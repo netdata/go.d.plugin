@@ -70,7 +70,7 @@ func main() {
 		runtime.GOMAXPROCS(conf.MaxProcs)
 	}
 
-	goplugin.New(parsedCmd.UpdEvery, enabledModules(conf, parsedCmd.ModRun), pLogger, "/opt/GoPluginConf/").Run()
+	goplugin.New(parsedCmd.UpdEvery, enabledModules(conf, parsedCmd.ModRun), pLogger, dir).Run()
 }
 
 // enabledModules returns map of enabled modules (creators actually)
