@@ -97,7 +97,7 @@ Module *specific* variables and their default values:
   response_match   = ""      # Optional. Regex match in body of response (ex.: "REGULAR_EXPRESSION")
   url              = ""      # Required. URL. 
   body             = ""      # Optional. HTTP request body (ex.: '''{'some':'data'}''')
-  header           = {""=""} # Optional. HTTP request headers (ex.: {"X-API-Key" = "key"}
+  header           = {}      # Optional. HTTP request headers (ex.: {X-API-Key = "key"}
   method           = "GET"   # Optional. HTTP request method
   username         = ""      # Optional. Username for basic auth
   password         = ""      # Optional. Password for basic auth
