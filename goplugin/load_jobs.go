@@ -70,7 +70,7 @@ func (p *goPlugin) loadJobs() jobStack {
 		p.Log.Debugf("'%s' configuration TOML parse success", modName)
 
 		for _, c := range parseConfAST(table) {
-			if !noconf && c.specific == nil {
+			if !noconf && !c.hasSpecific() {
 				p.Log.Errorf("'%s' skipped: no \"specific\" section", modName)
 				continue
 			}
