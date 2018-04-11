@@ -34,7 +34,7 @@ func chartsEqual(c1, c2 Chart) bool {
 		}
 	}
 	for _, v := range c1.Variables {
-		if c2.GetVarByID(v.ID()) == nil || v.ID() != c2.GetDimByID(v.ID()).ID() {
+		if c2.GetVarByID(v.ID()) == nil || v.ID() != c2.GetVarByID(v.ID()).ID() {
 			varEq = false
 			break
 		}
