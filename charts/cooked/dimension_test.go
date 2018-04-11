@@ -3,12 +3,13 @@ package cooked
 import (
 	"testing"
 
+	"fmt"
 	"github.com/l2isbad/go.d.plugin/charts/raw"
 )
 
 func TestDimension_ID(t *testing.T) {
 	id := "id"
-	d := dimension{id:id}
+	d := dimension{id: id}
 
 	if d.ID() != id {
 		t.Errorf("expected %s, but got %s", id, d.ID())
@@ -17,7 +18,7 @@ func TestDimension_ID(t *testing.T) {
 
 func TestDimension_Name(t *testing.T) {
 	n := "name"
-	d := dimension{name:n}
+	d := dimension{name: n}
 
 	if d.Name() != n {
 		t.Errorf("expected %s, but got %s", n, d.Name())
@@ -127,5 +128,17 @@ func TestDimension_SetHidden(t *testing.T) {
 	}
 	if d.SetHidden(true); d.Hidden() != true {
 		t.Error("expected true, but got false")
+	}
+}
+
+func TestDimension_MultipleSet(t *testing.T) {
+	d := dimension{}
+	id, name, mul, div := "id", "name", 10, 100
+
+	d.SetID(id).SetName(name).SetAlgorithm(raw.Absolute).SetMultiplier(mul).SetDivisor(div)
+
+	if d.ID() != id || d.Name() != name || d.Algorithm() != raw.Absolute || d.Multiplier() != mul || d.Divisor() != div {
+		fmt.Println(d)
+		t.Error("multiple set failed")
 	}
 }
