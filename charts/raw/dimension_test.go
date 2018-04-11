@@ -9,25 +9,25 @@ func TestDimension_IsValid(t *testing.T) {
 		t.Error("expected error, but got nil")
 	}
 
-	d = Dimension{idxDimID: nil}
+	d = Dimension{IdxDimID: nil}
 
 	if err := d.IsValid(); err == nil {
 		t.Error("expected error, but got nil")
 	}
 
-	d = Dimension{idxDimID: 1}
+	d = Dimension{IdxDimID: 1}
 
 	if err := d.IsValid(); err != nil {
 		t.Error("expected nil, but got error")
 	}
 
-	d = Dimension{idxDimID: "1"}
+	d = Dimension{IdxDimID: "1"}
 
 	if err := d.IsValid(); err != nil {
 		t.Error("expected nil, but got error")
 	}
 
-	d = Dimension{idxDimID: stringer{}}
+	d = Dimension{IdxDimID: stringer{}}
 
 	if err := d.IsValid(); err != nil {
 		t.Error("expected nil, but got error")
@@ -35,19 +35,19 @@ func TestDimension_IsValid(t *testing.T) {
 }
 
 func TestDimension_ID(t *testing.T) {
-	d := Dimension{idxDimID: "1"}
+	d := Dimension{IdxDimID: "1"}
 
 	if d.ID() != "1" {
 		t.Errorf("expected 1, but got %s", d.ID())
 	}
 
-	d = Dimension{idxDimID: stringer{}}
+	d = Dimension{IdxDimID: stringer{}}
 
 	if d.ID() != (stringer{}).String() {
 		t.Errorf("expected %s, but got %s", (stringer{}).String(), d.ID())
 	}
 
-	d = Dimension{idxDimID: nil}
+	d = Dimension{IdxDimID: nil}
 
 	if d.ID() != "" {
 		t.Errorf("expected \"\", but got %s", d.ID())
@@ -56,19 +56,19 @@ func TestDimension_ID(t *testing.T) {
 }
 
 func TestDimension_Name(t *testing.T) {
-	d := Dimension{idxDimName: "1"}
+	d := Dimension{IdxDimName: "1"}
 
 	if d.Name() != "1" {
 		t.Errorf("expected 1, but got %s", d.Name())
 	}
 
-	d = Dimension{idxDimName: stringer{}}
+	d = Dimension{IdxDimName: stringer{}}
 
 	if d.Name() != (stringer{}).String() {
 		t.Errorf("expected %s, but got %s", (stringer{}).String(), d.Name())
 	}
 
-	d = Dimension{idxDimName: nil}
+	d = Dimension{IdxDimName: nil}
 
 	if d.Name() != "" {
 		t.Errorf("expected \"\", but got %s", d.Name())
@@ -83,13 +83,13 @@ func TestDimension_Algorithm(t *testing.T) {
 		t.Errorf("expected %s, but got %s", Absolute, d.Algorithm())
 	}
 
-	d = Dimension{idxDimAlgorithm: Incremental}
+	d = Dimension{IdxDimAlgorithm: Incremental}
 
 	if d.Algorithm() != Incremental {
 		t.Errorf("expected %s, but got %s", Incremental, d.Algorithm())
 	}
 
-	d = Dimension{idxDimAlgorithm: "SuperAlgorithm"}
+	d = Dimension{IdxDimAlgorithm: "SuperAlgorithm"}
 
 	if d.Algorithm() != defaultDimAlgorithm {
 		t.Errorf("expected %s, but got %s", Absolute, d.Algorithm())
@@ -104,19 +104,19 @@ func TestDimension_Multiplier(t *testing.T) {
 		t.Errorf("expected 1, but got %d", d.Multiplier())
 	}
 
-	d = Dimension{idxDimMultiplier: 5}
+	d = Dimension{IdxDimMultiplier: 5}
 
 	if d.Multiplier() != 5 {
 		t.Errorf("expected 5, but got %d", d.Multiplier())
 	}
 
-	d = Dimension{idxDimMultiplier: "5"}
+	d = Dimension{IdxDimMultiplier: "5"}
 
 	if d.Multiplier() != 5 {
 		t.Errorf("expected 5, but got %d", d.Multiplier())
 	}
 
-	d = Dimension{idxDimMultiplier: 1e6}
+	d = Dimension{IdxDimMultiplier: 1e6}
 
 	if d.Multiplier() != 1000000 {
 		t.Errorf("expected 1000000, but got %d", d.Multiplier())
@@ -130,19 +130,19 @@ func TestDimension_Divisor(t *testing.T) {
 		t.Errorf("expected 1, but got %d", d.Divisor())
 	}
 
-	d = Dimension{idxDimDivisor: 5}
+	d = Dimension{IdxDimDivisor: 5}
 
 	if d.Divisor() != 5 {
 		t.Errorf("expected 5, but got %d", d.Divisor())
 	}
 
-	d = Dimension{idxDimDivisor: "5"}
+	d = Dimension{IdxDimDivisor: "5"}
 
 	if d.Divisor() != 5 {
 		t.Errorf("expected 5, but got %d", d.Divisor())
 	}
 
-	d = Dimension{idxDimDivisor: 1e6}
+	d = Dimension{IdxDimDivisor: 1e6}
 
 	if d.Divisor() != 1000000 {
 		t.Errorf("expected 1000000, but got %d", d.Divisor())
@@ -157,7 +157,7 @@ func TestDimension_Hidden(t *testing.T) {
 		t.Errorf("expected %s, but got %s", defaultDimHidden, d.Hidden())
 	}
 
-	d = Dimension{idxDimHidden: true}
+	d = Dimension{IdxDimHidden: true}
 
 	if d.Hidden() != "hidden" {
 		t.Errorf("expected hidden, but got %s", d.Hidden())
@@ -196,7 +196,7 @@ func TestDimension_SetAlgorithm(t *testing.T) {
 }
 
 func TestDimension_SetMultiplier(t *testing.T) {
-	d := Dimension{idxDimMultiplier: 1}
+	d := Dimension{IdxDimMultiplier: 1}
 	newMul := 420
 
 	d.SetMultiplier(newMul)
@@ -206,7 +206,7 @@ func TestDimension_SetMultiplier(t *testing.T) {
 }
 
 func TestDimension_SetDivisor(t *testing.T) {
-	d := Dimension{idxDimDivisor: 1}
+	d := Dimension{IdxDimDivisor: 1}
 	newDiv := 420
 
 	d.SetDivisor(newDiv)
@@ -217,7 +217,7 @@ func TestDimension_SetDivisor(t *testing.T) {
 }
 
 func TestDimension_SetHidden(t *testing.T) {
-	d := Dimension{idxDimHidden: false}
+	d := Dimension{IdxDimHidden: false}
 
 	d.SetHidden(true)
 	if d.Hidden() != "hidden" {

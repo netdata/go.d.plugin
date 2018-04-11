@@ -7,12 +7,12 @@ import (
 )
 
 const (
-	idxChartTitle = iota
-	idxChartUnits
-	idxChartFamily
-	idxChartContext
-	idxChartType
-	idxChartOverrideID
+	IdxChartTitle = iota
+	IdxChartUnits
+	IdxChartFamily
+	IdxChartContext
+	IdxChartType
+	IdxChartOverrideID
 )
 
 const (
@@ -68,35 +68,35 @@ func (c *Chart) IsValid() error {
 
 // Title returns 0 element of Options.
 func (c *Chart) Title() string {
-	return c.Options[idxChartTitle]
+	return c.Options[IdxChartTitle]
 }
 
 // Units returns 1 element of Options.
 func (c *Chart) Units() string {
-	return c.Options[idxChartUnits]
+	return c.Options[IdxChartUnits]
 }
 
 // Family returns 2 element of Options converted to lower case.
 func (c *Chart) Family() string {
-	return strings.ToLower(c.Options[idxChartFamily])
+	return strings.ToLower(c.Options[IdxChartFamily])
 }
 
 // Context returns 3 element of Options.
 func (c *Chart) Context() string {
-	return c.Options[idxChartContext]
+	return c.Options[IdxChartContext]
 }
 
 // ChartType returns 4 element of Options.
 func (c *Chart) ChartType() string {
-	if ValidChartType(c.Options[idxChartType]) {
-		return c.Options[idxChartType]
+	if ValidChartType(c.Options[IdxChartType]) {
+		return c.Options[IdxChartType]
 	}
 	return defaultChartType
 }
 
 // OverrideID returns 5 element of Options.
 func (c *Chart) OverrideID() string {
-	return c.Options[idxChartOverrideID]
+	return c.Options[IdxChartOverrideID]
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -105,37 +105,37 @@ func (c *Chart) OverrideID() string {
 
 // SetTitle sets 0 element of Options.
 func (c *Chart) SetTitle(t string) *Chart {
-	c.Options[idxChartTitle] = t
+	c.Options[IdxChartTitle] = t
 	return c
 }
 
 // SetUnits sets 1 element of Options.
 func (c *Chart) SetUnits(u string) *Chart {
-	c.Options[idxChartUnits] = u
+	c.Options[IdxChartUnits] = u
 	return c
 }
 
 // SetFamily sets 2 element of Options.
 func (c *Chart) SetFamily(f string) *Chart {
-	c.Options[idxChartFamily] = f
+	c.Options[IdxChartFamily] = f
 	return c
 }
 
 // SetContext sets 3 element of Options.
 func (c *Chart) SetContext(ctx string) *Chart {
-	c.Options[idxChartContext] = ctx
+	c.Options[IdxChartContext] = ctx
 	return c
 }
 
 // SetChartType sets 4 element of Options.
 func (c *Chart) SetChartType(t string) *Chart {
-	c.Options[idxChartType] = t
+	c.Options[IdxChartType] = t
 	return c
 }
 
 // SetOverrideID sets 5 element of Options.
 func (c *Chart) SetOverrideID(id string) *Chart {
-	c.Options[idxChartOverrideID] = id
+	c.Options[IdxChartOverrideID] = id
 	return c
 }
 

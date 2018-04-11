@@ -12,41 +12,41 @@ func TestChart_IsValid(t *testing.T) {
 	if (&Chart{
 		ID: "id",
 		Options: Options{
-			idxChartTitle: "title",
-			idxChartUnits: "units",
+			IdxChartTitle: "title",
+			IdxChartUnits: "units",
 		}}).IsValid() == nil {
 		t.Error("expected error, but got nil")
 	}
 	if (&Chart{
 		ID: "id",
 		Options: Options{
-			idxChartTitle:  "title",
-			idxChartFamily: "family",
+			IdxChartTitle:  "title",
+			IdxChartFamily: "family",
 		}}).IsValid() == nil {
 		t.Error("expected error, but got nil")
 	}
 	if (&Chart{
 		ID: "id",
 		Options: Options{
-			idxChartUnits:  "units",
-			idxChartFamily: "family",
+			IdxChartUnits:  "units",
+			IdxChartFamily: "family",
 		}}).IsValid() == nil {
 		t.Error("expected error, but got nil")
 	}
 	if (&Chart{
 		Options: Options{
-			idxChartTitle:  "title",
-			idxChartUnits:  "units",
-			idxChartFamily: "family",
+			IdxChartTitle:  "title",
+			IdxChartUnits:  "units",
+			IdxChartFamily: "family",
 		}}).IsValid() == nil {
 		t.Error("expected error, but got nil")
 	}
 	if (&Chart{
 		ID: "id",
 		Options: Options{
-			idxChartTitle:  "title",
-			idxChartUnits:  "units",
-			idxChartFamily: "family",
+			IdxChartTitle:  "title",
+			IdxChartUnits:  "units",
+			IdxChartFamily: "family",
 		}}).IsValid() != nil {
 		t.Error("expected nil, but got error")
 	}
@@ -57,7 +57,7 @@ func TestChart_Title(t *testing.T) {
 	title := "title"
 	c := Chart{
 		Options: Options{
-			idxChartTitle: title,
+			IdxChartTitle: title,
 		}}
 
 	if c.Title() != title {
@@ -69,7 +69,7 @@ func TestChart_Units(t *testing.T) {
 	units := "units"
 	c := Chart{
 		Options: Options{
-			idxChartUnits: units,
+			IdxChartUnits: units,
 		}}
 
 	if c.Units() != units {
@@ -81,7 +81,7 @@ func TestChart_Family(t *testing.T) {
 	family := "FAMILY"
 	c := Chart{
 		Options: Options{
-			idxChartFamily: family,
+			IdxChartFamily: family,
 		}}
 
 	if c.Family() != strings.ToLower(family) {
@@ -93,7 +93,7 @@ func TestChart_Context(t *testing.T) {
 	context := "context"
 	c := Chart{
 		Options: Options{
-			idxChartContext: context,
+			IdxChartContext: context,
 		}}
 
 	if c.Context() != context {
@@ -110,7 +110,7 @@ func TestChart_ChartType(t *testing.T) {
 
 	c = Chart{
 		Options: Options{
-			idxChartType: Stacked,
+			IdxChartType: Stacked,
 		}}
 
 	if c.ChartType() != Stacked {
@@ -123,7 +123,7 @@ func TestChart_OverrideID(t *testing.T) {
 	overrideID := "id"
 	c := Chart{
 		Options: Options{
-			idxChartOverrideID: overrideID,
+			IdxChartOverrideID: overrideID,
 		}}
 
 	if c.OverrideID() != overrideID {
