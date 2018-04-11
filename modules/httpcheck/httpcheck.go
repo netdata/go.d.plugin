@@ -23,8 +23,6 @@ type (
 	Options     = raw.Options
 	Dimensions  = raw.Dimensions
 	Dimension   = raw.Dimension
-	Variables   = raw.Variables
-	Variable    = raw.Variable
 )
 
 var uCharts = Charts{

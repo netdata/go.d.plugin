@@ -25,8 +25,6 @@ type (
 	Options     = raw.Options
 	Dimensions  = raw.Dimensions
 	Dimension   = raw.Dimension
-	Variables   = raw.Variables
-	Variable    = raw.Variable
 )
 
 func chartsTemplate(port int) *raw.Charts {
