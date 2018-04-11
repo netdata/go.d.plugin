@@ -371,17 +371,9 @@ func TestNewChart(t *testing.T) {
 		Dimensions: Dimensions{
 			Dimension{"1"},
 			Dimension{"2"},
-	}}
+		}}
 
-	c2 := NewChart(c1.ID, c1.Options, c1.Dimensions...)
-
-	switch {
-	case
-	c1.ID != c2.ID,
-	c1.Options != c2.Options,
-	len(c1.Dimensions) != len(c2.Dimensions),
-	c1.Dimensions[0] != c2.Dimensions[0],
-	c2.Dimensions[1] != c2.Dimensions[1]:
+	if !chartsEqual(c1, NewChart(c1.ID, c1.Options, c1.Dimensions...)) {
 		t.Error("expected an equal chart, got not equal")
 	}
 }
