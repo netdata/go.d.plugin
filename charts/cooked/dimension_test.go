@@ -3,7 +3,6 @@ package cooked
 import (
 	"testing"
 
-	"fmt"
 	"github.com/l2isbad/go.d.plugin/charts/raw"
 )
 
@@ -138,7 +137,6 @@ func TestDimension_MultipleSet(t *testing.T) {
 	d.SetID(id).SetName(name).SetAlgorithm(raw.Absolute).SetMultiplier(mul).SetDivisor(div)
 
 	if d.ID() != id || d.Name() != name || d.Algorithm() != raw.Absolute || d.Multiplier() != mul || d.Divisor() != div {
-		fmt.Println(d)
 		t.Error("multiple set failed")
 	}
 }
