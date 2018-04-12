@@ -7,7 +7,7 @@ import (
 	"github.com/l2isbad/go.d.plugin/charts/raw"
 )
 
-var rawChart = raw.Chart{
+var testRawChart = raw.Chart{
 	ID:      "chart1",
 	Options: raw.Options{"Title", "Units", "Family", "Context", "Type", "OverrideID"},
 	Dimensions: raw.Dimensions{
@@ -20,15 +20,15 @@ var rawChart = raw.Chart{
 	},
 }
 
-type bc struct{}
+type testBC struct{}
 
-func (b bc) ModuleName() string { return "module" }
+func (b testBC) ModuleName() string { return "module" }
 
-func (b bc) JobName() string { return "job" }
+func (b testBC) JobName() string { return "job" }
 
-func (b bc) FullName() string { return "full" }
+func (b testBC) FullName() string { return "full" }
 
-func (b bc) UpdateEvery() int { return 1 }
+func (b testBC) UpdateEvery() int { return 1 }
 
 func TestChart_ID(t *testing.T) {
 	id := "id"
@@ -77,7 +77,7 @@ func TestChart_Family(t *testing.T) {
 
 func TestChart_Context(t *testing.T) {
 	ctx := "context"
-	c := Chart{id: "id", context: ctx, bc: bc{}}
+	c := Chart{id: "id", context: ctx, bc: testBC{}}
 
 	if c.Context() != ctx {
 		t.Errorf("expected %s, but got %s", ctx, c.Context())
@@ -166,7 +166,7 @@ func TestChart_SetChartType(t *testing.T) {
 }
 
 func TestChart_GetDimByID(t *testing.T) {
-	c, _ := newChart(&rawChart, bc{}, 1)
+	c, _ := newChart(&testRawChart, testBC{}, 1)
 
 	if d := c.GetDimByID("dim0"); d != nil {
 		t.Errorf("expected nil, but got %v", d)
@@ -174,11 +174,15 @@ func TestChart_GetDimByID(t *testing.T) {
 
 	if d := c.GetDimByID("dim1"); d == nil {
 		t.Error("expected dimension, but got nil")
+	} else {
+		if _, ok := toInterface(d).(*dimension); !ok {
+			t.Error("expected *dimension type, but got another")
+		}
 	}
 }
 
 func TestChart_GetDimByIndex(t *testing.T) {
-	c, _ := newChart(&rawChart, bc{}, 1)
+	c, _ := newChart(&testRawChart, testBC{}, 1)
 
 	if d := c.GetDimByIndex(-1); d != nil {
 		t.Errorf("expected nil, but got %v", d)
@@ -186,11 +190,15 @@ func TestChart_GetDimByIndex(t *testing.T) {
 
 	if d := c.GetDimByIndex(1); d == nil {
 		t.Error("expected dimension, but got nil")
+	} else {
+		if _, ok := toInterface(d).(*dimension); !ok {
+			t.Error("expected *dimension type, but got another")
+		}
 	}
 }
 
 func TestChart_GetVarByID(t *testing.T) {
-	c, _ := newChart(&rawChart, bc{}, 1)
+	c, _ := newChart(&testRawChart, testBC{}, 1)
 
 	if v := c.GetVarByID("var0"); v != nil {
 		t.Errorf("expected nil, but got %v", v)
@@ -198,11 +206,15 @@ func TestChart_GetVarByID(t *testing.T) {
 
 	if v := c.GetVarByID("var1"); v == nil {
 		t.Error("expected dimension, but got nil")
+	} else {
+		if _, ok := toInterface(v).(*variable); !ok {
+			t.Error("expected *variable type, but got another")
+		}
 	}
 }
 
 func TestChart_AddDim(t *testing.T) {
-	c, _ := newChart(&rawChart, bc{}, 1)
+	c, _ := newChart(&testRawChart, testBC{}, 1)
 	c.setPush(false)
 	c.setObsoleted(true)
 	c.FailedUpdates = 1
@@ -247,7 +259,7 @@ func TestChart_AddVar(t *testing.T) {
 }
 
 func TestChart_Refresh(t *testing.T) {
-	c, _ := newChart(&rawChart, bc{}, 1)
+	c, _ := newChart(&testRawChart, testBC{}, 1)
 	c.setPush(false)
 	c.setObsoleted(true)
 	c.setCreated(true)
@@ -259,7 +271,7 @@ func TestChart_Refresh(t *testing.T) {
 }
 
 func TestChart_CanBeUpdated(t *testing.T) {
-	c, _ := newChart(&rawChart, bc{}, 1)
+	c, _ := newChart(&testRawChart, testBC{}, 1)
 
 	if !c.CanBeUpdated(map[string]int64{"dim1": 1}) {
 		t.Error("expected true, but got false")
@@ -271,7 +283,7 @@ func TestChart_CanBeUpdated(t *testing.T) {
 }
 
 func TestChart_Obsolete(t *testing.T) {
-	c, _ := newChart(&rawChart, bc{}, 1)
+	c, _ := newChart(&testRawChart, testBC{}, 1)
 
 	if c.Obsolete(); !c.IsObsoleted() {
 		t.Error("expected true, but got false")
@@ -280,7 +292,7 @@ func TestChart_Obsolete(t *testing.T) {
 }
 
 func TestChart_Update(t *testing.T) {
-	c, _ := newChart(&rawChart, bc{}, 1)
+	c, _ := newChart(&testRawChart, testBC{}, 1)
 	c.setPush(false)
 	c.setUpdated(true)
 
