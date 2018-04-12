@@ -7,8 +7,12 @@ import (
 )
 
 func TestNewCharts(t *testing.T) {
-	if NewCharts(testBC{}) == nil {
+	if v := NewCharts(testBC{}); v == nil {
 		t.Error("expected charts, not nil")
+	} else {
+		if _, ok := toInterface(v).(*charts); !ok {
+			t.Error("expected *charts type, but got another")
+		}
 	}
 }
 
