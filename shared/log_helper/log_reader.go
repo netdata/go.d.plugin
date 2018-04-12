@@ -24,7 +24,7 @@ func readLastLine(f io.ReadSeeker) ([]byte, error) {
 		if v, err := f.Seek(-2, io.SeekCurrent); err != nil {
 			return nil, err
 		} else if v == 0 {
-			c++
+			c += 2
 			break
 		}
 

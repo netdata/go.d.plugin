@@ -1,8 +1,8 @@
 package log_helper
 
 import (
-	"testing"
 	"bytes"
+	"testing"
 )
 
 func TestReadLastLine(t *testing.T) {
@@ -18,7 +18,7 @@ func TestReadLastLine(t *testing.T) {
 
 	if v, err := readLastLine(input); err != nil {
 		t.Errorf("expected nil, but got %s", err)
-	} else if string(v) == oneLine {
+	} else if string(v) != oneLine {
 		t.Errorf("expected %s, but got %s", oneLine, string(v))
 	}
 
@@ -27,7 +27,7 @@ func TestReadLastLine(t *testing.T) {
 
 	if v, err := readLastLine(input); err != nil {
 		t.Errorf("expected nil, but got %s", err)
-	} else if string(v) == oneLine {
+	} else if string(v) != oneLine {
 		t.Errorf("expected %s, but got %s", oneLine, string(v))
 	}
 
@@ -36,7 +36,7 @@ func TestReadLastLine(t *testing.T) {
 
 	if v, err := readLastLine(input); err != nil {
 		t.Errorf("expected nil, but got %s", err)
-	} else if string(v) == secondLine + "\n" {
+	} else if string(v) != secondLine {
 		t.Errorf("expected %s, but got %s", secondLine, string(v))
 	}
 
@@ -45,7 +45,7 @@ func TestReadLastLine(t *testing.T) {
 
 	if v, err := readLastLine(input); err != nil {
 		t.Errorf("expected nil, but got %s", err)
-	} else if string(v) == secondLine + "\n" {
+	} else if string(v) != secondLine {
 		t.Errorf("expected %s, but got %s", secondLine, string(v))
 	}
 }
