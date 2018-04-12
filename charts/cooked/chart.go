@@ -171,7 +171,7 @@ func (c *Chart) GetDimByID(dimID string) *dimension {
 
 // GetDimByIndex returns dimension by index.
 func (c *Chart) GetDimByIndex(idx int) *dimension {
-	if idx >= 0 && idx < c.Len() {
+	if idx >= 0 && idx < len(c.dimensions) {
 		return c.dimensions[idx]
 	}
 	return nil
@@ -273,16 +273,6 @@ func (c *Chart) Obsolete() {
 		c.bc.ModuleName()))
 }
 
-// Index finds dimension index by id.
-func (c *Chart) index(dimID string) (int, bool) {
-	for idx, dim := range c.dimensions {
-		if dim.id == dimID {
-			return idx, true
-		}
-	}
-	return 0, false
-}
-
 // Refresh sets Chart push flag to true. If Chart was obsoleted it also sets obsolete and created flags to false.
 func (c *Chart) Refresh() {
 	c.setPush(true)
@@ -341,7 +331,12 @@ func (c *Chart) CanBeUpdated(data map[string]int64) bool {
 	return false
 }
 
-// Len returns len of dimensions.
-func (c *Chart) Len() int {
-	return len(c.dimensions)
+// Index finds dimension index by id.
+func (c *Chart) index(dimID string) (int, bool) {
+	for idx, dim := range c.dimensions {
+		if dim.id == dimID {
+			return idx, true
+		}
+	}
+	return 0, false
 }
