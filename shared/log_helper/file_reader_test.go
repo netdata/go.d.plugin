@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestNewLogFileReader(t *testing.T) {
+func TestNewFileReader(t *testing.T) {
 	_, err := NewFileReader("this will fail")
 
 	if err == nil {
@@ -37,7 +37,7 @@ func TestNewLogFileReader(t *testing.T) {
 	}
 }
 
-func TestLogFileReader_GetRawData(t *testing.T) {
+func TestFileReader_GetRawData(t *testing.T) {
 	tmp, err := ioutil.TempFile("", "temp-")
 
 	if err != nil {
