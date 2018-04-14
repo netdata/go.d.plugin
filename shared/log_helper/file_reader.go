@@ -52,8 +52,12 @@ func (l *FileReader) GetRawData() (chan []byte, error) {
 	}
 	l.do <- true
 	if err := <-l.err; err != nil {
+		if err != ErrNothingToRead {
+			l.fails++
+		}
 		return nil, err
 	}
+	l.fails = 0
 	return l.data, nil
 }
 
@@ -89,7 +93,6 @@ func worker(l *FileReader) {
 		}
 		fi, err := os.Stat(l.path)
 		if err != nil {
-			l.fails++
 			l.err <- err
 			continue
 		}
@@ -98,19 +101,16 @@ func worker(l *FileReader) {
 			l.pos = 0
 		} else if fi.Size() == l.pos {
 			l.err <- ErrNothingToRead
-			l.fails = 0
 			continue
 		}
 
 		f, err := os.Open(l.path)
 		if err != nil {
-			l.fails++
 			l.err <- err
 			continue
 		}
 
 		if _, err := f.Seek(l.pos, io.SeekStart); err != nil {
-			l.fails++
 			l.err <- err
 			continue
 		}
@@ -125,7 +125,6 @@ func worker(l *FileReader) {
 
 		l.data = make(chan []byte)
 		l.pos, _ = f.Seek(0, io.SeekCurrent)
-		l.fails = 0
 		f.Close()
 	}
 }
