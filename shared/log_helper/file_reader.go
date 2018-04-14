@@ -51,10 +51,14 @@ func (l *FileReader) GetRawData() (chan []byte, error) {
 		return nil, ErrNotStarted
 	}
 	l.do <- true
-	if err := <-l.err; err != nil {
-		if err != ErrNothingToRead {
-			l.fails++
+	err := <-l.err
+
+	if err != nil {
+		if err == ErrNothingToRead {
+			l.fails = 0
+			return nil, err
 		}
+		l.fails++
 		return nil, err
 	}
 	l.fails = 0
