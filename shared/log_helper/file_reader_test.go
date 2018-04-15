@@ -57,8 +57,8 @@ func TestFileReader_GetRawData(t *testing.T) {
 		t.Fatal("expected error, but got nil")
 	}
 
-	if err != ErrNothingToRead {
-		t.Errorf("expected '%s' error, but got %s", ErrNothingToRead, err)
+	if err != ErrSizeNotChanged {
+		t.Errorf("expected '%s' error, but got %s", ErrSizeNotChanged, err)
 	}
 	lines := [...]string{1: "first", 2: "second", 3: "third", 4: "fourth"}
 
@@ -89,8 +89,8 @@ func TestFileReader_GetRawData(t *testing.T) {
 		t.Fatal("expected error, but got nil")
 	}
 
-	if err != ErrNothingToRead {
-		t.Errorf("expected '%s' error, but got %s", ErrNothingToRead, err)
+	if err != ErrSizeNotChanged {
+		t.Errorf("expected '%s' error, but got %s", ErrSizeNotChanged, err)
 	}
 
 	tmp.Write([]byte(lines[3] + "\n" + lines[4] + "\n"))

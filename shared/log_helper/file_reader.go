@@ -12,8 +12,8 @@ import (
 var runFindPath = 10
 
 var (
-	ErrNotStarted    = errors.New("not started")
-	ErrNothingToRead = errors.New("nothing to read")
+	ErrNotStarted     = errors.New("not started")
+	ErrSizeNotChanged = errors.New("size not changed")
 )
 
 // TODO the overall design looks bad. But it it works with minimum memory allocation even if log file is huge
@@ -54,7 +54,7 @@ func (l *FileReader) GetRawData() (chan []byte, error) {
 	err := <-l.err
 
 	if err != nil {
-		if err == ErrNothingToRead {
+		if err == ErrSizeNotChanged {
 			l.fails = 0
 			return nil, err
 		}
@@ -104,7 +104,7 @@ func worker(l *FileReader) {
 		if fi.Size() < l.pos {
 			l.pos = 0
 		} else if fi.Size() == l.pos {
-			l.err <- ErrNothingToRead
+			l.err <- ErrSizeNotChanged
 			continue
 		}
 
