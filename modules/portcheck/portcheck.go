@@ -18,7 +18,7 @@ const (
 )
 
 type (
-	Charts      = raw.Chart
+	Charts      = raw.Charts
 	Order       = raw.Order
 	Definitions = raw.Definitions
 	Chart       = raw.Chart
@@ -27,7 +27,7 @@ type (
 	Dimension   = raw.Dimension
 )
 
-func chartsTemplate(port int) *raw.Charts {
+func chartsTemplate(port int) *Charts {
 	family := fmt.Sprintf("port %d", port)
 	return &raw.Charts{
 		Order: Order{
