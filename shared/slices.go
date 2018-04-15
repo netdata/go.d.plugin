@@ -1,49 +1,45 @@
 package shared
 
-import (
-	"errors"
-	"fmt"
-)
-
 type StringSlice []string
 
 func (s *StringSlice) Append(values ...string) {
 	*s = append(*s, values...)
 }
 
-func (s *StringSlice) Insert(idx int, value string) error {
+func (s *StringSlice) Insert(idx int, value string) bool {
 	if !s.isIndexValid(idx) {
-		return errors.New("insertion failed. 'idx' bounds out of range")
+		return false
 	}
 	*s = append(*s, "")
 	copy((*s)[idx+1:], (*s)[idx:])
 	(*s)[idx] = value
-	return nil
+	return true
 }
 
-func (s *StringSlice) Index(value string) (int, error) {
+func (s *StringSlice) Index(value string) int {
 	for i, v := range *s {
 		if v == value {
-			return i, nil
+			return i
 		}
 	}
-	return 0, fmt.Errorf("'%s' not in slice", value)
+	return -1
 }
 
-func (s *StringSlice) DeleteByIndex(idx int) error {
+func (s *StringSlice) Include(value string) bool {
+	return s.Index(value) >= 0
+
+}
+
+func (s *StringSlice) DeleteByIndex(idx int) bool {
 	if !s.isIndexValid(idx) {
-		return fmt.Errorf("deleting index failed. %d bounds out of range", idx)
+		return false
 	}
 	*s = append((*s)[:idx], (*s)[idx+1:]...)
-	return nil
+	return true
 }
 
-func (s *StringSlice) DeleteByID(value string) error {
-	i, err := s.Index(value)
-	if err != nil {
-		return err
-	}
-	return s.DeleteByIndex(i)
+func (s *StringSlice) DeleteByID(value string) bool {
+	return s.DeleteByIndex(s.Index(value))
 }
 
 func (s *StringSlice) isIndexValid(idx int) bool {

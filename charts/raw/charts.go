@@ -74,7 +74,7 @@ func (c *Charts) AddChart(chart Chart, addToOrder bool) error {
 	}
 	c.Definitions = append(c.Definitions, chart)
 	if addToOrder {
-		if _, err := c.Order.Index(chart.ID); err != nil {
+		if !c.Order.Include(chart.ID) {
 			c.Order.Append(chart.ID)
 		}
 	}
