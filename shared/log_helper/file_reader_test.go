@@ -68,7 +68,7 @@ func TestFileReader_GetRawData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected nil, but got %s", err)
 	}
-	rv := string(<-data)
+	rv := <-data
 	if rv != lines[1] {
 		t.Fatalf("expected %s, but got %s", lines[1], rv)
 	}
@@ -79,7 +79,7 @@ func TestFileReader_GetRawData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected nil, but got %s", err)
 	}
-	rv = string(<-data)
+	rv = <-data
 	if rv != lines[2] {
 		t.Fatalf("expected %s, but got %s", lines[2], rv)
 	}
@@ -100,8 +100,8 @@ func TestFileReader_GetRawData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected nil, but got %s", err)
 	}
-	rv = string(<-data)
-	rv += string(<-data)
+	rv = <-data
+	rv += <-data
 	if rv != lines[3]+lines[4] {
 		t.Fatalf("expected %s, but got %s", lines[3]+lines[4], rv)
 	}

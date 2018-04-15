@@ -24,7 +24,7 @@ func NewFileReader(path string) (*FileReader, error) {
 	l := FileReader{
 		Path: path,
 		err:  make(chan error),
-		data: make(chan []byte),
+		data: make(chan string),
 		do:   make(chan bool),
 	}
 	if err := l.init(); err != nil {
@@ -41,12 +41,12 @@ type FileReader struct {
 	started bool
 
 	err  chan error
-	data chan []byte
+	data chan string
 	do   chan bool
 }
 
 // GetRawData returns error from worker if any or data channel
-func (l *FileReader) GetRawData() (chan []byte, error) {
+func (l *FileReader) GetRawData() (chan string, error) {
 	if !l.started {
 		return nil, ErrNotStarted
 	}
@@ -123,11 +123,11 @@ func worker(l *FileReader) {
 		l.err <- nil
 
 		for s.Scan() {
-			l.data <- s.Bytes()
+			l.data <- s.Text()
 		}
 		close(l.data)
 
-		l.data = make(chan []byte)
+		l.data = make(chan string)
 		l.pos, _ = f.Seek(0, io.SeekCurrent)
 		f.Close()
 	}
