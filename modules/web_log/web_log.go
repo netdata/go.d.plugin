@@ -115,7 +115,7 @@ var uCharts = Charts{
 			ID:      "requests_per_url",
 			Options: Options{"Requests Per Url", "requests/s", "urls", "", raw.Stacked},
 			Dimensions: Dimensions{
-				Dimension{"url_pattern_other", "other", raw.Incremental},
+				Dimension{"url_other", "other", raw.Incremental},
 			},
 		},
 		Chart{
@@ -183,12 +183,13 @@ type filter struct {
 type WebLog struct {
 	modules.Charts
 	modules.Logger
-	Path          string            `toml:"path, required"`
-	Filter        filter            `toml:"filter"`
-	Categories    map[string]string `toml:"categories"`
-	CategoriesU   map[string]string `toml:"categories_user_defined"`
-	DetRespCodes  bool              `toml:"detailed_response_codes"`
-	DetRespCodesA bool              `toml:"detailed_response_codes_aggregate"`
+	Path           string            `toml:"path, required"`
+	Filter         filter            `toml:"filter"`
+	Categories     map[string]string `toml:"categories"`
+	CategoriesU    map[string]string `toml:"categories_user_defined"`
+	CategoryCharts bool              `toml:"per_category_charts"`
+	DetRespCodes   bool              `toml:"detailed_response_codes"`
+	DetRespCodesA  bool              `toml:"detailed_response_codes_aggregate"`
 
 	*log_helper.FileReader
 	regex   regex
@@ -213,7 +214,7 @@ func (w *WebLog) Check() bool {
 				w.Error(err)
 				return false
 			}
-			w.regex.categories["url_pattern_"+k] = r
+			w.regex.categories["url_"+k] = r
 		}
 	}
 
@@ -292,15 +293,15 @@ func (w *WebLog) createCharts() {
 
 	if len(w.regex.categories) != 0 {
 		for key := range w.regex.categories {
-			c.GetChartByID("requests_per_url").AddDim(Dimension{key, key[12:], raw.Incremental})
+			c.GetChartByID("requests_per_url").AddDim(Dimension{key, key[4:], raw.Incremental})
 			w.data[key] = 0
-			w.data["url_pattern_other"] = 0
+			w.data["url_other"] = 0
 		}
 	}
 
 	if len(w.regex.categoriesU) != 0 {
 		for key := range w.regex.categoriesU {
-			c.GetChartByID("requests_per_user_defined").AddDim(Dimension{key, key[12:], raw.Incremental})
+			c.GetChartByID("requests_per_user_defined").AddDim(Dimension{key, key[13:], raw.Incremental})
 			w.data[key] = 0
 			w.data["user_pattern_other"] = 0
 		}
@@ -421,7 +422,7 @@ func (w *WebLog) getDataPerRequest(req string) {
 	}
 
 	if w.regex.categories != nil {
-		w.getDataPerPattern(m[2], "url_pattern_other", w.regex.categories)
+		w.getDataPerPattern(m[2], "url_other", w.regex.categories)
 	}
 
 	if _, ok := w.data[m[1]]; !ok {
@@ -436,14 +437,15 @@ func (w *WebLog) getDataPerRequest(req string) {
 	w.data[dimID]++
 }
 
-func (w *WebLog) getDataPerPattern(r, other string, p map[string]*regexp.Regexp) {
+func (w *WebLog) getDataPerPattern(r, other string, p map[string]*regexp.Regexp) string {
 	for k, v := range p {
 		if v.MatchString(r) {
 			w.data[k]++
-			return
+			return k
 		}
 	}
 	w.data[other]++
+	return ""
 }
 
 func (w *WebLog) getDataPerCode(code string) {
