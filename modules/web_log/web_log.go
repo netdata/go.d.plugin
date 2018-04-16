@@ -289,13 +289,13 @@ func (w *WebLog) getDataPerAddress(s string, m map[string]bool) {
 
 	if _, ok := m[s]; !ok {
 		m[s] = true
+		w.data["unique_cur_"+proto]++
 	}
-	w.data["unique_cur_"+proto]++
 
 	if _, ok := w.uniqIPs[s]; !ok {
 		w.uniqIPs[s] = true
+		w.data["unique_tot_"+proto]++
 	}
-	w.data["unique_tot_"+proto]++
 }
 
 func (w *WebLog) getDataPerRequest(req string) {
