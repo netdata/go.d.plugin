@@ -58,8 +58,8 @@ var (
 var patterns = []*regexp.Regexp{
 	regexp.MustCompile(apacheV1),
 	regexp.MustCompile(apacheV2),
-	regexp.MustCompile(nginxV2),
 	regexp.MustCompile(nginxV1),
+	regexp.MustCompile(nginxV2),
 	regexp.MustCompile(nginxV3),
 	regexp.MustCompile(lastHop),
 }
