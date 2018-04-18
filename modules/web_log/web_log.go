@@ -1,7 +1,6 @@
 package web_log
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -51,11 +50,11 @@ func (t *timings) active() bool {
 }
 
 type regex struct {
-	categories  map[string]*regexp.Regexp
-	categoriesU map[string]*regexp.Regexp
-	include     *regexp.Regexp
-	exclude     *regexp.Regexp
-	parser      *regexp.Regexp
+	URLCat  categories
+	UserCat categories
+	include *regexp.Regexp
+	exclude *regexp.Regexp
+	parser  *regexp.Regexp
 }
 
 type filter struct {
@@ -66,21 +65,19 @@ type filter struct {
 type WebLog struct {
 	modules.Charts
 	modules.Logger
-	Path           string            `toml:"path, required"`
-	Filter         filter            `toml:"filter"`
-	Categories     map[string]string `toml:"categories"`
-	CategoriesU    map[string]string `toml:"categories_user_defined"`
-	CategoryCharts bool              `toml:"per_category_charts"`
-	DetRespCodes   bool              `toml:"detailed_response_codes"`
-	DetRespCodesA  bool              `toml:"detailed_response_codes_aggregate"`
+	Path          string        `toml:"path, required"`
+	Filter        filter        `toml:"filter"`
+	RawURLCat     rawCategories `toml:"categories"`
+	RawUserCat    rawCategories `toml:"user_defined"`
+	ChartURLCat   bool          `toml:"per_category_charts"`
+	DetRespCodes  bool          `toml:"detailed_response_codes"`
+	DetRespCodesA bool          `toml:"detailed_response_codes_aggregate"`
 
 	*log_helper.FileReader
 	regex   regex
 	uniqIPs map[string]bool
 	data    map[string]int64
 }
-
-var reRequest = regexp.MustCompile(`(?P<method>[A-Z]+) (?P<url>[^ ]+) [A-Z]+/(?P<http_version>\d(?:.\d)?)`)
 
 func (w *WebLog) Check() bool {
 	v, err := log_helper.NewFileReader(w.Path)
@@ -90,26 +87,21 @@ func (w *WebLog) Check() bool {
 	}
 	w.FileReader = v
 
-	if len(w.Categories) != 0 {
-		for k, v := range w.Categories {
-			r, err := regexp.Compile(v)
-			if err != nil {
-				w.Error(err)
-				return false
-			}
-			w.regex.categories["url_"+k] = r
+	for _, v := range w.RawURLCat {
+		re, err := regexp.Compile(v.re)
+		if err != nil {
+			w.Error(err)
+			return false
 		}
+		w.regex.URLCat.add(v.name, re)
 	}
-
-	if len(w.CategoriesU) != 0 {
-		for k, v := range w.CategoriesU {
-			r, err := regexp.Compile(v)
-			if err != nil {
-				w.Error(err)
-				return false
-			}
-			w.regex.categoriesU["user_defined_"+k] = r
+	for _, v := range w.RawUserCat {
+		re, err := regexp.Compile(v.re)
+		if err != nil {
+			w.Error(err)
+			return false
 		}
+		w.regex.UserCat.add(v.name, re)
 	}
 
 	if w.Filter.Include != "" {
@@ -151,45 +143,9 @@ func (w *WebLog) Check() bool {
 		return false
 	}
 
-	w.createCharts()
+	w.addCharts()
 
 	return true
-}
-
-func (w *WebLog) createCharts() {
-	c := uCharts.Copy()
-	if w.DetRespCodes && w.DetRespCodesA {
-		n := raw.NewChart(
-			"detailed_response_codes",
-			Options{"Detailed Response Codes", "requests/s", "responses", "", raw.Stacked})
-		c.AddChart(n, true)
-	}
-
-	if w.DetRespCodes && !w.DetRespCodesA {
-		for _, v := range []string{"1xx", "2xx", "3xx", "4xx", "5xx", "other"} {
-			n := raw.NewChart(
-				fmt.Sprintf("detailed_response_codes_%s", v),
-				Options{fmt.Sprintf("Detailed Response Codes %s", v), "requests/s", "responses", "", raw.Stacked})
-			c.AddChart(n, true)
-		}
-	}
-
-	if len(w.regex.categories) != 0 {
-		for key := range w.regex.categories {
-			c.GetChartByID("requests_per_url").AddDim(Dimension{key, key[4:], raw.Incremental})
-			w.data[key] = 0
-			w.data["url_other"] = 0
-		}
-	}
-
-	if len(w.regex.categoriesU) != 0 {
-		for key := range w.regex.categoriesU {
-			c.GetChartByID("requests_per_user_defined").AddDim(Dimension{key, key[13:], raw.Incremental})
-			w.data[key] = 0
-			w.data["user_pattern_other"] = 0
-		}
-	}
-	w.AddMany(c)
 }
 
 func (w *WebLog) GetData() *map[string]int64 {
@@ -197,7 +153,6 @@ func (w *WebLog) GetData() *map[string]int64 {
 
 	if err != nil {
 		if err == log_helper.ErrSizeNotChanged {
-			w.Warning(err)
 			return &w.data
 		}
 		return nil
@@ -225,12 +180,26 @@ func (w *WebLog) GetData() *map[string]int64 {
 			md[v] = m[idx+1]
 		}
 
+		var URLCat string
+
+		if v, ok := md["request"]; ok {
+			URLCat = w.getDataPerRequest(v)
+		}
+
+		if v, ok := md["user_defined"]; ok && w.regex.UserCat.active() {
+			w.getDataPerCategory(v, w.regex.UserCat)
+		}
+
 		code, codeFam := md["code"], md["code"][:1]
 
 		if _, ok := w.data[codeFam+"xx"]; ok {
 			w.data[codeFam+"xx"]++
 		} else {
 			w.data["0xx"]++
+		}
+
+		if URLCat != "" && w.ChartURLCat {
+			w.perCategoriesCharts(URLCat, md)
 		}
 
 		if w.DetRespCodes {
@@ -258,14 +227,6 @@ func (w *WebLog) GetData() *map[string]int64 {
 		if v, ok := md["resp_length"]; ok {
 			w.data["resp_length"] += int64(strToInt(v))
 		}
-
-		if v, ok := md["user_defined"]; ok && w.regex.categoriesU != nil {
-			w.getDataPerPattern(v, "user_pattern_other", w.regex.categoriesU)
-		}
-
-		if v, ok := md["request"]; ok {
-			w.getDataPerRequest(v)
-		}
 	}
 
 	for _, v := range []*timings{&tr, &tu} {
@@ -279,55 +240,71 @@ func (w *WebLog) GetData() *map[string]int64 {
 	return &w.data
 }
 
-func (w *WebLog) getDataPerAddress(s string, m map[string]bool) {
+func (w *WebLog) perCategoriesCharts(s string, md map[string]string) {
+	code := md["code"]
+	if _, ok := w.data[s+"_"+code]; !ok {
+		w.GetChartByID(s + "_detailed_response_code").AddDim(Dimension{s + "_" + code, code, raw.Incremental})
+	}
+	w.data[s+"_"+code]++
+
+	if v, ok := md["bytes_sent"]; ok {
+		w.data[s+"_"+"bytes_sent"] += int64(strToInt(v))
+	}
+}
+
+func (w *WebLog) getDataPerAddress(address string, uniqIPs map[string]bool) {
 	var proto = "ipv4"
 
-	if strings.Contains(s, ":") {
+	if strings.Contains(address, ":") {
 		proto = "ipv6"
 	}
 	w.data["req_"+proto]++
 
-	if _, ok := m[s]; !ok {
-		m[s] = true
+	if _, ok := uniqIPs[address]; !ok {
+		uniqIPs[address] = true
 		w.data["unique_cur_"+proto]++
 	}
 
-	if _, ok := w.uniqIPs[s]; !ok {
-		w.uniqIPs[s] = true
+	if _, ok := w.uniqIPs[address]; !ok {
+		w.uniqIPs[address] = true
 		w.data["unique_tot_"+proto]++
 	}
 }
 
-func (w *WebLog) getDataPerRequest(req string) {
+func (w *WebLog) getDataPerRequest(req string) (URLCat string) {
+	// 0: method, 1: url, 2: http version
 	m := reRequest.FindStringSubmatch(req)
 	if m == nil {
 		return
 	}
 
-	if w.regex.categories != nil {
-		w.getDataPerPattern(m[2], "url_other", w.regex.categories)
+	if w.regex.URLCat.active() {
+		if v := w.getDataPerCategory(m[2], w.regex.URLCat); v != "" {
+			URLCat = v
+		}
 	}
 
 	if _, ok := w.data[m[1]]; !ok {
-		w.GetChartByID("http_method").AddDim(Dimension{m[1], "", raw.Incremental})
+		w.GetChartByID(chartHttpMethod).AddDim(Dimension{m[1], "", raw.Incremental})
 	}
 	w.data[m[1]]++
 
 	dimID := strings.Replace(m[3], ".", "_", 1)
 	if _, ok := w.data[dimID]; !ok {
-		w.GetChartByID("http_version").AddDim(Dimension{dimID, m[3], raw.Incremental})
+		w.GetChartByID(chartHttpVersion).AddDim(Dimension{dimID, m[3], raw.Incremental})
 	}
 	w.data[dimID]++
+	return
 }
 
-func (w *WebLog) getDataPerPattern(r, other string, p map[string]*regexp.Regexp) string {
-	for k, v := range p {
-		if v.MatchString(r) {
-			w.data[k]++
-			return k
+func (w *WebLog) getDataPerCategory(s string, c categories) string {
+	for _, v := range c.list {
+		if v.re.MatchString(s) {
+			w.data[v.fullname]++
+			return v.fullname
 		}
 	}
-	w.data[other]++
+	w.data[c.other()]++
 	return ""
 }
 
@@ -338,7 +315,7 @@ func (w *WebLog) getDataPerCode(code string) {
 	}
 
 	if w.DetRespCodesA {
-		w.GetChartByID("detailed_response_codes").AddDim(Dimension{code, "", raw.Incremental})
+		w.GetChartByID(chartDetRespCodes).AddDim(Dimension{code, "", raw.Incremental})
 		w.data[code] = 0
 		return
 	}
@@ -346,7 +323,7 @@ func (w *WebLog) getDataPerCode(code string) {
 	if code[0] <= 53 {
 		v = code[:1] + "xx"
 	}
-	w.GetChartByID("detailed_response_codes_" + v).AddDim(Dimension{code, "", raw.Incremental})
+	w.GetChartByID(chartDetRespCodes + "_" + v).AddDim(Dimension{code, "", raw.Incremental})
 	w.data[code] = 0
 }
 
@@ -367,13 +344,12 @@ func (w *WebLog) getDataPerCodeFam(code string) {
 }
 
 func strToInt(s string) int {
-	var l int
 	if s != "-" {
 		if v, err := strconv.Atoi(s); err != nil {
-			l = v
+			return v
 		}
 	}
-	return l
+	return 0
 }
 
 func init() {
@@ -381,17 +357,40 @@ func init() {
 		return &WebLog{
 			DetRespCodes:  true,
 			DetRespCodesA: true,
+			ChartURLCat:   true,
+			uniqIPs:       make(map[string]bool),
 			regex: regex{
-				categories:  make(map[string]*regexp.Regexp),
-				categoriesU: make(map[string]*regexp.Regexp)},
-			uniqIPs: make(map[string]bool),
+				URLCat:  categories{prefix: "url"},
+				UserCat: categories{prefix: "user_defined"},
+			},
 			data: map[string]int64{
-				"bytes_sent": 0, "resp_length": 0, "resp_time_min": 0, "resp_time_max": 0,
-				"resp_time_avg": 0, "resp_time_upstream_min": 0, "resp_time_upstream_max": 0,
-				"resp_time_upstream_avg": 0, "unique_cur_ipv4": 0, "unique_cur_ipv6": 0,
-				"2xx": 0, "5xx": 0, "3xx": 0, "4xx": 0, "1xx": 0, "0xx": 0, "unmatched": 0, "req_ipv4": 0,
-				"req_ipv6": 0, "unique_tot_ipv4": 0, "unique_tot_ipv6": 0, "successful_requests": 0,
-				"redirects": 0, "bad_requests": 0, "server_errors": 0, "other_requests": 0, "GET": 0,
+				"bytes_sent":             0,
+				"resp_length":            0,
+				"resp_time_min":          0,
+				"resp_time_max":          0,
+				"resp_time_avg":          0,
+				"resp_time_upstream_min": 0,
+				"resp_time_upstream_max": 0,
+				"resp_time_upstream_avg": 0,
+				"unique_cur_ipv4":        0,
+				"unique_cur_ipv6":        0,
+				"unique_tot_ipv4":        0,
+				"unique_tot_ipv6":        0,
+				"2xx":                    0,
+				"5xx":                    0,
+				"3xx":                    0,
+				"4xx":                    0,
+				"1xx":                    0,
+				"0xx":                    0,
+				"unmatched":              0,
+				"req_ipv4":               0,
+				"req_ipv6":               0,
+				"successful_requests":    0,
+				"redirects":              0,
+				"bad_requests":           0,
+				"server_errors":          0,
+				"other_requests":         0,
+				"GET":                    0, // GET should be green on the dashboard
 			},
 		}
 	}
