@@ -16,6 +16,18 @@ func (s *StringSlice) Insert(idx int, value string) bool {
 	return true
 }
 
+func (s *StringSlice) InsertBefore(id, v string) bool {
+	return s.Insert(s.Index(id), v)
+}
+
+func (s *StringSlice) InsertAfter(id, v string) bool {
+	if s.Include(id) {
+		return s.Insert(s.Index(id)+1, v)
+	}
+	return false
+
+}
+
 func (s *StringSlice) Index(value string) int {
 	for i, v := range *s {
 		if v == value {
