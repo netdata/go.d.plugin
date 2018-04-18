@@ -1,8 +1,8 @@
 package web_log
 
 import (
-	"github.com/l2isbad/go.d.plugin/charts/raw"
 	"fmt"
+	"github.com/l2isbad/go.d.plugin/charts/raw"
 )
 
 const (
@@ -189,8 +189,8 @@ func perCategoryCharts(c *category) []raw.Chart {
 		raw.NewChart(
 			c.fullname+"_bandwidth",
 			Options{"Bandwidth", "kilobits/s", c.fullname, "web_log.url_bandwidth", raw.Area},
-			Dimension{c.fullname + "_resp_length", "received", 8, 1000, raw.Incremental},
-			Dimension{c.fullname + "_bytes_sent", "sent", -8, 1000, raw.Incremental},
+			Dimension{c.fullname + "_resp_length", "received", raw.Incremental, 8, 1000},
+			Dimension{c.fullname + "_bytes_sent", "sent", raw.Incremental, -8, 1000},
 		),
 		raw.NewChart(
 			c.fullname+"_response_time",
