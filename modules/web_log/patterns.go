@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+var reRequest = regexp.MustCompile(`(?P<method>[A-Z]+) (?P<url>[^ ]+) [A-Z]+/(?P<http_version>\d(?:.\d)?)`)
+
 var (
 	lastHop = strings.Join([]string{
 		`(?P<address>[\\da-f.:]+|localhost) -.*?"`,
