@@ -28,8 +28,8 @@ func (s *StringSlice) InsertAfter(id, v string) bool {
 
 }
 
-func (s *StringSlice) Index(value string) int {
-	for i, v := range *s {
+func (s StringSlice) Index(value string) int {
+	for i, v := range s {
 		if v == value {
 			return i
 		}
@@ -37,7 +37,7 @@ func (s *StringSlice) Index(value string) int {
 	return -1
 }
 
-func (s *StringSlice) Include(value string) bool {
+func (s StringSlice) Include(value string) bool {
 	return s.Index(value) >= 0
 
 }
