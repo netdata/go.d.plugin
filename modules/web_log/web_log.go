@@ -10,44 +10,19 @@ import (
 	"github.com/l2isbad/go.d.plugin/shared/log_helper"
 )
 
-type timings struct {
-	name  string
-	min   int
-	max   int
-	sum   int
-	count int
-}
-
-func (t *timings) set(s string) {
-	var n int
-	switch {
-	case s == "0.000":
-		n = 0
-	case strings.Contains(s, "."):
-		if v, err := strconv.ParseFloat(s, 10); err != nil {
-			n = int(v * 1e6)
-		}
-	default:
-		if v, err := strconv.Atoi(s); err != nil {
-			n = v
-		}
-	}
-
-	if t.min == -1 {
-		t.min = n
-	}
-	if n > t.max {
-		t.max = n
-	} else if n < t.min {
-		t.min = n
-	}
-	t.sum += n
-	t.count++
-}
-
-func (t *timings) active() bool {
-	return t.min != -1
-}
+const (
+	keyAddress     = "address"
+	keyCode        = "code"
+	keyRequest     = "request"
+	keyHTTPMethod  = "method"
+	keyURL         = "url"
+	keyHTTPVer     = "http_version"
+	keyUserDefined = "user_defined"
+	keyBytesSent   = "bytes_sent"
+	keyRespTime    = "resp_time"
+	keyRespTimeUp  = "resp_time_upstream"
+	keyRespLen     = "resp_length"
+)
 
 type regex struct {
 	URLCat  categories
@@ -175,22 +150,19 @@ func (w *WebLog) GetData() *map[string]int64 {
 			continue
 		}
 
-		md := make(map[string]string)
-		for idx, v := range w.regex.parser.SubexpNames()[1:] {
-			md[v] = m[idx+1]
-		}
+		mm := createMatchMap(w.regex.parser.SubexpNames(), m)
 
 		var URLCat string
 
-		if v, ok := md["request"]; ok {
-			URLCat = w.getDataPerRequest(v)
+		if v, ok := mm[keyRequest]; ok {
+			URLCat = w.dataFromRequest(v)
 		}
 
-		if v, ok := md["user_defined"]; ok && w.regex.UserCat.active() {
-			w.getDataPerCategory(v, w.regex.UserCat)
+		if v, ok := mm[keyUserDefined]; ok && w.regex.UserCat.active() {
+			w.reqPerCategory(v, w.regex.UserCat)
 		}
 
-		code, codeFam := md["code"], md["code"][:1]
+		code, codeFam := mm[keyCode], mm[keyCode][:1]
 
 		if _, ok := w.data[codeFam+"xx"]; ok {
 			w.data[codeFam+"xx"]++
@@ -199,32 +171,32 @@ func (w *WebLog) GetData() *map[string]int64 {
 		}
 
 		if URLCat != "" && w.ChartURLCat {
-			w.perCategoriesCharts(URLCat, md)
+			w.dataPerCategory(URLCat, mm)
 		}
 
 		if w.DetRespCodes {
-			w.getDataPerCode(code)
+			w.reqPerCode(code)
 		}
 
-		w.getDataPerCodeFam(code)
+		w.reqPerCodeFam(code)
 
-		if v, ok := md["resp_time"]; ok {
+		if v, ok := mm[keyRespTime]; ok {
 			tr.set(v)
 		}
 
-		if v, ok := md["resp_time_upstream"]; ok {
+		if v, ok := mm[keyRespTimeUp]; ok {
 			tu.set(v)
 		}
 
-		if v, ok := md["address"]; ok {
-			w.getDataPerAddress(v, uniqIPs)
+		if v, ok := mm[keyAddress]; ok {
+			w.reqPerIPProto(v, uniqIPs)
 		}
 
-		if v, ok := md["bytes_sent"]; ok {
+		if v, ok := mm[keyBytesSent]; ok {
 			w.data["bytes_sent"] += int64(strToInt(v))
 		}
 
-		if v, ok := md["resp_length"]; ok {
+		if v, ok := mm[keyRespLen]; ok {
 			w.data["resp_length"] += int64(strToInt(v))
 		}
 	}
@@ -240,19 +212,18 @@ func (w *WebLog) GetData() *map[string]int64 {
 	return &w.data
 }
 
-func (w *WebLog) perCategoriesCharts(s string, md map[string]string) {
-	code := md["code"]
-	if _, ok := w.data[s+"_"+code]; !ok {
-		w.GetChartByID(s + "_detailed_response_code").AddDim(Dimension{s + "_" + code, code, raw.Incremental})
+func (w *WebLog) reqPerCategory(s string, c categories) string {
+	for _, v := range c.list {
+		if v.re.MatchString(s) {
+			w.data[v.fullname]++
+			return v.fullname
+		}
 	}
-	w.data[s+"_"+code]++
-
-	if v, ok := md["bytes_sent"]; ok {
-		w.data[s+"_"+"bytes_sent"] += int64(strToInt(v))
-	}
+	w.data[c.other()]++
+	return ""
 }
 
-func (w *WebLog) getDataPerAddress(address string, uniqIPs map[string]bool) {
+func (w *WebLog) reqPerIPProto(address string, uniqIPs map[string]bool) {
 	var proto = "ipv4"
 
 	if strings.Contains(address, ":") {
@@ -271,44 +242,7 @@ func (w *WebLog) getDataPerAddress(address string, uniqIPs map[string]bool) {
 	}
 }
 
-func (w *WebLog) getDataPerRequest(req string) (URLCat string) {
-	// 0: method, 1: url, 2: http version
-	m := reRequest.FindStringSubmatch(req)
-	if m == nil {
-		return
-	}
-
-	if w.regex.URLCat.active() {
-		if v := w.getDataPerCategory(m[2], w.regex.URLCat); v != "" {
-			URLCat = v
-		}
-	}
-
-	if _, ok := w.data[m[1]]; !ok {
-		w.GetChartByID(chartHttpMethod).AddDim(Dimension{m[1], "", raw.Incremental})
-	}
-	w.data[m[1]]++
-
-	dimID := strings.Replace(m[3], ".", "_", 1)
-	if _, ok := w.data[dimID]; !ok {
-		w.GetChartByID(chartHttpVersion).AddDim(Dimension{dimID, m[3], raw.Incremental})
-	}
-	w.data[dimID]++
-	return
-}
-
-func (w *WebLog) getDataPerCategory(s string, c categories) string {
-	for _, v := range c.list {
-		if v.re.MatchString(s) {
-			w.data[v.fullname]++
-			return v.fullname
-		}
-	}
-	w.data[c.other()]++
-	return ""
-}
-
-func (w *WebLog) getDataPerCode(code string) {
+func (w *WebLog) reqPerCode(code string) {
 	if _, ok := w.data[code]; ok {
 		w.data[code]++
 		return
@@ -327,7 +261,7 @@ func (w *WebLog) getDataPerCode(code string) {
 	w.data[code] = 0
 }
 
-func (w *WebLog) getDataPerCodeFam(code string) {
+func (w *WebLog) reqPerCodeFam(code string) {
 	f := code[:1]
 	switch {
 	case f == "2", code == "304", f == "1":
@@ -343,6 +277,45 @@ func (w *WebLog) getDataPerCodeFam(code string) {
 	}
 }
 
+func (w *WebLog) dataFromRequest(req string) (URLCat string) {
+	m := reRequest.FindStringSubmatch(req)
+	if m == nil {
+		return
+	}
+	mm := createMatchMap(reRequest.SubexpNames(), m)
+
+	if w.regex.URLCat.active() {
+		if v := w.reqPerCategory(mm[keyURL], w.regex.URLCat); v != "" {
+			URLCat = v
+		}
+	}
+
+	if v, ok := w.data[mm[keyHTTPMethod]]; !ok {
+		w.GetChartByID(chartHTTPMethod).AddDim(Dimension{v, "", raw.Incremental})
+	}
+	w.data[mm[keyHTTPMethod]]++
+
+	dimID := strings.Replace(mm[keyHTTPVer], ".", "_", 1)
+	if _, ok := w.data[dimID]; !ok {
+		w.GetChartByID(chartHTTPVer).AddDim(Dimension{dimID, mm[keyHTTPVer], raw.Incremental})
+	}
+	w.data[dimID]++
+	return
+}
+
+func (w *WebLog) dataPerCategory(fullname string, mm map[string]string) {
+	code := mm[keyCode]
+	dimID := code + "_" + fullname
+	if _, ok := w.data[dimID]; !ok {
+		w.GetChartByID(chartDetRespCodes + "_" + fullname).AddDim(Dimension{dimID, code, raw.Incremental})
+	}
+	w.data[dimID]++
+
+	if v, ok := mm[keyBytesSent]; ok {
+		w.data["bytes_sent_"+fullname] += int64(strToInt(v))
+	}
+}
+
 func strToInt(s string) int {
 	if s != "-" {
 		if v, err := strconv.Atoi(s); err != nil {
@@ -350,6 +323,14 @@ func strToInt(s string) int {
 		}
 	}
 	return 0
+}
+
+func createMatchMap(keys, values []string) map[string]string {
+	mm := make(map[string]string)
+	for idx, v := range keys[1:] {
+		mm[v] = values[idx+1]
+	}
+	return mm
 }
 
 func init() {
