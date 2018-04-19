@@ -149,8 +149,13 @@ var uCharts = Charts{
 
 func (w *WebLog) addCharts() {
 	c := uCharts.Copy()
-	if w.DetRespCodes {
-		for _, chart := range detRespCodesCharts(w.DetRespCodesA) {
+
+	if !w.DoClientsAll {
+		c.DeleteChartByID(chartClientsAll)
+	}
+
+	if w.DoDetailCodes {
+		for _, chart := range detRespCodesCharts(w.DoDetailCodesA) {
 			c.AddChart(chart, false)
 			c.Order.InsertBefore(chartBandwidth, chart.ID)
 		}
@@ -166,7 +171,7 @@ func (w *WebLog) addCharts() {
 		w.data[v.fullname] = 0
 	}
 
-	if w.ChartURLCat {
+	if w.DoChartURLCat {
 		for _, v := range w.regex.URLCat.list {
 			for _, chart := range perCategoryCharts(v) {
 				for _, d := range chart.Dimensions {

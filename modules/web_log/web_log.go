@@ -33,13 +33,14 @@ type regex struct {
 type WebLog struct {
 	modules.Charts
 	modules.Logger
-	Path          string        `toml:"path, required"`
-	RawFilter     rawFilter     `toml:"filter"`
-	RawURLCat     rawCategories `toml:"categories"`
-	RawUserCat    rawCategories `toml:"user_defined"`
-	ChartURLCat   bool          `toml:"per_category_charts"`
-	DetRespCodes  bool          `toml:"detailed_response_codes"`
-	DetRespCodesA bool          `toml:"detailed_response_codes_aggregate"`
+	Path           string        `toml:"path, required"`
+	RawFilter      rawFilter     `toml:"filter"`
+	RawURLCat      rawCategories `toml:"categories"`
+	RawUserCat     rawCategories `toml:"user_defined"`
+	DoChartURLCat  bool          `toml:"per_category_charts"`
+	DoDetailCodes  bool          `toml:"detailed_response_codes"`
+	DoDetailCodesA bool          `toml:"detailed_response_codes_aggregate"`
+	DoClientsAll   bool          `toml:"clients_all_time"`
 
 	filter
 	*log_helper.FileReader
@@ -150,11 +151,11 @@ func (w *WebLog) GetData() *map[string]int64 {
 			w.data["0xx"]++
 		}
 
-		if URLCat != "" && w.ChartURLCat {
+		if URLCat != "" && w.DoChartURLCat {
 			w.dataPerCategory(URLCat, mm)
 		}
 
-		if w.DetRespCodes {
+		if w.DoDetailCodes {
 			w.reqPerCode(code)
 		}
 
@@ -216,6 +217,10 @@ func (w *WebLog) reqPerIPProto(address string, uniqIPs map[string]bool) {
 		w.data["unique_cur_"+proto]++
 	}
 
+	if !w.DoClientsAll {
+		return
+	}
+
 	if _, ok := w.uniqIPs[address]; !ok {
 		w.uniqIPs[address] = true
 		w.data["unique_tot_"+proto]++
@@ -228,7 +233,7 @@ func (w *WebLog) reqPerCode(code string) {
 		return
 	}
 
-	if w.DetRespCodesA {
+	if w.DoDetailCodesA {
 		w.GetChartByID(chartDetRespCodes).AddDim(Dimension{code, "", raw.Incremental})
 		w.data[code] = 0
 		return
@@ -316,10 +321,10 @@ func createMatchMap(keys, values []string) map[string]string {
 func init() {
 	f := func() modules.Module {
 		return &WebLog{
-			DetRespCodes:  true,
-			DetRespCodesA: true,
-			ChartURLCat:   true,
-			uniqIPs:       make(map[string]bool),
+			DoDetailCodes:  true,
+			DoDetailCodesA: true,
+			DoChartURLCat:  true,
+			uniqIPs:        make(map[string]bool),
 			regex: regex{
 				URLCat:  categories{prefix: "url"},
 				UserCat: categories{prefix: "user_defined"},
