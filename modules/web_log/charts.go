@@ -1,7 +1,6 @@
 package web_log
 
 import (
-	"fmt"
 	"github.com/l2isbad/go.d.plugin/charts/raw"
 )
 
@@ -139,19 +138,10 @@ var uCharts = Charts{
 
 func (w *WebLog) addCharts() {
 	c := uCharts.Copy()
-	if w.DetRespCodes && w.DetRespCodesA {
-		n := raw.NewChart(
-			chartDetRespCodes,
-			Options{"Detailed Response Codes", "requests/s", "responses", "", raw.Stacked})
-		c.AddChart(n, true)
-	}
-
-	if w.DetRespCodes && !w.DetRespCodesA {
-		for _, v := range []string{"1xx", "2xx", "3xx", "4xx", "5xx", "other"} {
-			n := raw.NewChart(
-				chartDetRespCodes+"_"+v,
-				Options{fmt.Sprintf("Detailed Response Codes %s", v), "requests/s", "responses", "", raw.Stacked})
-			c.AddChart(n, true)
+	if w.DetRespCodes {
+		for _, chart := range detRespCodesCharts(w.DetRespCodesA) {
+			c.AddChart(chart, false)
+			c.Order.InsertBefore("bandwidth", chart.ID)
 		}
 	}
 
@@ -198,6 +188,42 @@ func perCategoryCharts(c *category) []raw.Chart {
 			Dimension{c.fullname + "_resp_time_min", "min", raw.Incremental, 1, 1000},
 			Dimension{c.fullname + "_resp_time_max", "max", raw.Incremental, 1, 1000},
 			Dimension{c.fullname + "_resp_time_avg", "avg", raw.Incremental, 1, 1000},
+		),
+	}
+}
+
+func detRespCodesCharts(aggregate bool) []raw.Chart {
+	if aggregate {
+		return []raw.Chart{
+			raw.NewChart(
+				chartDetRespCodes,
+				Options{"Detailed Response Codes", "requests/s", "responses", "", raw.Stacked}),
+		}
+	}
+	return []raw.Chart{
+		raw.NewChart(
+			chartDetRespCodes + "_1xx",
+			Options{"Detailed Response Codes 1xx", "requests/s", "responses", "", raw.Stacked},
+		),
+		raw.NewChart(
+			chartDetRespCodes + "_2xx",
+			Options{"Detailed Response Codes 2xx", "requests/s", "responses", "", raw.Stacked},
+		),
+		raw.NewChart(
+			chartDetRespCodes + "_3xx",
+			Options{"Detailed Response Codes 3xx", "requests/s", "responses", "", raw.Stacked},
+		),
+		raw.NewChart(
+			chartDetRespCodes + "_4xx",
+			Options{"Detailed Response Codes 4xx", "requests/s", "responses", "", raw.Stacked},
+		),
+		raw.NewChart(
+			chartDetRespCodes + "_5xx",
+			Options{"Detailed Response Codes 5xx", "requests/s", "responses", "", raw.Stacked},
+		),
+		raw.NewChart(
+			chartDetRespCodes + "_other",
+			Options{"Detailed Response Codes Other", "requests/s", "responses", "", raw.Stacked},
 		),
 	}
 }
