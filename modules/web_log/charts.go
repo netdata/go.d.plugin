@@ -28,10 +28,13 @@ var uCharts = Charts{
 		"response_codes",    // fam: responses
 		// detailed_response_codes               // fam: responses
 		// detailed_response_codes_(1xx|2xx|...) // fam: responses
-		"bandwidth",                 // fam: bandwidth
-		"response_time",             // fam: timings
-		"response_time_upstream",    // fam: timings
-		"requests_per_url",          // fam: urls
+		"bandwidth",              // fam: bandwidth
+		"response_time",          // fam: timings
+		"response_time_upstream", // fam: timings
+		"requests_per_url",       // fam: urls
+		// url_XXX_detailed_response_codes  //fam: url XXX
+		// url_XXX_bandwidth                //fam: url XXX
+		// url_XXX_response_time            //fam: url XXX
 		"requests_per_user_defined", // fam: user defined
 		"http_method",               // fam: http methods
 		"http_version",              // fam: http versions
@@ -168,13 +171,9 @@ func (w *WebLog) addCharts() {
 
 func perCategoryCharts(c *category) []raw.Chart {
 	return []raw.Chart{
-		raw.NewChart(c.fullname+"_"+chartDetRespCodes, Options{
-			"Detailed Response Codes",
-			"requests/s",
-			c.fullname,
-			"web_log.url_detailed_response_codes",
-			raw.Stacked,
-		},
+		raw.NewChart(
+			c.fullname+"_"+chartDetRespCodes,
+			Options{"Detailed Response Codes", "requests/s", c.fullname, "web_log.url_detailed_response_codes", raw.Stacked},
 		),
 		raw.NewChart(
 			c.fullname+"_bandwidth",
@@ -202,27 +201,27 @@ func detRespCodesCharts(aggregate bool) []raw.Chart {
 	}
 	return []raw.Chart{
 		raw.NewChart(
-			chartDetRespCodes + "_1xx",
+			chartDetRespCodes+"_1xx",
 			Options{"Detailed Response Codes 1xx", "requests/s", "responses", "", raw.Stacked},
 		),
 		raw.NewChart(
-			chartDetRespCodes + "_2xx",
+			chartDetRespCodes+"_2xx",
 			Options{"Detailed Response Codes 2xx", "requests/s", "responses", "", raw.Stacked},
 		),
 		raw.NewChart(
-			chartDetRespCodes + "_3xx",
+			chartDetRespCodes+"_3xx",
 			Options{"Detailed Response Codes 3xx", "requests/s", "responses", "", raw.Stacked},
 		),
 		raw.NewChart(
-			chartDetRespCodes + "_4xx",
+			chartDetRespCodes+"_4xx",
 			Options{"Detailed Response Codes 4xx", "requests/s", "responses", "", raw.Stacked},
 		),
 		raw.NewChart(
-			chartDetRespCodes + "_5xx",
+			chartDetRespCodes+"_5xx",
 			Options{"Detailed Response Codes 5xx", "requests/s", "responses", "", raw.Stacked},
 		),
 		raw.NewChart(
-			chartDetRespCodes + "_other",
+			chartDetRespCodes+"_other",
 			Options{"Detailed Response Codes Other", "requests/s", "responses", "", raw.Stacked},
 		),
 	}
