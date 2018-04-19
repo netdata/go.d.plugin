@@ -1,8 +1,8 @@
 package web_log
 
 import (
-	"strings"
 	"regexp"
+	"strings"
 )
 
 type filter interface {
@@ -21,11 +21,11 @@ type strFilter struct {
 }
 
 func (f *strFilter) match(s string) bool {
-	if f.include != "" {
-		return strings.Contains(s, f.include)
+	if f.include != "" && !strings.Contains(s, f.include) {
+		return false
 	}
-	if f.exclude != "" {
-		return !strings.Contains(s, f.exclude)
+	if f.exclude != "" && strings.Contains(s, f.exclude) {
+		return false
 	}
 	return true
 }
@@ -36,11 +36,11 @@ type regexFilter struct {
 }
 
 func (f *regexFilter) match(s string) bool {
-	if f.include != nil {
-		return f.include.MatchString(s)
+	if f.include != nil && !f.include.MatchString(s) {
+		return false
 	}
-	if f.exclude != nil {
-		return !f.exclude.MatchString(s)
+	if f.exclude != nil && f.exclude.MatchString(s) {
+		return false
 	}
 	return true
 }

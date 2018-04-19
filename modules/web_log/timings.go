@@ -1,8 +1,8 @@
 package web_log
 
 import (
-	"strings"
 	"strconv"
+	"strings"
 )
 
 type timings struct {
