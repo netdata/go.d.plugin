@@ -4,9 +4,12 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"errors"
+	"fmt"
 
 	"github.com/l2isbad/go.d.plugin/charts/raw"
 	"github.com/l2isbad/go.d.plugin/modules"
+	"github.com/l2isbad/go.d.plugin/shared"
 	"github.com/l2isbad/go.d.plugin/shared/log_helper"
 )
 
@@ -14,14 +17,15 @@ const (
 	keyAddress     = "address"
 	keyCode        = "code"
 	keyRequest     = "request"
-	keyHTTPMethod  = "method"
-	keyURL         = "url"
-	keyHTTPVer     = "http_version"
 	keyUserDefined = "user_defined"
 	keyBytesSent   = "bytes_sent"
 	keyRespTime    = "resp_time"
 	keyRespTimeUp  = "resp_time_upstream"
 	keyRespLen     = "resp_length"
+
+	keyHTTPMethod = "method"
+	keyURL        = "url"
+	keyHTTPVer    = "http_version"
 )
 
 type regex struct {
@@ -33,14 +37,15 @@ type regex struct {
 type WebLog struct {
 	modules.Charts
 	modules.Logger
-	Path           string        `toml:"path, required"`
-	RawFilter      rawFilter     `toml:"filter"`
-	RawURLCat      rawCategories `toml:"categories"`
-	RawUserCat     rawCategories `toml:"user_defined"`
-	DoChartURLCat  bool          `toml:"per_category_charts"`
-	DoDetailCodes  bool          `toml:"detailed_response_codes"`
-	DoDetailCodesA bool          `toml:"detailed_response_codes_aggregate"`
-	DoClientsAll   bool          `toml:"clients_all_time"`
+	Path            string        `toml:"path, required"`
+	RawFilter       rawFilter     `toml:"filter"`
+	RawURLCat       rawCategories `toml:"categories"`
+	RawUserCat      rawCategories `toml:"user_defined"`
+	RawCustomParser string        `toml:"custom_log_format"`
+	DoChartURLCat   bool          `toml:"per_category_charts"`
+	DoDetailCodes   bool          `toml:"detailed_response_codes"`
+	DoDetailCodesA  bool          `toml:"detailed_response_codes_aggregate"`
+	DoClientsAll    bool          `toml:"clients_all_time"`
 
 	filter
 	*log_helper.FileReader
@@ -87,19 +92,11 @@ func (w *WebLog) Check() bool {
 		return false
 	}
 
-	var found bool
-
-	for _, p := range patterns {
-		if p.Match(line) {
-			w.regex.parser = p
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		w.Error("can not find appropriate regex")
+	if re, err := findParser(w.RawCustomParser, line); err != nil {
+		w.Error(err)
 		return false
+	} else {
+		w.regex.parser =re
 	}
 
 	w.addCharts()
@@ -299,6 +296,31 @@ func (w *WebLog) dataPerCategory(fullname string, mm map[string]string) {
 	if v, ok := mm[keyBytesSent]; ok {
 		w.data["bytes_sent_"+fullname] += int64(strToInt(v))
 	}
+}
+
+func findParser(custom string, line []byte) (*regexp.Regexp, error) {
+	if custom == "" {
+		for _, p := range patterns {
+			if p.Match(line) {
+				return p, nil
+			}
+		}
+		return nil, errors.New("can not find appropriate regex")
+	}
+	r, err := regexp.Compile(custom)
+	if err != nil {
+		return nil, err
+	}
+
+	if !r.Match(line) {
+		return nil, errors.New("custom regex match fails")
+	}
+
+	if !shared.StringSlice(r.SubexpNames()).Include(keyCode) {
+		return nil, fmt.Errorf("custom regex match ok, but mandatory key '%s' is missing", keyCode)
+	}
+
+	return r, nil
 }
 
 func strToInt(s string) int {
