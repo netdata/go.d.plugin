@@ -27,27 +27,21 @@ const (
 type regex struct {
 	URLCat  categories
 	UserCat categories
-	include *regexp.Regexp
-	exclude *regexp.Regexp
 	parser  *regexp.Regexp
-}
-
-type filter struct {
-	Include string `toml:"include"`
-	Exclude string `toml:"exclude"`
 }
 
 type WebLog struct {
 	modules.Charts
 	modules.Logger
 	Path          string        `toml:"path, required"`
-	Filter        filter        `toml:"filter"`
+	RawFilter     rawFilter     `toml:"filter"`
 	RawURLCat     rawCategories `toml:"categories"`
 	RawUserCat    rawCategories `toml:"user_defined"`
 	ChartURLCat   bool          `toml:"per_category_charts"`
 	DetRespCodes  bool          `toml:"detailed_response_codes"`
 	DetRespCodesA bool          `toml:"detailed_response_codes_aggregate"`
 
+	filter
 	*log_helper.FileReader
 	regex   regex
 	uniqIPs map[string]bool
@@ -79,22 +73,11 @@ func (w *WebLog) Check() bool {
 		w.regex.UserCat.add(v.name, re)
 	}
 
-	if w.Filter.Include != "" {
-		r, err := regexp.Compile(w.Filter.Include)
-		if err != nil {
-			w.Error(err)
-			return false
-		}
-		w.regex.include = r
-	}
-
-	if w.Filter.Exclude != "" {
-		r, err := regexp.Compile(w.Filter.Exclude)
-		if err != nil {
-			w.Error(err)
-			return false
-		}
-		w.regex.exclude = r
+	if f, err := getFilter(w.RawFilter); err != nil {
+		w.Error(err)
+		return false
+	} else {
+		w.filter = f
 	}
 
 	line, err := log_helper.ReadLastLine(w.Path)
@@ -137,10 +120,7 @@ func (w *WebLog) GetData() *map[string]int64 {
 	tr, tu := timings{name: "resp_time", min: -1}, timings{name: "resp_time_upstream", min: -1}
 
 	for row := range v {
-		if w.regex.include != nil && !w.regex.include.MatchString(row) {
-			continue
-		}
-		if w.regex.exclude != nil && w.regex.exclude.MatchString(row) {
+		if w.filter != nil && !w.filter.match(row) {
 			continue
 		}
 
@@ -212,9 +192,9 @@ func (w *WebLog) GetData() *map[string]int64 {
 	return &w.data
 }
 
-func (w *WebLog) reqPerCategory(s string, c categories) string {
+func (w *WebLog) reqPerCategory(url string, c categories) string {
 	for _, v := range c.list {
-		if v.re.MatchString(s) {
+		if v.re.MatchString(url) {
 			w.data[v.fullname]++
 			return v.fullname
 		}
