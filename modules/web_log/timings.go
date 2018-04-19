@@ -1,0 +1,45 @@
+package web_log
+
+import (
+	"strings"
+	"strconv"
+)
+
+type timings struct {
+	name  string
+	min   int
+	max   int
+	sum   int
+	count int
+}
+
+func (t *timings) set(s string) {
+	var n int
+	switch {
+	case s == "0.000":
+		n = 0
+	case strings.Contains(s, "."):
+		if v, err := strconv.ParseFloat(s, 10); err != nil {
+			n = int(v * 1e6)
+		}
+	default:
+		if v, err := strconv.Atoi(s); err != nil {
+			n = v
+		}
+	}
+
+	if t.min == -1 {
+		t.min = n
+	}
+	if n > t.max {
+		t.max = n
+	} else if n < t.min {
+		t.min = n
+	}
+	t.sum += n
+	t.count++
+}
+
+func (t *timings) active() bool {
+	return t.min != -1
+}
