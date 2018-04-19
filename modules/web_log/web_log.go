@@ -290,8 +290,8 @@ func (w *WebLog) dataFromRequest(req string) (URLCat string) {
 		}
 	}
 
-	if v, ok := w.data[mm[keyHTTPMethod]]; !ok {
-		w.GetChartByID(chartHTTPMethod).AddDim(Dimension{v, "", raw.Incremental})
+	if _, ok := w.data[mm[keyHTTPMethod]]; !ok {
+		w.GetChartByID(chartHTTPMethod).AddDim(Dimension{mm[keyHTTPMethod], "", raw.Incremental})
 	}
 	w.data[mm[keyHTTPMethod]]++
 
