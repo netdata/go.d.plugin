@@ -5,11 +5,19 @@ import (
 )
 
 const (
+	chartRespStatuses  = "response_statuses"
+	chartRespCodes     = "response_codes"
 	chartDetRespCodes  = "detailed_response_codes"
-	chartHttpMethod    = "http_method"
-	chartHttpVersion   = "http_version"
+	chartBandwidth     = "bandwidth"
+	chartRespTime      = "response_time"
+	chartRespTimeUp    = "response_time_upstream"
 	chartReqPerURL     = "requests_per_url"
 	chartReqPerUserDef = "requests_per_user_defined"
+	chartReqPerIPProto = "requests_per_ip_proto"
+	chartHTTPMethod    = "http_method"
+	chartHTTPVer       = "http_version"
+	chartClients       = "clients"
+	chartClientsAll    = "clients_all"
 )
 
 type (
@@ -24,27 +32,27 @@ type (
 
 var uCharts = Charts{
 	Order: Order{
-		"response_statuses", // fam: responses
-		"response_codes",    // fam: responses
+		chartRespStatuses, // fam: responses
+		chartRespCodes,    // fam: responses
 		// detailed_response_codes               // fam: responses
 		// detailed_response_codes_(1xx|2xx|...) // fam: responses
-		"bandwidth",              // fam: bandwidth
-		"response_time",          // fam: timings
-		"response_time_upstream", // fam: timings
-		"requests_per_url",       // fam: urls
+		chartBandwidth,  // fam: bandwidth
+		chartRespTime,   // fam: timings
+		chartRespTimeUp, // fam: timings
+		chartReqPerURL,  // fam: urls
 		// url_XXX_detailed_response_codes  //fam: url XXX
 		// url_XXX_bandwidth                //fam: url XXX
 		// url_XXX_response_time            //fam: url XXX
-		"requests_per_user_defined", // fam: user defined
-		"http_method",               // fam: http methods
-		"http_version",              // fam: http versions
-		"requests_per_ipproto",      // fam: ip protocols
-		"clients",                   // fam: clients
-		"clients_all",               // fam: clients
+		chartReqPerUserDef, // fam: user defined
+		chartHTTPMethod,    // fam: http methods
+		chartHTTPVer,       // fam: http versions
+		chartReqPerIPProto, // fam: ip protocols
+		chartClients,       // fam: clients
+		chartClientsAll,    // fam: clients
 	},
 	Definitions: Definitions{
 		Chart{
-			ID:      "response_statuses",
+			ID:      chartRespStatuses,
 			Options: Options{"Response Statuses", "requests/s", "responses", "", raw.Stacked},
 			Dimensions: Dimensions{
 				Dimension{"successful_requests", "success", raw.Incremental},
@@ -55,7 +63,7 @@ var uCharts = Charts{
 			},
 		},
 		Chart{
-			ID:      "response_codes",
+			ID:      chartRespCodes,
 			Options: Options{"Response Codes", "requests/s", "responses", "", raw.Stacked},
 			Dimensions: Dimensions{
 				Dimension{"2xx", "", raw.Incremental},
@@ -68,7 +76,7 @@ var uCharts = Charts{
 			},
 		},
 		Chart{
-			ID:      "bandwidth",
+			ID:      chartBandwidth,
 			Options: Options{"Bandwidth", "kilobits/s", "bandwidth", "", raw.Area},
 			Dimensions: Dimensions{
 				Dimension{"resp_length", "received", 8, 1000, raw.Incremental},
@@ -76,7 +84,7 @@ var uCharts = Charts{
 			},
 		},
 		Chart{
-			ID:      "response_time",
+			ID:      chartRespTime,
 			Options: Options{"Processing Time", "milliseconds", "timings", "", raw.Area},
 			Dimensions: Dimensions{
 				Dimension{"resp_time_min", "min", raw.Incremental, 1, 1000},
@@ -85,7 +93,7 @@ var uCharts = Charts{
 			},
 		},
 		Chart{
-			ID:      "response_time_upstream",
+			ID:      chartRespTimeUp,
 			Options: Options{"Processing Time Upstream", "milliseconds", "timings", "", raw.Area},
 			Dimensions: Dimensions{
 				Dimension{"resp_time_upstream_min", "min", raw.Incremental, 1, 1000},
@@ -94,34 +102,34 @@ var uCharts = Charts{
 			},
 		},
 		Chart{
-			ID:         "requests_per_url",
+			ID:         chartReqPerURL,
 			Options:    Options{"Requests Per Url", "requests/s", "urls", "", raw.Stacked},
 			Dimensions: Dimensions{},
 		},
 		Chart{
-			ID:         "requests_per_user_defined",
+			ID:         chartReqPerUserDef,
 			Options:    Options{"Requests Per User Defined Pattern", "requests/s", "user defined", "", raw.Stacked},
 			Dimensions: Dimensions{},
 		},
 		Chart{
-			ID:      "http_method",
+			ID:      chartHTTPMethod,
 			Options: Options{"Requests Per HTTP Method", "requests/s", "http methods", "", raw.Stacked},
 			Dimensions: Dimensions{
 				Dimension{"GET", "", raw.Incremental},
 			},
 		},
 		Chart{
-			ID:         "http_version",
+			ID:         chartHTTPVer,
 			Options:    Options{"Requests Per HTTP Version", "requests/s", "http versions", "", raw.Stacked},
 			Dimensions: Dimensions{},
 		},
 		Chart{
-			ID:         "requests_per_ipproto",
+			ID:         chartReqPerIPProto,
 			Options:    Options{"Requests Per IP Protocol", "requests/s", "ip protocols", "", raw.Stacked},
 			Dimensions: Dimensions{},
 		},
 		Chart{
-			ID:      "clients",
+			ID:      chartClients,
 			Options: Options{"Current Poll Unique Client IPs", "unique ips", "clients", "", raw.Stacked},
 			Dimensions: Dimensions{
 				Dimension{"unique_cur_ipv4", "ipv4", raw.Incremental},
@@ -129,7 +137,7 @@ var uCharts = Charts{
 			},
 		},
 		Chart{
-			ID:      "clients_all",
+			ID:      chartClientsAll,
 			Options: Options{"All Time Unique Client IPs", "unique ips", "clients", "", raw.Stacked},
 			Dimensions: Dimensions{
 				Dimension{"unique_tot_ipv4", "ipv4"},
@@ -144,7 +152,7 @@ func (w *WebLog) addCharts() {
 	if w.DetRespCodes {
 		for _, chart := range detRespCodesCharts(w.DetRespCodesA) {
 			c.AddChart(chart, false)
-			c.Order.InsertBefore("bandwidth", chart.ID)
+			c.Order.InsertBefore(chartBandwidth, chart.ID)
 		}
 	}
 
@@ -172,21 +180,21 @@ func (w *WebLog) addCharts() {
 func perCategoryCharts(c *category) []raw.Chart {
 	return []raw.Chart{
 		raw.NewChart(
-			c.fullname+"_"+chartDetRespCodes,
+			chartDetRespCodes+"_"+c.fullname,
 			Options{"Detailed Response Codes", "requests/s", c.fullname, "web_log.url_detailed_response_codes", raw.Stacked},
 		),
 		raw.NewChart(
-			c.fullname+"_bandwidth",
+			chartBandwidth+"_"+c.fullname,
 			Options{"Bandwidth", "kilobits/s", c.fullname, "web_log.url_bandwidth", raw.Area},
-			Dimension{c.fullname + "_resp_length", "received", raw.Incremental, 8, 1000},
-			Dimension{c.fullname + "_bytes_sent", "sent", raw.Incremental, -8, 1000},
+			Dimension{"resp_length_" + c.fullname, "received", raw.Incremental, 8, 1000},
+			Dimension{"bytes_sent_" + c.fullname, "sent", raw.Incremental, -8, 1000},
 		),
 		raw.NewChart(
-			c.fullname+"_response_time",
+			chartRespTime+"_"+c.fullname,
 			Options{"Processing Time", "milliseconds", c.fullname, "web_log.url_response_time", raw.Area},
-			Dimension{c.fullname + "_resp_time_min", "min", raw.Incremental, 1, 1000},
-			Dimension{c.fullname + "_resp_time_max", "max", raw.Incremental, 1, 1000},
-			Dimension{c.fullname + "_resp_time_avg", "avg", raw.Incremental, 1, 1000},
+			Dimension{"resp_time_min_" + c.fullname, "min", raw.Incremental, 1, 1000},
+			Dimension{"resp_time_max_" + c.fullname, "max", raw.Incremental, 1, 1000},
+			Dimension{"resp_time_avg" + c.fullname, "avg", raw.Incremental, 1, 1000},
 		),
 	}
 }
