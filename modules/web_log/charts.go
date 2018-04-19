@@ -169,6 +169,9 @@ func (w *WebLog) addCharts() {
 	if w.ChartURLCat {
 		for _, v := range w.regex.URLCat.list {
 			for _, chart := range perCategoryCharts(v) {
+				for _, d := range chart.Dimensions {
+					w.data[d.ID()] = 0
+				}
 				c.AddChart(chart, false)
 				c.Order.InsertBefore(chartReqPerUserDef, chart.ID)
 			}
