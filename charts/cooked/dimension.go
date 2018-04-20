@@ -145,11 +145,11 @@ func (d *dimension) get(m *map[string]int64) (int64, bool) {
 }
 
 func (d *dimension) set(value int64) string {
-	d.retries = 0
 	if !d.alive() {
 		d.SetHidden(false)
 		d.push = true
 	}
+	d.retries = 0
 	return fmt.Sprintf(formatDimSET,
 		d.id,
 		value)
