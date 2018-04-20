@@ -37,21 +37,25 @@ type regex struct {
 type WebLog struct {
 	modules.Charts
 	modules.Logger
-	Path            string        `toml:"path, required"`
+	Path string `toml:"path, required"`
+
 	RawFilter       rawFilter     `toml:"filter"`
 	RawURLCat       rawCategories `toml:"categories"`
 	RawUserCat      rawCategories `toml:"user_defined"`
 	RawCustomParser string        `toml:"custom_log_format"`
-	DoChartURLCat   bool          `toml:"per_category_charts"`
-	DoDetailCodes   bool          `toml:"detailed_response_codes"`
-	DoDetailCodesA  bool          `toml:"detailed_response_codes_aggregate"`
-	DoClientsAll    bool          `toml:"clients_all_time"`
+
+	DoChartURLCat  bool `toml:"per_category_charts"`
+	DoDetailCodes  bool `toml:"detailed_response_codes"`
+	DoDetailCodesA bool `toml:"detailed_response_codes_aggregate"`
+	DoClientsAll   bool `toml:"clients_all_time"`
 
 	filter
 	*log_helper.FileReader
 	regex   regex
 	uniqIPs map[string]bool
-	data    map[string]int64
+	timings map[string]*timings
+
+	data map[string]int64
 }
 
 func (w *WebLog) Check() bool {
@@ -69,6 +73,12 @@ func (w *WebLog) Check() bool {
 			return false
 		}
 		w.regex.URLCat.add(v.name, re)
+
+		if w.DoChartURLCat {
+			k := fmt.Sprintf("%s_%s", w.regex.URLCat.prefix, v.name)
+			n := fmt.Sprintf("%s_%s_%s", w.regex.URLCat.prefix, v.name, keyRespTime)
+			w.timings[k] = newTimings(n)
+		}
 	}
 	for _, v := range w.RawUserCat {
 		re, err := regexp.Compile(v.re)
@@ -92,7 +102,7 @@ func (w *WebLog) Check() bool {
 		return false
 	}
 
-	if re, err := findParser(w.RawCustomParser, line); err != nil {
+	if re, err := getParser(w.RawCustomParser, line); err != nil {
 		w.Error(err)
 		return false
 	} else {
@@ -115,7 +125,8 @@ func (w *WebLog) GetData() *map[string]int64 {
 	}
 
 	uniqIPs := make(map[string]bool)
-	tr, tu := timings{name: "resp_time", min: -1}, timings{name: "resp_time_upstream", min: -1}
+
+	w.resetTimings()
 
 	for row := range v {
 		if w.filter != nil && !w.filter.match(row) {
@@ -130,16 +141,6 @@ func (w *WebLog) GetData() *map[string]int64 {
 
 		mm := createMatchMap(w.regex.parser.SubexpNames(), m)
 
-		var URLCat string
-
-		if v, ok := mm[keyRequest]; ok {
-			URLCat = w.dataFromRequest(v)
-		}
-
-		if v, ok := mm[keyUserDefined]; ok && w.regex.UserCat.active() {
-			w.reqPerCategory(v, w.regex.UserCat)
-		}
-
 		code, codeFam := mm[keyCode], mm[keyCode][:1]
 
 		if _, ok := w.data[codeFam+"xx"]; ok {
@@ -148,22 +149,32 @@ func (w *WebLog) GetData() *map[string]int64 {
 			w.data["0xx"]++
 		}
 
-		if URLCat != "" && w.DoChartURLCat {
-			w.dataPerCategory(URLCat, mm)
-		}
-
 		if w.DoDetailCodes {
 			w.reqPerCode(code)
 		}
 
 		w.reqPerCodeFam(code)
 
+		if v, ok := mm[keyUserDefined]; ok && w.regex.UserCat.active() {
+			w.reqPerCategory(v, w.regex.UserCat)
+		}
+
+		var URLCat string
+
+		if v, ok := mm[keyRequest]; ok {
+			URLCat = w.dataFromRequest(v)
+		}
+
+		if URLCat != "" && w.DoChartURLCat {
+			w.dataPerCategory(URLCat, mm)
+		}
+
 		if v, ok := mm[keyRespTime]; ok {
-			tr.set(v)
+			w.timings[keyRespTime].set(v)
 		}
 
 		if v, ok := mm[keyRespTimeUp]; ok {
-			tu.set(v)
+			w.timings[keyRespTimeUp].set(v)
 		}
 
 		if v, ok := mm[keyAddress]; ok {
@@ -179,12 +190,13 @@ func (w *WebLog) GetData() *map[string]int64 {
 		}
 	}
 
-	for _, v := range []*timings{&tr, &tu} {
-		if v.active() {
-			w.data[v.name+"_min"] += int64(v.min)
-			w.data[v.name+"_avg"] += int64(v.sum / v.count)
-			w.data[v.name+"_max"] += int64(v.max)
+	for _, v := range w.timings {
+		if !v.active() {
+			continue
 		}
+		w.data[v.name+"_min"] += int64(v.min)
+		w.data[v.name+"_avg"] += int64(v.sum / v.count)
+		w.data[v.name+"_max"] += int64(v.max)
 	}
 
 	return &w.data
@@ -287,22 +299,32 @@ func (w *WebLog) dataFromRequest(req string) (URLCat string) {
 
 func (w *WebLog) dataPerCategory(fullname string, mm map[string]string) {
 	code := mm[keyCode]
-	dimID := code + "_" + fullname
-	if _, ok := w.data[dimID]; !ok {
-		w.GetChartByID(chartDetRespCodes + "_" + fullname).AddDim(Dimension{dimID, code, raw.Incremental})
+	v := fullname + "_" + code
+	if _, ok := w.data[v]; !ok {
+		w.GetChartByID(chartDetRespCodes + "_" + fullname).AddDim(Dimension{v, code, raw.Incremental})
 	}
-	w.data[dimID]++
+	w.data[v]++
 
 	if v, ok := mm[keyBytesSent]; ok {
-		w.data["bytes_sent_"+fullname] += int64(strToInt(v))
+		w.data[fullname+"_bytes_sent"] += int64(strToInt(v))
 	}
 
 	if v, ok := mm[keyRespLen]; ok {
-		w.data["resp_length_"+fullname] += int64(strToInt(v))
+		w.data[fullname+"_resp_length"] += int64(strToInt(v))
+	}
+
+	if v, ok := mm[keyRespTime]; ok {
+		w.timings[fullname].set(v)
 	}
 }
 
-func findParser(custom string, line []byte) (*regexp.Regexp, error) {
+func (w *WebLog) resetTimings() {
+	for _, v := range w.timings {
+		v.reset()
+	}
+}
+
+func getParser(custom string, line []byte) (*regexp.Regexp, error) {
 	if custom == "" {
 		for _, p := range patterns {
 			if p.Match(line) {
@@ -332,7 +354,7 @@ func findParser(custom string, line []byte) (*regexp.Regexp, error) {
 
 func strToInt(s string) int {
 	if s != "-" {
-		if v, err := strconv.Atoi(s); err != nil {
+		if v, err := strconv.Atoi(s); err == nil {
 			return v
 		}
 	}
@@ -354,6 +376,10 @@ func init() {
 			DoDetailCodesA: true,
 			DoChartURLCat:  true,
 			uniqIPs:        make(map[string]bool),
+			timings: map[string]*timings{
+				keyRespTime:   newTimings(keyRespTime),
+				keyRespTimeUp: newTimings(keyRespTimeUp),
+			},
 			regex: regex{
 				URLCat:  categories{prefix: "url"},
 				UserCat: categories{prefix: "user_defined"},

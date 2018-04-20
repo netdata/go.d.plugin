@@ -5,6 +5,10 @@ import (
 	"strings"
 )
 
+func newTimings(n string) *timings {
+	return &timings{name: n, min: -1}
+}
+
 type timings struct {
 	name  string
 	min   int
@@ -19,11 +23,11 @@ func (t *timings) set(s string) {
 	case s == "0.000":
 		n = 0
 	case strings.Contains(s, "."):
-		if v, err := strconv.ParseFloat(s, 10); err != nil {
+		if v, err := strconv.ParseFloat(s, 10); err == nil {
 			n = int(v * 1e6)
 		}
 	default:
-		if v, err := strconv.Atoi(s); err != nil {
+		if v, err := strconv.Atoi(s); err == nil {
 			n = v
 		}
 	}
@@ -42,4 +46,11 @@ func (t *timings) set(s string) {
 
 func (t *timings) active() bool {
 	return t.min != -1
+}
+
+func (t *timings) reset() {
+	t.min = -1
+	t.max = 0
+	t.sum = 0
+	t.count = 0
 }

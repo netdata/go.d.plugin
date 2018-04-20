@@ -194,15 +194,15 @@ func perCategoryCharts(c *category) []raw.Chart {
 		raw.NewChart(
 			chartBandwidth+"_"+c.fullname,
 			Options{"Bandwidth", "kilobits/s", c.fullname, "web_log.url_bandwidth", raw.Area},
-			Dimension{"resp_length_" + c.fullname, "received", raw.Incremental, 8, 1000},
-			Dimension{"bytes_sent_" + c.fullname, "sent", raw.Incremental, -8, 1000},
+			Dimension{c.fullname + "_resp_length", "received", raw.Incremental, 8, 1000},
+			Dimension{c.fullname + "_bytes_sent", "sent", raw.Incremental, -8, 1000},
 		),
 		raw.NewChart(
 			chartRespTime+"_"+c.fullname,
 			Options{"Processing Time", "milliseconds", c.fullname, "web_log.url_response_time", raw.Area},
-			Dimension{"resp_time_min_" + c.fullname, "min", raw.Incremental, 1, 1000},
-			Dimension{"resp_time_max_" + c.fullname, "max", raw.Incremental, 1, 1000},
-			Dimension{"resp_time_avg" + c.fullname, "avg", raw.Incremental, 1, 1000},
+			Dimension{c.fullname + "_resp_time_min", "min", raw.Incremental, 1, 1000},
+			Dimension{c.fullname + "_resp_time_max", "max", raw.Incremental, 1, 1000},
+			Dimension{c.fullname + "_resp_time_avg", "avg", raw.Incremental, 1, 1000},
 		),
 	}
 }
