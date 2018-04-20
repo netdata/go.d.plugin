@@ -288,7 +288,7 @@ func (c *Chart) Update(data map[string]int64, interval int) bool {
 	var updDim, updVar string
 
 	for _, d := range c.dimensions {
-		if value, ok := d.get(&data); ok {
+		if value, ok := d.get(data); ok {
 			updDim += d.set(value)
 		}
 		if d.push {

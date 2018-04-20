@@ -132,8 +132,8 @@ func (d *dimension) create() string {
 		d.hidden)
 }
 
-func (d *dimension) get(m *map[string]int64) (int64, bool) {
-	v, ok := (*m)[d.id]
+func (d *dimension) get(m map[string]int64) (int64, bool) {
+	v, ok := m[d.id]
 	if !ok && d.alive() {
 		d.retries++
 		if !d.alive() {
