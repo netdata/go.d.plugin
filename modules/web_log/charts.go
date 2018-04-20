@@ -126,7 +126,10 @@ var uCharts = Charts{
 		Chart{
 			ID:         chartReqPerIPProto,
 			Options:    Options{"Requests Per IP Protocol", "requests/s", "ip protocols", "", raw.Stacked},
-			Dimensions: Dimensions{},
+			Dimensions: Dimensions{
+				Dimension{"req_ipv4", "ipv4", raw.Incremental},
+				Dimension{"req_ipv6", "ipv6", raw.Incremental},
+			},
 		},
 		Chart{
 			ID:      chartClients,
