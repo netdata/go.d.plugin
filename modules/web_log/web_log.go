@@ -66,7 +66,7 @@ func (w *WebLog) Check() bool {
 	}
 	w.FileReader = v
 
-	for _, v := range w.RawURLCat {
+	for idx, v := range w.RawURLCat {
 		re, err := regexp.Compile(v.re)
 		if err != nil {
 			w.Error(err)
@@ -75,9 +75,8 @@ func (w *WebLog) Check() bool {
 		w.regex.URLCat.add(v.name, re)
 
 		if w.DoChartURLCat {
-			k := fmt.Sprintf("%s_%s", w.regex.URLCat.prefix, v.name)
-			n := fmt.Sprintf("%s_%s_%s", w.regex.URLCat.prefix, v.name, keyRespTime)
-			w.timings[k] = newTimings(n)
+			k := w.regex.URLCat.list[idx].fullname
+			w.timings[k] = newTimings(k + "_" + keyRespTime)
 		}
 	}
 	for _, v := range w.RawUserCat {
