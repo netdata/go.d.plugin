@@ -59,6 +59,8 @@ type WebLog struct {
 }
 
 func (w *WebLog) Check() bool {
+
+	// FilReader initialization
 	v, err := log_helper.NewFileReader(w.Path)
 	if err != nil {
 		w.Error(err)
@@ -66,6 +68,7 @@ func (w *WebLog) Check() bool {
 	}
 	w.FileReader = v
 
+	// building "categories"
 	for idx, v := range w.RawURLCat {
 		re, err := regexp.Compile(v.re)
 		if err != nil {
@@ -79,6 +82,8 @@ func (w *WebLog) Check() bool {
 			w.timings[k] = newTimings(k + "_" + keyRespTime)
 		}
 	}
+
+	// building "user_defined"
 	for _, v := range w.RawUserCat {
 		re, err := regexp.Compile(v.re)
 		if err != nil {
@@ -88,6 +93,7 @@ func (w *WebLog) Check() bool {
 		w.regex.UserCat.add(v.name, re)
 	}
 
+	// building "filter"
 	if f, err := getFilter(w.RawFilter); err != nil {
 		w.Error(err)
 		return false
@@ -95,12 +101,14 @@ func (w *WebLog) Check() bool {
 		w.filter = f
 	}
 
+    // read last line
 	line, err := log_helper.ReadLastLine(w.Path)
 	if err != nil {
 		w.Error(err)
 		return false
 	}
 
+    // get parser: custom or one of predefined in patterns.go
 	if re, err := getParser(w.RawCustomParser, line); err != nil {
 		w.Error(err)
 		return false
