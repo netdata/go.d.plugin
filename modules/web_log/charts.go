@@ -79,8 +79,8 @@ var uCharts = Charts{
 			ID:      chartBandwidth,
 			Options: Options{"Bandwidth", "kilobits/s", "bandwidth", "", raw.Area},
 			Dimensions: Dimensions{
-				Dimension{"resp_length", "received", 8, 1000, raw.Incremental},
-				Dimension{"bytes_sent", "sent", -8, 1000, raw.Incremental},
+				Dimension{"resp_length", "received", raw.Incremental, 8, 1000},
+				Dimension{"bytes_sent", "sent", raw.Incremental, -8, 1000},
 			},
 		},
 		Chart{
