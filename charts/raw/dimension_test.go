@@ -110,6 +110,12 @@ func TestDimension_Multiplier(t *testing.T) {
 		t.Errorf("expected 5, but got %d", d.Multiplier())
 	}
 
+	d = Dimension{IdxDimMultiplier: -5}
+
+	if d.Multiplier() != -5 {
+		t.Errorf("expected -5, but got %d", d.Multiplier())
+	}
+
 	d = Dimension{IdxDimMultiplier: "5"}
 
 	if d.Multiplier() != 5 {
@@ -134,6 +140,12 @@ func TestDimension_Divisor(t *testing.T) {
 
 	if d.Divisor() != 5 {
 		t.Errorf("expected 5, but got %d", d.Divisor())
+	}
+
+	d = Dimension{IdxDimDivisor: -5}
+
+	if d.Divisor() != -5 {
+		t.Errorf("expected -5, but got %d", d.Divisor())
 	}
 
 	d = Dimension{IdxDimDivisor: "5"}

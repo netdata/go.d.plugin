@@ -87,25 +87,16 @@ func (d *Dimension) Algorithm() string {
 func (d *Dimension) Multiplier() int {
 	switch v := d[IdxDimMultiplier].(type) {
 	case string:
-		if val, err := strconv.Atoi(v); err != nil || val <= 0 {
+		if val, err := strconv.Atoi(v); err != nil {
 			return defaultDimMultiplier
 		} else {
 			return val
 		}
 	case int:
-		if v <= 0 {
-			return defaultDimMultiplier
-		}
 		return v
 	case float64:
-		if v <= 0 {
-			return defaultDimMultiplier
-		}
 		return int(v)
 	case float32:
-		if v <= 0 {
-			return defaultDimMultiplier
-		}
 		return int(v)
 	default:
 		return defaultDimMultiplier
@@ -116,25 +107,16 @@ func (d *Dimension) Multiplier() int {
 func (d *Dimension) Divisor() int {
 	switch v := d[IdxDimDivisor].(type) {
 	case string:
-		if val, err := strconv.Atoi(v); err != nil || val <= 0 {
+		if val, err := strconv.Atoi(v); err != nil {
 			return defaultDimDivisor
 		} else {
 			return val
 		}
 	case int:
-		if v <= 0 {
-			return defaultDimDivisor
-		}
 		return v
 	case float64:
-		if v <= 0 {
-			return defaultDimDivisor
-		}
 		return int(v)
 	case float32:
-		if v <= 0 {
-			return defaultDimDivisor
-		}
 		return int(v)
 	default:
 		return defaultDimDivisor
