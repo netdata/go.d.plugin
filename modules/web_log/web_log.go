@@ -1,15 +1,16 @@
 package web_log
 
 import (
+	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
-	"errors"
+
 	"github.com/l2isbad/go.d.plugin/charts/raw"
 	"github.com/l2isbad/go.d.plugin/modules"
-	"github.com/l2isbad/go.d.plugin/shared/log_helper"
 	"github.com/l2isbad/go.d.plugin/shared"
-	"fmt"
+	"github.com/l2isbad/go.d.plugin/shared/log_helper"
 )
 
 const (
@@ -95,7 +96,7 @@ func (w *WebLog) Check() bool {
 		w.Error(err)
 		return false
 	} else {
-		w.regex.parser =re
+		w.regex.parser = re
 	}
 
 	w.addCharts()
@@ -294,6 +295,10 @@ func (w *WebLog) dataPerCategory(fullname string, mm map[string]string) {
 
 	if v, ok := mm[keyBytesSent]; ok {
 		w.data["bytes_sent_"+fullname] += int64(strToInt(v))
+	}
+
+	if v, ok := mm[keyRespLen]; ok {
+		w.data["resp_length_"+fullname] += int64(strToInt(v))
 	}
 }
 
