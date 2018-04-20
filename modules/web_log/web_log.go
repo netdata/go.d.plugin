@@ -5,12 +5,11 @@ import (
 	"strconv"
 	"strings"
 	"errors"
-	"fmt"
-
 	"github.com/l2isbad/go.d.plugin/charts/raw"
 	"github.com/l2isbad/go.d.plugin/modules"
-	"github.com/l2isbad/go.d.plugin/shared"
 	"github.com/l2isbad/go.d.plugin/shared/log_helper"
+	"github.com/l2isbad/go.d.plugin/shared"
+	"fmt"
 )
 
 const (
@@ -311,13 +310,16 @@ func findParser(custom string, line []byte) (*regexp.Regexp, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	if !r.Match(line) {
-		return nil, errors.New("custom regex match fails")
+	if len(r.SubexpNames()) == 1 {
+		return nil, errors.New("custom regex contains no named groups (?P<subgroup_name>)")
 	}
 
 	if !shared.StringSlice(r.SubexpNames()).Include(keyCode) {
-		return nil, fmt.Errorf("custom regex match ok, but mandatory key '%s' is missing", keyCode)
+		return nil, fmt.Errorf("custom regex mandatory key '%s' is missing", keyCode)
+	}
+
+	if !r.Match(line) {
+		return nil, errors.New("custom regex match fails")
 	}
 
 	return r, nil
