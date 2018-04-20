@@ -17,7 +17,7 @@ type timings struct {
 	count int
 }
 
-func (t *timings) set(s string) {
+func (t *timings) set(s string) int {
 	var n int
 	switch {
 	case s == "0.000":
@@ -42,6 +42,7 @@ func (t *timings) set(s string) {
 	}
 	t.sum += n
 	t.count++
+	return n
 }
 
 func (t *timings) active() bool {

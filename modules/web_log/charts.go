@@ -1,23 +1,27 @@
 package web_log
 
 import (
+	"fmt"
+
 	"github.com/l2isbad/go.d.plugin/charts/raw"
 )
 
 const (
-	chartRespStatuses  = "response_statuses"
-	chartRespCodes     = "response_codes"
-	chartDetRespCodes  = "detailed_response_codes"
-	chartBandwidth     = "bandwidth"
-	chartRespTime      = "response_time"
-	chartRespTimeUp    = "response_time_upstream"
-	chartReqPerURL     = "requests_per_url"
-	chartReqPerUserDef = "requests_per_user_defined"
-	chartReqPerIPProto = "requests_per_ip_proto"
-	chartHTTPMethod    = "http_method"
-	chartHTTPVer       = "http_version"
-	chartClients       = "clients"
-	chartClientsAll    = "clients_all"
+	chartRespStatuses   = "response_statuses"
+	chartRespCodes      = "response_codes"
+	chartDetRespCodes   = "detailed_response_codes"
+	chartBandwidth      = "bandwidth"
+	chartRespTime       = "response_time"
+	chartRespTimeHist   = "response_time_histogram"
+	chartRespTimeUp     = "response_time_upstream"
+	chartRespTimeUpHist = "response_time_upstream_histogram"
+	chartReqPerURL      = "requests_per_url"
+	chartReqPerUserDef  = "requests_per_user_defined"
+	chartReqPerIPProto  = "requests_per_ip_proto"
+	chartHTTPMethod     = "http_method"
+	chartHTTPVer        = "http_version"
+	chartClients        = "clients"
+	chartClientsAll     = "clients_all"
 )
 
 type (
@@ -36,10 +40,12 @@ var uCharts = Charts{
 		chartRespCodes,    // fam: responses
 		// detailed_response_codes               // fam: responses
 		// detailed_response_codes_(1xx|2xx|...) // fam: responses
-		chartBandwidth,  // fam: bandwidth
-		chartRespTime,   // fam: timings
-		chartRespTimeUp, // fam: timings
-		chartReqPerURL,  // fam: urls
+		chartBandwidth,      // fam: bandwidth
+		chartRespTime,       // fam: timings
+		chartRespTimeHist,   // fam: timings
+		chartRespTimeUp,     // fam: timings
+		chartRespTimeUpHist, // fam: timings
+		chartReqPerURL,      // fam: urls
 		// url_XXX_detailed_response_codes  //fam: url XXX
 		// url_XXX_bandwidth                //fam: url XXX
 		// url_XXX_response_time            //fam: url XXX
@@ -93,6 +99,11 @@ var uCharts = Charts{
 			},
 		},
 		Chart{
+			ID:         chartRespTimeHist,
+			Options:    Options{"Processing Time Histogram", "requests/s", "timings"},
+			Dimensions: Dimensions{},
+		},
+		Chart{
 			ID:      chartRespTimeUp,
 			Options: Options{"Processing Time Upstream", "milliseconds", "timings", "", raw.Area},
 			Dimensions: Dimensions{
@@ -100,6 +111,11 @@ var uCharts = Charts{
 				Dimension{"resp_time_upstream_max", "max", raw.Incremental, 1, 1000},
 				Dimension{"resp_time_upstream_avg", "avg", raw.Incremental, 1, 1000},
 			},
+		},
+		Chart{
+			ID:         chartRespTimeUpHist,
+			Options:    Options{"Processing Time Upstream Histogram", "requests/s", "timings"},
+			Dimensions: Dimensions{},
 		},
 		Chart{
 			ID:         chartReqPerURL,
@@ -124,8 +140,8 @@ var uCharts = Charts{
 			Dimensions: Dimensions{},
 		},
 		Chart{
-			ID:         chartReqPerIPProto,
-			Options:    Options{"Requests Per IP Protocol", "requests/s", "ip protocols", "", raw.Stacked},
+			ID:      chartReqPerIPProto,
+			Options: Options{"Requests Per IP Protocol", "requests/s", "ip protocols", "", raw.Stacked},
 			Dimensions: Dimensions{
 				Dimension{"req_ipv4", "ipv4", raw.Incremental},
 				Dimension{"req_ipv6", "ipv6", raw.Incremental},
@@ -184,6 +200,23 @@ func (w *WebLog) addCharts() {
 				c.Order.InsertBefore(chartReqPerUserDef, chart.ID)
 			}
 		}
+	}
+
+	if len(w.RawHistogram) != 0 {
+		for _, v := range w.RawHistogram {
+			c.GetChartByID(chartRespTimeHist).AddDim(
+				Dimension{fmt.Sprintf("%s_%d", keyRespTimeHist, v), v, raw.Incremental},
+			)
+			c.GetChartByID(chartRespTimeUpHist).AddDim(
+				Dimension{fmt.Sprintf("%s_%d", keyRespTimeUpHist, v), v, raw.Incremental},
+			)
+		}
+		c.GetChartByID(chartRespTimeHist).AddDim(
+			Dimension{keyRespTimeHist + "_inf", "Inf", raw.Incremental},
+		)
+		c.GetChartByID(chartRespTimeUpHist).AddDim(
+			Dimension{keyRespTimeUpHist + "_inf", "Inf", raw.Incremental},
+		)
 	}
 	w.AddMany(c)
 }

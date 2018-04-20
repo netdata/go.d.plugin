@@ -26,6 +26,9 @@ const (
 	keyHTTPMethod = "method"
 	keyURL        = "url"
 	keyHTTPVer    = "http_version"
+
+	keyRespTimeHist   = "response_time_hist"
+	keyRespTimeUpHist = "response_time_hist_upstream"
 )
 
 type regex struct {
@@ -43,6 +46,7 @@ type WebLog struct {
 	RawURLCat       rawCategories `toml:"categories"`
 	RawUserCat      rawCategories `toml:"user_defined"`
 	RawCustomParser string        `toml:"custom_log_format"`
+	RawHistogram    []int         `toml:"histogram"`
 
 	DoChartURLCat  bool `toml:"per_category_charts"`
 	DoDetailCodes  bool `toml:"detailed_response_codes"`
@@ -51,9 +55,10 @@ type WebLog struct {
 
 	filter
 	*log_helper.FileReader
-	regex   regex
-	uniqIPs map[string]bool
-	timings map[string]*timings
+	regex      regex
+	uniqIPs    map[string]bool
+	timings    map[string]*timings
+	histograms map[string]*histogram
 
 	data map[string]int64
 }
@@ -99,6 +104,12 @@ func (w *WebLog) Check() bool {
 		return false
 	} else {
 		w.filter = f
+	}
+
+	// building "histogram"
+	if len(w.RawHistogram) > 0 {
+		w.histograms[keyRespTimeHist] = newHistogram(keyRespTimeHist, w.RawHistogram)
+		w.histograms[keyRespTimeUpHist] = newHistogram(keyRespTimeUpHist, w.RawHistogram)
 	}
 
 	// read last line
@@ -177,11 +188,17 @@ func (w *WebLog) GetData() *map[string]int64 {
 		}
 
 		if v, ok := mm[keyRespTime]; ok {
-			w.timings[keyRespTime].set(v)
+			i := w.timings[keyRespTime].set(v)
+			if h := w.histograms[keyRespTimeHist]; h != nil {
+				h.set(i)
+			}
 		}
 
-		if v, ok := mm[keyRespTimeUp]; ok {
-			w.timings[keyRespTimeUp].set(v)
+		if v, ok := mm[keyRespTimeUp]; ok && v != "-" {
+			i := w.timings[keyRespTimeUp].set(v)
+			if h := w.histograms[keyRespTimeUpHist]; h != nil {
+				h.set(i)
+			}
 		}
 
 		if v, ok := mm[keyAddress]; ok {
@@ -204,6 +221,12 @@ func (w *WebLog) GetData() *map[string]int64 {
 		w.data[v.name+"_min"] += int64(v.min)
 		w.data[v.name+"_avg"] += int64(v.sum / v.count)
 		w.data[v.name+"_max"] += int64(v.max)
+	}
+
+	for k, h := range w.histograms {
+		for i := range h.bucketIndex {
+			w.data[k+"_"+h.bucketStr[i]] = int64(h.buckets[i])
+		}
 	}
 
 	return &w.data
@@ -388,6 +411,7 @@ func init() {
 				keyRespTime:   newTimings(keyRespTime),
 				keyRespTimeUp: newTimings(keyRespTimeUp),
 			},
+			histograms: make(map[string]*histogram),
 			regex: regex{
 				URLCat:  categories{prefix: "url"},
 				UserCat: categories{prefix: "user_defined"},
