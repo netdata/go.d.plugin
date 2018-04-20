@@ -101,14 +101,14 @@ func (w *WebLog) Check() bool {
 		w.filter = f
 	}
 
-    // read last line
+	// read last line
 	line, err := log_helper.ReadLastLine(w.Path)
 	if err != nil {
 		w.Error(err)
 		return false
 	}
 
-    // get parser: custom or one of predefined in patterns.go
+	// get parser: custom or one of predefined in patterns.go
 	if re, err := getParser(w.RawCustomParser, line); err != nil {
 		w.Error(err)
 		return false
@@ -382,6 +382,7 @@ func init() {
 			DoDetailCodes:  true,
 			DoDetailCodesA: true,
 			DoChartURLCat:  true,
+			DoClientsAll:   true,
 			uniqIPs:        make(map[string]bool),
 			timings: map[string]*timings{
 				keyRespTime:   newTimings(keyRespTime),
