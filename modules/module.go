@@ -14,7 +14,7 @@ type Module interface {
 // mandatory
 type CheckDataGetter interface {
 	Check() bool
-	GetData() *map[string]int64
+	GetData() map[string]int64
 }
 
 // Charts must be added by any module

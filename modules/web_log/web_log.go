@@ -132,12 +132,12 @@ func (w *WebLog) Check() bool {
 	return true
 }
 
-func (w *WebLog) GetData() *map[string]int64 {
+func (w *WebLog) GetData() map[string]int64 {
 	v, err := w.GetRawData()
 
 	if err != nil {
 		if err == log_helper.ErrSizeNotChanged {
-			return &w.data
+			return w.data
 		}
 		return nil
 	}
@@ -229,7 +229,7 @@ func (w *WebLog) GetData() *map[string]int64 {
 		}
 	}
 
-	return &w.data
+	return w.data
 }
 
 func (w *WebLog) reqPerCategory(url string, c categories) string {

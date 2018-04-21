@@ -52,11 +52,11 @@ func (e *Example) Check() bool {
 	return true
 }
 
-func (e *Example) GetData() *map[string]int64 {
+func (e *Example) GetData() map[string]int64 {
 	for i := 0; i < 2; i++ {
 		e.data[fmt.Sprintf("random%d", i)] = rand.Int63n(100)
 	}
-	return &e.data
+	return e.data
 }
 
 func init() {

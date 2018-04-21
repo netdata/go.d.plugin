@@ -122,7 +122,7 @@ func (pc *PortCheck) Check() bool {
 	return true
 }
 
-func (pc *PortCheck) GetData() *map[string]int64 {
+func (pc *PortCheck) GetData() map[string]int64 {
 	for _, p := range pc.ports {
 		pc.data[fmt.Sprintf("success_%d", p.num)] = 0
 		pc.data[fmt.Sprintf("failed_%d", p.num)] = 0
@@ -141,7 +141,7 @@ func (pc *PortCheck) GetData() *map[string]int64 {
 		pc.data[fmt.Sprintf("instate_%d", p.num)] = int64(p.inState)
 		pc.data[fmt.Sprintf("latency_%d", p.num)] = int64(p.conLatency)
 	}
-	return &pc.data
+	return pc.data
 }
 
 func connWorker(host string, timeout time.Duration, doCh chan *port, doneCh chan *port) {

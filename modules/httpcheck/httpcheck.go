@@ -135,7 +135,7 @@ func (h *HttpCheck) Check() bool {
 	return true
 }
 
-func (h *HttpCheck) GetData() *map[string]int64 {
+func (h *HttpCheck) GetData() map[string]int64 {
 	h.data = data{}
 
 	start := time.Now()

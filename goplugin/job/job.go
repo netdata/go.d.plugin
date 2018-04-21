@@ -58,7 +58,7 @@ Done:
 }
 
 // SafeGetData is a wrapper around job.GetData() which invokes recover at the end.
-func (j *Job) SafeGetData() (m *map[string]int64) {
+func (j *Job) SafeGetData() (m map[string]int64) {
 	defer func() {
 		if r := recover(); r != nil {
 			j.Errorf("PANIC(%s)", r)
@@ -70,7 +70,7 @@ func (j *Job) SafeGetData() (m *map[string]int64) {
 
 // GetData overrides modules.Module GetData.
 // It runs SafeGetData or Module.GetData depends on job safe field.
-func (j *Job) GetData() *map[string]int64 {
+func (j *Job) GetData() map[string]int64 {
 	if j.unsafe {
 		return j.SafeGetData()
 	}
@@ -83,7 +83,7 @@ func (j *Job) GetData() *map[string]int64 {
 // Returns true if at least one chart have been updated.
 func (j *Job) update() bool {
 	data := j.GetData()
-	if data == nil || len(*data) == 0 {
+	if data == nil || len(data) == 0 {
 		j.Debug("GetData failed")
 		return false
 	}
@@ -92,7 +92,7 @@ func (j *Job) update() bool {
 	for _, chart := range j.GetCharts() {
 		if chart.IsObsoleted() {
 			suppressed++
-			if !chart.CanBeUpdated(*data) {
+			if !chart.CanBeUpdated(data) {
 				continue
 			}
 			chart.Refresh()
@@ -103,7 +103,7 @@ func (j *Job) update() bool {
 			continue
 		}
 		active++
-		if chart.Update(*data, j.sinceLast.ConvertTo(time.Microsecond)) {
+		if chart.Update(data, j.sinceLast.ConvertTo(time.Microsecond)) {
 			updated++
 		}
 	}
