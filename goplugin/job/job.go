@@ -83,7 +83,7 @@ func (j *Job) GetData() map[string]int64 {
 // Returns true if at least one chart have been updated.
 func (j *Job) update() bool {
 	data := j.GetData()
-	if data == nil || len(data) == 0 {
+	if data == nil {
 		j.Debug("GetData failed")
 		return false
 	}
