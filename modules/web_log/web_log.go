@@ -383,12 +383,11 @@ func getParser(custom string, line []byte) (*regexp.Regexp, error) {
 }
 
 func strToInt(s string) int {
-	if s != "-" {
-		if v, err := strconv.Atoi(s); err == nil {
-			return v
-		}
+	if s == "-" {
+		return 0
 	}
-	return 0
+	v, _ := strconv.Atoi(s)
+	return v
 }
 
 func createMatchMap(keys, values []string) map[string]string {
