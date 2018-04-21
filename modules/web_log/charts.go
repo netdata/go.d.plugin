@@ -1,14 +1,14 @@
 package web_log
 
 import (
-	"fmt"
-
 	"github.com/l2isbad/go.d.plugin/charts/raw"
+	"github.com/l2isbad/go.d.plugin/shared"
 )
 
 const (
-	chartRespStatuses   = "response_statuses"
-	chartRespCodes      = "response_codes"
+	chartRespStatuses = "response_statuses"
+	chartRespCodes    = "response_codes"
+
 	chartDetRespCodes   = "detailed_response_codes"
 	chartBandwidth      = "bandwidth"
 	chartRespTime       = "response_time"
@@ -166,18 +166,22 @@ var uCharts = Charts{
 	},
 }
 
-func (w *WebLog) addCharts() {
+func (w *WebLog) createCharts() {
 	c := uCharts.Copy()
 
-	if !w.DoClientsAll {
-		c.DeleteChartByID(chartClientsAll)
+	names := shared.StringSlice(w.regex.parser.SubexpNames())
+
+	if !names.Include(keyHTTPMethod) {
+		c.DeleteChartByID(chartHTTPMethod)
 	}
 
-	if w.DoDetailCodes {
+		if w.DoDetailCodes {
+		var s []string
 		for _, chart := range detRespCodesCharts(w.DoDetailCodesA) {
 			c.AddChart(chart, false)
-			c.Order.InsertBefore(chartBandwidth, chart.ID)
+			s = append(s, chart.ID)
 		}
+		c.Order.ExpandAfterID(chartRespCodes, s...)
 	}
 
 	for _, v := range w.regex.URLCat.list {
@@ -185,38 +189,41 @@ func (w *WebLog) addCharts() {
 		w.data[v.fullname] = 0
 	}
 
+	if w.DoChartURLCat {
+		var s []string
+		for _, v := range w.regex.URLCat.list {
+			for _, chart := range perCategoryCharts(v) {
+				s = append(s, chart.ID)
+				for _, d := range chart.Dimensions {
+					w.data[d.ID()] = 0
+				}
+				c.AddChart(chart, false)
+			}
+		}
+		c.Order.ExpandAfterID(chartReqPerURL, s...)
+	}
+
 	for _, v := range w.regex.UserCat.list {
 		c.GetChartByID(chartReqPerUserDef).AddDim(Dimension{v.fullname, v.name, raw.Incremental})
 		w.data[v.fullname] = 0
 	}
 
-	if w.DoChartURLCat {
-		for _, v := range w.regex.URLCat.list {
-			for _, chart := range perCategoryCharts(v) {
-				for _, d := range chart.Dimensions {
-					w.data[d.ID()] = 0
-				}
-				c.AddChart(chart, false)
-				c.Order.InsertBefore(chartReqPerUserDef, chart.ID)
-			}
+	if v, ok := w.histograms[keyRespTimeHist]; ok {
+		for i := range v.bucketIndex {
+			c.GetChartByID(chartRespTimeHist).AddDim(
+				Dimension{keyRespTimeHist + "_" + v.bucketStr[i], v.bucketStr[i], raw.Incremental},
+			)
+			w.data[keyRespTimeHist+"_"+v.bucketStr[i]] = 0
 		}
 	}
 
-	if len(w.RawHistogram) != 0 {
-		for _, v := range w.RawHistogram {
-			c.GetChartByID(chartRespTimeHist).AddDim(
-				Dimension{fmt.Sprintf("%s_%d", keyRespTimeHist, v), v, raw.Incremental},
-			)
+	if v, ok := w.histograms[keyRespTimeUpHist]; ok {
+		for i := range v.bucketIndex {
 			c.GetChartByID(chartRespTimeUpHist).AddDim(
-				Dimension{fmt.Sprintf("%s_%d", keyRespTimeUpHist, v), v, raw.Incremental},
+				Dimension{keyRespTimeUpHist + "_" + v.bucketStr[i], v.bucketStr[i], raw.Incremental},
 			)
+			w.data[keyRespTimeHist+"_"+v.bucketStr[i]] = 0
 		}
-		c.GetChartByID(chartRespTimeHist).AddDim(
-			Dimension{keyRespTimeHist + "_inf", "Inf", raw.Incremental},
-		)
-		c.GetChartByID(chartRespTimeUpHist).AddDim(
-			Dimension{keyRespTimeUpHist + "_inf", "Inf", raw.Incremental},
-		)
 	}
 	w.AddMany(c)
 }
