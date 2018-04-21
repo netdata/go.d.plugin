@@ -16,6 +16,15 @@ func (s *StringSlice) Insert(idx int, value string) bool {
 	return true
 }
 
+func (s *StringSlice) ExpandAfterID(id string, values ...string) bool {
+	idx := s.Index(id)
+	if !s.isIndexValid(idx) {
+		return false
+	}
+	*s = append((*s)[:idx+1], append(values, (*s)[idx+1:]...)...)
+	return true
+}
+
 func (s *StringSlice) InsertBefore(id, v string) bool {
 	return s.Insert(s.Index(id), v)
 }
