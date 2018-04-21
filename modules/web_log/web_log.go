@@ -27,8 +27,10 @@ const (
 	keyURL        = "url"
 	keyHTTPVer    = "http_version"
 
-	keyRespTimeHist   = "response_time_hist"
-	keyRespTimeUpHist = "response_time_hist_upstream"
+	keyRespTimeHist   = "resp_time_hist"
+	keyRespTimeUpHist = "resp_time_hist_upstream"
+
+	mandatoryKey = keyCode
 )
 
 type regex struct {
@@ -127,8 +129,8 @@ func (w *WebLog) Check() bool {
 		w.regex.parser = re
 	}
 
-	w.addCharts()
-
+	w.createCharts()
+	w.Info("collected data:", w.regex.parser.SubexpNames()[1:])
 	return true
 }
 
@@ -274,7 +276,7 @@ func (w *WebLog) reqPerCode(code string) {
 
 	if w.DoDetailCodesA {
 		w.GetChartByID(chartDetRespCodes).AddDim(Dimension{code, "", raw.Incremental})
-		w.data[code] = 0
+		w.data[code]++
 		return
 	}
 	var v = "other"
@@ -282,7 +284,7 @@ func (w *WebLog) reqPerCode(code string) {
 		v = code[:1] + "xx"
 	}
 	w.GetChartByID(chartDetRespCodes + "_" + v).AddDim(Dimension{code, "", raw.Incremental})
-	w.data[code] = 0
+	w.data[code]++
 }
 
 func (w *WebLog) reqPerCodeFam(code string) {
@@ -361,7 +363,7 @@ func getParser(custom string, line []byte) (*regexp.Regexp, error) {
 				return p, nil
 			}
 		}
-		return nil, errors.New("can not find appropriate regex")
+		return nil, errors.New("can not find appropriate regex, consider using \"custom_log_format\" feature")
 	}
 	r, err := regexp.Compile(custom)
 	if err != nil {
@@ -371,8 +373,8 @@ func getParser(custom string, line []byte) (*regexp.Regexp, error) {
 		return nil, errors.New("custom regex contains no named groups (?P<subgroup_name>)")
 	}
 
-	if !shared.StringSlice(r.SubexpNames()).Include(keyCode) {
-		return nil, fmt.Errorf("custom regex mandatory key '%s' is missing", keyCode)
+	if !shared.StringSlice(r.SubexpNames()).Include(mandatoryKey) {
+		return nil, fmt.Errorf("custom regex missing mandatory key '%s'", mandatoryKey)
 	}
 
 	if !r.Match(line) {
@@ -416,6 +418,18 @@ func init() {
 				UserCat: categories{prefix: "user_defined"},
 			},
 			data: map[string]int64{
+				"successful_requests":    0,
+				"redirects":              0,
+				"bad_requests":           0,
+				"server_errors":          0,
+				"other_requests":         0,
+				"2xx":                    0,
+				"5xx":                    0,
+				"3xx":                    0,
+				"4xx":                    0,
+				"1xx":                    0,
+				"0xx":                    0,
+				"unmatched":              0,
 				"bytes_sent":             0,
 				"resp_length":            0,
 				"resp_time_min":          0,
@@ -428,20 +442,8 @@ func init() {
 				"unique_cur_ipv6":        0,
 				"unique_tot_ipv4":        0,
 				"unique_tot_ipv6":        0,
-				"2xx":                    0,
-				"5xx":                    0,
-				"3xx":                    0,
-				"4xx":                    0,
-				"1xx":                    0,
-				"0xx":                    0,
-				"unmatched":              0,
 				"req_ipv4":               0,
 				"req_ipv6":               0,
-				"successful_requests":    0,
-				"redirects":              0,
-				"bad_requests":           0,
-				"server_errors":          0,
-				"other_requests":         0,
 				"GET":                    0, // GET should be green on the dashboard
 			},
 		}
