@@ -9,10 +9,10 @@ var reRequest = regexp.MustCompile(`(?P<method>[A-Z]+) (?P<url>[^ ]+) [A-Z]+/(?P
 
 var (
 	lastHop = strings.Join([]string{
-		`(?P<address>[\\da-f.:]+|localhost) -.*?"`,
+		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
 		`(?P<request>[^"]*)" `,
-		`(?P<code>[1-9]\\d{2}) `,
-		`(?P<bytes_sent>\\d+|-)`,
+		`(?P<code>[1-9]\d{2}) `,
+		`(?P<bytes_sent>\d+|-)`,
 	}, "")
 	apacheV1 = strings.Join([]string{
 		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
