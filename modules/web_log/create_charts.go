@@ -7,8 +7,8 @@ import (
 )
 
 type (
-	Charts      = raw.Charts
-	Dimension   = raw.Dimension
+	Charts    = raw.Charts
+	Dimension = raw.Dimension
 )
 
 func (w *WebLog) createCharts() {
@@ -35,14 +35,12 @@ func (w *WebLog) createCharts() {
 	if names.Include(keyRespTime) {
 		c.AddChart(charts.RespTime, true)
 
-		if len(w.RawHistogram) > 0 {
+		if v := w.histograms[keyRespTimeHist]; v != nil {
 			c.AddChart(charts.RespTimeHist, true)
-			if v := w.histograms[keyRespTimeHist]; v != nil {
-				for i := range v.bucketIndex {
-					dimID, dim := keyRespTimeHist+"_"+v.bucketStr[i], v.bucketStr[i]
-					c.GetChartByID(charts.RespTimeHist.ID).AddDim(Dimension{dimID, dim, raw.Incremental})
-					w.data[dimID] = 0
-				}
+			for i := range v.bucketIndex {
+				dimID, dim := keyRespTimeHist+"_"+v.bucketStr[i], v.bucketStr[i]
+				c.GetChartByID(charts.RespTimeHist.ID).AddDim(Dimension{dimID, dim, raw.Incremental})
+				w.data[dimID] = 0
 			}
 		}
 	}
@@ -50,14 +48,12 @@ func (w *WebLog) createCharts() {
 	if names.Include(keyRespTimeUp) {
 		c.AddChart(charts.RespTimeUpstream, true)
 
-		if len(w.RawHistogram) > 0 {
+		if v := w.histograms[keyRespTimeUpHist]; v != nil {
 			c.AddChart(charts.RespTimeUpstreamHist, true)
-			if v := w.histograms[keyRespTimeUpHist]; v != nil {
-				for i := range v.bucketIndex {
-					dimID, dim := keyRespTimeUpHist+"_"+v.bucketStr[i], v.bucketStr[i]
-					c.GetChartByID(charts.RespTimeUpstreamHist.ID).AddDim(Dimension{dimID, dim, raw.Incremental})
-					w.data[dimID] = 0
-				}
+			for i := range v.bucketIndex {
+				dimID, dim := keyRespTimeUpHist+"_"+v.bucketStr[i], v.bucketStr[i]
+				c.GetChartByID(charts.RespTimeUpstreamHist.ID).AddDim(Dimension{dimID, dim, raw.Incremental})
+				w.data[dimID] = 0
 			}
 		}
 	}
