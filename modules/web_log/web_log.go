@@ -9,6 +9,7 @@ import (
 
 	"github.com/l2isbad/go.d.plugin/charts/raw"
 	"github.com/l2isbad/go.d.plugin/modules"
+	"github.com/l2isbad/go.d.plugin/modules/web_log/charts"
 	"github.com/l2isbad/go.d.plugin/shared"
 	"github.com/l2isbad/go.d.plugin/shared/log_helper"
 )
@@ -273,7 +274,7 @@ func (w *WebLog) reqPerCode(code string) {
 	}
 
 	if w.DoDetailCodesA {
-		w.GetChartByID(chartDetRespCodes).AddDim(Dimension{code, "", raw.Incremental})
+		w.GetChartByID(charts.RespCodesDetailed.ID).AddDim(Dimension{code, "", raw.Incremental})
 		w.data[code]++
 		return
 	}
@@ -281,7 +282,7 @@ func (w *WebLog) reqPerCode(code string) {
 	if code[0] <= 53 {
 		v = code[:1] + "xx"
 	}
-	w.GetChartByID(chartDetRespCodes + "_" + v).AddDim(Dimension{code, "", raw.Incremental})
+	w.GetChartByID(charts.RespCodesDetailed.ID + "_" + v).AddDim(Dimension{code, "", raw.Incremental})
 	w.data[code]++
 }
 
@@ -315,13 +316,13 @@ func (w *WebLog) dataFromRequest(req string) (URLCat string) {
 	}
 
 	if _, ok := w.data[mm[keyHTTPMethod]]; !ok {
-		w.GetChartByID(chartHTTPMethod).AddDim(Dimension{mm[keyHTTPMethod], "", raw.Incremental})
+		w.GetChartByID(charts.ReqPerHTTPMethod.ID).AddDim(Dimension{mm[keyHTTPMethod], "", raw.Incremental})
 	}
 	w.data[mm[keyHTTPMethod]]++
 
 	dimID := strings.Replace(mm[keyHTTPVer], ".", "_", 1)
 	if _, ok := w.data[dimID]; !ok {
-		w.GetChartByID(chartHTTPVer).AddDim(Dimension{dimID, mm[keyHTTPVer], raw.Incremental})
+		w.GetChartByID(charts.ReqPerHTTPVer.ID).AddDim(Dimension{dimID, mm[keyHTTPVer], raw.Incremental})
 	}
 	w.data[dimID]++
 	return
@@ -331,7 +332,7 @@ func (w *WebLog) dataPerCategory(fullname string, mm map[string]string) {
 	code := mm[keyCode]
 	v := fullname + "_" + code
 	if _, ok := w.data[v]; !ok {
-		w.GetChartByID(chartDetRespCodes + "_" + fullname).AddDim(Dimension{v, code, raw.Incremental})
+		w.GetChartByID(charts.RespCodesDetailed.ID + "_" + fullname).AddDim(Dimension{v, code, raw.Incremental})
 	}
 	w.data[v]++
 
