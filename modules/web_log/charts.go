@@ -175,7 +175,7 @@ func (w *WebLog) createCharts() {
 		c.DeleteChartByID(chartHTTPMethod)
 	}
 
-		if w.DoDetailCodes {
+	if w.DoDetailCodes {
 		var s []string
 		for _, chart := range detRespCodesCharts(w.DoDetailCodesA) {
 			c.AddChart(chart, false)
@@ -228,8 +228,8 @@ func (w *WebLog) createCharts() {
 	w.AddMany(c)
 }
 
-func perCategoryCharts(c *category) []raw.Chart {
-	return []raw.Chart{
+func perCategoryCharts(c *category) []Chart {
+	return []Chart{
 		raw.NewChart(
 			chartDetRespCodes+"_"+c.fullname,
 			Options{"Detailed Response Codes", "requests/s", c.fullname, "web_log.url_detailed_response_codes", raw.Stacked},
@@ -250,15 +250,15 @@ func perCategoryCharts(c *category) []raw.Chart {
 	}
 }
 
-func detRespCodesCharts(aggregate bool) []raw.Chart {
+func detRespCodesCharts(aggregate bool) []Chart {
 	if aggregate {
-		return []raw.Chart{
+		return []Chart{
 			raw.NewChart(
 				chartDetRespCodes,
 				Options{"Detailed Response Codes", "requests/s", "responses", "", raw.Stacked}),
 		}
 	}
-	return []raw.Chart{
+	return []Chart{
 		raw.NewChart(
 			chartDetRespCodes+"_1xx",
 			Options{"Detailed Response Codes 1xx", "requests/s", "responses", "", raw.Stacked},

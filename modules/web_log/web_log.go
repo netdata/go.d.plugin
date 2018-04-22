@@ -42,18 +42,16 @@ type regex struct {
 type WebLog struct {
 	modules.Charts
 	modules.Logger
-	Path string `toml:"path, required"`
-
+	Path            string        `toml:"path, required"`
 	RawFilter       rawFilter     `toml:"filter"`
 	RawURLCat       rawCategories `toml:"categories"`
 	RawUserCat      rawCategories `toml:"user_defined"`
 	RawCustomParser string        `toml:"custom_log_format"`
 	RawHistogram    []int         `toml:"histogram"`
-
-	DoChartURLCat  bool `toml:"per_category_charts"`
-	DoDetailCodes  bool `toml:"detailed_response_codes"`
-	DoDetailCodesA bool `toml:"detailed_response_codes_aggregate"`
-	DoClientsAll   bool `toml:"clients_all_time"`
+	DoChartURLCat   bool          `toml:"per_category_charts"`
+	DoDetailCodes   bool          `toml:"detailed_response_codes"`
+	DoDetailCodesA  bool          `toml:"detailed_response_codes_aggregate"`
+	DoClientsAll    bool          `toml:"clients_all_time"`
 
 	filter
 	*log_helper.FileReader
