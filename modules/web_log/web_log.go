@@ -263,7 +263,7 @@ func (w *WebLog) reqPerIPProto(address string, uniqIPs map[string]bool) {
 
 	if _, ok := w.uniqIPs[address]; !ok {
 		w.uniqIPs[address] = true
-		w.data["unique_tot_"+proto]++
+		w.data["unique_all_"+proto]++
 	}
 }
 
