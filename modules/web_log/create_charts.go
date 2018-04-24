@@ -62,6 +62,7 @@ func (w *WebLog) createCharts() {
 			c.GetChartByID(charts.ReqPerURL.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
 			w.data[v.id] = 0
 		}
+		w.data[w.regex.URLCat.other()] = 0
 
 		if w.DoChartURLCat {
 			for _, v := range w.regex.URLCat.list {
@@ -81,6 +82,7 @@ func (w *WebLog) createCharts() {
 			c.GetChartByID(charts.ReqPerUserDef.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
 			w.data[v.id] = 0
 		}
+		w.data[w.regex.UserCat.other()] = 0
 	}
 
 	if names.Include(keyRequest) {
