@@ -59,13 +59,13 @@ func (w *WebLog) createCharts() {
 	if names.Include(keyRequest) && w.regex.URLCat.active() {
 		c.AddChart(charts.ReqPerURL, true)
 		for _, v := range w.regex.URLCat.list {
-			c.GetChartByID(charts.ReqPerURL.ID).AddDim(Dimension{v.fullname, v.name, raw.Incremental})
-			w.data[v.fullname] = 0
+			c.GetChartByID(charts.ReqPerURL.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+			w.data[v.id] = 0
 		}
 
 		if w.DoChartURLCat {
 			for _, v := range w.regex.URLCat.list {
-				for _, chart := range charts.PerCategory(v.fullname) {
+				for _, chart := range charts.PerCategory(v.id) {
 					c.AddChart(chart, true)
 					for _, d := range chart.Dimensions {
 						w.data[d.ID()] = 0
@@ -78,8 +78,8 @@ func (w *WebLog) createCharts() {
 	if names.Include(keyUserDefined) && w.regex.UserCat.active() {
 		c.AddChart(charts.ReqPerUserDef, true)
 		for _, v := range w.regex.UserCat.list {
-			c.GetChartByID(charts.ReqPerUserDef.ID).AddDim(Dimension{v.fullname, v.name, raw.Incremental})
-			w.data[v.fullname] = 0
+			c.GetChartByID(charts.ReqPerUserDef.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+			w.data[v.id] = 0
 		}
 	}
 

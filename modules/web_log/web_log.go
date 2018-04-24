@@ -84,7 +84,7 @@ func (w *WebLog) Check() bool {
 		w.regex.URLCat.add(v.name, re)
 
 		if w.DoChartURLCat {
-			k := w.regex.URLCat.list[idx].fullname
+			k := w.regex.URLCat.list[idx].id
 			w.timings[k] = newTimings(k + "_" + keyRespTime)
 		}
 	}
@@ -107,10 +107,10 @@ func (w *WebLog) Check() bool {
 		w.filter = f
 	}
 
-	// building "histValue"
+	// building "histogram"
 	if len(w.RawHistogram) > 0 {
-		w.histograms[keyRespTimeHist] = newHistograms(keyRespTimeHist, w.RawHistogram)
-		w.histograms[keyRespTimeUpHist] = newHistograms(keyRespTimeUpHist, w.RawHistogram)
+		w.histograms[keyRespTimeHist] = newHistogram(keyRespTimeHist, w.RawHistogram)
+		w.histograms[keyRespTimeUpHist] = newHistogram(keyRespTimeUpHist, w.RawHistogram)
 	}
 
 	// read last line
@@ -220,7 +220,7 @@ func (w *WebLog) GetData() map[string]int64 {
 			continue
 		}
 		w.data[v.name+"_min"] += int64(v.min)
-		w.data[v.name+"_avg"] += int64(v.sum / v.count)
+		w.data[v.name+"_avg"] += int64(v.avg())
 		w.data[v.name+"_max"] += int64(v.max)
 	}
 
@@ -236,8 +236,8 @@ func (w *WebLog) GetData() map[string]int64 {
 func (w *WebLog) reqPerCategory(url string, c categories) string {
 	for _, v := range c.list {
 		if v.re.MatchString(url) {
-			w.data[v.fullname]++
-			return v.fullname
+			w.data[v.id]++
+			return v.id
 		}
 	}
 	w.data[c.other()]++
@@ -328,24 +328,24 @@ func (w *WebLog) dataFromRequest(req string) (URLCat string) {
 	return
 }
 
-func (w *WebLog) dataPerCategory(fullname string, mm map[string]string) {
+func (w *WebLog) dataPerCategory(id string, mm map[string]string) {
 	code := mm[keyCode]
-	v := fullname + "_" + code
+	v := id + "_" + code
 	if _, ok := w.data[v]; !ok {
-		w.GetChartByID(charts.RespCodesDetailed.ID + "_" + fullname).AddDim(Dimension{v, code, raw.Incremental})
+		w.GetChartByID(charts.RespCodesDetailed.ID + "_" + id).AddDim(Dimension{v, code, raw.Incremental})
 	}
 	w.data[v]++
 
 	if v, ok := mm[keyBytesSent]; ok {
-		w.data[fullname+"_bytes_sent"] += int64(strToInt(v))
+		w.data[id+"_bytes_sent"] += int64(strToInt(v))
 	}
 
 	if v, ok := mm[keyRespLen]; ok {
-		w.data[fullname+"_resp_length"] += int64(strToInt(v))
+		w.data[id+"_resp_length"] += int64(strToInt(v))
 	}
 
 	if v, ok := mm[keyRespTime]; ok {
-		w.timings[fullname].set(v)
+		w.timings[id].set(v)
 	}
 }
 

@@ -147,24 +147,24 @@ func RespCodesDetailedPerFam() []Chart {
 	}
 }
 
-func PerCategory(fullname string) []Chart {
+func PerCategory(id string) []Chart {
 	return []Chart{
 		raw.NewChart(
-			RespCodesDetailed.ID+"_"+fullname,
-			Options{"Detailed Response Codes", "requests/s", fullname, "web_log.url_detailed_response_codes", raw.Stacked},
+			RespCodesDetailed.ID+"_"+id,
+			Options{"Detailed Response Codes", "requests/s", id, "web_log.url_detailed_response_codes", raw.Stacked},
 		),
 		raw.NewChart(
-			Bandwidth.ID+"_"+fullname,
-			Options{"Bandwidth", "kilobits/s", fullname, "web_log.url_bandwidth", raw.Area},
-			Dimension{fullname + "_resp_length", "received", raw.Incremental, 8, 1000},
-			Dimension{fullname + "_bytes_sent", "sent", raw.Incremental, -8, 1000},
+			Bandwidth.ID+"_"+id,
+			Options{"Bandwidth", "kilobits/s", id, "web_log.url_bandwidth", raw.Area},
+			Dimension{id + "_resp_length", "received", raw.Incremental, 8, 1000},
+			Dimension{id + "_bytes_sent", "sent", raw.Incremental, -8, 1000},
 		),
 		raw.NewChart(
-			RespTime.ID+"_"+fullname,
-			Options{"Processing Time", "milliseconds", fullname, "web_log.url_response_time", raw.Area},
-			Dimension{fullname + "_resp_time_min", "min", raw.Incremental, 1, 1000},
-			Dimension{fullname + "_resp_time_max", "max", raw.Incremental, 1, 1000},
-			Dimension{fullname + "_resp_time_avg", "avg", raw.Incremental, 1, 1000},
+			RespTime.ID+"_"+id,
+			Options{"Processing Time", "milliseconds", id, "web_log.url_response_time", raw.Area},
+			Dimension{id + "_resp_time_min", "min", raw.Incremental, 1, 1000},
+			Dimension{id + "_resp_time_max", "max", raw.Incremental, 1, 1000},
+			Dimension{id + "_resp_time_avg", "avg", raw.Incremental, 1, 1000},
 		),
 	}
 }

@@ -45,6 +45,10 @@ func (t *timings) set(s string) int {
 	return n
 }
 
+func (t *timings) avg() int {
+	return t.sum / t.count
+}
+
 func (t *timings) active() bool {
 	return t.min != -1
 }

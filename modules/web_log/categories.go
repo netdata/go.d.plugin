@@ -9,10 +9,9 @@ import (
 )
 
 type category struct {
-	prefix   string
-	name     string
-	fullname string
-	re       *regexp.Regexp
+	id   string
+	name string
+	re   *regexp.Regexp
 }
 
 type categories struct {
@@ -25,7 +24,7 @@ func (c *categories) other() string {
 }
 
 func (c *categories) add(n string, r *regexp.Regexp) {
-	c.list = append(c.list, &category{c.prefix, n, c.prefix + "_" + n, r})
+	c.list = append(c.list, &category{c.prefix + "_" + n,n, r})
 }
 
 func (c *categories) active() bool {

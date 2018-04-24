@@ -25,7 +25,7 @@ func (h *histogram) set(v int) {
 	}
 }
 
-func newHistograms(prefix string, h []int) *histogram {
+func newHistogram(prefix string, h []int) *histogram {
 	sort.Ints(h)
 	rv := make(histogram, len(h))
 	for idx, v := range h {
