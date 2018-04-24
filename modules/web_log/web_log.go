@@ -162,50 +162,22 @@ func (w *WebLog) GetData() map[string]int64 {
 
 		code, codeFam := mm[keyCode], mm[keyCode][:1]
 
+		// ResponseCodes chart
 		if _, ok := w.data[codeFam+"xx"]; ok {
 			w.data[codeFam+"xx"]++
 		} else {
 			w.data["0xx"]++
 		}
 
+		// ResponseStatuses chart
+		w.reqPerCodeFam(code)
+
+		// ResponseCodesDetailed chart
 		if w.DoDetailCodes {
 			w.reqPerCode(code)
 		}
 
-		w.reqPerCodeFam(code)
-
-		if v, ok := mm[keyUserDefined]; ok && w.regex.UserCat.active() {
-			w.reqPerCategory(v, w.regex.UserCat)
-		}
-
-		var URLCat string
-
-		if v, ok := mm[keyRequest]; ok {
-			URLCat = w.dataFromRequest(v)
-		}
-
-		if URLCat != "" && w.DoChartURLCat {
-			w.dataPerCategory(URLCat, mm)
-		}
-
-		if v, ok := mm[keyRespTime]; ok {
-			i := w.timings[keyRespTime].set(v)
-			if h := w.histograms[keyRespTimeHist]; h != nil {
-				h.set(i)
-			}
-		}
-
-		if v, ok := mm[keyRespTimeUp]; ok && v != "-" {
-			i := w.timings[keyRespTimeUp].set(v)
-			if h := w.histograms[keyRespTimeUpHist]; h != nil {
-				h.set(i)
-			}
-		}
-
-		if v, ok := mm[keyAddress]; ok {
-			w.reqPerIPProto(v, uniqIPs)
-		}
-
+		// Bandwidth chart
 		if v, ok := mm[keyBytesSent]; ok {
 			w.data["bytes_sent"] += int64(strToInt(v))
 		}
@@ -213,6 +185,45 @@ func (w *WebLog) GetData() map[string]int64 {
 		if v, ok := mm[keyRespLen]; ok {
 			w.data["resp_length"] += int64(strToInt(v))
 		}
+
+		// ResponseTime and ResponseTimeHistogram charts
+		if v, ok := mm[keyRespTime]; ok {
+			i := w.timings[keyRespTime].set(v)
+			if h := w.histograms[keyRespTimeHist]; h != nil {
+				h.set(i)
+			}
+		}
+
+		// ResponseTimeUpstream, ResponseTimeUpstreamHistogram charts
+		if v, ok := mm[keyRespTimeUp]; ok && v != "-" {
+			i := w.timings[keyRespTimeUp].set(v)
+			if h := w.histograms[keyRespTimeUpHist]; h != nil {
+				h.set(i)
+			}
+		}
+
+		// ReqPerUrl, ReqPerHTTPMethod, ReqPerHTTPVer charts
+		var URLCat string
+
+		if v, ok := mm[keyRequest]; ok {
+			URLCat = w.dataFromRequest(v)
+		}
+
+		// ReqPerUserDefined chart
+		if v, ok := mm[keyUserDefined]; ok && w.regex.UserCat.active() {
+			w.reqPerCategory(v, w.regex.UserCat)
+		}
+
+		// RespCodesDetailed, Bandwidth, RespTime per URL (category) charts
+		if URLCat != "" && w.DoChartURLCat {
+			w.dataPerCategory(URLCat, mm)
+		}
+
+		// RequestsPerIPProto, ClientsCurr, ClientsAll charts
+		if v, ok := mm[keyAddress]; ok {
+			w.reqPerIPProto(v, uniqIPs)
+		}
+
 	}
 
 	for _, v := range w.timings {
