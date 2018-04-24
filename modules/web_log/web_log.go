@@ -107,10 +107,10 @@ func (w *WebLog) Check() bool {
 		w.filter = f
 	}
 
-	// building "histogram"
+	// building "histValue"
 	if len(w.RawHistogram) > 0 {
-		w.histograms[keyRespTimeHist] = newHistogram(keyRespTimeHist, w.RawHistogram)
-		w.histograms[keyRespTimeUpHist] = newHistogram(keyRespTimeUpHist, w.RawHistogram)
+		w.histograms[keyRespTimeHist] = newHistograms(keyRespTimeHist, w.RawHistogram)
+		w.histograms[keyRespTimeUpHist] = newHistograms(keyRespTimeUpHist, w.RawHistogram)
 	}
 
 	// read last line
@@ -224,9 +224,9 @@ func (w *WebLog) GetData() map[string]int64 {
 		w.data[v.name+"_max"] += int64(v.max)
 	}
 
-	for k, h := range w.histograms {
-		for i := range h.bucketIndex {
-			w.data[k+"_"+h.bucketStr[i]] = int64(h.buckets[i])
+	for _, h := range w.histograms {
+		for _, v := range *h {
+			w.data[v.id] = int64(v.count)
 		}
 	}
 

@@ -6,35 +6,32 @@ import (
 	"strconv"
 )
 
-func newHistogram(n string, h []int) *histogram {
-	sort.Ints(h)
-	b := make([]int, len(h))
-	s := make([]string, len(h))
-	for idx, v := range h {
-		b[idx] = v * 1000
-		s[idx] = strconv.Itoa(v)
-	}
-	return &histogram{
-		name:        n,
-		bucketStr:   append(s, "inf"),
-		bucketIndex: append(b, math.MaxInt64),
-		buckets:     make([]int, len(h)+1),
-	}
+type histValue struct {
+	id    string
+	name  string
+	value int
+	count int
 }
 
-type histogram struct {
-	name        string
-	bucketStr   []string
-	bucketIndex []int
-	buckets     []int
-}
+type histogram []*histValue
 
 func (h *histogram) set(v int) {
-	for i := len(h.bucketIndex) - 1; i > -1; i-- {
-		if v <= h.bucketIndex[i] {
-			h.buckets[i]++
+	for i := len(*h) - 1; i > -1; i-- {
+		if v <= (*h)[i].value {
+			(*h)[i].count++
 			continue
 		}
 		break
 	}
+}
+
+func newHistograms(prefix string, h []int) *histogram {
+	sort.Ints(h)
+	rv := make(histogram, len(h))
+	for idx, v := range h {
+		n := strconv.Itoa(v)
+		rv[idx] = &histValue{id: prefix + "_" + n, name: n, value: v * 1000}
+	}
+	rv = append(rv, &histValue{id: prefix + "_inf", name: "inf", value: math.MaxInt64})
+	return &rv
 }

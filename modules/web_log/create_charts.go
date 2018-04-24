@@ -13,7 +13,7 @@ type (
 
 func (w *WebLog) createCharts() {
 	names := shared.StringSlice(w.regex.parser.SubexpNames())
-	c := Charts{}
+	c := &Charts{}
 
 	c.AddChart(charts.RespStatuses, true)
 	c.AddChart(charts.RespCodes, true)
@@ -35,12 +35,11 @@ func (w *WebLog) createCharts() {
 	if names.Include(keyRespTime) {
 		c.AddChart(charts.RespTime, true)
 
-		if v := w.histograms[keyRespTimeHist]; v != nil {
+		if h := w.histograms[keyRespTimeHist]; h != nil {
 			c.AddChart(charts.RespTimeHist, true)
-			for i := range v.bucketIndex {
-				dimID, dim := keyRespTimeHist+"_"+v.bucketStr[i], v.bucketStr[i]
-				c.GetChartByID(charts.RespTimeHist.ID).AddDim(Dimension{dimID, dim, raw.Incremental})
-				w.data[dimID] = 0
+			for _, v := range *h {
+				c.GetChartByID(charts.RespTimeHist.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+				w.data[v.id] = 0
 			}
 		}
 	}
@@ -48,12 +47,11 @@ func (w *WebLog) createCharts() {
 	if names.Include(keyRespTimeUp) {
 		c.AddChart(charts.RespTimeUpstream, true)
 
-		if v := w.histograms[keyRespTimeUpHist]; v != nil {
+		if h := w.histograms[keyRespTimeUpHist]; h != nil {
 			c.AddChart(charts.RespTimeUpstreamHist, true)
-			for i := range v.bucketIndex {
-				dimID, dim := keyRespTimeUpHist+"_"+v.bucketStr[i], v.bucketStr[i]
-				c.GetChartByID(charts.RespTimeUpstreamHist.ID).AddDim(Dimension{dimID, dim, raw.Incremental})
-				w.data[dimID] = 0
+			for _, v := range *h {
+				c.GetChartByID(charts.RespTimeUpstreamHist.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+				w.data[v.id] = 0
 			}
 		}
 	}
@@ -98,5 +96,5 @@ func (w *WebLog) createCharts() {
 		}
 	}
 
-	w.AddMany(&c)
+	w.AddMany(c)
 }
