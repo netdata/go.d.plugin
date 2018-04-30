@@ -22,7 +22,7 @@ type (
 
 // GetChartByID returns chart id.
 func (c *Charts) GetChartByID(chartID string) *Chart {
-	if idx, ok := c.Definitions.index(chartID); ok {
+	if idx := c.Definitions.index(chartID); idx != -1 {
 		return &c.Definitions[idx]
 	}
 	return nil
@@ -42,7 +42,7 @@ func (c *Charts) GetChartByIndex(idx int) *Chart {
 
 // DeleteChartByID deletes chart by id.
 func (c *Charts) DeleteChartByID(chartID string) error {
-	if idx, ok := c.Definitions.index(chartID); ok {
+	if idx := c.Definitions.index(chartID); idx != -1 {
 		c.Order.DeleteByID(chartID)
 		c.Definitions = append(c.Definitions[:idx], c.Definitions[idx+1:]...)
 		return nil
@@ -69,7 +69,7 @@ func (c *Charts) AddChart(chart Chart, addToOrder bool) error {
 	if err := chart.IsValid(); err != nil {
 		return fmt.Errorf("invalid chart '%s' (%s)", chart.ID, err)
 	}
-	if _, ok := c.Definitions.index(chart.ID); ok {
+	if c.Definitions.index(chart.ID) != -1 {
 		return fmt.Errorf("duplicate chart '%s'", chart.ID)
 	}
 	c.Definitions = append(c.Definitions, chart)
@@ -95,11 +95,11 @@ func (c *Charts) Copy() *Charts {
 	return &rv
 }
 
-func (d *Definitions) index(chartID string) (int, bool) {
+func (d *Definitions) index(chartID string) int {
 	for idx, c := range *d {
 		if c.ID == chartID {
-			return idx, true
+			return idx
 		}
 	}
-	return 0, false
+	return -1
 }
