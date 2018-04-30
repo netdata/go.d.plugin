@@ -145,7 +145,7 @@ func (c *Chart) SetOverrideID(id string) *Chart {
 
 // GetDimByID returns dimension by id.
 func (c *Chart) GetDimByID(dimID string) *Dimension {
-	if idx, ok := c.indexDim(dimID); ok {
+	if idx := c.indexDim(dimID); idx != -1 {
 		return &c.Dimensions[idx]
 	}
 	return nil
@@ -161,7 +161,7 @@ func (c *Chart) GetDimByIndex(idx int) *Dimension {
 
 // GetVarByID returns variable by id.
 func (c *Chart) GetVarByID(varID string) *Variable {
-	if idx, ok := c.indexVar(varID); ok {
+	if idx := c.indexVar(varID); idx != -1 {
 		return &c.Variables[idx]
 	}
 	return nil
@@ -173,7 +173,7 @@ func (c *Chart) GetVarByID(varID string) *Variable {
 
 // DeleteDimByID deletes dimension by id.
 func (c *Chart) DeleteDimByID(dimID string) error {
-	if idx, ok := c.indexDim(dimID); ok {
+	if idx := c.indexDim(dimID); idx != -1 {
 		c.Dimensions = append(c.Dimensions[:idx], c.Dimensions[idx+1:]...)
 		return nil
 	}
@@ -191,7 +191,7 @@ func (c *Chart) DeleteDimByIndex(idx int) error {
 
 // DeleteVarByID deletes variable by id.
 func (c *Chart) DeleteVarByID(varID string) error {
-	if idx, ok := c.indexVar(varID); ok {
+	if idx := c.indexVar(varID); idx != -1 {
 		c.Variables = append(c.Variables[:idx], c.Variables[idx+1:]...)
 		return nil
 	}
@@ -207,7 +207,7 @@ func (c *Chart) AddDim(d Dimension) error {
 	if err := d.IsValid(); err != nil {
 		return fmt.Errorf("chart '%s': invalid dimension (%s)", c.ID, err)
 	}
-	if _, ok := c.indexDim(d.ID()); ok {
+	if c.indexDim(d.ID()) != -1 {
 		return fmt.Errorf("chart '%s': duplicate dimension %s", c.ID, d.ID())
 	}
 	c.Dimensions = append(c.Dimensions, d)
@@ -219,7 +219,7 @@ func (c *Chart) AddVar(v Variable) error {
 	if err := v.IsValid(); err != nil {
 		return fmt.Errorf("chart '%s': invalid variable (%s)", c.ID, err)
 	}
-	if _, ok := c.indexVar(v.ID()); ok {
+	if c.indexVar(v.ID()) != -1 {
 		return fmt.Errorf("chart '%s': duplicate variable %s", c.ID, v.ID())
 	}
 	c.Variables = append(c.Variables, v)
@@ -228,22 +228,22 @@ func (c *Chart) AddVar(v Variable) error {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (c *Chart) indexDim(dimID string) (int, bool) {
+func (c *Chart) indexDim(dimID string) int {
 	for idx, dim := range c.Dimensions {
 		if dim.ID() == dimID {
-			return idx, true
+			return idx
 		}
 	}
-	return 0, false
+	return -1
 }
 
-func (c *Chart) indexVar(varID string) (int, bool) {
+func (c *Chart) indexVar(varID string) int {
 	for idx, v := range c.Variables {
 		if v.ID() == varID {
-			return idx, true
+			return idx
 		}
 	}
-	return 0, false
+	return -1
 }
 
 func (c *Chart) copy() Chart {

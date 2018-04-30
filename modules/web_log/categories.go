@@ -24,7 +24,7 @@ func (c *categories) other() string {
 }
 
 func (c *categories) add(n string, r *regexp.Regexp) {
-	c.list = append(c.list, &category{c.prefix + "_" + n,n, r})
+	c.list = append(c.list, &category{c.prefix + "_" + n, n, r})
 }
 
 func (c *categories) active() bool {
