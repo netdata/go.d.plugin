@@ -50,7 +50,6 @@ func TestChart_IsValid(t *testing.T) {
 		}}).IsValid() != nil {
 		t.Error("expected nil, but got error")
 	}
-
 }
 
 func TestChart_Title(t *testing.T) {
@@ -116,7 +115,6 @@ func TestChart_ChartType(t *testing.T) {
 	if c.ChartType() != Stacked {
 		t.Errorf("expected %s, but got %s", Stacked, c.ChartType())
 	}
-
 }
 
 func TestChart_OverrideID(t *testing.T) {
@@ -129,7 +127,6 @@ func TestChart_OverrideID(t *testing.T) {
 	if c.OverrideID() != overrideID {
 		t.Errorf("expected %s, but got %s", overrideID, c.OverrideID())
 	}
-
 }
 
 func TestChart_SetTitle(t *testing.T) {
@@ -235,7 +232,6 @@ func TestChart_GetDimByIndex(t *testing.T) {
 	if c.GetDimByIndex(1).ID() != id2 {
 		t.Errorf("expected %s, but got %s", id2, c.GetDimByIndex(1).ID())
 	}
-
 }
 
 func TestChart_GetVarByID(t *testing.T) {
@@ -254,7 +250,6 @@ func TestChart_GetVarByID(t *testing.T) {
 	if c.GetVarByID(id).ID() != id {
 		t.Errorf("expected %s, but got %s", id, c.GetVarByID(id).ID())
 	}
-
 }
 
 func TestChart_DeleteDimByID(t *testing.T) {
@@ -295,7 +290,6 @@ func TestChart_DeleteDimByIndex(t *testing.T) {
 	if !(len(c.Dimensions) < l) {
 		t.Errorf("start length %d, length after delete %d", l, len(c.Dimensions))
 	}
-
 }
 
 func TestChart_DeleteVarByID(t *testing.T) {
@@ -316,7 +310,6 @@ func TestChart_DeleteVarByID(t *testing.T) {
 	if !(len(c.Variables) < l) {
 		t.Errorf("start length %d, length after delete %d", l, len(c.Variables))
 	}
-
 }
 
 func TestChart_AddDim(t *testing.T) {
@@ -361,7 +354,6 @@ func TestChart_AddVar(t *testing.T) {
 	if len(c.Variables) != 1 {
 		t.Errorf("expected dimension length 1, got %d", len(c.Variables))
 	}
-
 }
 
 func TestNewChart(t *testing.T) {
@@ -378,6 +370,18 @@ func TestNewChart(t *testing.T) {
 	}
 }
 
+func TestChart_Copy(t *testing.T) {
+	chart := c1
+	chartCopy := chart.Copy()
+
+	chart.SetTitle("New Title")
+	chart.GetDimByIndex(0).SetID(999)
+
+	if chart.Title() == chartCopy.Title() || chart.GetDimByIndex(0) == chartCopy.GetDimByIndex(0) {
+		t.Error("copy funcion fails")
+	}
+}
+
 func TestValidChartType(t *testing.T) {
 
 	for _, v := range []string{Line, Area, Stacked} {
@@ -391,5 +395,4 @@ func TestValidChartType(t *testing.T) {
 			t.Fatalf("function returned true for incorrect chart type")
 		}
 	}
-
 }

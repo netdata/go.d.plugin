@@ -246,7 +246,7 @@ func (c *Chart) indexVar(varID string) int {
 	return -1
 }
 
-func (c *Chart) copy() Chart {
+func (c *Chart) Copy() Chart {
 	newChart := Chart{ID: c.ID, Options: c.Options}
 	for _, d := range c.Dimensions {
 		newChart.AddDim(d)

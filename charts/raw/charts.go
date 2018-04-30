@@ -90,7 +90,7 @@ func (c *Charts) Copy() *Charts {
 		rv.Order.Append(v)
 	}
 	for _, v := range c.Definitions {
-		rv.Definitions = append(rv.Definitions, v.copy())
+		rv.Definitions = append(rv.Definitions, v.Copy())
 	}
 	return &rv
 }
