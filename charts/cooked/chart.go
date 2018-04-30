@@ -162,11 +162,10 @@ func (c *Chart) SetChartType(t string) *Chart {
 
 // GetDimByID returns dimension by id.
 func (c *Chart) GetDimByID(dimID string) *dimension {
-	idx, ok := c.index(dimID)
-	if !ok {
-		return nil
+	if idx := c.index(dimID); idx != -1 {
+		return c.dimensions[idx]
 	}
-	return c.dimensions[idx]
+	return nil
 }
 
 // GetDimByIndex returns dimension by index.
@@ -188,7 +187,7 @@ func (c *Chart) GetVarByID(varID string) *variable {
 
 // AddDim adds valid non duplicate dimension to dimensions.
 func (c *Chart) AddDim(d raw.Dimension) error {
-	if _, ok := c.index(d.ID()); ok {
+	if c.index(d.ID()) != -1 {
 		return fmt.Errorf("chart '%s': duplicate dimension %s, skipping it", c.id, d.ID())
 	}
 	newDim, err := newDimension(d)
@@ -332,11 +331,11 @@ func (c *Chart) CanBeUpdated(data map[string]int64) bool {
 }
 
 // Index finds dimension index by id.
-func (c *Chart) index(dimID string) (int, bool) {
+func (c *Chart) index(dimID string) int {
 	for idx, dim := range c.dimensions {
 		if dim.id == dimID {
-			return idx, true
+			return idx
 		}
 	}
-	return 0, false
+	return -1
 }
