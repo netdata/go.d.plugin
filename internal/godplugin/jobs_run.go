@@ -75,7 +75,8 @@ func recheck(j *job.Job, wg *sync.WaitGroup) {
 			time.Sleep(time.Duration(j.AutoDetectionRetry) * time.Second)
 			if j.Check() {
 				j.Infof("Check() [OK] after %d rechecks", c)
-				j.Run(wg)
+				go j.Run(wg)
+				break
 			}
 		}
 	}()
