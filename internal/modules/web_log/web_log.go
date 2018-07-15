@@ -43,7 +43,7 @@ type regex struct {
 type WebLog struct {
 	modules.Charts
 	modules.Logger
-	Path            string        `yaml:"path, required"`
+	Path            string        `yaml:"path,required"`
 	RawFilter       rawFilter     `yaml:"filter"`
 	RawURLCat       rawCategories `yaml:"categories"`
 	RawUserCat      rawCategories `yaml:"user_defined"`
