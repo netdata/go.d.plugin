@@ -170,7 +170,7 @@ func connWorker(host string, timeout time.Duration, doCh chan *port, doneCh chan
 }
 
 func init() {
-	modules.SetDefault(modules.UpdateEvery).Set(5)
+	modules.SetDefault().SetUpdateEvery(5)
 
 	f := func() modules.Module {
 		return &PortCheck{

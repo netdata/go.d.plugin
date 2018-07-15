@@ -178,7 +178,7 @@ func (h *HttpCheck) GetData() map[string]int64 {
 }
 
 func init() {
-	modules.SetDefault(modules.UpdateEvery).Set(5)
+	modules.SetDefault().SetUpdateEvery(5)
 
 	f := func() modules.Module {
 		return &HttpCheck{
