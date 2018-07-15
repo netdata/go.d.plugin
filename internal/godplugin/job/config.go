@@ -13,7 +13,7 @@ func NewConf() *Config {
 type Config struct {
 	moduleName         string // standalone struct ?
 	jobName            string // standalone struct ?
-	OverrideName       string `yaml:"name,inregexd:<RE>[^[:word:]]</RE>"`
+	OverrideName       string `yaml:"name,inregexd:[^[:word:]]"`
 	UpdateEvery        int    `yaml:"update_every,inrange:[1:]"`
 	AutoDetectionRetry int    `yaml:"autodetection_retry,inrange:[0:]"`
 	ChartCleanup       int    `yaml:"chart_cleanup,inrange:[0:]"`
