@@ -35,8 +35,7 @@ func (gd *goDPlugin) jobsCreate() jobStack {
 	default:
 		if c, ok := modules.Registry[gd.cli.Module]; ok {
 			create(gd.cli.Module, c, gd.dir.modulesConf, &jobs)
-		}
-		if jobs.Empty() {
+		} else {
 			info()
 		}
 	case "all":
