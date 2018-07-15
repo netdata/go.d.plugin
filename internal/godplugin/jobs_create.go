@@ -41,7 +41,7 @@ func (gd *goDPlugin) jobsCreate() jobStack {
 	case "all":
 		for name, creator := range modules.Registry {
 
-			if v, ok := modules.GetDefault(name).GetDisabledByDefault(); v && ok && !gd.conf.Modules[name]{
+			if v, ok := modules.GetDefault(name).GetDisabledByDefault(); v && ok && !gd.conf.Modules[name] {
 				log.Infof("module \"%s\" disabled by default", name)
 				continue
 			}
@@ -127,18 +127,18 @@ func isModuleEnabled(c config, n string) bool {
 func parseModuleConf(f []byte) []jobRawConf {
 	var (
 		rv []jobRawConf
-		m  map[string]interface{}
+		m  yaml.MapSlice
 	)
 
 	yaml.Unmarshal(f, &m)
 
-	for k, v := range m {
-		_, ok := v.(map[interface{}]interface{})
-		if !ok {
+	// TODO: All maps of maps are considered as jobs. looks fragile.
+	for k := range m {
+		if _, ok := m[k].Value.(yaml.MapSlice); !ok {
 			continue
 		}
-		b, _ := yaml.Marshal(v)
-		rv = append(rv, jobRawConf{k, b})
+		b, _ := yaml.Marshal(m[k].Value)
+		rv = append(rv, jobRawConf{m[k].Key.(string), b})
 	}
 
 	return rv

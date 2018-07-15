@@ -22,21 +22,21 @@ func (m *moduleDefault) SetUpdateEvery(v int) {
 	if m.u == nil {
 		m.u = new(int)
 	}
-	*m.u =v
+	*m.u = v
 }
 
 func (m *moduleDefault) SetChartsCleanup(v int) {
 	if m.c == nil {
 		m.c = new(int)
 	}
-	*m.c =v
+	*m.c = v
 }
 
 func (m *moduleDefault) SetDisabledByDefault(v bool) {
 	if m.d == nil {
 		m.d = new(bool)
 	}
-	*m.d =v
+	*m.d = v
 }
 
 func (m *moduleDefault) GetUpdateEvery() (int, bool) {
