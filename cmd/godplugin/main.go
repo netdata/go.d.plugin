@@ -8,17 +8,15 @@ import (
 )
 
 func main() {
-	// plugin and modules dirs
-	var pd, md string
+	godplugin.New(getConfigDir()).Start()
+}
 
-	pd = os.Getenv("NETDATA_CONFIG_DIR")
+func getConfigDir() string {
+	pd := os.Getenv("NETDATA_CONFIG_DIR")
 
 	if pd == "" {
 		cd, _ := os.Getwd()
 		pd = path.Join(cd, "/../../../../etc/netdata")
 	}
-
-	md = path.Join(pd, "go.d/")
-
-	godplugin.New(pd, md).Start()
+	return pd
 }

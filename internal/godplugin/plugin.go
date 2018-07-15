@@ -13,22 +13,27 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
+var (
+	pluginConf = "go.d.conf"
+	modConfDir = "go.d/"
+)
+
 type P interface {
 	Start()
-}
-
-func New(p, m string) P {
-	return &goDPlugin{
-		dir:  dir{p, m},
-		conf: newConfig(),
-		cli:  cli.Parse(),
-	}
-
 }
 
 type dir struct {
 	pluginConf  string
 	modulesConf string
+}
+
+func New(p string) P {
+	return &goDPlugin{
+		dir:  dir{p, path.Join(p, modConfDir)},
+		conf: newConfig(),
+		cli:  cli.Parse(),
+	}
+
 }
 
 type goDPlugin struct {
@@ -65,7 +70,7 @@ func (gd *goDPlugin) Start() {
 }
 
 func (gd *goDPlugin) loadConfig() error {
-	f, err := ioutil.ReadFile(path.Join(gd.dir.pluginConf, "go.d.conf"))
+	f, err := ioutil.ReadFile(path.Join(gd.dir.pluginConf, pluginConf))
 
 	if err != nil {
 		log.Error(err)
