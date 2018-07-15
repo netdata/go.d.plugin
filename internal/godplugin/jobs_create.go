@@ -41,7 +41,7 @@ func (gd *goDPlugin) jobsCreate() jobStack {
 	case "all":
 		for name, creator := range modules.Registry {
 
-			if v, ok := modules.GetDefault(name).GetDisabledByDefault(); v && ok {
+			if v, ok := modules.GetDefault(name).GetDisabledByDefault(); v && ok && !gd.conf.Modules[name]{
 				log.Infof("module \"%s\" disabled by default", name)
 				continue
 			}
