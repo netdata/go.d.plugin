@@ -45,7 +45,6 @@ func (gd *goDPlugin) jobsCreate() jobStack {
 			// Delete disabled modules from Registry
 			if !isModuleEnabled(gd.conf, name) {
 				log.Infof("module \"%s\" disabled in configuration file", name)
-				modules.Registry.Remove(name)
 				continue
 			}
 

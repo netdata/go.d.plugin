@@ -1,10 +1,11 @@
 package godplugin
 
 import (
+	"sync"
 	"time"
 
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
-	"sync"
+	"github.com/l2isbad/go.d.plugin/internal/modules"
 )
 
 func (gd *goDPlugin) jobsRun(jobs jobStack) {
@@ -22,7 +23,7 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 			continue
 		}
 
-		if !ok && j.AutoDetectionRetry != 0 {
+		if j.AutoDetectionRetry != 0 {
 			j.Warningf("Check() [RECHECK EVERY %s]", j.AutoDetectionRetry)
 			recheck(j, &gd.wg)
 			gd.wg.Add(1)
@@ -33,6 +34,7 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 	}
 
 	jobs.Destroy()
+	modules.Registry.Destroy()
 }
 
 func check(j *job.Job) bool {

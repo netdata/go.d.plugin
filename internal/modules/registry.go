@@ -13,10 +13,11 @@ func (c Creator) MakeModule() Module {
 
 type Creators map[string]Creator
 
-func (c Creators) Remove(v string) {
-	if _, ok := c[v]; ok {
-		c[v] = nil
+func (c *Creators) Destroy() {
+	for k := range *c {
+		(*c)[k] = nil
 	}
+	*c = nil
 }
 
 var Registry = make(Creators)
