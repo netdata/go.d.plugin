@@ -12,12 +12,22 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 	if jobs.Empty() {
 		return
 	}
+	started := make(map[string]bool)
 
 	for _, j := range jobs {
+		key := j.GetFullName()
+
+		if started[key] {
+			j.Info("[DROPPED] already served by another job")
+			continue
+		}
+
 		ok := check(j)
 
 		if ok {
 			j.Info("Check() [OK]")
+			started[key] = true
+
 			go j.Run(&gd.wg)
 			gd.wg.Add(1)
 			continue
@@ -25,6 +35,8 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 
 		if j.AutoDetectionRetry != 0 {
 			j.Warningf("Check() [RECHECK EVERY %s]", j.AutoDetectionRetry)
+			started[key] = true
+
 			recheck(j, &gd.wg)
 			gd.wg.Add(1)
 			continue
