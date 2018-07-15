@@ -3,19 +3,19 @@ package modules
 type S interface {
 	SetUpdateEvery(int)
 	SetChartsCleanup(int)
-	SetDisabledByDefault(bool)
+	SetDisabledByDefault()
 }
 
 type G interface {
 	GetUpdateEvery() (int, bool)
 	GetChartsCleanup() (int, bool)
-	GetDisabledByDefault() (bool, bool)
+	GetDisabledByDefault() bool
 }
 
 type moduleDefault struct {
 	u *int
 	c *int
-	d *bool
+	d bool
 }
 
 func (m *moduleDefault) SetUpdateEvery(v int) {
@@ -32,11 +32,8 @@ func (m *moduleDefault) SetChartsCleanup(v int) {
 	*m.c = v
 }
 
-func (m *moduleDefault) SetDisabledByDefault(v bool) {
-	if m.d == nil {
-		m.d = new(bool)
-	}
-	*m.d = v
+func (m *moduleDefault) SetDisabledByDefault() {
+	m.d = true
 }
 
 func (m *moduleDefault) GetUpdateEvery() (int, bool) {
@@ -53,11 +50,8 @@ func (m *moduleDefault) GetChartsCleanup() (int, bool) {
 	return *m.c, true
 }
 
-func (m *moduleDefault) GetDisabledByDefault() (bool, bool) {
-	if m.d == nil {
-		return false, false
-	}
-	return *m.d, true
+func (m *moduleDefault) GetDisabledByDefault() bool {
+	return m.d
 }
 
 var moduleDefaults = map[string]*moduleDefault{"_": {}}
@@ -65,7 +59,7 @@ var moduleDefaults = map[string]*moduleDefault{"_": {}}
 func SetDefault() S {
 	name := getFileName(2)
 	if _, ok := moduleDefaults[name]; !ok {
-		moduleDefaults[name] = &moduleDefault{}
+		moduleDefaults[name] = new(moduleDefault)
 	}
 	return moduleDefaults[name]
 }

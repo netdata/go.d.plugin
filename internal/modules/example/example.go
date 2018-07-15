@@ -58,7 +58,7 @@ func (e *Example) GetData() map[string]int64 {
 }
 
 func init() {
-	modules.SetDefault().SetDisabledByDefault(true)
+	modules.SetDefault().SetDisabledByDefault()
 
 	f := func() modules.Module {
 		return &Example{
