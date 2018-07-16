@@ -44,17 +44,18 @@ type WebLog struct {
 	modules.Charts
 	modules.Logger
 	Path            string        `yaml:"path,required"`
-	RawFilter       rawFilter     `yaml:"filter"`
+	RawMatch        matchRaw      `yaml:"filter"`
 	RawURLCat       rawCategories `yaml:"categories"`
 	RawUserCat      rawCategories `yaml:"user_defined"`
 	RawCustomParser string        `yaml:"custom_log_format"`
 	RawHistogram    []int         `yaml:"histogram"`
-	DoChartURLCat   bool          `yaml:"per_category_charts"`
-	DoDetailCodes   bool          `yaml:"detailed_response_codes"`
-	DoDetailCodesA  bool          `yaml:"detailed_response_codes_aggregate"`
-	DoClientsAll    bool          `yaml:"clients_all_time"`
 
-	fil filter
+	DoChartURLCat  bool `yaml:"per_category_charts"`
+	DoDetailCodes  bool `yaml:"detailed_response_codes"`
+	DoDetailCodesA bool `yaml:"detailed_response_codes_aggregate"`
+	DoClientsAll   bool `yaml:"clients_all_time"`
+
+	matcher
 	*log.Reader
 	regex      regex
 	uniqIPs    map[string]bool
@@ -99,12 +100,10 @@ func (w *WebLog) Check() bool {
 		w.regex.UserCat.add(v.name, re)
 	}
 
-	// building "filter"
-	if f, err := getFilter(w.RawFilter); err != nil {
+	// building "matcher"
+	if err := w.createMatcher(); err != nil {
 		w.Error(err)
 		return false
-	} else {
-		w.fil = f
 	}
 
 	// building "histogram"
@@ -136,10 +135,9 @@ func (w *WebLog) Check() bool {
 func (w *WebLog) GetData() map[string]int64 {
 	v, err := w.GetRawData()
 
-	if err != nil {
-		if err == log.ErrSizeNotChanged {
-			return w.data
-		}
+	if err != nil && err == log.ErrSizeNotChanged {
+		return w.data
+	} else if err != nil {
 		return nil
 	}
 
@@ -148,7 +146,7 @@ func (w *WebLog) GetData() map[string]int64 {
 	w.resetTimings()
 
 	for row := range v {
-		if w.fil != nil && !w.fil.match(row) {
+		if w.hasMatch() && !w.match(row) {
 			continue
 		}
 
@@ -366,6 +364,22 @@ func (w *WebLog) resetTimings() {
 	}
 }
 
+func (w *WebLog) createMatcher() error {
+	if !w.RawMatch.exist() {
+		return nil
+	}
+	m := newMatch(w.RawMatch)
+	if err := m.compile(); err != nil {
+		return err
+	}
+	w.matcher = m
+	return nil
+}
+
+func (w *WebLog) hasMatch() bool {
+	return w.matcher != nil
+}
+
 func getParser(custom string, line []byte) (*regexp.Regexp, error) {
 	if custom == "" {
 		for _, p := range patterns {
@@ -388,7 +402,7 @@ func getParser(custom string, line []byte) (*regexp.Regexp, error) {
 	}
 
 	if !r.Match(line) {
-		return nil, errors.New("custom regex match fails")
+		return nil, errors.New("custom regex Match fails")
 	}
 
 	return r, nil
