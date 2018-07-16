@@ -146,7 +146,7 @@ func (w *WebLog) GetData() map[string]int64 {
 	w.resetTimings()
 
 	for row := range v {
-		if w.hasMather() && !w.matcher.match(row) {
+		if w.hasMatcher() && !w.matcher.match(row) {
 			continue
 		}
 
@@ -376,7 +376,7 @@ func (w *WebLog) createMatcher() error {
 	return nil
 }
 
-func (w *WebLog) hasMather() bool {
+func (w *WebLog) hasMatcher() bool {
 	return w.matcher != nil
 }
 
