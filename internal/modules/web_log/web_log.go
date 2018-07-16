@@ -55,7 +55,7 @@ type WebLog struct {
 	DoDetailCodesA bool `yaml:"detailed_response_codes_aggregate"`
 	DoClientsAll   bool `yaml:"clients_all_time"`
 
-	matcher
+	matcher matcher
 	*log.Reader
 	regex      regex
 	uniqIPs    map[string]bool
@@ -146,7 +146,7 @@ func (w *WebLog) GetData() map[string]int64 {
 	w.resetTimings()
 
 	for row := range v {
-		if w.hasMatch() && !w.match(row) {
+		if w.hasMather() && !w.matcher.match(row) {
 			continue
 		}
 
@@ -368,7 +368,7 @@ func (w *WebLog) createMatcher() error {
 	if !w.RawMatch.exist() {
 		return nil
 	}
-	m := newMatch(w.RawMatch)
+	m := newMatcher(w.RawMatch)
 	if err := m.compile(); err != nil {
 		return err
 	}
@@ -376,7 +376,7 @@ func (w *WebLog) createMatcher() error {
 	return nil
 }
 
-func (w *WebLog) hasMatch() bool {
+func (w *WebLog) hasMather() bool {
 	return w.matcher != nil
 }
 
@@ -402,7 +402,7 @@ func getParser(custom string, line []byte) (*regexp.Regexp, error) {
 	}
 
 	if !r.Match(line) {
-		return nil, errors.New("custom regex Match fails")
+		return nil, errors.New("custom regex match fails")
 	}
 
 	return r, nil

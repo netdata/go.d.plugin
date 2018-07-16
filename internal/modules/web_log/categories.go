@@ -1,9 +1,9 @@
 package web_log
 
 import (
-	"regexp"
-	"github.com/l2isbad/yaml"
 	"errors"
+	"github.com/l2isbad/yaml"
+	"regexp"
 )
 
 type category struct {

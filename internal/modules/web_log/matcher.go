@@ -10,7 +10,7 @@ type matcher interface {
 	match(string) bool
 }
 
-func newMatch(f matchRaw) matcher {
+func newMatcher(f matchRaw) matcher {
 	if f.UseRegex {
 		return &matchRe{
 			include: f.Include,
