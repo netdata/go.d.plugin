@@ -1,11 +1,9 @@
 package web_log
 
 import (
-	"bufio"
-	"bytes"
-	"errors"
 	"regexp"
-	"strings"
+	"github.com/l2isbad/yaml"
+	"errors"
 )
 
 type category struct {
@@ -38,16 +36,18 @@ type rawCategory struct {
 
 type rawCategories []rawCategory
 
-func (c *rawCategories) UnmarshalTOML(input []byte) error {
-	s := bufio.NewScanner(bytes.NewBuffer(input))
-	s.Scan()
-	for s.Scan() {
-		val := strings.SplitN(s.Text(), "=", 2)
-		if len(val) != 2 {
-			return errors.New("bad format")
+func (c *rawCategories) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var m yaml.MapSlice
+
+	if err := unmarshal(&m); err != nil {
+		return err
+	}
+	for k := range m {
+		v, ok := m[k].Value.(string)
+		if !ok {
+			return errors.New("\"categories\" bad format")
 		}
-		n, r := strings.TrimSpace(val[0]), strings.Trim(val[1], "'\" ")
-		*c = append(*c, rawCategory{n, r})
+		*c = append(*c, rawCategory{m[k].Key.(string), v})
 	}
 	return nil
 }

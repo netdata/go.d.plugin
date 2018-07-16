@@ -54,7 +54,7 @@ type WebLog struct {
 	DoDetailCodesA  bool          `yaml:"detailed_response_codes_aggregate"`
 	DoClientsAll    bool          `yaml:"clients_all_time"`
 
-	filter
+	fil filter
 	*log.Reader
 	regex      regex
 	uniqIPs    map[string]bool
@@ -104,7 +104,7 @@ func (w *WebLog) Check() bool {
 		w.Error(err)
 		return false
 	} else {
-		w.filter = f
+		w.fil = f
 	}
 
 	// building "histogram"
@@ -148,7 +148,7 @@ func (w *WebLog) GetData() map[string]int64 {
 	w.resetTimings()
 
 	for row := range v {
-		if w.filter != nil && !w.filter.match(row) {
+		if w.fil != nil && !w.fil.match(row) {
 			continue
 		}
 
