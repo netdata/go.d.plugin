@@ -25,15 +25,15 @@ func TestNewFileReader(t *testing.T) {
 	v, err := NewReader(tmp.Name())
 
 	if err != nil {
-		t.Fatalf("could not create Reader: %s", err)
+		t.Fatalf("could not create reader: %s", err)
 	}
 
 	if !v.started {
-		t.Error("Reader not started")
+		t.Error("reader not started")
 	}
 
 	if v.path == "" {
-		t.Error("expected not empty Reader path")
+		t.Error("expected not empty reader path")
 	}
 }
 
@@ -49,10 +49,10 @@ func TestFileReader_GetRawData(t *testing.T) {
 	v, err := NewReader(tmp.Name())
 
 	if err != nil {
-		t.Fatalf("could not create Reader: %s", err)
+		t.Fatalf("could not create reader: %s", err)
 	}
 
-	data, err := v.GetRawData()
+	data, err := v.GetRows()
 	if err == nil {
 		t.Fatal("expected error, but got nil")
 	}
@@ -63,7 +63,7 @@ func TestFileReader_GetRawData(t *testing.T) {
 	lines := [...]string{1: "first", 2: "second", 3: "third", 4: "fourth"}
 
 	tmp.Write([]byte(lines[1] + "\n"))
-	data, err = v.GetRawData()
+	data, err = v.GetRows()
 
 	if err != nil {
 		t.Fatalf("expected nil, but got %s", err)
@@ -74,7 +74,7 @@ func TestFileReader_GetRawData(t *testing.T) {
 	}
 
 	tmp.Write([]byte(lines[2] + "\n"))
-	data, err = v.GetRawData()
+	data, err = v.GetRows()
 
 	if err != nil {
 		t.Fatalf("expected nil, but got %s", err)
@@ -84,7 +84,7 @@ func TestFileReader_GetRawData(t *testing.T) {
 		t.Fatalf("expected %s, but got %s", lines[2], rv)
 	}
 
-	data, err = v.GetRawData()
+	data, err = v.GetRows()
 	if err == nil {
 		t.Fatal("expected error, but got nil")
 	}
@@ -95,7 +95,7 @@ func TestFileReader_GetRawData(t *testing.T) {
 
 	tmp.Write([]byte(lines[3] + "\n" + lines[4] + "\n"))
 
-	data, err = v.GetRawData()
+	data, err = v.GetRows()
 
 	if err != nil {
 		t.Fatalf("expected nil, but got %s", err)

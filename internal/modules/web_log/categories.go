@@ -1,53 +1,50 @@
 package web_log
 
 import (
-	"errors"
 	"github.com/l2isbad/yaml"
-	"regexp"
 )
+
+type categories struct {
+	items []category
+	other string
+}
+
+func (c categories) exist() bool {
+	return len(c.items) > 0
+}
 
 type category struct {
 	id   string
 	name string
-	re   *regexp.Regexp
+	matcher
 }
 
-type categories struct {
-	prefix string
-	list   []*category
-}
-
-func (c *categories) other() string {
-	return c.prefix + "_other"
-}
-
-func (c *categories) add(n string, r *regexp.Regexp) {
-	c.list = append(c.list, &category{c.prefix + "_" + n, n, r})
-}
-
-func (c *categories) active() bool {
-	return c.list != nil
-}
-
-type rawCategory struct {
-	name string
-	re   string
-}
-
-type rawCategories []rawCategory
-
-func (c *rawCategories) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var m yaml.MapSlice
-
-	if err := unmarshal(&m); err != nil {
-		return err
+func getCategories(ms yaml.MapSlice, prefix string) (categories, error) {
+	cats := categories{
+		other: prefix + "_other",
 	}
-	for k := range m {
-		v, ok := m[k].Value.(string)
-		if !ok {
-			return errors.New("\"categories\" bad format")
+
+	if len(ms) == 0 {
+		return cats, nil
+	}
+
+	for _, v := range ms {
+		r, ok := v.Value.(string)
+		if !ok || r == "" {
+			continue
 		}
-		*c = append(*c, rawCategory{m[k].Key.(string), v})
+
+		m, err := getMatcher(r)
+		if err != nil {
+			return cats, err
+		}
+
+		cat := category{
+			id:      prefix + "_" + v.Key.(string),
+			name:    v.Key.(string),
+			matcher: m,
+		}
+		cats.items = append(cats.items, cat)
 	}
-	return nil
+	return cats, nil
 }

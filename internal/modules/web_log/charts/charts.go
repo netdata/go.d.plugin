@@ -77,9 +77,8 @@ var (
 		Options: Options{"Requests Per Url", "requests/s", "urls", "", raw.Stacked},
 	}
 	ReqPerUserDef = Chart{
-		ID:         "requests_per_user_defined",
-		Options:    Options{"Requests Per User Defined Pattern", "requests/s", "user defined", "", raw.Stacked},
-		Dimensions: Dimensions{},
+		ID:      "requests_per_user_defined",
+		Options: Options{"Requests Per User Defined Pattern", "requests/s", "user defined", "", raw.Stacked},
 	}
 	ReqPerHTTPMethod = Chart{
 		ID:      "requests_per_http_method",
@@ -147,7 +146,7 @@ func RespCodesDetailedPerFam() []Chart {
 	}
 }
 
-func PerCategory(id string) []Chart {
+func PerCategoryStats(id string) []Chart {
 	return []Chart{
 		raw.NewChart(
 			RespCodesDetailed.ID+"_"+id,

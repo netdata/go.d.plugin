@@ -8,12 +8,13 @@ import (
 )
 
 type (
+	Order       = utils.StringSlice
+	Definitions []Chart
+
 	Charts struct {
 		Order       Order
 		Definitions Definitions
 	}
-	Order       = utils.StringSlice
-	Definitions []Chart
 )
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -64,8 +65,8 @@ func (c *Charts) DeleteChartByIndex(idx int) error {
 
 // CHART ADDER
 
-// AddChart adds valid non duplicate chart to Definitions and optionally to Order.
-func (c *Charts) AddChart(chart Chart, addToOrder bool) error {
+// AddChartOrder adds valid non duplicate chart to Definitions and to Order.
+func (c *Charts) AddChartNoOrder(chart Chart) error {
 	if err := chart.IsValid(); err != nil {
 		return fmt.Errorf("invalid chart '%s' (%s)", chart.ID, err)
 	}
@@ -73,10 +74,16 @@ func (c *Charts) AddChart(chart Chart, addToOrder bool) error {
 		return fmt.Errorf("duplicate chart '%s'", chart.ID)
 	}
 	c.Definitions = append(c.Definitions, chart)
-	if addToOrder {
-		if !c.Order.Include(chart.ID) {
-			c.Order.Append(chart.ID)
-		}
+	return nil
+}
+
+// AddChart adds valid non duplicate chart to Definitions.
+func (c *Charts) AddChart(chart Chart) error {
+	if err := c.AddChartNoOrder(chart); err != nil {
+		return err
+	}
+	if !c.Order.Include(chart.ID) {
+		c.Order.Append(chart.ID)
 	}
 	return nil
 }

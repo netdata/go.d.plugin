@@ -11,92 +11,94 @@ type (
 	Dimension = raw.Dimension
 )
 
-func (w *WebLog) createCharts() {
-	n := utils.StringSlice(w.regex.parser.SubexpNames())
-	c := &Charts{}
+func (w *WebLog) CreateCharts() {
+	n := utils.StringSlice(w.parser.SubexpNames())
+	ch := new(Charts)
 
-	c.AddChart(charts.RespStatuses, true)
-	c.AddChart(charts.RespCodes, true)
+	ch.AddChart(charts.RespStatuses)
+	ch.AddChart(charts.RespCodes)
 
-	if w.DoDetailCodes {
-		if w.DoDetailCodesA {
-			c.AddChart(charts.RespCodesDetailed, true)
-		} else {
-			for _, chart := range charts.RespCodesDetailedPerFam() {
-				c.AddChart(chart, true)
-			}
+	if w.DoCodesDetail && w.DoCodesAggregate {
+		ch.AddChart(charts.RespCodesDetailed)
+	}
+
+	if w.DoCodesDetail && !w.DoCodesAggregate {
+		for _, chart := range charts.RespCodesDetailedPerFam() {
+			ch.AddChart(chart)
 		}
 	}
 
 	if n.Include(keyBytesSent) || n.Include(keyRespLen) {
-		c.AddChart(charts.Bandwidth, true)
+		ch.AddChart(charts.Bandwidth)
 	}
 
-	if n.Include(keyRespTime) {
-		c.AddChart(charts.RespTime, true)
-
-		if h := w.histograms[keyRespTimeHist]; h != nil {
-			c.AddChart(charts.RespTimeHist, true)
-			for _, v := range *h {
-				c.GetChartByID(charts.RespTimeHist.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
-				w.data[v.id] = 0
-			}
-		}
-	}
-
-	if n.Include(keyRespTimeUp) {
-		c.AddChart(charts.RespTimeUpstream, true)
-
-		if h := w.histograms[keyRespTimeUpHist]; h != nil {
-			c.AddChart(charts.RespTimeUpstreamHist, true)
-			for _, v := range *h {
-				c.GetChartByID(charts.RespTimeUpstreamHist.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
-				w.data[v.id] = 0
-			}
-		}
-	}
-
-	if n.Include(keyRequest) && w.regex.URLCat.active() {
-		c.AddChart(charts.ReqPerURL, true)
-		for _, v := range w.regex.URLCat.list {
-			c.GetChartByID(charts.ReqPerURL.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+	if (n.Include(keyRequest) || n.Include(keyURL)) && w.urlCat.exist() {
+		ch.AddChart(charts.ReqPerURL)
+		for _, v := range w.urlCat.items {
+			ch.GetChartByID(charts.ReqPerURL.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
 			w.data[v.id] = 0
 		}
-		w.data[w.regex.URLCat.other()] = 0
+		w.data[w.urlCat.other] = 0
 
-		if w.DoChartURLCat {
-			for _, v := range w.regex.URLCat.list {
-				for _, chart := range charts.PerCategory(v.id) {
-					c.AddChart(chart, true)
-					for _, d := range chart.Dimensions {
-						w.data[d.ID()] = 0
-					}
+	}
+
+	if ((n.Include(keyRequest) || n.Include(keyURL)) && w.urlCat.exist()) && w.DoChartURLCat {
+		for _, v := range w.urlCat.items {
+			for _, chart := range charts.PerCategoryStats(v.id) {
+				ch.AddChart(chart)
+				for _, d := range chart.Dimensions {
+					w.data[d.ID()] = 0
 				}
 			}
 		}
 	}
 
-	if n.Include(keyUserDefined) && w.regex.UserCat.active() {
-		c.AddChart(charts.ReqPerUserDef, true)
-		for _, v := range w.regex.UserCat.list {
-			c.GetChartByID(charts.ReqPerUserDef.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+	if n.Include(keyUserDefined) && w.userCat.exist() {
+		ch.AddChart(charts.ReqPerUserDef)
+		for _, v := range w.userCat.items {
+			ch.GetChartByID(charts.ReqPerUserDef.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
 			w.data[v.id] = 0
 		}
-		w.data[w.regex.UserCat.other()] = 0
+		w.data[w.userCat.other] = 0
 	}
 
-	if n.Include(keyRequest) {
-		c.AddChart(charts.ReqPerHTTPMethod, true)
-		c.AddChart(charts.ReqPerHTTPVer, true)
+	if n.Include(keyRespTime) {
+		ch.AddChart(charts.RespTime)
+	}
+
+	if n.Include(keyRespTime) && len(w.RawHistogram) != 0 {
+		ch.AddChart(charts.RespTimeHist)
+		for _, v := range w.histograms.get(keyRespTimeHist) {
+			ch.GetChartByID(charts.RespTimeHist.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+		}
+	}
+
+	if n.Include(keyRespTimeUpstream) {
+		ch.AddChart(charts.RespTimeUpstream)
+	}
+
+	if n.Include(keyRespTimeUpstream) && len(w.RawHistogram) != 0 {
+		ch.AddChart(charts.RespTimeUpstreamHist)
+		for _, v := range w.histograms.get(keyRespTimeUpstreamHist) {
+			ch.GetChartByID(charts.RespTimeUpstreamHist.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+		}
+	}
+
+	if n.Include(keyRequest) || n.Include(keyHTTPMethod) {
+		ch.AddChart(charts.ReqPerHTTPMethod)
+	}
+
+	if n.Include(keyRequest) || n.Include(keyHTTPVer) {
+		ch.AddChart(charts.ReqPerHTTPVer)
 	}
 
 	if n.Include(keyAddress) {
-		c.AddChart(charts.ReqPerIPProto, true)
-		c.AddChart(charts.ClientsCurr, true)
+		ch.AddChart(charts.ReqPerIPProto)
+		ch.AddChart(charts.ClientsCurr)
 		if w.DoClientsAll {
-			c.AddChart(charts.ClientsAll, true)
+			ch.AddChart(charts.ClientsAll)
 		}
 	}
 
-	w.AddMany(c)
+	w.AddMany(ch)
 }

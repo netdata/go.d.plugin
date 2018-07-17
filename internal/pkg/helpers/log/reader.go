@@ -19,7 +19,7 @@ var (
 // TODO the overall design looks bad. But it it works with minimum memory allocation even if log file is huge
 // and all it's content have to be read. Anyway should be fixed.
 
-// NewReader returns init'ed instance of Reader and error if any.
+// NewReader returns init'ed instance of reader and error if any.
 func NewReader(path string) (*Reader, error) {
 	l := Reader{
 		Path: path,
@@ -45,8 +45,8 @@ type Reader struct {
 	do   chan bool
 }
 
-// GetRawData returns error from worker if any or data channel
-func (r *Reader) GetRawData() (chan string, error) {
+// GetRows returns error from worker if any or data channel
+func (r *Reader) GetRows() (chan string, error) {
 	if !r.started {
 		return nil, ErrNotStarted
 	}

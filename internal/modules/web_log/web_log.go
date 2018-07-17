@@ -1,8 +1,6 @@
 package web_log
 
 import (
-	"errors"
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -11,106 +9,64 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/modules/web_log/charts"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts/raw"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/log"
-	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
+	"github.com/l2isbad/yaml"
 )
 
 const (
-	keyAddress     = "address"
-	keyCode        = "code"
-	keyRequest     = "request"
-	keyUserDefined = "user_defined"
-	keyBytesSent   = "bytes_sent"
-	keyRespTime    = "resp_time"
-	keyRespTimeUp  = "resp_time_upstream"
-	keyRespLen     = "resp_length"
+	keyAddress          = "address"
+	keyCode             = "code"
+	keyRequest          = "request"
+	keyUserDefined      = "user_defined"
+	keyBytesSent        = "bytes_sent"
+	keyRespTime         = "resp_time"
+	keyRespTimeUpstream = "resp_time_upstream"
+	keyRespLen          = "resp_length"
+	keyHTTPMethod       = "method"
+	keyURL              = "url"
+	keyHTTPVer          = "http_version"
 
-	keyHTTPMethod = "method"
-	keyURL        = "url"
-	keyHTTPVer    = "http_version"
-
-	keyRespTimeHist   = "resp_time_hist"
-	keyRespTimeUpHist = "resp_time_hist_upstream"
-
-	mandatoryKey = keyCode
+	keyRespTimeHist         = "resp_time_hist"
+	keyRespTimeUpstreamHist = "resp_time_hist_upstream"
 )
-
-type regex struct {
-	URLCat  categories
-	UserCat categories
-	parser  *regexp.Regexp
-}
 
 type WebLog struct {
 	modules.Charts
 	modules.Logger
-	Path            string        `yaml:"path,required"`
-	RawMatch        matchRaw      `yaml:"filter"`
-	RawURLCat       rawCategories `yaml:"categories"`
-	RawUserCat      rawCategories `yaml:"user_defined"`
-	RawCustomParser string        `yaml:"custom_log_format"`
-	RawHistogram    []int         `yaml:"histogram"`
 
-	DoChartURLCat  bool `yaml:"per_category_charts"`
-	DoDetailCodes  bool `yaml:"detailed_response_codes"`
-	DoDetailCodesA bool `yaml:"detailed_response_codes_aggregate"`
-	DoClientsAll   bool `yaml:"clients_all_time"`
+	Path             string        `yaml:"path,required"`
+	RawFilter        rawFilter     `yaml:"filter"`
+	RawURLCat        yaml.MapSlice `yaml:"categories"`
+	RawUserCat       yaml.MapSlice `yaml:"user_defined"`
+	RawCustomParser  string        `yaml:"custom_log_format"`
+	RawHistogram     []int         `yaml:"histogram"`
+	DoCodesDetail    bool          `yaml:"detailed_response_codes"`
+	DoCodesAggregate bool          `yaml:"detailed_response_codes_aggregate"`
+	DoChartURLCat    bool          `yaml:"per_category_charts"`
+	DoClientsAll     bool          `yaml:"clients_all_time"`
 
-	matcher matcher
-	*log.Reader
-	regex      regex
+	reader *log.Reader
+	parser *regexp.Regexp
+
+	fil        filter
+	urlCat     categories
+	userCat    categories
+	timings    timings
+	histograms histograms
 	uniqIPs    map[string]bool
-	timings    map[string]*timings
-	histograms map[string]*histogram
 
+	gm   groupMap
 	data map[string]int64
 }
 
 func (w *WebLog) Check() bool {
 
-	// FilReader initialization
+	// LogReader initialization
 	v, err := log.NewReader(w.Path)
 	if err != nil {
 		w.Error(err)
 		return false
 	}
-	w.Reader = v
-
-	// building "categories"
-	for idx, v := range w.RawURLCat {
-		re, err := regexp.Compile(v.re)
-		if err != nil {
-			w.Error(err)
-			return false
-		}
-		w.regex.URLCat.add(v.name, re)
-
-		if w.DoChartURLCat {
-			k := w.regex.URLCat.list[idx].id
-			w.timings[k] = newTimings(k + "_" + keyRespTime)
-		}
-	}
-
-	// building "user_defined"
-	for _, v := range w.RawUserCat {
-		re, err := regexp.Compile(v.re)
-		if err != nil {
-			w.Error(err)
-			return false
-		}
-		w.regex.UserCat.add(v.name, re)
-	}
-
-	// building "matcher"
-	if err := w.createMatcher(); err != nil {
-		w.Error(err)
-		return false
-	}
-
-	// building "histogram"
-	if len(w.RawHistogram) > 0 {
-		w.histograms[keyRespTimeHist] = newHistogram(keyRespTimeHist, w.RawHistogram)
-		w.histograms[keyRespTimeUpHist] = newHistogram(keyRespTimeUpHist, w.RawHistogram)
-	}
+	w.reader = v
 
 	// read last line
 	line, err := log.ReadLastLine(w.Path)
@@ -120,20 +76,51 @@ func (w *WebLog) Check() bool {
 	}
 
 	// get parser: custom or one of predefined in patterns.go
-	if re, err := getParser(w.RawCustomParser, line); err != nil {
+	re, err := getPattern(w.RawCustomParser, line)
+	if err != nil {
 		w.Error(err)
 		return false
-	} else {
-		w.regex.parser = re
+	}
+	w.parser = re
+
+	c, err := getCategories(w.RawURLCat, "url")
+	if err != nil {
+		w.Error(err)
+		return false
+	}
+	w.urlCat = c
+
+	if w.DoChartURLCat {
+		for _, v := range w.urlCat.items {
+			w.timings.add(v.id)
+		}
 	}
 
-	w.createCharts()
-	w.Info("collected data:", w.regex.parser.SubexpNames()[1:])
+	c, err = getCategories(w.RawUserCat, "user")
+	if err != nil {
+		w.Error(err)
+		return false
+	}
+	w.userCat = c
+
+	f, err := getFilter(w.RawFilter)
+	if err != nil {
+		w.Error(err)
+		return false
+	}
+	w.fil = f
+
+	if len(w.RawHistogram) != 0 {
+		w.histograms = getHistograms(w.RawHistogram)
+	}
+
+	w.CreateCharts()
+	w.Info("collected data:", w.parser.SubexpNames()[1:])
 	return true
 }
 
 func (w *WebLog) GetData() map[string]int64 {
-	v, err := w.GetRawData()
+	v, err := w.reader.GetRows()
 
 	if err != nil && err == log.ErrSizeNotChanged {
 		return w.data
@@ -143,22 +130,22 @@ func (w *WebLog) GetData() map[string]int64 {
 
 	uniqIPs := make(map[string]bool)
 
-	w.resetTimings()
+	w.timings.reset()
 
 	for row := range v {
-		if w.hasMatcher() && !w.matcher.match(row) {
+		if w.fil.exist() && !w.fil.filter(row) {
 			continue
 		}
 
-		m := w.regex.parser.FindStringSubmatch(row)
+		m := w.parser.FindStringSubmatch(row)
 		if m == nil {
 			w.data["unmatched"]++
 			continue
 		}
 
-		mm := createMatchMap(w.regex.parser.SubexpNames(), m)
+		w.gm.update(w.parser.SubexpNames(), m)
 
-		code, codeFam := mm[keyCode], mm[keyCode][:1]
+		code, codeFam := w.gm.get(keyCode), w.gm.get(keyCode)[1:]
 
 		// ResponseCodes chart
 		if _, ok := w.data[codeFam+"xx"]; ok {
@@ -168,73 +155,72 @@ func (w *WebLog) GetData() map[string]int64 {
 		}
 
 		// ResponseStatuses chart
-		w.reqPerCodeFam(code)
+		w.reqPerCodeFamily(code)
 
 		// ResponseCodesDetailed chart
-		if w.DoDetailCodes {
-			w.reqPerCode(code)
+		if w.DoCodesDetail {
+			w.reqPerCodeDetail(code)
 		}
 
 		// Bandwidth chart
-		if v, ok := mm[keyBytesSent]; ok {
-			w.data["bytes_sent"] += int64(strToInt(v))
+		if v, ok := w.gm.lookup(keyBytesSent); ok {
+			w.data["bytes_sent"] += toInt(v)
 		}
 
-		if v, ok := mm[keyRespLen]; ok {
-			w.data["resp_length"] += int64(strToInt(v))
+		if v, ok := w.gm.lookup(keyRespLen); ok {
+			w.data["resp_length"] += toInt(v)
 		}
 
 		// ResponseTime and ResponseTimeHistogram charts
-		if v, ok := mm[keyRespTime]; ok {
-			i := w.timings[keyRespTime].set(v)
-			if h := w.histograms[keyRespTimeHist]; h != nil {
-				h.set(i)
+		if v, ok := w.gm.lookup(keyRespTime); ok {
+			i := w.timings.get(keyRespTime).set(v)
+			if w.histograms.exist() {
+				w.histograms.get(keyRespTimeHist).set(i)
 			}
 		}
 
 		// ResponseTimeUpstream, ResponseTimeUpstreamHistogram charts
-		if v, ok := mm[keyRespTimeUp]; ok && v != "-" {
-			i := w.timings[keyRespTimeUp].set(v)
-			if h := w.histograms[keyRespTimeUpHist]; h != nil {
-				h.set(i)
+		if v, ok := w.gm.lookup(keyRespTimeUpstream); ok && v != "-" {
+			i := w.timings.get(keyRespTimeUpstream).set(v)
+			if w.histograms.exist() {
+				w.histograms.get(keyRespTimeUpstreamHist).set(i)
 			}
 		}
 
-		// ReqPerUrl, ReqPerHTTPMethod, ReqPerHTTPVer charts
-		var URLCat string
-
-		if v, ok := mm[keyRequest]; ok {
-			URLCat = w.dataFromRequest(v)
+		// ReqPerUrl, reqPerHTTPMethod, ReqPerHTTPVer charts
+		var matchedURL string
+		if w.gm.has(keyRequest) || w.gm.has(keyURL) {
+			matchedURL = w.parseRequest(w.gm)
 		}
 
 		// ReqPerUserDefined chart
-		if v, ok := mm[keyUserDefined]; ok && w.regex.UserCat.active() {
-			w.reqPerCategory(v, w.regex.UserCat)
+		if v, ok := w.gm.lookup(keyUserDefined); ok && w.userCat.exist() {
+			w.reqPerCategory(v, w.userCat)
 		}
 
-		// RespCodesDetailed, Bandwidth, RespTime per URL (category) charts
-		if URLCat != "" && w.DoChartURLCat {
-			w.dataPerCategory(URLCat, mm)
+		// RespCodesDetailed, Bandwidth, RespTime per URL (Category) charts
+		if matchedURL != "" && w.DoChartURLCat {
+			w.perCategoryStats(matchedURL, w.gm)
 		}
 
 		// RequestsPerIPProto, ClientsCurr, ClientsAll charts
-		if v, ok := mm[keyAddress]; ok {
+		if v, ok := w.gm.lookup(keyAddress); ok {
 			w.reqPerIPProto(v, uniqIPs)
 		}
 
 	}
 
-	for _, v := range w.timings {
+	for n, v := range w.timings {
 		if !v.active() {
 			continue
 		}
-		w.data[v.name+"_min"] += int64(v.min)
-		w.data[v.name+"_avg"] += int64(v.avg())
-		w.data[v.name+"_max"] += int64(v.max)
+		w.data[n+"_min"] += int64(v.min)
+		w.data[n+"_avg"] += int64(v.avg())
+		w.data[n+"_max"] += int64(v.max)
 	}
 
 	for _, h := range w.histograms {
-		for _, v := range *h {
+		for _, v := range h {
 			w.data[v.id] = int64(v.count)
 		}
 	}
@@ -242,14 +228,15 @@ func (w *WebLog) GetData() map[string]int64 {
 	return w.data
 }
 
+// Per URL and per USER_DEFINED
 func (w *WebLog) reqPerCategory(url string, c categories) string {
-	for _, v := range c.list {
-		if v.re.MatchString(url) {
+	for _, v := range c.items {
+		if v.match(url) {
 			w.data[v.id]++
 			return v.id
 		}
 	}
-	w.data[c.other()]++
+	w.data[c.other]++
 	return ""
 }
 
@@ -276,13 +263,13 @@ func (w *WebLog) reqPerIPProto(address string, uniqIPs map[string]bool) {
 	}
 }
 
-func (w *WebLog) reqPerCode(code string) {
+func (w *WebLog) reqPerCodeDetail(code string) {
 	if _, ok := w.data[code]; ok {
 		w.data[code]++
 		return
 	}
 
-	if w.DoDetailCodesA {
+	if w.DoCodesAggregate {
 		w.GetChartByID(charts.RespCodesDetailed.ID).AddDim(Dimension{code, "", raw.Incremental})
 		w.data[code]++
 		return
@@ -295,7 +282,7 @@ func (w *WebLog) reqPerCode(code string) {
 	w.data[code]++
 }
 
-func (w *WebLog) reqPerCodeFam(code string) {
+func (w *WebLog) reqPerCodeFamily(code string) {
 	f := code[:1]
 	switch {
 	case f == "2", code == "304", f == "1":
@@ -311,136 +298,90 @@ func (w *WebLog) reqPerCodeFam(code string) {
 	}
 }
 
-func (w *WebLog) dataFromRequest(req string) (URLCat string) {
-	m := reRequest.FindStringSubmatch(req)
-	if m == nil {
-		return
+func (w *WebLog) reqPerHTTPMethod(method string) {
+	if _, ok := w.data[method]; !ok {
+		w.GetChartByID(charts.ReqPerHTTPMethod.ID).AddDim(Dimension{method, "", raw.Incremental})
 	}
-	mm := createMatchMap(reRequest.SubexpNames(), m)
+	w.data[method]++
+}
 
-	if w.regex.URLCat.active() {
-		if v := w.reqPerCategory(mm[keyURL], w.regex.URLCat); v != "" {
-			URLCat = v
-		}
-	}
+func (w *WebLog) reqPerHTTPVersion(version string) {
+	dimID := strings.Replace(version, ".", "_", 1)
 
-	if _, ok := w.data[mm[keyHTTPMethod]]; !ok {
-		w.GetChartByID(charts.ReqPerHTTPMethod.ID).AddDim(Dimension{mm[keyHTTPMethod], "", raw.Incremental})
-	}
-	w.data[mm[keyHTTPMethod]]++
-
-	dimID := strings.Replace(mm[keyHTTPVer], ".", "_", 1)
 	if _, ok := w.data[dimID]; !ok {
-		w.GetChartByID(charts.ReqPerHTTPVer.ID).AddDim(Dimension{dimID, mm[keyHTTPVer], raw.Incremental})
+		w.GetChartByID(charts.ReqPerHTTPVer.ID).AddDim(Dimension{dimID, version, raw.Incremental})
 	}
 	w.data[dimID]++
+}
+
+func (w *WebLog) parseRequest(gm groupMap) (matchedURL string) {
+	if gm.has(keyRequest) {
+		s := reRequest.FindStringSubmatch(gm.get(keyRequest))
+		if s == nil {
+			return
+		}
+		ngm := make(groupMap)
+		ngm.update(reRequest.SubexpNames(), s)
+		gm = ngm
+
+	}
+	if w.urlCat.exist() {
+		if v := w.reqPerCategory(gm.get(keyURL), w.urlCat); v != "" {
+			matchedURL = v
+		}
+	}
+	if v, ok := gm.lookup(keyHTTPMethod); ok {
+		w.reqPerHTTPMethod(v)
+	}
+
+	if v, ok := gm.lookup(keyHTTPVer); ok {
+		w.reqPerHTTPVersion(v)
+	}
 	return
 }
 
-func (w *WebLog) dataPerCategory(id string, mm map[string]string) {
-	code := mm[keyCode]
+func (w *WebLog) perCategoryStats(id string, gm groupMap) {
+	code := gm.get(keyCode)
 	v := id + "_" + code
 	if _, ok := w.data[v]; !ok {
 		w.GetChartByID(charts.RespCodesDetailed.ID + "_" + id).AddDim(Dimension{v, code, raw.Incremental})
 	}
 	w.data[v]++
 
-	if v, ok := mm[keyBytesSent]; ok {
-		w.data[id+"_bytes_sent"] += int64(strToInt(v))
+	if v, ok := gm.lookup(keyBytesSent); ok {
+		w.data[id+"_bytes_sent"] += toInt(v)
 	}
 
-	if v, ok := mm[keyRespLen]; ok {
-		w.data[id+"_resp_length"] += int64(strToInt(v))
+	if v, ok := gm.lookup(keyRespLen); ok {
+		w.data[id+"_resp_length"] += toInt(v)
 	}
 
-	if v, ok := mm[keyRespTime]; ok {
-		w.timings[id].set(v)
+	if v, ok := gm.lookup(keyRespTime); ok {
+		w.timings.get(id).set(v)
 	}
 }
 
-func (w *WebLog) resetTimings() {
-	for _, v := range w.timings {
-		v.reset()
-	}
-}
-
-func (w *WebLog) createMatcher() error {
-	if !w.RawMatch.exist() {
-		return nil
-	}
-	m := newMatcher(w.RawMatch)
-	if err := m.compile(); err != nil {
-		return err
-	}
-	w.matcher = m
-	return nil
-}
-
-func (w *WebLog) hasMatcher() bool {
-	return w.matcher != nil
-}
-
-func getParser(custom string, line []byte) (*regexp.Regexp, error) {
-	if custom == "" {
-		for _, p := range patterns {
-			if p.Match(line) {
-				return p, nil
-			}
-		}
-		return nil, errors.New("can not find appropriate regex, consider using \"custom_log_format\" feature")
-	}
-	r, err := regexp.Compile(custom)
-	if err != nil {
-		return nil, err
-	}
-	if len(r.SubexpNames()) == 1 {
-		return nil, errors.New("custom regex contains no named groups (?P<subgroup_name>)")
-	}
-
-	if !utils.StringSlice(r.SubexpNames()).Include(mandatoryKey) {
-		return nil, fmt.Errorf("custom regex missing mandatory key '%s'", mandatoryKey)
-	}
-
-	if !r.Match(line) {
-		return nil, errors.New("custom regex match fails")
-	}
-
-	return r, nil
-}
-
-func strToInt(s string) int {
+func toInt(s string) int64 {
 	if s == "-" {
 		return 0
 	}
 	v, _ := strconv.Atoi(s)
-	return v
-}
-
-func createMatchMap(keys, values []string) map[string]string {
-	mm := make(map[string]string)
-	for idx, v := range keys[1:] {
-		mm[v] = values[idx+1]
-	}
-	return mm
+	return int64(v)
 }
 
 func init() {
 	f := func() modules.Module {
 		return &WebLog{
-			DoDetailCodes:  true,
-			DoDetailCodesA: true,
-			DoChartURLCat:  true,
-			DoClientsAll:   true,
-			uniqIPs:        make(map[string]bool),
-			timings: map[string]*timings{
-				keyRespTime:   newTimings(keyRespTime),
-				keyRespTimeUp: newTimings(keyRespTimeUp),
+			DoCodesDetail:    true,
+			DoCodesAggregate: true,
+			DoChartURLCat:    true,
+			DoClientsAll:     true,
+			timings: timings{
+				keyRespTime:         &timing{},
+				keyRespTimeUpstream: &timing{},
 			},
-			histograms: make(map[string]*histogram),
-			regex: regex{
-				URLCat:  categories{prefix: "url"},
-				UserCat: categories{prefix: "user_defined"},
-			},
+			gm:      make(groupMap),
+			uniqIPs: make(map[string]bool),
 			data: map[string]int64{
 				"successful_requests":    0,
 				"redirects":              0,
