@@ -16,13 +16,13 @@ var (
 
 var (
 	lastHop = strings.Join([]string{
-		`(?P<address>[\da-fil.:]+|localhost) -.*?"`,
+		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
 		`(?P<request>[^"]*)" `,
 		`(?P<code>[1-9]\d{2}) `,
 		`(?P<bytes_sent>\d+|-)`,
 	}, "")
 	apacheV1 = strings.Join([]string{
-		`(?P<address>[\da-fil.:]+|localhost) -.*?"`,
+		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
 		`(?P<request>[^"]*)" `,
 		`(?P<code>[1-9]\d{2}) `,
 		`(?P<bytes_sent>\d+|-) `,
@@ -30,7 +30,7 @@ var (
 		`(?P<resp_time>\d+) `,
 	}, "")
 	apacheV2 = strings.Join([]string{
-		`(?P<address>[\da-fil.:]+|localhost) -.*?"`,
+		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
 		`(?P<request>[^"]*)" `,
 		`(?P<code>[1-9]\d{2}) `,
 		`(?P<bytes_sent>\d+|-) .*? `,
@@ -38,7 +38,7 @@ var (
 		`(?P<resp_time>\d+)(?: |$)`,
 	}, "")
 	nginxV1 = strings.Join([]string{
-		`(?P<address>[\da-fil.:]+) -.*?"`,
+		`(?P<address>[\da-f.:]+) -.*?"`,
 		`(?P<request>[^"]*)" `,
 		`(?P<code>[1-9]\d{2}) `,
 		`(?P<bytes_sent>\d+) `,
@@ -47,7 +47,7 @@ var (
 		`(?P<resp_time_upstream>[\d.-]+) `,
 	}, "")
 	nginxV2 = strings.Join([]string{
-		`(?P<address>[\da-fil.:]+) -.*?"`,
+		`(?P<address>[\da-f.:]+) -.*?"`,
 		`(?P<request>[^"]*)" `,
 		`(?P<code>[1-9]\d{2}) `,
 		`(?P<bytes_sent>\d+) `,
@@ -55,7 +55,7 @@ var (
 		`(?P<resp_time>\d+\.\d+) `,
 	}, "")
 	nginxV3 = strings.Join([]string{
-		`(?P<address>[\da-fil.:]+) -.*?"`,
+		`(?P<address>[\da-f.:]+) -.*?"`,
 		`(?P<request>[^"]*)" `,
 		`(?P<code>[1-9]\d{2}) `,
 		`(?P<bytes_sent>\d+) .*? `,
