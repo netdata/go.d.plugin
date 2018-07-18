@@ -1,6 +1,7 @@
 package godplugin
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -22,7 +23,11 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 			continue
 		}
 
-		ok := check(j)
+		ok, err := check(j)
+		if err != nil {
+			j.Error(err)
+			continue
+		}
 
 		if ok {
 			j.Info("Check() [OK]")
@@ -49,22 +54,14 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 	modules.Registry.Destroy()
 }
 
-func check(j *job.Job) bool {
-	var (
-		check = make(chan bool)
-		limit = time.After(5 * time.Second)
-		ok    bool
-	)
-	go func() {
-		check <- j.Check()
+func check(j *job.Job) (ok bool, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("PANIC(%s)", r)
+		}
 	}()
-
-	select {
-	case ok = <-check:
-	case <-limit:
-	}
-
-	return ok
+	ok = j.Check()
+	return
 }
 
 func recheck(j *job.Job, wg *sync.WaitGroup) {
@@ -73,7 +70,14 @@ func recheck(j *job.Job, wg *sync.WaitGroup) {
 		for {
 			c++
 			time.Sleep(time.Duration(j.AutoDetectionRetry) * time.Second)
-			if j.Check() {
+			ok, err := check(j)
+
+			if err != nil {
+				j.Error(err)
+				break
+			}
+
+			if ok {
 				j.Infof("Check() [OK] after %d rechecks", c)
 				go j.Run(wg)
 				break
