@@ -73,7 +73,7 @@ func check(j *job.Job) result {
 	var (
 		res   result
 		resCh = make(chan result)
-		limit = time.After(5 * time.Second)
+		limit = time.NewTimer(5 * time.Second)
 	)
 
 	go func() {
@@ -82,9 +82,10 @@ func check(j *job.Job) result {
 
 	select {
 	case res = <-resCh:
-	case <-limit:
+	case <-limit.C:
 	}
 
+	limit.Stop()
 	return res
 }
 
