@@ -9,6 +9,11 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 )
 
+type result struct {
+	ok  bool
+	err error
+}
+
 func (gd *goDPlugin) jobsRun(jobs jobStack) {
 	if jobs.Empty() {
 		return
@@ -23,13 +28,13 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 			continue
 		}
 
-		ok, err := check(j)
-		if err != nil {
-			j.Error(err)
+		res := check(j)
+		if res.err != nil {
+			j.Error(res.err)
 			continue
 		}
 
-		if ok {
+		if res.ok {
 			j.Info("Check() [OK]")
 			started[key] = true
 
@@ -54,14 +59,33 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 	modules.Registry.Destroy()
 }
 
-func check(j *job.Job) (ok bool, err error) {
+func safeCheck(f func() bool) (res result) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("PANIC(%s)", r)
+			res.err = fmt.Errorf("PANIC(%s)", r)
 		}
 	}()
-	ok = j.Check()
+	res.ok = f()
 	return
+}
+
+func check(j *job.Job) result {
+	var (
+		res   result
+		resCh = make(chan result)
+		limit = time.After(5 * time.Second)
+	)
+
+	go func() {
+		resCh <- safeCheck(j.Check)
+	}()
+
+	select {
+	case res = <-resCh:
+	case <-limit:
+	}
+
+	return res
 }
 
 func recheck(j *job.Job, wg *sync.WaitGroup) {
@@ -70,14 +94,12 @@ func recheck(j *job.Job, wg *sync.WaitGroup) {
 		for {
 			c++
 			time.Sleep(time.Duration(j.AutoDetectionRetry) * time.Second)
-			ok, err := check(j)
-
-			if err != nil {
-				j.Error(err)
+			res := check(j)
+			if res.err != nil {
+				j.Error(res.err)
 				break
 			}
-
-			if ok {
+			if res.ok {
 				j.Infof("Check() [OK] after %d rechecks", c)
 				go j.Run(wg)
 				break
