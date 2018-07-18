@@ -190,7 +190,7 @@ func (w *WebLog) GetData() map[string]int64 {
 		// ReqPerUrl, reqPerHTTPMethod, ReqPerHTTPVer charts
 		var matchedURL string
 		if w.gm.has(keyRequest) || w.gm.has(keyURL) {
-			matchedURL = w.parseRequest(w.gm)
+			matchedURL = w.parseRequest()
 		}
 
 		// ReqPerUserDefined chart
@@ -200,7 +200,7 @@ func (w *WebLog) GetData() map[string]int64 {
 
 		// RespCodesDetailed, Bandwidth, RespTime per URL (Category) charts
 		if matchedURL != "" && w.DoChartURLCat {
-			w.perCategoryStats(matchedURL, w.gm)
+			w.perCategoryStats(matchedURL)
 		}
 
 		// RequestsPerIPProto, ClientsCurr, ClientsAll charts
@@ -314,7 +314,8 @@ func (w *WebLog) reqPerHTTPVersion(version string) {
 	w.data[dimID]++
 }
 
-func (w *WebLog) parseRequest(gm groupMap) (matchedURL string) {
+func (w *WebLog) parseRequest() (matchedURL string) {
+	gm := w.gm
 	if gm.has(keyRequest) {
 		s := reRequest.FindStringSubmatch(gm.get(keyRequest))
 		if s == nil {
@@ -340,23 +341,23 @@ func (w *WebLog) parseRequest(gm groupMap) (matchedURL string) {
 	return
 }
 
-func (w *WebLog) perCategoryStats(id string, gm groupMap) {
-	code := gm.get(keyCode)
+func (w *WebLog) perCategoryStats(id string) {
+	code := w.gm.get(keyCode)
 	v := id + "_" + code
 	if _, ok := w.data[v]; !ok {
 		w.GetChartByID(charts.RespCodesDetailed.ID + "_" + id).AddDim(Dimension{v, code, raw.Incremental})
 	}
 	w.data[v]++
 
-	if v, ok := gm.lookup(keyBytesSent); ok {
+	if v, ok := w.gm.lookup(keyBytesSent); ok {
 		w.data[id+"_bytes_sent"] += toInt(v)
 	}
 
-	if v, ok := gm.lookup(keyRespLen); ok {
+	if v, ok := w.gm.lookup(keyRespLen); ok {
 		w.data[id+"_resp_length"] += toInt(v)
 	}
 
-	if v, ok := gm.lookup(keyRespTime); ok {
+	if v, ok := w.gm.lookup(keyRespTime); ok {
 		w.timings.get(id).set(v)
 	}
 }
