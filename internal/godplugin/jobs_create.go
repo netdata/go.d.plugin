@@ -31,10 +31,10 @@ func (js *jobStack) Destroy() {
 func (gd *goDPlugin) jobsCreate() jobStack {
 	var jobs jobStack
 
-	switch gd.cli.Module {
+	switch gd.cmd.Module {
 	default:
-		if c, ok := modules.Registry[gd.cli.Module]; ok {
-			create(gd.cli.Module, c, gd.dir.modulesConf, &jobs)
+		if c, ok := modules.Registry[gd.cmd.Module]; ok {
+			create(gd.cmd.Module, c, gd.dir.modulesConf, &jobs)
 		} else {
 			info()
 		}

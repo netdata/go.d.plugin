@@ -7,15 +7,15 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/cli/flags"
 )
 
-type ParsedCLI struct {
+type ParsedCMD struct {
 	Debug       bool
 	Module      string
 	UpdateEvery int
 }
 
-// Parse returns parsed command-line flags in ParsedCLI struct
+// Parse returns parsed command-line flags in ParsedCMD struct
 // Available flags:
-func Parse() ParsedCLI {
+func Parse() ParsedCMD {
 	var (
 		d bool
 		m string
@@ -33,7 +33,7 @@ func Parse() ParsedCLI {
 		u = v
 	}
 
-	return ParsedCLI{
+	return ParsedCMD{
 		Debug:       d,
 		Module:      m,
 		UpdateEvery: u,

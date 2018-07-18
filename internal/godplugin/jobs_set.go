@@ -30,8 +30,8 @@ func (gd *goDPlugin) jobsSet(created jobStack) jobStack {
 			continue
 		}
 
-		if gd.cli.Debug || j.UpdateEvery < gd.cli.UpdateEvery {
-			j.SetUpdateEvery(gd.cli.UpdateEvery)
+		if gd.cmd.Debug || j.UpdateEvery < gd.cmd.UpdateEvery {
+			j.SetUpdateEvery(gd.cmd.UpdateEvery)
 		}
 
 		js.Push(j)

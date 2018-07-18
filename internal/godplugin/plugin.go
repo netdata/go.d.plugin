@@ -31,7 +31,7 @@ func New(p string) P {
 	return &goDPlugin{
 		dir:  dir{p, path.Join(p, modConfDir)},
 		conf: newConfig(),
-		cli:  cli.Parse(),
+		cmd:  cli.Parse(),
 	}
 
 }
@@ -39,7 +39,7 @@ func New(p string) P {
 type goDPlugin struct {
 	dir  dir
 	conf config
-	cli  cli.ParsedCLI
+	cmd  cli.ParsedCMD
 	wg   sync.WaitGroup
 }
 
@@ -55,7 +55,7 @@ func (gd *goDPlugin) Start() {
 		return
 	}
 
-	if gd.cli.Debug {
+	if gd.cmd.Debug {
 		log.SetLevel(logger.DEBUG)
 	}
 
