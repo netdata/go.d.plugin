@@ -54,8 +54,11 @@ func setJobFields(mod interface{}, conf *job.Config) error {
 	if !setField(&elem, conf, fieldCharts) {
 		return errors.New("'Charts' field must be a 'modules.Charts' interface")
 	}
-	// Optional fields
-	setField(&elem, conf, fieldLogger)
+	// Mandatory field
+	if !setField(&elem, conf, fieldLogger) {
+		return errors.New("'Logger' field must be a 'modules.Logger' interface")
+	}
+	// Optional field
 	setField(&elem, conf, fieldBaseConf)
 	return nil
 }
