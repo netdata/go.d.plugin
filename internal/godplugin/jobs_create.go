@@ -41,7 +41,7 @@ func (gd *goDPlugin) jobsCreate() jobStack {
 	case "all":
 		for name, creator := range modules.Registry {
 
-			if modules.GetDefault(name).GetDisabledByDefault() && !gd.conf.Modules[name] {
+			if modules.GetDefault(name).DisabledByDefault() && !gd.conf.Modules[name] {
 				log.Infof("module \"%s\" disabled by default", name)
 				continue
 			}
@@ -145,10 +145,10 @@ func parseModuleConf(f []byte) []jobRawConf {
 }
 
 func setModuleDefaults(n string, c *job.Config) {
-	if v, ok := modules.GetDefault(n).GetUpdateEvery(); ok {
+	if v, ok := modules.GetDefault(n).UpdateEvery(); ok {
 		c.UpdateEvery = v
 	}
-	if v, ok := modules.GetDefault(n).GetChartsCleanup(); ok {
+	if v, ok := modules.GetDefault(n).ChartsCleanup(); ok {
 		c.ChartCleanup = v
 	}
 }

@@ -38,19 +38,19 @@ func TestModuleDefault_SetDisabledByDefault(t *testing.T) {
 }
 
 func TestModuleDefault_GetUpdateEvery(t *testing.T) {
-	if v, _ := GetDefault(n).GetUpdateEvery(); v != i {
+	if v, _ := GetDefault(n).UpdateEvery(); v != i {
 		t.Errorf("expected %d, but got %d", v, i)
 	}
 }
 
 func TestModuleDefault_GetChartsCleanup(t *testing.T) {
-	if v, _ := GetDefault(n).GetChartsCleanup(); v != i {
+	if v, _ := GetDefault(n).ChartsCleanup(); v != i {
 		t.Errorf("expected %d, but got %d", v, i)
 	}
 }
 
 func TestModuleDefault_GetDisabledByDefault(t *testing.T) {
-	if GetDefault(n).GetDisabledByDefault() == false {
+	if GetDefault(n).DisabledByDefault() == false {
 		t.Error("expected true, value is not set")
 	}
 }

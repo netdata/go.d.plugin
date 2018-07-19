@@ -7,9 +7,9 @@ type S interface {
 }
 
 type G interface {
-	GetUpdateEvery() (int, bool)
-	GetChartsCleanup() (int, bool)
-	GetDisabledByDefault() bool
+	UpdateEvery() (int, bool)
+	ChartsCleanup() (int, bool)
+	DisabledByDefault() bool
 }
 
 type moduleDefault struct {
@@ -36,21 +36,21 @@ func (m *moduleDefault) SetDisabledByDefault() {
 	m.d = true
 }
 
-func (m *moduleDefault) GetUpdateEvery() (int, bool) {
+func (m *moduleDefault) UpdateEvery() (int, bool) {
 	if m.u == nil {
 		return 0, false
 	}
 	return *m.u, true
 }
 
-func (m *moduleDefault) GetChartsCleanup() (int, bool) {
+func (m *moduleDefault) ChartsCleanup() (int, bool) {
 	if m.c == nil {
 		return 0, false
 	}
 	return *m.c, true
 }
 
-func (m *moduleDefault) GetDisabledByDefault() bool {
+func (m *moduleDefault) DisabledByDefault() bool {
 	return m.d
 }
 
