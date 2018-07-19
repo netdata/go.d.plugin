@@ -18,21 +18,21 @@ var charts = Charts{
 	Definitions: Definitions{
 		Chart{
 			ID:      "response_time",
-			Options: Options{"HTTP Response Time", "ms", "response", "httpcheck.response_time"},
+			Options: Options{"HTTP Response Time", "ms", "response"},
 			Dimensions: Dimensions{
 				Dimension{"response_time", "time", "", 1, 1e6},
 			},
 		},
 		Chart{
 			ID:      "response_length",
-			Options: Options{"HTTP Response Body Length", "characters", "response", "httpcheck.response_length"},
+			Options: Options{"HTTP Response Body Length", "characters", "response"},
 			Dimensions: Dimensions{
 				Dimension{"response_length", "length"},
 			},
 		},
 		Chart{
 			ID:      "response_status",
-			Options: Options{"HTTP Response Status", "boolean", "status", "httpcheck.status"},
+			Options: Options{"HTTP Response Status", "boolean", "status"},
 			Dimensions: Dimensions{
 				Dimension{"success"},
 				Dimension{"failed"},
@@ -41,14 +41,14 @@ var charts = Charts{
 		},
 		Chart{
 			ID:      "response_check_status",
-			Options: Options{"HTTP Response Check Status", "boolean", "status", "httpcheck.check_status"},
+			Options: Options{"HTTP Response Check Status", "boolean", "status"},
 			Dimensions: Dimensions{
 				Dimension{"bad_status", "bad status"},
 			},
 		},
 		Chart{
 			ID:      "response_check_content",
-			Options: Options{"HTTP Response Check Content", "boolean", "status", "httpcheck.check_content"},
+			Options: Options{"HTTP Response Check Content", "boolean", "status"},
 			Dimensions: Dimensions{
 				Dimension{"bad_content", "bad content"},
 			},

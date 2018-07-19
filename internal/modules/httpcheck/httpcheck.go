@@ -1,7 +1,6 @@
 package httpcheck
 
 import (
-	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -12,6 +11,13 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/web"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
+	"io"
+)
+
+const (
+	timeout = iota
+	failed
+	unknown
 )
 
 type data struct {
@@ -24,82 +30,95 @@ type data struct {
 	ResponseLength int `stm:"response_length"`
 }
 
+func (d *data) reset() {
+	d.Success = 0
+	d.Failed = 0
+	d.Timeout = 0
+	d.BadContent = 0
+	d.BadStatus = 0
+	d.ResponseTime = 0
+	d.ResponseLength = 0
+}
+
 type HttpCheck struct {
 	modules.Charts
 	modules.Logger
-	modules.BaseConfHook
 
 	StatusAccepted []int  `yaml:"status_accepted"`
 	ResponseMatch  string `yaml:"response_match"`
-	web.Request
-	web.Client
+	web.Request    `yaml:",inline"`
+	web.Client     `yaml:",inline"`
 
-	responseMatch  *regexp.Regexp
-	statusAccepted map[int]bool
-	client         *http.Client
-	request        *http.Request
+	match    *regexp.Regexp
+	statuses map[int]bool
+	client   *http.Client
+	request  *http.Request
 
 	data data
 }
 
-func (h *HttpCheck) Check() bool {
-	rawCharts := charts.Copy()
-
-	if len(h.ResponseMatch) == 0 {
-		rawCharts.DeleteChartByID("response_check_content")
-	} else {
-		if re, err := regexp.Compile(h.ResponseMatch); err != nil {
-			h.Errorf("regex compile failed: %s", err)
-			return false
-		} else {
-			h.responseMatch = re
-		}
+func (hc *HttpCheck) Check() bool {
+	// Set Timeout
+	if hc.Timeout.Duration == 0 {
+		hc.Timeout.Duration = time.Second
 	}
+	hc.Debugf("Using timeout: %s", hc.Timeout.Duration)
 
-	if len(h.StatusAccepted) != 0 {
-		delete(h.statusAccepted, 200)
-		for _, s := range h.StatusAccepted {
-			h.statusAccepted[s] = true
-		}
-	}
+	// Get Request and Client
+	req, err := web.CreateRequest(&hc.Request)
 
-	if h.Timeout.Duration == 0 {
-		h.Timeout.Duration = time.Duration(h.GetUpdateEvery()) * time.Second
-		h.Warningf("timeout not specified. Setting to %s", h.Timeout.Duration)
-	}
-
-	req, err := web.CreateRequest(&h.Request)
 	if err != nil {
-		h.Error(err)
+		hc.Error(err)
 		return false
 	}
-	h.request = req
-	h.client = web.CreateHttpClient(&h.Client)
 
-	h.AddMany(rawCharts)
+	hc.request = req
+	hc.client = web.CreateHttpClient(&hc.Client)
+
+	// Get Response Match Regex
+	re, err := regexp.Compile(hc.ResponseMatch)
+
+	if err != nil {
+		hc.Error(err)
+		return false
+	}
+
+	hc.match = re
+
+	// Get Response Statuses
+	for _, s := range hc.StatusAccepted {
+		hc.statuses[s] = true
+	}
+
+	if len(hc.statuses) == 0 {
+		hc.statuses[200] = true
+	}
+
+	// Get Charts
+	c := charts.Copy()
+	if len(hc.ResponseMatch) == 0 {
+		c.DeleteChartByID("response_check_content")
+	}
+	hc.AddMany(c)
+
 	return true
 }
 
-func (h *HttpCheck) GetData() map[string]int64 {
-	h.data = data{}
-
-	start := time.Now()
-	resp, err := h.client.Do(h.request)
-	h.data.ResponseTime = int(time.Since(start))
+func (hc *HttpCheck) GetData() map[string]int64 {
+	hc.data.reset()
+	resp, err := hc.doRequest()
 
 	if err != nil {
-		h.Debug(err)
-		v, ok := err.(net.Error)
-		switch {
-		case ok && v.Timeout():
-			h.data.Timeout = 1
-		case ok && strings.Contains(v.Error(), "connection refused"):
-			h.data.Failed = 1
-		default:
-			h.Error(err)
+		switch errCheck(err) {
+		case timeout:
+			hc.data.Timeout = 1
+		case failed:
+			hc.data.Failed = 1
+		case unknown:
+			hc.Error(err)
 			return nil
 		}
-		return utils.StrToMap(&h.data)
+		return utils.StrToMap(&hc.data)
 	}
 
 	defer func() {
@@ -107,19 +126,41 @@ func (h *HttpCheck) GetData() map[string]int64 {
 		resp.Body.Close()
 	}()
 
-	h.data.Success = 1
+	hc.data.Success = 1
 	// TODO error check ?
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	h.data.ResponseLength = len(bodyBytes)
+	hc.data.ResponseLength = len(bodyBytes)
 
-	if !h.statusAccepted[resp.StatusCode] {
-		h.data.BadStatus = 1
-	}
-	if h.responseMatch != nil && !h.responseMatch.Match(bodyBytes) {
-		h.data.BadContent = 1
+	if !hc.statuses[resp.StatusCode] {
+		hc.data.BadStatus = 1
 	}
 
-	return utils.StrToMap(&h.data)
+	if hc.match != nil && !hc.match.Match(bodyBytes) {
+		hc.data.BadContent = 1
+	}
+
+	return utils.StrToMap(&hc.data)
+}
+
+func (hc *HttpCheck) doRequest() (*http.Response, error) {
+	t := time.Now()
+	r, err := hc.client.Do(hc.request)
+	hc.data.ResponseTime = int(time.Since(t))
+	return r, err
+}
+
+func errCheck(err error) int {
+	v, ok := err.(net.Error)
+
+	if ok && v.Timeout() {
+		return timeout
+	}
+
+	if ok && strings.Contains(v.Error(), "connection refused") {
+		return failed
+	}
+
+	return unknown
 }
 
 func init() {
@@ -127,7 +168,9 @@ func init() {
 
 	f := func() modules.Module {
 		return &HttpCheck{
-			statusAccepted: map[int]bool{200: true}}
+			statuses: make(map[int]bool),
+			data:     data{},
+		}
 	}
 	modules.Add(f)
 }
