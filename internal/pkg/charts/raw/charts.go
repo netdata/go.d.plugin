@@ -29,12 +29,28 @@ func (c *Charts) GetChartByID(chartID string) *Chart {
 	return nil
 }
 
+// LookupChartByID looks up chart by id.
+func (c *Charts) LookupChartByID(chartID string) (*Chart, bool) {
+	if v :=  c.GetChartByID(chartID); v != nil {
+		return v, true
+	}
+	return nil, false
+}
+
 // GetChartByIndex returns chart by index.
 func (c *Charts) GetChartByIndex(idx int) *Chart {
 	if idx >= 0 && idx < len(c.Definitions) {
 		return &c.Definitions[idx]
 	}
 	return nil
+}
+
+// LookupChartByIndex looks up chart by index.
+func (c *Charts) LookupChartByIndex(idx int) (*Chart, bool) {
+	if v := c.GetChartByIndex(idx); v != nil {
+		return v, true
+	}
+	return nil, false
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
