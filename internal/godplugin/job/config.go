@@ -3,7 +3,7 @@ package job
 // NewConf returns Config with default values
 func NewConf() *Config {
 	return &Config{
-		UpdateEvery:        1,
+		UpdEvery:           1,
 		AutoDetectionRetry: 0,
 		ChartCleanup:       10,
 		RetriesMax:         60,
@@ -14,27 +14,27 @@ type Config struct {
 	moduleName         string // standalone struct ?
 	jobName            string // standalone struct ?
 	OverrideName       string `yaml:"name,inregexd:[^[:word:]]"`
-	UpdateEvery        int    `yaml:"update_every,inrange:[1:]"`
+	UpdEvery           int    `yaml:"update_every,inrange:[1:]"`
 	AutoDetectionRetry int    `yaml:"autodetection_retry,inrange:[0:]"`
 	ChartCleanup       int    `yaml:"chart_cleanup,inrange:[0:]"`
 	RetriesMax         int    `yaml:"retries,inrange:[0:]"`
 }
 
-// TODO: GetModuleName() prepends "go_"
-func (c *Config) GetModuleName() string {
+// TODO: ModuleName() prepends "go_"
+func (c *Config) ModuleName() string {
 	return "go_" + c.moduleName
 }
 
-func (c *Config) GetFullName() string {
+func (c *Config) FullName() string {
 	if c.jobName == "" {
-		return c.GetModuleName()
+		return c.ModuleName()
 	}
-	return c.GetModuleName() + "_" + c.GetJobName()
+	return c.ModuleName() + "_" + c.JobName()
 }
 
-func (c *Config) GetJobName() string {
+func (c *Config) JobName() string {
 	if c.jobName == "" {
-		return c.GetModuleName()
+		return c.ModuleName()
 	}
 	if c.OverrideName == "" {
 		return c.jobName
@@ -42,8 +42,8 @@ func (c *Config) GetJobName() string {
 	return c.OverrideName
 }
 
-func (c *Config) GetUpdateEvery() int {
-	return c.UpdateEvery
+func (c *Config) UpdateEvery() int {
+	return c.UpdEvery
 }
 
 func (c *Config) SetModuleName(name string) {
@@ -55,5 +55,5 @@ func (c *Config) SetJobName(name string) {
 }
 
 func (c *Config) SetUpdateEvery(u int) {
-	c.UpdateEvery = u
+	c.UpdEvery = u
 }

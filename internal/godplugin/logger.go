@@ -4,11 +4,11 @@ import "github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 
 type n struct{}
 
-func (*n) GetModuleName() string {
+func (*n) ModuleName() string {
 	return "plugin"
 }
 
-func (*n) GetJobName() string {
+func (*n) JobName() string {
 	return "main"
 }
 

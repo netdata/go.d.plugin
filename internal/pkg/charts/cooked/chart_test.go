@@ -84,7 +84,7 @@ func TestChart_Context(t *testing.T) {
 	}
 
 	c.context = ""
-	ctx = fmt.Sprintf("%s.%s", c.bc.GetModuleName(), c.id)
+	ctx = fmt.Sprintf("%s.%s", c.bc.ModuleName(), c.id)
 	if c.Context() != ctx {
 		t.Errorf("expected %s, but got %s", ctx, c.Context())
 	}

@@ -98,7 +98,7 @@ func (c *Chart) Family() string {
 // If context not specified it returns "moduleName.chartID".
 func (c *Chart) Context() string {
 	if c.context == "" {
-		return fmt.Sprintf("%s.%s", c.bc.GetModuleName(), c.id)
+		return fmt.Sprintf("%s.%s", c.bc.ModuleName(), c.id)
 	}
 	return c.context
 }
@@ -215,7 +215,7 @@ func (c *Chart) AddVar(v raw.Variable) error {
 
 func (c *Chart) begin(sinceLast int) string {
 	return fmt.Sprintf(formatChartBEGIN,
-		c.bc.GetFullName(),
+		c.bc.FullName(),
 		c.id,
 		sinceLast)
 }
@@ -223,7 +223,7 @@ func (c *Chart) begin(sinceLast int) string {
 func (c *Chart) create() string {
 	var dimensions, variables string
 	chart := fmt.Sprintf(formatChartCREATE,
-		c.bc.GetFullName(),
+		c.bc.FullName(),
 		c.id,
 		c.overrideID,
 		c.title,
@@ -232,8 +232,8 @@ func (c *Chart) create() string {
 		c.Context(),
 		c.chartType,
 		c.priority,
-		c.bc.GetUpdateEvery(),
-		c.bc.GetModuleName())
+		c.bc.UpdateEvery(),
+		c.bc.ModuleName())
 
 	for _, dim := range c.dimensions {
 		dimensions += dim.create()
@@ -259,7 +259,7 @@ func (c *Chart) Obsolete() {
 		return
 	}
 	SafePrint(fmt.Sprintf(formatChartOBSOLETE,
-		c.bc.GetFullName(),
+		c.bc.FullName(),
 		c.id,
 		c.overrideID,
 		c.title,
@@ -268,8 +268,8 @@ func (c *Chart) Obsolete() {
 		c.Context(),
 		c.chartType,
 		c.priority,
-		c.bc.GetUpdateEvery(),
-		c.bc.GetModuleName()))
+		c.bc.UpdateEvery(),
+		c.bc.ModuleName()))
 }
 
 // Refresh sets Chart push flag to true. If Chart was obsoleted it also sets obsolete and created flags to false.

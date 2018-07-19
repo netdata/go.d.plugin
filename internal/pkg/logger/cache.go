@@ -6,7 +6,7 @@ type loggers []*logger
 
 func (l *loggers) get(n namer) *logger {
 	for _, logger := range *l {
-		if n.GetModuleName() == logger.GetModuleName() && n.GetJobName() == logger.GetJobName() {
+		if n.ModuleName() == logger.ModuleName() && n.JobName() == logger.JobName() {
 			return logger
 		}
 	}

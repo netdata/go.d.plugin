@@ -30,7 +30,7 @@ Done:
 	for {
 
 		sleep := j.nextIn()
-		j.Debugf("sleeping for %s to reach frequency of %d sec", sleep, j.UpdateEvery)
+		j.Debugf("sleeping for %s to reach frequency of %d sec", sleep, j.UpdEvery)
 		time.Sleep(sleep)
 
 		j.curRun = time.Now()
@@ -113,7 +113,7 @@ func (j *Job) getData() map[string]int64 {
 
 func (j *Job) nextIn() time.Duration {
 	start := time.Now()
-	next := start.Add(time.Duration(j.UpdateEvery) * time.Second).Add(j.penalty).Truncate(time.Second)
+	next := start.Add(time.Duration(j.UpdEvery) * time.Second).Add(j.penalty).Truncate(time.Second)
 	return time.Duration(next.UnixNano() - start.UnixNano())
 }
 
@@ -124,7 +124,7 @@ func (j *Job) handleRetries() bool {
 		return true
 	}
 
-	j.penalty = time.Duration(j.retries*j.UpdateEvery/2) * time.Second
+	j.penalty = time.Duration(j.retries*j.UpdEvery/2) * time.Second
 	j.Warningf(
 		"added %.0f seconds penalty after %d failed updates in a row",
 		j.penalty.Seconds(),

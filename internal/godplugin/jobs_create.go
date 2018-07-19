@@ -146,7 +146,7 @@ func parseModuleConf(f []byte) []jobRawConf {
 
 func setModuleDefaults(n string, c *job.Config) {
 	if v, ok := modules.GetDefault(n).UpdateEvery(); ok {
-		c.UpdateEvery = v
+		c.UpdEvery = v
 	}
 	if v, ok := modules.GetDefault(n).ChartsCleanup(); ok {
 		c.ChartCleanup = v

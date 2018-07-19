@@ -26,11 +26,11 @@ func (gd *goDPlugin) jobsSet(created jobStack) jobStack {
 		err := setJobFields(j.Module, j.Config)
 
 		if err != nil {
-			log.Errorf("\"%s\" %s: %s", j.GetModuleName(), j.GetJobName(), err)
+			log.Errorf("\"%s\" %s: %s", j.ModuleName(), j.JobName(), err)
 			continue
 		}
 
-		if gd.cmd.Debug || j.UpdateEvery < gd.cmd.UpdateEvery {
+		if gd.cmd.Debug || j.UpdEvery < gd.cmd.UpdateEvery {
 			j.SetUpdateEvery(gd.cmd.UpdateEvery)
 		}
 

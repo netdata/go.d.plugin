@@ -7,8 +7,8 @@ import (
 )
 
 type namer interface {
-	GetModuleName() string
-	GetJobName() string
+	ModuleName() string
+	JobName() string
 }
 
 func New(n namer) *logger {
@@ -77,8 +77,8 @@ func (m *logger) print(level Severity, a ...interface{}) {
 	m.log.Printf(
 		"go.d: %s: %s: %s: %s",
 		level,
-		m.GetModuleName(),
-		m.GetJobName(),
+		m.ModuleName(),
+		m.JobName(),
 		fmt.Sprintln(a...))
 }
 

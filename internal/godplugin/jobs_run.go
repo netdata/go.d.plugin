@@ -21,7 +21,7 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 	started := make(map[string]bool)
 
 	for _, j := range jobs {
-		key := j.GetFullName()
+		key := j.FullName()
 
 		if started[key] {
 			j.Info("[DROPPED] already served by another job")

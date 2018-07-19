@@ -8,10 +8,10 @@ import (
 var initPriority = 70000
 
 type baseConfHook interface {
-	GetModuleName() string // for Chart + CacheGet
-	GetJobName() string    // for CacheGet
-	GetFullName() string   // for Chart
-	GetUpdateEvery() int   // for Chart
+	ModuleName() string // for Chart + CacheGet
+	JobName() string    // for CacheGet
+	FullName() string   // for Chart
+	UpdateEvery() int   // for Chart
 }
 
 type ChartsMap map[string]*Chart
