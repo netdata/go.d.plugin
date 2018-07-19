@@ -24,22 +24,22 @@ func (f *flagsChart) setObsoleted(b bool) {
 }
 
 // isPush returns whether we need to send a chart to netdata.
-func (f *flagsChart) isPush() bool {
+func (f flagsChart) isPush() bool {
 	return f.push
 }
 
 // isCreated returns whether a chart was created.
-func (f *flagsChart) isCreated() bool {
+func (f flagsChart) isCreated() bool {
 	return f.created
 }
 
 // isUpdated returns whether a chart was updated on previous update.
-func (f *flagsChart) isUpdated() bool {
+func (f flagsChart) isUpdated() bool {
 	return f.updated
 }
 
 // IsObsoleted returns whether a chart was obsoleted.
-func (f *flagsChart) IsObsoleted() bool {
+func (f flagsChart) IsObsoleted() bool {
 	return f.obsoleted
 }
 
@@ -49,6 +49,6 @@ type flagsDim struct {
 	retriesMax int
 }
 
-func (f *flagsDim) alive() bool {
+func (f flagsDim) alive() bool {
 	return f.retries < f.retriesMax
 }

@@ -22,7 +22,7 @@ type variable struct {
 }
 
 // set formats variables SET (ex.: "VARIABLE CHART 'max_conn' = '123'\n").
-func (v *variable) set(value int64) string {
+func (v variable) set(value int64) string {
 	return fmt.Sprintf(formatVarSET, v.id, value)
 }
 
@@ -31,12 +31,12 @@ func (v *variable) set(value int64) string {
 // FIELD GETTER
 
 // ID returns variable id.
-func (v *variable) ID() string {
+func (v variable) ID() string {
 	return v.id
 }
 
 // Value returns variable value.
-func (v *variable) Value() int64 {
+func (v variable) Value() int64 {
 	return v.value
 }
 

@@ -41,32 +41,32 @@ type dimension struct {
 // FIELD GETTER
 
 // ID returns dimension id.
-func (d *dimension) ID() string {
+func (d dimension) ID() string {
 	return d.id
 }
 
 // Name returns dimension name.
-func (d *dimension) Name() string {
+func (d dimension) Name() string {
 	return d.name
 }
 
 // Algorithm returns dimension algorithm.
-func (d *dimension) Algorithm() string {
+func (d dimension) Algorithm() string {
 	return d.algorithm
 }
 
 // Multiplier returns dimension multiplier.
-func (d *dimension) Multiplier() int {
+func (d dimension) Multiplier() int {
 	return d.multiplier
 }
 
 // Divisor returns dimension divisor.
-func (d *dimension) Divisor() int {
+func (d dimension) Divisor() int {
 	return d.divisor
 }
 
 // Hidden returns dimension hidden.
-func (d *dimension) Hidden() bool {
+func (d dimension) Hidden() bool {
 	return d.hidden == "hidden"
 }
 
@@ -122,7 +122,7 @@ func (d *dimension) SetHidden(b bool) *dimension {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (d *dimension) create() string {
+func (d dimension) create() string {
 	return fmt.Sprintf(formatDimCREATE,
 		d.id,
 		d.name,
