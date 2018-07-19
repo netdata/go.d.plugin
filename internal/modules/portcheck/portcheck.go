@@ -17,17 +17,15 @@ const (
 )
 
 type state struct {
-	curr     int
-	prev     int
+	current  int
 	duration int
 	u        int
 }
 
 func (s *state) set(v int) {
-	if v != s.curr {
+	if v != s.current {
 		s.duration = s.u
-		s.prev = s.curr
-		s.curr = v
+		s.current = v
 	} else {
 		s.duration += s.u
 	}
@@ -40,7 +38,7 @@ type port struct {
 }
 
 func (p port) stateText() string {
-	switch p.state.curr {
+	switch p.state.current {
 	case success:
 		return sprintf("success_%d", p.number)
 	case timeout:
@@ -112,7 +110,7 @@ func (pc *PortCheck) GetData() map[string]int64 {
 		pc.data[sprintf("failed_%d", p.number)] = 0
 		pc.data[sprintf("timeout_%d", p.number)] = 0
 
-		pc.data[p.stateText()] = int64(p.state.curr)
+		pc.data[p.stateText()] = int64(p.state.current)
 		pc.data[sprintf("instate_%d", p.number)] = int64(p.state.duration)
 		pc.data[sprintf("latency_%d", p.number)] = int64(p.latency)
 
