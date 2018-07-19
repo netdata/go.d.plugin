@@ -151,6 +151,14 @@ func (c *Chart) GetDimByID(dimID string) *Dimension {
 	return nil
 }
 
+// LookupDimByID looks up dimension by id.
+func (c *Chart) LookupDimByID(dimID string) (*Dimension, bool) {
+	if d := c.GetDimByID(dimID); d != nil {
+		return d, true
+	}
+	return nil, false
+}
+
 // GetDimByIndex returns dimension by index.
 func (c *Chart) GetDimByIndex(idx int) *Dimension {
 	if idx >= 0 && idx < len(c.Dimensions) {
@@ -159,12 +167,28 @@ func (c *Chart) GetDimByIndex(idx int) *Dimension {
 	return nil
 }
 
+// LookupDimByIndex looks dimension by index.
+func (c *Chart) LookupDimByIndex(idx int) (*Dimension, bool) {
+	if d := c.GetDimByIndex(idx); d != nil {
+		return d, true
+	}
+	return nil, false
+}
+
 // GetVarByID returns variable by id.
 func (c *Chart) GetVarByID(varID string) *Variable {
 	if idx := c.indexVar(varID); idx != -1 {
 		return &c.Variables[idx]
 	}
 	return nil
+}
+
+// LookupVarByID looks up variable by id.
+func (c *Chart) LookupVarByID(varID string) (*Variable, bool) {
+	if v := c.GetVarByID(varID); v!= nil {
+		return v, true
+	}
+	return nil, false
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
