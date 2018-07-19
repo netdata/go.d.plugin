@@ -74,3 +74,9 @@ func (c *charts) GetCharts() ChartsMap {
 func (c *charts) GetChartByID(id string) *Chart {
 	return c.charts[id]
 }
+
+// LookupChartsByID looks up a chart by id.
+func (c *charts) LookupChartByID(id string) (*Chart, bool) {
+	v, ok := c.charts[id]
+	return v, ok
+}

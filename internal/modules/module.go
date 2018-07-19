@@ -25,6 +25,7 @@ type Charts interface {
 	AddMany(*raw.Charts) int
 	GetCharts() cooked.ChartsMap
 	GetChartByID(string) *cooked.Chart
+	LookupChartByID(string) (*cooked.Chart, bool)
 }
 
 // BaseConfHook should be added by modules that need to get/set values from base conf
