@@ -125,11 +125,11 @@ func TestCharts_DeleteChartByIndex(t *testing.T) {
 func TestCharts_AddChart(t *testing.T) {
 	ch := Charts{}
 
-	if ch.AddChart(c2, true) == nil {
+	if ch.AddChart(c2) == nil {
 		t.Error("expected error, but got nil")
 	}
 
-	if err := ch.AddChart(c1, true); err != nil {
+	if err := ch.AddChart(c1); err != nil {
 		t.Fatalf("expected nil, but got %d", err)
 	}
 
@@ -137,19 +137,12 @@ func TestCharts_AddChart(t *testing.T) {
 		t.Fatalf("chart %s was not added", c1.ID)
 	}
 
-	if ch.AddChart(c1, true) == nil {
+	if ch.AddChart(c1) == nil {
 		t.Fatal("expected error, but got nil")
 	}
 
 	if len(ch.Order) == 0 {
 		t.Fatalf("chart %s was not added to Order", c1.ID)
-	}
-
-	ch.DeleteChartByID(c1.ID)
-
-	ch.AddChart(c1, false)
-	if len(ch.Order) != 0 {
-		t.Fatalf("chart %s was added to Order", c1.ID)
 	}
 }
 
@@ -161,7 +154,7 @@ func TestCharts_Copy(t *testing.T) {
 	if len(ch1.Order) != 0 {
 		t.Fatal("charts Order was modified by copy")
 	}
-	ch2.AddChart(c1, false)
+	ch2.AddChart(c1)
 
 	if len(ch1.Definitions) != 0 {
 		t.Fatal("charts Definitions was modified by copy")

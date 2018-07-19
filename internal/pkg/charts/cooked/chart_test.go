@@ -22,13 +22,13 @@ var testRawChart = raw.Chart{
 
 type testBC struct{}
 
-func (b testBC) GetModuleName() string { return "module" }
+func (b testBC) ModuleName() string { return "module" }
 
-func (b testBC) GetJobName() string { return "job" }
+func (b testBC) JobName() string { return "job" }
 
-func (b testBC) GetFullName() string { return "full" }
+func (b testBC) FullName() string { return "full" }
 
-func (b testBC) GetUpdateEvery() int { return 1 }
+func (b testBC) UpdateEvery() int { return 1 }
 
 func TestChart_ID(t *testing.T) {
 	id := "id"

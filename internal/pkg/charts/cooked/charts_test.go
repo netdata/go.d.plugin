@@ -39,8 +39,8 @@ func TestCharts_AddOne(t *testing.T) {
 func TestCharts_AddMany(t *testing.T) {
 	r1, r2, rc := testRawChart, testRawChart, raw.Charts{}
 	r2.ID = "chart2"
-	rc.AddChart(r1, true)
-	rc.AddChart(r2, true)
+	rc.AddChart(r1)
+	rc.AddChart(r2)
 
 	ch := NewCharts(testBC{})
 	n := ch.AddMany(&rc)
