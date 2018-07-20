@@ -31,7 +31,7 @@ type Charts interface {
 // BaseConfHook should be added by modules that need to get/set values from base conf
 // optional
 type BaseConfHook interface {
-	GetUpdateEvery() int
+	UpdateEvery() int
 	// more methods can be added if needed
 }
 

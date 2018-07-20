@@ -87,7 +87,7 @@ func (pc *PortCheck) Check() bool {
 
 	sort.Ints(pc.Ports)
 	for _, p := range pc.Ports {
-		pc.ports = append(pc.ports, newPort(p, pc.GetUpdateEvery()))
+		pc.ports = append(pc.ports, newPort(p, pc.UpdateEvery()))
 		pc.AddMany(charts(p))
 
 		go worker(pc.Host, pc.Timeout.Duration, pc.do, pc.done)
