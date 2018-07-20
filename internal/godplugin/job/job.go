@@ -66,7 +66,8 @@ func (j *Job) update() bool {
 		suppressed int
 	)
 
-	for _, chart := range j.GetCharts() {
+	for _, n := range j.ListNames() {
+		chart := j.GetChartByID(n)
 
 		if chart.IsObsoleted() {
 			if !chart.CanBeUpdated(data) {

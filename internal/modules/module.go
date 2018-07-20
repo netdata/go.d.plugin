@@ -23,7 +23,7 @@ type CheckDataGetter interface {
 type Charts interface {
 	AddOne(*raw.Chart) error
 	AddMany(*raw.Charts) int
-	GetCharts() cooked.ChartsMap
+	ListNames() []string
 	GetChartByID(string) *cooked.Chart
 	LookupChartByID(string) (*cooked.Chart, bool)
 }

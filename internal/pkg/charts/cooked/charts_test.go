@@ -68,14 +68,6 @@ func TestCharts_GetChartByID(t *testing.T) {
 	}
 }
 
-func TestCharts_GetCharts(t *testing.T) {
-	ch := NewCharts(testBC{})
-
-	if _, ok := toInterface(ch.GetCharts()).(ChartsMap); !ok {
-		t.Error("expected ChartsMap type, but got another")
-	}
-}
-
 func toInterface(i interface{}) interface{} {
 	return i
 }

@@ -14,17 +14,15 @@ type baseConfHook interface {
 	UpdateEvery() int   // for Chart
 }
 
-type ChartsMap map[string]*Chart
-
 type charts struct {
-	charts   ChartsMap
+	charts   map[string]*Chart
 	bc       baseConfHook
 	priority int
 }
 
 func NewCharts(bc baseConfHook) *charts {
 	return &charts{
-		charts:   make(ChartsMap),
+		charts:   make(map[string]*Chart),
 		bc:       bc,
 		priority: initPriority}
 }
@@ -65,9 +63,13 @@ func (c *charts) AddMany(r *raw.Charts) int {
 	return added
 }
 
-// GetCharts returns charts.
-func (c *charts) GetCharts() ChartsMap {
-	return c.charts
+// ListNames returns list of chart names.
+func (c *charts) ListNames() []string {
+	var rv []string
+	for k := range c.charts {
+		rv = append(rv, k)
+	}
+	return rv
 }
 
 // GetCharts returns chart by id.
