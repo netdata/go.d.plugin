@@ -10,10 +10,10 @@ import (
 )
 
 type Request struct {
-	Url           string            `yaml:"url"`
+	Url           string            `yaml:"url" validate:"required"`
 	Body          string            `yaml:"body"`
 	Header        map[string]string `yaml:"headers"`
-	Method        string            `yaml:"method"`
+	Method        string            `yaml:"method" validate:"isdefault|oneof=GET POST"`
 	Username      string            `yaml:"username"`
 	Password      string            `yaml:"password"`
 	ProxyUsername string            `yaml:"proxy_username"`

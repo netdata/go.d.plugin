@@ -185,7 +185,7 @@ func (c *Chart) GetVarByID(varID string) *Variable {
 
 // LookupVarByID looks up variable by id.
 func (c *Chart) LookupVarByID(varID string) (*Variable, bool) {
-	if v := c.GetVarByID(varID); v!= nil {
+	if v := c.GetVarByID(varID); v != nil {
 		return v, true
 	}
 	return nil, false

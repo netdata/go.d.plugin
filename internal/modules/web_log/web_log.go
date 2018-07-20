@@ -34,7 +34,7 @@ type WebLog struct {
 	modules.Charts
 	modules.Logger
 
-	Path             string        `yaml:"path"`
+	Path             string        `yaml:"path" validate:"required"`
 	RawFilter        rawFilter     `yaml:"filter"`
 	RawURLCat        yaml.MapSlice `yaml:"categories"`
 	RawUserCat       yaml.MapSlice `yaml:"user_defined"`
