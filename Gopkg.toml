@@ -30,7 +30,11 @@
   version = "1.7.0"
 
 [[constraint]]
-  name = "github.com/l2isbad/yaml"
+  name = "github.com/go-playground/validator"
+  version = "9.20.2"
+
+[[constraint]]
+  name = "github.com/go-yaml/yaml"
   version = "2.2.1"
 
 [prune]
