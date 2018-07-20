@@ -8,7 +8,28 @@
   version = "v1.7.0"
 
 [[projects]]
-  name = "github.com/l2isbad/yaml"
+  name = "github.com/go-playground/locales"
+  packages = [
+    ".",
+    "currency"
+  ]
+  revision = "f63010822830b6fe52288ee52d5a1151088ce039"
+  version = "v0.12.1"
+
+[[projects]]
+  name = "github.com/go-playground/universal-translator"
+  packages = ["."]
+  revision = "b32fa301c9fe55953584134cb6853a13c87ec0a1"
+  version = "v0.16.0"
+
+[[projects]]
+  name = "github.com/go-playground/validator"
+  packages = ["."]
+  revision = "ab2a8a99087e827c9af87ed6777ba897348fb178"
+  version = "v9.20.2"
+
+[[projects]]
+  name = "github.com/go-yaml/yaml"
   packages = ["."]
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
   version = "v2.2.1"
@@ -34,6 +55,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e3d205a32d00d01074bf43a64d9705e676a251365f00f4768c864cd8716b6071"
+  inputs-digest = "a68d8640241202e1179498daacc12e85bbfe3d29e43b043aa517b3400ce5e57c"
   solver-name = "gps-cdcl"
   solver-version = 1
