@@ -61,8 +61,8 @@ type PortCheck struct {
 	modules.BaseConfHook
 	modules.Logger
 
-	Host    string         `yaml:"host,required"`
-	Ports   []int          `yaml:"ports,required"`
+	Host    string         `yaml:"host"`
+	Ports   []int          `yaml:"ports"`
 	Timeout utils.Duration `yaml:"timeout"`
 
 	do    chan *port
