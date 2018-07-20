@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/l2isbad/yaml"
+	"github.com/go-yaml/yaml"
 
 	_ "github.com/l2isbad/go.d.plugin/internal/modules/all"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/cli"

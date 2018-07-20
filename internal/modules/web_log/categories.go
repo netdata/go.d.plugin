@@ -1,7 +1,7 @@
 package web_log
 
 import (
-	"github.com/l2isbad/yaml"
+	"github.com/go-yaml/yaml"
 )
 
 type categories struct {

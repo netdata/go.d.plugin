@@ -13,11 +13,11 @@ func NewConf() *Config {
 type Config struct {
 	moduleName         string // standalone struct ?
 	jobName            string // standalone struct ?
-	OverrideName       string `yaml:"name,inregexd:[^[:word:]]"`
-	UpdEvery           int    `yaml:"update_every,inrange:[1:]"`
-	AutoDetectionRetry int    `yaml:"autodetection_retry,inrange:[0:]"`
-	ChartCleanup       int    `yaml:"chart_cleanup,inrange:[0:]"`
-	RetriesMax         int    `yaml:"retries,inrange:[0:]"`
+	OverrideName       string `yaml:"name"`
+	UpdEvery           int    `yaml:"update_every" validate:"gte=1"`
+	AutoDetectionRetry int    `yaml:"autodetection_retry" validate:"gte=0"`
+	ChartCleanup       int    `yaml:"chart_cleanup" validate:"gte=0"`
+	RetriesMax         int    `yaml:"retries" validate:"gte=0"`
 }
 
 // TODO: ModuleName() prepends "go_"

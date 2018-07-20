@@ -4,10 +4,14 @@ import (
 	"io/ioutil"
 	"path"
 
+	val "github.com/go-playground/validator"
+	"github.com/go-yaml/yaml"
+
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
 	"github.com/l2isbad/go.d.plugin/internal/modules"
-	"github.com/l2isbad/yaml"
 )
+
+var validate = val.New()
 
 type jobRawConf struct {
 	name string
@@ -70,7 +74,7 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 	// SKIP: config read error and not NoConfiger
 	_, ok := mod.(modules.NoConfiger)
 	if !ok && err != nil {
-		log.Errorf("\"%s\" skipped: %s", name, err)
+		log.Errorf("'%s' skipped: %s", name, err)
 		return
 	}
 
@@ -81,30 +85,30 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 		return
 	}
 
-	log.Debugf("module \"%s\" configuration read success", name)
+	log.Debugf("module '%s' configuration read success", name)
 
-	err = yaml.Unmarshal(f, conf)
+	err = unmarshal(f, conf)
 
 	// SKIP: YAML parse error = no go
 	if err != nil {
-		log.Errorf("module \"%s\" config yaml parse: %s", name, err)
+		log.Errorf("module '%s': %s", name, err)
 		return
 	}
 
 	for _, r := range parseModuleConf(f) {
 		c, m := *conf, creator.MakeModule()
 
-		err := yaml.Unmarshal(r.conf, &c)
+		err := unmarshal(r.conf, &c)
 		// SKIP: job
 		if err != nil {
-			log.Errorf("module %s, job \"%s\" skipped: %s", name, r.name, err)
+			log.Errorf("module '%s', job '%s': %s", name, r.name, err)
 			continue
 		}
 
-		err = yaml.Unmarshal(r.conf, m)
+		err = unmarshal(r.conf, m)
 		// SKIP: job
 		if err != nil {
-			log.Errorf("module %s, job \"%s\" skipped: %s", name, r.name, err)
+			log.Errorf("module %s, job '%s': %s", name, r.name, err)
 			continue
 		}
 
@@ -151,4 +155,14 @@ func setModuleDefaults(n string, c *job.Config) {
 	if v, ok := modules.GetDefault(n).ChartsCleanup(); ok {
 		c.ChartCleanup = v
 	}
+}
+
+func unmarshal(in []byte, out interface{}) error {
+	if err := yaml.Unmarshal(in, out); err != nil {
+		return err
+	}
+	if err := validate.Struct(out); err != nil {
+		return err
+	}
+	return nil
 }

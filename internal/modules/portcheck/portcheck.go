@@ -61,8 +61,8 @@ type PortCheck struct {
 	modules.BaseConfHook
 	modules.Logger
 
-	Host    string         `yaml:"host,required"`
-	Ports   []int          `yaml:"ports,required"`
+	Host    string         `yaml:"host" validate:"required"`
+	Ports   []int          `yaml:"ports" validate:"required,gte=1"`
 	Timeout utils.Duration `yaml:"timeout"`
 
 	do    chan *port
@@ -87,7 +87,7 @@ func (pc *PortCheck) Check() bool {
 
 	sort.Ints(pc.Ports)
 	for _, p := range pc.Ports {
-		pc.ports = append(pc.ports, newPort(p, pc.GetUpdateEvery()))
+		pc.ports = append(pc.ports, newPort(p, pc.UpdateEvery()))
 		pc.AddMany(charts(p))
 
 		go worker(pc.Host, pc.Timeout.Duration, pc.do, pc.done)

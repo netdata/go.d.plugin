@@ -31,7 +31,7 @@ func (c *Charts) GetChartByID(chartID string) *Chart {
 
 // LookupChartByID looks up chart by id.
 func (c *Charts) LookupChartByID(chartID string) (*Chart, bool) {
-	if v :=  c.GetChartByID(chartID); v != nil {
+	if v := c.GetChartByID(chartID); v != nil {
 		return v, true
 	}
 	return nil, false
