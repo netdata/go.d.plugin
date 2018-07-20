@@ -4,9 +4,10 @@ import (
 	"io/ioutil"
 	"path"
 
+	"github.com/go-yaml/yaml"
+
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
 	"github.com/l2isbad/go.d.plugin/internal/modules"
-	"github.com/l2isbad/yaml"
 )
 
 type jobRawConf struct {

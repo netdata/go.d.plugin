@@ -5,11 +5,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-yaml/yaml"
+
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 	"github.com/l2isbad/go.d.plugin/internal/modules/web_log/charts"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts/raw"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/log"
-	"github.com/l2isbad/yaml"
 )
 
 const (
