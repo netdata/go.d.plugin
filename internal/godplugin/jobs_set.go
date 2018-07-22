@@ -18,7 +18,7 @@ const (
 func (gd *goDPlugin) jobsSet(created jobStack) jobStack {
 	var js jobStack
 
-	if created.Empty() {
+	if created.empty() {
 		return nil
 	}
 
@@ -34,10 +34,10 @@ func (gd *goDPlugin) jobsSet(created jobStack) jobStack {
 			j.SetUpdateEvery(gd.cmd.UpdateEvery)
 		}
 
-		js.Push(j)
+		js.push(j)
 	}
 
-	created.Destroy()
+	created.destroy()
 	return js
 }
 

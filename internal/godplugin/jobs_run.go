@@ -15,7 +15,7 @@ type result struct {
 }
 
 func (gd *goDPlugin) jobsRun(jobs jobStack) {
-	if jobs.Empty() {
+	if jobs.empty() {
 		return
 	}
 	started := make(map[string]bool)
@@ -55,7 +55,7 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 		j.Error("Check() [FAILED]")
 	}
 
-	jobs.Destroy()
+	jobs.destroy()
 	modules.Registry.Destroy()
 }
 

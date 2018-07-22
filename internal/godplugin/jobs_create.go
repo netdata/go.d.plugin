@@ -20,15 +20,20 @@ type jobRawConf struct {
 
 type jobStack []*job.Job
 
-func (js *jobStack) Push(v *job.Job) {
+func (js *jobStack) push(v *job.Job) {
 	*js = append(*js, v)
 }
 
-func (js *jobStack) Empty() bool {
+func (js *jobStack) empty() bool {
 	return len(*js) == 0
 }
 
-func (js *jobStack) Destroy() {
+func (js *jobStack) destroy() {
+	if !js.empty() {
+		for i := range *js {
+			(*js)[i] = nil
+		}
+	}
 	*js = nil
 }
 
@@ -81,7 +86,7 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 	// PUSH: jobs without configuration (only base conf)
 	if err != nil {
 		log.Debug(err)
-		jobs.Push(job.New(mod, conf))
+		jobs.push(job.New(mod, conf))
 		return
 	}
 
@@ -100,7 +105,7 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 
 	// PUSH: single job config
 	if num == 0 {
-		jobs.Push(job.New(mod, conf))
+		jobs.push(job.New(mod, conf))
 		return
 	}
 
@@ -126,7 +131,7 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 			c.SetJobName(r.name)
 		}
 		// PUSH:
-		jobs.Push(job.New(m, &c))
+		jobs.push(job.New(m, &c))
 	}
 
 }
