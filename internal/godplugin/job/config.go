@@ -21,18 +21,18 @@ type Config struct {
 }
 
 // TODO: ModuleName() prepends "go_"
-func (c *Config) ModuleName() string {
+func (c Config) ModuleName() string {
 	return "go_" + c.moduleName
 }
 
-func (c *Config) FullName() string {
+func (c Config) FullName() string {
 	if c.jobName == "" && c.OverrideName == ""{
 		return c.ModuleName()
 	}
 	return c.ModuleName() + "_" + c.JobName()
 }
 
-func (c *Config) JobName() string {
+func (c Config) JobName() string {
 	if c.OverrideName != "" {
 		return c.OverrideName
 	}
@@ -42,7 +42,7 @@ func (c *Config) JobName() string {
 	return c.moduleName
 }
 
-func (c *Config) UpdateEvery() int {
+func (c Config) UpdateEvery() int {
 	return c.UpdEvery
 }
 
