@@ -26,20 +26,20 @@ func (c *Config) ModuleName() string {
 }
 
 func (c *Config) FullName() string {
-	if c.jobName == "" {
+	if c.jobName == "" && c.OverrideName == ""{
 		return c.ModuleName()
 	}
 	return c.ModuleName() + "_" + c.JobName()
 }
 
 func (c *Config) JobName() string {
-	if c.jobName == "" {
-		return c.ModuleName()
+	if c.OverrideName != "" {
+		return c.OverrideName
 	}
-	if c.OverrideName == "" {
+	if c.jobName != "" {
 		return c.jobName
 	}
-	return c.OverrideName
+	return c.moduleName
 }
 
 func (c *Config) UpdateEvery() int {

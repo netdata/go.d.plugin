@@ -78,7 +78,7 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 		return
 	}
 
-	// PUSH: job with default config (1 job module)
+	// PUSH: jobs without configuration (only base conf)
 	if err != nil {
 		log.Debug(err)
 		jobs.Push(job.New(mod, conf))
@@ -89,31 +89,43 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 
 	err = unmarshal(f, conf)
 
-	// SKIP: YAML parse error = no go
+	// SKIP: YAML parse error || validator error
 	if err != nil {
 		log.Errorf("module '%s': %s", name, err)
 		return
 	}
 
-	for _, r := range parseModuleConf(f) {
+	raw := parseModuleConf(f)
+	num := len(raw)
+
+	// PUSH: single job config
+	if num == 0 {
+		jobs.Push(job.New(mod, conf))
+		return
+	}
+
+	for _, r := range raw {
 		c, m := *conf, creator.MakeModule()
 
 		err := unmarshal(r.conf, &c)
-		// SKIP: job
+		// SKIP: validator error
 		if err != nil {
 			log.Errorf("module '%s', job '%s': %s", name, r.name, err)
 			continue
 		}
 
 		err = unmarshal(r.conf, m)
-		// SKIP: job
+		// SKIP: validator error
 		if err != nil {
 			log.Errorf("module %s, job '%s': %s", name, r.name, err)
 			continue
 		}
 
-		c.SetJobName(r.name)
-		// PUSH: job
+		// do not add job name for multi job with only 1 job
+		if num > 1 {
+			c.SetJobName(r.name)
+		}
+		// PUSH:
 		jobs.Push(job.New(m, &c))
 	}
 
