@@ -24,7 +24,6 @@ type FlagContext interface {
 	BoolVar(*bool, string, string, bool, string)
 }
 
-// TODO: usage
 func New() FlagContext {
 	var a []string
 	last := len(os.Args) - 1
