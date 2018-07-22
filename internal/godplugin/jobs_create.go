@@ -24,8 +24,8 @@ func (js *jobStack) push(v *job.Job) {
 	*js = append(*js, v)
 }
 
-func (js *jobStack) empty() bool {
-	return len(*js) == 0
+func (js jobStack) empty() bool {
+	return len(js) == 0
 }
 
 func (js *jobStack) destroy() {
