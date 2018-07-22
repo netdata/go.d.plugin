@@ -41,6 +41,6 @@ func (f *boolFlag) SetDefault() {
 	*f.value = true
 }
 
-func (f *boolFlag) NeedArgument() bool {
+func (f boolFlag) NeedArgument() bool {
 	return false
 }
