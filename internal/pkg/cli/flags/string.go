@@ -8,24 +8,31 @@ type stringFlag struct {
 	usage        string
 }
 
-func (f *stringFlag) set(i interface{}) {
+func (f *stringFlag) Set(i interface{}) {
 	if v, ok := i.(string); ok {
 		*f.value = v
 	}
 }
 
-func (f *stringFlag) getUsage() string {
+func (f stringFlag) Usage() string {
 	return f.usage
 }
 
-func (f *stringFlag) getName() string {
+func (f stringFlag) Name() string {
 	return f.name
 }
 
-func (f *stringFlag) getShortName() string {
+func (f stringFlag) ShortName() string {
 	return f.shortName
 }
 
-func (f *stringFlag) getDefaultValue() interface{} {
+func (f stringFlag) UserDefaultValue() interface{} {
 	return f.defaultValue
+}
+
+func (f stringFlag) SetDefault() {
+}
+
+func (f stringFlag) NeedArgument() bool {
+	return true
 }

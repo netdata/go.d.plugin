@@ -23,7 +23,7 @@ func Parse() ParsedCMD {
 	)
 
 	f := flags.New()
-	f.BoolVar(&d, "debug", "d", false, "true or false")
+	f.BoolVar(&d, "debug", "d", false, "debug mode")
 	f.StringVar(&m, "module", "m", "all", "module name")
 	f.Parse()
 

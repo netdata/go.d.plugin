@@ -1,24 +1,27 @@
 package flags
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
 
 type flagSet interface {
-	getUsage() string
-	getName() string
-	getShortName() string
-	getDefaultValue() interface{}
-	set(interface{})
+	Name() string
+	ShortName() string
+	UserDefaultValue() interface{}
+	Usage() string
+
+	NeedArgument() bool
+	Set(interface{})
+	SetDefault()
 }
 
 type FlagContext interface {
 	Parse()
 	StringVar(*string, string, string, string, string)
 	BoolVar(*bool, string, string, bool, string)
-	// ShowUsage() string
 }
 
 // TODO: usage
@@ -33,78 +36,119 @@ func New() FlagContext {
 	}
 
 	return &flagContext{
-		flags: make(map[string]flagSet),
+		flags: make([]flagSet, 0),
 		args:  a,
 	}
 }
 
 type flagContext struct {
-	flags map[string]flagSet
+	flags []flagSet
 	args  []string
 }
 
 func (fc *flagContext) StringVar(v *string, name string, shortName string, value string, usage string) {
-	fc.flags[name] = &stringFlag{
+	f := &stringFlag{
 		value:        v,
 		name:         name,
 		shortName:    shortName,
 		defaultValue: value,
 		usage:        usage,
 	}
+	fc.flags = append(fc.flags, f)
 }
 
 func (fc *flagContext) BoolVar(v *bool, name string, shortName string, value bool, usage string) {
-	fc.flags[name] = &boolFlag{
+	f := &boolFlag{
 		value:        v,
 		name:         name,
 		shortName:    shortName,
 		defaultValue: value,
 		usage:        usage,
 	}
+	fc.flags = append(fc.flags, f)
 }
 
-func (fc *flagContext) Parse() {
+func (fc flagContext) Parse() {
+	if hasHelp(fc.args) {
+		fmt.Println(help(fc.flags))
+		os.Exit(2)
+	}
 
+	err := fc.parse()
+
+	if err != nil {
+		fmt.Println(err, "\n", help(fc.flags))
+		os.Exit(2)
+	}
+}
+
+func (fc flagContext) parse() error {
 	for _, f := range fc.flags {
-		idx := fc.inArgsIndex(f)
+		f.Set(f.UserDefaultValue())
+	}
 
-		if idx == -1 {
-			f.set(f.getDefaultValue())
+	for i := 0; i < len(fc.args); i++ {
+
+		if !isFlag(fc.args[i]) {
 			continue
 		}
 
-		if len(fc.args) > idx+1 && isValue(fc.args[idx+1]) {
-			f.set(fc.args[idx+1])
-			continue
+		v := strings.TrimLeft(fc.args[i], "-")
+
+		f, ok := fc.lookupFlags(v)
+		if !ok {
+			return fmt.Errorf("flag provided but not defined: %s", fc.args[i])
 		}
 
-		switch f.(type) {
+		switch {
 		default:
-			f.set(f.getDefaultValue())
-		case *boolFlag:
-			f.set(true)
+			f.Set(fc.args[i+1])
+			i++
+		case i == len(fc.args)-1, isFlag(fc.args[i+1]):
+			if f.NeedArgument() {
+				return fmt.Errorf("flag needs an argument: %s", fc.args[i])
+			}
+			f.SetDefault()
 		}
 	}
-
+	return nil
 }
 
-func (fc *flagContext) inArgsIndex(f flagSet) int {
-	for idx, v := range fc.args {
-		if !isFlag(v) {
-			continue
-		}
-		v = strings.TrimLeft(v, "-")
-		if v == f.getName() || v == f.getShortName() {
-			return idx
+func (fc flagContext) lookupFlags(v string) (flagSet, bool) {
+	for _, f := range fc.flags {
+		if v == f.Name() || v == f.ShortName() {
+			return f, true
 		}
 	}
-	return -1
+	return nil, false
 }
 
+// TODO: this is lame(negative integers...)
 func isFlag(v string) bool {
-	return strings.HasPrefix(v, "-") || strings.HasPrefix(v, "--")
+	return strings.HasPrefix(v, "-")
 }
 
-func isValue(v string) bool {
-	return !isFlag(v)
+func hasHelp(s []string) bool {
+	for i := range s {
+		v := strings.TrimLeft(s[i], "-")
+		if v == "help" || v == "h" {
+			return true
+		}
+	}
+	return false
+}
+
+func help(s []flagSet) string {
+	var msg = "Usage:\n"
+	for _, f := range s {
+		msg += fmt.Sprintf(
+			"  --%s (-%s) %T\n\t%s (default %v)\n",
+			f.Name(),
+			f.ShortName(),
+			f.UserDefaultValue(),
+			f.Usage(),
+			f.UserDefaultValue(),
+		)
+	}
+	return msg
 }
