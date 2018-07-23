@@ -34,7 +34,7 @@ func getFilter(r rawFilter) (filter, error) {
 	}
 
 	if r.Include != "" {
-		m, err := matcher.GetMatcher(r.Include)
+		m, err := matcher.New(r.Include)
 		if err != nil {
 			return f, err
 		}
@@ -42,7 +42,7 @@ func getFilter(r rawFilter) (filter, error) {
 	}
 
 	if r.Exclude != "" {
-		m, err := matcher.GetMatcher(r.Exclude)
+		m, err := matcher.New(r.Exclude)
 		if err != nil {
 			return f, err
 		}

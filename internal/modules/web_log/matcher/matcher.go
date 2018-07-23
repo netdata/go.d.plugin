@@ -9,7 +9,7 @@ type Matcher interface {
 	Match(string) bool
 }
 
-func GetMatcher(s string) (Matcher, error) {
+func New(s string) (Matcher, error) {
 	if isStringRegex(s) {
 		return getStringMatcher(s), nil
 	}

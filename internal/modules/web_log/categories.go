@@ -36,7 +36,7 @@ func getCategories(ms yaml.MapSlice, prefix string) (categories, error) {
 			continue
 		}
 
-		m, err := matcher.GetMatcher(r)
+		m, err := matcher.New(r)
 		if err != nil {
 			return cats, err
 		}
