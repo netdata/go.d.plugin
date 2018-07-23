@@ -10,7 +10,7 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 	"github.com/l2isbad/go.d.plugin/internal/modules/web_log/charts"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts/raw"
-	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/log"
+	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/tail"
 )
 
 const (
@@ -45,7 +45,7 @@ type WebLog struct {
 	DoChartURLCat    bool          `yaml:"per_category_charts"`
 	DoClientsAll     bool          `yaml:"clients_all_time"`
 
-	reader *log.Reader
+	reader *tail.Reader
 	parser *regexp.Regexp
 
 	fil        filter
@@ -62,7 +62,7 @@ type WebLog struct {
 func (w *WebLog) Check() bool {
 
 	// LogReader initialization
-	v, err := log.NewReader(w.Path)
+	v, err := tail.NewReader(w.Path)
 	if err != nil {
 		w.Error(err)
 		return false
@@ -70,7 +70,7 @@ func (w *WebLog) Check() bool {
 	w.reader = v
 
 	// read last line
-	line, err := log.ReadLastLine(w.Path)
+	line, err := tail.ReadLastLine(w.Path)
 	if err != nil {
 		w.Error(err)
 		return false
@@ -123,7 +123,7 @@ func (w *WebLog) Check() bool {
 func (w *WebLog) GetData() map[string]int64 {
 	v, err := w.reader.GetRows()
 
-	if err != nil && err == log.ErrSizeNotChanged {
+	if err != nil && err == tail.ErrSizeNotChanged {
 		return w.data
 	} else if err != nil {
 		return nil
