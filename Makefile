@@ -5,7 +5,7 @@ all: test build
 
 build:
 	mkdir -p pkg
-	$(GO) build github.com/l2isbad/go.d.plugin/cmd/godplugin
+	$(GO) build -o pkg/godplugin github.com/l2isbad/go.d.plugin/cmd/godplugin
 
 clean:
 	rm -rf pkg
