@@ -2,6 +2,8 @@ package web_log
 
 import (
 	"github.com/go-yaml/yaml"
+
+	"github.com/l2isbad/go.d.plugin/internal/modules/web_log/matcher"
 )
 
 type categories struct {
@@ -16,7 +18,7 @@ func (c categories) exist() bool {
 type category struct {
 	id   string
 	name string
-	matcher
+	matcher.Matcher
 }
 
 func getCategories(ms yaml.MapSlice, prefix string) (categories, error) {
@@ -34,7 +36,7 @@ func getCategories(ms yaml.MapSlice, prefix string) (categories, error) {
 			continue
 		}
 
-		m, err := getMatcher(r)
+		m, err := matcher.GetMatcher(r)
 		if err != nil {
 			return cats, err
 		}
@@ -42,7 +44,7 @@ func getCategories(ms yaml.MapSlice, prefix string) (categories, error) {
 		cat := category{
 			id:      prefix + "_" + v.Key.(string),
 			name:    v.Key.(string),
-			matcher: m,
+			Matcher: m,
 		}
 		cats.items = append(cats.items, cat)
 	}

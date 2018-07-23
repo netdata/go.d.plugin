@@ -26,7 +26,7 @@ func (c Config) ModuleName() string {
 }
 
 func (c Config) FullName() string {
-	if c.jobName == "" && c.OverrideName == ""{
+	if c.jobName == "" && c.OverrideName == "" {
 		return c.ModuleName()
 	}
 	return c.ModuleName() + "_" + c.JobName()

@@ -1,8 +1,10 @@
 package web_log
 
+import "github.com/l2isbad/go.d.plugin/internal/modules/web_log/matcher"
+
 type filter struct {
-	include matcher
-	exclude matcher
+	include matcher.Matcher
+	exclude matcher.Matcher
 }
 
 func (f *filter) exist() bool {
@@ -12,10 +14,10 @@ func (f *filter) exist() bool {
 func (f *filter) filter(s string) bool {
 	i, e := true, true
 	if f.include != nil {
-		i = f.include.match(s)
+		i = f.include.Match(s)
 	}
 	if f.exclude != nil {
-		e = !f.exclude.match(s)
+		e = !f.exclude.Match(s)
 	}
 	return i && e
 }
@@ -32,7 +34,7 @@ func getFilter(r rawFilter) (filter, error) {
 	}
 
 	if r.Include != "" {
-		m, err := getMatcher(r.Include)
+		m, err := matcher.GetMatcher(r.Include)
 		if err != nil {
 			return f, err
 		}
@@ -40,7 +42,7 @@ func getFilter(r rawFilter) (filter, error) {
 	}
 
 	if r.Exclude != "" {
-		m, err := getMatcher(r.Exclude)
+		m, err := matcher.GetMatcher(r.Exclude)
 		if err != nil {
 			return f, err
 		}

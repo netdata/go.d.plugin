@@ -232,7 +232,7 @@ func (w *WebLog) GetData() map[string]int64 {
 // Per URL and per USER_DEFINED
 func (w *WebLog) reqPerCategory(url string, c categories) string {
 	for _, v := range c.items {
-		if v.match(url) {
+		if v.Match(url) {
 			w.data[v.id]++
 			return v.id
 		}
