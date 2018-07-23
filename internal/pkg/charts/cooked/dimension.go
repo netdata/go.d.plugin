@@ -154,3 +154,7 @@ func (d *dimension) set(value int64) string {
 		d.id,
 		value)
 }
+
+func (d *dimension) empty() string {
+	return fmt.Sprintf(formatDimEmptySET, d.id)
+}
