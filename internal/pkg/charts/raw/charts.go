@@ -1,15 +1,13 @@
 package raw
 
 import (
-	"errors"
 	"fmt"
-
 	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
 )
 
 type (
 	Order       = utils.StringSlice
-	Definitions []Chart
+	Definitions []*Chart
 
 	Charts struct {
 		Order       Order
@@ -22,32 +20,36 @@ type (
 // CHART GETTER
 
 // GetChartByID returns chart id.
-func (c *Charts) GetChartByID(chartID string) *Chart {
-	if idx := c.Definitions.index(chartID); idx != -1 {
-		return &c.Definitions[idx]
+func (c Charts) GetChartByID(id string) *Chart {
+	idx := c.Definitions.index(id)
+	if idx == -1 {
+		return nil
 	}
-	return nil
+	return c.Definitions[idx]
 }
 
 // LookupChartByID looks up chart by id.
-func (c *Charts) LookupChartByID(chartID string) (*Chart, bool) {
-	if v := c.GetChartByID(chartID); v != nil {
+func (c Charts) LookupChartByID(id string) (*Chart, bool) {
+	v := c.GetChartByID(id)
+	if v != nil {
 		return v, true
 	}
 	return nil, false
 }
 
 // GetChartByIndex returns chart by index.
-func (c *Charts) GetChartByIndex(idx int) *Chart {
-	if idx >= 0 && idx < len(c.Definitions) {
-		return &c.Definitions[idx]
+func (c Charts) GetChartByIndex(idx int) *Chart {
+	ok := idx >= 0 && idx < len(c.Definitions)
+	if !ok {
+		return nil
 	}
-	return nil
+	return c.Definitions[idx]
 }
 
 // LookupChartByIndex looks up chart by index.
-func (c *Charts) LookupChartByIndex(idx int) (*Chart, bool) {
-	if v := c.GetChartByIndex(idx); v != nil {
+func (c Charts) LookupChartByIndex(idx int) (*Chart, bool) {
+	v := c.GetChartByIndex(idx)
+	if v != nil {
 		return v, true
 	}
 	return nil, false
@@ -58,46 +60,57 @@ func (c *Charts) LookupChartByIndex(idx int) (*Chart, bool) {
 // CHART DELETER
 
 // DeleteChartByID deletes chart by id.
-func (c *Charts) DeleteChartByID(chartID string) error {
-	if idx := c.Definitions.index(chartID); idx != -1 {
-		c.Order.DeleteByID(chartID)
-		c.Definitions = append(c.Definitions[:idx], c.Definitions[idx+1:]...)
-		return nil
+func (c *Charts) DeleteChartByID(id string) bool {
+	idx := c.Definitions.index(id)
+	if idx == -1 {
+		return false
 	}
-	return errors.New("nonexistent chart")
+
+	c.Order.DeleteByID(id)
+	c.Definitions = append(c.Definitions[:idx], c.Definitions[idx+1:]...)
+	return true
 }
 
 // DeleteChartByIndex deletes chart by index.
-func (c *Charts) DeleteChartByIndex(idx int) error {
-	if idx >= 0 && idx < len(c.Definitions) {
-		c.Order.DeleteByID(c.GetChartByIndex(idx).ID)
-		c.Definitions = append(c.Definitions[:idx], c.Definitions[idx+1:]...)
-		return nil
+func (c *Charts) DeleteChartByIndex(idx int) bool {
+	ok := idx >= 0 && idx < len(c.Definitions)
+	if !ok {
+		return false
 	}
-	return errors.New("nonexistent chart")
+
+	c.Order.DeleteByID(c.GetChartByIndex(idx).ID)
+	c.Definitions = append(c.Definitions[:idx], c.Definitions[idx+1:]...)
+	return true
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 // CHART ADDER
 
+// FIXME: change method name
 // AddChartOrder adds valid non duplicate chart to Definitions and to Order.
-func (c *Charts) AddChartNoOrder(chart Chart) error {
-	if err := chart.IsValid(); err != nil {
-		return fmt.Errorf("invalid chart '%s' (%s)", chart.ID, err)
+func (c *Charts) AddChartNoOrder(chart *Chart) error {
+	err := chart.IsValid()
+	if err != nil {
+		return fmt.Errorf("invalid chart '%s': %s", chart.ID, err)
 	}
-	if c.Definitions.index(chart.ID) != -1 {
+
+	idx := c.Definitions.index(chart.ID)
+	if idx != -1 {
 		return fmt.Errorf("duplicate chart '%s'", chart.ID)
 	}
+
 	c.Definitions = append(c.Definitions, chart)
 	return nil
 }
 
 // AddChart adds valid non duplicate chart to Definitions.
-func (c *Charts) AddChart(chart Chart) error {
-	if err := c.AddChartNoOrder(chart); err != nil {
+func (c *Charts) AddChart(chart *Chart) error {
+	err := c.AddChartNoOrder(chart)
+	if err != nil {
 		return err
 	}
+
 	if !c.Order.Include(chart.ID) {
 		c.Order.Append(chart.ID)
 	}
@@ -107,20 +120,22 @@ func (c *Charts) AddChart(chart Chart) error {
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Copy makes a full copy of charts.
-func (c *Charts) Copy() *Charts {
+func (c Charts) Copy() *Charts {
 	rv := Charts{}
-	for _, v := range c.Order {
-		rv.Order.Append(v)
+	for idx := range c.Order {
+		rv.Order.Append(c.Order[idx])
 	}
-	for _, v := range c.Definitions {
-		rv.Definitions = append(rv.Definitions, v.Copy())
+
+	for idx := range c.Definitions {
+		rv.Definitions = append(rv.Definitions, c.Definitions[idx].Copy())
 	}
+
 	return &rv
 }
 
-func (d *Definitions) index(chartID string) int {
-	for idx, c := range *d {
-		if c.ID == chartID {
+func (d Definitions) index(id string) int {
+	for idx := range d {
+		if d[idx].ID == id {
 			return idx
 		}
 	}

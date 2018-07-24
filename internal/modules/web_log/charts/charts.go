@@ -117,8 +117,8 @@ var (
 	}
 )
 
-func RespCodesDetailedPerFam() []Chart {
-	return []Chart{
+func RespCodesDetailedPerFam() []*Chart {
+	return []*Chart{
 		raw.NewChart(
 			RespCodesDetailed.ID+"_1xx",
 			Options{"Detailed Response Codes 1xx", "requests/s", "responses", "", raw.Stacked},
@@ -146,8 +146,8 @@ func RespCodesDetailedPerFam() []Chart {
 	}
 }
 
-func PerCategoryStats(id string) []Chart {
-	return []Chart{
+func PerCategoryStats(id string) []*Chart {
+	return []*Chart{
 		raw.NewChart(
 			RespCodesDetailed.ID+"_"+id,
 			Options{"Detailed Response Codes", "requests/s", id, "web_log.url_detailed_response_codes", raw.Stacked},

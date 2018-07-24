@@ -20,14 +20,14 @@ type (
 var charts = Charts{
 	Order: Order{"chart1", "chart2"},
 	Definitions: Definitions{
-		Chart{
+		&Chart{
 			ID:      "chart1",
 			Options: Options{"Random Data", "random", "random"},
 			Dimensions: Dimensions{
 				Dimension{"random0"},
 			},
 		},
-		Chart{
+		&Chart{
 			ID:      "chart2",
 			Options: Options{"Random Data", "random", "random"},
 			Dimensions: Dimensions{
