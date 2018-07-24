@@ -13,15 +13,22 @@ import (
 type Client struct {
 	FollowRedirect bool           `yaml:"follow_redirects"`
 	Timeout        utils.Duration `yaml:"timeout"`
-	ProxyUrl       string         `yaml:"proxy_url"`
+	ProxyURL       string         `yaml:"proxy_url"`
 	TLSVerify      bool           `yaml:"tls_verify"`
 }
 
 func CreateHttpClient(c *Client) *http.Client {
+	return c.CreateHttpClient()
+}
+
+func (c *Client) CreateHttpClient() *http.Client {
+	if c == nil {
+		return nil
+	}
 	client := &http.Client{
 		Timeout: c.Timeout.Duration,
 		Transport: &http.Transport{
-			Proxy:           getProxyFunc(c.ProxyUrl),
+			Proxy:           getProxyFunc(c.ProxyURL),
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: !c.TLSVerify},
 		}}
 
@@ -35,9 +42,9 @@ func getProxyFunc(u string) func(r *http.Request) (*url.URL, error) {
 	if u == "" {
 		return http.ProxyFromEnvironment
 	}
-	proxyUrl, err := url.Parse(u)
-	if err != nil || proxyUrl.Scheme != "http" && proxyUrl.Scheme != "https" {
+	proxyURL, err := url.Parse(u)
+	if err != nil || proxyURL.Scheme != "http" && proxyURL.Scheme != "https" {
 		return func(r *http.Request) (*url.URL, error) { return nil, fmt.Errorf("invalid proxy: %s", err) }
 	}
-	return func(r *http.Request) (*url.URL, error) { return proxyUrl, nil }
+	return func(r *http.Request) (*url.URL, error) { return proxyURL, nil }
 }

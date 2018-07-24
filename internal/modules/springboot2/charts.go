@@ -9,11 +9,16 @@ var charts = raw.Charts{
 			ID:      "response_code",
 			Options: raw.Options{"Response Codes", "requests/s", "response"},
 			Dimensions: raw.Dimensions{
-				raw.Dimension{"response_time", "time", "", 1, 1e6},
+				{"resp_1xx", "1xx", "incremental"},
+				{"resp_2xx", "2xx", "incremental"},
+				{"resp_3xx", "3xx", "incremental"},
+				{"resp_4xx", "4xx", "incremental"},
+				{"resp_5xx", "5xx", "incremental"},
+				{"resp_other", "Other", "incremental"},
 			},
 		},
 		{
-			ID:      "response_length",
+			ID:      "threads",
 			Options: raw.Options{"HTTP Response Body Length", "characters", "response"},
 			Dimensions: raw.Dimensions{
 				raw.Dimension{"response_length", "length"},

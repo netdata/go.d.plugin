@@ -8,18 +8,24 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/web"
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/pkg/textparse"
-
-	"github.com/pkg/errors"
 )
 
 type (
-	// Scraper Scraper
-	Scraper struct {
-		URL    string
-		Client *http.Client
+	// Prometheus is a helper for scrape and parse prometheus format metrics.
+	Prometheus interface {
+		// scrape and parse prometheus format metrics
+		GetMetrics() (Metrics, error)
+	}
 
+	prometheus struct {
+		client  *http.Client
+		request *web.Request
+		metrics Metrics
+
+		// inetrnal use
 		buf     *bytes.Buffer
 		gzipr   *gzip.Reader
 		bodybuf *bufio.Reader
@@ -31,56 +37,56 @@ const (
 	userAgentHeader = `netdata/go.d.plugin`
 )
 
-// Scrape Scrape
-func (p *Scraper) Scrape(metrics *Metrics) error {
-	if p.buf == nil {
-		p.buf = bytes.NewBuffer(make([]byte, 0, 16000))
+// New creates a Prometheus instance.
+func New(client *http.Client, request *web.Request) Prometheus {
+	return &prometheus{
+		client:  client,
+		request: request,
+		buf:     bytes.NewBuffer(make([]byte, 0, 16000)),
 	}
+}
+
+func (p *prometheus) GetMetrics() (Metrics, error) {
+	p.metrics.Reset()
+	if err := p.scrape(&p.metrics); err != nil {
+		return nil, err
+	}
+	p.metrics.Sort()
+	return p.metrics, nil
+}
+
+// Scrape Scrape
+func (p *prometheus) scrape(metrics *Metrics) error {
 	p.buf.Reset()
 	err := p.fetch(p.buf)
 	if err != nil {
 		return err
 	}
-	return p.parse(p.buf.Bytes(), metrics)
+	return parse(p.buf.Bytes(), metrics)
 }
 
-func (p *Scraper) parse(prometheusText []byte, metrics *Metrics) error {
+func parse(prometheusText []byte, metrics *Metrics) error {
 	parser := textparse.New(prometheusText)
 
-	for {
-		entry, err := parser.Next()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return err
-		}
-		if entry != textparse.EntrySeries {
-			continue
-		}
-		_, _, val := parser.Series()
+	for parser.Next() {
+		_, _, val := parser.At()
 		var lbls labels.Labels
 		parser.Metric(&lbls)
-		*metrics = append(*metrics, Metric{lbls, val})
+		metrics.Add(Metric{lbls, val})
 	}
 	return nil
 }
 
-func (p *Scraper) fetch(w io.Writer) error {
-	client := p.Client
-	if client == nil {
-		client = http.DefaultClient
-	}
-
-	req, err := http.NewRequest("GET", p.URL, nil)
+func (p *prometheus) fetch(w io.Writer) error {
+	req, err := p.request.CreateRequest()
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	req.Header.Add("Accept", acceptHeader)
 	req.Header.Add("Accept-Encoding", "gzip")
 	req.Header.Set("User-Agent", userAgentHeader)
 
-	resp, err := client.Do(req)
+	resp, err := p.client.Do(req)
 	if err != nil {
 		return err
 	}
