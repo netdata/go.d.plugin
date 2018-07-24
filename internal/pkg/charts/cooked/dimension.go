@@ -10,10 +10,7 @@ import (
 // hide dimension after N failed updates in a row.
 var dimMaxRetries = 5
 
-func newDimension(d raw.Dimension) (*dimension, error) {
-	if err := d.IsValid(); err != nil {
-		return nil, err
-	}
+func newDimension(d raw.Dimension) *dimension {
 	return &dimension{
 		id:         d.ID(),
 		name:       d.Name(),
@@ -22,8 +19,7 @@ func newDimension(d raw.Dimension) (*dimension, error) {
 		divisor:    d.Divisor(),
 		hidden:     d.Hidden(),
 		flagsDim:   &flagsDim{retriesMax: dimMaxRetries},
-	}, nil
-
+	}
 }
 
 type dimension struct {
