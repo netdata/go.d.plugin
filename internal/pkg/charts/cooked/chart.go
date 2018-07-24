@@ -284,13 +284,18 @@ func (c *Chart) Refresh() {
 
 // Update does Chart data collection, Chart creating and updating. Returns true if at least one dimension was updated.
 func (c *Chart) Update(data map[string]int64, interval int) bool {
-	var updDim, updVar string
+	var (
+		uDim    string
+		uVar    string
+		updated bool
+	)
 
 	for _, d := range c.dimensions {
 		if value, ok := d.get(data); ok {
-			updDim += d.set(value)
+			uDim += d.set(value)
+			updated = true
 		} else {
-			updDim += d.empty()
+			uDim += d.empty()
 		}
 		if d.push {
 			c.setPush(true)
@@ -300,11 +305,11 @@ func (c *Chart) Update(data map[string]int64, interval int) bool {
 
 	for _, v := range c.variables {
 		if value, ok := data[v.id]; ok {
-			updVar += v.set(value)
+			uVar += v.set(value)
 		}
 	}
 
-	if updDim == "" {
+	if !updated {
 		c.FailedUpdates++
 		c.setUpdated(false)
 		return false
@@ -315,7 +320,7 @@ func (c *Chart) Update(data map[string]int64, interval int) bool {
 	if c.isPush() {
 		SafePrint(c.create())
 	}
-	SafePrint(c.begin(interval), updDim, updVar, "END\n\n")
+	SafePrint(c.begin(interval), uDim, uVar, "END\n\n")
 	c.setUpdated(true)
 	c.FailedUpdates = 0
 

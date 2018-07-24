@@ -24,7 +24,7 @@ func charts(port int) *Charts {
 			sprintf("instate_%d", port),
 			sprintf("latency_%d", port)},
 		Definitions: Definitions{
-			Chart{
+			&Chart{
 				ID:      sprintf("status_%d", port),
 				Options: Options{"Port Check Status", "boolean", family, "portcheck.status"},
 				Dimensions: Dimensions{
@@ -33,14 +33,14 @@ func charts(port int) *Charts {
 					Dimension{sprintf("timeout_%d", port), "timeout"},
 				},
 			},
-			Chart{
+			&Chart{
 				ID:      sprintf("instate_%d", port),
 				Options: Options{"Current State Duration", "seconds", family, "portcheck.instate"},
 				Dimensions: Dimensions{
 					Dimension{sprintf("instate_%d", port), "time"},
 				},
 			},
-			Chart{
+			&Chart{
 				ID:      sprintf("latency_%d", port),
 				Options: Options{"TCP Connect Latency", "ms", family, "portcheck.latency"},
 				Dimensions: Dimensions{

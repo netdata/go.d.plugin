@@ -1,11 +1,5 @@
 package raw
 
-import (
-	"errors"
-	"fmt"
-	"strconv"
-)
-
 const (
 	IdxDimID = iota
 	IdxDimName
@@ -31,153 +25,117 @@ var (
 
 type Dimension [6]interface{}
 
-func (d *Dimension) IsValid() error {
+func (d Dimension) IsValid() error {
 	if d.ID() != "" {
 		return nil
 	}
-	return errors.New("id not specified")
+	return errNoID
 }
 
 // ---------------------------------------------------------------------------------------------------------------------_
 
 // FIELD GETTER
 
-// ID returns 0 element of Dimension converted to string (valid types are fmt.Stringer, string, int).
-func (d *Dimension) ID() string {
-	switch v := d[IdxDimID].(type) {
-	case string:
-		return v
-	case fmt.Stringer:
-		return v.String()
-	case int:
-		return strconv.Itoa(v)
-	default:
-		return ""
+// ID returns 0 element of Dimension converted to string.
+func (d Dimension) ID() string {
+	id, ok := d[IdxDimID].(string)
+	if ok {
+		return id
 	}
+	return ""
 }
 
-// Name returns 1 element of Dimension converted to string (valid types are fmt.Stringer, string, int).
-func (d *Dimension) Name() string {
-	switch v := d[IdxDimName].(type) {
-	case string:
-		return v
-	case fmt.Stringer:
-		return v.String()
-	case int:
-		return strconv.Itoa(v)
-	default:
-		return ""
+// Name returns 1 element of Dimension converted to string.
+func (d Dimension) Name() string {
+	name, ok := d[IdxDimName].(string)
+	if ok {
+		return name
 	}
+	return ""
 }
 
 // Algorithm returns 2 element of Dimension converted to string.
-func (d *Dimension) Algorithm() string {
-	switch v := d[IdxDimAlgorithm].(type) {
-	case string:
-		if ValidAlgorithm(v) {
-			return v
-		}
-		return defaultDimAlgorithm
-	default:
+func (d Dimension) Algorithm() string {
+	algorithm, ok := d[IdxDimAlgorithm].(string)
+	if !ok {
 		return defaultDimAlgorithm
 	}
+	if !ValidAlgorithm(algorithm) {
+		return defaultDimAlgorithm
+	}
+	return algorithm
 }
 
 // Multiplier returns 3 element of Dimension converted to int.
-func (d *Dimension) Multiplier() int {
-	switch v := d[IdxDimMultiplier].(type) {
-	case string:
-		if val, err := strconv.Atoi(v); err != nil {
-			return defaultDimMultiplier
-		} else {
-			return val
-		}
-	case int:
-		return v
-	case float64:
-		return int(v)
-	case float32:
-		return int(v)
-	default:
-		return defaultDimMultiplier
+func (d Dimension) Multiplier() int {
+	mul, ok := d[IdxDimMultiplier].(int)
+	if ok && mul > 0 {
+		return mul
 	}
+	return defaultDimMultiplier
 }
 
 // Divisor returns 4 element of Dimension converted to int.
-func (d *Dimension) Divisor() int {
-	switch v := d[IdxDimDivisor].(type) {
-	case string:
-		if val, err := strconv.Atoi(v); err != nil {
-			return defaultDimDivisor
-		} else {
-			return val
-		}
-	case int:
-		return v
-	case float64:
-		return int(v)
-	case float32:
-		return int(v)
-	default:
-		return defaultDimDivisor
+func (d Dimension) Divisor() int {
+	div, ok := d[IdxDimDivisor].(int)
+	if ok && div > 0 {
+		return div
 	}
+	return defaultDimDivisor
 }
 
 // Hidden returns 5 element of Dimension converted to string.
-func (d *Dimension) Hidden() string {
+func (d Dimension) Hidden() string {
 	switch v := d[IdxDimHidden].(type) {
 	case string:
 		if v == "hidden" {
 			return "hidden"
 		}
-		return defaultDimHidden
 	case bool:
 		if v {
 			return "hidden"
 		}
-		return defaultDimHidden
-	default:
-		return defaultDimHidden
 	}
+	return defaultDimHidden
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 // FIELD SETTER
 
-// SetID sets 0 element of Dimension (valid types are fmt.Stringer, string, int).
-func (d *Dimension) SetID(a interface{}) *Dimension {
-	d[IdxDimID] = a
+// SetID sets 0 element of Dimension.
+func (d *Dimension) SetID(s string) *Dimension {
+	d[IdxDimID] = s
 	return d
 }
 
-// SetName sets 1 element of Dimension (valid types are fmt.Stringer, string, int).
-func (d *Dimension) SetName(a interface{}) *Dimension {
-	d[IdxDimName] = a
+// SetName sets 1 element of Dimension.
+func (d *Dimension) SetName(s string) *Dimension {
+	d[IdxDimName] = s
 	return d
 }
 
 // SetAlgorithm sets 2 element of Dimension.
-func (d *Dimension) SetAlgorithm(a string) *Dimension {
-	d[IdxDimAlgorithm] = a
+func (d *Dimension) SetAlgorithm(s string) *Dimension {
+	d[IdxDimAlgorithm] = s
 	return d
 }
 
 // SetMultiplier sets 3 element of Dimension.
-func (d *Dimension) SetMultiplier(a int) *Dimension {
-	d[IdxDimMultiplier] = a
+func (d *Dimension) SetMultiplier(i int) *Dimension {
+	d[IdxDimMultiplier] = i
 	return d
 }
 
 // SetDivisor sets 4 element of Dimension.
-func (d *Dimension) SetDivisor(a int) *Dimension {
-	d[IdxDimDivisor] = a
+func (d *Dimension) SetDivisor(i int) *Dimension {
+	d[IdxDimDivisor] = i
 	return d
 }
 
 // SetHidden sets 5 element of Dimension.
-func (d *Dimension) SetHidden(a bool) *Dimension {
-	d[IdxDimHidden] = a
+func (d *Dimension) SetHidden(b bool) *Dimension {
+	d[IdxDimHidden] = b
 	return d
 }
 
@@ -185,8 +143,8 @@ func (d *Dimension) SetHidden(a bool) *Dimension {
 
 // ValidAlgorithm returns whether the dimension algorithm is valid.
 // Valid algorithms: "absolute", "incremental", "percentage-of-absolute-row", "percentage-of-incremental-row".
-func ValidAlgorithm(a string) bool {
-	switch a {
+func ValidAlgorithm(s string) bool {
+	switch s {
 	case Absolute, Incremental, PercentOfAbsolute, PercentOfIncremental:
 		return true
 	}

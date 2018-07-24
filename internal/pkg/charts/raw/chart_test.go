@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+var testChart = Chart{}
+
 func TestChart_IsValid(t *testing.T) {
 	if (&Chart{}).IsValid() == nil {
 		t.Error("expected error, but got nil")
@@ -54,143 +56,122 @@ func TestChart_IsValid(t *testing.T) {
 
 func TestChart_Title(t *testing.T) {
 	title := "title"
-	c := Chart{
-		Options: Options{
-			IdxChartTitle: title,
-		}}
+	testChart.Options[IdxChartTitle] = title
 
-	if c.Title() != title {
-		t.Errorf("expected %s, but got %s", title, c.Title())
+	if testChart.Title() != title {
+		t.Errorf("expected %s, but got %s", title, testChart.Title())
 	}
 }
 
 func TestChart_Units(t *testing.T) {
 	units := "units"
-	c := Chart{
-		Options: Options{
-			IdxChartUnits: units,
-		}}
+	testChart.Options[IdxChartUnits] = units
 
-	if c.Units() != units {
-		t.Errorf("expected %s, but got %s", units, c.Units())
+	if testChart.Units() != units {
+		t.Errorf("expected %s, but got %s", units, testChart.Units())
 	}
 }
 
 func TestChart_Family(t *testing.T) {
-	family := "FAMILY"
-	c := Chart{
-		Options: Options{
-			IdxChartFamily: family,
-		}}
+	family := "family"
+	testChart.Options[IdxChartFamily] = family
 
-	if c.Family() != strings.ToLower(family) {
-		t.Errorf("expected %s, but got %s", strings.ToLower(family), c.Family())
+	if testChart.Family() != strings.ToLower(family) {
+		t.Errorf("expected %s, but got %s", strings.ToLower(family), testChart.Family())
 	}
 }
 
 func TestChart_Context(t *testing.T) {
 	context := "context"
-	c := Chart{
-		Options: Options{
-			IdxChartContext: context,
-		}}
+	testChart.Options[IdxChartContext] = context
 
-	if c.Context() != context {
-		t.Errorf("expected %s, but got %s", context, c.Context())
+	if testChart.Context() != context {
+		t.Errorf("expected %s, but got %s", context, testChart.Context())
 	}
 }
 
 func TestChart_ChartType(t *testing.T) {
-	c := Chart{}
-
-	if c.ChartType() != defaultChartType {
-		t.Errorf("expected %s, but got %s", defaultChartType, c.ChartType())
+	if testChart.ChartType() != defaultChartType {
+		t.Errorf("expected %s, but got %s", defaultChartType, testChart.ChartType())
 	}
 
-	c = Chart{
-		Options: Options{
-			IdxChartType: Stacked,
-		}}
+	testChart.Options[IdxChartType] = Stacked
 
-	if c.ChartType() != Stacked {
-		t.Errorf("expected %s, but got %s", Stacked, c.ChartType())
+	if testChart.ChartType() != Stacked {
+		t.Errorf("expected %s, but got %s", Stacked, testChart.ChartType())
 	}
 }
 
 func TestChart_OverrideID(t *testing.T) {
-	overrideID := "id"
-	c := Chart{
-		Options: Options{
-			IdxChartOverrideID: overrideID,
-		}}
+	id := "id"
+	testChart.Options[IdxChartOverrideID] = id
 
-	if c.OverrideID() != overrideID {
-		t.Errorf("expected %s, but got %s", overrideID, c.OverrideID())
+	if testChart.OverrideID() != id {
+		t.Errorf("expected %s, but got %s", id, testChart.OverrideID())
 	}
 }
 
 func TestChart_SetTitle(t *testing.T) {
-	c := Chart{}
-	newTitle := "title"
+	title := "newTitle"
 
-	c.SetTitle(newTitle)
-	if c.Title() != newTitle {
-		t.Errorf("expected %s, but got %s", newTitle, c.Title())
+	testChart.SetTitle(title)
+
+	if testChart.Title() != title {
+		t.Errorf("expected %s, but got %s", title, testChart.Title())
 	}
 }
 
 func TestChart_SetUnits(t *testing.T) {
-	c := Chart{}
-	newUnits := "units"
+	units := "newUnits"
 
-	c.SetUnits(newUnits)
-	if c.Units() != newUnits {
-		t.Errorf("expected %s, but got %s", newUnits, c.Units())
+	testChart.SetUnits(units)
+
+	if testChart.Units() != units {
+		t.Errorf("expected %s, but got %s", units, testChart.Units())
 	}
 }
 
 func TestChart_SetFamily(t *testing.T) {
-	c := Chart{}
-	newFamily := "family"
+	family := "newFamily"
 
-	c.SetFamily(newFamily)
-	if c.Family() != newFamily {
-		t.Errorf("expected %s, but got %s", newFamily, c.Family())
+	testChart.SetFamily(family)
+
+	if testChart.Family() != "newfamily" {
+		t.Errorf("expected %s, but got %s", family, testChart.Family())
 	}
 }
 
 func TestChart_SetContext(t *testing.T) {
-	c := Chart{}
-	newContext := "context"
+	context := "newContext"
 
-	c.SetContext(newContext)
-	if c.Context() != newContext {
-		t.Errorf("expected %s, but got %s", newContext, c.Context())
+	testChart.SetContext(context)
+
+	if testChart.Context() != context {
+		t.Errorf("expected %s, but got %s", context, testChart.Context())
 	}
 }
 
 func TestChart_SetChartType(t *testing.T) {
-	c := Chart{}
+	testChart.SetChartType(Area)
 
-	c.SetChartType(Area)
-	if c.ChartType() != Area {
-		t.Errorf("expected %s, but got %s", Area, c.ChartType())
+	if testChart.ChartType() != Area {
+		t.Errorf("expected %s, but got %s", Area, testChart.ChartType())
 	}
 
-	c = Chart{}
-	c.SetChartType("SecretChartType")
-	if c.ChartType() != Line {
-		t.Errorf("expected %s, but got %s", Line, c.ChartType())
+	testChart.SetChartType("ChartType")
+
+	if testChart.ChartType() != Line {
+		t.Errorf("expected %s, but got %s", Line, testChart.ChartType())
 	}
 }
 
 func TestChart_SetOverrideID(t *testing.T) {
-	c := Chart{}
-	newOverrideID := "id"
+	id := "id"
 
-	c.SetOverrideID(newOverrideID)
-	if c.OverrideID() != newOverrideID {
-		t.Errorf("expected %s, but got %s", newOverrideID, c.OverrideID())
+	testChart.SetOverrideID(id)
+
+	if testChart.OverrideID() != id {
+		t.Errorf("expected %s, but got %s", id, testChart.OverrideID())
 	}
 }
 
@@ -259,12 +240,12 @@ func TestChart_DeleteDimByID(t *testing.T) {
 
 	l := len(c.Dimensions)
 
-	if err := c.DeleteDimByID(id); err != nil {
-		t.Errorf("expected nil, but got %s", err)
+	if ok := c.DeleteDimByID(id); !ok {
+		t.Errorf("expected true, but got false")
 	}
 
-	if err := c.DeleteDimByID("id2"); err == nil {
-		t.Error("expected error, but got nil")
+	if c.DeleteDimByID("id2") {
+		t.Errorf("expected false, but got true")
 	}
 
 	if !(len(c.Dimensions) < l) {
@@ -279,12 +260,12 @@ func TestChart_DeleteDimByIndex(t *testing.T) {
 
 	l := len(c.Dimensions)
 
-	if err := c.DeleteDimByIndex(0); err != nil {
-		t.Errorf("expected nil, but got %s", err)
+	if !c.DeleteDimByIndex(0) {
+		t.Errorf("expected true, but got false")
 	}
 
-	if err := c.DeleteDimByIndex(99); err == nil {
-		t.Error("expected error, but got nil")
+	if c.DeleteDimByIndex(99) {
+		t.Errorf("expected false, but got true")
 	}
 
 	if !(len(c.Dimensions) < l) {
@@ -299,12 +280,12 @@ func TestChart_DeleteVarByID(t *testing.T) {
 
 	l := len(c.Variables)
 
-	if err := c.DeleteVarByID(id); err != nil {
-		t.Errorf("expected nil, but got %s", err)
+	if !c.DeleteVarByID(id) {
+		t.Errorf("expected true, but got false")
 	}
 
-	if err := c.DeleteVarByID("id2"); err == nil {
-		t.Error("expected error, but got nil")
+	if c.DeleteVarByID("id2") {
+		t.Errorf("expected false, but got true")
 	}
 
 	if !(len(c.Variables) < l) {
@@ -365,32 +346,40 @@ func TestNewChart(t *testing.T) {
 			Dimension{"2"},
 		}}
 
-	if !chartsEqual(c1, NewChart(c1.ID, c1.Options, c1.Dimensions...)) {
+	if !chartsEqual(c1, *NewChart(c1.ID, c1.Options, c1.Dimensions...)) {
 		t.Error("expected an equal chart, got not equal")
 	}
 }
 
 func TestChart_Copy(t *testing.T) {
-	chart := c1
-	chartCopy := chart.Copy()
+	chart1 := c1
+	chart2 := chart1.Copy()
 
-	chart.SetTitle("New Title")
-	chart.GetDimByIndex(0).SetID(999)
+	chart1.SetTitle("New Title")
+	chart1.GetDimByIndex(0).SetID("dimID")
 
-	if chart.Title() == chartCopy.Title() || chart.GetDimByIndex(0) == chartCopy.GetDimByIndex(0) {
-		t.Error("copy funcion fails")
+	if chart1.Title() == chart2.Title() || chart1.GetDimByIndex(0) == chart2.GetDimByIndex(0) {
+		t.Error("chart2 funcion fails")
 	}
 }
 
 func TestValidChartType(t *testing.T) {
-
-	for _, v := range []string{Line, Area, Stacked} {
+	for _, v := range []string{
+		Line,
+		Area,
+		Stacked,
+	} {
 		if !ValidChartType(v) {
 			t.Fatalf("function returned false for correct chart type")
 		}
 	}
 
-	for _, v := range []string{"", "this", "is", "wrong"} {
+	for _, v := range []string{
+		"",
+		"this",
+		"is",
+		"wrong",
+	} {
 		if ValidChartType(v) {
 			t.Fatalf("function returned true for incorrect chart type")
 		}
