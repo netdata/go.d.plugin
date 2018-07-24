@@ -25,7 +25,7 @@ func TestPrometheusPlain(t *testing.T) {
 	ts := httptest.NewServer(tsMux)
 	defer ts.Close()
 
-	req := &web.Request{URL: ts.URL + "/metrics"}
+	req := web.Request{URL: ts.URL + "/metrics"}
 	prom := New(http.DefaultClient, req)
 	res, err := prom.GetMetrics()
 
@@ -50,7 +50,7 @@ func TestPrometheusGzip(t *testing.T) {
 	ts := httptest.NewServer(tsMux)
 	defer ts.Close()
 
-	req := &web.Request{URL: ts.URL + "/metrics"}
+	req := web.Request{URL: ts.URL + "/metrics"}
 	prom := New(http.DefaultClient, req)
 
 	for i := 0; i < 2; i++ {

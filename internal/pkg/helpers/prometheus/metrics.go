@@ -1,6 +1,7 @@
 package prometheus
 
 import (
+	"math"
 	"sort"
 
 	"github.com/prometheus/prometheus/pkg/labels"
@@ -78,4 +79,17 @@ func (m Metrics) Match(matcher *labels.Matcher) Metrics {
 		}
 	}
 	return res
+}
+
+// Max Return the max value.
+// It do NOT expect the metrics is sorted.
+// Complexity: O(N)
+func (m Metrics) Max() float64 {
+	max := -math.MaxFloat64
+	for _, kv := range m {
+		if max < kv.Value {
+			max = kv.Value
+		}
+	}
+	return max
 }
