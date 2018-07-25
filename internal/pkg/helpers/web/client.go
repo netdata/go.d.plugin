@@ -17,14 +17,7 @@ type Client struct {
 	TLSVerify      bool           `yaml:"tls_verify"`
 }
 
-func CreateHttpClient(c *Client) *http.Client {
-	return c.CreateHttpClient()
-}
-
-func (c *Client) CreateHttpClient() *http.Client {
-	if c == nil {
-		return nil
-	}
+func (c Client) CreateHttpClient() *http.Client {
 	client := &http.Client{
 		Timeout: c.Timeout.Duration,
 		Transport: &http.Transport{

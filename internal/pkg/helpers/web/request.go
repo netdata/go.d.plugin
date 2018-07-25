@@ -20,14 +20,7 @@ type Request struct {
 	ProxyPassword string            `yaml:"proxy_password"`
 }
 
-func CreateRequest(r *Request) (*http.Request, error) {
-	return r.CreateRequest()
-}
-
-func (r *Request) CreateRequest() (*http.Request, error) {
-	if r == nil {
-		return nil, nil
-	}
+func (r Request) CreateRequest() (*http.Request, error) {
 	// URL is the only thing needed to create the Request
 	if len(r.URL) == 0 {
 		return nil, errors.New("empty URL")

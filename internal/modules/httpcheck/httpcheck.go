@@ -65,7 +65,7 @@ func (hc *HttpCheck) Check() bool {
 	hc.Debugf("Using timeout: %s", hc.Timeout.Duration)
 
 	// Get Request and Client
-	req, err := web.CreateRequest(&hc.Request)
+	req, err := hc.Request.CreateRequest()
 
 	if err != nil {
 		hc.Error(err)
@@ -73,7 +73,7 @@ func (hc *HttpCheck) Check() bool {
 	}
 
 	hc.request = req
-	hc.client = web.CreateHttpClient(&hc.Client)
+	hc.client = hc.Client.CreateHttpClient()
 
 	// Get Response Match Regex
 	re, err := regexp.Compile(hc.ResponseMatch)
@@ -139,7 +139,7 @@ func (hc *HttpCheck) GetData() map[string]int64 {
 		hc.data.BadContent = 1
 	}
 
-	return utils.StrToMap(&hc.data)
+	return utils.StrToMap(hc.data)
 }
 
 func (hc *HttpCheck) doRequest() (*http.Response, error) {
