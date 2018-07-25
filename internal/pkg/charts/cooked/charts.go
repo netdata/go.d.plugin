@@ -29,19 +29,20 @@ func NewCharts(bc baseConfHook) *charts {
 
 // AddOne adds/re-adds one raw Chart.
 func (c *charts) AddOne(r *raw.Chart) error {
-	newChart, err := newChart(r, c.bc, c.priority)
-	if err != nil {
-		logger.CacheGet(c.bc).Errorf("invalid Chart '%s' (%s)", newChart.id, err)
+	if err := check(r); err != nil {
+		logger.CacheGet(c.bc).Errorf("invalid Chart '%s' (%s)", r.ID, err)
 		return err
 	}
+
+	chart := newChart(r, c.bc, c.priority)
 	// re-add
-	if v, ok := c.charts[newChart.id]; ok {
-		newChart.priority = v.priority
+	if v, ok := c.charts[chart.id]; ok {
+		chart.priority = v.priority
 		return nil
 	}
 	// add
 	c.priority++
-	c.charts[newChart.id] = newChart
+	c.charts[chart.id] = chart
 	return nil
 }
 
@@ -49,13 +50,13 @@ func (c *charts) AddOne(r *raw.Chart) error {
 func (c *charts) AddMany(r *raw.Charts) int {
 	var added int
 
-	for _, chartID := range r.Order {
-		rawChart := r.GetChartByID(chartID)
-		if rawChart == nil {
-			logger.CacheGet(c.bc).Warningf("'%s' is not in Definitions, skipping it", chartID)
+	for _, id := range r.Order {
+		chart, ok := r.LookupChartByID(id)
+		if !ok {
+			logger.CacheGet(c.bc).Warningf("'%s' is not in Definitions, skipping it", id)
 			continue
 		}
-		if err := c.AddOne(rawChart); err != nil {
+		if err := c.AddOne(chart); err != nil {
 			continue
 		}
 		added++

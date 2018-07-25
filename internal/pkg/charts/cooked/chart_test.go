@@ -166,7 +166,7 @@ func TestChart_SetChartType(t *testing.T) {
 }
 
 func TestChart_GetDimByID(t *testing.T) {
-	c, _ := newChart(&testRawChart, testBC{}, 1)
+	c := newChart(&testRawChart, testBC{}, 1)
 
 	if d := c.GetDimByID("dim0"); d != nil {
 		t.Errorf("expected nil, but got %v", d)
@@ -182,7 +182,7 @@ func TestChart_GetDimByID(t *testing.T) {
 }
 
 func TestChart_GetDimByIndex(t *testing.T) {
-	c, _ := newChart(&testRawChart, testBC{}, 1)
+	c := newChart(&testRawChart, testBC{}, 1)
 
 	if d := c.GetDimByIndex(-1); d != nil {
 		t.Errorf("expected nil, but got %v", d)
@@ -198,7 +198,7 @@ func TestChart_GetDimByIndex(t *testing.T) {
 }
 
 func TestChart_GetVarByID(t *testing.T) {
-	c, _ := newChart(&testRawChart, testBC{}, 1)
+	c := newChart(&testRawChart, testBC{}, 1)
 
 	if v := c.GetVarByID("var0"); v != nil {
 		t.Errorf("expected nil, but got %v", v)
@@ -214,7 +214,7 @@ func TestChart_GetVarByID(t *testing.T) {
 }
 
 func TestChart_AddDim(t *testing.T) {
-	c, _ := newChart(&testRawChart, testBC{}, 1)
+	c := newChart(&testRawChart, testBC{}, 1)
 	c.setPush(false)
 	c.setObsoleted(true)
 	c.FailedUpdates = 1
@@ -259,7 +259,7 @@ func TestChart_AddVar(t *testing.T) {
 }
 
 func TestChart_Refresh(t *testing.T) {
-	c, _ := newChart(&testRawChart, testBC{}, 1)
+	c := newChart(&testRawChart, testBC{}, 1)
 	c.setPush(false)
 	c.setObsoleted(true)
 	c.setCreated(true)
@@ -271,7 +271,7 @@ func TestChart_Refresh(t *testing.T) {
 }
 
 func TestChart_CanBeUpdated(t *testing.T) {
-	c, _ := newChart(&testRawChart, testBC{}, 1)
+	c := newChart(&testRawChart, testBC{}, 1)
 
 	if !c.CanBeUpdated(map[string]int64{"dim1": 1}) {
 		t.Error("expected true, but got false")
@@ -283,7 +283,7 @@ func TestChart_CanBeUpdated(t *testing.T) {
 }
 
 func TestChart_Obsolete(t *testing.T) {
-	c, _ := newChart(&testRawChart, testBC{}, 1)
+	c := newChart(&testRawChart, testBC{}, 1)
 
 	if c.Obsolete(); !c.IsObsoleted() {
 		t.Error("expected true, but got false")
@@ -292,7 +292,7 @@ func TestChart_Obsolete(t *testing.T) {
 }
 
 func TestChart_Update(t *testing.T) {
-	c, _ := newChart(&testRawChart, testBC{}, 1)
+	c := newChart(&testRawChart, testBC{}, 1)
 	c.setPush(false)
 	c.setUpdated(true)
 

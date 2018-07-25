@@ -6,14 +6,11 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts/raw"
 )
 
-func newVariable(v raw.Variable) (*variable, error) {
-	if err := v.IsValid(); err != nil {
-		return nil, err
-	}
+func newVariable(v raw.Variable) *variable {
 	return &variable{
 		id:    v.ID(),
 		value: v.Value(),
-	}, nil
+	}
 }
 
 type variable struct {

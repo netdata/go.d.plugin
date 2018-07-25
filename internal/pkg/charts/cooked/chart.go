@@ -8,12 +8,8 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
-func newChart(c *raw.Chart, bc baseConfHook, priority int) (*Chart, error) {
-	if err := c.IsValid(); err != nil {
-		return nil, err
-	}
-
-	newChart := &Chart{
+func newChart(c *raw.Chart, bc baseConfHook, priority int) *Chart {
+	chart := &Chart{
 		bc:         bc,
 		id:         c.ID,
 		overrideID: c.OverrideID(),
@@ -28,21 +24,21 @@ func newChart(c *raw.Chart, bc baseConfHook, priority int) (*Chart, error) {
 	}
 
 	for _, d := range c.Dimensions {
-		err := newChart.AddDim(d)
+		err := chart.AddDim(d)
 		if err != nil {
 			logger.CacheGet(bc).Error(err)
 			continue
 		}
 	}
 	for _, v := range c.Variables {
-		err := newChart.AddVar(v)
+		err := chart.AddVar(v)
 		if err != nil {
 			logger.CacheGet(bc).Error(err)
 			continue
 		}
 	}
 
-	return newChart, nil
+	return chart
 }
 
 type (
@@ -190,22 +186,26 @@ func (c *Chart) AddDim(d raw.Dimension) error {
 	if c.index(d.ID()) != -1 {
 		return fmt.Errorf("chart '%s': duplicate dimension %s, skipping it", c.id, d.ID())
 	}
-	newDim, err := newDimension(d)
-	if err != nil {
+
+	if err := check(d); err != nil {
 		return fmt.Errorf("chart '%s': invalid dimension (%s), skipping it", c.id, err)
 	}
-	c.dimensions = append(c.dimensions, newDim)
+
+	dim := newDimension(d)
+
+	c.dimensions = append(c.dimensions, dim)
 	c.Refresh()
 	return nil
 }
 
 // AddVar adds valid variable to variables.
 func (c *Chart) AddVar(v raw.Variable) error {
-	newVar, err := newVariable(v)
-	if err != nil {
+	if err := check(v); err != nil {
 		return fmt.Errorf("chart '%s': invalid variable (%s), skipping it", c.id, err)
 	}
-	c.variables[newVar.id] = newVar
+
+	nVar := newVariable(v)
+	c.variables[nVar.id] = nVar
 	return nil
 }
 
@@ -221,7 +221,7 @@ func (c *Chart) begin(sinceLast int) string {
 }
 
 func (c *Chart) create() string {
-	var dimensions, variables string
+	var dims, vars string
 	chart := fmt.Sprintf(formatChartCREATE,
 		c.bc.FullName(),
 		c.id,
@@ -236,17 +236,17 @@ func (c *Chart) create() string {
 		c.bc.ModuleName())
 
 	for _, dim := range c.dimensions {
-		dimensions += dim.create()
+		dims += dim.create()
 	}
 
 	for _, v := range c.variables {
 		if v.value != 0 {
-			variables += v.set(v.value)
+			vars += v.set(v.value)
 		}
 	}
 	c.setPush(false)
 	c.setCreated(true)
-	return chart + dimensions + variables + "\n"
+	return chart + dims + vars + "\n"
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -285,17 +285,17 @@ func (c *Chart) Refresh() {
 // Update does Chart data collection, Chart creating and updating. Returns true if at least one dimension was updated.
 func (c *Chart) Update(data map[string]int64, interval int) bool {
 	var (
-		uDim    string
-		uVar    string
+		dims    string
+		vars    string
 		updated bool
 	)
 
 	for _, d := range c.dimensions {
 		if value, ok := d.get(data); ok {
-			uDim += d.set(value)
+			dims += d.set(value)
 			updated = true
 		} else {
-			uDim += d.empty()
+			dims += d.empty()
 		}
 		if d.push {
 			c.setPush(true)
@@ -305,7 +305,7 @@ func (c *Chart) Update(data map[string]int64, interval int) bool {
 
 	for _, v := range c.variables {
 		if value, ok := data[v.id]; ok {
-			uVar += v.set(value)
+			vars += v.set(value)
 		}
 	}
 
@@ -320,7 +320,7 @@ func (c *Chart) Update(data map[string]int64, interval int) bool {
 	if c.isPush() {
 		SafePrint(c.create())
 	}
-	SafePrint(c.begin(interval), uDim, uVar, "END\n\n")
+	SafePrint(c.begin(interval), dims, vars, "END\n\n")
 	c.setUpdated(true)
 	c.FailedUpdates = 0
 
