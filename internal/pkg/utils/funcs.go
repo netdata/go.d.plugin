@@ -2,8 +2,9 @@ package utils
 
 import "reflect"
 
-var fieldTagName = "stm"
+const fieldTagName = "stm"
 
+// StrToMap Convert struct to map[string]int64 based on stm tag
 func StrToMap(s interface{}) map[string]int64 {
 	rv := make(map[string]int64)
 	t, v := reflect.TypeOf(s).Elem(), reflect.ValueOf(s).Elem()

@@ -25,6 +25,7 @@ type data struct {
 
 // Check Check
 func (s *Springboot2) Check() bool {
+	s.AddMany(charts)
 	s.prom = prometheus.New(s.Client.CreateHttpClient(), s.Request)
 	metrics, err := s.prom.GetMetrics()
 	if err != nil {
