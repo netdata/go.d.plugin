@@ -27,7 +27,7 @@ func TestCharts_AddOne(t *testing.T) {
 		t.Errorf("expected nil, but got %s", err)
 	}
 
-	if len(ch.charts) != 1 || ch.GetChartByID("chart1") == nil {
+	if len(ch.items) != 1 || ch.GetChartByID("chart1") == nil {
 		t.Fatal("chart not added")
 	}
 
@@ -48,10 +48,10 @@ func TestCharts_AddMany(t *testing.T) {
 	switch {
 	case
 		n != 2,
-		len(ch.charts) != 2,
+		len(ch.items) != 2,
 		ch.GetChartByID(r1.ID) == nil,
 		ch.GetChartByID(r2.ID) == nil:
-		t.Error("charts not added")
+		t.Error("items not added")
 	}
 }
 

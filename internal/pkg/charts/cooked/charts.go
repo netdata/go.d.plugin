@@ -15,14 +15,14 @@ type baseConfHook interface {
 }
 
 type charts struct {
-	charts   map[string]*Chart
+	items    map[string]*Chart
 	bc       baseConfHook
 	priority int
 }
 
 func NewCharts(bc baseConfHook) *charts {
 	return &charts{
-		charts:   make(map[string]*Chart),
+		items:    make(map[string]*Chart),
 		bc:       bc,
 		priority: initPriority}
 }
@@ -36,17 +36,17 @@ func (c *charts) AddOne(r *raw.Chart) error {
 
 	chart := newChart(r, c.bc, c.priority)
 	// re-add
-	if v, ok := c.charts[chart.id]; ok {
+	if v, ok := c.items[chart.id]; ok {
 		chart.priority = v.priority
 		return nil
 	}
 	// add
 	c.priority++
-	c.charts[chart.id] = chart
+	c.items[chart.id] = chart
 	return nil
 }
 
-// AddMany adds all charts from (raw.Charts) Order if they are in Definitions.
+// AddMany adds all items from (raw.Charts) Order if they are in Definitions.
 func (c *charts) AddMany(r *raw.Charts) int {
 	var added int
 
@@ -67,7 +67,7 @@ func (c *charts) AddMany(r *raw.Charts) int {
 // ListNames returns list of chart names.
 func (c *charts) ListNames() []string {
 	var rv []string
-	for k := range c.charts {
+	for k := range c.items {
 		rv = append(rv, k)
 	}
 	return rv
@@ -75,11 +75,11 @@ func (c *charts) ListNames() []string {
 
 // GetCharts returns chart by id.
 func (c *charts) GetChartByID(id string) *Chart {
-	return c.charts[id]
+	return c.items[id]
 }
 
 // LookupChartsByID looks up a chart by id.
 func (c *charts) LookupChartByID(id string) (*Chart, bool) {
-	v, ok := c.charts[id]
+	v, ok := c.items[id]
 	return v, ok
 }
