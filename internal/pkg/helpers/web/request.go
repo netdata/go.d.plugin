@@ -10,7 +10,7 @@ import (
 )
 
 type Request struct {
-	Url           string            `yaml:"url" validate:"required"`
+	URL           string            `yaml:"url" validate:"required"`
 	Body          string            `yaml:"body"`
 	Header        map[string]string `yaml:"headers"`
 	Method        string            `yaml:"method" validate:"isdefault|oneof=GET POST"`
@@ -21,12 +21,19 @@ type Request struct {
 }
 
 func CreateRequest(r *Request) (*http.Request, error) {
+	return r.CreateRequest()
+}
+
+func (r *Request) CreateRequest() (*http.Request, error) {
+	if r == nil {
+		return nil, nil
+	}
 	// URL is the only thing needed to create the Request
-	if len(r.Url) == 0 {
+	if len(r.URL) == 0 {
 		return nil, errors.New("empty URL")
 	}
 
-	u, err := url.Parse(r.Url)
+	u, err := url.Parse(r.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +47,7 @@ func CreateRequest(r *Request) (*http.Request, error) {
 		body = strings.NewReader(r.Body)
 	}
 
-	req, err := http.NewRequest(r.Method, r.Url, body)
+	req, err := http.NewRequest(r.Method, r.URL, body)
 	if err != nil {
 		return nil, err
 	}
