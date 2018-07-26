@@ -21,7 +21,7 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 	started := make(map[string]bool)
 
 	for _, j := range jobs {
-		key := j.C.FullName()
+		key := j.Config.FullName()
 
 		if started[key] {
 			j.Info("[DROPPED] already served by another job")
@@ -43,8 +43,8 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 			continue
 		}
 
-		if j.C.AutoDetectionRetry != 0 {
-			j.Warningf("Check() [RECHECK EVERY %s]", j.C.AutoDetectionRetry)
+		if j.Config.AutoDetectionRetry != 0 {
+			j.Warningf("Check() [RECHECK EVERY %s]", j.Config.AutoDetectionRetry)
 			started[key] = true
 
 			recheck(j, &gd.wg)
@@ -94,7 +94,7 @@ func recheck(j *job.Job, wg *sync.WaitGroup) {
 	go func() {
 		for {
 			c++
-			time.Sleep(time.Duration(j.C.AutoDetectionRetry) * time.Second)
+			time.Sleep(time.Duration(j.Config.AutoDetectionRetry) * time.Second)
 			res := check(j)
 			if res.err != nil {
 				j.Error(res.err)

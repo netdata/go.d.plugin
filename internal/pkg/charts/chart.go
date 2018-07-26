@@ -6,9 +6,17 @@ var (
 	Stacked = chartType{"stacked"}
 )
 
+type chartType struct {
+	t string
+}
+
+func (t chartType) String() string {
+	return t.t
+}
+
 type (
 	Chart struct {
-		ID   string
+		ID string
 		Opts
 		Dims Dims
 		Vars Vars
@@ -23,16 +31,7 @@ type (
 	}
 	Dims []Dim
 	Vars []Var
-	chartType  struct {
-		t string
-	}
 )
-
-func (t chartType) String() string {
-	return t.t
-}
-
-// DIM/VAR ADDER -------------------------------------------------------------------------------------------------------
 
 func (c *Chart) AddDim(d Dim) {
 	if c.indexDim(d.ID) != -1 {
@@ -47,8 +46,6 @@ func (c *Chart) AddVar(v Var) {
 	}
 	c.Vars = append(c.Vars, v)
 }
-
-// DIM/VAR GETTER ------------------------------------------------------------------------------------------------------
 
 func (c Chart) GetDimByID(id string) *Dim {
 	idx := c.indexDim(id)
@@ -77,14 +74,13 @@ func (c *Chart) DeleteDimByID(id string) bool {
 
 func (c Chart) Copy() Chart {
 	chart := c
-	c.Dims = nil
-	c.Vars = nil
+	chart.Dims, chart.Vars = nil, nil
 
 	for idx := range c.Dims {
-		chart.Dims = append(chart.Dims, c.Dims[idx].copy())
+		chart.Dims = append(chart.Dims, c.Dims[idx])
 	}
 	for idx := range c.Vars {
-		chart.Vars = append(chart.Vars, c.Vars[idx].copy())
+		chart.Vars = append(chart.Vars, c.Vars[idx])
 	}
 
 	return chart

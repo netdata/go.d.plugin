@@ -5,8 +5,6 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 )
 
-var initPriority = 70000
-
 type baseConfHook interface {
 	ModuleName() string // for Chart + CacheGet
 	JobName() string    // for CacheGet
@@ -14,43 +12,43 @@ type baseConfHook interface {
 	UpdateEvery() int   // for Chart
 }
 
-func NewWrappedCharts(h baseConfHook) *WrappedCharts {
-	return &WrappedCharts{
-		items:    make(map[string]*wrappedChart),
-		hook:     h,
-		priority: initPriority,
+func NewCharts(h baseConfHook) *Charts {
+	return &Charts{
+		items: make(map[string]*chart),
+		hook:  h,
+		prio:  70000,
 	}
 }
 
-type WrappedCharts struct {
-	items    map[string]*wrappedChart
-	hook     baseConfHook
-	priority int
+type Charts struct {
+	items map[string]*chart
+	hook  baseConfHook
+	prio  int
 }
 
-func (w *WrappedCharts) AddChart(charts ...charts.Chart) {
+func (w *Charts) AddChart(charts ...charts.Chart) {
 	for idx := range charts {
-	//	if !check(charts[idx]) {
-	//		continue
-	//	}
-		chart := newWrappedChart(charts[idx], w.hook, w.priority)
+		//	if !check(charts[idx]) {
+		//		continue
+		//	}
+		chart := newChart(charts[idx], w.hook, w.prio)
 		v, ok := w.items[chart.item.ID]
 
 		if ok {
-			chart.priority = v.priority
+			chart.prio = v.prio
 		} else {
-			w.priority++
+			w.prio++
 		}
 
 		w.items[chart.item.ID] = chart
 	}
 }
 
-func (w WrappedCharts) GetChart(id string) modules.Chart {
+func (w Charts) GetChart(id string) modules.Chart {
 	return w.items[id]
 }
 
-func (w WrappedCharts) LookupChart(id string) (modules.Chart, bool) {
+func (w Charts) LookupChart(id string) (modules.Chart, bool) {
 	v, ok := w.items[id]
 	return v, ok
 }

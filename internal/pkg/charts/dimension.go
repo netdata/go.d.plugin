@@ -11,14 +11,6 @@ var (
 )
 
 type (
-	Dim struct {
-		ID     string
-		Name   string
-		Algo   algorithm
-		Mul    int
-		Div    int
-		Hidden hidden
-	}
 	algorithm struct {
 		a string
 	}
@@ -35,6 +27,11 @@ func (h hidden) String() string {
 	return h.h
 }
 
-func (d Dim) copy() Dim {
-	return d
+type Dim struct {
+	ID     string
+	Name   string
+	Algo   algorithm
+	Mul    int
+	Div    int
+	Hidden hidden
 }

@@ -5,9 +5,9 @@ import (
 )
 
 type (
-	Chart      = charts.Chart
-	Opts = charts.Opts
-	Dims = charts.Dims
+	Chart = charts.Chart
+	Opts  = charts.Opts
+	Dims  = charts.Dims
 )
 
 var (
@@ -168,7 +168,7 @@ func chartPerCategoryStats(id string) []Chart {
 			ID: chartRespCodesDetailed.ID + "_" + id,
 			Opts: Opts{
 				Title: "Detailed Response Codes", Units: "requests/s", Fam: id,
-				Ctx:   "web_log.url_detailed_response_codes", Type: charts.Stacked},
+				Ctx: "web_log.url_detailed_response_codes", Type: charts.Stacked},
 		},
 		{
 			ID: chartBandwidth.ID + "_" + id,
