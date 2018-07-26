@@ -8,12 +8,12 @@ var (
 
 type (
 	Chart struct {
-		ID string
-		Options
-		Dimensions Dimensions
-		Variables  Variables
+		ID   string
+		Opts
+		Dims Dims
+		Vars Vars
 	}
-	Options struct {
+	Opts struct {
 		Title      string
 		Units      string
 		Family     string
@@ -21,8 +21,8 @@ type (
 		Type       chartType
 		OverrideID string
 	}
-	Dimensions []Dimension
-	Variables  []Variable
+	Dims []Dim
+	Vars []Var
 	chartType  struct {
 		t string
 	}
@@ -34,31 +34,31 @@ func (t chartType) String() string {
 
 // DIM/VAR ADDER -------------------------------------------------------------------------------------------------------
 
-func (c *Chart) AddDim(d Dimension) {
+func (c *Chart) AddDim(d Dim) {
 	if c.indexDim(d.ID) != -1 {
 		return
 	}
-	c.Dimensions = append(c.Dimensions, d)
+	c.Dims = append(c.Dims, d)
 }
 
-func (c *Chart) AddVar(v Variable) {
+func (c *Chart) AddVar(v Var) {
 	if c.indexVar(v.ID) != -1 {
 		return
 	}
-	c.Variables = append(c.Variables, v)
+	c.Vars = append(c.Vars, v)
 }
 
 // DIM/VAR GETTER ------------------------------------------------------------------------------------------------------
 
-func (c Chart) GetDimByID(id string) *Dimension {
+func (c Chart) GetDimByID(id string) *Dim {
 	idx := c.indexDim(id)
 	if idx == -1 {
 		return nil
 	}
-	return &c.Dimensions[idx]
+	return &c.Dims[idx]
 }
 
-func (c Chart) LookupDimByID(id string) (*Dimension, bool) {
+func (c Chart) LookupDimByID(id string) (*Dim, bool) {
 	d := c.GetDimByID(id)
 	if d == nil {
 		return nil, false
@@ -71,28 +71,28 @@ func (c *Chart) DeleteDimByID(id string) bool {
 	if idx == -1 {
 		return false
 	}
-	c.Dimensions = append(c.Dimensions[:idx], c.Dimensions[idx+1:]...)
+	c.Dims = append(c.Dims[:idx], c.Dims[idx+1:]...)
 	return true
 }
 
 func (c Chart) Copy() Chart {
 	chart := c
-	c.Dimensions = nil
-	c.Variables = nil
+	c.Dims = nil
+	c.Vars = nil
 
-	for idx := range c.Dimensions {
-		chart.Dimensions = append(chart.Dimensions, c.Dimensions[idx].copy())
+	for idx := range c.Dims {
+		chart.Dims = append(chart.Dims, c.Dims[idx].copy())
 	}
-	for idx := range c.Variables {
-		chart.Variables = append(chart.Variables, c.Variables[idx].copy())
+	for idx := range c.Vars {
+		chart.Vars = append(chart.Vars, c.Vars[idx].copy())
 	}
 
 	return chart
 }
 
 func (c Chart) indexDim(id string) int {
-	for idx := range c.Dimensions {
-		if c.Dimensions[idx].ID == id {
+	for idx := range c.Dims {
+		if c.Dims[idx].ID == id {
 			return idx
 		}
 	}
@@ -100,8 +100,8 @@ func (c Chart) indexDim(id string) int {
 }
 
 func (c Chart) indexVar(id string) int {
-	for idx := range c.Variables {
-		if c.Variables[idx].ID == id {
+	for idx := range c.Vars {
+		if c.Vars[idx].ID == id {
 			return idx
 		}
 	}

@@ -1,10 +1,10 @@
 package charts
 
-type Variable struct {
+type Var struct {
 	ID    string
 	Value int64
 }
 
-func (v Variable) copy() Variable {
+func (v Var) copy() Var {
 	return v
 }

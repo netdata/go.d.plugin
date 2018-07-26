@@ -7,7 +7,7 @@ import (
 )
 
 type wrappedVar struct {
-	item charts.Variable
+	item charts.Var
 }
 
 func (w wrappedVar) set(value int64) string {

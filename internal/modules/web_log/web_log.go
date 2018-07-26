@@ -270,7 +270,7 @@ func (w *WebLog) reqPerCodeDetail(code string) {
 	}
 
 	if w.DoCodesAggregate {
-		w.GetChart(chartRespCodesDetailed.ID).AddDim(Dimension{ID: code, Algorithm: charts.Incremental})
+		w.GetChart(chartRespCodesDetailed.ID).AddDim(Dimension{ID: code, Algo: charts.Incremental})
 		w.data[code]++
 		return
 	}
@@ -278,7 +278,7 @@ func (w *WebLog) reqPerCodeDetail(code string) {
 	if code[0] <= 53 {
 		v = code[:1] + "xx"
 	}
-	w.GetChart(chartRespCodesDetailed.ID + "_" + v).AddDim(Dimension{ID: code, Algorithm: charts.Incremental})
+	w.GetChart(chartRespCodesDetailed.ID + "_" + v).AddDim(Dimension{ID: code, Algo: charts.Incremental})
 	w.data[code]++
 }
 
@@ -300,7 +300,7 @@ func (w *WebLog) reqPerCodeFamily(code string) {
 
 func (w *WebLog) reqPerHTTPMethod(method string) {
 	if _, ok := w.data[method]; !ok {
-		w.GetChart(chartReqPerHTTPMethod.ID).AddDim(Dimension{ID: method, Algorithm: charts.Incremental})
+		w.GetChart(chartReqPerHTTPMethod.ID).AddDim(Dimension{ID: method, Algo: charts.Incremental})
 	}
 	w.data[method]++
 }
@@ -309,7 +309,7 @@ func (w *WebLog) reqPerHTTPVersion(version string) {
 	dimID := strings.Replace(version, ".", "_", 1)
 
 	if _, ok := w.data[dimID]; !ok {
-		w.GetChart(chartReqPerHTTPVer.ID).AddDim(Dimension{ID: dimID, Name: version, Algorithm: charts.Incremental})
+		w.GetChart(chartReqPerHTTPVer.ID).AddDim(Dimension{ID: dimID, Name: version, Algo: charts.Incremental})
 	}
 	w.data[dimID]++
 }
@@ -345,7 +345,7 @@ func (w *WebLog) perCategoryStats(id string) {
 	code := w.gm.get(keyCode)
 	v := id + "_" + code
 	if _, ok := w.data[v]; !ok {
-		w.GetChart(chartRespCodesDetailed.ID + "_" + id).AddDim(Dimension{ID: v, Name: code, Algorithm: charts.Incremental})
+		w.GetChart(chartRespCodesDetailed.ID + "_" + id).AddDim(Dimension{ID: v, Name: code, Algo: charts.Incremental})
 	}
 	w.data[v]++
 

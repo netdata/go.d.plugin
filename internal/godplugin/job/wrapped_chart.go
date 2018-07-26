@@ -12,10 +12,10 @@ func newWrappedChart(chart charts.Chart, hook baseConfHook, prio int) *wrappedCh
 		priority: prio,
 		flags:    chartFlags{push: true},
 	}
-	for _, v := range chart.Dimensions {
+	for _, v := range chart.Dims {
 		p.dimensions = append(p.dimensions, newWrappedDim(v))
 	}
-	for _, v := range chart.Variables {
+	for _, v := range chart.Vars {
 		p.variables = append(p.variables, &wrappedVar{v})
 	}
 	return p
@@ -156,13 +156,13 @@ func (w *wrappedChart) update(data map[string]int64, interval int) bool {
 	return true
 }
 
-func (w *wrappedChart) AddDim(dim charts.Dimension) {
+func (w *wrappedChart) AddDim(dim charts.Dim) {
 	if w.indexDim(dim.ID) == -1 {
 		w.dimensions = append(w.dimensions, newWrappedDim(dim))
 	}
 }
 
-func (w *wrappedChart) AddVar(v charts.Variable) {
+func (w *wrappedChart) AddVar(v charts.Var) {
 	if w.indexDim(v.ID) == -1 {
 		w.variables = append(w.variables, &wrappedVar{v})
 	}

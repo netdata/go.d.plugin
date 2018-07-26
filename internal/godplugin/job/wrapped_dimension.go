@@ -7,7 +7,7 @@ import (
 
 var retriesMax = 5
 
-func newWrappedDim(dim charts.Dimension) *wrappedDim {
+func newWrappedDim(dim charts.Dim) *wrappedDim {
 	return &wrappedDim{
 		item:  dim,
 		flags: dimFlags{retriesMax: retriesMax},
@@ -15,7 +15,7 @@ func newWrappedDim(dim charts.Dimension) *wrappedDim {
 }
 
 type wrappedDim struct {
-	item  charts.Dimension
+	item  charts.Dim
 	flags dimFlags
 }
 
@@ -44,9 +44,9 @@ func (w wrappedDim) create() string {
 	return fmt.Sprintf(formatDimCREATE,
 		w.item.ID,
 		w.item.Name,
-		w.item.Algorithm,
-		w.item.Multiplier,
-		w.item.Divisor,
+		w.item.Algo,
+		w.item.Mul,
+		w.item.Div,
 		w.item.Hidden,
 	)
 }
@@ -67,7 +67,7 @@ func (w wrappedDim) empty() string {
 	return fmt.Sprintf(formatDimEmptySET, w.item.ID)
 }
 
-// Dimension Flag ------------------------------------------------------------------------------------------------------
+// Dim Flag ------------------------------------------------------------------------------------------------------
 type dimFlags struct {
 	push       bool
 	retries    int

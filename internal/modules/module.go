@@ -57,14 +57,14 @@ type Unsafer interface {
 
 // User Chart
 type Chart interface {
-	AddDim(charts.Dimension)
-	AddVar(charts.Variable)
-	//GetDimByID(string) Dimension
-	//GetVarByID(string) Variable
+	AddDim(charts.Dim)
+	AddVar(charts.Var)
+	//GetDimByID(string) Dim
+	//GetVarByID(string) Var
 }
 
-//type Dimension interface {
+//type Dim interface {
 //}
 //
-//type Variable interface {
+//type Var interface {
 //}

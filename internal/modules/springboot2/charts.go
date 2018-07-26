@@ -6,9 +6,9 @@ import (
 
 var uCharts = charts.Charts{
 	{
-		ID:      "heap",
-		Options: charts.Options{Title: "Threads", Units: "threads", Family: "threads", Type: charts.Area},
-		Dimensions: charts.Dimensions{
+		ID:   "heap",
+		Opts: charts.Opts{Title: "Threads", Units: "threads", Family: "threads", Type: charts.Area},
+		Dims: charts.Dims{
 			{ID: "threads_daemon", Name: "daemon"},
 			{ID: "threads", Name: "total"},
 		},

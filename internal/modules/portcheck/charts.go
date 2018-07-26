@@ -9,8 +9,8 @@ import (
 type (
 	Charts     = charts.Charts
 	Chart      = charts.Chart
-	Options    = charts.Options
-	Dimensions = charts.Dimensions
+	Options    = charts.Opts
+	Dimensions = charts.Dims
 )
 
 func uCharts(port int) Charts {
@@ -18,9 +18,9 @@ func uCharts(port int) Charts {
 	return Charts{
 		{
 			ID: sprintf("status_%d", port),
-			Options: Options{
+			Opts: Options{
 				Title: "Port Check Status", Units: "boolean", Family: family, Context: "portcheck.status"},
-			Dimensions: Dimensions{
+			Dims: Dimensions{
 				{ID: sprintf("success_%d", port), Name: "success"},
 				{ID: sprintf("failed_%d", port), Name: "failed"},
 				{ID: sprintf("timeout_%d", port), Name: "timeout"},
@@ -28,17 +28,17 @@ func uCharts(port int) Charts {
 		},
 		{
 			ID: sprintf("instate_%d", port),
-			Options: Options{
+			Opts: Options{
 				Title: "Current State Duration", Units: "seconds", Family: family, Context: "portcheck.instate"},
-			Dimensions: Dimensions{
+			Dims: Dimensions{
 				{ID: sprintf("instate_%d", port), Name: "time"},
 			},
 		},
 		{
-			ID:      sprintf("latency_%d", port),
-			Options: Options{Title: "TCP Connect Latency", Units: "ms", Family: family, Context: "portcheck.latency"},
-			Dimensions: Dimensions{
-				{ID: sprintf("latency_%d", port), Name: "time", Divisor: 1000000},
+			ID:   sprintf("latency_%d", port),
+			Opts: Options{Title: "TCP Connect Latency", Units: "ms", Family: family, Context: "portcheck.latency"},
+			Dims: Dimensions{
+				{ID: sprintf("latency_%d", port), Name: "time", Div: 1000000},
 			},
 		},
 	}

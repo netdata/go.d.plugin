@@ -59,13 +59,13 @@ func (w WrappedCharts) LookupChart(id string) (modules.Chart, bool) {
 //	if !c.IsValid() {
 //		return false
 //	}
-//	for idx := range c.Dimensions {
-//		if !c.Dimensions[idx].IsValid() {
+//	for idx := range c.Dims {
+//		if !c.Dims[idx].IsValid() {
 //			return false
 //		}
 //	}
-//	for idx := range c.Variables {
-//		if !c.Variables[idx].IsValid() {
+//	for idx := range c.Vars {
+//		if !c.Vars[idx].IsValid() {
 //			return false
 //		}
 //	}

@@ -7,7 +7,7 @@ import (
 
 type (
 	Charts    = charts.Charts
-	Dimension = charts.Dimension
+	Dimension = charts.Dim
 )
 
 func (w *WebLog) CreateCharts() {
@@ -34,7 +34,7 @@ func (w *WebLog) CreateCharts() {
 	if (n.Include(keyRequest) || n.Include(keyURL)) && w.urlCat.exist() {
 		ch.Add(chartReqPerURL.Copy())
 		for _, v := range w.urlCat.items {
-			ch.Get(chartReqPerURL.ID).AddDim(Dimension{ID: v.id, Name: v.name, Algorithm: charts.Incremental})
+			ch.Get(chartReqPerURL.ID).AddDim(Dimension{ID: v.id, Name: v.name, Algo: charts.Incremental})
 			w.data[v.id] = 0
 		}
 		w.data[w.urlCat.other] = 0
@@ -45,7 +45,7 @@ func (w *WebLog) CreateCharts() {
 		for _, v := range w.urlCat.items {
 			for _, chart := range chartPerCategoryStats(v.id) {
 				ch.Add(chart)
-				for _, d := range chart.Dimensions {
+				for _, d := range chart.Dims {
 					w.data[d.ID] = 0
 				}
 			}
@@ -55,7 +55,7 @@ func (w *WebLog) CreateCharts() {
 	if n.Include(keyUserDefined) && w.userCat.exist() {
 		ch.Add(chartReqPerUserDef.Copy())
 		for _, v := range w.userCat.items {
-			ch.Get(chartReqPerUserDef.ID).AddDim(Dimension{ID: v.id, Name: v.name, Algorithm: charts.Incremental})
+			ch.Get(chartReqPerUserDef.ID).AddDim(Dimension{ID: v.id, Name: v.name, Algo: charts.Incremental})
 			w.data[v.id] = 0
 		}
 		w.data[w.userCat.other] = 0
@@ -68,7 +68,7 @@ func (w *WebLog) CreateCharts() {
 	if n.Include(keyRespTime) && len(w.RawHistogram) != 0 {
 		ch.Add(chartRespTimeHist.Copy())
 		for _, v := range w.histograms.get(keyRespTimeHist) {
-			ch.Get(chartRespTimeHist.ID).AddDim(Dimension{ID: v.id, Name: v.name, Algorithm: charts.Incremental})
+			ch.Get(chartRespTimeHist.ID).AddDim(Dimension{ID: v.id, Name: v.name, Algo: charts.Incremental})
 		}
 	}
 
@@ -79,7 +79,7 @@ func (w *WebLog) CreateCharts() {
 	if n.Include(keyRespTimeUpstream) && len(w.RawHistogram) != 0 {
 		ch.Add(chartRespTimeUpstreamHist.Copy())
 		for _, v := range w.histograms.get(keyRespTimeUpstreamHist) {
-			ch.Get(chartRespTimeUpstreamHist.ID).AddDim(Dimension{ID: v.id, Name: v.name, Algorithm: charts.Incremental})
+			ch.Get(chartRespTimeUpstreamHist.ID).AddDim(Dimension{ID: v.id, Name: v.name, Algo: charts.Incremental})
 		}
 	}
 
