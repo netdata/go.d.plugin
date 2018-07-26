@@ -95,11 +95,11 @@ func (hc *HttpCheck) Check() bool {
 	}
 
 	// Get Charts
-	c := charts.Copy()
+	c := uCharts.Copy()
 	if len(hc.ResponseMatch) == 0 {
-		c.DeleteChartByID("response_check_content")
+		c.Delete("response_check_content")
 	}
-	hc.AddMany(c)
+	hc.AddChart(c...)
 
 	return true
 }

@@ -1,9 +1,6 @@
 package modules
 
-import (
-	"github.com/l2isbad/go.d.plugin/internal/pkg/charts/cooked"
-	"github.com/l2isbad/go.d.plugin/internal/pkg/charts/raw"
-)
+import "github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 
 type Module interface {
 	CheckDataGetter // has to be implemented
@@ -21,11 +18,9 @@ type CheckDataGetter interface {
 // Charts must be added by any module
 // mandatory
 type Charts interface {
-	AddOne(*raw.Chart) error
-	AddMany(*raw.Charts) int
-	ListNames() []string
-	GetChartByID(string) *cooked.Chart
-	LookupChartByID(string) (*cooked.Chart, bool)
+	AddChart(...charts.Chart)
+	GetChart(string) Chart
+	LookupChart(string) (Chart, bool)
 }
 
 // BaseConfHook should be added by modules that need to get/set values from base conf
@@ -59,3 +54,17 @@ type NoConfiger interface {
 type Unsafer interface {
 	Unsafe()
 }
+
+// User Chart
+type Chart interface {
+	AddDim(charts.Dimension)
+	AddVar(charts.Variable)
+	//GetDimByID(string) Dimension
+	//GetVarByID(string) Variable
+}
+
+//type Dimension interface {
+//}
+//
+//type Variable interface {
+//}

@@ -69,10 +69,10 @@ func (gd *goDPlugin) jobsCreate() jobStack {
 
 func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 	// Create module and default conf
-	conf, mod := job.NewConf(), creator.MakeModule()
+	conf, mod := job.DefaultConfig(), creator.MakeModule()
 
 	conf.SetModuleName(name)
-	setModuleDefaults(name, conf)
+	setModuleDefaults(name, &conf)
 
 	f, err := ioutil.ReadFile(path.Join(dir, name+".conf"))
 
@@ -92,7 +92,7 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 
 	log.Debugf("module '%s' configuration read success", name)
 
-	err = unmarshal(f, conf)
+	err = unmarshal(f, &conf)
 
 	// SKIP: YAML parse error || validator error
 	if err != nil {
@@ -110,7 +110,7 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 	}
 
 	for _, r := range raw {
-		c, m := *conf, creator.MakeModule()
+		c, m := conf, creator.MakeModule()
 
 		err := unmarshal(r.conf, &c)
 		// SKIP: validator error
@@ -131,7 +131,7 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 			c.SetJobName(r.name)
 		}
 		// PUSH:
-		jobs.push(job.New(m, &c))
+		jobs.push(job.New(m, c))
 	}
 
 }

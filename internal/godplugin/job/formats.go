@@ -1,4 +1,4 @@
-package cooked
+package job
 
 import (
 	"fmt"
@@ -15,8 +15,8 @@ var (
 	formatChartOBSOLETE = "CHART %s.%s '%s' '%s' '%s' '%s' '%s' %s %d %d go.d %s obsolete\n"
 )
 
-// SafePrint prints using fmt.Print and Exit(1) if any write error encountered.
-func SafePrint(a ...interface{}) {
+// safePrint prints using fmt.Print and Exit(1) if any write error encountered.
+func safePrint(a ...interface{}) {
 	if _, err := fmt.Print(a...); err != nil {
 		os.Exit(1)
 	}

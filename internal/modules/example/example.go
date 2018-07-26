@@ -4,38 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/l2isbad/go.d.plugin/internal/modules"
-	"github.com/l2isbad/go.d.plugin/internal/pkg/charts/raw"
 )
-
-type (
-	Charts      = raw.Charts
-	Order       = raw.Order
-	Definitions = raw.Definitions
-	Chart       = raw.Chart
-	Options     = raw.Options
-	Dimensions  = raw.Dimensions
-	Dimension   = raw.Dimension
-)
-
-var charts = Charts{
-	Order: Order{"chart1", "chart2"},
-	Definitions: Definitions{
-		&Chart{
-			ID:      "chart1",
-			Options: Options{"Random Data", "random", "random"},
-			Dimensions: Dimensions{
-				Dimension{"random0"},
-			},
-		},
-		&Chart{
-			ID:      "chart2",
-			Options: Options{"Random Data", "random", "random"},
-			Dimensions: Dimensions{
-				Dimension{"random1"},
-			},
-		},
-	},
-}
 
 type Example struct {
 	modules.Charts
@@ -46,7 +15,7 @@ type Example struct {
 }
 
 func (e *Example) Check() bool {
-	e.AddMany(&charts)
+	e.AddChart(uCharts...)
 	return true
 }
 

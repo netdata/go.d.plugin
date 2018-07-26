@@ -1,17 +1,16 @@
 package springboot2
 
-import "github.com/l2isbad/go.d.plugin/internal/pkg/charts/raw"
+import (
+	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
+)
 
-var charts = &raw.Charts{
-	Order: raw.Order{"heap"},
-	Definitions: raw.Definitions{
-		&raw.Chart{
-			ID:      "heap",
-			Options: raw.Options{"Threads", "threads", "threads", "", "area"},
-			Dimensions: raw.Dimensions{
-				{"threads_daemon", "daemon"},
-				{"threads", "total"},
-			},
+var uCharts = charts.Charts{
+	{
+		ID:      "heap",
+		Options: charts.Options{Title: "Threads", Units: "threads", Family: "threads", Type: charts.Area},
+		Dimensions: charts.Dimensions{
+			{ID: "threads_daemon", Name: "daemon"},
+			{ID: "threads", Name: "total"},
 		},
 	},
 }

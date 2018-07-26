@@ -7,20 +7,21 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 )
 
-func New(m modules.Module, c *Config) *Job {
+func New(m modules.Module, c Config) *Job {
 	_, u := m.(modules.Unsafer)
 
 	return &Job{
 		Module: m,
-		Config: c,
+		C:      c,
 		unsafe: u,
 	}
 }
 
 type Job struct {
 	modules.Module
-	*Config
-	timers
+	t       timers
+	C       Config
+	W       *WrappedCharts
 	retries int
 	unsafe  bool
 }
@@ -30,20 +31,20 @@ Done:
 	for {
 
 		sleep := j.nextIn()
-		j.Debugf("sleeping for %s to reach frequency of %d sec", sleep, j.UpdEvery)
+		j.Debugf("sleeping for %s to reach frequency of %d sec", sleep, j.C.UpdEvery)
 		time.Sleep(sleep)
 
-		j.curRun = time.Now()
-		if !j.lastRun.IsZero() {
-			j.sinceLast.Duration = j.curRun.Sub(j.lastRun)
+		j.t.curRun = time.Now()
+		if !j.t.lastRun.IsZero() {
+			j.t.sinceLast.Duration = j.t.curRun.Sub(j.t.lastRun)
 		}
 
 		if ok := j.update(); ok {
-			j.retries, j.penalty, j.lastRun = 0, 0, j.curRun
-			j.spentOnRun.Duration = time.Since(j.lastRun)
+			j.retries, j.t.penalty, j.t.lastRun = 0, 0, j.t.curRun
+			j.t.spentOnRun.Duration = time.Since(j.t.lastRun)
 
 		} else if !ok && !j.handleRetries() {
-			j.Errorf("stopped after %d collection failures in a row", j.RetriesMax)
+			j.Errorf("stopped after %d collection failures in a row", j.C.RetriesMax)
 			break Done
 		}
 
@@ -66,31 +67,30 @@ func (j *Job) update() bool {
 		suppressed int
 	)
 
-	for _, n := range j.ListNames() {
-		chart := j.GetChartByID(n)
+	for _, chart := range j.W.items {
 
-		if chart.IsObsoleted() {
-			if !chart.CanBeUpdated(data) {
+		if chart.flags.obsoleted {
+			if !chart.canBeUpdated(data) {
 				suppressed++
 				continue
 			}
-			chart.Refresh()
+			chart.refresh()
 
-		} else if j.ChartCleanup > 0 && chart.FailedUpdates >= j.ChartCleanup {
-			j.Errorf("chart '%s' was suppressed due to non updating", chart.ID())
-			chart.Obsolete()
+		} else if j.C.ChartCleanup > 0 && chart.failedUpdates >= j.C.ChartCleanup {
+			j.Errorf("item '%s' was suppressed due to non updating", chart.item.ID)
+			chart.obsolete()
 			suppressed++
 			continue
 		}
 
 		active++
-		if chart.Update(data, j.sinceLast.ConvertTo(time.Microsecond)) {
+		if chart.update(data, j.t.sinceLast.ConvertTo(time.Microsecond)) {
 			updated++
 
 		}
 	}
 
-	j.Debugf("update charts: updated:%d, active:%d, suppressed:%d", updated, active, suppressed)
+	j.Debugf("update charts3: updated:%d, active:%d, suppressed:%d", updated, active, suppressed)
 	return updated > 0
 }
 
@@ -114,7 +114,7 @@ func (j *Job) getData() map[string]int64 {
 
 func (j *Job) nextIn() time.Duration {
 	start := time.Now()
-	next := start.Add(time.Duration(j.UpdEvery) * time.Second).Add(j.penalty).Truncate(time.Second)
+	next := start.Add(time.Duration(j.C.UpdEvery) * time.Second).Add(j.t.penalty).Truncate(time.Second)
 	return time.Duration(next.UnixNano() - start.UnixNano())
 }
 
@@ -125,11 +125,11 @@ func (j *Job) handleRetries() bool {
 		return true
 	}
 
-	j.penalty = time.Duration(j.retries*j.UpdEvery/2) * time.Second
+	j.t.penalty = time.Duration(j.retries*j.C.UpdEvery/2) * time.Second
 	j.Warningf(
 		"added %.0f seconds penalty after %d failed updates in a row",
-		j.penalty.Seconds(),
+		j.t.penalty.Seconds(),
 		j.retries,
 	)
-	return j.retries < j.RetriesMax
+	return j.retries < j.C.RetriesMax
 }

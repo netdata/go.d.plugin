@@ -87,7 +87,7 @@ func getPattern(custom string, line []byte) (*regexp.Regexp, error) {
 		return nil, err
 	}
 	if len(r.SubexpNames()) == 1 {
-		return nil, errors.New("custom regex contains no named groups (?P<subgroup_name>)")
+		return nil, errors.New("custom regex contains no named groups (?W<subgroup_name>)")
 	}
 
 	if !utils.StringSlice(r.SubexpNames()).Include(mandatoryKey) {

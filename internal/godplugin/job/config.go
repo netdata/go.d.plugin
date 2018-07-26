@@ -1,8 +1,8 @@
 package job
 
-// NewConf returns Config with default values
-func NewConf() *Config {
-	return &Config{
+// DefaultConfig returns Config with default values
+func DefaultConfig() Config {
+	return Config{
 		UpdEvery:           1,
 		AutoDetectionRetry: 0,
 		ChartCleanup:       10,
@@ -11,8 +11,8 @@ func NewConf() *Config {
 }
 
 type Config struct {
-	moduleName         string // standalone struct ?
-	jobName            string // standalone struct ?
+	moduleName         string
+	jobName            string
 	OverrideName       string `yaml:"name"`
 	UpdEvery           int    `yaml:"update_every" validate:"gte=1"`
 	AutoDetectionRetry int    `yaml:"autodetection_retry" validate:"gte=0"`
