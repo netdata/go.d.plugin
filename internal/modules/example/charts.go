@@ -11,14 +11,14 @@ type (
 var uCharts = Charts{
 	{
 		ID:   "chart1",
-		Opts: Options{Title: "Random Data 1", Units: "random", Family: "random", Type: charts.Line},
+		Opts: Options{Title: "Random Data 1", Units: "random", Fam: "random", Type: charts.Line},
 		Dims: Dimensions{
 			{ID: "random0", Name: "random"},
 		},
 	},
 	{
 		ID:   "chart2",
-		Opts: Options{Title: "Random Data 2", Units: "random", Family: "random", Type: charts.Area},
+		Opts: Options{Title: "Random Data 2", Units: "random", Fam: "random", Type: charts.Area},
 		Dims: Dimensions{
 			{ID: "random1", Name: "random"},
 		},

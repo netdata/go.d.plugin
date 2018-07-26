@@ -14,12 +14,12 @@ type (
 		Vars Vars
 	}
 	Opts struct {
-		Title      string
-		Units      string
-		Family     string
-		Context    string
-		Type       chartType
-		OverrideID string
+		Title  string
+		Units  string
+		Fam    string
+		Ctx    string
+		Type   chartType
+		OverID string
 	}
 	Dims []Dim
 	Vars []Var

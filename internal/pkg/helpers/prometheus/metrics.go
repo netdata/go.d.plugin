@@ -18,7 +18,7 @@ type (
 	Metrics []Metric
 )
 
-// Name the __name__ label value
+// OverID the __name__ label value
 func (m Metric) Name() string {
 	return m.Labels[0].Value
 }

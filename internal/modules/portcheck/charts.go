@@ -19,7 +19,7 @@ func uCharts(port int) Charts {
 		{
 			ID: sprintf("status_%d", port),
 			Opts: Options{
-				Title: "Port Check Status", Units: "boolean", Family: family, Context: "portcheck.status"},
+				Title: "Port Check Status", Units: "boolean", Fam: family, Ctx: "portcheck.status"},
 			Dims: Dimensions{
 				{ID: sprintf("success_%d", port), Name: "success"},
 				{ID: sprintf("failed_%d", port), Name: "failed"},
@@ -29,14 +29,14 @@ func uCharts(port int) Charts {
 		{
 			ID: sprintf("instate_%d", port),
 			Opts: Options{
-				Title: "Current State Duration", Units: "seconds", Family: family, Context: "portcheck.instate"},
+				Title: "Current State Duration", Units: "seconds", Fam: family, Ctx: "portcheck.instate"},
 			Dims: Dimensions{
 				{ID: sprintf("instate_%d", port), Name: "time"},
 			},
 		},
 		{
 			ID:   sprintf("latency_%d", port),
-			Opts: Options{Title: "TCP Connect Latency", Units: "ms", Family: family, Context: "portcheck.latency"},
+			Opts: Options{Title: "TCP Connect Latency", Units: "ms", Fam: family, Ctx: "portcheck.latency"},
 			Dims: Dimensions{
 				{ID: sprintf("latency_%d", port), Name: "time", Div: 1000000},
 			},
