@@ -47,7 +47,7 @@ func (c *Charts) DeleteChart(id string) bool {
 	return true
 }
 
-func (c Charts) CopyCharts() Charts {
+func (c Charts) Copy() Charts {
 	charts := Charts{}
 	for idx := range c {
 		charts = append(charts, c[idx].Copy())

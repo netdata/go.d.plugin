@@ -6,7 +6,7 @@ func NewConfig() *Config {
 		UpdEvery:           1,
 		AutoDetectionRetry: 0,
 		ChartCleanup:       10,
-		RetriesMax:         60,
+		MaxRetries:         60,
 	}
 }
 
@@ -17,7 +17,7 @@ type Config struct {
 	UpdEvery           int    `yaml:"update_every" validate:"gte=1"`
 	AutoDetectionRetry int    `yaml:"autodetection_retry" validate:"gte=0"`
 	ChartCleanup       int    `yaml:"chart_cleanup" validate:"gte=0"`
-	RetriesMax         int    `yaml:"failedUpdates" validate:"gte=0"`
+	MaxRetries         int    `yaml:"retries" validate:"gte=0"`
 }
 
 // TODO: ModuleName() prepends "go_"

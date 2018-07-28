@@ -16,7 +16,6 @@ type Charts interface {
 	GetChart(string) *charts.Chart
 	LookupChart(string) (*charts.Chart, bool)
 	DeleteChart(string) bool
-	CopyCharts() charts.Charts
 }
 
 // Logger should be added by modules that need to log messages

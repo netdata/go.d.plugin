@@ -48,7 +48,7 @@ Done:
 			j.timers.spentOnRun.Duration = time.Since(j.timers.lastRun)
 
 		} else if !ok && !j.handleRetries() {
-			j.Errorf("stopped after %d collection failures in a row", j.Config.RetriesMax)
+			j.Errorf("stopped after %d collection failures in a row", j.Config.MaxRetries)
 			break Done
 		}
 
@@ -136,5 +136,5 @@ func (j *Job) handleRetries() bool {
 		j.penalty.Seconds(),
 		j.retries,
 	)
-	return j.retries < j.RetriesMax
+	return j.retries < j.MaxRetries
 }
