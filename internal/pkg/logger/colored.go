@@ -10,7 +10,7 @@ import (
 
 type colored struct{}
 
-func (c *colored) Write(b []byte) (n int, err error) {
+func (c colored) Write(b []byte) (n int, err error) {
 	msg := string(b)
 
 	if sevLevel != DEBUG {
@@ -21,7 +21,7 @@ func (c *colored) Write(b []byte) (n int, err error) {
 	return len(b), nil
 }
 
-func (c *colored) colorWrite(m string) {
+func (c colored) colorWrite(m string) {
 	switch {
 	case strings.Contains(m, DEBUG.String()):
 		color.Magenta(m)
