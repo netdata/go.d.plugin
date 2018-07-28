@@ -2,7 +2,6 @@ package modules
 
 import "github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 
-// TODO:
 type Module interface {
 	Check() bool
 	GetData() map[string]int64
@@ -11,6 +10,7 @@ type Module interface {
 	Logger
 }
 
+// Mandatory
 type Charts interface {
 	AddChart(...*charts.Chart)
 	GetChart(string) *charts.Chart
@@ -18,7 +18,7 @@ type Charts interface {
 	DeleteChart(string) bool
 }
 
-// Logger should be added by modules that need to log messages
+// Mandatory
 type Logger interface {
 	Error(...interface{})
 	Warning(...interface{})
@@ -31,14 +31,14 @@ type Logger interface {
 	Debugf(string, ...interface{})
 }
 
-// BaseConfHook should be added by modules that need to get/set values from base conf
+// BaseConfHook should be added by modules that need access to the base conf
 // optional
 type BaseConfHook interface {
 	UpdateEvery() int
 	// more methods can be added if needed
 }
 
-// NoConfiger should be added/implemented by modules that can work without configuration file
+// NoConfiger should be added/implemented by modules which don't need configuration file
 // optional
 type NoConfiger interface {
 	NoConfig()

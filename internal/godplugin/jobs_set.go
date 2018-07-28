@@ -5,8 +5,8 @@ import (
 	"reflect"
 
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
-	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
+	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
 func (gd *goDPlugin) jobsSet(created jobStack) jobStack {

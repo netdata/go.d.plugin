@@ -6,8 +6,8 @@ import (
 )
 
 type (
-	Charts    = charts.Charts
-	Dim = charts.Dim
+	Charts = charts.Charts
+	Dim    = charts.Dim
 )
 
 func (w *WebLog) CreateCharts() {
