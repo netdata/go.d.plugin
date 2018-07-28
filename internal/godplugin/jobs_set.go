@@ -18,8 +18,7 @@ func (gd *goDPlugin) jobsSet(created jobStack) jobStack {
 
 	for _, j := range created {
 		ch := charts.New()
-		obs := job.NewObserver(ch, j.Config)
-		j.Obs = obs
+		j.Obs.Set(ch)
 
 		err := setModuleInterfaces(j.Module, j.Config, ch)
 

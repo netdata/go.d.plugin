@@ -42,10 +42,8 @@ func (c *chart) refresh() {
 	}
 }
 
-// FIXME: DUPLICATE CHARTS, DIMS
-func NewObserver(ch *charts.Charts, hook baseConfHook) *observer {
+func newObserver(hook baseConfHook) *observer {
 	o := &observer{
-		charts: ch,
 		items: make(map[string]*chart),
 		prio:  70000,
 		hook:  hook,
@@ -57,6 +55,10 @@ func (o *observer) init() {
 	for _, v := range *o.charts {
 		o.Add(v.ID)
 	}
+}
+
+func (o *observer) Set(c *charts.Charts) {
+	o.charts = c
 }
 
 func (o observer) Update(id string) {

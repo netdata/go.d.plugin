@@ -14,6 +14,7 @@ func New(m modules.Module, c *Config) *Job {
 		Module: m,
 		Config: c,
 		unsafe: u,
+		Obs: newObserver(c),
 	}
 }
 
