@@ -35,20 +35,20 @@ Done:
 	for {
 
 		sleep := j.nextIn()
-		j.Debugf("sleeping for %s to reach frequency of %d sec", sleep, j.Config.UpdEvery)
+		j.Debugf("sleeping for %s to reach frequency of %d sec", sleep, j.UpdEvery)
 		time.Sleep(sleep)
 
-		j.timers.curRun = time.Now()
-		if !j.timers.lastRun.IsZero() {
-			j.timers.sinceLast.Duration = j.timers.curRun.Sub(j.timers.lastRun)
+		j.curRun = time.Now()
+		if !j.lastRun.IsZero() {
+			j.sinceLast.Duration = j.curRun.Sub(j.lastRun)
 		}
 
 		if ok := j.update(); ok {
-			j.retries, j.timers.penalty, j.timers.lastRun = 0, 0, j.timers.curRun
-			j.timers.spentOnRun.Duration = time.Since(j.timers.lastRun)
+			j.retries, j.penalty, j.lastRun = 0, 0, j.curRun
+			j.spentOnRun.Duration = time.Since(j.lastRun)
 
 		} else if !ok && !j.handleRetries() {
-			j.Errorf("stopped after %d collection failures in a row", j.Config.MaxRetries)
+			j.Errorf("stopped after %d collection failures in a row", j.MaxRetries)
 			break Done
 		}
 
