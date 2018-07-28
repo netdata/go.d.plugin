@@ -1,39 +1,53 @@
 package charts
 
-type Charts []Chart
+type Charts []*Chart
 
-func (c *Charts) Add(charts ...Chart) {
-	for idx := range charts {
-		*c = append(*c, charts[idx])
+func New() *Charts {
+	return &Charts{}
+}
+
+func (c *Charts) AddChart(charts ...*Chart) {
+	for _, v := range charts {
+		*c = append(*c, v)
+		if v.runtime() {
+			v.obs.Add(v.ID)
+		}
 	}
 }
 
-func (c Charts) Get(id string) *Chart {
+func (c Charts) GetChart(id string) *Chart {
 	idx := c.index(id)
 	if idx == -1 {
 		return nil
 	}
-	return &c[idx]
+	return c[idx]
 }
 
-func (c Charts) Lookup(id string) (*Chart, bool) {
-	v := c.Get(id)
+func (c Charts) LookupChart(id string) (*Chart, bool) {
+	v := c.GetChart(id)
 	if v == nil {
 		return nil, false
 	}
 	return v, true
 }
 
-func (c *Charts) Delete(id string) bool {
+func (c *Charts) DeleteChart(id string) bool {
 	idx := c.index(id)
 	if idx == -1 {
 		return false
 	}
+	v := (*c)[idx]
+
+	if v.runtime() {
+		v.obs.Delete(v.ID)
+	}
+
 	*c = append((*c)[:idx], (*c)[idx+1:]...)
+
 	return true
 }
 
-func (c Charts) Copy() Charts {
+func (c Charts) CopyCharts() Charts {
 	charts := Charts{}
 	for idx := range c {
 		charts = append(charts, c[idx].Copy())

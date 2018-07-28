@@ -7,7 +7,7 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 )
 
-func New(m modules.Module, c Config) *Job {
+func New(m modules.Module, c *Config) *Job {
 	_, u := m.(modules.Unsafer)
 
 	return &Job{
@@ -20,15 +20,16 @@ func New(m modules.Module, c Config) *Job {
 type Job struct {
 	modules.Module
 
-	timers timers
-	Config Config
-	Charts *Charts
+	timers
+	*Config
+	Obs *observer
 
 	retries int
 	unsafe  bool
 }
 
 func (j *Job) Run(wg *sync.WaitGroup) {
+	j.Obs.init()
 Done:
 	for {
 
@@ -69,16 +70,18 @@ func (j *Job) update() bool {
 		suppressed int
 	)
 
-	for _, chart := range j.Charts.items {
+	for _, chart := range j.Obs.items {
 
 		if chart.obsoleted {
-			if !chart.canBeUpdated(data) {
+			if canBeUpdated(*chart, data) {
+				chart.refresh()
+			} else {
 				suppressed++
 				continue
 			}
-			chart.refresh()
+		}
 
-		} else if j.Config.ChartCleanup > 0 && chart.failedUpdates >= j.Config.ChartCleanup {
+		if j.ChartCleanup > 0 && chart.retries >= j.ChartCleanup {
 			j.Errorf("item '%s' was suppressed due to non updating", chart.item.ID)
 			chart.obsolete()
 			suppressed++
@@ -86,13 +89,12 @@ func (j *Job) update() bool {
 		}
 
 		active++
-		if chart.update(data, j.timers.sinceLast.ConvertTo(time.Microsecond)) {
+		if chart.update(data, j.sinceLast.ConvertTo(time.Microsecond)) {
 			updated++
-
 		}
 	}
 
-	j.Debugf("update charts3: updated:%d, active:%d, suppressed:%d", updated, active, suppressed)
+	j.Debugf("update items: updated:%d, active:%d, suppressed:%d", updated, active, suppressed)
 	return updated > 0
 }
 
@@ -116,7 +118,7 @@ func (j *Job) getData() map[string]int64 {
 
 func (j *Job) nextIn() time.Duration {
 	start := time.Now()
-	next := start.Add(time.Duration(j.Config.UpdEvery) * time.Second).Add(j.timers.penalty).Truncate(time.Second)
+	next := start.Add(time.Duration(j.UpdEvery) * time.Second).Add(j.penalty).Truncate(time.Second)
 	return time.Duration(next.UnixNano() - start.UnixNano())
 }
 
@@ -127,11 +129,11 @@ func (j *Job) handleRetries() bool {
 		return true
 	}
 
-	j.timers.penalty = time.Duration(j.retries*j.Config.UpdEvery/2) * time.Second
+	j.penalty = time.Duration(j.retries*j.UpdEvery/2) * time.Second
 	j.Warningf(
 		"added %.0f seconds penalty after %d failed updates in a row",
-		j.timers.penalty.Seconds(),
+		j.penalty.Seconds(),
 		j.retries,
 	)
-	return j.retries < j.Config.RetriesMax
+	return j.retries < j.RetriesMax
 }

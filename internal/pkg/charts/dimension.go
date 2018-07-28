@@ -27,11 +27,17 @@ func (h hidden) String() string {
 	return h.h
 }
 
-type Dim struct {
-	ID     string
-	Name   string
-	Algo   algorithm
-	Mul    int
-	Div    int
-	Hidden hidden
+type (
+	Dim struct {
+		ID     string
+		Name   string
+		Algo   algorithm
+		Mul    int
+		Div    int
+		Hidden hidden
+	}
+)
+
+func (d Dim) copy() *Dim {
+	return &d
 }

@@ -6,6 +6,13 @@ var (
 	Stacked = chartType{"stacked"}
 )
 
+type observer interface {
+	Add(string)
+	Delete(string)
+	Update(string)
+	Obsolete(string)
+}
+
 type chartType struct {
 	t string
 }
@@ -20,6 +27,8 @@ type (
 		Opts
 		Dims Dims
 		Vars Vars
+
+		obs observer
 	}
 	Opts struct {
 		Title  string
@@ -29,21 +38,40 @@ type (
 		Type   chartType
 		OverID string
 	}
-	Dims []Dim
-	Vars []Var
+	Dims []*Dim
+	Vars []*Var
 )
 
-func (c *Chart) AddDim(d Dim) {
+// ---------------------------------------------------------------------------------------------------------------------
+func (c *Chart) Register(o observer) {
+	c.obs = o
+}
+
+func (c Chart) runtime() bool {
+	return c.obs != nil
+}
+
+func (c Chart) Refresh() {
+	if c.runtime() {
+		c.obs.Update(c.ID)
+	}
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+func (c *Chart) AddDim(d *Dim) {
 	if c.indexDim(d.ID) != -1 {
 		return
 	}
+	c.Refresh()
 	c.Dims = append(c.Dims, d)
 }
 
-func (c *Chart) AddVar(v Var) {
+func (c *Chart) AddVar(v *Var) {
 	if c.indexVar(v.ID) != -1 {
 		return
 	}
+	c.Refresh()
 	c.Vars = append(c.Vars, v)
 }
 
@@ -52,7 +80,7 @@ func (c Chart) GetDimByID(id string) *Dim {
 	if idx == -1 {
 		return nil
 	}
-	return &c.Dims[idx]
+	return c.Dims[idx]
 }
 
 func (c Chart) LookupDimByID(id string) (*Dim, bool) {
@@ -68,19 +96,24 @@ func (c *Chart) DeleteDimByID(id string) bool {
 	if idx == -1 {
 		return false
 	}
+	if c.runtime() {
+		c.obs.Obsolete(c.ID)
+		c.Refresh()
+	}
 	c.Dims = append(c.Dims[:idx], c.Dims[idx+1:]...)
 	return true
 }
 
-func (c Chart) Copy() Chart {
-	chart := c
-	chart.Dims, chart.Vars = nil, nil
+func (c Chart) Copy() *Chart {
+	chart := new(Chart)
+	chart.ID = c.ID
+	chart.Opts = c.Opts
 
 	for idx := range c.Dims {
-		chart.Dims = append(chart.Dims, c.Dims[idx])
+		chart.Dims = append(chart.Dims, c.Dims[idx].copy())
 	}
 	for idx := range c.Vars {
-		chart.Vars = append(chart.Vars, c.Vars[idx])
+		chart.Vars = append(chart.Vars, c.Vars[idx].copy())
 	}
 
 	return chart

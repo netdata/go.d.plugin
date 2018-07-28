@@ -2,32 +2,21 @@ package modules
 
 import "github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 
+// TODO:
 type Module interface {
-	CheckDataGetter // has to be implemented
-	Charts          // has to be added
-	Logger          // has to be added
-}
-
-// CheckDataGetter must be implemented by any module
-// mandatory
-type CheckDataGetter interface {
 	Check() bool
 	GetData() map[string]int64
+
+	Charts
+	Logger
 }
 
-// Charts must be added by any module
-// mandatory
 type Charts interface {
-	AddChart(...charts.Chart)
-	GetChart(string) Chart
-	LookupChart(string) (Chart, bool)
-}
-
-// BaseConfHook should be added by modules that need to get/set values from base conf
-// optional
-type BaseConfHook interface {
-	UpdateEvery() int
-	// more methods can be added if needed
+	AddChart(...*charts.Chart)
+	GetChart(string) *charts.Chart
+	LookupChart(string) (*charts.Chart, bool)
+	DeleteChart(string) bool
+	CopyCharts() charts.Charts
 }
 
 // Logger should be added by modules that need to log messages
@@ -43,6 +32,13 @@ type Logger interface {
 	Debugf(string, ...interface{})
 }
 
+// BaseConfHook should be added by modules that need to get/set values from base conf
+// optional
+type BaseConfHook interface {
+	UpdateEvery() int
+	// more methods can be added if needed
+}
+
 // NoConfiger should be added/implemented by modules that can work without configuration file
 // optional
 type NoConfiger interface {
@@ -54,17 +50,3 @@ type NoConfiger interface {
 type Unsafer interface {
 	Unsafe()
 }
-
-// User Chart
-type Chart interface {
-	AddDim(charts.Dim)
-	AddVar(charts.Var)
-	//GetDimByID(string) Dim
-	//GetVarByID(string) Var
-}
-
-//type Dim interface {
-//}
-//
-//type Var interface {
-//}

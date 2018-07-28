@@ -23,7 +23,7 @@ func (m Metric) Name() string {
 	return m.Labels[0].Value
 }
 
-// Add Append a metric.
+// AddChart Append a metric.
 func (m *Metrics) Add(kv Metric) {
 	*m = append(*m, kv)
 }

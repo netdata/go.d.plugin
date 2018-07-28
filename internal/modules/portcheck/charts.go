@@ -7,10 +7,9 @@ import (
 )
 
 type (
-	Charts     = charts.Charts
-	Chart      = charts.Chart
-	Options    = charts.Opts
-	Dimensions = charts.Dims
+	Charts  = charts.Charts
+	Options = charts.Opts
+	Dims    = charts.Dims
 )
 
 func uCharts(port int) Charts {
@@ -20,7 +19,7 @@ func uCharts(port int) Charts {
 			ID: sprintf("status_%d", port),
 			Opts: Options{
 				Title: "Port Check Status", Units: "boolean", Fam: family, Ctx: "portcheck.status"},
-			Dims: Dimensions{
+			Dims: Dims{
 				{ID: sprintf("success_%d", port), Name: "success"},
 				{ID: sprintf("failed_%d", port), Name: "failed"},
 				{ID: sprintf("timeout_%d", port), Name: "timeout"},
@@ -30,14 +29,14 @@ func uCharts(port int) Charts {
 			ID: sprintf("instate_%d", port),
 			Opts: Options{
 				Title: "Current State Duration", Units: "seconds", Fam: family, Ctx: "portcheck.instate"},
-			Dims: Dimensions{
+			Dims: Dims{
 				{ID: sprintf("instate_%d", port), Name: "time"},
 			},
 		},
 		{
 			ID:   sprintf("latency_%d", port),
 			Opts: Options{Title: "TCP Connect Latency", Units: "ms", Fam: family, Ctx: "portcheck.latency"},
-			Dims: Dimensions{
+			Dims: Dims{
 				{ID: sprintf("latency_%d", port), Name: "time", Div: 1000000},
 			},
 		},

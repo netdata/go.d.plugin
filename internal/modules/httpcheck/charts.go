@@ -5,31 +5,30 @@ import (
 )
 
 type (
-	Charts     = charts.Charts
-	Options    = charts.Opts
-	Dimensions = charts.Dims
-	Dimension  = charts.Dim
+	Charts = charts.Charts
+	Opts   = charts.Opts
+	Dims   = charts.Dims
 )
 
 var uCharts = Charts{
 	{
 		ID:   "response_time",
-		Opts: Options{Title: "HTTP Response Time", Units: "ms", Fam: "response"},
-		Dims: Dimensions{
+		Opts: Opts{Title: "HTTP Response Time", Units: "ms", Fam: "response"},
+		Dims: Dims{
 			{ID: "response_time", Name: "time", Div: 1000000},
 		},
 	},
 	{
 		ID:   "response_length",
-		Opts: Options{Title: "HTTP Response Body Length", Units: "characters", Fam: "response"},
-		Dims: Dimensions{
+		Opts: Opts{Title: "HTTP Response Body Length", Units: "characters", Fam: "response"},
+		Dims: Dims{
 			{ID: "response_length", Name: "length", Div: 1000000},
 		},
 	},
 	{
 		ID:   "response_status",
-		Opts: Options{Title: "HTTP Response Status", Units: "boolean", Fam: "status"},
-		Dims: Dimensions{
+		Opts: Opts{Title: "HTTP Response Status", Units: "boolean", Fam: "status"},
+		Dims: Dims{
 			{ID: "success"},
 			{ID: "failed"},
 			{ID: "timeout"},
@@ -37,15 +36,15 @@ var uCharts = Charts{
 	},
 	{
 		ID:   "response_check_status",
-		Opts: Options{Title: "HTTP Response Check Status", Units: "boolean", Fam: "status"},
-		Dims: Dimensions{
+		Opts: Opts{Title: "HTTP Response Check Status", Units: "boolean", Fam: "status"},
+		Dims: Dims{
 			{ID: "bad_status", Name: "bad status"},
 		},
 	},
 	{
 		ID:   "response_check_content",
-		Opts: Options{Title: "HTTP Response Check Content", Units: "boolean", Fam: "status"},
-		Dims: Dimensions{
+		Opts: Opts{Title: "HTTP Response Check Content", Units: "boolean", Fam: "status"},
+		Dims: Dims{
 			{ID: "bad_content", Name: "bad content"},
 		},
 	},
