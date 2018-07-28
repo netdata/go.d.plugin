@@ -69,8 +69,14 @@ func TestChart_GetDimByID(t *testing.T) {
 	c := testChart.Copy()
 	d := c.Dims[0]
 
-	if v := c.GetDimByID("dim1"); v != d {
+	v := c.GetDimByID("dim1")
+
+	if v != d {
 		t.Errorf("expected %v, but got %v", d, v)
+	}
+
+	if _, ok := interface{}(v).(*Dim); !ok {
+		t.Error("expected *Dim")
 	}
 
 	if v := c.GetDimByID("dim2"); v != nil {
@@ -82,8 +88,14 @@ func TestChart_LookupDimByID(t *testing.T) {
 	c := testChart.Copy()
 	d := c.Dims[0]
 
-	if v, ok := c.LookupDimByID("dim1"); v != d || !ok {
+	v, ok := c.LookupDimByID("dim1")
+
+	if v != d || !ok {
 		t.Errorf("expected %v and true, but got %v and %v", d, v, ok)
+	}
+
+	if _, ok := interface{}(v).(*Dim); !ok {
+		t.Error("expected *Dim")
 	}
 
 	if v, ok := c.LookupDimByID("dim2"); v != nil || ok {
@@ -94,4 +106,22 @@ func TestChart_LookupDimByID(t *testing.T) {
 
 func TestChart_Refresh(t *testing.T) {
 	testChart.Refresh()
+}
+
+func Test_ChartType_Algorithm_Hidden(t *testing.T) {
+	if Line.String() != "line" || Area.String() != "area" || Stacked.String() != "stacked" {
+		t.Error("wrong chart type")
+	}
+
+	if Absolute.String() != "absolute" || Incremental.String() != "incremental"  {
+		t.Error("wrong dimension algorithm")
+	}
+
+	if PercentOfAbsolute.String() != "percentage-of-absolute-row" || PercentOfIncremental.String() != "percentage-of-incremental-row" {
+		t.Error("wrong dimension algorithm")
+	}
+
+	if Hidden.String() != "hidden" || NotHidden.String() != "" {
+		t.Error("wrong dimension hidden")
+	}
 }
