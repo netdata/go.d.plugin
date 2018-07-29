@@ -113,7 +113,7 @@ func Test_ChartType_Algorithm_Hidden(t *testing.T) {
 		t.Error("wrong chart type")
 	}
 
-	if Absolute.String() != "absolute" || Incremental.String() != "incremental"  {
+	if Absolute.String() != "absolute" || Incremental.String() != "incremental" {
 		t.Error("wrong dimension algorithm")
 	}
 

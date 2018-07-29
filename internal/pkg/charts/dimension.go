@@ -41,3 +41,7 @@ type (
 func (d Dim) copy() *Dim {
 	return &d
 }
+
+func (d Dim) isValid() bool {
+	return d.ID != ""
+}

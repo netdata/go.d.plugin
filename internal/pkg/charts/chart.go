@@ -60,7 +60,7 @@ func (c Chart) Refresh() {
 // ---------------------------------------------------------------------------------------------------------------------
 
 func (c *Chart) AddDim(d *Dim) {
-	if c.indexDim(d.ID) != -1 {
+	if c.indexDim(d.ID) != -1 || !d.isValid() {
 		return
 	}
 	c.Refresh()
@@ -68,7 +68,7 @@ func (c *Chart) AddDim(d *Dim) {
 }
 
 func (c *Chart) AddVar(v *Var) {
-	if c.indexVar(v.ID) != -1 {
+	if c.indexVar(v.ID) != -1 || !v.isValid() {
 		return
 	}
 	c.Refresh()
@@ -135,4 +135,8 @@ func (c Chart) indexVar(id string) int {
 		}
 	}
 	return -1
+}
+
+func (c Chart) isValid() bool {
+	return c.ID != "" && c.Title != "" && c.Units != ""
 }

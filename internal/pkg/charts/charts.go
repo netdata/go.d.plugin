@@ -8,6 +8,9 @@ func New() *Charts {
 
 func (c *Charts) AddChart(charts ...*Chart) {
 	for _, v := range charts {
+		if c.index(v.ID) != -1 || !v.isValid() {
+			continue
+		}
 		*c = append(*c, v)
 		if v.runtime() {
 			v.obs.Add(v.ID)
