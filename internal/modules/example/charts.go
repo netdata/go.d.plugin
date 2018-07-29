@@ -11,7 +11,7 @@ type (
 var uCharts = Charts{
 	{
 		ID:   "chart1",
-		Opts: Options{Title: "Random Data 1", Units: "random", Fam: "random", Type: charts.Line},
+		Opts: Options{Title: "Random Data 1", Units: "random", Fam: "random"},
 		Dims: Dims{
 			{ID: "random0", Name: "random"},
 		},

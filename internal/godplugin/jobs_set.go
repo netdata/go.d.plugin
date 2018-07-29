@@ -45,8 +45,6 @@ func (gd *goDPlugin) jobsSet(created jobStack) jobStack {
 			f.Set(reflect.ValueOf(j.Config))
 		}
 
-
-
 		if gd.cmd.Debug || j.UpdEvery < gd.cmd.UpdateEvery {
 			j.SetUpdateEvery(gd.cmd.UpdateEvery)
 		}

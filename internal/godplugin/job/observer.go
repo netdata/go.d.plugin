@@ -1,29 +1,24 @@
 package job
 
 import (
+	"fmt"
+
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 )
-
-type baseConfHook interface {
-	FullName() string
-	//JobName() string
-	ModuleName() string
-	UpdateEvery() int
-}
 
 type (
 	observer struct {
 		charts *charts.Charts
 
 		items map[string]*chart
-		hook  baseConfHook
+		hook  *Config
 		prio  int
 	}
 
 	chart struct {
 		item *charts.Chart
 
-		hook    baseConfHook
+		hook    *Config
 		prio    int
 		retries int
 
@@ -43,7 +38,7 @@ func (c *chart) refresh() {
 	}
 }
 
-func newObserver(hook baseConfHook) *observer {
+func newObserver(hook *Config) *observer {
 	o := &observer{
 		items: make(map[string]*chart),
 		prio:  70000,
@@ -78,6 +73,10 @@ func (o *observer) Delete(id string) {
 func (o *observer) Add(id string) {
 	ch := o.charts.GetChart(id)
 	ch.Register(o)
+
+	if ch.Ctx == "" {
+		ch.Ctx = fmt.Sprintf("%s.%s", o.hook.moduleName, ch.ID)
+	}
 
 	chart := &chart{
 		item: ch,

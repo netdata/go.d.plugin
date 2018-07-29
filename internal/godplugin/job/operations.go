@@ -37,8 +37,8 @@ func (c *chart) create() {
 		c.item.Ctx,
 		c.item.Type,
 		c.prio,
-		c.hook.UpdateEvery(),
-		c.hook.ModuleName(),
+		c.hook.UpdEvery,
+		c.hook.moduleName,
 	)
 
 	for idx := range c.item.Dims {
@@ -73,8 +73,8 @@ func (c *chart) obsolete() {
 		c.item.Ctx,
 		c.item.Type,
 		c.prio,
-		c.hook.UpdateEvery(),
-		c.hook.ModuleName()),
+		c.hook.UpdEvery,
+		c.hook.moduleName),
 	)
 }
 
