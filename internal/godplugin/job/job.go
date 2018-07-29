@@ -23,6 +23,7 @@ type Job struct {
 
 	timers
 	*Config
+	modules.Logger
 	Obs *observer
 
 	retries int

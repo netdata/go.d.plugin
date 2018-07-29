@@ -8,7 +8,6 @@ import (
 
 type Example struct {
 	modules.Charts
-	modules.Logger
 	modules.NoConfiger
 
 	data map[string]int64

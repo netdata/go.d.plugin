@@ -6,6 +6,7 @@ import (
 
 type baseConfHook interface {
 	FullName() string
+	//JobName() string
 	ModuleName() string
 	UpdateEvery() int
 }

@@ -5,9 +5,7 @@ import "github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 type Module interface {
 	Check() bool
 	GetData() map[string]int64
-
 	Charts
-	Logger
 }
 
 // Mandatory
@@ -18,7 +16,7 @@ type Charts interface {
 	DeleteChart(string) bool
 }
 
-// Mandatory
+// Optional
 type Logger interface {
 	Error(...interface{})
 	Warning(...interface{})
