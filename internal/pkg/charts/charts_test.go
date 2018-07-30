@@ -1,6 +1,8 @@
 package charts
 
-import "testing"
+import (
+	"testing"
+)
 
 var testCharts = &Charts{
 	testChart.Copy(),
@@ -26,12 +28,21 @@ func TestCharts_Copy(t *testing.T) {
 }
 
 func TestCharts_AddChart(t *testing.T) {
-	c := testCharts.Copy()
+	ch := testCharts.Copy()
+	c := testChart.Copy()
 
-	c.AddChart(testChart.Copy())
+	ch.AddChart(c)
 
-	if len(c) != 2 {
-		t.Errorf("excpected 2 charts, but got %d", len(c))
+	if len(ch) != 1 {
+		t.Errorf("excpected 1 charts, but got %d", len(ch))
+	}
+
+	c.ID = "test2"
+
+	ch.AddChart(c)
+
+	if len(ch) != 2 {
+		t.Errorf("excpected 2 charts, but got %d", len(ch))
 	}
 }
 

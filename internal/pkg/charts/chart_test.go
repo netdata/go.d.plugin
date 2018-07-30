@@ -4,7 +4,7 @@ import "testing"
 
 var testChart = &Chart{
 	ID:   "test1",
-	Opts: Opts{Title: "Test1"},
+	Opts: Opts{Title: "Test1", Units: "test"},
 	Dims: Dims{
 		{ID: "dim1"},
 	},
@@ -37,6 +37,12 @@ func TestChart_Copy(t *testing.T) {
 func TestChart_AddDim(t *testing.T) {
 	c := testChart.Copy()
 
+	c.AddDim(&Dim{ID: "dim1"})
+
+	if len(c.Dims) != 1 {
+		t.Errorf("expected 1 dimensions, but got %d", len(c.Dims))
+	}
+
 	c.AddDim(&Dim{ID: "dim2"})
 
 	if len(c.Dims) != 2 {
@@ -46,6 +52,12 @@ func TestChart_AddDim(t *testing.T) {
 
 func TestChart_AddVar(t *testing.T) {
 	c := testChart.Copy()
+
+	c.AddVar(&Var{ID: "var1"})
+
+	if len(c.Vars) != 1 {
+		t.Errorf("expected 1 variables, but got %d", len(c.Vars))
+	}
 
 	c.AddVar(&Var{ID: "var2"})
 
