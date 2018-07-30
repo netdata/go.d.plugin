@@ -4,18 +4,21 @@ import (
 	"math/rand"
 
 	"github.com/l2isbad/go.d.plugin/internal/modules"
+	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 )
 
 type Example struct {
-	modules.Charts
 	modules.NoConfiger
 
 	data map[string]int64
 }
 
 func (e *Example) Check() bool {
-	e.AddChart(uCharts...)
 	return true
+}
+
+func (Example) GetCharts() *charts.Charts {
+	return charts.NewCharts(uCharts...)
 }
 
 func (e *Example) GetData() map[string]int64 {

@@ -9,7 +9,7 @@ var testCharts = &Charts{
 }
 
 func TestNew(t *testing.T) {
-	if _, ok := interface{}(New()).(*Charts); !ok {
+	if _, ok := interface{}(NewCharts()).(*Charts); !ok {
 		t.Error("excpected *Charts")
 	}
 }

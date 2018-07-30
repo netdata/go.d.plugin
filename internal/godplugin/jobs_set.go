@@ -3,7 +3,6 @@ package godplugin
 import (
 	"reflect"
 
-	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
@@ -22,20 +21,11 @@ func (gd *goDPlugin) jobsSet(created jobStack) jobStack {
 			continue
 		}
 
-		jobCh := charts.New()
 		jobLog := logger.New(j.Config)
 
 		j.Logger = jobLog
-		j.Obs.Set(jobCh)
 
 		elem := m.Elem()
-
-		if f := elem.FieldByName("Charts"); !valid(f) {
-			log.Errorf("module '%s': 'Charts' field must be a 'modules.Charts' interface", j.ModuleName())
-			continue
-		} else {
-			f.Set(reflect.ValueOf(jobCh))
-		}
 
 		if f := elem.FieldByName("Logger"); valid(f) {
 			f.Set(reflect.ValueOf(jobLog))

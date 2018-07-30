@@ -7,6 +7,7 @@ import (
 
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
+	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 )
 
 const (
@@ -57,7 +58,6 @@ func newPort(p, u int) *port {
 }
 
 type PortCheck struct {
-	modules.Charts
 	modules.BaseConfHook
 	modules.Logger
 
@@ -88,12 +88,18 @@ func (pc *PortCheck) Check() bool {
 	sort.Ints(pc.Ports)
 	for _, p := range pc.Ports {
 		pc.ports = append(pc.ports, newPort(p, pc.UpdateEvery()))
-		pc.AddChart(uCharts(p)...)
-
 		go worker(pc.Host, pc.Timeout.Duration, pc.do, pc.done)
 	}
 
 	return true
+}
+
+func (pc PortCheck) GetCharts() *charts.Charts {
+	c := charts.NewCharts()
+	for _, p := range pc.Ports {
+		c.AddChart(uCharts(p)...)
+	}
+	return c
 }
 
 func (pc *PortCheck) GetData() map[string]int64 {

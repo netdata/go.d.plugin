@@ -5,11 +5,11 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/prometheus"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/web"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
+	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 )
 
 // Springboot2 Spring boot 2 plugin
 type Springboot2 struct {
-	modules.Charts
 	modules.Logger
 
 	web.Request `yaml:",inline"`
@@ -33,8 +33,11 @@ func (s *Springboot2) Check() bool {
 	}
 	jvmMemory := metrics.FindByName("jvm_memory_used_bytes")
 
-	s.AddChart(uCharts...)
 	return len(jvmMemory) > 0
+}
+
+func (Springboot2) GetCharts() *charts.Charts {
+	return charts.NewCharts(uCharts...)
 }
 
 // GetData GetData

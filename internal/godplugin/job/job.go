@@ -30,7 +30,7 @@ type Job struct {
 	unsafe  bool
 }
 
-func (j *Job) Run(wg *sync.WaitGroup) {
+func (j *Job) Start(wg *sync.WaitGroup) {
 Done:
 	for {
 

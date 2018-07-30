@@ -42,8 +42,6 @@ func (d *data) reset() {
 }
 
 type HttpCheck struct {
-	*charts.Charts
-
 	modules.Logger
 
 	StatusAccepted []int  `yaml:"status_accepted"`
@@ -96,14 +94,16 @@ func (hc *HttpCheck) Check() bool {
 		hc.statuses[200] = true
 	}
 
-	// GetChartInt Charts
+	return true
+}
+
+func(hc HttpCheck) GetCharts() *charts.Charts {
 	c := uCharts.Copy()
 	if len(hc.ResponseMatch) == 0 {
 		c.DeleteChart("response_check_content")
 	}
-	hc.AddChart(c...)
+	return charts.NewCharts(uCharts...)
 
-	return true
 }
 
 func (hc *HttpCheck) GetData() map[string]int64 {
@@ -172,7 +172,6 @@ func init() {
 		return &HttpCheck{
 			statuses: make(map[int]bool),
 			data:     data{},
-			Charts:   charts.New(),
 		}
 	}
 	modules.Add(f)

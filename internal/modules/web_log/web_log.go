@@ -30,7 +30,7 @@ const (
 )
 
 type WebLog struct {
-	modules.Charts
+	*charts.Charts
 	modules.Logger
 
 	Path             string        `yaml:"path" validate:"required"`
@@ -114,7 +114,6 @@ func (w *WebLog) Check() bool {
 		w.histograms = getHistograms(w.RawHistogram)
 	}
 
-	w.CreateCharts()
 	w.Info("collected data:", w.parser.SubexpNames()[1:])
 	return true
 }

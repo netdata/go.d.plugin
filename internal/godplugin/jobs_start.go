@@ -34,11 +34,11 @@ func (gd *goDPlugin) jobsRun(jobs jobStack) {
 			continue
 		}
 
-		if res.ok {
+		if res.ok && getCharts(j) {
 			j.Info("Check() [OK]")
 			started[key] = true
 
-			go j.Run(&gd.wg)
+			go j.Start(&gd.wg)
 			gd.wg.Add(1)
 			continue
 		}
@@ -100,11 +100,22 @@ func recheck(j *job.Job, wg *sync.WaitGroup) {
 				j.Error(res.err)
 				break
 			}
-			if res.ok {
+			if res.ok && getCharts(j) {
 				j.Infof("Check() [OK] after %d rechecks", c)
-				go j.Run(wg)
+				go j.Start(wg)
 				break
 			}
 		}
 	}()
+}
+
+func getCharts(j *job.Job) bool {
+	c := j.GetCharts()
+	if c == nil {
+		j.Error("GetCharts() [FAILED]")
+		return false
+	}
+
+	j.Obs.Set(c)
+	return true
 }

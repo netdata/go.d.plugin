@@ -10,7 +10,7 @@ type (
 	Dim    = charts.Dim
 )
 
-func (w *WebLog) CreateCharts() {
+func (w *WebLog) GetCharts() *charts.Charts {
 	n := utils.StringSlice(w.parser.SubexpNames())
 	ch := Charts{}
 
@@ -99,5 +99,7 @@ func (w *WebLog) CreateCharts() {
 		}
 	}
 
-	w.AddChart(ch...)
+	c := charts.NewCharts(ch...)
+	w.Charts = c
+	return c
 }

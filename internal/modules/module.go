@@ -5,15 +5,7 @@ import "github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 type Module interface {
 	Check() bool
 	GetData() map[string]int64
-	Charts
-}
-
-// Mandatory
-type Charts interface {
-	AddChart(...*charts.Chart)
-	GetChart(string) *charts.Chart
-	LookupChart(string) (*charts.Chart, bool)
-	DeleteChart(string) bool
+	GetCharts() *charts.Charts
 }
 
 // Optional

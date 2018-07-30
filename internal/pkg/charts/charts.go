@@ -2,8 +2,10 @@ package charts
 
 type Charts []*Chart
 
-func New() *Charts {
-	return &Charts{}
+func NewCharts(charts ...*Chart) *Charts {
+	c := new(Charts)
+	c.AddChart(charts...)
+	return c
 }
 
 func (c *Charts) AddChart(charts ...*Chart) {
