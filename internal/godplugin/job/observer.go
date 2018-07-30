@@ -56,7 +56,9 @@ func (o observer) Update(id string) {
 }
 
 func (o *observer) Obsolete(id string) {
-	o.items[id].obsolete()
+	if !o.items[id].obsoleted {
+		o.items[id].obsolete()
+	}
 }
 
 func (o *observer) Delete(id string) {
