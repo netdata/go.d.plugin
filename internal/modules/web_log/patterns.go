@@ -80,7 +80,7 @@ func getPattern(custom string, line []byte) (*regexp.Regexp, error) {
 				return p, nil
 			}
 		}
-		return nil, errors.New("can not find appropriate regex, consider using \"custom_log_format\" feature")
+		return nil, errors.New("can not find appropriate regex, consider using 'custom_log_format' feature")
 	}
 	r, err := regexp.Compile(custom)
 	if err != nil {

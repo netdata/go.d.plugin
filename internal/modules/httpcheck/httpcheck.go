@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/l2isbad/go.d.plugin/internal/modules"
+	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/web"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
 	"io"
@@ -41,7 +42,8 @@ func (d *data) reset() {
 }
 
 type HttpCheck struct {
-	modules.Charts
+	*charts.Charts
+
 	modules.Logger
 
 	StatusAccepted []int  `yaml:"status_accepted"`
@@ -64,7 +66,7 @@ func (hc *HttpCheck) Check() bool {
 	}
 	hc.Debugf("Using timeout: %s", hc.Timeout.Duration)
 
-	// Get Request and Client
+	// GetChartInt Request and Client
 	req, err := hc.Request.CreateRequest()
 
 	if err != nil {
@@ -75,7 +77,7 @@ func (hc *HttpCheck) Check() bool {
 	hc.request = req
 	hc.client = hc.Client.CreateHttpClient()
 
-	// Get Response Match Regex
+	// GetChartInt Response Match Regex
 	re, err := regexp.Compile(hc.ResponseMatch)
 
 	if err != nil {
@@ -85,7 +87,7 @@ func (hc *HttpCheck) Check() bool {
 
 	hc.match = re
 
-	// Get Response Statuses
+	// GetChartInt Response Statuses
 	for _, s := range hc.StatusAccepted {
 		hc.statuses[s] = true
 	}
@@ -94,12 +96,12 @@ func (hc *HttpCheck) Check() bool {
 		hc.statuses[200] = true
 	}
 
-	// Get Charts
-	c := charts.Copy()
+	// GetChartInt Charts
+	c := uCharts.Copy()
 	if len(hc.ResponseMatch) == 0 {
-		c.DeleteChartByID("response_check_content")
+		c.DeleteChart("response_check_content")
 	}
-	hc.AddMany(c)
+	hc.AddChart(c...)
 
 	return true
 }
@@ -170,6 +172,7 @@ func init() {
 		return &HttpCheck{
 			statuses: make(map[int]bool),
 			data:     data{},
+			Charts:   charts.New(),
 		}
 	}
 	modules.Add(f)

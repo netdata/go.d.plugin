@@ -1,22 +1,11 @@
 package logger
 
-var cache loggers
+var cache = map[string]*Logger{}
 
-type loggers []*logger
-
-func (l *loggers) get(n namer) *logger {
-	for _, logger := range *l {
-		if n.ModuleName() == logger.ModuleName() && n.JobName() == logger.JobName() {
-			return logger
-		}
-	}
-	return nil
+func add(l *Logger) {
+	cache[l.ModuleName()+l.JobName()] = l
 }
 
-func (l *loggers) add(n *logger) {
-	*l = append(*l, n)
-}
-
-func CacheGet(n namer) *logger {
-	return cache.get(n)
+func CacheGet(n namer) *Logger {
+	return cache[n.ModuleName()+n.JobName()]
 }

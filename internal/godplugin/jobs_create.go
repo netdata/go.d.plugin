@@ -69,9 +69,10 @@ func (gd *goDPlugin) jobsCreate() jobStack {
 
 func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 	// Create module and default conf
-	conf, mod := job.NewConf(), creator.MakeModule()
+	conf, mod := job.NewConfig(), creator.MakeModule()
 
 	conf.SetModuleName(name)
+
 	setModuleDefaults(name, conf)
 
 	f, err := ioutil.ReadFile(path.Join(dir, name+".conf"))

@@ -11,81 +11,94 @@ type namer interface {
 	JobName() string
 }
 
-func New(n namer) *logger {
-	l := &logger{
-		log:   log.New(&colorWriter{}, "", log.Ldate|log.Ltime),
-		namer: n,
-	}
+type n struct{}
 
-	if cache.get(n) == nil {
-		cache.add(l)
-	}
-
-	return l
+func (n) ModuleName() string {
+	return "module"
 }
 
-type logger struct {
+func (n) JobName() string {
+	return "job"
+}
+
+func New(n namer) *Logger {
+	v := CacheGet(n)
+	if v != nil {
+		return v
+	}
+	v = &Logger{
+		log:   log.New(colored{}, "", log.Ldate|log.Ltime),
+		namer: n,
+	}
+	add(v)
+	return v
+}
+
+func NewTest() *Logger {
+	return &Logger{
+		log:   log.New(&colored{}, "", log.Ldate|log.Ltime),
+		namer: n{},
+	}
+}
+
+type Logger struct {
 	log *log.Logger
 	namer
 }
 
-func (m *logger) Critical(a ...interface{}) {
-	m.print(CRITICAL, a...)
+func (l *Logger) Critical(a ...interface{}) {
+	l.print(CRITICAL, a...)
 	os.Exit(1)
 }
 
-func (m *logger) Error(a ...interface{}) {
-	m.print(ERROR, a...)
+func (l *Logger) Error(a ...interface{}) {
+	l.print(ERROR, a...)
 }
 
-func (m *logger) Warning(a ...interface{}) {
-	m.print(WARNING, a...)
+func (l *Logger) Warning(a ...interface{}) {
+	l.print(WARNING, a...)
 }
 
-func (m *logger) Info(a ...interface{}) {
-	m.print(INFO, a...)
+func (l *Logger) Info(a ...interface{}) {
+	l.print(INFO, a...)
 }
 
-func (m *logger) Debug(a ...interface{}) {
-	m.print(DEBUG, a...)
+func (l *Logger) Debug(a ...interface{}) {
+	l.print(DEBUG, a...)
 }
 
-func (m *logger) Criticalf(format string, a ...interface{}) {
-	m.Critical(fmt.Sprintf(format, a...))
+func (l *Logger) Criticalf(format string, a ...interface{}) {
+	l.Critical(fmt.Sprintf(format, a...))
 }
 
-func (m *logger) Errorf(format string, a ...interface{}) {
-	m.Error(fmt.Sprintf(format, a...))
+func (l *Logger) Errorf(format string, a ...interface{}) {
+	l.Error(fmt.Sprintf(format, a...))
 }
 
-func (m *logger) Warningf(format string, a ...interface{}) {
-	m.Warning(fmt.Sprintf(format, a...))
+func (l *Logger) Warningf(format string, a ...interface{}) {
+	l.Warning(fmt.Sprintf(format, a...))
 }
 
-func (m *logger) Infof(format string, a ...interface{}) {
-	m.Info(fmt.Sprintf(format, a...))
+func (l *Logger) Infof(format string, a ...interface{}) {
+	l.Info(fmt.Sprintf(format, a...))
 }
 
-func (m *logger) Debugf(format string, a ...interface{}) {
-	m.Debug(fmt.Sprintf(format, a...))
+func (l *Logger) Debugf(format string, a ...interface{}) {
+	l.Debug(fmt.Sprintf(format, a...))
 }
 
-func (m *logger) print(level Severity, a ...interface{}) {
+func (l *Logger) print(level Severity, a ...interface{}) {
 	if level > sevLevel {
 		return
 	}
-	m.log.Printf(
+	l.log.Printf(
 		"go.d: %s: %s: %s: %s",
 		level,
-		m.ModuleName(),
-		m.JobName(),
+		l.ModuleName(),
+		l.JobName(),
 		fmt.Sprintln(a...))
 }
 
-func (m *logger) SetLevel(l Severity) {
-	sevLevel = l
-}
-
-func (m *logger) Level() Severity {
-	return sevLevel
+func (l *Logger) SetLevel(lev Severity) {
+	sevLevel = lev
 }

@@ -1,57 +1,51 @@
 package httpcheck
 
-import "github.com/l2isbad/go.d.plugin/internal/pkg/charts/raw"
-
-type (
-	Charts      = raw.Charts
-	Order       = raw.Order
-	Definitions = raw.Definitions
-	Chart       = raw.Chart
-	Options     = raw.Options
-	Dimensions  = raw.Dimensions
-	Dimension   = raw.Dimension
+import (
+	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 )
 
-var charts = Charts{
-	Order: Order{
-		"response_time", "response_length", "response_status", "response_check_status", "response_check_content"},
-	Definitions: Definitions{
-		&Chart{
-			ID:      "response_time",
-			Options: Options{"HTTP Response Time", "ms", "response"},
-			Dimensions: Dimensions{
-				Dimension{"response_time", "time", "", 1, 1e6},
-			},
+type (
+	Charts = charts.Charts
+	Opts   = charts.Opts
+	Dims   = charts.Dims
+)
+
+var uCharts = Charts{
+	{
+		ID:   "response_time",
+		Opts: Opts{Title: "HTTP Response Time", Units: "ms", Fam: "response"},
+		Dims: Dims{
+			{ID: "response_time", Name: "time", Div: 1000000},
 		},
-		&Chart{
-			ID:      "response_length",
-			Options: Options{"HTTP Response Body Length", "characters", "response"},
-			Dimensions: Dimensions{
-				Dimension{"response_length", "length"},
-			},
+	},
+	{
+		ID:   "response_length",
+		Opts: Opts{Title: "HTTP Response Body Length", Units: "characters", Fam: "response"},
+		Dims: Dims{
+			{ID: "response_length", Name: "length", Div: 1000000},
 		},
-		&Chart{
-			ID:      "response_status",
-			Options: Options{"HTTP Response Status", "boolean", "status"},
-			Dimensions: Dimensions{
-				Dimension{"success"},
-				Dimension{"failed"},
-				Dimension{"timeout"},
-			},
+	},
+	{
+		ID:   "response_status",
+		Opts: Opts{Title: "HTTP Response Status", Units: "boolean", Fam: "status"},
+		Dims: Dims{
+			{ID: "success"},
+			{ID: "failed"},
+			{ID: "timeout"},
 		},
-		&Chart{
-			ID:      "response_check_status",
-			Options: Options{"HTTP Response Check Status", "boolean", "status"},
-			Dimensions: Dimensions{
-				Dimension{"bad_status", "bad status"},
-			},
+	},
+	{
+		ID:   "response_check_status",
+		Opts: Opts{Title: "HTTP Response Check Status", Units: "boolean", Fam: "status"},
+		Dims: Dims{
+			{ID: "bad_status", Name: "bad status"},
 		},
-		&Chart{
-			ID:      "response_check_content",
-			Options: Options{"HTTP Response Check Content", "boolean", "status"},
-			Dimensions: Dimensions{
-				Dimension{"bad_content", "bad content"},
-			},
+	},
+	{
+		ID:   "response_check_content",
+		Opts: Opts{Title: "HTTP Response Check Content", Units: "boolean", Fam: "status"},
+		Dims: Dims{
+			{ID: "bad_content", Name: "bad content"},
 		},
 	},
 }

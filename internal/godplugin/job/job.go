@@ -14,13 +14,18 @@ func New(m modules.Module, c *Config) *Job {
 		Module: m,
 		Config: c,
 		unsafe: u,
+		Obs:    newObserver(c),
 	}
 }
 
 type Job struct {
 	modules.Module
-	*Config
+
 	timers
+	*Config
+	modules.Logger
+	Obs *observer
+
 	retries int
 	unsafe  bool
 }
@@ -43,7 +48,7 @@ Done:
 			j.spentOnRun.Duration = time.Since(j.lastRun)
 
 		} else if !ok && !j.handleRetries() {
-			j.Errorf("stopped after %d collection failures in a row", j.RetriesMax)
+			j.Errorf("stopped after %d collection failures in a row", j.MaxRetries)
 			break Done
 		}
 
@@ -66,31 +71,35 @@ func (j *Job) update() bool {
 		suppressed int
 	)
 
-	for _, n := range j.ListNames() {
-		chart := j.GetChartByID(n)
+	for _, v := range *j.Obs.charts {
+		if _, ok := j.Obs.items[v.ID]; !ok {
+			j.Obs.add(v)
+		}
+		chart := j.Obs.items[v.ID]
 
-		if chart.IsObsoleted() {
-			if !chart.CanBeUpdated(data) {
+		if chart.obsoleted {
+			if canBeUpdated(*chart, data) {
+				chart.refresh()
+			} else {
 				suppressed++
 				continue
 			}
-			chart.Refresh()
+		}
 
-		} else if j.ChartCleanup > 0 && chart.FailedUpdates >= j.ChartCleanup {
-			j.Errorf("chart '%s' was suppressed due to non updating", chart.ID())
-			chart.Obsolete()
+		if j.ChartCleanup > 0 && chart.retries >= j.ChartCleanup {
+			j.Errorf("item '%s' was suppressed due to non updating", chart.item.ID)
+			chart.obsolete()
 			suppressed++
 			continue
 		}
 
 		active++
-		if chart.Update(data, j.sinceLast.ConvertTo(time.Microsecond)) {
+		if chart.update(data, j.sinceLast.ConvertTo(time.Microsecond)) {
 			updated++
-
 		}
 	}
 
-	j.Debugf("update charts: updated:%d, active:%d, suppressed:%d", updated, active, suppressed)
+	j.Debugf("update items: updated:%d, active:%d, suppressed:%d", updated, active, suppressed)
 	return updated > 0
 }
 
@@ -131,5 +140,5 @@ func (j *Job) handleRetries() bool {
 		j.penalty.Seconds(),
 		j.retries,
 	)
-	return j.retries < j.RetriesMax
+	return j.retries < j.MaxRetries
 }

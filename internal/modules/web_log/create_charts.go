@@ -1,41 +1,40 @@
 package web_log
 
 import (
-	"github.com/l2isbad/go.d.plugin/internal/modules/web_log/charts"
-	"github.com/l2isbad/go.d.plugin/internal/pkg/charts/raw"
+	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
 )
 
 type (
-	Charts    = raw.Charts
-	Dimension = raw.Dimension
+	Charts = charts.Charts
+	Dim    = charts.Dim
 )
 
 func (w *WebLog) CreateCharts() {
 	n := utils.StringSlice(w.parser.SubexpNames())
-	ch := new(Charts)
+	ch := Charts{}
 
-	ch.AddChart(&charts.RespStatuses)
-	ch.AddChart(&charts.RespCodes)
+	ch.AddChart(&chartRespStatuses)
+	ch.AddChart(&chartRespCodes)
 
 	if w.DoCodesDetail && w.DoCodesAggregate {
-		ch.AddChart(&charts.RespCodesDetailed)
+		ch.AddChart(&chartRespCodesDetailed)
 	}
 
 	if w.DoCodesDetail && !w.DoCodesAggregate {
-		for _, chart := range charts.RespCodesDetailedPerFam() {
-			ch.AddChart(chart)
+		for _, chart := range chartRespCodesDetailedPerFam() {
+			ch.AddChart(&chart)
 		}
 	}
 
 	if n.Include(keyBytesSent) || n.Include(keyRespLen) {
-		ch.AddChart(&charts.Bandwidth)
+		ch.AddChart(&chartBandwidth)
 	}
 
 	if (n.Include(keyRequest) || n.Include(keyURL)) && w.urlCat.exist() {
-		ch.AddChart(charts.ReqPerURL.Copy())
+		ch.AddChart(chartReqPerURL.Copy())
 		for _, v := range w.urlCat.items {
-			ch.GetChartByID(charts.ReqPerURL.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+			ch.GetChart(chartReqPerURL.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
 			w.data[v.id] = 0
 		}
 		w.data[w.urlCat.other] = 0
@@ -44,61 +43,61 @@ func (w *WebLog) CreateCharts() {
 
 	if ((n.Include(keyRequest) || n.Include(keyURL)) && w.urlCat.exist()) && w.DoChartURLCat {
 		for _, v := range w.urlCat.items {
-			for _, chart := range charts.PerCategoryStats(v.id) {
-				ch.AddChart(chart)
-				for _, d := range chart.Dimensions {
-					w.data[d.ID()] = 0
+			for _, chart := range chartPerCategoryStats(v.id) {
+				ch.AddChart(&chart)
+				for _, d := range chart.Dims {
+					w.data[d.ID] = 0
 				}
 			}
 		}
 	}
 
 	if n.Include(keyUserDefined) && w.userCat.exist() {
-		ch.AddChart(charts.ReqPerUserDef.Copy())
+		ch.AddChart(chartReqPerUserDef.Copy())
 		for _, v := range w.userCat.items {
-			ch.GetChartByID(charts.ReqPerUserDef.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+			ch.GetChart(chartReqPerUserDef.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
 			w.data[v.id] = 0
 		}
 		w.data[w.userCat.other] = 0
 	}
 
 	if n.Include(keyRespTime) {
-		ch.AddChart(&charts.RespTime)
+		ch.AddChart(&chartRespTime)
 	}
 
 	if n.Include(keyRespTime) && len(w.RawHistogram) != 0 {
-		ch.AddChart(charts.RespTimeHist.Copy())
+		ch.AddChart(chartRespTimeHist.Copy())
 		for _, v := range w.histograms.get(keyRespTimeHist) {
-			ch.GetChartByID(charts.RespTimeHist.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+			ch.GetChart(chartRespTimeHist.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
 		}
 	}
 
 	if n.Include(keyRespTimeUpstream) {
-		ch.AddChart(&charts.RespTimeUpstream)
+		ch.AddChart(&chartRespTimeUpstream)
 	}
 
 	if n.Include(keyRespTimeUpstream) && len(w.RawHistogram) != 0 {
-		ch.AddChart(charts.RespTimeUpstreamHist.Copy())
+		ch.AddChart(chartRespTimeUpstreamHist.Copy())
 		for _, v := range w.histograms.get(keyRespTimeUpstreamHist) {
-			ch.GetChartByID(charts.RespTimeUpstreamHist.ID).AddDim(Dimension{v.id, v.name, raw.Incremental})
+			ch.GetChart(chartRespTimeUpstreamHist.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
 		}
 	}
 
 	if n.Include(keyRequest) || n.Include(keyHTTPMethod) {
-		ch.AddChart(&charts.ReqPerHTTPMethod)
+		ch.AddChart(&chartReqPerHTTPMethod)
 	}
 
 	if n.Include(keyRequest) || n.Include(keyHTTPVer) {
-		ch.AddChart(&charts.ReqPerHTTPVer)
+		ch.AddChart(&chartReqPerHTTPVer)
 	}
 
 	if n.Include(keyAddress) {
-		ch.AddChart(&charts.ReqPerIPProto)
-		ch.AddChart(&charts.ClientsCurr)
+		ch.AddChart(&chartReqPerIPProto)
+		ch.AddChart(&chartClientsCurr)
 		if w.DoClientsAll {
-			ch.AddChart(&charts.ClientsAll)
+			ch.AddChart(&chartClientsAll)
 		}
 	}
 
-	w.AddMany(ch)
+	w.AddChart(ch...)
 }

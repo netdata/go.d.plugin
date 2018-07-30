@@ -25,7 +25,6 @@ type data struct {
 
 // Check Check
 func (s *Springboot2) Check() bool {
-	s.AddMany(charts)
 	s.prom = prometheus.New(s.Client.CreateHttpClient(), s.Request)
 	metrics, err := s.prom.GetMetrics()
 	if err != nil {
@@ -33,6 +32,8 @@ func (s *Springboot2) Check() bool {
 		return false
 	}
 	jvmMemory := metrics.FindByName("jvm_memory_used_bytes")
+
+	s.AddChart(uCharts...)
 	return len(jvmMemory) > 0
 }
 

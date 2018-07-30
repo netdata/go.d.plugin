@@ -8,21 +8,20 @@ import (
 	"github.com/fatih/color"
 )
 
-type colorWriter struct{}
+type colored struct{}
 
-func (c *colorWriter) Write(b []byte) (n int, err error) {
+func (c colored) Write(b []byte) (n int, err error) {
 	msg := string(b)
 
-	if sevLevel == DEBUG {
-		c.colorWrite(msg)
-	} else {
+	if sevLevel != DEBUG {
 		return fmt.Fprint(os.Stderr, msg)
 	}
 
+	c.colorWrite(msg)
 	return len(b), nil
 }
 
-func (c *colorWriter) colorWrite(m string) {
+func (c colored) colorWrite(m string) {
 	switch {
 	case strings.Contains(m, DEBUG.String()):
 		color.Magenta(m)
