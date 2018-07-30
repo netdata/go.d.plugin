@@ -110,7 +110,7 @@ func (pc *PortCheck) GetData() map[string]int64 {
 		pc.data[sprintf("failed_%d", p.number)] = 0
 		pc.data[sprintf("timeout_%d", p.number)] = 0
 
-		pc.data[p.stateText()] = int64(p.state.current)
+		pc.data[p.stateText()] = 1
 		pc.data[sprintf("instate_%d", p.number)] = int64(p.state.duration)
 		pc.data[sprintf("latency_%d", p.number)] = int64(p.latency)
 
