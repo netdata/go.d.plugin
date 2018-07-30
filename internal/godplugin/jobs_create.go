@@ -71,7 +71,7 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 	// Create module and default conf
 	conf, mod := job.NewConfig(), creator.MakeModule()
 
-	conf.SetModuleName(name)
+	conf.RealModuleName = name
 
 	setModuleDefaults(name, conf)
 
@@ -129,7 +129,7 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 
 		// do not add job name for multi job with only 1 job
 		if num > 1 {
-			c.SetJobName(r.name)
+			c.RealJobName = r.name
 		}
 		// PUSH:
 		jobs.push(job.New(m, &c))
@@ -168,7 +168,7 @@ func parseModuleConf(f []byte) []jobRawConf {
 
 func setModuleDefaults(n string, c *job.Config) {
 	if v, ok := modules.GetDefault(n).UpdateEvery(); ok {
-		c.UpdEvery = v
+		c.UpdateEvery = v
 	}
 	if v, ok := modules.GetDefault(n).ChartsCleanup(); ok {
 		c.ChartCleanup = v

@@ -42,7 +42,7 @@ func (d *data) reset() {
 }
 
 type HttpCheck struct {
-	modules.Logger
+	modules.ModuleBase
 
 	StatusAccepted []int  `yaml:"status_accepted"`
 	ResponseMatch  string `yaml:"response_match"`
@@ -57,14 +57,22 @@ type HttpCheck struct {
 	data data
 }
 
-func (hc *HttpCheck) Check() bool {
-	// Set Timeout
+func (hc *HttpCheck) Init() {
 	if hc.Timeout.Duration == 0 {
 		hc.Timeout.Duration = time.Second
 	}
 	hc.Debugf("Using timeout: %s", hc.Timeout.Duration)
 
-	// GetChartInt Request and Client
+	for _, s := range hc.StatusAccepted {
+		hc.statuses[s] = true
+	}
+
+	if len(hc.statuses) == 0 {
+		hc.statuses[200] = true
+	}
+}
+
+func (hc *HttpCheck) Check() bool {
 	req, err := hc.Request.CreateRequest()
 
 	if err != nil {
@@ -75,29 +83,18 @@ func (hc *HttpCheck) Check() bool {
 	hc.request = req
 	hc.client = hc.Client.CreateHttpClient()
 
-	// GetChartInt Response Match Regex
 	re, err := regexp.Compile(hc.ResponseMatch)
 
 	if err != nil {
 		hc.Error(err)
 		return false
 	}
-
 	hc.match = re
-
-	// GetChartInt Response Statuses
-	for _, s := range hc.StatusAccepted {
-		hc.statuses[s] = true
-	}
-
-	if len(hc.statuses) == 0 {
-		hc.statuses[200] = true
-	}
 
 	return true
 }
 
-func(hc HttpCheck) GetCharts() *charts.Charts {
+func (hc HttpCheck) GetCharts() *charts.Charts {
 	c := uCharts.Copy()
 	if len(hc.ResponseMatch) == 0 {
 		c.DeleteChart("response_check_content")

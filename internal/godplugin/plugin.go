@@ -11,6 +11,7 @@ import (
 	_ "github.com/l2isbad/go.d.plugin/internal/modules/all"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/cli"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
+	"fmt"
 )
 
 var (
@@ -56,7 +57,7 @@ func (gd *goDPlugin) Start() {
 	}
 
 	if gd.cmd.Debug {
-		log.SetLevel(logger.DEBUG)
+		logger.SetLevel(logger.DEBUG)
 	}
 
 	if gd.conf.MaxProcs != 0 {
@@ -64,9 +65,10 @@ func (gd *goDPlugin) Start() {
 		runtime.GOMAXPROCS(gd.conf.MaxProcs)
 	}
 
-	gd.jobsRun(gd.jobsSet(gd.jobsCreate()))
+	gd.jobsStart(gd.jobsCheck(gd.jobsInit(gd.jobsCreate())))
 
 	gd.wg.Wait()
+	fmt.Println("DISABLE")
 }
 
 func (gd *goDPlugin) loadConfig() error {

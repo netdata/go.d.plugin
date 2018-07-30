@@ -6,44 +6,24 @@ import (
 	"os"
 )
 
-type namer interface {
-	ModuleName() string
-	JobName() string
+var dummy = &Logger{
+	log:     log.New(colored{}, "", log.Ldate|log.Ltime),
+	modName: "dummy",
+	jobName: "dummy",
 }
 
-type n struct{}
-
-func (n) ModuleName() string {
-	return "module"
-}
-
-func (n) JobName() string {
-	return "job"
-}
-
-func New(n namer) *Logger {
-	v := CacheGet(n)
-	if v != nil {
-		return v
-	}
-	v = &Logger{
-		log:   log.New(colored{}, "", log.Ldate|log.Ltime),
-		namer: n,
-	}
-	add(v)
-	return v
-}
-
-func NewTest() *Logger {
+func New(modName, jobName string) *Logger {
 	return &Logger{
-		log:   log.New(&colored{}, "", log.Ldate|log.Ltime),
-		namer: n{},
+		log:     log.New(colored{}, "", log.Ldate|log.Ltime),
+		modName: modName,
+		jobName: jobName,
 	}
 }
 
 type Logger struct {
-	log *log.Logger
-	namer
+	log     *log.Logger
+	modName string
+	jobName string
 }
 
 func (l *Logger) Critical(a ...interface{}) {
@@ -91,14 +71,14 @@ func (l *Logger) print(level Severity, a ...interface{}) {
 	if level > sevLevel {
 		return
 	}
-	l.log.Printf(
-		"go.d: %s: %s: %s: %s",
-		level,
-		l.ModuleName(),
-		l.JobName(),
-		fmt.Sprintln(a...))
+
+	if l.log != nil {
+		l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
+	} else {
+		dummy.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
+	}
 }
 
-func (l *Logger) SetLevel(lev Severity) {
+func SetLevel(lev Severity) {
 	sevLevel = lev
 }
