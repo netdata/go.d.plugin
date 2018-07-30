@@ -7,7 +7,6 @@ var (
 )
 
 type observer interface {
-	Add(string)
 	Delete(string)
 	Update(string)
 	Obsolete(string)

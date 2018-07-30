@@ -47,12 +47,6 @@ func newObserver(hook *Config) *observer {
 	return o
 }
 
-func (o *observer) init() {
-	for _, v := range *o.charts {
-		o.Add(v.ID)
-	}
-}
-
 func (o *observer) Set(c *charts.Charts) {
 	o.charts = c
 }
@@ -66,12 +60,13 @@ func (o *observer) Obsolete(id string) {
 }
 
 func (o *observer) Delete(id string) {
-	o.items[id].obsolete()
-	delete(o.items, id)
+	if v, ok := o.items[id]; ok {
+		v.obsolete()
+		delete(o.items, id)
+	}
 }
 
-func (o *observer) Add(id string) {
-	ch := o.charts.GetChart(id)
+func (o *observer) add(ch *charts.Chart) {
 	ch.Register(o)
 
 	if ch.Ctx == "" {

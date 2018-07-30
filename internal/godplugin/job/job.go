@@ -31,7 +31,6 @@ type Job struct {
 }
 
 func (j *Job) Run(wg *sync.WaitGroup) {
-	j.Obs.init()
 Done:
 	for {
 
@@ -72,7 +71,11 @@ func (j *Job) update() bool {
 		suppressed int
 	)
 
-	for _, chart := range j.Obs.items {
+	for _, v := range *j.Obs.charts {
+		if _, ok := j.Obs.items[v.ID]; !ok {
+			j.Obs.add(v)
+		}
+		chart := j.Obs.items[v.ID]
 
 		if chart.obsoleted {
 			if canBeUpdated(*chart, data) {

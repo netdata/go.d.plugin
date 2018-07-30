@@ -12,9 +12,6 @@ func (c *Charts) AddChart(charts ...*Chart) {
 			continue
 		}
 		*c = append(*c, v)
-		if v.runtime() {
-			v.obs.Add(v.ID)
-		}
 	}
 }
 
