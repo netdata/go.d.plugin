@@ -42,7 +42,6 @@ func (t *Tail) Init(path string) error {
 	}
 
 	t.pos = fi.Size()
-	t.path = path
 	return nil
 }
 
