@@ -21,9 +21,6 @@ const (
 	keyRespTime         = "resp_time"
 	keyRespTimeUpstream = "resp_time_upstream"
 	keyRespLen          = "resp_length"
-	keyHTTPMethod       = "method"
-	keyURL              = "url"
-	keyHTTPVer          = "http_version"
 
 	keyRespTimeHist         = "resp_time_hist"
 	keyRespTimeUpstreamHist = "resp_time_hist_upstream"
@@ -190,7 +187,7 @@ func (w *WebLog) GetData() map[string]int64 {
 
 		// ReqPerUrl, reqPerHTTPMethod, chartReqPerHTTPVer charts3
 		var matchedURL string
-		if w.gm.has(keyRequest) || w.gm.has(keyURL) {
+		if w.gm.has(keyRequest) {
 			matchedURL = w.parseRequest()
 		}
 
@@ -316,29 +313,25 @@ func (w *WebLog) reqPerHTTPVersion(version string) {
 }
 
 func (w *WebLog) parseRequest() (matchedURL string) {
-	gm := w.gm
-	if gm.has(keyRequest) {
-		s := reRequest.FindStringSubmatch(gm.get(keyRequest))
-		if s == nil {
-			return
-		}
-		ngm := make(groupMap)
-		ngm.update(reRequest.SubexpNames(), s)
-		gm = ngm
-
+	req := w.gm.get(keyRequest)
+	if req == "-" {
+		return
 	}
+
+	v := strings.Fields(req)
+	if len(v) != 3 {
+		return
+	}
+
+	// FIXME: assumed that 'version' part is always prefixed with 'HTTP/'
+	method, url, version := v[0], v[1], v[2][5:]
 	if w.urlCat.exist() {
-		if v := w.reqPerCategory(gm.get(keyURL), w.urlCat); v != "" {
+		if v := w.reqPerCategory(url, w.urlCat); v != "" {
 			matchedURL = v
 		}
 	}
-	if v, ok := gm.lookup(keyHTTPMethod); ok {
-		w.reqPerHTTPMethod(v)
-	}
-
-	if v, ok := gm.lookup(keyHTTPVer); ok {
-		w.reqPerHTTPVersion(v)
-	}
+	w.reqPerHTTPMethod(method)
+	w.reqPerHTTPVersion(version)
 	return
 }
 
