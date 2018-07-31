@@ -64,13 +64,12 @@ func (t *Tail) Tail() (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	if fi.Size() < t.pos {
-		t.pos = 0
+	if fi.Size() == t.pos {
+		return nil, SizeNotChanged
 	}
 
-	if fi.Size() == t.pos {
-		t.fails = 0
-		return nil, SizeNotChanged
+	if fi.Size() < t.pos {
+		t.pos = 0
 	}
 
 	f, err := os.Open(t.path)
