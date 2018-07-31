@@ -8,10 +8,13 @@ import (
 )
 
 type Example struct {
+	modules.ModuleBase
 	modules.NoConfiger
 
 	data map[string]int64
 }
+
+func (Example) Init() {}
 
 func (e *Example) Check() bool {
 	return true

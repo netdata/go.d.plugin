@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/l2isbad/go.d.plugin/internal/modules"
-	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
+	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
 )
 
 const (
@@ -58,8 +58,7 @@ func newPort(p, u int) *port {
 }
 
 type PortCheck struct {
-	modules.BaseConfHook
-	modules.Logger
+	modules.ModuleBase
 
 	Host    string         `yaml:"host" validate:"required"`
 	Ports   []int          `yaml:"ports" validate:"required,gte=1"`
@@ -71,6 +70,14 @@ type PortCheck struct {
 	data  map[string]int64
 }
 
+func (pc *PortCheck) Init() {
+	if pc.Timeout.Duration == 0 {
+		pc.Timeout.Duration = time.Second
+	}
+	pc.Debugf("Using timeout: %s", pc.Timeout.Duration)
+	sort.Ints(pc.Ports)
+}
+
 func (pc *PortCheck) Check() bool {
 	ips, err := net.LookupIP(pc.Host)
 	if err != nil {
@@ -80,12 +87,6 @@ func (pc *PortCheck) Check() bool {
 	pc.Host = ips[len(ips)-1].String()
 	pc.Debugf("Using %s:%v", pc.Host, pc.Ports)
 
-	if pc.Timeout.Duration == 0 {
-		pc.Timeout.Duration = time.Second
-	}
-	pc.Debugf("Using timeout: %s", pc.Timeout.Duration)
-
-	sort.Ints(pc.Ports)
 	for _, p := range pc.Ports {
 		pc.ports = append(pc.ports, newPort(p, pc.UpdateEvery()))
 		go worker(pc.Host, pc.Timeout.Duration, pc.do, pc.done)

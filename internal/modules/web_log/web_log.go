@@ -31,7 +31,7 @@ const (
 
 type WebLog struct {
 	*charts.Charts
-	modules.Logger
+	modules.ModuleBase
 
 	Path             string        `yaml:"path" validate:"required"`
 	RawFilter        rawFilter     `yaml:"filter"`
@@ -57,6 +57,8 @@ type WebLog struct {
 	gm   groupMap
 	data map[string]int64
 }
+
+func (WebLog) Init() {}
 
 func (w *WebLog) Check() bool {
 

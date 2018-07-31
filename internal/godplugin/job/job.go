@@ -5,13 +5,14 @@ import (
 	"time"
 
 	"github.com/l2isbad/go.d.plugin/internal/modules"
+	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
 func New(m modules.Module, c *Config) *Job {
 	_, u := m.(modules.Unsafer)
 
 	return &Job{
-		Module: m,
+		Mod:    m,
 		Config: c,
 		unsafe: u,
 		Obs:    newObserver(c),
@@ -19,11 +20,11 @@ func New(m modules.Module, c *Config) *Job {
 }
 
 type Job struct {
-	modules.Module
+	Mod modules.Module
 
 	timers
 	*Config
-	modules.Logger
+	*logger.Logger
 	Obs *observer
 
 	retries int
@@ -35,7 +36,7 @@ Done:
 	for {
 
 		sleep := j.nextIn()
-		j.Debugf("sleeping for %s to reach frequency of %d sec", sleep, j.UpdEvery)
+		j.Debugf("sleeping for %s to reach frequency of %d sec", sleep, j.UpdateEvery)
 		time.Sleep(sleep)
 
 		j.curRun = time.Now()
@@ -110,7 +111,7 @@ func (j *Job) safeGetData() (m map[string]int64) {
 		}
 	}()
 
-	m = j.Module.GetData()
+	m = j.Mod.GetData()
 	return
 }
 
@@ -118,12 +119,12 @@ func (j *Job) getData() map[string]int64 {
 	if j.unsafe {
 		return j.safeGetData()
 	}
-	return j.Module.GetData()
+	return j.Mod.GetData()
 }
 
 func (j *Job) nextIn() time.Duration {
 	start := time.Now()
-	next := start.Add(time.Duration(j.UpdEvery) * time.Second).Add(j.penalty).Truncate(time.Second)
+	next := start.Add(time.Duration(j.UpdateEvery) * time.Second).Add(j.penalty).Truncate(time.Second)
 	return time.Duration(next.UnixNano() - start.UnixNano())
 }
 
@@ -134,7 +135,7 @@ func (j *Job) handleRetries() bool {
 		return true
 	}
 
-	j.penalty = time.Duration(j.retries*j.UpdEvery/2) * time.Second
+	j.penalty = time.Duration(j.retries*j.UpdateEvery/2) * time.Second
 	j.Warningf(
 		"added %.0f seconds penalty after %d failed updates in a row",
 		j.penalty.Seconds(),

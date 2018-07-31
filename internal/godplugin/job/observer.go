@@ -72,7 +72,7 @@ func (o *observer) add(ch *charts.Chart) {
 	ch.Register(o)
 
 	if ch.Ctx == "" {
-		ch.Ctx = fmt.Sprintf("%s.%s", o.hook.moduleName, ch.ID)
+		ch.Ctx = fmt.Sprintf("%s.%s", o.hook.RealModuleName, ch.ID)
 	}
 
 	chart := &chart{
