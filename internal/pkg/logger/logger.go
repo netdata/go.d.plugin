@@ -82,3 +82,7 @@ func (l *Logger) print(level Severity, a ...interface{}) {
 func SetLevel(lev Severity) {
 	sevLevel = lev
 }
+
+func SetModName(l *Logger, modName string) {
+	l.modName = modName
+}

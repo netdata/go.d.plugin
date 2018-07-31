@@ -2,6 +2,7 @@ package godplugin
 
 import (
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
+	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
 func (gd *goDPlugin) jobsStart(jobs chan *job.Job) {
@@ -14,6 +15,7 @@ func (gd *goDPlugin) jobsStart(jobs chan *job.Job) {
 		}
 
 		if v := j.Mod.ModuleName(); v != j.RealModuleName {
+			logger.SetModName(j.Logger, v)
 			j.RealModuleName = v
 		}
 

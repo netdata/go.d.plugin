@@ -36,22 +36,20 @@ func (m *ModuleBase) SetModuleName(v string) {
 	m.moduleName = v
 }
 
-func (m *ModuleBase) UpdateEvery() int {
+func (m ModuleBase) UpdateEvery() int {
 	return m.updateEvery
 }
 
-func (m *ModuleBase) ModuleName() string {
+func (m ModuleBase) ModuleName() string {
 	return m.moduleName
 }
 
 // NoConfiger should be added/implemented by modules which don't need configuration file
-// optional
 type NoConfiger interface {
 	NoConfig()
 }
 
 // Unsafer should be added/implemented if module getData has a chance to panic
-// optional
 type Unsafer interface {
 	Unsafe()
 }
