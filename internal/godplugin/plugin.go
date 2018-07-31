@@ -1,6 +1,7 @@
 package godplugin
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path"
 	"runtime"
@@ -11,7 +12,6 @@ import (
 	_ "github.com/l2isbad/go.d.plugin/internal/modules/all"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/cli"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
-	"fmt"
 )
 
 var (

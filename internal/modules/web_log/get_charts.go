@@ -31,7 +31,7 @@ func (w *WebLog) GetCharts() *charts.Charts {
 		ch.AddChart(&chartBandwidth)
 	}
 
-	if n.Include(keyRequest)  && w.urlCat.exist() {
+	if n.Include(keyRequest) && w.urlCat.exist() {
 		ch.AddChart(chartReqPerURL.Copy())
 		for _, v := range w.urlCat.items {
 			ch.GetChart(chartReqPerURL.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})

@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-yaml/yaml"
 
+	"bufio"
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/tail"
@@ -41,7 +42,7 @@ type WebLog struct {
 	DoChartURLCat    bool          `yaml:"per_category_charts"`
 	DoClientsAll     bool          `yaml:"clients_all_time"`
 
-	reader *tail.Reader
+	tail   *tail.Tail
 	parser *regexp.Regexp
 
 	fil        filter
@@ -59,13 +60,12 @@ func (WebLog) Init() {}
 
 func (w *WebLog) Check() bool {
 
-	// LogReader initialization
-	v, err := tail.NewReader(w.Path)
+	w.tail = tail.New()
+	err := w.tail.Init(w.Path)
 	if err != nil {
 		w.Error(err)
 		return false
 	}
-	w.reader = v
 
 	// read last line
 	line, err := tail.ReadLastLine(w.Path)
@@ -118,19 +118,25 @@ func (w *WebLog) Check() bool {
 }
 
 func (w *WebLog) GetData() map[string]int64 {
-	v, err := w.reader.GetRows()
+	f, err := w.tail.Tail()
 
-	if err != nil && err == tail.ErrSizeNotChanged {
+	if err == tail.SizeNotChanged {
 		return w.data
-	} else if err != nil {
+	}
+
+	if err != nil {
 		return nil
 	}
 
-	uniqIPs := make(map[string]bool)
+	defer f.Close()
 
+	uniqIPs := make(map[string]bool)
 	w.timings.reset()
 
-	for row := range v {
+	s := bufio.NewScanner(f)
+
+	for s.Scan() {
+		row := s.Text()
 		if w.fil.exist() && !w.fil.filter(row) {
 			continue
 		}
