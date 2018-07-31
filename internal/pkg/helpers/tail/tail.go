@@ -17,8 +17,10 @@ var (
 	SizeNotChanged = errors.New("size not changed")
 )
 
-func New() *Tail {
-	return new(Tail)
+func New(path string) *Tail {
+	return &Tail{
+		Path: path,
+	}
 }
 
 type Tail struct {
@@ -29,14 +31,13 @@ type Tail struct {
 	pos   int64
 }
 
-func (t *Tail) Init(path string) error {
-	t.Path = path
+func (t *Tail) Init() error {
 	err := t.globPath()
 	if err != nil {
 		return err
 	}
 
-	fi, err := os.Stat(path)
+	fi, err := os.Stat(t.Path)
 	if err != nil {
 		return err
 	}

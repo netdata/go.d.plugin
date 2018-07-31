@@ -10,16 +10,16 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	tail := New()
+	tail := New("")
 	if _, ok := interface{}(tail).(*Tail); !ok {
 		t.Error("expected *Tail type")
 	}
 }
 
 func TestTail_Init(t *testing.T) {
-	tail := New()
+	tail := New("fail")
 
-	err := tail.Init("fail")
+	err := tail.Init()
 	if err == nil {
 		t.Error("expected error, but got nil")
 	}
@@ -37,8 +37,8 @@ func TestTail_Init(t *testing.T) {
 		t.Fatal("could not create temporary file")
 	}
 	defer os.Remove(tmp.Name())
-
-	err = tail.Init(tmp.Name())
+	tail = New(tmp.Name())
+	err = tail.Init()
 
 	if err != nil {
 		t.Fatalf("tail init: %s", err)
@@ -50,14 +50,13 @@ func TestTail_Init(t *testing.T) {
 }
 
 func TestTail_Tail(t *testing.T) {
-	tail := New()
-
 	tmp, err := ioutil.TempFile("", "temp-")
 	if err != nil {
 		t.Fatal("could not create temporary file")
 	}
 	defer os.Remove(tmp.Name())
-	tail.Init(tmp.Name())
+	tail := New(tmp.Name())
+	tail.Init()
 
 	_, err = tail.Tail()
 	if err == nil {

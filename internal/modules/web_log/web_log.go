@@ -60,8 +60,8 @@ func (WebLog) Init() {}
 
 func (w *WebLog) Check() bool {
 
-	w.tail = tail.New()
-	err := w.tail.Init(w.Path)
+	w.tail = tail.New(w.Path)
+	err := w.tail.Init()
 	if err != nil {
 		w.Error(err)
 		return false
