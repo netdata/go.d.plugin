@@ -18,12 +18,12 @@ type (
 	Metrics []Metric
 )
 
-// OverID the __name__ label value
+// Name the __name__ label value
 func (m Metric) Name() string {
 	return m.Labels[0].Value
 }
 
-// AddChart Append a metric.
+// Add Append a metric.
 func (m *Metrics) Add(kv Metric) {
 	*m = append(*m, kv)
 }

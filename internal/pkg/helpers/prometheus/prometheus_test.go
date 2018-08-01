@@ -17,6 +17,22 @@ import (
 var testdata, _ = ioutil.ReadFile("tests/testdata.txt")
 var testdataNometa, _ = ioutil.ReadFile("tests/testdata.nometa.txt")
 
+func TestPrometheus404(t *testing.T) {
+	tsMux := http.NewServeMux()
+	tsMux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(404)
+	})
+	ts := httptest.NewServer(tsMux)
+	defer ts.Close()
+
+	req := web.Request{URL: ts.URL + "/metrics"}
+	prom := New(http.DefaultClient, req)
+	res, err := prom.GetMetrics()
+
+	assert.Error(t, err)
+	assert.Nil(t, res)
+}
+
 func TestPrometheusPlain(t *testing.T) {
 	tsMux := http.NewServeMux()
 	tsMux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
