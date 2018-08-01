@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/web"
@@ -92,6 +93,7 @@ func (p *prometheus) fetch(w io.Writer) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
+		io.Copy(ioutil.Discard, resp.Body)
 		return fmt.Errorf("server returned HTTP status %s", resp.Status)
 	}
 

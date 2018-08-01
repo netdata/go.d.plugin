@@ -2,30 +2,50 @@ package springboot2
 
 import (
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"testing"
+
+	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/web"
+	"github.com/stretchr/testify/assert"
 )
 
 var testdata, _ = ioutil.ReadFile("tests/testdata.txt")
 
 func TestSpringboot2(t *testing.T) {
-	// TODO: Since modules.Charts and modules.Logger are injected by job_set.go, it's hard to do unit test.
-	// https://github.com/l2isbad/go.d.plugin/issues/12
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/actuator/prometheus" {
+			w.Write(testdata)
+			return
+		}
+	}))
+	defer ts.Close()
+	plugin := &Springboot2{
+		Request: web.Request{
+			URL: ts.URL + "/actuator/prometheus",
+		},
+	}
 
-	// ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// 	if r.URL.Path == "/actuator/prometheus" {
-	// 		w.Write(testdata)
-	// 		return
-	// 	}
-	// }))
-	// defer ts.Close()
-	// plugin := &Springboot2{
-	// 	Request: web.Request{
-	// 		URL: ts.URL + "/actuator/prometheus",
-	// 	},
-	// }
+	plugin.Init()
 
-	// assert.True(t, plugin.Check())
+	assert.True(t, plugin.Check())
 
-	// data := plugin.GetData()
-	// assert.EqualValues(t, map[string]int64{}, data)
+	data := plugin.GetData()
+	assert.EqualValues(t, map[string]int64{}, data)
+}
+
+func TestSpringboot2_404(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(404)
+	}))
+	defer ts.Close()
+	plugin := &Springboot2{
+		Request: web.Request{
+			URL: ts.URL + "/actuator/prometheus",
+		},
+	}
+
+	plugin.Init()
+
+	assert.False(t, plugin.Check())
 }

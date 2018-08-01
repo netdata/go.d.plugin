@@ -7,9 +7,7 @@ import (
 )
 
 var dummy = &Logger{
-	log:     log.New(colored{}, "", log.Ldate|log.Ltime),
-	modName: "dummy",
-	jobName: "dummy",
+	log: log.New(colored{}, "", log.Ldate|log.Ltime),
 }
 
 func New(modName, jobName string) *Logger {
@@ -72,10 +70,10 @@ func (l *Logger) print(level Severity, a ...interface{}) {
 		return
 	}
 
-	if l.log != nil {
+	if l != nil && l.log != nil {
 		l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
 	} else {
-		dummy.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
+		dummy.log.Printf("go.d: %s: dummy: dummy: %s", level, fmt.Sprintln(a...))
 	}
 }
 
