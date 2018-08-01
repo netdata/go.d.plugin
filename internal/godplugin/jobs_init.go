@@ -4,7 +4,7 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
-func (gd *goDPlugin) jobsInit(created jobStack) jobStack {
+func (gd *GoDPlugin) jobsInit(created jobStack) jobStack {
 	var js jobStack
 
 	if created.empty() {

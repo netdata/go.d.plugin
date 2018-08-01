@@ -5,7 +5,7 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
-func (gd *goDPlugin) jobsStart(jobs chan *job.Job) {
+func (gd *GoDPlugin) jobsStart(jobs chan *job.Job) {
 	if jobs == nil {
 		return
 	}

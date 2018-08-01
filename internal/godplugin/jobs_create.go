@@ -37,7 +37,7 @@ func (js *jobStack) destroy() {
 	*js = nil
 }
 
-func (gd *goDPlugin) jobsCreate() jobStack {
+func (gd *GoDPlugin) jobsCreate() jobStack {
 	var jobs jobStack
 
 	switch gd.cmd.Module {

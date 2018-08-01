@@ -6,12 +6,11 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/go-yaml/yaml"
+	"fmt"
 
-	_ "github.com/l2isbad/go.d.plugin/internal/modules/all"
+	_ "github.com/l2isbad/go.d.plugin/internal/modules/all" // load all modules
 	"github.com/l2isbad/go.d.plugin/internal/pkg/cli"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
-	"fmt"
 )
 
 var (
@@ -19,39 +18,47 @@ var (
 	modConfDir = "go.d/"
 )
 
-type P interface {
-	Start()
-}
-
-type dir struct {
-	pluginConf  string
-	modulesConf string
-}
-
-func New(p string) P {
-	return &goDPlugin{
-		dir:  dir{p, path.Join(p, modConfDir)},
-		conf: newConfig(),
-		cmd:  cli.Parse(),
+type (
+	// GoDPlugin GoDPlugin
+	GoDPlugin interface {
+		// LoadConfig Load go.d.conf
+		LoadConfig(confDir string) error
+		InitModules() error
+		CheckModules() error
+		MainLoop()
+		Shutdown()
 	}
 
+	plugin struct {
+		PluginConf     string
+		ModulesConfDir string
+		Config         *Config
+		cmd            cli.ParsedCMD
+		wg             sync.WaitGroup
+	}
+)
+
+// func NewGoDPlugin(args []string) *GoDPlugin {
+// 	p := getConfigDir()
+// 	return &GoDPlugin{
+// 		dir:    dir{p, path.Join(p, modConfDir)},
+// 		config: newPluginConfig(),
+// 		cmd:    cli.Parse(args),
+// 	}
+// }
+
+func (p *plugin) LoadConfig(confDir string) {
+	f, err := ioutil.ReadFile(path.Join(gd.dir.pluginConf, pluginConf))
 }
 
-type goDPlugin struct {
-	dir  dir
-	conf config
-	cmd  cli.ParsedCMD
-	wg   sync.WaitGroup
-}
-
-func (gd *goDPlugin) Start() {
+func (gd *GoDPlugin) Start() {
 	err := gd.loadConfig()
 
 	if err != nil {
 		log.Critical(err)
 	}
 
-	if !gd.conf.Enabled {
+	if !gd.config.Enabled {
 		log.Info("disabled in configuration file")
 		return
 	}
@@ -60,24 +67,25 @@ func (gd *goDPlugin) Start() {
 		logger.SetLevel(logger.DEBUG)
 	}
 
-	if gd.conf.MaxProcs != 0 {
-		log.Warningf("setting GOMAXPROCS to %d", gd.conf.MaxProcs)
-		runtime.GOMAXPROCS(gd.conf.MaxProcs)
+	if gd.config.MaxProcs != 0 {
+		log.Warningf("setting GOMAXPROCS to %d", gd.config.MaxProcs)
+		runtime.GOMAXPROCS(gd.config.MaxProcs)
 	}
 
-	gd.jobsStart(gd.jobsCheck(gd.jobsInit(gd.jobsCreate())))
+	jobs := gd.jobsCreate()
+	gd.jobsStart(gd.jobsCheck(gd.jobsInit(jobs)))
 
 	gd.wg.Wait()
 	fmt.Println("DISABLE")
 }
 
-func (gd *goDPlugin) loadConfig() error {
-	f, err := ioutil.ReadFile(path.Join(gd.dir.pluginConf, pluginConf))
+// func (gd *GoDPlugin) loadConfig() error {
+// 	f, err := ioutil.ReadFile(path.Join(gd.dir.pluginConf, pluginConf))
 
-	if err != nil {
-		log.Error(err)
-		return nil
-	}
+// 	if err != nil {
+// 		log.Error(err)
+// 		return nil
+// 	}
 
-	return yaml.Unmarshal(f, &gd.conf)
-}
+// 	return yaml.Unmarshal(f, &gd.conf)
+// }

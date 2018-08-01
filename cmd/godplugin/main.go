@@ -8,15 +8,34 @@ import (
 )
 
 func main() {
-	godplugin.New(getConfigDir()).Start()
+	config := godplugin.NewConfig()
+	config.Load(pluginConfigFile())
+	godplugin.New(os.Args[1:]).Start()
+
 }
 
-func getConfigDir() string {
-	pd := os.Getenv("NETDATA_CONFIG_DIR")
+// return netdata conf directory
+// e.g. /opt/netdata/etc/netdata
+func netdataConfigDir() string {
+	dir := os.Getenv("NETDATA_CONFIG_DIR")
 
-	if pd == "" {
+	if dir == "" {
 		cd, _ := os.Getwd()
-		pd = path.Join(cd, "/../../../../etc/netdata")
+		dir = path.Join(cd, "/../../../../etc/netdata")
 	}
-	return pd
+	return configDir
+}
+
+// return netdata conf directory
+// e.g. /opt/netdata/etc/netdata/go.d.conf
+func pluginConfigFile() string {
+	return path.Join(netdataConfigDir(), "go.d.conf")
+}
+
+func moduleConfigDir() string {
+	file := os.Getenv("NETDATA_CONFIG_GO_MODULE")
+	if file == "" {
+		file = path.Join(netdataConfigDir(), "go.d.conf")
+	}
+	return file
 }

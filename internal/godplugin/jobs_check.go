@@ -14,7 +14,7 @@ type result struct {
 	err error
 }
 
-func (gd *goDPlugin) jobsCheck(jobs jobStack) chan *job.Job {
+func (gd *GoDPlugin) jobsCheck(jobs jobStack) chan *job.Job {
 	if jobs.empty() {
 		return nil
 	}
