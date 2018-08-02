@@ -98,7 +98,7 @@ func (pc *PortCheck) Check() bool {
 func (pc PortCheck) GetCharts() *charts.Charts {
 	c := charts.NewCharts()
 	for _, p := range pc.Ports {
-		c.AddChart(uCharts(p)...)
+		c.Add(uCharts(p)...)
 	}
 	return c
 }

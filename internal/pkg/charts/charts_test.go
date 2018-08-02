@@ -31,7 +31,7 @@ func TestCharts_AddChart(t *testing.T) {
 	ch := testCharts.Copy()
 	c := testChart.Copy()
 
-	ch.AddChart(c)
+	ch.Add(c)
 
 	if len(ch) != 1 {
 		t.Errorf("excpected 1 charts, but got %d", len(ch))
@@ -39,7 +39,7 @@ func TestCharts_AddChart(t *testing.T) {
 
 	c.ID = "test2"
 
-	ch.AddChart(c)
+	ch.Add(c)
 
 	if len(ch) != 2 {
 		t.Errorf("excpected 2 charts, but got %d", len(ch))
@@ -49,7 +49,7 @@ func TestCharts_AddChart(t *testing.T) {
 func TestCharts_DeleteChart(t *testing.T) {
 	c := testCharts.Copy()
 
-	c.DeleteChart("test1")
+	c.Delete("test1")
 
 	if len(c) != 0 {
 		t.Errorf("excpected 0 charts, but got %d", len(c))
@@ -59,15 +59,15 @@ func TestCharts_DeleteChart(t *testing.T) {
 func TestCharts_GetChart(t *testing.T) {
 	c := testCharts.Copy()
 
-	if c.GetChart("test1") == nil {
+	if c.Get("test1") == nil {
 		t.Error("expected not nil")
 	}
 
-	if c.GetChart("test2") != nil {
+	if c.Get("test2") != nil {
 		t.Error("expected nil")
 	}
 
-	if _, ok := interface{}(c.GetChart("test1")).(*Chart); !ok {
+	if _, ok := interface{}(c.Get("test1")).(*Chart); !ok {
 		t.Error("excpected *Chart")
 	}
 }
@@ -75,7 +75,7 @@ func TestCharts_GetChart(t *testing.T) {
 func TestCharts_LookupChart(t *testing.T) {
 	c := testCharts.Copy()
 
-	v, ok := c.LookupChart("test1")
+	v, ok := c.Lookup("test1")
 
 	if !ok {
 		t.Error("expected true")
@@ -85,7 +85,7 @@ func TestCharts_LookupChart(t *testing.T) {
 		t.Error("excpected *Chart")
 	}
 
-	if _, ok := c.LookupChart("test2"); ok {
+	if _, ok := c.Lookup("test2"); ok {
 		t.Error("expected false")
 	}
 }

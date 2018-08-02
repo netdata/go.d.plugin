@@ -14,27 +14,27 @@ func (w *WebLog) GetCharts() *charts.Charts {
 	n := utils.StringSlice(w.parser.SubexpNames())
 	ch := Charts{}
 
-	ch.AddChart(&chartRespStatuses)
-	ch.AddChart(&chartRespCodes)
+	ch.Add(&chartRespStatuses)
+	ch.Add(&chartRespCodes)
 
 	if w.DoCodesDetail && w.DoCodesAggregate {
-		ch.AddChart(&chartRespCodesDetailed)
+		ch.Add(&chartRespCodesDetailed)
 	}
 
 	if w.DoCodesDetail && !w.DoCodesAggregate {
 		for _, chart := range chartRespCodesDetailedPerFam() {
-			ch.AddChart(&chart)
+			ch.Add(&chart)
 		}
 	}
 
 	if n.Include(keyBytesSent) || n.Include(keyRespLen) {
-		ch.AddChart(&chartBandwidth)
+		ch.Add(&chartBandwidth)
 	}
 
 	if n.Include(keyRequest) && w.urlCat.exist() {
-		ch.AddChart(chartReqPerURL.Copy())
+		ch.Add(chartReqPerURL.Copy())
 		for _, v := range w.urlCat.items {
-			ch.GetChart(chartReqPerURL.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
+			ch.Get(chartReqPerURL.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
 			w.data[v.id] = 0
 		}
 		w.data[w.urlCat.other] = 0
@@ -44,7 +44,7 @@ func (w *WebLog) GetCharts() *charts.Charts {
 	if (n.Include(keyRequest) && w.urlCat.exist()) && w.DoChartURLCat {
 		for _, v := range w.urlCat.items {
 			for _, chart := range chartPerCategoryStats(v.id) {
-				ch.AddChart(&chart)
+				ch.Add(&chart)
 				for _, d := range chart.Dims {
 					w.data[d.ID] = 0
 				}
@@ -53,49 +53,49 @@ func (w *WebLog) GetCharts() *charts.Charts {
 	}
 
 	if n.Include(keyUserDefined) && w.userCat.exist() {
-		ch.AddChart(chartReqPerUserDef.Copy())
+		ch.Add(chartReqPerUserDef.Copy())
 		for _, v := range w.userCat.items {
-			ch.GetChart(chartReqPerUserDef.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
+			ch.Get(chartReqPerUserDef.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
 			w.data[v.id] = 0
 		}
 		w.data[w.userCat.other] = 0
 	}
 
 	if n.Include(keyRespTime) {
-		ch.AddChart(&chartRespTime)
+		ch.Add(&chartRespTime)
 	}
 
 	if n.Include(keyRespTime) && len(w.RawHistogram) != 0 {
-		ch.AddChart(chartRespTimeHist.Copy())
+		ch.Add(chartRespTimeHist.Copy())
 		for _, v := range w.histograms.get(keyRespTimeHist) {
-			ch.GetChart(chartRespTimeHist.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
+			ch.Get(chartRespTimeHist.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
 		}
 	}
 
 	if n.Include(keyRespTimeUpstream) {
-		ch.AddChart(&chartRespTimeUpstream)
+		ch.Add(&chartRespTimeUpstream)
 	}
 
 	if n.Include(keyRespTimeUpstream) && len(w.RawHistogram) != 0 {
-		ch.AddChart(chartRespTimeUpstreamHist.Copy())
+		ch.Add(chartRespTimeUpstreamHist.Copy())
 		for _, v := range w.histograms.get(keyRespTimeUpstreamHist) {
-			ch.GetChart(chartRespTimeUpstreamHist.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
+			ch.Get(chartRespTimeUpstreamHist.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
 		}
 	}
 
 	if n.Include(keyRequest) {
-		ch.AddChart(&chartReqPerHTTPMethod)
+		ch.Add(&chartReqPerHTTPMethod)
 	}
 
 	if n.Include(keyRequest) {
-		ch.AddChart(&chartReqPerHTTPVer)
+		ch.Add(&chartReqPerHTTPVer)
 	}
 
 	if n.Include(keyAddress) {
-		ch.AddChart(&chartReqPerIPProto)
-		ch.AddChart(&chartClientsCurr)
+		ch.Add(&chartReqPerIPProto)
+		ch.Add(&chartClientsCurr)
 		if w.DoClientsAll {
-			ch.AddChart(&chartClientsAll)
+			ch.Add(&chartClientsAll)
 		}
 	}
 

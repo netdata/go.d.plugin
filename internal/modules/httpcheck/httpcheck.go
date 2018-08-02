@@ -97,7 +97,7 @@ func (hc *HttpCheck) Check() bool {
 func (hc HttpCheck) GetCharts() *charts.Charts {
 	c := uCharts.Copy()
 	if len(hc.ResponseMatch) == 0 {
-		c.DeleteChart("response_check_content")
+		c.Delete("response_check_content")
 	}
 	return charts.NewCharts(uCharts...)
 
