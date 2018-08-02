@@ -2,6 +2,8 @@ package charts
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var testCharts = &Charts{
@@ -9,146 +11,120 @@ var testCharts = &Charts{
 }
 
 func TestNewCharts(t *testing.T) {
-	if _, ok := interface{}(NewCharts()).(*Charts); !ok {
-		t.Error("excpected *Charts")
-	}
+	assert.IsType(t, (*Charts)(nil), NewCharts())
 }
 
 func TestCharts_Copy(t *testing.T) {
-	c := testCharts.Copy()
+	charts := testCharts.Copy()
 
-	c[0].ID = "test2"
-	c[0].Dims = append(c[0].Dims, &Dim{ID: "dim2"})
-	c = append(c, testChart.Copy())
+	charts[0].ID = "test2"
+	charts[0].Dims = append(charts[0].Dims, &Dim{ID: "dim2"})
+	charts = append(charts, testChart.Copy())
 
-	if len(c) == len(*testCharts) || c[0].ID == (*testCharts)[0].ID || len(c[0].Dims) == len((*testCharts)[0].Dims) {
-		t.Error("expected full copy, but got partial")
-	}
-
+	assert.NotEqual(t, len(charts), len(*testCharts))
+	assert.NotEqual(t, len(charts[0].Dims), len((*testCharts)[0].Dims))
+	assert.NotEqual(t, charts[0].ID, (*testCharts)[0].ID)
 }
 
 func TestCharts_Add(t *testing.T) {
-	ch := testCharts.Copy()
-	c := testChart.Copy()
+	charts := testCharts.Copy()
+	chart := testChart.Copy()
 
-	ch.Add(c)
+	charts.Add(chart)
 
-	if len(ch) != 1 {
-		t.Errorf("excpected 1 charts, but got %d", len(ch))
-	}
+	assert.Equal(t, len(charts), 1)
 
-	c.ID = "test2"
+	chart.ID = "test2"
 
-	ch.Add(c)
+	charts.Add(chart)
 
-	if len(ch) != 2 {
-		t.Errorf("excpected 2 charts, but got %d", len(ch))
-	}
+	assert.Equal(t, len(charts), 2)
 }
 
 func TestCharts_Delete(t *testing.T) {
-	c := testCharts.Copy()
+	charts := testCharts.Copy()
 
-	c.Delete("test1")
+	charts.Delete("test99")
 
-	if len(c) != 0 {
-		t.Errorf("excpected 0 charts, but got %d", len(c))
-	}
+	assert.Equal(t, len(charts), 1)
+
+	charts.Delete("test1")
+
+	assert.Equal(t, len(charts), 0)
 }
 
 func TestCharts_Get(t *testing.T) {
-	c := testCharts.Copy()
+	charts := testCharts.Copy()
 
-	if c.Get("test1") == nil {
-		t.Error("expected not nil")
-	}
+	assert.NotNil(t, charts.Get("test1"))
 
-	if c.Get("test2") != nil {
-		t.Error("expected nil")
-	}
+	assert.Nil(t, charts.Get("test2"))
 
-	if _, ok := interface{}(c.Get("test1")).(*Chart); !ok {
-		t.Error("excpected *Chart")
-	}
+	assert.IsType(t, (*Chart)(nil), charts.Get("test1"))
 }
 
 func TestCharts_Lookup(t *testing.T) {
-	c := testCharts.Copy()
+	charts := testCharts.Copy()
 
-	v, ok := c.Lookup("test1")
+	v, ok := charts.Lookup("test1")
 
-	if !ok {
-		t.Error("expected true")
-	}
+	assert.True(t, ok)
+	assert.IsType(t, (*Chart)(nil), v)
 
-	if _, ok := interface{}(v).(*Chart); !ok {
-		t.Error("excpected *Chart")
-	}
+	_, ok = charts.Lookup("test2")
 
-	if _, ok := c.Lookup("test2"); ok {
-		t.Error("expected false")
-	}
+	assert.False(t, ok)
 }
 
 
 func TestCharts_AddAfter(t *testing.T) {
-	c1 := testChart.Copy()
-	c2 := testChart.Copy()
-	c3 := testChart.Copy()
-	c2.ID = "test2"
-	c3.ID = "test3"
+	chart1 := testChart.Copy()
+	chart2 := testChart.Copy()
+	chart3 := testChart.Copy()
+	chart2.ID = "test2"
+	chart3.ID = "test3"
 
-	ch := NewCharts(c1, c2, c3)
+	charts := NewCharts(chart1, chart2, chart3)
 
-	ch.AddAfter("test2", testChart.Copy())
+	charts.AddAfter("test2", testChart.Copy())
 
-	if len(*ch) != 3 {
-		t.Errorf("expected 3, but got %d", len(*ch))
-	}
+	assert.Equal(t, len(*charts), 3)
 
-	c4 := testChart.Copy()
-	c5 := testChart.Copy()
-	c4.ID = "test4"
-	c5.ID = "test5"
+	chart4 := testChart.Copy()
+	chart5 := testChart.Copy()
+	chart4.ID = "test4"
+	chart5.ID = "test5"
 
-	ch.AddAfter("test2", c4, c5)
+	charts.AddAfter("test2", chart4, chart5)
 
-	if len(*ch) != 5 {
-		t.Errorf("expected 5, but got %d", len(*ch))
-	}
+	assert.Equal(t, len(*charts), 5)
 
-	if (*ch)[2].ID != c4.ID || (*ch)[3].ID != c5.ID {
-		t.Error("insertion order wrong")
-	}
+	assert.Equal(t, (*charts)[2], chart4)
+	assert.Equal(t, (*charts)[3], chart5)
 }
 
 func TestCharts_AddBefore(t *testing.T) {
-	c1 := testChart.Copy()
-	c2 := testChart.Copy()
-	c3 := testChart.Copy()
-	c2.ID = "test2"
-	c3.ID = "test3"
+	chart1 := testChart.Copy()
+	chart2 := testChart.Copy()
+	chart3 := testChart.Copy()
+	chart2.ID = "test2"
+	chart3.ID = "test3"
 
-	ch := NewCharts(c1, c2, c3)
+	charts := NewCharts(chart1, chart2, chart3)
 
-	ch.AddBefore("test2", testChart.Copy())
+	charts.AddBefore("test2", testChart.Copy())
 
-	if len(*ch) != 3 {
-		t.Errorf("expected 3, but got %d", len(*ch))
-	}
+	assert.Equal(t, len(*charts), 3)
 
-	c4 := testChart.Copy()
-	c5 := testChart.Copy()
-	c4.ID = "test4"
-	c5.ID = "test5"
+	chart4 := testChart.Copy()
+	chart5 := testChart.Copy()
+	chart4.ID = "test4"
+	chart5.ID = "test5"
 
-	ch.AddBefore("test2", c4, c5)
+	charts.AddBefore("test2", chart4, chart5)
 
-	if len(*ch) != 5 {
-		t.Errorf("expected 5, but got %d", len(*ch))
-	}
+	assert.Equal(t, len(*charts), 5)
 
-	if (*ch)[1].ID != c4.ID || (*ch)[2].ID != c5.ID {
-		t.Error("insertion order wrong")
-	}
+	assert.Equal(t, (*charts)[1], chart4)
+	assert.Equal(t, (*charts)[2], chart5)
 }
