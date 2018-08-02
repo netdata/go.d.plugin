@@ -31,7 +31,7 @@ func (w *WebLog) GetCharts() *charts.Charts {
 		ch.AddChart(&chartBandwidth)
 	}
 
-	if (n.Include(keyRequest) || n.Include(keyURL)) && w.urlCat.exist() {
+	if n.Include(keyRequest) && w.urlCat.exist() {
 		ch.AddChart(chartReqPerURL.Copy())
 		for _, v := range w.urlCat.items {
 			ch.GetChart(chartReqPerURL.ID).AddDim(&Dim{ID: v.id, Name: v.name, Algo: charts.Incremental})
@@ -41,7 +41,7 @@ func (w *WebLog) GetCharts() *charts.Charts {
 
 	}
 
-	if ((n.Include(keyRequest) || n.Include(keyURL)) && w.urlCat.exist()) && w.DoChartURLCat {
+	if (n.Include(keyRequest) && w.urlCat.exist()) && w.DoChartURLCat {
 		for _, v := range w.urlCat.items {
 			for _, chart := range chartPerCategoryStats(v.id) {
 				ch.AddChart(&chart)
@@ -83,11 +83,11 @@ func (w *WebLog) GetCharts() *charts.Charts {
 		}
 	}
 
-	if n.Include(keyRequest) || n.Include(keyHTTPMethod) {
+	if n.Include(keyRequest) {
 		ch.AddChart(&chartReqPerHTTPMethod)
 	}
 
-	if n.Include(keyRequest) || n.Include(keyHTTPVer) {
+	if n.Include(keyRequest) {
 		ch.AddChart(&chartReqPerHTTPVer)
 	}
 

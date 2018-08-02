@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-yaml/yaml"
 
+	"bufio"
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/tail"
@@ -21,9 +22,6 @@ const (
 	keyRespTime         = "resp_time"
 	keyRespTimeUpstream = "resp_time_upstream"
 	keyRespLen          = "resp_length"
-	keyHTTPMethod       = "method"
-	keyURL              = "url"
-	keyHTTPVer          = "http_version"
 
 	keyRespTimeHist         = "resp_time_hist"
 	keyRespTimeUpstreamHist = "resp_time_hist_upstream"
@@ -44,7 +42,7 @@ type WebLog struct {
 	DoChartURLCat    bool          `yaml:"per_category_charts"`
 	DoClientsAll     bool          `yaml:"clients_all_time"`
 
-	reader *tail.Reader
+	tail   *tail.Tail
 	parser *regexp.Regexp
 
 	fil        filter
@@ -62,13 +60,12 @@ func (WebLog) Init() {}
 
 func (w *WebLog) Check() bool {
 
-	// LogReader initialization
-	v, err := tail.NewReader(w.Path)
+	w.tail = tail.New(w.Path)
+	err := w.tail.Init()
 	if err != nil {
 		w.Error(err)
 		return false
 	}
-	w.reader = v
 
 	// read last line
 	line, err := tail.ReadLastLine(w.Path)
@@ -121,19 +118,25 @@ func (w *WebLog) Check() bool {
 }
 
 func (w *WebLog) GetData() map[string]int64 {
-	v, err := w.reader.GetRows()
+	f, err := w.tail.Tail()
 
-	if err != nil && err == tail.ErrSizeNotChanged {
+	if err == tail.SizeNotChanged {
 		return w.data
-	} else if err != nil {
+	}
+
+	if err != nil {
 		return nil
 	}
 
-	uniqIPs := make(map[string]bool)
+	defer f.Close()
 
+	uniqIPs := make(map[string]bool)
 	w.timings.reset()
 
-	for row := range v {
+	s := bufio.NewScanner(f)
+
+	for s.Scan() {
+		row := s.Text()
 		if w.fil.exist() && !w.fil.filter(row) {
 			continue
 		}
@@ -190,7 +193,7 @@ func (w *WebLog) GetData() map[string]int64 {
 
 		// ReqPerUrl, reqPerHTTPMethod, chartReqPerHTTPVer charts3
 		var matchedURL string
-		if w.gm.has(keyRequest) || w.gm.has(keyURL) {
+		if w.gm.has(keyRequest) {
 			matchedURL = w.parseRequest()
 		}
 
@@ -316,29 +319,25 @@ func (w *WebLog) reqPerHTTPVersion(version string) {
 }
 
 func (w *WebLog) parseRequest() (matchedURL string) {
-	gm := w.gm
-	if gm.has(keyRequest) {
-		s := reRequest.FindStringSubmatch(gm.get(keyRequest))
-		if s == nil {
-			return
-		}
-		ngm := make(groupMap)
-		ngm.update(reRequest.SubexpNames(), s)
-		gm = ngm
-
+	req := w.gm.get(keyRequest)
+	if req == "-" {
+		return
 	}
+
+	v := strings.Fields(req)
+	if len(v) != 3 {
+		return
+	}
+
+	// FIXME: assumed that 'version' part is always prefixed with 'HTTP/'
+	method, url, version := v[0], v[1], v[2][5:]
 	if w.urlCat.exist() {
-		if v := w.reqPerCategory(gm.get(keyURL), w.urlCat); v != "" {
+		if v := w.reqPerCategory(url, w.urlCat); v != "" {
 			matchedURL = v
 		}
 	}
-	if v, ok := gm.lookup(keyHTTPMethod); ok {
-		w.reqPerHTTPMethod(v)
-	}
-
-	if v, ok := gm.lookup(keyHTTPVer); ok {
-		w.reqPerHTTPVersion(v)
-	}
+	w.reqPerHTTPMethod(method)
+	w.reqPerHTTPVersion(version)
 	return
 }
 
