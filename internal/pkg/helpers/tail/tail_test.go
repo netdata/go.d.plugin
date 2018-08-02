@@ -1,109 +1,127 @@
 package tail
 
 import (
+	"bufio"
 	"bytes"
+	"io"
 	"io/ioutil"
 	"os"
 	"testing"
 )
 
-func TestNewFileReader(t *testing.T) {
-	_, err := NewReader("this will fail")
-
-	if err == nil {
-		t.Error("expected error, but got nil")
-	}
-
-	tmp, err := ioutil.TempFile("", "temp-")
-
-	if err != nil {
-		t.Fatal("could not create temporary file")
-	}
-
-	defer os.Remove(tmp.Name())
-
-	v, err := NewReader(tmp.Name())
-
-	if err != nil {
-		t.Fatalf("could not create reader: %s", err)
-	}
-
-	if !v.started {
-		t.Error("reader not started")
-	}
-
-	if v.path == "" {
-		t.Error("expected not empty reader path")
+func TestNew(t *testing.T) {
+	tail := New("")
+	if _, ok := interface{}(tail).(*Tail); !ok {
+		t.Error("expected *Tail type")
 	}
 }
 
-func TestFileReader_GetRawData(t *testing.T) {
-	tmp, err := ioutil.TempFile("", "temp-")
+func TestTail_Init(t *testing.T) {
+	tail := New("fail")
 
+	err := tail.Init()
+	if err == nil {
+		t.Error("expected error, but got nil")
+	}
+	if err != ErrGlob {
+		t.Errorf("expected %s, but got %s", ErrGlob, err)
+	}
+
+	_, err = tail.Tail()
+	if err != ErrNotInited {
+		t.Errorf("expected %s, but got %s", ErrNotInited, err)
+	}
+
+	tmp, err := ioutil.TempFile("", "temp-")
 	if err != nil {
 		t.Fatal("could not create temporary file")
 	}
-
 	defer os.Remove(tmp.Name())
-
-	v, err := NewReader(tmp.Name())
+	tail = New(tmp.Name())
+	err = tail.Init()
 
 	if err != nil {
-		t.Fatalf("could not create reader: %s", err)
+		t.Fatalf("tail init: %s", err)
 	}
 
-	data, err := v.GetRows()
+	if tail.path == "" {
+		t.Error("expected not empty tail 'path'")
+	}
+}
+
+func TestTail_Tail(t *testing.T) {
+	tmp, err := ioutil.TempFile("", "temp-")
+	if err != nil {
+		t.Fatal("could not create temporary file")
+	}
+	defer os.Remove(tmp.Name())
+	tail := New(tmp.Name())
+	tail.Init()
+
+	_, err = tail.Tail()
 	if err == nil {
 		t.Fatal("expected error, but got nil")
 	}
 
-	if err != ErrSizeNotChanged {
-		t.Errorf("expected '%s' error, but got %s", ErrSizeNotChanged, err)
+	if err != SizeNotChanged {
+		t.Errorf("expected %s error, but got %s", SizeNotChanged, err)
 	}
-	lines := [...]string{1: "first", 2: "second", 3: "third", 4: "fourth"}
 
-	tmp.Write([]byte(lines[1] + "\n"))
-	data, err = v.GetRows()
+	w := func() {
+		tmp.WriteString("Donatello\n")
+		tmp.WriteString("Leonardo\n")
+		tmp.WriteString("Michelangelo\n")
+		tmp.WriteString("Raphael\n")
+	}
+	w()
+
+	data, err := tail.Tail()
 
 	if err != nil {
-		t.Fatalf("expected nil, but got %s", err)
-	}
-	rv := <-data
-	if rv != lines[1] {
-		t.Fatalf("expected %s, but got %s", lines[1], rv)
+		t.Fatalf("excpected nil, but got %s", err)
 	}
 
-	tmp.Write([]byte(lines[2] + "\n"))
-	data, err = v.GetRows()
+	if _, ok := interface{}(data).(io.ReadCloser); !ok {
+		t.Error("excpected io.ReadCloser type")
+	}
 
+	var c int
+	s := bufio.NewScanner(data)
+	for s.Scan() {
+		c++
+	}
+	if c != 4 {
+		t.Errorf("excepted 4, but got %d", c)
+	}
+
+	w()
+	w()
+	data, err = tail.Tail()
 	if err != nil {
-		t.Fatalf("expected nil, but got %s", err)
-	}
-	rv = <-data
-	if rv != lines[2] {
-		t.Fatalf("expected %s, but got %s", lines[2], rv)
+		t.Fatalf("excpected nil, but got %s", err)
 	}
 
-	data, err = v.GetRows()
-	if err == nil {
-		t.Fatal("expected error, but got nil")
+	c = 0
+	s = bufio.NewScanner(data)
+	for s.Scan() {
+		c++
+	}
+	if c != 8 {
+		t.Errorf("excepted 4, but got %d", c)
 	}
 
-	if err != ErrSizeNotChanged {
-		t.Errorf("expected '%s' error, but got %s", ErrSizeNotChanged, err)
-	}
-
-	tmp.Write([]byte(lines[3] + "\n" + lines[4] + "\n"))
-
-	data, err = v.GetRows()
-
+	tail.pos = 999
+	data, err = tail.Tail()
 	if err != nil {
-		t.Fatalf("expected nil, but got %s", err)
+		t.Fatalf("excpected nil, but got %s", err)
 	}
-	rv = <-data
-	rv += <-data
-	if rv != lines[3]+lines[4] {
-		t.Fatalf("expected %s, but got %s", lines[3]+lines[4], rv)
+	c = 0
+	s = bufio.NewScanner(data)
+	for s.Scan() {
+		c++
+	}
+	if c != 12 {
+		t.Errorf("excepted 12, but got %d", c)
 	}
 }
 

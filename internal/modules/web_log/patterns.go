@@ -11,7 +11,6 @@ import (
 
 var (
 	mandatoryKey = keyCode
-	reRequest    = regexp.MustCompile(`(?P<method>[A-Z]+) (?P<url>[^ ]+) [A-Z]+/(?P<http_version>\d(?:.\d)?)`)
 )
 
 var (
