@@ -8,7 +8,7 @@ var testCharts = &Charts{
 	testChart.Copy(),
 }
 
-func TestNew(t *testing.T) {
+func TestNewCharts(t *testing.T) {
 	if _, ok := interface{}(NewCharts()).(*Charts); !ok {
 		t.Error("excpected *Charts")
 	}
@@ -27,7 +27,7 @@ func TestCharts_Copy(t *testing.T) {
 
 }
 
-func TestCharts_AddChart(t *testing.T) {
+func TestCharts_Add(t *testing.T) {
 	ch := testCharts.Copy()
 	c := testChart.Copy()
 
@@ -46,7 +46,7 @@ func TestCharts_AddChart(t *testing.T) {
 	}
 }
 
-func TestCharts_DeleteChart(t *testing.T) {
+func TestCharts_Delete(t *testing.T) {
 	c := testCharts.Copy()
 
 	c.Delete("test1")
@@ -56,7 +56,7 @@ func TestCharts_DeleteChart(t *testing.T) {
 	}
 }
 
-func TestCharts_GetChart(t *testing.T) {
+func TestCharts_Get(t *testing.T) {
 	c := testCharts.Copy()
 
 	if c.Get("test1") == nil {
@@ -72,7 +72,7 @@ func TestCharts_GetChart(t *testing.T) {
 	}
 }
 
-func TestCharts_LookupChart(t *testing.T) {
+func TestCharts_Lookup(t *testing.T) {
 	c := testCharts.Copy()
 
 	v, ok := c.Lookup("test1")
@@ -87,5 +87,68 @@ func TestCharts_LookupChart(t *testing.T) {
 
 	if _, ok := c.Lookup("test2"); ok {
 		t.Error("expected false")
+	}
+}
+
+
+func TestCharts_AddAfter(t *testing.T) {
+	c1 := testChart.Copy()
+	c2 := testChart.Copy()
+	c3 := testChart.Copy()
+	c2.ID = "test2"
+	c3.ID = "test3"
+
+	ch := NewCharts(c1, c2, c3)
+
+	ch.AddAfter("test2", testChart.Copy())
+
+	if len(*ch) != 3 {
+		t.Errorf("expected 3, but got %d", len(*ch))
+	}
+
+	c4 := testChart.Copy()
+	c5 := testChart.Copy()
+	c4.ID = "test4"
+	c5.ID = "test5"
+
+	ch.AddAfter("test2", c4, c5)
+
+	if len(*ch) != 5 {
+		t.Errorf("expected 5, but got %d", len(*ch))
+	}
+
+	if (*ch)[2].ID != c4.ID || (*ch)[3].ID != c5.ID {
+		t.Error("insertion order wrong")
+	}
+}
+
+func TestCharts_AddBefore(t *testing.T) {
+	c1 := testChart.Copy()
+	c2 := testChart.Copy()
+	c3 := testChart.Copy()
+	c2.ID = "test2"
+	c3.ID = "test3"
+
+	ch := NewCharts(c1, c2, c3)
+
+	ch.AddBefore("test2", testChart.Copy())
+
+	if len(*ch) != 3 {
+		t.Errorf("expected 3, but got %d", len(*ch))
+	}
+
+	c4 := testChart.Copy()
+	c5 := testChart.Copy()
+	c4.ID = "test4"
+	c5.ID = "test5"
+
+	ch.AddBefore("test2", c4, c5)
+
+	if len(*ch) != 5 {
+		t.Errorf("expected 5, but got %d", len(*ch))
+	}
+
+	if (*ch)[1].ID != c4.ID || (*ch)[2].ID != c5.ID {
+		t.Error("insertion order wrong")
 	}
 }
