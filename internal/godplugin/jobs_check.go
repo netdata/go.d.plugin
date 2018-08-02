@@ -85,7 +85,7 @@ func check(j *job.Job) result {
 	resCh := make(chan result)
 
 	go func() {
-		resCh <- safeCheck(j.Mod.Check)
+		resCh <- safeCheck(j.Module.Check)
 	}()
 
 	select {

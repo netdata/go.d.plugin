@@ -49,17 +49,15 @@ func (p *Plugin) createJobs() jobStack {
 				log.Infof("module \"%s\" is disabled in configuration file", moduleName)
 				continue
 			}
-			module := creator.MakeModule()
-			if module.DisabledByDefault() && !p.Config.IsModuleEnabled(moduleName, true) {
+			if creator.DisabledByDefault && !p.Config.IsModuleEnabled(moduleName, true) {
 				log.Infof("module \"%s\" is disabled by default", moduleName)
 				continue
 			}
-			jobs = append(jobs, p.createJob(moduleName, module, creator, p.ModuleConfDir)...)
+			jobs = append(jobs, p.createJob(moduleName, creator, p.ModuleConfDir)...)
 		}
 	} else {
 		if creator, ok := modules.Registry[p.Option.Module]; ok {
-			module := creator.MakeModule()
-			jobs = append(jobs, p.createJob(p.Option.Module, module, creator, p.ModuleConfDir)...)
+			jobs = append(jobs, p.createJob(p.Option.Module, creator, p.ModuleConfDir)...)
 		} else {
 			showAvailableModulesInfo()
 		}
@@ -68,14 +66,22 @@ func (p *Plugin) createJobs() jobStack {
 	return jobs
 }
 
-func (p *Plugin) createJob(moduleName string, module modules.Module, creator modules.Creator, moduleConfDir string) []*job.Job {
+func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleConfDir string) []*job.Job {
 	var jobs []*job.Job
+
 	conf := job.NewConfig()
 	conf.RealModuleName = moduleName
-	conf.UpdateEvery = module.UpdateEvery()
-	conf.ChartCleanup = module.DefaultChartCleanup()
+	conf.UpdateEvery = p.Option.UpdateEvery
+	if creator.UpdateEvery != nil {
+		conf.UpdateEvery = *creator.UpdateEvery
+	}
+	if creator.ChartCleanup != nil {
+		conf.ChartCleanup = *creator.ChartCleanup
+	}
 
-	if !module.RequireConfig() {
+	module := creator.MakeModule()
+
+	if creator.NoConfig {
 		jobs = append(jobs, job.New(module, conf))
 		return jobs
 	}

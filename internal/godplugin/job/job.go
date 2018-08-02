@@ -8,27 +8,23 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
-func New(m modules.Module, c *Config) *Job {
-	_, u := m.(modules.Unsafer)
-
-	return &Job{
-		Mod:    m,
-		Config: c,
-		unsafe: u,
-		Obs:    newObserver(c),
-	}
-}
-
 type Job struct {
-	Mod modules.Module
-
-	timers
 	*Config
 	*logger.Logger
-	Obs *observer
+	Module modules.Module
+	Obs    *observer
 
+	timers
 	retries int
-	unsafe  bool
+}
+
+func New(module modules.Module, config *Config) *Job {
+
+	return &Job{
+		Module: module,
+		Config: config,
+		Obs:    newObserver(config),
+	}
 }
 
 func (j *Job) Start(wg *sync.WaitGroup) {
@@ -111,7 +107,7 @@ func (j *Job) safeGetData() (m map[string]int64) {
 		}
 	}()
 
-	m = j.Mod.GetData()
+	m = j.Module.GetData()
 	return
 }
 
@@ -119,7 +115,7 @@ func (j *Job) getData() map[string]int64 {
 	if j.unsafe {
 		return j.safeGetData()
 	}
-	return j.Mod.GetData()
+	return j.Module.GetData()
 }
 
 func (j *Job) nextIn() time.Duration {

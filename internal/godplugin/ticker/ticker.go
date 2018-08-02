@@ -35,10 +35,7 @@ func (t *Ticker) start() {
 			now := time.Now()
 			nextRun := now.Truncate(t.interval).Add(t.interval)
 
-			for now.Before(nextRun) {
-				time.Sleep(nextRun.Sub(now))
-				now = time.Now()
-			}
+			time.Sleep(nextRun.Sub(now))
 			select {
 			case <-t.done:
 				close(ch)

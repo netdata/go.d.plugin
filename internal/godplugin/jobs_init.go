@@ -4,24 +4,24 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
-func (gd *GoDPlugin) jobsInit(created jobStack) jobStack {
+func (p *Plugin) jobsInit(created jobStack) jobStack {
 	var js jobStack
 
 	if created.empty() {
 		return nil
 	}
 
-	for _, j := range created {
-		l := logger.New(j.RealModuleName, j.JobName())
-		j.Logger = l
+	for _, job := range created {
+		l := logger.New(job.RealModuleName, job.JobName())
+		job.Logger = l
 
-		j.Mod.SetUpdateEvery(j.UpdateEvery)
-		j.Mod.SetModuleName(j.RealModuleName)
-		j.Mod.SetLogger(l)
+		job.Module.SetUpdateEvery(job.UpdateEvery)
+		job.Module.SetModuleName(job.RealModuleName)
+		job.Module.SetLogger(l)
 
-		j.Mod.Init()
+		job.Module.Init()
 
-		js.push(j)
+		js.push(job)
 	}
 
 	created.destroy()

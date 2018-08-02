@@ -21,18 +21,18 @@ func NewConfig() *Config {
 }
 
 // TODO: ModuleName() prepends "go_"
-func (c Config) ModuleName() string {
+func (c *Config) ModuleName() string {
 	return "go_" + c.RealModuleName
 }
 
-func (c Config) FullName() string {
+func (c *Config) FullName() string {
 	if c.RealJobName == "" && c.OverrideName == "" {
 		return c.ModuleName()
 	}
 	return c.ModuleName() + "_" + c.JobName()
 }
 
-func (c Config) JobName() string {
+func (c *Config) JobName() string {
 	if c.OverrideName != "" {
 		return c.OverrideName
 	}

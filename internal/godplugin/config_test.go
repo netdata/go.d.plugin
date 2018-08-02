@@ -19,9 +19,13 @@ func TestConfigFull(t *testing.T) {
 	assert.True(t, config.Enabled)
 	assert.True(t, config.DefaultRun)
 	assert.Equal(t, 10, config.MaxProcs)
-	assert.False(t, config.IsModuleEnabled("example"))
-	assert.True(t, config.IsModuleEnabled("foo"))
-	assert.True(t, config.IsModuleEnabled("bar"))
+	assert.False(t, config.IsModuleEnabled("example", false))
+	assert.True(t, config.IsModuleEnabled("foo", false))
+	assert.True(t, config.IsModuleEnabled("bar", false))
+
+	assert.False(t, config.IsModuleEnabled("example", true))
+	assert.True(t, config.IsModuleEnabled("foo", true))
+	assert.False(t, config.IsModuleEnabled("bar", true))
 }
 
 func TestConfigMinimal(t *testing.T) {
@@ -31,9 +35,13 @@ func TestConfigMinimal(t *testing.T) {
 	assert.True(t, config.Enabled)
 	assert.True(t, config.DefaultRun)
 	assert.Equal(t, 1, config.MaxProcs)
-	assert.True(t, config.IsModuleEnabled("example"))
-	assert.True(t, config.IsModuleEnabled("foo"))
-	assert.True(t, config.IsModuleEnabled("bar"))
+	assert.True(t, config.IsModuleEnabled("example", false))
+	assert.True(t, config.IsModuleEnabled("foo", false))
+	assert.True(t, config.IsModuleEnabled("bar", false))
+
+	assert.False(t, config.IsModuleEnabled("example", true))
+	assert.False(t, config.IsModuleEnabled("foo", true))
+	assert.False(t, config.IsModuleEnabled("bar", true))
 }
 
 func TestConfigNeg(t *testing.T) {
@@ -43,7 +51,11 @@ func TestConfigNeg(t *testing.T) {
 	assert.True(t, config.Enabled)
 	assert.True(t, config.DefaultRun)
 	assert.Equal(t, 1, config.MaxProcs)
-	assert.True(t, config.IsModuleEnabled("example"))
-	assert.True(t, config.IsModuleEnabled("foo"))
-	assert.True(t, config.IsModuleEnabled("bar"))
+	assert.True(t, config.IsModuleEnabled("example", false))
+	assert.True(t, config.IsModuleEnabled("foo", false))
+	assert.True(t, config.IsModuleEnabled("bar", false))
+
+	assert.False(t, config.IsModuleEnabled("example", true))
+	assert.True(t, config.IsModuleEnabled("foo", true))
+	assert.False(t, config.IsModuleEnabled("bar", true))
 }

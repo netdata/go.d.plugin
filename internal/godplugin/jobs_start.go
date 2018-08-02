@@ -10,11 +10,11 @@ func (gd *GoDPlugin) jobsStart(jobs chan *job.Job) {
 		return
 	}
 	for j := range jobs {
-		if v := j.Mod.UpdateEvery(); v != j.UpdateEvery {
+		if v := j.Module.UpdateEvery(); v != j.UpdateEvery {
 			j.UpdateEvery = v
 		}
 
-		if v := j.Mod.ModuleName(); v != j.RealModuleName {
+		if v := j.Module.ModuleName(); v != j.RealModuleName {
 			logger.SetModName(j.Logger, v)
 			j.RealModuleName = v
 		}
@@ -23,7 +23,7 @@ func (gd *GoDPlugin) jobsStart(jobs chan *job.Job) {
 			j.UpdateEvery = gd.cmd.UpdateEvery
 		}
 
-		c := j.Mod.GetCharts()
+		c := j.Module.GetCharts()
 		if c == nil {
 			j.Error("GetCharts() [FAILED]")
 			continue

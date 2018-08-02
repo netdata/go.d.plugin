@@ -1,42 +1,22 @@
 package modules
 
-import (
-	"path"
-	"runtime"
-)
-
 type (
-	Creator  func() Module
-	Creators map[string]Creator
+	// Creator is a builder to create module instance
+	Creator struct {
+		UpdateEvery       *int
+		ChartCleanup      *int
+		DisabledByDefault bool
+		NoConfig          bool
+		Create            func() Module
+	}
 )
 
-var Registry = Creators{}
+// Registry Registry
+var Registry = map[string]Creator{}
 
-func (c Creator) MakeModule() Module {
-	return c()
-}
-
-func (c *Creators) Destroy() {
-	for k := range *c {
-		(*c)[k] = nil
-	}
-	*c = nil
-}
-
-func Add(c Creator) {
-	name := getFileName(2)
-
+// Register a module
+func Register(name string, creator Creator) {
 	if name != "" {
-		Registry[name] = c
+		Registry[name] = creator
 	}
-}
-
-func getFileName(skip int) string {
-	var name string
-	_, n, _, _ := runtime.Caller(skip)
-
-	if n != "" {
-		_, name = path.Split(n[:len(n)-3])
-	}
-	return name
 }
