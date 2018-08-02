@@ -13,45 +13,45 @@ type G interface {
 }
 
 type moduleDefault struct {
-	u *int
-	c *int
-	d bool
+	updateEvery       *int
+	chartsCleanup     *int
+	disabledByDefault bool
 }
 
 func (m *moduleDefault) SetUpdateEvery(v int) {
-	if m.u == nil {
-		m.u = new(int)
+	if m.updateEvery == nil {
+		m.updateEvery = new(int)
 	}
-	*m.u = v
+	*m.updateEvery = v
 }
 
 func (m *moduleDefault) SetChartsCleanup(v int) {
-	if m.c == nil {
-		m.c = new(int)
+	if m.chartsCleanup == nil {
+		m.chartsCleanup = new(int)
 	}
-	*m.c = v
+	*m.chartsCleanup = v
 }
 
 func (m *moduleDefault) SetDisabledByDefault() {
-	m.d = true
+	m.disabledByDefault = true
 }
 
 func (m *moduleDefault) UpdateEvery() (int, bool) {
-	if m.u == nil {
+	if m.updateEvery == nil {
 		return 0, false
 	}
-	return *m.u, true
+	return *m.updateEvery, true
 }
 
 func (m *moduleDefault) ChartsCleanup() (int, bool) {
-	if m.c == nil {
+	if m.chartsCleanup == nil {
 		return 0, false
 	}
-	return *m.c, true
+	return *m.chartsCleanup, true
 }
 
 func (m *moduleDefault) DisabledByDefault() bool {
-	return m.d
+	return m.disabledByDefault
 }
 
 var moduleDefaults = map[string]*moduleDefault{"_": {}}
@@ -64,8 +64,8 @@ func SetDefault() S {
 	return moduleDefaults[name]
 }
 
-func GetDefault(n string) G {
-	v, ok := moduleDefaults[n]
+func GetDefault(moduleName string) G {
+	v, ok := moduleDefaults[moduleName]
 	if !ok {
 		return moduleDefaults["_"]
 	}

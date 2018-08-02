@@ -1,0 +1,6 @@
+enabled: true
+default_run: no
+max_procs: 10
+modules:
+  example: no
+  foo: yes

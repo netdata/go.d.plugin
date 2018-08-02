@@ -5,6 +5,8 @@ import (
 	"sync"
 	"time"
 
+	"errors"
+
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 )
@@ -14,7 +16,7 @@ type result struct {
 	err error
 }
 
-func (gd *GoDPlugin) jobsCheck(jobs jobStack) chan *job.Job {
+func (p *Plugin) checkJobs(jobs jobStack) chan *job.Job {
 	if jobs.empty() {
 		return nil
 	}
@@ -72,7 +74,7 @@ func (gd *GoDPlugin) jobsCheck(jobs jobStack) chan *job.Job {
 func safeCheck(f func() bool) (res result) {
 	defer func() {
 		if r := recover(); r != nil {
-			res.err = fmt.Errorf("PANIC(%s)", r)
+			res.err = fmt.Errorf("PANIC(%v)", r)
 		}
 	}()
 	res.ok = f()
@@ -80,27 +82,22 @@ func safeCheck(f func() bool) (res result) {
 }
 
 func check(j *job.Job) result {
-	var (
-		res   result
-		resCh = make(chan result)
-		limit = time.NewTimer(5 * time.Second)
-	)
+	resCh := make(chan result)
 
 	go func() {
 		resCh <- safeCheck(j.Mod.Check)
 	}()
 
 	select {
-	case res = <-resCh:
-	case <-limit.C:
+	case res := <-resCh:
+		return res
+	case <-time.After(5 * time.Second):
+		return result{err: errors.New("check timeout")}
 	}
-
-	limit.Stop()
-	return res
 }
 
 func recheck(j *job.Job, wg *sync.WaitGroup, ch chan *job.Job) {
-	var c int
+	c := 0
 	for {
 		c++
 		time.Sleep(time.Duration(j.AutoDetectionRetry) * time.Second)

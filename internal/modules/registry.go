@@ -5,13 +5,16 @@ import (
 	"runtime"
 )
 
-type Creator func() Module
+type (
+	Creator  func() Module
+	Creators map[string]Creator
+)
+
+var Registry = Creators{}
 
 func (c Creator) MakeModule() Module {
 	return c()
 }
-
-type Creators map[string]Creator
 
 func (c *Creators) Destroy() {
 	for k := range *c {
@@ -19,8 +22,6 @@ func (c *Creators) Destroy() {
 	}
 	*c = nil
 }
-
-var Registry = make(Creators)
 
 func Add(c Creator) {
 	name := getFileName(2)

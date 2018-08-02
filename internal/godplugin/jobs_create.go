@@ -7,6 +7,9 @@ import (
 	val "github.com/go-playground/validator"
 	"github.com/go-yaml/yaml"
 
+	"fmt"
+	"sort"
+
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 )
@@ -37,68 +40,55 @@ func (js *jobStack) destroy() {
 	*js = nil
 }
 
-func (gd *GoDPlugin) jobsCreate() jobStack {
+func (p *Plugin) createJobs() jobStack {
 	var jobs jobStack
 
-	switch gd.cmd.Module {
-	default:
-		if c, ok := modules.Registry[gd.cmd.Module]; ok {
-			create(gd.cmd.Module, c, gd.dir.modulesConf, &jobs)
-		} else {
-			info()
+	if p.Option.Module == "all" {
+		for moduleName, creator := range modules.Registry {
+			if p.Config.IsModuleEnabled(moduleName, false) {
+				log.Infof("module \"%s\" is disabled in configuration file", moduleName)
+				continue
+			}
+			module := creator.MakeModule()
+			if module.DisabledByDefault() && !p.Config.IsModuleEnabled(moduleName, true) {
+				log.Infof("module \"%s\" is disabled by default", moduleName)
+				continue
+			}
+			jobs = append(jobs, p.createJob(moduleName, module, creator, p.ModuleConfDir)...)
 		}
-	case "all":
-		for name, creator := range modules.Registry {
-
-			if modules.GetDefault(name).DisabledByDefault() && !gd.conf.Modules[name] {
-				log.Infof("module \"%s\" disabled by default", name)
-				continue
-			}
-
-			if !isModuleEnabled(gd.conf, name) {
-				log.Infof("module \"%s\" disabled in configuration file", name)
-				continue
-			}
-
-			create(name, creator, gd.dir.modulesConf, &jobs)
+	} else {
+		if creator, ok := modules.Registry[p.Option.Module]; ok {
+			module := creator.MakeModule()
+			jobs = append(jobs, p.createJob(p.Option.Module, module, creator, p.ModuleConfDir)...)
+		} else {
+			showAvailableModulesInfo()
 		}
 	}
 
 	return jobs
 }
 
-func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
-	// Create module and default conf
-	conf, mod := job.NewConfig(), creator.MakeModule()
+func (p *Plugin) createJob(moduleName string, module modules.Module, creator modules.Creator, moduleConfDir string) []*job.Job {
+	var jobs []*job.Job
+	conf := job.NewConfig()
+	conf.RealModuleName = moduleName
+	conf.UpdateEvery = module.UpdateEvery()
+	conf.ChartCleanup = module.DefaultChartCleanup()
 
-	conf.RealModuleName = name
-
-	setModuleDefaults(name, conf)
-
-	f, err := ioutil.ReadFile(path.Join(dir, name+".conf"))
-
-	// SKIP: config read error and not NoConfiger
-	_, ok := mod.(modules.NoConfiger)
-	if !ok && err != nil {
-		log.Errorf("'%s' skipped: %s", name, err)
-		return
+	if !module.RequireConfig() {
+		jobs = append(jobs, job.New(module, conf))
+		return jobs
 	}
 
-	// PUSH: jobs without configuration (only base conf)
+	confFile := path.Join(moduleConfDir, moduleName+".conf")
+	f, err := ioutil.ReadFile(confFile)
 	if err != nil {
-		log.Debug(err)
-		jobs.push(job.New(mod, conf))
-		return
+		log.Errorf("module '%s': read config file '%s' error: %v", moduleName, confFile, err)
+		return jobs
 	}
 
-	log.Debugf("module '%s' configuration read success", name)
-
-	err = unmarshal(f, conf)
-
-	// SKIP: YAML parse error || validator error
-	if err != nil {
-		log.Errorf("module '%s': %s", name, err)
-		return
+	if err = unmarshal(f, conf); err != nil {
+		log.Errorf("module '%s', unmarshal config file error: %v", moduleName, err)
 	}
 
 	raw := parseModuleConf(f)
@@ -106,8 +96,8 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 
 	// PUSH: single job config
 	if num == 0 {
-		jobs.push(job.New(mod, conf))
-		return
+		jobs = append(jobs, job.New(module, conf))
+		return jobs
 	}
 
 	for _, r := range raw {
@@ -116,34 +106,24 @@ func create(name string, creator modules.Creator, dir string, jobs *jobStack) {
 		err := unmarshal(r.conf, &c)
 		// SKIP: validator error
 		if err != nil {
-			log.Errorf("module '%s', job '%s': %s", name, r.name, err)
+			log.Errorf("module '%s', job '%s': %s", moduleName, r.name, err)
 			continue
 		}
 
 		err = unmarshal(r.conf, m)
 		// SKIP: validator error
 		if err != nil {
-			log.Errorf("module %s, job '%s': %s", name, r.name, err)
+			log.Errorf("module %s, job '%s': %s", moduleName, r.name, err)
 			continue
 		}
 
-		// do not add job name for multi job with only 1 job
+		// do not add job moduleName for multi job with only 1 job
 		if num > 1 {
 			c.RealJobName = r.name
 		}
-		// PUSH:
-		jobs.push(job.New(m, &c))
+		jobs = append(jobs, job.New(m, &c))
 	}
-
-}
-
-func isModuleEnabled(c config, n string) bool {
-	v, ok := c.Modules[n]
-
-	if c.DefaultRun {
-		return !ok || ok && v
-	}
-	return ok && v
+	return jobs
 }
 
 func parseModuleConf(f []byte) []jobRawConf {
@@ -166,15 +146,6 @@ func parseModuleConf(f []byte) []jobRawConf {
 	return rv
 }
 
-func setModuleDefaults(n string, c *job.Config) {
-	if v, ok := modules.GetDefault(n).UpdateEvery(); ok {
-		c.UpdateEvery = v
-	}
-	if v, ok := modules.GetDefault(n).ChartsCleanup(); ok {
-		c.ChartCleanup = v
-	}
-}
-
 func unmarshal(in []byte, out interface{}) error {
 	if err := yaml.Unmarshal(in, out); err != nil {
 		return err
@@ -183,4 +154,16 @@ func unmarshal(in []byte, out interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func showAvailableModulesInfo() {
+	fmt.Println("Available modules:")
+	var s []string
+	for v := range modules.Registry {
+		s = append(s, v)
+	}
+	sort.Strings(s)
+	for idx, n := range s {
+		fmt.Printf("  %d. %s\n", idx+1, n)
+	}
 }

@@ -11,17 +11,36 @@ type Module interface {
 	GetData() map[string]int64
 	GetCharts() *charts.Charts
 
+	RequireConfig() bool
+	DefaultUpdateEvery(globalUpdateEvery int) int
+	DefaultChartCleanup() int
+	DisabledByDefault() bool
+
 	SetLogger(l *logger.Logger)
-	SetUpdateEvery(v int)
-	SetModuleName(v string)
 	UpdateEvery() int
+	SetUpdateEvery(v int)
 	ModuleName() string
+	SetModuleName(v string)
 }
 
 type ModuleBase struct {
 	*logger.Logger
 	updateEvery int
 	moduleName  string
+}
+
+func (m *ModuleBase) RequireConfig() bool {
+	return true
+}
+
+func (m *ModuleBase) DefaultUpdateEvery(globalUpdateEvery int) int {
+	return globalUpdateEvery
+}
+func (m *ModuleBase) DefaultChartCleanup() int {
+	return 0
+}
+func (m *ModuleBase) DisabledByDefault() bool {
+	return false
 }
 
 func (m *ModuleBase) SetLogger(l *logger.Logger) {
@@ -42,11 +61,6 @@ func (m ModuleBase) UpdateEvery() int {
 
 func (m ModuleBase) ModuleName() string {
 	return m.moduleName
-}
-
-// NoConfiger should be added/implemented by modules which don't need configuration file
-type NoConfiger interface {
-	NoConfig()
 }
 
 // Unsafer should be added/implemented if module getData has a chance to panic

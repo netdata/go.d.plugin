@@ -3,38 +3,31 @@ package cli
 import (
 	"strconv"
 
-	"github.com/l2isbad/go.d.plugin/internal/pkg/cli/flags"
+	"github.com/jessevdk/go-flags"
 )
 
-type ParsedCMD struct {
-	Debug       bool
-	Module      string
+// Option defines command line options.
+type Option struct {
+	Debug       bool   `short:"d" long:"debug" description:"debug mode"`
+	Module      string `short:"m" long:"module" description:"module name" default:"all"`
 	UpdateEvery int
 }
 
-// Parse returns parsed command-line flags in ParsedCMD struct
-// Available flags:
-func Parse(args []string) ParsedCMD {
-	var (
-		d bool
-		m string
-		u = 1
-	)
-
-	f := flags.New()
-	f.BoolVar(&d, "debug", "d", false, "debug mode")
-	f.StringVar(&m, "module", "m", "all", "module name")
-	f.Parse()
-
-	// override update every should be the last elem in os.Args
-	last := args[len(args)-1]
-	if v, _ := strconv.Atoi(last); v > 0 {
-		u = v
+// Parse returns parsed command-line flags in Option struct
+func Parse(args []string) (*Option, error) {
+	opt := &Option{UpdateEvery: 1}
+	parser := flags.NewParser(opt, flags.Default)
+	parser.Name = "go.d.plugin"
+	parser.Usage = "[OPTIONS] [update every]"
+	rest, err := parser.ParseArgs(args)
+	if err != nil {
+		return nil, err
 	}
-
-	return ParsedCMD{
-		Debug:       d,
-		Module:      m,
-		UpdateEvery: u,
+	if len(rest) > 1 {
+		opt.UpdateEvery, err = strconv.Atoi(rest[1])
+		if err != nil {
+			return nil, err
+		}
 	}
+	return opt, nil
 }

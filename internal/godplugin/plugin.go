@@ -1,42 +1,82 @@
 package godplugin
 
 import (
-	"io/ioutil"
-	"path"
 	"runtime"
-	"sync"
 
 	"fmt"
 
+	"time"
+
+	"errors"
+
+	"github.com/l2isbad/go.d.plugin/internal/godplugin/ticker"
 	_ "github.com/l2isbad/go.d.plugin/internal/modules/all" // load all modules
 	"github.com/l2isbad/go.d.plugin/internal/pkg/cli"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
 var (
-	pluginConf = "go.d.conf"
 	modConfDir = "go.d/"
 )
 
+var ErrDisabled = errors.New("disabled in configuration file")
+
+var log = logger.New("plugin", "main")
+
 type (
 	// GoDPlugin GoDPlugin
-	GoDPlugin interface {
-		// LoadConfig Load go.d.conf
-		LoadConfig(confDir string) error
-		InitModules() error
-		CheckModules() error
-		MainLoop()
-		Shutdown()
+	Plugin struct {
+		Option        *cli.Option
+		Config        *Config
+		ModuleConfDir string
+		shutdownHook  chan int
 	}
 
-	plugin struct {
-		PluginConf     string
-		ModulesConfDir string
-		Config         *Config
-		cmd            cli.ParsedCMD
-		wg             sync.WaitGroup
-	}
+	//plugin struct {
+	//	PluginConf     string
+	//	ModulesConfDir string
+	//	Config         *Config
+	//	opt            *cli.Option
+	//	wg             sync.WaitGroup
+	//}
 )
+
+func NewPlugin() *Plugin {
+	return &Plugin{
+		shutdownHook: make(chan int, 1),
+	}
+}
+
+func (p *Plugin) Setup() error {
+	if !p.Config.Enabled {
+		return ErrDisabled
+	}
+
+	if p.Config.MaxProcs > 0 {
+		log.Infof("setting GOMAXPROCS to %d", p.Config.MaxProcs)
+		runtime.GOMAXPROCS(p.Config.MaxProcs)
+	}
+
+	jobs := p.createJobs()
+	return nil
+}
+
+func (p *Plugin) MainLoop() {
+	tk := ticker.New(time.Second)
+LOOP:
+	for {
+		select {
+		case <-p.shutdownHook:
+			break LOOP
+		case <-tk.C:
+		}
+		// run job
+	}
+}
+
+func (p *Plugin) Shutdown() {
+	p.shutdownHook <- 1
+}
 
 // func NewGoDPlugin(args []string) *GoDPlugin {
 // 	p := getConfigDir()
@@ -46,10 +86,6 @@ type (
 // 		cmd:    cli.Parse(args),
 // 	}
 // }
-
-func (p *plugin) LoadConfig(confDir string) {
-	f, err := ioutil.ReadFile(path.Join(gd.dir.pluginConf, pluginConf))
-}
 
 func (gd *GoDPlugin) Start() {
 	err := gd.loadConfig()

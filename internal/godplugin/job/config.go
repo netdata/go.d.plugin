@@ -1,15 +1,5 @@
 package job
 
-// NewConfig returns Config with default values
-func NewConfig() *Config {
-	return &Config{
-		UpdateEvery:        1,
-		AutoDetectionRetry: 0,
-		ChartCleanup:       10,
-		MaxRetries:         60,
-	}
-}
-
 type Config struct {
 	RealModuleName     string
 	RealJobName        string
@@ -18,6 +8,16 @@ type Config struct {
 	AutoDetectionRetry int    `yaml:"autodetection_retry" validate:"gte=0"`
 	ChartCleanup       int    `yaml:"chart_cleanup" validate:"gte=0"`
 	MaxRetries         int    `yaml:"retries" validate:"gte=0"`
+}
+
+// NewConfig returns Config with default values
+func NewConfig() *Config {
+	return &Config{
+		UpdateEvery:        1,
+		AutoDetectionRetry: 0,
+		ChartCleanup:       10,
+		MaxRetries:         60,
+	}
 }
 
 // TODO: ModuleName() prepends "go_"

@@ -27,3 +27,13 @@ func (c *Config) Load(filename string) error {
 	}
 	return yaml.NewDecoder(file).Decode(c)
 }
+
+func (c *Config) IsModuleEnabled(module string, explicit bool) bool {
+	if run, ok := c.Modules[module]; ok {
+		return run
+	}
+	if explicit {
+		return false
+	}
+	return c.DefaultRun
+}

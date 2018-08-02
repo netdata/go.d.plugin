@@ -11,20 +11,20 @@ var (
 
 func TestModuleDefault_SetUpdateEvery(t *testing.T) {
 	SetDefault().SetUpdateEvery(i)
-	if moduleDefaults[n].u == nil {
+	if moduleDefaults[n].updateEvery == nil {
 		t.Fatal("expected not nil, value is not set")
 	}
-	if v := *moduleDefaults[n].u; v != i {
+	if v := *moduleDefaults[n].updateEvery; v != i {
 		t.Errorf("expected %d, but got %d", v, i)
 	}
 }
 
 func TestModuleDefault_SetChartsCleanup(t *testing.T) {
 	SetDefault().SetChartsCleanup(i)
-	if moduleDefaults[n].c == nil {
+	if moduleDefaults[n].chartsCleanup == nil {
 		t.Fatal("expected not nil, value is not set")
 	}
-	if v := *moduleDefaults[n].c; v != i {
+	if v := *moduleDefaults[n].chartsCleanup; v != i {
 		t.Errorf("expected %d, but got %d", v, i)
 	}
 }
@@ -32,7 +32,7 @@ func TestModuleDefault_SetChartsCleanup(t *testing.T) {
 func TestModuleDefault_SetDisabledByDefault(t *testing.T) {
 	SetDefault().SetDisabledByDefault()
 
-	if moduleDefaults[n].d == false {
+	if moduleDefaults[n].disabledByDefault == false {
 		t.Error("expected true, value is not set")
 	}
 }
