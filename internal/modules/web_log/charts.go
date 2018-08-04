@@ -116,7 +116,7 @@ var (
 	chartClientsCurr = Chart{
 		ID: "clients_current",
 		Opts: Opts{
-			Title: "Current Poll Unique RawClient IPs", Units: "unique ips", Fam: "clients", Type: charts.Stacked},
+			Title: "Current Poll Unique Client IPs", Units: "unique ips", Fam: "clients", Type: charts.Stacked},
 		Dims: Dims{
 			{ID: "unique_cur_ipv4", Name: "ipv4", Algo: charts.Incremental},
 			{ID: "unique_cur_ipv6", Name: "ipv6", Algo: charts.Incremental},
@@ -125,7 +125,7 @@ var (
 	chartClientsAll = Chart{
 		ID: "clients_all_time",
 		Opts: Opts{
-			Title: "All Time Unique RawClient IPs", Units: "unique ips", Fam: "clients", Type: charts.Stacked},
+			Title: "All Time Unique Client IPs", Units: "unique ips", Fam: "clients", Type: charts.Stacked},
 		Dims: Dims{
 			{ID: "unique_all_ipv4", Name: "ipv4"},
 			{ID: "unique_all_ipv6", Name: "ipv6"},
