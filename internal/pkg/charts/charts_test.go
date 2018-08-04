@@ -76,7 +76,6 @@ func TestCharts_Lookup(t *testing.T) {
 	assert.False(t, ok)
 }
 
-
 func TestCharts_AddAfter(t *testing.T) {
 	chart1 := testChart.Copy()
 	chart2 := testChart.Copy()
