@@ -79,7 +79,7 @@ func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleCon
 		conf.ChartCleanup = *creator.ChartCleanup
 	}
 
-	module := creator.MakeModule()
+	module := creator.Create()
 
 	if creator.NoConfig {
 		jobs = append(jobs, job.New(module, conf))

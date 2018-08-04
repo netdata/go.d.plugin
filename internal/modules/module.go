@@ -8,7 +8,7 @@ import (
 // Module Module
 type Module interface {
 	// Init is called after UpdateEvery, ModuleName are set.
-	Init()
+	Init() error
 
 	// Check is called after Init or AutoDetectionRetry.
 	// If it return false, this job will be disabled.

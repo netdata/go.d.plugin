@@ -7,19 +7,16 @@ import (
 
 	"time"
 
-	"errors"
+	"sync"
 
+	"io"
+
+	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/ticker"
 	_ "github.com/l2isbad/go.d.plugin/internal/modules/all" // load all modules
 	"github.com/l2isbad/go.d.plugin/internal/pkg/cli"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
-
-var (
-	modConfDir = "go.d/"
-)
-
-var ErrDisabled = errors.New("disabled in configuration file")
 
 var log = logger.New("plugin", "main")
 
@@ -29,16 +26,10 @@ type (
 		Option        *cli.Option
 		Config        *Config
 		ModuleConfDir string
+		Out           io.Writer
 		shutdownHook  chan int
+		jobs          []*job.Job
 	}
-
-	//plugin struct {
-	//	PluginConf     string
-	//	ModulesConfDir string
-	//	Config         *Config
-	//	opt            *cli.Option
-	//	wg             sync.WaitGroup
-	//}
 )
 
 func NewPlugin() *Plugin {
@@ -47,9 +38,11 @@ func NewPlugin() *Plugin {
 	}
 }
 
-func (p *Plugin) Setup() error {
+func (p *Plugin) Setup() bool {
 	if !p.Config.Enabled {
-		return ErrDisabled
+		fmt.Fprintln(p.Out, "DISABLE")
+		log.Info("disabled in configuration file")
+		return false
 	}
 
 	if p.Config.MaxProcs > 0 {
@@ -57,71 +50,68 @@ func (p *Plugin) Setup() error {
 		runtime.GOMAXPROCS(p.Config.MaxProcs)
 	}
 
+	return true
+}
+
+func (p *Plugin) CheckJobs() {
 	jobs := p.createJobs()
-	return nil
+	passed := make(chan *job.Job, 10)
+	done := make(chan int)
+
+	wg := sync.WaitGroup{}
+	wg.Add(len(jobs))
+	for _, job := range jobs {
+		job := job
+
+		go func() {
+			defer wg.Done()
+			if err := job.Init(); err != nil {
+				log.Warningf("module: %s, job: %s: init failed: %v", job.ModuleName(), job.JobName(), err)
+				return
+			}
+			if !job.Check() {
+				return
+			}
+			passed <- job
+		}()
+	}
+
+	go func() {
+		jobMap := map[string]*job.Job{}
+		for job := range passed {
+			name := job.FullName()
+			if _, exist := jobMap[name]; !exist {
+				jobMap[name] = job
+				p.jobs = append(p.jobs, job)
+			}
+		}
+		done <- 1
+	}()
+
+	wg.Wait()
+	close(passed)
+	<-done
 }
 
 func (p *Plugin) MainLoop() {
+	var clock int
 	tk := ticker.New(time.Second)
 LOOP:
 	for {
 		select {
 		case <-p.shutdownHook:
 			break LOOP
-		case <-tk.C:
+		case clock = <-tk.C:
 		}
-		// run job
+		for _, job := range p.jobs {
+			select {
+			case job.Tick <- clock:
+			default:
+			}
+		}
 	}
 }
 
 func (p *Plugin) Shutdown() {
 	p.shutdownHook <- 1
 }
-
-// func NewGoDPlugin(args []string) *GoDPlugin {
-// 	p := getConfigDir()
-// 	return &GoDPlugin{
-// 		dir:    dir{p, path.Join(p, modConfDir)},
-// 		config: newPluginConfig(),
-// 		cmd:    cli.Parse(args),
-// 	}
-// }
-
-func (gd *GoDPlugin) Start() {
-	err := gd.loadConfig()
-
-	if err != nil {
-		log.Critical(err)
-	}
-
-	if !gd.config.Enabled {
-		log.Info("disabled in configuration file")
-		return
-	}
-
-	if gd.cmd.Debug {
-		logger.SetLevel(logger.DEBUG)
-	}
-
-	if gd.config.MaxProcs != 0 {
-		log.Warningf("setting GOMAXPROCS to %d", gd.config.MaxProcs)
-		runtime.GOMAXPROCS(gd.config.MaxProcs)
-	}
-
-	jobs := gd.jobsCreate()
-	gd.jobsStart(gd.jobsCheck(gd.jobsInit(jobs)))
-
-	gd.wg.Wait()
-	fmt.Println("DISABLE")
-}
-
-// func (gd *GoDPlugin) loadConfig() error {
-// 	f, err := ioutil.ReadFile(path.Join(gd.dir.pluginConf, pluginConf))
-
-// 	if err != nil {
-// 		log.Error(err)
-// 		return nil
-// 	}
-
-// 	return yaml.Unmarshal(f, &gd.conf)
-// }

@@ -10,9 +10,9 @@ type (
 	observer struct {
 		charts *charts.Charts
 
-		items map[string]*chart
-		hook  *Config
-		prio  int
+		items    map[string]*chart
+		hook     *Config
+		priority int
 	}
 
 	chart struct {
@@ -40,9 +40,9 @@ func (c *chart) refresh() {
 
 func newObserver(hook *Config) *observer {
 	o := &observer{
-		items: make(map[string]*chart),
-		prio:  70000,
-		hook:  hook,
+		items:    make(map[string]*chart),
+		priority: 70000,
+		hook:     hook,
 	}
 	return o
 }
@@ -78,11 +78,11 @@ func (o *observer) add(ch *charts.Chart) {
 	chart := &chart{
 		item: ch,
 		hook: o.hook,
-		prio: o.prio,
+		prio: o.priority,
 		push: true,
 	}
 
-	o.prio++
+	o.priority++
 
 	o.items[ch.ID] = chart
 }

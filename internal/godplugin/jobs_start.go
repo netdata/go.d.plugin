@@ -28,7 +28,7 @@ func (gd *GoDPlugin) jobsStart(jobs chan *job.Job) {
 			j.Error("GetCharts() [FAILED]")
 			continue
 		}
-		j.Obs.Set(c)
+		j.observer.Set(c)
 
 		gd.wg.Add(1)
 		go j.Start(&gd.wg)

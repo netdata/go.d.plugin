@@ -1,17 +1,14 @@
 package godplugin
 
 import (
-	"fmt"
 	"sync"
 	"time"
-
-	"errors"
 
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 )
 
-type result struct {
+type checkResult struct {
 	ok  bool
 	err error
 }
@@ -71,30 +68,30 @@ func (p *Plugin) checkJobs(jobs jobStack) chan *job.Job {
 	return toStart
 }
 
-func safeCheck(f func() bool) (res result) {
-	defer func() {
-		if r := recover(); r != nil {
-			res.err = fmt.Errorf("PANIC(%v)", r)
-		}
-	}()
-	res.ok = f()
-	return
-}
-
-func check(j *job.Job) result {
-	resCh := make(chan result)
-
-	go func() {
-		resCh <- safeCheck(j.Module.Check)
-	}()
-
-	select {
-	case res := <-resCh:
-		return res
-	case <-time.After(5 * time.Second):
-		return result{err: errors.New("check timeout")}
-	}
-}
+//func safeCheck(f func() bool) (res checkResult) {
+//	defer func() {
+//		if r := recover(); r != nil {
+//			res.err = fmt.Errorf("PANIC(%v)", r)
+//		}
+//	}()
+//	res.ok = f()
+//	return
+//}
+//
+//func check(j *job.Job) checkResult {
+//	resCh := make(chan checkResult)
+//
+//	go func() {
+//		resCh <- safeCheck(j.Module.Check)
+//	}()
+//
+//	select {
+//	case res := <-resCh:
+//		return res
+//	case <-time.After(5 * time.Second):
+//		return checkResult{err: errors.New("check timeout")}
+//	}
+//}
 
 func recheck(j *job.Job, wg *sync.WaitGroup, ch chan *job.Job) {
 	c := 0

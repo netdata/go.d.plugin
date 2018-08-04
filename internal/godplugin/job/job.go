@@ -11,19 +11,72 @@ import (
 type Job struct {
 	*Config
 	*logger.Logger
-	Module modules.Module
-	Obs    *observer
+	Module       modules.Module
+	Tick         chan int
+	shutdownHook chan int
+	observer     *observer
 
 	timers
 	retries int
 }
 
 func New(module modules.Module, config *Config) *Job {
-
 	return &Job{
-		Module: module,
-		Config: config,
-		Obs:    newObserver(config),
+		Module:       module,
+		Config:       config,
+		Tick:         make(chan int),
+		shutdownHook: make(chan int),
+		observer:     newObserver(config),
+	}
+}
+
+func (j *Job) Init() error {
+	l := logger.New(j.RealModuleName, j.JobName())
+	j.Logger = l
+
+	j.Module.SetUpdateEvery(j.UpdateEvery)
+	j.Module.SetModuleName(j.RealModuleName)
+	j.Module.SetLogger(l)
+
+	return j.Module.Init()
+}
+
+func (j *Job) Check() bool {
+	okCh := make(chan bool)
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				j.Errorf("PANIC: %v", r)
+				okCh <- false
+			}
+		}()
+		okCh <- j.Module.Check()
+	}()
+
+	var ok bool
+	select {
+	case ok = <-okCh:
+	case time.After(5 * time.Second):
+		j.Error("check timeout")
+	}
+	return ok
+}
+
+func (j *Job) MainLoop() {
+LOOP:
+	for {
+		select {
+		case <-j.shutdownHook:
+			break LOOP
+		case t := <-j.Tick:
+			if t%j.UpdateEvery != 0 {
+				continue LOOP
+			}
+		}
+		data := j.getData()
+		if data == nil {
+			continue
+		}
 	}
 }
 
@@ -58,7 +111,7 @@ func (j *Job) update() bool {
 	data := j.getData()
 
 	if data == nil {
-		j.Debug("GetData() failed")
+		j.Debug("getData() failed")
 		return false
 	}
 
@@ -68,11 +121,11 @@ func (j *Job) update() bool {
 		suppressed int
 	)
 
-	for _, v := range *j.Obs.charts {
-		if _, ok := j.Obs.items[v.ID]; !ok {
-			j.Obs.add(v)
+	for _, v := range *j.observer.charts {
+		if _, ok := j.observer.items[v.ID]; !ok {
+			j.observer.add(v)
 		}
-		chart := j.Obs.items[v.ID]
+		chart := j.observer.items[v.ID]
 
 		if chart.obsoleted {
 			if canBeUpdated(*chart, data) {
@@ -100,22 +153,15 @@ func (j *Job) update() bool {
 	return updated > 0
 }
 
-func (j *Job) safeGetData() (m map[string]int64) {
+func (j *Job) getData() (result map[string]int64) {
 	defer func() {
 		if r := recover(); r != nil {
-			j.Errorf("PANIC(%s)", r)
+			j.Errorf("PANIC: %v", r)
+			result = nil
 		}
 	}()
-
-	m = j.Module.GetData()
+	result = j.Module.GetData()
 	return
-}
-
-func (j *Job) getData() map[string]int64 {
-	if j.unsafe {
-		return j.safeGetData()
-	}
-	return j.Module.GetData()
 }
 
 func (j *Job) nextIn() time.Duration {

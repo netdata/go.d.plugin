@@ -20,7 +20,9 @@ func main() {
 	opt := parseOptions()
 
 	plugin := createPlugin(opt)
-	plugin.Setup()
+	if !plugin.Setup() {
+		return
+	}
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT)
@@ -42,10 +44,12 @@ func createPlugin(opt *cli.Option) *godplugin.Plugin {
 	confDir := netdataConfigDir()
 	config := godplugin.NewConfig()
 	config.Load(confDir)
+
 	plugin := godplugin.NewPlugin()
 	plugin.Option = opt
 	plugin.Config = config
 	plugin.ModuleConfDir = path.Join(confDir, "go.d")
+	plugin.Out = os.Stdout
 	return plugin
 }
 
