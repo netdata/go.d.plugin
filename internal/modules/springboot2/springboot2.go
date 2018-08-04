@@ -12,8 +12,7 @@ import (
 type Springboot2 struct {
 	modules.ModuleBase
 
-	web.Request `yaml:",inline"`
-	web.Client  `yaml:",inline"`
+	web.RawWeb `yaml:",inline"`
 
 	prom prometheus.Prometheus
 }
@@ -24,7 +23,7 @@ type data struct {
 }
 
 func (s *Springboot2) Init() {
-	s.prom = prometheus.New(s.Client.CreateHttpClient(), s.Request)
+	s.prom = prometheus.New(s.CreateHTTPClient(), s.RawRequest)
 }
 
 // Check Check

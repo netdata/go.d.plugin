@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +17,6 @@ func TestNew(t *testing.T) {
 
 func TestTail_Init(t *testing.T) {
 	tail := New("fail")
-
 
 	err := tail.Init()
 	if assert.Error(t, err) {
@@ -103,7 +103,7 @@ func TestTail_Tail(t *testing.T) {
 		c++
 	}
 
-	assert.Equal(t, c ,12)
+	assert.Equal(t, c, 12)
 }
 
 func TestReadLastLine(t *testing.T) {
