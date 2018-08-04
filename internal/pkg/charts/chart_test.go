@@ -1,6 +1,9 @@
 package charts
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 var testChart = &Chart{
 	ID:   "test1",
@@ -14,8 +17,7 @@ var testChart = &Chart{
 }
 
 func TestChart_Copy(t *testing.T) {
-
-	c1 := &Chart{
+	chart1 := &Chart{
 		ID:   "test1",
 		Opts: Opts{Title: "Test1"},
 		Dims: Dims{
@@ -23,97 +25,76 @@ func TestChart_Copy(t *testing.T) {
 		},
 	}
 
-	c2 := c1.Copy()
-	c2.ID = "test2"
-	c2.Opts.Title = "Test2"
-	c2.Dims[0].ID = "dim2"
-	c2.Dims = append(c2.Dims, &Dim{ID: "dim3"})
+	chart2 := chart1.Copy()
 
-	if c1.ID == c2.ID || c1.Opts == c2.Opts || c1.Dims[0].ID == c2.Dims[0].ID || len(c1.Dims) == len(c2.Dims) {
-		t.Error("expected full copy, but got partial")
-	}
+	assert.Equal(t, chart1, chart2)
+
+	chart2.Dims = append(chart2.Dims, &Dim{ID: "dim3"})
+
+	assert.NotEqual(t, chart1, chart2)
 }
 
 func TestChart_AddDim(t *testing.T) {
-	c := testChart.Copy()
+	chart := testChart.Copy()
 
-	c.AddDim(&Dim{ID: "dim1"})
+	chart.AddDim(&Dim{ID: "dim1"})
 
-	if len(c.Dims) != 1 {
-		t.Errorf("expected 1 dimensions, but got %d", len(c.Dims))
-	}
+	assert.Equal(t, len(chart.Dims), 1)
 
-	c.AddDim(&Dim{ID: "dim2"})
+	chart.AddDim(&Dim{ID: "dim2"})
 
-	if len(c.Dims) != 2 {
-		t.Errorf("expected 2 dimensions, but got %d", len(c.Dims))
-	}
+	assert.Equal(t, len(chart.Dims), 2)
 }
 
 func TestChart_AddVar(t *testing.T) {
-	c := testChart.Copy()
+	chart := testChart.Copy()
 
-	c.AddVar(&Var{ID: "var1"})
+	chart.AddVar(&Var{ID: "var1"})
 
-	if len(c.Vars) != 1 {
-		t.Errorf("expected 1 variables, but got %d", len(c.Vars))
-	}
+	assert.Equal(t, len(chart.Vars), 1)
 
-	c.AddVar(&Var{ID: "var2"})
+	chart.AddVar(&Var{ID: "var2"})
 
-	if len(c.Vars) != 2 {
-		t.Errorf("expected 2 variables, but got %d", len(c.Vars))
-	}
+	assert.Equal(t, len(chart.Vars), 2)
 }
 
 func TestChart_DeleteDimByID(t *testing.T) {
-	c := testChart.Copy()
+	chart := testChart.Copy()
 
-	c.DeleteDimByID("dim1")
+	chart.DeleteDimByID("dim2")
 
-	if len(c.Dims) != 0 {
-		t.Errorf("expected 0 dimensions, but got %d", len(c.Dims))
-	}
+	assert.Equal(t, len(chart.Dims), 1)
 
+	chart.DeleteDimByID("dim1")
+
+	assert.Equal(t, len(chart.Dims), 0)
 }
 
 func TestChart_GetDimByID(t *testing.T) {
-	c := testChart.Copy()
-	d := c.Dims[0]
+	chart := testChart.Copy()
+	dim := chart.Dims[0]
 
-	v := c.GetDimByID("dim1")
+	v := chart.GetDimByID("dim1")
 
-	if v != d {
-		t.Errorf("expected %v, but got %v", d, v)
-	}
-
-	if _, ok := interface{}(v).(*Dim); !ok {
-		t.Error("expected *Dim")
-	}
-
-	if v := c.GetDimByID("dim2"); v != nil {
-		t.Errorf("expected nil, but got %v", v)
-	}
+	assert.Equal(t, v, dim)
+	assert.IsType(t, (*Dim)(nil), v)
+	assert.Nil(t, chart.GetDimByID("dim2"))
 }
 
 func TestChart_LookupDimByID(t *testing.T) {
-	c := testChart.Copy()
-	d := c.Dims[0]
+	chart := testChart.Copy()
+	dim := chart.Dims[0]
 
-	v, ok := c.LookupDimByID("dim1")
+	v, ok := chart.LookupDimByID("dim1")
 
-	if v != d || !ok {
-		t.Errorf("expected %v and true, but got %v and %v", d, v, ok)
-	}
+	assert.True(t, ok)
+	assert.Equal(t, v, dim)
+	assert.IsType(t, (*Dim)(nil), dim)
 
-	if _, ok := interface{}(v).(*Dim); !ok {
-		t.Error("expected *Dim")
-	}
+	v, ok = chart.LookupDimByID("dim2")
 
-	if v, ok := c.LookupDimByID("dim2"); v != nil || ok {
-		t.Errorf("expected nil and false, but got %v and %v", v, ok)
-	}
-
+	assert.False(t, ok)
+	assert.Nil(t, v)
 }
 
 func TestChart_Refresh(t *testing.T) {
@@ -121,19 +102,13 @@ func TestChart_Refresh(t *testing.T) {
 }
 
 func Test_ChartType_Algorithm_Hidden(t *testing.T) {
-	if Line.String() != "line" || Area.String() != "area" || Stacked.String() != "stacked" {
-		t.Error("wrong chart type")
-	}
-
-	if Absolute.String() != "absolute" || Incremental.String() != "incremental" {
-		t.Error("wrong dimension algorithm")
-	}
-
-	if PercentOfAbsolute.String() != "percentage-of-absolute-row" || PercentOfIncremental.String() != "percentage-of-incremental-row" {
-		t.Error("wrong dimension algorithm")
-	}
-
-	if Hidden.String() != "hidden" || NotHidden.String() != "" {
-		t.Error("wrong dimension hidden")
-	}
+	assert.Equal(t, Line.String(), "line")
+	assert.Equal(t, Area.String(), "area")
+	assert.Equal(t, Stacked.String(), "stacked")
+	assert.Equal(t, Absolute.String(), "absolute")
+	assert.Equal(t, Incremental.String(), "incremental")
+	assert.Equal(t, PercentOfAbsolute.String(), "percentage-of-absolute-row")
+	assert.Equal(t, PercentOfIncremental.String(), "percentage-of-incremental-row")
+	assert.Equal(t, Hidden.String(), "hidden")
+	assert.Equal(t, NotHidden.String(), "")
 }

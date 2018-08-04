@@ -46,13 +46,13 @@ type HttpCheck struct {
 
 	StatusAccepted []int  `yaml:"status_accepted"`
 	ResponseMatch  string `yaml:"response_match"`
-	web.Request    `yaml:",inline"`
-	web.Client     `yaml:",inline"`
+	web.RawWeb     `yaml:",inline"`
 
 	match    *regexp.Regexp
 	statuses map[int]bool
-	client   *http.Client
-	request  *http.Request
+
+	request *http.Request
+	client  web.Client
 
 	data data
 }
@@ -73,7 +73,7 @@ func (hc *HttpCheck) Init() {
 }
 
 func (hc *HttpCheck) Check() bool {
-	req, err := hc.Request.CreateRequest()
+	req, err := hc.CreateHTTPRequest()
 
 	if err != nil {
 		hc.Error(err)
@@ -81,7 +81,7 @@ func (hc *HttpCheck) Check() bool {
 	}
 
 	hc.request = req
-	hc.client = hc.Client.CreateHttpClient()
+	hc.client = hc.CreateHTTPClient()
 
 	re, err := regexp.Compile(hc.ResponseMatch)
 
@@ -97,7 +97,7 @@ func (hc *HttpCheck) Check() bool {
 func (hc HttpCheck) GetCharts() *charts.Charts {
 	c := uCharts.Copy()
 	if len(hc.ResponseMatch) == 0 {
-		c.DeleteChart("response_check_content")
+		c.Delete("response_check_content")
 	}
 	return charts.NewCharts(uCharts...)
 

@@ -7,64 +7,51 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {
-	tail := New("")
-	if _, ok := interface{}(tail).(*Tail); !ok {
-		t.Error("expected *Tail type")
-	}
+	assert.IsType(t, (*Tail)(nil), New(""))
 }
 
 func TestTail_Init(t *testing.T) {
 	tail := New("fail")
 
 	err := tail.Init()
-	if err == nil {
-		t.Error("expected error, but got nil")
-	}
-	if err != ErrGlob {
-		t.Errorf("expected %s, but got %s", ErrGlob, err)
+	if assert.Error(t, err) {
+		assert.Equal(t, err, ErrGlob)
 	}
 
 	_, err = tail.Tail()
-	if err != ErrNotInited {
-		t.Errorf("expected %s, but got %s", ErrNotInited, err)
+
+	if assert.Error(t, err) {
+		assert.Equal(t, err, ErrNotInited)
 	}
 
 	tmp, err := ioutil.TempFile("", "temp-")
-	if err != nil {
-		t.Fatal("could not create temporary file")
-	}
+
+	assert.Nilf(t, err, "could not create temporary file")
 	defer os.Remove(tmp.Name())
+
 	tail = New(tmp.Name())
 	err = tail.Init()
 
-	if err != nil {
-		t.Fatalf("tail init: %s", err)
-	}
-
-	if tail.path == "" {
-		t.Error("expected not empty tail 'path'")
-	}
+	assert.Nil(t, err)
+	assert.NotEqual(t, tail.path, "")
 }
 
 func TestTail_Tail(t *testing.T) {
 	tmp, err := ioutil.TempFile("", "temp-")
-	if err != nil {
-		t.Fatal("could not create temporary file")
-	}
+	assert.Nil(t, err)
+
 	defer os.Remove(tmp.Name())
 	tail := New(tmp.Name())
 	tail.Init()
 
 	_, err = tail.Tail()
-	if err == nil {
-		t.Fatal("expected error, but got nil")
-	}
-
-	if err != SizeNotChanged {
-		t.Errorf("expected %s error, but got %s", SizeNotChanged, err)
+	if assert.Error(t, err) {
+		assert.Equal(t, err, SizeNotChanged)
 	}
 
 	w := func() {
@@ -77,95 +64,80 @@ func TestTail_Tail(t *testing.T) {
 
 	data, err := tail.Tail()
 
-	if err != nil {
-		t.Fatalf("excpected nil, but got %s", err)
-	}
+	assert.Nil(t, err)
 
-	if _, ok := interface{}(data).(io.ReadCloser); !ok {
-		t.Error("excpected io.ReadCloser type")
-	}
+	assert.Implements(t, (*io.ReadCloser)(nil), data)
 
 	var c int
 	s := bufio.NewScanner(data)
 	for s.Scan() {
 		c++
 	}
-	if c != 4 {
-		t.Errorf("excepted 4, but got %d", c)
-	}
+
+	assert.Equal(t, c, 4)
 
 	w()
 	w()
+
 	data, err = tail.Tail()
-	if err != nil {
-		t.Fatalf("excpected nil, but got %s", err)
-	}
+
+	assert.Nil(t, err)
 
 	c = 0
 	s = bufio.NewScanner(data)
+
 	for s.Scan() {
 		c++
 	}
-	if c != 8 {
-		t.Errorf("excepted 4, but got %d", c)
-	}
+
+	assert.Equal(t, c, 8)
 
 	tail.pos = 999
 	data, err = tail.Tail()
-	if err != nil {
-		t.Fatalf("excpected nil, but got %s", err)
-	}
+
+	assert.Nil(t, err)
+
 	c = 0
 	s = bufio.NewScanner(data)
 	for s.Scan() {
 		c++
 	}
-	if c != 12 {
-		t.Errorf("excepted 12, but got %d", c)
-	}
+
+	assert.Equal(t, c, 12)
 }
 
 func TestReadLastLine(t *testing.T) {
 	empty := ""
 	input := bytes.NewReader([]byte(empty))
+	_, err := readLastLine(input)
 
-	if _, err := readLastLine(input); err == nil {
-		t.Error("expected error, but got nil")
-	}
+	assert.Error(t, err)
 
 	oneLine := "first line"
 	input = bytes.NewReader([]byte(oneLine))
+	v, err := readLastLine(input)
 
-	if v, err := readLastLine(input); err != nil {
-		t.Errorf("expected nil, but got %s", err)
-	} else if string(v) != oneLine {
-		t.Errorf("expected %s, but got %s", oneLine, string(v))
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, string(v), oneLine)
 
 	oneLine = "世界"
 	input = bytes.NewReader([]byte(oneLine))
+	v, err = readLastLine(input)
 
-	if v, err := readLastLine(input); err != nil {
-		t.Errorf("expected nil, but got %s", err)
-	} else if string(v) != oneLine {
-		t.Errorf("expected %s, but got %s", oneLine, string(v))
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, string(v), oneLine)
 
 	secondLine := "second line"
 	input = bytes.NewReader([]byte(oneLine + "\n" + secondLine))
+	v, err = readLastLine(input)
 
-	if v, err := readLastLine(input); err != nil {
-		t.Errorf("expected nil, but got %s", err)
-	} else if string(v) != secondLine {
-		t.Errorf("expected %s, but got %s", secondLine, string(v))
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, string(v), secondLine)
 
 	secondLine = "世界"
 	input = bytes.NewReader([]byte(oneLine + "\n" + secondLine))
+	v, err = readLastLine(input)
 
-	if v, err := readLastLine(input); err != nil {
-		t.Errorf("expected nil, but got %s", err)
-	} else if string(v) != secondLine {
-		t.Errorf("expected %s, but got %s", secondLine, string(v))
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, string(v), secondLine)
 }

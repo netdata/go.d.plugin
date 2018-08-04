@@ -21,8 +21,10 @@ func TestSpringboot2(t *testing.T) {
 	}))
 	defer ts.Close()
 	plugin := &Springboot2{
-		Request: web.Request{
-			URL: ts.URL + "/actuator/prometheus",
+		RawWeb: web.RawWeb{
+			RawRequest: web.RawRequest{
+				URL: ts.URL + "/actuator/prometheus",
+			},
 		},
 	}
 
@@ -31,7 +33,7 @@ func TestSpringboot2(t *testing.T) {
 	assert.True(t, plugin.Check())
 
 	data := plugin.GetData()
-	assert.EqualValues(t, map[string]int64{}, data)
+	assert.EqualValues(t, map[string]int64{"threads": 24, "threads_daemon": 20}, data)
 }
 
 func TestSpringboot2_404(t *testing.T) {
@@ -40,8 +42,10 @@ func TestSpringboot2_404(t *testing.T) {
 	}))
 	defer ts.Close()
 	plugin := &Springboot2{
-		Request: web.Request{
-			URL: ts.URL + "/actuator/prometheus",
+		RawWeb: web.RawWeb{
+			RawRequest: web.RawRequest{
+				URL: ts.URL + "/actuator/prometheus",
+			},
 		},
 	}
 

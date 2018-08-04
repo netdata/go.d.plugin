@@ -1,43 +1,59 @@
 package web
 
 import (
-	"crypto/tls"
-	"errors"
-	"fmt"
+	"encoding/base64"
 	"net/http"
-	"net/url"
-
-	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
 )
 
-type Client struct {
-	FollowRedirect bool           `yaml:"follow_redirects"`
-	Timeout        utils.Duration `yaml:"timeout"`
-	ProxyURL       string         `yaml:"proxy_url"`
-	TLSVerify      bool           `yaml:"tls_verify"`
+// Client Client
+type Client interface {
+	Do(r *http.Request) (*http.Response, error)
 }
 
-func (c Client) CreateHttpClient() *http.Client {
-	client := &http.Client{
-		Timeout: c.Timeout.Duration,
-		Transport: &http.Transport{
-			Proxy:           getProxyFunc(c.ProxyURL),
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: !c.TLSVerify},
-		}}
+type clientFunc func(r *http.Request) (*http.Response, error)
 
-	if !c.FollowRedirect {
-		client.CheckRedirect = func(req *http.Request, via []*http.Request) error { return errors.New("redirect") }
-	}
-	return client
+func (f clientFunc) Do(r *http.Request) (*http.Response, error) {
+	return f(r)
 }
 
-func getProxyFunc(u string) func(r *http.Request) (*url.URL, error) {
-	if u == "" {
-		return http.ProxyFromEnvironment
+type decorator func(Client) Client
+
+func authorization(user, password string) decorator {
+	return func(c Client) Client {
+		f := func(r *http.Request) (*http.Response, error) {
+			r.SetBasicAuth(user, password)
+			return c.Do(r)
+		}
+		return clientFunc(f)
 	}
-	proxyURL, err := url.Parse(u)
-	if err != nil || proxyURL.Scheme != "http" && proxyURL.Scheme != "https" {
-		return func(r *http.Request) (*url.URL, error) { return nil, fmt.Errorf("invalid proxy: %s", err) }
+}
+
+func proxyAuthorization(user, password string) decorator {
+	return func(c Client) Client {
+		f := func(r *http.Request) (*http.Response, error) {
+			r.Header.Set("Proxy-Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(user+":"+password)))
+			return c.Do(r)
+		}
+		return clientFunc(f)
 	}
-	return func(r *http.Request) (*url.URL, error) { return proxyURL, nil }
+}
+
+func header(h map[string]string) decorator {
+	return func(c Client) Client {
+		f := func(r *http.Request) (*http.Response, error) {
+			for k, v := range h {
+				r.Header.Set(k, v)
+			}
+			return c.Do(r)
+		}
+		return clientFunc(f)
+	}
+}
+
+func decorate(c Client, ds ...decorator) Client {
+	decorated := c
+	for _, d := range ds {
+		decorated = d(decorated)
+	}
+	return decorated
 }
