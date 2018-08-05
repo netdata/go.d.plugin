@@ -24,8 +24,8 @@ type inner2 struct {
 	G int64 `stm:"g"`
 }
 
-func TestStrToMap_ptr(t *testing.T) {
-	s := &data{
+func TestStrToMap(t *testing.T) {
+	s := data{
 		A: 1,
 		B: 2,
 		C: 3,
@@ -38,40 +38,22 @@ func TestStrToMap_ptr(t *testing.T) {
 			G: 7,
 		},
 	}
-	m := ToMap(s)
 
-	assert.EqualValues(t, map[string]int64{
+	assert.EqualValuesf(t, map[string]int64{
 		"a": 1,
 		"b": 2,
 		"d": 4,
 		"e": 5,
 		"f": 6,
 		"g": 7,
-	}, m)
-}
+	}, ToMap(s), "value test")
 
-func TestStrToMap_value(t *testing.T) {
-	s := &data{
-		A: 1,
-		B: 2,
-		C: 3,
-		X: inner1{
-			D: 4,
-			E: 5,
-		},
-		inner2: inner2{
-			F: 6,
-			G: 7,
-		},
-	}
-	m := ToMap(s)
-
-	assert.EqualValues(t, map[string]int64{
+	assert.EqualValuesf(t, map[string]int64{
 		"a": 1,
 		"b": 2,
 		"d": 4,
 		"e": 5,
 		"f": 6,
 		"g": 7,
-	}, m)
+	}, ToMap(&s), "ptr test")
 }
