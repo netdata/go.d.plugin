@@ -1,15 +1,11 @@
 package godplugin
 
 import (
-	"runtime"
-
 	"fmt"
-
-	"time"
-
-	"sync"
-
 	"io"
+	"runtime"
+	"sync"
+	"time"
 
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/ticker"
@@ -58,8 +54,8 @@ func (p *Plugin) Setup() bool {
 
 func (p *Plugin) CheckJobs() {
 	jobs := p.createJobs()
-	passed := make(chan *job.Job, len(jobs))
-	recheck := make(chan *job.Job, len(jobs))
+	passed := make(chan job.Job, len(jobs))
+	recheck := make(chan job.Job, len(jobs))
 	done := make(chan int)
 
 	wg := sync.WaitGroup{}
@@ -74,7 +70,7 @@ func (p *Plugin) CheckJobs() {
 				return
 			}
 			if !job.Check() {
-				if job.AutoDetectionRetry > 0 {
+				if job.AutoDetectionRetry() > 0 {
 					recheck <- job
 				}
 				return
@@ -114,15 +110,12 @@ LOOP:
 			break LOOP
 		case clock = <-tk.C:
 		}
-		p.runningJobs.Range(func(job *job.Job) bool {
-			select {
-			case job.Tick <- clock:
-			default:
-			}
+		p.runningJobs.Range(func(job job.Job) bool {
+			job.Tick(clock)
 			return true
 		})
-		p.recheckJobs.Range(func(job *job.Job) bool {
-			if clock%job.AutoDetectionRetry == 0 {
+		p.recheckJobs.Range(func(job job.Job) bool {
+			if clock%job.AutoDetectionRetry() == 0 {
 				go func() {
 					if !job.Check() {
 						return
@@ -137,8 +130,15 @@ LOOP:
 			return true
 		})
 	}
+	p.runningJobs.Range(func(job job.Job) bool {
+		job.Shutdown()
+		return true
+	})
 }
 
 func (p *Plugin) Shutdown() {
-	p.shutdownHook <- 1
+	select {
+	case p.shutdownHook <- 1:
+	default:
+	}
 }

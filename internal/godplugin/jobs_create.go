@@ -21,9 +21,9 @@ type jobRawConf struct {
 	conf []byte
 }
 
-//type jobStack []*job.Job
+//type jobStack []*job.job
 //
-//func (js *jobStack) push(v *job.Job) {
+//func (js *jobStack) push(v *job.job) {
 //	*js = append(*js, v)
 //}
 //
@@ -40,8 +40,8 @@ type jobRawConf struct {
 //	*js = nil
 //}
 
-func (p *Plugin) createJobs() []*job.Job {
-	var jobs []*job.Job
+func (p *Plugin) createJobs() []job.Job {
+	var jobs []job.Job
 
 	if p.Option.Module == "all" {
 		for moduleName, creator := range modules.Registry {
@@ -66,8 +66,8 @@ func (p *Plugin) createJobs() []*job.Job {
 	return jobs
 }
 
-func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleConfDir string) []*job.Job {
-	var jobs []*job.Job
+func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleConfDir string) []job.Job {
+	var jobs []job.Job
 
 	conf := job.NewConfig()
 	conf.RealModuleName = moduleName

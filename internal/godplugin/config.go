@@ -3,6 +3,8 @@ package godplugin
 import (
 	"os"
 
+	"io"
+
 	"github.com/go-yaml/yaml"
 )
 
@@ -25,7 +27,11 @@ func (c *Config) Load(filename string) error {
 	if err != nil {
 		return err
 	}
-	return yaml.NewDecoder(file).Decode(c)
+	err = yaml.NewDecoder(file).Decode(c)
+	if err != nil && err != io.EOF {
+		return err
+	}
+	return nil
 }
 
 func (c *Config) IsModuleEnabled(module string, explicit bool) bool {
