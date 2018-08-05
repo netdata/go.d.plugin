@@ -7,27 +7,46 @@ import (
 )
 
 type data struct {
-	Foo int64 `stm:"foo"`
-	Bar int64 `stm:"bar"`
-	Baz int64
+	A int64 `stm:"a"`
+	B int64 `stm:"b"`
+	C int64
+	X inner1
+	inner2
 }
 
-func TestStrToMap_ptr(t *testing.T) {
-	s := &data{1, 2, 3}
-	m := StrToMap(s)
-
-	assert.EqualValues(t, map[string]int64{
-		"foo": 1,
-		"bar": 2,
-	}, m)
+type inner1 struct {
+	D int64 `stm:"d"`
+	E int64 `stm:"e"`
 }
 
-func TestStrToMap_value(t *testing.T) {
-	s := data{1, 2, 3}
-	m := StrToMap(s)
+type inner2 struct {
+	F int64 `stm:"f"`
+	G int64 `stm:"g"`
+}
 
-	assert.EqualValues(t, map[string]int64{
-		"foo": 1,
-		"bar": 2,
-	}, m)
+func TestStrToMap(t *testing.T) {
+	s := data{
+		A: 1,
+		B: 2,
+		C: 3,
+		X: inner1{
+			D: 4,
+			E: 5,
+		},
+		inner2: inner2{
+			F: 6,
+			G: 7,
+		},
+	}
+	expected := map[string]int64{
+		"a": 1,
+		"b": 2,
+		"d": 4,
+		"e": 5,
+		"f": 6,
+		"g": 7,
+	}
+
+	assert.EqualValuesf(t, expected, ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
 }

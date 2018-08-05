@@ -132,7 +132,7 @@ func (hc *HttpCheck) GetData() map[string]int64 {
 			hc.Error(err)
 			return nil
 		}
-		return utils.StrToMap(&hc.data)
+		return utils.ToMap(&hc.data)
 	}
 
 	defer func() {
@@ -153,7 +153,7 @@ func (hc *HttpCheck) GetData() map[string]int64 {
 		hc.data.BadContent = 1
 	}
 
-	return utils.StrToMap(hc.data)
+	return utils.ToMap(hc.data)
 }
 
 func (hc *HttpCheck) doRequest() (*http.Response, error) {
