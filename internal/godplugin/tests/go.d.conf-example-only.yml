@@ -1,0 +1,4 @@
+max_procs: 2
+default_run: no
+modules:
+  example: yes

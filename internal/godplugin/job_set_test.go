@@ -9,6 +9,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestJobSet_AsList(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	job1 := mock.NewMockJob(ctrl)
+	job2 := mock.NewMockJob(ctrl)
+
+	set := jobSet{}
+	set.PutIfNotExist(job1)
+	set.PutIfNotExist(job2)
+
+	list := set.AsList()
+	assert.Len(t, list, 2)
+	assert.Contains(t, list, job1)
+	assert.Contains(t, list, job2)
+
+	set.Range(func(job job.Job) bool {
+		if job != job1 && job != job2 {
+			assert.Fail(t, "set contains extra")
+		}
+		return true
+	})
+}
+
 func TestJobSet_PutIfNotExist_NoKeyFunc(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -23,11 +47,7 @@ func TestJobSet_PutIfNotExist_NoKeyFunc(t *testing.T) {
 	assert.True(t, set.PutIfNotExist(job2))
 	assert.False(t, set.PutIfNotExist(job2))
 
-	var list []job.Job
-	set.Range(func(job job.Job) bool {
-		list = append(list, job)
-		return true
-	})
+	list := set.AsList()
 	assert.Len(t, list, 2)
 	assert.Contains(t, list, job1)
 	assert.Contains(t, list, job2)
@@ -52,11 +72,7 @@ func TestJobSet_PutIfNotExist_KeyFunc(t *testing.T) {
 	assert.True(t, set.PutIfNotExist(job2))
 	assert.False(t, set.PutIfNotExist(job2))
 
-	var list []job.Job
-	set.Range(func(job job.Job) bool {
-		list = append(list, job)
-		return true
-	})
+	list := set.AsList()
 	assert.Len(t, list, 2)
 	assert.Contains(t, list, job11)
 	assert.Contains(t, list, job2)

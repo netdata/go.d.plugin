@@ -10,6 +10,7 @@ import (
 func init() {
 	modules.Register("example", modules.Creator{
 		DisabledByDefault: true,
+		NoConfig:          true,
 		Create: func() modules.Module {
 			return &Example{
 				data: make(map[string]int64),

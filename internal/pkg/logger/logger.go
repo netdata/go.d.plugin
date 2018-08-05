@@ -71,9 +71,9 @@ func (l *Logger) print(level Severity, a ...interface{}) {
 	}
 
 	if l != nil && l.log != nil {
-		l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
+		l.log.Printf("go.d: [%s] %s[%s]: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
 	} else {
-		dummy.log.Printf("go.d: %s: dummy: dummy: %s", level, fmt.Sprintln(a...))
+		dummy.log.Printf("go.d: [%s] dummy[dummy]: %s", level, fmt.Sprintln(a...))
 	}
 }
 

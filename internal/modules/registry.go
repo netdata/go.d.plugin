@@ -16,7 +16,5 @@ var Registry = map[string]Creator{}
 
 // Register a module
 func Register(name string, creator Creator) {
-	if name != "" {
-		Registry[name] = creator
-	}
+	Registry[name] = creator
 }

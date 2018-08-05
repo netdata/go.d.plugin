@@ -21,36 +21,17 @@ type jobRawConf struct {
 	conf []byte
 }
 
-//type jobStack []*job.job
-//
-//func (js *jobStack) push(v *job.job) {
-//	*js = append(*js, v)
-//}
-//
-//func (js jobStack) empty() bool {
-//	return len(js) == 0
-//}
-//
-//func (js *jobStack) destroy() {
-//	if !js.empty() {
-//		for i := range *js {
-//			(*js)[i] = nil
-//		}
-//	}
-//	*js = nil
-//}
-
 func (p *Plugin) createJobs() []job.Job {
 	var jobs []job.Job
 
 	if p.Option.Module == "all" {
 		for moduleName, creator := range modules.Registry {
-			if p.Config.IsModuleEnabled(moduleName, false) {
-				log.Infof("module \"%s\" is disabled in configuration file", moduleName)
+			if !p.Config.IsModuleEnabled(moduleName, false) {
+				log.Infof("module '%s' is disabled in configuration file", moduleName)
 				continue
 			}
 			if creator.DisabledByDefault && !p.Config.IsModuleEnabled(moduleName, true) {
-				log.Infof("module \"%s\" is disabled by default", moduleName)
+				log.Infof("module '%s' is disabled by default", moduleName)
 				continue
 			}
 			jobs = append(jobs, p.createJob(moduleName, creator, p.ModuleConfDir)...)
@@ -67,6 +48,7 @@ func (p *Plugin) createJobs() []job.Job {
 }
 
 func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleConfDir string) []job.Job {
+	log.Debugf("create jobs for module '%s'", moduleName)
 	var jobs []job.Job
 
 	conf := job.NewConfig()

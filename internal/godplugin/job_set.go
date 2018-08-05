@@ -35,6 +35,15 @@ func (s *jobSet) Range(f func(job job.Job) bool) {
 	})
 }
 
+func (s *jobSet) AsList() []job.Job {
+	var list []job.Job
+	s.m.Range(func(k, v interface{}) bool {
+		list = append(list, v.(job.Job))
+		return true
+	})
+	return list
+}
+
 func (s *jobSet) getKey(job job.Job) interface{} {
 	if s.KeyFunc != nil {
 		return s.KeyFunc(job)

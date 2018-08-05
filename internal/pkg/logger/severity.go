@@ -15,13 +15,13 @@ const (
 func (s Severity) String() string {
 	switch s {
 	case CRITICAL:
-		return "CRITICAL"
+		return "CRIT "
 	case ERROR:
 		return "ERROR"
 	case WARNING:
-		return "WARNING"
+		return "WARN "
 	case INFO:
-		return "INFO"
+		return "INFO "
 	case DEBUG:
 		return "DEBUG"
 	default:
