@@ -52,7 +52,7 @@ func (s *Springboot2) GetData() map[string]int64 {
 	var d data
 	d.ThreadsDaemon = int64(metrics.FindByName("jvm_threads_daemon").Max())
 	d.Threads = int64(metrics.FindByName("jvm_threads_live").Max())
-	return utils.StrToMap(d)
+	return utils.ToMap(d)
 }
 
 func init() {
