@@ -38,22 +38,15 @@ func TestStrToMap(t *testing.T) {
 			G: 7,
 		},
 	}
-
-	assert.EqualValuesf(t, map[string]int64{
+	expected := map[string]int64{
 		"a": 1,
 		"b": 2,
 		"d": 4,
 		"e": 5,
 		"f": 6,
 		"g": 7,
-	}, ToMap(s), "value test")
+	}
 
-	assert.EqualValuesf(t, map[string]int64{
-		"a": 1,
-		"b": 2,
-		"d": 4,
-		"e": 5,
-		"f": 6,
-		"g": 7,
-	}, ToMap(&s), "ptr test")
+	assert.EqualValuesf(t, expected, ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
 }
