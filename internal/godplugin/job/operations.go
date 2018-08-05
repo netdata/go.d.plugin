@@ -6,6 +6,21 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 )
 
+type (
+	chart struct {
+		item *charts.Chart
+
+		config   *Config
+		priority int
+		retries  int
+
+		push      bool
+		created   bool
+		updated   bool
+		obsoleted bool
+	}
+)
+
 func canBeUpdated(c chart, data map[string]int64) bool {
 	for _, v := range c.item.Dims {
 		if _, ok := data[v.ID]; ok {
@@ -17,7 +32,7 @@ func canBeUpdated(c chart, data map[string]int64) bool {
 
 func (c chart) begin(sinceLast int, dims, vars string) {
 	begin := fmt.Sprintf(formatChartBEGIN,
-		c.hook.FullName(),
+		c.config.FullName(),
 		c.item.ID,
 		sinceLast,
 	)
@@ -28,7 +43,7 @@ func (c chart) begin(sinceLast int, dims, vars string) {
 func (c *chart) create() {
 	var dims, vars string
 	chart := fmt.Sprintf(formatChartCREATE,
-		c.hook.FullName(),
+		c.config.FullName(),
 		c.item.ID,
 		c.item.OverID,
 		c.item.Title,
@@ -36,9 +51,9 @@ func (c *chart) create() {
 		c.item.Fam,
 		c.item.Ctx,
 		c.item.Type,
-		c.prio,
-		c.hook.UpdateEvery,
-		c.hook.RealModuleName,
+		c.priority,
+		c.config.UpdateEvery,
+		c.config.RealModuleName,
 	)
 
 	for idx := range c.item.Dims {
@@ -64,7 +79,7 @@ func (c *chart) obsolete() {
 	}
 	c.created = false
 	safePrint(fmt.Sprintf(formatChartOBSOLETE,
-		c.hook.FullName(),
+		c.config.FullName(),
 		c.item.ID,
 		c.item.OverID,
 		c.item.Title,
@@ -72,9 +87,9 @@ func (c *chart) obsolete() {
 		c.item.Fam,
 		c.item.Ctx,
 		c.item.Type,
-		c.prio,
-		c.hook.UpdateEvery,
-		c.hook.RealModuleName),
+		c.priority,
+		c.config.UpdateEvery,
+		c.config.RealModuleName),
 	)
 }
 

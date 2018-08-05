@@ -1,32 +1,43 @@
 package job
 
 import (
-	"sync"
 	"time"
 
+	"bytes"
+
+	"io"
+
+	"github.com/l2isbad/go.d.plugin/internal/godplugin/apiwriter"
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
 )
 
-type Job struct {
-	*Config
-	*logger.Logger
-	Module       modules.Module
-	Tick         chan int
-	shutdownHook chan int
-	observer     *observer
+type (
+	Job struct {
+		*Config
+		*logger.Logger
+		Module       modules.Module
+		Tick         chan int
+		shutdownHook chan int
+		observer     *observer
+		out          io.Writer
+		buf          *bytes.Buffer
+		apiWriter    apiwriter.APIWriter
+		retries      int
+	}
+)
 
-	timers
-	retries int
-}
-
-func New(module modules.Module, config *Config) *Job {
+func New(module modules.Module, config *Config, out io.Writer) *Job {
+	buf := &bytes.Buffer{}
 	return &Job{
 		Module:       module,
 		Config:       config,
 		Tick:         make(chan int),
 		shutdownHook: make(chan int),
 		observer:     newObserver(config),
+		out:          out,
+		buf:          buf,
+		apiWriter:    apiwriter.APIWriter{Writer: buf},
 	}
 }
 
@@ -62,6 +73,22 @@ func (j *Job) Check() bool {
 	return ok
 }
 
+func (j *Job) PostCheck() bool {
+	j.UpdateEvery = j.Module.UpdateEvery()
+
+	modName := j.Module.ModuleName()
+	logger.SetModName(j.Logger, modName)
+	j.RealModuleName = modName
+
+	c := j.Module.GetCharts()
+	if c == nil {
+		j.Error("GetCharts() [FAILED]")
+		return false
+	}
+	j.observer.Set(c)
+	return true
+}
+
 func (j *Job) MainLoop() {
 LOOP:
 	for {
@@ -75,36 +102,40 @@ LOOP:
 		}
 		data := j.getData()
 		if data == nil {
+			j.retries++
 			continue
 		}
+		j.buf.Reset()
+		// TODO write data
+		io.Copy(j.out, j.buf)
 	}
 }
 
-func (j *Job) Start(wg *sync.WaitGroup) {
-Done:
-	for {
-
-		sleep := j.nextIn()
-		j.Debugf("sleeping for %s to reach frequency of %d sec", sleep, j.UpdateEvery)
-		time.Sleep(sleep)
-
-		j.curRun = time.Now()
-		if !j.lastRun.IsZero() {
-			j.sinceLast.Duration = j.curRun.Sub(j.lastRun)
-		}
-
-		if ok := j.update(); ok {
-			j.retries, j.penalty, j.lastRun = 0, 0, j.curRun
-			j.spentOnRun.Duration = time.Since(j.lastRun)
-
-		} else if !ok && !j.handleRetries() {
-			j.Errorf("stopped after %d collection failures in a row", j.MaxRetries)
-			break Done
-		}
-
-	}
-	wg.Done()
-}
+//func (j *Job) Start(wg *sync.WaitGroup) {
+//Done:
+//	for {
+//
+//		sleep := j.nextIn()
+//		j.Debugf("sleeping for %s to reach frequency of %d sec", sleep, j.UpdateEvery)
+//		time.Sleep(sleep)
+//
+//		j.curRun = time.Now()
+//		if !j.lastRun.IsZero() {
+//			j.sinceLast.Duration = j.curRun.Sub(j.lastRun)
+//		}
+//
+//		if ok := j.update(); ok {
+//			j.retries, j.penalty, j.lastRun = 0, 0, j.curRun
+//			j.spentOnRun.Duration = time.Since(j.lastRun)
+//
+//		} else if !ok && !j.handleRetries() {
+//			j.Errorf("stopped after %d collection failures in a row", j.MaxRetries)
+//			break Done
+//		}
+//
+//	}
+//	wg.Done()
+//}
 
 func (j *Job) update() bool {
 

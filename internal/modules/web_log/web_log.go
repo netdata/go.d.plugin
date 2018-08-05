@@ -8,10 +8,59 @@ import (
 	"github.com/go-yaml/yaml"
 
 	"bufio"
+
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/tail"
 )
+
+func init() {
+	modules.Register("web_log", modules.Creator{
+		Create: func() modules.Module {
+			return &WebLog{
+				DoCodesDetail:    true,
+				DoCodesAggregate: true,
+				DoChartURLCat:    true,
+				DoClientsAll:     true,
+				timings: timings{
+					keyRespTime:         &timing{},
+					keyRespTimeUpstream: &timing{},
+				},
+				gm:      make(groupMap),
+				uniqIPs: make(map[string]bool),
+				data: map[string]int64{
+					"successful_requests":    0,
+					"redirects":              0,
+					"bad_requests":           0,
+					"server_errors":          0,
+					"other_requests":         0,
+					"2xx":                    0,
+					"5xx":                    0,
+					"3xx":                    0,
+					"4xx":                    0,
+					"1xx":                    0,
+					"0xx":                    0,
+					"unmatched":              0,
+					"bytes_sent":             0,
+					"resp_length":            0,
+					"resp_time_min":          0,
+					"resp_time_max":          0,
+					"resp_time_avg":          0,
+					"resp_time_upstream_min": 0,
+					"resp_time_upstream_max": 0,
+					"resp_time_upstream_avg": 0,
+					"unique_cur_ipv4":        0,
+					"unique_cur_ipv6":        0,
+					"unique_tot_ipv4":        0,
+					"unique_tot_ipv6":        0,
+					"req_ipv4":               0,
+					"req_ipv6":               0,
+					"GET":                    0, // GET should be green on the dashboard
+				},
+			}
+		},
+	})
+}
 
 const (
 	keyAddress          = "address"
@@ -55,8 +104,6 @@ type WebLog struct {
 	gm   groupMap
 	data map[string]int64
 }
-
-func (WebLog) Init() {}
 
 func (w *WebLog) Check() bool {
 
@@ -368,51 +415,4 @@ func toInt(s string) int64 {
 	}
 	v, _ := strconv.Atoi(s)
 	return int64(v)
-}
-
-func init() {
-	f := func() modules.Module {
-		return &WebLog{
-			DoCodesDetail:    true,
-			DoCodesAggregate: true,
-			DoChartURLCat:    true,
-			DoClientsAll:     true,
-			timings: timings{
-				keyRespTime:         &timing{},
-				keyRespTimeUpstream: &timing{},
-			},
-			gm:      make(groupMap),
-			uniqIPs: make(map[string]bool),
-			data: map[string]int64{
-				"successful_requests":    0,
-				"redirects":              0,
-				"bad_requests":           0,
-				"server_errors":          0,
-				"other_requests":         0,
-				"2xx":                    0,
-				"5xx":                    0,
-				"3xx":                    0,
-				"4xx":                    0,
-				"1xx":                    0,
-				"0xx":                    0,
-				"unmatched":              0,
-				"bytes_sent":             0,
-				"resp_length":            0,
-				"resp_time_min":          0,
-				"resp_time_max":          0,
-				"resp_time_avg":          0,
-				"resp_time_upstream_min": 0,
-				"resp_time_upstream_max": 0,
-				"resp_time_upstream_avg": 0,
-				"unique_cur_ipv4":        0,
-				"unique_cur_ipv6":        0,
-				"unique_tot_ipv4":        0,
-				"unique_tot_ipv6":        0,
-				"req_ipv4":               0,
-				"req_ipv6":               0,
-				"GET":                    0, // GET should be green on the dashboard
-			},
-		}
-	}
-	modules.Add(f)
 }

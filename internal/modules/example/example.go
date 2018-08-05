@@ -26,7 +26,7 @@ type Example struct {
 }
 
 // Init Init
-func (Example) Init() {}
+func (Example) Init() error { return nil }
 
 // Check Check
 func (e *Example) Check() bool {

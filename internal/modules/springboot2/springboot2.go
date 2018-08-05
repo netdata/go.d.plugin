@@ -8,10 +8,17 @@ import (
 	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
 )
 
+func init() {
+	modules.Register("springboot2", modules.Creator{
+		Create: func() modules.Module {
+			return &Springboot2{}
+		},
+	})
+}
+
 // Springboot2 Spring boot 2 plugin
 type Springboot2 struct {
 	modules.ModuleBase
-
 	web.RawWeb `yaml:",inline"`
 
 	prom prometheus.Prometheus
@@ -22,8 +29,9 @@ type data struct {
 	Threads       int64 `stm:"threads"`
 }
 
-func (s *Springboot2) Init() {
+func (s *Springboot2) Init() error {
 	s.prom = prometheus.New(s.CreateHTTPClient(), s.RawRequest)
+	return nil
 }
 
 // Check Check
@@ -53,11 +61,4 @@ func (s *Springboot2) GetData() map[string]int64 {
 	d.ThreadsDaemon = int64(metrics.FindByName("jvm_threads_daemon").Max())
 	d.Threads = int64(metrics.FindByName("jvm_threads_live").Max())
 	return utils.StrToMap(d)
-}
-
-func init() {
-	f := func() modules.Module {
-		return &Springboot2{}
-	}
-	modules.Add(f)
 }

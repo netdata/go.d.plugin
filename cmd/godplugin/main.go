@@ -23,6 +23,7 @@ func main() {
 	if !plugin.Setup() {
 		return
 	}
+	plugin.CheckJobs()
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT)

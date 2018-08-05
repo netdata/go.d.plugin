@@ -8,11 +8,12 @@ import (
 	"strings"
 	"time"
 
+	"io"
+
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/helpers/web"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/utils"
-	"io"
 )
 
 const (
@@ -20,6 +21,19 @@ const (
 	failed
 	unknown
 )
+
+func init() {
+	u := 5
+	modules.Register("httpcheck", modules.Creator{
+		UpdateEvery: &u,
+		Create: func() modules.Module {
+			return &HttpCheck{
+				statuses: make(map[int]bool),
+				data:     data{},
+			}
+		},
+	})
+}
 
 type data struct {
 	Success        int `stm:"success"`
@@ -57,7 +71,7 @@ type HttpCheck struct {
 	data data
 }
 
-func (hc *HttpCheck) Init() {
+func (hc *HttpCheck) Init() error {
 	if hc.Timeout.Duration == 0 {
 		hc.Timeout.Duration = time.Second
 	}
@@ -70,6 +84,7 @@ func (hc *HttpCheck) Init() {
 	if len(hc.statuses) == 0 {
 		hc.statuses[200] = true
 	}
+	return nil
 }
 
 func (hc *HttpCheck) Check() bool {
@@ -160,16 +175,4 @@ func errCheck(err error) int {
 	}
 
 	return unknown
-}
-
-func init() {
-	modules.SetDefault().SetUpdateEvery(5)
-
-	f := func() modules.Module {
-		return &HttpCheck{
-			statuses: make(map[int]bool),
-			data:     data{},
-		}
-	}
-	modules.Add(f)
 }

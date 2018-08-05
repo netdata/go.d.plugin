@@ -11,21 +11,8 @@ type (
 		charts *charts.Charts
 
 		items    map[string]*chart
-		hook     *Config
+		config   *Config
 		priority int
-	}
-
-	chart struct {
-		item *charts.Chart
-
-		hook    *Config
-		prio    int
-		retries int
-
-		push      bool
-		created   bool
-		updated   bool
-		obsoleted bool
 	}
 )
 
@@ -38,11 +25,11 @@ func (c *chart) refresh() {
 	}
 }
 
-func newObserver(hook *Config) *observer {
+func newObserver(config *Config) *observer {
 	o := &observer{
-		items:    make(map[string]*chart),
+		items:    map[string]*chart{},
 		priority: 70000,
-		hook:     hook,
+		config:   config,
 	}
 	return o
 }
@@ -72,14 +59,14 @@ func (o *observer) add(ch *charts.Chart) {
 	ch.Register(o)
 
 	if ch.Ctx == "" {
-		ch.Ctx = fmt.Sprintf("%s.%s", o.hook.RealModuleName, ch.ID)
+		ch.Ctx = fmt.Sprintf("%s.%s", o.config.RealModuleName, ch.ID)
 	}
 
 	chart := &chart{
-		item: ch,
-		hook: o.hook,
-		prio: o.priority,
-		push: true,
+		item:     ch,
+		config:   o.config,
+		priority: o.priority,
+		push:     true,
 	}
 
 	o.priority++

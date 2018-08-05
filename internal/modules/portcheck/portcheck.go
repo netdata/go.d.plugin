@@ -17,6 +17,20 @@ const (
 	failed
 )
 
+func init() {
+	u := 5
+	modules.Register("portcheck", modules.Creator{
+		UpdateEvery: &u,
+		Create: func() modules.Module {
+			return &PortCheck{
+				do:    make(chan *port),
+				done:  make(chan struct{}),
+				ports: make([]*port, 0),
+				data:  make(map[string]int64)}
+		},
+	})
+}
+
 type state struct {
 	current  int
 	duration int
@@ -70,12 +84,13 @@ type PortCheck struct {
 	data  map[string]int64
 }
 
-func (pc *PortCheck) Init() {
+func (pc *PortCheck) Init() error {
 	if pc.Timeout.Duration == 0 {
 		pc.Timeout.Duration = time.Second
 	}
 	pc.Debugf("Using timeout: %s", pc.Timeout.Duration)
 	sort.Ints(pc.Ports)
+	return nil
 }
 
 func (pc *PortCheck) Check() bool {
@@ -146,17 +161,4 @@ func worker(host string, dialTimeout time.Duration, doCh chan *port, doneCh chan
 
 		doneCh <- struct{}{}
 	}
-}
-
-func init() {
-	modules.SetDefault().SetUpdateEvery(5)
-
-	f := func() modules.Module {
-		return &PortCheck{
-			do:    make(chan *port),
-			done:  make(chan struct{}),
-			ports: make([]*port, 0),
-			data:  make(map[string]int64)}
-	}
-	modules.Add(f)
 }

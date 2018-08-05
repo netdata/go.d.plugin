@@ -11,10 +11,10 @@ clean:
 	rm -rf pkg
 
 test:
-	$(GO) list ./... | xargs -n1 -I% $(GO) test % -race
+	$(GO) test ./... -race
 
 cover:
-	$(GO) list ./... | xargs -n1 -I% $(GO) test % -cover
+	$(GO) test ./... -cover
 
 dep:
 	$(DEP) ensure -v

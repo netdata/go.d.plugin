@@ -21,27 +21,27 @@ type jobRawConf struct {
 	conf []byte
 }
 
-type jobStack []*job.Job
+//type jobStack []*job.Job
+//
+//func (js *jobStack) push(v *job.Job) {
+//	*js = append(*js, v)
+//}
+//
+//func (js jobStack) empty() bool {
+//	return len(js) == 0
+//}
+//
+//func (js *jobStack) destroy() {
+//	if !js.empty() {
+//		for i := range *js {
+//			(*js)[i] = nil
+//		}
+//	}
+//	*js = nil
+//}
 
-func (js *jobStack) push(v *job.Job) {
-	*js = append(*js, v)
-}
-
-func (js jobStack) empty() bool {
-	return len(js) == 0
-}
-
-func (js *jobStack) destroy() {
-	if !js.empty() {
-		for i := range *js {
-			(*js)[i] = nil
-		}
-	}
-	*js = nil
-}
-
-func (p *Plugin) createJobs() jobStack {
-	var jobs jobStack
+func (p *Plugin) createJobs() []*job.Job {
+	var jobs []*job.Job
 
 	if p.Option.Module == "all" {
 		for moduleName, creator := range modules.Registry {
@@ -82,7 +82,7 @@ func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleCon
 	module := creator.Create()
 
 	if creator.NoConfig {
-		jobs = append(jobs, job.New(module, conf))
+		jobs = append(jobs, job.New(module, conf, p.Out))
 		return jobs
 	}
 
@@ -102,12 +102,12 @@ func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleCon
 
 	// PUSH: single job config
 	if num == 0 {
-		jobs = append(jobs, job.New(module, conf))
+		jobs = append(jobs, job.New(module, conf, p.Out))
 		return jobs
 	}
 
 	for _, r := range raw {
-		c, m := *conf, creator.MakeModule()
+		c, m := *conf, creator.Create()
 
 		err := unmarshal(r.conf, &c)
 		// SKIP: validator error
@@ -127,7 +127,7 @@ func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleCon
 		if num > 1 {
 			c.RealJobName = r.name
 		}
-		jobs = append(jobs, job.New(m, &c))
+		jobs = append(jobs, job.New(m, &c, p.Out))
 	}
 	return jobs
 }

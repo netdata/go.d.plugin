@@ -41,27 +41,20 @@ type ModuleBase struct {
 	moduleName  string
 }
 
+// Init Init
+func (m *ModuleBase) Init() error { return nil }
+
 // SetLogger SetLogger
-func (m *ModuleBase) SetLogger(l *logger.Logger) {
-	m.Logger = l
-}
+func (m *ModuleBase) SetLogger(l *logger.Logger) { m.Logger = l }
 
 // SetUpdateEvery SetUpdateEvery
-func (m *ModuleBase) SetUpdateEvery(v int) {
-	m.updateEvery = v
-}
+func (m *ModuleBase) SetUpdateEvery(v int) { m.updateEvery = v }
 
 // SetModuleName SetModuleName
-func (m *ModuleBase) SetModuleName(v string) {
-	m.moduleName = v
-}
+func (m *ModuleBase) SetModuleName(v string) { m.moduleName = v }
 
 // UpdateEvery UpdateEvery
-func (m ModuleBase) UpdateEvery() int {
-	return m.updateEvery
-}
+func (m ModuleBase) UpdateEvery() int { return m.updateEvery }
 
 // ModuleName ModuleName
-func (m ModuleBase) ModuleName() string {
-	return m.moduleName
-}
+func (m ModuleBase) ModuleName() string { return m.moduleName }
