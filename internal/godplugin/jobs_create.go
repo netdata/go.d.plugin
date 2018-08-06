@@ -34,11 +34,15 @@ func (p *Plugin) createJobs() []job.Job {
 				log.Infof("module '%s' is disabled by default", moduleName)
 				continue
 			}
-			jobs = append(jobs, p.createJob(moduleName, creator, p.ModuleConfDir)...)
+			createdJob := p.createJob(moduleName, creator, p.ModuleConfDir)
+			log.Debugf("created job: %v", createdJob)
+			jobs = append(jobs, createdJob...)
 		}
 	} else {
 		if creator, ok := p.registry[p.Option.Module]; ok {
-			jobs = append(jobs, p.createJob(p.Option.Module, creator, p.ModuleConfDir)...)
+			createdJob := p.createJob(p.Option.Module, creator, p.ModuleConfDir)
+			log.Debugf("created job: %v", createdJob)
+			jobs = append(jobs, createdJob...)
 		} else {
 			showAvailableModulesInfo()
 		}

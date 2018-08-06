@@ -32,6 +32,10 @@ func (c *Config) FullName() string {
 	return c.ModuleName() + "_" + c.JobName()
 }
 
+func (c *Config) String() string {
+	return c.ModuleName() + "[" + c.JobName() + "]"
+}
+
 func (c *Config) JobName() string {
 	if c.OverrideName != "" {
 		return c.OverrideName

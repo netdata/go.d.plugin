@@ -64,32 +64,39 @@ func (p *Plugin) CheckJobs() {
 	done := make(chan int)
 
 	wg := sync.WaitGroup{}
-	wg.Add(len(jobs))
 	for _, job := range jobs {
 		job := job
-
+		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			if err := job.Init(); err != nil {
-				log.Warningf("module: %s, job: %s: init failed: %v", job.ModuleName(), job.JobName(), err)
+				log.Warningf("%v: init failed: %v", job, err)
 				return
 			}
 			if !job.Check() {
+				log.Infof("%v: check failed", job)
 				if job.AutoDetectionRetry() > 0 {
+					log.Infof("%v: added to recheck list", job)
 					recheck <- job
 				}
 				return
 			}
 			if !job.PostCheck() {
+				log.Warningf("%v: post-check failed", job)
 				return
 			}
+			log.Debugf("%v: added to passed list", job)
 			passed <- job
 		}()
 	}
 
 	go func() {
 		for job := range passed {
-			p.runningJobs.PutIfNotExist(job)
+			if p.runningJobs.PutIfNotExist(job) {
+				log.Debugf("%v: added to running list", job)
+			} else {
+				log.Debugf("%v: skipped due to a same name job has been added.", job)
+			}
 		}
 		for job := range recheck {
 			if !p.runningJobs.Exist(job) {
@@ -106,21 +113,26 @@ func (p *Plugin) CheckJobs() {
 }
 
 func (p *Plugin) MainLoop() {
+	log.Info("start main loop")
 	var clock int
 	tk := ticker.New(time.Second)
 LOOP:
 	for {
 		select {
 		case <-p.shutdownHook:
+			log.Debug("caught shutdown")
 			break LOOP
 		case clock = <-tk.C:
+			log.Debugf("tick %d", clock)
 		}
 		p.runningJobs.Range(func(job job.Job) bool {
+			log.Debugf("tick job: %s[%s]", job.ModuleName(), job.JobName())
 			job.Tick(clock)
 			return true
 		})
 		p.recheckJobs.Range(func(job job.Job) bool {
 			if clock%job.AutoDetectionRetry() == 0 {
+				log.Infof("recheck job: %s[%s]", job.ModuleName(), job.JobName())
 				go func() {
 					if !job.Check() {
 						return

@@ -28,6 +28,7 @@ type (
 		FullName() string
 		JobName() string
 		AutoDetectionRetry() int
+		String() string
 	}
 	job struct {
 		*Config

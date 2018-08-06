@@ -136,6 +136,18 @@ func (mr *MockJobMockRecorder) Shutdown() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Shutdown", reflect.TypeOf((*MockJob)(nil).Shutdown))
 }
 
+// String mocks base method
+func (m *MockJob) String() string {
+	ret := m.ctrl.Call(m, "String")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// String indicates an expected call of String
+func (mr *MockJobMockRecorder) String() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "String", reflect.TypeOf((*MockJob)(nil).String))
+}
+
 // Tick mocks base method
 func (m *MockJob) Tick(arg0 int) {
 	m.ctrl.Call(m, "Tick", arg0)
