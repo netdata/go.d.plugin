@@ -14,6 +14,8 @@ import (
 
 // go:generate mockgen -source=job.go
 type (
+	Factory func(module modules.Module, config *Config, out io.Writer) Job
+
 	Job interface {
 		Init() error
 		Check() bool
@@ -46,7 +48,7 @@ func (j *job) Tick(clock int) {
 	select {
 	case j.tick <- clock:
 	default:
-		j.Errorf("module: '%s', job: '%s': Skip the tick due to previous run has not been finished.")
+		j.Errorf("Skip the tick due to previous run has not been finished.")
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/ticker"
+	"github.com/l2isbad/go.d.plugin/internal/modules"
 	_ "github.com/l2isbad/go.d.plugin/internal/modules/all" // load all modules
 	"github.com/l2isbad/go.d.plugin/internal/pkg/cli"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/logger"
@@ -23,6 +24,8 @@ type (
 		Config        *Config
 		ModuleConfDir string
 		Out           io.Writer
+		registry      modules.Registry
+		newJobFunc    job.Factory
 		shutdownHook  chan int
 		recheckJobs   jobSet
 		runningJobs   jobSet
@@ -34,6 +37,8 @@ func NewPlugin() *Plugin {
 		shutdownHook: make(chan int, 1),
 		recheckJobs:  jobSet{},
 		runningJobs:  jobSet{KeyFunc: keyFuncFullName},
+		registry:     modules.DefaultRegistry,
+		newJobFunc:   job.New,
 	}
 }
 

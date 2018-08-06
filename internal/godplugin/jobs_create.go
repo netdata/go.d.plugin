@@ -25,7 +25,7 @@ func (p *Plugin) createJobs() []job.Job {
 	var jobs []job.Job
 
 	if p.Option.Module == "all" {
-		for moduleName, creator := range modules.Registry {
+		for moduleName, creator := range p.registry {
 			if !p.Config.IsModuleEnabled(moduleName, false) {
 				log.Infof("module '%s' is disabled in configuration file", moduleName)
 				continue
@@ -37,7 +37,7 @@ func (p *Plugin) createJobs() []job.Job {
 			jobs = append(jobs, p.createJob(moduleName, creator, p.ModuleConfDir)...)
 		}
 	} else {
-		if creator, ok := modules.Registry[p.Option.Module]; ok {
+		if creator, ok := p.registry[p.Option.Module]; ok {
 			jobs = append(jobs, p.createJob(p.Option.Module, creator, p.ModuleConfDir)...)
 		} else {
 			showAvailableModulesInfo()
@@ -64,7 +64,7 @@ func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleCon
 	module := creator.Create()
 
 	if creator.NoConfig {
-		jobs = append(jobs, job.New(module, conf, p.Out))
+		jobs = append(jobs, p.newJobFunc(module, conf, p.Out))
 		return jobs
 	}
 
@@ -84,7 +84,7 @@ func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleCon
 
 	// PUSH: single job config
 	if num == 0 {
-		jobs = append(jobs, job.New(module, conf, p.Out))
+		jobs = append(jobs, p.newJobFunc(module, conf, p.Out))
 		return jobs
 	}
 
@@ -109,7 +109,7 @@ func (p *Plugin) createJob(moduleName string, creator modules.Creator, moduleCon
 		if num > 1 {
 			c.RealJobName = r.name
 		}
-		jobs = append(jobs, job.New(m, &c, p.Out))
+		jobs = append(jobs, p.newJobFunc(m, &c, p.Out))
 	}
 	return jobs
 }
@@ -147,7 +147,7 @@ func unmarshal(in []byte, out interface{}) error {
 func showAvailableModulesInfo() {
 	fmt.Println("Available modules:")
 	var s []string
-	for v := range modules.Registry {
+	for v := range modules.DefaultRegistry {
 		s = append(s, v)
 	}
 	sort.Strings(s)
