@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 )
 
-var dummy = &Logger{
-	log: log.New(colored{}, "", log.Ldate|log.Ltime),
-}
+var (
+	msgPerInterval = 60
+	interval = time.Second
+)
+
+var dummy = New("dummy", "dummy")
 
 func New(modName, jobName string) *Logger {
 	return &Logger{
@@ -22,6 +26,9 @@ type Logger struct {
 	log     *log.Logger
 	modName string
 	jobName string
+
+	count  int
+	ticker *time.Ticker
 }
 
 func (l *Logger) Critical(a ...interface{}) {
@@ -70,17 +77,45 @@ func (l *Logger) print(level Severity, a ...interface{}) {
 		return
 	}
 
-	if l != nil && l.log != nil {
-		l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
-	} else {
-		dummy.log.Printf("go.d: %s: dummy: dummy: %s", level, fmt.Sprintln(a...))
+	if l == nil || l.log == nil {
+		dummy.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
+		return
 	}
+
+	if l.ticker == nil {
+		l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
+		return
+	}
+
+	select {
+	case <-l.ticker.C:
+		l.count = 0
+	default:
+	}
+
+	if l.count > msgPerInterval {
+		return
+	}
+
+	if sevLevel < DEBUG {
+		l.count++
+	}
+	l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
 }
 
+// SetLevel sets global severity level
 func SetLevel(lev Severity) {
 	sevLevel = lev
 }
 
+// SetModName sets logger modName
 func SetModName(l *Logger, modName string) {
 	l.modName = modName
+}
+
+//TODO: stop ticker, do not hard code msgPerInterval, interval?
+// SetLimit sets logger ticker
+// After that it's not allowed to log more than 60 messages per 1 second.
+func SetLimit(l *Logger) {
+	l.ticker = time.NewTicker(interval)
 }
