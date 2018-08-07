@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 )
 
-var msgPerSecond = int64(60)
+const msgPerSecond = 60
 
 var dummy = New("", "")
 

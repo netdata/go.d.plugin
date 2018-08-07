@@ -102,5 +102,5 @@ func TestLogger_Limit(t *testing.T) {
 	for scan.Scan() {
 		c++
 	}
-	assert.True(t, num+int(msgPerSecond) == c)
+	assert.True(t, num+msgPerSecond == c)
 }
