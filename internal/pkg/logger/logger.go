@@ -83,7 +83,7 @@ func (l *Logger) print(level Severity, a ...interface{}) {
 		return
 	}
 
-	if atomic.AddInt64(l.count, 1) > msgPerSecond && sevLevel < DEBUG {
+	if sevLevel < DEBUG && atomic.AddInt64(l.count, 1) > msgPerSecond {
 		return
 	}
 
@@ -101,7 +101,7 @@ func SetModName(l *Logger, modName string) {
 }
 
 // SetLimit adds a message limit per second
-// After that it's not allowed to log more than 60 messages per 1 second.
+// After that it's not allowed to log more than msgPerSecond messages per second.
 func SetLimit(l *Logger) {
 	l.count = new(int64)
 	globalTicker.register(l)
