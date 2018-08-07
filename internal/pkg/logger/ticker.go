@@ -16,7 +16,7 @@ func (g *ticker) register(c chan struct{}) {
 	g.clients = append(g.clients, c)
 }
 
-func (g ticker) notify() {
+func (g *ticker) notify() {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	for _, c := range g.clients {
