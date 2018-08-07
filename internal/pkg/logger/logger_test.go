@@ -23,7 +23,7 @@ func TestSetModName(t *testing.T) {
 func TestSetLimit(t *testing.T) {
 	l := New("", "")
 	SetLimit(l)
-	assert.Len(t, globalTicker.loggers, 1)
+	assert.Len(t, globalTicker.counters, 1)
 
 }
 

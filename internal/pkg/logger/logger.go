@@ -104,5 +104,5 @@ func SetModName(l *Logger, modName string) {
 // After that it's not allowed to log more than msgPerSecond messages per second.
 func SetLimit(l *Logger) {
 	l.count = new(int64)
-	globalTicker.register(l)
+	globalTicker.register(l.count)
 }

@@ -7,11 +7,12 @@ import (
 
 type ticker struct {
 	ticker  <-chan time.Time
-	loggers []*Logger
+	// collection of &Logger.count
+	counters []*int64
 }
 
-func (t *ticker) register(logger *Logger) {
-	t.loggers = append(t.loggers, logger)
+func (t *ticker) register(counter *int64) {
+	t.counters = append(t.counters, counter)
 }
 
 func newTicker() *ticker {
@@ -21,8 +22,8 @@ func newTicker() *ticker {
 	go func() {
 		for {
 			<-t.ticker
-			for _, v := range t.loggers {
-				atomic.StoreInt64(v.count, 0)
+			for _, v := range t.counters {
+				atomic.StoreInt64(v, 0)
 			}
 		}
 	}()
