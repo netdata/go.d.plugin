@@ -32,42 +32,42 @@ func TestNew(t *testing.T) {
 }
 
 func TestLogger_Log(t *testing.T) {
-	l := New("", "")
-	b := new(bytes.Buffer)
-	r := bufio.NewReader(b)
-	l.log.SetOutput(b)
+	logger := New("", "")
+	buf := new(bytes.Buffer)
+	reader := bufio.NewReader(buf)
+	logger.log.SetOutput(buf)
 	SetLevel(DEBUG)
 
-	test := func(sev Severity) {
-		s, err := r.ReadString('\n')
+	check := func(sev Severity) {
+		s, err := reader.ReadString('\n')
 		assert.Nil(t, err)
 		assert.NotEmpty(t, s)
 		assert.True(t, strings.Contains(s, sev.String()))
 	}
 
-	l.Error("")
-	test(ERROR)
+	logger.Error("")
+	check(ERROR)
 
-	l.Warning("")
-	test(WARNING)
+	logger.Warning("")
+	check(WARNING)
 
-	l.Info("")
-	test(INFO)
+	logger.Info("")
+	check(INFO)
 
-	l.Debug("")
-	test(DEBUG)
+	logger.Debug("")
+	check(DEBUG)
 
-	l.Errorf("")
-	test(ERROR)
+	logger.Errorf("")
+	check(ERROR)
 
-	l.Warningf("")
-	test(WARNING)
+	logger.Warningf("")
+	check(WARNING)
 
-	l.Infof("")
-	test(INFO)
+	logger.Infof("")
+	check(INFO)
 
-	l.Debugf("")
-	test(DEBUG)
+	logger.Debugf("")
+	check(DEBUG)
 }
 
 func TestLogger_Limit(t *testing.T) {
