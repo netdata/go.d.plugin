@@ -24,8 +24,7 @@ type Logger struct {
 	modName string
 	jobName string
 
-	count   int64
-	resetCh chan struct{}
+	count   *int64
 }
 
 func (l *Logger) Critical(a ...interface{}) {
@@ -79,24 +78,15 @@ func (l *Logger) print(level Severity, a ...interface{}) {
 		return
 	}
 
-	if l.resetCh == nil {
+	if l.count == nil {
 		l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
 		return
 	}
 
-	select {
-	case <-l.resetCh:
-		l.count = 0
-	default:
-	}
-
-	if atomic.LoadInt64(&l.count) > msgPerInterval {
+	if atomic.AddInt64(l.count, 1) > msgPerInterval && sevLevel < DEBUG {
 		return
 	}
 
-	if sevLevel < DEBUG {
-		atomic.AddInt64(&l.count, 1)
-	}
 	l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
 }
 
@@ -111,9 +101,9 @@ func SetModName(l *Logger, modName string) {
 }
 
 //TODO: do not hard code msgPerInterval, interval?
-// SetLimit sets logger globalTicker
+// SetLimit adds a message limit per time interval
 // After that it's not allowed to log more than 60 messages per 1 second.
 func SetLimit(l *Logger) {
-	l.resetCh = make(chan struct{}, 1)
-	globalTicker.register(l.resetCh)
+	l.count = new(int64)
+	globalTicker.register(l)
 }

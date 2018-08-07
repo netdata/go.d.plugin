@@ -1,41 +1,32 @@
 package logger
 
 import (
-	"sync"
+	"sync/atomic"
 	"time"
 )
 
 type ticker struct {
-	mu      sync.Mutex
-	clients []chan struct{}
+	ticker  <-chan time.Time
+	loggers []*Logger
 }
 
-func (g *ticker) register(c chan struct{}) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
-	g.clients = append(g.clients, c)
-}
-
-func (g *ticker) notify() {
-	g.mu.Lock()
-	defer g.mu.Unlock()
-	for _, c := range g.clients {
-		select {
-		case c <- struct{}{}:
-		default:
-		}
-	}
+func (t *ticker) register(logger *Logger) {
+	t.loggers = append(t.loggers, logger)
 }
 
 func newTicker() *ticker {
-	o := new(ticker)
-	t := time.Tick(time.Second)
+	t := &ticker{
+		ticker: time.Tick(time.Second),
+	}
 	go func() {
-		for range t {
-			o.notify()
+		for {
+			<-t.ticker
+			for _, v := range t.loggers {
+				atomic.StoreInt64(v.count, 0)
+			}
 		}
 	}()
-	return o
+	return t
 }
 
 var globalTicker = newTicker()
