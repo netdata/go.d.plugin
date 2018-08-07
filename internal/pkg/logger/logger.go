@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 )
 
-var msgPerInterval = int64(60)
+var msgPerSecond = int64(60)
 
 var dummy = New("", "")
 
@@ -83,7 +83,7 @@ func (l *Logger) print(level Severity, a ...interface{}) {
 		return
 	}
 
-	if atomic.AddInt64(l.count, 1) > msgPerInterval && sevLevel < DEBUG {
+	if atomic.AddInt64(l.count, 1) > msgPerSecond && sevLevel < DEBUG {
 		return
 	}
 
@@ -100,8 +100,7 @@ func SetModName(l *Logger, modName string) {
 	l.modName = modName
 }
 
-//TODO: do not hard code msgPerInterval, interval?
-// SetLimit adds a message limit per time interval
+// SetLimit adds a message limit per second
 // After that it's not allowed to log more than 60 messages per 1 second.
 func SetLimit(l *Logger) {
 	l.count = new(int64)
