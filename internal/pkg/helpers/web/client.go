@@ -25,15 +25,12 @@ func (f clientFunc) Do(r *http.Request) (*http.Response, error) {
 
 // RawClient is a struct that contains the fields that are needed to create Client.
 type RawClient struct {
-	// default is zero (no timeout) must be tuned by modules
-	Timeout utils.Duration `yaml:"timeout"`
-	// default is follow
-	NotFollowRedirect bool `yaml:"not_follow_redirects"`
-	// default is verify
-	SkipVerify    bool   `yaml:"skip_tls_verify"`
-	ProxyURL      string `yaml:"proxy_url"`
-	ProxyUsername string `yaml:"proxy_username"`
-	ProxyPassword string `yaml:"proxy_password"`
+	Timeout           utils.Duration `yaml:"timeout"`              // default is zero (no timeout) must be tuned by modules
+	NotFollowRedirect bool           `yaml:"not_follow_redirects"` // default is follow
+	SkipVerify        bool           `yaml:"skip_tls_verify"`      // default is verify
+	ProxyURL          string         `yaml:"proxy_url"`
+	ProxyUsername     string         `yaml:"proxy_username"`
+	ProxyPassword     string         `yaml:"proxy_password"`
 }
 
 // CreateHTTPClient returns new Client.
