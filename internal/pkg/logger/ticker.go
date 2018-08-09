@@ -6,7 +6,7 @@ import (
 )
 
 type ticker struct {
-	ticker  <-chan time.Time
+	ticker <-chan time.Time
 	// collection of &Logger.count
 	counters []*int64
 }

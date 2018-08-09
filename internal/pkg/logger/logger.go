@@ -24,7 +24,7 @@ type Logger struct {
 	modName string
 	jobName string
 
-	count   *int64
+	count *int64
 }
 
 func (l *Logger) Critical(a ...interface{}) {

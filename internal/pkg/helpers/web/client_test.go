@@ -1,50 +1,34 @@
 package web
 
 import (
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 var (
-	username      = "user"
-	password      = "password"
 	proxyUsername = "proxyUser"
 	proxyPassword = "proxyPassword"
-	headerKey     = "X-Api-Key"
-	headerValue   = "secret"
 )
 
-func TestRawRequest_CreateRequest(t *testing.T) {
-	rawRequest := RawRequest{}
-	r, err := rawRequest.CreateHTTPRequest()
-	assert.Nil(t, err)
-	assert.IsType(t, (*http.Request)(nil), r)
-}
-
-func TestRawClient_CreateClient(t *testing.T) {
-	rawClient := RawClient{
-		Header: map[string]string{
-			headerKey: headerValue,
-		},
-		Username:      username,
-		Password:      password,
-		ProxyUsername: proxyUsername,
-		ProxyPassword: proxyPassword,
-	}
+func TestRawClient_CreateHTTPClient(t *testing.T) {
+	req, _ := http.NewRequest("GET", "", nil)
+	// Without Proxy Authorization
+	rawClient := new(RawClient)
 
 	client := rawClient.CreateHTTPClient()
+	assert.Implements(t, (*Client)(nil), client)
 
-	req, _ := http.NewRequest("GET", "", nil)
+	client.Do(req)
+	assert.Empty(t, req.Header.Get("Proxy-Authorization"))
 
-	_, _ = client.Do(req)
+	rawClient.ProxyUsername = proxyUsername
+	rawClient.ProxyPassword = proxyPassword
 
-	user, pass, ok := req.BasicAuth()
+	// With Proxy Authorization
+	client = rawClient.CreateHTTPClient()
+	assert.Implements(t, (*Client)(nil), client)
 
-	assert.True(t, ok)
-	assert.Equal(t, username, user)
-	assert.Equal(t, password, pass)
-	assert.Equal(t, req.Header.Get(headerKey), headerValue)
+	client.Do(req)
 	assert.NotEmpty(t, req.Header.Get("Proxy-Authorization"))
 }
