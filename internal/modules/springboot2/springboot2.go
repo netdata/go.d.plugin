@@ -12,7 +12,7 @@ import (
 type Springboot2 struct {
 	modules.ModuleBase
 
-	web.RawWeb `yaml:",inline"`
+	web.Web `yaml:",inline"`
 
 	prom prometheus.Prometheus
 }

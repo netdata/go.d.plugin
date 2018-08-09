@@ -21,7 +21,7 @@ func TestSpringboot2(t *testing.T) {
 	}))
 	defer ts.Close()
 	plugin := &Springboot2{
-		RawWeb: web.RawWeb{
+		Web: web.Web{
 			RawRequest: web.RawRequest{
 				URL: ts.URL + "/actuator/prometheus",
 			},
@@ -42,7 +42,7 @@ func TestSpringboot2_404(t *testing.T) {
 	}))
 	defer ts.Close()
 	plugin := &Springboot2{
-		RawWeb: web.RawWeb{
+		Web: web.Web{
 			RawRequest: web.RawRequest{
 				URL: ts.URL + "/actuator/prometheus",
 			},
