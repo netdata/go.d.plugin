@@ -46,7 +46,7 @@ type HttpCheck struct {
 
 	StatusAccepted []int  `yaml:"status_accepted"`
 	ResponseMatch  string `yaml:"response_match"`
-	web.Web        `yaml:",inline"`
+	web.HTTP       `yaml:",inline"`
 
 	match    *regexp.Regexp
 	statuses map[int]bool

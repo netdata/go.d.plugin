@@ -10,8 +10,8 @@ import (
 type RawRequest struct {
 	URL      string            `yaml:"url" validate:"required,url"`
 	Body     string            `yaml:"body"`
-	Method   string            `yaml:"method" validate:"isdefault|oneof=GET POST"`
-	Header   map[string]string `yaml:"headers"`
+	Method   string            `yaml:"method" validate:"isdefault|oneof=GET POST HEAD PUT BATCH"`
+	Headers  map[string]string `yaml:"headers"`
 	Username string            `yaml:"username"`
 	Password string            `yaml:"password"`
 }
@@ -30,8 +30,8 @@ func (r RawRequest) CreateHTTPRequest() (*http.Request, error) {
 	if r.Username != "" && r.Password != "" {
 		req.SetBasicAuth(r.Username, r.Password)
 	}
-	if len(r.Header) != 0 {
-		for k, v := range r.Header {
+	if len(r.Headers) != 0 {
+		for k, v := range r.Headers {
 			req.Header.Set(k, v)
 		}
 	}

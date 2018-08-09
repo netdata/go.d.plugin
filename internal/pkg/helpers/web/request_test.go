@@ -18,7 +18,7 @@ func TestRawRequest_CreateRequest(t *testing.T) {
 	rawRequest := RawRequest{
 		Username: username,
 		Password: password,
-		Header: map[string]string{
+		Headers: map[string]string{
 			headerKey: headerValue,
 		},
 	}
