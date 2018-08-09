@@ -41,6 +41,7 @@ func (r RawClient) CreateHTTPClient() Client {
 	return r.createWithProxyAuth()
 }
 
+// TODO: TLSClientConfig
 func (r RawClient) create() Client {
 	client := &http.Client{
 		Timeout: r.Timeout.Duration,
