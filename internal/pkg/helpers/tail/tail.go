@@ -3,6 +3,7 @@ package tail
 import (
 	"errors"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -128,29 +129,22 @@ func ReadLastLine(filename string) ([]byte, error) {
 }
 
 func readLastLine(f io.ReadSeeker) ([]byte, error) {
-	b := make([]byte, 1)
-	var c int
-
 	f.Seek(0, io.SeekEnd)
-	for {
+	b := make([]byte, 1)
+
+	for b[0] != '\n' {
 		if v, err := f.Seek(-2, io.SeekCurrent); err != nil {
 			return nil, err
 		} else if v == 0 {
-			c += 2
 			break
 		}
-
-		if _, err := f.Read(b); err != nil {
-			return nil, err
-		}
-		c++
-		if b[0] == '\n' {
-			break
-		}
-		continue
+		f.Read(b)
 	}
 
-	rv := make([]byte, c)
-	f.Read(rv)
-	return rv, nil
+	line, err := ioutil.ReadAll(f)
+	if err != nil {
+		return nil, err
+	}
+
+	return line, nil
 }

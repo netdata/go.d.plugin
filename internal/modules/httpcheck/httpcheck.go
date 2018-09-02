@@ -60,7 +60,7 @@ type HttpCheck struct {
 
 	StatusAccepted []int  `yaml:"status_accepted"`
 	ResponseMatch  string `yaml:"response_match"`
-	web.RawWeb     `yaml:",inline"`
+	web.HTTP       `yaml:",inline"`
 
 	match    *regexp.Regexp
 	statuses map[int]bool
@@ -76,7 +76,6 @@ func (hc *HttpCheck) Init() error {
 		hc.Timeout.Duration = time.Second
 	}
 	hc.Debugf("Using timeout: %s", hc.Timeout.Duration)
-
 	for _, s := range hc.StatusAccepted {
 		hc.statuses[s] = true
 	}

@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync/atomic"
 )
 
-var dummy = &Logger{
-	log: log.New(colored{}, "", log.Ldate|log.Ltime),
-}
+const msgPerSecond = 60
+
+var dummy = New("", "")
 
 func New(modName, jobName string) *Logger {
 	return &Logger{
@@ -22,6 +23,8 @@ type Logger struct {
 	log     *log.Logger
 	modName string
 	jobName string
+
+	count *int64
 }
 
 func (l *Logger) Critical(a ...interface{}) {
@@ -70,17 +73,36 @@ func (l *Logger) print(level Severity, a ...interface{}) {
 		return
 	}
 
-	if l != nil && l.log != nil {
-		l.log.Printf("go.d: [%s] %s[%s]: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
-	} else {
-		dummy.log.Printf("go.d: [%s] dummy[dummy]: %s", level, fmt.Sprintln(a...))
+	if l == nil || l.log == nil {
+		dummy.log.Printf("go.d: %s: dummy: dummy: %s", level, fmt.Sprintln(a...))
+		return
 	}
+
+	if l.count == nil {
+		l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
+		return
+	}
+
+	if sevLevel < DEBUG && atomic.AddInt64(l.count, 1) > msgPerSecond {
+		return
+	}
+
+	l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
 }
 
+// SetLevel sets global severity level
 func SetLevel(lev Severity) {
 	sevLevel = lev
 }
 
+// SetModName sets logger modName
 func SetModName(l *Logger, modName string) {
 	l.modName = modName
+}
+
+// SetLimit adds a message limit per second
+// After that it's not allowed to log more than msgPerSecond messages per second.
+func SetLimit(l *Logger) {
+	l.count = new(int64)
+	globalTicker.register(l.count)
 }

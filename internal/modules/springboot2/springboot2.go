@@ -19,7 +19,7 @@ func init() {
 // Springboot2 Spring boot 2 plugin
 type Springboot2 struct {
 	modules.ModuleBase
-	web.RawWeb `yaml:",inline"`
+	web.HTTP `yaml:",inline"`
 
 	prom prometheus.Prometheus
 }
