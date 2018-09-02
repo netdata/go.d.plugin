@@ -1,7 +1,6 @@
 package godplugin
 
 import (
-	"io"
 	"testing"
 
 	"bytes"
@@ -9,7 +8,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
 	"github.com/l2isbad/go.d.plugin/internal/mock"
 	"github.com/l2isbad/go.d.plugin/internal/modules"
 	"github.com/l2isbad/go.d.plugin/internal/pkg/charts"
@@ -42,7 +40,7 @@ func TestPlugin(t *testing.T) {
 		UpdateEvery: 1,
 	}
 	plg.registry = regi
-	plg.newJobFunc = newJobFunc(ctrl)
+	//plg.newJobFunc = newJobFunc(ctrl)
 	plg.Out = buf
 
 	assert.True(t, plg.Setup())
@@ -100,19 +98,19 @@ func mockModules(t *testing.T, ctrl *gomock.Controller) {
 	}
 }
 
-func newJobFunc(ctrl *gomock.Controller) job.Factory {
-	return func(module modules.Module, config *job.Config, out io.Writer) job.Job {
-		log.Debugf("create mock job: %s[%s]", module.ModuleName(), config.JobName())
-		job := mock.NewMockJob(ctrl)
-		job.EXPECT().JobName().Return(config.JobName()).AnyTimes()
-		job.EXPECT().ModuleName().Return(module.ModuleName()).AnyTimes()
-		job.EXPECT().FullName().Return(module.ModuleName() + "_" + config.JobName()).AnyTimes()
-		job.EXPECT().Shutdown().AnyTimes()
-		job.EXPECT().String().Return(config.String()).AnyTimes()
-		job.EXPECT().Init().Return(nil).AnyTimes()
-		job.EXPECT().Check().Return(true).AnyTimes()
-		job.EXPECT().PostCheck().Return(true).AnyTimes()
-		job.EXPECT().Tick(gomock.Any()).Do(func(v int) { log.Debugf("%s[%s] ticked: %d", module.ModuleName(), config.JobName(), v) }).AnyTimes()
-		return job
-	}
-}
+//func newJobFunc(ctrl *gomock.Controller) job.Factory {
+//	return func(module modules.Module, config *job.Config, out io.Writer) job.Job {
+//		log.Debugf("create mock job: %s[%s]", module.ModuleName(), config.JobName())
+//		job := mock.NewMockJob(ctrl)
+//		job.EXPECT().JobName().Return(config.JobName()).AnyTimes()
+//		job.EXPECT().ModuleName().Return(module.ModuleName()).AnyTimes()
+//		job.EXPECT().FullName().Return(module.ModuleName() + "_" + config.JobName()).AnyTimes()
+//		job.EXPECT().Shutdown().AnyTimes()
+//		job.EXPECT().String().Return(config.String()).AnyTimes()
+//		job.EXPECT().Init().Return(nil).AnyTimes()
+//		job.EXPECT().Check().Return(true).AnyTimes()
+//		job.EXPECT().PostCheck().Return(true).AnyTimes()
+//		job.EXPECT().Tick(gomock.Any()).Do(func(v int) { log.Debugf("%s[%s] ticked: %d", module.ModuleName(), config.JobName(), v) }).AnyTimes()
+//		return job
+//	}
+//}
