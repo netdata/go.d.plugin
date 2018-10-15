@@ -5,7 +5,7 @@ import (
 	"path"
 
 	val "github.com/go-playground/validator"
-	"github.com/go-yaml/yaml"
+	"gopkg.in/yaml.v2"
 
 	"github.com/l2isbad/go.d.plugin/internal/godplugin/job"
 	"github.com/l2isbad/go.d.plugin/internal/modules"
