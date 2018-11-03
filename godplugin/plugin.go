@@ -17,7 +17,7 @@ import (
 	"github.com/l2isbad/go.d.plugin/logger"
 	"github.com/l2isbad/go.d.plugin/modules"
 
-	_ "github.com/l2isbad/go.d.plugin/modules/collectors/all"
+	_ "github.com/l2isbad/go.d.plugin/modules/all"
 )
 
 var log = logger.New("plugin", "main")

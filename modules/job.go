@@ -7,8 +7,6 @@ import (
 	"time"
 
 	"github.com/l2isbad/go.d.plugin/logger"
-	"github.com/l2isbad/go.d.plugin/modules/internal/apiwriter"
-	"github.com/l2isbad/go.d.plugin/modules/internal/chartstate"
 )
 
 type switchResult string
@@ -52,7 +50,7 @@ type Job struct {
 	shutdownHook chan struct{}
 	out          io.Writer
 	buf          *bytes.Buffer
-	apiWriter    apiwriter.APIWriter
+	apiWriter    apiWriter
 
 	priority int
 	retries  int
@@ -77,7 +75,7 @@ func NewJob(modName string, module Module, config *JobConfig, out io.Writer) *Jo
 		shutdownHook: make(chan struct{}),
 		buf:          buf,
 		priority:     70000,
-		apiWriter:    apiwriter.APIWriter{Writer: buf},
+		apiWriter:    apiWriter{Writer: buf},
 	}
 }
 
@@ -159,6 +157,7 @@ LOOP:
 func (j *Job) Shutdown() {
 	select {
 	case j.shutdownHook <- struct{}{}:
+		j.module.Cleanup()
 	default:
 	}
 }
@@ -178,7 +177,7 @@ func (j *Job) AutoDetectionRetry() int {
 }
 
 func (j *Job) PopulateMetrics(data map[string]int64, sinceLast int) bool {
-	var updated int
+	var totalUpdated int
 LOOP:
 	for _, chart := range *j.charts {
 		for {
@@ -194,64 +193,64 @@ LOOP:
 		if data == nil {
 			continue
 		}
-		j.apiWriter.Begin("typeName", chart.ID, sinceLast)
+		j.apiWriter.begin("typeName", chart.ID, sinceLast)
 		var chartUpdated bool
 
 		for _, dim := range chart.Dims {
 			if v, ok := data[dim.ID]; ok {
-				j.apiWriter.Set(dim.ID, v)
+				j.apiWriter.set(dim.ID, v)
 				chartUpdated = true
 			}
 		}
 
 		for _, variable := range chart.Vars {
 			if v, ok := data[variable.ID]; ok {
-				j.apiWriter.Set(variable.ID, v)
+				j.apiWriter.set(variable.ID, v)
 			}
 		}
 
 		if chartUpdated {
-			updated++
+			totalUpdated++
 			chart.retries = 0
 		} else if chart.retries++; j.ChartCleanup > 0 && chart.retries >= j.ChartCleanup {
-			chart.state = chartstate.MarkedObsolete
+			chart.state = markedObsoleteState
 		}
 
-		j.apiWriter.End()
+		j.apiWriter.end()
 	}
 
-	return updated > 0
+	return totalUpdated > 0
 }
 
 func (j *Job) switchChartState(chart *Chart, data map[string]int64) switchResult {
 	switch chart.state {
-	case chartstate.Initial:
+	case initialState:
 		chart.priority = j.priority
 		j.priority++
-		chart.state = chartstate.New
-	case chartstate.New:
-		chart.state = chartstate.Created
-	case chartstate.Created:
+		chart.state = newState
+	case newState:
+		chart.state = createdState
+	case createdState:
 		return switchBreak
-	case chartstate.Rebuilt:
+	case rebuiltState:
 
-		chart.state = chartstate.New
-	case chartstate.Recovered:
+		chart.state = newState
+	case recoveredState:
 
-		chart.state = chartstate.New
-	case chartstate.MarkedObsolete:
+		chart.state = newState
+	case markedObsoleteState:
 
-		chart.state = chartstate.Obsoleted
-	case chartstate.Obsoleted:
+		chart.state = obsoletedState
+	case obsoletedState:
 		if canChartBeUpdated(chart, data) {
-			chart.state = chartstate.New
+			chart.state = newState
 		} else {
 			return switchSkip
 		}
-		chart.state = chartstate.New
-	case chartstate.MarkedRemove:
-		chart.state = chartstate.MarkedDelete
-	case chartstate.MarkedDelete:
+		chart.state = newState
+	case markedRemoveState:
+		chart.state = markedObsoleteState
+	case markedDeleteState:
 		return switchSkip
 	}
 	return switchContinue

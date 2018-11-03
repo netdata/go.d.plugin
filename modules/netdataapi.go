@@ -1,4 +1,4 @@
-package apiwriter
+package modules
 
 import (
 	"fmt"
@@ -6,16 +6,16 @@ import (
 )
 
 type (
-	// APIWriter write native netdata plugin API
+	// apiWriter write native netdata plugin API
 	// https://github.com/firehol/netdata/wiki/External-Plugins#native-netdata-plugin-api
-	APIWriter struct {
+	apiWriter struct {
 		// Out write to
 		io.Writer
 	}
 )
 
-// Chart defines a new chart.
-func (w *APIWriter) Chart(
+// chart defines a new chart.
+func (w *apiWriter) chart(
 	typeName string,
 	ID string,
 	name string,
@@ -33,8 +33,8 @@ func (w *APIWriter) Chart(
 	return err
 }
 
-//Dimension defines a new dimension for the chart
-func (w *APIWriter) Dimension(
+//dimension defines a new dimension for the chart
+func (w *apiWriter) dimension(
 	ID string,
 	name string,
 	algorithm string,
@@ -46,8 +46,8 @@ func (w *APIWriter) Dimension(
 	return err
 }
 
-// Begin initialize data collection for a chart
-func (w *APIWriter) Begin(typeName string, ID string, msSince int) error {
+// begin initialize data collection for a chart
+func (w *apiWriter) begin(typeName string, ID string, msSince int) error {
 	var err error
 	if msSince > 0 {
 		_, err = fmt.Fprintf(w, "BEGIN %s.%s %d\n", typeName, ID, msSince)
@@ -57,20 +57,20 @@ func (w *APIWriter) Begin(typeName string, ID string, msSince int) error {
 	return err
 }
 
-// Set set the value of a dimension for the initialized chart
-func (w *APIWriter) Set(ID string, value int64) error {
+// set set the value of a dimension for the initialized chart
+func (w *apiWriter) set(ID string, value int64) error {
 	_, err := fmt.Fprintf(w, "SET %s = %d\n", ID, value)
 	return err
 }
 
-// End complete data collection for the initialized chart
-func (w *APIWriter) End() error {
+// end complete data collection for the initialized chart
+func (w *apiWriter) end() error {
 	_, err := fmt.Fprintf(w, "END\n")
 	return err
 }
 
-// Flush ignore the last collected values
-func (w *APIWriter) Flush() error {
+// flush ignore the last collected values
+func (w *apiWriter) flush() error {
 	_, err := fmt.Fprintf(w, "FLUSH\n")
 	return err
 }

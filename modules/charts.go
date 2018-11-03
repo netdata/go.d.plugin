@@ -1,9 +1,5 @@
 package modules
 
-import (
-	"github.com/l2isbad/go.d.plugin/modules/internal/chartstate"
-)
-
 type chartType string
 
 const (
@@ -30,7 +26,7 @@ type (
 		Dims Dims
 		Vars Vars
 
-		state    chartstate.State
+		state    state
 		priority int
 		retries  int
 	}
@@ -119,14 +115,14 @@ func (c Charts) index(chartID string) int {
 	return -1
 }
 
-//------------------------------------------------------Chart-----------------------------------------------------------
+//------------------------------------------------------chart-----------------------------------------------------------
 
 func (c *Chart) AddDim(newDim *Dim) bool {
 	if c.indexDim(newDim.ID) != -1 || !newDim.isValid() {
 		return false
 	}
 	c.Dims = append(c.Dims, newDim)
-	c.dispatch(chartstate.Renew)
+	c.dispatch(renewTrigger)
 
 	return true
 }
@@ -146,7 +142,7 @@ func (c *Chart) RemoveDim(dimID string) bool {
 		return false
 	}
 	c.Dims = append(c.Dims[:idx], c.Dims[idx+1:]...)
-	c.dispatch(chartstate.Rebuild)
+	c.dispatch(rebuildTrigger)
 
 	return true
 }
@@ -196,11 +192,11 @@ func (c Chart) isValid() bool {
 	return c.ID != "" && c.Title != "" && c.Units != ""
 }
 
-func (c *Chart) dispatch(trigger chartstate.Trigger) {
-	c.state = c.state.Dispatch(trigger)
+func (c *Chart) dispatch(trigger trigger) {
+	c.state = c.state.dispatch(trigger)
 }
 
-//------------------------------------------------------Dimension-------------------------------------------------------
+//------------------------------------------------------dimension-------------------------------------------------------
 
 func (d Dim) copy() *Dim {
 	return &d

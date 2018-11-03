@@ -11,7 +11,7 @@ import (
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/l2isbad/go.d.plugin/modules/helpers/web"
+	"github.com/l2isbad/go.d.plugin/helpers/web"
 )
 
 var testdata, _ = ioutil.ReadFile("tests/testdata.txt")

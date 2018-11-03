@@ -6,13 +6,13 @@ package weblog
 //)
 //
 //type (
-//	Chart = charts.Chart
+//	chart = charts.chart
 //	Opts  = charts.Opts
 //	Dims  = charts.Dims
 //)
 //
 //var (
-//	chartRespStatuses = Chart{
+//	chartRespStatuses = chart{
 //		ID: "response_statuses",
 //		Opts: Opts{
 //			Title: "Response Statuses", Units: "requests/s", Fam: "responses", Type: charts.Stacked},
@@ -24,7 +24,7 @@ package weblog
 //			{ID: "other_requests", Name: "other", Algo: charts.Incremental},
 //		},
 //	}
-//	chartRespCodes = Chart{
+//	chartRespCodes = chart{
 //		ID: "response_codes",
 //		Opts: Opts{
 //			Title: "Response Codes", Units: "requests/s", Fam: "responses", Type: charts.Stacked},
@@ -38,12 +38,12 @@ package weblog
 //			{ID: "unmatched", Algo: charts.Incremental},
 //		},
 //	}
-//	chartRespCodesDetailed = Chart{
+//	chartRespCodesDetailed = chart{
 //		ID: "detailed_response_codes",
 //		Opts: Opts{
 //			Title: "Detailed Response Codes", Units: "requests/s", Fam: "responses", Type: charts.Stacked},
 //	}
-//	chartBandwidth = Chart{
+//	chartBandwidth = chart{
 //		ID: "bandwidth",
 //		Opts: Opts{
 //			Title: "chartBandwidth", Units: "kilobits/s", Fam: "bandwidth", Type: charts.Area},
@@ -52,7 +52,7 @@ package weblog
 //			{ID: "bytes_sent", Name: "sent", Algo: charts.Incremental, Mul: -8, Div: 1000},
 //		},
 //	}
-//	chartRespTime = Chart{
+//	chartRespTime = chart{
 //		ID: "response_time",
 //		Opts: Opts{
 //			Title: "Processing Time", Units: "milliseconds", Fam: "timings", Type: charts.Area},
@@ -62,12 +62,12 @@ package weblog
 //			{ID: "resp_time_avg", Name: "avg", Algo: charts.Incremental, Div: 1000},
 //		},
 //	}
-//	chartRespTimeHist = Chart{
+//	chartRespTimeHist = chart{
 //		ID: "response_time_histogram",
 //		Opts: Opts{
 //			Title: "Processing Time Histogram", Units: "requests/s", Fam: "timings"},
 //	}
-//	chartRespTimeUpstream = Chart{
+//	chartRespTimeUpstream = chart{
 //		ID: "response_time_upstream",
 //		Opts: Opts{
 //			Title: "Processing Time Upstream", Units: "milliseconds", Fam: "timings", Type: charts.Area},
@@ -77,22 +77,22 @@ package weblog
 //			{ID: "resp_time_upstream_avg", Name: "avg", Algo: charts.Incremental, Div: 1000},
 //		},
 //	}
-//	chartRespTimeUpstreamHist = Chart{
+//	chartRespTimeUpstreamHist = chart{
 //		ID: "response_time_upstream_histogram",
 //		Opts: Opts{
 //			Title: "Processing Time Upstream Histogram", Units: "requests/s", Fam: "timings"},
 //	}
-//	chartReqPerURL = Chart{
+//	chartReqPerURL = chart{
 //		ID: "requests_per_url",
 //		Opts: Opts{
 //			Title: "Requests Per Url", Units: "requests/s", Fam: "urls", Type: charts.Stacked},
 //	}
-//	chartReqPerUserDef = Chart{
+//	chartReqPerUserDef = chart{
 //		ID: "requests_per_user_defined",
 //		Opts: Opts{
 //			Title: "Requests Per User Defined Pattern", Units: "requests/s", Fam: "user defined", Type: charts.Stacked},
 //	}
-//	chartReqPerHTTPMethod = Chart{
+//	chartReqPerHTTPMethod = chart{
 //		ID: "requests_per_http_method",
 //		Opts: Opts{
 //			Title: "Requests Per HTTP Method", Units: "requests/s", Fam: "http methods", Type: charts.Stacked},
@@ -100,12 +100,12 @@ package weblog
 //			{ID: "GET", Algo: charts.Incremental},
 //		},
 //	}
-//	chartReqPerHTTPVer = Chart{
+//	chartReqPerHTTPVer = chart{
 //		ID: "requests_per_http_version",
 //		Opts: Opts{
 //			Title: "Requests Per HTTP Version", Units: "requests/s", Fam: "http versions", Type: charts.Stacked},
 //	}
-//	chartReqPerIPProto = Chart{
+//	chartReqPerIPProto = chart{
 //		ID: "requests_per_ip_proto",
 //		Opts: Opts{
 //			Title: "Requests Per IP Protocol", Units: "requests/s", Fam: "ip protocols", Type: charts.Stacked},
@@ -114,7 +114,7 @@ package weblog
 //			{ID: "req_ipv6", Name: "ipv6", Algo: charts.Incremental},
 //		},
 //	}
-//	chartClientsCurr = Chart{
+//	chartClientsCurr = chart{
 //		ID: "clients_current",
 //		Opts: Opts{
 //			Title: "Current Poll Unique Client IPs", Units: "unique ips", Fam: "clients", Type: charts.Stacked},
@@ -123,7 +123,7 @@ package weblog
 //			{ID: "unique_cur_ipv6", Name: "ipv6", Algo: charts.Incremental},
 //		},
 //	}
-//	chartClientsAll = Chart{
+//	chartClientsAll = chart{
 //		ID: "clients_all_time",
 //		Opts: Opts{
 //			Title: "All Time Unique Client IPs", Units: "unique ips", Fam: "clients", Type: charts.Stacked},
@@ -134,8 +134,8 @@ package weblog
 //	}
 //)
 //
-//func chartRespCodesDetailedPerFam() []Chart {
-//	return []Chart{
+//func chartRespCodesDetailedPerFam() []chart {
+//	return []chart{
 //		{
 //			ID:   chartRespCodesDetailed.ID + "_1xx",
 //			Opts: Opts{Title: "Detailed Response Codes 1xx", Units: "requests/s", Fam: "responses", Type: charts.Stacked},
@@ -163,8 +163,8 @@ package weblog
 //	}
 //}
 //
-//func chartPerCategoryStats(id string) []Chart {
-//	return []Chart{
+//func chartPerCategoryStats(id string) []chart {
+//	return []chart{
 //		{
 //			ID: chartRespCodesDetailed.ID + "_" + id,
 //			Opts: Opts{

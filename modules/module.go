@@ -32,6 +32,9 @@ type Module interface {
 	ModuleName() string
 	// SetModuleName SetModuleName
 	SetModuleName(v string)
+
+	// Cleanup Cleanup
+	Cleanup()
 }
 
 // Base is a helper struct. All modules should embed this struct.
@@ -58,3 +61,6 @@ func (b Base) UpdateEvery() int { return b.updateEvery }
 
 // ModuleName ModuleName
 func (b Base) ModuleName() string { return b.moduleName }
+
+// Cleanup Cleanup
+func (b Base) Cleanup() {}
