@@ -49,8 +49,8 @@ workflows:
     jobs:
     - build
     - vet:
-      requires:
-      - build
+        requires:
+        - build
     - test:
-      requires:
-      - build
+        requires:
+        - build
