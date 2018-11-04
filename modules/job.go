@@ -122,25 +122,31 @@ LOOP:
 			if t%j.UpdateEvery != 0 {
 				continue LOOP
 			}
-			j.Info(11111111111)
-		}
 
-		//curTime := time.Now()
-		//if j.prevRun.IsZero() {
-		//	sinceLast := 0
-		//} else {
-		//	sinceLast := convertTo(curTime.Sub(j.prevRun), time.Microsecond)
-		//}
-		//
-		//data := j.getData()
-		//
-		//if data == nil {
-		//	j.Retries++
-		//	continue
-		//}
-		//j.buf.Reset()
-		//// TODO write data
-		//io.Copy(j.out, j.buf)
+			var sinceLast int
+			curTime := time.Now()
+
+			if j.prevRun.IsZero() {
+				sinceLast = 0
+			} else {
+				sinceLast = convertTo(curTime.Sub(j.prevRun), time.Microsecond)
+			}
+
+			data := j.getData()
+
+			//if j.Panicked {
+			//
+			//}
+
+			if !j.populateMetrics(data, sinceLast) {
+				j.retries++
+			} else {
+				j.prevRun = curTime
+			}
+
+			io.Copy(j.out, j.buf)
+			j.buf.Reset()
+		}
 	}
 }
 
@@ -152,6 +158,10 @@ func (j *Job) Shutdown() {
 	}
 }
 
+func (j Job) AutoDetectionRetry() int {
+	return j.JobConfig.AutoDetectionRetry
+}
+
 func (j *Job) getData() (result map[string]int64) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -160,10 +170,6 @@ func (j *Job) getData() (result map[string]int64) {
 		}
 	}()
 	return j.module.GetData()
-}
-
-func (j *Job) AutoDetectionRetry() int {
-	return j.JobConfig.AutoDetectionRetry
 }
 
 func (j *Job) populateMetrics(data map[string]int64, sinceLast int) bool {
@@ -240,13 +246,4 @@ func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bo
 
 func convertTo(from time.Duration, to time.Duration) int {
 	return int(int64(from) / (int64(to) / int64(time.Nanosecond)))
-}
-
-func canChartBeUpdated(chart *Chart, data map[string]int64) bool {
-	for _, dim := range chart.Dims {
-		if _, ok := data[dim.ID]; ok {
-			return true
-		}
-	}
-	return false
 }

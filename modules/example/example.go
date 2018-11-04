@@ -30,7 +30,9 @@ func (e *Example) GetData() map[string]int64 {
 func init() {
 	modules.Register("example", modules.Creator{
 		Create: func() modules.Module {
-			return &Example{}
+			return &Example{
+				data: make(map[string]int64),
+			}
 		},
 	})
 }
