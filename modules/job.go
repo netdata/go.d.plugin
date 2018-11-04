@@ -15,7 +15,7 @@ type JobConfig struct {
 	UpdateEvery        int    `yaml:"update_every" validate:"gte=1"`
 	AutoDetectionRetry int    `yaml:"autodetection_retry" validate:"gte=0"`
 	ChartCleanup       int    `yaml:"chart_cleanup" validate:"gte=0"`
-	MaxRetries         int    `yaml:"retries" validate:"gte=0"`
+	MaxRetries         int    `yaml:"Retries" validate:"gte=0"`
 }
 
 // JobNewConfig returns JobConfig with default values
@@ -137,7 +137,7 @@ LOOP:
 		//data := j.getData()
 		//
 		//if data == nil {
-		//	j.retries++
+		//	j.Retries++
 		//	continue
 		//}
 		//j.buf.Reset()
@@ -195,36 +195,19 @@ func (j *Job) populateMetrics(data map[string]int64, sinceLast int) bool {
 			chart.pushed = true
 		}
 
-		if data == nil {
+		if data == nil || chart.Obsolete {
 			continue
 		}
 
-		if chart.Obsolete {
-			if !canChartBeUpdated(chart, data) {
-				continue
-			}
-			chart.Obsolete = false
-			chart.pushed = false
-		}
-
-		j.updateChart(chart, data, sinceLast)
-
-		if !chart.updated {
-			chart.retries++
-		} else {
+		if j.updateChart(chart, data, sinceLast) {
 			totalUpdated++
-		}
-
-		if j.ChartCleanup > 0 && chart.retries >= j.ChartCleanup {
-			chart.Obsolete = true
-			chart.pushed = false
 		}
 	}
 
 	return totalUpdated > 0
 }
 
-func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLast int) {
+func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bool {
 	if !chart.updated {
 		sinceLast = 0
 	}
@@ -247,6 +230,14 @@ func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLast int) {
 
 	j.apiWriter.end()
 	chart.updated = updated > 0
+
+	if chart.updated {
+		chart.Retries = 0
+	} else {
+		chart.Retries++
+	}
+
+	return chart.updated
 }
 
 func convertTo(from time.Duration, to time.Duration) int {
