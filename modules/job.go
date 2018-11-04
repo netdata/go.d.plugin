@@ -202,27 +202,7 @@ func (j *Job) PopulateMetrics(data map[string]int64, sinceLast int) bool {
 			chart.pushed = false
 		}
 
-		if !chart.updated {
-			sinceLast = 0
-		}
-
-		j.apiWriter.begin("typeName", chart.ID, sinceLast)
-
-		chart.updated = false
-		for _, dim := range chart.Dims {
-			if v, ok := data[dim.ID]; ok {
-				j.apiWriter.set(dim.ID, v)
-				chart.updated = true
-			}
-		}
-
-		for _, variable := range chart.Vars {
-			if v, ok := data[variable.ID]; ok {
-				j.apiWriter.set(variable.ID, v)
-			}
-		}
-
-		j.apiWriter.end()
+		j.updateChart(chart, data, sinceLast)
 
 		if !chart.updated {
 			chart.retries++
@@ -235,6 +215,31 @@ func (j *Job) PopulateMetrics(data map[string]int64, sinceLast int) bool {
 	}
 
 	return totalUpdated > 0
+}
+
+func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLast int) {
+	if !chart.updated {
+		sinceLast = 0
+	}
+
+	j.apiWriter.begin(j.Name(), chart.ID, sinceLast)
+
+	var updated int
+
+	for _, dim := range chart.Dims {
+		if v, ok := data[dim.ID]; ok {
+			j.apiWriter.set(dim.ID, v)
+			updated++
+		}
+	}
+	for _, variable := range chart.Vars {
+		if v, ok := data[variable.ID]; ok {
+			j.apiWriter.set(variable.ID, v)
+		}
+	}
+
+	j.apiWriter.end()
+	chart.updated = updated > 0
 }
 
 func convertTo(from time.Duration, to time.Duration) int {
