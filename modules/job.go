@@ -33,9 +33,9 @@ type Job struct {
 	*logger.Logger
 	module Module
 
+	ModuleName string
 	Inited     bool
 	Panicked   bool
-	ModuleName string
 
 	charts       *Charts
 	tick         chan int
@@ -172,6 +172,11 @@ func (j *Job) PopulateMetrics(data map[string]int64, sinceLast int) bool {
 	var totalUpdated int
 
 	for _, chart := range *j.charts {
+		if chart.Priority == 0 {
+			chart.Priority = j.priority
+			j.priority++
+		}
+
 		if !chart.pushed {
 			j.apiWriter.chart(
 				j.Name(),
