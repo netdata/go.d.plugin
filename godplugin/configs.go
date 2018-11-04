@@ -14,7 +14,7 @@ func NewConfig() *Config {
 	}
 }
 
-type Config struct {
+type GlobalConfig struct {
 	Enabled    bool            `yaml:"enabled"`
 	DefaultRun bool            `yaml:"default_run"`
 	MaxProcs   int             `yaml:"max_procs"`
