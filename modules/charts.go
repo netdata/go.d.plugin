@@ -1,5 +1,9 @@
 package modules
 
+import (
+	"strings"
+)
+
 type chartType string
 
 const (
@@ -21,22 +25,29 @@ type (
 	Charts []*Chart
 
 	Chart struct {
-		ID string
+		ID       string
+		OverID   string
+		Title    string
+		Units    string
+		Fam      string
+		Ctx      string
+		Type     chartType
+		Priority int
 		Opts
+
 		Dims Dims
 		Vars Vars
 
-		state    state
-		priority int
-		retries  int
+		pushed bool
+
+		updated bool
+		retries int
 	}
 	Opts struct {
-		Title  string
-		Units  string
-		Fam    string
-		Ctx    string
-		Type   chartType
-		OverID string
+		Obsolete   bool
+		Detail     bool
+		StoreFirst bool
+		Hidden     bool
 	}
 	Dims []*Dim
 	Vars []*Var
@@ -55,6 +66,25 @@ type (
 		Value int64
 	}
 )
+
+func (o Opts) String() string {
+	var opts []string
+
+	if o.Obsolete {
+		opts = append(opts, "obsolete")
+	}
+	if o.Detail {
+		opts = append(opts, "detail")
+	}
+	if o.StoreFirst {
+		opts = append(opts, "store_first")
+	}
+	if o.Hidden {
+		opts = append(opts, "hidden")
+	}
+
+	return strings.Join(opts, " ")
+}
 
 //------------------------------------------------------Charts----------------------------------------------------------
 
@@ -117,12 +147,15 @@ func (c Charts) index(chartID string) int {
 
 //------------------------------------------------------chart-----------------------------------------------------------
 
+func (c *Chart) MarkPush() {
+	c.pushed = false
+}
+
 func (c *Chart) AddDim(newDim *Dim) bool {
 	if c.indexDim(newDim.ID) != -1 || !newDim.isValid() {
 		return false
 	}
 	c.Dims = append(c.Dims, newDim)
-	c.dispatch(renewTrigger)
 
 	return true
 }
@@ -142,7 +175,6 @@ func (c *Chart) RemoveDim(dimID string) bool {
 		return false
 	}
 	c.Dims = append(c.Dims[:idx], c.Dims[idx+1:]...)
-	c.dispatch(rebuildTrigger)
 
 	return true
 }
@@ -190,10 +222,6 @@ func (c Chart) indexVar(varID string) int {
 
 func (c Chart) isValid() bool {
 	return c.ID != "" && c.Title != "" && c.Units != ""
-}
-
-func (c *Chart) dispatch(trigger trigger) {
-	c.state = c.state.dispatch(trigger)
 }
 
 //------------------------------------------------------dimension-------------------------------------------------------

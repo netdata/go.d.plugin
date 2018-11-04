@@ -9,14 +9,6 @@ import (
 	"github.com/l2isbad/go.d.plugin/logger"
 )
 
-type switchResult string
-
-const (
-	switchContinue switchResult = "continue"
-	switchSkip     switchResult = "skip"
-	switchBreak    switchResult = "break"
-)
-
 type JobConfig struct {
 	JobName            string `yaml:"job_name"`
 	OverrideName       string `yaml:"name"`
@@ -178,28 +170,49 @@ func (j *Job) AutoDetectionRetry() int {
 
 func (j *Job) PopulateMetrics(data map[string]int64, sinceLast int) bool {
 	var totalUpdated int
-LOOP:
+
 	for _, chart := range *j.charts {
-		for {
-			switch j.switchChartState(chart, data) {
-			case switchContinue:
-				continue
-			case switchSkip:
-				continue LOOP
-			case switchBreak:
-				break
-			}
+		if !chart.pushed {
+			j.apiWriter.chart(
+				j.Name(),
+				chart.ID,
+				chart.OverID,
+				chart.Title,
+				chart.Units,
+				chart.Fam,
+				chart.Ctx,
+				chart.Type,
+				chart.Priority,
+				j.UpdateEvery,
+				chart.Opts,
+				j.ModuleName,
+			)
+			chart.pushed = true
 		}
+
 		if data == nil {
 			continue
 		}
-		j.apiWriter.begin("typeName", chart.ID, sinceLast)
-		var chartUpdated bool
 
+		if chart.Obsolete {
+			if !canChartBeUpdated(chart, data) {
+				continue
+			}
+			chart.Obsolete = false
+			chart.pushed = false
+		}
+
+		if !chart.updated {
+			sinceLast = 0
+		}
+
+		j.apiWriter.begin("typeName", chart.ID, sinceLast)
+
+		chart.updated = false
 		for _, dim := range chart.Dims {
 			if v, ok := data[dim.ID]; ok {
 				j.apiWriter.set(dim.ID, v)
-				chartUpdated = true
+				chart.updated = true
 			}
 		}
 
@@ -209,51 +222,19 @@ LOOP:
 			}
 		}
 
-		if chartUpdated {
-			totalUpdated++
-			chart.retries = 0
-		} else if chart.retries++; j.ChartCleanup > 0 && chart.retries >= j.ChartCleanup {
-			chart.state = markedObsoleteState
+		j.apiWriter.end()
+
+		if !chart.updated {
+			chart.retries++
 		}
 
-		j.apiWriter.end()
+		if j.ChartCleanup > 0 && chart.retries >= j.ChartCleanup {
+			chart.Obsolete = true
+			chart.pushed = false
+		}
 	}
 
 	return totalUpdated > 0
-}
-
-func (j *Job) switchChartState(chart *Chart, data map[string]int64) switchResult {
-	switch chart.state {
-	case initialState:
-		chart.priority = j.priority
-		j.priority++
-		chart.state = newState
-	case newState:
-		chart.state = createdState
-	case createdState:
-		return switchBreak
-	case rebuiltState:
-
-		chart.state = newState
-	case recoveredState:
-
-		chart.state = newState
-	case markedObsoleteState:
-
-		chart.state = obsoletedState
-	case obsoletedState:
-		if canChartBeUpdated(chart, data) {
-			chart.state = newState
-		} else {
-			return switchSkip
-		}
-		chart.state = newState
-	case markedRemoveState:
-		chart.state = markedObsoleteState
-	case markedDeleteState:
-		return switchSkip
-	}
-	return switchContinue
 }
 
 func convertTo(from time.Duration, to time.Duration) int {

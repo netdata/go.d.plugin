@@ -23,13 +23,13 @@ func (w *apiWriter) chart(
 	units string,
 	family string,
 	context string,
-	chartType string,
+	chartType chartType,
 	priority int,
 	updateEvery int,
-	options string,
+	options Opts,
 	module string) error {
-	_, err := fmt.Fprintf(w, "CHART %s.%s '%s' '%s' '%s' '%s' '%s' %d %d %s go.d '%s'\n",
-		typeName, ID, title, units, family, context, chartType, priority, updateEvery, options, module)
+	_, err := fmt.Fprintf(w, "CHART %s.%s '%s' '%s' '%s' '%s' '%s' '%s' %d %d %s go.d '%s'\n",
+		typeName, ID, name, title, units, family, context, chartType, priority, updateEvery, options, module)
 	return err
 }
 

@@ -10,15 +10,15 @@ type (
 
 var uCharts = Charts{
 	{
-		ID:   "chart1",
-		Opts: Options{Title: "Random Data 1", Units: "random", Fam: "random"},
+		ID:    "chart1",
+		Title: "qwe", Units: "qw", Fam: "random",
 		Dims: Dims{
 			{ID: "random0", Name: "random"},
 		},
 	},
 	{
-		ID:   "chart2",
-		Opts: Options{Title: "Random Data 2", Units: "random", Fam: "random", Type: modules.Area},
+		ID:    "chart2",
+		Title: "qwe", Units: "qw", Fam: "random", Type: modules.Area,
 		Dims: Dims{
 			{ID: "random1", Name: "random"},
 		},
