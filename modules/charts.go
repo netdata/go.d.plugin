@@ -99,7 +99,7 @@ func (c *Charts) Add(charts ...*Chart) {
 		if c.index(v.ID) != -1 || !v.isValid() {
 			continue
 		}
-		*c = append(*c, v)
+		*c = append(*c, v.Copy())
 	}
 }
 
@@ -188,9 +188,9 @@ func (c Chart) HasDim(dimID string) bool {
 }
 
 func (c Chart) Copy() *Chart {
-	chart := new(Chart)
-	chart.ID = c.ID
-	chart.Opts = c.Opts
+	chart := c
+	chart.Dims = Dims{}
+	chart.Vars = Vars{}
 
 	for idx := range c.Dims {
 		chart.Dims = append(chart.Dims, c.Dims[idx].copy())
@@ -199,7 +199,7 @@ func (c Chart) Copy() *Chart {
 		chart.Vars = append(chart.Vars, c.Vars[idx].copy())
 	}
 
-	return chart
+	return &chart
 }
 
 func (c Chart) indexDim(dimID string) int {

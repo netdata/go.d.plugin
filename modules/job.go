@@ -161,15 +161,8 @@ LOOP:
 				continue LOOP
 			}
 
-			var sinceLast int
 			curTime := time.Now()
-
-			if j.prevRun.IsZero() {
-				sinceLast = 0
-			} else {
-				sinceLast = convertTo(curTime.Sub(j.prevRun), time.Microsecond)
-			}
-
+			sinceLast := calcSinceLast(curTime, j.prevRun)
 			data := j.getData()
 
 			//if j.Panicked {
@@ -282,6 +275,17 @@ func (j *job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bo
 	return chart.updated
 }
 
-func convertTo(from time.Duration, to time.Duration) int {
-	return int(int64(from) / (int64(to) / int64(time.Nanosecond)))
+func calcSinceLast(curTime, prevRun time.Time) int {
+	if prevRun.IsZero() {
+		return 0
+	}
+	return int(int64(curTime.Sub(prevRun)) / (int64(time.Microsecond) / int64(time.Nanosecond)))
+
+}
+
+func calcPenalty(retries, updateEvery int) int {
+	if retries%5 == 0 {
+		return retries * updateEvery / 2
+	}
+	return 0
 }
