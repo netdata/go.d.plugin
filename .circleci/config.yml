@@ -7,7 +7,7 @@ jobs:
     - checkout
     - restore_cache:
         keys:
-        - go_mod-{{ checksum "go.mod" }}-{{ "checksum go.sum" }}
+        - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
     - run: go get -v -d ./...
     - save_cache:
         key: go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
@@ -24,7 +24,7 @@ jobs:
     - checkout
     - restore_cache:
         keys:
-        - go_mod-{{ checksum "go.mod" }}-{{ "checksum go.sum" }}
+        - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
     - run: go vet ./...
   test:
     docker:
@@ -33,7 +33,7 @@ jobs:
     - checkout
     - restore_cache:
         keys:
-        - go_mod-{{ checksum "go.mod" }}-{{ "checksum go.sum" }}
+        - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
     - run: go test -v ./... -race
     - run: go test -v ./... -cover
 
