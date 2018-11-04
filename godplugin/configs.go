@@ -27,7 +27,7 @@ func (c *Config) Load(filename string) error {
 		return err
 	}
 	err = yaml.NewDecoder(file).Decode(c)
-	if err != nil && err != io.EOF {
+	if err != nil {
 		return err
 	}
 	return nil
