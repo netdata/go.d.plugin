@@ -1,6 +1,7 @@
 package modules
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -20,6 +21,25 @@ const (
 	PercentOfAbsolute    dimAlgo = "percentage-of-absolute-row"
 	PercentOfIncremental dimAlgo = "percentage-of-incremental-row"
 )
+
+type dimHidden bool
+
+func (d dimHidden) String() string {
+	if d {
+		return "hidden"
+	}
+	return ""
+}
+
+type dimDivMul int
+
+func (d dimDivMul) String() string {
+	v := d
+	if v == 0 {
+		v = 1
+	}
+	return fmt.Sprintf("%d", v)
+}
 
 type (
 	Charts []*Chart
@@ -56,9 +76,9 @@ type (
 		ID     string
 		Name   string
 		Algo   dimAlgo
-		Mul    int
-		Div    int
-		Hidden bool
+		Mul    dimDivMul
+		Div    dimDivMul
+		Hidden dimHidden
 	}
 
 	Var struct {
@@ -231,7 +251,7 @@ func (d Dim) copy() *Dim {
 }
 
 func (d Dim) isValid() bool {
-	return d.ID != "" && d.Mul != 0 && d.Div != 0
+	return d.ID != ""
 }
 
 //------------------------------------------------------Variable--------------------------------------------------------

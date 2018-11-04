@@ -213,20 +213,7 @@ func (j *job) populateMetrics(data map[string]int64, sinceLast int) bool {
 		}
 
 		if !chart.pushed {
-			j.apiWriter.chart(
-				j.fullName(),
-				chart.ID,
-				chart.OverID,
-				chart.Title,
-				chart.Units,
-				chart.Fam,
-				chart.Ctx,
-				chart.Type,
-				chart.Priority,
-				j.UpdateEvery,
-				chart.Opts,
-				j.moduleName,
-			)
+			j.createChart(chart)
 			chart.pushed = true
 		}
 
@@ -240,6 +227,33 @@ func (j *job) populateMetrics(data map[string]int64, sinceLast int) bool {
 	}
 
 	return totalUpdated > 0
+}
+
+func (j *job) createChart(chart *Chart) {
+	j.apiWriter.chart(
+		j.fullName(),
+		chart.ID,
+		chart.OverID,
+		chart.Title,
+		chart.Units,
+		chart.Fam,
+		chart.Ctx,
+		chart.Type,
+		chart.Priority,
+		j.UpdateEvery,
+		chart.Opts,
+		j.moduleName,
+	)
+	for _, dim := range chart.Dims {
+		j.apiWriter.dimension(
+			dim.ID,
+			dim.Name,
+			dim.Algo,
+			dim.Mul,
+			dim.Div,
+			dim.Hidden,
+		)
+	}
 }
 
 func (j *job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bool {
