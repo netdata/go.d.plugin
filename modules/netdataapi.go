@@ -37,11 +37,11 @@ func (w *apiWriter) chart(
 func (w *apiWriter) dimension(
 	ID string,
 	name string,
-	algorithm string,
-	multiplier int,
-	divisor int,
-	hidden string) error {
-	_, err := fmt.Fprintf(w, "DIMENSION '%s' '%s' '%s' %d %d %s\n",
+	algorithm dimAlgo,
+	multiplier dimDivMul,
+	divisor dimDivMul,
+	hidden dimHidden) error {
+	_, err := fmt.Fprintf(w, "DIMENSION '%s' '%s' '%s' %s %s %s\n",
 		ID, name, algorithm, multiplier, divisor, hidden)
 	return err
 }
