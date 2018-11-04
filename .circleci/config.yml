@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  compile:
     docker:
       - image: circleci/golang:1.11
     steps:
@@ -8,7 +8,7 @@ jobs:
     - restore_cache:
         keys:
         - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
-    - run: go get -v -d ./...
+    - run: go get -t -v -d ./...
     - save_cache:
         key: go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
         paths:
@@ -34,17 +34,17 @@ jobs:
     - restore_cache:
         keys:
         - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
-    - run: go test -v ./... -race
+    - run: go test -v ./... -race -cover
     - run: go test -v ./... -cover
 
 workflows:
   version: 2
   build_and_test:
     jobs:
-    - build
+    - compile
     - vet:
         requires:
-        - build
+        - compile
     - test:
         requires:
-        - build
+        - compile
