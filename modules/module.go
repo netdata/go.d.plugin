@@ -6,7 +6,7 @@ import (
 
 // Module Module
 type Module interface {
-	// Init is called after UpdateEvery, ModuleName are set.
+	// Init is called after UpdateEvery, moduleName are set.
 	Init() error
 
 	// Check is called after Init or AutoDetectionRetry.
@@ -28,7 +28,7 @@ type Module interface {
 	// SetUpdateEvery SetUpdateEvery
 	SetUpdateEvery(v int)
 
-	// ModuleName ModuleName
+	// moduleName moduleName
 	ModuleName() string
 	// SetModuleName SetModuleName
 	SetModuleName(v string)
@@ -59,7 +59,7 @@ func (b *Base) SetModuleName(v string) { b.moduleName = v }
 // UpdateEvery UpdateEvery
 func (b Base) UpdateEvery() int { return b.updateEvery }
 
-// ModuleName ModuleName
+// moduleName moduleName
 func (b Base) ModuleName() string { return b.moduleName }
 
 // Cleanup Cleanup

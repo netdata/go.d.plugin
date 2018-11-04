@@ -99,6 +99,23 @@ func (p *Plugin) Serve() {
 	p.MainLoop()
 }
 
+func (p *Plugin) MainLoop() {
+	log.Info("start main loop")
+	var clock int
+	tk := ticker.New(time.Second)
+
+	for {
+		select {
+		case clock = <-tk.C:
+			log.Debugf("tick %d", clock)
+			for _, job := range p.loopQueue {
+				log.Debugf("tick job: %s[%s]", job.ModuleName(), job.JobName)
+				job.Tick(clock)
+			}
+		}
+	}
+}
+
 func (p *Plugin) createCheckTask() chan *modules.Job {
 	ch := make(chan *modules.Job)
 	go func() {
@@ -169,23 +186,6 @@ func (p *Plugin) createJobs(ch chan *modules.Job) {
 
 			job := modules.NewJob(modName, mod, conf, os.Stdout)
 			ch <- job
-		}
-	}
-}
-
-func (p *Plugin) MainLoop() {
-	log.Info("start main loop")
-	var clock int
-	tk := ticker.New(time.Second)
-
-	for {
-		select {
-		case clock = <-tk.C:
-			log.Debugf("tick %d", clock)
-			for _, job := range p.loopQueue {
-				log.Debugf("tick job: %s[%s]", job.ModuleName, job.JobName)
-				job.Tick(clock)
-			}
 		}
 	}
 }
