@@ -7,16 +7,16 @@ jobs:
     - checkout
     - restore_cache:
         keys:
-        - go.mod-{{ checksum "go.mod" }}-{{ "checksum go.sum" }}
-        - go.mod-{{ checksum "go.mod" }}-
-        - go.mod-
+        - go_mod-{{ checksum "go.mod" }}-{{ "checksum go.sum" }}
+        - go_mod-{{ checksum "go.mod" }}-
+        - go_mod-
     - run: go get -v -d ./...
     - save_cache:
-        key: go.mod-{{ checksum go.mod }}-{{ checksum go.sum }}
+        key: go_mod-{{ checksum go.mod }}-{{ checksum go.sum }}
         paths:
         - /go/pkg/mod
     - run: go build -o /tmp/godplugin github.com/l2isbad/go.d.plugin/cmd/godplugin
-    - run: /tmp/godplugin --help
+    - run: /tmp/godplugin --help || true
     - store_artifacts:
         path: /tmp/godplugin
   vet:
