@@ -26,7 +26,23 @@ func JobNewConfig() *JobConfig {
 	}
 }
 
-func NewJob(modName string, module Module, config *JobConfig, out io.Writer) *Job {
+type Job interface {
+	ModuleName() string
+	Name() string
+	AutoDetectionRetry() int
+	Panicked() bool
+	Inited() bool
+
+	Init() bool
+	Check() bool
+	PostCheck() bool
+
+	Tick(clock int)
+	MainLoop()
+	Shutdown()
+}
+
+func NewJob(modName string, module Module, config *JobConfig, out io.Writer) Job {
 	buf := &bytes.Buffer{}
 	var name string
 	if config.OverrideName != "" {
@@ -36,7 +52,7 @@ func NewJob(modName string, module Module, config *JobConfig, out io.Writer) *Jo
 	} else {
 		name = modName
 	}
-	return &Job{
+	return &job{
 		moduleName:   modName,
 		name:         name,
 		module:       module,
@@ -50,15 +66,15 @@ func NewJob(modName string, module Module, config *JobConfig, out io.Writer) *Jo
 	}
 }
 
-type Job struct {
+type job struct {
 	*JobConfig
 	*logger.Logger
 	module Module
 
 	moduleName string
 	name       string
-	Inited     bool
-	Panicked   bool
+	inited     bool
+	panicked   bool
 
 	charts       *Charts
 	tick         chan int
@@ -72,22 +88,30 @@ type Job struct {
 	prevRun  time.Time
 }
 
-func (j Job) fullName() string {
+func (j job) fullName() string {
 	if j.moduleName == j.name {
 		return j.moduleName
 	}
 	return fmt.Sprintf("%s_%s", j.moduleName, j.name)
 }
 
-func (j Job) ModuleName() string {
+func (j job) ModuleName() string {
 	return j.moduleName
 }
 
-func (j Job) Name() string {
+func (j job) Name() string {
 	return j.name
 }
 
-func (j *Job) Init() error {
+func (j job) Inited() bool {
+	return j.inited
+}
+
+func (j job) Panicked() bool {
+	return j.panicked
+}
+
+func (j *job) Init() bool {
 	j.Logger = logger.New(j.moduleName, j.JobName)
 	j.module.SetUpdateEvery(j.UpdateEvery)
 	j.module.SetModuleName(j.moduleName)
@@ -96,10 +120,10 @@ func (j *Job) Init() error {
 	return j.module.Init()
 }
 
-func (j *Job) Check() bool {
+func (j *job) Check() bool {
 	defer func() {
 		if r := recover(); r != nil {
-			j.Panicked = true
+			j.panicked = true
 			j.Errorf("PANIC %v", r)
 		}
 
@@ -107,7 +131,7 @@ func (j *Job) Check() bool {
 	return j.module.Check()
 }
 
-func (j *Job) PostCheck() bool {
+func (j *job) PostCheck() bool {
 	j.UpdateEvery = j.module.UpdateEvery()
 	j.moduleName = j.module.ModuleName()
 	logger.SetModName(j.Logger, j.moduleName)
@@ -122,7 +146,7 @@ func (j *Job) PostCheck() bool {
 	return true
 }
 
-func (j *Job) Tick(clock int) {
+func (j *job) Tick(clock int) {
 	select {
 	case j.tick <- clock:
 	default:
@@ -130,7 +154,7 @@ func (j *Job) Tick(clock int) {
 	}
 }
 
-func (j *Job) MainLoop() {
+func (j *job) MainLoop() {
 LOOP:
 	for {
 		select {
@@ -168,7 +192,7 @@ LOOP:
 	}
 }
 
-func (j *Job) Shutdown() {
+func (j *job) Shutdown() {
 	select {
 	case j.shutdownHook <- struct{}{}:
 		j.module.Cleanup()
@@ -176,21 +200,21 @@ func (j *Job) Shutdown() {
 	}
 }
 
-func (j Job) AutoDetectionRetry() int {
+func (j job) AutoDetectionRetry() int {
 	return j.JobConfig.AutoDetectionRetry
 }
 
-func (j *Job) getData() (result map[string]int64) {
+func (j *job) getData() (result map[string]int64) {
 	defer func() {
 		if r := recover(); r != nil {
 			j.Errorf("PANIC: %v", r)
-			j.Panicked = true
+			j.panicked = true
 		}
 	}()
 	return j.module.GetData()
 }
 
-func (j *Job) populateMetrics(data map[string]int64, sinceLast int) bool {
+func (j *job) populateMetrics(data map[string]int64, sinceLast int) bool {
 	var totalUpdated int
 
 	for _, chart := range *j.charts {
@@ -229,7 +253,7 @@ func (j *Job) populateMetrics(data map[string]int64, sinceLast int) bool {
 	return totalUpdated > 0
 }
 
-func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bool {
+func (j *job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bool {
 	if !chart.updated {
 		sinceLast = 0
 	}

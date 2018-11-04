@@ -7,7 +7,7 @@ import (
 // Module Module
 type Module interface {
 	// Init is called after UpdateEvery, ModuleName are set.
-	Init() error
+	Init() bool
 
 	// Check is called after Init or AutoDetectionRetry.
 	// If it return false, this job will be disabled.
@@ -45,7 +45,7 @@ type Base struct {
 }
 
 // Init Init
-func (b *Base) Init() error { return nil }
+func (b *Base) Init() bool { return true }
 
 // SetLogger SetLogger
 func (b *Base) SetLogger(l *logger.Logger) { b.Logger = l }

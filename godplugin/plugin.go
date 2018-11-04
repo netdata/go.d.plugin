@@ -26,7 +26,7 @@ var validate = validator.New()
 func New() *Plugin {
 	return &Plugin{
 		modules:   make(modules.Registry),
-		loopQueue: make([]*modules.Job, 0),
+		loopQueue: make([]modules.Job, 0),
 	}
 }
 
@@ -38,7 +38,7 @@ type (
 		ModuleConfDir string
 		Out           io.Writer
 		modules       modules.Registry
-		loopQueue     []*modules.Job
+		loopQueue     []modules.Job
 	}
 )
 
@@ -109,24 +109,20 @@ func (p *Plugin) MainLoop() {
 		case clock = <-tk.C:
 			log.Debugf("tick %d", clock)
 			for _, job := range p.loopQueue {
-				log.Debugf("tick job: %s[%s]", job.ModuleName(), job.JobName)
+				log.Debugf("tick job: %s[%s]", job.ModuleName(), job.Name())
 				job.Tick(clock)
 			}
 		}
 	}
 }
 
-func (p *Plugin) createCheckTask() chan *modules.Job {
-	ch := make(chan *modules.Job)
+func (p *Plugin) createCheckTask() chan modules.Job {
+	ch := make(chan modules.Job)
 	go func() {
 		for job := range ch {
-			if !job.Inited {
-				if err := job.Init(); err == nil {
-					job.Inited = true
-				} else {
-					job.Error("Init failed")
-					continue
-				}
+			if !job.Inited() && !job.Init() {
+				log.Errorf("%s[%s] Init failed: %s", job.ModuleName(), job.Name())
+				continue
 			}
 
 			ok := job.Check()
@@ -139,23 +135,23 @@ func (p *Plugin) createCheckTask() chan *modules.Job {
 				continue
 			}
 
-			if job.Panicked {
+			if job.Panicked() {
 				continue
 			}
 
 			if job.AutoDetectionRetry() > 0 {
-				go func(j *modules.Job) {
+				go func(j modules.Job) {
 					time.Sleep(time.Second * time.Duration(j.AutoDetectionRetry()))
 					ch <- j
 				}(job)
 			}
-			job.Error("Check failed")
+			log.Error("%s[%s] Check failed", job.ModuleName(), job.Name())
 		}
 	}()
 	return ch
 }
 
-func (p *Plugin) createJobs(ch chan *modules.Job) {
+func (p *Plugin) createJobs(ch chan modules.Job) {
 	for modName, creator := range p.modules {
 		var rawConfigs rawModConfig
 		err := rawConfigs.Load(fmt.Sprintf("/opt/go.d/%s.conf", modName))
