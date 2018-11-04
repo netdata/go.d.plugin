@@ -44,17 +44,8 @@ type Job interface {
 
 func NewJob(modName string, module Module, config *JobConfig, out io.Writer) Job {
 	buf := &bytes.Buffer{}
-	var name string
-	if config.OverrideName != "" {
-		name = config.OverrideName
-	} else if config.JobName != "" {
-		name = config.JobName
-	} else {
-		name = modName
-	}
 	return &job{
 		moduleName:   modName,
-		name:         name,
 		module:       module,
 		JobConfig:    config,
 		out:          out,
@@ -72,7 +63,6 @@ type job struct {
 	module Module
 
 	moduleName string
-	name       string
 	inited     bool
 	panicked   bool
 
@@ -89,10 +79,10 @@ type job struct {
 }
 
 func (j job) fullName() string {
-	if j.moduleName == j.name {
-		return j.moduleName
+	if j.ModuleName() == j.Name() {
+		return j.ModuleName()
 	}
-	return fmt.Sprintf("%s_%s", j.moduleName, j.name)
+	return fmt.Sprintf("%s_%s", j.ModuleName(), j.Name())
 }
 
 func (j job) ModuleName() string {
@@ -100,7 +90,13 @@ func (j job) ModuleName() string {
 }
 
 func (j job) Name() string {
-	return j.name
+	if j.OverrideName != "" {
+		return j.OverrideName
+	}
+	if j.JobName != "" {
+		return j.JobName
+	}
+	return j.ModuleName()
 }
 
 func (j job) Inited() bool {
@@ -112,9 +108,9 @@ func (j job) Panicked() bool {
 }
 
 func (j *job) Init() bool {
-	j.Logger = logger.New(j.moduleName, j.JobName)
+	j.Logger = logger.New(j.ModuleName(), j.Name())
 	j.module.SetUpdateEvery(j.UpdateEvery)
-	j.module.SetModuleName(j.moduleName)
+	j.module.SetModuleName(j.ModuleName())
 	j.module.SetLogger(j.Logger)
 
 	return j.module.Init()
@@ -134,7 +130,7 @@ func (j *job) Check() bool {
 func (j *job) PostCheck() bool {
 	j.UpdateEvery = j.module.UpdateEvery()
 	j.moduleName = j.module.ModuleName()
-	logger.SetModName(j.Logger, j.moduleName)
+	logger.SetModName(j.Logger, j.ModuleName())
 
 	charts := j.module.GetCharts()
 	if charts == nil {
