@@ -23,16 +23,6 @@ type Module interface {
 	// SetLogger SetLogger
 	SetLogger(l *logger.Logger)
 
-	// UpdateEvery UpdateEvery
-	UpdateEvery() int
-	// SetUpdateEvery SetUpdateEvery
-	SetUpdateEvery(v int)
-
-	// ModuleName ModuleName
-	ModuleName() string
-	// SetModuleName SetModuleName
-	SetModuleName(v string)
-
 	// Cleanup Cleanup
 	Cleanup()
 }
@@ -49,18 +39,6 @@ func (b *Base) Init() bool { return true }
 
 // SetLogger SetLogger
 func (b *Base) SetLogger(l *logger.Logger) { b.Logger = l }
-
-// SetUpdateEvery SetUpdateEvery
-func (b *Base) SetUpdateEvery(v int) { b.updateEvery = v }
-
-// SetModuleName SetModuleName
-func (b *Base) SetModuleName(v string) { b.moduleName = v }
-
-// UpdateEvery UpdateEvery
-func (b Base) UpdateEvery() int { return b.updateEvery }
-
-// moduleName ModuleName
-func (b Base) ModuleName() string { return b.moduleName }
 
 // Cleanup Cleanup
 func (b Base) Cleanup() {}

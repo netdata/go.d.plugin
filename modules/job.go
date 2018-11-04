@@ -109,8 +109,6 @@ func (j job) Panicked() bool {
 
 func (j *job) Init() bool {
 	j.Logger = logger.New(j.ModuleName(), j.Name())
-	j.module.SetUpdateEvery(j.UpdateEvery)
-	j.module.SetModuleName(j.ModuleName())
 	j.module.SetLogger(j.Logger)
 
 	return j.module.Init()
@@ -128,10 +126,6 @@ func (j *job) Check() bool {
 }
 
 func (j *job) PostCheck() bool {
-	j.UpdateEvery = j.module.UpdateEvery()
-	j.moduleName = j.module.ModuleName()
-	logger.SetModName(j.Logger, j.ModuleName())
-
 	charts := j.module.GetCharts()
 	if charts == nil {
 		j.Error("GetCharts() [FAILED]")
