@@ -27,10 +27,6 @@ func (c *Config) Load(filename string) error {
 		return err
 	}
 	return yaml.NewDecoder(file).Decode(c)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (c *Config) IsModuleEnabled(module string, explicit bool) bool {
