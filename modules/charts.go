@@ -38,10 +38,10 @@ type (
 		Dims Dims
 		Vars Vars
 
-		pushed bool
+		Retries int
 
+		pushed  bool
 		updated bool
-		retries int
 	}
 	Opts struct {
 		Obsolete   bool
