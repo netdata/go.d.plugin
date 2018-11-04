@@ -49,7 +49,7 @@ type Job struct {
 	prevRun  time.Time
 }
 
-func (j Job) Name() string {
+func (j Job) name() string {
 	if j.ModuleName == j.JobName {
 		return j.ModuleName
 	}
@@ -168,7 +168,7 @@ func (j *Job) AutoDetectionRetry() int {
 	return j.JobConfig.AutoDetectionRetry
 }
 
-func (j *Job) PopulateMetrics(data map[string]int64, sinceLast int) bool {
+func (j *Job) populateMetrics(data map[string]int64, sinceLast int) bool {
 	var totalUpdated int
 
 	for _, chart := range *j.charts {
@@ -179,7 +179,7 @@ func (j *Job) PopulateMetrics(data map[string]int64, sinceLast int) bool {
 
 		if !chart.pushed {
 			j.apiWriter.chart(
-				j.Name(),
+				j.name(),
 				chart.ID,
 				chart.OverID,
 				chart.Title,
@@ -211,6 +211,8 @@ func (j *Job) PopulateMetrics(data map[string]int64, sinceLast int) bool {
 
 		if !chart.updated {
 			chart.retries++
+		} else {
+			totalUpdated++
 		}
 
 		if j.ChartCleanup > 0 && chart.retries >= j.ChartCleanup {
@@ -227,7 +229,7 @@ func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLast int) {
 		sinceLast = 0
 	}
 
-	j.apiWriter.begin(j.Name(), chart.ID, sinceLast)
+	j.apiWriter.begin(j.name(), chart.ID, sinceLast)
 
 	var updated int
 
