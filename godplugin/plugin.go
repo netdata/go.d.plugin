@@ -121,7 +121,7 @@ func (p *Plugin) createCheckTask() chan modules.Job {
 	go func() {
 		for job := range ch {
 			if !job.Inited() && !job.Init() {
-				log.Errorf("%s[%s] Init failed: %s", job.ModuleName(), job.Name())
+				log.Errorf("%s[%s] Init failed", job.ModuleName(), job.Name())
 				continue
 			}
 
@@ -145,7 +145,7 @@ func (p *Plugin) createCheckTask() chan modules.Job {
 					ch <- j
 				}(job)
 			}
-			log.Error("%s[%s] Check failed", job.ModuleName(), job.Name())
+			log.Errorf("%s[%s] Check failed", job.ModuleName(), job.Name())
 		}
 	}()
 	return ch
