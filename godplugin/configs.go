@@ -39,13 +39,7 @@ func (c *Config) IsModuleEnabled(module string, explicit bool) bool {
 	return c.DefaultRun
 }
 
-type ModuleConfig struct {
-  Global ModuleGlobalConfig `yaml:"global"`
-  Jobs []JobConfig `yaml:"jobs"`
-}
-
-type ModuleGlobalConfig  struct {...}
-type JobConfig struct {...}
+type rawModConfig []yaml.MapSlice
 
 func (r *rawModConfig) Load(filename string) error {
 	file, err := os.Open(filename)
