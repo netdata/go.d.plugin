@@ -1,7 +1,7 @@
 package modules
 
 import (
-	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -34,11 +34,10 @@ func (d dimHidden) String() string {
 type dimDivMul int
 
 func (d dimDivMul) String() string {
-	v := d
-	if v == 0 {
-		v = 1
+	if d == 0 {
+		return ""
 	}
-	return fmt.Sprintf("%d", v)
+	return strconv.Itoa(int(d))
 }
 
 type (
