@@ -63,10 +63,21 @@ type Job struct {
 }
 
 func (j Job) name() string {
-	if j.ModuleName == j.JobName {
+	if j.OverrideName != "" {
+		return j.OverrideName
+	}
+	if j.JobName != "" {
+		return j.JobName
+	}
+	return j.ModuleName
+}
+
+func (j Job) fullName() string {
+	if j.ModuleName == j.name() {
 		return j.ModuleName
 	}
-	return fmt.Sprintf("%s_%s", j.ModuleName, j.JobName)
+
+	return fmt.Sprintf("%s_%s", j.ModuleName, j.name())
 }
 
 func (j *Job) Init() error {
@@ -183,7 +194,7 @@ func (j *Job) populateMetrics(data map[string]int64, sinceLast int) bool {
 
 		if !chart.pushed {
 			j.apiWriter.chart(
-				j.name(),
+				j.fullName(),
 				chart.ID,
 				chart.OverID,
 				chart.Title,
@@ -216,7 +227,7 @@ func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bo
 		sinceLast = 0
 	}
 
-	j.apiWriter.begin(j.name(), chart.ID, sinceLast)
+	j.apiWriter.begin(j.fullName(), chart.ID, sinceLast)
 
 	var updated int
 
