@@ -14,7 +14,6 @@ type JobConfig struct {
 	OverrideName       string `yaml:"name"`
 	UpdateEvery        int    `yaml:"update_every" validate:"gte=1"`
 	AutoDetectionRetry int    `yaml:"autodetection_retry" validate:"gte=0"`
-	ChartCleanup       int    `yaml:"chart_cleanup" validate:"gte=0"`
 	MaxRetries         int    `yaml:"Retries" validate:"gte=0"`
 }
 
@@ -23,8 +22,22 @@ func JobNewConfig() *JobConfig {
 	return &JobConfig{
 		UpdateEvery:        1,
 		AutoDetectionRetry: 0,
-		ChartCleanup:       10,
 		MaxRetries:         60,
+	}
+}
+
+func NewJob(modName string, module Module, config *JobConfig, out io.Writer) *Job {
+	buf := &bytes.Buffer{}
+	return &Job{
+		ModuleName:   modName,
+		module:       module,
+		JobConfig:    config,
+		out:          out,
+		tick:         make(chan int),
+		shutdownHook: make(chan struct{}),
+		buf:          buf,
+		priority:     70000,
+		apiWriter:    apiWriter{Writer: buf},
 	}
 }
 
@@ -54,21 +67,6 @@ func (j Job) name() string {
 		return j.ModuleName
 	}
 	return fmt.Sprintf("%s_%s", j.ModuleName, j.JobName)
-}
-
-func NewJob(modName string, module Module, config *JobConfig, out io.Writer) *Job {
-	buf := &bytes.Buffer{}
-	return &Job{
-		ModuleName:   modName,
-		module:       module,
-		JobConfig:    config,
-		out:          out,
-		tick:         make(chan int),
-		shutdownHook: make(chan struct{}),
-		buf:          buf,
-		priority:     70000,
-		apiWriter:    apiWriter{Writer: buf},
-	}
 }
 
 func (j *Job) Init() error {
