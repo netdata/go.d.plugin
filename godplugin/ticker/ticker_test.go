@@ -9,7 +9,7 @@ var allowedDelta = 5 * time.Millisecond
 
 func TestTickerParallel(t *testing.T) {
 	for i := 0; i < 100; i++ {
-		//i := i
+		i := i
 		go func() {
 			time.Sleep(time.Second / 100 * time.Duration(i))
 			TestTicker(t)
