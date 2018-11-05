@@ -23,18 +23,18 @@ const (
 	PercentOfIncremental dimAlgo = "percentage-of-incremental-row"
 )
 
-func (c chartType) String() string {
-	switch c {
-	case Line, Area, Stacked:
-		return string(c)
-	}
-	return ""
-}
-
 func (d dimAlgo) String() string {
 	switch d {
 	case Absolute, Incremental, PercentOfAbsolute, PercentOfIncremental:
 		return string(d)
+	}
+	return ""
+}
+
+func (c chartType) String() string {
+	switch c {
+	case Line, Area, Stacked:
+		return string(c)
 	}
 	return ""
 }
