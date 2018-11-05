@@ -34,7 +34,7 @@ type (
 	// Plugin Plugin
 	Plugin struct {
 		Option        *cli.Option
-		Config        *Config
+		Config        *PluginConfig
 		ModuleConfDir string
 		Out           io.Writer
 		modules       modules.Registry
