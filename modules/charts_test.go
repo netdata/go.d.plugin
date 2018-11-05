@@ -65,12 +65,6 @@ func TestOpts_String(t *testing.T) {
 	}.String(), "obsolete hidden")
 }
 
-func TestNewCharts(t *testing.T) {
-	charts := NewCharts(createTestChart("1"), createTestChart("2"), createTestChart("1"))
-	assert.IsType(t, (*Charts)(nil), charts)
-	assert.True(t, len(*charts) == 2)
-}
-
 func TestCharts_Copy(t *testing.T) {
 	chart := createTestChart("")
 	chartCopy := chart.Copy()
@@ -83,4 +77,62 @@ func TestCharts_Copy(t *testing.T) {
 	for idx := range chart.Vars {
 		assert.False(t, chart.Vars[idx] == chartCopy.Vars[idx], "char var points to the same address")
 	}
+}
+
+func TestNewCharts(t *testing.T) {
+	charts := NewCharts(
+		createTestChart("1"),
+		createTestChart("2"),
+		createTestChart("1"),
+		createTestChart(""),
+	)
+	assert.IsType(t, (*Charts)(nil), charts)
+	assert.Len(t, *charts, 2)
+}
+
+func TestCharts_Add(t *testing.T) {
+	charts := new(Charts)
+	chart1 := createTestChart("1")
+	chart2 := createTestChart("2")
+	chart3 := createTestChart("")
+	charts.Add(
+		chart1,
+		chart2,
+		chart1,
+		chart3,
+	)
+	assert.Len(t, *charts, 2)
+	assert.True(t, (*charts)[0] == chart1)
+	assert.True(t, (*charts)[1] == chart2)
+}
+
+func TestCharts_Get(t *testing.T) {
+	chart := createTestChart("1")
+	charts := &Charts{
+		chart,
+	}
+	assert.Nil(t, charts.Get("2"))
+	assert.IsType(t, (*Chart)(nil), charts.Get("1"))
+	assert.True(t, chart == charts.Get("1"))
+}
+
+func TestCharts_Has(t *testing.T) {
+	chart := createTestChart("1")
+	charts := &Charts{
+		chart,
+	}
+
+	assert.True(t, charts.Has("1"))
+	assert.False(t, charts.Has("2"))
+}
+
+func TestCharts_Remove(t *testing.T) {
+	chart := createTestChart("1")
+	charts := &Charts{
+		chart,
+	}
+
+	assert.False(t, charts.Remove("2"))
+	assert.True(t, charts.Remove("1"))
+	assert.Len(t, *charts, 0)
 }
