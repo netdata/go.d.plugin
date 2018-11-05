@@ -5,24 +5,39 @@ import (
 	"strings"
 )
 
-type chartType string
+type (
+	dimAlgo   string
+	chartType string
+	dimHidden bool
+	dimDivMul int
+)
 
 const (
 	Line    chartType = "line"
 	Area    chartType = "area"
 	Stacked chartType = "stacked"
-)
 
-type dimAlgo string
-
-const (
 	Absolute             dimAlgo = "absolute"
 	Incremental          dimAlgo = "incremental"
 	PercentOfAbsolute    dimAlgo = "percentage-of-absolute-row"
 	PercentOfIncremental dimAlgo = "percentage-of-incremental-row"
 )
 
-type dimHidden bool
+func (c chartType) String() string {
+	switch c {
+	case Line, Area, Stacked:
+		return string(c)
+	}
+	return ""
+}
+
+func (d dimAlgo) String() string {
+	switch d {
+	case Absolute, Incremental, PercentOfAbsolute, PercentOfIncremental:
+		return string(d)
+	}
+	return ""
+}
 
 func (d dimHidden) String() string {
 	if d {
@@ -30,8 +45,6 @@ func (d dimHidden) String() string {
 	}
 	return ""
 }
-
-type dimDivMul int
 
 func (d dimDivMul) String() string {
 	if d == 0 {
