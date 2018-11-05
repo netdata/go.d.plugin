@@ -8,7 +8,7 @@ type (
 	Dims    = modules.Dims
 )
 
-var uCharts = Charts{
+var charts = Charts{
 	{
 		ID:    "chart1",
 		Title: "qwe", Units: "qw", Fam: "random",

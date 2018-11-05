@@ -17,7 +17,7 @@ func (e *Example) Check() bool {
 }
 
 func (Example) GetCharts() *modules.Charts {
-	return modules.NewCharts(uCharts...)
+	return charts.Copy()
 }
 
 func (e *Example) GetData() map[string]int64 {

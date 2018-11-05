@@ -119,15 +119,6 @@ func (o Opts) String() string {
 }
 
 //------------------------------------------------------Charts----------------------------------------------------------
-
-func NewCharts(charts ...*Chart) *Charts {
-	c := new(Charts)
-	for idx := range charts {
-		c.Add(charts[idx].Copy())
-	}
-	return c
-}
-
 func (c *Charts) Add(charts ...*Chart) {
 	for _, v := range charts {
 		if c.index(v.ID) != -1 || !v.isValid() {
@@ -162,12 +153,12 @@ func (c *Charts) Remove(chartID string) bool {
 	return true
 }
 
-func (c Charts) Copy() Charts {
+func (c Charts) Copy() *Charts {
 	charts := Charts{}
 	for idx := range c {
 		charts = append(charts, c[idx].Copy())
 	}
-	return charts
+	return &charts
 }
 
 func (c Charts) index(chartID string) int {
