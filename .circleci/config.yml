@@ -34,7 +34,8 @@ jobs:
     - restore_cache:
         keys:
         - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
-    - run: go test ./... -race -cover -covermode=atomic
+    - run: go test ./... -coverprofile=coverage.txt -race -cover -covermode=atomic
+    - run: bash <(curl -s https://codecov.io/bash)
 
 workflows:
   version: 2
