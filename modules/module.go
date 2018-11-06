@@ -30,8 +30,6 @@ type Module interface {
 // Base is a helper struct. All modules should embed this struct.
 type Base struct {
 	*logger.Logger
-	updateEvery int
-	moduleName  string
 }
 
 // Init Init
