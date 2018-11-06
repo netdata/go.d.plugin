@@ -162,6 +162,18 @@ func TestChart_AddVar(t *testing.T) {
 	assert.Len(t, chart.Vars, 2)
 }
 
+func TestChart_GetDim(t *testing.T) {
+	chart := &Chart{
+		Dims: Dims{
+			{ID: "1"},
+			{ID: "2"},
+		},
+	}
+
+	assert.Nil(t, chart.GetDim("3"))
+	assert.True(t, chart.GetDim("1") != nil && chart.GetDim("1").ID == "1")
+}
+
 func TestChart_RemoveDim(t *testing.T) {
 	chart := createTestChart("1")
 

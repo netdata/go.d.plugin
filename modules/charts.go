@@ -47,10 +47,10 @@ func (d dimHidden) String() string {
 }
 
 func (d dimDivMul) String() string {
-	if d == 0 {
-		return ""
+	if d != 0 {
+		return strconv.Itoa(int(d))
 	}
-	return strconv.Itoa(int(d))
+	return ""
 }
 
 type (
@@ -194,6 +194,13 @@ func (c *Chart) AddVar(newVar *Var) bool {
 	return true
 }
 
+func (c *Chart) GetDim(dimID string) *Dim {
+	if idx := c.indexDim(dimID); idx != -1 {
+		return c.Dims[idx]
+	}
+	return nil
+}
+
 func (c *Chart) RemoveDim(dimID string) bool {
 	idx := c.indexDim(dimID)
 	if idx == -1 {
@@ -205,11 +212,7 @@ func (c *Chart) RemoveDim(dimID string) bool {
 }
 
 func (c Chart) HasDim(dimID string) bool {
-	idx := c.indexDim(dimID)
-	if idx == -1 {
-		return false
-	}
-	return true
+	return c.indexDim(dimID) != -1
 }
 
 func (c Chart) Copy() *Chart {
