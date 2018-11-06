@@ -65,7 +65,7 @@ func (w *apiWriter) set(ID string, value int64) error {
 
 // end complete data collection for the initialized chart
 func (w *apiWriter) end() error {
-	_, err := fmt.Fprintf(w, "END\n")
+	_, err := fmt.Fprintf(w, "END\n\n")
 	return err
 }
 
