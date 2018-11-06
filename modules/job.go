@@ -248,6 +248,12 @@ func (j *job) createChart(chart *Chart) {
 			dim.Hidden,
 		)
 	}
+	for _, v := range chart.Vars {
+		if v.Value == 0 {
+			continue
+		}
+		j.apiWriter.set(v.ID, v.Value)
+	}
 }
 
 func (j *job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bool {
