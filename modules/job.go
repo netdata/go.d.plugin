@@ -9,6 +9,8 @@ import (
 	"github.com/l2isbad/go.d.plugin/logger"
 )
 
+const penaltyStep = 5
+
 type JobConfig struct {
 	JobName            string `yaml:"job_name"`
 	OverrideName       string `yaml:"name"`
@@ -151,28 +153,32 @@ LOOP:
 		case <-j.shutdownHook:
 			break LOOP
 		case t := <-j.tick:
-			if t%j.UpdateEvery != 0 {
+			if t%(j.UpdateEvery+j.penalty()) != 0 {
 				continue LOOP
 			}
-
-			curTime := time.Now()
-			sinceLast := calcSinceLast(curTime, j.prevRun)
-			data := j.getData()
-
-			//if j.Panicked {
-			//
-			//}
-
-			if !j.populateMetrics(data, sinceLast) {
-				j.retries++
-			} else {
-				j.prevRun = curTime
-			}
-
-			io.Copy(j.out, j.buf)
-			j.buf.Reset()
+			j.runOnce()
 		}
 	}
+}
+
+func (j *job) runOnce() {
+	curTime := time.Now()
+	sinceLast := calcSinceLast(curTime, j.prevRun)
+
+	data := j.getData()
+
+	//if j.Panicked {
+	//
+	//}
+
+	if j.populateMetrics(data, sinceLast) {
+		j.prevRun = curTime
+	} else {
+		j.retries++
+	}
+
+	io.Copy(j.out, j.buf)
+	j.buf.Reset()
 }
 
 func (j *job) Shutdown() {
@@ -289,17 +295,14 @@ func (j *job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bo
 	return chart.updated
 }
 
+func (j job) penalty() int {
+	return j.retries / penaltyStep * penaltyStep * j.UpdateEvery / 2
+}
+
 func calcSinceLast(curTime, prevRun time.Time) int {
 	if prevRun.IsZero() {
 		return 0
 	}
 	return int(int64(curTime.Sub(prevRun)) / (int64(time.Microsecond) / int64(time.Nanosecond)))
 
-}
-
-func calcPenalty(retries, updateEvery int) int {
-	if retries%5 == 0 {
-		return retries * updateEvery / 2
-	}
-	return 0
 }
