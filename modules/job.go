@@ -113,6 +113,7 @@ func (j *job) Init() bool {
 	defer func() {
 		if r := recover(); r != nil {
 			j.panicked = true
+			j.module.Cleanup()
 			j.Errorf("PANIC %v", r)
 		}
 
@@ -128,6 +129,7 @@ func (j *job) Check() bool {
 	defer func() {
 		if r := recover(); r != nil {
 			j.panicked = true
+			j.module.Cleanup()
 			j.Errorf("PANIC %v", r)
 		}
 	}()
