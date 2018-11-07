@@ -110,6 +110,14 @@ func (j job) Panicked() bool {
 }
 
 func (j *job) Init() bool {
+	defer func() {
+		if r := recover(); r != nil {
+			j.panicked = true
+			j.Errorf("PANIC %v", r)
+		}
+
+	}()
+
 	j.Logger = logger.New(j.ModuleName(), j.Name())
 	j.module.SetLogger(j.Logger)
 
@@ -122,19 +130,16 @@ func (j *job) Check() bool {
 			j.panicked = true
 			j.Errorf("PANIC %v", r)
 		}
-
 	}()
+
 	return j.module.Check()
 }
 
 func (j *job) PostCheck() bool {
-	charts := j.module.GetCharts()
-	if charts == nil {
+	if j.charts = j.module.GetCharts(); j.charts == nil {
 		j.Error("GetCharts() [FAILED]")
 		return false
 	}
-
-	j.charts = charts
 	return true
 }
 
