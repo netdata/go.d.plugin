@@ -7,7 +7,7 @@ package springboot2
 //	"net/http/httptest"
 //	"testing"
 //
-//	"github.com/l2isbad/go.d.plugin/modules/pkg/web"
+//	"github.com/l2isbad/go.d.plugin/modules/helpers/web"
 //	"github.com/stretchr/testify/assert"
 //)
 //
