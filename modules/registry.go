@@ -4,7 +4,6 @@ type (
 	// Creator is a builder to create job instance
 	Creator struct {
 		UpdateEvery       *int
-		ChartCleanup      *int
 		DisabledByDefault bool
 		Create            func() Module
 	}

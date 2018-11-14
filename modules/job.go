@@ -9,48 +9,18 @@ import (
 	"github.com/l2isbad/go.d.plugin/logger"
 )
 
-const penaltyStep = 5
+const (
+	penaltyStep = 5
+	maxPenalty  = 600
+)
 
-type JobConfig struct {
-	JobName            string `yaml:"job_name"`
-	OverrideName       string `yaml:"name"`
-	UpdateEvery        int    `yaml:"update_every" validate:"gte=1"`
-	AutoDetectionRetry int    `yaml:"autodetection_retry" validate:"gte=0"`
-	MaxRetries         int    `yaml:"Retries" validate:"gte=0"`
-}
-
-// JobNewConfig returns JobConfig with default values
-func JobNewConfig() *JobConfig {
-	return &JobConfig{
-		UpdateEvery:        1,
-		AutoDetectionRetry: 0,
-		MaxRetries:         60,
-	}
-}
-
-type Job interface {
-	ModuleName() string
-	Name() string
-	AutoDetectionRetry() int
-	Panicked() bool
-	Inited() bool
-
-	Init() bool
-	Check() bool
-	PostCheck() bool
-
-	Tick(clock int)
-	MainLoop()
-	Shutdown()
-}
-
-func NewJob(modName string, module Module, config *JobConfig, out io.Writer) Job {
+func NewJob(modName string, module Module, out io.Writer) *job {
 	buf := &bytes.Buffer{}
 	return &job{
-		moduleName:   modName,
-		module:       module,
-		JobConfig:    config,
-		out:          out,
+		moduleName: modName,
+		module:     module,
+		out:        out,
+
 		tick:         make(chan int),
 		shutdownHook: make(chan struct{}),
 		buf:          buf,
@@ -59,13 +29,16 @@ func NewJob(modName string, module Module, config *JobConfig, out io.Writer) Job
 }
 
 type job struct {
-	*JobConfig
 	*logger.Logger
-	module Module
-
+	module     Module
 	moduleName string
-	inited     bool
-	panicked   bool
+
+	Nam             string `yaml:"name"`
+	UpdateEvery     int    `yaml:"update_every" validate:"gte=1"`
+	AutoDetectRetry int    `yaml:"autodetection_retry" validate:"gte=0"`
+
+	initialized bool
+	panicked    bool
 
 	charts       *Charts
 	tick         chan int
@@ -78,8 +51,8 @@ type job struct {
 	prevRun time.Time
 }
 
-func (j job) fullName() string {
-	if j.ModuleName() == j.Name() {
+func (j job) FullName() string {
+	if j.Name() == "" {
 		return j.ModuleName()
 	}
 	return fmt.Sprintf("%s_%s", j.ModuleName(), j.Name())
@@ -90,17 +63,11 @@ func (j job) ModuleName() string {
 }
 
 func (j job) Name() string {
-	if j.OverrideName != "" {
-		return j.OverrideName
-	}
-	if j.JobName != "" {
-		return j.JobName
-	}
-	return j.ModuleName()
+	return j.Nam
 }
 
-func (j job) Inited() bool {
-	return j.inited
+func (j job) Initialized() bool {
+	return j.initialized
 }
 
 func (j job) Panicked() bool {
@@ -136,11 +103,8 @@ func (j *job) Check() bool {
 }
 
 func (j *job) PostCheck() bool {
-	if j.charts = j.module.GetCharts(); j.charts == nil {
-		j.Error("GetCharts() [FAILED]")
-		return false
-	}
-	return true
+	j.charts = j.module.GetCharts()
+	return j.charts != nil
 }
 
 func (j *job) Tick(clock int) {
@@ -195,7 +159,7 @@ func (j *job) Shutdown() {
 }
 
 func (j job) AutoDetectionRetry() int {
-	return j.JobConfig.AutoDetectionRetry
+	return j.AutoDetectRetry
 }
 
 func (j *job) getData() (result map[string]int64) {
@@ -232,7 +196,7 @@ func (j *job) populateMetrics(data map[string]int64, sinceLast int) bool {
 
 func (j *job) createChart(chart *Chart) {
 	j.apiWriter.chart(
-		j.fullName(),
+		j.FullName(),
 		chart.ID,
 		chart.OverID,
 		chart.Title,
@@ -256,10 +220,13 @@ func (j *job) createChart(chart *Chart) {
 		)
 	}
 	for _, v := range chart.Vars {
-		if v.Value == 0 {
+		if v.Value != 0 {
 			continue
 		}
-		j.apiWriter.set(v.ID, v.Value)
+		j.apiWriter.set(
+			v.ID,
+			v.Value,
+		)
 	}
 }
 
@@ -268,7 +235,7 @@ func (j *job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bo
 		sinceLast = 0
 	}
 
-	j.apiWriter.begin(j.fullName(), chart.ID, sinceLast)
+	j.apiWriter.begin(j.FullName(), chart.ID, sinceLast)
 
 	var updated int
 
@@ -285,6 +252,7 @@ func (j *job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bo
 	}
 
 	j.apiWriter.end()
+
 	chart.updated = updated > 0
 
 	if chart.updated {
@@ -297,7 +265,11 @@ func (j *job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bo
 }
 
 func (j job) penalty() int {
-	return j.retries / penaltyStep * penaltyStep * j.UpdateEvery / 2
+	v := j.retries / penaltyStep * penaltyStep * j.UpdateEvery / 2
+	if v > maxPenalty {
+		return maxPenalty
+	}
+	return v
 }
 
 func calcSinceLast(curTime, prevRun time.Time) int {
@@ -305,5 +277,4 @@ func calcSinceLast(curTime, prevRun time.Time) int {
 		return 0
 	}
 	return int(int64(curTime.Sub(prevRun)) / (int64(time.Microsecond) / int64(time.Nanosecond)))
-
 }

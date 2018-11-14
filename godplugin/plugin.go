@@ -2,6 +2,7 @@ package godplugin
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"io"
 	"os"
 	"os/signal"
@@ -10,8 +11,6 @@ import (
 	"time"
 
 	"github.com/go-playground/validator"
-	"gopkg.in/yaml.v2"
-
 	"github.com/l2isbad/go.d.plugin/cli"
 	"github.com/l2isbad/go.d.plugin/godplugin/ticker"
 	"github.com/l2isbad/go.d.plugin/logger"
@@ -20,13 +19,32 @@ import (
 	_ "github.com/l2isbad/go.d.plugin/modules/all"
 )
 
+type Job interface {
+	ModuleName() string
+	Name() string
+	AutoDetectionRetry() int
+
+	Initialized() bool
+	Panicked() bool
+
+	Init() bool
+	Check() bool
+	PostCheck() bool
+	//Cleanup()
+
+	Tick(clock int)
+	MainLoop()
+	Shutdown()
+}
+
 var log = logger.New("plugin", "main")
 var validate = validator.New()
 
 func New() *Plugin {
 	return &Plugin{
 		modules:   make(modules.Registry),
-		loopQueue: make([]modules.Job, 0),
+		loopQueue: make([]Job, 0),
+		checkCh:   make(chan Job),
 	}
 }
 
@@ -37,8 +55,10 @@ type (
 		Config        *PluginConfig
 		ModuleConfDir string
 		Out           io.Writer
-		modules       modules.Registry
-		loopQueue     []modules.Job
+
+		modules   modules.Registry
+		loopQueue []Job
+		checkCh   chan Job
 	}
 )
 
@@ -81,20 +101,12 @@ func (p *Plugin) Setup() bool {
 }
 
 func (p *Plugin) Serve() {
-	go func() {
-		signalChan := make(chan os.Signal, 1)
-		signal.Notify(signalChan, syscall.SIGINT)
-		for {
-			switch <-signalChan {
-			case syscall.SIGINT:
-				log.Info("SIGINT received. Terminating...")
-				os.Exit(0)
-			}
-		}
-	}()
+	go shutdownTask()
+	go p.checkJobs()
 
-	checkCh := p.createCheckTask()
-	p.createJobs(checkCh)
+	for _, job := range p.createJobs() {
+		p.checkCh <- job
+	}
 
 	p.MainLoop()
 }
@@ -116,72 +128,94 @@ func (p *Plugin) MainLoop() {
 	}
 }
 
-func (p *Plugin) createCheckTask() chan modules.Job {
-	ch := make(chan modules.Job)
-	go func() {
-		for job := range ch {
-			if !job.Inited() && !job.Init() {
-				log.Errorf("%s[%s] Init failed", job.ModuleName(), job.Name())
-				continue
-			}
-
-			ok := job.Check()
-
-			if ok {
-				if job.PostCheck() {
-					p.loopQueue = append(p.loopQueue, job)
-					go job.MainLoop()
-				}
-				continue
-			}
-
-			if job.Panicked() {
-				continue
-			}
-
-			if job.AutoDetectionRetry() > 0 {
-				go func(j modules.Job) {
-					time.Sleep(time.Second * time.Duration(j.AutoDetectionRetry()))
-					ch <- j
-				}(job)
-			}
-			log.Errorf("%s[%s] Check failed", job.ModuleName(), job.Name())
+func (p *Plugin) checkJobs() {
+	for job := range p.checkCh {
+		if !job.Initialized() && !job.Init() {
+			log.Errorf("%s[%s] Init failed", job.ModuleName(), job.Name())
+			continue
 		}
-	}()
-	return ch
+
+		ok := job.Check()
+
+		if job.Panicked() {
+			continue
+		}
+
+		if !ok && job.AutoDetectionRetry() > 0 {
+			go recheckTask(p.checkCh, job)
+			continue
+		}
+
+		if !ok {
+			log.Errorf("%s[%s] Check failed", job.ModuleName(), job.Name())
+			continue
+		}
+
+		if !job.PostCheck() {
+			log.Errorf("%s[%s] PostCheck failed", job.ModuleName(), job.Name())
+		}
+
+		p.loopQueue = append(p.loopQueue, job)
+		go job.MainLoop()
+	}
 }
 
-func (p *Plugin) createJobs(ch chan modules.Job) {
-	for modName, creator := range p.modules {
-		var rawConfigs rawModConfig
-		err := rawConfigs.Load(fmt.Sprintf("/opt/go.d/%s.conf", modName))
+func (p *Plugin) createJobs() []Job {
+	var jobs []Job
+	for name, creator := range p.modules {
 
-		if err != nil && !(os.IsNotExist(err) || os.IsPermission(err)) {
-			log.Errorf("skipping '%s': %s", modName, err)
+		if creator.DisabledByDefault {
 			continue
-		} else if err != nil {
-			log.Errorf("'%s': %s", modName, err)
 		}
 
-		for _, rawConf := range rawConfigs {
-			conf := modules.JobNewConfig()
+		var modConfig moduleConfig
+
+		// FIXME:
+		err := modConfig.load(fmt.Sprintf("/opt/go.d/%s.conf", name))
+
+		// FIXME:
+		if err != nil {
+			continue
+		}
+
+		// FIXME:
+		if len(modConfig.Jobs) == 0 {
+			continue
+		}
+
+		modConfig.updateJobConfigs()
+
+		for _, conf := range modConfig.Jobs {
 			mod := creator.Create()
-			b, _ := yaml.Marshal(rawConf)
+			yaml.Unmarshal(asBytes(conf), mod)
 
-			yaml.Unmarshal(b, conf)
-			if err := validate.Struct(conf); err != nil {
-				log.Error(err)
-				continue
-			}
+			job := modules.NewJob(name, mod, p.Out)
+			yaml.Unmarshal(asBytes(conf), job)
 
-			yaml.Unmarshal(b, mod)
-			if err := validate.Struct(mod); err != nil {
-				log.Error(err)
-				continue
-			}
-
-			job := modules.NewJob(modName, mod, conf, os.Stdout)
-			ch <- job
+			jobs = append(jobs, job)
 		}
 	}
+	return jobs
+}
+
+func asBytes(i interface{}) []byte {
+	v, _ := yaml.Marshal(i)
+	return v
+}
+
+func shutdownTask() {
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, syscall.SIGINT)
+	for {
+		switch <-signalChan {
+		case syscall.SIGINT:
+			log.Info("SIGINT received. Terminating...")
+			os.Exit(0)
+		}
+	}
+}
+
+func recheckTask(ch chan Job, job Job) {
+	time.Sleep(time.Second * time.Duration(job.AutoDetectionRetry()))
+	ch <- job
 }
