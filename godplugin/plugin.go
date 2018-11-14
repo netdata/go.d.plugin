@@ -153,6 +153,7 @@ func (p *Plugin) checkJobs() {
 
 		if !job.PostCheck() {
 			log.Errorf("%s[%s] PostCheck failed", job.ModuleName(), job.Name())
+			continue
 		}
 
 		p.loopQueue = append(p.loopQueue, job)

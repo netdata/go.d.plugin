@@ -220,7 +220,7 @@ func (j *job) createChart(chart *Chart) {
 		)
 	}
 	for _, v := range chart.Vars {
-		if v.Value != 0 {
+		if v.Value == 0 {
 			continue
 		}
 		j.apiWriter.set(
