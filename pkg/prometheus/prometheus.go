@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/l2isbad/go.d.plugin/helpers/web"
+	"github.com/l2isbad/go.d.plugin/pkg/web"
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/pkg/textparse"
 )
