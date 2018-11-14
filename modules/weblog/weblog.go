@@ -10,7 +10,7 @@ package weblog
 //
 //	"bufio"
 //	"github.com/l2isbad/go.d.plugin/internal/modules"
-//	"github.com/l2isbad/go.d.plugin/modules/helpers/tail"
+//	"github.com/l2isbad/go.d.plugin/modules/pkg/tail"
 //	"github.com/l2isbad/go.d.plugin/pkg/charts"
 //)
 //
