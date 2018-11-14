@@ -12,6 +12,14 @@ type Example struct {
 	data map[string]int64
 }
 
+func New() modules.Creator {
+	return modules.Creator{
+		Create: func() modules.Module {
+			return &Example{data: make(map[string]int64)}
+		},
+	}
+}
+
 func (e *Example) Check() bool {
 	return true
 }
@@ -28,11 +36,5 @@ func (e *Example) GetData() map[string]int64 {
 }
 
 func init() {
-	modules.Register("example", modules.Creator{
-		Create: func() modules.Module {
-			return &Example{
-				data: make(map[string]int64),
-			}
-		},
-	})
+	modules.Register("example", New())
 }
