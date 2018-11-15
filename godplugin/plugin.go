@@ -169,44 +169,49 @@ func (p *Plugin) checkJobs() {
 func (p *Plugin) createJobs() []Job {
 	var jobs []Job
 	for name, creator := range p.modules {
-
-		if creator.DisabledByDefault {
-			continue
-		}
-
 		var modConfig moduleConfig
 
 		// FIXME:
 		err := modConfig.load(fmt.Sprintf("/opt/go.d/%s.conf", name))
 
-		// FIXME:
 		if err != nil {
+			log.Errorf("skipping %s: %s", name, err)
 			continue
 		}
 
-		// FIXME:
 		if len(modConfig.Jobs) == 0 {
+			log.Errorf("skipping %s: config 'Jobs' section is empty or not exist", name)
 			continue
 		}
 
 		modConfig.updateJobConfigs()
 
+		jobName := func(conf map[string]interface{}) interface{} {
+			if name := conf["name"]; name != nil {
+				return name
+			}
+			return "unnamed"
+		}
+
 		for _, conf := range modConfig.Jobs {
 			mod := creator.Create()
-			yaml.Unmarshal(asBytes(conf), mod)
+
+			if err := unmarshalAndValidate(conf, mod); err != nil {
+				log.Errorf("skipping %s[%s]: %s", name, jobName(conf), err)
+				continue
+			}
 
 			job := modules.NewJob(name, mod, p.Out)
-			yaml.Unmarshal(asBytes(conf), job)
+
+			if err := unmarshalAndValidate(conf, job); err != nil {
+				log.Errorf("skipping %s[%s]: %s", name, jobName(conf), err)
+				continue
+			}
 
 			jobs = append(jobs, job)
 		}
 	}
 	return jobs
-}
-
-func asBytes(i interface{}) []byte {
-	v, _ := yaml.Marshal(i)
-	return v
 }
 
 func shutdownTask() {
@@ -224,4 +229,15 @@ func shutdownTask() {
 func recheckTask(ch chan Job, job Job) {
 	time.Sleep(time.Second * time.Duration(job.AutoDetectionRetry()))
 	ch <- job
+}
+
+func unmarshalAndValidate(rawConf map[string]interface{}, module interface{}) error {
+	b, _ := yaml.Marshal(rawConf)
+	if err := yaml.Unmarshal(b, module); err != nil {
+		return err
+	}
+	if err := validate.Struct(module); err != nil {
+		return err
+	}
+	return nil
 }
