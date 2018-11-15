@@ -2,7 +2,6 @@ package godplugin
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io"
 	"os"
 	"os/signal"
@@ -11,6 +10,8 @@ import (
 	"time"
 
 	"github.com/go-playground/validator"
+	"gopkg.in/yaml.v2"
+
 	"github.com/l2isbad/go.d.plugin/cli"
 	"github.com/l2isbad/go.d.plugin/godplugin/ticker"
 	"github.com/l2isbad/go.d.plugin/logger"
@@ -161,6 +162,7 @@ func (p *Plugin) checkJobs() {
 			continue
 		}
 
+		// FIXME:
 		p.loopQueue = append(p.loopQueue, job)
 		go job.MainLoop()
 	}

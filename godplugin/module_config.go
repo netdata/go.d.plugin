@@ -29,18 +29,16 @@ func (m *moduleConfig) load(filename string) error {
 
 func (m *moduleConfig) updateJobConfigs() {
 	for key, val := range globalDefaults {
-		setDefault(m.Global, key, val)
+		if _, ok := m.Global[key]; !ok {
+			m.Global[key] = val
+		}
 	}
 
 	for _, job := range m.Jobs {
 		for key, val := range m.Global {
-			setDefault(job, key, val)
+			if _, ok := job[key]; !ok {
+				job[key] = val
+			}
 		}
-	}
-}
-
-func setDefault(m map[string]interface{}, key string, val interface{}) {
-	if _, ok := m[key]; !ok {
-		m[key] = val
 	}
 }
