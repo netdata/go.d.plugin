@@ -62,6 +62,27 @@ type (
 	}
 )
 
+func (p *Plugin) populateActiveModules() {
+	if p.Option.Module != "all" {
+		if creator, exist := modules.DefaultRegistry[p.Option.Module]; exist {
+			p.modules[p.Option.Module] = creator
+		}
+		return
+	}
+
+	for name, creator := range modules.DefaultRegistry {
+		if creator.DisabledByDefault && !p.Config.IsModuleEnabled(name, true) {
+			log.Infof("'%s' disabled by default", name)
+			continue
+		}
+		if !p.Config.IsModuleEnabled(name, false) {
+			log.Infof("'%s' disabled in configuration file", name)
+			continue
+		}
+		p.modules[name] = creator
+	}
+}
+
 func (p *Plugin) Setup() bool {
 	if !p.Config.Enabled {
 		fmt.Fprintln(p.Out, "DISABLE")
@@ -69,23 +90,7 @@ func (p *Plugin) Setup() bool {
 		return false
 	}
 
-	if p.Option.Module != "all" {
-		if creator, exist := modules.DefaultRegistry[p.Option.Module]; exist {
-			p.modules[p.Option.Module] = creator
-		}
-	} else {
-		for name, creator := range modules.DefaultRegistry {
-			if creator.DisabledByDefault && !p.Config.IsModuleEnabled(name, true) {
-				log.Infof("'%s' disabled by default", name)
-				continue
-			}
-			if !p.Config.IsModuleEnabled(name, false) {
-				log.Infof("'%s' disabled in configuration file", name)
-				continue
-			}
-			p.modules[name] = creator
-		}
-	}
+	p.populateActiveModules()
 
 	if len(p.modules) == 0 {
 		log.Info("no modules to run")
