@@ -184,8 +184,6 @@ func (p *Plugin) createJobs() []Job {
 			continue
 		}
 
-		modConfig.updateJobConfigs()
-
 		jobName := func(conf map[string]interface{}) interface{} {
 			if name := conf["name"]; name != nil {
 				return name
@@ -193,7 +191,7 @@ func (p *Plugin) createJobs() []Job {
 			return "unnamed"
 		}
 
-		for _, conf := range modConfig.Jobs {
+		for _, conf := range createJobConfigs(modConfig, creator.UpdateEvery, p.Option.UpdateEvery) {
 			mod := creator.Create()
 
 			if err := unmarshalAndValidate(conf, mod); err != nil {
