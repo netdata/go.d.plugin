@@ -44,10 +44,10 @@ func createJobConfigs(modConf moduleConfig, modUpdateEvery *int, globalUpdateEve
 	return modConf.Jobs
 }
 
-func merge(a, b map[string]interface{}) {
-	for key, val := range b {
-		if _, ok := a[key]; !ok {
-			a[key] = val
+func merge(dst, src map[string]interface{}) {
+	for key, val := range src {
+		if _, ok := dst[key]; !ok {
+			dst[key] = val
 		}
 	}
 }
