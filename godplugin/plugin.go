@@ -21,8 +21,10 @@ import (
 )
 
 type Job interface {
+	FullName() string
 	ModuleName() string
 	Name() string
+
 	AutoDetectionRetry() int
 
 	Initialized() bool
@@ -137,7 +139,14 @@ func (p *Plugin) MainLoop() {
 }
 
 func (p *Plugin) checkJobs() {
+	started := make(map[string]bool)
+
 	for job := range p.checkCh {
+		if started[job.FullName()] {
+			log.Warningf("skipping %s[%s]: already served by another job", job.ModuleName(), job.Name())
+			continue
+		}
+
 		if !job.Initialized() && !job.Init() {
 			log.Errorf("%s[%s] Init failed", job.ModuleName(), job.Name())
 			continue
@@ -162,6 +171,9 @@ func (p *Plugin) checkJobs() {
 			continue
 		}
 
+		started[job.FullName()] = true
+
+		log.Infof("%s[%s]: Check OK", job.ModuleName(), job.Name())
 		// FIXME:
 		p.loopQueue = append(p.loopQueue, job)
 		go job.MainLoop()
