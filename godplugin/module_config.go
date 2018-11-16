@@ -6,9 +6,19 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type rawConf map[string]interface{}
+
+func (r *rawConf) merge(src rawConf) {
+	for key, val := range src {
+		if _, ok := (*r)[key]; !ok {
+			(*r)[key] = val
+		}
+	}
+}
+
 type moduleConfig struct {
-	Global map[string]interface{}
-	Jobs   []map[string]interface{}
+	Global rawConf
+	Jobs   []rawConf
 }
 
 func (m *moduleConfig) load(filename string) error {
@@ -22,32 +32,22 @@ func (m *moduleConfig) load(filename string) error {
 	return yaml.NewDecoder(file).Decode(m)
 }
 
-func createJobConfigs(modConf moduleConfig, modUpdateEvery *int, globalUpdateEvery int) []map[string]interface{} {
-	defaults := map[string]interface{}{
+func (m *moduleConfig) updateJobConfigs(modUpdateEvery, globalUpdateEvery int) {
+	defaults := rawConf{
 		"update_every":        1,
 		"autodetection_retry": 0,
 	}
 
-	if modUpdateEvery != nil {
-		defaults["update_every"] = *modUpdateEvery
+	if modUpdateEvery > 0 {
+		defaults["update_every"] = modUpdateEvery
 	}
 
-	for _, job := range modConf.Jobs {
-		merge(job, modConf.Global)
-		merge(job, defaults)
+	for _, job := range m.Jobs {
+		job.merge(m.Global)
+		job.merge(defaults)
 
 		if v, ok := job["update_every"].(int); ok && v < globalUpdateEvery {
 			job["update_every"] = globalUpdateEvery
-		}
-	}
-
-	return modConf.Jobs
-}
-
-func merge(dst, src map[string]interface{}) {
-	for key, val := range src {
-		if _, ok := dst[key]; !ok {
-			dst[key] = val
 		}
 	}
 }

@@ -103,6 +103,8 @@ func (p *Plugin) Setup() bool {
 		runtime.GOMAXPROCS(p.Config.MaxProcs)
 	}
 
+	log.Infof("minimum update every is set to %d", p.Option.UpdateEvery)
+
 	return true
 }
 
@@ -190,8 +192,9 @@ func (p *Plugin) createJobs() []Job {
 			}
 			return "unnamed"
 		}
+		modConfig.updateJobConfigs(creator.UpdateEvery, p.Option.UpdateEvery)
 
-		for _, conf := range createJobConfigs(modConfig, creator.UpdateEvery, p.Option.UpdateEvery) {
+		for _, conf := range modConfig.Jobs {
 			mod := creator.Create()
 
 			if err := unmarshalAndValidate(conf, mod); err != nil {

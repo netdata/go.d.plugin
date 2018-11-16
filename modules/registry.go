@@ -3,7 +3,7 @@ package modules
 type (
 	// Creator is a builder to create job instance
 	Creator struct {
-		UpdateEvery       *int
+		UpdateEvery       int
 		DisabledByDefault bool
 		Create            func() Module
 	}
