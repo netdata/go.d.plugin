@@ -23,7 +23,7 @@ func main() {
 
 func createPlugin(opt *cli.Option) *godplugin.Plugin {
 	confDir := netdataConfigDir()
-	config := godplugin.NewPluginConfig()
+	config := godplugin.NewConfig()
 	config.Load(confDir)
 
 	plugin := godplugin.New()

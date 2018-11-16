@@ -24,8 +24,8 @@ func (r *rawConfig) merge(src rawConfig) {
 }
 
 type moduleConfig struct {
-	Global rawConfig
-	Jobs   []rawConfig
+	Global rawConfig   `yaml:"global"`
+	Jobs   []rawConfig `yaml:"jobs"`
 }
 
 func (m *moduleConfig) load(filename string) error {

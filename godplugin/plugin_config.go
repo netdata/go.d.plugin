@@ -6,21 +6,21 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func NewPluginConfig() *PluginConfig {
-	return &PluginConfig{
+func NewConfig() *Config {
+	return &Config{
 		DefaultRun: true,
 		Enabled:    true,
 	}
 }
 
-type PluginConfig struct {
+type Config struct {
 	Enabled    bool            `yaml:"enabled"`
 	DefaultRun bool            `yaml:"default_run"`
 	MaxProcs   int             `yaml:"max_procs"`
 	Modules    map[string]bool `yaml:"modules"`
 }
 
-func (c *PluginConfig) Load(filename string) error {
+func (c *Config) Load(filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (c *PluginConfig) Load(filename string) error {
 	return yaml.NewDecoder(file).Decode(c)
 }
 
-func (c *PluginConfig) IsModuleEnabled(module string, explicit bool) bool {
+func (c *Config) IsModuleEnabled(module string, explicit bool) bool {
 	if run, ok := c.Modules[module]; ok {
 		return run
 	}

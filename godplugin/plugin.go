@@ -53,7 +53,7 @@ type (
 	// Plugin Plugin
 	Plugin struct {
 		Option        *cli.Option
-		Config        *PluginConfig
+		Config        *Config
 		ModuleConfDir string
 		Out           io.Writer
 
@@ -186,7 +186,7 @@ func (p *Plugin) createJobs() []Job {
 			continue
 		}
 
-		jobName := func(conf map[string]interface{}) interface{} {
+		jobName := func(conf rawConfig) interface{} {
 			if name := conf["name"]; name != nil {
 				return name
 			}
