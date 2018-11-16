@@ -6,9 +6,16 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type rawConf map[string]interface{}
+var modConfigDefaults = func() rawConfig {
+	return rawConfig{
+		"update_every":        1,
+		"autodetection_retry": 0,
+	}
+}
 
-func (r *rawConf) merge(src rawConf) {
+type rawConfig map[string]interface{}
+
+func (r *rawConfig) merge(src rawConfig) {
 	for key, val := range src {
 		if _, ok := (*r)[key]; !ok {
 			(*r)[key] = val
@@ -17,8 +24,8 @@ func (r *rawConf) merge(src rawConf) {
 }
 
 type moduleConfig struct {
-	Global rawConf
-	Jobs   []rawConf
+	Global rawConfig
+	Jobs   []rawConfig
 }
 
 func (m *moduleConfig) load(filename string) error {
@@ -32,12 +39,7 @@ func (m *moduleConfig) load(filename string) error {
 	return yaml.NewDecoder(file).Decode(m)
 }
 
-func (m *moduleConfig) updateJobConfigs(modUpdateEvery, globalUpdateEvery int) {
-	defaults := rawConf{
-		"update_every":        1,
-		"autodetection_retry": 0,
-	}
-
+func (m *moduleConfig) updateJobs(defaults rawConfig, modUpdateEvery, globalUpdateEvery int) {
 	if modUpdateEvery > 0 {
 		defaults["update_every"] = modUpdateEvery
 	}
