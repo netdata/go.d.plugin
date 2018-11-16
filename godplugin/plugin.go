@@ -150,11 +150,6 @@ func (p *Plugin) checkJobs() {
 		if !ok {
 			log.Errorf("%s[%s] Check failed", job.ModuleName(), job.Name())
 			if job.AutoDetectionRetry() > 0 {
-				log.Infof("%s[%s] scheduling next check in %d seconds",
-					job.ModuleName(),
-					job.Name(),
-					job.AutoDetectionRetry(),
-				)
 				go recheckTask(p.checkCh, job)
 			}
 			continue
@@ -232,6 +227,11 @@ func shutdownTask() {
 }
 
 func recheckTask(ch chan Job, job Job) {
+	log.Infof("%s[%s] scheduling next check in %d seconds",
+		job.ModuleName(),
+		job.Name(),
+		job.AutoDetectionRetry(),
+	)
 	time.Sleep(time.Second * time.Duration(job.AutoDetectionRetry()))
 	ch <- job
 }
