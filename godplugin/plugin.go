@@ -147,13 +147,16 @@ func (p *Plugin) checkJobs() {
 			continue
 		}
 
-		if !ok && job.AutoDetectionRetry() > 0 {
-			go recheckTask(p.checkCh, job)
-			continue
-		}
-
 		if !ok {
 			log.Errorf("%s[%s] Check failed", job.ModuleName(), job.Name())
+			if job.AutoDetectionRetry() > 0 {
+				log.Infof("%s[%s] scheduling next check in %d seconds",
+					job.ModuleName(),
+					job.Name(),
+					job.AutoDetectionRetry(),
+				)
+				go recheckTask(p.checkCh, job)
+			}
 			continue
 		}
 
