@@ -45,9 +45,8 @@ var validate = validator.New()
 
 func New() *Plugin {
 	return &Plugin{
-		modules:   make(modules.Registry),
-		loopQueue: make([]Job, 0),
-		checkCh:   make(chan Job),
+		modules: make(modules.Registry),
+		checkCh: make(chan Job, 1),
 	}
 }
 
