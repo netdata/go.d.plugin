@@ -126,13 +126,12 @@ func (p *Plugin) MainLoop() {
 	tk := ticker.New(time.Second)
 
 	for {
-		select {
-		case clock = <-tk.C:
-			log.Debugf("tick %d", clock)
-			for _, job := range p.loopQueue {
-				log.Debugf("tick job: %s[%s]", job.ModuleName(), job.Name())
-				job.Tick(clock)
-			}
+		clock = <-tk.C
+
+		log.Debugf("tick %d", clock)
+		for _, job := range p.loopQueue {
+			log.Debugf("tick job: %s[%s]", job.ModuleName(), job.Name())
+			job.Tick(clock)
 		}
 	}
 }
