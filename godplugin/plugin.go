@@ -141,7 +141,7 @@ func (p *Plugin) checkJobs() {
 
 	for job := range p.checkCh {
 		if started[job.FullName()] {
-			log.Warningf("skipping %s[%s]: already served by another job", job.ModuleName(), job.Name())
+			log.Infof("skipping %s[%s]: already served by another job", job.ModuleName(), job.Name())
 			continue
 		}
 
