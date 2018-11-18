@@ -187,7 +187,7 @@ func (p *Plugin) createJobs() []Job {
 		err := modConfig.load(fmt.Sprintf("/opt/go.d/%s.conf", name))
 
 		if err != nil {
-			log.Errorf("skipping %s: %s", name, err)
+			log.Errorf("skipping %s: %v", name, err)
 			continue
 		}
 
