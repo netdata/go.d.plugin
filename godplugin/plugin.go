@@ -202,7 +202,7 @@ func (p *Plugin) createJobs() []Job {
 			}
 			return "unnamed"
 		}
-		modConfig.updateJobs(modConfigDefaults(), creator.UpdateEvery, p.Option.UpdateEvery)
+		modConfig.updateJobs(creator.UpdateEvery, p.Option.UpdateEvery)
 
 		for _, conf := range modConfig.Jobs {
 			mod := creator.Create()
