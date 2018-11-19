@@ -1,26 +1,50 @@
-# Golang CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 jobs:
-  build:
+  compile:
     docker:
-      # specify the version
       - image: circleci/golang:1.11
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    #### TEMPLATE_NOTE: go expects specific checkout path representing url
-    #### expecting it in the form of
-    ####   /go/src/github.com/circleci/go-tool
-    ####   /go/src/bitbucket.org/circleci/go-tool
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
     steps:
-      - checkout
+    - checkout
+    - restore_cache:
+        keys:
+        - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+    - run: go get -t -v -d ./...
+    - save_cache:
+        key: go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+        paths:
+        - /go/pkg/mod
+    - run: go build -o /tmp/godplugin github.com/l2isbad/go.d.plugin/cmd/godplugin
+    - run: /tmp/godplugin --help || true
+    - store_artifacts:
+        path: /tmp/godplugin
+  vet:
+    docker:
+    - image: circleci/golang:1.11
+    steps:
+    - checkout
+    - restore_cache:
+        keys:
+        - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+    - run: go vet ./...
+  test:
+    docker:
+    - image: circleci/golang:1.11
+    steps:
+    - checkout
+    - restore_cache:
+        keys:
+        - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+    - run: go test ./... -coverprofile=coverage.txt -race -cover -covermode=atomic
+    - run: bash <(curl -s https://codecov.io/bash)
 
-      # specify any bash command here prefixed with `run: `
-      - run: go get -v -t -d ./...
-      - run: go test -v ./...
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+    - compile
+    - vet:
+        requires:
+        - compile
+    - test:
+        requires:
+        - compile
