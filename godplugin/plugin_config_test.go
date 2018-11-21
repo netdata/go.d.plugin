@@ -1,6 +1,7 @@
 package godplugin
 
 import (
+	"github.com/stretchr/testify/require"
 	"io"
 	"testing"
 
@@ -17,6 +18,27 @@ var (
 	bar = "bar"
 	baz = "baz"
 )
+
+func TestConfig_Load(t *testing.T) {
+	config := NewConfig()
+
+	require.Error(t, config.Load(goDConfNotExist))
+	require.NoError(t, config.Load(goDConf))
+}
+
+func TestNewConfig(t *testing.T) {
+	config := NewConfig()
+	assert.IsType(t, config, (*Config)(nil))
+
+	assert.Equal(
+		t,
+		config,
+		&Config{
+			Enabled:    true,
+			DefaultRun: true,
+		},
+	)
+}
 
 func TestConfig_isModuleEnabled(t *testing.T) {
 	config := Config{
