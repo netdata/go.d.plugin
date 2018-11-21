@@ -16,7 +16,7 @@ const (
 
 func NewJob(modName string, module Module, out io.Writer) *job {
 	buf := &bytes.Buffer{}
-	job := &job{
+	return &job{
 		moduleName: modName,
 		module:     module,
 		out:        out,
@@ -36,8 +36,6 @@ func NewJob(modName string, module Module, out io.Writer) *job {
 		buf:          buf,
 		apiWriter:    apiWriter{Writer: buf},
 	}
-
-	return job
 }
 
 type job struct {
