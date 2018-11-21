@@ -73,11 +73,11 @@ func (p *Plugin) populateActiveModules() {
 	}
 
 	for name, creator := range modules.DefaultRegistry {
-		if creator.DisabledByDefault && !p.Config.IsModuleEnabled(name, true) {
+		if creator.DisabledByDefault && !p.Config.isModuleEnabled(name, true) {
 			log.Infof("'%s' disabled by default", name)
 			continue
 		}
-		if !p.Config.IsModuleEnabled(name, false) {
+		if !p.Config.isModuleEnabled(name, false) {
 			log.Infof("'%s' disabled in configuration file", name)
 			continue
 		}
@@ -117,10 +117,10 @@ func (p *Plugin) Serve() {
 		p.checkCh <- job
 	}
 
-	p.MainLoop()
+	p.mainLoop()
 }
 
-func (p *Plugin) MainLoop() {
+func (p *Plugin) mainLoop() {
 	log.Info("start main loop")
 	var clock int
 	tk := ticker.New(time.Second)

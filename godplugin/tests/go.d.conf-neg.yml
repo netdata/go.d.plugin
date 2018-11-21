@@ -1,0 +1,7 @@
+enabled: true
+default_run: no
+max_procs: 10
+modules:
+  foo: yes
+  bar: no
+  # baz: yes
