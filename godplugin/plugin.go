@@ -66,16 +66,17 @@ func (q *jobQueue) add(job Job) {
 	q.queue = append(q.queue, job)
 }
 
-func (q *jobQueue) remove(fullName string) {
+func (q *jobQueue) pop(fullName string) Job {
 	q.mux.Lock()
 	defer q.mux.Unlock()
 
 	for i, job := range q.queue {
 		if job.FullName() == fullName {
 			q.queue = append(q.queue[:i], q.queue[i+1:]...)
-			break
+			return job
 		}
 	}
+	return nil
 }
 
 func (q *jobQueue) notify(clock int) {
@@ -102,7 +103,8 @@ type (
 )
 
 func (p *Plugin) RemoveFromQueue(fullName string) {
-	p.loopQueue.remove(fullName)
+	job := p.loopQueue.pop(fullName)
+	go job.Stop()
 }
 
 func (p *Plugin) populateActiveModules() {

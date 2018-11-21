@@ -143,10 +143,7 @@ func (j *job) Start() {
 }
 
 func (j *job) Stop() {
-	select {
-	case j.stopHook <- struct{}{}:
-	default:
-	}
+	j.stopHook <- struct{}{}
 }
 
 func (j *job) MainLoop() {
