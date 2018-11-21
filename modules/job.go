@@ -36,7 +36,7 @@ func NewJob(modName string, module Module, out io.Writer, observer Observer) *jo
 				{ID: "time"},
 			},
 		},
-		stopHook:  make(chan struct{}),
+		stopHook:  make(chan struct{}, 1),
 		tick:      make(chan int),
 		buf:       buf,
 		apiWriter: apiWriter{Writer: buf},

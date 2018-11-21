@@ -104,7 +104,7 @@ type (
 
 func (p *Plugin) RemoveFromQueue(fullName string) {
 	job := p.loopQueue.pop(fullName)
-	go job.Stop()
+	job.Stop()
 }
 
 func (p *Plugin) populateActiveModules() {
