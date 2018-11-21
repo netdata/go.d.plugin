@@ -14,12 +14,17 @@ const (
 	maxPenalty  = 600
 )
 
-func NewJob(modName string, module Module, out io.Writer) *job {
+type Observer interface {
+	RemoveFromQueue(fullName string)
+}
+
+func NewJob(modName string, module Module, out io.Writer, observer Observer) *job {
 	buf := &bytes.Buffer{}
 	return &job{
 		moduleName: modName,
 		module:     module,
 		out:        out,
+		observer:   observer,
 
 		runtimeChart: &Chart{
 			typeName: "netdata",
@@ -31,10 +36,10 @@ func NewJob(modName string, module Module, out io.Writer) *job {
 				{ID: "time"},
 			},
 		},
-		tick:         make(chan int),
-		shutdownHook: make(chan struct{}),
-		buf:          buf,
-		apiWriter:    apiWriter{Writer: buf},
+		stopHook:  make(chan struct{}),
+		tick:      make(chan int),
+		buf:       buf,
+		apiWriter: apiWriter{Writer: buf},
 	}
 }
 
@@ -50,10 +55,11 @@ type job struct {
 	initialized bool
 	panicked    bool
 
+	stopHook     chan struct{}
+	observer     Observer
 	runtimeChart *Chart
 	charts       *Charts
 	tick         chan int
-	shutdownHook chan struct{}
 	out          io.Writer
 	buf          *bytes.Buffer
 	apiWriter    apiWriter
@@ -88,11 +94,10 @@ func (j job) Panicked() bool {
 func (j *job) Init() bool {
 	defer func() {
 		if r := recover(); r != nil {
+			j.Errorf("PANIC %v", r)
 			j.panicked = true
 			j.module.Cleanup()
-			j.Errorf("PANIC %v", r)
 		}
-
 	}()
 
 	j.Logger = logger.New(j.ModuleName(), j.Name())
@@ -104,9 +109,9 @@ func (j *job) Init() bool {
 func (j *job) Check() bool {
 	defer func() {
 		if r := recover(); r != nil {
+			j.Errorf("PANIC %v", r)
 			j.panicked = true
 			j.module.Cleanup()
-			j.Errorf("PANIC %v", r)
 		}
 	}()
 
@@ -115,7 +120,14 @@ func (j *job) Check() bool {
 
 func (j *job) PostCheck() bool {
 	j.charts = j.module.GetCharts()
-	return j.charts != nil
+
+	if j.charts == nil {
+		j.Error("charts can't be nil")
+		j.module.Cleanup()
+		return false
+	}
+
+	return true
 }
 
 func (j *job) Tick(clock int) {
@@ -126,17 +138,29 @@ func (j *job) Tick(clock int) {
 	}
 }
 
+func (j *job) Start() {
+	j.MainLoop()
+}
+
+func (j *job) Stop() {
+	select {
+	case j.stopHook <- struct{}{}:
+	default:
+	}
+}
+
 func (j *job) MainLoop() {
 LOOP:
 	for {
 		select {
-		case <-j.shutdownHook:
+		case <-j.stopHook:
+			j.module.Cleanup()
 			break LOOP
 		case t := <-j.tick:
-			if t%(j.UpdateEvery+j.penalty()) != 0 {
-				continue LOOP
+			doRun := t%(j.UpdateEvery+j.penalty()) == 0
+			if doRun {
+				j.runOnce()
 			}
-			j.runOnce()
 		}
 	}
 }
@@ -147,9 +171,11 @@ func (j *job) runOnce() {
 
 	data := j.getData()
 
-	//if j.Panicked {
-	//
-	//}
+	if j.panicked {
+		j.observer.RemoveFromQueue(j.FullName())
+		go j.module.Cleanup()
+		return
+	}
 
 	if j.populateMetrics(data, curTime, sinceLastRun) {
 		j.prevRun = curTime
@@ -159,14 +185,6 @@ func (j *job) runOnce() {
 
 	io.Copy(j.out, j.buf)
 	j.buf.Reset()
-}
-
-func (j *job) Shutdown() {
-	select {
-	case j.shutdownHook <- struct{}{}:
-		j.module.Cleanup()
-	default:
-	}
 }
 
 func (j job) AutoDetectionRetry() int {
