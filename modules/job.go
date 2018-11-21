@@ -187,7 +187,7 @@ func (j *job) getData() (result map[string]int64) {
 
 func (j *job) populateMetrics(data map[string]int64, startTime time.Time, sinceLastRun int) bool {
 	if !j.runtimeChart.pushed {
-		j.runtimeChart.ID = fmt.Sprintf("%s_execution_time", j.FullName())
+		j.runtimeChart.ID = fmt.Sprintf("execution_time_of_%s", j.FullName())
 		j.createChart(j.runtimeChart)
 	}
 
