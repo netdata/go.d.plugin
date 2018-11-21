@@ -50,6 +50,7 @@ func TestModuleConfigWithModUpdateEvery(t *testing.T) {
 	require.NoError(t, config.load(moduleConf))
 	require.Len(t, config.Jobs, 2)
 
+	// updateEvery default 1 => 99
 	config.updateJobs(99, 1)
 
 	assert.Equal(
@@ -57,7 +58,7 @@ func TestModuleConfigWithModUpdateEvery(t *testing.T) {
 		[]rawConfig{
 			{
 				"name":                "job1",
-				"update_every":        99, // default
+				"update_every":        99, // overridden default
 				"autodetection_retry": 10, // global
 				"param":               10, // global
 			},
@@ -77,6 +78,7 @@ func TestModuleConfigWithGlobalUpdateEvery(t *testing.T) {
 	require.NoError(t, config.load(moduleConf))
 	require.Len(t, config.Jobs, 2)
 
+	// minimum updateEvery 1 => 15
 	config.updateJobs(0, 15)
 
 	assert.Equal(
@@ -84,7 +86,7 @@ func TestModuleConfigWithGlobalUpdateEvery(t *testing.T) {
 		[]rawConfig{
 			{
 				"name":                "job1",
-				"update_every":        15, // global overridden
+				"update_every":        15, // overridden default
 				"autodetection_retry": 10, // global
 				"param":               10, // global
 			},
@@ -104,6 +106,7 @@ func TestModuleConfigWithGlobalAndModuleUpdateEvery(t *testing.T) {
 	require.NoError(t, config.load(moduleConf))
 	require.Len(t, config.Jobs, 2)
 
+	// updateEvery default 1 => 5, minimum updateEvery 1 => 15
 	config.updateJobs(5, 15)
 
 	assert.Equal(
@@ -111,7 +114,7 @@ func TestModuleConfigWithGlobalAndModuleUpdateEvery(t *testing.T) {
 		[]rawConfig{
 			{
 				"name":                "job1",
-				"update_every":        15, // global overridden
+				"update_every":        15, // overridden default
 				"autodetection_retry": 10, // global
 				"param":               10, // global
 			},
