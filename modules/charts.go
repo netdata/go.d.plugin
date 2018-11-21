@@ -68,6 +68,8 @@ type (
 	Charts []*Chart
 
 	Chart struct {
+		typeName string
+
 		ID       string
 		OverID   string
 		Title    string
