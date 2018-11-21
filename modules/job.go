@@ -16,16 +16,28 @@ const (
 
 func NewJob(modName string, module Module, out io.Writer) *job {
 	buf := &bytes.Buffer{}
-	return &job{
+	job := &job{
 		moduleName: modName,
 		module:     module,
 		out:        out,
 
+		runtimeChart: &Chart{
+			typeName: "netdata",
+			Title:    "Execution Time for",
+			Units:    "ms",
+			Fam:      "go.d",
+			Ctx:      "netdata.go_d_execution_time", Priority: 145000,
+			Dims: Dims{
+				{ID: "time"},
+			},
+		},
 		tick:         make(chan int),
 		shutdownHook: make(chan struct{}),
 		buf:          buf,
 		apiWriter:    apiWriter{Writer: buf},
 	}
+
+	return job
 }
 
 type job struct {
@@ -40,6 +52,7 @@ type job struct {
 	initialized bool
 	panicked    bool
 
+	runtimeChart *Chart
 	charts       *Charts
 	tick         chan int
 	shutdownHook chan struct{}
@@ -140,7 +153,7 @@ func (j *job) runOnce() {
 	//
 	//}
 
-	if j.populateMetrics(data, sinceLast) {
+	if j.populateMetrics(data, curTime, sinceLast) {
 		j.prevRun = curTime
 	} else {
 		j.retries++
@@ -172,14 +185,19 @@ func (j *job) getData() (result map[string]int64) {
 	return j.module.GetData()
 }
 
-func (j *job) populateMetrics(data map[string]int64, sinceLast int) bool {
+func (j *job) populateMetrics(data map[string]int64, startTime time.Time, sinceLast int) bool {
+	if !j.runtimeChart.pushed {
+		j.runtimeChart.ID = fmt.Sprintf("%s_execution_time", j.FullName())
+		j.createChart(j.runtimeChart)
+	}
+
 	var totalUpdated int
+	elapsed := int64(durationTo(time.Now().Sub(startTime), time.Microsecond))
 
 	for _, chart := range *j.charts {
 
 		if !chart.pushed {
 			j.createChart(chart)
-			chart.pushed = true
 		}
 
 		if data == nil || chart.Obsolete {
@@ -191,12 +209,22 @@ func (j *job) populateMetrics(data map[string]int64, sinceLast int) bool {
 		}
 	}
 
-	return totalUpdated > 0
+	if totalUpdated == 0 {
+		return false
+	}
+
+	j.updateChart(
+		j.runtimeChart,
+		map[string]int64{"time": elapsed},
+		sinceLast,
+	)
+
+	return true
 }
 
 func (j *job) createChart(chart *Chart) {
 	j.apiWriter.chart(
-		j.FullName(),
+		firstNotEmpty(chart.typeName, j.FullName()),
 		chart.ID,
 		chart.OverID,
 		chart.Title,
@@ -228,6 +256,8 @@ func (j *job) createChart(chart *Chart) {
 			v.Value,
 		)
 	}
+
+	chart.pushed = true
 }
 
 func (j *job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bool {
@@ -235,7 +265,7 @@ func (j *job) updateChart(chart *Chart, data map[string]int64, sinceLast int) bo
 		sinceLast = 0
 	}
 
-	j.apiWriter.begin(j.FullName(), chart.ID, sinceLast)
+	j.apiWriter.begin(firstNotEmpty(chart.typeName, j.FullName()), chart.ID, sinceLast)
 
 	var updated int
 
@@ -276,5 +306,18 @@ func calcSinceLast(curTime, prevRun time.Time) int {
 	if prevRun.IsZero() {
 		return 0
 	}
-	return int(int64(curTime.Sub(prevRun)) / (int64(time.Microsecond) / int64(time.Nanosecond)))
+	return durationTo(curTime.Sub(prevRun), time.Microsecond)
+}
+
+func durationTo(duration time.Duration, to time.Duration) int {
+	return int(int64(duration) / (int64(to) / int64(time.Nanosecond)))
+}
+
+func firstNotEmpty(values ...string) string {
+	for _, v := range values {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
 }
