@@ -48,14 +48,14 @@ func New() *Plugin {
 	return &Plugin{
 		modules: make(modules.Registry),
 		checkCh: make(chan Job, 1),
-		loopQueue: &jobQueue{
-			mux: &sync.Mutex{},
+		loopQueue: jobQueue{
+			mux: sync.Mutex{},
 		},
 	}
 }
 
 type jobQueue struct {
-	mux   *sync.Mutex
+	mux   sync.Mutex
 	queue []Job
 }
 
@@ -66,7 +66,7 @@ func (q *jobQueue) add(job Job) {
 	q.queue = append(q.queue, job)
 }
 
-func (q *jobQueue) pop(fullName string) Job {
+func (q *jobQueue) remove(fullName string) Job {
 	q.mux.Lock()
 	defer q.mux.Unlock()
 
@@ -98,12 +98,12 @@ type (
 
 		modules   modules.Registry
 		checkCh   chan Job
-		loopQueue *jobQueue
+		loopQueue jobQueue
 	}
 )
 
 func (p *Plugin) RemoveFromQueue(fullName string) {
-	job := p.loopQueue.pop(fullName)
+	job := p.loopQueue.remove(fullName)
 	job.Stop()
 }
 
