@@ -48,9 +48,6 @@ func New() *Plugin {
 	return &Plugin{
 		modules: make(modules.Registry),
 		checkCh: make(chan Job, 1),
-		loopQueue: jobQueue{
-			mux: sync.Mutex{},
-		},
 	}
 }
 
