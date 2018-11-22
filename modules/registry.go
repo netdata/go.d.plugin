@@ -1,7 +1,7 @@
 package modules
 
 type (
-	// Creator is a builder to create job instance
+	// Creator is a builder to create Job instance
 	Creator struct {
 		UpdateEvery       int
 		DisabledByDefault bool
@@ -13,7 +13,7 @@ type (
 // DefaultRegistry DefaultRegistry
 var DefaultRegistry = Registry{}
 
-// Register a job
+// Register a module
 func Register(name string, creator Creator) {
 	DefaultRegistry[name] = creator
 }
