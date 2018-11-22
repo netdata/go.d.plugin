@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"sync"
 	"syscall"
 	"time"
 
@@ -33,11 +34,11 @@ type Job interface {
 	Init() bool
 	Check() bool
 	PostCheck() bool
-	//Cleanup()
 
 	Tick(clock int)
-	MainLoop()
-	Shutdown()
+
+	Start()
+	Stop()
 }
 
 var log = logger.New("plugin", "main")
@@ -50,6 +51,40 @@ func New() *Plugin {
 	}
 }
 
+type jobQueue struct {
+	mux   sync.Mutex
+	queue []Job
+}
+
+func (q *jobQueue) add(job Job) {
+	q.mux.Lock()
+	defer q.mux.Unlock()
+
+	q.queue = append(q.queue, job)
+}
+
+func (q *jobQueue) remove(fullName string) Job {
+	q.mux.Lock()
+	defer q.mux.Unlock()
+
+	for i, job := range q.queue {
+		if job.FullName() == fullName {
+			q.queue = append(q.queue[:i], q.queue[i+1:]...)
+			return job
+		}
+	}
+	return nil
+}
+
+func (q *jobQueue) notify(clock int) {
+	q.mux.Lock()
+	defer q.mux.Unlock()
+
+	for _, job := range q.queue {
+		job.Tick(clock)
+	}
+}
+
 type (
 	// Plugin Plugin
 	Plugin struct {
@@ -59,10 +94,15 @@ type (
 		Out           io.Writer
 
 		modules   modules.Registry
-		loopQueue []Job
 		checkCh   chan Job
+		loopQueue jobQueue
 	}
 )
+
+func (p *Plugin) RemoveFromQueue(fullName string) {
+	job := p.loopQueue.remove(fullName)
+	job.Stop()
+}
 
 func (p *Plugin) populateActiveModules() {
 	if p.Option.Module != "all" {
@@ -127,12 +167,8 @@ func (p *Plugin) mainLoop() {
 
 	for {
 		clock = <-tk.C
-
 		log.Debugf("tick %d", clock)
-		for _, job := range p.loopQueue {
-			log.Debugf("tick job: %s[%s]", job.ModuleName(), job.Name())
-			job.Tick(clock)
-		}
+		p.loopQueue.notify(clock)
 	}
 }
 
@@ -172,9 +208,9 @@ func (p *Plugin) checkJobs() {
 		started[job.FullName()] = true
 
 		log.Infof("%s[%s]: Check OK", job.ModuleName(), job.Name())
-		// FIXME:
-		p.loopQueue = append(p.loopQueue, job)
-		go job.MainLoop()
+
+		go job.Start()
+		p.loopQueue.add(job)
 	}
 }
 
@@ -212,7 +248,7 @@ func (p *Plugin) createJobs() []Job {
 				continue
 			}
 
-			job := modules.NewJob(name, mod, p.Out)
+			job := modules.NewJob(name, mod, p.Out, p)
 
 			if err := unmarshalAndValidate(conf, job); err != nil {
 				log.Errorf("skipping %s[%s]: %s", name, jobName(conf), err)
