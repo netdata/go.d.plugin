@@ -28,7 +28,7 @@ func (w *apiWriter) chart(
 	updateEvery int,
 	options Opts,
 	module string) error {
-	_, err := fmt.Fprintf(w, "CHART %s.%s '%s' '%s' '%s' '%s' '%s' '%s' %s %d %s go.d '%s'\n",
+	_, err := fmt.Fprintf(w, "CHART %s.%s '%s' '%s' '%s' '%s' '%s' '%s' '%s' '%d' '%s' go.d '%s'\n",
 		typeName, ID, name, title, units, family, context, chartType, priority, updateEvery, options, module)
 	return err
 }
@@ -41,7 +41,7 @@ func (w *apiWriter) dimension(
 	multiplier dimDivMul,
 	divisor dimDivMul,
 	hidden dimHidden) error {
-	_, err := fmt.Fprintf(w, "DIMENSION '%s' '%s' '%s' %s %s %s\n",
+	_, err := fmt.Fprintf(w, "DIMENSION '%s' '%s' '%s' '%s' '%s' '%s'\n",
 		ID, name, algorithm, multiplier, divisor, hidden)
 	return err
 }

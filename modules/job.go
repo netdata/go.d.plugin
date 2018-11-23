@@ -269,6 +269,7 @@ func (j *Job) createChart(chart *Chart) {
 			v.Value,
 		)
 	}
+	j.apiWriter.Write([]byte("\n"))
 
 	chart.pushed = true
 }
