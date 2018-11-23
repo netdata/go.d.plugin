@@ -70,18 +70,14 @@ type PortCheck struct {
 	data map[string]int64
 }
 
-func New() modules.Creator {
-	return modules.Creator{
-		UpdateEvery: 5,
-		Create: func() modules.Module {
-			return &PortCheck{
-				doCh:   make(chan *port),
-				doneCh: make(chan struct{}),
-				ports:  make([]*port, 0),
-				data:   make(map[string]int64)}
-
-		},
+func New() *PortCheck {
+	return &PortCheck{
+		doCh:   make(chan *port),
+		doneCh: make(chan struct{}),
+		ports:  make([]*port, 0),
+		data:   make(map[string]int64),
 	}
+
 }
 
 func (pc *PortCheck) Init() bool {
@@ -155,5 +151,11 @@ func (pc *PortCheck) GetData() map[string]int64 {
 }
 
 func init() {
-	modules.Register("portcheck", New())
+	modules.Register(
+		"portcheck",
+		modules.Creator{
+			UpdateEvery: 5,
+			Create:      func() modules.Module { return New() },
+		},
+	)
 }

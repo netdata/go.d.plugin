@@ -6,6 +6,7 @@ import (
 )
 
 type worker struct {
+	alive    bool
 	stopHook chan struct{}
 
 	doCh        chan *port
@@ -25,10 +26,12 @@ func newWorker(host string, dialTimeout time.Duration, doCh chan *port, doneCh c
 }
 
 func (w *worker) start() {
+	w.alive = true
 LOOP:
 	for {
 		select {
 		case <-w.stopHook:
+			w.alive = false
 			break LOOP
 		case port := <-w.doCh:
 			w.doWork(port)
