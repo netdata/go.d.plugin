@@ -85,7 +85,7 @@ func New() *TcpCheck {
 // Init does initialization,
 // it resolves host to IP address using local resolver.
 // If it fails it returns false, otherwise it's always true.
-// Init starts separate worker (goroutine) for every port.
+// Init starts a separate worker (goroutine) for every port.
 func (tc *TcpCheck) Init() bool {
 	if tc.Timeout.Duration == 0 {
 		tc.Timeout.Duration = time.Second
@@ -124,7 +124,7 @@ func (tc TcpCheck) Check() bool {
 }
 
 // Cleanup does cleanup
-// It stop all workers, which were started in Init.
+// It stops all workers, which were started in Init.
 func (tc *TcpCheck) Cleanup() {
 	for _, worker := range tc.workers {
 		worker.stop()
