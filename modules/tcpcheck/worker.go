@@ -1,4 +1,4 @@
-package portcheck
+package tcpcheck
 
 import (
 	"net"

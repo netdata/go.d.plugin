@@ -1,4 +1,4 @@
-package portcheck
+package tcpcheck
 
 import (
 	"net"
@@ -53,7 +53,7 @@ func newPort(number, updateEvery int) *port {
 	}
 }
 
-type PortCheck struct {
+type TcpCheck struct {
 	modules.Base
 
 	Host        string         `yaml:"host" validate:"required"`
@@ -70,8 +70,8 @@ type PortCheck struct {
 	data map[string]int64
 }
 
-func New() *PortCheck {
-	return &PortCheck{
+func New() *TcpCheck {
+	return &TcpCheck{
 		doCh:   make(chan *port),
 		doneCh: make(chan struct{}),
 		ports:  make([]*port, 0),
@@ -80,79 +80,79 @@ func New() *PortCheck {
 
 }
 
-func (pc *PortCheck) Init() bool {
-	if pc.Timeout.Duration == 0 {
-		pc.Timeout.Duration = time.Second
+func (tc *TcpCheck) Init() bool {
+	if tc.Timeout.Duration == 0 {
+		tc.Timeout.Duration = time.Second
 	}
-	pc.Debugf("using timeout: %s", pc.Timeout.Duration)
+	tc.Debugf("using timeout: %s", tc.Timeout.Duration)
 
-	ips, err := net.LookupIP(pc.Host)
+	ips, err := net.LookupIP(tc.Host)
 	if err != nil {
 		return false
 	}
 
-	pc.Host = ips[len(ips)-1].String()
-	pc.Debugf("using %s:%v", pc.Host, pc.Ports)
+	tc.Host = ips[len(ips)-1].String()
+	tc.Debugf("using %s:%v", tc.Host, tc.Ports)
 
-	sort.Ints(pc.Ports)
+	sort.Ints(tc.Ports)
 
-	for _, p := range pc.Ports {
-		pc.ports = append(pc.ports, newPort(p, pc.UpdateEvery))
+	for _, p := range tc.Ports {
+		tc.ports = append(tc.ports, newPort(p, tc.UpdateEvery))
 
-		worker := newWorker(pc.Host, pc.Timeout.Duration, pc.doCh, pc.doneCh)
-		pc.workers = append(pc.workers, worker)
+		worker := newWorker(tc.Host, tc.Timeout.Duration, tc.doCh, tc.doneCh)
+		tc.workers = append(tc.workers, worker)
 		go worker.start()
 	}
 
 	return true
 }
 
-func (pc PortCheck) Check() bool {
+func (tc TcpCheck) Check() bool {
 	return true
 }
 
-func (pc *PortCheck) Cleanup() {
-	for _, worker := range pc.workers {
+func (tc *TcpCheck) Cleanup() {
+	for _, worker := range tc.workers {
 		worker.stop()
 	}
-	close(pc.doCh)
-	close(pc.doneCh)
+	close(tc.doCh)
+	close(tc.doneCh)
 }
 
-func (pc PortCheck) GetCharts() *modules.Charts {
+func (tc TcpCheck) GetCharts() *modules.Charts {
 	charts := modules.Charts{}
-	for _, p := range pc.Ports {
+	for _, p := range tc.Ports {
 		charts.Add(chartsTemplate(p)...)
 	}
 
 	return &charts
 }
 
-func (pc *PortCheck) GetData() map[string]int64 {
-	for _, p := range pc.ports {
-		pc.doCh <- p
+func (tc *TcpCheck) GetData() map[string]int64 {
+	for _, p := range tc.ports {
+		tc.doCh <- p
 	}
 
-	for i := 0; i < len(pc.ports); i++ {
-		<-pc.doneCh
+	for i := 0; i < len(tc.ports); i++ {
+		<-tc.doneCh
 	}
 
-	for _, p := range pc.ports {
-		pc.data[sprintf("success_%d", p.number)] = 0
-		pc.data[sprintf("failed_%d", p.number)] = 0
-		pc.data[sprintf("timeout_%d", p.number)] = 0
+	for _, p := range tc.ports {
+		tc.data[sprintf("success_%d", p.number)] = 0
+		tc.data[sprintf("failed_%d", p.number)] = 0
+		tc.data[sprintf("timeout_%d", p.number)] = 0
 
-		pc.data[p.stateText()] = 1
-		pc.data[sprintf("instate_%d", p.number)] = int64(p.inState)
-		pc.data[sprintf("latency_%d", p.number)] = int64(p.latency)
+		tc.data[p.stateText()] = 1
+		tc.data[sprintf("instate_%d", p.number)] = int64(p.inState)
+		tc.data[sprintf("latency_%d", p.number)] = int64(p.latency)
 
 	}
-	return pc.data
+	return tc.data
 }
 
 func init() {
 	modules.Register(
-		"portcheck",
+		"tcpcheck",
 		modules.Creator{
 			UpdateEvery: 5,
 			Create:      func() modules.Module { return New() },
