@@ -7,8 +7,10 @@ import (
 )
 
 type (
+	// Charts is an alias for modules.Charts
 	Charts = modules.Charts
-	Dims   = modules.Dims
+	// Dims is an alias for modules.Dims
+	Dims = modules.Dims
 )
 
 func chartsTemplate(port int) Charts {

@@ -53,6 +53,7 @@ func newPort(number, updateEvery int) *port {
 	}
 }
 
+// TcpCheck module struct
 type TcpCheck struct {
 	modules.Base
 
@@ -70,6 +71,7 @@ type TcpCheck struct {
 	data map[string]int64
 }
 
+// New returns TcpCheck with default values
 func New() *TcpCheck {
 	return &TcpCheck{
 		doCh:   make(chan *port),
@@ -80,6 +82,10 @@ func New() *TcpCheck {
 
 }
 
+// Init does initialization,
+// it resolves host to IP address using local resolver.
+// If it fails it returns false, otherwise it's always true.
+// Init starts separate worker (goroutine) for every port.
 func (tc *TcpCheck) Init() bool {
 	if tc.Timeout.Duration == 0 {
 		tc.Timeout.Duration = time.Second
@@ -111,16 +117,21 @@ func (tc *TcpCheck) Init() bool {
 	return true
 }
 
+// Check does check
+// Since there is nothing to check it just returns true
 func (tc TcpCheck) Check() bool {
 	return true
 }
 
+// Cleanup does cleanup
+// It stop all workers, which were started in Init.
 func (tc *TcpCheck) Cleanup() {
 	for _, worker := range tc.workers {
 		worker.stop()
 	}
 }
 
+// GetCharts returns charts
 func (tc TcpCheck) GetCharts() *modules.Charts {
 	charts := modules.Charts{}
 	for _, p := range tc.Ports {
@@ -130,6 +141,7 @@ func (tc TcpCheck) GetCharts() *modules.Charts {
 	return &charts
 }
 
+// GetData does data collection
 func (tc *TcpCheck) GetData() map[string]int64 {
 	for _, p := range tc.ports {
 		tc.doCh <- p
