@@ -151,11 +151,10 @@ func (tc *TcpCheck) GetData() map[string]int64 {
 }
 
 func init() {
-	modules.Register(
-		"tcpcheck",
-		modules.Creator{
-			UpdateEvery: 5,
-			Create:      func() modules.Module { return New() },
-		},
-	)
+	creator := modules.Creator{
+		UpdateEvery: 5,
+		Create:      func() modules.Module { return New() },
+	}
+
+	modules.Register("tcpcheck", creator)
 }
