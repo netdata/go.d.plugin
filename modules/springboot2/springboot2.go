@@ -2,11 +2,11 @@ package springboot2
 
 //
 //import (
-//	"github.com/l2isbad/go.d.plugin/internal/modules"
-//	"github.com/l2isbad/go.d.plugin/modules/pkg/prometheus"
-//	"github.com/l2isbad/go.d.plugin/modules/pkg/web"
-//	"github.com/l2isbad/go.d.plugin/pkg/charts"
-//	"github.com/l2isbad/go.d.plugin/pkg/utils"
+//	"github.com/netdata/go.d.plugin/internal/modules"
+//	"github.com/netdata/go.d.plugin/modules/pkg/prometheus"
+//	"github.com/netdata/go.d.plugin/modules/pkg/web"
+//	"github.com/netdata/go.d.plugin/pkg/charts"
+//	"github.com/netdata/go.d.plugin/pkg/utils"
 //)
 //
 //// Springboot2 Spring boot 2 plugin

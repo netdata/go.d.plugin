@@ -9,9 +9,9 @@ package weblog
 //	"gopkg.in/yaml.v2"
 //
 //	"bufio"
-//	"github.com/l2isbad/go.d.plugin/internal/modules"
-//	"github.com/l2isbad/go.d.plugin/modules/pkg/tail"
-//	"github.com/l2isbad/go.d.plugin/pkg/charts"
+//	"github.com/netdata/go.d.plugin/internal/modules"
+//	"github.com/netdata/go.d.plugin/modules/pkg/tail"
+//	"github.com/netdata/go.d.plugin/pkg/charts"
 //)
 //
 //const (

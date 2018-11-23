@@ -3,7 +3,7 @@ package example
 import (
 	"math/rand"
 
-	"github.com/l2isbad/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/modules"
 )
 
 type Example struct {

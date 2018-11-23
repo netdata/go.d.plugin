@@ -7,7 +7,7 @@ package weblog
 //	"regexp"
 //	"strings"
 //
-//	"github.com/l2isbad/go.d.plugin/pkg/utils"
+//	"github.com/netdata/go.d.plugin/pkg/utils"
 //)
 //
 //var (

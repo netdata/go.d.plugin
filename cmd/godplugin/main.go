@@ -5,9 +5,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/l2isbad/go.d.plugin/cli"
-	"github.com/l2isbad/go.d.plugin/godplugin"
-	"github.com/l2isbad/go.d.plugin/logger"
+	"github.com/netdata/go.d.plugin/cli"
+	"github.com/netdata/go.d.plugin/godplugin"
+	"github.com/netdata/go.d.plugin/logger"
 )
 
 func main() {

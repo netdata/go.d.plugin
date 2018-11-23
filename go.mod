@@ -1,4 +1,4 @@
-module github.com/l2isbad/go.d.plugin
+module github.com/netdata/go.d.plugin
 
 require (
 	github.com/cespare/xxhash v1.1.0 // indirect
