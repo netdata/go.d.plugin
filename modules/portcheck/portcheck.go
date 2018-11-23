@@ -63,8 +63,11 @@ type PortCheck struct {
 
 	doCh   chan *port
 	doneCh chan struct{}
-	ports  []*port
-	data   map[string]int64
+
+	ports   []*port
+	workers []*worker
+
+	data map[string]int64
 }
 
 func New() modules.Creator {
@@ -99,7 +102,10 @@ func (pc *PortCheck) Init() bool {
 
 	for _, p := range pc.Ports {
 		pc.ports = append(pc.ports, newPort(p, pc.UpdateEvery))
-		go worker(pc.Host, pc.Timeout.Duration, pc.doCh, pc.doneCh)
+
+		worker := newWorker(pc.Host, pc.Timeout.Duration, pc.doCh, pc.doneCh)
+		pc.workers = append(pc.workers, worker)
+		go worker.start()
 	}
 
 	return true
@@ -110,8 +116,9 @@ func (pc PortCheck) Check() bool {
 }
 
 func (pc *PortCheck) Cleanup() {
-	close(pc.doCh)
-	// close(pc.doneCh)
+	for _, worker := range pc.workers {
+		worker.stop()
+	}
 }
 
 func (pc PortCheck) GetCharts() *modules.Charts {
@@ -143,29 +150,6 @@ func (pc *PortCheck) GetData() map[string]int64 {
 
 	}
 	return pc.data
-}
-
-func worker(host string, dialTimeout time.Duration, doCh chan *port, doneCh chan struct{}) {
-	for p := range doCh {
-		t := time.Now()
-		c, err := net.DialTimeout("tcp", sprintf("%s:%d", host, p.number), dialTimeout)
-		p.latency = time.Since(t)
-
-		if err == nil {
-			p.setState(success)
-			c.Close()
-		} else {
-			v, ok := err.(interface{ Timeout() bool })
-
-			if ok && v.Timeout() {
-				p.setState(timeout)
-			} else {
-				p.setState(failed)
-			}
-		}
-
-		doneCh <- struct{}{}
-	}
 }
 
 func init() {
