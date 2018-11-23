@@ -97,11 +97,15 @@ func (tc *TcpCheck) Init() bool {
 	sort.Ints(tc.Ports)
 
 	for _, p := range tc.Ports {
-		tc.ports = append(tc.ports, newPort(p, tc.UpdateEvery))
+		tc.ports = append(
+			tc.ports,
+			newPort(p, tc.UpdateEvery),
+		)
 
-		worker := newWorker(tc.Host, tc.Timeout.Duration, tc.doCh, tc.doneCh)
-		tc.workers = append(tc.workers, worker)
-		go worker.start()
+		tc.workers = append(
+			tc.workers,
+			newWorker(tc.Host, tc.Timeout.Duration, tc.doCh, tc.doneCh),
+		)
 	}
 
 	return true
@@ -115,8 +119,6 @@ func (tc *TcpCheck) Cleanup() {
 	for _, worker := range tc.workers {
 		worker.stop()
 	}
-	close(tc.doCh)
-	close(tc.doneCh)
 }
 
 func (tc TcpCheck) GetCharts() *modules.Charts {

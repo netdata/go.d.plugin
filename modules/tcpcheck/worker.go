@@ -16,31 +16,35 @@ type worker struct {
 }
 
 func newWorker(host string, dialTimeout time.Duration, doCh chan *port, doneCh chan struct{}) *worker {
-	return &worker{
+	w := &worker{
 		stopHook:    make(chan struct{}),
 		doCh:        doCh,
 		doneCh:      doneCh,
 		host:        host,
 		dialTimeout: dialTimeout,
+		alive:       true,
 	}
-}
 
-func (w *worker) start() {
-	w.alive = true
-LOOP:
-	for {
-		select {
-		case <-w.stopHook:
-			w.alive = false
-			break LOOP
-		case port := <-w.doCh:
-			w.doWork(port)
+	go func() {
+	LOOP:
+		for {
+			select {
+			case <-w.stopHook:
+				w.alive = false
+				w.stopHook <- struct{}{}
+				break LOOP
+			case port := <-w.doCh:
+				w.doWork(port)
+			}
 		}
-	}
+	}()
+
+	return w
 }
 
 func (w *worker) stop() {
 	w.stopHook <- struct{}{}
+	<-w.stopHook
 }
 
 func (w *worker) doWork(port *port) {
@@ -51,7 +55,9 @@ func (w *worker) doWork(port *port) {
 	if err == nil {
 		port.setState(success)
 		c.Close()
-	} else {
+	}
+
+	if err != nil {
 		v, ok := err.(interface{ Timeout() bool })
 
 		if ok && v.Timeout() {
@@ -60,5 +66,6 @@ func (w *worker) doWork(port *port) {
 			port.setState(failed)
 		}
 	}
+
 	w.doneCh <- struct{}{}
 }
