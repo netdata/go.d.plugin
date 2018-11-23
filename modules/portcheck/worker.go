@@ -16,7 +16,7 @@ type worker struct {
 
 func newWorker(host string, dialTimeout time.Duration, doCh chan *port, doneCh chan struct{}) *worker {
 	return &worker{
-		stopHook:    make(chan struct{}, 1),
+		stopHook:    make(chan struct{}),
 		doCh:        doCh,
 		doneCh:      doneCh,
 		host:        host,

@@ -119,6 +119,8 @@ func (pc *PortCheck) Cleanup() {
 	for _, worker := range pc.workers {
 		worker.stop()
 	}
+	close(pc.doCh)
+	close(pc.doneCh)
 }
 
 func (pc PortCheck) GetCharts() *modules.Charts {
