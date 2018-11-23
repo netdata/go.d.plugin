@@ -4,7 +4,7 @@ package portcheck
 //import (
 //	"fmt"
 //
-//	"github.com/l2isbad/go.d.plugin/pkg/charts"
+//	"github.com/netdata/go.d.plugin/pkg/charts"
 //)
 //
 //type (

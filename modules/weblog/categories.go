@@ -4,7 +4,7 @@ package weblog
 //import (
 //	"gopkg.in/yaml.v2"
 //
-//	"github.com/l2isbad/go.d.plugin/collectors/weblogog/matcher"
+//	"github.com/netdata/go.d.plugin/collectors/weblogog/matcher"
 //)
 //
 //type categories struct {

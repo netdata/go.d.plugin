@@ -13,12 +13,12 @@ import (
 	"github.com/go-playground/validator"
 	"gopkg.in/yaml.v2"
 
-	"github.com/l2isbad/go.d.plugin/cli"
-	"github.com/l2isbad/go.d.plugin/godplugin/ticker"
-	"github.com/l2isbad/go.d.plugin/logger"
-	"github.com/l2isbad/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/cli"
+	"github.com/netdata/go.d.plugin/godplugin/ticker"
+	"github.com/netdata/go.d.plugin/logger"
+	"github.com/netdata/go.d.plugin/modules"
 
-	_ "github.com/l2isbad/go.d.plugin/modules/all"
+	_ "github.com/netdata/go.d.plugin/modules/all"
 )
 
 type Job interface {

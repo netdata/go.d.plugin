@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/l2isbad/go.d.plugin/pkg/utils"
+	"github.com/netdata/go.d.plugin/pkg/utils"
 )
 
 // Client is the interface that wraps the Do method.

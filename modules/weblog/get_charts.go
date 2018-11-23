@@ -2,8 +2,8 @@ package weblog
 
 //
 //import (
-//	"github.com/l2isbad/go.d.plugin/pkg/charts"
-//	"github.com/l2isbad/go.d.plugin/pkg/utils"
+//	"github.com/netdata/go.d.plugin/pkg/charts"
+//	"github.com/netdata/go.d.plugin/pkg/utils"
 //)
 //
 //type (

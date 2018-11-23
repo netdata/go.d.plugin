@@ -6,7 +6,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/l2isbad/go.d.plugin/logger"
+	"github.com/netdata/go.d.plugin/logger"
 )
 
 const (

@@ -1,6 +1,6 @@
 package example
 
-import "github.com/l2isbad/go.d.plugin/modules"
+import "github.com/netdata/go.d.plugin/modules"
 
 type (
 	Charts  = modules.Charts

@@ -2,7 +2,7 @@ package springboot2
 
 //
 //import (
-//	"github.com/l2isbad/go.d.plugin/pkg/charts"
+//	"github.com/netdata/go.d.plugin/pkg/charts"
 //)
 //
 //var uCharts = charts.Charts{
