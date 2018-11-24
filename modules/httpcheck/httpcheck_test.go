@@ -2,13 +2,13 @@ package httpcheck
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/require"
 	"io"
 	"net"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
