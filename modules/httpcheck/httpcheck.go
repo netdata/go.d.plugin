@@ -50,8 +50,10 @@ func (d data) toMap() map[string]int64 {
 // New returns HTTPCheck with default values
 func New() *HTTPCheck {
 	return &HTTPCheck{
-		statuses: make(map[int]bool),
-		data:     data{},
+		statuses: map[int]bool{
+			200: true,
+		},
+		data: data{},
 	}
 }
 
@@ -78,14 +80,13 @@ func (hc *HTTPCheck) Init() bool {
 		hc.Timeout.Duration = time.Second
 	}
 
-	hc.Debugf("Using timeout: %s", hc.Timeout.Duration)
+	hc.Debugf("using timeout: %s", hc.Timeout.Duration)
 
-	for _, s := range hc.StatusAccepted {
-		hc.statuses[s] = true
-	}
-
-	if len(hc.statuses) == 0 {
-		hc.statuses[200] = true
+	if len(hc.StatusAccepted) != 0 {
+		delete(hc.statuses, 200)
+		for _, s := range hc.StatusAccepted {
+			hc.statuses[s] = true
+		}
 	}
 
 	req, err := hc.CreateHTTPRequest()
@@ -96,6 +97,7 @@ func (hc *HTTPCheck) Init() bool {
 	}
 
 	hc.request = req
+
 	hc.client = hc.CreateHTTPClient()
 
 	re, err := regexp.Compile(hc.ResponseMatch)
