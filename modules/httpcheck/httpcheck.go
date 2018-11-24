@@ -47,14 +47,16 @@ func (d data) toMap() map[string]int64 {
 	return utils.ToMap(d)
 }
 
-func New() *HttpCheck {
-	return &HttpCheck{
+// New returns HTTPCheck with default values
+func New() *HTTPCheck {
+	return &HTTPCheck{
 		statuses: make(map[int]bool),
 		data:     data{},
 	}
 }
 
-type HttpCheck struct {
+// HTTPCheck module struct
+type HTTPCheck struct {
 	modules.Base
 
 	StatusAccepted []int  `yaml:"status_accepted"`
@@ -70,7 +72,8 @@ type HttpCheck struct {
 	data data
 }
 
-func (hc *HttpCheck) Init() bool {
+// Init does initialization
+func (hc *HTTPCheck) Init() bool {
 	if hc.Timeout.Duration == 0 {
 		hc.Timeout.Duration = time.Second
 	}
@@ -107,11 +110,14 @@ func (hc *HttpCheck) Init() bool {
 	return true
 }
 
-func (hc HttpCheck) Check() bool {
+// Check does check
+// Since there is nothing to check it just returns true
+func (hc HTTPCheck) Check() bool {
 	return true
 }
 
-func (hc HttpCheck) GetCharts() *modules.Charts {
+// GetCharts returns charts
+func (hc HTTPCheck) GetCharts() *modules.Charts {
 	c := charts.Copy()
 
 	if len(hc.ResponseMatch) == 0 {
@@ -122,7 +128,8 @@ func (hc HttpCheck) GetCharts() *modules.Charts {
 
 }
 
-func (hc *HttpCheck) GetData() map[string]int64 {
+// GetData does data collection and processing
+func (hc *HTTPCheck) GetData() map[string]int64 {
 	hc.data.reset()
 
 	resp, err := hc.doRequest()
@@ -134,7 +141,7 @@ func (hc *HttpCheck) GetData() map[string]int64 {
 	return hc.processOKResponse(resp)
 }
 
-func (hc *HttpCheck) doRequest() (*http.Response, error) {
+func (hc *HTTPCheck) doRequest() (*http.Response, error) {
 	t := time.Now()
 	r, err := hc.client.Do(hc.request)
 	hc.data.ResponseTime = int(time.Since(t))
@@ -142,7 +149,7 @@ func (hc *HttpCheck) doRequest() (*http.Response, error) {
 	return r, err
 }
 
-func (hc *HttpCheck) processErrResponse(err error) map[string]int64 {
+func (hc *HTTPCheck) processErrResponse(err error) map[string]int64 {
 	switch parseErr(err) {
 	case timeout:
 		hc.data.Timeout = 1
@@ -155,7 +162,7 @@ func (hc *HttpCheck) processErrResponse(err error) map[string]int64 {
 	return hc.data.toMap()
 }
 
-func (hc *HttpCheck) processOKResponse(resp *http.Response) map[string]int64 {
+func (hc *HTTPCheck) processOKResponse(resp *http.Response) map[string]int64 {
 	defer func() {
 		io.Copy(ioutil.Discard, resp.Body)
 		resp.Body.Close()
