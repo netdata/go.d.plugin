@@ -135,10 +135,11 @@ func (hc *HTTPCheck) GetData() map[string]int64 {
 	resp, err := hc.doRequest()
 
 	if err != nil {
-		return hc.processErrResponse(err)
+		hc.processErrResponse(err)
 	}
+	hc.processOKResponse(resp)
 
-	return hc.processOKResponse(resp)
+	return hc.data.toMap()
 }
 
 func (hc *HTTPCheck) doRequest() (*http.Response, error) {
@@ -149,7 +150,7 @@ func (hc *HTTPCheck) doRequest() (*http.Response, error) {
 	return r, err
 }
 
-func (hc *HTTPCheck) processErrResponse(err error) map[string]int64 {
+func (hc *HTTPCheck) processErrResponse(err error) {
 	switch parseErr(err) {
 	case timeout:
 		hc.data.Timeout = 1
@@ -157,12 +158,11 @@ func (hc *HTTPCheck) processErrResponse(err error) map[string]int64 {
 		hc.data.Failed = 1
 	case unknown:
 		hc.Error(err)
-		return nil
+		panic("unknown state")
 	}
-	return hc.data.toMap()
 }
 
-func (hc *HTTPCheck) processOKResponse(resp *http.Response) map[string]int64 {
+func (hc *HTTPCheck) processOKResponse(resp *http.Response) {
 	defer func() {
 		io.Copy(ioutil.Discard, resp.Body)
 		resp.Body.Close()
@@ -179,8 +179,6 @@ func (hc *HTTPCheck) processOKResponse(resp *http.Response) map[string]int64 {
 	if hc.match != nil && !hc.match.Match(bodyBytes) {
 		hc.data.BadContent = 1
 	}
-
-	return hc.data.toMap()
 }
 
 func parseErr(err error) state {
