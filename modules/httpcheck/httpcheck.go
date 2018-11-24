@@ -124,21 +124,38 @@ func (hc HttpCheck) GetCharts() *modules.Charts {
 
 func (hc *HttpCheck) GetData() map[string]int64 {
 	hc.data.reset()
+
 	resp, err := hc.doRequest()
 
 	if err != nil {
-		switch errCheck(err) {
-		case timeout:
-			hc.data.Timeout = 1
-		case failed:
-			hc.data.Failed = 1
-		case unknown:
-			hc.Error(err)
-			return nil
-		}
-		return hc.data.toMap()
+		return hc.processErrResponse(err)
 	}
 
+	return hc.processOKResponse(resp)
+}
+
+func (hc *HttpCheck) doRequest() (*http.Response, error) {
+	t := time.Now()
+	r, err := hc.client.Do(hc.request)
+	hc.data.ResponseTime = int(time.Since(t))
+
+	return r, err
+}
+
+func (hc *HttpCheck) processErrResponse(err error) map[string]int64 {
+	switch parseErr(err) {
+	case timeout:
+		hc.data.Timeout = 1
+	case failed:
+		hc.data.Failed = 1
+	case unknown:
+		hc.Error(err)
+		return nil
+	}
+	return hc.data.toMap()
+}
+
+func (hc *HttpCheck) processOKResponse(resp *http.Response) map[string]int64 {
 	defer func() {
 		io.Copy(ioutil.Discard, resp.Body)
 		resp.Body.Close()
@@ -159,15 +176,7 @@ func (hc *HttpCheck) GetData() map[string]int64 {
 	return hc.data.toMap()
 }
 
-func (hc *HttpCheck) doRequest() (*http.Response, error) {
-	t := time.Now()
-	r, err := hc.client.Do(hc.request)
-	hc.data.ResponseTime = int(time.Since(t))
-
-	return r, err
-}
-
-func errCheck(err error) state {
+func parseErr(err error) state {
 	v, ok := err.(net.Error)
 
 	if ok && v.Timeout() {
