@@ -16,7 +16,7 @@ type (
 
 // chart defines a new chart.
 func (w *apiWriter) chart(
-	typeName string,
+	typeID string,
 	ID string,
 	name string,
 	title string,
@@ -29,7 +29,7 @@ func (w *apiWriter) chart(
 	options Opts,
 	module string) error {
 	_, err := fmt.Fprintf(w, "CHART %s.%s '%s' '%s' '%s' '%s' '%s' '%s' '%s' '%d' '%s' go.d '%s'\n",
-		typeName, ID, name, title, units, family, context, chartType, priority, updateEvery, options, module)
+		typeID, ID, name, title, units, family, context, chartType, priority, updateEvery, options, module)
 	return err
 }
 

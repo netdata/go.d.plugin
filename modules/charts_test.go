@@ -198,10 +198,10 @@ func TestChart_HasDim(t *testing.T) {
 func TestChart_MarkPush(t *testing.T) {
 	chart := createTestChart("1")
 
-	assert.False(t, chart.pushed)
-	chart.pushed = true
-	chart.MarkPush()
-	assert.False(t, chart.pushed)
+	assert.False(t, chart.created)
+	chart.created = true
+	chart.MarkNotCreated()
+	assert.False(t, chart.created)
 }
 
 func compareCharts(t *testing.T, orig, copied *Chart) {
