@@ -138,8 +138,9 @@ func (hc *HTTPCheck) GetData() map[string]int64 {
 
 	if err != nil {
 		hc.processErrResponse(err)
+	} else {
+		hc.processOKResponse(resp)
 	}
-	hc.processOKResponse(resp)
 
 	return hc.data.toMap()
 }
