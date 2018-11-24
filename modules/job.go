@@ -27,11 +27,11 @@ func NewJob(modName string, module Module, out io.Writer, observer Observer) *Jo
 		observer:   observer,
 
 		runtimeChart: &Chart{
-			typeName: "netdata",
-			Title:    "Execution Time for",
-			Units:    "ms",
-			Fam:      "go.d",
-			Ctx:      "netdata.go_d_execution_time", Priority: 145000,
+			typeID: "netdata",
+			Title:  "Execution Time for",
+			Units:  "ms",
+			Fam:    "go.d",
+			Ctx:    "netdata.go_d_execution_time", Priority: 145000,
 			Dims: Dims{
 				{ID: "time"},
 			},
@@ -199,7 +199,7 @@ func (j *Job) getData() (result map[string]int64) {
 }
 
 func (j *Job) populateMetrics(data map[string]int64, startTime time.Time, sinceLastRun int) bool {
-	if !j.runtimeChart.pushed {
+	if !j.runtimeChart.created {
 		j.runtimeChart.ID = fmt.Sprintf("execution_time_of_%s", j.FullName())
 		j.createChart(j.runtimeChart)
 	}
@@ -209,7 +209,7 @@ func (j *Job) populateMetrics(data map[string]int64, startTime time.Time, sinceL
 
 	for _, chart := range *j.charts {
 
-		if !chart.pushed {
+		if !chart.created {
 			j.createChart(chart)
 		}
 
@@ -237,7 +237,7 @@ func (j *Job) populateMetrics(data map[string]int64, startTime time.Time, sinceL
 
 func (j *Job) createChart(chart *Chart) {
 	j.apiWriter.chart(
-		firstNotEmpty(chart.typeName, j.FullName()),
+		firstNotEmpty(chart.typeID, j.FullName()),
 		chart.ID,
 		chart.OverID,
 		chart.Title,
@@ -271,7 +271,7 @@ func (j *Job) createChart(chart *Chart) {
 	}
 	j.apiWriter.Write([]byte("\n"))
 
-	chart.pushed = true
+	chart.created = true
 }
 
 func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLastRun int) bool {
@@ -280,7 +280,7 @@ func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLastRun int)
 	}
 
 	j.apiWriter.begin(
-		firstNotEmpty(chart.typeName, j.FullName()),
+		firstNotEmpty(chart.typeID, j.FullName()),
 		chart.ID,
 		sinceLastRun,
 	)
