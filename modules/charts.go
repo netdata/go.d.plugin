@@ -6,8 +6,6 @@ import (
 )
 
 type (
-	chartPriority int
-
 	dimAlgo   string
 	chartType string
 	dimHidden bool
@@ -15,8 +13,6 @@ type (
 )
 
 const (
-	defChartPriority = "70000"
-
 	// Line chart type.
 	Line chartType = "line"
 	// Area chart type.
@@ -38,13 +34,6 @@ const (
 	// The percent of this value compared to the incremental total of all dimensions
 	PercentOfIncremental dimAlgo = "percentage-of-incremental-row"
 )
-
-func (c chartPriority) String() string {
-	if c > 0 {
-		return strconv.Itoa(int(c))
-	}
-	return defChartPriority
-}
 
 func (d dimAlgo) String() string {
 	switch d {
@@ -94,7 +83,7 @@ type (
 		Fam      string
 		Ctx      string
 		Type     chartType
-		Priority chartPriority
+		Priority int
 		Opts
 
 		Dims Dims

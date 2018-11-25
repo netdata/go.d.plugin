@@ -40,6 +40,7 @@ func NewJob(modName string, module Module, out io.Writer, observer Observer) *Jo
 		tick:      make(chan int),
 		buf:       buf,
 		apiWriter: apiWriter{Writer: buf},
+		priority:  70000,
 	}
 }
 
@@ -64,8 +65,9 @@ type Job struct {
 	buf          *bytes.Buffer
 	apiWriter    apiWriter
 
-	retries int
-	prevRun time.Time
+	priority int
+	retries  int
+	prevRun  time.Time
 }
 
 func (j Job) FullName() string {
@@ -239,6 +241,10 @@ func (j *Job) populateMetrics(data map[string]int64, startTime time.Time, sinceL
 }
 
 func (j *Job) createChart(chart *Chart) {
+	if chart.Priority == 0 {
+		chart.Priority = j.priority
+		j.priority++
+	}
 	j.apiWriter.chart(
 		firstNotEmpty(chart.typeID, j.FullName()),
 		chart.ID,
