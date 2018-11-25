@@ -80,6 +80,9 @@ func (j Job) ModuleName() string {
 }
 
 func (j Job) Name() string {
+	if j.Nam == "" {
+		return j.moduleName
+	}
 	return j.Nam
 }
 
