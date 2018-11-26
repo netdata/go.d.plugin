@@ -24,12 +24,6 @@ func createTestChart(id string) *Chart {
 	}
 }
 
-func TestChartPriority_String(t *testing.T) {
-	assert.Equal(t, chartPriority(-1).String(), defChartPriority)
-	assert.Equal(t, chartPriority(0).String(), defChartPriority)
-	assert.Equal(t, chartPriority(1).String(), "1")
-}
-
 func TestDimAlgo_String(t *testing.T) {
 	assert.Equal(t, Line.String(), string(Line))
 	assert.Equal(t, Line.String(), "line")
