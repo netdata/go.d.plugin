@@ -200,11 +200,9 @@ func TestChart_MarkNotCreated(t *testing.T) {
 
 func TestChart_IsValid(t *testing.T) {
 	chart := createTestChart("1")
-
 	assert.True(t, chart.IsValid())
 
 	chart.ID = ""
-
 	assert.False(t, chart.IsValid())
 
 }
