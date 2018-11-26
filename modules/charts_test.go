@@ -189,13 +189,42 @@ func TestChart_HasDim(t *testing.T) {
 	assert.True(t, chart.HasDim("dim1"))
 }
 
-func TestChart_MarkPush(t *testing.T) {
+func TestChart_MarkNotCreated(t *testing.T) {
 	chart := createTestChart("1")
 
 	assert.False(t, chart.created)
 	chart.created = true
 	chart.MarkNotCreated()
 	assert.False(t, chart.created)
+}
+
+func TestChart_IsValid(t *testing.T) {
+	chart := createTestChart("1")
+
+	assert.True(t, chart.IsValid())
+
+	chart.ID = ""
+
+	assert.False(t, chart.IsValid())
+
+}
+
+func TestDim_IsValid(t *testing.T) {
+	dim := Dim{}
+	assert.False(t, dim.IsValid())
+
+	dim.ID = "dimID"
+	assert.True(t, dim.IsValid())
+
+}
+
+func TestVar_IsValid(t *testing.T) {
+	variable := Var{}
+	assert.False(t, variable.IsValid())
+
+	variable.ID = "variableID"
+	assert.True(t, variable.IsValid())
+
 }
 
 func compareCharts(t *testing.T, orig, copied *Chart) {
