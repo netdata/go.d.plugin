@@ -2,8 +2,9 @@ package modules
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNetdataAPI_chart(t *testing.T) {
@@ -26,9 +27,7 @@ func TestNetdataAPI_chart(t *testing.T) {
 	)
 
 	expected := "CHART '.id' 'name' 'title' 'units' 'family' 'context' 'line' '1' '1' '' go.d 'module'\n"
-
 	assert.NoError(t, err)
-
 	assert.Equal(
 		t,
 		expected,
@@ -50,9 +49,7 @@ func TestNetdataAPI_dimension(t *testing.T) {
 	)
 
 	expected := "DIMENSION 'id' 'name' 'absolute' '1' '1' ''\n"
-
 	assert.NoError(t, err)
-
 	assert.Equal(
 		t,
 		expected,
@@ -71,9 +68,7 @@ func TestNetdataAPI_begin(t *testing.T) {
 	)
 
 	expected := "BEGIN typeID.id\n"
-
 	assert.NoError(t, err)
-
 	assert.Equal(
 		t,
 		expected,
@@ -89,9 +84,7 @@ func TestNetdataAPI_begin(t *testing.T) {
 	)
 
 	expected = "BEGIN typeID.id 1\n"
-
 	assert.NoError(t, err)
-
 	assert.Equal(
 		t,
 		expected,
@@ -109,9 +102,7 @@ func TestNetdataAPI_set(t *testing.T) {
 	)
 
 	expected := "SET id = 100\n"
-
 	assert.NoError(t, err)
-
 	assert.Equal(
 		t,
 		expected,
@@ -126,9 +117,7 @@ func TestNetdataAPI_end(t *testing.T) {
 	err := netdataAPI.end()
 
 	expected := "END\n\n"
-
 	assert.NoError(t, err)
-
 	assert.Equal(
 		t,
 		expected,
@@ -143,9 +132,7 @@ func TestNetdataAPI_flush(t *testing.T) {
 	err := netdataAPI.flush()
 
 	expected := "FLUSH\n"
-
 	assert.NoError(t, err)
-
 	assert.Equal(
 		t,
 		expected,

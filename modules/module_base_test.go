@@ -1,10 +1,11 @@
 package modules
 
 import (
-	"github.com/netdata/go.d.plugin/logger"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/netdata/go.d.plugin/logger"
 )
 
 func TestBase_Init(t *testing.T) {
