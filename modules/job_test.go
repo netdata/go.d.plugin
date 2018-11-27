@@ -162,10 +162,49 @@ func TestJob_MainLoop(t *testing.T) {
 	job.charts = job.module.GetCharts()
 	job.UpdateEvery = 1
 
-	for i := 0; i < 3; i++ {
-		job.runOnce()
-		time.Sleep(time.Millisecond * 500)
+	go func() {
+		time.Sleep(time.Second * 3)
+		job.Stop()
+	}()
+
+	go func() {
+		for i := 1; i < 4; i++ {
+			job.Tick(i)
+			time.Sleep(time.Second)
+		}
+	}()
+
+	job.MainLoop()
+}
+
+func TestJob_MainLoop_Panic(t *testing.T) {
+	module := &MockModule{
+		GetDataDunc: func() map[string]int64 {
+			panic("panic in GetData")
+		},
 	}
+	job := testNewJob()
+	job.module = module
+	obs := testObserver(false)
+	job.observer = &obs
+	job.UpdateEvery = 1
+
+	go func() {
+		time.Sleep(time.Second * 3)
+		job.Stop()
+	}()
+
+	go func() {
+		for i := 1; i < 4; i++ {
+			job.Tick(i)
+			time.Sleep(time.Second)
+		}
+	}()
+
+	job.MainLoop()
+
+	assert.True(t, job.Panicked())
+	assert.True(t, bool(*job.observer.(*testObserver)))
 }
 
 func TestJob_Tick(t *testing.T) {
@@ -173,4 +212,10 @@ func TestJob_Tick(t *testing.T) {
 	for i := 0; i < 3; i++ {
 		job.Tick(i)
 	}
+}
+
+type testObserver bool
+
+func (t *testObserver) RemoveFromQueue(name string) {
+	*t = true
 }
