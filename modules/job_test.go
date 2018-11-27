@@ -40,12 +40,8 @@ func TestNewJob(t *testing.T) {
 }
 
 func TestJob_FullName(t *testing.T) {
-	job := NewJob(
-		"modName",
-		&mockModule{},
-		ioutil.Discard,
-		nil,
-	)
+	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+
 	assert.Equal(t, job.FullName(), "modName_modName")
 	job.Nam = "jobName"
 	assert.Equal(t, job.FullName(), "modName_jobName")
@@ -53,22 +49,14 @@ func TestJob_FullName(t *testing.T) {
 }
 
 func TestJob_ModuleName(t *testing.T) {
-	job := NewJob(
-		"modName",
-		&mockModule{},
-		ioutil.Discard,
-		nil,
-	)
+	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+
 	assert.Equal(t, job.ModuleName(), "modName")
 }
 
 func TestJob_Name(t *testing.T) {
-	job := NewJob(
-		"modName",
-		&mockModule{},
-		ioutil.Discard,
-		nil,
-	)
+	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+
 	assert.Equal(t, job.Name(), "modName")
 	job.Nam = "jobName"
 	assert.Equal(t, job.Name(), "jobName")
