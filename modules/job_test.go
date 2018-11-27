@@ -93,7 +93,8 @@ func TestJob_Init(t *testing.T) {
 	okJob := NewJob(
 		"modName",
 		&mockModule{initFunc: func() bool { return true }},
-		ioutil.Discard, nil,
+		ioutil.Discard,
+		nil,
 	)
 
 	assert.True(t, okJob.Init())
@@ -102,7 +103,8 @@ func TestJob_Init(t *testing.T) {
 	panicJob := NewJob(
 		"modName",
 		&mockModule{initFunc: func() bool { panic("panic in init") }},
-		ioutil.Discard, nil,
+		ioutil.Discard,
+		nil,
 	)
 
 	assert.False(t, panicJob.Init())
@@ -113,7 +115,8 @@ func TestJob_Check(t *testing.T) {
 	okJob := NewJob(
 		"modName",
 		&mockModule{checkFunc: func() bool { return true }},
-		ioutil.Discard, nil,
+		ioutil.Discard,
+		nil,
 	)
 
 	assert.True(t, okJob.Check())
@@ -121,14 +124,30 @@ func TestJob_Check(t *testing.T) {
 	panicJob := NewJob(
 		"modName",
 		&mockModule{checkFunc: func() bool { panic("panic in test") }},
-		ioutil.Discard, nil,
+		ioutil.Discard,
+		nil,
 	)
 
 	assert.False(t, panicJob.Check())
 }
 
 func TestJob_PostCheck(t *testing.T) {
+	okJob := NewJob(
+		"modName",
+		&mockModule{getChartsFunc: func() *Charts { return &Charts{} }},
+		ioutil.Discard,
+		nil,
+	)
+	assert.True(t, okJob.PostCheck())
 
+	ngJob := NewJob(
+		"modName",
+		&mockModule{getChartsFunc: func() *Charts { return nil }},
+		ioutil.Discard,
+		nil,
+	)
+
+	assert.False(t, ngJob.PostCheck())
 }
 
 func TestJob_Start(t *testing.T) {
