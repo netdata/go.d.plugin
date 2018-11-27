@@ -96,17 +96,7 @@ func (l *Logger) print(severity Severity, a ...interface{}) {
 		return
 	}
 
-	if !l.limited {
-		l.log.Printf(
-			"go.d: %s: %s: %s: %s",
-			severity,
-			l.modName,
-			l.jobName,
-			fmt.Sprintln(a...),
-		)
-	}
-
-	if globalSeverity < DEBUG && atomic.AddInt64(&l.count, 1) > msgPerSecondLimit {
+	if l.limited && globalSeverity < DEBUG && atomic.AddInt64(&l.count, 1) > msgPerSecondLimit {
 		return
 	}
 
