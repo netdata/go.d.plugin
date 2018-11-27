@@ -13,6 +13,7 @@ type mockModule struct {
 	checkFunc     func() bool
 	getChartsFunc func() *Charts
 	getDataDunc   func() map[string]int64
+	cleanupDone   bool
 }
 
 func (m mockModule) Init() bool {
@@ -29,6 +30,10 @@ func (m mockModule) GetCharts() *Charts {
 
 func (m mockModule) GetData() map[string]int64 {
 	return m.getDataDunc()
+}
+
+func (m *mockModule) Cleanup() {
+	m.cleanupDone = true
 }
 
 func TestNewJob(t *testing.T) {
@@ -90,64 +95,55 @@ func TestJob_AutoDetectionRetry(t *testing.T) {
 }
 
 func TestJob_Init(t *testing.T) {
-	okJob := NewJob(
-		"modName",
-		&mockModule{initFunc: func() bool { return true }},
-		ioutil.Discard,
-		nil,
-	)
+	okMockModule := &mockModule{
+		initFunc: func() bool { return true },
+	}
+	job := NewJob("modName", okMockModule, ioutil.Discard, nil)
+	assert.True(t, job.Init())
+	assert.True(t, job.Initialized())
+	assert.False(t, job.Panicked())
+	assert.False(t, okMockModule.cleanupDone)
 
-	assert.True(t, okJob.Init())
-	assert.True(t, okJob.Initialized())
-
-	panicJob := NewJob(
-		"modName",
-		&mockModule{initFunc: func() bool { panic("panic in init") }},
-		ioutil.Discard,
-		nil,
-	)
-
-	assert.False(t, panicJob.Init())
-	assert.False(t, panicJob.Initialized())
+	panicMockModule := &mockModule{
+		initFunc: func() bool { panic("panic in init") },
+	}
+	job = NewJob("modName", panicMockModule, ioutil.Discard, nil)
+	assert.False(t, job.Init())
+	assert.False(t, job.Initialized())
+	assert.True(t, job.Panicked())
+	assert.True(t, panicMockModule.cleanupDone)
 }
 
 func TestJob_Check(t *testing.T) {
-	okJob := NewJob(
-		"modName",
-		&mockModule{checkFunc: func() bool { return true }},
-		ioutil.Discard,
-		nil,
-	)
+	okMockModule := &mockModule{
+		checkFunc: func() bool { return true },
+	}
+	job := NewJob("modName", okMockModule, ioutil.Discard, nil)
+	assert.True(t, job.Check())
+	assert.False(t, job.Panicked())
+	assert.False(t, okMockModule.cleanupDone)
 
-	assert.True(t, okJob.Check())
-
-	panicJob := NewJob(
-		"modName",
-		&mockModule{checkFunc: func() bool { panic("panic in test") }},
-		ioutil.Discard,
-		nil,
-	)
-
-	assert.False(t, panicJob.Check())
+	panicMockModule := &mockModule{
+		checkFunc: func() bool { panic("panic in check") },
+	}
+	job = NewJob("modName", panicMockModule, ioutil.Discard, nil)
+	assert.False(t, job.Check())
+	assert.True(t, job.Panicked())
+	assert.True(t, panicMockModule.cleanupDone)
 }
 
 func TestJob_PostCheck(t *testing.T) {
-	okJob := NewJob(
-		"modName",
-		&mockModule{getChartsFunc: func() *Charts { return &Charts{} }},
-		ioutil.Discard,
-		nil,
-	)
-	assert.True(t, okJob.PostCheck())
+	okMockModule := &mockModule{
+		getChartsFunc: func() *Charts { return &Charts{} },
+	}
+	job := NewJob("modName", okMockModule, ioutil.Discard, nil)
+	assert.True(t, job.PostCheck())
 
-	ngJob := NewJob(
-		"modName",
-		&mockModule{getChartsFunc: func() *Charts { return nil }},
-		ioutil.Discard,
-		nil,
-	)
-
-	assert.False(t, ngJob.PostCheck())
+	ngMockModule := &mockModule{
+		getChartsFunc: func() *Charts { return nil },
+	}
+	job = NewJob("modName", ngMockModule, ioutil.Discard, nil)
+	assert.False(t, job.PostCheck())
 }
 
 func TestJob_Start(t *testing.T) {
