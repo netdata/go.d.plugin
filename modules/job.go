@@ -108,7 +108,11 @@ func (j *Job) Init() bool {
 	j.Logger = logger.New(j.ModuleName(), j.Name())
 	j.module.SetLogger(j.Logger)
 
-	return j.module.Init()
+	ok := j.module.Init()
+	if ok {
+		j.initialized = true
+	}
+	return ok
 }
 
 func (j *Job) Check() bool {
