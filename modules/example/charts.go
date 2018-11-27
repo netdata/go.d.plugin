@@ -11,16 +11,10 @@ type (
 var charts = Charts{
 	{
 		ID:    "chart1",
-		Title: "qwe", Units: "qw", Fam: "random",
+		Title: "A Random Number", Units: "random", Fam: "random",
 		Dims: Dims{
-			{ID: "random0", Name: "random"},
-		},
-	},
-	{
-		ID:    "chart2",
-		Title: "qwe", Units: "qw", Fam: "random", Type: modules.Area,
-		Dims: Dims{
-			{ID: "random1", Name: "random"},
+			{ID: "random0", Name: "random 0"},
+			{ID: "random1", Name: "random 1"},
 		},
 	},
 }
