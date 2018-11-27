@@ -9,3 +9,5 @@ Plugin configuration directory: `/etc/netdata/`
 Modules configuration directory: `/etc/netdata/go.d/`
 
 Configurations are written in [YAML](http://yaml.org/).
+
+test
