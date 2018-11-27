@@ -147,7 +147,6 @@ func TestNetdataAPI_flush(t *testing.T) {
 	netdataAPI := apiWriter{Writer: b}
 
 	err := netdataAPI.flush()
-
 	expected := "FLUSH\n"
 	assert.NoError(t, err)
 	assert.Equal(
