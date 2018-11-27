@@ -63,23 +63,68 @@ func TestJob_Name(t *testing.T) {
 }
 
 func TestJob_Initialized(t *testing.T) {
+	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+
+	assert.Equal(t, job.Initialized(), job.initialized)
+	job.initialized = true
+	assert.Equal(t, job.Initialized(), job.initialized)
 
 }
 
 func TestJob_Panicked(t *testing.T) {
+	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+
+	assert.Equal(t, job.Panicked(), job.panicked)
+	job.panicked = true
+	assert.Equal(t, job.Panicked(), job.panicked)
 
 }
 
 func TestJob_AutoDetectionRetry(t *testing.T) {
+	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+
+	assert.Equal(t, job.AutoDetectionRetry(), job.AutoDetectRetry)
+	job.AutoDetectRetry = 1
+	assert.Equal(t, job.AutoDetectionRetry(), job.AutoDetectRetry)
 
 }
 
 func TestJob_Init(t *testing.T) {
+	okJob := NewJob(
+		"modName",
+		&mockModule{initFunc: func() bool { return true }},
+		ioutil.Discard, nil,
+	)
 
+	assert.True(t, okJob.Init())
+	assert.True(t, okJob.Initialized())
+
+	panicJob := NewJob(
+		"modName",
+		&mockModule{initFunc: func() bool { panic("panic in init") }},
+		ioutil.Discard, nil,
+	)
+
+	assert.False(t, panicJob.Init())
+	assert.False(t, panicJob.Initialized())
 }
 
 func TestJob_Check(t *testing.T) {
+	okJob := NewJob(
+		"modName",
+		&mockModule{checkFunc: func() bool { return true }},
+		ioutil.Discard, nil,
+	)
 
+	assert.True(t, okJob.Check())
+
+	panicJob := NewJob(
+		"modName",
+		&mockModule{checkFunc: func() bool { panic("panic in test") }},
+		ioutil.Discard, nil,
+	)
+
+	assert.False(t, panicJob.Check())
 }
 
 func TestJob_PostCheck(t *testing.T) {
