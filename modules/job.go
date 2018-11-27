@@ -46,7 +46,7 @@ func NewJob(modName string, module Module, out io.Writer, observer Observer) *Jo
 	}
 }
 
-// Job represents
+// Job represents a job. It's a module wrapper.
 type Job struct {
 	*logger.Logger
 	module     Module
