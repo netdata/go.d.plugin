@@ -63,6 +63,12 @@ func (w *apiWriter) set(ID string, value int64) error {
 	return err
 }
 
+// set set the empty value of a dimension for the initialized chart
+func (w *apiWriter) setEmpty(ID string) error {
+	_, err := fmt.Fprintf(w, "SET %s = \n", ID)
+	return err
+}
+
 // end complete data collection for the initialized chart
 func (w *apiWriter) end() error {
 	_, err := fmt.Fprintf(w, "END\n\n")

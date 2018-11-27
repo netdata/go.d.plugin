@@ -300,6 +300,8 @@ func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLastRun int)
 		if v, ok := data[dim.ID]; ok {
 			j.apiWriter.set(dim.ID, v)
 			updated++
+		} else {
+			j.apiWriter.setEmpty(dim.ID)
 		}
 	}
 	for _, variable := range chart.Vars {
