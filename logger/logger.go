@@ -7,10 +7,11 @@ import (
 	"sync/atomic"
 )
 
-const msgPerSecond = 30
+const msgPerSecondLimit = 20
 
-var dummy = New("", "")
+var base = New("base", "base")
 
+// New creates a new logger
 func New(modName, jobName string) *Logger {
 	return &Logger{
 		log:     log.New(colored{}, "", log.Ldate|log.Ltime),
@@ -19,12 +20,23 @@ func New(modName, jobName string) *Logger {
 	}
 }
 
+// NewLimited creates a new limited logger
+func NewLimited(modName, jobName string) *Logger {
+	logger := New(modName, jobName)
+	logger.limited = true
+	globalTicker.register(&logger.count)
+
+	return logger
+}
+
+// Logger represents a logger object
 type Logger struct {
 	log     *log.Logger
 	modName string
 	jobName string
 
-	count *int64
+	limited bool
+	count   int64
 }
 
 func (l *Logger) Critical(a ...interface{}) {
@@ -68,41 +80,46 @@ func (l *Logger) Debugf(format string, a ...interface{}) {
 	l.Debug(fmt.Sprintf(format, a...))
 }
 
-func (l *Logger) print(level Severity, a ...interface{}) {
-	if level > sevLevel {
+func (l *Logger) print(severity Severity, a ...interface{}) {
+	if severity > globalSeverity {
 		return
 	}
 
 	if l == nil || l.log == nil {
-		dummy.log.Printf("go.d: %s: dummy: dummy: %s", level, fmt.Sprintln(a...))
+		base.log.Printf(
+			"go.d: %s: %s: %s: %s",
+			severity,
+			base.modName,
+			base.jobName,
+			fmt.Sprintln(a...),
+		)
 		return
 	}
 
-	if l.count == nil {
-		l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
+	if !l.limited {
+		l.log.Printf(
+			"go.d: %s: %s: %s: %s",
+			severity,
+			l.modName,
+			l.jobName,
+			fmt.Sprintln(a...),
+		)
+	}
+
+	if globalSeverity < DEBUG && atomic.AddInt64(&l.count, 1) > msgPerSecondLimit {
 		return
 	}
 
-	if sevLevel < DEBUG && atomic.AddInt64(l.count, 1) > msgPerSecond {
-		return
-	}
-
-	l.log.Printf("go.d: %s: %s: %s: %s", level, l.modName, l.jobName, fmt.Sprintln(a...))
+	l.log.Printf(
+		"go.d: %s: %s: %s: %s",
+		severity,
+		l.modName,
+		l.jobName,
+		fmt.Sprintln(a...),
+	)
 }
 
-// SetLevel sets global severity level
-func SetLevel(lev Severity) {
-	sevLevel = lev
-}
-
-// SetModName sets logger modName
-func SetModName(l *Logger, modName string) {
-	l.modName = modName
-}
-
-// SetLimit adds a message limit per second
-// After that it's not allowed to log more than msgPerSecond messages per second.
-func SetLimit(l *Logger) {
-	l.count = new(int64)
-	globalTicker.register(l.count)
+// SetGlobalSeverity sets global severity level
+func SetGlobalSeverity(severity Severity) {
+	globalSeverity = severity
 }

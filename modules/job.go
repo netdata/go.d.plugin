@@ -118,7 +118,7 @@ func (j *Job) Init() bool {
 	}()
 
 	j.Logger = logger.New(j.ModuleName(), j.Name())
-	j.module.SetLogger(j.Logger)
+	j.module.SetLogger(logger.NewLimited(j.ModuleName(), j.Name()))
 
 	ok := j.module.Init()
 	if ok {

@@ -9,22 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSetLevel(t *testing.T) {
-	SetLevel(WARNING)
-	assert.Equal(t, sevLevel, WARNING)
-}
-
-func TestSetModName(t *testing.T) {
-	l := New("", "")
-	SetModName(l, "name")
-	assert.Equal(t, l.modName, "name")
-}
-
-func TestSetLimit(t *testing.T) {
-	l := New("", "")
-	SetLimit(l)
-	assert.Len(t, globalTicker.counters, 1)
-
+func TestSetGlobLevel(t *testing.T) {
+	SetGlobalSeverity(WARNING)
+	assert.Equal(t, globalSeverity, WARNING)
 }
 
 func TestNew(t *testing.T) {
@@ -36,7 +23,7 @@ func TestLogger_Log(t *testing.T) {
 	buf := new(bytes.Buffer)
 	reader := bufio.NewReader(buf)
 	logger.log.SetOutput(buf)
-	SetLevel(DEBUG)
+	SetGlobalSeverity(DEBUG)
 
 	check := func(sev Severity) {
 		s, err := reader.ReadString('\n')
@@ -71,13 +58,12 @@ func TestLogger_Log(t *testing.T) {
 }
 
 func TestLogger_Limit(t *testing.T) {
-	logger := New("", "")
+	logger := NewLimited("", "")
 	buf := new(bytes.Buffer)
 	scan := bufio.NewScanner(buf)
 
 	logger.log.SetOutput(buf)
-	SetLimit(logger)
-	SetLevel(DEBUG)
+	SetGlobalSeverity(DEBUG)
 
 	num := 500
 
@@ -92,7 +78,7 @@ func TestLogger_Limit(t *testing.T) {
 
 	assert.True(t, num == c)
 
-	SetLevel(INFO)
+	SetGlobalSeverity(INFO)
 
 	for i := 0; i < num; i++ {
 		logger.Error("")
@@ -102,5 +88,5 @@ func TestLogger_Limit(t *testing.T) {
 	for scan.Scan() {
 		c++
 	}
-	assert.True(t, num+msgPerSecond == c)
+	assert.True(t, num+msgPerSecondLimit == c)
 }
