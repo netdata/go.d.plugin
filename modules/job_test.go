@@ -1,74 +1,51 @@
 package modules
 
 import (
+	"fmt"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
+	"time"
 )
 
-type mockModule struct {
-	Base
-	initFunc      func() bool
-	checkFunc     func() bool
-	getChartsFunc func() *Charts
-	getDataDunc   func() map[string]int64
-	cleanupDone   bool
-}
+var (
+	testModName = "testModName"
+	testJobName = "testJobName"
+)
 
-func (m mockModule) Init() bool {
-	return m.initFunc()
-}
-
-func (m mockModule) Check() bool {
-	return m.checkFunc()
-}
-
-func (m mockModule) GetCharts() *Charts {
-	return m.getChartsFunc()
-}
-
-func (m mockModule) GetData() map[string]int64 {
-	return m.getDataDunc()
-}
-
-func (m *mockModule) Cleanup() {
-	m.cleanupDone = true
+func testNewJob() *Job {
+	return NewJob(testModName, nil, ioutil.Discard, nil)
 }
 
 func TestNewJob(t *testing.T) {
-	assert.IsType(
-		t,
-		(*Job)(nil),
-		NewJob("example", nil, ioutil.Discard, nil),
-	)
+	assert.IsType(t, (*Job)(nil), testNewJob())
 }
 
 func TestJob_FullName(t *testing.T) {
-	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+	job := testNewJob()
 
-	assert.Equal(t, job.FullName(), "modName_modName")
-	job.Nam = "jobName"
-	assert.Equal(t, job.FullName(), "modName_jobName")
+	assert.Equal(t, job.FullName(), testModName)
+	job.Nam = testJobName
+	assert.Equal(t, job.FullName(), fmt.Sprintf("%s_%s", testModName, testJobName))
 
 }
 
 func TestJob_ModuleName(t *testing.T) {
-	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+	job := testNewJob()
 
-	assert.Equal(t, job.ModuleName(), "modName")
+	assert.Equal(t, job.ModuleName(), testModName)
 }
 
 func TestJob_Name(t *testing.T) {
-	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+	job := testNewJob()
 
-	assert.Equal(t, job.Name(), "modName")
-	job.Nam = "jobName"
-	assert.Equal(t, job.Name(), "jobName")
+	assert.Equal(t, job.Name(), testModName)
+	job.Nam = testJobName
+	assert.Equal(t, job.Name(), testJobName)
 }
 
 func TestJob_Initialized(t *testing.T) {
-	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+	job := testNewJob()
 
 	assert.Equal(t, job.Initialized(), job.initialized)
 	job.initialized = true
@@ -77,7 +54,7 @@ func TestJob_Initialized(t *testing.T) {
 }
 
 func TestJob_Panicked(t *testing.T) {
-	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+	job := testNewJob()
 
 	assert.Equal(t, job.Panicked(), job.panicked)
 	job.panicked = true
@@ -86,7 +63,7 @@ func TestJob_Panicked(t *testing.T) {
 }
 
 func TestJob_AutoDetectionRetry(t *testing.T) {
-	job := NewJob("modName", &mockModule{}, ioutil.Discard, nil)
+	job := testNewJob()
 
 	assert.Equal(t, job.AutoDetectionRetry(), job.AutoDetectRetry)
 	job.AutoDetectRetry = 1
@@ -95,69 +72,105 @@ func TestJob_AutoDetectionRetry(t *testing.T) {
 }
 
 func TestJob_Init(t *testing.T) {
-	okMockModule := &mockModule{
-		initFunc: func() bool { return true },
+	okMockModule := &MockModule{
+		InitFunc: func() bool { return true },
 	}
-	job := NewJob("modName", okMockModule, ioutil.Discard, nil)
+	job := testNewJob()
+	job.module = okMockModule
+
 	assert.True(t, job.Init())
 	assert.True(t, job.Initialized())
 	assert.False(t, job.Panicked())
-	assert.False(t, okMockModule.cleanupDone)
+	assert.False(t, okMockModule.CleanupDone)
 
-	panicMockModule := &mockModule{
-		initFunc: func() bool { panic("panic in init") },
+	panicMockModule := &MockModule{
+		InitFunc: func() bool { panic("panic in init") },
 	}
-	job = NewJob("modName", panicMockModule, ioutil.Discard, nil)
+	job = testNewJob()
+	job.module = panicMockModule
+
 	assert.False(t, job.Init())
 	assert.False(t, job.Initialized())
 	assert.True(t, job.Panicked())
-	assert.True(t, panicMockModule.cleanupDone)
+	assert.True(t, panicMockModule.CleanupDone)
 }
 
 func TestJob_Check(t *testing.T) {
-	okMockModule := &mockModule{
-		checkFunc: func() bool { return true },
+	okMockModule := &MockModule{
+		CheckFunc: func() bool { return true },
 	}
-	job := NewJob("modName", okMockModule, ioutil.Discard, nil)
+	job := testNewJob()
+	job.module = okMockModule
+
 	assert.True(t, job.Check())
 	assert.False(t, job.Panicked())
-	assert.False(t, okMockModule.cleanupDone)
+	assert.False(t, okMockModule.CleanupDone)
 
-	panicMockModule := &mockModule{
-		checkFunc: func() bool { panic("panic in check") },
+	panicMockModule := &MockModule{
+		CheckFunc: func() bool { panic("panic in check") },
 	}
-	job = NewJob("modName", panicMockModule, ioutil.Discard, nil)
+	job = testNewJob()
+	job.module = panicMockModule
+
 	assert.False(t, job.Check())
 	assert.True(t, job.Panicked())
-	assert.True(t, panicMockModule.cleanupDone)
+	assert.True(t, panicMockModule.CleanupDone)
 }
 
 func TestJob_PostCheck(t *testing.T) {
-	okMockModule := &mockModule{
-		getChartsFunc: func() *Charts { return &Charts{} },
+	okMockModule := &MockModule{
+		GetChartsFunc: func() *Charts { return &Charts{} },
 	}
-	job := NewJob("modName", okMockModule, ioutil.Discard, nil)
+	job := testNewJob()
+	job.module = okMockModule
+
 	assert.True(t, job.PostCheck())
 
-	ngMockModule := &mockModule{
-		getChartsFunc: func() *Charts { return nil },
+	ngMockModule := &MockModule{
+		GetChartsFunc: func() *Charts { return nil },
 	}
-	job = NewJob("modName", ngMockModule, ioutil.Discard, nil)
+	job = testNewJob()
+	job.module = ngMockModule
+
 	assert.False(t, job.PostCheck())
 }
 
-func TestJob_Start(t *testing.T) {
+func TestJob_MainLoop(t *testing.T) {
+	module := &MockModule{
+		GetChartsFunc: func() *Charts {
+			return &Charts{
+				&Chart{
+					ID:    "id",
+					Title: "title",
+					Units: "units",
+					Dims: Dims{
+						{ID: "id1"},
+						{ID: "id2"},
+					},
+				},
+			}
+		},
+		GetDataDunc: func() map[string]int64 {
+			return map[string]int64{
+				"id1": 1,
+				"id2": 2,
+			}
+		},
+	}
+	job := testNewJob()
+	job.module = module
+	job.charts = job.module.GetCharts()
+	job.UpdateEvery = 1
 
-}
-
-func TestJob_Stop(t *testing.T) {
-
+	for i := 0; i < 3; i++ {
+		job.runOnce()
+		time.Sleep(time.Millisecond * 500)
+	}
 }
 
 func TestJob_Tick(t *testing.T) {
-
-}
-
-func TestJob_MainLoop(t *testing.T) {
-
+	job := NewJob(testModName, nil, ioutil.Discard, nil)
+	for i := 0; i < 3; i++ {
+		job.Tick(i)
+	}
 }

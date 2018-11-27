@@ -71,7 +71,7 @@ type Job struct {
 }
 
 func (j Job) FullName() string {
-	if j.Name() == "" {
+	if j.Nam == "" {
 		return j.ModuleName()
 	}
 	return fmt.Sprintf("%s_%s", j.ModuleName(), j.Name())
