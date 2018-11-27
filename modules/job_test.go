@@ -163,15 +163,11 @@ func TestJob_MainLoop(t *testing.T) {
 	job.UpdateEvery = 1
 
 	go func() {
-		time.Sleep(time.Second * 3)
-		job.Stop()
-	}()
-
-	go func() {
 		for i := 1; i < 4; i++ {
 			job.Tick(i)
 			time.Sleep(time.Second)
 		}
+		job.Stop()
 	}()
 
 	job.MainLoop()
@@ -190,15 +186,11 @@ func TestJob_MainLoop_Panic(t *testing.T) {
 	job.UpdateEvery = 1
 
 	go func() {
-		time.Sleep(time.Second * 3)
-		job.Stop()
-	}()
-
-	go func() {
 		for i := 1; i < 4; i++ {
 			job.Tick(i)
 			time.Sleep(time.Second)
 		}
+		job.Stop()
 	}()
 
 	job.MainLoop()
