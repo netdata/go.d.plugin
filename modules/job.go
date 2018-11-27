@@ -199,7 +199,7 @@ func (j *Job) runOnce() {
 
 	if j.panicked {
 		j.observer.RemoveFromQueue(j.FullName())
-		go j.module.Cleanup()
+		j.module.Cleanup()
 		return
 	}
 
