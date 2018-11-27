@@ -110,6 +110,23 @@ func TestNetdataAPI_set(t *testing.T) {
 	)
 }
 
+func TestNetdataAPI_setEmpty(t *testing.T) {
+	b := &bytes.Buffer{}
+	netdataAPI := apiWriter{Writer: b}
+
+	err := netdataAPI.setEmpty(
+		"id",
+	)
+
+	expected := "SET id = \n"
+	assert.NoError(t, err)
+	assert.Equal(
+		t,
+		expected,
+		b.String(),
+	)
+}
+
 func TestNetdataAPI_end(t *testing.T) {
 	b := &bytes.Buffer{}
 	netdataAPI := apiWriter{Writer: b}
