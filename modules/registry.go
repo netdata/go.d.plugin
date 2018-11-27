@@ -1,5 +1,7 @@
 package modules
 
+import "fmt"
+
 type (
 	// Creator is a builder to create Job instance
 	Creator struct {
@@ -15,5 +17,12 @@ var DefaultRegistry = Registry{}
 
 // Register a module
 func Register(name string, creator Creator) {
-	DefaultRegistry[name] = creator
+	register(DefaultRegistry, name, creator)
+}
+
+func register(registry Registry, name string, creator Creator) {
+	if _, ok := registry[name]; ok {
+		panic(fmt.Sprintf("%s is already in registry", name))
+	}
+	registry[name] = creator
 }

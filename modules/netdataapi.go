@@ -28,7 +28,7 @@ func (w *apiWriter) chart(
 	updateEvery int,
 	options Opts,
 	module string) error {
-	_, err := fmt.Fprintf(w, "CHART %s.%s '%s' '%s' '%s' '%s' '%s' '%s' '%d' '%d' '%s' go.d '%s'\n",
+	_, err := fmt.Fprintf(w, "CHART '%s.%s' '%s' '%s' '%s' '%s' '%s' '%s' '%d' '%d' '%s' go.d '%s'\n",
 		typeID, ID, name, title, units, family, context, chartType, priority, updateEvery, options, module)
 	return err
 }
@@ -47,12 +47,12 @@ func (w *apiWriter) dimension(
 }
 
 // begin initialize data collection for a chart
-func (w *apiWriter) begin(typeName string, ID string, msSince int) error {
+func (w *apiWriter) begin(typeID string, ID string, msSince int) error {
 	var err error
 	if msSince > 0 {
-		_, err = fmt.Fprintf(w, "BEGIN %s.%s %d\n", typeName, ID, msSince)
+		_, err = fmt.Fprintf(w, "BEGIN %s.%s %d\n", typeID, ID, msSince)
 	} else {
-		_, err = fmt.Fprintf(w, "BEGIN %s.%s\n", typeName, ID)
+		_, err = fmt.Fprintf(w, "BEGIN %s.%s\n", typeID, ID)
 	}
 	return err
 }

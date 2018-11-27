@@ -14,10 +14,12 @@ const (
 	maxPenalty  = 600
 )
 
+// Observer Observer
 type Observer interface {
 	RemoveFromQueue(fullName string)
 }
 
+// NewJob returns new job.
 func NewJob(modName string, module Module, out io.Writer, observer Observer) *Job {
 	buf := &bytes.Buffer{}
 	return &Job{
@@ -44,6 +46,7 @@ func NewJob(modName string, module Module, out io.Writer, observer Observer) *Jo
 	}
 }
 
+// Job represents a job. It's a module wrapper.
 type Job struct {
 	*logger.Logger
 	module     Module
@@ -70,17 +73,22 @@ type Job struct {
 	prevRun  time.Time
 }
 
+// FullName returns full name.
+// If name isn't specified it returns module name.
 func (j Job) FullName() string {
-	if j.Name() == "" {
+	if j.Nam == "" {
 		return j.ModuleName()
 	}
 	return fmt.Sprintf("%s_%s", j.ModuleName(), j.Name())
 }
 
+// ModuleName returns module name.
 func (j Job) ModuleName() string {
 	return j.moduleName
 }
 
+// Name returns name.
+// If name isn't specified it returns module name.
 func (j Job) Name() string {
 	if j.Nam == "" {
 		return j.moduleName
@@ -88,14 +96,18 @@ func (j Job) Name() string {
 	return j.Nam
 }
 
+// Initialized returns 'initialized' flag value.
 func (j Job) Initialized() bool {
 	return j.initialized
 }
 
+// Panicked returns 'panicked' flag value.
 func (j Job) Panicked() bool {
 	return j.panicked
 }
 
+// Init calls module Init and returns its value.
+// It handles panic. In case of panic it calls module Cleanup.
 func (j *Job) Init() bool {
 	defer func() {
 		if r := recover(); r != nil {
@@ -108,9 +120,15 @@ func (j *Job) Init() bool {
 	j.Logger = logger.New(j.ModuleName(), j.Name())
 	j.module.SetLogger(j.Logger)
 
-	return j.module.Init()
+	ok := j.module.Init()
+	if ok {
+		j.initialized = true
+	}
+	return ok
 }
 
+// Check calls module Check and returns its value.
+// It handles panic. In case of panic it calls module Cleanup.
 func (j *Job) Check() bool {
 	defer func() {
 		if r := recover(); r != nil {
@@ -123,6 +141,8 @@ func (j *Job) Check() bool {
 	return j.module.Check()
 }
 
+// PostCheck calls module GetCharts.
+// If the result is nil it calls module Cleanup.
 func (j *Job) PostCheck() bool {
 	j.charts = j.module.GetCharts()
 
@@ -135,6 +155,7 @@ func (j *Job) PostCheck() bool {
 	return true
 }
 
+// Tick Tick
 func (j *Job) Tick(clock int) {
 	select {
 	case j.tick <- clock:
@@ -143,14 +164,17 @@ func (j *Job) Tick(clock int) {
 	}
 }
 
+// Start simply invokes MainLoop.
 func (j *Job) Start() {
 	j.MainLoop()
 }
 
+// Stop stops MainLoop
 func (j *Job) Stop() {
 	j.stopHook <- struct{}{}
 }
 
+// MainLoop is a job main function.
 func (j *Job) MainLoop() {
 LOOP:
 	for {
@@ -175,7 +199,7 @@ func (j *Job) runOnce() {
 
 	if j.panicked {
 		j.observer.RemoveFromQueue(j.FullName())
-		go j.module.Cleanup()
+		j.module.Cleanup()
 		return
 	}
 
@@ -189,6 +213,7 @@ func (j *Job) runOnce() {
 	j.buf.Reset()
 }
 
+// AutoDetectionRetry returns value of AutoDetectRetry.
 func (j Job) AutoDetectionRetry() int {
 	return j.AutoDetectRetry
 }
