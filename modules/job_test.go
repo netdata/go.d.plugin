@@ -187,8 +187,8 @@ func TestJob_MainLoop_Panic(t *testing.T) {
 
 	go func() {
 		for i := 1; i < 4; i++ {
-			job.Tick(i)
 			time.Sleep(time.Second)
+			job.Tick(i)
 		}
 		job.Stop()
 	}()
