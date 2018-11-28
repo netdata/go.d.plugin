@@ -7,9 +7,18 @@ import (
 	"sync/atomic"
 )
 
-const msgPerSecondLimit = 20
+const (
+	msgPerSecondLimit = 20
+)
 
-var base = New("base", "base")
+var (
+	base      = New("base", "base")
+	initialID = int64(1)
+)
+
+func createUniqueID() int64 {
+	return atomic.AddInt64(&initialID, 1)
+}
 
 // New creates a new logger
 func New(modName, jobName string) *Logger {
@@ -24,19 +33,22 @@ func New(modName, jobName string) *Logger {
 func NewLimited(modName, jobName string) *Logger {
 	logger := New(modName, jobName)
 	logger.limited = true
-	globalTicker.register(&logger.count)
+	logger.id = createUniqueID()
+	GlobalMsgCountWatcher.Register(logger)
 
 	return logger
 }
 
 // Logger represents a logger object
 type Logger struct {
-	log     *log.Logger
+	log *log.Logger
+
+	id      int64
 	modName string
 	jobName string
 
-	limited bool
-	count   int64
+	limited  bool
+	msgCount int64
 }
 
 func (l *Logger) Critical(a ...interface{}) {
@@ -96,7 +108,7 @@ func (l *Logger) print(severity Severity, a ...interface{}) {
 		return
 	}
 
-	if l.limited && globalSeverity < DEBUG && atomic.AddInt64(&l.count, 1) > msgPerSecondLimit {
+	if l.limited && globalSeverity < DEBUG && atomic.AddInt64(&l.msgCount, 1) > msgPerSecondLimit {
 		return
 	}
 
