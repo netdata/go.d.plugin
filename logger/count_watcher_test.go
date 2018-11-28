@@ -43,14 +43,15 @@ func TestMsgCountWatcher(t *testing.T) {
 	defer cw.stop()
 
 	logger := New("", "")
+	logger.limited = true
 	logger.log.SetOutput(ioutil.Discard)
 	cw.Register(logger)
 
 	for i := 0; i < 3; i++ {
-		time.Sleep(resetEvery)
 		for m := 0; m < 100; m++ {
 			logger.Info()
 		}
+		time.Sleep(resetEvery * 2)
 		assert.Equal(t, int64(0), atomic.LoadInt64(&logger.msgCount))
 	}
 }
