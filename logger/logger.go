@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	msgPerSecondLimit = 20
+	msgPerSecondLimit = 60
 )
 
 var (
