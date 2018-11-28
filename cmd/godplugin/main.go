@@ -44,7 +44,7 @@ func parseCLI() *cli.Option {
 	}
 
 	if opt.Debug {
-		logger.SetGlobalSeverity(logger.DEBUG)
+		logger.SetSeverity(logger.DEBUG)
 	}
 	return opt
 }
