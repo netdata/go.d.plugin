@@ -10,6 +10,21 @@ var (
 	resetEvery = time.Second
 )
 
+// GlobalMsgCountWatcher is a initiated instance of MsgCountWatcher.
+// It resets message counter for every registered logger every 1 seconds.
+var GlobalMsgCountWatcher = newMsgCountWatcher(resetEvery)
+
+func newMsgCountWatcher(resetEvery time.Duration) *MsgCountWatcher {
+	t := &MsgCountWatcher{
+		ticker:   time.NewTicker(resetEvery),
+		shutdown: make(chan struct{}),
+		items:    make(map[int64]*Logger),
+	}
+	go t.start()
+
+	return t
+}
+
 // MsgCountWatcher MsgCountWatcher
 type MsgCountWatcher struct {
 	shutdown chan struct{}
@@ -62,18 +77,3 @@ func (m *MsgCountWatcher) resetCount() {
 		atomic.StoreInt64(&v.msgCount, 0)
 	}
 }
-
-func newMsgCountWatcher(resetEvery time.Duration) *MsgCountWatcher {
-	t := &MsgCountWatcher{
-		ticker:   time.NewTicker(resetEvery),
-		shutdown: make(chan struct{}),
-		items:    make(map[int64]*Logger),
-	}
-	go t.start()
-
-	return t
-}
-
-// GlobalMsgCountWatcher is a initiated instance of MsgCountWatcher.
-// It resets message counter for every registered logger every 1 seconds.
-var GlobalMsgCountWatcher = newMsgCountWatcher(resetEvery)

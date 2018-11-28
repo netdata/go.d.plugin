@@ -129,7 +129,7 @@ func (l *Logger) print(severity Severity, a ...interface{}) {
 	)
 }
 
-// SetGlobalSeverity sets global severity level
-func SetGlobalSeverity(severity Severity) {
+// SetSeverity sets global severity level
+func SetSeverity(severity Severity) {
 	globalSeverity = severity
 }
