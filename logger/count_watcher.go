@@ -13,13 +13,13 @@ var (
 // MsgCountWatcher MsgCountWatcher
 type MsgCountWatcher struct {
 	shutdown chan struct{}
-	ticker   <-chan time.Time
+	ticker   *time.Ticker
 
 	mux   sync.Mutex
 	items map[int64]*Logger
 }
 
-// Register adds logger to the collection
+// Register adds logger to the collection.
 func (m *MsgCountWatcher) Register(logger *Logger) {
 	m.mux.Lock()
 	defer m.mux.Unlock()
@@ -27,7 +27,7 @@ func (m *MsgCountWatcher) Register(logger *Logger) {
 	m.items[logger.id] = logger
 }
 
-// Unregister removes logger from the collection
+// Unregister removes logger from the collection.
 func (m *MsgCountWatcher) Unregister(logger *Logger) {
 	m.mux.Lock()
 	defer m.mux.Unlock()
@@ -43,7 +43,7 @@ LOOP:
 		select {
 		case <-m.shutdown:
 			break LOOP
-		case <-m.ticker:
+		case <-m.ticker.C:
 			m.resetCount()
 		}
 	}
@@ -51,7 +51,7 @@ LOOP:
 
 func (m *MsgCountWatcher) stop() {
 	m.shutdown <- struct{}{}
-
+	m.ticker.Stop()
 }
 
 func (m *MsgCountWatcher) resetCount() {
@@ -65,7 +65,7 @@ func (m *MsgCountWatcher) resetCount() {
 
 func newMsgCountWatcher(resetEvery time.Duration) *MsgCountWatcher {
 	t := &MsgCountWatcher{
-		ticker:   time.Tick(resetEvery),
+		ticker:   time.NewTicker(resetEvery),
 		shutdown: make(chan struct{}),
 		items:    make(map[int64]*Logger),
 	}
@@ -75,5 +75,5 @@ func newMsgCountWatcher(resetEvery time.Duration) *MsgCountWatcher {
 }
 
 // GlobalMsgCountWatcher is a initiated instance of MsgCountWatcher.
-// It resets message counter for every registered logger every 1 seconds
+// It resets message counter for every registered logger every 1 seconds.
 var GlobalMsgCountWatcher = newMsgCountWatcher(resetEvery)
