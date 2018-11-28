@@ -30,7 +30,7 @@ func TestNewLimited(t *testing.T) {
 
 	_, ok := GlobalMsgCountWatcher.items[logger.id]
 	require.True(t, ok)
-	delete(GlobalMsgCountWatcher.items, logger.id)
+	GlobalMsgCountWatcher.Unregister(logger)
 }
 
 func TestLogger_Critical(t *testing.T) {
