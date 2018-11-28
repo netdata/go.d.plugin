@@ -1,14 +1,20 @@
 package logger
 
-var sevLevel = INFO
+var globalSeverity = INFO
 
+// Severity is a logging severity level
 type Severity int
 
 const (
+	// CRITICAL severity level
 	CRITICAL Severity = iota
+	// ERROR severity level
 	ERROR
+	// WARNING severity level
 	WARNING
+	// INFO severity level
 	INFO
+	// DEBUG severity level
 	DEBUG
 )
 
@@ -24,7 +30,6 @@ func (s Severity) String() string {
 		return "INFO"
 	case DEBUG:
 		return "DEBUG"
-	default:
-		return "UNKNOWN"
 	}
+	return "UNKNOWN"
 }

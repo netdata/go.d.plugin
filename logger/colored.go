@@ -13,7 +13,7 @@ type colored struct{}
 func (c colored) Write(b []byte) (n int, err error) {
 	msg := string(b)
 
-	if sevLevel != DEBUG {
+	if globalSeverity < DEBUG {
 		return fmt.Fprint(os.Stderr, msg)
 	}
 
