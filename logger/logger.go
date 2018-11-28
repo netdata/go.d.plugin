@@ -3,7 +3,6 @@ package logger
 import (
 	"fmt"
 	"log"
-	"os"
 	"sync/atomic"
 )
 
@@ -26,6 +25,7 @@ func New(modName, jobName string) *Logger {
 		log:     log.New(colored{}, "", log.Ldate|log.Ltime),
 		modName: modName,
 		jobName: jobName,
+		id:      createUniqueID(),
 	}
 }
 
@@ -33,7 +33,6 @@ func New(modName, jobName string) *Logger {
 func NewLimited(modName, jobName string) *Logger {
 	logger := New(modName, jobName)
 	logger.limited = true
-	logger.id = createUniqueID()
 	GlobalMsgCountWatcher.Register(logger)
 
 	return logger
@@ -51,43 +50,52 @@ type Logger struct {
 	msgCount int64
 }
 
+// Critical logs a message with the Critical severity
 func (l *Logger) Critical(a ...interface{}) {
 	l.print(CRITICAL, a...)
-	os.Exit(1)
 }
 
+// Error logs a message with the Error severity
 func (l *Logger) Error(a ...interface{}) {
 	l.print(ERROR, a...)
 }
 
+// Warning logs a message with the Warning severity
 func (l *Logger) Warning(a ...interface{}) {
 	l.print(WARNING, a...)
 }
 
+// Info logs a message with the Info severity
 func (l *Logger) Info(a ...interface{}) {
 	l.print(INFO, a...)
 }
 
+// Debug logs a message with the Debug severity
 func (l *Logger) Debug(a ...interface{}) {
 	l.print(DEBUG, a...)
 }
 
+// Criticalf logs a message with the Critical severity using the same syntax and options as fmt.Printf
 func (l *Logger) Criticalf(format string, a ...interface{}) {
 	l.Critical(fmt.Sprintf(format, a...))
 }
 
+// Errorf logs a message with the Error severity using the same syntax and options as fmt.Printf
 func (l *Logger) Errorf(format string, a ...interface{}) {
 	l.Error(fmt.Sprintf(format, a...))
 }
 
+// Warningf logs a message with the Warning severity using the same syntax and options as fmt.Printf
 func (l *Logger) Warningf(format string, a ...interface{}) {
 	l.Warning(fmt.Sprintf(format, a...))
 }
 
+// Infof logs a message with the Info severity using the same syntax and options as fmt.Printf
 func (l *Logger) Infof(format string, a ...interface{}) {
 	l.Info(fmt.Sprintf(format, a...))
 }
 
+// Debugf logs a message with the Debug severity using the same syntax and options as fmt.Printf
 func (l *Logger) Debugf(format string, a ...interface{}) {
 	l.Debug(fmt.Sprintf(format, a...))
 }
