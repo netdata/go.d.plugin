@@ -24,7 +24,7 @@ func (e *Example) Check() bool {
 	return true
 }
 
-func (Example) GetCharts() *Charts {
+func (Example) Charts() *Charts {
 	return charts.Copy()
 }
 

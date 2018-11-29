@@ -11,7 +11,7 @@ package weblog
 //	Dim    = charts.Dim
 //)
 //
-//func (w *WebLog) GetCharts() *charts.Charts {
+//func (w *WebLog) Charts() *charts.Charts {
 //	n := utils.StringSlice(w.parser.SubexpNames())
 //	ch := Charts{}
 //

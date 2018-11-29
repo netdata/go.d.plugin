@@ -30,7 +30,7 @@ func TestHTTPCheck_Check(t *testing.T) {
 }
 
 func TestHTTPCheck_GetCharts(t *testing.T) {
-	assert.NotNil(t, New().GetCharts())
+	assert.NotNil(t, New().Charts())
 }
 
 func TestHTTPCheck_ResponseSuccess(t *testing.T) {

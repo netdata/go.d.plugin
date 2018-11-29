@@ -5,7 +5,7 @@ type MockModule struct {
 	Base
 	InitFunc          func() bool
 	CheckFunc         func() bool
-	GetChartsFunc     func() *Charts
+	ChartsFunc        func() *Charts
 	GatherMetricsFunc func() map[string]int64
 	CleanupDone       bool
 }
@@ -20,9 +20,9 @@ func (m MockModule) Check() bool {
 	return m.CheckFunc()
 }
 
-// GetCharts invokes GetChartsFunc.
-func (m MockModule) GetCharts() *Charts {
-	return m.GetChartsFunc()
+// Charts invokes ChartsFunc.
+func (m MockModule) Charts() *Charts {
+	return m.ChartsFunc()
 }
 
 // GatherMetrics invokes GetDataDunc.

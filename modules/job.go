@@ -142,10 +142,10 @@ func (j *Job) Check() bool {
 	return j.module.Check()
 }
 
-// PostCheck calls module GetCharts.
+// PostCheck calls module Charts.
 // If the result is nil it calls module Cleanup.
 func (j *Job) PostCheck() bool {
-	j.charts = j.module.GetCharts()
+	j.charts = j.module.Charts()
 
 	if j.charts == nil {
 		j.Error("charts can't be nil")

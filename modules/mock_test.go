@@ -34,13 +34,13 @@ func TestMockModule_Check(t *testing.T) {
 func TestMockModule_GetCharts(t *testing.T) {
 	mock := &MockModule{}
 	f := func() {
-		mock.GetCharts()
+		mock.Charts()
 	}
 
 	require.Panics(t, f)
 
-	mock.GetChartsFunc = func() *Charts { return nil }
-	assert.Nil(t, mock.GetCharts())
+	mock.ChartsFunc = func() *Charts { return nil }
+	assert.Nil(t, mock.Charts())
 }
 
 func TestMockModule_GetData(t *testing.T) {

@@ -118,8 +118,8 @@ func (hc HTTPCheck) Check() bool {
 	return true
 }
 
-// GetCharts returns charts
-func (hc HTTPCheck) GetCharts() *Charts {
+// Charts returns charts
+func (hc HTTPCheck) Charts() *Charts {
 	c := charts.Copy()
 
 	if len(hc.ResponseMatch) == 0 {
