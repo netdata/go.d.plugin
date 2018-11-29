@@ -16,7 +16,7 @@ var testdata, _ = ioutil.ReadFile("tests/testdata.txt")
 func TestSpringboot2(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/actuator/prometheus" {
-			w.Write(testdata)
+			_, _ = w.Write(testdata)
 			return
 		}
 	}))

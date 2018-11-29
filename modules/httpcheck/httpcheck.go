@@ -167,8 +167,8 @@ func (hc *HTTPCheck) processErrResponse(err error) {
 
 func (hc *HTTPCheck) processOKResponse(resp *http.Response) {
 	defer func() {
-		io.Copy(ioutil.Discard, resp.Body)
-		resp.Body.Close()
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
 	}()
 
 	hc.data.Success = 1

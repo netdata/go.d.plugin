@@ -32,7 +32,9 @@ func TestTail_Init(t *testing.T) {
 	tmp, err := ioutil.TempFile("", "temp-")
 
 	assert.Nilf(t, err, "could not create temporary file")
-	defer os.Remove(tmp.Name())
+	defer func() {
+		_ = os.Remove(tmp.Name())
+	}()
 
 	tail = New(tmp.Name())
 	err = tail.Init()
@@ -45,9 +47,12 @@ func TestTail_Tail(t *testing.T) {
 	tmp, err := ioutil.TempFile("", "temp-")
 	assert.Nil(t, err)
 
-	defer os.Remove(tmp.Name())
+	defer func() {
+		_ = os.Remove(tmp.Name())
+	}()
+
 	tail := New(tmp.Name())
-	tail.Init()
+	_ = tail.Init()
 
 	_, err = tail.Tail()
 	if assert.Error(t, err) {
@@ -55,10 +60,10 @@ func TestTail_Tail(t *testing.T) {
 	}
 
 	w := func() {
-		tmp.WriteString("Donatello\n")
-		tmp.WriteString("Leonardo\n")
-		tmp.WriteString("Michelangelo\n")
-		tmp.WriteString("Raphael\n")
+		_, _ = tmp.WriteString("Donatello\n")
+		_, _ = tmp.WriteString("Leonardo\n")
+		_, _ = tmp.WriteString("Michelangelo\n")
+		_, _ = tmp.WriteString("Raphael\n")
 	}
 	w()
 

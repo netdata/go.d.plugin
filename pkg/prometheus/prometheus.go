@@ -108,9 +108,13 @@ func (p *prometheus) fetch(w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}()
+
 	if resp.StatusCode != http.StatusOK {
-		io.Copy(ioutil.Discard, resp.Body)
 		return fmt.Errorf("server returned HTTP status %s", resp.Status)
 	}
 
@@ -127,9 +131,9 @@ func (p *prometheus) fetch(w io.Writer) error {
 		}
 	} else {
 		p.bodybuf.Reset(resp.Body)
-		p.gzipr.Reset(p.bodybuf)
+		_ = p.gzipr.Reset(p.bodybuf)
 	}
 	_, err = io.Copy(w, p.gzipr)
-	p.gzipr.Close()
+	_ = p.gzipr.Close()
 	return err
 }

@@ -36,7 +36,7 @@ func TestPrometheus404(t *testing.T) {
 func TestPrometheusPlain(t *testing.T) {
 	tsMux := http.NewServeMux()
 	tsMux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
-		w.Write(testdata)
+		_, _ = w.Write(testdata)
 	})
 	ts := httptest.NewServer(tsMux)
 	defer ts.Close()
@@ -58,9 +58,9 @@ func TestPrometheusGzip(t *testing.T) {
 		w.WriteHeader(200)
 		gz := new(bytes.Buffer)
 		ww := gzip.NewWriter(gz)
-		ww.Write(rawTestData[counter])
-		ww.Close()
-		gz.WriteTo(w)
+		_, _ = ww.Write(rawTestData[counter])
+		_ = ww.Close()
+		_, _ = gz.WriteTo(w)
 		counter++
 	})
 	ts := httptest.NewServer(tsMux)

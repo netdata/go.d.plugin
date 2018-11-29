@@ -54,7 +54,7 @@ func (w *worker) doWork(port *port) {
 
 	if err == nil {
 		port.setState(success)
-		c.Close()
+		_ = c.Close()
 	}
 
 	if err != nil {

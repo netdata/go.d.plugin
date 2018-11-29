@@ -127,7 +127,7 @@ func (p *Plugin) populateActiveModules() {
 
 func (p *Plugin) Setup() bool {
 	if !p.Config.Enabled {
-		fmt.Fprintln(p.Out, "DISABLE")
+		_, _ = fmt.Fprintln(p.Out, "DISABLE")
 		log.Info("disabled in configuration file")
 		return false
 	}
