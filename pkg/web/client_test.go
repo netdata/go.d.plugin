@@ -19,7 +19,7 @@ func TestRawClient_CreateHTTPClient(t *testing.T) {
 	client := rawClient.CreateHTTPClient()
 	assert.Implements(t, (*Client)(nil), client)
 
-	client.Do(req)
+	_, _ = client.Do(req)
 	assert.Empty(t, req.Header.Get("Proxy-Authorization"))
 
 	rawClient.ProxyUsername = proxyUsername
@@ -29,6 +29,6 @@ func TestRawClient_CreateHTTPClient(t *testing.T) {
 	client = rawClient.CreateHTTPClient()
 	assert.Implements(t, (*Client)(nil), client)
 
-	client.Do(req)
+	_, _ = client.Do(req)
 	assert.NotEmpty(t, req.Header.Get("Proxy-Authorization"))
 }

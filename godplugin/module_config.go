@@ -24,7 +24,9 @@ type moduleConfig struct {
 
 func (m *moduleConfig) load(filename string) error {
 	file, err := os.Open(filename)
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	if err != nil && err != io.EOF {
 		return err

@@ -9,9 +9,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/pkg/textparse"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 type (
@@ -67,13 +68,29 @@ func (p *prometheus) scrape(metrics *Metrics) error {
 }
 
 func parse(prometheusText []byte, metrics *Metrics) error {
-	parser := textparse.New(prometheusText)
+	var parser = textparse.NewPromParser(prometheusText)
 
-	for parser.Next() {
-		_, _, val := parser.At()
-		var lbls labels.Labels
-		parser.Metric(&lbls)
-		metrics.Add(Metric{lbls, val})
+	for {
+		et, err := parser.Next()
+
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return err
+		}
+
+		switch et {
+		case textparse.EntrySeries:
+			var lbs labels.Labels
+			_, _, val := parser.Series()
+			parser.Metric(&lbs)
+
+			metrics.Add(Metric{lbs, val})
+		case textparse.EntryType:
+		case textparse.EntryHelp:
+		case textparse.EntryComment:
+		}
 	}
 	return nil
 }
@@ -91,9 +108,13 @@ func (p *prometheus) fetch(w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}()
+
 	if resp.StatusCode != http.StatusOK {
-		io.Copy(ioutil.Discard, resp.Body)
 		return fmt.Errorf("server returned HTTP status %s", resp.Status)
 	}
 
@@ -110,9 +131,9 @@ func (p *prometheus) fetch(w io.Writer) error {
 		}
 	} else {
 		p.bodybuf.Reset(resp.Body)
-		p.gzipr.Reset(p.bodybuf)
+		_ = p.gzipr.Reset(p.bodybuf)
 	}
 	_, err = io.Copy(w, p.gzipr)
-	p.gzipr.Close()
+	_ = p.gzipr.Close()
 	return err
 }

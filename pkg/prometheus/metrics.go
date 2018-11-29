@@ -23,35 +23,40 @@ func (m Metric) Name() string {
 	return m.Labels[0].Value
 }
 
-// Add Append a metric.
+// Add appends a metric.
 func (m *Metrics) Add(kv Metric) {
 	*m = append(*m, kv)
 }
 
-// Reset Clear all data but reuse the memory alloced.
+// Reset resets the buffer to be empty,
+// but it retains the underlying storage for use by future writes.
 func (m *Metrics) Reset() {
 	*m = (*m)[:0]
 }
 
-// Sort Sort
+// Sort sorts data.
 func (m Metrics) Sort() {
 	sort.Sort(m)
 }
 
+// Len returns metric length.
 func (m Metrics) Len() int {
 	return len(m)
 }
 
+// Less reports whether the element with
+// index i should sort before the element with index j.
 func (m Metrics) Less(i, j int) bool {
 	return m[i].Name() < m[j].Name()
 }
 
+// Swap swaps the elements with indexes i and j.
 func (m Metrics) Swap(i, j int) {
 	m[i], m[j] = m[j], m[i]
 }
 
-// FindByName Find metrics where it's __name__ label matches given name.
-// It expect the metrics is sorted.
+// FindByName finds metrics where it's __name__ label matches given name.
+// It expects the metrics is sorted.
 // Complexity: O(log(N))
 func (m Metrics) FindByName(name string) Metrics {
 	from := sort.Search(len(m), func(i int) bool {
@@ -67,8 +72,8 @@ func (m Metrics) FindByName(name string) Metrics {
 	return m[from:until]
 }
 
-// Match Find metrics where it's label matches given matcher.
-// It do NOT expect the metrics is sorted.
+// Match finds metrics where it's label matches given matcher.
+// It does NOT expect the metrics is sorted.
 // Complexity: O(N)
 func (m Metrics) Match(matcher *labels.Matcher) Metrics {
 	res := Metrics{}
@@ -81,7 +86,7 @@ func (m Metrics) Match(matcher *labels.Matcher) Metrics {
 	return res
 }
 
-// Max Return the max value.
+// Max returns the max value.
 // It do NOT expect the metrics is sorted.
 // Complexity: O(N)
 func (m Metrics) Max() float64 {

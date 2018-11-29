@@ -124,12 +124,14 @@ func ReadLastLine(filename string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() {
+		_ = f.Close()
+	}()
 	return readLastLine(f)
 }
 
 func readLastLine(f io.ReadSeeker) ([]byte, error) {
-	f.Seek(0, io.SeekEnd)
+	_, _ = f.Seek(0, io.SeekEnd)
 	b := make([]byte, 1)
 
 	for b[0] != '\n' {
@@ -138,7 +140,7 @@ func readLastLine(f io.ReadSeeker) ([]byte, error) {
 		} else if v == 0 {
 			break
 		}
-		f.Read(b)
+		_, _ = f.Read(b)
 	}
 
 	line, err := ioutil.ReadAll(f)
