@@ -176,7 +176,7 @@ func TestJob_MainLoop(t *testing.T) {
 func TestJob_MainLoop_Panic(t *testing.T) {
 	module := &MockModule{
 		GetDataDunc: func() map[string]int64 {
-			panic("panic in GetData")
+			panic("panic in GatherMetrics")
 		},
 	}
 	job := testNewJob()

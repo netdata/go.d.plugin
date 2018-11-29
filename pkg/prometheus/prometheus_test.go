@@ -27,7 +27,7 @@ func TestPrometheus404(t *testing.T) {
 
 	req := web.RawRequest{URL: ts.URL + "/metrics"}
 	prom := New(http.DefaultClient, req)
-	res, err := prom.GetMetrics()
+	res, err := prom.Scrape()
 
 	assert.Error(t, err)
 	assert.Nil(t, res)
@@ -43,7 +43,7 @@ func TestPrometheusPlain(t *testing.T) {
 
 	req := web.RawRequest{URL: ts.URL + "/metrics"}
 	prom := New(http.DefaultClient, req)
-	res, err := prom.GetMetrics()
+	res, err := prom.Scrape()
 
 	assert.NoError(t, err)
 	verifyTestData(t, res)
@@ -70,7 +70,7 @@ func TestPrometheusGzip(t *testing.T) {
 	prom := New(http.DefaultClient, req)
 
 	for i := 0; i < 2; i++ {
-		res, err := prom.GetMetrics()
+		res, err := prom.Scrape()
 		assert.NoError(t, err)
 		verifyTestData(t, res)
 	}

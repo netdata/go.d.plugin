@@ -132,7 +132,7 @@ func (tc *TcpCheck) Cleanup() {
 }
 
 // GetCharts returns charts
-func (tc TcpCheck) GetCharts() *modules.Charts {
+func (tc TcpCheck) GetCharts() *Charts {
 	charts := modules.Charts{}
 	for _, p := range tc.Ports {
 		charts.Add(chartsTemplate(p)...)
@@ -141,8 +141,8 @@ func (tc TcpCheck) GetCharts() *modules.Charts {
 	return &charts
 }
 
-// GetData does data collection
-func (tc *TcpCheck) GetData() map[string]int64 {
+// GatherMetrics does data collection
+func (tc *TcpCheck) GatherMetrics() map[string]int64 {
 	for _, p := range tc.ports {
 		tc.doCh <- p
 	}

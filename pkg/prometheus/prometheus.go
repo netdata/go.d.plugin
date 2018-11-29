@@ -19,7 +19,7 @@ type (
 	// Prometheus is a helper for scrape and parse prometheus format metrics.
 	Prometheus interface {
 		// scrape and parse prometheus format metrics
-		GetMetrics() (Metrics, error)
+		Scrape() (Metrics, error)
 	}
 
 	prometheus struct {
@@ -48,7 +48,7 @@ func New(client web.Client, request web.RawRequest) Prometheus {
 	}
 }
 
-func (p *prometheus) GetMetrics() (Metrics, error) {
+func (p *prometheus) Scrape() (Metrics, error) {
 	p.metrics.Reset()
 	if err := p.scrape(&p.metrics); err != nil {
 		return nil, err

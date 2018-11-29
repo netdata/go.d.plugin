@@ -35,7 +35,7 @@ func (s *Springboot2) Init() bool {
 
 // Check Check
 func (s *Springboot2) Check() bool {
-	metrics, err := s.prom.GetMetrics()
+	metrics, err := s.prom.Scrape()
 	if err != nil {
 		s.Error(err)
 		return false
@@ -49,9 +49,9 @@ func (Springboot2) GetCharts() *Charts {
 	return charts.Copy()
 }
 
-// GetData GetData
-func (s *Springboot2) GetData() map[string]int64 {
-	metrics, err := s.prom.GetMetrics()
+// GatherMetrics GatherMetrics
+func (s *Springboot2) GatherMetrics() map[string]int64 {
+	metrics, err := s.prom.Scrape()
 	if err != nil {
 		return nil
 	}

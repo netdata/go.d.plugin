@@ -118,7 +118,7 @@ package weblog
 //	return true
 //}
 //
-//func (w *WebLog) GetData() map[string]int64 {
+//func (w *WebLog) GatherMetrics() map[string]int64 {
 //	f, err := w.tail.Tail()
 //
 //	if err == tail.SizeNotChanged {
