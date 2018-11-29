@@ -31,7 +31,7 @@ func TestMockModule_Check(t *testing.T) {
 	assert.True(t, mock.Check())
 }
 
-func TestMockModule_GetCharts(t *testing.T) {
+func TestMockModule_Charts(t *testing.T) {
 	mock := &MockModule{}
 	f := func() {
 		mock.Charts()
