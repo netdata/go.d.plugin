@@ -46,13 +46,13 @@ func TestMockModule_GetCharts(t *testing.T) {
 func TestMockModule_GetData(t *testing.T) {
 	mock := &MockModule{}
 	f := func() {
-		mock.GetData()
+		mock.GatherMetrics()
 	}
 
 	require.Panics(t, f)
 
-	mock.GetDataDunc = func() map[string]int64 { return nil }
-	assert.Nil(t, mock.GetData())
+	mock.GatherMetricsFunc = func() map[string]int64 { return nil }
+	assert.Nil(t, mock.GatherMetrics())
 }
 
 func TestMockModule_Cleanup(t *testing.T) {

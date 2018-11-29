@@ -119,7 +119,7 @@ func (hc HTTPCheck) Check() bool {
 }
 
 // GetCharts returns charts
-func (hc HTTPCheck) GetCharts() *modules.Charts {
+func (hc HTTPCheck) GetCharts() *Charts {
 	c := charts.Copy()
 
 	if len(hc.ResponseMatch) == 0 {
@@ -130,8 +130,8 @@ func (hc HTTPCheck) GetCharts() *modules.Charts {
 
 }
 
-// GetData does data collection and processing
-func (hc *HTTPCheck) GetData() map[string]int64 {
+// GatherMetrics does data collection and processing
+func (hc *HTTPCheck) GatherMetrics() map[string]int64 {
 	hc.data.reset()
 
 	resp, err := hc.doRequest()

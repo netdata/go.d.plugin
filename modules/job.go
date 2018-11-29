@@ -196,7 +196,7 @@ func (j *Job) runOnce() {
 	curTime := time.Now()
 	sinceLastRun := calcSinceLastRun(curTime, j.prevRun)
 
-	data := j.getData()
+	metrics := j.gatherMetrics()
 
 	if j.panicked {
 		j.observer.RemoveFromQueue(j.FullName())
@@ -204,7 +204,7 @@ func (j *Job) runOnce() {
 		return
 	}
 
-	if j.populateMetrics(data, curTime, sinceLastRun) {
+	if j.processMetrics(metrics, curTime, sinceLastRun) {
 		j.prevRun = curTime
 	} else {
 		j.retries++
@@ -219,17 +219,17 @@ func (j Job) AutoDetectionRetry() int {
 	return j.AutoDetectRetry
 }
 
-func (j *Job) getData() (result map[string]int64) {
+func (j *Job) gatherMetrics() (result map[string]int64) {
 	defer func() {
 		if r := recover(); r != nil {
 			j.Errorf("PANIC: %v", r)
 			j.panicked = true
 		}
 	}()
-	return j.module.GetData()
+	return j.module.GatherMetrics()
 }
 
-func (j *Job) populateMetrics(data map[string]int64, startTime time.Time, sinceLastRun int) bool {
+func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinceLastRun int) bool {
 	if !j.runtimeChart.created {
 		j.runtimeChart.ID = fmt.Sprintf("execution_time_of_%s", j.FullName())
 		j.createChart(j.runtimeChart)
@@ -244,11 +244,11 @@ func (j *Job) populateMetrics(data map[string]int64, startTime time.Time, sinceL
 			j.createChart(chart)
 		}
 
-		if data == nil || chart.Obsolete {
+		if metrics == nil || chart.Obsolete {
 			continue
 		}
 
-		if j.updateChart(chart, data, sinceLastRun) {
+		if j.updateChart(chart, metrics, sinceLastRun) {
 			totalUpdated++
 		}
 	}

@@ -59,10 +59,13 @@ func TestTcpCheck_ServerOK(t *testing.T) {
 	tc.Init()
 
 	srv := tcpServer{addr: ":3001"}
-	srv.listen()
-	defer srv.close()
+	_ = srv.listen()
 
-	assert.NotNil(t, tc.GetData())
+	defer func() {
+		_ = srv.close()
+	}()
+
+	assert.NotNil(t, tc.GatherMetrics())
 
 	for _, port := range tc.ports {
 		assert.True(t, port.state == success)
@@ -79,7 +82,7 @@ func TestTcpCheck_ServerBAD(t *testing.T) {
 
 	tc.Init()
 
-	assert.NotNil(t, tc.GetData())
+	assert.NotNil(t, tc.GatherMetrics())
 
 	for _, port := range tc.ports {
 		assert.True(t, port.state == failed)

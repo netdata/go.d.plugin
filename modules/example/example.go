@@ -24,11 +24,11 @@ func (e *Example) Check() bool {
 	return true
 }
 
-func (Example) GetCharts() *modules.Charts {
+func (Example) GetCharts() *Charts {
 	return charts.Copy()
 }
 
-func (e *Example) GetData() map[string]int64 {
+func (e *Example) GatherMetrics() map[string]int64 {
 	e.data["random0"] = rand.Int63n(100)
 	e.data["random1"] = rand.Int63n(100)
 
