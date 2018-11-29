@@ -119,7 +119,7 @@ func TestJob_Check(t *testing.T) {
 
 func TestJob_PostCheck(t *testing.T) {
 	okMockModule := &MockModule{
-		GetChartsFunc: func() *Charts { return &Charts{} },
+		ChartsFunc: func() *Charts { return &Charts{} },
 	}
 	job := testNewJob()
 	job.module = okMockModule
@@ -127,7 +127,7 @@ func TestJob_PostCheck(t *testing.T) {
 	assert.True(t, job.PostCheck())
 
 	ngMockModule := &MockModule{
-		GetChartsFunc: func() *Charts { return nil },
+		ChartsFunc: func() *Charts { return nil },
 	}
 	job = testNewJob()
 	job.module = ngMockModule
@@ -137,7 +137,7 @@ func TestJob_PostCheck(t *testing.T) {
 
 func TestJob_MainLoop(t *testing.T) {
 	module := &MockModule{
-		GetChartsFunc: func() *Charts {
+		ChartsFunc: func() *Charts {
 			return &Charts{
 				&Chart{
 					ID:    "id",
@@ -159,7 +159,7 @@ func TestJob_MainLoop(t *testing.T) {
 	}
 	job := testNewJob()
 	job.module = module
-	job.charts = job.module.GetCharts()
+	job.charts = job.module.Charts()
 	job.UpdateEvery = 1
 
 	go func() {

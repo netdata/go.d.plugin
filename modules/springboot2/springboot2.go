@@ -45,7 +45,7 @@ func (s *Springboot2) Check() bool {
 	return len(jvmMemory) > 0
 }
 
-func (Springboot2) GetCharts() *Charts {
+func (Springboot2) Charts() *Charts {
 	return charts.Copy()
 }
 

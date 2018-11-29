@@ -13,9 +13,9 @@ type Module interface {
 	// If it return false, this job will be disabled.
 	Check() bool
 
-	// GetCharts returns the chart definition.
+	// Charts returns the chart definition.
 	// Make sure not to share the return instance.
-	GetCharts() *Charts
+	Charts() *Charts
 
 	// GatherMetrics returns metrics.
 	GatherMetrics() map[string]int64

@@ -131,8 +131,8 @@ func (tc *TcpCheck) Cleanup() {
 	}
 }
 
-// GetCharts returns charts
-func (tc TcpCheck) GetCharts() *Charts {
+// Charts returns charts
+func (tc TcpCheck) Charts() *Charts {
 	charts := modules.Charts{}
 	for _, p := range tc.Ports {
 		charts.Add(chartsTemplate(p)...)

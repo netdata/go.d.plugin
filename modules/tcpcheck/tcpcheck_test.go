@@ -45,7 +45,7 @@ func TestTcpCheck_Cleanup(t *testing.T) {
 }
 
 func TestTcpCheck_GetCharts(t *testing.T) {
-	assert.NotNil(t, New().GetCharts())
+	assert.NotNil(t, New().Charts())
 
 }
 
