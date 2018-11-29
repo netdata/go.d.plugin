@@ -1,10 +1,12 @@
 package utils
 
-import "reflect"
+import (
+	"reflect"
+)
 
 const fieldTagName = "stm"
 
-// ToMap Convert struct to map[string]int64 based on stm tag
+// ToMap converts struct to a map[string]int64 based on 'stm' tags
 func ToMap(s interface{}) map[string]int64 {
 	rv := make(map[string]int64)
 	v := reflect.Indirect(reflect.ValueOf(s))
