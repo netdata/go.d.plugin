@@ -9,9 +9,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/pkg/textparse"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 type (
@@ -67,13 +68,29 @@ func (p *prometheus) scrape(metrics *Metrics) error {
 }
 
 func parse(prometheusText []byte, metrics *Metrics) error {
-	parser := textparse.New(prometheusText)
+	var parser = textparse.NewPromParser(prometheusText)
 
-	for parser.Next() {
-		_, _, val := parser.At()
-		var lbls labels.Labels
-		parser.Metric(&lbls)
-		metrics.Add(Metric{lbls, val})
+	for {
+		et, err := parser.Next()
+
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return err
+		}
+
+		switch et {
+		case textparse.EntrySeries:
+			var lbs labels.Labels
+			_, _, val := parser.Series()
+			parser.Metric(&lbs)
+
+			metrics.Add(Metric{lbs, val})
+		case textparse.EntryType:
+		case textparse.EntryHelp:
+		case textparse.EntryComment:
+		}
 	}
 	return nil
 }
