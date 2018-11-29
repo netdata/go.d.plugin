@@ -1,11 +1,11 @@
 package utils
 
 import (
-	"gopkg.in/yaml.v2"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v2"
 )
 
 type data struct {

@@ -6,44 +6,25 @@ func (s *StringSlice) Append(values ...string) {
 	*s = append(*s, values...)
 }
 
-func (s *StringSlice) Insert(idx int, value string) bool {
+func (s *StringSlice) Insert(idx int, values ...string) bool {
 	if !s.isIndexValid(idx) {
 		return false
 	}
-	*s = append(*s, "")
-	copy((*s)[idx+1:], (*s)[idx:])
-	(*s)[idx] = value
+	s.insert(idx, values...)
 	return true
 }
 
-func (s *StringSlice) ExpandAfterID(id string, values ...string) bool {
+func (s *StringSlice) InsertAfterID(id string, values ...string) bool {
 	idx := s.Index(id)
 	if !s.isIndexValid(idx) {
 		return false
 	}
-	*s = append((*s)[:idx+1], append(values, (*s)[idx+1:]...)...)
+	s.insert(idx+1, values...)
 	return true
 }
 
-func (s *StringSlice) ExpandBeforeID(id string, values ...string) bool {
-	idx := s.Index(id)
-	if !s.isIndexValid(idx) {
-		return false
-	}
-	*s = append((*s)[:idx], append(values, (*s)[idx:]...)...)
-	return true
-}
-
-func (s *StringSlice) InsertBeforeID(id, v string) bool {
-	return s.Insert(s.Index(id), v)
-}
-
-func (s *StringSlice) InsertAfterID(id, v string) bool {
-	if s.Include(id) {
-		return s.Insert(s.Index(id)+1, v)
-	}
-	return false
-
+func (s *StringSlice) InsertBeforeID(id string, values ...string) bool {
+	return s.Insert(s.Index(id), values...)
 }
 
 func (s StringSlice) Index(value string) int {
@@ -74,4 +55,8 @@ func (s *StringSlice) DeleteByID(value string) bool {
 
 func (s *StringSlice) isIndexValid(idx int) bool {
 	return idx >= 0 && idx < len(*s)
+}
+
+func (s *StringSlice) insert(idx int, values ...string) {
+	*s = append((*s)[:idx], append(values, (*s)[idx:]...)...)
 }
