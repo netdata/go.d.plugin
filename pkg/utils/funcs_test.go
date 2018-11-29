@@ -24,7 +24,7 @@ type inner2 struct {
 	G int64 `stm:"g"`
 }
 
-func TestStrToMap(t *testing.T) {
+func TestToMap(t *testing.T) {
 	s := data{
 		A: 1,
 		B: 2,
