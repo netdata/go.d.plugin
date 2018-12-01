@@ -1,20 +1,16 @@
 GO  := go
-DEP := dep
 
-all: test build
+all: vet test build
 
 build:
-	mkdir -p pkg
-	$(GO) build -o pkg/godplugin github.com/netdata/go.d.plugin/cmd/godplugin
+	mkdir -p dist
+	$(GO) build -o dist/godplugin github.com/netdata/go.d.plugin/cmd/godplugin
 
 clean:
-	rm -rf pkg
+	rm -rf dist
 
 test:
-	$(GO) list ./... | xargs -n1 -I% $(GO) test % -race
+	$(GO) test ./... -race -cover -covermode=atomic
 
-cover:
-	$(GO) list ./... | xargs -n1 -I% $(GO) test % -cover
-
-dep:
-	$(DEP) ensure -v
+vet:
+	$(GO) vet ./...
