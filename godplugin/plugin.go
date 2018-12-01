@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/multipath"
+
 	"github.com/go-playground/validator"
 	"gopkg.in/yaml.v2"
 
@@ -88,10 +90,10 @@ func (q *jobQueue) notify(clock int) {
 type (
 	// Plugin Plugin
 	Plugin struct {
-		Option        *cli.Option
-		Config        *Config
-		ModuleConfDir string
-		Out           io.Writer
+		Option     *cli.Option
+		Config     *Config
+		ConfigPath multipath.MultiPath
+		Out        io.Writer
 
 		modules   modules.Registry
 		checkCh   chan Job
@@ -217,18 +219,21 @@ func (p *Plugin) checkJobs() {
 func (p *Plugin) createJobs() []Job {
 	var jobs []Job
 	for name, creator := range p.modules {
-		var modConfig moduleConfig
-
-		// FIXME:
-		err := modConfig.load(fmt.Sprintf("/opt/go.d/%s.conf", name))
-
+		configPath, err := p.ConfigPath.Find(fmt.Sprintf("go.d/%s.conf", name))
 		if err != nil {
-			log.Errorf("skipping %s: %v", name, err)
+			log.Warningf("skipping %s: %v", name, err)
+			continue
+		}
+
+		var modConfig moduleConfig
+		err = modConfig.load(configPath)
+		if err != nil {
+			log.Warningf("skipping %s: %v", name, err)
 			continue
 		}
 
 		if len(modConfig.Jobs) == 0 {
-			log.Errorf("skipping %s: config 'Jobs' section is empty or not exist", name)
+			log.Warningf("skipping %s: config 'Jobs' section is empty or not exist", name)
 			continue
 		}
 

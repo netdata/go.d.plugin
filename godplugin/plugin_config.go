@@ -6,6 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// NewConfig create new config
 func NewConfig() *Config {
 	return &Config{
 		DefaultRun: true,
@@ -13,6 +14,7 @@ func NewConfig() *Config {
 	}
 }
 
+// Config go.d.conf config
 type Config struct {
 	Enabled    bool            `yaml:"enabled"`
 	DefaultRun bool            `yaml:"default_run"`
@@ -20,6 +22,7 @@ type Config struct {
 	Modules    map[string]bool `yaml:"modules"`
 }
 
+// Load load go.d.conf config
 func (c *Config) Load(filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {

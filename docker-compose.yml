@@ -1,0 +1,14 @@
+version: '3'
+services:
+  netdata:
+    build: .
+    hostname: localhost
+    ports:
+      - 19999:19999
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
