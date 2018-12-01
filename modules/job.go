@@ -361,7 +361,9 @@ func calcSinceLastRun(curTime, prevRun time.Time) int {
 	if prevRun.IsZero() {
 		return 0
 	}
-	return durationTo(curTime.Sub(prevRun), time.Microsecond)
+	// monotonic
+	// durationTo(curTime.Sub(prevRun), time.Microsecond)
+	return int((curTime.UnixNano() - prevRun.UnixNano()) / 1000)
 }
 
 func durationTo(duration time.Duration, to time.Duration) int {
