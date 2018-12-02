@@ -25,7 +25,6 @@ type Job interface {
 
 	AutoDetectionRetry() int
 
-	Initialized() bool
 	Panicked() bool
 
 	Init() bool

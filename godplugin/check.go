@@ -11,7 +11,7 @@ func (p *Plugin) checkJobs() {
 			continue
 		}
 
-		if !job.Initialized() && !job.Init() {
+		if !job.Init() {
 			log.Errorf("%s[%s] Init failed", job.ModuleName(), job.Name())
 			continue
 		}
