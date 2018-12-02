@@ -32,11 +32,5 @@ type Base struct {
 	*logger.Logger
 }
 
-// Init Init
-func (b *Base) Init() bool { return true }
-
 // SetLogger SetLogger
 func (b *Base) SetLogger(l *logger.Logger) { b.Logger = l }
-
-// Cleanup Cleanup
-func (b Base) Cleanup() {}
