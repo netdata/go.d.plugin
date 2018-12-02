@@ -60,7 +60,7 @@ type (
 		config    *config
 		modules   modules.Registry
 		checkCh   chan Job
-		loopQueue jobQueue
+		loopQueue loopQueue
 	}
 )
 

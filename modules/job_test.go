@@ -67,7 +67,7 @@ func TestJob_AutoDetectionRetry(t *testing.T) {
 func TestJob_Init(t *testing.T) {
 	// OK case
 	m := &mockModule{
-		initFunc: func() bool { return true },
+		init: func() bool { return true },
 	}
 	job := testNewJob()
 	job.module = m
@@ -79,7 +79,7 @@ func TestJob_Init(t *testing.T) {
 
 	// NG case
 	m = &mockModule{
-		initFunc: func() bool { return false },
+		init: func() bool { return false },
 	}
 	job = testNewJob()
 	job.module = m
@@ -91,7 +91,7 @@ func TestJob_Init(t *testing.T) {
 
 	// PANIC case
 	m = &mockModule{
-		initFunc: func() bool { panic("panic in init") },
+		init: func() bool { panic("panic in init") },
 	}
 	job = testNewJob()
 	job.module = m
@@ -105,7 +105,7 @@ func TestJob_Init(t *testing.T) {
 func TestJob_Check(t *testing.T) {
 	// OK case
 	m := &mockModule{
-		checkFunc: func() bool { return true },
+		check: func() bool { return true },
 	}
 	job := testNewJob()
 	job.module = m
@@ -116,7 +116,7 @@ func TestJob_Check(t *testing.T) {
 
 	// NG case
 	m = &mockModule{
-		checkFunc: func() bool { return false },
+		check: func() bool { return false },
 	}
 	job = testNewJob()
 	job.module = m
@@ -127,7 +127,7 @@ func TestJob_Check(t *testing.T) {
 
 	// PANIC case
 	m = &mockModule{
-		initFunc: func() bool { panic("panic in init") },
+		init: func() bool { panic("panic in init") },
 	}
 	job = testNewJob()
 	job.module = m
@@ -141,7 +141,7 @@ func TestJob_Check(t *testing.T) {
 func TestJob_PostCheck(t *testing.T) {
 	// OK case
 	m := &mockModule{
-		chartsFunc: func() *Charts { return &Charts{} },
+		charts: func() *Charts { return &Charts{} },
 	}
 	job := testNewJob()
 	job.module = m
@@ -150,7 +150,7 @@ func TestJob_PostCheck(t *testing.T) {
 
 	// NG case
 	m = &mockModule{
-		chartsFunc: func() *Charts { return nil },
+		charts: func() *Charts { return nil },
 	}
 	job = testNewJob()
 	job.module = m
@@ -160,7 +160,7 @@ func TestJob_PostCheck(t *testing.T) {
 
 func TestJob_MainLoop(t *testing.T) {
 	m := &mockModule{
-		chartsFunc: func() *Charts {
+		charts: func() *Charts {
 			return &Charts{
 				&Chart{
 					ID:    "id",
@@ -173,7 +173,7 @@ func TestJob_MainLoop(t *testing.T) {
 				},
 			}
 		},
-		gatherMetricsFunc: func() map[string]int64 {
+		gatherMetrics: func() map[string]int64 {
 			return map[string]int64{
 				"id1": 1,
 				"id2": 2,
@@ -200,7 +200,7 @@ func TestJob_MainLoop(t *testing.T) {
 
 func TestJob_MainLoop_Panic(t *testing.T) {
 	m := &mockModule{
-		gatherMetricsFunc: func() map[string]int64 {
+		gatherMetrics: func() map[string]int64 {
 			panic("panic in GatherMetrics")
 		},
 	}
