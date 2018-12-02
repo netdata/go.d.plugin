@@ -14,7 +14,7 @@ type MultiPath []string
 // New New multi-paths
 func New(paths ...string) MultiPath {
 	set := map[string]bool{}
-	mPath := make(MultiPath, 0, len(paths))
+	mPath := make(MultiPath, 0)
 
 	for _, dir := range paths {
 		if dir == "" {
