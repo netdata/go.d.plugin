@@ -3,31 +3,31 @@ package modules
 // mockModule mockModule
 type mockModule struct {
 	Base
-	initFunc          func() bool
-	checkFunc         func() bool
-	chartsFunc        func() *Charts
-	gatherMetricsFunc func() map[string]int64
-	cleanupDone       bool
+	init          func() bool
+	check         func() bool
+	charts        func() *Charts
+	gatherMetrics func() map[string]int64
+	cleanupDone   bool
 }
 
-// Init invokes initFunc.
+// Init invokes init.
 func (m mockModule) Init() bool {
-	return m.initFunc()
+	return m.init()
 }
 
-// Check invokes checkFunc.
+// Check invokes check.
 func (m mockModule) Check() bool {
-	return m.checkFunc()
+	return m.check()
 }
 
-// Charts invokes chartsFunc.
+// Charts invokes charts.
 func (m mockModule) Charts() *Charts {
-	return m.chartsFunc()
+	return m.charts()
 }
 
 // GatherMetrics invokes GetDataDunc.
 func (m mockModule) GatherMetrics() map[string]int64 {
-	return m.gatherMetricsFunc()
+	return m.gatherMetrics()
 }
 
 // Cleanup sets cleanupDone to true.
