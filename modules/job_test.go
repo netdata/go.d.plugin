@@ -44,15 +44,6 @@ func TestJob_Name(t *testing.T) {
 	assert.Equal(t, job.Name(), testJobName)
 }
 
-func TestJob_Initialized(t *testing.T) {
-	job := testNewJob()
-
-	assert.Equal(t, job.Initialized(), job.initialized)
-	job.initialized = true
-	assert.Equal(t, job.Initialized(), job.initialized)
-
-}
-
 func TestJob_Panicked(t *testing.T) {
 	job := testNewJob()
 
@@ -72,62 +63,62 @@ func TestJob_AutoDetectionRetry(t *testing.T) {
 }
 
 func TestJob_Init(t *testing.T) {
-	okMockModule := &MockModule{
-		InitFunc: func() bool { return true },
+	okMockModule := &mockModule{
+		initFunc: func() bool { return true },
 	}
 	job := testNewJob()
 	job.module = okMockModule
 
 	assert.True(t, job.Init())
-	assert.True(t, job.Initialized())
+	assert.True(t, job.initialized)
 	assert.False(t, job.Panicked())
-	assert.False(t, okMockModule.CleanupDone)
+	assert.False(t, okMockModule.cleanupDone)
 
-	panicMockModule := &MockModule{
-		InitFunc: func() bool { panic("panic in init") },
+	panicMockModule := &mockModule{
+		initFunc: func() bool { panic("panic in init") },
 	}
 	job = testNewJob()
 	job.module = panicMockModule
 
 	assert.False(t, job.Init())
-	assert.False(t, job.Initialized())
+	assert.False(t, job.initialized)
 	assert.True(t, job.Panicked())
-	assert.True(t, panicMockModule.CleanupDone)
+	assert.True(t, panicMockModule.cleanupDone)
 }
 
 func TestJob_Check(t *testing.T) {
-	okMockModule := &MockModule{
-		CheckFunc: func() bool { return true },
+	okMockModule := &mockModule{
+		checkFunc: func() bool { return true },
 	}
 	job := testNewJob()
 	job.module = okMockModule
 
 	assert.True(t, job.Check())
 	assert.False(t, job.Panicked())
-	assert.False(t, okMockModule.CleanupDone)
+	assert.False(t, okMockModule.cleanupDone)
 
-	panicMockModule := &MockModule{
-		CheckFunc: func() bool { panic("panic in check") },
+	panicMockModule := &mockModule{
+		checkFunc: func() bool { panic("panic in check") },
 	}
 	job = testNewJob()
 	job.module = panicMockModule
 
 	assert.False(t, job.Check())
 	assert.True(t, job.Panicked())
-	assert.True(t, panicMockModule.CleanupDone)
+	assert.True(t, panicMockModule.cleanupDone)
 }
 
 func TestJob_PostCheck(t *testing.T) {
-	okMockModule := &MockModule{
-		ChartsFunc: func() *Charts { return &Charts{} },
+	okMockModule := &mockModule{
+		chartsFunc: func() *Charts { return &Charts{} },
 	}
 	job := testNewJob()
 	job.module = okMockModule
 
 	assert.True(t, job.PostCheck())
 
-	ngMockModule := &MockModule{
-		ChartsFunc: func() *Charts { return nil },
+	ngMockModule := &mockModule{
+		chartsFunc: func() *Charts { return nil },
 	}
 	job = testNewJob()
 	job.module = ngMockModule
@@ -136,8 +127,8 @@ func TestJob_PostCheck(t *testing.T) {
 }
 
 func TestJob_MainLoop(t *testing.T) {
-	module := &MockModule{
-		ChartsFunc: func() *Charts {
+	module := &mockModule{
+		chartsFunc: func() *Charts {
 			return &Charts{
 				&Chart{
 					ID:    "id",
@@ -150,7 +141,7 @@ func TestJob_MainLoop(t *testing.T) {
 				},
 			}
 		},
-		GatherMetricsFunc: func() map[string]int64 {
+		gatherMetricsFunc: func() map[string]int64 {
 			return map[string]int64{
 				"id1": 1,
 				"id2": 2,
@@ -174,8 +165,8 @@ func TestJob_MainLoop(t *testing.T) {
 }
 
 func TestJob_MainLoop_Panic(t *testing.T) {
-	module := &MockModule{
-		GatherMetricsFunc: func() map[string]int64 {
+	module := &mockModule{
+		gatherMetricsFunc: func() map[string]int64 {
 			panic("panic in GatherMetrics")
 		},
 	}

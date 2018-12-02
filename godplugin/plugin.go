@@ -18,6 +18,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/all"
 )
 
+// Job is an interface that represents a job.
 type Job interface {
 	FullName() string
 	ModuleName() string
@@ -40,6 +41,7 @@ type Job interface {
 var log = logger.New("plugin", "main")
 var validate = validator.New()
 
+// New creates Plugin with default values.
 func New() *Plugin {
 	return &Plugin{
 		modules: make(modules.Registry),
@@ -49,7 +51,7 @@ func New() *Plugin {
 }
 
 type (
-	// config config
+	// Plugin represents go.d.plugin
 	Plugin struct {
 		Option     *cli.Option
 		ConfigPath multipath.MultiPath
@@ -62,12 +64,14 @@ type (
 	}
 )
 
+// RemoveFromQueue removes job from the loop queue by full name.
 func (p *Plugin) RemoveFromQueue(fullName string) {
 	if job := p.loopQueue.remove(fullName); job != nil {
 		job.Stop()
 	}
 }
 
+// Serve Serve
 func (p *Plugin) Serve() {
 	go shutdownTask()
 	go p.checkJobs()

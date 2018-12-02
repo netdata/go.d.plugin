@@ -4,17 +4,18 @@ import (
 	"github.com/netdata/go.d.plugin/logger"
 )
 
-// Module Module
+// Module is an interface that represents a module.
 type Module interface {
-	// Init is called after UpdateEvery, ModuleName are set.
+	// Init does initialization.
+	// If it return false, the job will be disabled.
 	Init() bool
 
-	// Check is called after Init or AutoDetectionRetry.
-	// If it return false, this job will be disabled.
+	// Check is called after Init.
+	// If it return false, the job will be disabled.
 	Check() bool
 
 	// Charts returns the chart definition.
-	// Make sure not to share the return instance.
+	// Make sure not to share returned instance.
 	Charts() *Charts
 
 	// GatherMetrics returns metrics.
