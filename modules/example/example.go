@@ -20,6 +20,12 @@ func New() modules.Creator {
 	}
 }
 
+func (Example) Cleanup() {}
+
+func (Example) Init() bool {
+	return true
+}
+
 func (e *Example) Check() bool {
 	return true
 }

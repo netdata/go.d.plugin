@@ -96,19 +96,17 @@ func (j Job) Name() string {
 	return j.Nam
 }
 
-// Initialized returns 'initialized' flag value.
-func (j Job) Initialized() bool {
-	return j.initialized
-}
-
 // Panicked returns 'panicked' flag value.
 func (j Job) Panicked() bool {
 	return j.panicked
 }
 
 // Init calls module Init and returns its value.
-// It handles panic. In case of panic it calls module Cleanup.
 func (j *Job) Init() bool {
+	if j.initialized {
+		return true
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			j.Errorf("PANIC %v", r)
@@ -125,6 +123,7 @@ func (j *Job) Init() bool {
 	if ok {
 		j.initialized = true
 	}
+
 	return ok
 }
 
@@ -210,7 +209,7 @@ func (j *Job) runOnce() {
 		j.retries++
 	}
 
-	_, _ = io.Copy(j.out, j.buf)
+	io.Copy(j.out, j.buf)
 	j.buf.Reset()
 }
 
@@ -271,7 +270,7 @@ func (j *Job) createChart(chart *Chart) {
 		chart.Priority = j.priority
 		j.priority++
 	}
-	_ = j.apiWriter.chart(
+	j.apiWriter.chart(
 		firstNotEmpty(chart.typeID, j.FullName()),
 		chart.ID,
 		chart.OverID,
@@ -286,7 +285,7 @@ func (j *Job) createChart(chart *Chart) {
 		j.moduleName,
 	)
 	for _, dim := range chart.Dims {
-		_ = j.apiWriter.dimension(
+		j.apiWriter.dimension(
 			dim.ID,
 			dim.Name,
 			dim.Algo,
@@ -299,12 +298,12 @@ func (j *Job) createChart(chart *Chart) {
 		if v.Value == 0 {
 			continue
 		}
-		_ = j.apiWriter.set(
+		j.apiWriter.set(
 			v.ID,
 			v.Value,
 		)
 	}
-	_, _ = j.apiWriter.Write([]byte("\n"))
+	j.apiWriter.Write([]byte("\n"))
 
 	chart.created = true
 }
@@ -314,7 +313,7 @@ func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLastRun int)
 		sinceLastRun = 0
 	}
 
-	_ = j.apiWriter.begin(
+	j.apiWriter.begin(
 		firstNotEmpty(chart.typeID, j.FullName()),
 		chart.ID,
 		sinceLastRun,
@@ -324,19 +323,19 @@ func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLastRun int)
 
 	for _, dim := range chart.Dims {
 		if v, ok := data[dim.ID]; ok {
-			_ = j.apiWriter.set(dim.ID, v)
+			j.apiWriter.set(dim.ID, v)
 			updated++
 		} else {
-			_ = j.apiWriter.setEmpty(dim.ID)
+			j.apiWriter.setEmpty(dim.ID)
 		}
 	}
 	for _, variable := range chart.Vars {
 		if v, ok := data[variable.ID]; ok {
-			_ = j.apiWriter.set(variable.ID, v)
+			j.apiWriter.set(variable.ID, v)
 		}
 	}
 
-	_ = j.apiWriter.end()
+	j.apiWriter.end()
 
 	chart.updated = updated > 0
 

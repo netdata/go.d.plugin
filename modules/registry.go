@@ -3,12 +3,13 @@ package modules
 import "fmt"
 
 type (
-	// Creator is a builder to create Job instance
+	// Creator is a Job builder
 	Creator struct {
 		UpdateEvery       int
 		DisabledByDefault bool
 		Create            func() Module
 	}
+	// Registry is a collection of Creators
 	Registry map[string]Creator
 )
 

@@ -4,22 +4,29 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRegister(t *testing.T) {
 	modName := "modName"
 	registry := make(Registry)
 
-	assert.NotPanics(t, func() {
-		register(registry, modName, Creator{})
-	})
+	// add "modName" to the register
+	assert.NotPanics(
+		t,
+		func() {
+			register(registry, modName, Creator{})
+		})
 
-	_, ok := registry[modName]
+	_, exist := registry[modName]
 
-	assert.True(t, ok)
+	require.True(t, exist)
 
-	assert.Panics(t, func() {
-		register(registry, modName, Creator{})
-	})
+	// re-add "modName" to the register
+	assert.Panics(
+		t,
+		func() {
+			register(registry, modName, Creator{})
+		})
 
 }

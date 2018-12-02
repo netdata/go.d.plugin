@@ -27,6 +27,9 @@ type data struct {
 	Threads       int64 `stm:"threads"`
 }
 
+// Cleanup Cleanup
+func (Springboot2) Cleanup() {}
+
 // Init Init
 func (s *Springboot2) Init() bool {
 	s.prom = prometheus.New(s.CreateHTTPClient(), s.RawRequest)

@@ -8,57 +8,49 @@ import (
 )
 
 func TestMockModule_Init(t *testing.T) {
-	mock := &MockModule{}
-	f := func() {
-		mock.Init()
-	}
+	m := &mockModule{}
 
-	require.Panics(t, f)
+	// no default Init
+	require.Panics(t, func() { m.Init() })
 
-	mock.InitFunc = func() bool { return true }
-	assert.True(t, mock.Init())
+	m.initFunc = func() bool { return true }
+	assert.True(t, m.Init())
 }
 
 func TestMockModule_Check(t *testing.T) {
-	mock := &MockModule{}
-	f := func() {
-		mock.Check()
-	}
+	m := &mockModule{}
 
-	require.Panics(t, f)
+	// no default Check
+	require.Panics(t, func() { m.Check() })
 
-	mock.CheckFunc = func() bool { return true }
-	assert.True(t, mock.Check())
+	m.checkFunc = func() bool { return true }
+	assert.True(t, m.Check())
 }
 
 func TestMockModule_Charts(t *testing.T) {
-	mock := &MockModule{}
-	f := func() {
-		mock.Charts()
-	}
+	m := &mockModule{}
 
-	require.Panics(t, f)
+	// no default Charts
+	require.Panics(t, func() { m.Charts() })
 
-	mock.ChartsFunc = func() *Charts { return nil }
-	assert.Nil(t, mock.Charts())
+	m.chartsFunc = func() *Charts { return nil }
+	assert.Nil(t, m.Charts())
 }
 
 func TestMockModule_GetData(t *testing.T) {
-	mock := &MockModule{}
-	f := func() {
-		mock.GatherMetrics()
-	}
+	m := &mockModule{}
 
-	require.Panics(t, f)
+	// no default GatherMetrics
+	require.Panics(t, func() { m.GatherMetrics() })
 
-	mock.GatherMetricsFunc = func() map[string]int64 { return nil }
-	assert.Nil(t, mock.GatherMetrics())
+	m.gatherMetricsFunc = func() map[string]int64 { return nil }
+	assert.Nil(t, m.GatherMetrics())
 }
 
 func TestMockModule_Cleanup(t *testing.T) {
-	mock := &MockModule{}
-	assert.False(t, mock.CleanupDone)
+	m := &mockModule{}
+	assert.False(t, m.cleanupDone)
 
-	mock.Cleanup()
-	assert.True(t, mock.CleanupDone)
+	m.Cleanup()
+	assert.True(t, m.cleanupDone)
 }
