@@ -25,54 +25,43 @@ func createTestChart(id string) *Chart {
 }
 
 func TestDimAlgo_String(t *testing.T) {
-	assert.Equal(t, Line.String(), string(Line))
-	assert.Equal(t, Line.String(), "line")
-	assert.Equal(t, Area.String(), string(Area))
-	assert.Equal(t, Area.String(), "area")
-	assert.Equal(t, Stacked.String(), string(Stacked))
-	assert.Equal(t, Stacked.String(), "stacked")
-
-	assert.Equal(t, dimAlgo("wrong").String(), "")
+	assert.Equal(t, "line", Line.String())
+	assert.Equal(t, "area", Area.String())
+	assert.Equal(t, "stacked", Stacked.String())
+	assert.Equal(t, "", dimAlgo("wrong").String())
 }
 
 func TestChartType_String(t *testing.T) {
-	assert.Equal(t, Absolute.String(), string(Absolute))
-	assert.Equal(t, Absolute.String(), "absolute")
-	assert.Equal(t, Incremental.String(), string(Incremental))
-	assert.Equal(t, Incremental.String(), "incremental")
-	assert.Equal(t, PercentOfAbsolute.String(), string(PercentOfAbsolute))
-	assert.Equal(t, PercentOfAbsolute.String(), "percentage-of-absolute-row")
-	assert.Equal(t, PercentOfIncremental.String(), string(PercentOfIncremental))
-	assert.Equal(t, PercentOfIncremental.String(), "percentage-of-incremental-row")
-
-	assert.Equal(t, chartType("wrong").String(), "")
+	assert.Equal(t, "absolute", Absolute.String())
+	assert.Equal(t, "incremental", Incremental.String())
+	assert.Equal(t, "percentage-of-absolute-row", PercentOfAbsolute.String())
+	assert.Equal(t, "percentage-of-incremental-row", PercentOfIncremental.String())
+	assert.Equal(t, "", chartType("wrong").String())
 }
 
 func TestDimHidden_String(t *testing.T) {
-	assert.Equal(t, dimHidden(false).String(), "")
-	assert.Equal(t, dimHidden(true).String(), "hidden")
+	assert.Equal(t, "", dimHidden(false).String())
+	assert.Equal(t, "hidden", dimHidden(true).String())
 }
 
 func TestDimDivMul_String(t *testing.T) {
-	assert.Equal(t, dimDivMul(0).String(), "")
-	assert.Equal(t, dimDivMul(1).String(), "1")
-	assert.Equal(t, dimDivMul(-1).String(), "-1")
+	assert.Equal(t, "", dimDivMul(0).String())
+	assert.Equal(t, "1", dimDivMul(1).String())
+	assert.Equal(t, "-1", dimDivMul(-1).String())
 }
 
 func TestOpts_String(t *testing.T) {
-	assert.Equal(t, Opts{}.String(), "")
-	assert.Equal(t, Opts{
-		Obsolete:   true,
-		Detail:     true,
-		StoreFirst: true,
-		Hidden:     true,
-	}.String(), "obsolete detail store_first hidden")
-	assert.Equal(t, Opts{
-		Obsolete:   true,
-		Detail:     false,
-		StoreFirst: false,
-		Hidden:     true,
-	}.String(), "obsolete hidden")
+	assert.Equal(t, "", Opts{}.String())
+	assert.Equal(
+		t,
+		"obsolete detail store_first hidden",
+		Opts{Obsolete: true, Detail: true, StoreFirst: true, Hidden: true}.String())
+
+	assert.Equal(
+		t,
+		"obsolete hidden",
+		Opts{Obsolete: true, Detail: false, StoreFirst: false, Hidden: true}.String(),
+	)
 }
 
 func TestCharts_Copy(t *testing.T) {
@@ -82,12 +71,11 @@ func TestCharts_Copy(t *testing.T) {
 	}
 	copied := orig.Copy()
 
-	assert.False(t, orig == copied, "copied charts points to the same address")
+	require.False(t, orig == copied, "copied charts points to the same address")
 	require.Len(t, *orig, len(*copied))
 
 	for idx := range *orig {
 		compareCharts(t, (*orig)[idx], (*copied)[idx])
-
 	}
 }
 
@@ -102,13 +90,22 @@ func TestCharts_Add(t *testing.T) {
 	chart1 := createTestChart("1")
 	chart2 := createTestChart("2")
 	chart3 := createTestChart("")
+
+	// OK case
 	charts.Add(
 		chart1,
 		chart2,
-		chart1,
-		chart3,
 	)
 	assert.Len(t, charts, 2)
+
+	// NG case
+	charts.Add(
+		chart3,
+		chart1,
+		chart2,
+	)
+	assert.Len(t, charts, 2)
+
 	assert.True(t, charts[0] == chart1)
 	assert.True(t, charts[1] == chart2)
 }
@@ -118,9 +115,11 @@ func TestCharts_Get(t *testing.T) {
 	charts := Charts{
 		chart,
 	}
-	assert.Nil(t, charts.Get("2"))
-	assert.IsType(t, (*Chart)(nil), charts.Get("1"))
+
+	// OK case
 	assert.True(t, chart == charts.Get("1"))
+	// NG case
+	assert.Nil(t, charts.Get("2"))
 }
 
 func TestCharts_Has(t *testing.T) {
@@ -129,7 +128,9 @@ func TestCharts_Has(t *testing.T) {
 		chart,
 	}
 
+	// OK case
 	assert.True(t, charts.Has("1"))
+	// NG case
 	assert.False(t, charts.Has("2"))
 }
 
@@ -139,16 +140,21 @@ func TestCharts_Remove(t *testing.T) {
 		chart,
 	}
 
-	assert.False(t, charts.Remove("2"))
+	// OK case
 	assert.True(t, charts.Remove("1"))
 	assert.Len(t, *charts, 0)
+	// NG case
+	assert.False(t, charts.Remove("2"))
 }
 
 func TestChart_AddDim(t *testing.T) {
 	chart := createTestChart("1")
 	dim := &Dim{ID: "dim2"}
 
+	// OK case
 	assert.True(t, chart.AddDim(dim))
+	assert.Len(t, chart.Dims, 2)
+	// NG case
 	assert.False(t, chart.AddDim(dim))
 	assert.Len(t, chart.Dims, 2)
 }
@@ -157,7 +163,10 @@ func TestChart_AddVar(t *testing.T) {
 	chart := createTestChart("1")
 	variable := &Var{ID: "var2"}
 
+	// OK case
 	assert.True(t, chart.AddVar(variable))
+	assert.Len(t, chart.Vars, 2)
+	// NG case
 	assert.False(t, chart.AddVar(variable))
 	assert.Len(t, chart.Vars, 2)
 }
@@ -170,62 +179,82 @@ func TestChart_GetDim(t *testing.T) {
 		},
 	}
 
-	assert.Nil(t, chart.GetDim("3"))
+	// OK case
 	assert.True(t, chart.GetDim("1") != nil && chart.GetDim("1").ID == "1")
+	// NG case
+	assert.Nil(t, chart.GetDim("3"))
 }
 
 func TestChart_RemoveDim(t *testing.T) {
 	chart := createTestChart("1")
 
-	assert.False(t, chart.RemoveDim("dim2"))
+	// OK case
 	assert.True(t, chart.RemoveDim("dim1"))
 	assert.Len(t, chart.Dims, 0)
+	// NG case
+	assert.False(t, chart.RemoveDim("dim2"))
 }
 
 func TestChart_HasDim(t *testing.T) {
 	chart := createTestChart("1")
 
-	assert.False(t, chart.HasDim("dim2"))
+	// OK case
 	assert.True(t, chart.HasDim("dim1"))
+	// NG case
+	assert.False(t, chart.HasDim("dim2"))
 }
 
 func TestChart_MarkNotCreated(t *testing.T) {
 	chart := createTestChart("1")
 
-	assert.False(t, chart.created)
-	chart.created = true
 	chart.MarkNotCreated()
 	assert.False(t, chart.created)
 }
 
 func TestChart_IsValid(t *testing.T) {
 	chart := createTestChart("1")
-	assert.True(t, chart.IsValid())
 
+	// OK case
+	assert.True(t, chart.IsValid())
+	// NG case
+	chart = createTestChart("1")
 	chart.ID = ""
 	assert.False(t, chart.IsValid())
 
+	chart = createTestChart("1")
+	chart.Title = ""
+	assert.False(t, chart.IsValid())
+
+	chart = createTestChart("1")
+	chart.Units = ""
+	assert.False(t, chart.IsValid())
 }
 
 func TestDim_IsValid(t *testing.T) {
-	dim := Dim{}
-	assert.False(t, dim.IsValid())
+	dim := Dim{ID: "id"}
 
-	dim.ID = "dimID"
+	// OK case
 	assert.True(t, dim.IsValid())
-
+	// NG case
+	dim.ID = ""
+	assert.False(t, dim.IsValid())
 }
 
 func TestVar_IsValid(t *testing.T) {
-	variable := Var{}
-	assert.False(t, variable.IsValid())
+	variable := Var{ID: "id"}
 
-	variable.ID = "variableID"
+	// OK case
 	assert.True(t, variable.IsValid())
-
+	// NG case
+	variable.ID = ""
+	assert.False(t, variable.IsValid())
 }
 
 func compareCharts(t *testing.T, orig, copied *Chart) {
+	// 1. compare chart pointers
+	// 2. compare Dims, Vars length
+	// 3. compare Dims, Vars pointers
+
 	assert.False(t, orig == copied, "copied charts points to the same address")
 
 	require.Len(t, orig.Dims, len(copied.Dims))

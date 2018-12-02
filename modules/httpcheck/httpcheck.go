@@ -74,6 +74,9 @@ type HTTPCheck struct {
 	data data
 }
 
+// Cleanup Cleanup
+func (HTTPCheck) Cleanup() {}
+
 // Init does initialization
 func (hc *HTTPCheck) Init() bool {
 	if hc.Timeout.Duration == 0 {

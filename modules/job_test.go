@@ -2,10 +2,12 @@ package modules
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"github.com/netdata/go.d.plugin/logger"
 	"io/ioutil"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -63,71 +65,101 @@ func TestJob_AutoDetectionRetry(t *testing.T) {
 }
 
 func TestJob_Init(t *testing.T) {
-	okMockModule := &mockModule{
+	// OK case
+	m := &mockModule{
 		initFunc: func() bool { return true },
 	}
 	job := testNewJob()
-	job.module = okMockModule
+	job.module = m
 
 	assert.True(t, job.Init())
 	assert.True(t, job.initialized)
 	assert.False(t, job.Panicked())
-	assert.False(t, okMockModule.cleanupDone)
+	assert.False(t, m.cleanupDone)
 
-	panicMockModule := &mockModule{
+	// NG case
+	m = &mockModule{
+		initFunc: func() bool { return false },
+	}
+	job = testNewJob()
+	job.module = m
+
+	assert.False(t, job.Init())
+	assert.False(t, job.initialized)
+	assert.False(t, job.Panicked())
+	assert.False(t, m.cleanupDone)
+
+	// PANIC case
+	m = &mockModule{
 		initFunc: func() bool { panic("panic in init") },
 	}
 	job = testNewJob()
-	job.module = panicMockModule
+	job.module = m
 
 	assert.False(t, job.Init())
 	assert.False(t, job.initialized)
 	assert.True(t, job.Panicked())
-	assert.True(t, panicMockModule.cleanupDone)
+	assert.True(t, m.cleanupDone)
 }
 
 func TestJob_Check(t *testing.T) {
-	okMockModule := &mockModule{
+	// OK case
+	m := &mockModule{
 		checkFunc: func() bool { return true },
 	}
 	job := testNewJob()
-	job.module = okMockModule
+	job.module = m
 
 	assert.True(t, job.Check())
 	assert.False(t, job.Panicked())
-	assert.False(t, okMockModule.cleanupDone)
+	assert.False(t, m.cleanupDone)
 
-	panicMockModule := &mockModule{
-		checkFunc: func() bool { panic("panic in check") },
+	// NG case
+	m = &mockModule{
+		checkFunc: func() bool { return false },
 	}
 	job = testNewJob()
-	job.module = panicMockModule
+	job.module = m
 
 	assert.False(t, job.Check())
+	assert.False(t, job.Panicked())
+	assert.False(t, m.cleanupDone)
+
+	// PANIC case
+	m = &mockModule{
+		initFunc: func() bool { panic("panic in init") },
+	}
+	job = testNewJob()
+	job.module = m
+
+	assert.False(t, job.Check())
+	assert.False(t, job.initialized)
 	assert.True(t, job.Panicked())
-	assert.True(t, panicMockModule.cleanupDone)
+	assert.True(t, m.cleanupDone)
 }
 
 func TestJob_PostCheck(t *testing.T) {
-	okMockModule := &mockModule{
+	// OK case
+	m := &mockModule{
 		chartsFunc: func() *Charts { return &Charts{} },
 	}
 	job := testNewJob()
-	job.module = okMockModule
+	job.module = m
 
 	assert.True(t, job.PostCheck())
 
-	ngMockModule := &mockModule{
+	// NG case
+	m = &mockModule{
 		chartsFunc: func() *Charts { return nil },
 	}
 	job = testNewJob()
-	job.module = ngMockModule
+	job.module = m
 
 	assert.False(t, job.PostCheck())
 }
 
 func TestJob_MainLoop(t *testing.T) {
-	module := &mockModule{
+	m := &mockModule{
 		chartsFunc: func() *Charts {
 			return &Charts{
 				&Chart{
@@ -149,12 +181,12 @@ func TestJob_MainLoop(t *testing.T) {
 		},
 	}
 	job := testNewJob()
-	job.module = module
+	job.module = m
 	job.charts = job.module.Charts()
 	job.UpdateEvery = 1
 
 	go func() {
-		for i := 1; i < 4; i++ {
+		for i := 1; i < 3; i++ {
 			job.Tick(i)
 			time.Sleep(time.Second)
 		}
@@ -162,22 +194,24 @@ func TestJob_MainLoop(t *testing.T) {
 	}()
 
 	job.MainLoop()
+
+	assert.True(t, m.cleanupDone)
 }
 
 func TestJob_MainLoop_Panic(t *testing.T) {
-	module := &mockModule{
+	m := &mockModule{
 		gatherMetricsFunc: func() map[string]int64 {
 			panic("panic in GatherMetrics")
 		},
 	}
 	job := testNewJob()
-	job.module = module
+	job.module = m
 	obs := testObserver(false)
 	job.observer = &obs
 	job.UpdateEvery = 1
 
 	go func() {
-		for i := 1; i < 4; i++ {
+		for i := 1; i < 3; i++ {
 			time.Sleep(time.Second)
 			job.Tick(i)
 		}
@@ -201,4 +235,24 @@ type testObserver bool
 
 func (t *testObserver) RemoveFromQueue(name string) {
 	*t = true
+}
+
+func TestJob_Start(t *testing.T) {
+	job := testNewJob()
+	job.module = &mockModule{}
+
+	go func() {
+		time.Sleep(time.Second)
+		job.Stop()
+	}()
+
+	job.Start()
+
+}
+
+func TestBase_SetLogger(t *testing.T) {
+	var b Base
+	b.SetLogger(&logger.Logger{})
+
+	assert.NotNil(t, b.Logger)
 }
