@@ -52,13 +52,13 @@ func (m mockJob) PostCheck() bool {
 }
 
 func (m mockJob) Tick(clock int) {
-
+	m.tick(clock)
 }
 
 func (m mockJob) Start() {
-
+	m.start()
 }
 
 func (m mockJob) Stop() {
-
+	m.stop()
 }
