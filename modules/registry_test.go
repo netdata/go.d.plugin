@@ -11,22 +11,22 @@ func TestRegister(t *testing.T) {
 	modName := "modName"
 	registry := make(Registry)
 
-	// add "modName" to the register
+	// OK case
 	assert.NotPanics(
 		t,
 		func() {
-			register(registry, modName, Creator{})
+			registry.Register(modName, Creator{})
 		})
 
 	_, exist := registry[modName]
 
 	require.True(t, exist)
 
-	// re-add "modName" to the register
+	// Panic case
 	assert.Panics(
 		t,
 		func() {
-			register(registry, modName, Creator{})
+			registry.Register(modName, Creator{})
 		})
 
 }

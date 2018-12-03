@@ -44,9 +44,11 @@ var validate = validator.New()
 // New creates Plugin with default values.
 func New() *Plugin {
 	return &Plugin{
-		modules: make(modules.Registry),
-		checkCh: make(chan Job, 1),
-		config:  newConfig(),
+		modules:  make(modules.Registry),
+		checkCh:  make(chan Job, 1),
+		config:   newConfig(),
+		confName: "go.d.conf",
+		registry: modules.DefaultRegistry,
 	}
 }
 
@@ -57,7 +59,9 @@ type (
 		ConfigPath multipath.MultiPath
 		Out        io.Writer
 
+		confName  string
 		config    *config
+		registry  modules.Registry
 		modules   modules.Registry
 		checkCh   chan Job
 		loopQueue loopQueue
