@@ -14,3 +14,17 @@ test:
 
 vet:
 	$(GO) vet ./...
+
+dev: dev-build dev-up
+
+dev-build:
+	docker-compose build
+
+dev-up:
+	docker-compose up -d
+
+dev-exec:
+	docker-compose exec netdata bash
+
+dev-log:
+	docker-compose logs netdata
