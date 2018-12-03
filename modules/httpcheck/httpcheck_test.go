@@ -29,7 +29,7 @@ func TestHTTPCheck_Check(t *testing.T) {
 	assert.True(t, New().Check())
 }
 
-func TestHTTPCheck_GetCharts(t *testing.T) {
+func TestHTTPCheck_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
 

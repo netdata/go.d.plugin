@@ -1,9 +1,10 @@
 package godplugin
 
 import (
-	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLoopQueue_add(t *testing.T) {

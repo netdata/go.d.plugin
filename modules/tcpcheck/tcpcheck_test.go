@@ -44,9 +44,8 @@ func TestTcpCheck_Cleanup(t *testing.T) {
 
 }
 
-func TestTcpCheck_GetCharts(t *testing.T) {
+func TestTcpCheck_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
-
 }
 
 func TestTcpCheck_ServerOK(t *testing.T) {
@@ -67,8 +66,8 @@ func TestTcpCheck_ServerOK(t *testing.T) {
 
 	assert.NotNil(t, tc.GatherMetrics())
 
-	for _, port := range tc.ports {
-		assert.True(t, port.state == success)
+	for _, p := range tc.ports {
+		assert.True(t, p.state == success)
 	}
 }
 
@@ -84,8 +83,8 @@ func TestTcpCheck_ServerBAD(t *testing.T) {
 
 	assert.NotNil(t, tc.GatherMetrics())
 
-	for _, port := range tc.ports {
-		assert.True(t, port.state == failed)
+	for _, p := range tc.ports {
+		assert.True(t, p.state == failed)
 	}
 
 }
