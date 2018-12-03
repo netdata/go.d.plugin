@@ -66,7 +66,7 @@ func (d dimDivMul) String() string {
 }
 
 type (
-	// Charts is a collection of charts.
+	// Charts is a collection of ChartsFunc.
 	Charts []*Chart
 
 	// Chart represents a chart.
@@ -146,10 +146,10 @@ func (o Opts) String() string {
 	return strings.Join(opts, " ")
 }
 
-// Add adds (appends) a variable number of charts.
+// Add adds (appends) a variable number of ChartsFunc.
 // Chart won't be added if:
 //   * chart isn't a valid chart
-//   * charts have a chart with the same ID
+//   * ChartsFunc have a chart with the same ID
 func (c *Charts) Add(charts ...*Chart) {
 	for _, v := range charts {
 		if c.index(v.ID) != -1 || !v.IsValid() {
@@ -168,7 +168,7 @@ func (c Charts) Get(chartID string) *Chart {
 	return c[idx]
 }
 
-// Has returns true if charts contain the chart with the given ID, false otherwise.
+// Has returns true if ChartsFunc contain the chart with the given ID, false otherwise.
 func (c Charts) Has(chartID string) bool {
 	idx := c.index(chartID)
 	if idx == -1 {
@@ -177,8 +177,8 @@ func (c Charts) Has(chartID string) bool {
 	return true
 }
 
-// Remove removes the chart from charts by ID,
-// it returns true if charts contain the chart with the given ID, false otherwise.
+// Remove removes the chart from ChartsFunc by ID,
+// it returns true if ChartsFunc contain the chart with the given ID, false otherwise.
 // Avoid to use it in runtime.
 func (c *Charts) Remove(chartID string) bool {
 	idx := c.index(chartID)
@@ -189,7 +189,7 @@ func (c *Charts) Remove(chartID string) bool {
 	return true
 }
 
-// Copy returns a deep copy of charts.
+// Copy returns a deep copy of ChartsFunc.
 func (c Charts) Copy() *Charts {
 	charts := Charts{}
 	for idx := range c {

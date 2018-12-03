@@ -1,36 +1,36 @@
 package modules
 
-// mockModule mockModule
-type mockModule struct {
+// MockModule MockModule
+type MockModule struct {
 	Base
-	init          func() bool
-	check         func() bool
-	charts        func() *Charts
-	gatherMetrics func() map[string]int64
-	cleanupDone   bool
+	InitFunc          func() bool
+	CheckFunc         func() bool
+	ChartsFunc        func() *Charts
+	GatherMetricsFunc func() map[string]int64
+	CleanupDone       bool
 }
 
-// Init invokes init.
-func (m mockModule) Init() bool {
-	return m.init()
+// Init invokes InitFunc.
+func (m MockModule) Init() bool {
+	return m.InitFunc()
 }
 
-// Check invokes check.
-func (m mockModule) Check() bool {
-	return m.check()
+// Check invokes CheckFunc.
+func (m MockModule) Check() bool {
+	return m.CheckFunc()
 }
 
-// Charts invokes charts.
-func (m mockModule) Charts() *Charts {
-	return m.charts()
+// Charts invokes ChartsFunc.
+func (m MockModule) Charts() *Charts {
+	return m.ChartsFunc()
 }
 
 // GatherMetrics invokes GetDataDunc.
-func (m mockModule) GatherMetrics() map[string]int64 {
-	return m.gatherMetrics()
+func (m MockModule) GatherMetrics() map[string]int64 {
+	return m.GatherMetricsFunc()
 }
 
-// Cleanup sets cleanupDone to true.
-func (m *mockModule) Cleanup() {
-	m.cleanupDone = true
+// Cleanup sets CleanupDone to true.
+func (m *MockModule) Cleanup() {
+	m.CleanupDone = true
 }
