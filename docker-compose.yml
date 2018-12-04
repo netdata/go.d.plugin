@@ -12,3 +12,7 @@ services:
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
+  springboot2:
+    build: mocks/springboot2
+    ports:
+      - 8080:8080
