@@ -4,4 +4,4 @@ language: go
 go:
   - 1.11
 
-script: make all
+script: GO111MODULE=on make all
