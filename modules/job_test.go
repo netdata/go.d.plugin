@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	testModName = "testModName"
-	testJobName = "testJobName"
+	testModName = "modName"
+	testJobName = "jobName"
 )
 
 func testNewJob() *Job {
@@ -127,7 +127,7 @@ func TestJob_Check(t *testing.T) {
 
 	// PANIC case
 	m = &MockModule{
-		InitFunc: func() bool { panic("panic in InitFunc") },
+		CheckFunc: func() bool { panic("panic in InitFunc") },
 	}
 	job = testNewJob()
 	job.module = m

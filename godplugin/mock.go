@@ -1,63 +1,107 @@
 package godplugin
 
-const (
-	mockFullName           = "mock"
-	mockModuleName         = "mock"
-	mockName               = "mock"
-	mockAutoDetectionRetry = 0
-	mockPanicked           = false
-	mockInit               = true
-	mockCheck              = true
-	mockPostCheck          = true
-)
+type mockJob struct {
+	fullName   func() string
+	moduleName func() string
+	name       func() string
 
-type mockJob struct{}
+	autoDetectionRetry func() int
+	panicked           func() bool
 
-// FullName returns "mock"
-func (mockJob) FullName() string {
-	return mockFullName
+	init      func() bool
+	check     func() bool
+	postCheck func() bool
+
+	tick func(int)
+
+	start func()
+	stop  func()
 }
 
-// ModuleName returns "mock"
-func (mockJob) ModuleName() string {
-	return mockModuleName
+// FullName returns mock job full name
+func (m mockJob) FullName() string {
+	if m.fullName == nil {
+		return "mock"
+	}
+	return m.fullName()
 }
 
-// Name returns "mock"
-func (mockJob) Name() string {
-	return mockName
+// ModuleName returns mock job module name
+func (m mockJob) ModuleName() string {
+	if m.moduleName == nil {
+		return "mock"
+	}
+	return m.moduleName()
 }
 
-// AutoDetectionRetry returns 0
-func (mockJob) AutoDetectionRetry() int {
-	return mockAutoDetectionRetry
+// Name returns mock job name
+func (m mockJob) Name() string {
+	if m.name == nil {
+		return "mock"
+	}
+	return m.name()
 }
 
-// Panicked returns false
-func (mockJob) Panicked() bool {
-	return mockPanicked
+// AutoDetectionRetry returns mock job autoDetectionRetry
+func (m mockJob) AutoDetectionRetry() int {
+	if m.autoDetectionRetry == nil {
+		return 0
+	}
+	return m.autoDetectionRetry()
 }
 
-// Init returns true
-func (mockJob) Init() bool {
-	return mockInit
+// Panicked return whether the mock job is panicked
+func (m mockJob) Panicked() bool {
+	if m.panicked == nil {
+		return false
+	}
+	return m.panicked()
 }
 
-// Check returns true
-func (mockJob) Check() bool {
-	return mockCheck
+// Init invokes mock job init
+func (m mockJob) Init() bool {
+	if m.init == nil {
+		return true
+	}
+	return m.init()
 }
 
-// PostCheck returns true
-func (mockJob) PostCheck() bool {
-	return mockPostCheck
+// Check invokes mock job check
+func (m mockJob) Check() bool {
+	if m.check == nil {
+		return true
+	}
+	return m.check()
 }
 
-// Tick does nothing
-func (m mockJob) Tick(int) {}
+// PostCheck invokes mock job postCheck
+func (m mockJob) PostCheck() bool {
+	if m.postCheck == nil {
+		return true
+	}
+	return m.postCheck()
+}
 
-// Start does nothing
-func (m mockJob) Start() {}
+// Tick invokes mock job tick
+func (m mockJob) Tick(clock int) {
+	if m.tick == nil {
+		return
+	}
+	m.tick(clock)
+}
 
-// Stop does nothing
-func (m mockJob) Stop() {}
+// Start invokes mock job start
+func (m mockJob) Start() {
+	if m.start == nil {
+		return
+	}
+	m.start()
+}
+
+// Stop invokes mock job stop
+func (m mockJob) Stop() {
+	if m.stop == nil {
+		return
+	}
+	m.stop()
+}
