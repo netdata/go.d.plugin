@@ -122,8 +122,10 @@ func TestPlugin_Serve(t *testing.T) {
 	p.registry = reg
 
 	p.Setup()
+
 	go p.Serve()
 
 	time.Sleep(time.Second * 3)
-	//close(p.checkCh)
+
+	p.stop()
 }

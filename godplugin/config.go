@@ -49,6 +49,7 @@ func newModuleConfig() *moduleConfig {
 }
 
 type moduleConfig struct {
+	name   string
 	Global *moduleGlobal            `yaml:"global"`
 	Jobs   []map[string]interface{} `yaml:"jobs"`
 }
@@ -85,7 +86,7 @@ func load(conf interface{}, filename string) error {
 		return err
 	}
 
-	if err := yaml.NewDecoder(file).Decode(conf); err != nil {
+	if err = yaml.NewDecoder(file).Decode(conf); err != nil {
 		return err
 	}
 
