@@ -1,75 +1,63 @@
 package godplugin
 
-type mockJob struct {
-	fullName   func() string
-	moduleName func() string
-	name       func() string
+const (
+	mockFullName           = "mock"
+	mockModuleName         = "mock"
+	mockName               = "mock"
+	mockAutoDetectionRetry = 0
+	mockPanicked           = false
+	mockInit               = true
+	mockCheck              = true
+	mockPostCheck          = true
+)
 
-	autoDetectionRetry func() int
+type mockJob struct{}
 
-	panicked func() bool
-
-	init      func() bool
-	check     func() bool
-	postCheck func() bool
-
-	tick func(int)
-
-	start func()
-	stop  func()
+// FullName returns "mock"
+func (mockJob) FullName() string {
+	return mockFullName
 }
 
-// FullName invokes fullName
-func (m mockJob) FullName() string {
-	return m.fullName()
+// ModuleName returns "mock"
+func (mockJob) ModuleName() string {
+	return mockModuleName
 }
 
-// ModuleName invokes moduleName
-func (m mockJob) ModuleName() string {
-	return m.moduleName()
+// Name returns "mock"
+func (mockJob) Name() string {
+	return mockName
 }
 
-// Name invokes name
-func (m mockJob) Name() string {
-	return m.name()
+// AutoDetectionRetry returns 0
+func (mockJob) AutoDetectionRetry() int {
+	return mockAutoDetectionRetry
 }
 
-// AutoDetectionRetry invokes autoDetectionRetry
-func (m mockJob) AutoDetectionRetry() int {
-	return m.autoDetectionRetry()
+// Panicked returns false
+func (mockJob) Panicked() bool {
+	return mockPanicked
 }
 
-// Panicked invokes panicked
-func (m mockJob) Panicked() bool {
-	return m.panicked()
+// Init returns true
+func (mockJob) Init() bool {
+	return mockInit
 }
 
-// Init invokes init
-func (m mockJob) Init() bool {
-	return m.init()
+// Check returns true
+func (mockJob) Check() bool {
+	return mockCheck
 }
 
-// Check invokes check
-func (m mockJob) Check() bool {
-	return m.check()
+// PostCheck returns true
+func (mockJob) PostCheck() bool {
+	return mockPostCheck
 }
 
-// PostCheck invokes postCheck
-func (m mockJob) PostCheck() bool {
-	return m.postCheck()
-}
+// Tick does nothing
+func (m mockJob) Tick(int) {}
 
-// Tick invokes tick
-func (m mockJob) Tick(clock int) {
-	m.tick(clock)
-}
+// Start does nothing
+func (m mockJob) Start() {}
 
-// Start invokes start
-func (m mockJob) Start() {
-	m.start()
-}
-
-// Stop invokes stop
-func (m mockJob) Stop() {
-	m.stop()
-}
+// Stop does nothing
+func (m mockJob) Stop() {}
