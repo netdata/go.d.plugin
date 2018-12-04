@@ -83,7 +83,7 @@ func load(conf interface{}, filename string) error {
 	file, err := os.Open(filename)
 	defer file.Close()
 
-	if err != nil || err != io.EOF {
+	if err != nil && err != io.EOF {
 		return err
 	}
 
