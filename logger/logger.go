@@ -2,7 +2,7 @@ package logger
 
 import (
 	"fmt"
-	"log"
+	"os"
 	"sync/atomic"
 )
 
@@ -15,14 +15,24 @@ var (
 	initialID = int64(1)
 )
 
-func createUniqueID() int64 {
-	return atomic.AddInt64(&initialID, 1)
+var defaultFormatter = newFormatter(os.Stderr)
+
+// Logger represents a logger object
+type Logger struct {
+	log *formatter
+
+	id      int64
+	modName string
+	jobName string
+
+	limited  bool
+	msgCount int64
 }
 
 // New creates a new logger
 func New(modName, jobName string) *Logger {
 	return &Logger{
-		log:     log.New(colored{}, "", log.Ldate|log.Ltime),
+		log:     defaultFormatter,
 		modName: modName,
 		jobName: jobName,
 		id:      createUniqueID(),
@@ -36,18 +46,6 @@ func NewLimited(modName, jobName string) *Logger {
 	GlobalMsgCountWatcher.Register(logger)
 
 	return logger
-}
-
-// Logger represents a logger object
-type Logger struct {
-	log *log.Logger
-
-	id      int64
-	modName string
-	jobName string
-
-	limited  bool
-	msgCount int64
 }
 
 // Critical logs a message with the Critical severity
@@ -106,30 +104,21 @@ func (l *Logger) print(severity Severity, a ...interface{}) {
 	}
 
 	if l == nil || l.log == nil {
-		base.log.Printf(
-			"go.d: %s: %s: %s: %s",
-			severity,
-			base.modName,
-			base.jobName,
-			fmt.Sprintln(a...),
-		)
+		base.log.Output(severity, base.modName, base.jobName, 3, fmt.Sprint(a...))
 		return
 	}
 
 	if l.limited && globalSeverity < DEBUG && atomic.AddInt64(&l.msgCount, 1) > msgPerSecondLimit {
 		return
 	}
-
-	l.log.Printf(
-		"go.d: %s: %s: %s: %s",
-		severity,
-		l.modName,
-		l.jobName,
-		fmt.Sprintln(a...),
-	)
+	base.log.Output(severity, l.modName, l.jobName, 3, fmt.Sprint(a...))
 }
 
 // SetSeverity sets global severity level
 func SetSeverity(severity Severity) {
 	globalSeverity = severity
+}
+
+func createUniqueID() int64 {
+	return atomic.AddInt64(&initialID, 1)
 }

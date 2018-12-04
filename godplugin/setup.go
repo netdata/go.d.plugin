@@ -32,12 +32,12 @@ func (p *Plugin) Setup() bool {
 	name, err := p.ConfigPath.Find("go.d.conf")
 
 	if err != nil {
-		log.Critical(err)
+		log.Critical("find config file error: ", err)
 		return false
 	}
 
 	if err := load(p.config, name); err != nil {
-		log.Critical(err)
+		log.Critical("load config error: ", err)
 		return false
 	}
 

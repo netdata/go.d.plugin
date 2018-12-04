@@ -2,8 +2,10 @@ package logger
 
 import (
 	"bytes"
-	"strings"
+	"io/ioutil"
+	"log"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -39,7 +41,7 @@ func TestLogger_Critical(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Critical()
-	assert.True(t, strings.Contains(buf.String(), CRITICAL.String()))
+	assert.Contains(t, buf.String(), CRITICAL.String())
 }
 
 func TestLogger_Criticalf(t *testing.T) {
@@ -48,7 +50,7 @@ func TestLogger_Criticalf(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Criticalf("")
-	assert.True(t, strings.Contains(buf.String(), CRITICAL.String()))
+	assert.Contains(t, buf.String(), CRITICAL.String())
 }
 
 func TestLogger_Error(t *testing.T) {
@@ -57,7 +59,7 @@ func TestLogger_Error(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Error()
-	assert.True(t, strings.Contains(buf.String(), ERROR.String()))
+	assert.Contains(t, buf.String(), ERROR.String())
 }
 
 func TestLogger_Errorf(t *testing.T) {
@@ -66,7 +68,7 @@ func TestLogger_Errorf(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Errorf("")
-	assert.True(t, strings.Contains(buf.String(), ERROR.String()))
+	assert.Contains(t, buf.String(), ERROR.String())
 }
 
 func TestLogger_Warning(t *testing.T) {
@@ -75,7 +77,7 @@ func TestLogger_Warning(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Warning()
-	assert.True(t, strings.Contains(buf.String(), WARNING.String()))
+	assert.Contains(t, buf.String(), WARNING.String())
 }
 
 func TestLogger_Warningf(t *testing.T) {
@@ -84,7 +86,7 @@ func TestLogger_Warningf(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Warningf("")
-	assert.True(t, strings.Contains(buf.String(), WARNING.String()))
+	assert.Contains(t, buf.String(), WARNING.String())
 }
 
 func TestLogger_Info(t *testing.T) {
@@ -93,7 +95,7 @@ func TestLogger_Info(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Info()
-	assert.True(t, strings.Contains(buf.String(), INFO.String()))
+	assert.Contains(t, buf.String(), INFO.String())
 }
 
 func TestLogger_Infof(t *testing.T) {
@@ -102,7 +104,7 @@ func TestLogger_Infof(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Infof("")
-	assert.True(t, strings.Contains(buf.String(), INFO.String()))
+	assert.Contains(t, buf.String(), INFO.String())
 }
 
 func TestLogger_Debug(t *testing.T) {
@@ -111,7 +113,7 @@ func TestLogger_Debug(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Debug()
-	assert.True(t, strings.Contains(buf.String(), DEBUG.String()))
+	assert.Contains(t, buf.String(), DEBUG.String())
 }
 
 func TestLogger_Debugf(t *testing.T) {
@@ -120,7 +122,7 @@ func TestLogger_Debugf(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Debugf("")
-	assert.True(t, strings.Contains(buf.String(), DEBUG.String()))
+	assert.Contains(t, buf.String(), DEBUG.String())
 }
 
 func TestLogger_NotInitialized(t *testing.T) {
@@ -172,9 +174,37 @@ func TestLogger_Limited(t *testing.T) {
 	require.Equal(t, msgPerSecondLimit, int(wr))
 }
 
+func TestLogger_Info_race(t *testing.T) {
+	logger := New("", "")
+	logger.log.SetOutput(ioutil.Discard)
+	for i := 0; i < 10; i++ {
+		go func() {
+			for j := 0; j < 10; j++ {
+				logger.Info("hello ", "world")
+			}
+		}()
+	}
+	time.Sleep(time.Second)
+}
+
 type countWriter int
 
 func (c *countWriter) Write(b []byte) (n int, err error) {
 	*c++
 	return len(b), nil
+}
+
+func BenchmarkLogger_Infof(b *testing.B) {
+	log := New("test", "test")
+	log.log.SetOutput(ioutil.Discard)
+	for i := 0; i < b.N; i++ {
+		log.Infof("hello %s", "world")
+	}
+}
+
+func BenchmarkLog_Printf(b *testing.B) {
+	logger := log.New(ioutil.Discard, "", log.Lshortfile)
+	for i := 0; i < b.N; i++ {
+		logger.Printf("hello %s", "world")
+	}
 }

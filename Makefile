@@ -1,6 +1,9 @@
 GO  := go
 
-all: vet test build
+all: download vet test build
+
+download:
+	go mod download
 
 build:
 	mkdir -p dist
@@ -27,4 +30,4 @@ dev-exec:
 	docker-compose exec netdata bash
 
 dev-log:
-	docker-compose logs netdata
+	docker-compose logs -f netdata
