@@ -71,6 +71,8 @@ func (l *formatter) Output(severity Severity, module, job string, callDepth int,
 	l.buf = l.buf[:0]
 }
 
+// formatModuleJob write module name and job name to buf
+// format: $module[$job]
 func (l *formatter) formatModuleJob(module string, job string) {
 	l.buf = append(l.buf, module...)
 	l.buf = append(l.buf, '[')
@@ -79,6 +81,7 @@ func (l *formatter) formatModuleJob(module string, job string) {
 }
 
 // formatTimestamp writes timestamp to buf
+// format: YYYY-MM-DD hh:mm:ss:
 func (l *formatter) formatTimestamp(t time.Time) {
 	if l.flag&(log.Ldate|log.Ltime|log.Lmicroseconds) != 0 {
 		if l.flag&log.LUTC != 0 {
@@ -111,6 +114,9 @@ func (l *formatter) formatTimestamp(t time.Time) {
 	}
 }
 
+// formatSeverity write severity to buf
+// format (CLI):  [ $severity ]
+// format (file): $severity:
 func (l *formatter) formatSeverity(severity Severity) {
 	if l.colored {
 		switch severity {
@@ -134,6 +140,7 @@ func (l *formatter) formatSeverity(severity Severity) {
 }
 
 // formatFile writes file info to buf
+// format: $file:$line
 func (l *formatter) formatFile(file string, line int) {
 	if l.flag&(log.Lshortfile|log.Llongfile) == 0 {
 		return
@@ -162,7 +169,7 @@ func (l *formatter) formatFile(file string, line int) {
 	}
 }
 
-// Cheap integer to fixed-width decimal ASCII. Give a negative width to avoid zero-padding.
+// itoa Cheap integer to fixed-width decimal ASCII. Give a negative width to avoid zero-padding.
 func itoa(buf *[]byte, i int, wid int) {
 	// Assemble decimal in reverse order.
 	var b [20]byte
@@ -179,6 +186,7 @@ func itoa(buf *[]byte, i int, wid int) {
 	*buf = append(*buf, b[bp:]...)
 }
 
+// putString Cheap sprintf("%*s", s, wid)
 func putString(buf *[]byte, s string, wid int) {
 	*buf = append(*buf, s...)
 	space := wid - len(s)
