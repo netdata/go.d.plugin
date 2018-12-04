@@ -1,6 +1,7 @@
 package godplugin
 
 import (
+	"io"
 	"os"
 
 	"gopkg.in/yaml.v2"
@@ -82,7 +83,7 @@ func load(conf interface{}, filename string) error {
 	file, err := os.Open(filename)
 	defer file.Close()
 
-	if err != nil {
+	if err != nil && err != io.EOF {
 		return err
 	}
 

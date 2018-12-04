@@ -10,7 +10,7 @@ require (
 	github.com/golang/protobuf v1.2.0 // indirect
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/mattn/go-colorable v0.0.9 // indirect
-	github.com/mattn/go-isatty v0.0.4 // indirect
+	github.com/mattn/go-isatty v0.0.4
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mitchellh/go-homedir v1.0.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect

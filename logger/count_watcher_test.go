@@ -44,7 +44,7 @@ func TestMsgCountWatcher(t *testing.T) {
 
 	logger := New("", "")
 	logger.limited = true
-	logger.log.SetOutput(ioutil.Discard)
+	logger.formatter.SetOutput(ioutil.Discard)
 	cw.Register(logger)
 
 	for i := 0; i < 3; i++ {

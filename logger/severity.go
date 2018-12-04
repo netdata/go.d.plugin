@@ -33,3 +33,19 @@ func (s Severity) String() string {
 	}
 	return "UNKNOWN"
 }
+
+func (s Severity) ShortString() string {
+	switch s {
+	case CRITICAL:
+		return "CRIT"
+	case ERROR:
+		return "ERROR"
+	case WARNING:
+		return "WARN"
+	case INFO:
+		return "INFO"
+	case DEBUG:
+		return "DEBUG"
+	}
+	return "UNKNOWN"
+}
