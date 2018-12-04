@@ -41,7 +41,7 @@ func TestLogger_Critical(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Critical()
-	assert.Contains(t, buf.String(), CRITICAL.String())
+	assert.Contains(t, buf.String(), CRITICAL.ShortString())
 }
 
 func TestLogger_Criticalf(t *testing.T) {
@@ -50,7 +50,7 @@ func TestLogger_Criticalf(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Criticalf("")
-	assert.Contains(t, buf.String(), CRITICAL.String())
+	assert.Contains(t, buf.String(), CRITICAL.ShortString())
 }
 
 func TestLogger_Error(t *testing.T) {
@@ -59,7 +59,7 @@ func TestLogger_Error(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Error()
-	assert.Contains(t, buf.String(), ERROR.String())
+	assert.Contains(t, buf.String(), ERROR.ShortString())
 }
 
 func TestLogger_Errorf(t *testing.T) {
@@ -68,7 +68,7 @@ func TestLogger_Errorf(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Errorf("")
-	assert.Contains(t, buf.String(), ERROR.String())
+	assert.Contains(t, buf.String(), ERROR.ShortString())
 }
 
 func TestLogger_Warning(t *testing.T) {
@@ -77,7 +77,7 @@ func TestLogger_Warning(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Warning()
-	assert.Contains(t, buf.String(), WARNING.String())
+	assert.Contains(t, buf.String(), WARNING.ShortString())
 }
 
 func TestLogger_Warningf(t *testing.T) {
@@ -86,7 +86,7 @@ func TestLogger_Warningf(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Warningf("")
-	assert.Contains(t, buf.String(), WARNING.String())
+	assert.Contains(t, buf.String(), WARNING.ShortString())
 }
 
 func TestLogger_Info(t *testing.T) {
@@ -95,7 +95,7 @@ func TestLogger_Info(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Info()
-	assert.Contains(t, buf.String(), INFO.String())
+	assert.Contains(t, buf.String(), INFO.ShortString())
 }
 
 func TestLogger_Infof(t *testing.T) {
@@ -104,7 +104,7 @@ func TestLogger_Infof(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Infof("")
-	assert.Contains(t, buf.String(), INFO.String())
+	assert.Contains(t, buf.String(), INFO.ShortString())
 }
 
 func TestLogger_Debug(t *testing.T) {
@@ -113,7 +113,7 @@ func TestLogger_Debug(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Debug()
-	assert.Contains(t, buf.String(), DEBUG.String())
+	assert.Contains(t, buf.String(), DEBUG.ShortString())
 }
 
 func TestLogger_Debugf(t *testing.T) {
@@ -122,7 +122,7 @@ func TestLogger_Debugf(t *testing.T) {
 	logger.log.SetOutput(&buf)
 
 	logger.Debugf("")
-	assert.Contains(t, buf.String(), DEBUG.String())
+	assert.Contains(t, buf.String(), DEBUG.ShortString())
 }
 
 func TestLogger_NotInitialized(t *testing.T) {
