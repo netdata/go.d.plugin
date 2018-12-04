@@ -15,6 +15,7 @@ import (
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/multipath"
 
+	// add modules to the registry
 	_ "github.com/netdata/go.d.plugin/modules/all"
 )
 
@@ -44,9 +45,15 @@ var validate = validator.New()
 // New creates Plugin with default values.
 func New() *Plugin {
 	return &Plugin{
-		modules: make(modules.Registry),
-		checkCh: make(chan Job, 1),
-		config:  newConfig(),
+		modules:  make(modules.Registry),
+		config:   newConfig(),
+		confName: "go.d.conf",
+		registry: modules.DefaultRegistry,
+
+		jobCh: make(chan Job),
+
+		jobStartShutdown: make(chan struct{}),
+		mainShutdown:     make(chan struct{}),
 	}
 }
 
@@ -57,10 +64,16 @@ type (
 		ConfigPath multipath.MultiPath
 		Out        io.Writer
 
-		config    *config
-		modules   modules.Registry
-		checkCh   chan Job
-		loopQueue jobQueue
+		confName string
+		config   *config
+		registry modules.Registry
+		modules  modules.Registry
+
+		jobStartShutdown chan struct{}
+		jobCh            chan Job
+
+		mainShutdown chan struct{}
+		loopQueue    loopQueue
 	}
 )
 
@@ -74,10 +87,10 @@ func (p *Plugin) RemoveFromQueue(fullName string) {
 // Serve Serve
 func (p *Plugin) Serve() {
 	go shutdownTask()
-	go p.checkJobs()
+	go p.jobStartLoop()
 
 	for _, job := range p.createJobs() {
-		p.checkCh <- job
+		p.jobCh <- job
 	}
 
 	p.mainLoop()
@@ -85,15 +98,27 @@ func (p *Plugin) Serve() {
 
 func (p *Plugin) mainLoop() {
 	log.Info("start main loop")
-
-	var clock int
 	tk := ticker.New(time.Second)
 
+LOOP:
 	for {
-		clock = <-tk.C
-		log.Debugf("tick %d", clock)
-		p.loopQueue.notify(clock)
+		select {
+		case <-p.mainShutdown:
+			break LOOP
+		case clock := <-tk.C:
+			p.runOnce(clock)
+		}
 	}
+}
+
+func (p *Plugin) runOnce(clock int) {
+	log.Debugf("tick %d", clock)
+	p.loopQueue.notify(clock)
+}
+
+func (p *Plugin) stop() {
+	p.jobStartShutdown <- struct{}{}
+	p.mainShutdown <- struct{}{}
 }
 
 func shutdownTask() {
