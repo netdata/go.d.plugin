@@ -38,7 +38,7 @@ func TestNewLimited(t *testing.T) {
 func TestLogger_Critical(t *testing.T) {
 	buf := bytes.Buffer{}
 	logger := New("", "")
-	logger.log.SetOutput(&buf)
+	logger.formatter.SetOutput(&buf)
 
 	logger.Critical()
 	assert.Contains(t, buf.String(), CRITICAL.ShortString())
@@ -47,7 +47,7 @@ func TestLogger_Critical(t *testing.T) {
 func TestLogger_Criticalf(t *testing.T) {
 	buf := bytes.Buffer{}
 	logger := New("", "")
-	logger.log.SetOutput(&buf)
+	logger.formatter.SetOutput(&buf)
 
 	logger.Criticalf("")
 	assert.Contains(t, buf.String(), CRITICAL.ShortString())
@@ -56,7 +56,7 @@ func TestLogger_Criticalf(t *testing.T) {
 func TestLogger_Error(t *testing.T) {
 	buf := bytes.Buffer{}
 	logger := New("", "")
-	logger.log.SetOutput(&buf)
+	logger.formatter.SetOutput(&buf)
 
 	logger.Error()
 	assert.Contains(t, buf.String(), ERROR.ShortString())
@@ -65,7 +65,7 @@ func TestLogger_Error(t *testing.T) {
 func TestLogger_Errorf(t *testing.T) {
 	buf := bytes.Buffer{}
 	logger := New("", "")
-	logger.log.SetOutput(&buf)
+	logger.formatter.SetOutput(&buf)
 
 	logger.Errorf("")
 	assert.Contains(t, buf.String(), ERROR.ShortString())
@@ -74,7 +74,7 @@ func TestLogger_Errorf(t *testing.T) {
 func TestLogger_Warning(t *testing.T) {
 	buf := bytes.Buffer{}
 	logger := New("", "")
-	logger.log.SetOutput(&buf)
+	logger.formatter.SetOutput(&buf)
 
 	logger.Warning()
 	assert.Contains(t, buf.String(), WARNING.ShortString())
@@ -83,7 +83,7 @@ func TestLogger_Warning(t *testing.T) {
 func TestLogger_Warningf(t *testing.T) {
 	buf := bytes.Buffer{}
 	logger := New("", "")
-	logger.log.SetOutput(&buf)
+	logger.formatter.SetOutput(&buf)
 
 	logger.Warningf("")
 	assert.Contains(t, buf.String(), WARNING.ShortString())
@@ -92,7 +92,7 @@ func TestLogger_Warningf(t *testing.T) {
 func TestLogger_Info(t *testing.T) {
 	buf := bytes.Buffer{}
 	logger := New("", "")
-	logger.log.SetOutput(&buf)
+	logger.formatter.SetOutput(&buf)
 
 	logger.Info()
 	assert.Contains(t, buf.String(), INFO.ShortString())
@@ -101,7 +101,7 @@ func TestLogger_Info(t *testing.T) {
 func TestLogger_Infof(t *testing.T) {
 	buf := bytes.Buffer{}
 	logger := New("", "")
-	logger.log.SetOutput(&buf)
+	logger.formatter.SetOutput(&buf)
 
 	logger.Infof("")
 	assert.Contains(t, buf.String(), INFO.ShortString())
@@ -110,7 +110,7 @@ func TestLogger_Infof(t *testing.T) {
 func TestLogger_Debug(t *testing.T) {
 	buf := bytes.Buffer{}
 	logger := New("", "")
-	logger.log.SetOutput(&buf)
+	logger.formatter.SetOutput(&buf)
 
 	logger.Debug()
 	assert.Contains(t, buf.String(), DEBUG.ShortString())
@@ -119,7 +119,7 @@ func TestLogger_Debug(t *testing.T) {
 func TestLogger_Debugf(t *testing.T) {
 	buf := bytes.Buffer{}
 	logger := New("", "")
-	logger.log.SetOutput(&buf)
+	logger.formatter.SetOutput(&buf)
 
 	logger.Debugf("")
 	assert.Contains(t, buf.String(), DEBUG.ShortString())
@@ -145,7 +145,7 @@ func TestLogger_Unlimited(t *testing.T) {
 	logger := New("", "")
 
 	wr := countWriter(0)
-	logger.log.SetOutput(&wr)
+	logger.formatter.SetOutput(&wr)
 
 	num := 1000
 
@@ -163,7 +163,7 @@ func TestLogger_Limited(t *testing.T) {
 	logger.limited = true
 
 	wr := countWriter(0)
-	logger.log.SetOutput(&wr)
+	logger.formatter.SetOutput(&wr)
 
 	num := 1000
 
@@ -176,7 +176,7 @@ func TestLogger_Limited(t *testing.T) {
 
 func TestLogger_Info_race(t *testing.T) {
 	logger := New("", "")
-	logger.log.SetOutput(ioutil.Discard)
+	logger.formatter.SetOutput(ioutil.Discard)
 	for i := 0; i < 10; i++ {
 		go func() {
 			for j := 0; j < 10; j++ {
@@ -196,7 +196,7 @@ func (c *countWriter) Write(b []byte) (n int, err error) {
 
 func BenchmarkLogger_Infof(b *testing.B) {
 	log := New("test", "test")
-	log.log.SetOutput(ioutil.Discard)
+	log.formatter.SetOutput(ioutil.Discard)
 	for i := 0; i < b.N; i++ {
 		log.Infof("hello %s", "world")
 	}

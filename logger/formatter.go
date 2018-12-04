@@ -3,12 +3,9 @@ package logger
 import (
 	"io"
 	"log"
-	"os"
 	"runtime"
 	"sync"
 	"time"
-
-	"github.com/mattn/go-isatty"
 )
 
 type (
@@ -23,8 +20,8 @@ type (
 	}
 )
 
-func newFormatter(out io.Writer) *formatter {
-	if isatty.IsTerminal(os.Stderr.Fd()) {
+func newFormatter(out io.Writer, isCLI bool) *formatter {
+	if isCLI {
 		return &formatter{
 			out:     out,
 			colored: true,
@@ -118,18 +115,18 @@ func (l *formatter) formatSeverity(severity Severity) {
 	if l.colored {
 		switch severity {
 		case DEBUG:
-			l.buf = append(l.buf, "\x1b[0;36m[ "...)
+			l.buf = append(l.buf, "\x1b[0;36m[ "...) // Cyan text
 		case INFO:
-			l.buf = append(l.buf, "\x1b[0;32m[ "...)
+			l.buf = append(l.buf, "\x1b[0;32m[ "...) // Green text
 		case WARNING:
-			l.buf = append(l.buf, "\x1b[0;33m[ "...)
+			l.buf = append(l.buf, "\x1b[0;33m[ "...) // Yellow text
 		case ERROR:
-			l.buf = append(l.buf, "\x1b[0;31m[ "...)
+			l.buf = append(l.buf, "\x1b[0;31m[ "...) // Red text
 		case CRITICAL:
-			l.buf = append(l.buf, "\x1b[0;37;41m[ "...)
+			l.buf = append(l.buf, "\x1b[0;37;41m[ "...) // White text with Red background
 		}
 		putString(&l.buf, severity.ShortString(), 5)
-		l.buf = append(l.buf, " ]\x1b[0m "...)
+		l.buf = append(l.buf, " ]\x1b[0m "...) // clear color scheme
 	} else {
 		l.buf = append(l.buf, severity.String()...)
 		l.buf = append(l.buf, ": "...)

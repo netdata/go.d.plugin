@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"sync/atomic"
+
+	"github.com/mattn/go-isatty"
 )
 
 const (
@@ -15,11 +17,11 @@ var (
 	initialID = int64(1)
 )
 
-var defaultFormatter = newFormatter(os.Stderr)
+var defaultFormatter = newFormatter(os.Stderr, isatty.IsTerminal(os.Stderr.Fd()))
 
 // Logger represents a logger object
 type Logger struct {
-	log *formatter
+	formatter *formatter
 
 	id      int64
 	modName string
@@ -32,10 +34,10 @@ type Logger struct {
 // New creates a new logger
 func New(modName, jobName string) *Logger {
 	return &Logger{
-		log:     defaultFormatter,
-		modName: modName,
-		jobName: jobName,
-		id:      createUniqueID(),
+		formatter: defaultFormatter,
+		modName:   modName,
+		jobName:   jobName,
+		id:        createUniqueID(),
 	}
 }
 
@@ -103,15 +105,15 @@ func (l *Logger) print(severity Severity, a ...interface{}) {
 		return
 	}
 
-	if l == nil || l.log == nil {
-		base.log.Output(severity, base.modName, base.jobName, 3, fmt.Sprint(a...))
+	if l == nil || l.formatter == nil {
+		base.formatter.Output(severity, base.modName, base.jobName, 3, fmt.Sprint(a...))
 		return
 	}
 
 	if l.limited && globalSeverity < DEBUG && atomic.AddInt64(&l.msgCount, 1) > msgPerSecondLimit {
 		return
 	}
-	base.log.Output(severity, l.modName, l.jobName, 3, fmt.Sprint(a...))
+	l.formatter.Output(severity, l.modName, l.jobName, 3, fmt.Sprint(a...))
 }
 
 // SetSeverity sets global severity level
