@@ -3,19 +3,17 @@ package godplugin
 import (
 	"fmt"
 	"runtime"
-
-	"github.com/netdata/go.d.plugin/modules"
 )
 
 func (p *Plugin) populateActiveModules() {
 	if p.Option.Module != "all" {
-		if creator, exist := modules.DefaultRegistry[p.Option.Module]; exist {
+		if creator, exist := p.registry[p.Option.Module]; exist {
 			p.modules[p.Option.Module] = creator
 		}
 		return
 	}
 
-	for name, creator := range modules.DefaultRegistry {
+	for name, creator := range p.registry {
 		if creator.DisabledByDefault && !p.config.isModuleEnabled(name, true) {
 			log.Infof("'%s' disabled by default", name)
 			continue
@@ -29,7 +27,7 @@ func (p *Plugin) populateActiveModules() {
 }
 
 func (p *Plugin) Setup() bool {
-	name, err := p.ConfigPath.Find("go.d.conf")
+	name, err := p.ConfigPath.Find(p.confName)
 
 	if err != nil {
 		log.Critical(err)

@@ -16,14 +16,15 @@ type (
 // DefaultRegistry DefaultRegistry
 var DefaultRegistry = Registry{}
 
-// Register a module
+// Register registers a module in the DefaultRegistry
 func Register(name string, creator Creator) {
-	register(DefaultRegistry, name, creator)
+	DefaultRegistry.Register(name, creator)
 }
 
-func register(registry Registry, name string, creator Creator) {
-	if _, ok := registry[name]; ok {
+// Register registers a module
+func (r *Registry) Register(name string, creator Creator) {
+	if _, ok := (*r)[name]; ok {
 		panic(fmt.Sprintf("%s is already in registry", name))
 	}
-	registry[name] = creator
+	(*r)[name] = creator
 }

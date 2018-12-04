@@ -71,7 +71,7 @@ func TestCharts_Copy(t *testing.T) {
 	}
 	copied := orig.Copy()
 
-	require.False(t, orig == copied, "copied charts points to the same address")
+	require.False(t, orig == copied, "copied ChartsFunc points to the same address")
 	require.Len(t, *orig, len(*copied))
 
 	for idx := range *orig {
@@ -255,7 +255,7 @@ func compareCharts(t *testing.T, orig, copied *Chart) {
 	// 2. compare Dims, Vars length
 	// 3. compare Dims, Vars pointers
 
-	assert.False(t, orig == copied, "copied charts points to the same address")
+	assert.False(t, orig == copied, "copied ChartsFunc points to the same address")
 
 	require.Len(t, orig.Dims, len(copied.Dims))
 	require.Len(t, orig.Vars, len(copied.Vars))

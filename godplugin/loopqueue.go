@@ -2,19 +2,19 @@ package godplugin
 
 import "sync"
 
-type jobQueue struct {
+type loopQueue struct {
 	mux   sync.Mutex
 	queue []Job
 }
 
-func (q *jobQueue) add(job Job) {
+func (q *loopQueue) add(job Job) {
 	q.mux.Lock()
 	defer q.mux.Unlock()
 
 	q.queue = append(q.queue, job)
 }
 
-func (q *jobQueue) remove(fullName string) Job {
+func (q *loopQueue) remove(fullName string) Job {
 	q.mux.Lock()
 	defer q.mux.Unlock()
 
@@ -27,7 +27,7 @@ func (q *jobQueue) remove(fullName string) Job {
 	return nil
 }
 
-func (q *jobQueue) notify(clock int) {
+func (q *loopQueue) notify(clock int) {
 	q.mux.Lock()
 	defer q.mux.Unlock()
 
