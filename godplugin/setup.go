@@ -34,7 +34,7 @@ func (p *Plugin) Setup() bool {
 		return false
 	}
 
-	if err := load(p.config, name); err != nil {
+	if err = load(p.config, name); err != nil {
 		log.Critical("load config error: ", err)
 		return false
 	}
