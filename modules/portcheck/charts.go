@@ -14,34 +14,47 @@ type (
 )
 
 func chartsTemplate(port int) Charts {
-	family := sprintf("port %d", port)
+	fam := fmt.Sprintf("port %d", port)
+
 	return Charts{
 		{
-			ID:    sprintf("status_%d", port),
-			Title: "Port Check Status", Units: "boolean", Fam: family, Ctx: "portcheck.status",
+			ID:    fmt.Sprintf("status_%d", port),
+			Title: "Port Check Status", Units: "boolean", Fam: fam, Ctx: "portcheck.status",
 			Dims: Dims{
-				{ID: sprintf("success_%d", port), Name: "success"},
-				{ID: sprintf("failed_%d", port), Name: "failed"},
-				{ID: sprintf("timeout_%d", port), Name: "timeout"},
+				{
+					ID:   fmt.Sprintf("success_%d", port),
+					Name: "success",
+				},
+				{
+					ID:   fmt.Sprintf("failed_%d", port),
+					Name: "failed",
+				},
+				{
+					ID:   fmt.Sprintf("timeout_%d", port),
+					Name: "timeout",
+				},
 			},
 		},
 		{
-			ID:    sprintf("instate_%d", port),
-			Title: "Current State Duration", Units: "seconds", Fam: family, Ctx: "portcheck.instate",
+			ID:    fmt.Sprintf("instate_%d", port),
+			Title: "Current State Duration", Units: "seconds", Fam: fam, Ctx: "portcheck.instate",
 			Dims: Dims{
-				{ID: sprintf("instate_%d", port), Name: "time"},
+				{
+					ID:   fmt.Sprintf("instate_%d", port),
+					Name: "time",
+				},
 			},
 		},
 		{
-			ID:    sprintf("latency_%d", port),
-			Title: "TCP Connect Latency", Units: "ms", Fam: family, Ctx: "portcheck.latency",
+			ID:    fmt.Sprintf("latency_%d", port),
+			Title: "TCP Connect Latency", Units: "ms", Fam: fam, Ctx: "portcheck.latency",
 			Dims: Dims{
-				{ID: sprintf("latency_%d", port), Name: "time", Div: 1000000},
+				{
+					ID:   fmt.Sprintf("latency_%d", port),
+					Name: "time",
+					Div:  1000000,
+				},
 			},
 		},
 	}
-}
-
-func sprintf(f string, a ...interface{}) string {
-	return fmt.Sprintf(f, a...)
 }

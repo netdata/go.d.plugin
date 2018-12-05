@@ -1,6 +1,7 @@
 package portcheck
 
 import (
+	"fmt"
 	"net"
 	"sort"
 	"time"
@@ -37,11 +38,11 @@ func (p *port) setState(s state) {
 func (p port) stateText() string {
 	switch p.state {
 	case success:
-		return sprintf("success_%d", p.number)
+		return fmt.Sprintf("success_%d", p.number)
 	case timeout:
-		return sprintf("timeout_%d", p.number)
+		return fmt.Sprintf("timeout_%d", p.number)
 	case failed:
-		return sprintf("failed_%d", p.number)
+		return fmt.Sprintf("failed_%d", p.number)
 	}
 	panic("unknown state")
 }
@@ -53,7 +54,26 @@ func newPort(number, updateEvery int) *port {
 	}
 }
 
-// PortCheck module struct
+type metrics map[string]int64
+
+func (m *metrics) reset() {
+	for key := range *m {
+		(*m)[key] = 0
+	}
+}
+
+// New creates PortCheck with default values
+func New() *PortCheck {
+	return &PortCheck{
+		doCh:    make(chan *port),
+		doneCh:  make(chan struct{}),
+		ports:   make([]*port, 0),
+		metrics: make(map[string]int64),
+	}
+
+}
+
+// PortCheck portcheck module
 type PortCheck struct {
 	modules.Base
 
@@ -68,24 +88,10 @@ type PortCheck struct {
 	ports   []*port
 	workers []*worker
 
-	data map[string]int64
+	metrics metrics
 }
 
-// New returns PortCheck with default values
-func New() *PortCheck {
-	return &PortCheck{
-		doCh:   make(chan *port),
-		doneCh: make(chan struct{}),
-		ports:  make([]*port, 0),
-		data:   make(map[string]int64),
-	}
-
-}
-
-// Init does initialization,
-// it resolves host to IP address using local resolver.
-// If it fails it returns false, otherwise it's always true.
-// Init starts a separate worker (goroutine) for every port.
+// Init makes initialization
 func (tc *PortCheck) Init() bool {
 	if tc.Timeout.Duration == 0 {
 		tc.Timeout.Duration = time.Second
@@ -103,37 +109,35 @@ func (tc *PortCheck) Init() bool {
 	sort.Ints(tc.Ports)
 
 	for _, p := range tc.Ports {
-		tc.ports = append(
-			tc.ports,
-			newPort(p, tc.UpdateEvery),
-		)
+		tc.metrics[fmt.Sprintf("success_%d", p)] = 0
+		tc.metrics[fmt.Sprintf("failed_%d", p)] = 0
+		tc.metrics[fmt.Sprintf("timeout_%d", p)] = 0
+		tc.metrics[fmt.Sprintf("instate_%d", p)] = 0
+		tc.metrics[fmt.Sprintf("latency_%d", p)] = 0
 
-		tc.workers = append(
-			tc.workers,
-			newWorker(tc.Host, tc.Timeout.Duration, tc.doCh, tc.doneCh),
-		)
+		tc.ports = append(tc.ports, newPort(p, tc.UpdateEvery))
+		tc.workers = append(tc.workers, newWorker(tc.Host, tc.Timeout.Duration, tc.doCh, tc.doneCh))
 	}
 
 	return true
 }
 
-// Check does check
-// Since there is nothing to check it just returns true
-func (tc PortCheck) Check() bool {
+// Check makes check
+func (PortCheck) Check() bool {
 	return true
 }
 
-// Cleanup does cleanup
-// It stops all workers, which were started in Init.
+// Cleanup makes cleanup
 func (tc *PortCheck) Cleanup() {
-	for _, worker := range tc.workers {
-		worker.stop()
+	for _, w := range tc.workers {
+		w.stop()
 	}
 }
 
-// Charts returns charts
+// Charts creates    charts
 func (tc PortCheck) Charts() *Charts {
-	charts := modules.Charts{}
+	var charts modules.Charts
+
 	for _, p := range tc.Ports {
 		charts.Add(chartsTemplate(p)...)
 	}
@@ -141,7 +145,7 @@ func (tc PortCheck) Charts() *Charts {
 	return &charts
 }
 
-// GatherMetrics does data collection
+// GatherMetrics gathers metrics
 func (tc *PortCheck) GatherMetrics() map[string]int64 {
 	for _, p := range tc.ports {
 		tc.doCh <- p
@@ -151,17 +155,15 @@ func (tc *PortCheck) GatherMetrics() map[string]int64 {
 		<-tc.doneCh
 	}
 
+	tc.metrics.reset()
+
 	for _, p := range tc.ports {
-		tc.data[sprintf("success_%d", p.number)] = 0
-		tc.data[sprintf("failed_%d", p.number)] = 0
-		tc.data[sprintf("timeout_%d", p.number)] = 0
-
-		tc.data[p.stateText()] = 1
-		tc.data[sprintf("instate_%d", p.number)] = int64(p.inState)
-		tc.data[sprintf("latency_%d", p.number)] = int64(p.latency)
-
+		tc.metrics[p.stateText()] = 1
+		tc.metrics[fmt.Sprintf("instate_%d", p.number)] = int64(p.inState)
+		tc.metrics[fmt.Sprintf("latency_%d", p.number)] = int64(p.latency)
 	}
-	return tc.data
+
+	return tc.metrics
 }
 
 func init() {

@@ -1,6 +1,7 @@
 package portcheck
 
 import (
+	"fmt"
 	"net"
 	"time"
 )
@@ -33,8 +34,8 @@ func newWorker(host string, dialTimeout time.Duration, doCh chan *port, doneCh c
 				w.alive = false
 				w.stopHook <- struct{}{}
 				break LOOP
-			case port := <-w.doCh:
-				w.doWork(port)
+			case p := <-w.doCh:
+				w.doWork(p)
 			}
 		}
 	}()
@@ -49,7 +50,7 @@ func (w *worker) stop() {
 
 func (w *worker) doWork(port *port) {
 	t := time.Now()
-	c, err := net.DialTimeout("tcp", sprintf("%s:%d", w.host, port.number), w.dialTimeout)
+	c, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", w.host, port.number), w.dialTimeout)
 	port.latency = time.Since(t)
 
 	if err == nil {
