@@ -7,16 +7,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-playground/validator"
-
 	"github.com/netdata/go.d.plugin/cli"
 	"github.com/netdata/go.d.plugin/godplugin/ticker"
 	"github.com/netdata/go.d.plugin/logger"
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/multipath"
-
 	// add modules to the registry
 	_ "github.com/netdata/go.d.plugin/modules/all"
+
+	"github.com/go-playground/validator"
 )
 
 // Job is an interface that represents a job.

@@ -1,14 +1,13 @@
 package springboot2
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/prometheus"
-
 	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/utils"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-// New returns Springboot2 instance with default values
+// New creates Springboot2 with default values
 func New() *Springboot2 {
 	return &Springboot2{}
 }
@@ -22,48 +21,49 @@ type Springboot2 struct {
 	prom prometheus.Prometheus
 }
 
-type data struct {
+type metrics struct {
 	ThreadsDaemon int64 `stm:"threads_daemon"`
 	Threads       int64 `stm:"threads"`
 }
 
-// Cleanup Cleanup
+// Cleanup makes cleanup
 func (Springboot2) Cleanup() {}
 
-// Init Init
+// Init makes initialization
 func (s *Springboot2) Init() bool {
 	s.prom = prometheus.New(s.CreateHTTPClient(), s.RawRequest)
 	return true
 }
 
-// Check Check
+// Check makes check
 func (s *Springboot2) Check() bool {
-	metrics, err := s.prom.Scrape()
+	rawMetrics, err := s.prom.Scrape()
 	if err != nil {
 		s.Error(err)
 		return false
 	}
-	jvmMemory := metrics.FindByName("jvm_memory_used_bytes")
+	jvmMemory := rawMetrics.FindByName("jvm_memory_used_bytes")
 
 	return len(jvmMemory) > 0
 }
 
+// Charts creates Charts
 func (Springboot2) Charts() *Charts {
 	return charts.Copy()
 }
 
-// GatherMetrics GatherMetrics
+// GatherMetrics gathers metrics
 func (s *Springboot2) GatherMetrics() map[string]int64 {
-	metrics, err := s.prom.Scrape()
+	rawMetrics, err := s.prom.Scrape()
 	if err != nil {
 		return nil
 	}
 
-	var d data
-	d.ThreadsDaemon = int64(metrics.FindByName("jvm_threads_daemon").Max())
-	d.Threads = int64(metrics.FindByName("jvm_threads_live").Max())
+	var m metrics
+	m.ThreadsDaemon = int64(rawMetrics.FindByName("jvm_threads_daemon").Max())
+	m.Threads = int64(rawMetrics.FindByName("jvm_threads_live").Max())
 
-	return utils.ToMap(d)
+	return utils.ToMap(m)
 }
 
 func init() {

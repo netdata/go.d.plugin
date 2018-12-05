@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var testdata, _ = ioutil.ReadFile("tests/testdata.txt")
