@@ -145,8 +145,6 @@ func (tc *PortCheck) GatherMetrics() map[string]int64 {
 		tc.metrics[fmt.Sprintf("success_%d", p.number)] = 0
 		tc.metrics[fmt.Sprintf("failed_%d", p.number)] = 0
 		tc.metrics[fmt.Sprintf("timeout_%d", p.number)] = 0
-		tc.metrics[fmt.Sprintf("instate_%d", p.number)] = 0
-		tc.metrics[fmt.Sprintf("latency_%d", p.number)] = 0
 
 		tc.metrics[p.stateText()] = 1
 		tc.metrics[fmt.Sprintf("instate_%d", p.number)] = int64(p.inState)
