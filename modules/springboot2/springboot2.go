@@ -59,11 +59,11 @@ func (s *Springboot2) GatherMetrics() map[string]int64 {
 		return nil
 	}
 
-	var d metrics
-	d.ThreadsDaemon = int64(rawMetrics.FindByName("jvm_threads_daemon").Max())
-	d.Threads = int64(rawMetrics.FindByName("jvm_threads_live").Max())
+	var m metrics
+	m.ThreadsDaemon = int64(rawMetrics.FindByName("jvm_threads_daemon").Max())
+	m.Threads = int64(rawMetrics.FindByName("jvm_threads_live").Max())
 
-	return utils.ToMap(d)
+	return utils.ToMap(m)
 }
 
 func init() {
