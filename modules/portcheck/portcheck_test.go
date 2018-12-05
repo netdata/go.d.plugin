@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTcpCheck_Init(t *testing.T) {
+func TestPortCheck_Init(t *testing.T) {
 	tc := New()
 	defer tc.Cleanup()
 
@@ -24,14 +24,14 @@ func TestTcpCheck_Init(t *testing.T) {
 	}
 }
 
-func TestTcpCheck_Check(t *testing.T) {
+func TestPortCheck_Check(t *testing.T) {
 	tc := New()
 	defer tc.Cleanup()
 
 	assert.True(t, tc.Check())
 }
 
-func TestTcpCheck_Cleanup(t *testing.T) {
+func TestPortCheck_Cleanup(t *testing.T) {
 	tc := New()
 	tc.Host = "127.0.0.1"
 	tc.Ports = []int{3001, 3002}
@@ -45,11 +45,11 @@ func TestTcpCheck_Cleanup(t *testing.T) {
 
 }
 
-func TestTcpCheck_Charts(t *testing.T) {
+func TestPortCheck_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
 
-func TestTcpCheck_ServerOK(t *testing.T) {
+func TestPortCheck_ServerOK(t *testing.T) {
 	tc := New()
 	defer tc.Cleanup()
 
@@ -72,7 +72,7 @@ func TestTcpCheck_ServerOK(t *testing.T) {
 	}
 }
 
-func TestTcpCheck_ServerBAD(t *testing.T) {
+func TestPortCheck_ServerBAD(t *testing.T) {
 
 	tc := New()
 	defer tc.Cleanup()
