@@ -1,45 +1,50 @@
 package portcheck
 
 import (
+	"github.com/stretchr/testify/require"
 	"net"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNew(t *testing.T) {
+	assert.IsType(t, (*PortCheck)(nil), New())
+}
+
 func TestPortCheck_Init(t *testing.T) {
-	tc := New()
-	defer tc.Cleanup()
+	mod := New()
+	defer mod.Cleanup()
 
-	tc.Host = "127.0.0.1"
-	tc.Ports = []int{3001, 3002}
+	mod.Host = "127.0.0.1"
+	mod.Ports = []int{3001, 3002}
 
-	assert.True(t, tc.Init())
+	assert.True(t, mod.Init())
 
-	assert.Len(t, tc.ports, 2)
-	assert.Len(t, tc.workers, 2)
+	assert.Len(t, mod.ports, 2)
+	assert.Len(t, mod.workers, 2)
 
-	for _, w := range tc.workers {
+	for _, w := range mod.workers {
 		assert.True(t, w.alive)
 	}
 }
 
 func TestPortCheck_Check(t *testing.T) {
-	tc := New()
-	defer tc.Cleanup()
+	mod := New()
+	defer mod.Cleanup()
 
-	assert.True(t, tc.Check())
+	assert.True(t, mod.Check())
 }
 
 func TestPortCheck_Cleanup(t *testing.T) {
-	tc := New()
-	tc.Host = "127.0.0.1"
-	tc.Ports = []int{3001, 3002}
+	mod := New()
+	mod.Host = "127.0.0.1"
+	mod.Ports = []int{3001, 3002}
 
-	tc.Init()
-	tc.Cleanup()
+	mod.Init()
+	mod.Cleanup()
 
-	for _, w := range tc.workers {
+	for _, w := range mod.workers {
 		assert.False(t, w.alive)
 	}
 
@@ -49,32 +54,66 @@ func TestPortCheck_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
 
-func TestPortCheck_ServerOK(t *testing.T) {
-	tc := New()
-	defer tc.Cleanup()
+func TestPortCheck_GatherMetrics(t *testing.T) {
+	mod := New()
+	defer mod.Cleanup()
 
-	tc.Host = "127.0.0.1"
-	tc.Ports = []int{3001}
+	mod.Host = "127.0.0.1"
+	mod.Ports = []int{3001, 3002}
 
-	tc.Init()
+	mod.UpdateEvery = 5
+	mod.Init()
 
 	srv := tcpServer{addr: ":3001"}
 	_ = srv.listen()
 
-	defer func() {
-		_ = srv.close()
-	}()
+	defer srv.close()
 
-	assert.NotNil(t, tc.GatherMetrics())
+	expected := map[string]int64{
+		"success_3001": 1,
+		"failed_3001":  0,
+		"timeout_3001": 0,
+		"instate_3001": 5,
+		"success_3002": 0,
+		"failed_3002":  1,
+		"timeout_3002": 0,
+		"instate_3002": 5,
+	}
 
-	for _, p := range tc.ports {
+	rv := mod.GatherMetrics()
+
+	require.NotNil(t, rv)
+
+	delete(rv, "latency_3001")
+	delete(rv, "latency_3002")
+
+	assert.Equal(t, expected, rv)
+}
+
+func TestPortCheck_ServerOK(t *testing.T) {
+	mod := New()
+	defer mod.Cleanup()
+
+	mod.Host = "127.0.0.1"
+	mod.Ports = []int{3001}
+
+	mod.Init()
+
+	srv := tcpServer{addr: ":3001"}
+	_ = srv.listen()
+
+	defer srv.close()
+
+	assert.NotNil(t, mod.GatherMetrics())
+
+	for _, p := range mod.ports {
 		assert.True(t, p.state == success)
 	}
 }
 
 func TestPortCheck_ServerBAD(t *testing.T) {
-
 	tc := New()
+
 	defer tc.Cleanup()
 
 	tc.Host = "127.0.0.1"

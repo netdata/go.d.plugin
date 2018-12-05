@@ -54,14 +54,6 @@ func newPort(number, updateEvery int) *port {
 	}
 }
 
-type metrics map[string]int64
-
-func (m *metrics) reset() {
-	for key := range *m {
-		(*m)[key] = 0
-	}
-}
-
 // New creates PortCheck with default values
 func New() *PortCheck {
 	return &PortCheck{
@@ -88,7 +80,7 @@ type PortCheck struct {
 	ports   []*port
 	workers []*worker
 
-	metrics metrics
+	metrics map[string]int64
 }
 
 // Init makes initialization
@@ -109,12 +101,6 @@ func (tc *PortCheck) Init() bool {
 	sort.Ints(tc.Ports)
 
 	for _, p := range tc.Ports {
-		tc.metrics[fmt.Sprintf("success_%d", p)] = 0
-		tc.metrics[fmt.Sprintf("failed_%d", p)] = 0
-		tc.metrics[fmt.Sprintf("timeout_%d", p)] = 0
-		tc.metrics[fmt.Sprintf("instate_%d", p)] = 0
-		tc.metrics[fmt.Sprintf("latency_%d", p)] = 0
-
 		tc.ports = append(tc.ports, newPort(p, tc.UpdateEvery))
 		tc.workers = append(tc.workers, newWorker(tc.Host, tc.Timeout.Duration, tc.doCh, tc.doneCh))
 	}
@@ -155,9 +141,13 @@ func (tc *PortCheck) GatherMetrics() map[string]int64 {
 		<-tc.doneCh
 	}
 
-	tc.metrics.reset()
-
 	for _, p := range tc.ports {
+		tc.metrics[fmt.Sprintf("success_%d", p.number)] = 0
+		tc.metrics[fmt.Sprintf("failed_%d", p.number)] = 0
+		tc.metrics[fmt.Sprintf("timeout_%d", p.number)] = 0
+		tc.metrics[fmt.Sprintf("instate_%d", p.number)] = 0
+		tc.metrics[fmt.Sprintf("latency_%d", p.number)] = 0
+
 		tc.metrics[p.stateText()] = 1
 		tc.metrics[fmt.Sprintf("instate_%d", p.number)] = int64(p.inState)
 		tc.metrics[fmt.Sprintf("latency_%d", p.number)] = int64(p.latency)
