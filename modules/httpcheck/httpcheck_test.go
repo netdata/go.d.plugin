@@ -46,7 +46,7 @@ func TestHTTPCheck_ResponseSuccess(t *testing.T) {
 
 	assert.Equal(
 		t,
-		data{
+		metrics{
 			Success:        1,
 			Failed:         0,
 			Timeout:        0,
@@ -55,7 +55,7 @@ func TestHTTPCheck_ResponseSuccess(t *testing.T) {
 			ResponseTime:   0,
 			ResponseLength: len(msg),
 		},
-		hc.data,
+		hc.metrics,
 	)
 }
 
@@ -75,7 +75,7 @@ func TestHTTPCheck_ResponseSuccessBadContent(t *testing.T) {
 
 	assert.Equal(
 		t,
-		data{
+		metrics{
 			Success:        1,
 			Failed:         0,
 			Timeout:        0,
@@ -84,7 +84,7 @@ func TestHTTPCheck_ResponseSuccessBadContent(t *testing.T) {
 			ResponseTime:   0,
 			ResponseLength: len(msg),
 		},
-		hc.data,
+		hc.metrics,
 	)
 }
 
@@ -97,7 +97,7 @@ func TestHTTPCheck_ResponseTimeout(t *testing.T) {
 
 	assert.Equal(
 		t,
-		data{
+		metrics{
 			Success:        0,
 			Failed:         0,
 			Timeout:        1,
@@ -106,7 +106,7 @@ func TestHTTPCheck_ResponseTimeout(t *testing.T) {
 			ResponseTime:   0,
 			ResponseLength: 0,
 		},
-		hc.data,
+		hc.metrics,
 	)
 }
 
