@@ -6,18 +6,18 @@ import (
 	"github.com/netdata/go.d.plugin/modules"
 )
 
-// Example module
-type Example struct {
-	modules.Base // should be embedded by every module
-
-	data map[string]int64
-}
-
-// New returns Example with default values
+// New creates Example with default values
 func New() *Example {
 	return &Example{
 		data: make(map[string]int64),
 	}
+}
+
+// Example example module
+type Example struct {
+	modules.Base // should be embedded by every module
+
+	data map[string]int64
 }
 
 // Cleanup makes cleanup
