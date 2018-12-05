@@ -74,9 +74,9 @@ type Job struct {
 }
 
 // FullName returns full name.
-// If name isn't specified it returns module name.
+// If name isn't specified or equal to module name it returns module name.
 func (j Job) FullName() string {
-	if j.Nam == "" {
+	if j.Nam == "" || j.Nam == j.moduleName {
 		return j.ModuleName()
 	}
 	return fmt.Sprintf("%s_%s", j.ModuleName(), j.Name())
