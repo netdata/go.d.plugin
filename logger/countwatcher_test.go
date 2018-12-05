@@ -38,8 +38,8 @@ func TestMsgCountWatcher_Unregister(t *testing.T) {
 }
 
 func TestMsgCountWatcher(t *testing.T) {
-	resetEvery := time.Millisecond * 500
-	cw := newMsgCountWatcher(resetEvery)
+	reset := time.Millisecond * 500
+	cw := newMsgCountWatcher(reset)
 	defer cw.stop()
 
 	logger := New("", "")
@@ -51,7 +51,7 @@ func TestMsgCountWatcher(t *testing.T) {
 		for m := 0; m < 100; m++ {
 			logger.Info()
 		}
-		time.Sleep(resetEvery * 2)
+		time.Sleep(reset * 2)
 		assert.Equal(t, int64(0), atomic.LoadInt64(&logger.msgCount))
 	}
 }

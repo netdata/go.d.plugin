@@ -11,7 +11,7 @@ func TestNetdataAPI_chart(t *testing.T) {
 	b := &bytes.Buffer{}
 	netdataAPI := apiWriter{Writer: b}
 
-	netdataAPI.chart(
+	_ = netdataAPI.chart(
 		"",
 		"id",
 		"name",
@@ -37,7 +37,7 @@ func TestNetdataAPI_dimension(t *testing.T) {
 	b := &bytes.Buffer{}
 	netdataAPI := apiWriter{Writer: b}
 
-	netdataAPI.dimension(
+	_ = netdataAPI.dimension(
 		"id",
 		"name",
 		Absolute,
@@ -57,7 +57,7 @@ func TestNetdataAPI_begin(t *testing.T) {
 	b := &bytes.Buffer{}
 	netdataAPI := apiWriter{Writer: b}
 
-	netdataAPI.begin(
+	_ = netdataAPI.begin(
 		"typeID",
 		"id",
 		0,
@@ -71,7 +71,7 @@ func TestNetdataAPI_begin(t *testing.T) {
 
 	b.Reset()
 
-	netdataAPI.begin(
+	_ = netdataAPI.begin(
 		"typeID",
 		"id",
 		1,
@@ -88,7 +88,7 @@ func TestNetdataAPI_set(t *testing.T) {
 	b := &bytes.Buffer{}
 	netdataAPI := apiWriter{Writer: b}
 
-	netdataAPI.set("id", 100)
+	_ = netdataAPI.set("id", 100)
 
 	assert.Equal(
 		t,
@@ -101,7 +101,7 @@ func TestNetdataAPI_setEmpty(t *testing.T) {
 	b := &bytes.Buffer{}
 	netdataAPI := apiWriter{Writer: b}
 
-	netdataAPI.setEmpty("id")
+	_ = netdataAPI.setEmpty("id")
 
 	assert.Equal(
 		t,
@@ -114,7 +114,7 @@ func TestNetdataAPI_end(t *testing.T) {
 	b := &bytes.Buffer{}
 	netdataAPI := apiWriter{Writer: b}
 
-	netdataAPI.end()
+	_ = netdataAPI.end()
 
 	assert.Equal(
 		t,
@@ -127,7 +127,7 @@ func TestNetdataAPI_flush(t *testing.T) {
 	b := &bytes.Buffer{}
 	netdataAPI := apiWriter{Writer: b}
 
-	netdataAPI.flush()
+	_ = netdataAPI.flush()
 
 	assert.Equal(
 		t,

@@ -195,10 +195,10 @@ func (c *countWriter) Write(b []byte) (n int, err error) {
 }
 
 func BenchmarkLogger_Infof(b *testing.B) {
-	log := New("test", "test")
-	log.formatter.SetOutput(ioutil.Discard)
+	l := New("test", "test")
+	l.formatter.SetOutput(ioutil.Discard)
 	for i := 0; i < b.N; i++ {
-		log.Infof("hello %s", "world")
+		l.Infof("hello %s", "world")
 	}
 }
 

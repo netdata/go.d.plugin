@@ -9,7 +9,7 @@ import (
 // New creates Example with default values
 func New() *Example {
 	return &Example{
-		data: make(map[string]int64),
+		metrics: make(map[string]int64),
 	}
 }
 
@@ -17,7 +17,7 @@ func New() *Example {
 type Example struct {
 	modules.Base // should be embedded by every module
 
-	data map[string]int64
+	metrics map[string]int64
 }
 
 // Cleanup makes cleanup
@@ -29,7 +29,7 @@ func (Example) Init() bool {
 }
 
 // Check makes check
-func (e *Example) Check() bool {
+func (Example) Check() bool {
 	return true
 }
 
@@ -40,10 +40,10 @@ func (Example) Charts() *Charts {
 
 // GatherMetrics gathers metrics
 func (e *Example) GatherMetrics() map[string]int64 {
-	e.data["random0"] = rand.Int63n(100)
-	e.data["random1"] = rand.Int63n(100)
+	e.metrics["random0"] = rand.Int63n(100)
+	e.metrics["random1"] = rand.Int63n(100)
 
-	return e.data
+	return e.metrics
 }
 
 func init() {
