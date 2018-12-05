@@ -3,9 +3,10 @@ package example
 import "github.com/netdata/go.d.plugin/modules"
 
 type (
-	Charts  = modules.Charts
-	Options = modules.Opts
-	Dims    = modules.Dims
+	// Charts is an alias for modules.Charts
+	Charts = modules.Charts
+	// Dims is an alias for modules.Dims
+	Dims = modules.Dims
 )
 
 var charts = Charts{
