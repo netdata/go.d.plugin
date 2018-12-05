@@ -29,7 +29,7 @@ func (Example) Init() bool {
 }
 
 // Check makes check
-func (e Example) Check() bool {
+func (Example) Check() bool {
 	return true
 }
 

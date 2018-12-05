@@ -1,4 +1,4 @@
-package tcpcheck
+package portcheck
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ func chartsTemplate(port int) Charts {
 	return Charts{
 		{
 			ID:    sprintf("status_%d", port),
-			Title: "Port Check Status", Units: "boolean", Fam: family, Ctx: "tcpcheck.status",
+			Title: "Port Check Status", Units: "boolean", Fam: family, Ctx: "portcheck.status",
 			Dims: Dims{
 				{ID: sprintf("success_%d", port), Name: "success"},
 				{ID: sprintf("failed_%d", port), Name: "failed"},
@@ -27,14 +27,14 @@ func chartsTemplate(port int) Charts {
 		},
 		{
 			ID:    sprintf("instate_%d", port),
-			Title: "Current State Duration", Units: "seconds", Fam: family, Ctx: "tcpcheck.instate",
+			Title: "Current State Duration", Units: "seconds", Fam: family, Ctx: "portcheck.instate",
 			Dims: Dims{
 				{ID: sprintf("instate_%d", port), Name: "time"},
 			},
 		},
 		{
 			ID:    sprintf("latency_%d", port),
-			Title: "TCP Connect Latency", Units: "ms", Fam: family, Ctx: "tcpcheck.latency",
+			Title: "TCP Connect Latency", Units: "ms", Fam: family, Ctx: "portcheck.latency",
 			Dims: Dims{
 				{ID: sprintf("latency_%d", port), Name: "time", Div: 1000000},
 			},

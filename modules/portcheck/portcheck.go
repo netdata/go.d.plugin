@@ -1,4 +1,4 @@
-package tcpcheck
+package portcheck
 
 import (
 	"net"
@@ -53,8 +53,8 @@ func newPort(number, updateEvery int) *port {
 	}
 }
 
-// TcpCheck module struct
-type TcpCheck struct {
+// PortCheck module struct
+type PortCheck struct {
 	modules.Base
 
 	Host        string         `yaml:"host" validate:"required"`
@@ -71,9 +71,9 @@ type TcpCheck struct {
 	data map[string]int64
 }
 
-// New returns TcpCheck with default values
-func New() *TcpCheck {
-	return &TcpCheck{
+// New returns PortCheck with default values
+func New() *PortCheck {
+	return &PortCheck{
 		doCh:   make(chan *port),
 		doneCh: make(chan struct{}),
 		ports:  make([]*port, 0),
@@ -86,7 +86,7 @@ func New() *TcpCheck {
 // it resolves host to IP address using local resolver.
 // If it fails it returns false, otherwise it's always true.
 // Init starts a separate worker (goroutine) for every port.
-func (tc *TcpCheck) Init() bool {
+func (tc *PortCheck) Init() bool {
 	if tc.Timeout.Duration == 0 {
 		tc.Timeout.Duration = time.Second
 	}
@@ -119,20 +119,20 @@ func (tc *TcpCheck) Init() bool {
 
 // Check does check
 // Since there is nothing to check it just returns true
-func (tc TcpCheck) Check() bool {
+func (tc PortCheck) Check() bool {
 	return true
 }
 
 // Cleanup does cleanup
 // It stops all workers, which were started in Init.
-func (tc *TcpCheck) Cleanup() {
+func (tc *PortCheck) Cleanup() {
 	for _, worker := range tc.workers {
 		worker.stop()
 	}
 }
 
 // Charts returns charts
-func (tc TcpCheck) Charts() *Charts {
+func (tc PortCheck) Charts() *Charts {
 	charts := modules.Charts{}
 	for _, p := range tc.Ports {
 		charts.Add(chartsTemplate(p)...)
@@ -142,7 +142,7 @@ func (tc TcpCheck) Charts() *Charts {
 }
 
 // GatherMetrics does data collection
-func (tc *TcpCheck) GatherMetrics() map[string]int64 {
+func (tc *PortCheck) GatherMetrics() map[string]int64 {
 	for _, p := range tc.ports {
 		tc.doCh <- p
 	}
@@ -170,5 +170,5 @@ func init() {
 		Create:      func() modules.Module { return New() },
 	}
 
-	modules.Register("tcpcheck", creator)
+	modules.Register("portcheck", creator)
 }
