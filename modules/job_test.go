@@ -28,6 +28,8 @@ func TestJob_FullName(t *testing.T) {
 	job := testNewJob()
 
 	assert.Equal(t, job.FullName(), testModName)
+	job.Nam = testModName
+	assert.Equal(t, job.FullName(), testModName)
 	job.Nam = testJobName
 	assert.Equal(t, job.FullName(), fmt.Sprintf("%s_%s", testModName, testJobName))
 
