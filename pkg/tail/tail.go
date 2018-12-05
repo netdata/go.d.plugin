@@ -12,9 +12,13 @@ import (
 var maxFails = 10
 
 var (
-	ErrNotInited   = errors.New("not inited")
-	ErrGlob        = errors.New("glob returns an empty slice")
-	ErrBadFile     = errors.New("not a readable file")
+	// ErrNotInitialized ErrNotInitialized
+	ErrNotInitialized = errors.New("not initialized")
+	// ErrGlob ErrGlob
+	ErrGlob = errors.New("glob returns an empty slice")
+	// ErrBadFile ErrBadFile
+	ErrBadFile = errors.New("not a readable file")
+	// SizeNotChanged SizeNotChanged
 	SizeNotChanged = errors.New("size not changed")
 )
 
@@ -25,7 +29,7 @@ func New(path string) *Tail {
 }
 
 type Tail struct {
-	Path string // used as pattern
+	Path string // pattern
 	path string
 
 	fails int
@@ -49,7 +53,7 @@ func (t *Tail) Init() error {
 
 func (t *Tail) Tail() (io.ReadCloser, error) {
 	if t.path == "" {
-		return nil, ErrNotInited
+		return nil, ErrNotInitialized
 	}
 
 	if t.fails > maxFails {

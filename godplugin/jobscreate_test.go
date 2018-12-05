@@ -3,11 +3,11 @@ package godplugin
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/netdata/go.d.plugin/cli"
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/multipath"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_loadModuleConfigNoConfig(t *testing.T) {

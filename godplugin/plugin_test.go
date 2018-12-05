@@ -1,13 +1,15 @@
 package godplugin
 
 import (
-	"github.com/netdata/go.d.plugin/cli"
-	"github.com/netdata/go.d.plugin/modules"
-	"github.com/netdata/go.d.plugin/pkg/multipath"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/netdata/go.d.plugin/cli"
+	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/pkg/multipath"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {

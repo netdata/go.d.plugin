@@ -1,9 +1,8 @@
 package springboot2
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/prometheus"
-
 	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/utils"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )

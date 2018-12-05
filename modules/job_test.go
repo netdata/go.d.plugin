@@ -2,10 +2,11 @@ package modules
 
 import (
 	"fmt"
-	"github.com/netdata/go.d.plugin/logger"
 	"io/ioutil"
 	"testing"
 	"time"
+
+	"github.com/netdata/go.d.plugin/logger"
 
 	"github.com/stretchr/testify/assert"
 )

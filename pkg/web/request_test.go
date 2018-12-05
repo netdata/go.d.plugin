@@ -1,10 +1,10 @@
 package web
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"net/http"
 )
 
 var (

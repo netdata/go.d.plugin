@@ -1,9 +1,10 @@
 package tcpcheck
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTcpCheck_Init(t *testing.T) {
