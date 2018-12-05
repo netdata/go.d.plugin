@@ -43,7 +43,7 @@ func Test_loadModuleConfig(t *testing.T) {
 
 	assert.NotNil(t, conf)
 
-	assert.Equal(t, 2, len(conf.Jobs))
+	assert.Equal(t, 3, len(conf.Jobs))
 }
 
 func Test_createModuleJobs(t *testing.T) {
