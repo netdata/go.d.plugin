@@ -39,8 +39,8 @@ func newModuleGlobal() *moduleGlobal {
 }
 
 type moduleGlobal struct {
-	UpdateEvery        int
-	AutoDetectionRetry int
+	UpdateEvery        int `yaml:"update_every"`
+	AutoDetectionRetry int `yaml:"autodetection_retry"`
 }
 
 func newModuleConfig() *moduleConfig {
