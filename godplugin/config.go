@@ -79,15 +79,21 @@ func (m *moduleConfig) updateJobs(moduleUpdateEvery, pluginUpdateEvery int) {
 	}
 }
 
-func load(conf interface{}, filename string) error {
+func loadYAML(conf interface{}, filename string) error {
 	file, err := os.Open(filename)
 	defer file.Close()
 
-	if err != nil && err != io.EOF {
+	if err != nil {
+		log.Debug("open file ", filename, ": ", err)
 		return err
 	}
 
 	if err = yaml.NewDecoder(file).Decode(conf); err != nil {
+		if err == io.EOF {
+			log.Debug("config file is empty")
+			return nil
+		}
+		log.Debug("read YAML ", filename, ": ", err)
 		return err
 	}
 

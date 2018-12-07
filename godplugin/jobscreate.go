@@ -21,7 +21,7 @@ func (p *Plugin) loadModuleConfig(name string) *moduleConfig {
 	modConf := newModuleConfig()
 	modConf.name = name
 
-	if err = load(modConf, configPath); err != nil {
+	if err = loadYAML(modConf, configPath); err != nil {
 		log.Warningf("skipping '%s': %v", name, err)
 		return nil
 	}

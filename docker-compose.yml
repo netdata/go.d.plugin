@@ -1,8 +1,9 @@
 version: '3'
 services:
   netdata:
-    build: .
-    hostname: localhost
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
       - 19999:19999
     cap_add:

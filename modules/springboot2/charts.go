@@ -14,7 +14,18 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "heap",
+		ID:    "response",
+		Title: "Response Codes", Units: "requests/s", Fam: "response_code", Type: modules.Stacked,
+		Dims: Dims{
+			{ID: "resp_1xx", Name: "1xx", Algo: modules.Incremental},
+			{ID: "resp_2xx", Name: "2xx", Algo: modules.Incremental},
+			{ID: "resp_3xx", Name: "3xx", Algo: modules.Incremental},
+			{ID: "resp_4xx", Name: "4xx", Algo: modules.Incremental},
+			{ID: "resp_5xx", Name: "5xx", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "thread",
 		Title: "Threads", Units: "threads", Fam: "threads", Type: modules.Area,
 		Dims: Dims{
 			{ID: "threads_daemon", Name: "daemon"},
