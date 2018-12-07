@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,13 +17,13 @@ func TestNew(t *testing.T) {
 }
 
 func TestHTTPCheck_Init(t *testing.T) {
-	hc := New()
+	mod := New()
 
-	assert.True(t, hc.Init())
+	assert.True(t, mod.Init())
 
-	hc.ResponseMatch = "(?:qwe))"
+	mod.ResponseMatch = "(?:qwe))"
 
-	assert.False(t, hc.Init())
+	assert.False(t, mod.Init())
 }
 
 func TestHTTPCheck_Check(t *testing.T) {
@@ -33,8 +34,23 @@ func TestHTTPCheck_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
 
+func TestHTTPCheck_Cleanup(t *testing.T) {
+	New().Cleanup()
+}
+
+func TestHTTPCheck_GatherMetrics(t *testing.T) {
+	mod := New()
+
+	srv := httptest.NewServer(myHandler{})
+	defer srv.Close()
+
+	mod.URL = srv.URL
+	mod.Init()
+	assert.NotNil(t, mod.GatherMetrics())
+}
+
 func TestHTTPCheck_ResponseSuccess(t *testing.T) {
-	hc := New()
+	mod := New()
 	msg := "hello"
 
 	var resp http.Response
@@ -42,11 +58,11 @@ func TestHTTPCheck_ResponseSuccess(t *testing.T) {
 	resp.Body = nopCloser{bytes.NewBufferString(msg)}
 	resp.StatusCode = http.StatusOK
 
-	hc.processOKResponse(&resp)
+	mod.processOKResponse(&resp)
 
 	assert.Equal(
 		t,
-		data{
+		metrics{
 			Success:        1,
 			Failed:         0,
 			Timeout:        0,
@@ -55,14 +71,14 @@ func TestHTTPCheck_ResponseSuccess(t *testing.T) {
 			ResponseTime:   0,
 			ResponseLength: len(msg),
 		},
-		hc.data,
+		mod.metrics,
 	)
 }
 
 func TestHTTPCheck_ResponseSuccessBadContent(t *testing.T) {
-	hc := New()
-	hc.ResponseMatch = "no match"
-	require.True(t, hc.Init())
+	mod := New()
+	mod.ResponseMatch = "no match"
+	require.True(t, mod.Init())
 
 	msg := "hello"
 
@@ -71,11 +87,11 @@ func TestHTTPCheck_ResponseSuccessBadContent(t *testing.T) {
 	resp.Body = nopCloser{bytes.NewBufferString(msg)}
 	resp.StatusCode = http.StatusOK
 
-	hc.processOKResponse(&resp)
+	mod.processOKResponse(&resp)
 
 	assert.Equal(
 		t,
-		data{
+		metrics{
 			Success:        1,
 			Failed:         0,
 			Timeout:        0,
@@ -84,20 +100,20 @@ func TestHTTPCheck_ResponseSuccessBadContent(t *testing.T) {
 			ResponseTime:   0,
 			ResponseLength: len(msg),
 		},
-		hc.data,
+		mod.metrics,
 	)
 }
 
 func TestHTTPCheck_ResponseTimeout(t *testing.T) {
-	hc := New()
+	mod := New()
 
 	var err net.Error = timeoutError{}
 
-	hc.processErrResponse(err)
+	mod.processErrResponse(err)
 
 	assert.Equal(
 		t,
-		data{
+		metrics{
 			Success:        0,
 			Failed:         0,
 			Timeout:        1,
@@ -106,7 +122,7 @@ func TestHTTPCheck_ResponseTimeout(t *testing.T) {
 			ResponseTime:   0,
 			ResponseLength: 0,
 		},
-		hc.data,
+		mod.metrics,
 	)
 }
 
@@ -129,4 +145,10 @@ func (r timeoutError) Error() string {
 
 func (r timeoutError) Temporary() bool {
 	return true
+}
+
+type myHandler struct{}
+
+func (myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }

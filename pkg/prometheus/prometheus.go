@@ -9,16 +9,15 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/netdata/go.d.plugin/pkg/web"
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/pkg/textparse"
-
-	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 type (
 	// Prometheus is a helper for scrape and parse prometheus format metrics.
 	Prometheus interface {
-		// scrape and parse prometheus format metrics
+		// Scrape and parse prometheus format metrics
 		Scrape() (Metrics, error)
 	}
 
@@ -27,7 +26,7 @@ type (
 		request web.RawRequest
 		metrics Metrics
 
-		// inetrnal use
+		// internal use
 		buf     *bytes.Buffer
 		gzipr   *gzip.Reader
 		bodybuf *bufio.Reader
@@ -48,6 +47,7 @@ func New(client web.Client, request web.RawRequest) Prometheus {
 	}
 }
 
+// Scrape scrapes metrics, parses and sorts
 func (p *prometheus) Scrape() (Metrics, error) {
 	p.metrics.Reset()
 	if err := p.scrape(&p.metrics); err != nil {
@@ -57,7 +57,6 @@ func (p *prometheus) Scrape() (Metrics, error) {
 	return p.metrics, nil
 }
 
-// Scrape Scrape
 func (p *prometheus) scrape(metrics *Metrics) error {
 	p.buf.Reset()
 	err := p.fetch(p.buf)

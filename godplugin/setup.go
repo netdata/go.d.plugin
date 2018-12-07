@@ -36,8 +36,13 @@ func (p *Plugin) Setup() bool {
 		return false
 	}
 
+<<<<<<< HEAD
 	if err := loadYAML(p.config, configFile); err != nil {
 		log.Critical("loadYAML config error: ", err)
+=======
+	if err = load(p.config, name); err != nil {
+		log.Critical("load config error: ", err)
+>>>>>>> master
 		return false
 	}
 

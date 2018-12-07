@@ -69,7 +69,6 @@ func recheckTask(ch chan Job, job Job) {
 
 	select {
 	case <-t.C:
-		break
 	case ch <- job:
 	}
 }

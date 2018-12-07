@@ -2,7 +2,6 @@ package utils
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
@@ -65,22 +64,4 @@ func TestDuration_UnmarshalYAML(t *testing.T) {
 	for _, v := range values {
 		assert.NoError(t, yaml.Unmarshal(v, &d))
 	}
-}
-
-func TestDuration_ConvertTo(t *testing.T) {
-	d := Duration{time.Second}
-
-	assert.Equal(
-		t,
-		1000,
-		d.ConvertTo(time.Millisecond),
-	)
-
-	d.Duration = time.Second * 3
-
-	assert.Equal(
-		t,
-		1000*1000*3,
-		d.ConvertTo(time.Microsecond),
-	)
 }

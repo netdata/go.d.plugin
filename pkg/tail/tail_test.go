@@ -26,7 +26,7 @@ func TestTail_Init(t *testing.T) {
 	_, err = tail.Tail()
 
 	if assert.Error(t, err) {
-		assert.Equal(t, err, ErrNotInited)
+		assert.Equal(t, err, ErrNotInitialized)
 	}
 
 	tmp, err := ioutil.TempFile("", "temp-")

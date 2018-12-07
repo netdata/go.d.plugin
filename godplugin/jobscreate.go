@@ -3,9 +3,9 @@ package godplugin
 import (
 	"fmt"
 
-	"gopkg.in/yaml.v2"
-
 	"github.com/netdata/go.d.plugin/modules"
+
+	"gopkg.in/yaml.v2"
 )
 
 func (p *Plugin) loadModuleConfig(name string) *moduleConfig {

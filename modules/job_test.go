@@ -2,17 +2,18 @@ package modules
 
 import (
 	"fmt"
-	"github.com/netdata/go.d.plugin/logger"
 	"io/ioutil"
 	"testing"
 	"time"
+
+	"github.com/netdata/go.d.plugin/logger"
 
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testModName = "testModName"
-	testJobName = "testJobName"
+	testModName = "modName"
+	testJobName = "jobName"
 )
 
 func testNewJob() *Job {
@@ -26,6 +27,8 @@ func TestNewJob(t *testing.T) {
 func TestJob_FullName(t *testing.T) {
 	job := testNewJob()
 
+	assert.Equal(t, job.FullName(), testModName)
+	job.Nam = testModName
 	assert.Equal(t, job.FullName(), testModName)
 	job.Nam = testJobName
 	assert.Equal(t, job.FullName(), fmt.Sprintf("%s_%s", testModName, testJobName))
@@ -127,7 +130,7 @@ func TestJob_Check(t *testing.T) {
 
 	// PANIC case
 	m = &MockModule{
-		InitFunc: func() bool { panic("panic in InitFunc") },
+		CheckFunc: func() bool { panic("panic in InitFunc") },
 	}
 	job = testNewJob()
 	job.module = m

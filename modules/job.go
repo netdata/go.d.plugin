@@ -74,9 +74,9 @@ type Job struct {
 }
 
 // FullName returns full name.
-// If name isn't specified it returns module name.
+// If name isn't specified or equal to module name it returns module name.
 func (j Job) FullName() string {
-	if j.Nam == "" {
+	if j.Nam == "" || j.Nam == j.moduleName {
 		return j.ModuleName()
 	}
 	return fmt.Sprintf("%s_%s", j.ModuleName(), j.Name())
@@ -209,7 +209,7 @@ func (j *Job) runOnce() {
 		j.retries++
 	}
 
-	io.Copy(j.out, j.buf)
+	_, _ = io.Copy(j.out, j.buf)
 	j.buf.Reset()
 }
 
@@ -270,7 +270,7 @@ func (j *Job) createChart(chart *Chart) {
 		chart.Priority = j.priority
 		j.priority++
 	}
-	j.apiWriter.chart(
+	_ = j.apiWriter.chart(
 		firstNotEmpty(chart.typeID, j.FullName()),
 		chart.ID,
 		chart.OverID,
@@ -285,7 +285,7 @@ func (j *Job) createChart(chart *Chart) {
 		j.moduleName,
 	)
 	for _, dim := range chart.Dims {
-		j.apiWriter.dimension(
+		_ = j.apiWriter.dimension(
 			dim.ID,
 			dim.Name,
 			dim.Algo,
@@ -298,12 +298,12 @@ func (j *Job) createChart(chart *Chart) {
 		if v.Value == 0 {
 			continue
 		}
-		j.apiWriter.set(
+		_ = j.apiWriter.set(
 			v.ID,
 			v.Value,
 		)
 	}
-	j.apiWriter.Write([]byte("\n"))
+	_, _ = j.apiWriter.Write([]byte("\n"))
 
 	chart.created = true
 }
@@ -313,7 +313,7 @@ func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLastRun int)
 		sinceLastRun = 0
 	}
 
-	j.apiWriter.begin(
+	_ = j.apiWriter.begin(
 		firstNotEmpty(chart.typeID, j.FullName()),
 		chart.ID,
 		sinceLastRun,
@@ -323,19 +323,19 @@ func (j *Job) updateChart(chart *Chart, data map[string]int64, sinceLastRun int)
 
 	for _, dim := range chart.Dims {
 		if v, ok := data[dim.ID]; ok {
-			j.apiWriter.set(dim.ID, v)
+			_ = j.apiWriter.set(dim.ID, v)
 			updated++
 		} else {
-			j.apiWriter.setEmpty(dim.ID)
+			_ = j.apiWriter.setEmpty(dim.ID)
 		}
 	}
 	for _, variable := range chart.Vars {
 		if v, ok := data[variable.ID]; ok {
-			j.apiWriter.set(variable.ID, v)
+			_ = j.apiWriter.set(variable.ID, v)
 		}
 	}
 
-	j.apiWriter.end()
+	_ = j.apiWriter.end()
 
 	chart.updated = updated > 0
 

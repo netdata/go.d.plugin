@@ -6,10 +6,12 @@ import (
 	"time"
 )
 
+// Duration is a time.Duration wrapper
 type Duration struct {
 	Duration time.Duration
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler
 func (m *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var s string
 
@@ -30,8 +32,4 @@ func (m *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return nil
 	}
 	return fmt.Errorf("unparsable duration format '%s'", s)
-}
-
-func (m *Duration) ConvertTo(to time.Duration) int {
-	return int(int64(m.Duration) / (int64(to) / int64(time.Nanosecond)))
 }

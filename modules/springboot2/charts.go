@@ -9,7 +9,6 @@ type (
 	Charts = modules.Charts
 	// Dims is an alias for modules.Dims
 	Dims = modules.Dims
-	// Area is an alias for modules.Area
 )
 
 var charts = Charts{

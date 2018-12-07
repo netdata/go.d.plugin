@@ -6,8 +6,7 @@ type mockJob struct {
 	name       func() string
 
 	autoDetectionRetry func() int
-
-	panicked func() bool
+	panicked           func() bool
 
 	init      func() bool
 	check     func() bool
@@ -19,57 +18,90 @@ type mockJob struct {
 	stop  func()
 }
 
-// FullName invokes fullName
+// FullName returns mock job full name
 func (m mockJob) FullName() string {
+	if m.fullName == nil {
+		return "mock"
+	}
 	return m.fullName()
 }
 
-// ModuleName invokes moduleName
+// ModuleName returns mock job module name
 func (m mockJob) ModuleName() string {
+	if m.moduleName == nil {
+		return "mock"
+	}
 	return m.moduleName()
 }
 
-// Name invokes name
+// Name returns mock job name
 func (m mockJob) Name() string {
+	if m.name == nil {
+		return "mock"
+	}
 	return m.name()
 }
 
-// AutoDetectionRetry invokes autoDetectionRetry
+// AutoDetectionRetry returns mock job autoDetectionRetry
 func (m mockJob) AutoDetectionRetry() int {
+	if m.autoDetectionRetry == nil {
+		return 0
+	}
 	return m.autoDetectionRetry()
 }
 
-// Panicked invokes panicked
+// Panicked return whether the mock job is panicked
 func (m mockJob) Panicked() bool {
+	if m.panicked == nil {
+		return false
+	}
 	return m.panicked()
 }
 
-// Init invokes init
+// Init invokes mock job init
 func (m mockJob) Init() bool {
+	if m.init == nil {
+		return true
+	}
 	return m.init()
 }
 
-// Check invokes check
+// Check invokes mock job check
 func (m mockJob) Check() bool {
+	if m.check == nil {
+		return true
+	}
 	return m.check()
 }
 
-// PostCheck invokes postCheck
+// PostCheck invokes mock job postCheck
 func (m mockJob) PostCheck() bool {
+	if m.postCheck == nil {
+		return true
+	}
 	return m.postCheck()
 }
 
-// Tick invokes tick
+// Tick invokes mock job tick
 func (m mockJob) Tick(clock int) {
+	if m.tick == nil {
+		return
+	}
 	m.tick(clock)
 }
 
-// Start invokes start
+// Start invokes mock job start
 func (m mockJob) Start() {
+	if m.start == nil {
+		return
+	}
 	m.start()
 }
 
-// Stop invokes stop
+// Stop invokes mock job stop
 func (m mockJob) Stop() {
+	if m.stop == nil {
+		return
+	}
 	m.stop()
 }

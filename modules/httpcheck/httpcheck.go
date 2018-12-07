@@ -17,13 +17,12 @@ import (
 type state string
 
 var (
-	// success state = "success"
 	timeout state = "timeout"
 	failed  state = "failed"
 	unknown state = "unknown"
 )
 
-type data struct {
+type metrics struct {
 	Success        int `stm:"success"`
 	Failed         int `stm:"failed"`
 	Timeout        int `stm:"timeout"`
@@ -33,7 +32,7 @@ type data struct {
 	ResponseLength int `stm:"response_length"`
 }
 
-func (d *data) reset() {
+func (d *metrics) reset() {
 	d.Success = 0
 	d.Failed = 0
 	d.Timeout = 0
@@ -43,21 +42,21 @@ func (d *data) reset() {
 	d.ResponseLength = 0
 }
 
-func (d data) toMap() map[string]int64 {
+func (d metrics) toMap() map[string]int64 {
 	return utils.ToMap(d)
 }
 
-// New returns HTTPCheck with default values
+// New creates HTTPCheck with default values
 func New() *HTTPCheck {
 	return &HTTPCheck{
 		statuses: map[int]bool{
 			200: true,
 		},
-		data: data{},
+		metrics: metrics{},
 	}
 }
 
-// HTTPCheck module struct
+// HTTPCheck httpcheck module
 type HTTPCheck struct {
 	modules.Base
 
@@ -71,13 +70,13 @@ type HTTPCheck struct {
 	request *http.Request
 	client  web.Client
 
-	data data
+	metrics metrics
 }
 
-// Cleanup Cleanup
+// Cleanup makes cleanup
 func (HTTPCheck) Cleanup() {}
 
-// Init does initialization
+// Init makes initialization
 func (hc *HTTPCheck) Init() bool {
 	if hc.Timeout.Duration == 0 {
 		hc.Timeout.Duration = time.Second
@@ -115,13 +114,12 @@ func (hc *HTTPCheck) Init() bool {
 	return true
 }
 
-// Check does check
-// Since there is nothing to check it just returns true
+// Check makes check
 func (hc HTTPCheck) Check() bool {
 	return true
 }
 
-// Charts returns charts
+// Charts creates Charts
 func (hc HTTPCheck) Charts() *Charts {
 	c := charts.Copy()
 
@@ -133,9 +131,9 @@ func (hc HTTPCheck) Charts() *Charts {
 
 }
 
-// GatherMetrics does data collection and processing
+// GatherMetrics gathers metrics
 func (hc *HTTPCheck) GatherMetrics() map[string]int64 {
-	hc.data.reset()
+	hc.metrics.reset()
 
 	resp, err := hc.doRequest()
 
@@ -145,13 +143,13 @@ func (hc *HTTPCheck) GatherMetrics() map[string]int64 {
 		hc.processOKResponse(resp)
 	}
 
-	return hc.data.toMap()
+	return hc.metrics.toMap()
 }
 
 func (hc *HTTPCheck) doRequest() (*http.Response, error) {
 	t := time.Now()
 	r, err := hc.client.Do(hc.request)
-	hc.data.ResponseTime = int(time.Since(t))
+	hc.metrics.ResponseTime = int(time.Since(t))
 
 	return r, err
 }
@@ -159,9 +157,9 @@ func (hc *HTTPCheck) doRequest() (*http.Response, error) {
 func (hc *HTTPCheck) processErrResponse(err error) {
 	switch parseErr(err) {
 	case timeout:
-		hc.data.Timeout = 1
+		hc.metrics.Timeout = 1
 	case failed:
-		hc.data.Failed = 1
+		hc.metrics.Failed = 1
 	case unknown:
 		hc.Error(err)
 		panic("unknown state")
@@ -174,16 +172,16 @@ func (hc *HTTPCheck) processOKResponse(resp *http.Response) {
 		_ = resp.Body.Close()
 	}()
 
-	hc.data.Success = 1
+	hc.metrics.Success = 1
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	hc.data.ResponseLength = len(bodyBytes)
+	hc.metrics.ResponseLength = len(bodyBytes)
 
 	if !hc.statuses[resp.StatusCode] {
-		hc.data.BadStatus = 1
+		hc.metrics.BadStatus = 1
 	}
 
 	if hc.match != nil && !hc.match.Match(bodyBytes) {
-		hc.data.BadContent = 1
+		hc.metrics.BadContent = 1
 	}
 }
 

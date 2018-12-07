@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/prometheus/prometheus/pkg/labels"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
