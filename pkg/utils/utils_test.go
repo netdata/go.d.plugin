@@ -52,6 +52,34 @@ func TestToMap(t *testing.T) {
 	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
 }
 
+func TestToMapPrefix(t *testing.T) {
+	s := struct {
+		A int64  `stm:"a"`
+		B inner1 `prefix:"b_"`
+		C inner1 `prefix:"c_"`
+	}{
+		A: 1,
+		B: inner1{
+			D: 2,
+			E: 3,
+		},
+		C: inner1{
+			D: 4,
+			E: 5,
+		},
+	}
+	expected := map[string]int64{
+		"a":   1,
+		"b_d": 2,
+		"b_e": 3,
+		"c_d": 4,
+		"c_e": 5,
+	}
+
+	assert.EqualValuesf(t, expected, ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
+}
+
 func TestDuration_UnmarshalYAML(t *testing.T) {
 	var d Duration
 	values := [][]byte{

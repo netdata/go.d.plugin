@@ -30,10 +30,11 @@ func TestPlugin_SetupBrokenConfig(t *testing.T) {
 func TestPlugin_SetupEmptyConfig(t *testing.T) {
 	p := New()
 
+	p.Option, _ = cli.Parse([]string{})
 	p.ConfigPath = multipath.New("./tests")
 	p.confName = "go.d.conf-empty.yml"
 
-	assert.False(t, p.Setup())
+	assert.True(t, p.Setup())
 }
 
 func TestPlugin_SetupDisabledInConfig(t *testing.T) {

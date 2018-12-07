@@ -1,6 +1,8 @@
 package springboot2
 
 import (
+	"strings"
+
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/utils"
@@ -36,6 +38,17 @@ type metrics struct {
 	Resp3xx int64 `stm:"resp_3xx"`
 	Resp4xx int64 `stm:"resp_4xx"`
 	Resp5xx int64 `stm:"resp_5xx"`
+
+	HeapUsed      heap `prefix:"heap_used_"`
+	HeapCommitted heap `prefix:"heap_committed_"`
+
+	MemFree int64 `stm:"mem_free"`
+}
+
+type heap struct {
+	Eden     int64 `stm:"eden"`
+	Survivor int64 `stm:"survivor"`
+	Old      int64 `stm:"old"`
 }
 
 // Cleanup Cleanup
@@ -72,9 +85,38 @@ func (s *SpringBoot2) GatherMetrics() map[string]int64 {
 	}
 
 	var m metrics
+
+	// response
+	gatherResponse(rawMetrics, &m)
+
+	// threads
 	m.ThreadsDaemon = int64(rawMetrics.FindByName("jvm_threads_daemon").Max())
 	m.Threads = int64(rawMetrics.FindByName("jvm_threads_live").Max())
 
+	// heap memory
+	gatherHeap(rawMetrics.FindByName("jvm_memory_used_bytes"), &m.HeapUsed)
+	gatherHeap(rawMetrics.FindByName("jvm_memory_committed_bytes"), &m.HeapCommitted)
+	m.MemFree = m.HeapCommitted.Sum() - m.HeapUsed.Sum()
+
+	return utils.ToMap(m)
+}
+
+func gatherHeap(rawMetrics prometheus.Metrics, m *heap) {
+	for _, metric := range rawMetrics {
+		id := metric.Labels.Get("id")
+		value := int64(metric.Value)
+		switch {
+		case strings.Contains(id, "Eden"):
+			m.Eden = value
+		case strings.Contains(id, "Survivor"):
+			m.Survivor = value
+		case strings.Contains(id, "Old") || strings.Contains(id, "Tenured"):
+			m.Old = value
+		}
+	}
+}
+
+func gatherResponse(rawMetrics prometheus.Metrics, m *metrics) {
 	for _, metric := range rawMetrics.FindByName("http_server_requests_seconds_count") {
 		status := metric.Labels.Get("status")
 		if status == "" {
@@ -94,5 +136,8 @@ func (s *SpringBoot2) GatherMetrics() map[string]int64 {
 			m.Resp5xx += value
 		}
 	}
-	return utils.ToMap(m)
+}
+
+func (h heap) Sum() int64 {
+	return h.Eden + h.Survivor + h.Old
 }

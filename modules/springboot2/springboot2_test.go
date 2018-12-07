@@ -37,7 +37,22 @@ func TestSpringboot2(t *testing.T) {
 
 	assert.EqualValues(
 		t,
-		map[string]int64{"threads": 24, "threads_daemon": 20},
+		map[string]int64{
+			"threads":                 23,
+			"threads_daemon":          21,
+			"resp_1xx":                0,
+			"resp_2xx":                19,
+			"resp_3xx":                0,
+			"resp_4xx":                4,
+			"resp_5xx":                0,
+			"heap_used_eden":          129649936,
+			"heap_used_survivor":      8900136,
+			"heap_used_old":           17827920,
+			"heap_committed_eden":     153616384,
+			"heap_committed_survivor": 8912896,
+			"heap_committed_old":      40894464,
+			"mem_free":                47045752,
+		},
 		data,
 	)
 }

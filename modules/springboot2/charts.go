@@ -31,4 +31,38 @@ var charts = Charts{
 			{ID: "threads", Name: "total"},
 		},
 	},
+	{
+		ID:    "heap",
+		Title: "Overview", Units: "B", Fam: "heap", Type: modules.Stacked,
+		Dims: Dims{
+			{ID: "mem_free", Name: "free"},
+			{ID: "heap_used_eden", Name: "eden"},
+			{ID: "heap_used_survivor", Name: "survivor"},
+			{ID: "heap_used_old", Name: "old"},
+		},
+	},
+	{
+		ID:    "heap_eden",
+		Title: "Eden Space", Units: "B", Fam: "heap", Type: modules.Area,
+		Dims: Dims{
+			{ID: "heap_used_eden", Name: "used"},
+			{ID: "heap_committed_eden", Name: "committed"},
+		},
+	},
+	{
+		ID:    "heap_survivor",
+		Title: "Survivor Space", Units: "B", Fam: "heap", Type: modules.Area,
+		Dims: Dims{
+			{ID: "heap_used_survivor", Name: "used"},
+			{ID: "heap_committed_survivor", Name: "committed"},
+		},
+	},
+	{
+		ID:    "heap_old",
+		Title: "Old Space", Units: "B", Fam: "heap", Type: modules.Area,
+		Dims: Dims{
+			{ID: "heap_used_old", Name: "used"},
+			{ID: "heap_committed_old", Name: "committed"},
+		},
+	},
 }
