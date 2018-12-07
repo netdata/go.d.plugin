@@ -1,8 +1,9 @@
 version: '3'
 services:
   netdata:
-    build: .
-    hostname: localhost
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
       - 19999:19999
     cap_add:
@@ -12,3 +13,23 @@ services:
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
+    depends_on:
+      - springboot2
+  springboot2:
+    build: mocks/springboot2
+    ports:
+      - 8080:8080
+  springboot2_random:
+    image: alpine
+    depends_on:
+      - springboot2
+    command:
+      - '/bin/sh'
+      - '-c'
+      - |
+        while :; do
+          wget -O /dev/null http://springboot2:8080/hello || :
+          wget -O /dev/null http://springboot2:8080/hello || :
+          wget -O /dev/null http://springboot2:8080/ || :
+          sleep 0.7
+        done

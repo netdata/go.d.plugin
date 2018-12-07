@@ -27,15 +27,17 @@ func (p *Plugin) populateActiveModules() {
 }
 
 func (p *Plugin) Setup() bool {
-	name, err := p.ConfigPath.Find(p.confName)
+	configFile, err := p.ConfigPath.Find(p.confName)
+
+	log.Debug("plugin config file: ", configFile)
 
 	if err != nil {
 		log.Critical("find config file error: ", err)
 		return false
 	}
 
-	if err = load(p.config, name); err != nil {
-		log.Critical("load config error: ", err)
+	if err := loadYAML(p.config, configFile); err != nil {
+		log.Critical("loadYAML config error: ", err)
 		return false
 	}
 

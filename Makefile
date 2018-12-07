@@ -31,3 +31,6 @@ dev-exec:
 
 dev-log:
 	docker-compose logs -f netdata
+
+dev-run:
+	go run github.com/netdata/go.d.plugin/cmd/godplugin -d -c conf.d
