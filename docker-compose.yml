@@ -19,17 +19,31 @@ services:
     build: mocks/springboot2
     ports:
       - 8080:8080
+  nginx:
+    build: mocks/nginx
+    ports:
+      - 8000:80
   springboot2_random:
     image: alpine
     depends_on:
       - springboot2
+      - nginx
     command:
       - '/bin/sh'
       - '-c'
       - |
-        while :; do
-          wget -O /dev/null http://springboot2:8080/hello || :
-          wget -O /dev/null http://springboot2:8080/hello || :
-          wget -O /dev/null http://springboot2:8080/ || :
-          sleep 0.7
-        done
+        function httpget() {
+            while :; do
+                echo wget $$1
+                wget -O /dev/null $$1 2>&1 || :
+                sleep $$2
+            done
+        }
+
+        trap 'kill $$(jobs -pr)' SIGINT SIGTERM EXIT
+
+        httpget http://springboot2:8080/hello 0.5 &
+        httpget http://springboot2:8080 1 &
+        httpget http://nginx/empty_gif 0.7 &
+
+        while true; do sleep 86400; done
