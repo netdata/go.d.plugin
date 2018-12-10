@@ -1,102 +1,85 @@
 package weblog
 
-//
-//import (
-//	"errors"
-//	"fmt"
-//	"regexp"
-//	"strings"
-//
-//	"github.com/netdata/go.d.plugin/pkg/utils"
-//)
-//
-//var (
-//	mandatoryKey = keyCode
-//)
-//
-//var (
-//	lastHop = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+|-)`,
-//	}, "")
-//	apacheV1 = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+|-) `,
-//		`(?P<resp_length>\d+|-) `,
-//		`(?P<resp_time>\d+) `,
-//	}, "")
-//	apacheV2 = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+|-) .*? `,
-//		`(?P<resp_length>\d+|-) `,
-//		`(?P<resp_time>\d+)(?: |$)`,
-//	}, "")
-//	nginxV1 = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+) `,
-//		`(?P<resp_length>\d+) `,
-//		`(?P<resp_time>\d+\.\d+) `,
-//		`(?P<resp_time_upstream>[\d.-]+) `,
-//	}, "")
-//	nginxV2 = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+) `,
-//		`(?P<resp_length>\d+) `,
-//		`(?P<resp_time>\d+\.\d+) `,
-//	}, "")
-//	nginxV3 = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+) .*? `,
-//		`(?P<resp_length>\d+) `,
-//		`(?P<resp_time>\d+\.\d+)`,
-//	}, "")
-//)
-//
-//var patterns = []*regexp.Regexp{
-//	regexp.MustCompile(apacheV1),
-//	regexp.MustCompile(apacheV2),
-//	regexp.MustCompile(nginxV1),
-//	regexp.MustCompile(nginxV2),
-//	regexp.MustCompile(nginxV3),
-//	regexp.MustCompile(lastHop),
-//}
-//
-//func getPattern(custom string, line []byte) (*regexp.Regexp, error) {
-//	if custom == "" {
-//		for _, p := range patterns {
-//			if p.Match(line) {
-//				return p, nil
-//			}
-//		}
-//		return nil, errors.New("can not find appropriate regex, consider using 'custom_log_format' feature")
-//	}
-//	r, err := regexp.Compile(custom)
-//	if err != nil {
-//		return nil, err
-//	}
-//	if len(r.SubexpNames()) == 1 {
-//		return nil, errors.New("custom regex contains no named groups (?P<subgroup_name>)")
-//	}
-//
-//	if !utils.StringSlice(r.SubexpNames()).Include(mandatoryKey) {
-//		return nil, fmt.Errorf("custom regex missing mandatory key '%s'", mandatoryKey)
-//	}
-//
-//	if !r.Match(line) {
-//		return nil, errors.New("custom regex match fails")
-//	}
-//
-//	return r, nil
-//}
+import (
+	"regexp"
+)
+
+var (
+	reAddress        = regexp.MustCompile(`[\da-f.:]+|localhost`)
+	reCode           = regexp.MustCompile(`[1-9]\d{2}`)
+	reBytesSent      = regexp.MustCompile(`\d+|-`)
+	reResponseLength = regexp.MustCompile(`\d+|-`)
+	reResponseTime   = regexp.MustCompile(`\d+|\d+\.\d+`)
+)
+
+const (
+	keyAddress              = "address"                // check
+	keyCode                 = "code"                   // check
+	keyRequest              = "request"                // makes no sense
+	keyUserDefined          = "user_defined"           // can't
+	keyBytesSent            = "bytes_sent"             // check
+	keyResponseTime         = "response_time"          // check
+	keyResponseTimeUpstream = "response_time_upstream" // check
+	keyResponseLength       = "response_length"        // check
+
+	keyURL         = "url"
+	keyHTTPMethod  = "http_method"
+	keyHTTPVersion = "http_version"
+
+	keyResponseTimeHistogram         = "response_time_histogram"
+	keyResponseTimeUpstreamHistogram = "response_time_histogram_upstream"
+)
+
+type (
+	pattern []field
+	field   struct {
+		name  string
+		index int
+	}
+)
+
+func (p pattern) hasField(name string) bool {
+	for idx := range p {
+		if p[idx].name == name {
+			return true
+		}
+	}
+	return false
+}
+
+var defaultPatterns = []pattern{
+	// TODO: add examples
+	{
+		{keyAddress, 0},
+		{keyRequest, 5},
+		{keyCode, 6},
+		{keyBytesSent, 7},
+		{keyResponseLength, 8},
+		{keyResponseTime, 9},
+		{keyResponseTimeUpstream, 10},
+	},
+	// TODO: add examples
+	{
+		{keyAddress, 1},
+		{keyRequest, 6},
+		{keyCode, 7},
+		{keyBytesSent, 8},
+		{keyResponseLength, 9},
+		{keyResponseTime, 10},
+		{keyResponseTimeUpstream, 11},
+	},
+	// TODO: add examples
+	{
+		{keyAddress, 0},
+		{keyRequest, 5},
+		{keyCode, 6},
+		{keyBytesSent, 7},
+	},
+	// TODO: add examples
+	{
+		{keyAddress, 1},
+		{keyRequest, 6},
+		{keyCode, 7},
+		{keyBytesSent, 8},
+	},
+}
