@@ -40,8 +40,8 @@ type metrics struct {
 	Resp4xx int64 `stm:"resp_4xx"`
 	Resp5xx int64 `stm:"resp_5xx"`
 
-	HeapUsed      heap `prefix:"heap_used_"`
-	HeapCommitted heap `prefix:"heap_committed_"`
+	HeapUsed      heap `stm:"heap_used"`
+	HeapCommitted heap `stm:"heap_committed"`
 
 	MemFree int64 `stm:"mem_free"`
 }
