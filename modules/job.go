@@ -221,7 +221,7 @@ func (j Job) AutoDetectionRetry() int {
 func (j *Job) gatherMetrics() (result map[string]int64) {
 	defer func() {
 		if r := recover(); r != nil {
-			j.Errorf("PANIC: %v", r)
+			j.Criticalf("PANIC: %v", r)
 			j.panicked = true
 		}
 	}()

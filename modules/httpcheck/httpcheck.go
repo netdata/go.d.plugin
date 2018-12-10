@@ -9,8 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/stm"
+
 	"github.com/netdata/go.d.plugin/modules"
-	"github.com/netdata/go.d.plugin/pkg/utils"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -43,7 +44,7 @@ func (d *metrics) reset() {
 }
 
 func (d metrics) toMap() map[string]int64 {
-	return utils.ToMap(d)
+	return stm.ToMap(d)
 }
 
 // New creates HTTPCheck with default values

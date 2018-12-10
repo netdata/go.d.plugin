@@ -3,9 +3,10 @@ package springboot2
 import (
 	"strings"
 
+	"github.com/netdata/go.d.plugin/pkg/stm"
+
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
-	"github.com/netdata/go.d.plugin/pkg/utils"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -98,7 +99,7 @@ func (s *SpringBoot2) GatherMetrics() map[string]int64 {
 	gatherHeap(rawMetrics.FindByName("jvm_memory_committed_bytes"), &m.HeapCommitted)
 	m.MemFree = m.HeapCommitted.Sum() - m.HeapUsed.Sum()
 
-	return utils.ToMap(m)
+	return stm.ToMap(m)
 }
 
 func gatherHeap(rawMetrics prometheus.Metrics, m *heap) {
