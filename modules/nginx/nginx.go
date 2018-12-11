@@ -1,8 +1,7 @@
 package nginx
 
 import (
-	"bufio"
-	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -101,7 +100,7 @@ func (n *Nginx) GatherMetrics() map[string]int64 {
 		return nil
 	}
 
-	if err := n.processResponse(resp); err != nil {
+	if err := n.parseResponse(resp); err != nil {
 		n.Error(err)
 		return nil
 	}
@@ -113,93 +112,106 @@ func (n *Nginx) doRequest() (*http.Response, error) {
 	return n.client.Do(n.request)
 }
 
-func (n *Nginx) processResponse(resp *http.Response) error {
+func (n *Nginx) parseResponse(resp *http.Response) error {
 	// Active connections: 2
 	//server accepts handled requests
 	// 2 2 3
 	//Reading: 0 Writing: 1 Waiting: 1
 
-	reader := bufio.NewReader(resp.Body)
-
-	// Active connections: 2
-	line, err := reader.ReadString('\n')
+	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
-	// [Active connections: 2]
+	lines := strings.Split(string(b), "\n")
+
+	if len(lines) < 4 {
+		return fmt.Errorf("unparsable data, expected 4 rows, got %d", len(lines))
+	}
+
+	if err := n.parseActiveConnections(lines[0]); err != nil {
+		return err
+	}
+
+	if err := n.parseAcceptsHandledRequests(lines[2]); err != nil {
+		return err
+	}
+
+	if err := n.parseReadWriteWait(lines[3]); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (n *Nginx) parseActiveConnections(line string) error {
 	slice := strings.Fields(line)
-	if len(slice) != 3 {
-		return errors.New("not enough fields")
-	}
-
-	// active connections
-	n.metrics.Active, err = strconv.Atoi(slice[2])
-	if err != nil {
-		return err
-	}
-
-	// server accepts handled requests
-	line, err = reader.ReadString('\n')
-	if err != nil {
-		return err
-	}
-
-	// 2 2 3
-	line, err = reader.ReadString('\n')
-	if err != nil {
-		return err
-	}
-
-	// [2 2 3]
-	slice = strings.Fields(line)
 
 	if len(slice) != 3 {
-		return err
+		return fmt.Errorf("not enough fields in %s", line)
 	}
 
-	n.metrics.Accepts, err = strconv.Atoi(slice[0])
+	v, err := strconv.Atoi(slice[2])
 	if err != nil {
 		return err
 	}
+	n.metrics.Active = v
 
-	n.metrics.Handled, err = strconv.Atoi(slice[1])
+	return nil
+}
+
+func (n *Nginx) parseAcceptsHandledRequests(line string) error {
+	slice := strings.Fields(line)
+
+	if len(slice) != 3 {
+		return fmt.Errorf("not enough fields in %s", line)
+	}
+
+	v, err := strconv.Atoi(slice[0])
 	if err != nil {
 		return err
 	}
+	n.metrics.Accepts = v
 
-	n.metrics.Requests, err = strconv.Atoi(slice[2])
+	v, err = strconv.Atoi(slice[1])
 	if err != nil {
 		return err
 	}
+	n.metrics.Handled = v
 
-	//Reading: 0 Writing: 1 Waiting: 1
-	line, err = reader.ReadString('\n')
-
+	v, err = strconv.Atoi(slice[2])
 	if err != nil {
 		return err
 	}
+	n.metrics.Requests = v
 
-	slice = strings.Fields(line)
+	return nil
+}
+
+func (n *Nginx) parseReadWriteWait(line string) error {
+	slice := strings.Fields(line)
 
 	if len(slice) != 6 {
-		return errors.New("not enough fields")
+		return fmt.Errorf("not enough fields in %s", line)
 	}
 
-	n.metrics.Reading, err = strconv.Atoi(slice[1])
+	v, err := strconv.Atoi(slice[1])
 	if err != nil {
 		return err
 	}
+	n.metrics.Reading = v
 
-	n.metrics.Writing, err = strconv.Atoi(slice[3])
+	v, err = strconv.Atoi(slice[3])
 	if err != nil {
 		return err
 	}
+	n.metrics.Writing = v
 
-	n.metrics.Waiting, err = strconv.Atoi(slice[5])
+	v, err = strconv.Atoi(slice[5])
 	if err != nil {
 		return err
 	}
+	n.metrics.Waiting = v
 
 	return nil
 }
