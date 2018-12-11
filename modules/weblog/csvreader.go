@@ -17,6 +17,7 @@ type csvReader struct {
 	lastRecord   []string
 }
 
+// TODO: replace []byte with string
 func (r *csvReader) readRecord(line []byte) ([]string, error) {
 	// Parse each field in the record.
 	var err error
