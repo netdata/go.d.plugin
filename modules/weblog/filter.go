@@ -52,5 +52,4 @@ func createFilter(raw RawFilter) (matcher.Matcher, error) {
 	}
 
 	return &f, nil
-
 }

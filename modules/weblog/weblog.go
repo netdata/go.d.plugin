@@ -1,61 +1,71 @@
 package weblog
 
-//
-//import (
-//	"regexp"
-//	"strconv"
-//	"strings"
-//
-//	"gopkg.in/yaml.v2"
-//
-//	"bufio"
-//	"github.com/netdata/go.d.plugin/internal/modules"
-//	"github.com/netdata/go.d.plugin/modules/pkg/tail"
-//	"github.com/netdata/go.d.plugin/pkg/charts"
-//)
-//
-//const (
-//	keyAddress          = "address"
-//	keyCode             = "code"
-//	keyRequest          = "request"
-//	keyUserDefined      = "user_defined"
-//	keyBytesSent        = "bytes_sent"
-//	keyRespTime         = "resp_time"
-//	keyRespTimeUpstream = "resp_time_upstream"
-//	keyRespLen          = "resp_length"
-//
-//	keyRespTimeHist         = "resp_time_hist"
-//	keyRespTimeUpstreamHist = "resp_time_hist_upstream"
-//)
-//
-//type WebLog struct {
-//	*charts.Charts
-//	modules.ModuleBase
-//
-//	Path             string        `yaml:"path" validate:"required"`
-//	RawFilter        rawFilter     `yaml:"filter"`
-//	RawURLCat        yaml.MapSlice `yaml:"categories"`
-//	RawUserCat       yaml.MapSlice `yaml:"user_defined"`
-//	RawCustomParser  string        `yaml:"custom_log_format"`
-//	RawHistogram     []int         `yaml:"histogram"`
-//	DoCodesDetail    bool          `yaml:"detailed_response_codes"`
-//	DoCodesAggregate bool          `yaml:"detailed_response_codes_aggregate"`
-//	DoChartURLCat    bool          `yaml:"per_category_charts"`
-//	DoClientsAll     bool          `yaml:"clients_all_time"`
-//
-//	tail   *tail.Tail
-//	parser *regexp.Regexp
-//
-//	fil        filter
-//	urlCat     categories
-//	userCat    categories
-//	timings    timings
-//	histograms histograms
-//	uniqIPs    map[string]bool
-//
-//	gm   groupMap
-//	data map[string]int64
-//}
+import (
+	"sync"
+
+	"github.com/netdata/go.d.plugin/modules"
+)
+
+func init() {
+	creator := modules.Creator{
+		Create: func() modules.Module { return New() },
+	}
+
+	modules.Register("web_log", creator)
+}
+
+func New() *WebLog {
+	return &WebLog{}
+}
+
+type WebLog struct {
+	modules.Base
+
+	Path             string              `yaml:"path" validate:"required"`
+	Filter           RawFilter           `yaml:"RawFilter"`
+	URLCategories    []map[string]string `yaml:"categories"`
+	UserCategories   []map[string]string `yaml:"user_defined"`
+	CustomParser     string              `yaml:"custom_log_format"`
+	Histogram        []int               `yaml:"histogram"`
+	DoCodesDetailed  bool                `yaml:"detailed_response_codes"`
+	DoCodesAggregate bool                `yaml:"detailed_response_codes_aggregate"`
+	DoPerURLCharts   bool                `yaml:"per_category_charts"`
+	DoAllTimeIPs     bool                `yaml:"clients_all_time"`
+
+	//tail   *tail.Tail
+	parser Parser
+
+	filter Filter
+	//urlCat     categories
+	//userCat    categories
+	//timings    timings
+	//histograms histograms
+	uniqIPs map[string]bool
+
+	mux     sync.Mutex
+	metrics map[string]int64
+}
+
+func (WebLog) Cleanup() {
+
+}
+
+func (WebLog) Init() bool {
+	return false
+}
+
+func (WebLog) Check() bool {
+	return false
+}
+
+func (WebLog) Charts() *modules.Charts {
+	return nil
+}
+
+func (WebLog) GatherMetrics() map[string]int64 {
+	return nil
+}
+
 //
 //func (WebLog) Init() {}
 //
@@ -90,7 +100,7 @@ package weblog
 //	}
 //	w.urlCat = c
 //
-//	if w.DoChartURLCat {
+//	if w.DoPerURLCharts {
 //		for _, v := range w.urlCat.items {
 //			w.timings.add(v.id)
 //		}
@@ -108,7 +118,7 @@ package weblog
 //		w.Error(err)
 //		return false
 //	}
-//	w.fil = f
+//	w.filter = f
 //
 //	if len(w.RawHistogram) != 0 {
 //		w.histograms = getHistograms(w.RawHistogram)
@@ -138,7 +148,7 @@ package weblog
 //
 //	for s.Scan() {
 //		row := s.Text()
-//		if w.fil.exist() && !w.fil.filter(row) {
+//		if w.filter.exist() && !w.filter.RawFilter(row) {
 //			continue
 //		}
 //
@@ -163,7 +173,7 @@ package weblog
 //		w.reqPerCodeFamily(code)
 //
 //		// ResponseCodesDetailed chart
-//		if w.DoCodesDetail {
+//		if w.DoCodesDetailed {
 //			w.reqPerCodeDetail(code)
 //		}
 //
@@ -204,7 +214,7 @@ package weblog
 //		}
 //
 //		// chartRespCodesDetailed, chartBandwidth, chartRespTime per URL (Category) charts3
-//		if matchedURL != "" && w.DoChartURLCat {
+//		if matchedURL != "" && w.DoPerURLCharts {
 //			w.perCategoryStats(matchedURL)
 //		}
 //
@@ -258,7 +268,7 @@ package weblog
 //		w.data["unique_cur_"+proto]++
 //	}
 //
-//	if !w.DoClientsAll {
+//	if !w.DoAllTimeIPs {
 //		return
 //	}
 //
@@ -374,10 +384,10 @@ package weblog
 //func init() {
 //	f := func() modules.Module {
 //		return &WebLog{
-//			DoCodesDetail:    true,
+//			DoCodesDetailed:    true,
 //			DoCodesAggregate: true,
-//			DoChartURLCat:    true,
-//			DoClientsAll:     true,
+//			DoPerURLCharts:    true,
+//			DoAllTimeIPs:     true,
 //			timings: timings{
 //				keyRespTime:         &timing{},
 //				keyRespTimeUpstream: &timing{},
