@@ -42,7 +42,7 @@ type WebLog struct {
 	//histograms histograms
 	uniqIPs map[string]bool
 
-	mux     sync.Mutex
+	mux     *sync.Mutex
 	metrics map[string]int64
 }
 
