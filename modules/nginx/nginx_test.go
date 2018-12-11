@@ -1,12 +1,13 @@
 package nginx
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/web"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 var testdata = []byte(`Active connections: 1
