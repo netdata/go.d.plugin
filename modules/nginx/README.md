@@ -33,12 +33,11 @@ Here is an example for local server:
 
 ```yaml
 jobs:
-    - name: local
-      url : http://localhost/stub_status
+  - name: local
+    url : http://localhost/stub_status
       
-    - name: remote
-      url : http://100.64.0.1/stub_status
-    
+  - name: remote
+    url : http://100.64.0.1/stub_status
 ```
 
 Without configuration, module attempts to connect to `http://localhost/stub_status`
