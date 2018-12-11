@@ -21,10 +21,10 @@ func (f *Filter) Match(s string) bool {
 	}
 
 	if f.exclude != nil {
-		excludeOK = !f.exclude.Match(s)
+		excludeOK = f.exclude.Match(s)
 	}
 
-	return includeOK && excludeOK
+	return includeOK && !excludeOK
 }
 
 func createFilter(raw RawFilter) (matcher.Matcher, error) {
