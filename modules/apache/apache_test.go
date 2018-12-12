@@ -33,6 +33,25 @@ func TestApache_Init(t *testing.T) {
 }
 
 func TestApache_Check(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				if r.URL.Path == "/server-status" {
+					_, _ = w.Write(simpleData)
+					return
+				}
+			}))
+
+	defer ts.Close()
+
+	mod := New()
+	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
+	mod.Init()
+
+	assert.True(t, mod.Check())
+}
+
+func TestApache_CheckNG(t *testing.T) {
 	mod := New()
 
 	mod.Init()
@@ -68,8 +87,7 @@ func TestApache_GatherMetrics(t *testing.T) {
 
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
-	metrics := mod.GatherMetrics()
-	assert.NotNil(t, metrics)
+	require.NotNil(t, mod.GatherMetrics())
 
 	expected := map[string]int64{
 		assign(totalAccesses):       575,
