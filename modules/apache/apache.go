@@ -2,7 +2,7 @@ package apache
 
 import (
 	"bufio"
-	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -13,6 +13,14 @@ import (
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
+
+func init() {
+	creator := modules.Creator{
+		Create: func() modules.Module { return New() },
+	}
+
+	modules.Register("apache", creator)
+}
 
 // -- Extended On --
 // Total Accesses: 7
@@ -27,6 +35,7 @@ import (
 // ConnsAsyncWriting: 0
 // ConnsAsyncKeepAlive: 1
 // ConnsAsyncClosing: 0
+// Scoreboard: W_________________________________________________.......................................................
 
 // -- Extended Off --
 // BusyWorkers: 1
@@ -35,36 +44,43 @@ import (
 // ConnsAsyncWriting: 0
 // ConnsAsyncKeepAlive: 1
 // ConnsAsyncClosing: 0
+// Scoreboard: W_________________________________________________.......................................................
 
-func init() {
-	creator := modules.Creator{
-		Create: func() modules.Module { return New() },
-	}
+const (
+	totalAccesses = "Total Accesses"
+	totalkBytes   = "Total kBytes"
+	cpuLoad       = "CPULoad"
+	uptime        = "Uptime"
 
-	modules.Register("apache", creator)
-}
+	reqPerSec           = "ReqPerSec"
+	bytesPerSec         = "BytesPerSec"
+	bytesPerReq         = "BytesPerReq"
+	busyWorkers         = "BusyWorkers"
+	idleWorkers         = "IdleWorkers"
+	connsTotal          = "ConnsTotal"
+	connsAsyncKeepAlive = "ConnsAsyncKeepAlive"
+	connsAsyncClosing   = "ConnsAsyncClosing"
+	connsAsyncWriting   = "ConnsAsyncWriting"
+	scoreBoard          = "Scoreboard"
+)
 
 var assignment = map[string]string{
-	"BytesPerReq":         "size_req",
-	"IdleWorkers":         "idle",
-	"IdleServers":         "dle_servers",
-	"BusyWorkers":         "busy",
-	"BusyServers":         "busy_servers",
-	"ReqPerSec":           "requests_sec",
-	"BytesPerSec":         "size_sec",
-	"Total Accesses":      "requests",
-	"Total kBytes":        "sent",
-	"ConnsTotal":          "connections",
-	"ConnsAsyncKeepAlive": "keepalive",
-	"ConnsAsyncClosing":   "closing",
-	"ConnsAsyncWriting":   "writing",
+	bytesPerReq:         "size_req",
+	reqPerSec:           "requests_sec",
+	bytesPerSec:         "size_sec",
+	idleWorkers:         "idle",
+	busyWorkers:         "busy",
+	totalAccesses:       "requests",
+	totalkBytes:         "sent",
+	connsTotal:          "connections",
+	connsAsyncKeepAlive: "keepalive",
+	connsAsyncClosing:   "closing",
+	connsAsyncWriting:   "writing",
 }
 
 // New creates Apache with default values
 func New() *Apache {
-	return &Apache{
-		metrics: make(map[string]int64),
-	}
+	return &Apache{}
 }
 
 // Apache apache module
@@ -79,9 +95,7 @@ type Apache struct {
 	metrics map[string]int64
 }
 
-func (Apache) Cleanup() {
-
-}
+func (Apache) Cleanup() {}
 
 func (a *Apache) Init() bool {
 	req, err := a.CreateHTTPRequest()
@@ -113,7 +127,7 @@ func (a *Apache) GatherMetrics() map[string]int64 {
 	resp, err := a.doRequest()
 
 	if err != nil {
-		a.Error(err)
+		a.Errorf("error on request to %s: %s", a.request.URL, err)
 		return nil
 	}
 
@@ -122,8 +136,10 @@ func (a *Apache) GatherMetrics() map[string]int64 {
 		_ = resp.Body.Close()
 	}()
 
+	a.metrics = make(map[string]int64)
+
 	if err := a.parseResponse(resp); err != nil {
-		a.Error(err)
+		a.Errorf("error on parse response: %s", err)
 		return nil
 	}
 
@@ -136,56 +152,44 @@ func (a *Apache) doRequest() (*http.Response, error) {
 
 func (a *Apache) parseResponse(resp *http.Response) error {
 	s := bufio.NewScanner(resp.Body)
-	var parsed int
 
 	for s.Scan() {
 		if err := parseLine(s.Text(), a.metrics); err != nil {
-			continue
+			return err
 		}
-		parsed++
-	}
-
-	if parsed == 0 {
-		return errors.New("unparsable data")
 	}
 
 	return nil
 }
 
 func parseLine(line string, metrics map[string]int64) error {
-	if !strings.Contains(line, ":") {
-		return errors.New("bad line format")
-	}
-
 	parts := strings.SplitN(line, ":", 2)
 
 	if len(parts) != 2 {
-		return errors.New("bad line format")
+		return fmt.Errorf("bad format: %s", line)
 	}
 
-	key := strings.Replace(parts[0], " ", "", -1)
+	key := strings.TrimSpace(parts[0])
 	value := strings.TrimSpace(parts[1])
 
-	if newKey, ok := assignment[key]; ok {
-		key = newKey
-	}
-
 	switch key {
-	default:
+	case cpuLoad, uptime:
+	case totalAccesses, totalkBytes, busyWorkers, idleWorkers, connsTotal, connsAsyncWriting, connsAsyncKeepAlive, connsAsyncClosing:
 		v, err := strconv.Atoi(value)
 		if err != nil {
 			return err
 		}
-		metrics[key] = int64(v)
-	case "size_req", "requests_sec", "size_sec":
+		metrics[assign(key)] = int64(v)
+	case reqPerSec, bytesPerSec, bytesPerReq:
 		v, err := strconv.ParseFloat(value, 64)
 		if err != nil {
 			return err
-
 		}
-		metrics[key] = int64(v * 100000)
-	case "Scoreboard":
+		metrics[assign(key)] = int64(v * 100000)
+	case scoreBoard:
 		parseScoreboard(value, metrics)
+	default:
+		return fmt.Errorf("unknown key: %s", key)
 	}
 
 	return nil
@@ -245,4 +249,11 @@ func parseScoreboard(scoreboard string, metrics map[string]int64) {
 	metrics["scoreboard_finishing"] = G
 	metrics["scoreboard_idle_cleanup"] = I
 	metrics["scoreboard_open"] = open
+}
+
+func assign(key string) string {
+	if v, ok := assignment[key]; ok {
+		return v
+	}
+	return key
 }
