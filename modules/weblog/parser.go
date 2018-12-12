@@ -6,6 +6,16 @@ type Parser interface {
 	Parse(line string) (groupMap, bool)
 }
 
+func newCSVParser(pat pattern) *csvParser {
+	return &csvParser{
+		pattern: pat,
+		reader: csvReader{
+			comma: ' ',
+		},
+		data: make(groupMap),
+	}
+}
+
 type csvParser struct {
 	pattern pattern
 	reader  csvReader
@@ -26,6 +36,13 @@ func (cp *csvParser) Parse(line string) (groupMap, bool) {
 		cp.data[p.name] = lines[p.index]
 	}
 	return cp.data, true
+}
+
+func newRegexpParser(regexp *regexp.Regexp) *regexpParser {
+	return &regexpParser{
+		re:   regexp,
+		data: make(groupMap),
+	}
 }
 
 type regexpParser struct {
@@ -55,8 +72,8 @@ func (gm groupMap) has(key string) bool {
 	return ok
 }
 
-func (gm groupMap) get(s string) string {
-	return gm[s]
+func (gm groupMap) get(key string) string {
+	return gm[key]
 }
 func (gm groupMap) lookup(key string) (string, bool) {
 	v, ok := gm[key]
