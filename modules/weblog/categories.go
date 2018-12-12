@@ -2,8 +2,6 @@ package weblog
 
 import (
 	"fmt"
-
-	"github.com/netdata/go.d.plugin/modules/weblog/matcher"
 )
 
 type rawCategory struct {
@@ -13,7 +11,7 @@ type rawCategory struct {
 
 type category struct {
 	name string
-	matcher.Matcher
+	matcher
 }
 
 func newCategory(raw rawCategory) (*category, error) {
@@ -23,12 +21,12 @@ func newCategory(raw rawCategory) (*category, error) {
 		return nil, fmt.Errorf("category bad syntax : %s", raw)
 	}
 
-	m, err := matcher.New(raw.Match)
+	m, err := newMatcher(raw.Match)
 
 	if err != nil {
 		return nil, err
 	}
-	cat.Matcher = m
+	cat.matcher = m
 	cat.name = raw.Name
 
 	return cat, nil

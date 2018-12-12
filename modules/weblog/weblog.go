@@ -33,14 +33,15 @@ type WebLog struct {
 	DoAllTimeIPs          bool          `yaml:"clients_all_time"`
 
 	//tail   *tail.Tail
-	parser Parser
-
-	filter          filter
-	urlCats         []category
-	userDefinedCats []category
 	//timings    timings
 	//histograms histograms
-	uniqIPs map[string]bool
+
+	parser Parser
+
+	filter   matcher
+	urlCats  []category
+	userCats []category
+	uniqIPs  map[string]bool
 
 	mux     *sync.Mutex
 	metrics map[string]int64
@@ -50,7 +51,13 @@ func (WebLog) Cleanup() {
 
 }
 
-func (WebLog) Init() bool {
+func (w *WebLog) Init() bool {
+	f, err := newFilter(w.Filter)
+	if err != nil {
+		w.Error("build filter error : %s", err)
+	}
+	w.filter = f
+
 	return false
 }
 
@@ -71,7 +78,7 @@ func (WebLog) GatherMetrics() map[string]int64 {
 //
 //func (w *WebLog) Check() bool {
 //
-//	w.tail = tail.New(w.Path)
+//	w.tail = tail.newMatcher(w.Path)
 //	err := w.tail.Init()
 //	if err != nil {
 //		w.Error(err)
@@ -246,7 +253,7 @@ func (WebLog) GatherMetrics() map[string]int64 {
 //// Per URL and per USER_DEFINED
 //func (w *WebLog) reqPerCategory(url string, c categories) string {
 //	for _, v := range c.items {
-//		if v.Match(url) {
+//		if v.match(url) {
 //			w.data[v.id]++
 //			return v.id
 //		}

@@ -1,4 +1,4 @@
-package matcher
+package weblog
 
 import (
 	"fmt"
@@ -11,18 +11,15 @@ const (
 	methodRegexp = "regexp"
 )
 
-// Matcher Matcher
-type Matcher interface {
-	Match(string) bool
+type matcher interface {
+	match(string) bool
 }
 
-// New creates new Matcher.
-// It returns Matcher and error if any.
-// Examples:
+// Valid options:
 // 'string=GET'
 // 'string=^GOT'
 // 'regexp=G[QWERTY]T'
-func New(rawExpr string) (Matcher, error) {
+func newMatcher(rawExpr string) (matcher, error) {
 	v := strings.SplitN(rawExpr, "=", 2)
 
 	if len(v) == 2 && v[1] == "" || len(v) != 2 {
@@ -41,7 +38,7 @@ func New(rawExpr string) (Matcher, error) {
 	return nil, fmt.Errorf("unsupported match method: %s", method)
 }
 
-func stringMatcherFactory(expr string) Matcher {
+func stringMatcherFactory(expr string) matcher {
 	if strings.HasPrefix(expr, "^") {
 		return &stringPrefix{expr[1:]}
 	}
@@ -52,7 +49,7 @@ func stringMatcherFactory(expr string) Matcher {
 	return &stringContains{expr}
 }
 
-func regexpMatcherFactory(expr string) (Matcher, error) {
+func regexpMatcherFactory(expr string) (matcher, error) {
 	re, err := regexp.Compile(expr)
 	if err != nil {
 		return nil, err
@@ -64,7 +61,7 @@ type regexMatch struct {
 	v *regexp.Regexp
 }
 
-func (m regexMatch) Match(s string) bool {
+func (m regexMatch) match(s string) bool {
 	return m.v.MatchString(s)
 }
 
@@ -72,7 +69,7 @@ type stringContains struct {
 	v string
 }
 
-func (m stringContains) Match(s string) bool {
+func (m stringContains) match(s string) bool {
 	return strings.Contains(s, m.v)
 }
 
@@ -80,7 +77,7 @@ type stringPrefix struct {
 	v string
 }
 
-func (m stringPrefix) Match(s string) bool {
+func (m stringPrefix) match(s string) bool {
 	return strings.HasPrefix(s, m.v)
 }
 
@@ -88,6 +85,6 @@ type stringSuffix struct {
 	v string
 }
 
-func (m stringSuffix) Match(s string) bool {
+func (m stringSuffix) match(s string) bool {
 	return strings.HasSuffix(s, m.v)
 }
