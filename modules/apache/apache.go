@@ -40,13 +40,13 @@ const (
 )
 
 var assignment = map[string]string{
-	bytesPerReq:         "size_req",
-	reqPerSec:           "requests_sec",
-	bytesPerSec:         "size_sec",
-	idleWorkers:         "idle",
-	busyWorkers:         "busy",
 	totalAccesses:       "requests",
 	totalkBytes:         "sent",
+	reqPerSec:           "requests_sec",
+	bytesPerSec:         "size_sec",
+	bytesPerReq:         "size_req",
+	busyWorkers:         "busy",
+	idleWorkers:         "idle",
 	connsTotal:          "connections",
 	connsAsyncKeepAlive: "keepalive",
 	connsAsyncClosing:   "closing",
@@ -66,6 +66,8 @@ type Apache struct {
 
 	request *http.Request
 	client  web.Client
+
+	extendedStats bool
 
 	metrics map[string]int64
 }
@@ -90,12 +92,28 @@ func (a *Apache) Init() bool {
 	return true
 }
 
-func (Apache) Check() bool {
-	return false
+func (a *Apache) Check() bool {
+	if a.GatherMetrics() == nil {
+		return false
+	}
+
+	_, a.extendedStats = a.metrics[totalAccesses]
+
+	return true
 }
 
-func (Apache) Charts() *modules.Charts {
-	return nil
+func (a Apache) Charts() *modules.Charts {
+	charts := charts.Copy()
+
+	if !a.extendedStats {
+		charts.Remove("requests")
+		charts.Remove("net")
+		charts.Remove("reqpersec")
+		charts.Remove("bytespersec")
+		charts.Remove("bytesperreq")
+	}
+
+	return charts
 }
 
 func (a *Apache) GatherMetrics() map[string]int64 {
@@ -111,6 +129,7 @@ func (a *Apache) GatherMetrics() map[string]int64 {
 		_ = resp.Body.Close()
 	}()
 
+	// Extended On -> Extended Off
 	a.metrics = make(map[string]int64)
 
 	if err := a.parseResponse(resp); err != nil {
