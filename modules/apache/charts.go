@@ -74,7 +74,7 @@ var charts = Charts{
 		Ctx:   "apache.reqpersec",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "requests_sec"},
+			{ID: "requests_sec", Div: 100000},
 		},
 	},
 	{
@@ -85,7 +85,7 @@ var charts = Charts{
 		Ctx:   "apache.bytesperreq",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "size_sec", Mul: 8, Div: 1000},
+			{ID: "size_sec", Mul: 8, Div: 100000},
 		},
 	},
 	{
@@ -96,7 +96,27 @@ var charts = Charts{
 		Ctx:   "apache.bytesperreq",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "size_req"},
+			{ID: "size_req", Div: 100000},
+		},
+	},
+	{
+		ID:    "scoreboard",
+		Title: "ScoreBoard",
+		Units: "values",
+		Fam:   "scoreboard",
+		Ctx:   "apache.scoreboard",
+		Dims: Dims{
+			{ID: "scoreboard_waiting", Name: "waiting"},
+			{ID: "scoreboard_starting", Name: "starting"},
+			{ID: "scoreboard_reading", Name: "reading"},
+			{ID: "scoreboard_sending", Name: "sending"},
+			{ID: "scoreboard_keepalive", Name: "keepalive"},
+			{ID: "scoreboard_dns_lookup", Name: "dns lookup"},
+			{ID: "scoreboard_closing", Name: "closing"},
+			{ID: "scoreboard_logging", Name: "logging"},
+			{ID: "scoreboard_finishing", Name: "finishing"},
+			{ID: "scoreboard_idle_cleanup", Name: "idle cleanup"},
+			{ID: "scoreboard_open", Name: "open"},
 		},
 	},
 }
