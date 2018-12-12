@@ -1,31 +1,37 @@
-package weblog
+package filter
 
-type rawFilter struct {
+import "github.com/netdata/go.d.plugin/modules/weblog/matcher"
+
+type Filter interface {
+	Filter(line string) bool
+}
+
+type Raw struct {
 	Include string
 	Exclude string
 }
 
 type filter struct {
-	include matcher
-	exclude matcher
+	include matcher.Matcher
+	exclude matcher.Matcher
 }
 
-func (f *filter) match(s string) bool {
+func (f *filter) Filter(s string) bool {
 	includeOK := true
 	excludeOK := true
 
 	if f.include != nil {
-		includeOK = f.include.match(s)
+		includeOK = f.include.Match(s)
 	}
 
 	if f.exclude != nil {
-		excludeOK = f.exclude.match(s)
+		excludeOK = f.exclude.Match(s)
 	}
 
 	return includeOK && !excludeOK
 }
 
-func newFilter(raw rawFilter) (*filter, error) {
+func New(raw Raw) (Filter, error) {
 	var f filter
 
 	if raw.Include == "" && raw.Exclude == "" {
@@ -33,7 +39,7 @@ func newFilter(raw rawFilter) (*filter, error) {
 	}
 
 	if raw.Include != "" {
-		m, err := newMatcher(raw.Include)
+		m, err := matcher.New(raw.Include)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +48,7 @@ func newFilter(raw rawFilter) (*filter, error) {
 	}
 
 	if raw.Exclude != "" {
-		m, err := newMatcher(raw.Exclude)
+		m, err := matcher.New(raw.Exclude)
 		if err != nil {
 			return nil, err
 		}

@@ -1,4 +1,4 @@
-package weblog
+package pattern
 
 import (
 	"regexp"
@@ -31,23 +31,23 @@ const (
 )
 
 type (
-	pattern []field
-	field   struct {
-		name  string
-		index int
+	CSVPattern []CSVField
+	CSVField   struct {
+		Name  string
+		Index int
 	}
 )
 
-func (p pattern) hasField(name string) bool {
-	for idx := range p {
-		if p[idx].name == name {
-			return true
-		}
-	}
-	return false
-}
+//func (p CSVPattern) hasField(name string) bool {
+//	for idx := range p {
+//		if p[idx].Name == name {
+//			return true
+//		}
+//	}
+//	return false
+//}
 
-var defaultPatterns = []pattern{
+var CSVDefaultPatterns = []CSVPattern{
 	// TODO: add examples
 	{
 		{keyAddress, 0},

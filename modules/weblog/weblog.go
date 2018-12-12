@@ -1,6 +1,9 @@
 package weblog
 
 import (
+	"github.com/netdata/go.d.plugin/modules/weblog/category"
+	"github.com/netdata/go.d.plugin/modules/weblog/filter"
+	"github.com/netdata/go.d.plugin/modules/weblog/parser"
 	"sync"
 
 	"github.com/netdata/go.d.plugin/modules"
@@ -21,26 +24,26 @@ func New() *WebLog {
 type WebLog struct {
 	modules.Base
 
-	Path                  string        `yaml:"path" validate:"required"`
-	Filter                rawFilter     `yaml:"filter"`
-	URLCategories         []rawCategory `yaml:"categories"`
-	UserDefinedCategories []rawCategory `yaml:"user_defined_categories"`
-	CustomParser          string        `yaml:"custom_log_format"`
-	Histogram             []int         `yaml:"histogram"`
-	DoCodesDetailed       bool          `yaml:"detailed_response_codes"`
-	DoCodesAggregate      bool          `yaml:"detailed_response_codes_aggregate"`
-	DoPerURLCharts        bool          `yaml:"per_category_charts"`
-	DoAllTimeIPs          bool          `yaml:"clients_all_time"`
+	Path                  string         `yaml:"path" validate:"required"`
+	Filter                filter.Raw     `yaml:"filter"`
+	URLCategories         []category.Raw `yaml:"categories"`
+	UserDefinedCategories []category.Raw `yaml:"user_defined_categories"`
+	CustomParser          string         `yaml:"custom_log_format"`
+	Histogram             []int          `yaml:"histogram"`
+	DoCodesDetailed       bool           `yaml:"detailed_response_codes"`
+	DoCodesAggregate      bool           `yaml:"detailed_response_codes_aggregate"`
+	DoPerURLCharts        bool           `yaml:"per_category_charts"`
+	DoAllTimeIPs          bool           `yaml:"clients_all_time"`
 
 	//tail   *tail.Tail
 	//timings    timings
 	//histograms histograms
 
-	parser Parser
+	parser parser.Parser
+	filter filter.Filter
 
-	filter   matcher
-	urlCats  []category
-	userCats []category
+	urlCats  []category.Category
+	userCats []category.Category
 	uniqIPs  map[string]bool
 
 	mux     *sync.Mutex
@@ -52,7 +55,7 @@ func (WebLog) Cleanup() {
 }
 
 func (w *WebLog) Init() bool {
-	f, err := newFilter(w.Filter)
+	f, err := filter.New(w.Filter)
 	if err != nil {
 		w.Error("build filter error : %s", err)
 	}
@@ -92,7 +95,7 @@ func (WebLog) GatherMetrics() map[string]int64 {
 //		return false
 //	}
 //
-//	// get parser: custom or one of predefined in patterns.go
+//	// get parser: custom or one of predefined in csv.go
 //	re, err := getPattern(w.RawCustomParser, line)
 //	if err != nil {
 //		w.Error(err)
