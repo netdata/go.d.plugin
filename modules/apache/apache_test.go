@@ -115,7 +115,6 @@ func TestApache_GatherMetrics(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, mod.metrics)
-
 }
 
 func TestApache_BadData(t *testing.T) {

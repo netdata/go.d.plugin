@@ -14,7 +14,7 @@ var charts = Charts{
 		ID:    "requests",
 		Title: "Requests",
 		Units: "requests/s",
-		Fam:   "statistics",
+		Fam:   "requests",
 		Ctx:   "apache.requests",
 		Dims: Dims{
 			{ID: "requests", Algo: modules.Incremental},
@@ -85,7 +85,7 @@ var charts = Charts{
 		Ctx:   "apache.bytesperreq",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "size_sec", Mul: 8, Div: 100000},
+			{ID: "size_sec", Mul: 8, Div: 100000000},
 		},
 	},
 	{

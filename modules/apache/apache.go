@@ -72,8 +72,10 @@ type Apache struct {
 	metrics map[string]int64
 }
 
+// Cleanup makes cleanup
 func (Apache) Cleanup() {}
 
+// Init makes initialization
 func (a *Apache) Init() bool {
 	req, err := a.CreateHTTPRequest()
 
@@ -92,6 +94,7 @@ func (a *Apache) Init() bool {
 	return true
 }
 
+// Check makes check
 func (a *Apache) Check() bool {
 	if len(a.GatherMetrics()) == 0 {
 		return false
@@ -106,6 +109,7 @@ func (a *Apache) Check() bool {
 	return true
 }
 
+// Charts creates Charts
 func (a Apache) Charts() *modules.Charts {
 	charts := charts.Copy()
 
@@ -120,6 +124,7 @@ func (a Apache) Charts() *modules.Charts {
 	return charts
 }
 
+// GatherMetrics gathers metrics
 func (a *Apache) GatherMetrics() map[string]int64 {
 	resp, err := a.doRequest()
 
