@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html><head>
+<title>Apache Status</title>
+</head><body>
+<h1>Apache Server Status for 127.0.0.1 (via 127.0.0.1)</h1>
+
+<dl><dt>Server Version: Apache/2.4.10 (Debian)</dt>
+<dt>Server MPM: event</dt>
+<dt>Server Built: Mar 31 2018 09:39:03
+</dt></dl><hr /><dl>
+<dt>Current Time: Tuesday, 11-Dec-2018 23:16:48 EST</dt>
+<dt>Restart Time: Tuesday, 11-Dec-2018 23:15:19 EST</dt>
+<dt>Parent Server Config. Generation: 1</dt>
+<dt>Parent Server MPM Generation: 0</dt>
+<dt>Server uptime:  1 minute 29 seconds</dt>
+<dt>Server load: 0.01 0.08 0.06</dt>
+<dt>Total accesses: 93 - Total Traffic: 77 kB</dt>
+<dt>CPU Usage: u.02 s.02 cu0 cs0 - .0449% CPU load</dt>
+<dt>1.04 requests/sec - 885 B/second - 847 B/request</dt>
+<dt>1 requests currently being processed, 49 idle workers</dt>
+</dl>
