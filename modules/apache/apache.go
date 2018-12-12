@@ -93,11 +93,11 @@ func (a *Apache) Init() bool {
 }
 
 func (a *Apache) Check() bool {
-	if a.GatherMetrics() == nil {
+	if len(a.GatherMetrics()) == 0 {
 		return false
 	}
 
-	_, a.extendedStats = a.metrics[totalAccesses]
+	_, a.extendedStats = a.metrics[assign(totalAccesses)]
 
 	if !a.extendedStats {
 		a.Info("extended status is disabled, not all metrics are available")
@@ -132,6 +132,11 @@ func (a *Apache) GatherMetrics() map[string]int64 {
 		_, _ = io.Copy(ioutil.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}()
+
+	if resp.StatusCode != http.StatusOK {
+		a.Errorf("%s returned HTTP status %d", a.request.URL, resp.StatusCode)
+		return nil
+	}
 
 	// Extended On -> Extended Off
 	a.metrics = make(map[string]int64)
