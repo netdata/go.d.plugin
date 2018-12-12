@@ -99,6 +99,10 @@ func (a *Apache) Check() bool {
 
 	_, a.extendedStats = a.metrics[totalAccesses]
 
+	if !a.extendedStats {
+		a.Info("extended status is disabled, not all metrics are available")
+	}
+
 	return true
 }
 
@@ -120,7 +124,7 @@ func (a *Apache) GatherMetrics() map[string]int64 {
 	resp, err := a.doRequest()
 
 	if err != nil {
-		a.Errorf("error on request to %s: %s", a.request.URL, err)
+		a.Errorf("error on request to %s : %s", a.request.URL, err)
 		return nil
 	}
 
@@ -133,7 +137,7 @@ func (a *Apache) GatherMetrics() map[string]int64 {
 	a.metrics = make(map[string]int64)
 
 	if err := a.parseResponse(resp); err != nil {
-		a.Errorf("error on parse response: %s", err)
+		a.Errorf("error on parse response : %s", err)
 		return nil
 	}
 
@@ -160,7 +164,7 @@ func parseLine(line string, metrics map[string]int64) error {
 	parts := strings.SplitN(line, ":", 2)
 
 	if len(parts) != 2 {
-		return fmt.Errorf("bad format: %s", line)
+		return fmt.Errorf("bad format : %s", line)
 	}
 
 	key := strings.TrimSpace(parts[0])
