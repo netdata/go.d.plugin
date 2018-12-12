@@ -22,39 +22,14 @@ func init() {
 	modules.Register("apache", creator)
 }
 
-// -- Extended On --
-// Total Accesses: 7
-// Total kBytes: 5
-// Uptime: 6
-// ReqPerSec: 1.16667
-// BytesPerSec: 853.333
-// BytesPerReq: 731.429
-// BusyWorkers: 1
-// IdleWorkers: 49
-// ConnsTotal: 1
-// ConnsAsyncWriting: 0
-// ConnsAsyncKeepAlive: 1
-// ConnsAsyncClosing: 0
-// Scoreboard: W_________________________________________________.......................................................
-
-// -- Extended Off --
-// BusyWorkers: 1
-// IdleWorkers: 49
-// ConnsTotal: 1
-// ConnsAsyncWriting: 0
-// ConnsAsyncKeepAlive: 1
-// ConnsAsyncClosing: 0
-// Scoreboard: W_________________________________________________.......................................................
-
 const (
-	totalAccesses = "Total Accesses"
-	totalkBytes   = "Total kBytes"
-	cpuLoad       = "CPULoad"
-	uptime        = "Uptime"
-
-	reqPerSec           = "ReqPerSec"
-	bytesPerSec         = "BytesPerSec"
-	bytesPerReq         = "BytesPerReq"
+	totalAccesses       = "Total Accesses" // extended stats
+	totalkBytes         = "Total kBytes"   // extended stats
+	cpuLoad             = "CPULoad"        // extended stats
+	uptime              = "Uptime"         // extended stats
+	reqPerSec           = "ReqPerSec"      // extended stats
+	bytesPerSec         = "BytesPerSec"    // extended stats
+	bytesPerReq         = "BytesPerReq"    // extended stats
 	busyWorkers         = "BusyWorkers"
 	idleWorkers         = "IdleWorkers"
 	connsTotal          = "ConnsTotal"
