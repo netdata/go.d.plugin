@@ -149,7 +149,9 @@ func parseLine(line string, metrics map[string]int64) error {
 
 	switch key {
 	case cpuLoad, uptime:
-	case totalAccesses, totalkBytes, busyWorkers, idleWorkers, connsTotal, connsAsyncWriting, connsAsyncKeepAlive, connsAsyncClosing:
+	case totalAccesses, totalkBytes, busyWorkers, idleWorkers, connsTotal:
+		fallthrough
+	case connsAsyncWriting, connsAsyncKeepAlive, connsAsyncClosing:
 		v, err := strconv.Atoi(value)
 		if err != nil {
 			return err
