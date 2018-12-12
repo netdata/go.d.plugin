@@ -2,17 +2,17 @@ package weblog
 
 import "github.com/netdata/go.d.plugin/modules/weblog/matcher"
 
-type RawFilter struct {
+type rawFilter struct {
 	Include string
 	Exclude string
 }
 
-type Filter struct {
+type filter struct {
 	include matcher.Matcher
 	exclude matcher.Matcher
 }
 
-func (f *Filter) Match(s string) bool {
+func (f *filter) Match(s string) bool {
 	includeOK := true
 	excludeOK := true
 
@@ -27,8 +27,8 @@ func (f *Filter) Match(s string) bool {
 	return includeOK && !excludeOK
 }
 
-func createFilter(raw RawFilter) (matcher.Matcher, error) {
-	var f Filter
+func newFilter(raw rawFilter) (matcher.Matcher, error) {
+	var f filter
 
 	if raw.Include == "" && raw.Exclude == "" {
 		return &f, nil

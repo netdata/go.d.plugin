@@ -1,53 +1,35 @@
 package weblog
 
-//
-//import (
-//	"gopkg.in/yaml.v2"
-//
-//	"github.com/netdata/go.d.plugin/collectors/weblogog/matcher"
-//)
-//
-//type categories struct {
-//	items []category
-//	other string
-//}
-//
-//func (c categories) exist() bool {
-//	return len(c.items) > 0
-//}
-//
-//type category struct {
-//	id   string
-//	name string
-//	matcher.Matcher
-//}
-//
-//func getCategories(ms yaml.MapSlice, prefix string) (categories, error) {
-//	cats := categories{
-//		other: prefix + "_other",
-//	}
-//
-//	if len(ms) == 0 {
-//		return cats, nil
-//	}
-//
-//	for _, v := range ms {
-//		r, ok := v.Value.(string)
-//		if !ok || r == "" {
-//			continue
-//		}
-//
-//		m, err := matcher.New(r)
-//		if err != nil {
-//			return cats, err
-//		}
-//
-//		cat := category{
-//			id:      prefix + "_" + v.Key.(string),
-//			name:    v.Key.(string),
-//			Matcher: m,
-//		}
-//		cats.items = append(cats.items, cat)
-//	}
-//	return cats, nil
-//}
+import (
+	"fmt"
+
+	"github.com/netdata/go.d.plugin/modules/weblog/matcher"
+)
+
+type rawCategory struct {
+	Name  string
+	Match string
+}
+
+type category struct {
+	name string
+	matcher.Matcher
+}
+
+func newCategory(raw rawCategory) (*category, error) {
+	cat := &category{}
+
+	if raw.Name == "" || raw.Match == "" {
+		return nil, fmt.Errorf("category bad syntax : %s", raw)
+	}
+
+	m, err := matcher.New(raw.Match)
+
+	if err != nil {
+		return nil, err
+	}
+	cat.Matcher = m
+	cat.name = raw.Name
+
+	return cat, nil
+}

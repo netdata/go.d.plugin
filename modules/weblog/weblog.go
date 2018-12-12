@@ -21,23 +21,23 @@ func New() *WebLog {
 type WebLog struct {
 	modules.Base
 
-	Path             string              `yaml:"path" validate:"required"`
-	Filter           RawFilter           `yaml:"RawFilter"`
-	URLCategories    []map[string]string `yaml:"categories"`
-	UserCategories   []map[string]string `yaml:"user_defined"`
-	CustomParser     string              `yaml:"custom_log_format"`
-	Histogram        []int               `yaml:"histogram"`
-	DoCodesDetailed  bool                `yaml:"detailed_response_codes"`
-	DoCodesAggregate bool                `yaml:"detailed_response_codes_aggregate"`
-	DoPerURLCharts   bool                `yaml:"per_category_charts"`
-	DoAllTimeIPs     bool                `yaml:"clients_all_time"`
+	Path                  string        `yaml:"path" validate:"required"`
+	Filter                rawFilter     `yaml:"filter"`
+	URLCategories         []rawCategory `yaml:"categories"`
+	UserDefinedCategories []rawCategory `yaml:"user_defined_categories"`
+	CustomParser          string        `yaml:"custom_log_format"`
+	Histogram             []int         `yaml:"histogram"`
+	DoCodesDetailed       bool          `yaml:"detailed_response_codes"`
+	DoCodesAggregate      bool          `yaml:"detailed_response_codes_aggregate"`
+	DoPerURLCharts        bool          `yaml:"per_category_charts"`
+	DoAllTimeIPs          bool          `yaml:"clients_all_time"`
 
 	//tail   *tail.Tail
 	parser Parser
 
-	filter Filter
-	//urlCat     categories
-	//userCat    categories
+	filter          filter
+	urlCats         []category
+	userDefinedCats []category
 	//timings    timings
 	//histograms histograms
 	uniqIPs map[string]bool
@@ -113,7 +113,7 @@ func (WebLog) GatherMetrics() map[string]int64 {
 //	}
 //	w.userCat = c
 //
-//	f, err := getFilter(w.RawFilter)
+//	f, err := getFilter(w.rawFilter)
 //	if err != nil {
 //		w.Error(err)
 //		return false
@@ -148,7 +148,7 @@ func (WebLog) GatherMetrics() map[string]int64 {
 //
 //	for s.Scan() {
 //		row := s.Text()
-//		if w.filter.exist() && !w.filter.RawFilter(row) {
+//		if w.filter.exist() && !w.filter.rawFilter(row) {
 //			continue
 //		}
 //
