@@ -110,7 +110,7 @@ func (r *Rabbitmq) Init() bool {
 	if r.Timeout.Duration == 0 {
 		r.Timeout.Duration = time.Second
 	}
-	r.Info("using http request timeout %s", r.Timeout.Duration)
+	r.Infof("using http request timeout %s", r.Timeout.Duration)
 
 	r.client = r.CreateHTTPClient()
 
@@ -182,7 +182,7 @@ func (r *Rabbitmq) gather(req *http.Request, stats interface{}) error {
 }
 
 func (r *Rabbitmq) createOverviewRequest() error {
-	r.URI = "/api/overview"
+	r.URI = "/api/overviewData"
 	req, err := r.CreateHTTPRequest()
 
 	if err != nil {
@@ -194,7 +194,7 @@ func (r *Rabbitmq) createOverviewRequest() error {
 }
 
 func (r *Rabbitmq) createNodesRequest() error {
-	r.URI = "/api/nodes"
+	r.URI = "/api/nodesData"
 	req, err := r.CreateHTTPRequest()
 
 	if err != nil {
