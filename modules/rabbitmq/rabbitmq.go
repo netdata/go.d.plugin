@@ -1,7 +1,15 @@
 package rabbitmq
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/pkg/stm"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -19,7 +27,7 @@ type (
 		queueTotals  `json:"queue_totals" stm:"queue_totals"`
 		messageStats `json:"message_stats" stm:"message_stats"`
 	}
-	apiNode []node
+	apiNodes []node
 )
 
 type objectTotals struct {
@@ -62,21 +70,47 @@ type node struct {
 
 // New creates Rabbitmq with default values
 func New() *Rabbitmq {
-	return &Rabbitmq{}
+	return &Rabbitmq{
+		metrics: make(map[string]int64),
+	}
 }
 
 // Rabbitmq rabbitmq module
 type Rabbitmq struct {
 	modules.Base // should be embedded by every module
 
+	web.HTTP `yaml:",inline"`
+
+	reqOverview *http.Request
+	reqNodes    *http.Request
+	client      web.Client
+
+	overview apiOverview
+	nodes    apiNodes
+
+	metrics map[string]int64
 }
 
 // Cleanup makes cleanup
 func (Rabbitmq) Cleanup() {}
 
 // Init makes initialization
-func (Rabbitmq) Init() bool {
-	return false
+func (r *Rabbitmq) Init() bool {
+	//req, err := r.CreateHTTPRequest()
+	//
+	//if err != nil {
+	//	r.Error(err)
+	//	return false
+	//}
+	//
+	//if r.Timeout.Duration == 0 {
+	//	r.Timeout.Duration = time.Second
+	//}
+	//
+	////r.request = req
+	//r.client = r.CreateHTTPClient()
+
+	return true
 }
 
 // Check makes check
@@ -89,7 +123,52 @@ func (Rabbitmq) Charts() *Charts {
 	return charts.Copy()
 }
 
-// GatherMetrics gathers metrics
-func (Rabbitmq) GatherMetrics() map[string]int64 {
+// GatherMetrics gathers stats
+func (r *Rabbitmq) GatherMetrics() map[string]int64 {
+	if err := r.gather(r.reqOverview, &r.overview); err != nil {
+		r.Error(err)
+		return nil
+	}
+
+	if err := r.gather(r.reqNodes, &r.nodes); err != nil {
+		r.Error(err)
+		return nil
+	}
+
+	for k, v := range stm.ToMap(r.overview) {
+		r.metrics[k] = v
+	}
+
+	//for k, v := range stm.ToMap(r.nodes) {
+	//	r.metrics[k] = v
+	//}
+
+	return r.metrics
+}
+
+func (r *Rabbitmq) doRequest(req *http.Request) (*http.Response, error) {
+	return r.client.Do(req)
+}
+
+func (r *Rabbitmq) gather(req *http.Request, stats interface{}) error {
+	resp, err := r.doRequest(req)
+
+	if err != nil {
+		return fmt.Errorf("error on request to %s : %s", req.URL, err)
+	}
+
+	defer func() {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(stats); err != nil {
+		return fmt.Errorf("erorr on decode : %s", err)
+	}
+
 	return nil
 }
