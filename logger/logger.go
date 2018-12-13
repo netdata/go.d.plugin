@@ -50,6 +50,13 @@ func NewLimited(modName, jobName string) *Logger {
 	return logger
 }
 
+// Panic logs a message with the Critical severity then panic
+func (l *Logger) Panic(a ...interface{}) {
+	s := fmt.Sprint(a...)
+	l.print(CRITICAL, s)
+	panic(s)
+}
+
 // Critical logs a message with the Critical severity
 func (l *Logger) Critical(a ...interface{}) {
 	l.print(CRITICAL, a...)
@@ -73,6 +80,13 @@ func (l *Logger) Info(a ...interface{}) {
 // Debug logs a message with the Debug severity
 func (l *Logger) Debug(a ...interface{}) {
 	l.print(DEBUG, a...)
+}
+
+// Panicf logs a message with the Critical severity using the same syntax and options as fmt.Printf then panic
+func (l *Logger) Panicf(format string, a ...interface{}) {
+	s := fmt.Sprintf(format, a...)
+	l.print(CRITICAL, s)
+	panic(s)
 }
 
 // Criticalf logs a message with the Critical severity using the same syntax and options as fmt.Printf

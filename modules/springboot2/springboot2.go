@@ -5,7 +5,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
-	"github.com/netdata/go.d.plugin/pkg/utils"
+	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -39,8 +39,8 @@ type metrics struct {
 	Resp4xx int64 `stm:"resp_4xx"`
 	Resp5xx int64 `stm:"resp_5xx"`
 
-	HeapUsed      heap `prefix:"heap_used_"`
-	HeapCommitted heap `prefix:"heap_committed_"`
+	HeapUsed      heap `stm:"heap_used"`
+	HeapCommitted heap `stm:"heap_committed"`
 
 	MemFree int64 `stm:"mem_free"`
 }
@@ -98,7 +98,7 @@ func (s *SpringBoot2) GatherMetrics() map[string]int64 {
 	gatherHeap(rawMetrics.FindByName("jvm_memory_committed_bytes"), &m.HeapCommitted)
 	m.MemFree = m.HeapCommitted.Sum() - m.HeapUsed.Sum()
 
-	return utils.ToMap(m)
+	return stm.ToMap(m)
 }
 
 func gatherHeap(rawMetrics prometheus.Metrics, m *heap) {

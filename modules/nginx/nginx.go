@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
-	"github.com/netdata/go.d.plugin/pkg/utils"
+	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -105,7 +105,7 @@ func (n *Nginx) GatherMetrics() map[string]int64 {
 		return nil
 	}
 
-	return utils.ToMap(n.metrics)
+	return stm.ToMap(n.metrics)
 }
 
 func (n *Nginx) doRequest() (*http.Response, error) {

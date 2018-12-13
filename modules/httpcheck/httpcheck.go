@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
-	"github.com/netdata/go.d.plugin/pkg/utils"
+	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -40,10 +40,6 @@ func (d *metrics) reset() {
 	d.BadStatus = 0
 	d.ResponseTime = 0
 	d.ResponseLength = 0
-}
-
-func (d metrics) toMap() map[string]int64 {
-	return utils.ToMap(d)
 }
 
 // New creates HTTPCheck with default values
@@ -143,7 +139,7 @@ func (hc *HTTPCheck) GatherMetrics() map[string]int64 {
 		hc.processOKResponse(resp)
 	}
 
-	return hc.metrics.toMap()
+	return stm.ToMap(hc.metrics)
 }
 
 func (hc *HTTPCheck) doRequest() (*http.Response, error) {
