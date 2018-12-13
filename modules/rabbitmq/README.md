@@ -47,7 +47,7 @@ jobs:
     url : http://localhost:15672
       
   - name: remote
-    url : http://100.64.0.1
+    url : http://100.64.0.1:15672
 
 ```
 

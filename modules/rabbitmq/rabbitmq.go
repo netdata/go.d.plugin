@@ -72,6 +72,13 @@ type node struct {
 // New creates Rabbitmq with default values
 func New() *Rabbitmq {
 	return &Rabbitmq{
+		HTTP: web.HTTP{
+			RawRequest: web.RawRequest{
+				URL:      "http://localhost:15672",
+				Username: "guest",
+				Password: "guest",
+			},
+		},
 		metrics: make(map[string]int64),
 	}
 }
