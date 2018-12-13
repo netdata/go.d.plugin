@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/stm"
@@ -96,26 +97,39 @@ func (Rabbitmq) Cleanup() {}
 
 // Init makes initialization
 func (r *Rabbitmq) Init() bool {
-	//req, err := r.CreateHTTPRequest()
-	//
-	//if err != nil {
-	//	r.Error(err)
-	//	return false
-	//}
-	//
-	//if r.Timeout.Duration == 0 {
-	//	r.Timeout.Duration = time.Second
-	//}
-	//
-	////r.request = req
-	//r.client = r.CreateHTTPClient()
+	r.URI = "/api/overview"
+	req, err := r.CreateHTTPRequest()
+
+	if err != nil {
+		r.Errorf("error on creating request : %s", err)
+		return false
+	}
+
+	r.reqOverview = req
+
+	r.URI = "/api/nodes"
+	req, err = r.CreateHTTPRequest()
+
+	if err != nil {
+		r.Errorf("error on creating request : %s", err)
+		return false
+	}
+
+	r.reqNodes = req
+
+	if r.Timeout.Duration == 0 {
+		r.Timeout.Duration = time.Second
+	}
+	r.Info("using http request timeout %s", r.Timeout.Duration)
+
+	r.client = r.CreateHTTPClient()
 
 	return true
 }
 
 // Check makes check
-func (Rabbitmq) Check() bool {
-	return false
+func (r *Rabbitmq) Check() bool {
+	return len(r.GatherMetrics()) > 0
 }
 
 // Charts creates Charts
@@ -135,13 +149,17 @@ func (r *Rabbitmq) GatherMetrics() map[string]int64 {
 		return nil
 	}
 
+	r.metrics = make(map[string]int64)
+
 	for k, v := range stm.ToMap(r.overview) {
 		r.metrics[k] = v
 	}
 
-	//for k, v := range stm.ToMap(r.nodes) {
-	//	r.metrics[k] = v
-	//}
+	if len(r.nodes) > 0 {
+		for k, v := range stm.ToMap(r.nodes[0]) {
+			r.metrics[k] = v
+		}
+	}
 
 	return r.metrics
 }
