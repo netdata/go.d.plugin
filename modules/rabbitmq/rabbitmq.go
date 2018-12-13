@@ -12,6 +12,54 @@ func init() {
 	modules.Register("rabbitmq", creator)
 }
 
+// https://www.rabbitmq.com/monitoring.html
+type (
+	apiOverview struct {
+		objectTotals `json:"object_totals"`
+		queueTotals  `json:"queue_totals"`
+		messageStats `json:"message_stats"`
+	}
+	apiNode []node
+)
+
+type objectTotals struct {
+	Consumers   int
+	Queues      int
+	Exchanges   int
+	Connections int
+	Channels    int
+}
+
+type queueTotals struct {
+	MessagesReady          int `json:"messages_ready"`
+	MessagesUnacknowledged int `json:"messages_unacknowledged"`
+}
+
+// https://rawcdn.githack.com/rabbitmq/rabbitmq-management/master/priv/www/doc/stats.html
+type messageStats struct {
+	Ack              int
+	Publish          int
+	PublishIn        int `json:"publish_in"`
+	PublishOut       int `json:"publish_out"`
+	Confirm          int
+	Deliver          int
+	DeliverNoAck     int `json:"deliver_no_ack"`
+	Get              int
+	GetNoAck         int `json:"get_no_ack"`
+	DeliverGet       int `json:"deliver_get"`
+	Redeliver        int
+	ReturnUnroutable int `json:"return_unroutable"`
+}
+
+type node struct {
+	FDUsed      int `json:"fd_used"`
+	MemUsed     int `json:"mem_used"`
+	SocketsUsed int `json:"sockets_used"`
+	ProcUsed    int `json:"proc_used"`
+	DiskFree    int `json:"disk_free"`
+	RunQueue    int `json:"run_queue"`
+}
+
 // New creates Rabbitmq with default values
 func New() *Rabbitmq {
 	return &Rabbitmq{}
