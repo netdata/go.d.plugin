@@ -175,14 +175,14 @@ func (r *Rabbitmq) gather(req *http.Request, stats interface{}) error {
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(stats); err != nil {
-		return fmt.Errorf("erorr on decode : %s", err)
+		return fmt.Errorf("erorr on decode %s request : %s", req.URL, err)
 	}
 
 	return nil
 }
 
 func (r *Rabbitmq) createOverviewRequest() error {
-	r.URI = "/api/overviewData"
+	r.URI = "/api/overview"
 	req, err := r.CreateHTTPRequest()
 
 	if err != nil {
@@ -194,7 +194,7 @@ func (r *Rabbitmq) createOverviewRequest() error {
 }
 
 func (r *Rabbitmq) createNodesRequest() error {
-	r.URI = "/api/nodesData"
+	r.URI = "/api/nodes"
 	req, err := r.CreateHTTPRequest()
 
 	if err != nil {
