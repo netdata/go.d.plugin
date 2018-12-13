@@ -14,7 +14,7 @@ var charts = Charts{
 		ID:    "queued_messages",
 		Title: "Queued Messages",
 		Units: "messages",
-		Fam:   "overviewData",
+		Fam:   "overview",
 		Ctx:   "rabbitmq.queued_messages",
 		Type:  modules.Stacked,
 		Dims: Dims{
@@ -26,7 +26,7 @@ var charts = Charts{
 		ID:    "message_rates",
 		Title: "Message Rates",
 		Units: "messages/s",
-		Fam:   "overviewData",
+		Fam:   "overview",
 		Ctx:   "rabbitmq.message_rates",
 		Dims: Dims{
 			{ID: "message_stats_ack", Name: "ack", Algo: modules.Incremental},
@@ -47,7 +47,7 @@ var charts = Charts{
 		ID:    "global_counts",
 		Title: "Global Counts",
 		Units: "counts",
-		Fam:   "overviewData",
+		Fam:   "overview",
 		Ctx:   "rabbitmq.global_counts",
 		Dims: Dims{
 			{ID: "object_totals_channels", Name: "channels"},
@@ -61,7 +61,7 @@ var charts = Charts{
 		ID:    "file_descriptors",
 		Title: "File Descriptors",
 		Units: "descriptors",
-		Fam:   "overviewData",
+		Fam:   "overview",
 		Ctx:   "rabbitmq.file_descriptors",
 		Dims: Dims{
 			{ID: "fd_used", Name: "used"},
@@ -71,7 +71,7 @@ var charts = Charts{
 		ID:    "socket_descriptors",
 		Title: "Socket Descriptors",
 		Units: "descriptors",
-		Fam:   "overviewData",
+		Fam:   "overview",
 		Ctx:   "rabbitmq.sockets",
 		Dims: Dims{
 			{ID: "sockets_used", Name: "used"},
@@ -81,7 +81,7 @@ var charts = Charts{
 		ID:    "erlang_processes",
 		Title: "Erlang Processes",
 		Units: "processes",
-		Fam:   "overviewData",
+		Fam:   "overview",
 		Ctx:   "rabbitmq.processes",
 		Dims: Dims{
 			{ID: "proc_used", Name: "used"},
@@ -91,7 +91,7 @@ var charts = Charts{
 		ID:    "erlang_run_queue",
 		Title: "Erlang Run Queue",
 		Units: "processes",
-		Fam:   "overviewData",
+		Fam:   "overview",
 		Ctx:   "rabbitmq.erlang_run_queue",
 		Dims: Dims{
 			{ID: "run_queue", Name: "length"},
@@ -101,7 +101,7 @@ var charts = Charts{
 		ID:    "memory",
 		Title: "Memory",
 		Units: "MiB",
-		Fam:   "overviewData",
+		Fam:   "overview",
 		Ctx:   "rabbitmq.memory",
 		Dims: Dims{
 			{ID: "mem_used", Name: "used", Div: 1024 << 10},
@@ -111,7 +111,7 @@ var charts = Charts{
 		ID:    "disk_space",
 		Title: "Disk Space",
 		Units: "GiB",
-		Fam:   "overviewData",
+		Fam:   "overview",
 		Ctx:   "rabbitmq.disk_space",
 		Type:  modules.Area,
 		Dims: Dims{
