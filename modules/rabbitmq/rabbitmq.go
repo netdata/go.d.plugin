@@ -97,25 +97,15 @@ func (Rabbitmq) Cleanup() {}
 
 // Init makes initialization
 func (r *Rabbitmq) Init() bool {
-	r.URI = "/api/overview"
-	req, err := r.CreateHTTPRequest()
-
-	if err != nil {
+	if err := r.createOverviewRequest(); err != nil {
 		r.Errorf("error on creating request : %s", err)
 		return false
 	}
 
-	r.reqOverview = req
-
-	r.URI = "/api/nodes"
-	req, err = r.CreateHTTPRequest()
-
-	if err != nil {
+	if err := r.createNodesRequest(); err != nil {
 		r.Errorf("error on creating request : %s", err)
 		return false
 	}
-
-	r.reqNodes = req
 
 	if r.Timeout.Duration == 0 {
 		r.Timeout.Duration = time.Second
@@ -187,6 +177,30 @@ func (r *Rabbitmq) gather(req *http.Request, stats interface{}) error {
 	if err := json.NewDecoder(resp.Body).Decode(stats); err != nil {
 		return fmt.Errorf("erorr on decode : %s", err)
 	}
+
+	return nil
+}
+
+func (r *Rabbitmq) createOverviewRequest() error {
+	r.URI = "/api/overview"
+	req, err := r.CreateHTTPRequest()
+
+	if err != nil {
+		return fmt.Errorf("error on creating request : %s", err)
+	}
+	r.reqOverview = req
+
+	return nil
+}
+
+func (r *Rabbitmq) createNodesRequest() error {
+	r.URI = "/api/nodes"
+	req, err := r.CreateHTTPRequest()
+
+	if err != nil {
+		return err
+	}
+	r.reqNodes = req
 
 	return nil
 }

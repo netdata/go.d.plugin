@@ -1,0 +1,105 @@
+{
+    "management_version": "3.6.15",
+    "rates_mode": "basic",
+    "exchange_types": [
+        {
+            "name": "fanout",
+            "description": "AMQP 0-9-1 fanout exchange, a built-in type",
+            "enabled": true
+        },
+        {
+            "name": "direct",
+            "description": "AMQP 0-9-1 direct exchange, a built-in type",
+            "enabled": true
+        },
+        {
+            "name": "headers",
+            "description": "AMQP 0-9-1 headers exchange, a built-in type",
+            "enabled": true
+        },
+        {
+            "name": "topic",
+            "description": "AMQP 0-9-1 topic exchange, a built-in type",
+            "enabled": true
+        }
+    ],
+    "rabbitmq_version": "3.6.15",
+    "cluster_name": "rabbit@debian8",
+    "erlang_version": "17.3",
+    "erlang_full_version": "Erlang/OTP 17 [erts-6.2] [source] [64-bit] [async-threads:64] [kernel-poll:true]",
+    "message_stats": {
+        "disk_reads": 0,
+        "disk_reads_details": {
+            "rate": 0
+        },
+        "disk_writes": 0,
+        "disk_writes_details": {
+            "rate": 0
+        }
+    },
+    "queue_totals": {
+        "messages_ready": 0,
+        "messages_ready_details": {
+            "rate": 0
+        },
+        "messages_unacknowledged": 0,
+        "messages_unacknowledged_details": {
+            "rate": 0
+        },
+        "messages": 0,
+        "messages_details": {
+            "rate": 0
+        }
+    },
+    "object_totals": {
+        "consumers": 0,
+        "queues": 1,
+        "exchanges": 8,
+        "connections": 0,
+        "channels": 0
+    },
+    "statistics_db_event_queue": 0,
+    "node": "rabbit@debian8",
+    "listeners": [
+        {
+            "node": "rabbit@debian8",
+            "protocol": "amqp",
+            "ip_address": "::",
+            "port": 5672,
+            "socket_opts": {
+                "backlog": 128,
+                "nodelay": true,
+                "linger": [
+                    true,
+                    0
+                ],
+                "exit_on_close": false
+            }
+        },
+        {
+            "node": "rabbit@debian8",
+            "protocol": "clustering",
+            "ip_address": "::",
+            "port": 25672,
+            "socket_opts": []
+        },
+        {
+            "node": "rabbit@debian8",
+            "protocol": "http",
+            "ip_address": "::",
+            "port": 15672,
+            "socket_opts": {
+                "port": 15672
+            }
+        }
+    ],
+    "contexts": [
+        {
+            "ssl_opts": [],
+            "node": "rabbit@debian8",
+            "description": "RabbitMQ Management",
+            "path": "/",
+            "port": "15672"
+        }
+    ]
+}
