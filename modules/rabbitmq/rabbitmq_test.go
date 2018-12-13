@@ -29,15 +29,44 @@ func TestRabbitmq_Cleanup(t *testing.T) {
 }
 
 func TestRabbitmq_Init(t *testing.T) {
+	mod := New()
 
+	assert.True(t, mod.Init())
+	assert.NotNil(t, mod.reqOverview)
+	assert.NotNil(t, mod.reqNodes)
+	assert.NotNil(t, mod.client)
+	assert.NotZero(t, mod.Timeout.Duration)
 }
 
 func TestRabbitmq_Check(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				switch r.URL.Path {
+				case "/api/overview":
+					_, _ = w.Write(overviewData)
+				case "/api/nodes":
+					_, _ = w.Write(nodesData)
+				}
+			}))
+	defer ts.Close()
 
+	mod := New()
+	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL}
+
+	require.True(t, mod.Init())
+	require.True(t, mod.Check())
+}
+
+func TestApache_CheckNG(t *testing.T) {
+	mod := New()
+
+	mod.Init()
+	assert.False(t, mod.Check())
 }
 
 func TestRabbitmq_Charts(t *testing.T) {
-
+	assert.NotNil(t, New().Charts())
 }
 
 func TestRabbitmq_GatherMetrics(t *testing.T) {
