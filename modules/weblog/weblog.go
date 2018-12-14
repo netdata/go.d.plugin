@@ -72,7 +72,7 @@ func (WebLog) Charts() *modules.Charts {
 	return nil
 }
 
-func (WebLog) GatherMetrics() map[string]int64 {
+func (WebLog) Collect() map[string]int64 {
 	return nil
 }
 
