@@ -176,7 +176,7 @@ func TestJob_MainLoop(t *testing.T) {
 				},
 			}
 		},
-		GatherMetricsFunc: func() map[string]int64 {
+		CollectFunc: func() map[string]int64 {
 			return map[string]int64{
 				"id1": 1,
 				"id2": 2,
@@ -203,8 +203,8 @@ func TestJob_MainLoop(t *testing.T) {
 
 func TestJob_MainLoop_Panic(t *testing.T) {
 	m := &MockModule{
-		GatherMetricsFunc: func() map[string]int64 {
-			panic("panic in GatherMetrics")
+		CollectFunc: func() map[string]int64 {
+			panic("panic in Collect")
 		},
 	}
 	job := testNewJob()

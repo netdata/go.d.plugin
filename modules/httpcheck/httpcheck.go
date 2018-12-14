@@ -14,6 +14,15 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+func init() {
+	creator := modules.Creator{
+		UpdateEvery: 5,
+		Create:      func() modules.Module { return New() },
+	}
+
+	modules.Register("httpcheck", creator)
+}
+
 type state string
 
 var (
@@ -127,8 +136,8 @@ func (hc HTTPCheck) Charts() *Charts {
 
 }
 
-// GatherMetrics gathers metrics
-func (hc *HTTPCheck) GatherMetrics() map[string]int64 {
+// Collect collects metrics
+func (hc *HTTPCheck) Collect() map[string]int64 {
 	hc.metrics.reset()
 
 	resp, err := hc.doRequest()
@@ -193,13 +202,4 @@ func parseErr(err error) state {
 	}
 
 	return unknown
-}
-
-func init() {
-	creator := modules.Creator{
-		UpdateEvery: 5,
-		Create:      func() modules.Module { return New() },
-	}
-
-	modules.Register("httpcheck", creator)
 }

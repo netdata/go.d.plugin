@@ -96,7 +96,7 @@ func (a *Apache) Init() bool {
 
 // Check makes check
 func (a *Apache) Check() bool {
-	if len(a.GatherMetrics()) == 0 {
+	if len(a.Collect()) == 0 {
 		return false
 	}
 
@@ -124,8 +124,8 @@ func (a Apache) Charts() *modules.Charts {
 	return charts
 }
 
-// GatherMetrics gathers metrics
-func (a *Apache) GatherMetrics() map[string]int64 {
+// Collect collects metrics
+func (a *Apache) Collect() map[string]int64 {
 	resp, err := a.doRequest()
 
 	if err != nil {

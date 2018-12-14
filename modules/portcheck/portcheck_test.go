@@ -54,7 +54,7 @@ func TestPortCheck_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
 
-func TestPortCheck_GatherMetrics(t *testing.T) {
+func TestPortCheck_Collect(t *testing.T) {
 	mod := New()
 	defer mod.Cleanup()
 
@@ -80,7 +80,7 @@ func TestPortCheck_GatherMetrics(t *testing.T) {
 		"instate_3002": 5,
 	}
 
-	rv := mod.GatherMetrics()
+	rv := mod.Collect()
 
 	require.NotNil(t, rv)
 
@@ -104,7 +104,7 @@ func TestPortCheck_ServerOK(t *testing.T) {
 
 	defer srv.close()
 
-	assert.NotNil(t, mod.GatherMetrics())
+	assert.NotNil(t, mod.Collect())
 
 	for _, p := range mod.ports {
 		assert.True(t, p.state == success)
@@ -121,7 +121,7 @@ func TestPortCheck_ServerBAD(t *testing.T) {
 
 	tc.Init()
 
-	assert.NotNil(t, tc.GatherMetrics())
+	assert.NotNil(t, tc.Collect())
 
 	for _, p := range tc.ports {
 		assert.True(t, p.state == failed)

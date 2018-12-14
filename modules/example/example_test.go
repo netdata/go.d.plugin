@@ -35,8 +35,8 @@ func TestExample_Cleanup(t *testing.T) {
 	mod.Cleanup()
 }
 
-func TestExample_GatherMetrics(t *testing.T) {
+func TestExample_Collect(t *testing.T) {
 	mod := New()
 
-	assert.NotNil(t, mod.GatherMetrics())
+	assert.NotNil(t, mod.Collect())
 }

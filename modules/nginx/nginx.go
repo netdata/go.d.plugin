@@ -73,7 +73,7 @@ func (n *Nginx) Init() bool {
 
 // Check makes check
 func (n *Nginx) Check() bool {
-	return n.GatherMetrics() != nil
+	return len(n.Collect()) > 0
 }
 
 // Charts creates Charts
@@ -81,8 +81,8 @@ func (Nginx) Charts() *Charts {
 	return charts.Copy()
 }
 
-// GatherMetrics gathers metrics
-func (n *Nginx) GatherMetrics() map[string]int64 {
+// Collect collects metrics
+func (n *Nginx) Collect() map[string]int64 {
 	resp, err := n.doRequest()
 
 	if err != nil {

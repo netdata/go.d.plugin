@@ -33,7 +33,7 @@ func TestSpringboot2(t *testing.T) {
 
 	assert.True(t, module.Check())
 
-	data := module.GatherMetrics()
+	data := module.Collect()
 
 	assert.EqualValues(
 		t,
