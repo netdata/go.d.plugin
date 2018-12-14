@@ -77,8 +77,8 @@ func (SpringBoot2) Charts() *Charts {
 	return charts.Copy()
 }
 
-// GatherMetrics gathers metrics
-func (s *SpringBoot2) GatherMetrics() map[string]int64 {
+// Collect collects metrics
+func (s *SpringBoot2) Collect() map[string]int64 {
 	rawMetrics, err := s.prom.Scrape()
 	if err != nil {
 		return nil

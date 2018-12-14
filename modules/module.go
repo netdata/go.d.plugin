@@ -18,8 +18,8 @@ type Module interface {
 	// Make sure not to share returned instance.
 	Charts() *Charts
 
-	// GatherMetrics returns metrics.
-	GatherMetrics() map[string]int64
+	// Collect collects metrics.
+	Collect() map[string]int64
 
 	// SetLogger SetLogger
 	SetLogger(l *logger.Logger)

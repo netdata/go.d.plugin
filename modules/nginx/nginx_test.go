@@ -44,7 +44,7 @@ func TestNginx_Cleanup(t *testing.T) {
 	New().Cleanup()
 }
 
-func TestNginx_GatherMetrics(t *testing.T) {
+func TestNginx_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -60,7 +60,7 @@ func TestNginx_GatherMetrics(t *testing.T) {
 
 	assert.True(t, mod.Init())
 
-	metrics := mod.GatherMetrics()
+	metrics := mod.Collect()
 	assert.NotNil(t, metrics)
 
 	expected := map[string]int64{

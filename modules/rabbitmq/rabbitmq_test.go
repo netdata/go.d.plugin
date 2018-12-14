@@ -69,7 +69,7 @@ func TestRabbitmq_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
 
-func TestRabbitmq_GatherMetrics(t *testing.T) {
+func TestRabbitmq_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +87,7 @@ func TestRabbitmq_GatherMetrics(t *testing.T) {
 
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
-	require.NotZero(t, mod.GatherMetrics())
+	require.NotZero(t, mod.Collect())
 
 	expected := map[string]int64{
 		"message_stats_ack":                    1,

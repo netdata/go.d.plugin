@@ -4,11 +4,11 @@ package modules
 type MockModule struct {
 	Base
 
-	InitFunc          func() bool
-	CheckFunc         func() bool
-	ChartsFunc        func() *Charts
-	GatherMetricsFunc func() map[string]int64
-	CleanupDone       bool
+	InitFunc    func() bool
+	CheckFunc   func() bool
+	ChartsFunc  func() *Charts
+	CollectFunc func() map[string]int64
+	CleanupDone bool
 }
 
 // Init invokes InitFunc
@@ -35,12 +35,12 @@ func (m MockModule) Charts() *Charts {
 	return m.ChartsFunc()
 }
 
-// GatherMetrics invokes GetDataDunc
-func (m MockModule) GatherMetrics() map[string]int64 {
-	if m.GatherMetricsFunc == nil {
+// Collect invokes CollectDunc
+func (m MockModule) Collect() map[string]int64 {
+	if m.CollectFunc == nil {
 		return nil
 	}
-	return m.GatherMetricsFunc()
+	return m.CollectFunc()
 }
 
 // Cleanup sets CleanupDone to true

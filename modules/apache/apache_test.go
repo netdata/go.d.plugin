@@ -71,7 +71,7 @@ func TestApache_Cleanup(t *testing.T) {
 	New().Cleanup()
 }
 
-func TestApache_GatherMetrics(t *testing.T) {
+func TestApache_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +87,7 @@ func TestApache_GatherMetrics(t *testing.T) {
 
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
-	require.NotNil(t, mod.GatherMetrics())
+	require.NotNil(t, mod.Collect())
 
 	expected := map[string]int64{
 		assign(totalAccesses):       575,

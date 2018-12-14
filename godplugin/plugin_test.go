@@ -37,7 +37,7 @@ func TestPlugin_Serve(t *testing.T) {
 					},
 				}
 			},
-			GatherMetricsFunc: func() map[string]int64 {
+			CollectFunc: func() map[string]int64 {
 				return map[string]int64{
 					"id1": 1,
 					"id2": 2,

@@ -32,15 +32,15 @@ func TestMockModule_Charts(t *testing.T) {
 	assert.True(t, c == m.Charts())
 }
 
-func TestMockModule_GatherMetrics(t *testing.T) {
+func TestMockModule_Collect(t *testing.T) {
 	m := &MockModule{}
 	d := map[string]int64{
 		"1": 1,
 	}
 
-	assert.Nil(t, m.GatherMetrics())
-	m.GatherMetricsFunc = func() map[string]int64 { return d }
-	assert.Equal(t, d, m.GatherMetrics())
+	assert.Nil(t, m.Collect())
+	m.CollectFunc = func() map[string]int64 { return d }
+	assert.Equal(t, d, m.Collect())
 }
 
 func TestMockModule_Cleanup(t *testing.T) {

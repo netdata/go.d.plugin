@@ -195,7 +195,7 @@ func (j *Job) runOnce() {
 	curTime := time.Now()
 	sinceLastRun := calcSinceLastRun(curTime, j.prevRun)
 
-	metrics := j.gatherMetrics()
+	metrics := j.collect()
 
 	if j.panicked {
 		j.observer.RemoveFromQueue(j.FullName())
@@ -218,14 +218,14 @@ func (j Job) AutoDetectionRetry() int {
 	return j.AutoDetectRetry
 }
 
-func (j *Job) gatherMetrics() (result map[string]int64) {
+func (j *Job) collect() (result map[string]int64) {
 	defer func() {
 		if r := recover(); r != nil {
 			j.Errorf("PANIC: %v", r)
 			j.panicked = true
 		}
 	}()
-	return j.module.GatherMetrics()
+	return j.module.Collect()
 }
 
 func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinceLastRun int) bool {

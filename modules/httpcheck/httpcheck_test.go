@@ -38,7 +38,7 @@ func TestHTTPCheck_Cleanup(t *testing.T) {
 	New().Cleanup()
 }
 
-func TestHTTPCheck_GatherMetrics(t *testing.T) {
+func TestHTTPCheck_Collect(t *testing.T) {
 	mod := New()
 
 	srv := httptest.NewServer(myHandler{})
@@ -46,7 +46,7 @@ func TestHTTPCheck_GatherMetrics(t *testing.T) {
 
 	mod.URL = srv.URL
 	mod.Init()
-	assert.NotNil(t, mod.GatherMetrics())
+	assert.NotNil(t, mod.Collect())
 }
 
 func TestHTTPCheck_ResponseSuccess(t *testing.T) {

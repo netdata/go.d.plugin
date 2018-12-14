@@ -10,6 +10,15 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/utils"
 )
 
+func init() {
+	creator := modules.Creator{
+		UpdateEvery: 5,
+		Create:      func() modules.Module { return New() },
+	}
+
+	modules.Register("portcheck", creator)
+}
+
 type state string
 
 var (
@@ -131,8 +140,8 @@ func (tc PortCheck) Charts() *Charts {
 	return &charts
 }
 
-// GatherMetrics gathers metrics
-func (tc *PortCheck) GatherMetrics() map[string]int64 {
+// Collect collects metrics
+func (tc *PortCheck) Collect() map[string]int64 {
 	for _, p := range tc.ports {
 		tc.doCh <- p
 	}
@@ -152,13 +161,4 @@ func (tc *PortCheck) GatherMetrics() map[string]int64 {
 	}
 
 	return tc.metrics
-}
-
-func init() {
-	creator := modules.Creator{
-		UpdateEvery: 5,
-		Create:      func() modules.Module { return New() },
-	}
-
-	modules.Register("portcheck", creator)
 }

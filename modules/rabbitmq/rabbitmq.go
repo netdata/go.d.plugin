@@ -126,7 +126,7 @@ func (r *Rabbitmq) Init() bool {
 
 // Check makes check
 func (r *Rabbitmq) Check() bool {
-	return len(r.GatherMetrics()) > 0
+	return len(r.Collect()) > 0
 }
 
 // Charts creates Charts
@@ -134,14 +134,14 @@ func (Rabbitmq) Charts() *Charts {
 	return charts.Copy()
 }
 
-// GatherMetrics gathers stats
-func (r *Rabbitmq) GatherMetrics() map[string]int64 {
-	if err := r.gather(r.reqOverview, &r.overview); err != nil {
+// Collect collects stats
+func (r *Rabbitmq) Collect() map[string]int64 {
+	if err := r.collect(r.reqOverview, &r.overview); err != nil {
 		r.Error(err)
 		return nil
 	}
 
-	if err := r.gather(r.reqNodes, &r.nodes); err != nil {
+	if err := r.collect(r.reqNodes, &r.nodes); err != nil {
 		r.Error(err)
 		return nil
 	}
@@ -165,7 +165,7 @@ func (r *Rabbitmq) doRequest(req *http.Request) (*http.Response, error) {
 	return r.client.Do(req)
 }
 
-func (r *Rabbitmq) gather(req *http.Request, stats interface{}) error {
+func (r *Rabbitmq) collect(req *http.Request, stats interface{}) error {
 	resp, err := r.doRequest(req)
 
 	if err != nil {
