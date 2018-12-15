@@ -235,7 +235,7 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 	}
 
 	var totalUpdated int
-	elapsed := int64(durationTo(time.Now().Sub(startTime), time.Microsecond))
+	elapsed := int64(durationTo(time.Now().Sub(startTime), time.Millisecond))
 
 	for _, chart := range *j.charts {
 
