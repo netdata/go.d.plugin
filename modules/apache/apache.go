@@ -22,6 +22,22 @@ func init() {
 	modules.Register("apache", creator)
 }
 
+// New creates Apache with default values
+func New() *Apache {
+	var (
+		defURL     = "http://localhost/server-status?auto"
+		defTimeout = time.Second
+	)
+
+	return &Apache{
+		HTTP: web.HTTP{
+			Request: web.Request{URL: defURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defTimeout}},
+		},
+		metrics: make(map[string]int64),
+	}
+}
+
 const (
 	// The lines marked "(*)" are only available if ExtendedStatus is On.
 	// In version 2.3.6, loading mod_status will toggle ExtendedStatus On by default.
@@ -40,17 +56,6 @@ const (
 	connsAsyncWriting   = "ConnsAsyncWriting"
 	scoreBoard          = "Scoreboard"
 )
-
-// New creates Apache with default values
-func New() *Apache {
-	return &Apache{
-		HTTP: web.HTTP{
-			Request: web.Request{URL: "http://localhost/server-status?auto"},
-			Client:  web.Client{Timeout: web.Duration{Duration: time.Second}},
-		},
-		metrics: make(map[string]int64),
-	}
-}
 
 // Apache apache module
 type Apache struct {
