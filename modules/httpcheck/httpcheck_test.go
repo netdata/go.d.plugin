@@ -8,44 +8,52 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/modules"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
-	assert.IsType(t, (*HTTPCheck)(nil), New())
-}
-
-func TestHTTPCheck_Init(t *testing.T) {
-	mod := New()
-
-	assert.True(t, mod.Init())
-
-	mod.ResponseMatch = "(?:qwe))"
-
-	assert.False(t, mod.Init())
-}
-
-func TestHTTPCheck_Check(t *testing.T) {
-	assert.True(t, New().Check())
-}
-
-func TestHTTPCheck_Charts(t *testing.T) {
-	assert.NotNil(t, New().Charts())
+	assert.Implements(t, (*modules.Module)(nil), New())
 }
 
 func TestHTTPCheck_Cleanup(t *testing.T) {
 	New().Cleanup()
 }
 
+func TestHTTPCheck_Init(t *testing.T) {
+	mod := New()
+
+	// OK case
+	assert.True(t, mod.Init())
+	assert.NotNil(t, mod.request)
+	assert.NotNil(t, mod.client)
+
+	// NG case
+	mod.ResponseMatch = "(?:qwe))"
+	assert.False(t, mod.Init())
+}
+
+func TestHTTPCheck_Check(t *testing.T) {
+	mod := New()
+
+	require.True(t, mod.Init())
+	assert.True(t, mod.Check())
+}
+
+func TestHTTPCheck_Charts(t *testing.T) {
+	assert.NotNil(t, New().Charts())
+}
+
 func TestHTTPCheck_Collect(t *testing.T) {
 	mod := New()
 
-	srv := httptest.NewServer(myHandler{})
-	defer srv.Close()
+	ts := httptest.NewServer(myHandler{})
+	defer ts.Close()
 
-	mod.URL = srv.URL
-	mod.Init()
+	mod.URL = ts.URL
+	require.True(t, mod.Init())
 	assert.NotNil(t, mod.Collect())
 }
 
@@ -75,7 +83,7 @@ func TestHTTPCheck_ResponseSuccess(t *testing.T) {
 	)
 }
 
-func TestHTTPCheck_ResponseSuccessBadContent(t *testing.T) {
+func TestHTTPCheck_ResponseSuccessInvalidContent(t *testing.T) {
 	mod := New()
 	mod.ResponseMatch = "no match"
 	require.True(t, mod.Init())
@@ -132,8 +140,7 @@ type nopCloser struct {
 
 func (nopCloser) Close() error { return nil }
 
-type timeoutError struct {
-}
+type timeoutError struct{}
 
 func (r timeoutError) Timeout() bool {
 	return true

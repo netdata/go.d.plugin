@@ -81,17 +81,19 @@ func (a *Apache) Init() bool {
 		return false
 	}
 
+	// create HTTP request
 	req, err := web.NewHTTPRequest(a.Request)
-
 	if err != nil {
 		a.Errorf("error on creating request : %s", err)
 		return false
 	}
-
 	a.request = req
 
+	// create HTTP client
 	a.client = web.NewHTTPClient(a.Client)
 
+	// post Init debug info
+	a.Debugf("using URL %s", a.request.URL)
 	a.Debugf("using timeout: %s", a.Timeout.Duration)
 
 	return true
