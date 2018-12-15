@@ -46,7 +46,7 @@ var charts = Charts{
 	{
 		ID:    "scoreboard",
 		Title: "ScoreBoard",
-		Units: "values",
+		Units: "events",
 		Fam:   "scoreboard",
 		Ctx:   "lighttpd.scoreboard",
 		Dims: Dims{
@@ -58,7 +58,7 @@ var charts = Charts{
 			{ID: "scoreboard_read", Name: "read"},
 			{ID: "scoreboard_read_post", Name: "read post"},
 			{ID: "scoreboard_write", Name: "write"},
-			{ID: "scoreboard_handle request", Name: "handle request"},
+			{ID: "scoreboard_handle_request", Name: "handle request"},
 			{ID: "scoreboard_request_start", Name: "request start"},
 			{ID: "scoreboard_request_end", Name: "request end"},
 			{ID: "scoreboard_response_start", Name: "response start"},

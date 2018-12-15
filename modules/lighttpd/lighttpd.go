@@ -37,6 +37,7 @@ var assignment = map[string]string{
 	totalkBytes:   "sent",
 	busyServers:   "busy",
 	idleServers:   "idle",
+	uptime:        "uptime",
 }
 
 // New creates Lighttpd with default values

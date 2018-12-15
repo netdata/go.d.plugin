@@ -32,7 +32,6 @@ func TestLighttpd_Init(t *testing.T) {
 	assert.True(t, mod.Init())
 	assert.NotNil(t, mod.request)
 	assert.NotNil(t, mod.client)
-	assert.NotZero(t, mod.Timeout.Duration)
 }
 
 func TestLighttpd_Check(t *testing.T) {
@@ -49,8 +48,8 @@ func TestLighttpd_Check(t *testing.T) {
 
 	mod := New()
 	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
-	mod.Init()
 
+	require.True(t, mod.Init())
 	assert.True(t, mod.Check())
 }
 
@@ -58,7 +57,8 @@ func TestLighttpd_CheckNG(t *testing.T) {
 	mod := New()
 
 	mod.HTTP.RawRequest = web.RawRequest{URL: "http://127.0.0.1:3001/server-status?auto"}
-	mod.Init()
+
+	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
 }
 
@@ -82,7 +82,7 @@ func TestLighttpd_Collect(t *testing.T) {
 
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
-	require.NotNil(t, mod.Collect())
+	require.True(t, len(mod.Collect()) > 0)
 
 	expected := map[string]int64{
 		assign(totalAccesses):       6384,
@@ -122,7 +122,7 @@ func TestLighttpd_InvalidData(t *testing.T) {
 	mod := New()
 	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
 
-	assert.True(t, mod.Init())
+	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
 }
 
