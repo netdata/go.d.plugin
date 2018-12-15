@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -54,6 +55,9 @@ func (d *metrics) reset() {
 // New creates HTTPCheck with default values
 func New() *HTTPCheck {
 	return &HTTPCheck{
+		HTTP: web.HTTP{
+			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
+		},
 		statuses: map[int]bool{
 			200: true,
 		},
@@ -65,15 +69,16 @@ func New() *HTTPCheck {
 type HTTPCheck struct {
 	modules.Base
 
+	web.HTTP `yaml:",inline"`
+
 	StatusAccepted []int  `yaml:"status_accepted"`
 	ResponseMatch  string `yaml:"response_match"`
-	web.HTTP       `yaml:",inline"`
 
 	match    *regexp.Regexp
 	statuses map[int]bool
 
 	request *http.Request
-	client  web.Client
+	client  web.HTTPClient
 
 	metrics metrics
 }
@@ -83,38 +88,46 @@ func (HTTPCheck) Cleanup() {}
 
 // Init makes initialization
 func (hc *HTTPCheck) Init() bool {
-	if hc.Timeout.Duration == 0 {
-		hc.Timeout.Duration = time.Second
-	}
-
-	hc.Debugf("using timeout: %s", hc.Timeout.Duration)
-
+	// populate accepted statuses
 	if len(hc.StatusAccepted) != 0 {
 		delete(hc.statuses, 200)
+
 		for _, s := range hc.StatusAccepted {
 			hc.statuses[s] = true
 		}
 	}
 
-	req, err := hc.CreateHTTPRequest()
-
+	// create HTTP request
+	req, err := web.NewHTTPRequest(hc.Request)
 	if err != nil {
-		hc.Error(err)
+		hc.Error("error on creating request %s : %s", hc.Request, err)
 		return false
 	}
-
 	hc.request = req
 
-	hc.client = hc.CreateHTTPClient()
+	// create HTTP client
+	hc.client = web.NewHTTPClient(hc.Client)
 
+	// create response match
 	re, err := regexp.Compile(hc.ResponseMatch)
-
 	if err != nil {
-		hc.Error(err)
+		hc.Errorf("error on creating regexp %s : %s", hc.ResponseMatch, err)
 		return false
 	}
-
 	hc.match = re
+
+	// post Init debug info
+	hc.Debugf("using URL %s", hc.request.URL)
+	hc.Debugf("using HTTP timeout %s", hc.Timeout.Duration)
+	var statuses []int
+	for status := range hc.statuses {
+		statuses = append(statuses, status)
+	}
+	sort.Ints(statuses)
+	hc.Debugf("using accepted HTTP statuses %s", statuses)
+	if hc.match != nil {
+		hc.Debugf("using response match regexp %s", hc.match)
+	}
 
 	return true
 }
