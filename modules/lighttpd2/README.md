@@ -1,4 +1,4 @@
-# lighttpd
+# lighttpd2
 
 This module will monitor one or more Lighttpd2 servers depending on configuration.
 
