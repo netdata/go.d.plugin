@@ -21,6 +21,28 @@ func init() {
 	modules.Register("rabbitmq", creator)
 }
 
+// New creates Rabbitmq with default values
+func New() *Rabbitmq {
+	var (
+		defURL         = "http://localhost:15672"
+		defUsername    = "guest"
+		defPassword    = "guest"
+		defHTTPTimeout = time.Second
+	)
+
+	return &Rabbitmq{
+		HTTP: web.HTTP{
+			Request: web.Request{
+				URL:      defURL,
+				Username: defUsername,
+				Password: defPassword,
+			},
+			Client: web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+		},
+		metrics: make(map[string]int64),
+	}
+}
+
 // https://www.rabbitmq.com/monitoring.html
 type (
 	apiOverview struct {
@@ -69,20 +91,6 @@ type node struct {
 	RunQueue    int `json:"run_queue" stm:"run_queue"`
 }
 
-// New creates Rabbitmq with default values
-func New() *Rabbitmq {
-	return &Rabbitmq{
-		HTTP: web.HTTP{
-			RawRequest: web.RawRequest{
-				URL:      "http://localhost:15672",
-				Username: "guest",
-				Password: "guest",
-			},
-		},
-		metrics: make(map[string]int64),
-	}
-}
-
 // Rabbitmq rabbitmq module
 type Rabbitmq struct {
 	modules.Base // should be embedded by every module
@@ -91,7 +99,7 @@ type Rabbitmq struct {
 
 	reqOverview *http.Request
 	reqNodes    *http.Request
-	client      web.Client
+	client      web.HTTPClient
 
 	overview apiOverview
 	nodes    apiNodes
@@ -104,22 +112,18 @@ func (Rabbitmq) Cleanup() {}
 
 // Init makes initialization
 func (r *Rabbitmq) Init() bool {
-	if err := r.createOverviewRequest(); err != nil {
-		r.Errorf("error on creating request : %s", err)
+	// create HTTP requests
+	if err := r.createRequests(); err != nil {
+		r.Errorf("error on creating request to %s : %s", r.URL, err)
 		return false
 	}
 
-	if err := r.createNodesRequest(); err != nil {
-		r.Errorf("error on creating request : %s", err)
-		return false
-	}
+	// create HTTP client
+	r.client = web.NewHTTPClient(r.Client)
 
-	if r.Timeout.Duration == 0 {
-		r.Timeout.Duration = time.Second
-	}
-	r.Infof("using http request timeout %s", r.Timeout.Duration)
-
-	r.client = r.CreateHTTPClient()
+	// post Init debug info
+	r.Debugf("using URL %s", r.URL)
+	r.Debugf("using timeout: %s", r.Timeout.Duration)
 
 	return true
 }
@@ -182,32 +186,24 @@ func (r *Rabbitmq) collect(req *http.Request, stats interface{}) error {
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(stats); err != nil {
-		return fmt.Errorf("erorr on decode %s request : %s", req.URL, err)
+		return fmt.Errorf("erorr on decode request to %s : %s", req.URL, err)
 	}
 
 	return nil
 }
 
-func (r *Rabbitmq) createOverviewRequest() error {
+func (r *Rabbitmq) createRequests() (err error) {
 	r.URI = "/api/overview"
-	req, err := r.CreateHTTPRequest()
 
-	if err != nil {
-		return fmt.Errorf("error on creating request : %s", err)
-	}
-	r.reqOverview = req
-
-	return nil
-}
-
-func (r *Rabbitmq) createNodesRequest() error {
-	r.URI = "/api/nodes"
-	req, err := r.CreateHTTPRequest()
-
-	if err != nil {
+	if r.reqOverview, err = web.NewHTTPRequest(r.Request); err != nil {
 		return err
 	}
-	r.reqNodes = req
+
+	r.URI = "/api/nodes"
+
+	if r.reqNodes, err = web.NewHTTPRequest(r.Request); err != nil {
+		return err
+	}
 
 	return nil
 }

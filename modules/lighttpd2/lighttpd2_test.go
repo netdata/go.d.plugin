@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	statusData, _        = ioutil.ReadFile("testdata/status.txt")
-	statusInvalidData, _ = ioutil.ReadFile("testdata/status-invalid.txt")
+	okStatus, _      = ioutil.ReadFile("testdata/status.txt")
+	invalidStatus, _ = ioutil.ReadFile("testdata/status-invalid.txt")
 )
 
-func TestLighttpd_Cleanup(t *testing.T) {
+func TestLighttpd2_Cleanup(t *testing.T) {
 	New().Cleanup()
 }
 
@@ -26,20 +26,27 @@ func TestNew(t *testing.T) {
 	assert.Implements(t, (*modules.Module)(nil), New())
 }
 
-func TestLighttpd_Init(t *testing.T) {
+func TestLighttpd2_Init(t *testing.T) {
 	mod := New()
 
-	assert.True(t, mod.Init())
+	require.True(t, mod.Init())
 	assert.NotNil(t, mod.request)
 	assert.NotNil(t, mod.client)
 }
 
-func TestLighttpd_Check(t *testing.T) {
+func TestLighttpd2_InitNG(t *testing.T) {
+	mod := New()
+
+	mod.HTTP.Request = web.Request{URL: mod.Request.URL[0 : len(mod.Request.URL)-1]}
+	assert.False(t, mod.Init())
+}
+
+func TestLighttpd2_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/server-status" {
-					_, _ = w.Write(statusData)
+					_, _ = w.Write(okStatus)
 					return
 				}
 			}))
@@ -47,8 +54,8 @@ func TestLighttpd_Check(t *testing.T) {
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?format=plain"}
 
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?format=plain"}
 	require.True(t, mod.Init())
 	assert.True(t, mod.Check())
 }
@@ -56,8 +63,7 @@ func TestLighttpd_Check(t *testing.T) {
 func TestLighttpd_CheckNG(t *testing.T) {
 	mod := New()
 
-	mod.HTTP.RawRequest = web.RawRequest{URL: "http://127.0.0.1:3001/server-status?format=plain"}
-
+	mod.HTTP.Request = web.Request{URL: "http://127.0.0.1:38001/server-status?format=plain"}
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
 }
@@ -71,14 +77,14 @@ func TestLighttpd_Collect(t *testing.T) {
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/server-status" {
-					_, _ = w.Write(statusData)
+					_, _ = w.Write(okStatus)
 					return
 				}
 			}))
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?format=plain"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?format=plain"}
 
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
@@ -120,14 +126,14 @@ func TestLighttpd_InvalidData(t *testing.T) {
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/server-status" {
-					_, _ = w.Write(statusInvalidData)
+					_, _ = w.Write(invalidStatus)
 					return
 				}
 			}))
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?format=plain"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?format=plain"}
 
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
@@ -140,7 +146,7 @@ func TestLighttpd_404(t *testing.T) {
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?format=plain"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?format=plain"}
 
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())

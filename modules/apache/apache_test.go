@@ -14,10 +14,14 @@ import (
 )
 
 var (
-	extendedData, _ = ioutil.ReadFile("testdata/extended.txt")
-	simpleData, _   = ioutil.ReadFile("testdata/simple.txt")
-	badData, _      = ioutil.ReadFile("testdata/bad.txt")
+	extendedStatus, _ = ioutil.ReadFile("testdata/status-extended.txt")
+	simpleStatus, _   = ioutil.ReadFile("testdata/status-simple.txt")
+	invalidStatus, _  = ioutil.ReadFile("testdata/status-invalid.txt")
 )
+
+func TestApache_Cleanup(t *testing.T) {
+	New().Cleanup()
+}
 
 func TestNew(t *testing.T) {
 	assert.Implements(t, (*modules.Module)(nil), New())
@@ -26,10 +30,16 @@ func TestNew(t *testing.T) {
 func TestApache_Init(t *testing.T) {
 	mod := New()
 
-	assert.True(t, mod.Init())
+	require.True(t, mod.Init())
 	assert.NotNil(t, mod.request)
 	assert.NotNil(t, mod.client)
-	assert.NotZero(t, mod.Timeout.Duration)
+}
+
+func TestApache_InitNG(t *testing.T) {
+	mod := New()
+
+	mod.HTTP.Request = web.Request{URL: mod.Request.URL[0 : len(mod.Request.URL)-1]}
+	assert.False(t, mod.Init())
 }
 
 func TestApache_Check(t *testing.T) {
@@ -37,7 +47,7 @@ func TestApache_Check(t *testing.T) {
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/server-status" {
-					_, _ = w.Write(simpleData)
+					_, _ = w.Write(simpleStatus)
 					return
 				}
 			}))
@@ -45,16 +55,17 @@ func TestApache_Check(t *testing.T) {
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
-	mod.Init()
 
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
+	require.True(t, mod.Init())
 	assert.True(t, mod.Check())
 }
 
 func TestApache_CheckNG(t *testing.T) {
 	mod := New()
 
-	mod.Init()
+	mod.HTTP.Request = web.Request{URL: "http://127.0.0.1:38001/server-status?auto"}
+	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
 }
 
@@ -67,23 +78,19 @@ func TestApache_Charts(t *testing.T) {
 	assert.True(t, len(*mod.Charts()) > len(*New().Charts()))
 }
 
-func TestApache_Cleanup(t *testing.T) {
-	New().Cleanup()
-}
-
 func TestApache_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/server-status" {
-					_, _ = w.Write(extendedData)
+					_, _ = w.Write(extendedStatus)
 					return
 				}
 			}))
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
 
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
@@ -117,21 +124,21 @@ func TestApache_Collect(t *testing.T) {
 	assert.Equal(t, expected, mod.metrics)
 }
 
-func TestApache_BadData(t *testing.T) {
+func TestApache_InvalidData(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/server-status" {
-					_, _ = w.Write(badData)
+					_, _ = w.Write(invalidStatus)
 					return
 				}
 			}))
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
 
-	assert.True(t, mod.Init())
+	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
 }
 
@@ -142,7 +149,7 @@ func TestApache_404(t *testing.T) {
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
 
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())

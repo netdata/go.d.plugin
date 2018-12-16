@@ -15,20 +15,22 @@ var (
 )
 
 func TestRawRequest_CreateRequest(t *testing.T) {
-	rawRequest := RawRequest{
+	req := Request{
 		Username: username,
 		Password: password,
 		Headers: map[string]string{
 			headerKey: headerValue,
 		},
 	}
-	req, err := rawRequest.CreateHTTPRequest()
-	assert.IsType(t, (*http.Request)(nil), req)
 
-	user, pass, ok := req.BasicAuth()
+	httpReq, err := NewHTTPRequest(req)
 
 	assert.Nil(t, err)
+	assert.IsType(t, (*http.Request)(nil), httpReq)
+
+	user, pass, ok := httpReq.BasicAuth()
+
 	assert.True(t, ok)
 	assert.True(t, user == username && pass == password)
-	assert.True(t, req.Header.Get(headerKey) == headerValue)
+	assert.True(t, httpReq.Header.Get(headerKey) == headerValue)
 }

@@ -2,12 +2,11 @@ package portcheck
 
 import (
 	"fmt"
-	"net"
 	"sort"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
-	"github.com/netdata/go.d.plugin/pkg/utils"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -17,6 +16,23 @@ func init() {
 	}
 
 	modules.Register("portcheck", creator)
+}
+
+// New creates PortCheck with default values
+func New() *PortCheck {
+	var (
+		defHTTPTimeout = time.Second
+	)
+
+	return &PortCheck{
+		Timeout: web.Duration{Duration: defHTTPTimeout},
+
+		doCh:    make(chan *port),
+		doneCh:  make(chan struct{}),
+		ports:   make([]*port, 0),
+		metrics: make(map[string]int64),
+	}
+
 }
 
 type state string
@@ -36,7 +52,9 @@ type port struct {
 }
 
 func (p *port) setState(s state) {
-	if p.state != s {
+	changed := p.state != s
+
+	if changed {
 		p.inState = p.updateEvery
 		p.state = s
 	} else {
@@ -63,25 +81,14 @@ func newPort(number, updateEvery int) *port {
 	}
 }
 
-// New creates PortCheck with default values
-func New() *PortCheck {
-	return &PortCheck{
-		doCh:    make(chan *port),
-		doneCh:  make(chan struct{}),
-		ports:   make([]*port, 0),
-		metrics: make(map[string]int64),
-	}
-
-}
-
 // PortCheck portcheck module
 type PortCheck struct {
 	modules.Base
 
-	Host        string         `yaml:"host" validate:"required"`
-	Ports       []int          `yaml:"ports" validate:"required,gte=1"`
-	Timeout     utils.Duration `yaml:"timeout"`
-	UpdateEvery int            `yaml:"update_every"`
+	Host        string       `yaml:"host" validate:"required"`
+	Ports       []int        `yaml:"ports" validate:"required,gte=1"`
+	Timeout     web.Duration `yaml:"timeout"`
+	UpdateEvery int          `yaml:"update_every"`
 
 	doCh   chan *port
 	doneCh chan struct{}
@@ -92,21 +99,15 @@ type PortCheck struct {
 	metrics map[string]int64
 }
 
+// Cleanup makes cleanup
+func (tc *PortCheck) Cleanup() {
+	for _, w := range tc.workers {
+		w.stop()
+	}
+}
+
 // Init makes initialization
 func (tc *PortCheck) Init() bool {
-	if tc.Timeout.Duration == 0 {
-		tc.Timeout.Duration = time.Second
-	}
-	tc.Debugf("using timeout: %s", tc.Timeout.Duration)
-
-	ips, err := net.LookupIP(tc.Host)
-	if err != nil {
-		return false
-	}
-
-	tc.Host = ips[len(ips)-1].String()
-	tc.Debugf("using %s:%v", tc.Host, tc.Ports)
-
 	sort.Ints(tc.Ports)
 
 	for _, p := range tc.Ports {
@@ -114,19 +115,16 @@ func (tc *PortCheck) Init() bool {
 		tc.workers = append(tc.workers, newWorker(tc.Host, tc.Timeout.Duration, tc.doCh, tc.doneCh))
 	}
 
+	tc.Debugf("using host %s", tc.Host)
+	tc.Debugf("using ports %v", tc.Ports)
+	tc.Debugf("using HTTP timeout: %s", tc.Timeout.Duration)
+
 	return true
 }
 
 // Check makes check
 func (PortCheck) Check() bool {
 	return true
-}
-
-// Cleanup makes cleanup
-func (tc *PortCheck) Cleanup() {
-	for _, w := range tc.workers {
-		w.stop()
-	}
 }
 
 // Charts creates    charts

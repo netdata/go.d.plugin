@@ -23,7 +23,7 @@ func TestSpringboot2(t *testing.T) {
 	defer ts.Close()
 	module := &SpringBoot2{
 		HTTP: web.HTTP{
-			RawRequest: web.RawRequest{
+			Request: web.Request{
 				URL: ts.URL + "/actuator/prometheus",
 			},
 		},
@@ -64,7 +64,7 @@ func TestSpringboot2_404(t *testing.T) {
 	defer ts.Close()
 	module := &SpringBoot2{
 		HTTP: web.HTTP{
-			RawRequest: web.RawRequest{
+			Request: web.Request{
 				URL: ts.URL + "/actuator/prometheus",
 			},
 		},

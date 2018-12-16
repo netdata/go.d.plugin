@@ -14,28 +14,27 @@ import (
 )
 
 var (
-	overviewData, _ = ioutil.ReadFile("testdata/overview.txt")
-	nodesData, _    = ioutil.ReadFile("testdata/nodes.txt")
-	badData, _      = ioutil.ReadFile("testdata/bad.txt")
+	overview, _ = ioutil.ReadFile("testdata/overview.txt")
+	nodes, _    = ioutil.ReadFile("testdata/nodes.txt")
+	invalid, _  = ioutil.ReadFile("testdata/invalid.txt")
 )
+
+func TestRabbitmq_Cleanup(t *testing.T) {
+	New().Cleanup()
+}
 
 func TestNew(t *testing.T) {
 	assert.Implements(t, (*modules.Module)(nil), New())
 
 }
 
-func TestRabbitmq_Cleanup(t *testing.T) {
-	New().Cleanup()
-}
-
 func TestRabbitmq_Init(t *testing.T) {
 	mod := New()
 
-	assert.True(t, mod.Init())
+	require.True(t, mod.Init())
 	assert.NotNil(t, mod.reqOverview)
 	assert.NotNil(t, mod.reqNodes)
 	assert.NotNil(t, mod.client)
-	assert.NotZero(t, mod.Timeout.Duration)
 }
 
 func TestRabbitmq_Check(t *testing.T) {
@@ -44,24 +43,24 @@ func TestRabbitmq_Check(t *testing.T) {
 			func(w http.ResponseWriter, r *http.Request) {
 				switch r.URL.Path {
 				case "/api/overview":
-					_, _ = w.Write(overviewData)
+					_, _ = w.Write(overview)
 				case "/api/nodes":
-					_, _ = w.Write(nodesData)
+					_, _ = w.Write(nodes)
 				}
 			}))
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL}
+	mod.HTTP.Request = web.Request{URL: ts.URL}
 
 	require.True(t, mod.Init())
-	require.True(t, mod.Check())
+	assert.True(t, mod.Check())
 }
 
 func TestApache_CheckNG(t *testing.T) {
 	mod := New()
 
-	mod.Init()
+	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
 }
 
@@ -75,15 +74,15 @@ func TestRabbitmq_Collect(t *testing.T) {
 			func(w http.ResponseWriter, r *http.Request) {
 				switch r.URL.Path {
 				case "/api/overview":
-					_, _ = w.Write(overviewData)
+					_, _ = w.Write(overview)
 				case "/api/nodes":
-					_, _ = w.Write(nodesData)
+					_, _ = w.Write(nodes)
 				}
 			}))
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL}
+	mod.HTTP.Request = web.Request{URL: ts.URL}
 
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
@@ -120,16 +119,16 @@ func TestRabbitmq_Collect(t *testing.T) {
 	assert.Equal(t, expected, mod.metrics)
 }
 
-func TestRabbitmq_BadData(t *testing.T) {
+func TestRabbitmq_InvalidData(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(badData)
+				_, _ = w.Write(invalid)
 			}))
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL}
+	mod.HTTP.Request = web.Request{URL: ts.URL}
 
 	assert.True(t, mod.Init())
 	assert.False(t, mod.Check())
@@ -142,7 +141,7 @@ func TestRabbitmq_404(t *testing.T) {
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL}
+	mod.HTTP.Request = web.Request{URL: ts.URL}
 
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())

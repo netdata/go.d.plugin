@@ -68,7 +68,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "reqpersec",
-		Title: "Lifetime Average Requests",
+		Title: "Lifetime Average Requests Per Second",
 		Units: "requests/s",
 		Fam:   "statistics",
 		Ctx:   "apache.reqpersec",
@@ -79,30 +79,30 @@ var charts = Charts{
 	},
 	{
 		ID:    "bytespersec",
-		Title: "Lifetime Average Bandwidth",
-		Units: "kilobits/s",
+		Title: "Lifetime Avgerage Served Per Second",
+		Units: "KiB",
 		Fam:   "statistics",
-		Ctx:   "apache.bytesperreq",
+		Ctx:   "apache.bytespersec",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "size_sec", Mul: 8, Div: 100000000},
+			{ID: "size_sec", Mul: 8, Div: 1024 * 100000},
 		},
 	},
 	{
 		ID:    "bytesperreq",
 		Title: "Lifetime Average Response Size",
-		Units: "bytes/request",
+		Units: "KiB",
 		Fam:   "statistics",
 		Ctx:   "apache.bytesperreq",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "size_req", Div: 100000},
+			{ID: "size_req", Div: 1024 * 100000},
 		},
 	},
 	{
 		ID:    "scoreboard",
-		Title: "ScoreBoard",
-		Units: "values",
+		Title: "Scoreboard",
+		Units: "events",
 		Fam:   "scoreboard",
 		Ctx:   "apache.scoreboard",
 		Dims: Dims{

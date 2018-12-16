@@ -1,23 +1,29 @@
 package nginx
 
 import (
+	"github.com/netdata/go.d.plugin/modules"
+	"github.com/stretchr/testify/require"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var testdata = []byte(`Active connections: 1
-server accepts handled requests
-36 36 126
-Reading: 0 Writing: 1 Waiting: 0
-`)
+var (
+	okStatus, _      = ioutil.ReadFile("testdata/status.txt")
+	invalidStatus, _ = ioutil.ReadFile("testdata/status-invalid.txt")
+)
+
+func TestNginx_Cleanup(t *testing.T) {
+	New().Cleanup()
+}
 
 func TestNew(t *testing.T) {
-	assert.IsType(t, (*Nginx)(nil), New())
+	assert.Implements(t, (*modules.Module)(nil), New())
 }
 
 func TestNginx_Init(t *testing.T) {
@@ -26,13 +32,32 @@ func TestNginx_Init(t *testing.T) {
 	assert.True(t, mod.Init())
 	assert.NotNil(t, mod.request)
 	assert.NotNil(t, mod.client)
-	assert.NotZero(t, mod.Timeout.Duration)
 }
 
 func TestNginx_Check(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				if r.URL.Path == "/stub_status" {
+					_, _ = w.Write(okStatus)
+					return
+				}
+			}))
+
+	defer ts.Close()
+
 	mod := New()
 
-	mod.Init()
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/stub_status"}
+	require.True(t, mod.Init())
+	assert.True(t, mod.Check())
+}
+
+func TestNginx_CheckNG(t *testing.T) {
+	mod := New()
+
+	mod.HTTP.Request = web.Request{URL: "http://127.0.0.1:38001/stub_status"}
+	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
 }
 
@@ -40,23 +65,19 @@ func TestNginx_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
 
-func TestNginx_Cleanup(t *testing.T) {
-	New().Cleanup()
-}
-
 func TestNginx_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/stub_status" {
-					_, _ = w.Write(testdata)
+					_, _ = w.Write(okStatus)
 					return
 				}
 			}))
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/stub_status"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/stub_status"}
 
 	assert.True(t, mod.Init())
 
@@ -74,4 +95,35 @@ func TestNginx_Collect(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, metrics)
+}
+
+func TestNginx_InvalidData(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				if r.URL.Path == "/stub_status" {
+					_, _ = w.Write(invalidStatus)
+					return
+				}
+			}))
+	defer ts.Close()
+
+	mod := New()
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/stub_status"}
+
+	require.True(t, mod.Init())
+	assert.False(t, mod.Check())
+}
+
+func TestNginx_404(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(404)
+	}))
+	defer ts.Close()
+
+	mod := New()
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/stub_status"}
+
+	require.True(t, mod.Init())
+	assert.False(t, mod.Check())
 }

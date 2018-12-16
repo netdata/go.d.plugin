@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
-	"github.com/netdata/go.d.plugin/pkg/utils"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -23,6 +22,22 @@ func init() {
 	modules.Register("lighttpd", creator)
 }
 
+// New creates Lighttpd with default values
+func New() *Lighttpd {
+	var (
+		defURL         = "http://localhost/server-status?auto"
+		defHTTPTimeout = time.Second
+	)
+
+	return &Lighttpd{
+		HTTP: web.HTTP{
+			Request: web.Request{URL: defURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+		},
+		metrics: make(map[string]int64),
+	}
+}
+
 const (
 	totalAccesses = "Total Accesses"
 	totalkBytes   = "Total kBytes"
@@ -32,29 +47,6 @@ const (
 	scoreBoard    = "Scoreboard"
 )
 
-var assignment = map[string]string{
-	totalAccesses: "requests",
-	totalkBytes:   "sent",
-	busyServers:   "busy",
-	idleServers:   "idle",
-	uptime:        "uptime",
-}
-
-// New creates Lighttpd with default values
-func New() *Lighttpd {
-	return &Lighttpd{
-		HTTP: web.HTTP{
-			RawRequest: web.RawRequest{
-				URL: "http://localhost/server-status?auto",
-			},
-			RawClient: web.RawClient{
-				Timeout: utils.Duration{Duration: time.Second},
-			},
-		},
-		metrics: make(map[string]int64),
-	}
-}
-
 // Lighttpd lighttpd module
 type Lighttpd struct {
 	modules.Base // should be embedded by every module
@@ -62,7 +54,7 @@ type Lighttpd struct {
 	web.HTTP `yaml:",inline"`
 
 	request *http.Request
-	client  web.Client
+	client  web.HTTPClient
 
 	metrics map[string]int64
 }
@@ -71,36 +63,46 @@ type Lighttpd struct {
 func (Lighttpd) Cleanup() {}
 
 // Init makes initialization
-func (a *Lighttpd) Init() bool {
-	req, err := a.CreateHTTPRequest()
-
-	if err != nil {
-		a.Error(err)
+func (l *Lighttpd) Init() bool {
+	if !strings.HasSuffix(l.URL, "?auto") {
+		l.Errorf("invalid status page URL %s, must end with '?auto'", l.URL)
 		return false
 	}
 
-	a.request = req
-	a.client = a.CreateHTTPClient()
+	var err error
+
+	// create HTTP request
+	if l.request, err = web.NewHTTPRequest(l.Request); err != nil {
+		l.Errorf("error on creating request to %s : %s", l.URL, err)
+		return false
+	}
+
+	// create HTTP client
+	l.client = web.NewHTTPClient(l.Client)
+
+	// post Init debug info
+	l.Debugf("using URL %s", l.request.URL)
+	l.Debugf("using timeout: %s", l.Timeout.Duration)
 
 	return true
 }
 
 // Check makes check
-func (a *Lighttpd) Check() bool {
-	return len(a.Collect()) > 0
+func (l *Lighttpd) Check() bool {
+	return len(l.Collect()) > 0
 }
 
 // Charts creates Charts
-func (a Lighttpd) Charts() *modules.Charts {
+func (l Lighttpd) Charts() *modules.Charts {
 	return charts.Copy()
 }
 
 // Collect collects metrics
-func (a *Lighttpd) Collect() map[string]int64 {
-	resp, err := a.doRequest()
+func (l *Lighttpd) Collect() map[string]int64 {
+	resp, err := l.doRequest()
 
 	if err != nil {
-		a.Errorf("error on request to %s : %s", a.request.URL, err)
+		l.Errorf("error on request to %s : %s", l.request.URL, err)
 		return nil
 	}
 
@@ -110,27 +112,27 @@ func (a *Lighttpd) Collect() map[string]int64 {
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		a.Errorf("%s returned HTTP status %d", a.request.URL, resp.StatusCode)
+		l.Errorf("%s returned HTTP status %d", l.request.URL, resp.StatusCode)
 		return nil
 	}
 
-	if err := a.parseResponse(resp); err != nil {
-		a.Errorf("error on parse response : %s", err)
+	if err := l.parseResponse(resp); err != nil {
+		l.Errorf("error on parse response : %s", err)
 		return nil
 	}
 
-	return a.metrics
+	return l.metrics
 }
 
-func (a *Lighttpd) doRequest() (*http.Response, error) {
-	return a.client.Do(a.request)
+func (l *Lighttpd) doRequest() (*http.Response, error) {
+	return l.client.Do(l.request)
 }
 
-func (a *Lighttpd) parseResponse(resp *http.Response) error {
+func (l *Lighttpd) parseResponse(resp *http.Response) error {
 	s := bufio.NewScanner(resp.Body)
 
 	for s.Scan() {
-		if err := parseLine(s.Text(), a.metrics); err != nil {
+		if err := parseLine(s.Text(), l.metrics); err != nil {
 			return err
 		}
 	}
@@ -227,6 +229,14 @@ func parseScoreboard(scoreboard string, metrics map[string]int64) {
 	metrics["scoreboard_request_end"] = Q
 	metrics["scoreboard_response_start"] = s
 	metrics["scoreboard_response_end"] = S
+}
+
+var assignment = map[string]string{
+	totalAccesses: "requests",
+	totalkBytes:   "sent",
+	busyServers:   "busy",
+	idleServers:   "idle",
+	uptime:        "uptime",
 }
 
 func assign(key string) string {
