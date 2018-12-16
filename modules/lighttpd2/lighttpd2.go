@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
-	"github.com/netdata/go.d.plugin/pkg/utils"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -25,14 +24,15 @@ func init() {
 
 // New creates Lighttpd2 with default values
 func New() *Lighttpd2 {
+	var (
+		defURL         = "http://localhost/server-status?format=plain"
+		defHTTPTimeout = time.Second
+	)
+
 	return &Lighttpd2{
 		HTTP: web.HTTP{
-			RawRequest: web.RawRequest{
-				URL: "http://localhost/server-status?format=plain",
-			},
-			RawClient: web.RawClient{
-				Timeout: utils.Duration{Duration: time.Second},
-			},
+			Request: web.Request{URL: defURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
 		metrics: make(map[string]int64),
 	}
@@ -45,7 +45,7 @@ type Lighttpd2 struct {
 	web.HTTP `yaml:",inline"`
 
 	request *http.Request
-	client  web.Client
+	client  web.HTTPClient
 
 	metrics map[string]int64
 }
@@ -54,36 +54,46 @@ type Lighttpd2 struct {
 func (Lighttpd2) Cleanup() {}
 
 // Init makes initialization
-func (a *Lighttpd2) Init() bool {
-	req, err := a.CreateHTTPRequest()
-
-	if err != nil {
-		a.Error(err)
+func (l *Lighttpd2) Init() bool {
+	if !strings.HasSuffix(l.URL, "?format=plain") {
+		l.Errorf("invalid status page URL %s, must end with '?format=plain'", l.URL)
 		return false
 	}
 
-	a.request = req
-	a.client = a.CreateHTTPClient()
+	var err error
+
+	// create HTTP request
+	if l.request, err = web.NewHTTPRequest(l.Request); err != nil {
+		l.Errorf("error on creating request to %s : %s", l.URL, err)
+		return false
+	}
+
+	// create HTTP client
+	l.client = web.NewHTTPClient(l.Client)
+
+	// post Init debug info
+	l.Debugf("using URL %s", l.request.URL)
+	l.Debugf("using timeout: %s", l.Timeout.Duration)
 
 	return true
 }
 
 // Check makes check
-func (a *Lighttpd2) Check() bool {
-	return len(a.Collect()) > 0
+func (l *Lighttpd2) Check() bool {
+	return len(l.Collect()) > 0
 }
 
 // Charts creates Charts
-func (a Lighttpd2) Charts() *modules.Charts {
+func (l Lighttpd2) Charts() *modules.Charts {
 	return charts.Copy()
 }
 
 // Collect collects metrics
-func (a *Lighttpd2) Collect() map[string]int64 {
-	resp, err := a.doRequest()
+func (l *Lighttpd2) Collect() map[string]int64 {
+	resp, err := l.doRequest()
 
 	if err != nil {
-		a.Errorf("error on request to %s : %s", a.request.URL, err)
+		l.Errorf("error on request to %s : %s", l.request.URL, err)
 		return nil
 	}
 
@@ -93,23 +103,23 @@ func (a *Lighttpd2) Collect() map[string]int64 {
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		a.Errorf("%s returned HTTP status %d", a.request.URL, resp.StatusCode)
+		l.Errorf("%s returned HTTP status %d", l.request.URL, resp.StatusCode)
 		return nil
 	}
 
-	if err := a.parseResponse(resp); err != nil {
-		a.Errorf("error on parse response : %s", err)
+	if err := l.parseResponse(resp); err != nil {
+		l.Errorf("error on parse response : %s", err)
 		return nil
 	}
 
-	return a.metrics
+	return l.metrics
 }
 
-func (a *Lighttpd2) doRequest() (*http.Response, error) {
-	return a.client.Do(a.request)
+func (l *Lighttpd2) doRequest() (*http.Response, error) {
+	return l.client.Do(l.request)
 }
 
-func (a *Lighttpd2) parseResponse(resp *http.Response) error {
+func (l *Lighttpd2) parseResponse(resp *http.Response) error {
 	var parsed int
 
 	s := bufio.NewScanner(resp.Body)
@@ -121,7 +131,7 @@ func (a *Lighttpd2) parseResponse(resp *http.Response) error {
 			continue
 		}
 
-		if err := parseLine(line, a.metrics); err != nil {
+		if err := parseLine(line, l.metrics); err != nil {
 			return err
 		}
 		parsed++

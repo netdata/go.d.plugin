@@ -22,6 +22,20 @@ func init() {
 	modules.Register("nginx", creator)
 }
 
+// New creates Nginx with default values
+func New() *Nginx {
+	var (
+		defURL         = "http://localhost/stub_status"
+		defHTTPTimeout = time.Second
+	)
+	return &Nginx{
+		HTTP: web.HTTP{
+			Request: web.Request{URL: defURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+		},
+	}
+}
+
 type metrics struct {
 	Active   int `stm:"active"`
 	Requests int `stm:"requests"`
@@ -32,11 +46,6 @@ type metrics struct {
 	Handled  int `stm:"handled"`
 }
 
-// New creates Nginx with default values
-func New() *Nginx {
-	return &Nginx{}
-}
-
 // Nginx nginx module
 type Nginx struct {
 	modules.Base // should be embedded by every module
@@ -44,7 +53,7 @@ type Nginx struct {
 	web.HTTP `yaml:",inline"`
 
 	request *http.Request
-	client  web.Client
+	client  web.HTTPClient
 
 	metrics metrics
 }
@@ -54,19 +63,20 @@ func (Nginx) Cleanup() {}
 
 // Init makes initialization
 func (n *Nginx) Init() bool {
-	req, err := n.CreateHTTPRequest()
+	var err error
 
-	if err != nil {
-		n.Error(err)
+	// create HTTP request
+	if n.request, err = web.NewHTTPRequest(n.Request); err != nil {
+		n.Errorf("error on creating request to %s : %s", n.URL, err)
 		return false
 	}
 
-	if n.Timeout.Duration == 0 {
-		n.Timeout.Duration = time.Second
-	}
+	// create HTTP client
+	n.client = web.NewHTTPClient(n.Client)
 
-	n.request = req
-	n.client = n.CreateHTTPClient()
+	// post Init debug info
+	n.Debugf("using URL %s", n.request.URL)
+	n.Debugf("using timeout: %s", n.Timeout.Duration)
 
 	return true
 }
@@ -101,7 +111,7 @@ func (n *Nginx) Collect() map[string]int64 {
 	}
 
 	if err := n.parseResponse(resp); err != nil {
-		n.Error(err)
+		n.Errorf("error on parse response : %s", err)
 		return nil
 	}
 

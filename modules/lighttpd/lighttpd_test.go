@@ -34,6 +34,13 @@ func TestLighttpd_Init(t *testing.T) {
 	assert.NotNil(t, mod.client)
 }
 
+func TestApache_InitNG(t *testing.T) {
+	mod := New()
+
+	mod.HTTP.Request = web.Request{URL: mod.Request.URL[0 : len(mod.Request.URL)-1]}
+	assert.False(t, mod.Init())
+}
+
 func TestLighttpd_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
@@ -47,7 +54,7 @@ func TestLighttpd_Check(t *testing.T) {
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
 
 	require.True(t, mod.Init())
 	assert.True(t, mod.Check())
@@ -56,7 +63,7 @@ func TestLighttpd_Check(t *testing.T) {
 func TestLighttpd_CheckNG(t *testing.T) {
 	mod := New()
 
-	mod.HTTP.RawRequest = web.RawRequest{URL: "http://127.0.0.1:3001/server-status?auto"}
+	mod.HTTP.Request = web.Request{URL: "http://127.0.0.1:38001/server-status?auto"}
 
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
@@ -78,7 +85,7 @@ func TestLighttpd_Collect(t *testing.T) {
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
 
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
@@ -120,7 +127,7 @@ func TestLighttpd_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
 
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
@@ -133,7 +140,7 @@ func TestLighttpd_404(t *testing.T) {
 	defer ts.Close()
 
 	mod := New()
-	mod.HTTP.RawRequest = web.RawRequest{URL: ts.URL + "/server-status?auto"}
+	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
 
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())

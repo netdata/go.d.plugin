@@ -22,8 +22,8 @@ type (
 	}
 
 	prometheus struct {
-		client  web.Client
-		request web.RawRequest
+		client  web.HTTPClient
+		request web.Request
 		metrics Metrics
 
 		// internal use
@@ -39,7 +39,7 @@ const (
 )
 
 // New creates a Prometheus instance.
-func New(client web.Client, request web.RawRequest) Prometheus {
+func New(client web.HTTPClient, request web.Request) Prometheus {
 	return &prometheus{
 		client:  client,
 		request: request,
@@ -95,7 +95,7 @@ func parse(prometheusText []byte, metrics *Metrics) error {
 }
 
 func (p *prometheus) fetch(w io.Writer) error {
-	req, err := p.request.CreateHTTPRequest()
+	req, err := web.NewHTTPRequest(p.request)
 	if err != nil {
 		return err
 	}

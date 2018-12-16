@@ -27,13 +27,13 @@ func init() {
 // New creates HTTPCheck with default values
 func New() *HTTPCheck {
 	var (
-		defTimeout        = time.Second
+		defHTTPTimeout    = time.Second
 		defStatusAccepted = map[int]bool{200: true}
 	)
 
 	return &HTTPCheck{
 		HTTP: web.HTTP{
-			Client: web.Client{Timeout: web.Duration{Duration: defTimeout}},
+			Client: web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
 		statuses: defStatusAccepted,
 		metrics:  metrics{},
@@ -100,13 +100,13 @@ func (hc *HTTPCheck) Init() bool {
 		}
 	}
 
+	var err error
+
 	// create HTTP request
-	req, err := web.NewHTTPRequest(hc.Request)
-	if err != nil {
-		hc.Error("error on creating request %s : %s", hc.Request, err)
+	if hc.request, err = web.NewHTTPRequest(hc.Request); err != nil {
+		hc.Errorf("error on creating request to %s : %s", hc.URL, err)
 		return false
 	}
-	hc.request = req
 
 	// create HTTP client
 	hc.client = web.NewHTTPClient(hc.Client)

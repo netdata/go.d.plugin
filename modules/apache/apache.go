@@ -25,14 +25,14 @@ func init() {
 // New creates Apache with default values
 func New() *Apache {
 	var (
-		defURL     = "http://localhost/server-status?auto"
-		defTimeout = time.Second
+		defURL         = "http://localhost/server-status?auto"
+		defHTTPTimeout = time.Second
 	)
 
 	return &Apache{
 		HTTP: web.HTTP{
 			Request: web.Request{URL: defURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defTimeout}},
+			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
 		metrics: make(map[string]int64),
 	}
@@ -81,13 +81,13 @@ func (a *Apache) Init() bool {
 		return false
 	}
 
+	var err error
+
 	// create HTTP request
-	req, err := web.NewHTTPRequest(a.Request)
-	if err != nil {
-		a.Errorf("error on creating request : %s", err)
+	if a.request, err = web.NewHTTPRequest(a.Request); err != nil {
+		a.Errorf("error on creating request to %s : %s", a.URL, err)
 		return false
 	}
-	a.request = req
 
 	// create HTTP client
 	a.client = web.NewHTTPClient(a.Client)

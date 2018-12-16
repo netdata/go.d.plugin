@@ -19,6 +19,10 @@ var (
 	invalidStatus, _  = ioutil.ReadFile("testdata/status-invalid.txt")
 )
 
+func TestApache_Cleanup(t *testing.T) {
+	New().Cleanup()
+}
+
 func TestNew(t *testing.T) {
 	assert.Implements(t, (*modules.Module)(nil), New())
 }
@@ -34,7 +38,7 @@ func TestApache_Init(t *testing.T) {
 func TestApache_InitNG(t *testing.T) {
 	mod := New()
 
-	mod.HTTP.Request = web.Request{URL: defaultURL[0 : len(defaultURL)-1]}
+	mod.HTTP.Request = web.Request{URL: mod.Request.URL[0 : len(mod.Request.URL)-1]}
 	assert.False(t, mod.Init())
 }
 
@@ -60,6 +64,7 @@ func TestApache_Check(t *testing.T) {
 func TestApache_CheckNG(t *testing.T) {
 	mod := New()
 
+	mod.HTTP.Request = web.Request{URL: "http://127.0.0.1:38001/server-status?auto"}
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())
 }
@@ -71,10 +76,6 @@ func TestApache_Charts(t *testing.T) {
 	mod.extendedStats = true
 
 	assert.True(t, len(*mod.Charts()) > len(*New().Charts()))
-}
-
-func TestApache_Cleanup(t *testing.T) {
-	New().Cleanup()
 }
 
 func TestApache_Collect(t *testing.T) {
