@@ -63,6 +63,7 @@ func TestNginx_CheckNG(t *testing.T) {
 
 func TestNginx_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
+	assert.NoError(t, modules.CheckCharts(*New().Charts()...))
 }
 
 func TestNginx_Collect(t *testing.T) {

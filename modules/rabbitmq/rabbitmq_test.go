@@ -66,6 +66,7 @@ func TestApache_CheckNG(t *testing.T) {
 
 func TestRabbitmq_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
+	assert.NoError(t, modules.CheckCharts(*New().Charts()...))
 }
 
 func TestRabbitmq_Collect(t *testing.T) {

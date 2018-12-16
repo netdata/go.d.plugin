@@ -70,11 +70,12 @@ func TestApache_CheckNG(t *testing.T) {
 }
 
 func TestApache_Charts(t *testing.T) {
-	assert.NotNil(t, New().Charts())
-
 	mod := New()
-	mod.extendedStats = true
 
+	assert.NotNil(t, mod.Charts())
+	assert.NoError(t, modules.CheckCharts(*mod.Charts()...))
+
+	mod.extendedStats = true
 	assert.True(t, len(*mod.Charts()) > len(*New().Charts()))
 }
 

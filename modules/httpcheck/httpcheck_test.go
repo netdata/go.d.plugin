@@ -44,6 +44,7 @@ func TestHTTPCheck_Check(t *testing.T) {
 
 func TestHTTPCheck_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
+	assert.NoError(t, modules.CheckCharts(*New().Charts()...))
 }
 
 func TestHTTPCheck_Collect(t *testing.T) {
