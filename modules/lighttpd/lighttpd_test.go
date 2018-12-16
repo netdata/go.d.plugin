@@ -71,6 +71,7 @@ func TestLighttpd_CheckNG(t *testing.T) {
 
 func TestLighttpd_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
+	assert.NoError(t, modules.CheckCharts(*New().Charts()...))
 }
 
 func TestLighttpd_Collect(t *testing.T) {
