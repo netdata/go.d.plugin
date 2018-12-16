@@ -112,12 +112,10 @@ func (hc *HTTPCheck) Init() bool {
 	hc.client = web.NewHTTPClient(hc.Client)
 
 	// create response match
-	re, err := regexp.Compile(hc.ResponseMatch)
-	if err != nil {
+	if hc.match, err = regexp.Compile(hc.ResponseMatch); err != nil {
 		hc.Errorf("error on creating regexp %s : %s", hc.ResponseMatch, err)
 		return false
 	}
-	hc.match = re
 
 	// post Init debug info
 	hc.Debugf("using URL %s", hc.request.URL)
