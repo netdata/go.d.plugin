@@ -174,7 +174,7 @@ func (w *WebLog) perRequest(gm parser.GroupMap) {
 	}
 
 	if _, ok := gm.Lookup("version"); ok {
-		w.perHTTPMethod(gm)
+		w.perHTTPVersion(gm)
 	}
 }
 
