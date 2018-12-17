@@ -237,6 +237,20 @@ func TestChart_check(t *testing.T) {
 	chart = createTestChart("1")
 	chart.Units = ""
 	assert.Error(t, checkChart(chart))
+
+	chart = createTestChart("1")
+	chart.Dims = Dims{
+		{ID: "1"},
+		{ID: "1"},
+	}
+	assert.Error(t, checkChart(chart))
+
+	chart = createTestChart("1")
+	chart.Vars = Vars{
+		{ID: "1"},
+		{ID: "1"},
+	}
+	assert.Error(t, checkChart(chart))
 }
 
 func TestDim_check(t *testing.T) {

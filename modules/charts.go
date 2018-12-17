@@ -151,13 +151,12 @@ func (o Opts) String() string {
 
 // Add adds (appends) a variable number of Charts.
 func (c *Charts) Add(charts ...*Chart) error {
-	if err := CheckCharts(charts...); err != nil {
-		return err
-	}
-
 	for _, chart := range charts {
+		if err := checkChart(chart); err != nil {
+			return fmt.Errorf("error on adding chart : %s", err)
+		}
 		if c.index(chart.ID) != -1 {
-			return fmt.Errorf("chart '%s' is already in charts", chart.ID)
+			return fmt.Errorf("error on adding chart : '%s' is already in charts", chart.ID)
 		}
 		*c = append(*c, chart)
 	}
@@ -188,7 +187,7 @@ func (c Charts) Has(chartID string) bool {
 func (c *Charts) Remove(chartID string) error {
 	idx := c.index(chartID)
 	if idx == -1 {
-		return fmt.Errorf("chart '%s' is not in charts", chartID)
+		return fmt.Errorf("error on removing chart : '%s' is not in charts", chartID)
 	}
 	*c = append((*c)[:idx], (*c)[idx+1:]...)
 	return nil
@@ -224,7 +223,7 @@ func (c *Chart) AddDim(newDim *Dim) error {
 		return err
 	}
 	if c.indexDim(newDim.ID) != -1 {
-		return fmt.Errorf("dim '%s' is already in chart '%s'", newDim.ID, c.ID)
+		return fmt.Errorf("error on adding dim : '%s' is already in chart '%s' dims", newDim.ID, c.ID)
 	}
 	c.Dims = append(c.Dims, newDim)
 
@@ -237,7 +236,7 @@ func (c *Chart) AddVar(newVar *Var) error {
 		return err
 	}
 	if c.indexVar(newVar.ID) != -1 {
-		return fmt.Errorf("var '%s' is already in chart '%s'", newVar.ID, c.ID)
+		return fmt.Errorf("error on adding var : '%s' is already in chart '%s' vars", newVar.ID, c.ID)
 	}
 	c.Vars = append(c.Vars, newVar)
 
@@ -257,7 +256,7 @@ func (c *Chart) GetDim(dimID string) *Dim {
 func (c *Chart) RemoveDim(dimID string) error {
 	idx := c.indexDim(dimID)
 	if idx == -1 {
-		return fmt.Errorf("chart '%s' doesn't contain '%s'", c.ID, dimID)
+		return fmt.Errorf("error on removing dim : '%s' isn't in chart '%s'", dimID, c.ID)
 	}
 	c.Dims = append(c.Dims[:idx], c.Dims[idx+1:]...)
 
@@ -313,6 +312,7 @@ func (v Var) copy() *Var {
 
 // CheckCharts checks charts
 func CheckCharts(charts ...*Chart) error {
+	var ()
 	for _, chart := range charts {
 		if err := checkChart(chart); err != nil {
 			return err
@@ -338,15 +338,28 @@ func checkChart(chart *Chart) error {
 		return fmt.Errorf("unacceptable symbol in chart id '%s' : '%s'", chart.ID, string(id))
 	}
 
+	set := make(map[string]bool)
+
 	for _, d := range chart.Dims {
 		if err := checkDim(d); err != nil {
 			return err
 		}
+		if set[d.ID] {
+			return fmt.Errorf("duplicate dim '%s' in chart '%s'", d.ID, chart.ID)
+		}
+		set[d.ID] = true
 	}
+
+	set = make(map[string]bool)
+
 	for _, v := range chart.Vars {
 		if err := checkVar(v); err != nil {
 			return err
 		}
+		if set[v.ID] {
+			return fmt.Errorf("duplicate var '%s' in chart '%s'", v.ID, chart.ID)
+		}
+		set[v.ID] = true
 	}
 	return nil
 }
