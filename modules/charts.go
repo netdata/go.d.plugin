@@ -312,7 +312,6 @@ func (v Var) copy() *Var {
 
 // CheckCharts checks charts
 func CheckCharts(charts ...*Chart) error {
-	var ()
 	for _, chart := range charts {
 		if err := checkChart(chart); err != nil {
 			return err
