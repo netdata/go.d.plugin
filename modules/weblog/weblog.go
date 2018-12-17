@@ -3,7 +3,6 @@ package weblog
 import (
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/modules/weblog/category"
@@ -40,27 +39,32 @@ type WebLog struct {
 	DoPerURLCharts   bool           `yaml:"per_category_charts"`
 	DoAllTimeIPs     bool           `yaml:"all_time_clients"`
 
-	//tail   *tail.Tail
-	//timings    timings
-	//histograms histograms
+	tail *tail.Tail
+
+	charts *modules.Charts
 
 	parser.Parser
 	filter filter.Filter
 
 	matchedURL string
 
-	urlCats  []category.Category
-	userCats []category.Category
+	categories struct {
+		url  []category.Category
+		user []category.Category
+	}
 
-	curPollIPs map[string]bool
-	allTimeIPs map[string]bool
+	hooks struct {
+		stop    chan struct{}
+		collect chan struct{}
+	}
 
-	tail *tail.Tail
+	clientIPs struct {
+		cur map[string]bool
+		all map[string]bool
+	}
 
-	charts *modules.Charts
-
-	mux     *sync.Mutex
-	metrics map[string]int64
+	tailMetrics map[string]int64
+	metrics     map[string]int64
 }
 
 func (WebLog) Cleanup() {
@@ -79,17 +83,39 @@ func (WebLog) Charts() *modules.Charts {
 	return nil
 }
 
-func (WebLog) Collect() map[string]int64 {
-	return nil
+func (w *WebLog) Collect() map[string]int64 {
+	w.hooks.collect <- struct{}{}
+
+	return w.metrics
 }
 
 func (w *WebLog) parseLoop() {
+LOOP:
 	for {
 		select {
+		case <-w.hooks.stop:
+			w.cleanup()
+			break LOOP
+		case <-w.hooks.collect:
+			w.copyMetrics()
 		case line := <-w.tail.Lines:
 			w.parseLine(line.Text)
 		}
 	}
+}
+
+func (w *WebLog) cleanup() {
+	w.tail.Cleanup()
+	_ = w.tail.Stop()
+}
+
+func (w *WebLog) copyMetrics() {
+	for k, v := range w.tailMetrics {
+		w.metrics[k] = v
+	}
+
+	// add timings
+	// reset timings
 }
 
 func (w *WebLog) parseLine(line string) {
@@ -157,7 +183,6 @@ func (w *WebLog) codeStatus(gm parser.GroupMap) {
 	}
 }
 
-// method, url, http version
 func (w *WebLog) perRequest(gm parser.GroupMap) {
 	request := gm.Get("request")
 
@@ -195,7 +220,7 @@ func (w *WebLog) perHTTPMethod(gm parser.GroupMap) {
 func (w *WebLog) perURLCategory(gm parser.GroupMap) {
 	url := gm.Get("url")
 
-	for _, v := range w.urlCats {
+	for _, v := range w.categories.url {
 		if v.Match(url) {
 			w.metrics[v.Name()]++
 			w.matchedURL = v.Name()
@@ -209,7 +234,7 @@ func (w *WebLog) perURLCategory(gm parser.GroupMap) {
 func (w *WebLog) perUserCategory(gm parser.GroupMap) {
 	url := gm.Get("user_defined")
 
-	for _, v := range w.userCats {
+	for _, v := range w.categories.user {
 		if v.Match(url) {
 			w.metrics[v.Name()]++
 			break
@@ -263,8 +288,8 @@ func (w *WebLog) perIPProto(gm parser.GroupMap) {
 
 	w.metrics["req_"+proto]++
 
-	if _, ok := w.curPollIPs[address]; !ok {
-		w.curPollIPs[address] = true
+	if _, ok := w.clientIPs.cur[address]; !ok {
+		w.clientIPs.cur[address] = true
 		w.metrics["unique_cur_"+proto]++
 	}
 
@@ -272,8 +297,8 @@ func (w *WebLog) perIPProto(gm parser.GroupMap) {
 		return
 	}
 
-	if _, ok := w.allTimeIPs[address]; !ok {
-		w.allTimeIPs[address] = true
+	if _, ok := w.clientIPs.all[address]; !ok {
+		w.clientIPs.all[address] = true
 		w.metrics["unique_all_"+proto]++
 	}
 
