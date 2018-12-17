@@ -55,7 +55,7 @@ type WebLog struct {
 	curPollIPs map[string]bool
 	allTimeIPs map[string]bool
 
-	tail tail.Tail
+	tail *tail.Tail
 
 	charts *modules.Charts
 
@@ -161,16 +161,20 @@ func (w *WebLog) codeStatus(gm parser.GroupMap) {
 func (w *WebLog) perRequest(gm parser.GroupMap) {
 	request := gm.Get("request")
 
-	ok := true
-
 	if request != "" {
-		gm, ok = w.Parse(request)
+		gm, _ = w.Parse(request)
 	}
 
-	if ok {
+	if _, ok := gm.Lookup("method"); ok {
 		w.perHTTPMethod(gm)
+	}
+
+	if _, ok := gm.Lookup("url"); ok {
 		w.perURLCategory(gm)
-		w.perHTTPVersion(gm)
+	}
+
+	if _, ok := gm.Lookup("version"); ok {
+		w.perHTTPMethod(gm)
 	}
 }
 
