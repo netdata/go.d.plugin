@@ -1,12 +1,17 @@
 package weblog
 
 import (
-	"github.com/netdata/go.d.plugin/modules/weblog/category"
-	"github.com/netdata/go.d.plugin/modules/weblog/filter"
-	"github.com/netdata/go.d.plugin/modules/weblog/parser"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/modules/weblog/category"
+	"github.com/netdata/go.d.plugin/modules/weblog/charts"
+	"github.com/netdata/go.d.plugin/modules/weblog/filter"
+	"github.com/netdata/go.d.plugin/modules/weblog/parser"
+
+	"github.com/hpcloud/tail"
 )
 
 func init() {
@@ -24,27 +29,35 @@ func New() *WebLog {
 type WebLog struct {
 	modules.Base
 
-	Path                  string         `yaml:"path" validate:"required"`
-	Filter                filter.Raw     `yaml:"filter"`
-	URLCategories         []category.Raw `yaml:"categories"`
-	UserDefinedCategories []category.Raw `yaml:"user_defined_categories"`
-	CustomParser          string         `yaml:"custom_log_format"`
-	Histogram             []int          `yaml:"histogram"`
-	DoCodesDetailed       bool           `yaml:"detailed_response_codes"`
-	DoCodesAggregate      bool           `yaml:"detailed_response_codes_aggregate"`
-	DoPerURLCharts        bool           `yaml:"per_category_charts"`
-	DoAllTimeIPs          bool           `yaml:"clients_all_time"`
+	Path             string         `yaml:"path" validate:"required"`
+	Filter           filter.Raw     `yaml:"filter"`
+	URLCats          []category.Raw `yaml:"categories"`
+	UserCats         []category.Raw `yaml:"user_categories"`
+	CustomParser     string         `yaml:"custom_log_format"`
+	Histogram        []int          `yaml:"histogram"`
+	DoCodesDetailed  bool           `yaml:"detailed_response_codes"`
+	DoCodesAggregate bool           `yaml:"detailed_response_codes_aggregate"`
+	DoPerURLCharts   bool           `yaml:"per_category_charts"`
+	DoAllTimeIPs     bool           `yaml:"all_time_clients"`
 
 	//tail   *tail.Tail
 	//timings    timings
 	//histograms histograms
 
-	parser parser.Parser
+	parser.Parser
 	filter filter.Filter
+
+	matchedURL string
 
 	urlCats  []category.Category
 	userCats []category.Category
-	uniqIPs  map[string]bool
+
+	curPollIPs map[string]bool
+	allTimeIPs map[string]bool
+
+	tail tail.Tail
+
+	charts *modules.Charts
 
 	mux     *sync.Mutex
 	metrics map[string]int64
@@ -55,12 +68,6 @@ func (WebLog) Cleanup() {
 }
 
 func (w *WebLog) Init() bool {
-	f, err := filter.New(w.Filter)
-	if err != nil {
-		w.Error("build filter error : %s", err)
-	}
-	w.filter = f
-
 	return false
 }
 
@@ -76,9 +83,225 @@ func (WebLog) Collect() map[string]int64 {
 	return nil
 }
 
-//
-//func (WebLog) Init() {}
-//
+func (w *WebLog) parseLoop() {
+	for {
+		select {
+		case line := <-w.tail.Lines:
+			w.parseLine(line.Text)
+		}
+	}
+}
+
+func (w *WebLog) parseLine(line string) {
+	//if !w.filter.Filter(line) {
+	//	return
+	//}
+	//
+	//gm, ok := w.Parse(line)
+	//
+	//if !ok {
+	//	return
+	//}
+}
+
+func (w *WebLog) codeFam(gm parser.GroupMap) {
+	fam := gm.Get("code")[:1] + "xx"
+
+	if _, ok := w.metrics[fam]; ok {
+		w.metrics[fam]++
+	} else {
+		w.metrics["0xx"]++
+	}
+}
+
+func (w *WebLog) codeDetailed(gm parser.GroupMap) {
+	code := gm.Get("code")
+
+	if _, ok := w.metrics[code]; ok {
+		w.metrics[code]++
+		return
+	}
+
+	if w.DoCodesAggregate {
+		chart := w.charts.Get(charts.ResponseCodesDetailed.ID)
+		_ = chart.AddDim(&modules.Dim{ID: code, Algo: modules.Incremental})
+		w.metrics[code]++
+		return
+	}
+
+	var v = "other"
+
+	if code[0] <= 53 {
+		v = code[:1] + "xx"
+	}
+
+	chart := w.charts.Get(charts.ResponseCodesDetailed.ID + "_" + v)
+	_ = chart.AddDim(&modules.Dim{ID: code, Algo: modules.Incremental})
+	w.metrics[code]++
+}
+
+func (w *WebLog) codeStatus(gm parser.GroupMap) {
+	code, fam := gm.Get("code"), gm.Get("code")[:1]
+
+	switch {
+	case fam == "2", code == "304", fam == "1":
+		w.metrics["successful_requests"]++
+	case fam == "3":
+		w.metrics["redirects"]++
+	case fam == "4":
+		w.metrics["bad_requests"]++
+	case fam == "5":
+		w.metrics["server_errors"]++
+	default:
+		w.metrics["other_requests"]++
+	}
+}
+
+// method, url, http version
+func (w *WebLog) perRequest(gm parser.GroupMap) {
+	request := gm.Get("request")
+
+	ok := true
+
+	if request != "" {
+		gm, ok = w.Parse(request)
+	}
+
+	if ok {
+		w.perHTTPMethod(gm)
+		w.perURLCategory(gm)
+		w.perHTTPVersion(gm)
+	}
+}
+
+func (w *WebLog) perHTTPMethod(gm parser.GroupMap) {
+	method := gm.Get("method")
+
+	if _, ok := w.metrics[method]; !ok {
+		chart := w.charts.Get(charts.RequestsPerHTTPMethod.ID)
+		_ = chart.AddDim(&modules.Dim{
+			ID:   method,
+			Algo: modules.Incremental,
+		})
+	}
+
+	w.metrics[method]++
+}
+
+func (w *WebLog) perURLCategory(gm parser.GroupMap) {
+	url := gm.Get("url")
+
+	for _, v := range w.urlCats {
+		if v.Match(url) {
+			w.metrics[v.Name()]++
+			w.matchedURL = v.Name()
+			break
+		}
+	}
+	w.matchedURL = ""
+	w.metrics["url_other"]++
+}
+
+func (w *WebLog) perUserCategory(gm parser.GroupMap) {
+	url := gm.Get("user_defined")
+
+	for _, v := range w.userCats {
+		if v.Match(url) {
+			w.metrics[v.Name()]++
+			break
+		}
+	}
+	w.metrics["user_defined_other"]++
+}
+
+func (w *WebLog) perHTTPVersion(gm parser.GroupMap) {
+	version := gm.Get("version")
+
+	dimID := strings.Replace(gm.Get("version"), ".", "_", 1)
+
+	if _, ok := w.metrics[dimID]; !ok {
+		chart := w.charts.Get(charts.RequestsPerHTTPVersion.ID)
+		_ = chart.AddDim(&modules.Dim{
+			ID:   dimID,
+			Name: version,
+			Algo: modules.Incremental,
+		})
+	}
+
+	w.metrics[dimID]++
+}
+
+func (w *WebLog) perBytesSent(gm parser.GroupMap) {
+
+}
+
+func (w *WebLog) perRespLength(gm parser.GroupMap) {
+
+}
+
+func (w *WebLog) perRespTime(gm parser.GroupMap) {
+
+}
+
+func (w *WebLog) perRespTimeUpstream(gm parser.GroupMap) {
+
+}
+
+func (w *WebLog) perIPProto(gm parser.GroupMap) {
+	var (
+		address = gm.Get("address")
+		proto   = "ipv4"
+	)
+
+	if strings.Contains(address, ":") {
+		proto = "ipv6"
+	}
+
+	w.metrics["req_"+proto]++
+
+	if _, ok := w.curPollIPs[address]; !ok {
+		w.curPollIPs[address] = true
+		w.metrics["unique_cur_"+proto]++
+	}
+
+	if !w.DoAllTimeIPs {
+		return
+	}
+
+	if _, ok := w.allTimeIPs[address]; !ok {
+		w.allTimeIPs[address] = true
+		w.metrics["unique_all_"+proto]++
+	}
+
+}
+
+func (w *WebLog) perURLCategoryStats(gm parser.GroupMap) {
+	code := gm.Get("code")
+	v := w.matchedURL + "_" + code
+
+	if _, ok := w.metrics[v]; !ok {
+		chart := w.charts.Get(charts.ResponseCodesDetailed.ID + "_" + w.matchedURL)
+		_ = chart.AddDim(&modules.Dim{
+			ID:   v,
+			Name: code,
+			Algo: modules.Incremental,
+		})
+	}
+	w.metrics[v]++
+
+	if v, ok := gm.Lookup("bytes_sent"); ok {
+		w.metrics[w.matchedURL+"_bytes_sent"] += toInt(v)
+	}
+
+	if v, ok := gm.Lookup("resp_length"); ok {
+		w.metrics[w.matchedURL+"_resp_length"] += toInt(v)
+	}
+
+	//if v, ok := gm.Lookup("resp_time"); ok {
+	//	w.timings.get(id).set(v)
+	//}
+}
+
 //func (w *WebLog) Check() bool {
 //
 //	w.tail = tail.newMatcher(w.Path)
@@ -252,144 +475,16 @@ func (WebLog) Collect() map[string]int64 {
 //
 //	return w.data
 //}
-//
-//// Per URL and per USER_DEFINED
-//func (w *WebLog) reqPerCategory(url string, c categories) string {
-//	for _, v := range c.items {
-//		if v.match(url) {
-//			w.data[v.id]++
-//			return v.id
-//		}
-//	}
-//	w.data[c.other]++
-//	return ""
-//}
-//
-//func (w *WebLog) reqPerIPProto(address string, uniqIPs map[string]bool) {
-//	var proto = "ipv4"
-//
-//	if strings.Contains(address, ":") {
-//		proto = "ipv6"
-//	}
-//	w.data["req_"+proto]++
-//
-//	if _, ok := uniqIPs[address]; !ok {
-//		uniqIPs[address] = true
-//		w.data["unique_cur_"+proto]++
-//	}
-//
-//	if !w.DoAllTimeIPs {
-//		return
-//	}
-//
-//	if _, ok := w.uniqIPs[address]; !ok {
-//		w.uniqIPs[address] = true
-//		w.data["unique_all_"+proto]++
-//	}
-//}
-//
-//func (w *WebLog) reqPerCodeDetail(code string) {
-//	if _, ok := w.data[code]; ok {
-//		w.data[code]++
-//		return
-//	}
-//
-//	if w.DoCodesAggregate {
-//		w.Get(chartRespCodesDetailed.ID).AddDim(&Dim{ID: code, Algo: charts.Incremental})
-//		w.data[code]++
-//		return
-//	}
-//	var v = "other"
-//	if code[0] <= 53 {
-//		v = code[:1] + "xx"
-//	}
-//	w.Get(chartRespCodesDetailed.ID + "_" + v).AddDim(&Dim{ID: code, Algo: charts.Incremental})
-//	w.data[code]++
-//}
-//
-//func (w *WebLog) reqPerCodeFamily(code string) {
-//	f := code[:1]
-//	switch {
-//	case f == "2", code == "304", f == "1":
-//		w.data["successful_requests"]++
-//	case f == "3":
-//		w.data["redirects"]++
-//	case f == "4":
-//		w.data["bad_requests"]++
-//	case f == "5":
-//		w.data["server_errors"]++
-//	default:
-//		w.data["other_requests"]++
-//	}
-//}
-//
-//func (w *WebLog) reqPerHTTPMethod(method string) {
-//	if _, ok := w.data[method]; !ok {
-//		w.Get(chartReqPerHTTPMethod.ID).AddDim(&Dim{ID: method, Algo: charts.Incremental})
-//	}
-//	w.data[method]++
-//}
-//
-//func (w *WebLog) reqPerHTTPVersion(version string) {
-//	dimID := strings.Replace(version, ".", "_", 1)
-//
-//	if _, ok := w.data[dimID]; !ok {
-//		w.Get(chartReqPerHTTPVer.ID).AddDim(&Dim{ID: dimID, Name: version, Algo: charts.Incremental})
-//	}
-//	w.data[dimID]++
-//}
-//
-//func (w *WebLog) parseRequest() (matchedURL string) {
-//	req := w.gm.get(keyRequest)
-//	if req == "-" {
-//		return
-//	}
-//
-//	v := strings.Fields(req)
-//	if len(v) != 3 {
-//		return
-//	}
-//
-//	// FIXME: assumed that 'version' part is always prefixed with 'HTTP/'
-//	method, url, version := v[0], v[1], v[2][5:]
-//	if w.urlCat.exist() {
-//		if v := w.reqPerCategory(url, w.urlCat); v != "" {
-//			matchedURL = v
-//		}
-//	}
-//	w.reqPerHTTPMethod(method)
-//	w.reqPerHTTPVersion(version)
-//	return
-//}
-//
-//func (w *WebLog) perCategoryStats(id string) {
-//	code := w.gm.get(keyCode)
-//	v := id + "_" + code
-//	if _, ok := w.data[v]; !ok {
-//		w.Get(chartRespCodesDetailed.ID + "_" + id).AddDim(&Dim{ID: v, Name: code, Algo: charts.Incremental})
-//	}
-//	w.data[v]++
-//
-//	if v, ok := w.gm.lookup(keyBytesSent); ok {
-//		w.data[id+"_bytes_sent"] += toInt(v)
-//	}
-//
-//	if v, ok := w.gm.lookup(keyRespLen); ok {
-//		w.data[id+"_resp_length"] += toInt(v)
-//	}
-//
-//	if v, ok := w.gm.lookup(keyRespTime); ok {
-//		w.timings.get(id).set(v)
-//	}
-//}
-//
-//func toInt(s string) int64 {
-//	if s == "-" {
-//		return 0
-//	}
-//	v, _ := strconv.Atoi(s)
-//	return int64(v)
-//}
+
+func toInt(s string) int64 {
+	if s == "-" {
+		return 0
+	}
+	v, _ := strconv.Atoi(s)
+
+	return int64(v)
+}
+
 //
 //func init() {
 //	f := func() modules.Module {
