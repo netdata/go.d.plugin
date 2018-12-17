@@ -220,7 +220,7 @@ func (c *Chart) MarkNotCreated() {
 // AddDim adds new dimension to the chart dimensions.
 func (c *Chart) AddDim(newDim *Dim) error {
 	if err := checkDim(newDim); err != nil {
-		return err
+		return fmt.Errorf("error on adding dim to chart '%s' : %s", c.ID, err)
 	}
 	if c.indexDim(newDim.ID) != -1 {
 		return fmt.Errorf("error on adding dim : '%s' is already in chart '%s' dims", newDim.ID, c.ID)
@@ -233,7 +233,7 @@ func (c *Chart) AddDim(newDim *Dim) error {
 // AddVar adds new variable to the chart variables.
 func (c *Chart) AddVar(newVar *Var) error {
 	if err := checkVar(newVar); err != nil {
-		return err
+		return fmt.Errorf("error on adding var to chart '%s' : %s", c.ID, err)
 	}
 	if c.indexVar(newVar.ID) != -1 {
 		return fmt.Errorf("error on adding var : '%s' is already in chart '%s' vars", newVar.ID, c.ID)
