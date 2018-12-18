@@ -272,3 +272,79 @@ func perCategoryStats(id string) []*Chart {
 		},
 	}
 }
+
+func (w *WebLog) Charts() *Charts {
+	var charts modules.Charts
+
+	_ = charts.Add(responseStatuses.Copy(), responseCodes.Copy())
+
+	if w.DoCodesDetailed {
+		if w.DoCodesAggregate {
+			_ = charts.Add(responseCodesDetailed.Copy())
+		} else {
+			_ = charts.Add(responseCodesDetailedPerFamily()...)
+		}
+	}
+
+	if w.gm.has(keyBytesSent) || w.gm.has(keyResponseLength) {
+		_ = charts.Add(bandwidth.Copy())
+	}
+
+	if w.gm.has(keyRequest) && len(w.urlCats) > 0 {
+		chart := requestsPerURL.Copy()
+		_ = charts.Add(chart)
+
+		for _, cat := range w.urlCats {
+			_ = chart.AddDim(&Dim{ID: cat.name, Algo: modules.Incremental})
+			w.metrics[cat.name] = 0
+		}
+		w.metrics["url_category_other"] = 0
+	}
+
+	if w.gm.has(keyRequest) && len(w.urlCats) > 0 && w.DoPerURLCharts {
+		for _, cat := range w.urlCats {
+			for _, chart := range perCategoryStats(cat.name) {
+				_ = charts.Add(chart)
+				for _, d := range chart.Dims {
+					w.metrics[d.ID] = 0
+				}
+			}
+		}
+	}
+
+	if w.gm.has(keyRequest) && len(w.userCats) > 0 {
+		chart := requestsPerUserDefined.Copy()
+		_ = charts.Add(chart)
+
+		for _, cat := range w.userCats {
+			_ = chart.AddDim(&Dim{ID: cat.name, Algo: modules.Incremental})
+			w.metrics[cat.name] = 0
+		}
+		w.metrics["user_category_other"] = 0
+	}
+
+	if w.gm.has(keyResponseTime) {
+		_ = charts.Add(responseTime.Copy())
+	}
+
+	if w.gm.has(keyResponseTimeUpstream) {
+		_ = charts.Add(responseTimeUpstream.Copy())
+	}
+
+	if w.gm.has(keyRequest) {
+		_ = charts.Add(requestsPerHTTPMethod.Copy())
+		_ = charts.Add(requestsPerHTTPVersion.Copy())
+	}
+
+	if w.gm.has(keyAddress) {
+		_ = charts.Add(requestsPerIPProto.Copy())
+		_ = charts.Add(currentPollIPs.Copy())
+		if w.DoAllTimeIPs {
+			_ = charts.Add(allTimeIPs.Copy())
+		}
+	}
+
+	w.charts = &charts
+
+	return w.charts
+}
