@@ -12,7 +12,7 @@ type filter struct {
 
 func (f *filter) match(s string) bool {
 	includeOK := true
-	excludeOK := true
+	excludeOK := false
 
 	if f.include != nil {
 		includeOK = f.include.match(s)
@@ -26,26 +26,24 @@ func (f *filter) match(s string) bool {
 }
 
 func newFilter(raw rawFilter) (matcher, error) {
+	var f filter
 	if raw.Include == "" && raw.Exclude == "" {
-		return nil, nil
+		return &f, nil
 	}
 
-	var (
-		fil filter
-		err error
-	)
+	var err error
 
 	if raw.Include != "" {
-		if fil.include, err = newMatcher(raw.Include); err != nil {
+		if f.include, err = newMatcher(raw.Include); err != nil {
 			return nil, err
 		}
 	}
 
 	if raw.Exclude != "" {
-		if fil.exclude, err = newMatcher(raw.Exclude); err != nil {
+		if f.exclude, err = newMatcher(raw.Exclude); err != nil {
 			return nil, err
 		}
 	}
 
-	return &fil, nil
+	return &f, nil
 }

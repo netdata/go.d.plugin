@@ -26,7 +26,6 @@ func New() *WebLog {
 
 		stop:           make(chan struct{}),
 		collect:        make(chan struct{}),
-		done:           make(chan struct{}),
 		uniqIPs:        make(map[string]bool),
 		uniqIPsAllTime: make(map[string]bool),
 		metrics: map[string]int64{
@@ -94,7 +93,6 @@ type WebLog struct {
 
 	stop    chan struct{}
 	collect chan struct{}
-	done    chan struct{}
 
 	uniqIPs        map[string]bool
 	uniqIPsAllTime map[string]bool
@@ -187,13 +185,14 @@ func (w *WebLog) Check() bool {
 		return false
 	}
 	w.tail = t
+	go w.parseLoop()
 
 	return true
 }
 
 func (w *WebLog) Charts() *Charts {
 	var charts modules.Charts
-	_ = charts.Add(responseCodes.Copy(), responseStatuses.Copy())
+	_ = charts.Add(responseCodes.Copy(), responseStatuses.Copy(), responseCodesDetailed.Copy())
 	w.charts = &charts
 
 	return w.charts
@@ -201,9 +200,15 @@ func (w *WebLog) Charts() *Charts {
 
 func (w *WebLog) Collect() map[string]int64 {
 	w.collect <- struct{}{}
-	<-w.done
+	defer func() { <-w.collect }()
 
-	return w.metrics
+	m := make(map[string]int64)
+
+	for k, v := range w.metrics {
+		m[k] = v
+	}
+
+	return m
 }
 
 func (w *WebLog) parseLoop() {
@@ -215,9 +220,7 @@ LOOP:
 			w.cleanup()
 			break LOOP
 		case <-w.collect:
-			w.copyMetrics()
-			w.updated = false
-			w.done <- struct{}{}
+			w.collect <- struct{}{}
 		case line := <-lines:
 			if !w.filter.match(line.Text) {
 				continue
@@ -230,15 +233,6 @@ LOOP:
 
 func (w *WebLog) cleanup() {
 	w.tail.stop()
-}
-
-func (w *WebLog) copyMetrics() {
-	//for k, v := range w.tailMetrics {
-	//	w.metrics[k] = v
-	//}
-
-	// add timings
-	// reset timings
 }
 
 func (w *WebLog) parseLine(line string) {
