@@ -2,7 +2,6 @@ package weblog
 
 import (
 	"fmt"
-
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/simpletail"
 )
@@ -130,6 +129,7 @@ func (w *WebLog) initCategories() error {
 			w.timings.add(cat.name)
 		}
 	}
+	w.timings.reset()
 
 	for _, raw := range w.UserCats {
 		cat, err := newCategory(raw)
@@ -203,6 +203,18 @@ func (w *WebLog) Check() bool {
 func (w *WebLog) Collect() map[string]int64 {
 	w.pause <- struct{}{}
 	defer func() { <-w.pause }()
+
+	for k, v := range w.timings {
+		if !v.active() {
+			continue
+		}
+		fmt.Println(v, 1111111111, k+"_min")
+		w.metrics[k+"_min"] += int64(v.min)
+		w.metrics[k+"_avg"] += int64(v.avg())
+		w.metrics[k+"_max"] += int64(v.max)
+	}
+
+	w.timings.reset()
 
 	// NOTE: don't copy if nothing has changed?
 	m := make(map[string]int64)

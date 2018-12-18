@@ -215,14 +215,6 @@ func (w *WebLog) respLength(gm groupMap) {
 	w.metrics["resp_length"] += toInt(gm.get(keyResponseLength))
 }
 
-func (w *WebLog) respTime(gm groupMap) {
-
-}
-
-func (w *WebLog) respTimeUpstream(gm groupMap) {
-
-}
-
 func (w *WebLog) ipProto(gm groupMap) {
 	var (
 		address = gm.get(keyAddress)

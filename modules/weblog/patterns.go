@@ -3,13 +3,13 @@ package weblog
 import "sort"
 
 const (
-	keyAddress              = "address"                // check
-	keyCode                 = "code"                   // check
-	keyRequest              = "request"                // no
-	keyBytesSent            = "bytes_sent"             // check
-	keyResponseTime         = "response_time"          // check
-	keyResponseTimeUpstream = "response_time_upstream" // check
-	keyResponseLength       = "response_length"        // check
+	keyAddress              = "address"            // check
+	keyCode                 = "code"               // check
+	keyRequest              = "request"            // no
+	keyBytesSent            = "bytes_sent"         // check
+	keyResponseTime         = "resp_time"          // check
+	keyResponseTimeUpstream = "resp_time_upstream" // check
+	keyResponseLength       = "resp_length"        // check
 	keyUserDefined          = "user_defined"
 
 	keyMethod  = "method"

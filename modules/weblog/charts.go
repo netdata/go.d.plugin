@@ -298,7 +298,7 @@ func (w *WebLog) Charts() *Charts {
 			_ = chart.AddDim(&Dim{ID: cat.name, Algo: modules.Incremental})
 			w.metrics[cat.name] = 0
 		}
-		w.metrics["url_category_other"] = 0
+		w.metrics[keyURL+"_category_other"] = 0
 	}
 
 	if w.gm.has(keyRequest) && len(w.urlCats) > 0 && w.DoPerURLCharts {
@@ -320,7 +320,7 @@ func (w *WebLog) Charts() *Charts {
 			_ = chart.AddDim(&Dim{ID: cat.name, Algo: modules.Incremental})
 			w.metrics[cat.name] = 0
 		}
-		w.metrics["user_category_other"] = 0
+		w.metrics[keyUserDefined+"_category_other"] = 0
 	}
 
 	if w.gm.has(keyResponseTime) {
