@@ -52,12 +52,16 @@ func (cp *csvParser) parse(line string) (groupMap, bool) {
 		return nil, false
 	}
 
-	if len(lines) > cp.pattern.max() {
+	if cp.pattern.max() > len(lines) {
+		fmt.Println("GR")
 		return nil, false
 	}
 
 	for _, f := range cp.pattern {
 		cp.data[f.Name] = lines[f.Index]
+	}
+	for k, v := range cp.data {
+		fmt.Println(k, v)
 	}
 
 	return cp.data, true
@@ -100,23 +104,23 @@ func validateResult(gm map[string]string) error {
 		switch k {
 		case keyCode:
 			if !reCode.MatchString(v) {
-				return fmt.Errorf("key 'code' bad syntax")
+				return fmt.Errorf("key 'code' bad syntax: '%s'", v)
 			}
 		case keyAddress:
 			if !reAddress.MatchString(v) {
-				return fmt.Errorf("key 'address' bad syntax")
+				return fmt.Errorf("key 'address' bad syntax: '%s'", v)
 			}
 		case keyBytesSent:
 			if !reBytesSent.MatchString(v) {
-				return fmt.Errorf("key 'bytes_sent' bad syntax")
+				return fmt.Errorf("key 'bytes_sent' bad syntax: '%s'", v)
 			}
 		case keyResponseLength:
 			if !reResponseLength.MatchString(v) {
-				return fmt.Errorf("key 'response_length' bad syntax")
+				return fmt.Errorf("key 'response_length' bad syntax: '%s'", v)
 			}
 		case keyResponseTime, keyResponseTimeUpstream:
 			if !reResponseTime.MatchString(v) {
-				return fmt.Errorf("key 'response_time' bad syntax")
+				return fmt.Errorf("key 'response_time' bad syntax : '%s'", v)
 			}
 		}
 	}
@@ -128,5 +132,5 @@ var (
 	reCode           = regexp.MustCompile(`[1-9]\d{2}`)
 	reBytesSent      = regexp.MustCompile(`\d+|-`)
 	reResponseLength = regexp.MustCompile(`\d+|-`)
-	reResponseTime   = regexp.MustCompile(`\d+|\d+\.\d+`)
+	reResponseTime   = regexp.MustCompile(`\d+|\d+\.\d+|-`)
 )

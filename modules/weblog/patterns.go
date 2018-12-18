@@ -34,8 +34,8 @@ var csvDefaultPatterns = []csvPattern{
 	// TODO: add examples
 	{
 		{keyAddress, 0},
-		{keyCode, 5},
-		{keyRequest, 6},
+		{keyRequest, 5},
+		{keyCode, 6},
 		{keyBytesSent, 7},
 		{keyResponseLength, 8},
 		{keyResponseTime, 9},

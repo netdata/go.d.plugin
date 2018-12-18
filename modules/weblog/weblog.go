@@ -497,6 +497,7 @@ func (w *WebLog) urlCategoryStats(gm groupMap) {
 }
 
 func toInt(s string) int64 {
+	// TODO: 0.000
 	if s == "-" {
 		return 0
 	}
