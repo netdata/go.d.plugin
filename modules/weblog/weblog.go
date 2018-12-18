@@ -119,15 +119,45 @@ func (w *WebLog) copyMetrics() {
 }
 
 func (w *WebLog) parseLine(line string) {
-	//if !w.filter.Filter(line) {
-	//	return
-	//}
-	//
-	//gm, ok := w.Parse(line)
-	//
-	//if !ok {
-	//	return
-	//}
+	if !w.filter.Filter(line) {
+		return
+	}
+
+	gm, ok := w.Parse(line)
+
+	if !ok {
+		w.metrics["unmatched"]++
+		return
+	}
+
+	w.codeFam(gm)
+
+	w.codeDetailed(gm)
+
+	w.codeStatus(gm)
+
+	w.request(gm)
+
+	if _, ok := gm.Lookup("user_defined"); ok && len(w.categories.user) > 0 {
+		w.userCategory(gm)
+	}
+
+	if _, ok := gm.Lookup("bytes_sent"); ok {
+		w.bytesSent(gm)
+	}
+
+	if _, ok := gm.Lookup("resp_length"); ok {
+		w.respLength(gm)
+	}
+
+	if _, ok := gm.Lookup("address"); ok {
+		w.ipProto(gm)
+	}
+
+	if w.DoPerURLCharts && w.matchedURL != "" {
+		w.urlCategoryStats(gm)
+	}
+
 }
 
 func (w *WebLog) codeFam(gm parser.GroupMap) {
@@ -141,6 +171,10 @@ func (w *WebLog) codeFam(gm parser.GroupMap) {
 }
 
 func (w *WebLog) codeDetailed(gm parser.GroupMap) {
+	if !w.DoCodesDetailed {
+		return
+	}
+
 	code := gm.Get("code")
 
 	if _, ok := w.metrics[code]; ok {
@@ -183,7 +217,7 @@ func (w *WebLog) codeStatus(gm parser.GroupMap) {
 	}
 }
 
-func (w *WebLog) perRequest(gm parser.GroupMap) {
+func (w *WebLog) request(gm parser.GroupMap) {
 	request := gm.Get("request")
 
 	if request != "" {
@@ -191,19 +225,19 @@ func (w *WebLog) perRequest(gm parser.GroupMap) {
 	}
 
 	if _, ok := gm.Lookup("method"); ok {
-		w.perHTTPMethod(gm)
+		w.httpMethod(gm)
 	}
 
 	if _, ok := gm.Lookup("url"); ok {
-		w.perURLCategory(gm)
+		w.urlCategory(gm)
 	}
 
 	if _, ok := gm.Lookup("version"); ok {
-		w.perHTTPVersion(gm)
+		w.httpVersion(gm)
 	}
 }
 
-func (w *WebLog) perHTTPMethod(gm parser.GroupMap) {
+func (w *WebLog) httpMethod(gm parser.GroupMap) {
 	method := gm.Get("method")
 
 	if _, ok := w.metrics[method]; !ok {
@@ -217,33 +251,33 @@ func (w *WebLog) perHTTPMethod(gm parser.GroupMap) {
 	w.metrics[method]++
 }
 
-func (w *WebLog) perURLCategory(gm parser.GroupMap) {
+func (w *WebLog) urlCategory(gm parser.GroupMap) {
 	url := gm.Get("url")
 
 	for _, v := range w.categories.url {
 		if v.Match(url) {
 			w.metrics[v.Name()]++
 			w.matchedURL = v.Name()
-			break
+			return
 		}
 	}
 	w.matchedURL = ""
 	w.metrics["url_other"]++
 }
 
-func (w *WebLog) perUserCategory(gm parser.GroupMap) {
-	url := gm.Get("user_defined")
+func (w *WebLog) userCategory(gm parser.GroupMap) {
+	userDefined := gm.Get("user_defined")
 
-	for _, v := range w.categories.user {
-		if v.Match(url) {
-			w.metrics[v.Name()]++
-			break
+	for _, cat := range w.categories.user {
+		if cat.Match(userDefined) {
+			w.metrics[cat.Name()]++
+			return
 		}
 	}
 	w.metrics["user_defined_other"]++
 }
 
-func (w *WebLog) perHTTPVersion(gm parser.GroupMap) {
+func (w *WebLog) httpVersion(gm parser.GroupMap) {
 	version := gm.Get("version")
 
 	dimID := strings.Replace(gm.Get("version"), ".", "_", 1)
@@ -260,23 +294,27 @@ func (w *WebLog) perHTTPVersion(gm parser.GroupMap) {
 	w.metrics[dimID]++
 }
 
-func (w *WebLog) perBytesSent(gm parser.GroupMap) {
+func (w *WebLog) bytesSent(gm parser.GroupMap) {
+	v := gm.Get("bytes_sent")
+
+	w.metrics["bytes_sent"] += toInt(v)
+}
+
+func (w *WebLog) respLength(gm parser.GroupMap) {
+	v := gm.Get("resp_length")
+
+	w.metrics["resp_length"] += toInt(v)
+}
+
+func (w *WebLog) respTime(gm parser.GroupMap) {
 
 }
 
-func (w *WebLog) perRespLength(gm parser.GroupMap) {
+func (w *WebLog) respTimeUpstream(gm parser.GroupMap) {
 
 }
 
-func (w *WebLog) perRespTime(gm parser.GroupMap) {
-
-}
-
-func (w *WebLog) perRespTimeUpstream(gm parser.GroupMap) {
-
-}
-
-func (w *WebLog) perIPProto(gm parser.GroupMap) {
+func (w *WebLog) ipProto(gm parser.GroupMap) {
 	var (
 		address = gm.Get("address")
 		proto   = "ipv4"
@@ -304,7 +342,7 @@ func (w *WebLog) perIPProto(gm parser.GroupMap) {
 
 }
 
-func (w *WebLog) perURLCategoryStats(gm parser.GroupMap) {
+func (w *WebLog) urlCategoryStats(gm parser.GroupMap) {
 	code := gm.Get("code")
 	v := w.matchedURL + "_" + code
 
@@ -316,6 +354,7 @@ func (w *WebLog) perURLCategoryStats(gm parser.GroupMap) {
 			Algo: modules.Incremental,
 		})
 	}
+
 	w.metrics[v]++
 
 	if v, ok := gm.Lookup("bytes_sent"); ok {
