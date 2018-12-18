@@ -132,9 +132,11 @@ func (w *WebLog) parseLine(line string) {
 
 	w.codeFam(gm)
 
-	w.codeDetailed(gm)
-
 	w.codeStatus(gm)
+
+	if w.DoCodesDetailed {
+		w.codeDetailed(gm)
+	}
 
 	w.request(gm)
 
@@ -171,10 +173,6 @@ func (w *WebLog) codeFam(gm parser.GroupMap) {
 }
 
 func (w *WebLog) codeDetailed(gm parser.GroupMap) {
-	if !w.DoCodesDetailed {
-		return
-	}
-
 	code := gm.Get("code")
 
 	if _, ok := w.metrics[code]; ok {
@@ -369,180 +367,6 @@ func (w *WebLog) urlCategoryStats(gm parser.GroupMap) {
 	//	w.timings.get(id).set(v)
 	//}
 }
-
-//func (w *WebLog) Check() bool {
-//
-//	w.tail = tail.newMatcher(w.Path)
-//	err := w.tail.Init()
-//	if err != nil {
-//		w.Error(err)
-//		return false
-//	}
-//
-//	// read last line
-//	line, err := tail.ReadLastLine(w.Path)
-//	if err != nil {
-//		w.Error(err)
-//		return false
-//	}
-//
-//	// get parser: custom or one of predefined in csv.go
-//	re, err := getPattern(w.RawCustomParser, line)
-//	if err != nil {
-//		w.Error(err)
-//		return false
-//	}
-//	w.parser = re
-//
-//	c, err := getCategories(w.RawURLCat, "url")
-//	if err != nil {
-//		w.Error(err)
-//		return false
-//	}
-//	w.urlCat = c
-//
-//	if w.DoPerURLCharts {
-//		for _, v := range w.urlCat.items {
-//			w.timings.add(v.id)
-//		}
-//	}
-//
-//	c, err = getCategories(w.RawUserCat, "user")
-//	if err != nil {
-//		w.Error(err)
-//		return false
-//	}
-//	w.userCat = c
-//
-//	f, err := getFilter(w.rawFilter)
-//	if err != nil {
-//		w.Error(err)
-//		return false
-//	}
-//	w.filter = f
-//
-//	if len(w.RawHistogram) != 0 {
-//		w.histograms = getHistograms(w.RawHistogram)
-//	}
-//
-//	w.Info("collected data:", w.parser.SubexpNames()[1:])
-//	return true
-//}
-//
-//func (w *WebLog) GatherMetrics() map[string]int64 {
-//	f, err := w.tail.Tail()
-//
-//	if err == tail.SizeNotChanged {
-//		return w.data
-//	}
-//
-//	if err != nil {
-//		return nil
-//	}
-//
-//	defer f.Close()
-//
-//	uniqIPs := make(map[string]bool)
-//	w.timings.reset()
-//
-//	s := bufio.NewScanner(f)
-//
-//	for s.Scan() {
-//		row := s.Text()
-//		if w.filter.exist() && !w.filter.rawFilter(row) {
-//			continue
-//		}
-//
-//		m := w.parser.FindStringSubmatch(row)
-//		if m == nil {
-//			w.data["unmatched"]++
-//			continue
-//		}
-//
-//		w.gm.update(w.parser.SubexpNames(), m)
-//
-//		code, codeFam := w.gm.get(keyCode), w.gm.get(keyCode)[1:]
-//
-//		// ResponseCodes chart
-//		if _, ok := w.data[codeFam+"xx"]; ok {
-//			w.data[codeFam+"xx"]++
-//		} else {
-//			w.data["0xx"]++
-//		}
-//
-//		// ResponseStatuses chart
-//		w.reqPerCodeFamily(code)
-//
-//		// ResponseCodesDetailed chart
-//		if w.DoCodesDetailed {
-//			w.reqPerCodeDetail(code)
-//		}
-//
-//		// chartBandwidth chart
-//		if v, ok := w.gm.lookup(keyBytesSent); ok {
-//			w.data["bytes_sent"] += toInt(v)
-//		}
-//
-//		if v, ok := w.gm.lookup(keyRespLen); ok {
-//			w.data["resp_length"] += toInt(v)
-//		}
-//
-//		// ResponseTime and ResponseTimeHistogram charts3
-//		if v, ok := w.gm.lookup(keyRespTime); ok {
-//			i := w.timings.get(keyRespTime).set(v)
-//			if w.histograms.exist() {
-//				w.histograms.get(keyRespTimeHist).set(i)
-//			}
-//		}
-//
-//		// ResponseTimeUpstream, ResponseTimeUpstreamHistogram charts3
-//		if v, ok := w.gm.lookup(keyRespTimeUpstream); ok && v != "-" {
-//			i := w.timings.get(keyRespTimeUpstream).set(v)
-//			if w.histograms.exist() {
-//				w.histograms.get(keyRespTimeUpstreamHist).set(i)
-//			}
-//		}
-//
-//		// ReqPerUrl, reqPerHTTPMethod, chartReqPerHTTPVer charts3
-//		var matchedURL string
-//		if w.gm.has(keyRequest) {
-//			matchedURL = w.parseRequest()
-//		}
-//
-//		// ReqPerUserDefined chart
-//		if v, ok := w.gm.lookup(keyUserDefined); ok && w.userCat.exist() {
-//			w.reqPerCategory(v, w.userCat)
-//		}
-//
-//		// chartRespCodesDetailed, chartBandwidth, chartRespTime per URL (Category) charts3
-//		if matchedURL != "" && w.DoPerURLCharts {
-//			w.perCategoryStats(matchedURL)
-//		}
-//
-//		// RequestsPerIPProto, chartClientsCurr, chartClientsAll charts3
-//		if v, ok := w.gm.lookup(keyAddress); ok {
-//			w.reqPerIPProto(v, uniqIPs)
-//		}
-//
-//	}
-//
-//	for n, v := range w.timings {
-//		if !v.active() {
-//			continue
-//		}
-//		w.data[n+"_min"] += int64(v.min)
-//		w.data[n+"_avg"] += int64(v.avg())
-//		w.data[n+"_max"] += int64(v.max)
-//	}
-//
-//	for _, h := range w.histograms {
-//		for _, v := range h {
-//			w.data[v.id] = int64(v.count)
-//		}
-//	}
-//
-//	return w.data
-//}
 
 func toInt(s string) int64 {
 	if s == "-" {

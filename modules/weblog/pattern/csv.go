@@ -13,21 +13,21 @@ var (
 )
 
 const (
-	keyAddress              = "address"                // check
-	keyCode                 = "code"                   // check
-	keyRequest              = "request"                // makes no sense
-	keyUserDefined          = "user_defined"           // can't
-	keyBytesSent            = "bytes_sent"             // check
-	keyResponseTime         = "response_time"          // check
-	keyResponseTimeUpstream = "response_time_upstream" // check
-	keyResponseLength       = "response_length"        // check
+	address = "address" // check
+	code    = "code"    // check
+	request = "request" // makes no sense
+	// userDefined          = "user_defined"           // can't
+	bytesSent            = "bytes_sent"             // check
+	responseTime         = "response_time"          // check
+	responseTimeUpstream = "response_time_upstream" // check
+	responseLength       = "response_length"        // check
 
-	keyURL         = "url"
-	keyHTTPMethod  = "http_method"
-	keyHTTPVersion = "http_version"
-
-	keyResponseTimeHistogram         = "response_time_histogram"
-	keyResponseTimeUpstreamHistogram = "response_time_histogram_upstream"
+	//keyURL         = "url"
+	//keyHTTPMethod  = "http_method"
+	//keyHTTPVersion = "http_version"
+	//
+	//keyResponseTimeHistogram         = "response_time_histogram"
+	//keyResponseTimeUpstreamHistogram = "response_time_histogram_upstream"
 )
 
 type (
@@ -50,36 +50,36 @@ type (
 var CSVDefaultPatterns = []CSVPattern{
 	// TODO: add examples
 	{
-		{keyAddress, 0},
-		{keyRequest, 5},
-		{keyCode, 6},
-		{keyBytesSent, 7},
-		{keyResponseLength, 8},
-		{keyResponseTime, 9},
-		{keyResponseTimeUpstream, 10},
+		{address, 0},
+		{request, 5},
+		{code, 6},
+		{bytesSent, 7},
+		{responseLength, 8},
+		{responseTime, 9},
+		{responseTimeUpstream, 10},
 	},
 	// TODO: add examples
 	{
-		{keyAddress, 1},
-		{keyRequest, 6},
-		{keyCode, 7},
-		{keyBytesSent, 8},
-		{keyResponseLength, 9},
-		{keyResponseTime, 10},
-		{keyResponseTimeUpstream, 11},
+		{address, 1},
+		{request, 6},
+		{code, 7},
+		{bytesSent, 8},
+		{responseLength, 9},
+		{responseTime, 10},
+		{responseTimeUpstream, 11},
 	},
 	// TODO: add examples
 	{
-		{keyAddress, 0},
-		{keyRequest, 5},
-		{keyCode, 6},
-		{keyBytesSent, 7},
+		{address, 0},
+		{request, 5},
+		{code, 6},
+		{bytesSent, 7},
 	},
 	// TODO: add examples
 	{
-		{keyAddress, 1},
-		{keyRequest, 6},
-		{keyCode, 7},
-		{keyBytesSent, 8},
+		{address, 1},
+		{request, 6},
+		{code, 7},
+		{bytesSent, 8},
 	},
 }
