@@ -2,14 +2,11 @@ package weblog
 
 import (
 	"fmt"
-	"io"
 	"strconv"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/simpletail"
-
-	"github.com/hpcloud/tail"
 )
 
 func init() {
@@ -81,7 +78,7 @@ type WebLog struct {
 	DoPerURLCharts   bool `yaml:"per_category_charts"`
 	DoAllTimeIPs     bool `yaml:"all_time_clients"`
 
-	tail *tail.Tail
+	tail follower
 
 	charts *modules.Charts
 
@@ -183,17 +180,7 @@ func (w *WebLog) Init() bool {
 }
 
 func (w *WebLog) Check() bool {
-	t, err := tail.TailFile(
-		w.Path,
-		tail.Config{
-			Follow:    true,
-			ReOpen:    true,
-			MustExist: true,
-			Location:  &tail.SeekInfo{Whence: io.SeekEnd},
-			Logger:    tail.DiscardingLogger,
-			//Poll:      true,
-		},
-	)
+	t, err := newFollower(w.Path)
 
 	if err != nil {
 		w.Error(err)
@@ -216,6 +203,7 @@ func (w *WebLog) Collect() map[string]int64 {
 }
 
 func (w *WebLog) parseLoop() {
+	lines := w.tail.lines()
 LOOP:
 	for {
 		select {
@@ -226,7 +214,7 @@ LOOP:
 			w.copyMetrics()
 			w.updated = false
 			w.done <- struct{}{}
-		case line := <-w.tail.Lines:
+		case line := <-lines:
 			if !w.filter.match(line.Text) {
 				continue
 			}
@@ -237,8 +225,7 @@ LOOP:
 }
 
 func (w *WebLog) cleanup() {
-	w.tail.Cleanup()
-	_ = w.tail.Stop()
+	w.tail.stop()
 }
 
 func (w *WebLog) copyMetrics() {
