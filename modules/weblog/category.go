@@ -15,8 +15,6 @@ type category struct {
 }
 
 func newCategory(raw rawCategory) (*category, error) {
-	cat := &category{}
-
 	if raw.Name == "" || raw.Match == "" {
 		return nil, fmt.Errorf("category bad syntax : %s", raw)
 	}
@@ -26,7 +24,6 @@ func newCategory(raw rawCategory) (*category, error) {
 	if err != nil {
 		return nil, err
 	}
-	cat.matcher = m
 
-	return cat, nil
+	return &category{name: raw.Name, matcher: m}, nil
 }

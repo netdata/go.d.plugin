@@ -2,6 +2,7 @@ package weblog
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 
@@ -24,13 +25,42 @@ func New() *WebLog {
 		DoCodesDetailed:  true,
 		DoCodesAggregate: true,
 		DoAllTimeIPs:     true,
-		DoPerURLCharts:   false,
+		DoPerURLCharts:   true,
 
 		stop:           make(chan struct{}),
 		collect:        make(chan struct{}),
 		done:           make(chan struct{}),
 		uniqIPs:        make(map[string]bool),
 		uniqIPsAllTime: make(map[string]bool),
+		metrics: map[string]int64{
+			"successful_requests":    0,
+			"redirects":              0,
+			"bad_requests":           0,
+			"server_errors":          0,
+			"other_requests":         0,
+			"2xx":                    0,
+			"5xx":                    0,
+			"3xx":                    0,
+			"4xx":                    0,
+			"1xx":                    0,
+			"0xx":                    0,
+			"unmatched":              0,
+			"bytes_sent":             0,
+			"resp_length":            0,
+			"resp_time_min":          0,
+			"resp_time_max":          0,
+			"resp_time_avg":          0,
+			"resp_time_upstream_min": 0,
+			"resp_time_upstream_max": 0,
+			"resp_time_upstream_avg": 0,
+			"unique_cur_ipv4":        0,
+			"unique_cur_ipv6":        0,
+			"unique_tot_ipv4":        0,
+			"unique_tot_ipv6":        0,
+			"req_ipv4":               0,
+			"req_ipv6":               0,
+			"GET":                    0, // GET should be green on the dashboard
+		},
 	}
 }
 
@@ -71,8 +101,8 @@ type WebLog struct {
 	uniqIPs        map[string]bool
 	uniqIPsAllTime map[string]bool
 
-	tailMetrics map[string]int64
-	metrics     map[string]int64
+	gm      groupMap
+	metrics map[string]int64
 }
 
 func (WebLog) Cleanup() {}
@@ -108,7 +138,8 @@ func (w *WebLog) initCategories() error {
 }
 
 func (w *WebLog) initParser() error {
-	line, err := simpletail.ReadLastLine(w.Path)
+	b, err := simpletail.ReadLastLine(w.Path)
+	line := string(b)
 
 	if err != nil {
 		return err
@@ -117,9 +148,9 @@ func (w *WebLog) initParser() error {
 	var p parser
 
 	if len(w.CustomParser) > 0 {
-		p, err = newParser(string(line), w.CustomParser)
+		p, err = newParser(line, w.CustomParser)
 	} else {
-		p, err = newParser(string(line), csvDefaultPatterns...)
+		p, err = newParser(line, csvDefaultPatterns...)
 	}
 
 	if err != nil {
@@ -127,6 +158,7 @@ func (w *WebLog) initParser() error {
 	}
 
 	w.parser = p
+	w.gm, _ = w.parse(line)
 
 	return nil
 }
@@ -150,8 +182,26 @@ func (w *WebLog) Init() bool {
 	return true
 }
 
-func (WebLog) Check() bool {
-	return false
+func (w *WebLog) Check() bool {
+	t, err := tail.TailFile(
+		w.Path,
+		tail.Config{
+			Follow:    true,
+			ReOpen:    true,
+			MustExist: true,
+			Location:  &tail.SeekInfo{Whence: io.SeekEnd},
+			Logger:    tail.DiscardingLogger,
+			//Poll:      true,
+		},
+	)
+
+	if err != nil {
+		w.Error(err)
+		return false
+	}
+	w.tail = t
+
+	return true
 }
 
 func (WebLog) Charts() *modules.Charts {
@@ -192,9 +242,9 @@ func (w *WebLog) cleanup() {
 }
 
 func (w *WebLog) copyMetrics() {
-	for k, v := range w.tailMetrics {
-		w.metrics[k] = v
-	}
+	//for k, v := range w.tailMetrics {
+	//	w.metrics[k] = v
+	//}
 
 	// add timings
 	// reset timings
@@ -448,6 +498,8 @@ func (w *WebLog) urlCategoryStats(gm groupMap) {
 		w.metrics[w.matchedURL+"_resp_length"] += toInt(v)
 	}
 
+	// TODO:
+
 	//if id, ok := gm.Lookup("resp_time"); ok {
 	//	w.timings.get(id).set(id)
 	//}
@@ -461,51 +513,3 @@ func toInt(s string) int64 {
 
 	return int64(v)
 }
-
-//
-//func init() {
-//	f := func() modules.Module {
-//		return &WebLog{
-//			DoCodesDetailed:    true,
-//			DoCodesAggregate: true,
-//			DoPerURLCharts:    true,
-//			DoAllTimeIPs:     true,
-//			timings: timings{
-//				keyRespTime:         &timing{},
-//				keyRespTimeUpstream: &timing{},
-//			},
-//			gm:      make(groupMap),
-//			uniqIPs: make(map[string]bool),
-//			data: map[string]int64{
-//				"successful_requests":    0,
-//				"redirects":              0,
-//				"bad_requests":           0,
-//				"server_errors":          0,
-//				"other_requests":         0,
-//				"2xx":                    0,
-//				"5xx":                    0,
-//				"3xx":                    0,
-//				"4xx":                    0,
-//				"1xx":                    0,
-//				"0xx":                    0,
-//				"unmatched":              0,
-//				"bytes_sent":             0,
-//				"resp_length":            0,
-//				"resp_time_min":          0,
-//				"resp_time_max":          0,
-//				"resp_time_avg":          0,
-//				"resp_time_upstream_min": 0,
-//				"resp_time_upstream_max": 0,
-//				"resp_time_upstream_avg": 0,
-//				"unique_cur_ipv4":        0,
-//				"unique_cur_ipv6":        0,
-//				"unique_tot_ipv4":        0,
-//				"unique_tot_ipv6":        0,
-//				"req_ipv4":               0,
-//				"req_ipv6":               0,
-//				"GET":                    0, // GET should be green on the dashboard
-//			},
-//		}
-//	}
-//	modules.Add(f)
-//}

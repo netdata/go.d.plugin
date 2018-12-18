@@ -3,9 +3,6 @@ package weblog
 type rawFilter struct {
 	Include string
 	Exclude string
-
-	include matcher
-	exclude matcher
 }
 
 type filter struct {
@@ -29,28 +26,26 @@ func (f *filter) match(s string) bool {
 }
 
 func newFilter(raw rawFilter) (matcher, error) {
-	var f filter
-
 	if raw.Include == "" && raw.Exclude == "" {
-		return &f, nil
+		return nil, nil
 	}
 
+	var (
+		fil filter
+		err error
+	)
+
 	if raw.Include != "" {
-		m, err := newMatcher(raw.Include)
-		if err != nil {
+		if fil.include, err = newMatcher(raw.Include); err != nil {
 			return nil, err
 		}
-		f.include = m
-
 	}
 
 	if raw.Exclude != "" {
-		m, err := newMatcher(raw.Exclude)
-		if err != nil {
+		if fil.exclude, err = newMatcher(raw.Exclude); err != nil {
 			return nil, err
 		}
-		f.exclude = m
 	}
 
-	return &f, nil
+	return &fil, nil
 }
