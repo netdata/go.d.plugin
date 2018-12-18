@@ -57,16 +57,22 @@ func (w *WebLog) parseLine(line string) {
 		w.bytesSent(gm)
 	}
 
-	if _, ok := gm.lookup(keyResponseLength); ok {
+	if _, ok := gm.lookup(keyRespLength); ok {
 		w.respLength(gm)
 	}
 
-	if v, ok := gm.lookup(keyResponseTime); ok {
-		w.timings.get(keyResponseTime).set(v)
+	if v, ok := gm.lookup(keyRespTime); ok {
+		i := w.timings.get(keyRespTime).set(v)
+		if h, ok := w.histograms[keyRespTimeHistogram]; ok {
+			h.set(i)
+		}
 	}
 
-	if v, ok := gm.lookup(keyResponseTimeUpstream); ok {
-		w.timings.get(keyResponseTimeUpstream).set(v)
+	if v, ok := gm.lookup(keyRespTimeUpstream); ok {
+		i := w.timings.get(keyRespTimeUpstream).set(v)
+		if h, ok := w.histograms[keyRespTimeUpstreamHistogram]; ok {
+			h.set(i)
+		}
 	}
 
 	if _, ok := gm.lookup(keyAddress); ok {
@@ -212,7 +218,7 @@ func (w *WebLog) bytesSent(gm groupMap) {
 }
 
 func (w *WebLog) respLength(gm groupMap) {
-	w.metrics["resp_length"] += toInt(gm.get(keyResponseLength))
+	w.metrics["resp_length"] += toInt(gm.get(keyRespLength))
 }
 
 func (w *WebLog) ipProto(gm groupMap) {
@@ -263,11 +269,11 @@ func (w *WebLog) urlCategoryStats(gm groupMap) {
 		w.metrics[w.matchedURL+"_bytes_sent"] += toInt(v)
 	}
 
-	if v, ok := gm.lookup(keyResponseLength); ok {
+	if v, ok := gm.lookup(keyRespLength); ok {
 		w.metrics[w.matchedURL+"_resp_length"] += toInt(v)
 	}
 
-	if v, ok := gm.lookup(keyResponseTime); ok {
+	if v, ok := gm.lookup(keyRespTime); ok {
 		w.timings.get(w.matchedURL).set(v)
 	}
 }

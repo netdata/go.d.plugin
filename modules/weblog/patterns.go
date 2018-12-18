@@ -3,18 +3,20 @@ package weblog
 import "sort"
 
 const (
-	keyAddress              = "address"            // check
-	keyCode                 = "code"               // check
-	keyRequest              = "request"            // no
-	keyBytesSent            = "bytes_sent"         // check
-	keyResponseTime         = "resp_time"          // check
-	keyResponseTimeUpstream = "resp_time_upstream" // check
-	keyResponseLength       = "resp_length"        // check
-	keyUserDefined          = "user_defined"
+	keyAddress          = "address"            // check
+	keyCode             = "code"               // check
+	keyRequest          = "request"            // no
+	keyBytesSent        = "bytes_sent"         // check
+	keyRespTime         = "resp_time"          // check
+	keyRespTimeUpstream = "resp_time_upstream" // check
+	keyRespLength       = "resp_length"        // check
+	keyUserDefined      = "user_defined"
 
-	keyMethod  = "method"
-	keyVersion = "version"
-	keyURL     = "url"
+	keyMethod                    = "method"
+	keyVersion                   = "version"
+	keyURL                       = "url"
+	keyRespTimeHistogram         = "resp_time_histogram"
+	keyRespTimeUpstreamHistogram = "resp_time_upstream_histogram"
 )
 
 type (
@@ -42,9 +44,9 @@ var csvDefaultPatterns = []csvPattern{
 		{keyRequest, 5},
 		{keyCode, 6},
 		{keyBytesSent, 7},
-		{keyResponseLength, 8},
-		{keyResponseTime, 9},
-		{keyResponseTimeUpstream, 10},
+		{keyRespLength, 8},
+		{keyRespTime, 9},
+		{keyRespTimeUpstream, 10},
 	},
 	// TODO: add examples
 	{
@@ -52,9 +54,9 @@ var csvDefaultPatterns = []csvPattern{
 		{keyRequest, 6},
 		{keyCode, 7},
 		{keyBytesSent, 8},
-		{keyResponseLength, 9},
-		{keyResponseTime, 10},
-		{keyResponseTimeUpstream, 11},
+		{keyRespLength, 9},
+		{keyRespTime, 10},
+		{keyRespTimeUpstream, 11},
 	},
 	// TODO: add examples
 	{

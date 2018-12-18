@@ -286,19 +286,16 @@ func (w *WebLog) Charts() *Charts {
 		}
 	}
 
-	if w.gm.has(keyBytesSent) || w.gm.has(keyResponseLength) {
+	if w.gm.has(keyBytesSent) || w.gm.has(keyRespLength) {
 		_ = charts.Add(bandwidth.Copy())
 	}
 
 	if w.gm.has(keyRequest) && len(w.urlCats) > 0 {
 		chart := requestsPerURL.Copy()
 		_ = charts.Add(chart)
-
 		for _, cat := range w.urlCats {
 			_ = chart.AddDim(&Dim{ID: cat.name, Algo: modules.Incremental})
-			w.metrics[cat.name] = 0
 		}
-		w.metrics[keyURL+"_category_other"] = 0
 	}
 
 	if w.gm.has(keyRequest) && len(w.urlCats) > 0 && w.DoPerURLCharts {
@@ -318,17 +315,31 @@ func (w *WebLog) Charts() *Charts {
 
 		for _, cat := range w.userCats {
 			_ = chart.AddDim(&Dim{ID: cat.name, Algo: modules.Incremental})
-			w.metrics[cat.name] = 0
 		}
-		w.metrics[keyUserDefined+"_category_other"] = 0
 	}
 
-	if w.gm.has(keyResponseTime) {
+	if w.gm.has(keyRespTime) {
 		_ = charts.Add(responseTime.Copy())
 	}
 
-	if w.gm.has(keyResponseTimeUpstream) {
+	if w.gm.has(keyRespTime) && len(w.histograms) != 0 {
+		chart := responseTimeHistogram.Copy()
+		_ = charts.Add(chart)
+		for _, v := range w.histograms[keyRespTimeHistogram] {
+			_ = chart.AddDim(&Dim{ID: v.id, Name: v.name, Algo: modules.Incremental})
+		}
+	}
+
+	if w.gm.has(keyRespTimeUpstream) {
 		_ = charts.Add(responseTimeUpstream.Copy())
+	}
+
+	if w.gm.has(keyRespTimeUpstream) && len(w.histograms) != 0 {
+		chart := responseTimeUpstreamHistogram.Copy()
+		_ = charts.Add(chart)
+		for _, v := range w.histograms[keyRespTimeUpstreamHistogram] {
+			_ = chart.AddDim(&Dim{ID: v.id, Name: v.name, Algo: modules.Incremental})
+		}
 	}
 
 	if w.gm.has(keyRequest) {

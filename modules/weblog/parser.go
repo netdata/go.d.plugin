@@ -110,11 +110,11 @@ func validateResult(gm map[string]string) error {
 			if !reBytesSent.MatchString(v) {
 				return fmt.Errorf("key 'bytes_sent' bad syntax: '%s'", v)
 			}
-		case keyResponseLength:
+		case keyRespLength:
 			if !reResponseLength.MatchString(v) {
 				return fmt.Errorf("key 'response_length' bad syntax: '%s'", v)
 			}
-		case keyResponseTime, keyResponseTimeUpstream:
+		case keyRespTime, keyRespTimeUpstream:
 			if !reResponseTime.MatchString(v) {
 				return fmt.Errorf("key 'response_time' bad syntax : '%s'", v)
 			}

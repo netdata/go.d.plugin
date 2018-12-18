@@ -2,6 +2,7 @@ package weblog
 
 import (
 	"fmt"
+
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/simpletail"
 )
@@ -29,9 +30,10 @@ func New() *WebLog {
 		stop:  make(chan struct{}),
 		pause: make(chan struct{}),
 		timings: timings{
-			keyResponseTime:         &timing{},
-			keyResponseTimeUpstream: &timing{},
+			keyRespTime:         &timing{},
+			keyRespTimeUpstream: &timing{},
 		},
+		histograms:     make(map[string]histogram),
 		uniqIPs:        make(map[string]bool),
 		uniqIPsAllTime: make(map[string]bool),
 		metrics: map[string]int64{
@@ -97,6 +99,7 @@ type WebLog struct {
 	pause chan struct{}
 
 	timings        timings
+	histograms     map[string]histogram
 	uniqIPs        map[string]bool
 	uniqIPsAllTime map[string]bool
 
@@ -122,7 +125,9 @@ func (w *WebLog) initCategories() error {
 			return fmt.Errorf("error on creating category %s : %s", raw, err)
 		}
 		w.urlCats = append(w.urlCats, cat)
+		w.metrics[cat.name] = 0
 	}
+	w.metrics[keyURL+"_category_other"] = 0
 
 	if w.DoPerURLCharts {
 		for _, cat := range w.urlCats {
@@ -137,9 +142,26 @@ func (w *WebLog) initCategories() error {
 			return fmt.Errorf("error on creating category %s : %s", raw, err)
 		}
 		w.userCats = append(w.userCats, cat)
+		w.metrics[cat.name] = 0
 	}
+	w.metrics[keyUserDefined+"_category_other"] = 0
 
 	return nil
+}
+
+func (w *WebLog) initHistograms() {
+	if len(w.Histogram) == 0 {
+		return
+	}
+
+	w.histograms[keyRespTimeHistogram] = newHistogram(keyRespTimeHistogram, w.Histogram)
+	w.histograms[keyRespTimeUpstreamHistogram] = newHistogram(keyRespTimeUpstreamHistogram, w.Histogram)
+
+	for _, h := range w.histograms {
+		for _, v := range h {
+			w.metrics[v.id] = 0
+		}
+	}
 }
 
 func (w *WebLog) initParser() error {
@@ -184,6 +206,8 @@ func (w *WebLog) Init() bool {
 		return false
 	}
 
+	w.initHistograms()
+
 	return true
 }
 
@@ -208,13 +232,18 @@ func (w *WebLog) Collect() map[string]int64 {
 		if !v.active() {
 			continue
 		}
-		fmt.Println(v, 1111111111, k+"_min")
 		w.metrics[k+"_min"] += int64(v.min)
 		w.metrics[k+"_avg"] += int64(v.avg())
 		w.metrics[k+"_max"] += int64(v.max)
 	}
 
 	w.timings.reset()
+
+	for _, h := range w.histograms {
+		for _, v := range h {
+			w.metrics[v.id] = int64(v.count)
+		}
+	}
 
 	// NOTE: don't copy if nothing has changed?
 	m := make(map[string]int64)
