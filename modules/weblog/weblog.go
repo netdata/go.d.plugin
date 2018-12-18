@@ -24,6 +24,11 @@ func New() *WebLog {
 		DoAllTimeIPs:     true,
 		DoPerURLCharts:   true,
 
+		reqParser: newCSVParser(csvPattern{
+			{"method", 0},
+			{"url", 1},
+			{"version", 2},
+		}),
 		stop:           make(chan struct{}),
 		pause:          make(chan struct{}),
 		uniqIPs:        make(map[string]bool),
@@ -76,9 +81,10 @@ type WebLog struct {
 
 	charts *modules.Charts
 
-	tail   follower
-	filter matcher
-	parser
+	tail      follower
+	filter    matcher
+	parser    parser
+	reqParser parser
 
 	gm         groupMap // for creating charts
 	matchedURL string
@@ -148,7 +154,7 @@ func (w *WebLog) initParser() error {
 	}
 
 	w.parser = p
-	w.gm, _ = w.parse(line)
+	w.gm, _ = w.parser.parse(line)
 
 	return nil
 }
@@ -298,7 +304,7 @@ func (w *WebLog) cleanup() {
 }
 
 func (w *WebLog) parseLine(line string) {
-	gm, ok := w.parse(line)
+	gm, ok := w.parser.parse(line)
 
 	if !ok {
 		w.metrics["unmatched"]++
@@ -394,24 +400,17 @@ func (w *WebLog) codeStatus(gm groupMap) {
 }
 
 func (w *WebLog) request(gm groupMap) {
-	request := gm.get("request")
+	var ok bool
 
-	// FIX ME: separate parser for request field
-	if request != "" {
-		gm, _ = w.parse(request)
+	if gm, ok = w.reqParser.parse(gm.get("request")); !ok {
+		fmt.Println("FAILED")
+		return
 	}
+	fmt.Println(gm)
 
-	if _, ok := gm.lookup("method"); ok {
-		w.httpMethod(gm)
-	}
-
-	if _, ok := gm.lookup("url"); ok {
-		w.urlCategory(gm)
-	}
-
-	if _, ok := gm.lookup("version"); ok {
-		w.httpVersion(gm)
-	}
+	w.httpMethod(gm)
+	w.urlCategory(gm)
+	w.httpVersion(gm)
 }
 
 func (w *WebLog) httpMethod(gm groupMap) {
