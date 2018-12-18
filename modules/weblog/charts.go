@@ -182,8 +182,8 @@ var (
 	}
 )
 
-func responseCodesDetailedPerFamily() []Chart {
-	return []Chart{
+func responseCodesDetailedPerFamily() []*Chart {
+	return []*Chart{
 		{
 			ID:    responseCodesDetailed.ID + "_1xx",
 			Title: "Detailed Response Codes 1xx",
@@ -235,8 +235,8 @@ func responseCodesDetailedPerFamily() []Chart {
 	}
 }
 
-func perCategoryStats(id string) []Chart {
-	return []Chart{
+func perCategoryStats(id string) []*Chart {
+	return []*Chart{
 		{
 			ID:    responseCodesDetailed.ID + "_" + id,
 			Title: "Detailed Response Codes",

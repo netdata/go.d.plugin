@@ -25,7 +25,7 @@ func New() *WebLog {
 		DoPerURLCharts:   true,
 
 		stop:           make(chan struct{}),
-		collect:        make(chan struct{}),
+		pause:          make(chan struct{}),
 		uniqIPs:        make(map[string]bool),
 		uniqIPsAllTime: make(map[string]bool),
 		metrics: map[string]int64{
@@ -63,36 +63,31 @@ func New() *WebLog {
 type WebLog struct {
 	modules.Base
 
-	Path string `yaml:"path" validate:"required"`
-
-	Filter   rawFilter     `yaml:"filter"`
-	URLCats  []rawCategory `yaml:"categories"`
-	UserCats []rawCategory `yaml:"user_categories"`
-
-	CustomParser csvPattern `yaml:"custom_log_format"`
-	Histogram    []int      `yaml:"histogram"`
-
-	DoCodesDetailed  bool `yaml:"detailed_response_codes"`
-	DoCodesAggregate bool `yaml:"detailed_response_codes_aggregate"`
-	DoPerURLCharts   bool `yaml:"per_category_charts"`
-	DoAllTimeIPs     bool `yaml:"all_time_clients"`
-
-	tail follower
+	Path             string        `yaml:"path" validate:"required"`
+	Filter           rawFilter     `yaml:"filter"`
+	URLCats          []rawCategory `yaml:"categories"`
+	UserCats         []rawCategory `yaml:"user_categories"`
+	CustomParser     csvPattern    `yaml:"custom_log_format"`
+	Histogram        []int         `yaml:"histogram"`
+	DoCodesDetailed  bool          `yaml:"detailed_response_codes"`
+	DoCodesAggregate bool          `yaml:"detailed_response_codes_aggregate"`
+	DoPerURLCharts   bool          `yaml:"per_category_charts"`
+	DoAllTimeIPs     bool          `yaml:"all_time_clients"`
 
 	charts *modules.Charts
 
-	parser
+	tail   follower
 	filter matcher
+	parser
 
-	line       string // for creating charts
+	gm         groupMap // for creating charts
 	matchedURL string
-	updated    bool
 
 	urlCats  []*category
 	userCats []*category
 
-	stop    chan struct{}
-	collect chan struct{}
+	stop  chan struct{}
+	pause chan struct{}
 
 	uniqIPs        map[string]bool
 	uniqIPsAllTime map[string]bool
@@ -153,7 +148,7 @@ func (w *WebLog) initParser() error {
 	}
 
 	w.parser = p
-	w.line = line
+	w.gm, _ = w.parse(line)
 
 	return nil
 }
@@ -192,16 +187,85 @@ func (w *WebLog) Check() bool {
 
 func (w *WebLog) Charts() *Charts {
 	var charts modules.Charts
-	_ = charts.Add(responseCodes.Copy(), responseStatuses.Copy(), responseCodesDetailed.Copy())
+
+	_ = charts.Add(responseStatuses.Copy(), responseCodes.Copy())
+
+	if w.DoCodesDetailed {
+		if w.DoCodesAggregate {
+			_ = charts.Add(responseCodesDetailed.Copy())
+		} else {
+			_ = charts.Add(responseCodesDetailedPerFamily()...)
+		}
+	}
+
+	if w.gm.has(keyBytesSent) || w.gm.has(keyResponseLength) {
+		_ = charts.Add(bandwidth.Copy())
+	}
+
+	if w.gm.has(keyRequest) && len(w.urlCats) > 0 {
+		chart := requestsPerURL.Copy()
+		_ = charts.Add(chart)
+
+		for _, cat := range w.urlCats {
+			_ = chart.AddDim(&Dim{ID: cat.name, Algo: modules.Incremental})
+			w.metrics[cat.name] = 0
+		}
+		w.metrics["url_category_other"] = 0
+	}
+
+	if w.gm.has(keyRequest) && len(w.urlCats) > 0 && w.DoPerURLCharts {
+		for _, cat := range w.urlCats {
+			for _, chart := range perCategoryStats(cat.name) {
+				_ = charts.Add(chart)
+				for _, d := range chart.Dims {
+					w.metrics[d.ID] = 0
+				}
+			}
+		}
+	}
+
+	if w.gm.has(keyRequest) && len(w.userCats) > 0 {
+		chart := requestsPerUserDefined.Copy()
+		_ = charts.Add(chart)
+
+		for _, cat := range w.userCats {
+			_ = chart.AddDim(&Dim{ID: cat.name, Algo: modules.Incremental})
+			w.metrics[cat.name] = 0
+		}
+		w.metrics["user_category_other"] = 0
+	}
+
+	if w.gm.has(keyResponseTime) {
+		_ = charts.Add(responseTime.Copy())
+	}
+
+	if w.gm.has(keyResponseTimeUpstream) {
+		_ = charts.Add(responseTimeUpstream.Copy())
+	}
+
+	if w.gm.has(keyRequest) {
+		_ = charts.Add(requestsPerHTTPMethod.Copy())
+		_ = charts.Add(requestsPerHTTPVersion.Copy())
+	}
+
+	if w.gm.has(keyAddress) {
+		_ = charts.Add(requestsPerIPProto.Copy())
+		_ = charts.Add(currentPollIPs.Copy())
+		if w.DoAllTimeIPs {
+			_ = charts.Add(allTimeIPs.Copy())
+		}
+	}
+
 	w.charts = &charts
 
 	return w.charts
 }
 
 func (w *WebLog) Collect() map[string]int64 {
-	w.collect <- struct{}{}
-	defer func() { <-w.collect }()
+	w.pause <- struct{}{}
+	defer func() { <-w.pause }()
 
+	// TODO: don't copy if nothing changed?
 	m := make(map[string]int64)
 
 	for k, v := range w.metrics {
@@ -219,14 +283,12 @@ LOOP:
 		case <-w.stop:
 			w.cleanup()
 			break LOOP
-		case <-w.collect:
-			w.collect <- struct{}{}
+		case <-w.pause:
+			w.pause <- struct{}{}
 		case line := <-lines:
-			if !w.filter.match(line.Text) {
-				continue
+			if w.filter.match(line.Text) {
+				w.parseLine(line.Text)
 			}
-			w.updated = true
-			w.parseLine(line.Text)
 		}
 	}
 }
@@ -378,7 +440,7 @@ func (w *WebLog) urlCategory(gm groupMap) {
 		}
 	}
 	w.matchedURL = ""
-	w.metrics["url_other"]++
+	w.metrics["url_category_other"]++
 }
 
 func (w *WebLog) userCategory(gm groupMap) {
@@ -390,7 +452,7 @@ func (w *WebLog) userCategory(gm groupMap) {
 			return
 		}
 	}
-	w.metrics["user_defined_other"]++
+	w.metrics["user_category_other"]++
 }
 
 func (w *WebLog) httpVersion(gm groupMap) {
