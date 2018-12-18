@@ -12,7 +12,7 @@ package weblog
 //	histogram  []*histVal
 //	histVal    struct {
 //		id    string
-//		name  string
+//		nam  string
 //		value int
 //		count int
 //	}
@@ -43,11 +43,11 @@ package weblog
 //	sort.Ints(r)
 //	for _, v := range r {
 //		n := strconv.Itoa(v)
-//		h1 = append(h1, &histVal{id: keyRespTimeHist + "_" + n, name: n, value: v * 1000})
-//		h2 = append(h2, &histVal{id: keyRespTimeUpstreamHist + "_" + n, name: n, value: v * 1000})
+//		h1 = append(h1, &histVal{id: keyRespTimeHist + "_" + n, nam: n, value: v * 1000})
+//		h2 = append(h2, &histVal{id: keyRespTimeUpstreamHist + "_" + n, nam: n, value: v * 1000})
 //	}
-//	h1 = append(h1, &histVal{id: keyRespTimeHist + "_inf", name: "inf", value: math.MaxInt64})
-//	h2 = append(h2, &histVal{id: keyRespTimeUpstreamHist + "_inf", name: "inf", value: math.MaxInt64})
+//	h1 = append(h1, &histVal{id: keyRespTimeHist + "_inf", nam: "inf", value: math.MaxInt64})
+//	h2 = append(h2, &histVal{id: keyRespTimeUpstreamHist + "_inf", nam: "inf", value: math.MaxInt64})
 //
 //	h[keyRespTimeHist] = h1
 //	h[keyRespTimeUpstreamHist] = h2

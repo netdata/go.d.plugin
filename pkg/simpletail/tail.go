@@ -1,4 +1,4 @@
-package tail
+package simpletail
 
 import (
 	"errors"
@@ -91,6 +91,7 @@ func (t *Tail) Tail() (io.ReadCloser, error) {
 	}
 
 	t.fails = 0
+	// TODO: this is wrong
 	t.pos = fi.Size()
 	return f, nil
 }

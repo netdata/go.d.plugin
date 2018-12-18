@@ -1,14 +1,12 @@
 package weblog
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/modules"
-	"github.com/netdata/go.d.plugin/modules/weblog/category"
-	"github.com/netdata/go.d.plugin/modules/weblog/charts"
-	"github.com/netdata/go.d.plugin/modules/weblog/filter"
-	"github.com/netdata/go.d.plugin/modules/weblog/parser"
+	"github.com/netdata/go.d.plugin/pkg/simpletail"
 
 	"github.com/hpcloud/tail"
 )
@@ -22,57 +20,134 @@ func init() {
 }
 
 func New() *WebLog {
-	return &WebLog{}
+	return &WebLog{
+		DoCodesDetailed:  true,
+		DoCodesAggregate: true,
+		DoAllTimeIPs:     true,
+		DoPerURLCharts:   false,
+
+		stop:           make(chan struct{}),
+		collect:        make(chan struct{}),
+		done:           make(chan struct{}),
+		uniqIPs:        make(map[string]bool),
+		uniqIPsAllTime: make(map[string]bool),
+	}
 }
 
 type WebLog struct {
 	modules.Base
 
-	Path             string         `yaml:"path" validate:"required"`
-	Filter           filter.Raw     `yaml:"filter"`
-	URLCats          []category.Raw `yaml:"categories"`
-	UserCats         []category.Raw `yaml:"user_categories"`
-	CustomParser     string         `yaml:"custom_log_format"`
-	Histogram        []int          `yaml:"histogram"`
-	DoCodesDetailed  bool           `yaml:"detailed_response_codes"`
-	DoCodesAggregate bool           `yaml:"detailed_response_codes_aggregate"`
-	DoPerURLCharts   bool           `yaml:"per_category_charts"`
-	DoAllTimeIPs     bool           `yaml:"all_time_clients"`
+	Path string `yaml:"path" validate:"required"`
+
+	Filter   rawFilter     `yaml:"filter"`
+	URLCats  []rawCategory `yaml:"categories"`
+	UserCats []rawCategory `yaml:"user_categories"`
+
+	CustomParser csvPattern `yaml:"custom_log_format"`
+	Histogram    []int      `yaml:"histogram"`
+
+	DoCodesDetailed  bool `yaml:"detailed_response_codes"`
+	DoCodesAggregate bool `yaml:"detailed_response_codes_aggregate"`
+	DoPerURLCharts   bool `yaml:"per_category_charts"`
+	DoAllTimeIPs     bool `yaml:"all_time_clients"`
 
 	tail *tail.Tail
 
 	charts *modules.Charts
 
-	parser.Parser
-	filter filter.Filter
+	parser
+	filter matcher
 
 	matchedURL string
+	updated    bool
 
-	categories struct {
-		url  []category.Category
-		user []category.Category
-	}
+	urlCats  []*category
+	userCats []*category
 
-	hooks struct {
-		stop    chan struct{}
-		collect chan struct{}
-	}
+	stop    chan struct{}
+	collect chan struct{}
+	done    chan struct{}
 
-	clientIPs struct {
-		cur map[string]bool
-		all map[string]bool
-	}
+	uniqIPs        map[string]bool
+	uniqIPsAllTime map[string]bool
 
 	tailMetrics map[string]int64
 	metrics     map[string]int64
 }
 
-func (WebLog) Cleanup() {
+func (WebLog) Cleanup() {}
 
+func (w *WebLog) initFilter() error {
+	f, err := newFilter(w.Filter)
+	if err != nil {
+		return fmt.Errorf("error on creating filter : %s", err)
+	}
+	w.filter = f
+
+	return nil
+}
+
+func (w *WebLog) initCategories() error {
+	for _, raw := range w.URLCats {
+		cat, err := newCategory(raw)
+		if err != nil {
+			return fmt.Errorf("error on creating category %s : %s", raw, err)
+		}
+		w.urlCats = append(w.urlCats, cat)
+	}
+
+	for _, raw := range w.UserCats {
+		cat, err := newCategory(raw)
+		if err != nil {
+			return fmt.Errorf("error on creating category %s : %s", raw, err)
+		}
+		w.userCats = append(w.userCats, cat)
+	}
+
+	return nil
+}
+
+func (w *WebLog) initParser() error {
+	line, err := simpletail.ReadLastLine(w.Path)
+
+	if err != nil {
+		return err
+	}
+
+	var p parser
+
+	if len(w.CustomParser) > 0 {
+		p, err = newParser(string(line), w.CustomParser)
+	} else {
+		p, err = newParser(string(line), csvDefaultPatterns...)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	w.parser = p
+
+	return nil
 }
 
 func (w *WebLog) Init() bool {
-	return false
+	if err := w.initParser(); err != nil {
+		w.Error(err)
+		return false
+	}
+
+	if err := w.initFilter(); err != nil {
+		w.Error(err)
+		return false
+	}
+
+	if err := w.initCategories(); err != nil {
+		w.Error(err)
+		return false
+	}
+
+	return true
 }
 
 func (WebLog) Check() bool {
@@ -84,7 +159,8 @@ func (WebLog) Charts() *modules.Charts {
 }
 
 func (w *WebLog) Collect() map[string]int64 {
-	w.hooks.collect <- struct{}{}
+	w.collect <- struct{}{}
+	<-w.done
 
 	return w.metrics
 }
@@ -93,12 +169,18 @@ func (w *WebLog) parseLoop() {
 LOOP:
 	for {
 		select {
-		case <-w.hooks.stop:
+		case <-w.stop:
 			w.cleanup()
 			break LOOP
-		case <-w.hooks.collect:
+		case <-w.collect:
 			w.copyMetrics()
+			w.updated = false
+			w.done <- struct{}{}
 		case line := <-w.tail.Lines:
+			if !w.filter.match(line.Text) {
+				continue
+			}
+			w.updated = true
 			w.parseLine(line.Text)
 		}
 	}
@@ -119,11 +201,7 @@ func (w *WebLog) copyMetrics() {
 }
 
 func (w *WebLog) parseLine(line string) {
-	if !w.filter.Filter(line) {
-		return
-	}
-
-	gm, ok := w.Parse(line)
+	gm, ok := w.parse(line)
 
 	if !ok {
 		w.metrics["unmatched"]++
@@ -140,19 +218,19 @@ func (w *WebLog) parseLine(line string) {
 
 	w.request(gm)
 
-	if _, ok := gm.Lookup("user_defined"); ok && len(w.categories.user) > 0 {
+	if _, ok := gm.lookup("user_defined"); ok && len(w.userCats) > 0 {
 		w.userCategory(gm)
 	}
 
-	if _, ok := gm.Lookup("bytes_sent"); ok {
+	if _, ok := gm.lookup("bytes_sent"); ok {
 		w.bytesSent(gm)
 	}
 
-	if _, ok := gm.Lookup("resp_length"); ok {
+	if _, ok := gm.lookup("resp_length"); ok {
 		w.respLength(gm)
 	}
 
-	if _, ok := gm.Lookup("address"); ok {
+	if _, ok := gm.lookup("address"); ok {
 		w.ipProto(gm)
 	}
 
@@ -162,8 +240,8 @@ func (w *WebLog) parseLine(line string) {
 
 }
 
-func (w *WebLog) codeFam(gm parser.GroupMap) {
-	fam := gm.Get("code")[:1] + "xx"
+func (w *WebLog) codeFam(gm groupMap) {
+	fam := gm.get("code")[:1] + "xx"
 
 	if _, ok := w.metrics[fam]; ok {
 		w.metrics[fam]++
@@ -172,34 +250,37 @@ func (w *WebLog) codeFam(gm parser.GroupMap) {
 	}
 }
 
-func (w *WebLog) codeDetailed(gm parser.GroupMap) {
-	code := gm.Get("code")
+func (w *WebLog) codeDetailed(gm groupMap) {
+	code := gm.get("code")
 
 	if _, ok := w.metrics[code]; ok {
 		w.metrics[code]++
 		return
 	}
 
+	var chart *Chart
+
 	if w.DoCodesAggregate {
-		chart := w.charts.Get(charts.ResponseCodesDetailed.ID)
-		_ = chart.AddDim(&modules.Dim{ID: code, Algo: modules.Incremental})
-		w.metrics[code]++
-		return
+		chart = w.charts.Get(responseCodesDetailed.ID)
+	} else {
+		v := "other"
+		if code[0] <= 53 {
+			v = code[:1] + "xx"
+		}
+		chart = w.charts.Get(responseCodesDetailed.ID + "_" + v)
 	}
 
-	var v = "other"
+	_ = chart.AddDim(&Dim{
+		ID:   code,
+		Algo: modules.Incremental,
+	})
+	chart.MarkNotCreated()
 
-	if code[0] <= 53 {
-		v = code[:1] + "xx"
-	}
-
-	chart := w.charts.Get(charts.ResponseCodesDetailed.ID + "_" + v)
-	_ = chart.AddDim(&modules.Dim{ID: code, Algo: modules.Incremental})
 	w.metrics[code]++
 }
 
-func (w *WebLog) codeStatus(gm parser.GroupMap) {
-	code, fam := gm.Get("code"), gm.Get("code")[:1]
+func (w *WebLog) codeStatus(gm groupMap) {
+	code, fam := gm.get("code"), gm.get("code")[:1]
 
 	switch {
 	case fam == "2", code == "304", fam == "1":
@@ -215,47 +296,49 @@ func (w *WebLog) codeStatus(gm parser.GroupMap) {
 	}
 }
 
-func (w *WebLog) request(gm parser.GroupMap) {
-	request := gm.Get("request")
+func (w *WebLog) request(gm groupMap) {
+	request := gm.get("request")
 
+	// FIX ME: separate parser for request field
 	if request != "" {
-		gm, _ = w.Parse(request)
+		gm, _ = w.parse(request)
 	}
 
-	if _, ok := gm.Lookup("method"); ok {
+	if _, ok := gm.lookup("method"); ok {
 		w.httpMethod(gm)
 	}
 
-	if _, ok := gm.Lookup("url"); ok {
+	if _, ok := gm.lookup("url"); ok {
 		w.urlCategory(gm)
 	}
 
-	if _, ok := gm.Lookup("version"); ok {
+	if _, ok := gm.lookup("version"); ok {
 		w.httpVersion(gm)
 	}
 }
 
-func (w *WebLog) httpMethod(gm parser.GroupMap) {
-	method := gm.Get("method")
+func (w *WebLog) httpMethod(gm groupMap) {
+	method := gm.get("method")
 
 	if _, ok := w.metrics[method]; !ok {
-		chart := w.charts.Get(charts.RequestsPerHTTPMethod.ID)
-		_ = chart.AddDim(&modules.Dim{
+		chart := w.charts.Get(requestsPerHTTPMethod.ID)
+		_ = chart.AddDim(&Dim{
 			ID:   method,
 			Algo: modules.Incremental,
 		})
+		chart.MarkNotCreated()
 	}
 
 	w.metrics[method]++
 }
 
-func (w *WebLog) urlCategory(gm parser.GroupMap) {
-	url := gm.Get("url")
+func (w *WebLog) urlCategory(gm groupMap) {
+	url := gm.get("url")
 
-	for _, v := range w.categories.url {
-		if v.Match(url) {
-			w.metrics[v.Name()]++
-			w.matchedURL = v.Name()
+	for _, v := range w.urlCats {
+		if v.match(url) {
+			w.metrics[v.name]++
+			w.matchedURL = v.name
 			return
 		}
 	}
@@ -263,58 +346,59 @@ func (w *WebLog) urlCategory(gm parser.GroupMap) {
 	w.metrics["url_other"]++
 }
 
-func (w *WebLog) userCategory(gm parser.GroupMap) {
-	userDefined := gm.Get("user_defined")
+func (w *WebLog) userCategory(gm groupMap) {
+	userDefined := gm.get("user_defined")
 
-	for _, cat := range w.categories.user {
-		if cat.Match(userDefined) {
-			w.metrics[cat.Name()]++
+	for _, cat := range w.userCats {
+		if cat.match(userDefined) {
+			w.metrics[cat.name]++
 			return
 		}
 	}
 	w.metrics["user_defined_other"]++
 }
 
-func (w *WebLog) httpVersion(gm parser.GroupMap) {
-	version := gm.Get("version")
+func (w *WebLog) httpVersion(gm groupMap) {
+	version := gm.get("version")
 
-	dimID := strings.Replace(gm.Get("version"), ".", "_", 1)
+	dimID := strings.Replace(gm.get("version"), ".", "_", 1)
 
 	if _, ok := w.metrics[dimID]; !ok {
-		chart := w.charts.Get(charts.RequestsPerHTTPVersion.ID)
-		_ = chart.AddDim(&modules.Dim{
+		chart := w.charts.Get(requestsPerHTTPVersion.ID)
+		_ = chart.AddDim(&Dim{
 			ID:   dimID,
 			Name: version,
 			Algo: modules.Incremental,
 		})
+		chart.MarkNotCreated()
 	}
 
 	w.metrics[dimID]++
 }
 
-func (w *WebLog) bytesSent(gm parser.GroupMap) {
-	v := gm.Get("bytes_sent")
+func (w *WebLog) bytesSent(gm groupMap) {
+	v := gm.get("bytes_sent")
 
 	w.metrics["bytes_sent"] += toInt(v)
 }
 
-func (w *WebLog) respLength(gm parser.GroupMap) {
-	v := gm.Get("resp_length")
+func (w *WebLog) respLength(gm groupMap) {
+	v := gm.get("resp_length")
 
 	w.metrics["resp_length"] += toInt(v)
 }
 
-func (w *WebLog) respTime(gm parser.GroupMap) {
+func (w *WebLog) respTime(gm groupMap) {
 
 }
 
-func (w *WebLog) respTimeUpstream(gm parser.GroupMap) {
+func (w *WebLog) respTimeUpstream(gm groupMap) {
 
 }
 
-func (w *WebLog) ipProto(gm parser.GroupMap) {
+func (w *WebLog) ipProto(gm groupMap) {
 	var (
-		address = gm.Get("address")
+		address = gm.get("address")
 		proto   = "ipv4"
 	)
 
@@ -324,8 +408,8 @@ func (w *WebLog) ipProto(gm parser.GroupMap) {
 
 	w.metrics["req_"+proto]++
 
-	if _, ok := w.clientIPs.cur[address]; !ok {
-		w.clientIPs.cur[address] = true
+	if _, ok := w.uniqIPs[address]; !ok {
+		w.uniqIPs[address] = true
 		w.metrics["unique_cur_"+proto]++
 	}
 
@@ -333,38 +417,39 @@ func (w *WebLog) ipProto(gm parser.GroupMap) {
 		return
 	}
 
-	if _, ok := w.clientIPs.all[address]; !ok {
-		w.clientIPs.all[address] = true
+	if _, ok := w.uniqIPsAllTime[address]; !ok {
+		w.uniqIPsAllTime[address] = true
 		w.metrics["unique_all_"+proto]++
 	}
 
 }
 
-func (w *WebLog) urlCategoryStats(gm parser.GroupMap) {
-	code := gm.Get("code")
-	v := w.matchedURL + "_" + code
+func (w *WebLog) urlCategoryStats(gm groupMap) {
+	code := gm.get("code")
+	id := w.matchedURL + "_" + code
 
-	if _, ok := w.metrics[v]; !ok {
-		chart := w.charts.Get(charts.ResponseCodesDetailed.ID + "_" + w.matchedURL)
-		_ = chart.AddDim(&modules.Dim{
-			ID:   v,
+	if _, ok := w.metrics[id]; !ok {
+		chart := w.charts.Get(responseCodesDetailed.ID + "_" + w.matchedURL)
+		_ = chart.AddDim(&Dim{
+			ID:   id,
 			Name: code,
 			Algo: modules.Incremental,
 		})
+		chart.MarkNotCreated()
 	}
 
-	w.metrics[v]++
+	w.metrics[id]++
 
-	if v, ok := gm.Lookup("bytes_sent"); ok {
+	if v, ok := gm.lookup("bytes_sent"); ok {
 		w.metrics[w.matchedURL+"_bytes_sent"] += toInt(v)
 	}
 
-	if v, ok := gm.Lookup("resp_length"); ok {
+	if v, ok := gm.lookup("resp_length"); ok {
 		w.metrics[w.matchedURL+"_resp_length"] += toInt(v)
 	}
 
-	//if v, ok := gm.Lookup("resp_time"); ok {
-	//	w.timings.get(id).set(v)
+	//if id, ok := gm.Lookup("resp_time"); ok {
+	//	w.timings.get(id).set(id)
 	//}
 }
 

@@ -1,8 +1,8 @@
-package parser
+package weblog
 
 import (
-	"bytes"
 	"errors"
+	"strings"
 	"unicode"
 	"unicode/utf8"
 )
@@ -17,8 +17,7 @@ type csvReader struct {
 	lastRecord   []string
 }
 
-// TODO: replace []byte with string
-func (r *csvReader) readRecord(line []byte) ([]string, error) {
+func (r *csvReader) readRecord(line string) ([]string, error) {
 	// Parse each field in the record.
 	var err error
 	const quoteLen = len(`"`)
@@ -29,11 +28,11 @@ func (r *csvReader) readRecord(line []byte) ([]string, error) {
 parseField:
 	for {
 		if r.trimLeadingSpace {
-			line = bytes.TrimLeftFunc(line, unicode.IsSpace)
+			line = strings.TrimLeftFunc(line, unicode.IsSpace)
 		}
 		if len(line) == 0 || line[0] != '"' {
 			// Non-quoted string field
-			i := bytes.IndexRune(line, r.comma)
+			i := strings.IndexRune(line, r.comma)
 			field := line
 			if i >= 0 {
 				field = field[:i]
@@ -42,7 +41,7 @@ parseField:
 			}
 			// Check to make sure a quote does not appear in field.
 			if !r.lazyQuotes {
-				if j := bytes.IndexByte(field, '"'); j >= 0 {
+				if j := strings.IndexByte(field, '"'); j >= 0 {
 					err = errors.New("bare \" in non-quoted-field")
 					break parseField
 				}
@@ -58,7 +57,7 @@ parseField:
 			// Quoted string field
 			line = line[quoteLen:]
 			for {
-				i := bytes.IndexByte(line, '"')
+				i := strings.IndexByte(line, '"')
 				if i >= 0 {
 					// Hit next quote.
 					r.recordBuffer = append(r.recordBuffer, line[:i]...)
@@ -117,15 +116,15 @@ parseField:
 }
 
 // lengthNL reports the number of bytes for the trailing \n.
-func lengthNL(b []byte) int {
-	if len(b) > 0 && b[len(b)-1] == '\n' {
+func lengthNL(s string) int {
+	if len(s) > 0 && s[len(s)-1] == '\n' {
 		return 1
 	}
 	return 0
 }
 
 // nextRune returns the next rune in b or utf8.RuneError.
-func nextRune(b []byte) rune {
-	r, _ := utf8.DecodeRune(b)
+func nextRune(s string) rune {
+	r, _ := utf8.DecodeRuneInString(s)
 	return r
 }

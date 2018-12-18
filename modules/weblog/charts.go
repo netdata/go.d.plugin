@@ -1,4 +1,4 @@
-package charts
+package weblog
 
 import (
 	"github.com/netdata/go.d.plugin/modules"
@@ -9,11 +9,13 @@ type (
 	Chart = modules.Chart
 	// Dims is an alias for modules.Dims
 	Dims = modules.Dims
+	// Dim is an alias for modules.Dim
+	Dim = modules.Dim
 )
 
 // NOTE: inconsistency between contexts with python web_log
 var (
-	ResponseStatuses = Chart{
+	responseStatuses = Chart{
 		ID:    "response_statuses",
 		Title: "Response Statuses",
 		Units: "requests/s",
@@ -28,7 +30,7 @@ var (
 			{ID: "other_requests", Name: "other", Algo: modules.Incremental},
 		},
 	}
-	ResponseCodes = Chart{
+	responseCodes = Chart{
 		ID:    "response_codes",
 		Title: "Response Codes",
 		Units: "requests/s",
@@ -45,7 +47,7 @@ var (
 			{ID: "unmatched", Algo: modules.Incremental},
 		},
 	}
-	ResponseCodesDetailed = Chart{
+	responseCodesDetailed = Chart{
 		ID:    "detailed_response_codes",
 		Title: "Detailed Response Codes",
 		Units: "requests/s",
@@ -53,7 +55,7 @@ var (
 		Ctx:   "web_log.response_codes_detailed",
 		Type:  modules.Stacked,
 	}
-	Bandwidth = Chart{
+	bandwidth = Chart{
 		ID:    "bandwidth",
 		Title: "Bandwidth",
 		Units: "kilobits/s",
@@ -65,7 +67,7 @@ var (
 			{ID: "bytes_sent", Name: "sent", Algo: modules.Incremental, Mul: -8, Div: 1000},
 		},
 	}
-	ResponseTime = Chart{
+	responseTime = Chart{
 		ID:    "response_time",
 		Title: "Processing Time",
 		Units: "milliseconds",
@@ -78,14 +80,14 @@ var (
 			{ID: "resp_time_avg", Name: "avg", Algo: modules.Incremental, Div: 1000},
 		},
 	}
-	ResponseTimeHistogram = Chart{
+	responseTimeHistogram = Chart{
 		ID:    "response_time_histogram",
 		Title: "Processing Time Histogram",
 		Units: "requests/s",
 		Fam:   "timings",
 		Ctx:   "web_log.response_time_histogram",
 	}
-	ResponseTimeUpstream = Chart{
+	responseTimeUpstream = Chart{
 		ID:    "response_time_upstream",
 		Title: "Processing Time Upstream",
 		Units: "milliseconds",
@@ -98,14 +100,14 @@ var (
 			{ID: "resp_time_upstream_avg", Name: "avg", Algo: modules.Incremental, Div: 1000},
 		},
 	}
-	ResponseTimeUpstreamHistogram = Chart{
+	responseTimeUpstreamHistogram = Chart{
 		ID:    "response_time_upstream_histogram",
 		Title: "Processing Time Upstream Histogram",
 		Units: "requests/s",
 		Fam:   "timings",
 		Ctx:   "web_log.response_time_upstream_histogram",
 	}
-	RequestsPerURL = Chart{
+	requestsPerURL = Chart{
 		ID:    "requests_per_url",
 		Title: "Requests Per Url",
 		Units: "requests/s",
@@ -113,7 +115,7 @@ var (
 		Ctx:   "web_log.requests_per_url",
 		Type:  modules.Stacked,
 	}
-	RequestsPerUserDefined = Chart{
+	requestsPerUserDefined = Chart{
 		ID:    "requests_per_user_defined",
 		Title: "Requests Per User Defined Pattern",
 		Units: "requests/s",
@@ -121,7 +123,7 @@ var (
 		Ctx:   "web_log.requests_per_user_defined",
 		Type:  modules.Stacked,
 	}
-	RequestsPerHTTPMethod = Chart{
+	requestsPerHTTPMethod = Chart{
 		ID:    "requests_per_http_method",
 		Title: "Requests Per HTTP Method",
 		Units: "requests/s",
@@ -132,7 +134,7 @@ var (
 			{ID: "GET", Algo: modules.Incremental},
 		},
 	}
-	RequestsPerHTTPVersion = Chart{
+	requestsPerHTTPVersion = Chart{
 		ID:    "requests_per_http_version",
 		Title: "Requests Per HTTP Version",
 		Units: "requests/s",
@@ -140,7 +142,7 @@ var (
 		Ctx:   "web_log.requests_per_http_version",
 		Type:  modules.Stacked,
 	}
-	RequestsPerIPProto = Chart{
+	requestsPerIPProto = Chart{
 		ID:    "requests_per_ip_proto",
 		Title: "Requests Per IP Protocol",
 		Units: "requests/s",
@@ -152,7 +154,7 @@ var (
 			{ID: "req_ipv6", Name: "ipv6", Algo: modules.Incremental},
 		},
 	}
-	CurrentPollIPs = Chart{
+	currentPollIPs = Chart{
 		ID:    "clients_current",
 		Title: "Current Poll Unique Client IPs",
 		Units: "unique ips",
@@ -164,7 +166,7 @@ var (
 			{ID: "unique_cur_ipv6", Name: "ipv6", Algo: modules.Incremental},
 		},
 	}
-	AllTimeIPs = Chart{
+	allTimeIPs = Chart{
 		ID:    "clients_all_time",
 		Title: "All Time Unique Client IPs",
 		Units: "unique ips",
@@ -178,10 +180,10 @@ var (
 	}
 )
 
-func ResponseCodesDetailedPerFamily() []Chart {
+func responseCodesDetailedPerFamily() []Chart {
 	return []Chart{
 		{
-			ID:    ResponseCodesDetailed.ID + "_1xx",
+			ID:    responseCodesDetailed.ID + "_1xx",
 			Title: "Detailed Response Codes 1xx",
 			Units: "requests/s",
 			Fam:   "responses",
@@ -189,7 +191,7 @@ func ResponseCodesDetailedPerFamily() []Chart {
 			Type:  modules.Stacked,
 		},
 		{
-			ID:    ResponseCodesDetailed.ID + "_2xx",
+			ID:    responseCodesDetailed.ID + "_2xx",
 			Title: "Detailed Response Codes 2xx",
 			Units: "requests/s",
 			Fam:   "responses",
@@ -197,7 +199,7 @@ func ResponseCodesDetailedPerFamily() []Chart {
 			Type:  modules.Stacked,
 		},
 		{
-			ID:    ResponseCodesDetailed.ID + "_3xx",
+			ID:    responseCodesDetailed.ID + "_3xx",
 			Title: "Detailed Response Codes 3xx",
 			Units: "requests/s",
 			Fam:   "responses",
@@ -205,7 +207,7 @@ func ResponseCodesDetailedPerFamily() []Chart {
 			Type:  modules.Stacked,
 		},
 		{
-			ID:    ResponseCodesDetailed.ID + "_4xx",
+			ID:    responseCodesDetailed.ID + "_4xx",
 			Title: "Detailed Response Codes 4xx",
 			Units: "requests/s",
 			Fam:   "responses",
@@ -213,7 +215,7 @@ func ResponseCodesDetailedPerFamily() []Chart {
 			Type:  modules.Stacked,
 		},
 		{
-			ID:    ResponseCodesDetailed.ID + "_5xx",
+			ID:    responseCodesDetailed.ID + "_5xx",
 			Title: "Detailed Response Codes 5xx",
 			Units: "requests/s",
 			Fam:   "responses",
@@ -221,7 +223,7 @@ func ResponseCodesDetailedPerFamily() []Chart {
 			Type:  modules.Stacked,
 		},
 		{
-			ID:    ResponseCodesDetailed.ID + "_other",
+			ID:    responseCodesDetailed.ID + "_other",
 			Title: "Detailed Response Codes Other",
 			Units: "requests/s",
 			Fam:   "responses",
@@ -231,10 +233,10 @@ func ResponseCodesDetailedPerFamily() []Chart {
 	}
 }
 
-func PerCategoryStats(id string) []Chart {
+func perCategoryStats(id string) []Chart {
 	return []Chart{
 		{
-			ID:    ResponseCodesDetailed.ID + "_" + id,
+			ID:    responseCodesDetailed.ID + "_" + id,
 			Title: "Detailed Response Codes",
 			Units: "requests/s",
 			Fam:   id,
@@ -242,7 +244,7 @@ func PerCategoryStats(id string) []Chart {
 			Type:  modules.Stacked,
 		},
 		{
-			ID:    Bandwidth.ID + "_" + id,
+			ID:    bandwidth.ID + "_" + id,
 			Title: "Bandwidth",
 			Units: "kilobits/s",
 			Fam:   id,
@@ -254,7 +256,7 @@ func PerCategoryStats(id string) []Chart {
 			},
 		},
 		{
-			ID:    ResponseTime.ID + "_" + id,
+			ID:    responseTime.ID + "_" + id,
 			Title: "Processing Time",
 			Units: "milliseconds",
 			Fam:   id,
