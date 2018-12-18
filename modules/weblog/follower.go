@@ -1,8 +1,9 @@
 package weblog
 
 import (
-	"github.com/hpcloud/tail"
 	"io"
+
+	"github.com/hpcloud/tail"
 )
 
 type follower interface {

@@ -85,6 +85,7 @@ type WebLog struct {
 	parser
 	filter matcher
 
+	line       string // for creating charts
 	matchedURL string
 	updated    bool
 
@@ -98,7 +99,6 @@ type WebLog struct {
 	uniqIPs        map[string]bool
 	uniqIPsAllTime map[string]bool
 
-	gm      groupMap
 	metrics map[string]int64
 }
 
@@ -136,12 +136,12 @@ func (w *WebLog) initCategories() error {
 
 func (w *WebLog) initParser() error {
 	b, err := simpletail.ReadLastLine(w.Path)
-	line := string(b)
 
 	if err != nil {
 		return err
 	}
 
+	line := string(b)
 	var p parser
 
 	if len(w.CustomParser) > 0 {
@@ -155,7 +155,7 @@ func (w *WebLog) initParser() error {
 	}
 
 	w.parser = p
-	w.gm, _ = w.parse(line)
+	w.line = line
 
 	return nil
 }
@@ -191,8 +191,12 @@ func (w *WebLog) Check() bool {
 	return true
 }
 
-func (WebLog) Charts() *modules.Charts {
-	return nil
+func (w *WebLog) Charts() *Charts {
+	var charts modules.Charts
+	_ = charts.Add(responseCodes.Copy(), responseStatuses.Copy())
+	w.charts = &charts
+
+	return w.charts
 }
 
 func (w *WebLog) Collect() map[string]int64 {

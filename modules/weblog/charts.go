@@ -5,6 +5,8 @@ import (
 )
 
 type (
+	// Charts is an alias for modules.Charts
+	Charts = modules.Charts
 	// Chart is an alias for modules.Chart
 	Chart = modules.Chart
 	// Dims is an alias for modules.Dims
