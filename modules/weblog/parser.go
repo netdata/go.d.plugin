@@ -53,15 +53,11 @@ func (cp *csvParser) parse(line string) (groupMap, bool) {
 	}
 
 	if cp.pattern.max() > len(lines) {
-		fmt.Println("GR")
 		return nil, false
 	}
 
 	for _, f := range cp.pattern {
 		cp.data[f.Name] = lines[f.Index]
-	}
-	for k, v := range cp.data {
-		fmt.Println(k, v)
 	}
 
 	return cp.data, true
