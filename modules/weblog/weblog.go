@@ -27,38 +27,42 @@ func New() *WebLog {
 			{"url", 1},
 			{"version", 2},
 		}),
-		stop:           make(chan struct{}),
-		pause:          make(chan struct{}),
+		stop:  make(chan struct{}),
+		pause: make(chan struct{}),
+		timings: timings{
+			keyResponseTime:         &timing{},
+			keyResponseTimeUpstream: &timing{},
+		},
 		uniqIPs:        make(map[string]bool),
 		uniqIPsAllTime: make(map[string]bool),
 		metrics: map[string]int64{
-			"successful_requests":    0,
-			"redirects":              0,
-			"bad_requests":           0,
-			"server_errors":          0,
-			"other_requests":         0,
-			"2xx":                    0,
-			"5xx":                    0,
-			"3xx":                    0,
-			"4xx":                    0,
-			"1xx":                    0,
-			"0xx":                    0,
-			"unmatched":              0,
-			"bytes_sent":             0,
-			"resp_length":            0,
-			"resp_time_min":          0,
-			"resp_time_max":          0,
-			"resp_time_avg":          0,
-			"resp_time_upstream_min": 0,
-			"resp_time_upstream_max": 0,
-			"resp_time_upstream_avg": 0,
-			"unique_cur_ipv4":        0,
-			"unique_cur_ipv6":        0,
-			"unique_all_ipv4":        0,
-			"unique_all_ipv6":        0,
-			"req_ipv4":               0,
-			"req_ipv6":               0,
-			"GET":                    0, // GET should be green on the dashboard
+			"successful_requests":      0,
+			"redirects":                0,
+			"bad_requests":             0,
+			"server_errors":            0,
+			"other_requests":           0,
+			"2xx":                      0,
+			"5xx":                      0,
+			"3xx":                      0,
+			"4xx":                      0,
+			"1xx":                      0,
+			"0xx":                      0,
+			"unmatched":                0,
+			"bytes_sent":               0,
+			"resp_length":              0,
+			"resp_time_min":            0,
+			"resp_time_max":            0,
+			"resp_time_avg":            0,
+			"resp_time_upstream_min":   0,
+			"resp_time_upstream_max":   0,
+			"resp_time_upstream_avg":   0,
+			"unique_current_poll_ipv4": 0,
+			"unique_current_poll_ipv6": 0,
+			"unique_all_time_ipv4":     0,
+			"unique_all_time_ipv6":     0,
+			"req_ipv4":                 0,
+			"req_ipv6":                 0,
+			"GET":                      0, // GET should be green on the dashboard
 		},
 	}
 }
@@ -93,6 +97,7 @@ type WebLog struct {
 	stop  chan struct{}
 	pause chan struct{}
 
+	timings        timings
 	uniqIPs        map[string]bool
 	uniqIPsAllTime map[string]bool
 
@@ -118,6 +123,12 @@ func (w *WebLog) initCategories() error {
 			return fmt.Errorf("error on creating category %s : %s", raw, err)
 		}
 		w.urlCats = append(w.urlCats, cat)
+	}
+
+	if w.DoPerURLCharts {
+		for _, cat := range w.urlCats {
+			w.timings.add(cat.name)
+		}
 	}
 
 	for _, raw := range w.UserCats {

@@ -164,8 +164,8 @@ var (
 		Ctx:   "web_log.current_poll_ips",
 		Type:  modules.Stacked,
 		Dims: Dims{
-			{ID: "unique_cur_ipv4", Name: "ipv4", Algo: modules.Incremental},
-			{ID: "unique_cur_ipv6", Name: "ipv6", Algo: modules.Incremental},
+			{ID: "unique_current_poll_ipv4", Name: "ipv4", Algo: modules.Incremental},
+			{ID: "unique_current_poll_ipv6", Name: "ipv6", Algo: modules.Incremental},
 		},
 	}
 	allTimeIPs = Chart{
@@ -176,8 +176,8 @@ var (
 		Ctx:   "web_log.all_time_ips",
 		Type:  modules.Stacked,
 		Dims: Dims{
-			{ID: "unique_all_ipv4", Name: "ipv4"},
-			{ID: "unique_all_ipv6", Name: "ipv6"},
+			{ID: "unique_all_time_ipv4", Name: "ipv4"},
+			{ID: "unique_all_time_ipv6", Name: "ipv6"},
 		},
 	}
 )

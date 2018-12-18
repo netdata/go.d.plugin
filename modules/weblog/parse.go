@@ -45,21 +45,31 @@ func (w *WebLog) parseLine(line string) {
 		w.codeDetailed(gm)
 	}
 
-	w.request(gm)
+	if _, ok := gm.lookup(keyRequest); ok {
+		w.request(gm)
+	}
 
-	if _, ok := gm.lookup("user_defined"); ok && len(w.userCats) > 0 {
+	if _, ok := gm.lookup(keyUserDefined); ok && len(w.userCats) > 0 {
 		w.userCategory(gm)
 	}
 
-	if _, ok := gm.lookup("bytes_sent"); ok {
+	if _, ok := gm.lookup(keyBytesSent); ok {
 		w.bytesSent(gm)
 	}
 
-	if _, ok := gm.lookup("resp_length"); ok {
+	if _, ok := gm.lookup(keyResponseLength); ok {
 		w.respLength(gm)
 	}
 
-	if _, ok := gm.lookup("address"); ok {
+	if v, ok := gm.lookup(keyResponseTime); ok {
+		w.timings.get(keyResponseTime).set(v)
+	}
+
+	if v, ok := gm.lookup(keyResponseTimeUpstream); ok {
+		w.timings.get(keyResponseTimeUpstream).set(v)
+	}
+
+	if _, ok := gm.lookup(keyAddress); ok {
 		w.ipProto(gm)
 	}
 
@@ -70,7 +80,7 @@ func (w *WebLog) parseLine(line string) {
 }
 
 func (w *WebLog) codeFam(gm groupMap) {
-	fam := gm.get("code")[:1] + "xx"
+	fam := gm.get(keyCode)[:1] + "xx"
 
 	if _, ok := w.metrics[fam]; ok {
 		w.metrics[fam]++
@@ -80,7 +90,7 @@ func (w *WebLog) codeFam(gm groupMap) {
 }
 
 func (w *WebLog) codeDetailed(gm groupMap) {
-	code := gm.get("code")
+	code := gm.get(keyCode)
 
 	if _, ok := w.metrics[code]; ok {
 		w.metrics[code]++
@@ -109,7 +119,7 @@ func (w *WebLog) codeDetailed(gm groupMap) {
 }
 
 func (w *WebLog) codeStatus(gm groupMap) {
-	code, fam := gm.get("code"), gm.get("code")[:1]
+	code, fam := gm.get(keyCode), gm.get(keyCode)[:1]
 
 	switch {
 	case fam == "2", code == "304", fam == "1":
@@ -128,7 +138,7 @@ func (w *WebLog) codeStatus(gm groupMap) {
 func (w *WebLog) request(gm groupMap) {
 	var ok bool
 
-	if gm, ok = w.reqParser.parse(gm.get("request")); !ok {
+	if gm, ok = w.reqParser.parse(gm.get(keyRequest)); !ok {
 		return
 	}
 
@@ -138,7 +148,7 @@ func (w *WebLog) request(gm groupMap) {
 }
 
 func (w *WebLog) httpMethod(gm groupMap) {
-	method := gm.get("method")
+	method := gm.get(keyMethod)
 
 	if _, ok := w.metrics[method]; !ok {
 		chart := w.charts.Get(requestsPerHTTPMethod.ID)
@@ -153,7 +163,7 @@ func (w *WebLog) httpMethod(gm groupMap) {
 }
 
 func (w *WebLog) urlCategory(gm groupMap) {
-	url := gm.get("url")
+	url := gm.get(keyURL)
 
 	for _, v := range w.urlCats {
 		if v.match(url) {
@@ -162,12 +172,13 @@ func (w *WebLog) urlCategory(gm groupMap) {
 			return
 		}
 	}
+
 	w.matchedURL = ""
-	w.metrics["url_category_other"]++
+	w.metrics[keyURL+"_category_other"]++
 }
 
 func (w *WebLog) userCategory(gm groupMap) {
-	userDefined := gm.get("user_defined")
+	userDefined := gm.get(keyUserDefined)
 
 	for _, cat := range w.userCats {
 		if cat.match(userDefined) {
@@ -175,13 +186,13 @@ func (w *WebLog) userCategory(gm groupMap) {
 			return
 		}
 	}
-	w.metrics["user_category_other"]++
+
+	w.metrics[keyUserDefined+"_category_other"]++
 }
 
 func (w *WebLog) httpVersion(gm groupMap) {
-	version := gm.get("version")
-
-	dimID := strings.Replace(gm.get("version"), ".", "_", 1)
+	version := gm.get(keyVersion)
+	dimID := strings.Replace(version, ".", "_", 1)
 
 	if _, ok := w.metrics[dimID]; !ok {
 		chart := w.charts.Get(requestsPerHTTPVersion.ID)
@@ -197,11 +208,11 @@ func (w *WebLog) httpVersion(gm groupMap) {
 }
 
 func (w *WebLog) bytesSent(gm groupMap) {
-	w.metrics["bytes_sent"] += toInt(gm.get("bytes_sent"))
+	w.metrics["bytes_sent"] += toInt(gm.get(keyBytesSent))
 }
 
 func (w *WebLog) respLength(gm groupMap) {
-	w.metrics["resp_length"] += toInt(gm.get("resp_length"))
+	w.metrics["resp_length"] += toInt(gm.get(keyResponseLength))
 }
 
 func (w *WebLog) respTime(gm groupMap) {
@@ -214,7 +225,7 @@ func (w *WebLog) respTimeUpstream(gm groupMap) {
 
 func (w *WebLog) ipProto(gm groupMap) {
 	var (
-		address = gm.get("address")
+		address = gm.get(keyAddress)
 		proto   = "ipv4"
 	)
 
@@ -226,7 +237,7 @@ func (w *WebLog) ipProto(gm groupMap) {
 
 	if _, ok := w.uniqIPs[address]; !ok {
 		w.uniqIPs[address] = true
-		w.metrics["unique_cur_"+proto]++
+		w.metrics["unique_current_poll_"+proto]++
 	}
 
 	if !w.DoAllTimeIPs {
@@ -235,13 +246,13 @@ func (w *WebLog) ipProto(gm groupMap) {
 
 	if _, ok := w.uniqIPsAllTime[address]; !ok {
 		w.uniqIPsAllTime[address] = true
-		w.metrics["unique_all_"+proto]++
+		w.metrics["unique_all_time_"+proto]++
 	}
 
 }
 
 func (w *WebLog) urlCategoryStats(gm groupMap) {
-	code := gm.get("code")
+	code := gm.get(keyCode)
 	id := w.matchedURL + "_" + code
 
 	if _, ok := w.metrics[id]; !ok {
@@ -256,19 +267,17 @@ func (w *WebLog) urlCategoryStats(gm groupMap) {
 
 	w.metrics[id]++
 
-	if v, ok := gm.lookup("bytes_sent"); ok {
+	if v, ok := gm.lookup(keyBytesSent); ok {
 		w.metrics[w.matchedURL+"_bytes_sent"] += toInt(v)
 	}
 
-	if v, ok := gm.lookup("resp_length"); ok {
+	if v, ok := gm.lookup(keyResponseLength); ok {
 		w.metrics[w.matchedURL+"_resp_length"] += toInt(v)
 	}
 
-	// TODO:
-
-	//if id, ok := gm.Lookup("resp_time"); ok {
-	//	w.timings.get(id).set(id)
-	//}
+	if v, ok := gm.lookup(keyResponseTime); ok {
+		w.timings.get(w.matchedURL).set(v)
+	}
 }
 
 func toInt(s string) int64 {

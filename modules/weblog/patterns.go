@@ -10,6 +10,11 @@ const (
 	keyResponseTime         = "response_time"          // check
 	keyResponseTimeUpstream = "response_time_upstream" // check
 	keyResponseLength       = "response_length"        // check
+	keyUserDefined          = "user_defined"
+
+	keyMethod  = "method"
+	keyVersion = "version"
+	keyURL     = "url"
 )
 
 type (
