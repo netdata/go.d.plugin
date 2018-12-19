@@ -1,8 +1,14 @@
 package weblog
 
+import "fmt"
+
 type rawFilter struct {
 	Include string
 	Exclude string
+}
+
+func (r rawFilter) String() string {
+	return fmt.Sprintf("{include: %s, exclude: %s}", r.Include, r.Exclude)
 }
 
 type filter struct {

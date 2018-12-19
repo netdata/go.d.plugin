@@ -1,6 +1,7 @@
 package weblog
 
 import (
+	"fmt"
 	"math"
 	"sort"
 	"strconv"
@@ -26,11 +27,19 @@ func (h histogram) set(v int) {
 	}
 }
 
-func newHistogram(prefix string, r []int) histogram {
+func newHistogram(prefix string, r []int) (histogram, error) {
 	var h histogram
+
+	if !sort.IntsAreSorted(r) {
+		return nil, fmt.Errorf("not sorted histogram : %v", r)
+	}
 
 	sort.Ints(r)
 	for _, v := range r {
+		if v < 0 {
+			return nil, fmt.Errorf("histogram contains negative value : %v", r)
+		}
+
 		n := strconv.Itoa(v)
 		v := &histVal{id: prefix + "_" + n, name: n, value: v * 1000}
 		h = append(h, v)
@@ -38,5 +47,5 @@ func newHistogram(prefix string, r []int) histogram {
 
 	h = append(h, &histVal{id: prefix + "_inf", name: "inf", value: math.MaxInt64})
 
-	return h
+	return h, nil
 }

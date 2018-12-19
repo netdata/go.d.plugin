@@ -22,6 +22,7 @@ func New() *WebLog {
 		DoAllTimeIPs:     true,
 		DoPerURLCharts:   true,
 
+		tailFactory: newFollower,
 		reqParser: newCSVParser(csvPattern{
 			{"method", 0},
 			{"url", 1},
@@ -84,13 +85,14 @@ type WebLog struct {
 
 	charts *modules.Charts
 
-	tail      follower
-	filter    matcher
-	parser    parser
-	reqParser parser
+	tailFactory func(string) (follower, error)
+	tail        follower
+	filter      matcher
+	parser      parser
+	reqParser   parser
 
 	gm         groupMap // for creating charts
-	matchedURL string
+	matchedURL string   // for chart per url
 
 	urlCats  []*category
 	userCats []*category
@@ -108,12 +110,10 @@ type WebLog struct {
 
 func (WebLog) Cleanup() {}
 
-func (w *WebLog) initFilter() error {
-	f, err := newFilter(w.Filter)
-	if err != nil {
-		return fmt.Errorf("error on creating filter : %s", err)
+func (w *WebLog) initFilter() (err error) {
+	if w.filter, err = newFilter(w.Filter); err != nil {
+		return fmt.Errorf("error on creating filter %s: %s", w.Filter, err)
 	}
-	w.filter = f
 
 	return nil
 }
@@ -147,19 +147,32 @@ func (w *WebLog) initCategories() error {
 	return nil
 }
 
-func (w *WebLog) initHistograms() {
+func (w *WebLog) initHistograms() (err error) {
 	if len(w.Histogram) == 0 {
-		return
+		return nil
 	}
 
-	w.histograms[keyRespTimeHistogram] = newHistogram(keyRespTimeHistogram, w.Histogram)
-	w.histograms[keyRespTimeUpstreamHistogram] = newHistogram(keyRespTimeUpstreamHistogram, w.Histogram)
+	var h histogram
+
+	if h, err = newHistogram(keyRespTimeHistogram, w.Histogram); err != nil {
+		return fmt.Errorf("error on creating histogram : %s", err)
+	}
+
+	w.histograms[keyRespTimeHistogram] = h
+
+	if h, err = newHistogram(keyRespTimeUpstreamHistogram, w.Histogram); err != nil {
+		return fmt.Errorf("error on creating histogram : %s", err)
+	}
+
+	w.histograms[keyRespTimeUpstreamHistogram] = h
 
 	for _, h := range w.histograms {
 		for _, v := range h {
 			w.metrics[v.id] = 0
 		}
 	}
+
+	return nil
 }
 
 func (w *WebLog) initParser() error {
@@ -204,13 +217,16 @@ func (w *WebLog) Init() bool {
 		return false
 	}
 
-	w.initHistograms()
+	if err := w.initHistograms(); err != nil {
+		w.Error(err)
+		return false
+	}
 
 	return true
 }
 
 func (w *WebLog) Check() bool {
-	t, err := newFollower(w.Path)
+	t, err := w.tailFactory(w.Path)
 
 	if err != nil {
 		w.Error(err)
