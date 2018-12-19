@@ -235,13 +235,14 @@ func (w *WebLog) Collect() map[string]int64 {
 		w.metrics[k+"_max"] += int64(v.max)
 	}
 
-	w.timings.reset()
-
 	for _, h := range w.histograms {
 		for _, v := range h {
 			w.metrics[v.id] = int64(v.count)
 		}
 	}
+
+	w.timings.reset()
+	w.uniqIPs = make(map[string]bool)
 
 	// NOTE: don't copy if nothing has changed?
 	m := make(map[string]int64)
