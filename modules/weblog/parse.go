@@ -199,6 +199,7 @@ func (w *WebLog) userCategory(gm groupMap) {
 func (w *WebLog) httpVersion(gm groupMap) {
 	version := gm.get(keyVersion)
 	dimID := strings.Replace(version, ".", "_", 1)
+	dimID = strings.Replace(dimID, "/", "_", 1)
 
 	if _, ok := w.metrics[dimID]; !ok {
 		chart := w.charts.Get(requestsPerHTTPVersion.ID)
