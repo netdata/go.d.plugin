@@ -3,6 +3,7 @@ package weblog
 import "sort"
 
 const (
+	keyVhost            = "vhost"              // check
 	keyAddress          = "address"            // check
 	keyCode             = "code"               // check
 	keyRequest          = "request"            // check
@@ -11,11 +12,11 @@ const (
 	keyRespTimeUpstream = "resp_time_upstream" // check
 	keyRespLength       = "resp_length"        // check
 	keyUserDefined      = "user_defined"
+	keyMethod           = "http_method"  // check, parsed request field)
+	keyVersion          = "http_version" // check, parsed request field)
+	keyURL              = "url"          // parsed request field
 
-	keyMethod                    = "http_method"
-	keyVersion                   = "http_version"
-	keyURL                       = "url"
-	keyRespTimeHistogram         = "resp_time_histogram"
+	keyRespTimeHistogram         = "resp_time_histogram" //
 	keyRespTimeUpstreamHistogram = "resp_time_upstream_histogram"
 )
 
@@ -62,6 +63,7 @@ var csvDefaultPatterns = []csvPattern{
 	},
 	// TODO: add examples
 	{
+		{keyVhost, 0},
 		{keyAddress, 1},
 		{keyRequest, 6},
 		{keyCode, 7},
@@ -79,6 +81,7 @@ var csvDefaultPatterns = []csvPattern{
 	},
 	// TODO: add examples
 	{
+		{keyVhost, 0},
 		{keyAddress, 1},
 		{keyRequest, 6},
 		{keyCode, 7},

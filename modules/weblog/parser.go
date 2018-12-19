@@ -51,7 +51,7 @@ func (cp csvParser) info() string {
 	var info []string
 
 	for _, v := range cp.pattern {
-		info = append(info, v.Name)
+		info = append(info, fmt.Sprintf("%s:%d", v.Name, v.Index))
 	}
 
 	return fmt.Sprintf("[%s]", strings.Join(info, ", "))
@@ -114,6 +114,13 @@ func validateResult(gm map[string]string) error {
 
 	for k, v := range gm {
 		switch k {
+		default:
+			return fmt.Errorf("unknown key '%s'", k)
+		case keyUserDefined:
+		case keyVhost:
+			if !reVhost.MatchString(v) {
+				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
+			}
 		case keyCode:
 			if !reCode.MatchString(v) {
 				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
@@ -152,6 +159,7 @@ func validateResult(gm map[string]string) error {
 }
 
 var (
+	reVhost          = regexp.MustCompile(`[\da-z.:-]+|localhost`) // TODO: not sure about this
 	reAddress        = regexp.MustCompile(`[\da-f.:]+|localhost`)
 	reCode           = regexp.MustCompile(`[1-9]\d{2}`)
 	reBytesSent      = regexp.MustCompile(`\d+|-`)
