@@ -198,8 +198,7 @@ func (w *WebLog) userCategory(gm groupMap) {
 
 func (w *WebLog) httpVersion(gm groupMap) {
 	version := gm.get(keyVersion)
-	dimID := strings.Replace(version, ".", "_", 1)
-	dimID = strings.Replace(dimID, "/", "_", 1)
+	dimID := httpMethodReplace.Replace(version)
 
 	if _, ok := w.metrics[dimID]; !ok {
 		chart := w.charts.Get(requestsPerHTTPVersion.ID)
@@ -288,3 +287,5 @@ func toInt(s string) int64 {
 
 	return int64(v)
 }
+
+var httpMethodReplace = strings.NewReplacer("/", "_", ".", "_")

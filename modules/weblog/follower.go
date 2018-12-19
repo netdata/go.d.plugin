@@ -44,7 +44,8 @@ func (f *followerImp) start() (err error) {
 			ReOpen:    true,
 			MustExist: true,
 			Location:  &tail.SeekInfo{Whence: io.SeekEnd},
-			Logger:    tail.DiscardingLogger,
+			// Poll: true,
+			Logger: tail.DiscardingLogger,
 		})
 
 	return err
