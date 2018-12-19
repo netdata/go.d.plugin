@@ -1,7 +1,7 @@
 package weblog
 
 import (
-	"fmt"
+	"errors"
 	"math"
 	"sort"
 	"strconv"
@@ -31,13 +31,13 @@ func newHistogram(prefix string, r []int) (histogram, error) {
 	var h histogram
 
 	if !sort.IntsAreSorted(r) {
-		return nil, fmt.Errorf("not sorted histogram : %v", r)
+		return nil, errors.New("not sorted histogram")
 	}
 
 	sort.Ints(r)
 	for _, v := range r {
 		if v < 0 {
-			return nil, fmt.Errorf("histogram contains negative value : %v", r)
+			return nil, errors.New("histogram contains negative value")
 		}
 
 		n := strconv.Itoa(v)

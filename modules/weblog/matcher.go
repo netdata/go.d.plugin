@@ -1,7 +1,7 @@
 package weblog
 
 import (
-	"fmt"
+	"errors"
 	"regexp"
 	"strings"
 )
@@ -10,15 +10,12 @@ type matcher interface {
 	match(string) bool
 }
 
-// Valid options:
-// 'string=GET'
-// 'string=^GOT'
-// 'regexp=G[QWERTY]T'
-func newMatcher(rawExpr string) (matcher, error) {
-	v := strings.SplitN(rawExpr, "=", 2)
+// Syntax: 'method=pattern'
+func newMatcher(rawexpr string) (matcher, error) {
+	v := strings.SplitN(rawexpr, "=", 2)
 
 	if len(v) == 2 && v[1] == "" || len(v) != 2 {
-		return nil, fmt.Errorf("unsupported match syntax: %s", rawExpr)
+		return nil, errors.New("unsupported match syntax")
 	}
 
 	method, expr := v[0], v[1]
@@ -30,7 +27,7 @@ func newMatcher(rawExpr string) (matcher, error) {
 		return newRegexpMatcher(expr)
 	}
 
-	return nil, fmt.Errorf("unsupported Match method: %s", method)
+	return nil, errors.New("unsupported match method")
 }
 
 func newStringMatcher(expr string) matcher {

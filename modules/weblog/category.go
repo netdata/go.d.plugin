@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-type rawCategory struct {
+type rawcategory struct {
 	Name  string
 	Match string
 }
@@ -14,11 +14,11 @@ type category struct {
 	matcher
 }
 
-func (r rawCategory) String() string {
+func (r rawcategory) String() string {
 	return fmt.Sprintf("{name: %s, match: %s}", r.Name, r.Match)
 }
 
-func newCategory(raw rawCategory) (*category, error) {
+func newCategory(raw rawcategory) (*category, error) {
 	if raw.Name == "" || raw.Match == "" {
 		return nil, fmt.Errorf("category bad syntax")
 	}

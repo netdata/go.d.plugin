@@ -73,9 +73,9 @@ type WebLog struct {
 	modules.Base
 
 	Path             string        `yaml:"path" validate:"required"`
-	Filter           rawFilter     `yaml:"filter"`
-	URLCats          []rawCategory `yaml:"categories"`
-	UserCats         []rawCategory `yaml:"user_categories"`
+	Filter           rawfilter     `yaml:"filter"`
+	URLCats          []rawcategory `yaml:"categories"`
+	UserCats         []rawcategory `yaml:"user_categories"`
 	CustomParser     csvPattern    `yaml:"custom_log_format"`
 	Histogram        []int         `yaml:"histogram"`
 	DoCodesDetailed  bool          `yaml:"detailed_response_codes"`
@@ -155,13 +155,13 @@ func (w *WebLog) initHistograms() (err error) {
 	var h histogram
 
 	if h, err = newHistogram(keyRespTimeHistogram, w.Histogram); err != nil {
-		return fmt.Errorf("error on creating histogram : %s", err)
+		return fmt.Errorf("error on creating histogram %v : %s", w.Histogram, err)
 	}
 
 	w.histograms[keyRespTimeHistogram] = h
 
 	if h, err = newHistogram(keyRespTimeUpstreamHistogram, w.Histogram); err != nil {
-		return fmt.Errorf("error on creating histogram : %s", err)
+		return fmt.Errorf("error on creating histogram %v : %s", w.Histogram, err)
 	}
 
 	w.histograms[keyRespTimeUpstreamHistogram] = h
@@ -229,9 +229,10 @@ func (w *WebLog) Check() bool {
 	t, err := w.tailFactory(w.Path)
 
 	if err != nil {
-		w.Error(err)
+		w.Errorf("error on creating tail: %s", err)
 		return false
 	}
+
 	w.tail = t
 	go w.parseLoop()
 

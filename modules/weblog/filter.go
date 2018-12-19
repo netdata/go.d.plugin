@@ -2,12 +2,12 @@ package weblog
 
 import "fmt"
 
-type rawFilter struct {
+type rawfilter struct {
 	Include string
 	Exclude string
 }
 
-func (r rawFilter) String() string {
+func (r rawfilter) String() string {
 	return fmt.Sprintf("{include: %s, exclude: %s}", r.Include, r.Exclude)
 }
 
@@ -31,7 +31,7 @@ func (f *filter) match(s string) bool {
 	return includeOK && !excludeOK
 }
 
-func newFilter(raw rawFilter) (matcher, error) {
+func newFilter(raw rawfilter) (matcher, error) {
 	var f filter
 	if raw.Include == "" && raw.Exclude == "" {
 		return &f, nil
