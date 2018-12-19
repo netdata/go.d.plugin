@@ -22,50 +22,7 @@ func New() *WebLog {
 		DoAllTimeIPs:     true,
 		DoPerURLCharts:   true,
 
-		tailFactory: newFollower,
-		reqParser: newCSVParser(csvPattern{
-			{keyMethod, 0},
-			{keyURL, 1},
-			{keyVersion, 2},
-		}),
-		stop:  make(chan struct{}),
-		pause: make(chan struct{}),
-		timings: timings{
-			keyRespTime:         &timing{},
-			keyRespTimeUpstream: &timing{},
-		},
-		histograms:     make(map[string]histogram),
-		uniqIPs:        make(map[string]bool),
-		uniqIPsAllTime: make(map[string]bool),
-		metrics: map[string]int64{
-			"successful_requests":      0,
-			"redirects":                0,
-			"bad_requests":             0,
-			"server_errors":            0,
-			"other_requests":           0,
-			"2xx":                      0,
-			"5xx":                      0,
-			"3xx":                      0,
-			"4xx":                      0,
-			"1xx":                      0,
-			"0xx":                      0,
-			"unmatched":                0,
-			"bytes_sent":               0,
-			"resp_length":              0,
-			"resp_time_min":            0,
-			"resp_time_max":            0,
-			"resp_time_avg":            0,
-			"resp_time_upstream_min":   0,
-			"resp_time_upstream_max":   0,
-			"resp_time_upstream_avg":   0,
-			"unique_current_poll_ipv4": 0,
-			"unique_current_poll_ipv6": 0,
-			"unique_all_time_ipv4":     0,
-			"unique_all_time_ipv6":     0,
-			"req_ipv4":                 0,
-			"req_ipv6":                 0,
-			"GET":                      0, // GET should be green on the dashboard
-		},
+		worker: newWorker(),
 	}
 }
 
@@ -83,37 +40,23 @@ type WebLog struct {
 	DoPerURLCharts   bool          `yaml:"per_category_charts"`
 	DoAllTimeIPs     bool          `yaml:"all_time_clients"`
 
+	worker *worker
 	charts *modules.Charts
-
-	tailFactory func(string) (follower, error)
-	tail        follower
-	filter      matcher
-	parser      parser
-	reqParser   parser
-
-	gm         groupMap // for creating charts
-	matchedURL string   // for chart per url
-
-	urlCats  []*category
-	userCats []*category
-
-	stop  chan struct{}
-	pause chan struct{}
-
-	timings        timings
-	histograms     map[string]histogram
-	uniqIPs        map[string]bool
-	uniqIPsAllTime map[string]bool
-
-	metrics map[string]int64
+	gm     groupMap
 }
 
-func (WebLog) Cleanup() {}
+func (w *WebLog) Cleanup() {
+	w.worker.stop()
+}
 
-func (w *WebLog) initFilter() (err error) {
-	if w.filter, err = newFilter(w.Filter); err != nil {
+func (w *WebLog) initFilter() error {
+	f, err := newFilter(w.Filter)
+
+	if err != nil {
 		return fmt.Errorf("error on creating filter %s: %s", w.Filter, err)
 	}
+
+	w.worker.filter = f
 
 	return nil
 }
@@ -124,24 +67,24 @@ func (w *WebLog) initCategories() error {
 		if err != nil {
 			return fmt.Errorf("error on creating category %s : %s", raw, err)
 		}
-		w.urlCats = append(w.urlCats, cat)
-		w.metrics[cat.name] = 0
+		w.worker.urlCats = append(w.worker.urlCats, cat)
+		w.worker.metrics[cat.name] = 0
 	}
 
 	if w.DoPerURLCharts {
-		for _, cat := range w.urlCats {
-			w.timings.add(cat.name)
+		for _, cat := range w.worker.urlCats {
+			w.worker.timings.add(cat.name)
 		}
 	}
-	w.timings.reset()
+	w.worker.timings.reset()
 
 	for _, raw := range w.UserCats {
 		cat, err := newCategory(raw)
 		if err != nil {
 			return fmt.Errorf("error on creating category %s : %s", raw, err)
 		}
-		w.userCats = append(w.userCats, cat)
-		w.metrics[cat.name] = 0
+		w.worker.userCats = append(w.worker.userCats, cat)
+		w.worker.metrics[cat.name] = 0
 	}
 
 	return nil
@@ -158,17 +101,17 @@ func (w *WebLog) initHistograms() (err error) {
 		return fmt.Errorf("error on creating histogram %v : %s", w.Histogram, err)
 	}
 
-	w.histograms[keyRespTimeHistogram] = h
+	w.worker.histograms[keyRespTimeHistogram] = h
 
 	if h, err = newHistogram(keyRespTimeUpstreamHistogram, w.Histogram); err != nil {
 		return fmt.Errorf("error on creating histogram %v : %s", w.Histogram, err)
 	}
 
-	w.histograms[keyRespTimeUpstreamHistogram] = h
+	w.worker.histograms[keyRespTimeUpstreamHistogram] = h
 
-	for _, h := range w.histograms {
+	for _, h := range w.worker.histograms {
 		for _, v := range h {
-			w.metrics[v.id] = 0
+			w.worker.metrics[v.id] = 0
 		}
 	}
 
@@ -195,8 +138,8 @@ func (w *WebLog) initParser() error {
 		return err
 	}
 
-	w.parser = p
-	w.gm, _ = w.parser.parse(line)
+	w.worker.parser = p
+	w.gm, _ = p.parse(line)
 
 	return nil
 }
@@ -226,50 +169,57 @@ func (w *WebLog) Init() bool {
 }
 
 func (w *WebLog) Check() bool {
-	t, err := w.tailFactory(w.Path)
+	t, err := w.worker.tailFactory(w.Path)
 
 	if err != nil {
 		w.Errorf("error on creating tail : %s", err)
 		return false
 	}
 
-	w.tail = t
-	w.Infof("used parser : %s", w.parser.info())
+	w.worker.tail = t
+	w.Infof("used parser : %s", w.worker.parser.info())
 
 	w.createCharts()
-	go w.parseLoop()
+
+	w.worker.webLog = w
+	go w.worker.parseLoop()
 
 	return true
 }
 
 func (w *WebLog) Collect() map[string]int64 {
-	w.pause <- struct{}{}
-	defer func() { <-w.pause }()
+	w.worker.pause()
+	defer w.worker.unpause()
 
-	for k, v := range w.timings {
+	for k, v := range w.worker.timings {
 		if !v.active() {
 			continue
 		}
-		w.metrics[k+"_min"] += int64(v.min)
-		w.metrics[k+"_avg"] += int64(v.avg())
-		w.metrics[k+"_max"] += int64(v.max)
+		w.worker.metrics[k+"_min"] += int64(v.min)
+		w.worker.metrics[k+"_avg"] += int64(v.avg())
+		w.worker.metrics[k+"_max"] += int64(v.max)
 	}
 
-	for _, h := range w.histograms {
+	for _, h := range w.worker.histograms {
 		for _, v := range h {
-			w.metrics[v.id] = int64(v.count)
+			w.worker.metrics[v.id] = int64(v.count)
 		}
 	}
 
-	w.timings.reset()
-	w.uniqIPs = make(map[string]bool)
+	w.worker.timings.reset()
+	w.worker.uniqIPs = make(map[string]bool)
 
 	// NOTE: don't copy if nothing has changed?
 	m := make(map[string]int64)
 
-	for k, v := range w.metrics {
+	for k, v := range w.worker.metrics {
 		m[k] = v
 	}
+
+	for _, task := range w.worker.chartUpdate {
+		_ = w.charts.Get(task.id).AddDim(task.dim)
+	}
+	w.worker.chartUpdate = w.worker.chartUpdate[:0]
 
 	return m
 }

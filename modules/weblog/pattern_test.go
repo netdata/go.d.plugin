@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TODO: add cases
 func Test_patterns(t *testing.T) {
 	var cases = []struct {
 		name    string

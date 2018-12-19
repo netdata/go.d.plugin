@@ -298,10 +298,10 @@ func (w *WebLog) createCharts() {
 		_ = charts.Add(bandwidth.Copy())
 	}
 
-	if w.gm.has(keyRequest) && len(w.urlCats) > 0 {
+	if w.gm.has(keyRequest) && len(w.URLCats) > 0 {
 		chart := requestsPerURL.Copy()
 		_ = charts.Add(chart)
-		for _, cat := range w.urlCats {
+		for _, cat := range w.worker.urlCats {
 			_ = chart.AddDim(&Dim{
 				ID:   cat.name,
 				Algo: modules.Incremental,
@@ -309,22 +309,22 @@ func (w *WebLog) createCharts() {
 		}
 	}
 
-	if w.gm.has(keyRequest) && len(w.urlCats) > 0 && w.DoPerURLCharts {
-		for _, cat := range w.urlCats {
+	if w.gm.has(keyRequest) && len(w.URLCats) > 0 && w.DoPerURLCharts {
+		for _, cat := range w.worker.urlCats {
 			for _, chart := range perCategoryStats(cat.name) {
 				_ = charts.Add(chart)
 				for _, d := range chart.Dims {
-					w.metrics[d.ID] = 0
+					w.worker.metrics[d.ID] = 0
 				}
 			}
 		}
 	}
 
-	if w.gm.has(keyRequest) && len(w.userCats) > 0 {
+	if w.gm.has(keyRequest) && len(w.UserCats) > 0 {
 		chart := requestsPerUserDefined.Copy()
 		_ = charts.Add(chart)
 
-		for _, cat := range w.userCats {
+		for _, cat := range w.worker.userCats {
 			_ = chart.AddDim(&Dim{
 				ID:   cat.name,
 				Algo: modules.Incremental,
@@ -336,10 +336,10 @@ func (w *WebLog) createCharts() {
 		_ = charts.Add(responseTime.Copy())
 	}
 
-	if w.gm.has(keyRespTime) && len(w.histograms) != 0 {
+	if w.gm.has(keyRespTime) && len(w.Histogram) != 0 {
 		chart := responseTimeHistogram.Copy()
 		_ = charts.Add(chart)
-		for _, v := range w.histograms[keyRespTimeHistogram] {
+		for _, v := range w.worker.histograms[keyRespTimeHistogram] {
 			_ = chart.AddDim(&Dim{
 				ID:   v.id,
 				Name: v.name,
@@ -352,10 +352,10 @@ func (w *WebLog) createCharts() {
 		_ = charts.Add(responseTimeUpstream.Copy())
 	}
 
-	if w.gm.has(keyRespTimeUpstream) && len(w.histograms) != 0 {
+	if w.gm.has(keyRespTimeUpstream) && len(w.Histogram) != 0 {
 		chart := responseTimeUpstreamHistogram.Copy()
 		_ = charts.Add(chart)
-		for _, v := range w.histograms[keyRespTimeUpstreamHistogram] {
+		for _, v := range w.worker.histograms[keyRespTimeUpstreamHistogram] {
 			_ = chart.AddDim(&Dim{
 				ID:   v.id,
 				Name: v.name,
