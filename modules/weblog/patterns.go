@@ -1,102 +1,93 @@
 package weblog
 
-//
-//import (
-//	"errors"
-//	"fmt"
-//	"regexp"
-//	"strings"
-//
-//	"github.com/netdata/go.d.plugin/pkg/utils"
-//)
-//
-//var (
-//	mandatoryKey = keyCode
-//)
-//
-//var (
-//	lastHop = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+|-)`,
-//	}, "")
-//	apacheV1 = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+|-) `,
-//		`(?P<resp_length>\d+|-) `,
-//		`(?P<resp_time>\d+) `,
-//	}, "")
-//	apacheV2 = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+|localhost) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+|-) .*? `,
-//		`(?P<resp_length>\d+|-) `,
-//		`(?P<resp_time>\d+)(?: |$)`,
-//	}, "")
-//	nginxV1 = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+) `,
-//		`(?P<resp_length>\d+) `,
-//		`(?P<resp_time>\d+\.\d+) `,
-//		`(?P<resp_time_upstream>[\d.-]+) `,
-//	}, "")
-//	nginxV2 = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+) `,
-//		`(?P<resp_length>\d+) `,
-//		`(?P<resp_time>\d+\.\d+) `,
-//	}, "")
-//	nginxV3 = strings.Join([]string{
-//		`(?P<address>[\da-f.:]+) -.*?"`,
-//		`(?P<request>[^"]*)" `,
-//		`(?P<code>[1-9]\d{2}) `,
-//		`(?P<bytes_sent>\d+) .*? `,
-//		`(?P<resp_length>\d+) `,
-//		`(?P<resp_time>\d+\.\d+)`,
-//	}, "")
-//)
-//
-//var patterns = []*regexp.Regexp{
-//	regexp.MustCompile(apacheV1),
-//	regexp.MustCompile(apacheV2),
-//	regexp.MustCompile(nginxV1),
-//	regexp.MustCompile(nginxV2),
-//	regexp.MustCompile(nginxV3),
-//	regexp.MustCompile(lastHop),
-//}
-//
-//func getPattern(custom string, line []byte) (*regexp.Regexp, error) {
-//	if custom == "" {
-//		for _, p := range patterns {
-//			if p.Match(line) {
-//				return p, nil
-//			}
-//		}
-//		return nil, errors.New("can not find appropriate regex, consider using 'custom_log_format' feature")
-//	}
-//	r, err := regexp.Compile(custom)
-//	if err != nil {
-//		return nil, err
-//	}
-//	if len(r.SubexpNames()) == 1 {
-//		return nil, errors.New("custom regex contains no named groups (?P<subgroup_name>)")
-//	}
-//
-//	if !utils.StringSlice(r.SubexpNames()).Include(mandatoryKey) {
-//		return nil, fmt.Errorf("custom regex missing mandatory key '%s'", mandatoryKey)
-//	}
-//
-//	if !r.Match(line) {
-//		return nil, errors.New("custom regex match fails")
-//	}
-//
-//	return r, nil
-//}
+import "sort"
+
+const (
+	keyVhost            = "vhost"              // check
+	keyAddress          = "address"            // check
+	keyCode             = "code"               // check
+	keyRequest          = "request"            // check
+	keyBytesSent        = "bytes_sent"         // check
+	keyRespTime         = "resp_time"          // check
+	keyRespTimeUpstream = "resp_time_upstream" // check
+	keyRespLength       = "resp_length"        // check
+	keyUserDefined      = "user_defined"
+	keyMethod           = "http_method"  // check, parsed request field
+	keyVersion          = "http_version" // check, parsed request field
+	keyURL              = "url"          // parsed request field
+
+	keyRespTimeHistogram         = "resp_time_histogram"
+	keyRespTimeUpstreamHistogram = "resp_time_upstream_histogram"
+)
+
+type (
+	csvPattern []csvField
+	csvField   struct {
+		Key   string
+		Index int
+	}
+)
+
+func (c csvPattern) max() int {
+	return c[len(c)-1].Index
+}
+
+func (c csvPattern) isSorted() bool {
+	return sort.SliceIsSorted(c, func(i, j int) bool {
+		return c[i].Index < c[j].Index
+	})
+}
+
+func (c csvPattern) isValid() bool {
+	set := make(map[int]bool)
+
+	for _, p := range c {
+		if !(p.Key != "" && !set[p.Index]) {
+			return false
+		}
+		set[p.Index] = true
+	}
+	return true
+}
+
+var (
+	logFormatNetdata = csvPattern{
+		{keyAddress, 0},
+		{keyRequest, 5},
+		{keyCode, 6},
+		{keyBytesSent, 7},
+		{keyRespLength, 8},
+		{keyRespTime, 9},
+		{keyRespTimeUpstream, 10},
+	}
+	logFormatNetdataVhost = csvPattern{
+		{keyVhost, 0},
+		{keyAddress, 1},
+		{keyRequest, 6},
+		{keyCode, 7},
+		{keyBytesSent, 8},
+		{keyRespLength, 9},
+		{keyRespTime, 10},
+		{keyRespTimeUpstream, 11},
+	}
+	logFormatDefault = csvPattern{
+		{keyAddress, 0},
+		{keyRequest, 5},
+		{keyCode, 6},
+		{keyBytesSent, 7},
+	}
+	logFormatDefaultVhost = csvPattern{
+		{keyVhost, 0},
+		{keyAddress, 1},
+		{keyRequest, 6},
+		{keyCode, 7},
+		{keyBytesSent, 8},
+	}
+
+	csvDefaultPatterns = []csvPattern{
+		logFormatNetdata,
+		logFormatNetdataVhost,
+		logFormatDefault,
+		logFormatDefaultVhost,
+	}
+)

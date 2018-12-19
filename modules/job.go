@@ -147,7 +147,7 @@ func (j *Job) PostCheck() bool {
 	j.charts = j.module.Charts()
 
 	if j.charts == nil {
-		j.Error("ChartsFunc can't be nil")
+		j.Error("Charts can't be nil")
 		j.module.Cleanup()
 		return false
 	}
