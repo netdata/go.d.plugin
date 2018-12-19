@@ -145,6 +145,11 @@ func (w *WebLog) initParser() error {
 }
 
 func (w *WebLog) Init() bool {
+	w.worker.doCodesDetailed = w.DoCodesDetailed
+	w.worker.doCodesAggregate = w.DoCodesAggregate
+	w.worker.doAllTimeIPs = w.DoAllTimeIPs
+	w.worker.doPerURLCharts = w.DoPerURLCharts
+
 	if err := w.initParser(); err != nil {
 		w.Error(err)
 		return false
@@ -181,7 +186,6 @@ func (w *WebLog) Check() bool {
 
 	w.createCharts()
 
-	w.worker.webLog = w
 	go w.worker.parseLoop()
 
 	return true

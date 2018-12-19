@@ -62,7 +62,10 @@ type chartUpdateTask struct {
 }
 
 type worker struct {
-	webLog *WebLog
+	doCodesDetailed  bool
+	doCodesAggregate bool
+	doPerURLCharts   bool
+	doAllTimeIPs     bool
 
 	tailFactory func(string) (follower, error)
 	tail        follower
@@ -134,7 +137,7 @@ func (w *worker) parseLine(line string) {
 
 	w.codeStatus(gm)
 
-	if w.webLog.DoCodesDetailed {
+	if w.doCodesDetailed {
 		w.codeDetailed(gm)
 	}
 
@@ -170,7 +173,7 @@ func (w *worker) parseLine(line string) {
 		w.ipProto(gm)
 	}
 
-	if w.webLog.DoPerURLCharts && w.matchedURL != "" {
+	if w.doPerURLCharts && w.matchedURL != "" {
 		w.urlCategoryStats(gm)
 	}
 
@@ -208,7 +211,7 @@ func (w *worker) codeDetailed(gm groupMap) {
 
 	var chartID string
 
-	if w.webLog.DoCodesAggregate {
+	if w.doCodesAggregate {
 		chartID = responseCodesDetailed.ID
 	} else {
 		v := "other"
@@ -324,7 +327,7 @@ func (w *worker) ipProto(gm groupMap) {
 		w.metrics["unique_current_poll_"+proto]++
 	}
 
-	if !w.webLog.DoAllTimeIPs {
+	if !w.doAllTimeIPs {
 		return
 	}
 
