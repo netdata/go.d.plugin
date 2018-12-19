@@ -229,12 +229,14 @@ func (w *WebLog) Check() bool {
 	t, err := w.tailFactory(w.Path)
 
 	if err != nil {
-		w.Errorf("error on creating tail: %s", err)
+		w.Errorf("error on creating tail : %s", err)
 		return false
 	}
 
 	w.tail = t
 	go w.parseLoop()
+
+	w.Infof("used parser : %s", w.parser.info())
 
 	return true
 }

@@ -274,8 +274,8 @@ func (w *WebLog) urlCategoryStats(gm groupMap) {
 	}
 }
 
+// toInt used in bytesSent and respLength
 func toInt(s string) int64 {
-	// TODO: 0.000
 	if s == "-" {
 		return 0
 	}

@@ -5,7 +5,7 @@ import "sort"
 const (
 	keyAddress          = "address"            // check
 	keyCode             = "code"               // check
-	keyRequest          = "request"            // no
+	keyRequest          = "request"            // parse and check parts or nah?
 	keyBytesSent        = "bytes_sent"         // check
 	keyRespTime         = "resp_time"          // check
 	keyRespTimeUpstream = "resp_time_upstream" // check

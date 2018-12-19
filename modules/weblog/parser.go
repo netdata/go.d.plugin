@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 type groupMap map[string]string
@@ -35,6 +36,7 @@ func newCSVParser(pattern csvPattern) *csvParser {
 type (
 	parser interface {
 		parse(line string) (groupMap, bool)
+		info() string
 	}
 
 	csvParser struct {
@@ -44,6 +46,16 @@ type (
 		data groupMap
 	}
 )
+
+func (cp csvParser) info() string {
+	var info []string
+
+	for _, v := range cp.pattern {
+		info = append(info, v.Name)
+	}
+
+	return fmt.Sprintf("[%s]", strings.Join(info, ", "))
+}
 
 func (cp *csvParser) parse(line string) (groupMap, bool) {
 	lines, err := cp.reader.readRecord(line)
@@ -100,26 +112,38 @@ func validateResult(gm map[string]string) error {
 		switch k {
 		case keyCode:
 			if !reCode.MatchString(v) {
-				return fmt.Errorf("key 'code' bad syntax: '%s'", v)
+				return fmt.Errorf("'code' bad syntax: '%s'", v)
 			}
 		case keyAddress:
 			if !reAddress.MatchString(v) {
-				return fmt.Errorf("key 'address' bad syntax: '%s'", v)
+				return fmt.Errorf("'address' bad syntax: '%s'", v)
 			}
 		case keyBytesSent:
 			if !reBytesSent.MatchString(v) {
-				return fmt.Errorf("key 'bytes_sent' bad syntax: '%s'", v)
+				return fmt.Errorf("'bytes_sent' bad syntax: '%s'", v)
 			}
 		case keyRespLength:
 			if !reResponseLength.MatchString(v) {
-				return fmt.Errorf("key 'response_length' bad syntax: '%s'", v)
+				return fmt.Errorf("'response_length' bad syntax: '%s'", v)
 			}
 		case keyRespTime, keyRespTimeUpstream:
 			if !reResponseTime.MatchString(v) {
-				return fmt.Errorf("key 'response_time' bad syntax : '%s'", v)
+				return fmt.Errorf("'response_time' bad syntax : '%s'", v)
+			}
+		case keyRequest:
+			gm, ok := reqParser.parse(v)
+			if !ok {
+				return fmt.Errorf("unparsable 'request' field : '%s'", v)
+			}
+			if !reHTTPMethod.MatchString(gm.get(keyMethod)) {
+				return fmt.Errorf("'http_method' bad syntax : '%s'", v)
+			}
+			if !reHTTPVersion.MatchString(gm.get(keyVersion)) {
+				return fmt.Errorf("'http_version' bad syntax : '%s'", v)
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -129,4 +153,12 @@ var (
 	reBytesSent      = regexp.MustCompile(`\d+|-`)
 	reResponseLength = regexp.MustCompile(`\d+|-`)
 	reResponseTime   = regexp.MustCompile(`\d+|\d+\.\d+|-`)
+	reHTTPMethod     = regexp.MustCompile(`[A-Z]+`)
+	reHTTPVersion    = regexp.MustCompile(`HTTP/[0-9.]+`)
 )
+
+var reqParser = newCSVParser(csvPattern{
+	{"method", 0},
+	{"url", 1},
+	{"version", 2},
+})
