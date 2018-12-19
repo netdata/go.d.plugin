@@ -241,7 +241,7 @@ func perCategoryStats(id string) []*Chart {
 			ID:    responseCodesDetailed.ID + "_" + id,
 			Title: "Detailed Response Codes",
 			Units: "requests/s",
-			Fam:   id,
+			Fam:   "url " + id,
 			Ctx:   "web_log.response_codes_detailed_per_url",
 			Type:  modules.Stacked,
 		},
@@ -249,7 +249,7 @@ func perCategoryStats(id string) []*Chart {
 			ID:    bandwidth.ID + "_" + id,
 			Title: "Bandwidth",
 			Units: "kilobits/s",
-			Fam:   id,
+			Fam:   "url " + id,
 			Ctx:   "web_log.bandwidth_per_url",
 			Type:  modules.Area,
 			Dims: Dims{
@@ -261,7 +261,7 @@ func perCategoryStats(id string) []*Chart {
 			ID:    responseTime.ID + "_" + id,
 			Title: "Processing Time",
 			Units: "milliseconds",
-			Fam:   id,
+			Fam:   "url " + id,
 			Ctx:   "web_log.response_time_per_url",
 			Type:  modules.Area,
 			Dims: Dims{

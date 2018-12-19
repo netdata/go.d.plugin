@@ -127,7 +127,6 @@ func (w *WebLog) initCategories() error {
 		w.urlCats = append(w.urlCats, cat)
 		w.metrics[cat.name] = 0
 	}
-	w.metrics[keyURL+"_category_other"] = 0
 
 	if w.DoPerURLCharts {
 		for _, cat := range w.urlCats {
@@ -144,7 +143,6 @@ func (w *WebLog) initCategories() error {
 		w.userCats = append(w.userCats, cat)
 		w.metrics[cat.name] = 0
 	}
-	w.metrics[keyUserDefined+"_category_other"] = 0
 
 	return nil
 }

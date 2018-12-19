@@ -178,9 +178,7 @@ func (w *WebLog) urlCategory(gm groupMap) {
 			return
 		}
 	}
-
 	w.matchedURL = ""
-	w.metrics[keyURL+"_category_other"]++
 }
 
 func (w *WebLog) userCategory(gm groupMap) {
@@ -192,8 +190,6 @@ func (w *WebLog) userCategory(gm groupMap) {
 			return
 		}
 	}
-
-	w.metrics[keyUserDefined+"_category_other"]++
 }
 
 func (w *WebLog) httpVersion(gm groupMap) {
