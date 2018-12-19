@@ -156,6 +156,14 @@ var (
 			{ID: "req_ipv6", Name: "ipv6", Algo: modules.Incremental},
 		},
 	}
+	requestsPerVhost = Chart{
+		ID:    "requests_per_vhost",
+		Title: "Requests Per Vhost",
+		Units: "requests/s",
+		Fam:   "vhost",
+		Ctx:   "web_log.requests_per_vhost",
+		Type:  modules.Stacked,
+	}
 	currentPollIPs = Chart{
 		ID:    "clients_current",
 		Title: "Current Poll Unique Client IPs",
@@ -273,7 +281,7 @@ func perCategoryStats(id string) []*Chart {
 	}
 }
 
-func (w *WebLog) Charts() *Charts {
+func (w *WebLog) createCharts() {
 	var charts modules.Charts
 
 	_ = charts.Add(responseStatuses.Copy(), responseCodes.Copy())
@@ -294,7 +302,10 @@ func (w *WebLog) Charts() *Charts {
 		chart := requestsPerURL.Copy()
 		_ = charts.Add(chart)
 		for _, cat := range w.urlCats {
-			_ = chart.AddDim(&Dim{ID: cat.name, Algo: modules.Incremental})
+			_ = chart.AddDim(&Dim{
+				ID:   cat.name,
+				Algo: modules.Incremental,
+			})
 		}
 	}
 
@@ -314,7 +325,10 @@ func (w *WebLog) Charts() *Charts {
 		_ = charts.Add(chart)
 
 		for _, cat := range w.userCats {
-			_ = chart.AddDim(&Dim{ID: cat.name, Algo: modules.Incremental})
+			_ = chart.AddDim(&Dim{
+				ID:   cat.name,
+				Algo: modules.Incremental,
+			})
 		}
 	}
 
@@ -326,7 +340,11 @@ func (w *WebLog) Charts() *Charts {
 		chart := responseTimeHistogram.Copy()
 		_ = charts.Add(chart)
 		for _, v := range w.histograms[keyRespTimeHistogram] {
-			_ = chart.AddDim(&Dim{ID: v.id, Name: v.name, Algo: modules.Incremental})
+			_ = chart.AddDim(&Dim{
+				ID:   v.id,
+				Name: v.name,
+				Algo: modules.Incremental,
+			})
 		}
 	}
 
@@ -338,13 +356,21 @@ func (w *WebLog) Charts() *Charts {
 		chart := responseTimeUpstreamHistogram.Copy()
 		_ = charts.Add(chart)
 		for _, v := range w.histograms[keyRespTimeUpstreamHistogram] {
-			_ = chart.AddDim(&Dim{ID: v.id, Name: v.name, Algo: modules.Incremental})
+			_ = chart.AddDim(&Dim{
+				ID:   v.id,
+				Name: v.name,
+				Algo: modules.Incremental,
+			})
 		}
 	}
 
 	if w.gm.has(keyRequest) {
 		_ = charts.Add(requestsPerHTTPMethod.Copy())
 		_ = charts.Add(requestsPerHTTPVersion.Copy())
+	}
+
+	if w.gm.has(keyVhost) {
+		_ = charts.Add(requestsPerVhost.Copy())
 	}
 
 	if w.gm.has(keyAddress) {
@@ -356,6 +382,8 @@ func (w *WebLog) Charts() *Charts {
 	}
 
 	w.charts = &charts
+}
 
+func (w *WebLog) Charts() *Charts {
 	return w.charts
 }

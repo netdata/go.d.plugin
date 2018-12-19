@@ -45,6 +45,10 @@ func (w *WebLog) parseLine(line string) {
 		w.codeDetailed(gm)
 	}
 
+	if _, ok := gm.lookup(keyVhost); ok {
+		w.vhost(gm)
+	}
+
 	if _, ok := gm.lookup(keyRequest); ok {
 		w.request(gm)
 	}
@@ -61,18 +65,12 @@ func (w *WebLog) parseLine(line string) {
 		w.respLength(gm)
 	}
 
-	if v, ok := gm.lookup(keyRespTime); ok {
-		i := w.timings.get(keyRespTime).set(v)
-		if h, ok := w.histograms[keyRespTimeHistogram]; ok {
-			h.set(i)
-		}
+	if _, ok := gm.lookup(keyRespTime); ok {
+		w.respTime(gm)
 	}
 
-	if v, ok := gm.lookup(keyRespTimeUpstream); ok {
-		i := w.timings.get(keyRespTimeUpstream).set(v)
-		if h, ok := w.histograms[keyRespTimeUpstreamHistogram]; ok {
-			h.set(i)
-		}
+	if _, ok := gm.lookup(keyRespTimeUpstream); ok {
+		w.respTimeUpstream(gm)
 	}
 
 	if _, ok := gm.lookup(keyAddress); ok {
@@ -83,6 +81,23 @@ func (w *WebLog) parseLine(line string) {
 		w.urlCategoryStats(gm)
 	}
 
+}
+
+func (w *WebLog) vhost(gm groupMap) {
+	vhost := gm.get(keyVhost)
+	dimID := vhostReplacer.Replace(vhost)
+
+	if _, ok := w.metrics[dimID]; !ok {
+		chart := w.charts.Get(requestsPerVhost.ID)
+		_ = chart.AddDim(&Dim{
+			ID:   dimID,
+			Name: vhost,
+			Algo: modules.Incremental,
+		})
+		chart.MarkNotCreated()
+	}
+
+	w.metrics[dimID]++
 }
 
 func (w *WebLog) codeFam(gm groupMap) {
@@ -194,7 +209,7 @@ func (w *WebLog) userCategory(gm groupMap) {
 
 func (w *WebLog) httpVersion(gm groupMap) {
 	version := gm.get(keyVersion)
-	dimID := httpMethodReplace.Replace(version)
+	dimID := httpMethodReplacer.Replace(version)
 
 	if _, ok := w.metrics[dimID]; !ok {
 		chart := w.charts.Get(requestsPerHTTPVersion.ID)
@@ -245,6 +260,22 @@ func (w *WebLog) ipProto(gm groupMap) {
 
 }
 
+func (w *WebLog) respTime(gm groupMap) {
+	i := w.timings.get(keyRespTime).set(gm.get(keyRespTime))
+
+	if h, ok := w.histograms[keyRespTimeHistogram]; ok {
+		h.set(i)
+	}
+}
+
+func (w *WebLog) respTimeUpstream(gm groupMap) {
+	i := w.timings.get(keyRespTimeUpstream).set(gm.get(keyRespTimeUpstream))
+
+	if h, ok := w.histograms[keyRespTimeUpstreamHistogram]; ok {
+		h.set(i)
+	}
+}
+
 func (w *WebLog) urlCategoryStats(gm groupMap) {
 	code := gm.get(keyCode)
 	id := w.matchedURL + "_" + code
@@ -284,4 +315,7 @@ func toInt(s string) int64 {
 	return int64(v)
 }
 
-var httpMethodReplace = strings.NewReplacer("/", "_", ".", "_")
+var (
+	httpMethodReplacer = strings.NewReplacer("/", "_", ".", "_")
+	vhostReplacer      = strings.NewReplacer(":", "_", ".", "_", "-", "_")
+)

@@ -12,8 +12,8 @@ const (
 	keyRespTimeUpstream = "resp_time_upstream" // check
 	keyRespLength       = "resp_length"        // check
 	keyUserDefined      = "user_defined"
-	keyMethod           = "http_method"  // check, parsed request field)
-	keyVersion          = "http_version" // check, parsed request field)
+	keyMethod           = "http_method"  // check, parsed request field
+	keyVersion          = "http_version" // check, parsed request field
 	keyURL              = "url"          // parsed request field
 
 	keyRespTimeHistogram         = "resp_time_histogram" //

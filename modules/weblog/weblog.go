@@ -24,9 +24,9 @@ func New() *WebLog {
 
 		tailFactory: newFollower,
 		reqParser: newCSVParser(csvPattern{
-			{"http_method", 0},
-			{"url", 1},
-			{"http_version", 2},
+			{keyMethod, 0},
+			{keyURL, 1},
+			{keyVersion, 2},
 		}),
 		stop:  make(chan struct{}),
 		pause: make(chan struct{}),
@@ -234,9 +234,10 @@ func (w *WebLog) Check() bool {
 	}
 
 	w.tail = t
-	go w.parseLoop()
-
 	w.Infof("used parser : %s", w.parser.info())
+
+	w.createCharts()
+	go w.parseLoop()
 
 	return true
 }

@@ -170,7 +170,7 @@ var (
 )
 
 var reqParser = newCSVParser(csvPattern{
-	{"http_method", 0},
-	{"url", 1},
-	{"http_version", 2},
+	{keyMethod, 0},
+	{keyURL, 1},
+	{keyVersion, 2},
 })
