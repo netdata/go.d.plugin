@@ -51,7 +51,7 @@ func (cp csvParser) info() string {
 	var info []string
 
 	for _, v := range cp.pattern {
-		info = append(info, fmt.Sprintf("%s:%d", v.Name, v.Index))
+		info = append(info, fmt.Sprintf("%s:%d", v.Key, v.Index))
 	}
 
 	return fmt.Sprintf("[%s]", strings.Join(info, ", "))
@@ -64,12 +64,12 @@ func (cp *csvParser) parse(line string) (groupMap, bool) {
 		return nil, false
 	}
 
-	if cp.pattern.max() > len(lines) {
+	if cp.pattern.max() >= len(lines) {
 		return nil, false
 	}
 
 	for _, f := range cp.pattern {
-		cp.data[f.Name] = lines[f.Index]
+		cp.data[f.Key] = lines[f.Index]
 	}
 
 	return cp.data, true

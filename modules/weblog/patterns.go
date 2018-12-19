@@ -16,14 +16,14 @@ const (
 	keyVersion          = "http_version" // check, parsed request field
 	keyURL              = "url"          // parsed request field
 
-	keyRespTimeHistogram         = "resp_time_histogram" //
+	keyRespTimeHistogram         = "resp_time_histogram"
 	keyRespTimeUpstreamHistogram = "resp_time_upstream_histogram"
 )
 
 type (
 	csvPattern []csvField
 	csvField   struct {
-		Name  string
+		Key   string
 		Index int
 	}
 )
@@ -42,7 +42,7 @@ func (c csvPattern) isValid() bool {
 	set := make(map[int]bool)
 
 	for _, p := range c {
-		if !(p.Name != "" && !set[p.Index]) {
+		if !(p.Key != "" && !set[p.Index]) {
 			return false
 		}
 		set[p.Index] = true
@@ -50,9 +50,8 @@ func (c csvPattern) isValid() bool {
 	return true
 }
 
-var csvDefaultPatterns = []csvPattern{
-	// TODO: add examples
-	{
+var (
+	logFormatNetdata = csvPattern{
 		{keyAddress, 0},
 		{keyRequest, 5},
 		{keyCode, 6},
@@ -60,9 +59,8 @@ var csvDefaultPatterns = []csvPattern{
 		{keyRespLength, 8},
 		{keyRespTime, 9},
 		{keyRespTimeUpstream, 10},
-	},
-	// TODO: add examples
-	{
+	}
+	logFormatNetdataVhost = csvPattern{
 		{keyVhost, 0},
 		{keyAddress, 1},
 		{keyRequest, 6},
@@ -71,20 +69,25 @@ var csvDefaultPatterns = []csvPattern{
 		{keyRespLength, 9},
 		{keyRespTime, 10},
 		{keyRespTimeUpstream, 11},
-	},
-	// TODO: add examples
-	{
+	}
+	logFormatDefault = csvPattern{
 		{keyAddress, 0},
 		{keyRequest, 5},
 		{keyCode, 6},
 		{keyBytesSent, 7},
-	},
-	// TODO: add examples
-	{
+	}
+	logFormatDefaultVhost = csvPattern{
 		{keyVhost, 0},
 		{keyAddress, 1},
 		{keyRequest, 6},
 		{keyCode, 7},
 		{keyBytesSent, 8},
-	},
-}
+	}
+
+	csvDefaultPatterns = []csvPattern{
+		logFormatNetdata,
+		logFormatNetdataVhost,
+		logFormatDefault,
+		logFormatDefaultVhost,
+	}
+)
