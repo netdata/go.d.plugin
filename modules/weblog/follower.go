@@ -31,8 +31,8 @@ func (f *followerImp) lines() chan *tail.Line {
 }
 
 func (f *followerImp) stop() {
-	f.tail.Cleanup()
 	_ = f.tail.Stop()
+	f.tail.Cleanup()
 
 }
 
