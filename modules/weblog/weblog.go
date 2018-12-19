@@ -24,9 +24,9 @@ func New() *WebLog {
 
 		tailFactory: newFollower,
 		reqParser: newCSVParser(csvPattern{
-			{"method", 0},
+			{"http_method", 0},
 			{"url", 1},
-			{"version", 2},
+			{"http_version", 2},
 		}),
 		stop:  make(chan struct{}),
 		pause: make(chan struct{}),

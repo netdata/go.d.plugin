@@ -85,6 +85,10 @@ func newParser(line string, patterns ...csvPattern) (parser, error) {
 			return nil, fmt.Errorf("pattern %v is not sorted", pattern)
 		}
 
+		if !pattern.isValid() {
+			return nil, fmt.Errorf("pattern %v is not valid", pattern)
+		}
+
 		parser := newCSVParser(pattern)
 
 		gm, ok := parser.parse(line)
@@ -112,34 +116,34 @@ func validateResult(gm map[string]string) error {
 		switch k {
 		case keyCode:
 			if !reCode.MatchString(v) {
-				return fmt.Errorf("'code' bad syntax: '%s'", v)
+				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
 			}
 		case keyAddress:
 			if !reAddress.MatchString(v) {
-				return fmt.Errorf("'address' bad syntax: '%s'", v)
+				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
 			}
 		case keyBytesSent:
 			if !reBytesSent.MatchString(v) {
-				return fmt.Errorf("'bytes_sent' bad syntax: '%s'", v)
+				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
 			}
 		case keyRespLength:
 			if !reResponseLength.MatchString(v) {
-				return fmt.Errorf("'response_length' bad syntax: '%s'", v)
+				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
 			}
 		case keyRespTime, keyRespTimeUpstream:
 			if !reResponseTime.MatchString(v) {
-				return fmt.Errorf("'response_time' bad syntax : '%s'", v)
+				return fmt.Errorf("'%s' bad syntax : '%s'", k, v)
 			}
 		case keyRequest:
 			gm, ok := reqParser.parse(v)
 			if !ok {
-				return fmt.Errorf("unparsable 'request' field : '%s'", v)
+				return fmt.Errorf("unparsable '%s' field : '%s'", k, v)
 			}
 			if !reHTTPMethod.MatchString(gm.get(keyMethod)) {
-				return fmt.Errorf("'http_method' bad syntax : '%s'", v)
+				return fmt.Errorf("'%s' field bad syntax : '%s'", keyMethod, gm.get(keyMethod))
 			}
 			if !reHTTPVersion.MatchString(gm.get(keyVersion)) {
-				return fmt.Errorf("'http_version' bad syntax : '%s'", v)
+				return fmt.Errorf("'%s' bad syntax : '%s'", keyVersion, gm.get(keyVersion))
 			}
 		}
 	}
@@ -158,7 +162,7 @@ var (
 )
 
 var reqParser = newCSVParser(csvPattern{
-	{"method", 0},
+	{"http_method", 0},
 	{"url", 1},
-	{"version", 2},
+	{"http_version", 2},
 })
