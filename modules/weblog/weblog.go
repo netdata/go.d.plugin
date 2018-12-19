@@ -221,7 +221,9 @@ func (w *WebLog) Collect() map[string]int64 {
 	}
 
 	for _, task := range w.worker.chartUpdate {
-		_ = w.charts.Get(task.id).AddDim(task.dim)
+		chart := w.charts.Get(task.id)
+		_ = chart.AddDim(task.dim)
+		chart.MarkNotCreated()
 	}
 	w.worker.chartUpdate = w.worker.chartUpdate[:0]
 
