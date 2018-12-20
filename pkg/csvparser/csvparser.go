@@ -16,6 +16,8 @@ var (
 	ErrFieldCount = errors.New("wrong number of fields")
 )
 
+// Parser parses comma-separated values (CSV) lines.
+// see csv.Reader std package for fields description.
 type Parser struct {
 	LazyQuotes       bool
 	TrimLeadingSpace bool
@@ -28,6 +30,8 @@ type Parser struct {
 	lastRecord   []string
 }
 
+// ParseString parses CSV string,
+// it's a copy of csv.Reader.readRecord private method.
 func (r *Parser) ParseString(line string) ([]string, error) {
 	if r.Comment != 0 && nextRunesString(line) == r.Comment {
 		return nil, nil // Skip Comment lines
@@ -143,6 +147,8 @@ parseField:
 	return r.lastRecord, err
 }
 
+// Parse parses CSV string (slice of fields),
+// it's a copy of csv.Reader.readRecord private method.
 func (r *Parser) Parse(line []byte) ([]string, error) {
 	if r.Comment != 0 && nextRune(line) == r.Comment {
 		return nil, nil // Skip Comment lines
