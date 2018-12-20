@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/netdata/go.d.plugin/pkg/csvparser"
 )
 
 type groupMap map[string]string
@@ -26,10 +28,8 @@ func (gm groupMap) lookup(key string) (string, bool) {
 func newCSVParser(pattern csvPattern) *csvParser {
 	return &csvParser{
 		pattern: pattern,
-		reader: csvReader{
-			comma: ' ',
-		},
-		data: make(groupMap),
+		parser:  csvparser.Parser{Comma: ' '},
+		data:    make(groupMap),
 	}
 }
 
@@ -41,7 +41,7 @@ type (
 
 	csvParser struct {
 		pattern csvPattern
-		reader  csvReader
+		parser  csvparser.Parser
 
 		data groupMap
 	}
@@ -58,7 +58,7 @@ func (cp csvParser) info() string {
 }
 
 func (cp *csvParser) parse(line string) (groupMap, bool) {
-	lines, err := cp.reader.readRecord(line)
+	lines, err := cp.parser.ParseString(line)
 
 	if err != nil {
 		return nil, false
@@ -159,7 +159,7 @@ func validateResult(gm map[string]string) error {
 }
 
 var (
-	reVhost          = regexp.MustCompile(`[\da-z.:-]+|localhost`) // TODO: not sure about this
+	reVhost          = regexp.MustCompile(`[\da-z.:-]+`) // TODO: not sure about this
 	reAddress        = regexp.MustCompile(`[\da-f.:]+|localhost`)
 	reCode           = regexp.MustCompile(`[1-9]\d{2}`)
 	reBytesSent      = regexp.MustCompile(`\d+|-`)
