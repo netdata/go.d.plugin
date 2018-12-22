@@ -33,7 +33,5 @@ type Base struct {
 	*logger.Logger
 }
 
-func (*Base) Cleanup() {}
-
 // SetLogger SetLogger
 func (b *Base) SetLogger(l *logger.Logger) { b.Logger = l }

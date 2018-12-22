@@ -79,6 +79,8 @@ func New() modules.Module {
 	}
 }
 
+func (n *NginxVTS) Cleanup() {}
+
 // Init makes initialization
 func (n *NginxVTS) Init() bool {
 	n.httpClient = web.NewHTTPClient(n.HTTP.Client)
