@@ -68,10 +68,6 @@ func (d *metrics) reset() {
 	d.ResponseLength = 0
 }
 
-func (d metrics) toMap() map[string]int64 {
-	return stm.ToMap(d)
-}
-
 // HTTPCheck httpcheck module
 type HTTPCheck struct {
 	modules.Base
