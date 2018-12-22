@@ -54,7 +54,7 @@ type Lighttpd struct {
 	web.HTTP `yaml:",inline"`
 
 	request *http.Request
-	client  web.HTTPClient
+	client  *http.Client
 
 	metrics map[string]int64
 }

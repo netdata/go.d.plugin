@@ -53,7 +53,7 @@ type Nginx struct {
 	web.HTTP `yaml:",inline"`
 
 	request *http.Request
-	client  web.HTTPClient
+	client  *http.Client
 
 	metrics metrics
 }
