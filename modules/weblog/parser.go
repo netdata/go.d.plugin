@@ -60,7 +60,7 @@ func (cp csvParser) info() string {
 func (cp *csvParser) parse(line string) (groupMap, bool) {
 	lines, err := cp.parser.ParseString(line)
 
-	if err != nil {
+	if err != nil && err != csvparser.ErrFieldCount {
 		return nil, false
 	}
 
