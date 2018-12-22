@@ -28,7 +28,7 @@ func (gm groupMap) lookup(key string) (string, bool) {
 func newCSVParser(pattern csvPattern) *csvParser {
 	return &csvParser{
 		pattern: pattern,
-		parser:  csvparser.Parser{Comma: ' '},
+		parser:  csvparser.Parser{Comma: ' ', FieldsPerRecord: -1},
 		data:    make(groupMap),
 	}
 }
@@ -60,7 +60,7 @@ func (cp csvParser) info() string {
 func (cp *csvParser) parse(line string) (groupMap, bool) {
 	lines, err := cp.parser.ParseString(line)
 
-	if err != nil && err != csvparser.ErrFieldCount {
+	if err != nil {
 		return nil, false
 	}
 
