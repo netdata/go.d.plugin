@@ -12,24 +12,31 @@ var (
 	proxyPassword = "proxyPassword"
 )
 
-func TestRawClient_CreateHTTPClient(t *testing.T) {
+func TestNewHTTPClient(t *testing.T) {
 	req, _ := http.NewRequest("GET", "", nil)
-	// Without Proxy Authorization
-	rawClient := new(RawClient)
 
-	client := rawClient.CreateHTTPClient()
-	assert.Implements(t, (*Client)(nil), client)
+	// W/o Proxy Authorization
+	var client Client
 
-	_, _ = client.Do(req)
+	httpClient := NewHTTPClient(client)
+
+	assert.Implements(t, (*HTTPClient)(nil), httpClient)
+
+	_, _ = httpClient.Do(req)
+
 	assert.Empty(t, req.Header.Get("Proxy-Authorization"))
 
-	rawClient.ProxyUsername = proxyUsername
-	rawClient.ProxyPassword = proxyPassword
+	// W/ Proxy Authorization
 
-	// With Proxy Authorization
-	client = rawClient.CreateHTTPClient()
-	assert.Implements(t, (*Client)(nil), client)
+	client.ProxyUsername = proxyUsername
+	client.ProxyPassword = proxyPassword
 
-	_, _ = client.Do(req)
+	httpClient = NewHTTPClient(client)
+
+	assert.Implements(t, (*HTTPClient)(nil), httpClient)
+
+	_, _ = httpClient.Do(req)
+
 	assert.NotEmpty(t, req.Header.Get("Proxy-Authorization"))
+
 }

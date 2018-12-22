@@ -4,7 +4,6 @@ import "fmt"
 
 // Panic logs a message with the Critical severity then panic
 func Panic(a ...interface{}) {
-	base.Panic(a...)
 	s := fmt.Sprint(a...)
 	base.print(CRITICAL, s)
 	panic(s)

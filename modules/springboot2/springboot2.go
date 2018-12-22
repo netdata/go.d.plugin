@@ -2,11 +2,13 @@ package springboot2
 
 import (
 	"strings"
+	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
+	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -18,7 +20,15 @@ func init() {
 
 // New returns SpringBoot2 instance with default values
 func New() *SpringBoot2 {
-	return &SpringBoot2{}
+	var (
+		defHTTPTimeout = time.Second
+	)
+
+	return &SpringBoot2{
+		HTTP: web.HTTP{
+			Client: web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+		},
+	}
 }
 
 // SpringBoot2 Spring boot 2 module
@@ -57,7 +67,7 @@ func (SpringBoot2) Cleanup() {}
 
 // Init makes initialization
 func (s *SpringBoot2) Init() bool {
-	s.prom = prometheus.New(s.CreateHTTPClient(), s.RawRequest)
+	s.prom = prometheus.New(web.NewHTTPClient(s.Client), s.Request)
 	return true
 }
 
@@ -78,8 +88,8 @@ func (SpringBoot2) Charts() *Charts {
 	return charts.Copy()
 }
 
-// GatherMetrics gathers metrics
-func (s *SpringBoot2) GatherMetrics() map[string]int64 {
+// Collect collects metrics
+func (s *SpringBoot2) Collect() map[string]int64 {
 	rawMetrics, err := s.prom.Scrape()
 	if err != nil {
 		return nil

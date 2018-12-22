@@ -1,0 +1,7 @@
+BusyWorkers: 1
+IdleWorkers: 49
+ConnsTotal: 2
+ConnsAsyncWriting: 0
+ConnsAsyncKeepAlive: 2
+ConnsAsyncClosing: 0
+Scoreboard: _______________________W__________________________....................................................................................................

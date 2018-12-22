@@ -1,0 +1,14 @@
+Total Accesses: 575
+Total kBytes: 433
+CPULoad: .0477032
+Uptime: 566
+ReqPerSec: 1.0159
+BytesPerSec: 783.378
+BytesPerReq: 771.117
+BusyWorkers: 1
+IdleWorkers: 49
+ConnsTotal: 2
+ConnsAsyncWriting: 0
+ConnsAsyncKeepAlive: 2
+ConnsAsyncClosing: 0
+Scoreboard: _____W____________________________________________....................................................................................................

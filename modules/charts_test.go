@@ -92,18 +92,18 @@ func TestCharts_Add(t *testing.T) {
 	chart3 := createTestChart("")
 
 	// OK case
-	charts.Add(
+	assert.NoError(t, charts.Add(
 		chart1,
 		chart2,
-	)
+	))
 	assert.Len(t, charts, 2)
 
 	// NG case
-	charts.Add(
+	assert.Error(t, charts.Add(
 		chart3,
 		chart1,
 		chart2,
-	)
+	))
 	assert.Len(t, charts, 2)
 
 	assert.True(t, charts[0] == chart1)
@@ -141,10 +141,11 @@ func TestCharts_Remove(t *testing.T) {
 	}
 
 	// OK case
-	assert.True(t, charts.Remove("1"))
+	assert.NoError(t, charts.Remove("1"))
 	assert.Len(t, *charts, 0)
+
 	// NG case
-	assert.False(t, charts.Remove("2"))
+	assert.Error(t, charts.Remove("2"))
 }
 
 func TestChart_AddDim(t *testing.T) {
@@ -152,10 +153,11 @@ func TestChart_AddDim(t *testing.T) {
 	dim := &Dim{ID: "dim2"}
 
 	// OK case
-	assert.True(t, chart.AddDim(dim))
+	assert.NoError(t, chart.AddDim(dim))
 	assert.Len(t, chart.Dims, 2)
+
 	// NG case
-	assert.False(t, chart.AddDim(dim))
+	assert.Error(t, chart.AddDim(dim))
 	assert.Len(t, chart.Dims, 2)
 }
 
@@ -164,10 +166,11 @@ func TestChart_AddVar(t *testing.T) {
 	variable := &Var{ID: "var2"}
 
 	// OK case
-	assert.True(t, chart.AddVar(variable))
+	assert.NoError(t, chart.AddVar(variable))
 	assert.Len(t, chart.Vars, 2)
+
 	// NG case
-	assert.False(t, chart.AddVar(variable))
+	assert.Error(t, chart.AddVar(variable))
 	assert.Len(t, chart.Vars, 2)
 }
 
@@ -181,6 +184,7 @@ func TestChart_GetDim(t *testing.T) {
 
 	// OK case
 	assert.True(t, chart.GetDim("1") != nil && chart.GetDim("1").ID == "1")
+
 	// NG case
 	assert.Nil(t, chart.GetDim("3"))
 }
@@ -189,10 +193,11 @@ func TestChart_RemoveDim(t *testing.T) {
 	chart := createTestChart("1")
 
 	// OK case
-	assert.True(t, chart.RemoveDim("dim1"))
+	assert.NoError(t, chart.RemoveDim("dim1"))
 	assert.Len(t, chart.Dims, 0)
+
 	// NG case
-	assert.False(t, chart.RemoveDim("dim2"))
+	assert.Error(t, chart.RemoveDim("dim2"))
 }
 
 func TestChart_HasDim(t *testing.T) {
@@ -211,43 +216,71 @@ func TestChart_MarkNotCreated(t *testing.T) {
 	assert.False(t, chart.created)
 }
 
-func TestChart_IsValid(t *testing.T) {
-	chart := createTestChart("1")
-
+func TestChart_check(t *testing.T) {
 	// OK case
-	assert.True(t, chart.IsValid())
+	chart := createTestChart("1")
+	assert.NoError(t, checkChart(chart))
+
 	// NG case
 	chart = createTestChart("1")
 	chart.ID = ""
-	assert.False(t, chart.IsValid())
+	assert.Error(t, checkChart(chart))
+
+	chart = createTestChart("1")
+	chart.ID = "invalid id"
+	assert.Error(t, checkChart(chart))
 
 	chart = createTestChart("1")
 	chart.Title = ""
-	assert.False(t, chart.IsValid())
+	assert.Error(t, checkChart(chart))
 
 	chart = createTestChart("1")
 	chart.Units = ""
-	assert.False(t, chart.IsValid())
+	assert.Error(t, checkChart(chart))
+
+	chart = createTestChart("1")
+	chart.Dims = Dims{
+		{ID: "1"},
+		{ID: "1"},
+	}
+	assert.Error(t, checkChart(chart))
+
+	chart = createTestChart("1")
+	chart.Vars = Vars{
+		{ID: "1"},
+		{ID: "1"},
+	}
+	assert.Error(t, checkChart(chart))
 }
 
-func TestDim_IsValid(t *testing.T) {
-	dim := Dim{ID: "id"}
-
+func TestDim_check(t *testing.T) {
 	// OK case
-	assert.True(t, dim.IsValid())
+	dim := &Dim{ID: "id"}
+	assert.NoError(t, checkDim(dim))
+
 	// NG case
+	dim = &Dim{ID: "id"}
 	dim.ID = ""
-	assert.False(t, dim.IsValid())
+	assert.Error(t, checkDim(dim))
+
+	dim = &Dim{ID: "id"}
+	dim.ID = "invalid id"
+	assert.Error(t, checkDim(dim))
 }
 
-func TestVar_IsValid(t *testing.T) {
-	variable := Var{ID: "id"}
-
+func TestVar_check(t *testing.T) {
 	// OK case
-	assert.True(t, variable.IsValid())
+	v := &Var{ID: "id"}
+	assert.NoError(t, checkVar(v))
+
 	// NG case
-	variable.ID = ""
-	assert.False(t, variable.IsValid())
+	v = &Var{ID: "id"}
+	v.ID = ""
+	assert.Error(t, checkVar(v))
+
+	v = &Var{ID: "id"}
+	v.ID = "invalid id"
+	assert.Error(t, checkVar(v))
 }
 
 func compareCharts(t *testing.T, orig, copied *Chart) {

@@ -1,8 +1,11 @@
 package modules
 
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 type (
@@ -146,17 +149,19 @@ func (o Opts) String() string {
 	return strings.Join(opts, " ")
 }
 
-// Add adds (appends) a variable number of ChartsFunc.
-// Chart won't be added if:
-//   * chart isn't a valid chart
-//   * ChartsFunc have a chart with the same ID
-func (c *Charts) Add(charts ...*Chart) {
-	for _, v := range charts {
-		if c.index(v.ID) != -1 || !v.IsValid() {
-			continue
+// Add adds (appends) a variable number of Charts.
+func (c *Charts) Add(charts ...*Chart) error {
+	for _, chart := range charts {
+		if err := checkChart(chart); err != nil {
+			return fmt.Errorf("error on adding chart : %s", err)
 		}
-		*c = append(*c, v)
+		if c.index(chart.ID) != -1 {
+			return fmt.Errorf("error on adding chart : '%s' is already in charts", chart.ID)
+		}
+		*c = append(*c, chart)
 	}
+
+	return nil
 }
 
 // Get returns the chart by ID.
@@ -177,16 +182,15 @@ func (c Charts) Has(chartID string) bool {
 	return true
 }
 
-// Remove removes the chart from ChartsFunc by ID,
-// it returns true if ChartsFunc contain the chart with the given ID, false otherwise.
+// Remove removes the chart from Charts by ID.
 // Avoid to use it in runtime.
-func (c *Charts) Remove(chartID string) bool {
+func (c *Charts) Remove(chartID string) error {
 	idx := c.index(chartID)
 	if idx == -1 {
-		return false
+		return fmt.Errorf("error on removing chart : '%s' is not in charts", chartID)
 	}
 	*c = append((*c)[:idx], (*c)[idx+1:]...)
-	return true
+	return nil
 }
 
 // Copy returns a deep copy of ChartsFunc.
@@ -214,23 +218,29 @@ func (c *Chart) MarkNotCreated() {
 }
 
 // AddDim adds new dimension to the chart dimensions.
-func (c *Chart) AddDim(newDim *Dim) bool {
-	if c.indexDim(newDim.ID) != -1 || !newDim.IsValid() {
-		return false
+func (c *Chart) AddDim(newDim *Dim) error {
+	if err := checkDim(newDim); err != nil {
+		return fmt.Errorf("error on adding dim to chart '%s' : %s", c.ID, err)
+	}
+	if c.indexDim(newDim.ID) != -1 {
+		return fmt.Errorf("error on adding dim : '%s' is already in chart '%s' dims", newDim.ID, c.ID)
 	}
 	c.Dims = append(c.Dims, newDim)
 
-	return true
+	return nil
 }
 
 // AddVar adds new variable to the chart variables.
-func (c *Chart) AddVar(newVar *Var) bool {
-	if c.indexVar(newVar.ID) != -1 || !newVar.IsValid() {
-		return false
+func (c *Chart) AddVar(newVar *Var) error {
+	if err := checkVar(newVar); err != nil {
+		return fmt.Errorf("error on adding var to chart '%s' : %s", c.ID, err)
+	}
+	if c.indexVar(newVar.ID) != -1 {
+		return fmt.Errorf("error on adding var : '%s' is already in chart '%s' vars", newVar.ID, c.ID)
 	}
 	c.Vars = append(c.Vars, newVar)
 
-	return true
+	return nil
 }
 
 // GetDim returns dimension by ID.
@@ -241,17 +251,16 @@ func (c *Chart) GetDim(dimID string) *Dim {
 	return nil
 }
 
-// RemoveDim removes dimension by ID,
-// it returns true if the chart contains dimension with the given ID, false otherwise.
+// RemoveDim removes dimension by ID.
 // Avoid to use it in runtime.
-func (c *Chart) RemoveDim(dimID string) bool {
+func (c *Chart) RemoveDim(dimID string) error {
 	idx := c.indexDim(dimID)
 	if idx == -1 {
-		return false
+		return fmt.Errorf("error on removing dim : '%s' isn't in chart '%s'", dimID, c.ID)
 	}
 	c.Dims = append(c.Dims[:idx], c.Dims[idx+1:]...)
 
-	return true
+	return nil
 }
 
 // HasDim returns true if the chart contains dimension with the given ID, false otherwise.
@@ -293,28 +302,92 @@ func (c Chart) indexVar(varID string) int {
 	return -1
 }
 
-// IsValid returns whether the chart is valid.
-// Chart is valid if it has non empty ID, Title and Units.
-func (c Chart) IsValid() bool {
-	return c.ID != "" && c.Title != "" && c.Units != ""
-}
-
 func (d Dim) copy() *Dim {
 	return &d
-}
-
-// IsValid returns whether the dimension is valid.
-// Dimension is valid if it has non empty ID.
-func (d Dim) IsValid() bool {
-	return d.ID != ""
 }
 
 func (v Var) copy() *Var {
 	return &v
 }
 
-// IsValid returns whether the variable is valid.
-// Variable is valid if it has non empty ID.
-func (v Var) IsValid() bool {
-	return v.ID != ""
+// CheckCharts checks charts
+func CheckCharts(charts ...*Chart) error {
+	for _, chart := range charts {
+		if err := checkChart(chart); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func checkChart(chart *Chart) error {
+	if chart.ID == "" {
+		return errors.New("empty chart id")
+	}
+
+	if chart.Title == "" {
+		return fmt.Errorf("empty title in chart '%s'", chart.ID)
+	}
+
+	if chart.Units == "" {
+		return fmt.Errorf("empty units in chart '%s'", chart.ID)
+	}
+
+	if id := checkID(chart.ID); id != -1 {
+		return fmt.Errorf("unacceptable symbol in chart id '%s' : '%s'", chart.ID, string(id))
+	}
+
+	set := make(map[string]bool)
+
+	for _, d := range chart.Dims {
+		if err := checkDim(d); err != nil {
+			return err
+		}
+		if set[d.ID] {
+			return fmt.Errorf("duplicate dim '%s' in chart '%s'", d.ID, chart.ID)
+		}
+		set[d.ID] = true
+	}
+
+	set = make(map[string]bool)
+
+	for _, v := range chart.Vars {
+		if err := checkVar(v); err != nil {
+			return err
+		}
+		if set[v.ID] {
+			return fmt.Errorf("duplicate var '%s' in chart '%s'", v.ID, chart.ID)
+		}
+		set[v.ID] = true
+	}
+	return nil
+}
+
+func checkDim(d *Dim) error {
+	if d.ID == "" {
+		return errors.New("empty dim id")
+	}
+	if id := checkID(d.ID); id != -1 {
+		return fmt.Errorf("unacceptable symbol in dim id '%s' : '%s'", d.ID, string(id))
+	}
+	return nil
+}
+
+func checkVar(v *Var) error {
+	if v.ID == "" {
+		return errors.New("empty var id")
+	}
+	if id := checkID(v.ID); id != -1 {
+		return fmt.Errorf("unacceptable symbol in var id '%s' : '%s'", v.ID, string(id))
+	}
+	return nil
+}
+
+func checkID(id string) int {
+	for _, r := range id {
+		if !(unicode.IsLetter(r) || unicode.IsDigit(r) || r == '-' || r == '_') {
+			return int(r)
+		}
+	}
+	return -1
 }

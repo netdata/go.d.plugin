@@ -1,7 +1,7 @@
 package web
 
-// HTTP is a struct with embedded RawRequest and RawClient.
+// HTTP is a struct with embedded Request and Client.
 type HTTP struct {
-	RawRequest `yaml:",inline"`
-	RawClient  `yaml:",inline"`
+	Request `yaml:",inline"`
+	Client  `yaml:",inline"`
 }

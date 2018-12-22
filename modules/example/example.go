@@ -6,6 +6,15 @@ import (
 	"github.com/netdata/go.d.plugin/modules"
 )
 
+func init() {
+	creator := modules.Creator{
+		DisabledByDefault: true,
+		Create:            func() modules.Module { return New() },
+	}
+
+	modules.Register("example", creator)
+}
+
 // New creates Example with default values
 func New() *Example {
 	return &Example{
@@ -38,19 +47,10 @@ func (Example) Charts() *Charts {
 	return charts.Copy()
 }
 
-// GatherMetrics gathers metrics
-func (e *Example) GatherMetrics() map[string]int64 {
+// Collect collects metrics
+func (e *Example) Collect() map[string]int64 {
 	e.metrics["random0"] = rand.Int63n(100)
 	e.metrics["random1"] = rand.Int63n(100)
 
 	return e.metrics
-}
-
-func init() {
-	creator := modules.Creator{
-		DisabledByDefault: true,
-		Create:            func() modules.Module { return New() },
-	}
-
-	modules.Register("example", creator)
 }

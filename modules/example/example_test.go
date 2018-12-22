@@ -3,6 +3,8 @@ package example
 import (
 	"testing"
 
+	"github.com/netdata/go.d.plugin/modules"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,7 +28,7 @@ func TestExample_Charts(t *testing.T) {
 	mod := New()
 
 	assert.NotNil(t, mod.Charts())
-
+	assert.NoError(t, modules.CheckCharts(*mod.Charts()...))
 }
 
 func TestExample_Cleanup(t *testing.T) {
@@ -35,8 +37,8 @@ func TestExample_Cleanup(t *testing.T) {
 	mod.Cleanup()
 }
 
-func TestExample_GatherMetrics(t *testing.T) {
+func TestExample_Collect(t *testing.T) {
 	mod := New()
 
-	assert.NotNil(t, mod.GatherMetrics())
+	assert.NotNil(t, mod.Collect())
 }

@@ -72,7 +72,7 @@ func (m Metrics) FindByName(name string) Metrics {
 	return m[from:until]
 }
 
-// Match finds metrics where it's label matches given matcher.
+// match finds metrics where it's label matches given matcher.
 // It does NOT expect the metrics is sorted.
 // Complexity: O(N)
 func (m Metrics) Match(matcher *labels.Matcher) Metrics {

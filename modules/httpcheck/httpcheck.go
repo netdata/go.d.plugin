@@ -6,14 +6,41 @@ import (
 	"net"
 	"net/http"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 
 	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
+
+func init() {
+	creator := modules.Creator{
+		UpdateEvery: 5,
+		Create:      func() modules.Module { return New() },
+	}
+
+	modules.Register("httpcheck", creator)
+}
+
+// New creates HTTPCheck with default values
+func New() *HTTPCheck {
+	var (
+		defHTTPTimeout    = time.Second
+		defStatusAccepted = map[int]bool{200: true}
+	)
+
+	return &HTTPCheck{
+		HTTP: web.HTTP{
+			Client: web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+		},
+		statuses: defStatusAccepted,
+		metrics:  metrics{},
+	}
+}
 
 type state string
 
@@ -43,6 +70,7 @@ func (d *metrics) reset() {
 	d.ResponseLength = 0
 }
 
+<<<<<<< HEAD
 func (d metrics) toMap() map[string]int64 {
 	return stm.ToMap(d)
 }
@@ -57,19 +85,22 @@ func New() *HTTPCheck {
 	}
 }
 
+=======
+>>>>>>> master
 // HTTPCheck httpcheck module
 type HTTPCheck struct {
 	modules.Base
 
+	web.HTTP `yaml:",inline"`
+
 	StatusAccepted []int  `yaml:"status_accepted"`
 	ResponseMatch  string `yaml:"response_match"`
-	web.HTTP       `yaml:",inline"`
 
 	match    *regexp.Regexp
 	statuses map[int]bool
 
 	request *http.Request
-	client  web.Client
+	client  web.HTTPClient
 
 	metrics metrics
 }
@@ -79,38 +110,44 @@ func (HTTPCheck) Cleanup() {}
 
 // Init makes initialization
 func (hc *HTTPCheck) Init() bool {
-	if hc.Timeout.Duration == 0 {
-		hc.Timeout.Duration = time.Second
-	}
-
-	hc.Debugf("using timeout: %s", hc.Timeout.Duration)
-
+	// populate accepted statuses
 	if len(hc.StatusAccepted) != 0 {
 		delete(hc.statuses, 200)
+
 		for _, s := range hc.StatusAccepted {
 			hc.statuses[s] = true
 		}
 	}
 
-	req, err := hc.CreateHTTPRequest()
+	var err error
 
-	if err != nil {
-		hc.Error(err)
+	// create HTTP request
+	if hc.request, err = web.NewHTTPRequest(hc.Request); err != nil {
+		hc.Errorf("error on creating request to %s : %s", hc.URL, err)
 		return false
 	}
 
-	hc.request = req
+	// create HTTP client
+	hc.client = web.NewHTTPClient(hc.Client)
 
-	hc.client = hc.CreateHTTPClient()
-
-	re, err := regexp.Compile(hc.ResponseMatch)
-
-	if err != nil {
-		hc.Error(err)
+	// create response match
+	if hc.match, err = regexp.Compile(hc.ResponseMatch); err != nil {
+		hc.Errorf("error on creating regexp %s : %s", hc.ResponseMatch, err)
 		return false
 	}
 
-	hc.match = re
+	// post Init debug info
+	hc.Debugf("using URL %s", hc.request.URL)
+	hc.Debugf("using HTTP timeout %s", hc.Timeout.Duration)
+	var statuses []int
+	for status := range hc.statuses {
+		statuses = append(statuses, status)
+	}
+	sort.Ints(statuses)
+	hc.Debugf("using accepted HTTP statuses %s", statuses)
+	if hc.match != nil {
+		hc.Debugf("using response match regexp %s", hc.match)
+	}
 
 	return true
 }
@@ -132,8 +169,8 @@ func (hc HTTPCheck) Charts() *Charts {
 
 }
 
-// GatherMetrics gathers metrics
-func (hc *HTTPCheck) GatherMetrics() map[string]int64 {
+// Collect collects metrics
+func (hc *HTTPCheck) Collect() map[string]int64 {
 	hc.metrics.reset()
 
 	resp, err := hc.doRequest()
@@ -144,7 +181,7 @@ func (hc *HTTPCheck) GatherMetrics() map[string]int64 {
 		hc.processOKResponse(resp)
 	}
 
-	return hc.metrics.toMap()
+	return stm.ToMap(hc.metrics)
 }
 
 func (hc *HTTPCheck) doRequest() (*http.Response, error) {
@@ -198,13 +235,4 @@ func parseErr(err error) state {
 	}
 
 	return unknown
-}
-
-func init() {
-	creator := modules.Creator{
-		UpdateEvery: 5,
-		Create:      func() modules.Module { return New() },
-	}
-
-	modules.Register("httpcheck", creator)
 }

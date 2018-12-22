@@ -1,54 +1,55 @@
 package weblog
 
-//
-//import "github.com/netdata/go.d.plugin/collectors/weblogog/matcher"
-//
-//type filter struct {
-//	include matcher.Matcher
-//	exclude matcher.Matcher
-//}
-//
-//func (f *filter) exist() bool {
-//	return f.include != nil || f.exclude != nil
-//}
-//
-//func (f *filter) filter(s string) bool {
-//	i, e := true, true
-//	if f.include != nil {
-//		i = f.include.Match(s)
-//	}
-//	if f.exclude != nil {
-//		e = !f.exclude.Match(s)
-//	}
-//	return i && e
-//}
-//
-//type rawFilter struct {
-//	Include string `yaml:"include"`
-//	Exclude string `yaml:"exclude"`
-//}
-//
-//func getFilter(r rawFilter) (filter, error) {
-//	var f filter
-//	if r.Include == "" && r.Exclude == "" {
-//		return f, nil
-//	}
-//
-//	if r.Include != "" {
-//		m, err := matcher.New(r.Include)
-//		if err != nil {
-//			return f, err
-//		}
-//		f.include = m
-//	}
-//
-//	if r.Exclude != "" {
-//		m, err := matcher.New(r.Exclude)
-//		if err != nil {
-//			return f, err
-//		}
-//		f.exclude = m
-//	}
-//
-//	return f, nil
-//}
+import "fmt"
+
+type rawfilter struct {
+	Include string
+	Exclude string
+}
+
+func (r rawfilter) String() string {
+	return fmt.Sprintf("{include: %s, exclude: %s}", r.Include, r.Exclude)
+}
+
+type filter struct {
+	include matcher
+	exclude matcher
+}
+
+func (f *filter) match(s string) bool {
+	includeOK := true
+	excludeOK := false
+
+	if f.include != nil {
+		includeOK = f.include.match(s)
+	}
+
+	if f.exclude != nil {
+		excludeOK = f.exclude.match(s)
+	}
+
+	return includeOK && !excludeOK
+}
+
+func newFilter(raw rawfilter) (matcher, error) {
+	var f filter
+	if raw.Include == "" && raw.Exclude == "" {
+		return &f, nil
+	}
+
+	var err error
+
+	if raw.Include != "" {
+		if f.include, err = newMatcher(raw.Include); err != nil {
+			return nil, err
+		}
+	}
+
+	if raw.Exclude != "" {
+		if f.exclude, err = newMatcher(raw.Exclude); err != nil {
+			return nil, err
+		}
+	}
+
+	return &f, nil
+}
