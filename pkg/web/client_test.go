@@ -3,40 +3,25 @@ package web
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	proxyUsername = "proxyUser"
-	proxyPassword = "proxyPassword"
-)
+//var (
+//	proxyUsername = "proxyUser"
+//	proxyPassword = "proxyPassword"
+//)
 
 func TestNewHTTPClient(t *testing.T) {
-	req, _ := http.NewRequest("GET", "", nil)
+	client := NewHTTPClient(Client{
+		Timeout:           Duration{Duration: time.Second * 5},
+		NotFollowRedirect: true,
+		TLSSkipVerify:     true,
+		ProxyURL:          "http://127.0.0.1:3128",
+	})
 
-	// W/o Proxy Authorization
-	var client Client
-
-	httpClient := NewHTTPClient(client)
-
-	assert.Implements(t, (*HTTPClient)(nil), httpClient)
-
-	_, _ = httpClient.Do(req)
-
-	assert.Empty(t, req.Header.Get("Proxy-Authorization"))
-
-	// W/ Proxy Authorization
-
-	client.ProxyUsername = proxyUsername
-	client.ProxyPassword = proxyPassword
-
-	httpClient = NewHTTPClient(client)
-
-	assert.Implements(t, (*HTTPClient)(nil), httpClient)
-
-	_, _ = httpClient.Do(req)
-
-	assert.NotEmpty(t, req.Header.Get("Proxy-Authorization"))
-
+	assert.IsType(t, (*http.Client)(nil), client)
+	assert.Equal(t, time.Second*5, client.Timeout)
+	assert.NotNil(t, client.CheckRedirect)
 }

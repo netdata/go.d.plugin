@@ -99,7 +99,7 @@ type Rabbitmq struct {
 
 	reqOverview *http.Request
 	reqNodes    *http.Request
-	client      web.HTTPClient
+	client      *http.Client
 
 	overview apiOverview
 	nodes    apiNodes

@@ -64,7 +64,7 @@ type Apache struct {
 	web.HTTP `yaml:",inline"`
 
 	request *http.Request
-	client  web.HTTPClient
+	client  *http.Client
 
 	extendedStats bool
 
@@ -119,11 +119,11 @@ func (a Apache) Charts() *modules.Charts {
 	charts := charts.Copy()
 
 	if !a.extendedStats {
-		charts.Remove("requests")
-		charts.Remove("net")
-		charts.Remove("reqpersec")
-		charts.Remove("bytespersec")
-		charts.Remove("bytesperreq")
+		_ = charts.Remove("requests")
+		_ = charts.Remove("net")
+		_ = charts.Remove("reqpersec")
+		_ = charts.Remove("bytespersec")
+		_ = charts.Remove("bytesperreq")
 	}
 
 	return charts
