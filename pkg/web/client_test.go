@@ -8,11 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//var (
-//	proxyUsername = "proxyUser"
-//	proxyPassword = "proxyPassword"
-//)
-
 func TestNewHTTPClient(t *testing.T) {
 	client := NewHTTPClient(Client{
 		Timeout:           Duration{Duration: time.Second * 5},
