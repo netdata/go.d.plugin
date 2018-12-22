@@ -4,8 +4,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/stm"
-
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"

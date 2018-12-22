@@ -23,7 +23,7 @@ type (
 		web.HTTP     `yaml:",inline"`
 		SumKey       string `yaml:"sum_key"`
 
-		httpClient     web.Client
+		httpClient     web.HTTPClient
 		charts         *Charts
 		serverReqChart *modules.Chart
 	}
@@ -81,13 +81,13 @@ func New() modules.Module {
 
 // Init makes initialization
 func (n *NginxVTS) Init() bool {
-	n.httpClient = n.CreateHTTPClient()
+	n.httpClient = web.NewHTTPClient(n.HTTP.Client)
 	return true
 }
 
 // Check makes check
 func (n *NginxVTS) Check() bool {
-	req, err := n.CreateHTTPRequest()
+	req, err := web.NewHTTPRequest(n.HTTP.Request)
 	if err != nil {
 		n.Warning("create http request error: ", err)
 		return false
@@ -126,8 +126,8 @@ func (n *NginxVTS) Charts() *Charts {
 }
 
 // GatherMetrics gathers metrics
-func (n *NginxVTS) GatherMetrics() map[string]int64 {
-	req, err := n.CreateHTTPRequest()
+func (n *NginxVTS) Collect() map[string]int64 {
+	req, err := web.NewHTTPRequest(n.HTTP.Request)
 	if err != nil {
 		n.Error("create http request error: ", err)
 		return nil

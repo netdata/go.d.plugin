@@ -10,8 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/stm"
-
 	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -70,23 +68,10 @@ func (d *metrics) reset() {
 	d.ResponseLength = 0
 }
 
-<<<<<<< HEAD
 func (d metrics) toMap() map[string]int64 {
 	return stm.ToMap(d)
 }
 
-// New creates HTTPCheck with default values
-func New() *HTTPCheck {
-	return &HTTPCheck{
-		statuses: map[int]bool{
-			200: true,
-		},
-		metrics: metrics{},
-	}
-}
-
-=======
->>>>>>> master
 // HTTPCheck httpcheck module
 type HTTPCheck struct {
 	modules.Base
