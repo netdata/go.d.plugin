@@ -34,13 +34,15 @@ func TestRawRequest_CreateRequest(t *testing.T) {
 
 	user, pass, ok := req.BasicAuth()
 	assert.True(t, ok)
-	assert.True(t, user == username && pass == password)
+	assert.Equal(t, username, user)
+	assert.Equal(t, password, pass)
 
 	user, pass, ok = parseBasicAuth(req.Header.Get("Proxy-Authorization"))
 	assert.True(t, ok)
-	assert.True(t, user == proxyUsername && pass == proxyPassword)
 
-	assert.True(t, req.Header.Get(headerKey) == headerValue)
+	assert.Equal(t, proxyUsername, user)
+	assert.Equal(t, proxyPassword, pass)
+	assert.Equal(t, headerValue, req.Header.Get(headerKey))
 }
 
 func parseBasicAuth(auth string) (username, password string, ok bool) {
