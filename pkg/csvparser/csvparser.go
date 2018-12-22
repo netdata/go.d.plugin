@@ -30,6 +30,12 @@ type Parser struct {
 	lastRecord   []string
 }
 
+func NewCSVParser() *Parser {
+	return &Parser{
+		Comma: ',',
+	}
+}
+
 // ParseString parses CSV string,
 // it's a copy of csv.Reader.readRecord private method.
 func (r *Parser) ParseString(line string) ([]string, error) {
