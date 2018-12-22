@@ -44,6 +44,7 @@ services:
 
         httpget http://springboot2:8080/hello 0.5 &
         httpget http://springboot2:8080 1 &
-        httpget http://nginx/empty_gif 0.7 &
+        httpget http://nginx/empty_gif 0.3 &
+        httpget http://nginx/ 0.5 &
 
         while true; do sleep 86400; done

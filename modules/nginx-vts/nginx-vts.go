@@ -21,30 +21,40 @@ type (
 	NginxVTS struct {
 		modules.Base // should be embedded by every module
 		web.HTTP     `yaml:",inline"`
+		SumKey       string `yaml:"sum_key"`
 
-		httpClient web.Client
+		httpClient     web.Client
+		charts         *Charts
+		serverReqChart *modules.Chart
 	}
 
 	vts struct {
-		HostName     string      `json:"hostName"`
-		NginxVersion string      `json:"nginxVersion"`
-		SharedZones  sharedZones `json:"sharedZones"`
-		ServerZones  serverZones `json:"serverZones"`
+		HostName      string                    `json:"hostName"`
+		NginxVersion  string                    `json:"nginxVersion"`
+		SharedZones   sharedZones               `json:"sharedZones"`
+		ServerZones   map[string]serverZone     `json:"serverZones"`
+		UpstreamZones map[string][]upstreamZone `json:"upstreamZones"`
 	}
 
 	sharedZones struct {
 		Name     string `json:"name"`
-		MaxSize  int    `json:"maxSize" stm:"max_size"`
+		MaxSize  int    `json:"maxSize"  stm:"max_size"`
 		UsedSize int    `json:"usedSize" stm:"used_size"`
 	}
 
-	serverZones = map[string]serverZone
-
 	serverZone struct {
 		RequestCounter int       `json:"requestCounter" stm:"req"`
-		InBytes        int       `json:"inBytes" stm:"received"`
-		OutBytes       int       `json:"outBytes" stm:"sent"`
-		Responses      responses `json:"responses" stm:"resp"`
+		InBytes        int       `json:"inBytes"        stm:"received"`
+		OutBytes       int       `json:"outBytes"       stm:"sent"`
+		Responses      responses `json:"responses"      stm:"resp"`
+	}
+
+	upstreamZone struct {
+		Server         string    `json:"server"`
+		RequestCounter int       `json:"requestCounter" stm:"req"`
+		InBytes        int       `json:"inBytes"        stm:"received"`
+		OutBytes       int       `json:"outBytes"       stm:"sent"`
+		Responses      responses `json:"responses"      stm:"resp"`
 	}
 
 	responses struct {
@@ -56,14 +66,17 @@ type (
 	}
 
 	data struct {
-		SharedZones sharedZones           `stm:"shared"`
-		ServerZones map[string]serverZone `stm:"server"`
+		SharedZones   sharedZones                        `stm:"shared"`
+		ServerZones   map[string]serverZone              `stm:"server"`
+		UpstreamZones map[string]map[string]upstreamZone `stm:"upstream"`
 	}
 )
 
 // New creates NginxVTS module with default values
 func New() modules.Module {
-	return &NginxVTS{}
+	return &NginxVTS{
+		SumKey: "*",
+	}
 }
 
 // Init makes initialization
@@ -81,25 +94,25 @@ func (n *NginxVTS) Check() bool {
 	}
 	resp, err := n.httpClient.Do(req)
 	if err != nil {
-		n.Info("skip job due to http request error: ", err)
+		n.Warning("skip job due to http request error: ", err)
 		return false
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		n.Info("skip job due to %v status %d", req, resp.StatusCode)
+		n.Warning("skip job due to %v status %d", req, resp.StatusCode)
 		return false
 	}
 
 	var data vts
 	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
-		n.Info("skip job due to decode json error: ", err)
+		n.Warning("skip job due to decode json error: ", err)
 		return false
 	}
 
 	if data.HostName == "" || data.NginxVersion == "" || data.SharedZones.Name == "" {
-		n.Info("skip job due to invalid JSON format")
+		n.Warning("skip job due to invalid JSON format")
 		return false
 	}
 	return true
@@ -107,7 +120,9 @@ func (n *NginxVTS) Check() bool {
 
 // Charts creates Charts
 func (n *NginxVTS) Charts() *Charts {
-	return charts.Copy()
+	n.charts = charts.Copy()
+	n.serverReqChart = n.charts.Get(serverReqChart)
+	return n.charts
 }
 
 // GatherMetrics gathers metrics
@@ -136,18 +151,39 @@ func (n *NginxVTS) GatherMetrics() map[string]int64 {
 		return nil
 	}
 
-	var metrics data
+	metrics := data{
+		UpstreamZones: map[string]map[string]upstreamZone{},
+	}
 
-	metrics.SharedZones = raw.SharedZones
 	metrics.ServerZones = raw.ServerZones
 
-	if len(raw.ServerZones) > 0 {
-
-		for name := range raw.ServerZones {
-			// TODO: add charts
-			_ = name
+	for name := range raw.ServerZones {
+		if name == n.SumKey {
+			continue
+		}
+		serverReqDim := "server_" + name + "_req"
+		if !n.serverReqChart.HasDim(serverReqDim) {
+			n.serverReqChart.AddDim(createZoneReqDim(serverReqDim, name))
+			n.serverReqChart.MarkNotCreated()
+		}
+		if !n.charts.Has("server_response_" + name) {
+			n.charts.Add(createZoneCharts("server", name)...)
+		}
+	}
+	for name, upstream := range raw.UpstreamZones {
+		metrics.UpstreamZones[name] = map[string]upstreamZone{}
+		for _, server := range upstream {
+			metrics.UpstreamZones[name][server.Server] = server
+			upstreamReqDim := "upstream_" + name + "_" + server.Server + "_req"
+			if !n.serverReqChart.HasDim(upstreamReqDim) {
+				n.serverReqChart.AddDim(createZoneReqDim(upstreamReqDim, server.Server))
+				n.serverReqChart.MarkNotCreated()
+			}
+			if !n.charts.Has("upstream_" + name + "_response_" + server.Server) {
+				n.charts.Add(createZoneCharts("upstream_"+name, server.Server)...)
+			}
 		}
 	}
 
-	return stm.ToMap(metrics)
+	return stm.ToMap(raw)
 }
