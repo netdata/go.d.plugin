@@ -109,6 +109,7 @@ func TestApache_Collect(t *testing.T) {
 		assign(connsAsyncWriting):   0,
 		assign(connsAsyncKeepAlive): 2,
 		assign(connsAsyncClosing):   0,
+		assign(uptime):              566,
 		"scoreboard_waiting":        49,
 		"scoreboard_starting":       0,
 		"scoreboard_reading":        0,

@@ -119,4 +119,14 @@ var charts = Charts{
 			{ID: "scoreboard_open", Name: "open"},
 		},
 	},
+	{
+		ID:    "uptime",
+		Title: "Uptime",
+		Units: "seconds",
+		Fam:   "uptime",
+		Ctx:   "lighttpd.uptime",
+		Dims: Dims{
+			{ID: "uptime"},
+		},
+	},
 }
