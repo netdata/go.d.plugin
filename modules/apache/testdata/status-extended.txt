@@ -1,6 +1,22 @@
+127.0.0.1
+ServerVersion: Apache/2.4.25 (Debian)
+ServerMPM: event
+Server Built: 2018-11-03T18:46:19
+CurrentTime: Sunday, 23-Dec-2018 14:57:34 EST
+RestartTime: Sunday, 23-Dec-2018 14:57:25 EST
+ParentServerConfigGeneration: 1
+ParentServerMPMGeneration: 0
+ServerUptimeSeconds: 9
+ServerUptime: 9 seconds
+Load1: 0.05
+Load5: 0.04
+Load15: 0.00
 Total Accesses: 575
 Total kBytes: 433
-CPULoad: .0477032
+CPUUser: 0
+CPUSystem: 0
+CPUChildrenUser: 0
+CPUChildrenSystem: 0
 Uptime: 566
 ReqPerSec: 1.0159
 BytesPerSec: 783.378
