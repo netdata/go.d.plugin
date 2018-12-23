@@ -138,7 +138,7 @@ func (l *Lighttpd2) parseResponse(resp *http.Response) error {
 	}
 
 	if parsed == 0 {
-		return fmt.Errorf("nothing parsed")
+		return fmt.Errorf("nothing has been parsed")
 	}
 
 	return nil

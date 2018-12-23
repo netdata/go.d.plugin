@@ -2,6 +2,7 @@ package lighttpd
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -130,11 +131,23 @@ func (l *Lighttpd) doRequest() (*http.Response, error) {
 
 func (l *Lighttpd) parseResponse(resp *http.Response) error {
 	s := bufio.NewScanner(resp.Body)
+	var parsed int
 
 	for s.Scan() {
+		line := s.Text()
+
+		if !strings.Contains(line, ":") || len(strings.Split(line, ":")) != 2 {
+			continue
+		}
+
 		if err := parseLine(s.Text(), l.metrics); err != nil {
 			return err
 		}
+		parsed++
+	}
+
+	if parsed == 0 {
+		return errors.New("nothing has been parsed")
 	}
 
 	return nil
@@ -142,10 +155,6 @@ func (l *Lighttpd) parseResponse(resp *http.Response) error {
 
 func parseLine(line string, metrics map[string]int64) error {
 	parts := strings.SplitN(line, ":", 2)
-
-	if len(parts) != 2 {
-		return fmt.Errorf("bad format : %s", line)
-	}
 
 	key := strings.TrimSpace(parts[0])
 	value := strings.TrimSpace(parts[1])
