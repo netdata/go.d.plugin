@@ -140,7 +140,7 @@ func (l *Lighttpd) parseResponse(resp *http.Response) error {
 			continue
 		}
 
-		if err := parseLine(s.Text(), l.metrics); err != nil {
+		if err := parseLine(line, l.metrics); err != nil {
 			return err
 		}
 		parsed++
