@@ -2,6 +2,7 @@ package apache
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -55,6 +56,20 @@ const (
 	connsAsyncClosing   = "ConnsAsyncClosing"
 	connsAsyncWriting   = "ConnsAsyncWriting"
 	scoreBoard          = "Scoreboard"
+
+	serverVersion                = "ServerVersion"
+	serverMPM                    = "ServerMPM"
+	parentServerConfigGeneration = "ParentServerConfigGeneration"
+	parentServerMPMGeneration    = "ParentServerMPMGeneration"
+	serverUptimeSeconds          = "ServerUptimeSeconds"
+	serverUptime                 = "ServerUptime"
+	load1                        = "Load1"
+	load5                        = "Load5"
+	load15                       = "Load15"
+	cpuUser                      = "CPUUser"
+	cpuSystem                    = "CPUSystem"
+	cpuChildrenUser              = "CPUChildrenUser"
+	cpuChildrenSystem            = "CPUChildrenSystem"
 )
 
 // Apache apache module
@@ -64,7 +79,7 @@ type Apache struct {
 	web.HTTP `yaml:",inline"`
 
 	request *http.Request
-	client  web.HTTPClient
+	client  *http.Client
 
 	extendedStats bool
 
@@ -119,11 +134,11 @@ func (a Apache) Charts() *modules.Charts {
 	charts := charts.Copy()
 
 	if !a.extendedStats {
-		charts.Remove("requests")
-		charts.Remove("net")
-		charts.Remove("reqpersec")
-		charts.Remove("bytespersec")
-		charts.Remove("bytesperreq")
+		_ = charts.Remove("requests")
+		_ = charts.Remove("net")
+		_ = charts.Remove("reqpersec")
+		_ = charts.Remove("bytespersec")
+		_ = charts.Remove("bytesperreq")
 	}
 
 	return charts
@@ -162,11 +177,24 @@ func (a *Apache) doRequest() (*http.Response, error) {
 
 func (a *Apache) parseResponse(resp *http.Response) error {
 	s := bufio.NewScanner(resp.Body)
+	var parsed int
 
 	for s.Scan() {
+		line := s.Text()
+
+		if !strings.Contains(line, ":") || len(strings.Split(line, ":")) != 2 {
+			continue
+		}
+
 		if err := parseLine(s.Text(), a.metrics); err != nil {
 			return err
 		}
+
+		parsed++
+	}
+
+	if parsed == 0 {
+		return errors.New("nothing has been parsed")
 	}
 
 	return nil
@@ -175,18 +203,15 @@ func (a *Apache) parseResponse(resp *http.Response) error {
 func parseLine(line string, metrics map[string]int64) error {
 	parts := strings.SplitN(line, ":", 2)
 
-	if len(parts) != 2 {
-		return fmt.Errorf("invalid format : %s", line)
-	}
-
 	key := strings.TrimSpace(parts[0])
 	value := strings.TrimSpace(parts[1])
 
 	switch key {
-	case cpuLoad, uptime:
+	case serverVersion, serverMPM, parentServerConfigGeneration, parentServerMPMGeneration, serverUptimeSeconds, serverUptime:
+	case load1, load5, load15, cpuLoad, cpuUser, cpuSystem, cpuChildrenUser, cpuChildrenSystem:
 	case totalAccesses, totalkBytes, busyWorkers, idleWorkers, connsTotal:
 		fallthrough
-	case connsAsyncWriting, connsAsyncKeepAlive, connsAsyncClosing:
+	case connsAsyncWriting, connsAsyncKeepAlive, connsAsyncClosing, uptime:
 		v, err := strconv.Atoi(value)
 		if err != nil {
 			return err
@@ -275,6 +300,7 @@ var assignment = map[string]string{
 	connsAsyncKeepAlive: "keepalive",
 	connsAsyncClosing:   "closing",
 	connsAsyncWriting:   "writing",
+	uptime:              "uptime",
 }
 
 func assign(key string) string {

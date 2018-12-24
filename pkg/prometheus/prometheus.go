@@ -22,7 +22,7 @@ type (
 	}
 
 	prometheus struct {
-		client  web.HTTPClient
+		client  *http.Client
 		request web.Request
 		metrics Metrics
 
@@ -39,7 +39,7 @@ const (
 )
 
 // New creates a Prometheus instance.
-func New(client web.HTTPClient, request web.Request) Prometheus {
+func New(client *http.Client, request web.Request) Prometheus {
 	return &prometheus{
 		client:  client,
 		request: request,

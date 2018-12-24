@@ -81,7 +81,7 @@ type HTTPCheck struct {
 	statuses map[int]bool
 
 	request *http.Request
-	client  web.HTTPClient
+	client  *http.Client
 
 	metrics metrics
 }
@@ -143,7 +143,7 @@ func (hc HTTPCheck) Charts() *Charts {
 	c := charts.Copy()
 
 	if len(hc.ResponseMatch) == 0 {
-		c.Remove("response_check_content")
+		_ = c.Remove("response_check_content")
 	}
 
 	return c

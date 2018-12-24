@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/base64"
 	"io"
 	"net/http"
 	"strings"
@@ -8,13 +9,15 @@ import (
 
 // Request is a struct that contains the fields that are needed to newHTTPClient *http.Request.
 type Request struct {
-	URI      string            `yaml:"-"`
-	URL      string            `yaml:"url" validate:"required,url"`
-	Body     string            `yaml:"body"`
-	Method   string            `yaml:"method" validate:"isdefault|oneof=GET POST HEAD PUT BATCH"`
-	Headers  map[string]string `yaml:"headers"`
-	Username string            `yaml:"username"`
-	Password string            `yaml:"password"`
+	URI           string            `yaml:"-"`
+	URL           string            `yaml:"url" validate:"required,url"`
+	Body          string            `yaml:"body"`
+	Method        string            `yaml:"method" validate:"isdefault|oneof=GET POST HEAD PUT BATCH"`
+	Headers       map[string]string `yaml:"headers"`
+	Username      string            `yaml:"username"`
+	Password      string            `yaml:"password"`
+	ProxyUsername string            `yaml:"proxy_username"`
+	ProxyPassword string            `yaml:"proxy_password"`
 }
 
 // NewHTTPRequest creates a new *http.Requests based Request fields
@@ -33,6 +36,12 @@ func NewHTTPRequest(req Request) (*http.Request, error) {
 
 	if req.Username != "" && req.Password != "" {
 		httpReq.SetBasicAuth(req.Username, req.Password)
+	}
+
+	if req.ProxyUsername != "" && req.ProxyPassword != "" {
+		httpReq.Header.Set(
+			"Proxy-Authorization",
+			"Basic "+base64.StdEncoding.EncodeToString([]byte(req.ProxyUsername+":"+req.ProxyPassword)))
 	}
 
 	for k, v := range req.Headers {
