@@ -32,7 +32,6 @@ func New() *DNSQuery {
 
 		task:             make(chan task),
 		taskDone:         make(chan struct{}),
-		shutdown:         make(chan struct{}),
 		exchangerFactory: newExchanger,
 		servers:          make([]*server, 0),
 		workers:          make([]*worker, 0),
@@ -73,7 +72,6 @@ type DNSQuery struct {
 
 	task     chan task
 	taskDone chan struct{}
-	shutdown chan struct{}
 
 	exchangerFactory func(network string, duration time.Duration) exchanger
 
@@ -87,7 +85,7 @@ func (d *DNSQuery) Cleanup() {
 	if len(d.workers) == 0 {
 		return
 	}
-	close(d.shutdown)
+	close(d.task)
 	d.workers = make([]*worker, 0)
 }
 
@@ -126,7 +124,7 @@ func (d *DNSQuery) Init() bool {
 	for _, srv := range d.Servers {
 		d.servers = append(d.servers, &server{id: serverNameReplacer.Replace(srv), name: srv, port: d.Port})
 		// newWorker spawns worker goroutine
-		d.workers = append(d.workers, newWorker(exch, d.task, d.taskDone, d.shutdown))
+		d.workers = append(d.workers, newWorker(exch, d.task, d.taskDone))
 	}
 
 	return true
