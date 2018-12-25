@@ -12,12 +12,12 @@ It produces one chart:
 ### configuration
 
 Module specific options:
- * domains     - list of domains.
- * servers     - list of servers.
- * port        - server port. Default is 53.
- * network     - network transport. Default is upd. Supported options: udp, tcp, tcp-tls.
- * record_type - query record type. Default is A. Supported options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV.
- * timeout     - query read timeout. Default is 2 seconds.
+ * `domains`     - list of domains.
+ * `servers`     - list of servers.
+ * `port`        - server port. Default is 53.
+ * `network`     - network transport. Default is upd. Supported options: udp, tcp, tcp-tls.
+ * `record_type` - query record type. Default is A. Supported options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV.
+ * `timeout`     - query read timeout. Default is 2 seconds.
 
 Mandatory options: `domains` and `servers`. All other are optional.
 
