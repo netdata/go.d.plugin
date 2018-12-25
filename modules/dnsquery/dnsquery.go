@@ -97,8 +97,8 @@ func (d *DNSQuery) setup() error {
 		return errors.New("no servers specified")
 	}
 
-	if !(d.Network == "" || d.Network == "tcp" || d.Network == "udp") {
-		return fmt.Errorf("wrong network : %s", d.Network)
+	if !(d.Network == "" || d.Network == "udp" || d.Network == "tcp" || d.Network == "tcp-tls") {
+		return fmt.Errorf("wrong network transport : %s", d.Network)
 	}
 
 	rtype, err := parseRecordType(d.RecordType)

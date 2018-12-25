@@ -12,7 +12,7 @@ type (
 var charts = Charts{
 	{
 		ID:    "query_time",
-		Title: "DNS Response Time",
+		Title: "DNS Query Time",
 		Units: "ms",
 		Fam:   "query time",
 		Ctx:   "dns_query_time.query_time",

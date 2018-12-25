@@ -106,5 +106,5 @@ func (m okMockExchanger) Exchange(msg *dns.Msg, address string) (response *dns.M
 type errMockExchanger struct{}
 
 func (m errMockExchanger) Exchange(msg *dns.Msg, address string) (response *dns.Msg, rtt time.Duration, err error) {
-	return nil, time.Second, errors.New("error")
+	return nil, time.Second, errors.New("mock error")
 }
