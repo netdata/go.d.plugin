@@ -15,7 +15,7 @@ type task struct {
 
 func newWorker(exchanger exchanger, task chan task, taskDone chan struct{}) *worker {
 	return &worker{
-		shutdown:  make(chan struct{}),
+		shutdown:  make(chan struct{}, 1),
 		task:      task,
 		taskDone:  taskDone,
 		exchanger: exchanger,
@@ -27,15 +27,17 @@ type worker struct {
 	task     chan task
 	taskDone chan struct{}
 
+	alive     bool
 	exchanger exchanger
 }
 
 func (w *worker) workLoop() {
+	w.alive = true
 LOOP:
 	for {
 		select {
 		case <-w.shutdown:
-			w.shutdown <- struct{}{}
+			w.alive = false
 			break LOOP
 		case task := <-w.task:
 			w.doWork(task)
@@ -45,7 +47,6 @@ LOOP:
 
 func (w *worker) stop() {
 	w.shutdown <- struct{}{}
-	<-w.shutdown
 }
 
 func (w *worker) doWork(t task) {

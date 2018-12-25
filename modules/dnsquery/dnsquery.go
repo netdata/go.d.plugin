@@ -121,7 +121,10 @@ func (d *DNSQuery) Init() bool {
 	exch := d.exchangerFactory(d.Network, d.Timeout.Duration)
 
 	for _, srv := range d.Servers {
-		d.servers = append(d.servers, &server{id: serverNameReplacer.Replace(srv), name: srv, port: d.Port})
+		d.servers = append(
+			d.servers,
+			&server{id: serverNameReplacer.Replace(srv), name: srv, port: d.Port},
+		)
 
 		worker := newWorker(exch, d.task, d.taskDone)
 		d.workers = append(d.workers, worker)

@@ -21,12 +21,13 @@ func TestDNSQuery_Init(t *testing.T) {
 
 	// NG case
 	assert.False(t, mod.Init())
+
 	// OK case
 	mod.Domains = []string{"google.com"}
-	mod.Servers = []string{"8.8.8.8"}
+	mod.Servers = []string{"8.8.8.8", "8.8.4.4"}
 	require.True(t, mod.Init())
-	assert.NotZero(t, mod.servers)
-	assert.NotZero(t, mod.workers)
+	assert.Len(t, mod.servers, len(mod.Servers))
+	assert.Len(t, mod.workers, len(mod.Servers))
 }
 
 func TestDNSQuery_Check(t *testing.T) {
@@ -51,10 +52,21 @@ func TestDNSQuery_Cleanup(t *testing.T) {
 	mod.Domains = []string{"google.com"}
 	mod.Servers = []string{"8.8.8.8"}
 	require.True(t, mod.Init())
-	assert.NotZero(t, mod.servers)
-	assert.NotZero(t, mod.workers)
+	workers := mod.workers
+
+	time.Sleep(time.Second)
+	for _, w := range workers {
+		assert.True(t, w.alive)
+	}
+	require.Len(t, mod.servers, len(mod.Servers))
+	require.Len(t, mod.workers, len(mod.Servers))
+
 	mod.Cleanup()
+	time.Sleep(time.Second)
 	assert.Len(t, mod.workers, 0)
+	for _, w := range workers {
+		assert.False(t, w.alive)
+	}
 }
 
 func TestDNSQuery_Collect(t *testing.T) {
