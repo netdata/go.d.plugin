@@ -7,45 +7,30 @@ import (
 )
 
 type worker struct {
-	alive    bool
-	stopHook chan struct{}
+	task     chan *port
+	taskDone chan struct{}
 
-	doCh        chan *port
-	doneCh      chan struct{}
 	host        string
 	dialTimeout time.Duration
 }
 
-func newWorker(host string, dialTimeout time.Duration, doCh chan *port, doneCh chan struct{}) *worker {
+func newWorker(host string, dialTimeout time.Duration, task chan *port, taskDone chan struct{}) *worker {
 	w := &worker{
-		stopHook:    make(chan struct{}),
-		doCh:        doCh,
-		doneCh:      doneCh,
+		task:        task,
+		taskDone:    taskDone,
 		host:        host,
 		dialTimeout: dialTimeout,
-		alive:       true,
 	}
 
-	go func() {
-	LOOP:
-		for {
-			select {
-			case <-w.stopHook:
-				w.alive = false
-				w.stopHook <- struct{}{}
-				break LOOP
-			case p := <-w.doCh:
-				w.doWork(p)
-			}
-		}
-	}()
+	go w.workLoop()
 
 	return w
 }
 
-func (w *worker) stop() {
-	w.stopHook <- struct{}{}
-	<-w.stopHook
+func (w *worker) workLoop() {
+	for task := range w.task {
+		w.doWork(task)
+	}
 }
 
 func (w *worker) doWork(port *port) {
@@ -68,5 +53,5 @@ func (w *worker) doWork(port *port) {
 		}
 	}
 
-	w.doneCh <- struct{}{}
+	w.taskDone <- struct{}{}
 }

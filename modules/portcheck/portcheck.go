@@ -27,10 +27,10 @@ func New() *PortCheck {
 	return &PortCheck{
 		Timeout: web.Duration{Duration: defHTTPTimeout},
 
-		doCh:    make(chan *port),
-		doneCh:  make(chan struct{}),
-		ports:   make([]*port, 0),
-		metrics: make(map[string]int64),
+		task:     make(chan *port),
+		taskDone: make(chan struct{}),
+		ports:    make([]*port, 0),
+		metrics:  make(map[string]int64),
 	}
 
 }
@@ -90,8 +90,8 @@ type PortCheck struct {
 	Timeout     web.Duration `yaml:"timeout"`
 	UpdateEvery int          `yaml:"update_every"`
 
-	doCh   chan *port
-	doneCh chan struct{}
+	task     chan *port
+	taskDone chan struct{}
 
 	ports   []*port
 	workers []*worker
@@ -101,9 +101,11 @@ type PortCheck struct {
 
 // Cleanup makes cleanup
 func (tc *PortCheck) Cleanup() {
-	for _, w := range tc.workers {
-		w.stop()
+	if len(tc.workers) == 0 {
+		return
 	}
+	close(tc.task)
+	tc.workers = make([]*worker, 0)
 }
 
 // Init makes initialization
@@ -112,7 +114,7 @@ func (tc *PortCheck) Init() bool {
 
 	for _, p := range tc.Ports {
 		tc.ports = append(tc.ports, newPort(p, tc.UpdateEvery))
-		tc.workers = append(tc.workers, newWorker(tc.Host, tc.Timeout.Duration, tc.doCh, tc.doneCh))
+		tc.workers = append(tc.workers, newWorker(tc.Host, tc.Timeout.Duration, tc.task, tc.taskDone))
 	}
 
 	tc.Debugf("using host %s", tc.Host)
@@ -132,7 +134,7 @@ func (tc PortCheck) Charts() *Charts {
 	var charts modules.Charts
 
 	for _, p := range tc.Ports {
-		charts.Add(chartsTemplate(p)...)
+		_ = charts.Add(chartsTemplate(p)...)
 	}
 
 	return &charts
@@ -141,11 +143,11 @@ func (tc PortCheck) Charts() *Charts {
 // Collect collects metrics
 func (tc *PortCheck) Collect() map[string]int64 {
 	for _, p := range tc.ports {
-		tc.doCh <- p
+		tc.task <- p
 	}
 
 	for i := 0; i < len(tc.ports); i++ {
-		<-tc.doneCh
+		<-tc.taskDone
 	}
 
 	for _, p := range tc.ports {
