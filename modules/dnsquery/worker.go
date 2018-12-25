@@ -13,13 +13,17 @@ type task struct {
 	rtype  uint16
 }
 
-func newWorker(exchanger exchanger, task chan task, taskDone chan struct{}) *worker {
-	return &worker{
-		shutdown:  make(chan struct{}, 1),
+func newWorker(exchanger exchanger, task chan task, taskDone, shutdown chan struct{}) *worker {
+	w := &worker{
 		task:      task,
 		taskDone:  taskDone,
+		shutdown:  shutdown,
 		exchanger: exchanger,
 	}
+
+	go w.workLoop()
+
+	return w
 }
 
 type worker struct {
@@ -27,26 +31,19 @@ type worker struct {
 	task     chan task
 	taskDone chan struct{}
 
-	alive     bool
 	exchanger exchanger
 }
 
 func (w *worker) workLoop() {
-	w.alive = true
 LOOP:
 	for {
 		select {
 		case <-w.shutdown:
-			w.alive = false
 			break LOOP
 		case task := <-w.task:
 			w.doWork(task)
 		}
 	}
-}
-
-func (w *worker) stop() {
-	w.shutdown <- struct{}{}
 }
 
 func (w *worker) doWork(t task) {
