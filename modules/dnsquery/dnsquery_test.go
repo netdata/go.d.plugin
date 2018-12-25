@@ -66,8 +66,8 @@ func TestDNSQuery_Cleanup(t *testing.T) {
 
 	select {
 	case <-wait.C:
-		t.Error("cleanup failed, shutdown channel is not closed")
-	case <-mod.shutdown:
+		t.Error("cleanup failed, task channel is not closed")
+	case <-mod.task:
 	}
 }
 
