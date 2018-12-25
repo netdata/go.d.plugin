@@ -3,6 +3,7 @@ package portcheck
 import (
 	"net"
 	"testing"
+	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
 
@@ -22,13 +23,8 @@ func TestPortCheck_Init(t *testing.T) {
 	mod.Ports = []int{38001, 38002}
 
 	require.True(t, mod.Init())
-
 	assert.Len(t, mod.ports, 2)
 	assert.Len(t, mod.workers, 2)
-
-	for _, w := range mod.workers {
-		assert.True(t, w.alive)
-	}
 }
 
 func TestPortCheck_Check(t *testing.T) {
@@ -45,9 +41,15 @@ func TestPortCheck_Cleanup(t *testing.T) {
 
 	assert.True(t, mod.Init())
 	mod.Cleanup()
+	assert.Len(t, mod.workers, 0)
 
-	for _, w := range mod.workers {
-		assert.False(t, w.alive)
+	wait := time.NewTimer(time.Second)
+	defer wait.Stop()
+
+	select {
+	case <-wait.C:
+		t.Error("cleanup failed, task channel is not closed")
+	case <-mod.task:
 	}
 
 }
