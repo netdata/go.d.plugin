@@ -57,7 +57,7 @@ var charts = Charts{
 			{ID: "proxy-auth-duplicate-requests", Name: "duplicate", Algo: modules.Incremental},
 			{ID: "proxy-auth-invalid-requests", Name: "invalid", Algo: modules.Incremental},
 			{ID: "proxy-auth-malformed-requests", Name: "malformed", Algo: modules.Incremental},
-			{ID: "proxy-auth-unknown-types", Name: "unknown-type", Algo: modules.Incremental},
+			{ID: "proxy-auth-unknown-types", Name: "unknown-types", Algo: modules.Incremental},
 		},
 	},
 	{
