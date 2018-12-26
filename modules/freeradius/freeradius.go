@@ -1,7 +1,12 @@
 package freeradius
 
 import (
+	"context"
+	"time"
+
 	"github.com/netdata/go.d.plugin/modules"
+
+	"layeh.com/radius"
 )
 
 func init() {
@@ -12,14 +17,33 @@ func init() {
 	modules.Register("freeradius", creator)
 }
 
-// New creates Example with default values
+// New creates Freeradius with default values
 func New() *Freeradius {
-	return &Freeradius{}
+	return &Freeradius{
+		Address: "127.0.0.1",
+		Port:    18121,
+		Secret:  "adminsecret",
+
+		exchanger: &radius.Client{
+			Retry:           time.Second,
+			MaxPacketErrors: 10,
+		},
+	}
+}
+
+type exchanger interface {
+	Exchange(ctx context.Context, packet *radius.Packet, address string) (*radius.Packet, error)
 }
 
 // Freeradius freeradius module
 type Freeradius struct {
 	modules.Base
+
+	Address string
+	Port    int
+	Secret  string
+
+	exchanger exchanger
 }
 
 // Cleanup makes cleanup
