@@ -12,14 +12,14 @@ type (
 	histVal   struct {
 		id    string
 		name  string
-		value int
+		value int64
 		count int
 	}
 )
 
 func (h histogram) set(v int) {
 	for i := len(h) - 1; i > -1; i-- {
-		if v <= h[i].value {
+		if int64(v) <= h[i].value {
 			h[i].count++
 			continue
 		}
@@ -41,7 +41,7 @@ func newHistogram(prefix string, r []int) (histogram, error) {
 		}
 
 		n := strconv.Itoa(v)
-		v := &histVal{id: prefix + "_" + n, name: n, value: v * 1000}
+		v := &histVal{id: prefix + "_" + n, name: n, value: int64(v * 1000)}
 		h = append(h, v)
 	}
 
