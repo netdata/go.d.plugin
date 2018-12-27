@@ -49,9 +49,9 @@ var charts = Charts{
 	},
 	{
 		ID:    "proxy_authentication",
-		Title: "Proxy Authentication",
+		Title: "Authentication",
 		Units: "packets/s",
-		Fam:   "authentication",
+		Fam:   "proxy authentication",
 		Ctx:   "freeradius.authentication",
 		Dims: Dims{
 			{ID: "proxy-access-requests", Name: "requests", Algo: modules.Incremental},
@@ -60,9 +60,9 @@ var charts = Charts{
 	},
 	{
 		ID:    "proxy_authentication_responses",
-		Title: "Proxy Authentication Responses",
+		Title: "Authentication Responses",
 		Units: "packets/s",
-		Fam:   "authentication",
+		Fam:   "proxy authentication",
 		Ctx:   "freeradius.authentication",
 		Dims: Dims{
 			{ID: "proxy-access-accepts", Name: "accepts", Algo: modules.Incremental},
@@ -72,9 +72,9 @@ var charts = Charts{
 	},
 	{
 		ID:    "bad_proxy_authentication_requests",
-		Title: "Bad Proxy Authentication Requests",
+		Title: "Bad Authentication Requests",
 		Units: "packets/s",
-		Fam:   "authentication",
+		Fam:   "proxy authentication",
 		Ctx:   "freeradius.bad_authentication",
 		Dims: Dims{
 			{ID: "proxy-auth-dropped-requests", Name: "dropped", Algo: modules.Incremental},
@@ -111,9 +111,9 @@ var charts = Charts{
 	},
 	{
 		ID:    "proxy_accounting",
-		Title: "Proxy Accounting",
+		Title: "Accounting",
 		Units: "packets/s",
-		Fam:   "accounting",
+		Fam:   "proxy accounting",
 		Ctx:   "freeradius.accounting",
 		Dims: Dims{
 			{ID: "proxy-accounting-requests", Name: "requests", Algo: modules.Incremental},
@@ -122,9 +122,9 @@ var charts = Charts{
 	},
 	{
 		ID:    "bad_proxy_accounting_requests",
-		Title: "Bad Proxy Accounting Requests",
+		Title: "Bad Accounting Requests",
 		Units: "packets/s",
-		Fam:   "accounting",
+		Fam:   "proxy accounting",
 		Ctx:   "freeradius.bad_accounting",
 		Dims: Dims{
 			{ID: "proxy-acct-dropped-requests", Name: "dropped", Algo: modules.Incremental},
