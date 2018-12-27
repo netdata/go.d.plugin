@@ -95,6 +95,8 @@ type mockOKRadiusServer struct{}
 
 func (m mockOKRadiusServer) Exchange(ctx context.Context, packet *radius.Packet, address string) (*radius.Packet, error) {
 	resp := radius.New(radius.CodeAccessAccept, []byte(defSecret))
+	resp.Code = radius.CodeAccessAccept
+
 	_ = FreeRADIUSTotalAccessRequests_Add(resp, 10)
 	_ = FreeRADIUSTotalAccessAccepts_Add(resp, 10)
 	_ = FreeRADIUSTotalAccessRequests_Add(resp, 10)

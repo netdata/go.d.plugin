@@ -103,7 +103,12 @@ func (f *Freeradius) Collect() map[string]int64 {
 	resp, err := f.exchanger.Exchange(ctx, packet, net.JoinHostPort(f.Address, strconv.Itoa(f.Port)))
 
 	if err != nil {
-		f.Errorf("error on StatusServer request to %s : %s", net.JoinHostPort(f.Address, strconv.Itoa(f.Port)), err)
+		f.Errorf("error on request to %s : %s", net.JoinHostPort(f.Address, strconv.Itoa(f.Port)), err)
+		return nil
+	}
+
+	if resp.Code != radius.CodeAccessAccept {
+		f.Errorf("%s returned response code %d", net.JoinHostPort(f.Address, strconv.Itoa(f.Port)), resp.Code)
 		return nil
 	}
 
@@ -150,11 +155,9 @@ func decodeServerResponse(resp *radius.Packet) map[string]int64 {
 }
 
 func newStatusServerPacket(secret string) (*radius.Packet, error) {
+	// https://wiki.freeradius.org/config/Status#status-of-freeradius-server
 	packet := radius.New(radius.CodeStatusServer, []byte(secret))
 
-	if err := PacketType_Set(packet, PacketType_Value_AccessAccept); err != nil {
-		return nil, err
-	}
 	if err := FreeRADIUSStatisticsType_Set(packet, FreeRADIUSStatisticsType_Value_All); err != nil {
 		return nil, err
 	}
