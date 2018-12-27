@@ -11,14 +11,26 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "authentication_access",
-		Title: "Authentication Access",
+		ID:    "authentication",
+		Title: "Authentication",
+		Units: "packets/s",
+		Fam:   "authentication",
+		Ctx:   "freeradius.authentication",
+		Dims: Dims{
+			{ID: "access-requests", Name: "requests", Algo: modules.Incremental},
+			{ID: "auth-responses", Name: "responses", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "authentication_responses",
+		Title: "Authentication Responses",
 		Units: "packets/s",
 		Fam:   "authentication",
 		Ctx:   "freeradius.authentication",
 		Dims: Dims{
 			{ID: "access-accepts", Name: "accepts", Algo: modules.Incremental},
 			{ID: "access-rejects", Name: "rejects", Algo: modules.Incremental},
+			{ID: "access-challenges", Name: "challenges", Algo: modules.Incremental},
 		},
 	},
 	{
@@ -32,18 +44,30 @@ var charts = Charts{
 			{ID: "auth-duplicate-requests", Name: "duplicate", Algo: modules.Incremental},
 			{ID: "auth-invalid-requests", Name: "invalid", Algo: modules.Incremental},
 			{ID: "auth-malformed-requests", Name: "malformed", Algo: modules.Incremental},
-			{ID: "auth-unknown-types", Name: "unknown-type", Algo: modules.Incremental},
+			{ID: "auth-unknown-types", Name: "unknown-types", Algo: modules.Incremental},
 		},
 	},
 	{
-		ID:    "proxy_authentication_access",
-		Title: "Proxy Authentication Access",
+		ID:    "proxy_authentication",
+		Title: "Proxy Authentication",
+		Units: "packets/s",
+		Fam:   "authentication",
+		Ctx:   "freeradius.authentication",
+		Dims: Dims{
+			{ID: "proxy-access-requests", Name: "requests", Algo: modules.Incremental},
+			{ID: "proxy-auth-responses", Name: "responses", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "proxy_authentication_responses",
+		Title: "Proxy Authentication Responses",
 		Units: "packets/s",
 		Fam:   "authentication",
 		Ctx:   "freeradius.authentication",
 		Dims: Dims{
 			{ID: "proxy-access-accepts", Name: "accepts", Algo: modules.Incremental},
 			{ID: "proxy-access-rejects", Name: "rejects", Algo: modules.Incremental},
+			{ID: "proxy-access-challenges", Name: "challenges", Algo: modules.Incremental},
 		},
 	},
 	{
