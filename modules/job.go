@@ -205,6 +205,7 @@ func (j *Job) runOnce() {
 
 	if j.processMetrics(metrics, curTime, sinceLastRun) {
 		j.prevRun = curTime
+		j.retries = 0
 	} else {
 		j.retries++
 	}
