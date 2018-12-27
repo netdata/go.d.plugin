@@ -24,3 +24,6 @@ comment:
   layout: "header"
   behavior: default
   require_changes: yes
+
+ignore:
+  - "modules/freeradius/dictionary.go"
