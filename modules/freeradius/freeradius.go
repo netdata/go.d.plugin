@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/hmac"
 	"crypto/md5"
+	"net"
+	"strconv"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
@@ -77,8 +79,8 @@ func (f *Freeradius) Init() bool {
 }
 
 // Check makes check
-func (Freeradius) Check() bool {
-	return false
+func (f Freeradius) Check() bool {
+	return len(f.Collect()) > 0
 }
 
 // Charts creates Charts
@@ -87,8 +89,37 @@ func (Freeradius) Charts() *Charts {
 }
 
 // Collect collects metrics
-func (Freeradius) Collect() map[string]int64 {
-	return nil
+func (f *Freeradius) Collect() map[string]int64 {
+	packet, err := newStatusServerPacket(f.Secret)
+
+	if err != nil {
+		f.Errorf("error on creating StatusServer packet : %s", err)
+		return nil
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), f.Timeout.Duration)
+	defer cancel()
+
+	resp, err := f.exchanger.Exchange(ctx, packet, net.JoinHostPort(f.Address, strconv.Itoa(f.Port)))
+
+	if err != nil {
+		f.Errorf("error on StatusServer request to %s : %s", net.JoinHostPort(f.Address, strconv.Itoa(f.Port)), err)
+		return nil
+	}
+
+	metrics, err := decodeServerResponse(resp)
+
+	if err != nil {
+		f.Errorf("error on decoding response from %s : %s", net.JoinHostPort(f.Address, strconv.Itoa(f.Port)), err)
+		return nil
+	}
+
+	return metrics
+}
+
+func decodeServerResponse(resp *radius.Packet) (map[string]int64, error) {
+	return nil, nil
+
 }
 
 func newStatusServerPacket(secret string) (*radius.Packet, error) {
