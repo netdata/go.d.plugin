@@ -40,11 +40,11 @@ type requestTimes struct {
 	P999MS        int64 `json:"p999_ms"`
 }
 
-type metrics struct {
+type coresMetrics struct {
 	Metrics map[string]map[string]json.RawMessage
 }
 
-type V6Parser struct {
+type v6Parser struct {
 	count        count
 	value        value
 	common       common
@@ -53,8 +53,8 @@ type V6Parser struct {
 	parsed map[string]int64
 }
 
-func (v *V6Parser) parse(resp *http.Response) (map[string]int64, error) {
-	var m metrics
+func (v *v6Parser) parse(resp *http.Response) (map[string]int64, error) {
+	var m coresMetrics
 
 	if err := json.NewDecoder(resp.Body).Decode(&m); err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func (v *V6Parser) parse(resp *http.Response) (map[string]int64, error) {
 	return v.parsed, nil
 }
 
-func (v *V6Parser) parseCore(core string, data map[string]json.RawMessage) error {
+func (v *v6Parser) parseCore(core string, data map[string]json.RawMessage) error {
 	for metric, stats := range data {
 		parts := strings.Split(metric, ".")
 

@@ -88,7 +88,7 @@ func (s *Solr) Init() bool {
 
 	s.client = web.NewHTTPClient(s.Client)
 
-	s.parser = &V6Parser{parsed: make(map[string]int64)}
+	s.parser = &v6Parser{parsed: make(map[string]int64)}
 
 	return true
 }
@@ -104,7 +104,7 @@ func (Solr) Charts() *Charts {
 	return nil
 }
 
-// Collect collects metrics
+// Collect collects coresMetrics
 func (s *Solr) Collect() map[string]int64 {
 	resp, err := s.doRequest(s.reqCoreHandlers)
 
