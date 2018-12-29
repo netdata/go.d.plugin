@@ -29,7 +29,15 @@ var charts = []*Chart{
 		Units: "errors/s",
 		Ctx:   "solr.search_errors",
 		Dims: Dims{
-			{ID: "query_errors_count", Name: "handler", Algo: modules.Incremental},
+			{ID: "query_errors_count", Name: "errors", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "search_errors_by_type",
+		Title: "Search Errors By Types",
+		Units: "errors/s",
+		Ctx:   "solr.search_errors_by_type",
+		Dims: Dims{
 			{ID: "query_clientErrors_count", Name: "client", Algo: modules.Incremental},
 			{ID: "query_serverErrors_count", Name: "server", Algo: modules.Incremental},
 			{ID: "query_timeouts_count", Name: "timeouts", Algo: modules.Incremental},
