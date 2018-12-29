@@ -16,28 +16,28 @@ type value struct {
 }
 
 type common struct {
-	Count         int64
-	MeanRate      int64
-	MeanRate1min  int64 `json:"1minRate"`
-	MeanRate5min  int64 `json:"5minRate"`
-	MeanRate15min int64 `json:"15minRate"`
+	Count        int64
+	MeanRate     int64 `json:"meanRate"`
+	MinRate1min  int64 `json:"1minRate"`
+	MinRate5min  int64 `json:"5minRate"`
+	MinRate15min int64 `json:"15minRate"`
 }
 
 type requestTimes struct {
-	Count         int64
-	MeanRate      int64
-	MeanRate1min  int64 `json:"1minRate"`
-	MeanRate5min  int64 `json:"5minRate"`
-	MeanRate15min int64 `json:"15minRate"`
-	MinMS         int64 `json:"min_ms"`
-	MaxMS         int64 `json:"max_ms"`
-	MeanMS        int64 `json:"mean_ms"`
-	MedianMS      int64 `json:"median_ms"`
-	StdDevMS      int64 `json:"stddev_ms"`
-	P75MS         int64 `json:"p75_ms"`
-	P95MS         int64 `json:"p95_ms"`
-	P99MS         int64 `json:"p99_ms"`
-	P999MS        int64 `json:"p999_ms"`
+	Count        int64
+	MeanRate     int64 `json:"meanRate"`
+	MinRate1min  int64 `json:"1minRate"`
+	MinRate5min  int64 `json:"5minRate"`
+	MinRate15min int64 `json:"15minRate"`
+	MinMS        int64 `json:"min_ms"`
+	MaxMS        int64 `json:"max_ms"`
+	MeanMS       int64 `json:"mean_ms"`
+	MedianMS     int64 `json:"median_ms"`
+	StdDevMS     int64 `json:"stddev_ms"`
+	P75MS        int64 `json:"p75_ms"`
+	P95MS        int64 `json:"p95_ms"`
+	P99MS        int64 `json:"p99_ms"`
+	P999MS       int64 `json:"p999_ms"`
 }
 
 type coresMetrics struct {
