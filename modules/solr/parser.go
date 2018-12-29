@@ -17,27 +17,27 @@ type value struct {
 
 type common struct {
 	Count        int64
-	MeanRate     int64 `json:"meanRate"`
-	MinRate1min  int64 `json:"1minRate"`
-	MinRate5min  int64 `json:"5minRate"`
-	MinRate15min int64 `json:"15minRate"`
+	MeanRate     float64 `json:"meanRate"`
+	MinRate1min  float64 `json:"1minRate"`
+	MinRate5min  float64 `json:"5minRate"`
+	MinRate15min float64 `json:"15minRate"`
 }
 
 type requestTimes struct {
 	Count        int64
-	MeanRate     int64 `json:"meanRate"`
-	MinRate1min  int64 `json:"1minRate"`
-	MinRate5min  int64 `json:"5minRate"`
-	MinRate15min int64 `json:"15minRate"`
-	MinMS        int64 `json:"min_ms"`
-	MaxMS        int64 `json:"max_ms"`
-	MeanMS       int64 `json:"mean_ms"`
-	MedianMS     int64 `json:"median_ms"`
-	StdDevMS     int64 `json:"stddev_ms"`
-	P75MS        int64 `json:"p75_ms"`
-	P95MS        int64 `json:"p95_ms"`
-	P99MS        int64 `json:"p99_ms"`
-	P999MS       int64 `json:"p999_ms"`
+	MeanRate     float64 `json:"meanRate"`
+	MinRate1min  float64 `json:"1minRate"`
+	MinRate5min  float64 `json:"5minRate"`
+	MinRate15min float64 `json:"15minRate"`
+	MinMS        float64 `json:"min_ms"`
+	MaxMS        float64 `json:"max_ms"`
+	MeanMS       float64 `json:"mean_ms"`
+	MedianMS     float64 `json:"median_ms"`
+	StdDevMS     float64 `json:"stddev_ms"`
+	P75MS        float64 `json:"p75_ms"`
+	P95MS        float64 `json:"p95_ms"`
+	P99MS        float64 `json:"p99_ms"`
+	P999MS       float64 `json:"p999_ms"`
 }
 
 type coresMetrics struct {
@@ -110,12 +110,12 @@ func (v *v6Parser) parseCore(core string, data map[string]json.RawMessage) error
 				return err
 			}
 			v.parsed[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += v.requestTimes.Count
-			v.parsed[fmt.Sprintf("%s_%s_%s_mean_ms", core, typ, stat)] += v.requestTimes.MeanMS
-			v.parsed[fmt.Sprintf("%s_%s_%s_median_ms", core, typ, stat)] += v.requestTimes.MedianMS
-			v.parsed[fmt.Sprintf("%s_%s_%s_p75_ms", core, typ, stat)] += v.requestTimes.P75MS
-			v.parsed[fmt.Sprintf("%s_%s_%s_p95_ms", core, typ, stat)] += v.requestTimes.P95MS
-			v.parsed[fmt.Sprintf("%s_%s_%s_p99_ms", core, typ, stat)] += v.requestTimes.P99MS
-			v.parsed[fmt.Sprintf("%s_%s_%s_p999_ms", core, typ, stat)] += v.requestTimes.P999MS
+			v.parsed[fmt.Sprintf("%s_%s_%s_mean_ms", core, typ, stat)] += int64(v.requestTimes.MeanMS * 1e6)
+			v.parsed[fmt.Sprintf("%s_%s_%s_median_ms", core, typ, stat)] += int64(v.requestTimes.MedianMS * 1e6)
+			v.parsed[fmt.Sprintf("%s_%s_%s_p75_ms", core, typ, stat)] += int64(v.requestTimes.P75MS * 1e6)
+			v.parsed[fmt.Sprintf("%s_%s_%s_p95_ms", core, typ, stat)] += int64(v.requestTimes.P95MS * 1e6)
+			v.parsed[fmt.Sprintf("%s_%s_%s_p99_ms", core, typ, stat)] += int64(v.requestTimes.P99MS * 1e6)
+			v.parsed[fmt.Sprintf("%s_%s_%s_p999_ms", core, typ, stat)] += int64(v.requestTimes.P999MS * 1e6)
 		}
 	}
 
@@ -187,12 +187,12 @@ func (v *v7Parser) parseCore(core string, data map[string]json.RawMessage) error
 				return err
 			}
 			v.parsed[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += v.requestTimes.Count
-			v.parsed[fmt.Sprintf("%s_%s_%s_mean_ms", core, typ, stat)] += v.requestTimes.MeanMS
-			v.parsed[fmt.Sprintf("%s_%s_%s_median_ms", core, typ, stat)] += v.requestTimes.MedianMS
-			v.parsed[fmt.Sprintf("%s_%s_%s_p75_ms", core, typ, stat)] += v.requestTimes.P75MS
-			v.parsed[fmt.Sprintf("%s_%s_%s_p95_ms", core, typ, stat)] += v.requestTimes.P95MS
-			v.parsed[fmt.Sprintf("%s_%s_%s_p99_ms", core, typ, stat)] += v.requestTimes.P99MS
-			v.parsed[fmt.Sprintf("%s_%s_%s_p999_ms", core, typ, stat)] += v.requestTimes.P999MS
+			v.parsed[fmt.Sprintf("%s_%s_%s_mean_ms", core, typ, stat)] += int64(v.requestTimes.MeanMS * 1e6)
+			v.parsed[fmt.Sprintf("%s_%s_%s_median_ms", core, typ, stat)] += int64(v.requestTimes.MedianMS * 1e6)
+			v.parsed[fmt.Sprintf("%s_%s_%s_p75_ms", core, typ, stat)] += int64(v.requestTimes.P75MS * 1e6)
+			v.parsed[fmt.Sprintf("%s_%s_%s_p95_ms", core, typ, stat)] += int64(v.requestTimes.P95MS * 1e6)
+			v.parsed[fmt.Sprintf("%s_%s_%s_p99_ms", core, typ, stat)] += int64(v.requestTimes.P99MS * 1e6)
+			v.parsed[fmt.Sprintf("%s_%s_%s_p999_ms", core, typ, stat)] += int64(v.requestTimes.P999MS * 1e6)
 		}
 	}
 
