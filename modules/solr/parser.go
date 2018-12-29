@@ -96,14 +96,13 @@ func (p *parser) parseCore(core string, data map[string]json.RawMessage, parsed 
 			}
 			parsed[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += p.common.Count
 		case "requests", "totalTime":
-			/*
-							7.0+:
-							 "UPDATE./update.requests": 0
-							6.4, 6.5:
-							 "UPDATE./update.requests": {
-				                "count": 0
-							}
-			*/
+			//
+			// 7.0+:
+			// "UPDATE./update.requests": 0
+			//
+			// 6.4, 6.5:
+			// "UPDATE./update.requests": { "count": 0 }
+			//
 			if p.version < 7.0 {
 				if err := json.Unmarshal(stats, &p.count); err != nil {
 					return err
