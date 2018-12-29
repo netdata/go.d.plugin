@@ -1,9 +1,13 @@
 package solr
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
@@ -21,7 +25,9 @@ func init() {
 var (
 	defURL         = "http://127.0.0.1:8983"
 	defHTTPTimeout = time.Second
+)
 
+var (
 	coreHandlersURI = "/solr/admin/metrics?group=core&prefix=UPDATE,QUERY&wt=json"
 	infoSystemURI   = "/solr/admin/info/system?wt=json"
 )
@@ -36,16 +42,6 @@ func New() *Solr {
 	}
 }
 
-type InfoSystem struct {
-	Lucene struct {
-		Version string `json:"solr-spec-version"`
-	}
-}
-
-type parser interface {
-	parse(*http.Response) (map[string]int64, error)
-}
-
 // Solr solr module
 type Solr struct {
 	modules.Base
@@ -56,7 +52,9 @@ type Solr struct {
 	reqInfoSystem   *http.Request
 	client          *http.Client
 
-	parser
+	charts *Charts
+
+	parser *parser
 }
 
 func (s *Solr) doRequest(req *http.Request) (*http.Response, error) {
@@ -69,42 +67,47 @@ func (Solr) Cleanup() {}
 // Init makes initialization
 func (s *Solr) Init() bool {
 	if s.URL == "" {
-		s.URL = defURL
-	}
-
-	var err error
-
-	s.URI = infoSystemURI
-	if s.reqInfoSystem, err = web.NewHTTPRequest(s.Request); err != nil {
-		s.Errorf("error on creating HTTP request : %s", err)
+		s.Error("URL not specified")
 		return false
 	}
 
-	s.URI = coreHandlersURI
-	if s.reqCoreHandlers, err = web.NewHTTPRequest(s.Request); err != nil {
-		s.Errorf("error on creating HTTP request : %s", err)
+	if err := s.createRequests(); err != nil {
+		s.Error(err)
 		return false
 	}
 
 	s.client = web.NewHTTPClient(s.Client)
 
-	s.parser = &v6Parser{parsed: make(map[string]int64)}
-
 	return true
 }
 
 // Check makes check
-func (Solr) Check() bool {
+func (s *Solr) Check() bool {
+	version, err := s.determineVersion()
 
-	return false
+	if err != nil {
+		s.Error(err)
+		return false
+	}
+
+	if version < 6.4 {
+		s.Errorf("unsupported Solr version : %f", version)
+		return false
+	}
+
+	s.parser = &parser{version: version}
+
+	return true
 }
 
 // Charts creates Charts
-func (Solr) Charts() *Charts {
-	return nil
+func (s *Solr) Charts() *Charts {
+	s.charts = &Charts{}
+
+	return s.charts
 }
 
-// Collect collects coresMetrics
+// Collect collects metrics
 func (s *Solr) Collect() map[string]int64 {
 	resp, err := s.doRequest(s.reqCoreHandlers)
 
@@ -126,9 +129,65 @@ func (s *Solr) Collect() map[string]int64 {
 	metrics, err := s.parse(resp)
 
 	if err != nil {
-		s.Error(err)
+		s.Errorf("error on parse response from %s : %s", s.reqCoreHandlers.URL, err)
 		return nil
 	}
 
 	return metrics
+}
+
+func (s *Solr) createRequests() error {
+	var err error
+
+	s.URI = infoSystemURI
+	if s.reqInfoSystem, err = web.NewHTTPRequest(s.Request); err != nil {
+		return fmt.Errorf("error on creating HTTP request : %s", err)
+	}
+	s.URI = coreHandlersURI
+	if s.reqCoreHandlers, err = web.NewHTTPRequest(s.Request); err != nil {
+		return fmt.Errorf("error on creating HTTP request : %s", err)
+	}
+
+	return nil
+}
+
+func (s *Solr) determineVersion() (version float64, err error) {
+	resp, err := s.doRequest(s.reqInfoSystem)
+
+	if err != nil {
+		return 0, fmt.Errorf("error on request to %s : %s", s.reqInfoSystem.URL, err)
+	}
+
+	defer func() {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("%s returned HTTP status %d", s.reqInfoSystem.URL, resp.StatusCode)
+	}
+
+	var info infoSystem
+
+	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
+		return 0, fmt.Errorf("error on decoding %s response : %s", s.reqInfoSystem.URL, err)
+	}
+
+	var idx int
+
+	if idx = strings.LastIndex(info.Lucene.Version, "."); idx == -1 {
+		return 0, fmt.Errorf("error on parsing version '%s': bad format", info.Lucene.Version)
+	}
+
+	if version, err = strconv.ParseFloat(info.Lucene.Version[:idx], 10); err != nil {
+		return 0, fmt.Errorf("error on parsing version '%s' :  %s", info.Lucene.Version, err)
+	}
+
+	return version, nil
+}
+
+type infoSystem struct {
+	Lucene struct {
+		Version string `json:"solr-spec-version"`
+	}
 }
