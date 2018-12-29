@@ -22,7 +22,7 @@ var (
 	defURL         = "http://127.0.0.1:8983"
 	defHTTPTimeout = time.Second
 
-	coreHandlersURI = "group=core&prefix=UPDATE,QUERY&wt=json"
+	coreHandlersURI = "/solr/admin/metrics?group=core&prefix=UPDATE,QUERY&wt=json"
 	infoSystemURI   = "/solr/admin/info/system?wt=json"
 )
 
