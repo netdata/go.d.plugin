@@ -50,10 +50,10 @@ var charts = []*Chart{
 		Units: "milliseconds",
 		Ctx:   "solr.search_requests_timings",
 		Dims: Dims{
-			{ID: "query_requestTimes_min_ms", Name: "min"},
-			{ID: "query_requestTimes_median_ms", Name: "median"},
-			{ID: "query_requestTimes_mean_ms", Name: "mean"},
-			{ID: "query_requestTimes_max_ms", Name: "max"},
+			{ID: "query_requestTimes_min_ms", Name: "min", Div: 1000000},
+			{ID: "query_requestTimes_median_ms", Name: "median", Div: 1000000},
+			{ID: "query_requestTimes_mean_ms", Name: "mean", Div: 1000000},
+			{ID: "query_requestTimes_max_ms", Name: "max", Div: 1000000},
 		},
 	},
 	{
@@ -62,10 +62,10 @@ var charts = []*Chart{
 		Units: "milliseconds",
 		Ctx:   "solr.search_requests_duration",
 		Dims: Dims{
-			{ID: "query_requestTimes_p75_ms", Name: "p75"},
-			{ID: "query_requestTimes_p95_ms", Name: "p95"},
-			{ID: "query_requestTimes_p99_ms", Name: "p99"},
-			{ID: "query_requestTimes_p999_ms", Name: "p999"},
+			{ID: "query_requestTimes_p75_ms", Name: "p75", Div: 1000000},
+			{ID: "query_requestTimes_p95_ms", Name: "p95", Div: 1000000},
+			{ID: "query_requestTimes_p99_ms", Name: "p99", Div: 1000000},
+			{ID: "query_requestTimes_p999_ms", Name: "p999", Div: 1000000},
 		},
 	},
 }
