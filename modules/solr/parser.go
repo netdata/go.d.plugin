@@ -55,6 +55,7 @@ type v6Parser struct {
 
 func (v *v6Parser) parse(resp *http.Response) (map[string]int64, error) {
 	var m coresMetrics
+	v.parsed = make(map[string]int64)
 
 	if err := json.NewDecoder(resp.Body).Decode(&m); err != nil {
 		return nil, err
@@ -131,6 +132,7 @@ type v7Parser struct {
 
 func (v *v7Parser) parse(resp *http.Response) (map[string]int64, error) {
 	var m coresMetrics
+	v.parsed = make(map[string]int64)
 
 	if err := json.NewDecoder(resp.Body).Decode(&m); err != nil {
 		return nil, err
