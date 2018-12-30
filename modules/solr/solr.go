@@ -28,8 +28,9 @@ var (
 )
 
 var (
-	coresHandlersURI = "/solr/admin/metrics?group=core&prefix=UPDATE,QUERY&wt=json"
-	infoSystemURI    = "/solr/admin/info/system?wt=json"
+	minSupportedVersion = 6.4
+	coresHandlersURI    = "/solr/admin/metrics?group=core&prefix=UPDATE,QUERY&wt=json"
+	infoSystemURI       = "/solr/admin/info/system?wt=json"
 )
 
 // New creates Solr with default values
@@ -85,19 +86,15 @@ func (s *Solr) Init() bool {
 
 // Check makes check
 func (s *Solr) Check() bool {
-	version, err := s.determineVersion()
-
-	if err != nil {
+	if err := s.getSolrVersion(); err != nil {
 		s.Error(err)
 		return false
 	}
 
-	if version < 6.4 {
-		s.Errorf("unsupported Solr version : %f", version)
+	if s.version < minSupportedVersion {
+		s.Errorf("unsupported Solr version : %f", s.version)
 		return false
 	}
-
-	s.version = version
 
 	return true
 }
@@ -153,11 +150,11 @@ func (s *Solr) createRequests() error {
 	return nil
 }
 
-func (s *Solr) determineVersion() (version float64, err error) {
+func (s *Solr) getSolrVersion() error {
 	resp, err := s.doRequest(s.reqInfoSystem)
 
 	if err != nil {
-		return 0, fmt.Errorf("error on request to %s : %s", s.reqInfoSystem.URL, err)
+		return fmt.Errorf("error on request to %s : %s", s.reqInfoSystem.URL, err)
 	}
 
 	defer func() {
@@ -166,26 +163,26 @@ func (s *Solr) determineVersion() (version float64, err error) {
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return 0, fmt.Errorf("%s returned HTTP status %d", s.reqInfoSystem.URL, resp.StatusCode)
+		return fmt.Errorf("%s returned HTTP status %d", s.reqInfoSystem.URL, resp.StatusCode)
 	}
 
 	var info infoSystem
 
 	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
-		return 0, fmt.Errorf("error on decoding %s response : %s", s.reqInfoSystem.URL, err)
+		return fmt.Errorf("error on decoding %s response : %s", s.reqInfoSystem.URL, err)
 	}
 
 	var idx int
 
 	if idx = strings.LastIndex(info.Lucene.Version, "."); idx == -1 {
-		return 0, fmt.Errorf("error on parsing version '%s': bad format", info.Lucene.Version)
+		return fmt.Errorf("error on parsing version '%s': bad format", info.Lucene.Version)
 	}
 
-	if version, err = strconv.ParseFloat(info.Lucene.Version[:idx], 10); err != nil {
-		return 0, fmt.Errorf("error on parsing version '%s' :  %s", info.Lucene.Version, err)
+	if s.version, err = strconv.ParseFloat(info.Lucene.Version[:idx], 10); err != nil {
+		return fmt.Errorf("error on parsing version '%s' :  %s", info.Lucene.Version, err)
 	}
 
-	return version, nil
+	return nil
 }
 
 type infoSystem struct {
