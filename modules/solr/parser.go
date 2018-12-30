@@ -91,39 +91,34 @@ func (s *Solr) parseCore(core string, data map[string]json.RawMessage, metrics m
 			if err := json.Unmarshal(stats, &common); err != nil {
 				return err
 			}
-			metrics[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += common.Count
+			metrics[format("%s_%s_%s_count", core, typ, stat)] += common.Count
 		case "requests", "totalTime":
-			//
-			// 7.0+:
-			// "UPDATE./update.requests": 0
-			//
-			// 6.4, 6.5:
-			// "UPDATE./update.requests": { "count": 0 }
-			//
+			var c int64
 			if s.version < 7.0 {
 				if err := json.Unmarshal(stats, &count); err != nil {
 					return err
 				}
-				metrics[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += count.Count
+				c = count.Count
 			} else {
 				if err := json.Unmarshal(stats, &simpleCount); err != nil {
 					return err
 				}
-				metrics[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += simpleCount
+				c = simpleCount
 			}
+			metrics[format("%s_%s_%s_count", core, typ, stat)] += c
 		case "requestTimes":
 			if err := json.Unmarshal(stats, &requestTimes); err != nil {
 				return err
 			}
-			metrics[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += requestTimes.Count
-			metrics[fmt.Sprintf("%s_%s_%s_min_ms", core, typ, stat)] += int64(requestTimes.MinMS * 1e6)
-			metrics[fmt.Sprintf("%s_%s_%s_mean_ms", core, typ, stat)] += int64(requestTimes.MeanMS * 1e6)
-			metrics[fmt.Sprintf("%s_%s_%s_median_ms", core, typ, stat)] += int64(requestTimes.MedianMS * 1e6)
-			metrics[fmt.Sprintf("%s_%s_%s_max_ms", core, typ, stat)] += int64(requestTimes.MaxMS * 1e6)
-			metrics[fmt.Sprintf("%s_%s_%s_p75_ms", core, typ, stat)] += int64(requestTimes.P75MS * 1e6)
-			metrics[fmt.Sprintf("%s_%s_%s_p95_ms", core, typ, stat)] += int64(requestTimes.P95MS * 1e6)
-			metrics[fmt.Sprintf("%s_%s_%s_p99_ms", core, typ, stat)] += int64(requestTimes.P99MS * 1e6)
-			metrics[fmt.Sprintf("%s_%s_%s_p999_ms", core, typ, stat)] += int64(requestTimes.P999MS * 1e6)
+			metrics[format("%s_%s_%s_count", core, typ, stat)] += requestTimes.Count
+			metrics[format("%s_%s_%s_min_ms", core, typ, stat)] += int64(requestTimes.MinMS * 1e6)
+			metrics[format("%s_%s_%s_mean_ms", core, typ, stat)] += int64(requestTimes.MeanMS * 1e6)
+			metrics[format("%s_%s_%s_median_ms", core, typ, stat)] += int64(requestTimes.MedianMS * 1e6)
+			metrics[format("%s_%s_%s_max_ms", core, typ, stat)] += int64(requestTimes.MaxMS * 1e6)
+			metrics[format("%s_%s_%s_p75_ms", core, typ, stat)] += int64(requestTimes.P75MS * 1e6)
+			metrics[format("%s_%s_%s_p95_ms", core, typ, stat)] += int64(requestTimes.P95MS * 1e6)
+			metrics[format("%s_%s_%s_p99_ms", core, typ, stat)] += int64(requestTimes.P99MS * 1e6)
+			metrics[format("%s_%s_%s_p999_ms", core, typ, stat)] += int64(requestTimes.P999MS * 1e6)
 		}
 	}
 
@@ -134,13 +129,16 @@ func (s *Solr) addCoreCharts(core string) {
 	charts := charts.Copy()
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf("%s_%s", core, chart.ID)
-		chart.Fam = fmt.Sprintf("core %s", core)
+		chart.ID = format("%s_%s", core, chart.ID)
+		chart.Fam = format("core %s", core)
+
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf("%s_%s", core, dim.ID)
+			dim.ID = format("%s_%s", core, dim.ID)
 		}
 	}
 
 	_ = s.charts.Add(*charts...)
 
 }
+
+var format = fmt.Sprintf
