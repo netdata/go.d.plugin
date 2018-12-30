@@ -116,8 +116,10 @@ func (s *Solr) parseCore(core string, data map[string]json.RawMessage, metrics m
 				return err
 			}
 			metrics[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += requestTimes.Count
+			metrics[fmt.Sprintf("%s_%s_%s_min_ms", core, typ, stat)] += int64(requestTimes.MinMS * 1e6)
 			metrics[fmt.Sprintf("%s_%s_%s_mean_ms", core, typ, stat)] += int64(requestTimes.MeanMS * 1e6)
 			metrics[fmt.Sprintf("%s_%s_%s_median_ms", core, typ, stat)] += int64(requestTimes.MedianMS * 1e6)
+			metrics[fmt.Sprintf("%s_%s_%s_max_ms", core, typ, stat)] += int64(requestTimes.MaxMS * 1e6)
 			metrics[fmt.Sprintf("%s_%s_%s_p75_ms", core, typ, stat)] += int64(requestTimes.P75MS * 1e6)
 			metrics[fmt.Sprintf("%s_%s_%s_p95_ms", core, typ, stat)] += int64(requestTimes.P95MS * 1e6)
 			metrics[fmt.Sprintf("%s_%s_%s_p99_ms", core, typ, stat)] += int64(requestTimes.P99MS * 1e6)
@@ -133,6 +135,7 @@ func (s *Solr) addCoreCharts(core string) {
 
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf("%s_%s", core, chart.ID)
+		chart.Fam = fmt.Sprintf("core %s", core)
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf("%s_%s", core, dim.ID)
 		}

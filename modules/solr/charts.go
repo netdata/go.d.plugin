@@ -32,7 +32,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "search_errors_by_type",
-		Title: "Search Errors By Types",
+		Title: "Search Errors By Type",
 		Units: "errors/s",
 		Ctx:   "solr.search_errors_by_type",
 		Dims: Dims{
@@ -94,7 +94,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "update_errors_by_type",
-		Title: "Update Errors By Types",
+		Title: "Update Errors By Type",
 		Units: "errors/s",
 		Ctx:   "solr.update_errors_by_type",
 		Dims: Dims{
