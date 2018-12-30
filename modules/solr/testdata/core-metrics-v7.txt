@@ -6,21 +6,22 @@
   "metrics":{
     "solr.core.core1":{
       "QUERY./select.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./select.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "QUERY./select.handlerStart":1546020968904,
       "QUERY./select.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -30,47 +31,44 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "QUERY./select.requests":{
-        "count":0
-      },
+      "QUERY./select.requests":1,
       "QUERY./select.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./select.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "QUERY./select.totalTime":{
-        "count":0
-      },
+      "QUERY./select.totalTime":1,
       "QUERY./sql.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./sql.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "QUERY./sql.handlerStart":1546020968901,
       "QUERY./sql.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -80,47 +78,44 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "QUERY./sql.requests":{
-        "count":0
-      },
+      "QUERY./sql.requests":1,
       "QUERY./sql.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./sql.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "QUERY./sql.totalTime":{
-        "count":0
-      },
+      "QUERY./sql.totalTime":1,
       "QUERY./stream.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./stream.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "QUERY./stream.handlerStart":1546020968894,
       "QUERY./stream.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -130,47 +125,44 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "QUERY./stream.requests":{
-        "count":0
-      },
+      "QUERY./stream.requests":1,
       "QUERY./stream.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./stream.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "QUERY./stream.totalTime":{
-        "count":0
-      },
+      "QUERY./stream.totalTime":1,
       "UPDATE./update.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "UPDATE./update.handlerStart":1546020968419,
       "UPDATE./update.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -180,47 +172,44 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "UPDATE./update.requests":{
-        "count":0
-      },
+      "UPDATE./update.requests":1,
       "UPDATE./update.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "UPDATE./update.totalTime":{
-        "count":0
-      },
+      "UPDATE./update.totalTime":1,
       "UPDATE./update/csv.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update/csv.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "UPDATE./update/csv.handlerStart":1546020968462,
       "UPDATE./update/csv.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -230,47 +219,44 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "UPDATE./update/csv.requests":{
-        "count":0
-      },
+      "UPDATE./update/csv.requests":1,
       "UPDATE./update/csv.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update/csv.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "UPDATE./update/csv.totalTime":{
-        "count":0
-      },
+      "UPDATE./update/csv.totalTime":1,
       "UPDATE./update/json.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update/json.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "UPDATE./update/json.handlerStart":1546020968445,
       "UPDATE./update/json.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -280,117 +266,100 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "UPDATE./update/json.requests":{
-        "count":0
-      },
+      "UPDATE./update/json.requests":1,
       "UPDATE./update/json.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update/json.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "UPDATE./update/json.totalTime":{
-        "count":0
-      },
-      "UPDATE.updateHandler.adds":{
-        "value":0
-      },
-      "UPDATE.updateHandler.autoCommits":{
-        "value":0
-      },
+      "UPDATE./update/json.totalTime":1,
+      "UPDATE.updateHandler.adds":0,
+      "UPDATE.updateHandler.autoCommitMaxTime":"15000ms",
+      "UPDATE.updateHandler.autoCommits":0,
       "UPDATE.updateHandler.commits":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.cumulativeAdds":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.cumulativeDeletesById":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.cumulativeDeletesByQuery":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.cumulativeErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "UPDATE.updateHandler.deletesById":{
-        "value":0
-      },
-      "UPDATE.updateHandler.deletesByQuery":{
-        "value":0
-      },
-      "UPDATE.updateHandler.docsPending":{
-        "value":0
-      },
-      "UPDATE.updateHandler.errors":{
-        "value":0
-      },
+      "UPDATE.updateHandler.deletesById":0,
+      "UPDATE.updateHandler.deletesByQuery":0,
+      "UPDATE.updateHandler.docsPending":0,
+      "UPDATE.updateHandler.errors":0,
       "UPDATE.updateHandler.expungeDeletes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.merges":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.optimizes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.rollbacks":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "UPDATE.updateHandler.softAutoCommits":{
-        "value":0
-      },
+      "UPDATE.updateHandler.softAutoCommits":0,
       "UPDATE.updateHandler.splits":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -399,21 +368,22 @@
     },
     "solr.core.core2":{
       "QUERY./select.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./select.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "QUERY./select.handlerStart":1546020968904,
       "QUERY./select.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -423,47 +393,44 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "QUERY./select.requests":{
-        "count":0
-      },
+      "QUERY./select.requests":1,
       "QUERY./select.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./select.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "QUERY./select.totalTime":{
-        "count":0
-      },
+      "QUERY./select.totalTime":1,
       "QUERY./sql.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./sql.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "QUERY./sql.handlerStart":1546020968901,
       "QUERY./sql.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -473,47 +440,44 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "QUERY./sql.requests":{
-        "count":0
-      },
+      "QUERY./sql.requests":1,
       "QUERY./sql.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./sql.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "QUERY./sql.totalTime":{
-        "count":0
-      },
+      "QUERY./sql.totalTime":1,
       "QUERY./stream.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./stream.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "QUERY./stream.handlerStart":1546020968894,
       "QUERY./stream.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -523,47 +487,44 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "QUERY./stream.requests":{
-        "count":0
-      },
+      "QUERY./stream.requests":1,
       "QUERY./stream.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "QUERY./stream.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "QUERY./stream.totalTime":{
-        "count":0
-      },
+      "QUERY./stream.totalTime":1,
       "UPDATE./update.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "UPDATE./update.handlerStart":1546020968419,
       "UPDATE./update.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -573,47 +534,44 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "UPDATE./update.requests":{
-        "count":0
-      },
+      "UPDATE./update.requests":1,
       "UPDATE./update.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "UPDATE./update.totalTime":{
-        "count":0
-      },
+      "UPDATE./update.totalTime":1,
       "UPDATE./update/csv.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update/csv.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "UPDATE./update/csv.handlerStart":1546020968462,
       "UPDATE./update/csv.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -623,47 +581,44 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "UPDATE./update/csv.requests":{
-        "count":0
-      },
+      "UPDATE./update/csv.requests":1,
       "UPDATE./update/csv.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update/csv.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "UPDATE./update/csv.totalTime":{
-        "count":0
-      },
+      "UPDATE./update/csv.totalTime":1,
       "UPDATE./update/json.clientErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update/json.errors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
+      "UPDATE./update/json.handlerStart":1546020968445,
       "UPDATE./update/json.requestTimes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
@@ -673,117 +628,100 @@
         "mean_ms":0,
         "median_ms":0,
         "stddev_ms":0,
-        "p75_ms":0,
-        "p95_ms":0,
-        "p99_ms":0,
-        "p999_ms":0
+        "p75_ms":75,
+        "p95_ms":95,
+        "p99_ms":99,
+        "p999_ms":999
       },
-      "UPDATE./update/json.requests":{
-        "count":0
-      },
+      "UPDATE./update/json.requests":1,
       "UPDATE./update/json.serverErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE./update/json.timeouts":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "UPDATE./update/json.totalTime":{
-        "count":0
-      },
-      "UPDATE.updateHandler.adds":{
-        "value":0
-      },
-      "UPDATE.updateHandler.autoCommits":{
-        "value":0
-      },
+      "UPDATE./update/json.totalTime":1,
+      "UPDATE.updateHandler.adds":0,
+      "UPDATE.updateHandler.autoCommitMaxTime":"15000ms",
+      "UPDATE.updateHandler.autoCommits":0,
       "UPDATE.updateHandler.commits":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.cumulativeAdds":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.cumulativeDeletesById":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.cumulativeDeletesByQuery":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.cumulativeErrors":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "UPDATE.updateHandler.deletesById":{
-        "value":0
-      },
-      "UPDATE.updateHandler.deletesByQuery":{
-        "value":0
-      },
-      "UPDATE.updateHandler.docsPending":{
-        "value":0
-      },
-      "UPDATE.updateHandler.errors":{
-        "value":0
-      },
+      "UPDATE.updateHandler.deletesById":0,
+      "UPDATE.updateHandler.deletesByQuery":0,
+      "UPDATE.updateHandler.docsPending":0,
+      "UPDATE.updateHandler.errors":0,
       "UPDATE.updateHandler.expungeDeletes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.merges":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.optimizes":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
       "UPDATE.updateHandler.rollbacks":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,
         "15minRate":0
       },
-      "UPDATE.updateHandler.softAutoCommits":{
-        "value":0
-      },
+      "UPDATE.updateHandler.softAutoCommits":0,
       "UPDATE.updateHandler.splits":{
-        "count":0,
+        "count":1,
         "meanRate":0,
         "1minRate":0,
         "5minRate":0,

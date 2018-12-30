@@ -2,6 +2,7 @@ package solr
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -46,6 +47,10 @@ func (s *Solr) parse(resp *http.Response) (map[string]int64, error) {
 
 	if err := json.NewDecoder(resp.Body).Decode(&cm); err != nil {
 		return nil, err
+	}
+
+	if len(cm.Metrics) == 0 {
+		return nil, errors.New("unparsable data")
 	}
 
 	for core, data := range cm.Metrics {

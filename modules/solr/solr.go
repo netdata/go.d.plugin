@@ -86,13 +86,13 @@ func (s *Solr) Init() bool {
 
 // Check makes check
 func (s *Solr) Check() bool {
-	if err := s.getSolrVersion(); err != nil {
+	if err := s.getVersion(); err != nil {
 		s.Error(err)
 		return false
 	}
 
 	if s.version < minSupportedVersion {
-		s.Errorf("unsupported Solr version : %f", s.version)
+		s.Errorf("unsupported Solr version : %.1f", s.version)
 		return false
 	}
 
@@ -150,7 +150,7 @@ func (s *Solr) createRequests() error {
 	return nil
 }
 
-func (s *Solr) getSolrVersion() error {
+func (s *Solr) getVersion() error {
 	resp, err := s.doRequest(s.reqInfoSystem)
 
 	if err != nil {
