@@ -144,11 +144,11 @@ func (a *Activemq) doRequest(req *http.Request) (*http.Response, error) {
 	return a.client.Do(req)
 }
 
-func (a *Activemq) collectQueues() error {
-	resp, err := a.doRequest(a.reqQueues)
+func (a *Activemq) getMetrics(req *http.Request) ([]byte, error) {
+	resp, err := a.doRequest(req)
 
 	if err != nil {
-		return fmt.Errorf("error on request to %s : %s", a.reqQueues.URL, err)
+		return nil, fmt.Errorf("error on request to %s : %s", req.URL, err)
 	}
 
 	defer func() {
@@ -157,40 +157,39 @@ func (a *Activemq) collectQueues() error {
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("%s returned HTTP status %d", a.reqQueues.URL, resp.StatusCode)
+		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+	}
+
+	return ioutil.ReadAll(resp.Body)
+}
+
+func (a *Activemq) collectQueues() error {
+	b, err := a.getMetrics(a.reqQueues)
+
+	if err != nil {
+		return err
 	}
 
 	var q queues
 
-	if err := xml.NewDecoder(resp.Body).Decode(&q); err != nil {
-		return fmt.Errorf("error on decoding response from %s : %s", a.reqQueues.URL, err)
-
+	if err := xml.Unmarshal(b, &q); err != nil {
+		return fmt.Errorf("error on decoding resp from %s : %s", a.reqQueues.URL, err)
 	}
 
 	return nil
 }
 
 func (a *Activemq) collectTopics() error {
-	resp, err := a.doRequest(a.reqTopics)
+	b, err := a.getMetrics(a.reqTopics)
 
 	if err != nil {
-		return fmt.Errorf("error on request to %s : %s", a.reqTopics.URL, err)
-	}
-
-	defer func() {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
-		_ = resp.Body.Close()
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("%s returned HTTP status %d", a.reqTopics.URL, resp.StatusCode)
+		return err
 	}
 
 	var t topics
 
-	if err := xml.NewDecoder(resp.Body).Decode(&t); err != nil {
-		return fmt.Errorf("error on decoding response from %s : %s", a.reqTopics.URL, err)
-
+	if err := xml.Unmarshal(b, &t); err != nil {
+		return fmt.Errorf("error on decoding resp from %s : %s", a.reqTopics.URL, err)
 	}
 
 	return nil
