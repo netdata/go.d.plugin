@@ -3,6 +3,8 @@ package activemq
 import (
 	"encoding/xml"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -30,6 +32,7 @@ func New() *Activemq {
 			Request: web.Request{URL: defURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
+		metrics: make(map[string]int64),
 	}
 }
 
@@ -74,6 +77,8 @@ type Activemq struct {
 	reqQueues *http.Request
 	reqTopics *http.Request
 	client    *http.Client
+
+	metrics map[string]int64
 }
 
 // Cleanup makes cleanup
@@ -107,8 +112,18 @@ func (Activemq) Charts() *Charts {
 }
 
 // Collect collects metrics
-func (Activemq) Collect() map[string]int64 {
-	return nil
+func (a *Activemq) Collect() map[string]int64 {
+	a.metrics = make(map[string]int64)
+
+	if err := a.collectQueues(); err != nil {
+		a.Error(err)
+	}
+
+	if err := a.collectTopics(); err != nil {
+		a.Error(err)
+	}
+
+	return a.metrics
 }
 
 func (a *Activemq) createRequests() (err error) {
@@ -120,6 +135,62 @@ func (a *Activemq) createRequests() (err error) {
 	a.URI = fmt.Sprintf("/%s/xml/%s.jsp", a.Webadmin, "topics")
 	if a.reqTopics, err = web.NewHTTPRequest(a.Request); err != nil {
 		return fmt.Errorf("error on creating HTTP request : %s", err)
+	}
+
+	return nil
+}
+
+func (a *Activemq) doRequest(req *http.Request) (*http.Response, error) {
+	return a.client.Do(req)
+}
+
+func (a *Activemq) collectQueues() error {
+	resp, err := a.doRequest(a.reqQueues)
+
+	if err != nil {
+		return fmt.Errorf("error on request to %s : %s", a.reqQueues.URL, err)
+	}
+
+	defer func() {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%s returned HTTP status %d", a.reqQueues.URL, resp.StatusCode)
+	}
+
+	var q queues
+
+	if err := xml.NewDecoder(resp.Body).Decode(&q); err != nil {
+		return fmt.Errorf("error on decoding response from %s : %s", a.reqQueues.URL, err)
+
+	}
+
+	return nil
+}
+
+func (a *Activemq) collectTopics() error {
+	resp, err := a.doRequest(a.reqTopics)
+
+	if err != nil {
+		return fmt.Errorf("error on request to %s : %s", a.reqTopics.URL, err)
+	}
+
+	defer func() {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%s returned HTTP status %d", a.reqTopics.URL, resp.StatusCode)
+	}
+
+	var t topics
+
+	if err := xml.NewDecoder(resp.Body).Decode(&t); err != nil {
+		return fmt.Errorf("error on decoding response from %s : %s", a.reqTopics.URL, err)
+
 	}
 
 	return nil
