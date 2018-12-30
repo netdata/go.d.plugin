@@ -11,6 +11,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/nginx"
 	_ "github.com/netdata/go.d.plugin/modules/portcheck"
 	_ "github.com/netdata/go.d.plugin/modules/rabbitmq"
+	_ "github.com/netdata/go.d.plugin/modules/solr"
 	_ "github.com/netdata/go.d.plugin/modules/springboot2"
 	_ "github.com/netdata/go.d.plugin/modules/weblog"
 )
