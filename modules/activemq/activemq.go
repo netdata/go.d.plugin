@@ -2,8 +2,12 @@ package activemq
 
 import (
 	"encoding/xml"
+	"fmt"
+	"net/http"
+	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -14,9 +18,19 @@ func init() {
 	modules.Register("activemq", creator)
 }
 
+var (
+	defURL         = "http://127.0.0.1:8161"
+	defHTTPTimeout = time.Second
+)
+
 // New creates Example with default values
 func New() *Activemq {
-	return &Activemq{}
+	return &Activemq{
+		HTTP: web.HTTP{
+			Request: web.Request{URL: defURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+		},
+	}
 }
 
 type topics struct {
@@ -52,13 +66,32 @@ type stats struct {
 // Activemq activemq module
 type Activemq struct {
 	modules.Base
+
+	web.HTTP `yaml:",inline"`
+
+	Webadmin string `yaml:"webadmin"`
+
+	reqQueues *http.Request
+	reqTopics *http.Request
+	client    *http.Client
 }
 
 // Cleanup makes cleanup
 func (Activemq) Cleanup() {}
 
 // Init makes initialization
-func (Activemq) Init() bool {
+func (a *Activemq) Init() bool {
+	if a.Webadmin == "" {
+		a.Error("webadmin root path not specified")
+		return false
+	}
+
+	if err := a.createRequests(); err != nil {
+		a.Error(err)
+		return false
+	}
+
+	a.client = web.NewHTTPClient(a.Client)
 	return false
 }
 
@@ -74,5 +107,19 @@ func (Activemq) Charts() *Charts {
 
 // Collect collects metrics
 func (Activemq) Collect() map[string]int64 {
+	return nil
+}
+
+func (a *Activemq) createRequests() (err error) {
+	a.URI = fmt.Sprintf("/%s/xml/%s.jsp", a.Webadmin, "queues")
+	if a.reqQueues, err = web.NewHTTPRequest(a.Request); err != nil {
+		return fmt.Errorf("error on creating HTTP request : %s", err)
+	}
+
+	a.URI = fmt.Sprintf("/%s/xml/%s.jsp", a.Webadmin, "topics")
+	if a.reqTopics, err = web.NewHTTPRequest(a.Request); err != nil {
+		return fmt.Errorf("error on creating HTTP request : %s", err)
+	}
+
 	return nil
 }
