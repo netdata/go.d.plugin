@@ -63,10 +63,10 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "search_requests_duration",
-		Title: "Search Requests Duration",
+		ID:    "search_requests_processing_time_percentile",
+		Title: "Search Requests Processing Time Percentile",
 		Units: "milliseconds",
-		Ctx:   "solr.search_requests_duration",
+		Ctx:   "solr.search_requests_processing_time_percentile",
 		Dims: Dims{
 			{ID: "query_requestTimes_p75_ms", Name: "p75", Div: 1000000},
 			{ID: "query_requestTimes_p95_ms", Name: "p95", Div: 1000000},
@@ -125,10 +125,10 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "update_requests_duration",
-		Title: "Update Requests Duration",
+		ID:    "update_requests_processing_time_percentile",
+		Title: "Update Requests Processing Time Percentile",
 		Units: "milliseconds",
-		Ctx:   "solr.update_requests_duration",
+		Ctx:   "solr.update_requests_processing_time_percentile",
 		Dims: Dims{
 			{ID: "update_requestTimes_p75_ms", Name: "p75", Div: 1000000},
 			{ID: "update_requestTimes_p95_ms", Name: "p95", Div: 1000000},
