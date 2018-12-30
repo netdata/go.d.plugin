@@ -18,7 +18,7 @@ var charts = Charts{
 		Units: "requests/s",
 		Ctx:   "solr.search_requests",
 		Dims: Dims{
-			{ID: "query_requests_count", Name: "requests", Algo: modules.Incremental},
+			{ID: "query_requests_count", Name: "search", Algo: modules.Incremental},
 		},
 	},
 	{
@@ -80,7 +80,7 @@ var charts = Charts{
 		Units: "requests/s",
 		Ctx:   "solr.update_requests",
 		Dims: Dims{
-			{ID: "update_requests_count", Name: "requests", Algo: modules.Incremental},
+			{ID: "update_requests_count", Name: "update", Algo: modules.Incremental},
 		},
 	},
 	{
