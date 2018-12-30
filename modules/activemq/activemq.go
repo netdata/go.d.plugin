@@ -92,7 +92,8 @@ func (a *Activemq) Init() bool {
 	}
 
 	a.client = web.NewHTTPClient(a.Client)
-	return false
+
+	return true
 }
 
 // Check makes check
