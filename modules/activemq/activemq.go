@@ -144,7 +144,7 @@ func (a *Activemq) doRequest(req *http.Request) (*http.Response, error) {
 	return a.client.Do(req)
 }
 
-func (a *Activemq) getMetrics(req *http.Request) ([]byte, error) {
+func (a *Activemq) getData(req *http.Request) ([]byte, error) {
 	resp, err := a.doRequest(req)
 
 	if err != nil {
@@ -164,7 +164,7 @@ func (a *Activemq) getMetrics(req *http.Request) ([]byte, error) {
 }
 
 func (a *Activemq) collectQueues() error {
-	b, err := a.getMetrics(a.reqQueues)
+	b, err := a.getData(a.reqQueues)
 
 	if err != nil {
 		return err
@@ -180,7 +180,7 @@ func (a *Activemq) collectQueues() error {
 }
 
 func (a *Activemq) collectTopics() error {
-	b, err := a.getMetrics(a.reqTopics)
+	b, err := a.getData(a.reqTopics)
 
 	if err != nil {
 		return err
