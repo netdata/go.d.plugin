@@ -28,8 +28,8 @@ var (
 )
 
 var (
-	coreHandlersURI = "/solr/admin/metrics?group=core&prefix=UPDATE,QUERY&wt=json"
-	infoSystemURI   = "/solr/admin/info/system?wt=json"
+	coresHandlersURI = "/solr/admin/metrics?group=core&prefix=UPDATE,QUERY&wt=json"
+	infoSystemURI    = "/solr/admin/info/system?wt=json"
 )
 
 // New creates Solr with default values
@@ -39,6 +39,7 @@ func New() *Solr {
 			Request: web.Request{URL: defURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
+		cores: make(map[string]bool),
 	}
 }
 
@@ -48,13 +49,14 @@ type Solr struct {
 
 	web.HTTP `yaml:",inline"`
 
-	reqCoreHandlers *http.Request
+	cores map[string]bool
+
 	reqInfoSystem   *http.Request
+	reqCoreHandlers *http.Request
 	client          *http.Client
 
-	charts *Charts
-
-	parser *parser
+	version float64
+	charts  *Charts
 }
 
 func (s *Solr) doRequest(req *http.Request) (*http.Response, error) {
@@ -95,7 +97,7 @@ func (s *Solr) Check() bool {
 		return false
 	}
 
-	s.parser = &parser{version: version}
+	s.version = version
 
 	return true
 }
@@ -143,7 +145,7 @@ func (s *Solr) createRequests() error {
 	if s.reqInfoSystem, err = web.NewHTTPRequest(s.Request); err != nil {
 		return fmt.Errorf("error on creating HTTP request : %s", err)
 	}
-	s.URI = coreHandlersURI
+	s.URI = coresHandlersURI
 	if s.reqCoreHandlers, err = web.NewHTTPRequest(s.Request); err != nil {
 		return fmt.Errorf("error on creating HTTP request : %s", err)
 	}

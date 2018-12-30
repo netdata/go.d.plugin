@@ -11,10 +11,6 @@ type count struct {
 	Count int64
 }
 
-type value struct {
-	Value int64
-}
-
 type common struct {
 	Count        int64
 	MeanRate     float64 `json:"meanRate"`
@@ -44,34 +40,38 @@ type coresMetrics struct {
 	Metrics map[string]map[string]json.RawMessage
 }
 
-type parser struct {
-	simpleCount  int64
-	count        count
-	value        value
-	common       common
-	requestTimes requestTimes
+func (s *Solr) parse(resp *http.Response) (map[string]int64, error) {
+	var cm coresMetrics
+	var metrics = make(map[string]int64)
 
-	version float64
-}
-
-func (v *parser) parse(resp *http.Response) (map[string]int64, error) {
-	var m coresMetrics
-	parsed := make(map[string]int64)
-
-	if err := json.NewDecoder(resp.Body).Decode(&m); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&cm); err != nil {
 		return nil, err
 	}
 
-	for core, data := range m.Metrics {
-		if err := v.parseCore(core[10:], data, parsed); err != nil {
+	for core, data := range cm.Metrics {
+		coreName := core[10:]
+
+		if !s.cores[coreName] {
+			s.addCoreCharts(coreName)
+			s.cores[coreName] = true
+		}
+
+		if err := s.parseCore(coreName, data, metrics); err != nil {
 			return nil, err
 		}
 	}
 
-	return parsed, nil
+	return metrics, nil
 }
 
-func (p *parser) parseCore(core string, data map[string]json.RawMessage, parsed map[string]int64) error {
+func (s *Solr) parseCore(core string, data map[string]json.RawMessage, metrics map[string]int64) error {
+	var (
+		simpleCount  int64
+		count        count
+		common       common
+		requestTimes requestTimes
+	)
+
 	for metric, stats := range data {
 		parts := strings.Split(metric, ".")
 
@@ -82,19 +82,16 @@ func (p *parser) parseCore(core string, data map[string]json.RawMessage, parsed 
 		typ, handler, stat := strings.ToLower(parts[0]), parts[1], parts[2]
 
 		if handler == "updateHandler" {
-			//switch stat {
-			//case "adds", "autoCommits", "deletesById", "deletesByQuery", "docsPending", "errors", "softAutoCommits":
-			//case "commits", "cumulativeAdds", "cumulativeDeletesById", "cumulativeDeletesByQuery", "cumulativeErrors", "expungeDeletes", "merges", "optimizes", "rollbacks", "splits":
-			//}
+			// TODO:
 			continue
 		}
 
 		switch stat {
 		case "clientErrors", "errors", "serverErrors", "timeouts":
-			if err := json.Unmarshal(stats, &p.common); err != nil {
+			if err := json.Unmarshal(stats, &common); err != nil {
 				return err
 			}
-			parsed[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += p.common.Count
+			metrics[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += common.Count
 		case "requests", "totalTime":
 			//
 			// 7.0+:
@@ -103,30 +100,44 @@ func (p *parser) parseCore(core string, data map[string]json.RawMessage, parsed 
 			// 6.4, 6.5:
 			// "UPDATE./update.requests": { "count": 0 }
 			//
-			if p.version < 7.0 {
-				if err := json.Unmarshal(stats, &p.count); err != nil {
+			if s.version < 7.0 {
+				if err := json.Unmarshal(stats, &count); err != nil {
 					return err
 				}
-				parsed[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += p.count.Count
+				metrics[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += count.Count
 			} else {
-				if err := json.Unmarshal(stats, &p.simpleCount); err != nil {
+				if err := json.Unmarshal(stats, &simpleCount); err != nil {
 					return err
 				}
-				parsed[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += p.simpleCount
+				metrics[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += simpleCount
 			}
 		case "requestTimes":
-			if err := json.Unmarshal(stats, &p.requestTimes); err != nil {
+			if err := json.Unmarshal(stats, &requestTimes); err != nil {
 				return err
 			}
-			parsed[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += p.requestTimes.Count
-			parsed[fmt.Sprintf("%s_%s_%s_mean_ms", core, typ, stat)] += int64(p.requestTimes.MeanMS * 1e6)
-			parsed[fmt.Sprintf("%s_%s_%s_median_ms", core, typ, stat)] += int64(p.requestTimes.MedianMS * 1e6)
-			parsed[fmt.Sprintf("%s_%s_%s_p75_ms", core, typ, stat)] += int64(p.requestTimes.P75MS * 1e6)
-			parsed[fmt.Sprintf("%s_%s_%s_p95_ms", core, typ, stat)] += int64(p.requestTimes.P95MS * 1e6)
-			parsed[fmt.Sprintf("%s_%s_%s_p99_ms", core, typ, stat)] += int64(p.requestTimes.P99MS * 1e6)
-			parsed[fmt.Sprintf("%s_%s_%s_p999_ms", core, typ, stat)] += int64(p.requestTimes.P999MS * 1e6)
+			metrics[fmt.Sprintf("%s_%s_%s_count", core, typ, stat)] += requestTimes.Count
+			metrics[fmt.Sprintf("%s_%s_%s_mean_ms", core, typ, stat)] += int64(requestTimes.MeanMS * 1e6)
+			metrics[fmt.Sprintf("%s_%s_%s_median_ms", core, typ, stat)] += int64(requestTimes.MedianMS * 1e6)
+			metrics[fmt.Sprintf("%s_%s_%s_p75_ms", core, typ, stat)] += int64(requestTimes.P75MS * 1e6)
+			metrics[fmt.Sprintf("%s_%s_%s_p95_ms", core, typ, stat)] += int64(requestTimes.P95MS * 1e6)
+			metrics[fmt.Sprintf("%s_%s_%s_p99_ms", core, typ, stat)] += int64(requestTimes.P99MS * 1e6)
+			metrics[fmt.Sprintf("%s_%s_%s_p999_ms", core, typ, stat)] += int64(requestTimes.P999MS * 1e6)
 		}
 	}
 
 	return nil
+}
+
+func (s *Solr) addCoreCharts(core string) {
+	charts := charts.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf("%s_%s", core, chart.ID)
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf("%s_%s", core, dim.ID)
+		}
+	}
+
+	_ = s.charts.Add(*charts...)
+
 }
