@@ -244,7 +244,7 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 			j.createChart(chart)
 		}
 
-		if metrics == nil || chart.Obsolete {
+		if len(metrics) == 0 || chart.Obsolete {
 			continue
 		}
 
