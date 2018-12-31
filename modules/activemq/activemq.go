@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
@@ -21,12 +22,15 @@ func init() {
 }
 
 var (
-	uriStats  = "/%s/xml/%s.jsp"
-	keyQueues = "queues"
-	keyTopics = "topics"
+	uriStats    = "/%s/xml/%s.jsp"
+	keyQueues   = "queues"
+	keyTopics   = "topics"
+	keyAdvisory = "Advisory"
 )
 
 var (
+	defMaxQueues   = 999
+	defMaxTopics   = 999
 	defURL         = "http://127.0.0.1:8161"
 	defHTTPTimeout = time.Second
 )
@@ -39,8 +43,8 @@ func New() *Activemq {
 			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
 
-		MaxQueues: 0,
-		MaxTopics: 0,
+		MaxQueues: defMaxQueues,
+		MaxTopics: defMaxTopics,
 
 		charts:       &Charts{},
 		activeQueues: make(map[string]bool),
@@ -216,6 +220,10 @@ func (a *Activemq) processQueues(queues queues, metrics map[string]int64) {
 	)
 
 	for _, q := range queues.Items {
+		if strings.Contains(q.Name, keyAdvisory) {
+			continue
+		}
+
 		if !a.activeQueues[q.Name] {
 			if a.MaxQueues != 0 && count > a.MaxQueues {
 				continue
@@ -247,6 +255,10 @@ func (a *Activemq) processTopics(topics topics, metrics map[string]int64) {
 	)
 
 	for _, t := range topics.Items {
+		if strings.Contains(t.Name, keyAdvisory) {
+			continue
+		}
+
 		if !a.activeTopics[t.Name] {
 			if a.MaxTopics != 0 && count > a.MaxTopics {
 				continue
