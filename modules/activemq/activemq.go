@@ -26,6 +26,8 @@ var (
 	keyQueues   = "queues"
 	keyTopics   = "topics"
 	keyAdvisory = "Advisory"
+
+	nameReplacer = strings.NewReplacer(".", "_", " ", "")
 )
 
 var (
@@ -232,10 +234,12 @@ func (a *Activemq) processQueues(queues queues, metrics map[string]int64) {
 			a.addQueueTopicCharts(q.Name, keyQueues)
 		}
 
-		metrics["queue_"+q.Name+"_consumers"] = q.Stats.ConsumerCount
-		metrics["queue_"+q.Name+"_enqueued"] = q.Stats.EnqueueCount
-		metrics["queue_"+q.Name+"_dequeued"] = q.Stats.DequeueCount
-		metrics["queue_"+q.Name+"_unprocessed"] = q.Stats.EnqueueCount - q.Stats.DequeueCount
+		rname := nameReplacer.Replace(q.Name)
+
+		metrics["queue_"+rname+"_consumers"] = q.Stats.ConsumerCount
+		metrics["queue_"+rname+"_enqueued"] = q.Stats.EnqueueCount
+		metrics["queue_"+rname+"_dequeued"] = q.Stats.DequeueCount
+		metrics["queue_"+rname+"_unprocessed"] = q.Stats.EnqueueCount - q.Stats.DequeueCount
 
 		updated[q.Name] = true
 	}
@@ -267,10 +271,12 @@ func (a *Activemq) processTopics(topics topics, metrics map[string]int64) {
 			a.addQueueTopicCharts(t.Name, keyTopics)
 		}
 
-		metrics["topic_"+t.Name+"_consumers"] = t.Stats.ConsumerCount
-		metrics["topic_"+t.Name+"_enqueued"] = t.Stats.EnqueueCount
-		metrics["topic_"+t.Name+"_dequeued"] = t.Stats.DequeueCount
-		metrics["topic_"+t.Name+"_unprocessed"] = t.Stats.EnqueueCount - t.Stats.DequeueCount
+		name := nameReplacer.Replace(t.Name)
+
+		metrics["topic_"+name+"_consumers"] = t.Stats.ConsumerCount
+		metrics["topic_"+name+"_enqueued"] = t.Stats.EnqueueCount
+		metrics["topic_"+name+"_dequeued"] = t.Stats.DequeueCount
+		metrics["topic_"+name+"_unprocessed"] = t.Stats.EnqueueCount - t.Stats.DequeueCount
 
 		updated[t.Name] = true
 	}
@@ -284,6 +290,8 @@ func (a *Activemq) processTopics(topics topics, metrics map[string]int64) {
 }
 
 func (a *Activemq) addQueueTopicCharts(name, typ string) {
+	name = nameReplacer.Replace(name)
+
 	charts := charts.Copy()
 
 	for _, chart := range *charts {
@@ -296,9 +304,12 @@ func (a *Activemq) addQueueTopicCharts(name, typ string) {
 	}
 
 	_ = a.charts.Add(*charts...)
+
 }
 
 func (a *Activemq) removeQueueTopicCharts(name, typ string) {
+	name = nameReplacer.Replace(name)
+
 	chart := a.charts.Get(fmt.Sprintf("%s_%s_messages", typ, name))
 	chart.Obsolete = true
 	chart.MarkNotCreated()
