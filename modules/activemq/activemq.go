@@ -92,8 +92,6 @@ type Activemq struct {
 	reqTopics *http.Request
 	client    *http.Client
 
-	queueCount   int
-	topicCount   int
 	activeQueues map[string]bool
 	activeTopics map[string]bool
 
@@ -226,16 +224,17 @@ func (a *Activemq) collect(req *http.Request, elem interface{}) error {
 }
 
 func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
-	var updated = make(map[string]bool)
+	var (
+		queueCount = len(a.activeQueues)
+		topicCount = len(a.activeTopics)
+		updated    = make(map[string]bool)
+	)
 
 	for _, q := range queues.Items {
 		if !a.activeQueues[q.Name] {
-
-			if a.MaxQueues != 0 && a.queueCount > a.MaxQueues {
+			if a.MaxQueues != 0 && queueCount > a.MaxQueues {
 				continue
 			}
-			a.queueCount++
-
 			a.activeQueues[q.Name] = true
 			a.addQueueTopicCharts(q.Name, keyQueues)
 		}
@@ -245,7 +244,6 @@ func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
 		if !updated[name] {
 			delete(a.activeQueues, name)
 			a.removeQueueTopicCharts(name, keyQueues)
-			a.queueCount--
 		}
 	}
 
@@ -253,12 +251,9 @@ func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
 
 	for _, t := range topics.Items {
 		if !a.activeTopics[t.Name] {
-
-			if a.MaxTopics != 0 && a.topicCount > a.MaxTopics {
+			if a.MaxTopics != 0 && topicCount > a.MaxTopics {
 				continue
 			}
-			a.topicCount++
-
 			a.activeTopics[t.Name] = true
 			a.addQueueTopicCharts(t.Name, keyTopics)
 		}
@@ -268,7 +263,6 @@ func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
 		if !updated[name] {
 			delete(a.activeTopics, name)
 			a.removeQueueTopicCharts(name, keyTopics)
-			a.topicCount--
 		}
 	}
 
