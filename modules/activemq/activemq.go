@@ -39,8 +39,8 @@ func New() *Activemq {
 			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
 
-		MaxQueues: 50,
-		MaxTopics: 50,
+		MaxQueues: 0,
+		MaxTopics: 0,
 
 		charts:       &Charts{},
 		activeQueues: make(map[string]bool),
@@ -92,6 +92,8 @@ type Activemq struct {
 	reqTopics *http.Request
 	client    *http.Client
 
+	queueCount   int
+	topicCount   int
 	activeQueues map[string]bool
 	activeTopics map[string]bool
 
@@ -228,6 +230,12 @@ func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
 
 	for _, q := range queues.Items {
 		if !a.activeQueues[q.Name] {
+
+			if a.MaxQueues != 0 && a.queueCount > a.MaxQueues {
+				continue
+			}
+			a.queueCount++
+
 			a.activeQueues[q.Name] = true
 			a.addQueueTopicCharts(q.Name, keyQueues)
 		}
@@ -237,6 +245,7 @@ func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
 		if !updated[name] {
 			delete(a.activeQueues, name)
 			a.removeQueueTopicCharts(name, keyQueues)
+			a.queueCount--
 		}
 	}
 
@@ -244,6 +253,12 @@ func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
 
 	for _, t := range topics.Items {
 		if !a.activeTopics[t.Name] {
+
+			if a.MaxTopics != 0 && a.topicCount > a.MaxTopics {
+				continue
+			}
+			a.topicCount++
+
 			a.activeTopics[t.Name] = true
 			a.addQueueTopicCharts(t.Name, keyTopics)
 		}
@@ -253,6 +268,7 @@ func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
 		if !updated[name] {
 			delete(a.activeTopics, name)
 			a.removeQueueTopicCharts(name, keyTopics)
+			a.topicCount--
 		}
 	}
 
