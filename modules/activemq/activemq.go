@@ -241,8 +241,8 @@ func (a *Activemq) processQueues(queues *queues) {
 
 func (a *Activemq) processTopics(topics *topics) {
 	for _, t := range topics.Items {
-		if !a.activeQueues[t.Name] {
-			a.activeQueues[t.Name] = true
+		if !a.activeTopics[t.Name] {
+			a.activeTopics[t.Name] = true
 			a.addQueueTopicCharts(t.Name, keyTopics)
 		}
 
@@ -253,17 +253,27 @@ func (a *Activemq) processTopics(topics *topics) {
 	}
 }
 
-func (a *Activemq) addQueueTopicCharts(name string, typ string) {
+func (a *Activemq) addQueueTopicCharts(name, typ string) {
 	charts := charts.Copy()
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf("%s_%s", name, chart.ID)
+		chart.ID = fmt.Sprintf("%s_%s_%s", typ, name, chart.ID)
 		chart.Fam = typ
 
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf("%s_%s", name, dim.ID)
+			dim.ID = fmt.Sprintf("%s_%s_%s", typ, name, dim.ID)
 		}
 	}
 
 	_ = a.charts.Add(*charts...)
+}
+
+func (a *Activemq) obsoleteQueueTopicCharts(name, typ string) {
+	chart := a.charts.Get(fmt.Sprintf("%s_%s_messages", name, typ))
+	chart.Obsolete = true
+	chart.MarkNotCreated()
+
+	chart = a.charts.Get(fmt.Sprintf("%s_%s_consumers", name, typ))
+	chart.Obsolete = true
+	chart.MarkNotCreated()
 }
