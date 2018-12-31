@@ -1,11 +1,15 @@
 package activemq
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
@@ -47,4 +51,32 @@ func TestActivemq_Cleanup(t *testing.T) {
 
 func TestActivemq_Collect(t *testing.T) {
 
+}
+
+func TestActivemq_Collect_404(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(404)
+	}))
+	defer ts.Close()
+
+	mod := New()
+	mod.Webadmin = "webadmin"
+	mod.HTTP.Request = web.Request{URL: ts.URL}
+
+	require.True(t, mod.Init())
+	assert.False(t, mod.Check())
+}
+
+func TestActivemq_Collect_InvalidData(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("hello and goodbye!"))
+	}))
+	defer ts.Close()
+
+	mod := New()
+	mod.Webadmin = "webadmin"
+	mod.HTTP.Request = web.Request{URL: ts.URL}
+
+	require.True(t, mod.Init())
+	assert.False(t, mod.Check())
 }
