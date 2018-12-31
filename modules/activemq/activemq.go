@@ -39,6 +39,9 @@ func New() *Activemq {
 			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
 
+		MaxQueues: 50,
+		MaxTopics: 50,
+
 		charts:       &Charts{},
 		activeQueues: make(map[string]bool),
 		activeTopics: make(map[string]bool),
@@ -82,7 +85,9 @@ type Activemq struct {
 
 	web.HTTP `yaml:",inline"`
 
-	Webadmin string `yaml:"webadmin"`
+	Webadmin  string `yaml:"webadmin"`
+	MaxQueues int
+	MaxTopics int
 
 	reqQueues *http.Request
 	reqTopics *http.Request
