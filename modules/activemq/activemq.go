@@ -130,26 +130,27 @@ func (a *Activemq) Collect() map[string]int64 {
 	a.metrics = make(map[string]int64)
 
 	var (
-		q queues
-		t topics
+		q   *queues
+		t   *topics
+		err error
 	)
 
-	if err := a.collectQueues(&q); err != nil {
+	if q, err = a.collectQueues(); err != nil {
 		a.Error(err)
 		return nil
 	}
 
-	if err := a.parseQueues(&q); err != nil {
+	if t, err = a.collectTopics(); err != nil {
 		a.Error(err)
 		return nil
 	}
 
-	if err := a.collectTopics(&t); err != nil {
+	if err = a.processQueues(q); err != nil {
 		a.Error(err)
 		return nil
 	}
 
-	if err := a.parseTopics(&t); err != nil {
+	if err = a.processTopics(t); err != nil {
 		a.Error(err)
 		return nil
 	}
@@ -198,41 +199,45 @@ func (a *Activemq) getData(req *http.Request) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func (a *Activemq) collectQueues(q *queues) error {
+func (a *Activemq) collectQueues() (*queues, error) {
 	b, err := a.getData(a.reqQueues)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	var q queues
 
 	if err := xml.Unmarshal(b, &q); err != nil {
-		return fmt.Errorf("error on decoding resp from %s : %s", a.reqQueues.URL, err)
+		return nil, fmt.Errorf("error on decoding resp from %s : %s", a.reqQueues.URL, err)
 	}
 
-	return nil
+	return &q, nil
 
 }
 
-func (a *Activemq) collectTopics(t *topics) error {
+func (a *Activemq) collectTopics() (*topics, error) {
 	b, err := a.getData(a.reqTopics)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	var t topics
 
 	if err := xml.Unmarshal(b, &t); err != nil {
-		return fmt.Errorf("error on decoding resp from %s : %s", a.reqTopics.URL, err)
+		return nil, fmt.Errorf("error on decoding resp from %s : %s", a.reqTopics.URL, err)
 	}
 
+	return &t, nil
+}
+
+func (a *Activemq) processQueues(q *queues) error {
+
 	return nil
 }
 
-func (a *Activemq) parseQueues(q *queues) error {
-
-	return nil
-}
-
-func (a *Activemq) parseTopics(t *topics) error {
+func (a *Activemq) processTopics(t *topics) error {
 
 	return nil
 }
