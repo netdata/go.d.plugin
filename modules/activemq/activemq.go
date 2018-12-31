@@ -39,7 +39,7 @@ func New() *Activemq {
 			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
 
-		charts:       new(make(Charts, 0)),
+		charts:       &Charts{},
 		activeQueues: make(map[string]bool),
 		activeTopics: make(map[string]bool),
 		metrics:      make(map[string]int64),
