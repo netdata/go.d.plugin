@@ -38,7 +38,11 @@ func New() *Activemq {
 			Request: web.Request{URL: defURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
-		metrics: make(map[string]int64),
+
+		charts:       new(make(Charts, 0)),
+		activeQueues: make(map[string]bool),
+		activeTopics: make(map[string]bool),
+		metrics:      make(map[string]int64),
 	}
 }
 
@@ -84,6 +88,10 @@ type Activemq struct {
 	reqTopics *http.Request
 	client    *http.Client
 
+	activeQueues map[string]bool
+	activeTopics map[string]bool
+
+	charts  *Charts
 	metrics map[string]int64
 }
 
@@ -108,13 +116,13 @@ func (a *Activemq) Init() bool {
 }
 
 // Check makes check
-func (Activemq) Check() bool {
-	return false
+func (a *Activemq) Check() bool {
+	return len(a.Collect()) > 0
 }
 
 // Charts creates Charts
-func (Activemq) Charts() *Charts {
-	return nil
+func (a Activemq) Charts() *Charts {
+	return a.charts
 }
 
 // Collect collects metrics
@@ -126,12 +134,22 @@ func (a *Activemq) Collect() map[string]int64 {
 		t topics
 	)
 
-	if err := a.collect(a.reqQueues, &q); err != nil {
+	if err := a.collectQueues(&q); err != nil {
 		a.Error(err)
 		return nil
 	}
 
-	if err := a.collect(a.reqTopics, &t); err != nil {
+	if err := a.parseQueues(&q); err != nil {
+		a.Error(err)
+		return nil
+	}
+
+	if err := a.collectTopics(&t); err != nil {
+		a.Error(err)
+		return nil
+	}
+
+	if err := a.parseTopics(&t); err != nil {
 		a.Error(err)
 		return nil
 	}
@@ -180,16 +198,56 @@ func (a *Activemq) getData(req *http.Request) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func (a *Activemq) collect(req *http.Request, elem interface{}) error {
-	b, err := a.getData(req)
+func (a *Activemq) collectQueues(q *queues) error {
+	b, err := a.getData(a.reqQueues)
 
 	if err != nil {
 		return err
 	}
 
-	if err := xml.Unmarshal(b, elem); err != nil {
-		return fmt.Errorf("error on decoding resp from %s : %s", req.URL, err)
+	if err := xml.Unmarshal(b, &q); err != nil {
+		return fmt.Errorf("error on decoding resp from %s : %s", a.reqQueues.URL, err)
 	}
 
 	return nil
+
+}
+
+func (a *Activemq) collectTopics(t *topics) error {
+	b, err := a.getData(a.reqTopics)
+
+	if err != nil {
+		return err
+	}
+
+	if err := xml.Unmarshal(b, &t); err != nil {
+		return fmt.Errorf("error on decoding resp from %s : %s", a.reqTopics.URL, err)
+	}
+
+	return nil
+}
+
+func (a *Activemq) parseQueues(q *queues) error {
+
+	return nil
+}
+
+func (a *Activemq) parseTopics(t *topics) error {
+
+	return nil
+}
+
+func (a *Activemq) addQueueTopicCharts(name string, typ string) {
+	charts := charts.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf("%s_%s", name, chart.ID)
+		chart.Fam = typ
+
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf("%s_%s", name, dim.ID)
+		}
+	}
+
+	_ = a.charts.Add(*charts...)
 }

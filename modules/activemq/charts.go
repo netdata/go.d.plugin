@@ -13,7 +13,7 @@ var charts = Charts{
 	{ID: "messages",
 		Title: "Messages",
 		Units: "messages/s",
-		Fam:   "queues",
+		Fam:   "",
 		Ctx:   "activemq.messages",
 		Dims: Dims{
 			{ID: "enqueued", Name: "enqueued", Algo: modules.Incremental},
@@ -24,7 +24,7 @@ var charts = Charts{
 	{ID: "consumers",
 		Title: "Consumers",
 		Units: "consumers",
-		Fam:   "queues",
+		Fam:   "",
 		Ctx:   "activemq.consumers",
 		Dims: Dims{
 			{ID: "consumers", Name: "consumers"},
