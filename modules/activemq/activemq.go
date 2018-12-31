@@ -45,7 +45,6 @@ func New() *Activemq {
 		charts:       &Charts{},
 		activeQueues: make(map[string]bool),
 		activeTopics: make(map[string]bool),
-		metrics:      make(map[string]int64),
 	}
 }
 
@@ -96,8 +95,7 @@ type Activemq struct {
 	activeQueues map[string]bool
 	activeTopics map[string]bool
 
-	charts  *Charts
-	metrics map[string]int64
+	charts *Charts
 }
 
 // Cleanup makes cleanup
@@ -132,28 +130,41 @@ func (a Activemq) Charts() *Charts {
 
 // Collect collects metrics
 func (a *Activemq) Collect() map[string]int64 {
-	a.metrics = make(map[string]int64)
+	metrics := make(map[string]int64)
 
 	var (
-		q   *queues
-		t   *topics
-		err error
+		queues queues
+		topics topics
+		err    error
 	)
 
-	if q, err = a.collectQueues(); err != nil {
+	if err = a.collect(a.reqQueues, &queues); err != nil {
 		a.Error(err)
 		return nil
 	}
 
-	if t, err = a.collectTopics(); err != nil {
+	if err = a.collect(a.reqTopics, &topics); err != nil {
 		a.Error(err)
 		return nil
 	}
 
-	a.processQueues(q)
-	a.processTopics(t)
+	for _, q := range queues.Items {
+		metrics["queue_"+q.Name+"_consumers"] = q.Stats.ConsumerCount
+		metrics["queue_"+q.Name+"_enqueued"] = q.Stats.EnqueueCount
+		metrics["queue_"+q.Name+"_dequeued"] = q.Stats.DequeueCount
+		metrics["queue_"+q.Name+"_unprocessed"] = q.Stats.EnqueueCount - q.Stats.DequeueCount
+	}
 
-	return a.metrics
+	for _, t := range topics.Items {
+		metrics["topic_"+t.Name+"_consumers"] = t.Stats.ConsumerCount
+		metrics["topic_"+t.Name+"_enqueued"] = t.Stats.EnqueueCount
+		metrics["topic_"+t.Name+"_dequeued"] = t.Stats.DequeueCount
+		metrics["topic_"+t.Name+"_unprocessed"] = t.Stats.EnqueueCount - t.Stats.DequeueCount
+	}
+
+	a.manageQueueTopicCharts(queues, topics)
+
+	return metrics
 }
 
 func (a *Activemq) createRequests() (err error) {
@@ -197,65 +208,54 @@ func (a *Activemq) getData(req *http.Request) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func (a *Activemq) collectQueues() (*queues, error) {
-	b, err := a.getData(a.reqQueues)
+func (a *Activemq) collect(req *http.Request, elem interface{}) error {
+	b, err := a.getData(req)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var q queues
-
-	if err := xml.Unmarshal(b, &q); err != nil {
-		return nil, fmt.Errorf("error on decoding resp from %s : %s", a.reqQueues.URL, err)
+	if err := xml.Unmarshal(b, elem); err != nil {
+		return fmt.Errorf("error on decoding resp from %s : %s", req.URL, err)
 	}
 
-	return &q, nil
+	return nil
 
 }
 
-func (a *Activemq) collectTopics() (*topics, error) {
-	b, err := a.getData(a.reqTopics)
+func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
+	var updated = make(map[string]bool)
 
-	if err != nil {
-		return nil, err
-	}
-
-	var t topics
-
-	if err := xml.Unmarshal(b, &t); err != nil {
-		return nil, fmt.Errorf("error on decoding resp from %s : %s", a.reqTopics.URL, err)
-	}
-
-	return &t, nil
-}
-
-func (a *Activemq) processQueues(queues *queues) {
 	for _, q := range queues.Items {
 		if !a.activeQueues[q.Name] {
 			a.activeQueues[q.Name] = true
 			a.addQueueTopicCharts(q.Name, keyQueues)
 		}
-
-		a.metrics[q.Name+"_consumers"] = q.Stats.ConsumerCount
-		a.metrics[q.Name+"_enqueued"] = q.Stats.EnqueueCount
-		a.metrics[q.Name+"_dequeued"] = q.Stats.DequeueCount
-		a.metrics[q.Name+"_unprocessed"] = q.Stats.EnqueueCount - q.Stats.DequeueCount
 	}
-}
 
-func (a *Activemq) processTopics(topics *topics) {
+	for name := range a.activeQueues {
+		if !updated[name] {
+			delete(a.activeQueues, name)
+			a.removeQueueTopicCharts(name, keyQueues)
+		}
+	}
+
+	updated = make(map[string]bool)
+
 	for _, t := range topics.Items {
 		if !a.activeTopics[t.Name] {
 			a.activeTopics[t.Name] = true
 			a.addQueueTopicCharts(t.Name, keyTopics)
 		}
-
-		a.metrics[t.Name+"_consumers"] = t.Stats.ConsumerCount
-		a.metrics[t.Name+"_enqueued"] = t.Stats.EnqueueCount
-		a.metrics[t.Name+"_dequeued"] = t.Stats.DequeueCount
-		a.metrics[t.Name+"_unprocessed"] = t.Stats.EnqueueCount - t.Stats.DequeueCount
 	}
+
+	for name := range a.activeTopics {
+		if !updated[name] {
+			delete(a.activeTopics, name)
+			a.removeQueueTopicCharts(name, keyTopics)
+		}
+	}
+
 }
 
 func (a *Activemq) addQueueTopicCharts(name, typ string) {
@@ -273,12 +273,14 @@ func (a *Activemq) addQueueTopicCharts(name, typ string) {
 	_ = a.charts.Add(*charts...)
 }
 
-func (a *Activemq) obsoleteQueueTopicCharts(name, typ string) {
-	chart := a.charts.Get(fmt.Sprintf("%s_%s_messages", name, typ))
+func (a *Activemq) removeQueueTopicCharts(name, typ string) {
+	chart := a.charts.Get(fmt.Sprintf("%s_%s_messages", typ, name))
 	chart.Obsolete = true
 	chart.MarkNotCreated()
+	chart.MarkRemove()
 
-	chart = a.charts.Get(fmt.Sprintf("%s_%s_consumers", name, typ))
+	chart = a.charts.Get(fmt.Sprintf("%s_%s_consumers", typ, name))
 	chart.Obsolete = true
 	chart.MarkNotCreated()
+	chart.MarkRemove()
 }
