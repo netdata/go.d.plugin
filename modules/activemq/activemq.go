@@ -145,15 +145,8 @@ func (a *Activemq) Collect() map[string]int64 {
 		return nil
 	}
 
-	if err = a.processQueues(q); err != nil {
-		a.Error(err)
-		return nil
-	}
-
-	if err = a.processTopics(t); err != nil {
-		a.Error(err)
-		return nil
-	}
+	a.processQueues(q)
+	a.processTopics(t)
 
 	return a.metrics
 }
@@ -232,7 +225,7 @@ func (a *Activemq) collectTopics() (*topics, error) {
 	return &t, nil
 }
 
-func (a *Activemq) processQueues(queues *queues) error {
+func (a *Activemq) processQueues(queues *queues) {
 	for _, q := range queues.Items {
 		if !a.activeQueues[q.Name] {
 			a.activeQueues[q.Name] = true
@@ -244,11 +237,9 @@ func (a *Activemq) processQueues(queues *queues) error {
 		a.metrics[q.Name+"_dequeued"] = q.Stats.DequeueCount
 		a.metrics[q.Name+"_unprocessed"] = q.Stats.EnqueueCount - q.Stats.DequeueCount
 	}
-
-	return nil
 }
 
-func (a *Activemq) processTopics(topics *topics) error {
+func (a *Activemq) processTopics(topics *topics) {
 	for _, t := range topics.Items {
 		if !a.activeQueues[t.Name] {
 			a.activeQueues[t.Name] = true
@@ -260,8 +251,6 @@ func (a *Activemq) processTopics(topics *topics) error {
 		a.metrics[t.Name+"_dequeued"] = t.Stats.DequeueCount
 		a.metrics[t.Name+"_unprocessed"] = t.Stats.EnqueueCount - t.Stats.DequeueCount
 	}
-
-	return nil
 }
 
 func (a *Activemq) addQueueTopicCharts(name string, typ string) {
