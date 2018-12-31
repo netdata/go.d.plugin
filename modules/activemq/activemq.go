@@ -21,9 +21,9 @@ func init() {
 }
 
 var (
-	uriStats    = "/%s/xml/%s.jsp"
-	queuesStats = "queues"
-	topicsStats = "topics"
+	uriStats  = "/%s/xml/%s.jsp"
+	keyQueues = "queues"
+	keyTopics = "topics"
 )
 
 var (
@@ -70,10 +70,10 @@ type queue struct {
 
 type stats struct {
 	XMLName       xml.Name `xml:"stats"`
-	Size          int      `xml:"size,attr"`
-	ConsumerCount int      `xml:"consumerCount,attr"`
-	EnqueueCount  int      `xml:"enqueueCount,attr"`
-	DequeueCount  int      `xml:"dequeueCount,attr"`
+	Size          int64    `xml:"size,attr"`
+	ConsumerCount int64    `xml:"consumerCount,attr"`
+	EnqueueCount  int64    `xml:"enqueueCount,attr"`
+	DequeueCount  int64    `xml:"dequeueCount,attr"`
 }
 
 // Activemq activemq module
@@ -159,14 +159,14 @@ func (a *Activemq) Collect() map[string]int64 {
 }
 
 func (a *Activemq) createRequests() (err error) {
-	a.URI = fmt.Sprintf(uriStats, a.Webadmin, queuesStats)
+	a.URI = fmt.Sprintf(uriStats, a.Webadmin, keyQueues)
 	a.reqQueues, err = web.NewHTTPRequest(a.Request)
 
 	if err != nil {
 		return fmt.Errorf("error on creating HTTP request : %s", err)
 	}
 
-	a.URI = fmt.Sprintf(uriStats, a.Webadmin, topicsStats)
+	a.URI = fmt.Sprintf(uriStats, a.Webadmin, keyTopics)
 	a.reqTopics, err = web.NewHTTPRequest(a.Request)
 
 	if err != nil {
@@ -232,12 +232,34 @@ func (a *Activemq) collectTopics() (*topics, error) {
 	return &t, nil
 }
 
-func (a *Activemq) processQueues(q *queues) error {
+func (a *Activemq) processQueues(queues *queues) error {
+	for _, q := range queues.Items {
+		if !a.activeQueues[q.Name] {
+			a.activeQueues[q.Name] = true
+			a.addQueueTopicCharts(q.Name, keyQueues)
+		}
+
+		a.metrics[q.Name+"_consumers"] = q.Stats.ConsumerCount
+		a.metrics[q.Name+"_enqueued"] = q.Stats.EnqueueCount
+		a.metrics[q.Name+"_dequeued"] = q.Stats.DequeueCount
+		a.metrics[q.Name+"_unprocessed"] = q.Stats.EnqueueCount - q.Stats.DequeueCount
+	}
 
 	return nil
 }
 
-func (a *Activemq) processTopics(t *topics) error {
+func (a *Activemq) processTopics(topics *topics) error {
+	for _, t := range topics.Items {
+		if !a.activeQueues[t.Name] {
+			a.activeQueues[t.Name] = true
+			a.addQueueTopicCharts(t.Name, keyTopics)
+		}
+
+		a.metrics[t.Name+"_consumers"] = t.Stats.ConsumerCount
+		a.metrics[t.Name+"_enqueued"] = t.Stats.EnqueueCount
+		a.metrics[t.Name+"_dequeued"] = t.Stats.DequeueCount
+		a.metrics[t.Name+"_unprocessed"] = t.Stats.EnqueueCount - t.Stats.DequeueCount
+	}
 
 	return nil
 }
