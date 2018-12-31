@@ -94,6 +94,7 @@ type (
 
 		Retries int
 
+		remove bool
 		// created flag is used to indicate whether the chart needs to be created by the plugin.
 		created bool
 		// updated flag is used to indicate whether the chart was updated on last data collection interval.
@@ -215,6 +216,12 @@ func (c Charts) index(chartID string) int {
 // Use it to add dimension in runtime.
 func (c *Chart) MarkNotCreated() {
 	c.created = false
+}
+
+// MarkRemove changes 'remove' chart flag to true.
+// Use it to remove chart in runtime.
+func (c *Chart) MarkRemove() {
+	c.remove = true
 }
 
 // AddDim adds new dimension to the chart dimensions.
