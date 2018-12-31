@@ -148,21 +148,8 @@ func (a *Activemq) Collect() map[string]int64 {
 		return nil
 	}
 
-	for _, q := range queues.Items {
-		metrics["queue_"+q.Name+"_consumers"] = q.Stats.ConsumerCount
-		metrics["queue_"+q.Name+"_enqueued"] = q.Stats.EnqueueCount
-		metrics["queue_"+q.Name+"_dequeued"] = q.Stats.DequeueCount
-		metrics["queue_"+q.Name+"_unprocessed"] = q.Stats.EnqueueCount - q.Stats.DequeueCount
-	}
-
-	for _, t := range topics.Items {
-		metrics["topic_"+t.Name+"_consumers"] = t.Stats.ConsumerCount
-		metrics["topic_"+t.Name+"_enqueued"] = t.Stats.EnqueueCount
-		metrics["topic_"+t.Name+"_dequeued"] = t.Stats.DequeueCount
-		metrics["topic_"+t.Name+"_unprocessed"] = t.Stats.EnqueueCount - t.Stats.DequeueCount
-	}
-
-	a.manageQueueTopicCharts(queues, topics)
+	a.processQueues(queues, metrics)
+	a.processTopics(topics, metrics)
 
 	return metrics
 }
@@ -220,24 +207,29 @@ func (a *Activemq) collect(req *http.Request, elem interface{}) error {
 	}
 
 	return nil
-
 }
 
-func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
+func (a *Activemq) processQueues(queues queues, metrics map[string]int64) {
 	var (
-		queueCount = len(a.activeQueues)
-		topicCount = len(a.activeTopics)
-		updated    = make(map[string]bool)
+		count   = len(a.activeQueues)
+		updated = make(map[string]bool)
 	)
 
 	for _, q := range queues.Items {
 		if !a.activeQueues[q.Name] {
-			if a.MaxQueues != 0 && queueCount > a.MaxQueues {
+			if a.MaxQueues != 0 && count > a.MaxQueues {
 				continue
 			}
 			a.activeQueues[q.Name] = true
 			a.addQueueTopicCharts(q.Name, keyQueues)
 		}
+
+		metrics["queue_"+q.Name+"_consumers"] = q.Stats.ConsumerCount
+		metrics["queue_"+q.Name+"_enqueued"] = q.Stats.EnqueueCount
+		metrics["queue_"+q.Name+"_dequeued"] = q.Stats.DequeueCount
+		metrics["queue_"+q.Name+"_unprocessed"] = q.Stats.EnqueueCount - q.Stats.DequeueCount
+
+		updated[q.Name] = true
 	}
 
 	for name := range a.activeQueues {
@@ -246,17 +238,29 @@ func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
 			a.removeQueueTopicCharts(name, keyQueues)
 		}
 	}
+}
 
-	updated = make(map[string]bool)
+func (a *Activemq) processTopics(topics topics, metrics map[string]int64) {
+	var (
+		count   = len(a.activeTopics)
+		updated = make(map[string]bool)
+	)
 
 	for _, t := range topics.Items {
 		if !a.activeTopics[t.Name] {
-			if a.MaxTopics != 0 && topicCount > a.MaxTopics {
+			if a.MaxTopics != 0 && count > a.MaxTopics {
 				continue
 			}
 			a.activeTopics[t.Name] = true
 			a.addQueueTopicCharts(t.Name, keyTopics)
 		}
+
+		metrics["topic_"+t.Name+"_consumers"] = t.Stats.ConsumerCount
+		metrics["topic_"+t.Name+"_enqueued"] = t.Stats.EnqueueCount
+		metrics["topic_"+t.Name+"_dequeued"] = t.Stats.DequeueCount
+		metrics["topic_"+t.Name+"_unprocessed"] = t.Stats.EnqueueCount - t.Stats.DequeueCount
+
+		updated[t.Name] = true
 	}
 
 	for name := range a.activeTopics {
@@ -265,7 +269,6 @@ func (a *Activemq) manageQueueTopicCharts(queues queues, topics topics) {
 			a.removeQueueTopicCharts(name, keyTopics)
 		}
 	}
-
 }
 
 func (a *Activemq) addQueueTopicCharts(name, typ string) {
