@@ -21,6 +21,12 @@ func init() {
 }
 
 var (
+	uriStats    = "/%s/xml/%s.jsp"
+	queuesStats = "queues"
+	topicsStats = "topics"
+)
+
+var (
 	defURL         = "http://127.0.0.1:8161"
 	defHTTPTimeout = time.Second
 )
@@ -115,11 +121,16 @@ func (Activemq) Charts() *Charts {
 func (a *Activemq) Collect() map[string]int64 {
 	a.metrics = make(map[string]int64)
 
-	if err := a.collectQueues(); err != nil {
+	var (
+		q queues
+		t topics
+	)
+
+	if err := a.collect(a.reqQueues, &q); err != nil {
 		a.Error(err)
 	}
 
-	if err := a.collectTopics(); err != nil {
+	if err := a.collect(a.reqTopics, &t); err != nil {
 		a.Error(err)
 	}
 
@@ -127,13 +138,17 @@ func (a *Activemq) Collect() map[string]int64 {
 }
 
 func (a *Activemq) createRequests() (err error) {
-	a.URI = fmt.Sprintf("/%s/xml/%s.jsp", a.Webadmin, "queues")
-	if a.reqQueues, err = web.NewHTTPRequest(a.Request); err != nil {
+	a.URI = fmt.Sprintf(uriStats, a.Webadmin, queuesStats)
+	a.reqQueues, err = web.NewHTTPRequest(a.Request)
+
+	if err != nil {
 		return fmt.Errorf("error on creating HTTP request : %s", err)
 	}
 
-	a.URI = fmt.Sprintf("/%s/xml/%s.jsp", a.Webadmin, "topics")
-	if a.reqTopics, err = web.NewHTTPRequest(a.Request); err != nil {
+	a.URI = fmt.Sprintf(uriStats, a.Webadmin, topicsStats)
+	a.reqTopics, err = web.NewHTTPRequest(a.Request)
+
+	if err != nil {
 		return fmt.Errorf("error on creating HTTP request : %s", err)
 	}
 
@@ -163,33 +178,15 @@ func (a *Activemq) getData(req *http.Request) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func (a *Activemq) collectQueues() error {
-	b, err := a.getData(a.reqQueues)
+func (a *Activemq) collect(req *http.Request, elem interface{}) error {
+	b, err := a.getData(req)
 
 	if err != nil {
 		return err
 	}
 
-	var q queues
-
-	if err := xml.Unmarshal(b, &q); err != nil {
-		return fmt.Errorf("error on decoding resp from %s : %s", a.reqQueues.URL, err)
-	}
-
-	return nil
-}
-
-func (a *Activemq) collectTopics() error {
-	b, err := a.getData(a.reqTopics)
-
-	if err != nil {
-		return err
-	}
-
-	var t topics
-
-	if err := xml.Unmarshal(b, &t); err != nil {
-		return fmt.Errorf("error on decoding resp from %s : %s", a.reqTopics.URL, err)
+	if err := xml.Unmarshal(b, elem); err != nil {
+		return fmt.Errorf("error on decoding resp from %s : %s", req.URL, err)
 	}
 
 	return nil
