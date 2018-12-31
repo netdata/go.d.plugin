@@ -128,10 +128,12 @@ func (a *Activemq) Collect() map[string]int64 {
 
 	if err := a.collect(a.reqQueues, &q); err != nil {
 		a.Error(err)
+		return nil
 	}
 
 	if err := a.collect(a.reqTopics, &t); err != nil {
 		a.Error(err)
+		return nil
 	}
 
 	return a.metrics
