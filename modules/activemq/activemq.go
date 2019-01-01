@@ -283,6 +283,7 @@ func (a *Activemq) processTopics(topics topics, metrics map[string]int64) {
 
 	for name := range a.activeTopics {
 		if !updated[name] {
+			// TODO: delete after timeout?
 			delete(a.activeTopics, name)
 			a.removeQueueTopicCharts(name, keyTopics)
 		}
