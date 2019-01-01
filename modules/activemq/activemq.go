@@ -91,8 +91,8 @@ type Activemq struct {
 	web.HTTP `yaml:",inline"`
 
 	Webadmin  string `yaml:"webadmin"`
-	MaxQueues int
-	MaxTopics int
+	MaxQueues int    `yaml:"max_queues"`
+	MaxTopics int    `yaml:"max_topics"`
 
 	reqQueues *http.Request
 	reqTopics *http.Request
