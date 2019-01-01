@@ -10,24 +10,26 @@ type (
 )
 
 var charts = Charts{
-	{ID: "messages",
-		Title: "Messages",
+	{
+		ID:    "%s_%s_messages",
+		Title: "%s Messages",
 		Units: "messages/s",
 		Fam:   "",
 		Ctx:   "activemq.messages",
 		Dims: Dims{
-			{ID: "enqueued", Name: "enqueued", Algo: modules.Incremental},
-			{ID: "dequeued", Name: "dequeued", Algo: modules.Incremental},
-			{ID: "unprocessed", Name: "unprocessed", Algo: modules.Incremental},
+			{ID: "%s_%s_enqueued", Name: "enqueued", Algo: modules.Incremental},
+			{ID: "%s_%s_dequeued", Name: "dequeued", Algo: modules.Incremental},
+			{ID: "%s_%s_unprocessed", Name: "unprocessed", Algo: modules.Incremental},
 		},
 	},
-	{ID: "consumers",
-		Title: "Consumers",
+	{
+		ID:    "%s_%s_consumers",
+		Title: "%s Consumers",
 		Units: "consumers",
 		Fam:   "",
 		Ctx:   "activemq.consumers",
 		Dims: Dims{
-			{ID: "consumers", Name: "consumers"},
+			{ID: "%s_%s_consumers", Name: "consumers"},
 		},
 	},
 }
