@@ -190,7 +190,9 @@ func (c *Charts) Remove(chartID string) error {
 	if idx == -1 {
 		return fmt.Errorf("error on removing chart : '%s' is not in charts", chartID)
 	}
-	*c = append((*c)[:idx], (*c)[idx+1:]...)
+	copy((*c)[idx:], (*c)[idx+1:])
+	(*c)[len(*c)-1] = nil
+	*c = (*c)[:len(*c)-1]
 	return nil
 }
 
