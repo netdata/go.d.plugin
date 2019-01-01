@@ -215,6 +215,12 @@ func TestChart_MarkNotCreated(t *testing.T) {
 	chart.MarkNotCreated()
 	assert.False(t, chart.created)
 }
+func TestChart_MarkRemove(t *testing.T) {
+	chart := createTestChart("1")
+
+	chart.MarkRemove()
+	assert.True(t, chart.remove)
+}
 
 func TestChart_check(t *testing.T) {
 	// OK case

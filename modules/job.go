@@ -238,10 +238,18 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 	var totalUpdated int
 	elapsed := int64(durationTo(time.Now().Sub(startTime), time.Millisecond))
 
-	for _, chart := range *j.charts {
+	for i, s := 0, len(*j.charts); i < s; i++ {
+		chart := (*j.charts)[i]
 
 		if !chart.created {
 			j.createChart(chart)
+		}
+
+		if chart.remove {
+			_ = j.charts.Remove(chart.ID)
+			i--
+			s--
+			continue
 		}
 
 		if len(metrics) == 0 || chart.Obsolete {
@@ -251,6 +259,7 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 		if j.updateChart(chart, metrics, sinceLastRun) {
 			totalUpdated++
 		}
+
 	}
 
 	if totalUpdated == 0 {
