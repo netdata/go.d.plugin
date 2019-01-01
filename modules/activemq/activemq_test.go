@@ -207,89 +207,98 @@ func TestActivemq_Collect(t *testing.T) {
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
 
-	expected := map[string]int64{
-		"queue_sandra_consumers":   1,
-		"queue_sandra_dequeued":    1,
-		"queue_Test_enqueued":      2,
-		"queue_Test_unprocessed":   1,
-		"topic_AAA_dequeued":       1,
-		"topic_AAAA_unprocessed":   1,
-		"queue_Test_dequeued":      1,
-		"topic_AAA_enqueued":       2,
-		"topic_AAA_unprocessed":    1,
-		"topic_AAAA_consumers":     1,
-		"topic_AAAA_dequeued":      1,
-		"queue_Test_consumers":     1,
-		"queue_sandra_enqueued":    2,
-		"queue_sandra_unprocessed": 1,
-		"topic_AAA_consumers":      1,
-		"topic_AAAA_enqueued":      2,
+	cases := []struct {
+		expected  map[string]int64
+		numQueues int
+		numTopics int
+		numCharts int
+	}{
+		{
+			expected: map[string]int64{
+				"queue_sandra_consumers":   1,
+				"queue_sandra_dequeued":    1,
+				"queue_Test_enqueued":      2,
+				"queue_Test_unprocessed":   1,
+				"topic_AAA_dequeued":       1,
+				"topic_AAAA_unprocessed":   1,
+				"queue_Test_dequeued":      1,
+				"topic_AAA_enqueued":       2,
+				"topic_AAA_unprocessed":    1,
+				"topic_AAAA_consumers":     1,
+				"topic_AAAA_dequeued":      1,
+				"queue_Test_consumers":     1,
+				"queue_sandra_enqueued":    2,
+				"queue_sandra_unprocessed": 1,
+				"topic_AAA_consumers":      1,
+				"topic_AAAA_enqueued":      2,
+			},
+			numQueues: 2,
+			numTopics: 2,
+			numCharts: 8,
+		},
+		{
+			expected: map[string]int64{
+				"queue_sandra_enqueued":    3,
+				"queue_Test_enqueued":      3,
+				"queue_Test_unprocessed":   1,
+				"queue_Test2_dequeued":     0,
+				"topic_BBB_enqueued":       2,
+				"queue_sandra_dequeued":    2,
+				"queue_sandra_unprocessed": 1,
+				"queue_Test2_enqueued":     0,
+				"topic_AAAA_enqueued":      3,
+				"topic_AAAA_dequeued":      2,
+				"topic_BBB_unprocessed":    1,
+				"topic_AAA_dequeued":       2,
+				"topic_AAAA_unprocessed":   1,
+				"queue_Test_consumers":     2,
+				"queue_Test_dequeued":      2,
+				"queue_Test2_consumers":    0,
+				"queue_Test2_unprocessed":  0,
+				"topic_AAA_consumers":      2,
+				"topic_AAA_enqueued":       3,
+				"topic_BBB_dequeued":       1,
+				"queue_sandra_consumers":   2,
+				"topic_AAA_unprocessed":    1,
+				"topic_AAAA_consumers":     2,
+				"topic_BBB_consumers":      1,
+			},
+			numQueues: 3,
+			numTopics: 3,
+			numCharts: 12,
+		},
+		{
+			expected: map[string]int64{
+				"queue_sandra_unprocessed": 1,
+				"queue_Test_unprocessed":   1,
+				"queue_sandra_consumers":   3,
+				"topic_AAAA_enqueued":      4,
+				"queue_sandra_dequeued":    3,
+				"queue_Test_consumers":     3,
+				"queue_Test_enqueued":      4,
+				"queue_Test_dequeued":      3,
+				"topic_AAA_consumers":      3,
+				"topic_AAA_unprocessed":    1,
+				"topic_AAAA_consumers":     3,
+				"topic_AAAA_unprocessed":   1,
+				"queue_sandra_enqueued":    4,
+				"topic_AAA_enqueued":       4,
+				"topic_AAA_dequeued":       3,
+				"topic_AAAA_dequeued":      3,
+			},
+			numQueues: 2,
+			numTopics: 2,
+			numCharts: 12,
+		},
 	}
 
-	assert.Equal(t, expected, mod.Collect())
-	assert.Len(t, mod.activeQueues, 2)
-	assert.Len(t, mod.activeTopics, 2)
-	assert.Len(t, *mod.charts, 8)
-
-	collectNum++
-
-	expected = map[string]int64{
-		"queue_sandra_enqueued":    3,
-		"queue_Test_enqueued":      3,
-		"queue_Test_unprocessed":   1,
-		"queue_Test2_dequeued":     0,
-		"topic_BBB_enqueued":       2,
-		"queue_sandra_dequeued":    2,
-		"queue_sandra_unprocessed": 1,
-		"queue_Test2_enqueued":     0,
-		"topic_AAAA_enqueued":      3,
-		"topic_AAAA_dequeued":      2,
-		"topic_BBB_unprocessed":    1,
-		"topic_AAA_dequeued":       2,
-		"topic_AAAA_unprocessed":   1,
-		"queue_Test_consumers":     2,
-		"queue_Test_dequeued":      2,
-		"queue_Test2_consumers":    0,
-		"queue_Test2_unprocessed":  0,
-		"topic_AAA_consumers":      2,
-		"topic_AAA_enqueued":       3,
-		"topic_BBB_dequeued":       1,
-		"queue_sandra_consumers":   2,
-		"topic_AAA_unprocessed":    1,
-		"topic_AAAA_consumers":     2,
-		"topic_BBB_consumers":      1,
+	for _, c := range cases {
+		require.Equal(t, c.expected, mod.Collect())
+		assert.Len(t, mod.activeQueues, c.numQueues)
+		assert.Len(t, mod.activeTopics, c.numTopics)
+		assert.Len(t, *mod.charts, c.numCharts)
+		collectNum++
 	}
-
-	assert.Equal(t, expected, mod.Collect())
-	assert.Len(t, mod.activeQueues, 3)
-	assert.Len(t, mod.activeTopics, 3)
-	assert.Len(t, *mod.charts, 12)
-
-	collectNum++
-
-	expected = map[string]int64{
-		"queue_sandra_unprocessed": 1,
-		"queue_Test_unprocessed":   1,
-		"queue_sandra_consumers":   3,
-		"topic_AAAA_enqueued":      4,
-		"queue_sandra_dequeued":    3,
-		"queue_Test_consumers":     3,
-		"queue_Test_enqueued":      4,
-		"queue_Test_dequeued":      3,
-		"topic_AAA_consumers":      3,
-		"topic_AAA_unprocessed":    1,
-		"topic_AAAA_consumers":     3,
-		"topic_AAAA_unprocessed":   1,
-		"queue_sandra_enqueued":    4,
-		"topic_AAA_enqueued":       4,
-		"topic_AAA_dequeued":       3,
-		"topic_AAAA_dequeued":      3,
-	}
-
-	assert.Equal(t, expected, mod.Collect())
-	assert.Len(t, mod.activeQueues, 2)
-	assert.Len(t, mod.activeTopics, 2)
-
 }
 
 func TestActivemq_Collect_404(t *testing.T) {
