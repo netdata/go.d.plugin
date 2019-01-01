@@ -236,10 +236,10 @@ func (a *Activemq) processQueues(queues queues, metrics map[string]int64) {
 
 		rname := nameReplacer.Replace(q.Name)
 
-		metrics["queue_"+rname+"_consumers"] = q.Stats.ConsumerCount
-		metrics["queue_"+rname+"_enqueued"] = q.Stats.EnqueueCount
-		metrics["queue_"+rname+"_dequeued"] = q.Stats.DequeueCount
-		metrics["queue_"+rname+"_unprocessed"] = q.Stats.EnqueueCount - q.Stats.DequeueCount
+		metrics["queues_"+rname+"_consumers"] = q.Stats.ConsumerCount
+		metrics["queues_"+rname+"_enqueued"] = q.Stats.EnqueueCount
+		metrics["queues_"+rname+"_dequeued"] = q.Stats.DequeueCount
+		metrics["queues_"+rname+"_unprocessed"] = q.Stats.EnqueueCount - q.Stats.DequeueCount
 
 		updated[q.Name] = true
 	}
@@ -271,12 +271,12 @@ func (a *Activemq) processTopics(topics topics, metrics map[string]int64) {
 			a.addQueueTopicCharts(t.Name, keyTopics)
 		}
 
-		name := nameReplacer.Replace(t.Name)
+		rname := nameReplacer.Replace(t.Name)
 
-		metrics["topic_"+name+"_consumers"] = t.Stats.ConsumerCount
-		metrics["topic_"+name+"_enqueued"] = t.Stats.EnqueueCount
-		metrics["topic_"+name+"_dequeued"] = t.Stats.DequeueCount
-		metrics["topic_"+name+"_unprocessed"] = t.Stats.EnqueueCount - t.Stats.DequeueCount
+		metrics["topics_"+rname+"_consumers"] = t.Stats.ConsumerCount
+		metrics["topics_"+rname+"_enqueued"] = t.Stats.EnqueueCount
+		metrics["topics_"+rname+"_dequeued"] = t.Stats.DequeueCount
+		metrics["topics_"+rname+"_unprocessed"] = t.Stats.EnqueueCount - t.Stats.DequeueCount
 
 		updated[t.Name] = true
 	}
