@@ -18,4 +18,5 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/solr"
 	_ "github.com/netdata/go.d.plugin/modules/springboot2"
 	_ "github.com/netdata/go.d.plugin/modules/weblog"
+	// Oracle DB should be configured with specific dsn.
 )
