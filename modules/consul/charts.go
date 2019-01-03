@@ -2,6 +2,7 @@ package consul
 
 import (
 	"fmt"
+
 	"github.com/netdata/go.d.plugin/modules"
 )
 
@@ -31,9 +32,7 @@ var (
 	}
 )
 
-func createCheckChart(check *agentCheck) *Chart {
-	var chart *Chart
-
+func createCheckChart(check *agentCheck) (chart *Chart) {
 	if check.ServiceID != "" {
 		chart = boundCheckChart.Copy()
 		chart.ID = fmt.Sprintf(chart.ID, check.CheckID)
@@ -43,6 +42,5 @@ func createCheckChart(check *agentCheck) *Chart {
 		chart.ID = fmt.Sprintf(chart.ID, check.CheckID)
 		chart.Title = fmt.Sprintf(chart.Title, check.CheckID, check.Name)
 	}
-
 	return chart
 }
