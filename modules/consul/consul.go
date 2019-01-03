@@ -25,6 +25,13 @@ const (
 	defHTTPTimeout = time.Second
 )
 
+const (
+	healthPassing  = "passing"
+	healthWarning  = "warning"
+	healthCritical = "critical"
+	healthMaint    = "maintenance"
+)
+
 // New creates Consul with default values
 func New() *Consul {
 	return &Consul{
@@ -130,6 +137,7 @@ func (c *Consul) getLocalChecks() (map[string]*agentCheck, error) {
 }
 
 func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[string]int64) {
+	var status int64
 	count := len(c.activeChecks)
 
 	for id, check := range checks {
@@ -143,6 +151,18 @@ func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[s
 			c.addCheckCharts(check)
 		}
 
+		switch check.Status {
+		case healthPassing, healthMaint:
+			status = 0
+		case healthWarning:
+			status = 1
+		case healthCritical:
+			status = 2
+		default:
+			panic(fmt.Sprintf("check %s has unknown status : %s", check.CheckID, check.Status))
+		}
+
+		metrics[id] = status
 	}
 }
 
