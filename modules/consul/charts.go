@@ -11,24 +11,36 @@ type (
 	Charts = modules.Charts
 	// Chart is an alias for modules.Chart
 	Chart = modules.Chart
-	// Dim is an alias for modules.Dim
-	Dim = modules.Dim
+	// Dims is an alias for modules.Dims
+	Dims = modules.Dims
 )
 
 var (
 	boundCheckChart = Chart{
-		ID:    "%s_check",
+		ID:    "check_%s",
 		Title: "Service %s[%s] Check %s[%s] Status",
 		Fam:   "service checks",
 		Units: "status",
 		Ctx:   "consul.checks",
+		Dims: Dims{
+			{ID: "%s_passing", Name: "passing"},
+			{ID: "%s_critical", Name: "critical"},
+			{ID: "%s_maintenance", Name: "maintenance"},
+			{ID: "%s_warning", Name: "warning"},
+		},
 	}
 	unboundCheckChart = Chart{
-		ID:    "%s_check",
+		ID:    "check_%s",
 		Title: "Check %s[%s] Status",
 		Fam:   "unbound checks",
 		Units: "status",
 		Ctx:   "consul.checks",
+		Dims: Dims{
+			{ID: "%s_passing", Name: "passing"},
+			{ID: "%s_critical", Name: "critical"},
+			{ID: "%s_maintenance", Name: "maintenance"},
+			{ID: "%s_warning", Name: "warning"},
+		},
 	}
 )
 
@@ -42,6 +54,9 @@ func createCheckChart(check *agentCheck) (chart *Chart) {
 		chart.ID = fmt.Sprintf(chart.ID, check.CheckID)
 		chart.Title = fmt.Sprintf(chart.Title, check.CheckID, check.Name)
 	}
-	_ = chart.AddDim(&Dim{ID: check.CheckID})
+
+	for _, dim := range chart.Dims {
+		dim.ID = fmt.Sprintf(dim.ID, check.CheckID)
+	}
 	return chart
 }
