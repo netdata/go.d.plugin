@@ -10,12 +10,9 @@ import (
 	"gopkg.in/goracle.v2"
 )
 
-const defaultDSN = "SYSTEM/Oracle12345@ORCL" // there is no such thing as default connstr/dsn, but...
-
 func init() {
 	creator := modules.Creator{
-		// TODO: open a discussion about API changes with @ilyam for that creator thing and more.
-		Create: func() modules.Module { return New(defaultDSN) },
+		Create: func() modules.Module { return New("") },
 	}
 
 	modules.Register("oracledb", creator)
@@ -24,42 +21,67 @@ func init() {
 // OracleDB oracledb module.
 type OracleDB struct {
 	modules.Base
-	DSN string `json:"dsn,omitempty" yaml:"dsn,omitempty"`
+	DSN string `yaml:"dsn,omitempty"`
+	db  *sql.DB
 }
 
 // New creates OracleDB mod.
-func New(connString string) *OracleDB {
+func New(dsn string) *OracleDB {
 	return &OracleDB{
-		DSN: defaultDSN,
+		DSN: dsn,
 	}
 }
 
 // Cleanup performs cleanup.
-func (*OracleDB) Cleanup() {}
+func (m *OracleDB) Cleanup() {
+	err := m.db.Close()
+	if err != nil {
+		m.Errorf("cleanup: error on closing the oracle database [%s]: %v", m.DSN, err)
+	}
+}
 
 // Init makes initialization of the OracleDB mod.
 func (m *OracleDB) Init() bool {
-	// test the connectivity here, this session will be not actually used.
-	// each metrics scraping will have its own session.
-	db, err := sql.Open("goracle", m.DSN)
-	if err != nil {
-		m.Errorf("error on opening a connection with the oracle database [%s]: %v", m.DSN, err)
+	if m.DSN == "" {
 		return false
 	}
 
-	if err = db.Ping(); err != nil {
-		db.Close()
-		m.Errorf("error on pinging the oracle database [%s]: %v", m.DSN, err)
-		return false
-	}
-
-	if err = db.Close(); err != nil {
+	// test the connectivity here.
+	if err := m.openConnection(); err != nil {
 		return false
 	}
 
 	// post Init debug info.
 	m.Debugf("using DSN [%s]", m.DSN)
 	return true
+}
+
+func (m *OracleDB) openConnection() error {
+	if m.db != nil {
+		if err := m.db.Ping(); err != nil {
+			m.db.Close()
+			m.db = nil
+
+			return m.openConnection()
+		}
+
+		return nil
+	}
+
+	db, err := sql.Open("goracle", m.DSN)
+	if err != nil {
+		m.Errorf("error on opening a connection with the oracle database [%s]: %v", m.DSN, err)
+		return err
+	}
+
+	if err = db.Ping(); err != nil {
+		db.Close()
+		m.Errorf("error on pinging the oracle database [%s]: %v", m.DSN, err)
+		return err
+	}
+
+	m.db = db
+	return nil
 }
 
 // Check makes check.
@@ -74,52 +96,55 @@ func (m *OracleDB) Charts() *Charts {
 
 // Collect collects health checks and metrics for OracleDB.
 func (m *OracleDB) Collect() map[string]int64 {
+	if err := m.openConnection(); err != nil {
+		return nil
+	}
+
 	metrics := make(map[string]int64)
 
-	db, err := sql.Open("goracle", m.DSN)
-	if err != nil {
-		m.Errorf("error on opening a connection with the oracle database [%s]: %v", m.DSN, err)
-		return metrics
-	}
-	defer db.Close()
-
-	err = m.collectProcesses(db, metrics)
+	err := m.collectProcesses(metrics)
 	if err != nil {
 		m.Errorf("error on collecting processes: %v", err)
+		return nil
 	}
 
-	err = m.collectSessions(db, metrics)
+	err = m.collectSessions(metrics)
 	if err != nil {
 		m.Errorf("error on collecting sessions: %v", err)
+		return nil
 	}
 
-	err = m.collectActivity(db, metrics)
+	err = m.collectActivity(metrics)
 	if err != nil {
 		m.Errorf("error on collecting activity: %v", err)
+		return nil
 	}
 
-	err = m.collectWaitTime(db, metrics)
+	err = m.collectWaitTime(metrics)
 	if err != nil {
 		m.Errorf("error on collecting wait time: %v", err)
+		return nil
 	}
 
-	err = m.collectTablespace(db, metrics)
+	err = m.collectTablespace(metrics)
 	if err != nil {
 		m.Errorf("error on collecting tablespace size: %v", err)
+		return nil
 	}
 
-	err = m.collectSystemMetrics(db, metrics)
+	err = m.collectSystemMetrics(metrics)
 	if err != nil {
 		m.Errorf("error on collecting system metrics: %v", err)
+		return nil
 	}
 
 	return metrics
 }
 
 // collectProcesses collects information about the currently active processes.
-func (m *OracleDB) collectProcesses(db *sql.DB, metrics map[string]int64) error {
+func (m *OracleDB) collectProcesses(metrics map[string]int64) error {
 	var count int64
-	err := db.QueryRow("SELECT COUNT(*) FROM v$process").Scan(&count)
+	err := m.db.QueryRow("SELECT COUNT(*) FROM v$process").Scan(&count)
 	if err != nil {
 		return err
 	}
@@ -129,9 +154,9 @@ func (m *OracleDB) collectProcesses(db *sql.DB, metrics map[string]int64) error 
 }
 
 // collectSessions collects all (active, inactive, total) sessions.
-func (m *OracleDB) collectSessions(db *sql.DB, metrics map[string]int64) error {
+func (m *OracleDB) collectSessions(metrics map[string]int64) error {
 	// sessions (active, inactive, total).
-	rows, err := db.Query("SELECT status, type FROM v$session GROUP BY status, type")
+	rows, err := m.db.Query("SELECT status, type FROM v$session GROUP BY status, type")
 	if err != nil {
 		return err
 	}
@@ -166,12 +191,15 @@ func (m *OracleDB) collectSessions(db *sql.DB, metrics map[string]int64) error {
 }
 
 func cleanActivityName(s string) string {
-	return strings.Replace(strings.Replace(strings.Replace(s, "(", "", -1), ")", "", -1), " ", "_", -1)
+	s = strings.Replace(s, " ", "_", -1)
+	s = strings.Replace(s, "(", "", -1)
+	s = strings.Replace(s, ")", "", -1)
+	return s
 }
 
 // collectActivity collects activity metrics.
-func (m *OracleDB) collectActivity(db *sql.DB, metrics map[string]int64) error {
-	rows, err := db.Query("SELECT name, value FROM v$sysstat WHERE name IN ('parse count (total)', 'execute count', 'user commits', 'user rollbacks')")
+func (m *OracleDB) collectActivity(metrics map[string]int64) error {
+	rows, err := m.db.Query("SELECT name, value FROM v$sysstat WHERE name IN ('parse count (total)', 'execute count', 'user commits', 'user rollbacks')")
 	if err != nil {
 		return err
 	}
@@ -208,8 +236,8 @@ func cleanWaitTimeClassname(s string) string {
 }
 
 // collectWaitTime collects wait time metrics from the v$waitclassmetric view.
-func (m *OracleDB) collectWaitTime(db *sql.DB, metrics map[string]int64) error {
-	rows, err := db.Query("SELECT n.wait_class, round(m.time_waited/m.INTSIZE_CSEC,3) AAS from v$waitclassmetric  m, v$system_wait_class n where m.wait_class_id=n.wait_class_id and n.wait_class != 'Idle'")
+func (m *OracleDB) collectWaitTime(metrics map[string]int64) error {
+	rows, err := m.db.Query("SELECT n.wait_class, round(m.time_waited/m.INTSIZE_CSEC,3) AAS from v$waitclassmetric  m, v$system_wait_class n where m.wait_class_id=n.wait_class_id and n.wait_class != 'Idle'")
 	if err != nil {
 		return err
 	}
@@ -244,8 +272,8 @@ func (m *OracleDB) collectWaitTime(db *sql.DB, metrics map[string]int64) error {
 }
 
 //  collectTablespace collects tablespace size.
-func (m *OracleDB) collectTablespace(db *sql.DB, metrics map[string]int64) error {
-	rows, err := db.Query(`
+func (m *OracleDB) collectTablespace(metrics map[string]int64) error {
+	rows, err := m.db.Query(`
 SELECT
   Z.name,
   Z.bytes,
@@ -388,8 +416,8 @@ var systemMetricsKeys = map[string]string{
 	"Temp Space Used":                 "system_temp_space_used",
 }
 
-func (m *OracleDB) collectSystemMetrics(db *sql.DB, metrics map[string]int64) error {
-	rows, err := db.Query(`SELECT METRIC_NAME, VALUE FROM GV$SYSMETRIC ORDER BY BEGIN_TIME`)
+func (m *OracleDB) collectSystemMetrics(metrics map[string]int64) error {
+	rows, err := m.db.Query(`SELECT METRIC_NAME, VALUE FROM GV$SYSMETRIC ORDER BY BEGIN_TIME`)
 	if err != nil {
 		return err
 	}

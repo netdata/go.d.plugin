@@ -1,4 +1,4 @@
-# rabbitmq
+# oracledb
 
 Module monitor Oracle DB performance and health metrics.
 
