@@ -87,20 +87,20 @@ func (c *Consul) doRequest(req *http.Request) (*http.Response, error) {
 
 func (c *Consul) doRequestReqOK(req *http.Request) (resp *http.Response, err error) {
 	if resp, err = c.doRequest(req); err != nil {
-		closeResponse(resp)
-		return nil, fmt.Errorf("error on request to %s : %s", req.URL, err)
+		return resp, fmt.Errorf("error on request to %s : %s", req.URL, err)
 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		closeResponse(resp)
-		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+		return resp, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
 	}
 
 	return resp, err
 }
 
-func closeResponse(resp *http.Response) {
-	_, _ = io.Copy(ioutil.Discard, resp.Body)
-	_ = resp.Body.Close()
+func closeBody(resp *http.Response) {
+	if resp != nil && resp.Body != nil {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}
 }
