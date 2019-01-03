@@ -11,8 +11,8 @@ type (
 	Charts = modules.Charts
 	// Chart is an alias for modules.Chart
 	Chart = modules.Chart
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Dim is an alias for modules.Dim
+	Dim = modules.Dim
 )
 
 var (
@@ -42,5 +42,6 @@ func createCheckChart(check *agentCheck) (chart *Chart) {
 		chart.ID = fmt.Sprintf(chart.ID, check.CheckID)
 		chart.Title = fmt.Sprintf(chart.Title, check.CheckID, check.Name)
 	}
+	_ = chart.AddDim(&Dim{ID: check.CheckID})
 	return chart
 }

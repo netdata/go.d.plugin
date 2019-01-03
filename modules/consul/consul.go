@@ -134,7 +134,7 @@ func (c *Consul) getLocalChecks() (map[string]*agentCheck, error) {
 
 	var checks map[string]*agentCheck
 
-	if err = json.NewDecoder(resp.Body).Decode(checks); err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(&checks); err != nil {
 		return nil, fmt.Errorf("error on decoding resp from %s : %v", req.URL, err)
 	}
 
