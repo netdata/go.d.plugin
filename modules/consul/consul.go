@@ -85,23 +85,31 @@ func (c Consul) Charts() *Charts {
 func (c *Consul) Collect() map[string]int64 {
 	metrics := make(map[string]int64)
 
-	checks, err := c.collectLocalChecks()
-
-	if err != nil {
+	if err := c.collectLocalChecks(metrics); err != nil {
 		c.Error(err)
 		return nil
 	}
 
-	c.processLocalChecks(checks, metrics)
-
 	return metrics
 }
 
-func (c *Consul) collectLocalChecks() (map[string]*agentCheck, error) {
+func (c *Consul) collectLocalChecks(metrics map[string]int64) error {
+	checks, err := c.getLocalChecks()
+
+	if err != nil {
+		return err
+	}
+
+	c.processLocalChecks(checks, metrics)
+
+	return nil
+}
+
+func (c *Consul) getLocalChecks() (map[string]*agentCheck, error) {
 	req, err := c.createRequest("/v1/agent/checks")
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error on creating request : %v", err)
 	}
 
 	resp, err := c.doRequestReqOK(req)
