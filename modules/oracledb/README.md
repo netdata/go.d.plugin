@@ -43,6 +43,31 @@ Following charts are drawn:
  * free_bytes_temp
  * bytes_temp
 
+5. **System Metrics from gv$sysmetric**
+ * buffer_cachehit_ratio
+ * cursor_cachehit_ratio
+ * library_cachehit_ratio
+ * shared_pool_free
+ * physical_reads
+ * physical_writes
+ * enqueue_timeouts
+ * gc_cr_block_received
+ * cache_blocks_corrupt
+ * cache_blocks_lost
+ * logons
+ * active_sessions
+ * long_table_scans
+ * service_response_time
+ * user_rollbacks
+ * sorts_per_user_call
+ * rows_per_sort
+ * disk_sorts
+ * memory_sorts_ratio
+ * database_wait_time_ratio
+ * session_limit_usage
+ * session_count
+ * temp_space_used
+
 ### configuration
 
 ```yaml
