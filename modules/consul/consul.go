@@ -1,7 +1,14 @@
 package consul
 
 import (
+	"fmt"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"time"
+
 	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -12,14 +19,43 @@ func init() {
 	modules.Register("consul", creator)
 }
 
+const (
+	defURL         = "http://127.0.0.1:8500"
+	defHTTPTimeout = time.Second
+)
+
 // New creates Consul with default values
 func New() *Consul {
-	return &Consul{}
+	return &Consul{
+		HTTP: web.HTTP{
+			Request: web.Request{URL: defURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+		},
+	}
+}
+
+type agentCheck struct {
+	Node        string
+	CheckID     string
+	Name        string
+	Status      string
+	ServiceID   string
+	ServiceName string
+	ServiceTags []string
 }
 
 // Consul consul module
 type Consul struct {
 	modules.Base
+
+	web.HTTP `yaml:",inline"`
+
+	MaxChecks  int `yaml:"max_checks"`
+	Token      string
+	DataCentre string
+
+	reqChecks *http.Request
+	client    *http.Client
 }
 
 // Cleanup makes cleanup
@@ -43,4 +79,28 @@ func (Consul) Charts() *Charts {
 // Collect collects metrics
 func (c *Consul) Collect() map[string]int64 {
 	return nil
+}
+
+func (c *Consul) doRequest(req *http.Request) (*http.Response, error) {
+	return c.client.Do(req)
+}
+
+func (c *Consul) doRequestReqOK(req *http.Request) (resp *http.Response, err error) {
+	if resp, err = c.doRequest(req); err != nil {
+		closeResponse(resp)
+		return nil, fmt.Errorf("error on request to %s : %s", req.URL, err)
+
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		closeResponse(resp)
+		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+	}
+
+	return resp, err
+}
+
+func closeResponse(resp *http.Response) {
+	_, _ = io.Copy(ioutil.Discard, resp.Body)
+	_ = resp.Body.Close()
 }
