@@ -1,6 +1,7 @@
 package consul
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -31,6 +32,8 @@ func New() *Consul {
 			Request: web.Request{URL: defURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
+		activeChecks: make(map[string]bool),
+		charts:       &Charts{},
 	}
 }
 
@@ -50,35 +53,93 @@ type Consul struct {
 
 	web.HTTP `yaml:",inline"`
 
-	MaxChecks  int `yaml:"max_checks"`
-	Token      string
-	DataCentre string
+	MaxChecks int `yaml:"max_checks"`
+	Token     string
 
-	reqChecks *http.Request
-	client    *http.Client
+	charts       *Charts
+	activeChecks map[string]bool
+	client       *http.Client
 }
 
 // Cleanup makes cleanup
 func (Consul) Cleanup() {}
 
 // Init makes initialization
-func (Consul) Init() bool {
-	return false
+func (c *Consul) Init() bool {
+	c.client = web.NewHTTPClient(c.Client)
+
+	return true
 }
 
 // Check makes check
-func (Consul) Check() bool {
-	return false
+func (c *Consul) Check() bool {
+	return c.Collect() != nil
 }
 
 // Charts creates Charts
-func (Consul) Charts() *Charts {
-	return nil
+func (c Consul) Charts() *Charts {
+	return c.charts
 }
 
 // Collect collects metrics
 func (c *Consul) Collect() map[string]int64 {
-	return nil
+	metrics := make(map[string]int64)
+
+	checks, err := c.collectLocalChecks()
+
+	if err != nil {
+		c.Error(err)
+		return nil
+	}
+
+	c.processLocalChecks(checks, metrics)
+
+	return metrics
+}
+
+func (c *Consul) collectLocalChecks() (map[string]*agentCheck, error) {
+	req, err := c.createRequest("/v1/agent/checks")
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.doRequestReqOK(req)
+
+	defer closeBody(resp)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var checks map[string]*agentCheck
+
+	if err = json.NewDecoder(resp.Body).Decode(checks); err != nil {
+		return nil, fmt.Errorf("error on decoding resp from %s : %v", req.URL, err)
+	}
+
+	return checks, nil
+}
+
+func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[string]int64) {
+	count := len(c.activeChecks)
+
+	for id, check := range checks {
+		_, exist := c.activeChecks[id]
+
+		if !exist {
+			if c.MaxChecks != 0 && count > c.MaxChecks {
+				continue
+			}
+			c.activeChecks[id] = true
+			c.addCheckCharts(check)
+		}
+
+	}
+}
+
+func (c *Consul) addCheckCharts(check *agentCheck) {
+
 }
 
 func (c *Consul) doRequest(req *http.Request) (*http.Response, error) {
@@ -87,7 +148,7 @@ func (c *Consul) doRequest(req *http.Request) (*http.Response, error) {
 
 func (c *Consul) doRequestReqOK(req *http.Request) (resp *http.Response, err error) {
 	if resp, err = c.doRequest(req); err != nil {
-		return resp, fmt.Errorf("error on request to %s : %s", req.URL, err)
+		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
 
 	}
 
@@ -96,6 +157,20 @@ func (c *Consul) doRequestReqOK(req *http.Request) (resp *http.Response, err err
 	}
 
 	return resp, err
+}
+
+func (c *Consul) createRequest(uri string) (req *http.Request, err error) {
+	c.Request.URI = uri
+
+	if req, err = web.NewHTTPRequest(c.Request); err != nil {
+		return
+	}
+
+	if c.Token != "" {
+		req.Header.Set("X-Consul-Token", c.Token)
+	}
+
+	return
 }
 
 func closeBody(resp *http.Response) {
