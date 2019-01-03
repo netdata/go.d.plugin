@@ -73,6 +73,11 @@ func (Consul) Cleanup() {}
 
 // Init makes initialization
 func (c *Consul) Init() bool {
+	if c.URL == "" {
+		c.Error("URL is not set")
+		return false
+	}
+
 	c.client = web.NewHTTPClient(c.Client)
 
 	return true
@@ -80,7 +85,7 @@ func (c *Consul) Init() bool {
 
 // Check makes check
 func (c *Consul) Check() bool {
-	return c.Collect() != nil
+	return len(c.Collect()) > 0
 }
 
 // Charts creates Charts
@@ -148,7 +153,7 @@ func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[s
 				continue
 			}
 			c.activeChecks[id] = true
-			c.addCheckCharts(check)
+			c.addCheckChart(check)
 		}
 
 		switch check.Status {
@@ -166,8 +171,8 @@ func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[s
 	}
 }
 
-func (c *Consul) addCheckCharts(check *agentCheck) {
-
+func (c *Consul) addCheckChart(check *agentCheck) {
+	_ = c.charts.Add(createCheckChart(check))
 }
 
 func (c *Consul) doRequest(req *http.Request) (*http.Response, error) {
