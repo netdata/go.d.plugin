@@ -5,7 +5,7 @@ package oracledb
 // )
 
 // func TestExampleOracleDB(t *testing.T) {
-// 	m := New("SYSTEM/Oracle12345@ORCL")
+// 	m := New("SYSTEM/Oracle12345@ORCL") // lsnrctl status
 // 	if expected, got := true, m.Init(); expected != got {
 // 		t.Fatalf("expected init to give [%v] but got [%v]", expected, got)
 // 	}
