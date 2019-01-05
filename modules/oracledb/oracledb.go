@@ -2,7 +2,6 @@ package oracledb
 
 import (
 	"database/sql"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -254,7 +253,7 @@ func (m *OracleDB) collectWaitTime(metrics map[string]int64) error {
 		if err := rows.Scan(&name, &value); err != nil {
 			return err
 		}
-		fmt.Printf("%v\n", metrics["wait_time"+cleanWaitTimeClassname(name)]/1000.0)
+		metrics["wait_time_"+cleanWaitTimeClassname(name)] = int64(value * 1000)
 	}
 
 	/*
