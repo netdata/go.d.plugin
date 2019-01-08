@@ -12,7 +12,7 @@ import (
 
 func init() {
 	creator := modules.Creator{
-		Create: func() modules.Module { return New("") },
+		Create: func() modules.Module { return New() },
 	}
 
 	modules.Register("oracledb", creator)
@@ -21,15 +21,13 @@ func init() {
 // OracleDB oracledb module.
 type OracleDB struct {
 	modules.Base
-	DSN string `yaml:"dsn,omitempty"`
+	DSN string `yaml:"dsn"`
 	db  *sql.DB
 }
 
 // New creates OracleDB mod.
-func New(dsn string) *OracleDB {
-	return &OracleDB{
-		DSN: dsn,
-	}
+func New() *OracleDB {
+	return &OracleDB{}
 }
 
 // Cleanup performs cleanup.
@@ -43,6 +41,7 @@ func (m *OracleDB) Cleanup() {
 // Init makes initialization of the OracleDB mod.
 func (m *OracleDB) Init() bool {
 	if m.DSN == "" {
+		m.Errorf("dsn is missing")
 		return false
 	}
 
