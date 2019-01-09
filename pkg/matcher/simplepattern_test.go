@@ -63,7 +63,7 @@ func TestSimplePatterns_Match(t *testing.T) {
 }
 
 func TestSimplePatterns_Add(t *testing.T) {
-	sps := make(SimplePatterns, 0)
+	sps := &SimplePatterns{}
 
 	cases := []struct {
 		error   error
@@ -87,7 +87,7 @@ func TestSimplePatterns_Add(t *testing.T) {
 		assert.Equal(t, c.error, sps.Add(c.pattern))
 	}
 
-	assert.Len(t, sps, 2)
+	assert.Len(t, sps.Patterns, 2)
 }
 
 func TestCreateSimplePatterns(t *testing.T) {
@@ -96,9 +96,9 @@ func TestCreateSimplePatterns(t *testing.T) {
 	sps, err := CreateSimplePatterns(line)
 
 	require.NoError(t, err)
-	assert.Len(t, *sps, 4)
-	assert.False(t, (*sps)[0].Negative)
-	assert.True(t, (*sps)[1].Negative)
-	assert.True(t, (*sps)[2].Negative)
-	assert.False(t, (*sps)[3].Negative)
+	assert.Len(t, sps.Patterns, 4)
+	assert.False(t, sps.Patterns[0].Negative)
+	assert.True(t, sps.Patterns[1].Negative)
+	assert.True(t, sps.Patterns[2].Negative)
+	assert.False(t, sps.Patterns[3].Negative)
 }

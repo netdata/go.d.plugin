@@ -17,7 +17,12 @@ type SimplePattern struct {
 	ShellMatch
 }
 
-type SimplePatterns []SimplePattern
+type SimplePatterns struct {
+	UseCache bool
+	Patterns []SimplePattern
+
+	cache map[string]bool
+}
 
 func (s *SimplePatterns) Add(pattern string) error {
 	if err := checkShellPattern(pattern); err != nil {
@@ -33,13 +38,26 @@ func (s *SimplePatterns) Add(pattern string) error {
 		sp.Pattern = pattern
 	}
 
-	*s = append(*s, sp)
+	s.Patterns = append(s.Patterns, sp)
 
 	return nil
 }
 
 func (s SimplePatterns) Match(line string) bool {
-	for _, p := range s {
+	if s.UseCache {
+		if v, ok := s.cache[line]; ok {
+			return v
+		}
+	}
+
+	matched := s.match(line)
+	s.cache[line] = matched
+
+	return matched
+}
+
+func (s SimplePatterns) match(line string) bool {
+	for _, p := range s.Patterns {
 		if p.Match(line) {
 			if p.Negative {
 				return false
@@ -51,7 +69,7 @@ func (s SimplePatterns) Match(line string) bool {
 }
 
 func CreateSimplePatterns(line string) (*SimplePatterns, error) {
-	sps := make(SimplePatterns, 0)
+	sps := &SimplePatterns{UseCache: true, cache: make(map[string]bool)}
 
 	for _, pattern := range strings.Fields(line) {
 
@@ -60,7 +78,7 @@ func CreateSimplePatterns(line string) (*SimplePatterns, error) {
 		}
 	}
 
-	return &sps, nil
+	return sps, nil
 }
 
 func checkShellPattern(pattern string) error {
