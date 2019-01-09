@@ -64,6 +64,6 @@ func CreateSimplePatterns(line string) (*SimplePatterns, error) {
 }
 
 func checkShellPattern(pattern string) error {
-	_, err := filepath.Match(pattern, "")
+	_, err := filepath.Match(pattern, "QQ")
 	return err
 }
