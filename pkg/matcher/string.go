@@ -2,9 +2,9 @@ package matcher
 
 import "strings"
 
-type StringContains struct{ SubStr string }
+type StringContains struct{ Substr string }
 
-func (m StringContains) Match(line string) bool { return strings.Contains(line, m.SubStr) }
+func (m StringContains) Match(line string) bool { return strings.Contains(line, m.Substr) }
 
 type StringPrefix struct{ Prefix string }
 

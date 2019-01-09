@@ -19,6 +19,25 @@ type SimplePattern struct {
 
 type SimplePatterns []SimplePattern
 
+func (s *SimplePatterns) Add(pattern string) error {
+	if err := checkShellPattern(pattern); err != nil {
+		return err
+	}
+
+	sp := SimplePattern{}
+
+	if strings.HasPrefix(pattern, "!") {
+		sp.Negative = true
+		sp.Pattern = pattern[1:]
+	} else {
+		sp.Pattern = pattern
+	}
+
+	*s = append(*s, sp)
+
+	return nil
+}
+
 func (s SimplePatterns) Match(line string) bool {
 	for _, p := range s {
 		if p.Match(line) {
@@ -33,20 +52,9 @@ func CreateSimplePatterns(line string) (*SimplePatterns, error) {
 
 	for _, pattern := range strings.Fields(line) {
 
-		if err := checkShellPattern(pattern); err != nil {
+		if err := sps.Add(pattern); err != nil {
 			return nil, err
 		}
-
-		sp := SimplePattern{}
-
-		if strings.HasPrefix(pattern, "!") {
-			sp.Negative = true
-			sp.Pattern = pattern[1:]
-		} else {
-			sp.Pattern = pattern
-		}
-
-		sps = append(sps, sp)
 	}
 
 	return &sps, nil
