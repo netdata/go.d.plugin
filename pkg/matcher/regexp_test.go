@@ -10,6 +10,25 @@ import (
 func TestRegexpMatch_Match(t *testing.T) {
 	m := RegexpMatch{regexp.MustCompile("[0-9]+")}
 
-	assert.True(t, m.Match("Match 2018"))
-	assert.False(t, m.Match("No Match"))
+	cases := []struct {
+		expected bool
+		line     string
+	}{
+		{
+			expected: true,
+			line:     "2019",
+		},
+		{
+			expected: true,
+			line:     "It's over 9000!",
+		},
+		{
+			expected: false,
+			line:     "This will never fail!",
+		},
+	}
+
+	for _, c := range cases {
+		assert.Equal(t, c.expected, m.Match(c.line))
+	}
 }
