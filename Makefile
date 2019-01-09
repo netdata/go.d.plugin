@@ -1,24 +1,46 @@
-GO  := go
 
 all: download vet test build
 
-download:
+.PHONY: help
+help:
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: download
+download: ## Download go modules
 	go mod download
 
-build:
-	mkdir -p dist
-	$(GO) build -o dist/godplugin github.com/netdata/go.d.plugin/cmd/godplugin
+.PHONY: build
+build: clean ## Build package
+	hack/go-build.sh
 
+.PHONY: clean
 clean:
-	rm -rf dist
+	rm -rf bin
 
-test:
-	$(GO) test ./... -race -cover -covermode=atomic
+.PHONY: check
+check: fmt vet lint ## Run static code analysis
 
-vet:
-	$(GO) vet ./...
 
-dev: dev-build dev-up
+.PHONY: test
+test: ## Run tests
+	go test ./... -race -cover -covermode=atomic
+
+.PHONY: fmt
+fmt:
+	hack/go-fmt.sh .
+
+.PHONY: vet
+vet: 
+	go vet ./...
+
+.PHONY: release
+release: clean download ## Create all release artifacts
+	hack/go-build.sh all
+	tar -zcvf bin/config.tar.gz -C config .
+	cd bin && sha256sum -b * >"sha256sums.txt"
+
+.PHONY: dev
+dev: dev-build dev-up ## Launch development build
 
 dev-build:
 	docker-compose build
@@ -26,11 +48,12 @@ dev-build:
 dev-up:
 	docker-compose up -d
 
-dev-exec:
+.PHONY: dev-exec
+dev-exec: ## Get into development environment
 	docker-compose exec netdata bash
 
 dev-log:
 	docker-compose logs -f netdata
 
-dev-run:
+dev-run: ## Run go.d.plugin inside development environment
 	go run github.com/netdata/go.d.plugin/cmd/godplugin -d -c conf.d

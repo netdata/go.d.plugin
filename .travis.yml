@@ -1,7 +1,23 @@
 ---
 language: go
-
 go:
   - 1.11
 
-script: GO111MODULE=on make all
+env:
+  - GO111MODULE=on
+
+stages:
+- build
+- name: release
+  if: tag =~ ^v
+
+jobs:
+  include:
+  - stage: build
+    name: lint & test & build
+    script: make all
+  - stage: release
+    name: publish release artifacts
+    script:
+      - make release
+      - .travis/publisher.sh

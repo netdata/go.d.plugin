@@ -1,5 +1,5 @@
 .idea
-/dist
+bin/
 mocks/springboot2/.gradle/5.0/fileChanges/last-build.bin
 mocks/springboot2/.gradle/5.0/fileHashes/fileHashes.bin
 mocks/springboot2/.gradle/5.0/fileHashes/fileHashes.lock
