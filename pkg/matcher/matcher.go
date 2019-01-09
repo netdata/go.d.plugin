@@ -12,11 +12,14 @@ const (
 	methodSimplePattern = "simplepattern"
 )
 
-type Mather interface {
+// Matcher is an interface that wraps Match method.
+type Matcher interface {
 	Match(string) bool
 }
 
-func CreateMatcher(line string) (Mather, error) {
+// CreateMatcher creates matcher.
+// Syntax: method=expression, valid methods: string, regexp, simplepattern.
+func CreateMatcher(line string) (Matcher, error) {
 	parts := strings.SplitN(line, "=", 2)
 
 	if len(parts) == 2 && parts[1] == "" || len(parts) != 2 {
@@ -37,7 +40,7 @@ func CreateMatcher(line string) (Mather, error) {
 	}
 }
 
-func createStringMatcher(expr string) Mather {
+func createStringMatcher(expr string) Matcher {
 	if strings.HasPrefix(expr, "^") {
 		return &StringPrefix{expr[1:]}
 	}
@@ -47,7 +50,7 @@ func createStringMatcher(expr string) Mather {
 	return &StringContains{expr}
 }
 
-func createRegexpMatcher(expr string) (Mather, error) {
+func createRegexpMatcher(expr string) (Matcher, error) {
 	re, err := regexp.Compile(expr)
 	if err != nil {
 		return nil, err

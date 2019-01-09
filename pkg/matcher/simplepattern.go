@@ -5,18 +5,22 @@ import (
 	"strings"
 )
 
+// ShellMatch implements Matcher, it uses filepath.Match to match.
 type ShellMatch struct{ Pattern string }
 
+// Match matches.
 func (m ShellMatch) Match(line string) bool {
 	ok, _ := filepath.Match(m.Pattern, line)
 	return ok
 }
 
+// SimplePattern implements Matcher, it uses filepath.Match to match.
 type SimplePattern struct {
 	Negative bool
 	ShellMatch
 }
 
+// SimplePatterns implements Matcher, it is an ordered collection of SimplePatterns.
 type SimplePatterns struct {
 	UseCache bool
 	Patterns []SimplePattern
@@ -24,6 +28,7 @@ type SimplePatterns struct {
 	cache map[string]bool
 }
 
+// Add adds pattern to the collections. The only possible returned error is ErrBadPattern.
 func (s *SimplePatterns) Add(pattern string) error {
 	if err := checkShellPattern(pattern); err != nil {
 		return err
@@ -43,6 +48,7 @@ func (s *SimplePatterns) Add(pattern string) error {
 	return nil
 }
 
+// Match matches.
 func (s SimplePatterns) Match(line string) bool {
 	if !s.UseCache {
 		return s.match(line)
@@ -70,6 +76,7 @@ func (s SimplePatterns) match(line string) bool {
 	return false
 }
 
+// CreateSimplePatterns creates cached SimplePatterns.
 func CreateSimplePatterns(line string) (*SimplePatterns, error) {
 	sps := &SimplePatterns{UseCache: true, cache: make(map[string]bool)}
 
