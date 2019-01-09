@@ -44,10 +44,12 @@ func (s *SimplePatterns) Add(pattern string) error {
 }
 
 func (s SimplePatterns) Match(line string) bool {
-	if s.UseCache {
-		if v, ok := s.cache[line]; ok {
-			return v
-		}
+	if !s.UseCache {
+		return s.match(line)
+	}
+
+	if v, ok := s.cache[line]; ok {
+		return v
 	}
 
 	matched := s.match(line)
