@@ -41,7 +41,10 @@ func (s *SimplePatterns) Add(pattern string) error {
 func (s SimplePatterns) Match(line string) bool {
 	for _, p := range s {
 		if p.Match(line) {
-			return p.Negative
+			if p.Negative {
+				return false
+			}
+			return true
 		}
 	}
 	return false
