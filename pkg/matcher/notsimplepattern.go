@@ -9,69 +9,46 @@ type NotSimplePattern struct {
 	GlobMatch
 }
 
-// NotSimplePatterns implements Matcher, it is an ordered collection of NotSimplePatterns.
-type NotSimplePatterns struct {
-	UseCache bool
-	Patterns []NotSimplePattern
-
-	cache map[string]bool
-}
+// NotSimplePatterns implements Matcher, it is an ordered collection of patterns.
+type NotSimplePatterns []NotSimplePattern
 
 // Add adds pattern to the collections. The only possible returned error is ErrBadPattern.
-func (s *NotSimplePatterns) Add(pattern string) error {
-	if err := checkGlobPatterns(pattern); err != nil {
-		return err
-	}
+func (nsp *NotSimplePatterns) Add(pat string) error {
+	//if err := checkGlobPatterns(pattern); err != nil {
+	//	return err
+	//}
 
-	gp := NotSimplePattern{}
+	p := NotSimplePattern{}
 
-	if strings.HasPrefix(pattern, "!") {
-		gp.Exclude = true
-		gp.Pattern = pattern[1:]
+	if strings.HasPrefix(pat, "!") {
+		p.Exclude = true
+		p.Pattern = pat[1:]
 	} else {
-		gp.Pattern = pattern
+		p.Pattern = pat
 	}
 
-	s.Patterns = append(s.Patterns, gp)
+	*nsp = append(*nsp, p)
 
 	return nil
 }
 
 // Match matches.
-func (s NotSimplePatterns) Match(line string) bool {
-	if !s.UseCache {
-		return s.match(line)
-	}
-
-	if v, ok := s.cache[line]; ok {
-		return v
-	}
-
-	matched := s.match(line)
-	s.cache[line] = matched
-
-	return matched
-}
-
-func (s NotSimplePatterns) match(line string) bool {
-	for _, p := range s.Patterns {
+func (nsp NotSimplePatterns) Match(line string) bool {
+	for _, p := range nsp {
 		if p.Match(line) {
-			if p.Exclude {
-				return false
-			}
-			return true
+			return !p.Exclude
 		}
 	}
 	return false
 }
 
-func CreateNotSimplePatterns(line string) (*NotSimplePatterns, error) {
-	sps := &NotSimplePatterns{UseCache: true, cache: make(map[string]bool)}
-	for _, pattern := range strings.Fields(line) {
+func CreateSimplePatterns(expr string) (*NotSimplePatterns, error) {
+	nsp := make(NotSimplePatterns, 0)
 
-		if err := sps.Add(pattern); err != nil {
+	for _, pattern := range strings.Fields(expr) {
+		if err := nsp.Add(pattern); err != nil {
 			return nil, err
 		}
 	}
-	return sps, nil
+	return &nsp, nil
 }

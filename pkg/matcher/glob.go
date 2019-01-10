@@ -6,13 +6,6 @@ import (
 	"unicode/utf8"
 )
 
-func createGlobMatcher(expr string) (Matcher, error) {
-	if err := checkGlobPatterns(expr); err != nil {
-		return nil, err
-	}
-	return &GlobMatch{expr}, nil
-}
-
 type GlobMatch struct{ Pattern string }
 
 func (m GlobMatch) Match(line string) bool {
@@ -203,9 +196,4 @@ func getEsc(chunk string) (r rune, nchunk string, err error) {
 		err = filepath.ErrBadPattern
 	}
 	return
-}
-
-func checkGlobPatterns(pattern string) error {
-	_, err := filepath.Match(pattern, "QQ")
-	return err
 }

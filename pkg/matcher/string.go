@@ -2,19 +2,6 @@ package matcher
 
 import "strings"
 
-func createStringMatcher(expr string) Matcher {
-	switch {
-	case len(expr) > 2 && strings.HasPrefix(expr, "^") && strings.HasSuffix(expr, "$"):
-		return &StringFull{expr[1 : len(expr)-1]}
-	case strings.HasPrefix(expr, "^"):
-		return &StringPrefix{expr[1:]}
-	case strings.HasSuffix(expr, "$"):
-		return &StringSuffix{expr[:len(expr)-1]}
-	default:
-		return &StringPartial{expr}
-	}
-}
-
 // StringFull implements Matcher, it uses "==" to match.
 type StringFull struct{ Str string }
 
