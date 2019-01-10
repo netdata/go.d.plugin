@@ -191,7 +191,7 @@ func (c *Consul) createRequest(uri string) (req *http.Request, err error) {
 	}
 
 	if c.ACLToken != "" {
-		req.Header.Set("X-Consul-ACLToken", c.ACLToken)
+		req.Header.Set("X-Consul-Token", c.ACLToken)
 	}
 
 	return
