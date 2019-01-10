@@ -34,8 +34,8 @@ func TestCreateMatcher(t *testing.T) {
 		},
 		{
 			valid:        true,
-			line:         "simplepattern=*foo !bar* *",
-			expectedType: &SimplePatterns{},
+			line:         "shell=*foo",
+			expectedType: &ShellMatch{},
 		},
 		{
 			valid:        false,

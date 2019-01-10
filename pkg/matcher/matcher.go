@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	methodString        = "string"
-	methodRegexp        = "regexp"
-	methodSimplePattern = "simplepattern"
+	methodString = "string"
+	methodRegexp = "regexp"
+	methodShell  = "shell"
 )
 
 // Matcher is an interface that wraps Match method.
@@ -18,7 +18,7 @@ type Matcher interface {
 }
 
 // CreateMatcher creates matcher.
-// Syntax: method=expression, valid methods: string, regexp, simplepattern.
+// Syntax: method=expression, valid methods: string, regexp, shell.
 func CreateMatcher(line string) (Matcher, error) {
 	parts := strings.SplitN(line, "=", 2)
 
@@ -29,8 +29,8 @@ func CreateMatcher(line string) (Matcher, error) {
 	method, expr := parts[0], parts[1]
 
 	switch method {
-	case methodSimplePattern:
-		return CreateSimplePatterns(expr)
+	case methodShell:
+		return createShellMatcher(expr)
 	case methodRegexp:
 		return createRegexpMatcher(expr)
 	case methodString:
@@ -56,4 +56,12 @@ func createRegexpMatcher(expr string) (Matcher, error) {
 		return nil, err
 	}
 	return &RegexpMatch{re}, nil
+}
+
+func createShellMatcher(expr string) (Matcher, error) {
+	if err := checkShellPattern(expr); err != nil {
+		return nil, err
+	}
+
+	return &ShellMatch{expr}, nil
 }
