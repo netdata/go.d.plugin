@@ -78,7 +78,7 @@ func (c *Consul) Init() bool {
 	if c.ChecksFilter != "" {
 		sps, err := notsimplepattern.Create(c.ChecksFilter)
 		if err != nil {
-			c.Errorf("error on creating checks checksFilter : %v", err)
+			c.Errorf("error on creating checks filter : %v", err)
 			return false
 		}
 
@@ -160,7 +160,7 @@ func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[s
 	}
 
 	if unp > 0 {
-		c.Warningf("%d checks was unprocessed due to max_checks filter (%d)", unp, c.MaxChecks)
+		c.Warningf("%d checks were unprocessed due to max_checks limit (%d)", unp, c.MaxChecks)
 	}
 }
 
