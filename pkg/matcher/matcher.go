@@ -39,8 +39,8 @@ type NegMatcher struct{ Matcher }
 // Match matches
 func (m NegMatcher) Match(line string) bool { return !m.Matcher.Match(line) }
 
-// CreateMatcher creates matcher based on match format.
-func CreateMatcher(format MatchFormat, expr string) (m Matcher, err error) {
+// Create creates matcher based on match format.
+func Create(format MatchFormat, expr string) (m Matcher, err error) {
 	switch format {
 	case FmtString, FmtNegString:
 		m = createStringMatcher(expr)
@@ -68,7 +68,7 @@ func Parse(line string) (Matcher, error) {
 	if len(parts) != 2 {
 		return nil, errors.New("unsupported matcher syntax")
 	}
-	return CreateMatcher(MatchFormat(parts[0]), parts[1])
+	return Create(MatchFormat(parts[0]), parts[1])
 }
 
 func createStringMatcher(expr string) Matcher {

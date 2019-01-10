@@ -1,65 +1,75 @@
 package matcher
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestCreateMatcher(t *testing.T) {
-	//cases := []struct {
-	//	valid        bool
-	//	line         string
-	//	expectedType Matcher
-	//}{
-	//	{
-	//		valid:        true,
-	//		line:         "string=hello",
-	//		expectedType: &StringContains{},
-	//	},
-	//	{
-	//		valid:        true,
-	//		line:         "string=^hello",
-	//		expectedType: &StringPrefix{},
-	//	},
-	//	{
-	//		valid:        true,
-	//		line:         "string=hello$",
-	//		expectedType: &StringSuffix{},
-	//	},
-	//	{
-	//		valid:        true,
-	//		line:         "regexp=[0-9]+",
-	//		expectedType: &RegExp{},
-	//	},
-	//	{
-	//		valid:        true,
-	//		line:         "shell=*foo",
-	//		expectedType: &ShellMatch{},
-	//	},
-	//	{
-	//		valid:        false,
-	//		line:         "unknown=*foo !bar* *",
-	//		expectedType: nil,
-	//	},
-	//	{
-	//		valid:        false,
-	//		line:         "no method",
-	//		expectedType: nil,
-	//	},
-	//	{
-	//		valid:        false,
-	//		line:         "=empty",
-	//		expectedType: nil,
-	//	},
-	//}
-	//
-	//for _, c := range cases {
-	//	m, err := CreateMatcher(c.line)
-	//	assert.IsType(t, c.expectedType, m)
-	//	if c.valid {
-	//		assert.NoError(t, err)
-	//	} else {
-	//		assert.Error(t, err)
-	//	}
-	//}
+func TestParse(t *testing.T) {
+	cases := []struct {
+		valid        bool
+		line         string
+		expectedType Matcher
+	}{
+		{
+			valid:        true,
+			line:         "=:^full$",
+			expectedType: &StringFull{},
+		},
+		{
+			valid:        true,
+			line:         "=:^prefix",
+			expectedType: &StringPrefix{},
+		},
+		{
+			valid:        true,
+			line:         "=:suffix$",
+			expectedType: &StringSuffix{},
+		},
+		{
+			valid:        true,
+			line:         "=:partial",
+			expectedType: &StringPartial{},
+		},
+		{
+			valid:        true,
+			line:         "*:glob",
+			expectedType: &GlobMatch{},
+		},
+		{
+			valid:        true,
+			line:         "~:regexp",
+			expectedType: &RegExpMatch{},
+		},
+		{
+			valid:        false,
+			line:         "no method",
+			expectedType: nil,
+		},
+		{
+			valid:        false,
+			line:         ":empty",
+			expectedType: nil,
+		},
+		{
+			valid:        true,
+			line:         "!~:regexp",
+			expectedType: &NegMatcher{},
+		},
+		{
+			valid:        true,
+			line:         "!*:glob",
+			expectedType: &NegMatcher{},
+		},
+	}
 
+	for _, c := range cases {
+		m, err := Parse(c.line)
+		assert.IsType(t, c.expectedType, m)
+		if c.valid {
+			assert.NoError(t, err)
+		} else {
+			assert.Error(t, err)
+		}
+	}
 }
