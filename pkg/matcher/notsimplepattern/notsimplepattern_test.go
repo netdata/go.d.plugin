@@ -1,4 +1,4 @@
-package matcher
+package notsimplepattern
 
 //func TestShellMatch_Match(t *testing.T) {
 //	m := ShellMatch{"*bar*"}

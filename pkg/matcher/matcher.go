@@ -7,45 +7,39 @@ import (
 	"strings"
 )
 
+// MatchFormat match format
 type MatchFormat string
 
 const (
-	FmtString    MatchFormat = "="
-	FmtGlob      MatchFormat = "*"
-	FmtRegExp    MatchFormat = "~"
+	// FmtString is a string match format
+	FmtString MatchFormat = "="
+	// FmtGlob is a glob match format
+	FmtGlob MatchFormat = "*"
+	// FmtRegExp is a regex[ match format
+	FmtRegExp MatchFormat = "~"
+	// FmtNegString is a negative string match format
 	FmtNegString MatchFormat = "!="
-	FmtNegGlob   MatchFormat = "!*"
+	// FmtNegGlob is a negative glob match format
+	FmtNegGlob MatchFormat = "!*"
+	// FmtNegRegExp is a negative regexp match format
 	FmtNegRegExp MatchFormat = "!~"
 )
 
-const separator = ":"
+// Separator is a separator between match format and expression.
+const Separator = ":"
 
 // Matcher is an interface that wraps Match method.
 type Matcher interface {
 	Match(string) bool
 }
 
+// NegMatcher is a Matcher wrapper. It returns negative match.
 type NegMatcher struct{ Matcher }
 
+// Match matches
 func (m NegMatcher) Match(line string) bool { return !m.Matcher.Match(line) }
 
-type CachedMatcher struct {
-	Cache map[string]bool
-	Matcher
-}
-
-func (m CachedMatcher) Match(line string) bool {
-	if v, ok := m.Cache[line]; ok {
-		return v
-	}
-
-	matched := m.Matcher.Match(line)
-	m.Cache[line] = matched
-
-	return matched
-}
-
-// CreateMatcher creates matcher.
+// CreateMatcher creates matcher based on match format.
 func CreateMatcher(format MatchFormat, expr string) (m Matcher, err error) {
 	switch format {
 	case FmtString, FmtNegString:
@@ -68,8 +62,9 @@ func CreateMatcher(format MatchFormat, expr string) (m Matcher, err error) {
 	return m, nil
 }
 
+// Parses parses line and returns appropriate matcher based on match format.
 func Parse(line string) (Matcher, error) {
-	parts := strings.SplitN(line, separator, 2)
+	parts := strings.SplitN(line, Separator, 2)
 	if len(parts) != 2 {
 		return nil, errors.New("unsupported matcher syntax")
 	}
@@ -94,7 +89,7 @@ func createStringMatcher(expr string) Matcher {
 }
 
 func createGlobMatcher(expr string) (Matcher, error) {
-	if err := checkGlobPatterns(expr); err != nil {
+	if _, err := filepath.Match(expr, "QQ"); err != nil {
 		return nil, err
 	}
 	return &GlobMatch{expr}, nil
@@ -106,9 +101,4 @@ func createRegExpMatcher(expr string) (Matcher, error) {
 		return nil, err
 	}
 	return &RegExpMatch{re}, nil
-}
-
-func checkGlobPatterns(pattern string) error {
-	_, err := filepath.Match(pattern, "QQ")
-	return err
 }
