@@ -4,26 +4,26 @@ import (
 	"strings"
 )
 
-type GlobPattern struct {
+type NotSimplePattern struct {
 	Exclude bool
 	GlobMatch
 }
 
-// GlobPatterns implements Matcher, it is an ordered collection of GlobPatterns.
-type GlobPatterns struct {
+// NotSimplePatterns implements Matcher, it is an ordered collection of NotSimplePatterns.
+type NotSimplePatterns struct {
 	UseCache bool
-	Patterns []GlobPattern
+	Patterns []NotSimplePattern
 
 	cache map[string]bool
 }
 
 // Add adds pattern to the collections. The only possible returned error is ErrBadPattern.
-func (s *GlobPatterns) Add(pattern string) error {
+func (s *NotSimplePatterns) Add(pattern string) error {
 	if err := checkGlobPatterns(pattern); err != nil {
 		return err
 	}
 
-	gp := GlobPattern{}
+	gp := NotSimplePattern{}
 
 	if strings.HasPrefix(pattern, "!") {
 		gp.Exclude = true
@@ -38,7 +38,7 @@ func (s *GlobPatterns) Add(pattern string) error {
 }
 
 // Match matches.
-func (s GlobPatterns) Match(line string) bool {
+func (s NotSimplePatterns) Match(line string) bool {
 	if !s.UseCache {
 		return s.match(line)
 	}
@@ -53,7 +53,7 @@ func (s GlobPatterns) Match(line string) bool {
 	return matched
 }
 
-func (s GlobPatterns) match(line string) bool {
+func (s NotSimplePatterns) match(line string) bool {
 	for _, p := range s.Patterns {
 		if p.Match(line) {
 			if p.Exclude {
@@ -65,15 +65,13 @@ func (s GlobPatterns) match(line string) bool {
 	return false
 }
 
-func CreateGlobPatterns(line string) (*GlobPatterns, error) {
-	sps := &GlobPatterns{UseCache: true, cache: make(map[string]bool)}
-
+func CreateNotSimplePatterns(line string) (*NotSimplePatterns, error) {
+	sps := &NotSimplePatterns{UseCache: true, cache: make(map[string]bool)}
 	for _, pattern := range strings.Fields(line) {
 
 		if err := sps.Add(pattern); err != nil {
 			return nil, err
 		}
 	}
-
 	return sps, nil
 }
