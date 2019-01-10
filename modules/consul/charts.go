@@ -29,20 +29,3 @@ var charts = Charts{
 		Ctx:   "consul.checks",
 	},
 }
-
-//func createCheckChart(check *agentCheck) (chart *Chart) {
-//	if check.ServiceID != "" {
-//		chart = boundCheckChart.Copy()
-//		chart.ID = fmt.Sprintf(chart.ID, check.CheckID)
-//		chart.Title = fmt.Sprintf(chart.Title, check.ServiceID, check.ServiceName, check.CheckID, check.Name)
-//	} else {
-//		chart = unboundCheckChart.Copy()
-//		chart.ID = fmt.Sprintf(chart.ID, check.CheckID)
-//		chart.Title = fmt.Sprintf(chart.Title, check.CheckID, check.Name)
-//	}
-//
-//	for _, dim := range chart.Dims {
-//		dim.ID = fmt.Sprintf(dim.ID, check.CheckID)
-//	}
-//	return chart
-//}
