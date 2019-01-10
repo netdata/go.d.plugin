@@ -2,66 +2,65 @@ package matcher
 
 import (
 	"errors"
-	"regexp"
 	"strings"
 )
 
+type MatchFormat string
+
 const (
-	methodString = "string"
-	methodRegexp = "regexp"
-	methodShell  = "shell"
+	FmtString    MatchFormat = "="
+	FmtGlob      MatchFormat = "*"
+	FmtRegExp    MatchFormat = "~"
+	FmtNegString MatchFormat = "!="
+	FmtNegGlob   MatchFormat = "!*"
+	FmtNegRegExp MatchFormat = "!~"
 )
+
+const separator = ":"
 
 // Matcher is an interface that wraps Match method.
 type Matcher interface {
 	Match(string) bool
 }
 
+type NegMatcher struct{ Matcher }
+
+func (m NegMatcher) Match(line string) bool { return !m.Matcher.Match(line) }
+
 // CreateMatcher creates matcher.
-// Syntax: method=expression, valid methods: string, regexp, shell.
-func CreateMatcher(line string) (Matcher, error) {
-	parts := strings.SplitN(line, "=", 2)
-
-	if len(parts) == 2 && parts[1] == "" || len(parts) != 2 {
-		return nil, errors.New("unsupported match syntax")
+func CreateMatcher(format MatchFormat, expr string) (m Matcher, err error) {
+	switch format {
+	case FmtString, FmtNegString:
+		m = createStringMatcher(expr)
+	case FmtRegExp, FmtNegRegExp:
+		m, err = createRegExpMatcher(expr)
+	case FmtGlob, FmtNegGlob:
+		m, err = createGlobMatcher(expr)
 	}
 
-	method, expr := parts[0], parts[1]
-
-	switch method {
-	case methodShell:
-		return createShellMatcher(expr)
-	case methodRegexp:
-		return createRegexpMatcher(expr)
-	case methodString:
-		return createStringMatcher(expr), nil
-	default:
-		return nil, errors.New("unsupported match method")
-	}
-}
-
-func createStringMatcher(expr string) Matcher {
-	if strings.HasPrefix(expr, "^") {
-		return &StringPrefix{expr[1:]}
-	}
-	if strings.HasSuffix(expr, "$") {
-		return &StringSuffix{expr[:len(expr)-1]}
-	}
-	return &StringContains{expr}
-}
-
-func createRegexpMatcher(expr string) (Matcher, error) {
-	re, err := regexp.Compile(expr)
 	if err != nil {
 		return nil, err
 	}
-	return &RegexpMatch{re}, nil
-}
 
-func createShellMatcher(expr string) (Matcher, error) {
-	if err := checkShellPattern(expr); err != nil {
-		return nil, err
+	if m == nil {
+		return nil, errors.New("unsupported matcher method")
+
 	}
 
-	return &ShellMatch{expr}, nil
+	if format[0] == '!' {
+
+		return &NegMatcher{m}, nil
+
+	}
+
+	return m, nil
+
+}
+
+func Parse(line string) (Matcher, error) {
+	parts := strings.SplitN(line, separator, 2)
+	if len(parts) != 2 {
+		return nil, errors.New("unsupported matcher syntax")
+	}
+	return CreateMatcher(MatchFormat(parts[0]), parts[1])
 }
