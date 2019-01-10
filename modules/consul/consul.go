@@ -1,14 +1,10 @@
 package consul
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go.d.plugin/pkg/matcher/notsimplepattern"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -23,6 +19,7 @@ func init() {
 const (
 	defURL         = "http://127.0.0.1:8500"
 	defHTTPTimeout = time.Second
+	defMaxChecks   = 50
 )
 
 const (
@@ -32,68 +29,76 @@ const (
 	healthMaint    = "maintenance"
 )
 
-// New creates Consul with default values
+// New creates Consul with default values.
 func New() *Consul {
 	return &Consul{
 		HTTP: web.HTTP{
 			Request: web.Request{URL: defURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
+		MaxChecks:    defMaxChecks,
 		activeChecks: make(map[string]bool),
 		charts:       &Charts{},
 	}
 }
 
-type agentCheck struct {
-	Node        string
-	CheckID     string
-	Name        string
-	Status      string
-	ServiceID   string
-	ServiceName string
-	ServiceTags []string
-}
-
-// Consul consul module
+// Consul consul module.
 type Consul struct {
 	modules.Base
 
 	web.HTTP `yaml:",inline"`
 
-	MaxChecks int    `yaml:"max_checks"`
-	ACLToken  string `yaml:"acl_token"`
+	ACLToken     string `yaml:"acl_token"`
+	MaxChecks    int    `yaml:"max_checks"`
+	ChecksFilter string `yaml:"checks_filter"`
 
 	charts       *Charts
 	activeChecks map[string]bool
-	client       *http.Client
+	checksFilter *notsimplepattern.Patterns
+	apiClient    *apiClient
 }
 
-// Cleanup makes cleanup
+// Cleanup makes cleanup.
 func (Consul) Cleanup() {}
 
-// Init makes initialization
+// Init makes initialization.
 func (c *Consul) Init() bool {
 	if c.URL == "" {
 		c.Error("URL is not set")
 		return false
 	}
 
-	c.client = web.NewHTTPClient(c.Client)
+	c.apiClient = &apiClient{
+		aclToken:   c.ACLToken,
+		req:        c.Request,
+		httpClient: web.NewHTTPClient(c.Client),
+	}
+
+	if c.ChecksFilter != "" {
+		sps, err := notsimplepattern.Create(c.ChecksFilter)
+		if err != nil {
+			c.Errorf("error on creating checks checksFilter : %v", err)
+			return false
+		}
+
+		sps.UseCache = true
+		c.checksFilter = sps
+	}
 
 	return true
 }
 
-// Check makes check
+// Check makes check.
 func (c *Consul) Check() bool {
 	return len(c.Collect()) > 0
 }
 
-// Charts creates Charts
+// Charts creates Charts.
 func (c Consul) Charts() *Charts {
 	return c.charts
 }
 
-// Collect collects metrics
+// Collect collects metrics.
 func (c *Consul) Collect() map[string]int64 {
 	metrics := make(map[string]int64)
 
@@ -106,7 +111,7 @@ func (c *Consul) Collect() map[string]int64 {
 }
 
 func (c *Consul) collectLocalChecks(metrics map[string]int64) error {
-	checks, err := c.getLocalChecks()
+	checks, err := c.apiClient.localChecks()
 
 	if err != nil {
 		return err
@@ -117,30 +122,6 @@ func (c *Consul) collectLocalChecks(metrics map[string]int64) error {
 	return nil
 }
 
-func (c *Consul) getLocalChecks() (map[string]*agentCheck, error) {
-	req, err := c.createRequest("/v1/agent/checks")
-
-	if err != nil {
-		return nil, fmt.Errorf("error on creating request : %v", err)
-	}
-
-	resp, err := c.doRequestReqOK(req)
-
-	defer closeBody(resp)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var checks map[string]*agentCheck
-
-	if err = json.NewDecoder(resp.Body).Decode(&checks); err != nil {
-		return nil, fmt.Errorf("error on decoding resp from %s : %v", req.URL, err)
-	}
-
-	return checks, nil
-}
-
 func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[string]int64) {
 	count := len(c.activeChecks)
 
@@ -148,9 +129,11 @@ func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[s
 		_, exist := c.activeChecks[id]
 
 		if !exist {
-			if c.MaxChecks != 0 && count > c.MaxChecks {
+
+			if c.MaxChecks != 0 && count > c.MaxChecks || !c.filterChecks(id) {
 				continue
 			}
+
 			c.activeChecks[id] = true
 			c.addCheckChart(check)
 		}
@@ -162,44 +145,13 @@ func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[s
 	}
 }
 
+func (c *Consul) filterChecks(name string) bool {
+	if c.checksFilter == nil {
+		return true
+	}
+	return c.checksFilter.Match(name)
+}
+
 func (c *Consul) addCheckChart(check *agentCheck) {
 	_ = c.charts.Add(createCheckChart(check))
-}
-
-func (c *Consul) doRequest(req *http.Request) (*http.Response, error) {
-	return c.client.Do(req)
-}
-
-func (c *Consul) doRequestReqOK(req *http.Request) (resp *http.Response, err error) {
-	if resp, err = c.doRequest(req); err != nil {
-		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
-
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
-	}
-
-	return resp, err
-}
-
-func (c *Consul) createRequest(uri string) (req *http.Request, err error) {
-	c.Request.URI = uri
-
-	if req, err = web.NewHTTPRequest(c.Request); err != nil {
-		return
-	}
-
-	if c.ACLToken != "" {
-		req.Header.Set("X-Consul-Token", c.ACLToken)
-	}
-
-	return
-}
-
-func closeBody(resp *http.Response) {
-	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
-		_ = resp.Body.Close()
-	}
 }
