@@ -60,8 +60,8 @@ type Consul struct {
 
 	web.HTTP `yaml:",inline"`
 
-	MaxChecks int `yaml:"max_checks"`
-	Token     string
+	MaxChecks int    `yaml:"max_checks"`
+	ACLToken  string `yaml:"acl_token"`
 
 	charts       *Charts
 	activeChecks map[string]bool
@@ -190,8 +190,8 @@ func (c *Consul) createRequest(uri string) (req *http.Request, err error) {
 		return
 	}
 
-	if c.Token != "" {
-		req.Header.Set("X-Consul-Token", c.Token)
+	if c.ACLToken != "" {
+		req.Header.Set("X-Consul-ACLToken", c.ACLToken)
 	}
 
 	return
