@@ -1,6 +1,7 @@
 package consul
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
@@ -38,7 +39,7 @@ func New() *Consul {
 		},
 		MaxChecks:    defMaxChecks,
 		activeChecks: make(map[string]bool),
-		charts:       &Charts{},
+		charts:       charts.Copy(),
 	}
 }
 
@@ -124,24 +125,42 @@ func (c *Consul) collectLocalChecks(metrics map[string]int64) error {
 
 func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[string]int64) {
 	count := len(c.activeChecks)
+	var unp int
 
 	for id, check := range checks {
 		_, exist := c.activeChecks[id]
 
 		if !exist {
+			if c.MaxChecks != 0 && count > c.MaxChecks {
+				unp++
+				continue
+			}
 
-			if c.MaxChecks != 0 && count > c.MaxChecks || !c.filterChecks(id) {
+			if !c.filterChecks(id) {
 				continue
 			}
 
 			c.activeChecks[id] = true
-			c.addCheckChart(check)
+			c.addCheckToChart(check)
 		}
-		metrics[id+"_"+healthPassing] = 0
-		metrics[id+"_"+healthCritical] = 0
-		metrics[id+"_"+healthMaint] = 0
-		metrics[id+"_"+healthWarning] = 0
-		metrics[id+"_"+check.Status] = 1
+
+		var status int64
+
+		switch check.Status {
+		case healthPassing, healthMaint:
+			status = 0
+		case healthWarning:
+			status = 1
+		case healthCritical:
+			status = 2
+		default:
+			panic(fmt.Sprintf("check %s unkown status %s", check.CheckID, check.Status))
+		}
+		metrics[id] = status
+	}
+
+	if unp > 0 {
+		c.Warningf("%d checks was unprocessed due to max_checks filter (%d)", unp, c.MaxChecks)
 	}
 }
 
@@ -152,6 +171,14 @@ func (c *Consul) filterChecks(name string) bool {
 	return c.checksFilter.Match(name)
 }
 
-func (c *Consul) addCheckChart(check *agentCheck) {
-	_ = c.charts.Add(createCheckChart(check))
+func (c *Consul) addCheckToChart(check *agentCheck) {
+	var chart *Chart
+
+	if check.ServiceID != "" {
+		chart = c.charts.Get("service_checks")
+	} else {
+		chart = c.charts.Get("unbound_checks")
+	}
+
+	_ = chart.AddDim(&Dim{ID: check.CheckID})
 }

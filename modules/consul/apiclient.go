@@ -34,7 +34,7 @@ func (a *apiClient) localChecks() (map[string]*agentCheck, error) {
 		return nil, fmt.Errorf("error on creating request : %v", err)
 	}
 
-	resp, err := a.doRequest(req)
+	resp, err := a.doRequestOK(req)
 
 	defer closeBody(resp)
 
@@ -44,9 +44,7 @@ func (a *apiClient) localChecks() (map[string]*agentCheck, error) {
 
 	var checks map[string]*agentCheck
 
-	err = json.NewDecoder(resp.Body).Decode(&checks)
-
-	if err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(&checks); err != nil {
 		return nil, fmt.Errorf("error on decoding resp from %s : %v", req.URL, err)
 	}
 
