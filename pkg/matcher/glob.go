@@ -6,8 +6,10 @@ import (
 	"unicode/utf8"
 )
 
+// GlobMatch implements Matcher, it uses filepath.Match to match.
 type GlobMatch struct{ Pattern string }
 
+// Match matches.
 func (m GlobMatch) Match(line string) bool {
 	matched, _ := m.match(m.Pattern, line)
 	return matched

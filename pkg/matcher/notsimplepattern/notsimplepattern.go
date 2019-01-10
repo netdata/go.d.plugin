@@ -7,60 +7,74 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
 
-// Pattern pattern.
-type Pattern struct {
-	Exclude bool
+type pattern struct {
+	exclude bool
 	matcher.GlobMatch
 }
 
 // New creates new not simple pattern.
 func New() *Patterns {
-	return &Patterns{cache: make(map[string]bool)}
+	return &Patterns{Cache: make(map[string]bool)}
 }
 
 // Patterns patterns.
 type Patterns struct {
 	UseCache bool
-	Patterns []Pattern
+	Cache    map[string]bool
 
-	cache map[string]bool
+	patterns []pattern
 }
 
-// Add adds pattern to the collections. The only possible returned error is ErrBadPattern.
-func (ps *Patterns) Add(pattern string) error {
-	if _, err := filepath.Match(pattern, "QQ"); err != nil {
+func (ps *Patterns) add(pat string) error {
+	if _, err := filepath.Match(pat, "QQ"); err != nil {
 		return err
 	}
 
-	p := Pattern{}
+	p := pattern{}
 
-	if strings.HasPrefix(pattern, "!") {
-		p.Exclude = true
-		p.Pattern = pattern[1:]
+	if strings.HasPrefix(pat, "!") {
+		p.exclude = true
+		p.Pattern = pat[1:]
 	} else {
-		p.Pattern = pattern
+		p.Pattern = pat
 	}
 
-	ps.Patterns = append(ps.Patterns, p)
+	ps.patterns = append(ps.patterns, p)
 
 	return nil
 }
 
 // Match matches.
 func (ps Patterns) Match(line string) bool {
-	for _, p := range ps.Patterns {
+	if !ps.UseCache {
+		return ps.match(line)
+	}
+
+	if v, ok := ps.Cache[line]; ok {
+		return v
+	}
+
+	matched := ps.match(line)
+	ps.Cache[line] = matched
+
+	return matched
+}
+
+func (ps Patterns) match(line string) bool {
+	for _, p := range ps.patterns {
 		if p.Match(line) {
-			return !p.Exclude
+			return !p.exclude
 		}
 	}
 	return false
 }
 
+// Create creates new not simple patterns. It returns error in case one of patterns has bad syntax.
 func Create(expr string) (*Patterns, error) {
 	ps := New()
 
 	for _, pattern := range strings.Fields(expr) {
-		if err := ps.Add(pattern); err != nil {
+		if err := ps.add(pattern); err != nil {
 			return nil, err
 		}
 	}

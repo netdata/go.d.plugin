@@ -7,21 +7,21 @@ import (
 	"strings"
 )
 
-// MatchFormat match format
+// MatchFormat match format.
 type MatchFormat string
 
 const (
-	// FmtString is a string match format
+	// FmtString is a string match format.
 	FmtString MatchFormat = "="
-	// FmtGlob is a glob match format
+	// FmtGlob is a glob match format.
 	FmtGlob MatchFormat = "*"
-	// FmtRegExp is a regex[ match format
+	// FmtRegExp is a regex[ match format.
 	FmtRegExp MatchFormat = "~"
-	// FmtNegString is a negative string match format
+	// FmtNegString is a negative string match format.
 	FmtNegString MatchFormat = "!="
-	// FmtNegGlob is a negative glob match format
+	// FmtNegGlob is a negative glob match format.
 	FmtNegGlob MatchFormat = "!*"
-	// FmtNegRegExp is a negative regexp match format
+	// FmtNegRegExp is a negative regexp match format.
 	FmtNegRegExp MatchFormat = "!~"
 )
 
