@@ -19,7 +19,16 @@ var charts = Charts{
 		Dims: Dims{
 			{ID: "%s_%s_enqueued", Name: "enqueued", Algo: modules.Incremental},
 			{ID: "%s_%s_dequeued", Name: "dequeued", Algo: modules.Incremental},
-			{ID: "%s_%s_unprocessed", Name: "unprocessed", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "%s_%s_unprocessed_messages",
+		Title: "%s Unprocessed Messages",
+		Units: "messages",
+		Fam:   "",
+		Ctx:   "activemq.unprocessed_messages",
+		Dims: Dims{
+			{ID: "%s_%s_unprocessed", Name: "unprocessed"},
 		},
 	},
 	{

@@ -9,7 +9,10 @@ It produces following charts per queue and per topic:
  * dequeued
  * unprocessed
  
-2. **Consumers** in consumers
+2. **Unprocessed Messages** in messages
+ * unprocessed
+ 
+3. **Consumers** in consumers
  * consumers
  
 
@@ -22,6 +25,10 @@ jobs:
   - name: job1
     url: http://127.0.0.1:8161
     webadmin: admin
+    max_queues: 100
+    max_topics: 100
+    queues_filter: '!sandr* *'
+    topics_filter: '!sandr* *'
     
   - name: remote
     url: http://100.127.0.1:8161
