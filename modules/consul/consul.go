@@ -128,15 +128,16 @@ func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[s
 	var unp int
 
 	for id, check := range checks {
+
+		if !c.filterChecks(id) {
+			continue
+		}
+
 		_, exist := c.activeChecks[id]
 
 		if !exist {
 			if c.MaxChecks != 0 && count > c.MaxChecks {
 				unp++
-				continue
-			}
-
-			if !c.filterChecks(id) {
 				continue
 			}
 
