@@ -148,10 +148,7 @@ func TestActivemq_Init(t *testing.T) {
 	// OK case
 	mod.Webadmin = "webadmin"
 	assert.True(t, mod.Init())
-	assert.NotNil(t, mod.reqQueues)
-	assert.NotNil(t, mod.reqTopics)
-	assert.NotNil(t, mod.client)
-
+	assert.NotNil(t, mod.apiClient)
 }
 
 func TestActivemq_Check(t *testing.T) {
@@ -234,7 +231,7 @@ func TestActivemq_Collect(t *testing.T) {
 			},
 			numQueues: 2,
 			numTopics: 2,
-			numCharts: 8,
+			numCharts: 12,
 		},
 		{
 			expected: map[string]int64{
@@ -265,7 +262,7 @@ func TestActivemq_Collect(t *testing.T) {
 			},
 			numQueues: 3,
 			numTopics: 3,
-			numCharts: 12,
+			numCharts: 18,
 		},
 		{
 			expected: map[string]int64{
@@ -288,7 +285,7 @@ func TestActivemq_Collect(t *testing.T) {
 			},
 			numQueues: 2,
 			numTopics: 2,
-			numCharts: 12,
+			numCharts: 18,
 		},
 	}
 
