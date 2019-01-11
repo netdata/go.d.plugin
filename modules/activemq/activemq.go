@@ -110,20 +110,6 @@ func (a *Activemq) Init() bool {
 	return true
 }
 
-func (a *Activemq) filterQueues(line string) bool {
-	if a.queuesFilter == nil {
-		return true
-	}
-	return a.queuesFilter.Match(line)
-}
-
-func (a *Activemq) filterTopics(line string) bool {
-	if a.topicsFilter == nil {
-		return true
-	}
-	return a.topicsFilter.Match(line)
-}
-
 // Check makes check
 func (a *Activemq) Check() bool {
 	return len(a.Collect()) > 0
@@ -245,6 +231,20 @@ func (a *Activemq) processTopics(topics *topics, metrics map[string]int64) {
 	if unp > 0 {
 		a.Debugf("%d topics were unprocessed due to max_topics limit (%d)", unp, a.MaxTopics)
 	}
+}
+
+func (a Activemq) filterQueues(line string) bool {
+	if a.queuesFilter == nil {
+		return true
+	}
+	return a.queuesFilter.Match(line)
+}
+
+func (a Activemq) filterTopics(line string) bool {
+	if a.topicsFilter == nil {
+		return true
+	}
+	return a.topicsFilter.Match(line)
 }
 
 func (a *Activemq) addQueueTopicCharts(name, typ string) {
