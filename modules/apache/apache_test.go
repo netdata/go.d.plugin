@@ -16,7 +16,6 @@ import (
 var (
 	extendedStatus, _ = ioutil.ReadFile("testdata/status-extended.txt")
 	simpleStatus, _   = ioutil.ReadFile("testdata/status-simple.txt")
-	invalidStatus, _  = ioutil.ReadFile("testdata/status-invalid.txt")
 )
 
 func TestApache_Cleanup(t *testing.T) {
@@ -24,22 +23,19 @@ func TestApache_Cleanup(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	assert.Implements(t, (*modules.Module)(nil), New())
+	mod := New()
+
+	assert.Implements(t, (*modules.Module)(nil), mod)
+	assert.Equal(t, defURL, mod.URL)
+	assert.Equal(t, defHTTPTimeout, mod.Timeout.Duration)
+	assert.NotNil(t, mod.charts)
 }
 
 func TestApache_Init(t *testing.T) {
 	mod := New()
 
 	require.True(t, mod.Init())
-	assert.NotNil(t, mod.request)
-	assert.NotNil(t, mod.client)
-}
-
-func TestApache_InitNG(t *testing.T) {
-	mod := New()
-
-	mod.HTTP.Request = web.Request{URL: mod.Request.URL[0 : len(mod.Request.URL)-1]}
-	assert.False(t, mod.Init())
+	assert.NotNil(t, mod.apiClient)
 }
 
 func TestApache_Check(t *testing.T) {
@@ -73,10 +69,6 @@ func TestApache_Charts(t *testing.T) {
 	mod := New()
 
 	assert.NotNil(t, mod.Charts())
-	assert.NoError(t, modules.CheckCharts(*mod.Charts()...))
-
-	mod.extendedStats = true
-	assert.True(t, len(*mod.Charts()) > len(*New().Charts()))
 }
 
 func TestApache_Collect(t *testing.T) {
@@ -95,35 +87,36 @@ func TestApache_Collect(t *testing.T) {
 
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
-	require.NotNil(t, mod.Collect())
+
+	metrics := mod.Collect()
 
 	expected := map[string]int64{
-		assign(totalAccesses):       575,
-		assign(totalkBytes):         433,
-		assign(reqPerSec):           101590,
-		assign(bytesPerSec):         78337800,
-		assign(bytesPerReq):         77111700,
-		assign(busyWorkers):         1,
-		assign(idleWorkers):         49,
-		assign(connsTotal):          2,
-		assign(connsAsyncWriting):   0,
-		assign(connsAsyncKeepAlive): 2,
-		assign(connsAsyncClosing):   0,
-		assign(uptime):              566,
-		"scoreboard_waiting":        49,
-		"scoreboard_starting":       0,
-		"scoreboard_reading":        0,
-		"scoreboard_sending":        1,
-		"scoreboard_keepalive":      0,
-		"scoreboard_dns_lookup":     0,
-		"scoreboard_closing":        0,
-		"scoreboard_logging":        0,
-		"scoreboard_finishing":      0,
-		"scoreboard_idle_cleanup":   0,
-		"scoreboard_open":           100,
+		"conns_async_closing":     0,
+		"scoreboard_open":         300,
+		"conns_async_keep_alive":  0,
+		"uptime":                  256,
+		"req_per_sec":             3515,
+		"bytes_per_sec":           4800000,
+		"scoreboard_waiting":      99,
+		"scoreboard_reading":      0,
+		"scoreboard_idle_cleanup": 0,
+		"total_accesses":          9,
+		"total_kBytes":            12,
+		"scoreboard_starting":     0,
+		"scoreboard_logging":      0,
+		"scoreboard_finishing":    0,
+		"conns_total":             0,
+		"idle_workers":            99,
+		"conns_async_writing":     0,
+		"scoreboard_sending":      1,
+		"scoreboard_keepalive":    0,
+		"scoreboard_dns_lookup":   0,
+		"scoreboard_closing":      0,
+		"busy_workers":            1,
+		"bytes_per_req":           136533000,
 	}
 
-	assert.Equal(t, expected, mod.metrics)
+	assert.Equal(t, expected, metrics)
 }
 
 func TestApache_InvalidData(t *testing.T) {
@@ -131,7 +124,7 @@ func TestApache_InvalidData(t *testing.T) {
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/server-status" {
-					_, _ = w.Write(invalidStatus)
+					_, _ = w.Write([]byte("hello and goodbye"))
 					return
 				}
 			}))

@@ -17,7 +17,7 @@ var charts = Charts{
 		Fam:   "requests",
 		Ctx:   "apache.requests",
 		Dims: Dims{
-			{ID: "requests", Algo: modules.Incremental},
+			{ID: "total_accesses", Name: "requests", Algo: modules.Incremental},
 		},
 	},
 	{
@@ -27,7 +27,7 @@ var charts = Charts{
 		Fam:   "connections",
 		Ctx:   "apache.connections",
 		Dims: Dims{
-			{ID: "connections"},
+			{ID: "conns_total", Name: "connections"},
 		},
 	},
 	{
@@ -38,9 +38,9 @@ var charts = Charts{
 		Ctx:   "apache.conns_async",
 		Type:  modules.Stacked,
 		Dims: Dims{
-			{ID: "keepalive"},
-			{ID: "closing"},
-			{ID: "writing"},
+			{ID: "conns_async_keep_alive", Name: "keepalive"},
+			{ID: "conns_async_closing", Name: "closing"},
+			{ID: "conns_async_writing", Name: "writing"},
 		},
 	},
 	{
@@ -51,7 +51,7 @@ var charts = Charts{
 		Ctx:   "apache.net",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "sent", Algo: modules.Incremental, Mul: 8},
+			{ID: "total_kBytes", Name: "sent", Algo: modules.Incremental, Mul: 8},
 		},
 	},
 	{
@@ -62,8 +62,8 @@ var charts = Charts{
 		Ctx:   "apache.workers",
 		Type:  modules.Stacked,
 		Dims: Dims{
-			{ID: "idle"},
-			{ID: "busy"},
+			{ID: "idle_workers", Name: "idle"},
+			{ID: "busy_workers", Name: "busy"},
 		},
 	},
 	{
@@ -74,7 +74,7 @@ var charts = Charts{
 		Ctx:   "apache.reqpersec",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "requests_sec", Div: 100000},
+			{ID: "req_per_sec", Name: "requests", Div: 100000},
 		},
 	},
 	{
@@ -85,7 +85,7 @@ var charts = Charts{
 		Ctx:   "apache.bytespersec",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "size_sec", Mul: 8, Div: 1024 * 100000},
+			{ID: "bytes_per_sec", Name: "served", Mul: 8, Div: 1024 * 100000},
 		},
 	},
 	{
@@ -96,7 +96,7 @@ var charts = Charts{
 		Ctx:   "apache.bytesperreq",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "size_req", Div: 1024 * 100000},
+			{ID: "bytes_per_req", Name: "size", Div: 1024 * 100000},
 		},
 	},
 	{
