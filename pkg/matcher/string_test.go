@@ -7,7 +7,7 @@ import (
 )
 
 func TestStringFull_Match(t *testing.T) {
-	m := StringFull{"Does Coca-Cola contain cocaine?"}
+	m := stringFullMatcher("Does Coca-Cola contain cocaine?")
 
 	cases := []struct {
 		expected bool
@@ -28,12 +28,12 @@ func TestStringFull_Match(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		assert.Equal(t, c.expected, m.Match(c.line))
+		assert.Equal(t, c.expected, m.MatchString(c.line))
 	}
 }
 
 func TestStringPartial_Match(t *testing.T) {
-	m := StringPartial{"contain"}
+	m := stringPartialMatcher("contain")
 
 	cases := []struct {
 		expected bool
@@ -54,12 +54,12 @@ func TestStringPartial_Match(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		assert.Equal(t, c.expected, m.Match(c.line))
+		assert.Equal(t, c.expected, m.MatchString(c.line))
 	}
 }
 
 func TestStringSuffix_Match(t *testing.T) {
-	m := StringSuffix{"mistakes."}
+	m := stringSuffixMatcher("mistakes.")
 
 	cases := []struct {
 		expected bool
@@ -80,12 +80,12 @@ func TestStringSuffix_Match(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		assert.Equal(t, c.expected, m.Match(c.line))
+		assert.Equal(t, c.expected, m.MatchString(c.line))
 	}
 }
 
 func TestStringPrefix_Match(t *testing.T) {
-	m := StringPrefix{"That book"}
+	m := stringPrefixMatcher("That book")
 
 	cases := []struct {
 		expected bool
@@ -106,6 +106,6 @@ func TestStringPrefix_Match(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		assert.Equal(t, c.expected, m.Match(c.line))
+		assert.Equal(t, c.expected, m.MatchString(c.line))
 	}
 }

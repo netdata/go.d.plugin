@@ -8,7 +8,7 @@ import (
 )
 
 func TestRegExpMatch_Match(t *testing.T) {
-	m := RegExpMatch{regexp.MustCompile("[0-9]+")}
+	m := regexp.MustCompile("[0-9]+")
 
 	cases := []struct {
 		expected bool
@@ -29,6 +29,6 @@ func TestRegExpMatch_Match(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		assert.Equal(t, c.expected, m.Match(c.line))
+		assert.Equal(t, c.expected, m.MatchString(c.line))
 	}
 }

@@ -4,18 +4,29 @@ import (
 	"path/filepath"
 	"runtime"
 	"unicode/utf8"
+
+	"errors"
 )
 
-// GlobMatch implements Matcher, it uses filepath.Match to match.
-type GlobMatch struct{ Pattern string }
+// globMatcher implements Matcher, it uses filepath.MatchString to match.
+type globMatcher string
 
-// Match matches.
-func (m GlobMatch) Match(line string) bool {
-	matched, _ := m.match(m.Pattern, line)
+var (
+	ErrBadGlobPattern = errors.New("bad glob pattern")
+)
+
+// MatchString matches.
+func (m globMatcher) Match(b []byte) bool {
+	return m.MatchString(string(b))
+}
+
+// MatchString matches.
+func (m globMatcher) MatchString(line string) bool {
+	matched, _ := globMatch(string(m), line)
 	return matched
 }
 
-func (m GlobMatch) match(pattern, name string) (matched bool, err error) {
+func globMatch(pattern, name string) (matched bool, err error) {
 Pattern:
 	for len(pattern) > 0 {
 		var star bool
@@ -198,4 +209,71 @@ func getEsc(chunk string) (r rune, nchunk string, err error) {
 		err = filepath.ErrBadPattern
 	}
 	return
+}
+
+func NewGlobMatcher(expr string) (Matcher, error) {
+	switch expr {
+	case "":
+		return stringFullMatcher(""), nil
+	case "*":
+		return TRUE(), nil
+	case "?":
+		return stringLenMatcher(1), nil
+	}
+
+	// syntax check
+	if _, err := filepath.Match(expr, "QQ"); err != nil {
+		return nil, ErrBadGlobPattern
+	}
+
+	size := len(expr)
+	chars := []rune(expr)
+	var startWith, endWith bool
+	startIdx := 0
+	endIdx := size - 1
+	if chars[startIdx] == '*' {
+		startWith = true
+		startIdx = 1
+	}
+	if chars[endIdx] == '*' {
+		endWith = true
+		endIdx--
+	}
+
+	unescapedExpr := make([]rune, 0, endIdx-startIdx+1)
+	for i := startIdx; i <= endIdx; i++ {
+		ch := chars[i]
+		if ch == '\\' {
+			if i == endIdx { // end with '\' => invalid format
+				return nil, ErrBadGlobPattern
+			}
+			nextCh := chars[i+1]
+			unescapedExpr = append(unescapedExpr, nextCh)
+			i++
+		} else if isGlobMeta(ch) {
+			return globMatcher(expr), nil
+		} else {
+			unescapedExpr = append(unescapedExpr, ch)
+		}
+	}
+
+	if startWith {
+		if endWith {
+			return stringFullMatcher(string(unescapedExpr)), nil
+		}
+		return stringPrefixMatcher(string(unescapedExpr)), nil
+	}
+	if endWith {
+		return stringSuffixMatcher(string(unescapedExpr)), nil
+	}
+	return stringPrefixMatcher(string(unescapedExpr)), nil
+}
+
+func isGlobMeta(ch rune) bool {
+	switch ch {
+	case '*', '?', '[', ']':
+		return true
+	default:
+		return false
+	}
 }

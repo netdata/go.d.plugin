@@ -82,7 +82,7 @@ func (a *Activemq) Init() bool {
 	}
 
 	if a.QueuesFilter != "" {
-		f, err := notsimplepattern.Create(a.QueuesFilter)
+		f, err := notsimplepattern.New(a.QueuesFilter)
 		if err != nil {
 			a.Errorf("error on creating queues filter : %v", err)
 			return false
@@ -92,7 +92,7 @@ func (a *Activemq) Init() bool {
 	}
 
 	if a.TopicsFilter != "" {
-		f, err := notsimplepattern.Create(a.TopicsFilter)
+		f, err := notsimplepattern.New(a.TopicsFilter)
 		if err != nil {
 			a.Errorf("error on creating topics filter : %v", err)
 			return false
@@ -237,14 +237,14 @@ func (a Activemq) filterQueues(line string) bool {
 	if a.queuesFilter == nil {
 		return true
 	}
-	return a.queuesFilter.Match(line)
+	return a.queuesFilter.MatchString(line)
 }
 
 func (a Activemq) filterTopics(line string) bool {
 	if a.topicsFilter == nil {
 		return true
 	}
-	return a.topicsFilter.Match(line)
+	return a.topicsFilter.MatchString(line)
 }
 
 func (a *Activemq) addQueueTopicCharts(name, typ string) {

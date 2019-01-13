@@ -1,49 +1,51 @@
 package matcher
 
 import (
-	"github.com/stretchr/testify/assert"
+	"regexp"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestParse(t *testing.T) {
-	cases := []struct {
+	tests := []struct {
 		valid        bool
 		line         string
 		expectedType Matcher
 	}{
 		{
 			valid:        true,
-			line:         "=:^full$",
-			expectedType: &StringFull{},
+			line:         "= full",
+			expectedType: stringFullMatcher(""),
 		},
 		{
 			valid:        true,
-			line:         "=:^prefix",
-			expectedType: &StringPrefix{},
+			line:         "~ ^prefix",
+			expectedType: stringPrefixMatcher(""),
 		},
 		{
 			valid:        true,
-			line:         "=:suffix$",
-			expectedType: &StringSuffix{},
+			line:         "~ suffix$",
+			expectedType: stringSuffixMatcher(""),
 		},
 		{
 			valid:        true,
-			line:         "=:partial",
-			expectedType: &StringPartial{},
+			line:         "~ partial",
+			expectedType: stringPartialMatcher(""),
 		},
 		{
 			valid:        true,
-			line:         "*:glob",
-			expectedType: &GlobMatch{},
+			line:         "* glob",
+			expectedType: globMatcher(""),
 		},
 		{
 			valid:        true,
-			line:         "~:regexp",
-			expectedType: &RegExpMatch{},
+			line:         "~ regexp",
+			expectedType: regexp.MustCompile(""),
 		},
 		{
 			valid:        false,
-			line:         "no method",
+			line:         "",
 			expectedType: nil,
 		},
 		{
@@ -53,23 +55,29 @@ func TestParse(t *testing.T) {
 		},
 		{
 			valid:        true,
-			line:         "!~:regexp",
-			expectedType: &NegMatcher{},
+			line:         "!= string",
+			expectedType: negMatcher{},
 		},
 		{
 			valid:        true,
-			line:         "!*:glob",
-			expectedType: &NegMatcher{},
+			line:         "!~ regexp",
+			expectedType: negMatcher{},
+		},
+		{
+			valid:        true,
+			line:         "!* glob",
+			expectedType: negMatcher{},
 		},
 	}
-
-	for _, c := range cases {
-		m, err := Parse(c.line)
-		assert.IsType(t, c.expectedType, m)
-		if c.valid {
-			assert.NoError(t, err)
-		} else {
-			assert.Error(t, err)
-		}
+	for _, test := range tests {
+		t.Run(test.line, func(t *testing.T) {
+			m, err := Parse(test.line)
+			assert.IsType(t, test.expectedType, m)
+			if test.valid {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+			}
+		})
 	}
 }

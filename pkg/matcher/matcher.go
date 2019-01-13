@@ -2,103 +2,142 @@ package matcher
 
 import (
 	"errors"
-	"path/filepath"
-	"regexp"
 	"strings"
 )
 
-// MatchFormat match format.
-type MatchFormat string
-
 const (
 	// FmtString is a string match format.
-	FmtString MatchFormat = "="
+	FmtString = "string"
 	// FmtGlob is a glob match format.
-	FmtGlob MatchFormat = "*"
-	// FmtRegExp is a regex[ match format.
-	FmtRegExp MatchFormat = "~"
-	// FmtNegString is a negative string match format.
-	FmtNegString MatchFormat = "!="
-	// FmtNegGlob is a negative glob match format.
-	FmtNegGlob MatchFormat = "!*"
-	// FmtNegRegExp is a negative regexp match format.
-	FmtNegRegExp MatchFormat = "!~"
+	FmtGlob = "glob"
+	// FmtRegExp is a regex match format.
+	FmtRegExp = "regexp"
+	// FmtSimplePattern is a simple pattern match format
+	// https://docs.netdata.cloud/libnetdata/simple_pattern/
+	FmtSimplePattern = "simplepattern"
+
+	// Separator is a separator between match format and expression.
+	Separator = ":"
 )
 
-// Separator is a separator between match format and expression.
-const Separator = ":"
+const (
+	SymString = '='
+	SymGlob   = '*'
+	SymRegExp = '~'
+	SymNeg    = '!'
+)
 
-// Matcher is an interface that wraps Match method.
+var (
+	// ErrUnsupportedMatcherFormat error for unsupported matcher format
+	ErrUnsupportedMatcherFormat = errors.New("unsupported matcher method")
+	// ErrUnsupportedMatcherSyntax error for unsupported matcher syntax
+	ErrUnsupportedMatcherSyntax = errors.New("unsupported matcher syntax")
+
+	errNotShortSyntax = errors.New("not short syntax")
+)
+
+// Matcher is an interface that wraps MatchString method.
 type Matcher interface {
-	Match(string) bool
+	Match(b []byte) bool
+	MatchString(string) bool
 }
 
-// NegMatcher is a Matcher wrapper. It returns negative match.
-type NegMatcher struct{ Matcher }
-
-// Match matches
-func (m NegMatcher) Match(line string) bool { return !m.Matcher.Match(line) }
-
-// Create creates matcher based on match format.
-func Create(format MatchFormat, expr string) (m Matcher, err error) {
+// New create a matcher
+func New(format string, expr string) (Matcher, error) {
 	switch format {
-	case FmtString, FmtNegString:
-		m = createStringMatcher(expr)
-	case FmtRegExp, FmtNegRegExp:
-		m, err = createRegExpMatcher(expr)
-	case FmtGlob, FmtNegGlob:
-		m, err = createGlobMatcher(expr)
+	case FmtString:
+		return NewStringMatcher(expr), nil
+	case FmtGlob:
+		return NewGlobMatcher(expr)
+	case FmtRegExp:
+		return NewRegExpMatcher(expr)
+	case FmtSimplePattern:
+		return NewSimplePatternsMatcher(expr)
+	default:
+		return nil, ErrUnsupportedMatcherFormat
 	}
+}
+
+func NewStringMatcher(expr string) Matcher {
+	return stringFullMatcher(expr)
+}
+
+// Parse parses line and returns appropriate matcher based on match format.
+//
+// Short syntax
+//   [ '!' ] <symbol> { ' ' } <expr>
+//   = my_value
+//   * *.example.com
+//   ~ [0-9]+
+//   != my_value
+//
+// Long syntax
+//   <name>:<expr>
+//   string:my_value
+//   glob:*.example.com
+//   regexp:[0-9]+
+func Parse(line string) (Matcher, error) {
+	matcher, err := parseShortFormat(line)
+	if err == nil {
+		return matcher, nil
+	}
+	if err != errNotShortSyntax {
+		return nil, err
+	}
+	return parseLongSyntax(line)
+}
+
+func parseShortFormat(line string) (Matcher, error) {
+	var format string
+	var neg bool
+	switch line {
+	case "", "!":
+		return nil, ErrUnsupportedMatcherFormat
+	}
+	if line[0] == SymNeg {
+		neg = true
+		line = line[1:]
+	}
+	switch line[0] {
+	case SymString:
+		format = FmtString
+	case SymGlob:
+		format = FmtGlob
+	case SymRegExp:
+		format = FmtRegExp
+	default:
+		return nil, errNotShortSyntax
+	}
+	expr := line[1:]
+	for i, c := range expr {
+		if !isSpace(c) {
+			expr = expr[i:]
+			break
+		}
+	}
+	m, err := New(format, expr)
 	if err != nil {
 		return nil, err
 	}
-	if m == nil {
-		return nil, errors.New("unsupported matcher method")
+	if neg {
+		m = Not(m)
 	}
-	if format[0] == '!' {
-		m = &NegMatcher{m}
-	}
-
 	return m, nil
 }
 
-// Parses parses line and returns appropriate matcher based on match format.
-func Parse(line string) (Matcher, error) {
+func isSpace(c rune) bool {
+	switch c {
+	case ' ', '\t', '\f', '\v':
+		return true
+	default:
+		return false
+	}
+}
+
+func parseLongSyntax(line string) (Matcher, error) {
 	parts := strings.SplitN(line, Separator, 2)
 	if len(parts) != 2 {
-		return nil, errors.New("unsupported matcher syntax")
+		return nil, ErrUnsupportedMatcherSyntax
 	}
-	return Create(MatchFormat(parts[0]), parts[1])
-}
-
-func createStringMatcher(expr string) Matcher {
-	full := len(expr) > 2 && strings.HasPrefix(expr, "^") && strings.HasSuffix(expr, "$")
-	prefix := strings.HasPrefix(expr, "^")
-	suffix := strings.HasSuffix(expr, "$")
-
-	switch {
-	case full:
-		return &StringFull{expr[1 : len(expr)-1]}
-	case prefix:
-		return &StringPrefix{expr[1:]}
-	case suffix:
-		return &StringSuffix{expr[:len(expr)-1]}
-	default:
-		return &StringPartial{expr}
-	}
-}
-
-func createGlobMatcher(expr string) (Matcher, error) {
-	if _, err := filepath.Match(expr, "QQ"); err != nil {
-		return nil, err
-	}
-	return &GlobMatch{expr}, nil
-}
-
-func createRegExpMatcher(expr string) (Matcher, error) {
-	re, err := regexp.Compile(expr)
-	if err != nil {
-		return nil, err
-	}
-	return &RegExpMatch{re}, nil
+	return New(parts[0], parts[1])
 }

@@ -1,4 +1,4 @@
-package notsimplepattern
+package matcher
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	sps := New()
+	sps := &Patterns{Cache: make(map[string]bool)}
 
 	assert.False(t, sps.UseCache)
 	assert.NotNil(t, sps.Cache)
@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 func TestCreate(t *testing.T) {
 	expr := "*foobar* !foo* !*bar *"
 
-	sps, err := Create(expr)
+	sps, err := New(expr)
 
 	require.NoError(t, err)
 	assert.Len(t, sps.patterns, 4)
@@ -29,7 +29,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestPatterns_Match(t *testing.T) {
-	m, err := Create("*foobar* !foo* *Bar*")
+	m, err := New("*foobar* !foo* *Bar*")
 
 	require.NoError(t, err)
 
@@ -52,7 +52,7 @@ func TestPatterns_Match(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		assert.Equal(t, c.expected, m.Match(c.line))
+		assert.Equal(t, c.expected, m.MatchString(c.line))
 	}
 
 }
