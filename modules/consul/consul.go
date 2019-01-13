@@ -161,7 +161,7 @@ func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[s
 	}
 
 	if unp > 0 {
-		c.Warningf("%d checks were unprocessed due to max_checks limit (%d)", unp, c.MaxChecks)
+		c.Debugf("%d checks were unprocessed due to max_checks limit (%d)", unp, c.MaxChecks)
 	}
 }
 
