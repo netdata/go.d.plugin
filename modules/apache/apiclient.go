@@ -12,6 +12,41 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+var validStatusKeys = map[string]string{
+	"ServerVersion":                "",
+	"ServerMPM":                    "",
+	"Server Built":                 "",
+	"ParentServerConfigGeneration": "",
+	"ParentServerMPMGeneration":    "",
+	"ServerUptimeSeconds":          "",
+	"ServerUptime":                 "",
+	"Load1":                        "",
+	"Load5":                        "",
+	"Load15":                       "",
+	"Total Duration":               "",
+	"CPUUser":                      "",
+	"CPUSystem":                    "",
+	"CPUChildrenUser":              "",
+	"CPUChildrenSystem":            "",
+	"CPULoad":                      "",
+	"DurationPerReq":               "",
+	"Processes":                    "",
+	"Stopping":                     "",
+	"Total Accesses":               "total_accesses",
+	"Total kBytes":                 "total_kBytes",
+	"Uptime":                       "uptime",
+	"ReqPerSec":                    "req_per_sec",
+	"BytesPerSec":                  "bytes_per_sec",
+	"BytesPerReq":                  "bytes_per_req",
+	"BusyWorkers":                  "busy_workers",
+	"IdleWorkers":                  "idle_workers",
+	"ConnsTotal":                   "conns_total",
+	"ConnsAsyncWriting":            "conns_async_writing",
+	"ConnsAsyncKeepAlive":          "conns_async_keep_alive",
+	"ConnsAsyncClosing":            "conns_async_closing",
+	"Scoreboard":                   "scoreboard",
+}
+
 type apiClient struct {
 	req        web.Request
 	httpClient *http.Client
@@ -187,37 +222,3 @@ func parseScoreboard(scoreboard string, metrics map[string]int64) {
 	metrics["scoreboard_open"] = open
 }
 
-var validStatusKeys = map[string]string{
-	"ServerVersion":                "",
-	"ServerMPM":                    "",
-	"Server Built":                 "",
-	"ParentServerConfigGeneration": "",
-	"ParentServerMPMGeneration":    "",
-	"ServerUptimeSeconds":          "",
-	"ServerUptime":                 "",
-	"Load1":                        "",
-	"Load5":                        "",
-	"Load15":                       "",
-	"Total Duration":               "",
-	"CPUUser":                      "",
-	"CPUSystem":                    "",
-	"CPUChildrenUser":              "",
-	"CPUChildrenSystem":            "",
-	"CPULoad":                      "",
-	"DurationPerReq":               "",
-	"Processes":                    "",
-	"Stopping":                     "",
-	"Total Accesses":               "total_accesses",
-	"Total kBytes":                 "total_kBytes",
-	"Uptime":                       "uptime",
-	"ReqPerSec":                    "req_per_sec",
-	"BytesPerSec":                  "bytes_per_sec",
-	"BytesPerReq":                  "bytes_per_req",
-	"BusyWorkers":                  "busy_workers",
-	"IdleWorkers":                  "idle_workers",
-	"ConnsTotal":                   "conns_total",
-	"ConnsAsyncWriting":            "conns_async_writing",
-	"ConnsAsyncKeepAlive":          "conns_async_keep_alive",
-	"ConnsAsyncClosing":            "conns_async_closing",
-	"Scoreboard":                   "scoreboard",
-}
