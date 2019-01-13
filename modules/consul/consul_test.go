@@ -117,7 +117,7 @@ func TestConsul_InvalidData(t *testing.T) {
 	assert.False(t, mod.Check())
 }
 
-func TestNginx_404(t *testing.T) {
+func TestConsul_404(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 	}))
