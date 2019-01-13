@@ -1,6 +1,7 @@
 package apache
 
 import (
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
@@ -47,6 +48,11 @@ func (Apache) Cleanup() {}
 func (a *Apache) Init() bool {
 	if a.URL == "" {
 		a.Error("URL is not set")
+		return false
+	}
+
+	if !strings.HasSuffix(a.URL, "?auto") {
+		a.Errorf("bad URL, should end in '?auto'")
 		return false
 	}
 

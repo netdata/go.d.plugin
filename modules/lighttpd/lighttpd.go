@@ -1,6 +1,7 @@
 package lighttpd
 
 import (
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
@@ -47,6 +48,11 @@ func (Lighttpd) Cleanup() {}
 func (l *Lighttpd) Init() bool {
 	if l.URL == "" {
 		l.Error("URL is not set")
+		return false
+	}
+
+	if !strings.HasSuffix(l.URL, "?auto") {
+		l.Errorf("bad URL, should end in '?auto'")
 		return false
 	}
 
