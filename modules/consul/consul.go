@@ -182,4 +182,5 @@ func (c *Consul) addCheckToChart(check *agentCheck) {
 	}
 
 	_ = chart.AddDim(&Dim{ID: check.CheckID})
+	chart.MarkNotCreated()
 }
