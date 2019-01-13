@@ -37,7 +37,7 @@ type Apache struct {
 	web.HTTP `yaml:",inline"`
 
 	extendedStatus bool
-	apiClient *apiClient
+	apiClient      *apiClient
 }
 
 // Cleanup makes cleanup
@@ -46,7 +46,7 @@ func (Apache) Cleanup() {}
 // Init makes initialization
 func (a *Apache) Init() bool {
 	if a.URL == "" {
-		a.Error("URL is nop set")
+		a.Error("URL is not set")
 		return false
 	}
 
