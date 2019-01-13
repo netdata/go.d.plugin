@@ -28,7 +28,6 @@ func TestNew(t *testing.T) {
 	assert.Implements(t, (*modules.Module)(nil), mod)
 	assert.Equal(t, defURL, mod.URL)
 	assert.Equal(t, defHTTPTimeout, mod.Timeout.Duration)
-	assert.NotNil(t, mod.charts)
 }
 
 func TestApache_Init(t *testing.T) {
