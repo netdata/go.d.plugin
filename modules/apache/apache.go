@@ -27,7 +27,6 @@ func New() *Apache {
 			Request: web.Request{URL: defURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
 		},
-		charts: charts.Copy(),
 	}
 }
 
@@ -37,8 +36,8 @@ type Apache struct {
 
 	web.HTTP `yaml:",inline"`
 
+	extendedStatus bool
 	apiClient *apiClient
-	charts    *Charts
 }
 
 // Cleanup makes cleanup
@@ -71,13 +70,10 @@ func (a *Apache) Check() bool {
 		return false
 	}
 
-	if _, ok := m["total_accesses"]; !ok {
-		_ = a.charts.Remove("requests")
-		_ = a.charts.Remove("net")
-		_ = a.charts.Remove("reqpersec")
-		_ = a.charts.Remove("bytespersec")
-		_ = a.charts.Remove("bytesperreq")
+	_, a.extendedStatus = m["total_accesses"]
 
+	if !a.extendedStatus {
+		a.Warning("extendedStatus is disabled, please enable it to collect more metrics")
 	}
 
 	return len(m) > 0
@@ -85,7 +81,19 @@ func (a *Apache) Check() bool {
 
 // Charts creates Charts
 func (a Apache) Charts() *modules.Charts {
-	return a.charts
+	charts := charts.Copy()
+
+	if !a.extendedStatus {
+		_ = charts.Remove("requests")
+		_ = charts.Remove("net")
+		_ = charts.Remove("reqpersec")
+		_ = charts.Remove("bytespersec")
+		_ = charts.Remove("bytesperreq")
+		_ = charts.Remove("uptime")
+
+	}
+
+	return charts
 }
 
 // Collect collects metrics
