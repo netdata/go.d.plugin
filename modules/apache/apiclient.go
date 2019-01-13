@@ -221,4 +221,3 @@ func parseScoreboard(scoreboard string, metrics map[string]int64) {
 	metrics["scoreboard_idle_cleanup"] = I
 	metrics["scoreboard_open"] = open
 }
-

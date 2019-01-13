@@ -37,6 +37,13 @@ func TestApache_Init(t *testing.T) {
 	assert.NotNil(t, mod.apiClient)
 }
 
+func TestApache_InitNG(t *testing.T) {
+	mod := New()
+
+	mod.HTTP.Request = web.Request{URL: ""}
+	assert.False(t, mod.Init())
+}
+
 func TestApache_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(

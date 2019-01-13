@@ -17,7 +17,7 @@ var charts = Charts{
 		Fam:   "requests",
 		Ctx:   "lighttpd.requests",
 		Dims: Dims{
-			{ID: "requests", Algo: modules.Incremental},
+			{ID: "total_accesses", Name: "requests", Algo: modules.Incremental},
 		},
 	},
 	{
@@ -28,7 +28,7 @@ var charts = Charts{
 		Ctx:   "lighttpd.net",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "sent", Algo: modules.Incremental, Mul: 8},
+			{ID: "total_kBytes", Name: "sent", Algo: modules.Incremental, Mul: 8},
 		},
 	},
 	{
@@ -39,8 +39,8 @@ var charts = Charts{
 		Ctx:   "lighttpd.workers",
 		Type:  modules.Stacked,
 		Dims: Dims{
-			{ID: "idle"},
-			{ID: "busy"},
+			{ID: "idle_servers", Name: "idle"},
+			{ID: "busy_servers", Name: "busy"},
 		},
 	},
 	{
