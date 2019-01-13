@@ -124,7 +124,7 @@ var charts = Charts{
 		Title: "Uptime",
 		Units: "seconds",
 		Fam:   "uptime",
-		Ctx:   "lighttpd.uptime",
+		Ctx:   "apache.uptime",
 		Dims: Dims{
 			{ID: "uptime"},
 		},
