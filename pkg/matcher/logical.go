@@ -25,10 +25,14 @@ func FALSE() Matcher {
 
 // Not returns a matcher which positive the sub-matcher's result
 func Not(m Matcher) Matcher {
-	if m == TRUE() {
+	switch m {
+	case TRUE():
 		return FALSE()
+	case FALSE():
+		return TRUE()
+	default:
+		return negMatcher{m}
 	}
-	return negMatcher{m}
 }
 
 // And returns a matcher which returns true only if all of it's sub-matcher return true
