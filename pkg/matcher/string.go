@@ -17,10 +17,21 @@ type (
 
 	// stringSuffixMatcher implements Matcher, it uses strings.HasSuffix to match.
 	stringSuffixMatcher string
-
-	// stringLenMatcher implements Matcher, it uses len(s) == m to match.
-	stringLenMatcher int
 )
+
+// NewStringMatcher create a new matcher with string format
+func NewStringMatcher(s string, startWith, endWith bool) (Matcher, error) {
+	switch {
+	case startWith && endWith:
+		return stringFullMatcher(s), nil
+	case startWith && !endWith:
+		return stringPrefixMatcher(s), nil
+	case !startWith && endWith:
+		return stringSuffixMatcher(s), nil
+	default:
+		return stringPartialMatcher(s), nil
+	}
+}
 
 func (m stringFullMatcher) Match(b []byte) bool          { return string(m) == string(b) }
 func (m stringFullMatcher) MatchString(line string) bool { return string(m) == line }
@@ -33,6 +44,3 @@ func (m stringPrefixMatcher) MatchString(line string) bool { return strings.HasP
 
 func (m stringSuffixMatcher) Match(b []byte) bool          { return bytes.HasSuffix(b, []byte(m)) }
 func (m stringSuffixMatcher) MatchString(line string) bool { return strings.HasSuffix(line, string(m)) }
-
-func (m stringLenMatcher) Match(b []byte) bool          { return len(b) == int(m) }
-func (m stringLenMatcher) MatchString(line string) bool { return len(line) == int(m) }

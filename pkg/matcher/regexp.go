@@ -2,12 +2,13 @@ package matcher
 
 import "regexp"
 
+// NewRegExpMatcher create new matcher with RegExp format
 func NewRegExpMatcher(expr string) (Matcher, error) {
 	switch expr {
 	case "", "^", "$":
 		return TRUE(), nil
 	case "^$", "$^":
-		return stringFullMatcher(""), nil
+		return NewStringMatcher("", true, true)
 	}
 	size := len(expr)
 	chars := []rune(expr)
@@ -43,16 +44,7 @@ func NewRegExpMatcher(expr string) (Matcher, error) {
 		}
 	}
 
-	if startWith {
-		if endWith {
-			return stringFullMatcher(string(unescapedExpr)), nil
-		}
-		return stringPrefixMatcher(string(unescapedExpr)), nil
-	}
-	if endWith {
-		return stringSuffixMatcher(string(unescapedExpr)), nil
-	}
-	return stringPrefixMatcher(string(unescapedExpr)), nil
+	return NewStringMatcher(string(unescapedExpr), startWith, endWith)
 }
 
 // isRegExpMeta reports whether byte b needs to be escaped by QuoteMeta.

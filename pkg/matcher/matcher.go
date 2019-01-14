@@ -2,51 +2,56 @@ package matcher
 
 import (
 	"errors"
-	"strings"
+	"fmt"
+	"regexp"
+)
+
+type (
+	// Matcher is an interface that wraps MatchString method.
+	Matcher interface {
+		// Perform match against given []byte
+		Match(b []byte) bool
+		// Perform match against given string
+		MatchString(string) bool
+	}
+
+	// Format matcher format
+	Format string
 )
 
 const (
 	// FmtString is a string match format.
-	FmtString = "string"
+	FmtString Format = "string"
 	// FmtGlob is a glob match format.
-	FmtGlob = "glob"
+	FmtGlob Format = "glob"
 	// FmtRegExp is a regex match format.
-	FmtRegExp = "regexp"
+	FmtRegExp Format = "regexp"
 	// FmtSimplePattern is a simple pattern match format
 	// https://docs.netdata.cloud/libnetdata/simple_pattern/
-	FmtSimplePattern = "simplepattern"
+	FmtSimplePattern Format = "simple_patterns"
 
 	// Separator is a separator between match format and expression.
 	Separator = ":"
 )
 
 const (
-	SymString = '='
-	SymGlob   = '*'
-	SymRegExp = '~'
-	SymNeg    = '!'
+	symString = "="
+	symGlob   = "*"
+	symRegExp = "~"
 )
 
 var (
-	// ErrUnsupportedMatcherFormat error for unsupported matcher format
-	ErrUnsupportedMatcherFormat = errors.New("unsupported matcher method")
-	// ErrUnsupportedMatcherSyntax error for unsupported matcher syntax
-	ErrUnsupportedMatcherSyntax = errors.New("unsupported matcher syntax")
+	reShortSyntax = regexp.MustCompile(`(?s)^(!)?(.)\s*(.*)$`)
+	reLongSyntax  = regexp.MustCompile(`(?s)^(!)?([^:]+):(.*)$`)
 
 	errNotShortSyntax = errors.New("not short syntax")
 )
 
-// Matcher is an interface that wraps MatchString method.
-type Matcher interface {
-	Match(b []byte) bool
-	MatchString(string) bool
-}
-
 // New create a matcher
-func New(format string, expr string) (Matcher, error) {
+func New(format Format, expr string) (Matcher, error) {
 	switch format {
 	case FmtString:
-		return NewStringMatcher(expr), nil
+		return NewStringMatcher(expr, true, true)
 	case FmtGlob:
 		return NewGlobMatcher(expr)
 	case FmtRegExp:
@@ -54,90 +59,57 @@ func New(format string, expr string) (Matcher, error) {
 	case FmtSimplePattern:
 		return NewSimplePatternsMatcher(expr)
 	default:
-		return nil, ErrUnsupportedMatcherFormat
+		return nil, fmt.Errorf("unsupported matcher format: '%s'", format)
 	}
 }
 
-func NewStringMatcher(expr string) Matcher {
-	return stringFullMatcher(expr)
-}
-
 // Parse parses line and returns appropriate matcher based on match format.
-//
-// Short syntax
-//   [ '!' ] <symbol> { ' ' } <expr>
-//   = my_value
-//   * *.example.com
-//   ~ [0-9]+
-//   != my_value
-//
-// Long syntax
-//   <name>:<expr>
-//   string:my_value
-//   glob:*.example.com
-//   regexp:[0-9]+
 func Parse(line string) (Matcher, error) {
 	matcher, err := parseShortFormat(line)
 	if err == nil {
 		return matcher, nil
 	}
-	if err != errNotShortSyntax {
-		return nil, err
-	}
 	return parseLongSyntax(line)
 }
 
 func parseShortFormat(line string) (Matcher, error) {
-	var format string
-	var neg bool
-	switch line {
-	case "", "!":
-		return nil, ErrUnsupportedMatcherFormat
-	}
-	if line[0] == SymNeg {
-		neg = true
-		line = line[1:]
-	}
-	switch line[0] {
-	case SymString:
-		format = FmtString
-	case SymGlob:
-		format = FmtGlob
-	case SymRegExp:
-		format = FmtRegExp
-	default:
+	m := reShortSyntax.FindStringSubmatch(line)
+	if m == nil {
 		return nil, errNotShortSyntax
 	}
-	expr := line[1:]
-	for i, c := range expr {
-		if !isSpace(c) {
-			expr = expr[i:]
-			break
-		}
+	var format Format
+	switch m[2] {
+	case symString:
+		format = FmtString
+	case symGlob:
+		format = FmtGlob
+	case symRegExp:
+		format = FmtRegExp
+	default:
+		return nil, fmt.Errorf("invalid short syntax: unknown symbol '%s'", m[2])
 	}
-	m, err := New(format, expr)
+	expr := m[3]
+	matcher, err := New(format, expr)
 	if err != nil {
 		return nil, err
 	}
-	if neg {
-		m = Not(m)
+	if m[1] != "" {
+		matcher = Not(matcher)
 	}
-	return m, nil
-}
-
-func isSpace(c rune) bool {
-	switch c {
-	case ' ', '\t', '\f', '\v':
-		return true
-	default:
-		return false
-	}
+	return matcher, nil
 }
 
 func parseLongSyntax(line string) (Matcher, error) {
-	parts := strings.SplitN(line, Separator, 2)
-	if len(parts) != 2 {
-		return nil, ErrUnsupportedMatcherSyntax
+	m := reLongSyntax.FindStringSubmatch(line)
+	if m == nil {
+		return nil, fmt.Errorf("invalid syntax")
 	}
-	return New(parts[0], parts[1])
+	matcher, err := New(Format(m[2]), m[3])
+	if err != nil {
+		return nil, err
+	}
+	if m[1] != "" {
+		matcher = Not(matcher)
+	}
+	return matcher, nil
 }

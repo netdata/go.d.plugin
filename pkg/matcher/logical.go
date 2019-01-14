@@ -23,19 +23,36 @@ func FALSE() Matcher {
 	return matcherF
 }
 
-// Not returns a matcher which negative the sub-matcher's result
+// Not returns a matcher which positive the sub-matcher's result
 func Not(m Matcher) Matcher {
+	if m == TRUE() {
+		return FALSE()
+	}
 	return negMatcher{m}
 }
 
 // And returns a matcher which returns true only if all of it's sub-matcher return true
 func And(lhs, rhs Matcher) Matcher {
-	return andMatcher{lhs, rhs}
+	switch lhs {
+	case TRUE():
+		return rhs
+	case FALSE():
+		return FALSE()
+	default:
+		return andMatcher{lhs, rhs}
+	}
 }
 
 // Or returns a matcher which returns true if any of it's sub-matcher return true
 func Or(lhs, rhs Matcher) Matcher {
-	return orMatcher{lhs, rhs}
+	switch lhs {
+	case TRUE():
+		return TRUE()
+	case FALSE():
+		return rhs
+	default:
+		return orMatcher{lhs, rhs}
+	}
 }
 
 func (trueMatcher) Match(b []byte) bool       { return true }
