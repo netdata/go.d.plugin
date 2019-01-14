@@ -14,8 +14,7 @@ import (
 )
 
 var (
-	okStatus, _      = ioutil.ReadFile("testdata/status.txt")
-	invalidStatus, _ = ioutil.ReadFile("testdata/status-invalid.txt")
+	status, _ = ioutil.ReadFile("testdata/status.txt")
 )
 
 func TestNginx_Cleanup(t *testing.T) {
@@ -23,15 +22,25 @@ func TestNginx_Cleanup(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	assert.Implements(t, (*modules.Module)(nil), New())
+	mod := New()
+
+	assert.Implements(t, (*modules.Module)(nil), mod)
+	assert.Equal(t, defURL, mod.URL)
+	assert.Equal(t, defHTTPTimeout, mod.Timeout.Duration)
 }
 
 func TestNginx_Init(t *testing.T) {
 	mod := New()
 
-	assert.True(t, mod.Init())
-	assert.NotNil(t, mod.request)
-	assert.NotNil(t, mod.client)
+	require.True(t, mod.Init())
+	assert.NotNil(t, mod.apiClient)
+}
+
+func TestNginx_InitNG(t *testing.T) {
+	mod := New()
+
+	mod.HTTP.Request = web.Request{URL: ""}
+	assert.False(t, mod.Init())
 }
 
 func TestNginx_Check(t *testing.T) {
@@ -39,7 +48,7 @@ func TestNginx_Check(t *testing.T) {
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/stub_status" {
-					_, _ = w.Write(okStatus)
+					_, _ = w.Write(status)
 					return
 				}
 			}))
@@ -71,7 +80,7 @@ func TestNginx_Collect(t *testing.T) {
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/stub_status" {
-					_, _ = w.Write(okStatus)
+					_, _ = w.Write(status)
 					return
 				}
 			}))
@@ -103,7 +112,7 @@ func TestNginx_InvalidData(t *testing.T) {
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/stub_status" {
-					_, _ = w.Write(invalidStatus)
+					_, _ = w.Write([]byte("hello and goodbye"))
 					return
 				}
 			}))
