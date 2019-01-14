@@ -63,3 +63,33 @@ func TestGlobMatcher_MatchString(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkGlob_MatchString(b *testing.B) {
+	benchmarks := []struct {
+		expr string
+		test string
+	}{
+		{"", ""},
+		{"abc", "abcd"},
+		{"*abc", "abcd"},
+		{"abc*", "abcd"},
+		{"*abc*", "abcd"},
+		{"[a-z]", "abcd"},
+	}
+	for _, bm := range benchmarks {
+		b.Run(bm.expr+"_raw", func(b *testing.B) {
+			m := globMatcher(bm.expr)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				m.MatchString(bm.test)
+			}
+		})
+		b.Run(bm.expr+"_optimized", func(b *testing.B) {
+			m, _ := NewGlobMatcher(bm.expr)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				m.MatchString(bm.test)
+			}
+		})
+	}
+}
