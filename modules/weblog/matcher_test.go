@@ -40,8 +40,8 @@ func Test_regexMatch_match(t *testing.T) {
 	re, _ := regexp.Compile("[0-9]+")
 	m := regexpMatcher{re}
 
-	assert.True(t, m.match("MatchString 2018"))
-	assert.False(t, m.match("No MatchString"))
+	assert.True(t, m.match("match 2018"))
+	assert.False(t, m.match("No match"))
 
 }
 
