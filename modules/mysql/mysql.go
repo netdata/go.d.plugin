@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func init() {
