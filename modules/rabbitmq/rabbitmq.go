@@ -80,7 +80,6 @@ func (Rabbitmq) Charts() *Charts {
 // Collect collects stats.
 func (r *Rabbitmq) Collect() map[string]int64 {
 	var (
-		metrics  = make(map[string]int64)
 		overview overview
 		node     node
 		err      error
@@ -96,9 +95,5 @@ func (r *Rabbitmq) Collect() map[string]int64 {
 		return nil
 	}
 
-	for k, v := range stm.ToMap(overview, node) {
-		metrics[k] = v
-	}
-
-	return metrics
+	return stm.ToMap(overview, node)
 }
