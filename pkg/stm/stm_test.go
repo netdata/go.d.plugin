@@ -187,3 +187,31 @@ func TestToMap_duplicateKey(t *testing.T) {
 		ToMap(&s)
 	}, "ptr test")
 }
+
+func TestToMap_Variadic(t *testing.T) {
+	s1 := struct {
+		Key1 int `stm:"key1"`
+	}{
+		Key1: 1,
+	}
+	s2 := struct {
+		Key2 int `stm:"key2"`
+	}{
+		Key2: 2,
+	}
+	s3 := struct {
+		Key3 int `stm:"key3"`
+	}{
+		Key3: 3,
+	}
+
+	assert.Equal(
+		t,
+		map[string]int64{
+			"key1": 1,
+			"key2": 2,
+			"key3": 3,
+		},
+		ToMap(s1, s2, s3),
+	)
+}
