@@ -96,11 +96,7 @@ func (r *Rabbitmq) Collect() map[string]int64 {
 		return nil
 	}
 
-	for k, v := range stm.ToMap(overview) {
-		metrics[k] = v
-	}
-
-	for k, v := range stm.ToMap(node) {
+	for k, v := range stm.ToMap(overview, node) {
 		metrics[k] = v
 	}
 
