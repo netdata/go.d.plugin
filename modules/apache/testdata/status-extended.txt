@@ -1,30 +1,37 @@
 127.0.0.1
-ServerVersion: Apache/2.4.25 (Debian)
+ServerVersion: Apache/2.4.37 (Unix)
 ServerMPM: event
-Server Built: 2018-11-03T18:46:19
-CurrentTime: Sunday, 23-Dec-2018 14:57:34 EST
-RestartTime: Sunday, 23-Dec-2018 14:57:25 EST
+Server Built: Oct 23 2018 18:27:46
+CurrentTime: Sunday, 13-Jan-2019 20:39:30 MSK
+RestartTime: Sunday, 13-Jan-2019 20:35:13 MSK
 ParentServerConfigGeneration: 1
 ParentServerMPMGeneration: 0
-ServerUptimeSeconds: 9
-ServerUptime: 9 seconds
-Load1: 0.05
-Load5: 0.04
-Load15: 0.00
-Total Accesses: 575
-Total kBytes: 433
+ServerUptimeSeconds: 256
+ServerUptime: 4 minutes 16 seconds
+Load1: 1.02
+Load5: 1.30
+Load15: 1.41
+Total Accesses: 9
+Total kBytes: 12
+Total Duration: 1
 CPUUser: 0
-CPUSystem: 0
+CPUSystem: .01
 CPUChildrenUser: 0
 CPUChildrenSystem: 0
-Uptime: 566
-ReqPerSec: 1.0159
-BytesPerSec: 783.378
-BytesPerReq: 771.117
+CPULoad: .00390625
+Uptime: 256
+ReqPerSec: .0351563
+BytesPerSec: 48
+BytesPerReq: 1365.33
+DurationPerReq: .111111
 BusyWorkers: 1
-IdleWorkers: 49
-ConnsTotal: 2
+IdleWorkers: 99
+Processes: 4
+Stopping: 0
+BusyWorkers: 1
+IdleWorkers: 99
+ConnsTotal: 0
 ConnsAsyncWriting: 0
-ConnsAsyncKeepAlive: 2
+ConnsAsyncKeepAlive: 0
 ConnsAsyncClosing: 0
-Scoreboard: _____W____________________________________________....................................................................................................
+Scoreboard: ____________________________________________________________W_______________________________________............................................................................................................................................................................................................................................................................................................
