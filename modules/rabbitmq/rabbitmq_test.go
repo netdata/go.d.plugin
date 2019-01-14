@@ -14,9 +14,8 @@ import (
 )
 
 var (
-	overview, _ = ioutil.ReadFile("testdata/overview.txt")
-	nodes, _    = ioutil.ReadFile("testdata/nodes.txt")
-	invalid, _  = ioutil.ReadFile("testdata/invalid.txt")
+	overviewData, _ = ioutil.ReadFile("testdata/overview.txt")
+	nodeData, _     = ioutil.ReadFile("testdata/node.txt")
 )
 
 func TestRabbitmq_Cleanup(t *testing.T) {
@@ -31,10 +30,11 @@ func TestNew(t *testing.T) {
 func TestRabbitmq_Init(t *testing.T) {
 	mod := New()
 
-	require.True(t, mod.Init())
-	assert.NotNil(t, mod.reqOverview)
-	assert.NotNil(t, mod.reqNodes)
-	assert.NotNil(t, mod.client)
+	assert.Implements(t, (*modules.Module)(nil), mod)
+	assert.Equal(t, defURL, mod.URL)
+	assert.Equal(t, defUsername, mod.Username)
+	assert.Equal(t, defPassword, mod.Password)
+	assert.Equal(t, defHTTPTimeout, mod.Timeout.Duration)
 }
 
 func TestRabbitmq_Check(t *testing.T) {
@@ -43,9 +43,9 @@ func TestRabbitmq_Check(t *testing.T) {
 			func(w http.ResponseWriter, r *http.Request) {
 				switch r.URL.Path {
 				case "/api/overview":
-					_, _ = w.Write(overview)
-				case "/api/nodes":
-					_, _ = w.Write(nodes)
+					_, _ = w.Write(overviewData)
+				case "/api/node/rabbit@rbt0":
+					_, _ = w.Write(nodeData)
 				}
 			}))
 	defer ts.Close()
@@ -66,7 +66,6 @@ func TestApache_CheckNG(t *testing.T) {
 
 func TestRabbitmq_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
-	assert.NoError(t, modules.CheckCharts(*New().Charts()...))
 }
 
 func TestRabbitmq_Collect(t *testing.T) {
@@ -75,9 +74,9 @@ func TestRabbitmq_Collect(t *testing.T) {
 			func(w http.ResponseWriter, r *http.Request) {
 				switch r.URL.Path {
 				case "/api/overview":
-					_, _ = w.Write(overview)
-				case "/api/nodes":
-					_, _ = w.Write(nodes)
+					_, _ = w.Write(overviewData)
+				case "/api/node/rabbit@rbt0":
+					_, _ = w.Write(nodeData)
 				}
 			}))
 	defer ts.Close()
@@ -87,44 +86,43 @@ func TestRabbitmq_Collect(t *testing.T) {
 
 	require.True(t, mod.Init())
 	require.True(t, mod.Check())
-	require.NotZero(t, mod.Collect())
 
 	expected := map[string]int64{
-		"message_stats_ack":                    1,
-		"message_stats_publish":                2,
-		"message_stats_publish_in":             3,
-		"message_stats_publish_out":            4,
-		"message_stats_confirm":                5,
-		"message_stats_deliver":                6,
 		"message_stats_deliver_no_ack":         7,
-		"message_stats_get":                    8,
-		"message_stats_get_no_ack":             9,
-		"message_stats_deliver_get":            10,
-		"message_stats_redeliver":              11,
-		"message_stats_return_unroutable":      666,
-		"object_totals_channels":               44,
-		"object_totals_connections":            44,
-		"object_totals_consumers":              65,
-		"object_totals_exchanges":              43,
-		"object_totals_queues":                 62,
-		"queue_totals_messages_ready":          150,
-		"queue_totals_messages_unacknowledged": 99,
-		"fd_used":                              74,
-		"sockets_used":                         40,
-		"mem_used":                             95463672,
-		"disk_free":                            79654567936,
-		"proc_used":                            621,
 		"run_queue":                            0,
+		"mem_used":                             75022616,
+		"message_stats_return_unroutable":      666,
+		"message_stats_get":                    8,
+		"object_totals_consumers":              65,
+		"object_totals_queues":                 62,
+		"message_stats_deliver":                6,
+		"message_stats_deliver_get":            10,
+		"message_stats_confirm":                5,
+		"message_stats_publish_in":             3,
+		"message_stats_publish":                2,
+		"message_stats_get_no_ack":             9,
+		"message_stats_redeliver":              11,
+		"sockets_used":                         40,
+		"fd_used":                              75,
+		"object_totals_channels":               44,
+		"message_stats_ack":                    1,
+		"object_totals_exchanges":              43,
+		"proc_used":                            622,
+		"disk_free":                            79493152768,
+		"queue_totals_messages_unacknowledged": 99,
+		"message_stats_publish_out":            4,
+		"object_totals_connections":            44,
+		"queue_totals_messages_ready":          150,
 	}
 
-	assert.Equal(t, expected, mod.metrics)
+	assert.Equal(t, expected, mod.Collect())
 }
 
 func TestRabbitmq_InvalidData(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(invalid)
+				_, _ = w.Write([]byte("hello and goodbye"))
 			}))
 	defer ts.Close()
 
