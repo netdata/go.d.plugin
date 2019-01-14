@@ -20,10 +20,16 @@ func TestAnd(t *testing.T) {
 	assert.Equal(t,
 		matcherF,
 		And(FALSE(), stringFullMatcher("")))
+	assert.Equal(t,
+		matcherF,
+		And(stringFullMatcher(""), FALSE()))
 
 	assert.Equal(t,
 		stringFullMatcher(""),
 		And(TRUE(), stringFullMatcher("")))
+	assert.Equal(t,
+		stringFullMatcher(""),
+		And(stringFullMatcher(""), TRUE()))
 
 	assert.Equal(t,
 		andMatcher{stringPartialMatcher("a"), stringPartialMatcher("b")},
@@ -41,10 +47,16 @@ func TestOr(t *testing.T) {
 	assert.Equal(t,
 		stringFullMatcher(""),
 		Or(FALSE(), stringFullMatcher("")))
+	assert.Equal(t,
+		stringFullMatcher(""),
+		Or(stringFullMatcher(""), FALSE()))
 
 	assert.Equal(t,
 		TRUE(),
 		Or(TRUE(), stringFullMatcher("")))
+	assert.Equal(t,
+		TRUE(),
+		Or(stringFullMatcher(""), TRUE()))
 
 	assert.Equal(t,
 		orMatcher{stringPartialMatcher("a"), stringPartialMatcher("b")},

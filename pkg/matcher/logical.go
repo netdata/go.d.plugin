@@ -40,7 +40,14 @@ func And(lhs, rhs Matcher, others ...Matcher) Matcher {
 	case FALSE():
 		matcher = FALSE()
 	default:
-		matcher = andMatcher{lhs, rhs}
+		switch rhs {
+		case TRUE():
+			matcher = lhs
+		case FALSE():
+			matcher = FALSE()
+		default:
+			matcher = andMatcher{lhs, rhs}
+		}
 	}
 	if len(others) > 0 {
 		return And(matcher, others[0], others[1:]...)
@@ -57,7 +64,14 @@ func Or(lhs, rhs Matcher, others ...Matcher) Matcher {
 	case FALSE():
 		matcher = rhs
 	default:
-		matcher = orMatcher{lhs, rhs}
+		switch rhs {
+		case TRUE():
+			matcher = TRUE()
+		case FALSE():
+			matcher = lhs
+		default:
+			matcher = orMatcher{lhs, rhs}
+		}
 	}
 	if len(others) > 0 {
 		return Or(matcher, others[0], others[1:]...)
