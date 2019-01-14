@@ -32,27 +32,37 @@ func Not(m Matcher) Matcher {
 }
 
 // And returns a matcher which returns true only if all of it's sub-matcher return true
-func And(lhs, rhs Matcher) Matcher {
+func And(lhs, rhs Matcher, others ...Matcher) Matcher {
+	var matcher Matcher
 	switch lhs {
 	case TRUE():
-		return rhs
+		matcher = rhs
 	case FALSE():
-		return FALSE()
+		matcher = FALSE()
 	default:
-		return andMatcher{lhs, rhs}
+		matcher = andMatcher{lhs, rhs}
 	}
+	if len(others) > 0 {
+		return And(matcher, others[0], others[1:]...)
+	}
+	return matcher
 }
 
 // Or returns a matcher which returns true if any of it's sub-matcher return true
-func Or(lhs, rhs Matcher) Matcher {
+func Or(lhs, rhs Matcher, others ...Matcher) Matcher {
+	var matcher Matcher
 	switch lhs {
 	case TRUE():
-		return TRUE()
+		matcher = TRUE()
 	case FALSE():
-		return rhs
+		matcher = rhs
 	default:
-		return orMatcher{lhs, rhs}
+		matcher = orMatcher{lhs, rhs}
 	}
+	if len(others) > 0 {
+		return Or(matcher, others[0], others[1:]...)
+	}
+	return matcher
 }
 
 func (trueMatcher) Match(b []byte) bool       { return true }
