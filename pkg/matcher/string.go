@@ -1,27 +1,46 @@
 package matcher
 
-import "strings"
+import (
+	"bytes"
+	"strings"
+)
 
-// StringFull implements Matcher, it uses "==" to match.
-type StringFull struct{ Str string }
+type (
+	// stringFullMatcher implements Matcher, it uses "==" to match.
+	stringFullMatcher string
 
-// Match matches.
-func (m StringFull) Match(line string) bool { return m.Str == line }
+	// stringPartialMatcher implements Matcher, it uses strings.Contains to match.
+	stringPartialMatcher string
 
-// StringPartial implements Matcher, it uses strings.Contains to match.
-type StringPartial struct{ Substr string }
+	// stringPrefixMatcher implements Matcher, it uses strings.HasPrefix to match.
+	stringPrefixMatcher string
 
-// Match matches.
-func (m StringPartial) Match(line string) bool { return strings.Contains(line, m.Substr) }
+	// stringSuffixMatcher implements Matcher, it uses strings.HasSuffix to match.
+	stringSuffixMatcher string
+)
 
-// StringPrefix implements Matcher, it uses strings.HasPrefix to match.
-type StringPrefix struct{ Prefix string }
+// NewStringMatcher create a new matcher with string format
+func NewStringMatcher(s string, startWith, endWith bool) (Matcher, error) {
+	switch {
+	case startWith && endWith:
+		return stringFullMatcher(s), nil
+	case startWith && !endWith:
+		return stringPrefixMatcher(s), nil
+	case !startWith && endWith:
+		return stringSuffixMatcher(s), nil
+	default:
+		return stringPartialMatcher(s), nil
+	}
+}
 
-// Match matches.
-func (m StringPrefix) Match(line string) bool { return strings.HasPrefix(line, m.Prefix) }
+func (m stringFullMatcher) Match(b []byte) bool          { return string(m) == string(b) }
+func (m stringFullMatcher) MatchString(line string) bool { return string(m) == line }
 
-// StringSuffix implements Matcher, it uses strings.HasSuffix to match.
-type StringSuffix struct{ Suffix string }
+func (m stringPartialMatcher) Match(b []byte) bool          { return bytes.Contains(b, []byte(m)) }
+func (m stringPartialMatcher) MatchString(line string) bool { return strings.Contains(line, string(m)) }
 
-// Match matches.
-func (m StringSuffix) Match(line string) bool { return strings.HasSuffix(line, m.Suffix) }
+func (m stringPrefixMatcher) Match(b []byte) bool          { return bytes.HasPrefix(b, []byte(m)) }
+func (m stringPrefixMatcher) MatchString(line string) bool { return strings.HasPrefix(line, string(m)) }
+
+func (m stringSuffixMatcher) Match(b []byte) bool          { return bytes.HasSuffix(b, []byte(m)) }
+func (m stringSuffixMatcher) MatchString(line string) bool { return strings.HasSuffix(line, string(m)) }

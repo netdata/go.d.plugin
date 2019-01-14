@@ -2,20 +2,88 @@ package matcher
 
 import (
 	"path/filepath"
-	"runtime"
+	"regexp"
 	"unicode/utf8"
+
+	"errors"
 )
 
-// GlobMatch implements Matcher, it uses filepath.Match to match.
-type GlobMatch struct{ Pattern string }
+// globMatcher implements Matcher, it uses filepath.MatchString to match.
+type globMatcher string
 
-// Match matches.
-func (m GlobMatch) Match(line string) bool {
-	matched, _ := m.match(m.Pattern, line)
-	return matched
+var (
+	errBadGlobPattern = errors.New("bad glob pattern")
+	erGlobPattern     = regexp.MustCompile(`(?s)^(?:[*?]|\[\^?([^\\-\]]|\\.|.-.)+\]|\\.|[^\*\?\\\[])*$`)
+)
+
+// NewGlobMatcher create a new matcher with glob format
+func NewGlobMatcher(expr string) (Matcher, error) {
+	switch expr {
+	case "":
+		return stringFullMatcher(""), nil
+	case "*":
+		return TRUE(), nil
+	}
+
+	// any strings pass this regexp check are valid pattern
+	if !erGlobPattern.MatchString(expr) {
+		return nil, errBadGlobPattern
+	}
+
+	size := len(expr)
+	chars := []rune(expr)
+	startWith := true
+	endWith := true
+	startIdx := 0
+	endIdx := size - 1
+	if chars[startIdx] == '*' {
+		startWith = false
+		startIdx = 1
+	}
+	if chars[endIdx] == '*' {
+		endWith = false
+		endIdx--
+	}
+
+	unescapedExpr := make([]rune, 0, endIdx-startIdx+1)
+	for i := startIdx; i <= endIdx; i++ {
+		ch := chars[i]
+		if ch == '\\' {
+			nextCh := chars[i+1]
+			unescapedExpr = append(unescapedExpr, nextCh)
+			i++
+		} else if isGlobMeta(ch) {
+			return globMatcher(expr), nil
+		} else {
+			unescapedExpr = append(unescapedExpr, ch)
+		}
+	}
+
+	return NewStringMatcher(string(unescapedExpr), startWith, endWith)
 }
 
-func (m GlobMatch) match(pattern, name string) (matched bool, err error) {
+func isGlobMeta(ch rune) bool {
+	switch ch {
+	case '*', '?', '[':
+		return true
+	default:
+		return false
+	}
+}
+
+// MatchString matches.
+func (m globMatcher) Match(b []byte) bool {
+	return m.MatchString(string(b))
+}
+
+// MatchString matches.
+func (m globMatcher) MatchString(line string) bool {
+	rs, _ := m.globMatch(line)
+	return rs
+}
+
+func (m globMatcher) globMatch(name string) (matched bool, err error) {
+	pattern := string(m)
 Pattern:
 	for len(pattern) > 0 {
 		var star bool
@@ -76,11 +144,8 @@ Scan:
 	for i = 0; i < len(pattern); i++ {
 		switch pattern[i] {
 		case '\\':
-			if runtime.GOOS != "windows" {
-				// error check handled in matchChunk: bad pattern.
-				if i+1 < len(pattern) {
-					i++
-				}
+			if i+1 < len(pattern) {
+				i++
 			}
 		case '[':
 			inrange = true
@@ -156,12 +221,10 @@ func matchChunk(chunk, s string) (rest string, ok bool, err error) {
 			chunk = chunk[1:]
 
 		case '\\':
-			if runtime.GOOS != "windows" {
-				chunk = chunk[1:]
-				if len(chunk) == 0 {
-					err = filepath.ErrBadPattern
-					return
-				}
+			chunk = chunk[1:]
+			if len(chunk) == 0 {
+				err = filepath.ErrBadPattern
+				return
 			}
 			fallthrough
 
@@ -182,7 +245,7 @@ func getEsc(chunk string) (r rune, nchunk string, err error) {
 		err = filepath.ErrBadPattern
 		return
 	}
-	if chunk[0] == '\\' && runtime.GOOS != "windows" {
+	if chunk[0] == '\\' {
 		chunk = chunk[1:]
 		if len(chunk) == 0 {
 			err = filepath.ErrBadPattern

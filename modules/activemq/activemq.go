@@ -5,8 +5,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
+
 	"github.com/netdata/go.d.plugin/modules"
-	"github.com/netdata/go.d.plugin/pkg/matcher/notsimplepattern"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -66,8 +67,8 @@ type Activemq struct {
 	apiClient    *apiClient
 	activeQueues map[string]bool
 	activeTopics map[string]bool
-	queuesFilter *notsimplepattern.Patterns
-	topicsFilter *notsimplepattern.Patterns
+	queuesFilter matcher.Matcher
+	topicsFilter matcher.Matcher
 	charts       *Charts
 }
 
@@ -82,23 +83,21 @@ func (a *Activemq) Init() bool {
 	}
 
 	if a.QueuesFilter != "" {
-		f, err := notsimplepattern.Create(a.QueuesFilter)
+		f, err := matcher.NewSimplePatternsMatcher(a.QueuesFilter)
 		if err != nil {
 			a.Errorf("error on creating queues filter : %v", err)
 			return false
 		}
-		f.UseCache = true
-		a.queuesFilter = f
+		a.queuesFilter = matcher.WithCache(f)
 	}
 
 	if a.TopicsFilter != "" {
-		f, err := notsimplepattern.Create(a.TopicsFilter)
+		f, err := matcher.NewSimplePatternsMatcher(a.TopicsFilter)
 		if err != nil {
 			a.Errorf("error on creating topics filter : %v", err)
 			return false
 		}
-		f.UseCache = true
-		a.topicsFilter = f
+		a.topicsFilter = matcher.WithCache(f)
 	}
 
 	a.apiClient = &apiClient{
@@ -237,14 +236,14 @@ func (a Activemq) filterQueues(line string) bool {
 	if a.queuesFilter == nil {
 		return true
 	}
-	return a.queuesFilter.Match(line)
+	return a.queuesFilter.MatchString(line)
 }
 
 func (a Activemq) filterTopics(line string) bool {
 	if a.topicsFilter == nil {
 		return true
 	}
-	return a.topicsFilter.Match(line)
+	return a.topicsFilter.MatchString(line)
 }
 
 func (a *Activemq) addQueueTopicCharts(name, typ string) {

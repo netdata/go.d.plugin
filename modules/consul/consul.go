@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
+
 	"github.com/netdata/go.d.plugin/modules"
-	"github.com/netdata/go.d.plugin/pkg/matcher/notsimplepattern"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -55,7 +56,7 @@ type Consul struct {
 
 	charts       *Charts
 	activeChecks map[string]bool
-	checksFilter *notsimplepattern.Patterns
+	checksFilter matcher.Matcher
 	apiClient    *apiClient
 }
 
@@ -76,14 +77,13 @@ func (c *Consul) Init() bool {
 	}
 
 	if c.ChecksFilter != "" {
-		sps, err := notsimplepattern.Create(c.ChecksFilter)
+		sps, err := matcher.NewSimplePatternsMatcher(c.ChecksFilter)
 		if err != nil {
 			c.Errorf("error on creating checks filter : %v", err)
 			return false
 		}
 
-		sps.UseCache = true
-		c.checksFilter = sps
+		c.checksFilter = matcher.WithCache(sps)
 	}
 
 	return true
@@ -169,7 +169,7 @@ func (c *Consul) filterChecks(name string) bool {
 	if c.checksFilter == nil {
 		return true
 	}
-	return c.checksFilter.Match(name)
+	return c.checksFilter.MatchString(name)
 }
 
 func (c *Consul) addCheckToChart(check *agentCheck) {

@@ -6,106 +6,55 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStringFull_Match(t *testing.T) {
-	m := StringFull{"Does Coca-Cola contain cocaine?"}
+var stringMatcherTestCases = []struct {
+	line                          string
+	expr                          string
+	full, prefix, suffix, partial bool
+}{
+	{"", "", true, true, true, true},
+	{"abc", "", false, true, true, true},
+	{"power", "pow", false, true, false, true},
+	{"netdata", "data", false, false, true, true},
+	{"abc", "def", false, false, false, false},
+	{"soon", "o", false, false, false, true},
+}
 
-	cases := []struct {
-		expected bool
-		line     string
-	}{
-		{
-			expected: true,
-			line:     "Does Coca-Cola contain cocaine?",
-		},
-		{
-			expected: false,
-			line:     "Water contains hydrogen and oxygen.",
-		},
-		{
-			expected: false,
-			line:     "This will never fail!",
-		},
-	}
-
-	for _, c := range cases {
-		assert.Equal(t, c.expected, m.Match(c.line))
+func TestStringFullMatcher_MatchString(t *testing.T) {
+	for _, c := range stringMatcherTestCases {
+		t.Run(c.line, func(t *testing.T) {
+			m := stringFullMatcher(c.expr)
+			assert.Equal(t, c.full, m.Match([]byte(c.line)))
+			assert.Equal(t, c.full, m.MatchString(c.line))
+		})
 	}
 }
 
-func TestStringPartial_Match(t *testing.T) {
-	m := StringPartial{"contain"}
-
-	cases := []struct {
-		expected bool
-		line     string
-	}{
-		{
-			expected: true,
-			line:     "Does Coca-Cola contain cocaine?",
-		},
-		{
-			expected: true,
-			line:     "Water contains hydrogen and oxygen.",
-		},
-		{
-			expected: false,
-			line:     "This will never fail!",
-		},
-	}
-
-	for _, c := range cases {
-		assert.Equal(t, c.expected, m.Match(c.line))
+func TestStringPrefixMatcher_MatchString(t *testing.T) {
+	for _, c := range stringMatcherTestCases {
+		t.Run(c.line, func(t *testing.T) {
+			m := stringPrefixMatcher(c.expr)
+			assert.Equal(t, c.prefix, m.Match([]byte(c.line)))
+			assert.Equal(t, c.prefix, m.MatchString(c.line))
+		})
 	}
 }
 
-func TestStringSuffix_Match(t *testing.T) {
-	m := StringSuffix{"mistakes."}
-
-	cases := []struct {
-		expected bool
-		line     string
-	}{
-		{
-			expected: true,
-			line:     "Your paper contains too many mistakes.",
-		},
-		{
-			expected: true,
-			line:     "This sentence contains several mistakes.",
-		},
-		{
-			expected: false,
-			line:     "This will never fail!",
-		},
-	}
-
-	for _, c := range cases {
-		assert.Equal(t, c.expected, m.Match(c.line))
+func TestStringSuffixMatcher_MatchString(t *testing.T) {
+	for _, c := range stringMatcherTestCases {
+		t.Run(c.line, func(t *testing.T) {
+			m := stringSuffixMatcher(c.expr)
+			assert.Equal(t, c.suffix, m.Match([]byte(c.line)))
+			assert.Equal(t, c.suffix, m.MatchString(c.line))
+		})
 	}
 }
 
-func TestStringPrefix_Match(t *testing.T) {
-	m := StringPrefix{"That book"}
-
-	cases := []struct {
-		expected bool
-		line     string
-	}{
-		{
-			expected: true,
-			line:     "That book contains many pictures.",
-		},
-		{
-			expected: true,
-			line:     "That book contains useful ideas.",
-		},
-		{
-			expected: false,
-			line:     "This will never fail!",
-		},
-	}
-
-	for _, c := range cases {
-		assert.Equal(t, c.expected, m.Match(c.line))
+func TestStringPartialMatcher_MatchString(t *testing.T) {
+	for _, c := range stringMatcherTestCases {
+		t.Run(c.line, func(t *testing.T) {
+			m := stringPartialMatcher(c.expr)
+			assert.Equal(t, c.partial, m.Match([]byte(c.line)))
+			assert.Equal(t, c.partial, m.MatchString(c.line))
+		})
 	}
 }
