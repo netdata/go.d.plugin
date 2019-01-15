@@ -7,18 +7,18 @@ import (
 )
 
 type cache interface {
-	Get(key string) (result bool, exist bool)
-	Add(key string, value bool)
+	get(key string) (result bool, exist bool)
+	add(key string, value bool)
 }
 
 type simpleCache map[string]bool
 
-func (c simpleCache) Get(key string) (bool, bool) {
+func (c simpleCache) get(key string) (bool, bool) {
 	result, ok := c[key]
 	return result, ok
 }
 
-func (c simpleCache) Add(key string, value bool) { c[key] = value }
+func (c simpleCache) add(key string, value bool) { c[key] = value }
 
 func newLRUCache(limit int) cache {
 	c, err := lru.New(limit)
@@ -32,7 +32,7 @@ type lruCache struct {
 	*lru.Cache
 }
 
-func (c lruCache) Get(key string) (bool, bool) {
+func (c lruCache) get(key string) (bool, bool) {
 	v, ok := c.Cache.Get(key)
 	if !ok {
 		return false, false
@@ -41,7 +41,7 @@ func (c lruCache) Get(key string) (bool, bool) {
 	return result, ok
 }
 
-func (c lruCache) Add(key string, value bool) { c.Cache.Add(key, value) }
+func (c lruCache) add(key string, value bool) { c.Cache.Add(key, value) }
 
 type (
 	cachedMatcher struct {
@@ -93,13 +93,13 @@ func (m *cachedMatcher) MatchString(s string) bool {
 
 func (m *cachedMatcher) fetch(key string) (result bool, ok bool) {
 	m.mux.RLock()
-	result, ok = m.cache.Get(key)
+	result, ok = m.cache.get(key)
 	m.mux.RUnlock()
 	return
 }
 
 func (m *cachedMatcher) put(key string, result bool) {
 	m.mux.Lock()
-	m.cache.Add(key, result)
+	m.cache.add(key, result)
 	m.mux.Unlock()
 }
