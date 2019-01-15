@@ -74,6 +74,9 @@ func WithCache(m Matcher, limit int) Matcher {
 
 func (m *cachedMatcher) Match(b []byte) bool {
 	s := string(b)
+	if m.cache == nil {
+		return m.matcher.Match(b)
+	}
 
 	if result, ok := m.fetch(s); ok {
 		return result
@@ -84,6 +87,10 @@ func (m *cachedMatcher) Match(b []byte) bool {
 }
 
 func (m *cachedMatcher) MatchString(s string) bool {
+	if m.cache == nil {
+		return m.matcher.MatchString(s)
+	}
+
 	if result, ok := m.fetch(s); ok {
 		return result
 	}
