@@ -14,26 +14,16 @@ func TestWithCache(t *testing.T) {
 	assert.True(t, cached.MatchString("1"))
 	assert.True(t, cached.Match([]byte("2")))
 	assert.True(t, cached.Match([]byte("2")))
-}
 
-func TestWithLimitedCache(t *testing.T) {
-	regMatcher, _ := NewRegExpMatcher("[0-9]+")
+	regMatcher, _ = NewRegExpMatcher("[0-9]+")
 
-	cached := WithCache(regMatcher, -1)
-	for _, s := range []string{"1", "2", "3", "4", "a", "b", "c"} {
-		cached.MatchString(s)
-	}
+	cached = WithCache(regMatcher, -1)
 	cm := cached.(*cachedMatcher)
 	assert.IsType(t, (simpleCache)(nil), cm.cache)
-	assert.Equal(t, 7, cm.cache.Len())
 
 	cached = WithCache(regMatcher, 4)
-	for _, s := range []string{"1", "2", "3", "4", "a", "b", "c"} {
-		cached.MatchString(s)
-	}
 	cm = cached.(*cachedMatcher)
 	assert.IsType(t, (*lruCache)(nil), cm.cache)
-	assert.Equal(t, 4, cm.cache.Len())
 }
 
 func TestWithCache_specialCase(t *testing.T) {

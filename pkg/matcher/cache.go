@@ -8,7 +8,6 @@ import (
 
 type cache interface {
 	Get(key string) (result bool, exist bool)
-	Len() int
 	Add(key string, value bool)
 }
 
@@ -18,8 +17,6 @@ func (c simpleCache) Get(key string) (bool, bool) {
 	result, ok := c[key]
 	return result, ok
 }
-
-func (c simpleCache) Len() int { return len(c) }
 
 func (c simpleCache) Add(key string, value bool) { c[key] = value }
 
