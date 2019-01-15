@@ -394,7 +394,7 @@ func checkVar(v *Var) error {
 
 func checkID(id string) int {
 	for _, r := range id {
-		if r == ' ' || r == '.' {
+		if unicode.IsSpace(r) || r == '.' {
 			return int(r)
 		}
 	}
