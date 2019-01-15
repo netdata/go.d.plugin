@@ -19,11 +19,12 @@ func TestWithCache(t *testing.T) {
 func TestWithLimitedCache(t *testing.T) {
 	regMatcher, _ := NewRegExpMatcher("[0-9]+")
 
-	cached := WithCache(regMatcher, 10)
+	cached := WithCache(regMatcher, -1)
 	for _, s := range []string{"1", "2", "3", "4", "a", "b", "c"} {
 		cached.MatchString(s)
 	}
 	cm := cached.(*cachedMatcher)
+	assert.IsType(t, (simpleCache)(nil), cm.cache)
 	assert.Equal(t, 7, cm.cache.Len())
 
 	cached = WithCache(regMatcher, 4)
@@ -31,6 +32,7 @@ func TestWithLimitedCache(t *testing.T) {
 		cached.MatchString(s)
 	}
 	cm = cached.(*cachedMatcher)
+	assert.IsType(t, (*lruCache)(nil), cm.cache)
 	assert.Equal(t, 4, cm.cache.Len())
 }
 

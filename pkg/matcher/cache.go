@@ -1,38 +1,79 @@
 package matcher
 
 import (
+	"sync"
+
 	"github.com/hashicorp/golang-lru"
 )
+
+type cache interface {
+	Get(key string) (result bool, exist bool)
+	Len() int
+	Add(key string, value bool)
+}
+
+type simpleCache map[string]bool
+
+func (c simpleCache) Get(key string) (bool, bool) {
+	result, ok := c[key]
+	return result, ok
+}
+
+func (c simpleCache) Len() int { return len(c) }
+
+func (c simpleCache) Add(key string, value bool) { c[key] = value }
+
+func newLRUCache(limit int) cache {
+	c, err := lru.New(limit)
+	if err != nil {
+		panic(err)
+	}
+	return &lruCache{c}
+}
+
+type lruCache struct {
+	*lru.Cache
+}
+
+func (c lruCache) Get(key string) (bool, bool) {
+	v, ok := c.Cache.Get(key)
+	if !ok {
+		return false, false
+	}
+	result := v.(bool)
+	return result, ok
+}
+
+func (c lruCache) Add(key string, value bool) { c.Cache.Add(key, value) }
 
 type (
 	cachedMatcher struct {
 		matcher Matcher
-		cache   *lru.Cache
+
+		mux   sync.RWMutex
+		cache cache
 	}
 )
 
 // WithCache adds limited cache to the Matcher.
-// Limit must be a positive number. Otherwise WithCache will panic.
+// Limit <= 0 means no limit.
 func WithCache(m Matcher, limit int) Matcher {
 	switch m {
 	case TRUE(), FALSE():
 		return m
 	default:
 		cm := &cachedMatcher{matcher: m}
-		cache, err := lru.New(limit)
-		if err != nil {
-			panic(err)
+		if limit < 0 {
+			cm.cache = make(simpleCache)
+		} else {
+			cm.cache = newLRUCache(limit)
 		}
-		cm.cache = cache
 		return cm
 	}
 }
 
 func (m *cachedMatcher) Match(b []byte) bool {
 	s := string(b)
-	if m.cache == nil {
-		return m.matcher.MatchString(s)
-	}
 
 	if result, ok := m.fetch(s); ok {
 		return result
@@ -43,10 +84,6 @@ func (m *cachedMatcher) Match(b []byte) bool {
 }
 
 func (m *cachedMatcher) MatchString(s string) bool {
-	if m.cache == nil {
-		return m.matcher.MatchString(s)
-	}
-
 	if result, ok := m.fetch(s); ok {
 		return result
 	}
@@ -55,17 +92,15 @@ func (m *cachedMatcher) MatchString(s string) bool {
 	return result
 }
 
-func (m *cachedMatcher) fetch(key string) (result bool, exist bool) {
-	var v interface{}
-	v, exist = m.cache.Get(key)
-	if !exist {
-		return
-	}
-
-	result = v.(bool)
+func (m *cachedMatcher) fetch(key string) (result bool, ok bool) {
+	m.mux.RLock()
+	result, ok = m.cache.Get(key)
+	m.mux.RUnlock()
 	return
 }
 
 func (m *cachedMatcher) put(key string, result bool) {
+	m.mux.Lock()
 	m.cache.Add(key, result)
+	m.mux.Unlock()
 }
