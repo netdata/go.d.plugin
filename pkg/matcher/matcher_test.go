@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParse_syntax(t *testing.T) {
+func TestParse(t *testing.T) {
 	tests := []struct {
 		valid   bool
 		line    string
@@ -106,4 +106,15 @@ func TestParse_syntax(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMust(t *testing.T) {
+	assert.NotPanics(t, func() {
+		m := Must(New(FmtRegExp, `[0-9]+`))
+		assert.NotNil(t, m)
+	})
+
+	assert.Panics(t, func() {
+		Must(New(FmtRegExp, `[0-9]+\`))
+	})
 }
