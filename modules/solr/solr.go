@@ -22,12 +22,12 @@ func init() {
 	modules.Register("solr", creator)
 }
 
-var (
-	defURL         = "http://127.0.0.1:8983"
-	defHTTPTimeout = time.Second
+const (
+	defaultURL         = "http://127.0.0.1:8983"
+	defaultHTTPTimeout = time.Second
 )
 
-var (
+const (
 	minSupportedVersion = 6.4
 	coresHandlersURI    = "/solr/admin/metrics?group=core&prefix=UPDATE,QUERY&wt=json"
 	infoSystemURI       = "/solr/admin/info/system?wt=json"
@@ -37,8 +37,8 @@ var (
 func New() *Solr {
 	return &Solr{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+			Request: web.Request{URL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 		cores: make(map[string]bool),
 	}

@@ -28,25 +28,25 @@ var (
 	nameReplacer = strings.NewReplacer(".", "_", " ", "")
 )
 
-var (
-	defMaxQueues       = 50
-	defMaxTopics       = 50
-	defURL             = "http://127.0.0.1:8161"
-	defHTTPTimeout     = time.Second
-	defFilterCacheSize = 1000
+const (
+	defaultMaxQueues       = 50
+	defaultMaxTopics       = 50
+	defaultURL             = "http://127.0.0.1:8161"
+	defaultHTTPTimeout     = time.Second
+	defaultFilterCacheSize = 1000
 )
 
 // New creates Example with default values
 func New() *Activemq {
 	return &Activemq{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+			Request: web.Request{URL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 
-		MaxQueues:       defMaxQueues,
-		MaxTopics:       defMaxTopics,
-		FilterCacheSize: defFilterCacheSize,
+		MaxQueues:       defaultMaxQueues,
+		MaxTopics:       defaultMaxTopics,
+		FilterCacheSize: defaultFilterCacheSize,
 
 		charts:       &Charts{},
 		activeQueues: make(map[string]bool),

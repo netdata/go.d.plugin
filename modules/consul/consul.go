@@ -19,10 +19,10 @@ func init() {
 }
 
 const (
-	defURL                   = "http://127.0.0.1:8500"
-	defHTTPTimeout           = time.Second
-	defMaxChecks             = 50
-	defChecksFilterCacheSize = 1000
+	defaultURL                   = "http://127.0.0.1:8500"
+	defaultHTTPTimeout           = time.Second
+	defaultMaxChecks             = 50
+	defaultChecksFilterCacheSize = 1000
 )
 
 const (
@@ -36,11 +36,11 @@ const (
 func New() *Consul {
 	return &Consul{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+			Request: web.Request{URL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
-		MaxChecks:             defMaxChecks,
-		ChecksFilterCacheSize: defChecksFilterCacheSize,
+		MaxChecks:             defaultMaxChecks,
+		ChecksFilterCacheSize: defaultChecksFilterCacheSize,
 		activeChecks:          make(map[string]bool),
 		charts:                charts.Copy(),
 	}

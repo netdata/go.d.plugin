@@ -24,17 +24,17 @@ func init() {
 }
 
 const (
-	defAddress = "127.0.0.1"
-	defPort    = 18121
-	defSecret  = "adminsecret"
+	defaultAddress = "127.0.0.1"
+	defaultPort    = 18121
+	defaultSecret  = "adminsecret"
 )
 
 // New creates Freeradius with default values
 func New() *Freeradius {
 	return &Freeradius{
-		Address: defAddress,
-		Port:    defPort,
-		Secret:  defSecret,
+		Address: defaultAddress,
+		Port:    defaultPort,
+		Secret:  defaultSecret,
 		Timeout: web.Duration{Duration: time.Second},
 
 		exchanger: &radius.Client{
@@ -66,13 +66,13 @@ func (Freeradius) Cleanup() {}
 // Init makes initialization
 func (f *Freeradius) Init() bool {
 	if f.Address == "" {
-		f.Address = defAddress
+		f.Address = defaultAddress
 	}
 	if f.Port == 0 {
-		f.Port = defPort
+		f.Port = defaultPort
 	}
 	if f.Secret == "" {
-		f.Secret = defSecret
+		f.Secret = defaultSecret
 	}
 
 	return true

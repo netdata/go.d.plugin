@@ -16,17 +16,17 @@ func init() {
 	modules.Register("nginx", creator)
 }
 
-var (
-	defURL         = "http://localhost/stub_status"
-	defHTTPTimeout = time.Second
+const (
+	defaultURL         = "http://localhost/stub_status"
+	defaultHTTPTimeout = time.Second
 )
 
 // New creates Nginx with default values
 func New() *Nginx {
 	return &Nginx{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+			Request: web.Request{URL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
 }

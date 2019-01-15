@@ -23,9 +23,9 @@ func TestFreeradius_Init(t *testing.T) {
 	mod.Secret = ""
 
 	assert.True(mod, mod.Init())
-	assert.Equal(t, defAddress, mod.Address)
-	assert.Equal(t, defPort, mod.Port)
-	assert.Equal(t, defSecret, mod.Secret)
+	assert.Equal(t, defaultAddress, mod.Address)
+	assert.Equal(t, defaultPort, mod.Port)
+	assert.Equal(t, defaultSecret, mod.Secret)
 }
 
 func TestFreeradius_Check(t *testing.T) {
@@ -94,7 +94,7 @@ func TestFreeradius_Cleanup(t *testing.T) {
 type mockOKRadiusServer struct{}
 
 func (m mockOKRadiusServer) Exchange(ctx context.Context, packet *radius.Packet, address string) (*radius.Packet, error) {
-	resp := radius.New(radius.CodeAccessAccept, []byte(defSecret))
+	resp := radius.New(radius.CodeAccessAccept, []byte(defaultSecret))
 	resp.Code = radius.CodeAccessAccept
 
 	_ = FreeRADIUSTotalAccessRequests_Add(resp, 10)

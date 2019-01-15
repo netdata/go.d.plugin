@@ -16,15 +16,15 @@ func init() {
 	})
 }
 
+const (
+	defaultHTTPTimeout = time.Second
+)
+
 // New returns SpringBoot2 instance with default values
 func New() *SpringBoot2 {
-	var (
-		defHTTPTimeout = time.Second
-	)
-
 	return &SpringBoot2{
 		HTTP: web.HTTP{
-			Client: web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+			Client: web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
 }

@@ -16,11 +16,11 @@ func init() {
 	modules.Register("rabbitmq", creator)
 }
 
-var (
-	defURL         = "http://localhost:15672"
-	defUsername    = "guest"
-	defPassword    = "guest"
-	defHTTPTimeout = time.Second
+const (
+	defaultURL         = "http://localhost:15672"
+	defaultUsername    = "guest"
+	defaultPassword    = "guest"
+	defaultHTTPTimeout = time.Second
 )
 
 // New creates Rabbitmq with default values
@@ -28,11 +28,11 @@ func New() *Rabbitmq {
 	return &Rabbitmq{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				URL:      defURL,
-				Username: defUsername,
-				Password: defPassword,
+				URL:      defaultURL,
+				Username: defaultUsername,
+				Password: defaultPassword,
 			},
-			Client: web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+			Client: web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
 }

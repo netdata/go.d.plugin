@@ -16,17 +16,17 @@ func init() {
 	modules.Register("lighttpd2", creator)
 }
 
-var (
-	defURL         = "http://localhost/server-status?format=plain"
-	defHTTPTimeout = time.Second
+const (
+	defaultURL         = "http://localhost/server-status?format=plain"
+	defaultHTTPTimeout = time.Second
 )
 
 // New creates Lighttpd2 with default values
 func New() *Lighttpd2 {
 	return &Lighttpd2{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+			Request: web.Request{URL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
 }

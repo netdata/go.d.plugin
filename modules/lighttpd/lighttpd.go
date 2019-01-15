@@ -17,8 +17,8 @@ func init() {
 }
 
 const (
-	defURL         = "http://localhost/server-status?auto"
-	defHTTPTimeout = time.Second
+	defaultURL         = "http://localhost/server-status?auto"
+	defaultHTTPTimeout = time.Second
 )
 
 // New creates Lighttpd with default values
@@ -26,8 +26,8 @@ func New() *Lighttpd {
 
 	return &Lighttpd{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+			Request: web.Request{URL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
 }
