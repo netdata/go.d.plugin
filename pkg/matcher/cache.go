@@ -32,8 +32,8 @@ type lruCache struct {
 	*lru.Cache
 }
 
-func (c lruCache) get(key string) (bool, bool) {
-	v, ok := c.Cache.Get(key)
+func (c *lruCache) get(key string) (bool, bool) {
+	v, ok := c.Get(key)
 	if !ok {
 		return false, false
 	}
@@ -41,7 +41,7 @@ func (c lruCache) get(key string) (bool, bool) {
 	return result, ok
 }
 
-func (c lruCache) add(key string, value bool) { c.Cache.Add(key, value) }
+func (c *lruCache) add(key string, value bool) { c.Add(key, value) }
 
 type (
 	cachedMatcher struct {
