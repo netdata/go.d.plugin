@@ -394,7 +394,7 @@ func checkVar(v *Var) error {
 
 func checkID(id string) int {
 	for _, r := range id {
-		if !(unicode.IsLetter(r) || unicode.IsDigit(r) || r == '-' || r == '_') {
+		if r == ' ' || r == '.' {
 			return int(r)
 		}
 	}
