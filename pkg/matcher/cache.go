@@ -1,35 +1,39 @@
 package matcher
 
-import "sync"
+import (
+	"github.com/hashicorp/golang-lru"
+)
 
 type (
 	cachedMatcher struct {
 		matcher Matcher
-
-		limit   int
-		mtx     sync.RWMutex
-		cache   map[string]bool
-		inCache int
+		cache   *lru.Cache
 	}
 )
 
 // WithCache adds limited cache to the Matcher.
-// Limit <=0 means no limit. Cache is reset after reaching the limit.
+// Limit must be a positive number. Otherwise WithCache will panic.
 func WithCache(m Matcher, limit int) Matcher {
 	switch m {
 	case TRUE(), FALSE():
 		return m
 	default:
-		return &cachedMatcher{
-			limit:   limit,
-			matcher: m,
-			cache:   map[string]bool{},
+		cm := &cachedMatcher{matcher: m}
+		cache, err := lru.New(limit)
+		if err != nil {
+			panic(err)
 		}
+		cm.cache = cache
+		return cm
 	}
 }
 
 func (m *cachedMatcher) Match(b []byte) bool {
 	s := string(b)
+	if m.cache == nil {
+		return m.matcher.MatchString(s)
+	}
+
 	if result, ok := m.fetch(s); ok {
 		return result
 	}
@@ -39,6 +43,10 @@ func (m *cachedMatcher) Match(b []byte) bool {
 }
 
 func (m *cachedMatcher) MatchString(s string) bool {
+	if m.cache == nil {
+		return m.matcher.MatchString(s)
+	}
+
 	if result, ok := m.fetch(s); ok {
 		return result
 	}
@@ -47,20 +55,17 @@ func (m *cachedMatcher) MatchString(s string) bool {
 	return result
 }
 
-func (m *cachedMatcher) fetch(key string) (result bool, ok bool) {
-	m.mtx.RLock()
-	result, ok = m.cache[key]
-	m.mtx.RUnlock()
+func (m *cachedMatcher) fetch(key string) (result bool, exist bool) {
+	var v interface{}
+	v, exist = m.cache.Get(key)
+	if !exist {
+		return
+	}
+
+	result = v.(bool)
 	return
 }
 
 func (m *cachedMatcher) put(key string, result bool) {
-	m.mtx.Lock()
-	if m.limit > 0 && m.inCache >= m.limit {
-		m.cache = make(map[string]bool)
-		m.inCache = 0
-	}
-	m.cache[key] = result
-	m.inCache++
-	m.mtx.Unlock()
+	m.cache.Add(key, result)
 }
