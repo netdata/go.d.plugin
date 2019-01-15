@@ -1,30 +1,37 @@
 /*
-Package matcher implements vary type of string matcher.
+Package matcher implements vary formats of string matcher.
 
-Supported match type:
-  string
-  glob
-  regexp
-  simple patterns
+Supported Format
 
-Short Syntax
-  <line> 	  ::= <type> <space> <expr>
-  <type>      ::= [ <not> ] <symbol>
-  <not>       ::= '!'
-                    positive expression
-  <symbol>    ::= [ '=', '~', '*' ]
-                    '=' means string match
-                    '~' means regexp match
-                    '*' means glob match
-  <space>     ::= { ' ' | '\t' | '\f' | '\v' }
-  <expr>      ::= any string
+    string
+    glob
+    regexp
+    simple patterns
 
-Long Syntax
-  <line>      ::= [ <not> ] <name> <separator> <expr>
-  <name>      ::= [ 'string' | 'glob' | 'regexp' | 'simple_patterns' ]
-  <not>       ::= '!'
-                    positive expression
-  <separator> ::= ':'
-  <expr>      ::= any string
+The string matcher reports whether the given value equals to the string ( use == ).
+
+The glob matcher reports whether the given value matches the wildcard pattern.
+The pattern syntax is:
+    pattern:
+        { term }
+    term:
+        '*'         matches any sequence of characters
+        '?'         matches any single character
+        '[' [ '^' ] { character-range } ']'
+        character class (must be non-empty)
+        c           matches character c (c != '*', '?', '\\', '[')
+        '\\' c      matches character c
+
+    character-range:
+        c           matches character c (c != '\\', '-', ']')
+        '\\' c      matches character c
+        lo '-' hi   matches character c for lo <= c <= hi
+
+The regexp matcher reports whether the given value matches the RegExp pattern ( use regexp.Match ).
+The RegExp syntax is described at https://golang.org/pkg/regexp/syntax/.
+
+The simple patterns matcher reports whether the given value matches the simple patterns.
+The simple patterns is a custom format used in netdata,
+it's syntax is described at https://docs.netdata.cloud/libnetdata/simple_pattern/.
 */
 package matcher

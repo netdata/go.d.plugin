@@ -47,6 +47,16 @@ var (
 	errNotShortSyntax = errors.New("not short syntax")
 )
 
+// Must is a helper that wraps a call to a function returning (Matcher, error) and panics if the error is non-nil.
+// It is intended for use in variable initializations such as
+//   var m = matcher.Must(matcher.New(matcher.FmtString, "hello world"))
+func Must(m Matcher, err error) Matcher {
+	if err != nil {
+		panic(err)
+	}
+	return m
+}
+
 // New create a matcher
 func New(format Format, expr string) (Matcher, error) {
 	switch format {
@@ -63,7 +73,28 @@ func New(format Format, expr string) (Matcher, error) {
 	}
 }
 
-// Parse parses line and returns appropriate matcher based on match format.
+// Parse parses line and returns appropriate matcher based on matched format.
+//
+// Short Syntax
+//
+//     <line>      ::= [ <not> ] <format> <space> <expr>
+//     <not>       ::= '!'
+//                       negative expression
+//     <format>    ::= [ '=', '~', '*' ]
+//                       '=' means string match
+//                       '~' means regexp match
+//                       '*' means glob match
+//     <space>     ::= { ' ' | '\t' | '\n' | '\n' | '\r' }
+//     <expr>      ::= any string
+//
+// Long Syntax
+//
+//     <line>      ::= [ <not> ] <format> <separator> <expr>
+//     <format>    ::= [ 'string' | 'glob' | 'regexp' | 'simple_patterns' ]
+//     <not>       ::= '!'
+//                       negative expression
+//     <separator> ::= ':'
+//     <expr>      ::= any string
 func Parse(line string) (Matcher, error) {
 	matcher, err := parseShortFormat(line)
 	if err == nil {
