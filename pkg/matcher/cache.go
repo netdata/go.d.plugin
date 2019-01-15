@@ -55,13 +55,16 @@ type (
 	}
 )
 
-// WithCache adds limited cache to the Matcher.
-// Limit <= 0 means no limit.
+// WithCache adds limited cache to the matcher.
+// Limit < 0 means no limit. If limit == 0 WithCache doesn't add cache to the matcher.
 func WithCache(m Matcher, limit int) Matcher {
 	switch m {
 	case TRUE(), FALSE():
 		return m
 	default:
+		if limit == 0 {
+			return m
+		}
 		cm := &cachedMatcher{matcher: m}
 		if limit < 0 {
 			cm.cache = make(simpleCache)
