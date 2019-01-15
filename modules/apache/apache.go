@@ -17,16 +17,16 @@ func init() {
 }
 
 const (
-	defURL         = "http://localhost/server-status?auto"
-	defHTTPTimeout = time.Second
+	defaultURL         = "http://localhost/server-status?auto"
+	defaultHTTPTimeout = time.Second
 )
 
 // New creates Apache with default values
 func New() *Apache {
 	return &Apache{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+			Request: web.Request{URL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
 }

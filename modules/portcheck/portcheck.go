@@ -18,14 +18,14 @@ func init() {
 	modules.Register("portcheck", creator)
 }
 
+const (
+	defaultHTTPTimeout = time.Second
+)
+
 // New creates PortCheck with default values
 func New() *PortCheck {
-	var (
-		defHTTPTimeout = time.Second
-	)
-
 	return &PortCheck{
-		Timeout: web.Duration{Duration: defHTTPTimeout},
+		Timeout: web.Duration{Duration: defaultHTTPTimeout},
 
 		task:     make(chan *port),
 		taskDone: make(chan struct{}),

@@ -1,26 +1,74 @@
 package matcher
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/hashicorp/golang-lru"
+)
+
+type cache interface {
+	Get(key string) (result bool, exist bool)
+	Add(key string, value bool)
+}
+
+type simpleCache map[string]bool
+
+func (c simpleCache) Get(key string) (bool, bool) {
+	result, ok := c[key]
+	return result, ok
+}
+
+func (c simpleCache) Add(key string, value bool) { c[key] = value }
+
+func newLRUCache(limit int) cache {
+	c, err := lru.New(limit)
+	if err != nil {
+		panic(err)
+	}
+	return &lruCache{c}
+}
+
+type lruCache struct {
+	*lru.Cache
+}
+
+func (c lruCache) Get(key string) (bool, bool) {
+	v, ok := c.Cache.Get(key)
+	if !ok {
+		return false, false
+	}
+	result := v.(bool)
+	return result, ok
+}
+
+func (c lruCache) Add(key string, value bool) { c.Cache.Add(key, value) }
 
 type (
 	cachedMatcher struct {
 		matcher Matcher
 
-		mtx   sync.RWMutex
-		cache map[string]bool
+		mux   sync.RWMutex
+		cache cache
 	}
 )
 
-// WithCache WithCache
-func WithCache(m Matcher) Matcher {
+// WithCache adds limited cache to the matcher.
+// Limit < 0 means no limit. If limit == 0 WithCache doesn't add cache to the matcher.
+func WithCache(m Matcher, limit int) Matcher {
 	switch m {
 	case TRUE(), FALSE():
 		return m
 	default:
-		return &cachedMatcher{
-			matcher: m,
-			cache:   map[string]bool{},
+		if limit == 0 {
+			return m
 		}
+		cm := &cachedMatcher{matcher: m}
+		if limit < 0 {
+			cm.cache = make(simpleCache)
+		} else {
+			cm.cache = newLRUCache(limit)
+		}
+		return cm
 	}
 }
 
@@ -44,14 +92,14 @@ func (m *cachedMatcher) MatchString(s string) bool {
 }
 
 func (m *cachedMatcher) fetch(key string) (result bool, ok bool) {
-	m.mtx.RLock()
-	result, ok = m.cache[key]
-	m.mtx.RUnlock()
+	m.mux.RLock()
+	result, ok = m.cache.Get(key)
+	m.mux.RUnlock()
 	return
 }
 
 func (m *cachedMatcher) put(key string, result bool) {
-	m.mtx.Lock()
-	m.cache[key] = result
-	m.mtx.Unlock()
+	m.mux.Lock()
+	m.cache.Add(key, result)
+	m.mux.Unlock()
 }

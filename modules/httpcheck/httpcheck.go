@@ -24,18 +24,19 @@ func init() {
 	modules.Register("httpcheck", creator)
 }
 
+var (
+	defaultHTTPTimeout    = time.Second
+	defaultStatusAccepted = map[int]bool{200: true}
+)
+
 // New creates HTTPCheck with default values
 func New() *HTTPCheck {
-	var (
-		defHTTPTimeout    = time.Second
-		defStatusAccepted = map[int]bool{200: true}
-	)
 
 	return &HTTPCheck{
 		HTTP: web.HTTP{
-			Client: web.Client{Timeout: web.Duration{Duration: defHTTPTimeout}},
+			Client: web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
-		statuses: defStatusAccepted,
+		statuses: defaultStatusAccepted,
 		metrics:  metrics{},
 	}
 }

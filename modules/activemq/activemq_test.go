@@ -133,10 +133,10 @@ func TestNew(t *testing.T) {
 	mod := New()
 
 	assert.Implements(t, (*modules.Module)(nil), mod)
-	assert.Equal(t, defURL, mod.URL)
-	assert.Equal(t, defHTTPTimeout, mod.Client.Timeout.Duration)
-	assert.Equal(t, defMaxQueues, mod.MaxQueues)
-	assert.Equal(t, defMaxTopics, mod.MaxTopics)
+	assert.Equal(t, defaultURL, mod.URL)
+	assert.Equal(t, defaultHTTPTimeout, mod.Client.Timeout.Duration)
+	assert.Equal(t, defaultMaxQueues, mod.MaxQueues)
+	assert.Equal(t, defaultMaxTopics, mod.MaxTopics)
 }
 
 func TestActivemq_Init(t *testing.T) {

@@ -22,13 +22,20 @@ func init() {
 	modules.Register("dns_query", creator)
 }
 
+const (
+	defaultTimeout    = time.Second * 2
+	defaultNetwork    = "udp"
+	defaultRecordType = "A"
+	defaultPort       = 53
+)
+
 // New creates DNSQuery with default values
 func New() *DNSQuery {
 	return &DNSQuery{
-		Timeout:    web.Duration{Duration: time.Second * 2},
-		Network:    "udp",
-		RecordType: "A",
-		Port:       53,
+		Timeout:    web.Duration{Duration: defaultTimeout},
+		Network:    defaultNetwork,
+		RecordType: defaultRecordType,
+		Port:       defaultPort,
 
 		task:             make(chan task),
 		taskDone:         make(chan struct{}),

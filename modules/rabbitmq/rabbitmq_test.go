@@ -31,10 +31,10 @@ func TestRabbitmq_Init(t *testing.T) {
 	mod := New()
 
 	assert.Implements(t, (*modules.Module)(nil), mod)
-	assert.Equal(t, defURL, mod.URL)
-	assert.Equal(t, defUsername, mod.Username)
-	assert.Equal(t, defPassword, mod.Password)
-	assert.Equal(t, defHTTPTimeout, mod.Timeout.Duration)
+	assert.Equal(t, defaultURL, mod.URL)
+	assert.Equal(t, defaultUsername, mod.Username)
+	assert.Equal(t, defaultPassword, mod.Password)
+	assert.Equal(t, defaultHTTPTimeout, mod.Timeout.Duration)
 }
 
 func TestRabbitmq_Check(t *testing.T) {

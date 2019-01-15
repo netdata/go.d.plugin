@@ -23,7 +23,7 @@ func TestNew(t *testing.T) {
 	assert.Implements(t, (*modules.Module)(nil), New())
 	assert.NotNil(t, mod.charts)
 	assert.NotNil(t, mod.activeChecks)
-	assert.Equal(t, defMaxChecks, mod.MaxChecks)
+	assert.Equal(t, defaultMaxChecks, mod.MaxChecks)
 }
 
 func TestConsul_Init(t *testing.T) {
