@@ -8,7 +8,7 @@ import (
 
 func TestWithCache(t *testing.T) {
 	regMatcher, _ := NewRegExpMatcher("[0-9]+")
-	cached := WithCache(regMatcher, 10)
+	cached := WithCache(regMatcher, -1)
 
 	assert.True(t, cached.MatchString("1"))
 	assert.True(t, cached.MatchString("1"))
@@ -37,8 +37,8 @@ func TestWithLimitedCache(t *testing.T) {
 }
 
 func TestWithCache_specialCase(t *testing.T) {
-	assert.Equal(t, TRUE(), WithCache(TRUE(), 10))
-	assert.Equal(t, FALSE(), WithCache(FALSE(), 10))
+	assert.Equal(t, TRUE(), WithCache(TRUE(), -1))
+	assert.Equal(t, FALSE(), WithCache(FALSE(), -1))
 }
 
 func BenchmarkCachedMatcher_Match(b *testing.B) {
@@ -50,7 +50,7 @@ func BenchmarkCachedMatcher_Match(b *testing.B) {
 		}
 	})
 	b.Run("cached", func(b *testing.B) {
-		m := WithCache(globMatcher("abc*def*ghi"), 10)
+		m := WithCache(globMatcher("abc*def*ghi"), -1)
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
 			m.MatchString("abc123def456ghi")
