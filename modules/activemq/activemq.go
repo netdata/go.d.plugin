@@ -88,7 +88,7 @@ func (a *Activemq) Init() bool {
 			a.Errorf("error on creating queues filter : %v", err)
 			return false
 		}
-		a.queuesFilter = matcher.WithCache(f)
+		a.queuesFilter = matcher.WithCache(f, 2000)
 	}
 
 	if a.TopicsFilter != "" {
@@ -97,7 +97,7 @@ func (a *Activemq) Init() bool {
 			a.Errorf("error on creating topics filter : %v", err)
 			return false
 		}
-		a.topicsFilter = matcher.WithCache(f)
+		a.topicsFilter = matcher.WithCache(f, 2000)
 	}
 
 	a.apiClient = &apiClient{

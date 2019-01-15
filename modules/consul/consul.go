@@ -83,7 +83,7 @@ func (c *Consul) Init() bool {
 			return false
 		}
 
-		c.checksFilter = matcher.WithCache(sps)
+		c.checksFilter = matcher.WithCache(sps, 2000)
 	}
 
 	return true

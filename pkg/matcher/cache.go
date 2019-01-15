@@ -6,18 +6,22 @@ type (
 	cachedMatcher struct {
 		matcher Matcher
 
-		mtx   sync.RWMutex
-		cache map[string]bool
+		limit   int
+		mtx     sync.RWMutex
+		cache   map[string]bool
+		inCache int
 	}
 )
 
-// WithCache WithCache
-func WithCache(m Matcher) Matcher {
+// WithCache adds limited cache to the Matcher.
+// Limit <=0 means no limit. Cache is reset after reaching the limit.
+func WithCache(m Matcher, limit int) Matcher {
 	switch m {
 	case TRUE(), FALSE():
 		return m
 	default:
 		return &cachedMatcher{
+			limit:   limit,
 			matcher: m,
 			cache:   map[string]bool{},
 		}
@@ -52,6 +56,11 @@ func (m *cachedMatcher) fetch(key string) (result bool, ok bool) {
 
 func (m *cachedMatcher) put(key string, result bool) {
 	m.mtx.Lock()
+	if m.limit > 0 && m.inCache >= m.limit {
+		m.cache = make(map[string]bool)
+		m.inCache = 0
+	}
 	m.cache[key] = result
+	m.inCache++
 	m.mtx.Unlock()
 }
