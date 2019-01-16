@@ -233,4 +233,4 @@ func randomDomain(domains []string) string {
 	return domains[rand.Intn(len(domains))]
 }
 
-var serverNameReplacer = strings.NewReplacer(":", "_", ".", "_", "-", "_", "[", "_", "]", "_")
+var serverNameReplacer = strings.NewReplacer(".", "_")
