@@ -153,7 +153,7 @@ func (a *Activemq) processQueues(queues *queues, metrics map[string]int64) {
 	)
 
 	for _, q := range queues.Items {
-		if strings.Contains(q.Name, keyAdvisory) || !a.filterQueues(q.Name) {
+		if strings.Contains(q.Name, keyAdvisory) {
 			continue
 		}
 
@@ -162,6 +162,11 @@ func (a *Activemq) processQueues(queues *queues, metrics map[string]int64) {
 				unp++
 				continue
 			}
+
+			if !a.filterQueues(q.Name) {
+				continue
+			}
+
 			a.activeQueues[q.Name] = true
 			a.addQueueTopicCharts(q.Name, keyQueues)
 		}
@@ -196,7 +201,7 @@ func (a *Activemq) processTopics(topics *topics, metrics map[string]int64) {
 	)
 
 	for _, t := range topics.Items {
-		if strings.Contains(t.Name, keyAdvisory) || !a.filterTopics(t.Name) {
+		if strings.Contains(t.Name, keyAdvisory) {
 			continue
 		}
 
@@ -205,6 +210,11 @@ func (a *Activemq) processTopics(topics *topics, metrics map[string]int64) {
 				unp++
 				continue
 			}
+
+			if !a.filterTopics(t.Name) {
+				continue
+			}
+
 			a.activeTopics[t.Name] = true
 			a.addQueueTopicCharts(t.Name, keyTopics)
 		}
