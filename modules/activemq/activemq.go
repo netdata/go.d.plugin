@@ -29,11 +29,10 @@ var (
 )
 
 const (
-	defaultMaxQueues       = 50
-	defaultMaxTopics       = 50
-	defaultURL             = "http://127.0.0.1:8161"
-	defaultHTTPTimeout     = time.Second
-	defaultFilterCacheSize = 1000
+	defaultMaxQueues   = 50
+	defaultMaxTopics   = 50
+	defaultURL         = "http://127.0.0.1:8161"
+	defaultHTTPTimeout = time.Second
 )
 
 // New creates Example with default values
@@ -44,9 +43,8 @@ func New() *Activemq {
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 
-		MaxQueues:       defaultMaxQueues,
-		MaxTopics:       defaultMaxTopics,
-		FilterCacheSize: defaultFilterCacheSize,
+		MaxQueues: defaultMaxQueues,
+		MaxTopics: defaultMaxTopics,
 
 		charts:       &Charts{},
 		activeQueues: make(map[string]bool),
@@ -60,12 +58,11 @@ type Activemq struct {
 
 	web.HTTP `yaml:",inline"`
 
-	Webadmin        string `yaml:"webadmin"`
-	MaxQueues       int    `yaml:"max_queues"`
-	MaxTopics       int    `yaml:"max_topics"`
-	QueuesFilter    string `yaml:"queues_filter"`
-	TopicsFilter    string `yaml:"topics_filter"`
-	FilterCacheSize int    `yaml:"filter_cache_size"`
+	Webadmin     string `yaml:"webadmin"`
+	MaxQueues    int    `yaml:"max_queues"`
+	MaxTopics    int    `yaml:"max_topics"`
+	QueuesFilter string `yaml:"queues_filter"`
+	TopicsFilter string `yaml:"topics_filter"`
 
 	apiClient    *apiClient
 	activeQueues map[string]bool
@@ -91,7 +88,7 @@ func (a *Activemq) Init() bool {
 			a.Errorf("error on creating queues filter : %v", err)
 			return false
 		}
-		a.queuesFilter = matcher.WithCache(f, a.FilterCacheSize)
+		a.queuesFilter = matcher.WithCache(f)
 	}
 
 	if a.TopicsFilter != "" {
@@ -100,7 +97,7 @@ func (a *Activemq) Init() bool {
 			a.Errorf("error on creating topics filter : %v", err)
 			return false
 		}
-		a.topicsFilter = matcher.WithCache(f, a.FilterCacheSize)
+		a.topicsFilter = matcher.WithCache(f)
 	}
 
 	a.apiClient = &apiClient{
@@ -156,7 +153,7 @@ func (a *Activemq) processQueues(queues *queues, metrics map[string]int64) {
 	)
 
 	for _, q := range queues.Items {
-		if strings.Contains(q.Name, keyAdvisory) || !a.filterQueues(q.Name) {
+		if strings.Contains(q.Name, keyAdvisory) {
 			continue
 		}
 
@@ -165,6 +162,11 @@ func (a *Activemq) processQueues(queues *queues, metrics map[string]int64) {
 				unp++
 				continue
 			}
+
+			if !a.filterQueues(q.Name) {
+				continue
+			}
+
 			a.activeQueues[q.Name] = true
 			a.addQueueTopicCharts(q.Name, keyQueues)
 		}
@@ -199,7 +201,7 @@ func (a *Activemq) processTopics(topics *topics, metrics map[string]int64) {
 	)
 
 	for _, t := range topics.Items {
-		if strings.Contains(t.Name, keyAdvisory) || !a.filterTopics(t.Name) {
+		if strings.Contains(t.Name, keyAdvisory) {
 			continue
 		}
 
@@ -208,6 +210,11 @@ func (a *Activemq) processTopics(topics *topics, metrics map[string]int64) {
 				unp++
 				continue
 			}
+
+			if !a.filterTopics(t.Name) {
+				continue
+			}
+
 			a.activeTopics[t.Name] = true
 			a.addQueueTopicCharts(t.Name, keyTopics)
 		}

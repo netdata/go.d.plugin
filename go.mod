@@ -8,7 +8,6 @@ require (
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/go-playground/validator v9.23.0+incompatible
 	github.com/golang/protobuf v1.2.0 // indirect
-	github.com/hashicorp/golang-lru v0.5.0
 	github.com/hpcloud/tail v1.0.0
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/mattn/go-isatty v0.0.4
