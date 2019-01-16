@@ -62,9 +62,7 @@ type chartUpdateTask struct {
 }
 
 type worker struct {
-	doCodesDetailed  bool
 	doCodesAggregate bool
-	doPerURLCharts   bool
 	doAllTimeIPs     bool
 
 	tailFactory func(string) (follower, error)
@@ -137,43 +135,41 @@ func (w *worker) parseLine(line string) {
 
 	w.codeStatus(gm)
 
-	if w.doCodesDetailed {
-		w.codeDetailed(gm)
-	}
+	w.codeDetailed(gm)
 
-	if _, ok := gm.lookup(keyVhost); ok {
+	if gm.has(keyVhost) {
 		w.vhost(gm)
 	}
 
-	if _, ok := gm.lookup(keyRequest); ok {
+	if gm.has(keyRequest) {
 		w.request(gm)
 	}
 
-	if _, ok := gm.lookup(keyUserDefined); ok && len(w.userCats) > 0 {
+	if gm.has(keyUserDefined) && len(w.userCats) > 0 {
 		w.userCategory(gm)
 	}
 
-	if _, ok := gm.lookup(keyBytesSent); ok {
+	if gm.has(keyBytesSent) {
 		w.bytesSent(gm)
 	}
 
-	if _, ok := gm.lookup(keyRespLength); ok {
+	if gm.has(keyRespLength) {
 		w.respLength(gm)
 	}
 
-	if _, ok := gm.lookup(keyRespTime); ok {
+	if gm.has(keyRespTime) {
 		w.respTime(gm)
 	}
 
-	if _, ok := gm.lookup(keyRespTimeUpstream); ok {
+	if gm.has(keyRespTimeUpstream) {
 		w.respTimeUpstream(gm)
 	}
 
-	if _, ok := gm.lookup(keyAddress); ok {
+	if gm.has(keyAddress) {
 		w.ipProto(gm)
 	}
 
-	if w.doPerURLCharts && w.matchedURL != "" {
+	if w.matchedURL != "" {
 		w.urlCategoryStats(gm)
 	}
 
@@ -181,7 +177,7 @@ func (w *worker) parseLine(line string) {
 
 func (w *worker) vhost(gm groupMap) {
 	vhost := gm.get(keyVhost)
-	dimID := vhostReplacer.Replace(vhost)
+	dimID := replacer.Replace(vhost)
 
 	if _, ok := w.metrics[dimID]; !ok {
 		dim := &Dim{ID: dimID, Name: vhost, Algo: modules.Incremental}
@@ -292,7 +288,7 @@ func (w *worker) userCategory(gm groupMap) {
 
 func (w *worker) httpVersion(gm groupMap) {
 	version := gm.get(keyVersion)
-	dimID := httpMethodReplacer.Replace(version)
+	dimID := replacer.Replace(version)
 
 	if _, ok := w.metrics[dimID]; !ok {
 		dim := &Dim{ID: dimID, Name: version, Algo: modules.Incremental}
@@ -389,6 +385,5 @@ func toInt(s string) int64 {
 }
 
 var (
-	httpMethodReplacer = strings.NewReplacer("/", "_", ".", "_")
-	vhostReplacer      = strings.NewReplacer(":", "_", ".", "_", "-", "_")
+	replacer = strings.NewReplacer(".", "_")
 )

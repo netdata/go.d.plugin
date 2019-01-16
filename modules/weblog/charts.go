@@ -286,12 +286,10 @@ func (w *WebLog) createCharts() {
 
 	_ = charts.Add(responseStatuses.Copy(), responseCodes.Copy())
 
-	if w.DoCodesDetailed {
-		if w.DoCodesAggregate {
-			_ = charts.Add(responseCodesDetailed.Copy())
-		} else {
-			_ = charts.Add(responseCodesDetailedPerFamily()...)
-		}
+	if w.DoCodesAggregate {
+		_ = charts.Add(responseCodesDetailed.Copy())
+	} else {
+		_ = charts.Add(responseCodesDetailedPerFamily()...)
 	}
 
 	if w.gm.has(keyBytesSent) || w.gm.has(keyRespLength) {
@@ -309,7 +307,7 @@ func (w *WebLog) createCharts() {
 		}
 	}
 
-	if w.gm.has(keyRequest) && len(w.URLCats) > 0 && w.DoPerURLCharts {
+	if w.gm.has(keyRequest) && len(w.URLCats) > 0 {
 		for _, cat := range w.worker.urlCats {
 			for _, chart := range perCategoryStats(cat.name) {
 				_ = charts.Add(chart)
