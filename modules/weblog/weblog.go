@@ -17,10 +17,8 @@ func init() {
 
 func New() *WebLog {
 	return &WebLog{
-		DoCodesDetailed:  true,
 		DoCodesAggregate: true,
 		DoAllTimeIPs:     true,
-		DoPerURLCharts:   true,
 
 		worker: newWorker(),
 	}
@@ -35,9 +33,7 @@ type WebLog struct {
 	UserCats         []rawcategory `yaml:"user_categories"`
 	CustomParser     csvPattern    `yaml:"custom_log_format"`
 	Histogram        []int         `yaml:"histogram"`
-	DoCodesDetailed  bool          `yaml:"detailed_response_codes"`
 	DoCodesAggregate bool          `yaml:"detailed_response_codes_aggregate"`
-	DoPerURLCharts   bool          `yaml:"per_category_charts"`
 	DoAllTimeIPs     bool          `yaml:"all_time_clients"`
 
 	worker *worker
@@ -71,11 +67,10 @@ func (w *WebLog) initCategories() error {
 		w.worker.metrics[cat.name] = 0
 	}
 
-	if w.DoPerURLCharts {
-		for _, cat := range w.worker.urlCats {
-			w.worker.timings.add(cat.name)
-		}
+	for _, cat := range w.worker.urlCats {
+		w.worker.timings.add(cat.name)
 	}
+
 	w.worker.timings.reset()
 
 	for _, raw := range w.UserCats {
@@ -145,10 +140,8 @@ func (w *WebLog) initParser() error {
 }
 
 func (w *WebLog) Init() bool {
-	w.worker.doCodesDetailed = w.DoCodesDetailed
 	w.worker.doCodesAggregate = w.DoCodesAggregate
 	w.worker.doAllTimeIPs = w.DoAllTimeIPs
-	w.worker.doPerURLCharts = w.DoPerURLCharts
 
 	if err := w.initParser(); err != nil {
 		w.Error(err)
@@ -213,7 +206,6 @@ func (w *WebLog) Collect() map[string]int64 {
 	w.worker.timings.reset()
 	w.worker.uniqIPs = make(map[string]bool)
 
-	// NOTE: don't copy if nothing has changed?
 	m := make(map[string]int64)
 
 	for k, v := range w.worker.metrics {
