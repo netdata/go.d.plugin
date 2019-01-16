@@ -31,46 +31,33 @@ func (c config) isModuleEnabled(module string, explicit bool) bool {
 	return c.DefaultRun
 }
 
-func newModuleGlobal() *moduleGlobal {
-	return &moduleGlobal{
+func newModuleConfig() *moduleConfig {
+	return &moduleConfig{
 		UpdateEvery:        1,
 		AutoDetectionRetry: 0,
 	}
 }
 
-type moduleGlobal struct {
-	UpdateEvery        int `yaml:"update_every"`
-	AutoDetectionRetry int `yaml:"autodetection_retry"`
-}
-
-func newModuleConfig() *moduleConfig {
-	return &moduleConfig{
-		Global: newModuleGlobal(),
-	}
-}
-
 type moduleConfig struct {
-	name   string
-	Global *moduleGlobal            `yaml:"global"`
-	Jobs   []map[string]interface{} `yaml:"jobs"`
+	UpdateEvery        int                      `yaml:"update_every"`
+	AutoDetectionRetry int                      `yaml:"autodetection_retry"`
+	Jobs               []map[string]interface{} `yaml:"jobs"`
+
+	name string
 }
 
 func (m *moduleConfig) updateJobs(moduleUpdateEvery, pluginUpdateEvery int) {
-	if m.Global == nil {
-		m.Global = newModuleGlobal()
-	}
-
 	if moduleUpdateEvery > 0 {
-		m.Global.UpdateEvery = moduleUpdateEvery
+		m.UpdateEvery = moduleUpdateEvery
 	}
 
 	for _, job := range m.Jobs {
 		if _, ok := job["update_every"]; !ok {
-			job["update_every"] = m.Global.UpdateEvery
+			job["update_every"] = m.UpdateEvery
 		}
 
 		if _, ok := job["autodetection_retry"]; !ok {
-			job["autodetection_retry"] = m.Global.AutoDetectionRetry
+			job["autodetection_retry"] = m.AutoDetectionRetry
 		}
 
 		if v, ok := job["update_every"].(int); ok && v < pluginUpdateEvery {

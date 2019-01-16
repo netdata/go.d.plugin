@@ -59,8 +59,8 @@ func Test_createModuleJobs(t *testing.T) {
 	)
 
 	p.registry = reg
-
-	conf := &moduleConfig{Jobs: []map[string]interface{}{{}, {}, {}}}
+	conf := newModuleConfig()
+	conf.Jobs = []map[string]interface{}{{}, {}, {}}
 	conf.name = "module1"
 	assert.Len(t, p.createModuleJobs(conf), 3)
 }

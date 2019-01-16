@@ -57,10 +57,8 @@ func TestPluginConfig_isModuleEnabled(t *testing.T) {
 
 func TestModuleConfig_updateJobs(t *testing.T) {
 	conf := moduleConfig{
-		Global: &moduleGlobal{
-			UpdateEvery:        10,
-			AutoDetectionRetry: 10,
-		},
+		UpdateEvery:        10,
+		AutoDetectionRetry: 10,
 		Jobs: []map[string]interface{}{
 			{"name": "job1"},
 			{"name": "job2", "update_every": 1},
@@ -81,10 +79,8 @@ func TestModuleConfig_updateJobs(t *testing.T) {
 
 func TestModuleConfig_UpdateJobsRewriteModuleUpdateEvery(t *testing.T) {
 	conf := moduleConfig{
-		Global: &moduleGlobal{
-			UpdateEvery:        10,
-			AutoDetectionRetry: 10,
-		},
+		UpdateEvery:        10,
+		AutoDetectionRetry: 10,
 		Jobs: []map[string]interface{}{
 			{"name": "job1"},
 			{"name": "job2", "update_every": 1},
@@ -105,10 +101,8 @@ func TestModuleConfig_UpdateJobsRewriteModuleUpdateEvery(t *testing.T) {
 
 func TestModuleConfig_UpdateJobsRewritePluginUpdateEvery(t *testing.T) {
 	conf := moduleConfig{
-		Global: &moduleGlobal{
-			UpdateEvery:        10,
-			AutoDetectionRetry: 10,
-		},
+		UpdateEvery:        10,
+		AutoDetectionRetry: 10,
 		Jobs: []map[string]interface{}{
 			{"name": "job1"},
 			{"name": "job2", "update_every": 1},
