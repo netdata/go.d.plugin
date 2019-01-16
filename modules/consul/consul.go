@@ -19,10 +19,9 @@ func init() {
 }
 
 const (
-	defaultURL                   = "http://127.0.0.1:8500"
-	defaultHTTPTimeout           = time.Second
-	defaultMaxChecks             = 50
-	defaultChecksFilterCacheSize = 1000
+	defaultURL         = "http://127.0.0.1:8500"
+	defaultHTTPTimeout = time.Second
+	defaultMaxChecks   = 50
 )
 
 const (
@@ -39,10 +38,9 @@ func New() *Consul {
 			Request: web.Request{URL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
-		MaxChecks:             defaultMaxChecks,
-		ChecksFilterCacheSize: defaultChecksFilterCacheSize,
-		activeChecks:          make(map[string]bool),
-		charts:                charts.Copy(),
+		MaxChecks:    defaultMaxChecks,
+		activeChecks: make(map[string]bool),
+		charts:       charts.Copy(),
 	}
 }
 
@@ -52,10 +50,9 @@ type Consul struct {
 
 	web.HTTP `yaml:",inline"`
 
-	ACLToken              string `yaml:"acl_token"`
-	MaxChecks             int    `yaml:"max_checks"`
-	ChecksFilter          string `yaml:"checks_filter"`
-	ChecksFilterCacheSize int    `yaml:"checks_filter_cache_size"`
+	ACLToken     string `yaml:"acl_token"`
+	MaxChecks    int    `yaml:"max_checks"`
+	ChecksFilter string `yaml:"checks_filter"`
 
 	charts       *Charts
 	activeChecks map[string]bool
@@ -86,7 +83,7 @@ func (c *Consul) Init() bool {
 			return false
 		}
 
-		c.checksFilter = matcher.WithCache(sps, c.ChecksFilterCacheSize)
+		c.checksFilter = matcher.WithCache(sps)
 	}
 
 	return true
