@@ -5,7 +5,7 @@
   * regexp
   * simple patterns
   
-# Syntax
+### Syntax
 ```
 Short Syntax
 
