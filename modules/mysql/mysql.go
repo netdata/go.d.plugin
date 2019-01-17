@@ -29,18 +29,25 @@ type MySQL struct {
 	DSN string `yaml:"dsn"`
 
 	// i.e "10" for top 10 sql queries having the longest avg execution time.
-	// Defaults to "10".
+	// See SlowQueriesSeconds too.
+	// Defaults to 0, disabled.
 	SlowQueriesMaxCount int64 `yaml:"slow_queries_max_count"`
+	// SlowQueriesInPercentile can be used to
+	// collect the slowest statements (those in the $SlowQueriesInPercentile$th percentile by runtime).
+	// See SlowQueriesSeconds too.
+	// Defaults to 95, enabled.
+	SlowQueriesInPercentile int `yaml:"slow_queries_in_percentile"`
 	// Determinates what is "slow".
 	// i.e "4" to increment the "slow_queries++" metric when
 	// a query executed in equal or more than 4 seconds.
+	// Used where SlowQueriesMaxCount > 0 or SlowQueriesInPercentile > 0.
 	// Defaults to 4.
 	SlowQueriesSeconds int64 `yaml:"slow_queries_seconds"`
 }
 
 // New creates and returns a new empty MySQL module.
 func New() *MySQL {
-	return &MySQL{SlowQueriesMaxCount: 10, SlowQueriesSeconds: 4}
+	return &MySQL{SlowQueriesMaxCount: 0, SlowQueriesInPercentile: 95, SlowQueriesSeconds: 4}
 }
 
 // CompatibleMinimumVersion is the minimum required version of the mysql server.
@@ -147,9 +154,19 @@ func (m *MySQL) Collect() map[string]int64 {
 		return nil
 	}
 
-	if err := m.collectSlowQueries(metrics); err != nil {
-		m.Errorf("error on determinating slowest queries: %v", err)
-		return nil
+	if m.SlowQueriesSeconds > 0 {
+		if m.SlowQueriesMaxCount > 0 {
+			if err := m.collectSlowQueries(metrics); err != nil {
+				m.Errorf("error on determinating the slowest queries: %v", err)
+				return nil
+			}
+		} else if m.SlowQueriesInPercentile > 0 {
+			if err := m.collectSlowQueriesInPercentile(metrics); err != nil {
+				m.Errorf("error on determinating the slowest statements (those in the %dth percentile by runtime) : %v",
+					m.SlowQueriesInPercentile, err)
+				return nil
+			}
+		}
 	}
 
 	return metrics
@@ -514,6 +531,8 @@ func (m *MySQL) collectMaxConnections(metrics map[string]int64) error {
 	*/
 }
 
+// collects from performance_schema, there is an alternative way from sys but this is not configurable
+// by seconds and etc, only by % of the whole runtime, see `collectSlowQueriesInPercentile`.
 func (m *MySQL) collectSlowQueries(metrics map[string]int64) error {
 	rows, err := m.db.Query(`SELECT substr(digest_text, 1, 50) AS digest_text_start, count_star,
 TRUNCATE(avg_timer_wait/1000000000000,6) as avg_time
@@ -542,6 +561,69 @@ LIMIT ?;`, m.SlowQueriesMaxCount) // truncate by 1 trillion to convert picosecon
 		}
 
 		if avgTime < float64(m.SlowQueriesSeconds) {
+			continue
+		}
+
+		if v, ok := metrics["slow_queries"]; ok {
+			metrics["slow_queries"] = v + 1
+			continue
+		}
+		metrics["slow_queries"] = 1
+
+	}
+
+	if _, ok := metrics["slow_queries"]; !ok {
+		metrics["slow_queries"] = 0
+	}
+
+	return nil
+
+	/*
+		[slow_queries] = [0]
+	*/
+}
+
+func (m *MySQL) collectSlowQueriesInPercentile(metrics map[string]int64) error {
+	q := fmt.Sprintf("SELECT avg_latency FROM sys.statements_with_runtimes_in_%dth_percentile;",
+		m.SlowQueriesInPercentile)
+
+	rows, err := m.db.Query(q)
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		// total columns:
+		//
+		// query
+		// db
+		// full_scan
+		// exec_count
+		// err_count
+		// warn_count
+		// total_latency
+		// max_latency
+		// avg_latency <--
+		// rows_sent
+		// rows_sent_avg
+		// rows_examined
+		// rows_examined_avg
+		// first_seen
+		// last_seen
+		// digest
+		var (
+			avgLatencyStr string // i.e 62.37 ms
+		)
+
+		err = rows.Scan(&avgLatencyStr)
+		if err != nil {
+			return err
+		}
+
+		avgLatency, _ := time.ParseDuration(avgLatencyStr)
+		if avgLatency < time.Duration(m.SlowQueriesSeconds)*time.Second {
 			continue
 		}
 
