@@ -25,13 +25,22 @@ func init() {
 type MySQL struct {
 	modules.Base
 	db *sql.DB
+	// i.e user:password@/dbname
+	DSN string `yaml:"dsn"`
 
-	DSN string `yaml:"dsn"` // i.e user:password@/dbname
+	// i.e "10" for top 10 sql queries having the longest avg execution time.
+	// Defaults to "10".
+	SlowQueriesMaxCount int64 `yaml:"slow_queries_max_count"`
+	// Determinates what is "slow".
+	// i.e "4" to increment the "slow_queries++" metric when
+	// a query executed in equal or more than 4 seconds.
+	// Defaults to 4.
+	SlowQueriesSeconds int64 `yaml:"slow_queries_seconds"`
 }
 
 // New creates and returns a new empty MySQL module.
 func New() *MySQL {
-	return &MySQL{}
+	return &MySQL{SlowQueriesMaxCount: 10, SlowQueriesSeconds: 4}
 }
 
 // CompatibleMinimumVersion is the minimum required version of the mysql server.
@@ -127,19 +136,21 @@ func (m *MySQL) Collect() map[string]int64 {
 		m.Errorf("error on collecting global stats: %v", err)
 		return nil
 	}
-	// m.Debugf("total metrics length after stats: %d\n", len(metrics))
 
 	if err := m.collectSlaveStatus(metrics); err != nil {
 		m.Errorf("error on collecting slave status: %v", err)
 		return nil
 	}
-	// m.Debugf("total metrics length after slave status: %d\n", len(metrics))
 
 	if err := m.collectMaxConnections(metrics); err != nil {
 		m.Errorf("error on determinating max connections: %v", err)
 		return nil
 	}
-	// m.Debugf("total metrics length after max connections determination: %d\n", len(metrics))
+
+	if err := m.collectSlowQueries(metrics); err != nil {
+		m.Errorf("error on determinating slowest queries: %v", err)
+		return nil
+	}
 
 	return metrics
 }
@@ -149,7 +160,7 @@ var globalStats = [...]string{
 	"Bytes_sent",
 	"Queries",
 	"Questions",
-	"Slow_queries",
+	//	"Slow_queries", handled by a custom query to be configurable.
 	"Handler_commit",
 	"Handler_delete",
 	"Handler_prepare",
@@ -373,7 +384,6 @@ func (m *MySQL) collectGlobalStats(metrics map[string]int64) error {
 	   [innodb_rows_read] = [7208]
 	   [key_write_requests] = [0]
 	   [key_writes] = [0]
-	   [slow_queries] = [0]
 	   [innodb_data_pending_writes] = [0]
 	   [innodb_os_log_pending_fsyncs] = [0]
 	   [aborted_connects] = [1]
@@ -501,5 +511,55 @@ func (m *MySQL) collectMaxConnections(metrics map[string]int64) error {
 
 	/*
 		[max_connections] = [151]
+	*/
+}
+
+func (m *MySQL) collectSlowQueries(metrics map[string]int64) error {
+	rows, err := m.db.Query(`SELECT substr(digest_text, 1, 50) AS digest_text_start, count_star,
+TRUNCATE(avg_timer_wait/1000000000000,6) as avg_time
+FROM performance_schema.events_statements_summary_by_digest 
+ORDER BY avg_timer_wait DESC
+LIMIT ?;`, m.SlowQueriesMaxCount) // truncate by 1 trillion to convert picoseconds data into seconds.
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		// digest_text_start
+		// count_star
+		// avg_time
+		var (
+			text      string
+			countStar int64
+			avgTime   float64
+		)
+
+		err = rows.Scan(&text, &countStar, &avgTime)
+		if err != nil {
+			return err
+		}
+
+		if avgTime < float64(m.SlowQueriesSeconds) {
+			continue
+		}
+
+		if v, ok := metrics["slow_queries"]; ok {
+			metrics["slow_queries"] = v + 1
+			continue
+		}
+		metrics["slow_queries"] = 1
+
+	}
+
+	if _, ok := metrics["slow_queries"]; !ok {
+		metrics["slow_queries"] = 0
+	}
+
+	return nil
+
+	/*
+		[slow_queries] = [0]
 	*/
 }

@@ -17,6 +17,7 @@ but should be:
 	"slave_sql_running":     1 // if Yes
 	"slave_io_running":      -1 // if !Yes
 )
+[slow_queries] = [4]
 [select_full_range_join] = [0]
 [bytes_sent] = [292534]
 [handler_write] = [10163]
@@ -48,7 +49,6 @@ but should be:
 [handler_read_rnd] = [360]
 [innodb_buffer_pool_read_ahead_evicted] = [0]
 [innodb_data_writes] = [362]
-[slow_queries] = [0]
 [key_read_requests] = [0]
 [com_insert] = [0]
 [handler_read_rnd_next] = [20070]
