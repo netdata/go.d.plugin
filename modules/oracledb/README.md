@@ -29,6 +29,7 @@ Following charts are drawn:
  * user I/O
  * other
 
+<!--
 4. **Tablespace Size**
  * max_bytes_system
  * free_bytes_system
@@ -66,7 +67,7 @@ Following charts are drawn:
  * database_wait_time_ratio
  * session_limit_usage
  * session_count
- * temp_space_used
+ * temp_space_used -->
 
 ### configuration
 

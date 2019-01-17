@@ -125,17 +125,18 @@ func (m *OracleDB) Collect() map[string]int64 {
 		return nil
 	}
 
-	err = m.collectTablespace(metrics)
-	if err != nil {
-		m.Errorf("error on collecting tablespace size: %v", err)
-		return nil
-	}
 
-	err = m.collectSystemMetrics(metrics)
-	if err != nil {
-		m.Errorf("error on collecting system metrics: %v", err)
-		return nil
-	}
+	// err = m.collectTablespace(metrics)
+	// if err != nil {
+	// 	m.Errorf("error on collecting tablespace size: %v", err)
+	// 	return nil
+	// }
+
+	// err = m.collectSystemMetrics(metrics)
+	// if err != nil {
+	// 	m.Errorf("error on collecting system metrics: %v", err)
+	// 	return nil
+	// }
 
 	return metrics
 }
