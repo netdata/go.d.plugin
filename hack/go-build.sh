@@ -15,14 +15,14 @@ if [ "${WHICH}" != "all" ]; then
 	eval $(go env | grep -e "GOHOSTOS" -e "GOHOSTARCH")
 	: "${GOOS:=${GOHOSTOS}}"
 	: "${GOARCH:=${GOHOSTARCH}}"
-	CGO_ENABLED=1 GOOS=${GOOS} GOARCH=${GOARCH} go build ${GOFLAGS} -ldflags "${GLDFLAGS}" -o bin/godplugin github.com/netdata/go.d.plugin/cmd/godplugin
+	CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build ${GOFLAGS} -ldflags "${GLDFLAGS}" -o bin/godplugin github.com/netdata/go.d.plugin/cmd/godplugin
 else
 	for PLATFORM in "${PLATFORMS[@]}"; do
 		PLTFRM_SPLT=(${PLATFORM//\// })
 		GOOS=${PLTFRM_SPLT[0]}
 		GOARCH=${PLTFRM_SPLT[1]}
 		FILE="bin/go.d.plugin-${VERSION}.${GOOS}-${GOARCH}"
-		CGO_ENABLED=1 GOOS=${GOOS} GOARCH=${GOARCH} go build ${GOFLAGS} -ldflags "${GLDFLAGS}" -o "${FILE}" github.com/netdata/go.d.plugin/cmd/godplugin
+		CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build ${GOFLAGS} -ldflags "${GLDFLAGS}" -o "${FILE}" github.com/netdata/go.d.plugin/cmd/godplugin
 	done
 fi
 
