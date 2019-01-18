@@ -15,6 +15,7 @@ import (
 
 func init() {
 	creator := modules.Creator{
+		DisabledByDefault: true,
 		UpdateEvery: 5,
 		Create:      func() modules.Module { return New() },
 	}
