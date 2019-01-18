@@ -58,7 +58,7 @@ If case of problems:
 ## Configuration
 
 `go.d.plugin` itself can be configured using the configuration file `/etc/netdata/go.d.conf`
-(to edit it on your system run `/etc/netdata/edit-config go.d.conf`). This file is also a BASH script.
+(to edit it on your system run `/etc/netdata/edit-config go.d.conf`). This file is a BASH script.
 
 Configurations are written in [YAML](http://yaml.org/).
 
