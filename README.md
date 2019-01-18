@@ -70,7 +70,7 @@ Configurations are written in [YAML](http://yaml.org/).
 Plugin CLI:
 ```
 Usage:
-  go.d.plugin [update every] [OPTIONS]
+  go.d.plugin [OPTIONS] [update every]
 
 Application Options:
   -d, --debug    debug mode
