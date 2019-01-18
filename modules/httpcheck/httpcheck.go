@@ -17,8 +17,9 @@ import (
 
 func init() {
 	creator := modules.Creator{
-		UpdateEvery: 5,
-		Create:      func() modules.Module { return New() },
+		DisabledByDefault: true,
+		UpdateEvery:       5,
+		Create:            func() modules.Module { return New() },
 	}
 
 	modules.Register("httpcheck", creator)
