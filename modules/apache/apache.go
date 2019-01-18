@@ -10,7 +10,8 @@ import (
 
 func init() {
 	creator := modules.Creator{
-		Create: func() modules.Module { return New() },
+		DisabledByDefault: true,
+		Create:            func() modules.Module { return New() },
 	}
 
 	modules.Register("apache", creator)
