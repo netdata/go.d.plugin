@@ -34,8 +34,8 @@ type WebLog struct {
 	UserCats         []rawcategory `yaml:"user_categories"`
 	CustomParser     csvPattern    `yaml:"custom_log_format"`
 	Histogram        []int         `yaml:"histogram"`
-	DoCodesAggregate bool          `yaml:"detailed_response_codes_aggregate"`
-	DoAllTimeIPs     bool          `yaml:"all_time_clients"`
+	DoCodesAggregate bool          `yaml:"response_codes_aggregate"`
+	DoAllTimeIPs     bool          `yaml:"all_time_ips"`
 
 	worker *worker
 	charts *modules.Charts
