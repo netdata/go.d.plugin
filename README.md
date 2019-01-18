@@ -22,20 +22,22 @@ If you have time and willing to help, there are a lof of ways to contribute:
 
 ## Available modules
  - [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)
- - [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache) (disabled)
+ - [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache) *
  - [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)
- - [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery) (disabled)
- - [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example) (disabled)
- - [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius) (disabled)
- - [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck) (disabled)
- - [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd) (disabled)
+ - [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery) *
+ - [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example) *
+ - [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius) *
+ - [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck) *
+ - [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd) *
  - [lighttpd2](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd2)
- - [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx) (disabled)
- - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck) (disabled)
- - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) (disabled)
+ - [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx) *
+ - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck) *
+ - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
  - [sorl](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
  - [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)
- - [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) (disabled)
+ - [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) *
+
+`*` - disabled by default.
 
 ## Why disabled? How to enable?
 We are in process of migrating collectors from `python` to `go`.
