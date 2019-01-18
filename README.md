@@ -24,7 +24,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)
  - [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache) *
  - [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)
- - [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery) *
+ - [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery)
  - [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example) *
  - [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius) *
  - [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck) *
