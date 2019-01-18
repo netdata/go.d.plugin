@@ -18,7 +18,7 @@ Shipped with `netdata`.
 If you have time and willing to help, there are a lof of ways to contribute:
  - Fix and [report bugs](https://github.com/netdata/go.d.plugin/issues/new)
  - [Review code and feature proposals](https://github.com/netdata/go.d.plugin/pulls)
- - [Contribute modules](https://github.com/netdata/go.d.plugin/blob/master/CONTRIBUTING.md)
+ - [Contribute modules](https://github.com/netdata/go.d.plugin/blob/master/CONTRIBUTING.md) (wip, module interface may be changed soon)
 
 ## Available modules
  - [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)
