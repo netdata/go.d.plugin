@@ -52,7 +52,7 @@ To enable module please do the following:
  - restart `netdata.service`
 
 If case of problems:
- - check `error.log` errors (`grep <module name> error.log`)
+ - check `error.log` for module related errors (`grep <module name> error.log`)
  - run plugin in [debug mode](#how-to-debug-a-go-module)
 
 ## Configuration
