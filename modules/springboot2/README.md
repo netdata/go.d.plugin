@@ -44,4 +44,4 @@ and `http://127.0.0.1:8080/actuator/prometheus` to detect Spring Boot applicatio
 You can change it by editing `/etc/netdata/go.d/springboot2.conf` 
 (to edit it on your system run `/etc/netdata/edit-config go.d/springboot2.conf`).
 
-Please check [springboot2.conf](springboot2.conf) for more examples.
+Please check [springboot2.conf](../../config/go.d/springboot2.conf) for more examples.
