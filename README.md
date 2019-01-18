@@ -51,6 +51,10 @@ To enable module please do the following:
  - move python module jobs to go module configuration file (change syntax, see go module configuration file for details).
  - restart `netdata.service`
 
+If case of problems:
+ - look for errors in `error.log`
+ - run module in [debug mode](#how-to-debug-a-go-module)
+
 ## Configuration
 
 `go.d.plugin` itself can be configured using the configuration file `/etc/netdata/go.d.conf`
