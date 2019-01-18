@@ -52,8 +52,8 @@ To enable module please do the following:
  - restart `netdata.service`
 
 If case of problems:
- - look for errors in `error.log`
- - run module in [debug mode](#how-to-debug-a-go-module)
+ - check `error.log` errors (`grep <module name> error.log`)
+ - run plugin in [debug mode](#how-to-debug-a-go-module)
 
 ## Configuration
 
