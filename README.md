@@ -1,6 +1,6 @@
-[![CircleCI](https://circleci.com/gh/netdata/go.d.plugin.svg?style=svg)](https://circleci.com/gh/netdata/go.d.plugin)
-
 # go.d.plugin
+
+[![CircleCI](https://circleci.com/gh/netdata/go.d.plugin.svg?style=svg)](https://circleci.com/gh/netdata/go.d.plugin)
 
 `go.d.plugin` is a `netdata` external plugin. It is an **orchestrator** for data collection modules written in `go`.
 
