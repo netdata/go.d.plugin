@@ -46,8 +46,8 @@ Configurations are incompatible. All rewritten in `go` modules are disabled by d
 This is a temporary solution, we are working on it.
 
 To enable module please do the following:
- - disable python module in `python.d.conf`
- - enable go module in `go.d.conf`
+ - explicitly disable python module in `python.d.conf`
+ - explicitly enable go module in `go.d.conf`
  - move python module jobs to go module configuration file (change syntax, see go module configuration file for details).
  - restart `netdata.service`
 
