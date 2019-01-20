@@ -6,7 +6,7 @@ package mysql
 
 // func TestExampleMySQL(t *testing.T) {
 // 	m := New()
-// 	m.DSN = "root:12345@/mysql?charset=utf8"
+// 	m.DSN = "root:12345@/?charset=utf8"
 // 	if expected, got := true, m.Init(); expected != got {
 // 		t.Fatalf("expected init to give [%v] but got [%v]", expected, got)
 // 	}

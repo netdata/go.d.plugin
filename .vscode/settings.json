@@ -36,7 +36,7 @@
     "editor.suggestFontSize": 14,
     "terminal.integrated.fontSize": 13,
     "terminal.integrated.fontFamily": "Fira Code",
-    "workbench.colorTheme": "Visual Studio Light",
+    "workbench.colorTheme": "One Dark Pro",
     "workbench.iconTheme": "vscode-great-icons",
     "workbench.activityBar.visible": true, // optionally toggles the workbench controls
     "workbench.editor.enablePreview": false, // it's a good feature if it's on but I want to keep the windows on, mostly when I navigate to a native source code.

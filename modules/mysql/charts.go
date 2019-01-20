@@ -9,113 +9,556 @@ type (
 	Dims = modules.Dims
 )
 
-var charts = Charts{}
-
-/* TODO (slave stats missing from my machine because I am not using any type of replication,
-but should be:
-	"seconds_behind_master": $seconds
-	"slave_sql_running":     1 // if Yes
-	"slave_io_running":      -1 // if !Yes
-)
-[slow_queries] = [4]
-[select_full_range_join] = [0]
-[bytes_sent] = [292534]
-[handler_write] = [10163]
-[innodb_buffer_pool_pages_dirty] = [0]
-[innodb_data_pending_reads] = [0]
-[innodb_os_log_pending_fsyncs] = [0]
-[innodb_os_log_written] = [89600]
-[key_reads] = [0]
-[table_locks_immediate] = [23]
-[binlog_cache_disk_use] = [0]
-[connection_errors_internal] = [0]
-[connection_errors_max_connections] = [0]
-[connection_errors_tcpwrap] = [0]
-[questions] = [63]
-[innodb_buffer_pool_read_requests] = [21544]
-[innodb_log_write_requests] = [765]
-[innodb_log_writes] = [98]
-[sort_scan] = [4]
-[binlog_cache_use] = [0]
-[com_delete] = [0]
-[handler_savepoint] = [0]
-[handler_update] = [346]
-[innodb_buffer_pool_pages_misc] = [6]
-[key_writes] = [0]
-[connection_errors_accept] = [0]
-[created_tmp_disk_tables] = [0]
-[handler_prepare] = [0]
-[handler_read_key] = [2374]
-[handler_read_rnd] = [360]
-[innodb_buffer_pool_read_ahead_evicted] = [0]
-[innodb_data_writes] = [362]
-[key_read_requests] = [0]
-[com_insert] = [0]
-[handler_read_rnd_next] = [20070]
-[innodb_buffer_pool_pages_total] = [512]
-[innodb_buffer_pool_read_ahead] = [14]
-[innodb_data_written] = [5153792]
-[innodb_rows_deleted] = [0]
-[key_blocks_unused] = [6698]
-[threads_created] = [3]
-[aborted_connects] = [1]
-[binlog_stmt_cache_disk_use] = [0]
-[innodb_buffer_pool_pages_flushed] = [215]
-[innodb_data_pending_fsyncs] = [0]
-[innodb_data_read] = [15864832]
-[select_range] = [0]
-[select_range_check] = [0]
-[threads_cached] = [0]
-[created_tmp_tables] = [31]
-[handler_read_first] = [39]
-[innodb_buffer_pool_pages_data] = [257]
-[innodb_buffer_pool_read_ahead_rnd] = [0]
-[innodb_row_lock_current_waits] = [0]
-[queries] = [105]
-[sort_range] = [0]
-[bytes_received] = [5648]
-[connection_errors_peer_address] = [0]
-[innodb_buffer_pool_write_requests] = [1945]
-[key_blocks_not_flushed] = [0]
-[table_locks_waited] = [0]
-[created_tmp_files] = [5]
-[innodb_data_reads] = [987]
-[max_used_connections] = [3]
-[open_files] = [7]
-[threads_connected] = [3]
-[threads_running] = [2]
-[com_select] = [27]
-[handler_read_next] = [6085]
-[innodb_buffer_pool_bytes_data] = [4210688]
-[select_full_join] = [2]
-[opened_files] = [28]
-[com_update] = [0]
-[connection_errors_select] = [0]
-[handler_commit] = [681]
-[innodb_data_fsyncs] = [105]
-[innodb_log_waits] = [0]
-[innodb_rows_read] = [7214]
-[innodb_rows_updated] = [346]
-[binlog_stmt_cache_use] = [0]
-[innodb_buffer_pool_wait_free] = [0]
-[key_blocks_used] = [0]
-[key_write_requests] = [0]
-[max_connections] = [151]
-[innodb_os_log_pending_writes] = [0]
-[connections] = [31]
-[handler_delete] = [0]
-[handler_read_prev] = [0]
-[handler_rollback] = [0]
-[innodb_buffer_pool_bytes_dirty] = [0]
-[innodb_buffer_pool_reads] = [950]
-[innodb_os_log_fsyncs] = [71]
-[select_scan] = [57]
-[com_replace] = [0]
-[handler_savepoint_rollback] = [0]
-[innodb_buffer_pool_pages_free] = [249]
-[innodb_rows_inserted] = [0]
-[sort_merge_passes] = [0]
-[innodb_data_pending_writes] = [0]
-
-
-*/
+var charts = Charts{
+	{
+		ID:    "net",
+		Title: "Bandwidth",
+		Units: "kilobits/s",
+		Fam:   "bandwidth",
+		Ctx:   "mysql.net",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "bytes_received", Name: "in", Algo: modules.Incremental, Mul: 8, Div: 1000},
+			{ID: "bytes_sent", Name: "out", Algo: modules.Incremental, Mul: -8, Div: 1000},
+		},
+	},
+	{
+		ID:    "queries",
+		Title: "Queries",
+		Units: "queries/s",
+		Fam:   "queries",
+		Ctx:   "mysql.queries",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "queries", Name: "queries", Algo: modules.Incremental},
+			{ID: "questions", Name: "questions", Algo: modules.Incremental},
+			{ID: "slow_queries", Name: "slow_queries", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "queries_type",
+		Title: "Queries type",
+		Units: "queries/s",
+		Fam:   "queries_type",
+		Ctx:   "mysql.queries_type",
+		Type:  modules.Stacked,
+		Dims: Dims{
+			{ID: "com_select", Name: "select", Algo: modules.Incremental},
+			{ID: "com_delete", Name: "delete", Algo: modules.Incremental},
+			{ID: "com_update", Name: "update", Algo: modules.Incremental},
+			{ID: "com_insert", Name: "insert", Algo: modules.Incremental},
+			{ID: "qcache_hits", Name: "cache_hits", Algo: modules.Incremental},
+			{ID: "com_replace", Name: "replace", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "handlers",
+		Title: "Handlers",
+		Units: "handlers/s",
+		Fam:   "handlers",
+		Ctx:   "mysql.handlers",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "handler_commit", Name: "commit", Algo: modules.Incremental},
+			{ID: "handler_delete", Name: "delete", Algo: modules.Incremental},
+			{ID: "handler_prepare", Name: "prepare", Algo: modules.Incremental},
+			{ID: "handler_read_first", Name: "read_first", Algo: modules.Incremental},
+			{ID: "handler_read_key", Name: "read_key", Algo: modules.Incremental},
+			{ID: "handler_read_next", Name: "read_next", Algo: modules.Incremental},
+			{ID: "handler_read_prev", Name: "read_prev", Algo: modules.Incremental},
+			{ID: "handler_read_rnd", Name: "read_rnd", Algo: modules.Incremental},
+			{ID: "handler_read_rnd_next", Name: "read_rnd_next", Algo: modules.Incremental},
+			{ID: "handler_rollback", Name: "rollback", Algo: modules.Incremental},
+			{ID: "handler_savepoint", Name: "savepoint", Algo: modules.Incremental},
+			{ID: "handler_savepoint_rollback", Name: "savepoint_rollback", Algo: modules.Incremental},
+			{ID: "handler_update", Name: "update", Algo: modules.Incremental},
+			{ID: "handler_write", Name: "write", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "table_locks",
+		Title: "Table Locks",
+		Units: "locks/s",
+		Fam:   "locks",
+		Ctx:   "mysql.table_locks",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "table_locks_immediate", Name: "immediate", Algo: modules.Incremental},
+			{ID: "handler_table_locks_waiteddelete", Name: "waited", Algo: modules.Incremental, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "join_issues",
+		Title: "Table Select Join Issues",
+		Units: "joins/s",
+		Fam:   "issues",
+		Ctx:   "mysql.join_issues",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "select_full_join", Name: "full_join", Algo: modules.Incremental},
+			{ID: "select_full_range_join", Name: "full_range_join", Algo: modules.Incremental},
+			{ID: "select_range", Name: "range", Algo: modules.Incremental},
+			{ID: "select_range_check", Name: "range_check", Algo: modules.Incremental},
+			{ID: "select_scan", Name: "scan", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "sort_issues",
+		Title: "Table Sort Issues",
+		Units: "issues/s",
+		Fam:   "issues",
+		Ctx:   "mysql.sort_issues",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "sort_merge_passes", Name: "merge_passes", Algo: modules.Incremental},
+			{ID: "sort_range", Name: "range", Algo: modules.Incremental},
+			{ID: "sort_scan", Name: "scan", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "tmp",
+		Title: "Tmp Operations",
+		Units: "counter",
+		Fam:   "temporaries",
+		Ctx:   "mysql.tmp",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "created_tmp_disk_tables", Name: "disk_tables", Algo: modules.Incremental},
+			{ID: "created_tmp_files", Name: "files", Algo: modules.Incremental},
+			{ID: "created_tmp_tables", Name: "tables", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "connections",
+		Title: "Connections",
+		Units: "connections/s",
+		Fam:   "connections",
+		Ctx:   "mysql.connections",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "connections", Name: "all", Algo: modules.Incremental},
+			{ID: "aborted_connects", Name: "aborted", Algo: modules.Incremental},
+			{ID: "created_tmp_tables", Name: "tables", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "connections_active",
+		Title: "Connections Active",
+		Units: "connections",
+		Fam:   "connections",
+		Ctx:   "mysql.connections_active",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "threads_connected", Name: "active", Algo: modules.Absolute},
+			{ID: "max_connections", Name: "limit", Algo: modules.Absolute},
+			{ID: "max_used_connections", Name: "max_active", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "binlog_cache",
+		Title: "Binlog Cache",
+		Units: "transactions/s",
+		Fam:   "binlog",
+		Ctx:   "mysql.binlog_cache",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "binlog_cache_disk_use", Name: "disk", Algo: modules.Incremental},
+			{ID: "binlog_cache_use", Name: "all", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "threads",
+		Title: "Threads",
+		Units: "threads",
+		Fam:   "threads",
+		Ctx:   "mysql.threads",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "threads_connected", Name: "connected", Algo: modules.Absolute},
+			{ID: "threads_created", Name: "created", Algo: modules.Incremental},
+			{ID: "threads_cached", Name: "cached", Algo: modules.Absolute, Mul: -1, Div: 1},
+			{ID: "threads_running", Name: "running", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "thread_cache_misses",
+		Title: "Threads Cache Misses",
+		Units: "misses",
+		Fam:   "threads",
+		Ctx:   "mysql.thread_cache_misses",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "thread_cache_misses", Name: "misses", Algo: modules.Absolute, Mul: 1, Div: 100},
+		},
+	},
+	{
+		ID:    "innodb_io",
+		Title: "InnoDB I/O Bandwidth",
+		Units: "KiB/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_io",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "innodb_data_read", Name: "read", Algo: modules.Incremental, Mul: 1, Div: 1024},
+			{ID: "innodb_data_written", Name: "write", Algo: modules.Incremental, Mul: 1, Div: 1024},
+		},
+	},
+	{
+		ID:    "innodb_io_ops",
+		Title: "InnoDB I/O Operations",
+		Units: "operations/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_io_ops",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "innodb_data_reads", Name: "reads", Algo: modules.Incremental},
+			{ID: "innodb_data_writes", Name: "writes", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "innodb_data_fsyncs", Name: "fsyncs", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "innodb_io_pending_ops",
+		Title: "InnoDB Pending I/O Operations",
+		Units: "operations",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_io_pending_ops",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "innodb_data_pending_reads", Name: "reads", Algo: modules.Absolute},
+			{ID: "innodb_data_pending_writes", Name: "writes", Algo: modules.Absolute, Mul: -1, Div: 1},
+			{ID: "innodb_data_pending_fsyncs", Name: "fsyncs", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "innodb_log",
+		Title: "InnoDB Log Operations",
+		Units: "operations/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_log",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "innodb_log_waits", Name: "waits", Algo: modules.Incremental},
+			{ID: "innodb_log_write_requests", Name: "write_requests", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "innodb_log_writes", Name: "writes", Algo: modules.Incremental, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "innodb_os_log",
+		Title: "InnoDB Log Operations",
+		Units: "operations",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_os_log",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "innodb_os_log_fsyncs", Name: "fsyncs", Algo: modules.Incremental},
+			{ID: "innodb_os_log_pending_fsyncs", Name: "pending_fsyncs", Algo: modules.Absolute},
+			{ID: "innodb_os_log_pending_writes", Name: "pending_writes", Algo: modules.Absolute, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "innodb_os_log_io",
+		Title: "InnoDB OS Log Bandwidth",
+		Units: "KiB/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_os_log_io",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "innodb_os_log_written", Name: "write", Algo: modules.Incremental, Mul: -1, Div: 1024},
+		},
+	},
+	{
+		ID:    "innodb_cur_row_lock",
+		Title: "InnoDB Current Row Locks",
+		Units: "operations",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_cur_row_lock",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "innodb_row_lock_current_waits", Name: "current_waits", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "innodb_rows",
+		Title: "InnoDB Row Operations",
+		Units: "operations/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_rows",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "innodb_rows_inserted", Name: "inserted", Algo: modules.Incremental},
+			{ID: "innodb_rows_read", Name: "read", Algo: modules.Incremental, Mul: 1, Div: 1},
+			{ID: "innodb_rows_updated", Name: "updated", Algo: modules.Incremental, Mul: 1, Div: 1},
+			{ID: "innodb_rows_deleted", Name: "deleted", Algo: modules.Incremental, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "innodb_buffer_pool_pages",
+		Title: "InnoDB Buffer Pool Pages",
+		Units: "pages",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_buffer_pool_pages",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "innodb_buffer_pool_pages_data", Name: "data", Algo: modules.Absolute},
+			{ID: "innodb_buffer_pool_pages_dirty", Name: "dirty", Algo: modules.Absolute, Mul: -1, Div: 1},
+			{ID: "innodb_buffer_pool_pages_free", Name: "free", Algo: modules.Absolute},
+			{ID: "innodb_buffer_pool_pages_flushed", Name: "flushed", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "innodb_buffer_pool_pages_misc", Name: "misc", Algo: modules.Absolute, Mul: -1, Div: 1},
+			{ID: "innodb_buffer_pool_pages_total", Name: "total", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "innodb_buffer_pool_bytes",
+		Title: "InnoDB Buffer Pool Bytes",
+		Units: "MiB",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_buffer_pool_bytes",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "innodb_buffer_pool_bytes_data", Name: "data", Algo: modules.Absolute, Mul: 1, Div: 1024 * 1024},
+			{ID: "innodb_buffer_pool_bytes_dirty", Name: "dirty", Algo: modules.Absolute, Mul: -1, Div: 1024 * 1024},
+		},
+	},
+	{
+		ID:    "innodb_buffer_pool_read_ahead",
+		Title: "InnoDB Buffer Pool Bytes",
+		Units: "operations/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_buffer_pool_read_ahead",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "innodb_buffer_pool_read_ahead", Name: "all", Algo: modules.Incremental},
+			{ID: "innodb_buffer_pool_read_ahead_evicted", Name: "evicted", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "innodb_buffer_pool_read_ahead_rnd", Name: "random", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "innodb_buffer_pool_ops",
+		Title: "InnoDB Buffer Pool Operations",
+		Units: "operations/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_buffer_pool_ops",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "innodb_buffer_pool_reads", Name: "disk reads", Algo: modules.Incremental},
+			{ID: "innodb_buffer_pool_wait_free", Name: "wait free", Algo: modules.Incremental, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "qcache_ops",
+		Title: "QCache Operations",
+		Units: "queries/s",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache_ops",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "qcache_hits", Name: "hits", Algo: modules.Incremental},
+			{ID: "qcache_lowmem_prunes", Name: "lowmem prunes", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "qcache_inserts", Name: "inserts", Algo: modules.Incremental},
+			{ID: "qcache_not_cached", Name: "not cached", Algo: modules.Incremental, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "qcache",
+		Title: "QCache Queries in Cache",
+		Units: "queries",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "qcache_queries_in_cache", Name: "queries", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "qcache_freemem",
+		Title: "QCache Free Memory",
+		Units: "MiB",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache_freemem",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "qcache_free_memory", Name: "free", Algo: modules.Absolute, Mul: 1, Div: 1024 * 1024},
+		},
+	},
+	{
+		ID:    "qcache_memblocks",
+		Title: "QCache Memory Blocks",
+		Units: "blocks",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache_memblocks",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "qcache_free_blocks", Name: "free", Algo: modules.Absolute},
+			{ID: "qcache_total_blocks", Name: "total", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "key_blocks",
+		Title: "MyISAM Key Cache Blocks",
+		Units: "blocks",
+		Fam:   "myisam",
+		Ctx:   "mysql.key_blocks",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "key_blocks_unused", Name: "unused", Algo: modules.Absolute},
+			{ID: "key_blocks_used", Name: "used", Algo: modules.Absolute, Mul: -1, Div: 1},
+			{ID: "key_blocks_not_flushed", Name: "not flushed", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "key_requests",
+		Title: "MyISAM Key Cache Requests",
+		Units: "requests/s",
+		Fam:   "myisam",
+		Ctx:   "mysql.key_requests",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "key_read_requests", Name: "reads", Algo: modules.Incremental},
+			{ID: "key_write_requests", Name: "writes", Algo: modules.Incremental, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "key_disk_ops",
+		Title: "MyISAM Key Cache Disk Operations",
+		Units: "operations/s",
+		Fam:   "myisam",
+		Ctx:   "mysql.key_disk_ops",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "key_reads", Name: "reads", Algo: modules.Incremental},
+			{ID: "key_writes", Name: "writes", Algo: modules.Incremental, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "files",
+		Title: "Open Files",
+		Units: "files",
+		Fam:   "files",
+		Ctx:   "mysql.files",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "open_files", Name: "files", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "files_rate",
+		Title: "Opened Files Rate",
+		Units: "files/s",
+		Fam:   "files",
+		Ctx:   "mysql.files_rate",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "opened_files", Name: "files", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "binlog_stmt_cache",
+		Title: "Binlog Statement Cache",
+		Units: "statements/s",
+		Fam:   "binlog",
+		Ctx:   "mysql.binlog_stmt_cache",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "binlog_stmt_cache_disk_use", Name: "disk", Algo: modules.Incremental},
+			{ID: "binlog_stmt_cache_use", Name: "all", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "connection_errors",
+		Title: "Connection Errors",
+		Units: "connections/s",
+		Fam:   "connections",
+		Ctx:   "mysql.connection_errors",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "connection_errors_accept", Name: "accept", Algo: modules.Incremental},
+			{ID: "connection_errors_internal", Name: "internal", Algo: modules.Incremental},
+			{ID: "connection_errors_max_connections", Name: "max", Algo: modules.Incremental},
+			{ID: "connection_errors_peer_address", Name: "peer_addr", Algo: modules.Incremental},
+			{ID: "connection_errors_select", Name: "select", Algo: modules.Incremental},
+			{ID: "connection_errors_tcpwrap", Name: "tcpwrap", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "slave_behind",
+		Title: "Slave Behind Seconds",
+		Units: "seconds",
+		Fam:   "slave",
+		Ctx:   "mysql.slave_behind",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "seconds_behind_master", Name: "seconds", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "slave_status",
+		Title: "Slave Status",
+		Units: "status",
+		Fam:   "slave",
+		Ctx:   "mysql.slave_status",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "slave_sql_Running", Name: "sql_running", Algo: modules.Absolute},
+			{ID: "slave_io_Running", Name: "io_running", Algo: modules.Absolute},
+		},
+	},
+	{
+		ID:    "galera_writesets",
+		Title: "Replicated writesets",
+		Units: "writesets/s",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_writesets",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "wsrep_received", Name: "rx", Algo: modules.Incremental},
+			{ID: "wsrep_replicated", Name: "tx", Algo: modules.Incremental, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "galera_bytes",
+		Title: "Replicated bytes",
+		Units: "KiB/s",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_bytes",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "wsrep_received_bytes", Name: "rx", Algo: modules.Incremental, Mul: 1, Div: 1024},
+			{ID: "wsrep_replicated_bytes", Name: "tx", Algo: modules.Incremental, Mul: -1, Div: 1024},
+		},
+	},
+	{
+		ID:    "galera_queue",
+		Title: "Galera queue",
+		Units: "writesets",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_queue",
+		Type:  modules.Line,
+		Dims: Dims{
+			{ID: "wsrep_local_recv_queue", Name: "rx", Algo: modules.Absolute},
+			{ID: "wsrep_local_send_queue", Name: "tx", Algo: modules.Absolute, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "galera_conflicts",
+		Title: "Replication conflicts",
+		Units: "transactions",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_conflicts",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "wsrep_local_bf_aborts", Name: "bf_aborts", Algo: modules.Incremental},
+			{ID: "wsrep_local_cert_failures", Name: "cert_fails", Algo: modules.Incremental, Mul: -1, Div: 1},
+		},
+	},
+	{
+		ID:    "galera_flow_control",
+		Title: "Flow control",
+		Units: "millisec",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_flow_control",
+		Type:  modules.Area,
+		Dims: Dims{
+			{ID: "wsrep_flow_control_paused_ns", Name: "paused", Algo: modules.Incremental, Mul: 1, Div: 1000000},
+		},
+	},
+}
