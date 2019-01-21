@@ -95,7 +95,7 @@ func (p *Plugin) Serve() {
 
 	// NOTE: temporary workaround
 	// `go.d.plugin` process doesn't die after `kill -9 <netdata pid>` if there is no active jobs
-	if len(p.loopQueue.queue) == 0 {
+	if p.loopQueue.len() == 0 {
 		log.Info("no jobs to run. Exit...")
 		_, _ = fmt.Fprint(os.Stdout, "DISABLE")
 		os.Exit(0)
