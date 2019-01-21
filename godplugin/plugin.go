@@ -87,19 +87,12 @@ func (p *Plugin) RemoveFromQueue(fullName string) {
 // Serve Serve
 func (p *Plugin) Serve() {
 	go shutdownTask()
+	go heartbeatTask()
+
 	go p.jobStartLoop()
 
 	for _, job := range p.createJobs() {
 		p.jobCh <- job
-	}
-
-	// FIXME: temporary workaround
-	// `go.d.plugin` process doesn't die after `kill -9 <netdata pid>` if there is no active jobs
-	// this breaks autodetection jobs
-	if p.loopQueue.len() == 0 {
-		log.Info("no jobs to run. Exit...")
-		_, _ = fmt.Fprint(os.Stdout, "DISABLE")
-		os.Exit(0)
 	}
 
 	p.mainLoop()
@@ -141,4 +134,14 @@ func shutdownTask() {
 		log.Info("SIGHUP received. Terminating...")
 	}
 	os.Exit(0)
+}
+
+func heartbeatTask() {
+	t := time.Tick(time.Second)
+	for range t {
+		if _, err := fmt.Fprint(os.Stdout, "\n"); err != nil {
+			log.Critical("STDOUT write error. Terminating...")
+			os.Exit(1)
+		}
+	}
 }
