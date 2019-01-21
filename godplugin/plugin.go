@@ -125,13 +125,16 @@ func (p *Plugin) stop() {
 
 func shutdownTask() {
 	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGHUP)
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGHUP, syscall.SIGPIPE)
 
 	switch <-signalChan {
 	case syscall.SIGINT:
 		log.Info("SIGINT received. Terminating...")
 	case syscall.SIGHUP:
 		log.Info("SIGHUP received. Terminating...")
+	case syscall.SIGPIPE:
+		log.Critical("SIGPIPE received. Terminating...")
+		os.Exit(1)
 	}
 	os.Exit(0)
 }
@@ -139,9 +142,6 @@ func shutdownTask() {
 func heartbeatTask() {
 	t := time.Tick(time.Second)
 	for range t {
-		if _, err := fmt.Fprint(os.Stdout, "\n"); err != nil {
-			log.Critical("STDOUT write error. Terminating...")
-			os.Exit(1)
-		}
+		_, _ = fmt.Fprint(os.Stdout, "\n")
 	}
 }
