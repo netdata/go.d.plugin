@@ -122,13 +122,13 @@ func (p *Plugin) stop() {
 
 func shutdownTask() {
 	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, syscall.SIGINT)
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGHUP)
 
-	for {
-		switch <-signalChan {
-		case syscall.SIGINT:
-			log.Info("SIGINT received. Terminating...")
-			os.Exit(0)
-		}
+	switch <-signalChan {
+	case syscall.SIGINT:
+		log.Info("SIGINT received. Terminating...")
+	case syscall.SIGHUP:
+		log.Info("SIGHUP received. Terminating...")
 	}
+	os.Exit(0)
 }
