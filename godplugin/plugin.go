@@ -1,6 +1,7 @@
 package godplugin
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"os/signal"
@@ -86,6 +87,8 @@ func (p *Plugin) RemoveFromQueue(fullName string) {
 // Serve Serve
 func (p *Plugin) Serve() {
 	go shutdownTask()
+	go heartbeatTask()
+
 	go p.jobStartLoop()
 
 	for _, job := range p.createJobs() {
@@ -131,4 +134,14 @@ func shutdownTask() {
 		log.Info("SIGHUP received. Terminating...")
 	}
 	os.Exit(0)
+}
+
+func heartbeatTask() {
+	t := time.Tick(time.Second)
+	for range t {
+		if _, err := fmt.Fprint(os.Stdout, "\n"); err != nil {
+			log.Critical("STDOUT write error. Terminating...")
+			os.Exit(1)
+		}
+	}
 }

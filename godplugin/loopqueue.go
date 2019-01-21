@@ -7,6 +7,12 @@ type loopQueue struct {
 	queue []Job
 }
 
+func (q *loopQueue) len() int {
+	q.mux.Lock()
+	defer q.mux.Unlock()
+	return len(q.queue)
+}
+
 func (q *loopQueue) add(job Job) {
 	q.mux.Lock()
 	defer q.mux.Unlock()
