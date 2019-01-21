@@ -93,8 +93,9 @@ func (p *Plugin) Serve() {
 		p.jobCh <- job
 	}
 
-	// NOTE: temporary workaround
+	// FIXME: temporary workaround
 	// `go.d.plugin` process doesn't die after `kill -9 <netdata pid>` if there is no active jobs
+	// this breaks autodetection jobs
 	if p.loopQueue.len() == 0 {
 		log.Info("no jobs to run. Exit...")
 		_, _ = fmt.Fprint(os.Stdout, "DISABLE")
