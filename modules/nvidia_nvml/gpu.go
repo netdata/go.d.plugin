@@ -2,6 +2,7 @@ package nvidia_nvml
 
 import (
 	"fmt"
+
 	"github.com/mindprince/gonvml"
 )
 
