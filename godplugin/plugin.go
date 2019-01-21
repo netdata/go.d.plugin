@@ -1,6 +1,7 @@
 package godplugin
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"os/signal"
@@ -90,6 +91,14 @@ func (p *Plugin) Serve() {
 
 	for _, job := range p.createJobs() {
 		p.jobCh <- job
+	}
+
+	// NOTE: temporary workaround
+	// `go.d.plugin` process doesn't die after `kill -9 <netdata pid>` if there is no active jobs
+	if len(p.loopQueue.queue) == 0 {
+		log.Info("no jobs to run. Exit...")
+		_, _ = fmt.Fprint(os.Stdout, "DISABLE")
+		os.Exit(0)
 	}
 
 	p.mainLoop()
