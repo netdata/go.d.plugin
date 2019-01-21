@@ -1,8 +1,11 @@
 package nvidia_nvml
 
 import (
-	"github.com/mindprince/gonvml"
+	"sync/atomic"
+
 	"github.com/netdata/go.d.plugin/modules"
+
+	"github.com/mindprince/gonvml"
 )
 
 func init() {
@@ -14,6 +17,13 @@ func init() {
 	modules.Register("nvidia_nvml", creator)
 }
 
+var once = func() func() bool {
+	var c int64
+	return func() bool {
+		return atomic.AddInt64(&c, 1) == 1
+	}
+}()
+
 // New creates NvidiaNVML with default values.
 func New() *NvidiaNVML {
 	return &NvidiaNVML{
@@ -24,7 +34,6 @@ func New() *NvidiaNVML {
 // NvidiaNVML NvidiaNVML module.
 type NvidiaNVML struct {
 	modules.Base
-
 	charts *Charts
 }
 
@@ -35,11 +44,20 @@ func (NvidiaNVML) Cleanup() {
 
 // Init makes initialization.
 func (n NvidiaNVML) Init() bool {
+	if !once() {
+		n.Error("only one job is supported")
+		return false
+	}
+
 	if err := gonvml.Initialize(); err != nil {
 		n.Errorf("error on nvml initialization : %v", err)
 		return false
 	}
+	return true
+}
 
+// Check makes check.
+func (n *NvidiaNVML) Check() bool {
 	gpus, err := getGPUs()
 
 	if err != nil {
@@ -51,12 +69,7 @@ func (n NvidiaNVML) Init() bool {
 		_ = n.charts.Add(*createGPUCharts(g)...)
 	}
 
-	return true
-}
-
-// Check makes check.
-func (NvidiaNVML) Check() bool {
-	return true
+	return len(charts) > 0
 }
 
 // Charts creates Charts.
