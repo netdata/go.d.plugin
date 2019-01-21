@@ -1,7 +1,11 @@
-package stm
+package stm_test
 
 import (
 	"testing"
+
+	"github.com/netdata/go.d.plugin/pkg/stm"
+
+	"github.com/netdata/go.d.plugin/pkg/metrics"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -11,8 +15,48 @@ func TestToMap_empty(t *testing.T) {
 
 	expected := map[string]int64{}
 
-	assert.EqualValuesf(t, expected, ToMap(s), "value test")
-	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
+	assert.EqualValuesf(t, expected, stm.ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, stm.ToMap(&s), "ptr test")
+}
+
+func TestToMap_metrics(t *testing.T) {
+	s := struct {
+		C metrics.Counter   `stm:"c"`
+		G metrics.Gauge     `stm:"g,100"`
+		H metrics.Histogram `stm:"h,100"`
+		S metrics.Summary   `stm:"s,200,2"`
+	}{}
+	s.C.Inc()
+	s.G.Set(3.14)
+	s.H = metrics.NewHistogram([]float64{1, 5, 10})
+
+	s.H.Observe(3.14)
+	s.H.Observe(6.28)
+	s.H.Observe(20)
+
+	s.S = metrics.NewSummary()
+	s.S.Observe(3.14)
+	s.S.Observe(6.28)
+
+	expected := map[string]int64{
+		"c": 1,
+		"g": 314,
+
+		"h_count":    3,
+		"h_sum":      2942,
+		"h_bucket_1": 0,
+		"h_bucket_2": 1,
+		"h_bucket_3": 2,
+
+		"s_count": 2,
+		"s_sum":   942,
+		"s_min":   314,
+		"s_max":   628,
+		"s_avg":   471,
+	}
+
+	assert.Equal(t, expected, stm.ToMap(s), "value test")
+	assert.Equal(t, expected, stm.ToMap(&s), "ptr test")
 }
 
 func TestToMap_int(t *testing.T) {
@@ -30,8 +74,24 @@ func TestToMap_int(t *testing.T) {
 		"int": 1, "int8": 2, "int16": 3, "int32": 4, "int64": 5,
 	}
 
-	assert.EqualValuesf(t, expected, ToMap(s), "value test")
-	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
+	assert.EqualValuesf(t, expected, stm.ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, stm.ToMap(&s), "ptr test")
+}
+
+func TestToMap_float(t *testing.T) {
+	s := struct {
+		F32 float32 `stm:"f32,100"`
+		F64 float64 `stm:"f64"`
+	}{
+		3.14, 628,
+	}
+
+	expected := map[string]int64{
+		"f32": 314, "f64": 628,
+	}
+
+	assert.EqualValuesf(t, expected, stm.ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, stm.ToMap(&s), "ptr test")
 }
 
 func TestToMap_struct(t *testing.T) {
@@ -57,8 +117,8 @@ func TestToMap_struct(t *testing.T) {
 		"s_left": 4, "s_right": 5,
 	}
 
-	assert.EqualValuesf(t, expected, ToMap(s), "value test")
-	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
+	assert.EqualValuesf(t, expected, stm.ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, stm.ToMap(&s), "ptr test")
 }
 
 func TestToMap_tree(t *testing.T) {
@@ -81,8 +141,8 @@ func TestToMap_tree(t *testing.T) {
 		"right_left_v": 4,
 	}
 
-	assert.EqualValuesf(t, expected, ToMap(s), "value test")
-	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
+	assert.EqualValuesf(t, expected, stm.ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, stm.ToMap(&s), "ptr test")
 }
 
 func TestToMap_map(t *testing.T) {
@@ -103,8 +163,8 @@ func TestToMap_map(t *testing.T) {
 		"b":   3,
 	}
 
-	assert.EqualValuesf(t, expected, ToMap(s), "value test")
-	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
+	assert.EqualValuesf(t, expected, stm.ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, stm.ToMap(&s), "ptr test")
 }
 
 func TestToMap_nestMap(t *testing.T) {
@@ -129,8 +189,8 @@ func TestToMap_nestMap(t *testing.T) {
 		"m_c": 4,
 	}
 
-	assert.EqualValuesf(t, expected, ToMap(s), "value test")
-	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
+	assert.EqualValuesf(t, expected, stm.ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, stm.ToMap(&s), "ptr test")
 }
 
 func TestToMap_ptr(t *testing.T) {
@@ -150,8 +210,8 @@ func TestToMap_ptr(t *testing.T) {
 		"ptr": 2,
 	}
 
-	assert.EqualValuesf(t, expected, ToMap(s), "value test")
-	assert.EqualValuesf(t, expected, ToMap(&s), "ptr test")
+	assert.EqualValuesf(t, expected, stm.ToMap(s), "value test")
+	assert.EqualValuesf(t, expected, stm.ToMap(&s), "ptr test")
 }
 
 func TestToMap_invalidType(t *testing.T) {
@@ -162,30 +222,50 @@ func TestToMap_invalidType(t *testing.T) {
 	}
 
 	assert.Panics(t, func() {
-		ToMap(s)
+		stm.ToMap(s)
 	}, "value test")
 	assert.Panics(t, func() {
-		ToMap(&s)
+		stm.ToMap(&s)
 	}, "ptr test")
 }
 
 func TestToMap_duplicateKey(t *testing.T) {
-	s := struct {
-		Key int            `stm:"key"`
-		M   map[string]int `stm:""`
-	}{
-		Key: 1,
-		M: map[string]int{
-			"key": 2,
-		},
-	}
+	{
+		s := struct {
+			Key int            `stm:"key"`
+			M   map[string]int `stm:""`
+		}{
+			Key: 1,
+			M: map[string]int{
+				"key": 2,
+			},
+		}
 
-	assert.Panics(t, func() {
-		ToMap(s)
-	}, "value test")
-	assert.Panics(t, func() {
-		ToMap(&s)
-	}, "ptr test")
+		assert.Panics(t, func() {
+			stm.ToMap(s)
+		}, "value test")
+		assert.Panics(t, func() {
+			stm.ToMap(&s)
+		}, "ptr test")
+	}
+	{
+		s := struct {
+			Key float64            `stm:"key"`
+			M   map[string]float64 `stm:""`
+		}{
+			Key: 1,
+			M: map[string]float64{
+				"key": 2,
+			},
+		}
+
+		assert.Panics(t, func() {
+			stm.ToMap(s)
+		}, "value test")
+		assert.Panics(t, func() {
+			stm.ToMap(&s)
+		}, "ptr test")
+	}
 }
 
 func TestToMap_Variadic(t *testing.T) {
@@ -212,6 +292,34 @@ func TestToMap_Variadic(t *testing.T) {
 			"key2": 2,
 			"key3": 3,
 		},
-		ToMap(s1, s2, s3),
+		stm.ToMap(s1, s2, s3),
 	)
+}
+
+func TestToMap_badTag(t *testing.T) {
+
+	assert.Panics(t, func() {
+		s := struct {
+			a int `stm:"a,not_int"`
+		}{1}
+		stm.ToMap(s)
+	})
+	assert.Panics(t, func() {
+		s := struct {
+			a int `stm:"a,1,not_int"`
+		}{1}
+		stm.ToMap(s)
+	})
+	assert.Panics(t, func() {
+		s := struct {
+			a int `stm:"a,not_int,1"`
+		}{1}
+		stm.ToMap(s)
+	})
+	assert.Panics(t, func() {
+		s := struct {
+			a int `stm:"a,1,2,3"`
+		}{1}
+		stm.ToMap(s)
+	})
 }
