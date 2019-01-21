@@ -25,9 +25,6 @@ type (
 	}
 )
 
-// assume Counter implements stm.Value
-var _ Summary = &summary{}
-
 // NewSummary creates a new Summary.
 func NewSummary() Summary {
 	return &summary{
@@ -43,7 +40,7 @@ func NewSummary() Summary {
 //   ${key}_min        gauge, for min of it's observed values from last Reset calls (only exists if count > 0)
 //   ${key}_max        gauge, for max of it's observed values from last Reset calls (only exists if count > 0)
 //   ${key}_avg        gauge, for avg of it's observed values from last Reset calls (only exists if count > 0)
-func (s *summary) WriteTo(rv map[string]int64, key string, mul, div int64) {
+func (s *summary) WriteTo(rv map[string]int64, key string, mul, div int) {
 	if s.count > 0 {
 		rv[key+"_min"] = int64(s.min * float64(mul) / float64(div))
 		rv[key+"_max"] = int64(s.max * float64(mul) / float64(div))

@@ -29,9 +29,6 @@ type (
 	}
 )
 
-// assume Counter implements stm.Value
-var _ Histogram = &histogram{}
-
 // DefBuckets are the default histogram buckets. The default buckets are
 // tailored to broadly measure the response time (in seconds) of a network
 // service. Most likely, however, you will be required to define buckets
@@ -106,7 +103,7 @@ func NewHistogram(buckets []float64) Histogram {
 //   ${key}_bucket_2   counter, for 2nd bucket count
 //   ...
 //   ${key}_bucket_N   counter, for Nth bucket count
-func (h *histogram) WriteTo(rv map[string]int64, key string, mul, div int64) {
+func (h *histogram) WriteTo(rv map[string]int64, key string, mul, div int) {
 	rv[key+"_sum"] = int64(h.sum * float64(mul) / float64(div))
 	rv[key+"_count"] = h.count
 	var conn int64

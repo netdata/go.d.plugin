@@ -22,7 +22,7 @@ var (
 )
 
 // WriteTo writes it's value into given map.
-func (g Gauge) WriteTo(rv map[string]int64, key string, mul, div int64) {
+func (g Gauge) WriteTo(rv map[string]int64, key string, mul, div int) {
 	rv[key] = int64(float64(g) * float64(mul) / float64(div))
 }
 

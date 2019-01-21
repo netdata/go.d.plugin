@@ -26,7 +26,7 @@ var (
 )
 
 // WriteTo writes it's value into given map.
-func (c Counter) WriteTo(rv map[string]int64, key string, mul, div int64) {
+func (c Counter) WriteTo(rv map[string]int64, key string, mul, div int) {
 	rv[key] = int64(c.Value() * float64(mul) / float64(div))
 }
 
