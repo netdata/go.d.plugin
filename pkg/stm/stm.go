@@ -8,6 +8,12 @@ import (
 
 const fieldTagName = "stm"
 
+type (
+	Value interface {
+		WriteTo(rv map[string]int64, key string, mul, div int64)
+	}
+)
+
 // ToMap converts struct to a map[string]int64 based on 'stm' tags
 func ToMap(s ...interface{}) map[string]int64 {
 	rv := map[string]int64{}
