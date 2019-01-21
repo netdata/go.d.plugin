@@ -28,7 +28,6 @@ var charts = Charts{
 		Units: "queries/s",
 		Fam:   "queries",
 		Ctx:   "mysql.queries",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "queries", Name: "queries", Algo: modules.Incremental},
 			{ID: "questions", Name: "questions", Algo: modules.Incremental},
@@ -57,7 +56,6 @@ var charts = Charts{
 		Units: "handlers/s",
 		Fam:   "handlers",
 		Ctx:   "mysql.handlers",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "handler_commit", Name: "commit", Algo: modules.Incremental},
 			{ID: "handler_delete", Name: "delete", Algo: modules.Incremental},
@@ -81,10 +79,9 @@ var charts = Charts{
 		Units: "locks/s",
 		Fam:   "locks",
 		Ctx:   "mysql.table_locks",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "table_locks_immediate", Name: "immediate", Algo: modules.Incremental},
-			{ID: "handler_table_locks_waiteddelete", Name: "waited", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "table_locks_waited", Name: "waited", Algo: modules.Incremental, Mul: -1},
 		},
 	},
 	{
@@ -93,7 +90,6 @@ var charts = Charts{
 		Units: "joins/s",
 		Fam:   "issues",
 		Ctx:   "mysql.join_issues",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "select_full_join", Name: "full_join", Algo: modules.Incremental},
 			{ID: "select_full_range_join", Name: "full_range_join", Algo: modules.Incremental},
@@ -108,7 +104,6 @@ var charts = Charts{
 		Units: "issues/s",
 		Fam:   "issues",
 		Ctx:   "mysql.sort_issues",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "sort_merge_passes", Name: "merge_passes", Algo: modules.Incremental},
 			{ID: "sort_range", Name: "range", Algo: modules.Incremental},
@@ -121,7 +116,6 @@ var charts = Charts{
 		Units: "counter",
 		Fam:   "temporaries",
 		Ctx:   "mysql.tmp",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "created_tmp_disk_tables", Name: "disk_tables", Algo: modules.Incremental},
 			{ID: "created_tmp_files", Name: "files", Algo: modules.Incremental},
@@ -138,7 +132,6 @@ var charts = Charts{
 		Dims: Dims{
 			{ID: "connections", Name: "all", Algo: modules.Incremental},
 			{ID: "aborted_connects", Name: "aborted", Algo: modules.Incremental},
-			{ID: "created_tmp_tables", Name: "tables", Algo: modules.Incremental},
 		},
 	},
 	{
@@ -147,11 +140,10 @@ var charts = Charts{
 		Units: "connections",
 		Fam:   "connections",
 		Ctx:   "mysql.connections_active",
-		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "threads_connected", Name: "active", Algo: modules.Absolute},
-			{ID: "max_connections", Name: "limit", Algo: modules.Absolute},
-			{ID: "max_used_connections", Name: "max_active", Algo: modules.Absolute},
+			{ID: "threads_connected", Name: "active"},
+			{ID: "max_connections", Name: "limit"},
+			{ID: "max_used_connections", Name: "max_active"},
 		},
 	},
 	{
@@ -160,7 +152,6 @@ var charts = Charts{
 		Units: "transactions/s",
 		Fam:   "binlog",
 		Ctx:   "mysql.binlog_cache",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "binlog_cache_disk_use", Name: "disk", Algo: modules.Incremental},
 			{ID: "binlog_cache_use", Name: "all", Algo: modules.Incremental},
@@ -172,12 +163,12 @@ var charts = Charts{
 		Units: "threads",
 		Fam:   "threads",
 		Ctx:   "mysql.threads",
-		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "threads_connected", Name: "connected", Algo: modules.Absolute},
+			{ID: "threads_connected", Name: "connected"},
+			// FIXME: dimensions with different algorithms
 			{ID: "threads_created", Name: "created", Algo: modules.Incremental},
-			{ID: "threads_cached", Name: "cached", Algo: modules.Absolute, Mul: -1, Div: 1},
-			{ID: "threads_running", Name: "running", Algo: modules.Absolute},
+			{ID: "threads_cached", Name: "cached", Mul: -1},
+			{ID: "threads_running", Name: "running"},
 		},
 	},
 	{
@@ -188,7 +179,7 @@ var charts = Charts{
 		Ctx:   "mysql.thread_cache_misses",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "thread_cache_misses", Name: "misses", Algo: modules.Absolute, Mul: 1, Div: 100},
+			{ID: "thread_cache_misses", Name: "misses", Div: 100},
 		},
 	},
 	{
@@ -199,8 +190,8 @@ var charts = Charts{
 		Ctx:   "mysql.innodb_io",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "innodb_data_read", Name: "read", Algo: modules.Incremental, Mul: 1, Div: 1024},
-			{ID: "innodb_data_written", Name: "write", Algo: modules.Incremental, Mul: 1, Div: 1024},
+			{ID: "innodb_data_read", Name: "read", Algo: modules.Incremental, Div: 1024},
+			{ID: "innodb_data_written", Name: "write", Algo: modules.Incremental, Div: 1024},
 		},
 	},
 	{
@@ -209,10 +200,9 @@ var charts = Charts{
 		Units: "operations/s",
 		Fam:   "innodb",
 		Ctx:   "mysql.innodb_io_ops",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "innodb_data_reads", Name: "reads", Algo: modules.Incremental},
-			{ID: "innodb_data_writes", Name: "writes", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "innodb_data_writes", Name: "writes", Algo: modules.Incremental, Mul: -1},
 			{ID: "innodb_data_fsyncs", Name: "fsyncs", Algo: modules.Incremental},
 		},
 	},
@@ -222,11 +212,10 @@ var charts = Charts{
 		Units: "operations",
 		Fam:   "innodb",
 		Ctx:   "mysql.innodb_io_pending_ops",
-		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "innodb_data_pending_reads", Name: "reads", Algo: modules.Absolute},
-			{ID: "innodb_data_pending_writes", Name: "writes", Algo: modules.Absolute, Mul: -1, Div: 1},
-			{ID: "innodb_data_pending_fsyncs", Name: "fsyncs", Algo: modules.Absolute},
+			{ID: "innodb_data_pending_reads", Name: "reads"},
+			{ID: "innodb_data_pending_writes", Name: "writes", Mul: -1},
+			{ID: "innodb_data_pending_fsyncs", Name: "fsyncs"},
 		},
 	},
 	{
@@ -235,11 +224,10 @@ var charts = Charts{
 		Units: "operations/s",
 		Fam:   "innodb",
 		Ctx:   "mysql.innodb_log",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "innodb_log_waits", Name: "waits", Algo: modules.Incremental},
-			{ID: "innodb_log_write_requests", Name: "write_requests", Algo: modules.Incremental, Mul: -1, Div: 1},
-			{ID: "innodb_log_writes", Name: "writes", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "innodb_log_write_requests", Name: "write_requests", Algo: modules.Incremental, Mul: -1},
+			{ID: "innodb_log_writes", Name: "writes", Algo: modules.Incremental, Mul: -1},
 		},
 	},
 	{
@@ -248,11 +236,11 @@ var charts = Charts{
 		Units: "operations",
 		Fam:   "innodb",
 		Ctx:   "mysql.innodb_os_log",
-		Type:  modules.Line,
 		Dims: Dims{
+			// FIXME: dimensions with different algorithm
 			{ID: "innodb_os_log_fsyncs", Name: "fsyncs", Algo: modules.Incremental},
-			{ID: "innodb_os_log_pending_fsyncs", Name: "pending_fsyncs", Algo: modules.Absolute},
-			{ID: "innodb_os_log_pending_writes", Name: "pending_writes", Algo: modules.Absolute, Mul: -1, Div: 1},
+			{ID: "innodb_os_log_pending_fsyncs", Name: "pending_fsyncs"},
+			{ID: "innodb_os_log_pending_writes", Name: "pending_writes", Mul: -1},
 		},
 	},
 	{
@@ -274,7 +262,7 @@ var charts = Charts{
 		Ctx:   "mysql.innodb_cur_row_lock",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "innodb_row_lock_current_waits", Name: "current_waits", Algo: modules.Absolute},
+			{ID: "innodb_row_lock_current_waits", Name: "current_waits"},
 		},
 	},
 	{
@@ -286,9 +274,9 @@ var charts = Charts{
 		Type:  modules.Area,
 		Dims: Dims{
 			{ID: "innodb_rows_inserted", Name: "inserted", Algo: modules.Incremental},
-			{ID: "innodb_rows_read", Name: "read", Algo: modules.Incremental, Mul: 1, Div: 1},
-			{ID: "innodb_rows_updated", Name: "updated", Algo: modules.Incremental, Mul: 1, Div: 1},
-			{ID: "innodb_rows_deleted", Name: "deleted", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "innodb_rows_read", Name: "read", Algo: modules.Incremental},
+			{ID: "innodb_rows_updated", Name: "updated", Algo: modules.Incremental},
+			{ID: "innodb_rows_deleted", Name: "deleted", Algo: modules.Incremental, Mul: -1},
 		},
 	},
 	{
@@ -297,14 +285,14 @@ var charts = Charts{
 		Units: "pages",
 		Fam:   "innodb",
 		Ctx:   "mysql.innodb_buffer_pool_pages",
-		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "innodb_buffer_pool_pages_data", Name: "data", Algo: modules.Absolute},
-			{ID: "innodb_buffer_pool_pages_dirty", Name: "dirty", Algo: modules.Absolute, Mul: -1, Div: 1},
-			{ID: "innodb_buffer_pool_pages_free", Name: "free", Algo: modules.Absolute},
-			{ID: "innodb_buffer_pool_pages_flushed", Name: "flushed", Algo: modules.Incremental, Mul: -1, Div: 1},
-			{ID: "innodb_buffer_pool_pages_misc", Name: "misc", Algo: modules.Absolute, Mul: -1, Div: 1},
-			{ID: "innodb_buffer_pool_pages_total", Name: "total", Algo: modules.Absolute},
+			{ID: "innodb_buffer_pool_pages_data", Name: "data"},
+			{ID: "innodb_buffer_pool_pages_dirty", Name: "dirty", Mul: -1},
+			{ID: "innodb_buffer_pool_pages_free", Name: "free"},
+			// FIXME: dimension with different algorithm
+			{ID: "innodb_buffer_pool_pages_flushed", Name: "flushed", Algo: modules.Incremental, Mul: -1},
+			{ID: "innodb_buffer_pool_pages_misc", Name: "misc", Mul: -1},
+			{ID: "innodb_buffer_pool_pages_total", Name: "total"},
 		},
 	},
 	{
@@ -315,8 +303,8 @@ var charts = Charts{
 		Ctx:   "mysql.innodb_buffer_pool_bytes",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "innodb_buffer_pool_bytes_data", Name: "data", Algo: modules.Absolute, Mul: 1, Div: 1024 * 1024},
-			{ID: "innodb_buffer_pool_bytes_dirty", Name: "dirty", Algo: modules.Absolute, Mul: -1, Div: 1024 * 1024},
+			{ID: "innodb_buffer_pool_bytes_data", Name: "data", Div: 1024 * 1024},
+			{ID: "innodb_buffer_pool_bytes_dirty", Name: "dirty", Mul: -1, Div: 1024 * 1024},
 		},
 	},
 	{
@@ -328,7 +316,7 @@ var charts = Charts{
 		Type:  modules.Area,
 		Dims: Dims{
 			{ID: "innodb_buffer_pool_read_ahead", Name: "all", Algo: modules.Incremental},
-			{ID: "innodb_buffer_pool_read_ahead_evicted", Name: "evicted", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "innodb_buffer_pool_read_ahead_evicted", Name: "evicted", Algo: modules.Incremental, Mul: -1},
 			{ID: "innodb_buffer_pool_read_ahead_rnd", Name: "random", Algo: modules.Incremental},
 		},
 	},
@@ -353,9 +341,9 @@ var charts = Charts{
 		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "qcache_hits", Name: "hits", Algo: modules.Incremental},
-			{ID: "qcache_lowmem_prunes", Name: "lowmem prunes", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "qcache_lowmem_prunes", Name: "lowmem prunes", Algo: modules.Incremental, Mul: -1},
 			{ID: "qcache_inserts", Name: "inserts", Algo: modules.Incremental},
-			{ID: "qcache_not_cached", Name: "not cached", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "qcache_not_cached", Name: "not cached", Algo: modules.Incremental, Mul: -1},
 		},
 	},
 	{
@@ -364,7 +352,6 @@ var charts = Charts{
 		Units: "queries",
 		Fam:   "qcache",
 		Ctx:   "mysql.qcache",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "qcache_queries_in_cache", Name: "queries", Algo: modules.Absolute},
 		},
@@ -377,7 +364,7 @@ var charts = Charts{
 		Ctx:   "mysql.qcache_freemem",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "qcache_free_memory", Name: "free", Algo: modules.Absolute, Mul: 1, Div: 1024 * 1024},
+			{ID: "qcache_free_memory", Name: "free", Div: 1024 * 1024},
 		},
 	},
 	{
@@ -386,10 +373,9 @@ var charts = Charts{
 		Units: "blocks",
 		Fam:   "qcache",
 		Ctx:   "mysql.qcache_memblocks",
-		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "qcache_free_blocks", Name: "free", Algo: modules.Absolute},
-			{ID: "qcache_total_blocks", Name: "total", Algo: modules.Absolute},
+			{ID: "qcache_free_blocks", Name: "free"},
+			{ID: "qcache_total_blocks", Name: "total"},
 		},
 	},
 	{
@@ -398,11 +384,10 @@ var charts = Charts{
 		Units: "blocks",
 		Fam:   "myisam",
 		Ctx:   "mysql.key_blocks",
-		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "key_blocks_unused", Name: "unused", Algo: modules.Absolute},
-			{ID: "key_blocks_used", Name: "used", Algo: modules.Absolute, Mul: -1, Div: 1},
-			{ID: "key_blocks_not_flushed", Name: "not flushed", Algo: modules.Absolute},
+			{ID: "key_blocks_unused", Name: "unused"},
+			{ID: "key_blocks_used", Name: "used", Mul: -1},
+			{ID: "key_blocks_not_flushed", Name: "not flushed"},
 		},
 	},
 	{
@@ -414,7 +399,7 @@ var charts = Charts{
 		Type:  modules.Area,
 		Dims: Dims{
 			{ID: "key_read_requests", Name: "reads", Algo: modules.Incremental},
-			{ID: "key_write_requests", Name: "writes", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "key_write_requests", Name: "writes", Algo: modules.Incremental, Mul: -1},
 		},
 	},
 	{
@@ -426,7 +411,7 @@ var charts = Charts{
 		Type:  modules.Area,
 		Dims: Dims{
 			{ID: "key_reads", Name: "reads", Algo: modules.Incremental},
-			{ID: "key_writes", Name: "writes", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "key_writes", Name: "writes", Algo: modules.Incremental, Mul: -1},
 		},
 	},
 	{
@@ -435,9 +420,8 @@ var charts = Charts{
 		Units: "files",
 		Fam:   "files",
 		Ctx:   "mysql.files",
-		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "open_files", Name: "files", Algo: modules.Absolute},
+			{ID: "open_files", Name: "files"},
 		},
 	},
 	{
@@ -446,7 +430,6 @@ var charts = Charts{
 		Units: "files/s",
 		Fam:   "files",
 		Ctx:   "mysql.files_rate",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "opened_files", Name: "files", Algo: modules.Incremental},
 		},
@@ -457,7 +440,6 @@ var charts = Charts{
 		Units: "statements/s",
 		Fam:   "binlog",
 		Ctx:   "mysql.binlog_stmt_cache",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "binlog_stmt_cache_disk_use", Name: "disk", Algo: modules.Incremental},
 			{ID: "binlog_stmt_cache_use", Name: "all", Algo: modules.Incremental},
@@ -469,7 +451,6 @@ var charts = Charts{
 		Units: "connections/s",
 		Fam:   "connections",
 		Ctx:   "mysql.connection_errors",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "connection_errors_accept", Name: "accept", Algo: modules.Incremental},
 			{ID: "connection_errors_internal", Name: "internal", Algo: modules.Incremental},
@@ -487,7 +468,7 @@ var charts = Charts{
 		Ctx:   "mysql.slave_behind",
 		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "seconds_behind_master", Name: "seconds", Algo: modules.Absolute},
+			{ID: "seconds_behind_master", Name: "seconds"},
 		},
 	},
 	{
@@ -496,10 +477,9 @@ var charts = Charts{
 		Units: "status",
 		Fam:   "slave",
 		Ctx:   "mysql.slave_status",
-		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "slave_sql_Running", Name: "sql_running", Algo: modules.Absolute},
-			{ID: "slave_io_Running", Name: "io_running", Algo: modules.Absolute},
+			{ID: "slave_sql_Running", Name: "sql_running"},
+			{ID: "slave_io_Running", Name: "io_running"},
 		},
 	},
 	{
@@ -508,10 +488,9 @@ var charts = Charts{
 		Units: "writesets/s",
 		Fam:   "galera",
 		Ctx:   "mysql.galera_writesets",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "wsrep_received", Name: "rx", Algo: modules.Incremental},
-			{ID: "wsrep_replicated", Name: "tx", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "wsrep_replicated", Name: "tx", Algo: modules.Incremental, Mul: -1},
 		},
 	},
 	{
@@ -522,7 +501,7 @@ var charts = Charts{
 		Ctx:   "mysql.galera_bytes",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "wsrep_received_bytes", Name: "rx", Algo: modules.Incremental, Mul: 1, Div: 1024},
+			{ID: "wsrep_received_bytes", Name: "rx", Algo: modules.Incremental, Div: 1024},
 			{ID: "wsrep_replicated_bytes", Name: "tx", Algo: modules.Incremental, Mul: -1, Div: 1024},
 		},
 	},
@@ -532,10 +511,9 @@ var charts = Charts{
 		Units: "writesets",
 		Fam:   "galera",
 		Ctx:   "mysql.galera_queue",
-		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "wsrep_local_recv_queue", Name: "rx", Algo: modules.Absolute},
-			{ID: "wsrep_local_send_queue", Name: "tx", Algo: modules.Absolute, Mul: -1, Div: 1},
+			{ID: "wsrep_local_recv_queue", Name: "rx"},
+			{ID: "wsrep_local_send_queue", Name: "tx", Mul: -1},
 		},
 	},
 	{
@@ -547,7 +525,7 @@ var charts = Charts{
 		Type:  modules.Area,
 		Dims: Dims{
 			{ID: "wsrep_local_bf_aborts", Name: "bf_aborts", Algo: modules.Incremental},
-			{ID: "wsrep_local_cert_failures", Name: "cert_fails", Algo: modules.Incremental, Mul: -1, Div: 1},
+			{ID: "wsrep_local_cert_failures", Name: "cert_fails", Algo: modules.Incremental, Mul: -1},
 		},
 	},
 	{
@@ -558,7 +536,7 @@ var charts = Charts{
 		Ctx:   "mysql.galera_flow_control",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "wsrep_flow_control_paused_ns", Name: "paused", Algo: modules.Incremental, Mul: 1, Div: 1000000},
+			{ID: "wsrep_flow_control_paused_ns", Name: "paused", Algo: modules.Incremental, Div: 1000000},
 		},
 	},
 }
