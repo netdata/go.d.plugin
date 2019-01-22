@@ -31,6 +31,7 @@ var charts = Charts{
 		Title: "Memory Usage",
 		Units: "KiB",
 		Ctx:   "nvidia_nvml.memory_usage",
+		Type:  modules.Stacked,
 		Dims: Dims{
 			{ID: "%s_memory_free", Name: "free", Div: 1024},
 			{ID: "%s_memory_used", Name: "used", Div: 1024},
