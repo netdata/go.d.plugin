@@ -61,8 +61,8 @@ var charts = Charts{
 	},
 	{
 		ID:    "gc_count",
-		Title: "Garbage Collections",
-		Units: "counts",
+		Title: "Garbage Collection Count",
+		Units: "counts/s",
 		Fam:   "garbage collection",
 		Dims: Dims{
 			{ID: "jvm_gc_collectors_young_collection_count", Name: "young", Algo: modules.Incremental},
@@ -71,7 +71,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "gc_time",
-		Title: "Time Spent On Garbage Collections",
+		Title: "Time Spent On Garbage Collection",
 		Units: "ms",
 		Fam:   "garbage collection",
 		Dims: Dims{
