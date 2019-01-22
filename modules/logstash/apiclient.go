@@ -52,13 +52,13 @@ type apiClient struct {
 	httpClient *http.Client
 }
 
-func (a apiClient) jvmStats() (jvmStats, error) {
+func (a apiClient) jvmStats() (*jvmStats, error) {
 	var stats jvmStats
 
 	req, err := a.createRequest("/_node/stats/jvm")
 
 	if err != nil {
-		return stats, err
+		return nil, err
 	}
 
 	resp, err := a.doRequestOK(req)
@@ -66,14 +66,14 @@ func (a apiClient) jvmStats() (jvmStats, error) {
 	defer closeBody(resp)
 
 	if err != nil {
-		return stats, err
+		return nil, err
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&stats); err != nil {
-		return stats, err
+		return nil, err
 	}
 
-	return stats, nil
+	return &stats, nil
 }
 
 func (a apiClient) doRequest(req *http.Request) (*http.Response, error) {

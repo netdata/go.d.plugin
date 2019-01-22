@@ -1,6 +1,7 @@
 package logstash
 
 import (
+	"github.com/netdata/go.d.plugin/pkg/stm"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
@@ -49,6 +50,11 @@ func (l *Logstash) Init() bool {
 		return false
 	}
 
+	l.apiClient = &apiClient{
+		req:        l.Request,
+		httpClient: web.NewHTTPClient(l.Client),
+	}
+
 	l.Debugf("using URL %s", l.URL)
 	l.Debugf("using timeout: %s", l.Timeout.Duration)
 
@@ -61,11 +67,18 @@ func (l *Logstash) Check() bool {
 }
 
 // Charts creates Charts.
-func (l Logstash) Charts() *Charts {
-	return nil
+func (Logstash) Charts() *Charts {
+	return charts.Copy()
 }
 
 // Collect collects metrics.
-func (Logstash) Collect() map[string]int64 {
-	return nil
+func (l *Logstash) Collect() map[string]int64 {
+	jvmStats, err := l.apiClient.jvmStats()
+
+	if err != nil {
+		l.Error(err)
+		return nil
+	}
+
+	return stm.ToMap(jvmStats)
 }
