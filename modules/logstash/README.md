@@ -24,16 +24,16 @@ It produces following charts:
  * used
  * committed
 
-6. **JVM Pool Young Memory** in KiB
+6. **JVM Pool Eden Memory** in KiB
  * used
  * committed
 
 7. **Garbage Collection Count** in counts/s
- * young
+ * eden
  * old
 
 8. **Time Spent On Garbage Collection** in ms
- * young
+ * eden
  * old
 
 9. **Uptime** in time
