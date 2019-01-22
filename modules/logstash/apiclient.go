@@ -20,9 +20,9 @@ type jvm struct {
 }
 
 type jvmMem struct {
-	HeapUsedPercent      int `json:"heap_used_percent",stm:"heap_used_percent"`
-	HeapCommittedInBytes int `json:"heap_committed_in_bytes",stm:"heap_committed_in_bytes"`
-	HeapUsedInBytes      int `json:"heap_used_in_bytes",stm:"heap_used_in_bytes"`
+	HeapUsedPercent      int `json:"heap_used_percent" stm:"heap_used_percent"`
+	HeapCommittedInBytes int `json:"heap_committed_in_bytes" stm:"heap_committed_in_bytes"`
+	HeapUsedInBytes      int `json:"heap_used_in_bytes" stm:"heap_used_in_bytes"`
 	Pools                struct {
 		Survivor jvmPool `stm:"survivor"`
 		Old      jvmPool `stm:"old"`
@@ -31,8 +31,8 @@ type jvmMem struct {
 }
 
 type jvmPool struct {
-	UsedInBytes      int `json:"used_in_bytes",stm:"used_in_bytes"`
-	CommittedInBytes int `json:"used_in_bytes",stm:"used_in_bytes"`
+	UsedInBytes      int `json:"used_in_bytes" stm:"used_in_bytes"`
+	CommittedInBytes int `json:"used_in_bytes" stm:"used_in_bytes"`
 }
 
 type jvmGC struct {
@@ -43,8 +43,8 @@ type jvmGC struct {
 }
 
 type gcCollector struct {
-	CollectionTimeInMillis int `json:"collection_time_in_millis",stm:"collection_time_in_millis"`
-	CollectionCount        int `json:"collection_count",stm:"collection_count"`
+	CollectionTimeInMillis int `json:"collection_time_in_millis" stm:"collection_time_in_millis"`
+	CollectionCount        int `json:"collection_count" stm:"collection_count"`
 }
 
 type apiClient struct {
