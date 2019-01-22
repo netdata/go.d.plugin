@@ -13,7 +13,7 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "response",
+		ID:    "response_codes",
 		Title: "Response Codes", Units: "requests/s", Fam: "response_code", Type: modules.Stacked,
 		Dims: Dims{
 			{ID: "resp_1xx", Name: "1xx", Algo: modules.Incremental},
