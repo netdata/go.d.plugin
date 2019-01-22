@@ -34,7 +34,7 @@ type jvmMem struct {
 	Pools                struct {
 		Survivor jvmPool `stm:"survivor"`
 		Old      jvmPool `stm:"old"`
-		Young    jvmPool `stm:"young"`
+		Young    jvmPool `stm:"eden"`
 	} `stm:"pools"`
 }
 
@@ -46,7 +46,7 @@ type jvmPool struct {
 type jvmGC struct {
 	Collectors struct {
 		Old   gcCollector `stm:"old"`
-		Young gcCollector `stm:"young"`
+		Young gcCollector `stm:"eden"`
 	} `stm:"collectors"`
 }
 

@@ -63,13 +63,13 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "jvm_mem_pools_young",
-		Title: "JVM Pool Young Memory",
+		ID:    "jvm_mem_pools_eden",
+		Title: "JVM Pool Eden Memory",
 		Units: "KiB",
 		Fam:   "memory",
 		Dims: Dims{
-			{ID: "jvm_mem_pools_young_used_in_bytes", Name: "used", Div: 1024},
-			{ID: "jvm_mem_pools_young_committed_in_bytes", Name: "committed", Div: 1024},
+			{ID: "jvm_mem_pools_eden_used_in_bytes", Name: "used", Div: 1024},
+			{ID: "jvm_mem_pools_eden_committed_in_bytes", Name: "committed", Div: 1024},
 		},
 	},
 	{
@@ -78,7 +78,7 @@ var charts = Charts{
 		Units: "counts/s",
 		Fam:   "garbage collection",
 		Dims: Dims{
-			{ID: "jvm_gc_collectors_young_collection_count", Name: "young", Algo: modules.Incremental},
+			{ID: "jvm_gc_collectors_eden_collection_count", Name: "eden", Algo: modules.Incremental},
 			{ID: "jvm_gc_collectors_old_collection_count", Name: "old", Algo: modules.Incremental},
 		},
 	},
@@ -88,7 +88,7 @@ var charts = Charts{
 		Units: "ms",
 		Fam:   "garbage collection",
 		Dims: Dims{
-			{ID: "jvm_gc_collectors_young_collection_time_in_millis", Name: "young", Algo: modules.Incremental},
+			{ID: "jvm_gc_collectors_eden_collection_time_in_millis", Name: "eden", Algo: modules.Incremental},
 			{ID: "jvm_gc_collectors_old_collection_time_in_millis", Name: "old", Algo: modules.Incremental},
 		},
 	},
