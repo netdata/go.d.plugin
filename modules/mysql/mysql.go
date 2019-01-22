@@ -25,8 +25,9 @@ type MySQL struct {
 	modules.Base
 	db *sql.DB
 	// i.e user:password@/dbname
-	DSN  string `yaml:"dsn"`
-	user string
+	DSN                   string `yaml:"dsn"`
+	user                  string
+	replicationPrivileges bool
 }
 
 // New creates and returns a new empty MySQL module.
@@ -68,7 +69,7 @@ func (m *MySQL) Init() bool {
 	}
 
 	m.user = parseUser(m.DSN)
-
+	m.replicationPrivileges = m.hasReplPriv()
 	// if min, got := CompatibleMinimumVersion, m.getMySQLVersion(); min > 0 && got < min {
 	// 	m.Warningf("running with uncompatible mysql version [%v<%v]", got, min)
 	// }
@@ -488,7 +489,7 @@ func (m *MySQL) hasReplPriv() bool {
 
 // https://dev.mysql.com/doc/refman/8.0/en/show-slave-status.html
 func (m *MySQL) collectSlaveStatus(metrics map[string]int64) error {
-	if !m.hasReplPriv() {
+	if !m.replicationPrivileges {
 		return nil
 	}
 
