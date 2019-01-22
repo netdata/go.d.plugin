@@ -10,6 +10,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/httpcheck"
 	_ "github.com/netdata/go.d.plugin/modules/lighttpd"
 	_ "github.com/netdata/go.d.plugin/modules/lighttpd2"
+	_ "github.com/netdata/go.d.plugin/modules/logstash"
 	_ "github.com/netdata/go.d.plugin/modules/nginx"
 	_ "github.com/netdata/go.d.plugin/modules/portcheck"
 	_ "github.com/netdata/go.d.plugin/modules/rabbitmq"

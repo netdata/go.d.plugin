@@ -10,8 +10,7 @@ import (
 
 func init() {
 	creator := modules.Creator{
-		DisabledByDefault: true,
-		Create:            func() modules.Module { return New() },
+		Create: func() modules.Module { return New() },
 	}
 
 	modules.Register("logstash", creator)
