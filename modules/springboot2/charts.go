@@ -13,7 +13,7 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "response",
+		ID:    "response_codes",
 		Title: "Response Codes", Units: "requests/s", Fam: "response_code", Type: modules.Stacked,
 		Dims: Dims{
 			{ID: "resp_1xx", Name: "1xx", Algo: modules.Incremental},
@@ -63,6 +63,13 @@ var charts = Charts{
 		Dims: Dims{
 			{ID: "heap_used_old", Name: "used"},
 			{ID: "heap_committed_old", Name: "committed"},
+		},
+	},
+	{
+		ID:    "uptime",
+		Title: "The uptime of the Java virtual machine", Units: "seconds", Fam: "uptime", Type: modules.Line,
+		Dims: Dims{
+			{ID: "uptime", Name: "uptime", Div: 1000},
 		},
 	},
 }

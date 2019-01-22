@@ -17,25 +17,33 @@ for more information.
 
 ## Charts
 
-1. **Response Codes** in requests/s
- * 1xx
- * 2xx
- * 3xx
- * 4xx
- * 5xx
+* **Response Codes** in requests/s
+  * 1xx
+  * 2xx
+  * 3xx
+  * 4xx
+  * 5xx
 
-2. **Threads**
- * daemon
- * total
+* **Threads**
+  * daemon
+  * total
 
-3. **GC Time** in milliseconds and **GC Operations** in operations/s
- * Copy
- * MarkSweep
- * ...
+* **Heap Mmeory Usage** in bytes
+  * overview
+    * used
+    * committed
+  * Eden space
+    * used
+    * committed
+  * Survivor space
+    * used
+    * committed
+  * Old space
+    * used
+    * committed
 
-4. **Heap Mmeory Usage** in KB
- * used
- * committed
+* **uptime** in seconds
+  * uptime
 
 ## Usage
 
