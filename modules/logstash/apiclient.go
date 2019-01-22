@@ -1,6 +1,7 @@
 package logstash
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -9,9 +10,75 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+type jvmStats struct {
+	JVM jvm `stm:"jvm"`
+}
+
+type jvm struct {
+	Threads struct {
+		Count     int
+		PeakCount int
+	}
+	Mem struct {
+		HeapUsedPercent      int `json:"heap_used_percent",stm:"heap_used_percent"`
+		HeapCommittedInBytes int `json:"heap_committed_in_bytes",stm:"heap_committed_in_bytes"`
+		HeapUsedInBytes      int `json:"heap_used_in_bytes",stm:"heap_used_in_bytes"`
+		Pools                struct {
+			Survivor struct {
+				UsedInBytes      int `json:"used_in_bytes",stm:"used_in_bytes"`
+				CommittedInBytes int `json:"used_in_bytes",stm:"used_in_bytes"`
+			} `stm:"survivor"`
+			Old struct {
+				UsedInBytes      int `json:"used_in_bytes",stm:"used_in_bytes"`
+				CommittedInBytes int `json:"used_in_bytes",stm:"used_in_bytes"`
+			} `stm:"old"`
+			Young struct {
+				UsedInBytes      int `json:"used_in_bytes",stm:"used_in_bytes"`
+				CommittedInBytes int `json:"used_in_bytes",stm:"used_in_bytes"`
+			} `stm:"young"`
+		} `stm:"pools"`
+	} `stm:"mem"`
+	GC struct {
+		Collectors struct {
+			Old struct {
+				CollectionTimeInMillis int `json:"collection_time_in_millis",stm:"collection_time_in_millis"`
+				CollectionCount        int `json:"collection_count",stm:"collection_count"`
+			} `stm:"old"`
+			Young struct {
+				CollectionTimeInMillis int `json:"collection_time_in_millis",stm:"collection_time_in_millis"`
+				CollectionCount        int `json:"collection_count",stm:"collection_count"`
+			} `stm:"young"`
+		} `stm:"collectors"`
+	} `stm:"gc"`
+}
+
 type apiClient struct {
 	req        web.Request
 	httpClient *http.Client
+}
+
+func (a apiClient) jvmStats() (jvmStats, error) {
+	var stats jvmStats
+
+	req, err := a.createRequest("/_node/stats/jvm")
+
+	if err != nil {
+		return stats, err
+	}
+
+	resp, err := a.doRequestOK(req)
+
+	defer closeBody(resp)
+
+	if err != nil {
+		return stats, err
+	}
+
+	if err = json.NewDecoder(resp.Body).Decode(&stats); err != nil {
+		return stats, err
+	}
+
+	return stats, nil
 }
 
 func (a apiClient) doRequest(req *http.Request) (*http.Response, error) {
@@ -36,11 +103,13 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-func (a apiClient) createRequest() (*http.Request, error) {
+func (a apiClient) createRequest(uri string) (*http.Request, error) {
 	var (
 		req *http.Request
 		err error
 	)
+
+	a.req.URI = uri
 
 	if req, err = web.NewHTTPRequest(a.req); err != nil {
 		return nil, err
