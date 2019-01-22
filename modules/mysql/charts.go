@@ -128,7 +128,6 @@ var charts = Charts{
 		Units: "connections/s",
 		Fam:   "connections",
 		Ctx:   "mysql.connections",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "connections", Name: "all", Algo: modules.Incremental},
 			{ID: "aborted_connects", Name: "aborted", Algo: modules.Incremental},
@@ -165,10 +164,18 @@ var charts = Charts{
 		Ctx:   "mysql.threads",
 		Dims: Dims{
 			{ID: "threads_connected", Name: "connected"},
-			// FIXME: dimensions with different algorithms
-			{ID: "threads_created", Name: "created", Algo: modules.Incremental},
 			{ID: "threads_cached", Name: "cached", Mul: -1},
 			{ID: "threads_running", Name: "running"},
+		},
+	},
+	{
+		ID:    "threads_creation_rate",
+		Title: "Threads Creation Rate",
+		Units: "threads/a",
+		Fam:   "threads",
+		Ctx:   "mysql.threads",
+		Dims: Dims{
+			{ID: "threads_created", Name: "created", Algo: modules.Incremental},
 		},
 	},
 	{
@@ -232,15 +239,23 @@ var charts = Charts{
 	},
 	{
 		ID:    "innodb_os_log",
-		Title: "InnoDB Log Operations",
+		Title: "InnoDB OS Log Pending Operations",
 		Units: "operations",
 		Fam:   "innodb",
 		Ctx:   "mysql.innodb_os_log",
 		Dims: Dims{
-			// FIXME: dimensions with different algorithm
+			{ID: "innodb_os_log_pending_fsyncs", Name: "fsyncs"},
+			{ID: "innodb_os_log_pending_writes", Name: "writes", Mul: -1},
+		},
+	},
+	{
+		ID:    "innodb_os_log_fsync_writes",
+		Title: "InnoDB OS Log Operations",
+		Units: "operations/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_os_log",
+		Dims: Dims{
 			{ID: "innodb_os_log_fsyncs", Name: "fsyncs", Algo: modules.Incremental},
-			{ID: "innodb_os_log_pending_fsyncs", Name: "pending_fsyncs"},
-			{ID: "innodb_os_log_pending_writes", Name: "pending_writes", Mul: -1},
 		},
 	},
 	{
@@ -289,10 +304,18 @@ var charts = Charts{
 			{ID: "innodb_buffer_pool_pages_data", Name: "data"},
 			{ID: "innodb_buffer_pool_pages_dirty", Name: "dirty", Mul: -1},
 			{ID: "innodb_buffer_pool_pages_free", Name: "free"},
-			// FIXME: dimension with different algorithm
-			{ID: "innodb_buffer_pool_pages_flushed", Name: "flushed", Algo: modules.Incremental, Mul: -1},
 			{ID: "innodb_buffer_pool_pages_misc", Name: "misc", Mul: -1},
 			{ID: "innodb_buffer_pool_pages_total", Name: "total"},
+		},
+	},
+	{
+		ID:    "innodb_buffer_pool_flush_pages_requests",
+		Title: "InnoDB Buffer Pool Flush Pages Requests",
+		Units: "requests/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_buffer_pool_pages",
+		Dims: Dims{
+			{ID: "innodb_buffer_pool_pages_flushed", Name: "flush pages", Algo: modules.Incremental},
 		},
 	},
 	{
@@ -338,7 +361,6 @@ var charts = Charts{
 		Units: "queries/s",
 		Fam:   "qcache",
 		Ctx:   "mysql.qcache_ops",
-		Type:  modules.Line,
 		Dims: Dims{
 			{ID: "qcache_hits", Name: "hits", Algo: modules.Incremental},
 			{ID: "qcache_lowmem_prunes", Name: "lowmem prunes", Algo: modules.Incremental, Mul: -1},
