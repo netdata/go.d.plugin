@@ -17,6 +17,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/all"
 
 	"github.com/go-playground/validator"
+	"github.com/mattn/go-isatty"
 )
 
 // Job is an interface that represents a job.
@@ -87,7 +88,10 @@ func (p *Plugin) RemoveFromQueue(fullName string) {
 // Serve Serve
 func (p *Plugin) Serve() {
 	go shutdownTask()
-	go heartbeatTask()
+
+	if !isatty.IsTerminal(os.Stdout.Fd()) {
+		go heartbeatTask()
+	}
 
 	go p.jobStartLoop()
 
