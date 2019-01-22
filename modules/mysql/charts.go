@@ -171,7 +171,7 @@ var charts = Charts{
 	{
 		ID:    "threads_creation_rate",
 		Title: "Threads Creation Rate",
-		Units: "threads/a",
+		Units: "threads/s",
 		Fam:   "threads",
 		Ctx:   "mysql.threads",
 		Dims: Dims{
