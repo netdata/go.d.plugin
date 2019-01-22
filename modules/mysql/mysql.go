@@ -28,12 +28,14 @@ type MySQL struct {
 	DSN                   string `yaml:"dsn"`
 	user                  string
 	replicationPrivileges bool
+
+	charts *Charts
 }
 
 // New creates and returns a new empty MySQL module.
 func New() *MySQL {
 	// return &MySQL{SlowQueriesMaxCount: 0, SlowQueriesInPercentile: 95, SlowQueriesSeconds: 4}
-	return &MySQL{}
+	return &MySQL{charts: charts.Copy()}
 }
 
 // // CompatibleMinimumVersion is the minimum required version of the mysql server.
@@ -70,6 +72,9 @@ func (m *MySQL) Init() bool {
 
 	m.user = parseUser(m.DSN)
 	m.replicationPrivileges = m.hasReplPriv()
+	if !m.replicationPrivileges {
+		m.Info("not enough privileges, replication info won't be collected")
+	}
 	// if min, got := CompatibleMinimumVersion, m.getMySQLVersion(); min > 0 && got < min {
 	// 	m.Warningf("running with uncompatible mysql version [%v<%v]", got, min)
 	// }
@@ -120,12 +125,27 @@ func (m *MySQL) openConnection() error {
 
 // Check makes check.
 func (m *MySQL) Check() bool {
-	return len(m.Collect()) > 0
+	metrics := m.Collect()
+
+	if len(metrics) == 0 {
+		return false
+	}
+
+	if _, ok := metrics["seconds_behind_master"]; ok {
+		_ = m.charts.Add(*slaveCharts.Copy()...)
+	}
+
+	// FIXME: not sure this check is valid
+	if _, ok := metrics["wsrep_local_recv_queue"]; ok {
+		_ = m.charts.Add(*galeraCharts.Copy()...)
+	}
+
+	return true
 }
 
 // Charts creates Charts.
 func (m *MySQL) Charts() *Charts {
-	return charts.Copy()
+	return m.charts
 }
 
 // Collect collects health checks and metrics for MySQL.

@@ -482,6 +482,9 @@ var charts = Charts{
 			{ID: "connection_errors_tcpwrap", Name: "tcpwrap", Algo: modules.Incremental},
 		},
 	},
+}
+
+var slaveCharts = Charts{
 	{
 		ID:    "slave_behind",
 		Title: "Slave Behind Seconds",
@@ -500,10 +503,13 @@ var charts = Charts{
 		Fam:   "slave",
 		Ctx:   "mysql.slave_status",
 		Dims: Dims{
-			{ID: "slave_sql_Running", Name: "sql_running"},
-			{ID: "slave_io_Running", Name: "io_running"},
+			{ID: "slave_sql_running", Name: "sql_running"},
+			{ID: "slave_io_running", Name: "io_running"},
 		},
 	},
+}
+
+var galeraCharts = Charts{
 	{
 		ID:    "galera_writesets",
 		Title: "Replicated writesets",
