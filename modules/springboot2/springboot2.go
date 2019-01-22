@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules"
+	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -39,25 +40,27 @@ type SpringBoot2 struct {
 }
 
 type metrics struct {
-	ThreadsDaemon int64 `stm:"threads_daemon"`
-	Threads       int64 `stm:"threads"`
+	Uptime mtx.Gauge `stm:"uptime,1000"`
 
-	Resp1xx int64 `stm:"resp_1xx"`
-	Resp2xx int64 `stm:"resp_2xx"`
-	Resp3xx int64 `stm:"resp_3xx"`
-	Resp4xx int64 `stm:"resp_4xx"`
-	Resp5xx int64 `stm:"resp_5xx"`
+	ThreadsDaemon mtx.Gauge `stm:"threads_daemon"`
+	Threads       mtx.Gauge `stm:"threads"`
+
+	Resp1xx mtx.Counter `stm:"resp_1xx"`
+	Resp2xx mtx.Counter `stm:"resp_2xx"`
+	Resp3xx mtx.Counter `stm:"resp_3xx"`
+	Resp4xx mtx.Counter `stm:"resp_4xx"`
+	Resp5xx mtx.Counter `stm:"resp_5xx"`
 
 	HeapUsed      heap `stm:"heap_used"`
 	HeapCommitted heap `stm:"heap_committed"`
 
-	MemFree int64 `stm:"mem_free"`
+	MemFree mtx.Gauge `stm:"mem_free"`
 }
 
 type heap struct {
-	Eden     int64 `stm:"eden"`
-	Survivor int64 `stm:"survivor"`
-	Old      int64 `stm:"old"`
+	Eden     mtx.Gauge `stm:"eden"`
+	Survivor mtx.Gauge `stm:"survivor"`
+	Old      mtx.Gauge `stm:"old"`
 }
 
 // Cleanup Cleanup
@@ -95,17 +98,20 @@ func (s *SpringBoot2) Collect() map[string]int64 {
 
 	var m metrics
 
+	// uptime
+	m.Uptime.Set(rawMetrics.FindByName("process_uptime_seconds").Max())
+
 	// response
 	gatherResponse(rawMetrics, &m)
 
 	// threads
-	m.ThreadsDaemon = int64(rawMetrics.FindByName("jvm_threads_daemon").Max())
-	m.Threads = int64(rawMetrics.FindByName("jvm_threads_live").Max())
+	m.ThreadsDaemon.Set(rawMetrics.FindByName("jvm_threads_daemon").Max())
+	m.Threads.Set(rawMetrics.FindByName("jvm_threads_live").Max())
 
 	// heap memory
 	gatherHeap(rawMetrics.FindByName("jvm_memory_used_bytes"), &m.HeapUsed)
 	gatherHeap(rawMetrics.FindByName("jvm_memory_committed_bytes"), &m.HeapCommitted)
-	m.MemFree = m.HeapCommitted.Sum() - m.HeapUsed.Sum()
+	m.MemFree.Set(m.HeapCommitted.Sum() - m.HeapUsed.Sum())
 
 	return stm.ToMap(m)
 }
@@ -113,14 +119,14 @@ func (s *SpringBoot2) Collect() map[string]int64 {
 func gatherHeap(rawMetrics prometheus.Metrics, m *heap) {
 	for _, metric := range rawMetrics {
 		id := metric.Labels.Get("id")
-		value := int64(metric.Value)
+		value := metric.Value
 		switch {
 		case strings.Contains(id, "Eden"):
-			m.Eden = value
+			m.Eden.Set(value)
 		case strings.Contains(id, "Survivor"):
-			m.Survivor = value
+			m.Survivor.Set(value)
 		case strings.Contains(id, "Old") || strings.Contains(id, "Tenured"):
-			m.Old = value
+			m.Old.Set(value)
 		}
 	}
 }
@@ -131,22 +137,22 @@ func gatherResponse(rawMetrics prometheus.Metrics, m *metrics) {
 		if status == "" {
 			continue
 		}
-		value := int64(metric.Value)
+		value := metric.Value
 		switch status[0] {
 		case '1':
-			m.Resp1xx += value
+			m.Resp1xx.Add(value)
 		case '2':
-			m.Resp2xx += value
+			m.Resp2xx.Add(value)
 		case '3':
-			m.Resp3xx += value
+			m.Resp3xx.Add(value)
 		case '4':
-			m.Resp4xx += value
+			m.Resp4xx.Add(value)
 		case '5':
-			m.Resp5xx += value
+			m.Resp5xx.Add(value)
 		}
 	}
 }
 
-func (h heap) Sum() int64 {
-	return h.Eden + h.Survivor + h.Old
+func (h heap) Sum() float64 {
+	return h.Eden.Value() + h.Survivor.Value() + h.Old.Value()
 }

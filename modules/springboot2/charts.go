@@ -65,4 +65,11 @@ var charts = Charts{
 			{ID: "heap_committed_old", Name: "committed"},
 		},
 	},
+	{
+		ID:    "uptime",
+		Title: "The uptime of the Java virtual machine", Units: "seconds", Fam: "uptime", Type: modules.Line,
+		Dims: Dims{
+			{ID: "uptime", Name: "uptime", Div: 1000},
+		},
+	},
 }
