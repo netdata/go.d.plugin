@@ -3,7 +3,6 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -35,18 +34,18 @@ func New() *MySQL {
 	return &MySQL{}
 }
 
-// CompatibleMinimumVersion is the minimum required version of the mysql server.
-const CompatibleMinimumVersion = 5.1
-
-func (m *MySQL) getMySQLVersion() float64 {
-	var versionStr string
-	var versionNum float64
-	if err := m.db.QueryRow("SELECT @@version").Scan(&versionStr); err == nil {
-		versionNum, _ = strconv.ParseFloat(regexp.MustCompile(`^\d+\.\d+`).FindString(versionStr), 64)
-	}
-
-	return versionNum
-}
+// // CompatibleMinimumVersion is the minimum required version of the mysql server.
+// const CompatibleMinimumVersion = 5.1
+//
+// func (m *MySQL) getMySQLVersion() float64 {
+// 	var versionStr string
+// 	var versionNum float64
+// 	if err := m.db.QueryRow("SELECT @@version").Scan(&versionStr); err == nil {
+// 		versionNum, _ = strconv.ParseFloat(regexp.MustCompile(`^\d+\.\d+`).FindString(versionStr), 64)
+// 	}
+//
+// 	return versionNum
+// }
 
 // Cleanup performs cleanup.
 func (m *MySQL) Cleanup() {
@@ -59,11 +58,7 @@ func (m *MySQL) Cleanup() {
 // Init makes initialization of the MySQL mod.
 func (m *MySQL) Init() bool {
 	if m.DSN == "" {
-		m.Warningf("'DSN' field is missing, trying to connect through default socket...")
-		if !m.tryResolveDSN() {
-			m.Errorf("couldn't connect, 'DSN' field is missing and connection through default DSN failed")
-			return false
-		}
+		return false
 	}
 
 	// test the connectivity here.
@@ -71,30 +66,13 @@ func (m *MySQL) Init() bool {
 		return false
 	}
 
-	if min, got := CompatibleMinimumVersion, m.getMySQLVersion(); min > 0 && got < min {
-		m.Warningf("running with uncompatible mysql version [%v<%v]", got, min)
-	}
+	// if min, got := CompatibleMinimumVersion, m.getMySQLVersion(); min > 0 && got < min {
+	// 	m.Warningf("running with uncompatible mysql version [%v<%v]", got, min)
+	// }
 
 	// post Init debug info.
 	m.Debugf("connected using DSN [%s]", m.DSN)
 	return true
-}
-
-var defaultDSNs = []string{
-	"root@unix(/var/run/mysqld/mysqld.sock)/",
-	"root@unix(/usr/local/var/mysql/mysql.sock)/",
-	"root@/",
-}
-
-func (m *MySQL) tryResolveDSN() bool {
-	for _, dsn := range defaultDSNs {
-		m.DSN = dsn
-		if err := m.openConnection(); err == nil {
-			return true
-		}
-	}
-
-	return false
 }
 
 func (m *MySQL) openConnection() error {
