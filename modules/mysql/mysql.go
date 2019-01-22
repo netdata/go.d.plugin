@@ -25,7 +25,8 @@ type MySQL struct {
 	modules.Base
 	db *sql.DB
 	// i.e user:password@/dbname
-	DSN string `yaml:"dsn"`
+	DSN  string `yaml:"dsn"`
+	user string
 }
 
 // New creates and returns a new empty MySQL module.
@@ -66,6 +67,8 @@ func (m *MySQL) Init() bool {
 		return false
 	}
 
+	m.user = parseUser(m.DSN)
+
 	// if min, got := CompatibleMinimumVersion, m.getMySQLVersion(); min > 0 && got < min {
 	// 	m.Warningf("running with uncompatible mysql version [%v<%v]", got, min)
 	// }
@@ -73,6 +76,16 @@ func (m *MySQL) Init() bool {
 	// post Init debug info.
 	m.Debugf("connected using DSN [%s]", m.DSN)
 	return true
+}
+
+func parseUser(dsn string) string {
+	if userIdx := strings.IndexRune(dsn, ':'); userIdx != -1 {
+		return dsn[:userIdx]
+	} else if userIdx = strings.IndexRune(dsn, '@'); userIdx != -1 {
+		return dsn[:userIdx]
+	}
+
+	return ""
 }
 
 func (m *MySQL) openConnection() error {
@@ -438,8 +451,47 @@ var slaveStats = map[string]func(value interface{}) int64{
 	"Slave_IO_Running":      slaveRunning,
 }
 
+// hasReplPriv returns if the current user has privileges for the "SHOW SLAVE STATUS" query.
+func (m *MySQL) hasReplPriv() bool {
+	if m.user == "" {
+		return false
+	}
+
+	rows, err := m.db.Query("select User,Host,Super_priv,Repl_client_priv from mysql.user")
+	if err != nil {
+		return false
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			user           string
+			superPriv      string // Y or N
+			replClientPriv string // Y or N
+		)
+
+		err = rows.Scan(&user, &superPriv, &replClientPriv)
+		if err != nil {
+			return false
+		}
+
+		// either  SUPER or REPLICATION CLIENT.
+		if user == m.user && (superPriv == "Y" || replClientPriv == "Y") {
+			return true
+		}
+	}
+
+	return false
+
+}
+
 // https://dev.mysql.com/doc/refman/8.0/en/show-slave-status.html
 func (m *MySQL) collectSlaveStatus(metrics map[string]int64) error {
+	if !m.hasReplPriv() {
+		return nil
+	}
+
 	rows, err := m.db.Query("SHOW SLAVE STATUS")
 	if err != nil {
 		return err
