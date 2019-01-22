@@ -11,7 +11,16 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "heap_memory_percent",
+		ID:    "jvm_threads",
+		Title: "JVM Threads",
+		Units: "count",
+		Fam:   "threads",
+		Dims: Dims{
+			{ID: "jvm_threads_count", Name: "threads"},
+		},
+	},
+	{
+		ID:    "jvm_mem_heap_percent",
 		Title: "JVM Heap Memory Percentage",
 		Units: "percent",
 		Fam:   "memory",
@@ -20,7 +29,7 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "heap_memory",
+		ID:    "jvm_mem_heap",
 		Title: "JVM Heap Memory",
 		Units: "KiB",
 		Fam:   "memory",
@@ -30,7 +39,7 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "pool_survivor_memory",
+		ID:    "jvm_mem_pools_survivor",
 		Title: "JVM Pool Survivor Memory",
 		Units: "KiB",
 		Fam:   "memory",
@@ -40,7 +49,7 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "pool_old_memory",
+		ID:    "jvm_mem_pools_old",
 		Title: "JVM Pool Old Memory",
 		Units: "KiB",
 		Fam:   "memory",
@@ -50,7 +59,7 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "pool_young_memory",
+		ID:    "jvm_mem_pools_young",
 		Title: "JVM Pool Young Memory",
 		Units: "KiB",
 		Fam:   "memory",
@@ -60,7 +69,7 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "gc_count",
+		ID:    "jvm_gc_collector_count",
 		Title: "Garbage Collection Count",
 		Units: "counts/s",
 		Fam:   "garbage collection",
@@ -70,13 +79,22 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "gc_time",
+		ID:    "jvm_gc_collector_time",
 		Title: "Time Spent On Garbage Collection",
 		Units: "ms",
 		Fam:   "garbage collection",
 		Dims: Dims{
 			{ID: "jvm_gc_collectors_young_collection_time_in_millis", Name: "young", Algo: modules.Incremental},
 			{ID: "jvm_gc_collectors_young_collection_time_in_millis", Name: "old", Algo: modules.Incremental},
+		},
+	},
+	{
+		ID:    "uptime",
+		Title: "Uptime",
+		Units: "seconds",
+		Fam:   "uptime",
+		Dims: Dims{
+			{ID: "jvm_uptime_in_millis", Name: "uptime", Div: 1000},
 		},
 	},
 }

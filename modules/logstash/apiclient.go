@@ -19,8 +19,12 @@ type jvmStats struct {
 }
 
 type jvm struct {
-	Mem jvmMem `stm:"mem"`
-	GC  jvmGC  `stm:"gc"`
+	Threads struct {
+		Count int `stm:"count"`
+	} `stm:"threads"`
+	Mem            jvmMem `stm:"mem"`
+	GC             jvmGC  `stm:"gc"`
+	UptimeInMillis int    `json:"uptime_in_millis" stm:"uptime_in_millis"`
 }
 
 type jvmMem struct {

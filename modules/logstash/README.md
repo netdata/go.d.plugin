@@ -6,32 +6,38 @@ Servers can be either local or remote.
 
 It produces following charts:
 
-1. **JVM Heap Memory Percentage** in percent
+1. **JVM Threads** in count
+ * threads
+
+2. **JVM Heap Memory Percentage** in percent
  * in use
 
-2. **JVM Heap Memory** in KiB
+3. **JVM Heap Memory** in KiB
  * used
  * committed
 
-3. **JVM Pool Survivor Memory** in KiB
+4. **JVM Pool Survivor Memory** in KiB
  * used
  * committed
 
-4. **JVM Pool Old Memory** in KiB
+5. **JVM Pool Old Memory** in KiB
  * used
  * committed
 
-5. **JVM Pool Young Memory** in KiB
+6. **JVM Pool Young Memory** in KiB
  * used
  * committed
 
-6. **Garbage Collection Count** in counts/s
+7. **Garbage Collection Count** in counts/s
  * young
  * old
 
-7. **Time Spent On Garbage Collection** in ms
+8. **Time Spent On Garbage Collection** in ms
  * young
  * old
+
+9. **Uptime** in time
+ * uptime
 
 ### configuration
 Detailed logstash configuration with all available parameters can be found in ['go.d/logstash.conf'](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/logstash.conf)
