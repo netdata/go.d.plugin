@@ -457,7 +457,7 @@ func (m *MySQL) hasReplPriv() bool {
 		return false
 	}
 
-	rows, err := m.db.Query("select User,Host,Super_priv,Repl_client_priv from mysql.user")
+	rows, err := m.db.Query("select User,Super_priv,Repl_client_priv from mysql.user")
 	if err != nil {
 		return false
 	}
