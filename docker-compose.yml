@@ -15,10 +15,18 @@ services:
       - /sys:/host/sys:ro
     depends_on:
       - springboot2
+      - httpd
+
   springboot2:
     build: mocks/springboot2
     ports:
       - 8080:8080
+
+  httpd:
+    image: httpd:2.4
+    volumes:
+      - ./mocks/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+
   springboot2_random:
     image: alpine
     depends_on:
