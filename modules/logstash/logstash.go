@@ -58,7 +58,7 @@ func (l *Logstash) Init() bool {
 	l.Debugf("using URL %s", l.URL)
 	l.Debugf("using timeout: %s", l.Timeout.Duration)
 
-	return false
+	return true
 }
 
 // Check makes check.

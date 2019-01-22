@@ -10,6 +10,10 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+const (
+	jvmStatusURI = "/_node/stats/jvm"
+)
+
 type jvmStats struct {
 	JVM jvm `stm:"jvm"`
 }
@@ -32,7 +36,7 @@ type jvmMem struct {
 
 type jvmPool struct {
 	UsedInBytes      int `json:"used_in_bytes" stm:"used_in_bytes"`
-	CommittedInBytes int `json:"used_in_bytes" stm:"used_in_bytes"`
+	CommittedInBytes int `json:"committed_in_bytes" stm:"committed_in_bytes"`
 }
 
 type jvmGC struct {
@@ -55,7 +59,7 @@ type apiClient struct {
 func (a apiClient) jvmStats() (*jvmStats, error) {
 	var stats jvmStats
 
-	req, err := a.createRequest("/_node/stats/jvm")
+	req, err := a.createRequest(jvmStatusURI)
 
 	if err != nil {
 		return nil, err
