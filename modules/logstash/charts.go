@@ -79,7 +79,7 @@ var charts = Charts{
 		Fam:   "garbage collection",
 		Dims: Dims{
 			{ID: "jvm_gc_collectors_young_collection_count", Name: "young", Algo: modules.Incremental},
-			{ID: "jvm_gc_collectors_young_collection_count", Name: "old", Algo: modules.Incremental},
+			{ID: "jvm_gc_collectors_old_collection_count", Name: "old", Algo: modules.Incremental},
 		},
 	},
 	{
@@ -89,7 +89,7 @@ var charts = Charts{
 		Fam:   "garbage collection",
 		Dims: Dims{
 			{ID: "jvm_gc_collectors_young_collection_time_in_millis", Name: "young", Algo: modules.Incremental},
-			{ID: "jvm_gc_collectors_young_collection_time_in_millis", Name: "old", Algo: modules.Incremental},
+			{ID: "jvm_gc_collectors_old_collection_time_in_millis", Name: "old", Algo: modules.Incremental},
 		},
 	},
 	{
