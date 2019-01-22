@@ -15,41 +15,36 @@ type jvmStats struct {
 }
 
 type jvm struct {
-	Threads struct {
-		Count     int
-		PeakCount int
-	}
-	Mem struct {
-		HeapUsedPercent      int `json:"heap_used_percent",stm:"heap_used_percent"`
-		HeapCommittedInBytes int `json:"heap_committed_in_bytes",stm:"heap_committed_in_bytes"`
-		HeapUsedInBytes      int `json:"heap_used_in_bytes",stm:"heap_used_in_bytes"`
-		Pools                struct {
-			Survivor struct {
-				UsedInBytes      int `json:"used_in_bytes",stm:"used_in_bytes"`
-				CommittedInBytes int `json:"used_in_bytes",stm:"used_in_bytes"`
-			} `stm:"survivor"`
-			Old struct {
-				UsedInBytes      int `json:"used_in_bytes",stm:"used_in_bytes"`
-				CommittedInBytes int `json:"used_in_bytes",stm:"used_in_bytes"`
-			} `stm:"old"`
-			Young struct {
-				UsedInBytes      int `json:"used_in_bytes",stm:"used_in_bytes"`
-				CommittedInBytes int `json:"used_in_bytes",stm:"used_in_bytes"`
-			} `stm:"young"`
-		} `stm:"pools"`
-	} `stm:"mem"`
-	GC struct {
-		Collectors struct {
-			Old struct {
-				CollectionTimeInMillis int `json:"collection_time_in_millis",stm:"collection_time_in_millis"`
-				CollectionCount        int `json:"collection_count",stm:"collection_count"`
-			} `stm:"old"`
-			Young struct {
-				CollectionTimeInMillis int `json:"collection_time_in_millis",stm:"collection_time_in_millis"`
-				CollectionCount        int `json:"collection_count",stm:"collection_count"`
-			} `stm:"young"`
-		} `stm:"collectors"`
-	} `stm:"gc"`
+	Mem jvmMem `stm:"mem"`
+	GC  jvmGC  `stm:"gc"`
+}
+
+type jvmMem struct {
+	HeapUsedPercent      int `json:"heap_used_percent",stm:"heap_used_percent"`
+	HeapCommittedInBytes int `json:"heap_committed_in_bytes",stm:"heap_committed_in_bytes"`
+	HeapUsedInBytes      int `json:"heap_used_in_bytes",stm:"heap_used_in_bytes"`
+	Pools                struct {
+		Survivor jvmPool `stm:"survivor"`
+		Old      jvmPool `stm:"old"`
+		Young    jvmPool `stm:"young"`
+	} `stm:"pools"`
+}
+
+type jvmPool struct {
+	UsedInBytes      int `json:"used_in_bytes",stm:"used_in_bytes"`
+	CommittedInBytes int `json:"used_in_bytes",stm:"used_in_bytes"`
+}
+
+type jvmGC struct {
+	Collectors struct {
+		Old   gcCollector `stm:"old"`
+		Young gcCollector `stm:"young"`
+	} `stm:"collectors"`
+}
+
+type gcCollector struct {
+	CollectionTimeInMillis int `json:"collection_time_in_millis",stm:"collection_time_in_millis"`
+	CollectionCount        int `json:"collection_count",stm:"collection_count"`
 }
 
 type apiClient struct {
