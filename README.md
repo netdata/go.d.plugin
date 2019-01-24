@@ -30,6 +30,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck) *
  - [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd) *
  - [lighttpd2](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd2)
+ - [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)
  - [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx) *
  - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck) *
  - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
