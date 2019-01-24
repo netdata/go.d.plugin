@@ -34,7 +34,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx) *
  - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck) *
  - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
- - [sorl](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
+ - [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
  - [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)
  - [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) *
 
