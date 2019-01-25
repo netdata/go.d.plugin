@@ -13,6 +13,7 @@ require (
 	github.com/mattn/go-isatty v0.0.4
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/miekg/dns v1.1.3
+	github.com/mindprince/gonvml v0.0.0-20180514031326-b364b296c732
 	github.com/mitchellh/go-homedir v1.0.0
 	github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910 // indirect
 	github.com/prometheus/common v0.0.0-20181126121408-4724e9255275 // indirect
