@@ -3,18 +3,18 @@ package weblog
 import "sort"
 
 const (
-	keyVhost            = "vhost"              // check
-	keyAddress          = "address"            // check
-	keyCode             = "code"               // check
-	keyRequest          = "request"            // check
-	keyBytesSent        = "bytes_sent"         // check
-	keyRespTime         = "resp_time"          // check
-	keyRespTimeUpstream = "resp_time_upstream" // check
-	keyRespLength       = "resp_length"        // check
-	keyUserDefined      = "user_defined"
-	keyMethod           = "http_method"  // check, parsed request field
-	keyVersion          = "http_version" // check, parsed request field
-	keyURL              = "url"          // parsed request field
+	keyVhost   = "vhost"   // check
+	keyAddress = "address" // check
+	keyCode    = "code"    // check
+	//keyRequest          = "request"            // check
+	//keyBytesSent        = "bytes_sent"         // check
+	//keyRespTime         = "resp_time"          // check
+	//keyRespTimeUpstream = "resp_time_upstream" // check
+	//keyReqLength       = "resp_length"        // check
+	//keyUserDefined      = "user_defined"
+	keyMethod  = "http_method"  // check, parsed request fieldID
+	keyVersion = "http_version" // check, parsed request fieldID
+	keyURL     = "url"          // parsed request fieldID
 
 	keyRespTimeHistogram         = "resp_time_histogram"
 	keyRespTimeUpstreamHistogram = "resp_time_upstream_histogram"
@@ -56,7 +56,7 @@ var (
 		{keyRequest, 5},
 		{keyCode, 6},
 		{keyBytesSent, 7},
-		{keyRespLength, 8},
+		{keyReqLength, 8},
 		{keyRespTime, 9},
 		{keyRespTimeUpstream, 10},
 	}
@@ -66,7 +66,7 @@ var (
 		{keyRequest, 6},
 		{keyCode, 7},
 		{keyBytesSent, 8},
-		{keyRespLength, 9},
+		{keyReqLength, 9},
 		{keyRespTime, 10},
 		{keyRespTimeUpstream, 11},
 	}

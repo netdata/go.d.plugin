@@ -61,6 +61,20 @@ func TestGauge_WriteTo(t *testing.T) {
 	assert.EqualValues(t, 314, m["pi"])
 }
 
+func TestGaugeVec_WriteTo(t *testing.T) {
+	g := NewGaugeVec()
+	g.Get("foo").Inc()
+	g.Get("foo").Inc()
+	g.Get("bar").Inc()
+	g.Get("bar").Add(0.14)
+
+	m := map[string]int64{}
+	g.WriteTo(m, "pi", 100, 1)
+	assert.Len(t, m, 2)
+	assert.EqualValues(t, 200, m["pi_foo"])
+	assert.EqualValues(t, 114, m["pi_bar"])
+}
+
 func BenchmarkGauge_Add(b *testing.B) {
 	benchmarks := []struct {
 		name  string

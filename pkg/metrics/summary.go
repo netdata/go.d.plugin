@@ -17,6 +17,13 @@ type (
 		Reset()
 	}
 
+	// SummaryVec is a Collector that bundles a set of Summary which have different values for their names.
+	// This is used if you want to count the same thing partitioned by various dimensions
+	// (e.g. number of HTTP response time, partitioned by response code and method).
+	//
+	// Create instances with NewSummaryVec.
+	SummaryVec map[string]Summary
+
 	summary struct {
 		min   float64
 		max   float64
@@ -75,4 +82,34 @@ func (s *summary) Observe(v float64) {
 	}
 	s.sum += v
 	s.count++
+}
+
+// NewSummaryVec creates a new SummaryVec instance.
+func NewSummaryVec() SummaryVec {
+	return SummaryVec{}
+}
+
+// WriteTo writes it's value into given map.
+func (c SummaryVec) WriteTo(rv map[string]int64, key string, mul, div int) {
+	for name, value := range c {
+		value.WriteTo(rv, key+"_"+name, mul, div)
+	}
+}
+
+// Get gets counter instance by name.
+func (c SummaryVec) Get(name string) Summary {
+	item, ok := c[name]
+	if ok {
+		return item
+	}
+	item = NewSummary()
+	c[name] = item
+	return item
+}
+
+// Reset resets its all summaries.
+func (c SummaryVec) Reset() {
+	for _, value := range c {
+		value.Reset()
+	}
 }

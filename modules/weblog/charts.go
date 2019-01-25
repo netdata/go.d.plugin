@@ -292,7 +292,7 @@ func (w *WebLog) createCharts() {
 		_ = charts.Add(responseCodesDetailedPerFamily()...)
 	}
 
-	if w.gm.has(keyBytesSent) || w.gm.has(keyRespLength) {
+	if w.gm.has(keyBytesSent) || w.gm.has(keyReqLength) {
 		_ = charts.Add(bandwidth.Copy())
 	}
 

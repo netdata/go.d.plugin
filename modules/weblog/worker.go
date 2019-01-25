@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
+
 	"github.com/netdata/go.d.plugin/modules"
 )
 
@@ -67,7 +69,7 @@ type worker struct {
 
 	tailFactory func(string) (follower, error)
 	tail        follower
-	filter      matcher
+	filter      matcher.Matcher
 	parser      parser
 	reqParser   parser
 
@@ -116,7 +118,7 @@ LOOP:
 		case <-w.pauseCh:
 			w.pauseCh <- struct{}{}
 		case line := <-lines:
-			if w.filter.match(line.Text) {
+			if w.filter.MatchString(line.Text) {
 				w.parseLine(line.Text)
 			}
 		}
@@ -153,7 +155,7 @@ func (w *worker) parseLine(line string) {
 		w.bytesSent(gm)
 	}
 
-	if gm.has(keyRespLength) {
+	if gm.has(keyReqLength) {
 		w.respLength(gm)
 	}
 
@@ -266,7 +268,7 @@ func (w *worker) urlCategory(gm groupMap) {
 	url := gm.get(keyURL)
 
 	for _, v := range w.urlCats {
-		if v.match(url) {
+		if v.MatchString(url) {
 			w.metrics[v.name]++
 			w.matchedURL = v.name
 			return
@@ -279,7 +281,7 @@ func (w *worker) userCategory(gm groupMap) {
 	userDefined := gm.get(keyUserDefined)
 
 	for _, cat := range w.userCats {
-		if cat.match(userDefined) {
+		if cat.MatchString(userDefined) {
 			w.metrics[cat.name]++
 			return
 		}
@@ -303,7 +305,7 @@ func (w *worker) bytesSent(gm groupMap) {
 }
 
 func (w *worker) respLength(gm groupMap) {
-	w.metrics[keyRespLength] += toInt(gm.get(keyRespLength))
+	w.metrics[keyReqLength] += toInt(gm.get(keyReqLength))
 }
 
 func (w *worker) ipProto(gm groupMap) {
@@ -365,7 +367,7 @@ func (w *worker) urlCategoryStats(gm groupMap) {
 		w.metrics[w.matchedURL+"_bytes_sent"] += toInt(v)
 	}
 
-	if v, ok := gm.lookup(keyRespLength); ok {
+	if v, ok := gm.lookup(keyReqLength); ok {
 		w.metrics[w.matchedURL+"_resp_length"] += toInt(v)
 	}
 

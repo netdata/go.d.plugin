@@ -18,6 +18,13 @@ type (
 		valInt   int64
 		valFloat float64
 	}
+
+	// CounterVec is a Collector that bundles a set of Counters which have different values for their names.
+	// This is used if you want to count the same thing partitioned by various dimensions
+	// (e.g. number of HTTP requests, partitioned by response code and method).
+	//
+	// Create instances with NewCounterVec.
+	CounterVec map[string]*Counter
 )
 
 var (
@@ -41,10 +48,10 @@ func (c *Counter) Inc() {
 	c.valInt++
 }
 
-// Add adds the given bits to the counter. It panics if the bits is < 0.
+// Add adds the given bits to the counter. It panics if the value is < 0.
 func (c *Counter) Add(v float64) {
 	if v < 0 {
-		panic(errors.New("counter cannot decrease in bits"))
+		panic(errors.New("counter cannot decrease in value"))
 	}
 	val := int64(v)
 	if float64(val) == v {
@@ -52,4 +59,27 @@ func (c *Counter) Add(v float64) {
 		return
 	}
 	c.valFloat += v
+}
+
+// NewCounterVec creates a new CounterVec
+func NewCounterVec() CounterVec {
+	return CounterVec{}
+}
+
+// WriteTo writes it's value into given map.
+func (c CounterVec) WriteTo(rv map[string]int64, key string, mul, div int) {
+	for name, value := range c {
+		rv[key+"_"+name] = int64(value.Value() * float64(mul) / float64(div))
+	}
+}
+
+// Get gets counter instance by name
+func (c CounterVec) Get(name string) *Counter {
+	item, ok := c[name]
+	if ok {
+		return item
+	}
+	item = &Counter{}
+	c[name] = item
+	return item
 }

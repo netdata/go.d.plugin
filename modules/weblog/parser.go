@@ -1,176 +1,124 @@
 package weblog
 
 import (
+	"encoding/csv"
 	"errors"
-	"fmt"
-	"regexp"
+	"io"
+	"strconv"
 	"strings"
-
-	"github.com/netdata/go.d.plugin/pkg/csvparser"
 )
-
-type groupMap map[string]string
-
-func (gm groupMap) has(key string) bool {
-	_, ok := gm[key]
-	return ok
-}
-
-func (gm groupMap) get(key string) string {
-	return gm[key]
-}
-
-func (gm groupMap) lookup(key string) (string, bool) {
-	v, ok := gm[key]
-	return v, ok
-}
-
-func newCSVParser(pattern csvPattern) *csvParser {
-	return &csvParser{
-		pattern: pattern,
-		parser:  csvparser.Parser{Comma: ' ', FieldsPerRecord: -1},
-		data:    make(groupMap),
-	}
-}
 
 type (
-	parser interface {
-		parse(line string) (groupMap, bool)
-		info() string
+	logParser struct {
+		parser  *csv.Reader
+		pattern logPattern
 	}
-
-	csvParser struct {
-		pattern csvPattern
-		parser  csvparser.Parser
-
-		data groupMap
+	logLine struct {
+		RemoteAddr       string
+		Request          string
+		Method           string
+		URI              string
+		Version          string
+		Status           int
+		BytesSent        int
+		Host             string
+		RespTime         float64
+		RespTimeUpstream string
+		ReqLength        int
+		UserDefined      string
 	}
 )
-
-func (cp csvParser) info() string {
-	var info []string
-
-	for _, v := range cp.pattern {
-		info = append(info, fmt.Sprintf("%s:%d", v.Key, v.Index))
-	}
-
-	return fmt.Sprintf("[%s]", strings.Join(info, ", "))
-}
-
-func (cp *csvParser) parse(line string) (groupMap, bool) {
-	lines, err := cp.parser.ParseString(line)
-
-	if err != nil {
-		return nil, false
-	}
-
-	if cp.pattern.max() >= len(lines) {
-		return nil, false
-	}
-
-	for _, f := range cp.pattern {
-		cp.data[f.Key] = lines[f.Index]
-	}
-
-	return cp.data, true
-}
-
-func newParser(line string, patterns ...csvPattern) (parser, error) {
-	if line == "" {
-		return nil, errors.New("empty line")
-	}
-
-	for _, pattern := range patterns {
-		if !pattern.isSorted() {
-			return nil, fmt.Errorf("pattern %v is not sorted", pattern)
-		}
-
-		if !pattern.isValid() {
-			return nil, fmt.Errorf("pattern %v is not valid", pattern)
-		}
-
-		parser := newCSVParser(pattern)
-
-		gm, ok := parser.parse(line)
-		if !ok {
-			continue
-		}
-
-		if err := validateResult(gm); err != nil {
-			return nil, err
-		}
-
-		return parser, nil
-	}
-
-	return nil, errors.New("can't find appropriate csv parser")
-}
-
-func validateResult(gm map[string]string) error {
-	_, ok := gm[keyCode]
-	if !ok {
-		return errors.New("mandatory key 'code' is missing")
-	}
-
-	for k, v := range gm {
-		switch k {
-		default:
-			return fmt.Errorf("unknown key '%s'", k)
-		case keyUserDefined:
-		case keyVhost:
-			if !reVhost.MatchString(v) {
-				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
-			}
-		case keyCode:
-			if !reCode.MatchString(v) {
-				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
-			}
-		case keyAddress:
-			if !reAddress.MatchString(v) {
-				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
-			}
-		case keyBytesSent:
-			if !reBytesSent.MatchString(v) {
-				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
-			}
-		case keyRespLength:
-			if !reResponseLength.MatchString(v) {
-				return fmt.Errorf("'%s' field bad syntax: '%s'", k, v)
-			}
-		case keyRespTime, keyRespTimeUpstream:
-			if !reResponseTime.MatchString(v) {
-				return fmt.Errorf("'%s' bad syntax : '%s'", k, v)
-			}
-		case keyRequest:
-			gm, ok := reqParser.parse(v)
-			if !ok {
-				return fmt.Errorf("unparsable '%s' field : '%s'", k, v)
-			}
-			if !reHTTPMethod.MatchString(gm.get(keyMethod)) {
-				return fmt.Errorf("'%s' field bad syntax : '%s'", keyMethod, gm.get(keyMethod))
-			}
-			if !reHTTPVersion.MatchString(gm.get(keyVersion)) {
-				return fmt.Errorf("'%s' bad syntax : '%s'", keyVersion, gm.get(keyVersion))
-			}
-		}
-	}
-
-	return nil
-}
 
 var (
-	reVhost          = regexp.MustCompile(`[\da-z.:-]+`) // TODO: not sure about this
-	reAddress        = regexp.MustCompile(`[\da-f.:]+|localhost`)
-	reCode           = regexp.MustCompile(`[1-9]\d{2}`)
-	reBytesSent      = regexp.MustCompile(`\d+|-`)
-	reResponseLength = regexp.MustCompile(`\d+|-`)
-	reResponseTime   = regexp.MustCompile(`\d+|\d+\.\d+|-`)
-	reHTTPMethod     = regexp.MustCompile(`[A-Z]+`)
-	reHTTPVersion    = regexp.MustCompile(`HTTP/[0-9.]+`)
+	errUnmatchedLine       = errors.New("unmatched line")
+	errInvalidRequestField = errors.New("invalid request field")
 )
 
-var reqParser = newCSVParser(csvPattern{
-	{keyMethod, 0},
-	{keyURL, 1},
-	{keyVersion, 2},
-})
+func newLogParser(pattern logPattern) *logParser {
+	return &logParser{
+		pattern: pattern,
+	}
+}
+
+func (p *logParser) SetDataSource(r io.Reader) {
+	p.parser = csv.NewReader(r)
+	p.parser.Comma = ' '
+	p.parser.ReuseRecord = true
+	p.parser.TrimLeadingSpace = true
+	p.parser.FieldsPerRecord = -1
+}
+
+func (p *logParser) Read() (logLine, error) {
+	log := logLine{
+		Status:    -1,
+		BytesSent: -1,
+		RespTime:  -1,
+		ReqLength: -1,
+	}
+	records, err := p.parser.Read()
+	if err != nil {
+		return log, err
+	}
+
+	if len(records) <= p.pattern.MaxIndex() {
+		return log, errUnmatchedLine
+	}
+
+	for field, idx := range p.pattern.Mapping {
+		if idx < 0 {
+			continue
+		}
+		switch fieldID(field) {
+		case fieldRemoteAddr:
+			log.RemoteAddr = records[idx]
+		case fieldRequest:
+			log.Request = records[idx]
+			var err error
+			log.Method, log.URI, log.Version, err = parseRequest(log.Request)
+			if err != nil {
+				return log, err
+			}
+		case fieldStatus:
+			val, err := strconv.Atoi(records[idx])
+			if err != nil {
+				return log, err
+			}
+			log.Status = val
+		case fieldBytesSent:
+			val, err := strconv.Atoi(records[idx])
+			if err != nil {
+				return log, err
+			}
+			log.BytesSent = val
+		case fieldHost:
+			log.Host = records[idx]
+		case fieldRespTime:
+			val, err := strconv.ParseFloat(records[idx], 64)
+			if err != nil {
+				return log, err
+			}
+			log.RespTime = val
+		case fieldRespTimeUpstream:
+			log.RespTimeUpstream = records[idx]
+		case fieldReqLength:
+			val, err := strconv.Atoi(records[idx])
+			if err != nil {
+				return log, err
+			}
+			log.ReqLength = val
+		case fieldUserDefined:
+			log.UserDefined = records[idx]
+		}
+	}
+
+	return log, nil
+}
+
+func parseRequest(request string) (method string, uri string, version string, err error) {
+	fields := strings.Fields(request)
+	if len(fields) != 3 {
+		err = errInvalidRequestField
+		return
+	}
+	return fields[0], fields[1], fields[2], nil
+}

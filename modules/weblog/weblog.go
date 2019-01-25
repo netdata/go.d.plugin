@@ -18,29 +18,34 @@ func init() {
 
 func New() *WebLog {
 	return &WebLog{
-		DoCodesAggregate: true,
-		DoAllTimeIPs:     true,
-
+		Config: Config{
+			DoCodesAggregate: true,
+			DoAllTimeIPs:     true,
+		},
 		worker: newWorker(),
 	}
 }
 
-type WebLog struct {
-	modules.Base
+type (
+	Config struct {
+		Path             string        `yaml:"path" validate:"required"`
+		Filter           rawfilter     `yaml:"filter"`
+		URLCats          []rawcategory `yaml:"categories"`
+		UserCats         []rawcategory `yaml:"user_categories"`
+		CustomParser     csvPattern    `yaml:"custom_log_format"`
+		Histogram        []float64     `yaml:"histogram"`
+		DoCodesAggregate bool          `yaml:"response_codes_aggregate"`
+		DoAllTimeIPs     bool          `yaml:"all_time_ips"`
+	}
 
-	Path             string        `yaml:"path" validate:"required"`
-	Filter           rawfilter     `yaml:"filter"`
-	URLCats          []rawcategory `yaml:"categories"`
-	UserCats         []rawcategory `yaml:"user_categories"`
-	CustomParser     csvPattern    `yaml:"custom_log_format"`
-	Histogram        []int         `yaml:"histogram"`
-	DoCodesAggregate bool          `yaml:"response_codes_aggregate"`
-	DoAllTimeIPs     bool          `yaml:"all_time_ips"`
-
-	worker *worker
-	charts *modules.Charts
-	gm     groupMap
-}
+	WebLog struct {
+		modules.Base
+		Config
+		worker *worker
+		charts *modules.Charts
+		gm     groupMap
+	}
+)
 
 func (w *WebLog) Cleanup() {
 	w.worker.stop()

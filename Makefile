@@ -30,7 +30,7 @@ fmt:
 	hack/go-fmt.sh .
 
 .PHONY: vet
-vet: 
+vet:
 	go vet ./...
 
 .PHONY: release
@@ -46,7 +46,7 @@ dev-build:
 	docker-compose build
 
 dev-up:
-	docker-compose up -d
+	docker-compose up -d --remove-orphans
 
 .PHONY: dev-exec
 dev-exec: ## Get into development environment
