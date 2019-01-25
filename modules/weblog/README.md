@@ -23,8 +23,17 @@ log_format custom2  '$remote_addr - $remote_user [$time_local] "$request" $statu
 
 ### Examples
 
-|format  |remote_addr |logname|remote_user|date                 |TZ    |request                 |status|bytes_sent|referer |User-Agent|
-|--------|------------|:-----:|:---------:|---------------------|------|------------------------|------|----------|--------|----------|
-|Index   |0           |1      |2          |3                    |4     |5                       |6     |7         |8       |9         |
-|common  |64.242.88.10|-      |-          |[07/Mar/2004:16:47:12|-0800]|GET /robots.txt HTTP/1.1|200   |68        |        |          |
-|combined|64.242.88.10|-      |-          |[07/Mar/2004:16:47:12|-0800]|GET /robots.txt HTTP/1.1|200   |68        |<refer> |<UA>      |
+|format  |remote_addr|logname|remote_user|date                 |TZ    |request                 |status|bytes_sent|referer |User-Agent|cookie|$request_time|
+
+
+|Index       |0           |1      |2          |3                    |4     |5                       |6     |7         |8       |9         |10    |11          |
+|:----------:|:----------:|:-----:|:---------:|:-------------------:|:----:|:----------------------:|:----:|:--------:|:------:|:--------:|:----:|:----------:|
+|Format      |remote_addr |logname|remote_user|date                 |TZ    |request                 |status|bytes_sent|referer |User-Agent|cookie|request_time|
+|**common**  |64.242.88.10|-      |-          |[07/Mar/2004:16:47:12|-0800]|GET /robots.txt HTTP/1.1|200   |68        |        |          |      |            |
+|**combined**|64.242.88.10|-      |-          |[07/Mar/2004:16:47:12|-0800]|GET /robots.txt HTTP/1.1|200   |68        |refer   |UA        |      |            |
+|**custom1** |64.242.88.10|-      |-          |[07/Mar/2004:16:47:12|-0800]|GET /robots.txt HTTP/1.1|200   |68        |refer   |UA        |Cookie|0.05        |
+
+|Index       |0           |1      |2          |3                    |4     |5                       |6     |7         |8             |9           |
+|:----------:|:----------:|:-----:|:---------:|:-------------------:|:----:|:----------------------:|:----:|:--------:|:------------:|:----------:|
+|Format      |remote_addr |logname|remote_user|date                 |TZ    |request                 |status|bytes_sent|bytes_received|request_time|
+|**costom2** |64.242.88.10|-      |-          |[07/Mar/2004:16:47:12|-0800]|GET /robots.txt HTTP/1.1|200   |68        |24            |0.05        |
