@@ -57,9 +57,16 @@ func (r *Rabbitmq) Init() bool {
 		return false
 	}
 
+	client, err := web.NewHTTPClient(r.Client)
+
+	if err != nil {
+		r.Error(err)
+		return false
+	}
+
 	r.apiClient = &apiClient{
 		req:        r.Request,
-		httpClient: web.NewHTTPClient(r.Client),
+		httpClient: client,
 	}
 
 	r.Debugf("using URL %s", r.URL)

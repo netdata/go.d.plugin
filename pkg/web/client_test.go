@@ -9,10 +9,9 @@ import (
 )
 
 func TestNewHTTPClient(t *testing.T) {
-	client := NewHTTPClient(Client{
+	client, _ := NewHTTPClient(Client{
 		Timeout:           Duration{Duration: time.Second * 5},
 		NotFollowRedirect: true,
-		TLSSkipVerify:     true,
 		ProxyURL:          "http://127.0.0.1:3128",
 	})
 

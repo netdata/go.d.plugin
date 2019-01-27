@@ -70,10 +70,17 @@ func (c *Consul) Init() bool {
 		return false
 	}
 
+	client, err := web.NewHTTPClient(c.Client)
+
+	if err != nil {
+		c.Error(err)
+		return false
+	}
+
 	c.apiClient = &apiClient{
 		aclToken:   c.ACLToken,
 		req:        c.Request,
-		httpClient: web.NewHTTPClient(c.Client),
+		httpClient: client,
 	}
 
 	if c.ChecksFilter != "" {

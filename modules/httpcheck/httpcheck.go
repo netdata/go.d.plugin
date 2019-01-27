@@ -111,7 +111,10 @@ func (hc *HTTPCheck) Init() bool {
 	}
 
 	// create HTTP client
-	hc.client = web.NewHTTPClient(hc.Client)
+	if hc.client, err = web.NewHTTPClient(hc.Client); err != nil {
+		hc.Error(err)
+		return false
+	}
 
 	// create response match
 	if hc.match, err = regexp.Compile(hc.ResponseMatch); err != nil {

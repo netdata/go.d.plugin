@@ -100,10 +100,17 @@ func (a *Activemq) Init() bool {
 		a.topicsFilter = matcher.WithCache(f)
 	}
 
+	client, err := web.NewHTTPClient(a.Client)
+
+	if err != nil {
+		a.Error(err)
+		return false
+	}
+
 	a.apiClient = &apiClient{
 		webadmin:   a.Webadmin,
 		req:        a.Request,
-		httpClient: web.NewHTTPClient(a.Client),
+		httpClient: client,
 	}
 
 	return true

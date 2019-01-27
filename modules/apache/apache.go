@@ -57,9 +57,16 @@ func (a *Apache) Init() bool {
 		return false
 	}
 
+	client, err := web.NewHTTPClient(a.Client)
+
+	if err != nil {
+		a.Error(err)
+		return false
+	}
+
 	a.apiClient = &apiClient{
 		req:        a.Request,
-		httpClient: web.NewHTTPClient(a.Client),
+		httpClient: client,
 	}
 
 	a.Debugf("using URL %s", a.Request.URL)

@@ -79,7 +79,14 @@ func (s *Solr) Init() bool {
 		return false
 	}
 
-	s.client = web.NewHTTPClient(s.Client)
+	client, err := web.NewHTTPClient(s.Client)
+
+	if err != nil {
+		s.Error(err)
+		return false
+	}
+
+	s.client = client
 
 	return true
 }

@@ -51,9 +51,16 @@ func (n *Nginx) Init() bool {
 		return false
 	}
 
+	client, err := web.NewHTTPClient(n.Client)
+
+	if err != nil {
+		n.Error(err)
+		return false
+	}
+
 	n.apiClient = &apiClient{
 		req:        n.Request,
-		httpClient: web.NewHTTPClient(n.Client),
+		httpClient: client,
 	}
 
 	n.Debugf("using URL %s", n.URL)
