@@ -1,4 +1,4 @@
-# oracledb
+# oracledb (completely disabled)
 
 Module monitor Oracle DB performance and health metrics.
 
