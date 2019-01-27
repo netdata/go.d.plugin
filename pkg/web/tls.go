@@ -51,8 +51,7 @@ func makeCertPool(certFiles []string) (*x509.CertPool, error) {
 		if err != nil {
 			return nil, fmt.Errorf("could not read certificate %q: %v", certFile, err)
 		}
-		ok := pool.AppendCertsFromPEM(pem)
-		if !ok {
+		if !pool.AppendCertsFromPEM(pem) {
 			return nil, fmt.Errorf("could not parse any PEM certificates %q: %v", certFile, err)
 		}
 	}
@@ -62,8 +61,7 @@ func makeCertPool(certFiles []string) (*x509.CertPool, error) {
 func loadCertificate(config *tls.Config, certFile, keyFile string) error {
 	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
 	if err != nil {
-		return fmt.Errorf(
-			"could not load keypair %s:%s: %v", certFile, keyFile, err)
+		return fmt.Errorf("could not load keypair %s:%s: %v", certFile, keyFile, err)
 	}
 
 	config.Certificates = []tls.Certificate{cert}
