@@ -13,10 +13,10 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/logstash"
 	_ "github.com/netdata/go.d.plugin/modules/nginx"
 	// _ "github.com/netdata/go.d.plugin/modules/nvidia_nvml" # wil be imported by cgo enabled version
+	// _ "github.com/netdata/go.d.plugin/modules/oracledb" # wil be imported by cgo enabled version
 	_ "github.com/netdata/go.d.plugin/modules/portcheck"
 	_ "github.com/netdata/go.d.plugin/modules/rabbitmq"
 	_ "github.com/netdata/go.d.plugin/modules/solr"
 	_ "github.com/netdata/go.d.plugin/modules/springboot2"
 	_ "github.com/netdata/go.d.plugin/modules/weblog"
-	// Oracle DB should be configured with specific dsn.
 )
