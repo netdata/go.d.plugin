@@ -57,9 +57,16 @@ func (l *Lighttpd) Init() bool {
 		return false
 	}
 
+	client, err := web.NewHTTPClient(l.Client)
+
+	if err != nil {
+		l.Error(err)
+		return false
+	}
+
 	l.apiClient = &apiClient{
 		req:        l.Request,
-		httpClient: web.NewHTTPClient(l.Client),
+		httpClient: client,
 	}
 
 	l.Debugf("using URL %s", l.URL)

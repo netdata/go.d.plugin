@@ -68,7 +68,12 @@ func (SpringBoot2) Cleanup() {}
 
 // Init makes initialization
 func (s *SpringBoot2) Init() bool {
-	s.prom = prometheus.New(web.NewHTTPClient(s.Client), s.Request)
+	client, err := web.NewHTTPClient(s.Client)
+	if err != nil {
+		s.Error(err)
+		return false
+	}
+	s.prom = prometheus.New(client, s.Request)
 	return true
 }
 
