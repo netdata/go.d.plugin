@@ -117,6 +117,7 @@ func (m *MySQL) Collect() map[string]int64 {
 		return nil
 	}
 
+	// TODO: do better
 	if m.doSlave {
 		if err := m.collectSlaveStatus(metrics); err != nil {
 			m.Errorf("error on collecting slave status: %v", err)
@@ -238,7 +239,6 @@ func (m *MySQL) collectSlaveStatus(metrics map[string]int64) error {
 	}
 
 	for index, columnName := range columns {
-
 		switch columnName {
 		case "Slave_SQL_Running", "Slave_IO_Running":
 			val := *values[index].(*sql.NullString)
