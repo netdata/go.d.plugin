@@ -173,47 +173,6 @@ func (m *MySQL) collectGlobalStats(metrics map[string]int64) error {
 	return nil
 }
 
-//func slaveSeconds(value interface{}) int64 {
-//	v, err := strconv.ParseInt(fmt.Sprintf("%s", value), 10, 64)
-//	if err != nil {
-//		return -1
-//	}
-//	return v
-//}
-//
-//func slaveRunning(value interface{}) int64 {
-//	if v, ok := value.(string); ok {
-//		if v == "Yes" {
-//			return 1
-//		}
-//
-//		return -1
-//	}
-//
-//	if v := fmt.Sprintf("%s", value); v == "Yes" {
-//		return 1
-//	}
-//
-//	return -1
-//}
-//
-//var slaveStats = map[string]func(value interface{}) int64{
-//	"Seconds_Behind_Master": slaveSeconds,
-//	"Slave_SQL_Running":     slaveRunning,
-//	"Slave_IO_Running":      slaveRunning,
-//}
-
-// https://dev.mysql.com/doc/refman/8.0/en/show-slave-status.html
-func (m *MySQL) collectSlaveStatus(metrics map[string]int64) error {
-	rows, err := m.db.Query(querySlaveStatus)
-	if err != nil {
-		return err
-	}
-	_ = rows
-
-	return nil
-}
-
 // https://dev.mysql.com/doc/refman/8.0/en/show-variables.html
 func (m *MySQL) collectMaxConnections(metrics map[string]int64) error {
 	// only one result, i.e "max_conections" = 151
@@ -239,6 +198,71 @@ func (m *MySQL) collectMaxConnections(metrics map[string]int64) error {
 	}
 
 	metrics["max_connections"] = value
+
+	return nil
+}
+
+// https://dev.mysql.com/doc/refman/8.0/en/show-slave-status.html
+func (m *MySQL) collectSlaveStatus(metrics map[string]int64) error {
+	// // https://github.com/gdaws/mysql-slave-status
+	rows, err := m.db.Query(querySlaveStatus)
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	columns, err := rows.Columns()
+
+	if err != nil {
+		return err
+	}
+
+	if !rows.Next() {
+		if err = rows.Err(); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	values := make([]interface{}, len(columns))
+
+	for index := range values {
+		values[index] = new(sql.NullString)
+	}
+
+	err = rows.Scan(values...)
+
+	if err != nil {
+		return err
+	}
+
+	for index, columnName := range columns {
+
+		switch columnName {
+		case "Slave_SQL_Running", "Slave_IO_Running":
+			val := *values[index].(*sql.NullString)
+			if !val.Valid {
+				continue
+			}
+			if val.String == "Yes" {
+				metrics[strings.ToLower(columnName)] = 1
+			} else {
+				metrics[strings.ToLower(columnName)] = 0
+			}
+		case "Seconds_Behind_Master":
+			val := *values[index].(*sql.NullString)
+			if !val.Valid {
+				continue
+			}
+			v, err := strconv.ParseInt(val.String, 10, 64)
+			if err != nil {
+				continue
+			}
+			metrics[strings.ToLower(columnName)] = v
+
+		}
+	}
 
 	return nil
 }

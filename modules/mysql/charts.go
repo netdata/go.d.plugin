@@ -497,14 +497,14 @@ var slaveCharts = Charts{
 		},
 	},
 	{
-		ID:    "slave_status",
-		Title: "Slave Status",
-		Units: "status",
+		ID:    "slave_thread_running",
+		Title: "I/O / SQL Thread Running State",
+		Units: "bool",
 		Fam:   "slave",
-		Ctx:   "mysql.slave_status",
+		Ctx:   "mysql.slave_thread_running",
 		Dims: Dims{
-			{ID: "slave_sql_running", Name: "sql_running"},
-			{ID: "slave_io_running", Name: "io_running"},
+			{ID: "slave_sql_running", Name: "sql"},
+			{ID: "slave_io_running", Name: "io"},
 		},
 	},
 }
