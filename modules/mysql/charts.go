@@ -31,14 +31,14 @@ var charts = Charts{
 		Dims: Dims{
 			{ID: "queries", Name: "queries", Algo: modules.Incremental},
 			{ID: "questions", Name: "questions", Algo: modules.Incremental},
-			{ID: "slow_queries", Name: "slow_queries", Algo: modules.Incremental},
+			{ID: "slow_queries", Name: "slow queries", Algo: modules.Incremental},
 		},
 	},
 	{
 		ID:    "queries_type",
-		Title: "Queries type",
+		Title: "Queries By Type",
 		Units: "queries/s",
-		Fam:   "queries_type",
+		Fam:   "queries",
 		Ctx:   "mysql.queries_type",
 		Type:  modules.Stacked,
 		Dims: Dims{
@@ -46,7 +46,7 @@ var charts = Charts{
 			{ID: "com_delete", Name: "delete", Algo: modules.Incremental},
 			{ID: "com_update", Name: "update", Algo: modules.Incremental},
 			{ID: "com_insert", Name: "insert", Algo: modules.Incremental},
-			{ID: "qcache_hits", Name: "cache_hits", Algo: modules.Incremental},
+			{ID: "qcache_hits", Name: "cache hits", Algo: modules.Incremental},
 			{ID: "com_replace", Name: "replace", Algo: modules.Incremental},
 		},
 	},
@@ -60,15 +60,15 @@ var charts = Charts{
 			{ID: "handler_commit", Name: "commit", Algo: modules.Incremental},
 			{ID: "handler_delete", Name: "delete", Algo: modules.Incremental},
 			{ID: "handler_prepare", Name: "prepare", Algo: modules.Incremental},
-			{ID: "handler_read_first", Name: "read_first", Algo: modules.Incremental},
-			{ID: "handler_read_key", Name: "read_key", Algo: modules.Incremental},
-			{ID: "handler_read_next", Name: "read_next", Algo: modules.Incremental},
-			{ID: "handler_read_prev", Name: "read_prev", Algo: modules.Incremental},
-			{ID: "handler_read_rnd", Name: "read_rnd", Algo: modules.Incremental},
-			{ID: "handler_read_rnd_next", Name: "read_rnd_next", Algo: modules.Incremental},
+			{ID: "handler_read_first", Name: "read first", Algo: modules.Incremental},
+			{ID: "handler_read_key", Name: "read key", Algo: modules.Incremental},
+			{ID: "handler_read_next", Name: "read next", Algo: modules.Incremental},
+			{ID: "handler_read_prev", Name: "read prev", Algo: modules.Incremental},
+			{ID: "handler_read_rnd", Name: "read rnd", Algo: modules.Incremental},
+			{ID: "handler_read_rnd_next", Name: "read rnd next", Algo: modules.Incremental},
 			{ID: "handler_rollback", Name: "rollback", Algo: modules.Incremental},
 			{ID: "handler_savepoint", Name: "savepoint", Algo: modules.Incremental},
-			{ID: "handler_savepoint_rollback", Name: "savepoint_rollback", Algo: modules.Incremental},
+			{ID: "handler_savepoint_rollback", Name: "savepointrollback", Algo: modules.Incremental},
 			{ID: "handler_update", Name: "update", Algo: modules.Incremental},
 			{ID: "handler_write", Name: "write", Algo: modules.Incremental},
 		},
@@ -91,10 +91,10 @@ var charts = Charts{
 		Fam:   "issues",
 		Ctx:   "mysql.join_issues",
 		Dims: Dims{
-			{ID: "select_full_join", Name: "full_join", Algo: modules.Incremental},
-			{ID: "select_full_range_join", Name: "full_range_join", Algo: modules.Incremental},
+			{ID: "select_full_join", Name: "full join", Algo: modules.Incremental},
+			{ID: "select_full_range_join", Name: "full range join", Algo: modules.Incremental},
 			{ID: "select_range", Name: "range", Algo: modules.Incremental},
-			{ID: "select_range_check", Name: "range_check", Algo: modules.Incremental},
+			{ID: "select_range_check", Name: "range check", Algo: modules.Incremental},
 			{ID: "select_scan", Name: "scan", Algo: modules.Incremental},
 		},
 	},
@@ -105,7 +105,7 @@ var charts = Charts{
 		Fam:   "issues",
 		Ctx:   "mysql.sort_issues",
 		Dims: Dims{
-			{ID: "sort_merge_passes", Name: "merge_passes", Algo: modules.Incremental},
+			{ID: "sort_merge_passes", Name: "merge passes", Algo: modules.Incremental},
 			{ID: "sort_range", Name: "range", Algo: modules.Incremental},
 			{ID: "sort_scan", Name: "scan", Algo: modules.Incremental},
 		},
@@ -113,11 +113,11 @@ var charts = Charts{
 	{
 		ID:    "tmp",
 		Title: "Tmp Operations",
-		Units: "counter",
+		Units: "events/s",
 		Fam:   "temporaries",
 		Ctx:   "mysql.tmp",
 		Dims: Dims{
-			{ID: "created_tmp_disk_tables", Name: "disk_tables", Algo: modules.Incremental},
+			{ID: "created_tmp_disk_tables", Name: "disk tables", Algo: modules.Incremental},
 			{ID: "created_tmp_files", Name: "files", Algo: modules.Incremental},
 			{ID: "created_tmp_tables", Name: "tables", Algo: modules.Incremental},
 		},
@@ -142,7 +142,7 @@ var charts = Charts{
 		Dims: Dims{
 			{ID: "threads_connected", Name: "active"},
 			{ID: "max_connections", Name: "limit"},
-			{ID: "max_used_connections", Name: "max_active"},
+			{ID: "max_used_connections", Name: "max active"},
 		},
 	},
 	{
@@ -233,7 +233,7 @@ var charts = Charts{
 		Ctx:   "mysql.innodb_log",
 		Dims: Dims{
 			{ID: "innodb_log_waits", Name: "waits", Algo: modules.Incremental},
-			{ID: "innodb_log_write_requests", Name: "write_requests", Algo: modules.Incremental, Mul: -1},
+			{ID: "innodb_log_write_requests", Name: "write requests", Algo: modules.Incremental, Mul: -1},
 			{ID: "innodb_log_writes", Name: "writes", Algo: modules.Incremental, Mul: -1},
 		},
 	},
@@ -277,7 +277,7 @@ var charts = Charts{
 		Ctx:   "mysql.innodb_cur_row_lock",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "innodb_row_lock_current_waits", Name: "current_waits"},
+			{ID: "innodb_row_lock_current_waits", Name: "current waits"},
 		},
 	},
 	{
@@ -470,14 +470,14 @@ var charts = Charts{
 	{
 		ID:    "connection_errors",
 		Title: "Connection Errors",
-		Units: "connections/s",
+		Units: "errors/s",
 		Fam:   "connections",
 		Ctx:   "mysql.connection_errors",
 		Dims: Dims{
 			{ID: "connection_errors_accept", Name: "accept", Algo: modules.Incremental},
 			{ID: "connection_errors_internal", Name: "internal", Algo: modules.Incremental},
 			{ID: "connection_errors_max_connections", Name: "max", Algo: modules.Incremental},
-			{ID: "connection_errors_peer_address", Name: "peer_addr", Algo: modules.Incremental},
+			{ID: "connection_errors_peer_address", Name: "peer addr", Algo: modules.Incremental},
 			{ID: "connection_errors_select", Name: "select", Algo: modules.Incremental},
 			{ID: "connection_errors_tcpwrap", Name: "tcpwrap", Algo: modules.Incremental},
 		},
@@ -493,7 +493,7 @@ var slaveCharts = Charts{
 		Ctx:   "mysql.slave_behind",
 		Type:  modules.Line,
 		Dims: Dims{
-			{ID: "seconds_behind_master", Name: "seconds"},
+			{ID: "seconds_behind_master", Name: "time"},
 		},
 	},
 	{
@@ -512,7 +512,7 @@ var slaveCharts = Charts{
 var galeraCharts = Charts{
 	{
 		ID:    "galera_writesets",
-		Title: "Replicated writesets",
+		Title: "Replicated Writesets",
 		Units: "writesets/s",
 		Fam:   "galera",
 		Ctx:   "mysql.galera_writesets",
@@ -523,7 +523,7 @@ var galeraCharts = Charts{
 	},
 	{
 		ID:    "galera_bytes",
-		Title: "Replicated bytes",
+		Title: "Replicated Bytes",
 		Units: "KiB/s",
 		Fam:   "galera",
 		Ctx:   "mysql.galera_bytes",
@@ -535,7 +535,7 @@ var galeraCharts = Charts{
 	},
 	{
 		ID:    "galera_queue",
-		Title: "Galera queue",
+		Title: "Galera Queue",
 		Units: "writesets",
 		Fam:   "galera",
 		Ctx:   "mysql.galera_queue",
@@ -546,20 +546,20 @@ var galeraCharts = Charts{
 	},
 	{
 		ID:    "galera_conflicts",
-		Title: "Replication conflicts",
+		Title: "Replication Conflicts",
 		Units: "transactions",
 		Fam:   "galera",
 		Ctx:   "mysql.galera_conflicts",
 		Type:  modules.Area,
 		Dims: Dims{
-			{ID: "wsrep_local_bf_aborts", Name: "bf_aborts", Algo: modules.Incremental},
-			{ID: "wsrep_local_cert_failures", Name: "cert_fails", Algo: modules.Incremental, Mul: -1},
+			{ID: "wsrep_local_bf_aborts", Name: "bf aborts", Algo: modules.Incremental},
+			{ID: "wsrep_local_cert_failures", Name: "cert fails", Algo: modules.Incremental, Mul: -1},
 		},
 	},
 	{
 		ID:    "galera_flow_control",
-		Title: "Flow control",
-		Units: "millisec",
+		Title: "Flow Control",
+		Units: "ms",
 		Fam:   "galera",
 		Ctx:   "mysql.galera_flow_control",
 		Type:  modules.Area,
