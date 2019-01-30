@@ -7,7 +7,7 @@ require (
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/go-playground/validator v9.23.0+incompatible
-	github.com/golang/protobuf v1.2.0 // indirect
+	github.com/go-sql-driver/mysql v1.4.1
 	github.com/hpcloud/tail v1.0.0
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/mattn/go-isatty v0.0.4
@@ -22,6 +22,7 @@ require (
 	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9 // indirect
 	golang.org/x/net v0.0.0-20181201002055-351d144fa1fc // indirect
 	golang.org/x/sys v0.0.0-20181011152604-fa43e7bc11ba // indirect
+	google.golang.org/appengine v1.4.0 // indirect
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/goracle.v2 v2.12.0
