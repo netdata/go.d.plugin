@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -20,7 +20,7 @@ var (
 func TestNew(t *testing.T) {
 	mod := New()
 
-	assert.Implements(t, (*modules.Module)(nil), New())
+	assert.Implements(t, (*module.Module)(nil), New())
 	assert.NotNil(t, mod.charts)
 	assert.NotNil(t, mod.activeChecks)
 	assert.Equal(t, defaultMaxChecks, mod.MaxChecks)

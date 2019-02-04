@@ -4,16 +4,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
 	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	modules.Register("springboot2", modules.Creator{
-		Create: func() modules.Module { return New() },
+	module.Register("springboot2", module.Creator{
+		Create: func() module.Module { return New() },
 	})
 }
 
@@ -32,7 +33,7 @@ func New() *SpringBoot2 {
 
 // SpringBoot2 Spring boot 2 module
 type SpringBoot2 struct {
-	modules.Base
+	module.Base
 
 	web.HTTP `yaml:",inline"`
 

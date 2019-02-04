@@ -8,14 +8,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/modules"
-
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
-	assert.Implements(t, (*modules.Module)(nil), New())
+	assert.Implements(t, (*module.Module)(nil), New())
 }
 
 func TestHTTPCheck_Cleanup(t *testing.T) {
@@ -44,7 +43,7 @@ func TestHTTPCheck_Check(t *testing.T) {
 
 func TestHTTPCheck_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
-	assert.NoError(t, modules.CheckCharts(*New().Charts()...))
+	assert.NoError(t, module.CheckCharts(*New().Charts()...))
 }
 
 func TestHTTPCheck_Collect(t *testing.T) {

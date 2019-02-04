@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -24,7 +24,7 @@ func TestLighttpd_Cleanup(t *testing.T) {
 func TestNew(t *testing.T) {
 	mod := New()
 
-	assert.Implements(t, (*modules.Module)(nil), mod)
+	assert.Implements(t, (*module.Module)(nil), mod)
 	assert.Equal(t, defaultURL, mod.URL)
 	assert.Equal(t, defaultHTTPTimeout, mod.Timeout.Duration)
 }

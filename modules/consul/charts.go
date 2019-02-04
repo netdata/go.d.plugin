@@ -1,16 +1,16 @@
 package consul
 
 import (
-	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go-orchestrator/module"
 )
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Chart is an alias for modules.Chart
-	Chart = modules.Chart
-	// Dim is an alias for modules.Dim
-	Dim = modules.Dim
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Chart is an alias for module.Chart
+	Chart = module.Chart
+	// Dim is an alias for module.Dim
+	Dim = module.Dim
 )
 
 var charts = Charts{

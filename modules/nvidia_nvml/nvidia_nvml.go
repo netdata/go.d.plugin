@@ -3,18 +3,17 @@ package nvidia_nvml
 import (
 	"sync/atomic"
 
-	"github.com/netdata/go.d.plugin/modules"
-
 	"github.com/mindprince/gonvml"
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		//DisabledByDefault: true,
-		Create: func() modules.Module { return New() },
+		Create: func() module.Module { return New() },
 	}
 
-	modules.Register("nvidia_nvml", creator)
+	module.Register("nvidia_nvml", creator)
 }
 
 var once = func() func() bool {
@@ -33,7 +32,7 @@ func New() *NvidiaNVML {
 
 // NvidiaNVML NvidiaNVML module.
 type NvidiaNVML struct {
-	modules.Base
+	module.Base
 	charts *Charts
 }
 

@@ -5,10 +5,28 @@ import (
 	"os"
 	"path"
 
-	"github.com/netdata/go.d.plugin/cli"
-	"github.com/netdata/go.d.plugin/godplugin"
-	"github.com/netdata/go.d.plugin/logger"
-	"github.com/netdata/go.d.plugin/pkg/multipath"
+	"github.com/netdata/go-orchestrator"
+	"github.com/netdata/go-orchestrator/cli"
+	"github.com/netdata/go-orchestrator/logger"
+	"github.com/netdata/go-orchestrator/pkg/multipath"
+
+	_ "github.com/netdata/go.d.plugin/modules/activemq"
+	_ "github.com/netdata/go.d.plugin/modules/apache"
+	_ "github.com/netdata/go.d.plugin/modules/consul"
+	_ "github.com/netdata/go.d.plugin/modules/dnsquery"
+	_ "github.com/netdata/go.d.plugin/modules/example"
+	_ "github.com/netdata/go.d.plugin/modules/freeradius"
+	_ "github.com/netdata/go.d.plugin/modules/httpcheck"
+	_ "github.com/netdata/go.d.plugin/modules/lighttpd"
+	_ "github.com/netdata/go.d.plugin/modules/lighttpd2"
+	_ "github.com/netdata/go.d.plugin/modules/logstash"
+	_ "github.com/netdata/go.d.plugin/modules/mysql"
+	_ "github.com/netdata/go.d.plugin/modules/nginx"
+	_ "github.com/netdata/go.d.plugin/modules/portcheck"
+	_ "github.com/netdata/go.d.plugin/modules/rabbitmq"
+	_ "github.com/netdata/go.d.plugin/modules/solr"
+	_ "github.com/netdata/go.d.plugin/modules/springboot2"
+	_ "github.com/netdata/go.d.plugin/modules/weblog"
 )
 
 var (
@@ -28,7 +46,7 @@ func main() {
 		logger.SetSeverity(logger.DEBUG)
 	}
 
-	plugin := createPlugin(opt)
+	plugin := newPlugin(opt)
 
 	if !plugin.Setup() {
 		return
@@ -37,17 +55,10 @@ func main() {
 	plugin.Serve()
 }
 
-func createPlugin(opt *cli.Option) *godplugin.Plugin {
-	plugin := godplugin.New()
-
+func newPlugin(opt *cli.Option) *orchestrator.Orchestrator {
+	plugin := orchestrator.New()
 	plugin.Option = opt
 	plugin.ConfigPath = configPaths
-	plugin.Out = os.Stdout
-
-	if plugin.Option.ConfigDir != "" {
-		plugin.ConfigPath = multipath.New(plugin.Option.ConfigDir)
-	}
-
 	return plugin
 }
 
@@ -59,6 +70,5 @@ func parseCLI() *cli.Option {
 		}
 		os.Exit(0)
 	}
-
 	return opt
 }

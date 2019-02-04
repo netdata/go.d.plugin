@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -24,7 +24,7 @@ func TestLogstash_Cleanup(t *testing.T) {
 func TestNew(t *testing.T) {
 	job := New()
 
-	assert.Implements(t, (*modules.Module)(nil), job)
+	assert.Implements(t, (*module.Module)(nil), job)
 	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }

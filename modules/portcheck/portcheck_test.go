@@ -5,14 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
-
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
-	assert.Implements(t, (*modules.Module)(nil), New())
+	assert.Implements(t, (*module.Module)(nil), New())
 }
 
 func TestPortCheck_Init(t *testing.T) {
@@ -56,7 +55,7 @@ func TestPortCheck_Cleanup(t *testing.T) {
 
 func TestPortCheck_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
-	assert.NoError(t, modules.CheckCharts(*New().Charts()...))
+	assert.NoError(t, module.CheckCharts(*New().Charts()...))
 }
 
 func TestPortCheck_Collect(t *testing.T) {

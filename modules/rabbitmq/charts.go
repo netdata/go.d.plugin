@@ -1,12 +1,12 @@
 package rabbitmq
 
-import "github.com/netdata/go.d.plugin/modules"
+import "github.com/netdata/go-orchestrator/module"
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
 )
 
 var charts = Charts{
@@ -16,7 +16,7 @@ var charts = Charts{
 		Units: "messages",
 		Fam:   "overview",
 		Ctx:   "rabbitmq.queued_messages",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "queue_totals_messages_ready", Name: "ready"},
 			{ID: "queue_totals_messages_unacknowledged", Name: "unacknowledged"},
@@ -29,18 +29,18 @@ var charts = Charts{
 		Fam:   "overview",
 		Ctx:   "rabbitmq.message_rates",
 		Dims: Dims{
-			{ID: "message_stats_ack", Name: "ack", Algo: modules.Incremental},
-			{ID: "message_stats_publish", Name: "publish", Algo: modules.Incremental},
-			{ID: "message_stats_publish_in", Name: "publish in", Algo: modules.Incremental},
-			{ID: "message_stats_publish_out", Name: "publish out", Algo: modules.Incremental},
-			{ID: "message_stats_confirm", Name: "confirm", Algo: modules.Incremental},
-			{ID: "message_stats_deliver", Name: "deliver", Algo: modules.Incremental},
-			{ID: "message_stats_deliver_no_ack", Name: "deliver no ack", Algo: modules.Incremental},
-			{ID: "message_stats_get", Name: "get", Algo: modules.Incremental},
-			{ID: "message_stats_get_no_ack", Name: "get no ack", Algo: modules.Incremental},
-			{ID: "message_stats_deliver_get", Name: "deliver get", Algo: modules.Incremental},
-			{ID: "message_stats_redeliver", Name: "redeliver", Algo: modules.Incremental},
-			{ID: "message_stats_return_unroutable", Name: "return unroutable", Algo: modules.Incremental},
+			{ID: "message_stats_ack", Name: "ack", Algo: module.Incremental},
+			{ID: "message_stats_publish", Name: "publish", Algo: module.Incremental},
+			{ID: "message_stats_publish_in", Name: "publish in", Algo: module.Incremental},
+			{ID: "message_stats_publish_out", Name: "publish out", Algo: module.Incremental},
+			{ID: "message_stats_confirm", Name: "confirm", Algo: module.Incremental},
+			{ID: "message_stats_deliver", Name: "deliver", Algo: module.Incremental},
+			{ID: "message_stats_deliver_no_ack", Name: "deliver no ack", Algo: module.Incremental},
+			{ID: "message_stats_get", Name: "get", Algo: module.Incremental},
+			{ID: "message_stats_get_no_ack", Name: "get no ack", Algo: module.Incremental},
+			{ID: "message_stats_deliver_get", Name: "deliver get", Algo: module.Incremental},
+			{ID: "message_stats_redeliver", Name: "redeliver", Algo: module.Incremental},
+			{ID: "message_stats_return_unroutable", Name: "return unroutable", Algo: module.Incremental},
 		},
 	},
 	{
@@ -113,7 +113,7 @@ var charts = Charts{
 		Units: "GiB",
 		Fam:   "overview",
 		Ctx:   "rabbitmq.disk_space",
-		Type:  modules.Area,
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: "disk_free", Name: "free", Div: 1024 * 1024 * 1024},
 		},

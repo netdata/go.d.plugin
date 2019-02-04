@@ -3,16 +3,16 @@ package example
 import (
 	"math/rand"
 
-	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("example", creator)
+	module.Register("example", creator)
 }
 
 // New creates Example with default values
@@ -24,7 +24,7 @@ func New() *Example {
 
 // Example example module
 type Example struct {
-	modules.Base // should be embedded by every module
+	module.Base // should be embedded by every module
 
 	metrics map[string]int64
 }

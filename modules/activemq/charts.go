@@ -1,12 +1,12 @@
 package activemq
 
-import "github.com/netdata/go.d.plugin/modules"
+import "github.com/netdata/go-orchestrator/module"
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
 )
 
 var charts = Charts{
@@ -17,8 +17,8 @@ var charts = Charts{
 		Fam:   "",
 		Ctx:   "activemq.messages",
 		Dims: Dims{
-			{ID: "%s_%s_enqueued", Name: "enqueued", Algo: modules.Incremental},
-			{ID: "%s_%s_dequeued", Name: "dequeued", Algo: modules.Incremental},
+			{ID: "%s_%s_enqueued", Name: "enqueued", Algo: module.Incremental},
+			{ID: "%s_%s_dequeued", Name: "dequeued", Algo: module.Incremental},
 		},
 	},
 	{

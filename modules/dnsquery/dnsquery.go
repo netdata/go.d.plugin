@@ -7,20 +7,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/miekg/dns"
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
 		UpdateEvery:       5,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("dns_query", creator)
+	module.Register("dns_query", creator)
 }
 
 const (
@@ -69,7 +69,7 @@ type server struct {
 
 // DNSQuery dnsquery module
 type DNSQuery struct {
-	modules.Base
+	module.Base
 
 	Domains    []string
 	Servers    []string
