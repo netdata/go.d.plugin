@@ -57,6 +57,7 @@ func main() {
 
 func newPlugin(opt *cli.Option) *orchestrator.Orchestrator {
 	plugin := orchestrator.New()
+	plugin.Name = "go.d"
 	plugin.Option = opt
 	plugin.ConfigPath = configPaths
 	return plugin
