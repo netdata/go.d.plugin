@@ -7,7 +7,7 @@ require (
 	github.com/hpcloud/tail v1.0.0
 	github.com/miekg/dns v1.1.4
 	github.com/mindprince/gonvml v0.0.0-20180514031326-b364b296c732
-	github.com/netdata/go-orchestrator v0.0.0-20190205061452-83ad43716bdc
+	github.com/netdata/go-orchestrator v0.0.0-20190205065647-e8e5c240f4d3
 	github.com/prometheus/common v0.2.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
 	github.com/stretchr/testify v1.3.0
