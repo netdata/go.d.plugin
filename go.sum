@@ -43,8 +43,8 @@ github.com/mindprince/gonvml v0.0.0-20180514031326-b364b296c732/go.mod h1:2eu9pR
 github.com/mitchellh/go-homedir v1.1.0 h1:lukF9ziXFxDFPkA1vsr5zpc1XuPDn/wFntq5mG+4E0Y=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
-github.com/netdata/go-orchestrator v0.0.0-20190204080538-f17172574b93 h1:xOFXnfN7+AoQhi39RC9bNDTto9v31lHJyzx0xwQ5KJM=
-github.com/netdata/go-orchestrator v0.0.0-20190204080538-f17172574b93/go.mod h1:GkRx+XaReZcgCkm8nlSM+90ctTww5l0G9Qtxx8ZkvYY=
+github.com/netdata/go-orchestrator v0.0.0-20190205061452-83ad43716bdc h1:E/yE7URVbPHL2ZUTSApwtWxQuNeDsTkl4mH9cF0IO1Q=
+github.com/netdata/go-orchestrator v0.0.0-20190205061452-83ad43716bdc/go.mod h1:GkRx+XaReZcgCkm8nlSM+90ctTww5l0G9Qtxx8ZkvYY=
 github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
