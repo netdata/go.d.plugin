@@ -1,6 +1,0 @@
-enabled: true
-default_run: yes
-
-modules:
-  module1: yes
-  module2: yes

@@ -3,14 +3,14 @@ package portcheck
 import (
 	"fmt"
 
-	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go-orchestrator/module"
 )
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
 )
 
 func chartsTemplate(port int) Charts {

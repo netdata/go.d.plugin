@@ -3,14 +3,14 @@ package nvidia_nvml
 import (
 	"fmt"
 
-	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go-orchestrator/module"
 )
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
 )
 
 var charts = Charts{
@@ -31,7 +31,7 @@ var charts = Charts{
 		Title: "Memory Usage",
 		Units: "KiB",
 		Ctx:   "nvidia_nvml.memory_usage",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "%s_memory_free", Name: "free", Div: 1024},
 			{ID: "%s_memory_used", Name: "used", Div: 1024},

@@ -7,18 +7,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
-
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("mysql", creator)
+	module.Register("mysql", creator)
 }
 
 const (
@@ -29,7 +28,7 @@ const (
 
 // MySQL is the mysql database module.
 type MySQL struct {
-	modules.Base
+	module.Base
 	db *sql.DB
 	// i.e user:password@/dbname
 	DSN     string `yaml:"dsn"`

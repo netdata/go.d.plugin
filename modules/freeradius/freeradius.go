@@ -8,20 +8,20 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
+	"github.com/netdata/go-orchestrator/module"
 	"layeh.com/radius"
 	"layeh.com/radius/rfc2869"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("freeradius", creator)
+	module.Register("freeradius", creator)
 }
 
 const (
@@ -51,7 +51,7 @@ type exchanger interface {
 
 // Freeradius freeradius module
 type Freeradius struct {
-	modules.Base
+	module.Base
 
 	Address string
 	Port    int

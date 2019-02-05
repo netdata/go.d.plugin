@@ -5,15 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
-
 	"github.com/miekg/dns"
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
-	assert.Implements(t, (*modules.Module)(nil), New())
+	assert.Implements(t, (*module.Module)(nil), New())
 }
 
 func TestDNSQuery_Init(t *testing.T) {

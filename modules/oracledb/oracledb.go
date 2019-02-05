@@ -5,22 +5,22 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go-orchestrator/module"
 
 	"gopkg.in/goracle.v2"
 )
 
 func init() {
-	creator := modules.Creator{
-		Create: func() modules.Module { return New() },
+	creator := module.Creator{
+		Create: func() module.Module { return New() },
 	}
 
-	modules.Register("oracledb", creator)
+	module.Register("oracledb", creator)
 }
 
 // OracleDB oracledb module.
 type OracleDB struct {
-	modules.Base
+	module.Base
 	DSN string `yaml:"dsn"`
 	db  *sql.DB
 }
@@ -124,7 +124,6 @@ func (m *OracleDB) Collect() map[string]int64 {
 		m.Errorf("error on collecting wait time: %v", err)
 		return nil
 	}
-
 
 	// err = m.collectTablespace(metrics)
 	// if err != nil {

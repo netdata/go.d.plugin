@@ -1,12 +1,12 @@
 package lighttpd
 
-import "github.com/netdata/go.d.plugin/modules"
+import "github.com/netdata/go-orchestrator/module"
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
 )
 
 var charts = Charts{
@@ -17,7 +17,7 @@ var charts = Charts{
 		Fam:   "requests",
 		Ctx:   "lighttpd.requests",
 		Dims: Dims{
-			{ID: "total_accesses", Name: "requests", Algo: modules.Incremental},
+			{ID: "total_accesses", Name: "requests", Algo: module.Incremental},
 		},
 	},
 	{
@@ -26,9 +26,9 @@ var charts = Charts{
 		Units: "kilobits/s",
 		Fam:   "bandwidth",
 		Ctx:   "lighttpd.net",
-		Type:  modules.Area,
+		Type:  module.Area,
 		Dims: Dims{
-			{ID: "total_kBytes", Name: "sent", Algo: modules.Incremental, Mul: 8},
+			{ID: "total_kBytes", Name: "sent", Algo: module.Incremental, Mul: 8},
 		},
 	},
 	{
@@ -37,7 +37,7 @@ var charts = Charts{
 		Units: "servers",
 		Fam:   "servers",
 		Ctx:   "lighttpd.workers",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "idle_servers", Name: "idle"},
 			{ID: "busy_servers", Name: "busy"},

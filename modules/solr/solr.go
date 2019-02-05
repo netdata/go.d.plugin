@@ -10,16 +10,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
-		Create: func() modules.Module { return New() },
+	creator := module.Creator{
+		Create: func() module.Module { return New() },
 	}
 
-	modules.Register("solr", creator)
+	module.Register("solr", creator)
 }
 
 const (
@@ -46,7 +47,7 @@ func New() *Solr {
 
 // Solr solr module
 type Solr struct {
-	modules.Base
+	module.Base
 
 	web.HTTP `yaml:",inline"`
 

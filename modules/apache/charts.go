@@ -1,12 +1,12 @@
 package apache
 
-import "github.com/netdata/go.d.plugin/modules"
+import "github.com/netdata/go-orchestrator/module"
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
 )
 
 var charts = Charts{
@@ -17,7 +17,7 @@ var charts = Charts{
 		Fam:   "requests",
 		Ctx:   "apache.requests",
 		Dims: Dims{
-			{ID: "total_accesses", Name: "requests", Algo: modules.Incremental},
+			{ID: "total_accesses", Name: "requests", Algo: module.Incremental},
 		},
 	},
 	{
@@ -36,7 +36,7 @@ var charts = Charts{
 		Units: "connections",
 		Fam:   "connections",
 		Ctx:   "apache.conns_async",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "conns_async_keep_alive", Name: "keepalive"},
 			{ID: "conns_async_closing", Name: "closing"},
@@ -49,9 +49,9 @@ var charts = Charts{
 		Units: "kilobits/s",
 		Fam:   "bandwidth",
 		Ctx:   "apache.net",
-		Type:  modules.Area,
+		Type:  module.Area,
 		Dims: Dims{
-			{ID: "total_kBytes", Name: "sent", Algo: modules.Incremental, Mul: 8},
+			{ID: "total_kBytes", Name: "sent", Algo: module.Incremental, Mul: 8},
 		},
 	},
 	{
@@ -60,7 +60,7 @@ var charts = Charts{
 		Units: "workers",
 		Fam:   "workers",
 		Ctx:   "apache.workers",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "idle_workers", Name: "idle"},
 			{ID: "busy_workers", Name: "busy"},
@@ -72,7 +72,7 @@ var charts = Charts{
 		Units: "requests/s",
 		Fam:   "statistics",
 		Ctx:   "apache.reqpersec",
-		Type:  modules.Area,
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: "req_per_sec", Name: "requests", Div: 100000},
 		},
@@ -83,7 +83,7 @@ var charts = Charts{
 		Units: "KiB",
 		Fam:   "statistics",
 		Ctx:   "apache.bytespersec",
-		Type:  modules.Area,
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: "bytes_per_sec", Name: "served", Mul: 8, Div: 1024 * 100000},
 		},
@@ -94,7 +94,7 @@ var charts = Charts{
 		Units: "KiB",
 		Fam:   "statistics",
 		Ctx:   "apache.bytesperreq",
-		Type:  modules.Area,
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: "bytes_per_req", Name: "size", Div: 1024 * 100000},
 		},

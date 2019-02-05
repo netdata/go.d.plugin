@@ -3,17 +3,18 @@ package weblog
 import (
 	"fmt"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/simpletail"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("web_log", creator)
+	module.Register("web_log", creator)
 }
 
 func New() *WebLog {
@@ -26,7 +27,7 @@ func New() *WebLog {
 }
 
 type WebLog struct {
-	modules.Base
+	module.Base
 
 	Path             string        `yaml:"path" validate:"required"`
 	Filter           rawfilter     `yaml:"filter"`
@@ -38,7 +39,7 @@ type WebLog struct {
 	DoAllTimeIPs     bool          `yaml:"all_time_ips"`
 
 	worker *worker
-	charts *modules.Charts
+	charts *module.Charts
 	gm     groupMap
 }
 

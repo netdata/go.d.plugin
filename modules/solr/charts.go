@@ -1,14 +1,14 @@
 package solr
 
 import (
-	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go-orchestrator/module"
 )
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
 )
 
 var charts = Charts{
@@ -18,7 +18,7 @@ var charts = Charts{
 		Units: "requests/s",
 		Ctx:   "solr.search_requests",
 		Dims: Dims{
-			{ID: "query_requests_count", Name: "search", Algo: modules.Incremental},
+			{ID: "query_requests_count", Name: "search", Algo: module.Incremental},
 		},
 	},
 	{
@@ -27,7 +27,7 @@ var charts = Charts{
 		Units: "errors/s",
 		Ctx:   "solr.search_errors",
 		Dims: Dims{
-			{ID: "query_errors_count", Name: "errors", Algo: modules.Incremental},
+			{ID: "query_errors_count", Name: "errors", Algo: module.Incremental},
 		},
 	},
 	{
@@ -36,9 +36,9 @@ var charts = Charts{
 		Units: "errors/s",
 		Ctx:   "solr.search_errors_by_type",
 		Dims: Dims{
-			{ID: "query_clientErrors_count", Name: "client", Algo: modules.Incremental},
-			{ID: "query_serverErrors_count", Name: "server", Algo: modules.Incremental},
-			{ID: "query_timeouts_count", Name: "timeouts", Algo: modules.Incremental},
+			{ID: "query_clientErrors_count", Name: "client", Algo: module.Incremental},
+			{ID: "query_serverErrors_count", Name: "server", Algo: module.Incremental},
+			{ID: "query_timeouts_count", Name: "timeouts", Algo: module.Incremental},
 		},
 	},
 	{
@@ -47,7 +47,7 @@ var charts = Charts{
 		Units: "milliseconds",
 		Ctx:   "solr.search_requests_processing_time",
 		Dims: Dims{
-			{ID: "query_totalTime_count", Name: "time", Algo: modules.Incremental},
+			{ID: "query_totalTime_count", Name: "time", Algo: module.Incremental},
 		},
 	},
 	{
@@ -80,7 +80,7 @@ var charts = Charts{
 		Units: "requests/s",
 		Ctx:   "solr.update_requests",
 		Dims: Dims{
-			{ID: "update_requests_count", Name: "update", Algo: modules.Incremental},
+			{ID: "update_requests_count", Name: "update", Algo: module.Incremental},
 		},
 	},
 	{
@@ -89,7 +89,7 @@ var charts = Charts{
 		Units: "errors/s",
 		Ctx:   "solr.update_errors",
 		Dims: Dims{
-			{ID: "update_errors_count", Name: "errors", Algo: modules.Incremental},
+			{ID: "update_errors_count", Name: "errors", Algo: module.Incremental},
 		},
 	},
 	{
@@ -98,9 +98,9 @@ var charts = Charts{
 		Units: "errors/s",
 		Ctx:   "solr.update_errors_by_type",
 		Dims: Dims{
-			{ID: "update_clientErrors_count", Name: "client", Algo: modules.Incremental},
-			{ID: "update_serverErrors_count", Name: "server", Algo: modules.Incremental},
-			{ID: "update_timeouts_count", Name: "timeouts", Algo: modules.Incremental},
+			{ID: "update_clientErrors_count", Name: "client", Algo: module.Incremental},
+			{ID: "update_serverErrors_count", Name: "server", Algo: module.Incremental},
+			{ID: "update_timeouts_count", Name: "timeouts", Algo: module.Incremental},
 		},
 	},
 	{
@@ -109,7 +109,7 @@ var charts = Charts{
 		Units: "milliseconds",
 		Ctx:   "solr.update_requests_processing_time",
 		Dims: Dims{
-			{ID: "update_totalTime_count", Name: "time", Algo: modules.Incremental},
+			{ID: "update_totalTime_count", Name: "time", Algo: module.Incremental},
 		},
 	},
 	{

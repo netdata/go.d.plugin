@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/netdata/go.d.plugin/modules"
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func newWorker() *worker {
@@ -180,7 +180,7 @@ func (w *worker) vhost(gm groupMap) {
 	dimID := replacer.Replace(vhost)
 
 	if _, ok := w.metrics[dimID]; !ok {
-		dim := &Dim{ID: dimID, Name: vhost, Algo: modules.Incremental}
+		dim := &Dim{ID: dimID, Name: vhost, Algo: module.Incremental}
 		w.chartUpdate = append(w.chartUpdate, chartUpdateTask{id: requestsPerVhost.ID, dim: dim})
 	}
 
@@ -216,7 +216,7 @@ func (w *worker) codeDetailed(gm groupMap) {
 		}
 		chartID = responseCodesDetailed.ID + "_" + v
 	}
-	dim := &Dim{ID: code, Algo: modules.Incremental}
+	dim := &Dim{ID: code, Algo: module.Incremental}
 	w.chartUpdate = append(w.chartUpdate, chartUpdateTask{id: chartID, dim: dim})
 
 	w.metrics[code]++
@@ -255,7 +255,7 @@ func (w *worker) httpMethod(gm groupMap) {
 	method := gm.get(keyMethod)
 
 	if _, ok := w.metrics[method]; !ok {
-		dim := &Dim{ID: method, Algo: modules.Incremental}
+		dim := &Dim{ID: method, Algo: module.Incremental}
 		w.chartUpdate = append(w.chartUpdate, chartUpdateTask{id: requestsPerHTTPMethod.ID, dim: dim})
 	}
 
@@ -291,7 +291,7 @@ func (w *worker) httpVersion(gm groupMap) {
 	dimID := replacer.Replace(version)
 
 	if _, ok := w.metrics[dimID]; !ok {
-		dim := &Dim{ID: dimID, Name: version, Algo: modules.Incremental}
+		dim := &Dim{ID: dimID, Name: version, Algo: module.Incremental}
 		w.chartUpdate = append(w.chartUpdate, chartUpdateTask{id: requestsPerHTTPVersion.ID, dim: dim})
 	}
 
@@ -355,7 +355,7 @@ func (w *worker) urlCategoryStats(gm groupMap) {
 	id := w.matchedURL + "_" + code
 
 	if _, ok := w.metrics[id]; !ok {
-		dim := &Dim{ID: id, Name: code, Algo: modules.Incremental}
+		dim := &Dim{ID: id, Name: code, Algo: module.Incremental}
 		w.chartUpdate = append(w.chartUpdate, chartUpdateTask{id: responseCodesDetailed.ID + "_" + w.matchedURL, dim: dim})
 	}
 

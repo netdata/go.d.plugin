@@ -1,12 +1,12 @@
 package logstash
 
-import "github.com/netdata/go.d.plugin/modules"
+import "github.com/netdata/go-orchestrator/module"
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
 )
 
 var charts = Charts{
@@ -24,7 +24,7 @@ var charts = Charts{
 		Title: "JVM Heap Memory Percentage",
 		Units: "percent",
 		Fam:   "memory",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "jvm_mem_heap_used_percent", Name: "in use"},
 		},
@@ -34,7 +34,7 @@ var charts = Charts{
 		Title: "JVM Heap Memory",
 		Units: "KiB",
 		Fam:   "memory",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "jvm_mem_heap_used_in_bytes", Name: "used", Div: 1024},
 			{ID: "jvm_mem_heap_committed_in_bytes", Name: "committed", Div: 1024},
@@ -45,7 +45,7 @@ var charts = Charts{
 		Title: "JVM Pool Survivor Memory",
 		Units: "KiB",
 		Fam:   "memory",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "jvm_mem_pools_survivor_used_in_bytes", Name: "used", Div: 1024},
 			{ID: "jvm_mem_pools_survivor_committed_in_bytes", Name: "committed", Div: 1024},
@@ -56,7 +56,7 @@ var charts = Charts{
 		Title: "JVM Pool Old Memory",
 		Units: "KiB",
 		Fam:   "memory",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "jvm_mem_pools_old_used_in_bytes", Name: "used", Div: 1024},
 			{ID: "jvm_mem_pools_old_committed_in_bytes", Name: "committed", Div: 1024},
@@ -78,8 +78,8 @@ var charts = Charts{
 		Units: "counts/s",
 		Fam:   "garbage collection",
 		Dims: Dims{
-			{ID: "jvm_gc_collectors_eden_collection_count", Name: "eden", Algo: modules.Incremental},
-			{ID: "jvm_gc_collectors_old_collection_count", Name: "old", Algo: modules.Incremental},
+			{ID: "jvm_gc_collectors_eden_collection_count", Name: "eden", Algo: module.Incremental},
+			{ID: "jvm_gc_collectors_old_collection_count", Name: "old", Algo: module.Incremental},
 		},
 	},
 	{
@@ -88,8 +88,8 @@ var charts = Charts{
 		Units: "ms",
 		Fam:   "garbage collection",
 		Dims: Dims{
-			{ID: "jvm_gc_collectors_eden_collection_time_in_millis", Name: "eden", Algo: modules.Incremental},
-			{ID: "jvm_gc_collectors_old_collection_time_in_millis", Name: "old", Algo: modules.Incremental},
+			{ID: "jvm_gc_collectors_eden_collection_time_in_millis", Name: "eden", Algo: module.Incremental},
+			{ID: "jvm_gc_collectors_old_collection_time_in_millis", Name: "old", Algo: module.Incremental},
 		},
 	},
 	{

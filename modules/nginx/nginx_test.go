@@ -1,8 +1,6 @@
 package nginx
 
 import (
-	"github.com/netdata/go.d.plugin/modules"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -10,7 +8,9 @@ import (
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -24,7 +24,7 @@ func TestNginx_Cleanup(t *testing.T) {
 func TestNew(t *testing.T) {
 	mod := New()
 
-	assert.Implements(t, (*modules.Module)(nil), mod)
+	assert.Implements(t, (*module.Module)(nil), mod)
 	assert.Equal(t, defaultURL, mod.URL)
 	assert.Equal(t, defaultHTTPTimeout, mod.Timeout.Duration)
 }
@@ -72,7 +72,7 @@ func TestNginx_CheckNG(t *testing.T) {
 
 func TestNginx_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
-	assert.NoError(t, modules.CheckCharts(*New().Charts()...))
+	assert.NoError(t, module.CheckCharts(*New().Charts()...))
 }
 
 func TestNginx_Collect(t *testing.T) {

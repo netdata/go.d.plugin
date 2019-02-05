@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/netdata/go.d.plugin/logger"
+	"github.com/netdata/go-orchestrator/logger"
 )
 
 const fieldTagName = "stm"
