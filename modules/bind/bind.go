@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -42,7 +43,11 @@ type bindAPIClient interface {
 // Bind bind module.
 type Bind struct {
 	module.Base
-	web.HTTP `yaml:",inline"`
+
+	web.HTTP    `yaml:",inline"`
+	ViewsFilter string `yaml:"views_filter"`
+
+	views matcher.Matcher
 	bindAPIClient
 	charts *Charts
 }
@@ -86,6 +91,13 @@ func (b *Bind) Init() bool {
 		return false
 	case "/json/v1":
 		b.bindAPIClient = newJSONClient(client, b.Request)
+	}
+
+	if b.ViewsFilter != "" {
+		if b.views, err = matcher.Parse(b.ViewsFilter); err != nil {
+			b.Errorf("error on creating views matcher : %v", err)
+			return false
+		}
 	}
 
 	return true
@@ -174,71 +186,28 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 		}
 	}
 
-	if len(stats.NSStats) > 0 {
-		if !b.charts.Has(keyNSStats) {
-			_ = b.charts.Add(charts[keyNSStats].Copy())
+	for _, v := range []struct {
+		item map[string]int64
+		key  string
+	}{
+		{item: stats.NSStats, key: keyNSStats},
+		{item: stats.OpCodes, key: keyInOpCodes},
+		{item: stats.QTypes, key: keyInQTypes},
+		{item: stats.SockStats, key: keyNSStats},
+	} {
+		if !b.charts.Has(v.key) {
+			_ = b.charts.Add(charts[v.key].Copy())
 		}
 
-		chart = b.charts.Get(keyNSStats)
+		chart = b.charts.Get(v.key)
 
-		for k, v := range stats.NSStats {
-			if !chart.HasDim(k) {
-				_ = chart.AddDim(&Dim{ID: k, Algo: module.Incremental})
+		for key, val := range v.item {
+			if !chart.HasDim(key) {
+				_ = chart.AddDim(&Dim{ID: key, Algo: module.Incremental})
 				chart.MarkNotCreated()
 			}
 
-			metrics[k] = v
-		}
-	}
-
-	if len(stats.OpCodes) > 0 {
-		if !b.charts.Has(keyInOpCodes) {
-			_ = b.charts.Add(charts[keyInOpCodes].Copy())
-		}
-
-		chart = b.charts.Get(keyInOpCodes)
-
-		for k, v := range stats.OpCodes {
-			if !chart.HasDim(k) {
-				_ = chart.AddDim(&Dim{ID: k, Algo: module.Incremental})
-				chart.MarkNotCreated()
-			}
-
-			metrics[k] = v
-		}
-	}
-
-	if len(stats.QTypes) > 0 {
-		if !b.charts.Has(keyInQTypes) {
-			_ = b.charts.Add(charts[keyInQTypes].Copy())
-		}
-
-		chart = b.charts.Get(keyInQTypes)
-
-		for k, v := range stats.QTypes {
-			if !chart.HasDim(k) {
-				_ = chart.AddDim(&Dim{ID: k, Algo: module.Incremental})
-				chart.MarkNotCreated()
-			}
-
-			metrics[k] = v
-		}
-	}
-
-	if len(stats.SockStats) > 0 {
-		if !b.charts.Has(keyInSockStats) {
-			_ = b.charts.Add(charts[keyInSockStats].Copy())
-		}
-
-		chart = b.charts.Get(keyInSockStats)
-
-		for k, v := range stats.SockStats {
-			if !chart.HasDim(k) {
-				_ = chart.AddDim(&Dim{ID: k, Algo: module.Incremental})
-				chart.MarkNotCreated()
-			}
-
-			metrics[k] = v
+			metrics[key] = val
 		}
 	}
 }
