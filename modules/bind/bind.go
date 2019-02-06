@@ -187,19 +187,19 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 	}
 
 	for _, v := range []struct {
-		item map[string]int64
-		key  string
+		item    map[string]int64
+		chartID string
 	}{
-		{item: stats.NSStats, key: keyNSStats},
-		{item: stats.OpCodes, key: keyInOpCodes},
-		{item: stats.QTypes, key: keyInQTypes},
-		{item: stats.SockStats, key: keyNSStats},
+		{item: stats.NSStats, chartID: keyNSStats},
+		{item: stats.OpCodes, chartID: keyInOpCodes},
+		{item: stats.QTypes, chartID: keyInQTypes},
+		{item: stats.SockStats, chartID: keyNSStats},
 	} {
-		if !b.charts.Has(v.key) {
-			_ = b.charts.Add(charts[v.key].Copy())
+		if !b.charts.Has(v.chartID) {
+			_ = b.charts.Add(charts[v.chartID].Copy())
 		}
 
-		chart = b.charts.Get(v.key)
+		chart = b.charts.Get(v.chartID)
 
 		for key, val := range v.item {
 			if !chart.HasDim(key) {
