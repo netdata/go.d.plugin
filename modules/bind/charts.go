@@ -176,8 +176,8 @@ var charts = map[string]Chart{
 		Ctx:      "bind.resolver_cachehits",
 		Priority: basePriority + 25,
 		Dims: Dims{
-			{ID: "CacheHits", Name: "hits", Algo: module.Incremental},
-			{ID: "CacheMisses", Name: "misses", Algo: module.Incremental, Mul: -1},
+			{ID: "%s_CacheHits", Name: "hits", Algo: module.Incremental},
+			{ID: "%s_CacheMisses", Name: "misses", Algo: module.Incremental, Mul: -1},
 		},
 	},
 	keyResolverNumFetch: {
@@ -187,8 +187,5 @@ var charts = map[string]Chart{
 		Fam:      "view %s",
 		Ctx:      "bind.resolver_active_queries",
 		Priority: basePriority + 26,
-		Dims: Dims{
-			{ID: "NumFetch", Name: "queries"},
-		},
 	},
 }

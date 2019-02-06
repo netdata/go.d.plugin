@@ -230,10 +230,18 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 		}
 
 		for key, val := range r.Stats {
-			var chartKey string
+			var (
+				algo     = module.Incremental
+				dimName  = key
+				chartKey = ""
+			)
+
 			switch {
 			default:
 				chartKey = keyResolverStats
+			case key == "NumFetches":
+				chartKey = keyResolverNumFetch
+				dimName = "queries"
 			case strings.HasPrefix(key, "QryRTT"):
 				// TODO: not ordered
 				chartKey = keyResolverRTT
@@ -252,7 +260,7 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 			dimID := fmt.Sprintf("%s_%s", name, key)
 
 			if !chart.HasDim(dimID) {
-				_ = chart.AddDim(&Dim{ID: dimID, Algo: module.Incremental})
+				_ = chart.AddDim(&Dim{ID: dimID, Name: dimName, Algo: algo})
 				chart.MarkNotCreated()
 			}
 
@@ -281,5 +289,21 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 			}
 		}
 
+		if len(r.CacheStats) > 0 {
+			chartID := fmt.Sprintf(keyResolverCacheHits, name)
+
+			if !b.charts.Has(chartID) {
+				chart = charts[keyResolverCacheHits].Copy()
+				chart.ID = chartID
+				chart.Fam = fmt.Sprintf(chart.Fam, name)
+				_ = b.charts.Add(chart)
+				for _, dim := range chart.Dims {
+					dim.ID = fmt.Sprintf(dim.ID, name)
+				}
+			}
+
+			metrics[name+"_CacheHits"] = r.CacheStats["CacheHits"]
+			metrics[name+"_CacheMisses"] = r.CacheStats["CacheMisses"]
+		}
 	}
 }
