@@ -118,10 +118,13 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 	var chart *Chart
 
 	if len(stats.NSStats) > 0 {
-		var chartID, dimName string
-
 		for k, v := range stats.NSStats {
-			algo := module.Incremental
+			var (
+				algo    = module.Incremental
+				dimName = k
+				chartID = ""
+			)
+
 			switch {
 			default:
 				continue
@@ -148,13 +151,10 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 				dimName = "queries"
 				chartID = keyQueriesSuccess
 			case strings.HasSuffix(k, "QryRej"):
-				dimName = k
 				chartID = keyQueryFailuresDetail
 			case strings.HasPrefix(k, "Qry"):
-				dimName = k
 				chartID = keyQueriesAnalysis
 			case strings.HasPrefix(k, "Update"):
-				dimName = k
 				chartID = keyReceivedUpdates
 			}
 
