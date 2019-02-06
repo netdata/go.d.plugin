@@ -31,6 +31,12 @@ const (
 	keyInOpCodes           = "in_opcodes"
 	keyInQTypes            = "in_qtypes"
 	keyInSockStats         = "in_sockstats"
+
+	keyResolverStats     = "view_resolver_stats_%s"
+	keyResolverRTT       = "view_resolver_rtt_%s"
+	keyResolverInQTypes  = "view_resolver_qtypes_%s"
+	keyResolverCacheHits = "view_resolver_cachehits_%s"
+	keyResolverNumFetch  = "view_resolver_numfetch_%s"
 )
 
 var charts = map[string]Chart{
@@ -136,5 +142,53 @@ var charts = map[string]Chart{
 		Fam:      "sockets",
 		Ctx:      "bind.in_sockstats",
 		Priority: basePriority + 12,
+	},
+
+	keyResolverStats: {
+		ID:       keyResolverStats,
+		Title:    "Resolver Statistics",
+		Units:    "operations/s",
+		Fam:      "view %s",
+		Ctx:      "bind.resolver_stats",
+		Priority: basePriority + 22,
+	},
+	keyResolverRTT: {
+		ID:       keyResolverRTT,
+		Title:    "Resolver Round Trip Time",
+		Units:    "queries/s",
+		Fam:      "view %s",
+		Ctx:      "bind.resolver_rtt",
+		Priority: basePriority + 23,
+	},
+	keyResolverInQTypes: {
+		ID:       keyResolverInQTypes,
+		Title:    "Resolver Requests by Query Type",
+		Units:    "requests/s",
+		Fam:      "view %s",
+		Ctx:      "bind.resolver_qtypes",
+		Priority: basePriority + 24,
+	},
+	keyResolverCacheHits: {
+		ID:       keyResolverCacheHits,
+		Title:    "Resolver Cache Hits",
+		Units:    "operations/s",
+		Fam:      "view %s",
+		Ctx:      "bind.resolver_cachehits",
+		Priority: basePriority + 25,
+		Dims: Dims{
+			{ID: "CacheHits", Name: "hits", Algo: module.Incremental},
+			{ID: "CacheMisses", Name: "misses", Algo: module.Incremental, Mul: -1},
+		},
+	},
+	keyResolverNumFetch: {
+		ID:       keyResolverNumFetch,
+		Title:    "Resolver Active Queries",
+		Units:    "queries",
+		Fam:      "view %s",
+		Ctx:      "bind.resolver_active_queries",
+		Priority: basePriority + 26,
+		Dims: Dims{
+			{ID: "NumFetch", Name: "queries"},
+		},
 	},
 }

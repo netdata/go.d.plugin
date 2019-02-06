@@ -1,6 +1,7 @@
 package bind
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 	"time"
@@ -44,12 +45,12 @@ type bindAPIClient interface {
 type Bind struct {
 	module.Base
 
-	web.HTTP    `yaml:",inline"`
-	ViewsFilter string `yaml:"views_filter"`
+	web.HTTP   `yaml:",inline"`
+	PermitView string `yaml:"permit_view"`
 
-	views matcher.Matcher
 	bindAPIClient
-	charts *Charts
+	permitView matcher.Matcher
+	charts     *Charts
 }
 
 // Cleanup makes cleanup.
@@ -93,11 +94,13 @@ func (b *Bind) Init() bool {
 		b.bindAPIClient = newJSONClient(client, b.Request)
 	}
 
-	if b.ViewsFilter != "" {
-		if b.views, err = matcher.Parse(b.ViewsFilter); err != nil {
-			b.Errorf("error on creating views matcher : %v", err)
+	if b.PermitView != "" {
+		m, err := matcher.Parse(b.PermitView)
+		if err != nil {
+			b.Errorf("error on creating permitView matcher : %v", err)
 			return false
 		}
+		b.permitView = matcher.WithCache(m)
 	}
 
 	return true
@@ -129,61 +132,58 @@ func (b *Bind) Collect() map[string]int64 {
 func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) {
 	var chart *Chart
 
-	if len(stats.NSStats) > 0 {
-		for k, v := range stats.NSStats {
-			var (
-				algo    = module.Incremental
-				dimName = k
-				chartID = ""
-			)
-
-			switch {
-			default:
-				continue
-			case k == "RecursClients":
-				dimName = "clients"
-				chartID = keyRecursiveClients
-				algo = module.Absolute
-			case k == "Requestv4":
-				dimName = "IPv4"
-				chartID = keyReceivedRequests
-			case k == "Requestv6":
-				dimName = "IPv6"
-				chartID = keyReceivedRequests
-			case k == "QryFailure":
-				dimName = "failures"
-				chartID = keyQueryFailures
-			case k == "QryUDP":
-				dimName = "UDP"
-				chartID = keyProtocolsQueries
-			case k == "QryTCP":
-				dimName = "TCP"
-				chartID = keyProtocolsQueries
-			case k == "QrySuccess":
-				dimName = "queries"
-				chartID = keyQueriesSuccess
-			case strings.HasSuffix(k, "QryRej"):
-				chartID = keyQueryFailuresDetail
-			case strings.HasPrefix(k, "Qry"):
-				chartID = keyQueriesAnalysis
-			case strings.HasPrefix(k, "Update"):
-				chartID = keyReceivedUpdates
-			}
-
-			if !b.charts.Has(chartID) {
-				_ = b.charts.Add(charts[chartID].Copy())
-			}
-
-			chart = b.charts.Get(chartID)
-
-			if !chart.HasDim(k) {
-				_ = chart.AddDim(&Dim{ID: k, Name: dimName, Algo: algo})
-				chart.MarkNotCreated()
-			}
-
-			delete(stats.NSStats, k)
-			metrics[k] = v
+	for k, v := range stats.NSStats {
+		var (
+			algo    = module.Incremental
+			dimName = k
+			chartID = ""
+		)
+		switch {
+		default:
+			continue
+		case k == "RecursClients":
+			dimName = "clients"
+			chartID = keyRecursiveClients
+			algo = module.Absolute
+		case k == "Requestv4":
+			dimName = "IPv4"
+			chartID = keyReceivedRequests
+		case k == "Requestv6":
+			dimName = "IPv6"
+			chartID = keyReceivedRequests
+		case k == "QryFailure":
+			dimName = "failures"
+			chartID = keyQueryFailures
+		case k == "QryUDP":
+			dimName = "UDP"
+			chartID = keyProtocolsQueries
+		case k == "QryTCP":
+			dimName = "TCP"
+			chartID = keyProtocolsQueries
+		case k == "QrySuccess":
+			dimName = "queries"
+			chartID = keyQueriesSuccess
+		case strings.HasSuffix(k, "QryRej"):
+			chartID = keyQueryFailuresDetail
+		case strings.HasPrefix(k, "Qry"):
+			chartID = keyQueriesAnalysis
+		case strings.HasPrefix(k, "Update"):
+			chartID = keyReceivedUpdates
 		}
+
+		if !b.charts.Has(chartID) {
+			_ = b.charts.Add(charts[chartID].Copy())
+		}
+
+		chart = b.charts.Get(chartID)
+
+		if !chart.HasDim(k) {
+			_ = chart.AddDim(&Dim{ID: k, Name: dimName, Algo: algo})
+			chart.MarkNotCreated()
+		}
+
+		delete(stats.NSStats, k)
+		metrics[k] = v
 	}
 
 	for _, v := range []struct {
@@ -193,8 +193,12 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 		{item: stats.NSStats, chartID: keyNSStats},
 		{item: stats.OpCodes, chartID: keyInOpCodes},
 		{item: stats.QTypes, chartID: keyInQTypes},
-		{item: stats.SockStats, chartID: keyNSStats},
+		{item: stats.SockStats, chartID: keyInSockStats},
 	} {
+		if len(v.item) == 0 {
+			continue
+		}
+
 		if !b.charts.Has(v.chartID) {
 			_ = b.charts.Add(charts[v.chartID].Copy())
 		}
@@ -209,5 +213,73 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 
 			metrics[key] = val
 		}
+	}
+
+	//if !(b.permitView != nil && len(stats.Views) > 0) {
+	//	return
+	//}
+
+	for name, view := range stats.Views {
+		//if !b.permitView.MatchString(name) {
+		//	continue
+		//}
+		r := view.Resolver
+
+		if _, ok := r.Stats["BucketSize"]; ok {
+			delete(r.Stats, "BucketSize")
+		}
+
+		for key, val := range r.Stats {
+			var chartKey string
+			switch {
+			default:
+				chartKey = keyResolverStats
+			case strings.HasPrefix(key, "QryRTT"):
+				// TODO: not ordered
+				chartKey = keyResolverRTT
+			}
+
+			chartID := fmt.Sprintf(chartKey, name)
+
+			if !b.charts.Has(chartID) {
+				chart = charts[chartKey].Copy()
+				chart.ID = chartID
+				chart.Fam = fmt.Sprintf(chart.Fam, name)
+				_ = b.charts.Add(chart)
+			}
+
+			chart = b.charts.Get(chartID)
+			dimID := fmt.Sprintf("%s_%s", name, key)
+
+			if !chart.HasDim(dimID) {
+				_ = chart.AddDim(&Dim{ID: dimID, Algo: module.Incremental})
+				chart.MarkNotCreated()
+			}
+
+			metrics[dimID] = val
+		}
+
+		if len(r.QTypes) > 0 {
+			chartID := fmt.Sprintf(keyResolverInQTypes, name)
+
+			if !b.charts.Has(chartID) {
+				chart = charts[keyResolverInQTypes].Copy()
+				chart.ID = chartID
+				chart.Fam = fmt.Sprintf(chart.Fam, name)
+				_ = b.charts.Add(chart)
+			}
+
+			chart = b.charts.Get(chartID)
+
+			for key, val := range r.QTypes {
+				dimID := fmt.Sprintf("%s_%s", name, key)
+				if !chart.HasDim(dimID) {
+					_ = chart.AddDim(&Dim{ID: dimID, Name: key, Algo: module.Incremental})
+					chart.MarkNotCreated()
+				}
+				metrics[dimID] = val
+			}
+		}
+
 	}
 }

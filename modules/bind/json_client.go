@@ -21,7 +21,7 @@ type jsonServerStats struct {
 }
 
 type jsonView struct {
-	Resolver map[string]jsonViewResolver
+	Resolver jsonViewResolver
 }
 
 type jsonViewResolver struct {
