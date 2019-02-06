@@ -1,4 +1,4 @@
-# nvidia_nvml (temporary disabled)
+# nvidia_nvml (WIP)
 
 This module will monitor one or more NVIDIA GPUs using [NVML(NVIDIA Management Library)](https://developer.nvidia.com/nvidia-management-library-nvml).
 
