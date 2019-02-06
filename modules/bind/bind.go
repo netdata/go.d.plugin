@@ -1,11 +1,13 @@
 package bind
 
 import (
-	"fmt"
-	"github.com/netdata/go-orchestrator/module"
-	"github.com/netdata/go.d.plugin/pkg/web"
 	"net/url"
+	"strings"
 	"time"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
@@ -29,6 +31,7 @@ func New() *Bind {
 			Request: web.Request{URL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
+		charts: &Charts{},
 	}
 }
 
@@ -39,10 +42,9 @@ type bindAPIClient interface {
 // Bind bind module.
 type Bind struct {
 	module.Base
-
 	web.HTTP `yaml:",inline"`
-
 	bindAPIClient
+	charts *Charts
 }
 
 // Cleanup makes cleanup.
@@ -83,7 +85,7 @@ func (b *Bind) Init() bool {
 		b.Error("WIP")
 		return false
 	case "/json/v1":
-		b.bindAPIClient = &jsonClient{request: b.Request, httpClient: client}
+		b.bindAPIClient = newJSONClient(client, b.Request)
 	}
 
 	return true
@@ -95,19 +97,143 @@ func (Bind) Check() bool {
 }
 
 // Charts creates Charts.
-func (Bind) Charts() *Charts {
-	return &module.Charts{}
+func (b Bind) Charts() *Charts {
+	return b.charts
 }
 
 // Collect collects metrics.
 func (b *Bind) Collect() map[string]int64 {
-	s, err := b.serverStats()
+	metrics := make(map[string]int64)
 
+	s, err := b.serverStats()
 	if err != nil {
 		b.Error(err)
 	}
+	b.collectServerStats(metrics, s)
 
-	fmt.Println(s)
+	return metrics
+}
 
-	return nil
+func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) {
+	var chart *Chart
+
+	if len(stats.NSStats) > 0 {
+		var chartID, dimName string
+
+		for k, v := range stats.NSStats {
+			switch {
+			default:
+				continue
+			case k == "Requestv4":
+				dimName = "IPv4"
+				chartID = keyReceivedRequests
+			case k == "Requestv6":
+				dimName = "IPv6"
+				chartID = keyReceivedRequests
+			case k == "QryFailure":
+				dimName = "failures"
+				chartID = keyQueryFailures
+			case k == "QryUDP":
+				dimName = "UDP"
+				chartID = keyProtocolsQueries
+			case k == "QryTCP":
+				dimName = "TCP"
+				chartID = keyProtocolsQueries
+			case k == "QrySuccess":
+				dimName = "queries"
+				chartID = keyQueriesSuccess
+			case strings.HasSuffix(k, "QryRej"):
+				dimName = k
+				chartID = keyQueryFailuresDetail
+			case strings.HasPrefix(k, "Qry"):
+				dimName = k
+				chartID = keyQueriesAnalysis
+			case strings.HasPrefix(k, "Update"):
+				dimName = k
+				chartID = keyReceivedUpdates
+			}
+
+			if !b.charts.Has(chartID) {
+				_ = b.charts.Add(charts[chartID].Copy())
+			}
+
+			chart = b.charts.Get(chartID)
+
+			if !chart.HasDim(k) {
+				_ = chart.AddDim(&Dim{ID: k, Name: dimName, Algo: module.Incremental})
+				chart.MarkNotCreated()
+			}
+
+			delete(stats.NSStats, k)
+			metrics[k] = v
+		}
+	}
+
+	if len(stats.NSStats) > 0 {
+		if !b.charts.Has(keyNSStats) {
+			_ = b.charts.Add(charts[keyNSStats].Copy())
+		}
+
+		chart = b.charts.Get(keyNSStats)
+
+		for k, v := range stats.NSStats {
+			if !chart.HasDim(k) {
+				_ = chart.AddDim(&Dim{ID: k, Algo: module.Incremental})
+				chart.MarkNotCreated()
+			}
+
+			metrics[k] = v
+		}
+	}
+
+	if len(stats.OpCodes) > 0 {
+		if !b.charts.Has(keyInOpCodes) {
+			_ = b.charts.Add(charts[keyInOpCodes].Copy())
+		}
+
+		chart = b.charts.Get(keyInOpCodes)
+
+		for k, v := range stats.OpCodes {
+			if !chart.HasDim(k) {
+				_ = chart.AddDim(&Dim{ID: k, Algo: module.Incremental})
+				chart.MarkNotCreated()
+			}
+
+			metrics[k] = v
+		}
+	}
+
+	if len(stats.QTypes) > 0 {
+		if !b.charts.Has(keyInQTypes) {
+			_ = b.charts.Add(charts[keyInQTypes].Copy())
+		}
+
+		chart = b.charts.Get(keyInQTypes)
+
+		for k, v := range stats.QTypes {
+			if !chart.HasDim(k) {
+				_ = chart.AddDim(&Dim{ID: k, Algo: module.Incremental})
+				chart.MarkNotCreated()
+			}
+
+			metrics[k] = v
+		}
+	}
+
+	if len(stats.SockStats) > 0 {
+		if !b.charts.Has(keyInSockStats) {
+			_ = b.charts.Add(charts[keyInSockStats].Copy())
+		}
+
+		chart = b.charts.Get(keyInSockStats)
+
+		for k, v := range stats.SockStats {
+			if !chart.HasDim(k) {
+				_ = chart.AddDim(&Dim{ID: k, Algo: module.Incremental})
+				chart.MarkNotCreated()
+			}
+
+			metrics[k] = v
+		}
+	}
 }

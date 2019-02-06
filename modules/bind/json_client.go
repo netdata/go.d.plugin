@@ -3,10 +3,11 @@ package bind
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/netdata/go.d.plugin/pkg/web"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 type serverStats = jsonServerStats
@@ -27,6 +28,10 @@ type jsonViewResolver struct {
 	Stats      map[string]int64
 	QTypes     map[string]int64
 	CacheStats map[string]int64
+}
+
+func newJSONClient(client *http.Client, request web.Request) *jsonClient {
+	return &jsonClient{httpClient: client, request: request}
 }
 
 type jsonClient struct {
