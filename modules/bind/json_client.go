@@ -13,7 +13,3 @@ type jsonView struct {
 }
 
 type jsonClient struct{}
-
-type xml3Client struct{}
-
-type xml2Client struct{}
