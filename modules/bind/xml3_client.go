@@ -21,13 +21,13 @@ type xml3View struct {
 	// Omitted branches: zones
 	Name          string             `xml:"name,attr"`
 	CounterGroups []xml3CounterGroup `xml:"counters"`
-	Caches        []struct {
-		Name   string `xml:"name,attr"`
-		RRSets []struct {
-			Name  string `xml:"name"`
-			Value int    `xml:"counter"`
-		} `xml:"rrset"`
-	} `xml:"cache"`
+	//Caches        []struct {
+	//	Name   string `xml:"name,attr"`
+	//	RRSets []struct {
+	//		Name  string `xml:"name"`
+	//		Value int    `xml:"counter"`
+	//	} `xml:"rrset"`
+	//} `xml:"cache"`
 }
 
 type xml3Client struct{}
