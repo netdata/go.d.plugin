@@ -121,9 +121,14 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 		var chartID, dimName string
 
 		for k, v := range stats.NSStats {
+			algo := module.Incremental
 			switch {
 			default:
 				continue
+			case k == "RecursClients":
+				dimName = "clients"
+				chartID = keyRecursiveClients
+				algo = module.Absolute
 			case k == "Requestv4":
 				dimName = "IPv4"
 				chartID = keyReceivedRequests
@@ -160,7 +165,7 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 			chart = b.charts.Get(chartID)
 
 			if !chart.HasDim(k) {
-				_ = chart.AddDim(&Dim{ID: k, Name: dimName, Algo: module.Incremental})
+				_ = chart.AddDim(&Dim{ID: k, Name: dimName, Algo: algo})
 				chart.MarkNotCreated()
 			}
 
