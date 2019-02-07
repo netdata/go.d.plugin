@@ -14,15 +14,14 @@ import (
 
 func init() {
 	creator := module.Creator{
-		// DisabledByDefault: true,
-		Create: func() module.Module { return New() },
+		DisabledByDefault: true,
+		Create:            func() module.Module { return New() },
 	}
 
 	module.Register("bind", creator)
 }
 
 const (
-	// defaultURL         = "http://100.127.0.254:8653/json/v1"
 	defaultURL         = "http://127.0.0.1:8653/json/v1"
 	defaultHTTPTimeout = time.Second * 2
 )
@@ -203,6 +202,9 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 		chart = b.charts.Get(v.chartID)
 
 		for key, val := range v.item {
+			if v.chartID == keyInOpCodes && strings.HasPrefix(key, "RESERVED") {
+				continue
+			}
 			if !chart.HasDim(key) {
 				_ = chart.AddDim(&Dim{ID: key, Algo: module.Incremental})
 				chart.MarkNotCreated()
