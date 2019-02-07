@@ -101,8 +101,8 @@ func (b *Bind) Init() bool {
 }
 
 // Check makes check.
-func (Bind) Check() bool {
-	return true
+func (b *Bind) Check() bool {
+	return len(b.Collect()) > 0
 }
 
 // Charts creates Charts.
