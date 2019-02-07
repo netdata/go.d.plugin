@@ -202,9 +202,6 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 		chart = b.charts.Get(v.chartID)
 
 		for key, val := range v.item {
-			if v.chartID == keyInOpCodes && strings.HasPrefix(key, "RESERVED") {
-				continue
-			}
 			if !chart.HasDim(key) {
 				_ = chart.AddDim(&Dim{ID: key, Algo: module.Incremental})
 				chart.MarkNotCreated()
