@@ -12,6 +12,7 @@ import (
 
 	_ "github.com/netdata/go.d.plugin/modules/activemq"
 	_ "github.com/netdata/go.d.plugin/modules/apache"
+	_ "github.com/netdata/go.d.plugin/modules/bind"
 	_ "github.com/netdata/go.d.plugin/modules/consul"
 	_ "github.com/netdata/go.d.plugin/modules/dnsquery"
 	_ "github.com/netdata/go.d.plugin/modules/example"
