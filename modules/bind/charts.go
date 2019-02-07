@@ -40,6 +40,14 @@ const (
 )
 
 var charts = map[string]Chart{
+	keyRecursiveClients: {
+		ID:       keyRecursiveClients,
+		Title:    "Global Recursive Clients",
+		Units:    "clients",
+		Fam:      "clients",
+		Ctx:      "bind.recursive_clients",
+		Priority: basePriority + 1,
+	},
 	keyReceivedRequests: {
 		ID:       keyReceivedRequests,
 		Title:    "Global Received Requests by IP version",
@@ -47,7 +55,7 @@ var charts = map[string]Chart{
 		Fam:      "requests",
 		Ctx:      "bind.requests",
 		Type:     module.Stacked,
-		Priority: basePriority + 1,
+		Priority: basePriority + 2,
 	},
 	keyQueriesSuccess: {
 		ID:       keyQueriesSuccess,
@@ -55,14 +63,6 @@ var charts = map[string]Chart{
 		Units:    "queries/s",
 		Fam:      "queries",
 		Ctx:      "bind.queries_success",
-		Priority: basePriority + 2,
-	},
-	keyRecursiveClients: {
-		ID:       keyRecursiveClients,
-		Title:    "Global Recursive Clients",
-		Units:    "clients",
-		Fam:      "clients",
-		Ctx:      "bind.recursive_clients",
 		Priority: basePriority + 3,
 	},
 	keyProtocolsQueries: {
@@ -144,20 +144,21 @@ var charts = map[string]Chart{
 		Priority: basePriority + 12,
 	},
 
-	keyResolverStats: {
-		ID:       keyResolverStats,
-		Title:    "Resolver Statistics",
-		Units:    "operations/s",
-		Fam:      "view %s",
-		Ctx:      "bind.resolver_stats",
-		Priority: basePriority + 22,
-	},
 	keyResolverRTT: {
 		ID:       keyResolverRTT,
 		Title:    "Resolver Round Trip Time",
 		Units:    "queries/s",
 		Fam:      "view %s",
 		Ctx:      "bind.resolver_rtt",
+		Type:     module.Stacked,
+		Priority: basePriority + 22,
+	},
+	keyResolverStats: {
+		ID:       keyResolverStats,
+		Title:    "Resolver Statistics",
+		Units:    "operations/s",
+		Fam:      "view %s",
+		Ctx:      "bind.resolver_stats",
 		Priority: basePriority + 23,
 	},
 	keyResolverInQTypes: {
@@ -166,19 +167,8 @@ var charts = map[string]Chart{
 		Units:    "requests/s",
 		Fam:      "view %s",
 		Ctx:      "bind.resolver_qtypes",
+		Type:     module.Stacked,
 		Priority: basePriority + 24,
-	},
-	keyResolverCacheHits: {
-		ID:       keyResolverCacheHits,
-		Title:    "Resolver Cache Hits",
-		Units:    "operations/s",
-		Fam:      "view %s",
-		Ctx:      "bind.resolver_cachehits",
-		Priority: basePriority + 25,
-		Dims: Dims{
-			{ID: "%s_CacheHits", Name: "hits", Algo: module.Incremental},
-			{ID: "%s_CacheMisses", Name: "misses", Algo: module.Incremental, Mul: -1},
-		},
 	},
 	keyResolverNumFetch: {
 		ID:       keyResolverNumFetch,
@@ -186,6 +176,19 @@ var charts = map[string]Chart{
 		Units:    "queries",
 		Fam:      "view %s",
 		Ctx:      "bind.resolver_active_queries",
+		Priority: basePriority + 25,
+	},
+	keyResolverCacheHits: {
+		ID:       keyResolverCacheHits,
+		Title:    "Resolver Cache Hits",
+		Units:    "operations/s",
+		Fam:      "view %s",
+		Ctx:      "bind.resolver_cachehits",
+		Type:     module.Area,
 		Priority: basePriority + 26,
+		Dims: Dims{
+			{ID: "%s_CacheHits", Name: "hits", Algo: module.Incremental},
+			{ID: "%s_CacheMisses", Name: "misses", Algo: module.Incremental, Mul: -1},
+		},
 	},
 }

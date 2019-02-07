@@ -22,7 +22,8 @@ func init() {
 }
 
 const (
-	defaultURL         = "http://100.127.0.91:8080/json/v1"
+	// defaultURL         = "http://100.127.0.254:8653/json/v1"
+	defaultURL         = "http://127.0.0.1:8653/json/v1"
 	defaultHTTPTimeout = time.Second
 )
 
@@ -239,9 +240,10 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 			switch {
 			default:
 				chartKey = keyResolverStats
-			case key == "NumFetches":
+			case key == "NumFetch":
 				chartKey = keyResolverNumFetch
 				dimName = "queries"
+				algo = module.Absolute
 			case strings.HasPrefix(key, "QryRTT"):
 				// TODO: not ordered
 				chartKey = keyResolverRTT
