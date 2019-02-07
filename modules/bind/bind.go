@@ -83,13 +83,15 @@ func (b *Bind) Init() bool {
 		b.Errorf("URL %s is wrong, supported endpoints: `/xml/v3`, `/json/v1`", b.URL)
 		return false
 	case "/xml/v3":
+		// BIND 9.9+
 		b.bindAPIClient = newXML3Client(client, b.Request)
 	case "/json/v1":
+		// BIND 9.10+
 		b.bindAPIClient = newJSONClient(client, b.Request)
 	}
 
 	if b.PermitView != "" {
-		m, err := matcher.Parse(b.PermitView)
+		m, err := matcher.NewSimplePatternsMatcher(b.PermitView)
 		if err != nil {
 			b.Errorf("error on creating permitView matcher : %v", err)
 			return false
@@ -210,14 +212,14 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 		}
 	}
 
-	//if !(b.permitView != nil && len(stats.Views) > 0) {
-	//	return
-	//}
+	if !(b.permitView != nil && len(stats.Views) > 0) {
+		return
+	}
 
 	for name, view := range stats.Views {
-		//if !b.permitView.MatchString(name) {
-		//	continue
-		//}
+		if !b.permitView.MatchString(name) {
+			continue
+		}
 		r := view.Resolver
 
 		if _, ok := r.Stats["BucketSize"]; ok {
