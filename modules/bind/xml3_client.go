@@ -108,6 +108,8 @@ func convertXML(xmlStats xml3Stats) *serverStats {
 		}
 		for _, viewGroup := range view.CounterGroups {
 			switch viewGroup.Type {
+			default:
+				continue
 			case "resqtype":
 				m = stats.Views[view.Name].Resolver.QTypes
 			case "resstats":
