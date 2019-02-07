@@ -43,6 +43,10 @@ func (j jsonClient) serverStats() (*serverStats, error) {
 	req := j.createRequest("/server")
 	resp, err := j.httpClient.Do(req)
 
+	if err != nil {
+		return nil, fmt.Errorf("error on request : %v", err)
+	}
+
 	defer closeBody(resp)
 
 	if resp.StatusCode != http.StatusOK {

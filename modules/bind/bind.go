@@ -124,6 +124,7 @@ func (b *Bind) Collect() map[string]int64 {
 	s, err := b.serverStats()
 	if err != nil {
 		b.Error(err)
+		return nil
 	}
 	b.collectServerStats(metrics, s)
 
