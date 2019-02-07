@@ -1,7 +1,7 @@
 package bind
 
 import (
-	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"net/http"
 
@@ -55,7 +55,7 @@ func (c xml3Client) serverStats() (*serverStats, error) {
 
 	stats := xml3Stats{}
 
-	if err = json.NewDecoder(resp.Body).Decode(&stats); err != nil {
+	if err = xml.NewDecoder(resp.Body).Decode(&stats); err != nil {
 		return nil, fmt.Errorf("error on decoding response from %s : %v", req.URL, err)
 	}
 
