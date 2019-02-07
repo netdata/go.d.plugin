@@ -78,6 +78,7 @@ func TestBind_CollectJSON(t *testing.T) {
 
 	job := New()
 	job.URL = ts.URL + "/json/v1"
+	job.PermitView = "*"
 
 	require.True(t, job.Init())
 	require.True(t, job.Check())
@@ -253,6 +254,7 @@ func TestBind_CollectXML3(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
+	job.PermitView = "*"
 	job.URL = ts.URL + "/xml/v3"
 
 	require.True(t, job.Init())
