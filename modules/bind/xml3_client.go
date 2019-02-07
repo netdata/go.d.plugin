@@ -1,5 +1,13 @@
 package bind
 
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
+)
+
 type xml3Stats struct {
 	Server xml3Server `xml:"server"`
 	Views  []xml3View `xml:"views>view"`
@@ -13,21 +21,104 @@ type xml3CounterGroup struct {
 	Type     string `xml:"type,attr"`
 	Counters []struct {
 		Name  string `xml:"name,attr"`
-		Value int    `xml:",chardata"`
+		Value int64  `xml:",chardata"`
 	} `xml:"counter"`
 }
 
 type xml3View struct {
-	// Omitted branches: zones
 	Name          string             `xml:"name,attr"`
 	CounterGroups []xml3CounterGroup `xml:"counters"`
-	//Caches        []struct {
-	//	Name   string `xml:"name,attr"`
-	//	RRSets []struct {
-	//		Name  string `xml:"name"`
-	//		Value int    `xml:"counter"`
-	//	} `xml:"rrset"`
-	//} `xml:"cache"`
 }
 
-type xml3Client struct{}
+func newXML3Client(client *http.Client, request web.Request) *xml3Client {
+	return &xml3Client{httpClient: client, request: request}
+}
+
+type xml3Client struct {
+	httpClient *http.Client
+	request    web.Request
+}
+
+func (c xml3Client) serverStats() (*serverStats, error) {
+	req := c.createRequest("/server")
+	resp, err := c.httpClient.Do(req)
+
+	if err != nil {
+		return nil, fmt.Errorf("error on request : %v", err)
+	}
+
+	defer closeBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+	}
+
+	stats := xml3Stats{}
+
+	if err = json.NewDecoder(resp.Body).Decode(&stats); err != nil {
+		return nil, fmt.Errorf("error on decoding response from %s : %v", req.URL, err)
+	}
+
+	return convertXML(stats), nil
+}
+
+func (c xml3Client) createRequest(uri string) *http.Request {
+	c.request.URI = uri
+	req, _ := web.NewHTTPRequest(c.request)
+	return req
+}
+
+func convertXML(xmlStats xml3Stats) *serverStats {
+	stats := serverStats{
+		OpCodes:   make(map[string]int64),
+		NSStats:   make(map[string]int64),
+		QTypes:    make(map[string]int64),
+		SockStats: make(map[string]int64),
+		Views:     make(map[string]jsonView),
+	}
+
+	var m map[string]int64
+
+	for _, group := range xmlStats.Server.CounterGroups {
+		switch group.Type {
+		default:
+			continue
+		case "opcode":
+			m = stats.OpCodes
+		case "qtype":
+			m = stats.QTypes
+		case "nsstat":
+			m = stats.NSStats
+		case "sockstat":
+			m = stats.SockStats
+		}
+
+		for _, v := range group.Counters {
+			m[v.Name] = v.Value
+		}
+	}
+
+	for _, view := range xmlStats.Views {
+		stats.Views[view.Name] = jsonView{
+			Resolver: jsonViewResolver{
+				Stats:      make(map[string]int64),
+				QTypes:     make(map[string]int64),
+				CacheStats: make(map[string]int64),
+			},
+		}
+		for _, viewGroup := range view.CounterGroups {
+			switch viewGroup.Type {
+			case "resqtype":
+				m = stats.Views[view.Name].Resolver.QTypes
+			case "resstats":
+				m = stats.Views[view.Name].Resolver.Stats
+			case "cachestats":
+				m = stats.Views[view.Name].Resolver.CacheStats
+			}
+			for _, viewCounter := range viewGroup.Counters {
+				m[viewCounter.Name] = viewCounter.Value
+			}
+		}
+	}
+	return &stats
+}

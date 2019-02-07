@@ -24,7 +24,7 @@ func init() {
 const (
 	// defaultURL         = "http://100.127.0.254:8653/json/v1"
 	defaultURL         = "http://127.0.0.1:8653/json/v1"
-	defaultHTTPTimeout = time.Second
+	defaultHTTPTimeout = time.Second * 2
 )
 
 // New creates Bind with default values.
@@ -80,17 +80,10 @@ func (b *Bind) Init() bool {
 
 	switch addr.Path {
 	default:
-		b.Errorf("URL %s is wrong", b.URL)
-		return false
-	case "":
-		b.Error("WIP")
-		return false
-	case "/xml/v2":
-		b.Error("WIP")
+		b.Errorf("URL %s is wrong, supported endpoints: `/xml/v3`, `/json/v1`", b.URL)
 		return false
 	case "/xml/v3":
-		b.Error("WIP")
-		return false
+		b.bindAPIClient = newXML3Client(client, b.Request)
 	case "/json/v1":
 		b.bindAPIClient = newJSONClient(client, b.Request)
 	}
