@@ -37,8 +37,8 @@ func New() *Fluentd {
 }
 
 type Config struct {
-	web.HTTP         `yaml:",inline"`
-	PermitPluginType string `yaml:"permit_plugin_type"`
+	web.HTTP     `yaml:",inline"`
+	PermitPlugin string `yaml:"permit_plugin"`
 }
 
 // Fluentd Fluentd module.
@@ -46,10 +46,10 @@ type Fluentd struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	permitPluginType matcher.Matcher
-	apiClient        *apiClient
-	activePlugins    map[string]bool
-	charts           *Charts
+	permitPlugin  matcher.Matcher
+	apiClient     *apiClient
+	activePlugins map[string]bool
+	charts        *Charts
 }
 
 // Cleanup makes cleanup.
@@ -62,13 +62,13 @@ func (f *Fluentd) Init() bool {
 		return false
 	}
 
-	if f.PermitPluginType != "" {
-		m, err := matcher.NewSimplePatternsMatcher(f.PermitPluginType)
+	if f.PermitPlugin != "" {
+		m, err := matcher.NewSimplePatternsMatcher(f.PermitPlugin)
 		if err != nil {
 			f.Errorf("error on creating permit_plugin matcher : %v", err)
 			return false
 		}
-		f.permitPluginType = matcher.WithCache(m)
+		f.permitPlugin = matcher.WithCache(m)
 	}
 
 	client, err := web.NewHTTPClient(f.Client)
@@ -109,7 +109,7 @@ func (f *Fluentd) Collect() map[string]int64 {
 			continue
 		}
 
-		if f.permitPluginType != nil && !f.permitPluginType.MatchString(p.Type) {
+		if f.permitPlugin != nil && !f.permitPlugin.MatchString(p.ID) {
 			f.Debugf("plugin id: '%s', type: '%s', category: '%s' denied", p.ID, p.Type, p.Category)
 			continue
 		}
@@ -146,12 +146,12 @@ func (f *Fluentd) addPluginToCharts(p pluginData) {
 	}
 	if p.hasBufferQueueLength() {
 		chart := f.charts.Get("buffer_queue_length")
-		_ = chart.AddDim(&Dim{ID: id + "_buffer_queue_length", Name: p.ID, Algo: module.Incremental})
+		_ = chart.AddDim(&Dim{ID: id + "_buffer_queue_length", Name: p.ID})
 		chart.MarkNotCreated()
 	}
 	if p.hasBufferTotalQueuedSize() {
 		chart := f.charts.Get("buffer_total_queued_size")
-		_ = chart.AddDim(&Dim{ID: id + "_buffer_total_queued_size", Name: p.ID, Algo: module.Incremental})
+		_ = chart.AddDim(&Dim{ID: id + "_buffer_total_queued_size", Name: p.ID})
 		chart.MarkNotCreated()
 	}
 }

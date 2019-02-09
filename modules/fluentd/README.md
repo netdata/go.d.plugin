@@ -38,13 +38,13 @@ ___
 
 **Filter plugins**: by default module collects statistics for all plugins.
 
-To filter unwanted please configure `permit_plugin`:
+To filter unwanted please configure `permit_plugin_id`:
 
 ```yaml
 jobs:
   - name: local
     url: http://10.0.0.1:24220
-    permit_plugin: '!monitor_agent !dummy *'
+    permit_plugin_id: '!monitor_agent !dummy *'
 ```
 
 Syntax: [simple patterns](https://docs.netdata.cloud/libnetdata/simple_pattern/).
