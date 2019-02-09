@@ -114,42 +114,44 @@ func (f *Fluentd) Collect() map[string]int64 {
 			continue
 		}
 
-		f.collectPlugin(metrics, p)
+		id := fmt.Sprintf("%s_%s_%s", p.ID, p.Type, p.Category)
+
+		if p.hasCategory() {
+			metrics[id+"_retry_count"] = *p.RetryCount
+		}
+		if p.hasBufferQueueLength() {
+			metrics[id+"_buffer_queue_length"] = *p.BufferQueueLength
+		}
+		if p.hasBufferTotalQueuedSize() {
+			metrics[id+"_buffer_total_queued_size"] = *p.BufferTotalQueuedSize
+		}
+
+		if !f.activePlugins[id] {
+			f.activePlugins[id] = true
+			f.addPluginToCharts(p)
+		}
+
 	}
 
 	return metrics
 }
 
-func (f *Fluentd) collectPlugin(m map[string]int64, p pluginData) {
+func (f *Fluentd) addPluginToCharts(p pluginData) {
 	id := fmt.Sprintf("%s_%s_%s", p.ID, p.Type, p.Category)
 
 	if p.hasCategory() {
-		m[id+"_retry_count"] = *p.RetryCount
+		chart := f.charts.Get("retry_count")
+		_ = chart.AddDim(&Dim{ID: id + "_retry_count", Name: p.ID})
+		chart.MarkNotCreated()
 	}
 	if p.hasBufferQueueLength() {
-		m[id+"_buffer_queue_length"] = *p.BufferQueueLength
+		chart := f.charts.Get("buffer_queue_length")
+		_ = chart.AddDim(&Dim{ID: id + "_buffer_queue_length", Name: p.ID, Algo: module.Incremental})
+		chart.MarkNotCreated()
 	}
 	if p.hasBufferTotalQueuedSize() {
-		m[id+"_buffer_total_queued_size"] = *p.BufferTotalQueuedSize
-	}
-
-	if !f.activePlugins[id] {
-		f.activePlugins[id] = true
-
-		if p.hasCategory() {
-			chart := f.charts.Get("retry_count")
-			_ = chart.AddDim(&Dim{ID: id, Name: p.ID})
-			chart.MarkNotCreated()
-		}
-		if p.hasBufferQueueLength() {
-			chart := f.charts.Get("buffer_queue_length")
-			_ = chart.AddDim(&Dim{ID: id, Name: p.ID, Algo: module.Incremental})
-			chart.MarkNotCreated()
-		}
-		if p.hasBufferTotalQueuedSize() {
-			chart := f.charts.Get("buffer_total_queued_size")
-			_ = chart.AddDim(&Dim{ID: id, Name: p.ID, Algo: module.Incremental})
-			chart.MarkNotCreated()
-		}
+		chart := f.charts.Get("buffer_total_queued_size")
+		_ = chart.AddDim(&Dim{ID: id + "_buffer_total_queued_size", Name: p.ID, Algo: module.Incremental})
+		chart.MarkNotCreated()
 	}
 }
