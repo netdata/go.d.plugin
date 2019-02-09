@@ -105,7 +105,7 @@ func (f *Fluentd) Collect() map[string]int64 {
 
 	for _, p := range info.Payload {
 		// TODO: if p.Category == "input" ?
-		if p.RetryCount == nil && p.BufferQueueLength == nil && p.BufferTotalQueuedSize == nil {
+		if !p.hasCategory() && !p.hasBufferQueueLength() && !p.hasBufferTotalQueuedSize() {
 			continue
 		}
 
@@ -120,32 +120,36 @@ func (f *Fluentd) Collect() map[string]int64 {
 	return metrics
 }
 
-func (f *Fluentd) collectPlugin(metrics map[string]int64, plugin pluginData) {
-	id := fmt.Sprintf("%s_%s_%s", plugin.ID, plugin.Type, plugin.Category)
+func (f *Fluentd) collectPlugin(m map[string]int64, p pluginData) {
+	id := fmt.Sprintf("%s_%s_%s", p.ID, p.Type, p.Category)
 
-	if plugin.RetryCount != nil {
-		metrics[id+"_retry_count"] = *plugin.RetryCount
+	if p.hasCategory() {
+		m[id+"_retry_count"] = *p.RetryCount
 	}
-	if plugin.BufferQueueLength != nil {
-		metrics[id+"_buffer_queue_length"] = *plugin.BufferQueueLength
+	if p.hasBufferQueueLength() {
+		m[id+"_buffer_queue_length"] = *p.BufferQueueLength
 	}
-	if plugin.BufferTotalQueuedSize != nil {
-		metrics[id+"_buffer_total_queued_size"] = *plugin.BufferTotalQueuedSize
+	if p.hasBufferTotalQueuedSize() {
+		m[id+"_buffer_total_queued_size"] = *p.BufferTotalQueuedSize
 	}
 
 	if !f.activePlugins[id] {
 		f.activePlugins[id] = true
 
-		chart := f.charts.Get("retry_count")
-		_ = chart.AddDim(&Dim{ID: id, Name: plugin.ID})
-		chart.MarkNotCreated()
-
-		chart = f.charts.Get("buffer_queue_length")
-		_ = chart.AddDim(&Dim{ID: id, Name: plugin.ID, Algo: module.Incremental})
-		chart.MarkNotCreated()
-
-		chart = f.charts.Get("buffer_total_queued_size")
-		_ = chart.AddDim(&Dim{ID: id, Name: plugin.ID, Algo: module.Incremental})
-		chart.MarkNotCreated()
+		if p.hasCategory() {
+			chart := f.charts.Get("retry_count")
+			_ = chart.AddDim(&Dim{ID: id, Name: p.ID})
+			chart.MarkNotCreated()
+		}
+		if p.hasBufferQueueLength() {
+			chart := f.charts.Get("buffer_queue_length")
+			_ = chart.AddDim(&Dim{ID: id, Name: p.ID, Algo: module.Incremental})
+			chart.MarkNotCreated()
+		}
+		if p.hasBufferTotalQueuedSize() {
+			chart := f.charts.Get("buffer_total_queued_size")
+			_ = chart.AddDim(&Dim{ID: id, Name: p.ID, Algo: module.Incremental})
+			chart.MarkNotCreated()
+		}
 	}
 }
