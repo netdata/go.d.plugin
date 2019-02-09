@@ -34,9 +34,21 @@ func TestFluentd_Init(t *testing.T) {
 }
 
 func TestFluentd_Check(t *testing.T) {
-	job := New()
+	ts := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write(testDataPlugins) }))
+	defer ts.Close()
 
-	assert.True(t, job.Check())
+	// OK
+	job := New()
+	job.URL = ts.URL
+	require.True(t, job.Init())
+	require.True(t, job.Check())
+
+	// NG
+	job = New()
+	job.URL = "http://127.0.0.1:38001/api/plugins.json"
+	require.True(t, job.Init())
+	require.False(t, job.Check())
 }
 
 func TestFluentd_Charts(t *testing.T) {
