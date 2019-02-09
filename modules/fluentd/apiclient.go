@@ -20,9 +20,9 @@ type pluginData struct {
 	ID                    string `json:"plugin_id"`
 	Type                  string `json:"type"`
 	Category              string `json:"plugin_category"`
-	BufferTotalQueuedSize *int   `json:"buffer_total_queued_size"`
-	RetryCount            *int   `json:"retry_count"`
-	BufferQueueLength     *int   `json:"buffer_queue_length"`
+	BufferTotalQueuedSize *int64 `json:"buffer_total_queued_size"`
+	RetryCount            *int64 `json:"retry_count"`
+	BufferQueueLength     *int64 `json:"buffer_queue_length"`
 }
 
 func newAPIClient(client *http.Client, request web.Request) *apiClient {
