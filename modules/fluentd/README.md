@@ -34,5 +34,19 @@ jobs:
 ```
 
 Without configuration, module attempts to connect to `http://127.0.0.1:24220`.
+___
+
+**Filter plugins**: by default module collects statistics for all plugins.
+
+To filter unwanted please configure `permit_plugin`:
+
+```yaml
+jobs:
+  - name: local
+    url: http://10.0.0.1:24220
+    permit_plugin: '!monitor_agent !dummy *'
+```
+
+Syntax: [simple patterns](https://docs.netdata.cloud/libnetdata/simple_pattern/).
 
 ---
