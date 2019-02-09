@@ -38,7 +38,7 @@ func New() *Fluentd {
 
 type Config struct {
 	web.HTTP     `yaml:",inline"`
-	PermitPlugin string `yaml:"permit_plugin"`
+	PermitPlugin string `yaml:"permit_plugin_id"`
 }
 
 // Fluentd Fluentd module.
