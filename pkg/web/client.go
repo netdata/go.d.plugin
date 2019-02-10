@@ -12,7 +12,7 @@ type Client struct {
 	Timeout           Duration `yaml:"timeout"`              // default is zero (no timeout) must be tuned by modules
 	NotFollowRedirect bool     `yaml:"not_follow_redirects"` // default is follow
 	ProxyURL          string   `yaml:"proxy_url"`
-	ClientTLSConfig
+	ClientTLSConfig   `yaml:",inline"`
 }
 
 // NewHTTPClient creates new HTTPClient.
