@@ -21,7 +21,7 @@ func BenchmarkParser_JSON(b *testing.B) {
 func BenchmarkParser_EasyJSON(b *testing.B) {
 	var sum Summary
 	for i := 0; i < b.N; i++ {
-		_ = json.Unmarshal(testKubernetesSumStatsData, &sum)
+		_ = easyjson.Unmarshal(testKubernetesSumStatsData, &sum)
 	}
 }
 
