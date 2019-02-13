@@ -5,6 +5,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/hpcloud/tail v1.0.0
+	github.com/mailru/easyjson v0.0.0-20180823135443-60711f1a8329
 	github.com/miekg/dns v1.1.4
 	github.com/mindprince/gonvml v0.0.0-20180514031326-b364b296c732
 	github.com/netdata/go-orchestrator v0.0.0-20190207161842-2b790177c792

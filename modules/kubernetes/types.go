@@ -38,7 +38,7 @@ type PodStats struct {
 	Memory           *MemoryStats     `json:"memory"`
 	Network          *NetworkStats    `json:"network"`
 	VolumeStats      []VolumeStats    `json:"volume"`
-	EphemeralStorage *FsStats         `json:"ephemeral-storage,omitempty"`
+	EphemeralStorage *FsStats         `json:"ephemeral-storage"`
 }
 
 // ContainerStats holds container-level unprocessed sample stats.
