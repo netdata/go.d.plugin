@@ -2,6 +2,9 @@
 
 Module monitors solr request handler statistics.
 
+**Requirement:**
+* SOLR version 6.4+
+
 Following charts are drawn (per core):
 
 1. **Search Requests** in requests/s

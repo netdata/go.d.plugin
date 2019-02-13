@@ -6,17 +6,17 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/matcher"
-
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
-		Create: func() modules.Module { return New() },
+	creator := module.Creator{
+		Create: func() module.Module { return New() },
 	}
 
-	modules.Register("activemq", creator)
+	module.Register("activemq", creator)
 }
 
 var (
@@ -54,7 +54,7 @@ func New() *Activemq {
 
 // Activemq activemq module
 type Activemq struct {
-	modules.Base
+	module.Base
 
 	web.HTTP `yaml:",inline"`
 
@@ -100,10 +100,17 @@ func (a *Activemq) Init() bool {
 		a.topicsFilter = matcher.WithCache(f)
 	}
 
+	client, err := web.NewHTTPClient(a.Client)
+
+	if err != nil {
+		a.Error(err)
+		return false
+	}
+
 	a.apiClient = &apiClient{
 		webadmin:   a.Webadmin,
 		req:        a.Request,
-		httpClient: web.NewHTTPClient(a.Client),
+		httpClient: client,
 	}
 
 	return true

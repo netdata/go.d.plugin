@@ -10,19 +10,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
 		UpdateEvery:       5,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("httpcheck", creator)
+	module.Register("httpcheck", creator)
 }
 
 var (
@@ -72,7 +73,7 @@ func (d *metrics) reset() {
 
 // HTTPCheck httpcheck module
 type HTTPCheck struct {
-	modules.Base
+	module.Base
 
 	web.HTTP `yaml:",inline"`
 
@@ -111,7 +112,10 @@ func (hc *HTTPCheck) Init() bool {
 	}
 
 	// create HTTP client
-	hc.client = web.NewHTTPClient(hc.Client)
+	if hc.client, err = web.NewHTTPClient(hc.Client); err != nil {
+		hc.Error(err)
+		return false
+	}
 
 	// create response match
 	if hc.match, err = regexp.Compile(hc.ResponseMatch); err != nil {

@@ -1,12 +1,12 @@
 package nginx
 
-import "github.com/netdata/go.d.plugin/modules"
+import "github.com/netdata/go-orchestrator/module"
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
 )
 
 var charts = Charts{
@@ -27,7 +27,7 @@ var charts = Charts{
 		Fam:   "requests",
 		Ctx:   "nginx.requests",
 		Dims: Dims{
-			{ID: "requests", Algo: modules.Incremental},
+			{ID: "requests", Algo: module.Incremental},
 		},
 	},
 	{
@@ -49,8 +49,8 @@ var charts = Charts{
 		Fam:   "connections rate",
 		Ctx:   "nginx.connect_rate",
 		Dims: Dims{
-			{ID: "accepts", Name: "accepted", Algo: modules.Incremental},
-			{ID: "handled", Algo: modules.Incremental},
+			{ID: "accepts", Name: "accepted", Algo: module.Incremental},
+			{ID: "handled", Algo: module.Incremental},
 		},
 	},
 }

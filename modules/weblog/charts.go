@@ -1,16 +1,18 @@
 package weblog
 
-import "github.com/netdata/go.d.plugin/modules"
+import (
+	"github.com/netdata/go-orchestrator/module"
+)
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Chart is an alias for modules.Chart
-	Chart = modules.Chart
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
-	// Dim is an alias for modules.Dim
-	Dim = modules.Dim
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Chart is an alias for module.Chart
+	Chart = module.Chart
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
+	// Dim is an alias for module.Dim
+	Dim = module.Dim
 )
 
 //
@@ -22,12 +24,12 @@ var (
 		Units: "requests/s",
 		Fam:   "responses",
 		Ctx:   "web_log.response_statuses",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "resp_successful", Name: "success", Algo: modules.Incremental},
-			{ID: "resp_redirect", Name: "redirect", Algo: modules.Incremental},
-			{ID: "resp_client_error", Name: "client error", Algo: modules.Incremental},
-			{ID: "resp_server_error", Name: "server error", Algo: modules.Incremental},
+			{ID: "resp_successful", Name: "success", Algo: module.Incremental},
+			{ID: "resp_redirect", Name: "redirect", Algo: module.Incremental},
+			{ID: "resp_client_error", Name: "client error", Algo: module.Incremental},
+			{ID: "resp_server_error", Name: "server error", Algo: module.Incremental},
 		},
 	}
 
@@ -37,13 +39,13 @@ var (
 		Units: "requests/s",
 		Fam:   "responses",
 		Ctx:   "web_log.response_codes",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "resp_2xx", Algo: modules.Incremental},
-			{ID: "resp_5xx", Algo: modules.Incremental},
-			{ID: "resp_3xx", Algo: modules.Incremental},
-			{ID: "resp_4xx", Algo: modules.Incremental},
-			{ID: "resp_1xx", Algo: modules.Incremental},
+			{ID: "resp_2xx", Algo: module.Incremental},
+			{ID: "resp_5xx", Algo: module.Incremental},
+			{ID: "resp_3xx", Algo: module.Incremental},
+			{ID: "resp_4xx", Algo: module.Incremental},
+			{ID: "resp_1xx", Algo: module.Incremental},
 		},
 	}
 
@@ -53,7 +55,7 @@ var (
 		Units: "requests/s",
 		Fam:   "responses",
 		Ctx:   "web_log.response_codes_detailed",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 	}
 
 	bandwidth = Chart{
@@ -62,10 +64,10 @@ var (
 		Units: "kilobits/s",
 		Fam:   "bandwidth",
 		Ctx:   "web_log.bandwidth",
-		Type:  modules.Area,
+		Type:  module.Area,
 		Dims: Dims{
-			{ID: "bytes_received", Name: "received", Algo: modules.Incremental, Mul: 8, Div: 1000},
-			{ID: "bytes_sent", Name: "sent", Algo: modules.Incremental, Mul: -8, Div: 1000},
+			{ID: "bytes_received", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
+			{ID: "bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
 		},
 	}
 
@@ -75,7 +77,7 @@ var (
 		Units: "milliseconds",
 		Fam:   "timings",
 		Ctx:   "web_log.response_time",
-		Type:  modules.Line,
+		Type:  module.Line,
 		Dims: Dims{
 			{ID: "resp_time_min", Name: "min", Mul: 1000},
 			{ID: "resp_time_max", Name: "max", Mul: 1000},
@@ -97,7 +99,7 @@ var (
 		Units: "milliseconds",
 		Fam:   "timings",
 		Ctx:   "web_log.response_time_upstream",
-		Type:  modules.Line,
+		Type:  module.Line,
 		Dims: Dims{
 			{ID: "resp_time_upstream_min", Name: "min", Mul: 1000},
 			{ID: "resp_time_upstream_max", Name: "max", Mul: 1000},
@@ -119,7 +121,7 @@ var (
 		Units: "requests/s",
 		Fam:   "urls",
 		Ctx:   "web_log.requests_per_url",
-		Type:  modules.Stacked,
+		Type:  module.Stacked,
 	}
 
 //	requestsPerUserDefined = Chart{
@@ -128,7 +130,7 @@ var (
 //		Units: "requests/s",
 //		Fam:   "user defined",
 //		Ctx:   "web_log.requests_per_user_defined",
-//		Type:  modules.Stacked,
+//		Type:  module.Stacked,
 //	}
 //	requestsPerHTTPMethod = Chart{
 //		ID:    "requests_per_http_method",
@@ -136,9 +138,9 @@ var (
 //		Units: "requests/s",
 //		Fam:   "http methods",
 //		Ctx:   "web_log.requests_per_http_method",
-//		Type:  modules.Stacked,
+//		Type:  module.Stacked,
 //		Dims: Dims{
-//			{ID: "GET", Algo: modules.Incremental},
+//			{ID: "GET", Algo: module.Incremental},
 //		},
 //	}
 //	requestsPerHTTPVersion = Chart{
@@ -147,7 +149,7 @@ var (
 //		Units: "requests/s",
 //		Fam:   "http versions",
 //		Ctx:   "web_log.requests_per_http_version",
-//		Type:  modules.Stacked,
+//		Type:  module.Stacked,
 //	}
 //	requestsPerIPProto = Chart{
 //		ID:    "requests_per_ip_proto",
@@ -155,10 +157,10 @@ var (
 //		Units: "requests/s",
 //		Fam:   "ip protocols",
 //		Ctx:   "web_log.requests_per_ip_proto",
-//		Type:  modules.Stacked,
+//		Type:  module.Stacked,
 //		Dims: Dims{
-//			{ID: "req_ipv4", Name: "ipv4", Algo: modules.Incremental},
-//			{ID: "req_ipv6", Name: "ipv6", Algo: modules.Incremental},
+//			{ID: "req_ipv4", Name: "ipv4", Algo: module.Incremental},
+//			{ID: "req_ipv6", Name: "ipv6", Algo: module.Incremental},
 //		},
 //	}
 //	requestsPerVhost = Chart{
@@ -167,7 +169,7 @@ var (
 //		Units: "requests/s",
 //		Fam:   "vhost",
 //		Ctx:   "web_log.requests_per_vhost",
-//		Type:  modules.Stacked,
+//		Type:  module.Stacked,
 //	}
 //	currentPollIPs = Chart{
 //		ID:    "clients_current",
@@ -175,10 +177,10 @@ var (
 //		Units: "unique ips",
 //		Fam:   "clients",
 //		Ctx:   "web_log.current_poll_ips",
-//		Type:  modules.Stacked,
+//		Type:  module.Stacked,
 //		Dims: Dims{
-//			{ID: "unique_current_poll_ipv4", Name: "ipv4", Algo: modules.Incremental},
-//			{ID: "unique_current_poll_ipv6", Name: "ipv6", Algo: modules.Incremental},
+//			{ID: "unique_current_poll_ipv4", Name: "ipv4", Algo: module.Incremental},
+//			{ID: "unique_current_poll_ipv6", Name: "ipv6", Algo: module.Incremental},
 //		},
 //	}
 )
@@ -192,7 +194,7 @@ var (
 //			Units: "requests/s",
 //			Fam:   "responses",
 //			Ctx:   "web_log.response_codes_detailed_1xx",
-//			Type:  modules.Stacked,
+//			Type:  module.Stacked,
 //		},
 //		{
 //			ID:    responseCodesDetailed.ID + "_2xx",
@@ -200,7 +202,7 @@ var (
 //			Units: "requests/s",
 //			Fam:   "responses",
 //			Ctx:   "web_log.response_codes_detailed_2xx",
-//			Type:  modules.Stacked,
+//			Type:  module.Stacked,
 //		},
 //		{
 //			ID:    responseCodesDetailed.ID + "_3xx",
@@ -208,7 +210,7 @@ var (
 //			Units: "requests/s",
 //			Fam:   "responses",
 //			Ctx:   "web_log.response_codes_detailed_3xx",
-//			Type:  modules.Stacked,
+//			Type:  module.Stacked,
 //		},
 //		{
 //			ID:    responseCodesDetailed.ID + "_4xx",
@@ -216,7 +218,7 @@ var (
 //			Units: "requests/s",
 //			Fam:   "responses",
 //			Ctx:   "web_log.response_codes_detailed_4xx",
-//			Type:  modules.Stacked,
+//			Type:  module.Stacked,
 //		},
 //		{
 //			ID:    responseCodesDetailed.ID + "_5xx",
@@ -224,7 +226,7 @@ var (
 //			Units: "requests/s",
 //			Fam:   "responses",
 //			Ctx:   "web_log.response_codes_detailed_5xx",
-//			Type:  modules.Stacked,
+//			Type:  module.Stacked,
 //		},
 //		{
 //			ID:    responseCodesDetailed.ID + "_other",
@@ -232,7 +234,7 @@ var (
 //			Units: "requests/s",
 //			Fam:   "responses",
 //			Ctx:   "web_log.response_codes_detailed_other",
-//			Type:  modules.Stacked,
+//			Type:  module.Stacked,
 //		},
 //	}
 //}
@@ -245,7 +247,7 @@ var (
 //			Units: "requests/s",
 //			Fam:   "url " + id,
 //			Ctx:   "web_log.response_codes_detailed_per_url",
-//			Type:  modules.Stacked,
+//			Type:  module.Stacked,
 //		},
 //		{
 //			ID:    bandwidth.ID + "_" + id,
@@ -253,10 +255,10 @@ var (
 //			Units: "kilobits/s",
 //			Fam:   "url " + id,
 //			Ctx:   "web_log.bandwidth_per_url",
-//			Type:  modules.Area,
+//			Type:  module.Area,
 //			Dims: Dims{
-//				{ID: id + "_resp_length", Name: "received", Algo: modules.Incremental, Mul: 8, Div: 1000},
-//				{ID: id + "_bytes_sent", Name: "sent", Algo: modules.Incremental, Mul: -8, Div: 1000},
+//				{ID: id + "_resp_length", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
+//				{ID: id + "_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
 //			},
 //		},
 //		{
@@ -265,18 +267,18 @@ var (
 //			Units: "milliseconds",
 //			Fam:   "url " + id,
 //			Ctx:   "web_log.response_time_per_url",
-//			Type:  modules.Area,
+//			Type:  module.Area,
 //			Dims: Dims{
-//				{ID: id + "_resp_time_min", Name: "min", Algo: modules.Incremental, Div: 1000},
-//				{ID: id + "_resp_time_max", Name: "max", Algo: modules.Incremental, Div: 1000},
-//				{ID: id + "_resp_time_avg", Name: "avg", Algo: modules.Incremental, Div: 1000},
+//				{ID: id + "_resp_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
+//				{ID: id + "_resp_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
+//				{ID: id + "_resp_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
 //			},
 //		},
 //	}
 //}
 //
 //func (w *WebLog) createCharts() {
-//	var charts modules.Charts
+//	var charts module.Charts
 //
 //	_ = charts.Add(responseStatuses.Copy(), responseCodes.Copy())
 //
@@ -296,7 +298,7 @@ var (
 //		for _, cat := range w.worker.urlCats {
 //			_ = chart.AddDim(&Dim{
 //				ID:   cat.name,
-//				Algo: modules.Incremental,
+//				Algo: module.Incremental,
 //			})
 //		}
 //	}
@@ -319,7 +321,7 @@ var (
 //		for _, cat := range w.worker.userCats {
 //			_ = chart.AddDim(&Dim{
 //				ID:   cat.name,
-//				Algo: modules.Incremental,
+//				Algo: module.Incremental,
 //			})
 //		}
 //	}
@@ -335,7 +337,7 @@ var (
 //			_ = chart.AddDim(&Dim{
 //				ID:   v.id,
 //				Name: v.name,
-//				Algo: modules.Incremental,
+//				Algo: module.Incremental,
 //			})
 //		}
 //	}
@@ -351,7 +353,7 @@ var (
 //			_ = chart.AddDim(&Dim{
 //				ID:   v.id,
 //				Name: v.name,
-//				Algo: modules.Incremental,
+//				Algo: module.Incremental,
 //			})
 //		}
 //	}

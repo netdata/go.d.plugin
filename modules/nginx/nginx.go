@@ -3,18 +3,19 @@ package nginx
 import (
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("nginx", creator)
+	module.Register("nginx", creator)
 }
 
 const (
@@ -34,7 +35,7 @@ func New() *Nginx {
 
 // Nginx nginx module
 type Nginx struct {
-	modules.Base // should be embedded by every module
+	module.Base // should be embedded by every module
 
 	web.HTTP `yaml:",inline"`
 
@@ -51,9 +52,16 @@ func (n *Nginx) Init() bool {
 		return false
 	}
 
+	client, err := web.NewHTTPClient(n.Client)
+
+	if err != nil {
+		n.Error(err)
+		return false
+	}
+
 	n.apiClient = &apiClient{
 		req:        n.Request,
-		httpClient: web.NewHTTPClient(n.Client),
+		httpClient: client,
 	}
 
 	n.Debugf("using URL %s", n.URL)

@@ -5,14 +5,13 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/modules"
-
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"layeh.com/radius"
 )
 
 func TestNew(t *testing.T) {
-	assert.Implements(t, (*modules.Module)(nil), New())
+	assert.Implements(t, (*module.Module)(nil), New())
 }
 
 func TestFreeradius_Init(t *testing.T) {

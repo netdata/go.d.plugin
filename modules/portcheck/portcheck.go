@@ -5,18 +5,19 @@ import (
 	"sort"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
 		UpdateEvery:       5,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("portcheck", creator)
+	module.Register("portcheck", creator)
 }
 
 const (
@@ -84,7 +85,7 @@ func newPort(number, updateEvery int) *port {
 
 // PortCheck portcheck module
 type PortCheck struct {
-	modules.Base
+	module.Base
 
 	Host        string       `yaml:"host" validate:"required"`
 	Ports       []int        `yaml:"ports" validate:"required,gte=1"`
@@ -132,7 +133,7 @@ func (PortCheck) Check() bool {
 
 // Charts creates    charts
 func (tc PortCheck) Charts() *Charts {
-	var charts modules.Charts
+	var charts module.Charts
 
 	for _, p := range tc.Ports {
 		_ = charts.Add(chartsTemplate(p)...)

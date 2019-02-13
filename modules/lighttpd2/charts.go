@@ -1,12 +1,12 @@
 package lighttpd2
 
-import "github.com/netdata/go.d.plugin/modules"
+import "github.com/netdata/go-orchestrator/module"
 
 type (
-	// Charts is an alias for modules.Charts
-	Charts = modules.Charts
-	// Dims is an alias for modules.Dims
-	Dims = modules.Dims
+	// Charts is an alias for module.Charts
+	Charts = module.Charts
+	// Dims is an alias for module.Dims
+	Dims = module.Dims
 )
 
 var charts = Charts{
@@ -17,7 +17,7 @@ var charts = Charts{
 		Fam:   "requests",
 		Ctx:   "lighttpd2.requests",
 		Dims: Dims{
-			{ID: "requests_abs", Name: "requests", Algo: modules.Incremental},
+			{ID: "requests_abs", Name: "requests", Algo: module.Incremental},
 		},
 	},
 	{
@@ -27,11 +27,11 @@ var charts = Charts{
 		Fam:   "requests",
 		Ctx:   "lighttpd2.status_codes",
 		Dims: Dims{
-			{ID: "status_1xx", Name: "1xx", Algo: modules.Incremental},
-			{ID: "status_2xx", Name: "2xx", Algo: modules.Incremental},
-			{ID: "status_3xx", Name: "3xx", Algo: modules.Incremental},
-			{ID: "status_4xx", Name: "4xx", Algo: modules.Incremental},
-			{ID: "status_5xx", Name: "5xx", Algo: modules.Incremental},
+			{ID: "status_1xx", Name: "1xx", Algo: module.Incremental},
+			{ID: "status_2xx", Name: "2xx", Algo: module.Incremental},
+			{ID: "status_3xx", Name: "3xx", Algo: module.Incremental},
+			{ID: "status_4xx", Name: "4xx", Algo: module.Incremental},
+			{ID: "status_5xx", Name: "5xx", Algo: module.Incremental},
 		},
 	},
 	{
@@ -40,10 +40,10 @@ var charts = Charts{
 		Units: "kilobits/s",
 		Fam:   "traffic",
 		Ctx:   "lighttpd2.traffic",
-		Type:  modules.Area,
+		Type:  module.Area,
 		Dims: Dims{
-			{ID: "traffic_in_abs", Name: "in", Algo: modules.Incremental, Mul: 8},
-			{ID: "traffic_out_abs", Name: "out", Algo: modules.Incremental, Mul: -8},
+			{ID: "traffic_in_abs", Name: "in", Algo: module.Incremental, Mul: 8},
+			{ID: "traffic_out_abs", Name: "out", Algo: module.Incremental, Mul: -8},
 		},
 	},
 	{

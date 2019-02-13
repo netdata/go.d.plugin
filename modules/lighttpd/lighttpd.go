@@ -4,17 +4,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("lighttpd", creator)
+	module.Register("lighttpd", creator)
 }
 
 const (
@@ -35,7 +36,7 @@ func New() *Lighttpd {
 
 // Lighttpd lighttpd module
 type Lighttpd struct {
-	modules.Base // should be embedded by every module
+	module.Base // should be embedded by every module
 
 	web.HTTP `yaml:",inline"`
 
@@ -57,9 +58,16 @@ func (l *Lighttpd) Init() bool {
 		return false
 	}
 
+	client, err := web.NewHTTPClient(l.Client)
+
+	if err != nil {
+		l.Error(err)
+		return false
+	}
+
 	l.apiClient = &apiClient{
 		req:        l.Request,
-		httpClient: web.NewHTTPClient(l.Client),
+		httpClient: client,
 	}
 
 	l.Debugf("using URL %s", l.URL)
@@ -74,7 +82,7 @@ func (l *Lighttpd) Check() bool {
 }
 
 // Charts creates Charts
-func (l Lighttpd) Charts() *modules.Charts {
+func (l Lighttpd) Charts() *Charts {
 	return charts.Copy()
 }
 

@@ -13,7 +13,7 @@ jobs:
         key: go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
         paths:
         - /go/pkg/mod
-    - run: go build -o /tmp/godplugin github.com/netdata/go.d.plugin/cmd/godplugin
+    - run: CGO_ENABLED=0 go build -o /tmp/godplugin github.com/netdata/go.d.plugin/cmd/godplugin
     - run: /tmp/godplugin --help || true
     - store_artifacts:
         path: /tmp/godplugin

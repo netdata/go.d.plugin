@@ -4,17 +4,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("apache", creator)
+	module.Register("apache", creator)
 }
 
 const (
@@ -34,7 +35,7 @@ func New() *Apache {
 
 // Apache apache module
 type Apache struct {
-	modules.Base // should be embedded by every module
+	module.Base // should be embedded by every module
 
 	web.HTTP `yaml:",inline"`
 
@@ -57,9 +58,16 @@ func (a *Apache) Init() bool {
 		return false
 	}
 
+	client, err := web.NewHTTPClient(a.Client)
+
+	if err != nil {
+		a.Error(err)
+		return false
+	}
+
 	a.apiClient = &apiClient{
 		req:        a.Request,
-		httpClient: web.NewHTTPClient(a.Client),
+		httpClient: client,
 	}
 
 	a.Debugf("using URL %s", a.Request.URL)
@@ -87,7 +95,7 @@ func (a *Apache) Check() bool {
 }
 
 // Charts creates Charts
-func (a Apache) Charts() *modules.Charts {
+func (a Apache) Charts() *module.Charts {
 	charts := charts.Copy()
 
 	if !a.extendedStatus {

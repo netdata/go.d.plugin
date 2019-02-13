@@ -3,18 +3,19 @@ package rabbitmq
 import (
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
-	creator := modules.Creator{
+	creator := module.Creator{
 		DisabledByDefault: true,
-		Create:            func() modules.Module { return New() },
+		Create:            func() module.Module { return New() },
 	}
 
-	modules.Register("rabbitmq", creator)
+	module.Register("rabbitmq", creator)
 }
 
 const (
@@ -40,7 +41,7 @@ func New() *Rabbitmq {
 
 // Rabbitmq rabbitmq module.
 type Rabbitmq struct {
-	modules.Base
+	module.Base
 
 	web.HTTP `yaml:",inline"`
 
@@ -57,9 +58,16 @@ func (r *Rabbitmq) Init() bool {
 		return false
 	}
 
+	client, err := web.NewHTTPClient(r.Client)
+
+	if err != nil {
+		r.Error(err)
+		return false
+	}
+
 	r.apiClient = &apiClient{
 		req:        r.Request,
-		httpClient: web.NewHTTPClient(r.Client),
+		httpClient: client,
 	}
 
 	r.Debugf("using URL %s", r.URL)

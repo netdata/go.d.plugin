@@ -24,6 +24,9 @@ wget "https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-
 tar -C /tmp -xvf "/tmp/hub-linux-amd64-${HUB_VERSION}.tgz"
 export PATH=$PATH:"/tmp/hub-linux-amd64-${HUB_VERSION}/bin"
 
+set +e
+
 for i in bin/*; do
 	hub release edit -a "$i" -m "${TRAVIS_TAG}" "${TRAVIS_TAG}"
+	sleep 2
 done
