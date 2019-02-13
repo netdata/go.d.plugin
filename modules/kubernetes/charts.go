@@ -52,7 +52,7 @@ var (
 				Algo: module.Incremental,
 			},
 			{
-				ID:   "%s_memory_stats_working_rss_bytes",
+				ID:   "%s_memory_stats_rss_bytes",
 				Name: "rss",
 				Div:  1024,
 				Algo: module.Incremental,
