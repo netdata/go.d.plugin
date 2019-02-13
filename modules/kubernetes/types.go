@@ -2,6 +2,8 @@ package kubernetes
 
 // https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/apis/stats/v1alpha1/types.go
 
+type statsSummary = Summary
+
 // Summary is a top-level container for holding NodeStats and PodStats.
 type Summary struct {
 	Node NodeStats  `json:"node"`

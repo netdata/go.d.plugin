@@ -16,7 +16,10 @@ func init() {
 func New() *Kubernetes { return &Kubernetes{} }
 
 // Kubernetes Kubernetes module.
-type Kubernetes struct{ module.Base }
+type Kubernetes struct {
+	module.Base
+	apiClient apiClient
+}
 
 // Cleanup makes cleanup.
 func (Kubernetes) Cleanup() {}
