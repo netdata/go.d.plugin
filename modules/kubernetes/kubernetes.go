@@ -1,9 +1,11 @@
 package kubernetes
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/matcher"
+	"fmt"
+	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -19,12 +21,13 @@ func init() {
 
 const (
 	defaultHTTPTimeout = time.Second * 2
-	defaultURL         = "http://192.168.99.106:10255"
+	defaultURL         = "http://192.168.99.111:10255"
 	// defaultURL         = "http://127.0.0.1:10255"
 )
 
 type Config struct {
-	web.HTTP `yaml:",inline"`
+	web.HTTP    `yaml:",inline"`
+	UpdateEvery int `yaml:"update_every"`
 }
 
 // New creates Kubernetes with default values.
@@ -114,10 +117,10 @@ func (k *Kubernetes) Collect() map[string]int64 {
 		}
 		if !k.activePods[pod.PodRef.UID] {
 			k.activePods[pod.PodRef.UID] = true
-			k.addPodToCharts(pod)
+			k.addPodToCharts(&pod)
 		}
 
-		for k, v := range podStatsToMap(pod) {
+		for k, v := range podStatsToMap(&pod) {
 			metrics[k] = v
 		}
 
@@ -135,13 +138,50 @@ func (k *Kubernetes) Collect() map[string]int64 {
 	return metrics
 }
 
-func (k *Kubernetes) removePodFromCharts(podIUD string) {}
+func (k *Kubernetes) removePodFromCharts(podIUD string) {
+	for _, chart := range *k.charts {
+		if strings.Contains(chart.ID, podIUD) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
+}
 
-func (k *Kubernetes) addPodToCharts(pod PodStats) {
+func (k *Kubernetes) addPodToCharts(pod *PodStats) {
+	chart := chartCPUStats.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, fmt.Sprintf("%s_%s_%s", pod.PodRef.Name, pod.PodRef.UID, pod.PodRef.Namespace))
+	chart.Fam = pod.PodRef.Name
+	for _, dim := range chart.Dims {
+		dim.ID = fmt.Sprintf(dim.ID, pod.PodRef.UID)
+		// TODO:
+		// dim.Div = k.UpdateEvery * dim.Div
+	}
+	_ = k.charts.Add(chart)
+
+	chart = chartMemoryStatsUsage.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, fmt.Sprintf("%s_%s_%s", pod.PodRef.Name, pod.PodRef.UID, pod.PodRef.Namespace))
+	chart.Fam = pod.PodRef.Name
+	for _, dim := range chart.Dims {
+		dim.ID = fmt.Sprintf(dim.ID, pod.PodRef.UID)
+	}
+	if pod.Memory.AvailableBytes == nil {
+		_ = chart.RemoveDim(fmt.Sprintf("%s_memory_stats_available_bytes", pod.PodRef.UID))
+	}
+
+	_ = k.charts.Add(chart)
+
+	chart = chartMemoryStatsPageFaults.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, fmt.Sprintf("%s_%s_%s", pod.PodRef.Name, pod.PodRef.UID, pod.PodRef.Namespace))
+	chart.Fam = pod.PodRef.Name
+	for _, dim := range chart.Dims {
+		dim.ID = fmt.Sprintf(dim.ID, pod.PodRef.UID)
+	}
+
+	_ = k.charts.Add(chart)
 
 }
 
-func podStatsToMap(pod PodStats) map[string]int64 {
+func podStatsToMap(pod *PodStats) map[string]int64 {
 	rv := make(map[string]int64)
 	if pod.CPU.UsageCoreNanoSeconds != nil {
 		rv[pod.PodRef.UID+"_cpu_stats_usage_core_nano_seconds"] = *pod.CPU.UsageCoreNanoSeconds
