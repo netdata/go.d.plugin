@@ -11,14 +11,14 @@ import (
 
 var testKubernetesSumStatsData, _ = ioutil.ReadFile("testdata/stats_summary.json")
 
-func BenchmarkParser_JSON(b *testing.B) {
+func BenchmarkUnmarshal_JSON(b *testing.B) {
 	var sum Summary
 	for i := 0; i < b.N; i++ {
 		_ = json.Unmarshal(testKubernetesSumStatsData, &sum)
 	}
 }
 
-func BenchmarkParser_EasyJSON(b *testing.B) {
+func BenchmarkUnmarshal_EasyJSON(b *testing.B) {
 	var sum Summary
 	for i := 0; i < b.N; i++ {
 		_ = easyjson.Unmarshal(testKubernetesSumStatsData, &sum)
