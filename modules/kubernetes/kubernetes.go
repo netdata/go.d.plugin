@@ -104,11 +104,10 @@ func (k *Kubernetes) Collect() map[string]int64 {
 
 	// TODO: remove immediately?
 	for podIUD := range updatedPods {
-		if k.activePods[podIUD] {
-			continue
+		if !k.activePods[podIUD] {
+			delete(k.activePods, podIUD)
+			k.removePodFromCharts(podIUD)
 		}
-		delete(k.activePods, podIUD)
-		k.removePodFromCharts(podIUD)
 	}
 
 	return metrics

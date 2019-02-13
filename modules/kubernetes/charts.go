@@ -23,6 +23,7 @@ var (
 				Name: "usage",
 				Mul:  100,
 				Div:  1000000000,
+				Algo: module.Incremental,
 			},
 		},
 	}
@@ -33,10 +34,46 @@ var (
 		Ctx:   "kubernetes.memory_stats_usage",
 		Dims: Dims{
 			{
-				ID:   "%s_memory_stats",
+				ID:   "%s_memory_stats_available_bytes",
+				Name: "available",
+				Div:  1024,
+				Algo: module.Incremental,
+			},
+			{
+				ID:   "%s_memory_stats_usage_bytes",
 				Name: "usage",
-				Mul:  100,
-				Div:  1000000000,
+				Div:  1024,
+				Algo: module.Incremental,
+			},
+			{
+				ID:   "%s_memory_stats_working_set_bytes",
+				Name: "working set",
+				Div:  1024,
+				Algo: module.Incremental,
+			},
+			{
+				ID:   "%s_memory_stats_working_rss_bytes",
+				Name: "rss",
+				Div:  1024,
+				Algo: module.Incremental,
+			},
+		},
+	}
+	chartMemoryStatsPageFaults = Chart{
+		ID:    "%s_memory_stats_page_faults",
+		Title: "Page Faults",
+		Units: "KB",
+		Ctx:   "kubernetes.memory_stats_page_faults",
+		Dims: Dims{
+			{
+				ID:   "%s_memory_stats_page_faults",
+				Name: "minor",
+				Algo: module.Incremental,
+			},
+			{
+				ID:   "%s_memory_stats_major_page_faults",
+				Name: "major",
+				Algo: module.Incremental,
 			},
 		},
 	}
