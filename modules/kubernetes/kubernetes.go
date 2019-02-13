@@ -18,7 +18,8 @@ func init() {
 
 const (
 	defaultHTTPTimeout = time.Second * 2
-	defaultURL         = "http://127.0.0.1:10255"
+	defaultURL         = "http://192.168.99.106:10255"
+	// defaultURL         = "http://127.0.0.1:10255"
 )
 
 type Config struct {
@@ -35,6 +36,7 @@ func New() *Kubernetes {
 			},
 		},
 		activePods: make(map[string]bool),
+		charts:     &Charts{},
 	}
 }
 
@@ -43,7 +45,8 @@ type Kubernetes struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	apiClient apiClient
+	charts    *Charts
+	apiClient *apiClient
 	// TODO: likely wrong
 	activePods map[string]bool
 }
@@ -52,13 +55,67 @@ type Kubernetes struct {
 func (Kubernetes) Cleanup() {}
 
 // Init makes initialization.
-func (Kubernetes) Init() bool { return false }
+func (k *Kubernetes) Init() bool {
+	if k.URL == "" {
+		k.Error("URL not set")
+		return false
+	}
+
+	client, err := web.NewHTTPClient(k.Client)
+
+	if err != nil {
+		k.Errorf("error on creating http client : %v", err)
+		return false
+	}
+
+	k.apiClient = newAPIClient(client, k.Request)
+
+	return true
+}
 
 // Check makes check.
-func (Kubernetes) Check() bool { return true }
+func (k *Kubernetes) Check() bool { return len(k.Collect()) > 0 }
 
 // Charts creates Charts.
-func (Kubernetes) Charts() *Charts { return nil }
+func (k Kubernetes) Charts() *Charts { return k.charts }
 
 // Collect collects metrics.
-func (Kubernetes) Collect() map[string]int64 { return nil }
+func (k *Kubernetes) Collect() map[string]int64 {
+	stats, err := k.apiClient.getStatsSummary()
+
+	if err != nil {
+		k.Error(err)
+		return nil
+	}
+
+	var (
+		metrics     = make(map[string]int64)
+		updatedPods = make(map[string]bool)
+	)
+
+	for _, pod := range stats.Pods {
+		if !k.activePods[pod.PodRef.UID] {
+			k.activePods[pod.PodRef.UID] = true
+			k.addPodToCharts(pod)
+		}
+		k.collectPodStats(metrics, pod)
+		updatedPods[pod.PodRef.UID] = true
+	}
+
+	// TODO: remove immediately?
+	for podIUD := range updatedPods {
+		if k.activePods[podIUD] {
+			continue
+		}
+		delete(k.activePods, podIUD)
+		k.removePodFromCharts(podIUD)
+	}
+
+	return metrics
+}
+
+func (k *Kubernetes) removePodFromCharts(podIUD string) {}
+
+func (k *Kubernetes) addPodToCharts(pod PodStats) {}
+
+func (k *Kubernetes) collectPodStats(metrics map[string]int64, pod PodStats) {}
