@@ -148,62 +148,51 @@ func (k *Kubernetes) removePodFromCharts(podIUD string) {
 }
 
 func (k *Kubernetes) addPodToCharts(pod *PodStats) {
-	chart := chartCPUStats.Copy()
-	chart.ID = fmt.Sprintf(chart.ID, fmt.Sprintf("%s_%s_%s", pod.PodRef.Name, pod.PodRef.UID, pod.PodRef.Namespace))
-	chart.Fam = pod.PodRef.Name
-	for _, dim := range chart.Dims {
-		dim.ID = fmt.Sprintf(dim.ID, pod.PodRef.UID)
-		// TODO:
-		// dim.Div = k.UpdateEvery * dim.Div
-	}
-	_ = k.charts.Add(chart)
-
-	chart = chartMemoryStatsUsage.Copy()
-	chart.ID = fmt.Sprintf(chart.ID, fmt.Sprintf("%s_%s_%s", pod.PodRef.Name, pod.PodRef.UID, pod.PodRef.Namespace))
-	chart.Fam = pod.PodRef.Name
-	for _, dim := range chart.Dims {
-		dim.ID = fmt.Sprintf(dim.ID, pod.PodRef.UID)
-	}
-	if pod.Memory.AvailableBytes == nil {
-		_ = chart.RemoveDim(fmt.Sprintf("%s_memory_stats_available_bytes", pod.PodRef.UID))
+	for _, c := range []Chart{
+		chartCPUStats,
+		chartMemoryStatsUsage,
+		chartMemoryStatsPageFaults,
+	} {
+		chart := c.Copy()
+		chart.ID = fmt.Sprintf(chart.ID, fmt.Sprintf("%s_%s_%s", pod.PodRef.Name, pod.PodRef.UID, pod.PodRef.Namespace))
+		chart.Fam = pod.PodRef.Name
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, pod.PodRef.UID)
+		}
+		_ = k.charts.Add(chart)
 	}
 
-	_ = k.charts.Add(chart)
-
-	chart = chartMemoryStatsPageFaults.Copy()
-	chart.ID = fmt.Sprintf(chart.ID, fmt.Sprintf("%s_%s_%s", pod.PodRef.Name, pod.PodRef.UID, pod.PodRef.Namespace))
-	chart.Fam = pod.PodRef.Name
-	for _, dim := range chart.Dims {
-		dim.ID = fmt.Sprintf(dim.ID, pod.PodRef.UID)
-	}
-
-	_ = k.charts.Add(chart)
+	// TODO:
+	// 1. dim.Div = k.UpdateEvery * dim.Div in CPU
+	// 2. remove AvailableBytes if nil from MemStats
 
 }
 
 func podStatsToMap(pod *PodStats) map[string]int64 {
 	rv := make(map[string]int64)
-	if pod.CPU.UsageCoreNanoSeconds != nil {
+	if has(pod.CPU.UsageCoreNanoSeconds) {
 		rv[pod.PodRef.UID+"_cpu_stats_usage_core_nano_seconds"] = *pod.CPU.UsageCoreNanoSeconds
 	}
-	if pod.Memory.AvailableBytes != nil {
+	if has(pod.Memory.AvailableBytes) {
 		rv[pod.PodRef.UID+"_memory_stats_available_bytes"] = *pod.Memory.AvailableBytes
 	}
-	if pod.Memory.UsageBytes != nil {
+	if has(pod.Memory.UsageBytes) {
 		rv[pod.PodRef.UID+"_memory_stats_usage_bytes"] = *pod.Memory.UsageBytes
 	}
-	if pod.Memory.WorkingSetBytes != nil {
+	if has(pod.Memory.WorkingSetBytes) {
 		rv[pod.PodRef.UID+"_memory_stats_working_set_bytes"] = *pod.Memory.WorkingSetBytes
 	}
-	if pod.Memory.RSSBytes != nil {
+	if has(pod.Memory.RSSBytes) {
 		rv[pod.PodRef.UID+"_memory_stats_rss_bytes"] = *pod.Memory.RSSBytes
 	}
-	if pod.Memory.PageFaults != nil {
+	if has(pod.Memory.PageFaults) {
 		rv[pod.PodRef.UID+"_memory_stats_page_faults"] = *pod.Memory.PageFaults
 	}
-	if pod.Memory.MajorPageFaults != nil {
+	if has(pod.Memory.MajorPageFaults) {
 		rv[pod.PodRef.UID+"_memory_stats_major_page_faults"] = *pod.Memory.MajorPageFaults
 	}
 
 	return rv
 }
+
+func has(v *int64) bool { return v != nil }
