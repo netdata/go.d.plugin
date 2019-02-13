@@ -152,6 +152,8 @@ func (k *Kubernetes) addPodToCharts(pod *PodStats) {
 		chartCPUStats,
 		chartMemoryStatsUsage,
 		chartMemoryStatsPageFaults,
+		chartInterfaceBandwidth,
+		chartInterfaceErrors,
 	} {
 		chart := c.Copy()
 		chart.ID = fmt.Sprintf(chart.ID, fmt.Sprintf("%s_%s_%s", pod.PodRef.Name, pod.PodRef.UID, pod.PodRef.Namespace))
@@ -170,26 +172,44 @@ func (k *Kubernetes) addPodToCharts(pod *PodStats) {
 
 func podStatsToMap(pod *PodStats) map[string]int64 {
 	rv := make(map[string]int64)
-	if has(pod.CPU.UsageCoreNanoSeconds) {
-		rv[pod.PodRef.UID+"_cpu_stats_usage_core_nano_seconds"] = *pod.CPU.UsageCoreNanoSeconds
+	if pod.CPU != nil {
+		if has(pod.CPU.UsageCoreNanoSeconds) {
+			rv[pod.PodRef.UID+"_cpu_stats_usage_core_nano_seconds"] = *pod.CPU.UsageCoreNanoSeconds
+		}
 	}
-	if has(pod.Memory.AvailableBytes) {
-		rv[pod.PodRef.UID+"_memory_stats_available_bytes"] = *pod.Memory.AvailableBytes
+	if pod.Memory != nil {
+		if has(pod.Memory.AvailableBytes) {
+			rv[pod.PodRef.UID+"_memory_stats_available_bytes"] = *pod.Memory.AvailableBytes
+		}
+		if has(pod.Memory.UsageBytes) {
+			rv[pod.PodRef.UID+"_memory_stats_usage_bytes"] = *pod.Memory.UsageBytes
+		}
+		if has(pod.Memory.WorkingSetBytes) {
+			rv[pod.PodRef.UID+"_memory_stats_working_set_bytes"] = *pod.Memory.WorkingSetBytes
+		}
+		if has(pod.Memory.RSSBytes) {
+			rv[pod.PodRef.UID+"_memory_stats_rss_bytes"] = *pod.Memory.RSSBytes
+		}
+		if has(pod.Memory.PageFaults) {
+			rv[pod.PodRef.UID+"_memory_stats_page_faults"] = *pod.Memory.PageFaults
+		}
+		if has(pod.Memory.MajorPageFaults) {
+			rv[pod.PodRef.UID+"_memory_stats_major_page_faults"] = *pod.Memory.MajorPageFaults
+		}
 	}
-	if has(pod.Memory.UsageBytes) {
-		rv[pod.PodRef.UID+"_memory_stats_usage_bytes"] = *pod.Memory.UsageBytes
-	}
-	if has(pod.Memory.WorkingSetBytes) {
-		rv[pod.PodRef.UID+"_memory_stats_working_set_bytes"] = *pod.Memory.WorkingSetBytes
-	}
-	if has(pod.Memory.RSSBytes) {
-		rv[pod.PodRef.UID+"_memory_stats_rss_bytes"] = *pod.Memory.RSSBytes
-	}
-	if has(pod.Memory.PageFaults) {
-		rv[pod.PodRef.UID+"_memory_stats_page_faults"] = *pod.Memory.PageFaults
-	}
-	if has(pod.Memory.MajorPageFaults) {
-		rv[pod.PodRef.UID+"_memory_stats_major_page_faults"] = *pod.Memory.MajorPageFaults
+	if pod.Network != nil {
+		if has(pod.Network.RxBytes) {
+			rv[pod.PodRef.UID+"_interface_stats_rx_bytes"] = *pod.Network.RxBytes
+		}
+		if has(pod.Network.TxBytes) {
+			rv[pod.PodRef.UID+"_interface_stats_tx_bytes"] = *pod.Network.TxBytes
+		}
+		if has(pod.Network.RxErrors) {
+			rv[pod.PodRef.UID+"_interface_stats_rx_errors"] = *pod.Network.RxErrors
+		}
+		if has(pod.Network.TxErrors) {
+			rv[pod.PodRef.UID+"_interface_stats_tx_errors"] = *pod.Network.TxErrors
+		}
 	}
 
 	return rv

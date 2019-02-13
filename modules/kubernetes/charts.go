@@ -72,4 +72,50 @@ var (
 			},
 		},
 	}
+	chartInterfaceBandwidth = Chart{
+		ID:    "%s_interface_stats_bandwidth",
+		Title: "Interface Bandwidth",
+		Units: "kilobits/s",
+		Ctx:   "kubernetes.interface_stats_bandwidth",
+		Type:  module.Area,
+		Dims: Dims{
+			{
+				ID:   "%s_interface_stats_rx_bytes",
+				Name: "rx",
+				Algo: module.Incremental,
+				Mul:  8,
+				Div:  1000,
+			},
+			{
+				ID:   "%s_interface_stats_tx_bytes",
+				Name: "tx",
+				Algo: module.Incremental,
+				Mul:  -8,
+				Div:  1000,
+			},
+		},
+	}
+	chartInterfaceErrors = Chart{
+		ID:    "%s_interface_stats_errors",
+		Title: "Interface Errors",
+		Units: "errors/s",
+		Ctx:   "kubernetes.interface_stats_errors",
+		Type:  module.Area,
+		Dims: Dims{
+			{
+				ID:   "%s_interface_stats_rx_errors",
+				Name: "rx",
+				Algo: module.Incremental,
+				Mul:  8,
+				Div:  1000,
+			},
+			{
+				ID:   "%s_interface_stats_tx_errors",
+				Name: "tx",
+				Algo: module.Incremental,
+				Mul:  -8,
+				Div:  1000,
+			},
+		},
+	}
 )
