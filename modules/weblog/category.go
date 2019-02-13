@@ -6,21 +6,21 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
 
-type rawcategory struct {
+type RawCategory struct {
 	Name  string
 	Match string
 }
 
-type category struct {
+type Category struct {
 	name string
 	matcher.Matcher
 }
 
-func (r rawcategory) String() string {
+func (r RawCategory) String() string {
 	return fmt.Sprintf("{name: %s, match: %s}", r.Name, r.Match)
 }
 
-func newCategory(raw rawcategory) (*category, error) {
+func NewCategory(raw RawCategory) (*Category, error) {
 	if raw.Name == "" || raw.Match == "" {
 		return nil, fmt.Errorf("category bad syntax")
 	}
@@ -31,5 +31,5 @@ func newCategory(raw rawcategory) (*category, error) {
 		return nil, err
 	}
 
-	return &category{name: raw.Name, Matcher: m}, nil
+	return &Category{name: raw.Name, Matcher: m}, nil
 }
