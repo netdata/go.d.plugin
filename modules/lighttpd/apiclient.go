@@ -12,22 +12,43 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-var validStatusKeys = map[string]string{
-	"Total Accesses": "total_accesses",
-	"Total kBytes":   "total_kBytes",
-	"Uptime":         "uptime",
-	"BusyServers":    "busy_servers",
-	"IdleServers":    "idle_servers",
-	"Scoreboard":     "scoreboard",
+type (
+	scoreboard struct {
+		Waiting       int `stm:"waiting"`
+		Open          int `stm:"open"`
+		Close         int `stm:"close"`
+		HardError     int `stm:"hard_error"`
+		KeepAlive     int `stm:"keepalive"`
+		Read          int `stm:"read"`
+		ReadPost      int `stm:"read_post"`
+		Write         int `stm:"write"`
+		HandleRequest int `stm:"handle_request"`
+		RequestStart  int `stm:"request_start"`
+		RequestEnd    int `stm:"request_end"`
+		ResponseStart int `stm:"response_start"`
+		ResponseEnd   int `stm:"response_end"`
+	}
+	serverStatus struct {
+		TotalAccesses *int        `stm:"total_accesses"`
+		TotalKBytes   *int        `stm:"total_kBytes"`
+		Uptime        *int        `stm:"uptime"`
+		BusyServers   *int        `stm:"busy_servers"`
+		IdleServers   *int        `stm:"idle_servers"`
+		Scoreboard    *scoreboard `stm:"scoreboard"`
+	}
+)
+
+func newAPIClient(client *http.Client, request web.Request) *apiClient {
+	return &apiClient{httpClient: client, request: request}
 }
 
 type apiClient struct {
-	req        web.Request
 	httpClient *http.Client
+	request    web.Request
 }
 
-func (a apiClient) serverStatus() (map[string]int64, error) {
-	req, err := a.createRequest()
+func (a apiClient) getServerStatus() (*serverStatus, error) {
+	req, err := web.NewHTTPRequest(a.request)
 
 	if err != nil {
 		return nil, fmt.Errorf("error on creating request : %v", err)
@@ -41,96 +62,81 @@ func (a apiClient) serverStatus() (map[string]int64, error) {
 		return nil, err
 	}
 
-	s := bufio.NewScanner(resp.Body)
-
-	status := make(map[string]string)
-
-	for s.Scan() {
-		parts := strings.Split(s.Text(), ":")
-
-		if len(parts) != 2 {
-			continue
-		}
-		status[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
-	}
-
-	metrics, err := a.parseStatus(status)
+	status, err := parseResponse(resp.Body)
 
 	if err != nil {
-		return nil, fmt.Errorf("error on parsing status : %v", err)
+		return nil, fmt.Errorf("error on parsing response from %s : %v", req.URL, err)
 	}
 
-	return metrics, nil
-}
-
-func (a *apiClient) parseStatus(status map[string]string) (map[string]int64, error) {
-	metrics := make(map[string]int64)
-
-	for key, value := range status {
-		k, ok := validStatusKeys[key]
-
-		if !ok {
-			return nil, fmt.Errorf("unknown value : %s", key)
-		}
-
-		switch k {
-		case "scoreboard":
-			parseScoreboard(value, metrics)
-		default:
-			v, err := strconv.Atoi(value)
-			if err != nil {
-				return nil, err
-			}
-			metrics[k] = int64(v)
-		}
-	}
-
-	return metrics, nil
-}
-
-func (a apiClient) doRequest(req *http.Request) (*http.Response, error) {
-	return a.httpClient.Do(req)
+	return status, nil
 }
 
 func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
-	var (
-		resp *http.Response
-		err  error
-	)
-
-	if resp, err = a.doRequest(req); err != nil {
-		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
-
+	resp, err := a.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error on request: %v", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
 	}
-
-	return resp, err
+	return resp, nil
 }
 
-func (a apiClient) createRequest() (*http.Request, error) {
-	var (
-		req *http.Request
-		err error
-	)
+func parseResponse(respBody io.ReadCloser) (*serverStatus, error) {
+	s := bufio.NewScanner(respBody)
+	status := &serverStatus{}
 
-	if req, err = web.NewHTTPRequest(a.req); err != nil {
-		return nil, err
+	for s.Scan() {
+		parts := strings.Split(s.Text(), ":")
+		if len(parts) != 2 {
+			continue
+		}
+		key, value := strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
+
+		switch key {
+		default:
+		case "BusyWorkers", "IdleWorkers":
+			return nil, fmt.Errorf("apache data")
+		case "BusyServers":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.BusyServers = &v
+			}
+		case "IdleServers":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.IdleServers = &v
+			}
+		case "Total Accesses":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.TotalAccesses = &v
+			}
+		case "Total kBytes":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.TotalKBytes = &v
+			}
+		case "Uptime":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.Uptime = &v
+			}
+		case "Scoreboard":
+			status.Scoreboard = &scoreboard{}
+			parseScoreboard(status.Scoreboard, value)
+		}
 	}
 
-	return req, nil
+	return status, nil
 }
 
-func closeBody(resp *http.Response) {
-	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
-		_ = resp.Body.Close()
-	}
-}
-
-func parseScoreboard(scoreboard string, metrics map[string]int64) {
+func parseScoreboard(sb *scoreboard, scoreboard string) {
 	// Descriptions from https://blog.serverdensity.com/monitor-lighttpd/
 	//
 	// “.” = Opening the TCP connection (connect)
@@ -147,51 +153,42 @@ func parseScoreboard(scoreboard string, metrics map[string]int64) {
 	// “S” = End of the HTTP request response (response-end)
 	// “_” Waiting for Connection (NOTE: not sure, copied the description from apache score board)
 
-	var waiting, open, C, E, k, r, R, W, h, q, Q, s, S int64
+	for _, s := range strings.Split(scoreboard, "") {
 
-	for _, v := range strings.Split(scoreboard, "") {
-
-		switch v {
+		switch s {
 		case "_":
-			waiting++
+			sb.Waiting++
 		case ".":
-			open++
+			sb.Open++
 		case "C":
-			C++
+			sb.Close++
 		case "E":
-			E++
+			sb.HardError++
 		case "k":
-			k++
+			sb.KeepAlive++
 		case "r":
-			r++
+			sb.Read++
 		case "R":
-			R++
+			sb.ReadPost++
 		case "W":
-			W++
+			sb.Write++
 		case "h":
-			h++
+			sb.HandleRequest++
 		case "q":
-			q++
+			sb.RequestStart++
 		case "Q":
-			Q++
+			sb.RequestEnd++
 		case "s":
-			s++
+			sb.ResponseStart++
 		case "S":
-			S++
+			sb.ResponseEnd++
 		}
 	}
+}
 
-	metrics["scoreboard_waiting"] = waiting
-	metrics["scoreboard_open"] = open
-	metrics["scoreboard_close"] = C
-	metrics["scoreboard_hard_error"] = E
-	metrics["scoreboard_keepalive"] = k
-	metrics["scoreboard_read"] = r
-	metrics["scoreboard_read_post"] = R
-	metrics["scoreboard_write"] = W
-	metrics["scoreboard_handle_request"] = h
-	metrics["scoreboard_request_start"] = q
-	metrics["scoreboard_request_end"] = Q
-	metrics["scoreboard_response_start"] = s
-	metrics["scoreboard_response_end"] = S
+func closeBody(resp *http.Response) {
+	if resp != nil && resp.Body != nil {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}
 }
