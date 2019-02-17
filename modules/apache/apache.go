@@ -61,7 +61,7 @@ func (a *Apache) Init() bool {
 	client, err := web.NewHTTPClient(a.Client)
 
 	if err != nil {
-		a.Error(err)
+		a.Errorf("error on creating http client : %v", err)
 		return false
 	}
 
