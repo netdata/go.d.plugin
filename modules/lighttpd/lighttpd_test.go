@@ -6,8 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
-
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -17,132 +15,116 @@ var (
 	statusData, _ = ioutil.ReadFile("testdata/status.txt")
 )
 
-func TestLighttpd_Cleanup(t *testing.T) {
-	New().Cleanup()
-}
+func TestLighttpd_Cleanup(t *testing.T) { New().Cleanup() }
 
 func TestNew(t *testing.T) {
-	mod := New()
+	job := New()
 
-	assert.Implements(t, (*module.Module)(nil), mod)
-	assert.Equal(t, defaultURL, mod.URL)
-	assert.Equal(t, defaultHTTPTimeout, mod.Timeout.Duration)
+	assert.Implements(t, (*module.Module)(nil), job)
+	assert.Equal(t, defaultURL, job.URL)
+	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
+	assert.NotNil(t, job.charts)
 }
 
 func TestLighttpd_Init(t *testing.T) {
-	mod := New()
+	job := New()
 
-	assert.True(t, mod.Init())
-	assert.NotNil(t, mod.apiClient)
+	require.True(t, job.Init())
+	assert.NotNil(t, job.apiClient)
 }
 
-func TestApache_InitNG(t *testing.T) {
-	mod := New()
+func TestLighttpd_InitNG(t *testing.T) {
+	job := New()
 
-	mod.HTTP.Request = web.Request{URL: ""}
-	assert.False(t, mod.Init())
+	job.URL = ""
+	assert.False(t, job.Init())
 }
 
 func TestLighttpd_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path == "/server-status" {
-					_, _ = w.Write(statusData)
-					return
-				}
+				_, _ = w.Write(statusData)
 			}))
-
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
-
-	require.True(t, mod.Init())
-	assert.True(t, mod.Check())
+	job := New()
+	job.URL = ts.URL + "/server-status?auto"
+	require.True(t, job.Init())
+	assert.True(t, job.Check())
 }
 
 func TestLighttpd_CheckNG(t *testing.T) {
-	mod := New()
+	job := New()
 
-	mod.HTTP.Request = web.Request{URL: "http://127.0.0.1:38001/server-status?auto"}
-
-	require.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	job.URL = "http://127.0.0.1:38001/server-status?auto"
+	require.True(t, job.Init())
+	assert.False(t, job.Check())
 }
 
-func TestLighttpd_Charts(t *testing.T) {
-	assert.NotNil(t, New().Charts())
-}
+func TestLighttpd_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
 
 func TestLighttpd_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path == "/server-status" {
-					_, _ = w.Write(statusData)
-					return
-				}
+				_, _ = w.Write(statusData)
 			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
-
-	require.True(t, mod.Init())
-	require.True(t, mod.Check())
+	job := New()
+	job.URL = ts.URL + "/server-status?auto"
+	require.True(t, job.Init())
+	require.True(t, job.Check())
 
 	expected := map[string]int64{
+		"scoreboard_waiting":        125,
+		"scoreboard_request_end":    0,
+		"busy_servers":              3,
 		"scoreboard_keepalive":      1,
 		"scoreboard_read":           1,
-		"scoreboard_write":          0,
-		"busy_servers":              3,
-		"scoreboard_open":           0,
-		"scoreboard_handle_request": 1,
+		"scoreboard_request_start":  0,
 		"scoreboard_response_start": 0,
 		"scoreboard_close":          0,
-		"scoreboard_read_post":      0,
-		"scoreboard_request_start":  0,
-		"scoreboard_request_end":    0,
-		"total_accesses":            12,
+		"scoreboard_open":           0,
 		"scoreboard_hard_error":     0,
-		"scoreboard_response_end":   0,
+		"scoreboard_handle_request": 1,
+		"idle_servers":              125,
 		"total_kBytes":              4,
 		"uptime":                    11,
-		"idle_servers":              125,
-		"scoreboard_waiting":        125,
+		"scoreboard_read_post":      0,
+		"scoreboard_write":          0,
+		"scoreboard_response_end":   0,
+		"total_accesses":            12,
 	}
 
-	assert.Equal(t, expected, mod.Collect())
+	assert.Equal(t, expected, job.Collect())
 }
 
 func TestLighttpd_InvalidData(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path == "/server-status" {
-					_, _ = w.Write([]byte("hello and goodbye"))
-					return
-				}
+				_, _ = w.Write([]byte("hello and goodbye"))
 			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
-
-	require.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	job := New()
+	job.URL = ts.URL + "/server-status?auto"
+	require.True(t, job.Init())
+	assert.False(t, job.Check())
 }
 
 func TestLighttpd_404(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(404)
-	}))
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusNotFound)
+			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL + "/server-status?auto"}
-
-	require.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	job := New()
+	job.URL = ts.URL + "/server-status?auto"
+	require.True(t, job.Init())
+	assert.False(t, job.Check())
 }

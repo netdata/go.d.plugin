@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -20,33 +21,32 @@ func init() {
 
 const (
 	defaultURL         = "http://localhost/server-status?auto"
-	defaultHTTPTimeout = time.Second
+	defaultHTTPTimeout = time.Second * 2
 )
 
-// New creates Lighttpd with default values
+// New creates Lighttpd with default values.
 func New() *Lighttpd {
-
 	return &Lighttpd{
 		HTTP: web.HTTP{
 			Request: web.Request{URL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
+		charts: charts.Copy(),
 	}
 }
 
-// Lighttpd lighttpd module
+// Lighttpd Lighttpd module.
 type Lighttpd struct {
-	module.Base // should be embedded by every module
-
-	web.HTTP `yaml:",inline"`
-
+	module.Base
+	web.HTTP  `yaml:",inline"`
 	apiClient *apiClient
+	charts    *Charts
 }
 
-// Cleanup makes cleanup
+// Cleanup makes cleanup.
 func (Lighttpd) Cleanup() {}
 
-// Init makes initialization
+// Init makes initialization.
 func (l *Lighttpd) Init() bool {
 	if l.URL == "" {
 		l.Error("URL is not set")
@@ -61,14 +61,11 @@ func (l *Lighttpd) Init() bool {
 	client, err := web.NewHTTPClient(l.Client)
 
 	if err != nil {
-		l.Error(err)
+		l.Errorf("error on creating http client : %v", err)
 		return false
 	}
 
-	l.apiClient = &apiClient{
-		req:        l.Request,
-		httpClient: client,
-	}
+	l.apiClient = newAPIClient(client, l.Request)
 
 	l.Debugf("using URL %s", l.URL)
 	l.Debugf("using timeout: %s", l.Timeout.Duration)
@@ -77,26 +74,19 @@ func (l *Lighttpd) Init() bool {
 }
 
 // Check makes check
-func (l *Lighttpd) Check() bool {
-	return len(l.Collect()) > 0
-}
+func (l *Lighttpd) Check() bool { return len(l.Collect()) > 0 }
 
-// Charts creates Charts
-func (l Lighttpd) Charts() *Charts {
-	return charts.Copy()
-}
+// Charts returns Charts.
+func (l Lighttpd) Charts() *module.Charts { return l.charts }
 
-// Collect collects metrics
+// Collect collects metrics.
 func (l *Lighttpd) Collect() map[string]int64 {
-	var (
-		metrics map[string]int64
-		err     error
-	)
+	status, err := l.apiClient.getServerStatus()
 
-	if metrics, err = l.apiClient.serverStatus(); err != nil {
+	if err != nil {
 		l.Error(err)
 		return nil
 	}
 
-	return metrics
+	return stm.ToMap(status)
 }
