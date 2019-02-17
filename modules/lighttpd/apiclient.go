@@ -82,7 +82,7 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func parseResponse(respBody io.ReadCloser) (*serverStatus, error) {
+func parseResponse(respBody io.Reader) (*serverStatus, error) {
 	s := bufio.NewScanner(respBody)
 	status := &serverStatus{}
 
