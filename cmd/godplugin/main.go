@@ -42,20 +42,14 @@ var (
 	)
 )
 
-var (
-	version string
-	commit  string
-	branch  string
-)
+var version string
 
 func fullVersion() string {
-	f := func(s string) string {
-		if s == "" {
-			return "unknown"
-		}
-		return s
+	v := version
+	if v == "" {
+		return "unknown"
 	}
-	return fmt.Sprintf("go.d.plugin, version %s (branch: %s, commit: %s)", f(version), f(branch), f(commit))
+	return fmt.Sprintf("go.d.plugin, version %s", version)
 }
 
 func main() {
