@@ -23,17 +23,20 @@ If you have time and willing to help, there are a lof of ways to contribute:
 ## Available modules
  - [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)
  - [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache) *
+ - [bind](https://github.com/netdata/go.d.plugin/tree/master/modules/bind) *
  - [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)
  - [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery) *
  - [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example) *
+ - [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)
  - [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius) *
  - [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck) *
  - [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd) *
  - [lighttpd2](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd2)
  - [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)
+ - [mysql](https://github.com/netdata/go.d.plugin/tree/master/modules/mysql) *
  - [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx) *
  - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck) *
- - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
+ - [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
  - [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
  - [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)
  - [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) *
