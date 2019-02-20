@@ -30,3 +30,6 @@ for i in bin/*; do
 	hub release edit -a "$i" -m "${TRAVIS_TAG}" "${TRAVIS_TAG}"
 	sleep 2
 done
+
+echo "---- MODIFY NETDATA INSTALLER (with a PR) ----"
+./.travis/netdata_sync.sh
