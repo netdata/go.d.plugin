@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"path"
 
@@ -41,11 +42,31 @@ var (
 	)
 )
 
+var (
+	version string
+	commit  string
+	branch  string
+)
+
+func fullVersion() string {
+	f := func(s string) string {
+		if s == "" {
+			return "unknown"
+		}
+		return s
+	}
+	return fmt.Sprintf("go.d.plugin, version %s (branch: %s, commit: %s)", f(version), f(branch), f(commit))
+}
+
 func main() {
 	opt := parseCLI()
 
 	if opt.Debug {
 		logger.SetSeverity(logger.DEBUG)
+	}
+	if opt.Version {
+		fmt.Println(fullVersion())
+		os.Exit(0)
 	}
 
 	plugin := newPlugin(opt)
