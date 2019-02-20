@@ -47,7 +47,7 @@ var version string
 func fullVersion() string {
 	v := version
 	if v == "" {
-		return "unknown"
+		v = "unknown"
 	}
 	return fmt.Sprintf("go.d.plugin, version %s", version)
 }
