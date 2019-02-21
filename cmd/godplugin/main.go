@@ -48,7 +48,7 @@ func main() {
 	opt := parseCLI()
 
 	if opt.Version {
-		fmt.Println(version)
+		fmt.Println(fmt.Sprintf("go.d.plugin, version: %s", version))
 		return
 	}
 	if opt.Debug {
