@@ -42,25 +42,17 @@ var (
 	)
 )
 
-var version string
-
-func fullVersion() string {
-	v := version
-	if v == "" {
-		v = "unknown"
-	}
-	return fmt.Sprintf("go.d.plugin, version %s", version)
-}
+var version = "unknown"
 
 func main() {
 	opt := parseCLI()
 
+	if opt.Version {
+		fmt.Println(version)
+		return
+	}
 	if opt.Debug {
 		logger.SetSeverity(logger.DEBUG)
-	}
-	if opt.Version {
-		fmt.Println(fullVersion())
-		os.Exit(0)
 	}
 
 	plugin := newPlugin(opt)
