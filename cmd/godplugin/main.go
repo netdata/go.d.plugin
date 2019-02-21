@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"path"
 
@@ -41,9 +42,15 @@ var (
 	)
 )
 
+var version = "unknown"
+
 func main() {
 	opt := parseCLI()
 
+	if opt.Version {
+		fmt.Println(version)
+		return
+	}
 	if opt.Debug {
 		logger.SetSeverity(logger.DEBUG)
 	}

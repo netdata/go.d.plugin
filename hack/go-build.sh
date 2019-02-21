@@ -5,10 +5,11 @@ set -e
 WHICH="$1"
 PLATFORMS=(darwin/386 darwin/amd64 freebsd/386 freebsd/amd64 freebsd/arm linux/386 linux/amd64 linux/arm linux/arm64 linux/ppc64 linux/ppc64le linux/mips linux/mipsle linux/mips64 linux/mips64le)
 
+VERSION="${TRAVIS_TAG}"
+: "${VERSION:=$(git describe --tags --always --dirty)}"
 GOFLAGS=${GOFLAGS:-}
 GLDFLAGS=${GLDFLAGS:-}
-VERSION="${TRAVIS_TAG}"
-: "${VERSION:=undefined}"
+GLDFLAGS="$GLDFLAGS -X main.version=$VERSION"
 
 echo "Building binaries for version: $VERSION"
 if [ "${WHICH}" != "all" ]; then
