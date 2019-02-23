@@ -12,48 +12,48 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-var validStatusKeys = map[string]string{
-	"ServerVersion":                "",
-	"ServerMPM":                    "",
-	"Server Built":                 "",
-	"ParentServerConfigGeneration": "",
-	"ParentServerMPMGeneration":    "",
-	"ServerUptimeSeconds":          "",
-	"ServerUptime":                 "",
-	"Load1":                        "",
-	"Load5":                        "",
-	"Load15":                       "",
-	"Total Duration":               "",
-	"CPUUser":                      "",
-	"CPUSystem":                    "",
-	"CPUChildrenUser":              "",
-	"CPUChildrenSystem":            "",
-	"CPULoad":                      "",
-	"DurationPerReq":               "",
-	"Processes":                    "",
-	"Stopping":                     "",
-	"Total Accesses":               "total_accesses",
-	"Total kBytes":                 "total_kBytes",
-	"Uptime":                       "uptime",
-	"ReqPerSec":                    "req_per_sec",
-	"BytesPerSec":                  "bytes_per_sec",
-	"BytesPerReq":                  "bytes_per_req",
-	"BusyWorkers":                  "busy_workers",
-	"IdleWorkers":                  "idle_workers",
-	"ConnsTotal":                   "conns_total",
-	"ConnsAsyncWriting":            "conns_async_writing",
-	"ConnsAsyncKeepAlive":          "conns_async_keep_alive",
-	"ConnsAsyncClosing":            "conns_async_closing",
-	"Scoreboard":                   "scoreboard",
+type (
+	scoreboard struct {
+		Waiting     int `stm:"waiting"`
+		Starting    int `stm:"starting"`
+		Reading     int `stm:"reading"`
+		Sending     int `stm:"sending"`
+		KeepAlive   int `stm:"keepalive"`
+		DNSLookup   int `stm:"dns_lookup"`
+		Closing     int `stm:"closing"`
+		Logging     int `stm:"logging"`
+		Finishing   int `stm:"finishing"`
+		IdleCleanup int `stm:"idle_cleanup"`
+		Open        int `stm:"open"`
+	}
+	serverStatus struct {
+		TotalAccesses       *int        `stm:"total_accesses"`
+		TotalKBytes         *int        `stm:"total_kBytes"`
+		Uptime              *int        `stm:"uptime"`
+		ReqPerSec           *float64    `stm:"req_per_sec"`
+		BytesPerSec         *float64    `stm:"bytes_per_sec"`
+		BytesPerReq         *float64    `stm:"bytes_per_req"`
+		BusyWorkers         *int        `stm:"busy_workers"`
+		IdleWorkers         *int        `stm:"idle_workers"`
+		ConnsTotal          *int        `stm:"conns_total"`
+		ConnsAsyncWriting   *int        `stm:"conns_async_writing"`
+		ConnsAsyncKeepAlive *int        `stm:"conns_async_keep_alive"`
+		ConnsAsyncClosing   *int        `stm:"conns_async_closing"`
+		Scoreboard          *scoreboard `stm:"scoreboard"`
+	}
+)
+
+func newAPIClient(client *http.Client, request web.Request) *apiClient {
+	return &apiClient{httpClient: client, request: request}
 }
 
 type apiClient struct {
-	req        web.Request
 	httpClient *http.Client
+	request    web.Request
 }
 
-func (a apiClient) serverStatus() (map[string]int64, error) {
-	req, err := a.createRequest()
+func (a apiClient) getServerStatus() (*serverStatus, error) {
+	req, err := web.NewHTTPRequest(a.request)
 
 	if err != nil {
 		return nil, fmt.Errorf("error on creating request : %v", err)
@@ -67,106 +67,126 @@ func (a apiClient) serverStatus() (map[string]int64, error) {
 		return nil, err
 	}
 
-	s := bufio.NewScanner(resp.Body)
-
-	status := make(map[string]string)
-
-	for s.Scan() {
-		parts := strings.Split(s.Text(), ":")
-
-		if len(parts) != 2 {
-			continue
-		}
-		status[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
-	}
-
-	metrics, err := a.parseStatus(status)
+	status, err := parseResponse(resp.Body)
 
 	if err != nil {
-		return nil, fmt.Errorf("error on parsing status : %v", err)
+		return nil, fmt.Errorf("error on parsing response from %s : %v", req.URL, err)
 	}
 
-	return metrics, nil
-}
-
-func (a *apiClient) parseStatus(status map[string]string) (map[string]int64, error) {
-	metrics := make(map[string]int64)
-
-	for key, value := range status {
-		k, ok := validStatusKeys[key]
-
-		if !ok {
-			return nil, fmt.Errorf("unknown value : %s", key)
-		}
-
-		if k == "" {
-			continue
-		}
-
-		switch k {
-		case "req_per_sec", "bytes_per_sec", "bytes_per_req":
-			v, err := strconv.ParseFloat(value, 64)
-			if err != nil {
-				return nil, err
-			}
-			metrics[k] = int64(v * 100000)
-		case "scoreboard":
-			parseScoreboard(value, metrics)
-		default:
-			v, err := strconv.Atoi(value)
-			if err != nil {
-				return nil, err
-			}
-			metrics[k] = int64(v)
-		}
-	}
-
-	return metrics, nil
-}
-
-func (a apiClient) doRequest(req *http.Request) (*http.Response, error) {
-	return a.httpClient.Do(req)
+	return status, nil
 }
 
 func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
-	var (
-		resp *http.Response
-		err  error
-	)
-
-	if resp, err = a.doRequest(req); err != nil {
-		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
-
+	resp, err := a.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error on request: %v", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
 	}
-
-	return resp, err
+	return resp, nil
 }
 
-func (a apiClient) createRequest() (*http.Request, error) {
-	var (
-		req *http.Request
-		err error
-	)
+func parseResponse(respBody io.Reader) (*serverStatus, error) {
+	s := bufio.NewScanner(respBody)
+	status := &serverStatus{}
 
-	if req, err = web.NewHTTPRequest(a.req); err != nil {
-		return nil, err
+	for s.Scan() {
+		parts := strings.Split(s.Text(), ":")
+		if len(parts) != 2 {
+			continue
+		}
+		key, value := strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
+
+		switch key {
+		default:
+		case "BusyServers", "IdleServers":
+			return nil, fmt.Errorf("lighttpd data")
+		case "BusyWorkers":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.BusyWorkers = &v
+			}
+		case "IdleWorkers":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.IdleWorkers = &v
+			}
+		case "ConnsTotal":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.ConnsTotal = &v
+			}
+		case "ConnsAsyncWriting":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.ConnsAsyncWriting = &v
+			}
+		case "ConnsAsyncKeepAlive":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.ConnsAsyncKeepAlive = &v
+			}
+		case "ConnsAsyncClosing":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.ConnsAsyncClosing = &v
+			}
+		case "Total Accesses":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.TotalAccesses = &v
+			}
+		case "Total kBytes":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.TotalKBytes = &v
+			}
+		case "Uptime":
+			if v, err := strconv.Atoi(value); err != nil {
+				return nil, err
+			} else {
+				status.Uptime = &v
+			}
+		case "ReqPerSec":
+			if v, err := strconv.ParseFloat(value, 64); err != nil {
+				return nil, err
+			} else {
+				v = v * 100000
+				status.ReqPerSec = &v
+			}
+		case "BytesPerSec":
+			if v, err := strconv.ParseFloat(value, 64); err != nil {
+				return nil, err
+			} else {
+				v = v * 100000
+				status.BytesPerSec = &v
+			}
+		case "BytesPerReq":
+			if v, err := strconv.ParseFloat(value, 64); err != nil {
+				return nil, err
+			} else {
+				v = v * 100000
+				status.BytesPerReq = &v
+			}
+		case "Scoreboard":
+			status.Scoreboard = &scoreboard{}
+			parseScoreboard(status.Scoreboard, value)
+		}
 	}
 
-	return req, nil
+	return status, nil
 }
 
-func closeBody(resp *http.Response) {
-	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
-		_ = resp.Body.Close()
-	}
-}
-
-func parseScoreboard(scoreboard string, metrics map[string]int64) {
+func parseScoreboard(sb *scoreboard, scoreboard string) {
 	//  “_” Waiting for Connection
 	// “S” Starting up
 	// “R” Reading Request
@@ -178,46 +198,38 @@ func parseScoreboard(scoreboard string, metrics map[string]int64) {
 	// “G” Gracefully finishing
 	// “I” Idle cleanup of worker
 	// “.” Open slot with no current process
-
-	var waiting, open, S, R, W, K, D, C, L, G, I int64
-
 	for _, s := range strings.Split(scoreboard, "") {
 
 		switch s {
 		case "_":
-			waiting++
+			sb.Waiting++
 		case "S":
-			S++
+			sb.Starting++
 		case "R":
-			R++
+			sb.Reading++
 		case "W":
-			W++
+			sb.Sending++
 		case "K":
-			K++
+			sb.KeepAlive++
 		case "D":
-			D++
+			sb.DNSLookup++
 		case "C":
-			C++
+			sb.Closing++
 		case "L":
-			L++
+			sb.Logging++
 		case "G":
-			G++
+			sb.Finishing++
 		case "I":
-			I++
+			sb.IdleCleanup++
 		case ".":
-			open++
+			sb.Open++
 		}
 	}
+}
 
-	metrics["scoreboard_waiting"] = waiting
-	metrics["scoreboard_starting"] = S
-	metrics["scoreboard_reading"] = R
-	metrics["scoreboard_sending"] = W
-	metrics["scoreboard_keepalive"] = K
-	metrics["scoreboard_dns_lookup"] = D
-	metrics["scoreboard_closing"] = C
-	metrics["scoreboard_logging"] = L
-	metrics["scoreboard_finishing"] = G
-	metrics["scoreboard_idle_cleanup"] = I
-	metrics["scoreboard_open"] = open
+func closeBody(resp *http.Response) {
+	if resp != nil && resp.Body != nil {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}
 }

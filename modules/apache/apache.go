@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -20,33 +21,32 @@ func init() {
 
 const (
 	defaultURL         = "http://localhost/server-status?auto"
-	defaultHTTPTimeout = time.Second
+	defaultHTTPTimeout = time.Second * 2
 )
 
-// New creates Apache with default values
+// New creates Apache with default values.
 func New() *Apache {
 	return &Apache{
 		HTTP: web.HTTP{
 			Request: web.Request{URL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
+		charts: charts.Copy(),
 	}
 }
 
-// Apache apache module
+// Apache Apache module.
 type Apache struct {
-	module.Base // should be embedded by every module
-
-	web.HTTP `yaml:",inline"`
-
-	extendedStatus bool
-	apiClient      *apiClient
+	module.Base
+	web.HTTP  `yaml:",inline"`
+	apiClient *apiClient
+	charts    *Charts
 }
 
-// Cleanup makes cleanup
+// Cleanup makes cleanup.
 func (Apache) Cleanup() {}
 
-// Init makes initialization
+// Init makes initialization.
 func (a *Apache) Init() bool {
 	if a.URL == "" {
 		a.Error("URL is not set")
@@ -61,16 +61,13 @@ func (a *Apache) Init() bool {
 	client, err := web.NewHTTPClient(a.Client)
 
 	if err != nil {
-		a.Error(err)
+		a.Errorf("error on creating http client : %v", err)
 		return false
 	}
 
-	a.apiClient = &apiClient{
-		req:        a.Request,
-		httpClient: client,
-	}
+	a.apiClient = newAPIClient(client, a.Request)
 
-	a.Debugf("using URL %s", a.Request.URL)
+	a.Debugf("using URL %s", a.URL)
 	a.Debugf("using timeout: %s", a.Timeout.Duration)
 
 	return true
@@ -78,50 +75,35 @@ func (a *Apache) Init() bool {
 
 // Check makes check
 func (a *Apache) Check() bool {
-	m, err := a.apiClient.serverStatus()
+	m := a.Collect()
 
-	if err != nil {
-		a.Error(err)
+	if len(m) == 0 {
 		return false
 	}
 
-	_, a.extendedStatus = m["total_accesses"]
-
-	if !a.extendedStatus {
-		a.Warning("extendedStatus is disabled, please enable it to collect more metrics")
+	if _, extendedStatus := m["total_accesses"]; !extendedStatus {
+		_ = a.charts.Remove("requests")
+		_ = a.charts.Remove("net")
+		_ = a.charts.Remove("reqpersec")
+		_ = a.charts.Remove("bytespersec")
+		_ = a.charts.Remove("bytesperreq")
+		_ = a.charts.Remove("uptime")
 	}
 
-	return len(m) > 0
+	return true
 }
 
-// Charts creates Charts
-func (a Apache) Charts() *module.Charts {
-	charts := charts.Copy()
+// Charts returns Charts.
+func (a Apache) Charts() *module.Charts { return a.charts }
 
-	if !a.extendedStatus {
-		_ = charts.Remove("requests")
-		_ = charts.Remove("net")
-		_ = charts.Remove("reqpersec")
-		_ = charts.Remove("bytespersec")
-		_ = charts.Remove("bytesperreq")
-		_ = charts.Remove("uptime")
-
-	}
-
-	return charts
-}
-
-// Collect collects metrics
+// Collect collects metrics.
 func (a *Apache) Collect() map[string]int64 {
-	var (
-		metrics map[string]int64
-		err     error
-	)
+	status, err := a.apiClient.getServerStatus()
 
-	if metrics, err = a.apiClient.serverStatus(); err != nil {
+	if err != nil {
 		a.Error(err)
 		return nil
 	}
 
-	return metrics
+	return stm.ToMap(status)
 }
