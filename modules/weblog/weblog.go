@@ -1,24 +1,28 @@
 package weblog
 
-//func init() {
-//	creator := modules.Creator{
-//		DisabledByDefault: true,
-//		Create:            func() modules.Module { return New() },
-//	}
-//
-//	modules.Register("web_log", creator)
-//}
-//
-//func New() *WebLog {
-//	return &WebLog{
-//		Config: Config{
-//			DoCodesAggregate: true,
-//			DoAllTimeIPs:     true,
-//		},
-//		worker: newWorker(),
-//	}
-//}
-//
+import (
+	"fmt"
+
+	"github.com/netdata/go-orchestrator/module"
+)
+
+func init() {
+	creator := module.Creator{
+		DisabledByDefault: true,
+		Create:            func() module.Module { return New() },
+	}
+
+	module.Register("web_log", creator)
+}
+
+func New() *WebLog {
+	return &WebLog{
+		Config: Config{
+			DetailedStatus: true,
+		},
+	}
+}
+
 type (
 	Config struct {
 		Path           string         `yaml:"path" validate:"required"`
@@ -28,35 +32,31 @@ type (
 		CustomParser   map[string]int `yaml:"custom_log_format"`
 		Histogram      []float64      `yaml:"histogram"`
 		DetailedStatus bool           `yaml:"detailed_status"`
-		DoAllTimeIPs   bool           `yaml:"all_time_ips"`
 	}
 
-//
-//	WebLog struct {
-//		modules.Base
-//		Config
-//		worker *worker
-//		charts *modules.Charts
-//		gm     groupMap
-//	}
+	WebLog struct {
+		module.Base
+		Config
+		charts *module.Charts
+		worker *Worker
+	}
 )
 
-//
-//func (w *WebLog) Cleanup() {
-//	w.worker.stop()
-//}
-//
-//func (w *WebLog) initFilter() error {
-//	f, err := newFilter(w.Filter)
-//
-//	if err != nil {
-//		return fmt.Errorf("error on creating filter %s: %s", w.Filter, err)
-//	}
-//
-//	w.worker.filter = f
-//
-//	return nil
-//}
+func (w *WebLog) Cleanup() {
+}
+
+func (w *WebLog) initFilter() error {
+	f, err := newFilter(w.Filter)
+
+	if err != nil {
+		return fmt.Errorf("error on creating filter %s: %s", w.Filter, err)
+	}
+
+	w.worker.filter = f
+
+	return nil
+}
+
 //
 //func (w *WebLog) initCategories() error {
 //	for _, raw := range w.URLCats {
@@ -140,85 +140,82 @@ type (
 //	return nil
 //}
 //
-//func (w *WebLog) Init() bool {
-//	w.worker.doCodesAggregate = w.DoCodesAggregate
-//	w.worker.doAllTimeIPs = w.DoAllTimeIPs
-//
-//	if err := w.initParser(); err != nil {
-//		w.Error(err)
-//		return false
-//	}
-//
-//	if err := w.initFilter(); err != nil {
-//		w.Error(err)
-//		return false
-//	}
-//
-//	if err := w.initCategories(); err != nil {
-//		w.Error(err)
-//		return false
-//	}
-//
-//	if err := w.initHistograms(); err != nil {
-//		w.Error(err)
-//		return false
-//	}
-//
-//	return true
-//}
-//
-//func (w *WebLog) Check() bool {
-//	t, err := w.worker.tailFactory(w.Path)
-//
-//	if err != nil {
-//		w.Errorf("error on creating tail : %s", err)
-//		return false
-//	}
-//
-//	w.worker.tail = t
-//	w.Infof("used parser : %s", w.worker.parser.info())
-//
-//	w.createCharts()
-//
-//	go w.worker.parseLoop()
-//
-//	return true
-//}
-//
-//func (w *WebLog) Collect() map[string]int64 {
-//	w.worker.pause()
-//	defer w.worker.unpause()
-//
-//	for k, v := range w.worker.timings {
-//		if !v.active() {
-//			continue
-//		}
-//		w.worker.metrics[k+"_min"] += int64(v.min)
-//		w.worker.metrics[k+"_avg"] += int64(v.avg())
-//		w.worker.metrics[k+"_max"] += int64(v.max)
-//	}
-//
-//	for _, h := range w.worker.histograms {
-//		for _, v := range h {
-//			w.worker.metrics[v.id] = int64(v.count)
-//		}
-//	}
-//
-//	w.worker.timings.reset()
-//	w.worker.uniqIPs = make(map[string]bool)
-//
-//	m := make(map[string]int64)
-//
-//	for k, v := range w.worker.metrics {
-//		m[k] = v
-//	}
-//
-//	for _, task := range w.worker.chartUpdate {
-//		chart := w.charts.Get(task.id)
-//		_ = chart.AddDim(task.dim)
-//		chart.MarkNotCreated()
-//	}
-//	w.worker.chartUpdate = w.worker.chartUpdate[:0]
-//
-//	return m
-//}
+func (w *WebLog) Init() bool {
+	if err := w.initParser(); err != nil {
+		w.Error(err)
+		return false
+	}
+
+	if err := w.initFilter(); err != nil {
+		w.Error(err)
+		return false
+	}
+
+	if err := w.initCategories(); err != nil {
+		w.Error(err)
+		return false
+	}
+
+	if err := w.initHistograms(); err != nil {
+		w.Error(err)
+		return false
+	}
+
+	return true
+}
+
+func (w *WebLog) Check() bool {
+	t, err := w.worker.tailFactory(w.Path)
+
+	if err != nil {
+		w.Errorf("error on creating tail : %s", err)
+		return false
+	}
+
+	w.worker.tail = t
+	w.Infof("used parser : %s", w.worker.parser.info())
+
+	w.createCharts()
+
+	go w.worker.parseLoop()
+
+	return true
+}
+
+func (w *WebLog) Collect() map[string]int64 {
+	w.worker.pause()
+	defer w.worker.unpause()
+
+	for k, v := range w.worker.timings {
+		if !v.active() {
+			continue
+		}
+		w.worker.metrics[k+"_min"] += int64(v.min)
+		w.worker.metrics[k+"_avg"] += int64(v.avg())
+		w.worker.metrics[k+"_max"] += int64(v.max)
+	}
+
+	for _, h := range w.worker.histograms {
+		for _, v := range h {
+			w.worker.metrics[v.id] = int64(v.count)
+		}
+	}
+
+	w.worker.timings.reset()
+	w.worker.uniqIPs = make(map[string]bool)
+
+	m := make(map[string]int64)
+
+	for k, v := range w.worker.metrics {
+		m[k] = v
+	}
+
+	for _, task := range w.worker.chartUpdate {
+		chart := w.charts.Get(task.id)
+		_ = chart.AddDim(task.dim)
+		chart.MarkNotCreated()
+	}
+	w.worker.chartUpdate = w.worker.chartUpdate[:0]
+
+	return m
+}
