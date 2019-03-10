@@ -9,7 +9,7 @@ type (
 	Worker struct {
 		config     *Config
 		parser     *LogParser
-		pattern    *LogPattern
+		pattern    *Format
 		metrics    *MetricsData
 		categories []*Category
 	}
@@ -17,7 +17,7 @@ type (
 
 func NewWorker(config *Config) (*Worker, error) {
 	var categories []*Category
-	for _, cat := range config.URLCats {
+	for _, cat := range config.URLCategories {
 		category, err := NewCategory(cat)
 		if err != nil {
 			return nil, err
@@ -25,9 +25,9 @@ func NewWorker(config *Config) (*Worker, error) {
 		categories = append(categories, category)
 	}
 	return &Worker{
-		config:  config,
-		parser:  NewLogParser(),
-		metrics: NewMetricsData(config),
+		config: config,
+		parser: NewLogParser(),
+		//metrics: NewMetricsData(config),
 	}, nil
 }
 
@@ -103,8 +103,8 @@ func (w *Worker) handleLine(line LogLine) {
 			w.metrics.RespTimeHist.Observe(line.RespTime)
 		}
 	}
-	if line.RespTimeUpstream != nil {
-		for _, time := range line.RespTimeUpstream {
+	if line.UpstreamRespTime != nil {
+		for _, time := range line.UpstreamRespTime {
 			w.metrics.RespTimeUpstream.Observe(time)
 			if w.metrics.RespTimeUpstreamHist != nil {
 				w.metrics.RespTimeUpstreamHist.Observe(line.RespTime)
@@ -116,7 +116,7 @@ func (w *Worker) handleLine(line LogLine) {
 		w.metrics.UniqueIPs.Insert(line.RemoteAddr)
 	}
 	for _, cat := range w.categories {
-		if cat.MatchString(line.URI) {
+		if cat.Matcher.MatchString(line.URI) {
 			// TODO add metrics
 			break
 		}

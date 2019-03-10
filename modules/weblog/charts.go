@@ -292,7 +292,7 @@ var (
 //		_ = charts.Add(bandwidth.Copy())
 //	}
 //
-//	if w.gm.has(keyRequest) && len(w.URLCats) > 0 {
+//	if w.gm.has(keyRequest) && len(w.URLCategories) > 0 {
 //		chart := requestsPerURL.Copy()
 //		_ = charts.Add(chart)
 //		for _, cat := range w.worker.urlCats {
@@ -303,7 +303,7 @@ var (
 //		}
 //	}
 //
-//	if w.gm.has(keyRequest) && len(w.URLCats) > 0 {
+//	if w.gm.has(keyRequest) && len(w.URLCategories) > 0 {
 //		for _, cat := range w.worker.urlCats {
 //			for _, chart := range perCategoryStats(cat.name) {
 //				_ = charts.Add(chart)
@@ -314,7 +314,7 @@ var (
 //		}
 //	}
 //
-//	if w.gm.has(keyRequest) && len(w.UserCats) > 0 {
+//	if w.gm.has(keyRequest) && len(w.UserCategories) > 0 {
 //		chart := requestsPerUserDefined.Copy()
 //		_ = charts.Add(chart)
 //

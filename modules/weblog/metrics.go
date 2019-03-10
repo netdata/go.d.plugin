@@ -1,15 +1,10 @@
 package weblog
 
 import (
-	"sync"
-
 	"github.com/netdata/go.d.plugin/pkg/metrics"
 )
 
 type MetricsData struct {
-	// mutex for all values
-	Mux sync.RWMutex
-
 	BytesSent     metrics.Counter `stm:"bytes_sent"`
 	BytesReceived metrics.Counter `stm:"bytes_received"`
 
@@ -45,7 +40,7 @@ type MetricsData struct {
 	CategorizedRespTime metrics.Summary    `stm:"cat_resp_time"`
 }
 
-func NewMetricsData(config *Config) *MetricsData {
+func NewMetricsData(config Config) *MetricsData {
 	return &MetricsData{
 		RespCode:             metrics.NewCounterVec(),
 		ReqMethod:            metrics.NewCounterVec(),
@@ -56,4 +51,8 @@ func NewMetricsData(config *Config) *MetricsData {
 		UniqueIPs:            metrics.NewUniqueCounter(true),
 		CategorizedRequests:  metrics.NewCounterVec(),
 	}
+}
+
+func (m *MetricsData) Reset() {
+	m.UniqueIPs.Reset()
 }

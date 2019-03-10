@@ -7,17 +7,17 @@ import (
 )
 
 type RawCategory struct {
-	Name  string
-	Match string
+	Name  string `yaml:"name"`
+	Match string `yaml:"match"`
 }
 
 type Category struct {
-	name string
-	matcher.Matcher
+	name    string
+	Matcher matcher.Matcher
 }
 
 func (r RawCategory) String() string {
-	return fmt.Sprintf("{name: %s, match: %s}", r.Name, r.Match)
+	return fmt.Sprintf(`{"name": %q, "match": %q}`, r.Name, r.Match)
 }
 
 func NewCategory(raw RawCategory) (*Category, error) {
@@ -26,7 +26,6 @@ func NewCategory(raw RawCategory) (*Category, error) {
 	}
 
 	m, err := matcher.Parse(raw.Match)
-
 	if err != nil {
 		return nil, err
 	}
