@@ -29,7 +29,7 @@ func TestParse(t *testing.T) {
 				Status:           6,
 				BytesSent:        7,
 				Host:             -1,
-				RespTime:         -1,
+				ReqTime:          -1,
 				UpstreamRespTime: -1,
 				ReqLength:        -1,
 				Custom:           -1,
@@ -44,7 +44,7 @@ func TestParse(t *testing.T) {
 				Status:           6,
 				BytesSent:        7,
 				Host:             -1,
-				RespTime:         -1,
+				ReqTime:          -1,
 				UpstreamRespTime: -1,
 				ReqLength:        -1,
 				Custom:           -1,
@@ -59,7 +59,7 @@ func TestParse(t *testing.T) {
 				Status:           6,
 				BytesSent:        7,
 				Host:             12,
-				RespTime:         11,
+				ReqTime:          11,
 				UpstreamRespTime: -1,
 				ReqLength:        -1,
 				Custom:           -1,
@@ -74,7 +74,7 @@ func TestParse(t *testing.T) {
 				Status:           6,
 				BytesSent:        7,
 				Host:             12,
-				RespTime:         11,
+				ReqTime:          11,
 				UpstreamRespTime: -1,
 				ReqLength:        -1,
 				Custom:           -1,
@@ -83,7 +83,7 @@ func TestParse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.want.Raw = tt.args.logFormat
-			assert.Equal(t, tt.want, NewFormat(1, tt.args.logFormat))
+			assert.Equal(t, tt.want, *NewFormat(1, tt.args.logFormat))
 		})
 	}
 }
@@ -115,7 +115,7 @@ func TestFormat_Parse(t *testing.T) {
 				Status:     200,
 				BytesSent:  1620,
 				ReqLength:  -1,
-				RespTime:   -1,
+				ReqTime:    -1,
 			},
 			true, false, false, false,
 		},
@@ -129,7 +129,7 @@ func TestFormat_Parse(t *testing.T) {
 				Status:     200,
 				BytesSent:  1620,
 				ReqLength:  -1,
-				RespTime:   -1,
+				ReqTime:    -1,
 			},
 			true, true, false, false,
 		},
@@ -143,7 +143,7 @@ func TestFormat_Parse(t *testing.T) {
 				Status:     200,
 				BytesSent:  1620,
 				ReqLength:  -1,
-				RespTime:   0.000128,
+				ReqTime:    0.000128,
 				Host:       "www.example.com",
 			},
 			true, true, true, false,
@@ -152,7 +152,7 @@ func TestFormat_Parse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name+"_common", func(t *testing.T) {
 			want := tt.want
-			want.RespTime = -1
+			want.ReqTime = -1
 			want.Host = ""
 			got, err := common.Parse(tt.line)
 			if tt.commonOK {
@@ -163,7 +163,7 @@ func TestFormat_Parse(t *testing.T) {
 		})
 		t.Run(tt.name+"_combined", func(t *testing.T) {
 			want := tt.want
-			want.RespTime = -1
+			want.ReqTime = -1
 			want.Host = ""
 			got, err := combined.Parse(tt.line)
 			if tt.combinedOK {

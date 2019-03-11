@@ -1,14 +1,13 @@
 package weblog
 
 import (
-	"io"
 	"strconv"
 )
 
 type (
 	Worker struct {
-		config     *Config
-		parser     *LogParser
+		config *Config
+		//parser     *LogParser
 		pattern    *Format
 		metrics    *MetricsData
 		categories []*Category
@@ -26,26 +25,26 @@ func NewWorker(config *Config) (*Worker, error) {
 	}
 	return &Worker{
 		config: config,
-		parser: NewLogParser(),
+		//parser: NewLogParser(),
 		//metrics: NewMetricsData(config),
 	}, nil
 }
 
 func (w *Worker) Start() {
-	go func() {
-		for {
-			record, err := w.parser.Read()
-			if err == io.EOF {
-				break
-			}
-			line, err := w.pattern.Parse(record)
-			if err != nil {
-				w.metrics.ReqUnmatched.Inc()
-				continue
-			}
-			w.handleLine(line)
-		}
-	}()
+	//go func() {
+	//	for {
+	//		//record, err := w.parser.Read()
+	//		if err == io.EOF {
+	//			break
+	//		}
+	//		line, err := w.pattern.Parse(record)
+	//		if err != nil {
+	//			w.metrics.ReqUnmatched.Inc()
+	//			continue
+	//		}
+	//		w.handleLine(line)
+	//	}
+	//}()
 }
 
 func (w *Worker) handleLine(line LogLine) {
@@ -97,17 +96,17 @@ func (w *Worker) handleLine(line LogLine) {
 		w.metrics.BytesReceived.Add(float64(line.ReqLength))
 	}
 
-	if line.RespTime >= 0 {
-		w.metrics.RespTime.Observe(line.RespTime)
+	if line.ReqTime >= 0 {
+		w.metrics.RespTime.Observe(line.ReqTime)
 		if w.metrics.RespTimeHist != nil {
-			w.metrics.RespTimeHist.Observe(line.RespTime)
+			w.metrics.RespTimeHist.Observe(line.ReqTime)
 		}
 	}
 	if line.UpstreamRespTime != nil {
 		for _, time := range line.UpstreamRespTime {
 			w.metrics.RespTimeUpstream.Observe(time)
 			if w.metrics.RespTimeUpstreamHist != nil {
-				w.metrics.RespTimeUpstreamHist.Observe(line.RespTime)
+				w.metrics.RespTimeUpstreamHist.Observe(line.ReqTime)
 			}
 		}
 	}

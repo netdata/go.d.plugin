@@ -19,7 +19,7 @@ package weblog
 //		Status           int
 //		BytesSent        int
 //		Host             int
-//		RespTime         int
+//		ReqTime         int
 //		RespTimeUpstream int
 //		ReqLength        int
 //		UserDefined      int
@@ -34,7 +34,7 @@ package weblog
 //		Status           int
 //		BytesSent        int
 //		Host             string
-//		RespTime         float64
+//		ReqTime         float64
 //		RespTimeUpstream []float64
 //		ReqLength        int
 //		UserDefined      string
@@ -74,7 +74,7 @@ package weblog
 //		Status:           -1,
 //		BytesSent:        -1,
 //		Host:             -1,
-//		RespTime:         -1,
+//		ReqTime:         -1,
 //		RespTimeUpstream: -1,
 //		ReqLength:        -1,
 //		UserDefined:      -1,
@@ -101,7 +101,7 @@ package weblog
 //		case keyHost:
 //			pattern.Host = idx
 //		case keyRespTime:
-//			pattern.RespTime = idx
+//			pattern.ReqTime = idx
 //		case keyRespTimeUpstream:
 //			pattern.RespTimeUpstream = idx
 //		case keyReqLength:
@@ -142,8 +142,8 @@ package weblog
 //	if p.Host >= 0 && !reHost.MatchString(line.Host) {
 //		return fmt.Errorf("'%s' field bad syntax: '%s'", keyHost, line.Host)
 //	}
-//	if p.RespTime >= 0 && line.RespTime < 0 {
-//		return fmt.Errorf("'%s' field bad syntax: %f", keyRespTime, line.RespTime)
+//	if p.ReqTime >= 0 && line.ReqTime < 0 {
+//		return fmt.Errorf("'%s' field bad syntax: %f", keyRespTime, line.ReqTime)
 //	}
 //	if p.RespTimeUpstream >= 0 {
 //		for _, time := range line.RespTimeUpstream {
@@ -162,7 +162,7 @@ package weblog
 //	line := LogLine{
 //		Status:    -1,
 //		BytesSent: -1,
-//		RespTime:  -1,
+//		ReqTime:  -1,
 //		ReqLength: -1,
 //	}
 //
@@ -198,12 +198,12 @@ package weblog
 //	if p.Host >= 0 {
 //		line.Host = records[p.Host]
 //	}
-//	if p.RespTime >= 0 {
-//		val, err := strconv.ParseFloat(records[p.RespTime], 64)
+//	if p.ReqTime >= 0 {
+//		val, err := strconv.ParseFloat(records[p.ReqTime], 64)
 //		if err != nil {
 //			return line, err
 //		}
-//		line.RespTime = val
+//		line.ReqTime = val
 //	}
 //	if p.RespTimeUpstream >= 0 && records[p.RespTimeUpstream] != "-" {
 //		times := strings.Split(records[p.RespTimeUpstream], ", ")

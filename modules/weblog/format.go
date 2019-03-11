@@ -10,6 +10,7 @@ import (
 )
 
 type LogLine struct {
+	Host             string
 	RemoteAddr       string
 	Request          string
 	Method           string
@@ -18,8 +19,7 @@ type LogLine struct {
 	Status           int
 	BytesSent        int
 	ReqLength        int
-	Host             string
-	RespTime         float64
+	ReqTime          float64
 	UpstreamRespTime []float64
 	Custom           string
 }
@@ -34,7 +34,7 @@ type Format struct {
 	Status           int
 	BytesSent        int
 	Host             int
-	RespTime         int
+	ReqTime          int
 	UpstreamRespTime int
 	ReqLength        int
 	Custom           int
@@ -46,20 +46,48 @@ var (
 )
 
 var (
-	common        = NewFormat(time.Microsecond.Seconds(), `$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent`)
-	combined      = NewFormat(time.Microsecond.Seconds(), `$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"`)
-	custom1       = NewFormat(time.Microsecond.Seconds(), `$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $uid_got $request_time'`)
-	custom2       = NewFormat(time.Microsecond.Seconds(), `$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time'`)
-	custom3       = NewFormat(time.Microsecond.Seconds(), `$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time "$upstream_response_time"'`)
+	common        = NewFormat(time.Microsecond.Seconds(), `           $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent`)
+	combined      = NewFormat(time.Microsecond.Seconds(), `           $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"`)
+	custom1       = NewFormat(time.Microsecond.Seconds(), `           $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $uid_got                  $request_time'`)
+	custom2       = NewFormat(time.Microsecond.Seconds(), `           $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time'`)
+	custom3       = NewFormat(time.Microsecond.Seconds(), `           $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time      "$upstream_response_time"'`)
 	vhostCommon   = NewFormat(time.Microsecond.Seconds(), `$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent`)
 	vhostCombined = NewFormat(time.Microsecond.Seconds(), `$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"`)
-	vhostCustom1  = NewFormat(time.Microsecond.Seconds(), `$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $uid_got $request_time`)
+	vhostCustom1  = NewFormat(time.Microsecond.Seconds(), `$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $uid_got                  $request_time`)
 	vhostCustom2  = NewFormat(time.Microsecond.Seconds(), `$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time`)
-	vhostCustom3  = NewFormat(time.Microsecond.Seconds(), `$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time "$upstream_response_time"`)
+	vhostCustom3  = NewFormat(time.Microsecond.Seconds(), `$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time      "$upstream_response_time"`)
+
+	guessOrder = []*Format{
+		vhostCustom1,
+		vhostCustom3,
+		vhostCustom2,
+		vhostCombined,
+		vhostCommon,
+		custom1,
+		custom3,
+		custom2,
+		combined,
+		common,
+	}
 )
 
-func NewFormat(timeScale float64, logFormat string) Format {
-	format := Format{
+func GuessFormat(record []string) *Format {
+
+	for _, format := range guessOrder {
+		if format.Match(record) == nil {
+			var rs = *format
+			respTime := record[format.ReqTime]
+			if strings.Contains(respTime, ".") { // should be nginx
+				rs.TimeScale = time.Second.Seconds()
+			}
+			return &rs
+		}
+	}
+	return nil
+}
+
+func NewFormat(timeScale float64, logFormat string) *Format {
+	format := &Format{
 		Raw:              logFormat,
 		TimeScale:        timeScale,
 		RemoteAddr:       -1,
@@ -67,7 +95,7 @@ func NewFormat(timeScale float64, logFormat string) Format {
 		Status:           -1,
 		BytesSent:        -1,
 		Host:             -1,
-		RespTime:         -1,
+		ReqTime:          -1,
 		UpstreamRespTime: -1,
 		ReqLength:        -1,
 		Custom:           -1,
@@ -88,7 +116,7 @@ func NewFormat(timeScale float64, logFormat string) Format {
 		case "$request_length":
 			format.ReqLength = i + offset
 		case "$request_time":
-			format.RespTime = i + offset
+			format.ReqTime = i + offset
 		case "$upstream_response_time":
 			format.UpstreamRespTime = i + offset
 		case "$server_name", "$http_host", "$host", "$hostname":
@@ -108,7 +136,7 @@ func (f Format) Parse(record []string) (LogLine, error) {
 	line := LogLine{
 		Status:    -1,
 		BytesSent: -1,
-		RespTime:  -1,
+		ReqTime:   -1,
 		ReqLength: -1,
 	}
 
@@ -144,12 +172,12 @@ func (f Format) Parse(record []string) (LogLine, error) {
 	if f.Host >= 0 {
 		line.Host = record[f.Host]
 	}
-	if f.RespTime >= 0 && record[f.RespTime] != "-" {
-		val, err := strconv.ParseFloat(record[f.RespTime], 64)
+	if f.ReqTime >= 0 && record[f.ReqTime] != "-" {
+		val, err := strconv.ParseFloat(record[f.ReqTime], 64)
 		if err != nil {
 			return line, err
 		}
-		line.RespTime = val * f.TimeScale
+		line.ReqTime = val * f.TimeScale
 	}
 	if f.UpstreamRespTime >= 0 && record[f.UpstreamRespTime] != "-" {
 		times := strings.Split(record[f.UpstreamRespTime], ", ")
@@ -202,8 +230,8 @@ func (f *Format) Match(record []string) error {
 	if f.Host >= 0 && !reHost.MatchString(line.Host) {
 		return fmt.Errorf("host field bad syntax: '%s'", line.Host)
 	}
-	if f.RespTime >= 0 && line.RespTime < 0 {
-		return fmt.Errorf("respTime field bad syntax: %f", line.RespTime)
+	if f.ReqTime >= 0 && line.ReqTime < 0 {
+		return fmt.Errorf("respTime field bad syntax: %f", line.ReqTime)
 	}
 	if f.UpstreamRespTime >= 0 {
 		for _, t := range line.UpstreamRespTime {

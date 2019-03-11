@@ -1,0 +1,104 @@
+package logreader
+
+import (
+	"encoding/csv"
+	"fmt"
+	"os"
+	"path/filepath"
+	"sync"
+	"testing"
+	"time"
+
+	"github.com/netdata/go-orchestrator/logger"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestFile_Read(t *testing.T) {
+	tmpFileName1 := filepath.Join(os.TempDir(), "test_read.1.log")
+	tmpFileName2 := filepath.Join(os.TempDir(), "test_read.2.log")
+	tmpFileName3 := filepath.Join(os.TempDir(), "test_read.3.log")
+	defer os.Remove(tmpFileName1)
+	defer os.Remove(tmpFileName2)
+	defer os.Remove(tmpFileName3)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		writeLog(t, tmpFileName1, time.Millisecond*10)
+		writeLog(t, tmpFileName2, time.Millisecond*10)
+		writeLog(t, tmpFileName3, time.Millisecond*10)
+	}()
+
+	time.Sleep(time.Millisecond * 10)
+
+	go func() {
+		defer wg.Done()
+		readLog(t)
+	}()
+
+	wg.Wait()
+}
+
+func TestFile_Read2(t *testing.T) {
+	tmpFileName1 := filepath.Join(os.TempDir(), "test_read.1.log")
+	tmpFileName2 := filepath.Join(os.TempDir(), "test_read.1.log")
+	tmpFileName3 := filepath.Join(os.TempDir(), "test_read.1.log")
+	defer os.Remove(tmpFileName1)
+	defer os.Remove(tmpFileName2)
+	defer os.Remove(tmpFileName3)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		writeLog(t, tmpFileName1, time.Millisecond*10)
+		writeLog(t, tmpFileName2, time.Millisecond*10)
+		writeLog(t, tmpFileName3, time.Millisecond*10)
+	}()
+
+	time.Sleep(time.Millisecond * 10)
+
+	go func() {
+		defer wg.Done()
+		readLog(t)
+	}()
+
+	wg.Wait()
+}
+
+func readLog(t *testing.T) {
+	t.Helper()
+	file, err := Open(filepath.Join(os.TempDir(), "test_read.*.log"), "", logger.New("go.d", "web_log", "test"))
+	require.NoError(t, err)
+	r := csv.NewReader(file)
+	r.Comma = ' '
+	r.ReuseRecord = true
+	r.FieldsPerRecord = -1
+	for i := 0; i < 50; i++ {
+		record, err := r.Read()
+		if err == nil {
+			fmt.Printf("[%d] line:  %v\n", i, record)
+		} else {
+			fmt.Printf("[%d] error: %v\n", i, err)
+		}
+		time.Sleep(time.Millisecond * 15)
+	}
+}
+
+func writeLog(t *testing.T, filename string, interval time.Duration) {
+	t.Helper()
+	base := filepath.Base(filename)
+	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+	require.NoError(t, err)
+	require.NotNil(t, file)
+	defer file.Close()
+
+	for i := 0; i < 15; i++ {
+		fmt.Fprintln(file, "line", i, "filename", base)
+		time.Sleep(interval)
+	}
+}

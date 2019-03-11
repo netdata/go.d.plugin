@@ -1,7 +1,13 @@
 package weblog
 
 import (
+	"bytes"
+	"encoding/csv"
 	"fmt"
+
+	"github.com/netdata/go.d.plugin/pkg/simpletail"
+
+	"github.com/netdata/go.d.plugin/pkg/logreader"
 
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 
@@ -27,21 +33,25 @@ func New() *WebLog {
 
 type (
 	Config struct {
-		Path           string         `yaml:"path" validate:"required"`
-		ExcludePath    string         `yaml:"exclude_path"`
-		Filter         rawFilter      `yaml:"filter"`
-		URLCategories  []RawCategory  `yaml:"categories"`
-		UserCategories []RawCategory  `yaml:"user_categories"`
-		CustomParser   map[string]int `yaml:"custom_log_format"`
-		Histogram      []float64      `yaml:"histogram"`
-		DetailedStatus bool           `yaml:"detailed_status"`
+		Path           string        `yaml:"path" validate:"required"`
+		ExcludePath    string        `yaml:"exclude_path"`
+		Filter         rawFilter     `yaml:"filter"`
+		URLCategories  []RawCategory `yaml:"categories"`
+		UserCategories []RawCategory `yaml:"user_categories"`
+		LogFormat      string        `yaml:"log_format"`
+		LogTimeScale   float64       `yaml:"log_time_scale"`
+		Histogram      []float64     `yaml:"histogram"`
+		DetailedStatus bool          `yaml:"detailed_status"`
 	}
 
 	WebLog struct {
 		module.Base
 		Config `yaml:",inline"`
 		charts *module.Charts
-		worker *Worker
+
+		file   *logreader.Reader
+		parser *csv.Reader
+		format *Format
 
 		metrics        *MetricsData
 		filter         matcher.Matcher
@@ -55,11 +65,6 @@ func (w *WebLog) Charts() *module.Charts {
 }
 
 func (w *WebLog) Init() bool {
-	if err := w.initParser(); err != nil {
-		w.Error(err)
-		return false
-	}
-
 	if err := w.initFilter(); err != nil {
 		w.Error(err)
 		return false
@@ -76,91 +81,56 @@ func (w *WebLog) Init() bool {
 }
 
 func (w *WebLog) Check() bool {
+	if err := w.initLogReader(); err != nil {
+		w.Warning("check failed: ", err)
+		return false
+	}
+	lastLine, err := simpletail.ReadLastLine(w.file.CurrentFilename(), 0)
+	if err != nil {
+		w.Warning("check failed: ", err)
+		return false
+	}
+
+	parser := NewLogParser(bytes.NewBuffer(lastLine))
+	fields, err := parser.Read()
+	if err != nil {
+		w.Warning("check failed: ", err)
+		return false
+	}
+
+	if w.LogFormat != "" {
+		w.format = NewFormat(w.LogTimeScale, w.LogFormat)
+		if w.format.Match(fields) != nil {
+			w.Warning("check failed: ", err)
+			return false
+		}
+	} else {
+		w.format = GuessFormat(fields)
+		if w.format == nil {
+			w.Warning("check failed: cannot determine log format")
+			return false
+		}
+	}
+
 	panic("TODO")
-	//t, err := w.worker.tailFactory(w.Path)
-	//
-	//if err != nil {
-	//	w.Errorf("error on creating tail : %s", err)
-	//	return false
-	//}
-	//
-	//w.worker.tail = t
-	//w.Infof("used parser : %s", w.worker.parser.info())
-	//
-	//w.createCharts()
-	//
-	//go w.worker.parseLoop()
-	//
-	//return true
 }
 
 func (w *WebLog) Collect() map[string]int64 {
 	panic("TODO")
-	//w.worker.pause()
-	//defer w.worker.unpause()
-	//
-	//for k, v := range w.worker.timings {
-	//	if !v.active() {
-	//		continue
-	//	}
-	//	w.worker.metrics[k+"_min"] += int64(v.min)
-	//	w.worker.metrics[k+"_avg"] += int64(v.avg())
-	//	w.worker.metrics[k+"_max"] += int64(v.max)
-	//}
-	//
-	//for _, h := range w.worker.histograms {
-	//	for _, v := range h {
-	//		w.worker.metrics[v.id] = int64(v.count)
-	//	}
-	//}
-	//
-	//w.worker.timings.reset()
-	//w.worker.uniqIPs = make(map[string]bool)
-	//
-	//m := make(map[string]int64)
-	//
-	//for k, v := range w.worker.metrics {
-	//	m[k] = v
-	//}
-	//
-	//for _, task := range w.worker.chartUpdate {
-	//	chart := w.charts.Get(task.id)
-	//	_ = chart.AddDim(task.dim)
-	//	chart.MarkNotCreated()
-	//}
-	//w.worker.chartUpdate = w.worker.chartUpdate[:0]
-	//
-	//return m
 }
 
 func (w *WebLog) Cleanup() {
+	w.file.Close()
 }
 
-func (w *WebLog) initParser() error {
-	panic("TODO:")
-	//b, err := simpletail.ReadLastLine(w.Path)
-	//
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//line := string(b)
-	//var p parser
-	//
-	//if len(w.CustomParser) > 0 {
-	//	p, err = newParser(line, w.CustomParser)
-	//} else {
-	//	p, err = newParser(line, csvDefaultPatterns...)
-	//}
-	//
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//w.worker.parser = p
-	//w.gm, _ = p.parse(line)
-	//
-	//return nil
+func (w *WebLog) initLogReader() error {
+	file, err := logreader.Open(w.Path, w.ExcludePath, w.Logger)
+	if err != nil {
+		return err
+	}
+	w.file = file
+	w.parser = NewLogParser(file)
+	return nil
 }
 
 func (w *WebLog) initFilter() (err error) {

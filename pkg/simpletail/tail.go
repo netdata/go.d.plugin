@@ -1,164 +1,57 @@
 package simpletail
 
 import (
-	"io"
-	"io/ioutil"
+	"errors"
 	"os"
 )
 
-// TODO: rewrite using hpcloud/tail
-//import (
-//	"errors"
-//	"io"
-//	"io/ioutil"
-//	"os"
-//	"path/filepath"
-//	"sort"
-//)
-//
-//var maxFails = 10
-//
-//var (
-//	// ErrNotInitialized ErrNotInitialized
-//	ErrNotInitialized = errors.New("not initialized")
-//	// ErrGlob ErrGlob
-//	ErrGlob = errors.New("glob returns an empty slice")
-//	// ErrBadFile ErrBadFile
-//	ErrBadFile = errors.New("not a readable file")
-//	// SizeNotChanged SizeNotChanged
-//	SizeNotChanged = errors.New("size not changed")
-//)
-//
-//func New(path string) *Tail {
-//	return &Tail{
-//		Path: path,
-//	}
-//}
-//
-//type Tail struct {
-//	Path string // pattern
-//	path string
-//
-//	fails int
-//	pos   int64
-//}
-//
-//func (t *Tail) Init() error {
-//	err := t.globPath()
-//	if err != nil {
-//		return err
-//	}
-//
-//	fi, err := os.Stat(t.Path)
-//	if err != nil {
-//		return err
-//	}
-//
-//	t.pos = fi.Size()
-//	return nil
-//}
-//
-//func (t *Tail) Tail() (io.ReadCloser, error) {
-//	if t.path == "" {
-//		return nil, ErrNotInitialized
-//	}
-//
-//	if t.fails > maxFails {
-//		err := t.globPath()
-//		if err != nil {
-//			return nil, err
-//		}
-//	}
-//
-//	fi, err := os.Stat(t.path)
-//
-//	if err != nil {
-//		t.fails++
-//		return nil, err
-//	}
-//
-//	if fi.Size() == t.pos {
-//		return nil, SizeNotChanged
-//	}
-//
-//	if fi.Size() < t.pos {
-//		t.pos = 0
-//	}
-//
-//	f, err := os.Open(t.path)
-//	if err != nil {
-//		t.fails++
-//		return nil, err
-//	}
-//
-//	_, err = f.Seek(t.pos, io.SeekStart)
-//	if err != nil {
-//		t.fails++
-//		return nil, err
-//	}
-//
-//	t.fails = 0
-//	// TODO: this is wrong
-//	t.pos = fi.Size()
-//	return f, nil
-//}
-//
-//func (t *Tail) globPath() error {
-//	v, err := filepath.Glob(t.Path)
-//	if err != nil {
-//		return err
-//	}
-//
-//	if len(v) == 0 {
-//		return ErrGlob
-//	}
-//
-//	sort.Strings(v)
-//	p := v[len(v)-1]
-//
-//	if !isReadableFile(p) {
-//		return ErrBadFile
-//	}
-//
-//	t.path = p
-//	return nil
-//}
-//
-//func isReadableFile(name string) bool {
-//	_, e1 := os.Open(name)
-//	v, e2 := os.Stat(name)
-//	return e1 == nil && e2 == nil && v.Mode().IsRegular()
-//}
+const DefaultMaxLineWidth = 4 * 1024 // assume disk block size is 4K
+
+var ErrTooLongLine = errors.New("too long line")
 
 // ReadLastLine returns the last line of the file and any read error encountered.
-func ReadLastLine(filename string) ([]byte, error) {
+// It expect last line width <= maxLineWidth.
+// If maxLineWidth <= 0, it defaults to DefaultMaxLineWidth.
+func ReadLastLine(filename string, maxLineWidth int64) ([]byte, error) {
+	if maxLineWidth <= 0 {
+		maxLineWidth = DefaultMaxLineWidth
+	}
 	f, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		_ = f.Close()
-	}()
-	return readLastLine(f)
-}
+	defer func() { _ = f.Close() }()
 
-func readLastLine(f io.ReadSeeker) ([]byte, error) {
-	_, _ = f.Seek(0, io.SeekEnd)
-	b := make([]byte, 1)
-
-	for b[0] != '\n' {
-		if v, err := f.Seek(-2, io.SeekCurrent); err != nil {
-			return nil, err
-		} else if v == 0 {
-			break
-		}
-		_, _ = f.Read(b)
+	stat, _ := f.Stat()
+	endPos := stat.Size()
+	if endPos == 0 {
+		return []byte{}, nil
 	}
-
-	line, err := ioutil.ReadAll(f)
+	startPos := endPos - maxLineWidth
+	if startPos < 0 {
+		startPos = 0
+	}
+	buf := make([]byte, endPos-startPos)
+	n, err := f.ReadAt(buf, startPos)
 	if err != nil {
 		return nil, err
 	}
+	lnPos := 0
+	foundLn := false
+	for i := n - 2; i >= 0; i-- {
+		ch := buf[i]
+		if ch == '\n' {
+			foundLn = true
+			lnPos = i
+			break
+		}
+	}
+	if foundLn {
+		return buf[lnPos+1 : n], nil
+	}
+	if startPos == 0 {
+		return buf[0:n], nil
+	}
 
-	return line, nil
+	return nil, ErrTooLongLine
 }
