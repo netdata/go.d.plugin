@@ -4,11 +4,9 @@ require (
 	github.com/axiomhq/hyperloglog v0.0.0-20181223111420-4b99d0c2c99e
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/dgryski/go-metro v0.0.0-20180109044635-280f6062b5bc // indirect
-	github.com/fsnotify/fsnotify v1.4.7
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/miekg/dns v1.1.4
-	github.com/netdata/go-orchestrator v0.0.0-20190220185207-68fba67151c9
-	github.com/pkg/errors v0.8.1 // indirect
+	github.com/netdata/go-orchestrator v0.0.0-20190312061432-547df3f9ece6
 	github.com/prometheus/common v0.2.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
 	github.com/stretchr/testify v1.3.0
