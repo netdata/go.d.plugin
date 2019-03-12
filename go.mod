@@ -6,7 +6,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/hpcloud/tail v1.0.0
 	github.com/miekg/dns v1.1.4
-	github.com/netdata/go-orchestrator v0.0.0-20190220185207-68fba67151c9
+	github.com/netdata/go-orchestrator v0.0.0-20190312061432-547df3f9ece6
 	github.com/prometheus/common v0.2.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
 	github.com/stretchr/testify v1.3.0
