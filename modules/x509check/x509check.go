@@ -94,7 +94,7 @@ func (x *X509Check) Collect() map[string]int64 {
 	notAfter := certs[0].NotAfter
 
 	return map[string]int64{
-		"time":                           int64(notAfter.Sub(now).Seconds()),
+		"expiry":                         int64(notAfter.Sub(now).Seconds()),
 		"days_until_expiration_warning":  int64(x.DaysUntilWarn),
 		"days_until_expiration_critical": int64(x.DaysUntilCrit),
 	}

@@ -19,7 +19,7 @@ var charts = Charts{
 		Fam:   "expiration time",
 		Ctx:   "x509check.time_until_expiration",
 		Dims: Dims{
-			{ID: "time"},
+			{ID: "expiry"},
 		},
 		Vars: Vars{
 			{ID: "days_until_expiration_warning"},
