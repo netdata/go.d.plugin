@@ -9,7 +9,7 @@ It produces the following charts:
 
 ### configuration
 
-For all available options and defaults please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/x509.conf).
+For all available options and defaults please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/x509check.conf).
 ___
 
 ```yaml
