@@ -5,7 +5,7 @@ Checks the time until a x509 certificate expires.
 It produces the following charts:
 
 1. **Time Until Certificate Expiration** in seconds
- * time
+ * expiry
 
 ### configuration
 
