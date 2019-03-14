@@ -59,7 +59,7 @@ func newCertGetter(config Config) (certGetter, error) {
 		return newURLCertGetter(u, tlsCfg, config.Timeout.Duration), nil
 	}
 
-	return nil, fmt.Errorf("unsupported scheme in '%s', supported schemes : %v", u.Scheme, supportedSchemes)
+	return nil, fmt.Errorf("unsupported scheme in '%s', supported schemes : %v", u, supportedSchemes)
 }
 
 type certGetter interface {

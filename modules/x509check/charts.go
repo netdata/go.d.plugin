@@ -16,7 +16,7 @@ var charts = Charts{
 		ID:    "time_until_expiration",
 		Title: "Time Until Certificate Expiration",
 		Units: "seconds",
-		Fam:   "certificate expiration time",
+		Fam:   "expiration time",
 		Ctx:   "x509check.time_until_expiration",
 		Dims: Dims{
 			{ID: "time"},
