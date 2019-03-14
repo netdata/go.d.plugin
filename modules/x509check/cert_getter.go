@@ -115,7 +115,7 @@ func (ug urlCertGetter) getCert() ([]*x509.Certificate, error) {
 
 	defer ipConn.Close()
 
-	conn := tls.Client(ipConn, ug.tlsCfg)
+	conn := tls.Client(ipConn, ug.tlsCfg.Clone())
 
 	defer conn.Close()
 
