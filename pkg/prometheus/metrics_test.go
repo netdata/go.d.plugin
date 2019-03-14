@@ -137,7 +137,7 @@ func TestMetrics_Sort(t *testing.T) {
 	}
 	{
 		m := Metrics{}
-		assert.Equal(t, 0, m.Max())
+		assert.Equal(t, 0.0, m.Max())
 	}
 }
 
