@@ -9,25 +9,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testdata, _ = ioutil.ReadFile("tests/testdata.txt")
+var (
+	testdata, _  = ioutil.ReadFile("tests/testdata.txt")
+	testdata2, _ = ioutil.ReadFile("tests/testdata2.txt")
+)
 
-func TestSpringboot2(t *testing.T) {
+func TestSpringboot2_Collect(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/actuator/prometheus" {
+		switch r.URL.Path {
+		case "/actuator/prometheus":
 			_, _ = w.Write(testdata)
-			return
+		case "/actuator/prometheus2":
+			_, _ = w.Write(testdata2)
 		}
 	}))
 	defer ts.Close()
-	job := New()
-	job.HTTP.Request.URL = ts.URL + "/actuator/prometheus"
-
-	assert.True(t, job.Init())
-
-	assert.True(t, job.Check())
-
-	data := job.Collect()
-
+	job1 := New()
+	job1.HTTP.Request.URL = ts.URL + "/actuator/prometheus"
+	assert.True(t, job1.Init())
+	assert.True(t, job1.Check())
 	assert.EqualValues(
 		t,
 		map[string]int64{
@@ -47,7 +47,33 @@ func TestSpringboot2(t *testing.T) {
 			"mem_free":                47045752,
 			"uptime":                  191730,
 		},
-		data,
+		job1.Collect(),
+	)
+
+	job2 := New()
+	job2.HTTP.Request.URL = ts.URL + "/actuator/prometheus2"
+	assert.True(t, job2.Init())
+	assert.True(t, job2.Check())
+	assert.EqualValues(
+		t,
+		map[string]int64{
+			"threads":                 36,
+			"threads_daemon":          22,
+			"resp_1xx":                0,
+			"resp_2xx":                57740,
+			"resp_3xx":                0,
+			"resp_4xx":                4,
+			"resp_5xx":                0,
+			"heap_used_eden":          18052960,
+			"heap_used_survivor":      302704,
+			"heap_used_old":           40122672,
+			"heap_committed_eden":     21430272,
+			"heap_committed_survivor": 2621440,
+			"heap_committed_old":      53182464,
+			"mem_free":                18755840,
+			"uptime":                  45501125,
+		},
+		job2.Collect(),
 	)
 }
 

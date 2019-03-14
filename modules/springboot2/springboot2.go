@@ -111,8 +111,8 @@ func (s *SpringBoot2) Collect() map[string]int64 {
 	gatherResponse(rawMetrics, &m)
 
 	// threads
-	m.ThreadsDaemon.Set(rawMetrics.FindByName("jvm_threads_daemon").Max())
-	m.Threads.Set(rawMetrics.FindByName("jvm_threads_live").Max())
+	m.ThreadsDaemon.Set(rawMetrics.FindByNames("jvm_threads_daemon", "jvm_threads_daemon_threads").Max())
+	m.Threads.Set(rawMetrics.FindByNames("jvm_threads_live", "jvm_threads_live_threads").Max())
 
 	// heap memory
 	gatherHeap(rawMetrics.FindByName("jvm_memory_used_bytes"), &m.HeapUsed)

@@ -73,8 +73,17 @@ func TestMetrics_Add(t *testing.T) {
 
 func TestMetrics_FindByName(t *testing.T) {
 	m := testMetrics()
-
+	m.Sort()
+	assert.Len(t, Metrics{}.FindByName(testName1), 0)
 	assert.Len(t, m.FindByName(testName1), len(m)-1)
+}
+
+func TestMetrics_FindByNames(t *testing.T) {
+	m := testMetrics()
+	m.Sort()
+	assert.Len(t, m.FindByNames(), 0)
+	assert.Len(t, m.FindByNames(testName1), len(m)-1)
+	assert.Len(t, m.FindByNames(testName1, testName2), len(m))
 }
 
 func TestMetrics_Len(t *testing.T) {
@@ -121,10 +130,15 @@ func TestMetrics_Reset(t *testing.T) {
 }
 
 func TestMetrics_Sort(t *testing.T) {
-	m := testMetrics()
-
-	m.Sort()
-	assert.Equal(t, testName2, m[0].Name())
+	{
+		m := testMetrics()
+		m.Sort()
+		assert.Equal(t, testName2, m[0].Name())
+	}
+	{
+		m := Metrics{}
+		assert.Equal(t, 0, m.Max())
+	}
 }
 
 func TestMetrics_Swap(t *testing.T) {
