@@ -40,6 +40,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
  - [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)
  - [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) *
+ - [x509check](https://github.com/netdata/go.d.plugin/tree/master/modules/x509check)
 
 `*` - disabled by default.
 
