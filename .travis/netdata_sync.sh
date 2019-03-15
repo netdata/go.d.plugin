@@ -40,4 +40,4 @@ sed -i "s/GO_PACKAGE_VERSION=\".*\"/GO_PACKAGE_VERSION=\"${TRAVIS_TAG}\"/g" netd
 git checkout -b new_go_d_version
 git add netdata-installer.sh packaging/go.d.checksums
 git commit -m "installer: include go.d.plugin version ${TRAVIS_TAG}"
-hub pull-request -p -r paulfantom,ilyam8 -m "${PR_TITLE}" -m "${PR_MSG}"
+hub pull-request -p -r paulkatsoulakis,ilyam8 -m "${PR_TITLE}" -m "${PR_MSG}"
