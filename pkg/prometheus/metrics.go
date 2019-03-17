@@ -72,7 +72,24 @@ func (m Metrics) FindByName(name string) Metrics {
 	return m[from:until]
 }
 
-// match finds metrics where it's label matches given matcher.
+// FindByNames finds metrics where it's __name__ label matches given any of names.
+// It expects the metrics is sorted.
+// Complexity: O(log(N))
+func (m Metrics) FindByNames(names ...string) Metrics {
+	switch len(names) {
+	case 0:
+		return Metrics{}
+	case 1:
+		return m.FindByName(names[0])
+	}
+	var result Metrics
+	for _, name := range names {
+		result = append(result, m.FindByName(name)...)
+	}
+	return result
+}
+
+// Match match finds metrics where it's label matches given matcher.
 // It does NOT expect the metrics is sorted.
 // Complexity: O(N)
 func (m Metrics) Match(matcher *labels.Matcher) Metrics {
@@ -90,6 +107,9 @@ func (m Metrics) Match(matcher *labels.Matcher) Metrics {
 // It do NOT expect the metrics is sorted.
 // Complexity: O(N)
 func (m Metrics) Max() float64 {
+	if len(m) == 0 {
+		return 0
+	}
 	max := -math.MaxFloat64
 	for _, kv := range m {
 		if max < kv.Value {
