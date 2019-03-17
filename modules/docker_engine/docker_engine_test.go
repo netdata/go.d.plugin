@@ -1,13 +1,13 @@
 package docker_engine
 
 import (
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var testMetrics, _ = ioutil.ReadFile("testdata/metrics.txt")
