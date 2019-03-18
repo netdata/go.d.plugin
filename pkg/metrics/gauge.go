@@ -85,11 +85,17 @@ func (g GaugeVec) WriteTo(rv map[string]int64, key string, mul, div int) {
 
 // Get gets counter instance by name
 func (g GaugeVec) Get(name string) *Gauge {
-	item, ok := g[name]
-	if ok {
-		return item
-	}
-	item = new(Gauge)
-	g[name] = item
+	item, _ := g.GetP(name)
 	return item
+}
+
+// Get gets counter instance by name
+func (g GaugeVec) GetP(name string) (gauge *Gauge, ok bool) {
+	gauge, ok = g[name]
+	if ok {
+		return
+	}
+	gauge = new(Gauge)
+	g[name] = gauge
+	return
 }

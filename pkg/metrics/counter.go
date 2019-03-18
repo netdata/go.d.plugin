@@ -75,11 +75,17 @@ func (c CounterVec) WriteTo(rv map[string]int64, key string, mul, div int) {
 
 // Get gets counter instance by name
 func (c CounterVec) Get(name string) *Counter {
-	item, ok := c[name]
-	if ok {
-		return item
-	}
-	item = &Counter{}
-	c[name] = item
+	item, _ := c.GetP(name)
 	return item
+}
+
+// Get gets counter instance by name
+func (c CounterVec) GetP(name string) (counter *Counter, ok bool) {
+	counter, ok = c[name]
+	if ok {
+		return
+	}
+	counter = &Counter{}
+	c[name] = counter
+	return
 }

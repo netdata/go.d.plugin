@@ -80,7 +80,7 @@ func (w *Worker) handleLine(line LogLine) {
 			w.metrics.Resp5xx.Inc()
 		}
 
-		if w.config.DetailedStatus {
+		if w.config.AggregateResponseCodes {
 			w.metrics.RespCode.Get(strconv.Itoa(status)).Inc()
 		}
 	}

@@ -29,23 +29,21 @@ func init() {
 
 func New() *WebLog {
 	return &WebLog{
-		Config: Config{
-			DetailedStatus: true,
-		},
+		Config: Config{},
 	}
 }
 
 type (
 	Config struct {
-		Path           string        `yaml:"path" validate:"required"`
-		ExcludePath    string        `yaml:"exclude_path"`
-		Filter         rawFilter     `yaml:"filter"`
-		URLCategories  []RawCategory `yaml:"categories"`
-		UserCategories []RawCategory `yaml:"user_categories"`
-		LogFormat      string        `yaml:"log_format"`
-		LogTimeScale   float64       `yaml:"log_time_scale"`
-		Histogram      []float64     `yaml:"histogram"`
-		DetailedStatus bool          `yaml:"detailed_status"`
+		Path                   string        `yaml:"path" validate:"required"`
+		ExcludePath            string        `yaml:"exclude_path"`
+		Filter                 rawFilter     `yaml:"filter"`
+		URLCategories          []RawCategory `yaml:"categories"`
+		UserCategories         []RawCategory `yaml:"user_categories"`
+		LogFormat              string        `yaml:"log_format"`
+		LogTimeScale           float64       `yaml:"log_time_scale"`
+		Histogram              []float64     `yaml:"histogram"`
+		AggregateResponseCodes bool          `yaml:"aggregate_response_codes"`
 	}
 
 	WebLog struct {
@@ -117,9 +115,8 @@ func (w *WebLog) Check() bool {
 func (w *WebLog) Charts() *module.Charts {
 	var charts module.Charts
 	_ = charts.Add(responseStatuses.Copy(), responseCodes.Copy())
-	if w.DetailedStatus {
+	if w.AggregateResponseCodes {
 		_ = charts.Add(responseCodesDetailedPerFamily()...)
-
 	} else {
 		_ = charts.Add(responseCodesDetailed.Copy())
 	}
@@ -219,6 +216,10 @@ func (w *WebLog) Collect() map[string]int64 {
 			return nil
 		}
 
+		if !w.filter.MatchString(line.URI) {
+			continue
+		}
+
 		w.metrics.Requests.Inc()
 		if line.Version != "" {
 			w.metrics.ReqVersion.Get(line.Version).Inc()
@@ -249,8 +250,12 @@ func (w *WebLog) Collect() map[string]int64 {
 				w.metrics.Resp5xx.Inc()
 			}
 
-			if w.DetailedStatus {
-				w.metrics.RespCode.Get(strconv.Itoa(status)).Inc()
+			if w.AggregateResponseCodes {
+				counter, ok := w.metrics.RespCode.GetP(strconv.Itoa(status))
+				counter.Inc()
+				if !ok {
+					// TODO add dim
+				}
 			}
 		}
 		if line.Method != "" {
@@ -282,13 +287,23 @@ func (w *WebLog) Collect() map[string]int64 {
 		if line.RemoteAddr != "" {
 			w.metrics.UniqueIPs.Insert(line.RemoteAddr)
 		}
-		for _, cat := range w.urlCategories {
-			if cat.Matcher.MatchString(line.URI) {
-				// TODO add metrics
-				break
+		if line.URI != "" {
+			for _, cat := range w.urlCategories {
+				if cat.Matcher.MatchString(line.URI) {
+					// TODO add metrics
+					break
+				}
 			}
 		}
-		// TODO add user defined
+
+		if w.format.Custom >= 0 {
+			for _, cat := range w.userCategories {
+				if cat.Matcher.MatchString(line.Custom) {
+					// TODO add metrics
+					break
+				}
+			}
+		}
 	}
 
 	return stm.ToMap(w.metrics)
