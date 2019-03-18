@@ -7,9 +7,8 @@ require (
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/dgryski/go-metro v0.0.0-20180109044635-280f6062b5bc // indirect
 	github.com/go-sql-driver/mysql v1.4.1
-	github.com/hpcloud/tail v1.0.0
 	github.com/miekg/dns v1.1.6
-	github.com/netdata/go-orchestrator v0.0.0-20190313225439-42e20dc9010d
+	github.com/netdata/go-orchestrator v0.0.0-20190318105202-3b8fb1123649
 	github.com/prometheus/common v0.2.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
 	github.com/stretchr/testify v1.3.0
