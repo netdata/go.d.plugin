@@ -9,7 +9,6 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
-	"github.com/prometheus/prometheus/pkg/labels"
 )
 
 const (
@@ -52,11 +51,11 @@ type DockerEngine struct {
 type metrics struct {
 	Container struct {
 		Actions struct {
-			Changes mtx.Counter `stm:"changes"`
-			Commit  mtx.Counter `stm:"commit"`
-			Create  mtx.Counter `stm:"create"`
-			Delete  mtx.Counter `stm:"delete"`
-			Start   mtx.Counter `stm:"start"`
+			Changes mtx.Gauge `stm:"changes"`
+			Commit  mtx.Gauge `stm:"commit"`
+			Create  mtx.Gauge `stm:"create"`
+			Delete  mtx.Gauge `stm:"delete"`
+			Start   mtx.Gauge `stm:"start"`
 		} `stm:"actions"`
 		States struct {
 			Paused  mtx.Gauge `stm:"paused"`
@@ -108,29 +107,48 @@ func (de *DockerEngine) Collect() map[string]int64 {
 
 	var metrics metrics
 
-	ms := raw.FindByName("engine_daemon_container_actions_seconds_count")
-	metrics.Container.Actions.Changes.Add(
-		ms.Match(newEqualMatcher("action", "changes")).Max())
-	metrics.Container.Actions.Commit.Add(
-		ms.Match(newEqualMatcher("action", "commit")).Max())
-	metrics.Container.Actions.Create.Add(
-		ms.Match(newEqualMatcher("action", "create")).Max())
-	metrics.Container.Actions.Delete.Add(
-		ms.Match(newEqualMatcher("action", "delete")).Max())
-	metrics.Container.Actions.Start.Add(
-		ms.Match(newEqualMatcher("action", "start")).Max())
-
-	ms = raw.FindByName("engine_daemon_container_states_containers")
-	metrics.Container.States.Paused.Set(
-		ms.Match(newEqualMatcher("state", "paused")).Max())
-	metrics.Container.States.Running.Set(
-		ms.Match(newEqualMatcher("state", "running")).Max())
-	metrics.Container.States.Stopped.Set(
-		ms.Match(newEqualMatcher("state", "stopped")).Max())
+	gatherContainerActions(raw, &metrics)
+	gatherContainerStates(raw, &metrics)
 
 	return stm.ToMap(metrics)
 }
 
-func newEqualMatcher(name, value string) *labels.Matcher {
-	return &labels.Matcher{Type: labels.MatchEqual, Name: name, Value: value}
+func gatherContainerActions(raw prometheus.Metrics, ms *metrics) {
+	for _, metric := range raw.FindByName("engine_daemon_container_actions_seconds_count") {
+		action := metric.Labels.Get("action")
+		if action == "" {
+			continue
+		}
+		value := metric.Value
+		switch action {
+		case "changes":
+			ms.Container.Actions.Changes.Set(value)
+		case "commit":
+			ms.Container.Actions.Commit.Set(value)
+		case "create":
+			ms.Container.Actions.Create.Set(value)
+		case "delete":
+			ms.Container.Actions.Delete.Set(value)
+		case "start":
+			ms.Container.Actions.Start.Set(value)
+		}
+	}
+}
+
+func gatherContainerStates(raw prometheus.Metrics, ms *metrics) {
+	for _, metric := range raw.FindByName("engine_daemon_container_states_containers") {
+		action := metric.Labels.Get("state")
+		if action == "" {
+			continue
+		}
+		value := metric.Value
+		switch action {
+		case "paused":
+			ms.Container.States.Paused.Set(value)
+		case "running":
+			ms.Container.States.Running.Set(value)
+		case "stopped":
+			ms.Container.States.Stopped.Set(value)
+		}
+	}
 }
