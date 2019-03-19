@@ -15,7 +15,7 @@ import (
 )
 
 var supportedSchemes = []string{
-	//"file",
+	"file",
 	"https",
 	"tcp",
 	"tcp4",
@@ -37,9 +37,8 @@ func newCertGetter(config Config) (certGetter, error) {
 	}
 
 	switch u.Scheme {
-	// TODO: not tested
-	//case "file":
-	//	return newFileCertGetter(u.Path), nil
+	case "file":
+		return newFileCertGetter(u.Path), nil
 	case "https":
 		u.Scheme = "tcp"
 		fallthrough
