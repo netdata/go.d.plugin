@@ -20,23 +20,19 @@ func TestNew(t *testing.T) {
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
-func TestExample_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
+func TestDockerEngine_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
 
-func TestExample_Cleanup(t *testing.T) { New().Cleanup() }
+func TestDockerEngine_Cleanup(t *testing.T) { New().Cleanup() }
 
-func TestExample_Init(t *testing.T) {
+func TestDockerEngine_Init(t *testing.T) { assert.True(t, New().Init()) }
+
+func TestDockerEngine_InitNG(t *testing.T) {
 	job := New()
-	assert.True(t, job.Init())
-}
-
-func TestExample_InitNG(t *testing.T) {
-	job := New()
-
 	job.URL = ""
 	assert.False(t, job.Init())
 }
 
-func TestExample_Check(t *testing.T) {
+func TestDockerEngine_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +48,6 @@ func TestExample_Check(t *testing.T) {
 
 func TestDockerEngine_CheckNG(t *testing.T) {
 	job := New()
-
 	job.URL = "http://127.0.0.1:38001/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
