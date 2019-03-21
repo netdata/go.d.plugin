@@ -21,6 +21,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/fluentd"
 	_ "github.com/netdata/go.d.plugin/modules/freeradius"
 	_ "github.com/netdata/go.d.plugin/modules/httpcheck"
+	_ "github.com/netdata/go.d.plugin/modules/k8s_kubeproxy"
 	_ "github.com/netdata/go.d.plugin/modules/lighttpd"
 	_ "github.com/netdata/go.d.plugin/modules/lighttpd2"
 	_ "github.com/netdata/go.d.plugin/modules/logstash"
