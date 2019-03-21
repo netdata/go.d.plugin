@@ -40,11 +40,30 @@ func New() *KubeProxy {
 }
 
 func newMetrics() *metrics {
-	return &metrics{SyncProxyRulesLatency: make(map[string]mtx.Gauge)}
+	return &metrics{
+		SyncProxyRules: syncProxyRulesMetrics{
+			Latency: make(map[string]mtx.Gauge),
+		},
+		RestClientMetrics: restClientMetrics{
+			HTTPRequestsByStatusCode: make(map[string]mtx.Gauge),
+			HTTPRequestsByMethod:     make(map[string]mtx.Gauge),
+		},
+	}
 }
 
 type metrics struct {
-	SyncProxyRulesLatency map[string]mtx.Gauge `stm:"sync_proxy_rules_latency_microseconds_bucket"`
+	SyncProxyRules    syncProxyRulesMetrics `stm:"sync_proxy_rules"`
+	RestClientMetrics restClientMetrics     `stm:"rest_client"`
+}
+
+type syncProxyRulesMetrics struct {
+	Count   mtx.Gauge            `stm:"count"`
+	Latency map[string]mtx.Gauge `stm:"bucket"`
+}
+
+type restClientMetrics struct {
+	HTTPRequestsByStatusCode map[string]mtx.Gauge `stm:"requests"`
+	HTTPRequestsByMethod     map[string]mtx.Gauge `stm:"requests"`
 }
 
 // Config is the KubeProxy module configuration.
@@ -52,7 +71,7 @@ type Config struct {
 	web.HTTP `yaml:",inline"`
 }
 
-// DockerEngine DockerEngine module.
+// KubeProxy is KubeProxy module.
 type KubeProxy struct {
 	module.Base
 	Config `yaml:",inline"`
@@ -102,19 +121,62 @@ func (kp *KubeProxy) Collect() map[string]int64 {
 		return nil
 	}
 
+	kp.mx.SyncProxyRules.Count.Set(
+		raw.FindByName("kubeproxy_sync_proxy_rules_latency_microseconds_count").Max())
 	kp.collectSyncProxyRuleLatency(raw)
+	kp.collectRestClientHTTPRequests(raw)
 
 	return stm.ToMap(kp.mx)
 }
 
 func (kp *KubeProxy) collectSyncProxyRuleLatency(raw prometheus.Metrics) {
 	metricName := "kubeproxy_sync_proxy_rules_latency_microseconds_bucket"
+
 	for _, metric := range raw.FindByName(metricName) {
 		val := metric.Labels.Get("le")
 		if val == "" {
 			continue
 		}
-		val = strings.Replace(val, ".", "_", -1)
-		kp.mx.SyncProxyRulesLatency[val] = mtx.Gauge(metric.Value)
+		// TODO: FIX
+		newVal := strings.Replace(val, ".", "_", -1)
+		kp.mx.SyncProxyRules.Latency[newVal] = mtx.Gauge(metric.Value)
+	}
+}
+
+func (kp *KubeProxy) collectRestClientHTTPRequests(raw prometheus.Metrics) {
+	metricName := "rest_client_requests_total"
+
+	for _, metric := range raw.FindByName(metricName) {
+		value := metric.Labels.Get("code")
+		m := kp.mx.RestClientMetrics.HTTPRequestsByStatusCode
+
+		if value != "" {
+			if _, ok := m[value]; !ok {
+				chart := kp.charts.Get("rest_client_requests_by_code")
+				_ = chart.AddDim(&Dim{
+					ID:   "rest_client_requests_" + value,
+					Name: value,
+					Algo: module.Incremental,
+				})
+				chart.MarkNotCreated()
+			}
+			m[value] = mtx.Gauge(metric.Value)
+		}
+
+		value = metric.Labels.Get("method")
+		m = kp.mx.RestClientMetrics.HTTPRequestsByMethod
+
+		if value != "" {
+			if _, ok := m[value]; !ok {
+				chart := kp.charts.Get("rest_client_requests_by_method")
+				_ = chart.AddDim(&Dim{
+					ID:   "rest_client_requests_" + value,
+					Name: value,
+					Algo: module.Incremental,
+				})
+				chart.MarkNotCreated()
+			}
+			m[value] = mtx.Gauge(metric.Value)
+		}
 	}
 }
