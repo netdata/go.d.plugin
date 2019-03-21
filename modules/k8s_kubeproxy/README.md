@@ -25,6 +25,12 @@ It produces the following charts:
  * bucket 8192000
  * bucket 16384000
  * bucket +Inf
+ 
+3. **HTTP Requests By Status Code** in requests/s
+ * per code (200, 201, 404, etc.)
+ 
+4. **HTTP Requests By Method** in requests/s
+ * per code (GET, POST, etc.)
 
 ### configuration
 
