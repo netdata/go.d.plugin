@@ -54,6 +54,7 @@ var charts = Charts{
 		Units: "requests/s",
 		Fam:   "rest client",
 		Ctx:   "k8s_kubeproxy.rest_client_requests_by_code",
+		Type:  module.Stacked,
 	},
 	{
 		ID:    "rest_client_requests_by_method",
@@ -61,5 +62,6 @@ var charts = Charts{
 		Units: "requests/s",
 		Fam:   "rest client",
 		Ctx:   "k8s_kubeproxy.rest_client_requests_by_method",
+		Type:  module.Stacked,
 	},
 }
