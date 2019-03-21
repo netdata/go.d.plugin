@@ -47,6 +47,8 @@ jobs:
     url : http://100.64.0.1:10249/metrics
 ```
 
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/k8s_kubeproxy.conf).
+
 Without configuration, module attempts to connect to `http://127.0.0.1:10249/metrics`
 
 ---
