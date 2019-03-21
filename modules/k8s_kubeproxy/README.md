@@ -9,22 +9,7 @@ It produces the following charts:
  * sync proxy rules
 
 2. **Sync Proxy Rules Latency In Microseconds** observes per bucket
- * bucket 1000
- * bucket 2000
- * bucket 4000
- * bucket 8000
- * bucket 16000
- * bucket 32000
- * bucket 64000
- * bucket 128000
- * bucket 256000
- * bucket 512000
- * bucket 1024000
- * bucket 2048000
- * bucket 4096000
- * bucket 8192000
- * bucket 16384000
- * bucket +Inf
+ * per bucket (1000, 2000, 4000, ..., 16384000, +Inf)
  
 3. **HTTP Requests By Status Code** in requests/s
  * per code (200, 201, 404, etc.)
