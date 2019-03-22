@@ -3,7 +3,6 @@ package docker_engine
 import (
 	"time"
 
-	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -24,7 +23,7 @@ func init() {
 	module.Register("docker_engine", creator)
 }
 
-// New creates DockerEngine with default values
+// New creates DockerEngine with default values.
 func New() *DockerEngine {
 	return &DockerEngine{
 		Config: Config{
@@ -51,18 +50,33 @@ type DockerEngine struct {
 type metrics struct {
 	Container struct {
 		Actions struct {
-			Changes mtx.Gauge `stm:"changes"`
-			Commit  mtx.Gauge `stm:"commit"`
-			Create  mtx.Gauge `stm:"create"`
-			Delete  mtx.Gauge `stm:"delete"`
-			Start   mtx.Gauge `stm:"start"`
+			Changes int `stm:"changes"`
+			Commit  int `stm:"commit"`
+			Create  int `stm:"create"`
+			Delete  int `stm:"delete"`
+			Start   int `stm:"start"`
 		} `stm:"actions"`
 		States struct {
-			Paused  mtx.Gauge `stm:"paused"`
-			Running mtx.Gauge `stm:"running"`
-			Stopped mtx.Gauge `stm:"stopped"`
+			Paused  int `stm:"paused"`
+			Running int `stm:"running"`
+			Stopped int `stm:"stopped"`
 		} `stm:"states"`
-	} `stm:""`
+	} `stm:"container"`
+	Builder struct {
+		FailsByReason struct {
+			BuildCanceled                int `stm:"build_canceled"`
+			BuildTargetNotReachableError int `stm:"build_target_not_reachable_error"`
+			CommandNotSupportedError     int `stm:"command_not_supported_error"`
+			DockerfileEmptyError         int `stm:"dockerfile_empty_error"`
+			DockerfileSyntaxError        int `stm:"dockerfile_syntax_error"`
+			ErrorProcessingCommandsError int `stm:"error_processing_commands_error"`
+			MissingOnbuildArgumentsError int `stm:"missing_onbuild_arguments_error"`
+			UnknownInstructionError      int `stm:"unknown_instruction_error"`
+		} `stm:"fails"`
+	} `stm:"builder"`
+	HealthChecks struct {
+		Failed int `stm:"failed"`
+	} `stm:"health_checks"`
 }
 
 // Cleanup makes cleanup.
@@ -91,12 +105,12 @@ func (de DockerEngine) Check() bool {
 	return len(de.Collect()) > 0
 }
 
-// Charts creates Charts
+// Charts creates Charts.
 func (DockerEngine) Charts() *Charts {
 	return charts.Copy()
 }
 
-// Collect collects metrics
+// Collect collects metrics.
 func (de *DockerEngine) Collect() map[string]int64 {
 	raw, err := de.prom.Scrape()
 
@@ -105,50 +119,71 @@ func (de *DockerEngine) Collect() map[string]int64 {
 		return nil
 	}
 
-	var metrics metrics
+	var mx metrics
 
-	gatherContainerActions(raw, &metrics)
-	gatherContainerStates(raw, &metrics)
+	mx.HealthChecks.Failed = int(raw.FindByName("engine_daemon_health_checks_failed_total").Max())
+	collectContainerActions(raw, &mx)
+	collectContainerStates(raw, &mx)
+	collectBuilderBuildsFails(raw, &mx)
 
-	return stm.ToMap(metrics)
+	return stm.ToMap(mx)
 }
 
-func gatherContainerActions(raw prometheus.Metrics, ms *metrics) {
+func collectContainerActions(raw prometheus.Metrics, ms *metrics) {
 	for _, metric := range raw.FindByName("engine_daemon_container_actions_seconds_count") {
 		action := metric.Labels.Get("action")
-		if action == "" {
-			continue
-		}
 		value := metric.Value
 		switch action {
 		case "changes":
-			ms.Container.Actions.Changes.Set(value)
+			ms.Container.Actions.Changes = int(value)
 		case "commit":
-			ms.Container.Actions.Commit.Set(value)
+			ms.Container.Actions.Commit = int(value)
 		case "create":
-			ms.Container.Actions.Create.Set(value)
+			ms.Container.Actions.Create = int(value)
 		case "delete":
-			ms.Container.Actions.Delete.Set(value)
+			ms.Container.Actions.Delete = int(value)
 		case "start":
-			ms.Container.Actions.Start.Set(value)
+			ms.Container.Actions.Start = int(value)
 		}
 	}
 }
 
-func gatherContainerStates(raw prometheus.Metrics, ms *metrics) {
+func collectContainerStates(raw prometheus.Metrics, ms *metrics) {
 	for _, metric := range raw.FindByName("engine_daemon_container_states_containers") {
 		action := metric.Labels.Get("state")
-		if action == "" {
-			continue
-		}
 		value := metric.Value
 		switch action {
 		case "paused":
-			ms.Container.States.Paused.Set(value)
+			ms.Container.States.Paused = int(value)
 		case "running":
-			ms.Container.States.Running.Set(value)
+			ms.Container.States.Running = int(value)
 		case "stopped":
-			ms.Container.States.Stopped.Set(value)
+			ms.Container.States.Stopped = int(value)
+		}
+	}
+}
+
+func collectBuilderBuildsFails(raw prometheus.Metrics, ms *metrics) {
+	for _, metric := range raw.FindByName("builder_builds_failed_total") {
+		action := metric.Labels.Get("reason")
+		value := metric.Value
+		switch action {
+		case "build_canceled":
+			ms.Builder.FailsByReason.BuildCanceled = int(value)
+		case "build_target_not_reachable_error":
+			ms.Builder.FailsByReason.BuildTargetNotReachableError = int(value)
+		case "command_not_supported_error":
+			ms.Builder.FailsByReason.CommandNotSupportedError = int(value)
+		case "dockerfile_empty_error":
+			ms.Builder.FailsByReason.DockerfileEmptyError = int(value)
+		case "dockerfile_syntax_error":
+			ms.Builder.FailsByReason.DockerfileSyntaxError = int(value)
+		case "error_processing_commands_error":
+			ms.Builder.FailsByReason.ErrorProcessingCommandsError = int(value)
+		case "missing_onbuild_arguments_error":
+			ms.Builder.FailsByReason.MissingOnbuildArgumentsError = int(value)
+		case "unknown_instruction_error":
+			ms.Builder.FailsByReason.UnknownInstructionError = int(value)
 		}
 	}
 }
