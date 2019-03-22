@@ -1,13 +1,13 @@
 # HELP builder_builds_failed_total Number of failed image builds
 # TYPE builder_builds_failed_total counter
-builder_builds_failed_total{reason="build_canceled"} 0
-builder_builds_failed_total{reason="build_target_not_reachable_error"} 0
-builder_builds_failed_total{reason="command_not_supported_error"} 0
-builder_builds_failed_total{reason="dockerfile_empty_error"} 0
-builder_builds_failed_total{reason="dockerfile_syntax_error"} 0
-builder_builds_failed_total{reason="error_processing_commands_error"} 0
-builder_builds_failed_total{reason="missing_onbuild_arguments_error"} 0
-builder_builds_failed_total{reason="unknown_instruction_error"} 0
+builder_builds_failed_total{reason="build_canceled"} 1
+builder_builds_failed_total{reason="build_target_not_reachable_error"} 2
+builder_builds_failed_total{reason="command_not_supported_error"} 3
+builder_builds_failed_total{reason="dockerfile_empty_error"} 4
+builder_builds_failed_total{reason="dockerfile_syntax_error"} 5
+builder_builds_failed_total{reason="error_processing_commands_error"} 6
+builder_builds_failed_total{reason="missing_onbuild_arguments_error"} 7
+builder_builds_failed_total{reason="unknown_instruction_error"} 8
 # HELP builder_builds_triggered_total Number of triggered image builds
 # TYPE builder_builds_triggered_total counter
 builder_builds_triggered_total 0
@@ -105,7 +105,7 @@ engine_daemon_events_subscribers_total 0
 engine_daemon_events_total 0
 # HELP engine_daemon_health_checks_failed_total The total number of failed health checks
 # TYPE engine_daemon_health_checks_failed_total counter
-engine_daemon_health_checks_failed_total 0
+engine_daemon_health_checks_failed_total 33
 # HELP engine_daemon_health_checks_total The total number of health checks
 # TYPE engine_daemon_health_checks_total counter
 engine_daemon_health_checks_total 0
