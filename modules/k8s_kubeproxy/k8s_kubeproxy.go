@@ -32,7 +32,6 @@ func New() *KubeProxy {
 	}
 	return &KubeProxy{
 		Config: config,
-		mx:     newMetrics(),
 		charts: charts.Copy(),
 	}
 }
@@ -49,7 +48,6 @@ type KubeProxy struct {
 
 	prom   prometheus.Prometheus
 	charts *Charts
-	mx     *metrics
 }
 
 // Cleanup makes cleanup.

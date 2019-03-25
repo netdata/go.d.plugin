@@ -15,98 +15,91 @@ func (kp *KubeProxy) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	kp.collectSyncProxyRules(raw)
-	kp.collectRESTClientHTTPRequests(raw)
+	mx := newMetrics()
 
-	return stm.ToMap(kp.mx), nil
+	kp.collectSyncProxyRules(raw, mx)
+	kp.collectRESTClientHTTPRequests(raw, mx)
+
+	return stm.ToMap(mx), nil
 }
 
-func (kp *KubeProxy) collectSyncProxyRules(raw prometheus.Metrics) {
-	val := raw.FindByName("kubeproxy_sync_proxy_rules_latency_microseconds_count").Max()
-	kp.mx.SyncProxyRules.Count.Set(val)
-	kp.collectSyncProxyRulesLatency(raw)
+func (kp *KubeProxy) collectSyncProxyRules(raw prometheus.Metrics, mx *metrics) {
+	m := raw.FindByName("kubeproxy_sync_proxy_rules_latency_microseconds_count")
+	mx.SyncProxyRules.Count.Set(m.Max())
+	kp.collectSyncProxyRulesLatency(raw, mx)
 }
 
-func (kp *KubeProxy) collectSyncProxyRulesLatency(raw prometheus.Metrics) {
+func (kp *KubeProxy) collectSyncProxyRulesLatency(raw prometheus.Metrics, mx *metrics) {
 	metricName := "kubeproxy_sync_proxy_rules_latency_microseconds_bucket"
 
 	for _, metric := range raw.FindByName(metricName) {
 		value := metric.Labels.Get("le")
 		switch value {
 		case "1000":
-			kp.mx.SyncProxyRules.Latency.LE1000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE1000.Set(metric.Value)
 		case "2000":
-			kp.mx.SyncProxyRules.Latency.LE2000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE2000.Set(metric.Value)
 		case "4000":
-			kp.mx.SyncProxyRules.Latency.LE4000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE4000.Set(metric.Value)
 		case "8000":
-			kp.mx.SyncProxyRules.Latency.LE8000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE8000.Set(metric.Value)
 		case "16000":
-			kp.mx.SyncProxyRules.Latency.LE16000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE16000.Set(metric.Value)
 		case "32000":
-			kp.mx.SyncProxyRules.Latency.LE32000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE32000.Set(metric.Value)
 		case "64000":
-			kp.mx.SyncProxyRules.Latency.LE64000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE64000.Set(metric.Value)
 		case "128000":
-			kp.mx.SyncProxyRules.Latency.LE128000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE128000.Set(metric.Value)
 		case "256000":
-			kp.mx.SyncProxyRules.Latency.LE256000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE256000.Set(metric.Value)
 		case "512000":
-			kp.mx.SyncProxyRules.Latency.LE512000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE512000.Set(metric.Value)
 		case "1.024e+06":
-			kp.mx.SyncProxyRules.Latency.LE1024000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE1024000.Set(metric.Value)
 		case "2.048e+06":
-			kp.mx.SyncProxyRules.Latency.LE2048000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE2048000.Set(metric.Value)
 		case "4.096e+06":
-			kp.mx.SyncProxyRules.Latency.LE4096000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE4096000.Set(metric.Value)
 		case "8.192e+06":
-			kp.mx.SyncProxyRules.Latency.LE8192000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE8192000.Set(metric.Value)
 		case "1.6384e+07":
-			kp.mx.SyncProxyRules.Latency.LE16384000.Set(metric.Value)
+			mx.SyncProxyRules.Latency.LE16384000.Set(metric.Value)
 		case "+Inf":
-			kp.mx.SyncProxyRules.Latency.Inf.Set(metric.Value)
+			mx.SyncProxyRules.Latency.Inf.Set(metric.Value)
 		}
 	}
 }
 
-func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics) {
+func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics, mx *metrics) {
 	metricName := "rest_client_requests_total"
+	chart := kp.charts.Get("rest_client_requests_by_code")
 
 	for _, metric := range raw.FindByName(metricName) {
 		value := metric.Labels.Get("code")
 		if value == "" {
 			continue
 		}
-		m := kp.mx.RESTClient.HTTPRequests.ByStatusCode
-
-		if _, ok := m[value]; !ok {
-			chart := kp.charts.Get("rest_client_requests_by_code")
-			_ = chart.AddDim(&Dim{
-				ID:   "rest_client_http_requests_" + value,
-				Name: value,
-				Algo: module.Incremental,
-			})
+		dimID := "rest_client_http_requests_" + value
+		if !chart.HasDim(dimID) {
+			_ = chart.AddDim(&Dim{ID: dimID, Name: value, Algo: module.Incremental})
 			chart.MarkNotCreated()
 		}
-		m[value] = mtx.Gauge(metric.Value)
+		mx.RESTClient.HTTPRequests.ByStatusCode[value] = mtx.Gauge(metric.Value)
 	}
 
+	chart = kp.charts.Get("rest_client_requests_by_method")
+
 	for _, metric := range raw.FindByName(metricName) {
-		value := metric.Labels.Get("method")
-		if value == "" {
+		method := metric.Labels.Get("method")
+		if method == "" {
 			continue
 		}
-		m := kp.mx.RESTClient.HTTPRequests.ByMethod
-
-		if _, ok := m[value]; !ok {
-			chart := kp.charts.Get("rest_client_requests_by_method")
-			_ = chart.AddDim(&Dim{
-				ID:   "rest_client_http_requests_" + value,
-				Name: value,
-				Algo: module.Incremental,
-			})
+		dimID := "rest_client_http_requests_" + method
+		if !chart.HasDim(dimID) {
+			_ = chart.AddDim(&Dim{ID: dimID, Name: method, Algo: module.Incremental})
 			chart.MarkNotCreated()
 		}
-		m[value] = mtx.Gauge(metric.Value)
+		mx.RESTClient.HTTPRequests.ByMethod[method] = mtx.Gauge(metric.Value)
 	}
 }
