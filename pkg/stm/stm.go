@@ -104,6 +104,9 @@ func joinPrefix(prefix, key string) string {
 	if prefix == "" {
 		return key
 	}
+	if key == "" {
+		return prefix
+	}
 	return prefix + "_" + key
 }
 
