@@ -8,8 +8,8 @@ It produces the following charts:
 1. **Sync Proxy Rules** in events/s
  * sync proxy rules
 
-2. **Sync Proxy Rules Latency In Microseconds** observes per bucket
- * per bucket (1000, 2000, 4000, ..., 16384000, +Inf)
+2. **Sync Proxy Rules Latency In Microseconds** in observes per bucket
+ * per bucket (0.001 sec, 0.002 sec, 0.003 sec, ..., 16.384 sec, +Inf)
  
 3. **HTTP Requests By Status Code** in requests/s
  * per code (200, 201, 404, etc.)
