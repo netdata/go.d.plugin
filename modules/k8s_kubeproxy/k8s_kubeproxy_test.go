@@ -84,10 +84,10 @@ func TestKubeProxy_Collect(t *testing.T) {
 		"sync_proxy_rules_bucket_8192000":  2669,
 		"sync_proxy_rules_bucket_16384000": 2669,
 		"sync_proxy_rules_bucket_+Inf":     2669,
-		"rest_client_requests_200":         362,
-		"rest_client_requests_POST":        1,
-		"rest_client_requests_GET":         362,
-		"rest_client_requests_201":         1,
+		"rest_client_http_requests_200":    362,
+		"rest_client_http_requests_POST":   1,
+		"rest_client_http_requests_GET":    362,
+		"rest_client_http_requests_201":    1,
 	}
 
 	assert.Equal(t, expected, job.Collect())

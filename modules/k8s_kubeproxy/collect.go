@@ -8,45 +8,6 @@ import (
 	"github.com/netdata/go-orchestrator/module"
 )
 
-func newMetrics() *metrics {
-	return &metrics{
-		RestClientMetrics: restClientMetrics{
-			HTTPRequestsByStatusCode: make(map[string]mtx.Gauge),
-			HTTPRequestsByMethod:     make(map[string]mtx.Gauge),
-		},
-	}
-}
-
-type metrics struct {
-	SyncProxyRules struct {
-		Count   mtx.Gauge `stm:"count"`
-		Latency struct {
-			LE1000     mtx.Gauge `stm:"1000"`
-			LE2000     mtx.Gauge `stm:"2000"`
-			LE4000     mtx.Gauge `stm:"4000"`
-			LE8000     mtx.Gauge `stm:"8000"`
-			LE16000    mtx.Gauge `stm:"16000"`
-			LE32000    mtx.Gauge `stm:"32000"`
-			LE64000    mtx.Gauge `stm:"64000"`
-			LE128000   mtx.Gauge `stm:"128000"`
-			LE256000   mtx.Gauge `stm:"256000"`
-			LE512000   mtx.Gauge `stm:"512000"`
-			LE1024000  mtx.Gauge `stm:"1024000"`
-			LE2048000  mtx.Gauge `stm:"2048000"`
-			LE4096000  mtx.Gauge `stm:"4096000"`
-			LE8192000  mtx.Gauge `stm:"8192000"`
-			LE16384000 mtx.Gauge `stm:"16384000"`
-			Inf        mtx.Gauge `stm:"+Inf"`
-		} `stm:"bucket"`
-	} `stm:"sync_proxy_rules"`
-	RestClientMetrics restClientMetrics `stm:"rest_client"`
-}
-
-type restClientMetrics struct {
-	HTTPRequestsByStatusCode map[string]mtx.Gauge `stm:"requests"`
-	HTTPRequestsByMethod     map[string]mtx.Gauge `stm:"requests"`
-}
-
 func (kp *KubeProxy) collect() (map[string]int64, error) {
 	raw, err := kp.prom.Scrape()
 
@@ -54,16 +15,19 @@ func (kp *KubeProxy) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	kp.mx.SyncProxyRules.Count.Set(
-		raw.FindByName("kubeproxy_sync_proxy_rules_latency_microseconds_count").Max())
-
-	kp.collectSyncProxyRuleLatency(raw)
+	kp.collectSyncProxyRules(raw)
 	kp.collectRESTClientHTTPRequests(raw)
 
 	return stm.ToMap(kp.mx), nil
 }
 
-func (kp *KubeProxy) collectSyncProxyRuleLatency(raw prometheus.Metrics) {
+func (kp *KubeProxy) collectSyncProxyRules(raw prometheus.Metrics) {
+	val := raw.FindByName("kubeproxy_sync_proxy_rules_latency_microseconds_count").Max()
+	kp.mx.SyncProxyRules.Count.Set(val)
+	kp.collectSyncProxyRulesLatency(raw)
+}
+
+func (kp *KubeProxy) collectSyncProxyRulesLatency(raw prometheus.Metrics) {
 	metricName := "kubeproxy_sync_proxy_rules_latency_microseconds_bucket"
 
 	for _, metric := range raw.FindByName(metricName) {
@@ -113,13 +77,12 @@ func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics) {
 		if value == "" {
 			continue
 		}
-
-		m := kp.mx.RestClientMetrics.HTTPRequestsByStatusCode
+		m := kp.mx.RESTClient.HTTPRequests.ByStatusCode
 
 		if _, ok := m[value]; !ok {
 			chart := kp.charts.Get("rest_client_requests_by_code")
 			_ = chart.AddDim(&Dim{
-				ID:   "rest_client_requests_" + value,
+				ID:   "rest_client_http_requests_" + value,
 				Name: value,
 				Algo: module.Incremental,
 			})
@@ -133,13 +96,12 @@ func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics) {
 		if value == "" {
 			continue
 		}
-
-		m := kp.mx.RestClientMetrics.HTTPRequestsByMethod
+		m := kp.mx.RESTClient.HTTPRequests.ByMethod
 
 		if _, ok := m[value]; !ok {
 			chart := kp.charts.Get("rest_client_requests_by_method")
 			_ = chart.AddDim(&Dim{
-				ID:   "rest_client_requests_" + value,
+				ID:   "rest_client_http_requests_" + value,
 				Name: value,
 				Algo: module.Incremental,
 			})
