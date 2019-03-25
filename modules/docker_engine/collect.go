@@ -48,8 +48,8 @@ func collectContainerActions(raw prometheus.Metrics, mx *metrics) {
 
 func collectContainerStates(raw prometheus.Metrics, mx *metrics) {
 	for _, metric := range raw.FindByName("engine_daemon_container_states_containers") {
-		action := metric.Labels.Get("state")
-		switch action {
+		state := metric.Labels.Get("state")
+		switch state {
 		case "paused":
 			mx.Container.States.Paused.Set(metric.Value)
 		case "running":
@@ -62,8 +62,8 @@ func collectContainerStates(raw prometheus.Metrics, mx *metrics) {
 
 func collectBuilderBuildsFails(raw prometheus.Metrics, ms *metrics) {
 	for _, metric := range raw.FindByName("builder_builds_failed_total") {
-		action := metric.Labels.Get("reason")
-		switch action {
+		reason := metric.Labels.Get("reason")
+		switch reason {
 		case "build_canceled":
 			ms.Builder.FailsByReason.BuildCanceled.Set(metric.Value)
 		case "build_target_not_reachable_error":

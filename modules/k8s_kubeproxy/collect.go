@@ -33,8 +33,8 @@ func (kp *KubeProxy) collectSyncProxyRulesLatency(raw prometheus.Metrics, mx *me
 	metricName := "kubeproxy_sync_proxy_rules_latency_microseconds_bucket"
 
 	for _, metric := range raw.FindByName(metricName) {
-		value := metric.Labels.Get("le")
-		switch value {
+		bucket := metric.Labels.Get("le")
+		switch bucket {
 		case "1000":
 			mx.SyncProxyRules.Latency.LE1000.Set(metric.Value)
 		case "2000":
@@ -76,16 +76,16 @@ func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics, mx *m
 	chart := kp.charts.Get("rest_client_requests_by_code")
 
 	for _, metric := range raw.FindByName(metricName) {
-		value := metric.Labels.Get("code")
-		if value == "" {
+		code := metric.Labels.Get("code")
+		if code == "" {
 			continue
 		}
-		dimID := "rest_client_http_requests_" + value
+		dimID := "rest_client_http_requests_" + code
 		if !chart.HasDim(dimID) {
-			_ = chart.AddDim(&Dim{ID: dimID, Name: value, Algo: module.Incremental})
+			_ = chart.AddDim(&Dim{ID: dimID, Name: code, Algo: module.Incremental})
 			chart.MarkNotCreated()
 		}
-		mx.RESTClient.HTTPRequests.ByStatusCode[value] = mtx.Gauge(metric.Value)
+		mx.RESTClient.HTTPRequests.ByStatusCode[code] = mtx.Gauge(metric.Value)
 	}
 
 	chart = kp.charts.Get("rest_client_requests_by_method")
