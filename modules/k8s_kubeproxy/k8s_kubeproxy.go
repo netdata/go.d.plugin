@@ -24,14 +24,14 @@ func init() {
 
 // New creates KubeProxy with default values.
 func New() *KubeProxy {
-	return &KubeProxy{
-		Config: Config{
-			HTTP: web.HTTP{
-				Request: web.Request{URL: defaultURL},
-				Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
-			},
+	config := Config{
+		HTTP: web.HTTP{
+			Request: web.Request{URL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
-		mx:     newMetrics(),
+	}
+	return &KubeProxy{
+		Config: config,
 		charts: charts.Copy(),
 	}
 }
@@ -48,7 +48,6 @@ type KubeProxy struct {
 
 	prom   prometheus.Prometheus
 	charts *Charts
-	mx     *metrics
 }
 
 // Cleanup makes cleanup.

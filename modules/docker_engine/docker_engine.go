@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
-	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -25,13 +24,14 @@ func init() {
 
 // New creates DockerEngine with default values.
 func New() *DockerEngine {
-	return &DockerEngine{
-		Config: Config{
-			HTTP: web.HTTP{
-				Request: web.Request{URL: defaultURL},
-				Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
-			},
+	config := Config{
+		HTTP: web.HTTP{
+			Request: web.Request{URL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
+	}
+	return &DockerEngine{
+		Config: config,
 	}
 }
 
@@ -45,38 +45,6 @@ type DockerEngine struct {
 	module.Base
 	Config `yaml:",inline"`
 	prom   prometheus.Prometheus
-}
-
-type metrics struct {
-	Container struct {
-		Actions struct {
-			Changes int `stm:"changes"`
-			Commit  int `stm:"commit"`
-			Create  int `stm:"create"`
-			Delete  int `stm:"delete"`
-			Start   int `stm:"start"`
-		} `stm:"actions"`
-		States struct {
-			Paused  int `stm:"paused"`
-			Running int `stm:"running"`
-			Stopped int `stm:"stopped"`
-		} `stm:"states"`
-	} `stm:"container"`
-	Builder struct {
-		FailsByReason struct {
-			BuildCanceled                int `stm:"build_canceled"`
-			BuildTargetNotReachableError int `stm:"build_target_not_reachable_error"`
-			CommandNotSupportedError     int `stm:"command_not_supported_error"`
-			DockerfileEmptyError         int `stm:"dockerfile_empty_error"`
-			DockerfileSyntaxError        int `stm:"dockerfile_syntax_error"`
-			ErrorProcessingCommandsError int `stm:"error_processing_commands_error"`
-			MissingOnbuildArgumentsError int `stm:"missing_onbuild_arguments_error"`
-			UnknownInstructionError      int `stm:"unknown_instruction_error"`
-		} `stm:"fails"`
-	} `stm:"builder"`
-	HealthChecks struct {
-		Failed int `stm:"failed"`
-	} `stm:"health_checks"`
 }
 
 // Cleanup makes cleanup.
@@ -112,78 +80,12 @@ func (DockerEngine) Charts() *Charts {
 
 // Collect collects metrics.
 func (de *DockerEngine) Collect() map[string]int64 {
-	raw, err := de.prom.Scrape()
+	mx, err := de.collect()
 
 	if err != nil {
 		de.Error(err)
 		return nil
 	}
 
-	var mx metrics
-
-	mx.HealthChecks.Failed = int(raw.FindByName("engine_daemon_health_checks_failed_total").Max())
-	collectContainerActions(raw, &mx)
-	collectContainerStates(raw, &mx)
-	collectBuilderBuildsFails(raw, &mx)
-
-	return stm.ToMap(mx)
-}
-
-func collectContainerActions(raw prometheus.Metrics, ms *metrics) {
-	for _, metric := range raw.FindByName("engine_daemon_container_actions_seconds_count") {
-		action := metric.Labels.Get("action")
-		value := metric.Value
-		switch action {
-		case "changes":
-			ms.Container.Actions.Changes = int(value)
-		case "commit":
-			ms.Container.Actions.Commit = int(value)
-		case "create":
-			ms.Container.Actions.Create = int(value)
-		case "delete":
-			ms.Container.Actions.Delete = int(value)
-		case "start":
-			ms.Container.Actions.Start = int(value)
-		}
-	}
-}
-
-func collectContainerStates(raw prometheus.Metrics, ms *metrics) {
-	for _, metric := range raw.FindByName("engine_daemon_container_states_containers") {
-		action := metric.Labels.Get("state")
-		value := metric.Value
-		switch action {
-		case "paused":
-			ms.Container.States.Paused = int(value)
-		case "running":
-			ms.Container.States.Running = int(value)
-		case "stopped":
-			ms.Container.States.Stopped = int(value)
-		}
-	}
-}
-
-func collectBuilderBuildsFails(raw prometheus.Metrics, ms *metrics) {
-	for _, metric := range raw.FindByName("builder_builds_failed_total") {
-		action := metric.Labels.Get("reason")
-		value := metric.Value
-		switch action {
-		case "build_canceled":
-			ms.Builder.FailsByReason.BuildCanceled = int(value)
-		case "build_target_not_reachable_error":
-			ms.Builder.FailsByReason.BuildTargetNotReachableError = int(value)
-		case "command_not_supported_error":
-			ms.Builder.FailsByReason.CommandNotSupportedError = int(value)
-		case "dockerfile_empty_error":
-			ms.Builder.FailsByReason.DockerfileEmptyError = int(value)
-		case "dockerfile_syntax_error":
-			ms.Builder.FailsByReason.DockerfileSyntaxError = int(value)
-		case "error_processing_commands_error":
-			ms.Builder.FailsByReason.ErrorProcessingCommandsError = int(value)
-		case "missing_onbuild_arguments_error":
-			ms.Builder.FailsByReason.MissingOnbuildArgumentsError = int(value)
-		case "unknown_instruction_error":
-			ms.Builder.FailsByReason.UnknownInstructionError = int(value)
-		}
-	}
+	return mx
 }
