@@ -1,10 +1,11 @@
 package k8s_kubeproxy
 
 import (
+	"math"
+
 	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
-	"math"
 
 	"github.com/netdata/go-orchestrator/module"
 )
