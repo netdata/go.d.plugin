@@ -25,7 +25,7 @@ var charts = Charts{
 	{
 		ID:    "kubeproxy_sync_proxy_rules_latency_microseconds",
 		Title: "Sync Proxy Rules Latency",
-		Units: "observes/s",
+		Units: "observes",
 		Fam:   "sync proxy rules",
 		Ctx:   "k8s_kubeproxy.kubeproxy_sync_proxy_rules_latency_microseconds",
 		Type:  module.Stacked,
