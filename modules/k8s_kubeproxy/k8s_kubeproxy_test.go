@@ -79,15 +79,18 @@ func TestKubeProxy_Collect(t *testing.T) {
 		"sync_proxy_rules_bucket_256000":   2668,
 		"sync_proxy_rules_bucket_512000":   2669,
 		"sync_proxy_rules_bucket_1024000":  2669,
-		"sync_proxy_rules_bucket_2048000":  2669,
 		"sync_proxy_rules_bucket_4096000":  2669,
 		"sync_proxy_rules_bucket_8192000":  2669,
+		"sync_proxy_rules_bucket_2048000":  2669,
 		"sync_proxy_rules_bucket_16384000": 2669,
 		"sync_proxy_rules_bucket_+Inf":     2669,
-		"rest_client_http_requests_200":    362,
-		"rest_client_http_requests_POST":   1,
-		"rest_client_http_requests_GET":    362,
-		"rest_client_http_requests_201":    1,
+		"rest_client_requests_201":         1,
+		"rest_client_requests_200":         362,
+		"rest_client_requests_GET":         362,
+		"rest_client_requests_POST":        1,
+		"http_request_duration_05":         1515,
+		"http_request_duration_09":         3939,
+		"http_request_duration_099":        9464,
 	}
 
 	assert.Equal(t, expected, job.Collect())
