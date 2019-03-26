@@ -4,6 +4,7 @@ import (
 	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
+	"math"
 
 	"github.com/netdata/go-orchestrator/module"
 )
@@ -19,6 +20,7 @@ func (kp *KubeProxy) collect() (map[string]int64, error) {
 
 	kp.collectSyncProxyRules(raw, mx)
 	kp.collectRESTClientHTTPRequests(raw, mx)
+	kp.collectHTTPRequestDuration(raw, mx)
 
 	return stm.ToMap(mx), nil
 }
@@ -80,12 +82,12 @@ func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics, mx *m
 		if code == "" {
 			continue
 		}
-		dimID := "rest_client_http_requests_" + code
+		dimID := "rest_client_requests_" + code
 		if !chart.HasDim(dimID) {
 			_ = chart.AddDim(&Dim{ID: dimID, Name: code, Algo: module.Incremental})
 			chart.MarkNotCreated()
 		}
-		mx.RESTClient.HTTPRequests.ByStatusCode[code] = mtx.Gauge(metric.Value)
+		mx.RESTClient.Requests.ByStatusCode[code] = mtx.Gauge(metric.Value)
 	}
 
 	chart = kp.charts.Get("rest_client_requests_by_method")
@@ -95,11 +97,29 @@ func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics, mx *m
 		if method == "" {
 			continue
 		}
-		dimID := "rest_client_http_requests_" + method
+		dimID := "rest_client_requests_" + method
 		if !chart.HasDim(dimID) {
 			_ = chart.AddDim(&Dim{ID: dimID, Name: method, Algo: module.Incremental})
 			chart.MarkNotCreated()
 		}
-		mx.RESTClient.HTTPRequests.ByMethod[method] = mtx.Gauge(metric.Value)
+		mx.RESTClient.Requests.ByMethod[method] = mtx.Gauge(metric.Value)
+	}
+}
+
+func (kp *KubeProxy) collectHTTPRequestDuration(raw prometheus.Metrics, mx *metrics) {
+	// Summary
+	for _, metric := range raw.FindByName("http_request_duration_microseconds") {
+		if math.IsNaN(metric.Value) {
+			continue
+		}
+		quantile := metric.Labels.Get("quantile")
+		switch quantile {
+		case "0.5":
+			mx.HTTP.Request.Duration.Quantile05.Set(metric.Value)
+		case "0.9":
+			mx.HTTP.Request.Duration.Quantile09.Set(metric.Value)
+		case "0.99":
+			mx.HTTP.Request.Duration.Quantile099.Set(metric.Value)
+		}
 	}
 }

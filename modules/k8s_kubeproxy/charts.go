@@ -64,4 +64,17 @@ var charts = Charts{
 		Ctx:   "k8s_kubeproxy.rest_client_requests_by_method",
 		Type:  module.Stacked,
 	},
+	{
+		ID:    "http_request_duration",
+		Title: "HTTP Requests Duration",
+		Units: "microseconds",
+		Fam:   "http",
+		Ctx:   "k8s_kubeproxy.http_request_duration",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "http_request_duration_05", Name: "0.5"},
+			{ID: "http_request_duration_09", Name: "0.9"},
+			{ID: "http_request_duration_099", Name: "0.99"},
+		},
+	},
 }

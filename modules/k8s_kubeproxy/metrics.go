@@ -1,15 +1,14 @@
 package k8s_kubeproxy
 
 import (
-	"reflect"
-
 	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 )
 
 func newMetrics() *metrics {
 	var mx metrics
-	value := reflect.Indirect(reflect.ValueOf(&mx))
-	setMetrics(value, value.Type())
+	mx.RESTClient.Requests.ByStatusCode = make(map[string]mtx.Gauge)
+	mx.RESTClient.Requests.ByMethod = make(map[string]mtx.Gauge)
+
 	return &mx
 }
 
@@ -36,29 +35,18 @@ type metrics struct {
 		} `stm:"bucket"`
 	} `stm:"sync_proxy_rules"`
 	RESTClient struct {
-		HTTPRequests struct {
+		Requests struct {
 			ByStatusCode map[string]mtx.Gauge `stm:""`
 			ByMethod     map[string]mtx.Gauge `stm:""`
-		} `stm:"http_requests"`
+		} `stm:"requests"`
 	} `stm:"rest_client"`
-}
-
-func setMetrics(v reflect.Value, t reflect.Type) {
-	for i := 0; i < t.NumField(); i++ {
-		ft := t.Field(i)
-		if ft.Type.Kind() == reflect.Struct {
-			setMetrics(v.Field(i), ft.Type)
-		}
-		if ft.Type.Kind() != reflect.Map {
-			continue
-		}
-		value := v.Field(i)
-		if !value.IsNil() {
-			continue
-		}
-		switch value.Interface().(type) {
-		case map[string]mtx.Gauge:
-			value.Set(reflect.ValueOf(map[string]mtx.Gauge{}))
-		}
-	}
+	HTTP struct {
+		Request struct {
+			Duration struct {
+				Quantile05  mtx.Gauge `stm:"05"`
+				Quantile09  mtx.Gauge `stm:"09"`
+				Quantile099 mtx.Gauge `stm:"099"`
+			} `stm:"duration"`
+		} `stm:"request"`
+	} `stm:"http"`
 }
