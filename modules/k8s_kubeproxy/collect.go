@@ -72,6 +72,21 @@ func (kp *KubeProxy) collectSyncProxyRulesLatency(raw prometheus.Metrics, mx *me
 			mx.SyncProxyRules.Latency.Inf.Set(metric.Value)
 		}
 	}
+	mx.SyncProxyRules.Latency.Inf.Sub(mx.SyncProxyRules.Latency.LE16384000.Value())
+	mx.SyncProxyRules.Latency.LE16384000.Sub(mx.SyncProxyRules.Latency.LE8192000.Value())
+	mx.SyncProxyRules.Latency.LE8192000.Sub(mx.SyncProxyRules.Latency.LE4096000.Value())
+	mx.SyncProxyRules.Latency.LE4096000.Sub(mx.SyncProxyRules.Latency.LE2048000.Value())
+	mx.SyncProxyRules.Latency.LE2048000.Sub(mx.SyncProxyRules.Latency.LE1024000.Value())
+	mx.SyncProxyRules.Latency.LE1024000.Sub(mx.SyncProxyRules.Latency.LE512000.Value())
+	mx.SyncProxyRules.Latency.LE512000.Sub(mx.SyncProxyRules.Latency.LE256000.Value())
+	mx.SyncProxyRules.Latency.LE256000.Sub(mx.SyncProxyRules.Latency.LE128000.Value())
+	mx.SyncProxyRules.Latency.LE128000.Sub(mx.SyncProxyRules.Latency.LE64000.Value())
+	mx.SyncProxyRules.Latency.LE64000.Sub(mx.SyncProxyRules.Latency.LE32000.Value())
+	mx.SyncProxyRules.Latency.LE32000.Sub(mx.SyncProxyRules.Latency.LE16000.Value())
+	mx.SyncProxyRules.Latency.LE16000.Sub(mx.SyncProxyRules.Latency.LE8000.Value())
+	mx.SyncProxyRules.Latency.LE8000.Sub(mx.SyncProxyRules.Latency.LE4000.Value())
+	mx.SyncProxyRules.Latency.LE4000.Sub(mx.SyncProxyRules.Latency.LE2000.Value())
+	mx.SyncProxyRules.Latency.LE2000.Sub(mx.SyncProxyRules.Latency.LE1000.Value())
 }
 
 func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics, mx *metrics) {
