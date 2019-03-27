@@ -8,14 +8,20 @@ It produces the following charts:
 1. **Sync Proxy Rules** in events/s
  * sync proxy rules
 
-2. **Sync Proxy Rules Latency In Microseconds** in observes per bucket
+2. **Sync Proxy Rules Latency** in observes/s
  * per bucket (0.001 sec, 0.002 sec, 0.003 sec, ..., 16.384 sec, +Inf)
  
-3. **HTTP Requests By Status Code** in requests/s
- * per code (200, 201, 404, etc.)
+3. **Sync Proxy Rules Latency Percentage** in %
+ * per bucket (0.001 sec, 0.002 sec, 0.003 sec, ..., 16.384 sec, +Inf)
  
-4. **HTTP Requests By Method** in requests/s
- * per code (GET, POST, etc.)
+3. **REST Client HTTP Requests By Status Code** in requests/s
+ * per code (200, 201, 404, ...)
+ 
+4. **REST Client HTTP Requests By Method** in requests/s
+ * per code (GET, POST, ...)
+ 
+5. **HTTP Requests Duration** in microseconds
+ * per quantile (0.5, 0.9, 0.99)
 
 ### configuration
 
