@@ -15,6 +15,7 @@ var charts = Charts{
 		Title: "Container Actions",
 		Units: "actions/s",
 		Fam:   "containers",
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "container_actions_changes", Name: "changes", Algo: module.Incremental},
 			{ID: "container_actions_commit", Name: "commit", Algo: module.Incremental},
@@ -28,6 +29,7 @@ var charts = Charts{
 		Title: "Containers In Various States",
 		Units: "count",
 		Fam:   "containers",
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "container_states_running", Name: "running"},
 			{ID: "container_states_paused", Name: "paused"},
@@ -39,6 +41,7 @@ var charts = Charts{
 		Title: "Builder Builds Fails By Reason",
 		Units: "fails/s",
 		Fam:   "builder",
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "builder_fails_build_canceled", Name: "build_canceled", Algo: module.Incremental},
 			{ID: "builder_fails_build_target_not_reachable_error", Name: "build_target_not_reachable_error", Algo: module.Incremental},
