@@ -4,7 +4,7 @@ This module will monitor one or more kubelet instances.
 
 It produces the following charts (if all data is available):
 
-1. **API Server Audit Requests** in requests
+1. **API Server Audit Requests** in requests/s
  * rejected
 
 2. **API Server Failed Data Encryption Key(DEK) Generation Operations** in events/s
@@ -25,39 +25,35 @@ It produces the following charts (if all data is available):
 7. **Number Of Pods Currently Running** in running pods
  * total
  
-7. **Runtime Operations By Type** in operations/s
+8. **Runtime Operations By Type** in operations/s
  * per operation type
  
-8. **Docker Operations By Type** in operations/s
+9. **Docker Operations By Type** in operations/s
  * per operation type
  
-9. **Docker Operations Errors By Type** in operations/s
+10. **Docker Operations Errors By Type** in operations/s
  * per operation error type
  
-10. **Node Configuration-Related Error** in bool
+11. **Node Configuration-Related Error** in bool
  * experiencing error
  
-11. **PLEG Relisting Interval Summary** in microseconds per quantile
- * 0.5
- * 0.9
- * 0.99
+12. **PLEG Relisting Interval Summary** in microseconds
+ * per quantile (0.5, 0.9, 0.99)
  
-12. **PLEG Relisting Latency Summary** in microseconds per quantile
- * 0.5
- * 0.9
- * 0.99
+13. **PLEG Relisting Latency Summary** in microseconds
+ * per quantile (0.5, 0.9, 0.99)
  
-13. **Token() Requests To The Alternate Token Source** in token requests/s
+14. **Token() Requests To The Alternate Token Source** in token requests/s
  * total
  * failed
  
-14. **REST Client HTTP Requests By Status Code** in requests/s
+15. **REST Client HTTP Requests By Status Code** in requests/s
  * per status code (200, 201, etc.)
  
-15. **REST Client HTTP Requests By Method** in requests/s
+16. **REST Client HTTP Requests By Method** in requests/s
  * per http method (GET, POST, etc.)
  
-16. **Volume Manager State Of The World** per every plugin in state of the world
+17. **Volume Manager State Of The World** per every plugin in state of the world
  * actual
  * desired
  
