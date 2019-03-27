@@ -31,6 +31,8 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)
  - [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius) *
  - [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck) *
+ - [k8s_kubelet](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubelet)
+ - [k8s_kubeproxy](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubeproxy)
  - [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd) *
  - [lighttpd2](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd2)
  - [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)
