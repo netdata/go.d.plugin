@@ -34,59 +34,62 @@ func (kp *KubeProxy) collectSyncProxyRules(raw prometheus.Metrics, mx *metrics) 
 
 func (kp *KubeProxy) collectSyncProxyRulesLatency(raw prometheus.Metrics, mx *metrics) {
 	metricName := "kubeproxy_sync_proxy_rules_latency_microseconds_bucket"
+	latency := &mx.SyncProxyRules.Latency
 
 	for _, metric := range raw.FindByName(metricName) {
 		bucket := metric.Labels.Get("le")
+		value := metric.Value
 		switch bucket {
 		case "1000":
-			mx.SyncProxyRules.Latency.LE1000.Set(metric.Value)
+			latency.LE1000.Set(value)
 		case "2000":
-			mx.SyncProxyRules.Latency.LE2000.Set(metric.Value)
+			latency.LE2000.Set(value)
 		case "4000":
-			mx.SyncProxyRules.Latency.LE4000.Set(metric.Value)
+			latency.LE4000.Set(value)
 		case "8000":
-			mx.SyncProxyRules.Latency.LE8000.Set(metric.Value)
+			latency.LE8000.Set(value)
 		case "16000":
-			mx.SyncProxyRules.Latency.LE16000.Set(metric.Value)
+			latency.LE16000.Set(value)
 		case "32000":
-			mx.SyncProxyRules.Latency.LE32000.Set(metric.Value)
+			latency.LE32000.Set(value)
 		case "64000":
-			mx.SyncProxyRules.Latency.LE64000.Set(metric.Value)
+			latency.LE64000.Set(value)
 		case "128000":
-			mx.SyncProxyRules.Latency.LE128000.Set(metric.Value)
+			latency.LE128000.Set(value)
 		case "256000":
-			mx.SyncProxyRules.Latency.LE256000.Set(metric.Value)
+			latency.LE256000.Set(value)
 		case "512000":
-			mx.SyncProxyRules.Latency.LE512000.Set(metric.Value)
+			latency.LE512000.Set(value)
 		case "1.024e+06":
-			mx.SyncProxyRules.Latency.LE1024000.Set(metric.Value)
+			latency.LE1024000.Set(value)
 		case "2.048e+06":
-			mx.SyncProxyRules.Latency.LE2048000.Set(metric.Value)
+			latency.LE2048000.Set(value)
 		case "4.096e+06":
-			mx.SyncProxyRules.Latency.LE4096000.Set(metric.Value)
+			latency.LE4096000.Set(value)
 		case "8.192e+06":
-			mx.SyncProxyRules.Latency.LE8192000.Set(metric.Value)
+			latency.LE8192000.Set(value)
 		case "1.6384e+07":
-			mx.SyncProxyRules.Latency.LE16384000.Set(metric.Value)
+			latency.LE16384000.Set(value)
 		case "+Inf":
-			mx.SyncProxyRules.Latency.Inf.Set(metric.Value)
+			latency.Inf.Set(value)
 		}
 	}
-	mx.SyncProxyRules.Latency.Inf.Sub(mx.SyncProxyRules.Latency.LE16384000.Value())
-	mx.SyncProxyRules.Latency.LE16384000.Sub(mx.SyncProxyRules.Latency.LE8192000.Value())
-	mx.SyncProxyRules.Latency.LE8192000.Sub(mx.SyncProxyRules.Latency.LE4096000.Value())
-	mx.SyncProxyRules.Latency.LE4096000.Sub(mx.SyncProxyRules.Latency.LE2048000.Value())
-	mx.SyncProxyRules.Latency.LE2048000.Sub(mx.SyncProxyRules.Latency.LE1024000.Value())
-	mx.SyncProxyRules.Latency.LE1024000.Sub(mx.SyncProxyRules.Latency.LE512000.Value())
-	mx.SyncProxyRules.Latency.LE512000.Sub(mx.SyncProxyRules.Latency.LE256000.Value())
-	mx.SyncProxyRules.Latency.LE256000.Sub(mx.SyncProxyRules.Latency.LE128000.Value())
-	mx.SyncProxyRules.Latency.LE128000.Sub(mx.SyncProxyRules.Latency.LE64000.Value())
-	mx.SyncProxyRules.Latency.LE64000.Sub(mx.SyncProxyRules.Latency.LE32000.Value())
-	mx.SyncProxyRules.Latency.LE32000.Sub(mx.SyncProxyRules.Latency.LE16000.Value())
-	mx.SyncProxyRules.Latency.LE16000.Sub(mx.SyncProxyRules.Latency.LE8000.Value())
-	mx.SyncProxyRules.Latency.LE8000.Sub(mx.SyncProxyRules.Latency.LE4000.Value())
-	mx.SyncProxyRules.Latency.LE4000.Sub(mx.SyncProxyRules.Latency.LE2000.Value())
-	mx.SyncProxyRules.Latency.LE2000.Sub(mx.SyncProxyRules.Latency.LE1000.Value())
+
+	latency.Inf.Sub(latency.LE16384000.Value())
+	latency.LE16384000.Sub(latency.LE8192000.Value())
+	latency.LE8192000.Sub(latency.LE4096000.Value())
+	latency.LE4096000.Sub(latency.LE2048000.Value())
+	latency.LE2048000.Sub(latency.LE1024000.Value())
+	latency.LE1024000.Sub(latency.LE512000.Value())
+	latency.LE512000.Sub(latency.LE256000.Value())
+	latency.LE256000.Sub(latency.LE128000.Value())
+	latency.LE128000.Sub(latency.LE64000.Value())
+	latency.LE64000.Sub(latency.LE32000.Value())
+	latency.LE32000.Sub(latency.LE16000.Value())
+	latency.LE16000.Sub(latency.LE8000.Value())
+	latency.LE8000.Sub(latency.LE4000.Value())
+	latency.LE4000.Sub(latency.LE2000.Value())
+	latency.LE2000.Sub(latency.LE1000.Value())
 }
 
 func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics, mx *metrics) {
