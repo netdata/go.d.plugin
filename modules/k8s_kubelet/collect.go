@@ -125,41 +125,60 @@ func (k *Kubelet) collectPLEGRelisting(raw prometheus.Metrics, mx *metrics) {
 }
 
 func (k *Kubelet) collectStorageDataKeyGenerationLatencies(raw prometheus.Metrics, mx *metrics) {
-	for _, metric := range raw.FindByName("apiserver_storage_data_key_generation_latencies_microseconds_bucket") {
+	latencies := &mx.APIServer.Storage.DataKeyGeneration.Latencies
+	metricName := "apiserver_storage_data_key_generation_latencies_microseconds_bucket"
+
+	for _, metric := range raw.FindByName(metricName) {
+		value := metric.Value
 		bucket := metric.Labels.Get("le")
 		switch bucket {
 		case "5":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE5.Set(metric.Value)
+			latencies.LE5.Set(value)
 		case "10":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE10.Set(metric.Value)
+			latencies.LE10.Set(value)
 		case "20":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE20.Set(metric.Value)
+			latencies.LE20.Set(value)
 		case "40":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE40.Set(metric.Value)
+			latencies.LE40.Set(value)
 		case "80":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE80.Set(metric.Value)
+			latencies.LE80.Set(value)
 		case "160":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE160.Set(metric.Value)
+			latencies.LE160.Set(value)
 		case "320":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE320.Set(metric.Value)
+			latencies.LE320.Set(value)
 		case "640":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE640.Set(metric.Value)
+			latencies.LE640.Set(value)
 		case "1280":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE1280.Set(metric.Value)
+			latencies.LE1280.Set(value)
 		case "2560":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE2560.Set(metric.Value)
+			latencies.LE2560.Set(value)
 		case "5120":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE5120.Set(metric.Value)
+			latencies.LE5120.Set(value)
 		case "10240":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE10240.Set(metric.Value)
+			latencies.LE10240.Set(value)
 		case "20480":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE20480.Set(metric.Value)
+			latencies.LE20480.Set(value)
 		case "40960":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LE40960.Set(metric.Value)
+			latencies.LE40960.Set(value)
 		case "+Inf":
-			mx.APIServer.Storage.DataKeyGeneration.Latencies.LEInf.Set(metric.Value)
+			latencies.LEInf.Set(value)
 		}
 	}
+
+	latencies.LEInf.Sub(latencies.LE40960.Value())
+	latencies.LE40960.Sub(latencies.LE20480.Value())
+	latencies.LE20480.Sub(latencies.LE10240.Value())
+	latencies.LE10240.Sub(latencies.LE5120.Value())
+	latencies.LE5120.Sub(latencies.LE2560.Value())
+	latencies.LE2560.Sub(latencies.LE1280.Value())
+	latencies.LE1280.Sub(latencies.LE640.Value())
+	latencies.LE640.Sub(latencies.LE320.Value())
+	latencies.LE320.Sub(latencies.LE160.Value())
+	latencies.LE160.Sub(latencies.LE80.Value())
+	latencies.LE80.Sub(latencies.LE40.Value())
+	latencies.LE40.Sub(latencies.LE20.Value())
+	latencies.LE20.Sub(latencies.LE10.Value())
+	latencies.LE10.Sub(latencies.LE5.Value())
 }
 
 func (k *Kubelet) collectRESTClientHTTPRequests(raw prometheus.Metrics, mx *metrics) {
