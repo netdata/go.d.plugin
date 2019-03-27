@@ -37,7 +37,7 @@ var charts = Charts{
 	{
 		ID:    "apiserver_storage_data_key_generation_latencies",
 		Title: "API Server Latencies Of Data Encryption Key(DEK) Generation Operations",
-		Units: "observes",
+		Units: "observes/s",
 		Fam:   "api server",
 		Ctx:   "k8s_kubelet.apiserver_storage_data_key_generation_latencies",
 		Type:  module.Stacked,
