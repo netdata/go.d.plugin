@@ -23,17 +23,16 @@ fi
 
 HUB_VERSION=${HUB_VERSION:-"2.7.0"}
 
-echo "--- Download hub version: $HUB_VERSION ---"
+echo "--- Download hub version: ${HUB_VERSION} ---"
 wget "https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-amd64-${HUB_VERSION}.tgz" -O "/tmp/hub-linux-amd64-${HUB_VERSION}.tgz"
 tar -C /tmp -xvf "/tmp/hub-linux-amd64-${HUB_VERSION}.tgz"
 export PATH=$PATH:"/tmp/hub-linux-amd64-${HUB_VERSION}/bin"
 
-# TODO: Why?
 set +e
 
 for i in bin/*; do
-	echo "--- Call hub to Release $TRAVIS_TAG for $i ---"
-	hub release edit -a "$i" -m "${TRAVIS_TAG}" "${TRAVIS_TAG}"
+	echo "--- Call hub to Release ${TRAVIS_TAG} for ${i} ---"
+	hub release edit -a "${i}" -m "${TRAVIS_TAG}" "${TRAVIS_TAG}"
 	sleep 2
 done
 

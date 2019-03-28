@@ -34,7 +34,7 @@ echo "--- Initialize git configuration ---"
 git config user.email "${GIT_MAIL}"
 git config user.name "${GIT_USER}"
 
-echo "--- Cloning $NETDATA_GIT_URL --- "
+echo "--- Cloning ${NETDATA_GIT_URL} --- "
 git clone "${NETDATA_GIT_URL}" "${LOCAL_NETDATA_DIR}"
 cd "${LOCAL_NETDATA_DIR}"
 
