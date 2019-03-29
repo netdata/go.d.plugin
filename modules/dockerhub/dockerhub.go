@@ -57,11 +57,11 @@ func (DockerHub) Cleanup() {}
 // Init makes initialization.
 func (dh *DockerHub) Init() bool {
 	if dh.URL == "" {
-		dh.Error("URL parameter is mandatory, please set")
+		dh.Error("URL parameter is not set")
 		return false
 	}
 	if len(dh.Repositories) == 0 {
-		dh.Error("repositories parameter mandatory, please set")
+		dh.Error("repositories parameter is not set")
 		return false
 	}
 
