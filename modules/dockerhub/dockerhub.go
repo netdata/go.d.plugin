@@ -33,7 +33,6 @@ func New() *DockerHub {
 	}
 	return &DockerHub{
 		Config: config,
-		//Repositories: []string{"netdata/netdata", "titpetric/netdata", "firehol/netdata"},
 	}
 }
 
