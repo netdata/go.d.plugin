@@ -39,14 +39,13 @@ func New() *DockerHub {
 // Config is the DockerHub module configuration.
 type Config struct {
 	web.HTTP `yaml:",inline"`
+	Repositories []string
 }
 
 // DockerHub DockerHub module.
 type DockerHub struct {
 	module.Base
 	Config       `yaml:",inline"`
-	Repositories []string
-
 	client *apiClient
 }
 
