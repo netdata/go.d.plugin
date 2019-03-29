@@ -11,7 +11,7 @@ import (
 const (
 	defaultURL         = "https://hub.docker.com/v2/repositories"
 	defaultHTTPTimeout = time.Second * 2
-	defaultUpdateEvery = 1
+	defaultUpdateEvery = 5
 )
 
 func init() {
