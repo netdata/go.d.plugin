@@ -1,8 +1,8 @@
 * @ilyam8
 
-.github/ @paulfantom @ilyam8
-.travis/ @paulfantom
-hack/ @paulfantom
+.github/ @paulkatsoulakis @ilyam8
+.travis/ @paulkatsoulakis
+hack/ @paulkatsoulakis
 
-.travis.yml @paulfantom
-Makefile @paulfantom @ilyam8
+.travis.yml @paulkatsoulakis
+Makefile @paulkatsoulakis @ilyam8
