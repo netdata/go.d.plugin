@@ -27,20 +27,20 @@ func TestNew(t *testing.T) {
 	assert.Nil(t, job.client)
 }
 
-func TestDockerEngine_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
+func TestDockerHub_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
 
-func TestDockerEngine_Cleanup(t *testing.T) { New().Cleanup() }
+func TestDockerHub_Cleanup(t *testing.T) { New().Cleanup() }
 
-func TestDockerEngine_Init(t *testing.T) {
+func TestDockerHub_Init(t *testing.T) {
 	job := New()
 	job.Repositories = []string{"name/repo"}
 	assert.True(t, job.Init())
 	assert.NotNil(t, job.client)
 }
 
-func TestDockerEngine_InitNG(t *testing.T) { assert.False(t, New().Init()) }
+func TestDockerHub_InitNG(t *testing.T) { assert.False(t, New().Init()) }
 
-func TestDockerEngine_Check(t *testing.T) {
+func TestDockerHub_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +62,7 @@ func TestDockerEngine_Check(t *testing.T) {
 	assert.True(t, job.Check())
 }
 
-func TestDockerEngine_CheckNG(t *testing.T) {
+func TestDockerHub_CheckNG(t *testing.T) {
 	job := New()
 	job.URL = "http://127.0.0.1:38001/metrics"
 	job.Repositories = []string{"name1/repo1", "name2/repo2", "name3/repo3"}
@@ -70,7 +70,7 @@ func TestDockerEngine_CheckNG(t *testing.T) {
 	assert.False(t, job.Check())
 }
 
-func TestDockerEngine_Collect(t *testing.T) {
+func TestDockerHub_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -114,7 +114,7 @@ func TestDockerEngine_Collect(t *testing.T) {
 	assert.Equal(t, expected, collected)
 }
 
-func TestDockerEngine_InvalidData(t *testing.T) {
+func TestDockerHub_InvalidData(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -129,7 +129,7 @@ func TestDockerEngine_InvalidData(t *testing.T) {
 	assert.False(t, job.Check())
 }
 
-func TestDockerEngine_404(t *testing.T) {
+func TestDockerHub_404(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
