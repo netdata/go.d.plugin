@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"runtime"
 	"strconv"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
@@ -199,6 +200,19 @@ func (w *WebLog) Charts() *module.Charts {
 }
 
 func (w *WebLog) Collect() map[string]int64 {
+	defer func() {
+		if err := recover(); err != nil {
+			w.Errorf("[ERROR] %s\n", err)
+			for depth := 0; ; depth++ {
+				_, file, line, ok := runtime.Caller(depth)
+				if !ok {
+					break
+				}
+				w.Errorf("======> %d: %v:%d", depth, file, line)
+			}
+			panic(err)
+		}
+	}()
 	w.metrics.Reset()
 
 	for {
@@ -325,7 +339,7 @@ func (w *WebLog) initLogReader() error {
 
 func (w *WebLog) initFilter() (err error) {
 	if w.filter, err = NewFilter(w.Filter); err != nil {
-		err = fmt.Errorf("error on creating filter %s: %s", w.Filter, err)
+		err = fmt.Errorf("error on creating filter %s: %v", w.Filter, err)
 	}
 	return
 }
@@ -334,7 +348,7 @@ func (w *WebLog) initCategories() error {
 	for _, raw := range w.URLCategories {
 		cat, err := NewCategory(raw)
 		if err != nil {
-			return fmt.Errorf("error on creating Category %s : %s", raw, err)
+			return fmt.Errorf("error on creating Category %s: %v", raw, err)
 		}
 		w.urlCategories = append(w.urlCategories, cat)
 	}
@@ -342,7 +356,7 @@ func (w *WebLog) initCategories() error {
 	for _, raw := range w.UserCategories {
 		cat, err := NewCategory(raw)
 		if err != nil {
-			return fmt.Errorf("error on creating Category %s : %s", raw, err)
+			return fmt.Errorf("error on creating Category %s: %v", raw, err)
 		}
 		w.userCategories = append(w.userCategories, cat)
 	}

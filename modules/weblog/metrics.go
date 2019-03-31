@@ -44,6 +44,7 @@ func NewMetricsData(config Config) *MetricsData {
 	return &MetricsData{
 		RespCode:             metrics.NewCounterVec(),
 		ReqMethod:            metrics.NewCounterVec(),
+		ReqVersion:           metrics.NewCounterVec(),
 		RespTime:             metrics.NewSummary(),
 		RespTimeHist:         metrics.NewHistogram(config.Histogram),
 		RespTimeUpstream:     metrics.NewSummary(),
