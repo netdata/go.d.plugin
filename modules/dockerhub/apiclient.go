@@ -1,0 +1,72 @@
+package dockerhub
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"net/http"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
+)
+
+type repository struct {
+	User        string
+	Name        string
+	Status      int
+	StarCount   int    `json:"star_count"`
+	PullCount   int    `json:"pull_count"`
+	LastUpdated string `json:"last_updated"`
+}
+
+func newAPIClient(client *http.Client, request web.Request) *apiClient {
+	return &apiClient{httpClient: client, request: request}
+}
+
+type apiClient struct {
+	httpClient *http.Client
+	request    web.Request
+}
+
+func (a apiClient) getRepository(repoName string) (*repository, error) {
+	a.request.URI = repoName
+	req, err := web.NewHTTPRequest(a.request)
+
+	if err != nil {
+		return nil, fmt.Errorf("error on creating http request : %v", err)
+	}
+
+	resp, err := a.doRequestOK(req)
+
+	defer closeBody(resp)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var repo repository
+
+	if err := json.NewDecoder(resp.Body).Decode(&repo); err != nil {
+		return nil, fmt.Errorf("error on parsing response from %s : %v", req.URL, err)
+	}
+
+	return &repo, nil
+}
+
+func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
+	resp, err := a.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error on request: %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+	}
+	return resp, nil
+}
+
+func closeBody(resp *http.Response) {
+	if resp != nil && resp.Body != nil {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}
+}

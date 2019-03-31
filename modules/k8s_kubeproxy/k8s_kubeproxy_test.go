@@ -1,4 +1,4 @@
-package docker_engine
+package k8s_kubeproxy
 
 import (
 	"io/ioutil"
@@ -15,24 +15,24 @@ var testMetrics, _ = ioutil.ReadFile("testdata/metrics.txt")
 func TestNew(t *testing.T) {
 	job := New()
 
-	assert.IsType(t, (*DockerEngine)(nil), job)
+	assert.IsType(t, (*KubeProxy)(nil), job)
 	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
-func TestDockerEngine_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
+func TestKubeProxy_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
 
-func TestDockerEngine_Cleanup(t *testing.T) { New().Cleanup() }
+func TestKubeProxy_Cleanup(t *testing.T) { New().Cleanup() }
 
-func TestDockerEngine_Init(t *testing.T) { assert.True(t, New().Init()) }
+func TestKubeProxy_Init(t *testing.T) { assert.True(t, New().Init()) }
 
-func TestDockerEngine_InitNG(t *testing.T) {
+func TestKubeProxy_InitNG(t *testing.T) {
 	job := New()
 	job.URL = ""
 	assert.False(t, job.Init())
 }
 
-func TestDockerEngine_Check(t *testing.T) {
+func TestKubeProxy_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -46,14 +46,14 @@ func TestDockerEngine_Check(t *testing.T) {
 	assert.True(t, job.Check())
 }
 
-func TestDockerEngine_CheckNG(t *testing.T) {
+func TestKubeProxy_CheckNG(t *testing.T) {
 	job := New()
 	job.URL = "http://127.0.0.1:38001/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
 
-func TestDockerEngine_Collect(t *testing.T) {
+func TestKubeProxy_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -67,29 +67,36 @@ func TestDockerEngine_Collect(t *testing.T) {
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
-		"container_actions_changes":                      1,
-		"container_actions_start":                        1,
-		"container_actions_commit":                       1,
-		"container_actions_delete":                       1,
-		"container_actions_create":                       1,
-		"container_states_paused":                        11,
-		"container_states_running":                       12,
-		"container_states_stopped":                       13,
-		"builder_fails_dockerfile_empty_error":           4,
-		"builder_fails_dockerfile_syntax_error":          5,
-		"builder_fails_error_processing_commands_error":  6,
-		"builder_fails_build_canceled":                   1,
-		"builder_fails_build_target_not_reachable_error": 2,
-		"builder_fails_command_not_supported_error":      3,
-		"builder_fails_missing_onbuild_arguments_error":  7,
-		"builder_fails_unknown_instruction_error":        8,
-		"health_checks_failed":                           33,
+		"sync_proxy_rules_count":           2669,
+		"sync_proxy_rules_bucket_1000":     1,
+		"sync_proxy_rules_bucket_2000":     0,
+		"sync_proxy_rules_bucket_4000":     0,
+		"sync_proxy_rules_bucket_8000":     0,
+		"sync_proxy_rules_bucket_16000":    23,
+		"sync_proxy_rules_bucket_32000":    2510,
+		"sync_proxy_rules_bucket_64000":    126,
+		"sync_proxy_rules_bucket_128000":   8,
+		"sync_proxy_rules_bucket_256000":   0,
+		"sync_proxy_rules_bucket_512000":   1,
+		"sync_proxy_rules_bucket_1024000":  0,
+		"sync_proxy_rules_bucket_4096000":  0,
+		"sync_proxy_rules_bucket_8192000":  0,
+		"sync_proxy_rules_bucket_2048000":  0,
+		"sync_proxy_rules_bucket_16384000": 0,
+		"sync_proxy_rules_bucket_+Inf":     0,
+		"rest_client_requests_201":         1,
+		"rest_client_requests_200":         362,
+		"rest_client_requests_GET":         362,
+		"rest_client_requests_POST":        1,
+		"http_request_duration_05":         1515,
+		"http_request_duration_09":         3939,
+		"http_request_duration_099":        9464,
 	}
 
 	assert.Equal(t, expected, job.Collect())
 }
 
-func TestDockerEngine_InvalidData(t *testing.T) {
+func TestKubeProxy_InvalidData(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -103,7 +110,7 @@ func TestDockerEngine_InvalidData(t *testing.T) {
 	assert.False(t, job.Check())
 }
 
-func TestDockerEngine_404(t *testing.T) {
+func TestKubeProxy_404(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {

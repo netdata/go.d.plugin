@@ -1,4 +1,4 @@
-package docker_engine
+package k8s_kubeproxy
 
 import (
 	"time"
@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	defaultURL         = "http://127.0.0.1:9323/metrics"
+	defaultURL         = "http://127.0.0.1:10249/metrics"
 	defaultHTTPTimeout = time.Second * 2
 )
 
@@ -19,71 +19,74 @@ func init() {
 		Create: func() module.Module { return New() },
 	}
 
-	module.Register("docker_engine", creator)
+	module.Register("k8s_kubeproxy", creator)
 }
 
-// New creates DockerEngine with default values.
-func New() *DockerEngine {
+// New creates KubeProxy with default values.
+func New() *KubeProxy {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{URL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
-	return &DockerEngine{
+	return &KubeProxy{
 		Config: config,
+		charts: charts.Copy(),
 	}
 }
 
-// Config is the DockerEngine module configuration.
+// Config is the KubeProxy module configuration.
 type Config struct {
 	web.HTTP `yaml:",inline"`
 }
 
-// DockerEngine DockerEngine module.
-type DockerEngine struct {
+// KubeProxy is KubeProxy module.
+type KubeProxy struct {
 	module.Base
 	Config `yaml:",inline"`
+
 	prom   prometheus.Prometheus
+	charts *Charts
 }
 
 // Cleanup makes cleanup.
-func (DockerEngine) Cleanup() {}
+func (KubeProxy) Cleanup() {}
 
 // Init makes initialization.
-func (de *DockerEngine) Init() bool {
-	if de.URL == "" {
-		de.Error("URL parameter is mandatory, please set")
+func (kp *KubeProxy) Init() bool {
+	if kp.URL == "" {
+		kp.Error("URL parameter is mandatory, please set")
 		return false
 	}
 
-	client, err := web.NewHTTPClient(de.Client)
+	client, err := web.NewHTTPClient(kp.Client)
 	if err != nil {
-		de.Errorf("error on creating http client : %v", err)
+		kp.Errorf("error on creating http client : %v", err)
 		return false
 	}
 
-	de.prom = prometheus.New(client, de.Request)
+	kp.prom = prometheus.New(client, kp.Request)
 
 	return true
 }
 
 // Check makes check.
-func (de DockerEngine) Check() bool {
-	return len(de.Collect()) > 0
+func (kp *KubeProxy) Check() bool {
+	return len(kp.Collect()) > 0
 }
 
 // Charts creates Charts.
-func (DockerEngine) Charts() *Charts {
-	return charts.Copy()
+func (kp KubeProxy) Charts() *Charts {
+	return kp.charts
 }
 
 // Collect collects metrics.
-func (de *DockerEngine) Collect() map[string]int64 {
-	mx, err := de.collect()
+func (kp *KubeProxy) Collect() map[string]int64 {
+	mx, err := kp.collect()
 
 	if err != nil {
-		de.Error(err)
+		kp.Error(err)
 		return nil
 	}
 

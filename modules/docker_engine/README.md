@@ -19,8 +19,25 @@ It produces the following charts:
  * running
  * paused
  * stopped
+ 
+3. **Builder Builds Fails By Reason** in fails/s
+ * build_canceled
+ * build_target_not_reachable_error
+ * command_not_supported_error
+ * dockerfile_empty_error
+ * dockerfile_syntax_error
+ * error_processing_commands_error
+ * missing_onbuild_arguments_error
+ * unknown_instruction_error
+ 
+4. **Health Checks** in events/s
+ * fails
+
 
 ### configuration
+
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/docker_engine.conf).
+___
 
 Needs only `url` to docker metric-address.
 

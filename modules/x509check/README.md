@@ -21,4 +21,7 @@ jobs:
   
   - name: my_site_org
     source: https://my_site_org:443
+    
+  - name: my_local_cert
+    source: file:///home/me/cert.pem
 ```
