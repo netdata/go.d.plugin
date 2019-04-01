@@ -8,7 +8,7 @@ require (
 	github.com/dgryski/go-metro v0.0.0-20180109044635-280f6062b5bc // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/miekg/dns v1.1.6
-	github.com/netdata/go-orchestrator v0.0.0-20190326170318-a0dabaa80151
+	github.com/netdata/go-orchestrator v0.0.0-20190331081727-438b8d16d893
 	github.com/prometheus/common v0.2.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
 	github.com/stretchr/testify v1.3.0
