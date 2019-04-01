@@ -297,7 +297,6 @@ func TestToMap_Variadic(t *testing.T) {
 }
 
 func TestToMap_badTag(t *testing.T) {
-
 	assert.Panics(t, func() {
 		s := struct {
 			a int `stm:"a,not_int"`
@@ -320,6 +319,15 @@ func TestToMap_badTag(t *testing.T) {
 		s := struct {
 			a int `stm:"a,1,2,3"`
 		}{1}
+		stm.ToMap(s)
+	})
+}
+
+func TestToMap_nilValue(t *testing.T) {
+	assert.Panics(t, func() {
+		s := struct {
+			a metrics.CounterVec `stm:"a"`
+		}{nil}
 		stm.ToMap(s)
 	})
 }

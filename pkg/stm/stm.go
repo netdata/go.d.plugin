@@ -28,6 +28,9 @@ func ToMap(s ...interface{}) map[string]int64 {
 }
 
 func toMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
+	if !value.IsValid() {
+		logger.Panicf("value is not vaild key=%s", key)
+	}
 	if value.CanInterface() {
 		val, ok := value.Interface().(Value)
 		if ok {

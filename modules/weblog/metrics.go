@@ -51,6 +51,7 @@ func NewMetricsData(config Config) *MetricsData {
 		RespTimeUpstreamHist: metrics.NewHistogram(config.Histogram),
 		UniqueIPs:            metrics.NewUniqueCounter(true),
 		CategorizedRequests:  metrics.NewCounterVec(),
+		CategorizedRespTime:  metrics.NewSummary(),
 	}
 }
 

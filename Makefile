@@ -1,3 +1,4 @@
+DEV_MODULES := all
 
 all: download vet test build
 
@@ -57,3 +58,6 @@ dev-log:
 
 dev-run: ## Run go.d.plugin inside development environment
 	go run github.com/netdata/go.d.plugin/cmd/godplugin -d -c conf.d
+
+dev-mock: ## Run go.d.plugin inside development environment with mock config
+	go run github.com/netdata/go.d.plugin/cmd/godplugin -d -c ./mocks/conf.d -m $(DEV_MODULES)

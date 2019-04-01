@@ -28,8 +28,8 @@ var (
 		Dims: Dims{
 			{ID: "resp_successful", Name: "success", Algo: module.Incremental},
 			{ID: "resp_redirect", Name: "redirect", Algo: module.Incremental},
-			{ID: "resp_client_error", Name: "client error", Algo: module.Incremental},
-			{ID: "resp_server_error", Name: "server error", Algo: module.Incremental},
+			{ID: "resp_client_error", Name: "bad", Algo: module.Incremental},
+			{ID: "resp_server_error", Name: "error", Algo: module.Incremental},
 		},
 	}
 
@@ -141,7 +141,7 @@ var (
 		Ctx:   "web_log.requests_per_http_method",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "GET", Algo: module.Incremental},
+			{ID: "req_method_GET", Name: "GET", Algo: module.Incremental},
 		},
 	}
 	requestsPerHTTPVersion = Chart{
@@ -188,7 +188,6 @@ var (
 	}
 )
 
-//
 func responseCodesDetailedPerFamily() []*Chart {
 	return []*Chart{
 		{

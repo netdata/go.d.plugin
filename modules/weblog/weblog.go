@@ -320,7 +320,8 @@ func (w *WebLog) Collect() map[string]int64 {
 		}
 	}
 
-	return stm.ToMap(w.metrics)
+	result := stm.ToMap(w.metrics)
+	return result
 }
 
 func (w *WebLog) Cleanup() {
