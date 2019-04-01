@@ -19,7 +19,7 @@ func init() {
 		Create: func() module.Module { return New() },
 	}
 
-	module.Register("dockerhub", creator)
+	module.Register("coredns", creator)
 }
 
 // New creates CoreDNS with default values.
