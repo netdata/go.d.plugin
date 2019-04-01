@@ -3,7 +3,7 @@
 coredns_build_info{goversion="go1.12",revision="8dcc7fc",version="1.4.0"} 1
 # HELP coredns_panic_count_total A metrics that counts the number of panics.
 # TYPE coredns_panic_count_total counter
-coredns_panic_count_total 0
+coredns_panic_count_total 99
 # HELP go_gc_duration_seconds A summary of the GC invocation durations.
 # TYPE go_gc_duration_seconds summary
 go_gc_duration_seconds{quantile="0"} 6.8742e-05

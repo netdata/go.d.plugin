@@ -66,7 +66,9 @@ func TestCoreDNS_Collect(t *testing.T) {
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
-	expected := map[string]int64{}
+	expected := map[string]int64{
+		"panic_count": 99,
+	}
 
 	assert.Equal(t, expected, job.Collect())
 }

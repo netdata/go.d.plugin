@@ -10,3 +10,18 @@ type (
 	// Dim is an alias for module.Dim
 	Dim = module.Dim
 )
+
+var charts = Charts{
+	{
+		ID:    "panic_count",
+		Title: "The Number Of Panics",
+		Units: "events/s",
+		Fam:   "panic",
+		Ctx:   "coredns.panic_count",
+		Dims: Dims{
+			{
+				ID: "panic_count", Name: "panic", Algo: module.Incremental,
+			},
+		},
+	},
+}

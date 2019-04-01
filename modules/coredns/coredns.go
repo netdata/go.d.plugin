@@ -32,10 +32,11 @@ func New() *CoreDNS {
 	}
 	return &CoreDNS{
 		Config: config,
+		charts: charts.Copy(),
 	}
 }
 
-// Config is the DockerHub module configuration.
+// Config is the CoreDNS module configuration.
 type Config struct {
 	web.HTTP `yaml:",inline"`
 }
@@ -77,7 +78,7 @@ func (cd CoreDNS) Check() bool {
 
 // Charts creates Charts.
 func (cd CoreDNS) Charts() *Charts {
-	return nil
+	return cd.charts
 }
 
 // Collect collects metrics.
