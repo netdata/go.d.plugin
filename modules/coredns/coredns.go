@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	defaultURL         = "https://127.0.0.1:9253/metrics"
+	defaultURL         = "http://127.0.0.1:9253/metrics"
 	defaultHTTPTimeout = time.Second * 2
 )
 

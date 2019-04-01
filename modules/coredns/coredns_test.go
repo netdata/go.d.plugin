@@ -10,7 +10,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var testNoLoadMin, _ = ioutil.ReadFile("testdata/no_load.txt")
+var (
+	testNoLoad, _   = ioutil.ReadFile("testdata/no_load.txt")
+	testSomeLoad, _ = ioutil.ReadFile("testdata/some_load.txt")
+)
 
 func TestNew(t *testing.T) {
 	job := New()
@@ -36,7 +39,7 @@ func TestCoreDNS_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(testNoLoadMin)
+				_, _ = w.Write(testSomeLoad)
 			}))
 	defer ts.Close()
 
@@ -57,7 +60,7 @@ func TestCoreDNS_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(testNoLoadMin)
+				_, _ = w.Write(testSomeLoad)
 			}))
 	defer ts.Close()
 
@@ -66,9 +69,18 @@ func TestCoreDNS_Collect(t *testing.T) {
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
+	//for k, v := range job.Collect() {
+	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", k, v))
+	//}
+
 	expected := map[string]int64{
-		"panic_count_total":   99,
-		"request_count_total": 0,
+		"panic_count_total":                      0,
+		"request_count_total":                    119,
+		"request_count_by_type_total_A":          89,
+		"request_count_by_type_total_AAAA":       29,
+		"request_count_by_type_total_MX":         1,
+		"response_count_by_rcode_total_NOERROR":  3,
+		"response_count_by_rcode_total_SERVFAIL": 116,
 	}
 
 	assert.Equal(t, expected, job.Collect())
