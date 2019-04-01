@@ -13,15 +13,23 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "panic_count",
-		Title: "The Number Of Panics",
+		ID:    "panic_count_total",
+		Title: "The Total Number Of Panics",
 		Units: "events/s",
-		Fam:   "panic",
-		Ctx:   "coredns.panic_count",
+		Fam:   "panics",
+		Ctx:   "coredns.panic_count_total",
 		Dims: Dims{
-			{
-				ID: "panic_count", Name: "panic", Algo: module.Incremental,
-			},
+			{ID: "panic_count_total", Name: "panics", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "request_count_total",
+		Title: "The Total Number Of Requests Per All Zones, Protocols And Families",
+		Units: "events/s",
+		Fam:   "requests",
+		Ctx:   "coredns.request_count_total",
+		Dims: Dims{
+			{ID: "request_count_total", Name: "requests", Algo: module.Incremental},
 		},
 	},
 }

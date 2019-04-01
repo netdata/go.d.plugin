@@ -5,5 +5,6 @@ import (
 )
 
 type metrics struct {
-	PanicCount mtx.Gauge `stm:"panic_count"`
+	PanicCountTotal    mtx.Gauge `stm:"panic_count_total"`
+	RequestsCountTotal mtx.Gauge `stm:"request_count_total"`
 }

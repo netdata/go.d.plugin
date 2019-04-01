@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var testNoLoadMin, _ = ioutil.ReadFile("testdata/no_load_minimum.txt")
+var testNoLoadMin, _ = ioutil.ReadFile("testdata/no_load.txt")
 
 func TestNew(t *testing.T) {
 	job := New()
@@ -67,7 +67,8 @@ func TestCoreDNS_Collect(t *testing.T) {
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
-		"panic_count": 99,
+		"panic_count_total":   99,
+		"request_count_total": 0,
 	}
 
 	assert.Equal(t, expected, job.Collect())
