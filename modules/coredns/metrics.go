@@ -5,28 +5,35 @@ import (
 )
 
 func newMetrics() *metrics {
-	mx := metrics{}
-	mx.Request.Count.ByTypeTotal = make(map[string]mtx.Gauge)
-	mx.Response.Count.ByRcodeTotal = make(map[string]mtx.Gauge)
-
-	return &mx
+	return &metrics{
+		PerServer: make(map[string]*serverMetrics),
+	}
 }
 
 type metrics struct {
-	Panic struct {
-		Count struct {
-			Total mtx.Gauge `stm:"total"`
-		} `stm:"count"`
-	} `stm:"panic"`
-	Request struct {
-		Count struct {
-			Total       mtx.Gauge            `stm:"total"`
-			ByTypeTotal map[string]mtx.Gauge `stm:"by_type_total"`
-		} `stm:"count"`
-	} `stm:"request"`
-	Response struct {
-		Count struct {
-			ByRcodeTotal map[string]mtx.Gauge `stm:"by_rcode_total"`
-		} `stm:"count"`
-	} `stm:"response"`
+	Summary struct {
+		Panic   mtx.Gauge      `stm:"panic_total"`
+		Request requestMetrics `stm:"request"`
+	} `stm:""`
+	PerServer map[string]*serverMetrics `stm:""`
+}
+
+type serverMetrics struct {
+	Request requestMetrics `stm:"request"`
+}
+
+type requestMetrics struct {
+	Total    mtx.Gauge `stm:"total"`
+	ByStatus struct {
+		Processed mtx.Gauge `stm:"processed"`
+		Dropped   mtx.Gauge `stm:"dropped"`
+	} `stm:"by_status"`
+	ByProto struct {
+		UDP mtx.Gauge `stm:"udp"`
+		TCP mtx.Gauge `stm:"tcp"`
+	} `stm:"by_proto"`
+	ByIPFamily struct {
+		IPv4 mtx.Gauge `stm:"v4"`
+		IPv6 mtx.Gauge `stm:"v6"`
+	} `stm:"by_ip_family"`
 }

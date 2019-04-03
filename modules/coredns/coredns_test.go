@@ -69,18 +69,32 @@ func TestCoreDNS_Collect(t *testing.T) {
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
-	//for k, v := range job.Collect() {
-	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", k, v))
+	//m := job.Collect()
+	//l := make([]string, 0)
+	//for k := range m {
+	//	l = append(l, k)
+	//}
+	//sort.Strings(l)
+	//for _, v := range l {
+	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", v, m[v]))
 	//}
 
 	expected := map[string]int64{
-		"panic_count_total":                      0,
-		"request_count_total":                    119,
-		"request_count_by_type_total_A":          89,
-		"request_count_by_type_total_AAAA":       29,
-		"request_count_by_type_total_MX":         1,
-		"response_count_by_rcode_total_NOERROR":  3,
-		"response_count_by_rcode_total_SERVFAIL": 116,
+		"dns://:53_request_by_ip_family_v4":     119,
+		"dns://:53_request_by_ip_family_v6":     62,
+		"dns://:53_request_by_proto_tcp":        62,
+		"dns://:53_request_by_proto_udp":        119,
+		"dns://:53_request_by_status_dropped":   58,
+		"dns://:53_request_by_status_processed": 123,
+		"dns://:53_request_total":               0,
+		"panic_total":                           99,
+		"request_by_ip_family_v4":               119,
+		"request_by_ip_family_v6":               62,
+		"request_by_proto_tcp":                  0,
+		"request_by_proto_udp":                  181,
+		"request_by_status_dropped":             58,
+		"request_by_status_processed":           123,
+		"request_total":                         181,
 	}
 
 	assert.Equal(t, expected, job.Collect())

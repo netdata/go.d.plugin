@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	defaultURL         = "http://127.0.0.1:9253/metrics"
+	defaultURL         = "http://127.0.0.1:9153/metrics"
 	defaultHTTPTimeout = time.Second * 2
 )
 
@@ -31,8 +31,9 @@ func New() *CoreDNS {
 		},
 	}
 	return &CoreDNS{
-		Config: config,
-		charts: charts.Copy(),
+		Config:        config,
+		charts:        summaryCharts.Copy(),
+		activeServers: make(map[string]bool),
 	}
 }
 
@@ -46,8 +47,9 @@ type CoreDNS struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	prom   prometheus.Prometheus
-	charts *Charts
+	prom          prometheus.Prometheus
+	charts        *Charts
+	activeServers map[string]bool
 }
 
 // Cleanup makes cleanup.

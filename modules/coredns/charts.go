@@ -13,41 +13,82 @@ type (
 	Dim = module.Dim
 )
 
-var charts = Charts{
+var summaryCharts = Charts{
 	{
-		ID:    "panic_count_total",
-		Title: "The Total Number Of Panics",
-		Units: "events/s",
-		Fam:   "panics",
-		Ctx:   "coredns.panic_count_total",
+		ID:    "requests_rate_by_status",
+		Title: "Requests Rate By Status",
+		Units: "requests/s",
+		Fam:   "summary",
+		Ctx:   "coredns.requests_rate_by_status",
+		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "panic_count_total", Name: "panics", Algo: module.Incremental},
+			{ID: "request_by_status_processed", Name: "processed", Algo: module.Incremental},
+			{ID: "request_by_status_dropped", Name: "dropped", Algo: module.Incremental},
 		},
 	},
 	{
-		ID:    "request_count_total",
-		Title: "The Total Number Of Request",
+		ID:    "panics_rate",
+		Title: "Panics Rate",
 		Units: "events/s",
-		Fam:   "requests",
-		Ctx:   "coredns.request_count_total",
+		Fam:   "summary",
+		Ctx:   "coredns.panics_rate",
 		Dims: Dims{
-			{ID: "request_count_total", Name: "requests", Algo: module.Incremental},
+			{ID: "panic_total", Name: "panics", Algo: module.Incremental},
 		},
 	},
 }
 
-var chartReqByTypeTotal = Chart{
-	ID:    "request_type_count_total",
-	Title: "The Total Number Of Requests By Type",
-	Units: "requests/s",
-	Fam:   "requests",
-	Ctx:   "coredns.request_type_count_total",
+var serverCharts = Charts{
+	{
+		ID:    "%s_requests_rate_by_status",
+		Title: "Requests Rate By Status",
+		Units: "requests/s",
+		Fam:   "server %s",
+		Ctx:   "coredns.requests_rate_by_status",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "%s_request_by_status_processed", Name: "processed", Algo: module.Incremental},
+			{ID: "%s_request_by_status_dropped", Name: "dropped", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "%s_requests_rate_by_proto",
+		Title: "Requests Rate By Proto",
+		Units: "requests/s",
+		Fam:   "server %s",
+		Ctx:   "coredns.requests_rate_by_proto",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "%s_request_by_proto_udp", Name: "udp", Algo: module.Incremental},
+			{ID: "%s_request_by_proto_tcp", Name: "tcp", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "%s_requests_rate_by_ip_family",
+		Title: "Requests Rate By IP Family",
+		Units: "requests/s",
+		Fam:   "server %s",
+		Ctx:   "coredns.requests_rate_by_ip_family",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "%s_request_by_ip_family_v4", Name: "v4", Algo: module.Incremental},
+			{ID: "%s_request_by_ip_family_v6", Name: "v6", Algo: module.Incremental},
+		},
+	},
 }
 
-var chartRespByRcodeTotal = Chart{
-	ID:    "response_rcode_count_total",
-	Title: "The Total Number Of Responses By Rcode",
-	Units: "responses/s",
-	Fam:   "responses",
-	Ctx:   "coredns.request_type_count_total",
-}
+//var chartReqByTypeTotal = Chart{
+//	ID:    "request_type_count_total",
+//	Title: "The Total Number Of Requests By Type",
+//	Units: "requests/s",
+//	Fam:   "requests",
+//	Ctx:   "coredns.request_type_count_total",
+//}
+//
+//var chartRespByRcodeTotal = Chart{
+//	ID:    "response_rcode_count_total",
+//	Title: "The Total Number Of Responses By Rcode",
+//	Units: "responses/s",
+//	Fam:   "responses",
+//	Ctx:   "coredns.request_type_count_total",
+//}

@@ -4,6 +4,7 @@ coredns_build_info{goversion="go1.12",revision="8dcc7fc",version="1.4.0"} 1
 # HELP coredns_dns_request_count_total Counter of DNS requests made per zone, protocol and family.
 # TYPE coredns_dns_request_count_total counter
 coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="."} 61
+coredns_dns_request_count_total{family="2",proto="tcp",server="dns://:53",zone="."} 62
 coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="dropped"} 58
 # HELP coredns_dns_request_duration_seconds Histogram of the time (in seconds) each request took.
 # TYPE coredns_dns_request_duration_seconds histogram
@@ -164,7 +165,7 @@ coredns_forward_response_rcode_count_total{rcode="NOERROR",to="8.8.8.8:53"} 3
 coredns_forward_sockets_open{to="8.8.8.8:53"} 1
 # HELP coredns_panic_count_total A metrics that counts the number of panics.
 # TYPE coredns_panic_count_total counter
-coredns_panic_count_total 0
+coredns_panic_count_total 99
 # HELP go_gc_duration_seconds A summary of the GC invocation durations.
 # TYPE go_gc_duration_seconds summary
 go_gc_duration_seconds{quantile="0"} 9.696e-06
