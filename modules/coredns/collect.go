@@ -16,21 +16,21 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 
 	mx := newMetrics()
 
-	cd.collectPanicTotal(raw, mx)
-	cd.collectRequestTotal(raw, mx)
-	cd.collectRequestByTypeTotal(raw, mx)
-	cd.collectResponseByTypeTotal(raw, mx)
+	cd.collectPanic(raw, mx)
+	cd.collectRequest(raw, mx)
+	cd.collectRequestByType(raw, mx)
+	cd.collectResponseByRcode(raw, mx)
 
 	return stm.ToMap(mx), nil
 }
 
-func (cd CoreDNS) collectPanicTotal(raw prometheus.Metrics, mx *metrics) {
+func (cd CoreDNS) collectPanic(raw prometheus.Metrics, mx *metrics) {
 	metricName := "coredns_panic_count_total"
 
 	mx.Summary.Panic.Set(raw.FindByName(metricName).Max())
 }
 
-func (cd *CoreDNS) collectRequestTotal(raw prometheus.Metrics, mx *metrics) {
+func (cd *CoreDNS) collectRequest(raw prometheus.Metrics, mx *metrics) {
 	metricName := "coredns_dns_request_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
@@ -93,7 +93,7 @@ func (cd *CoreDNS) collectRequestTotal(raw prometheus.Metrics, mx *metrics) {
 	}
 }
 
-func (cd *CoreDNS) collectRequestByTypeTotal(raw prometheus.Metrics, mx *metrics) {
+func (cd *CoreDNS) collectRequestByType(raw prometheus.Metrics, mx *metrics) {
 	metricName := "coredns_dns_request_type_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
@@ -177,7 +177,7 @@ func (cd *CoreDNS) collectRequestByTypeTotal(raw prometheus.Metrics, mx *metrics
 	}
 }
 
-func (cd *CoreDNS) collectResponseByTypeTotal(raw prometheus.Metrics, mx *metrics) {
+func (cd *CoreDNS) collectResponseByRcode(raw prometheus.Metrics, mx *metrics) {
 	metricName := "coredns_dns_response_rcode_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
