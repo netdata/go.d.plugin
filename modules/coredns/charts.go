@@ -15,6 +15,26 @@ type (
 
 var summaryCharts = Charts{
 	{
+		ID:    "requests_rate",
+		Title: "Requests Rate",
+		Units: "events/s",
+		Fam:   "summary",
+		Ctx:   "coredns.requests_rate",
+		Dims: Dims{
+			{ID: "request_total", Name: "requests", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "responses_rate",
+		Title: "Responses Rate",
+		Units: "events/s",
+		Fam:   "summary",
+		Ctx:   "coredns.responses_rate",
+		Dims: Dims{
+			{ID: "response_total", Name: "responses", Algo: module.Incremental},
+		},
+	},
+	{
 		ID:    "requests_rate_by_status",
 		Title: "Requests Rate By Status",
 		Units: "requests/s",
@@ -39,6 +59,26 @@ var summaryCharts = Charts{
 }
 
 var serverCharts = Charts{
+	{
+		ID:    "%s_requests_rate",
+		Title: "Requests Rate",
+		Units: "events/s",
+		Fam:   "server %s",
+		Ctx:   "coredns.requests_rate",
+		Dims: Dims{
+			{ID: "%s_request_total", Name: "requests", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "%s_responses_rate",
+		Title: "Responses Rate",
+		Units: "events/s",
+		Fam:   "server %s",
+		Ctx:   "coredns.responses_rate",
+		Dims: Dims{
+			{ID: "%s_response_total", Name: "responses", Algo: module.Incremental},
+		},
+	},
 	{
 		ID:    "%s_requests_rate_by_status",
 		Title: "Requests Rate By Status",
@@ -74,7 +114,8 @@ var serverCharts = Charts{
 			{ID: "%s_request_by_ip_family_v4", Name: "v4", Algo: module.Incremental},
 			{ID: "%s_request_by_ip_family_v6", Name: "v6", Algo: module.Incremental},
 		},
-	}, {
+	},
+	{
 		ID:    "%s_requests_rate_by_type",
 		Title: "Requests Rate By Type",
 		Units: "requests/s",
@@ -100,20 +141,34 @@ var serverCharts = Charts{
 			{ID: "%s_request_by_type_other", Name: "other", Algo: module.Incremental},
 		},
 	},
+	{
+		ID:    "%s_responses_rate_by_type",
+		Title: "Responses Rate By Type",
+		Units: "responses/s",
+		Fam:   "server %s",
+		Ctx:   "coredns.responses_rate_by_type",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "%s_response_by_rcode_NOERROR", Name: "NOERROR", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_FORMERR", Name: "FORMERR", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_SERVFAIL", Name: "SERVFAIL", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_NXDOMAIN", Name: "NXDOMAIN", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_NOTIMP", Name: "NOTIMP", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_REFUSED", Name: "REFUSED", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_YXDOMAIN", Name: "YXDOMAIN", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_YXRRSET", Name: "YXRRSET", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_NXRRSET", Name: "NXRRSET", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_NOTAUTH", Name: "NOTAUTH", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_NOTZONE", Name: "NOTZONE", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_BADSIG", Name: "BADSIG", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_BADKEY", Name: "BADKEY", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_BADTIME", Name: "BADTIME", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_BADMODE", Name: "BADMODE", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_BADNAME", Name: "BADNAME", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_BADALG", Name: "BADALG", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_BADTRUNC", Name: "BADTRUNC", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_BADCOOKIE", Name: "BADCOOKIE", Algo: module.Incremental},
+			{ID: "%s_response_by_rcode_other", Name: "other", Algo: module.Incremental},
+		},
+	},
 }
-
-//var chartReqByTypeTotal = Chart{
-//	ID:    "request_type_count_total",
-//	Title: "The Total Number Of Requests By Type",
-//	Units: "requests/s",
-//	Fam:   "requests",
-//	Ctx:   "coredns.request_type_count_total",
-//}
-//
-//var chartRespByRcodeTotal = Chart{
-//	ID:    "response_rcode_count_total",
-//	Title: "The Total Number Of Responses By Rcode",
-//	Units: "responses/s",
-//	Fam:   "responses",
-//	Ctx:   "coredns.request_type_count_total",
-//}

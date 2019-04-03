@@ -19,6 +19,7 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	cd.collectPanicTotal(raw, mx)
 	cd.collectRequestTotal(raw, mx)
 	cd.collectRequestByTypeTotal(raw, mx)
+	cd.collectResponseByTypeTotal(raw, mx)
 
 	return stm.ToMap(mx), nil
 }
@@ -46,18 +47,19 @@ func (cd *CoreDNS) collectRequestTotal(raw prometheus.Metrics, mx *metrics) {
 			continue
 		}
 
-		mx.Summary.Request.Total.Add(value)
-
 		if !cd.activeServers[server] {
 			cd.addNewServerCharts(server)
 			cd.activeServers[server] = true
 		}
 
-		if mx.PerServer[server] == nil {
-			mx.PerServer[server] = &serverMetrics{}
+		if mx.Servers[server] == nil {
+			mx.Servers[server] = &serverMetrics{}
 		}
 
-		srvMX := mx.PerServer[server]
+		srvMX := mx.Servers[server]
+
+		mx.Summary.Request.Total.Add(value)
+		srvMX.Request.Total.Add(value)
 
 		switch family {
 		case "1":
@@ -84,6 +86,9 @@ func (cd *CoreDNS) collectRequestTotal(raw prometheus.Metrics, mx *metrics) {
 		case "dropped":
 			mx.Summary.Request.ByStatus.Dropped.Add(value)
 			srvMX.Request.ByStatus.Dropped.Add(value)
+
+			mx.Summary.Request.ByStatus.Processed.Sub(value)
+			srvMX.Request.ByStatus.Processed.Sub(value)
 		}
 	}
 }
@@ -94,12 +99,17 @@ func (cd *CoreDNS) collectRequestByTypeTotal(raw prometheus.Metrics, mx *metrics
 	for _, metric := range raw.FindByName(metricName) {
 		var (
 			typ    = metric.Labels.Get("type")
+			zone   = metric.Labels.Get("zone")
 			server = metric.Labels.Get("server")
 			value  = metric.Value
 		)
 
 		// TODO: server can be empty??
-		if typ == "" || server == "" {
+		if typ == "" || zone == "" || server == "" {
+			continue
+		}
+
+		if zone == "dropped" {
 			continue
 		}
 
@@ -108,13 +118,16 @@ func (cd *CoreDNS) collectRequestByTypeTotal(raw prometheus.Metrics, mx *metrics
 			cd.activeServers[server] = true
 		}
 
-		if mx.PerServer[server] == nil {
-			mx.PerServer[server] = &serverMetrics{}
+		if mx.Servers[server] == nil {
+			mx.Servers[server] = &serverMetrics{}
 		}
 
-		srvMX := mx.PerServer[server]
+		srvMX := mx.Servers[server]
 
 		switch typ {
+		default:
+			mx.Summary.Request.ByType.Other.Add(value)
+			srvMX.Request.ByType.Other.Add(value)
 		case "A":
 			mx.Summary.Request.ByType.A.Add(value)
 			srvMX.Request.ByType.A.Add(value)
@@ -160,9 +173,105 @@ func (cd *CoreDNS) collectRequestByTypeTotal(raw prometheus.Metrics, mx *metrics
 		case "ANY":
 			mx.Summary.Request.ByType.ANY.Add(value)
 			srvMX.Request.ByType.ANY.Add(value)
-		case "other":
-			mx.Summary.Request.ByType.Other.Add(value)
-			srvMX.Request.ByType.Other.Add(value)
+		}
+	}
+}
+
+func (cd *CoreDNS) collectResponseByTypeTotal(raw prometheus.Metrics, mx *metrics) {
+	metricName := "coredns_dns_response_rcode_count_total"
+
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			rcode  = metric.Labels.Get("rcode")
+			zone   = metric.Labels.Get("zone")
+			server = metric.Labels.Get("server")
+			value  = metric.Value
+		)
+
+		// TODO: server can be empty??
+		if rcode == "" || zone == "" || server == "" {
+			continue
+		}
+
+		if zone == "dropped" {
+			continue
+		}
+
+		if !cd.activeServers[server] {
+			cd.addNewServerCharts(server)
+			cd.activeServers[server] = true
+		}
+
+		if mx.Servers[server] == nil {
+			mx.Servers[server] = &serverMetrics{}
+		}
+
+		srvMX := mx.Servers[server]
+
+		mx.Summary.Response.Total.Add(value)
+		srvMX.Response.Total.Add(value)
+
+		switch rcode {
+		default:
+			mx.Summary.Response.ByRcode.Other.Add(value)
+			srvMX.Response.ByRcode.Other.Add(value)
+		case "NOERROR":
+			mx.Summary.Response.ByRcode.NOERROR.Add(value)
+			srvMX.Response.ByRcode.NOERROR.Add(value)
+		case "FORMERR":
+			mx.Summary.Response.ByRcode.FORMERR.Add(value)
+			srvMX.Response.ByRcode.FORMERR.Add(value)
+		case "SERVFAIL":
+			mx.Summary.Response.ByRcode.SERVFAIL.Add(value)
+			srvMX.Response.ByRcode.SERVFAIL.Add(value)
+		case "NXDOMAIN":
+			mx.Summary.Response.ByRcode.NXDOMAIN.Add(value)
+			srvMX.Response.ByRcode.NXDOMAIN.Add(value)
+		case "NOTIMP":
+			mx.Summary.Response.ByRcode.NOTIMP.Add(value)
+			srvMX.Response.ByRcode.NOTIMP.Add(value)
+		case "REFUSED":
+			mx.Summary.Response.ByRcode.REFUSED.Add(value)
+			srvMX.Response.ByRcode.REFUSED.Add(value)
+		case "YXDOMAIN":
+			mx.Summary.Response.ByRcode.YXDOMAIN.Add(value)
+			srvMX.Response.ByRcode.YXDOMAIN.Add(value)
+		case "YXRRSET":
+			mx.Summary.Response.ByRcode.YXRRSET.Add(value)
+			srvMX.Response.ByRcode.YXRRSET.Add(value)
+		case "NXRRSET":
+			mx.Summary.Response.ByRcode.NXRRSET.Add(value)
+			srvMX.Response.ByRcode.NXRRSET.Add(value)
+		case "NOTAUTH":
+			mx.Summary.Response.ByRcode.NOTAUTH.Add(value)
+			srvMX.Response.ByRcode.NOTAUTH.Add(value)
+		case "NOTZONE":
+			mx.Summary.Response.ByRcode.NOTZONE.Add(value)
+			srvMX.Response.ByRcode.NOTZONE.Add(value)
+		case "BADSIG":
+			mx.Summary.Response.ByRcode.BADSIG.Add(value)
+			srvMX.Response.ByRcode.BADSIG.Add(value)
+		case "BADKEY":
+			mx.Summary.Response.ByRcode.BADKEY.Add(value)
+			srvMX.Response.ByRcode.BADKEY.Add(value)
+		case "BADTIME":
+			mx.Summary.Response.ByRcode.BADTIME.Add(value)
+			srvMX.Response.ByRcode.BADTIME.Add(value)
+		case "BADMODE":
+			mx.Summary.Response.ByRcode.BADMODE.Add(value)
+			srvMX.Response.ByRcode.BADMODE.Add(value)
+		case "BADNAME":
+			mx.Summary.Response.ByRcode.BADNAME.Add(value)
+			srvMX.Response.ByRcode.BADNAME.Add(value)
+		case "BADALG":
+			mx.Summary.Response.ByRcode.BADALG.Add(value)
+			srvMX.Response.ByRcode.BADALG.Add(value)
+		case "BADTRUNC":
+			mx.Summary.Response.ByRcode.BADTRUNC.Add(value)
+			srvMX.Response.ByRcode.BADTRUNC.Add(value)
+		case "BADCOOKIE":
+			mx.Summary.Response.ByRcode.BADCOOKIE.Add(value)
+			srvMX.Response.ByRcode.BADCOOKIE.Add(value)
 		}
 	}
 }
@@ -179,59 +288,3 @@ func (cd *CoreDNS) addNewServerCharts(serverName string) {
 	}
 	_ = cd.charts.Add(*charts...)
 }
-
-//func (cd CoreDNS) collectRequestTotalPerFamily(raw prometheus.Metrics, mx *metrics) {
-//	metricName := "coredns_dns_request_count_total"
-//
-//	for _, metric := range raw.FindByName(metricName) {
-//		mx.Request.Count.Total.Add(metric.Value)
-//	}
-//}
-//
-//func (cd *CoreDNS) collectRequestsByTypeTotal(raw prometheus.Metrics, mx *metrics) {
-//	metricName := "coredns_dns_request_type_count_total"
-//	chartName := "request_type_count_total"
-//	chart := cd.charts.Get(chartName)
-//
-//	for _, metric := range raw.FindByName(metricName) {
-//		typ := metric.Labels.Get("type")
-//		if typ == "" {
-//			continue
-//		}
-//		if chart == nil {
-//			_ = cd.charts.Add(chartReqByTypeTotal.Copy())
-//			chart = cd.charts.Get(chartName)
-//		}
-//		dimID := "request_count_by_type_total_" + typ
-//		if !chart.HasDim(dimID) {
-//			_ = chart.AddDim(&Dim{ID: dimID, Name: typ, Algo: module.Incremental})
-//		}
-//
-//		current := mx.Request.Count.ByTypeTotal[typ].Value()
-//		mx.Request.Count.ByTypeTotal[typ] = mtx.Gauge(metric.Value + current)
-//	}
-//}
-//
-//func (cd *CoreDNS) collectResponsesByRcodeTotal(raw prometheus.Metrics, mx *metrics) {
-//	metricName := "coredns_dns_response_rcode_count_total"
-//	chartName := "response_rcode_count_total"
-//	chart := cd.charts.Get(chartName)
-//
-//	for _, metric := range raw.FindByName(metricName) {
-//		rcode := metric.Labels.Get("rcode")
-//		if rcode == "" {
-//			continue
-//		}
-//		if chart == nil {
-//			_ = cd.charts.Add(chartRespByRcodeTotal.Copy())
-//			chart = cd.charts.Get(chartName)
-//		}
-//		dimID := "response_count_by_rcode_total_" + rcode
-//		if !chart.HasDim(dimID) {
-//			_ = chart.AddDim(&Dim{ID: dimID, Name: rcode, Algo: module.Incremental})
-//		}
-//
-//		current := mx.Response.Count.ByRcodeTotal[rcode].Value()
-//		mx.Response.Count.ByRcodeTotal[rcode] = mtx.Gauge(metric.Value + current)
-//	}
-//}

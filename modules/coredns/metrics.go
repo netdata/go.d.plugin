@@ -6,20 +6,22 @@ import (
 
 func newMetrics() *metrics {
 	return &metrics{
-		PerServer: make(map[string]*serverMetrics),
+		Servers: make(map[string]*serverMetrics),
 	}
 }
 
 type metrics struct {
 	Summary struct {
-		Panic   mtx.Gauge      `stm:"panic_total"`
-		Request requestMetrics `stm:"request"`
+		Panic    mtx.Gauge       `stm:"panic_total"`
+		Request  requestMetrics  `stm:"request"`
+		Response responseMetrics `stm:"response"`
 	} `stm:""`
-	PerServer map[string]*serverMetrics `stm:""`
+	Servers map[string]*serverMetrics `stm:""`
 }
 
 type serverMetrics struct {
-	Request requestMetrics `stm:"request"`
+	Request  requestMetrics  `stm:"request"`
+	Response responseMetrics `stm:"response"`
 }
 
 type requestMetrics struct {
@@ -36,6 +38,7 @@ type requestMetrics struct {
 		IPv4 mtx.Gauge `stm:"v4"`
 		IPv6 mtx.Gauge `stm:"v6"`
 	} `stm:"by_ip_family"`
+	// https://github.com/coredns/coredns/blob/master/plugin/metrics/vars/report.go
 	ByType struct {
 		A      mtx.Gauge `stm:"A"`
 		AAAA   mtx.Gauge `stm:"AAAA"`
@@ -55,4 +58,32 @@ type requestMetrics struct {
 		ANY    mtx.Gauge `stm:"ANY"`
 		Other  mtx.Gauge `stm:"other"`
 	} `stm:"by_type"`
+}
+
+// https://github.com/miekg/dns/blob/master/types.go
+// https://github.com/miekg/dns/blob/master/msg.go#L169
+type responseMetrics struct {
+	Total   mtx.Gauge `stm:"total"`
+	ByRcode struct {
+		NOERROR   mtx.Gauge `stm:"NOERROR"`
+		FORMERR   mtx.Gauge `stm:"FORMERR"`
+		SERVFAIL  mtx.Gauge `stm:"SERVFAIL"`
+		NXDOMAIN  mtx.Gauge `stm:"NXDOMAIN"`
+		NOTIMP    mtx.Gauge `stm:"NOTIMP"`
+		REFUSED   mtx.Gauge `stm:"REFUSED"`
+		YXDOMAIN  mtx.Gauge `stm:"YXDOMAIN"`
+		YXRRSET   mtx.Gauge `stm:"YXRRSET"`
+		NXRRSET   mtx.Gauge `stm:"NXRRSET"`
+		NOTAUTH   mtx.Gauge `stm:"NOTAUTH"`
+		NOTZONE   mtx.Gauge `stm:"NOTZONE"`
+		BADSIG    mtx.Gauge `stm:"BADSIG"`
+		BADKEY    mtx.Gauge `stm:"BADKEY"`
+		BADTIME   mtx.Gauge `stm:"BADTIME"`
+		BADMODE   mtx.Gauge `stm:"BADMODE"`
+		BADNAME   mtx.Gauge `stm:"BADNAME"`
+		BADALG    mtx.Gauge `stm:"BADALG"`
+		BADTRUNC  mtx.Gauge `stm:"BADTRUNC"`
+		BADCOOKIE mtx.Gauge `stm:"BADCOOKIE"`
+		Other     mtx.Gauge `stm:"other"`
+	} `stm:"by_rcode"`
 }
