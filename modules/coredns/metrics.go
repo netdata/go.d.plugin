@@ -36,4 +36,23 @@ type requestMetrics struct {
 		IPv4 mtx.Gauge `stm:"v4"`
 		IPv6 mtx.Gauge `stm:"v6"`
 	} `stm:"by_ip_family"`
+	ByType struct {
+		A      mtx.Gauge `stm:"A"`
+		AAAA   mtx.Gauge `stm:"AAAA"`
+		MX     mtx.Gauge `stm:"MX"`
+		SOA    mtx.Gauge `stm:"SOA"`
+		CNAME  mtx.Gauge `stm:"CNAME"`
+		PTR    mtx.Gauge `stm:"PTR"`
+		TXT    mtx.Gauge `stm:"TXT"`
+		NS     mtx.Gauge `stm:"NS"`
+		SRV    mtx.Gauge `stm:"SRV"`
+		DS     mtx.Gauge `stm:"DS"`
+		DNSKEY mtx.Gauge `stm:"DNSKEY"`
+		RRSIG  mtx.Gauge `stm:"RRSIG"`
+		NSEC   mtx.Gauge `stm:"NSEC"`
+		NSEC3  mtx.Gauge `stm:"NSEC3"`
+		IXFR   mtx.Gauge `stm:"IXFR"`
+		ANY    mtx.Gauge `stm:"ANY"`
+		Other  mtx.Gauge `stm:"other"`
+	} `stm:"by_type"`
 }
