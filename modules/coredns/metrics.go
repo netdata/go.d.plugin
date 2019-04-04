@@ -5,18 +5,17 @@ import (
 )
 
 func newMetrics() *metrics {
-	return &metrics{
-		Servers: make(map[string]*serverMetrics),
-	}
+	mx := &metrics{}
+	mx.PerServer = make(map[string]*serverMetrics)
+
+	return mx
 }
 
 type metrics struct {
-	Summary struct {
-		Panic    mtx.Gauge       `stm:"panic_total"`
-		Request  requestMetrics  `stm:"request"`
-		Response responseMetrics `stm:"response"`
-	} `stm:""`
-	Servers map[string]*serverMetrics `stm:""`
+	Panic           mtx.Gauge                 `stm:"panic_total"`
+	NoServerDropped mtx.Gauge                 `stm:"no_server_dropped"`
+	Summary         serverMetrics             `stm:""`
+	PerServer       map[string]*serverMetrics `stm:""`
 }
 
 type serverMetrics struct {

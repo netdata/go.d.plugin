@@ -37,7 +37,7 @@ var summaryCharts = Charts{
 	{
 		ID:    "requests_rate_by_status",
 		Title: "Requests Rate By Status",
-		Units: "requests/s",
+		Units: "requests/ss",
 		Fam:   "summary",
 		Ctx:   "coredns.requests_rate_by_status",
 		Type:  module.Stacked,

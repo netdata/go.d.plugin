@@ -6,6 +6,7 @@ coredns_build_info{goversion="go1.12",revision="8dcc7fc",version="1.4.0"} 1
 coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="."} 61
 coredns_dns_request_count_total{family="2",proto="tcp",server="dns://:53",zone="."} 62
 coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="dropped"} 58
+coredns_dns_request_count_total{family="1",proto="udp",server="",zone="dropped"} 111
 # HELP coredns_dns_request_duration_seconds Histogram of the time (in seconds) each request took.
 # TYPE coredns_dns_request_duration_seconds histogram
 coredns_dns_request_duration_seconds_bucket{server="dns://:53",zone=".",le="0.00025"} 50
