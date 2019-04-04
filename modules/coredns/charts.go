@@ -47,6 +47,16 @@ var summaryCharts = Charts{
 		},
 	},
 	{
+		ID:    "no_server_rate",
+		Title: "No Server Rate",
+		Units: "requests/s",
+		Fam:   "summary",
+		Ctx:   "coredns.no_server_rate",
+		Dims: Dims{
+			{ID: "no_server_dropped", Name: "dropped", Algo: module.Incremental},
+		},
+	},
+	{
 		ID:    "panics_rate",
 		Title: "Panics Rate",
 		Units: "events/s",
