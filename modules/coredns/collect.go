@@ -51,7 +51,7 @@ func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
 		}
 
 		if server == "" {
-			mx.NoServerDropped.Add(value)
+			mx.NoZoneDropped.Add(value)
 			continue
 		}
 
@@ -81,7 +81,7 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 		}
 
 		if mx.PerServer[server] == nil {
-			mx.PerServer[server] = &serverMetrics{}
+			mx.PerServer[server] = &requestResponse{}
 		}
 
 		srvMX := mx.PerServer[server]
@@ -130,7 +130,7 @@ func (cd *CoreDNS) collectPerServerRequestByType(mx *metrics, raw prometheus.Met
 		}
 
 		if mx.PerServer[server] == nil {
-			mx.PerServer[server] = &serverMetrics{}
+			mx.PerServer[server] = &requestResponse{}
 		}
 
 		srvMX := mx.PerServer[server]
@@ -179,14 +179,14 @@ func (cd *CoreDNS) collectPerServerResponseByRcode(mx *metrics, raw prometheus.M
 		}
 
 		if mx.PerServer[server] == nil {
-			mx.PerServer[server] = &serverMetrics{}
+			mx.PerServer[server] = &requestResponse{}
 		}
 
 		setResponseByRcode(&mx.PerServer[server].Response, value, rcode)
 	}
 }
 
-func setRequestTotal(mx *requestMetrics, value float64, family, proto, zone string) {
+func setRequestTotal(mx *request, value float64, family, proto, zone string) {
 	mx.Total.Add(value)
 
 	switch family {
@@ -210,7 +210,7 @@ func setRequestTotal(mx *requestMetrics, value float64, family, proto, zone stri
 	}
 }
 
-func setRequestByType(mx *requestMetrics, value float64, typ string) {
+func setRequestByType(mx *request, value float64, typ string) {
 	switch typ {
 	default:
 		mx.ByType.Other.Add(value)
@@ -247,7 +247,7 @@ func setRequestByType(mx *requestMetrics, value float64, typ string) {
 	}
 }
 
-func setResponseByRcode(mx *responseMetrics, value float64, rcode string) {
+func setResponseByRcode(mx *response, value float64, rcode string) {
 	mx.Total.Add(value)
 
 	switch rcode {
@@ -298,6 +298,7 @@ func (cd *CoreDNS) addNewServerCharts(name string) {
 	charts := serverCharts.Copy()
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, name)
+		chart.Title = fmt.Sprintf(chart.Title, name)
 		chart.Fam = fmt.Sprintf(chart.Fam, name)
 
 		for _, dim := range chart.Dims {

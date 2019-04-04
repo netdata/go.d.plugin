@@ -6,37 +6,37 @@ import (
 
 func newMetrics() *metrics {
 	mx := &metrics{}
-	mx.PerServer = make(map[string]*serverMetrics)
+	mx.PerServer = make(map[string]*requestResponse)
 
 	return mx
 }
 
 type metrics struct {
-	Panic           mtx.Gauge                 `stm:"panic_total"`
-	NoServerDropped mtx.Gauge                 `stm:"no_server_dropped"`
-	Summary         serverMetrics             `stm:""`
-	PerServer       map[string]*serverMetrics `stm:""`
+	Panic         mtx.Gauge                   `stm:"panic_total"`
+	NoZoneDropped mtx.Gauge                   `stm:"no_matching_zone_dropped_total"`
+	Summary       requestResponse             `stm:""`
+	PerServer     map[string]*requestResponse `stm:""`
 }
 
-type serverMetrics struct {
-	Request  requestMetrics  `stm:"request"`
-	Response responseMetrics `stm:"response"`
+type requestResponse struct {
+	Request  request  `stm:"request"`
+	Response response `stm:"response"`
 }
 
-type requestMetrics struct {
+type request struct {
 	Total    mtx.Gauge `stm:"total"`
 	ByStatus struct {
 		Processed mtx.Gauge `stm:"processed"`
 		Dropped   mtx.Gauge `stm:"dropped"`
-	} `stm:"by_status"`
+	} `stm:"per_status"`
 	ByProto struct {
 		UDP mtx.Gauge `stm:"udp"`
 		TCP mtx.Gauge `stm:"tcp"`
-	} `stm:"by_proto"`
+	} `stm:"per_proto"`
 	ByIPFamily struct {
 		IPv4 mtx.Gauge `stm:"v4"`
 		IPv6 mtx.Gauge `stm:"v6"`
-	} `stm:"by_ip_family"`
+	} `stm:"per_ip_family"`
 	// https://github.com/coredns/coredns/blob/master/plugin/metrics/vars/report.go
 	ByType struct {
 		A      mtx.Gauge `stm:"A"`
@@ -56,12 +56,12 @@ type requestMetrics struct {
 		IXFR   mtx.Gauge `stm:"IXFR"`
 		ANY    mtx.Gauge `stm:"ANY"`
 		Other  mtx.Gauge `stm:"other"`
-	} `stm:"by_type"`
+	} `stm:"per_type"`
 }
 
 // https://github.com/miekg/dns/blob/master/types.go
 // https://github.com/miekg/dns/blob/master/msg.go#L169
-type responseMetrics struct {
+type response struct {
 	Total   mtx.Gauge `stm:"total"`
 	ByRcode struct {
 		NOERROR   mtx.Gauge `stm:"NOERROR"`
@@ -84,5 +84,5 @@ type responseMetrics struct {
 		BADTRUNC  mtx.Gauge `stm:"BADTRUNC"`
 		BADCOOKIE mtx.Gauge `stm:"BADCOOKIE"`
 		Other     mtx.Gauge `stm:"other"`
-	} `stm:"by_rcode"`
+	} `stm:"per_rcode"`
 }
