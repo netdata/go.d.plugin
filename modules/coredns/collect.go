@@ -18,14 +18,14 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 
 	cd.collectPanic(mx, raw)
 	cd.collectSummaryRequests(mx, raw)
-	cd.collectSummaryRequestByType(mx, raw)
-	cd.collectSummaryResponseByRcode(mx, raw)
+	cd.collectSummaryRequestPerType(mx, raw)
+	cd.collectSummaryResponsePerRcode(mx, raw)
 	cd.collectSummaryRequestsDuration(mx, raw)
 
 	if cd.perServerMatcher != nil {
 		cd.collectPerServerRequests(mx, raw)
-		cd.collectPerServerRequestByType(mx, raw)
-		cd.collectPerServerResponseByRcode(mx, raw)
+		cd.collectPerServerRequestPerType(mx, raw)
+		cd.collectPerServerResponsePerRcode(mx, raw)
 		cd.collectPerServerRequestsDuration(mx, raw)
 	}
 
@@ -62,8 +62,6 @@ func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Me
 func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_dns_request_duration_seconds_bucket"
 
-	var req *request
-
 	for _, metric := range raw.FindByName(metricName) {
 		var (
 			server = metric.Labels.Get("server")
@@ -89,12 +87,10 @@ func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.
 			mx.PerServer[server] = &requestResponse{}
 		}
 
-		req = &mx.PerServer[server].Request
-		setRequestDuration(req, value, le)
+		setRequestDuration(&mx.PerServer[server].Request, value, le)
 	}
-
-	if req != nil {
-		processRequestDuration(req)
+	for _, s := range mx.PerServer {
+		processRequestDuration(&s.Request)
 	}
 }
 
@@ -158,7 +154,7 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 	}
 }
 
-func (cd *CoreDNS) collectSummaryRequestByType(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectSummaryRequestPerType(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_dns_request_type_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
@@ -177,7 +173,7 @@ func (cd *CoreDNS) collectSummaryRequestByType(mx *metrics, raw prometheus.Metri
 	}
 }
 
-func (cd *CoreDNS) collectPerServerRequestByType(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_dns_request_type_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
@@ -211,7 +207,7 @@ func (cd *CoreDNS) collectPerServerRequestByType(mx *metrics, raw prometheus.Met
 	}
 }
 
-func (cd *CoreDNS) collectSummaryResponseByRcode(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectSummaryResponsePerRcode(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_dns_response_rcode_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
@@ -230,7 +226,7 @@ func (cd *CoreDNS) collectSummaryResponseByRcode(mx *metrics, raw prometheus.Met
 	}
 }
 
-func (cd *CoreDNS) collectPerServerResponseByRcode(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_dns_response_rcode_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
