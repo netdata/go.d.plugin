@@ -20,6 +20,7 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	cd.collectSummaryRequests(mx, raw)
 	cd.collectSummaryRequestByType(mx, raw)
 	cd.collectSummaryResponseByRcode(mx, raw)
+	cd.collectSummaryRequestsDuration(mx, raw)
 
 	if cd.perServerMatcher != nil {
 		cd.collectPerServerRequests(mx, raw)
@@ -34,6 +35,27 @@ func (cd CoreDNS) collectPanic(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_panic_count_total"
 
 	mx.Panic.Set(raw.FindByName(metricName).Max())
+}
+
+func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+	metricName := "coredns_dns_request_duration_seconds_bucket"
+
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			server = metric.Labels.Get("server")
+			zone   = metric.Labels.Get("zone")
+			le     = metric.Labels.Get("le")
+			value  = metric.Value
+		)
+
+		if server == "" || zone == "" || le == "" {
+			continue
+		}
+
+		setRequestDuration(&mx.Summary.Request, value, le)
+	}
+
+	processRequestDuration(&mx.Summary.Request)
 }
 
 func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
@@ -306,6 +328,64 @@ func setResponseByRcode(mx *response, value float64, rcode string) {
 	case "BADCOOKIE":
 		mx.ByRcode.BADCOOKIE.Add(value)
 	}
+}
+
+func setRequestDuration(mx *request, value float64, le string) {
+	switch le {
+	case "0.00025":
+		mx.Duration.LE000025.Add(value)
+	case "0.0005":
+		mx.Duration.LE00005.Add(value)
+	case "0.001":
+		mx.Duration.LE0001.Add(value)
+	case "0.002":
+		mx.Duration.LE0002.Add(value)
+	case "0.004":
+		mx.Duration.LE0004.Add(value)
+	case "0.008":
+		mx.Duration.LE0008.Add(value)
+	case "0.016":
+		mx.Duration.LE0016.Add(value)
+	case "0.032":
+		mx.Duration.LE0032.Add(value)
+	case "0.064":
+		mx.Duration.LE0064.Add(value)
+	case "0.128":
+		mx.Duration.LE0128.Add(value)
+	case "0.256":
+		mx.Duration.LE0256.Add(value)
+	case "0.512":
+		mx.Duration.LE0512.Add(value)
+	case "1.024":
+		mx.Duration.LE1024.Add(value)
+	case "2.048":
+		mx.Duration.LE2048.Add(value)
+	case "4.096":
+		mx.Duration.LE4096.Add(value)
+	case "8.192":
+		mx.Duration.LE8192.Add(value)
+	case "+Inf":
+		mx.Duration.LEInf.Add(value)
+	}
+}
+
+func processRequestDuration(mx *request) {
+	mx.Duration.LEInf.Sub(mx.Duration.LE8192.Value())
+	mx.Duration.LE8192.Sub(mx.Duration.LE4096.Value())
+	mx.Duration.LE4096.Sub(mx.Duration.LE2048.Value())
+	mx.Duration.LE2048.Sub(mx.Duration.LE1024.Value())
+	mx.Duration.LE1024.Sub(mx.Duration.LE0512.Value())
+	mx.Duration.LE0512.Sub(mx.Duration.LE0256.Value())
+	mx.Duration.LE0256.Sub(mx.Duration.LE0128.Value())
+	mx.Duration.LE0128.Sub(mx.Duration.LE0064.Value())
+	mx.Duration.LE0064.Sub(mx.Duration.LE0032.Value())
+	mx.Duration.LE0032.Sub(mx.Duration.LE0016.Value())
+	mx.Duration.LE0016.Sub(mx.Duration.LE0008.Value())
+	mx.Duration.LE0008.Sub(mx.Duration.LE0004.Value())
+	mx.Duration.LE0004.Sub(mx.Duration.LE0002.Value())
+	mx.Duration.LE0002.Sub(mx.Duration.LE0001.Value())
+	mx.Duration.LE0001.Sub(mx.Duration.LE00005.Value())
+	mx.Duration.LE00005.Sub(mx.Duration.LE000025.Value())
 }
 
 func (cd *CoreDNS) addNewServerCharts(name string) {

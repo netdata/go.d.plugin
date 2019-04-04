@@ -57,6 +57,25 @@ type request struct {
 		ANY    mtx.Gauge `stm:"ANY"`
 		Other  mtx.Gauge `stm:"other"`
 	} `stm:"per_type"`
+	Duration struct {
+		LE000025 mtx.Gauge `stm:"0.00025"`
+		LE00005  mtx.Gauge `stm:"0.0005"`
+		LE0001   mtx.Gauge `stm:"0.001"`
+		LE0002   mtx.Gauge `stm:"0.002"`
+		LE0004   mtx.Gauge `stm:"0.004"`
+		LE0008   mtx.Gauge `stm:"0.008"`
+		LE0016   mtx.Gauge `stm:"0.016"`
+		LE0032   mtx.Gauge `stm:"0.032"`
+		LE0064   mtx.Gauge `stm:"0.064"`
+		LE0128   mtx.Gauge `stm:"0.128"`
+		LE0256   mtx.Gauge `stm:"0.256"`
+		LE0512   mtx.Gauge `stm:"0.512"`
+		LE1024   mtx.Gauge `stm:"1.024"`
+		LE2048   mtx.Gauge `stm:"2.048"`
+		LE4096   mtx.Gauge `stm:"4.096"`
+		LE8192   mtx.Gauge `stm:"8.192"`
+		LEInf    mtx.Gauge `stm:"+Inf"`
+	} `stm:"duration_seconds_bucket"`
 }
 
 // https://github.com/miekg/dns/blob/master/types.go
