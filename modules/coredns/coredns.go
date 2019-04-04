@@ -3,6 +3,7 @@ package coredns
 import (
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
@@ -31,25 +32,27 @@ func New() *CoreDNS {
 		},
 	}
 	return &CoreDNS{
-		Config:        config,
-		charts:        summaryCharts.Copy(),
-		activeServers: make(map[string]bool),
+		Config:           config,
+		charts:           summaryCharts.Copy(),
+		collectedServers: make(map[string]bool),
 	}
 }
 
 // Config is the CoreDNS module configuration.
 type Config struct {
-	web.HTTP `yaml:",inline"`
+	web.HTTP                 `yaml:",inline"`
+	PerServerStatsPermitFrom string `yaml:"per_server_stats_permit_for"`
+	//PerZoneStatsPermitFrom   string `yaml:"per_zone_stats_permit_for"`
 }
 
 // CoreDNS CoreDNS module.
 type CoreDNS struct {
 	module.Base
-	Config `yaml:",inline"`
-
-	prom          prometheus.Prometheus
-	charts        *Charts
-	activeServers map[string]bool
+	Config           `yaml:",inline"`
+	perServerMatcher matcher.Matcher
+	prom             prometheus.Prometheus
+	charts           *Charts
+	collectedServers map[string]bool
 }
 
 // Cleanup makes cleanup.
@@ -60,6 +63,16 @@ func (cd *CoreDNS) Init() bool {
 	if cd.URL == "" {
 		cd.Error("URL parameter is not set")
 		return false
+	}
+
+	if cd.PerServerStatsPermitFrom != "" {
+		m, err := matcher.Parse(cd.PerServerStatsPermitFrom)
+		if err != nil {
+			cd.Errorf("error on creating 'per_server_stats_permit_for' matcher from '%s' : %v",
+				cd.PerServerStatsPermitFrom, err)
+			return false
+		}
+		cd.perServerMatcher = matcher.WithCache(m)
 	}
 
 	client, err := web.NewHTTPClient(cd.Client)

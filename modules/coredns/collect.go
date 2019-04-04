@@ -21,9 +21,11 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	cd.collectSummaryRequestByType(mx, raw)
 	cd.collectSummaryResponseByRcode(mx, raw)
 
-	cd.collectPerServerRequests(mx, raw)
-	cd.collectPerServerRequestByType(mx, raw)
-	cd.collectPerServerResponseByRcode(mx, raw)
+	if cd.perServerMatcher != nil {
+		cd.collectPerServerRequests(mx, raw)
+		cd.collectPerServerRequestByType(mx, raw)
+		cd.collectPerServerResponseByRcode(mx, raw)
+	}
 
 	return stm.ToMap(mx), nil
 }
@@ -75,9 +77,13 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 			continue
 		}
 
-		if !cd.activeServers[server] {
+		if !cd.perServerMatcher.MatchString(server) {
+			continue
+		}
+
+		if !cd.collectedServers[server] {
 			cd.addNewServerCharts(server)
-			cd.activeServers[server] = true
+			cd.collectedServers[server] = true
 		}
 
 		if mx.PerServer[server] == nil {
@@ -124,9 +130,13 @@ func (cd *CoreDNS) collectPerServerRequestByType(mx *metrics, raw prometheus.Met
 			continue
 		}
 
-		if !cd.activeServers[server] {
+		if !cd.perServerMatcher.MatchString(server) {
+			continue
+		}
+
+		if !cd.collectedServers[server] {
 			cd.addNewServerCharts(server)
-			cd.activeServers[server] = true
+			cd.collectedServers[server] = true
 		}
 
 		if mx.PerServer[server] == nil {
@@ -173,9 +183,13 @@ func (cd *CoreDNS) collectPerServerResponseByRcode(mx *metrics, raw prometheus.M
 			continue
 		}
 
-		if !cd.activeServers[server] {
+		if !cd.perServerMatcher.MatchString(server) {
+			continue
+		}
+
+		if !cd.collectedServers[server] {
 			cd.addNewServerCharts(server)
-			cd.activeServers[server] = true
+			cd.collectedServers[server] = true
 		}
 
 		if mx.PerServer[server] == nil {
