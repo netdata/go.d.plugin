@@ -26,6 +26,7 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 		cd.collectPerServerRequests(mx, raw)
 		cd.collectPerServerRequestByType(mx, raw)
 		cd.collectPerServerResponseByRcode(mx, raw)
+		cd.collectPerServerRequestsDuration(mx, raw)
 	}
 
 	return stm.ToMap(mx), nil
@@ -56,6 +57,45 @@ func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Me
 	}
 
 	processRequestDuration(&mx.Summary.Request)
+}
+
+func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+	metricName := "coredns_dns_request_duration_seconds_bucket"
+
+	var req *request
+
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			server = metric.Labels.Get("server")
+			zone   = metric.Labels.Get("zone")
+			le     = metric.Labels.Get("le")
+			value  = metric.Value
+		)
+
+		if server == "" || zone == "" || le == "" {
+			continue
+		}
+
+		if !cd.perServerMatcher.MatchString(server) {
+			continue
+		}
+
+		if !cd.collectedServers[server] {
+			cd.addNewServerCharts(server)
+			cd.collectedServers[server] = true
+		}
+
+		if _, ok := mx.PerServer[server]; !ok {
+			mx.PerServer[server] = &requestResponse{}
+		}
+
+		req = &mx.PerServer[server].Request
+		setRequestDuration(req, value, le)
+	}
+
+	if req != nil {
+		processRequestDuration(req)
+	}
 }
 
 func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
@@ -108,7 +148,7 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 			cd.collectedServers[server] = true
 		}
 
-		if mx.PerServer[server] == nil {
+		if _, ok := mx.PerServer[server]; !ok {
 			mx.PerServer[server] = &requestResponse{}
 		}
 
@@ -161,7 +201,7 @@ func (cd *CoreDNS) collectPerServerRequestByType(mx *metrics, raw prometheus.Met
 			cd.collectedServers[server] = true
 		}
 
-		if mx.PerServer[server] == nil {
+		if _, ok := mx.PerServer[server]; !ok {
 			mx.PerServer[server] = &requestResponse{}
 		}
 
@@ -214,7 +254,7 @@ func (cd *CoreDNS) collectPerServerResponseByRcode(mx *metrics, raw prometheus.M
 			cd.collectedServers[server] = true
 		}
 
-		if mx.PerServer[server] == nil {
+		if _, ok := mx.PerServer[server]; !ok {
 			mx.PerServer[server] = &requestResponse{}
 		}
 
