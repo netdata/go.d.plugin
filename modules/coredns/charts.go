@@ -177,30 +177,30 @@ var summaryCharts = Charts{
 
 var serverCharts = Charts{
 	{
-		ID:    "per_%s_dns_request_count_total",
-		Title: "Number Of DNS Requests, Server %s",
+		ID:    "per_%s_%s_dns_request_count_total",
+		Title: "Number Of DNS Requests, %s %s",
 		Units: "requests/s",
-		Fam:   "server %s",
+		Fam:   "%s %s",
 		Ctx:   "coredns.dns_request_count_total",
 		Dims: Dims{
 			{ID: "%s_request_total", Name: "requests", Algo: module.Incremental},
 		},
 	},
 	{
-		ID:    "per_%s_dns_responses_count_total",
-		Title: "Number Of DNS Responses, Server %s",
+		ID:    "per_%s_%s_dns_responses_count_total",
+		Title: "Number Of DNS Responses, %s %s",
 		Units: "responses/s",
-		Fam:   "server %s",
+		Fam:   "%s %s",
 		Ctx:   "coredns.dns_responses_count_total",
 		Dims: Dims{
 			{ID: "%s_response_total", Name: "responses", Algo: module.Incremental},
 		},
 	},
 	{
-		ID:    "per_%s_dns_request_count_total_per_status",
-		Title: "Number Of Processed And Dropped DNS Requests, Server %s",
+		ID:    "per_%s_%s_dns_request_count_total_per_status",
+		Title: "Number Of Processed And Dropped DNS Requests, %s %s",
 		Units: "requests/s",
-		Fam:   "server %s",
+		Fam:   "%s %s",
 		Ctx:   "coredns.dns_request_count_total_per_status",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -209,10 +209,10 @@ var serverCharts = Charts{
 		},
 	},
 	{
-		ID:    "per_%s_dns_requests_count_total_per_proto",
-		Title: "Number Of DNS Requests Per Transport Protocol, Server %s",
+		ID:    "per_%s_%s_dns_requests_count_total_per_proto",
+		Title: "Number Of DNS Requests Per Transport Protocol, %s %s",
 		Units: "requests/s",
-		Fam:   "server %s",
+		Fam:   "%s %s",
 		Ctx:   "coredns.dns_requests_count_total_per_proto",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -221,10 +221,10 @@ var serverCharts = Charts{
 		},
 	},
 	{
-		ID:    "per_%s_dns_requests_count_total_per_ip_family",
-		Title: "Number Of DNS Requests Per IP Family, Server %s",
+		ID:    "per_%s_%s_dns_requests_count_total_per_ip_family",
+		Title: "Number Of DNS Requests Per IP Family, %s %s",
 		Units: "requests/s",
-		Fam:   "server %s",
+		Fam:   "%s %s",
 		Ctx:   "coredns.dns_requests_count_total_per_ip_family",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -233,10 +233,10 @@ var serverCharts = Charts{
 		},
 	},
 	{
-		ID:    "per_%s_dns_requests_duration_seconds",
-		Title: "Number Of DNS Requests Per Bucket, Server %s",
+		ID:    "per_%s_%s_dns_requests_duration_seconds",
+		Title: "Number Of DNS Requests Per Bucket, %s %s",
 		Units: "requests/s",
-		Fam:   "server %s",
+		Fam:   "%s %s",
 		Ctx:   "coredns.dns_requests_duration_seconds",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -260,10 +260,10 @@ var serverCharts = Charts{
 		},
 	},
 	{
-		ID:    "per_%s_dns_requests_count_total_per_type",
-		Title: "Number Of DNS Requests Per Type, Server %s",
+		ID:    "per_%s_%s_dns_requests_count_total_per_type",
+		Title: "Number Of DNS Requests Per Type, %s %s",
 		Units: "requests/s",
-		Fam:   "server %s",
+		Fam:   "%s %s",
 		Ctx:   "coredns.dns_requests_count_total_per_per_type",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -286,10 +286,10 @@ var serverCharts = Charts{
 		},
 	},
 	{
-		ID:    "per_%s_dns_responses_count_total_per_rcode",
-		Title: "Number Of DNS Responses Per Rcode, Server %s",
+		ID:    "per_%s_%s_dns_responses_count_total_per_rcode",
+		Title: "Number Of DNS Responses Per Rcode, %s %s",
 		Units: "responses/s",
-		Fam:   "server %s",
+		Fam:   "%s %s",
 		Ctx:   "coredns.dns_responses_count_total_per_rcode",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -316,3 +316,9 @@ var serverCharts = Charts{
 		},
 	},
 }
+
+var zoneCharts = func() Charts {
+	c := serverCharts.Copy()
+	_ = c.Remove("per_%s_%s_dns_request_count_total_per_status")
+	return *c
+}()

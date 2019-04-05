@@ -7,6 +7,7 @@ import (
 func newMetrics() *metrics {
 	mx := &metrics{}
 	mx.PerServer = make(map[string]*requestResponse)
+	mx.PerZone = make(map[string]*requestResponse)
 
 	return mx
 }
@@ -16,6 +17,7 @@ type metrics struct {
 	NoZoneDropped mtx.Gauge                   `stm:"no_matching_zone_dropped_total"`
 	Summary       requestResponse             `stm:""`
 	PerServer     map[string]*requestResponse `stm:""`
+	PerZone       map[string]*requestResponse `stm:""`
 }
 
 type requestResponse struct {
@@ -24,21 +26,21 @@ type requestResponse struct {
 }
 
 type request struct {
-	Total    mtx.Gauge `stm:"total"`
-	ByStatus struct {
+	Total     mtx.Gauge `stm:"total"`
+	PerStatus struct {
 		Processed mtx.Gauge `stm:"processed"`
 		Dropped   mtx.Gauge `stm:"dropped"`
 	} `stm:"per_status"`
-	ByProto struct {
+	PerProto struct {
 		UDP mtx.Gauge `stm:"udp"`
 		TCP mtx.Gauge `stm:"tcp"`
 	} `stm:"per_proto"`
-	ByIPFamily struct {
+	PerIPFamily struct {
 		IPv4 mtx.Gauge `stm:"v4"`
 		IPv6 mtx.Gauge `stm:"v6"`
 	} `stm:"per_ip_family"`
 	// https://github.com/coredns/coredns/blob/master/plugin/metrics/vars/report.go
-	ByType struct {
+	PerType struct {
 		A      mtx.Gauge `stm:"A"`
 		AAAA   mtx.Gauge `stm:"AAAA"`
 		MX     mtx.Gauge `stm:"MX"`
@@ -81,8 +83,8 @@ type request struct {
 // https://github.com/miekg/dns/blob/master/types.go
 // https://github.com/miekg/dns/blob/master/msg.go#L169
 type response struct {
-	Total   mtx.Gauge `stm:"total"`
-	ByRcode struct {
+	Total    mtx.Gauge `stm:"total"`
+	PerRcode struct {
 		NOERROR   mtx.Gauge `stm:"NOERROR"`
 		FORMERR   mtx.Gauge `stm:"FORMERR"`
 		SERVFAIL  mtx.Gauge `stm:"SERVFAIL"`

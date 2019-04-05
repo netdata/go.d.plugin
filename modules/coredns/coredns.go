@@ -35,6 +35,7 @@ func New() *CoreDNS {
 		Config:           config,
 		charts:           summaryCharts.Copy(),
 		collectedServers: make(map[string]bool),
+		collectedZones:   make(map[string]bool),
 	}
 }
 
@@ -51,9 +52,10 @@ type CoreDNS struct {
 	Config           `yaml:",inline"`
 	charts           *Charts
 	prom             prometheus.Prometheus
-	perServerStats   matcher.Matcher
-	perZoneStats     matcher.Matcher
+	perServerMatcher matcher.Matcher
+	perZoneMatcher   matcher.Matcher
 	collectedServers map[string]bool
+	collectedZones   map[string]bool
 }
 
 // Cleanup makes cleanup.
@@ -72,7 +74,7 @@ func (cd *CoreDNS) Init() bool {
 			cd.Errorf("error on creating 'per_server_stats' ('%s') matcher : %v", cd.PerServerStats, err)
 			return false
 		}
-		cd.perServerStats = matcher.WithCache(m)
+		cd.perServerMatcher = matcher.WithCache(m)
 	}
 
 	if cd.PerZoneStats != "" {
@@ -81,7 +83,7 @@ func (cd *CoreDNS) Init() bool {
 			cd.Errorf("error on creating 'per_zone_stats' ('%s') matcher : %v", cd.PerZoneStats, err)
 			return false
 		}
-		cd.perZoneStats = matcher.WithCache(m)
+		cd.perZoneMatcher = matcher.WithCache(m)
 	}
 
 	client, err := web.NewHTTPClient(cd.Client)

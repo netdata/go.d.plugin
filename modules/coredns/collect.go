@@ -22,79 +22,26 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	cd.collectSummaryResponsePerRcode(mx, raw)
 	cd.collectSummaryRequestsDuration(mx, raw)
 
-	if cd.perServerStats != nil {
+	if cd.perServerMatcher != nil {
 		cd.collectPerServerRequests(mx, raw)
 		cd.collectPerServerRequestPerType(mx, raw)
 		cd.collectPerServerResponsePerRcode(mx, raw)
 		cd.collectPerServerRequestsDuration(mx, raw)
 	}
 
-	if cd.perZoneStats != nil {
+	if cd.perZoneMatcher != nil {
+		cd.collectPerZoneRequests(mx, raw)
 	}
 
 	return stm.ToMap(mx), nil
 }
 
+// Summary
+
 func (cd CoreDNS) collectPanic(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_panic_count_total"
 
 	mx.Panic.Set(raw.FindByName(metricName).Max())
-}
-
-func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Metrics) {
-	metricName := "coredns_dns_request_duration_seconds_bucket"
-
-	for _, metric := range raw.FindByName(metricName) {
-		var (
-			server = metric.Labels.Get("server")
-			zone   = metric.Labels.Get("zone")
-			le     = metric.Labels.Get("le")
-			value  = metric.Value
-		)
-
-		if server == "" || zone == "" || le == "" {
-			continue
-		}
-
-		setRequestDuration(&mx.Summary.Request, value, le)
-	}
-
-	processRequestDuration(&mx.Summary.Request)
-}
-
-func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.Metrics) {
-	metricName := "coredns_dns_request_duration_seconds_bucket"
-
-	for _, metric := range raw.FindByName(metricName) {
-		var (
-			server = metric.Labels.Get("server")
-			zone   = metric.Labels.Get("zone")
-			le     = metric.Labels.Get("le")
-			value  = metric.Value
-		)
-
-		if server == "" || zone == "" || le == "" {
-			continue
-		}
-
-		if !cd.perServerStats.MatchString(server) {
-			continue
-		}
-
-		if !cd.collectedServers[server] {
-			cd.addNewServerCharts(server)
-			cd.collectedServers[server] = true
-		}
-
-		if _, ok := mx.PerServer[server]; !ok {
-			mx.PerServer[server] = &requestResponse{}
-		}
-
-		setRequestDuration(&mx.PerServer[server].Request, value, le)
-	}
-	for _, s := range mx.PerServer {
-		processRequestDuration(&s.Request)
-	}
 }
 
 func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
@@ -118,42 +65,10 @@ func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
 			continue
 		}
 
-		setRequestTotal(&mx.Summary.Request, value, family, proto, zone)
-	}
-}
-
-func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics) {
-	metricName := "coredns_dns_request_count_total"
-
-	for _, metric := range raw.FindByName(metricName) {
-		var (
-			family = metric.Labels.Get("family")
-			proto  = metric.Labels.Get("proto")
-			zone   = metric.Labels.Get("zone")
-			server = metric.Labels.Get("server")
-			value  = metric.Value
-		)
-
-		if family == "" || proto == "" || zone == "" || server == "" {
-			continue
-		}
-
-		if !cd.perServerStats.MatchString(server) {
-			continue
-		}
-
-		if !cd.collectedServers[server] {
-			cd.addNewServerCharts(server)
-			cd.collectedServers[server] = true
-		}
-
-		if _, ok := mx.PerServer[server]; !ok {
-			mx.PerServer[server] = &requestResponse{}
-		}
-
-		srvMX := mx.PerServer[server]
-
-		setRequestTotal(&srvMX.Request, value, family, proto, zone)
+		mx.Summary.Request.Total.Add(value)
+		setRequestPerIPFamily(&mx.Summary.Request, value, family)
+		setRequestPerProto(&mx.Summary.Request, value, proto)
+		setRequestPerStatus(&mx.Summary.Request, value, zone)
 	}
 }
 
@@ -172,41 +87,7 @@ func (cd *CoreDNS) collectSummaryRequestPerType(mx *metrics, raw prometheus.Metr
 			continue
 		}
 
-		setRequestByType(&mx.Summary.Request, value, typ)
-	}
-}
-
-func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Metrics) {
-	metricName := "coredns_dns_request_type_count_total"
-
-	for _, metric := range raw.FindByName(metricName) {
-		var (
-			typ    = metric.Labels.Get("type")
-			zone   = metric.Labels.Get("zone")
-			server = metric.Labels.Get("server")
-			value  = metric.Value
-		)
-
-		if typ == "" || zone == "" || zone == "dropped" || server == "" {
-			continue
-		}
-
-		if !cd.perServerStats.MatchString(server) {
-			continue
-		}
-
-		if !cd.collectedServers[server] {
-			cd.addNewServerCharts(server)
-			cd.collectedServers[server] = true
-		}
-
-		if _, ok := mx.PerServer[server]; !ok {
-			mx.PerServer[server] = &requestResponse{}
-		}
-
-		srvMX := mx.PerServer[server]
-
-		setRequestByType(&srvMX.Request, value, typ)
+		setRequestPerType(&mx.Summary.Request, value, typ)
 	}
 }
 
@@ -225,7 +106,100 @@ func (cd *CoreDNS) collectSummaryResponsePerRcode(mx *metrics, raw prometheus.Me
 			continue
 		}
 
-		setResponseByRcode(&mx.Summary.Response, value, rcode)
+		setResponsePerRcode(&mx.Summary.Response, value, rcode)
+	}
+}
+
+func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+	metricName := "coredns_dns_request_duration_seconds_bucket"
+
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			server = metric.Labels.Get("server")
+			zone   = metric.Labels.Get("zone")
+			le     = metric.Labels.Get("le")
+			value  = metric.Value
+		)
+
+		if server == "" || zone == "" || le == "" {
+			continue
+		}
+
+		setRequestDuration(&mx.Summary.Request, value, le)
+	}
+	processRequestDuration(&mx.Summary.Request)
+}
+
+// Per Server
+
+func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics) {
+	metricName := "coredns_dns_request_count_total"
+
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			family = metric.Labels.Get("family")
+			proto  = metric.Labels.Get("proto")
+			zone   = metric.Labels.Get("zone")
+			server = metric.Labels.Get("server")
+			value  = metric.Value
+		)
+
+		if family == "" || proto == "" || zone == "" || server == "" {
+			continue
+		}
+
+		if !cd.perServerMatcher.MatchString(server) {
+			continue
+		}
+
+		if !cd.collectedServers[server] {
+			cd.addNewServerCharts(server)
+			cd.collectedServers[server] = true
+		}
+
+		if _, ok := mx.PerServer[server]; !ok {
+			mx.PerServer[server] = &requestResponse{}
+		}
+
+		srvMX := mx.PerServer[server]
+		srvMX.Request.Total.Add(value)
+		setRequestPerIPFamily(&srvMX.Request, value, family)
+		setRequestPerProto(&srvMX.Request, value, proto)
+		setRequestPerStatus(&srvMX.Request, value, zone)
+	}
+}
+
+func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Metrics) {
+	metricName := "coredns_dns_request_type_count_total"
+
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			typ    = metric.Labels.Get("type")
+			zone   = metric.Labels.Get("zone")
+			server = metric.Labels.Get("server")
+			value  = metric.Value
+		)
+
+		if typ == "" || zone == "" || zone == "dropped" || server == "" {
+			continue
+		}
+
+		if !cd.perServerMatcher.MatchString(server) {
+			continue
+		}
+
+		if !cd.collectedServers[server] {
+			cd.addNewServerCharts(server)
+			cd.collectedServers[server] = true
+		}
+
+		if _, ok := mx.PerServer[server]; !ok {
+			mx.PerServer[server] = &requestResponse{}
+		}
+
+		srvMX := mx.PerServer[server]
+
+		setRequestPerType(&srvMX.Request, value, typ)
 	}
 }
 
@@ -244,7 +218,7 @@ func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.
 			continue
 		}
 
-		if !cd.perServerStats.MatchString(server) {
+		if !cd.perServerMatcher.MatchString(server) {
 			continue
 		}
 
@@ -257,115 +231,193 @@ func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.
 			mx.PerServer[server] = &requestResponse{}
 		}
 
-		setResponseByRcode(&mx.PerServer[server].Response, value, rcode)
+		setResponsePerRcode(&mx.PerServer[server].Response, value, rcode)
 	}
 }
 
-func setRequestTotal(mx *request, value float64, family, proto, zone string) {
-	mx.Total.Add(value)
+func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+	metricName := "coredns_dns_request_duration_seconds_bucket"
 
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			server = metric.Labels.Get("server")
+			zone   = metric.Labels.Get("zone")
+			le     = metric.Labels.Get("le")
+			value  = metric.Value
+		)
+
+		if server == "" || zone == "" || le == "" {
+			continue
+		}
+
+		if !cd.perServerMatcher.MatchString(server) {
+			continue
+		}
+
+		if !cd.collectedServers[server] {
+			cd.addNewServerCharts(server)
+			cd.collectedServers[server] = true
+		}
+
+		if _, ok := mx.PerServer[server]; !ok {
+			mx.PerServer[server] = &requestResponse{}
+		}
+
+		setRequestDuration(&mx.PerServer[server].Request, value, le)
+	}
+	for _, s := range mx.PerServer {
+		processRequestDuration(&s.Request)
+	}
+}
+
+// Per Zone
+
+func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Metrics) {
+	metricName := "coredns_dns_request_count_total"
+
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			family = metric.Labels.Get("family")
+			proto  = metric.Labels.Get("proto")
+			zone   = metric.Labels.Get("zone")
+			value  = metric.Value
+		)
+
+		if family == "" || proto == "" || zone == "" {
+			continue
+		}
+
+		if !cd.perZoneMatcher.MatchString(zone) {
+			continue
+		}
+
+		if !cd.collectedZones[zone] {
+			cd.addNewZoneCharts(zone)
+			cd.collectedZones[zone] = true
+		}
+
+		if _, ok := mx.PerZone[zone]; !ok {
+			mx.PerZone[zone] = &requestResponse{}
+		}
+
+		zoneMX := mx.PerZone[zone]
+		zoneMX.Request.Total.Add(value)
+		setRequestPerIPFamily(&zoneMX.Request, value, family)
+		setRequestPerProto(&zoneMX.Request, value, proto)
+	}
+}
+
+// ---
+
+func setRequestPerIPFamily(mx *request, value float64, family string) {
 	switch family {
 	case "1":
-		mx.ByIPFamily.IPv4.Add(value)
+		mx.PerIPFamily.IPv4.Add(value)
 	case "2":
-		mx.ByIPFamily.IPv6.Add(value)
+		mx.PerIPFamily.IPv6.Add(value)
 	}
+}
+
+func setRequestPerProto(mx *request, value float64, proto string) {
 	switch proto {
 	case "udp":
-		mx.ByProto.UDP.Add(value)
+		mx.PerProto.UDP.Add(value)
 	case "tcp":
-		mx.ByProto.TCP.Add(value)
+		mx.PerProto.TCP.Add(value)
 	}
+}
+
+func setRequestPerStatus(mx *request, value float64, zone string) {
 	switch zone {
 	default:
-		mx.ByStatus.Processed.Add(value)
+		mx.PerStatus.Processed.Add(value)
 	case "dropped":
-		mx.ByStatus.Dropped.Add(value)
-		mx.ByStatus.Processed.Sub(value)
+		mx.PerStatus.Dropped.Add(value)
+		mx.PerStatus.Processed.Sub(value)
 	}
 }
 
-func setRequestByType(mx *request, value float64, typ string) {
+func setRequestPerType(mx *request, value float64, typ string) {
 	switch typ {
 	default:
-		mx.ByType.Other.Add(value)
+		mx.PerType.Other.Add(value)
 	case "A":
-		mx.ByType.A.Add(value)
+		mx.PerType.A.Add(value)
 	case "AAAA":
-		mx.ByType.AAAA.Add(value)
+		mx.PerType.AAAA.Add(value)
 	case "MX":
-		mx.ByType.MX.Add(value)
+		mx.PerType.MX.Add(value)
 	case "SOA":
-		mx.ByType.SOA.Add(value)
+		mx.PerType.SOA.Add(value)
 	case "CNAME":
-		mx.ByType.CNAME.Add(value)
+		mx.PerType.CNAME.Add(value)
 	case "PTR":
-		mx.ByType.PTR.Add(value)
+		mx.PerType.PTR.Add(value)
 	case "TXT":
-		mx.ByType.TXT.Add(value)
+		mx.PerType.TXT.Add(value)
 	case "NS":
-		mx.ByType.NS.Add(value)
+		mx.PerType.NS.Add(value)
 	case "DS":
-		mx.ByType.DS.Add(value)
+		mx.PerType.DS.Add(value)
 	case "DNSKEY":
-		mx.ByType.DNSKEY.Add(value)
+		mx.PerType.DNSKEY.Add(value)
 	case "RRSIG":
-		mx.ByType.RRSIG.Add(value)
+		mx.PerType.RRSIG.Add(value)
 	case "NSEC":
-		mx.ByType.NSEC.Add(value)
+		mx.PerType.NSEC.Add(value)
 	case "NSEC3":
-		mx.ByType.NSEC3.Add(value)
+		mx.PerType.NSEC3.Add(value)
 	case "IXFR":
-		mx.ByType.IXFR.Add(value)
+		mx.PerType.IXFR.Add(value)
 	case "ANY":
-		mx.ByType.ANY.Add(value)
+		mx.PerType.ANY.Add(value)
 	}
 }
 
-func setResponseByRcode(mx *response, value float64, rcode string) {
+func setResponsePerRcode(mx *response, value float64, rcode string) {
 	mx.Total.Add(value)
 
 	switch rcode {
 	default:
-		mx.ByRcode.Other.Add(value)
+		mx.PerRcode.Other.Add(value)
 	case "NOERROR":
-		mx.ByRcode.NOERROR.Add(value)
+		mx.PerRcode.NOERROR.Add(value)
 	case "FORMERR":
-		mx.ByRcode.FORMERR.Add(value)
+		mx.PerRcode.FORMERR.Add(value)
 	case "SERVFAIL":
-		mx.ByRcode.SERVFAIL.Add(value)
+		mx.PerRcode.SERVFAIL.Add(value)
 	case "NXDOMAIN":
-		mx.ByRcode.NXDOMAIN.Add(value)
+		mx.PerRcode.NXDOMAIN.Add(value)
 	case "NOTIMP":
-		mx.ByRcode.NOTIMP.Add(value)
+		mx.PerRcode.NOTIMP.Add(value)
 	case "REFUSED":
-		mx.ByRcode.REFUSED.Add(value)
+		mx.PerRcode.REFUSED.Add(value)
 	case "YXDOMAIN":
-		mx.ByRcode.YXDOMAIN.Add(value)
+		mx.PerRcode.YXDOMAIN.Add(value)
 	case "YXRRSET":
-		mx.ByRcode.YXRRSET.Add(value)
+		mx.PerRcode.YXRRSET.Add(value)
 	case "NXRRSET":
-		mx.ByRcode.NXRRSET.Add(value)
+		mx.PerRcode.NXRRSET.Add(value)
 	case "NOTAUTH":
-		mx.ByRcode.NOTAUTH.Add(value)
+		mx.PerRcode.NOTAUTH.Add(value)
 	case "NOTZONE":
-		mx.ByRcode.NOTZONE.Add(value)
+		mx.PerRcode.NOTZONE.Add(value)
 	case "BADSIG":
-		mx.ByRcode.BADSIG.Add(value)
+		mx.PerRcode.BADSIG.Add(value)
 	case "BADKEY":
-		mx.ByRcode.BADKEY.Add(value)
+		mx.PerRcode.BADKEY.Add(value)
 	case "BADTIME":
-		mx.ByRcode.BADTIME.Add(value)
+		mx.PerRcode.BADTIME.Add(value)
 	case "BADMODE":
-		mx.ByRcode.BADMODE.Add(value)
+		mx.PerRcode.BADMODE.Add(value)
 	case "BADNAME":
-		mx.ByRcode.BADNAME.Add(value)
+		mx.PerRcode.BADNAME.Add(value)
 	case "BADALG":
-		mx.ByRcode.BADALG.Add(value)
+		mx.PerRcode.BADALG.Add(value)
 	case "BADTRUNC":
-		mx.ByRcode.BADTRUNC.Add(value)
+		mx.PerRcode.BADTRUNC.Add(value)
 	case "BADCOOKIE":
-		mx.ByRcode.BADCOOKIE.Add(value)
+		mx.PerRcode.BADCOOKIE.Add(value)
 	}
 }
 
@@ -427,12 +479,28 @@ func processRequestDuration(mx *request) {
 	mx.Duration.LE00005.Sub(mx.Duration.LE000025.Value())
 }
 
+// ---
+
 func (cd *CoreDNS) addNewServerCharts(name string) {
 	charts := serverCharts.Copy()
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, name)
-		chart.Title = fmt.Sprintf(chart.Title, name)
-		chart.Fam = fmt.Sprintf(chart.Fam, name)
+		chart.ID = fmt.Sprintf(chart.ID, "server", name)
+		chart.Title = fmt.Sprintf(chart.Title, "Server", name)
+		chart.Fam = fmt.Sprintf(chart.Fam, "server", name)
+
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, name)
+		}
+	}
+	_ = cd.charts.Add(*charts...)
+}
+
+func (cd *CoreDNS) addNewZoneCharts(name string) {
+	charts := zoneCharts.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, "zone", name)
+		chart.Title = fmt.Sprintf(chart.Title, "Zone", name)
+		chart.Fam = fmt.Sprintf(chart.Fam, "zone", name)
 
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, name)
