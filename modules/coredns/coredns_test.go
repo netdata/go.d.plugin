@@ -66,7 +66,7 @@ func TestCoreDNS_Collect(t *testing.T) {
 
 	job := New()
 	job.URL = ts.URL + "/metrics"
-	job.PerServerStatsPermitFrom = "glob:*"
+	job.PerServerStats = "glob:*"
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 

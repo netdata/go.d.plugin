@@ -40,18 +40,19 @@ func New() *CoreDNS {
 
 // Config is the CoreDNS module configuration.
 type Config struct {
-	web.HTTP                 `yaml:",inline"`
-	PerServerStatsPermitFrom string `yaml:"per_server_stats_permit_for"`
-	//PerZoneStatsPermitFrom   string `yaml:"per_zone_stats_permit_for"`
+	web.HTTP       `yaml:",inline"`
+	PerServerStats string `yaml:"per_server_stats"`
+	PerZoneStats   string `yaml:"per_zone_stats"`
 }
 
 // CoreDNS CoreDNS module.
 type CoreDNS struct {
 	module.Base
 	Config           `yaml:",inline"`
-	perServerMatcher matcher.Matcher
-	prom             prometheus.Prometheus
 	charts           *Charts
+	prom             prometheus.Prometheus
+	perServerStats   matcher.Matcher
+	perZoneStats     matcher.Matcher
 	collectedServers map[string]bool
 }
 
@@ -65,14 +66,22 @@ func (cd *CoreDNS) Init() bool {
 		return false
 	}
 
-	if cd.PerServerStatsPermitFrom != "" {
-		m, err := matcher.Parse(cd.PerServerStatsPermitFrom)
+	if cd.PerServerStats != "" {
+		m, err := matcher.Parse(cd.PerServerStats)
 		if err != nil {
-			cd.Errorf("error on creating 'per_server_stats_permit_for' matcher from '%s' : %v",
-				cd.PerServerStatsPermitFrom, err)
+			cd.Errorf("error on creating 'per_server_stats' ('%s') matcher : %v", cd.PerServerStats, err)
 			return false
 		}
-		cd.perServerMatcher = matcher.WithCache(m)
+		cd.perServerStats = matcher.WithCache(m)
+	}
+
+	if cd.PerZoneStats != "" {
+		m, err := matcher.Parse(cd.PerZoneStats)
+		if err != nil {
+			cd.Errorf("error on creating 'per_zone_stats' ('%s') matcher : %v", cd.PerZoneStats, err)
+			return false
+		}
+		cd.perZoneStats = matcher.WithCache(m)
 	}
 
 	client, err := web.NewHTTPClient(cd.Client)

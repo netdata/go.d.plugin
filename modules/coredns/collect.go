@@ -22,11 +22,14 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	cd.collectSummaryResponsePerRcode(mx, raw)
 	cd.collectSummaryRequestsDuration(mx, raw)
 
-	if cd.perServerMatcher != nil {
+	if cd.perServerStats != nil {
 		cd.collectPerServerRequests(mx, raw)
 		cd.collectPerServerRequestPerType(mx, raw)
 		cd.collectPerServerResponsePerRcode(mx, raw)
 		cd.collectPerServerRequestsDuration(mx, raw)
+	}
+
+	if cd.perZoneStats != nil {
 	}
 
 	return stm.ToMap(mx), nil
@@ -74,7 +77,7 @@ func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.
 			continue
 		}
 
-		if !cd.perServerMatcher.MatchString(server) {
+		if !cd.perServerStats.MatchString(server) {
 			continue
 		}
 
@@ -135,7 +138,7 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 			continue
 		}
 
-		if !cd.perServerMatcher.MatchString(server) {
+		if !cd.perServerStats.MatchString(server) {
 			continue
 		}
 
@@ -188,7 +191,7 @@ func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Me
 			continue
 		}
 
-		if !cd.perServerMatcher.MatchString(server) {
+		if !cd.perServerStats.MatchString(server) {
 			continue
 		}
 
@@ -241,7 +244,7 @@ func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.
 			continue
 		}
 
-		if !cd.perServerMatcher.MatchString(server) {
+		if !cd.perServerStats.MatchString(server) {
 			continue
 		}
 
