@@ -162,7 +162,7 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 			value  = metric.Value
 		)
 
-		if family == empty || proto == empty || zone == empty || zone == dropped && server != empty {
+		if family == empty || proto == empty || zone == empty {
 			continue
 		}
 
@@ -186,6 +186,11 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 		srv := mx.PerServer[server]
 
 		setRequestPerStatus(&srv.Request, value, server, zone)
+
+		if zone == dropped && server != emptyServerReplaceName {
+			continue
+		}
+
 		srv.Request.Total.Add(value)
 		setRequestPerIPFamily(&srv.Request, value, family)
 		setRequestPerProto(&srv.Request, value, proto)
