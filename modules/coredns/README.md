@@ -5,7 +5,8 @@ This module will monitor one or more coredns instances.
 
 It produces the following charts:
 
- - Summary:
+<br>
+Summary:
 
 1. **Number Of DNS Requests** in requests/s
 
@@ -18,20 +19,15 @@ It produces the following charts:
 5. **Number Of Panics** in panics/s
 
 6. **Number Of DNS Requests Per Transport Protocol** in requests/s
- * TCP, UDP
 
 7. **Number Of DNS Requests Per IP Family** in requests/s
- * IPv4, IPv6
 
 8. **Number Of DNS Requests Per Type** in requests/s
- * A, AAAA, MX, SOA, CNAME, PTR, TXT, NS, DS, DNSKEY, RRSIG, NSEC, NSEC3, IXFR, ANY, other
  
 9. **Number Of DNS Responses Per Rcode** in responses/s
- * NOERROR, FORMERR, SERVFAIL, NXDOMAIN, NOTIMP, REFUSED, YXDOMAIN, YXRESET, NSRESET
- * NOTAUTH, NOTZONE, BADSIG, BADKEY, BADTIME, BADMODE, BADNAME, BADLAG,
- * BADTRUNC, BADCOOKIE, other 
- 
- - Per Server (if configured):
+
+<br> 
+Per Server (if configured):
 
 1. **Number Of DNS Requests** in requests/s
 
@@ -40,38 +36,27 @@ It produces the following charts:
 3. **Number Of Processed And Dropped DNS Requests** in requests/s
 
 4. **Number Of DNS Requests Per Transport Protocol** in requests/s
- * TCP, UDP
 
 5. **Number Of DNS Requests Per IP Family** in requests/s
- * IPv4, IPv6
 
 6. **Number Of DNS Requests Per Type** in requests/s
- * A, AAAA, MX, SOA, CNAME, PTR, TXT, NS, DS, DNSKEY, RRSIG, NSEC, NSEC3, IXFR, ANY, other
  
 7. **Number Of DNS Responses Per Rcode** in responses/s
- * NOERROR, FORMERR, SERVFAIL, NXDOMAIN, NOTIMP, REFUSED, YXDOMAIN, YXRESET, NSRESET
- * NOTAUTH, NOTZONE, BADSIG, BADKEY, BADTIME, BADMODE, BADNAME, BADLAG,
- * BADTRUNC, BADCOOKIE, other
- 
- - Per Zone (if configured):
+
+<br> 
+Per Zone (if configured):
 
 1. **Number Of DNS Requests** in requests/s
 
 2. **Number Of DNS Responses** in responses/s
 
 3. **Number Of DNS Requests Per Transport Protocol** in requests/s
- * TCP, UDP
 
 4. **Number Of DNS Requests Per IP Family** in requests/s
- * IPv4, IPv6
 
 5. **Number Of DNS Requests Per Type** in requests/s
- * A, AAAA, MX, SOA, CNAME, PTR, TXT, NS, DS, DNSKEY, RRSIG, NSEC, NSEC3, IXFR, ANY, other
  
 6. **Number Of DNS Responses Per Rcode** in responses/s
- * NOERROR, FORMERR, SERVFAIL, NXDOMAIN, NOTIMP, REFUSED, YXDOMAIN, YXRESET, NSRESET
- * NOTAUTH, NOTZONE, BADSIG, BADKEY, BADTIME, BADMODE, BADNAME, BADLAG,
- * BADTRUNC, BADCOOKIE, other
 
 
 ### configuration
