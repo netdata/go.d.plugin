@@ -33,7 +33,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "servers",
-		Title: "Server",
+		Title: "Servers",
 		Units: "servers",
 		Fam:   "servers",
 		Ctx:   "lighttpd.workers",

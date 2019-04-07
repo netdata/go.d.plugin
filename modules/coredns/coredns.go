@@ -71,7 +71,7 @@ func (cd *CoreDNS) Init() bool {
 	if !cd.PerServerStats.isEmpty() {
 		m, err := cd.PerServerStats.createMatcher()
 		if err != nil {
-			cd.Errorf("error on creating `per_server_stats` matcher : %v", err)
+			cd.Errorf("error on creating 'per_server_stats' matcher : %v", err)
 			return false
 		}
 		cd.perServerMatcher = matcher.WithCache(m)
@@ -80,7 +80,7 @@ func (cd *CoreDNS) Init() bool {
 	if !cd.PerZoneStats.isEmpty() {
 		m, err := cd.PerZoneStats.createMatcher()
 		if err != nil {
-			cd.Errorf("error on creating `per_zone_stats` matcher : %v", err)
+			cd.Errorf("error on creating 'per_zone_stats' matcher : %v", err)
 			return false
 		}
 		cd.perZoneMatcher = matcher.WithCache(m)
