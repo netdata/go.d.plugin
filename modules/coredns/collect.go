@@ -31,6 +31,9 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 
 	if cd.perZoneMatcher != nil {
 		cd.collectPerZoneRequests(mx, raw)
+		cd.collectPerZoneRequestPerType(mx, raw)
+		cd.collectPerZoneResponsePerRcode(mx, raw)
+		cd.collectPerZoneRequestsDuration(mx, raw)
 	}
 
 	return stm.ToMap(mx), nil
@@ -304,6 +307,105 @@ func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Metrics) {
 		zoneMX.Request.Total.Add(value)
 		setRequestPerIPFamily(&zoneMX.Request, value, family)
 		setRequestPerProto(&zoneMX.Request, value, proto)
+	}
+}
+
+func (cd *CoreDNS) collectPerZoneRequestPerType(mx *metrics, raw prometheus.Metrics) {
+	metricName := "coredns_dns_request_type_count_total"
+
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			typ    = metric.Labels.Get("type")
+			zone   = metric.Labels.Get("zone")
+			server = metric.Labels.Get("server")
+			value  = metric.Value
+		)
+
+		if typ == "" || zone == "" || server == "" {
+			continue
+		}
+
+		if !cd.perZoneMatcher.MatchString(zone) {
+			continue
+		}
+
+		if !cd.collectedZones[zone] {
+			cd.addNewZoneCharts(zone)
+			cd.collectedZones[zone] = true
+		}
+
+		if _, ok := mx.PerZone[zone]; !ok {
+			mx.PerZone[zone] = &requestResponse{}
+		}
+
+		setRequestPerType(&mx.PerZone[zone].Request, value, typ)
+	}
+}
+
+func (cd *CoreDNS) collectPerZoneResponsePerRcode(mx *metrics, raw prometheus.Metrics) {
+	metricName := "coredns_dns_response_rcode_count_total"
+
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			rcode  = metric.Labels.Get("rcode")
+			zone   = metric.Labels.Get("zone")
+			server = metric.Labels.Get("server")
+			value  = metric.Value
+		)
+
+		if rcode == "" || zone == "" || server == "" {
+			continue
+		}
+
+		if !cd.perZoneMatcher.MatchString(zone) {
+			continue
+		}
+
+		if !cd.collectedZones[server] {
+			cd.addNewZoneCharts(zone)
+			cd.collectedZones[zone] = true
+		}
+
+		if _, ok := mx.PerZone[zone]; !ok {
+			mx.PerZone[zone] = &requestResponse{}
+		}
+
+		setResponsePerRcode(&mx.PerZone[zone].Response, value, rcode)
+	}
+}
+
+func (cd *CoreDNS) collectPerZoneRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+	metricName := "coredns_dns_request_duration_seconds_bucket"
+
+	for _, metric := range raw.FindByName(metricName) {
+		var (
+			server = metric.Labels.Get("server")
+			zone   = metric.Labels.Get("zone")
+			le     = metric.Labels.Get("le")
+			value  = metric.Value
+		)
+
+		if server == "" || zone == "" || le == "" {
+			continue
+		}
+
+		if !cd.perZoneMatcher.MatchString(zone) {
+			continue
+		}
+
+		if !cd.collectedZones[zone] {
+			cd.addNewZoneCharts(zone)
+			cd.collectedZones[zone] = true
+		}
+
+		if _, ok := mx.PerZone[zone]; !ok {
+			mx.PerZone[zone] = &requestResponse{}
+		}
+
+		setRequestDuration(&mx.PerZone[zone].Request, value, le)
+	}
+	for _, s := range mx.PerZone {
+		processRequestDuration(&s.Request)
 	}
 }
 

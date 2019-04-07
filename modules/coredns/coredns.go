@@ -42,8 +42,8 @@ func New() *CoreDNS {
 // Config is the CoreDNS module configuration.
 type Config struct {
 	web.HTTP       `yaml:",inline"`
-	PerServerStats string `yaml:"per_server_stats"`
-	PerZoneStats   string `yaml:"per_zone_stats"`
+	PerServerStats filter `yaml:"per_server_stats"`
+	PerZoneStats   filter `yaml:"per_zone_stats"`
 }
 
 // CoreDNS CoreDNS module.
@@ -68,19 +68,19 @@ func (cd *CoreDNS) Init() bool {
 		return false
 	}
 
-	if cd.PerServerStats != "" {
-		m, err := matcher.Parse(cd.PerServerStats)
+	if !cd.PerServerStats.isEmpty() {
+		m, err := cd.PerServerStats.createMatcher()
 		if err != nil {
-			cd.Errorf("error on creating 'per_server_stats' ('%s') matcher : %v", cd.PerServerStats, err)
+			cd.Errorf("error on creating `per_server_stats` matcher : %v", err)
 			return false
 		}
 		cd.perServerMatcher = matcher.WithCache(m)
 	}
 
-	if cd.PerZoneStats != "" {
-		m, err := matcher.Parse(cd.PerZoneStats)
+	if !cd.PerZoneStats.isEmpty() {
+		m, err := cd.PerZoneStats.createMatcher()
 		if err != nil {
-			cd.Errorf("error on creating 'per_zone_stats' ('%s') matcher : %v", cd.PerZoneStats, err)
+			cd.Errorf("error on creating `per_zone_stats` matcher : %v", err)
 			return false
 		}
 		cd.perZoneMatcher = matcher.WithCache(m)
