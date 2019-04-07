@@ -7,6 +7,11 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
+var (
+	empty   = ""
+	dropped = "dropped"
+)
+
 func (cd *CoreDNS) collect() (map[string]int64, error) {
 	raw, err := cd.prom.Scrape()
 
@@ -18,8 +23,8 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 
 	cd.collectPanic(mx, raw)
 	cd.collectSummaryRequests(mx, raw)
-	cd.collectSummaryRequestPerType(mx, raw)
-	cd.collectSummaryResponsePerRcode(mx, raw)
+	cd.collectSummaryRequestsPerType(mx, raw)
+	cd.collectSummaryResponsesPerRcode(mx, raw)
 	cd.collectSummaryRequestsDuration(mx, raw)
 
 	if cd.perServerMatcher != nil {
@@ -31,8 +36,8 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 
 	if cd.perZoneMatcher != nil {
 		cd.collectPerZoneRequests(mx, raw)
-		cd.collectPerZoneRequestPerType(mx, raw)
-		cd.collectPerZoneResponsePerRcode(mx, raw)
+		cd.collectPerZoneRequestsPerType(mx, raw)
+		cd.collectPerZoneResponsesPerRcode(mx, raw)
 		cd.collectPerZoneRequestsDuration(mx, raw)
 	}
 
@@ -54,39 +59,44 @@ func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
 		var (
 			family = metric.Labels.Get("family")
 			proto  = metric.Labels.Get("proto")
-			zone   = metric.Labels.Get("zone")
 			server = metric.Labels.Get("server")
+			zone   = metric.Labels.Get("zone")
 			value  = metric.Value
 		)
 
-		if family == "" || proto == "" || zone == "" {
+		if family == empty || proto == empty || zone == empty {
 			continue
 		}
 
-		if server == "" {
+		if server == empty {
 			mx.NoZoneDropped.Add(value)
+			continue
+		}
+
+		setRequestPerStatus(&mx.Summary.Request, value, zone)
+
+		if zone == dropped {
 			continue
 		}
 
 		mx.Summary.Request.Total.Add(value)
 		setRequestPerIPFamily(&mx.Summary.Request, value, family)
 		setRequestPerProto(&mx.Summary.Request, value, proto)
-		setRequestPerStatus(&mx.Summary.Request, value, zone)
 	}
 }
 
-func (cd *CoreDNS) collectSummaryRequestPerType(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectSummaryRequestsPerType(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_dns_request_type_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
 		var (
+			server = metric.Labels.Get("server")
 			typ    = metric.Labels.Get("type")
 			zone   = metric.Labels.Get("zone")
-			server = metric.Labels.Get("server")
 			value  = metric.Value
 		)
 
-		if typ == "" || zone == "" || zone == "dropped" || server == "" {
+		if server == empty || typ == empty || zone == empty || zone == dropped {
 			continue
 		}
 
@@ -94,18 +104,18 @@ func (cd *CoreDNS) collectSummaryRequestPerType(mx *metrics, raw prometheus.Metr
 	}
 }
 
-func (cd *CoreDNS) collectSummaryResponsePerRcode(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectSummaryResponsesPerRcode(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_dns_response_rcode_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
 		var (
 			rcode  = metric.Labels.Get("rcode")
-			zone   = metric.Labels.Get("zone")
 			server = metric.Labels.Get("server")
+			zone   = metric.Labels.Get("zone")
 			value  = metric.Value
 		)
 
-		if rcode == "" || zone == "" || zone == "dropped" || server == "" {
+		if server == "" || rcode == empty || zone == empty || zone == dropped {
 			continue
 		}
 
@@ -124,7 +134,7 @@ func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Me
 			value  = metric.Value
 		)
 
-		if server == "" || zone == "" || le == "" {
+		if server == empty || zone == empty || zone == dropped || le == empty {
 			continue
 		}
 
@@ -142,12 +152,12 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 		var (
 			family = metric.Labels.Get("family")
 			proto  = metric.Labels.Get("proto")
-			zone   = metric.Labels.Get("zone")
 			server = metric.Labels.Get("server")
+			zone   = metric.Labels.Get("zone")
 			value  = metric.Value
 		)
 
-		if family == "" || proto == "" || zone == "" || server == "" {
+		if family == empty || proto == empty || server == empty || zone == empty {
 			continue
 		}
 
@@ -164,11 +174,16 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 			mx.PerServer[server] = &requestResponse{}
 		}
 
-		srvMX := mx.PerServer[server]
-		srvMX.Request.Total.Add(value)
-		setRequestPerIPFamily(&srvMX.Request, value, family)
-		setRequestPerProto(&srvMX.Request, value, proto)
-		setRequestPerStatus(&srvMX.Request, value, zone)
+		srv := mx.PerServer[server]
+		setRequestPerStatus(&srv.Request, value, zone)
+
+		if zone == dropped {
+			continue
+		}
+
+		srv.Request.Total.Add(value)
+		setRequestPerIPFamily(&srv.Request, value, family)
+		setRequestPerProto(&srv.Request, value, proto)
 	}
 }
 
@@ -177,13 +192,13 @@ func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Me
 
 	for _, metric := range raw.FindByName(metricName) {
 		var (
+			server = metric.Labels.Get("server")
 			typ    = metric.Labels.Get("type")
 			zone   = metric.Labels.Get("zone")
-			server = metric.Labels.Get("server")
 			value  = metric.Value
 		)
 
-		if typ == "" || zone == "" || zone == "dropped" || server == "" {
+		if server == empty || typ == empty || zone == empty || zone == dropped {
 			continue
 		}
 
@@ -200,9 +215,7 @@ func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Me
 			mx.PerServer[server] = &requestResponse{}
 		}
 
-		srvMX := mx.PerServer[server]
-
-		setRequestPerType(&srvMX.Request, value, typ)
+		setRequestPerType(&mx.PerServer[server].Request, value, typ)
 	}
 }
 
@@ -212,12 +225,12 @@ func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.
 	for _, metric := range raw.FindByName(metricName) {
 		var (
 			rcode  = metric.Labels.Get("rcode")
-			zone   = metric.Labels.Get("zone")
 			server = metric.Labels.Get("server")
+			zone   = metric.Labels.Get("zone")
 			value  = metric.Value
 		)
 
-		if rcode == "" || zone == "" || zone == "dropped" || server == "" {
+		if rcode == empty || server == empty || zone == empty || zone == dropped {
 			continue
 		}
 
@@ -249,7 +262,7 @@ func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.
 			value  = metric.Value
 		)
 
-		if server == "" || zone == "" || le == "" {
+		if server == empty || zone == empty || zone == dropped || le == empty {
 			continue
 		}
 
@@ -286,7 +299,7 @@ func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Metrics) {
 			value  = metric.Value
 		)
 
-		if family == "" || proto == "" || zone == "" {
+		if family == empty || proto == empty || zone == empty {
 			continue
 		}
 
@@ -310,18 +323,17 @@ func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Metrics) {
 	}
 }
 
-func (cd *CoreDNS) collectPerZoneRequestPerType(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPerZoneRequestsPerType(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_dns_request_type_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
 		var (
-			typ    = metric.Labels.Get("type")
-			zone   = metric.Labels.Get("zone")
-			server = metric.Labels.Get("server")
-			value  = metric.Value
+			typ   = metric.Labels.Get("type")
+			zone  = metric.Labels.Get("zone")
+			value = metric.Value
 		)
 
-		if typ == "" || zone == "" || server == "" {
+		if typ == empty || zone == empty {
 			continue
 		}
 
@@ -342,18 +354,17 @@ func (cd *CoreDNS) collectPerZoneRequestPerType(mx *metrics, raw prometheus.Metr
 	}
 }
 
-func (cd *CoreDNS) collectPerZoneResponsePerRcode(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPerZoneResponsesPerRcode(mx *metrics, raw prometheus.Metrics) {
 	metricName := "coredns_dns_response_rcode_count_total"
 
 	for _, metric := range raw.FindByName(metricName) {
 		var (
-			rcode  = metric.Labels.Get("rcode")
-			zone   = metric.Labels.Get("zone")
-			server = metric.Labels.Get("server")
-			value  = metric.Value
+			rcode = metric.Labels.Get("rcode")
+			zone  = metric.Labels.Get("zone")
+			value = metric.Value
 		)
 
-		if rcode == "" || zone == "" || server == "" {
+		if rcode == empty || zone == empty {
 			continue
 		}
 
@@ -361,7 +372,7 @@ func (cd *CoreDNS) collectPerZoneResponsePerRcode(mx *metrics, raw prometheus.Me
 			continue
 		}
 
-		if !cd.collectedZones[server] {
+		if !cd.collectedZones[zone] {
 			cd.addNewZoneCharts(zone)
 			cd.collectedZones[zone] = true
 		}
@@ -379,13 +390,12 @@ func (cd *CoreDNS) collectPerZoneRequestsDuration(mx *metrics, raw prometheus.Me
 
 	for _, metric := range raw.FindByName(metricName) {
 		var (
-			server = metric.Labels.Get("server")
-			zone   = metric.Labels.Get("zone")
-			le     = metric.Labels.Get("le")
-			value  = metric.Value
+			zone  = metric.Labels.Get("zone")
+			le    = metric.Labels.Get("le")
+			value = metric.Value
 		)
 
-		if server == "" || zone == "" || le == "" {
+		if zone == empty || le == empty {
 			continue
 		}
 
@@ -434,6 +444,11 @@ func setRequestPerStatus(mx *request, value float64, zone string) {
 	default:
 		mx.PerStatus.Processed.Add(value)
 	case "dropped":
+		// when server is not empty request is added to both actual and dropped zones
+		//
+		// 2 requests to ya.ru:
+		// coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="dropped"} 2
+		// coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="ya.ru."} 2
 		mx.PerStatus.Dropped.Add(value)
 		mx.PerStatus.Processed.Sub(value)
 	}

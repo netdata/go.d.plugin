@@ -16,11 +16,15 @@ func (f filter) isEmpty() bool {
 }
 
 func (f filter) createMatcher() (matcher.Matcher, error) {
+	if f.isEmpty() {
+		return matcher.FALSE(), nil
+	}
+
 	var (
 		includes []matcher.Matcher
 		excludes []matcher.Matcher
-		include  = matcher.TRUE()
-		exclude  = matcher.FALSE()
+		include  matcher.Matcher
+		exclude  matcher.Matcher
 	)
 
 	for _, line := range f.Include {
@@ -42,6 +46,7 @@ func (f filter) createMatcher() (matcher.Matcher, error) {
 	default:
 		include = matcher.Or(includes[0], includes[1], includes[2:]...)
 	case 0:
+		include = matcher.TRUE()
 	case 1:
 		include = includes[0]
 	}
@@ -50,6 +55,7 @@ func (f filter) createMatcher() (matcher.Matcher, error) {
 	default:
 		exclude = matcher.Or(excludes[0], excludes[1], excludes[2:]...)
 	case 0:
+		exclude = matcher.FALSE()
 	case 1:
 		exclude = excludes[0]
 	}
