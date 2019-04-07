@@ -18,6 +18,18 @@ type (
 //
 //// NOTE: inconsistency between contexts with python web_log
 var (
+	requests = Chart{
+		ID:    "requests",
+		Title: "Requests",
+		Units: "requests/s",
+		Fam:   "requests",
+		Ctx:   "web_log.requests",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "requests", Name: "requests", Algo: module.Incremental},
+		},
+	}
+
 	responseStatuses = Chart{
 		ID:    "response_statuses",
 		Title: "Response Statuses",
@@ -41,11 +53,11 @@ var (
 		Ctx:   "web_log.response_codes",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "resp_2xx", Algo: module.Incremental},
-			{ID: "resp_5xx", Algo: module.Incremental},
-			{ID: "resp_3xx", Algo: module.Incremental},
-			{ID: "resp_4xx", Algo: module.Incremental},
-			{ID: "resp_1xx", Algo: module.Incremental},
+			{ID: "resp_2xx", Name: "2xx", Algo: module.Incremental},
+			{ID: "resp_5xx", Name: "5xx", Algo: module.Incremental},
+			{ID: "resp_3xx", Name: "3xx", Algo: module.Incremental},
+			{ID: "resp_4xx", Name: "4xx", Algo: module.Incremental},
+			{ID: "resp_1xx", Name: "1xx", Algo: module.Incremental},
 		},
 	}
 

@@ -16,6 +16,9 @@ type MetricsData struct {
 
 	ReqVersion metrics.CounterVec `stm:"req_version"`
 
+	ReqIpv4 metrics.Counter `stm:"req_ipv4"`
+	ReqIpv6 metrics.Counter `stm:"req_ipv6"`
+
 	RespCode metrics.CounterVec `stm:"req_code"`
 
 	RespSuccessful  metrics.Counter `stm:"resp_successful"`
@@ -34,7 +37,8 @@ type MetricsData struct {
 	RespTimeUpstream     metrics.Summary   `stm:"resp_time_upstream,1000"`
 	RespTimeUpstreamHist metrics.Histogram `stm:"resp_time_upstream_hist"`
 
-	UniqueIPs metrics.UniqueCounter `stm:"uniq_ips"`
+	UniqueIPv4 metrics.UniqueCounter `stm:"unique_current_poll_ipv4"`
+	UniqueIPv6 metrics.UniqueCounter `stm:"unique_current_poll_ipv6"`
 
 	CategorizedRequests metrics.CounterVec `stm:"cat_req"`
 	CategorizedRespTime metrics.Summary    `stm:"cat_resp_time"`
@@ -49,12 +53,14 @@ func NewMetricsData(config Config) *MetricsData {
 		RespTimeHist:         metrics.NewHistogram(config.Histogram),
 		RespTimeUpstream:     metrics.NewSummary(),
 		RespTimeUpstreamHist: metrics.NewHistogram(config.Histogram),
-		UniqueIPs:            metrics.NewUniqueCounter(true),
+		UniqueIPv4:           metrics.NewUniqueCounter(true),
+		UniqueIPv6:           metrics.NewUniqueCounter(true),
 		CategorizedRequests:  metrics.NewCounterVec(),
 		CategorizedRespTime:  metrics.NewSummary(),
 	}
 }
 
 func (m *MetricsData) Reset() {
-	m.UniqueIPs.Reset()
+	m.UniqueIPv4.Reset()
+	m.UniqueIPv6.Reset()
 }

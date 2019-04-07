@@ -7,6 +7,7 @@ import (
 	"io"
 	"runtime"
 	"strconv"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 
@@ -114,8 +115,8 @@ func (w *WebLog) Check() bool {
 }
 
 func (w *WebLog) Charts() *module.Charts {
-	var charts module.Charts
-	_ = charts.Add(responseStatuses.Copy(), responseCodes.Copy())
+	charts := make(module.Charts, 0, 10)
+	_ = charts.Add(requests.Copy(), responseStatuses.Copy(), responseCodes.Copy())
 	if w.AggregateResponseCodes {
 		_ = charts.Add(responseCodesDetailedPerFamily()...)
 	} else {
@@ -196,7 +197,8 @@ func (w *WebLog) Charts() *module.Charts {
 		_ = charts.Add(currentPollIPs.Copy())
 	}
 
-	return &charts
+	w.charts = &charts
+	return w.charts
 }
 
 func (w *WebLog) Collect() map[string]int64 {
@@ -235,9 +237,7 @@ func (w *WebLog) Collect() map[string]int64 {
 		}
 
 		w.metrics.Requests.Inc()
-		if line.Version != "" {
-			w.metrics.ReqVersion.Get(line.Version).Inc()
-		}
+
 		if line.Status > 0 {
 			status := line.Status
 			switch {
@@ -264,16 +264,49 @@ func (w *WebLog) Collect() map[string]int64 {
 				w.metrics.Resp5xx.Inc()
 			}
 
-			if w.AggregateResponseCodes {
-				counter, ok := w.metrics.RespCode.GetP(strconv.Itoa(status))
-				counter.Inc()
-				if !ok {
-					// TODO add dim
+			statusStr := strconv.Itoa(status)
+			counter, ok := w.metrics.RespCode.GetP(statusStr)
+			counter.Inc()
+			if !ok {
+				if w.AggregateResponseCodes {
+					chartName := fmt.Sprintf(`%s_%dxx`, responseCodesDetailed.ID, status/100)
+					w.charts.Get(chartName).AddDim(&module.Dim{
+						ID:   "req_code_" + statusStr,
+						Name: statusStr,
+						Algo: module.Incremental,
+					})
+				} else {
+					w.charts.Get(responseCodesDetailed.ID).AddDim(&module.Dim{
+						ID:   "req_code_" + statusStr,
+						Name: statusStr,
+						Algo: module.Incremental,
+					})
 				}
 			}
 		}
 		if line.Method != "" {
-			w.metrics.ReqMethod.Get(line.Method).Inc()
+			counter, ok := w.metrics.ReqMethod.GetP(line.Method)
+			counter.Inc()
+			if !ok && line.Method != "GET" {
+				w.charts.Get(requestsPerHTTPMethod.ID).AddDim(&module.Dim{
+					ID:   "req_method_" + line.Method,
+					Name: line.Method,
+					Algo: module.Incremental,
+				})
+			}
+		}
+
+		if line.Version != "" {
+			deDotVersion := strings.Replace(line.Version, ".", "_", 1)
+			c, ok := w.metrics.ReqVersion.GetP(deDotVersion)
+			c.Inc()
+			if !ok {
+				w.charts.Get(requestsPerHTTPVersion.ID).AddDim(&module.Dim{
+					ID:   "req_version_" + deDotVersion,
+					Name: line.Version,
+					Algo: module.Incremental,
+				})
+			}
 		}
 
 		if line.BytesSent > 0 {
@@ -299,7 +332,13 @@ func (w *WebLog) Collect() map[string]int64 {
 		}
 
 		if line.RemoteAddr != "" {
-			w.metrics.UniqueIPs.Insert(line.RemoteAddr)
+			if strings.ContainsRune(line.RemoteAddr, ':') {
+				w.metrics.ReqIpv6.Inc()
+				w.metrics.UniqueIPv6.Insert(line.RemoteAddr)
+			} else {
+				w.metrics.ReqIpv4.Inc()
+				w.metrics.UniqueIPv4.Insert(line.RemoteAddr)
+			}
 		}
 		if line.URI != "" {
 			for _, cat := range w.urlCategories {

@@ -1,127 +1,128 @@
 package weblog
 
-import (
-	"strconv"
-)
-
-type (
-	Worker struct {
-		config *Config
-		//parser     *LogParser
-		pattern    *Format
-		metrics    *MetricsData
-		categories []*Category
-	}
-)
-
-func NewWorker(config *Config) (*Worker, error) {
-	var categories []*Category
-	for _, cat := range config.URLCategories {
-		category, err := NewCategory(cat)
-		if err != nil {
-			return nil, err
-		}
-		categories = append(categories, category)
-	}
-	return &Worker{
-		config: config,
-		//parser: NewLogParser(),
-		//metrics: NewMetricsData(config),
-	}, nil
-}
-
-func (w *Worker) Start() {
-	//go func() {
-	//	for {
-	//		//record, err := w.parser.Read()
-	//		if err == io.EOF {
-	//			break
-	//		}
-	//		line, err := w.pattern.Parse(record)
-	//		if err != nil {
-	//			w.metrics.ReqUnmatched.Inc()
-	//			continue
-	//		}
-	//		w.handleLine(line)
-	//	}
-	//}()
-}
-
-func (w *Worker) handleLine(line LogLine) {
-	w.metrics.Requests.Inc()
-
-	if line.Version != "" {
-		w.metrics.ReqVersion.Get(line.Version).Inc()
-	}
-
-	if line.Status > 0 {
-		status := line.Status
-		switch {
-		case status >= 100 && status < 300, status == 304:
-			w.metrics.RespSuccessful.Inc()
-		case status >= 300 && status < 400:
-			w.metrics.RespRedirect.Inc()
-		case status >= 400 && status < 500:
-			w.metrics.RespClientError.Inc()
-		case status >= 500 && status < 600:
-			w.metrics.RespServerError.Inc()
-		}
-
-		switch status / 100 {
-		case 1:
-			w.metrics.Resp1xx.Inc()
-		case 2:
-			w.metrics.Resp2xx.Inc()
-		case 3:
-			w.metrics.Resp3xx.Inc()
-		case 4:
-			w.metrics.Resp4xx.Inc()
-		case 5:
-			w.metrics.Resp5xx.Inc()
-		}
-
-		if w.config.AggregateResponseCodes {
-			w.metrics.RespCode.Get(strconv.Itoa(status)).Inc()
-		}
-	}
-
-	if line.Method != "" {
-		w.metrics.ReqMethod.Get(line.Method).Inc()
-	}
-
-	if line.BytesSent > 0 {
-		w.metrics.BytesSent.Add(float64(line.BytesSent))
-	}
-	if line.ReqLength > 0 {
-		w.metrics.BytesReceived.Add(float64(line.ReqLength))
-	}
-
-	if line.ReqTime >= 0 {
-		w.metrics.RespTime.Observe(line.ReqTime)
-		if w.metrics.RespTimeHist != nil {
-			w.metrics.RespTimeHist.Observe(line.ReqTime)
-		}
-	}
-	if line.UpstreamRespTime != nil {
-		for _, time := range line.UpstreamRespTime {
-			w.metrics.RespTimeUpstream.Observe(time)
-			if w.metrics.RespTimeUpstreamHist != nil {
-				w.metrics.RespTimeUpstreamHist.Observe(line.ReqTime)
-			}
-		}
-	}
-
-	if line.RemoteAddr != "" {
-		w.metrics.UniqueIPs.Insert(line.RemoteAddr)
-	}
-	for _, cat := range w.categories {
-		if cat.Matcher.MatchString(line.URI) {
-			// TODO add metrics
-			break
-		}
-	}
-	// TODO add user defined
-}
+//
+//import (
+//	"strconv"
+//)
+//
+//type (
+//	Worker struct {
+//		config *Config
+//		//parser     *LogParser
+//		pattern    *Format
+//		metrics    *MetricsData
+//		categories []*Category
+//	}
+//)
+//
+//func NewWorker(config *Config) (*Worker, error) {
+//	var categories []*Category
+//	for _, cat := range config.URLCategories {
+//		category, err := NewCategory(cat)
+//		if err != nil {
+//			return nil, err
+//		}
+//		categories = append(categories, category)
+//	}
+//	return &Worker{
+//		config: config,
+//		//parser: NewLogParser(),
+//		//metrics: NewMetricsData(config),
+//	}, nil
+//}
+//
+//func (w *Worker) Start() {
+//	//go func() {
+//	//	for {
+//	//		//record, err := w.parser.Read()
+//	//		if err == io.EOF {
+//	//			break
+//	//		}
+//	//		line, err := w.pattern.Parse(record)
+//	//		if err != nil {
+//	//			w.metrics.ReqUnmatched.Inc()
+//	//			continue
+//	//		}
+//	//		w.handleLine(line)
+//	//	}
+//	//}()
+//}
+//
+//func (w *Worker) handleLine(line LogLine) {
+//	w.metrics.Requests.Inc()
+//
+//	if line.Version != "" {
+//		w.metrics.ReqVersion.Get(line.Version).Inc()
+//	}
+//
+//	if line.Status > 0 {
+//		status := line.Status
+//		switch {
+//		case status >= 100 && status < 300, status == 304:
+//			w.metrics.RespSuccessful.Inc()
+//		case status >= 300 && status < 400:
+//			w.metrics.RespRedirect.Inc()
+//		case status >= 400 && status < 500:
+//			w.metrics.RespClientError.Inc()
+//		case status >= 500 && status < 600:
+//			w.metrics.RespServerError.Inc()
+//		}
+//
+//		switch status / 100 {
+//		case 1:
+//			w.metrics.Resp1xx.Inc()
+//		case 2:
+//			w.metrics.Resp2xx.Inc()
+//		case 3:
+//			w.metrics.Resp3xx.Inc()
+//		case 4:
+//			w.metrics.Resp4xx.Inc()
+//		case 5:
+//			w.metrics.Resp5xx.Inc()
+//		}
+//
+//		if w.config.AggregateResponseCodes {
+//			w.metrics.RespCode.Get(strconv.Itoa(status)).Inc()
+//		}
+//	}
+//
+//	if line.Method != "" {
+//		w.metrics.ReqMethod.Get(line.Method).Inc()
+//	}
+//
+//	if line.BytesSent > 0 {
+//		w.metrics.BytesSent.Add(float64(line.BytesSent))
+//	}
+//	if line.ReqLength > 0 {
+//		w.metrics.BytesReceived.Add(float64(line.ReqLength))
+//	}
+//
+//	if line.ReqTime >= 0 {
+//		w.metrics.RespTime.Observe(line.ReqTime)
+//		if w.metrics.RespTimeHist != nil {
+//			w.metrics.RespTimeHist.Observe(line.ReqTime)
+//		}
+//	}
+//	if line.UpstreamRespTime != nil {
+//		for _, time := range line.UpstreamRespTime {
+//			w.metrics.RespTimeUpstream.Observe(time)
+//			if w.metrics.RespTimeUpstreamHist != nil {
+//				w.metrics.RespTimeUpstreamHist.Observe(line.ReqTime)
+//			}
+//		}
+//	}
+//
+//	if line.RemoteAddr != "" {
+//		w.metrics.UniqueIPs.Insert(line.RemoteAddr)
+//	}
+//	for _, cat := range w.categories {
+//		if cat.Matcher.MatchString(line.URI) {
+//			// TODO add metrics
+//			break
+//		}
+//	}
+//	// TODO add user defined
+//}
 
 //
 //func newWorker() *worker {

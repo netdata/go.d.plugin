@@ -252,5 +252,12 @@ func parseRequest(request string) (method string, uri string, version string, er
 		err = errInvalidRequestField
 		return
 	}
-	return fields[0], fields[1], fields[2], nil
+	method = strings.ToUpper(fields[0])
+	uri = fields[1]
+	if strings.HasPrefix(fields[2], "HTTP/") {
+		version = fields[2][5:]
+	} else {
+		err = errInvalidRequestField
+	}
+	return
 }
