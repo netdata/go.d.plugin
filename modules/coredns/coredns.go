@@ -30,6 +30,8 @@ func New() *CoreDNS {
 			Request: web.Request{URL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
+		//PerZoneStats:   filter{Include: []string{"glob:*"}},
+		//PerServerStats: filter{Include: []string{"glob:*"}},
 	}
 	return &CoreDNS{
 		Config:           config,

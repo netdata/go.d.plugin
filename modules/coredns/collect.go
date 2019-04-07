@@ -41,20 +41,20 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 
 	cd.collectPanic(mx, raw)
 	cd.collectSummaryRequests(mx, raw)
-	cd.collectSummaryRequestsDuration(mx, raw)
+	//cd.collectSummaryRequestsDuration(mx, raw)
 	cd.collectSummaryRequestsPerType(mx, raw)
 	cd.collectSummaryResponsesPerRcode(mx, raw)
 
 	if cd.perServerMatcher != nil {
 		cd.collectPerServerRequests(mx, raw)
-		cd.collectPerServerRequestsDuration(mx, raw)
+		//cd.collectPerServerRequestsDuration(mx, raw)
 		cd.collectPerServerRequestPerType(mx, raw)
 		cd.collectPerServerResponsePerRcode(mx, raw)
 	}
 
 	if cd.perZoneMatcher != nil {
 		cd.collectPerZoneRequests(mx, raw)
-		cd.collectPerZoneRequestsDuration(mx, raw)
+		//cd.collectPerZoneRequestsDuration(mx, raw)
 		cd.collectPerZoneRequestsPerType(mx, raw)
 		cd.collectPerZoneResponsesPerRcode(mx, raw)
 	}
@@ -98,23 +98,23 @@ func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
 	}
 }
 
-func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Metrics) {
-	for _, metric := range raw.FindByName(metricRequestDurationSecondsBucket) {
-		var (
-			server = metric.Labels.Get("server")
-			zone   = metric.Labels.Get("zone")
-			le     = metric.Labels.Get("le")
-			value  = metric.Value
-		)
-
-		if zone == empty || zone == dropped && server != empty || le == empty {
-			continue
-		}
-
-		setRequestDuration(&mx.Summary.Request, value, le)
-	}
-	processRequestDuration(&mx.Summary.Request)
-}
+//func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+//	for _, metric := range raw.FindByName(metricRequestDurationSecondsBucket) {
+//		var (
+//			server = metric.Labels.Get("server")
+//			zone   = metric.Labels.Get("zone")
+//			le     = metric.Labels.Get("le")
+//			value  = metric.Value
+//		)
+//
+//		if zone == empty || zone == dropped && server != empty || le == empty {
+//			continue
+//		}
+//
+//		setRequestDuration(&mx.Summary.Request, value, le)
+//	}
+//	processRequestDuration(&mx.Summary.Request)
+//}
 
 func (cd *CoreDNS) collectSummaryRequestsPerType(mx *metrics, raw prometheus.Metrics) {
 	for _, metric := range raw.FindByName(metricRequestTypeCountTotal) {
@@ -170,51 +170,6 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 			continue
 		}
 
-		if !cd.collectedServers[server] {
-			cd.addNewServerCharts(server)
-			cd.collectedServers[server] = true
-		}
-
-		if server == "" {
-			server = emptyServerReplaceName
-		}
-
-		if _, ok := mx.PerServer[server]; !ok {
-			mx.PerServer[server] = &requestResponse{}
-		}
-
-		srv := mx.PerServer[server]
-
-		setRequestPerStatus(&srv.Request, value, server, zone)
-
-		// skip dropped zone for non empty servers
-		if zone == dropped {
-			continue
-		}
-
-		srv.Request.Total.Add(value)
-		setRequestPerIPFamily(&srv.Request, value, family)
-		setRequestPerProto(&srv.Request, value, proto)
-	}
-}
-
-func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.Metrics) {
-	for _, metric := range raw.FindByName(metricRequestDurationSecondsBucket) {
-		var (
-			server = metric.Labels.Get("server")
-			zone   = metric.Labels.Get("zone")
-			le     = metric.Labels.Get("le")
-			value  = metric.Value
-		)
-
-		if zone == empty || zone == dropped && server != empty || le == empty {
-			continue
-		}
-
-		if !cd.perServerMatcher.MatchString(server) {
-			continue
-		}
-
 		if server == empty {
 			server = emptyServerReplaceName
 		}
@@ -228,12 +183,51 @@ func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.
 			mx.PerServer[server] = &requestResponse{}
 		}
 
-		setRequestDuration(&mx.PerServer[server].Request, value, le)
-	}
-	for _, s := range mx.PerServer {
-		processRequestDuration(&s.Request)
+		srv := mx.PerServer[server]
+
+		setRequestPerStatus(&srv.Request, value, server, zone)
+		srv.Request.Total.Add(value)
+		setRequestPerIPFamily(&srv.Request, value, family)
+		setRequestPerProto(&srv.Request, value, proto)
 	}
 }
+
+//func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+//	for _, metric := range raw.FindByName(metricRequestDurationSecondsBucket) {
+//		var (
+//			server = metric.Labels.Get("server")
+//			zone   = metric.Labels.Get("zone")
+//			le     = metric.Labels.Get("le")
+//			value  = metric.Value
+//		)
+//
+//		if zone == empty || zone == dropped && server != empty || le == empty {
+//			continue
+//		}
+//
+//		if !cd.perServerMatcher.MatchString(server) {
+//			continue
+//		}
+//
+//		if server == empty {
+//			server = emptyServerReplaceName
+//		}
+//
+//		if !cd.collectedServers[server] {
+//			cd.addNewServerCharts(server)
+//			cd.collectedServers[server] = true
+//		}
+//
+//		if _, ok := mx.PerServer[server]; !ok {
+//			mx.PerServer[server] = &requestResponse{}
+//		}
+//
+//		setRequestDuration(&mx.PerServer[server].Request, value, le)
+//	}
+//	for _, s := range mx.PerServer {
+//		processRequestDuration(&s.Request)
+//	}
+//}
 
 func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Metrics) {
 	for _, metric := range raw.FindByName(metricRequestTypeCountTotal) {
@@ -342,41 +336,41 @@ func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Metrics) {
 	}
 }
 
-func (cd *CoreDNS) collectPerZoneRequestsDuration(mx *metrics, raw prometheus.Metrics) {
-	for _, metric := range raw.FindByName(metricRequestDurationSecondsBucket) {
-		var (
-			zone  = metric.Labels.Get("zone")
-			le    = metric.Labels.Get("le")
-			value = metric.Value
-		)
-
-		if zone == empty || le == empty {
-			continue
-		}
-
-		if !cd.perZoneMatcher.MatchString(zone) {
-			continue
-		}
-
-		if zone == "." {
-			zone = rootZoneReplaceName
-		}
-
-		if !cd.collectedZones[zone] {
-			cd.addNewZoneCharts(zone)
-			cd.collectedZones[zone] = true
-		}
-
-		if _, ok := mx.PerZone[zone]; !ok {
-			mx.PerZone[zone] = &requestResponse{}
-		}
-
-		setRequestDuration(&mx.PerZone[zone].Request, value, le)
-	}
-	for _, s := range mx.PerZone {
-		processRequestDuration(&s.Request)
-	}
-}
+//func (cd *CoreDNS) collectPerZoneRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+//	for _, metric := range raw.FindByName(metricRequestDurationSecondsBucket) {
+//		var (
+//			zone  = metric.Labels.Get("zone")
+//			le    = metric.Labels.Get("le")
+//			value = metric.Value
+//		)
+//
+//		if zone == empty || le == empty {
+//			continue
+//		}
+//
+//		if !cd.perZoneMatcher.MatchString(zone) {
+//			continue
+//		}
+//
+//		if zone == "." {
+//			zone = rootZoneReplaceName
+//		}
+//
+//		if !cd.collectedZones[zone] {
+//			cd.addNewZoneCharts(zone)
+//			cd.collectedZones[zone] = true
+//		}
+//
+//		if _, ok := mx.PerZone[zone]; !ok {
+//			mx.PerZone[zone] = &requestResponse{}
+//		}
+//
+//		setRequestDuration(&mx.PerZone[zone].Request, value, le)
+//	}
+//	for _, s := range mx.PerZone {
+//		processRequestDuration(&s.Request)
+//	}
+//}
 
 func (cd *CoreDNS) collectPerZoneRequestsPerType(mx *metrics, raw prometheus.Metrics) {
 	for _, metric := range raw.FindByName(metricRequestTypeCountTotal) {
@@ -470,9 +464,10 @@ func setRequestPerStatus(mx *request, value float64, server, zone string) {
 		mx.PerStatus.Processed.Add(value)
 	case "dropped":
 		mx.PerStatus.Dropped.Add(value)
-		if server != empty {
-			mx.PerStatus.Processed.Sub(value)
+		if server == empty || server == emptyServerReplaceName {
+			return
 		}
+		mx.PerStatus.Processed.Sub(value)
 	}
 }
 
@@ -560,63 +555,63 @@ func setResponsePerRcode(mx *response, value float64, rcode string) {
 	}
 }
 
-func setRequestDuration(mx *request, value float64, le string) {
-	switch le {
-	case "0.00025":
-		mx.Duration.LE000025.Add(value)
-	case "0.0005":
-		mx.Duration.LE00005.Add(value)
-	case "0.001":
-		mx.Duration.LE0001.Add(value)
-	case "0.002":
-		mx.Duration.LE0002.Add(value)
-	case "0.004":
-		mx.Duration.LE0004.Add(value)
-	case "0.008":
-		mx.Duration.LE0008.Add(value)
-	case "0.016":
-		mx.Duration.LE0016.Add(value)
-	case "0.032":
-		mx.Duration.LE0032.Add(value)
-	case "0.064":
-		mx.Duration.LE0064.Add(value)
-	case "0.128":
-		mx.Duration.LE0128.Add(value)
-	case "0.256":
-		mx.Duration.LE0256.Add(value)
-	case "0.512":
-		mx.Duration.LE0512.Add(value)
-	case "1.024":
-		mx.Duration.LE1024.Add(value)
-	case "2.048":
-		mx.Duration.LE2048.Add(value)
-	case "4.096":
-		mx.Duration.LE4096.Add(value)
-	case "8.192":
-		mx.Duration.LE8192.Add(value)
-	case "+Inf":
-		mx.Duration.LEInf.Add(value)
-	}
-}
+//func setRequestDuration(mx *request, value float64, le string) {
+//	switch le {
+//	case "0.00025":
+//		mx.Duration.LE000025.Add(value)
+//	case "0.0005":
+//		mx.Duration.LE00005.Add(value)
+//	case "0.001":
+//		mx.Duration.LE0001.Add(value)
+//	case "0.002":
+//		mx.Duration.LE0002.Add(value)
+//	case "0.004":
+//		mx.Duration.LE0004.Add(value)
+//	case "0.008":
+//		mx.Duration.LE0008.Add(value)
+//	case "0.016":
+//		mx.Duration.LE0016.Add(value)
+//	case "0.032":
+//		mx.Duration.LE0032.Add(value)
+//	case "0.064":
+//		mx.Duration.LE0064.Add(value)
+//	case "0.128":
+//		mx.Duration.LE0128.Add(value)
+//	case "0.256":
+//		mx.Duration.LE0256.Add(value)
+//	case "0.512":
+//		mx.Duration.LE0512.Add(value)
+//	case "1.024":
+//		mx.Duration.LE1024.Add(value)
+//	case "2.048":
+//		mx.Duration.LE2048.Add(value)
+//	case "4.096":
+//		mx.Duration.LE4096.Add(value)
+//	case "8.192":
+//		mx.Duration.LE8192.Add(value)
+//	case "+Inf":
+//		mx.Duration.LEInf.Add(value)
+//	}
+//}
 
-func processRequestDuration(mx *request) {
-	mx.Duration.LEInf.Sub(mx.Duration.LE8192.Value())
-	mx.Duration.LE8192.Sub(mx.Duration.LE4096.Value())
-	mx.Duration.LE4096.Sub(mx.Duration.LE2048.Value())
-	mx.Duration.LE2048.Sub(mx.Duration.LE1024.Value())
-	mx.Duration.LE1024.Sub(mx.Duration.LE0512.Value())
-	mx.Duration.LE0512.Sub(mx.Duration.LE0256.Value())
-	mx.Duration.LE0256.Sub(mx.Duration.LE0128.Value())
-	mx.Duration.LE0128.Sub(mx.Duration.LE0064.Value())
-	mx.Duration.LE0064.Sub(mx.Duration.LE0032.Value())
-	mx.Duration.LE0032.Sub(mx.Duration.LE0016.Value())
-	mx.Duration.LE0016.Sub(mx.Duration.LE0008.Value())
-	mx.Duration.LE0008.Sub(mx.Duration.LE0004.Value())
-	mx.Duration.LE0004.Sub(mx.Duration.LE0002.Value())
-	mx.Duration.LE0002.Sub(mx.Duration.LE0001.Value())
-	mx.Duration.LE0001.Sub(mx.Duration.LE00005.Value())
-	mx.Duration.LE00005.Sub(mx.Duration.LE000025.Value())
-}
+//func processRequestDuration(mx *request) {
+//	mx.Duration.LEInf.Sub(mx.Duration.LE8192.Value())
+//	mx.Duration.LE8192.Sub(mx.Duration.LE4096.Value())
+//	mx.Duration.LE4096.Sub(mx.Duration.LE2048.Value())
+//	mx.Duration.LE2048.Sub(mx.Duration.LE1024.Value())
+//	mx.Duration.LE1024.Sub(mx.Duration.LE0512.Value())
+//	mx.Duration.LE0512.Sub(mx.Duration.LE0256.Value())
+//	mx.Duration.LE0256.Sub(mx.Duration.LE0128.Value())
+//	mx.Duration.LE0128.Sub(mx.Duration.LE0064.Value())
+//	mx.Duration.LE0064.Sub(mx.Duration.LE0032.Value())
+//	mx.Duration.LE0032.Sub(mx.Duration.LE0016.Value())
+//	mx.Duration.LE0016.Sub(mx.Duration.LE0008.Value())
+//	mx.Duration.LE0008.Sub(mx.Duration.LE0004.Value())
+//	mx.Duration.LE0004.Sub(mx.Duration.LE0002.Value())
+//	mx.Duration.LE0002.Sub(mx.Duration.LE0001.Value())
+//	mx.Duration.LE0001.Sub(mx.Duration.LE00005.Value())
+//	mx.Duration.LE00005.Sub(mx.Duration.LE000025.Value())
+//}
 
 // ---
 
