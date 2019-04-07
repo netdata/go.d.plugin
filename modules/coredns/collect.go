@@ -18,7 +18,7 @@ var (
 	// - if none of server block matches 'server' tag is "", empty server has only one zone - dropped.
 	//   example:
 	//   coredns_dns_request_count_total{family="1",proto="udp",server="",zone="dropped"} 1
-	// - dropped requests is added to both dropped and corresponding zone
+	// - dropped requests are added to both dropped and corresponding zone
 	//   example:
 	//   coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="dropped"} 2
 	//   coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="ya.ru."} 2
@@ -163,7 +163,7 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 			value  = metric.Value
 		)
 
-		if family == empty || proto == empty || server == empty || zone == empty {
+		if family == empty || proto == empty || zone == empty {
 			continue
 		}
 
@@ -174,6 +174,10 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 		if !cd.collectedServers[server] {
 			cd.addNewServerCharts(server)
 			cd.collectedServers[server] = true
+		}
+
+		if server == "" {
+			server = "empty"
 		}
 
 		if _, ok := mx.PerServer[server]; !ok {
@@ -202,12 +206,16 @@ func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.
 			value  = metric.Value
 		)
 
-		if server == empty || zone == empty || zone == dropped || le == empty {
+		if zone == empty || zone == dropped || le == empty {
 			continue
 		}
 
 		if !cd.perServerMatcher.MatchString(server) {
 			continue
+		}
+
+		if server == "" {
+			server = "empty"
 		}
 
 		if !cd.collectedServers[server] {
@@ -235,12 +243,16 @@ func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Me
 			value  = metric.Value
 		)
 
-		if server == empty || typ == empty || zone == empty || zone == dropped {
+		if typ == empty || zone == empty || zone == dropped {
 			continue
 		}
 
 		if !cd.perServerMatcher.MatchString(server) {
 			continue
+		}
+
+		if server == "" {
+			server = "empty"
 		}
 
 		if !cd.collectedServers[server] {
@@ -265,12 +277,16 @@ func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.
 			value  = metric.Value
 		)
 
-		if rcode == empty || server == empty || zone == empty || zone == dropped {
+		if rcode == empty || zone == empty || zone == dropped {
 			continue
 		}
 
 		if !cd.perServerMatcher.MatchString(server) {
 			continue
+		}
+
+		if server == "" {
+			server = "empty"
 		}
 
 		if !cd.collectedServers[server] {
@@ -305,6 +321,10 @@ func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Metrics) {
 			continue
 		}
 
+		if zone == "." {
+			zone = "root"
+		}
+
 		if !cd.collectedZones[zone] {
 			cd.addNewZoneCharts(zone)
 			cd.collectedZones[zone] = true
@@ -335,6 +355,10 @@ func (cd *CoreDNS) collectPerZoneRequestsDuration(mx *metrics, raw prometheus.Me
 
 		if !cd.perZoneMatcher.MatchString(zone) {
 			continue
+		}
+
+		if zone == "." {
+			zone = "root"
 		}
 
 		if !cd.collectedZones[zone] {
@@ -369,6 +393,10 @@ func (cd *CoreDNS) collectPerZoneRequestsPerType(mx *metrics, raw prometheus.Met
 			continue
 		}
 
+		if zone == "." {
+			zone = "root"
+		}
+
 		if !cd.collectedZones[zone] {
 			cd.addNewZoneCharts(zone)
 			cd.collectedZones[zone] = true
@@ -396,6 +424,10 @@ func (cd *CoreDNS) collectPerZoneResponsesPerRcode(mx *metrics, raw prometheus.M
 
 		if !cd.perZoneMatcher.MatchString(zone) {
 			continue
+		}
+
+		if zone == "." {
+			zone = "root"
 		}
 
 		if !cd.collectedZones[zone] {
