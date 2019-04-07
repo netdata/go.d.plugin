@@ -89,7 +89,7 @@ func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
 			continue
 		}
 
-		setRequestPerStatus(&mx.Summary.Request, value, zone)
+		setRequestPerStatus(&mx.Summary.Request, value, server, zone)
 
 		if zone == dropped {
 			continue
@@ -165,7 +165,7 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 			value  = metric.Value
 		)
 
-		if family == empty || proto == empty || zone == empty {
+		if family == empty || proto == empty || zone == empty || zone == dropped && server != empty {
 			continue
 		}
 
@@ -187,8 +187,10 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 		}
 
 		srv := mx.PerServer[server]
-		setRequestPerStatus(&srv.Request, value, zone)
 
+		setRequestPerStatus(&srv.Request, value, server, zone)
+
+		// skip dropped zone for non empty servers
 		if zone == dropped {
 			continue
 		}
@@ -208,7 +210,7 @@ func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.
 			value  = metric.Value
 		)
 
-		if zone == empty || zone == dropped || le == empty {
+		if zone == empty || zone == dropped && server != empty || le == empty {
 			continue
 		}
 
@@ -245,7 +247,7 @@ func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Me
 			value  = metric.Value
 		)
 
-		if typ == empty || zone == empty || zone == dropped {
+		if typ == empty || zone == empty || zone == dropped && server != empty {
 			continue
 		}
 
@@ -279,7 +281,7 @@ func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.
 			value  = metric.Value
 		)
 
-		if rcode == empty || zone == empty || zone == dropped {
+		if rcode == empty || zone == empty || zone == dropped && server != empty {
 			continue
 		}
 
@@ -465,13 +467,15 @@ func setRequestPerProto(mx *request, value float64, proto string) {
 	}
 }
 
-func setRequestPerStatus(mx *request, value float64, zone string) {
+func setRequestPerStatus(mx *request, value float64, server, zone string) {
 	switch zone {
 	default:
 		mx.PerStatus.Processed.Add(value)
 	case "dropped":
 		mx.PerStatus.Dropped.Add(value)
-		mx.PerStatus.Processed.Sub(value)
+		if server != empty {
+			mx.PerStatus.Processed.Sub(value)
+		}
 	}
 }
 
