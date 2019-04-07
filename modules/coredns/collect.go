@@ -8,8 +8,10 @@ import (
 )
 
 var (
-	empty   = ""
-	dropped = "dropped"
+	empty                  = ""
+	dropped                = "dropped"
+	emptyServerReplaceName = "empty"
+	rootZoneReplaceName    = "root"
 )
 
 var (
@@ -177,7 +179,7 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 		}
 
 		if server == "" {
-			server = "empty"
+			server = emptyServerReplaceName
 		}
 
 		if _, ok := mx.PerServer[server]; !ok {
@@ -214,8 +216,8 @@ func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.
 			continue
 		}
 
-		if server == "" {
-			server = "empty"
+		if server == empty {
+			server = emptyServerReplaceName
 		}
 
 		if !cd.collectedServers[server] {
@@ -251,8 +253,8 @@ func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Me
 			continue
 		}
 
-		if server == "" {
-			server = "empty"
+		if server == empty {
+			server = emptyServerReplaceName
 		}
 
 		if !cd.collectedServers[server] {
@@ -285,8 +287,8 @@ func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.
 			continue
 		}
 
-		if server == "" {
-			server = "empty"
+		if server == empty {
+			server = emptyServerReplaceName
 		}
 
 		if !cd.collectedServers[server] {
@@ -322,7 +324,7 @@ func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Metrics) {
 		}
 
 		if zone == "." {
-			zone = "root"
+			zone = rootZoneReplaceName
 		}
 
 		if !cd.collectedZones[zone] {
@@ -358,7 +360,7 @@ func (cd *CoreDNS) collectPerZoneRequestsDuration(mx *metrics, raw prometheus.Me
 		}
 
 		if zone == "." {
-			zone = "root"
+			zone = rootZoneReplaceName
 		}
 
 		if !cd.collectedZones[zone] {
@@ -394,7 +396,7 @@ func (cd *CoreDNS) collectPerZoneRequestsPerType(mx *metrics, raw prometheus.Met
 		}
 
 		if zone == "." {
-			zone = "root"
+			zone = rootZoneReplaceName
 		}
 
 		if !cd.collectedZones[zone] {
@@ -427,7 +429,7 @@ func (cd *CoreDNS) collectPerZoneResponsesPerRcode(mx *metrics, raw prometheus.M
 		}
 
 		if zone == "." {
-			zone = "root"
+			zone = rootZoneReplaceName
 		}
 
 		if !cd.collectedZones[zone] {
