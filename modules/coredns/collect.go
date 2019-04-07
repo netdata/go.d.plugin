@@ -69,9 +69,7 @@ func (cd CoreDNS) collectPanic(mx *metrics, raw prometheus.Metrics) {
 }
 
 func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
-	metricName := metricRequestCountTotal
-
-	for _, metric := range raw.FindByName(metricName) {
+	for _, metric := range raw.FindByName(metricRequestCountTotal) {
 		var (
 			family = metric.Labels.Get("family")
 			proto  = metric.Labels.Get("proto")
@@ -86,12 +84,11 @@ func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
 
 		if server == empty {
 			mx.NoZoneDropped.Add(value)
-			continue
 		}
 
 		setRequestPerStatus(&mx.Summary.Request, value, server, zone)
 
-		if zone == dropped {
+		if zone == dropped && server != empty {
 			continue
 		}
 
@@ -110,7 +107,7 @@ func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Me
 			value  = metric.Value
 		)
 
-		if server == empty || zone == empty || zone == dropped || le == empty {
+		if zone == empty || zone == dropped && server != empty || le == empty {
 			continue
 		}
 
@@ -128,7 +125,7 @@ func (cd *CoreDNS) collectSummaryRequestsPerType(mx *metrics, raw prometheus.Met
 			value  = metric.Value
 		)
 
-		if server == empty || typ == empty || zone == empty || zone == dropped {
+		if typ == empty || zone == empty || zone == dropped && server != empty {
 			continue
 		}
 
@@ -145,7 +142,7 @@ func (cd *CoreDNS) collectSummaryResponsesPerRcode(mx *metrics, raw prometheus.M
 			value  = metric.Value
 		)
 
-		if server == "" || rcode == empty || zone == empty || zone == dropped {
+		if rcode == empty || zone == empty || zone == dropped && server != empty {
 			continue
 		}
 
