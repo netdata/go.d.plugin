@@ -16,11 +16,11 @@ var charts = Charts{
 		ID:    "response_codes",
 		Title: "Response Codes", Units: "requests/s", Fam: "response_code", Type: module.Stacked,
 		Dims: Dims{
-			{ID: "resp_1xx", Name: "1xx", Algo: module.Incremental},
 			{ID: "resp_2xx", Name: "2xx", Algo: module.Incremental},
+			{ID: "resp_5xx", Name: "5xx", Algo: module.Incremental},
 			{ID: "resp_3xx", Name: "3xx", Algo: module.Incremental},
 			{ID: "resp_4xx", Name: "4xx", Algo: module.Incremental},
-			{ID: "resp_5xx", Name: "5xx", Algo: module.Incremental},
+			{ID: "resp_1xx", Name: "1xx", Algo: module.Incremental},
 		},
 	},
 	{
