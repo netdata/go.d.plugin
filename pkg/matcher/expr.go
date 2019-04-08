@@ -1,52 +1,60 @@
 package matcher
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type (
+	Expr interface {
+		Parse() (Matcher, error)
+	}
+
 	// SimpleExpr is a simple expression to describe the condition:
 	//     (includes[0].Match(v) || includes[1].Match(v) || ...) && !(excludes[0].Match(v) || excludes[1].Match(v) || ...)
 	SimpleExpr struct {
 		Includes []string `yaml:"includes" json:"includes"`
 		Excludes []string `yaml:"excludes" json:"excludes"`
-
-		matcher Matcher
 	}
 )
 
+var (
+	ErrEmptyExpr = errors.New("empty expression")
+)
+
+// Empty returns true if both Includes and Excludes are empty. You can't
+func (s *SimpleExpr) Empty() bool {
+	return len(s.Includes) == 0 && len(s.Excludes) == 0
+}
+
 // Parse parse the given matchers in Includes and Excludes
-func (s *SimpleExpr) Parse() error {
+func (s *SimpleExpr) Parse() (Matcher, error) {
+	if len(s.Includes) == 0 && len(s.Excludes) == 0 {
+		return nil, ErrEmptyExpr
+	}
 	var (
 		includes = FALSE()
 		excludes = FALSE()
 	)
-	for _, item := range s.Includes {
-		m, err := Parse(item)
-		if err != nil {
-			return fmt.Errorf("parse matcher %q error: %v", item, err)
+	if len(s.Includes) > 0 {
+		for _, item := range s.Includes {
+			m, err := Parse(item)
+			if err != nil {
+				return nil, fmt.Errorf("parse matcher %q error: %v", item, err)
+			}
+			includes = Or(includes, m)
 		}
-		includes = Or(includes, m)
+	} else {
+		includes = TRUE()
 	}
+
 	for _, item := range s.Excludes {
 		m, err := Parse(item)
 		if err != nil {
-			return fmt.Errorf("parse matcher %q error: %v", item, err)
+			return nil, fmt.Errorf("parse matcher %q error: %v", item, err)
 		}
 		excludes = Or(excludes, m)
 	}
 
-	if len(s.Includes) == 0 {
-		includes = TRUE()
-	}
-	s.matcher = And(includes, Not(excludes))
-	return nil
-}
-
-// Match match against []byte
-func (s *SimpleExpr) Match(b []byte) bool {
-	return s.matcher.Match(b)
-}
-
-// MatchString match against string
-func (s *SimpleExpr) MatchString(str string) bool {
-	return s.matcher.MatchString(str)
+	return And(includes, Not(excludes)), nil
 }

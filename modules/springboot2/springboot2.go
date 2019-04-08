@@ -40,6 +40,8 @@ type SpringBoot2 struct {
 	web.HTTP  `yaml:",inline"`
 	URIFilter matcher.SimpleExpr `yaml:"uri_filter"`
 
+	uriFilter matcher.Matcher
+
 	prom prometheus.Prometheus
 }
 
@@ -77,8 +79,8 @@ func (s *SpringBoot2) Init() bool {
 		s.Error(err)
 		return false
 	}
-	err = s.URIFilter.Parse()
-	if err != nil {
+	s.uriFilter, err = s.URIFilter.Parse()
+	if err != nil && err != matcher.ErrEmptyExpr {
 		s.Error(err)
 		return false
 	}
@@ -147,10 +149,13 @@ func gatherHeap(rawMetrics prometheus.Metrics, m *heap) {
 
 func (s *SpringBoot2) gatherResponse(rawMetrics prometheus.Metrics, m *metrics) {
 	for _, metric := range rawMetrics.FindByName("http_server_requests_seconds_count") {
-		uri := metric.Labels.Get("uri")
-		if !s.URIFilter.MatchString(uri) {
-			continue
+		if s.uriFilter != nil {
+			uri := metric.Labels.Get("uri")
+			if !s.uriFilter.MatchString(uri) {
+				continue
+			}
 		}
+
 		status := metric.Labels.Get("status")
 		if status == "" {
 			continue

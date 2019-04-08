@@ -9,19 +9,9 @@ import (
 func TestSimpleExpr_none(t *testing.T) {
 	expr := &SimpleExpr{}
 
-	err := expr.Parse()
-	assert.NoError(t, err)
-
-	assert.True(t, expr.MatchString("/api/a.php"))
-	assert.True(t, expr.MatchString("/api/a.php2"))
-	assert.True(t, expr.MatchString("/api2/a.php"))
-	assert.True(t, expr.MatchString("/api/img.php"))
-	assert.True(t, expr.MatchString("/api2/img.php2"))
-
-	assert.True(t, expr.Match([]byte("/api/a.php")))
-	assert.True(t, expr.Match([]byte("/api/a.php2")))
-	assert.True(t, expr.Match([]byte("/api2/a.php")))
-	assert.True(t, expr.Match([]byte("/api/img.php")))
+	m, err := expr.Parse()
+	assert.EqualError(t, err, ErrEmptyExpr.Error())
+	assert.Nil(t, m)
 }
 
 func TestSimpleExpr_include(t *testing.T) {
@@ -32,19 +22,14 @@ func TestSimpleExpr_include(t *testing.T) {
 		},
 	}
 
-	err := expr.Parse()
+	m, err := expr.Parse()
 	assert.NoError(t, err)
 
-	assert.True(t, expr.MatchString("/api/a.php"))
-	assert.True(t, expr.MatchString("/api/a.php2"))
-	assert.True(t, expr.MatchString("/api2/a.php"))
-	assert.True(t, expr.MatchString("/api/img.php"))
-	assert.False(t, expr.MatchString("/api2/img.php2"))
-
-	assert.True(t, expr.Match([]byte("/api/a.php")))
-	assert.True(t, expr.Match([]byte("/api/a.php2")))
-	assert.True(t, expr.Match([]byte("/api2/a.php")))
-	assert.True(t, expr.Match([]byte("/api/img.php")))
+	assert.True(t, m.MatchString("/api/a.php"))
+	assert.True(t, m.MatchString("/api/a.php2"))
+	assert.True(t, m.MatchString("/api2/a.php"))
+	assert.True(t, m.MatchString("/api/img.php"))
+	assert.False(t, m.MatchString("/api2/img.php2"))
 }
 
 func TestSimpleExpr_exclude(t *testing.T) {
@@ -54,19 +39,14 @@ func TestSimpleExpr_exclude(t *testing.T) {
 		},
 	}
 
-	err := expr.Parse()
+	m, err := expr.Parse()
 	assert.NoError(t, err)
 
-	assert.True(t, expr.MatchString("/api/a.php"))
-	assert.True(t, expr.MatchString("/api/a.php2"))
-	assert.True(t, expr.MatchString("/api2/a.php"))
-	assert.False(t, expr.MatchString("/api/img.php"))
-	assert.True(t, expr.MatchString("/api2/img.php2"))
-
-	assert.True(t, expr.Match([]byte("/api/a.php")))
-	assert.True(t, expr.Match([]byte("/api/a.php2")))
-	assert.True(t, expr.Match([]byte("/api2/a.php")))
-	assert.False(t, expr.Match([]byte("/api/img.php")))
+	assert.True(t, m.MatchString("/api/a.php"))
+	assert.True(t, m.MatchString("/api/a.php2"))
+	assert.True(t, m.MatchString("/api2/a.php"))
+	assert.False(t, m.MatchString("/api/img.php"))
+	assert.True(t, m.MatchString("/api2/img.php2"))
 }
 
 func TestSimpleExpr_both(t *testing.T) {
@@ -80,19 +60,14 @@ func TestSimpleExpr_both(t *testing.T) {
 		},
 	}
 
-	err := expr.Parse()
+	m, err := expr.Parse()
 	assert.NoError(t, err)
 
-	assert.True(t, expr.MatchString("/api/a.php"))
-	assert.True(t, expr.MatchString("/api/a.php2"))
-	assert.True(t, expr.MatchString("/api2/a.php"))
-	assert.False(t, expr.MatchString("/api/img.php"))
-	assert.False(t, expr.MatchString("/api2/img.php2"))
-
-	assert.True(t, expr.Match([]byte("/api/a.php")))
-	assert.True(t, expr.Match([]byte("/api/a.php2")))
-	assert.True(t, expr.Match([]byte("/api2/a.php")))
-	assert.False(t, expr.Match([]byte("/api/img.php")))
+	assert.True(t, m.MatchString("/api/a.php"))
+	assert.True(t, m.MatchString("/api/a.php2"))
+	assert.True(t, m.MatchString("/api2/a.php"))
+	assert.False(t, m.MatchString("/api/img.php"))
+	assert.False(t, m.MatchString("/api2/img.php2"))
 }
 
 func TestSimpleExpr_Parse_NG(t *testing.T) {
@@ -104,8 +79,9 @@ func TestSimpleExpr_Parse_NG(t *testing.T) {
 			},
 		}
 
-		err := expr.Parse()
+		m, err := expr.Parse()
 		assert.Error(t, err)
+		assert.Nil(t, m)
 	}
 	{
 		expr := &SimpleExpr{
@@ -115,7 +91,8 @@ func TestSimpleExpr_Parse_NG(t *testing.T) {
 			},
 		}
 
-		err := expr.Parse()
+		m, err := expr.Parse()
 		assert.Error(t, err)
+		assert.Nil(t, m)
 	}
 }
