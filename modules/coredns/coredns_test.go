@@ -66,8 +66,8 @@ func TestCoreDNS_Collect(t *testing.T) {
 
 	job := New()
 	job.URL = ts.URL + "/metrics"
-	job.PerServerStats.Include = []string{"glob:*"}
-	job.PerZoneStats.Include = []string{"glob:*"}
+	job.PerServerStats.Includes = []string{"glob:*"}
+	job.PerZoneStats.Includes = []string{"glob:*"}
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -414,8 +414,8 @@ func TestCoreDNS_CollectNoLoad(t *testing.T) {
 
 	job := New()
 	job.URL = ts.URL + "/metrics"
-	job.PerServerStats.Include = []string{"glob:*"}
-	job.PerZoneStats.Include = []string{"glob:*"}
+	job.PerServerStats.Includes = []string{"glob:*"}
+	job.PerZoneStats.Includes = []string{"glob:*"}
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
