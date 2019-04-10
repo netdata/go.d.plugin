@@ -34,10 +34,10 @@ var charts = Charts{
 		Title: "JVM Heap Memory",
 		Units: "KiB",
 		Fam:   "memory",
-		Type:  module.Stacked,
+		Type:  module.Area,
 		Dims: Dims{
-			{ID: "jvm_mem_heap_used_in_bytes", Name: "used", Div: 1024},
 			{ID: "jvm_mem_heap_committed_in_bytes", Name: "committed", Div: 1024},
+			{ID: "jvm_mem_heap_used_in_bytes", Name: "used", Div: 1024},
 		},
 	},
 	{
@@ -45,10 +45,10 @@ var charts = Charts{
 		Title: "JVM Pool Survivor Memory",
 		Units: "KiB",
 		Fam:   "memory",
-		Type:  module.Stacked,
+		Type:  module.Area,
 		Dims: Dims{
-			{ID: "jvm_mem_pools_survivor_used_in_bytes", Name: "used", Div: 1024},
 			{ID: "jvm_mem_pools_survivor_committed_in_bytes", Name: "committed", Div: 1024},
+			{ID: "jvm_mem_pools_survivor_used_in_bytes", Name: "used", Div: 1024},
 		},
 	},
 	{
@@ -56,10 +56,10 @@ var charts = Charts{
 		Title: "JVM Pool Old Memory",
 		Units: "KiB",
 		Fam:   "memory",
-		Type:  module.Stacked,
+		Type:  module.Area,
 		Dims: Dims{
-			{ID: "jvm_mem_pools_old_used_in_bytes", Name: "used", Div: 1024},
 			{ID: "jvm_mem_pools_old_committed_in_bytes", Name: "committed", Div: 1024},
+			{ID: "jvm_mem_pools_old_used_in_bytes", Name: "used", Div: 1024},
 		},
 	},
 	{
@@ -67,9 +67,10 @@ var charts = Charts{
 		Title: "JVM Pool Eden Memory",
 		Units: "KiB",
 		Fam:   "memory",
+		Type:  module.Area,
 		Dims: Dims{
-			{ID: "jvm_mem_pools_eden_used_in_bytes", Name: "used", Div: 1024},
 			{ID: "jvm_mem_pools_eden_committed_in_bytes", Name: "committed", Div: 1024},
+			{ID: "jvm_mem_pools_eden_used_in_bytes", Name: "used", Div: 1024},
 		},
 	},
 	{
