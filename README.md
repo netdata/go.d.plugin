@@ -25,8 +25,10 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache) *
  - [bind](https://github.com/netdata/go.d.plugin/tree/master/modules/bind) *
  - [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)
+ - [coredns](https://github.com/netdata/go.d.plugin/tree/master/modules/coredns)
  - [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery) *
  - [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine)
+ - [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)
  - [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example) *
  - [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)
  - [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius) *
