@@ -68,7 +68,7 @@ func (a *apiClient) connect() error {
 
 func (a *apiClient) reconnect() error {
 	if a.conn != nil {
-		_ = a.conn.Close()
+		_ = a.disconnect()
 		a.conn = nil
 	}
 	return a.connect()
