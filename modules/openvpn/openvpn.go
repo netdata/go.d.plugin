@@ -20,6 +20,8 @@ func New() *OpenVPN {
 // OpenVPN OpenVPN module.
 type OpenVPN struct {
 	module.Base // should be embedded by every module
+
+	apiClient apiClient
 }
 
 // Cleanup makes cleanup.
@@ -32,7 +34,7 @@ func (OpenVPN) Init() bool { return false }
 func (OpenVPN) Check() bool { return false }
 
 // Charts creates Charts.
-func (OpenVPN) Charts() *Charts { return nil }
+func (OpenVPN) Charts() *Charts { return charts.Copy() }
 
 // Collect collects metrics.
 func (o *OpenVPN) Collect() map[string]int64 {

@@ -44,7 +44,7 @@ type apiClient interface {
 	disconnect() error
 	send(command string) error
 	read(stop func(string) bool) ([]string, error)
-	isAlive() bool
+	isConnected() bool
 }
 
 func newAPIClient(config clientConfig) apiClient {
@@ -66,7 +66,7 @@ type client struct {
 	conn net.Conn
 }
 
-func (c *client) isAlive() bool {
+func (c *client) isConnected() bool {
 	return c.conn != nil
 }
 
