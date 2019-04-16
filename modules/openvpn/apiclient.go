@@ -32,15 +32,26 @@ var (
 	commandExit = "exit\n" // "quit"
 	// Show current daemon status information, in the same format as
 	// that produced by the OpenVPN --status directive.
-	commandStatus    = "status 3\n" // --status-version 3
-	commandLoadStats = "load-stats\n"
+	commandStatus    = "status 3\n"   // --status-version 3
+	commandLoadStats = "load-stats\n" // no description in docs ¯\(°_o)/¯
+	// Show the current OpenVPN and Management Interface versions.
+	commandVersion = "version\n"
 )
 
-func newAPIClient(config apiClientConfig) *apiClient {
-	return &apiClient{apiClientConfig: config}
+type apiClient interface {
+	connect() error
+	reconnect() error
+	disconnect() error
+	send(command string) error
+	read(stop func(string) bool) ([]string, error)
+	isAlive() bool
 }
 
-type apiClientConfig struct {
+func newAPIClient(config clientConfig) apiClient {
+	return &client{clientConfig: config}
+}
+
+type clientConfig struct {
 	network string
 	address string
 	timeout struct {
@@ -48,54 +59,58 @@ type apiClientConfig struct {
 	}
 }
 
-type apiClient struct {
-	apiClientConfig
+type client struct {
+	clientConfig
 
 	resp []string
 	conn net.Conn
 }
 
-func (a *apiClient) connect() error {
-	if a.conn != nil {
-		return a.reconnect()
+func (c *client) isAlive() bool {
+	return c.conn != nil
+}
+
+func (c *client) connect() error {
+	if c.conn != nil {
+		return c.reconnect()
 	}
-	conn, err := net.DialTimeout(a.network, a.address, a.timeout.connect)
+	conn, err := net.DialTimeout(c.network, c.address, c.timeout.connect)
 	if err != nil {
 		return err
 	}
-	a.conn = conn
+	c.conn = conn
 	return nil
 }
 
-func (a *apiClient) reconnect() error {
-	if a.conn != nil {
-		_ = a.disconnect()
+func (c *client) reconnect() error {
+	if c.conn != nil {
+		_ = c.disconnect()
 	}
-	return a.connect()
+	return c.connect()
 }
 
-func (a *apiClient) disconnect() error {
-	if a.conn == nil {
+func (c *client) disconnect() error {
+	if c.conn == nil {
 		return nil
 	}
-	_ = a.send(commandExit)
-	err := a.conn.Close()
-	a.conn = nil
+	_ = c.send(commandExit)
+	err := c.conn.Close()
+	c.conn = nil
 	return err
 }
 
-func (a *apiClient) send(command string) error {
-	_, err := a.conn.Write([]byte(command))
+func (c *client) send(command string) error {
+	_, err := c.conn.Write([]byte(command))
 	return err
 }
 
-func (a *apiClient) read(stop func(string) bool) ([]string, error) {
-	err := a.conn.SetReadDeadline(time.Now().Add(a.timeout.read))
+func (c *client) read(stop func(string) bool) ([]string, error) {
+	err := c.conn.SetReadDeadline(time.Now().Add(c.timeout.read))
 	if err != nil {
 		return nil, err
 	}
-	a.resp = a.resp[:0]
-	r := bufio.NewReader(a.conn)
+	c.resp = c.resp[:0]
+	r := bufio.NewReader(c.conn)
 	var line string
 	for {
 		line, err = r.ReadString('\n')
@@ -106,10 +121,10 @@ func (a *apiClient) read(stop func(string) bool) ([]string, error) {
 		if strings.HasPrefix(line, ">") {
 			continue
 		}
-		a.resp = append(a.resp, line)
-		if stop(line) {
+		c.resp = append(c.resp, line)
+		if stop != nil && stop(line) {
 			break
 		}
 	}
-	return a.resp, nil
+	return c.resp, nil
 }
