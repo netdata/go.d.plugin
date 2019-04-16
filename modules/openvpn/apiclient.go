@@ -32,8 +32,8 @@ var (
 	commandExit = "exit\n" // "quit"
 	// Show current daemon status information, in the same format as
 	// that produced by the OpenVPN --status directive.
-	commandStatus    = "status 3\n"   // --status-version 3
-	commandLoadStats = "load-stats\n" // --status-version 3
+	commandStatus    = "status 3\n" // --status-version 3
+	commandLoadStats = "load-stats\n"
 )
 
 func newAPIClient(config apiClientConfig) *apiClient {
@@ -41,10 +41,11 @@ func newAPIClient(config apiClientConfig) *apiClient {
 }
 
 type apiClientConfig struct {
-	network     string
-	address     string
-	connTimeout time.Duration
-	readTimeout time.Duration
+	network string
+	address string
+	timeout struct {
+		connect, read time.Duration
+	}
 }
 
 type apiClient struct {
@@ -58,7 +59,7 @@ func (a *apiClient) connect() error {
 	if a.conn != nil {
 		return a.reconnect()
 	}
-	conn, err := net.DialTimeout(a.network, a.address, a.connTimeout)
+	conn, err := net.DialTimeout(a.network, a.address, a.timeout.connect)
 	if err != nil {
 		return err
 	}
@@ -69,7 +70,6 @@ func (a *apiClient) connect() error {
 func (a *apiClient) reconnect() error {
 	if a.conn != nil {
 		_ = a.disconnect()
-		a.conn = nil
 	}
 	return a.connect()
 }
@@ -90,7 +90,7 @@ func (a *apiClient) send(command string) error {
 }
 
 func (a *apiClient) read(stop func(string) bool) ([]string, error) {
-	err := a.conn.SetReadDeadline(time.Now().Add(a.readTimeout))
+	err := a.conn.SetReadDeadline(time.Now().Add(a.timeout.read))
 	if err != nil {
 		return nil, err
 	}
