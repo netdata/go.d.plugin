@@ -11,21 +11,21 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "number_of_clients",
-		Title: "Active Clients",
+		ID:    "active_clients",
+		Title: "Total Number Of Active Clients",
 		Units: "active clients",
 		Fam:   "clients",
-		Ctx:   "openvpn.number_of_clients",
+		Ctx:   "openvpn.active_clients",
 		Dims: Dims{
 			{ID: "clients"},
 		},
 	},
 	{
-		ID:    "traffic",
-		Title: "Traffic",
+		ID:    "total_traffic",
+		Title: "Total Traffic",
 		Units: "KiB/s",
 		Fam:   "traffic",
-		Ctx:   "openvpn.traffic",
+		Ctx:   "openvpn.total_traffic",
 		Type:  module.Area,
 		Dims: Dims{
 			{ID: "bytes_in", Name: "in", Algo: module.Incremental, Div: 1 << 10},
