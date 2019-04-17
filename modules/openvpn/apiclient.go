@@ -52,11 +52,10 @@ func newAPIClient(config clientConfig) apiClient {
 }
 
 type clientConfig struct {
-	network string
-	address string
-	timeout struct {
-		connect, read time.Duration
-	}
+	network        string
+	address        string
+	connectTimeout time.Duration
+	readTimeout    time.Duration
 }
 
 type client struct {
@@ -74,7 +73,7 @@ func (c *client) connect() error {
 	if c.conn != nil {
 		return c.reconnect()
 	}
-	conn, err := net.DialTimeout(c.network, c.address, c.timeout.connect)
+	conn, err := net.DialTimeout(c.network, c.address, c.connectTimeout)
 	if err != nil {
 		return err
 	}
@@ -105,7 +104,7 @@ func (c *client) send(command string) error {
 }
 
 func (c *client) read(stop func(string) bool) ([]string, error) {
-	err := c.conn.SetReadDeadline(time.Now().Add(c.timeout.read))
+	err := c.conn.SetReadDeadline(time.Now().Add(c.readTimeout))
 	if err != nil {
 		return nil, err
 	}
