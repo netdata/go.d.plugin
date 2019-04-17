@@ -10,10 +10,12 @@ import (
 )
 
 var (
-	loadStatsData, _    = ioutil.ReadFile("testdata/load-stats.txt")
-	versionData, _      = ioutil.ReadFile("testdata/version.txt")
-	status3Data, _      = ioutil.ReadFile("testdata/status3.txt")
-	status3EmptyData, _ = ioutil.ReadFile("testdata/status3-empty.txt")
+	testLoadStatsData, _    = ioutil.ReadFile("testdata/load-stats.txt")
+	testVersionData, _      = ioutil.ReadFile("testdata/version.txt")
+	testStatus3Data, _      = ioutil.ReadFile("testdata/status3.txt")
+	testStatus3EmptyData, _ = ioutil.ReadFile("testdata/status3-empty.txt")
+
+	testCommandStatus3Empty = "status 3 empty/n"
 )
 
 func TestNew(t *testing.T) {
@@ -30,10 +32,25 @@ func TestOpenVPN_Init(t *testing.T) {
 	assert.NotNil(t, job.apiClient)
 }
 
+func TestOpenVPN_InitNG(t *testing.T) {
+	job := New()
+	job.Address = ""
+	assert.False(t, job.Init())
+	assert.Nil(t, job.apiClient)
+}
+
 func TestOpenVPN_Check(t *testing.T) {
-	//mod := New()
-	//
-	//assert.True(t, mod.Check())
+	job := New()
+	assert.True(t, job.Init())
+	job.apiClient = &mockApiClient{}
+	assert.True(t, job.Check())
+}
+
+func TestOpenVPN_CheckNG(t *testing.T) {
+	job := New()
+	job.Address = "127.0.0.1:38001"
+	assert.True(t, job.Init())
+	assert.False(t, job.Check())
 }
 
 func TestOpenVPN_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
@@ -64,11 +81,11 @@ func (m *mockApiClient) send(command string) error {
 func (m *mockApiClient) read(stop func(string) bool) ([]string, error) {
 	switch m.lastCommand {
 	case commandLoadStats:
-		return strings.Split(string(loadStatsData), "\n"), nil
+		return strings.Split(string(testLoadStatsData), "\n"), nil
 	case commandVersion:
-		return strings.Split(string(versionData), "\n"), nil
+		return strings.Split(string(testVersionData), "\n"), nil
 	case commandStatus:
-		return strings.Split(string(status3Data), "\n"), nil
+		return strings.Split(string(testStatus3Data), "\n"), nil
 	}
 	return nil, fmt.Errorf("unknown command : %s", m.lastCommand)
 }
