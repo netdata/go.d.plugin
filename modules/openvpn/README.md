@@ -24,7 +24,6 @@ Reason:
  >  Currently,the OpenVPN daemon can at most support a single management client any one time.
 
 So to not break other tools that uses Management Interface we decided to disable it by default. 
-___
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/openvpn.conf).
 ___
