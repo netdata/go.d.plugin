@@ -98,7 +98,6 @@ func (t *testTCPServer) serve() error {
 	for {
 		err := t.serveOnce()
 		if err != nil {
-			fmt.Println(err)
 			return err
 		}
 	}
