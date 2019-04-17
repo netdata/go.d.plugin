@@ -35,10 +35,10 @@ Here is an example for 2 OpenVPN instances:
 ```yaml
 jobs:
   - name: local
-    url : /dev/openvpn
+    address : /dev/openvpn
       
   - name: remote
-    url : 100.64.0.1:7505
+    address : 100.64.0.1:7505
 ```
 
 Without configuration, module attempts to connect to `127.0.0.1:7505`
