@@ -2,6 +2,7 @@ package openvpn
 
 import (
 	"bufio"
+	"fmt"
 	"net"
 	"strings"
 	"time"
@@ -47,22 +48,26 @@ type apiClient interface {
 	isConnected() bool
 }
 
-func newAPIClient(config clientConfig) apiClient {
+func newClient(config clientConfig) *client {
 	return &client{clientConfig: config}
 }
 
 type clientConfig struct {
-	network        string
-	address        string
-	connectTimeout time.Duration
-	readTimeout    time.Duration
+	network  string
+	address  string
+	timeouts clientTimeouts
+}
+
+type clientTimeouts struct {
+	connect time.Duration
+	read    time.Duration
+	write   time.Duration
 }
 
 type client struct {
 	clientConfig
-
-	resp []string
-	conn net.Conn
+	records []string
+	conn    net.Conn
 }
 
 func (c *client) isConnected() bool {
@@ -73,7 +78,7 @@ func (c *client) connect() error {
 	if c.conn != nil {
 		return c.reconnect()
 	}
-	conn, err := net.DialTimeout(c.network, c.address, c.connectTimeout)
+	conn, err := net.DialTimeout(c.network, c.address, c.timeouts.connect)
 	if err != nil {
 		return err
 	}
@@ -92,23 +97,27 @@ func (c *client) disconnect() error {
 	if c.conn == nil {
 		return nil
 	}
-	_ = c.send(commandExit)
 	err := c.conn.Close()
 	c.conn = nil
 	return err
 }
 
 func (c *client) send(command string) error {
-	_, err := c.conn.Write([]byte(command))
+	fmt.Println("SEND", command)
+	err := c.conn.SetWriteDeadline(time.Now().Add(c.timeouts.write))
+	if err != nil {
+		return err
+	}
+	_, err = c.conn.Write([]byte(command))
 	return err
 }
 
 func (c *client) read(stop func(string) bool) ([]string, error) {
-	err := c.conn.SetReadDeadline(time.Now().Add(c.readTimeout))
+	err := c.conn.SetReadDeadline(time.Now().Add(c.timeouts.read))
 	if err != nil {
 		return nil, err
 	}
-	c.resp = c.resp[:0]
+	c.records = c.records[:0]
 	r := bufio.NewReader(c.conn)
 	var line string
 	for {
@@ -120,10 +129,11 @@ func (c *client) read(stop func(string) bool) ([]string, error) {
 		if strings.HasPrefix(line, ">") {
 			continue
 		}
-		c.resp = append(c.resp, line)
+		line = strings.Trim(line, "\r\n ")
+		c.records = append(c.records, line)
 		if stop != nil && stop(line) {
 			break
 		}
 	}
-	return c.resp, nil
+	return c.records, nil
 }

@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	reLoadStats = regexp.MustCompile(`SUCCESS: nclients=([0-9]+),bytesin=([0-9]+),bytesout=([0-9]+)`)
-	reVersion   = regexp.MustCompile(`OpenVPN Version: OpenVPN ([0-9]+)\.([0-9]+)\.([0-9]+) .+?Management Version: ([0-9])`)
+	reLoadStats = regexp.MustCompile(`^SUCCESS: nclients=([0-9]+),bytesin=([0-9]+),bytesout=([0-9]+)`)
+	reVersion   = regexp.MustCompile(`^OpenVPN Version: OpenVPN ([0-9]+)\.([0-9]+)\.([0-9]+) .+Management Version: ([0-9])`)
 )
 
 type loadStats struct {
@@ -34,7 +34,6 @@ func (o *OpenVPN) collect() (map[string]int64, error) {
 			return nil, err
 		}
 	}
-
 	ls, err := o.collectLoadStats()
 	if err != nil {
 		_ = o.apiClient.disconnect()
@@ -45,35 +44,45 @@ func (o *OpenVPN) collect() (map[string]int64, error) {
 }
 
 func (o *OpenVPN) collectVersion() (*version, error) {
-	if err := o.apiClient.send(commandVersion); err != nil {
-		return nil, err
+	err := o.apiClient.send(commandVersion)
+	if err != nil {
+		return nil, fmt.Errorf("error on sending command : %v", err)
 	}
 
-	// one line is enough
-	resp, err := o.apiClient.read(func(s string) bool { return true })
+	resp, err := o.apiClient.read(func(s string) bool { return strings.HasSuffix(s, "END") })
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error on reading response : %v", err)
 	}
-	return parseVersion(resp)
+
+	ver, err := parseVersion(resp)
+	if err != nil {
+		return nil, fmt.Errorf("error on parsing response : %v", err)
+	}
+
+	return ver, nil
 }
 
 func (o *OpenVPN) collectLoadStats() (*loadStats, error) {
 	err := o.apiClient.send(commandLoadStats)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error on sending command : %v", err)
 	}
 	// one line is enough
 	resp, err := o.apiClient.read(func(s string) bool { return true })
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error on reading response : %v", err)
 	}
-	return parseLoadStats(resp)
+	ls, err := parseLoadStats(resp)
+	if err != nil {
+		return nil, fmt.Errorf("error on parsing response : %v", err)
+	}
+	return ls, err
 }
 
 func parseVersion(raw []string) (*version, error) {
 	m := reVersion.FindStringSubmatch(strings.Join(raw, " "))
 	if len(m) == 0 {
-		return nil, fmt.Errorf("regex parse filed, invalid format : %v", raw)
+		return nil, fmt.Errorf("parse failed : %v", raw)
 	}
 	ver := version{
 		major:      mustAtoi(m[1]),
@@ -87,7 +96,7 @@ func parseVersion(raw []string) (*version, error) {
 func parseLoadStats(raw []string) (*loadStats, error) {
 	m := reLoadStats.FindStringSubmatch(strings.Join(raw, " "))
 	if len(m) == 0 {
-		return nil, fmt.Errorf("regex parse filed, invalid format : %v", raw)
+		return nil, fmt.Errorf("parse failed : %v", raw)
 	}
 	ls := loadStats{
 		Clients:  mustAtoi(m[1]),

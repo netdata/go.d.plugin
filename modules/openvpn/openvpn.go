@@ -13,6 +13,7 @@ const (
 	defaultAddress        = "127.0.0.1:7505"
 	defaultConnectTimeout = time.Second * 2
 	defaultReadTimeout    = time.Second * 2
+	defaultWriteTimeout   = time.Second * 2
 )
 
 func init() {
@@ -28,18 +29,26 @@ func init() {
 // New creates OpenVPN with default values.
 func New() *OpenVPN {
 	config := Config{
-		Address:        defaultAddress,
-		ConnectTimeout: web.Duration{Duration: defaultConnectTimeout},
-		ReadTimeout:    web.Duration{Duration: defaultReadTimeout},
+		Address: defaultAddress,
+		Timeouts: timeouts{
+			Connect: web.Duration{Duration: defaultConnectTimeout},
+			Read:    web.Duration{Duration: defaultReadTimeout},
+			Write:   web.Duration{Duration: defaultWriteTimeout},
+		},
 	}
 	return &OpenVPN{Config: config}
 }
 
 // Config is the OpenVPN module configuration.
 type Config struct {
-	Address        string
-	ConnectTimeout web.Duration `yaml:"connect_timeout"`
-	ReadTimeout    web.Duration `yaml:"read_timeout"`
+	Address  string
+	Timeouts timeouts `yaml:",inline"`
+}
+
+type timeouts struct {
+	Connect web.Duration `yaml:"connect_timeout"`
+	Read    web.Duration `yaml:"read_timeout"`
+	Write   web.Duration `yaml:"write_timeout"`
 }
 
 // OpenVPN OpenVPN module.
@@ -59,25 +68,45 @@ func (o *OpenVPN) Cleanup() {
 
 // Init makes initialization.
 func (o *OpenVPN) Init() bool {
-	if len(o.Address) == 0 {
-		o.Error("mandatory 'address' parameter is not set")
-		return false
-	}
 	var network = "tcp"
 	if strings.HasPrefix(o.Address, "/") {
 		network = "unix"
 	}
-	o.apiClient = newAPIClient(clientConfig{
-		network:        network,
-		address:        o.Address,
-		connectTimeout: o.ConnectTimeout.Duration,
-		readTimeout:    o.ReadTimeout.Duration,
-	})
+	config := clientConfig{
+		network: network,
+		address: o.Address,
+		timeouts: clientTimeouts{
+			connect: o.Timeouts.Connect.Duration,
+			read:    o.Timeouts.Read.Duration,
+			write:   o.Timeouts.Write.Duration,
+		},
+	}
+	o.Infof("using network: %s, address: %s, connect timeout: %s, read timeout: %s, write timeout: %s",
+		network, o.Address, o.Timeouts.Connect.Duration, o.Timeouts.Read.Duration, o.Timeouts.Write.Duration)
+	o.apiClient = newClient(config)
+
 	return true
 }
 
 // Check makes check.
-func (o *OpenVPN) Check() bool { return len(o.Collect()) > 0 }
+func (o *OpenVPN) Check() bool {
+	if !o.apiClient.isConnected() {
+		err := o.apiClient.connect()
+		if err != nil {
+			o.Error(err)
+			return false
+		}
+	}
+	ver, err := o.collectVersion()
+	if err != nil {
+		o.Error(err)
+		o.Cleanup()
+		return false
+	}
+	o.Infof("connected to OpenVPN v%d.%d.%d, Management v%d",
+		ver.major, ver.minor, ver.patch, ver.management)
+	return true
+}
 
 // Charts creates Charts.
 func (OpenVPN) Charts() *Charts { return charts.Copy() }

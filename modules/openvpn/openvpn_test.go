@@ -1,10 +1,13 @@
 package openvpn
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
 	"io/ioutil"
-	"strings"
+	"net"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -22,8 +25,9 @@ func TestNew(t *testing.T) {
 	job := New()
 	assert.IsType(t, (*OpenVPN)(nil), job)
 	assert.Equal(t, defaultAddress, job.Address)
-	assert.Equal(t, defaultConnectTimeout, job.ConnectTimeout.Duration)
-	assert.Equal(t, defaultReadTimeout, job.ReadTimeout.Duration)
+	assert.Equal(t, defaultConnectTimeout, job.Timeouts.Connect.Duration)
+	assert.Equal(t, defaultReadTimeout, job.Timeouts.Read.Duration)
+	assert.Equal(t, defaultWriteTimeout, job.Timeouts.Write.Duration)
 }
 
 func TestOpenVPN_Init(t *testing.T) {
@@ -32,17 +36,13 @@ func TestOpenVPN_Init(t *testing.T) {
 	assert.NotNil(t, job.apiClient)
 }
 
-func TestOpenVPN_InitNG(t *testing.T) {
-	job := New()
-	job.Address = ""
-	assert.False(t, job.Init())
-	assert.Nil(t, job.apiClient)
-}
-
 func TestOpenVPN_Check(t *testing.T) {
 	job := New()
 	assert.True(t, job.Init())
-	job.apiClient = &mockApiClient{}
+	serverConn, clientConn := net.Pipe()
+	job.apiClient = newTestClient(clientConn)
+	server := newTestServer(serverConn)
+	go server.serve()
 	assert.True(t, job.Check())
 }
 
@@ -58,34 +58,75 @@ func TestOpenVPN_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
 func TestOpenVPN_Cleanup(t *testing.T) { assert.NotPanics(t, New().Cleanup) }
 
 func TestExample_Collect(t *testing.T) {
-	//mod := New()
-	//
-	//assert.NotNil(t, mod.Collect())
-}
+	job := New()
 
-type mockApiClient struct{ lastCommand string }
+	assert.True(t, job.Init())
+	serverConn, clientConn := net.Pipe()
+	job.apiClient = newTestClient(clientConn)
+	server := newTestServer(serverConn)
+	go server.serve()
 
-func (mockApiClient) connect() error { return nil }
-
-func (mockApiClient) reconnect() error { return nil }
-
-func (mockApiClient) disconnect() error { return nil }
-
-func (mockApiClient) isConnected() bool { return true }
-
-func (m *mockApiClient) send(command string) error {
-	m.lastCommand = command
-	return nil
-}
-
-func (m *mockApiClient) read(stop func(string) bool) ([]string, error) {
-	switch m.lastCommand {
-	case commandLoadStats:
-		return strings.Split(string(testLoadStatsData), "\n"), nil
-	case commandVersion:
-		return strings.Split(string(testVersionData), "\n"), nil
-	case commandStatus:
-		return strings.Split(string(testStatus3Data), "\n"), nil
+	assert.True(t, job.Check())
+	expected := map[string]int64{
+		"bytes_in":  7811,
+		"bytes_out": 7667,
+		"clients":   1,
 	}
-	return nil, fmt.Errorf("unknown command : %s", m.lastCommand)
+	assert.Equal(t, expected, job.Collect())
+}
+
+func newTestClient(conn net.Conn) *client {
+	return &client{
+		conn: conn,
+		clientConfig: clientConfig{
+			timeouts: clientTimeouts{
+				connect: defaultConnectTimeout,
+				read:    defaultReadTimeout,
+				write:   defaultWriteTimeout,
+			},
+		},
+	}
+}
+
+func newTestServer(conn net.Conn) *testTCPServer { return &testTCPServer{conn: conn} }
+
+type testTCPServer struct {
+	conn net.Conn
+}
+
+func (t *testTCPServer) serve() error {
+	for {
+		err := t.serveOnce()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+	}
+}
+
+func (t *testTCPServer) serveOnce() error {
+	_ = t.conn.SetReadDeadline(time.Now().Add(defaultReadTimeout))
+	s, err := bufio.NewReader(t.conn).ReadString('\n')
+	if err != nil {
+		return err
+	}
+	err = t.conn.SetWriteDeadline(time.Now().Add(defaultWriteTimeout))
+	if err != nil {
+		return err
+	}
+	switch s {
+	default:
+		return fmt.Errorf("unknown command : %s", s)
+	case commandExit:
+		return errors.New("exiting")
+	case commandVersion:
+		_, _ = t.conn.Write(testVersionData)
+	case commandStatus:
+		_, _ = t.conn.Write(testStatus3Data)
+	case commandLoadStats:
+		_, _ = t.conn.Write(testLoadStatsData)
+	case testCommandStatus3Empty:
+		_, _ = t.conn.Write(testStatus3EmptyData)
+	}
+	return nil
 }
