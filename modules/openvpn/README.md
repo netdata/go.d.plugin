@@ -38,7 +38,7 @@ jobs:
     url : /dev/openvpn
       
   - name: remote
-    url : http://100.64.0.1:7505
+    url : 100.64.0.1:7505
 ```
 
 Without configuration, module attempts to connect to `127.0.0.1:7505`
