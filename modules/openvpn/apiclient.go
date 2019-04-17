@@ -120,8 +120,9 @@ func (c *client) read(stop func(string) bool) ([]string, error) {
 	var line string
 	for {
 		line, err = r.ReadString('\n')
+		// never EOF
 		if err != nil {
-			break
+			return nil, err
 		}
 		// skip real-time messages
 		if strings.HasPrefix(line, ">") {
