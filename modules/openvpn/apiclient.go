@@ -2,7 +2,6 @@ package openvpn
 
 import (
 	"bufio"
-	"fmt"
 	"net"
 	"strings"
 	"time"
@@ -103,7 +102,6 @@ func (c *client) disconnect() error {
 }
 
 func (c *client) send(command string) error {
-	fmt.Println("SEND", command)
 	err := c.conn.SetWriteDeadline(time.Now().Add(c.timeouts.write))
 	if err != nil {
 		return err
