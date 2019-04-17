@@ -18,9 +18,8 @@ const (
 
 func init() {
 	creator := module.Creator{
-		// TODO: enable
-		// DisabledByDefault:true,
-		Create: func() module.Module { return New() },
+		DisabledByDefault: true,
+		Create:            func() module.Module { return New() },
 	}
 
 	module.Register("openvpn", creator)
