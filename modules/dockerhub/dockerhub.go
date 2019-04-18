@@ -11,13 +11,16 @@ import (
 const (
 	defaultURL         = "https://hub.docker.com/v2/repositories"
 	defaultHTTPTimeout = time.Second * 2
+
 	defaultUpdateEvery = 5
 )
 
 func init() {
 	creator := module.Creator{
-		UpdateEvery: defaultUpdateEvery,
-		Create:      func() module.Module { return New() },
+		Defaults: module.Defaults{
+			UpdateEvery: defaultUpdateEvery,
+		},
+		Create: func() module.Module { return New() },
 	}
 
 	module.Register("dockerhub", creator)

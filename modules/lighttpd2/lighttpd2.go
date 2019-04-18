@@ -12,8 +12,7 @@ import (
 
 func init() {
 	creator := module.Creator{
-		DisabledByDefault: true,
-		Create:            func() module.Module { return New() },
+		Create: func() module.Module { return New() },
 	}
 
 	module.Register("lighttpd2", creator)
