@@ -286,17 +286,14 @@ func (a *Activemq) removeQueueTopicCharts(name, typ string) {
 	rname := nameReplacer.Replace(name)
 
 	chart := a.charts.Get(fmt.Sprintf("%s_%s_messages", typ, rname))
-	chart.Obsolete = true
-	chart.MarkNotCreated()
 	chart.MarkRemove()
+	chart.MarkNotCreated()
 
 	chart = a.charts.Get(fmt.Sprintf("%s_%s_unprocessed_messages", typ, rname))
-	chart.Obsolete = true
-	chart.MarkNotCreated()
 	chart.MarkRemove()
+	chart.MarkNotCreated()
 
 	chart = a.charts.Get(fmt.Sprintf("%s_%s_consumers", typ, rname))
-	chart.Obsolete = true
-	chart.MarkNotCreated()
 	chart.MarkRemove()
+	chart.MarkNotCreated()
 }

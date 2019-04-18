@@ -18,8 +18,10 @@ const (
 
 func init() {
 	creator := module.Creator{
-		DisabledByDefault: true,
-		Create:            func() module.Module { return New() },
+		Defaults: module.Defaults{
+			Disabled: true,
+		},
+		Create: func() module.Module { return New() },
 	}
 
 	module.Register("openvpn", creator)

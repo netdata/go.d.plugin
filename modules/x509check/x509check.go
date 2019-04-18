@@ -16,8 +16,10 @@ const (
 
 func init() {
 	creator := module.Creator{
-		UpdateEvery: 60,
-		Create:      func() module.Module { return New() },
+		Defaults: module.Defaults{
+			UpdateEvery: 60,
+		},
+		Create: func() module.Module { return New() },
 	}
 
 	module.Register("x509check", creator)
