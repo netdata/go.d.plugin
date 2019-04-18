@@ -16,6 +16,10 @@ const (
 
 func init() {
 	creator := module.Creator{
+		Defaults: module.Defaults{
+			// NETDATA_CHART_PRIO_CGROUPS_CONTAINERS        40000
+			Priority: 39900,
+		},
 		Create: func() module.Module { return New() },
 	}
 
