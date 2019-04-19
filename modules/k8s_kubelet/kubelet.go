@@ -36,9 +36,9 @@ func New() *Kubelet {
 	}
 
 	return &Kubelet{
-		Config:                     config,
-		charts:                     charts.Copy(),
-		activeVolumeManagerPlugins: make(map[string]bool),
+		Config:                        config,
+		charts:                        charts.Copy(),
+		collectedVolumeManagerPlugins: make(map[string]bool),
 	}
 }
 
@@ -52,9 +52,10 @@ type Kubelet struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	prom                       prometheus.Prometheus
-	charts                     *Charts
-	activeVolumeManagerPlugins map[string]bool
+	prom   prometheus.Prometheus
+	charts *Charts
+	// volume_manager_total_volumes
+	collectedVolumeManagerPlugins map[string]bool
 }
 
 // Cleanup makes cleanup.

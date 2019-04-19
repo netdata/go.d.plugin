@@ -28,6 +28,41 @@ func (k *Kubelet) collect() (map[string]int64, error) {
 	return stm.ToMap(mx), nil
 }
 
+func (k *Kubelet) collectLogsUsagePerPod(raw prometheus.Metrics, mx *metrics) {
+	chart := k.charts.Get("kubelet_pods_log_filesystem_used_bytes")
+	set := make(map[string]bool)
+
+	for _, metric := range raw.FindByName("kubelet_container_log_filesystem_used_bytes") {
+		pod := metric.Labels.Get("pod")
+		namespace := metric.Labels.Get("namespace")
+
+		if pod == "" || namespace == "" {
+			continue
+		}
+
+		key := namespace + "_" + pod
+		dimID := "kubelet_log_file_system_usage_" + key
+
+		if !chart.HasDim(dimID) {
+			_ = chart.AddDim(&Dim{ID: dimID, Name: pod})
+			chart.MarkNotCreated()
+		}
+
+		set[dimID] = true
+		v := mx.Kubelet.PodLogFileSystemUsage[key]
+		v.Add(metric.Value)
+		mx.Kubelet.PodLogFileSystemUsage[key] = v
+	}
+
+	for _, dim := range chart.Dims {
+		if set[dim.ID] {
+			continue
+		}
+		_ = chart.MarkDimRemove(dim.ID, false)
+		chart.MarkNotCreated()
+	}
+}
+
 func (k *Kubelet) collectVolumeManager(raw prometheus.Metrics, mx *metrics) {
 	vmPlugins := make(map[string]*volumeManagerPlugin)
 
@@ -35,9 +70,9 @@ func (k *Kubelet) collectVolumeManager(raw prometheus.Metrics, mx *metrics) {
 		pluginName := metric.Labels.Get("plugin_name")
 		state := metric.Labels.Get("state")
 
-		if !k.activeVolumeManagerPlugins[pluginName] {
+		if !k.collectedVolumeManagerPlugins[pluginName] {
 			_ = k.charts.Add(newVolumeManagerChart(pluginName))
-			k.activeVolumeManagerPlugins[pluginName] = true
+			k.collectedVolumeManagerPlugins[pluginName] = true
 		}
 		if _, ok := vmPlugins[pluginName]; !ok {
 			vmPlugins[pluginName] = &volumeManagerPlugin{}
@@ -69,6 +104,7 @@ func (k *Kubelet) collectKubelet(raw prometheus.Metrics, mx *metrics) {
 	k.collectDockerOperations(raw, mx)
 	k.collectDockerOperationsErrors(raw, mx)
 	k.collectPLEGRelisting(raw, mx)
+	k.collectLogsUsagePerPod(raw, mx)
 }
 
 func (k *Kubelet) collectAPIServer(raw prometheus.Metrics, mx *metrics) {
