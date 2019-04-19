@@ -12,6 +12,7 @@ func newMetrics() *metrics {
 	mx.Kubelet.Runtime.OperationsErrors = make(map[string]mtx.Gauge)
 	mx.Kubelet.Docker.Operations = make(map[string]mtx.Gauge)
 	mx.Kubelet.Docker.OperationsErrors = make(map[string]mtx.Gauge)
+	mx.Kubelet.PodLogFileSystemUsage = make(map[string]mtx.Gauge)
 
 	return &mx
 }
@@ -95,6 +96,7 @@ type kubeletMetrics struct {
 		Operations       map[string]mtx.Gauge `stm:"operations"`
 		OperationsErrors map[string]mtx.Gauge `stm:"operations_errors"`
 	} `stm:"docker"`
+	PodLogFileSystemUsage map[string]mtx.Gauge `stm:"log_file_system_usage"`
 }
 
 type volumeManagerMetrics struct {

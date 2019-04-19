@@ -25,35 +25,38 @@ It produces the following charts (if all data is available):
 7. **Number Of Pods Currently Running** in running pods
  * total
  
-8. **Runtime Operations By Type** in operations/s
+8. **Bytes Used By The Pod Logs On The Filesystem** in bytes
+ * usage per pod
+ 
+9. **Runtime Operations By Type** in operations/s
  * per operation type
  
-9. **Docker Operations By Type** in operations/s
+10. **Docker Operations By Type** in operations/s
  * per operation type
  
-10. **Docker Operations Errors By Type** in operations/s
+11. **Docker Operations Errors By Type** in operations/s
  * per operation error type
  
-11. **Node Configuration-Related Error** in bool
+12. **Node Configuration-Related Error** in bool
  * experiencing error
  
-12. **PLEG Relisting Interval Summary** in microseconds
+13. **PLEG Relisting Interval Summary** in microseconds
  * per quantile (0.5, 0.9, 0.99)
  
-13. **PLEG Relisting Latency Summary** in microseconds
+14. **PLEG Relisting Latency Summary** in microseconds
  * per quantile (0.5, 0.9, 0.99)
  
-14. **Token() Requests To The Alternate Token Source** in token requests/s
+15. **Token() Requests To The Alternate Token Source** in token requests/s
  * total
  * failed
  
-15. **REST Client HTTP Requests By Status Code** in requests/s
+16. **REST Client HTTP Requests By Status Code** in requests/s
  * per status code (200, 201, etc.)
  
-16. **REST Client HTTP Requests By Method** in requests/s
+17. **REST Client HTTP Requests By Method** in requests/s
  * per http method (GET, POST, etc.)
  
-17. **Volume Manager State Of The World** per every plugin in state of the world
+18. **Volume Manager State Of The World** per every plugin in state of the world
  * actual
  * desired
  
