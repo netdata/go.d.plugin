@@ -1,6 +1,8 @@
 # tengine
 
-This module will monitor one or more tengine instances via the `ngx_http_reqstat_module` module.
+> Tengine is a web server originated by Taobao, the largest e-commerce website in Asia. It is based on the Nginx HTTP server and has many advanced features.
+
+This module will monitor one or more [tengine](https://tengine.taobao.org/) instances via the `ngx_http_reqstat_module` module.
 
 **Requirements:**
  * tengine with configured [`ngx_http_reqstat_module`](http://tengine.taobao.org/document/http_reqstat.html)
