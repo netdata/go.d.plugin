@@ -17,8 +17,7 @@ func init() {
 }
 
 const (
-	//defaultURL         = "http://127.0.0.1/us"
-	defaultURL         = "http://100.127.0.91/us"
+	defaultURL         = "http://127.0.0.1/us"
 	defaultHTTPTimeout = time.Second * 2
 )
 

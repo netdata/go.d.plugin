@@ -8,10 +8,11 @@ This module will monitor one or more [tengine](https://tengine.taobao.org/) inst
  * tengine with configured [`ngx_http_reqstat_module`](http://tengine.taobao.org/document/http_reqstat.html)
  * collector expects [default line format](http://tengine.taobao.org/document/http_reqstat.html)
 
+___
+
 It produces the following charts:
 
-<br>
-Summary:
+Summary charts:
 
 1. **Bandwidth** in B/s
 
