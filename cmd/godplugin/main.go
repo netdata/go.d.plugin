@@ -35,6 +35,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/rabbitmq"
 	_ "github.com/netdata/go.d.plugin/modules/solr"
 	_ "github.com/netdata/go.d.plugin/modules/springboot2"
+	_ "github.com/netdata/go.d.plugin/modules/tengine"
 	_ "github.com/netdata/go.d.plugin/modules/weblog"
 	_ "github.com/netdata/go.d.plugin/modules/x509check"
 )
