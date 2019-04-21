@@ -21,11 +21,11 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "connection_statuses",
+		ID:    "connections_statuses",
 		Title: "Active Connections Per Status",
 		Units: "connections",
 		Fam:   "connections",
-		Ctx:   "nginx.connection_status",
+		Ctx:   "nginx.connections_status",
 		Dims: Dims{
 			{ID: "reading"},
 			{ID: "writing"},
@@ -33,11 +33,11 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "connection_rate",
-		Title: "Connections Rate",
+		ID:    "connections_accepted_handled",
+		Title: "Accepted And Handled Connections",
 		Units: "connections/s",
-		Fam:   "connections rate",
-		Ctx:   "nginx.connection_rate",
+		Fam:   "connections",
+		Ctx:   "nginx.connections_accepted_handled",
 		Dims: Dims{
 			{ID: "accepts", Name: "accepted", Algo: module.Incremental},
 			{ID: "handled", Algo: module.Incremental},
