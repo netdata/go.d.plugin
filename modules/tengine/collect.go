@@ -110,7 +110,7 @@ func parseLine(m *metric, line string, lineFormat []string) error {
 	// TODO: custom line format?
 	// www.example.com,127.0.0.1:80,162,6242,1,1,1,0,0,0,0,10,1,10,1....
 	if len(parts)-2 != len(lineFormat) {
-		return fmt.Errorf("invalid response length, got %d, expected %d", len(parts), len(defaultLineFormat))
+		return fmt.Errorf("invalid response length, got %d, expected %d", len(parts), len(lineFormat))
 	}
 
 	m.Host = parts[0]
