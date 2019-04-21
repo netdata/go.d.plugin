@@ -12,29 +12,19 @@ type (
 var charts = Charts{
 	{
 		ID:    "connections",
-		Title: "Active Connections",
+		Title: "Active Client Connections Including Waiting Connections",
 		Units: "connections",
-		Fam:   "active connections",
+		Fam:   "connections",
 		Ctx:   "nginx.connections",
 		Dims: Dims{
 			{ID: "active"},
 		},
 	},
 	{
-		ID:    "requests",
-		Title: "Requests",
-		Units: "requests/s",
-		Fam:   "requests",
-		Ctx:   "nginx.requests",
-		Dims: Dims{
-			{ID: "requests", Algo: module.Incremental},
-		},
-	},
-	{
 		ID:    "connection_statuses",
-		Title: "Active Connections By Status",
+		Title: "Active Connections Per Status",
 		Units: "connections",
-		Fam:   "testTengineStubStatusData",
+		Fam:   "connections",
 		Ctx:   "nginx.connection_status",
 		Dims: Dims{
 			{ID: "reading"},
@@ -43,14 +33,24 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "connect_rate",
+		ID:    "connection_rate",
 		Title: "Connections Rate",
 		Units: "connections/s",
 		Fam:   "connections rate",
-		Ctx:   "nginx.connect_rate",
+		Ctx:   "nginx.connection_rate",
 		Dims: Dims{
 			{ID: "accepts", Name: "accepted", Algo: module.Incremental},
 			{ID: "handled", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "requests",
+		Title: "Client Requests",
+		Units: "requests/s",
+		Fam:   "requests",
+		Ctx:   "nginx.requests",
+		Dims: Dims{
+			{ID: "requests", Algo: module.Incremental},
 		},
 	},
 }
