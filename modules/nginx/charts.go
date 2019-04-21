@@ -34,7 +34,7 @@ var charts = Charts{
 		ID:    "connection_statuses",
 		Title: "Active Connections By Status",
 		Units: "connections",
-		Fam:   "status",
+		Fam:   "testTengineStubStatusData",
 		Ctx:   "nginx.connection_status",
 		Dims: Dims{
 			{ID: "reading"},
