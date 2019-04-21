@@ -11,10 +11,11 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "bandwidth",
+		ID:    "bandwidth_total",
 		Title: "Bandwidth",
 		Units: "B/s",
 		Fam:   "bandwidth",
+		Ctx:   "tengine.bandwidth_total",
 		Type:  module.Area,
 		Dims: Dims{
 			{ID: "bytes_in", Name: "in", Algo: module.Incremental},
@@ -22,10 +23,11 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "connections",
+		ID:    "connections_total",
 		Title: "Connections",
 		Units: "connections/s",
 		Fam:   "connections",
+		Ctx:   "tengine.connections_total",
 		Dims: Dims{
 			{ID: "conn_total", Name: "accepted", Algo: module.Incremental},
 		},
@@ -35,15 +37,17 @@ var charts = Charts{
 		Title: "Requests",
 		Units: "requests/s",
 		Fam:   "requests",
+		Ctx:   "tengine.requests_total",
 		Dims: Dims{
 			{ID: "req_total", Name: "processed", Algo: module.Incremental},
 		},
 	},
 	{
-		ID:    "requests_per_response_code_family",
+		ID:    "requests_per_response_code_family_total",
 		Title: "Requests Per Response Code Family",
 		Units: "requests/s",
 		Fam:   "requests",
+		Ctx:   "tengine.requests_per_response_code_family_total",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "http_2xx", Name: "2xx", Algo: module.Incremental},
@@ -54,9 +58,10 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "requests_per_response_code_detailed",
+		ID:    "requests_per_response_code_detailed_total",
 		Title: "Requests Per Response Code Detailed",
 		Units: "requests/s",
+		Ctx:   "tengine.requests_per_response_code_detailed_total",
 		Fam:   "requests",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -77,29 +82,32 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "requests_upstream",
+		ID:    "requests_upstream_total",
 		Title: "Number Of Requests Calling For Upstream",
 		Units: "requests/s",
 		Fam:   "upstream",
+		Ctx:   "tengine.requests_upstream_total",
 		Dims: Dims{
 			{ID: "ups_req", Name: "requests", Algo: module.Incremental},
 		},
 	},
 	{
-		ID:    "tries_upstream",
+		ID:    "tries_upstream_total",
 		Title: "Number Of Times Calling For Upstream",
 		Units: "calls/s",
 		Fam:   "upstream",
+		Ctx:   "tengine.tries_upstream_total",
 		Dims: Dims{
 			{ID: "ups_tries", Name: "calls", Algo: module.Incremental},
 		},
 	},
 	{
-		ID:    "requests_upstream_per_response_code_family",
+		ID:    "requests_upstream_per_response_code_family_total",
 		Title: "Upstream Requests Per Response Code Family",
 		Units: "requests/s",
 		Fam:   "upstream",
 		Type:  module.Stacked,
+		Ctx:   "tengine.requests_upstream_per_response_code_family_total",
 		Dims: Dims{
 			{ID: "http_ups_4xx", Name: "4xx", Algo: module.Incremental},
 			{ID: "http_ups_5xx", Name: "5xx", Algo: module.Incremental},
