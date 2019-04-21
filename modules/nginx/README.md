@@ -36,6 +36,7 @@ jobs:
 ```
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/nginx.conf).
+
 Without configuration, module attempts to connect to `http://127.0.0.1/stub_status`
 
 ---
