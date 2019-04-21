@@ -109,16 +109,17 @@ func parseLine(m *metric, line string, lineFormat []string) error {
 	// NOTE: only default line format is supported
 	// TODO: custom line format?
 	// www.example.com,127.0.0.1:80,162,6242,1,1,1,0,0,0,0,10,1,10,1....
-	if len(parts)-2 != len(lineFormat) {
-		return fmt.Errorf("invalid response length, got %d, expected %d", len(parts), len(lineFormat))
+	if len(parts) != len(lineFormat)+2 {
+		return fmt.Errorf("invalid response length, got %d, expected %d", len(parts), len(lineFormat)+2)
 	}
 
 	m.Host = parts[0]
 	m.ServerAddress = parts[1]
+	// 1, 2: "$host,$server_addr:$server_port"
+	parts = parts[2:]
 
 	for i, f := range lineFormat {
-		// 1, 2: "$host,$server_addr:$server_port"
-		value := parts[i+2]
+		value := parts[i]
 		switch f {
 		default:
 			return fmt.Errorf("unknown line format value: %s", f)
