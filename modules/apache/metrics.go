@@ -13,11 +13,11 @@ type (
 		} `stm:"total"`
 		Averages struct {
 			//Average number of requests per second.
-			ReqPerSec *float64 `stm:"req_per_sec,1,10000"`
+			ReqPerSec *float64 `stm:"req_per_sec,100000,1"`
 			// Average number of bytes served per second.
-			BytesPerSec *float64 `stm:"bytes_per_sec,1,10000"`
+			BytesPerSec *float64 `stm:"bytes_per_sec,100000,1"`
 			// Average number of bytes per request.
-			BytesPerReq *float64 `stm:"bytes_per_req,1,10000"`
+			BytesPerReq *float64 `stm:"bytes_per_req,100000,1"`
 		} `stm:""`
 		Uptime *int64 `stm:"uptime"`
 

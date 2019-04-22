@@ -100,7 +100,7 @@ var charts = Charts{
 	{
 		ID:    "bytespersec",
 		Title: "Lifetime Average Number Of Bytes Served Per Second",
-		Units: "KiB",
+		Units: "KiB/s",
 		Fam:   "statistics",
 		Ctx:   "apache.bytespersec",
 		Type:  module.Area,

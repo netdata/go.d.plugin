@@ -1,6 +1,9 @@
 package apache
 
-import "github.com/netdata/go.d.plugin/pkg/stm"
+import (
+	"fmt"
+	"github.com/netdata/go.d.plugin/pkg/stm"
+)
 
 func (a *Apache) collect() (map[string]int64, error) {
 	status, err := a.apiClient.getServerStatus()
@@ -9,5 +12,11 @@ func (a *Apache) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	return stm.ToMap(status), nil
+	mx := stm.ToMap(status)
+
+	if len(mx) == 0 {
+		return nil, fmt.Errorf("nothing was collected from %s", a.URL)
+	}
+
+	return mx, nil
 }
