@@ -89,7 +89,7 @@ func parseResponse(r io.Reader) (*serverStatus, error) {
 		switch key {
 		default:
 		case busyServers, idleServers:
-			return nil, fmt.Errorf("lighttpd data")
+			return nil, fmt.Errorf("found '%s', lighttpd data", key)
 		case busyWorkers:
 			status.Workers.Busy = mustParseInt(value)
 		case idleWorkers:
@@ -97,11 +97,11 @@ func parseResponse(r io.Reader) (*serverStatus, error) {
 		case connsTotal:
 			status.Connections.Total = mustParseInt(value)
 		case connsAsyncWriting:
-			status.Connections.AsyncWriting = mustParseInt(value)
+			status.Connections.Async.Writing = mustParseInt(value)
 		case connsAsyncKeepAlive:
-			status.Connections.AsyncKeepAlive = mustParseInt(value)
+			status.Connections.Async.KeepAlive = mustParseInt(value)
 		case connsAsyncClosing:
-			status.Connections.AsyncClosing = mustParseInt(value)
+			status.Connections.Async.Closing = mustParseInt(value)
 		case totalAccesses:
 			status.Total.Accesses = mustParseInt(value)
 		case totalKBytes:
