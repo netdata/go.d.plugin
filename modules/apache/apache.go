@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -75,7 +74,7 @@ func (a *Apache) Init() bool {
 	return true
 }
 
-// Check makes check
+// Check makes check.
 func (a *Apache) Check() bool {
 	m := a.Collect()
 
@@ -100,12 +99,12 @@ func (a Apache) Charts() *module.Charts { return a.charts }
 
 // Collect collects metrics.
 func (a *Apache) Collect() map[string]int64 {
-	status, err := a.apiClient.getServerStatus()
+	mx, err := a.collect()
 
 	if err != nil {
 		a.Error(err)
 		return nil
 	}
 
-	return stm.ToMap(status)
+	return mx
 }

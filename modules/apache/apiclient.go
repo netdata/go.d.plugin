@@ -12,35 +12,23 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-type (
-	scoreboard struct {
-		Waiting     int `stm:"waiting"`
-		Starting    int `stm:"starting"`
-		Reading     int `stm:"reading"`
-		Sending     int `stm:"sending"`
-		KeepAlive   int `stm:"keepalive"`
-		DNSLookup   int `stm:"dns_lookup"`
-		Closing     int `stm:"closing"`
-		Logging     int `stm:"logging"`
-		Finishing   int `stm:"finishing"`
-		IdleCleanup int `stm:"idle_cleanup"`
-		Open        int `stm:"open"`
-	}
-	serverStatus struct {
-		TotalAccesses       *int        `stm:"total_accesses"`
-		TotalKBytes         *int        `stm:"total_kBytes"`
-		Uptime              *int        `stm:"uptime"`
-		ReqPerSec           *float64    `stm:"req_per_sec"`
-		BytesPerSec         *float64    `stm:"bytes_per_sec"`
-		BytesPerReq         *float64    `stm:"bytes_per_req"`
-		BusyWorkers         *int        `stm:"busy_workers"`
-		IdleWorkers         *int        `stm:"idle_workers"`
-		ConnsTotal          *int        `stm:"conns_total"`
-		ConnsAsyncWriting   *int        `stm:"conns_async_writing"`
-		ConnsAsyncKeepAlive *int        `stm:"conns_async_keep_alive"`
-		ConnsAsyncClosing   *int        `stm:"conns_async_closing"`
-		Scoreboard          *scoreboard `stm:"scoreboard"`
-	}
+const (
+	busyServers = "BusyServers"
+	idleServers = "IdleServers"
+
+	busyWorkers         = "BusyWorkers"
+	idleWorkers         = "IdleWorkers"
+	connsTotal          = "ConnsTotal"
+	connsAsyncWriting   = "ConnsAsyncWriting"
+	connsAsyncKeepAlive = "ConnsAsyncKeepAlive"
+	connsAsyncClosing   = "ConnsAsyncClosing"
+	totalAccesses       = "Total Accesses"
+	totalKBytes         = "Total kBytes"
+	uptime              = "Uptime"
+	reqPerSec           = "ReqPerSec"
+	bytesPerSec         = "BytesPerSec"
+	bytesPerReq         = "BytesPerReq"
+	scoreBoard          = "Scoreboard"
 )
 
 func newAPIClient(client *http.Client, request web.Request) *apiClient {
@@ -79,7 +67,7 @@ func (a apiClient) getServerStatus() (*serverStatus, error) {
 func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	resp, err := a.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error on request: %v", err)
+		return nil, fmt.Errorf("error on request : %v", err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
@@ -87,9 +75,9 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func parseResponse(respBody io.Reader) (*serverStatus, error) {
-	s := bufio.NewScanner(respBody)
-	status := &serverStatus{}
+func parseResponse(r io.Reader) (*serverStatus, error) {
+	s := bufio.NewScanner(r)
+	var status serverStatus
 
 	for s.Scan() {
 		parts := strings.Split(s.Text(), ":")
@@ -100,93 +88,41 @@ func parseResponse(respBody io.Reader) (*serverStatus, error) {
 
 		switch key {
 		default:
-		case "BusyServers", "IdleServers":
+		case busyServers, idleServers:
 			return nil, fmt.Errorf("lighttpd data")
-		case "BusyWorkers":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.BusyWorkers = &v
-			}
-		case "IdleWorkers":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.IdleWorkers = &v
-			}
-		case "ConnsTotal":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnsTotal = &v
-			}
-		case "ConnsAsyncWriting":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnsAsyncWriting = &v
-			}
-		case "ConnsAsyncKeepAlive":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnsAsyncKeepAlive = &v
-			}
-		case "ConnsAsyncClosing":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnsAsyncClosing = &v
-			}
-		case "Total Accesses":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.TotalAccesses = &v
-			}
-		case "Total kBytes":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.TotalKBytes = &v
-			}
-		case "Uptime":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.Uptime = &v
-			}
-		case "ReqPerSec":
-			if v, err := strconv.ParseFloat(value, 64); err != nil {
-				return nil, err
-			} else {
-				v = v * 100000
-				status.ReqPerSec = &v
-			}
-		case "BytesPerSec":
-			if v, err := strconv.ParseFloat(value, 64); err != nil {
-				return nil, err
-			} else {
-				v = v * 100000
-				status.BytesPerSec = &v
-			}
-		case "BytesPerReq":
-			if v, err := strconv.ParseFloat(value, 64); err != nil {
-				return nil, err
-			} else {
-				v = v * 100000
-				status.BytesPerReq = &v
-			}
-		case "Scoreboard":
-			status.Scoreboard = &scoreboard{}
-			parseScoreboard(status.Scoreboard, value)
+		case busyWorkers:
+			status.Workers.Busy = mustParseInt(value)
+		case idleWorkers:
+			status.Workers.Idle = mustParseInt(value)
+		case connsTotal:
+			status.Connections.Total = mustParseInt(value)
+		case connsAsyncWriting:
+			status.Connections.AsyncWriting = mustParseInt(value)
+		case connsAsyncKeepAlive:
+			status.Connections.AsyncKeepAlive = mustParseInt(value)
+		case connsAsyncClosing:
+			status.Connections.AsyncClosing = mustParseInt(value)
+		case totalAccesses:
+			status.Total.Accesses = mustParseInt(value)
+		case totalKBytes:
+			status.Total.KBytes = mustParseInt(value)
+		case uptime:
+			status.Uptime = mustParseInt(value)
+		case reqPerSec:
+			status.Averages.ReqPerSec = mustParseFloat(value)
+		case bytesPerSec:
+			status.Averages.BytesPerSec = mustParseFloat(value)
+		case bytesPerReq:
+			status.Averages.BytesPerReq = mustParseFloat(value)
+		case scoreBoard:
+			status.Scoreboard = parseScoreboard(value)
 		}
 	}
 
-	return status, nil
+	return &status, nil
 }
 
-func parseScoreboard(sb *scoreboard, scoreboard string) {
+func parseScoreboard(value string) *scoreboard {
 	//  “_” Waiting for Connection
 	// “S” Starting up
 	// “R” Reading Request
@@ -198,7 +134,8 @@ func parseScoreboard(sb *scoreboard, scoreboard string) {
 	// “G” Gracefully finishing
 	// “I” Idle cleanup of worker
 	// “.” Open slot with no current process
-	for _, s := range strings.Split(scoreboard, "") {
+	var sb scoreboard
+	for _, s := range strings.Split(value, "") {
 
 		switch s {
 		case "_":
@@ -225,6 +162,24 @@ func parseScoreboard(sb *scoreboard, scoreboard string) {
 			sb.Open++
 		}
 	}
+
+	return &sb
+}
+
+func mustParseInt(value string) *int64 {
+	v, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return &v
+}
+
+func mustParseFloat(value string) *float64 {
+	v, err := strconv.ParseFloat(value, 10)
+	if err != nil {
+		panic(err)
+	}
+	return &v
 }
 
 func closeBody(resp *http.Response) {
