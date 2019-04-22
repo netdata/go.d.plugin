@@ -71,7 +71,7 @@ func (t *Tengine) Check() bool { return len(t.Collect()) > 0 }
 // Charts returns Charts.
 func (t Tengine) Charts() *module.Charts { return charts.Copy() }
 
-// Collect collects metrics.
+// Collect collects tengineStatus.
 func (t *Tengine) Collect() map[string]int64 {
 	mx, err := t.collect()
 
