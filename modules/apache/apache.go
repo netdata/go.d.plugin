@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -22,25 +21,33 @@ func init() {
 }
 
 const (
-	defaultURL         = "http://localhost/server-status?auto"
+	defaultURL         = "http://127.0.0.1/server-status?auto"
 	defaultHTTPTimeout = time.Second * 2
 )
 
 // New creates Apache with default values.
 func New() *Apache {
-	return &Apache{
+	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{URL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
+	}
+	return &Apache{
+		Config: config,
 		charts: charts.Copy(),
 	}
+}
+
+// Config is the Apache module configuration.
+type Config struct {
+	web.HTTP `yaml:",inline"`
 }
 
 // Apache Apache module.
 type Apache struct {
 	module.Base
-	web.HTTP  `yaml:",inline"`
+	Config    `yaml:",inline"`
 	apiClient *apiClient
 	charts    *Charts
 }
@@ -50,13 +57,8 @@ func (Apache) Cleanup() {}
 
 // Init makes initialization.
 func (a *Apache) Init() bool {
-	if a.URL == "" {
-		a.Error("URL is not set")
-		return false
-	}
-
 	if !strings.HasSuffix(a.URL, "?auto") {
-		a.Errorf("bad URL, should end in '?auto'")
+		a.Errorf("bad URL, should ends in '?auto'")
 		return false
 	}
 
@@ -75,21 +77,23 @@ func (a *Apache) Init() bool {
 	return true
 }
 
-// Check makes check
+// Check makes check.
 func (a *Apache) Check() bool {
-	m := a.Collect()
+	mx := a.Collect()
 
-	if len(m) == 0 {
+	if len(mx) == 0 {
 		return false
 	}
 
-	if _, extendedStatus := m["total_accesses"]; !extendedStatus {
+	if _, extendedStatus := mx["total_accesses"]; !extendedStatus {
 		_ = a.charts.Remove("requests")
 		_ = a.charts.Remove("net")
 		_ = a.charts.Remove("reqpersec")
 		_ = a.charts.Remove("bytespersec")
 		_ = a.charts.Remove("bytesperreq")
 		_ = a.charts.Remove("uptime")
+
+		a.Warning("'ExtendedStatus' is not enabled, not all metrics collected")
 	}
 
 	return true
@@ -100,12 +104,12 @@ func (a Apache) Charts() *module.Charts { return a.charts }
 
 // Collect collects metrics.
 func (a *Apache) Collect() map[string]int64 {
-	status, err := a.apiClient.getServerStatus()
+	mx, err := a.collect()
 
 	if err != nil {
 		a.Error(err)
 		return nil
 	}
 
-	return stm.ToMap(status)
+	return mx
 }

@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	extendedStatus, _ = ioutil.ReadFile("testdata/status-extended.txt")
-	simpleStatus, _   = ioutil.ReadFile("testdata/status-simple.txt")
+	testExtendedStatusData, _ = ioutil.ReadFile("testdata/extended-status.txt")
+	testSimpleStatusData, _   = ioutil.ReadFile("testdata/simple-status.txt")
+	testLighttpdStatusData, _ = ioutil.ReadFile("testdata/lighttpd-status.txt")
 )
 
 func TestApache_Cleanup(t *testing.T) { New().Cleanup() }
@@ -45,7 +46,7 @@ func TestApache_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(simpleStatus)
+				_, _ = w.Write(testSimpleStatusData)
 			}))
 	defer ts.Close()
 
@@ -69,7 +70,7 @@ func TestApache_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(simpleStatus)
+				_, _ = w.Write(testSimpleStatusData)
 			}))
 	defer ts.Close()
 
@@ -105,7 +106,7 @@ func TestApache_CollectExtended(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(extendedStatus)
+				_, _ = w.Write(testExtendedStatusData)
 			}))
 	defer ts.Close()
 
@@ -155,6 +156,20 @@ func TestApache_InvalidData(t *testing.T) {
 	job.URL = ts.URL + "/server-status?auto"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
+}
+
+func TestApache_LighttpdData(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				_, _ = w.Write(testLighttpdStatusData)
+			}))
+	defer ts.Close()
+
+	job := New()
+	job.URL = ts.URL + "/server-status?auto"
+	require.True(t, job.Init())
+	require.False(t, job.Check())
 }
 
 func TestApache_404(t *testing.T) {

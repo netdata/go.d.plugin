@@ -1,38 +1,51 @@
 # apache
 
-This module will monitor one or more Apache servers depending on configuration.
+This module will monitor one or more [`Apache`](https://httpd.apache.org/) servers depending on configuration.
 
 **Requirements:**
- * apache with enabled `mod_status`
+ * `Apache` with enabled [`mod_status`](https://httpd.apache.org/docs/2.4/mod/mod_status.html)
 
 It produces the following charts:
 
 1. **Requests** in requests/s
  * requests
 
-2. **Connections**
+2. **Connections** in connections
  * connections
 
-3. **Async Connections**
+3. **Async Connections** in connections
  * keepalive
  * closing
  * writing
+ 
+4. **Scoreboard** in connections
+ * waiting
+ * starting
+ * reading
+ * sending
+ * keepalive
+ * dns lookup
+ * closing
+ * logging
+ * finishing
+ * idle cleanup
+ * open
 
-4. **Bandwidth** in kilobytes/s
+4. **Bandwidth** in kilobits/s
  * sent
 
-5. **Workers**
+5. **Workers** in workers
  * idle
  * busy
 
-6. **Lifetime Avg. Requests/s** in requests/s
- * requests_sec
+6. **Lifetime Average Number Of Requests Per Second** in requests/s
+ * requests
 
-7. **Lifetime Avg. Bandwidth/s** in kilobytes/s
- * size_sec
+7. **Lifetime Average Number Of Bytes Served Per Second** in KiB/s
+ * served
 
-8. **Lifetime Avg. Response Size** in bytes/request
- * size_req
+8. **Lifetime Average Response Size** in KiB
+ * size
 
 ### configuration
 
@@ -43,12 +56,14 @@ Here is an example for 2 servers:
 ```yaml
 jobs:
   - name: local
-    url : http://localhost/server-status?auto
+    url : http://127.0.0.1/server-status?auto
       
   - name: remote
     url : http://100.64.0.1/server-status?auto
 ```
 
-Without configuration, module attempts to connect to `http://localhost/server-status?auto`
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/apache.conf).
+
+Without configuration, module attempts to connect to `http://127.0.0.1/server-status?auto`
 
 ---
