@@ -35,7 +35,7 @@ http_ups_5xx total number of requests of upstream 5xx
 */
 
 type (
-	metrics []metric
+	tengineStatus []metric
 
 	metric struct {
 		Host                  string
