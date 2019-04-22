@@ -2,6 +2,7 @@ package apache
 
 import (
 	"fmt"
+
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 

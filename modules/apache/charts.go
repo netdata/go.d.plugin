@@ -121,7 +121,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "uptime",
-		Title: "The Time The Server Has Been Running For",
+		Title: "Uptime",
 		Units: "seconds",
 		Fam:   "availability",
 		Ctx:   "apache.uptime",
