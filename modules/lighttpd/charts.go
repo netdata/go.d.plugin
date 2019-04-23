@@ -46,8 +46,8 @@ var charts = Charts{
 	{
 		ID:    "scoreboard",
 		Title: "ScoreBoard",
-		Units: "events",
-		Fam:   "scoreboard",
+		Units: "connections",
+		Fam:   "connections",
 		Ctx:   "lighttpd.scoreboard",
 		Dims: Dims{
 			{ID: "scoreboard_waiting", Name: "waiting"},
