@@ -12,30 +12,16 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-type (
-	scoreboard struct {
-		Waiting       int `stm:"waiting"`
-		Open          int `stm:"open"`
-		Close         int `stm:"close"`
-		HardError     int `stm:"hard_error"`
-		KeepAlive     int `stm:"keepalive"`
-		Read          int `stm:"read"`
-		ReadPost      int `stm:"read_post"`
-		Write         int `stm:"write"`
-		HandleRequest int `stm:"handle_request"`
-		RequestStart  int `stm:"request_start"`
-		RequestEnd    int `stm:"request_end"`
-		ResponseStart int `stm:"response_start"`
-		ResponseEnd   int `stm:"response_end"`
-	}
-	serverStatus struct {
-		TotalAccesses *int        `stm:"total_accesses"`
-		TotalKBytes   *int        `stm:"total_kBytes"`
-		Uptime        *int        `stm:"uptime"`
-		BusyServers   *int        `stm:"busy_servers"`
-		IdleServers   *int        `stm:"idle_servers"`
-		Scoreboard    *scoreboard `stm:"scoreboard"`
-	}
+const (
+	busyWorkers = "BusyWorkers"
+	idleWorkers = "IdleWorkers"
+
+	busyServers   = "BusyServers"
+	idleServers   = "IdleServers"
+	totalAccesses = "Total Accesses"
+	totalkBytes   = "Total kBytes"
+	uptime        = "Uptime"
+	scoreBoard    = "Scoreboard"
 )
 
 func newAPIClient(client *http.Client, request web.Request) *apiClient {
@@ -74,7 +60,7 @@ func (a apiClient) getServerStatus() (*serverStatus, error) {
 func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	resp, err := a.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error on request: %v", err)
+		return nil, fmt.Errorf("error on request : %v", err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
@@ -82,9 +68,9 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func parseResponse(respBody io.Reader) (*serverStatus, error) {
-	s := bufio.NewScanner(respBody)
-	status := &serverStatus{}
+func parseResponse(r io.Reader) (*serverStatus, error) {
+	s := bufio.NewScanner(r)
+	var status serverStatus
 
 	for s.Scan() {
 		parts := strings.Split(s.Text(), ":")
@@ -95,48 +81,27 @@ func parseResponse(respBody io.Reader) (*serverStatus, error) {
 
 		switch key {
 		default:
-		case "BusyWorkers", "IdleWorkers":
-			return nil, fmt.Errorf("apache data")
-		case "BusyServers":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.BusyServers = &v
-			}
-		case "IdleServers":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.IdleServers = &v
-			}
-		case "Total Accesses":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.TotalAccesses = &v
-			}
-		case "Total kBytes":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.TotalKBytes = &v
-			}
-		case "Uptime":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.Uptime = &v
-			}
-		case "Scoreboard":
-			status.Scoreboard = &scoreboard{}
-			parseScoreboard(status.Scoreboard, value)
+		case busyWorkers, idleWorkers:
+			return nil, fmt.Errorf("found '%s', apache data", key)
+		case busyServers:
+			status.Servers.Busy = mustParseInt(value)
+		case idleServers:
+			status.Servers.Idle = mustParseInt(value)
+		case totalAccesses:
+			status.Total.Accesses = mustParseInt(value)
+		case totalkBytes:
+			status.Total.KBytes = mustParseInt(value)
+		case uptime:
+			status.Uptime = mustParseInt(value)
+		case scoreBoard:
+			status.Scoreboard = parseScoreboard(value)
 		}
 	}
 
-	return status, nil
+	return &status, nil
 }
 
-func parseScoreboard(sb *scoreboard, scoreboard string) {
+func parseScoreboard(value string) *scoreboard {
 	// Descriptions from https://blog.serverdensity.com/monitor-lighttpd/
 	//
 	// “.” = Opening the TCP connection (connect)
@@ -153,8 +118,8 @@ func parseScoreboard(sb *scoreboard, scoreboard string) {
 	// “S” = End of the HTTP request response (response-end)
 	// “_” Waiting for Connection (NOTE: not sure, copied the description from apache score board)
 
-	for _, s := range strings.Split(scoreboard, "") {
-
+	var sb scoreboard
+	for _, s := range strings.Split(value, "") {
 		switch s {
 		case "_":
 			sb.Waiting++
@@ -184,6 +149,16 @@ func parseScoreboard(sb *scoreboard, scoreboard string) {
 			sb.ResponseEnd++
 		}
 	}
+
+	return &sb
+}
+
+func mustParseInt(value string) *int64 {
+	v, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return &v
 }
 
 func closeBody(resp *http.Response) {

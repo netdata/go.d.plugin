@@ -12,7 +12,8 @@ import (
 )
 
 var (
-	statusData, _ = ioutil.ReadFile("testdata/status.txt")
+	testStatusData, _       = ioutil.ReadFile("testdata/status.txt")
+	testApacheStatusData, _ = ioutil.ReadFile("testdata/apache-status.txt")
 )
 
 func TestLighttpd_Cleanup(t *testing.T) { New().Cleanup() }
@@ -23,7 +24,6 @@ func TestNew(t *testing.T) {
 	assert.Implements(t, (*module.Module)(nil), job)
 	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
-	assert.NotNil(t, job.charts)
 }
 
 func TestLighttpd_Init(t *testing.T) {
@@ -44,7 +44,7 @@ func TestLighttpd_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(statusData)
+				_, _ = w.Write(testStatusData)
 			}))
 	defer ts.Close()
 
@@ -68,7 +68,7 @@ func TestLighttpd_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(statusData)
+				_, _ = w.Write(testStatusData)
 			}))
 	defer ts.Close()
 
@@ -113,6 +113,20 @@ func TestLighttpd_InvalidData(t *testing.T) {
 	job.URL = ts.URL + "/server-status?auto"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
+}
+
+func TestLighttpd_ApacheData(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				_, _ = w.Write(testApacheStatusData)
+			}))
+	defer ts.Close()
+
+	job := New()
+	job.URL = ts.URL + "/server-status?auto"
+	require.True(t, job.Init())
+	require.False(t, job.Check())
 }
 
 func TestLighttpd_404(t *testing.T) {

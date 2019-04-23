@@ -1,9 +1,9 @@
 # lighttpd2
 
-This module will monitor one or more Lighttpd2 servers depending on configuration.
+This module will monitor one or more [`Lighttpd2`](https://redmine.lighttpd.net/projects/lighttpd2/wiki) servers depending on configuration.
 
 **Requirements:**
- * lighttpd2 with enabled `mod_status`
+ * `lighttpd2` with enabled [`mod_status`](https://doc.lighttpd.net/lighttpd2/mod_status.html)
 
 It produces the following charts:
 
@@ -48,11 +48,13 @@ Here is an example for 2 servers:
 ```yaml
 jobs:
   - name: local
-    url : http://localhost/server-status?format=plain
+    url : http://127.0.0.1/server-status?format=plain
       
   - name: remote
     url : http://100.64.0.1/server-status?format=plain
 ```
+
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/lighttpd2.conf).
 
 Without configuration, module attempts to connect to `http://localhost/server-status?format=plain`
 

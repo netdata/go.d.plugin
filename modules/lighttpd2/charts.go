@@ -53,7 +53,7 @@ var charts = Charts{
 		Fam:   "connections",
 		Ctx:   "lighttpd2.connections",
 		Dims: Dims{
-			{ID: "connections_abs", Name: "connections"},
+			{ID: "connection_abs", Name: "connections"},
 		},
 	},
 	{

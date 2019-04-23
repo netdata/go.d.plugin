@@ -12,25 +12,25 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-type serverStatus struct {
-	Uptime                       *int `stm:"uptime"`
-	RequestsAbs                  *int `stm:"requests_abs"`
-	Status1xx                    *int `stm:"status_1xx"`
-	Status2xx                    *int `stm:"status_2xx"`
-	Status3xx                    *int `stm:"status_3xx"`
-	Status4xx                    *int `stm:"status_4xx"`
-	Status5xx                    *int `stm:"status_5xx"`
-	TrafficInAbs                 *int `stm:"traffic_in_abs"`
-	TrafficOutAbs                *int `stm:"traffic_out_abs"`
-	ConnectionsAbs               *int `stm:"connections_abs"`
-	ConnectionStateStart         *int `stm:"connection_state_start"`
-	ConnectionStateReadHeader    *int `stm:"connection_state_read_header"`
-	ConnectionStateHandleRequest *int `stm:"connection_state_handle_request"`
-	ConnectionStateWriteResponse *int `stm:"connection_state_write_response"`
-	ConnectionStateKeepAlive     *int `stm:"connection_state_keepalive"`
-	ConnectionStateUpgraded      *int `stm:"connection_state_upgraded"`
-	MemoryUsage                  *int `stm:"memory_usage"`
-}
+const (
+	requestsAbs                  = "requests_abs"
+	memoryUsage                  = "memory_usage"
+	status1xx                    = "status_1xx"
+	status2xx                    = "status_2xx"
+	status3xx                    = "status_3xx"
+	status4xx                    = "status_4xx"
+	status5xx                    = "status_5xx"
+	trafficInAbs                 = "traffic_in_abs"
+	trafficOutAbs                = "traffic_out_abs"
+	connectionsAbs               = "connections_abs"
+	connectionStateStart         = "connection_state_start"
+	connectionStateReadHeader    = "connection_state_read_header"
+	connectionStateHandleRequest = "connection_state_handle_request"
+	connectionStateWriteResponse = "connection_state_write_response"
+	connectionStateKeepAlive     = "connection_state_keep_alive"
+	connectionStateUpgraded      = "connection_state_upgraded"
+	uptime                       = "uptime"
+)
 
 func newAPIClient(client *http.Client, request web.Request) *apiClient {
 	return &apiClient{httpClient: client, request: request}
@@ -68,7 +68,7 @@ func (a apiClient) getServerStatus() (*serverStatus, error) {
 func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	resp, err := a.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error on request: %v", err)
+		return nil, fmt.Errorf("error on request : %v", err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
@@ -76,9 +76,9 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func parseResponse(respBody io.Reader) (*serverStatus, error) {
-	s := bufio.NewScanner(respBody)
-	status := &serverStatus{}
+func parseResponse(r io.Reader) (*serverStatus, error) {
+	s := bufio.NewScanner(r)
+	var status serverStatus
 
 	for s.Scan() {
 		line := s.Text()
@@ -96,112 +96,52 @@ func parseResponse(respBody io.Reader) (*serverStatus, error) {
 
 		switch key {
 		default:
-		case "requests_abs":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.RequestsAbs = &v
-			}
-		case "memory_usage":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.MemoryUsage = &v
-			}
-		case "status_1xx":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.Status1xx = &v
-			}
-		case "status_2xx":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.Status2xx = &v
-			}
-		case "status_3xx":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.Status3xx = &v
-			}
-		case "status_4xx":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.Status4xx = &v
-			}
-		case "status_5xx":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.Status5xx = &v
-			}
-		case "traffic_in_abs":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.TrafficInAbs = &v
-			}
-		case "traffic_out_abs":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.TrafficOutAbs = &v
-			}
-		case "connections_abs":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnectionsAbs = &v
-			}
-		case "connection_state_start":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnectionStateStart = &v
-			}
-		case "connection_state_read_header":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnectionStateReadHeader = &v
-			}
-		case "connection_state_handle_request":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnectionStateHandleRequest = &v
-			}
-		case "connection_state_write_response":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnectionStateWriteResponse = &v
-			}
-		case "connection_state_keep_alive":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnectionStateKeepAlive = &v
-			}
-		case "connection_state_upgraded":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.ConnectionStateUpgraded = &v
-			}
-		case "uptime":
-			if v, err := strconv.Atoi(value); err != nil {
-				return nil, err
-			} else {
-				status.Uptime = &v
-			}
+		case requestsAbs:
+			status.Requests.Total = mustParseInt(value)
+		case memoryUsage:
+			status.Memory.Usage = mustParseInt(value)
+		case status1xx:
+			status.Responses.Status.Codes1xx = mustParseInt(value)
+		case status2xx:
+			status.Responses.Status.Codes2xx = mustParseInt(value)
+		case status3xx:
+			status.Responses.Status.Codes3xx = mustParseInt(value)
+		case status4xx:
+			status.Responses.Status.Codes4xx = mustParseInt(value)
+		case status5xx:
+			status.Responses.Status.Codes5xx = mustParseInt(value)
+		case trafficInAbs:
+			status.Traffic.In = mustParseInt(value)
+		case trafficOutAbs:
+			status.Traffic.Out = mustParseInt(value)
+		case connectionsAbs:
+			status.Connection.Total = mustParseInt(value)
+		case connectionStateStart:
+			status.Connection.State.Start = mustParseInt(value)
+		case connectionStateReadHeader:
+			status.Connection.State.ReadHeader = mustParseInt(value)
+		case connectionStateHandleRequest:
+			status.Connection.State.HandleRequest = mustParseInt(value)
+		case connectionStateWriteResponse:
+			status.Connection.State.WriteResponse = mustParseInt(value)
+		case connectionStateKeepAlive:
+			status.Connection.State.KeepAlive = mustParseInt(value)
+		case connectionStateUpgraded:
+			status.Connection.State.Upgraded = mustParseInt(value)
+		case uptime:
+			status.Uptime = mustParseInt(value)
 		}
 	}
 
-	return status, nil
+	return &status, nil
+}
+
+func mustParseInt(value string) *int64 {
+	v, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return &v
 }
 
 func closeBody(resp *http.Response) {
