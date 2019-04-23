@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -19,27 +18,31 @@ func init() {
 }
 
 const (
-	defaultURL         = "http://localhost/server-status?format=plain"
+	defaultURL         = "http://127.0.0.1/server-status?format=plain"
 	defaultHTTPTimeout = time.Second * 2
 )
 
 // New creates Lighttpd with default values.
 func New() *Lighttpd2 {
-	return &Lighttpd2{
+	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{URL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
-		charts: charts.Copy(),
 	}
+	return &Lighttpd2{Config: config}
+}
+
+// Config is the Lighttpd2 module configuration.
+type Config struct {
+	web.HTTP `yaml:",inline"`
 }
 
 // Lighttpd2 Lighttpd2 module.
 type Lighttpd2 struct {
 	module.Base
-	web.HTTP  `yaml:",inline"`
+	Config    `yaml:",inline"`
 	apiClient *apiClient
-	charts    *Charts
 }
 
 // Cleanup makes cleanup.
@@ -47,11 +50,6 @@ func (Lighttpd2) Cleanup() {}
 
 // Init makes initialization.
 func (l *Lighttpd2) Init() bool {
-	if l.URL == "" {
-		l.Error("URL is not set")
-		return false
-	}
-
 	if !strings.HasSuffix(l.URL, "?format=plain") {
 		l.Errorf("bad URL, should end in '?format=plain'")
 		return false
@@ -76,16 +74,16 @@ func (l *Lighttpd2) Init() bool {
 func (l *Lighttpd2) Check() bool { return len(l.Collect()) > 0 }
 
 // Charts returns Charts.
-func (l Lighttpd2) Charts() *module.Charts { return l.charts }
+func (l Lighttpd2) Charts() *module.Charts { return charts.Copy() }
 
 // Collect collects metrics.
 func (l *Lighttpd2) Collect() map[string]int64 {
-	status, err := l.apiClient.getServerStatus()
+	mx, err := l.collect()
 
 	if err != nil {
 		l.Error(err)
 		return nil
 	}
 
-	return stm.ToMap(status)
+	return mx
 }

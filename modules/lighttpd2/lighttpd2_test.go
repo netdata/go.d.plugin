@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	statusData, _ = ioutil.ReadFile("testdata/status.txt")
+	testStatusData, _ = ioutil.ReadFile("testdata/status.txt")
 )
 
 func TestLighttpd2_Cleanup(t *testing.T) { New().Cleanup() }
@@ -23,7 +23,6 @@ func TestNew(t *testing.T) {
 	assert.Implements(t, (*module.Module)(nil), job)
 	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
-	assert.NotNil(t, job.charts)
 }
 
 func TestLighttpd2_Init(t *testing.T) {
@@ -44,7 +43,7 @@ func TestLighttpd2_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(statusData)
+				_, _ = w.Write(testStatusData)
 			}))
 	defer ts.Close()
 
@@ -68,7 +67,7 @@ func TestLighttpd2_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(statusData)
+				_, _ = w.Write(testStatusData)
 			}))
 	defer ts.Close()
 
@@ -86,7 +85,7 @@ func TestLighttpd2_Collect(t *testing.T) {
 		"status_4xx":                      52891,
 		"status_5xx":                      572,
 		"requests_abs":                    640866,
-		"connections_abs":                 8,
+		"connection_abs":                  8,
 		"connection_state_start":          0,
 		"connection_state_read_header":    0,
 		"connection_state_handle_request": 1,
