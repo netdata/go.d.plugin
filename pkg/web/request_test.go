@@ -34,10 +34,10 @@ func TestRequest_Copy(t *testing.T) {
 	r.ProxyUsername = testProxyUsername
 	r.ProxyPassword = testProxyPassword
 
-	rr := r.Copy()
-	assert.Equal(t, r, *rr)
-	rr.Headers[""] = ""
-	assert.NotEqual(t, r, *rr)
+	cp := r.Copy()
+	assert.Equal(t, r, cp)
+	cp.Headers[""] = ""
+	assert.NotEqual(t, r, cp)
 }
 
 func TestNewHTTPRequest(t *testing.T) {

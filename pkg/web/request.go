@@ -20,12 +20,12 @@ type Request struct {
 	ProxyPassword string            `yaml:"proxy_password"`
 }
 
-func (r Request) Copy() *Request {
+func (r Request) Copy() Request {
 	h := make(map[string]string)
 	for k, v := range r.Headers {
 		h[k] = v
 	}
-	return &Request{
+	return Request{
 		URI:           r.URI,
 		URL:           r.URL,
 		Body:          r.Body,
