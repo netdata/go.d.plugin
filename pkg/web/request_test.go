@@ -10,23 +10,45 @@ import (
 )
 
 var (
-	username      = "user"
-	password      = "password"
-	headerKey     = "X-Api-Key"
-	headerValue   = "secret"
-	proxyUsername = "proxyUser"
-	proxyPassword = "proxyPassword"
+	testURI           = "testURI"
+	testURL           = "testURL"
+	testMethod        = "testMethod"
+	testUsername      = "user"
+	testPassword      = "testPassword"
+	testHeaderKey     = "X-Api-Key"
+	testHeaderValue   = "secret"
+	testProxyUsername = "proxyUser"
+	testProxyPassword = "testProxyPassword"
 )
 
-func TestRawRequest_CreateRequest(t *testing.T) {
+func TestRequest_Copy(t *testing.T) {
+	var r Request
+	r.URL = testURI
+	r.URL = testURL
+	r.Method = testMethod
+	r.Headers = map[string]string{
+		testHeaderKey: testHeaderValue,
+	}
+	r.Username = testUsername
+	r.Password = testPassword
+	r.ProxyUsername = testProxyUsername
+	r.ProxyPassword = testProxyPassword
+
+	cp := r.Copy()
+	assert.Equal(t, r, cp)
+	cp.Headers[""] = ""
+	assert.NotEqual(t, r, cp)
+}
+
+func TestNewHTTPRequest(t *testing.T) {
 	req, err := NewHTTPRequest(Request{
-		Username: username,
-		Password: password,
+		Username: testUsername,
+		Password: testPassword,
 		Headers: map[string]string{
-			headerKey: headerValue,
+			testHeaderKey: testHeaderValue,
 		},
-		ProxyUsername: proxyUsername,
-		ProxyPassword: proxyPassword,
+		ProxyUsername: testProxyUsername,
+		ProxyPassword: testProxyPassword,
 	})
 
 	assert.Nil(t, err)
@@ -34,15 +56,15 @@ func TestRawRequest_CreateRequest(t *testing.T) {
 
 	user, pass, ok := req.BasicAuth()
 	assert.True(t, ok)
-	assert.Equal(t, username, user)
-	assert.Equal(t, password, pass)
+	assert.Equal(t, testUsername, user)
+	assert.Equal(t, testPassword, pass)
 
 	user, pass, ok = parseBasicAuth(req.Header.Get("Proxy-Authorization"))
 	assert.True(t, ok)
 
-	assert.Equal(t, proxyUsername, user)
-	assert.Equal(t, proxyPassword, pass)
-	assert.Equal(t, headerValue, req.Header.Get(headerKey))
+	assert.Equal(t, testProxyUsername, user)
+	assert.Equal(t, testProxyPassword, pass)
+	assert.Equal(t, testHeaderValue, req.Header.Get(testHeaderKey))
 }
 
 func parseBasicAuth(auth string) (username, password string, ok bool) {

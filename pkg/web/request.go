@@ -10,9 +10,9 @@ import (
 // Request is a struct that contains the fields that are needed to newHTTPClient *http.Request.
 type Request struct {
 	URI           string            `yaml:"-"`
-	URL           string            `yaml:"url" validate:"required,url"`
+	URL           string            `yaml:"url"`
 	Body          string            `yaml:"body"`
-	Method        string            `yaml:"method" validate:"isdefault|oneof=GET POST HEAD PUT BATCH"`
+	Method        string            `yaml:"method"`
 	Headers       map[string]string `yaml:"headers"`
 	Username      string            `yaml:"username"`
 	Password      string            `yaml:"password"`
@@ -20,7 +20,17 @@ type Request struct {
 	ProxyPassword string            `yaml:"proxy_password"`
 }
 
-// NewHTTPRequest creates a new *http.Requests based Request fields
+// Copy does full copy of Request.
+func (r Request) Copy() Request {
+	h := make(map[string]string)
+	for k, v := range r.Headers {
+		h[k] = v
+	}
+	r.Headers = h
+	return r
+}
+
+// NewHTTPRequest creates a new *http.Requests based on Request fields
 // and returns *http.Requests and error if any encountered.
 func NewHTTPRequest(req Request) (*http.Request, error) {
 	var body io.Reader
