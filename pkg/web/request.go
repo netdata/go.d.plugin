@@ -25,17 +25,8 @@ func (r Request) Copy() Request {
 	for k, v := range r.Headers {
 		h[k] = v
 	}
-	return Request{
-		URI:           r.URI,
-		URL:           r.URL,
-		Body:          r.Body,
-		Method:        r.Method,
-		Headers:       h,
-		Username:      r.Username,
-		Password:      r.Password,
-		ProxyUsername: r.ProxyUsername,
-		ProxyPassword: r.ProxyPassword,
-	}
+	r.Headers = h
+	return r
 }
 
 // NewHTTPRequest creates a new *http.Requests based Request fields
