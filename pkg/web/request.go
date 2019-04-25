@@ -20,6 +20,7 @@ type Request struct {
 	ProxyPassword string            `yaml:"proxy_password"`
 }
 
+// Copy does full copy of Request.
 func (r Request) Copy() Request {
 	h := make(map[string]string)
 	for k, v := range r.Headers {
@@ -29,7 +30,7 @@ func (r Request) Copy() Request {
 	return r
 }
 
-// NewHTTPRequest creates a new *http.Requests based Request fields
+// NewHTTPRequest creates a new *http.Requests based on Request fields
 // and returns *http.Requests and error if any encountered.
 func NewHTTPRequest(req Request) (*http.Request, error) {
 	var body io.Reader
