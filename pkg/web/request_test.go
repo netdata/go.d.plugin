@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/base64"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -10,38 +11,43 @@ import (
 )
 
 var (
-	testURI           = "testURI"
-	testURL           = "testURL"
-	testMethod        = "testMethod"
+	testPath          = "/api/v1/info"
+	testURL           = "http://127.0.0.1"
+	testMethod        = "POST"
 	testUsername      = "user"
-	testPassword      = "testPassword"
+	testPassword      = "password"
 	testHeaderKey     = "X-Api-Key"
 	testHeaderValue   = "secret"
-	testProxyUsername = "proxyUser"
-	testProxyPassword = "testProxyPassword"
+	testProxyUsername = "proxy_user"
+	testProxyPassword = "proxy_password"
 )
 
 func TestRequest_Copy(t *testing.T) {
-	var r Request
-	r.URL = testURI
-	r.URL = testURL
-	r.Method = testMethod
-	r.Headers = map[string]string{
+	var r1 Request
+	r1.URL = &url.URL{Path: testPath}
+	r1.UserURL = testURL
+	r1.Method = testMethod
+	r1.Headers = map[string]string{
 		testHeaderKey: testHeaderValue,
 	}
-	r.Username = testUsername
-	r.Password = testPassword
-	r.ProxyUsername = testProxyUsername
-	r.ProxyPassword = testProxyPassword
+	r1.Username = testUsername
+	r1.Password = testPassword
+	r1.ProxyUsername = testProxyUsername
+	r1.ProxyPassword = testProxyPassword
 
-	cp := r.Copy()
-	assert.Equal(t, r, cp)
-	cp.Headers[""] = ""
-	assert.NotEqual(t, r, cp)
+	r2 := r1.Copy()
+	r3 := r1.Copy()
+	assert.Equal(t, r1, r2)
+	r2.Headers[""] = ""
+	assert.NotEqual(t, r1, r2)
+	r3.URL.Path = ""
+	assert.NotEqual(t, r1, r3)
 }
 
 func TestNewHTTPRequest(t *testing.T) {
-	req, err := NewHTTPRequest(Request{
+	r := Request{
+		UserURL:  testURL,
+		Method:   testMethod,
 		Username: testUsername,
 		Password: testPassword,
 		Headers: map[string]string{
@@ -49,10 +55,17 @@ func TestNewHTTPRequest(t *testing.T) {
 		},
 		ProxyUsername: testProxyUsername,
 		ProxyPassword: testProxyPassword,
-	})
+	}
 
-	assert.Nil(t, err)
+	assert.NoError(t, r.ParseUserURL())
+	assert.NotNil(t, r.URL)
+	r.URL.Path = testPath
+
+	req, err := NewHTTPRequest(r)
+	assert.NoError(t, err)
 	assert.IsType(t, (*http.Request)(nil), req)
+
+	assert.Equal(t, testMethod, req.Method)
 
 	user, pass, ok := req.BasicAuth()
 	assert.True(t, ok)
@@ -61,10 +74,11 @@ func TestNewHTTPRequest(t *testing.T) {
 
 	user, pass, ok = parseBasicAuth(req.Header.Get("Proxy-Authorization"))
 	assert.True(t, ok)
-
 	assert.Equal(t, testProxyUsername, user)
 	assert.Equal(t, testProxyPassword, pass)
 	assert.Equal(t, testHeaderValue, req.Header.Get(testHeaderKey))
+
+	assert.Equal(t, testURL+testPath, req.URL.String())
 }
 
 func parseBasicAuth(auth string) (username, password string, ok bool) {
