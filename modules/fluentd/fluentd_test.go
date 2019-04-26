@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 	assert.IsType(t, (*Fluentd)(nil), job)
 	assert.NotNil(t, job.charts)
 	assert.NotNil(t, job.activePlugins)
-	assert.Equal(t, defaultURL, job.URL)
+	assert.Equal(t, defaultURL, job.UserURL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
@@ -29,7 +29,7 @@ func TestFluentd_Init(t *testing.T) {
 
 	//NG
 	job = New()
-	job.URL = ""
+	job.UserURL = ""
 	assert.False(t, job.Init())
 }
 
@@ -40,13 +40,13 @@ func TestFluentd_Check(t *testing.T) {
 
 	// OK
 	job := New()
-	job.URL = ts.URL
+	job.UserURL = ts.URL
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
 	// NG
 	job = New()
-	job.URL = "http://127.0.0.1:38001/api/plugins.json"
+	job.UserURL = "http://127.0.0.1:38001/api/plugins.json"
 	require.True(t, job.Init())
 	require.False(t, job.Check())
 }
@@ -65,7 +65,7 @@ func TestFluentd_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL
+	job.UserURL = ts.URL
 
 	require.True(t, job.Init())
 	require.True(t, job.Check())
@@ -87,7 +87,7 @@ func TestFluentd_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL
+	job.UserURL = ts.URL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -97,7 +97,7 @@ func TestFluentd_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL
+	job.UserURL = ts.URL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
