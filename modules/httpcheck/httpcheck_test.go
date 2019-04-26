@@ -22,23 +22,24 @@ func TestHTTPCheck_Cleanup(t *testing.T) {
 }
 
 func TestHTTPCheck_Init(t *testing.T) {
-	mod := New()
+	job := New()
+	job.UserURL = "http://127.0.0.1:38001"
 
 	// OK case
-	assert.True(t, mod.Init())
-	assert.NotNil(t, mod.request)
-	assert.NotNil(t, mod.client)
+	assert.True(t, job.Init())
+	assert.NotNil(t, job.client)
 
 	// NG case
-	mod.ResponseMatch = "(?:qwe))"
-	assert.False(t, mod.Init())
+	job.ResponseMatch = "(?:qwe))"
+	assert.False(t, job.Init())
 }
 
 func TestHTTPCheck_Check(t *testing.T) {
-	mod := New()
+	job := New()
+	job.UserURL = "http://127.0.0.1:38001"
 
-	require.True(t, mod.Init())
-	assert.True(t, mod.Check())
+	require.True(t, job.Init())
+	assert.True(t, job.Check())
 }
 
 func TestHTTPCheck_Charts(t *testing.T) {
@@ -47,18 +48,18 @@ func TestHTTPCheck_Charts(t *testing.T) {
 }
 
 func TestHTTPCheck_Collect(t *testing.T) {
-	mod := New()
+	job := New()
 
 	ts := httptest.NewServer(myHandler{})
 	defer ts.Close()
 
-	mod.URL = ts.URL
-	require.True(t, mod.Init())
-	assert.NotNil(t, mod.Collect())
+	job.UserURL = ts.URL
+	require.True(t, job.Init())
+	assert.NotNil(t, job.Collect())
 }
 
 func TestHTTPCheck_ResponseSuccess(t *testing.T) {
-	mod := New()
+	job := New()
 	msg := "hello"
 
 	var resp http.Response
@@ -66,7 +67,7 @@ func TestHTTPCheck_ResponseSuccess(t *testing.T) {
 	resp.Body = nopCloser{bytes.NewBufferString(msg)}
 	resp.StatusCode = http.StatusOK
 
-	mod.processOKResponse(&resp)
+	job.processOKResponse(&resp)
 
 	assert.Equal(
 		t,
@@ -79,14 +80,15 @@ func TestHTTPCheck_ResponseSuccess(t *testing.T) {
 			ResponseTime:   0,
 			ResponseLength: len(msg),
 		},
-		mod.metrics,
+		job.metrics,
 	)
 }
 
 func TestHTTPCheck_ResponseSuccessInvalidContent(t *testing.T) {
-	mod := New()
-	mod.ResponseMatch = "no match"
-	require.True(t, mod.Init())
+	job := New()
+	job.ResponseMatch = "no match"
+	job.UserURL = "http://127.0.0.1:38001"
+	require.True(t, job.Init())
 
 	msg := "hello"
 
@@ -95,7 +97,7 @@ func TestHTTPCheck_ResponseSuccessInvalidContent(t *testing.T) {
 	resp.Body = nopCloser{bytes.NewBufferString(msg)}
 	resp.StatusCode = http.StatusOK
 
-	mod.processOKResponse(&resp)
+	job.processOKResponse(&resp)
 
 	assert.Equal(
 		t,
@@ -108,16 +110,16 @@ func TestHTTPCheck_ResponseSuccessInvalidContent(t *testing.T) {
 			ResponseTime:   0,
 			ResponseLength: len(msg),
 		},
-		mod.metrics,
+		job.metrics,
 	)
 }
 
 func TestHTTPCheck_ResponseTimeout(t *testing.T) {
-	mod := New()
+	job := New()
 
 	var err net.Error = timeoutError{}
 
-	mod.processErrResponse(err)
+	job.processErrResponse(err)
 
 	assert.Equal(
 		t,
@@ -130,7 +132,7 @@ func TestHTTPCheck_ResponseTimeout(t *testing.T) {
 			ResponseTime:   0,
 			ResponseLength: 0,
 		},
-		mod.metrics,
+		job.metrics,
 	)
 }
 
