@@ -21,7 +21,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.URL)
+	assert.Equal(t, defaultURL, job.UserURL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
@@ -41,7 +41,7 @@ func TestTengine_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL
+	job.UserURL = ts.URL
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 }
@@ -49,7 +49,7 @@ func TestTengine_Check(t *testing.T) {
 func TestTengine_CheckNG(t *testing.T) {
 	job := New()
 
-	job.URL = "http://127.0.0.1:38001/us"
+	job.UserURL = "http://127.0.0.1:38001/us"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -65,7 +65,7 @@ func TestTengine_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL
+	job.UserURL = ts.URL
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -113,7 +113,7 @@ func TestTengine_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL
+	job.UserURL = ts.URL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -127,7 +127,7 @@ func TestTengine_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL
+	job.UserURL = ts.URL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }

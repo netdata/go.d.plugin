@@ -25,7 +25,7 @@ const (
 func New() *Tengine {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
@@ -50,6 +50,16 @@ func (Tengine) Cleanup() {}
 
 // Init makes initialization.
 func (t *Tengine) Init() bool {
+	if err := t.ParseUserURL(); err != nil {
+		t.Errorf("error on parsing url '%s' : %v", t.UserURL, err)
+		return false
+	}
+
+	if t.URL.Host == "" {
+		t.Error("URL is not set")
+		return false
+	}
+
 	client, err := web.NewHTTPClient(t.Client)
 
 	if err != nil {
