@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"path"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
@@ -40,7 +41,10 @@ type jsonClient struct {
 }
 
 func (j jsonClient) serverStats() (*serverStats, error) {
-	req := j.createRequest("/server")
+	r := j.request.Copy()
+	r.URL.Path = path.Join(r.URL.Path, "/server")
+	req, _ := web.NewHTTPRequest(r)
+
 	resp, err := j.httpClient.Do(req)
 
 	if err != nil {
@@ -60,13 +64,6 @@ func (j jsonClient) serverStats() (*serverStats, error) {
 	}
 
 	return stats, nil
-}
-
-func (j jsonClient) createRequest(uri string) *http.Request {
-	j.request.URI = uri
-	req, _ := web.NewHTTPRequest(j.request)
-
-	return req
 }
 
 func closeBody(resp *http.Response) {
