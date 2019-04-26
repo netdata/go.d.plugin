@@ -30,7 +30,7 @@ func init() {
 func New() *Kubelet {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
@@ -63,8 +63,13 @@ func (Kubelet) Cleanup() {}
 
 // Init makes initialization.
 func (k *Kubelet) Init() bool {
-	if k.URL == "" {
-		k.Error("URL parameter is mandatory, please set")
+	if err := k.ParseUserURL(); err != nil {
+		k.Errorf("error on parsing url '%s' : %v", k.UserURL, err)
+		return false
+	}
+
+	if k.URL.Host == "" {
+		k.Error("URL is not set")
 		return false
 	}
 
