@@ -25,7 +25,7 @@ func TestPrometheus404(t *testing.T) {
 	ts := httptest.NewServer(tsMux)
 	defer ts.Close()
 
-	req := web.Request{URL: ts.URL + "/metrics"}
+	req := web.Request{UserURL: ts.URL + "/metrics"}
 	prom := New(http.DefaultClient, req)
 	res, err := prom.Scrape()
 
@@ -41,7 +41,7 @@ func TestPrometheusPlain(t *testing.T) {
 	ts := httptest.NewServer(tsMux)
 	defer ts.Close()
 
-	req := web.Request{URL: ts.URL + "/metrics"}
+	req := web.Request{UserURL: ts.URL + "/metrics"}
 	prom := New(http.DefaultClient, req)
 	res, err := prom.Scrape()
 
@@ -66,7 +66,7 @@ func TestPrometheusGzip(t *testing.T) {
 	ts := httptest.NewServer(tsMux)
 	defer ts.Close()
 
-	req := web.Request{URL: ts.URL + "/metrics"}
+	req := web.Request{UserURL: ts.URL + "/metrics"}
 	prom := New(http.DefaultClient, req)
 
 	for i := 0; i < 2; i++ {

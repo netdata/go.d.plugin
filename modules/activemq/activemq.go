@@ -19,14 +19,13 @@ func init() {
 	module.Register("activemq", creator)
 }
 
-var (
-	uriStats    = "/%s/xml/%s.jsp"
+const (
 	keyQueues   = "queues"
 	keyTopics   = "topics"
 	keyAdvisory = "Advisory"
-
-	nameReplacer = strings.NewReplacer(".", "_", " ", "")
 )
+
+var nameReplacer = strings.NewReplacer(".", "_", " ", "")
 
 const (
 	defaultMaxQueues   = 50
@@ -35,34 +34,40 @@ const (
 	defaultHTTPTimeout = time.Second
 )
 
-// New creates Example with default values
-func New() *Activemq {
-	return &Activemq{
+// New creates Example with default values.
+func New() *ActiveMQ {
+	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 
 		MaxQueues: defaultMaxQueues,
 		MaxTopics: defaultMaxTopics,
+	}
 
+	return &ActiveMQ{
+		Config:       config,
 		charts:       &Charts{},
 		activeQueues: make(map[string]bool),
 		activeTopics: make(map[string]bool),
 	}
 }
 
-// Activemq activemq module
-type Activemq struct {
-	module.Base
-
-	web.HTTP `yaml:",inline"`
-
+// Config is the ActiveMQ module configuration.
+type Config struct {
+	web.HTTP     `yaml:",inline"`
 	Webadmin     string `yaml:"webadmin"`
 	MaxQueues    int    `yaml:"max_queues"`
 	MaxTopics    int    `yaml:"max_topics"`
 	QueuesFilter string `yaml:"queues_filter"`
 	TopicsFilter string `yaml:"topics_filter"`
+}
+
+// ActiveMQ ActiveMQ module.
+type ActiveMQ struct {
+	module.Base
+	Config `yaml:",inline"`
 
 	apiClient    *apiClient
 	activeQueues map[string]bool
@@ -72,11 +77,21 @@ type Activemq struct {
 	charts       *Charts
 }
 
-// Cleanup makes cleanup
-func (Activemq) Cleanup() {}
+// Cleanup makes cleanup.
+func (ActiveMQ) Cleanup() {}
 
-// Init makes initialization
-func (a *Activemq) Init() bool {
+// Init makes initialization.
+func (a *ActiveMQ) Init() bool {
+	if err := a.ParseUserURL(); err != nil {
+		a.Errorf("error on parsing url '%s' : %v", a.UserURL, err)
+		return false
+	}
+
+	if a.URL.Host == "" {
+		a.Error("URL is not set")
+		return false
+	}
+
 	if a.Webadmin == "" {
 		a.Error("webadmin root path is not set")
 		return false
@@ -107,27 +122,23 @@ func (a *Activemq) Init() bool {
 		return false
 	}
 
-	a.apiClient = &apiClient{
-		webadmin:   a.Webadmin,
-		req:        a.Request,
-		httpClient: client,
-	}
+	a.apiClient = newAPIClient(client, a.Request, a.Webadmin)
 
 	return true
 }
 
-// Check makes check
-func (a *Activemq) Check() bool {
+// Check makes check.
+func (a *ActiveMQ) Check() bool {
 	return len(a.Collect()) > 0
 }
 
-// Charts creates Charts
-func (a Activemq) Charts() *Charts {
+// Charts creates Charts.
+func (a ActiveMQ) Charts() *Charts {
 	return a.charts
 }
 
-// Collect collects metrics
-func (a *Activemq) Collect() map[string]int64 {
+// Collect collects metrics.
+func (a *ActiveMQ) Collect() map[string]int64 {
 	metrics := make(map[string]int64)
 
 	var (
@@ -152,7 +163,7 @@ func (a *Activemq) Collect() map[string]int64 {
 	return metrics
 }
 
-func (a *Activemq) processQueues(queues *queues, metrics map[string]int64) {
+func (a *ActiveMQ) processQueues(queues *queues, metrics map[string]int64) {
 	var (
 		count   = len(a.activeQueues)
 		updated = make(map[string]bool)
@@ -200,7 +211,7 @@ func (a *Activemq) processQueues(queues *queues, metrics map[string]int64) {
 	}
 }
 
-func (a *Activemq) processTopics(topics *topics, metrics map[string]int64) {
+func (a *ActiveMQ) processTopics(topics *topics, metrics map[string]int64) {
 	var (
 		count   = len(a.activeTopics)
 		updated = make(map[string]bool)
@@ -249,21 +260,21 @@ func (a *Activemq) processTopics(topics *topics, metrics map[string]int64) {
 	}
 }
 
-func (a Activemq) filterQueues(line string) bool {
+func (a ActiveMQ) filterQueues(line string) bool {
 	if a.queuesFilter == nil {
 		return true
 	}
 	return a.queuesFilter.MatchString(line)
 }
 
-func (a Activemq) filterTopics(line string) bool {
+func (a ActiveMQ) filterTopics(line string) bool {
 	if a.topicsFilter == nil {
 		return true
 	}
 	return a.topicsFilter.MatchString(line)
 }
 
-func (a *Activemq) addQueueTopicCharts(name, typ string) {
+func (a *ActiveMQ) addQueueTopicCharts(name, typ string) {
 	rname := nameReplacer.Replace(name)
 
 	charts := charts.Copy()
@@ -282,7 +293,7 @@ func (a *Activemq) addQueueTopicCharts(name, typ string) {
 
 }
 
-func (a *Activemq) removeQueueTopicCharts(name, typ string) {
+func (a *ActiveMQ) removeQueueTopicCharts(name, typ string) {
 	rname := nameReplacer.Replace(name)
 
 	chart := a.charts.Get(fmt.Sprintf("%s_%s_messages", typ, rname))

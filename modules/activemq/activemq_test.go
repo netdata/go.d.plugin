@@ -130,28 +130,28 @@ var (
 )
 
 func TestNew(t *testing.T) {
-	mod := New()
+	job := New()
 
-	assert.Implements(t, (*module.Module)(nil), mod)
-	assert.Equal(t, defaultURL, mod.URL)
-	assert.Equal(t, defaultHTTPTimeout, mod.Client.Timeout.Duration)
-	assert.Equal(t, defaultMaxQueues, mod.MaxQueues)
-	assert.Equal(t, defaultMaxTopics, mod.MaxTopics)
+	assert.Implements(t, (*module.Module)(nil), job)
+	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultHTTPTimeout, job.Client.Timeout.Duration)
+	assert.Equal(t, defaultMaxQueues, job.MaxQueues)
+	assert.Equal(t, defaultMaxTopics, job.MaxTopics)
 }
 
-func TestActivemq_Init(t *testing.T) {
-	mod := New()
+func TestActiveMQ_Init(t *testing.T) {
+	job := New()
 
 	// NG case
-	assert.False(t, mod.Init())
+	assert.False(t, job.Init())
 
 	// OK case
-	mod.Webadmin = "webadmin"
-	assert.True(t, mod.Init())
-	assert.NotNil(t, mod.apiClient)
+	job.Webadmin = "webadmin"
+	assert.True(t, job.Init())
+	assert.NotNil(t, job.apiClient)
 }
 
-func TestActivemq_Check(t *testing.T) {
+func TestActiveMQ_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -164,23 +164,23 @@ func TestActivemq_Check(t *testing.T) {
 			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL}
-	mod.Webadmin = "webadmin"
+	job := New()
+	job.HTTP.Request = web.Request{UserURL: ts.URL}
+	job.Webadmin = "webadmin"
 
-	require.True(t, mod.Init())
-	require.True(t, mod.Check())
+	require.True(t, job.Init())
+	require.True(t, job.Check())
 }
 
-func TestActivemq_Charts(t *testing.T) {
+func TestActiveMQ_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
 
-func TestActivemq_Cleanup(t *testing.T) {
+func TestActiveMQ_Cleanup(t *testing.T) {
 	New().Cleanup()
 }
 
-func TestActivemq_Collect(t *testing.T) {
+func TestActiveMQ_Collect(t *testing.T) {
 	var collectNum int
 	getQueues := func() string { return queuesData[collectNum] }
 	getTopics := func() string { return topicsData[collectNum] }
@@ -197,12 +197,12 @@ func TestActivemq_Collect(t *testing.T) {
 			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL}
-	mod.Webadmin = "webadmin"
+	job := New()
+	job.HTTP.Request = web.Request{UserURL: ts.URL}
+	job.Webadmin = "webadmin"
 
-	require.True(t, mod.Init())
-	require.True(t, mod.Check())
+	require.True(t, job.Init())
+	require.True(t, job.Check())
 
 	cases := []struct {
 		expected  map[string]int64
@@ -290,29 +290,29 @@ func TestActivemq_Collect(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		require.Equal(t, c.expected, mod.Collect())
-		assert.Len(t, mod.activeQueues, c.numQueues)
-		assert.Len(t, mod.activeTopics, c.numTopics)
-		assert.Len(t, *mod.charts, c.numCharts)
+		require.Equal(t, c.expected, job.Collect())
+		assert.Len(t, job.activeQueues, c.numQueues)
+		assert.Len(t, job.activeTopics, c.numTopics)
+		assert.Len(t, *job.charts, c.numCharts)
 		collectNum++
 	}
 }
 
-func TestActivemq_Collect_404(t *testing.T) {
+func TestActiveMQ_404(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 	}))
 	defer ts.Close()
 
-	mod := New()
-	mod.Webadmin = "webadmin"
-	mod.HTTP.Request = web.Request{URL: ts.URL}
+	job := New()
+	job.Webadmin = "webadmin"
+	job.HTTP.Request = web.Request{UserURL: ts.URL}
 
-	require.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	require.True(t, job.Init())
+	assert.False(t, job.Check())
 }
 
-func TestActivemq_Collect_InvalidData(t *testing.T) {
+func TestActiveMQ_InvalidData(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("hello and goodbye!"))
 	}))
@@ -320,7 +320,7 @@ func TestActivemq_Collect_InvalidData(t *testing.T) {
 
 	mod := New()
 	mod.Webadmin = "webadmin"
-	mod.HTTP.Request = web.Request{URL: ts.URL}
+	mod.HTTP.Request = web.Request{UserURL: ts.URL}
 
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())

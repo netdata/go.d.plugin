@@ -22,25 +22,22 @@ func version(v string) string {
 }
 
 func TestNew(t *testing.T) {
-	mod := New()
+	job := New()
 
-	assert.Implements(t, (*module.Module)(nil), mod)
-	assert.Equal(t, defaultURL, mod.URL)
-	assert.Equal(t, defaultHTTPTimeout, mod.Client.Timeout.Duration)
+	assert.Implements(t, (*module.Module)(nil), job)
+	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultHTTPTimeout, job.Client.Timeout.Duration)
 }
 
 func TestSolr_Init(t *testing.T) {
-	mod := New()
+	job := New()
 
-	assert.True(t, mod.Init())
-
-	assert.NotNil(t, mod.reqInfoSystem)
-	assert.NotNil(t, mod.reqCoreHandlers)
-	assert.NotNil(t, mod.client)
+	assert.True(t, job.Init())
+	assert.NotNil(t, job.client)
 }
 
 func TestSolr_Check(t *testing.T) {
-	mod := New()
+	job := New()
 
 	ts := httptest.NewServer(
 		http.HandlerFunc(
@@ -51,15 +48,13 @@ func TestSolr_Check(t *testing.T) {
 				}
 			}))
 
-	mod.URL = ts.URL
-
-	require.True(t, mod.Init())
-
-	assert.True(t, mod.Check())
+	job.UserURL = ts.URL
+	require.True(t, job.Init())
+	assert.True(t, job.Check())
 }
 
 func TestSolr_Check_UnsupportedVersion(t *testing.T) {
-	mod := New()
+	job := New()
 
 	ts := httptest.NewServer(
 		http.HandlerFunc(
@@ -70,11 +65,11 @@ func TestSolr_Check_UnsupportedVersion(t *testing.T) {
 				}
 			}))
 
-	mod.URL = ts.URL
+	job.UserURL = ts.URL
 
-	require.True(t, mod.Init())
+	require.True(t, job.Init())
 
-	assert.False(t, mod.Check())
+	assert.False(t, job.Check())
 }
 
 func TestSolr_Charts(t *testing.T) {
@@ -86,7 +81,7 @@ func TestSolr_Cleanup(t *testing.T) {
 }
 
 func TestSolr_CollectV6(t *testing.T) {
-	mod := New()
+	job := New()
 
 	ts := httptest.NewServer(
 		http.HandlerFunc(
@@ -101,11 +96,11 @@ func TestSolr_CollectV6(t *testing.T) {
 				}
 			}))
 
-	mod.URL = ts.URL
+	job.UserURL = ts.URL
 
-	require.True(t, mod.Init())
-	require.True(t, mod.Check())
-	require.NotNil(t, mod.Charts())
+	require.True(t, job.Init())
+	require.True(t, job.Check())
+	require.NotNil(t, job.Charts())
 
 	expected := map[string]int64{
 		"core2_query_requestTimes_min_ms":     0,
@@ -170,12 +165,12 @@ func TestSolr_CollectV6(t *testing.T) {
 		"core2_query_totalTime_count":         3,
 	}
 
-	assert.Equal(t, expected, mod.Collect())
-	assert.Equal(t, expected, mod.Collect())
+	assert.Equal(t, expected, job.Collect())
+	assert.Equal(t, expected, job.Collect())
 }
 
 func TestSolr_CollectV7(t *testing.T) {
-	mod := New()
+	job := New()
 
 	ts := httptest.NewServer(
 		http.HandlerFunc(
@@ -190,11 +185,11 @@ func TestSolr_CollectV7(t *testing.T) {
 				}
 			}))
 
-	mod.URL = ts.URL
+	job.UserURL = ts.URL
 
-	require.True(t, mod.Init())
-	require.True(t, mod.Check())
-	require.NotNil(t, mod.Charts())
+	require.True(t, job.Init())
+	require.True(t, job.Check())
+	require.NotNil(t, job.Charts())
 
 	expected := map[string]int64{
 		"core1_query_requestTimes_p95_ms":     285000000,
@@ -259,8 +254,8 @@ func TestSolr_CollectV7(t *testing.T) {
 		"core2_query_requestTimes_median_ms":  0,
 	}
 
-	assert.Equal(t, expected, mod.Collect())
-	assert.Equal(t, expected, mod.Collect())
+	assert.Equal(t, expected, job.Collect())
+	assert.Equal(t, expected, job.Collect())
 }
 
 func TestSolr_Collect_404(t *testing.T) {
@@ -269,9 +264,9 @@ func TestSolr_Collect_404(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	mod := New()
-	mod.URL = ts.URL
+	job := New()
+	job.UserURL = ts.URL
 
-	require.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	require.True(t, job.Init())
+	assert.False(t, job.Check())
 }

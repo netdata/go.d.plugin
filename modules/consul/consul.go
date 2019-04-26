@@ -35,7 +35,7 @@ const (
 func New() *Consul {
 	return &Consul{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 		MaxChecks:    defaultMaxChecks,
@@ -44,7 +44,7 @@ func New() *Consul {
 	}
 }
 
-// Consul consul module.
+// Consul Consul module.
 type Consul struct {
 	module.Base
 
@@ -65,7 +65,12 @@ func (Consul) Cleanup() {}
 
 // Init makes initialization.
 func (c *Consul) Init() bool {
-	if c.URL == "" {
+	if err := c.Request.ParseUserURL(); err != nil {
+		c.Errorf("error on parsing url '%s' : %v", c.UserURL, err)
+		return false
+	}
+
+	if c.URL.Host == "" {
 		c.Error("URL is not set")
 		return false
 	}
@@ -77,11 +82,7 @@ func (c *Consul) Init() bool {
 		return false
 	}
 
-	c.apiClient = &apiClient{
-		aclToken:   c.ACLToken,
-		req:        c.Request,
-		httpClient: client,
-	}
+	c.apiClient = newAPIClient(client, c.Request, c.ACLToken)
 
 	if c.ChecksFilter != "" {
 		sps, err := matcher.NewSimplePatternsMatcher(c.ChecksFilter)

@@ -26,7 +26,7 @@ func init() {
 func New() *DockerEngine {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
@@ -52,8 +52,13 @@ func (DockerEngine) Cleanup() {}
 
 // Init makes initialization.
 func (de *DockerEngine) Init() bool {
-	if de.URL == "" {
-		de.Error("URL parameter is mandatory, please set")
+	if err := de.ParseUserURL(); err != nil {
+		de.Errorf("error on parsing url '%s' : %v", de.UserURL, err)
+		return false
+	}
+
+	if de.URL.Host == "" {
+		de.Error("URL is not set")
 		return false
 	}
 

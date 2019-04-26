@@ -29,34 +29,45 @@ const (
 )
 
 const (
-	minSupportedVersion = 6.4
-	coresHandlersURI    = "/solr/admin/metrics?group=core&prefix=UPDATE,QUERY&wt=json"
-	infoSystemURI       = "/solr/admin/info/system?wt=json"
+	minSupportedVersion   = 6.4
+	coresHandlersURLPath  = "/solr/admin/metrics"
+	coresHandlersURLQuery = "group=core&prefix=UPDATE,QUERY&wt=json"
+	infoSystemURLPath     = "/solr/admin/info/system"
+	infoSystemURLQuery    = "wt=json"
 )
+
+type infoSystem struct {
+	Lucene struct {
+		Version string `json:"solr-spec-version"`
+	}
+}
 
 // New creates Solr with default values
 func New() *Solr {
-	return &Solr{
+	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
-		cores: make(map[string]bool),
 	}
+	return &Solr{
+		Config: config,
+		cores:  make(map[string]bool),
+	}
+}
+
+// Config is the Solr module configuration.
+type Config struct {
+	web.HTTP `yaml:",inline"`
 }
 
 // Solr solr module
 type Solr struct {
 	module.Base
+	Config `yaml:",inline"`
 
-	web.HTTP `yaml:",inline"`
-
-	cores map[string]bool
-
-	reqInfoSystem   *http.Request
-	reqCoreHandlers *http.Request
-	client          *http.Client
-
+	cores   map[string]bool
+	client  *http.Client
 	version float64
 	charts  *Charts
 }
@@ -70,13 +81,13 @@ func (Solr) Cleanup() {}
 
 // Init makes initialization
 func (s *Solr) Init() bool {
-	if s.URL == "" {
-		s.Error("URL not specified")
+	if err := s.ParseUserURL(); err != nil {
+		s.Errorf("error on parsing url '%s' : %v", s.UserURL, err)
 		return false
 	}
 
-	if err := s.createRequests(); err != nil {
-		s.Error(err)
+	if s.URL.Host == "" {
+		s.Error("URL is not set")
 		return false
 	}
 
@@ -116,68 +127,53 @@ func (s *Solr) Charts() *Charts {
 
 // Collect collects metrics
 func (s *Solr) Collect() map[string]int64 {
-	resp, err := s.doRequest(s.reqCoreHandlers)
-
+	req, err := createRequest(s.Request, coresHandlersURLPath, coresHandlersURLQuery)
 	if err != nil {
-		s.Errorf("error on request to %s : %s", s.reqCoreHandlers.URL, err)
+		s.Errorf("error on creating http request : %v", err)
 		return nil
 	}
 
-	defer func() {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
-		_ = resp.Body.Close()
-	}()
+	resp, err := s.doRequest(req)
+	if err != nil {
+		s.Errorf("error on request to %s : %s", req.URL, err)
+		return nil
+	}
+	defer closeBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		s.Errorf("%s returned HTTP status %d", s.reqCoreHandlers.URL, resp.StatusCode)
+		s.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
 		return nil
 	}
 
 	metrics, err := s.parse(resp)
-
 	if err != nil {
-		s.Errorf("error on parse response from %s : %s", s.reqCoreHandlers.URL, err)
+		s.Errorf("error on parse response from %s : %s", req.URL, err)
 		return nil
 	}
 
 	return metrics
 }
 
-func (s *Solr) createRequests() error {
-	var err error
-
-	s.URI = infoSystemURI
-	if s.reqInfoSystem, err = web.NewHTTPRequest(s.Request); err != nil {
-		return fmt.Errorf("error on creating HTTP request : %s", err)
-	}
-	s.URI = coresHandlersURI
-	if s.reqCoreHandlers, err = web.NewHTTPRequest(s.Request); err != nil {
-		return fmt.Errorf("error on creating HTTP request : %s", err)
-	}
-
-	return nil
-}
-
 func (s *Solr) getVersion() error {
-	resp, err := s.doRequest(s.reqInfoSystem)
-
+	req, err := createRequest(s.Request, infoSystemURLPath, infoSystemURLQuery)
 	if err != nil {
-		return fmt.Errorf("error on request to %s : %s", s.reqInfoSystem.URL, err)
+		return fmt.Errorf("error on creating http request : %v", err)
 	}
 
-	defer func() {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
-		_ = resp.Body.Close()
-	}()
+	resp, err := s.doRequest(req)
+	if err != nil {
+		return fmt.Errorf("error on request to %s : %s", req.URL, err)
+	}
+	defer closeBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("%s returned HTTP status %d", s.reqInfoSystem.URL, resp.StatusCode)
+		return fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
 	}
 
 	var info infoSystem
 
 	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
-		return fmt.Errorf("error on decoding %s response : %s", s.reqInfoSystem.URL, err)
+		return fmt.Errorf("error on decode response from %s : %s", req.URL, err)
 	}
 
 	var idx int
@@ -193,8 +189,16 @@ func (s *Solr) getVersion() error {
 	return nil
 }
 
-type infoSystem struct {
-	Lucene struct {
-		Version string `json:"solr-spec-version"`
+func createRequest(req web.Request, urlPath, urlQuery string) (*http.Request, error) {
+	r := req.Copy()
+	r.URL.Path = urlPath
+	r.URL.RawQuery = urlQuery
+	return web.NewHTTPRequest(r)
+}
+
+func closeBody(resp *http.Response) {
+	if resp != nil && resp.Body != nil {
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
 	}
 }

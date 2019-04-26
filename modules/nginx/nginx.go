@@ -28,7 +28,7 @@ const (
 func New() *Nginx {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
@@ -54,6 +54,16 @@ func (Nginx) Cleanup() {}
 
 // Init makes initialization.
 func (n *Nginx) Init() bool {
+	if err := n.ParseUserURL(); err != nil {
+		n.Errorf("error on parsing url '%s' : %v", n.UserURL, err)
+		return false
+	}
+
+	if n.URL.Host == "" {
+		n.Error("URL is not set")
+		return false
+	}
+
 	client, err := web.NewHTTPClient(n.Client)
 
 	if err != nil {

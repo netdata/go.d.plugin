@@ -6,7 +6,6 @@ import (
 	"net"
 	"net/http"
 	"regexp"
-	"sort"
 	"strings"
 	"time"
 
@@ -29,18 +28,20 @@ func init() {
 }
 
 var (
-	defaultHTTPTimeout    = time.Second
-	defaultStatusAccepted = map[int]bool{200: true}
+	defaultHTTPTimeout = time.Second
 )
 
 // New creates HTTPCheck with default values
 func New() *HTTPCheck {
-
-	return &HTTPCheck{
+	config := Config{
 		HTTP: web.HTTP{
 			Client: web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
-		statuses: defaultStatusAccepted,
+	}
+
+	return &HTTPCheck{
+		Config:   config,
+		statuses: map[int]bool{200: true},
 		metrics:  metrics{},
 	}
 }
@@ -73,22 +74,23 @@ func (d *metrics) reset() {
 	d.ResponseLength = 0
 }
 
-// HTTPCheck httpcheck module
-type HTTPCheck struct {
-	module.Base
-
+// Config is the HTTPCheck module configuration.
+type Config struct {
 	web.HTTP `yaml:",inline"`
 
 	StatusAccepted []int  `yaml:"status_accepted"`
 	ResponseMatch  string `yaml:"response_match"`
+}
+
+// HTTPCheck HTTPCheck module
+type HTTPCheck struct {
+	module.Base
+	Config `yaml:",inline"`
 
 	match    *regexp.Regexp
 	statuses map[int]bool
-
-	request *http.Request
-	client  *http.Client
-
-	metrics metrics
+	client   *http.Client
+	metrics  metrics
 }
 
 // Cleanup makes cleanup
@@ -96,20 +98,15 @@ func (HTTPCheck) Cleanup() {}
 
 // Init makes initialization
 func (hc *HTTPCheck) Init() bool {
-	// populate accepted statuses
-	if len(hc.StatusAccepted) != 0 {
-		delete(hc.statuses, 200)
-
-		for _, s := range hc.StatusAccepted {
-			hc.statuses[s] = true
-		}
-	}
-
 	var err error
 
-	// create HTTP request
-	if hc.request, err = web.NewHTTPRequest(hc.Request); err != nil {
-		hc.Errorf("error on creating request to %s : %s", hc.URL, err)
+	if err = hc.ParseUserURL(); err != nil {
+		hc.Errorf("error on parsing url '%s' : %v", hc.UserURL, err)
+		return false
+	}
+
+	if hc.URL.Host == "" {
+		hc.Error("URL is not set")
 		return false
 	}
 
@@ -126,14 +123,19 @@ func (hc *HTTPCheck) Init() bool {
 	}
 
 	// post Init debug info
-	hc.Debugf("using URL %s", hc.request.URL)
+	hc.Debugf("using URL %s", hc.URL)
 	hc.Debugf("using HTTP timeout %s", hc.Timeout.Duration)
-	var statuses []int
-	for status := range hc.statuses {
-		statuses = append(statuses, status)
+
+	// populate accepted statuses
+	if len(hc.StatusAccepted) != 0 {
+		delete(hc.statuses, 200)
+
+		for _, s := range hc.StatusAccepted {
+			hc.statuses[s] = true
+		}
 	}
-	sort.Ints(statuses)
-	hc.Debugf("using accepted HTTP statuses %s", statuses)
+
+	hc.Debugf("using accepted HTTP statuses %s", hc.statuses)
 	if hc.match != nil {
 		hc.Debugf("using response match regexp %s", hc.match)
 	}
@@ -175,7 +177,13 @@ func (hc *HTTPCheck) Collect() map[string]int64 {
 
 func (hc *HTTPCheck) doRequest() (*http.Response, error) {
 	t := time.Now()
-	r, err := hc.client.Do(hc.request)
+
+	req, err := web.NewHTTPRequest(hc.Request)
+	if err != nil {
+		return nil, err
+	}
+
+	r, err := hc.client.Do(req)
 	hc.metrics.ResponseTime = int(time.Since(t))
 
 	return r, err

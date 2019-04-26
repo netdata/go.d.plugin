@@ -27,7 +27,7 @@ func init() {
 func New() *CoreDNS {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
@@ -63,8 +63,13 @@ func (CoreDNS) Cleanup() {}
 
 // Init makes initialization.
 func (cd *CoreDNS) Init() bool {
-	if cd.URL == "" {
-		cd.Error("URL parameter is not set")
+	if err := cd.ParseUserURL(); err != nil {
+		cd.Errorf("error on parsing url '%s' : %v", cd.UserURL, err)
+		return false
+	}
+
+	if cd.URL.Host == "" {
+		cd.Error("URL is not set")
 		return false
 	}
 

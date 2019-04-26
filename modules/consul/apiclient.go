@@ -20,16 +20,22 @@ type agentCheck struct {
 	ServiceTags []string
 }
 
-type apiClient struct {
-	aclToken string
+func newAPIClient(client *http.Client, request web.Request, aclToken string) *apiClient {
+	return &apiClient{
+		httpClient: client,
+		request:    request,
+		aclToken:   aclToken,
+	}
+}
 
-	req        web.Request
+type apiClient struct {
 	httpClient *http.Client
+	request    web.Request
+	aclToken   string
 }
 
 func (a *apiClient) localChecks() (map[string]*agentCheck, error) {
 	req, err := a.createRequest("/v1/agent/checks")
-
 	if err != nil {
 		return nil, fmt.Errorf("error on creating request : %v", err)
 	}
@@ -51,19 +57,10 @@ func (a *apiClient) localChecks() (map[string]*agentCheck, error) {
 	return checks, nil
 }
 
-func (a apiClient) doRequest(req *http.Request) (*http.Response, error) {
-	return a.httpClient.Do(req)
-}
-
 func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
-	var (
-		resp *http.Response
-		err  error
-	)
-
-	if resp, err = a.doRequest(req); err != nil {
+	resp, err := a.httpClient.Do(req)
+	if err != nil {
 		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
-
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -73,23 +70,15 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-func (a apiClient) createRequest(uri string) (*http.Request, error) {
-	var (
-		req *http.Request
-		err error
-	)
-
-	a.req.URI = uri
-
-	if req, err = web.NewHTTPRequest(a.req); err != nil {
-		return nil, err
-	}
+func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
+	req := a.request.Copy()
+	req.URL.Path = urlPath
 
 	if a.aclToken != "" {
-		req.Header.Set("X-Consul-Token", a.aclToken)
+		req.Headers["X-Consul-Token"] = a.aclToken
 	}
 
-	return req, nil
+	return web.NewHTTPRequest(req)
 }
 
 func closeBody(resp *http.Response) {

@@ -1,7 +1,6 @@
 package apache
 
 import (
-	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -29,7 +28,7 @@ const (
 func New() *Apache {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
@@ -57,7 +56,17 @@ func (Apache) Cleanup() {}
 
 // Init makes initialization.
 func (a *Apache) Init() bool {
-	if !strings.HasSuffix(a.URL, "?auto") {
+	if err := a.ParseUserURL(); err != nil {
+		a.Errorf("error on parsing url '%s' : %v", a.Request.UserURL, err)
+		return false
+	}
+
+	if a.URL.Host == "" {
+		a.Error("URL is not set")
+		return false
+	}
+
+	if a.URL.RawQuery != "auto" {
 		a.Errorf("bad URL, should ends in '?auto'")
 		return false
 	}

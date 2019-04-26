@@ -29,9 +29,7 @@ type apiClient struct {
 }
 
 func (a apiClient) getRepository(repoName string) (*repository, error) {
-	a.request.URI = repoName
-	req, err := web.NewHTTPRequest(a.request)
-
+	req, err := a.createRequest(repoName)
 	if err != nil {
 		return nil, fmt.Errorf("error on creating http request : %v", err)
 	}
@@ -58,10 +56,17 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error on request: %v", err)
 	}
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
 	}
 	return resp, nil
+}
+
+func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
+	req := a.request.Copy()
+	req.URL.Path = urlPath
+	return web.NewHTTPRequest(req)
 }
 
 func closeBody(resp *http.Response) {

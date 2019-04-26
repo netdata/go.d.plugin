@@ -30,7 +30,7 @@ func init() {
 func New() *DockerHub {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
@@ -57,10 +57,16 @@ func (DockerHub) Cleanup() {}
 
 // Init makes initialization.
 func (dh *DockerHub) Init() bool {
-	if dh.URL == "" {
-		dh.Error("URL parameter is not set")
+	if err := dh.ParseUserURL(); err != nil {
+		dh.Errorf("error on parsing url '%s' : %v", dh.UserURL, err)
 		return false
 	}
+
+	if dh.URL.Host == "" {
+		dh.Error("URL is not set")
+		return false
+	}
+
 	if len(dh.Repositories) == 0 {
 		dh.Error("repositories parameter is not set")
 		return false

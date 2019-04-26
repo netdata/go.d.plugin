@@ -2,7 +2,6 @@ package bind
 
 import (
 	"fmt"
-	"net/url"
 	"strings"
 	"time"
 
@@ -30,11 +29,15 @@ const (
 
 // New creates Bind with default values.
 func New() *Bind {
-	return &Bind{
+	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
+	}
+
+	return &Bind{
+		Config: config,
 		charts: &Charts{},
 	}
 }
@@ -43,13 +46,16 @@ type bindAPIClient interface {
 	serverStats() (*serverStats, error)
 }
 
-// Bind bind module.
-type Bind struct {
-	module.Base
-
+// Config is the Bind module configuration.
+type Config struct {
 	web.HTTP   `yaml:",inline"`
 	PermitView string `yaml:"permit_view"`
+}
 
+// Bind Bind module.
+type Bind struct {
+	module.Base
+	Config `yaml:",inline"`
 	bindAPIClient
 	permitView matcher.Matcher
 	charts     *Charts
@@ -60,8 +66,13 @@ func (Bind) Cleanup() {}
 
 // Init makes initialization.
 func (b *Bind) Init() bool {
-	if b.URL == "" {
-		b.Error("URL not set")
+	if err := b.ParseUserURL(); err != nil {
+		b.Errorf("error on parsing url '%s' : %v", b.UserURL, err)
+		return false
+	}
+
+	if b.URL.Host == "" {
+		b.Error("URL is not set")
 		return false
 	}
 
@@ -72,14 +83,7 @@ func (b *Bind) Init() bool {
 		return false
 	}
 
-	addr, err := url.Parse(b.URL)
-
-	if err != nil {
-		b.Errorf("error on parsing URL %s : %v", b.URL, err)
-		return false
-	}
-
-	switch addr.Path {
+	switch b.URL.Path {
 	default:
 		b.Errorf("URL %s is wrong, supported endpoints: `/xml/v3`, `/json/v1`", b.URL)
 		return false
