@@ -6,8 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
-
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -18,7 +16,7 @@ var (
 	nodeData, _     = ioutil.ReadFile("testdata/node.txt")
 )
 
-func TestRabbitmq_Cleanup(t *testing.T) {
+func TestRabbitMQ_Cleanup(t *testing.T) {
 	New().Cleanup()
 }
 
@@ -27,17 +25,17 @@ func TestNew(t *testing.T) {
 
 }
 
-func TestRabbitmq_Init(t *testing.T) {
-	mod := New()
+func TestRabbitMQ_Init(t *testing.T) {
+	job := New()
 
-	assert.Implements(t, (*module.Module)(nil), mod)
-	assert.Equal(t, defaultURL, mod.URL)
-	assert.Equal(t, defaultUsername, mod.Username)
-	assert.Equal(t, defaultPassword, mod.Password)
-	assert.Equal(t, defaultHTTPTimeout, mod.Timeout.Duration)
+	assert.Implements(t, (*module.Module)(nil), job)
+	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultUsername, job.Username)
+	assert.Equal(t, defaultPassword, job.Password)
+	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
-func TestRabbitmq_Check(t *testing.T) {
+func TestRabbitMQ_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -50,25 +48,25 @@ func TestRabbitmq_Check(t *testing.T) {
 			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL}
+	job := New()
+	job.UserURL = ts.URL
 
-	require.True(t, mod.Init())
-	assert.True(t, mod.Check())
+	require.True(t, job.Init())
+	assert.True(t, job.Check())
 }
 
-func TestApache_CheckNG(t *testing.T) {
-	mod := New()
+func TestRabbitMQ_CheckNG(t *testing.T) {
+	job := New()
 
-	require.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	require.True(t, job.Init())
+	assert.False(t, job.Check())
 }
 
-func TestRabbitmq_Charts(t *testing.T) {
+func TestRabbitMQ_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
 
-func TestRabbitmq_Collect(t *testing.T) {
+func TestRabbitMQ_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -81,11 +79,11 @@ func TestRabbitmq_Collect(t *testing.T) {
 			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL}
+	job := New()
+	job.UserURL = ts.URL
 
-	require.True(t, mod.Init())
-	require.True(t, mod.Check())
+	require.True(t, job.Init())
+	require.True(t, job.Check())
 
 	expected := map[string]int64{
 		"message_stats_deliver_no_ack":         7,
@@ -115,10 +113,10 @@ func TestRabbitmq_Collect(t *testing.T) {
 		"queue_totals_messages_ready":          150,
 	}
 
-	assert.Equal(t, expected, mod.Collect())
+	assert.Equal(t, expected, job.Collect())
 }
 
-func TestRabbitmq_InvalidData(t *testing.T) {
+func TestRabbitMQ_InvalidData(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -126,22 +124,22 @@ func TestRabbitmq_InvalidData(t *testing.T) {
 			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL}
+	job := New()
+	job.UserURL = ts.URL
 
-	assert.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	assert.True(t, job.Init())
+	assert.False(t, job.Check())
 }
 
-func TestRabbitmq_404(t *testing.T) {
+func TestRabbitMQ_404(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 	}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL}
+	job := New()
+	job.UserURL = ts.URL
 
-	require.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	require.True(t, job.Init())
+	assert.False(t, job.Check())
 }
