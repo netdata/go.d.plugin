@@ -8,10 +8,9 @@ type apiError struct {
 	ErrorCode      int
 }
 
-func (e apiError) Error() string {
-	return e.Message
-}
+func (e apiError) Error() string { return e.Message }
 
+// Version represents ScaleIO REST API Version
 type Version struct {
 	Major int64
 	Minor int64
@@ -23,6 +22,7 @@ type Version struct {
 //	SystemVersionName string
 //}
 
+// Bwc Bwc
 type Bwc struct {
 	NumOccured      int64
 	NumSeconds      int64

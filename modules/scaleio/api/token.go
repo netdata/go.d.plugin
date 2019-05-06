@@ -2,6 +2,8 @@ package api
 
 import "sync"
 
+func newToken() *token { return &token{mux: &sync.RWMutex{}} }
+
 type token struct {
 	mux   *sync.RWMutex
 	value string

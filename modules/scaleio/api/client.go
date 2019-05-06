@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
@@ -18,7 +17,7 @@ func NewClient(client *http.Client, request web.Request) *Client {
 	return &Client{
 		httpClient: client,
 		request:    request,
-		token:      &token{mux: &sync.RWMutex{}},
+		token:      newToken(),
 	}
 }
 
