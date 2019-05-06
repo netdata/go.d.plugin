@@ -1,12 +1,10 @@
 package scaleio
 
 import (
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
-	"net/http"
-	"net/http/httptest"
 	"testing"
-
-	"github.com/netdata/go.d.plugin/modules/scaleio/api"
 
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
@@ -14,7 +12,6 @@ import (
 )
 
 var (
-	testToken                = []byte("token")
 	testSelectedStatsData, _ = ioutil.ReadFile("testdata/selected_statistics.json")
 )
 
@@ -42,30 +39,18 @@ func TestScaleIO_InitNG(t *testing.T) {
 }
 
 func TestScaleIO_Check(t *testing.T) {
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				switch r.URL.Path {
-				default:
-					w.WriteHeader(http.StatusBadRequest)
-				case api.PATHLogin:
-					_, _ = w.Write(testToken)
-				case api.PATHLogout:
-				case api.PATHSelectedStatistics:
-					_, _ = w.Write(testSelectedStatsData)
-				}
-			}))
-	defer ts.Close()
-
 	job := New()
-	job.UserURL = ts.URL
+	job.UserURL = "http://127.0.0.1:38001"
+
 	require.True(t, job.Init())
-	assert.True(t, job.Check())
+	job.apiClient = &okAPIClient{}
+	require.True(t, job.Check())
 }
 
 func TestScaleIO_CheckNG(t *testing.T) {
 	job := New()
 	job.UserURL = "http://127.0.0.1:38001"
+
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -73,24 +58,11 @@ func TestScaleIO_CheckNG(t *testing.T) {
 func TestScaleIO_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
 
 func TestScaleIO_Cleanup(t *testing.T) {
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				switch r.URL.Path {
-				default:
-					w.WriteHeader(http.StatusBadRequest)
-				case api.PATHLogin:
-					_, _ = w.Write(testToken)
-				case api.PATHLogout:
-				case api.PATHSelectedStatistics:
-					_, _ = w.Write(testSelectedStatsData)
-				}
-			}))
-	defer ts.Close()
-
 	job := New()
-	job.UserURL = ts.URL
+	job.UserURL = "http://127.0.0.1:38001"
+
 	require.True(t, job.Init())
+	job.apiClient = &okAPIClient{}
 	require.True(t, job.Check())
 
 	assert.True(t, job.apiClient.IsLoggedIn())
@@ -99,24 +71,11 @@ func TestScaleIO_Cleanup(t *testing.T) {
 }
 
 func TestScaleIO_Collect(t *testing.T) {
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				switch r.URL.Path {
-				default:
-					w.WriteHeader(http.StatusBadRequest)
-				case api.PATHLogin:
-					_, _ = w.Write(testToken)
-				case api.PATHLogout:
-				case api.PATHSelectedStatistics:
-					_, _ = w.Write(testSelectedStatsData)
-				}
-			}))
-	defer ts.Close()
-
 	job := New()
-	job.UserURL = ts.URL
+	job.UserURL = "http://127.0.0.1:38001"
+
 	require.True(t, job.Init())
+	job.apiClient = &okAPIClient{}
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
@@ -256,16 +215,23 @@ func TestScaleIO_Collect(t *testing.T) {
 	assert.Equal(t, expected, job.Collect())
 }
 
-func TestScaleIO_404(t *testing.T) {
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusBadRequest)
-			}))
-	defer ts.Close()
+type okAPIClient struct {
+	loggedIn bool
+}
 
-	job := New()
-	job.UserURL = ts.URL
-	require.True(t, job.Init())
-	assert.False(t, job.Check())
+func (o *okAPIClient) Login() error {
+	o.loggedIn = true
+	return nil
+}
+
+func (o *okAPIClient) Logout() error {
+	o.loggedIn = false
+	return nil
+}
+
+func (o okAPIClient) IsLoggedIn() bool { return o.loggedIn }
+
+func (okAPIClient) GetSelectedStatistics(dst interface{}, query string) error {
+	r := bytes.NewBuffer(testSelectedStatsData)
+	return json.NewDecoder(r).Decode(dst)
 }

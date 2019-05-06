@@ -43,11 +43,18 @@ type Config struct {
 	web.HTTP `yaml:",inline"`
 }
 
+type scaleIOAPIClient interface {
+	Login() error
+	Logout() error
+	IsLoggedIn() bool
+	GetSelectedStatistics(dst interface{}, query string) error
+}
+
 // ScaleIO ScaleIO module.
 type ScaleIO struct {
 	module.Base
 	Config    `yaml:",inline"`
-	apiClient *api.Client
+	apiClient scaleIOAPIClient
 }
 
 // Cleanup makes cleanup.
