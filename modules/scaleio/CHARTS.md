@@ -1,6 +1,6 @@
-`ScaleIO` collector produces the following charts:
+# ScaleIO
 
-Capacity:
+### Capacity
   1. **System Total Capacity** in KB
      * total
     
@@ -21,8 +21,10 @@ Capacity:
   4. **Thin Volume Usage** in KB
      * free
      * used
+     
+<br>
 
-I/O Workload:
+### I/O Workload
   1. **Primary Backend Bandwidth Total (Read and Write)** in KB/s
      * total
     
@@ -40,23 +42,28 @@ I/O Workload:
      * read
      * write
 
-Rebalance:
+
+### Rebalance
   1. **System Rebalance** in KB/s
      * read
      * write
     
   2. **System Rebalance Pending Capacity** in KB
      * left
-    
-Rebuild:
+
+<br>
+
+### Rebuild
   1. **System Rebuild Bandwidth Total (Forward, Backward and Normal)** in KB/s
      * read
      * write
     
   2. **System Rebuild Pending Capacity Total (Forward, Backward and Normal)** in KB
      * left
-    
-Components:
+
+<br>
+
+### Components
   1. **System Defined Components** in number
      * devices
      * fault_sets
