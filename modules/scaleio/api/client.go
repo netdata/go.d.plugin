@@ -13,12 +13,19 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-func NewClient(client *http.Client, request web.Request) *Client {
+func NewClient(client web.Client, request web.Request) (*Client, error) {
+	httpClient, err := web.NewHTTPClient(client)
+	if err != nil {
+		return nil, err
+	}
+	if err := request.ParseUserURL(); err != nil {
+		return nil, err
+	}
 	return &Client{
-		httpClient: client,
+		httpClient: httpClient,
 		request:    request,
 		token:      newToken(),
-	}
+	}, nil
 }
 
 type Client struct {

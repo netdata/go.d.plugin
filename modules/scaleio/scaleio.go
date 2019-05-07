@@ -77,14 +77,13 @@ func (s *ScaleIO) Init() bool {
 		return false
 	}
 
-	client, err := web.NewHTTPClient(s.Client)
-
+	client, err := api.NewClient(s.Client, s.Request)
 	if err != nil {
-		s.Errorf("error on creating http client : %v", err)
+		s.Errorf("error on creating api client : %v", err)
 		return false
 	}
 
-	s.apiClient = api.NewClient(client, s.Request)
+	s.apiClient = client
 
 	s.Debugf("using URL %s", s.URL)
 	s.Debugf("using timeout: %s", s.Timeout.Duration)
