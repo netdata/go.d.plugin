@@ -13,7 +13,7 @@ var charts = Charts{
 	// Capacity
 	{
 		ID:    "system_capacity_total",
-		Title: "Total Capacity",
+		Title: "System Total Capacity",
 		Units: "KB",
 		Fam:   "capacity",
 		Ctx:   "scaleio.system_capacity_total",
@@ -23,7 +23,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "system_capacity",
-		Title: "Capacity",
+		Title: "System Capacity",
 		Units: "KB",
 		Fam:   "capacity",
 		Type:  module.Stacked,
@@ -132,7 +132,7 @@ var charts = Charts{
 	// Rebalance
 	{
 		ID:    "system_rebalance",
-		Title: "Rebalance",
+		Title: "System Rebalance",
 		Units: "KB/s",
 		Fam:   "rebalance",
 		Type:  module.Area,
@@ -144,7 +144,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "system_rebalance_left",
-		Title: "Rebalance Pending Capacity",
+		Title: "System Rebalance Pending Capacity",
 		Units: "KB",
 		Fam:   "rebalance",
 		Ctx:   "scaleio.system_rebalance_left",
@@ -155,7 +155,7 @@ var charts = Charts{
 	// Rebuild
 	{
 		ID:    "system_rebuild",
-		Title: "Rebuild Bandwidth Total (Forward, Backward and Normal)",
+		Title: "System Rebuild Bandwidth Total (Forward, Backward and Normal)",
 		Units: "KB/s",
 		Fam:   "rebuild",
 		Ctx:   "scaleio.system_rebuild",
@@ -167,7 +167,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "system_rebuild_left",
-		Title: "Rebuild Pending Capacity Total (Forward, Backward and Normal)",
+		Title: "System Rebuild Pending Capacity Total (Forward, Backward and Normal)",
 		Units: "KB",
 		Fam:   "rebuild",
 		Ctx:   "scaleio.system_rebuild_left",
@@ -178,7 +178,7 @@ var charts = Charts{
 	// Components
 	{
 		ID:    "system_defined_components",
-		Title: "Defined Components",
+		Title: "System Defined Components",
 		Units: "number",
 		Fam:   "components",
 		Ctx:   "scaleio.system_defined_components",
