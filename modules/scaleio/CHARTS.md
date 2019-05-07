@@ -22,8 +22,6 @@
      * free
      * used
      
-<br>
-
 ### I/O Workload
   1. **Primary Backend Bandwidth Total (Read and Write)** in KB/s
      * total
@@ -42,7 +40,6 @@
      * read
      * write
 
-
 ### Rebalance
   1. **System Rebalance** in KB/s
      * read
@@ -51,8 +48,6 @@
   2. **System Rebalance Pending Capacity** in KB
      * left
 
-<br>
-
 ### Rebuild
   1. **System Rebuild Bandwidth Total (Forward, Backward and Normal)** in KB/s
      * read
@@ -60,8 +55,6 @@
     
   2. **System Rebuild Pending Capacity Total (Forward, Backward and Normal)** in KB
      * left
-
-<br>
 
 ### Components
   1. **System Defined Components** in number
