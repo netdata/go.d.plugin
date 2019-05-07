@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	statusData, _ = ioutil.ReadFile("testdata/status.txt")
+	testStatusData, _ = ioutil.ReadFile("testdata/status.txt")
 )
 
 func TestLighttpd2_Cleanup(t *testing.T) { New().Cleanup() }
@@ -21,9 +21,8 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.URL)
+	assert.Equal(t, defaultURL, job.UserURL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
-	assert.NotNil(t, job.charts)
 }
 
 func TestLighttpd2_Init(t *testing.T) {
@@ -36,7 +35,7 @@ func TestLighttpd2_Init(t *testing.T) {
 func TestLighttpd2_InitNG(t *testing.T) {
 	job := New()
 
-	job.URL = ""
+	job.UserURL = ""
 	assert.False(t, job.Init())
 }
 
@@ -44,12 +43,12 @@ func TestLighttpd2_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(statusData)
+				_, _ = w.Write(testStatusData)
 			}))
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL + "/server-status?format=plain"
+	job.UserURL = ts.URL + "/server-status?format=plain"
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 }
@@ -57,7 +56,7 @@ func TestLighttpd2_Check(t *testing.T) {
 func TestLighttpd2_CheckNG(t *testing.T) {
 	job := New()
 
-	job.URL = "http://127.0.0.1:38001/server-status?format=plain"
+	job.UserURL = "http://127.0.0.1:38001/server-status?format=plain"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -68,12 +67,12 @@ func TestLighttpd2_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(statusData)
+				_, _ = w.Write(testStatusData)
 			}))
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL + "/server-status?format=plain"
+	job.UserURL = ts.URL + "/server-status?format=plain"
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -86,7 +85,7 @@ func TestLighttpd2_Collect(t *testing.T) {
 		"status_4xx":                      52891,
 		"status_5xx":                      572,
 		"requests_abs":                    640866,
-		"connections_abs":                 8,
+		"connection_abs":                  8,
 		"connection_state_start":          0,
 		"connection_state_read_header":    0,
 		"connection_state_handle_request": 1,
@@ -109,7 +108,7 @@ func TestLighttpd2_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL + "/server-status?format=plain"
+	job.UserURL = ts.URL + "/server-status?format=plain"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -123,7 +122,7 @@ func TestLighttpd2_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.URL = ts.URL + "/server-status?format=plain"
+	job.UserURL = ts.URL + "/server-status?format=plain"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }

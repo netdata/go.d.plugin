@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	overviewURI = "/api/overview"
-	nodeURI     = "/api/node/"
+	overviewURLPath = "/api/overview"
+	nodeURLPath     = "/api/node/"
 )
 
 // https://www.rabbitmq.com/monitoring.html
@@ -61,8 +61,12 @@ type node struct {
 	RunQueue    int `json:"run_queue" stm:"run_queue"`
 }
 
+func newAPIClient(client *http.Client, request web.Request) *apiClient {
+	return &apiClient{httpClient: client, request: request}
+}
+
 type apiClient struct {
-	req        web.Request
+	request    web.Request
 	httpClient *http.Client
 	nodeName   string
 }
@@ -70,7 +74,7 @@ type apiClient struct {
 func (a *apiClient) getOverview() (overview, error) {
 	var overview overview
 
-	req, err := a.createRequest(overviewURI)
+	req, err := a.createRequest(overviewURLPath)
 
 	if err != nil {
 		return overview, fmt.Errorf("error on creating request : %v", err)
@@ -96,7 +100,7 @@ func (a *apiClient) getOverview() (overview, error) {
 func (a apiClient) getNodeStats() (node, error) {
 	var node node
 
-	req, err := a.createRequest(nodeURI + a.nodeName)
+	req, err := a.createRequest(nodeURLPath + a.nodeName)
 
 	if err != nil {
 		return node, fmt.Errorf("error on creating request : %v", err)
@@ -139,19 +143,10 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-func (a apiClient) createRequest(uri string) (*http.Request, error) {
-	var (
-		req *http.Request
-		err error
-	)
-
-	a.req.URI = uri
-
-	if req, err = web.NewHTTPRequest(a.req); err != nil {
-		return nil, err
-	}
-
-	return req, nil
+func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
+	req := a.request.Copy()
+	req.URL.Path = urlPath
+	return web.NewHTTPRequest(req)
 }
 
 func closeBody(resp *http.Response) {

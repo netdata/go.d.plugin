@@ -16,6 +16,10 @@ const (
 
 func init() {
 	creator := module.Creator{
+		Defaults: module.Defaults{
+			// NETDATA_CHART_PRIO_CGROUPS_CONTAINERS        40000
+			Priority: 39900,
+		},
 		Create: func() module.Module { return New() },
 	}
 
@@ -26,15 +30,15 @@ func init() {
 func New() *Kubelet {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
 
 	return &Kubelet{
-		Config:                     config,
-		charts:                     charts.Copy(),
-		activeVolumeManagerPlugins: make(map[string]bool),
+		Config:                        config,
+		charts:                        charts.Copy(),
+		collectedVolumeManagerPlugins: make(map[string]bool),
 	}
 }
 
@@ -48,9 +52,10 @@ type Kubelet struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	prom                       prometheus.Prometheus
-	charts                     *Charts
-	activeVolumeManagerPlugins map[string]bool
+	prom   prometheus.Prometheus
+	charts *Charts
+	// volume_manager_total_volumes
+	collectedVolumeManagerPlugins map[string]bool
 }
 
 // Cleanup makes cleanup.
@@ -58,8 +63,13 @@ func (Kubelet) Cleanup() {}
 
 // Init makes initialization.
 func (k *Kubelet) Init() bool {
-	if k.URL == "" {
-		k.Error("URL parameter is mandatory, please set")
+	if err := k.ParseUserURL(); err != nil {
+		k.Errorf("error on parsing url '%s' : %v", k.UserURL, err)
+		return false
+	}
+
+	if k.URL.Host == "" {
+		k.Error("URL is not set")
 		return false
 	}
 

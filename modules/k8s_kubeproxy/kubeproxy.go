@@ -16,6 +16,10 @@ const (
 
 func init() {
 	creator := module.Creator{
+		Defaults: module.Defaults{
+			// NETDATA_CHART_PRIO_CGROUPS_CONTAINERS        40000
+			Priority: 39900,
+		},
 		Create: func() module.Module { return New() },
 	}
 
@@ -26,7 +30,7 @@ func init() {
 func New() *KubeProxy {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{URL: defaultURL},
+			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
@@ -55,8 +59,13 @@ func (KubeProxy) Cleanup() {}
 
 // Init makes initialization.
 func (kp *KubeProxy) Init() bool {
-	if kp.URL == "" {
-		kp.Error("URL parameter is mandatory, please set")
+	if err := kp.ParseUserURL(); err != nil {
+		kp.Errorf("error on parsing url '%s' : %v", kp.UserURL, err)
+		return false
+	}
+
+	if kp.URL.Host == "" {
+		kp.Error("URL is not set")
 		return false
 	}
 

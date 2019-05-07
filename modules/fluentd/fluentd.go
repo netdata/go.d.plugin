@@ -25,12 +25,14 @@ const (
 
 // New creates Fluentd with default values.
 func New() *Fluentd {
+	config := Config{
+		HTTP: web.HTTP{
+			Request: web.Request{UserURL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+		}}
+
 	return &Fluentd{
-		Config: Config{
-			HTTP: web.HTTP{
-				Request: web.Request{URL: defaultURL},
-				Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
-			}},
+		Config:        config,
 		activePlugins: make(map[string]bool),
 		charts:        charts.Copy(),
 	}
@@ -57,7 +59,12 @@ func (Fluentd) Cleanup() {}
 
 // Init makes initialization.
 func (f *Fluentd) Init() bool {
-	if f.URL == "" {
+	if err := f.ParseUserURL(); err != nil {
+		f.Errorf("error on parsing url '%s' : %v", f.UserURL, err)
+		return false
+	}
+
+	if f.URL.Host == "" {
 		f.Error("URL is not set")
 		return false
 	}

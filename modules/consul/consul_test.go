@@ -18,19 +18,21 @@ var (
 )
 
 func TestNew(t *testing.T) {
-	mod := New()
+	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), New())
-	assert.NotNil(t, mod.charts)
-	assert.NotNil(t, mod.activeChecks)
-	assert.Equal(t, defaultMaxChecks, mod.MaxChecks)
+	assert.NotNil(t, job.charts)
+	assert.NotNil(t, job.activeChecks)
+	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
+	assert.Equal(t, defaultMaxChecks, job.MaxChecks)
 }
 
 func TestConsul_Init(t *testing.T) {
-	mod := New()
+	job := New()
 
-	assert.True(t, mod.Init())
-	assert.NotNil(t, mod.apiClient)
+	assert.True(t, job.Init())
+	assert.NotNil(t, job.apiClient)
 }
 
 func TestConsul_Check(t *testing.T) {
@@ -44,20 +46,20 @@ func TestConsul_Check(t *testing.T) {
 			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL}
+	job := New()
+	job.HTTP.Request = web.Request{UserURL: ts.URL}
 
-	require.True(t, mod.Init())
-	assert.True(t, mod.Check())
+	require.True(t, job.Init())
+	assert.True(t, job.Check())
 }
 
 func TestConsul_CheckNG(t *testing.T) {
-	mod := New()
+	job := New()
 
-	mod.HTTP.Request = web.Request{URL: "http://127.0.0.1:38001"}
+	job.HTTP.Request = web.Request{UserURL: "http://127.0.0.1:38001"}
 
-	require.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	require.True(t, job.Init())
+	assert.False(t, job.Check())
 }
 
 func TestConsul_Charts(t *testing.T) {
@@ -79,12 +81,12 @@ func TestConsul_Collect(t *testing.T) {
 			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL}
+	job := New()
+	job.HTTP.Request = web.Request{UserURL: ts.URL}
 
-	assert.True(t, mod.Init())
+	assert.True(t, job.Init())
 
-	metrics := mod.Collect()
+	metrics := job.Collect()
 	assert.NotNil(t, metrics)
 
 	expected := map[string]int64{
@@ -95,8 +97,8 @@ func TestConsul_Collect(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, metrics)
-	assert.Len(t, mod.charts.Get("service_checks").Dims, 1)
-	assert.Len(t, mod.charts.Get("unbound_checks").Dims, 3)
+	assert.Len(t, job.charts.Get("service_checks").Dims, 1)
+	assert.Len(t, job.charts.Get("unbound_checks").Dims, 3)
 }
 
 func TestConsul_InvalidData(t *testing.T) {
@@ -110,11 +112,11 @@ func TestConsul_InvalidData(t *testing.T) {
 			}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL}
+	job := New()
+	job.HTTP.Request = web.Request{UserURL: ts.URL}
 
-	require.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	require.True(t, job.Init())
+	assert.False(t, job.Check())
 }
 
 func TestConsul_404(t *testing.T) {
@@ -123,9 +125,9 @@ func TestConsul_404(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	mod := New()
-	mod.HTTP.Request = web.Request{URL: ts.URL}
+	job := New()
+	job.HTTP.Request = web.Request{UserURL: ts.URL}
 
-	require.True(t, mod.Init())
-	assert.False(t, mod.Check())
+	require.True(t, job.Init())
+	assert.False(t, job.Check())
 }

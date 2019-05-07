@@ -4,15 +4,16 @@ import (
 	"encoding/base64"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
 // Request is a struct that contains the fields that are needed to newHTTPClient *http.Request.
 type Request struct {
-	URI           string            `yaml:"-"`
-	URL           string            `yaml:"url" validate:"required,url"`
+	URL           *url.URL          `yaml:"-"`
+	UserURL       string            `yaml:"url"`
 	Body          string            `yaml:"body"`
-	Method        string            `yaml:"method" validate:"isdefault|oneof=GET POST HEAD PUT BATCH"`
+	Method        string            `yaml:"method"`
 	Headers       map[string]string `yaml:"headers"`
 	Username      string            `yaml:"username"`
 	Password      string            `yaml:"password"`
@@ -20,16 +21,44 @@ type Request struct {
 	ProxyPassword string            `yaml:"proxy_password"`
 }
 
-// NewHTTPRequest creates a new *http.Requests based Request fields
+// Copy makes full copy of Request.
+func (r Request) Copy() Request {
+	h := make(map[string]string)
+	for k, v := range r.Headers {
+		h[k] = v
+	}
+
+	var u *url.URL
+	if r.URL != nil {
+		u, _ = url.Parse(r.URL.String())
+	}
+
+	r.URL = u
+	r.Headers = h
+
+	return r
+}
+
+// ParseUserURL parses UserURL into *url.URL and sets URL.
+func (r *Request) ParseUserURL() (err error) {
+	r.URL, err = url.Parse(r.UserURL)
+	return err
+}
+
+// NewHTTPRequest creates a new *http.Requests based on Request fields
 // and returns *http.Requests and error if any encountered.
 func NewHTTPRequest(req Request) (*http.Request, error) {
 	var body io.Reader
-
 	if req.Body != "" {
 		body = strings.NewReader(req.Body)
 	}
 
-	httpReq, err := http.NewRequest(req.Method, joinURL(req.URL, req.URI), body)
+	var u = req.UserURL
+	if req.URL != nil {
+		u = req.URL.String()
+	}
+
+	httpReq, err := http.NewRequest(req.Method, u, body)
 	if err != nil {
 		return nil, err
 	}
@@ -39,9 +68,8 @@ func NewHTTPRequest(req Request) (*http.Request, error) {
 	}
 
 	if req.ProxyUsername != "" && req.ProxyPassword != "" {
-		httpReq.Header.Set(
-			"Proxy-Authorization",
-			"Basic "+base64.StdEncoding.EncodeToString([]byte(req.ProxyUsername+":"+req.ProxyPassword)))
+		basicAuth := base64.StdEncoding.EncodeToString([]byte(req.ProxyUsername + ":" + req.ProxyPassword))
+		httpReq.Header.Set("Proxy-Authorization", "Basic "+basicAuth)
 	}
 
 	for k, v := range req.Headers {
@@ -53,20 +81,4 @@ func NewHTTPRequest(req Request) (*http.Request, error) {
 	}
 
 	return httpReq, nil
-}
-
-func joinURL(url, uri string) string {
-	if uri == "" || url == "" {
-		return url
-	}
-
-	if strings.HasSuffix(url, "/") {
-		url = url[0 : len(url)-1]
-	}
-
-	if strings.HasPrefix(uri, "/") {
-		uri = uri[1:]
-	}
-
-	return url + "/" + uri
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-const pluginsURI = "/api/plugins.json"
+const pluginsPath = "/api/plugins.json"
 
 type pluginsInfo struct {
 	Payload []pluginData `json:"plugins"`
@@ -47,8 +47,7 @@ type apiClient struct {
 }
 
 func (a apiClient) getPluginsInfo() (*pluginsInfo, error) {
-	req, err := a.createRequest()
-
+	req, err := a.createRequest(pluginsPath)
 	if err != nil {
 		return nil, fmt.Errorf("error on creating request : %v", err)
 	}
@@ -71,38 +70,22 @@ func (a apiClient) getPluginsInfo() (*pluginsInfo, error) {
 	return &info, nil
 }
 
-func (a apiClient) doRequest(req *http.Request) (*http.Response, error) { return a.httpClient.Do(req) }
-
 func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
-	var (
-		resp *http.Response
-		err  error
-	)
-
-	if resp, err = a.doRequest(req); err != nil {
-		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
-
+	resp, err := a.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error on request: %v", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
 	}
-
-	return resp, err
+	return resp, nil
 }
 
-func (a apiClient) createRequest() (*http.Request, error) {
-	var (
-		req *http.Request
-		err error
-	)
-	a.request.URI = pluginsURI
-
-	if req, err = web.NewHTTPRequest(a.request); err != nil {
-		return nil, err
-	}
-
-	return req, nil
+func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
+	req := a.request.Copy()
+	req.URL.Path = urlPath
+	return web.NewHTTPRequest(req)
 }
 
 func closeBody(resp *http.Response) {

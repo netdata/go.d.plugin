@@ -25,7 +25,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.URL)
+	assert.Equal(t, defaultURL, job.UserURL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
@@ -39,7 +39,7 @@ func TestLogstash_Init(t *testing.T) {
 func TestLogstash_InitNG(t *testing.T) {
 	job := New()
 
-	job.HTTP.Request = web.Request{URL: ""}
+	job.HTTP.Request = web.Request{UserURL: ""}
 	assert.False(t, job.Init())
 }
 
@@ -47,7 +47,7 @@ func TestLogstash_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path == jvmStatusURI {
+				if r.URL.Path == jvmStatusPath {
 					_, _ = w.Write(jvmStatusData)
 					return
 				}
@@ -57,7 +57,7 @@ func TestLogstash_Check(t *testing.T) {
 
 	job := New()
 
-	job.HTTP.Request = web.Request{URL: ts.URL}
+	job.UserURL = ts.URL
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 }
@@ -65,7 +65,7 @@ func TestLogstash_Check(t *testing.T) {
 func TestLogstash_CheckNG(t *testing.T) {
 	job := New()
 
-	job.HTTP.Request = web.Request{URL: "http://127.0.0.1:38001"}
+	job.UserURL = "http://127.0.0.1:38001"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -78,7 +78,7 @@ func TestLogstash_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path == jvmStatusURI {
+				if r.URL.Path == jvmStatusPath {
 					_, _ = w.Write(jvmStatusData)
 					return
 				}
@@ -86,7 +86,7 @@ func TestLogstash_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.HTTP.Request = web.Request{URL: ts.URL}
+	job.UserURL = ts.URL
 
 	assert.True(t, job.Init())
 
@@ -115,7 +115,7 @@ func TestLogstash_InvalidData(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path == jvmStatusURI {
+				if r.URL.Path == jvmStatusPath {
 					_, _ = w.Write([]byte("hello and goodbye"))
 					return
 				}
@@ -123,7 +123,7 @@ func TestLogstash_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.HTTP.Request = web.Request{URL: ts.URL}
+	job.UserURL = ts.URL
 
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
@@ -136,7 +136,7 @@ func TestLogstash_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.HTTP.Request = web.Request{URL: ts.URL}
+	job.UserURL = ts.URL
 
 	require.True(t, job.Init())
 	assert.False(t, job.Check())

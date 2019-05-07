@@ -1,38 +1,67 @@
 package nginx
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-type stubStatus struct {
-	Active   int `stm:"active"`
-	Requests int `stm:"requests"`
-	Reading  int `stm:"reading"`
-	Writing  int `stm:"writing"`
-	Waiting  int `stm:"waiting"`
-	Accepts  int `stm:"accepts"`
-	Handled  int `stm:"handled"`
+const (
+	connActive  = "connActive"
+	connAccepts = "connAccepts"
+	connHandled = "connHandled"
+	requests    = "requests"
+	requestTime = "requestTime"
+	connReading = "connReading"
+	connWriting = "connWriting"
+	connWaiting = "connWaiting"
+)
+
+var (
+	nginxSeq = []string{
+		connActive,
+		connAccepts,
+		connHandled,
+		requests,
+		connReading,
+		connWriting,
+		connWaiting,
+	}
+	tengineSeq = []string{
+		connActive,
+		connAccepts,
+		connHandled,
+		requests,
+		requestTime,
+		connReading,
+		connWriting,
+		connWaiting,
+	}
+
+	reStatus = regexp.MustCompile(`^Active connections: ([0-9]+)\n[^\d]+([0-9]+) ([0-9]+) ([0-9]+) ?([0-9]+)?\nReading: ([0-9]+) Writing: ([0-9]+) Waiting: ([0-9]+)`)
+)
+
+func newAPIClient(client *http.Client, request web.Request) *apiClient {
+	return &apiClient{httpClient: client, request: request}
 }
 
 type apiClient struct {
-	req        web.Request
 	httpClient *http.Client
+	request    web.Request
 }
 
-func (a apiClient) stubStatus() (stubStatus, error) {
-	var status stubStatus
-
-	req, err := a.createRequest()
+func (a apiClient) getStubStatus() (*stubStatus, error) {
+	req, err := web.NewHTTPRequest(a.request)
 
 	if err != nil {
-		return status, fmt.Errorf("error on creating request : %v", err)
+		return nil, fmt.Errorf("error on creating request : %v", err)
 	}
 
 	resp, err := a.doRequestOK(req)
@@ -40,135 +69,22 @@ func (a apiClient) stubStatus() (stubStatus, error) {
 	defer closeBody(resp)
 
 	if err != nil {
-		return status, err
+		return nil, err
 	}
 
-	if err := a.parseResponse(resp, &status); err != nil {
-		return status, fmt.Errorf("error on parse response : %v", err)
+	status, err := parseStubStatus(resp.Body)
+
+	if err != nil {
+		return nil, fmt.Errorf("error on parsing response : %v", err)
 	}
 
 	return status, nil
 }
 
-func (a *apiClient) parseResponse(resp *http.Response, status *stubStatus) error {
-	// Active connections: 2
-	//server accepts handled requests
-	// 2 2 3
-	//Reading: 0 Writing: 1 Waiting: 1
-
-	b, err := ioutil.ReadAll(resp.Body)
-
-	if err != nil {
-		return err
-	}
-
-	lines := strings.Split(string(b), "\n")
-
-	if len(lines) < 4 {
-		return fmt.Errorf("unparsable data, expected 4 rows, got %d", len(lines))
-	}
-
-	if err := a.parseActiveConnections(lines[0], status); err != nil {
-		return err
-	}
-
-	if err := a.parseAcceptsHandledRequests(lines[2], status); err != nil {
-		return err
-	}
-
-	if err := a.parseReadWriteWait(lines[3], status); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (a *apiClient) parseActiveConnections(line string, status *stubStatus) error {
-	slice := strings.Fields(line)
-
-	if len(slice) != 3 {
-		return fmt.Errorf("not enough fields in %s", line)
-	}
-
-	v, err := strconv.Atoi(slice[2])
-	if err != nil {
-		return err
-	}
-
-	status.Active = v
-
-	return nil
-}
-
-func (a *apiClient) parseAcceptsHandledRequests(line string, status *stubStatus) error {
-	slice := strings.Fields(line)
-
-	if len(slice) != 3 {
-		return fmt.Errorf("not enough fields in %s", line)
-	}
-
-	v, err := strconv.Atoi(slice[0])
-	if err != nil {
-		return err
-	}
-	status.Accepts = v
-
-	v, err = strconv.Atoi(slice[1])
-	if err != nil {
-		return err
-	}
-	status.Handled = v
-
-	v, err = strconv.Atoi(slice[2])
-	if err != nil {
-		return err
-	}
-	status.Requests = v
-
-	return nil
-}
-
-func (a *apiClient) parseReadWriteWait(line string, status *stubStatus) error {
-	slice := strings.Fields(line)
-
-	if len(slice) != 6 {
-		return fmt.Errorf("not enough fields in %s", line)
-	}
-
-	v, err := strconv.Atoi(slice[1])
-	if err != nil {
-		return err
-	}
-	status.Reading = v
-
-	v, err = strconv.Atoi(slice[3])
-	if err != nil {
-		return err
-	}
-	status.Writing = v
-
-	v, err = strconv.Atoi(slice[5])
-	if err != nil {
-		return err
-	}
-	status.Waiting = v
-
-	return nil
-}
-
-func (a apiClient) doRequest(req *http.Request) (*http.Response, error) {
-	return a.httpClient.Do(req)
-}
-
 func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
-	var (
-		resp *http.Response
-		err  error
-	)
-
-	if resp, err = a.doRequest(req); err != nil {
-		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
-
+	resp, err := a.httpClient.Do(req)
+	if err != nil {
+		return resp, fmt.Errorf("error on request : %v", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -178,22 +94,78 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-func (a apiClient) createRequest() (*http.Request, error) {
-	var (
-		req *http.Request
-		err error
-	)
-
-	if req, err = web.NewHTTPRequest(a.req); err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 func closeBody(resp *http.Response) {
 	if resp != nil && resp.Body != nil {
 		_, _ = io.Copy(ioutil.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
+}
+
+func parseStubStatus(r io.Reader) (*stubStatus, error) {
+	sc := bufio.NewScanner(r)
+	var lines []string
+
+	for sc.Scan() {
+		lines = append(lines, strings.Trim(sc.Text(), "\r\n "))
+	}
+
+	parsed := reStatus.FindStringSubmatch(strings.Join(lines, "\n"))
+
+	if len(parsed) == 0 {
+		return nil, fmt.Errorf("can't parse '%v'", lines)
+	}
+
+	parsed = parsed[1:]
+
+	var (
+		seq    []string
+		status stubStatus
+	)
+
+	switch len(parsed) {
+	default:
+		return nil, fmt.Errorf("invalid number of fields, got %d, expect %d or %d", len(parsed), len(nginxSeq), len(tengineSeq))
+	case len(nginxSeq):
+		seq = nginxSeq
+	case len(tengineSeq):
+		seq = tengineSeq
+	}
+
+	for i, key := range seq {
+		strValue := parsed[i]
+		if strValue == "" {
+			continue
+		}
+		value := mustParseInt(strValue)
+		switch key {
+		default:
+			return nil, fmt.Errorf("unknown key in seq : %s", key)
+		case connActive:
+			status.Connections.Active = value
+		case connAccepts:
+			status.Connections.Accepts = value
+		case connHandled:
+			status.Connections.Handled = value
+		case requests:
+			status.Requests.Total = value
+		case connReading:
+			status.Connections.Reading = value
+		case connWriting:
+			status.Connections.Writing = value
+		case connWaiting:
+			status.Connections.Waiting = value
+		case requestTime:
+			status.Requests.Time = &value
+		}
+	}
+
+	return &status, nil
+}
+
+func mustParseInt(value string) int64 {
+	v, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return v
 }

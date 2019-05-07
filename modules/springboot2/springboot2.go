@@ -4,6 +4,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
+
 	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
@@ -35,7 +37,10 @@ func New() *SpringBoot2 {
 type SpringBoot2 struct {
 	module.Base
 
-	web.HTTP `yaml:",inline"`
+	web.HTTP  `yaml:",inline"`
+	URIFilter matcher.SimpleExpr `yaml:"uri_filter"`
+
+	uriFilter matcher.Matcher
 
 	prom prometheus.Prometheus
 }
@@ -74,6 +79,11 @@ func (s *SpringBoot2) Init() bool {
 		s.Error(err)
 		return false
 	}
+	s.uriFilter, err = s.URIFilter.Parse()
+	if err != nil && err != matcher.ErrEmptyExpr {
+		s.Error(err)
+		return false
+	}
 	s.prom = prometheus.New(client, s.Request)
 	return true
 }
@@ -82,7 +92,7 @@ func (s *SpringBoot2) Init() bool {
 func (s *SpringBoot2) Check() bool {
 	rawMetrics, err := s.prom.Scrape()
 	if err != nil {
-		s.Error(err)
+		s.Warning(err)
 		return false
 	}
 	jvmMemory := rawMetrics.FindByName("jvm_memory_used_bytes")
@@ -108,7 +118,7 @@ func (s *SpringBoot2) Collect() map[string]int64 {
 	m.Uptime.Set(rawMetrics.FindByName("process_uptime_seconds").Max())
 
 	// response
-	gatherResponse(rawMetrics, &m)
+	s.gatherResponse(rawMetrics, &m)
 
 	// threads
 	m.ThreadsDaemon.Set(rawMetrics.FindByNames("jvm_threads_daemon", "jvm_threads_daemon_threads").Max())
@@ -137,8 +147,15 @@ func gatherHeap(rawMetrics prometheus.Metrics, m *heap) {
 	}
 }
 
-func gatherResponse(rawMetrics prometheus.Metrics, m *metrics) {
+func (s *SpringBoot2) gatherResponse(rawMetrics prometheus.Metrics, m *metrics) {
 	for _, metric := range rawMetrics.FindByName("http_server_requests_seconds_count") {
+		if s.uriFilter != nil {
+			uri := metric.Labels.Get("uri")
+			if !s.uriFilter.MatchString(uri) {
+				continue
+			}
+		}
+
 		status := metric.Labels.Get("status")
 		if status == "" {
 			continue

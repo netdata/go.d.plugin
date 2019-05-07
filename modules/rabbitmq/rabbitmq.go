@@ -11,8 +11,10 @@ import (
 
 func init() {
 	creator := module.Creator{
-		DisabledByDefault: true,
-		Create:            func() module.Module { return New() },
+		Defaults: module.Defaults{
+			Disabled: true,
+		},
+		Create: func() module.Module { return New() },
 	}
 
 	module.Register("rabbitmq", creator)
@@ -25,35 +27,45 @@ const (
 	defaultHTTPTimeout = time.Second
 )
 
-// New creates Rabbitmq with default values
-func New() *Rabbitmq {
-	return &Rabbitmq{
+// New creates RabbitMQ with default values.
+func New() *RabbitMQ {
+	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				URL:      defaultURL,
+				UserURL:  defaultURL,
 				Username: defaultUsername,
 				Password: defaultPassword,
 			},
 			Client: web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
+
+	return &RabbitMQ{Config: config}
 }
 
-// Rabbitmq rabbitmq module.
-type Rabbitmq struct {
-	module.Base
-
+// Config is the RabbitMQ module configuration.
+type Config struct {
 	web.HTTP `yaml:",inline"`
+}
 
+// RabbitMQ RabbitMQ module.
+type RabbitMQ struct {
+	module.Base
+	Config    `yaml:",inline"`
 	apiClient *apiClient
 }
 
 // Cleanup makes cleanup.
-func (Rabbitmq) Cleanup() {}
+func (RabbitMQ) Cleanup() {}
 
 // Init makes initialization.
-func (r *Rabbitmq) Init() bool {
-	if r.URL == "" {
+func (r *RabbitMQ) Init() bool {
+	if err := r.ParseUserURL(); err != nil {
+		r.Errorf("error on parsing url '%s' : %v", r.UserURL, err)
+		return false
+	}
+
+	if r.URL.Host == "" {
 		r.Error("URL is not set")
 		return false
 	}
@@ -65,10 +77,7 @@ func (r *Rabbitmq) Init() bool {
 		return false
 	}
 
-	r.apiClient = &apiClient{
-		req:        r.Request,
-		httpClient: client,
-	}
+	r.apiClient = newAPIClient(client, r.Request)
 
 	r.Debugf("using URL %s", r.URL)
 	r.Debugf("using timeout: %s", r.Timeout.Duration)
@@ -77,17 +86,17 @@ func (r *Rabbitmq) Init() bool {
 }
 
 // Check makes check.
-func (r *Rabbitmq) Check() bool {
+func (r *RabbitMQ) Check() bool {
 	return len(r.Collect()) > 0
 }
 
 // Charts creates Charts.
-func (Rabbitmq) Charts() *Charts {
+func (RabbitMQ) Charts() *Charts {
 	return charts.Copy()
 }
 
 // Collect collects stats.
-func (r *Rabbitmq) Collect() map[string]int64 {
+func (r *RabbitMQ) Collect() map[string]int64 {
 	var (
 		overview overview
 		node     node

@@ -115,6 +115,14 @@ var charts = Charts{
 		},
 	},
 	{
+		ID:    "kubelet_pods_log_filesystem_used_bytes",
+		Title: "Bytes Used By The Pod Logs On The Filesystem",
+		Units: "B",
+		Fam:   "pods",
+		Ctx:   "k8s_kubelet.kubelet_pods_log_filesystem_used_bytes",
+		Type:  module.Stacked,
+	},
+	{
 		ID:    "kubelet_runtime_operations",
 		Title: "Runtime Operations By Type",
 		Units: "operations/s",

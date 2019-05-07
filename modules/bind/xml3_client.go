@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+	"path"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
@@ -40,7 +41,10 @@ type xml3Client struct {
 }
 
 func (c xml3Client) serverStats() (*serverStats, error) {
-	req := c.createRequest("/server")
+	r := c.request.Copy()
+	r.URL.Path = path.Join(r.URL.Path, "/server")
+	req, _ := web.NewHTTPRequest(r)
+
 	resp, err := c.httpClient.Do(req)
 
 	if err != nil {
@@ -60,12 +64,6 @@ func (c xml3Client) serverStats() (*serverStats, error) {
 	}
 
 	return convertXML(stats), nil
-}
-
-func (c xml3Client) createRequest(uri string) *http.Request {
-	c.request.URI = uri
-	req, _ := web.NewHTTPRequest(c.request)
-	return req
 }
 
 func convertXML(xmlStats xml3Stats) *serverStats {

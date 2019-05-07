@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	jvmStatusURI = "/_node/stats/jvm"
+	jvmStatusPath = "/_node/stats/jvm"
 )
 
 type jvmStats struct {
@@ -55,15 +55,19 @@ type gcCollector struct {
 	CollectionCount        int `json:"collection_count" stm:"collection_count"`
 }
 
+func newAPIClient(client *http.Client, request web.Request) *apiClient {
+	return &apiClient{httpClient: client, request: request}
+}
+
 type apiClient struct {
-	req        web.Request
 	httpClient *http.Client
+	request    web.Request
 }
 
 func (a apiClient) jvmStats() (*jvmStats, error) {
 	var stats jvmStats
 
-	req, err := a.createRequest(jvmStatusURI)
+	req, err := a.createRequest(jvmStatusPath)
 
 	if err != nil {
 		return nil, err
@@ -84,17 +88,13 @@ func (a apiClient) jvmStats() (*jvmStats, error) {
 	return &stats, nil
 }
 
-func (a apiClient) doRequest(req *http.Request) (*http.Response, error) {
-	return a.httpClient.Do(req)
-}
-
 func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	var (
 		resp *http.Response
 		err  error
 	)
 
-	if resp, err = a.doRequest(req); err != nil {
+	if resp, err = a.httpClient.Do(req); err != nil {
 		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
 
 	}
@@ -106,19 +106,10 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-func (a apiClient) createRequest(uri string) (*http.Request, error) {
-	var (
-		req *http.Request
-		err error
-	)
-
-	a.req.URI = uri
-
-	if req, err = web.NewHTTPRequest(a.req); err != nil {
-		return nil, err
-	}
-
-	return req, nil
+func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
+	req := a.request.Copy()
+	req.URL.Path = urlPath
+	return web.NewHTTPRequest(req)
 }
 
 func closeBody(resp *http.Response) {

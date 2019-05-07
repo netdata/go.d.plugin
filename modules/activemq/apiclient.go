@@ -40,17 +40,26 @@ type stats struct {
 	DequeueCount  int64    `xml:"dequeueCount,attr"`
 }
 
+const pathStats = "/%s/xml/%s.jsp"
+
+func newAPIClient(client *http.Client, request web.Request, webadmin string) *apiClient {
+	return &apiClient{
+		httpClient: client,
+		request:    request,
+		webadmin:   webadmin,
+	}
+}
+
 type apiClient struct {
-	webadmin   string
-	req        web.Request
 	httpClient *http.Client
+	request    web.Request
+	webadmin   string
 }
 
 func (a *apiClient) getQueues() (*queues, error) {
-	req, err := a.createRequest(fmt.Sprintf(uriStats, a.webadmin, keyQueues))
-
+	req, err := a.createRequest(fmt.Sprintf(pathStats, a.webadmin, keyQueues))
 	if err != nil {
-		return nil, fmt.Errorf("error on creating request : %v", err)
+		return nil, fmt.Errorf("error on creating request '%s' : %v", a.request.URL, err)
 	}
 
 	resp, err := a.doRequestOK(req)
@@ -71,10 +80,9 @@ func (a *apiClient) getQueues() (*queues, error) {
 }
 
 func (a *apiClient) getTopics() (*topics, error) {
-	req, err := a.createRequest(fmt.Sprintf(uriStats, a.webadmin, keyTopics))
-
+	req, err := a.createRequest(fmt.Sprintf(pathStats, a.webadmin, keyTopics))
 	if err != nil {
-		return nil, fmt.Errorf("error on creating request : %v", err)
+		return nil, fmt.Errorf("error on creating request '%s' : %v", a.request.URL, err)
 	}
 
 	resp, err := a.doRequestOK(req)
@@ -94,19 +102,10 @@ func (a *apiClient) getTopics() (*topics, error) {
 	return &topics, nil
 }
 
-func (a apiClient) doRequest(req *http.Request) (*http.Response, error) {
-	return a.httpClient.Do(req)
-}
-
 func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
-	var (
-		resp *http.Response
-		err  error
-	)
-
-	if resp, err = a.doRequest(req); err != nil {
+	resp, err := a.httpClient.Do(req)
+	if err != nil {
 		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
-
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -116,19 +115,11 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-func (a apiClient) createRequest(uri string) (*http.Request, error) {
-	var (
-		req *http.Request
-		err error
-	)
+func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
+	req := a.request.Copy()
+	req.URL.Path = urlPath
 
-	a.req.URI = uri
-
-	if req, err = web.NewHTTPRequest(a.req); err != nil {
-		return nil, err
-	}
-
-	return req, nil
+	return web.NewHTTPRequest(req)
 }
 
 func closeBody(resp *http.Response) {

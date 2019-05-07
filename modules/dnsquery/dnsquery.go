@@ -15,9 +15,10 @@ import (
 
 func init() {
 	creator := module.Creator{
-		DisabledByDefault: true,
-		UpdateEvery:       5,
-		Create:            func() module.Module { return New() },
+		Defaults: module.Defaults{
+			UpdateEvery: 5,
+		},
+		Create: func() module.Module { return New() },
 	}
 
 	module.Register("dns_query", creator)
