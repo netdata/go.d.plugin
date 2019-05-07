@@ -18,8 +18,7 @@ func init() {
 }
 
 const (
-	// defaultURL         = "https://127.0.0.1"
-	defaultURL         = "https://100.127.0.201"
+	defaultURL         = "https://127.0.0.1"
 	defaultHTTPTimeout = time.Second * 2
 )
 
@@ -27,12 +26,8 @@ const (
 func New() *ScaleIO {
 	config := Config{
 		HTTP: web.HTTP{
-			// Request: web.Request{UserURL: defaultURL},
-			Request: web.Request{UserURL: defaultURL, Username: "admin", Password: "Admin1!"},
-			Client: web.Client{
-				Timeout:         web.Duration{Duration: defaultHTTPTimeout},
-				ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true}, // TODO: remove
-			},
+			Request: web.Request{UserURL: defaultURL},
+			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
 	return &ScaleIO{Config: config}
@@ -74,6 +69,11 @@ func (s *ScaleIO) Init() bool {
 
 	if s.URL.Host == "" {
 		s.Error("URL is not set")
+		return false
+	}
+
+	if s.Username == "" || s.Password == "" {
+		s.Error("username and password aren't set")
 		return false
 	}
 
