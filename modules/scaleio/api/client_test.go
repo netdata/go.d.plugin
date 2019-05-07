@@ -17,7 +17,7 @@ const (
 )
 
 func TestNewClient(t *testing.T) {
-	client := NewClient(&http.Client{}, web.Request{})
+	client, _ := NewClient(web.Client{}, web.Request{})
 	assert.IsType(t, (*Client)(nil), client)
 	assert.NotNil(t, client.httpClient)
 	assert.NotNil(t, client.token)
@@ -27,10 +27,7 @@ func TestClient_IsLoggedIn(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
-	req := web.Request{UserURL: ts.URL}
-	_ = req.ParseUserURL()
-
-	client := NewClient(&http.Client{}, req)
+	client, _ := NewClient(web.Client{}, web.Request{UserURL: ts.URL})
 
 	require.NoError(t, client.Login())
 	assert.True(t, client.IsLoggedIn())
@@ -40,10 +37,7 @@ func TestClient_Login(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
-	req := web.Request{UserURL: ts.URL}
-	_ = req.ParseUserURL()
-
-	client := NewClient(&http.Client{}, req)
+	client, _ := NewClient(web.Client{}, web.Request{UserURL: ts.URL})
 
 	require.NoError(t, client.Login())
 	assert.Equal(t, testToken, client.token.get())
@@ -53,10 +47,7 @@ func TestClient_Logout(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
-	req := web.Request{UserURL: ts.URL}
-	_ = req.ParseUserURL()
-
-	client := NewClient(&http.Client{}, req)
+	client, _ := NewClient(web.Client{}, web.Request{UserURL: ts.URL})
 
 	require.NoError(t, client.Login())
 	require.True(t, client.IsLoggedIn())
@@ -68,10 +59,7 @@ func TestClient_GetAPIVersion(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
-	req := web.Request{UserURL: ts.URL}
-	_ = req.ParseUserURL()
-
-	client := NewClient(&http.Client{}, req)
+	client, _ := NewClient(web.Client{}, web.Request{UserURL: ts.URL})
 
 	ver, err := client.GetAPIVersion()
 	require.NoError(t, err)
@@ -82,10 +70,8 @@ func TestClient_GetSelectedStatistics(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
-	req := web.Request{UserURL: ts.URL}
-	_ = req.ParseUserURL()
+	client, _ := NewClient(web.Client{}, web.Request{UserURL: ts.URL})
 
-	client := NewClient(&http.Client{}, req)
 	require.NoError(t, client.Login())
 	dst := &struct {
 		A, B int
