@@ -9,7 +9,7 @@ Module was tested on:
 
 ### charts/collected metrics
 
-Please see [CHARTS.md](https://github.com/netdata/go.d.plugin/blob/master/modules/scaleio/charts.go) 
+Please see [CHARTS.md](https://github.com/netdata/go.d.plugin/blob/master/modules/scaleio/CHARTS.md) 
  
 ### configuration
 
