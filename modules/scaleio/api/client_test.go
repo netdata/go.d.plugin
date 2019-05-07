@@ -1,9 +1,6 @@
 package api
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,6 +11,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	testToken   = "token"
+	testVersion = "2.5"
+)
+
 func TestNewClient(t *testing.T) {
 	client := NewClient(&http.Client{}, web.Request{})
 	assert.IsType(t, (*Client)(nil), client)
@@ -22,18 +24,7 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestClient_IsLoggedIn(t *testing.T) {
-	secret := "secret token"
-
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				switch r.URL.Path {
-				default:
-					w.WriteHeader(http.StatusBadRequest)
-				case PATHLogin:
-					_, _ = w.Write([]byte(secret))
-				}
-			}))
+	ts := newTestServer()
 	defer ts.Close()
 
 	req := web.Request{UserURL: ts.URL}
@@ -43,22 +34,10 @@ func TestClient_IsLoggedIn(t *testing.T) {
 
 	require.NoError(t, client.Login())
 	assert.True(t, client.IsLoggedIn())
-
 }
 
 func TestClient_Login(t *testing.T) {
-	secret := "secret token"
-
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				switch r.URL.Path {
-				default:
-					w.WriteHeader(http.StatusBadRequest)
-				case PATHLogin:
-					_, _ = w.Write([]byte(secret))
-				}
-			}))
+	ts := newTestServer()
 	defer ts.Close()
 
 	req := web.Request{UserURL: ts.URL}
@@ -67,23 +46,11 @@ func TestClient_Login(t *testing.T) {
 	client := NewClient(&http.Client{}, req)
 
 	require.NoError(t, client.Login())
-	assert.Equal(t, secret, client.token.get())
+	assert.Equal(t, testToken, client.token.get())
 }
 
 func TestClient_Logout(t *testing.T) {
-	secret := "secret token"
-
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				switch r.URL.Path {
-				default:
-					w.WriteHeader(http.StatusBadRequest)
-				case PATHLogin:
-					_, _ = w.Write([]byte(secret))
-				case PATHLogout:
-				}
-			}))
+	ts := newTestServer()
 	defer ts.Close()
 
 	req := web.Request{UserURL: ts.URL}
@@ -98,16 +65,7 @@ func TestClient_Logout(t *testing.T) {
 }
 
 func TestClient_GetAPIVersion(t *testing.T) {
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				switch r.URL.Path {
-				default:
-					w.WriteHeader(http.StatusBadRequest)
-				case PATHVersion:
-					_, _ = w.Write([]byte("2.5"))
-				}
-			}))
+	ts := newTestServer()
 	defer ts.Close()
 
 	req := web.Request{UserURL: ts.URL}
@@ -121,56 +79,7 @@ func TestClient_GetAPIVersion(t *testing.T) {
 }
 
 func TestClient_GetSelectedStatistics(t *testing.T) {
-	secret := "secret token"
-	query := "{query: query}"
-
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				switch r.URL.Path {
-				default:
-					w.WriteHeader(http.StatusBadRequest)
-				case PATHLogin:
-					_, _ = w.Write([]byte(secret))
-				case PATHSelectedStatistics:
-					_, pass, _ := r.BasicAuth()
-					bs, _ := ioutil.ReadAll(r.Body)
-					ct := r.Header.Get("Content-Type")
-
-					switch {
-					default:
-						_, _ = w.Write([]byte(`{"A": 1, "B": 2}`))
-					case string(bs) != query:
-						err := apiError{
-							Message: fmt.Sprintf("wrong query, expect %s, got %s", query, string(bs)),
-						}
-						b, _ := json.Marshal(err)
-						w.WriteHeader(http.StatusBadRequest)
-						_, _ = w.Write(b)
-					case r.Method != http.MethodPost:
-						err := apiError{
-							Message: fmt.Sprintf("wrong req method, expect %s, got %s", http.MethodPost, r.Method),
-						}
-						b, _ := json.Marshal(err)
-						w.WriteHeader(http.StatusBadRequest)
-						_, _ = w.Write(b)
-					case pass != secret:
-						err := apiError{
-							Message: fmt.Sprintf("wrong password, expect %s, got %s", secret, pass),
-						}
-						b, _ := json.Marshal(err)
-						w.WriteHeader(http.StatusBadRequest)
-						_, _ = w.Write(b)
-					case ct != "application/json":
-						err := apiError{
-							Message: fmt.Sprintf("wrong content type, expect %s, got %s", "application/json", ct),
-						}
-						b, _ := json.Marshal(err)
-						w.WriteHeader(http.StatusBadRequest)
-						_, _ = w.Write(b)
-					}
-				}
-			}))
+	ts := newTestServer()
 	defer ts.Close()
 
 	req := web.Request{UserURL: ts.URL}
@@ -181,7 +90,25 @@ func TestClient_GetSelectedStatistics(t *testing.T) {
 	dst := &struct {
 		A, B int
 	}{}
-	require.NoError(t, client.GetSelectedStatistics(dst, query))
+	require.NoError(t, client.GetSelectedStatistics(dst, ""))
 	assert.Equal(t, 1, dst.A)
 	assert.Equal(t, 2, dst.B)
+}
+
+func newTestServer() *httptest.Server {
+	handle := func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		default:
+			w.WriteHeader(http.StatusBadRequest)
+		case PATHLogin:
+			_, _ = w.Write([]byte(testToken))
+		case PATHLogout:
+		case PATHVersion:
+			_, _ = w.Write([]byte(testVersion))
+		case PATHSelectedStatistics:
+			_, _ = w.Write([]byte(`{"A": 1, "B": 2}`))
+		}
+	}
+
+	return httptest.NewServer(http.HandlerFunc(handle))
 }
