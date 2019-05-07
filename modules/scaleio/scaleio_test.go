@@ -19,13 +19,15 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	//assert.Equal(t, defaultURL, job.UserURL)
-	//assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
+	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
 func TestScaleIO_Init(t *testing.T) {
 	job := New()
 	job.UserURL = "http://127.0.0.1:38001"
+	job.Username = "username"
+	job.Password = "password"
 
 	require.True(t, job.Init())
 	assert.NotNil(t, job.apiClient)
@@ -34,13 +36,14 @@ func TestScaleIO_Init(t *testing.T) {
 func TestScaleIO_InitNG(t *testing.T) {
 	job := New()
 
-	require.True(t, job.Init())
-	assert.NotNil(t, job.apiClient)
+	assert.False(t, job.Init())
 }
 
 func TestScaleIO_Check(t *testing.T) {
 	job := New()
 	job.UserURL = "http://127.0.0.1:38001"
+	job.Username = "username"
+	job.Password = "password"
 
 	require.True(t, job.Init())
 	job.apiClient = &okAPIClient{}
@@ -50,6 +53,8 @@ func TestScaleIO_Check(t *testing.T) {
 func TestScaleIO_CheckNG(t *testing.T) {
 	job := New()
 	job.UserURL = "http://127.0.0.1:38001"
+	job.Username = "username"
+	job.Password = "password"
 
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
@@ -60,6 +65,8 @@ func TestScaleIO_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
 func TestScaleIO_Cleanup(t *testing.T) {
 	job := New()
 	job.UserURL = "http://127.0.0.1:38001"
+	job.Username = "username"
+	job.Password = "password"
 
 	require.True(t, job.Init())
 	job.apiClient = &okAPIClient{}
@@ -73,6 +80,8 @@ func TestScaleIO_Cleanup(t *testing.T) {
 func TestScaleIO_Collect(t *testing.T) {
 	job := New()
 	job.UserURL = "http://127.0.0.1:38001"
+	job.Username = "username"
+	job.Password = "password"
 
 	require.True(t, job.Init())
 	job.apiClient = &okAPIClient{}
