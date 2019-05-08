@@ -15,6 +15,7 @@ var charts = Charts{
 		Title: "Container Actions",
 		Units: "actions/s",
 		Fam:   "containers",
+		Ctx:   "docker_engine.engine_daemon_container_actions",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "container_actions_changes", Name: "changes", Algo: module.Incremental},
@@ -29,6 +30,7 @@ var charts = Charts{
 		Title: "Containers In Various States",
 		Units: "count",
 		Fam:   "containers",
+		Ctx:   "docker_engine.engine_daemon_container_states_containers",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "container_states_running", Name: "running"},
@@ -41,6 +43,7 @@ var charts = Charts{
 		Title: "Builder Builds Fails By Reason",
 		Units: "fails/s",
 		Fam:   "builder",
+		Ctx:   "docker_engine.builder_builds_failed_total",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "builder_fails_build_canceled", Name: "build_canceled", Algo: module.Incremental},
@@ -58,8 +61,78 @@ var charts = Charts{
 		Title: "Health Checks",
 		Units: "events/s",
 		Fam:   "health checks",
+		Ctx:   "docker_engine.engine_daemon_health_checks_failed_total",
 		Dims: Dims{
 			{ID: "health_checks_failed", Name: "fails", Algo: module.Incremental},
+		},
+	},
+}
+
+var swarmManagerCharts = Charts{
+	{
+		ID:    "swarm_manager_is_leader",
+		Title: "Swarm Manager Leader",
+		Units: "bool",
+		Fam:   "swarm",
+		Ctx:   "docker_engine.swarm_manager_is_leader",
+		Dims: Dims{
+			{ID: "swarm_manager_leader", Name: "is_leader"},
+		},
+	},
+	{
+		ID:    "swarm_manager_nodes_total",
+		Title: "Swarm Manager Nodes Total",
+		Units: "count",
+		Fam:   "swarm",
+		Ctx:   "docker_engine.swarm_manager_nodes_total",
+		Dims: Dims{
+			{ID: "swarm_manager_nodes_total", Name: "nodes"},
+		},
+	},
+	{
+		ID:    "swarm_manager_nodes_per_state",
+		Title: "Swarm Manager Nodes Per State",
+		Units: "count",
+		Fam:   "swarm",
+		Ctx:   "docker_engine.swarm_manager_nodes_per_state",
+		Dims: Dims{
+			{ID: "swarm_manager_nodes_state_ready", Name: "ready"},
+			{ID: "swarm_manager_nodes_state_down", Name: "down"},
+			{ID: "swarm_manager_nodes_state_unknown", Name: "unknown"},
+			{ID: "swarm_manager_nodes_state_disconnected", Name: "disconnected"},
+		},
+	},
+	{
+		ID:    "swarm_manager_services_total",
+		Title: "Swarm Manager Services Total",
+		Units: "count",
+		Fam:   "swarm",
+		Ctx:   "docker_engine.swarm_manager_services_total",
+		Dims: Dims{
+			{ID: "swarm_manager_services_total", Name: "services"},
+		},
+	},
+	{
+		ID:    "swarm_manager_services_per_state",
+		Title: "Swarm Manager Services Per State",
+		Units: "count",
+		Fam:   "swarm",
+		Ctx:   "docker_engine.swarm_manager_services_per_state",
+		Dims: Dims{
+			{ID: "swarm_manager_services_state_running", Name: "running"},
+			{ID: "swarm_manager_services_state_failed", Name: "failed"},
+			{ID: "swarm_manager_services_state_ready", Name: "ready"},
+			{ID: "swarm_manager_services_state_rejected", Name: "rejected"},
+			{ID: "swarm_manager_services_state_starting", Name: "starting"},
+			{ID: "swarm_manager_services_state_shutdown", Name: "shutdown"},
+			{ID: "swarm_manager_services_state_new", Name: "new"},
+			{ID: "swarm_manager_services_state_orphaned", Name: "orphaned"},
+			{ID: "swarm_manager_services_state_preparing", Name: "preparing"},
+			{ID: "swarm_manager_services_state_pending", Name: "pending"},
+			{ID: "swarm_manager_services_state_complete", Name: "complete"},
+			{ID: "swarm_manager_services_state_remove", Name: "remove"},
+			{ID: "swarm_manager_services_state_accepted", Name: "accepted"},
+			{ID: "swarm_manager_services_state_assigned", Name: "assigned"},
 		},
 	},
 }
