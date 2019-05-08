@@ -33,6 +33,42 @@ It produces the following charts:
 4. **Health Checks** in events/s
  * fails
 
+<br>
+
+If docker in [swarm mode](https://docs.docker.com/engine/swarm/) and the instance is swarm manager additional charts will be added:
+
+1. **Swarm Manager Leader** in bool
+ * is_leader
+
+2. **Swarm Manager Object Store** in count
+ * nodes
+ * services
+ * tasks
+ * networks
+ * secrets
+ * configs
+ 
+3. **Swarm Manager Nodes Per State** in count
+ * ready
+ * down
+ * unknown
+ * disconnected
+ 
+4. **Swarm Manager Tasks Per State** in count
+ * running
+ * failed
+ * ready
+ * rejected
+ * starting
+ * shutdown
+ * new
+ * orphaned
+ * preparing
+ * pending
+ * complete
+ * remove
+ * accepted
+ * assigned
 
 ### configuration
 
