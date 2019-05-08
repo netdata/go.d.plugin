@@ -2,114 +2,91 @@ package openvpn
 
 import (
 	"fmt"
-	"regexp"
-	"strconv"
-	"strings"
+	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/stm"
+	"github.com/netdata/go.d.plugin/modules/openvpn/client"
 )
-
-var (
-	reLoadStats = regexp.MustCompile(`^SUCCESS: nclients=([0-9]+),bytesin=([0-9]+),bytesout=([0-9]+)`)
-	reVersion   = regexp.MustCompile(`^OpenVPN Version: OpenVPN ([0-9]+)\.([0-9]+)\.([0-9]+) .+Management Version: ([0-9])`)
-)
-
-type loadStats struct {
-	Clients  int `stm:"clients"`
-	BytesIn  int `stm:"bytes_in"`
-	BytesOut int `stm:"bytes_out"`
-}
-
-type version struct {
-	major      int
-	minor      int
-	patch      int
-	management int
-}
 
 func (o *OpenVPN) collect() (map[string]int64, error) {
-	if !o.apiClient.isConnected() {
-		err := o.apiClient.reconnect()
-		if err != nil {
+	var err error
+	if !o.apiClient.IsConnected() {
+		if err = o.apiClient.Connect(); err != nil {
 			return nil, err
 		}
 	}
-	ls, err := o.collectLoadStats()
-	if err != nil {
-		_ = o.apiClient.disconnect()
+
+	defer func() {
+		if err != nil {
+			_ = o.apiClient.Disconnect()
+		}
+	}()
+
+	mx := make(map[string]int64)
+
+	if err = o.collectLoadStats(mx); err != nil {
 		return nil, err
 	}
 
-	return stm.ToMap(ls), nil
+	if o.perUserMatcher != nil {
+		if err = o.collectUsers(mx); err != nil {
+			return nil, err
+		}
+	}
+
+	return mx, nil
 }
 
-func (o *OpenVPN) collectVersion() (*version, error) {
-	err := o.apiClient.send(commandVersion)
+func (o *OpenVPN) collectLoadStats(mx map[string]int64) error {
+	stats, err := o.apiClient.GetLoadStats()
 	if err != nil {
-		return nil, fmt.Errorf("error on sending command : %v", err)
+		return err
 	}
 
-	resp, err := o.apiClient.read(func(s string) bool { return strings.HasSuffix(s, "END") })
-	if err != nil {
-		return nil, fmt.Errorf("error on reading response : %v", err)
-	}
+	mx["clients"] = stats.NumOfClients
+	mx["bytes_in"] = stats.BytesIn
+	mx["bytes_out"] = stats.BytesOut
 
-	ver, err := parseVersion(resp)
-	if err != nil {
-		return nil, fmt.Errorf("error on parsing response : %v", err)
-	}
-
-	return ver, nil
+	return nil
 }
 
-func (o *OpenVPN) collectLoadStats() (*loadStats, error) {
-	err := o.apiClient.send(commandLoadStats)
+func (o *OpenVPN) collectUsers(mx map[string]int64) error {
+	users, err := o.apiClient.GetUsers()
 	if err != nil {
-		return nil, fmt.Errorf("error on sending command : %v", err)
+		return err
 	}
-	// one line is enough
-	resp, err := o.apiClient.read(func(s string) bool { return true })
-	if err != nil {
-		return nil, fmt.Errorf("error on reading response : %v", err)
+
+	now := time.Now().Unix()
+
+	for _, u := range users {
+		if !o.perUserMatcher.MatchString(u.Username) {
+			continue
+		}
+		if !o.collectedUsers[u.Username] {
+			o.collectedUsers[u.Username] = true
+			if err := o.addUserCharts(u); err != nil {
+				o.Error(err)
+			}
+		}
+		mx[u.Username+"_bytes_received"] = u.BytesReceived
+		mx[u.Username+"_bytes_sent"] = u.BytesSent
+		mx[u.Username+"_connection_time"] = now - u.ConnectedSince
 	}
-	ls, err := parseLoadStats(resp)
-	if err != nil {
-		return nil, fmt.Errorf("error on parsing response : %v", err)
-	}
-	return ls, err
+
+	return nil
 }
 
-func parseVersion(raw []string) (*version, error) {
-	m := reVersion.FindStringSubmatch(strings.Join(raw, " "))
-	if len(m) == 0 {
-		return nil, fmt.Errorf("parse failed : %v", raw)
-	}
-	ver := version{
-		major:      mustAtoi(m[1]),
-		minor:      mustAtoi(m[2]),
-		patch:      mustAtoi(m[3]),
-		management: mustAtoi(m[4]),
-	}
-	return &ver, nil
-}
+func (o *OpenVPN) addUserCharts(user client.User) error {
+	cs := userCharts.Copy()
 
-func parseLoadStats(raw []string) (*loadStats, error) {
-	m := reLoadStats.FindStringSubmatch(strings.Join(raw, " "))
-	if len(m) == 0 {
-		return nil, fmt.Errorf("parse failed : %v", raw)
-	}
-	ls := loadStats{
-		Clients:  mustAtoi(m[1]),
-		BytesIn:  mustAtoi(m[2]),
-		BytesOut: mustAtoi(m[3]),
-	}
-	return &ls, nil
-}
+	for _, chart := range *cs {
+		chart.ID = fmt.Sprintf(chart.ID, user.Username)
+		chart.Fam = fmt.Sprintf(chart.Fam, user.Username)
 
-func mustAtoi(str string) int {
-	v, err := strconv.Atoi(str)
-	if err != nil {
-		panic(err)
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, user.Username)
+		}
+		chart.MarkNotCreated()
 	}
-	return v
+
+	return o.charts.Add(*cs...)
 }

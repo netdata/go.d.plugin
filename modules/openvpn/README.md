@@ -15,6 +15,15 @@ It produces the following charts:
  * in
  * out
  
+Per user charts (disabled by default, see `per_user_stats` in the module config file):
+
+1. **User Traffic** in KiB/s
+ * received
+ * sent
+
+2. **User Connection Time** in seconds
+ * time
+ 
  
 ### configuration
 
@@ -23,7 +32,7 @@ It produces the following charts:
 Reason:
  >  Currently,the OpenVPN daemon can at most support a single management client any one time.
 
-So to not break other tools that uses Management Interface we decided to disable it by default. 
+So to not break other tools that uses Management Interface we decided to disable it by default.
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/openvpn.conf).
 ___
