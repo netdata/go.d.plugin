@@ -34,4 +34,40 @@ type metrics struct {
 	HealthChecks struct {
 		Failed mtx.Gauge `stm:"failed"`
 	} `stm:"health_checks"`
+
+	SwarmManager *swarmManager `stm:"swarm_manager"`
+}
+
+type swarmManager struct {
+	IsLeader mtx.Gauge `stm:"leader"`
+	Networks mtx.Gauge `stm:"networks_total"`
+	Secrets  mtx.Gauge `stm:"secrets_total"`
+	Nodes    struct {
+		Total    mtx.Gauge `stm:"total"`
+		PerState struct {
+			Disconnected mtx.Gauge `stm:"disconnected"`
+			Down         mtx.Gauge `stm:"down"`
+			Ready        mtx.Gauge `stm:"ready"`
+			Unknown      mtx.Gauge `stm:"unknown"`
+		} `stm:"state"`
+	} `stm:"nodes"`
+	Services struct {
+		Total    mtx.Gauge `stm:"total"`
+		PerState struct {
+			Accepted  mtx.Gauge `stm:"accepted"`
+			Assigned  mtx.Gauge `stm:"assigned"`
+			Complete  mtx.Gauge `stm:"complete"`
+			Failed    mtx.Gauge `stm:"failed"`
+			New       mtx.Gauge `stm:"new"`
+			Orphaned  mtx.Gauge `stm:"orphaned"`
+			Pending   mtx.Gauge `stm:"pending"`
+			Preparing mtx.Gauge `stm:"preparing"`
+			Ready     mtx.Gauge `stm:"ready"`
+			Rejected  mtx.Gauge `stm:"rejected"`
+			Remove    mtx.Gauge `stm:"remove"`
+			Running   mtx.Gauge `stm:"running"`
+			Shutdown  mtx.Gauge `stm:"shutdown"`
+			Starting  mtx.Gauge `stm:"starting"`
+		} `stm:"state"`
+	} `stm:"services"`
 }
