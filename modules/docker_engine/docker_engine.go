@@ -43,8 +43,9 @@ type Config struct {
 // DockerEngine DockerEngine module.
 type DockerEngine struct {
 	module.Base
-	Config `yaml:",inline"`
-	prom   prometheus.Prometheus
+	Config         `yaml:",inline"`
+	prom           prometheus.Prometheus
+	isSwarmManager bool
 }
 
 // Cleanup makes cleanup.
@@ -79,8 +80,12 @@ func (de DockerEngine) Check() bool {
 }
 
 // Charts creates Charts.
-func (DockerEngine) Charts() *Charts {
-	return charts.Copy()
+func (de DockerEngine) Charts() *Charts {
+	c := charts.Copy()
+	if de.isSwarmManager {
+		_ = c.Add(*swarmManagerCharts.Copy()...)
+	}
+	return c
 }
 
 // Collect collects metrics.

@@ -40,8 +40,10 @@ type metrics struct {
 
 type swarmManager struct {
 	IsLeader mtx.Gauge `stm:"leader"`
+	Configs  mtx.Gauge `stm:"configs_total"`
 	Networks mtx.Gauge `stm:"networks_total"`
 	Secrets  mtx.Gauge `stm:"secrets_total"`
+	Services mtx.Gauge `stm:"services_total"`
 	Nodes    struct {
 		Total    mtx.Gauge `stm:"total"`
 		PerState struct {
@@ -51,7 +53,7 @@ type swarmManager struct {
 			Unknown      mtx.Gauge `stm:"unknown"`
 		} `stm:"state"`
 	} `stm:"nodes"`
-	Services struct {
+	Tasks struct {
 		Total    mtx.Gauge `stm:"total"`
 		PerState struct {
 			Accepted  mtx.Gauge `stm:"accepted"`
@@ -69,5 +71,5 @@ type swarmManager struct {
 			Shutdown  mtx.Gauge `stm:"shutdown"`
 			Starting  mtx.Gauge `stm:"starting"`
 		} `stm:"state"`
-	} `stm:"services"`
+	} `stm:"tasks"`
 }
