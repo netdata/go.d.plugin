@@ -75,15 +75,21 @@ func (de *DockerEngine) Init() bool {
 }
 
 // Check makes check.
-func (de DockerEngine) Check() bool {
+func (de *DockerEngine) Check() bool {
 	return len(de.Collect()) > 0
 }
 
 // Charts creates Charts.
 func (de DockerEngine) Charts() *Charts {
+	if !de.isSwarmManager {
+		return charts.Copy()
+	}
+
 	c := charts.Copy()
-	if de.isSwarmManager {
-		_ = c.Add(*swarmManagerCharts.Copy()...)
+	err := c.Add(*swarmManagerCharts.Copy()...)
+	if err != nil {
+		de.Error(err)
+		return nil
 	}
 	return c
 }
