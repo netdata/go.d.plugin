@@ -79,7 +79,7 @@ func (s *ScaleIO) Init() bool {
 
 	c, err := client.New(s.Client, s.Request)
 	if err != nil {
-		s.Errorf("error on creating c c : %v", err)
+		s.Errorf("error on creating ScaleIO client : %v", err)
 		return false
 	}
 	s.apiClient = c
