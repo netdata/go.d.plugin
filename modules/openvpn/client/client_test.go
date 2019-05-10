@@ -20,7 +20,7 @@ var (
 )
 
 func testDial(conn net.Conn) dialFunc {
-	return func(network, address string, timeout time.Duration) (net.Conn, error) { return conn, nil }
+	return func(_, _ string, _ time.Duration) (net.Conn, error) { return conn, nil }
 }
 
 func TestNew(t *testing.T) { assert.IsType(t, (*Client)(nil), New(Config{})) }
