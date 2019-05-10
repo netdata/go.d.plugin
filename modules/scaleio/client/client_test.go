@@ -1,4 +1,4 @@
-package api
+package client
 
 import (
 	"net/http"
@@ -17,7 +17,7 @@ const (
 )
 
 func TestNewClient(t *testing.T) {
-	client, _ := NewClient(web.Client{}, web.Request{})
+	client, _ := New(web.Client{}, web.Request{})
 	assert.IsType(t, (*Client)(nil), client)
 	assert.NotNil(t, client.httpClient)
 	assert.NotNil(t, client.token)
@@ -27,7 +27,7 @@ func TestClient_IsLoggedIn(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
-	client, _ := NewClient(web.Client{}, web.Request{UserURL: ts.URL})
+	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
 
 	require.NoError(t, client.Login())
 	assert.True(t, client.IsLoggedIn())
@@ -37,7 +37,7 @@ func TestClient_Login(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
-	client, _ := NewClient(web.Client{}, web.Request{UserURL: ts.URL})
+	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
 
 	require.NoError(t, client.Login())
 	assert.Equal(t, testToken, client.token.get())
@@ -47,7 +47,7 @@ func TestClient_Logout(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
-	client, _ := NewClient(web.Client{}, web.Request{UserURL: ts.URL})
+	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
 
 	require.NoError(t, client.Login())
 	require.True(t, client.IsLoggedIn())
@@ -59,7 +59,7 @@ func TestClient_GetAPIVersion(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
-	client, _ := NewClient(web.Client{}, web.Request{UserURL: ts.URL})
+	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
 
 	ver, err := client.GetAPIVersion()
 	require.NoError(t, err)
@@ -70,7 +70,7 @@ func TestClient_GetSelectedStatistics(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
-	client, _ := NewClient(web.Client{}, web.Request{UserURL: ts.URL})
+	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
 
 	require.NoError(t, client.Login())
 	dst := &struct {
@@ -86,12 +86,12 @@ func newTestServer() *httptest.Server {
 		switch r.URL.Path {
 		default:
 			w.WriteHeader(http.StatusBadRequest)
-		case PATHLogin:
+		case pathLogin:
 			_, _ = w.Write([]byte(testToken))
-		case PATHLogout:
-		case PATHVersion:
+		case pathLogout:
+		case pathVersion:
 			_, _ = w.Write([]byte(testVersion))
-		case PATHSelectedStatistics:
+		case pathSelectedStatistics:
 			_, _ = w.Write([]byte(`{"A": 1, "B": 2}`))
 		}
 	}

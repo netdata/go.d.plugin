@@ -3,7 +3,7 @@ package scaleio
 import (
 	"time"
 
-	"github.com/netdata/go.d.plugin/modules/scaleio/api"
+	"github.com/netdata/go.d.plugin/modules/scaleio/client"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -77,13 +77,12 @@ func (s *ScaleIO) Init() bool {
 		return false
 	}
 
-	client, err := api.NewClient(s.Client, s.Request)
+	c, err := client.New(s.Client, s.Request)
 	if err != nil {
-		s.Errorf("error on creating api client : %v", err)
+		s.Errorf("error on creating c c : %v", err)
 		return false
 	}
-
-	s.apiClient = client
+	s.apiClient = c
 
 	s.Debugf("using URL %s", s.URL)
 	s.Debugf("using timeout: %s", s.Timeout.Duration)
