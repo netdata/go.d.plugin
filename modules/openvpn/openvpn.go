@@ -1,9 +1,10 @@
 package openvpn
 
 import (
-	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/modules/openvpn/client"
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -30,33 +31,44 @@ func init() {
 // New creates OpenVPN with default values.
 func New() *OpenVPN {
 	config := Config{
-		Address: defaultAddress,
-		Timeouts: timeouts{
-			Connect: web.Duration{Duration: defaultConnectTimeout},
-			Read:    web.Duration{Duration: defaultReadTimeout},
-			Write:   web.Duration{Duration: defaultWriteTimeout},
-		},
+		Address:        defaultAddress,
+		ConnectTimeout: web.Duration{Duration: defaultConnectTimeout},
+		ReadTimeout:    web.Duration{Duration: defaultReadTimeout},
+		WriteTimeout:   web.Duration{Duration: defaultWriteTimeout},
 	}
-	return &OpenVPN{Config: config}
+	return &OpenVPN{
+		Config:         config,
+		charts:         charts.Copy(),
+		collectedUsers: make(map[string]bool),
+	}
 }
 
 // Config is the OpenVPN module configuration.
 type Config struct {
-	Address  string
-	Timeouts timeouts `yaml:",inline"`
+	Address        string
+	ConnectTimeout web.Duration       `yaml:"connect_timeout"`
+	ReadTimeout    web.Duration       `yaml:"read_timeout"`
+	WriteTimeout   web.Duration       `yaml:"write_timeout"`
+	PerUserStats   matcher.SimpleExpr `yaml:"per_user_stats"`
 }
 
-type timeouts struct {
-	Connect web.Duration `yaml:"connect_timeout"`
-	Read    web.Duration `yaml:"read_timeout"`
-	Write   web.Duration `yaml:"write_timeout"`
+type openVPNClient interface {
+	Connect() error
+	Disconnect() error
+	IsConnected() bool
+	GetVersion() (*client.Version, error)
+	GetLoadStats() (*client.LoadStats, error)
+	GetUsers() (client.Users, error)
 }
 
 // OpenVPN OpenVPN module.
 type OpenVPN struct {
 	module.Base
-	Config    `yaml:",inline"`
-	apiClient apiClient
+	Config         `yaml:",inline"`
+	apiClient      openVPNClient
+	charts         *Charts
+	collectedUsers map[string]bool
+	perUserMatcher matcher.Matcher
 }
 
 // Cleanup makes cleanup.
@@ -64,53 +76,54 @@ func (o *OpenVPN) Cleanup() {
 	if o.apiClient == nil {
 		return
 	}
-	_ = o.apiClient.disconnect()
+	_ = o.apiClient.Disconnect()
 }
 
 // Init makes initialization.
 func (o *OpenVPN) Init() bool {
-	var network = "tcp"
-	if strings.HasPrefix(o.Address, "/") {
-		network = "unix"
+	if !o.PerUserStats.Empty() {
+		m, err := o.PerUserStats.Parse()
+		if err != nil {
+			o.Errorf("error on creating per user stats matcher : %v", err)
+			return false
+		}
+		o.perUserMatcher = matcher.WithCache(m)
 	}
-	config := clientConfig{
-		network: network,
-		address: o.Address,
-		timeouts: clientTimeouts{
-			connect: o.Timeouts.Connect.Duration,
-			read:    o.Timeouts.Read.Duration,
-			write:   o.Timeouts.Write.Duration,
-		},
+	config := client.Config{
+		Address:        o.Address,
+		ConnectTimeout: o.ConnectTimeout.Duration,
+		ReadTimeout:    o.ReadTimeout.Duration,
+		WriteTimeout:   o.WriteTimeout.Duration,
+		ReuseRecord:    true,
 	}
-	o.Infof("using network: %s, address: %s, connect timeout: %s, read timeout: %s, write timeout: %s",
-		network, o.Address, o.Timeouts.Connect.Duration, o.Timeouts.Read.Duration, o.Timeouts.Write.Duration)
-	o.apiClient = newClient(config)
+	o.apiClient = client.New(config)
+
+	o.Infof("using address: %s, connect timeout: %s, read timeout: %s, write timeout: %s",
+		o.Address, o.ConnectTimeout.Duration, o.ReadTimeout.Duration, o.WriteTimeout.Duration)
 
 	return true
 }
 
 // Check makes check.
 func (o *OpenVPN) Check() bool {
-	if !o.apiClient.isConnected() {
-		err := o.apiClient.connect()
-		if err != nil {
-			o.Error(err)
-			return false
-		}
+	if err := o.apiClient.Connect(); err != nil {
+		o.Error(err)
+		return false
 	}
-	ver, err := o.collectVersion()
+
+	ver, err := o.apiClient.GetVersion()
 	if err != nil {
 		o.Error(err)
 		o.Cleanup()
 		return false
 	}
-	o.Infof("connected to OpenVPN v%d.%d.%d, Management v%d",
-		ver.major, ver.minor, ver.patch, ver.management)
+
+	o.Infof("connected to OpenVPN v%d.%d.%d, Management v%d", ver.Major, ver.Minor, ver.Patch, ver.Management)
 	return true
 }
 
 // Charts creates Charts.
-func (OpenVPN) Charts() *Charts { return charts.Copy() }
+func (o OpenVPN) Charts() *Charts { return o.charts }
 
 // Collect collects metrics.
 func (o *OpenVPN) Collect() map[string]int64 {
