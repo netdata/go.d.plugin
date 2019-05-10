@@ -47,6 +47,7 @@ func TestWebLog_Collect(t *testing.T) {
 	defer os.Remove(tmp.Name())
 
 	done, wait := generateLog(tmp)
+	time.Sleep(150 * time.Millisecond)
 
 	weblog := New()
 	weblog.Config.Path = tmp.Name()

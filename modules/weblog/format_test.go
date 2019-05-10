@@ -111,7 +111,7 @@ func TestFormat_Parse(t *testing.T) {
 				Request:    `GET / HTTP/1.1`,
 				Method:     `GET`,
 				URI:        "/",
-				Version:    "HTTP/1.1",
+				Version:    "1.1",
 				Status:     200,
 				BytesSent:  1620,
 				ReqLength:  -1,
@@ -125,7 +125,7 @@ func TestFormat_Parse(t *testing.T) {
 				Request:    `GET / HTTP/1.1`,
 				Method:     `GET`,
 				URI:        "/",
-				Version:    "HTTP/1.1",
+				Version:    "1.1",
 				Status:     200,
 				BytesSent:  1620,
 				ReqLength:  -1,
@@ -139,7 +139,7 @@ func TestFormat_Parse(t *testing.T) {
 				Request:    `GET / HTTP/1.1`,
 				Method:     `GET`,
 				URI:        "/",
-				Version:    "HTTP/1.1",
+				Version:    "1.1",
 				Status:     200,
 				BytesSent:  1620,
 				ReqLength:  -1,
@@ -199,9 +199,12 @@ func Test_parseRequest(t *testing.T) {
 		wantVersion string
 		wantErr     bool
 	}{
-		{"GET / HTTP/1.1", "GET", "/", "HTTP/1.1", false},
-		{"GET /ihs.gif HTTP/1.1", "GET", "/ihs.gif", "HTTP/1.1", false},
+		{"GET / HTTP/1.1", "GET", "/", "1.1", false},
+		{"GET / HTTP/1.0", "GET", "/", "1.0", false},
+		{"GET / HTTP/2", "GET", "/", "2", false},
+		{"GET /ihs.gif HTTP/1.1", "GET", "/ihs.gif", "1.1", false},
 		{"GET no_version", "", "", "", true},
+		{"GET /invalid_version http/1.1", "GET", "/invalid_version", "", true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

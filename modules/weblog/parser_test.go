@@ -33,7 +33,7 @@ func Test_logParser_ParseLine(t *testing.T) {
 			assert.Equal(t, "GET /twiki/bin/edit/Main/Double_bounce_sender?topicparent=Main.ConfigurationVariables HTTP/1.1", row.Request)
 			assert.Equal(t, "GET", row.Method)
 			assert.Equal(t, "/twiki/bin/edit/Main/Double_bounce_sender?topicparent=Main.ConfigurationVariables", row.URI)
-			assert.Equal(t, "HTTP/1.1", row.Version)
+			assert.Equal(t, "1.1", row.Version)
 			assert.Equal(t, 401, row.Status)
 			assert.Equal(t, 12846, row.BytesSent)
 		case 1: // 64.242.88.10 - - [07/Mar/2004:16:06:51 -0800] "GET /twiki/bin/rdiff/TWiki/NewUserTemplate?rev1=1.3&rev2=1.2 HTTP/1.1" 200 4523
@@ -41,7 +41,7 @@ func Test_logParser_ParseLine(t *testing.T) {
 			assert.Equal(t, "GET /twiki/bin/rdiff/TWiki/NewUserTemplate?rev1=1.3&rev2=1.2 HTTP/1.1", row.Request)
 			assert.Equal(t, "GET", row.Method)
 			assert.Equal(t, "/twiki/bin/rdiff/TWiki/NewUserTemplate?rev1=1.3&rev2=1.2", row.URI)
-			assert.Equal(t, "HTTP/1.1", row.Version)
+			assert.Equal(t, "1.1", row.Version)
 			assert.Equal(t, 200, row.Status)
 			assert.Equal(t, 4523, row.BytesSent)
 		case 33: // lj1036.inktomisearch.com - - [07/Mar/2004:17:18:36 -0800] "GET /robots.txt HTTP/1.0" 200 68
@@ -54,7 +54,7 @@ func Test_logParser_ParseLine(t *testing.T) {
 			assert.Equal(t, "GET /twiki/bin/search/Main/SearchResult?scope=text®ex=on&search=Office%20*Locations[^A-Za-z] HTTP/1.1", row.Request)
 			assert.Equal(t, "GET", row.Method)
 			assert.Equal(t, "/twiki/bin/search/Main/SearchResult?scope=text®ex=on&search=Office%20*Locations[^A-Za-z]", row.URI)
-			assert.Equal(t, "HTTP/1.1", row.Version)
+			assert.Equal(t, "1.1", row.Version)
 			assert.Equal(t, 200, row.Status)
 			assert.Equal(t, 7771, row.BytesSent)
 		}
