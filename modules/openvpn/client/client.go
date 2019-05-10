@@ -62,10 +62,9 @@ func (c *Client) Connect() (err error) {
 
 // Disconnect closes connection, if there is no connection it does nothing.
 func (c *Client) Disconnect() error {
-	if c.conn == nil {
+	if !c.IsConnected() {
 		return nil
 	}
-	//_ = c.send(commandExit)
 	err := c.conn.Close()
 	c.conn = nil
 	return err
