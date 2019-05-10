@@ -1,4 +1,4 @@
-package api
+package client
 
 // For all 4xx and 5xx return codes, the body may contain an apiError instance
 // with more specifics about the failure.

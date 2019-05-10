@@ -1,7 +1,7 @@
 package scaleio
 
 import (
-	"github.com/netdata/go.d.plugin/modules/scaleio/api"
+	"github.com/netdata/go.d.plugin/modules/scaleio/client"
 	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
@@ -58,26 +58,26 @@ type selectedStatistics struct {
 		ThinCapacityInUseInKb                    float64
 		UnreachableUnusedCapacityInKb            float64
 		UnusedCapacityInKb                       float64
-		NormRebuildReadBwc                       api.Bwc // TODO: ???
-		NormRebuildWriteBwc                      api.Bwc // TODO: ???
-		BckRebuildReadBwc                        api.Bwc // failed node/disk is back alive
-		BckRebuildWriteBwc                       api.Bwc // failed node/disk is back alive
-		FwdRebuildReadBwc                        api.Bwc // node/disk fails
-		FwdRebuildWriteBwc                       api.Bwc // node/disk fails
-		RebalanceReadBwc                         api.Bwc
-		RebalanceWriteBwc                        api.Bwc
-		PrimaryReadBwc                           api.Bwc // Backend (SDSs + Devices)
-		PrimaryWriteBwc                          api.Bwc // Backend (SDSs + Devices)
-		SecondaryReadBwc                         api.Bwc // Backend (SDSs + Devices, 2nd)
-		SecondaryWriteBwc                        api.Bwc // Backend (SDSs + Devices, 2nd)
-		UserDataReadBwc                          api.Bwc // Frontend (Volumes + SDCs)
-		UserDataWriteBwc                         api.Bwc // Frontend (Volumes + SDCs)
-		PrimaryReadFromDevBwc                    api.Bwc // TODO: ???
-		PrimaryReadFromRmcacheBwc                api.Bwc // TODO: ???
-		SecondaryReadFromDevBwc                  api.Bwc // TODO: ???
-		SecondaryReadFromRmcacheBwc              api.Bwc // TODO: ???
-		TotalReadBwc                             api.Bwc // *ReadBwc
-		TotalWriteBwc                            api.Bwc // *WriteBwc
+		NormRebuildReadBwc                       client.Bwc // TODO: ???
+		NormRebuildWriteBwc                      client.Bwc // TODO: ???
+		BckRebuildReadBwc                        client.Bwc // failed node/disk is back alive
+		BckRebuildWriteBwc                       client.Bwc // failed node/disk is back alive
+		FwdRebuildReadBwc                        client.Bwc // node/disk fails
+		FwdRebuildWriteBwc                       client.Bwc // node/disk fails
+		RebalanceReadBwc                         client.Bwc
+		RebalanceWriteBwc                        client.Bwc
+		PrimaryReadBwc                           client.Bwc // Backend (SDSs + Devices)
+		PrimaryWriteBwc                          client.Bwc // Backend (SDSs + Devices)
+		SecondaryReadBwc                         client.Bwc // Backend (SDSs + Devices, 2nd)
+		SecondaryWriteBwc                        client.Bwc // Backend (SDSs + Devices, 2nd)
+		UserDataReadBwc                          client.Bwc // Frontend (Volumes + SDCs)
+		UserDataWriteBwc                         client.Bwc // Frontend (Volumes + SDCs)
+		PrimaryReadFromDevBwc                    client.Bwc // TODO: ???
+		PrimaryReadFromRmcacheBwc                client.Bwc // TODO: ???
+		SecondaryReadFromDevBwc                  client.Bwc // TODO: ???
+		SecondaryReadFromRmcacheBwc              client.Bwc // TODO: ???
+		TotalReadBwc                             client.Bwc // *ReadBwc
+		TotalWriteBwc                            client.Bwc // *WriteBwc
 	}
 }
 
@@ -371,11 +371,11 @@ func div(a, b int64) float64 {
 	return float64(a) / float64(b)
 }
 
-func calcBW(bwc api.Bwc) float64 { return div(bwc.TotalWeightInKb, bwc.NumSeconds) }
+func calcBW(bwc client.Bwc) float64 { return div(bwc.TotalWeightInKb, bwc.NumSeconds) }
 
-func calcIOPS(bwc api.Bwc) float64 { return div(bwc.NumOccured, bwc.NumSeconds) }
+func calcIOPS(bwc client.Bwc) float64 { return div(bwc.NumOccured, bwc.NumSeconds) }
 
-func calcIOSize(bwc api.Bwc) float64 { return div(bwc.TotalWeightInKb, bwc.NumOccured) }
+func calcIOSize(bwc client.Bwc) float64 { return div(bwc.TotalWeightInKb, bwc.NumOccured) }
 
 func sumGauge(vs ...mtx.Gauge) (res float64) {
 	for _, v := range vs {

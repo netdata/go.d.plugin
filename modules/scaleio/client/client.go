@@ -1,4 +1,4 @@
-package api
+package client
 
 import (
 	"encoding/json"
@@ -13,7 +13,8 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-func NewClient(client web.Client, request web.Request) (*Client, error) {
+// Client creates new ScaleIO client.
+func New(client web.Client, request web.Request) (*Client, error) {
 	httpClient, err := web.NewHTTPClient(client)
 	if err != nil {
 		return nil, err
@@ -28,32 +29,36 @@ func NewClient(client web.Client, request web.Request) (*Client, error) {
 	}, nil
 }
 
+// Client represents ScaleIO client.
 type Client struct {
 	httpClient *http.Client
 	request    web.Request
 	token      *token
 }
 
+// IsLoggedIn reports whether the client is logged in.
 func (c Client) IsLoggedIn() bool { return c.token.isSet() }
 
+// Login connects to FxFlex Gateway to get the token that is used for later authentication for other requests.
 func (c *Client) Login() error {
 	if c.IsLoggedIn() {
 		_ = c.Logout()
 	}
 
 	req := c.request.Copy()
-	req.URL.Path = PATHLogin
+	req.URL.Path = pathLogin
 
 	return c.doWithDecode(c.token, decodeToken, req, false, false)
 }
 
+// Logout sends logout request.
 func (c *Client) Logout() error {
 	if !c.IsLoggedIn() {
 		return nil
 	}
 
 	req := c.request.Copy()
-	req.URL.Path = PATHLogout
+	req.URL.Path = pathLogout
 	req.Password = c.token.get()
 
 	c.token.unset()
@@ -61,9 +66,10 @@ func (c *Client) Logout() error {
 	return c.doWithDecode(nil, nil, req, false, false)
 }
 
+// GetAPIVersion returns FxFlex Gateway API version.
 func (c *Client) GetAPIVersion() (*Version, error) {
 	req := c.request.Copy()
-	req.URL.Path = PATHVersion
+	req.URL.Path = pathVersion
 	req.Password = c.token.get()
 
 	ver := &Version{}
@@ -72,9 +78,10 @@ func (c *Client) GetAPIVersion() (*Version, error) {
 	return ver, err
 }
 
+// GetSelectedStatistics makes the query and decodes response into the passed structure.
 func (c *Client) GetSelectedStatistics(dst interface{}, query string) error {
 	req := c.request.Copy()
-	req.URL.Path = PATHSelectedStatistics
+	req.URL.Path = pathSelectedStatistics
 	req.Password = c.token.get()
 	req.Method = http.MethodPost
 	req.Headers["Content-Type"] = "application/json"
