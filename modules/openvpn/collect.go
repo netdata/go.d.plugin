@@ -16,6 +16,7 @@ func (o *OpenVPN) collect() (map[string]int64, error) {
 	}
 
 	defer func() {
+		// TODO: disconnect not on every error?
 		if err != nil {
 			_ = o.apiClient.Disconnect()
 		}
@@ -64,7 +65,7 @@ func (o *OpenVPN) collectUsers(mx map[string]int64) error {
 		if !o.collectedUsers[u.Username] {
 			o.collectedUsers[u.Username] = true
 			if err := o.addUserCharts(u); err != nil {
-				o.Error(err)
+				o.Warning(err)
 			}
 		}
 		mx[u.Username+"_bytes_received"] = u.BytesReceived
