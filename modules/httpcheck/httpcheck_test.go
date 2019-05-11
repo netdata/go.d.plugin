@@ -86,7 +86,7 @@ func TestHTTPCheck_ResponseSuccess(t *testing.T) {
 
 func TestHTTPCheck_ResponseSuccessInvalidContent(t *testing.T) {
 	job := New()
-	job.ResponseMatch = "no match"
+	job.ResponseMatch = "no reResponse"
 	job.UserURL = "http://127.0.0.1:38001"
 	require.True(t, job.Init())
 
