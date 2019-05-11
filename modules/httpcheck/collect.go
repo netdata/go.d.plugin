@@ -112,7 +112,7 @@ func decodeReqError(err error) reqErrCode {
 		return codeNoConnection
 	}
 
-	switch _ := (opErr.Err).(type) {
+	switch (opErr.Err).(type) {
 	case *net.DNSError:
 		return codeDNSLookup
 	case *net.ParseError:
