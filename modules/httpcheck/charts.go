@@ -21,12 +21,12 @@ var charts = Charts{
 		Fam:   "response",
 		Ctx:   "httpcheck.response_time",
 		Dims: Dims{
-			{ID: "response_time", Name: "time", Div: 1000000},
+			{ID: "response_time", Name: "time"},
 		},
 	},
 	{
 		ID:    "request_status",
-		Title: "HTTP Request Status",
+		Title: "HTTP Check Status",
 		Units: "boolean",
 		Fam:   "status",
 		Ctx:   "httpcheck.status",

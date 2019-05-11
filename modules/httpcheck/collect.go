@@ -33,14 +33,13 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 
 	start := time.Now()
 	resp, err := hc.client.Do(req)
-	end := time.Since(start).Nanoseconds()
-	closeBody(resp)
+	end := time.Since(start)
 
 	if err != nil {
 		hc.Warning(err)
 		hc.collectErrResponse(&mx, err)
 	} else {
-		mx.ResponseTime = end
+		mx.ResponseTime = durationToMs(end)
 		hc.collectOKResponse(&mx, resp)
 	}
 
@@ -128,4 +127,8 @@ func closeBody(resp *http.Response) {
 	}
 	_, _ = io.Copy(ioutil.Discard, resp.Body)
 	_ = resp.Body.Close()
+}
+
+func durationToMs(duration time.Duration) int64 {
+	return int64(duration) / (int64(time.Millisecond) / int64(time.Nanosecond))
 }
