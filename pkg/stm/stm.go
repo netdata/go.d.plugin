@@ -36,12 +36,15 @@ func toMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
 		}
 	}
 	switch value.Kind() {
+
 	case reflect.Ptr:
 		convertPtr(value, rv, key, mul, div)
 	case reflect.Struct:
 		convertStruct(value, rv, key)
 	case reflect.Map:
 		convertMap(value, rv, key, mul, div)
+	case reflect.Bool:
+		convertBool(value, rv, key)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		convertInteger(value, rv, key, mul, div)
 	case reflect.Float32, reflect.Float64:
@@ -79,19 +82,30 @@ func convertMap(value reflect.Value, rv map[string]int64, key string, mul, div i
 	}
 }
 
-func convertInteger(value reflect.Value, rv map[string]int64, key string, mul, div int) {
-	intVal := value.Int()
+func convertBool(value reflect.Value, rv map[string]int64, key string) {
 	if _, ok := rv[key]; ok {
 		logger.Panic("duplicate key: ", key)
 	}
+	if value.Bool() {
+		rv[key] = 1
+	} else {
+		rv[key] = 0
+	}
+}
+
+func convertInteger(value reflect.Value, rv map[string]int64, key string, mul, div int) {
+	if _, ok := rv[key]; ok {
+		logger.Panic("duplicate key: ", key)
+	}
+	intVal := value.Int()
 	rv[key] = intVal * int64(mul) / int64(div)
 }
 
 func convertFloat(value reflect.Value, rv map[string]int64, key string, mul, div int) {
-	floatVal := value.Float()
 	if _, ok := rv[key]; ok {
 		logger.Panic("duplicate key: ", key)
 	}
+	floatVal := value.Float()
 	rv[key] = int64(floatVal * float64(mul) / float64(div))
 }
 

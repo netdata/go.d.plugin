@@ -1,6 +1,7 @@
 package stm_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
@@ -297,7 +298,6 @@ func TestToMap_Variadic(t *testing.T) {
 }
 
 func TestToMap_badTag(t *testing.T) {
-
 	assert.Panics(t, func() {
 		s := struct {
 			a int `stm:"a,not_int"`
@@ -322,4 +322,16 @@ func TestToMap_badTag(t *testing.T) {
 		}{1}
 		stm.ToMap(s)
 	})
+}
+
+func TestToMap_bool(t *testing.T) {
+	s := struct {
+		A bool            `stm:"a"`
+		B map[string]bool `stm:""`
+	}{
+		A: true,
+		B: map[string]bool{"B": true, "C": false},
+	}
+
+	fmt.Println(stm.ToMap(s))
 }
