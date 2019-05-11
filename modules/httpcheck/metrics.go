@@ -9,11 +9,9 @@ type metrics struct {
 		} `stm:""`
 	} `stm:""`
 	Response struct {
-		IsBad struct {
-			Content    bool `stm:"bad_content"`
-			StatusCode bool `stm:"bad_status"`
-		} `stm:""`
-		Time   int `stm:"response_time"`
-		Length int `stm:"response_length"`
+		BadContent    bool  `stm:"bad_content"`
+		BadStatusCode bool  `stm:"bad_status"`
+		Time          int64 `stm:"response_time"`
+		Length        int   `stm:"response_length"`
 	} `stm:""`
 }

@@ -102,7 +102,7 @@ func (hc *HTTPCheck) Init() bool {
 }
 
 // Check makes check.
-func (HTTPCheck) Check() bool { return true }
+func (hc *HTTPCheck) Check() bool { return len(hc.Collect()) > 0 }
 
 // Charts creates Charts
 func (hc HTTPCheck) Charts() *Charts {

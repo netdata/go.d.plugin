@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -19,8 +20,10 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 
 	var mx metrics
 
+	before := time.Now()
 	resp, err := hc.client.Do(req)
 	closeBody(resp)
+	mx.Response.Time = time.Now().Sub(before).Nanoseconds()
 
 	if err != nil {
 		hc.Debug(err)
@@ -46,11 +49,11 @@ func (hc HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
 	mx.Response.Length = len(bodyBytes)
 
 	if !hc.acceptedStatuses[resp.StatusCode] {
-		mx.Response.IsBad.StatusCode = true
+		mx.Response.BadStatusCode = true
 	}
 
 	if hc.reResponse != nil && !hc.reResponse.Match(bodyBytes) {
-		mx.Response.IsBad.Content = true
+		mx.Response.BadContent = true
 	}
 }
 

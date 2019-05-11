@@ -31,7 +31,7 @@ var charts = Charts{
 		Fam:   "response",
 		Ctx:   "httpcheck.response_length",
 		Dims: Dims{
-			{ID: "response_length", Name: "length", Div: 1000000},
+			{ID: "response_length", Name: "length"},
 		},
 	},
 	{
