@@ -6,10 +6,21 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
+)
+
+type reqErrCode int
+
+const (
+	codeTimeout reqErrCode = iota
+	codeDNSLookup
+	codeParseAddress
+	codeRedirect
+	codeNoConnection
 )
 
 func (hc *HTTPCheck) collect() (map[string]int64, error) {
@@ -20,15 +31,16 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 
 	var mx metrics
 
-	before := time.Now()
+	start := time.Now()
 	resp, err := hc.client.Do(req)
+	end := time.Since(start).Nanoseconds()
 	closeBody(resp)
-	mx.Response.Time = time.Now().Sub(before).Nanoseconds()
 
 	if err != nil {
-		hc.Debug(err)
+		hc.Warning(err)
 		hc.collectErrResponse(&mx, err)
 	} else {
+		mx.ResponseTime = end
 		hc.collectOKResponse(&mx, resp)
 	}
 
@@ -36,25 +48,78 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 }
 
 func (hc HTTPCheck) collectErrResponse(mx *metrics, err error) {
-	if v, ok := err.(net.Error); ok && v.Timeout() {
-		mx.Request.Status.Timeout = true
-	} else {
-		mx.Request.Status.Failed = true
+	switch code := decodeReqError(err); code {
+	default:
+		panic(fmt.Sprintf("unknown request error code : %d", code))
+	case codeNoConnection:
+		mx.Status.NoConnection = true
+	case codeDNSLookup:
+		mx.Status.DNSLookupError = true
+	case codeParseAddress:
+		mx.Status.ParseAddressError = true
+	case codeRedirect:
+		mx.Status.RedirectError = true
+	case codeTimeout:
+		mx.Status.Timeout = true
 	}
 }
 
 func (hc HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
-	mx.Request.Status.Success = true
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	mx.Response.Length = len(bodyBytes)
-
 	if !hc.acceptedStatuses[resp.StatusCode] {
-		mx.Response.BadStatusCode = true
+		mx.Status.BadStatusCode = true
+		return
 	}
 
-	if hc.reResponse != nil && !hc.reResponse.Match(bodyBytes) {
-		mx.Response.BadContent = true
+	if hc.reResponse == nil {
+		mx.Status.Success = true
+		return
 	}
+
+	bs, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		mx.Status.BodyReadError = true
+		return
+	}
+	if !hc.reResponse.Match(bs) {
+		mx.Status.BadContent = true
+		return
+	}
+	mx.ResponseLength = len(bs)
+	mx.Status.Success = true
+}
+
+func decodeReqError(err error) reqErrCode {
+	if err == nil {
+		panic("nil error")
+	}
+
+	netErr, isNetErr := err.(net.Error)
+	if isNetErr && netErr.Timeout() {
+		return codeTimeout
+	}
+
+	urlErr, isURLErr := err.(*url.Error)
+	if !isURLErr {
+		return codeNoConnection
+	}
+
+	if urlErr.Err == web.ErrRedirectAttempted {
+		return codeRedirect
+	}
+
+	opErr, isOpErr := (urlErr.Err).(*net.OpError)
+	if !isOpErr {
+		return codeNoConnection
+	}
+
+	switch _ := (opErr.Err).(type) {
+	case *net.DNSError:
+		return codeDNSLookup
+	case *net.ParseError:
+		return codeParseAddress
+	}
+
+	return codeNoConnection
 }
 
 func closeBody(resp *http.Response) {

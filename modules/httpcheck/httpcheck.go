@@ -108,7 +108,7 @@ func (hc *HTTPCheck) Check() bool { return len(hc.Collect()) > 0 }
 func (hc HTTPCheck) Charts() *Charts {
 	cs := charts.Copy()
 	if hc.reResponse != nil {
-		_ = cs.Add(respCheckContentChart.Copy())
+		_ = cs.Add(bodyLengthChart.Copy())
 	}
 	return cs
 }

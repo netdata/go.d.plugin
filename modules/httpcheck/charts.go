@@ -25,16 +25,6 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "response_length",
-		Title: "HTTP Response Body Length",
-		Units: "characters",
-		Fam:   "response",
-		Ctx:   "httpcheck.response_length",
-		Dims: Dims{
-			{ID: "response_length", Name: "length"},
-		},
-	},
-	{
 		ID:    "request_status",
 		Title: "HTTP Request Status",
 		Units: "boolean",
@@ -42,29 +32,25 @@ var charts = Charts{
 		Ctx:   "httpcheck.status",
 		Dims: Dims{
 			{ID: "success"},
-			{ID: "failed"},
+			{ID: "no_connection"},
 			{ID: "timeout"},
-		},
-	},
-	{
-		ID:    "response_check_status",
-		Title: "HTTP Response Status Code Check ",
-		Units: "boolean",
-		Fam:   "status",
-		Ctx:   "httpcheck.check_status",
-		Dims: Dims{
-			{ID: "bad_status", Name: "bad"},
+			{ID: "dns_lookup_error"},
+			{ID: "address_parse_error"},
+			{ID: "redirect_error"},
+			{ID: "body_read_error"},
+			{ID: "bad_content"},
+			{ID: "bad_status"},
 		},
 	},
 }
 
-var respCheckContentChart = Chart{
-	ID:    "response_check_content",
-	Title: "HTTP Response Content Check",
-	Units: "boolean",
-	Fam:   "status",
-	Ctx:   "httpcheck.check_content",
+var bodyLengthChart = Chart{
+	ID:    "response_length",
+	Title: "HTTP Response Body Length",
+	Units: "characters",
+	Fam:   "response",
+	Ctx:   "httpcheck.response_length",
 	Dims: Dims{
-		{ID: "bad_content", Name: "bad content"},
+		{ID: "response_length", Name: "length"},
 	},
 }
