@@ -71,19 +71,21 @@ func (hc *HTTPCheck) Init() bool {
 		return false
 	}
 
-	c, err := web.NewHTTPClient(hc.Client)
+	client, err := web.NewHTTPClient(hc.Client)
 	if err != nil {
 		hc.Error("error on creating HTTP client : %v", err)
 		return false
 	}
-	hc.client = c
+	hc.client = client
 
-	r, err := regexp.Compile(hc.ResponseMatch)
-	if err != nil {
-		hc.Errorf("error on creating regexp %s : %s", hc.ResponseMatch, err)
-		return false
+	if hc.ResponseMatch != "" {
+		re, err := regexp.Compile(hc.ResponseMatch)
+		if err != nil {
+			hc.Errorf("error on creating regexp %s : %s", hc.ResponseMatch, err)
+			return false
+		}
+		hc.reResponse = re
 	}
-	hc.reResponse = r
 
 	for _, v := range hc.AcceptedStatuses {
 		hc.acceptedStatuses[v] = true
