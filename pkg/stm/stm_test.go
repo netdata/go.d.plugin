@@ -1,7 +1,6 @@
 package stm_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
@@ -326,12 +325,18 @@ func TestToMap_badTag(t *testing.T) {
 
 func TestToMap_bool(t *testing.T) {
 	s := struct {
-		A bool            `stm:"a"`
-		B map[string]bool `stm:""`
+		A bool `stm:"a"`
+		B bool `stm:"b"`
 	}{
 		A: true,
-		B: map[string]bool{"B": true, "C": false},
+		B: false,
 	}
-
-	fmt.Println(stm.ToMap(s))
+	assert.Equal(
+		t,
+		map[string]int64{
+			"a": 1,
+			"b": 0,
+		},
+		stm.ToMap(s),
+	)
 }
