@@ -3,13 +3,10 @@ package httpcheck
 import (
 	"bytes"
 	"io"
-	"net"
 	"net/http"
-	"net/url"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
-	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
@@ -99,51 +96,51 @@ func TestHTTPCheck_Collect_TimeoutError(t *testing.T) {
 
 }
 
-func TestHTTPCheck_Collect_DNSLookupError(t *testing.T) {
-	job := New()
+//func TestHTTPCheck_Collect_DNSLookupError(t *testing.T) {
+//	job := New()
+//
+//	job.UserURL = testURL
+//	require.True(t, job.Init())
+//
+//	err := net.Error(&url.Error{Err: &net.OpError{Err: &net.DNSError{}}})
+//	job.client = newClientFunc(nil, err)
+//	assert.Equal(
+//		t,
+//		stm.ToMap(metrics{Status: status{DNSLookupError: true}}),
+//		job.Collect(),
+//	)
+//}
 
-	job.UserURL = testURL
-	require.True(t, job.Init())
+//func TestHTTPCheck_Collect_AddressParseError(t *testing.T) {
+//	job := New()
+//
+//	job.UserURL = testURL
+//	require.True(t, job.Init())
+//
+//	err := net.Error(&url.Error{Err: &net.OpError{Err: &net.ParseError{}}})
+//	job.client = newClientFunc(nil, err)
+//	assert.Equal(
+//		t,
+//		stm.ToMap(metrics{Status: status{ParseAddressError: true}}),
+//		job.Collect(),
+//	)
+//
+//}
 
-	err := net.Error(&url.Error{Err: &net.OpError{Err: &net.DNSError{}}})
-	job.client = newClientFunc(nil, err)
-	assert.Equal(
-		t,
-		stm.ToMap(metrics{Status: status{DNSLookupError: true}}),
-		job.Collect(),
-	)
-}
-
-func TestHTTPCheck_Collect_AddressParseError(t *testing.T) {
-	job := New()
-
-	job.UserURL = testURL
-	require.True(t, job.Init())
-
-	err := net.Error(&url.Error{Err: &net.OpError{Err: &net.ParseError{}}})
-	job.client = newClientFunc(nil, err)
-	assert.Equal(
-		t,
-		stm.ToMap(metrics{Status: status{ParseAddressError: true}}),
-		job.Collect(),
-	)
-
-}
-
-func TestHTTPCheck_Collect_RedirectError(t *testing.T) {
-	job := New()
-
-	job.UserURL = testURL
-	require.True(t, job.Init())
-
-	err := net.Error(&url.Error{Err: web.ErrRedirectAttempted})
-	job.client = newClientFunc(nil, err)
-	assert.Equal(
-		t,
-		stm.ToMap(metrics{Status: status{RedirectError: true}}),
-		job.Collect(),
-	)
-}
+//func TestHTTPCheck_Collect_RedirectError(t *testing.T) {
+//	job := New()
+//
+//	job.UserURL = testURL
+//	require.True(t, job.Init())
+//
+//	err := net.Error(&url.Error{Err: web.ErrRedirectAttempted})
+//	job.client = newClientFunc(nil, err)
+//	assert.Equal(
+//		t,
+//		stm.ToMap(metrics{Status: status{RedirectError: true}}),
+//		job.Collect(),
+//	)
+//}
 
 func TestHTTPCheck_Collect_BadContentError(t *testing.T) {
 	job := New()

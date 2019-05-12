@@ -19,9 +19,9 @@ var charts = Charts{
 		Title: "HTTP Response Time",
 		Units: "ms",
 		Fam:   "response",
-		Ctx:   "httpcheck.response_time",
+		Ctx:   "httpcheck.responsetime",
 		Dims: Dims{
-			{ID: "response_time", Name: "time"},
+			{ID: "time"},
 		},
 	},
 	{
@@ -34,12 +34,12 @@ var charts = Charts{
 			{ID: "success"},
 			{ID: "no_connection", Name: "no connection"},
 			{ID: "timeout"},
-			{ID: "dns_lookup_error", Name: "dns lookup error"},
-			{ID: "address_parse_error", Name: "address parse error"},
-			{ID: "redirect_error", Name: "redirect error"},
-			{ID: "body_read_error", Name: "body read error"},
 			{ID: "bad_content", Name: "bad content"},
 			{ID: "bad_status", Name: "bad status"},
+			//{ID: "dns_lookup_error", Name: "dns lookup error"},
+			//{ID: "address_parse_error", Name: "address parse error"},
+			//{ID: "redirect_error", Name: "redirect error"},
+			//{ID: "body_read_error", Name: "body read error"},
 		},
 	},
 }
@@ -49,8 +49,8 @@ var bodyLengthChart = Chart{
 	Title: "HTTP Response Body Length",
 	Units: "characters",
 	Fam:   "response",
-	Ctx:   "httpcheck.response_length",
+	Ctx:   "httpcheck.responselength",
 	Dims: Dims{
-		{ID: "response_length", Name: "length"},
+		{ID: "length"},
 	},
 }
