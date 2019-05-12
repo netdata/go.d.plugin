@@ -42,14 +42,15 @@ var charts = Charts{
 			{ID: "bad_status", Name: "bad status"},
 		},
 	},
-	{
-		ID:    "response_length",
-		Title: "HTTP Response Body Length",
-		Units: "characters",
-		Fam:   "response",
-		Ctx:   "httpcheck.response_length",
-		Dims: Dims{
-			{ID: "response_length", Name: "length"},
-		},
+}
+
+var bodyLengthChart = Chart{
+	ID:    "response_length",
+	Title: "HTTP Response Body Length",
+	Units: "characters",
+	Fam:   "response",
+	Ctx:   "httpcheck.response_length",
+	Dims: Dims{
+		{ID: "response_length", Name: "length"},
 	},
 }

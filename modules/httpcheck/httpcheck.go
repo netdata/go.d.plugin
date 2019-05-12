@@ -107,7 +107,13 @@ func (hc *HTTPCheck) Init() bool {
 func (hc *HTTPCheck) Check() bool { return len(hc.Collect()) > 0 }
 
 // Charts creates Charts
-func (hc HTTPCheck) Charts() *Charts { return charts.Copy() }
+func (hc HTTPCheck) Charts() *Charts {
+	cs := charts.Copy()
+	if hc.reResponse != nil {
+		_ = cs.Add(bodyLengthChart.Copy())
+	}
+	return cs
+}
 
 // Collect collects metrics
 func (hc *HTTPCheck) Collect() map[string]int64 {
