@@ -33,8 +33,8 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 
 	start := time.Now()
 	resp, err := hc.client.Do(req)
-	defer closeBody(resp)
 	end := time.Since(start)
+	defer closeBody(resp)
 
 	if err != nil {
 		hc.Warning(err)
