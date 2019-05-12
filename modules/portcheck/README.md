@@ -22,9 +22,11 @@ Here is an example for 2 servers:
 ```yaml
 jobs:
   - name: server1
+    host: 127.0.0.1
     ports: [22, 23]
       
   - name: server2
+    host: 10.0.0.1
     ports: [80, 81, 8080]
 ```
 
