@@ -33,6 +33,7 @@ It produces the following charts:
 | body read error | Error during response body reading (only if `response_match` option is set)|
 | bad content |The body of the response didn't match the regex (only if `response_match` option is set)|
 | bad status |Response status code not in `accepted_statuses`|
+| no connection |Any other network error not specifically handled by the module|
 
 
 ### configuration
