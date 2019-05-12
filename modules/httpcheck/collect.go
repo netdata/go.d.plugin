@@ -40,8 +40,11 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 		hc.Warning(err)
 		hc.collectErrResponse(&mx, err)
 	} else {
-		mx.ResponseTime = durationToMs(end)
 		hc.collectOKResponse(&mx, resp)
+	}
+
+	if err == nil || mx.Status.RedirectError {
+		mx.ResponseTime = durationToMs(end)
 	}
 
 	return stm.ToMap(mx), nil
