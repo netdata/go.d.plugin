@@ -16,6 +16,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	testURL = "http://127.0.0.1:38001"
+)
+
 func TestNew(t *testing.T) {
 	job := New()
 	assert.Implements(t, (*module.Module)(nil), job)
@@ -28,7 +32,7 @@ func TestHTTPCheck_Cleanup(t *testing.T) { New().Cleanup() }
 func TestHTTPCheck_Init(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1:38001"
+	job.UserURL = testURL
 	assert.True(t, job.Init())
 	assert.NotNil(t, job.client)
 }
@@ -37,14 +41,14 @@ func TestHTTPCheck_InitNG(t *testing.T) {
 	job := New()
 
 	assert.False(t, job.Init())
-	job.UserURL = "http://127.0.0.1:38001"
+	job.UserURL = testURL
 	job.ResponseMatch = "(?:qwe))"
 	assert.False(t, job.Init())
 }
 
 func TestHTTPCheck_Check(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001"
+	job.UserURL = testURL
 
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
@@ -55,7 +59,7 @@ func TestHTTPCheck_Charts(t *testing.T) {
 	assert.False(t, New().Charts().Has(bodyLengthChart.ID))
 
 	job := New()
-	job.UserURL = "http://127.0.0.1"
+	job.UserURL = testURL
 	job.ResponseMatch = "1"
 	require.True(t, job.Init())
 	assert.True(t, job.Charts().Has(bodyLengthChart.ID))
@@ -64,17 +68,15 @@ func TestHTTPCheck_Charts(t *testing.T) {
 func TestHTTPCheck_Collect(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1"
+	job.UserURL = testURL
 	job.ResponseMatch = "hello"
 	require.True(t, job.Init())
 
-	job.client = clientFunc(func(r *http.Request) (*http.Response, error) {
-		resp := &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       nopCloser{bytes.NewBufferString("hello")},
-		}
-		return resp, nil
-	})
+	resp := &http.Response{
+		StatusCode: http.StatusOK,
+		Body:       nopCloser{bytes.NewBufferString("hello")},
+	}
+	job.client = newClientFunc(resp, nil)
 	assert.Equal(
 		t,
 		stm.ToMap(metrics{Status: status{Success: true}}),
@@ -85,11 +87,10 @@ func TestHTTPCheck_Collect(t *testing.T) {
 func TestHTTPCheck_Collect_TimeoutError(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1"
-	job.ResponseMatch = "hello"
+	job.UserURL = testURL
 	require.True(t, job.Init())
 
-	job.client = clientFunc(func(r *http.Request) (*http.Response, error) { return nil, timeoutError{} })
+	job.client = newClientFunc(nil, timeoutError{})
 	assert.Equal(
 		t,
 		stm.ToMap(metrics{Status: status{Timeout: true}}),
@@ -101,13 +102,11 @@ func TestHTTPCheck_Collect_TimeoutError(t *testing.T) {
 func TestHTTPCheck_Collect_DNSLookupError(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1"
-	job.ResponseMatch = "hello"
+	job.UserURL = testURL
 	require.True(t, job.Init())
 
-	job.client = clientFunc(func(r *http.Request) (*http.Response, error) {
-		return nil, net.Error(&url.Error{Err: &net.OpError{Err: &net.DNSError{}}})
-	})
+	err := net.Error(&url.Error{Err: &net.OpError{Err: &net.DNSError{}}})
+	job.client = newClientFunc(nil, err)
 	assert.Equal(
 		t,
 		stm.ToMap(metrics{Status: status{DNSLookupError: true}}),
@@ -118,13 +117,11 @@ func TestHTTPCheck_Collect_DNSLookupError(t *testing.T) {
 func TestHTTPCheck_Collect_AddressParseError(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1"
-	job.ResponseMatch = "hello"
+	job.UserURL = testURL
 	require.True(t, job.Init())
 
-	job.client = clientFunc(func(r *http.Request) (*http.Response, error) {
-		return nil, net.Error(&url.Error{Err: &net.OpError{Err: &net.ParseError{}}})
-	})
+	err := net.Error(&url.Error{Err: &net.OpError{Err: &net.ParseError{}}})
+	job.client = newClientFunc(nil, err)
 	assert.Equal(
 		t,
 		stm.ToMap(metrics{Status: status{ParseAddressError: true}}),
@@ -136,13 +133,11 @@ func TestHTTPCheck_Collect_AddressParseError(t *testing.T) {
 func TestHTTPCheck_Collect_RedirectError(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1"
-	job.ResponseMatch = "hello"
+	job.UserURL = testURL
 	require.True(t, job.Init())
 
-	job.client = clientFunc(func(r *http.Request) (*http.Response, error) {
-		return nil, net.Error(&url.Error{Err: web.ErrRedirectAttempted})
-	})
+	err := net.Error(&url.Error{Err: web.ErrRedirectAttempted})
+	job.client = newClientFunc(nil, err)
 	assert.Equal(
 		t,
 		stm.ToMap(metrics{Status: status{RedirectError: true}}),
@@ -153,14 +148,15 @@ func TestHTTPCheck_Collect_RedirectError(t *testing.T) {
 func TestHTTPCheck_Collect_BadContentError(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1"
+	job.UserURL = testURL
 	job.ResponseMatch = "hello"
 	require.True(t, job.Init())
 
-	job.client = clientFunc(func(r *http.Request) (*http.Response, error) {
-		resp := &http.Response{StatusCode: http.StatusOK, Body: nopCloser{bytes.NewBufferString("good bye")}}
-		return resp, nil
-	})
+	resp := &http.Response{
+		StatusCode: http.StatusOK,
+		Body:       nopCloser{bytes.NewBufferString("good bye")},
+	}
+	job.client = newClientFunc(resp, nil)
 	assert.Equal(
 		t,
 		stm.ToMap(metrics{Status: status{BadContent: true}}),
@@ -171,14 +167,11 @@ func TestHTTPCheck_Collect_BadContentError(t *testing.T) {
 func TestHTTPCheck_Collect_BadStatusError(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1"
-	job.ResponseMatch = "hello"
+	job.UserURL = testURL
 	require.True(t, job.Init())
 
-	job.client = clientFunc(func(r *http.Request) (*http.Response, error) {
-		resp := &http.Response{StatusCode: http.StatusBadGateway}
-		return resp, nil
-	})
+	resp := &http.Response{StatusCode: http.StatusBadGateway}
+	job.client = newClientFunc(resp, nil)
 	assert.Equal(
 		t,
 		stm.ToMap(metrics{Status: status{BadStatusCode: true}}),
@@ -189,6 +182,11 @@ func TestHTTPCheck_Collect_BadStatusError(t *testing.T) {
 type clientFunc func(r *http.Request) (*http.Response, error)
 
 func (f clientFunc) Do(r *http.Request) (*http.Response, error) { return f(r) }
+
+func newClientFunc(resp *http.Response, err error) clientFunc {
+	f := func(r *http.Request) (*http.Response, error) { return resp, err }
+	return clientFunc(f)
+}
 
 type nopCloser struct {
 	io.Reader
