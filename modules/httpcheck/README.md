@@ -25,14 +25,14 @@ It produces the following charts:
 
 | Status        | Description|
 | ------------- |-------------|
-| success      |no error on HTTP request, body reading and its content checking |
-| timeout      |timeout error on HTTP request|
-| dns lookup error |dns lookup error on HTTP request|
-| address parse error |address parse error on HTTP request |
-| redirect error |redirect is disabled, but server returned 3xx|
-| body read error |`response_match` option is set. Error during response body reading|
-| bad content |`response_match` option is set. The body of the response didn't match the regex|
-| bad status |response status code not in `accepted_statuses`|
+| success      |No error on HTTP request, body reading and body content checking |
+| timeout      |Timeout error on HTTP request|
+| dns lookup error |DNS lookup error on HTTP request|
+| address parse error |Address parse error on HTTP request |
+| redirect error |Redirect is disabled, but server returned 3xx|
+| body read error | Error during response body reading (only if `response_match` option is set)|
+| bad content |The body of the response didn't match the regex (only if `response_match` option is set)|
+| bad status |Response status code not in `accepted_statuses`|
 
 
 ### configuration
