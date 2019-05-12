@@ -11,10 +11,6 @@ It produces the following charts:
  * success
  * no connection
  * timeout
- * dns lookup error
- * address parse error
- * redirect error
- * body read error
  * bad content
  * bad status
 
@@ -27,10 +23,6 @@ It produces the following charts:
 | ------------- |-------------|
 | success      |No error on HTTP request, body reading and body content checking |
 | timeout      |Timeout error on HTTP request|
-| dns lookup error |DNS lookup error on HTTP request|
-| address parse error |Address parse error on HTTP request |
-| redirect error |Redirect is disabled, but server returned 3xx|
-| body read error | Error during response body reading (only if `response_match` option is set)|
 | bad content |The body of the response didn't match the regex (only if `response_match` option is set)|
 | bad status |Response status code not in `accepted_statuses`|
 | no connection |Any other network error not specifically handled by the module|
