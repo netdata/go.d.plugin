@@ -297,7 +297,6 @@ func TestToMap_Variadic(t *testing.T) {
 }
 
 func TestToMap_badTag(t *testing.T) {
-
 	assert.Panics(t, func() {
 		s := struct {
 			a int `stm:"a,not_int"`
@@ -322,4 +321,22 @@ func TestToMap_badTag(t *testing.T) {
 		}{1}
 		stm.ToMap(s)
 	})
+}
+
+func TestToMap_bool(t *testing.T) {
+	s := struct {
+		A bool `stm:"a"`
+		B bool `stm:"b"`
+	}{
+		A: true,
+		B: false,
+	}
+	assert.Equal(
+		t,
+		map[string]int64{
+			"a": 1,
+			"b": 0,
+		},
+		stm.ToMap(s),
+	)
 }

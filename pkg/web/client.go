@@ -7,6 +7,9 @@ import (
 	"net/url"
 )
 
+// ErrRedirectAttempted indicates that a redirect occurred.
+var ErrRedirectAttempted = errors.New("redirect")
+
 // Client is a struct that contains the fields that are needed fore creating HTTPClient.
 type Client struct {
 	Timeout           Duration `yaml:"timeout"`              // default is zero (no timeout) must be tuned by modules
@@ -37,7 +40,7 @@ func NewHTTPClient(client Client) (*http.Client, error) {
 
 func redirectFunc(notFollowRedirect bool) func(req *http.Request, via []*http.Request) error {
 	if notFollowRedirect {
-		return func(req *http.Request, via []*http.Request) error { return errors.New("redirect") }
+		return func(_ *http.Request, _ []*http.Request) error { return ErrRedirectAttempted }
 	}
 	return nil
 }
@@ -49,7 +52,7 @@ func proxyFunc(proxyurl string) func(r *http.Request) (*url.URL, error) {
 
 	proxyURL, err := url.Parse(proxyurl)
 	if err != nil {
-		return func(r *http.Request) (*url.URL, error) { return nil, fmt.Errorf("invalid proxy: %s", err) }
+		return func(_ *http.Request) (*url.URL, error) { return nil, fmt.Errorf("invalid proxy: %v", err) }
 	}
 
 	return func(r *http.Request) (*url.URL, error) { return proxyURL, nil }
