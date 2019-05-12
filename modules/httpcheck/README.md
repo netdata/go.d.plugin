@@ -23,16 +23,16 @@ It produces the following charts:
 
 ### check statuses
 
-| Status        | Description           |
-| ------------- |:-------------:|
-| success      | no error on HTTP request, body reading and its content checking |
-| timeout      | timeout error on HTTP request |
-| dns lookup error | dns lookup error on HTTP request|
-| address parse error | address parse error on HTTP request |
-| redirect error | redirect is disabled, but server returned 3xx|
-| body read error | `response_match` option is set. Error during response body reading|
-| bad content | `response_match` option is set. The body of the response didn't match the regex|
-| bad status | response status code not in `accepted_statuses`|
+| Status        | Description|
+| ------------- |-------------|
+| success      |no error on HTTP request, body reading and its content checking |
+| timeout      |timeout error on HTTP request|
+| dns lookup error |dns lookup error on HTTP request|
+| address parse error |address parse error on HTTP request |
+| redirect error |redirect is disabled, but server returned 3xx|
+| body read error |`response_match` option is set. Error during response body reading|
+| bad content |`response_match` option is set. The body of the response didn't match the regex|
+| bad status |response status code not in `accepted_statuses`|
 
 
 ### configuration
