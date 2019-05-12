@@ -101,7 +101,7 @@ func (hc *HTTPCheck) Init() bool {
 
 	hc.Debugf("using accepted HTTP statuses %s", hc.AcceptedStatuses)
 	if hc.reResponse != nil {
-		hc.Debugf("using response reResponse regexp %s", hc.reResponse)
+		hc.Debugf("using response match regexp %s", hc.reResponse)
 	}
 
 	return true
