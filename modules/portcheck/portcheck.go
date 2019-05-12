@@ -1,7 +1,7 @@
 package portcheck
 
 import (
-	"fmt"
+	"net"
 	"sort"
 	"time"
 
@@ -13,7 +13,6 @@ import (
 func init() {
 	creator := module.Creator{
 		Defaults: module.Defaults{
-			Disabled:    true,
 			UpdateEvery: 5,
 		},
 		Create: func() module.Module { return New() },
@@ -22,147 +21,106 @@ func init() {
 	module.Register("portcheck", creator)
 }
 
-const (
-	defaultHTTPTimeout = time.Second
-)
+const defaultConnectTimeout = time.Second * 2
 
-// New creates PortCheck with default values
+// New creates PortCheck with default values.
 func New() *PortCheck {
-	return &PortCheck{
-		Timeout: web.Duration{Duration: defaultHTTPTimeout},
-
-		task:     make(chan *port),
-		taskDone: make(chan struct{}),
-		ports:    make([]*port, 0),
-		metrics:  make(map[string]int64),
+	config := Config{
+		Timeout: web.Duration{Duration: defaultConnectTimeout},
 	}
 
+	return &PortCheck{
+		Config: config,
+		dial:   net.DialTimeout,
+	}
 }
+
+/// Config is the Portcheck module configuration file.
+type Config struct {
+	Host    string       `yaml:"host"`
+	Ports   []int        `yaml:"ports"`
+	Timeout web.Duration `yaml:"timeout"`
+}
+
+type dialFunc func(network, address string, timeout time.Duration) (net.Conn, error)
 
 type state string
 
-var (
+const (
 	success state = "success"
 	timeout state = "timeout"
 	failed  state = "failed"
 )
 
 type port struct {
-	number      int
-	state       state
-	inState     int
-	updateEvery int
-	latency     time.Duration
+	number  int
+	state   state
+	inState int
+	latency int
 }
 
-func (p *port) setState(s state) {
-	changed := p.state != s
-
-	if changed {
-		p.inState = p.updateEvery
-		p.state = s
-	} else {
-		p.inState += p.updateEvery
-	}
-}
-
-func (p port) stateText() string {
-	switch p.state {
-	case success:
-		return fmt.Sprintf("success_%d", p.number)
-	case timeout:
-		return fmt.Sprintf("timeout_%d", p.number)
-	case failed:
-		return fmt.Sprintf("failed_%d", p.number)
-	}
-	panic("unknown state")
-}
-
-func newPort(number, updateEvery int) *port {
-	return &port{
-		number:      number,
-		updateEvery: updateEvery,
-	}
-}
-
-// PortCheck portcheck module
+// PortCheck portcheck module.
 type PortCheck struct {
 	module.Base
-
-	Host        string       `yaml:"host" validate:"required"`
-	Ports       []int        `yaml:"ports" validate:"required,gte=1"`
-	Timeout     web.Duration `yaml:"timeout"`
-	UpdateEvery int          `yaml:"update_every"`
-
-	task     chan *port
-	taskDone chan struct{}
-
-	ports   []*port
-	workers []*worker
-
-	metrics map[string]int64
+	Config      `yaml:",inline"`
+	UpdateEvery int `yaml:"update_every"`
+	dial        dialFunc
+	ports       []*port
 }
 
-// Cleanup makes cleanup
-func (tc *PortCheck) Cleanup() {
-	if len(tc.workers) == 0 {
-		return
-	}
-	close(tc.task)
-	tc.workers = make([]*worker, 0)
-}
+// Cleanup makes cleanup.
+func (PortCheck) Cleanup() {}
 
-// Init makes initialization
-func (tc *PortCheck) Init() bool {
-	sort.Ints(tc.Ports)
-
-	for _, p := range tc.Ports {
-		tc.ports = append(tc.ports, newPort(p, tc.UpdateEvery))
-		tc.workers = append(tc.workers, newWorker(tc.Host, tc.Timeout.Duration, tc.task, tc.taskDone))
+// Init makes initialization.
+func (pc *PortCheck) Init() bool {
+	if pc.Host == "" {
+		pc.Error("host parameter is not set")
+		return false
 	}
 
-	tc.Debugf("using host %s", tc.Host)
-	tc.Debugf("using ports %v", tc.Ports)
-	tc.Debugf("using HTTP timeout: %s", tc.Timeout.Duration)
+	if len(pc.Ports) == 0 {
+		pc.Error("ports parameter is not set")
+		return false
+	}
+
+	sort.Ints(pc.Ports)
+
+	for _, p := range pc.Ports {
+		pc.ports = append(pc.ports, &port{number: p})
+	}
+
+	pc.Debugf("using host %s", pc.Host)
+	pc.Debugf("using ports %v", pc.Ports)
+	pc.Debugf("using TCP connection timeout: %s", pc.Timeout)
 
 	return true
 }
 
-// Check makes check
-func (PortCheck) Check() bool {
-	return true
+// Check makes check.
+func (PortCheck) Check() bool { return true }
+
+// Charts creates charts.
+func (pc PortCheck) Charts() *Charts {
+	charts := &Charts{}
+
+	for _, port := range pc.Ports {
+		_ = charts.Add(*newPortCharts(port)...)
+	}
+
+	return charts
 }
 
-// Charts creates    charts
-func (tc PortCheck) Charts() *Charts {
-	var charts module.Charts
+// Collect collects metrics.
+func (pc *PortCheck) Collect() map[string]int64 {
+	mx, err := pc.collect()
 
-	for _, p := range tc.Ports {
-		_ = charts.Add(chartsTemplate(p)...)
+	if err != nil {
+		pc.Error(err)
 	}
 
-	return &charts
-}
-
-// Collect collects metrics
-func (tc *PortCheck) Collect() map[string]int64 {
-	for _, p := range tc.ports {
-		tc.task <- p
+	if len(mx) == 0 {
+		return nil
 	}
 
-	for i := 0; i < len(tc.ports); i++ {
-		<-tc.taskDone
-	}
-
-	for _, p := range tc.ports {
-		tc.metrics[fmt.Sprintf("success_%d", p.number)] = 0
-		tc.metrics[fmt.Sprintf("failed_%d", p.number)] = 0
-		tc.metrics[fmt.Sprintf("timeout_%d", p.number)] = 0
-
-		tc.metrics[p.stateText()] = 1
-		tc.metrics[fmt.Sprintf("instate_%d", p.number)] = int64(p.inState)
-		tc.metrics[fmt.Sprintf("latency_%d", p.number)] = int64(p.latency)
-	}
-
-	return tc.metrics
+	return mx
 }
