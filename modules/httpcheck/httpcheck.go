@@ -47,13 +47,17 @@ type Config struct {
 	ResponseMatch    string `yaml:"response_match"`
 }
 
+type client interface {
+	Do(*http.Request) (*http.Response, error)
+}
+
 // HTTPCheck HTTPCheck module.
 type HTTPCheck struct {
 	module.Base
 	Config           `yaml:",inline"`
 	acceptedStatuses map[int]bool
 	reResponse       *regexp.Regexp
-	client           *http.Client
+	client           client
 }
 
 // Cleanup makes cleanup.
