@@ -32,25 +32,24 @@ var charts = Charts{
 		Ctx:   "httpcheck.status",
 		Dims: Dims{
 			{ID: "success"},
-			{ID: "no_connection"},
+			{ID: "no_connection", Name: "no connection"},
 			{ID: "timeout"},
-			{ID: "dns_lookup_error"},
-			{ID: "address_parse_error"},
-			{ID: "redirect_error"},
-			{ID: "body_read_error"},
-			{ID: "bad_content"},
-			{ID: "bad_status"},
+			{ID: "dns_lookup_error", Name: "dns lookup error"},
+			{ID: "address_parse_error", Name: "address parse error"},
+			{ID: "redirect_error", Name: "redirect error"},
+			{ID: "body_read_error", Name: "body read error"},
+			{ID: "bad_content", Name: "bad content"},
+			{ID: "bad_status", Name: "bad status"},
 		},
 	},
-}
-
-var bodyLengthChart = Chart{
-	ID:    "response_length",
-	Title: "HTTP Response Body Length",
-	Units: "characters",
-	Fam:   "response",
-	Ctx:   "httpcheck.response_length",
-	Dims: Dims{
-		{ID: "response_length", Name: "length"},
+	{
+		ID:    "response_length",
+		Title: "HTTP Response Body Length",
+		Units: "characters",
+		Fam:   "response",
+		Ctx:   "httpcheck.response_length",
+		Dims: Dims{
+			{ID: "response_length", Name: "length"},
+		},
 	},
 }

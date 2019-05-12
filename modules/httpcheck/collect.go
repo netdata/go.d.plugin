@@ -33,6 +33,7 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 
 	start := time.Now()
 	resp, err := hc.client.Do(req)
+	defer closeBody(resp)
 	end := time.Since(start)
 
 	if err != nil {
@@ -69,21 +70,18 @@ func (hc HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
 		return
 	}
 
-	if hc.reResponse == nil {
-		mx.Status.Success = true
-		return
+	if hc.reResponse != nil {
+		bs, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			mx.Status.BodyReadError = true
+			return
+		}
+		if !hc.reResponse.Match(bs) {
+			mx.Status.BadContent = true
+			return
+		}
 	}
 
-	bs, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		mx.Status.BodyReadError = true
-		return
-	}
-	if !hc.reResponse.Match(bs) {
-		mx.Status.BadContent = true
-		return
-	}
-	mx.ResponseLength = len(bs)
 	mx.Status.Success = true
 }
 
