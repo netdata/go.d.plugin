@@ -1,8 +1,6 @@
 package wmi
 
 import (
-	"fmt"
-	"github.com/netdata/go-orchestrator/module"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/prometheus/prometheus/pkg/labels"
@@ -25,6 +23,8 @@ func (w *WMI) collect() (map[string]int64, error) {
 
 	w.collectCPU(mx, scraped)
 
+	w.updateCharts(mx)
+
 	return stm.ToMap(mx), nil
 }
 
@@ -40,25 +40,6 @@ func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) {
 		mx.CPU.Time.Interrupt.Add(c.Time.Interrupt.Value())
 		mx.CPU.Time.Idle.Add(c.Time.Idle.Value())
 		mx.CPU.Time.DPC.Add(c.Time.DPC.Value())
-
-		if !w.collectedCPUCores[c.ID] {
-			w.collectedCPUCores[c.ID] = true
-			dim := &Dim{
-				ID:   fmt.Sprintf("cpu_core_%s_dpc", c.ID),
-				Name: "core" + c.ID,
-				Algo: module.Incremental,
-				Div:  1000,
-			}
-			_ = w.charts.Get("cpu_dpcs_total").AddDim(dim)
-
-			dim = &Dim{
-				ID:   fmt.Sprintf("cpu_core_%s_interrupts", c.ID),
-				Name: "core" + c.ID,
-				Algo: module.Incremental,
-				Div:  1000,
-			}
-			_ = w.charts.Get("cpu_interrupts_total").AddDim(dim)
-		}
 	}
 }
 
@@ -71,15 +52,12 @@ func collectCPUCoresCStates(mx *metrics, pms prometheus.Metrics) {
 			state  = pm.Labels.Get("state")
 			value  = pm.Value
 		)
-
 		if coreID == "" || state == "" {
 			continue
 		}
-
 		if core.ID != coreID {
 			core = mx.CPU.Cores.get(coreID, true)
 		}
-
 		switch state {
 		default:
 		case "c1":
@@ -100,15 +78,12 @@ func collectCPUCoresInterrupts(mx *metrics, pms prometheus.Metrics) {
 			coreID = pm.Labels.Get("core")
 			value  = pm.Value
 		)
-
 		if coreID == "" {
 			continue
 		}
-
 		if core.ID != coreID {
 			core = mx.CPU.Cores.get(coreID, true)
 		}
-
 		core.Interrupts.Set(value)
 	}
 }
@@ -122,15 +97,12 @@ func collectCPUCoresUsage(mx *metrics, pms prometheus.Metrics) {
 			mode   = pm.Labels.Get("mode")
 			value  = pm.Value
 		)
-
 		if coreID == "" || mode == "" {
 			continue
 		}
-
 		if core.ID != coreID {
 			core = mx.CPU.Cores.get(coreID, true)
 		}
-
 		switch mode {
 		default:
 		case "dpc":
@@ -155,15 +127,12 @@ func collectCPUCoresDPCs(mx *metrics, pms prometheus.Metrics) {
 			coreID = pm.Labels.Get("core")
 			value  = pm.Value
 		)
-
 		if coreID == "" {
 			continue
 		}
-
 		if core.ID != coreID {
 			core = mx.CPU.Cores.get(coreID, true)
 		}
-
 		core.DPCs.Set(value)
 	}
 }

@@ -1,6 +1,10 @@
 package wmi
 
-import "github.com/netdata/go-orchestrator/module"
+import (
+	"fmt"
+
+	"github.com/netdata/go-orchestrator/module"
+)
 
 type (
 	// Charts is an alias for module.Charts
@@ -49,4 +53,27 @@ var charts = Charts{
 		Type:  module.Stacked,
 		// Dims will be added during collection
 	},
+}
+
+func (w *WMI) updateCharts(mx *metrics) {
+	for _, c := range mx.CPU.Cores {
+		if !w.collectedCPUCores[c.ID] {
+			w.collectedCPUCores[c.ID] = true
+			dim := &Dim{
+				ID:   fmt.Sprintf("cpu_core_%s_dpc", c.ID),
+				Name: "core" + c.ID,
+				Algo: module.Incremental,
+				Div:  1000,
+			}
+			_ = w.charts.Get("cpu_dpcs_total").AddDim(dim)
+
+			dim = &Dim{
+				ID:   fmt.Sprintf("cpu_core_%s_interrupts", c.ID),
+				Name: "core" + c.ID,
+				Algo: module.Incremental,
+				Div:  1000,
+			}
+			_ = w.charts.Get("cpu_interrupts_total").AddDim(dim)
+		}
+	}
 }
