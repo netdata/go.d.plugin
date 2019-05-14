@@ -9,7 +9,10 @@ import (
 	"github.com/netdata/go-orchestrator/logger"
 )
 
-const fieldTagName = "stm"
+const (
+	fieldTagName = "stm"
+	structKey    = "STMKey"
+)
 
 type (
 	Value interface {
@@ -40,6 +43,8 @@ func toMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
 		convertPtr(value, rv, key, mul, div)
 	case reflect.Struct:
 		convertStruct(value, rv, key)
+	case reflect.Array, reflect.Slice:
+		convertArraySlice(value, rv, key, mul, div)
 	case reflect.Map:
 		convertMap(value, rv, key, mul, div)
 	case reflect.Bool:
@@ -63,10 +68,14 @@ func convertPtr(value reflect.Value, rv map[string]int64, key string, mul, div i
 
 func convertStruct(value reflect.Value, rv map[string]int64, key string) {
 	t := value.Type()
+	k := value.FieldByName(structKey)
+	if k.Kind() == reflect.String {
+		key = joinPrefix(key, k.String())
+	}
 	for i := 0; i < t.NumField(); i++ {
 		ft := t.Field(i)
 		tag, ok := ft.Tag.Lookup(fieldTagName)
-		if !ok {
+		if !ok || ft.Name == structKey {
 			continue
 		}
 		value := value.Field(i)
@@ -78,6 +87,12 @@ func convertStruct(value reflect.Value, rv map[string]int64, key string) {
 func convertMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
 	for _, k := range value.MapKeys() {
 		toMap(value.MapIndex(k), rv, joinPrefix(key, k.String()), mul, div)
+	}
+}
+
+func convertArraySlice(value reflect.Value, rv map[string]int64, key string, mul, div int) {
+	for i := 0; i < value.Len(); i++ {
+		toMap(value.Index(i), rv, key, mul, div)
 	}
 }
 
