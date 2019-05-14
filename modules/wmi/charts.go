@@ -58,9 +58,9 @@ var cpuCharts = Charts{
 var cpuCoreCharts = Charts{
 	{
 		ID:    "core_%s_cpu_usage",
-		Title: "CPU Usage",
+		Title: "Core%s Usage",
 		Units: "percentage",
-		Fam:   "cpu usage per core",
+		Fam:   "cpu core usage",
 		Ctx:   "cpu.cpu_usage_per_core",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -73,9 +73,9 @@ var cpuCoreCharts = Charts{
 	},
 	{
 		ID:    "core_%s_cpu_cstate",
-		Title: "Time Spent in Low-Power Idle State",
+		Title: "Core%s Time Spent in Low-Power Idle State",
 		Units: "percentage",
-		Fam:   "cpu cstate per core",
+		Fam:   "cpu core c-state",
 		Ctx:   "cpu.cpu_cstate_per_core",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -112,6 +112,7 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 
 		for _, chart := range *charts {
 			chart.ID = fmt.Sprintf(chart.ID, core.ID)
+			chart.Title = fmt.Sprintf(chart.Title, core.ID)
 			for _, dim := range chart.Dims {
 				dim.ID = fmt.Sprintf(dim.ID, core.ID)
 			}
