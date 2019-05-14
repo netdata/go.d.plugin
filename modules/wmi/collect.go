@@ -3,6 +3,7 @@ package wmi
 import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
+	"github.com/prometheus/prometheus/pkg/labels"
 )
 
 const (
@@ -32,11 +33,11 @@ func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) {
 	collectCPUCoresUsage(mx, pms)
 
 	for _, c := range mx.CPU.Cores {
-		mx.CPU.Usage.User.Add(c.Usage.User.Value())
-		mx.CPU.Usage.Privileged.Add(c.Usage.Privileged.Value())
-		mx.CPU.Usage.Interrupt.Add(c.Usage.Interrupt.Value())
-		mx.CPU.Usage.Idle.Add(c.Usage.Idle.Value())
-		mx.CPU.Usage.DPC.Add(c.Usage.DPC.Value())
+		mx.CPU.Time.User.Add(c.Time.User.Value())
+		mx.CPU.Time.Privileged.Add(c.Time.Privileged.Value())
+		mx.CPU.Time.Interrupt.Add(c.Time.Interrupt.Value())
+		mx.CPU.Time.Idle.Add(c.Time.Idle.Value())
+		mx.CPU.Time.DPC.Add(c.Time.DPC.Value())
 	}
 }
 
@@ -112,15 +113,15 @@ func collectCPUCoresUsage(mx *metrics, pms prometheus.Metrics) {
 		switch mode {
 		default:
 		case "dpc":
-			core.Usage.DPC.Set(value)
+			core.Time.DPC.Set(value)
 		case "idle":
-			core.Usage.Idle.Set(value)
+			core.Time.Idle.Set(value)
 		case "interrupt":
-			core.Usage.Interrupt.Set(value)
+			core.Time.Interrupt.Set(value)
 		case "privileged":
-			core.Usage.Privileged.Set(value)
+			core.Time.Privileged.Set(value)
 		case "user":
-			core.Usage.User.Set(value)
+			core.Time.User.Set(value)
 		}
 	}
 }
@@ -146,15 +147,11 @@ func collectCPUCoresDPCs(mx *metrics, pms prometheus.Metrics) {
 	}
 }
 
-func findCollector(pms prometheus.Metrics, colName string) (exist, success bool) {
-	for _, pm := range pms.FindByName("wmi_exporter_collector_success") {
-		name := pm.Labels.Get("collector")
-		if name == "" {
-			break
-		}
-		if name == colName {
-			return true, pm.Value == 1
-		}
+func findCollector(pms prometheus.Metrics, name string) (exist, success bool) {
+	m, err := labels.NewMatcher(labels.MatchEqual, "collector", name)
+	if err != nil {
+		panic(err)
 	}
-	return false, false
+	ms := pms.Match(m)
+	return ms.Len() > 0, ms.Max() == 1
 }

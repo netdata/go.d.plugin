@@ -7,7 +7,7 @@ func newMetrics() *metrics { return &metrics{} }
 type metrics struct {
 	CPU struct {
 		// Time that processor spent in different modes.
-		Usage cpuModes `stm:"time"`
+		Time  cpuModes `stm:"time"`
 		Cores cpuCores `stm:"core"`
 	} `stm:"cpu"`
 }
@@ -30,7 +30,7 @@ type (
 		// Total number of received and serviced hardware interrupts.
 		Interrupts mtx.Gauge `stm:"interrupts,1000,1"`
 		// Time that processor spent in different modes.
-		Usage cpuModes `stm:"time"`
+		Time cpuModes `stm:"time"`
 		// Time spent in low-power idle state.
 		CState struct {
 			C1 mtx.Gauge `stm:"c1,1000,1"`

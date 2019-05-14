@@ -17,18 +17,18 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "cpu_usage_total",
-		Title: "CPU Usage Total",
+		ID:    "cpu_utilization_total",
+		Title: "CPU Utilization Total",
 		Units: "percentage",
 		Fam:   "cpu",
-		Ctx:   "cpu.cpu_usage_total",
+		Ctx:   "cpu.cpu_utilization_total",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "cpu_time_idle", Name: "idle", Algo: module.PercentOfIncremental, DimOpts: Opts{Hidden: true}},
-			{ID: "cpu_time_dpc", Name: "dpc", Algo: module.PercentOfIncremental},
-			{ID: "cpu_time_user", Name: "user", Algo: module.PercentOfIncremental},
-			{ID: "cpu_time_privileged", Name: "privileged", Algo: module.PercentOfIncremental},
-			{ID: "cpu_time_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental},
+			{ID: "cpu_time_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
+			{ID: "cpu_time_dpc", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_time_user", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_time_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_time_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
 		},
 	},
 }
