@@ -2,6 +2,7 @@ package wmi
 
 import (
 	"fmt"
+
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -20,11 +21,11 @@ type (
 
 var cpuCharts = Charts{
 	{
-		ID:    "cpu_utilization_total",
-		Title: "CPU Utilization Total",
+		ID:    "cpu_usage_total",
+		Title: "CPU Usage Total",
 		Units: "percentage",
 		Fam:   "cpu",
-		Ctx:   "cpu.cpu_utilization_total",
+		Ctx:   "cpu.cpu_usage_total",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "cpu_time_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
@@ -54,6 +55,37 @@ var cpuCharts = Charts{
 	},
 }
 
+var cpuCoreCharts = Charts{
+	{
+		ID:    "core_%s_cpu_usage",
+		Title: "CPU Usage",
+		Units: "percentage",
+		Fam:   "cpu usage per core",
+		Ctx:   "cpu.cpu_usage_per_core",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "cpu_core_%s_time_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
+			{ID: "cpu_core_%s_time_dpc", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_time_user", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_time_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_time_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
+		},
+	},
+	{
+		ID:    "core_%s_cpu_cstate",
+		Title: "Time Spent in Low-Power Idle State",
+		Units: "percentage",
+		Fam:   "cpu cstate per core",
+		Ctx:   "cpu.cpu_cstate_per_core",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "cpu_core_%s_cstate_c1", Name: "c1", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_cstate_c2", Name: "c2", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_cstate_c3", Name: "c3", Algo: module.PercentOfIncremental, Div: 1000},
+		},
+	},
+}
+
 func (w *WMI) updateCharts(mx *metrics) {
 	w.updateCPUCharts(mx)
 }
@@ -64,29 +96,42 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 		return
 	}
 
-	if !w.col.collectors["cpu"] {
-		w.col.collectors["cpu"] = true
+	if !w.collected.collectors[collectorCPU] {
+		w.collected.collectors[collectorCPU] = true
 		_ = w.charts.Add(*cpuCharts.Copy()...)
 	}
 
-	for _, c := range mx.CPU.Cores {
-		if !w.col.cpuCores[c.ID] {
-			w.col.cpuCores[c.ID] = true
-			dim := &Dim{
-				ID:   fmt.Sprintf("cpu_core_%s_dpc", c.ID),
-				Name: "core" + c.ID,
-				Algo: module.Incremental,
-				Div:  1000,
-			}
-			_ = w.charts.Get("cpu_dpcs_total").AddDim(dim)
-
-			dim = &Dim{
-				ID:   fmt.Sprintf("cpu_core_%s_interrupts", c.ID),
-				Name: "core" + c.ID,
-				Algo: module.Incremental,
-				Div:  1000,
-			}
-			_ = w.charts.Get("cpu_interrupts_total").AddDim(dim)
+	for _, core := range mx.CPU.Cores {
+		if w.collected.cpuCores[core.ID] {
+			continue
 		}
+
+		w.collected.cpuCores[core.ID] = true
+
+		charts := cpuCoreCharts.Copy()
+
+		for _, chart := range *charts {
+			chart.ID = fmt.Sprintf(chart.ID, core.ID)
+			for _, dim := range chart.Dims {
+				dim.ID = fmt.Sprintf(dim.ID, core.ID)
+			}
+		}
+		_ = w.charts.Add(*charts...)
+
+		dim := &Dim{
+			ID:   fmt.Sprintf("cpu_core_%s_dpc", core.ID),
+			Name: "core" + core.ID,
+			Algo: module.Incremental,
+			Div:  1000,
+		}
+		_ = w.charts.Get("cpu_dpcs_total").AddDim(dim)
+
+		dim = &Dim{
+			ID:   fmt.Sprintf("cpu_core_%s_interrupts", core.ID),
+			Name: "core" + core.ID,
+			Algo: module.Incremental,
+			Div:  1000,
+		}
+		_ = w.charts.Get("cpu_interrupts_total").AddDim(dim)
 	}
 }

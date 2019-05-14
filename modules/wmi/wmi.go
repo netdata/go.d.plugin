@@ -34,7 +34,7 @@ func New() *WMI {
 	return &WMI{
 		Config: config,
 		charts: &Charts{},
-		col: collected{
+		collected: collected{
 			collectors: make(map[string]bool),
 			cpuCores:   make(map[string]bool),
 		},
@@ -59,7 +59,7 @@ type WMI struct {
 	charts *Charts
 	prom   prometheus.Prometheus
 
-	col collected
+	collected collected
 }
 
 // Cleanup makes cleanup.

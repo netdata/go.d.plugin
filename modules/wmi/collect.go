@@ -6,6 +6,11 @@ import (
 	"github.com/prometheus/prometheus/pkg/labels"
 )
 
+const (
+	collectorCPU = "cpu"
+	collectorNet = "net"
+)
+
 func (w *WMI) collect() (map[string]int64, error) {
 	scraped, err := w.prom.Scrape()
 	if err != nil {
@@ -21,7 +26,7 @@ func (w *WMI) collect() (map[string]int64, error) {
 }
 
 func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
-	enabled, success := findCollector(scraped, "cpu")
+	enabled, success := findCollector(scraped, collectorCPU)
 
 	if enabled && success {
 		mx.CPU = &cpu{}
