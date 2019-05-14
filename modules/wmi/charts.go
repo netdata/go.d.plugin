@@ -2,7 +2,6 @@ package wmi
 
 import (
 	"fmt"
-
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -19,7 +18,7 @@ type (
 	Opts = module.DimOpts
 )
 
-var charts = Charts{
+var cpuCharts = Charts{
 	{
 		ID:    "cpu_utilization_total",
 		Title: "CPU Utilization Total",
@@ -56,9 +55,23 @@ var charts = Charts{
 }
 
 func (w *WMI) updateCharts(mx *metrics) {
+	w.updateCPUCharts(mx)
+}
+
+func (w *WMI) updateCPUCharts(mx *metrics) {
+	enabled := mx.CPU != nil
+	if !enabled {
+		return
+	}
+
+	if !w.col.collectors["cpu"] {
+		w.col.collectors["cpu"] = true
+		_ = w.charts.Add(*cpuCharts.Copy()...)
+	}
+
 	for _, c := range mx.CPU.Cores {
-		if !w.collectedCPUCores[c.ID] {
-			w.collectedCPUCores[c.ID] = true
+		if !w.col.cpuCores[c.ID] {
+			w.col.cpuCores[c.ID] = true
 			dim := &Dim{
 				ID:   fmt.Sprintf("cpu_core_%s_dpc", c.ID),
 				Name: "core" + c.ID,

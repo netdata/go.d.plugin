@@ -32,15 +32,23 @@ func New() *WMI {
 		},
 	}
 	return &WMI{
-		Config:            config,
-		charts:            charts.Copy(),
-		collectedCPUCores: make(map[string]bool),
+		Config: config,
+		charts: &Charts{},
+		col: collected{
+			collectors: make(map[string]bool),
+			cpuCores:   make(map[string]bool),
+		},
 	}
 }
 
 // Config is the WMI module configuration.
 type Config struct {
 	web.HTTP `yaml:",inline"`
+}
+
+type collected struct {
+	collectors map[string]bool
+	cpuCores   map[string]bool
 }
 
 // WMI WMI module.
@@ -51,7 +59,7 @@ type WMI struct {
 	charts *Charts
 	prom   prometheus.Prometheus
 
-	collectedCPUCores map[string]bool
+	col collected
 }
 
 // Cleanup makes cleanup.

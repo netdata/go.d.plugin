@@ -5,11 +5,13 @@ import mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 func newMetrics() *metrics { return &metrics{} }
 
 type metrics struct {
-	CPU struct {
-		// Time that processor spent in different modes.
-		Time  cpuModes `stm:"time"`
-		Cores cpuCores `stm:"core"`
-	} `stm:"cpu"`
+	CPU *cpu `stm:"cpu"`
+}
+
+type cpu struct {
+	// Time that processor spent in different modes.
+	Time  cpuModes `stm:"time"`
+	Cores cpuCores `stm:"core"`
 }
 
 type (
