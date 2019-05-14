@@ -3,7 +3,6 @@ package wmi
 import (
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
@@ -11,7 +10,8 @@ import (
 )
 
 const (
-	defaultURL         = "http://127.0.0.1:9153/metrics"
+	// defaultURL         = "http://127.0.0.1:9182/metrics"
+	defaultURL         = "http://100.127.0.251:9182/metrics"
 	defaultHTTPTimeout = time.Second * 2
 )
 
@@ -33,6 +33,7 @@ func New() *WMI {
 	}
 	return &WMI{
 		Config: config,
+		charts: charts.Copy(),
 	}
 }
 
@@ -44,13 +45,9 @@ type Config struct {
 // WMI WMI module.
 type WMI struct {
 	module.Base
-	Config           `yaml:",inline"`
-	charts           *Charts
-	prom             prometheus.Prometheus
-	perServerMatcher matcher.Matcher
-	perZoneMatcher   matcher.Matcher
-	collectedServers map[string]bool
-	collectedZones   map[string]bool
+	Config `yaml:",inline"`
+	charts *Charts
+	prom   prometheus.Prometheus
 }
 
 // Cleanup makes cleanup.
@@ -80,9 +77,7 @@ func (w *WMI) Init() bool {
 }
 
 // Check makes check.
-func (w WMI) Check() bool {
-	return len(w.Collect()) > 0
-}
+func (w WMI) Check() bool { return len(w.Collect()) > 0 }
 
 // Charts creates Charts.
 func (w WMI) Charts() *Charts { return w.charts }
