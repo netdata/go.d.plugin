@@ -32,8 +32,9 @@ func New() *WMI {
 		},
 	}
 	return &WMI{
-		Config: config,
-		charts: charts.Copy(),
+		Config:            config,
+		charts:            charts.Copy(),
+		collectedCPUCores: make(map[string]bool),
 	}
 }
 
@@ -46,8 +47,11 @@ type Config struct {
 type WMI struct {
 	module.Base
 	Config `yaml:",inline"`
+
 	charts *Charts
 	prom   prometheus.Prometheus
+
+	collectedCPUCores map[string]bool
 }
 
 // Cleanup makes cleanup.

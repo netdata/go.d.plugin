@@ -1,6 +1,8 @@
 package wmi
 
 import (
+	"fmt"
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/prometheus/prometheus/pkg/labels"
@@ -38,6 +40,25 @@ func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) {
 		mx.CPU.Time.Interrupt.Add(c.Time.Interrupt.Value())
 		mx.CPU.Time.Idle.Add(c.Time.Idle.Value())
 		mx.CPU.Time.DPC.Add(c.Time.DPC.Value())
+
+		if !w.collectedCPUCores[c.ID] {
+			w.collectedCPUCores[c.ID] = true
+			dim := &Dim{
+				ID:   fmt.Sprintf("cpu_core_%s_dpc", c.ID),
+				Name: "core" + c.ID,
+				Algo: module.Incremental,
+				Div:  1000,
+			}
+			_ = w.charts.Get("cpu_dpcs_total").AddDim(dim)
+
+			dim = &Dim{
+				ID:   fmt.Sprintf("cpu_core_%s_interrupts", c.ID),
+				Name: "core" + c.ID,
+				Algo: module.Incremental,
+				Div:  1000,
+			}
+			_ = w.charts.Get("cpu_interrupts_total").AddDim(dim)
+		}
 	}
 }
 

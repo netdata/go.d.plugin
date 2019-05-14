@@ -31,4 +31,22 @@ var charts = Charts{
 			{ID: "cpu_time_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
 		},
 	},
+	{
+		ID:    "cpu_dpcs_total",
+		Title: "Received and Serviced Deferred Procedure Calls (DPC)",
+		Units: "dpc/s",
+		Fam:   "cpu",
+		Ctx:   "cpu.cpu_dpcs_total",
+		Type:  module.Stacked,
+		// Dims will be added during collection
+	},
+	{
+		ID:    "cpu_interrupts_total",
+		Title: "Received and Serviced Hardware Interrupts",
+		Units: "interrupts/s",
+		Fam:   "cpu",
+		Ctx:   "cpu.cpu_interrupts_total",
+		Type:  module.Stacked,
+		// Dims will be added during collection
+	},
 }
