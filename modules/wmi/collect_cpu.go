@@ -15,12 +15,17 @@ func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) {
 	collectCPUCoresInterrupts(mx, pms)
 	collectCPUCoresUsage(mx, pms)
 
+	collectCPUSummary(mx)
+
+}
+
+func collectCPUSummary(mx *metrics) {
 	for _, c := range mx.CPU.Cores {
-		mx.CPU.Time.User.Add(c.Time.User.Value())
-		mx.CPU.Time.Privileged.Add(c.Time.Privileged.Value())
-		mx.CPU.Time.Interrupt.Add(c.Time.Interrupt.Value())
-		mx.CPU.Time.Idle.Add(c.Time.Idle.Value())
-		mx.CPU.Time.DPC.Add(c.Time.DPC.Value())
+		mx.CPU.Mode.User.Add(c.Mode.User.Value())
+		mx.CPU.Mode.Privileged.Add(c.Mode.Privileged.Value())
+		mx.CPU.Mode.Interrupt.Add(c.Mode.Interrupt.Value())
+		mx.CPU.Mode.Idle.Add(c.Mode.Idle.Value())
+		mx.CPU.Mode.DPC.Add(c.Mode.DPC.Value())
 	}
 }
 
@@ -87,15 +92,15 @@ func collectCPUCoresUsage(mx *metrics, pms prometheus.Metrics) {
 		switch mode {
 		default:
 		case "dpc":
-			core.Time.DPC.Set(value)
+			core.Mode.DPC.Set(value)
 		case "idle":
-			core.Time.Idle.Set(value)
+			core.Mode.Idle.Set(value)
 		case "interrupt":
-			core.Time.Interrupt.Set(value)
+			core.Mode.Interrupt.Set(value)
 		case "privileged":
-			core.Time.Privileged.Set(value)
+			core.Mode.Privileged.Set(value)
 		case "user":
-			core.Time.User.Set(value)
+			core.Mode.User.Set(value)
 		}
 	}
 }

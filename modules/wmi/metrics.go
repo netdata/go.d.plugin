@@ -9,8 +9,9 @@ type metrics struct {
 }
 
 type cpu struct {
-	// Time that processor spent in different modes.
-	Time  cpuModes `stm:"time"`
+	// Mode represents time that processor spent in different modes.
+	Mode cpuModes `stm:"time"`
+	// Cores is the per core statistics.
 	Cores cpuCores `stm:"core"`
 }
 
@@ -31,9 +32,9 @@ type (
 		DPCs mtx.Gauge `stm:"dpc,1000,1"`
 		// Total number of received and serviced hardware interrupts.
 		Interrupts mtx.Gauge `stm:"interrupts,1000,1"`
-		// Time that processor spent in different modes.
-		Time cpuModes `stm:"time"`
-		// Time spent in low-power idle state.
+		// Mode represents time that processor spent in different modes.
+		Mode cpuModes `stm:"time"`
+		// CState represents time spent in low-power idle state.
 		CState struct {
 			C1 mtx.Gauge `stm:"c1,1000,1"`
 			C2 mtx.Gauge `stm:"c2,1000,1"`
