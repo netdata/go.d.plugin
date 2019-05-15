@@ -15,7 +15,9 @@ type (
 	Dims = module.Dims
 	// Dim is an alias for module.Dim
 	Dim = module.Dim
-	// Opts is an alias for module.DimOpts
+	// Vars is an alias for module.Vars
+	Vars = module.Vars
+	// Dim is an alias for module.Dim
 	Opts = module.DimOpts
 )
 
@@ -98,6 +100,45 @@ var netNICCharts = Charts{
 			{ID: "net_%s_bytes_received", Name: "received", Algo: module.Incremental, Div: 1000 * 125},
 			{ID: "net_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Div: -1000 * 125},
 		},
+		Vars: Vars{
+			{ID: "net_%s_current_bandwidth"},
+		},
+	},
+	{
+		ID:    "nic_%s_packets",
+		Title: "%s Packets",
+		Units: "pps",
+		Fam:   "net %s",
+		Ctx:   "net.net_nic_packets",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "net_%s_packets_received_total", Name: "received", Algo: module.Incremental, Div: 1000},
+			{ID: "net_%s_packets_sent_total", Name: "sent", Algo: module.Incremental, Div: -1000},
+		},
+	},
+	{
+		ID:    "nic_%s_packets_errors",
+		Title: "%s Packets Errors",
+		Units: "pps",
+		Fam:   "net %s",
+		Ctx:   "net.net_nic_packets_errors",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "net_%s_packets_received_errors", Name: "inbound", Algo: module.Incremental, Div: 1000},
+			{ID: "net_%s_packets_outbound_errors", Name: "outbound", Algo: module.Incremental, Div: -1000},
+		},
+	},
+	{
+		ID:    "nic_%s_packets_discarded",
+		Title: "%s Packets Discarded",
+		Units: "pps",
+		Fam:   "net %s",
+		Ctx:   "net.net_nic_packets_discarded",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "net_%s_packets_received_discarded", Name: "inbound", Algo: module.Incremental, Div: 1000},
+			{ID: "net_%s_packets_outbound_discarded", Name: "outbound", Algo: module.Incremental, Div: -1000},
+		},
 	},
 }
 
@@ -111,11 +152,6 @@ func (w *WMI) updateCharts(mx *metrics) {
 }
 
 func (w *WMI) updateCPUCharts(mx *metrics) {
-	enabled := mx.CPU != nil
-	if !enabled {
-		return
-	}
-
 	if !w.collected.collectors[collectorCPU] {
 		w.collected.collectors[collectorCPU] = true
 		_ = w.charts.Add(*cpuCharts.Copy()...)
@@ -165,18 +201,21 @@ func (w *WMI) updateNetCharts(mx *metrics) {
 		}
 		w.collected.nics[nic.ID] = true
 
-		// Create per nic charts
 		charts := netNICCharts.Copy()
 
 		for _, chart := range *charts {
 			chart.ID = fmt.Sprintf(chart.ID, nic.ID)
 			chart.Title = fmt.Sprintf(chart.Title, nic.ID)
 			chart.Fam = fmt.Sprintf(chart.Fam, nic.ID)
+
 			for _, dim := range chart.Dims {
 				dim.ID = fmt.Sprintf(dim.ID, nic.ID)
 			}
+
+			for _, v := range chart.Vars {
+				v.ID = fmt.Sprintf(v.ID, nic.ID)
+			}
 		}
 		_ = w.charts.Add(*charts...)
-
 	}
 }
