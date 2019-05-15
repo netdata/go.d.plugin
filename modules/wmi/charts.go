@@ -38,48 +38,50 @@ var charts = Charts{
 	},
 }
 
-var cpuCharts = Charts{
-	{
-		ID:    "cpu_usage_total",
-		Title: "CPU Usage Total",
-		Units: "percentage",
-		Fam:   "cpu",
-		Ctx:   "cpu.cpu_usage_total",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: "cpu_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
-			{ID: "cpu_dpc", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_user", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
+var (
+	cpuCharts = Charts{
+		{
+			ID:    "cpu_usage_total",
+			Title: "CPU Usage Total",
+			Units: "percentage",
+			Fam:   "cpu",
+			Ctx:   "cpu.cpu_usage_total",
+			Type:  module.Stacked,
+			Dims: Dims{
+				{ID: "cpu_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
+				{ID: "cpu_dpc", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
+				{ID: "cpu_user", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
+				{ID: "cpu_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
+				{ID: "cpu_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
+			},
 		},
-	},
-	{
-		ID:    "cpu_dpcs_total",
-		Title: "Received and Serviced Deferred Procedure Calls (DPC)",
-		Units: "dpc/s",
-		Fam:   "cpu",
-		Ctx:   "cpu.cpu_dpcs_total",
-		Type:  module.Stacked,
-		// Dims will be added during collection
-	},
-	{
-		ID:    "cpu_interrupts_total",
-		Title: "Received and Serviced Hardware Interrupts",
-		Units: "interrupts/s",
-		Fam:   "cpu",
-		Ctx:   "cpu.cpu_interrupts_total",
-		Type:  module.Stacked,
-		// Dims will be added during collection
-	},
-}
+		{
+			ID:    "cpu_dpcs_total",
+			Title: "Received and Serviced Deferred Procedure Calls (DPC)",
+			Units: "dpc/s",
+			Fam:   "cpu",
+			Ctx:   "cpu.cpu_dpcs_total",
+			Type:  module.Stacked,
+			// Dims will be added during collection
+		},
+		{
+			ID:    "cpu_interrupts_total",
+			Title: "Received and Serviced Hardware Interrupts",
+			Units: "interrupts/s",
+			Fam:   "cpu",
+			Ctx:   "cpu.cpu_interrupts_total",
+			Type:  module.Stacked,
+			// Dims will be added during collection
+		},
+	}
 
-var cpuCoreCharts = Charts{
-	{
+	// Per core charts
+	cpuCoreUsageChart = Chart{
+
 		ID:    "core_%s_cpu_usage",
 		Title: "Core%s Usage",
 		Units: "percentage",
-		Fam:   "cpu core usage",
+		Fam:   "cpu",
 		Ctx:   "cpu.core_cpu_usage",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -89,12 +91,12 @@ var cpuCoreCharts = Charts{
 			{ID: "cpu_core_%s_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
 			{ID: "cpu_core_%s_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
 		},
-	},
-	{
+	}
+	cpuCoreCStateChart = Chart{
 		ID:    "core_%s_cpu_cstate",
 		Title: "Core%s Time Spent in Low-Power Idle State",
 		Units: "percentage",
-		Fam:   "cpu core c-state",
+		Fam:   "cpu",
 		Ctx:   "cpu.core_cpu_cstate",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -102,13 +104,13 @@ var cpuCoreCharts = Charts{
 			{ID: "cpu_core_%s_c2", Name: "c2", Algo: module.PercentOfIncremental, Div: 1000},
 			{ID: "cpu_core_%s_c3", Name: "c3", Algo: module.PercentOfIncremental, Div: 1000},
 		},
-	},
-}
+	}
+)
 
 var netNICCharts = Charts{
 	{
 		ID:       "nic_%s_bandwidth",
-		Title:    "%s Bandwidth",
+		Title:    "Bandwidth %s",
 		Units:    "kilobits/s",
 		Fam:      "net %s",
 		Ctx:      "net.net_nic_bandwidth",
@@ -124,7 +126,7 @@ var netNICCharts = Charts{
 	},
 	{
 		ID:       "nic_%s_packets",
-		Title:    "%s Packets",
+		Title:    "Packets %s",
 		Units:    "pps",
 		Fam:      "net %s",
 		Ctx:      "net.net_nic_packets",
@@ -137,8 +139,8 @@ var netNICCharts = Charts{
 	},
 	{
 		ID:       "nic_%s_packets_errors",
-		Title:    "%s Packets Errors",
-		Units:    "pps",
+		Title:    "Errored Packets %s",
+		Units:    "errors/s",
 		Fam:      "net %s",
 		Ctx:      "net.net_nic_packets_errors",
 		Type:     module.Area,
@@ -150,8 +152,8 @@ var netNICCharts = Charts{
 	},
 	{
 		ID:       "nic_%s_packets_discarded",
-		Title:    "%s Packets Discarded",
-		Units:    "pps",
+		Title:    "Discarded Packets %s",
+		Units:    "discards/s",
 		Fam:      "net %s",
 		Ctx:      "net.net_nic_packets_discarded",
 		Type:     module.Area,
@@ -192,21 +194,37 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 		if w.collected.cores[core.ID] {
 			continue
 		}
-		w.collected.cores[core.ID] = true
 
-		// Create per core charts
-		charts := cpuCoreCharts.Copy()
+		chart := cpuCoreUsageChart.Copy()
 
-		for _, chart := range *charts {
-			chart.ID = fmt.Sprintf(chart.ID, core.ID)
-			chart.Title = fmt.Sprintf(chart.Title, core.ID)
-			for _, dim := range chart.Dims {
-				dim.ID = fmt.Sprintf(dim.ID, core.ID)
-			}
+		chart.ID = fmt.Sprintf(chart.ID, core.ID)
+		chart.Title = fmt.Sprintf(chart.Title, core.ID)
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, core.ID)
 		}
-		_ = w.charts.Add(*charts...)
+		_ = w.charts.Add(chart)
+	}
 
-		// Add dimensions to existing charts
+	for _, core := range mx.CPU.Cores {
+		if w.collected.cores[core.ID] {
+			continue
+		}
+
+		chart := cpuCoreCStateChart.Copy()
+
+		chart.ID = fmt.Sprintf(chart.ID, core.ID)
+		chart.Title = fmt.Sprintf(chart.Title, core.ID)
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, core.ID)
+		}
+		_ = w.charts.Add(chart)
+	}
+
+	for _, core := range mx.CPU.Cores {
+		if w.collected.cores[core.ID] {
+			continue
+		}
+
 		dim := &Dim{
 			ID:   fmt.Sprintf("cpu_core_%s_dpc", core.ID),
 			Name: "core" + core.ID,
@@ -222,7 +240,10 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 			Div:  1000,
 		}
 		_ = w.charts.Get("cpu_interrupts_total").AddDim(dim)
+
+		w.collected.cores[core.ID] = true
 	}
+
 }
 
 func (w *WMI) updateNetCharts(mx *metrics) {
@@ -246,6 +267,7 @@ func (w *WMI) updateNetCharts(mx *metrics) {
 			for _, v := range chart.Vars {
 				v.ID = fmt.Sprintf(v.ID, nic.ID)
 			}
+
 		}
 		_ = w.charts.Add(*charts...)
 	}
