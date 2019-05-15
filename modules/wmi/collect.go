@@ -27,10 +27,15 @@ func (w *WMI) collect() (map[string]int64, error) {
 
 func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
 	enabled, success := findCollector(scraped, collectorCPU)
-
 	if enabled && success {
 		mx.CPU = &cpu{}
 		w.collectCPU(mx, scraped)
+	}
+
+	enabled, success = findCollector(scraped, collectorNet)
+	if enabled && success {
+		mx.Net = &network{}
+		w.collectNet(mx, scraped)
 	}
 }
 
