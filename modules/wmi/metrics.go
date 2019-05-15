@@ -47,12 +47,12 @@ type (
 
 type (
 	network struct {
-		NICs nics
+		NICs netNICs
 	}
 
-	nics []*nic
+	netNICs []*netNIC
 
-	nic struct {
+	netNIC struct {
 		STMKey                   string
 		ID                       string
 		BytesReceivedTotal       mtx.Gauge `stm:"bytes_received,1000,1"`
@@ -85,17 +85,17 @@ func (cc *cpuCores) get(id string, createIfNotExist bool) (core *cpuCore) {
 	return core
 }
 
-func newNIC(id string) *nic { return &nic{STMKey: id, ID: id} }
+func newNIC(id string) *netNIC { return &netNIC{STMKey: id, ID: id} }
 
-func (ns *nics) get(id string, createIfNotExist bool) (n *nic) {
+func (ns *netNICs) get(id string, createIfNotExist bool) (nic *netNIC) {
 	for _, n := range *ns {
 		if n.ID == id {
 			return n
 		}
 	}
 	if createIfNotExist {
-		n = newNIC(id)
-		*ns = append(*ns, n)
+		nic = newNIC(id)
+		*ns = append(*ns, nic)
 	}
-	return n
+	return nic
 }

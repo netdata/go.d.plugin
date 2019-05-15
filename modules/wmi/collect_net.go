@@ -2,6 +2,7 @@ package wmi
 
 import (
 	"fmt"
+
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
@@ -42,7 +43,7 @@ func (w *WMI) collectNet(mx *metrics, pms prometheus.Metrics) {
 }
 
 func collectNetAny(mx *metrics, pms prometheus.Metrics, metricName string) {
-	n := newNIC("")
+	nic := newNIC("")
 
 	for _, pm := range pms.FindByName(metricName) {
 		var (
@@ -52,36 +53,36 @@ func collectNetAny(mx *metrics, pms prometheus.Metrics, metricName string) {
 		if nicID == "" {
 			continue
 		}
-		if n.ID != nicID {
-			n = mx.Net.NICs.get(nicID, true)
+		if nic.ID != nicID {
+			nic = mx.Net.NICs.get(nicID, true)
 		}
 		switch metricName {
 		default:
 			panic(fmt.Sprintf("unknown metric name during net collection : %s", metricName))
 		case metricNetBytesReceived:
-			n.BytesReceivedTotal.Set(value)
+			nic.BytesReceivedTotal.Set(value)
 		case metricNetBytesSent:
-			n.BytesSentTotal.Set(value)
+			nic.BytesSentTotal.Set(value)
 		case metricNetBytes:
-			n.BytesTotal.Set(value)
+			nic.BytesTotal.Set(value)
 		case metricNetPacketsOutboundDiscarded:
-			n.PacketsOutboundDiscarded.Set(value)
+			nic.PacketsOutboundDiscarded.Set(value)
 		case metricNetPacketsOutboundErrors:
-			n.PacketsOutboundErrors.Set(value)
+			nic.PacketsOutboundErrors.Set(value)
 		case metricNetPacketsReceivedDiscarded:
-			n.PacketsReceivedDiscarded.Set(value)
+			nic.PacketsReceivedDiscarded.Set(value)
 		case metricNetPacketsReceivedErrors:
-			n.PacketsReceivedErrors.Set(value)
+			nic.PacketsReceivedErrors.Set(value)
 		case metricNetPacketsReceived:
-			n.PacketsReceivedTotal.Set(value)
+			nic.PacketsReceivedTotal.Set(value)
 		case metricNetPacketsReceivedUnknown:
-			n.PacketsReceivedUnknown.Set(value)
+			nic.PacketsReceivedUnknown.Set(value)
 		case metricNetPackets:
-			n.PacketsTotal.Set(value)
+			nic.PacketsTotal.Set(value)
 		case metricNetPacketsSent:
-			n.PacketsSentTotal.Set(value)
+			nic.PacketsSentTotal.Set(value)
 		case metricNetCurrentBandwidth:
-			n.CurrentBandwidth.Set(value)
+			nic.CurrentBandwidth.Set(value)
 		}
 	}
 }
