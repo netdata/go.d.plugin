@@ -109,6 +109,9 @@ func getCPUIntID(id string) int {
 	if id == "" {
 		return -1
 	}
-	v, _ := strconv.Atoi(string(id[len(id)-1]))
+	v, err := strconv.Atoi(string(id[len(id)-1]))
+	if err != nil {
+		return -1
+	}
 	return v
 }
