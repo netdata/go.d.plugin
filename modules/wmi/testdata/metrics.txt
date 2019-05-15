@@ -1,0 +1,171 @@
+# HELP go_gc_duration_seconds A summary of the GC invocation durations.
+# TYPE go_gc_duration_seconds summary
+go_gc_duration_seconds{quantile="0"} 0
+go_gc_duration_seconds{quantile="0.25"} 0
+go_gc_duration_seconds{quantile="0.5"} 0
+go_gc_duration_seconds{quantile="0.75"} 0.0007945
+go_gc_duration_seconds{quantile="1"} 0.0040351
+go_gc_duration_seconds_sum 0.6707994
+go_gc_duration_seconds_count 2845
+# HELP go_goroutines Number of goroutines that currently exist.
+# TYPE go_goroutines gauge
+go_goroutines 12
+# HELP go_memstats_alloc_bytes Number of bytes allocated and still in use.
+# TYPE go_memstats_alloc_bytes gauge
+go_memstats_alloc_bytes 1.147536e+06
+# HELP go_memstats_alloc_bytes_total Total number of bytes allocated, even if freed.
+# TYPE go_memstats_alloc_bytes_total counter
+go_memstats_alloc_bytes_total 9.39730292e+09
+# HELP go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table.
+# TYPE go_memstats_buck_hash_sys_bytes gauge
+go_memstats_buck_hash_sys_bytes 756592
+# HELP go_memstats_frees_total Total number of frees.
+# TYPE go_memstats_frees_total counter
+go_memstats_frees_total 3.1011804e+07
+# HELP go_memstats_gc_sys_bytes Number of bytes used for garbage collection system metadata.
+# TYPE go_memstats_gc_sys_bytes gauge
+go_memstats_gc_sys_bytes 731136
+# HELP go_memstats_heap_alloc_bytes Number of heap bytes allocated and still in use.
+# TYPE go_memstats_heap_alloc_bytes gauge
+go_memstats_heap_alloc_bytes 1.147536e+06
+# HELP go_memstats_heap_idle_bytes Number of heap bytes waiting to be used.
+# TYPE go_memstats_heap_idle_bytes gauge
+go_memstats_heap_idle_bytes 6.111232e+06
+# HELP go_memstats_heap_inuse_bytes Number of heap bytes that are in use.
+# TYPE go_memstats_heap_inuse_bytes gauge
+go_memstats_heap_inuse_bytes 1.949696e+06
+# HELP go_memstats_heap_objects Number of allocated objects.
+# TYPE go_memstats_heap_objects gauge
+go_memstats_heap_objects 3396
+# HELP go_memstats_heap_released_bytes_total Total number of heap bytes released to OS.
+# TYPE go_memstats_heap_released_bytes_total counter
+go_memstats_heap_released_bytes_total 0
+# HELP go_memstats_heap_sys_bytes Number of heap bytes obtained from system.
+# TYPE go_memstats_heap_sys_bytes gauge
+go_memstats_heap_sys_bytes 8.060928e+06
+# HELP go_memstats_last_gc_time_seconds Number of seconds since 1970 of last garbage collection.
+# TYPE go_memstats_last_gc_time_seconds gauge
+go_memstats_last_gc_time_seconds 1.5578866453022394e+09
+# HELP go_memstats_lookups_total Total number of pointer lookups.
+# TYPE go_memstats_lookups_total counter
+go_memstats_lookups_total 0
+# HELP go_memstats_mallocs_total Total number of mallocs.
+# TYPE go_memstats_mallocs_total counter
+go_memstats_mallocs_total 3.10152e+07
+# HELP go_memstats_mcache_inuse_bytes Number of bytes in use by mcache structures.
+# TYPE go_memstats_mcache_inuse_bytes gauge
+go_memstats_mcache_inuse_bytes 1712
+# HELP go_memstats_mcache_sys_bytes Number of bytes used for mcache structures obtained from system.
+# TYPE go_memstats_mcache_sys_bytes gauge
+go_memstats_mcache_sys_bytes 16384
+# HELP go_memstats_mspan_inuse_bytes Number of bytes in use by mspan structures.
+# TYPE go_memstats_mspan_inuse_bytes gauge
+go_memstats_mspan_inuse_bytes 13340
+# HELP go_memstats_mspan_sys_bytes Number of bytes used for mspan structures obtained from system.
+# TYPE go_memstats_mspan_sys_bytes gauge
+go_memstats_mspan_sys_bytes 16384
+# HELP go_memstats_next_gc_bytes Number of heap bytes when next garbage collection will take place.
+# TYPE go_memstats_next_gc_bytes gauge
+go_memstats_next_gc_bytes 4.194304e+06
+# HELP go_memstats_other_sys_bytes Number of bytes used for other system allocations.
+# TYPE go_memstats_other_sys_bytes gauge
+go_memstats_other_sys_bytes 772364
+# HELP go_memstats_stack_inuse_bytes Number of bytes in use by the stack allocator.
+# TYPE go_memstats_stack_inuse_bytes gauge
+go_memstats_stack_inuse_bytes 327680
+# HELP go_memstats_stack_sys_bytes Number of bytes obtained from system for stack allocator.
+# TYPE go_memstats_stack_sys_bytes gauge
+go_memstats_stack_sys_bytes 327680
+# HELP go_memstats_sys_bytes Number of bytes obtained by system. Sum of all system allocations.
+# TYPE go_memstats_sys_bytes gauge
+go_memstats_sys_bytes 1.0681468e+07
+# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
+# TYPE process_start_time_seconds counter
+process_start_time_seconds 1.557885376e+09
+# HELP wmi_cpu_cstate_seconds_total Time spent in low-power idle state
+# TYPE wmi_cpu_cstate_seconds_total gauge
+wmi_cpu_cstate_seconds_total{core="0",state="c1"} 40718.2965337
+wmi_cpu_cstate_seconds_total{core="0",state="c2"} 0
+wmi_cpu_cstate_seconds_total{core="0",state="c3"} 0
+wmi_cpu_cstate_seconds_total{core="1",state="c1"} 40765.3541298
+wmi_cpu_cstate_seconds_total{core="1",state="c2"} 0
+wmi_cpu_cstate_seconds_total{core="1",state="c3"} 0
+# HELP wmi_cpu_dpcs_total Total number of received and serviced deferred procedure calls (DPCs)
+# TYPE wmi_cpu_dpcs_total counter
+wmi_cpu_dpcs_total{core="0"} 332635
+wmi_cpu_dpcs_total{core="1"} 177683
+# HELP wmi_cpu_interrupts_total Total number of received and serviced hardware interrupts
+# TYPE wmi_cpu_interrupts_total counter
+wmi_cpu_interrupts_total{core="0"} 8.7289519e+07
+wmi_cpu_interrupts_total{core="1"} 7.798273e+06
+# HELP wmi_cpu_time_total Time that processor spent in different modes (idle, user, system, ...)
+# TYPE wmi_cpu_time_total gauge
+wmi_cpu_time_total{core="0",mode="dpc"} 2.640625
+wmi_cpu_time_total{core="0",mode="idle"} 40718.2965337
+wmi_cpu_time_total{core="0",mode="interrupt"} 4.15625
+wmi_cpu_time_total{core="0",mode="privileged"} 362.4375
+wmi_cpu_time_total{core="0",mode="user"} 258.953125
+wmi_cpu_time_total{core="1",mode="dpc"} 7.84375
+wmi_cpu_time_total{core="1",mode="idle"} 40765.3541298
+wmi_cpu_time_total{core="1",mode="interrupt"} 22.03125
+wmi_cpu_time_total{core="1",mode="privileged"} 270.1875
+wmi_cpu_time_total{core="1",mode="user"} 319.828125
+# HELP wmi_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which wmi_exporter was built.
+# TYPE wmi_exporter_build_info gauge
+wmi_exporter_build_info{branch="master",goversion="go1.11",revision="8841091f9c7c9e88e6a5948a656af1bc29cfcd58",version="0.7.0"} 1
+# HELP wmi_exporter_collector_duration_seconds wmi_exporter: Duration of a collection.
+# TYPE wmi_exporter_collector_duration_seconds gauge
+wmi_exporter_collector_duration_seconds{collector="cpu"} 0.041207
+wmi_exporter_collector_duration_seconds{collector="net"} 0.0690583
+# HELP wmi_exporter_collector_success wmi_exporter: Whether the collector was successful.
+# TYPE wmi_exporter_collector_success gauge
+wmi_exporter_collector_success{collector="cpu"} 1
+wmi_exporter_collector_success{collector="net"} 1
+# HELP wmi_net_bytes_received_total (Network.BytesReceivedPerSec)
+# TYPE wmi_net_bytes_received_total counter
+wmi_net_bytes_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 5.342635e+06
+wmi_net_bytes_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 3.075019e+06
+# HELP wmi_net_bytes_sent_total (Network.BytesSentPerSec)
+# TYPE wmi_net_bytes_sent_total counter
+wmi_net_bytes_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 1.218739e+06
+wmi_net_bytes_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 2.4108436e+07
+# HELP wmi_net_bytes_total (Network.BytesTotalPerSec)
+# TYPE wmi_net_bytes_total counter
+wmi_net_bytes_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 6.561374e+06
+wmi_net_bytes_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 2.7183455e+07
+# HELP wmi_net_current_bandwidth (Network.CurrentBandwidth)
+# TYPE wmi_net_current_bandwidth counter
+wmi_net_current_bandwidth{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 1e+09
+wmi_net_current_bandwidth{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 1e+09
+# HELP wmi_net_packets_outbound_discarded (Network.PacketsOutboundDiscarded)
+# TYPE wmi_net_packets_outbound_discarded counter
+wmi_net_packets_outbound_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
+wmi_net_packets_outbound_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
+# HELP wmi_net_packets_outbound_errors (Network.PacketsOutboundErrors)
+# TYPE wmi_net_packets_outbound_errors counter
+wmi_net_packets_outbound_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
+wmi_net_packets_outbound_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
+# HELP wmi_net_packets_received_discarded (Network.PacketsReceivedDiscarded)
+# TYPE wmi_net_packets_received_discarded counter
+wmi_net_packets_received_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
+wmi_net_packets_received_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
+# HELP wmi_net_packets_received_errors (Network.PacketsReceivedErrors)
+# TYPE wmi_net_packets_received_errors counter
+wmi_net_packets_received_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
+wmi_net_packets_received_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
+# HELP wmi_net_packets_received_total (Network.PacketsReceivedPerSec)
+# TYPE wmi_net_packets_received_total counter
+wmi_net_packets_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 9900
+wmi_net_packets_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 22450
+# HELP wmi_net_packets_received_unknown (Network.PacketsReceivedUnknown)
+# TYPE wmi_net_packets_received_unknown counter
+wmi_net_packets_received_unknown{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
+wmi_net_packets_received_unknown{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
+# HELP wmi_net_packets_sent_total (Network.PacketsSentPerSec)
+# TYPE wmi_net_packets_sent_total counter
+wmi_net_packets_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 6893
+wmi_net_packets_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 21808
+# HELP wmi_net_packets_total (Network.PacketsPerSec)
+# TYPE wmi_net_packets_total counter
+wmi_net_packets_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 16793
+wmi_net_packets_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 44258
