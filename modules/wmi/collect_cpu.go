@@ -3,10 +3,10 @@ package wmi
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	metricCPUCstate     = "wmi_cpu_cstate_seconds_total"
-	metricCPUDPCs       = "wmi_cpu_dpcs_total"
-	metricCPUInterrupts = "wmi_cpu_interrupts_total"
-	metricCPUTime       = "wmi_cpu_time_total"
+	metricCPUCstateTotal     = "wmi_cpu_cstate_seconds_total"
+	metricCPUDPCsTotal       = "wmi_cpu_dpcs_total"
+	metricCPUInterruptsTotal = "wmi_cpu_interrupts_total"
+	metricCPUTimeTotal       = "wmi_cpu_time_total"
 )
 
 func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) {
@@ -32,7 +32,7 @@ func collectCPUSummary(mx *metrics) {
 func collectCPUCoresCStates(mx *metrics, pms prometheus.Metrics) {
 	core := newCPUCore("")
 
-	for _, pm := range pms.FindByName(metricCPUCstate) {
+	for _, pm := range pms.FindByName(metricCPUCstateTotal) {
 		var (
 			coreID = pm.Labels.Get("core")
 			state  = pm.Labels.Get("state")
@@ -59,7 +59,7 @@ func collectCPUCoresCStates(mx *metrics, pms prometheus.Metrics) {
 func collectCPUCoresInterrupts(mx *metrics, pms prometheus.Metrics) {
 	core := newCPUCore("")
 
-	for _, pm := range pms.FindByName(metricCPUInterrupts) {
+	for _, pm := range pms.FindByName(metricCPUInterruptsTotal) {
 		var (
 			coreID = pm.Labels.Get("core")
 			value  = pm.Value
@@ -77,7 +77,7 @@ func collectCPUCoresInterrupts(mx *metrics, pms prometheus.Metrics) {
 func collectCPUCoresUsage(mx *metrics, pms prometheus.Metrics) {
 	core := newCPUCore("")
 
-	for _, pm := range pms.FindByName(metricCPUTime) {
+	for _, pm := range pms.FindByName(metricCPUTimeTotal) {
 		var (
 			coreID = pm.Labels.Get("core")
 			mode   = pm.Labels.Get("mode")
@@ -108,7 +108,7 @@ func collectCPUCoresUsage(mx *metrics, pms prometheus.Metrics) {
 func collectCPUCoresDPCs(mx *metrics, pms prometheus.Metrics) {
 	core := newCPUCore("")
 
-	for _, pm := range pms.FindByName(metricCPUDPCs) {
+	for _, pm := range pms.FindByName(metricCPUDPCsTotal) {
 		var (
 			coreID = pm.Labels.Get("core")
 			value  = pm.Value

@@ -8,33 +8,33 @@ import (
 )
 
 const (
-	metricNetBytesReceived            = "wmi_net_bytes_received_total"
-	metricNetBytesSent                = "wmi_net_bytes_sent_total"
-	metricNetBytes                    = "wmi_net_bytes_total"
+	metricNetBytesReceivedTotal       = "wmi_net_bytes_received_total"
+	metricNetBytesSentTotal           = "wmi_net_bytes_sent_total"
+	metricNetBytesTotal               = "wmi_net_bytes_total"
 	metricNetPacketsOutboundDiscarded = "wmi_net_packets_outbound_discarded"
 	metricNetPacketsOutboundErrors    = "wmi_net_packets_outbound_errors"
 	metricNetPacketsReceivedDiscarded = "wmi_net_packets_received_discarded"
 	metricNetPacketsReceivedErrors    = "wmi_net_packets_received_errors"
-	metricNetPacketsReceived          = "wmi_net_packets_received_total"
+	metricNetPacketsReceivedTotal     = "wmi_net_packets_received_total"
 	metricNetPacketsReceivedUnknown   = "wmi_net_packets_received_unknown"
-	metricNetPackets                  = "wmi_net_packets_total"
-	metricNetPacketsSent              = "wmi_net_packets_sent_total"
+	metricNetPacketsTotal             = "wmi_net_packets_total"
+	metricNetPacketsSentTotal         = "wmi_net_packets_sent_total"
 	metricNetCurrentBandwidth         = "wmi_net_current_bandwidth"
 )
 
 func (w *WMI) collectNet(mx *metrics, pms prometheus.Metrics) {
 	names := []string{
-		metricNetBytesReceived,
-		metricNetBytesSent,
-		metricNetBytes,
+		metricNetBytesReceivedTotal,
+		metricNetBytesSentTotal,
+		metricNetBytesTotal,
 		metricNetPacketsOutboundDiscarded,
 		metricNetPacketsOutboundErrors,
 		metricNetPacketsReceivedDiscarded,
 		metricNetPacketsReceivedErrors,
-		metricNetPacketsReceived,
+		metricNetPacketsReceivedTotal,
 		metricNetPacketsReceivedUnknown,
-		metricNetPackets,
-		metricNetPacketsSent,
+		metricNetPacketsTotal,
+		metricNetPacketsSentTotal,
 		metricNetCurrentBandwidth,
 	}
 
@@ -43,10 +43,10 @@ func (w *WMI) collectNet(mx *metrics, pms prometheus.Metrics) {
 	}
 }
 
-func collectNetAny(mx *metrics, pms prometheus.Metrics, metricName string) {
+func collectNetAny(mx *metrics, pms prometheus.Metrics, name string) {
 	nic := newNIC("")
 
-	for _, pm := range pms.FindByName(metricName) {
+	for _, pm := range pms.FindByName(name) {
 		var (
 			nicID = pm.Labels.Get("nic")
 			value = pm.Value
@@ -58,14 +58,14 @@ func collectNetAny(mx *metrics, pms prometheus.Metrics, metricName string) {
 		if nic.ID != nicID {
 			nic = mx.Net.NICs.get(nicID, true)
 		}
-		switch metricName {
+		switch name {
 		default:
-			panic(fmt.Sprintf("unknown metric name during net collection : %s", metricName))
-		case metricNetBytesReceived:
+			panic(fmt.Sprintf("unknown metric name during net collection : %s", name))
+		case metricNetBytesReceivedTotal:
 			nic.BytesReceivedTotal = value
-		case metricNetBytesSent:
+		case metricNetBytesSentTotal:
 			nic.BytesSentTotal = value
-		case metricNetBytes:
+		case metricNetBytesTotal:
 			nic.BytesTotal = value
 		case metricNetPacketsOutboundDiscarded:
 			nic.PacketsOutboundDiscarded = value
@@ -75,13 +75,13 @@ func collectNetAny(mx *metrics, pms prometheus.Metrics, metricName string) {
 			nic.PacketsReceivedDiscarded = value
 		case metricNetPacketsReceivedErrors:
 			nic.PacketsReceivedErrors = value
-		case metricNetPacketsReceived:
+		case metricNetPacketsReceivedTotal:
 			nic.PacketsReceivedTotal = value
 		case metricNetPacketsReceivedUnknown:
 			nic.PacketsReceivedUnknown = value
-		case metricNetPackets:
+		case metricNetPacketsTotal:
 			nic.PacketsTotal = value
-		case metricNetPacketsSent:
+		case metricNetPacketsSentTotal:
 			nic.PacketsSentTotal = value
 		case metricNetCurrentBandwidth:
 			nic.CurrentBandwidth = value
