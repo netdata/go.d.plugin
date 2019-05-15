@@ -39,15 +39,15 @@ type (
 		PercentPrivilegedTime mtx.Gauge `stm:"privileged,1000,1"`
 		PercentUserTime       mtx.Gauge `stm:"user,1000,1"`
 		// CState represents time spent in low-power idle state.
-		PercentC1Time mtx.Gauge `stm:"cstate_c1,1000,1"`
-		PercentC2Time mtx.Gauge `stm:"cstate_c2,1000,1"`
-		PercentC3Time mtx.Gauge `stm:"cstate_c3,1000,1"`
+		PercentC1Time mtx.Gauge `stm:"c1,1000,1"`
+		PercentC2Time mtx.Gauge `stm:"c2,1000,1"`
+		PercentC3Time mtx.Gauge `stm:"c3,1000,1"`
 	}
 )
 
 type (
 	network struct {
-		NICs netNICs
+		NICs netNICs `stm:""`
 	}
 
 	netNICs []*netNIC

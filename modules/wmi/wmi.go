@@ -36,7 +36,8 @@ func New() *WMI {
 		charts: &Charts{},
 		collected: collected{
 			collectors: make(map[string]bool),
-			cpuCores:   make(map[string]bool),
+			cores:      make(map[string]bool),
+			nics:       make(map[string]bool),
 		},
 	}
 }
@@ -48,7 +49,8 @@ type Config struct {
 
 type collected struct {
 	collectors map[string]bool
-	cpuCores   map[string]bool
+	cores      map[string]bool
+	nics       map[string]bool
 }
 
 // WMI WMI module.

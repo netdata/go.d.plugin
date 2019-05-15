@@ -2,6 +2,7 @@ package wmi
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
@@ -53,6 +54,7 @@ func collectNetAny(mx *metrics, pms prometheus.Metrics, metricName string) {
 		if nicID == "" {
 			continue
 		}
+		nicID = strings.Replace(nicID, "__", "_", -1)
 		if nic.ID != nicID {
 			nic = mx.Net.NICs.get(nicID, true)
 		}

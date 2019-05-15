@@ -28,11 +28,11 @@ var cpuCharts = Charts{
 		Ctx:   "cpu.cpu_usage_total",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "cpu_time_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
-			{ID: "cpu_time_dpc", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_time_user", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_time_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_time_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
+			{ID: "cpu_dpc", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_user", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
 		},
 	},
 	{
@@ -61,14 +61,14 @@ var cpuCoreCharts = Charts{
 		Title: "Core%s Usage",
 		Units: "percentage",
 		Fam:   "cpu core usage",
-		Ctx:   "cpu.cpu_usage_per_core",
+		Ctx:   "cpu.core_cpu_usage",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "cpu_core_%s_time_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
-			{ID: "cpu_core_%s_time_dpc", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_core_%s_time_user", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_core_%s_time_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_core_%s_time_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
+			{ID: "cpu_core_%s_dpc", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_user", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
 		},
 	},
 	{
@@ -76,18 +76,38 @@ var cpuCoreCharts = Charts{
 		Title: "Core%s Time Spent in Low-Power Idle State",
 		Units: "percentage",
 		Fam:   "cpu core c-state",
-		Ctx:   "cpu.cpu_cstate_per_core",
+		Ctx:   "cpu.core_cpu_cstate",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "cpu_core_%s_cstate_c1", Name: "c1", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_core_%s_cstate_c2", Name: "c2", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_core_%s_cstate_c3", Name: "c3", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_c1", Name: "c1", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_c2", Name: "c2", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_core_%s_c3", Name: "c3", Algo: module.PercentOfIncremental, Div: 1000},
+		},
+	},
+}
+
+var netNICCharts = Charts{
+	{
+		ID:    "nic_%s_bandwidth",
+		Title: "%s Bandwidth",
+		Units: "kilobits/s",
+		Fam:   "net %s",
+		Ctx:   "net.net_nic_bandwidth",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "net_%s_bytes_received", Name: "received", Algo: module.Incremental, Div: 1000 * 125},
+			{ID: "net_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Div: -1000 * 125},
 		},
 	},
 }
 
 func (w *WMI) updateCharts(mx *metrics) {
-	w.updateCPUCharts(mx)
+	if mx.CPU != nil {
+		w.updateCPUCharts(mx)
+	}
+	if mx.Net != nil {
+		w.updateNetCharts(mx)
+	}
 }
 
 func (w *WMI) updateCPUCharts(mx *metrics) {
@@ -102,12 +122,12 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 	}
 
 	for _, core := range mx.CPU.Cores {
-		if w.collected.cpuCores[core.ID] {
+		if w.collected.cores[core.ID] {
 			continue
 		}
+		w.collected.cores[core.ID] = true
 
-		w.collected.cpuCores[core.ID] = true
-
+		// Create per core charts
 		charts := cpuCoreCharts.Copy()
 
 		for _, chart := range *charts {
@@ -119,6 +139,7 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 		}
 		_ = w.charts.Add(*charts...)
 
+		// Add dimensions to existing charts
 		dim := &Dim{
 			ID:   fmt.Sprintf("cpu_core_%s_dpc", core.ID),
 			Name: "core" + core.ID,
@@ -134,5 +155,28 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 			Div:  1000,
 		}
 		_ = w.charts.Get("cpu_interrupts_total").AddDim(dim)
+	}
+}
+
+func (w *WMI) updateNetCharts(mx *metrics) {
+	for _, nic := range mx.Net.NICs {
+		if w.collected.nics[nic.ID] {
+			continue
+		}
+		w.collected.nics[nic.ID] = true
+
+		// Create per nic charts
+		charts := netNICCharts.Copy()
+
+		for _, chart := range *charts {
+			chart.ID = fmt.Sprintf(chart.ID, nic.ID)
+			chart.Title = fmt.Sprintf(chart.Title, nic.ID)
+			chart.Fam = fmt.Sprintf(chart.Fam, nic.ID)
+			for _, dim := range chart.Dims {
+				dim.ID = fmt.Sprintf(dim.ID, nic.ID)
+			}
+		}
+		_ = w.charts.Add(*charts...)
+
 	}
 }
