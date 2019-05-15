@@ -2,6 +2,8 @@ package wmi
 
 import (
 	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
+	"sort"
+	"strconv"
 )
 
 func newMetrics() *metrics { return &metrics{} }
@@ -28,6 +30,7 @@ type (
 	cpuCore struct {
 		STMKey string
 		ID     string
+		id     int
 		// Total number of received and serviced deferred procedure calls (DPCs).
 		DPCsQueuedPerSec mtx.Gauge `stm:"dpc,1000,1"`
 		// Total number of received and serviced hardware interrupts.
@@ -70,7 +73,7 @@ type (
 	}
 )
 
-func newCPUCore(id string) *cpuCore { return &cpuCore{STMKey: id, ID: id} }
+func newCPUCore(id string) *cpuCore { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
 
 func (cc *cpuCores) get(id string, createIfNotExist bool) (core *cpuCore) {
 	for _, c := range *cc {
@@ -85,6 +88,8 @@ func (cc *cpuCores) get(id string, createIfNotExist bool) (core *cpuCore) {
 	return core
 }
 
+func (cc *cpuCores) sort() { sort.Slice(*cc, func(i, j int) bool { return (*cc)[i].id < (*cc)[j].id }) }
+
 func newNIC(id string) *netNIC { return &netNIC{STMKey: id, ID: id} }
 
 func (ns *netNICs) get(id string, createIfNotExist bool) (nic *netNIC) {
@@ -98,4 +103,12 @@ func (ns *netNICs) get(id string, createIfNotExist bool) (nic *netNIC) {
 		*ns = append(*ns, nic)
 	}
 	return nic
+}
+
+func getCPUIntID(id string) int {
+	if id == "" {
+		return -1
+	}
+	v, _ := strconv.Atoi(string(id[len(id)-1]))
+	return v
 }

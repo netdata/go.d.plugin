@@ -15,8 +15,8 @@ func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) {
 	collectCPUCoresInterrupts(mx, pms)
 	collectCPUCoresUsage(mx, pms)
 
+	mx.CPU.Cores.sort()
 	collectCPUSummary(mx)
-
 }
 
 func collectCPUSummary(mx *metrics) {

@@ -3,6 +3,7 @@ package wmi
 import (
 	"fmt"
 
+	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -19,6 +20,10 @@ type (
 	Vars = module.Vars
 	// Dim is an alias for module.Dim
 	Opts = module.DimOpts
+)
+
+const (
+	defaultPriority = orchestrator.DefaultJobPriority
 )
 
 var cpuCharts = Charts{
@@ -90,12 +95,13 @@ var cpuCoreCharts = Charts{
 
 var netNICCharts = Charts{
 	{
-		ID:    "nic_%s_bandwidth",
-		Title: "%s Bandwidth",
-		Units: "kilobits/s",
-		Fam:   "net %s",
-		Ctx:   "net.net_nic_bandwidth",
-		Type:  module.Area,
+		ID:       "nic_%s_bandwidth",
+		Title:    "%s Bandwidth",
+		Units:    "kilobits/s",
+		Fam:      "net %s",
+		Ctx:      "net.net_nic_bandwidth",
+		Type:     module.Area,
+		Priority: defaultPriority + 10,
 		Dims: Dims{
 			{ID: "net_%s_bytes_received", Name: "received", Algo: module.Incremental, Div: 1000 * 125},
 			{ID: "net_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Div: -1000 * 125},
@@ -105,36 +111,39 @@ var netNICCharts = Charts{
 		},
 	},
 	{
-		ID:    "nic_%s_packets",
-		Title: "%s Packets",
-		Units: "pps",
-		Fam:   "net %s",
-		Ctx:   "net.net_nic_packets",
-		Type:  module.Area,
+		ID:       "nic_%s_packets",
+		Title:    "%s Packets",
+		Units:    "pps",
+		Fam:      "net %s",
+		Ctx:      "net.net_nic_packets",
+		Type:     module.Area,
+		Priority: defaultPriority + 10,
 		Dims: Dims{
 			{ID: "net_%s_packets_received_total", Name: "received", Algo: module.Incremental, Div: 1000},
 			{ID: "net_%s_packets_sent_total", Name: "sent", Algo: module.Incremental, Div: -1000},
 		},
 	},
 	{
-		ID:    "nic_%s_packets_errors",
-		Title: "%s Packets Errors",
-		Units: "pps",
-		Fam:   "net %s",
-		Ctx:   "net.net_nic_packets_errors",
-		Type:  module.Area,
+		ID:       "nic_%s_packets_errors",
+		Title:    "%s Packets Errors",
+		Units:    "pps",
+		Fam:      "net %s",
+		Ctx:      "net.net_nic_packets_errors",
+		Type:     module.Area,
+		Priority: defaultPriority + 10,
 		Dims: Dims{
 			{ID: "net_%s_packets_received_errors", Name: "inbound", Algo: module.Incremental, Div: 1000},
 			{ID: "net_%s_packets_outbound_errors", Name: "outbound", Algo: module.Incremental, Div: -1000},
 		},
 	},
 	{
-		ID:    "nic_%s_packets_discarded",
-		Title: "%s Packets Discarded",
-		Units: "pps",
-		Fam:   "net %s",
-		Ctx:   "net.net_nic_packets_discarded",
-		Type:  module.Area,
+		ID:       "nic_%s_packets_discarded",
+		Title:    "%s Packets Discarded",
+		Units:    "pps",
+		Fam:      "net %s",
+		Ctx:      "net.net_nic_packets_discarded",
+		Type:     module.Area,
+		Priority: defaultPriority + 10,
 		Dims: Dims{
 			{ID: "net_%s_packets_received_discarded", Name: "inbound", Algo: module.Incremental, Div: 1000},
 			{ID: "net_%s_packets_outbound_discarded", Name: "outbound", Algo: module.Incremental, Div: -1000},
