@@ -54,6 +54,34 @@ type (
 	}
 )
 
+func newCPUCore(id string) *cpuCore { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
+
+func (cc *cpuCores) get(id string, createIfNotExist bool) (core *cpuCore) {
+	for _, c := range *cc {
+		if c.ID == id {
+			return c
+		}
+	}
+	if createIfNotExist {
+		core = newCPUCore(id)
+		*cc = append(*cc, core)
+	}
+	return core
+}
+
+func (cc *cpuCores) sort() { sort.Slice(*cc, func(i, j int) bool { return (*cc)[i].id < (*cc)[j].id }) }
+
+func getCPUIntID(id string) int {
+	if id == "" {
+		return -1
+	}
+	v, err := strconv.Atoi(string(id[len(id)-1]))
+	if err != nil {
+		return -1
+	}
+	return v
+}
+
 type (
 	network struct {
 		NICs netNICs `stm:""`
@@ -79,23 +107,6 @@ type (
 	}
 )
 
-func newCPUCore(id string) *cpuCore { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
-
-func (cc *cpuCores) get(id string, createIfNotExist bool) (core *cpuCore) {
-	for _, c := range *cc {
-		if c.ID == id {
-			return c
-		}
-	}
-	if createIfNotExist {
-		core = newCPUCore(id)
-		*cc = append(*cc, core)
-	}
-	return core
-}
-
-func (cc *cpuCores) sort() { sort.Slice(*cc, func(i, j int) bool { return (*cc)[i].id < (*cc)[j].id }) }
-
 func newNIC(id string) *netNIC { return &netNIC{STMKey: id, ID: id} }
 
 func (ns *netNICs) get(id string, createIfNotExist bool) (nic *netNIC) {
@@ -111,13 +122,38 @@ func (ns *netNICs) get(id string, createIfNotExist bool) (nic *netNIC) {
 	return nic
 }
 
-func getCPUIntID(id string) int {
-	if id == "" {
-		return -1
-	}
-	v, err := strconv.Atoi(string(id[len(id)-1]))
-	if err != nil {
-		return -1
-	}
-	return v
+type memory struct {
+	PhysicalMemoryBytes mtx.Gauge
+
+	AvailableBytes                  mtx.Gauge
+	CacheBytes                      mtx.Gauge
+	CacheBytesPeak                  mtx.Gauge
+	CacheFaultsTotal                mtx.Gauge
+	CommitLimit                     mtx.Gauge
+	CommittedBytes                  mtx.Gauge
+	DemandZeroFaultsTotal           mtx.Gauge
+	FreeAndZeroPageListBytes        mtx.Gauge
+	FreeSystemPageTableEntries      mtx.Gauge
+	ModifiedPageListBytes           mtx.Gauge
+	PageFaultsTotal                 mtx.Gauge
+	SwapPageReadsTotal              mtx.Gauge
+	SwapPagesReadTotal              mtx.Gauge
+	SwapPagesWrittenTotal           mtx.Gauge
+	SwapPageOperationsTotal         mtx.Gauge
+	SwapPageWritesTotal             mtx.Gauge
+	PoolNonpagedAllocsTotal         mtx.Gauge
+	PoolNonpagedBytes               mtx.Gauge
+	PoolPagedAllocsTotal            mtx.Gauge
+	PoolPagedBytes                  mtx.Gauge
+	PoolPagedResidentBytes          mtx.Gauge
+	StandbyCacheCoreBytes           mtx.Gauge
+	StandbyCacheNormalPriorityBytes mtx.Gauge
+	StandbyCacheReserveBytes        mtx.Gauge
+	SystemCacheResidentBytes        mtx.Gauge
+	SystemCodeResidentBytes         mtx.Gauge
+	SystemCodeTotalBytes            mtx.Gauge
+	SystemDriverResidentBytes       mtx.Gauge
+	SystemDriverTotalBytes          mtx.Gauge
+	TransitionFaultsTotal           mtx.Gauge
+	TransitionPagesRepurposedTotal  mtx.Gauge
 }
