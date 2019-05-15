@@ -9,6 +9,8 @@ import (
 const (
 	collectorCPU = "cpu"
 	collectorNet = "net"
+
+	metricCollectorDuration = "wmi_exporter_collector_duration_seconds"
 )
 
 func (w *WMI) collect() (map[string]int64, error) {
@@ -26,6 +28,8 @@ func (w *WMI) collect() (map[string]int64, error) {
 }
 
 func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
+	collectCollectorsDuration(mx, scraped)
+
 	enabled, success := findCollector(scraped, collectorCPU)
 	if enabled && success {
 		mx.CPU = &cpu{}
@@ -36,6 +40,16 @@ func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
 	if enabled && success {
 		mx.Net = &network{}
 		w.collectNet(mx, scraped)
+	}
+}
+
+func collectCollectorsDuration(mx *metrics, pms prometheus.Metrics) {
+	for _, pm := range pms.FindByName(metricCollectorDuration) {
+		name := pm.Labels.Get("collector")
+		if name == "" {
+			continue
+		}
+		mx.CollectDuration[name] = pm.Value
 	}
 }
 

@@ -90,6 +90,8 @@ func TestWMI_Collect(t *testing.T) {
 	//}
 
 	expected := map[string]int64{
+		"cpu":                   41,
+		"net":                   69,
 		"cpu_core_0_c1":         40718296,
 		"cpu_core_0_c2":         0,
 		"cpu_core_0_c3":         0,

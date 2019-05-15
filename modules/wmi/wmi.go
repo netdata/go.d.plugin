@@ -33,7 +33,7 @@ func New() *WMI {
 	}
 	return &WMI{
 		Config: config,
-		charts: &Charts{},
+		charts: charts.Copy(),
 		collected: collected{
 			collectors: make(map[string]bool),
 			cores:      make(map[string]bool),

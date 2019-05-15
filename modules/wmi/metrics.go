@@ -1,16 +1,22 @@
 package wmi
 
 import (
-	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 	"sort"
 	"strconv"
+
+	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
 )
 
-func newMetrics() *metrics { return &metrics{} }
+func newMetrics() *metrics {
+	return &metrics{
+		CollectDuration: make(map[string]float64),
+	}
+}
 
 type metrics struct {
-	CPU *cpu     `stm:"cpu"`
-	Net *network `stm:"net"`
+	CPU             *cpu               `stm:"cpu"`
+	Net             *network           `stm:"net"`
+	CollectDuration map[string]float64 `stm:",1000,1"`
 }
 
 type (

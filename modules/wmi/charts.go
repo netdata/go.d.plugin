@@ -26,6 +26,18 @@ const (
 	defaultPriority = orchestrator.DefaultJobPriority
 )
 
+var charts = Charts{
+	{
+		ID:       "collector_duration",
+		Title:    "Duration of a Collector",
+		Units:    "ms",
+		Fam:      "collector duration",
+		Ctx:      "cpu.collector_duration",
+		Priority: defaultPriority + 90,
+		// Dims will be added during collection
+	},
+}
+
 var cpuCharts = Charts{
 	{
 		ID:    "cpu_usage_total",
@@ -152,11 +164,21 @@ var netNICCharts = Charts{
 }
 
 func (w *WMI) updateCharts(mx *metrics) {
+	w.updateCollectDurationChart(mx)
 	if mx.CPU != nil {
 		w.updateCPUCharts(mx)
 	}
 	if mx.Net != nil {
 		w.updateNetCharts(mx)
+	}
+}
+
+func (w *WMI) updateCollectDurationChart(mx *metrics) {
+	for k := range mx.CollectDuration {
+		chart := w.charts.Get("collector_duration")
+		if !chart.HasDim(k) {
+			_ = chart.AddDim(&Dim{ID: k})
+		}
 	}
 }
 
