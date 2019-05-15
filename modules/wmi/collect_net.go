@@ -62,29 +62,29 @@ func collectNetAny(mx *metrics, pms prometheus.Metrics, metricName string) {
 		default:
 			panic(fmt.Sprintf("unknown metric name during net collection : %s", metricName))
 		case metricNetBytesReceived:
-			nic.BytesReceivedTotal.Set(value)
+			nic.BytesReceivedTotal = value
 		case metricNetBytesSent:
-			nic.BytesSentTotal.Set(value)
+			nic.BytesSentTotal = value
 		case metricNetBytes:
-			nic.BytesTotal.Set(value)
+			nic.BytesTotal = value
 		case metricNetPacketsOutboundDiscarded:
-			nic.PacketsOutboundDiscarded.Set(value)
+			nic.PacketsOutboundDiscarded = value
 		case metricNetPacketsOutboundErrors:
-			nic.PacketsOutboundErrors.Set(value)
+			nic.PacketsOutboundErrors = value
 		case metricNetPacketsReceivedDiscarded:
-			nic.PacketsReceivedDiscarded.Set(value)
+			nic.PacketsReceivedDiscarded = value
 		case metricNetPacketsReceivedErrors:
-			nic.PacketsReceivedErrors.Set(value)
+			nic.PacketsReceivedErrors = value
 		case metricNetPacketsReceived:
-			nic.PacketsReceivedTotal.Set(value)
+			nic.PacketsReceivedTotal = value
 		case metricNetPacketsReceivedUnknown:
-			nic.PacketsReceivedUnknown.Set(value)
+			nic.PacketsReceivedUnknown = value
 		case metricNetPackets:
-			nic.PacketsTotal.Set(value)
+			nic.PacketsTotal = value
 		case metricNetPacketsSent:
-			nic.PacketsSentTotal.Set(value)
+			nic.PacketsSentTotal = value
 		case metricNetCurrentBandwidth:
-			nic.CurrentBandwidth.Set(value)
+			nic.CurrentBandwidth = value
 		}
 	}
 }

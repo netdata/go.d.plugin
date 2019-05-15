@@ -7,8 +7,12 @@ import (
 )
 
 const (
-	collectorCPU = "cpu"
-	collectorNet = "net"
+	collectorCPU    = "cpu"
+	collectorNet    = "net"
+	collectorMemory = "memory"
+	collectorCS     = "cs"
+	collectorOS     = "os"
+	collectorSystem = "system"
 
 	metricCollectorDuration = "wmi_exporter_collector_duration_seconds"
 )
@@ -30,16 +34,40 @@ func (w *WMI) collect() (map[string]int64, error) {
 func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
 	collectCollectorsDuration(mx, scraped)
 
-	enabled, success := findCollector(scraped, collectorCPU)
+	enabled, success := checkCollector(scraped, collectorCPU)
 	if enabled && success {
 		mx.CPU = &cpu{}
 		w.collectCPU(mx, scraped)
 	}
 
-	enabled, success = findCollector(scraped, collectorNet)
+	enabled, success = checkCollector(scraped, collectorNet)
 	if enabled && success {
 		mx.Net = &network{}
 		w.collectNet(mx, scraped)
+	}
+
+	enabled, success = checkCollector(scraped, collectorMemory)
+	if enabled && success {
+		mx.Memory = &memory{}
+		w.collectMemory(mx, scraped)
+	}
+
+	enabled, success = checkCollector(scraped, collectorCS)
+	if enabled && success {
+		mx.CS = &cs{}
+		w.collectCS(mx, scraped)
+	}
+
+	enabled, success = checkCollector(scraped, collectorOS)
+	if enabled && success {
+		mx.OS = &os{}
+		w.collectOS(mx, scraped)
+	}
+
+	enabled, success = checkCollector(scraped, collectorSystem)
+	if enabled && success {
+		mx.System = &system{}
+		w.collectSystem(mx, scraped)
 	}
 }
 
@@ -53,7 +81,7 @@ func collectCollectorsDuration(mx *metrics, pms prometheus.Metrics) {
 	}
 }
 
-func findCollector(pms prometheus.Metrics, name string) (enabled, success bool) {
+func checkCollector(pms prometheus.Metrics, name string) (enabled, success bool) {
 	m, err := labels.NewMatcher(labels.MatchEqual, "collector", name)
 	if err != nil {
 		panic(err)

@@ -21,11 +21,11 @@ func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) {
 
 func collectCPUSummary(mx *metrics) {
 	for _, c := range mx.CPU.Cores {
-		mx.CPU.PercentUserTime.Add(c.PercentUserTime.Value())
-		mx.CPU.PercentPrivilegedTime.Add(c.PercentPrivilegedTime.Value())
-		mx.CPU.PercentInterruptTime.Add(c.PercentInterruptTime.Value())
-		mx.CPU.PercentIdleTime.Add(c.PercentIdleTime.Value())
-		mx.CPU.PercentDPCTime.Add(c.PercentDPCTime.Value())
+		mx.CPU.User += c.User
+		mx.CPU.Privileged += c.Privileged
+		mx.CPU.Interrupt += c.Interrupt
+		mx.CPU.Idle += c.Idle
+		mx.CPU.DPC += c.DPC
 	}
 }
 
@@ -47,11 +47,11 @@ func collectCPUCoresCStates(mx *metrics, pms prometheus.Metrics) {
 		switch state {
 		default:
 		case "c1":
-			core.PercentC1Time.Set(value)
+			core.C1 = value
 		case "c2":
-			core.PercentC2Time.Set(value)
+			core.C2 = value
 		case "c3":
-			core.PercentC3Time.Set(value)
+			core.C3 = value
 		}
 	}
 }
@@ -70,7 +70,7 @@ func collectCPUCoresInterrupts(mx *metrics, pms prometheus.Metrics) {
 		if core.ID != coreID {
 			core = mx.CPU.Cores.get(coreID, true)
 		}
-		core.InterruptsPerSec.Set(value)
+		core.InterruptsTotal = value
 	}
 }
 
@@ -92,15 +92,15 @@ func collectCPUCoresUsage(mx *metrics, pms prometheus.Metrics) {
 		switch mode {
 		default:
 		case "dpc":
-			core.PercentDPCTime.Set(value)
+			core.DPC = value
 		case "idle":
-			core.PercentIdleTime.Set(value)
+			core.Idle = value
 		case "interrupt":
-			core.PercentInterruptTime.Set(value)
+			core.Interrupt = value
 		case "privileged":
-			core.PercentPrivilegedTime.Set(value)
+			core.Privileged = value
 		case "user":
-			core.PercentUserTime.Set(value)
+			core.User = value
 		}
 	}
 }
@@ -119,6 +119,6 @@ func collectCPUCoresDPCs(mx *metrics, pms prometheus.Metrics) {
 		if core.ID != coreID {
 			core = mx.CPU.Cores.get(coreID, true)
 		}
-		core.DPCsQueuedPerSec.Set(value)
+		core.DPCsTotal = value
 	}
 }
