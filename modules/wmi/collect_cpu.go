@@ -21,11 +21,11 @@ func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) {
 
 func collectCPUSummary(mx *metrics) {
 	for _, c := range mx.CPU.Cores {
-		mx.CPU.Mode.User.Add(c.Mode.User.Value())
-		mx.CPU.Mode.Privileged.Add(c.Mode.Privileged.Value())
-		mx.CPU.Mode.Interrupt.Add(c.Mode.Interrupt.Value())
-		mx.CPU.Mode.Idle.Add(c.Mode.Idle.Value())
-		mx.CPU.Mode.DPC.Add(c.Mode.DPC.Value())
+		mx.CPU.PercentUserTime.Add(c.PercentUserTime.Value())
+		mx.CPU.PercentPrivilegedTime.Add(c.PercentPrivilegedTime.Value())
+		mx.CPU.PercentInterruptTime.Add(c.PercentInterruptTime.Value())
+		mx.CPU.PercentIdleTime.Add(c.PercentIdleTime.Value())
+		mx.CPU.PercentDPCTime.Add(c.PercentDPCTime.Value())
 	}
 }
 
@@ -47,11 +47,11 @@ func collectCPUCoresCStates(mx *metrics, pms prometheus.Metrics) {
 		switch state {
 		default:
 		case "c1":
-			core.CState.C1.Set(value)
+			core.PercentC1Time.Set(value)
 		case "c2":
-			core.CState.C2.Set(value)
+			core.PercentC2Time.Set(value)
 		case "c3":
-			core.CState.C3.Set(value)
+			core.PercentC3Time.Set(value)
 		}
 	}
 }
@@ -70,7 +70,7 @@ func collectCPUCoresInterrupts(mx *metrics, pms prometheus.Metrics) {
 		if core.ID != coreID {
 			core = mx.CPU.Cores.get(coreID, true)
 		}
-		core.Interrupts.Set(value)
+		core.InterruptsPerSec.Set(value)
 	}
 }
 
@@ -92,15 +92,15 @@ func collectCPUCoresUsage(mx *metrics, pms prometheus.Metrics) {
 		switch mode {
 		default:
 		case "dpc":
-			core.Mode.DPC.Set(value)
+			core.PercentDPCTime.Set(value)
 		case "idle":
-			core.Mode.Idle.Set(value)
+			core.PercentIdleTime.Set(value)
 		case "interrupt":
-			core.Mode.Interrupt.Set(value)
+			core.PercentInterruptTime.Set(value)
 		case "privileged":
-			core.Mode.Privileged.Set(value)
+			core.PercentPrivilegedTime.Set(value)
 		case "user":
-			core.Mode.User.Set(value)
+			core.PercentUserTime.Set(value)
 		}
 	}
 }
@@ -119,6 +119,6 @@ func collectCPUCoresDPCs(mx *metrics, pms prometheus.Metrics) {
 		if core.ID != coreID {
 			core = mx.CPU.Cores.get(coreID, true)
 		}
-		core.DPCs.Set(value)
+		core.DPCsQueuedPerSec.Set(value)
 	}
 }
