@@ -55,17 +55,17 @@ type (
 	nic struct {
 		STMKey                   string
 		ID                       string
-		BytesReceivedTotal       mtx.Gauge `stm:"bytes_received"`
-		BytesSentTotal           mtx.Gauge `stm:"bytes_sent"`
-		BytesTotal               mtx.Gauge `stm:"bytes_total"`
-		PacketsOutboundDiscarded mtx.Gauge `stm:"packets_outbound_discarded"`
-		PacketsOutboundErrors    mtx.Gauge `stm:"packets_outbound_errors"`
-		PacketsTotal             mtx.Gauge `stm:"packets_total"`
-		PacketsReceivedDiscarded mtx.Gauge `stm:"packets_received_discarded"`
-		PacketsReceivedErrors    mtx.Gauge `stm:"packets_received_errors"`
-		PacketsReceivedTotal     mtx.Gauge `stm:"packets_received_total"`
-		PacketsReceivedUnknown   mtx.Gauge `stm:"packets_received_unknown"`
-		PacketsSentTotal         mtx.Gauge `stm:"packets_sent_total"`
+		BytesReceivedTotal       mtx.Gauge `stm:"bytes_received,1000,1"`
+		BytesSentTotal           mtx.Gauge `stm:"bytes_sent,1000,1"`
+		BytesTotal               mtx.Gauge `stm:"bytes_total,1000,1"`
+		PacketsOutboundDiscarded mtx.Gauge `stm:"packets_outbound_discarded,1000,1"`
+		PacketsOutboundErrors    mtx.Gauge `stm:"packets_outbound_errors,1000,1"`
+		PacketsTotal             mtx.Gauge `stm:"packets_total,1000,1"`
+		PacketsReceivedDiscarded mtx.Gauge `stm:"packets_received_discarded,1000,1"`
+		PacketsReceivedErrors    mtx.Gauge `stm:"packets_received_errors,1000,1"`
+		PacketsReceivedTotal     mtx.Gauge `stm:"packets_received_total,1000,1"`
+		PacketsReceivedUnknown   mtx.Gauge `stm:"packets_received_unknown,1000,1"`
+		PacketsSentTotal         mtx.Gauge `stm:"packets_sent_total,1000,1"`
 		CurrentBandwidth         mtx.Gauge `stm:"current_bandwidth"`
 	}
 )
