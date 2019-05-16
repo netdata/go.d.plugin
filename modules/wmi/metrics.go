@@ -14,13 +14,25 @@ func newMetrics() *metrics {
 type metrics struct {
 	// https://github.com/martinlindhe/wmi_exporter/tree/master/docs
 	CPU             *cpu               `stm:"cpu"`
-	LogicalDisk     *logicalDisk       `stm:"logical_disk"`
-	Net             *network           `stm:"net"`
 	Memory          *memory            `stm:"memory"`
+	Net             *network           `stm:"net"`
+	LogicalDisk     *logicalDisk       `stm:"logical_disk"`
 	OS              *os                `stm:"os"`
 	System          *system            `stm:"system"`
 	CollectDuration map[string]float64 `stm:",1000,1"`
 }
+
+func (m metrics) hasCPU() bool { return m.CPU != nil }
+
+func (m metrics) hasMem() bool { return m.Memory != nil }
+
+func (m metrics) hasNet() bool { return m.Net != nil }
+
+func (m metrics) hasLDisk() bool { return m.LogicalDisk != nil }
+
+func (m metrics) hasOS() bool { return m.OS != nil }
+
+func (m metrics) hasSystem() bool { return m.System != nil }
 
 // cpu
 type (

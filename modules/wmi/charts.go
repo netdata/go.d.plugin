@@ -322,19 +322,19 @@ var logicalDiskCharts = Charts{
 func (w *WMI) updateCharts(mx *metrics) {
 	w.updateCollectDurationChart(mx)
 
-	if mx.CPU != nil {
+	if mx.hasCPU() {
 		w.updateCPUCharts(mx)
 	}
 
-	if mx.Memory != nil {
+	if mx.hasMem() {
 		w.updateMemoryCharts(mx)
 	}
 
-	if mx.Net != nil {
+	if mx.hasNet() {
 		w.updateNetCharts(mx)
 	}
 
-	if mx.LogicalDisk != nil {
+	if mx.hasLDisk() {
 		w.updateLogicalDisksCharts(mx)
 	}
 
@@ -451,10 +451,6 @@ func (w *WMI) updateNetCharts(mx *metrics) {
 	}
 }
 
-func (w *WMI) updateSystemCharts(mx *metrics) {}
-
-func (w *WMI) updateOSCharts(mx *metrics) {}
-
 func (w *WMI) updateLogicalDisksCharts(mx *metrics) {
 	for _, vol := range mx.LogicalDisk.Volumes {
 		if w.collected.volumes[vol.ID] {
@@ -474,3 +470,7 @@ func (w *WMI) updateLogicalDisksCharts(mx *metrics) {
 		_ = w.charts.Add(*charts...)
 	}
 }
+
+func (w *WMI) updateSystemCharts(mx *metrics) {}
+
+func (w *WMI) updateOSCharts(mx *metrics) {}
