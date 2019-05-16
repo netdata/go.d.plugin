@@ -9,7 +9,13 @@ const (
 	metricCPUTimeTotal       = "wmi_cpu_time_total"
 )
 
-func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) {
+func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) bool {
+	enabled, success := checkCollector(pms, collectorCPU)
+	if !(enabled && success) {
+		return false
+	}
+	mx.CPU = &cpu{}
+
 	collectCPUCoresCStates(mx, pms)
 	collectCPUCoresDPCs(mx, pms)
 	collectCPUCoresInterrupts(mx, pms)
@@ -17,6 +23,8 @@ func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) {
 
 	mx.CPU.Cores.sort()
 	collectCPUSummary(mx)
+
+	return true
 }
 
 func collectCPUSummary(mx *metrics) {

@@ -15,7 +15,13 @@ const (
 	metricSysThreads                  = "wmi_system_threads"
 )
 
-func (w *WMI) collectSystem(mx *metrics, pms prometheus.Metrics) {
+func (w *WMI) collectSystem(mx *metrics, pms prometheus.Metrics) bool {
+	enabled, success := checkCollector(pms, collectorSystem)
+	if !(enabled && success) {
+		return false
+	}
+	mx.System = &system{}
+
 	names := []string{
 		metricSysContextSwitchesTotal,
 		metricSysExceptionDispatchesTotal,
@@ -28,6 +34,8 @@ func (w *WMI) collectSystem(mx *metrics, pms prometheus.Metrics) {
 	for _, name := range names {
 		collectSystemAny(mx, pms, name)
 	}
+
+	return true
 }
 
 func collectSystemAny(mx *metrics, pms prometheus.Metrics, name string) {

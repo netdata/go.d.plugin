@@ -22,7 +22,13 @@ const (
 	metricNetCurrentBandwidth         = "wmi_net_current_bandwidth"
 )
 
-func (w *WMI) collectNet(mx *metrics, pms prometheus.Metrics) {
+func (w *WMI) collectNet(mx *metrics, pms prometheus.Metrics) bool {
+	enabled, success := checkCollector(pms, collectorNet)
+	if !(enabled && success) {
+		return false
+	}
+	mx.Net = &network{}
+
 	names := []string{
 		metricNetBytesReceivedTotal,
 		metricNetBytesSentTotal,
@@ -41,6 +47,8 @@ func (w *WMI) collectNet(mx *metrics, pms prometheus.Metrics) {
 	for _, name := range names {
 		collectNetAny(mx, pms, name)
 	}
+
+	return true
 }
 
 func collectNetAny(mx *metrics, pms prometheus.Metrics, name string) {

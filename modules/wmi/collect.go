@@ -36,41 +36,12 @@ func (w *WMI) collect() (map[string]int64, error) {
 func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
 	collectCollectorsDuration(mx, scraped)
 
-	enabled, success := checkCollector(scraped, collectorCPU)
-	if enabled && success {
-		mx.CPU = &cpu{}
-		w.collectCPU(mx, scraped)
-	}
-
-	enabled, success = checkCollector(scraped, collectorNet)
-	if enabled && success {
-		mx.Net = &network{}
-		w.collectNet(mx, scraped)
-	}
-
-	enabled, success = checkCollector(scraped, collectorMemory)
-	if enabled && success {
-		mx.Memory = &memory{}
-		w.collectMemory(mx, scraped)
-	}
-
-	enabled, success = checkCollector(scraped, collectorCS)
-	if enabled && success {
-		mx.CS = &cs{}
-		w.collectCS(mx, scraped)
-	}
-
-	enabled, success = checkCollector(scraped, collectorOS)
-	if enabled && success {
-		mx.OS = &os{}
-		w.collectOS(mx, scraped)
-	}
-
-	enabled, success = checkCollector(scraped, collectorSystem)
-	if enabled && success {
-		mx.System = &system{}
-		w.collectSystem(mx, scraped)
-	}
+	w.collectCPU(mx, scraped)
+	w.collectNet(mx, scraped)
+	w.collectMemory(mx, scraped)
+	w.collectCS(mx, scraped)
+	w.collectOS(mx, scraped)
+	w.collectSystem(mx, scraped)
 }
 
 func collectCollectorsDuration(mx *metrics, pms prometheus.Metrics) {

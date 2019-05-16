@@ -20,7 +20,13 @@ const (
 	metricOSTime                    = "wmi_os_time"
 )
 
-func (w *WMI) collectOS(mx *metrics, pms prometheus.Metrics) {
+func (w *WMI) collectOS(mx *metrics, pms prometheus.Metrics) bool {
+	enabled, success := checkCollector(pms, collectorOS)
+	if !(enabled && success) {
+		return false
+	}
+	mx.OS = &os{}
+
 	names := []string{
 		metricOSPhysicalMemoryFreeBytes,
 		metricOSPagingFreeBytes,
@@ -38,6 +44,8 @@ func (w *WMI) collectOS(mx *metrics, pms prometheus.Metrics) {
 	for _, name := range names {
 		collectOSAny(mx, pms, name)
 	}
+
+	return true
 }
 
 func collectOSAny(mx *metrics, pms prometheus.Metrics, name string) {

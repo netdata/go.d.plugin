@@ -41,7 +41,13 @@ const (
 	metricMemWriteCopiesTotal                = "wmi_memory_write_copies_total"
 )
 
-func (w *WMI) collectMemory(mx *metrics, pms prometheus.Metrics) {
+func (w *WMI) collectMemory(mx *metrics, pms prometheus.Metrics) bool {
+	enabled, success := checkCollector(pms, collectorMemory)
+	if !(enabled && success) {
+		return false
+	}
+	mx.Memory = &memory{}
+
 	names := []string{
 		metricMemAvailBytes,
 		metricMemCacheBytes,
@@ -81,6 +87,7 @@ func (w *WMI) collectMemory(mx *metrics, pms prometheus.Metrics) {
 		collectMemoryAny(mx, pms, name)
 	}
 
+	return true
 }
 
 func collectMemoryAny(mx *metrics, pms prometheus.Metrics, name string) {

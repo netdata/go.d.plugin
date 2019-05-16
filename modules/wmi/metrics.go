@@ -142,6 +142,8 @@ type (
 	// Win32_OperatingSystem
 	// https://docs.microsoft.com/en-us/windows/desktop/CIMWin32Prov/win32-operatingsystem
 	os struct {
+		PhysicalMemoryUsedBytes *float64 `stm:"physical_memory_used_bytes,1000,1"` // cs.PhysicalMemoryBytes - PhysicalMemoryFreeBytes
+
 		PhysicalMemoryFreeBytes float64 `stm:"physical_memory_free_bytes,1000,1"` // FreePhysicalMemory
 		PagingFreeBytes         float64 `stm:"paging_free_bytes,1000,1"`          // FreeSpaceInPagingFiles
 		VirtualMemoryFreeBytes  float64 `stm:"virtual_memory_free_bytes,1000,1"`  // FreeVirtualMemory
