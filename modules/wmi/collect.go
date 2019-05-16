@@ -7,12 +7,14 @@ import (
 )
 
 const (
-	collectorCPU    = "cpu"
-	collectorNet    = "net"
-	collectorMemory = "memory"
-	collectorCS     = "cs"
-	collectorOS     = "os"
-	collectorSystem = "system"
+	// defaults are cpu,cs,logical_disk,net,os,service,system,textfile
+	collectorCPU      = "cpu"
+	collectorCS       = "cs"
+	collectorLogDisks = "logical_disk"
+	collectorNet      = "net"
+	collectorOS       = "os"
+	collectorSystem   = "system"
+	collectorMemory   = "memory"
 
 	metricCollectorDuration = "wmi_exporter_collector_duration_seconds"
 )

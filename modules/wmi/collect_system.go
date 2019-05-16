@@ -1,6 +1,10 @@
 package wmi
 
-import "github.com/netdata/go.d.plugin/pkg/prometheus"
+import (
+	"fmt"
+
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
+)
 
 const (
 	metricSysContextSwitchesTotal     = "wmi_system_context_switches_total"
@@ -12,10 +16,37 @@ const (
 )
 
 func (w *WMI) collectSystem(mx *metrics, pms prometheus.Metrics) {
-	mx.System.ContextSwitchesTotal = pms.FindByName(metricSysContextSwitchesTotal).Max()
-	mx.System.ExceptionDispatchesTotal = pms.FindByName(metricSysExceptionDispatchesTotal).Max()
-	mx.System.ProcessorQueueLength = pms.FindByName(metricSysProcessorQueueLength).Max()
-	mx.System.SystemCallsTotal = pms.FindByName(metricSysSystemCallsTotal).Max()
-	mx.System.SystemUpTime = pms.FindByName(metricSysSystemUpTime).Max()
-	mx.System.Threads = pms.FindByName(metricSysThreads).Max()
+	names := []string{
+		metricSysContextSwitchesTotal,
+		metricSysExceptionDispatchesTotal,
+		metricSysProcessorQueueLength,
+		metricSysSystemCallsTotal,
+		metricSysSystemUpTime,
+		metricSysThreads,
+	}
+
+	for _, name := range names {
+		collectSystemAny(mx, pms, name)
+	}
+}
+
+func collectSystemAny(mx *metrics, pms prometheus.Metrics, name string) {
+	value := pms.FindByName(name).Max()
+
+	switch name {
+	default:
+		panic(fmt.Sprintf("unknown metric name during system collection : %s", name))
+	case metricSysContextSwitchesTotal:
+		mx.System.ContextSwitchesTotal = value
+	case metricSysExceptionDispatchesTotal:
+		mx.System.ExceptionDispatchesTotal = value
+	case metricSysProcessorQueueLength:
+		mx.System.ProcessorQueueLength = value
+	case metricSysSystemCallsTotal:
+		mx.System.SystemCallsTotal = value
+	case metricSysSystemUpTime:
+		mx.System.SystemUpTime = value
+	case metricSysThreads:
+		mx.System.Threads = value
+	}
 }

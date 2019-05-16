@@ -38,7 +38,7 @@ type (
 		id                    int // for sorting
 		cpuCStateSecondsTotal `stm:""`
 		cpuTimeTotal          `stm:""`
-		DPCsTotal             float64 `stm:"dpc,1000,1"`        // DPCsQueuedPersec
+		DPCsTotal             float64 `stm:"dpcs,1000,1"`       // DPCsQueuedPersec
 		InterruptsTotal       float64 `stm:"interrupts,1000,1"` // InterruptsPersec
 	}
 
@@ -139,8 +139,8 @@ type (
 		SystemUpTime             float64 `stm:"system_up_time"`
 		Threads                  float64 `stm:"system_threads"`
 	}
-	// Win32_ComputerSystem
-	// https://msdn.microsoft.com/en-us/library/aa394102
+	// Win32_OperatingSystem
+	// https://docs.microsoft.com/en-us/windows/desktop/CIMWin32Prov/win32-operatingsystem
 	os struct {
 		PhysicalMemoryFreeBytes float64 `stm:"physical_memory_free_bytes,1000,1"` // FreePhysicalMemory
 		PagingFreeBytes         float64 `stm:"paging_free_bytes,1000,1"`          // FreeSpaceInPagingFiles
@@ -153,7 +153,7 @@ type (
 		VirtualMemoryBytes      float64 `stm:"virtual_memory_bytes,1000,1"`       // TotalVirtualMemorySize
 		VisibleMemoryBytes      float64 `stm:"visible_memory_bytes,1000,1"`       // TotalVisibleMemorySize
 		Time                    float64 `stm:"time"`                              // LocalDateTime
-		Timezone                float64 `stm:"timezone"`                          // LocalDateTime
+		// Timezone                float64 `stm:"timezone"`                          // LocalDateTime
 	}
 )
 
