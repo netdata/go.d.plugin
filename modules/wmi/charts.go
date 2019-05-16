@@ -23,9 +23,10 @@ type (
 )
 
 const (
-	defaultPriority = orchestrator.DefaultJobPriority
-	memoryPriority  = defaultPriority + 20
-	nicPriority     = defaultPriority + 40
+	defaultPriority     = orchestrator.DefaultJobPriority
+	memoryPriority      = defaultPriority + 20
+	netPriority         = defaultPriority + 40
+	logicalDiskPriority = defaultPriority + 60
 )
 
 var charts = Charts{
@@ -47,7 +48,7 @@ var (
 			Title: "CPU Usage Total",
 			Units: "percentage",
 			Fam:   "cpu",
-			Ctx:   "cpu.cpu_usage_total",
+			Ctx:   "wmi.cpu_usage_total",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "cpu_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
@@ -62,7 +63,7 @@ var (
 			Title: "Received and Serviced Deferred Procedure Calls (DPC)",
 			Units: "dpc/s",
 			Fam:   "cpu",
-			Ctx:   "cpu.cpu_dpcs_total",
+			Ctx:   "wmi.cpu_dpcs_total",
 			Type:  module.Stacked,
 			// Dims will be added during collection
 		},
@@ -71,7 +72,7 @@ var (
 			Title: "Received and Serviced Hardware Interrupts",
 			Units: "interrupts/s",
 			Fam:   "cpu",
-			Ctx:   "cpu.cpu_interrupts_total",
+			Ctx:   "wmi.cpu_interrupts_total",
 			Type:  module.Stacked,
 			// Dims will be added during collection
 		},
@@ -84,7 +85,7 @@ var (
 		Title: "Core%s Usage",
 		Units: "percentage",
 		Fam:   "cpu",
-		Ctx:   "cpu.core_cpu_usage",
+		Ctx:   "wmi.core_cpu_usage",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "cpu_core_%s_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: Opts{Hidden: true}},
@@ -99,7 +100,7 @@ var (
 		Title: "Core%s Time Spent in Low-Power Idle State",
 		Units: "percentage",
 		Fam:   "cpu",
-		Ctx:   "cpu.core_cpu_cstate",
+		Ctx:   "wmi.core_cpu_cstate",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "cpu_core_%s_c1", Name: "c1", Algo: module.PercentOfIncremental, Div: 1000},
@@ -109,72 +110,14 @@ var (
 	}
 )
 
-var netNICCharts = Charts{
-	{
-		ID:       "nic_%s_bandwidth",
-		Title:    "Bandwidth %s",
-		Units:    "kilobits/s",
-		Fam:      "network",
-		Ctx:      "net.net_nic_bandwidth",
-		Type:     module.Area,
-		Priority: nicPriority,
-		Dims: Dims{
-			{ID: "net_%s_bytes_received", Name: "received", Algo: module.Incremental, Div: 1000 * 125},
-			{ID: "net_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Div: -1000 * 125},
-		},
-		Vars: Vars{
-			{ID: "net_%s_current_bandwidth"},
-		},
-	},
-	{
-		ID:       "nic_%s_packets",
-		Title:    "Packets %s",
-		Units:    "packets/s",
-		Fam:      "network",
-		Ctx:      "net.net_nic_packets",
-		Type:     module.Area,
-		Priority: nicPriority + 1,
-		Dims: Dims{
-			{ID: "net_%s_packets_received_total", Name: "received", Algo: module.Incremental, Div: 1000},
-			{ID: "net_%s_packets_sent_total", Name: "sent", Algo: module.Incremental, Div: -1000},
-		},
-	},
-	{
-		ID:       "nic_%s_packets_errors",
-		Title:    "Errored Packets %s",
-		Units:    "errors/s",
-		Fam:      "network",
-		Ctx:      "net.net_nic_packets_errors",
-		Type:     module.Area,
-		Priority: nicPriority + 2,
-		Dims: Dims{
-			{ID: "net_%s_packets_received_errors", Name: "inbound", Algo: module.Incremental, Div: 1000},
-			{ID: "net_%s_packets_outbound_errors", Name: "outbound", Algo: module.Incremental, Div: -1000},
-		},
-	},
-	{
-		ID:       "nic_%s_packets_discarded",
-		Title:    "Discarded Packets %s",
-		Units:    "discards/s",
-		Fam:      "network",
-		Ctx:      "net.net_nic_packets_discarded",
-		Type:     module.Area,
-		Priority: nicPriority + 3,
-		Dims: Dims{
-			{ID: "net_%s_packets_received_discarded", Name: "inbound", Algo: module.Incremental, Div: 1000},
-			{ID: "net_%s_packets_outbound_discarded", Name: "outbound", Algo: module.Incremental, Div: -1000},
-		},
-	},
-}
-
 var (
 	memoryCharts = Charts{
 		{
 			ID:       "memory_usage",
 			Title:    "Memory Usage",
 			Units:    "KiB",
-			Fam:      "memory",
-			Ctx:      "memory.memory_usage",
+			Fam:      "mem",
+			Ctx:      "wmi.memory_usage",
 			Type:     module.Stacked,
 			Priority: memoryPriority,
 			Dims: Dims{
@@ -189,8 +132,8 @@ var (
 			ID:       "memory_page_faults",
 			Title:    "Memory Page Faults",
 			Units:    "events/s",
-			Fam:      "memory",
-			Ctx:      "memory.page_faults",
+			Fam:      "mem",
+			Ctx:      "wmi.memory_page_faults",
 			Priority: memoryPriority,
 			Dims: Dims{
 				{ID: "memory_page_faults_total", Name: "page faults", Algo: module.Incremental, Div: 1000},
@@ -200,8 +143,8 @@ var (
 			ID:       "memory_swap",
 			Title:    "Swap",
 			Units:    "KiB",
-			Fam:      "memory",
-			Ctx:      "memory.memory_swap",
+			Fam:      "mem",
+			Ctx:      "wmi.memory_swap",
 			Type:     module.Stacked,
 			Priority: memoryPriority,
 			Dims: Dims{
@@ -216,8 +159,8 @@ var (
 			ID:       "memory_swap_operations",
 			Title:    "Swap Operations",
 			Units:    "operations/s",
-			Fam:      "memory",
-			Ctx:      "memory.memory_swap_operations",
+			Fam:      "mem",
+			Ctx:      "wmi.memory_swap_operations",
 			Type:     module.Area,
 			Priority: memoryPriority,
 			Dims: Dims{
@@ -229,8 +172,8 @@ var (
 			ID:       "memory_swap_pages",
 			Title:    "Swap Pages",
 			Units:    "pages/s",
-			Fam:      "memory",
-			Ctx:      "memory.memory_swap_pages",
+			Fam:      "mem",
+			Ctx:      "wmi.memory_swap_pages",
 			Type:     module.Area,
 			Priority: memoryPriority,
 			Dims: Dims{
@@ -242,8 +185,8 @@ var (
 			ID:       "memory_cached",
 			Title:    "Cached",
 			Units:    "KiB",
-			Fam:      "memory",
-			Ctx:      "memory.cached",
+			Fam:      "mem",
+			Ctx:      "wmi.memory_cached",
 			Priority: memoryPriority,
 			Dims: Dims{
 				{ID: "memory_cache_total", Name: "cached", Div: 1000 * 1024},
@@ -253,8 +196,8 @@ var (
 			ID:       "memory_cache_faults",
 			Title:    "Cache Faults",
 			Units:    "events/s",
-			Fam:      "memory",
-			Ctx:      "memory.cache_faults",
+			Fam:      "mem",
+			Ctx:      "wmi.memory_cache_faults",
 			Priority: memoryPriority,
 			Dims: Dims{
 				{ID: "memory_cache_faults_total", Name: "cache faults", Algo: module.Incremental, Div: 1000},
@@ -264,8 +207,8 @@ var (
 			ID:       "memory_system_pool",
 			Title:    "System Memory Pool",
 			Units:    "KiB",
-			Fam:      "memory",
-			Ctx:      "memory.memory_system_pool",
+			Fam:      "mem",
+			Ctx:      "wmi.memory_system_pool",
 			Type:     module.Stacked,
 			Priority: memoryPriority,
 			Dims: Dims{
@@ -276,6 +219,106 @@ var (
 	}
 )
 
+var netNICCharts = Charts{
+	{
+		ID:       "nic_%s_bandwidth",
+		Title:    "Bandwidth %s",
+		Units:    "kilobits/s",
+		Fam:      "net",
+		Ctx:      "wmi.net_nic_bandwidth",
+		Type:     module.Area,
+		Priority: netPriority,
+		Dims: Dims{
+			{ID: "net_%s_bytes_received", Name: "received", Algo: module.Incremental, Div: 1000 * 125},
+			{ID: "net_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Div: -1000 * 125},
+		},
+		Vars: Vars{
+			{ID: "net_%s_current_bandwidth"},
+		},
+	},
+	{
+		ID:       "nic_%s_packets",
+		Title:    "Packets %s",
+		Units:    "packets/s",
+		Fam:      "net",
+		Ctx:      "wmi.net_nic_packets",
+		Type:     module.Area,
+		Priority: netPriority + 1,
+		Dims: Dims{
+			{ID: "net_%s_packets_received_total", Name: "received", Algo: module.Incremental, Div: 1000},
+			{ID: "net_%s_packets_sent_total", Name: "sent", Algo: module.Incremental, Div: -1000},
+		},
+	},
+	{
+		ID:       "nic_%s_packets_errors",
+		Title:    "Errored Packets %s",
+		Units:    "errors/s",
+		Fam:      "net",
+		Ctx:      "wmi.net_nic_packets_errors",
+		Type:     module.Area,
+		Priority: netPriority + 2,
+		Dims: Dims{
+			{ID: "net_%s_packets_received_errors", Name: "inbound", Algo: module.Incremental, Div: 1000},
+			{ID: "net_%s_packets_outbound_errors", Name: "outbound", Algo: module.Incremental, Div: -1000},
+		},
+	},
+	{
+		ID:       "nic_%s_packets_discarded",
+		Title:    "Discarded Packets %s",
+		Units:    "discards/s",
+		Fam:      "net",
+		Ctx:      "wmi.net_nic_packets_discarded",
+		Type:     module.Area,
+		Priority: netPriority + 3,
+		Dims: Dims{
+			{ID: "net_%s_packets_received_discarded", Name: "inbound", Algo: module.Incremental, Div: 1000},
+			{ID: "net_%s_packets_outbound_discarded", Name: "outbound", Algo: module.Incremental, Div: -1000},
+		},
+	},
+}
+
+var logicalDiskCharts = Charts{
+	{
+		ID:       "logical_disk_%s_usage",
+		Title:    "Usage Disk %s",
+		Units:    "KiB",
+		Fam:      "disk",
+		Ctx:      "wmi.logical_disk_usage",
+		Type:     module.Stacked,
+		Priority: logicalDiskPriority,
+		Dims: Dims{
+			{ID: "logical_disk_%s_free_space", Name: "free", Div: 1000 * 1024},
+			{ID: "logical_disk_%s_used_space", Name: "used", Div: 1000 * 1024},
+		},
+	},
+	{
+		ID:       "logical_disk_%s_bandwidth",
+		Title:    "Bandwidth Disk %s",
+		Units:    "KiB/s",
+		Fam:      "disk",
+		Ctx:      "wmi.logical_disk_bandwidth",
+		Type:     module.Area,
+		Priority: logicalDiskPriority + 1,
+		Dims: Dims{
+			{ID: "logical_disk_%s_read_bytes_total", Name: "read", Algo: module.Incremental, Div: 1000 * 1024},
+			{ID: "logical_disk_%s_write_bytes_total", Name: "write", Algo: module.Incremental, Div: -11000 * 1024},
+		},
+	},
+	{
+		ID:       "logical_disk_%s_operations",
+		Title:    "Operations Disk %s",
+		Units:    "operations/s",
+		Fam:      "disk",
+		Ctx:      "wmi.logical_disk_operations",
+		Type:     module.Area,
+		Priority: logicalDiskPriority + 2,
+		Dims: Dims{
+			{ID: "logical_disk_%s_reads_total", Name: "reads", Algo: module.Incremental},
+			{ID: "logical_disk_%s_writes_total", Name: "writes", Algo: module.Incremental, Mul: -1},
+		},
+	},
+}
+
 func (w *WMI) updateCharts(mx *metrics) {
 	w.updateCollectDurationChart(mx)
 
@@ -283,21 +326,25 @@ func (w *WMI) updateCharts(mx *metrics) {
 		w.updateCPUCharts(mx)
 	}
 
-	if mx.OS != nil {
-		w.updateOSCharts(mx)
-	}
-
 	if mx.Memory != nil {
 		w.updateMemoryCharts(mx)
-	}
-
-	if mx.System != nil {
-		w.updateSystemCharts(mx)
 	}
 
 	if mx.Net != nil {
 		w.updateNetCharts(mx)
 	}
+
+	if mx.LogicalDisk != nil {
+		w.updateLogicalDisksCharts(mx)
+	}
+
+	//if mx.System != nil {
+	//	w.updateSystemCharts(mx)
+	//}
+	//
+	//if mx.OS != nil {
+	//	w.updateOSCharts(mx)
+	//}
 
 }
 
@@ -408,4 +455,22 @@ func (w *WMI) updateSystemCharts(mx *metrics) {}
 
 func (w *WMI) updateOSCharts(mx *metrics) {}
 
-func (w *WMI) updateLogicalDisksCharts(mx *metrics) {}
+func (w *WMI) updateLogicalDisksCharts(mx *metrics) {
+	for _, vol := range mx.LogicalDisk.Volumes {
+		if w.collected.volumes[vol.ID] {
+			continue
+		}
+		w.collected.volumes[vol.ID] = true
+		charts := logicalDiskCharts.Copy()
+
+		for _, chart := range *charts {
+			chart.ID = fmt.Sprintf(chart.ID, vol.ID)
+			chart.Title = fmt.Sprintf(chart.Title, vol.ID)
+
+			for _, dim := range chart.Dims {
+				dim.ID = fmt.Sprintf(dim.ID, vol.ID)
+			}
+		}
+		_ = w.charts.Add(*charts...)
+	}
+}

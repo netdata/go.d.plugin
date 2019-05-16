@@ -38,6 +38,7 @@ func New() *WMI {
 			collectors: make(map[string]bool),
 			cores:      make(map[string]bool),
 			nics:       make(map[string]bool),
+			volumes:    make(map[string]bool),
 		},
 	}
 }
@@ -51,6 +52,7 @@ type collected struct {
 	collectors map[string]bool
 	cores      map[string]bool
 	nics       map[string]bool
+	volumes    map[string]bool
 }
 
 // WMI WMI module.

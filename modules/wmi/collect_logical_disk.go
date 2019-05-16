@@ -51,7 +51,7 @@ func collectLogicalDiskAny(mx *metrics, pms prometheus.Metrics, name string) {
 			volumeID = pm.Labels.Get("volume")
 			value    = pm.Value
 		)
-		if volumeID == "" || strings.HasSuffix(volumeID, "HarddiskVolume") {
+		if volumeID == "" || strings.HasPrefix(volumeID, "HarddiskVolume") {
 			continue
 		}
 		if vol.ID != volumeID {

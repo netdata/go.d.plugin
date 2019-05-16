@@ -22,6 +22,7 @@ type metrics struct {
 	CollectDuration map[string]float64 `stm:",1000,1"`
 }
 
+// cpu
 type (
 	cpu struct {
 		cpuTimeTotal `stm:""`
@@ -54,63 +55,6 @@ type (
 		C1 float64 `stm:"c1,1000,1"` // PercentC1Time
 		C2 float64 `stm:"c2,1000,1"` // PercentC2Time
 		C3 float64 `stm:"c3,1000,1"` // PercentC3Time
-	}
-)
-
-type (
-	network struct {
-		NICs netNICs `stm:""`
-	}
-
-	netNICs []*netNIC
-
-	// Win32_PerfRawData_Tcpip_NetworkInterface
-	// https://docs.microsoft.com/en-us/previous-versions/aa394293(v%3Dvs.85)
-	netNIC struct {
-		STMKey string
-		ID     string
-
-		BytesReceivedTotal       float64 `stm:"bytes_received,1000,1"` // BytesReceivedPersec
-		BytesSentTotal           float64 `stm:"bytes_sent,1000,1"`     // BytesSentPersec
-		BytesTotal               float64 `stm:"bytes_total,1000,1"`    // BytesTotalPersec
-		PacketsOutboundDiscarded float64 `stm:"packets_outbound_discarded,1000,1"`
-		PacketsOutboundErrors    float64 `stm:"packets_outbound_errors,1000,1"`
-		PacketsTotal             float64 `stm:"packets_total,1000,1"` // PacketsPersec
-		PacketsReceivedDiscarded float64 `stm:"packets_received_discarded,1000,1"`
-		PacketsReceivedErrors    float64 `stm:"packets_received_errors,1000,1"`
-		PacketsReceivedTotal     float64 `stm:"packets_received_total,1000,1"` // PacketsReceivedPersec
-		PacketsReceivedUnknown   float64 `stm:"packets_received_unknown,1000,1"`
-		PacketsSentTotal         float64 `stm:"packets_sent_total,1000,1"` // PacketsSentPersec
-		CurrentBandwidth         float64 `stm:"current_bandwidth"`
-	}
-)
-
-type (
-	logicalDisk struct {
-		Volumes volumes `stm:""`
-	}
-
-	volumes []*volume
-
-	// Win32_PerfRawData_PerfDisk_LogicalDisk
-	// https://msdn.microsoft.com/en-us/windows/hardware/aa394307(v=vs.71)
-	volume struct {
-		STMKey string
-		ID     string
-
-		UsedSpace float64 `stm:"used_space,1000,1"` // TotalSpace - FreeSpace
-
-		RequestsQueued  float64 `stm:"requests_queued"`            // CurrentDiskQueueLength
-		ReadBytesTotal  float64 `stm:"read_bytes_total,1000,1"`    // DiskReadBytesPerSec
-		ReadsTotal      float64 `stm:"reads_total"`                // DiskReadsPerSec
-		WriteBytesTotal float64 `stm:"write_bytes_total,1000,1"`   // DiskWriteBytesPerSec
-		WritesTotal     float64 `stm:"writes_total"`               // DiskWritesPerSec
-		ReadTime        float64 `stm:"read_seconds_total,1000,1"`  // PercentDiskReadTime
-		WriteTime       float64 `stm:"write_seconds_total,1000,1"` // PercentDiskWriteTime
-		TotalSpace      float64 `stm:"total_space,1000,1"`         // PercentFreeSpace_Base
-		FreeSpace       float64 `stm:"free_space,1000,1"`          // PercentFreeSpace
-		IdleTime        float64 `stm:"idle_seconds_total,1000,1"`  // PercentIdleTime
-		SplitIOs        float64 `stm:"split_ios_total"`            // SplitIOPerSec
 	}
 )
 
@@ -156,6 +100,65 @@ type memory struct {
 	TransitionPagesRePurposedTotal  float64 `stm:"transition_pages_repurposed_total,1000,1"` // TransitionPagesRePurposedPersec
 	WriteCopiesTotal                float64 `stm:"write_copies_total,1000,1"`                // WriteCopiesPersec
 }
+
+// network
+type (
+	network struct {
+		NICs netNICs `stm:""`
+	}
+
+	netNICs []*netNIC
+
+	// Win32_PerfRawData_Tcpip_NetworkInterface
+	// https://docs.microsoft.com/en-us/previous-versions/aa394293(v%3Dvs.85)
+	netNIC struct {
+		STMKey string
+		ID     string
+
+		BytesReceivedTotal       float64 `stm:"bytes_received,1000,1"` // BytesReceivedPersec
+		BytesSentTotal           float64 `stm:"bytes_sent,1000,1"`     // BytesSentPersec
+		BytesTotal               float64 `stm:"bytes_total,1000,1"`    // BytesTotalPersec
+		PacketsOutboundDiscarded float64 `stm:"packets_outbound_discarded,1000,1"`
+		PacketsOutboundErrors    float64 `stm:"packets_outbound_errors,1000,1"`
+		PacketsTotal             float64 `stm:"packets_total,1000,1"` // PacketsPersec
+		PacketsReceivedDiscarded float64 `stm:"packets_received_discarded,1000,1"`
+		PacketsReceivedErrors    float64 `stm:"packets_received_errors,1000,1"`
+		PacketsReceivedTotal     float64 `stm:"packets_received_total,1000,1"` // PacketsReceivedPersec
+		PacketsReceivedUnknown   float64 `stm:"packets_received_unknown,1000,1"`
+		PacketsSentTotal         float64 `stm:"packets_sent_total,1000,1"` // PacketsSentPersec
+		CurrentBandwidth         float64 `stm:"current_bandwidth"`
+	}
+)
+
+// logical disk
+type (
+	logicalDisk struct {
+		Volumes volumes `stm:""`
+	}
+
+	volumes []*volume
+
+	// Win32_PerfRawData_PerfDisk_LogicalDisk
+	// https://msdn.microsoft.com/en-us/windows/hardware/aa394307(v=vs.71)
+	volume struct {
+		STMKey string
+		ID     string
+
+		UsedSpace float64 `stm:"used_space,1000,1"` // TotalSpace - FreeSpace
+
+		RequestsQueued  float64 `stm:"requests_queued"`            // CurrentDiskQueueLength
+		ReadBytesTotal  float64 `stm:"read_bytes_total,1000,1"`    // DiskReadBytesPerSec
+		ReadsTotal      float64 `stm:"reads_total"`                // DiskReadsPerSec
+		WriteBytesTotal float64 `stm:"write_bytes_total,1000,1"`   // DiskWriteBytesPerSec
+		WritesTotal     float64 `stm:"writes_total"`               // DiskWritesPerSec
+		ReadTime        float64 `stm:"read_seconds_total,1000,1"`  // PercentDiskReadTime
+		WriteTime       float64 `stm:"write_seconds_total,1000,1"` // PercentDiskWriteTime
+		TotalSpace      float64 `stm:"total_space,1000,1"`         // PercentFreeSpace_Base
+		FreeSpace       float64 `stm:"free_space,1000,1"`          // PercentFreeSpace
+		IdleTime        float64 `stm:"idle_seconds_total,1000,1"`  // PercentIdleTime
+		SplitIOs        float64 `stm:"split_ios_total"`            // SplitIOPerSec
+	}
+)
 
 // Win32_PerfRawData_PerfOS_System
 // https://docs.microsoft.com/en-us/previous-versions/aa394272(v%3Dvs.85)
