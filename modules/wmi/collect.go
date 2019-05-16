@@ -40,6 +40,7 @@ func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
 	w.collectMemory(mx, scraped)
 	w.collectOS(mx, scraped)
 	w.collectSystem(mx, scraped)
+	w.collectLogicalDisk(mx, scraped)
 
 	if mx.OS != nil && mx.Memory != nil {
 		v := sum(mx.OS.VisibleMemoryBytes, -mx.Memory.AvailableBytes)

@@ -368,8 +368,6 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 	}
 }
 
-func (w *WMI) updateOSCharts(mx *metrics) {}
-
 func (w *WMI) updateMemoryCharts(mx *metrics) {
 	if w.collected.collectors[collectorMemory] {
 		return
@@ -381,8 +379,6 @@ func (w *WMI) updateMemoryCharts(mx *metrics) {
 	}
 	_ = w.charts.Add(charts...)
 }
-
-func (w *WMI) updateSystemCharts(mx *metrics) {}
 
 func (w *WMI) updateNetCharts(mx *metrics) {
 	for _, nic := range mx.Net.NICs {
@@ -407,3 +403,9 @@ func (w *WMI) updateNetCharts(mx *metrics) {
 		_ = w.charts.Add(*charts...)
 	}
 }
+
+func (w *WMI) updateSystemCharts(mx *metrics) {}
+
+func (w *WMI) updateOSCharts(mx *metrics) {}
+
+func (w *WMI) updateLogicalDisksCharts(mx *metrics) {}

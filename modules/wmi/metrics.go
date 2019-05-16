@@ -14,6 +14,7 @@ func newMetrics() *metrics {
 type metrics struct {
 	// https://github.com/martinlindhe/wmi_exporter/tree/master/docs
 	CPU             *cpu               `stm:"cpu"`
+	LogicalDisk     *logicalDisk       `stm:"logical_disk"`
 	Net             *network           `stm:"net"`
 	Memory          *memory            `stm:"memory"`
 	OS              *os                `stm:"os"`
@@ -85,75 +86,104 @@ type (
 )
 
 type (
-	// Win32_PerfRawData_PerfOS_Memory
-	// https://technet.microsoft.com/en-ca/aa394314(v=vs.71)
-	// http://wutils.com/wmi/root/cimv2/win32_perfrawdata_perfos_memory/
-	memory struct {
-		UsedBytes         *float64 `stm:"used_bytes,1000,1"`          // cs.PhysicalMemoryBytes - AvailableBytes
-		NotCommittedBytes float64  `stm:"not_committed_bytes,1000,1"` // CommitLimit - CommittedBytes
-		StandbyCacheTotal float64  `stm:"standby_cache_total,1000,1"` // StandbyCacheCoreBytes + StandbyCacheNormalPriorityBytes + StandbyCacheReserveBytes
-		Cached            float64  `stm:"cache_total,1000,1"`         // StandbyCacheTotal + ModifiedPageListBytes
+	logicalDisk struct {
+		Volumes volumes `stm:""`
+	}
 
-		AvailableBytes                  float64 `stm:"available_bytes,1000,1"`
-		CacheBytes                      float64 `stm:"cache_bytes,1000,1"`
-		CacheBytesPeak                  float64 `stm:"cache_bytes_peak,1000,1"`
-		CacheFaultsTotal                float64 `stm:"cache_faults_total,1000,1"` // CacheFaultsPersec
-		CommitLimit                     float64 `stm:"commit_limit,1000,1"`
-		CommittedBytes                  float64 `stm:"committed_bytes,1000,1"`
-		DemandZeroFaultsTotal           float64 `stm:"demand_zero_faults_total,1000,1"` // DemandZeroFaultsPersec
-		FreeAndZeroPageListBytes        float64 `stm:"free_and_zero_page_list_bytes,1000,1"`
-		FreeSystemPageTableEntries      float64 `stm:"free_system_page_table_entries,1000,1"`
-		ModifiedPageListBytes           float64 `stm:"modified_page_list_bytes,1000,1"`
-		PageFaultsTotal                 float64 `stm:"page_faults_total,1000,1"`          // PageFaultsPersec
-		SwapPageReadsTotal              float64 `stm:"swap_page_reads_total,1000,1"`      // PageReadsPersec
-		SwapPagesReadTotal              float64 `stm:"swap_pages_read_total,1000,1"`      // PagesInputPersec
-		SwapPagesWrittenTotal           float64 `stm:"swap_pages_written_total,1000,1"`   // PagesOutputPersec
-		SwapPageOperationsTotal         float64 `stm:"swap_page_operations_total,1000,1"` // PagesPersec
-		SwapPageWritesTotal             float64 `stm:"swap_page_writes_total,1000,1"`     // PageWritesPersec
-		PoolNonPagedAllocsTotal         float64 `stm:"pool_nonpaged_allocs_total,1000,1"` // PoolNonPagedAllocs
-		PoolNonPagedBytes               float64 `stm:"pool_nonpaged_bytes_total,1000,1"`
-		PoolPagedAllocsTotal            float64 `stm:"pool_paged_allocs_total,1000,1"` // PoolPagedAllocs
-		PoolPagedBytes                  float64 `stm:"pool_paged_bytes,1000,1"`
-		PoolPagedResidentBytes          float64 `stm:"pool_paged_resident_bytes,1000,1"`
-		StandbyCacheCoreBytes           float64 `stm:"standby_cache_core_bytes,1000,1"`
-		StandbyCacheNormalPriorityBytes float64 `stm:"standby_cache_normal_priority_bytes,1000,1"`
-		StandbyCacheReserveBytes        float64 `stm:"standby_cache_reserve_bytes,1000,1"`
-		SystemCacheResidentBytes        float64 `stm:"system_cache_resident_bytes,1000,1"`
-		SystemCodeResidentBytes         float64 `stm:"system_code_resident_bytes,1000,1"`
-		SystemCodeTotalBytes            float64 `stm:"system_code_total_bytes,1000,1"`
-		SystemDriverResidentBytes       float64 `stm:"system_driver_resident_bytes,1000,1"`
-		SystemDriverTotalBytes          float64 `stm:"system_driver_total_bytes,1000,1"`
-		TransitionFaultsTotal           float64 `stm:"transition_faults_total,1000,1"`           // TransitionFaultsPersec
-		TransitionPagesRePurposedTotal  float64 `stm:"transition_pages_repurposed_total,1000,1"` // TransitionPagesRePurposedPersec
-		WriteCopiesTotal                float64 `stm:"write_copies_total,1000,1"`                // WriteCopiesPersec
-	}
-	// Win32_PerfRawData_PerfOS_System
-	// https://docs.microsoft.com/en-us/previous-versions/aa394272(v%3Dvs.85)
-	system struct {
-		ContextSwitchesTotal     float64 `stm:"context_switches_total,1000,1"`     // ContextSwitchesPersec
-		ExceptionDispatchesTotal float64 `stm:"exception_dispatches_total,1000,1"` // ExceptionDispatchesPersec
-		ProcessorQueueLength     float64 `stm:"processor_queue_length"`
-		SystemCallsTotal         float64 `stm:"system_calls_total,1000,1"` // SystemCallsPersec
-		SystemUpTime             float64 `stm:"system_up_time"`
-		Threads                  float64 `stm:"system_threads"`
-	}
-	// Win32_OperatingSystem
-	// https://docs.microsoft.com/en-us/windows/desktop/CIMWin32Prov/win32-operatingsystem
-	os struct {
-		PhysicalMemoryFreeBytes float64 `stm:"physical_memory_free_bytes,1000,1"` // FreePhysicalMemory
-		PagingFreeBytes         float64 `stm:"paging_free_bytes,1000,1"`          // FreeSpaceInPagingFiles
-		VirtualMemoryFreeBytes  float64 `stm:"virtual_memory_free_bytes,1000,1"`  // FreeVirtualMemory
-		ProcessesLimit          float64 `stm:"processes_limit"`                   // MaxNumberOfProcesses
-		ProcessMemoryLimitBytes float64 `stm:"process_memory_limit_bytes,1000,1"` // MaxProcessMemorySize
-		Processes               float64 `stm:"processes"`                         // NumberOfProcesses
-		Users                   float64 `stm:"users"`                             // NumberOfUsers
-		PagingLimitBytes        float64 `stm:"paging_limit_bytes,1000,1"`         // SizeStoredInPagingFiles
-		VirtualMemoryBytes      float64 `stm:"virtual_memory_bytes,1000,1"`       // TotalVirtualMemorySize
-		VisibleMemoryBytes      float64 `stm:"visible_memory_bytes,1000,1"`       // TotalVisibleMemorySize
-		Time                    float64 `stm:"time"`                              // LocalDateTime
-		// Timezone                float64 `stm:"timezone"`                          // LocalDateTime
+	volumes []*volume
+
+	// Win32_PerfRawData_PerfDisk_LogicalDisk
+	// https://msdn.microsoft.com/en-us/windows/hardware/aa394307(v=vs.71)
+	volume struct {
+		STMKey string
+		ID     string
+
+		UsedSpace float64 `stm:"used_space,1000,1"` // TotalSpace - FreeSpace
+
+		RequestsQueued  float64 `stm:"requests_queued"`            // CurrentDiskQueueLength
+		ReadBytesTotal  float64 `stm:"read_bytes_total,1000,1"`    // DiskReadBytesPerSec
+		ReadsTotal      float64 `stm:"reads_total"`                // DiskReadsPerSec
+		WriteBytesTotal float64 `stm:"write_bytes_total,1000,1"`   // DiskWriteBytesPerSec
+		WritesTotal     float64 `stm:"writes_total"`               // DiskWritesPerSec
+		ReadTime        float64 `stm:"read_seconds_total,1000,1"`  // PercentDiskReadTime
+		WriteTime       float64 `stm:"write_seconds_total,1000,1"` // PercentDiskWriteTime
+		TotalSpace      float64 `stm:"total_space,1000,1"`         // PercentFreeSpace_Base
+		FreeSpace       float64 `stm:"free_space,1000,1"`          // PercentFreeSpace
+		IdleTime        float64 `stm:"idle_seconds_total,1000,1"`  // PercentIdleTime
+		SplitIOs        float64 `stm:"split_ios_total"`            // SplitIOPerSec
 	}
 )
+
+// Win32_PerfRawData_PerfOS_Memory
+// https://technet.microsoft.com/en-ca/aa394314(v=vs.71)
+// http://wutils.com/wmi/root/cimv2/win32_perfrawdata_perfos_memory/
+type memory struct {
+	UsedBytes         *float64 `stm:"used_bytes,1000,1"`          // os.VisibleMemoryBytes - AvailableBytes
+	NotCommittedBytes float64  `stm:"not_committed_bytes,1000,1"` // CommitLimit - CommittedBytes
+	StandbyCacheTotal float64  `stm:"standby_cache_total,1000,1"` // StandbyCacheCoreBytes + StandbyCacheNormalPriorityBytes + StandbyCacheReserveBytes
+	Cached            float64  `stm:"cache_total,1000,1"`         // StandbyCacheTotal + ModifiedPageListBytes
+
+	AvailableBytes                  float64 `stm:"available_bytes,1000,1"`
+	CacheBytes                      float64 `stm:"cache_bytes,1000,1"`
+	CacheBytesPeak                  float64 `stm:"cache_bytes_peak,1000,1"`
+	CacheFaultsTotal                float64 `stm:"cache_faults_total,1000,1"` // CacheFaultsPersec
+	CommitLimit                     float64 `stm:"commit_limit,1000,1"`
+	CommittedBytes                  float64 `stm:"committed_bytes,1000,1"`
+	DemandZeroFaultsTotal           float64 `stm:"demand_zero_faults_total,1000,1"` // DemandZeroFaultsPersec
+	FreeAndZeroPageListBytes        float64 `stm:"free_and_zero_page_list_bytes,1000,1"`
+	FreeSystemPageTableEntries      float64 `stm:"free_system_page_table_entries,1000,1"`
+	ModifiedPageListBytes           float64 `stm:"modified_page_list_bytes,1000,1"`
+	PageFaultsTotal                 float64 `stm:"page_faults_total,1000,1"`          // PageFaultsPersec
+	SwapPageReadsTotal              float64 `stm:"swap_page_reads_total,1000,1"`      // PageReadsPersec
+	SwapPagesReadTotal              float64 `stm:"swap_pages_read_total,1000,1"`      // PagesInputPersec
+	SwapPagesWrittenTotal           float64 `stm:"swap_pages_written_total,1000,1"`   // PagesOutputPersec
+	SwapPageOperationsTotal         float64 `stm:"swap_page_operations_total,1000,1"` // PagesPersec
+	SwapPageWritesTotal             float64 `stm:"swap_page_writes_total,1000,1"`     // PageWritesPersec
+	PoolNonPagedAllocsTotal         float64 `stm:"pool_nonpaged_allocs_total,1000,1"` // PoolNonPagedAllocs
+	PoolNonPagedBytes               float64 `stm:"pool_nonpaged_bytes_total,1000,1"`
+	PoolPagedAllocsTotal            float64 `stm:"pool_paged_allocs_total,1000,1"` // PoolPagedAllocs
+	PoolPagedBytes                  float64 `stm:"pool_paged_bytes,1000,1"`
+	PoolPagedResidentBytes          float64 `stm:"pool_paged_resident_bytes,1000,1"`
+	StandbyCacheCoreBytes           float64 `stm:"standby_cache_core_bytes,1000,1"`
+	StandbyCacheNormalPriorityBytes float64 `stm:"standby_cache_normal_priority_bytes,1000,1"`
+	StandbyCacheReserveBytes        float64 `stm:"standby_cache_reserve_bytes,1000,1"`
+	SystemCacheResidentBytes        float64 `stm:"system_cache_resident_bytes,1000,1"`
+	SystemCodeResidentBytes         float64 `stm:"system_code_resident_bytes,1000,1"`
+	SystemCodeTotalBytes            float64 `stm:"system_code_total_bytes,1000,1"`
+	SystemDriverResidentBytes       float64 `stm:"system_driver_resident_bytes,1000,1"`
+	SystemDriverTotalBytes          float64 `stm:"system_driver_total_bytes,1000,1"`
+	TransitionFaultsTotal           float64 `stm:"transition_faults_total,1000,1"`           // TransitionFaultsPersec
+	TransitionPagesRePurposedTotal  float64 `stm:"transition_pages_repurposed_total,1000,1"` // TransitionPagesRePurposedPersec
+	WriteCopiesTotal                float64 `stm:"write_copies_total,1000,1"`                // WriteCopiesPersec
+}
+
+// Win32_PerfRawData_PerfOS_System
+// https://docs.microsoft.com/en-us/previous-versions/aa394272(v%3Dvs.85)
+type system struct {
+	ContextSwitchesTotal     float64 `stm:"context_switches_total,1000,1"`     // ContextSwitchesPersec
+	ExceptionDispatchesTotal float64 `stm:"exception_dispatches_total,1000,1"` // ExceptionDispatchesPersec
+	ProcessorQueueLength     float64 `stm:"processor_queue_length"`
+	SystemCallsTotal         float64 `stm:"system_calls_total,1000,1"` // SystemCallsPersec
+	SystemUpTime             float64 `stm:"system_up_time"`
+	Threads                  float64 `stm:"system_threads"`
+}
+
+// Win32_OperatingSystem
+// https://docs.microsoft.com/en-us/windows/desktop/CIMWin32Prov/win32-operatingsystem
+type os struct {
+	PhysicalMemoryFreeBytes float64 `stm:"physical_memory_free_bytes,1000,1"` // FreePhysicalMemory
+	PagingFreeBytes         float64 `stm:"paging_free_bytes,1000,1"`          // FreeSpaceInPagingFiles
+	VirtualMemoryFreeBytes  float64 `stm:"virtual_memory_free_bytes,1000,1"`  // FreeVirtualMemory
+	ProcessesLimit          float64 `stm:"processes_limit"`                   // MaxNumberOfProcesses
+	ProcessMemoryLimitBytes float64 `stm:"process_memory_limit_bytes,1000,1"` // MaxProcessMemorySize
+	Processes               float64 `stm:"processes"`                         // NumberOfProcesses
+	Users                   float64 `stm:"users"`                             // NumberOfUsers
+	PagingLimitBytes        float64 `stm:"paging_limit_bytes,1000,1"`         // SizeStoredInPagingFiles
+	VirtualMemoryBytes      float64 `stm:"virtual_memory_bytes,1000,1"`       // TotalVirtualMemorySize
+	VisibleMemoryBytes      float64 `stm:"visible_memory_bytes,1000,1"`       // TotalVisibleMemorySize
+	Time                    float64 `stm:"time"`                              // LocalDateTime
+	// Timezone                float64 `stm:"timezone"`                          // LocalDateTime
+}
 
 func newCPUCore(id string) *cpuCore { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
 
@@ -196,4 +226,19 @@ func (ns *netNICs) get(id string, createIfNotExist bool) (nic *netNIC) {
 		*ns = append(*ns, nic)
 	}
 	return nic
+}
+
+func newVolume(id string) *volume { return &volume{STMKey: id, ID: id} }
+
+func (vs *volumes) get(id string, createIfNotExist bool) (vol *volume) {
+	for _, v := range *vs {
+		if v.ID == id {
+			return v
+		}
+	}
+	if createIfNotExist {
+		vol = newVolume(id)
+		*vs = append(*vs, vol)
+	}
+	return vol
 }
