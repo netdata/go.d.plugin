@@ -24,6 +24,8 @@ type (
 
 const (
 	defaultPriority = orchestrator.DefaultJobPriority
+	memoryPriority  = defaultPriority + 20
+	nicPriority     = defaultPriority + 40
 )
 
 var charts = Charts{
@@ -31,9 +33,9 @@ var charts = Charts{
 		ID:       "collector_duration",
 		Title:    "Duration of a Collector",
 		Units:    "ms",
-		Fam:      "collector duration",
+		Fam:      "collection duration",
 		Ctx:      "cpu.collector_duration",
-		Priority: defaultPriority + 90,
+		Priority: defaultPriority + 200, // last chart
 		// Dims will be added during collection
 	},
 }
@@ -115,7 +117,7 @@ var netNICCharts = Charts{
 		Fam:      "net %s",
 		Ctx:      "net.net_nic_bandwidth",
 		Type:     module.Area,
-		Priority: defaultPriority + 10,
+		Priority: nicPriority,
 		Dims: Dims{
 			{ID: "net_%s_bytes_received", Name: "received", Algo: module.Incremental, Div: 1000 * 125},
 			{ID: "net_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Div: -1000 * 125},
@@ -131,7 +133,7 @@ var netNICCharts = Charts{
 		Fam:      "net %s",
 		Ctx:      "net.net_nic_packets",
 		Type:     module.Area,
-		Priority: defaultPriority + 10,
+		Priority: nicPriority + 1,
 		Dims: Dims{
 			{ID: "net_%s_packets_received_total", Name: "received", Algo: module.Incremental, Div: 1000},
 			{ID: "net_%s_packets_sent_total", Name: "sent", Algo: module.Incremental, Div: -1000},
@@ -144,7 +146,7 @@ var netNICCharts = Charts{
 		Fam:      "net %s",
 		Ctx:      "net.net_nic_packets_errors",
 		Type:     module.Area,
-		Priority: defaultPriority + 10,
+		Priority: nicPriority + 2,
 		Dims: Dims{
 			{ID: "net_%s_packets_received_errors", Name: "inbound", Algo: module.Incremental, Div: 1000},
 			{ID: "net_%s_packets_outbound_errors", Name: "outbound", Algo: module.Incremental, Div: -1000},
@@ -157,7 +159,7 @@ var netNICCharts = Charts{
 		Fam:      "net %s",
 		Ctx:      "net.net_nic_packets_discarded",
 		Type:     module.Area,
-		Priority: defaultPriority + 10,
+		Priority: nicPriority + 3,
 		Dims: Dims{
 			{ID: "net_%s_packets_received_discarded", Name: "inbound", Algo: module.Incremental, Div: 1000},
 			{ID: "net_%s_packets_outbound_discarded", Name: "outbound", Algo: module.Incremental, Div: -1000},
@@ -165,14 +167,90 @@ var netNICCharts = Charts{
 	},
 }
 
+var (
+	memoryTotalChart = Chart{
+		ID:       "memory_usage",
+		Title:    "Memory Usage",
+		Units:    "KB",
+		Fam:      "memory",
+		Ctx:      "memory.memory_usage",
+		Type:     module.Stacked,
+		Priority: memoryPriority,
+		Dims: Dims{
+			{ID: "os_physical_memory_free_bytes", Name: "available", Div: 1000 * 1024},
+			{ID: "os_physical_memory_used_bytes", Name: "used", Div: 1000 * 1024},
+		},
+		Vars: Vars{
+			{ID: "cs_physical_memory_bytes"},
+		},
+	}
+	memoryCharts = Charts{
+		{
+			ID:       "memory_cached",
+			Title:    "Cached",
+			Units:    "KB",
+			Fam:      "memory",
+			Ctx:      "memory.cached",
+			Priority: memoryPriority + 1,
+			Dims: Dims{
+				{ID: "memory_cache_total", Name: "cached", Div: 1000 * 1024},
+			},
+		},
+		{
+			ID:       "memory_swap",
+			Title:    "Swap",
+			Units:    "KB",
+			Fam:      "memory",
+			Ctx:      "memory.memory_swap",
+			Type:     module.Stacked,
+			Priority: memoryPriority + 2,
+			Dims: Dims{
+				{ID: "memory_not_committed_bytes", Name: "available", Div: 1000 * 1024},
+				{ID: "memory_committed_bytes", Name: "used", Div: 1000 * 1024},
+			},
+			Vars: Vars{
+				{ID: "memory_commit_limit"},
+			},
+		},
+		{
+			ID:       "memory_system_pool",
+			Title:    "System Memory Pool",
+			Units:    "KB",
+			Fam:      "memory",
+			Ctx:      "memory.memory_system_pool",
+			Type:     module.Stacked,
+			Priority: memoryPriority + 3,
+			Dims: Dims{
+				{ID: "memory_pool_paged_bytes", Name: "paged", Div: 1000 * 1024},
+				{ID: "memory_pool_nonpaged_bytes_total", Name: "non-paged", Div: 1000 * 1024},
+			},
+		},
+	}
+)
+
 func (w *WMI) updateCharts(mx *metrics) {
 	w.updateCollectDurationChart(mx)
+
 	if mx.CPU != nil {
 		w.updateCPUCharts(mx)
 	}
+
+	if mx.OS != nil {
+		w.updateOSCharts(mx)
+	}
+
+	if mx.Memory != nil {
+		w.updateMemoryCharts(mx)
+	}
+
+	if mx.System != nil {
+		w.updateSystemCharts(mx)
+	}
+
 	if mx.Net != nil {
 		w.updateNetCharts(mx)
 	}
+
 }
 
 func (w *WMI) updateCollectDurationChart(mx *metrics) {
@@ -194,9 +272,7 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 		if w.collected.cores[core.ID] {
 			continue
 		}
-
 		chart := cpuCoreUsageChart.Copy()
-
 		chart.ID = fmt.Sprintf(chart.ID, core.ID)
 		chart.Title = fmt.Sprintf(chart.Title, core.ID)
 		for _, dim := range chart.Dims {
@@ -209,9 +285,7 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 		if w.collected.cores[core.ID] {
 			continue
 		}
-
 		chart := cpuCoreCStateChart.Copy()
-
 		chart.ID = fmt.Sprintf(chart.ID, core.ID)
 		chart.Title = fmt.Sprintf(chart.Title, core.ID)
 		for _, dim := range chart.Dims {
@@ -224,27 +298,45 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 		if w.collected.cores[core.ID] {
 			continue
 		}
-
+		chart := w.charts.Get("cpu_dpcs_total")
 		dim := &Dim{
 			ID:   fmt.Sprintf("cpu_core_%s_dpc", core.ID),
 			Name: "core" + core.ID,
 			Algo: module.Incremental,
 			Div:  1000,
 		}
-		_ = w.charts.Get("cpu_dpcs_total").AddDim(dim)
+		_ = chart.AddDim(dim)
 
+		chart = w.charts.Get("cpu_interrupts_total")
 		dim = &Dim{
 			ID:   fmt.Sprintf("cpu_core_%s_interrupts", core.ID),
 			Name: "core" + core.ID,
 			Algo: module.Incremental,
 			Div:  1000,
 		}
-		_ = w.charts.Get("cpu_interrupts_total").AddDim(dim)
+		_ = chart.AddDim(dim)
 
 		w.collected.cores[core.ID] = true
 	}
-
 }
+
+func (w *WMI) updateOSCharts(mx *metrics) {
+	if w.collected.collectors[collectorOS] {
+		return
+	}
+	w.collected.collectors[collectorOS] = true
+	_ = w.charts.Add(memoryTotalChart.Copy())
+}
+
+func (w *WMI) updateMemoryCharts(mx *metrics) {
+	if w.collected.collectors[collectorMemory] {
+		return
+	}
+	w.collected.collectors[collectorMemory] = true
+	_ = w.charts.Add(*memoryCharts.Copy()...)
+}
+
+func (w *WMI) updateSystemCharts(mx *metrics) {}
 
 func (w *WMI) updateNetCharts(mx *metrics) {
 	for _, nic := range mx.Net.NICs {
@@ -252,7 +344,6 @@ func (w *WMI) updateNetCharts(mx *metrics) {
 			continue
 		}
 		w.collected.nics[nic.ID] = true
-
 		charts := netNICCharts.Copy()
 
 		for _, chart := range *charts {
@@ -263,7 +354,6 @@ func (w *WMI) updateNetCharts(mx *metrics) {
 			for _, dim := range chart.Dims {
 				dim.ID = fmt.Sprintf(dim.ID, nic.ID)
 			}
-
 			for _, v := range chart.Vars {
 				v.ID = fmt.Sprintf(v.ID, nic.ID)
 			}

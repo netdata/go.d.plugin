@@ -42,6 +42,11 @@ func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
 	w.collectCS(mx, scraped)
 	w.collectOS(mx, scraped)
 	w.collectSystem(mx, scraped)
+
+	if mx.CS != nil {
+		v := mx.CS.PhysicalMemoryBytes - mx.OS.PhysicalMemoryFreeBytes
+		mx.OS.PhysicalMemoryUsedBytes = &v
+	}
 }
 
 func collectCollectorsDuration(mx *metrics, pms prometheus.Metrics) {

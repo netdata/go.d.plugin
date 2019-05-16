@@ -90,6 +90,10 @@ type (
 	// https://technet.microsoft.com/en-ca/aa394314(v=vs.71)
 	// http://wutils.com/wmi/root/cimv2/win32_perfrawdata_perfos_memory/
 	memory struct {
+		NotCommittedBytes float64 `stm:"not_committed_bytes,1000,1"` // CommitLimit - CommittedBytes
+		StandbyCacheTotal float64 `stm:"standby_cache_total,1000,1"` // StandbyCacheCoreBytes + StandbyCacheNormalPriorityBytes + StandbyCacheReserveBytes
+		CacheTotal        float64 `stm:"cache_total,1000,1"`         // StandbyCacheTotal + ModifiedPageListBytes
+
 		AvailableBytes                  float64 `stm:"available_bytes,1000,1"`
 		CacheBytes                      float64 `stm:"cache_bytes,1000,1"`
 		CacheBytesPeak                  float64 `stm:"cache_bytes_peak,1000,1"`
