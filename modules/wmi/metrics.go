@@ -16,7 +16,6 @@ type metrics struct {
 	CPU             *cpu               `stm:"cpu"`
 	Net             *network           `stm:"net"`
 	Memory          *memory            `stm:"memory"`
-	CS              *cs                `stm:"cs"`
 	OS              *os                `stm:"os"`
 	System          *system            `stm:"system"`
 	CollectDuration map[string]float64 `stm:",1000,1"`
@@ -127,12 +126,6 @@ type (
 		TransitionFaultsTotal           float64 `stm:"transition_faults_total,1000,1"`           // TransitionFaultsPersec
 		TransitionPagesRePurposedTotal  float64 `stm:"transition_pages_repurposed_total,1000,1"` // TransitionPagesRePurposedPersec
 		WriteCopiesTotal                float64 `stm:"write_copies_total,1000,1"`                // WriteCopiesPersec
-	}
-	// Win32_ComputerSystem
-	// https://msdn.microsoft.com/en-us/library/aa394102
-	cs struct {
-		LogicalProcessors   float64 `stm:"logical_processors"`           // NumberOfLogicalProcessors
-		PhysicalMemoryBytes float64 `stm:"physical_memory_bytes,1000,1"` // TotalPhysicalMemory
 	}
 	// Win32_PerfRawData_PerfOS_System
 	// https://docs.microsoft.com/en-us/previous-versions/aa394272(v%3Dvs.85)

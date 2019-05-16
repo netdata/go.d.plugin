@@ -182,7 +182,7 @@ var (
 				{ID: "memory_used_bytes", Name: "used", Div: 1000 * 1024},
 			},
 			Vars: Vars{
-				{ID: "cs_physical_memory_bytes"},
+				{ID: "os_visible_memory_bytes"},
 			},
 		},
 		{
@@ -194,28 +194,6 @@ var (
 			Priority: memoryPriority,
 			Dims: Dims{
 				{ID: "memory_page_faults_total", Name: "page faults", Algo: module.Incremental, Div: 1000},
-			},
-		},
-		{
-			ID:       "memory_cached",
-			Title:    "Cached",
-			Units:    "KiB",
-			Fam:      "memory",
-			Ctx:      "memory.cached",
-			Priority: memoryPriority,
-			Dims: Dims{
-				{ID: "memory_cache_total", Name: "cached", Div: 1000 * 1024},
-			},
-		},
-		{
-			ID:       "memory_cache_faults",
-			Title:    "Cache Faults",
-			Units:    "events/s",
-			Fam:      "memory",
-			Ctx:      "memory.cache_faults",
-			Priority: memoryPriority,
-			Dims: Dims{
-				{ID: "memory_cache_faults_total", Name: "cache faults", Algo: module.Incremental, Div: 1000},
 			},
 		},
 		{
@@ -258,6 +236,28 @@ var (
 			Dims: Dims{
 				{ID: "memory_swap_pages_read_total", Name: "read", Algo: module.Incremental, Div: 1000},
 				{ID: "memory_swap_pages_written_total", Name: "write", Algo: module.Incremental, Div: -11000},
+			},
+		},
+		{
+			ID:       "memory_cached",
+			Title:    "Cached",
+			Units:    "KiB",
+			Fam:      "memory",
+			Ctx:      "memory.cached",
+			Priority: memoryPriority,
+			Dims: Dims{
+				{ID: "memory_cache_total", Name: "cached", Div: 1000 * 1024},
+			},
+		},
+		{
+			ID:       "memory_cache_faults",
+			Title:    "Cache Faults",
+			Units:    "events/s",
+			Fam:      "memory",
+			Ctx:      "memory.cache_faults",
+			Priority: memoryPriority,
+			Dims: Dims{
+				{ID: "memory_cache_faults_total", Name: "cache faults", Algo: module.Incremental, Div: 1000},
 			},
 		},
 		{

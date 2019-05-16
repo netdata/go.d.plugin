@@ -9,7 +9,6 @@ import (
 const (
 	// defaults are cpu,cs,logical_disk,net,os,service,system,textfile
 	collectorCPU      = "cpu"
-	collectorCS       = "cs"
 	collectorLogDisks = "logical_disk"
 	collectorNet      = "net"
 	collectorOS       = "os"
@@ -39,12 +38,11 @@ func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
 	w.collectCPU(mx, scraped)
 	w.collectNet(mx, scraped)
 	w.collectMemory(mx, scraped)
-	w.collectCS(mx, scraped)
 	w.collectOS(mx, scraped)
 	w.collectSystem(mx, scraped)
 
-	if mx.CS != nil && mx.Memory != nil {
-		v := sum(mx.CS.PhysicalMemoryBytes, -mx.Memory.AvailableBytes)
+	if mx.OS != nil && mx.Memory != nil {
+		v := sum(mx.OS.VisibleMemoryBytes, -mx.Memory.AvailableBytes)
 		mx.Memory.UsedBytes = &v
 	}
 }
