@@ -90,9 +90,10 @@ type (
 	// https://technet.microsoft.com/en-ca/aa394314(v=vs.71)
 	// http://wutils.com/wmi/root/cimv2/win32_perfrawdata_perfos_memory/
 	memory struct {
-		NotCommittedBytes float64 `stm:"not_committed_bytes,1000,1"` // CommitLimit - CommittedBytes
-		StandbyCacheTotal float64 `stm:"standby_cache_total,1000,1"` // StandbyCacheCoreBytes + StandbyCacheNormalPriorityBytes + StandbyCacheReserveBytes
-		CacheTotal        float64 `stm:"cache_total,1000,1"`         // StandbyCacheTotal + ModifiedPageListBytes
+		UsedBytes         *float64 `stm:"used_bytes,1000,1"`          // cs.PhysicalMemoryBytes - AvailableBytes
+		NotCommittedBytes float64  `stm:"not_committed_bytes,1000,1"` // CommitLimit - CommittedBytes
+		StandbyCacheTotal float64  `stm:"standby_cache_total,1000,1"` // StandbyCacheCoreBytes + StandbyCacheNormalPriorityBytes + StandbyCacheReserveBytes
+		Cached            float64  `stm:"cache_total,1000,1"`         // StandbyCacheTotal + ModifiedPageListBytes
 
 		AvailableBytes                  float64 `stm:"available_bytes,1000,1"`
 		CacheBytes                      float64 `stm:"cache_bytes,1000,1"`
@@ -146,8 +147,6 @@ type (
 	// Win32_OperatingSystem
 	// https://docs.microsoft.com/en-us/windows/desktop/CIMWin32Prov/win32-operatingsystem
 	os struct {
-		PhysicalMemoryUsedBytes *float64 `stm:"physical_memory_used_bytes,1000,1"` // cs.PhysicalMemoryBytes - PhysicalMemoryFreeBytes
-
 		PhysicalMemoryFreeBytes float64 `stm:"physical_memory_free_bytes,1000,1"` // FreePhysicalMemory
 		PagingFreeBytes         float64 `stm:"paging_free_bytes,1000,1"`          // FreeSpaceInPagingFiles
 		VirtualMemoryFreeBytes  float64 `stm:"virtual_memory_free_bytes,1000,1"`  // FreeVirtualMemory

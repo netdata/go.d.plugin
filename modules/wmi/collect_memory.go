@@ -86,9 +86,13 @@ func (w *WMI) collectMemory(mx *metrics, pms prometheus.Metrics) bool {
 	for _, name := range names {
 		collectMemoryAny(mx, pms, name)
 	}
-	mx.Memory.NotCommittedBytes = mx.Memory.CommitLimit - mx.Memory.CommittedBytes
-	mx.Memory.StandbyCacheTotal = mx.Memory.StandbyCacheReserveBytes + mx.Memory.StandbyCacheNormalPriorityBytes + mx.Memory.StandbyCacheCoreBytes
-	mx.Memory.CacheTotal = mx.Memory.StandbyCacheTotal + mx.Memory.ModifiedPageListBytes
+	mx.Memory.NotCommittedBytes = sum(mx.Memory.CommitLimit, -mx.Memory.CommittedBytes)
+	mx.Memory.StandbyCacheTotal = sum(
+		mx.Memory.StandbyCacheReserveBytes,
+		mx.Memory.StandbyCacheNormalPriorityBytes,
+		mx.Memory.StandbyCacheCoreBytes,
+	)
+	mx.Memory.Cached = sum(mx.Memory.StandbyCacheTotal, mx.Memory.ModifiedPageListBytes)
 
 	return true
 }

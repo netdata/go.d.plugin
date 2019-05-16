@@ -33,7 +33,7 @@ var charts = Charts{
 		ID:       "collector_duration",
 		Title:    "Duration of a Collector",
 		Units:    "ms",
-		Fam:      "collection duration",
+		Fam:      "collection",
 		Ctx:      "cpu.collector_duration",
 		Priority: defaultPriority + 200, // last chart
 		// Dims will be added during collection
@@ -114,7 +114,7 @@ var netNICCharts = Charts{
 		ID:       "nic_%s_bandwidth",
 		Title:    "Bandwidth %s",
 		Units:    "kilobits/s",
-		Fam:      "net %s",
+		Fam:      "network",
 		Ctx:      "net.net_nic_bandwidth",
 		Type:     module.Area,
 		Priority: nicPriority,
@@ -129,8 +129,8 @@ var netNICCharts = Charts{
 	{
 		ID:       "nic_%s_packets",
 		Title:    "Packets %s",
-		Units:    "pps",
-		Fam:      "net %s",
+		Units:    "packets/s",
+		Fam:      "network",
 		Ctx:      "net.net_nic_packets",
 		Type:     module.Area,
 		Priority: nicPriority + 1,
@@ -143,7 +143,7 @@ var netNICCharts = Charts{
 		ID:       "nic_%s_packets_errors",
 		Title:    "Errored Packets %s",
 		Units:    "errors/s",
-		Fam:      "net %s",
+		Fam:      "network",
 		Ctx:      "net.net_nic_packets_errors",
 		Type:     module.Area,
 		Priority: nicPriority + 2,
@@ -156,7 +156,7 @@ var netNICCharts = Charts{
 		ID:       "nic_%s_packets_discarded",
 		Title:    "Discarded Packets %s",
 		Units:    "discards/s",
-		Fam:      "net %s",
+		Fam:      "network",
 		Ctx:      "net.net_nic_packets_discarded",
 		Type:     module.Area,
 		Priority: nicPriority + 3,
@@ -168,42 +168,64 @@ var netNICCharts = Charts{
 }
 
 var (
-	memoryTotalChart = Chart{
-		ID:       "memory_usage",
-		Title:    "Memory Usage",
-		Units:    "KB",
-		Fam:      "memory",
-		Ctx:      "memory.memory_usage",
-		Type:     module.Stacked,
-		Priority: memoryPriority,
-		Dims: Dims{
-			{ID: "os_physical_memory_free_bytes", Name: "available", Div: 1000 * 1024},
-			{ID: "os_physical_memory_used_bytes", Name: "used", Div: 1000 * 1024},
-		},
-		Vars: Vars{
-			{ID: "cs_physical_memory_bytes"},
-		},
-	}
 	memoryCharts = Charts{
+		{
+			ID:       "memory_usage",
+			Title:    "Memory Usage",
+			Units:    "KiB",
+			Fam:      "memory",
+			Ctx:      "memory.memory_usage",
+			Type:     module.Stacked,
+			Priority: memoryPriority,
+			Dims: Dims{
+				{ID: "memory_available_bytes", Name: "available", Div: 1000 * 1024},
+				{ID: "memory_used_bytes", Name: "used", Div: 1000 * 1024},
+			},
+			Vars: Vars{
+				{ID: "cs_physical_memory_bytes"},
+			},
+		},
+		{
+			ID:       "memory_page_faults",
+			Title:    "Memory Page Faults",
+			Units:    "events/s",
+			Fam:      "memory",
+			Ctx:      "memory.page_faults",
+			Priority: memoryPriority,
+			Dims: Dims{
+				{ID: "memory_page_faults_total", Name: "page faults", Algo: module.Incremental, Div: 1000},
+			},
+		},
 		{
 			ID:       "memory_cached",
 			Title:    "Cached",
-			Units:    "KB",
+			Units:    "KiB",
 			Fam:      "memory",
 			Ctx:      "memory.cached",
-			Priority: memoryPriority + 1,
+			Priority: memoryPriority,
 			Dims: Dims{
 				{ID: "memory_cache_total", Name: "cached", Div: 1000 * 1024},
 			},
 		},
 		{
+			ID:       "memory_cache_faults",
+			Title:    "Cache Faults",
+			Units:    "events/s",
+			Fam:      "memory",
+			Ctx:      "memory.cache_faults",
+			Priority: memoryPriority,
+			Dims: Dims{
+				{ID: "memory_cache_faults_total", Name: "cache faults", Algo: module.Incremental, Div: 1000},
+			},
+		},
+		{
 			ID:       "memory_swap",
 			Title:    "Swap",
-			Units:    "KB",
+			Units:    "KiB",
 			Fam:      "memory",
 			Ctx:      "memory.memory_swap",
 			Type:     module.Stacked,
-			Priority: memoryPriority + 2,
+			Priority: memoryPriority,
 			Dims: Dims{
 				{ID: "memory_not_committed_bytes", Name: "available", Div: 1000 * 1024},
 				{ID: "memory_committed_bytes", Name: "used", Div: 1000 * 1024},
@@ -213,13 +235,39 @@ var (
 			},
 		},
 		{
+			ID:       "memory_swap_operations",
+			Title:    "Swap Operations",
+			Units:    "operations/s",
+			Fam:      "memory",
+			Ctx:      "memory.memory_swap_operations",
+			Type:     module.Area,
+			Priority: memoryPriority,
+			Dims: Dims{
+				{ID: "memory_swap_page_reads_total", Name: "read", Algo: module.Incremental, Div: 1000},
+				{ID: "memory_swap_page_writes_total", Name: "write", Algo: module.Incremental, Div: -11000},
+			},
+		},
+		{
+			ID:       "memory_swap_pages",
+			Title:    "Swap Pages",
+			Units:    "pages/s",
+			Fam:      "memory",
+			Ctx:      "memory.memory_swap_pages",
+			Type:     module.Area,
+			Priority: memoryPriority,
+			Dims: Dims{
+				{ID: "memory_swap_pages_read_total", Name: "read", Algo: module.Incremental, Div: 1000},
+				{ID: "memory_swap_pages_written_total", Name: "write", Algo: module.Incremental, Div: -11000},
+			},
+		},
+		{
 			ID:       "memory_system_pool",
 			Title:    "System Memory Pool",
-			Units:    "KB",
+			Units:    "KiB",
 			Fam:      "memory",
 			Ctx:      "memory.memory_system_pool",
 			Type:     module.Stacked,
-			Priority: memoryPriority + 3,
+			Priority: memoryPriority,
 			Dims: Dims{
 				{ID: "memory_pool_paged_bytes", Name: "paged", Div: 1000 * 1024},
 				{ID: "memory_pool_nonpaged_bytes_total", Name: "non-paged", Div: 1000 * 1024},
@@ -320,20 +368,18 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 	}
 }
 
-func (w *WMI) updateOSCharts(mx *metrics) {
-	if w.collected.collectors[collectorOS] {
-		return
-	}
-	w.collected.collectors[collectorOS] = true
-	_ = w.charts.Add(memoryTotalChart.Copy())
-}
+func (w *WMI) updateOSCharts(mx *metrics) {}
 
 func (w *WMI) updateMemoryCharts(mx *metrics) {
 	if w.collected.collectors[collectorMemory] {
 		return
 	}
 	w.collected.collectors[collectorMemory] = true
-	_ = w.charts.Add(*memoryCharts.Copy()...)
+	charts := *memoryCharts.Copy()
+	for i, chart := range charts {
+		chart.Priority += i + 1
+	}
+	_ = w.charts.Add(charts...)
 }
 
 func (w *WMI) updateSystemCharts(mx *metrics) {}
@@ -349,7 +395,6 @@ func (w *WMI) updateNetCharts(mx *metrics) {
 		for _, chart := range *charts {
 			chart.ID = fmt.Sprintf(chart.ID, nic.ID)
 			chart.Title = fmt.Sprintf(chart.Title, nic.ID)
-			chart.Fam = fmt.Sprintf(chart.Fam, nic.ID)
 
 			for _, dim := range chart.Dims {
 				dim.ID = fmt.Sprintf(dim.ID, nic.ID)

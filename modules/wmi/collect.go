@@ -43,9 +43,9 @@ func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
 	w.collectOS(mx, scraped)
 	w.collectSystem(mx, scraped)
 
-	if mx.CS != nil {
-		v := mx.CS.PhysicalMemoryBytes - mx.OS.PhysicalMemoryFreeBytes
-		mx.OS.PhysicalMemoryUsedBytes = &v
+	if mx.CS != nil && mx.Memory != nil {
+		v := sum(mx.CS.PhysicalMemoryBytes, -mx.Memory.AvailableBytes)
+		mx.Memory.UsedBytes = &v
 	}
 }
 
@@ -66,4 +66,11 @@ func checkCollector(pms prometheus.Metrics, name string) (enabled, success bool)
 	}
 	ms := pms.Match(m)
 	return ms.Len() > 0, ms.Max() == 1
+}
+
+func sum(vs ...float64) (s float64) {
+	for _, v := range vs {
+		s += v
+	}
+	return s
 }
