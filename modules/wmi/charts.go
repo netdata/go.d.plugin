@@ -353,6 +353,7 @@ func (w *WMI) updateCollectDurationChart(mx *metrics) {
 		chart := w.charts.Get("collector_duration")
 		if !chart.HasDim(k) {
 			_ = chart.AddDim(&Dim{ID: k})
+			chart.MarkNotCreated()
 		}
 	}
 }
@@ -401,6 +402,7 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 			Div:  1000,
 		}
 		_ = chart.AddDim(dim)
+		chart.MarkNotCreated()
 
 		chart = w.charts.Get("cpu_interrupts_total")
 		dim = &Dim{
@@ -410,6 +412,7 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 			Div:  1000,
 		}
 		_ = chart.AddDim(dim)
+		chart.MarkNotCreated()
 
 		w.collected.cores[core.ID] = true
 	}
