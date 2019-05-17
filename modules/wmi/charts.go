@@ -27,6 +27,7 @@ const (
 	memoryPriority      = defaultPriority + 20
 	netPriority         = defaultPriority + 40
 	logicalDiskPriority = defaultPriority + 60
+	systemPriority      = defaultPriority + 80
 )
 
 var charts = Charts{
@@ -178,7 +179,7 @@ var (
 			Priority: memoryPriority,
 			Dims: Dims{
 				{ID: "memory_swap_pages_read_total", Name: "read", Algo: module.Incremental, Div: 1000},
-				{ID: "memory_swap_pages_written_total", Name: "write", Algo: module.Incremental, Div: -11000},
+				{ID: "memory_swap_pages_written_total", Name: "written", Algo: module.Incremental, Div: -11000},
 			},
 		},
 		{
@@ -277,6 +278,20 @@ var netNICCharts = Charts{
 	},
 }
 
+var systemCharts = Charts{
+	{
+		ID:       "system_uptime",
+		Title:    "System Uptime",
+		Units:    "seconds",
+		Fam:      "uptime",
+		Ctx:      "wmi.system_uptime",
+		Priority: systemPriority,
+		Dims: Dims{
+			{ID: "system_up_time", Name: "time"},
+		},
+	},
+}
+
 var logicalDiskCharts = Charts{
 	{
 		ID:       "logical_disk_%s_usage",
@@ -338,9 +353,9 @@ func (w *WMI) updateCharts(mx *metrics) {
 		w.updateLogicalDisksCharts(mx)
 	}
 
-	//if mx.System != nil {
-	//	w.updateSystemCharts(mx)
-	//}
+	if mx.System != nil {
+		w.updateSystemCharts(mx)
+	}
 	//
 	//if mx.OS != nil {
 	//	w.updateOSCharts(mx)
@@ -474,6 +489,16 @@ func (w *WMI) updateLogicalDisksCharts(mx *metrics) {
 	}
 }
 
-func (w *WMI) updateSystemCharts(mx *metrics) {}
+func (w *WMI) updateSystemCharts(mx *metrics) {
+	if w.collected.collectors[collectorSystem] {
+		return
+	}
+	w.collected.collectors[collectorSystem] = true
+	charts := *systemCharts.Copy()
+	for i, chart := range charts {
+		chart.Priority += i + 1
+	}
+	_ = w.charts.Add(charts...)
+}
 
 func (w *WMI) updateOSCharts(mx *metrics) {}

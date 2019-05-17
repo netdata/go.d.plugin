@@ -175,12 +175,14 @@ type (
 // Win32_PerfRawData_PerfOS_System
 // https://docs.microsoft.com/en-us/previous-versions/aa394272(v%3Dvs.85)
 type system struct {
+	SystemUpTime float64 `stm:"up_time"`
+
 	ContextSwitchesTotal     float64 `stm:"context_switches_total,1000,1"`     // ContextSwitchesPersec
 	ExceptionDispatchesTotal float64 `stm:"exception_dispatches_total,1000,1"` // ExceptionDispatchesPersec
 	ProcessorQueueLength     float64 `stm:"processor_queue_length"`
-	SystemCallsTotal         float64 `stm:"system_calls_total,1000,1"` // SystemCallsPersec
-	SystemUpTime             float64 `stm:"system_up_time"`
-	Threads                  float64 `stm:"system_threads"`
+	SystemCallsTotal         float64 `stm:"calls_total,1000,1"` // SystemCallsPersec
+	SystemBootTime           float64 `stm:"boot_time"`
+	Threads                  float64 `stm:"threads"`
 }
 
 // Win32_OperatingSystem

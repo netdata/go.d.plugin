@@ -2,6 +2,7 @@ package wmi
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
@@ -35,6 +36,8 @@ func (w *WMI) collectSystem(mx *metrics, pms prometheus.Metrics) bool {
 		collectSystemAny(mx, pms, name)
 	}
 
+	mx.System.SystemUpTime = float64(time.Now().Unix()) - mx.System.SystemBootTime
+
 	return true
 }
 
@@ -53,7 +56,7 @@ func collectSystemAny(mx *metrics, pms prometheus.Metrics, name string) {
 	case metricSysSystemCallsTotal:
 		mx.System.SystemCallsTotal = value
 	case metricSysSystemUpTime:
-		mx.System.SystemUpTime = value
+		mx.System.SystemBootTime = value
 	case metricSysThreads:
 		mx.System.Threads = value
 	}
