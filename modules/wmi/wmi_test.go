@@ -19,13 +19,13 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.IsType(t, (*WMI)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
 func TestWMI_Init(t *testing.T) {
 	job := New()
 
+	job.UserURL = "http://127.0.0.1:38001/metrics"
 	require.True(t, job.Init())
 	assert.NotNil(t, job.prom)
 	assert.NotNil(t, job.charts)

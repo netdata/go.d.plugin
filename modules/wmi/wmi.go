@@ -10,8 +10,6 @@ import (
 )
 
 const (
-	// defaultURL         = "http://127.0.0.1:9182/metrics"
-	defaultURL         = "http://100.127.0.251:9182/metrics"
 	defaultHTTPTimeout = time.Second * 2
 )
 
@@ -27,8 +25,7 @@ func init() {
 func New() *WMI {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Client: web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
 	}
 	return &WMI{
