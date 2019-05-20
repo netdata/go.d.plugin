@@ -33,6 +33,7 @@ func TestWMI_Init(t *testing.T) {
 	assert.NotNil(t, job.collected.collectors)
 	assert.NotNil(t, job.collected.cores)
 	assert.NotNil(t, job.collected.nics)
+	assert.NotNil(t, job.collected.volumes)
 }
 
 func TestWMI_InitNG(t *testing.T) {
