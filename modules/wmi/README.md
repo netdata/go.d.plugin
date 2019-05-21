@@ -10,10 +10,11 @@ Module collects metrics from following collectors:
    - net
    - logical_disk
    - os
+   - system
 
 Run `wmi_exporter` with these collectors:     
     
- > wmi-exporter-0.7.0-386.exe --collectors.enabled="cpu,memory,net,logical_disk,os"
+ > wmi-exporter-0.7.0-386.exe --collectors.enabled="cpu,memory,net,logical_disk,os,system"
  
 
 Installation: please follow [official guide](https://github.com/martinlindhe/wmi_exporter#installation).
@@ -105,6 +106,17 @@ Installation: please follow [official guide](https://github.com/martinlindhe/wmi
 3. **Operations** Per Disk in operations/s
   * reads
   * writes
+  
+#### system
+ 
+1. **Processes** in number
+  * processes
+
+2. **Threads** in number
+  * threads
+
+3. **Uptime** in seconds
+  * time
 
  
  

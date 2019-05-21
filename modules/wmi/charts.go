@@ -279,19 +279,48 @@ var netNICCharts = Charts{
 	},
 }
 
-var systemCharts = Charts{
-	{
-		ID:       "system_uptime",
-		Title:    "System Uptime",
-		Units:    "seconds",
-		Fam:      "uptime",
-		Ctx:      "wmi.system_uptime",
-		Priority: systemPriority,
-		Dims: Dims{
-			{ID: "system_up_time", Name: "time"},
+var (
+	systemCharts = Charts{
+		{
+			ID:       "system_threads",
+			Title:    "Threads",
+			Units:    "number",
+			Fam:      "system",
+			Ctx:      "wmi.system_threads",
+			Priority: systemPriority + 1,
+			Dims: Dims{
+				{ID: "system_threads", Name: "threads"},
+			},
 		},
-	},
-}
+		{
+			ID:       "system_uptime",
+			Title:    "Uptime",
+			Units:    "seconds",
+			Fam:      "system",
+			Ctx:      "wmi.system_uptime",
+			Priority: systemPriority + 2,
+			Dims: Dims{
+				{ID: "system_up_time", Name: "time"},
+			},
+		},
+	}
+	osCharts = Charts{
+		{
+			ID:       "system_processes",
+			Title:    "Processes",
+			Units:    "number",
+			Fam:      "system",
+			Ctx:      "wmi.system_processes",
+			Priority: systemPriority,
+			Dims: Dims{
+				{ID: "os_processes", Name: "processes"},
+			},
+			Vars: Vars{
+				{ID: "os_processes_limit"},
+			},
+		},
+	}
+)
 
 var logicalDiskCharts = Charts{
 	{
@@ -343,7 +372,7 @@ func (w *WMI) updateCharts(mx *metrics) {
 	}
 
 	if mx.hasMem() {
-		w.updateMemoryCharts(mx)
+		w.addMemoryCharts()
 	}
 
 	if mx.hasNet() {
@@ -354,13 +383,13 @@ func (w *WMI) updateCharts(mx *metrics) {
 		w.updateLogicalDisksCharts(mx)
 	}
 
-	//if mx.hasSystem() {
-	//	w.updateSystemCharts(mx)
-	//}
+	if mx.hasSystem() {
+		w.addSystemCharts()
+	}
 
-	//if mx.hasOS() {
-	//	w.updateOSCharts(mx)
-	//}
+	if mx.hasOS() {
+		w.addOSCharts()
+	}
 }
 
 func (w *WMI) updateCollectDurationChart(mx *metrics) {
@@ -433,7 +462,7 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 	}
 }
 
-func (w *WMI) updateMemoryCharts(mx *metrics) {
+func (w *WMI) addMemoryCharts() {
 	if w.collected.collectors[collectorMemory] {
 		return
 	}
@@ -511,16 +540,18 @@ func (w *WMI) removeLogicalDiskFromCharts(diskID string) {
 	}
 }
 
-func (w *WMI) updateSystemCharts(mx *metrics) {
+func (w *WMI) addSystemCharts() {
 	if w.collected.collectors[collectorSystem] {
 		return
 	}
 	w.collected.collectors[collectorSystem] = true
-	charts := *systemCharts.Copy()
-	for i, chart := range charts {
-		chart.Priority += i + 1
-	}
-	_ = w.charts.Add(charts...)
+	_ = w.charts.Add(*systemCharts.Copy()...)
 }
 
-func (w *WMI) updateOSCharts(mx *metrics) {}
+func (w *WMI) addOSCharts() {
+	if w.collected.collectors[collectorOS] {
+		return
+	}
+	w.collected.collectors[collectorOS] = true
+	_ = w.charts.Add(*osCharts.Copy()...)
+}

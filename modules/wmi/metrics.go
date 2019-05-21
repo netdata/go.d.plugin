@@ -175,7 +175,7 @@ type (
 // Win32_PerfRawData_PerfOS_System
 // https://docs.microsoft.com/en-us/previous-versions/aa394272(v%3Dvs.85)
 type system struct {
-	SystemUpTime float64 `stm:"up_time"`
+	SystemUpTime int64 `stm:"up_time"`
 
 	ContextSwitchesTotal     float64 `stm:"context_switches_total,1000,1"`     // ContextSwitchesPersec
 	ExceptionDispatchesTotal float64 `stm:"exception_dispatches_total,1000,1"` // ExceptionDispatchesPersec
