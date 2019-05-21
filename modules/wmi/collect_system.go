@@ -36,8 +36,7 @@ func (w *WMI) collectSystem(mx *metrics, pms prometheus.Metrics) bool {
 		collectSystemAny(mx, pms, name)
 	}
 
-	// TODO: negative numbers after VM reboot
-	mx.System.SystemUpTime = float64(time.Now().Unix()) - mx.System.SystemBootTime
+	mx.System.SystemUpTime = time.Now().Unix() - int64(mx.System.SystemBootTime)
 
 	return true
 }

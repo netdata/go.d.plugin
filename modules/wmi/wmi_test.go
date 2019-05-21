@@ -181,27 +181,32 @@ func TestWMI_Collect(t *testing.T) {
 		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_unknown":     0,
 		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_sent_total":           20685000,
 		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_total":                69054000,
-		"os":                            567,
-		"os_paging_free_bytes":          1451696128000,
-		"os_paging_limit_bytes":         1476395008000,
-		"os_physical_memory_free_bytes": 2483429376000,
-		"os_process_memory_limit_bytes": 0,
-		"os_processes":                  116,
-		"os_processes_limit":            4294967295,
-		"os_time":                       1558031630,
-		"os_users":                      2,
-		"os_virtual_memory_bytes":       5770891264000,
-		"os_virtual_memory_free_bytes":  4163584000000,
-		"os_visible_memory_bytes":       4294496256000,
-		"system":                        511,
+		"os":                                567,
+		"os_paging_free_bytes":              1451696128000,
+		"os_paging_limit_bytes":             1476395008000,
+		"os_physical_memory_free_bytes":     2483429376000,
+		"os_process_memory_limit_bytes":     0,
+		"os_processes":                      116,
+		"os_processes_limit":                4294967295,
+		"os_time":                           1558031630,
+		"os_users":                          2,
+		"os_virtual_memory_bytes":           5770891264000,
+		"os_virtual_memory_free_bytes":      4163584000000,
+		"os_visible_memory_bytes":           4294496256000,
+		"system":                            511,
+		"system_boot_time":                  1558029847,
+		"system_calls_total":                36309080000,
+		"system_context_switches_total":     4549390000,
+		"system_exception_dispatches_total": 4441000,
+		"system_processor_queue_length":     0,
+		"system_threads":                    1320,
+		"system_up_time":                    434578,
 	}
 
-	//rv := job.Collect()
-	//if _, ok := rv["system_up_time"]; ok {
-	//	delete(rv, "system_up_time")
-	//}
+	rv := job.Collect()
+	rv["system_up_time"] = expected["system_up_time"]
 
-	assert.Equal(t, expected, job.Collect())
+	assert.Equal(t, expected, rv)
 }
 
 func TestWMI_CollectPartial(t *testing.T) {
