@@ -7,6 +7,8 @@ import (
 )
 
 const (
+	collectorMemory = "memory"
+
 	metricMemAvailBytes                      = "wmi_memory_available_bytes"
 	metricMemCacheBytes                      = "wmi_memory_cache_bytes"
 	metricMemCacheBytesPeak                  = "wmi_memory_cache_bytes_peak"
@@ -41,7 +43,7 @@ const (
 	metricMemWriteCopiesTotal                = "wmi_memory_write_copies_total"
 )
 
-func (w *WMI) collectMemory(mx *metrics, pms prometheus.Metrics) bool {
+func collectMemory(mx *metrics, pms prometheus.Metrics) bool {
 	enabled, success := checkCollector(pms, collectorMemory)
 	if !(enabled && success) {
 		return false

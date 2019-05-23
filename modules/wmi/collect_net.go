@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	collectorNet = "net"
+
 	metricNetBytesReceivedTotal       = "wmi_net_bytes_received_total"
 	metricNetBytesSentTotal           = "wmi_net_bytes_sent_total"
 	metricNetBytesTotal               = "wmi_net_bytes_total"
@@ -22,7 +24,7 @@ const (
 	metricNetCurrentBandwidth         = "wmi_net_current_bandwidth"
 )
 
-func (w *WMI) collectNet(mx *metrics, pms prometheus.Metrics) bool {
+func collectNet(mx *metrics, pms prometheus.Metrics) bool {
 	enabled, success := checkCollector(pms, collectorNet)
 	if !(enabled && success) {
 		return false
