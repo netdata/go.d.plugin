@@ -40,11 +40,15 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)
  - [mysql](https://github.com/netdata/go.d.plugin/tree/master/modules/mysql) *
  - [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx) *
+ - [openvpn](https://github.com/netdata/go.d.plugin/tree/master/modules/openvpn)
  - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck) *
  - [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
+ - [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)
  - [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
  - [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)
+ - [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)
  - [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) *
+ - [wmi](https://github.com/netdata/go.d.plugin/tree/master/modules/wmi)
  - [x509check](https://github.com/netdata/go.d.plugin/tree/master/modules/x509check)
 
 `*` - disabled by default.
