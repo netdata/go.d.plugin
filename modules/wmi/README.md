@@ -129,10 +129,10 @@ Here is an example for 2 instances:
 ```yaml
 jobs:
   - name : win_server1
-    url  : http://10.0.0.1:9182
+    url  : http://10.0.0.1:9182/metrics
 
   - name : win_server2
-    url  : http://10.0.0.2:9182
+    url  : http://10.0.0.2:9182/metrics
 ```
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/wmi.conf).
 

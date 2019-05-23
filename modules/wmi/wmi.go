@@ -30,8 +30,9 @@ func New() *WMI {
 	}
 	return &WMI{
 		Config: config,
-		charts: charts.Copy(),
+		charts: collectionCharts.Copy(),
 		collected: collected{
+			collection: make(map[string]bool),
 			collectors: make(map[string]bool),
 			cores:      make(map[string]bool),
 			nics:       make(map[string]bool),
@@ -46,6 +47,7 @@ type Config struct {
 }
 
 type collected struct {
+	collection map[string]bool
 	collectors map[string]bool
 	cores      map[string]bool
 	nics       map[string]bool

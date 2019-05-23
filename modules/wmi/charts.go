@@ -29,16 +29,26 @@ const (
 	netPriority         = defaultPriority + 40
 	logicalDiskPriority = defaultPriority + 60
 	systemPriority      = defaultPriority + 80
+	collectionPriority  = defaultPriority + 200 // last
 )
 
-var charts = Charts{
+var collectionCharts = Charts{
 	{
 		ID:       "collector_duration",
-		Title:    "Duration of a Collector",
+		Title:    "Duration",
 		Units:    "ms",
 		Fam:      "collection",
 		Ctx:      "cpu.collector_duration",
-		Priority: defaultPriority + 200, // last chart
+		Priority: collectionPriority, // last chart
+		// Dims will be added during collection
+	},
+	{
+		ID:       "collector_success",
+		Title:    "Status (whether the collector was successful)",
+		Units:    "bool",
+		Fam:      "collection",
+		Ctx:      "cpu.collector_success",
+		Priority: collectionPriority, // last chart
 		// Dims will be added during collection
 	},
 }
@@ -80,7 +90,7 @@ var (
 		},
 	}
 
-	// Per core charts
+	// Per core collectionCharts
 	cpuCoreUsageChart = Chart{
 
 		ID:    "core_%s_cpu_utilization",
@@ -365,7 +375,7 @@ var logicalDiskCharts = Charts{
 }
 
 func (w *WMI) updateCharts(mx *metrics) {
-	w.updateCollectDurationChart(mx)
+	w.updateCollectionCharts(mx)
 
 	if mx.hasCPU() {
 		w.updateCPUCharts(mx)
@@ -392,13 +402,20 @@ func (w *WMI) updateCharts(mx *metrics) {
 	}
 }
 
-func (w *WMI) updateCollectDurationChart(mx *metrics) {
-	for k := range mx.CollectDuration {
-		chart := w.charts.Get("collector_duration")
-		if !chart.HasDim(k) {
-			_ = chart.AddDim(&Dim{ID: k})
-			chart.MarkNotCreated()
+func (w *WMI) updateCollectionCharts(mx *metrics) {
+	for _, c := range *mx.Collectors {
+		if w.collected.collection[c.ID] {
+			continue
 		}
+		w.collected.collection[c.ID] = true
+
+		chart := w.charts.Get("collector_duration")
+		_ = chart.AddDim(&Dim{ID: c.ID + "_collection_duration", Name: c.ID})
+		chart.MarkNotCreated()
+
+		chart = w.charts.Get("collector_success")
+		_ = chart.AddDim(&Dim{ID: c.ID + "_collection_success", Name: c.ID})
+		chart.MarkNotCreated()
 	}
 }
 

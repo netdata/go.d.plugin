@@ -5,21 +5,17 @@ import (
 	"strconv"
 )
 
-func newMetrics() *metrics {
-	return &metrics{
-		CollectDuration: make(map[string]float64),
-	}
-}
+func newMetrics() *metrics { return &metrics{} }
 
 type metrics struct {
 	// https://github.com/martinlindhe/wmi_exporter/tree/master/docs
-	CPU             *cpu               `stm:"cpu"`
-	Memory          *memory            `stm:"memory"`
-	Net             *network           `stm:"net"`
-	LogicalDisk     *logicalDisk       `stm:"logical_disk"`
-	OS              *os                `stm:"os"`
-	System          *system            `stm:"system"`
-	CollectDuration map[string]float64 `stm:",1000,1"`
+	CPU         *cpu         `stm:"cpu"`
+	Memory      *memory      `stm:"memory"`
+	Net         *network     `stm:"net"`
+	LogicalDisk *logicalDisk `stm:"logical_disk"`
+	OS          *os          `stm:"os"`
+	System      *system      `stm:"system"`
+	Collectors  *collectors  `stm:""`
 }
 
 func (m metrics) hasCPU() bool { return m.CPU != nil }
@@ -200,6 +196,32 @@ type os struct {
 	VisibleMemoryBytes      float64 `stm:"visible_memory_bytes,1000,1"`       // TotalVisibleMemorySize
 	Time                    float64 `stm:"time"`                              // LocalDateTime
 	// Timezone                float64 `stm:"timezone"`                          // LocalDateTime
+}
+
+type (
+	collectors []*collector
+	collector  struct {
+		STMKey string
+		ID     string
+
+		Duration float64 `stm:"collection_duration,1000,1"`
+		Success  bool    `stm:"collection_success"`
+	}
+)
+
+func newCollector(id string) *collector { return &collector{STMKey: id, ID: id} }
+
+func (cs *collectors) get(id string, createIfNotExist bool) (cr *collector) {
+	for _, c := range *cs {
+		if c.ID == id {
+			return c
+		}
+	}
+	if createIfNotExist {
+		cr = newCollector(id)
+		*cs = append(*cs, cr)
+	}
+	return cr
 }
 
 func newCPUCore(id string) *cpuCore { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
