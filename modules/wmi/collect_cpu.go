@@ -3,13 +3,15 @@ package wmi
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
+	collectorCPU = "cpu"
+
 	metricCPUCstateTotal     = "wmi_cpu_cstate_seconds_total"
 	metricCPUDPCsTotal       = "wmi_cpu_dpcs_total"
 	metricCPUInterruptsTotal = "wmi_cpu_interrupts_total"
 	metricCPUTimeTotal       = "wmi_cpu_time_total"
 )
 
-func (w *WMI) collectCPU(mx *metrics, pms prometheus.Metrics) bool {
+func collectCPU(mx *metrics, pms prometheus.Metrics) bool {
 	enabled, success := checkCollector(pms, collectorCPU)
 	if !(enabled && success) {
 		return false

@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	collectorLogDisks = "logical_disk"
+
 	metricLDReadBytesTotal  = "wmi_logical_disk_read_bytes_total"
 	metricLDWriteBytesTotal = "wmi_logical_disk_write_bytes_total"
 	metricLDReadsTotal      = "wmi_logical_disk_reads_total"
@@ -16,7 +18,7 @@ const (
 	metricLDFreeBytes       = "wmi_logical_disk_free_bytes"
 )
 
-func (w *WMI) collectLogicalDisk(mx *metrics, pms prometheus.Metrics) bool {
+func collectLogicalDisk(mx *metrics, pms prometheus.Metrics) bool {
 	enabled, success := checkCollector(pms, collectorLogDisks)
 	if !(enabled && success) {
 		return false

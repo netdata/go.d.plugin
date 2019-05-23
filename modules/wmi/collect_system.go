@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	collectorSystem = "system"
+
 	metricSysContextSwitchesTotal     = "wmi_system_context_switches_total"
 	metricSysExceptionDispatchesTotal = "wmi_system_exception_dispatches_total"
 	metricSysProcessorQueueLength     = "wmi_system_processor_queue_length"
@@ -16,7 +18,7 @@ const (
 	metricSysThreads                  = "wmi_system_threads"
 )
 
-func (w *WMI) collectSystem(mx *metrics, pms prometheus.Metrics) bool {
+func collectSystem(mx *metrics, pms prometheus.Metrics) bool {
 	enabled, success := checkCollector(pms, collectorSystem)
 	if !(enabled && success) {
 		return false

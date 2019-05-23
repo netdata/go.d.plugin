@@ -7,6 +7,8 @@ import (
 )
 
 const (
+	collectorOS = "os"
+
 	metricOSPhysicalMemoryFreeBytes = "wmi_os_physical_memory_free_bytes"
 	metricOSPagingFreeBytes         = "wmi_os_paging_free_bytes"
 	metricOSVirtualMemoryFreeBytes  = "wmi_os_virtual_memory_free_bytes"
@@ -20,7 +22,7 @@ const (
 	metricOSTime                    = "wmi_os_time"
 )
 
-func (w *WMI) collectOS(mx *metrics, pms prometheus.Metrics) bool {
+func collectOS(mx *metrics, pms prometheus.Metrics) bool {
 	enabled, success := checkCollector(pms, collectorOS)
 	if !(enabled && success) {
 		return false
