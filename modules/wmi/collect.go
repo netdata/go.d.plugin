@@ -16,6 +16,7 @@ const (
 	collectorMemory   = "memory"
 
 	metricCollectorDuration = "wmi_exporter_collector_duration_seconds"
+	metricCollectorSuccess  = "wmi_exporter_collector_success"
 )
 
 func (w *WMI) collect() (map[string]int64, error) {
@@ -33,7 +34,7 @@ func (w *WMI) collect() (map[string]int64, error) {
 }
 
 func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
-	collectCollectorsDuration(mx, scraped)
+	collectCollection(mx, scraped)
 
 	w.collectCPU(mx, scraped)
 	w.collectOS(mx, scraped)
@@ -48,13 +49,37 @@ func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
 	}
 }
 
-func collectCollectorsDuration(mx *metrics, pms prometheus.Metrics) {
+func collectCollection(mx *metrics, pms prometheus.Metrics) {
+	mx.Collectors = &collectors{}
+	collectCollectionDuration(mx, pms)
+	collectCollectionSuccess(mx, pms)
+}
+
+func collectCollectionDuration(mx *metrics, pms prometheus.Metrics) {
+	cr := newCollector("")
 	for _, pm := range pms.FindByName(metricCollectorDuration) {
 		name := pm.Labels.Get("collector")
 		if name == "" {
 			continue
 		}
-		mx.CollectDuration[name] = pm.Value
+		if cr.ID != name {
+			cr = mx.Collectors.get(name, true)
+		}
+		cr.Duration = pm.Value
+	}
+}
+
+func collectCollectionSuccess(mx *metrics, pms prometheus.Metrics) {
+	cr := newCollector("")
+	for _, pm := range pms.FindByName(metricCollectorSuccess) {
+		name := pm.Labels.Get("collector")
+		if name == "" {
+			continue
+		}
+		if cr.ID != name {
+			cr = mx.Collectors.get(name, true)
+		}
+		cr.Success = pm.Value == 1
 	}
 }
 
@@ -63,6 +88,8 @@ func checkCollector(pms prometheus.Metrics, name string) (enabled, success bool)
 	if err != nil {
 		panic(err)
 	}
+
+	pms = pms.FindByName(metricCollectorSuccess)
 	ms := pms.Match(m)
 	return ms.Len() > 0, ms.Max() == 1
 }
