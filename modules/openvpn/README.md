@@ -11,13 +11,13 @@ It produces the following charts:
 1. **Total Number Of Active Clients** in clients
  * clients
 
-2. **Total Traffic** in KiB/s
+2. **Total Traffic** in kilobits/s
  * in
  * out
  
 Per user charts (disabled by default, see `per_user_stats` in the module config file):
 
-1. **User Traffic** in KiB/s
+1. **User Traffic** in kilobits/s
  * received
  * sent
 
