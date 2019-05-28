@@ -3,6 +3,7 @@ package web
 import (
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 )
@@ -27,8 +28,10 @@ func NewHTTPClient(client Client) (*http.Client, error) {
 	}
 
 	transport := &http.Transport{
-		Proxy:           proxyFunc(client.ProxyURL),
-		TLSClientConfig: tlsConfig,
+		Proxy:               proxyFunc(client.ProxyURL),
+		TLSClientConfig:     tlsConfig,
+		DialContext:         (&net.Dialer{Timeout: client.Timeout.Duration}).DialContext,
+		TLSHandshakeTimeout: client.Timeout.Duration,
 	}
 
 	return &http.Client{

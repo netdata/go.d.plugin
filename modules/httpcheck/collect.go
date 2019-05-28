@@ -32,14 +32,14 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 
 	start := time.Now()
 	resp, err := hc.client.Do(req)
-	end := time.Since(start)
+	dur := time.Since(start)
 	defer closeBody(resp)
 
 	if err != nil {
 		hc.Warning(err)
 		hc.collectErrResponse(&mx, err)
 	} else {
-		mx.ResponseTime = durationToMs(end)
+		mx.ResponseTime = durationToMs(dur)
 		hc.collectOKResponse(&mx, resp)
 	}
 
@@ -73,16 +73,17 @@ func (hc HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
 		return
 	}
 
-	if hc.reResponse != nil {
-		bs, _ := ioutil.ReadAll(resp.Body)
-		//if err != nil {
-		//	mx.Status.BodyReadError = true
-		//	return
-		//}
-		if !hc.reResponse.Match(bs) {
-			mx.Status.BadContent = true
-			return
-		}
+	bs, err := ioutil.ReadAll(resp.Body)
+	if err != nil && err != io.EOF {
+		hc.Warningf("error on reading body : %v", err)
+		return
+	}
+
+	mx.ResponseLength = len(bs)
+
+	if hc.reResponse != nil && !hc.reResponse.Match(bs) {
+		mx.Status.BadContent = true
+		return
 	}
 
 	mx.Status.Success = true
@@ -134,6 +135,6 @@ func closeBody(resp *http.Response) {
 	_ = resp.Body.Close()
 }
 
-func durationToMs(duration time.Duration) int64 {
-	return int64(duration) / (int64(time.Millisecond) / int64(time.Nanosecond))
+func durationToMs(duration time.Duration) int {
+	return int(duration) / (int(time.Millisecond) / int(time.Nanosecond))
 }

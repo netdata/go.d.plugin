@@ -53,30 +53,29 @@ func TestHTTPCheck_Check(t *testing.T) {
 
 func TestHTTPCheck_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
-	assert.False(t, New().Charts().Has(bodyLengthChart.ID))
-
-	job := New()
-	job.UserURL = testURL
-	job.ResponseMatch = "1"
-	require.True(t, job.Init())
-	assert.True(t, job.Charts().Has(bodyLengthChart.ID))
 }
 
 func TestHTTPCheck_Collect(t *testing.T) {
 	job := New()
+	body := "hello"
 
 	job.UserURL = testURL
-	job.ResponseMatch = "hello"
+	job.ResponseMatch = body
 	require.True(t, job.Init())
 
 	resp := &http.Response{
 		StatusCode: http.StatusOK,
-		Body:       nopCloser{bytes.NewBufferString("hello")},
+		Body:       nopCloser{bytes.NewBufferString(body)},
 	}
 	job.client = newClientFunc(resp, nil)
+
 	assert.Equal(
 		t,
-		stm.ToMap(metrics{Status: status{Success: true}}),
+		stm.ToMap(metrics{
+			Status:         status{Success: true},
+			ResponseLength: len(body),
+			ResponseTime:   0,
+		}),
 		job.Collect(),
 	)
 }
@@ -144,19 +143,23 @@ func TestHTTPCheck_Collect_TimeoutError(t *testing.T) {
 
 func TestHTTPCheck_Collect_BadContentError(t *testing.T) {
 	job := New()
+	body := "hello"
 
 	job.UserURL = testURL
-	job.ResponseMatch = "hello"
+	job.ResponseMatch = "not match"
 	require.True(t, job.Init())
 
 	resp := &http.Response{
 		StatusCode: http.StatusOK,
-		Body:       nopCloser{bytes.NewBufferString("good bye")},
+		Body:       nopCloser{bytes.NewBufferString(body)},
 	}
 	job.client = newClientFunc(resp, nil)
 	assert.Equal(
 		t,
-		stm.ToMap(metrics{Status: status{BadContent: true}}),
+		stm.ToMap(metrics{
+			Status:         status{BadContent: true},
+			ResponseLength: len(body),
+		}),
 		job.Collect(),
 	)
 }
