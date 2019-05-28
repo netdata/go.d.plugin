@@ -2,8 +2,8 @@ package httpcheck
 
 type metrics struct {
 	Status         status `stm:""`
-	ResponseTime   int64  `stm:"response_time"`
-	ResponseLength int    `stm:"response_length"`
+	ResponseTime   int64  `stm:"time"`
+	ResponseLength int    `stm:"length"`
 }
 
 type status struct {
