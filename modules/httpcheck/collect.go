@@ -76,6 +76,7 @@ func (hc HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
 	bs, err := ioutil.ReadAll(resp.Body)
 	if err != nil && err != io.EOF {
 		hc.Warningf("error on reading body : %v", err)
+		mx.Status.BadContent = true
 		return
 	}
 
