@@ -22,7 +22,7 @@ func init() {
 }
 
 var (
-	defaultHTTPTimeout      = time.Second * 2
+	defaultHTTPTimeout      = time.Second
 	defaultAcceptedStatuses = []int{200}
 )
 
@@ -111,13 +111,7 @@ func (hc *HTTPCheck) Init() bool {
 func (hc *HTTPCheck) Check() bool { return len(hc.Collect()) > 0 }
 
 // Charts creates Charts
-func (hc HTTPCheck) Charts() *Charts {
-	cs := charts.Copy()
-	if hc.reResponse != nil {
-		_ = cs.Add(bodyLengthChart.Copy())
-	}
-	return cs
-}
+func (hc HTTPCheck) Charts() *Charts { return charts.Copy() }
 
 // Collect collects metrics
 func (hc *HTTPCheck) Collect() map[string]int64 {

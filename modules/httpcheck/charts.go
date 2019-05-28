@@ -25,6 +25,16 @@ var charts = Charts{
 		},
 	},
 	{
+		ID:    "response_length",
+		Title: "HTTP Response Body Length",
+		Units: "characters",
+		Fam:   "response",
+		Ctx:   "httpcheck.responselength",
+		Dims: Dims{
+			{ID: "length"},
+		},
+	},
+	{
 		ID:    "request_status",
 		Title: "HTTP Check Status",
 		Units: "boolean",
@@ -41,16 +51,5 @@ var charts = Charts{
 			//{ID: "redirect_error", Name: "redirect error"},
 			//{ID: "body_read_error", Name: "body read error"},
 		},
-	},
-}
-
-var bodyLengthChart = Chart{
-	ID:    "response_length",
-	Title: "HTTP Response Body Length",
-	Units: "characters",
-	Fam:   "response",
-	Ctx:   "httpcheck.responselength",
-	Dims: Dims{
-		{ID: "length"},
 	},
 }
