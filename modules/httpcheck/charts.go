@@ -19,7 +19,7 @@ var charts = Charts{
 		Title: "HTTP Response Time",
 		Units: "ms",
 		Fam:   "response",
-		Ctx:   "httpcheck.responsetime",
+		Ctx:   "httpcheck.response_time",
 		Dims: Dims{
 			{ID: "time"},
 		},
@@ -29,7 +29,7 @@ var charts = Charts{
 		Title: "HTTP Response Body Length",
 		Units: "characters",
 		Fam:   "response",
-		Ctx:   "httpcheck.responselength",
+		Ctx:   "httpcheck.response_length",
 		Dims: Dims{
 			{ID: "length"},
 		},
