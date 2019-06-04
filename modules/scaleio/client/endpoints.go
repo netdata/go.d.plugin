@@ -3,7 +3,7 @@ package client
 /*
 The REST API is served from the VxFlex OS Gateway.
 The FxFlex Gateway connects to a single MDM and serves requests by querying the MDM
-and reformatting the answers it receives from the MDM in s RESTful manner, back to a REST client.
+and reformatting the answers it receives from the MDM in s RESTful manner, back to a REST API.
 The Gateway is stateless. It requires the MDM username and password for the login requests.
 The login returns a token in the response, that is used for later authentication for other requests.
 
@@ -14,16 +14,16 @@ for 10 minutes, of if the client has sent a logout request.
 const (
 	// URL PATHs
 
-	pathVersion = "/client/version" // GET
-	pathLogin   = "/client/login"   // GET
-	pathLogout  = "/client/logout"  // GET
-	//pathAllObjects                    = "/client/instances"                         // GET
-	//pathObjectsByType                 = "/client/types/%s/instances"                // GET
-	//pathObjectByTypeByID              = "/client/types/%s::%s"                      // GET
-	//pathObjectRelationshipsByTypeByID = "/client/instances/%s::%s/relationships/%s" // GET
-	//pathActionOnObjectsByType         = "/client/types/%s/action/%s"                // POST
-	//pathActionOnObjectByTypeByID      = "/client/types/%s::%s/action/%s"            // POST
-	pathSelectedStatistics = "/client/instances/querySelectedStatistics" // POST
+	pathVersion = "/api/version" // GET
+	pathLogin   = "/api/login"   // GET
+	pathLogout  = "/api/logout"  // GET
+	//pathAllObjects                    = "/api/instances"                         // GET
+	//pathObjectsByType                 = "/api/types/%s/instances"                // GET
+	//pathObjectByTypeByID              = "/api/types/%s::%s"                      // GET
+	//pathObjectRelationshipsByTypeByID = "/api/instances/%s::%s/relationships/%s" // GET
+	//pathActionOnObjectsByType         = "/api/types/%s/action/%s"                // POST
+	//pathActionOnObjectByTypeByID      = "/api/types/%s::%s/action/%s"            // POST
+	pathSelectedStatistics = "/api/instances/querySelectedStatistics" // POST
 )
 
 const (
