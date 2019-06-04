@@ -3,6 +3,7 @@ package client
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -83,6 +84,10 @@ func TestClient_GetSelectedStatistics(t *testing.T) {
 
 func newTestServer() *httptest.Server {
 	handle := func(w http.ResponseWriter, r *http.Request) {
+		if !strings.HasPrefix(r.URL.Path, "/api/") {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
 		switch r.URL.Path {
 		default:
 			w.WriteHeader(http.StatusBadRequest)
