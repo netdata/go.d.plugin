@@ -35,8 +35,8 @@ github.com/miekg/dns v1.1.8/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nr
 github.com/mitchellh/go-homedir v1.1.0 h1:lukF9ziXFxDFPkA1vsr5zpc1XuPDn/wFntq5mG+4E0Y=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
-github.com/netdata/go-orchestrator v0.0.0-20190418191812-d94ef4ac5291 h1:eM9qK09t0owUJbarpQje7d+NjNU+4FzRpRwblB4J/3s=
-github.com/netdata/go-orchestrator v0.0.0-20190418191812-d94ef4ac5291/go.mod h1:ErI8v7oo3A0a5PMhPg/sxyV9FmB8Md+QlNn0p5qLvEs=
+github.com/netdata/go-orchestrator v0.0.0-20190604151551-bbbeb05378c3 h1:engvIcRW2tutp0fuTd7nJqi3GErXwsjEMD32GF1gkP0=
+github.com/netdata/go-orchestrator v0.0.0-20190604151551-bbbeb05378c3/go.mod h1:ErI8v7oo3A0a5PMhPg/sxyV9FmB8Md+QlNn0p5qLvEs=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
