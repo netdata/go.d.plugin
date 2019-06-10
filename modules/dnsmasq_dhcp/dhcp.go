@@ -19,15 +19,15 @@ func New() *DnsmasqDHCP {
 	}
 }
 
-type userPool struct {
-	Name      string `yaml:"name"`
-	DHCPRange string `yaml:"range"`
+type Pool struct {
+	Name  string `yaml:"name"`
+	Range string `yaml:"range"`
 }
 
 // Config is the DnsmasqDHCP module configuration.
 type Config struct {
-	LeasesPath string     `yaml:"leases_path"`
-	Pools      []userPool `yaml:"pools"`
+	LeasesPath string `yaml:"leases_path"`
+	Pools      []Pool `yaml:"pools"`
 }
 
 // DnsmasqDHCP DnsmasqDHCP module.
