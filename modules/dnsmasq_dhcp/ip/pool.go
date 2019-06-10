@@ -20,7 +20,7 @@ const (
 type Pool interface {
 	Type() Type
 	Contains(ip net.IP) bool
-	Size() *big.Int
+	Hosts() *big.Int
 	fmt.Stringer
 }
 

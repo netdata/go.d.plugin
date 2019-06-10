@@ -38,18 +38,21 @@ func (r Range) Contains(ip net.IP) bool {
 	return inLower && inUpper
 }
 
-// Size returns number of available IPs in the Range.
-func (r Range) Size() *big.Int {
-	if r.Start.To4() != nil && r.End.To4() != nil {
+// Hosts returns number of hosts addresses in the Range.
+func (r Range) Hosts() *big.Int {
+	switch r.Type() {
+	default:
+		return big.NewInt(0)
+	case V4Type:
 		return V4RangeSize(r)
+	case V6Type:
+		return V6RangeSize(r)
 	}
-	return V6RangeSize(r)
 }
 
 // IsRangeValid reports if Range is valid.
 func IsRangeValid(r Range) bool {
-	sameFam := (r.Start.To4() == nil) == (r.End.To4() == nil)
-	return r.Start != nil && r.End != nil && bytes.Compare(r.End, r.Start) >= 0 && sameFam
+	return r.Type() != UnknownType && bytes.Compare(r.End, r.Start) >= 0
 }
 
 // V4RangeSize return ipv4 Range size.

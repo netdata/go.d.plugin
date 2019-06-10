@@ -28,24 +28,32 @@ func (n Net) Type() Type {
 	return UnknownType
 }
 
-// Size returns number of available IPs in the Net.
-func (n Net) Size() *big.Int {
+// Hosts returns number of hosts addresses in the Net.
+func (n Net) Hosts() *big.Int {
 	var (
 		ones, bits = n.IPNet.Mask.Size()
 		zero       = big.NewInt(0)
-		size       = big.NewInt(1)
+		hosts      = big.NewInt(1)
 		two        = big.NewInt(2)
 	)
 	if ones == 0 && bits == 0 {
 		return zero
 	}
 	for i := 0; i < bits-ones; i++ {
-		size.Mul(size, two)
+		hosts.Mul(hosts, two)
 	}
-	if size.Sub(size, two).Cmp(zero) <= 0 {
+
+	switch n.Type() {
+	default:
 		return zero
+	case V4Type:
+		if hosts.Sub(hosts, two).Cmp(zero) <= 0 {
+			return zero
+		}
+		return hosts
+	case V6Type:
+		return hosts
 	}
-	return size
 }
 
 func ParseNet(s string) *Net {
