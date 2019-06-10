@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// Range represents IP Range.
 type Range struct {
 	Start net.IP
 	End   net.IP
@@ -15,6 +16,17 @@ type Range struct {
 
 // String returns Range string representation.
 func (r Range) String() string { return fmt.Sprintf("%s-%s", r.Start, r.End) }
+
+// Type returns Range IP type.
+func (r Range) Type() Type {
+	if r.Start.To4() != nil && r.End.To4() != nil {
+		return V4Type
+	}
+	if r.Start.To16() != nil && r.End.To16() != nil {
+		return V6Type
+	}
+	return UnknownType
+}
 
 // Contains reports whether net.IP is within Range.
 func (r Range) Contains(ip net.IP) bool {
@@ -59,14 +71,15 @@ func V4ToInt(ip net.IP) int32 {
 }
 
 func ParseRange(s string) *Range {
-	s = strings.TrimSpace(s)
-
-	parts := strings.Split(s, "-")
+	parts := strings.Split(s, ",")
 	if len(parts) != 2 {
 		return nil
 	}
 
-	r := Range{Start: net.ParseIP(parts[0]), End: net.ParseIP(parts[1])}
+	r := Range{
+		Start: net.ParseIP(parts[0]),
+		End:   net.ParseIP(parts[1]),
+	}
 	if !IsRangeValid(r) {
 		return nil
 	}
