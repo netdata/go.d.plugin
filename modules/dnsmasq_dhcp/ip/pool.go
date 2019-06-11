@@ -16,7 +16,7 @@ const (
 	V6Type
 )
 
-// IRange implements IP Range.
+// IRange is implemented by IP Ranges.
 type IRange interface {
 	Type() Type
 	Hosts() *big.Int
@@ -24,56 +24,40 @@ type IRange interface {
 	fmt.Stringer
 }
 
-// RawDHCPPool RawDHCPPool.
-type RawDHCPPool struct {
-	Name  string `yaml:"name"`
-	Range string `yaml:"range"`
-}
-
-// NewDHCPPool creates new DHCPPool.
-func NewDHCPPool(raw RawDHCPPool) *DHCPPool {
-	pool := ParseRange(raw.Range)
-	if pool == nil {
+// NewPool creates new Pool.
+func NewPool(iprange string) *Pool {
+	r := ParseRange(iprange)
+	if r == nil {
 		return nil
 	}
 
-	name := raw.Name
-	if name == "" {
-		name = raw.Range
-	}
-
-	return &DHCPPool{
-		IRange: pool,
-		name:   name,
+	return &Pool{
+		IRange: r,
 		leases: make(map[string]bool),
 	}
 }
 
-type DHCPPool struct {
+type Pool struct {
 	IRange
-	name   string
 	leases map[string]bool
 }
 
-// Name returns name.
-func (d DHCPPool) Name() string { return d.name }
-
 // NumOfLeases returns number of active dhcp leases.
-func (d DHCPPool) NumOfLeases() int64 { return int64(len(d.leases)) }
+func (p Pool) NumOfLeases() int64 { return int64(len(p.leases)) }
 
 // Lease adds IP to leases database.
-func (d *DHCPPool) Lease(ip net.IP) { d.leases[ip.String()] = true }
+func (p *Pool) Lease(ip net.IP) { p.leases[ip.String()] = true }
 
 // ResetLeases resets all leases.
-func (d *DHCPPool) ResetLeases() { d.leases = make(map[string]bool) }
+func (p *Pool) ResetLeases() { p.leases = make(map[string]bool) }
 
 // Utilization returns pool utilization in percent.
-func (d DHCPPool) Utilization() float64 {
-	total := d.Hosts()
+func (p Pool) Utilization() float64 {
+	total := p.Hosts()
 	if !total.IsInt64() {
 		return 0
 	}
-	return float64(d.NumOfLeases()) * 100 / float64(total.Int64())
+	return float64(p.NumOfLeases()) * 100 / float64(total.Int64())
 }
 
 func ParseRange(iprange string) IRange {

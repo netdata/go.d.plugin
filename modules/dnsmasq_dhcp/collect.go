@@ -2,6 +2,7 @@ package dnsmasq_dhcp
 
 import (
 	"bufio"
+	"fmt"
 	"net"
 	"os"
 	"strings"
@@ -19,13 +20,19 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	if d.modTime.Equal(fi.ModTime()) {
-		return nil, nil
-	}
+	_ = fi
+
+	//if d.modTime.Equal(fi.ModTime()) {
+	//	return nil, nil
+	//}
 
 	s := bufio.NewScanner(f)
 	for s.Scan() {
 		d.collectLine(s.Text())
+	}
+
+	for _, pool := range d.pools {
+		fmt.Println(pool, pool.Hosts(), pool.NumOfLeases(), pool.Utilization())
 	}
 
 	return nil, nil
@@ -36,7 +43,7 @@ func (d *DnsmasqDHCP) collectLine(line string) {
 	// 1560252212 660684014 1234::20b * 00:01:00:01:24:90:cf:a3:08:00:27:61:3c:ee
 
 	parts := strings.Fields(line)
-	if len(line) != 5 {
+	if len(parts) != 5 {
 		return
 	}
 
@@ -47,7 +54,7 @@ func (d *DnsmasqDHCP) collectLine(line string) {
 
 	for _, pool := range d.pools {
 		if pool.Contains(ip) {
-			pool.ips++
+			pool.Lease(ip)
 		}
 	}
 }

@@ -58,7 +58,7 @@ func (n Net) Hosts() *big.Int {
 	default:
 		return zero
 	case V4Type:
-		if hosts.Sub(hosts, two).Cmp(zero) <= 0 {
+		if hosts.Sub(hosts, two).Cmp(zero) < 0 {
 			return zero
 		}
 		return hosts

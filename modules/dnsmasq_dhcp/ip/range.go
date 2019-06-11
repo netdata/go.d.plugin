@@ -90,5 +90,6 @@ func V6RangeSize(r Range) *big.Int {
 
 // V4ToInt converts net.IP to int32.
 func V4ToInt(ip net.IP) int32 {
+	ip = ip.To4()
 	return int32(ip[0])<<24 | int32(ip[1])<<16 | int32(ip[2])<<8 | int32(ip[3])
 }
