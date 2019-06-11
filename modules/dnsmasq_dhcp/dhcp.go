@@ -1,9 +1,11 @@
 package dnsmasq_dhcp
 
 import (
-	"github.com/netdata/go-orchestrator/module"
-	"github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp/ip"
 	"time"
+
+	"github.com/netdata/go-orchestrator/module"
+
+	"github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp/ip"
 )
 
 func init() {

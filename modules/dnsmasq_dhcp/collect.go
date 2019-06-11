@@ -2,7 +2,9 @@ package dnsmasq_dhcp
 
 import (
 	"bufio"
+	"fmt"
 	"io"
+	"math/big"
 	"net"
 	"os"
 	"strings"
@@ -21,15 +23,18 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 	}
 
 	if d.modTime.Equal(fi.ModTime()) {
+		for k, v := range d.mx {
+			fmt.Println(k, v)
+		}
 		return d.mx, nil
 	}
 	d.modTime = fi.ModTime()
 
 	mx := make(map[string]int64)
 
-	for _, lease := range findLeases(f) {
+	for _, ip := range findIPs(f) {
 		for _, r := range d.ranges {
-			if !r.Contains(lease) {
+			if !r.Contains(ip) {
 				continue
 			}
 			mx[r.String()]++
@@ -39,18 +44,17 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 
 	for _, r := range d.ranges {
 		name := r.String()
-		v, ok := mx[name]
+		numOfIps, ok := mx[name]
 		if !ok {
 			mx[name] = 0
 		}
 
-		mx[name+"_utilization"] = 0
-		h := r.Hosts()
-		if !h.IsInt64() {
+		hosts := r.Hosts()
+		if !hosts.IsInt64() {
 			continue
 		}
 
-		mx[name+"_utilization"] = int64(float64(v) * 100 / float64(h.Int64()) * 1000)
+		mx[name+"_utilization"] = int64(calcPercent(numOfIps, hosts) * 1000)
 	}
 
 	d.mx = mx
@@ -58,8 +62,8 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func findLeases(r io.Reader) []net.IP {
-	var leases []net.IP
+func findIPs(r io.Reader) []net.IP {
+	var ips []net.IP
 	s := bufio.NewScanner(r)
 
 	for s.Scan() {
@@ -72,8 +76,12 @@ func findLeases(r io.Reader) []net.IP {
 		if ip == nil {
 			continue
 		}
-		leases = append(leases, ip)
+		ips = append(ips, ip)
 	}
 
-	return leases
+	return ips
+}
+
+func calcPercent(ips int64, hosts *big.Int) float64 {
+	return float64(ips) * 100 / float64(hosts.Int64())
 }
