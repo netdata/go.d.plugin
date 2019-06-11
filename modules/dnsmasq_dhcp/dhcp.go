@@ -2,6 +2,7 @@ package dnsmasq_dhcp
 
 import (
 	"github.com/netdata/go-orchestrator/module"
+	"time"
 )
 
 func init() {
@@ -12,10 +13,18 @@ func init() {
 	module.Register("dnsmasq_dhcp", creator)
 }
 
+const (
+	defaultLeasesPath = "/var/lib/misc/dnsmasq.leases"
+)
+
 // New creates DnsmasqDHCP with default values.
 func New() *DnsmasqDHCP {
+	config := Config{
+		LeasesPath: defaultLeasesPath,
+	}
+
 	return &DnsmasqDHCP{
-		metrics: make(map[string]int64),
+		Config: config,
 	}
 }
 
@@ -35,7 +44,8 @@ type DnsmasqDHCP struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	metrics map[string]int64
+	modTime time.Time
+	pools   []pool
 }
 
 // Cleanup makes cleanup.

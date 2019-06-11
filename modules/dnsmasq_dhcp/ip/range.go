@@ -8,6 +8,26 @@ import (
 	"strings"
 )
 
+func NewRange(s string) *Range {
+	if s == "" {
+		return nil
+	}
+	parts := strings.Split(s, "-")
+	if len(parts) != 2 {
+		return nil
+	}
+
+	r := Range{
+		Start: net.ParseIP(parts[0]),
+		End:   net.ParseIP(parts[1]),
+	}
+	if !IsRangeValid(r) {
+		return nil
+	}
+
+	return &r
+}
+
 // Range represents IP Range.
 type Range struct {
 	Start net.IP
@@ -71,21 +91,4 @@ func V6RangeSize(r Range) *big.Int {
 // V4ToInt converts net.IP to int32.
 func V4ToInt(ip net.IP) int32 {
 	return int32(ip[0])<<24 | int32(ip[1])<<16 | int32(ip[2])<<8 | int32(ip[3])
-}
-
-func ParseRange(s string) *Range {
-	parts := strings.Split(s, ",")
-	if len(parts) != 2 {
-		return nil
-	}
-
-	r := Range{
-		Start: net.ParseIP(parts[0]),
-		End:   net.ParseIP(parts[1]),
-	}
-	if !IsRangeValid(r) {
-		return nil
-	}
-
-	return &r
 }

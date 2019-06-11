@@ -12,6 +12,17 @@ const (
 	defaultV6Mask = "64"
 )
 
+func NewNet(s string) *Net {
+	if s == "" {
+		return nil
+	}
+	_, ipnet, err := net.ParseCIDR(addMaskToIP(s))
+	if err != nil || ipnet == nil {
+		return nil
+	}
+	return &Net{IPNet: ipnet}
+}
+
 // Net represents IP Network.
 type Net struct {
 	*net.IPNet
@@ -31,7 +42,7 @@ func (n Net) Type() Type {
 // Hosts returns number of hosts addresses in the Net.
 func (n Net) Hosts() *big.Int {
 	var (
-		ones, bits = n.IPNet.Mask.Size()
+		ones, bits = n.Mask.Size()
 		zero       = big.NewInt(0)
 		hosts      = big.NewInt(1)
 		two        = big.NewInt(2)
@@ -54,15 +65,6 @@ func (n Net) Hosts() *big.Int {
 	case V6Type:
 		return hosts
 	}
-}
-
-func ParseNet(s string) *Net {
-	_, ipnet, err := net.ParseCIDR(addMaskToIP(s))
-	if err != nil || ipnet == nil {
-		return nil
-	}
-
-	return &Net{IPNet: ipnet}
 }
 
 func addMaskToIP(s string) string {
