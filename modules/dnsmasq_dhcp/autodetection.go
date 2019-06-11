@@ -79,7 +79,7 @@ func findDHCPRanges(filePath string) ([]string, error) {
 		return nil, fmt.Errorf("'%s' is not a regular file", filePath)
 	}
 
-	var ipRanges []string
+	var ranges []string
 	s := bufio.NewScanner(f)
 
 	for s.Scan() {
@@ -87,10 +87,10 @@ func findDHCPRanges(filePath string) ([]string, error) {
 		if !strings.HasPrefix(line, "dhcp-range") {
 			continue
 		}
-		ipRanges = append(ipRanges, line)
+		ranges = append(ranges, line)
 	}
 
-	return ipRanges, nil
+	return ranges, nil
 }
 
 /*
@@ -108,7 +108,7 @@ Examples:
 */
 var reDHCPRange = regexp.MustCompile(`(?:[=,])([0-9a-f.:]+),([0-9a-f.:]+)`)
 
-// parseDHCPRangeLine expects lines that started  with 'dhcp-range='
+// parseDHCPRangeLine expects lines that starts with 'dhcp-range='
 func parseDHCPRangeLine(s string) (r string) {
 	if strings.Contains(s, "ra-stateless") {
 		return

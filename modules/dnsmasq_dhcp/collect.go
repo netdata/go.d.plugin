@@ -2,7 +2,7 @@ package dnsmasq_dhcp
 
 import (
 	"bufio"
-	"fmt"
+	"io"
 	"net"
 	"os"
 	"strings"
@@ -20,41 +20,60 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	_ = fi
-
-	//if d.modTime.Equal(fi.ModTime()) {
-	//	return nil, nil
-	//}
-
-	s := bufio.NewScanner(f)
-	for s.Scan() {
-		d.collectLine(s.Text())
+	if d.modTime.Equal(fi.ModTime()) {
+		return d.mx, nil
 	}
+	d.modTime = fi.ModTime()
 
-	for _, pool := range d.pools {
-		fmt.Println(pool, pool.Hosts(), pool.NumOfLeases(), pool.Utilization())
-	}
+	mx := make(map[string]int64)
 
-	return nil, nil
-}
-
-func (d *DnsmasqDHCP) collectLine(line string) {
-	// 1560248031 08:00:27:61:3c:ee 1.1.2.27 debian8 *
-	// 1560252212 660684014 1234::20b * 00:01:00:01:24:90:cf:a3:08:00:27:61:3c:ee
-
-	parts := strings.Fields(line)
-	if len(parts) != 5 {
-		return
-	}
-
-	ip := net.ParseIP(parts[2])
-	if ip == nil {
-		return
-	}
-
-	for _, pool := range d.pools {
-		if pool.Contains(ip) {
-			pool.Lease(ip)
+	for _, lease := range findLeases(f) {
+		for _, r := range d.ranges {
+			if !r.Contains(lease) {
+				continue
+			}
+			mx[r.String()]++
+			break
 		}
 	}
+
+	for _, r := range d.ranges {
+		name := r.String()
+		v, ok := mx[name]
+		if !ok {
+			mx[name] = 0
+		}
+
+		mx[name+"_utilization"] = 0
+		h := r.Hosts()
+		if !h.IsInt64() {
+			continue
+		}
+
+		mx[name+"_utilization"] = int64(float64(v) * 100 / float64(h.Int64()) * 1000)
+	}
+
+	d.mx = mx
+
+	return mx, nil
+}
+
+func findLeases(r io.Reader) []net.IP {
+	var leases []net.IP
+	s := bufio.NewScanner(r)
+
+	for s.Scan() {
+		parts := strings.Fields(s.Text())
+		if len(parts) != 5 {
+			continue
+		}
+
+		ip := net.ParseIP(parts[2])
+		if ip == nil {
+			continue
+		}
+		leases = append(leases, ip)
+	}
+
+	return leases
 }

@@ -8,6 +8,15 @@ import (
 	"strings"
 )
 
+// Type is type of Range.
+type Type int
+
+const (
+	InvalidType Type = iota
+	V4Type
+	V6Type
+)
+
 func NewRange(s string) *Range {
 	if s == "" {
 		return nil
@@ -18,8 +27,8 @@ func NewRange(s string) *Range {
 	}
 
 	r := Range{
-		Start: net.ParseIP(parts[0]),
-		End:   net.ParseIP(parts[1]),
+		start: net.ParseIP(parts[0]),
+		end:   net.ParseIP(parts[1]),
 	}
 	if !IsRangeValid(r) {
 		return nil
@@ -30,31 +39,31 @@ func NewRange(s string) *Range {
 
 // Range represents IP Range.
 type Range struct {
-	Start net.IP
-	End   net.IP
+	start net.IP
+	end   net.IP
 }
 
 // String returns Range string representation.
-func (r Range) String() string { return fmt.Sprintf("%s-%s", r.Start, r.End) }
+func (r Range) String() string { return fmt.Sprintf("%s-%s", r.start, r.end) }
 
 // Type returns Range IP type.
 func (r Range) Type() Type {
-	if r.Start.To4() != nil && r.End.To4() != nil {
+	if r.start.To4() != nil && r.end.To4() != nil {
 		return V4Type
 	}
-	if r.Start.To16() != nil && r.End.To16() != nil {
+	if r.start.To16() != nil && r.end.To16() != nil {
 		return V6Type
 	}
-	return UnknownType
+	return InvalidType
 }
 
 // Contains reports whether net.IP is within Range.
 func (r Range) Contains(ip net.IP) bool {
-	inLower := bytes.Compare(ip, r.Start) >= 0
+	inLower := bytes.Compare(ip, r.start) >= 0
 	if !inLower {
 		return false
 	}
-	inUpper := bytes.Compare(ip, r.End) <= 0
+	inUpper := bytes.Compare(ip, r.end) <= 0
 	return inLower && inUpper
 }
 
@@ -72,18 +81,18 @@ func (r Range) Hosts() *big.Int {
 
 // IsRangeValid reports if Range is valid.
 func IsRangeValid(r Range) bool {
-	return r.Type() != UnknownType && bytes.Compare(r.End, r.Start) >= 0
+	return r.Type() != InvalidType && bytes.Compare(r.end, r.start) >= 0
 }
 
 // V4RangeSize return ipv4 Range size.
 func V4RangeSize(r Range) *big.Int {
-	return big.NewInt(int64(V4ToInt(r.End)) - int64(V4ToInt(r.Start)) + 1)
+	return big.NewInt(int64(V4ToInt(r.end)) - int64(V4ToInt(r.start)) + 1)
 }
 
 // V6RangeSize return ipv6 Range size.
 func V6RangeSize(r Range) *big.Int {
 	return big.NewInt(0).Add(
-		big.NewInt(0).Sub(big.NewInt(0).SetBytes(r.End), big.NewInt(0).SetBytes(r.Start)),
+		big.NewInt(0).Sub(big.NewInt(0).SetBytes(r.end), big.NewInt(0).SetBytes(r.start)),
 		big.NewInt(1),
 	)
 }

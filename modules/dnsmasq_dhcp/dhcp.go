@@ -31,6 +31,7 @@ func New() *DnsmasqDHCP {
 
 	return &DnsmasqDHCP{
 		Config: config,
+		mx:     make(map[string]int64),
 	}
 }
 
@@ -48,7 +49,8 @@ type DnsmasqDHCP struct {
 
 	// leases db modification time
 	modTime time.Time
-	pools   []*ip.Pool
+	ranges  []*ip.Range
+	mx      map[string]int64
 }
 
 // Cleanup makes cleanup.
@@ -62,16 +64,15 @@ func (d *DnsmasqDHCP) Init() bool {
 		return false
 	}
 
-	for _, r := range ranges {
-		pool := ip.NewPool(r)
-		if pool == nil {
-			d.Errorf("failed to parse %s", r)
-			return false
+	for _, raw := range ranges {
+		r := ip.NewRange(raw)
+		if r == nil {
+			continue
 		}
-		d.pools = append(d.pools, pool)
+		d.ranges = append(d.ranges, r)
 	}
 
-	return len(d.pools) > 0
+	return len(d.ranges) > 0
 }
 
 // Check makes check.
