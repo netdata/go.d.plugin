@@ -24,8 +24,10 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 
 	notChanged := d.modTime.Equal(fi.ModTime())
 	if notChanged {
+		d.Debug("leases db file modification time was not changed, returning old data")
 		return d.mx, nil
 	}
+	d.Debug("leases db file modification time was is changed, reading it")
 
 	d.modTime = fi.ModTime()
 	d.mx = d.collectRangesStats(findIPs(f))

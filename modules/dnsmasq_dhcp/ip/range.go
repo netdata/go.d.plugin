@@ -60,8 +60,8 @@ func (r Range) String() string {
 
 // Family returns IP Range family.
 func (r Range) Family() Family {
-	start := ipFamily(r.Start)
-	end := ipFamily(r.End)
+	start := ipAddressFamily(r.Start)
+	end := ipAddressFamily(r.End)
 	if start != end || start == InvalidFamily {
 		return InvalidFamily
 	}
@@ -70,12 +70,8 @@ func (r Range) Family() Family {
 
 // Contains reports whether net.IP is within Range.
 func (r Range) Contains(ip net.IP) bool {
-	inLower := bytes.Compare(ip, r.Start) >= 0
-	if !inLower {
-		return false
-	}
-	inUpper := bytes.Compare(ip, r.End) <= 0
-	return inLower && inUpper
+	// in [lower:upper]
+	return bytes.Compare(ip, r.Start) >= 0 && bytes.Compare(ip, r.End) <= 0
 }
 
 // Hosts returns number of hosts addresses in the Range.
@@ -91,8 +87,8 @@ func (r Range) Hosts() *big.Int {
 	}
 }
 
-// ipFamily return IP address family.
-func ipFamily(ip net.IP) Family {
+// ipAddressFamily returns IP address family.
+func ipAddressFamily(ip net.IP) Family {
 	if ip.To16() == nil {
 		return InvalidFamily
 	}
@@ -107,12 +103,12 @@ func isRangeValid(r Range) bool {
 	return r.Family() != InvalidFamily && bytes.Compare(r.End, r.Start) >= 0
 }
 
-// v4RangeSize return ipv4 Range size.
+// v4RangeSize returns ipv4 Range size.
 func v4RangeSize(r Range) *big.Int {
 	return big.NewInt(v4ToInt(r.End) - v4ToInt(r.Start) + 1)
 }
 
-// v6RangeSize return ipv6 Range size.
+// v6RangeSize returns ipv6 Range size.
 func v6RangeSize(r Range) *big.Int {
 	return big.NewInt(0).Add(
 		big.NewInt(0).Sub(big.NewInt(0).SetBytes(r.End), big.NewInt(0).SetBytes(r.Start)),

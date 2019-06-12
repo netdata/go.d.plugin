@@ -1,6 +1,7 @@
 package dnsmasq_dhcp
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -44,6 +45,14 @@ type Config struct {
 	ConfDir    string `yaml:"conf_dir"`
 }
 
+func (c Config) String() string {
+	return fmt.Sprintf("leases_path: [%s], conf_path: [%s], conf_dir: [%s]",
+		c.LeasesPath,
+		c.ConfPath,
+		c.ConfDir,
+	)
+}
+
 // DnsmasqDHCP DnsmasqDHCP module.
 type DnsmasqDHCP struct {
 	module.Base
@@ -60,6 +69,8 @@ func (DnsmasqDHCP) Cleanup() {}
 
 // Init makes initialization.
 func (d *DnsmasqDHCP) Init() bool {
+	d.Infof("start config : %s", d.Config)
+
 	ranges, err := d.findDHCPRanges()
 	if err != nil {
 		d.Error(err)
@@ -69,16 +80,16 @@ func (d *DnsmasqDHCP) Init() bool {
 	for _, raw := range ranges {
 		r := ip.ParseRange(raw)
 		if r == nil {
+			d.Warningf("error on parsing '%s' dhcp range, skipping it", raw)
 			continue
 		}
 		d.ranges = append(d.ranges, r)
 	}
-
 	return len(d.ranges) > 0
 }
 
 // Check makes check.
-func (DnsmasqDHCP) Check() bool { return true }
+func (d *DnsmasqDHCP) Check() bool { return len(d.Collect()) > 0 }
 
 // Charts creates Charts.
 func (d DnsmasqDHCP) Charts() *Charts { return d.charts() }

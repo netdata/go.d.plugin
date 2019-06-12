@@ -2,7 +2,6 @@ package dnsmasq_dhcp
 
 import (
 	"fmt"
-
 	"github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp/ip"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -50,30 +49,27 @@ func (d DnsmasqDHCP) charts() *Charts {
 	cs := charts.Copy()
 
 	for _, r := range d.ranges {
-		err := addRangeToCharts(cs, r)
-		if err != nil {
-			d.Error(err)
-			return nil
-		}
+		addRangeToCharts(cs, r)
 	}
 
 	rv := &Charts{}
 
 	for _, c := range *cs {
-		if len(c.Dims) > 0 {
-			_ = rv.Add(c)
+		if len(c.Dims) == 0 {
+			continue
 		}
+		panicIf(rv.Add(c))
 	}
 
 	return rv
 }
 
-func addRangeToCharts(cs *Charts, r ip.IRange) error {
+func addRangeToCharts(cs *Charts, r ip.IRange) {
 	var prefix string
 
 	switch r.Family() {
 	default:
-		return fmt.Errorf("invalid ip range '%s'", r)
+		panic(fmt.Sprintf("invalid ip range '%s'", r))
 	case ip.V4Family:
 		prefix = "ipv4"
 	case ip.V6Family:
@@ -81,16 +77,13 @@ func addRangeToCharts(cs *Charts, r ip.IRange) error {
 	}
 
 	name := r.String()
+	panicIf(cs.Get(prefix + "_active_leases").AddDim(&Dim{ID: name}))
+	panicIf(cs.Get(prefix + "_utilization").AddDim(&Dim{ID: name + "_percent", Name: name}))
+}
 
-	err := cs.Get(prefix + "_active_leases").AddDim(&Dim{ID: name})
-	if err != nil {
-		return fmt.Errorf("error during adding dimension : %v", err)
+func panicIf(err error) {
+	if err == nil {
+		return
 	}
-
-	err = cs.Get(prefix + "_utilization").AddDim(&Dim{ID: name + "_percent", Name: name})
-	if err != nil {
-		return fmt.Errorf("error during adding dimension : %v", err)
-	}
-
-	return nil
+	panic(err)
 }
