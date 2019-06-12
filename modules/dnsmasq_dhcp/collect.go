@@ -2,7 +2,6 @@ package dnsmasq_dhcp
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"math/big"
 	"net"
@@ -22,17 +21,21 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	if d.modTime.Equal(fi.ModTime()) {
-		for k, v := range d.mx {
-			fmt.Println(k, v)
-		}
+	notChanged := d.modTime.Equal(fi.ModTime())
+	if notChanged {
 		return d.mx, nil
 	}
-	d.modTime = fi.ModTime()
 
+	d.modTime = fi.ModTime()
+	d.mx = d.collectRangesStats(findIPs(f))
+
+	return d.mx, nil
+}
+
+func (d *DnsmasqDHCP) collectRangesStats(ips []net.IP) map[string]int64 {
 	mx := make(map[string]int64)
 
-	for _, ip := range findIPs(f) {
+	for _, ip := range ips {
 		for _, r := range d.ranges {
 			if !r.Contains(ip) {
 				continue
@@ -54,15 +57,18 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 			continue
 		}
 
-		mx[name+"_utilization"] = int64(calcPercent(numOfIps, hosts) * 1000)
+		mx[name+"_percent"] = int64(calcPercent(numOfIps, hosts) * 1000)
 	}
 
-	d.mx = mx
-
-	return mx, nil
+	return mx
 }
 
 func findIPs(r io.Reader) []net.IP {
+	/*
+		1560300536 08:00:27:61:3c:ee 2.2.2.3 debian8 *
+		duid 00:01:00:01:24:90:cf:5b:08:00:27:61:2e:2c
+		1560300414 660684014 1234::20b * 00:01:00:01:24:90:cf:a3:08:00:27:61:3c:ee
+	*/
 	var ips []net.IP
 	s := bufio.NewScanner(r)
 
@@ -83,5 +89,8 @@ func findIPs(r io.Reader) []net.IP {
 }
 
 func calcPercent(ips int64, hosts *big.Int) float64 {
+	if ips == 0 || hosts.Int64() == 0 {
+		return 0
+	}
 	return float64(ips) * 100 / float64(hosts.Int64())
 }

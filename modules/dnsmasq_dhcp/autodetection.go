@@ -25,7 +25,7 @@ func (d *DnsmasqDHCP) findDHCPRanges() ([]string, error) {
 	var ranges []string
 
 	for _, config := range configs {
-		d.Debugf("reading from %s", config)
+		d.Debugf("reading %s", config)
 		rs, err := findDHCPRanges(config)
 		if err != nil {
 			return nil, err

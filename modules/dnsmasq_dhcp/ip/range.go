@@ -30,7 +30,7 @@ func NewRange(s string) *Range {
 		start: net.ParseIP(parts[0]),
 		end:   net.ParseIP(parts[1]),
 	}
-	if !IsRangeValid(r) {
+	if !isRangeValid(r) {
 		return nil
 	}
 
@@ -44,7 +44,9 @@ type Range struct {
 }
 
 // String returns Range string representation.
-func (r Range) String() string { return fmt.Sprintf("%s-%s", r.start, r.end) }
+func (r Range) String() string {
+	return fmt.Sprintf("%s-%s", r.start, r.end)
+}
 
 // Type returns Range IP type.
 func (r Range) Type() Type {
@@ -73,32 +75,32 @@ func (r Range) Hosts() *big.Int {
 	default:
 		return big.NewInt(0)
 	case V4Type:
-		return V4RangeSize(r)
+		return v4RangeSize(r)
 	case V6Type:
-		return V6RangeSize(r)
+		return v6RangeSize(r)
 	}
 }
 
-// IsRangeValid reports if Range is valid.
-func IsRangeValid(r Range) bool {
+// isRangeValid reports if the Range is valid.
+func isRangeValid(r Range) bool {
 	return r.Type() != InvalidType && bytes.Compare(r.end, r.start) >= 0
 }
 
-// V4RangeSize return ipv4 Range size.
-func V4RangeSize(r Range) *big.Int {
-	return big.NewInt(int64(V4ToInt(r.end)) - int64(V4ToInt(r.start)) + 1)
+// v4RangeSize return ipv4 Range size.
+func v4RangeSize(r Range) *big.Int {
+	return big.NewInt(int64(v4ToInt(r.end)) - int64(v4ToInt(r.start)) + 1)
 }
 
-// V6RangeSize return ipv6 Range size.
-func V6RangeSize(r Range) *big.Int {
+// v6RangeSize return ipv6 Range size.
+func v6RangeSize(r Range) *big.Int {
 	return big.NewInt(0).Add(
 		big.NewInt(0).Sub(big.NewInt(0).SetBytes(r.end), big.NewInt(0).SetBytes(r.start)),
 		big.NewInt(1),
 	)
 }
 
-// V4ToInt converts net.IP to int32.
-func V4ToInt(ip net.IP) int32 {
+// v4ToInt converts net.IP to int32.
+func v4ToInt(ip net.IP) int32 {
 	ip = ip.To4()
 	return int32(ip[0])<<24 | int32(ip[1])<<16 | int32(ip[2])<<8 | int32(ip[3])
 }
