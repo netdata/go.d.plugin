@@ -51,13 +51,7 @@ func (d *DnsmasqDHCP) collectRangesStats(ips []net.IP) map[string]int64 {
 		if !ok {
 			mx[name] = 0
 		}
-
-		hosts := r.Hosts()
-		if !hosts.IsInt64() {
-			continue
-		}
-
-		mx[name+"_percent"] = int64(calcPercent(numOfIps, hosts) * 1000)
+		mx[name+"_percent"] = int64(calcPercent(numOfIps, r.Hosts()) * 1000)
 	}
 
 	return mx
@@ -89,8 +83,9 @@ func findIPs(r io.Reader) []net.IP {
 }
 
 func calcPercent(ips int64, hosts *big.Int) float64 {
-	if ips == 0 || hosts.Int64() == 0 {
+	h := hosts.Int64()
+	if ips == 0 || h == 0 || !hosts.IsInt64() {
 		return 0
 	}
-	return float64(ips) * 100 / float64(hosts.Int64())
+	return float64(ips) * 100 / float64(h)
 }

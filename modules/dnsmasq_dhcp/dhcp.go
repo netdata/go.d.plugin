@@ -51,7 +51,7 @@ type DnsmasqDHCP struct {
 
 	// leases db modification time
 	modTime time.Time
-	ranges  []*ip.Range
+	ranges  []ip.IRange
 	mx      map[string]int64
 }
 
@@ -67,7 +67,7 @@ func (d *DnsmasqDHCP) Init() bool {
 	}
 
 	for _, raw := range ranges {
-		r := ip.NewRange(raw)
+		r := ip.ParseRange(raw)
 		if r == nil {
 			continue
 		}
