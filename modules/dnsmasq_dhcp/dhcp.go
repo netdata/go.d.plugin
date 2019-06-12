@@ -17,8 +17,8 @@ func init() {
 }
 
 const (
-	//defaultLeasesPath = "/var/lib/misc/dnsmasq.leases"
-	defaultLeasesPath = "/home/ilyam/leases"
+	//defaultLeasesPath = "/var/lib/misc/dnsmasq.dnsmasq.leases"
+	defaultLeasesPath = "/home/ilyam/dnsmasq.leases"
 	defaultConfPath   = "/home/ilyam/dnsmasq.conf"
 	defaultConfDir    = "/home/ilyam/dnsmasq.d"
 )
@@ -49,7 +49,7 @@ type DnsmasqDHCP struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	// leases db modification time
+	// dnsmasq.leases db modification time
 	modTime time.Time
 	ranges  []ip.IRange
 	mx      map[string]int64

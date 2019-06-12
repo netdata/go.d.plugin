@@ -2,7 +2,9 @@ package dnsmasq_dhcp
 
 import (
 	"bufio"
+	"fmt"
 	"io"
+	"math"
 	"math/big"
 	"net"
 	"os"
@@ -23,6 +25,7 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 
 	notChanged := d.modTime.Equal(fi.ModTime())
 	if notChanged {
+		fmt.Println(d.mx)
 		return d.mx, nil
 	}
 
@@ -51,7 +54,7 @@ func (d *DnsmasqDHCP) collectRangesStats(ips []net.IP) map[string]int64 {
 		if !ok {
 			mx[name] = 0
 		}
-		mx[name+"_percent"] = int64(calcPercent(numOfIps, r.Hosts()) * 1000)
+		mx[name+"_percent"] = int64(math.Round(calcPercent(numOfIps, r.Hosts())))
 	}
 
 	return mx
