@@ -2,7 +2,6 @@ package dnsmasq_dhcp
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"math"
 	"math/big"
@@ -25,7 +24,6 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 
 	notChanged := d.modTime.Equal(fi.ModTime())
 	if notChanged {
-		fmt.Println(d.mx)
 		return d.mx, nil
 	}
 

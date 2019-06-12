@@ -18,9 +18,9 @@ func init() {
 
 const (
 	//defaultLeasesPath = "/var/lib/misc/dnsmasq.dnsmasq.leases"
-	defaultLeasesPath = "/home/ilyam/dnsmasq.leases"
-	defaultConfPath   = "/home/ilyam/dnsmasq.conf"
-	defaultConfDir    = "/home/ilyam/dnsmasq.d"
+	defaultLeasesPath = "/opt/other/dnsmasq/leases"
+	defaultConfPath   = "/opt/other/dnsmasq/dnsmasq.conf"
+	defaultConfDir    = "/opt/other/dnsmasq/dnsmasq.d"
 )
 
 // New creates DnsmasqDHCP with default values.
@@ -81,7 +81,7 @@ func (d *DnsmasqDHCP) Init() bool {
 func (DnsmasqDHCP) Check() bool { return true }
 
 // Charts creates Charts.
-func (DnsmasqDHCP) Charts() *Charts { return charts.Copy() }
+func (d DnsmasqDHCP) Charts() *Charts { return d.charts() }
 
 // Collect collects metrics.
 func (d *DnsmasqDHCP) Collect() map[string]int64 {
