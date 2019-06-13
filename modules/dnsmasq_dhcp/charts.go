@@ -17,69 +17,45 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "ipv4_active_leases",
-		Title: "DHCP Range Active Leases",
-		Units: "active leases",
-		Fam:   "ipv4",
-		Ctx:   "dhcp_range_active_leases",
-	},
-	{
-		ID:    "ipv4_utilization",
+		ID:    "%s_utilization",
 		Title: "DHCP Range Utilization",
 		Units: "percentage",
-		Fam:   "ipv4",
 		Ctx:   "dhcp_range_utilization",
 	},
 	{
-		ID:    "ipv6_active_leases",
-		Title: "DHCP Range Active Leases",
-		Units: "active leases",
-		Fam:   "ipv6",
-		Ctx:   "dhcp_range_active_leases",
-	},
-	{
-		ID:    "ipv6_utilization",
-		Title: "DHCP Range Utilization",
-		Units: "percentage",
-		Fam:   "ipv6",
-		Ctx:   "dhcp_range_utilization",
+		ID:    "%s_allocated_leases",
+		Title: "DHCP Range Allocated Leases",
+		Units: "leases",
+		Ctx:   "dhcp_range_allocated_leases",
 	},
 }
 
 func (d DnsmasqDHCP) charts() *Charts {
-	cs := charts.Copy()
+	cs := &Charts{}
 
 	for _, r := range d.ranges {
-		addRangeToCharts(cs, r)
+		panicIf(cs.Add(*addRangeCharts(r)...))
 	}
 
-	rv := &Charts{}
-
-	for _, c := range *cs {
-		if len(c.Dims) == 0 {
-			continue
-		}
-		panicIf(rv.Add(c))
-	}
-
-	return rv
+	return cs
 }
 
-func addRangeToCharts(cs *Charts, r ip.IRange) {
-	var prefix string
-
-	switch r.Family() {
-	default:
-		panic(fmt.Sprintf("invalid ip range '%s'", r))
-	case ip.V4Family:
-		prefix = "ipv4"
-	case ip.V6Family:
-		prefix = "ipv6"
-	}
+func addRangeCharts(r ip.IRange) *Charts {
+	cs := charts.Copy()
 
 	name := r.String()
-	panicIf(cs.Get(prefix + "_active_leases").AddDim(&Dim{ID: name}))
-	panicIf(cs.Get(prefix + "_utilization").AddDim(&Dim{ID: name + "_percentage", Name: name}))
+
+	c := cs.Get("%s_utilization")
+	c.ID = fmt.Sprintf(c.ID, name)
+	c.Fam = name
+	panicIf(c.AddDim(&Dim{ID: name + "_percentage", Name: "used"}))
+
+	c = cs.Get("%s_allocated_leases")
+	c.ID = fmt.Sprintf(c.ID, name)
+	c.Fam = name
+	panicIf(c.AddDim(&Dim{ID: name, Name: "allocated"}))
+
+	return cs
 }
 
 func panicIf(err error) {

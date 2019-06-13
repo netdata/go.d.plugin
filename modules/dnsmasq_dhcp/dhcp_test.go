@@ -33,6 +33,9 @@ func TestDnsmasqDHCP_Init(t *testing.T) {
 
 func TestDnsmasqDHCP_InitNG(t *testing.T) {
 	job := New()
+	job.LeasesPath += "_"
+	job.ConfPath += "_"
+	job.ConfDir += "_"
 
 	assert.False(t, job.Init())
 }
