@@ -2,15 +2,11 @@
 
 This module will monitor [`Dnsmasq DHCP`](http://www.thekelleys.org.uk/dnsmasq/doc.html) leases database.
 
-It produces the following set of charts for both ipv4 and ipv6 dhcp-ranges:
+It produces the following set of charts for every dhcp-range:
 
-1. **DHCP Range Active Leases** in active leases
-  * per dhcp-range
+1. **DHCP Range Allocated Leases** in leases
 
-
-2. **DHCP Range Utilization** in percentage per
-  * per dhcp-range 
-
+2. **DHCP Range Utilization** in percentage
 
 ### configuration
 
