@@ -26,7 +26,7 @@ var charts = Charts{
 		ID:    "%s_allocated_leases",
 		Title: "DHCP Range Allocated Leases",
 		Units: "leases",
-		Ctx:   "dhcp_range_active_leases",
+		Ctx:   "dhcp_range_allocated_leases",
 	},
 }
 
