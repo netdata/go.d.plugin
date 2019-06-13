@@ -2,6 +2,7 @@ package dnsmasq_dhcp
 
 import (
 	"fmt"
+
 	"github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp/ip"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -78,7 +79,7 @@ func addRangeToCharts(cs *Charts, r ip.IRange) {
 
 	name := r.String()
 	panicIf(cs.Get(prefix + "_active_leases").AddDim(&Dim{ID: name}))
-	panicIf(cs.Get(prefix + "_utilization").AddDim(&Dim{ID: name + "_percent", Name: name}))
+	panicIf(cs.Get(prefix + "_utilization").AddDim(&Dim{ID: name + "_percentage", Name: name}))
 }
 
 func panicIf(err error) {

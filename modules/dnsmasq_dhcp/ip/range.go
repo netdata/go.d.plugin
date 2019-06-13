@@ -24,6 +24,14 @@ type IRange interface {
 	fmt.Stringer
 }
 
+const separator = " "
+
+var replacer = strings.NewReplacer(
+	separator, "",
+	",", separator,
+	"-", separator,
+)
+
 // ParseRange parses s as an IP Range, returning the result.
 // If s is not a valid textual representation of an IP Range,
 // ParseRange returns nil.
@@ -31,14 +39,24 @@ func ParseRange(s string) IRange {
 	if s == "" {
 		return nil
 	}
-	parts := strings.Split(s, "-")
-	if len(parts) != 2 {
+
+	var start, end string
+
+	s = replacer.Replace(s)
+	parts := strings.Split(s, separator)
+
+	switch len(parts) {
+	default:
 		return nil
+	case 1:
+		start, end = parts[0], parts[0]
+	case 2:
+		start, end = parts[0], parts[1]
 	}
 
 	r := Range{
-		Start: net.ParseIP(parts[0]),
-		End:   net.ParseIP(parts[1]),
+		Start: net.ParseIP(start),
+		End:   net.ParseIP(end),
 	}
 	if !isRangeValid(r) {
 		return nil

@@ -27,7 +27,7 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 		d.Debug("leases db file modification time was not changed, returning old data")
 		return d.mx, nil
 	}
-	d.Debug("leases db file modification time was is changed, reading it")
+	d.Debug("leases db file modification time is changed, reading it")
 
 	d.modTime = fi.ModTime()
 	d.mx = d.collectRangesStats(findIPs(f))
@@ -54,7 +54,7 @@ func (d *DnsmasqDHCP) collectRangesStats(ips []net.IP) map[string]int64 {
 		if !ok {
 			mx[name] = 0
 		}
-		mx[name+"_percent"] = int64(math.Round(calcPercent(numOfIps, r.Hosts())))
+		mx[name+"_percentage"] = int64(math.Round(calcPercent(numOfIps, r.Hosts())))
 	}
 
 	return mx

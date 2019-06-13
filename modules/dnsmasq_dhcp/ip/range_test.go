@@ -148,8 +148,8 @@ func Test_isRangeValid(t *testing.T) {
 
 func TestParseRange(t *testing.T) {
 	assert.Nil(t, ParseRange("not ip address"))
-	assert.Nil(t, ParseRange("1.1.1.1"))
-	assert.Nil(t, ParseRange("1234::1,1234::2"))
+	assert.NotNil(t, ParseRange("1234::1, 1234::2"))
+	assert.NotNil(t, ParseRange("1.1.1.1"))
 	assert.NotNil(t, ParseRange("1.1.1.1-1.1.1.2"))
 	assert.NotNil(t, ParseRange("1234::1-1234::2"))
 }
