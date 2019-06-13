@@ -84,7 +84,13 @@ func (d *DnsmasqDHCP) Init() bool {
 		}
 		d.ranges = append(d.ranges, r)
 	}
-	return len(d.ranges) > 0
+
+	if len(d.ranges) == 0 {
+		d.Info("haven't found any dhcp-ranges")
+		return false
+	}
+
+	return true
 }
 
 // Check makes check.
