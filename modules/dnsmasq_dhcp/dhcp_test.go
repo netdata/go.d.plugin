@@ -34,7 +34,7 @@ func TestDnsmasqDHCP_Init(t *testing.T) {
 func TestDnsmasqDHCP_InitNG(t *testing.T) {
 	job := New()
 
-	assert.True(t, job.Init())
+	assert.False(t, job.Init())
 }
 
 func TestDnsmasqDHCP_Check(t *testing.T) {
