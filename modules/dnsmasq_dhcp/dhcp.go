@@ -18,7 +18,7 @@ func init() {
 }
 
 const (
-	defaultLeasesPath = "/var/lib/misc/dnsmasq/dnsmasq.leases"
+	defaultLeasesPath = "/var/lib/misc/dnsmasq.leases"
 	defaultConfPath   = "/etc/dnsmasq.conf"
 	defaultConfDir    = "/etc/dnsmasq.d"
 )
