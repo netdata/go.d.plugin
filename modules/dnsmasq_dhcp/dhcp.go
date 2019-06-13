@@ -18,10 +18,9 @@ func init() {
 }
 
 const (
-	//defaultLeasesPath = "/var/lib/misc/dnsmasq.dnsmasq.leases"
-	defaultLeasesPath = "/opt/other/dnsmasq/leases"
-	defaultConfPath   = "/opt/other/dnsmasq/dnsmasq.conf"
-	defaultConfDir    = "/opt/other/dnsmasq/dnsmasq.d"
+	defaultLeasesPath = "/var/lib/misc/dnsmasq/dnsmasq.leases"
+	defaultConfPath   = "/etc/dnsmasq.conf"
+	defaultConfDir    = "/etc/dnsmasq.d"
 )
 
 // New creates DnsmasqDHCP with default values.
