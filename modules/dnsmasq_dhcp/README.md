@@ -13,7 +13,7 @@ It produces the following set of charts for every dhcp-range:
 Module automatically detects all configured dhcp-ranges reading `dnsmasq` configuration files.
 
 By default it uses:
- - `/var/lib/misc/dnsmasq.dnsmasq.leases` to read leases.
+ - `/var/lib/misc/dnsmasq.leases` to read leases.
  - `/etc/dnsmasq.conf` to detect dhcp-ranges.
  - `/etc/dnsmasq.d` to find additional configurations.
 
@@ -22,7 +22,7 @@ Here is an example:
 ```yaml
 jobs:
   - name         : dnsmasq_dhcp
-    leases_path  : /var/lib/misc/dnsmasq.dnsmasq.leases
+    leases_path  : /var/lib/misc/dnsmasq.leases
     conf_path    : /etc/dnsmasq.conf
     conf_dir     : /etc/dnsmasq.d
 ```
