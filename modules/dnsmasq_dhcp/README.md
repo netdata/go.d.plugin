@@ -14,12 +14,12 @@ It produces the following set of charts for both ipv4 and ipv6 dhcp-ranges:
 
 ### configuration
 
-Module automatically detects all configured dhcp-ranges reading dnsmasq configuration files.
+Module automatically detects all configured dhcp-ranges reading `dnsmasq` configuration files.
 
 By default it uses:
- - `/var/lib/misc/dnsmasq.dnsmasq.leases` to read leases
+ - `/var/lib/misc/dnsmasq.dnsmasq.leases` to read leases.
  - `/etc/dnsmasq.conf` to detect dhcp-ranges.
- - `/etc/dnsmasq.d` to find all additional configurations to detect dhcp-ranges.
+ - `/etc/dnsmasq.d` to find additional configurations.
 
 Here is an example:
 
