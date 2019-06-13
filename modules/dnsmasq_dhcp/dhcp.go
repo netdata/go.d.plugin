@@ -2,6 +2,7 @@ package dnsmasq_dhcp
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -85,10 +86,18 @@ func (d *DnsmasqDHCP) Init() bool {
 		d.ranges = append(d.ranges, r)
 	}
 
+	// orders: ipv4, ipv6
+	sort.Slice(
+		d.ranges,
+		func(i, j int) bool { return d.ranges[i].Family() < d.ranges[j].Family() },
+	)
+
 	if len(d.ranges) == 0 {
 		d.Info("haven't found any dhcp-ranges")
 		return false
 	}
+
+	d.Infof("using dhcp-ranges : %v", d.ranges)
 
 	return true
 }
