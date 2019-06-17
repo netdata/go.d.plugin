@@ -18,41 +18,41 @@ func (p *Pihole) collect() (map[string]int64, error) {
 	rmx := p.getAllMetrics()
 	mx := make(map[string]int64)
 
-	p.collectSummary(mx, rmx.summary)
-	p.collectQueryTypes(mx, rmx.queryTypes)
-	p.collectForwardDestination(mx, rmx.forwardDestinations)
-	p.collectTopClients(mx, rmx.topClients)
-	p.collectTopItems(mx, rmx.topItems)
+	p.collectSummary(mx, rmx)
+	p.collectQueryTypes(mx, rmx)
+	p.collectForwardDestination(mx, rmx)
+	p.collectTopClients(mx, rmx)
+	p.collectTopItems(mx, rmx)
 
 	return mx, nil
 }
 
-func (p *Pihole) collectSummary(mx map[string]int64, summary *client.SummaryRaw) {
-	if summary == nil {
+func (p *Pihole) collectSummary(mx map[string]int64, rmx *rawMetrics) {
+	if rmx.summary == nil {
 		return
 	}
 }
 
-func (p *Pihole) collectQueryTypes(mx map[string]int64, queryTypes *client.QueryTypes) {
-	if queryTypes == nil {
+func (p *Pihole) collectQueryTypes(mx map[string]int64, rmx *rawMetrics) {
+	if rmx.queryTypes == nil {
 		return
 	}
 }
 
-func (p *Pihole) collectForwardDestination(mx map[string]int64, forwardDest *client.ForwardDestinations) {
-	if forwardDest == nil {
+func (p *Pihole) collectForwardDestination(mx map[string]int64, rmx *rawMetrics) {
+	if rmx.forwardDestinations == nil {
 		return
 	}
 }
 
-func (p *Pihole) collectTopClients(mx map[string]int64, topClients *client.TopClients) {
-	if topClients == nil {
+func (p *Pihole) collectTopClients(mx map[string]int64, rmx *rawMetrics) {
+	if rmx.topClients == nil {
 		return
 	}
 }
 
-func (p *Pihole) collectTopItems(mx map[string]int64, topItems *client.TopItems) {
-	if topItems == nil || topItems.TopAds == nil && topItems.TopQueries == nil {
+func (p *Pihole) collectTopItems(mx map[string]int64, rmx *rawMetrics) {
+	if rmx.topItems == nil {
 		return
 	}
 }
