@@ -58,51 +58,51 @@ func (p *Pihole) collectTopItems(mx map[string]int64, rmx *rawMetrics) {
 }
 
 func (p *Pihole) getAllMetrics() *rawMetrics {
-	rmx := &rawMetrics{}
-	var wg sync.WaitGroup
+	rmx := new(rawMetrics)
+	wg := &sync.WaitGroup{}
 
-	wg.Add(5)
-
-	go func() {
+	doSummary := func() error {
 		var err error
 		rmx.summary, err = p.client.SummaryRaw()
-		if err != nil {
-			p.Error(err)
-		}
-		wg.Done()
-	}()
-	go func() {
+		return err
+	}
+	doQueryTypes := func() error {
 		var err error
 		rmx.queryTypes, err = p.client.QueryTypes()
-		if err != nil {
-			p.Error(err)
-		}
-		wg.Done()
-	}()
-	go func() {
+		return err
+	}
+	doForwardDestinations := func() error {
 		var err error
 		rmx.forwardDestinations, err = p.client.ForwardDestinations()
-		if err != nil {
-			p.Error(err)
-		}
-		wg.Done()
-	}()
-	go func() {
+		return err
+	}
+	doTopClients := func() error {
 		var err error
 		rmx.topClients, err = p.client.TopClients(5)
-		if err != nil {
-			p.Error(err)
-		}
-		wg.Done()
-	}()
-	go func() {
+		return err
+	}
+	doTopItems := func() error {
 		var err error
 		rmx.topItems, err = p.client.TopItems(5)
-		if err != nil {
-			p.Error(err)
+		return err
+	}
+
+	wrapper := func(do func() error) func() {
+		w := func() {
+			if err := do(); err != nil {
+				p.Error(err)
+			}
+			wg.Done()
 		}
-		wg.Done()
-	}()
+		return w
+	}
+
+	tasks := []func() error{doSummary, doQueryTypes, doForwardDestinations, doTopClients, doTopItems}
+
+	wg.Add(len(tasks))
+	for _, task := range tasks {
+		go wrapper(task)
+	}
 
 	wg.Wait()
 
