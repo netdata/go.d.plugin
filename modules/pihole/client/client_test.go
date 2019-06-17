@@ -33,13 +33,13 @@ func Test_data(t *testing.T) {
 func TestNew(t *testing.T) {
 	client := New(Configuration{})
 	assert.NotNil(t, client)
-	assert.NotNil(t, client.Client)
+	assert.NotNil(t, client.HTTPClient)
 	assert.Empty(t, client.URL)
 	assert.Empty(t, client.WebPassword)
 
 	client = New(Configuration{URL: "url", WebPassword: "pass"})
 	assert.NotNil(t, client)
-	assert.NotNil(t, client.Client)
+	assert.NotNil(t, client.HTTPClient)
 	assert.Equal(t, "url", client.URL)
 	assert.Equal(t, "pass", client.WebPassword)
 
@@ -244,8 +244,8 @@ func newTestServer() *httptest.Server {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 
-		_, isVersion := qs[queryVersion]
-		_, isSummaryRaw := qs[querySummaryRaw]
+		_, isVersion := qs[string(QueryVersion)]
+		_, isSummaryRaw := qs[string(QuerySummaryRaw)]
 
 		switch {
 		case isVersion:
@@ -262,10 +262,10 @@ func newTestServer() *httptest.Server {
 			return
 		}
 
-		_, isQueryTypes := qs[queryGetQueryTypes]
-		_, isForwardDestinations := qs[queryGetForwardDestinations]
-		_, isTopClients := qs[queryTopClients]
-		_, isTopItems := qs[queryTopItems]
+		_, isQueryTypes := qs[string(QueryGetQueryTypes)]
+		_, isForwardDestinations := qs[string(QueryGetForwardDestinations)]
+		_, isTopClients := qs[string(QueryTopClients)]
+		_, isTopItems := qs[string(QueryTopItems)]
 
 		switch {
 		default:

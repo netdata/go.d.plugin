@@ -7,17 +7,38 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"strings"
 )
+
+type Query string
+
+func (q Query) WithValue(value string) Query {
+	if len(value) == 0 {
+		return q
+	}
+
+	parts := strings.Split(string(q), "=")
+	switch len(parts) {
+	case 0:
+		return q
+	case 1:
+		return Query(fmt.Sprintf("%s=%s", string(q), value))
+	default:
+		return Query(fmt.Sprintf("%s&%s=%s", string(q), parts[0], value))
+	}
+}
 
 const (
 	apiPath = "/admin/api.php"
 
-	queryVersion                = "version"
-	querySummaryRaw             = "summaryRaw"
-	queryTopItems               = "topItems"               // AUTH
-	queryTopClients             = "topClients"             // AUTH
-	queryGetForwardDestinations = "getForwardDestinations" // AUTH
-	queryGetQueryTypes          = "getQueryTypes"          // AUTH
+	queryAuth                   Query = "auth"
+	QueryVersion                Query = "version"
+	QuerySummaryRaw             Query = "summaryRaw"
+	QueryTopItems               Query = "topItems"               // AUTH
+	QueryTopClients             Query = "topClients"             // AUTH
+	QueryGetForwardDestinations Query = "getForwardDestinations" // AUTH
+	QueryGetQueryTypes          Query = "getQueryTypes"          // AUTH
 )
 
 var ErrPasswordNotSet = errors.New("password not set")
@@ -34,7 +55,7 @@ func New(config Configuration) *Client {
 	}
 
 	return &Client{
-		Client:      config.Client,
+		HTTPClient:  config.Client,
 		URL:         config.URL,
 		WebPassword: config.WebPassword,
 	}
@@ -42,23 +63,28 @@ func New(config Configuration) *Client {
 
 // Client represents Pihole client.
 type Client struct {
-	*http.Client
+	HTTPClient  *http.Client
 	URL         string
 	WebPassword string
+}
+
+func (c *Client) Collect(dst interface{}, query Query) error {
+	if needAuth(query) && c.WebPassword == "" {
+		return ErrPasswordNotSet
+	}
+	u, err := makeURL(c.URL, query, c.WebPassword)
+	if err != nil {
+		return err
+	}
+	return c.getWithDecode(dst, u)
 }
 
 // Version does ?version query.
 // Returns API version.
 func (c *Client) Version() (int, error) {
-	u := fmt.Sprintf(
-		"%s%s?%s",
-		c.URL,
-		apiPath,
-		queryVersion,
-	)
-
 	var v version
-	if err := c.getWithDecode(&v, u); err != nil {
+	err := c.Collect(&v, QueryVersion)
+	if err != nil {
 		return 0, err
 	}
 
@@ -68,15 +94,9 @@ func (c *Client) Version() (int, error) {
 // SummaryRaw does ?summaryRaw query.
 // Returns summary statistics.
 func (c *Client) SummaryRaw() (*SummaryRaw, error) {
-	u := fmt.Sprintf(
-		"%s%s?%s",
-		c.URL,
-		apiPath,
-		querySummaryRaw,
-	)
-
 	var s SummaryRaw
-	if err := c.getWithDecode(&s, u); err != nil {
+	err := c.Collect(&s, QuerySummaryRaw)
+	if err != nil {
 		return nil, err
 	}
 
@@ -86,20 +106,9 @@ func (c *Client) SummaryRaw() (*SummaryRaw, error) {
 // QueryTypes does ?getQueryTypes query.
 // Returns number of queries that the Pi-hole’s DNS server has processed.
 func (c *Client) QueryTypes() (*QueryTypes, error) {
-	if c.WebPassword == "" {
-		return nil, ErrPasswordNotSet
-	}
-
-	u := fmt.Sprintf(
-		"%s%s?%s&auth=%s",
-		c.URL,
-		apiPath,
-		queryGetQueryTypes,
-		c.WebPassword,
-	)
-
 	var qt queryTypes
-	if err := c.getWithDecode(&qt, u); err != nil {
+	err := c.Collect(&qt, QueryGetQueryTypes)
+	if err != nil {
 		return nil, err
 	}
 
@@ -109,20 +118,9 @@ func (c *Client) QueryTypes() (*QueryTypes, error) {
 // ForwardDestinations does ?getForwardDestinations query.
 // Returns number of queries that have been forwarded to the targets.
 func (c *Client) ForwardDestinations() (*ForwardDestinations, error) {
-	if c.WebPassword == "" {
-		return nil, ErrPasswordNotSet
-	}
-
-	u := fmt.Sprintf(
-		"%s%s?%s&auth=%s",
-		c.URL,
-		apiPath,
-		queryGetForwardDestinations,
-		c.WebPassword,
-	)
-
 	var fd forwardDestinations
-	if err := c.getWithDecode(&fd, u); err != nil {
+	err := c.Collect(&fd, QueryGetForwardDestinations)
+	if err != nil {
 		return nil, err
 	}
 
@@ -132,21 +130,9 @@ func (c *Client) ForwardDestinations() (*ForwardDestinations, error) {
 // TopItems does ?topClients query.
 // Returns top sources.
 func (c *Client) TopClients(top int) (*TopClients, error) {
-	if c.WebPassword == "" {
-		return nil, ErrPasswordNotSet
-	}
-
-	u := fmt.Sprintf(
-		"%s%s?%s=%d&auth=%s",
-		c.URL,
-		apiPath,
-		queryTopClients,
-		top,
-		c.WebPassword,
-	)
-
 	var tc topClients
-	if err := c.getWithDecode(&tc, u); err != nil {
+	err := c.Collect(&tc, QueryTopClients)
+	if err != nil {
 		return nil, err
 	}
 
@@ -156,21 +142,9 @@ func (c *Client) TopClients(top int) (*TopClients, error) {
 // TopItems does ?topItems query.
 // Returns top domains and top advertisements.
 func (c *Client) TopItems(top int) (*TopItems, error) {
-	if c.WebPassword == "" {
-		return nil, ErrPasswordNotSet
-	}
-
-	u := fmt.Sprintf(
-		"%s%s?%s=%d&auth=%s",
-		c.URL,
-		apiPath,
-		queryTopItems,
-		top,
-		c.WebPassword,
-	)
-
 	var ti TopItems
-	if err := c.getWithDecode(&ti, u); err != nil {
+	err := c.Collect(&ti, QueryTopItems)
+	if err != nil {
 		return nil, err
 	}
 
@@ -205,7 +179,7 @@ func (c *Client) getWithDecode(dst interface{}, url string) error {
 }
 
 func (c *Client) getOK(url string) (*http.Response, error) {
-	resp, err := c.Get(url)
+	resp, err := c.HTTPClient.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -215,6 +189,20 @@ func (c *Client) getOK(url string) (*http.Response, error) {
 	}
 
 	return resp, nil
+}
+
+func makeURL(host string, query Query, password string) (string, error) {
+	u, err := url.Parse(host)
+	if err != nil {
+		return "", err
+	}
+	u.Path = apiPath
+	u.RawQuery = string(query)
+	if password != "" {
+		u.RawQuery += "&" + string(queryAuth.WithValue(password))
+	}
+
+	return u.String(), nil
 }
 
 func closeBody(resp *http.Response) {
@@ -227,4 +215,12 @@ func closeBody(resp *http.Response) {
 func isEmptyArray(data []byte) bool {
 	empty := "[]"
 	return len(data) == len(empty) && string(data) == empty
+}
+
+func needAuth(q Query) bool {
+	switch q {
+	case QueryGetQueryTypes, QueryGetForwardDestinations, QueryTopItems, QueryTopClients:
+		return true
+	}
+	return false
 }

@@ -1,9 +1,10 @@
 package pihole
 
 import (
-	"github.com/netdata/go.d.plugin/modules/pihole/client"
+	"sync"
 	"time"
 
+	"github.com/netdata/go.d.plugin/modules/pihole/client"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -20,6 +21,8 @@ func init() {
 const (
 	defaultURL         = "http://192.168.88.228"
 	defaultHTTPTimeout = time.Second
+	defaultTopClients  = 5
+	defaultTopItems    = 5
 )
 
 // New creates Pihole with default values.
@@ -31,7 +34,9 @@ func New() *Pihole {
 		},
 	}
 
-	return &Pihole{Config: config}
+	return &Pihole{
+		Config: config,
+	}
 }
 
 // Config is the Pihole module configuration.
@@ -44,6 +49,9 @@ type Pihole struct {
 	module.Base
 	Config `yaml:",inline"`
 
+	mu     *sync.Mutex
+	charts *module.Charts
+
 	client *client.Client
 }
 
@@ -52,13 +60,7 @@ func (Pihole) Cleanup() {}
 
 // Init makes initialization.
 func (p *Pihole) Init() bool {
-	c, err := client.New(p.Client, p.Request)
-	if err != nil {
-		p.Error(err)
-		return false
-	}
 
-	p.client = c
 	return true
 }
 
