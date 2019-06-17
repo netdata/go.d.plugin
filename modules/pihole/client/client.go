@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -68,7 +69,7 @@ type Client struct {
 	WebPassword string
 }
 
-func (c *Client) Collect(dst interface{}, query Query) error {
+func (c *Client) query(dst interface{}, query Query) error {
 	if needAuth(query) && c.WebPassword == "" {
 		return ErrPasswordNotSet
 	}
@@ -83,7 +84,7 @@ func (c *Client) Collect(dst interface{}, query Query) error {
 // Returns API version.
 func (c *Client) Version() (int, error) {
 	var v version
-	err := c.Collect(&v, QueryVersion)
+	err := c.query(&v, QueryVersion)
 	if err != nil {
 		return 0, err
 	}
@@ -95,7 +96,7 @@ func (c *Client) Version() (int, error) {
 // Returns summary statistics.
 func (c *Client) SummaryRaw() (*SummaryRaw, error) {
 	var s SummaryRaw
-	err := c.Collect(&s, QuerySummaryRaw)
+	err := c.query(&s, QuerySummaryRaw)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +108,7 @@ func (c *Client) SummaryRaw() (*SummaryRaw, error) {
 // Returns number of queries that the Pi-hole’s DNS server has processed.
 func (c *Client) QueryTypes() (*QueryTypes, error) {
 	var qt queryTypes
-	err := c.Collect(&qt, QueryGetQueryTypes)
+	err := c.query(&qt, QueryGetQueryTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +120,7 @@ func (c *Client) QueryTypes() (*QueryTypes, error) {
 // Returns number of queries that have been forwarded to the targets.
 func (c *Client) ForwardDestinations() (*ForwardDestinations, error) {
 	var fd forwardDestinations
-	err := c.Collect(&fd, QueryGetForwardDestinations)
+	err := c.query(&fd, QueryGetForwardDestinations)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +132,7 @@ func (c *Client) ForwardDestinations() (*ForwardDestinations, error) {
 // Returns top sources.
 func (c *Client) TopClients(top int) (*TopClients, error) {
 	var tc topClients
-	err := c.Collect(&tc, QueryTopClients)
+	err := c.query(&tc, QueryTopClients.WithValue(strconv.Itoa(top)))
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +144,7 @@ func (c *Client) TopClients(top int) (*TopClients, error) {
 // Returns top domains and top advertisements.
 func (c *Client) TopItems(top int) (*TopItems, error) {
 	var ti TopItems
-	err := c.Collect(&ti, QueryTopItems)
+	err := c.query(&ti, QueryTopItems.WithValue(strconv.Itoa(top)))
 	if err != nil {
 		return nil, err
 	}

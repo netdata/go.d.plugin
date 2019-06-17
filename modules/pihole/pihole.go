@@ -70,7 +70,7 @@ func (Pihole) Check() bool { return true }
 // Charts returns Charts.
 func (Pihole) Charts() *module.Charts { return charts.Copy() }
 
-// Collect collects metrics.
+// query collects metrics.
 func (p *Pihole) Collect() map[string]int64 {
 	mx, err := p.collect()
 
