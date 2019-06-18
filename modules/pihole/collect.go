@@ -63,54 +63,56 @@ func (p *Pihole) collectRawMetrics(doConcurrently bool) *rawMetrics {
 
 	type task func() error
 
-	logWrap := func(t task) func() {
+	logWrap := func(task task) func() {
 		return func() {
-			if err := t(); err != nil {
+			err := task()
+			if err != nil {
 				p.Error(err)
 			}
 		}
 	}
-	wgWrap := func(t func()) func() {
+
+	wgWrap := func(call func()) func() {
 		return func() {
-			t()
+			call()
 			wg.Done()
 		}
 	}
 
-	doSummary := func() error {
+	taskSummary := func() error {
 		var err error
 		rmx.summary, err = p.client.SummaryRaw()
 		return err
 	}
-	doQueryTypes := func() error {
+	taskQueryTypes := func() error {
 		var err error
 		rmx.queryTypes, err = p.client.QueryTypes()
 		return err
 	}
-	doForwardDestinations := func() error {
+	taskForwardDestinations := func() error {
 		var err error
 		rmx.forwardDestinations, err = p.client.ForwardDestinations()
 		return err
 	}
-	doTopClients := func() error {
+	taskTopClients := func() error {
 		var err error
 		rmx.topClients, err = p.client.TopClients(5)
 		return err
 	}
-	doTopItems := func() error {
+	taskTopItems := func() error {
 		var err error
 		rmx.topItems, err = p.client.TopItems(5)
 		return err
 	}
 
-	tasks := []task{doSummary, doQueryTypes, doForwardDestinations, doTopClients, doTopItems}
+	tasks := []task{taskSummary, taskQueryTypes, taskForwardDestinations, taskTopClients, taskTopItems}
 
 	for _, t := range tasks {
 		wrapped := logWrap(t)
+
 		if doConcurrently {
 			wg.Add(1)
-			wrapped = wgWrap(wrapped)
-			go wrapped()
+			go wgWrap(wrapped)
 		} else {
 			wrapped()
 		}
