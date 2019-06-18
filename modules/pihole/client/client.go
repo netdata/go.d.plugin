@@ -243,7 +243,7 @@ func parseTopSources(raw topClients) *[]TopClient {
 	var ts []TopClient
 	for k, v := range raw.Sources {
 		name := strings.Split(k, "|")
-		ts = append(ts, TopClient{Name: name[0], Queries: v})
+		ts = append(ts, TopClient{Name: name[0], Requests: v})
 	}
 
 	return &ts
@@ -252,10 +252,10 @@ func parseTopSources(raw topClients) *[]TopClient {
 func parseTopItems(raw topItems) *TopItems {
 	var ti TopItems
 	for k, v := range raw.TopQueries {
-		ti.TopQueries = append(ti.TopQueries, TopQuery{Name: k, Queries: v})
+		ti.TopQueries = append(ti.TopQueries, TopQuery{Name: k, Hits: v})
 	}
 	for k, v := range raw.TopAds {
-		ti.TopAds = append(ti.TopAds, TopAdvertisement{Name: k, Queries: v})
+		ti.TopAds = append(ti.TopAds, TopAdvertisement{Name: k, Hits: v})
 	}
 
 	return &ti

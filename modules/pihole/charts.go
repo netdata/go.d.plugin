@@ -52,10 +52,6 @@ var (
 			Units: "percentage",
 			Fam:   "queries",
 			Ctx:   "pihole.forwarded_dns_queries_targets",
-			Dims: Dims{
-				{ID: "target_blocklist", Name: "blocklist", Div: 100},
-				{ID: "target_cache", Name: "cache", Div: 100},
-			},
 		},
 	}
 
@@ -100,20 +96,22 @@ func (p *Pihole) updateForwardDestinationsCharts(pmx *piholeMetrics) {
 	}
 
 	chart := p.charts.Get("forwarded_dns_queries_targets")
+	set := make(map[string]bool)
 
 	for _, v := range *pmx.forwarders {
-		if v.Name == "blocklist" || v.Name == "cache" {
-			continue
-		}
-
 		id := "target_" + v.Name
-		if chart.HasDim(id) {
+		set[id] = true
+
+		if p.collected.forwarders[id] {
 			continue
 		}
 
+		p.collected.forwarders[id] = true
 		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name, Div: 100}))
 		chart.MarkNotCreated()
 	}
+
+	removeNotUpdatedDims(chart, p.collected.forwarders, set)
 }
 
 func (p *Pihole) updateTopClientChart(pmx *piholeMetrics) {

@@ -3,12 +3,12 @@ package pihole
 import "github.com/netdata/go.d.plugin/modules/pihole/client"
 
 type piholeMetrics struct {
-	summary    *client.SummaryRaw
-	queryTypes *client.QueryTypes
-	forwarders *[]client.ForwardDestination
-	topClients *[]client.TopClient
-	topQueries *[]client.TopQuery
-	topAds     *[]client.TopAdvertisement
+	summary    *client.SummaryRaw           // ?summary
+	queryTypes *client.QueryTypes           // ?getQueryTypes
+	forwarders *[]client.ForwardDestination // ?getForwardedDestinations
+	topClients *[]client.TopClient          // ?topClient
+	topQueries *[]client.TopQuery           // ?topItem
+	topAds     *[]client.TopAdvertisement   // ?topItem
 }
 
 func (p piholeMetrics) hasSummary() bool {

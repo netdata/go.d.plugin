@@ -69,8 +69,8 @@ type (
 
 	// TopClient represents represents queries per client (source) statistics.
 	TopClient struct {
-		Name    string
-		Queries int64
+		Name     string
+		Requests int64
 	}
 )
 
@@ -84,8 +84,8 @@ type (
 
 	// TopQuery represents TopQuery.
 	TopQuery struct {
-		Name    string
-		Queries int64
+		Name string
+		Hits int64
 	}
 
 	// TopAdvertisement represents TopAdvertisement.

@@ -158,7 +158,7 @@ func TestClient_TopClients(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := &[]TopClient{
-		{Name: "localhost", Queries: 36},
+		{Name: "localhost", Requests: 36},
 	}
 
 	assert.Equal(t, expected, rv)
@@ -176,17 +176,17 @@ func TestClient_TopItems(t *testing.T) {
 	require.NoError(t, err)
 
 	sort.Slice(rv.TopAds, func(i, j int) bool {
-		return rv.TopAds[i].Queries < rv.TopAds[j].Queries
+		return rv.TopAds[i].Hits < rv.TopAds[j].Hits
 	})
 	sort.Slice(rv.TopQueries, func(i, j int) bool {
-		return rv.TopQueries[i].Queries < rv.TopQueries[j].Queries
+		return rv.TopQueries[i].Hits < rv.TopQueries[j].Hits
 	})
 
 	expected := &TopItems{
 		TopQueries: []TopQuery{
-			{Name: "api.github.com", Queries: 10},
-			{Name: "220.220.67.208.in-addr.arpa", Queries: 11},
-			{Name: "222.222.67.208.in-addr.arpa", Queries: 12},
+			{Name: "api.github.com", Hits: 10},
+			{Name: "220.220.67.208.in-addr.arpa", Hits: 11},
+			{Name: "222.222.67.208.in-addr.arpa", Hits: 12},
 		},
 	}
 

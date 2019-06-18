@@ -14,7 +14,8 @@ func (p *Pihole) collect() (map[string]int64, error) {
 	collectQueryTypes(mx, pmx)
 	collectForwardDestination(mx, pmx)
 	collectTopClients(mx, pmx)
-	collectTopItems(mx, pmx)
+	collectTopDomains(mx, pmx)
+	collectTopAdvertisers(mx, pmx)
 
 	p.updateCharts(pmx)
 
@@ -31,6 +32,7 @@ func collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
 	if !pmx.hasQueryTypes() {
 		return
 	}
+
 	mx["A"] = int64(pmx.queryTypes.A * 100)
 	mx["AAAA"] = int64(pmx.queryTypes.AAAA * 100)
 	mx["ANY"] = int64(pmx.queryTypes.ANY * 100)
@@ -54,20 +56,25 @@ func collectTopClients(mx map[string]int64, pmx *piholeMetrics) {
 		return
 	}
 	for _, v := range *pmx.topClients {
-		mx["top_client_"+v.Name] = v.Queries
+		mx["top_client_"+v.Name] = v.Requests
 	}
 }
 
-func collectTopItems(mx map[string]int64, pmx *piholeMetrics) {
-	if pmx.hasTopQueries() {
-		for _, v := range *pmx.topQueries {
-			mx["top_domain_"+v.Name] = v.Queries
-		}
+func collectTopDomains(mx map[string]int64, pmx *piholeMetrics) {
+	if !pmx.hasTopQueries() {
+		return
 	}
-	if pmx.hasTopAdvertisers() {
-		for _, v := range *pmx.topAds {
-			mx["top_ad_"+v.Name] = v.Queries
-		}
+	for _, v := range *pmx.topQueries {
+		mx["top_domain_"+v.Name] = v.Hits
+	}
+}
+
+func collectTopAdvertisers(mx map[string]int64, pmx *piholeMetrics) {
+	if !pmx.hasTopAdvertisers() {
+		return
+	}
+	for _, v := range *pmx.topAds {
+		mx["top_ad_"+v.Name] = v.Hits
 	}
 }
 
