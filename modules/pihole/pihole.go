@@ -39,12 +39,6 @@ func New() *Pihole {
 	return &Pihole{
 		Config: config,
 		charts: authCharts.Copy(),
-		collected: collected{
-			forwarders: make(map[string]bool),
-			topClients: make(map[string]bool),
-			topDomains: make(map[string]bool),
-			topAds:     make(map[string]bool),
-		},
 	}
 }
 
@@ -55,13 +49,6 @@ type piholeAPIClient interface {
 	ForwardDestinations() (*[]client.ForwardDestination, error)
 	TopClients(top int) (*[]client.TopClient, error)
 	TopItems(top int) (*client.TopItems, error)
-}
-
-type collected struct {
-	forwarders map[string]bool
-	topClients map[string]bool
-	topDomains map[string]bool
-	topAds     map[string]bool
 }
 
 // Config is the Pihole module configuration.
@@ -75,9 +62,8 @@ type Pihole struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	collected collected
-	charts    *module.Charts
-	client    piholeAPIClient
+	charts *module.Charts
+	client piholeAPIClient
 }
 
 // Cleanup makes cleanup.

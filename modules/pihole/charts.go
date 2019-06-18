@@ -102,16 +102,15 @@ func (p *Pihole) updateForwardDestinationsCharts(pmx *piholeMetrics) {
 		id := "target_" + v.Name
 		set[id] = true
 
-		if p.collected.forwarders[id] {
+		if chart.HasDim(id) {
 			continue
 		}
 
-		p.collected.forwarders[id] = true
 		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name, Div: 100}))
 		chart.MarkNotCreated()
 	}
 
-	removeNotUpdatedDims(chart, p.collected.forwarders, set)
+	removeNotUpdatedDims(chart, set)
 }
 
 func (p *Pihole) updateTopClientChart(pmx *piholeMetrics) {
@@ -119,27 +118,27 @@ func (p *Pihole) updateTopClientChart(pmx *piholeMetrics) {
 		return
 	}
 
-	if len(p.collected.topClients) == 0 && !p.charts.Has("top_clients") {
-		panicIf(p.charts.Add(topClientsChart.Copy()))
+	chart := p.charts.Get(topClientsChart.ID)
+	if chart == nil {
+		chart = topClientsChart.Copy()
+		panicIf(p.charts.Add(chart))
 	}
 
-	chart := p.charts.Get("top_clients")
 	set := make(map[string]bool)
 
 	for _, v := range *pmx.topClients {
 		id := "top_client_" + v.Name
 		set[id] = true
 
-		if p.collected.topClients[id] {
+		if chart.HasDim(id) {
 			continue
 		}
 
-		p.collected.topClients[id] = true
 		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name}))
 		chart.MarkNotCreated()
 	}
 
-	removeNotUpdatedDims(chart, p.collected.topClients, set)
+	removeNotUpdatedDims(chart, set)
 }
 
 func (p *Pihole) updateTopDomainsChart(pmx *piholeMetrics) {
@@ -147,27 +146,27 @@ func (p *Pihole) updateTopDomainsChart(pmx *piholeMetrics) {
 		return
 	}
 
-	if len(p.collected.topDomains) == 0 && !p.charts.Has("top_domains") {
-		panicIf(p.charts.Add(topDomainsChart.Copy()))
+	chart := p.charts.Get(topDomainsChart.ID)
+	if chart == nil {
+		chart = topDomainsChart.Copy()
+		panicIf(p.charts.Add(chart))
 	}
 
-	chart := p.charts.Get("top_domains")
 	set := make(map[string]bool)
 
 	for _, v := range *pmx.topQueries {
 		id := "top_domain_" + v.Name
 		set[id] = true
 
-		if p.collected.topDomains[id] {
+		if chart.HasDim(id) {
 			continue
 		}
 
-		p.collected.topDomains[id] = true
 		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name}))
 		chart.MarkNotCreated()
 	}
 
-	removeNotUpdatedDims(chart, p.collected.topDomains, set)
+	removeNotUpdatedDims(chart, set)
 }
 
 func (p *Pihole) updateTopAdvertisersChart(pmx *piholeMetrics) {
@@ -175,37 +174,45 @@ func (p *Pihole) updateTopAdvertisersChart(pmx *piholeMetrics) {
 		return
 	}
 
-	if len(p.collected.topAds) == 0 && !p.charts.Has("top_advertisers") {
-		panicIf(p.charts.Add(topAdvertisersChart.Copy()))
+	chart := p.charts.Get(topAdvertisersChart.ID)
+	if chart == nil {
+		chart = topAdvertisersChart.Copy()
+		panicIf(p.charts.Add(chart))
 	}
 
-	chart := p.charts.Get("top_advertisers")
 	set := make(map[string]bool)
 
 	for _, v := range *pmx.topAds {
 		id := "top_ad_" + v.Name
 		set[id] = true
 
-		if p.collected.topAds[id] {
+		if chart.HasDim(id) {
 			continue
 		}
 
-		p.collected.topAds[id] = true
 		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name}))
 		chart.MarkNotCreated()
 	}
 
-	removeNotUpdatedDims(chart, p.collected.topAds, set)
+	removeNotUpdatedDims(chart, set)
 }
 
-func removeNotUpdatedDims(chart *Chart, existed, updated map[string]bool) {
-	for id := range existed {
-		if updated[id] {
+func removeNotUpdatedDims(chart *Chart, updated map[string]bool) {
+	if len(updated) == 0 {
+		return
+	}
+
+	var notUpdated []string
+
+	for _, d := range chart.Dims {
+		if updated[d.ID] {
 			continue
 		}
+		notUpdated = append(notUpdated, d.ID)
+	}
 
-		delete(existed, id)
-		panicIf(chart.RemoveDim(id))
+	for _, v := range notUpdated {
+		panicIf(chart.MarkDimRemove(v, true))
 		chart.MarkNotCreated()
 	}
 }
