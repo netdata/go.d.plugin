@@ -37,6 +37,7 @@ func New() *Pihole {
 
 	return &Pihole{
 		Config: config,
+		charts: authCharts.Copy(),
 	}
 }
 
@@ -86,7 +87,7 @@ func (p *Pihole) Init() bool {
 func (Pihole) Check() bool { return true }
 
 // Charts returns Charts.
-func (Pihole) Charts() *module.Charts { return authCharts.Copy() }
+func (p Pihole) Charts() *module.Charts { return p.charts }
 
 // Collect collects metrics.
 func (p *Pihole) Collect() map[string]int64 {

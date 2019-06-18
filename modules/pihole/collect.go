@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-type rawMetrics struct {
+type piholeMetrics struct {
 	summary             *client.SummaryRaw
 	queryTypes          *client.QueryTypes
 	forwardDestinations *client.ForwardDestinations
@@ -14,85 +14,75 @@ type rawMetrics struct {
 	topItems            *client.TopItems
 }
 
-func (r rawMetrics) hasSummary() bool { return r.summary != nil }
-
-func (r rawMetrics) hasQueryTypes() bool { return r.queryTypes != nil }
-
-func (r rawMetrics) hasForwardDestinations() bool { return r.forwardDestinations != nil }
-
-func (r rawMetrics) hasTopClients() bool { return r.topClients != nil }
-
-func (r rawMetrics) hasTopItems() bool { return r.topItems != nil }
-
 func (p *Pihole) collect() (map[string]int64, error) {
-	rmx := p.collectRawMetrics(true)
+	pmx := p.collectRawMetrics(true)
 	mx := make(map[string]int64)
 
 	// non auth
-	p.collectSummary(mx, rmx)
+	p.collectSummary(mx, pmx)
 
 	// auth
-	p.collectQueryTypes(mx, rmx)
-	p.collectForwardDestination(mx, rmx)
-	p.collectTopClients(mx, rmx)
-	p.collectTopItems(mx, rmx)
+	p.collectQueryTypes(mx, pmx)
+	p.collectForwardDestination(mx, pmx)
+	p.collectTopClients(mx, pmx)
+	p.collectTopItems(mx, pmx)
 
-	p.updateCharts(rmx)
+	p.updateCharts(pmx)
 
 	return mx, nil
 }
 
-func (p *Pihole) collectSummary(mx map[string]int64, rmx *rawMetrics) {
-	if !rmx.hasSummary() {
+func (p *Pihole) collectSummary(mx map[string]int64, pmx *piholeMetrics) {
+	if pmx.summary == nil {
 		return
 	}
 }
 
-func (p *Pihole) collectQueryTypes(mx map[string]int64, rmx *rawMetrics) {
-	if rmx.hasQueryTypes() {
+func (p *Pihole) collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
+	if pmx.queryTypes == nil {
 		return
 	}
-	mx["A"] = int64(rmx.queryTypes.A * 100)
-	mx["AAAA"] = int64(rmx.queryTypes.AAAA * 100)
-	mx["ANY"] = int64(rmx.queryTypes.ANY * 100)
-	mx["PTR"] = int64(rmx.queryTypes.PTR * 100)
-	mx["SOA"] = int64(rmx.queryTypes.SOA * 100)
-	mx["SRV"] = int64(rmx.queryTypes.SRV * 100)
-	mx["TXT"] = int64(rmx.queryTypes.TXT * 100)
+	mx["A"] = int64(pmx.queryTypes.A * 100)
+	mx["AAAA"] = int64(pmx.queryTypes.AAAA * 100)
+	mx["ANY"] = int64(pmx.queryTypes.ANY * 100)
+	mx["PTR"] = int64(pmx.queryTypes.PTR * 100)
+	mx["SOA"] = int64(pmx.queryTypes.SOA * 100)
+	mx["SRV"] = int64(pmx.queryTypes.SRV * 100)
+	mx["TXT"] = int64(pmx.queryTypes.TXT * 100)
 }
 
-func (p *Pihole) collectForwardDestination(mx map[string]int64, rmx *rawMetrics) {
-	if rmx.hasForwardDestinations() {
+func (p *Pihole) collectForwardDestination(mx map[string]int64, pmx *piholeMetrics) {
+	if pmx.forwardDestinations == nil {
 		return
 	}
-	for _, v := range *rmx.forwardDestinations {
+	for _, v := range *pmx.forwardDestinations {
 		mx["target_"+v.Name] = int64(v.Percent * 100)
 	}
 }
 
-func (p *Pihole) collectTopClients(mx map[string]int64, rmx *rawMetrics) {
-	if rmx.hasTopClients() {
+func (p *Pihole) collectTopClients(mx map[string]int64, pmx *piholeMetrics) {
+	if pmx.topItems == nil {
 		return
 	}
-	for _, v := range *rmx.topClients {
+	for _, v := range *pmx.topClients {
 		mx["top_client_"+v.Name] = v.Queries
 	}
 }
 
-func (p *Pihole) collectTopItems(mx map[string]int64, rmx *rawMetrics) {
-	if rmx.hasTopItems() {
+func (p *Pihole) collectTopItems(mx map[string]int64, pmx *piholeMetrics) {
+	if pmx.topItems == nil {
 		return
 	}
-	for _, v := range rmx.topItems.TopQueries {
-		mx["top_query_"+v.Name] = v.Queries
+	for _, v := range pmx.topItems.TopQueries {
+		mx["top_domain_"+v.Name] = v.Queries
 	}
-	for _, v := range rmx.topItems.TopAds {
+	for _, v := range pmx.topItems.TopAds {
 		mx["top_ad_"+v.Name] = v.Queries
 	}
 }
 
-func (p *Pihole) collectRawMetrics(doConcurrently bool) *rawMetrics {
-	rmx := new(rawMetrics)
+func (p *Pihole) collectRawMetrics(doConcurrently bool) *piholeMetrics {
+	rmx := new(piholeMetrics)
 
 	taskSummary := func() {
 		var err error

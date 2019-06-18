@@ -1,12 +1,16 @@
 package pihole
 
-import "github.com/netdata/go-orchestrator/module"
+import (
+	"github.com/netdata/go-orchestrator/module"
+)
 
 type (
 	// Charts is an alias for module.Charts
 	Charts = module.Charts
 	// Dims is an alias for module.Dims
 	Dims = module.Dims
+	// Dim is an alias for module.Dim
+	Dim = module.Dim
 )
 
 var charts = Charts{
@@ -55,8 +59,106 @@ var authCharts = Charts{
 		Fam:   "top clients",
 		Ctx:   "pihole.top_clients_queries",
 	},
+	{
+		ID:    "top_domains",
+		Title: "Top Domains",
+		Units: "queries",
+		Fam:   "top domains",
+		Ctx:   "pihole.top_domains_queries",
+	},
+	{
+		ID:    "top_advertisers",
+		Title: "Top Advertisers",
+		Units: "queries",
+		Fam:   "top ads",
+		Ctx:   "pihole.top_ads_queries",
+	},
 }
 
-func (p *Pihole) updateCharts(rmx *rawMetrics) {
+func (p *Pihole) updateCharts(pmx *piholeMetrics) {
+	p.updateForwardDestinationsCharts(pmx)
+	p.updateTopClientChart(pmx)
+	p.updateTopDomainsChart(pmx)
+	p.updateTopAdvertisersChart(pmx)
+}
 
+func (p *Pihole) updateForwardDestinationsCharts(pmx *piholeMetrics) {
+	if pmx.forwardDestinations == nil {
+		return
+	}
+	chart := p.charts.Get("forwarded_dns_queries_targets")
+
+	for _, v := range *pmx.forwardDestinations {
+		if v.Name == "blocklist" || v.Name == "cache" {
+			continue
+		}
+
+		id := "target_" + v.Name
+		if chart.HasDim(id) {
+			continue
+		}
+
+		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name, Div: 100}))
+		chart.MarkNotCreated()
+	}
+}
+
+func (p *Pihole) updateTopClientChart(pmx *piholeMetrics) {
+	if pmx.topClients == nil {
+		return
+	}
+
+	chart := p.charts.Get("top_clients")
+
+	for _, v := range *pmx.topClients {
+		id := "top_client_" + v.Name
+		if chart.HasDim(id) {
+			continue
+		}
+
+		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name}))
+		chart.MarkNotCreated()
+	}
+}
+
+func (p *Pihole) updateTopDomainsChart(pmx *piholeMetrics) {
+	if pmx.topItems == nil || pmx.topItems.TopQueries == nil {
+		return
+	}
+
+	chart := p.charts.Get("top_domains")
+
+	for _, v := range pmx.topItems.TopQueries {
+		id := "top_domain_" + v.Name
+		if chart.HasDim(id) {
+			continue
+		}
+
+		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name}))
+		chart.MarkNotCreated()
+	}
+}
+
+func (p *Pihole) updateTopAdvertisersChart(pmx *piholeMetrics) {
+	if pmx.topItems == nil || pmx.topItems.TopAds == nil {
+		return
+	}
+
+	chart := p.charts.Get("top_advertisers")
+
+	for _, v := range pmx.topItems.TopAds {
+		id := "top_ad_" + v.Name
+		if chart.HasDim(id) {
+			continue
+		}
+
+		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name}))
+		chart.MarkNotCreated()
+	}
+}
+
+func panicIf(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
