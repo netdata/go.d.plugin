@@ -1,7 +1,6 @@
 package pihole
 
 import (
-	"sync"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules/pihole/client"
@@ -19,10 +18,11 @@ func init() {
 }
 
 const (
-	defaultURL         = "http://192.168.88.228"
-	defaultHTTPTimeout = time.Second
-	defaultTopClients  = 5
-	defaultTopItems    = 5
+	defaultURL           = "http://192.168.88.228"
+	defaultHTTPTimeout   = time.Second
+	defaultTopClients    = 5
+	defaultTopItems      = 5
+	defaultSetupVarsPath = "/etc/pihole/setupVars.conf"
 )
 
 // New creates Pihole with default values.
@@ -49,9 +49,7 @@ type Pihole struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	mu     *sync.Mutex
 	charts *module.Charts
-
 	client *client.Client
 }
 
@@ -60,6 +58,18 @@ func (Pihole) Cleanup() {}
 
 // Init makes initialization.
 func (p *Pihole) Init() bool {
+	httpClient, err := web.NewHTTPClient(p.Client)
+	if err != nil {
+		p.Errorf("error on creating http client : %v", err)
+		return false
+	}
+
+	config := client.Configuration{
+		Client:      httpClient,
+		URL:         p.UserURL,
+		WebPassword: p.webPassword(),
+	}
+	p.client = client.New(config)
 
 	return true
 }

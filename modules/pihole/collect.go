@@ -96,12 +96,12 @@ func (p *Pihole) collectRawMetrics(doConcurrently bool) *rawMetrics {
 	}
 	taskTopClients := func() error {
 		var err error
-		rmx.topClients, err = p.client.TopClients(5)
+		rmx.topClients, err = p.client.TopClients(defaultTopClients)
 		return err
 	}
 	taskTopItems := func() error {
 		var err error
-		rmx.topItems, err = p.client.TopItems(5)
+		rmx.topItems, err = p.client.TopItems(defaultTopItems)
 		return err
 	}
 
