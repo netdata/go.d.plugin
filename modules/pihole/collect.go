@@ -15,7 +15,7 @@ type rawMetrics struct {
 }
 
 func (p *Pihole) collect() (map[string]int64, error) {
-	rmx := p.getAllMetrics()
+	rmx := p.collectRawMetrics(true)
 	mx := make(map[string]int64)
 
 	p.collectSummary(mx, rmx)
@@ -57,9 +57,25 @@ func (p *Pihole) collectTopItems(mx map[string]int64, rmx *rawMetrics) {
 	}
 }
 
-func (p *Pihole) getAllMetrics() *rawMetrics {
+func (p *Pihole) collectRawMetrics(doConcurrently bool) *rawMetrics {
 	rmx := new(rawMetrics)
 	wg := &sync.WaitGroup{}
+
+	type task func() error
+
+	logWrap := func(t task) func() {
+		return func() {
+			err := t()
+			p.Error(err)
+		}
+	}
+	wgWrap := func(t func()) func() {
+		wg.Add(1)
+		return func() {
+			t()
+			wg.Done()
+		}
+	}
 
 	doSummary := func() error {
 		var err error
@@ -87,21 +103,15 @@ func (p *Pihole) getAllMetrics() *rawMetrics {
 		return err
 	}
 
-	wrapper := func(do func() error) func() {
-		w := func() {
-			if err := do(); err != nil {
-				p.Error(err)
-			}
-			wg.Done()
+	tasks := []task{doSummary, doQueryTypes, doForwardDestinations, doTopClients, doTopItems}
+
+	for _, t := range tasks {
+		wrapped := wgWrap(logWrap(t))
+		if doConcurrently {
+			go wrapped()
+		} else {
+			wrapped()
 		}
-		return w
-	}
-
-	tasks := []func() error{doSummary, doQueryTypes, doForwardDestinations, doTopClients, doTopItems}
-
-	wg.Add(len(tasks))
-	for _, task := range tasks {
-		go wrapper(task)
 	}
 
 	wg.Wait()
