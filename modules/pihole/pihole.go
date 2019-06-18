@@ -33,17 +33,19 @@ func New() *Pihole {
 			Request: web.Request{UserURL: defaultURL},
 			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
+		SetupVarsPath: defaultSetupVarsPath,
 	}
 
 	return &Pihole{
 		Config: config,
 		charts: authCharts.Copy(),
+		collected: collected{
+			forwarders: make(map[string]bool),
+			topClients: make(map[string]bool),
+			topDomains: make(map[string]bool),
+			topAds:     make(map[string]bool),
+		},
 	}
-}
-
-// Config is the Pihole module configuration.
-type Config struct {
-	web.HTTP `yaml:",inline"`
 }
 
 type piholeAPIClient interface {
@@ -55,13 +57,27 @@ type piholeAPIClient interface {
 	TopItems(top int) (*client.TopItems, error)
 }
 
+type collected struct {
+	forwarders map[string]bool
+	topClients map[string]bool
+	topDomains map[string]bool
+	topAds     map[string]bool
+}
+
+// Config is the Pihole module configuration.
+type Config struct {
+	web.HTTP      `yaml:",inline"`
+	SetupVarsPath string `yaml:"setup_vars_path"`
+}
+
 // Pihole Pihole module.
 type Pihole struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	charts *module.Charts
-	client piholeAPIClient
+	collected collected
+	charts    *module.Charts
+	client    piholeAPIClient
 }
 
 // Cleanup makes cleanup.

@@ -7,6 +7,8 @@ import (
 type (
 	// Charts is an alias for module.Charts
 	Charts = module.Charts
+	// Chart is an alias for module.Chart
+	Chart = module.Chart
 	// Dims is an alias for module.Dims
 	Dims = module.Dims
 	// Dim is an alias for module.Dim
@@ -109,16 +111,22 @@ func (p *Pihole) updateTopClientChart(pmx *piholeMetrics) {
 	}
 
 	chart := p.charts.Get("top_clients")
+	set := make(map[string]bool)
 
 	for _, v := range *pmx.topClients {
 		id := "top_client_" + v.Name
-		if chart.HasDim(id) {
+		set[id] = true
+
+		if p.collected.topClients[id] {
 			continue
 		}
 
+		p.collected.topClients[id] = true
 		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name}))
 		chart.MarkNotCreated()
 	}
+
+	removeNotUpdatedDims(chart, p.collected.topClients, set)
 }
 
 func (p *Pihole) updateTopDomainsChart(pmx *piholeMetrics) {
@@ -127,16 +135,22 @@ func (p *Pihole) updateTopDomainsChart(pmx *piholeMetrics) {
 	}
 
 	chart := p.charts.Get("top_domains")
+	set := make(map[string]bool)
 
 	for _, v := range pmx.topItems.TopQueries {
 		id := "top_domain_" + v.Name
-		if chart.HasDim(id) {
+		set[id] = true
+
+		if p.collected.topDomains[id] {
 			continue
 		}
 
+		p.collected.topDomains[id] = true
 		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name}))
 		chart.MarkNotCreated()
 	}
+
+	removeNotUpdatedDims(chart, p.collected.topDomains, set)
 }
 
 func (p *Pihole) updateTopAdvertisersChart(pmx *piholeMetrics) {
@@ -145,14 +159,32 @@ func (p *Pihole) updateTopAdvertisersChart(pmx *piholeMetrics) {
 	}
 
 	chart := p.charts.Get("top_advertisers")
+	set := make(map[string]bool)
 
 	for _, v := range pmx.topItems.TopAds {
 		id := "top_ad_" + v.Name
-		if chart.HasDim(id) {
+		set[id] = true
+
+		if p.collected.topAds[id] {
 			continue
 		}
 
+		p.collected.topAds[id] = true
 		panicIf(chart.AddDim(&Dim{ID: id, Name: v.Name}))
+		chart.MarkNotCreated()
+	}
+
+	removeNotUpdatedDims(chart, p.collected.topAds, set)
+}
+
+func removeNotUpdatedDims(chart *Chart, existed, updated map[string]bool) {
+	for id := range existed {
+		if updated[id] {
+			continue
+		}
+
+		delete(updated, id)
+		panicIf(chart.RemoveDim(id))
 		chart.MarkNotCreated()
 	}
 }

@@ -15,30 +15,29 @@ type piholeMetrics struct {
 }
 
 func (p *Pihole) collect() (map[string]int64, error) {
-	pmx := p.collectRawMetrics(true)
+	pmx := p.scrapePihole(true)
 	mx := make(map[string]int64)
 
 	// non auth
-	p.collectSummary(mx, pmx)
-
+	collectSummary(mx, pmx)
 	// auth
-	p.collectQueryTypes(mx, pmx)
-	p.collectForwardDestination(mx, pmx)
-	p.collectTopClients(mx, pmx)
-	p.collectTopItems(mx, pmx)
+	collectQueryTypes(mx, pmx)
+	collectForwardDestination(mx, pmx)
+	collectTopClients(mx, pmx)
+	collectTopItems(mx, pmx)
 
 	p.updateCharts(pmx)
 
 	return mx, nil
 }
 
-func (p *Pihole) collectSummary(mx map[string]int64, pmx *piholeMetrics) {
+func collectSummary(mx map[string]int64, pmx *piholeMetrics) {
 	if pmx.summary == nil {
 		return
 	}
 }
 
-func (p *Pihole) collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
+func collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
 	if pmx.queryTypes == nil {
 		return
 	}
@@ -51,7 +50,7 @@ func (p *Pihole) collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
 	mx["TXT"] = int64(pmx.queryTypes.TXT * 100)
 }
 
-func (p *Pihole) collectForwardDestination(mx map[string]int64, pmx *piholeMetrics) {
+func collectForwardDestination(mx map[string]int64, pmx *piholeMetrics) {
 	if pmx.forwardDestinations == nil {
 		return
 	}
@@ -60,7 +59,7 @@ func (p *Pihole) collectForwardDestination(mx map[string]int64, pmx *piholeMetri
 	}
 }
 
-func (p *Pihole) collectTopClients(mx map[string]int64, pmx *piholeMetrics) {
+func collectTopClients(mx map[string]int64, pmx *piholeMetrics) {
 	if pmx.topItems == nil {
 		return
 	}
@@ -69,7 +68,7 @@ func (p *Pihole) collectTopClients(mx map[string]int64, pmx *piholeMetrics) {
 	}
 }
 
-func (p *Pihole) collectTopItems(mx map[string]int64, pmx *piholeMetrics) {
+func collectTopItems(mx map[string]int64, pmx *piholeMetrics) {
 	if pmx.topItems == nil {
 		return
 	}
@@ -81,40 +80,40 @@ func (p *Pihole) collectTopItems(mx map[string]int64, pmx *piholeMetrics) {
 	}
 }
 
-func (p *Pihole) collectRawMetrics(doConcurrently bool) *piholeMetrics {
-	rmx := new(piholeMetrics)
+func (p *Pihole) scrapePihole(doConcurrently bool) *piholeMetrics {
+	pmx := new(piholeMetrics)
 
 	taskSummary := func() {
 		var err error
-		rmx.summary, err = p.client.SummaryRaw()
+		pmx.summary, err = p.client.SummaryRaw()
 		if err != nil {
 			p.Error(err)
 		}
 	}
 	taskQueryTypes := func() {
 		var err error
-		rmx.queryTypes, err = p.client.QueryTypes()
+		pmx.queryTypes, err = p.client.QueryTypes()
 		if err != nil {
 			p.Error(err)
 		}
 	}
 	taskForwardDestinations := func() {
 		var err error
-		rmx.forwardDestinations, err = p.client.ForwardDestinations()
+		pmx.forwardDestinations, err = p.client.ForwardDestinations()
 		if err != nil {
 			p.Error(err)
 		}
 	}
 	taskTopClients := func() {
 		var err error
-		rmx.topClients, err = p.client.TopClients(defaultTopClients)
+		pmx.topClients, err = p.client.TopClients(defaultTopClients)
 		if err != nil {
 			p.Error(err)
 		}
 	}
 	taskTopItems := func() {
 		var err error
-		rmx.topItems, err = p.client.TopItems(defaultTopItems)
+		pmx.topItems, err = p.client.TopItems(defaultTopItems)
 		if err != nil {
 			p.Error(err)
 		}
@@ -152,5 +151,5 @@ func (p *Pihole) collectRawMetrics(doConcurrently bool) *piholeMetrics {
 
 	wg.Wait()
 
-	return rmx
+	return pmx
 }

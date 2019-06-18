@@ -16,10 +16,10 @@ func (p *Pihole) webPassword() string {
 		return ""
 	}
 
-	p.Info("starting web password auto detection, reading : %s", defaultSetupVarsPath)
-	pass, err := findWebPassword(defaultSetupVarsPath)
+	p.Info("starting web password auto detection, reading : %s", p.SetupVarsPath)
+	pass, err := findWebPassword(p.SetupVarsPath)
 	if err != nil {
-		p.Warningf("error during reading '%s' : %v", defaultSetupVarsPath, err)
+		p.Warningf("error during reading '%s' : %v", p.SetupVarsPath, err)
 	}
 
 	return pass
