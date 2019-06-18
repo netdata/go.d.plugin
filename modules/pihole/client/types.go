@@ -55,14 +55,11 @@ type (
 		Destinations map[string]float64 `json:"forward_destinations"`
 	}
 
-	// Destination is the forwarder.
-	Destination struct {
+	// ForwardDestination represents forwarder queries statistics.
+	ForwardDestination struct {
 		Name    string
 		Percent float64
 	}
-
-	// ForwardDestinations represents queries forwarding statistics.
-	ForwardDestinations []Destination
 )
 
 type (
@@ -70,13 +67,11 @@ type (
 		Sources map[string]int64 `json:"top_sources"`
 	}
 
-	// Source represents client.
-	Source struct {
+	// TopClient represents represents queries per client (source) statistics.
+	TopClient struct {
 		Name    string
 		Queries int64
 	}
-	// TopClients represents queries per client (source) statistics.
-	TopClients []Source
 )
 
 type (
@@ -87,16 +82,19 @@ type (
 		TopAds     item `json:"top_ads"`
 	}
 
-	// Item Item.
-	Item struct {
+	// TopQuery represents TopQuery.
+	TopQuery struct {
 		Name    string
 		Queries int64
 	}
 
+	// TopAdvertisement represents TopAdvertisement.
+	TopAdvertisement = TopQuery
+
 	// TopItems represents top domains and top advertisements statistics.
 	TopItems struct {
-		TopQueries []Item
-		TopAds     []Item
+		TopQueries []TopQuery
+		TopAds     []TopAdvertisement
 	}
 )
 

@@ -52,8 +52,8 @@ type piholeAPIClient interface {
 	Version() (int, error)
 	SummaryRaw() (*client.SummaryRaw, error)
 	QueryTypes() (*client.QueryTypes, error)
-	ForwardDestinations() (*client.ForwardDestinations, error)
-	TopClients(top int) (*client.TopClients, error)
+	ForwardDestinations() (*[]client.ForwardDestination, error)
+	TopClients(top int) (*[]client.TopClient, error)
 	TopItems(top int) (*client.TopItems, error)
 }
 

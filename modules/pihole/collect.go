@@ -1,18 +1,8 @@
 package pihole
 
 import (
-	"github.com/netdata/go.d.plugin/modules/pihole/client"
-
 	"sync"
 )
-
-type piholeMetrics struct {
-	summary             *client.SummaryRaw
-	queryTypes          *client.QueryTypes
-	forwardDestinations *client.ForwardDestinations
-	topClients          *client.TopClients
-	topItems            *client.TopItems
-}
 
 func (p *Pihole) collect() (map[string]int64, error) {
 	pmx := p.scrapePihole(true)
@@ -32,13 +22,13 @@ func (p *Pihole) collect() (map[string]int64, error) {
 }
 
 func collectSummary(mx map[string]int64, pmx *piholeMetrics) {
-	if pmx.summary == nil {
+	if !pmx.hasSummary() {
 		return
 	}
 }
 
 func collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
-	if pmx.queryTypes == nil {
+	if !pmx.hasQueryTypes() {
 		return
 	}
 	mx["A"] = int64(pmx.queryTypes.A * 100)
@@ -51,16 +41,16 @@ func collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
 }
 
 func collectForwardDestination(mx map[string]int64, pmx *piholeMetrics) {
-	if pmx.forwardDestinations == nil {
+	if !pmx.hasForwardDestinations() {
 		return
 	}
-	for _, v := range *pmx.forwardDestinations {
+	for _, v := range *pmx.forwarders {
 		mx["target_"+v.Name] = int64(v.Percent * 100)
 	}
 }
 
 func collectTopClients(mx map[string]int64, pmx *piholeMetrics) {
-	if pmx.topItems == nil {
+	if !pmx.hasTopClients() {
 		return
 	}
 	for _, v := range *pmx.topClients {
@@ -69,14 +59,15 @@ func collectTopClients(mx map[string]int64, pmx *piholeMetrics) {
 }
 
 func collectTopItems(mx map[string]int64, pmx *piholeMetrics) {
-	if pmx.topItems == nil {
-		return
+	if pmx.hasTopQueries() {
+		for _, v := range *pmx.topQueries {
+			mx["top_domain_"+v.Name] = v.Queries
+		}
 	}
-	for _, v := range pmx.topItems.TopQueries {
-		mx["top_domain_"+v.Name] = v.Queries
-	}
-	for _, v := range pmx.topItems.TopAds {
-		mx["top_ad_"+v.Name] = v.Queries
+	if pmx.hasTopAdvertisers() {
+		for _, v := range *pmx.topAds {
+			mx["top_ad_"+v.Name] = v.Queries
+		}
 	}
 }
 
@@ -99,7 +90,7 @@ func (p *Pihole) scrapePihole(doConcurrently bool) *piholeMetrics {
 	}
 	taskForwardDestinations := func() {
 		var err error
-		pmx.forwardDestinations, err = p.client.ForwardDestinations()
+		pmx.forwarders, err = p.client.ForwardDestinations()
 		if err != nil {
 			p.Error(err)
 		}
@@ -112,10 +103,13 @@ func (p *Pihole) scrapePihole(doConcurrently bool) *piholeMetrics {
 		}
 	}
 	taskTopItems := func() {
-		var err error
-		pmx.topItems, err = p.client.TopItems(defaultTopItems)
+		topItems, err := p.client.TopItems(defaultTopItems)
 		if err != nil {
 			p.Error(err)
+		}
+		if topItems != nil {
+			pmx.topQueries = &topItems.TopQueries
+			pmx.topAds = &topItems.TopAds
 		}
 	}
 

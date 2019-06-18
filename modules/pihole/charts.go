@@ -1,6 +1,7 @@
 package pihole
 
 import (
+	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -15,67 +16,76 @@ type (
 	Dim = module.Dim
 )
 
-var charts = Charts{
-	{
-		ID:    "random",
-		Title: "A Random Number", Units: "random", Fam: "random",
-		Dims: Dims{
-			{ID: "random0", Name: "random 0"},
-			{ID: "random1", Name: "random 1"},
+var (
+	charts = Charts{
+		{
+			ID:    "random",
+			Title: "A Random Number", Units: "random", Fam: "random",
+			Dims: Dims{
+				{ID: "random0", Name: "random 0"},
+				{ID: "random1", Name: "random 1"},
+			},
 		},
-	},
-}
+	}
 
-var authCharts = Charts{
-	{
-		ID:    "processed_dns_queries_types",
-		Title: "Processed DNS Queries By Types",
-		Units: "percentage",
-		Fam:   "queries",
-		Ctx:   "pihole.processed_dns_queries_types",
-		Dims: Dims{
-			{ID: "A", Div: 100},
-			{ID: "AAAA", Div: 100},
-			{ID: "ANY", Div: 100},
-			{ID: "PTR", Div: 100},
-			{ID: "SOA", Div: 100},
-			{ID: "SRV", Div: 100},
-			{ID: "TXT", Div: 100},
+	// authentication required
+	authCharts = Charts{
+		{
+			ID:    "processed_dns_queries_types",
+			Title: "Processed DNS Queries By Types",
+			Units: "percentage",
+			Fam:   "queries",
+			Ctx:   "pihole.processed_dns_queries_types",
+			Dims: Dims{
+				{ID: "A", Div: 100},
+				{ID: "AAAA", Div: 100},
+				{ID: "ANY", Div: 100},
+				{ID: "PTR", Div: 100},
+				{ID: "SOA", Div: 100},
+				{ID: "SRV", Div: 100},
+				{ID: "TXT", Div: 100},
+			},
 		},
-	},
-	{
-		ID:    "forwarded_dns_queries_targets",
-		Title: "Forwarded DNS Queries By Target",
-		Units: "percentage",
-		Fam:   "queries",
-		Ctx:   "pihole.forwarded_dns_queries_targets",
-		Dims: Dims{
-			{ID: "target_blocklist", Name: "blocklist", Div: 100},
-			{ID: "target_cache", Name: "cache", Div: 100},
+		{
+			ID:    "forwarded_dns_queries_targets",
+			Title: "Forwarded DNS Queries By Target",
+			Units: "percentage",
+			Fam:   "queries",
+			Ctx:   "pihole.forwarded_dns_queries_targets",
+			Dims: Dims{
+				{ID: "target_blocklist", Name: "blocklist", Div: 100},
+				{ID: "target_cache", Name: "cache", Div: 100},
+			},
 		},
-	},
-	{
-		ID:    "top_clients",
-		Title: "Top Clients",
-		Units: "queries",
-		Fam:   "top clients",
-		Ctx:   "pihole.top_clients_queries",
-	},
-	{
-		ID:    "top_domains",
-		Title: "Top Domains",
-		Units: "queries",
-		Fam:   "top domains",
-		Ctx:   "pihole.top_domains_queries",
-	},
-	{
-		ID:    "top_advertisers",
-		Title: "Top Advertisers",
-		Units: "queries",
-		Fam:   "top ads",
-		Ctx:   "pihole.top_ads_queries",
-	},
-}
+	}
+
+	topClientsChart = Chart{
+		ID:       "top_clients",
+		Title:    "Top Clients",
+		Units:    "queries",
+		Fam:      "top clients",
+		Ctx:      "pihole.top_clients_queries",
+		Priority: orchestrator.DefaultJobPriority + 10,
+	}
+
+	topDomainsChart = Chart{
+		ID:       "top_domains",
+		Title:    "Top Domains",
+		Units:    "queries",
+		Fam:      "top domains",
+		Ctx:      "pihole.top_domains_queries",
+		Priority: orchestrator.DefaultJobPriority + 20,
+	}
+
+	topAdvertisersChart = Chart{
+		ID:       "top_advertisers",
+		Title:    "Top Advertisers",
+		Units:    "queries",
+		Fam:      "top ads",
+		Ctx:      "pihole.top_ads_queries",
+		Priority: orchestrator.DefaultJobPriority + 30,
+	}
+)
 
 func (p *Pihole) updateCharts(pmx *piholeMetrics) {
 	p.updateForwardDestinationsCharts(pmx)
@@ -85,12 +95,13 @@ func (p *Pihole) updateCharts(pmx *piholeMetrics) {
 }
 
 func (p *Pihole) updateForwardDestinationsCharts(pmx *piholeMetrics) {
-	if pmx.forwardDestinations == nil {
+	if !pmx.hasForwardDestinations() {
 		return
 	}
+
 	chart := p.charts.Get("forwarded_dns_queries_targets")
 
-	for _, v := range *pmx.forwardDestinations {
+	for _, v := range *pmx.forwarders {
 		if v.Name == "blocklist" || v.Name == "cache" {
 			continue
 		}
@@ -106,8 +117,12 @@ func (p *Pihole) updateForwardDestinationsCharts(pmx *piholeMetrics) {
 }
 
 func (p *Pihole) updateTopClientChart(pmx *piholeMetrics) {
-	if pmx.topClients == nil {
+	if !pmx.hasTopClients() {
 		return
+	}
+
+	if len(p.collected.topClients) == 0 && !p.charts.Has("top_clients") {
+		panicIf(p.charts.Add(topClientsChart.Copy()))
 	}
 
 	chart := p.charts.Get("top_clients")
@@ -130,14 +145,18 @@ func (p *Pihole) updateTopClientChart(pmx *piholeMetrics) {
 }
 
 func (p *Pihole) updateTopDomainsChart(pmx *piholeMetrics) {
-	if pmx.topItems == nil || pmx.topItems.TopQueries == nil {
+	if !pmx.hasTopQueries() {
 		return
+	}
+
+	if len(p.collected.topDomains) == 0 && !p.charts.Has("top_domains") {
+		panicIf(p.charts.Add(topDomainsChart.Copy()))
 	}
 
 	chart := p.charts.Get("top_domains")
 	set := make(map[string]bool)
 
-	for _, v := range pmx.topItems.TopQueries {
+	for _, v := range *pmx.topQueries {
 		id := "top_domain_" + v.Name
 		set[id] = true
 
@@ -154,14 +173,18 @@ func (p *Pihole) updateTopDomainsChart(pmx *piholeMetrics) {
 }
 
 func (p *Pihole) updateTopAdvertisersChart(pmx *piholeMetrics) {
-	if pmx.topItems == nil || pmx.topItems.TopAds == nil {
+	if !pmx.hasTopAdvertisers() {
 		return
+	}
+
+	if len(p.collected.topAds) == 0 && !p.charts.Has("top_advertisers") {
+		panicIf(p.charts.Add(topAdvertisersChart.Copy()))
 	}
 
 	chart := p.charts.Get("top_advertisers")
 	set := make(map[string]bool)
 
-	for _, v := range pmx.topItems.TopAds {
+	for _, v := range *pmx.topAds {
 		id := "top_ad_" + v.Name
 		set[id] = true
 
@@ -183,7 +206,7 @@ func removeNotUpdatedDims(chart *Chart, existed, updated map[string]bool) {
 			continue
 		}
 
-		delete(updated, id)
+		delete(existed, id)
 		panicIf(chart.RemoveDim(id))
 		chart.MarkNotCreated()
 	}

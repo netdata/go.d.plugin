@@ -129,7 +129,7 @@ func (c *Client) QueryTypes() (*QueryTypes, error) {
 
 // ForwardDestinations does ?getForwardDestinations query.
 // Returns number of queries that have been forwarded to the targets.
-func (c *Client) ForwardDestinations() (*ForwardDestinations, error) {
+func (c *Client) ForwardDestinations() (*[]ForwardDestination, error) {
 	var fd forwardDestinations
 	err := c.query(&fd, QueryGetForwardDestinations)
 	if err != nil {
@@ -141,7 +141,7 @@ func (c *Client) ForwardDestinations() (*ForwardDestinations, error) {
 
 // TopClients does ?topClients query.
 // Returns top sources.
-func (c *Client) TopClients(top int) (*TopClients, error) {
+func (c *Client) TopClients(top int) (*[]TopClient, error) {
 	var ts topClients
 	err := c.query(&ts, QueryTopClients.WithValue(strconv.Itoa(top)))
 	if err != nil {
@@ -229,21 +229,21 @@ func isEmptyArray(data []byte) bool {
 	return len(data) == len(empty) && string(data) == empty
 }
 
-func parseForwardDestinations(raw forwardDestinations) *ForwardDestinations {
-	var fd ForwardDestinations
+func parseForwardDestinations(raw forwardDestinations) *[]ForwardDestination {
+	var fd []ForwardDestination
 	for k, v := range raw.Destinations {
 		name := strings.Split(k, "|")
-		fd = append(fd, Destination{Name: name[0], Percent: v})
+		fd = append(fd, ForwardDestination{Name: name[0], Percent: v})
 	}
 
 	return &fd
 }
 
-func parseTopSources(raw topClients) *TopClients {
-	var ts TopClients
+func parseTopSources(raw topClients) *[]TopClient {
+	var ts []TopClient
 	for k, v := range raw.Sources {
 		name := strings.Split(k, "|")
-		ts = append(ts, Source{Name: name[0], Queries: v})
+		ts = append(ts, TopClient{Name: name[0], Queries: v})
 	}
 
 	return &ts
@@ -252,10 +252,10 @@ func parseTopSources(raw topClients) *TopClients {
 func parseTopItems(raw topItems) *TopItems {
 	var ti TopItems
 	for k, v := range raw.TopQueries {
-		ti.TopQueries = append(ti.TopQueries, Item{Name: k, Queries: v})
+		ti.TopQueries = append(ti.TopQueries, TopQuery{Name: k, Queries: v})
 	}
 	for k, v := range raw.TopAds {
-		ti.TopAds = append(ti.TopAds, Item{Name: k, Queries: v})
+		ti.TopAds = append(ti.TopAds, TopAdvertisement{Name: k, Queries: v})
 	}
 
 	return &ti

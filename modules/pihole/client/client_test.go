@@ -136,7 +136,7 @@ func TestClient_ForwardDestinations(t *testing.T) {
 		return (*rv)[i].Percent < (*rv)[j].Percent
 	})
 
-	expected := &ForwardDestinations{
+	expected := &[]ForwardDestination{
 		{Name: "blocklist", Percent: 0},
 		{Name: "resolver1.opendns.com", Percent: 2.78},
 		{Name: "resolver2.opendns.com", Percent: 8.33},
@@ -157,7 +157,7 @@ func TestClient_TopClients(t *testing.T) {
 	rv, err := client.TopClients(5)
 	require.NoError(t, err)
 
-	expected := &TopClients{
+	expected := &[]TopClient{
 		{Name: "localhost", Queries: 36},
 	}
 
@@ -183,7 +183,7 @@ func TestClient_TopItems(t *testing.T) {
 	})
 
 	expected := &TopItems{
-		TopQueries: []Item{
+		TopQueries: []TopQuery{
 			{Name: "api.github.com", Queries: 10},
 			{Name: "220.220.67.208.in-addr.arpa", Queries: 11},
 			{Name: "222.222.67.208.in-addr.arpa", Queries: 12},
