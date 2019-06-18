@@ -46,13 +46,22 @@ type Config struct {
 	web.HTTP `yaml:",inline"`
 }
 
+type piholeAPIClient interface {
+	Version() (int, error)
+	SummaryRaw() (*client.SummaryRaw, error)
+	QueryTypes() (*client.QueryTypes, error)
+	ForwardDestinations() (*client.ForwardDestinations, error)
+	TopClients(top int) (*client.TopClients, error)
+	TopItems(top int) (*client.TopItems, error)
+}
+
 // Pihole Pihole module.
 type Pihole struct {
 	module.Base
 	Config `yaml:",inline"`
 
 	charts *module.Charts
-	client *client.Client
+	client piholeAPIClient
 }
 
 // Cleanup makes cleanup.
@@ -66,17 +75,17 @@ func (p *Pihole) Init() bool {
 		return false
 	}
 
-	pass := p.webPassword()
-	if pass == "" {
+	p.Password = p.webPassword()
+	if p.Password == "" {
 		p.Warning("no web password, not all metrics available")
 	} else {
-		p.Debugf("web password: %s", pass)
+		p.Debugf("web password: %s", p.Password)
 	}
 
 	config := client.Configuration{
 		Client:      httpClient,
 		URL:         p.UserURL,
-		WebPassword: pass,
+		WebPassword: p.Password,
 	}
 	p.client = client.New(config)
 

@@ -121,7 +121,7 @@ func (p *Pihole) collectRawMetrics(doConcurrently bool) *piholeMetrics {
 	}
 
 	var tasks = []func(){taskSummary}
-	if p.client.WebPassword != "" {
+	if p.Password != "" {
 		tasks = []func(){
 			taskSummary,
 			taskQueryTypes,
