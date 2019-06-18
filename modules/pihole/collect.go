@@ -14,46 +14,80 @@ type rawMetrics struct {
 	topItems            *client.TopItems
 }
 
+func (r rawMetrics) hasSummary() bool { return r.summary != nil }
+
+func (r rawMetrics) hasQueryTypes() bool { return r.queryTypes != nil }
+
+func (r rawMetrics) hasForwardDestinations() bool { return r.forwardDestinations != nil }
+
+func (r rawMetrics) hasTopClients() bool { return r.topClients != nil }
+
+func (r rawMetrics) hasTopItems() bool { return r.topItems != nil }
+
 func (p *Pihole) collect() (map[string]int64, error) {
 	rmx := p.collectRawMetrics(true)
 	mx := make(map[string]int64)
 
+	// non auth
 	p.collectSummary(mx, rmx)
+
+	// auth
 	p.collectQueryTypes(mx, rmx)
 	p.collectForwardDestination(mx, rmx)
 	p.collectTopClients(mx, rmx)
 	p.collectTopItems(mx, rmx)
 
+	p.updateCharts(rmx)
+
 	return mx, nil
 }
 
 func (p *Pihole) collectSummary(mx map[string]int64, rmx *rawMetrics) {
-	if rmx.summary == nil {
+	if !rmx.hasSummary() {
 		return
 	}
 }
 
 func (p *Pihole) collectQueryTypes(mx map[string]int64, rmx *rawMetrics) {
-	if rmx.queryTypes == nil {
+	if rmx.hasQueryTypes() {
 		return
 	}
+	mx["A"] = int64(rmx.queryTypes.A * 100)
+	mx["AAAA"] = int64(rmx.queryTypes.AAAA * 100)
+	mx["ANY"] = int64(rmx.queryTypes.ANY * 100)
+	mx["PTR"] = int64(rmx.queryTypes.PTR * 100)
+	mx["SOA"] = int64(rmx.queryTypes.SOA * 100)
+	mx["SRV"] = int64(rmx.queryTypes.SRV * 100)
+	mx["TXT"] = int64(rmx.queryTypes.TXT * 100)
 }
 
 func (p *Pihole) collectForwardDestination(mx map[string]int64, rmx *rawMetrics) {
-	if rmx.forwardDestinations == nil {
+	if rmx.hasForwardDestinations() {
 		return
+	}
+	for _, v := range *rmx.forwardDestinations {
+		mx["target_"+v.Name] = int64(v.Percent * 100)
 	}
 }
 
 func (p *Pihole) collectTopClients(mx map[string]int64, rmx *rawMetrics) {
-	if rmx.topClients == nil {
+	if rmx.hasTopClients() {
 		return
+	}
+	for _, v := range *rmx.topClients {
+		mx["top_client_"+v.Name] = v.Queries
 	}
 }
 
 func (p *Pihole) collectTopItems(mx map[string]int64, rmx *rawMetrics) {
-	if rmx.topItems == nil {
+	if rmx.hasTopItems() {
 		return
+	}
+	for _, v := range rmx.topItems.TopQueries {
+		mx["top_query_"+v.Name] = v.Queries
+	}
+	for _, v := range rmx.topItems.TopAds {
+		mx["top_ad_"+v.Name] = v.Queries
 	}
 }
 
@@ -62,50 +96,65 @@ func (p *Pihole) collectRawMetrics(doConcurrently bool) *rawMetrics {
 
 	taskSummary := func() {
 		var err error
-		if rmx.summary, err = p.client.SummaryRaw(); err != nil {
+		rmx.summary, err = p.client.SummaryRaw()
+		if err != nil {
 			p.Error(err)
 		}
 	}
 	taskQueryTypes := func() {
 		var err error
-		if rmx.queryTypes, err = p.client.QueryTypes(); err != nil {
+		rmx.queryTypes, err = p.client.QueryTypes()
+		if err != nil {
 			p.Error(err)
 		}
 	}
 	taskForwardDestinations := func() {
 		var err error
-		if rmx.forwardDestinations, err = p.client.ForwardDestinations(); err != nil {
+		rmx.forwardDestinations, err = p.client.ForwardDestinations()
+		if err != nil {
 			p.Error(err)
 		}
 	}
 	taskTopClients := func() {
 		var err error
-		if rmx.topClients, err = p.client.TopClients(defaultTopClients); err != nil {
+		rmx.topClients, err = p.client.TopClients(defaultTopClients)
+		if err != nil {
 			p.Error(err)
 		}
 	}
 	taskTopItems := func() {
 		var err error
-		if rmx.topItems, err = p.client.TopItems(defaultTopItems); err != nil {
+		rmx.topItems, err = p.client.TopItems(defaultTopItems)
+		if err != nil {
 			p.Error(err)
+		}
+	}
+
+	var tasks = []func(){taskSummary}
+	if p.client.WebPassword != "" {
+		tasks = []func(){
+			taskSummary,
+			taskQueryTypes,
+			taskForwardDestinations,
+			taskTopClients,
+			taskTopItems,
 		}
 	}
 
 	wg := &sync.WaitGroup{}
 
-	wrapper := func(call func()) func() {
+	wrap := func(call func()) func() {
 		return func() {
 			call()
 			wg.Done()
 		}
 	}
 
-	tasks := []func(){taskSummary, taskQueryTypes, taskForwardDestinations, taskTopClients, taskTopItems}
-
 	for _, task := range tasks {
 		if doConcurrently {
 			wg.Add(1)
-			go wrapper(task)()
+			task = wrap(task)
+			go task()
 		} else {
 			task()
 		}

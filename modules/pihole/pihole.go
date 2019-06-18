@@ -23,7 +23,7 @@ const (
 	defaultTopClients  = 5
 	defaultTopItems    = 5
 	//defaultSetupVarsPath = "/etc/pihole/setupVars.conf"
-	defaultSetupVarsPath = "/opt/other/setupVars.conf1"
+	defaultSetupVarsPath = "/opt/other/setupVars.conf"
 )
 
 // New creates Pihole with default values.
@@ -86,7 +86,7 @@ func (p *Pihole) Init() bool {
 func (Pihole) Check() bool { return true }
 
 // Charts returns Charts.
-func (Pihole) Charts() *module.Charts { return charts.Copy() }
+func (Pihole) Charts() *module.Charts { return authCharts.Copy() }
 
 // Collect collects metrics.
 func (p *Pihole) Collect() map[string]int64 {
