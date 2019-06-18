@@ -65,12 +65,12 @@ func (p *Pihole) collectRawMetrics(doConcurrently bool) *rawMetrics {
 
 	logWrap := func(t task) func() {
 		return func() {
-			err := t()
-			p.Error(err)
+			if err := t(); err != nil {
+				p.Error(err)
+			}
 		}
 	}
 	wgWrap := func(t func()) func() {
-		wg.Add(1)
 		return func() {
 			t()
 			wg.Done()
@@ -106,8 +106,10 @@ func (p *Pihole) collectRawMetrics(doConcurrently bool) *rawMetrics {
 	tasks := []task{doSummary, doQueryTypes, doForwardDestinations, doTopClients, doTopItems}
 
 	for _, t := range tasks {
-		wrapped := wgWrap(logWrap(t))
+		wrapped := logWrap(t)
 		if doConcurrently {
+			wg.Add(1)
+			wrapped = wgWrap(wrapped)
 			go wrapped()
 		} else {
 			wrapped()
