@@ -132,10 +132,10 @@ func TestClient_ForwardDestinations(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := &ForwardDestinations{
-		"blocklist|blocklist":                  0,
-		"cache|cache":                          88.89,
-		"resolver2.opendns.com|208.67.220.220": 8.33,
-		"resolver1.opendns.com|208.67.222.222": 2.78,
+		{Name: "blocklist", Percent: 0},
+		{Name: "cache", Percent: 88.89},
+		{Name: "resolver2.opendns.com", Percent: 8.33},
+		{Name: "resolver1.opendns.com", Percent: 2.78},
 	}
 
 	assert.Equal(t, expected, rv)
@@ -153,7 +153,7 @@ func TestClient_TopClients(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := &TopClients{
-		"localhost|127.0.0.1": 36,
+		{Name: "localhost", Queries: 36},
 	}
 
 	assert.Equal(t, expected, rv)
@@ -171,10 +171,10 @@ func TestClient_TopItems(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := &TopItems{
-		TopQueries: Item{
-			"api.github.com":              12,
-			"220.220.67.208.in-addr.arpa": 12,
-			"222.222.67.208.in-addr.arpa": 12,
+		TopQueries: []Item{
+			{Name: "api.github.com", Queries: 12},
+			{Name: "220.220.67.208.in-addr.arpa", Queries: 12},
+			{Name: "222.222.67.208.in-addr.arpa", Queries: 12},
 		},
 	}
 

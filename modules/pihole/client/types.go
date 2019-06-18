@@ -52,36 +52,58 @@ type (
 
 type (
 	forwardDestinations struct {
-		Destinations ForwardDestinations `json:"forward_destinations"`
+		Destinations map[string]float64 `json:"forward_destinations"`
+	}
+
+	// Destination is the forwarder.
+	Destination struct {
+		Name    string
+		Percent float64
 	}
 
 	// ForwardDestinations represents queries forwarding statistics.
-	ForwardDestinations map[string]float64
+	ForwardDestinations []Destination
 )
 
 type (
 	topClients struct {
-		Clients TopClients `json:"top_sources"`
+		Sources map[string]int64 `json:"top_sources"`
+	}
+
+	// Source represents client.
+	Source struct {
+		Name    string
+		Queries int64
 	}
 	// TopClients represents queries per client (source) statistics.
-	TopClients map[string]int64
+	TopClients []Source
 )
 
 type (
+	item map[string]int64
+
+	topItems struct {
+		TopQueries item `json:"top_queries"`
+		TopAds     item `json:"top_ads"`
+	}
+
 	// Item Item.
-	Item map[string]int
+	Item struct {
+		Name    string
+		Queries int64
+	}
 
 	// TopItems represents top domains and top advertisements statistics.
 	TopItems struct {
-		TopQueries Item `json:"top_queries"`
-		TopAds     Item `json:"top_ads"`
+		TopQueries []Item
+		TopAds     []Item
 	}
 )
 
-func (i *Item) UnmarshalJSON(data []byte) error {
+func (i *item) UnmarshalJSON(data []byte) error {
 	if isEmptyArray(data) {
 		return nil
 	}
-	type tmp *Item
+	type tmp *item
 	return json.Unmarshal(data, (tmp)(i))
 }

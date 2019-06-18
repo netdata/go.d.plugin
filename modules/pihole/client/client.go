@@ -42,6 +42,14 @@ const (
 	QueryGetQueryTypes          Query = "getQueryTypes"          // AUTH
 )
 
+func needAuth(q Query) bool {
+	switch q {
+	case QueryGetQueryTypes, QueryGetForwardDestinations, QueryTopItems, QueryTopClients:
+		return true
+	}
+	return false
+}
+
 var ErrPasswordNotSet = errors.New("password not set")
 
 type Configuration struct {
@@ -125,31 +133,31 @@ func (c *Client) ForwardDestinations() (*ForwardDestinations, error) {
 		return nil, err
 	}
 
-	return &fd.Destinations, nil
+	return parseForwardDestinations(fd), nil
 }
 
-// TopItems does ?topClients query.
+// TopClients does ?topClients query.
 // Returns top sources.
 func (c *Client) TopClients(top int) (*TopClients, error) {
-	var tc topClients
-	err := c.query(&tc, QueryTopClients.WithValue(strconv.Itoa(top)))
+	var ts topClients
+	err := c.query(&ts, QueryTopClients.WithValue(strconv.Itoa(top)))
 	if err != nil {
 		return nil, err
 	}
 
-	return &tc.Clients, nil
+	return parseTopSources(ts), nil
 }
 
 // TopItems does ?topItems query.
 // Returns top domains and top advertisements.
 func (c *Client) TopItems(top int) (*TopItems, error) {
-	var ti TopItems
+	var ti topItems
 	err := c.query(&ti, QueryTopItems.WithValue(strconv.Itoa(top)))
 	if err != nil {
 		return nil, err
 	}
 
-	return &ti, nil
+	return parseTopItems(ti), nil
 }
 
 func (c *Client) getWithDecode(dst interface{}, url string) error {
@@ -218,10 +226,34 @@ func isEmptyArray(data []byte) bool {
 	return len(data) == len(empty) && string(data) == empty
 }
 
-func needAuth(q Query) bool {
-	switch q {
-	case QueryGetQueryTypes, QueryGetForwardDestinations, QueryTopItems, QueryTopClients:
-		return true
+func parseForwardDestinations(raw forwardDestinations) *ForwardDestinations {
+	var fd ForwardDestinations
+	for k, v := range raw.Destinations {
+		name := strings.Split(k, "|")
+		fd = append(fd, Destination{Name: name[0], Percent: v})
 	}
-	return false
+
+	return &fd
+}
+
+func parseTopSources(raw topClients) *TopClients {
+	var ts TopClients
+	for k, v := range raw.Sources {
+		name := strings.Split(k, "|")
+		ts = append(ts, Source{Name: name[0], Queries: v})
+	}
+
+	return &ts
+}
+
+func parseTopItems(raw topItems) *TopItems {
+	var ti TopItems
+	for k, v := range raw.TopQueries {
+		ti.TopQueries = append(ti.TopQueries, Item{Name: k, Queries: v})
+	}
+	for k, v := range raw.TopAds {
+		ti.TopAds = append(ti.TopAds, Item{Name: k, Queries: v})
+	}
+
+	return &ti
 }
