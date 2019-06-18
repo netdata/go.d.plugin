@@ -11,16 +11,22 @@ func (p *Pihole) webPassword() string {
 	if p.Password != "" {
 		return p.Password
 	}
-
-	password, err := findWebPassword()
-	if err != nil {
-		p.Warningf("error on web password finding : %v", err)
+	if isLocalHost(p.UserURL) {
+		p.Info("abort web password auto detection, host is not localhost")
+		return ""
 	}
-	return password
+
+	p.Info("starting web password auto detection, reading : %s", defaultSetupVarsPath)
+	pass, err := findWebPassword(defaultSetupVarsPath)
+	if err != nil {
+		p.Warningf("error during reading '%s' : %v", defaultSetupVarsPath, err)
+	}
+
+	return pass
 }
 
-func findWebPassword() (string, error) {
-	f, err := os.Open(defaultSetupVarsPath)
+func findWebPassword(filePath string) (string, error) {
+	f, err := os.Open(filePath)
 	if err != nil {
 		return "", err
 	}
@@ -34,13 +40,26 @@ func findWebPassword() (string, error) {
 		if !strings.HasPrefix(line, "WEBPASSWORD") {
 			continue
 		}
+
 		parts := strings.Split(line, "=")
 		if len(parts) != 2 {
 			return "", fmt.Errorf("unparsable line : %s", line)
 		}
+
 		password = parts[1]
 		break
 	}
 
 	return password, nil
+}
+
+func isLocalHost(u string) bool {
+	if strings.Contains(u, "127.0.0.1") {
+		return true
+	}
+	if strings.Contains(u, "localhost") {
+		return true
+	}
+
+	return false
 }

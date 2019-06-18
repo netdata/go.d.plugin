@@ -59,62 +59,55 @@ func (p *Pihole) collectTopItems(mx map[string]int64, rmx *rawMetrics) {
 
 func (p *Pihole) collectRawMetrics(doConcurrently bool) *rawMetrics {
 	rmx := new(rawMetrics)
-	wg := &sync.WaitGroup{}
 
-	type task func() error
-
-	logWrap := func(task task) func() {
-		return func() {
-			err := task()
-			if err != nil {
-				p.Error(err)
-			}
+	taskSummary := func() {
+		var err error
+		if rmx.summary, err = p.client.SummaryRaw(); err != nil {
+			p.Error(err)
+		}
+	}
+	taskQueryTypes := func() {
+		var err error
+		if rmx.queryTypes, err = p.client.QueryTypes(); err != nil {
+			p.Error(err)
+		}
+	}
+	taskForwardDestinations := func() {
+		var err error
+		if rmx.forwardDestinations, err = p.client.ForwardDestinations(); err != nil {
+			p.Error(err)
+		}
+	}
+	taskTopClients := func() {
+		var err error
+		if rmx.topClients, err = p.client.TopClients(defaultTopClients); err != nil {
+			p.Error(err)
+		}
+	}
+	taskTopItems := func() {
+		var err error
+		if rmx.topItems, err = p.client.TopItems(defaultTopItems); err != nil {
+			p.Error(err)
 		}
 	}
 
-	wgWrap := func(call func()) func() {
+	wg := &sync.WaitGroup{}
+
+	wrapper := func(call func()) func() {
 		return func() {
 			call()
 			wg.Done()
 		}
 	}
 
-	taskSummary := func() error {
-		var err error
-		rmx.summary, err = p.client.SummaryRaw()
-		return err
-	}
-	taskQueryTypes := func() error {
-		var err error
-		rmx.queryTypes, err = p.client.QueryTypes()
-		return err
-	}
-	taskForwardDestinations := func() error {
-		var err error
-		rmx.forwardDestinations, err = p.client.ForwardDestinations()
-		return err
-	}
-	taskTopClients := func() error {
-		var err error
-		rmx.topClients, err = p.client.TopClients(defaultTopClients)
-		return err
-	}
-	taskTopItems := func() error {
-		var err error
-		rmx.topItems, err = p.client.TopItems(defaultTopItems)
-		return err
-	}
+	tasks := []func(){taskSummary, taskQueryTypes, taskForwardDestinations, taskTopClients, taskTopItems}
 
-	tasks := []task{taskSummary, taskQueryTypes, taskForwardDestinations, taskTopClients, taskTopItems}
-
-	for _, t := range tasks {
-		wrapped := logWrap(t)
-
+	for _, task := range tasks {
 		if doConcurrently {
 			wg.Add(1)
-			go wgWrap(wrapped)
+			go wrapper(task)()
 		} else {
-			wrapped()
+			task()
 		}
 	}
 

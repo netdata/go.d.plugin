@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -43,14 +42,18 @@ const (
 )
 
 func needAuth(q Query) bool {
-	switch q {
-	case QueryGetQueryTypes, QueryGetForwardDestinations, QueryTopItems, QueryTopClients:
+	switch {
+	case strings.HasPrefix(string(q), string(QueryGetQueryTypes)):
+		return true
+	case strings.HasPrefix(string(q), string(QueryGetForwardDestinations)):
+		return true
+	case strings.HasPrefix(string(q), string(QueryTopItems)):
+		return true
+	case strings.HasPrefix(string(q), string(QueryTopClients)):
 		return true
 	}
 	return false
 }
-
-var ErrPasswordNotSet = errors.New("password not set")
 
 type Configuration struct {
 	Client      *http.Client
@@ -79,7 +82,7 @@ type Client struct {
 
 func (c *Client) query(dst interface{}, query Query) error {
 	if needAuth(query) && c.WebPassword == "" {
-		return ErrPasswordNotSet
+		return fmt.Errorf("query %s needs authorization, but password is not set", string(query))
 	}
 	u, err := makeURL(c.URL, query, c.WebPassword)
 	if err != nil {

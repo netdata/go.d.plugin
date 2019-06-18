@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -131,11 +132,15 @@ func TestClient_ForwardDestinations(t *testing.T) {
 	rv, err := client.ForwardDestinations()
 	require.NoError(t, err)
 
+	sort.Slice(*rv, func(i, j int) bool {
+		return (*rv)[i].Percent < (*rv)[j].Percent
+	})
+
 	expected := &ForwardDestinations{
 		{Name: "blocklist", Percent: 0},
-		{Name: "cache", Percent: 88.89},
-		{Name: "resolver2.opendns.com", Percent: 8.33},
 		{Name: "resolver1.opendns.com", Percent: 2.78},
+		{Name: "resolver2.opendns.com", Percent: 8.33},
+		{Name: "cache", Percent: 88.89},
 	}
 
 	assert.Equal(t, expected, rv)
@@ -170,10 +175,17 @@ func TestClient_TopItems(t *testing.T) {
 	rv, err := client.TopItems(5)
 	require.NoError(t, err)
 
+	sort.Slice(rv.TopAds, func(i, j int) bool {
+		return rv.TopAds[i].Queries < rv.TopAds[j].Queries
+	})
+	sort.Slice(rv.TopQueries, func(i, j int) bool {
+		return rv.TopQueries[i].Queries < rv.TopQueries[j].Queries
+	})
+
 	expected := &TopItems{
 		TopQueries: []Item{
-			{Name: "api.github.com", Queries: 12},
-			{Name: "220.220.67.208.in-addr.arpa", Queries: 12},
+			{Name: "api.github.com", Queries: 10},
+			{Name: "220.220.67.208.in-addr.arpa", Queries: 11},
 			{Name: "222.222.67.208.in-addr.arpa", Queries: 12},
 		},
 	}

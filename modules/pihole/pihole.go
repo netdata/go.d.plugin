@@ -18,11 +18,12 @@ func init() {
 }
 
 const (
-	defaultURL           = "http://192.168.88.228"
-	defaultHTTPTimeout   = time.Second
-	defaultTopClients    = 5
-	defaultTopItems      = 5
-	defaultSetupVarsPath = "/etc/pihole/setupVars.conf"
+	defaultURL         = "http://192.168.88.228"
+	defaultHTTPTimeout = time.Second
+	defaultTopClients  = 5
+	defaultTopItems    = 5
+	//defaultSetupVarsPath = "/etc/pihole/setupVars.conf"
+	defaultSetupVarsPath = "/opt/other/setupVars.conf1"
 )
 
 // New creates Pihole with default values.
@@ -64,10 +65,17 @@ func (p *Pihole) Init() bool {
 		return false
 	}
 
+	pass := p.webPassword()
+	if pass == "" {
+		p.Warning("no web password, not all metrics available")
+	} else {
+		p.Debugf("web password: %s", pass)
+	}
+
 	config := client.Configuration{
 		Client:      httpClient,
 		URL:         p.UserURL,
-		WebPassword: p.webPassword(),
+		WebPassword: pass,
 	}
 	p.client = client.New(config)
 
