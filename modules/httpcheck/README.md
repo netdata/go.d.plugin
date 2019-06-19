@@ -24,7 +24,7 @@ It produces the following charts:
 | success      |No error on HTTP request, body reading and body content checking |
 | timeout      |Timeout error on HTTP request|
 | bad content |The body of the response didn't match the regex (only if `response_match` option is set)|
-| bad status |Response status code not in `accepted_statuses`|
+| bad status |Response status code not in `status_accepted`|
 | no connection |Any other network error not specifically handled by the module|
 
 
@@ -39,7 +39,7 @@ jobs:
       
   - name: cool_website2
     url: http://cool.website2:8080/home
-    accepted_statuses: [200, 201, 202]
+    status_accepted: [200, 201, 202]
     response_match: <title>My cool website!<\/title>
 ```
 
