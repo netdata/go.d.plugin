@@ -39,7 +39,7 @@ jobs:
       
   - name: cool_website2
     url: http://cool.website2:8080/home
-    accepted_statuses: [200, 201, 202]
+    status_accepted: [200, 201, 202]
     response_match: <title>My cool website!<\/title>
 ```
 
