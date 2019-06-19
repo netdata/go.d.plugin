@@ -2,6 +2,7 @@ package pihole
 
 import (
 	"sync"
+	"time"
 )
 
 func (p *Pihole) collect() (map[string]int64, error) {
@@ -16,7 +17,6 @@ func (p *Pihole) collect() (map[string]int64, error) {
 	collectForwardDestination(mx, pmx)
 	collectTopClients(mx, pmx)
 	collectTopDomains(mx, pmx)
-	collectTopAdvertisers(mx, pmx)
 
 	p.updateCharts(pmx)
 
@@ -27,6 +27,15 @@ func collectSummary(mx map[string]int64, pmx *piholeMetrics) {
 	if !pmx.hasSummary() {
 		return
 	}
+
+	mx["ads_blocked_today"] = pmx.summary.AdsBlockedToday
+	mx["ads_percentage_today"] = int64(pmx.summary.AdsPercentageToday * 100)
+	mx["domains_being_blocked"] = pmx.summary.DomainsBeingBlocked
+	mx["blocklist_last_update"] = time.Now().Unix() - pmx.summary.GravityLastUpdated.Absolute
+	mx["dns_queries_today"] = pmx.summary.DNSQueriesToday
+	mx["queries_forwarded"] = pmx.summary.QueriesForwarded
+	mx["queries_cached"] = pmx.summary.QueriesCached
+	mx["unique_clients"] = pmx.summary.UniqueClients
 }
 
 func collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
@@ -48,7 +57,7 @@ func collectForwardDestination(mx map[string]int64, pmx *piholeMetrics) {
 		return
 	}
 	for _, v := range *pmx.forwarders {
-		mx["target_"+v.Name] = int64(v.Percent * 100)
+		mx["destination_"+v.Name] = int64(v.Percent * 100)
 	}
 }
 
@@ -62,20 +71,15 @@ func collectTopClients(mx map[string]int64, pmx *piholeMetrics) {
 }
 
 func collectTopDomains(mx map[string]int64, pmx *piholeMetrics) {
-	if !pmx.hasTopQueries() {
-		return
+	if pmx.hasTopQueries() {
+		for _, v := range *pmx.topQueries {
+			mx["top_perm_domain_"+v.Name] = v.Hits
+		}
 	}
-	for _, v := range *pmx.topQueries {
-		mx["top_domain_"+v.Name] = v.Hits
-	}
-}
-
-func collectTopAdvertisers(mx map[string]int64, pmx *piholeMetrics) {
-	if !pmx.hasTopAdvertisers() {
-		return
-	}
-	for _, v := range *pmx.topAds {
-		mx["top_ad_"+v.Name] = v.Hits
+	if pmx.hasTopAdvertisers() {
+		for _, v := range *pmx.topAds {
+			mx["top_blocked_domain_"+v.Name] = v.Hits
+		}
 	}
 }
 
@@ -124,6 +128,7 @@ func (p *Pihole) scrapeSummary(pmx *piholeMetrics) {
 	}
 	pmx.summary = v
 }
+
 func (p *Pihole) scrapeQueryTypes(pmx *piholeMetrics) {
 	v, err := p.client.QueryTypes()
 	if err != nil {
@@ -143,7 +148,7 @@ func (p *Pihole) scrapeForwardedDestinations(pmx *piholeMetrics) {
 }
 
 func (p *Pihole) scrapeTopClients(pmx *piholeMetrics) {
-	v, err := p.client.TopClients(5)
+	v, err := p.client.TopClients(p.TopClientsEntries)
 	if err != nil {
 		p.Error(err)
 		return
@@ -152,7 +157,7 @@ func (p *Pihole) scrapeTopClients(pmx *piholeMetrics) {
 }
 
 func (p *Pihole) scrapeTopItems(pmx *piholeMetrics) {
-	v, err := p.client.TopItems(5)
+	v, err := p.client.TopItems(p.TopItemsEntries)
 	if err != nil {
 		p.Error(err)
 		return

@@ -8,6 +8,7 @@ import (
 )
 
 func (p *Pihole) webPassword() string {
+	// do no read setupVarsPath is password is net in the configuration file
 	if p.Password != "" {
 		return p.Password
 	}

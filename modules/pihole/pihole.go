@@ -18,10 +18,13 @@ func init() {
 }
 
 const (
+	// TODO: change defaultURL
+	//defaultURL         = "http://127.0.0.1"
 	defaultURL         = "http://192.168.88.228"
 	defaultHTTPTimeout = time.Second
 	defaultTopClients  = 5
 	defaultTopItems    = 5
+	// TODO: change defaultSetupVarsPath
 	//defaultSetupVarsPath = "/etc/pihole/setupVars.conf"
 	defaultSetupVarsPath = "/opt/other/setupVars.conf"
 )
@@ -30,15 +33,19 @@ const (
 func New() *Pihole {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				UserURL: defaultURL},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
-		SetupVarsPath: defaultSetupVarsPath,
+		SetupVarsPath:     defaultSetupVarsPath,
+		TopClientsEntries: defaultTopClients,
+		TopItemsEntries:   defaultTopItems,
 	}
 
 	return &Pihole{
 		Config: config,
-		charts: authCharts.Copy(),
+		charts: charts.Copy(),
 	}
 }
 
@@ -53,8 +60,10 @@ type piholeAPIClient interface {
 
 // Config is the Pihole module configuration.
 type Config struct {
-	web.HTTP      `yaml:",inline"`
-	SetupVarsPath string `yaml:"setup_vars_path"`
+	web.HTTP          `yaml:",inline"`
+	SetupVarsPath     string `yaml:"setup_vars_path"`
+	TopClientsEntries int    `yaml:"top_clients_entries"`
+	TopItemsEntries   int    `yaml:"top_items_entries"`
 }
 
 // Pihole Pihole module.
@@ -98,7 +107,12 @@ func (p *Pihole) Init() bool {
 func (Pihole) Check() bool { return true }
 
 // Charts returns Charts.
-func (p Pihole) Charts() *module.Charts { return p.charts }
+func (p Pihole) Charts() *module.Charts {
+	if p.Password != "" {
+		panicIf(p.charts.Add(*authCharts.Copy()...))
+	}
+	return p.charts
+}
 
 // Collect collects metrics.
 func (p *Pihole) Collect() map[string]int64 {
