@@ -5,7 +5,8 @@ import (
 )
 
 func (p *Pihole) collect() (map[string]int64, error) {
-	pmx := p.scrapePihole(true)
+	pmx := new(piholeMetrics)
+	p.scrapePihole(pmx, true)
 	mx := make(map[string]int64)
 
 	// non auth
@@ -78,64 +79,26 @@ func collectTopAdvertisers(mx map[string]int64, pmx *piholeMetrics) {
 	}
 }
 
-func (p *Pihole) scrapePihole(doConcurrently bool) *piholeMetrics {
-	pmx := new(piholeMetrics)
+func (p *Pihole) scrapePihole(pmx *piholeMetrics, doConcurrently bool) {
+	type task func(*piholeMetrics)
 
-	taskSummary := func() {
-		var err error
-		pmx.summary, err = p.client.SummaryRaw()
-		if err != nil {
-			p.Error(err)
-		}
-	}
-	taskQueryTypes := func() {
-		var err error
-		pmx.queryTypes, err = p.client.QueryTypes()
-		if err != nil {
-			p.Error(err)
-		}
-	}
-	taskForwardDestinations := func() {
-		var err error
-		pmx.forwarders, err = p.client.ForwardDestinations()
-		if err != nil {
-			p.Error(err)
-		}
-	}
-	taskTopClients := func() {
-		var err error
-		pmx.topClients, err = p.client.TopClients(defaultTopClients)
-		if err != nil {
-			p.Error(err)
-		}
-	}
-	taskTopItems := func() {
-		topItems, err := p.client.TopItems(defaultTopItems)
-		if err != nil {
-			p.Error(err)
-		}
-		if topItems != nil {
-			pmx.topQueries = &topItems.TopQueries
-			pmx.topAds = &topItems.TopAds
-		}
-	}
+	var tasks = []task{p.scrapeSummary}
 
-	var tasks = []func(){taskSummary}
 	if p.Password != "" {
-		tasks = []func(){
-			taskSummary,
-			taskQueryTypes,
-			taskForwardDestinations,
-			taskTopClients,
-			taskTopItems,
+		tasks = []task{
+			p.scrapeSummary,
+			p.scrapeQueryTypes,
+			p.scrapeForwardedDestinations,
+			p.scrapeTopClients,
+			p.scrapeTopItems,
 		}
 	}
 
 	wg := &sync.WaitGroup{}
 
-	wrap := func(call func()) func() {
-		return func() {
-			call()
+	wrap := func(call task) task {
+		return func(metrics *piholeMetrics) {
+			call(metrics)
 			wg.Done()
 		}
 	}
@@ -144,13 +107,56 @@ func (p *Pihole) scrapePihole(doConcurrently bool) *piholeMetrics {
 		if doConcurrently {
 			wg.Add(1)
 			task = wrap(task)
-			go task()
+			go task(pmx)
 		} else {
-			task()
+			task(pmx)
 		}
 	}
 
 	wg.Wait()
+}
 
-	return pmx
+func (p *Pihole) scrapeSummary(pmx *piholeMetrics) {
+	v, err := p.client.SummaryRaw()
+	if err != nil {
+		p.Error(err)
+		return
+	}
+	pmx.summary = v
+}
+func (p *Pihole) scrapeQueryTypes(pmx *piholeMetrics) {
+	v, err := p.client.QueryTypes()
+	if err != nil {
+		p.Error(err)
+		return
+	}
+	pmx.queryTypes = v
+}
+
+func (p *Pihole) scrapeForwardedDestinations(pmx *piholeMetrics) {
+	v, err := p.client.ForwardDestinations()
+	if err != nil {
+		p.Error(err)
+		return
+	}
+	pmx.forwarders = v
+}
+
+func (p *Pihole) scrapeTopClients(pmx *piholeMetrics) {
+	v, err := p.client.TopClients(5)
+	if err != nil {
+		p.Error(err)
+		return
+	}
+	pmx.topClients = v
+}
+
+func (p *Pihole) scrapeTopItems(pmx *piholeMetrics) {
+	v, err := p.client.TopItems(5)
+	if err != nil {
+		p.Error(err)
+		return
+	}
+	pmx.topQueries = &v.TopQueries
+	pmx.topAds = &v.TopAds
 }
