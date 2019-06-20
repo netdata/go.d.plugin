@@ -17,6 +17,8 @@ func init() {
 	module.Register("pihole", creator)
 }
 
+const supportedAPIVersion = 3
+
 const (
 	// TODO: change defaultURL
 	//defaultURL         = "http://127.0.0.1"
@@ -105,7 +107,20 @@ func (p *Pihole) Init() bool {
 }
 
 // Check makes check.
-func (Pihole) Check() bool { return true }
+func (p Pihole) Check() bool {
+	ver, err := p.client.Version()
+	if err != nil {
+		p.Error(err)
+		return false
+	}
+
+	if ver != supportedAPIVersion {
+		p.Errorf("API version: %d, supported version: %d", ver, supportedAPIVersion)
+		return false
+	}
+
+	return true
+}
 
 // Charts returns Charts.
 func (p Pihole) Charts() *module.Charts {
