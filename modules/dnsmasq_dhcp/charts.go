@@ -20,13 +20,13 @@ var charts = Charts{
 		ID:    "%s_utilization",
 		Title: "DHCP Range Utilization",
 		Units: "percentage",
-		Ctx:   "dhcp_range_utilization",
+		Ctx:   "dnsmasq_dhcp.dhcp_range_utilization",
 	},
 	{
 		ID:    "%s_allocated_leases",
 		Title: "DHCP Range Allocated Leases",
 		Units: "leases",
-		Ctx:   "dhcp_range_allocated_leases",
+		Ctx:   "dnsmasq_dhcp.dhcp_range_allocated_leases",
 	},
 }
 
