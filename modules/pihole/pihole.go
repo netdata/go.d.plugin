@@ -119,16 +119,15 @@ func (p Pihole) Check() bool {
 		return false
 	}
 
-	return true
-}
-
-// Charts returns Charts.
-func (p Pihole) Charts() *module.Charts {
 	if p.Password != "" {
 		panicIf(p.charts.Add(*authCharts.Copy()...))
 	}
-	return p.charts
+
+	return len(p.Collect()) > 0
 }
+
+// Charts returns Charts.
+func (p Pihole) Charts() *module.Charts { return p.charts }
 
 // Collect collects metrics.
 func (p *Pihole) Collect() map[string]int64 {

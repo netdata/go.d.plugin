@@ -142,7 +142,7 @@ var (
 	topClientsChart = Chart{
 		ID:       "top_clients",
 		Title:    "Top Clients Total",
-		Units:    "queries",
+		Units:    "requests",
 		Fam:      "top clients",
 		Ctx:      "pihole.top_clients",
 		Type:     module.Stacked,
@@ -171,6 +171,7 @@ var (
 )
 
 func (p *Pihole) updateCharts(pmx *piholeMetrics) {
+	// auth charts
 	p.updateForwardDestinationsCharts(pmx)
 	p.updateTopClientChart(pmx)
 	p.updateTopPermittedDomainsChart(pmx)
