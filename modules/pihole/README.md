@@ -34,7 +34,7 @@ It produces the following set of charts:
 7. **Unwanted Domains Blocking Status (1 - Enabled, 0 - Disabled)** in boolean
   * enabled
   
-If the web password is set and valid following chart will be added:
+If the web password is set and valid following charts will be added:
 
 1. **DNS Queries Per Type** in percentage
   * A
@@ -66,7 +66,7 @@ It expects to find the file in the `/etc/pihole/` directory.
 
 If you want to monitor remote instance you need to set the password in the module configuration file. 
 
-Here is an example for local and remote instance:
+Here is an example for local and remote instances:
 
 ```yaml
 jobs:
