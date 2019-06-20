@@ -97,11 +97,11 @@ var (
 		{
 			ID:    "unwanted_domains_blocking_status",
 			Title: "Unwanted Domains Blocking Status (1 - Enabled, 0 - Disabled)",
-			Units: "bool",
+			Units: "boolean",
 			Fam:   "status",
 			Ctx:   "pihole.unwanted_domains_blocking_status",
 			Dims: Dims{
-				{ID: "status"},
+				{ID: "status", Name: "enabled"},
 			},
 		},
 	}
@@ -141,7 +141,7 @@ var (
 
 	topClientsChart = Chart{
 		ID:       "top_clients",
-		Title:    "Top Clients Total",
+		Title:    "Top Clients",
 		Units:    "requests",
 		Fam:      "top clients",
 		Ctx:      "pihole.top_clients",
