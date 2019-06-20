@@ -20,15 +20,11 @@ func init() {
 const supportedAPIVersion = 3
 
 const (
-	// TODO: change defaultURL
-	//defaultURL         = "http://127.0.0.1"
-	defaultURL         = "http://192.168.88.228"
-	defaultHTTPTimeout = time.Second
-	defaultTopClients  = 5
-	defaultTopItems    = 5
-	// TODO: change defaultSetupVarsPath
-	//defaultSetupVarsPath = "/etc/pihole/setupVars.conf"
-	defaultSetupVarsPath = "/opt/other/setupVars.conf"
+	defaultURL           = "http://127.0.0.1"
+	defaultHTTPTimeout   = time.Second
+	defaultTopClients    = 5
+	defaultTopItems      = 5
+	defaultSetupVarsPath = "/etc/pihole/setupVars.conf"
 )
 
 // New creates Pihole with default values.

@@ -31,7 +31,7 @@ It produces the following set of charts:
 6. **Blocklist Last Update** in seconds
   * ago
   
-7. **Unwanted Domains Blocking Status (1 - Enabled, 0 - Disabled)** in boolean
+7. **Unwanted Domains Blocking Status** in boolean
   * enabled
   
 If the web password is set and valid following charts will be added:

@@ -96,7 +96,7 @@ var (
 		// ads blocking
 		{
 			ID:    "unwanted_domains_blocking_status",
-			Title: "Unwanted Domains Blocking Status (1 - Enabled, 0 - Disabled)",
+			Title: "Unwanted Domains Blocking Status",
 			Units: "boolean",
 			Fam:   "status",
 			Ctx:   "pihole.unwanted_domains_blocking_status",
