@@ -14,6 +14,8 @@ type (
 	Dims = module.Dims
 	// Dim is an alias for module.Dim
 	Dim = module.Dim
+	// Dim is an alias for module.Dim
+	Vars = module.Vars
 )
 
 // ads_percentage_today
@@ -21,21 +23,21 @@ var (
 	charts = Charts{
 		// queries
 		{
-			ID:    "queries_total",
-			Title: "Total Queries (Cached, Blocked and Forwarded)",
-			Units: "queries/s",
+			ID:    "dns_queries_total",
+			Title: "DNS Queries Total (Cached, Blocked and Forwarded)",
+			Units: "queries",
 			Fam:   "queries",
-			Ctx:   "pihole.queries",
+			Ctx:   "pihole.dns_queries_total",
 			Dims: Dims{
-				{ID: "dns_queries_today", Name: "queries", Algo: module.Incremental},
+				{ID: "dns_queries_today", Name: "queries"},
 			},
 		},
 		{
-			ID:    "processed_queries_total",
-			Title: "Processed Queries Total",
+			ID:    "dns_queries",
+			Title: "DNS Queries",
 			Units: "queries",
 			Fam:   "queries",
-			Ctx:   "pihole.processed_queries",
+			Ctx:   "pihole.dns_queries",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "queries_cached", Name: "cached"},
@@ -44,39 +46,16 @@ var (
 			},
 		},
 		{
-			ID:    "processed_queries",
-			Title: "Processed Queries",
-			Units: "queries/s",
-			Fam:   "queries",
-			Ctx:   "pihole.processed_queries",
-			Type:  module.Stacked,
-			Dims: Dims{
-				{ID: "queries_cached", Name: "cached", Algo: module.Incremental},
-				{ID: "ads_blocked_today", Name: "blocked", Algo: module.Incremental},
-				{ID: "queries_forwarded", Name: "forwarded", Algo: module.Incremental},
-			},
-		},
-		{
-			ID:    "processed_queries_ratio",
-			Title: "Processed Queries Ratio",
+			ID:    "dns_queries_percentage",
+			Title: "DNS Queries Percentage",
 			Units: "percentage",
 			Fam:   "queries",
-			Ctx:   "pihole.processed_queries_percentage",
+			Ctx:   "pihole.dns_queries_percentage",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "queries_cached", Name: "cached", Algo: module.PercentOfAbsolute},
 				{ID: "ads_blocked_today", Name: "blocked", Algo: module.PercentOfAbsolute},
 				{ID: "queries_forwarded", Name: "forwarded", Algo: module.PercentOfAbsolute},
-			},
-		},
-		{
-			ID:    "blocked_queries_percentage",
-			Title: "Blocked Queries Percentage",
-			Units: "percentage",
-			Fam:   "queries",
-			Ctx:   "pihole.blocked_queries_percentage",
-			Dims: Dims{
-				{ID: "ads_percentage_today", Name: "blocked", Div: 100},
 			},
 		},
 		// clients
@@ -98,7 +77,7 @@ var (
 			Fam:   "blocklist",
 			Ctx:   "pihole.domains_on_blocklist",
 			Dims: Dims{
-				{ID: "domains_being_blocked", Name: "on blocklist"},
+				{ID: "domains_being_blocked", Name: "blocklist"},
 			},
 		},
 		{
@@ -110,17 +89,31 @@ var (
 			Dims: Dims{
 				{ID: "blocklist_last_update", Name: "ago"},
 			},
+			Vars: Vars{
+				{ID: "file_exists", Value: 1},
+			},
+		},
+		// ads blocking
+		{
+			ID:    "unwanted_domains_blocking_status",
+			Title: "Unwanted Domains Blocking Status (1 - Enabled, 0 - Disabled)",
+			Units: "bool",
+			Fam:   "status",
+			Ctx:   "pihole.unwanted_domains_blocking_status",
+			Dims: Dims{
+				{ID: "status"},
+			},
 		},
 	}
 
 	// authentication required
 	authCharts = Charts{
 		{
-			ID:    "processed_dns_queries_types",
-			Title: "Processed DNS Queries By Types",
+			ID:    "dns_queries_types",
+			Title: "DNS Queries Per Type",
 			Units: "percentage",
 			Fam:   "query types",
-			Ctx:   "pihole.processed_dns_queries_types",
+			Ctx:   "pihole.dns_queries_types",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "A", Div: 100},
@@ -133,11 +126,11 @@ var (
 			},
 		},
 		{
-			ID:    "forwarded_dns_queries_destination",
-			Title: "Forwarded DNS Queries By Destination",
+			ID:    "dns_queries_forwarded_destination",
+			Title: "DNS Queries Per Destination",
 			Units: "percentage",
 			Fam:   "queries answered by",
-			Ctx:   "pihole.forwarded_dns_queries_destinations",
+			Ctx:   "pihole.dns_queries_forwarded_destination",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "destination_cache", Name: "cache", Div: 100},
@@ -151,7 +144,7 @@ var (
 		Title:    "Top Clients Total",
 		Units:    "queries",
 		Fam:      "top clients",
-		Ctx:      "pihole.top_clients_queries",
+		Ctx:      "pihole.top_clients",
 		Type:     module.Stacked,
 		Priority: orchestrator.DefaultJobPriority + 10,
 	}
@@ -189,7 +182,7 @@ func (p *Pihole) updateForwardDestinationsCharts(pmx *piholeMetrics) {
 		return
 	}
 
-	chart := p.charts.Get("forwarded_dns_queries_destination")
+	chart := p.charts.Get("dns_queries_forwarded_destination")
 	set := make(map[string]bool)
 
 	for _, v := range *pmx.forwarders {

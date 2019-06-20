@@ -34,7 +34,8 @@ func New() *Pihole {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: defaultURL},
+				UserURL: defaultURL,
+			},
 			Client: web.Client{
 				Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},

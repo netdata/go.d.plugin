@@ -36,6 +36,8 @@ func collectSummary(mx map[string]int64, pmx *piholeMetrics) {
 	mx["queries_forwarded"] = pmx.summary.QueriesForwarded
 	mx["queries_cached"] = pmx.summary.QueriesCached
 	mx["unique_clients"] = pmx.summary.UniqueClients
+	mx["file_exists"] = boolToInt(pmx.summary.GravityLastUpdated.FileExists)
+	mx["status"] = boolToInt(pmx.summary.Status == "enabled")
 }
 
 func collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
@@ -164,4 +166,11 @@ func (p *Pihole) scrapeTopItems(pmx *piholeMetrics) {
 	}
 	pmx.topQueries = &v.TopQueries
 	pmx.topAds = &v.TopAds
+}
+
+func boolToInt(b bool) int64 {
+	if !b {
+		return 0
+	}
+	return 1
 }
