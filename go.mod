@@ -3,6 +3,7 @@ module github.com/netdata/go.d.plugin
 go 1.12
 
 require (
+	github.com/Wing924/ltsv v1.2.0 // indirect
 	github.com/axiomhq/hyperloglog v0.0.0-20181223111420-4b99d0c2c99e
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/dgryski/go-metro v0.0.0-20180109044635-280f6062b5bc // indirect

@@ -29,6 +29,9 @@ type Reader struct {
 	log           *logger.Logger
 }
 
+// Open a file and seek to end of the file.
+// path: shell file name pattern
+// excludePath: shell file name pattern
 func Open(path string, excludePath string, log *logger.Logger) (*Reader, error) {
 	var err error
 	if path, err = filepath.Abs(path); err != nil {
@@ -52,6 +55,7 @@ func Open(path string, excludePath string, log *logger.Logger) (*Reader, error) 
 	return r, nil
 }
 
+// CurrentFilename get current opened file name
 func (f *Reader) CurrentFilename() string {
 	return f.file.Name()
 }

@@ -26,7 +26,7 @@ package weblog
 //	}
 //	return &Worker{
 //		config: config,
-//		//parser: NewLogParser(),
+//		//parser: NewCSVParser(),
 //		//metrics: NewMetricsData(config),
 //	}, nil
 //}
@@ -34,7 +34,7 @@ package weblog
 //func (w *Worker) Start() {
 //	//go func() {
 //	//	for {
-//	//		//record, err := w.parser.Read()
+//	//		//record, err := w.parser.ReadAsMap()
 //	//		if err == io.EOF {
 //	//			break
 //	//		}

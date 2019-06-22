@@ -39,15 +39,15 @@ func New() *WebLog {
 
 type (
 	Config struct {
-		Path                   string        `yaml:"path" validate:"required"`
-		ExcludePath            string        `yaml:"exclude_path"`
-		Filter                 rawFilter     `yaml:"filter"`
-		URLCategories          []RawCategory `yaml:"categories"`
-		UserCategories         []RawCategory `yaml:"user_categories"`
-		LogFormat              string        `yaml:"log_format"`
-		LogTimeScale           float64       `yaml:"log_time_scale"`
-		Histogram              []float64     `yaml:"histogram"`
-		AggregateResponseCodes bool          `yaml:"aggregate_response_codes"`
+		Path                   string             `yaml:"path" validate:"required"`
+		ExcludePath            string             `yaml:"exclude_path"`
+		Filter                 matcher.SimpleExpr `yaml:"filter"`
+		URLCategories          []RawCategory      `yaml:"categories"`
+		UserCategories         []RawCategory      `yaml:"user_categories"`
+		LogFormat              string             `yaml:"log_format"`
+		LogTimeScale           float64            `yaml:"log_time_scale"`
+		Histogram              []float64          `yaml:"histogram"`
+		AggregateResponseCodes bool               `yaml:"aggregate_response_codes"`
 	}
 
 	WebLog struct {
@@ -93,7 +93,7 @@ func (w *WebLog) Check() bool {
 		return false
 	}
 
-	parser := NewLogParser(bytes.NewBuffer(lastLine))
+	parser := NewCSVParser(ParserConfig{}, bytes.NewBuffer(lastLine))
 	fields, err := parser.Read()
 	if err != nil {
 		w.Warning("check failed: ", err)
@@ -375,14 +375,20 @@ func (w *WebLog) initLogReader() error {
 		return err
 	}
 	w.file = file
-	w.parser = NewLogParser(file)
+	w.parser = NewCSVParser(ParserConfig{}, file)
 	return nil
 }
 
 func (w *WebLog) initFilter() (err error) {
-	if w.filter, err = NewFilter(w.Filter); err != nil {
-		err = fmt.Errorf("error on creating filter %s: %v", w.Filter, err)
+	if w.Filter.Empty() {
+		w.filter = matcher.TRUE()
+		return
 	}
+	m, err := w.Filter.Parse()
+	if err != nil {
+		return fmt.Errorf("error on creating filter %s: %v", w.Filter, err)
+	}
+	w.filter = m
 	return
 }
 

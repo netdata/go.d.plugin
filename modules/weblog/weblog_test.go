@@ -13,7 +13,7 @@ import (
 
 func TestWebLog_Init(t *testing.T) {
 	weblog := New()
-	weblog.Config.Filter.Include = "~ .php$"
+	weblog.Config.Filter.Includes = []string{"~ .php$"}
 	weblog.Config.URLCategories = []RawCategory{
 		{"foo", "= foo"},
 		{"bar", "= bar"},
