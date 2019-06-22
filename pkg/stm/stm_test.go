@@ -299,25 +299,25 @@ func TestToMap_Variadic(t *testing.T) {
 func TestToMap_badTag(t *testing.T) {
 	assert.Panics(t, func() {
 		s := struct {
-			a int `stm:"a,not_int"`
+			A int `stm:"a,not_int"`
 		}{1}
 		stm.ToMap(s)
 	})
 	assert.Panics(t, func() {
 		s := struct {
-			a int `stm:"a,1,not_int"`
+			A int `stm:"a,1,not_int"`
 		}{1}
 		stm.ToMap(s)
 	})
 	assert.Panics(t, func() {
 		s := struct {
-			a int `stm:"a,not_int,1"`
+			A int `stm:"a,not_int,1"`
 		}{1}
 		stm.ToMap(s)
 	})
 	assert.Panics(t, func() {
 		s := struct {
-			a int `stm:"a,1,2,3"`
+			A int `stm:"a,1,2,3"`
 		}{1}
 		stm.ToMap(s)
 	})
@@ -330,4 +330,84 @@ func TestToMap_nilValue(t *testing.T) {
 		}{nil}
 		stm.ToMap(s)
 	})
+}
+func TestToMap_bool(t *testing.T) {
+	s := struct {
+		A bool `stm:"a"`
+		B bool `stm:"b"`
+	}{
+		A: true,
+		B: false,
+	}
+	assert.Equal(
+		t,
+		map[string]int64{
+			"a": 1,
+			"b": 0,
+		},
+		stm.ToMap(s),
+	)
+}
+
+func TestToMap_ArraySlice(t *testing.T) {
+	s := [4]interface{}{
+		map[string]int{
+			"B": 1,
+			"C": 2,
+		},
+		struct {
+			D int `stm:"D"`
+			E int `stm:"E"`
+		}{
+			D: 3,
+			E: 4,
+		},
+		struct {
+			STMKey string
+			F      int `stm:"F"`
+			G      int `stm:"G"`
+		}{
+			F: 5,
+			G: 6,
+		},
+		struct {
+			STMKey string
+			H      int `stm:"H"`
+			I      int `stm:"I"`
+		}{
+			STMKey: "KEY",
+			H:      7,
+			I:      8,
+		},
+	}
+
+	assert.Equal(
+		t,
+		map[string]int64{
+			"B":     1,
+			"C":     2,
+			"D":     3,
+			"E":     4,
+			"F":     5,
+			"G":     6,
+			"KEY_H": 7,
+			"KEY_I": 8,
+		},
+		stm.ToMap(s),
+	)
+
+	assert.Equal(
+		t,
+		map[string]int64{
+			"B":     1,
+			"C":     2,
+			"D":     3,
+			"E":     4,
+			"F":     5,
+			"G":     6,
+			"KEY_H": 7,
+			"KEY_I": 8,
+		},
+		stm.ToMap(s[:]),
+	)
 }

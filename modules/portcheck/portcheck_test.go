@@ -1,6 +1,7 @@
 package portcheck
 
 import (
+	"errors"
 	"net"
 	"testing"
 	"time"
@@ -11,138 +12,117 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	assert.Implements(t, (*module.Module)(nil), New())
+	job := New()
+
+	assert.Implements(t, (*module.Module)(nil), job)
+	assert.Equal(t, defaultConnectTimeout, job.Timeout.Duration)
 }
 
 func TestPortCheck_Init(t *testing.T) {
-	mod := New()
-	defer mod.Cleanup()
+	job := New()
 
-	mod.Host = "127.0.0.1"
-	mod.Ports = []int{38001, 38002}
+	job.Host = "127.0.0.1"
+	job.Ports = []int{38001, 38002}
+	assert.True(t, job.Init())
+	assert.Len(t, job.ports, 2)
+}
+func TestPortCheck_InitNG(t *testing.T) {
+	job := New()
 
-	require.True(t, mod.Init())
-	assert.Len(t, mod.ports, 2)
-	assert.Len(t, mod.workers, 2)
+	assert.False(t, job.Init())
+	job.Host = "127.0.0.1"
+	assert.False(t, job.Init())
+	job.Ports = []int{38001, 38002}
+	assert.True(t, job.Init())
 }
 
-func TestPortCheck_Check(t *testing.T) {
-	mod := New()
-	defer mod.Cleanup()
+func TestPortCheck_Check(t *testing.T) { assert.True(t, New().Check()) }
 
-	assert.True(t, mod.Check())
-}
-
-func TestPortCheck_Cleanup(t *testing.T) {
-	mod := New()
-	mod.Host = "127.0.0.1"
-	mod.Ports = []int{38001, 38002}
-
-	assert.True(t, mod.Init())
-	mod.Cleanup()
-	assert.Len(t, mod.workers, 0)
-
-	wait := time.NewTimer(time.Second)
-	defer wait.Stop()
-
-	select {
-	case <-wait.C:
-		t.Error("cleanup failed, task channel is not closed")
-	case <-mod.task:
-	}
-
-}
+func TestPortCheck_Cleanup(t *testing.T) { New().Cleanup() }
 
 func TestPortCheck_Charts(t *testing.T) {
-	assert.NotNil(t, New().Charts())
-	assert.NoError(t, module.CheckCharts(*New().Charts()...))
+	job := New()
+	job.Ports = []int{1, 2}
+	assert.Len(t, *job.Charts(), len(portCharts)*len(job.Ports))
 }
 
 func TestPortCheck_Collect(t *testing.T) {
-	mod := New()
-	defer mod.Cleanup()
+	job := New()
 
-	mod.Host = "127.0.0.1"
-	mod.Ports = []int{38001, 38002}
-
-	mod.UpdateEvery = 5
-	require.True(t, mod.Init())
-
-	ts := tcpServer{addr: ":38001"}
-	_ = ts.listen()
-
-	defer ts.close()
+	job.Host = "127.0.0.1"
+	job.Ports = []int{38001, 38002}
+	job.UpdateEvery = 5
+	job.dial = testDial(nil)
+	require.True(t, job.Init())
+	require.True(t, job.Check())
 
 	expected := map[string]int64{
-		"success_38001": 1,
-		"failed_38001":  0,
-		"timeout_38001": 0,
-		"instate_38001": 5,
-		"success_38002": 0,
-		"failed_38002":  1,
-		"timeout_38002": 0,
-		"instate_38002": 5,
+		"port_38001_current_state_duration": int64(job.UpdateEvery),
+		"port_38001_failed":                 0,
+		"port_38001_latency":                0,
+		"port_38001_success":                1,
+		"port_38001_timeout":                0,
+		"port_38002_current_state_duration": int64(job.UpdateEvery),
+		"port_38002_failed":                 0,
+		"port_38002_latency":                0,
+		"port_38002_success":                1,
+		"port_38002_timeout":                0,
 	}
+	assert.Equal(t, expected, job.Collect())
 
-	rv := mod.Collect()
-
-	require.NotNil(t, rv)
-
-	delete(rv, "latency_38001")
-	delete(rv, "latency_38002")
-
-	assert.Equal(t, expected, rv)
-}
-
-func TestPortCheck_ServerOK(t *testing.T) {
-	mod := New()
-	defer mod.Cleanup()
-
-	mod.Host = "127.0.0.1"
-	mod.Ports = []int{38001}
-
-	require.True(t, mod.Init())
-
-	ts := tcpServer{addr: ":38001"}
-	_ = ts.listen()
-
-	defer ts.close()
-
-	assert.NotNil(t, mod.Collect())
-
-	for _, p := range mod.ports {
-		assert.True(t, p.state == success)
+	expected = map[string]int64{
+		"port_38001_current_state_duration": int64(job.UpdateEvery) * 2,
+		"port_38001_failed":                 0,
+		"port_38001_latency":                0,
+		"port_38001_success":                1,
+		"port_38001_timeout":                0,
+		"port_38002_current_state_duration": int64(job.UpdateEvery) * 2,
+		"port_38002_failed":                 0,
+		"port_38002_latency":                0,
+		"port_38002_success":                1,
+		"port_38002_timeout":                0,
 	}
-}
+	assert.Equal(t, expected, job.Collect())
 
-func TestPortCheck_ServerNG(t *testing.T) {
-	mod := New()
+	job.dial = testDial(errors.New("failed"))
 
-	defer mod.Cleanup()
-
-	mod.Host = "127.0.0.1"
-	mod.Ports = []int{38001}
-
-	require.True(t, mod.Init())
-
-	assert.NotNil(t, mod.Collect())
-
-	for _, p := range mod.ports {
-		assert.True(t, p.state == failed)
+	expected = map[string]int64{
+		"port_38001_current_state_duration": int64(job.UpdateEvery),
+		"port_38001_failed":                 1,
+		"port_38001_latency":                0,
+		"port_38001_success":                0,
+		"port_38001_timeout":                0,
+		"port_38002_current_state_duration": int64(job.UpdateEvery),
+		"port_38002_failed":                 1,
+		"port_38002_latency":                0,
+		"port_38002_success":                0,
+		"port_38002_timeout":                0,
 	}
+	assert.Equal(t, expected, job.Collect())
 
+	job.dial = testDial(timeoutError{})
+
+	expected = map[string]int64{
+		"port_38001_current_state_duration": int64(job.UpdateEvery),
+		"port_38001_failed":                 0,
+		"port_38001_latency":                0,
+		"port_38001_success":                0,
+		"port_38001_timeout":                1,
+		"port_38002_current_state_duration": int64(job.UpdateEvery),
+		"port_38002_failed":                 0,
+		"port_38002_latency":                0,
+		"port_38002_success":                0,
+		"port_38002_timeout":                1,
+	}
+	assert.Equal(t, expected, job.Collect())
 }
 
-type tcpServer struct {
-	addr   string
-	server net.Listener
+func testDial(err error) dialFunc {
+	return func(_, _ string, _ time.Duration) (net.Conn, error) { return &net.TCPConn{}, err }
 }
 
-func (t *tcpServer) listen() (err error) {
-	t.server, err = net.Listen("tcp", t.addr)
-	return err
-}
+type timeoutError struct{}
 
-func (t *tcpServer) close() error {
-	return t.server.Close()
-}
+func (timeoutError) Error() string { return "timeout" }
+
+func (timeoutError) Timeout() bool { return true }

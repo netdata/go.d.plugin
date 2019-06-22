@@ -63,7 +63,7 @@ func NewHTTPRequest(req Request) (*http.Request, error) {
 		return nil, err
 	}
 
-	if req.Username != "" && req.Password != "" {
+	if req.Username != "" || req.Password != "" {
 		httpReq.SetBasicAuth(req.Username, req.Password)
 	}
 

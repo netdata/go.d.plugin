@@ -3,9 +3,13 @@ package web
 import (
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 )
+
+// ErrRedirectAttempted indicates that a redirect occurred.
+var ErrRedirectAttempted = errors.New("redirect")
 
 // Client is a struct that contains the fields that are needed fore creating HTTPClient.
 type Client struct {
@@ -24,8 +28,10 @@ func NewHTTPClient(client Client) (*http.Client, error) {
 	}
 
 	transport := &http.Transport{
-		Proxy:           proxyFunc(client.ProxyURL),
-		TLSClientConfig: tlsConfig,
+		Proxy:               proxyFunc(client.ProxyURL),
+		TLSClientConfig:     tlsConfig,
+		DialContext:         (&net.Dialer{Timeout: client.Timeout.Duration}).DialContext,
+		TLSHandshakeTimeout: client.Timeout.Duration,
 	}
 
 	return &http.Client{
@@ -37,7 +43,7 @@ func NewHTTPClient(client Client) (*http.Client, error) {
 
 func redirectFunc(notFollowRedirect bool) func(req *http.Request, via []*http.Request) error {
 	if notFollowRedirect {
-		return func(req *http.Request, via []*http.Request) error { return errors.New("redirect") }
+		return func(_ *http.Request, _ []*http.Request) error { return ErrRedirectAttempted }
 	}
 	return nil
 }
@@ -49,7 +55,7 @@ func proxyFunc(proxyurl string) func(r *http.Request) (*url.URL, error) {
 
 	proxyURL, err := url.Parse(proxyurl)
 	if err != nil {
-		return func(r *http.Request) (*url.URL, error) { return nil, fmt.Errorf("invalid proxy: %s", err) }
+		return func(_ *http.Request) (*url.URL, error) { return nil, fmt.Errorf("invalid proxy: %v", err) }
 	}
 
 	return func(r *http.Request) (*url.URL, error) { return proxyURL, nil }

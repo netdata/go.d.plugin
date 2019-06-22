@@ -13,48 +13,50 @@ type (
 	Dims = module.Dims
 )
 
-func chartsTemplate(port int) Charts {
-	fam := fmt.Sprintf("port %d", port)
+var portCharts = Charts{
+	{
+		ID:    "port_%d_status",
+		Title: "TCP Check Status",
+		Units: "boolean",
+		Fam:   "port %d",
+		Ctx:   "portcheck.status",
+		Dims: Dims{
+			{ID: "port_%d_success", Name: "success"},
+			{ID: "port_%d_failed", Name: "failed"},
+			{ID: "port_%d_timeout", Name: "timeout"},
+		},
+	},
+	{
+		ID:    "port_%d_current_state_duration",
+		Title: "Current State Duration",
+		Units: "seconds",
+		Fam:   "port %d",
+		Ctx:   "portcheck.state_duration",
+		Dims: Dims{
+			{ID: "port_%d_current_state_duration", Name: "time"},
+		},
+	},
+	{
+		ID:    "port_%d_connection_latency",
+		Title: "TCP Connection Latency",
+		Units: "ms",
+		Fam:   "port %d",
+		Ctx:   "portcheck.latency",
+		Dims: Dims{
+			{ID: "port_%d_latency", Name: "time"},
+		},
+	},
+}
 
-	return Charts{
-		{
-			ID:    fmt.Sprintf("status_%d", port),
-			Title: "Port Check Status", Units: "boolean", Fam: fam, Ctx: "portcheck.status",
-			Dims: Dims{
-				{
-					ID:   fmt.Sprintf("success_%d", port),
-					Name: "success",
-				},
-				{
-					ID:   fmt.Sprintf("failed_%d", port),
-					Name: "failed",
-				},
-				{
-					ID:   fmt.Sprintf("timeout_%d", port),
-					Name: "timeout",
-				},
-			},
-		},
-		{
-			ID:    fmt.Sprintf("instate_%d", port),
-			Title: "Current State Duration", Units: "seconds", Fam: fam, Ctx: "portcheck.instate",
-			Dims: Dims{
-				{
-					ID:   fmt.Sprintf("instate_%d", port),
-					Name: "time",
-				},
-			},
-		},
-		{
-			ID:    fmt.Sprintf("latency_%d", port),
-			Title: "TCP Connect Latency", Units: "ms", Fam: fam, Ctx: "portcheck.latency",
-			Dims: Dims{
-				{
-					ID:   fmt.Sprintf("latency_%d", port),
-					Name: "time",
-					Div:  1000000,
-				},
-			},
-		},
+func newPortCharts(port int) *Charts {
+	cs := portCharts.Copy()
+	for _, chart := range *cs {
+		chart.ID = fmt.Sprintf(chart.ID, port)
+		chart.Fam = fmt.Sprintf(chart.Fam, port)
+
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, port)
+		}
 	}
+	return cs
 }

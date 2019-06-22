@@ -9,7 +9,10 @@ import (
 	"github.com/netdata/go-orchestrator/logger"
 )
 
-const fieldTagName = "stm"
+const (
+	fieldTagName = "stm"
+	structKey    = "STMKey"
+)
 
 type (
 	Value interface {
@@ -43,8 +46,12 @@ func toMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
 		convertPtr(value, rv, key, mul, div)
 	case reflect.Struct:
 		convertStruct(value, rv, key)
+	case reflect.Array, reflect.Slice:
+		convertArraySlice(value, rv, key, mul, div)
 	case reflect.Map:
 		convertMap(value, rv, key, mul, div)
+	case reflect.Bool:
+		convertBool(value, rv, key)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		convertInteger(value, rv, key, mul, div)
 	case reflect.Float32, reflect.Float64:
@@ -64,10 +71,14 @@ func convertPtr(value reflect.Value, rv map[string]int64, key string, mul, div i
 
 func convertStruct(value reflect.Value, rv map[string]int64, key string) {
 	t := value.Type()
+	k := value.FieldByName(structKey)
+	if k.Kind() == reflect.String {
+		key = joinPrefix(key, k.String())
+	}
 	for i := 0; i < t.NumField(); i++ {
 		ft := t.Field(i)
 		tag, ok := ft.Tag.Lookup(fieldTagName)
-		if !ok {
+		if !ok || ft.Name == structKey {
 			continue
 		}
 		value := value.Field(i)
@@ -85,19 +96,36 @@ func convertMap(value reflect.Value, rv map[string]int64, key string, mul, div i
 	}
 }
 
-func convertInteger(value reflect.Value, rv map[string]int64, key string, mul, div int) {
-	intVal := value.Int()
+func convertArraySlice(value reflect.Value, rv map[string]int64, key string, mul, div int) {
+	for i := 0; i < value.Len(); i++ {
+		toMap(value.Index(i), rv, key, mul, div)
+	}
+}
+
+func convertBool(value reflect.Value, rv map[string]int64, key string) {
 	if _, ok := rv[key]; ok {
 		logger.Panic("duplicate key: ", key)
 	}
+	if value.Bool() {
+		rv[key] = 1
+	} else {
+		rv[key] = 0
+	}
+}
+
+func convertInteger(value reflect.Value, rv map[string]int64, key string, mul, div int) {
+	if _, ok := rv[key]; ok {
+		logger.Panic("duplicate key: ", key)
+	}
+	intVal := value.Int()
 	rv[key] = intVal * int64(mul) / int64(div)
 }
 
 func convertFloat(value reflect.Value, rv map[string]int64, key string, mul, div int) {
-	floatVal := value.Float()
 	if _, ok := rv[key]; ok {
 		logger.Panic("duplicate key: ", key)
 	}
+	floatVal := value.Float()
 	rv[key] = int64(floatVal * float64(mul) / float64(div))
 }
 

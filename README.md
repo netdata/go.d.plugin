@@ -26,13 +26,14 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [bind](https://github.com/netdata/go.d.plugin/tree/master/modules/bind) *
  - [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)
  - [coredns](https://github.com/netdata/go.d.plugin/tree/master/modules/coredns)
- - [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery) *
+ - [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery)
+ - [dnsmasq_dhcp](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq_dhcp)
  - [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine)
  - [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)
  - [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example) *
  - [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)
  - [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius) *
- - [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck) *
+ - [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck)
  - [k8s_kubelet](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubelet)
  - [k8s_kubeproxy](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubeproxy)
  - [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd) *
@@ -40,11 +41,16 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)
  - [mysql](https://github.com/netdata/go.d.plugin/tree/master/modules/mysql) *
  - [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx) *
- - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck) *
+ - [openvpn](https://github.com/netdata/go.d.plugin/tree/master/modules/openvpn)
+ - [pihole](https://github.com/netdata/go.d.plugin/tree/master/modules/pihole)
+ - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)
  - [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
+ - [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)
  - [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
  - [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)
+ - [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)
  - [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) *
+ - [wmi](https://github.com/netdata/go.d.plugin/tree/master/modules/wmi)
  - [x509check](https://github.com/netdata/go.d.plugin/tree/master/modules/x509check)
 
 `*` - disabled by default.
