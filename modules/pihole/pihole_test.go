@@ -106,16 +106,16 @@ func TestPihole_Collect(t *testing.T) {
 	require.NotNil(t, job.Charts())
 
 	expected := map[string]int64{
-		"A":                     0,
-		"AAAA":                  0,
-		"ANY":                   0,
-		"PTR":                   0,
-		"SOA":                   0,
-		"SRV":                   0,
-		"TXT":                   0,
-		"ads_blocked_today":     0,
-		"ads_percentage_today":  0,
-		"blocklist_last_update": 1561019970,
+		"A":                    0,
+		"AAAA":                 0,
+		"ANY":                  0,
+		"PTR":                  0,
+		"SOA":                  0,
+		"SRV":                  0,
+		"TXT":                  0,
+		"ads_blocked_today":    0,
+		"ads_percentage_today": 0,
+		// "blocklist_last_update": 1561019970,
 		"destination_d1":        3329,
 		"destination_d2":        6659,
 		"dns_queries_today":     0,
@@ -133,8 +133,8 @@ func TestPihole_Collect(t *testing.T) {
 		"unique_clients":        0,
 	}
 
-	collected := job.Collect()
-	expected["blocklist_last_update"] = collected["blocklist_last_update"]
+	//collected := job.Collect()
+	// expected["blocklist_last_update"] = collected["blocklist_last_update"]
 
 	assert.Equal(t, expected, job.Collect())
 }
@@ -155,9 +155,9 @@ func TestPihole_Collect_OnlySummary(t *testing.T) {
 	require.NotNil(t, job.Charts())
 
 	expected := map[string]int64{
-		"ads_blocked_today":     0,
-		"ads_percentage_today":  0,
-		"blocklist_last_update": 1561019970,
+		"ads_blocked_today":    0,
+		"ads_percentage_today": 0,
+		// "blocklist_last_update": 1561019970,
 		"dns_queries_today":     0,
 		"domains_being_blocked": 0,
 		"file_exists":           0,
@@ -167,8 +167,8 @@ func TestPihole_Collect_OnlySummary(t *testing.T) {
 		"unique_clients":        0,
 	}
 
-	collected := job.Collect()
-	expected["blocklist_last_update"] = collected["blocklist_last_update"]
+	//collected := job.Collect()
+	//expected["blocklist_last_update"] = collected["blocklist_last_update"]
 
 	assert.Equal(t, expected, job.Collect())
 }

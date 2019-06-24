@@ -9,6 +9,28 @@ type version struct {
 	Version int
 }
 
+/*
+if the gravity.list file exists
+
+{
+    "file_exists": true,
+    "absolute": 1561159378,
+    "relative": {
+        "days": "2",
+        "hours": "07",
+        "minutes": "40"
+    }
+}
+
+
+if the gravity.list file not exists
+
+{
+    "file_exists": false
+}
+
+*/
+
 // SummaryRaw represents summary statistics int raw format (no number formatting applied).
 type SummaryRaw struct {
 	DomainsBeingBlocked int64   `json:"domains_being_blocked"`
@@ -29,7 +51,7 @@ type SummaryRaw struct {
 	Status              string  `json:"status"`
 	GravityLastUpdated  struct {
 		FileExists bool `json:"file_exists"`
-		Absolute   int64
+		Absolute   *int64
 	} `json:"gravity_last_updated"`
 }
 
