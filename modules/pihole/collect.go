@@ -31,7 +31,10 @@ func collectSummary(mx map[string]int64, pmx *piholeMetrics) {
 	mx["ads_blocked_today"] = pmx.summary.AdsBlockedToday
 	mx["ads_percentage_today"] = int64(pmx.summary.AdsPercentageToday * 100)
 	mx["domains_being_blocked"] = pmx.summary.DomainsBeingBlocked
-	mx["blocklist_last_update"] = time.Now().Unix() - pmx.summary.GravityLastUpdated.Absolute
+	// GravityLastUpdated.Absolute is <nil> if the file is not exists (deleted/moved)
+	if pmx.summary.GravityLastUpdated.Absolute != nil {
+		mx["blocklist_last_update"] = time.Now().Unix() - *pmx.summary.GravityLastUpdated.Absolute
+	}
 	mx["dns_queries_today"] = pmx.summary.DNSQueriesToday
 	mx["queries_forwarded"] = pmx.summary.QueriesForwarded
 	mx["queries_cached"] = pmx.summary.QueriesCached
