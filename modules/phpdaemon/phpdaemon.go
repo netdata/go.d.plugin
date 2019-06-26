@@ -17,8 +17,8 @@ func init() {
 }
 
 const (
-	defaultURL         = "http://127.0.0.1:8509/FullStatus/"
-	defaultHTTPTimeout = time.Second
+	defaultURL         = "http://127.0.0.1:8509/FullStatus"
+	defaultHTTPTimeout = time.Second * 2
 )
 
 // New creates PHPDaemon with default values.
@@ -63,13 +63,13 @@ func (p *PHPDaemon) Init() bool {
 
 	_, err = web.NewHTTPRequest(p.Request)
 	if err != nil {
-		p.Errorf("error on creating http request to %s : %v", p.Request.UserURL, err)
+		p.Errorf("error on creating http request to %s : %v", p.UserURL, err)
 		return false
 	}
 
 	p.client = newAPIClient(httpClient, p.Request)
 
-	p.Debugf("using URL %s", p.URL)
+	p.Debugf("using URL %s", p.UserURL)
 	p.Debugf("using timeout: %s", p.Timeout.Duration)
 
 	return true

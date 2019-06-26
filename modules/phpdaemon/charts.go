@@ -13,18 +13,8 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "total_workers",
-		Title: "Total Workers",
-		Units: "workers",
-		Fam:   "workers",
-		Ctx:   "phpdaemon.total_workers",
-		Dims: Dims{
-			{ID: "total"},
-		},
-	},
-	{
 		ID:    "workers",
-		Title: "Workers State",
+		Title: "Workers",
 		Units: "workers",
 		Fam:   "workers",
 		Ctx:   "phpdaemon.workers",

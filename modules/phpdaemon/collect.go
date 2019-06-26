@@ -12,7 +12,6 @@ func (p *PHPDaemon) collect() (map[string]int64, error) {
 	// https://github.com/kakserpom/phpdaemon/blob/master/PHPDaemon/Core/Daemon.php
 	// see getStateOfWorkers()
 	s.Initialized = s.Idle - (s.Init + s.Preinit)
-	s.Total = s.Alive + s.Shutdown
 
 	return stm.ToMap(s), nil
 }

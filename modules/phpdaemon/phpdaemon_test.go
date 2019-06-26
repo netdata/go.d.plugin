@@ -1,12 +1,12 @@
 package phpdaemon
 
 import (
-	"github.com/netdata/go-orchestrator/module"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -102,7 +102,6 @@ func TestPHPDaemon_Collect(t *testing.T) {
 		"preinit":     20,
 		"reloading":   100,
 		"shutdown":    500,
-		"total":       850,
 		"uptime":      15765,
 	}
 

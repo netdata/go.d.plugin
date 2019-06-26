@@ -5,8 +5,6 @@ package phpdaemon
 
 // WorkerState represents phpdaemon worker state.
 type WorkerState struct {
-	// Total is total number of workers.
-	Total int64 `stm:"total"`
 	// Alive is sum of Idle, Busy and Reloading
 	Alive    int64 `stm:"alive"`
 	Shutdown int64 `stm:"shutdown"`
