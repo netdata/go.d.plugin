@@ -32,6 +32,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/mysql"
 	_ "github.com/netdata/go.d.plugin/modules/nginx"
 	_ "github.com/netdata/go.d.plugin/modules/openvpn"
+	_ "github.com/netdata/go.d.plugin/modules/phpdaemon"
 	_ "github.com/netdata/go.d.plugin/modules/pihole"
 	_ "github.com/netdata/go.d.plugin/modules/portcheck"
 	_ "github.com/netdata/go.d.plugin/modules/rabbitmq"
