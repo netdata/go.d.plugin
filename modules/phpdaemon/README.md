@@ -24,16 +24,6 @@ It produces the following charts:
  
 4. **Uptime** in seconds
  * time
- * starting
- * reading
- * sending
- * keepalive
- * dns lookup
- * closing
- * logging
- * finishing
- * idle cleanup
- * open
  
 ### configuration
 
