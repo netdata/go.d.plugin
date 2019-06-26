@@ -3,7 +3,7 @@
 This module collects [`phpdaemon`](https://github.com/kakserpom/phpdaemon) workers statistics via http.
 
 **Requirements:**
- * `phpdaemon` with enabled [`http`] server.
+ * `phpdaemon` with enabled `http` server.
  * statistics should be reported in `json` format.
 
 It produces the following charts:
