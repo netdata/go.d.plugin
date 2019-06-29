@@ -99,7 +99,7 @@ func (hc *HTTPCheck) Init() bool {
 	hc.Debugf("using URL %s", hc.URL)
 	hc.Debugf("using HTTP timeout %s", hc.Timeout.Duration)
 
-	hc.Debugf("using accepted HTTP statuses %s", hc.AcceptedStatuses)
+	hc.Debugf("using accepted HTTP statuses %v", hc.AcceptedStatuses)
 	if hc.reResponse != nil {
 		hc.Debugf("using response match regexp %s", hc.reResponse)
 	}
