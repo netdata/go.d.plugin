@@ -1,3 +1,4 @@
 .idea
 bin/
 mocks/springboot2/.gradle/
+/godplugin

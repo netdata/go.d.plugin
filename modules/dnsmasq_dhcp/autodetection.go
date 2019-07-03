@@ -6,20 +6,34 @@ import (
 	"io/ioutil"
 	"net"
 	"os"
-	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
 
-func (d *DnsmasqDHCP) findDHCPRanges() ([]string, error) {
-	cs, err := findConfigurations(d.ConfDir)
-	if err != nil {
-		d.Warningf("error during configuration dir scanning : %v", err)
-	}
+// configDir represents conf-dir directive
+//
+// #conf-dir=/etc/dnsmasq.d
+//
+// # Include all the files in a directory except those ending in .bak
+// #conf-dir=/etc/dnsmasq.d,.bak
+//
+// # Include all files in a directory which end in .conf
+// #conf-dir=/etc/dnsmasq.d/,*.conf
+type configDir struct {
+	path          string
+	includeSuffix []string
+	excludeSuffix []string
+}
 
-	configs := []string{d.ConfPath}
-	configs = append(configs, cs...)
-	d.Infof("configuration files to read : %v", configs)
+func (d *DnsmasqDHCP) findDHCPRanges() ([]string, error) {
+	configs := d.findConfigs(d.ConfPath)
+
+	configs = append([]string{d.ConfPath}, configs...)
+
+	configs = unique(configs)
+
+	d.Infof("configuration files to read: %v", configs)
 
 	seen := make(map[string]bool)
 	var ranges []string
@@ -27,7 +41,7 @@ func (d *DnsmasqDHCP) findDHCPRanges() ([]string, error) {
 	for _, config := range configs {
 		d.Debugf("reading %s", config)
 		rs, err := findDHCPRanges(config)
-		if err != nil {
+		if err != nil && !os.IsNotExist(err) {
 			return nil, err
 		}
 
@@ -46,18 +60,128 @@ func (d *DnsmasqDHCP) findDHCPRanges() ([]string, error) {
 	return ranges, nil
 }
 
-func findConfigurations(confDir string) ([]string, error) {
-	fis, err := ioutil.ReadDir(confDir)
+// findConfigs recursively finds and reads configuration files respecting
+// conf-file and conf-dir directives.
+// findConfigs is tolerant to IO errors and finds as maximum config
+// files as possible, therefore if an error occurrs during scanning process,
+// it will be just logged with warning severity
+func (d *DnsmasqDHCP) findConfigs(confPath string) []string {
+	config, err := os.Open(confPath)
+	if err != nil {
+		d.Warningf("error during configuration file %q reading: %v", confPath, err)
+		return nil
+	}
+
+	defer config.Close()
+
+	var (
+		includeFiles []string
+		includeDirs  []configDir
+	)
+
+	scanner := bufio.NewScanner(config)
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if path, ok := getConfValue(line, "conf-file"); ok {
+			includeFiles = append(includeFiles, path)
+			continue
+		}
+
+		if path, ok := getConfValue(line, "conf-dir"); ok {
+			args := strings.Split(path, ",")
+
+			dir := configDir{
+				path: args[0],
+			}
+
+			for _, arg := range args[1:] {
+				arg := strings.TrimSpace(arg)
+				// dnsmasq treats suffixes with asterisk as "to include" and without
+				// asterisk as "to exclude"
+				if strings.HasPrefix(arg, "*") {
+					dir.includeSuffix = append(dir.includeSuffix, arg[1:])
+				} else {
+					dir.excludeSuffix = append(dir.excludeSuffix, arg)
+				}
+			}
+
+			includeDirs = append(includeDirs, dir)
+
+			continue
+		}
+	}
+
+	for _, dir := range includeDirs {
+		dirFiles, err := dir.find()
+		if err != nil {
+			d.Warningf("error during configuration dir %q scanning: %v", dir.path, err)
+		}
+
+		includeFiles = append(includeFiles, dirFiles...)
+	}
+
+	for _, file := range includeFiles {
+		files := d.findConfigs(file)
+
+		includeFiles = append(includeFiles, files...)
+	}
+
+	return includeFiles
+}
+
+func getConfValue(line, prefix string) (value string, ok bool) {
+	if !strings.HasPrefix(line, prefix) {
+		return "", false
+	}
+
+	value = strings.TrimPrefix(line, prefix)
+
+	value = strings.TrimSpace(value)
+
+	if !strings.HasPrefix(value, "=") {
+		// got some unexpected line, has prefix like conf-file but there is no
+		// assign sign
+		return "", false
+	}
+
+	value = strings.TrimPrefix(value, "=")
+
+	value = strings.TrimSpace(value)
+
+	return value, true
+}
+
+func (dir configDir) find() ([]string, error) {
+	if len(dir.includeSuffix) == 0 && len(dir.excludeSuffix) == 0 {
+		dir.includeSuffix = []string{".conf"}
+	}
+
+	fis, err := ioutil.ReadDir(dir.path)
 	if err != nil {
 		return nil, err
 	}
 
 	var configs []string
+
+FILES:
 	for _, fi := range fis {
-		if !fi.Mode().IsRegular() || !strings.HasSuffix(fi.Name(), ".conf") {
+		if !fi.Mode().IsRegular() {
 			continue
 		}
-		configs = append(configs, path.Join(confDir, fi.Name()))
+
+		for _, suffix := range dir.excludeSuffix {
+			if strings.HasSuffix(fi.Name(), suffix) {
+				continue FILES
+			}
+		}
+
+		for _, suffix := range dir.includeSuffix {
+			if strings.HasSuffix(fi.Name(), suffix) {
+				configs = append(configs, filepath.Join(dir.path, fi.Name()))
+				continue FILES
+			}
+		}
 	}
 
 	return configs, nil
@@ -127,4 +251,25 @@ func parseDHCPRangeLine(s string) (r string) {
 	}
 
 	return fmt.Sprintf("%s-%s", start, end)
+}
+
+func unique(slice []string) []string {
+	result := []string{}
+
+	for _, item := range slice {
+		if !contains(result, item) {
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
+func contains(slice []string, target string) bool {
+	for _, item := range slice {
+		if item == target {
+			return true
+		}
+	}
+
+	return false
 }
