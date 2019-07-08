@@ -113,7 +113,7 @@ func (d *DnsmasqDHCP) findConfigs(confPath string) []string {
 	}
 
 	for _, dir := range includeDirs {
-		dirFiles, err := dir.find()
+		dirFiles, err := dir.findConfigs()
 		if err != nil {
 			d.Warningf("error during configuration dir %q scanning: %v", dir.path, err)
 		}
@@ -150,41 +150,6 @@ func getConfValue(line, prefix string) (value string, ok bool) {
 	value = strings.TrimSpace(value)
 
 	return value, true
-}
-
-func (dir configDir) find() ([]string, error) {
-	if len(dir.includeSuffix) == 0 && len(dir.excludeSuffix) == 0 {
-		dir.includeSuffix = []string{".conf"}
-	}
-
-	fis, err := ioutil.ReadDir(dir.path)
-	if err != nil {
-		return nil, err
-	}
-
-	var configs []string
-
-FILES:
-	for _, fi := range fis {
-		if !fi.Mode().IsRegular() {
-			continue
-		}
-
-		for _, suffix := range dir.excludeSuffix {
-			if strings.HasSuffix(fi.Name(), suffix) {
-				continue FILES
-			}
-		}
-
-		for _, suffix := range dir.includeSuffix {
-			if strings.HasSuffix(fi.Name(), suffix) {
-				configs = append(configs, filepath.Join(dir.path, fi.Name()))
-				continue FILES
-			}
-		}
-	}
-
-	return configs, nil
 }
 
 func findDHCPRanges(filePath string) ([]string, error) {
@@ -251,6 +216,75 @@ func parseDHCPRangeLine(s string) (r string) {
 	}
 
 	return fmt.Sprintf("%s-%s", start, end)
+}
+
+func (dir configDir) findConfigs() ([]string, error) {
+	fis, err := ioutil.ReadDir(dir.path)
+	if err != nil {
+		return nil, err
+	}
+
+	var configs []string
+
+	for _, fi := range fis {
+		if !fi.Mode().IsRegular() {
+			continue
+		}
+
+		name := fi.Name()
+		if !dir.isValidFileName(name) {
+			continue
+		}
+
+		if len(dir.includeSuffix) > 0 {
+			including := false
+			for _, suffix := range dir.includeSuffix {
+				if strings.HasSuffix(fi.Name(), suffix) {
+					including = true
+					break
+				}
+			}
+
+			if !including {
+				continue
+			}
+		}
+
+		excluding := false
+		for _, suffix := range dir.excludeSuffix {
+			if strings.HasSuffix(fi.Name(), suffix) {
+				excluding = true
+				break
+			}
+		}
+
+		if excluding {
+			continue
+		}
+
+		configs = append(configs, filepath.Join(dir.path, fi.Name()))
+	}
+
+	return configs, nil
+}
+
+func (dir *configDir) isValidFileName(name string) bool {
+	// We copy the dnsmasq's logic
+	//
+	// /* ignore emacs backups and dotfiles */
+	// if (len == 0 ||
+	//     ent->d_name[len - 1] == '~' ||
+	//     (ent->d_name[0] == '#' && ent->d_name[len - 1] == '#') ||
+	//     ent->d_name[0] == '.')
+	//    continue;
+
+	if strings.HasSuffix(name, "~") ||
+		(strings.HasPrefix(name, "#") && strings.HasSuffix(name, "#")) ||
+		strings.HasPrefix(name, ".") {
+		return false
+	}
+
+	return true
 }
 
 func unique(slice []string) []string {

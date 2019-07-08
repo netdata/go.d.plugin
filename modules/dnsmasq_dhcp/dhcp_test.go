@@ -103,3 +103,65 @@ func TestDnsmasqDHCP_Collect(t *testing.T) {
 
 	assert.Equal(t, expected, job.Collect())
 }
+
+func TestConfigDir_findConfigs(t *testing.T) {
+	testcases := []struct {
+		config   configDir
+		expected []string
+	}{
+		0: {
+			configDir{
+				path:          "testdata",
+				includeSuffix: nil,
+				excludeSuffix: nil,
+			},
+			[]string{
+				"testdata/dnsmasq.conf",
+				"testdata/dnsmasq.leases",
+				"testdata/dnsmasq.more.conf",
+			},
+		},
+
+		1: {
+			configDir{
+				path:          "testdata",
+				includeSuffix: []string{".leases"},
+				excludeSuffix: nil,
+			},
+			[]string{
+				"testdata/dnsmasq.leases",
+			},
+		},
+
+		2: {
+			configDir{
+				path:          "testdata",
+				includeSuffix: nil,
+				excludeSuffix: []string{".leases"},
+			},
+			[]string{
+				"testdata/dnsmasq.conf",
+				"testdata/dnsmasq.more.conf",
+			},
+		},
+
+		3: {
+			// weird one, but possible
+			configDir{
+				path:          "testdata",
+				includeSuffix: []string{".conf", ".leases"},
+				excludeSuffix: []string{".conf"},
+			},
+			[]string{
+				"testdata/dnsmasq.leases",
+			},
+		},
+	}
+
+	for i, testcase := range testcases {
+		actual, err := testcase.config.findConfigs()
+		assert.NoError(t, err, "testcase: %d", i)
+
+		assert.Equal(t, testcase.expected, actual, "testcase: %d", i)
+	}
+}
