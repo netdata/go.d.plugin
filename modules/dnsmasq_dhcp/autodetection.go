@@ -236,29 +236,7 @@ func (dir configDir) findConfigs() ([]string, error) {
 			continue
 		}
 
-		if len(dir.includeSuffix) > 0 {
-			including := false
-			for _, suffix := range dir.includeSuffix {
-				if strings.HasSuffix(fi.Name(), suffix) {
-					including = true
-					break
-				}
-			}
-
-			if !including {
-				continue
-			}
-		}
-
-		excluding := false
-		for _, suffix := range dir.excludeSuffix {
-			if strings.HasSuffix(fi.Name(), suffix) {
-				excluding = true
-				break
-			}
-		}
-
-		if excluding {
+		if !dir.matchFileName(name) {
 			continue
 		}
 
@@ -268,7 +246,7 @@ func (dir configDir) findConfigs() ([]string, error) {
 	return configs, nil
 }
 
-func (dir *configDir) isValidFileName(name string) bool {
+func (dir configDir) isValidFileName(name string) bool {
 	// We copy the dnsmasq's logic
 	//
 	// /* ignore emacs backups and dotfiles */
@@ -282,6 +260,30 @@ func (dir *configDir) isValidFileName(name string) bool {
 		(strings.HasPrefix(name, "#") && strings.HasSuffix(name, "#")) ||
 		strings.HasPrefix(name, ".") {
 		return false
+	}
+
+	return true
+}
+
+func (dir configDir) matchFileName(name string) bool {
+	if len(dir.includeSuffix) > 0 {
+		including := false
+		for _, suffix := range dir.includeSuffix {
+			if strings.HasSuffix(name, suffix) {
+				including = true
+				break
+			}
+		}
+
+		if !including {
+			return false
+		}
+	}
+
+	for _, suffix := range dir.excludeSuffix {
+		if strings.HasSuffix(name, suffix) {
+			return false
+		}
 	}
 
 	return true
