@@ -6,6 +6,7 @@ This module will monitor one or more [ScaleIO (VxFlex OS)](https://www.dellemc.c
 Module was tested on:
  - VxFlex OS REST API v2.5
  - VxFlex OS v2.6.1.1_113
+ - VxFlex OS 3.0.0.1_134
 
 ### charts/collected metrics
 
