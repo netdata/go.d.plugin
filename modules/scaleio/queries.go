@@ -62,7 +62,9 @@ var (
         "numOfMappedToAllVolumes",
         "numOfProtectionDomains",
         "numOfRfcacheDevices",
-        "numOfScsiInitiators",
+	// Starting from version 3 of ScaleIO/VxFlex API numOfScsiInitiators property is removed.
+	// Reference: VxFlex OS v3.x REST API Reference Guide.pdf
+	// "numOfScsiInitiators",
         "numOfSdc",
         "numOfSds",
         "numOfSnapshots",
