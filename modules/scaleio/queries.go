@@ -62,7 +62,6 @@ var (
         "numOfMappedToAllVolumes",
         "numOfProtectionDomains",
         "numOfRfcacheDevices",
-        "numOfScsiInitiators",
         "numOfSdc",
         "numOfSds",
         "numOfSnapshots",
