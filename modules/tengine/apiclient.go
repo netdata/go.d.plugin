@@ -149,10 +149,10 @@ func parseStatusLine(line string, lineFormat []string) (*metric, error) {
 	// www.example.com,127.0.0.1:80,162,6242,1,1,1,0,0,0,0,10,1,10,1....
 	i := findFirstInt(parts)
 	if i == -1 {
-		return nil, fmt.Errorf("invalid response : %s", line)
+		return nil, fmt.Errorf("invalid response line : %s", line)
 	}
 	if len(parts[i:]) != len(lineFormat) {
-		return nil, fmt.Errorf("invalid response length, got %d, expected %d, response : %s",
+		return nil, fmt.Errorf("invalid response line length, got %d, expected %d, response line : %s",
 			len(parts[i:]), len(lineFormat), line)
 	}
 
