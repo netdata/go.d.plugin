@@ -148,13 +148,14 @@ func parseStatusLine(line string, lineFormat []string) (*metric, error) {
 	// TODO: custom line format?
 	// www.example.com,127.0.0.1:80,162,6242,1,1,1,0,0,0,0,10,1,10,1....
 	i := findFirstInt(parts)
-	if i == -1 || len(parts[i:]) != len(lineFormat) {
-		return nil, fmt.Errorf("invalid response length, got %d, expected %d, response : %s",
-			len(parts),
-			len(lineFormat),
-			line,
-		)
+	if i == -1 {
+		return nil, fmt.Errorf("invalid line : %s", line)
 	}
+	if len(parts[i:]) != len(lineFormat) {
+		return nil, fmt.Errorf("invalid line length, got %d, expected %d, line : %s",
+			len(parts[i:]), len(lineFormat), line)
+	}
+
 	// skip "$host,$server_addr:$server_port"
 	parts = parts[i:]
 
