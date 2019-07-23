@@ -147,17 +147,18 @@ func parseStatusLine(line string, lineFormat []string) (*metric, error) {
 	// NOTE: only default line format is supported
 	// TODO: custom line format?
 	// www.example.com,127.0.0.1:80,162,6242,1,1,1,0,0,0,0,10,1,10,1....
-	if len(parts) != len(lineFormat)+2 {
-		return nil, fmt.Errorf("invalid response length, got %d, expected %d", len(parts), len(lineFormat)+2)
+	i := findFirstInt(parts)
+	if i == -1 || len(parts[i:]) != len(lineFormat) {
+		return nil, fmt.Errorf("invalid response length, got %d, expected %d, response : %s",
+			len(parts),
+			len(lineFormat),
+			line,
+		)
 	}
+	// skip "$host,$server_addr:$server_port"
+	parts = parts[i:]
 
 	var m metric
-
-	m.Host = parts[0]
-	m.ServerAddress = parts[1]
-	// 1, 2: "$host,$server_addr:$server_port"
-	parts = parts[2:]
-
 	for i, key := range lineFormat {
 		value := mustParseInt(parts[i])
 		switch key {
@@ -224,6 +225,17 @@ func parseStatusLine(line string, lineFormat []string) (*metric, error) {
 		}
 	}
 	return &m, nil
+}
+
+func findFirstInt(s []string) int {
+	for i, v := range s {
+		_, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			continue
+		}
+		return i
+	}
+	return -1
 }
 
 func mustParseInt(value string) *int64 {
