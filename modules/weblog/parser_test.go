@@ -1,12 +1,5 @@
 package weblog
 
-import (
-	"bufio"
-	"bytes"
-	"io/ioutil"
-	"testing"
-)
-
 //func Test_logParser_ParseLine(t *testing.T) {
 //	logs, _ := os.Open("tests/common.log")
 //	parser := NewCSVParser(ParserConfig{}, logs)
@@ -58,41 +51,41 @@ import (
 //		}
 //	}
 //}
-
-func BenchmarkCSVParser(b *testing.B) {
-	content, err := ioutil.ReadFile("testdata/big_combined.log")
-	if err != nil {
-		b.Fatalf("%+v", err)
-	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		buf := bytes.NewBuffer(content)
-		parser := NewCSVParser(ParserConfig{}, buf)
-		for err == nil {
-			_, err = parser.Read()
-		}
-	}
-}
-
-func BenchmarkCSVParser2(b *testing.B) {
-	content, err := ioutil.ReadFile("testdata/big_combined.log")
-	if err != nil {
-		b.Fatalf("%+v", err)
-	}
-
-	var lines [][]byte
-	buf := bytes.NewBuffer(content)
-	scanner := bufio.NewScanner(buf)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Bytes())
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		for _, line := range lines {
-			buf := bytes.NewBuffer(line)
-			parser := NewCSVParser(ParserConfig{}, buf)
-			_, err = parser.Read()
-		}
-	}
-}
+//
+//func BenchmarkCSVParser(b *testing.B) {
+//	content, err := ioutil.ReadFile("testdata/big_combined.log")
+//	if err != nil {
+//		b.Fatalf("%+v", err)
+//	}
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		buf := bytes.NewBuffer(content)
+//		parser := NewCSVParser(ParserConfig{}, buf)
+//		for err == nil {
+//			_, err = parser.Read()
+//		}
+//	}
+//}
+//
+//func BenchmarkCSVParser2(b *testing.B) {
+//	content, err := ioutil.ReadFile("testdata/big_combined.log")
+//	if err != nil {
+//		b.Fatalf("%+v", err)
+//	}
+//
+//	var lines [][]byte
+//	buf := bytes.NewBuffer(content)
+//	scanner := bufio.NewScanner(buf)
+//	for scanner.Scan() {
+//		lines = append(lines, scanner.Bytes())
+//	}
+//
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		for _, line := range lines {
+//			buf := bytes.NewBuffer(line)
+//			parser := NewCSVParser(ParserConfig{}, buf)
+//			_, err = parser.Read()
+//		}
+//	}
+//}

@@ -40,23 +40,18 @@
 ```apache
 LogFormat    "%h %l %u %t \"%r\" %>s %b" common
 LogFormat    "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
-LogFormat    "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{cookie}n %D" custom1
-LogFormat    "%h %l %u %t \"%r\" %>s %O %I %D" costom2
+LogFormat    "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O %D" combinedio
 LogFormat "%v %h %l %u %t \"%r\" %>s %b" vhost_common
 LogFormat "%v %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
-LogFormat "%v %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{cookie}n %D" vhost_custom1
-LogFormat "%v %h %l %u %t \"%r\" %>s %O %I %D" vhost_costom2
+LogFormat "%v %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O %D" vhost_combinedio
 ```
-
-*Note: Apache don't support `custom3` and `vhost_custom3`*
 
 #### Nginx
 
 ```nginx
 log_format common                    '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent';
 log_format combined                  '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"';
-log_format custom1                   '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $uid_got $request_time';
-log_format custom3                   '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time';
+log_format combinedio                '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $bytes_sent $request_time';
 log_format custom3                   '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time "$upstream_response_time"';
 log_format vhost_common   '$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent';
 log_format vhost_combined '$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"';

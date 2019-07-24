@@ -43,7 +43,7 @@ var (
 )
 
 func NewParser(config Config, in io.Reader, line []byte) (Parser, error) {
-	switch config.Type {
+	switch config.LogType {
 	case TypeAuto:
 		return guessParser(config, in, line)
 	case TypeCSV:
@@ -53,7 +53,7 @@ func NewParser(config Config, in io.Reader, line []byte) (Parser, error) {
 	case TypeRegExp:
 		return newRegExpParser(config, in)
 	default:
-		return nil, xerrors.Errorf("invalid type: %q", config.Type)
+		return nil, xerrors.Errorf("invalid type: %q", config.LogType)
 	}
 }
 

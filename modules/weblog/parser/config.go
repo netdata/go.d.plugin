@@ -4,11 +4,11 @@ import "time"
 
 type (
 	Config struct {
-		Type           string       `yaml:"type"`
+		LogType        string       `yaml:"log_type"`
 		TimeMultiplier float64      `yaml:"time_multiplier"`
-		CSV            CSVConfig    `yaml:"csv"`
-		LTSV           LTSVConfig   `yaml:"ltsv"`
-		RegExp         RegExpConfig `yaml:"regexp"`
+		CSV            CSVConfig    `yaml:"csv_config"`
+		LTSV           LTSVConfig   `yaml:"ltsv_config"`
+		RegExp         RegExpConfig `yaml:"regexp_config"`
 	}
 
 	CSVConfig struct {
@@ -36,7 +36,7 @@ const (
 
 var (
 	DefaultConfig = Config{
-		Type:           TypeAuto,
+		LogType:        TypeAuto,
 		TimeMultiplier: time.Second.Seconds(),
 		CSV: CSVConfig{
 			Delimiter: ' ',

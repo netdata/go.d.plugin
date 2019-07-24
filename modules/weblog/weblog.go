@@ -1,13 +1,13 @@
 package weblog
 
 import (
-	"bytes"
-	"encoding/csv"
 	"fmt"
 	"io"
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/netdata/go.d.plugin/modules/weblog/parser"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 
@@ -33,19 +33,20 @@ func init() {
 
 func New() *WebLog {
 	return &WebLog{
-		Config: Config{},
+		Config: Config{
+			Parser: parser.DefaultConfig,
+		},
 	}
 }
 
 type (
 	Config struct {
+		Parser                 parser.Config      `yaml:",inline"`
 		Path                   string             `yaml:"path" validate:"required"`
 		ExcludePath            string             `yaml:"exclude_path"`
 		Filter                 matcher.SimpleExpr `yaml:"filter"`
 		URLCategories          []RawCategory      `yaml:"categories"`
 		UserCategories         []RawCategory      `yaml:"user_categories"`
-		LogFormat              string             `yaml:"log_format"`
-		LogTimeScale           float64            `yaml:"log_time_scale"`
 		Histogram              []float64          `yaml:"histogram"`
 		AggregateResponseCodes bool               `yaml:"aggregate_response_codes"`
 	}
@@ -56,8 +57,7 @@ type (
 		charts *module.Charts
 
 		file   *logreader.Reader
-		parser *csv.Reader
-		format *Format
+		parser parser.Parser
 
 		metrics        *MetricsData
 		filter         matcher.Matcher
@@ -93,26 +93,21 @@ func (w *WebLog) Check() bool {
 		return false
 	}
 
-	parser := NewCSVParser(ParserConfig{}, bytes.NewBuffer(lastLine))
-	fields, err := parser.Read()
+	w.parser, err = parser.NewParser(w.Config.Parser, w.file, lastLine)
 	if err != nil {
 		w.Warning("check failed: ", err)
 		return false
 	}
-
-	if w.LogFormat != "" {
-		w.format = NewFormat(w.LogTimeScale, w.LogFormat)
-		if w.format.Match(fields) != nil {
-			w.Warning("check failed: ", err)
-			return false
-		}
-	} else {
-		w.format = GuessFormat(fields)
-		if w.format == nil {
-			w.Warning("check failed: cannot determine log format")
-			return false
-		}
+	log, err := w.parser.Parse(lastLine)
+	if err != nil {
+		w.Warning("check failed: ", err)
+		return false
 	}
+	if err = log.Verify(); err != nil {
+		w.Warning("check failed: ", err)
+		return false
+	}
+
 	return true
 }
 
@@ -124,30 +119,26 @@ func (w *WebLog) Charts() *module.Charts {
 	} else {
 		_ = charts.Add(responseCodesDetailed.Copy())
 	}
-	if w.format.BytesSent >= 0 || w.format.ReqLength >= 0 {
-		_ = charts.Add(bandwidth.Copy())
-	}
+	_ = charts.Add(bandwidth.Copy())
 
-	if w.format.Request >= 0 {
-		_ = charts.Add(requestsPerHTTPMethod.Copy())
-		_ = charts.Add(requestsPerHTTPVersion.Copy())
+	_ = charts.Add(requestsPerHTTPMethod.Copy())
+	_ = charts.Add(requestsPerHTTPVersion.Copy())
 
-		if len(w.urlCategories) > 0 {
-			chart := requestsPerURL.Copy()
-			for _, category := range w.urlCategories {
-				_ = chart.AddDim(&Dim{
-					ID:   category.name, //TODO: fix name
-					Algo: module.Incremental,
-				})
-				for _, catChart := range perCategoryStats(category.name) {
-					_ = charts.Add(catChart)
-				}
+	if len(w.urlCategories) > 0 {
+		chart := requestsPerURL.Copy()
+		for _, category := range w.urlCategories {
+			_ = chart.AddDim(&Dim{
+				ID:   category.name, //TODO: fix name
+				Algo: module.Incremental,
+			})
+			for _, catChart := range perCategoryStats(category.name) {
+				_ = charts.Add(catChart)
 			}
-			_ = charts.Add(chart)
 		}
+		_ = charts.Add(chart)
 	}
 
-	if w.format.Custom >= 0 && len(w.userCategories) > 0 {
+	if len(w.userCategories) > 0 {
 		chart := requestsPerUserDefined.Copy()
 		for _, category := range w.userCategories {
 			_ = chart.AddDim(&Dim{
@@ -158,46 +149,38 @@ func (w *WebLog) Charts() *module.Charts {
 		_ = charts.Add(chart)
 	}
 
-	if w.format.ReqTime >= 0 {
-		_ = charts.Add(responseTime.Copy())
-		if len(w.Histogram) > 0 {
-			chart := responseTimeHistogram.Copy()
-			_ = charts.Add(chart)
-			for _, v := range w.Histogram {
-				name := fmt.Sprintf("%f", v)
-				_ = chart.AddDim(&Dim{
-					ID:   name, //FIXME
-					Name: name,
-					Algo: module.Incremental,
-				})
-			}
+	_ = charts.Add(responseTime.Copy())
+	if len(w.Histogram) > 0 {
+		chart := responseTimeHistogram.Copy()
+		_ = charts.Add(chart)
+		for _, v := range w.Histogram {
+			name := fmt.Sprintf("%f", v)
+			_ = chart.AddDim(&Dim{
+				ID:   name, //FIXME
+				Name: name,
+				Algo: module.Incremental,
+			})
 		}
 	}
 
-	if w.format.UpstreamRespTime >= 0 {
-		_ = charts.Add(responseTimeUpstream.Copy())
-		if len(w.Histogram) > 0 {
-			chart := responseTimeUpstreamHistogram.Copy()
-			_ = charts.Add(chart)
-			for _, v := range w.Histogram {
-				name := fmt.Sprintf("%f", v)
-				_ = chart.AddDim(&Dim{
-					ID:   name, //FIXME
-					Name: name,
-					Algo: module.Incremental,
-				})
-			}
+	_ = charts.Add(responseTimeUpstream.Copy())
+	if len(w.Histogram) > 0 {
+		chart := responseTimeUpstreamHistogram.Copy()
+		_ = charts.Add(chart)
+		for _, v := range w.Histogram {
+			name := fmt.Sprintf("%f", v)
+			_ = chart.AddDim(&Dim{
+				ID:   name, //FIXME
+				Name: name,
+				Algo: module.Incremental,
+			})
 		}
 	}
 
-	if w.format.Host >= 0 {
-		_ = charts.Add(requestsPerVhost.Copy())
-	}
+	_ = charts.Add(requestsPerVhost.Copy())
 
-	if w.format.RemoteAddr >= 0 {
-		_ = charts.Add(requestsPerIPProto.Copy())
-		_ = charts.Add(currentPollIPs.Copy())
-	}
+	_ = charts.Add(requestsPerIPProto.Copy())
+	_ = charts.Add(currentPollIPs.Copy())
 
 	w.charts = &charts
 	return w.charts
@@ -220,17 +203,12 @@ func (w *WebLog) Collect() map[string]int64 {
 	w.metrics.Reset()
 
 	for {
-		fields, err := w.parser.Read()
+		line, err := w.parser.ReadLine()
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
 			w.Logger.Errorf("collect error: %v", err)
-			return nil
-		}
-		line, err := w.format.Parse(fields)
-		if err != nil {
-			w.Logger.Errorf("parse error: %v", err)
 			return nil
 		}
 
@@ -240,7 +218,7 @@ func (w *WebLog) Collect() map[string]int64 {
 
 		w.metrics.Requests.Inc()
 
-		if line.Status > 0 {
+		if line.Status != parser.EmptyNumber {
 			status := line.Status
 			switch {
 			case status >= 100 && status < 300, status == 304:
@@ -286,7 +264,7 @@ func (w *WebLog) Collect() map[string]int64 {
 				}
 			}
 		}
-		if line.Method != "" {
+		if line.Method != parser.EmptyString {
 			counter, ok := w.metrics.ReqMethod.GetP(line.Method)
 			counter.Inc()
 			if !ok && line.Method != "GET" {
@@ -298,7 +276,7 @@ func (w *WebLog) Collect() map[string]int64 {
 			}
 		}
 
-		if line.Version != "" {
+		if line.Version != parser.EmptyString {
 			deDotVersion := strings.Replace(line.Version, ".", "_", 1)
 			c, ok := w.metrics.ReqVersion.GetP(deDotVersion)
 			c.Inc()
@@ -311,38 +289,36 @@ func (w *WebLog) Collect() map[string]int64 {
 			}
 		}
 
-		if line.BytesSent > 0 {
-			w.metrics.BytesSent.Add(float64(line.BytesSent))
+		if line.RespSize != parser.EmptyNumber {
+			w.metrics.BytesSent.Add(float64(line.RespSize))
 		}
-		if line.ReqLength > 0 {
-			w.metrics.BytesReceived.Add(float64(line.ReqLength))
+		if line.ReqSize != parser.EmptyNumber {
+			w.metrics.BytesReceived.Add(float64(line.ReqSize))
 		}
 
-		if line.ReqTime >= 0 {
-			w.metrics.RespTime.Observe(line.ReqTime)
+		if line.RespTime != parser.EmptyNumber {
+			w.metrics.RespTime.Observe(line.RespTime)
 			if w.metrics.RespTimeHist != nil {
-				w.metrics.RespTimeHist.Observe(line.ReqTime)
+				w.metrics.RespTimeHist.Observe(line.RespTime)
 			}
 		}
-		if line.UpstreamRespTime != nil {
-			for _, time := range line.UpstreamRespTime {
-				w.metrics.RespTimeUpstream.Observe(time)
-				if w.metrics.RespTimeUpstreamHist != nil {
-					w.metrics.RespTimeUpstreamHist.Observe(line.ReqTime)
-				}
+		if line.UpstreamRespTime != parser.EmptyNumber {
+			w.metrics.RespTimeUpstream.Observe(line.UpstreamRespTime)
+			if w.metrics.RespTimeUpstreamHist != nil {
+				w.metrics.RespTimeUpstreamHist.Observe(line.UpstreamRespTime)
 			}
 		}
 
-		if line.RemoteAddr != "" {
-			if strings.ContainsRune(line.RemoteAddr, ':') {
+		if line.Client != parser.EmptyString {
+			if strings.ContainsRune(line.Client, ':') {
 				w.metrics.ReqIpv6.Inc()
-				w.metrics.UniqueIPv6.Insert(line.RemoteAddr)
+				w.metrics.UniqueIPv6.Insert(line.Client)
 			} else {
 				w.metrics.ReqIpv4.Inc()
-				w.metrics.UniqueIPv4.Insert(line.RemoteAddr)
+				w.metrics.UniqueIPv4.Insert(line.Client)
 			}
 		}
-		if line.URI != "" {
+		if line.URI != parser.EmptyString {
 			for _, cat := range w.urlCategories {
 				if cat.Matcher.MatchString(line.URI) {
 					// TODO add metrics
@@ -351,7 +327,7 @@ func (w *WebLog) Collect() map[string]int64 {
 			}
 		}
 
-		if w.format.Custom >= 0 {
+		if line.Custom != parser.EmptyString {
 			for _, cat := range w.userCategories {
 				if cat.Matcher.MatchString(line.Custom) {
 					// TODO add metrics
@@ -375,7 +351,6 @@ func (w *WebLog) initLogReader() error {
 		return err
 	}
 	w.file = file
-	w.parser = NewCSVParser(ParserConfig{}, file)
 	return nil
 }
 

@@ -11,7 +11,7 @@ import (
 type (
 	LogLine struct {
 		Vhost            string
-		ClientIP         string
+		Client           string
 		Method           string
 		URI              string
 		Version          string
@@ -54,7 +54,7 @@ var (
 
 	emptyLogLine = LogLine{
 		Vhost:            EmptyString,
-		ClientIP:         EmptyString,
+		Client:           EmptyString,
 		Method:           EmptyString,
 		URI:              EmptyString,
 		Version:          EmptyString,
@@ -68,14 +68,14 @@ var (
 )
 
 func (l *LogLine) Verify() error {
-	if l.ClientIP == EmptyString || l.Status == EmptyNumber || l.RespSize == EmptyNumber || l.Method == EmptyString || l.URI == EmptyString {
+	if l.Client == EmptyString || l.Status == EmptyNumber || l.RespSize == EmptyNumber || l.Method == EmptyString || l.URI == EmptyString {
 		return xerrors.New("missing some mandatory fields: client, status,resp_size, method, uri")
 	}
 	if l.Vhost != EmptyString && !reVhost.MatchString(l.Vhost) {
 		return xerrors.Errorf("invalid vhost field: '%s'", l.Vhost)
 	}
-	if !reClient.MatchString(l.ClientIP) {
-		return xerrors.Errorf("invalid client field: %q", l.ClientIP)
+	if !reClient.MatchString(l.Client) {
+		return xerrors.Errorf("invalid client field: %q", l.Client)
 	}
 	if !reMethod.MatchString(l.Method) {
 		return xerrors.Errorf("invalid method field: '%s'", l.Method)
@@ -107,7 +107,7 @@ func (l *LogLine) Verify() error {
 func (l *LogLine) assign(field string, value string, timeMultiplier float64) error {
 	switch field {
 	case fieldClient:
-		l.ClientIP = value
+		l.Client = value
 	case fieldRequest:
 		if err := l.assignRequest(value); err != nil {
 			return err

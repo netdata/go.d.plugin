@@ -71,7 +71,8 @@ var (
 
 func newCSVFormat(logFormat string) *csvFormat {
 	format := &csvFormat{
-		Raw: logFormat,
+		Raw:          logFormat,
+		fieldIndexes: make(map[string]int, 13),
 	}
 	fields := strings.Fields(logFormat)
 	offset := 0

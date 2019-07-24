@@ -74,6 +74,7 @@ func readLog(t *testing.T) {
 	t.Helper()
 	file, err := Open(filepath.Join(os.TempDir(), "test_read.*.log"), "", logger.New("go.d", "web_log", "test"))
 	require.NoError(t, err)
+	defer file.Close()
 	r := csv.NewReader(file)
 	r.Comma = ' '
 	r.ReuseRecord = true
