@@ -1,5 +1,9 @@
 package scaleio
 
+/*
+Starting from version 3 of ScaleIO/VxFlex API numOfScsiInitiators property is removed from selectedStatisticsQuery.
+Reference: VxFlex OS v3.x REST API Reference Guide.pdf
+*/
 var (
 	selectedStatisticsQuery = `
 {
@@ -62,7 +66,6 @@ var (
         "numOfMappedToAllVolumes",
         "numOfProtectionDomains",
         "numOfRfcacheDevices",
-        "numOfScsiInitiators",
         "numOfSdc",
         "numOfSds",
         "numOfSnapshots",

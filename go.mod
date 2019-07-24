@@ -9,7 +9,7 @@ require (
 	github.com/dgryski/go-metro v0.0.0-20180109044635-280f6062b5bc // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/miekg/dns v1.1.8
-	github.com/netdata/go-orchestrator v0.0.0-20190604151551-bbbeb05378c3
+	github.com/netdata/go-orchestrator v0.0.0-20190629213730-6df8bb4a4cbd
 	github.com/prometheus/common v0.3.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
 	github.com/stretchr/objx v0.2.0 // indirect

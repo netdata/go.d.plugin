@@ -71,6 +71,8 @@ func TestClient_SummaryRaw(t *testing.T) {
 	rv, err := client.SummaryRaw()
 	require.NoError(t, err)
 
+	var absolute int64 = 1560443834
+
 	expected := &SummaryRaw{
 		DomainsBeingBlocked: 1,
 		DNSQueriesToday:     1,
@@ -90,8 +92,8 @@ func TestClient_SummaryRaw(t *testing.T) {
 		Status:              "enabled",
 		GravityLastUpdated: struct {
 			FileExists bool `json:"file_exists"`
-			Absolute   int64
-		}{FileExists: true, Absolute: 1560443834},
+			Absolute   *int64
+		}{FileExists: true, Absolute: &absolute},
 	}
 
 	assert.Equal(t, expected, rv)
