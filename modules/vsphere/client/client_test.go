@@ -101,6 +101,31 @@ func TestClient_IsSessionActive(t *testing.T) {
 	assert.True(t, v)
 }
 
+func TestClient_Login(t *testing.T) {
+	model, srv, err := createSim()
+	require.NoError(t, err)
+
+	defer model.Remove()
+	defer srv.Close()
+
+	c, err := newTestClient(srv.URL)
+	require.NoError(t, err)
+
+	err = c.Logout()
+	assert.NoError(t, err)
+
+	v, err := c.IsSessionActive()
+	assert.NoError(t, err)
+	assert.False(t, v)
+
+	err = c.Login(url.UserPassword("admin", "password"))
+	assert.NoError(t, err)
+
+	v, err = c.IsSessionActive()
+	assert.NoError(t, err)
+	assert.True(t, v)
+}
+
 func TestClient_Logout(t *testing.T) {
 	model, srv, err := createSim()
 	require.NoError(t, err)
