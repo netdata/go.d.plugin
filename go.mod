@@ -6,6 +6,7 @@ require (
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/google/uuid v1.1.1 // indirect
 	github.com/hpcloud/tail v1.0.0
 	github.com/miekg/dns v1.1.8
 	github.com/netdata/go-orchestrator v0.0.0-20190629213730-6df8bb4a4cbd

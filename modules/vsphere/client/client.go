@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"net/url"
 	"sync"
 	"time"
@@ -58,6 +59,9 @@ func New(config Config) (*Client, error) {
 	u, err := soap.ParseURL(config.URL)
 	if err != nil {
 		return nil, err
+	}
+	if u == nil {
+		return nil, errors.New("empty URL")
 	}
 	u.User = url.UserPassword(config.User, config.Password)
 
@@ -128,8 +132,8 @@ func (c *Client) Version() string {
 }
 
 func (c *Client) Login() error {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
+	c.Lock.Lock()
+	defer c.Lock.Unlock()
 
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
@@ -137,8 +141,8 @@ func (c *Client) Login() error {
 }
 
 func (c *Client) Logout() error {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
+	c.Lock.Lock()
+	defer c.Lock.Unlock()
 
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()

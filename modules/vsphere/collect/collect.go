@@ -45,8 +45,9 @@ func (c VSphereMetricCollector) collectMetrics(pqs []types.PerfQuerySpec) []perf
 	lock := &sync.Mutex{}
 
 	for _, chunk := range chunks {
+		pqs := chunk
 		job := func() {
-			c.collect(&ms, lock, chunk)
+			c.collect(&ms, lock, pqs)
 		}
 		tc.call(job)
 	}
