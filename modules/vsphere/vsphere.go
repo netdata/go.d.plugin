@@ -1,12 +1,12 @@
 package vsphere
 
 import (
-	"github.com/netdata/go.d.plugin/modules/vsphere/collect"
 	"net/url"
 	"sync"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules/vsphere/client"
+	"github.com/netdata/go.d.plugin/modules/vsphere/collect"
 	"github.com/netdata/go.d.plugin/modules/vsphere/discover"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -99,11 +99,16 @@ func (vs *VSphere) Init() bool {
 	}
 
 	c, err := client.New(client.Config{
-		URL:      u.String(),
-		User:     username,
-		Password: password,
-		Timeout:  timeout,
+		URL:             u.String(),
+		User:            username,
+		Password:        password,
+		Timeout:         timeout,
+		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
 	})
+	if err != nil {
+		vs.Error(err)
+		return false
+	}
 
 	cl := discover.NewVSphereDiscoverer(c)
 	mc := collect.NewVSphereMetricCollector(c)
@@ -115,6 +120,7 @@ func (vs *VSphere) Init() bool {
 	}
 	vs.resources = res
 	vs.metricCollector = mc
+	time.Sleep(time.Minute)
 
 	return true
 }

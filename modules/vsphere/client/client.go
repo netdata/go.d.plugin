@@ -2,13 +2,14 @@ package client
 
 import (
 	"context"
-	"errors"
 	"net/url"
-	"sync"
 	"time"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/performance"
+	"github.com/vmware/govmomi/session"
 	"github.com/vmware/govmomi/view"
 	"github.com/vmware/govmomi/vim25"
 	"github.com/vmware/govmomi/vim25/mo"
@@ -28,213 +29,129 @@ type Config struct {
 	URL      string
 	User     string
 	Password string
-	Timeout  time.Duration
+	web.ClientTLSConfig
+	Timeout time.Duration
 }
 
-func newContainerView(client *vim25.Client, root types.ManagedObjectReference, timeout time.Duration) (*view.ContainerView, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-	viewManager := view.NewManager(client)
-	return viewManager.CreateContainerView(ctx, root, []string{}, true)
+type Client struct {
+	client *govmomi.Client
+	root   *view.ContainerView
+	perf   *performance.Manager
 }
 
-func newPerformance(client *vim25.Client, timeout time.Duration) (*performance.Manager, error) {
-	perfManager := performance.NewManager(client)
-	perfManager.Sort = true
-
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-	// populate cache
-	_, err := perfManager.CounterInfoByName(ctx)
-	if err != nil {
+func newSoapClient(config Config) (*soap.Client, error) {
+	soapURL, err := soap.ParseURL(config.URL)
+	if err != nil || soapURL == nil {
 		return nil, err
 	}
-	return perfManager, nil
+
+	soapURL.User = url.UserPassword(config.User, config.Password)
+	soapClient := soap.NewClient(soapURL, config.InsecureSkipVerify)
+	soapClient.Timeout = config.Timeout
+	return soapClient, nil
+}
+
+func newContainerView(ctx context.Context, client *govmomi.Client) (*view.ContainerView, error) {
+	viewManager := view.NewManager(client.Client)
+	return viewManager.CreateContainerView(ctx, client.ServiceContent.RootFolder, []string{}, true)
+}
+
+func newPerformanceManager(client *vim25.Client) *performance.Manager {
+	perfManager := performance.NewManager(client)
+	perfManager.Sort = true
+	return perfManager
 }
 
 func New(config Config) (*Client, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), config.Timeout)
-	defer cancel()
-
-	u, err := soap.ParseURL(config.URL)
-	if err != nil {
-		return nil, err
-	}
-	if u == nil {
-		return nil, errors.New("empty URL")
-	}
-	u.User = url.UserPassword(config.User, config.Password)
-
-	vmomiClient, err := govmomi.NewClient(ctx, u, true)
-	if err != nil {
-		return nil, err
-	}
-	vmomiClient.Timeout = config.Timeout
-
-	containerView, err := newContainerView(vmomiClient.Client, vmomiClient.ServiceContent.RootFolder, config.Timeout)
+	ctx := context.Background()
+	soapClient, err := newSoapClient(config)
 	if err != nil {
 		return nil, err
 	}
 
-	perfManager, err := newPerformance(vmomiClient.Client, config.Timeout)
+	vimClient, err := vim25.NewClient(ctx, soapClient)
 	if err != nil {
 		return nil, err
 	}
+
+	vmomiClient := &govmomi.Client{
+		Client:         vimClient,
+		SessionManager: session.NewManager(vimClient),
+	}
+
+	useInfo := url.UserPassword(config.User, config.Password)
+
+	addKeepAlive(vmomiClient, useInfo)
+	err = vmomiClient.Login(ctx, useInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	containerView, err := newContainerView(ctx, vmomiClient)
+	if err != nil {
+		return nil, err
+	}
+
+	perfManager := newPerformanceManager(vimClient)
 
 	client := &Client{
-		Client:  vmomiClient,
-		Perf:    perfManager,
-		Root:    containerView,
-		Timeout: config.Timeout,
-		Lock:    new(sync.RWMutex),
-		config:  config,
+		client: vmomiClient,
+		perf:   perfManager,
+		root:   containerView,
 	}
 
 	return client, nil
 }
 
-type Client struct {
-	Client  *govmomi.Client
-	Root    *view.ContainerView
-	Perf    *performance.Manager
-	Timeout time.Duration
-	Lock    *sync.RWMutex
-	config  Config
-}
-
-func (c *Client) Reconnect() error {
-	cl, err := New(c.config)
-	if err != nil {
-		return err
-	}
-
-	c.Lock.Lock()
-	defer c.Lock.Unlock()
-
-	c.Client = cl.Client
-	c.Root = cl.Root
-	c.Perf = cl.Perf
-	return nil
-}
-
 func (c *Client) IsSessionActive() (bool, error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-
-	return c.Client.SessionManager.SessionIsActive(ctx)
+	return c.client.SessionManager.SessionIsActive(context.Background())
 }
 
 func (c *Client) Version() string {
-	return c.Client.ServiceContent.About.Version
+	return c.client.ServiceContent.About.Version
 }
 
-func (c *Client) Login() error {
-	c.Lock.Lock()
-	defer c.Lock.Unlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	return c.Client.SessionManager.Login(ctx, url.UserPassword(c.config.User, c.config.Password))
+func (c *Client) Login(userinfo *url.Userinfo) error {
+	return c.client.Login(context.Background(), userinfo)
 }
 
 func (c *Client) Logout() error {
-	c.Lock.Lock()
-	defer c.Lock.Unlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	return c.Client.SessionManager.Logout(ctx)
+	return c.client.Logout(context.Background())
 }
 
 func (c *Client) PerformanceMetrics(pqs []types.PerfQuerySpec) ([]performance.EntityMetric, error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	metrics, err := c.Perf.Query(ctx, pqs)
+	metrics, err := c.perf.Query(context.Background(), pqs)
 	if err != nil {
 		return nil, err
 	}
-
-	ctx, cancel = context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	return c.Perf.ToMetricSeries(ctx, metrics)
+	return c.perf.ToMetricSeries(context.Background(), metrics)
 }
 
-func (c *Client) Datacenters(pathSet []string) (dcs []mo.Datacenter, err error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	err = c.Root.Retrieve(ctx, []string{datacenter}, pathSet, &dcs)
+func (c *Client) Datacenters(pathSet ...string) (dcs []mo.Datacenter, err error) {
+	err = c.root.Retrieve(context.Background(), []string{datacenter}, pathSet, &dcs)
 	return
 }
 
-func (c *Client) Folders(pathSet []string) (folders []mo.Folder, err error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	err = c.Root.Retrieve(ctx, []string{folder}, pathSet, &folders)
+func (c *Client) Folders(pathSet ...string) (folders []mo.Folder, err error) {
+	err = c.root.Retrieve(context.Background(), []string{folder}, pathSet, &folders)
 	return
 }
 
-func (c *Client) ComputeResources(pathSet []string) (computeResources []mo.ComputeResource, err error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	err = c.Root.Retrieve(ctx, []string{computeResource}, pathSet, &computeResources)
+func (c *Client) ComputeResources(pathSet ...string) (computes []mo.ComputeResource, err error) {
+	err = c.root.Retrieve(context.Background(), []string{computeResource}, pathSet, &computes)
 	return
 }
 
-func (c *Client) Hosts(pathSet []string) (hosts []mo.HostSystem, err error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	err = c.Root.Retrieve(ctx, []string{hostSystem}, pathSet, &hosts)
+func (c *Client) Hosts(pathSet ...string) (hosts []mo.HostSystem, err error) {
+	err = c.root.Retrieve(context.Background(), []string{hostSystem}, pathSet, &hosts)
 	return
 }
 
-func (c *Client) VirtualMachines(pathSet []string) (vms []mo.VirtualMachine, err error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	err = c.Root.Retrieve(ctx, []string{virtualMachine}, pathSet, &vms)
+func (c *Client) VirtualMachines(pathSet ...string) (vms []mo.VirtualMachine, err error) {
+	err = c.root.Retrieve(context.Background(), []string{virtualMachine}, pathSet, &vms)
 	return
 }
 
 func (c *Client) CounterInfoByName() (map[string]*types.PerfCounterInfo, error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	return c.Perf.CounterInfoByName(ctx)
+	return c.perf.CounterInfoByName(context.Background())
 }
-
-func IsNotAuthenticatedError(err error) bool {
-	_, ok := soap.ToVimFault(err).(*types.NotAuthenticated)
-	return ok
-}
-
-//func (c *Client) GetServerTime() (time.Time, error) {
-//	ctx, cancel := c.contextWithTimeout()
-//	defer cancel()
-//	t, err := methods.GetCurrentTime(ctx, c.Client)
-//	if err != nil {
-//		return time.Time{}, err
-//	}
-//	return *t, nil
-//}

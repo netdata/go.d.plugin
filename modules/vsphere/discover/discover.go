@@ -13,11 +13,11 @@ import (
 )
 
 type APIClient interface {
-	Datacenters(pathSet []string) ([]mo.Datacenter, error)
-	Folders(pathSet []string) ([]mo.Folder, error)
-	ComputeResources(pathSet []string) ([]mo.ComputeResource, error)
-	Hosts(pathSet []string) ([]mo.HostSystem, error)
-	VirtualMachines(pathSet []string) ([]mo.VirtualMachine, error)
+	Datacenters(pathSet ...string) ([]mo.Datacenter, error)
+	Folders(pathSet ...string) ([]mo.Folder, error)
+	ComputeResources(pathSet ...string) ([]mo.ComputeResource, error)
+	Hosts(pathSet ...string) ([]mo.HostSystem, error)
+	VirtualMachines(pathSet ...string) ([]mo.VirtualMachine, error)
 
 	CounterInfoByName() (map[string]*types.PerfCounterInfo, error)
 }
@@ -100,35 +100,35 @@ func (d vSphereDiscoverer) discoverRawResources() (*rawResources, error) {
 
 	start := time.Now()
 	t := start
-	datacenters, err := d.Datacenters(datacenterPathSet)
+	datacenters, err := d.Datacenters(datacenterPathSet...)
 	if err != nil {
 		return nil, err
 	}
 	d.Debugf("discovering : found %d datacenters, discovering took %s", len(datacenters), time.Since(t))
 
 	t = time.Now()
-	folders, err := d.Folders(folderPathSet)
+	folders, err := d.Folders(folderPathSet...)
 	if err != nil {
 		return nil, err
 	}
 	d.Debugf("discovering : found %d folders, discovering took %s", len(folders), time.Since(t))
 
 	t = time.Now()
-	clusters, err := d.ComputeResources(clusterPathSet)
+	clusters, err := d.ComputeResources(clusterPathSet...)
 	if err != nil {
 		return nil, err
 	}
 	d.Debugf("discovering : found %d clusters, discovering took %s", len(clusters), time.Since(t))
 
 	t = time.Now()
-	hosts, err := d.Hosts(hostPathSet)
+	hosts, err := d.Hosts(hostPathSet...)
 	if err != nil {
 		return nil, err
 	}
 	d.Debugf("discovering : found %d hosts, discovering took %s", len(hosts), time.Since(t))
 
 	t = time.Now()
-	vms, err := d.VirtualMachines(vmPathSet)
+	vms, err := d.VirtualMachines(vmPathSet...)
 	if err != nil {
 		return nil, err
 	}
