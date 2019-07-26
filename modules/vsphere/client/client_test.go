@@ -20,7 +20,7 @@ func newTestClient(vCenterURL *url.URL) (*Client, error) {
 		URL:             vCenterURL.String(),
 		User:            "admin",
 		Password:        "password",
-		Timeout:         time.Second,
+		Timeout:         time.Second * 3,
 		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
 	})
 }
