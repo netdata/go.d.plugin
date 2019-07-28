@@ -16,7 +16,7 @@ func (vs *VSphere) cleanupHosts() {
 		}
 		delete(vs.chartedHosts, k)
 		delete(vs.failedUpdatesHosts, k)
-		vs.removeHostFromCharts(k)
+		vs.removeFromCharts(k)
 	}
 }
 
@@ -27,6 +27,6 @@ func (vs *VSphere) cleanupVMs() {
 		}
 		delete(vs.chartedHosts, k)
 		delete(vs.failedUpdatesHosts, k)
-		vs.removeVMFromCharts(k)
+		vs.removeFromCharts(k)
 	}
 }
