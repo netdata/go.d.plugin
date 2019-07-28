@@ -2,7 +2,6 @@ package discover
 
 import (
 	"crypto/tls"
-	"fmt"
 	"net/url"
 	"testing"
 	"time"
@@ -28,6 +27,8 @@ func newTestClient(vCenterURL *url.URL) (*client.Client, error) {
 
 func createSim() (*simulator.Model, *simulator.Server, error) {
 	model := simulator.VPX()
+	model.Datacenter = 2
+	model.Folder = 3
 
 	err := model.Create()
 	if err != nil {
@@ -38,25 +39,6 @@ func createSim() (*simulator.Model, *simulator.Server, error) {
 
 	s := model.Service.NewServer()
 	return model, s, nil
-}
-
-func numOfFolders(m *simulator.Model) int {
-	if m.Datacenter >= m.Folder {
-		return (m.Datacenter-m.Folder)*4 + m.Folder*9
-	}
-	return m.Datacenter * 9
-}
-
-func numOfClusters(m *simulator.Model) int {
-	return m.Cluster*m.Datacenter + m.Host
-}
-
-func numOfHosts(m *simulator.Model) int {
-	return m.Host*m.Datacenter + m.ClusterHost*m.Cluster
-}
-
-func numOfVMs(m *simulator.Model) int {
-	return m.Host*m.Machine + m.Cluster*m.Machine + m.Cluster*m.App*m.Machine
 }
 
 func TestVSphereDiscoverer_Discover(t *testing.T) {
@@ -70,66 +52,162 @@ func TestVSphereDiscoverer_Discover(t *testing.T) {
 	require.NoError(t, err)
 
 	d := NewVSphereDiscoverer(c)
+	res, err := d.Discover()
+	require.NoError(t, err)
 
+	assert.True(t, len(res.Dcs) > 0)
+	assert.True(t, len(res.Folders) > 0)
+	assert.True(t, len(res.Clusters) > 0)
+	assert.True(t, len(res.Hosts) > 0)
+	assert.True(t, len(res.VMs) > 0)
+	assert.True(t, isHierarchySet(res))
+	assert.True(t, isMetricListsCollected(res))
+}
+
+func TestVSphereDiscoverer_discoverRawResources(t *testing.T) {
+	model, srv, err := createSim()
+	require.NoError(t, err)
+	defer model.Remove()
+	defer srv.Close()
+
+	c, err := newTestClient(srv.URL)
+	require.NoError(t, err)
+
+	d := NewVSphereDiscoverer(c)
 	raw, err := d.discoverRawResources()
 	require.NoError(t, err)
 
-	assert.Equalf(t, model.Datacenter, len(raw.dcs), "discover raw resources, datacenters")
-	assert.Equalf(t, numOfFolders(model), len(raw.folders), "discover raw resources, folders")
-	assert.Equalf(t, numOfClusters(model), len(raw.clusters), "discover raw resources, clusters")
-	assert.Equalf(t, numOfHosts(model), len(raw.hosts), "discover raw resources, hosts")
-	assert.Equalf(t, numOfVMs(model), len(raw.vms), "discover raw resources, vms")
+	count := model.Count()
+	assert.Lenf(t, raw.dcs, count.Datacenter, "datacenters")
+	assert.Lenf(t, raw.folders, count.Folder-1, "folders") // minus root folder
+	dummyClusters := model.Host * count.Datacenter
+	assert.Lenf(t, raw.clusters, count.Cluster+dummyClusters, "clusters")
+	assert.Lenf(t, raw.hosts, count.Host, "hosts")
+	assert.Lenf(t, raw.vms, count.Machine, "hosts")
+}
+
+func TestVSphereDiscoverer_buildResources(t *testing.T) {
+	model, srv, err := createSim()
+	require.NoError(t, err)
+	defer model.Remove()
+	defer srv.Close()
+
+	c, err := newTestClient(srv.URL)
+	require.NoError(t, err)
+
+	d := NewVSphereDiscoverer(c)
+	raw, err := d.discoverRawResources()
+	require.NoError(t, err)
 
 	res := d.buildResources(raw)
-	assert.Equalf(t, len(raw.dcs), len(res.Dcs), "build resources, datacenters")
-	assert.Equalf(t, len(raw.folders), len(res.Folders), "build resources, folders")
-	assert.Equalf(t, len(raw.clusters), len(res.Clusters), "build resources, clusters")
-	assert.Equalf(t, len(raw.hosts), len(res.Hosts), "build resources, hosts")
-	assert.Equalf(t, len(raw.vms), len(res.VMs), "build resources, vms")
-
-	assert.Zero(t, d.removeUnmatched(res))
-
-	assert.NoErrorf(t, d.setHierarchy(res), "set hierarchy")
-	assert.NoErrorf(t, checkHierarchy(res), "set hierarchy")
-
-	assert.NoErrorf(t, d.collectMetricLists(res), "collect metric lists")
-	assert.NoErrorf(t, checkMetricLists(res), "collect metric lists")
+	assert.Lenf(t, res.Dcs, len(raw.dcs), "datacenters")
+	assert.Lenf(t, res.Folders, len(raw.folders), "folders")
+	assert.Lenf(t, res.Clusters, len(raw.clusters), "clusters")
+	assert.Lenf(t, res.Hosts, len(raw.hosts), "hosts")
+	assert.Lenf(t, res.VMs, len(raw.vms), "hosts")
 }
 
-func checkHierarchy(res *resources.Resources) error {
+func TestVSphereDiscoverer_setHierarchy(t *testing.T) {
+	model, srv, err := createSim()
+	require.NoError(t, err)
+	defer model.Remove()
+	defer srv.Close()
+
+	c, err := newTestClient(srv.URL)
+	require.NoError(t, err)
+
+	d := NewVSphereDiscoverer(c)
+	raw, err := d.discoverRawResources()
+	require.NoError(t, err)
+	res := d.buildResources(raw)
+
+	err = d.setHierarchy(res)
+	require.NoError(t, err)
+	assert.True(t, isHierarchySet(res))
+}
+
+func TestVSphereDiscoverer_removeUnmatched(t *testing.T) {
+	model, srv, err := createSim()
+	require.NoError(t, err)
+	defer model.Remove()
+	defer srv.Close()
+
+	c, err := newTestClient(srv.URL)
+	require.NoError(t, err)
+
+	d := NewVSphereDiscoverer(c)
+	d.HostMatcher = testHostMatcher{}
+	d.VMMatcher = testVMMatcher{}
+	raw, err := d.discoverRawResources()
+	require.NoError(t, err)
+	res := d.buildResources(raw)
+
+	numVMs, numHosts := len(res.VMs), len(res.Hosts)
+	assert.Equal(t, numVMs+numHosts, d.removeUnmatched(res))
+	assert.Lenf(t, res.Hosts, 0, "hosts")
+	assert.Lenf(t, res.VMs, 0, "vms")
+}
+
+func TestVSphereDiscoverer_collectMetricLists(t *testing.T) {
+	model, srv, err := createSim()
+	require.NoError(t, err)
+	defer model.Remove()
+	defer srv.Close()
+
+	c, err := newTestClient(srv.URL)
+	require.NoError(t, err)
+
+	d := NewVSphereDiscoverer(c)
+	raw, err := d.discoverRawResources()
+	require.NoError(t, err)
+
+	res := d.buildResources(raw)
+	err = d.collectMetricLists(res)
+	require.NoError(t, err)
+	assert.True(t, isMetricListsCollected(res))
+}
+
+func isHierarchySet(res *resources.Resources) bool {
 	for _, c := range res.Clusters {
-		if c.Hier.IsSet() {
-			continue
+		if !c.Hier.IsSet() {
+			return false
 		}
-		return fmt.Errorf("hierarchy not set for cluster %s/%s", c.ID, c.Name)
 	}
 	for _, h := range res.Hosts {
-		if h.Hier.IsSet() {
-			continue
+		if !h.Hier.IsSet() {
+			return false
 		}
-		return fmt.Errorf("hierarchy not set for host %s/%s", h.ID, h.Name)
 	}
 	for _, v := range res.VMs {
-		if v.Hier.IsSet() {
-			continue
+		if !v.Hier.IsSet() {
+			return false
 		}
-		return fmt.Errorf("hierarchy not set for vm %s/%s", v.ID, v.Name)
 	}
-	return nil
+	return true
 }
 
-func checkMetricLists(res *resources.Resources) error {
+func isMetricListsCollected(res *resources.Resources) bool {
 	for _, h := range res.Hosts {
-		if h.MetricList != nil {
-			continue
+		if h.MetricList == nil {
+			return false
 		}
-		return fmt.Errorf("metric list not set for host %s/%s", h.ID, h.Name)
 	}
 	for _, v := range res.VMs {
-		if v.MetricList != nil {
-			continue
+		if v.MetricList == nil {
+			return false
 		}
-		return fmt.Errorf("metric list not set for vm %s/%s", v.ID, v.Name)
 	}
-	return nil
+	return true
+}
+
+type testHostMatcher struct{}
+
+func (testHostMatcher) Match(host resources.Host) bool {
+	return false
+}
+
+type testVMMatcher struct{}
+
+func (testVMMatcher) Match(vm resources.VM) bool {
+	return false
 }
