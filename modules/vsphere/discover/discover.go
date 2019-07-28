@@ -43,7 +43,7 @@ type vSphereDiscoverer struct {
 	VMMatcher
 }
 
-type rawResources struct {
+type resources struct {
 	dcs      []mo.Datacenter
 	folders  []mo.Folder
 	clusters []mo.ComputeResource
@@ -53,12 +53,12 @@ type rawResources struct {
 
 func (d vSphereDiscoverer) Discover() (*rs.Resources, error) {
 	startTime := time.Now()
-	raw, err := d.discoverRawResources()
+	raw, err := d.discover()
 	if err != nil {
 		return nil, fmt.Errorf("discovering resources : %v", err)
 	}
 
-	res := d.buildResources(raw)
+	res := d.build(raw)
 
 	err = d.setHierarchy(res)
 	if err != nil {
@@ -95,7 +95,7 @@ var (
 	vmPathSet         = []string{"name", "runtime.host", "runtime.powerState"}
 )
 
-func (d vSphereDiscoverer) discoverRawResources() (*rawResources, error) {
+func (d vSphereDiscoverer) discover() (*resources, error) {
 	d.Debug("discovering : starting resource discovering")
 
 	start := time.Now()
@@ -134,7 +134,7 @@ func (d vSphereDiscoverer) discoverRawResources() (*rawResources, error) {
 	}
 	d.Debugf("discovering : found %d vms, discovering took %s", len(hosts), time.Since(t))
 
-	raw := rawResources{
+	raw := resources{
 		dcs:      datacenters,
 		folders:  folders,
 		clusters: clusters,

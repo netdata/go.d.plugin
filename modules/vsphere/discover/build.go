@@ -6,7 +6,7 @@ import (
 	"github.com/vmware/govmomi/vim25/mo"
 )
 
-func (d vSphereDiscoverer) buildResources(raw *rawResources) *rs.Resources {
+func (d vSphereDiscoverer) build(raw *resources) *rs.Resources {
 	d.Debug("discovering : starting building resources")
 
 	var res rs.Resources

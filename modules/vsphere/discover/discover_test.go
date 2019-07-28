@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules/vsphere/client"
-	"github.com/netdata/go.d.plugin/modules/vsphere/resources"
+	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/stretchr/testify/assert"
@@ -64,7 +64,7 @@ func TestVSphereDiscoverer_Discover(t *testing.T) {
 	assert.True(t, isMetricListsCollected(res))
 }
 
-func TestVSphereDiscoverer_discoverRawResources(t *testing.T) {
+func TestVSphereDiscoverer_discover(t *testing.T) {
 	model, srv, err := createSim()
 	require.NoError(t, err)
 	defer model.Remove()
@@ -74,7 +74,7 @@ func TestVSphereDiscoverer_discoverRawResources(t *testing.T) {
 	require.NoError(t, err)
 
 	d := NewVSphereDiscoverer(c)
-	raw, err := d.discoverRawResources()
+	raw, err := d.discover()
 	require.NoError(t, err)
 
 	count := model.Count()
@@ -86,7 +86,7 @@ func TestVSphereDiscoverer_discoverRawResources(t *testing.T) {
 	assert.Lenf(t, raw.vms, count.Machine, "hosts")
 }
 
-func TestVSphereDiscoverer_buildResources(t *testing.T) {
+func TestVSphereDiscoverer_build(t *testing.T) {
 	model, srv, err := createSim()
 	require.NoError(t, err)
 	defer model.Remove()
@@ -96,10 +96,10 @@ func TestVSphereDiscoverer_buildResources(t *testing.T) {
 	require.NoError(t, err)
 
 	d := NewVSphereDiscoverer(c)
-	raw, err := d.discoverRawResources()
+	raw, err := d.discover()
 	require.NoError(t, err)
 
-	res := d.buildResources(raw)
+	res := d.build(raw)
 	assert.Lenf(t, res.Dcs, len(raw.dcs), "datacenters")
 	assert.Lenf(t, res.Folders, len(raw.folders), "folders")
 	assert.Lenf(t, res.Clusters, len(raw.clusters), "clusters")
@@ -117,9 +117,9 @@ func TestVSphereDiscoverer_setHierarchy(t *testing.T) {
 	require.NoError(t, err)
 
 	d := NewVSphereDiscoverer(c)
-	raw, err := d.discoverRawResources()
+	raw, err := d.discover()
 	require.NoError(t, err)
-	res := d.buildResources(raw)
+	res := d.build(raw)
 
 	err = d.setHierarchy(res)
 	require.NoError(t, err)
@@ -138,9 +138,9 @@ func TestVSphereDiscoverer_removeUnmatched(t *testing.T) {
 	d := NewVSphereDiscoverer(c)
 	d.HostMatcher = testHostMatcher{}
 	d.VMMatcher = testVMMatcher{}
-	raw, err := d.discoverRawResources()
+	raw, err := d.discover()
 	require.NoError(t, err)
-	res := d.buildResources(raw)
+	res := d.build(raw)
 
 	numVMs, numHosts := len(res.VMs), len(res.Hosts)
 	assert.Equal(t, numVMs+numHosts, d.removeUnmatched(res))
@@ -158,16 +158,16 @@ func TestVSphereDiscoverer_collectMetricLists(t *testing.T) {
 	require.NoError(t, err)
 
 	d := NewVSphereDiscoverer(c)
-	raw, err := d.discoverRawResources()
+	raw, err := d.discover()
 	require.NoError(t, err)
 
-	res := d.buildResources(raw)
+	res := d.build(raw)
 	err = d.collectMetricLists(res)
 	require.NoError(t, err)
 	assert.True(t, isMetricListsCollected(res))
 }
 
-func isHierarchySet(res *resources.Resources) bool {
+func isHierarchySet(res *rs.Resources) bool {
 	for _, c := range res.Clusters {
 		if !c.Hier.IsSet() {
 			return false
@@ -186,7 +186,7 @@ func isHierarchySet(res *resources.Resources) bool {
 	return true
 }
 
-func isMetricListsCollected(res *resources.Resources) bool {
+func isMetricListsCollected(res *rs.Resources) bool {
 	for _, h := range res.Hosts {
 		if h.MetricList == nil {
 			return false
@@ -202,12 +202,12 @@ func isMetricListsCollected(res *resources.Resources) bool {
 
 type testHostMatcher struct{}
 
-func (testHostMatcher) Match(host resources.Host) bool {
+func (testHostMatcher) Match(host rs.Host) bool {
 	return false
 }
 
 type testVMMatcher struct{}
 
-func (testVMMatcher) Match(vm resources.VM) bool {
+func (testVMMatcher) Match(vm rs.VM) bool {
 	return false
 }
