@@ -58,13 +58,12 @@ func New() *VSphere {
 	}
 
 	return &VSphere{
-		resLock:            new(sync.RWMutex),
-		Config:             config,
-		charts:             &Charts{},
-		failedUpdatesHosts: make(map[string]int),
-		failedUpdatesVms:   make(map[string]int),
-		chartedHosts:       make(map[string]bool),
-		chartedVMs:         make(map[string]bool),
+		resLock:        new(sync.RWMutex),
+		Config:         config,
+		charts:         &Charts{},
+		collectedHosts: make(map[string]int),
+		collectedVMs:   make(map[string]int),
+		charted:        make(map[string]bool),
 	}
 }
 
@@ -86,10 +85,9 @@ type VSphere struct {
 
 	charts *module.Charts
 
-	failedUpdatesHosts map[string]int
-	failedUpdatesVms   map[string]int
-	chartedHosts       map[string]bool
-	chartedVMs         map[string]bool
+	collectedHosts map[string]int
+	collectedVMs   map[string]int
+	charted        map[string]bool
 }
 
 // Cleanup makes cleanup.

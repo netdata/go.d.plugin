@@ -7,7 +7,7 @@ func (vs *VSphere) collect() (map[string]int64, error) {
 	defer vs.resLock.Unlock()
 
 	defer vs.updateCharts()
-	defer vs.cleanupResources()
+	defer vs.removeStale()
 
 	err := vs.collectHosts(mx)
 	if err != nil {
@@ -20,4 +20,27 @@ func (vs *VSphere) collect() (map[string]int64, error) {
 	}
 
 	return mx, nil
+}
+
+const (
+	failedMax = 10
+)
+
+func (vs *VSphere) removeStale() {
+	for k, v := range vs.collectedHosts {
+		if v < failedMax {
+			continue
+		}
+		delete(vs.charted, k)
+		delete(vs.collectedHosts, k)
+		vs.removeFromCharts(k)
+	}
+	for k, v := range vs.collectedVMs {
+		if v < failedMax {
+			continue
+		}
+		delete(vs.charted, k)
+		delete(vs.collectedVMs, k)
+		vs.removeFromCharts(k)
+	}
 }

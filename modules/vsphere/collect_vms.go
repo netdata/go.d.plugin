@@ -21,16 +21,22 @@ func (vs *VSphere) collectVMs(mx map[string]int64) error {
 }
 
 func (vs *VSphere) processVMsMetrics(mx map[string]int64, ems []performance.EntityMetric) {
-	for _, v := range vs.resources.VMs {
-		vs.failedUpdatesVms[v.ID] += 1
-	}
+	updated := make(map[string]bool)
 	for _, em := range ems {
 		vm := vs.resources.VMs.Get(em.Entity.Value)
 		if vm == nil {
 			continue
 		}
 		writeVMMetrics(mx, vm, em.Value)
-		vs.failedUpdatesVms[vm.ID] = 0
+		updated[vm.ID] = true
+		vs.collectedVMs[vm.ID] = 0
+	}
+
+	for k := range vs.collectedVMs {
+		if updated[k] {
+			continue
+		}
+		vs.collectedVMs[k] += 1
 	}
 }
 

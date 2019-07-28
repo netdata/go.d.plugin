@@ -21,19 +21,23 @@ func (vs *VSphere) collectHosts(mx map[string]int64) error {
 }
 
 func (vs *VSphere) processHostsMetrics(mx map[string]int64, metrics []performance.EntityMetric) {
-	for _, v := range vs.resources.Hosts {
-		vs.failedUpdatesHosts[v.ID] += 1
-	}
-
+	updated := make(map[string]bool)
 	for _, m := range metrics {
 		host := vs.resources.Hosts.Get(m.Entity.Value)
 		if host == nil {
 			continue
 		}
 		writeHostMetrics(mx, host, m.Value)
-		vs.failedUpdatesHosts[host.ID] = 0
+		updated[host.ID] = true
+		vs.collectedHosts[host.ID] = 0
 	}
 
+	for k := range vs.collectedHosts {
+		if updated[k] {
+			continue
+		}
+		vs.collectedHosts[k] += 1
+	}
 }
 
 func writeHostMetrics(dst map[string]int64, host *rs.Host, metrics []performance.MetricSeries) {

@@ -276,11 +276,11 @@ func (vs *VSphere) updateCharts() {
 
 func (vs *VSphere) updateHostsCharts() {
 	for _, h := range vs.resources.Hosts {
-		if vs.chartedHosts[h.ID] {
+		if vs.charted[h.ID] {
 			continue
 		}
 
-		vs.chartedHosts[h.ID] = true
+		vs.charted[h.ID] = true
 		cs := newHostCharts(h)
 		panicIf(vs.charts.Add(*cs...))
 	}
@@ -305,11 +305,11 @@ func setHostChart(chart *Chart, host *rs.Host, prio int) {
 
 func (vs *VSphere) updateVMsCharts() {
 	for _, v := range vs.resources.VMs {
-		if vs.chartedVMs[v.ID] {
+		if vs.charted[v.ID] {
 			continue
 		}
 
-		vs.chartedVMs[v.ID] = true
+		vs.charted[v.ID] = true
 		cs := newVMCHarts(v)
 		panicIf(vs.charts.Add(*cs...))
 	}
