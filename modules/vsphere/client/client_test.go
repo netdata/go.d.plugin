@@ -227,3 +227,35 @@ func TestClient_VirtualMachines(t *testing.T) {
 	assert.IsType(t, []mo.VirtualMachine{}, vms)
 	assert.NotEmpty(t, vms)
 }
+
+func TestClient_PerformanceMetrics(t *testing.T) {
+	model, srv, err := createSim()
+	require.NoError(t, err)
+
+	defer model.Remove()
+	defer srv.Close()
+
+	c, err := newTestClient(srv.URL)
+	require.NoError(t, err)
+
+	hosts, err := c.Hosts()
+	require.NoError(t, err)
+	metrics, err := c.PerformanceMetrics(hostsPerfQuerySpecs(hosts))
+	require.NoError(t, err)
+	assert.True(t, len(metrics) > 0)
+}
+
+func hostsPerfQuerySpecs(hosts []mo.HostSystem) []types.PerfQuerySpec {
+	var pqs []types.PerfQuerySpec
+	for _, host := range hosts {
+		pq := types.PerfQuerySpec{
+			Entity:     host.Reference(),
+			MaxSample:  1,
+			MetricId:   []types.PerfMetricId{{CounterId: 32, Instance: ""}},
+			IntervalId: 20,
+			Format:     "normal",
+		}
+		pqs = append(pqs, pq)
+	}
+	return pqs
+}
