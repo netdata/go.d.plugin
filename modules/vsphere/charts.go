@@ -332,18 +332,18 @@ func setVMChart(chart *Chart, vm *rs.VM, prio int) {
 	}
 }
 
-func (vs *VSphere) removeHostFromCharts(host *rs.Host) {
+func (vs *VSphere) removeHostFromCharts(id string) {
 	for _, c := range *vs.charts {
-		if strings.HasPrefix(host.ID, c.ID) {
+		if strings.HasPrefix(c.ID, id) {
 			c.MarkRemove()
 			c.MarkNotCreated()
 		}
 	}
 }
 
-func (vs *VSphere) removeVMFromCharts(vm *rs.VM) {
+func (vs *VSphere) removeVMFromCharts(id string) {
 	for _, c := range *vs.charts {
-		if strings.HasPrefix(vm.ID, c.ID) {
+		if strings.HasPrefix(c.ID, id) {
 			c.MarkRemove()
 			c.MarkNotCreated()
 		}
