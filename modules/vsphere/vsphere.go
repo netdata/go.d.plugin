@@ -58,11 +58,13 @@ func New() *VSphere {
 	}
 
 	return &VSphere{
-		resLock:      new(sync.RWMutex),
-		Config:       config,
-		charts:       &Charts{},
-		chartedHosts: make(map[string]bool),
-		chartedVMs:   make(map[string]bool),
+		resLock:            new(sync.RWMutex),
+		Config:             config,
+		charts:             &Charts{},
+		failedUpdatesHosts: make(map[string]int),
+		failedUpdatesVms:   make(map[string]int),
+		chartedHosts:       make(map[string]bool),
+		chartedVMs:         make(map[string]bool),
 	}
 }
 
@@ -80,15 +82,23 @@ type VSphere struct {
 	resources *rs.Resources
 	discoverer
 	metricCollector
+	discoveryTask *task
 
 	charts *module.Charts
 
-	chartedHosts map[string]bool
-	chartedVMs   map[string]bool
+	failedUpdatesHosts map[string]int
+	failedUpdatesVms   map[string]int
+	chartedHosts       map[string]bool
+	chartedVMs         map[string]bool
 }
 
 // Cleanup makes cleanup.
-func (VSphere) Cleanup() {}
+func (vs VSphere) Cleanup() {
+	if vs.discoveryTask != nil {
+		return
+	}
+	vs.discoveryTask.stop()
+}
 
 // Init makes initialization.
 func (vs *VSphere) Init() bool {
@@ -120,7 +130,6 @@ func (vs *VSphere) Init() bool {
 	}
 	vs.resources = res
 	vs.metricCollector = mc
-	time.Sleep(time.Minute)
 
 	return true
 }

@@ -2,6 +2,7 @@ package vsphere
 
 import (
 	"fmt"
+	"strings"
 
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 
@@ -12,6 +13,8 @@ import (
 type (
 	// Charts is an alias for module.Charts
 	Charts = module.Charts
+	// Chart is an alias for module.Chart
+	Chart = module.Chart
 	// Dims is an alias for module.Dims
 	Dims = module.Dims
 )
@@ -266,64 +269,85 @@ var hostCharts = Charts{
 	},
 }
 
+func (vs *VSphere) updateCharts() {
+	vs.updateHostsCharts()
+	vs.updateVMsCharts()
+}
+
 func (vs *VSphere) updateHostsCharts() {
 	for _, h := range vs.resources.Hosts {
-		if h.Metrics == nil {
-			continue
-		}
-
 		if vs.chartedHosts[h.ID] {
 			continue
 		}
 
 		vs.chartedHosts[h.ID] = true
-		vs.addNewHostCharts(h)
+		cs := newHostCharts(h)
+		panicIf(vs.charts.Add(*cs...))
 	}
 }
 
-func (vs *VSphere) addNewHostCharts(host *rs.Host) {
+func newHostCharts(host *rs.Host) *Charts {
 	cs := hostCharts.Copy()
 	for i, c := range *cs {
-		c.Priority = hostPrio + i
-		c.ID = fmt.Sprintf(c.ID, host.ID, host.Name)
-		c.Fam = fmt.Sprintf(c.Fam, host.Name)
-		for _, d := range c.Dims {
-			d.ID = fmt.Sprintf(d.ID, host.ID, host.Name)
-		}
+		setHostChart(c, host, hostPrio+i)
 	}
+	return cs
+}
 
-	panicIf(vs.charts.Add(*cs...))
+func setHostChart(chart *Chart, host *rs.Host, prio int) {
+	chart.Priority = prio
+	chart.ID = fmt.Sprintf(chart.ID, host.ID, host.Name)
+	chart.Fam = fmt.Sprintf(chart.Fam, host.Name)
+	for _, d := range chart.Dims {
+		d.ID = fmt.Sprintf(d.ID, host.ID, host.Name)
+	}
 }
 
 func (vs *VSphere) updateVMsCharts() {
 	for _, v := range vs.resources.VMs {
-		if v.Metrics == nil {
-			continue
-		}
-
 		if vs.chartedVMs[v.ID] {
 			continue
 		}
 
 		vs.chartedVMs[v.ID] = true
-		vs.addNewVMCharts(v)
+		cs := newVMCHarts(v)
+		panicIf(vs.charts.Add(*cs...))
 	}
-
 }
 
-func (vs *VSphere) addNewVMCharts(vm *rs.VM) {
+func newVMCHarts(vm *rs.VM) *Charts {
 	cs := vmCharts.Copy()
 	for i, c := range *cs {
-		c.Priority = vmPrio + i
-		c.ID = fmt.Sprintf(c.ID, vm.ID, vm.Name)
-		c.Fam = fmt.Sprintf(c.Fam, vm.Name)
-		for _, d := range c.Dims {
-			d.ID = fmt.Sprintf(d.ID, vm.ID, vm.Name)
+		setVMChart(c, vm, vmPrio+i)
+	}
+	return cs
+}
+
+func setVMChart(chart *Chart, vm *rs.VM, prio int) {
+	chart.Priority = prio
+	chart.ID = fmt.Sprintf(chart.ID, vm.ID, vm.Name)
+	chart.Fam = fmt.Sprintf(chart.Fam, vm.Name)
+	for _, d := range chart.Dims {
+		d.ID = fmt.Sprintf(d.ID, vm.ID, vm.Name)
+	}
+}
+
+func (vs *VSphere) removeHostFromCharts(host *rs.Host) {
+	for _, c := range *vs.charts {
+		if strings.HasPrefix(host.ID, c.ID) {
+			c.MarkRemove()
+			c.MarkNotCreated()
 		}
 	}
+}
 
-	panicIf(vs.charts.Add(*cs...))
-
+func (vs *VSphere) removeVMFromCharts(vm *rs.VM) {
+	for _, c := range *vs.charts {
+		if strings.HasPrefix(vm.ID, c.ID) {
+			c.MarkRemove()
+			c.MarkNotCreated()
+		}
+	}
 }
 
 //func findMetricSeriesByPrefix(ms []performance.MetricSeries, prefix string) []performance.MetricSeries {

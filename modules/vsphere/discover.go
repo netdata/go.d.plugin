@@ -11,7 +11,9 @@ func (vs *VSphere) goDiscovery(runEvery time.Duration) *task {
 			vs.Errorf("error on discovering : %v", err)
 			return
 		}
-		_ = res
+		vs.resLock.Lock()
+		defer vs.resLock.Unlock()
+		vs.resources = res
 	}
 	return newTask(discovery, runEvery)
 }

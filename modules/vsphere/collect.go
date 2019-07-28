@@ -3,17 +3,21 @@ package vsphere
 func (vs *VSphere) collect() (map[string]int64, error) {
 	mx := make(map[string]int64)
 
-	//err := vs.collectHosts(mx)
-	//if err != nil {
-	//	return mx, err
-	//}
-	//vs.updateHostsCharts()
+	vs.resLock.Lock()
+	defer vs.resLock.Unlock()
 
-	err := vs.collectVMs(mx)
+	defer vs.updateCharts()
+	defer vs.cleanupResources()
+
+	err := vs.collectHosts(mx)
 	if err != nil {
 		return mx, err
 	}
-	vs.updateVMsCharts()
+
+	err = vs.collectVMs(mx)
+	if err != nil {
+		return mx, err
+	}
 
 	return mx, nil
 }

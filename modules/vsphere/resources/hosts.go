@@ -18,7 +18,6 @@ type (
 		ParentID   string
 		Hier       HostHierarchy
 		MetricList performance.MetricList
-		Metrics    []performance.MetricSeries
 		Ref        types.ManagedObjectReference
 	}
 

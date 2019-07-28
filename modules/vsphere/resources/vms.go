@@ -31,7 +31,6 @@ type (
 		ParentID   string
 		Hier       VMHierarchy
 		MetricList performance.MetricList
-		Metrics    []performance.MetricSeries
 		Ref        types.ManagedObjectReference
 	}
 
