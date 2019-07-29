@@ -42,7 +42,7 @@ echo "--- Preparing changes for ${NETDATA_GIT_URL} ---"
 cp "$CHECKSUM_FILE" packaging/go.d.checksums
 echo "${TRAVIS_TAG}" > packaging/go.d.version
 git checkout -b new_go_d_version
-git add packaging/go.d.version ackaging/go.d.checksums
+git add packaging/go.d.version packaging/go.d.checksums
 git commit -m "installer: include go.d.plugin version ${TRAVIS_TAG}"
 
 echo "--- Pushing changes to ${NETDATA_GIT_URL} --- "
