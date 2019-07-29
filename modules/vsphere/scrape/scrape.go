@@ -1,6 +1,9 @@
 package scrape
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
 	"sync"
 
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
@@ -16,14 +19,25 @@ type APIClient interface {
 }
 
 func NewVSphereMetricScraper(client APIClient) *VSphereMetricScraper {
-	return &VSphereMetricScraper{
-		APIClient: client,
-	}
+	v := &VSphereMetricScraper{APIClient: client}
+	v.calcMaxQuery()
+	return v
 }
 
 type VSphereMetricScraper struct {
 	*logger.Logger
 	APIClient
+	maxQuery int
+}
+
+// Default settings for vCenter 6.5 and above is 256, prior versions of vCenter have this set to 64.
+func (c *VSphereMetricScraper) calcMaxQuery() {
+	major, minor, err := parseVersion(c.Version())
+	if err != nil || major < 6 || minor == 0 {
+		c.maxQuery = 64
+		return
+	}
+	c.maxQuery = 256
 }
 
 func (c VSphereMetricScraper) ScrapeHostsMetrics(hosts rs.Hosts) []performance.EntityMetric {
@@ -38,12 +52,11 @@ func (c VSphereMetricScraper) ScrapeVMsMetrics(vms rs.VMs) []performance.EntityM
 
 func (c VSphereMetricScraper) scrapeMetrics(pqs []types.PerfQuerySpec) []performance.EntityMetric {
 	// TODO: hardcoded
-	chunks := chunkify(pqs, 256)
 	tc := newThrottledCaller(5)
-
 	var ms []performance.EntityMetric
 	lock := &sync.Mutex{}
 
+	chunks := chunkify(pqs, c.maxQuery)
 	for _, chunk := range chunks {
 		pqs := chunk
 		job := func() {
@@ -113,4 +126,16 @@ func newVMsPerfQuerySpecs(vms rs.VMs) []types.PerfQuerySpec {
 		pqs = append(pqs, pq)
 	}
 	return pqs
+}
+
+func parseVersion(version string) (major, minor int, err error) {
+	parts := strings.Split(version, ".")
+	if len(parts) < 2 {
+		return 0, 0, fmt.Errorf("unparsable version string : %s", version)
+	}
+	if major, err = strconv.Atoi(parts[0]); err != nil {
+		return
+	}
+	minor, err = strconv.Atoi(parts[1])
+	return
 }
