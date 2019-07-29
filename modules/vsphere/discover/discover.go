@@ -29,11 +29,11 @@ func NewVSphereDiscoverer(client APIClient) *vSphereDiscoverer {
 }
 
 type HostMatcher interface {
-	Match(rs.Host) bool
+	Match(*rs.Host) bool
 }
 
 type VMMatcher interface {
-	Match(rs.VM) bool
+	Match(*rs.VM) bool
 }
 
 type vSphereDiscoverer struct {

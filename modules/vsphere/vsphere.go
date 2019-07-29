@@ -27,8 +27,9 @@ func init() {
 }
 
 const (
-	defaultURL         = "http://127.0.0.1"
-	defaultHTTPTimeout = time.Second * 5
+	defaultURL              = "http://127.0.0.1"
+	defaultHTTPTimeout      = time.Second * 5
+	defaultDiscoverInterval = time.Minute * 5
 
 	vCenterURL = "https://192.168.0.154/sdk"
 	username   = "administrator@vsphere.local"
@@ -45,7 +46,6 @@ type metricScraper interface {
 	ScrapeVMsMetrics(rs.VMs) []performance.EntityMetric
 }
 
-// New creates VSphere with default values.
 func New() *VSphere {
 	config := Config{
 		HTTP: web.HTTP{
@@ -55,6 +55,7 @@ func New() *VSphere {
 			Client: web.Client{
 				Timeout: web.Duration{Duration: defaultHTTPTimeout}},
 		},
+		DiscoverInterval: web.Duration{Duration: defaultDiscoverInterval},
 	}
 
 	return &VSphere{
@@ -67,30 +68,29 @@ func New() *VSphere {
 	}
 }
 
-// Config is the VSphere module configuration.
 type Config struct {
-	web.HTTP `yaml:",inline"`
+	web.HTTP         `yaml:",inline"`
+	DiscoverInterval web.Duration  `yaml:"discover_interval"`
+	HostsInclude     []hostInclude `yaml:"host_include"`
+	VMsInclude       []vmInclude   `yaml:"vm_include"`
 }
 
-// VSphere VSphere module.
 type VSphere struct {
 	module.Base
 	Config `yaml:",inline"`
 
 	discoverer
 	metricScraper
-	discoveryTask *task
-
-	charts *module.Charts
 
 	collectionLock  *sync.RWMutex
 	resources       *rs.Resources
+	discoveryTask   *task
 	discoveredHosts map[string]int
 	discoveredVMs   map[string]int
 	charted         map[string]bool
+	charts          *Charts
 }
 
-// Cleanup makes cleanup.
 func (vs VSphere) Cleanup() {
 	if vs.discoveryTask != nil {
 		return
@@ -98,7 +98,6 @@ func (vs VSphere) Cleanup() {
 	vs.discoveryTask.stop()
 }
 
-// Init makes initialization.
 func (vs *VSphere) Init() bool {
 	u, err := url.Parse(vCenterURL)
 	if err != nil {
@@ -118,7 +117,25 @@ func (vs *VSphere) Init() bool {
 		return false
 	}
 
+	hm, err := parseHostIncludes(vs.HostsInclude)
+	if err != nil {
+		vs.Error(err)
+		return false
+	}
+
+	vmm, err := parseVMIncludes(vs.VMsInclude)
+	if err != nil {
+		vs.Error(err)
+		return false
+	}
+
 	cl := discover.NewVSphereDiscoverer(c)
+	if hm != nil {
+		cl.HostMatcher = hm
+	}
+	if vmm != nil {
+		cl.VMMatcher = vmm
+	}
 	mc := scrape.NewVSphereMetricScraper(c)
 
 	res, err := cl.Discover()
@@ -132,16 +149,12 @@ func (vs *VSphere) Init() bool {
 	return true
 }
 
-// Check makes check.
 func (vs VSphere) Check() bool {
 	return true
-
 }
 
-// Charts returns Charts.
 func (vs VSphere) Charts() *module.Charts { return vs.charts }
 
-// Collect collects metricList.
 func (vs *VSphere) Collect() map[string]int64 {
 	mx, err := vs.collect()
 

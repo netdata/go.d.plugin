@@ -1,15 +1,19 @@
 package discover
 
-import rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
+import (
+	"fmt"
+	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
+)
 
-func (d vSphereDiscoverer) matchHost(host rs.Host) bool {
+func (d vSphereDiscoverer) matchHost(host *rs.Host) bool {
+	fmt.Println(d.VMMatcher, 1231, 123, 12312)
 	if d.HostMatcher == nil {
 		return true
 	}
 	return d.HostMatcher.Match(host)
 }
 
-func (d vSphereDiscoverer) matchVM(vm rs.VM) bool {
+func (d vSphereDiscoverer) matchVM(vm *rs.VM) bool {
 	if d.VMMatcher == nil {
 		return true
 	}
@@ -25,7 +29,7 @@ func (d vSphereDiscoverer) removeUnmatched(res *rs.Resources) (removed int) {
 
 func (d vSphereDiscoverer) removeUnmatchedHosts(hosts rs.Hosts) (removed int) {
 	for _, v := range hosts {
-		if !d.matchHost(*v) {
+		if !d.matchHost(v) {
 			removed++
 			hosts.Remove(v.ID)
 		}
@@ -38,7 +42,7 @@ func (d vSphereDiscoverer) removeUnmatchedHosts(hosts rs.Hosts) (removed int) {
 
 func (d vSphereDiscoverer) removeUnmatchedVMs(vms rs.VMs) (removed int) {
 	for _, v := range vms {
-		if !d.matchVM(*v) {
+		if !d.matchVM(v) {
 			removed++
 			vms.Remove(v.ID)
 		}

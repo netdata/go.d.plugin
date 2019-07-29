@@ -202,12 +202,12 @@ func isMetricListsCollected(res *rs.Resources) bool {
 
 type testHostMatcher struct{}
 
-func (testHostMatcher) Match(host rs.Host) bool {
+func (testHostMatcher) Match(host *rs.Host) bool {
 	return false
 }
 
 type testVMMatcher struct{}
 
-func (testVMMatcher) Match(vm rs.VM) bool {
+func (testVMMatcher) Match(vm *rs.VM) bool {
 	return false
 }
