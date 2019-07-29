@@ -30,14 +30,14 @@ func (vs *VSphere) collectHostsMetrics(mx map[string]int64, metrics []performanc
 		}
 		writeHostMetrics(mx, host, m.Value)
 		collected[host.ID] = true
-		vs.discoveredHosts[host.ID] = 0
 	}
 
 	for k := range vs.discoveredHosts {
 		if collected[k] {
-			continue
+			vs.discoveredHosts[k] = 0
+		} else {
+			vs.discoveredHosts[k] += 1
 		}
-		vs.discoveredHosts[k] += 1
 	}
 	return collected
 }

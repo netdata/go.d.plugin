@@ -30,14 +30,14 @@ func (vs *VSphere) collectVMsMetrics(mx map[string]int64, ems []performance.Enti
 		}
 		writeVMMetrics(mx, vm, em.Value)
 		collected[vm.ID] = true
-		vs.discoveredVMs[vm.ID] = 0
 	}
 
 	for k := range vs.discoveredVMs {
 		if collected[k] {
-			continue
+			vs.discoveredVMs[k] = 0
+		} else {
+			vs.discoveredVMs[k] += 1
 		}
-		vs.discoveredVMs[k] += 1
 	}
 	return collected
 }
