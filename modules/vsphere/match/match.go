@@ -100,7 +100,7 @@ func (vi VMIncludes) Parse() (VMMatcher, error) {
 	case 1:
 		return ms[0], nil
 	default:
-		return newOrVMMatcher(ms[0], ms[1], ms[1:]...), nil
+		return newOrVMMatcher(ms[0], ms[1], ms[2:]...), nil
 	}
 }
 
@@ -120,7 +120,7 @@ func (hi HostIncludes) Parse() (HostMatcher, error) {
 	case 1:
 		return ms[0], nil
 	default:
-		return newOrHostMatcher(ms[0], ms[1], ms[1:]...), nil
+		return newOrHostMatcher(ms[0], ms[1], ms[2:]...), nil
 	}
 }
 
