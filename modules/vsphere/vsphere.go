@@ -1,6 +1,7 @@
 package vsphere
 
 import (
+	"github.com/netdata/go.d.plugin/modules/vsphere/match"
 	"net/url"
 	"sync"
 	"time"
@@ -70,9 +71,9 @@ func New() *VSphere {
 
 type Config struct {
 	web.HTTP         `yaml:",inline"`
-	DiscoverInterval web.Duration  `yaml:"discover_interval"`
-	HostsInclude     []hostInclude `yaml:"host_include"`
-	VMsInclude       []vmInclude   `yaml:"vm_include"`
+	DiscoverInterval web.Duration       `yaml:"discover_interval"`
+	HostsInclude     match.HostIncludes `yaml:"host_include"`
+	VMsInclude       match.VMIncludes   `yaml:"vm_include"`
 }
 
 type VSphere struct {
@@ -117,13 +118,13 @@ func (vs *VSphere) Init() bool {
 		return false
 	}
 
-	hm, err := parseHostIncludes(vs.HostsInclude)
+	hm, err := vs.HostsInclude.Parse()
 	if err != nil {
 		vs.Error(err)
 		return false
 	}
 
-	vmm, err := parseVMIncludes(vs.VMsInclude)
+	vmm, err := vs.VMsInclude.Parse()
 	if err != nil {
 		vs.Error(err)
 		return false

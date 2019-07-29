@@ -1,12 +1,10 @@
 package discover
 
 import (
-	"fmt"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 )
 
 func (d vSphereDiscoverer) matchHost(host *rs.Host) bool {
-	fmt.Println(d.VMMatcher, 1231, 123, 12312)
 	if d.HostMatcher == nil {
 		return true
 	}

@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/modules/vsphere/match"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 
 	"github.com/netdata/go-orchestrator/logger"
@@ -28,19 +29,11 @@ func NewVSphereDiscoverer(client APIClient) *vSphereDiscoverer {
 	}
 }
 
-type HostMatcher interface {
-	Match(*rs.Host) bool
-}
-
-type VMMatcher interface {
-	Match(*rs.VM) bool
-}
-
 type vSphereDiscoverer struct {
 	*logger.Logger
 	APIClient
-	HostMatcher
-	VMMatcher
+	match.HostMatcher
+	match.VMMatcher
 }
 
 type resources struct {
