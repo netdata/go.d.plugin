@@ -23,13 +23,13 @@ type APIClient interface {
 	CounterInfoByName() (map[string]*types.PerfCounterInfo, error)
 }
 
-func NewVSphereDiscoverer(client APIClient) *vSphereDiscoverer {
-	return &vSphereDiscoverer{
+func NewVSphereDiscoverer(client APIClient) *VSphereDiscoverer {
+	return &VSphereDiscoverer{
 		APIClient: client,
 	}
 }
 
-type vSphereDiscoverer struct {
+type VSphereDiscoverer struct {
 	*logger.Logger
 	APIClient
 	match.HostMatcher
@@ -44,7 +44,7 @@ type resources struct {
 	vms      []mo.VirtualMachine
 }
 
-func (d vSphereDiscoverer) Discover() (*rs.Resources, error) {
+func (d VSphereDiscoverer) Discover() (*rs.Resources, error) {
 	startTime := time.Now()
 	raw, err := d.discover()
 	if err != nil {
@@ -88,7 +88,7 @@ var (
 	vmPathSet         = []string{"name", "runtime.host", "runtime.powerState"}
 )
 
-func (d vSphereDiscoverer) discover() (*resources, error) {
+func (d VSphereDiscoverer) discover() (*resources, error) {
 	d.Debug("discovering : starting resource discovering")
 
 	start := time.Now()

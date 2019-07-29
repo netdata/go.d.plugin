@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func (d vSphereDiscoverer) setHierarchy(res *rs.Resources) error {
+func (d VSphereDiscoverer) setHierarchy(res *rs.Resources) error {
 	d.Debug("discovering : starting hierarchy set process")
 
 	c := d.setClustersHierarchy(res)
@@ -27,7 +27,7 @@ func (d vSphereDiscoverer) setHierarchy(res *rs.Resources) error {
 	return nil
 }
 
-func (d vSphereDiscoverer) setClustersHierarchy(res *rs.Resources) (set int) {
+func (d VSphereDiscoverer) setClustersHierarchy(res *rs.Resources) (set int) {
 	for _, cluster := range res.Clusters {
 		if setClusterHierarchy(cluster, res) {
 			set++
@@ -36,7 +36,7 @@ func (d vSphereDiscoverer) setClustersHierarchy(res *rs.Resources) (set int) {
 	return set
 }
 
-func (d vSphereDiscoverer) setHostsHierarchy(res *rs.Resources) (set int) {
+func (d VSphereDiscoverer) setHostsHierarchy(res *rs.Resources) (set int) {
 	for _, host := range res.Hosts {
 		if setHostHierarchy(host, res) {
 			set++
@@ -45,7 +45,7 @@ func (d vSphereDiscoverer) setHostsHierarchy(res *rs.Resources) (set int) {
 	return set
 }
 
-func (d vSphereDiscoverer) setVMsHierarchy(res *rs.Resources) (set int) {
+func (d VSphereDiscoverer) setVMsHierarchy(res *rs.Resources) (set int) {
 	for _, vm := range res.VMs {
 		if setVMHierarchy(vm, res) {
 			set++

@@ -10,7 +10,7 @@ import (
 	"github.com/vmware/govmomi/vim25/types"
 )
 
-func (d vSphereDiscoverer) collectMetricLists(res *rs.Resources) error {
+func (d VSphereDiscoverer) collectMetricLists(res *rs.Resources) error {
 	d.Debug("discovering : starting metric list collection")
 	d.Debugf("discovering : will collect metric lists for %d hosts, %d vms", len(res.Hosts), len(res.VMs))
 	t := time.Now()
