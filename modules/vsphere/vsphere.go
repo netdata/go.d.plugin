@@ -92,7 +92,7 @@ type VSphere struct {
 	charts          *Charts
 }
 
-func (vs VSphere) Cleanup() {
+func (vs *VSphere) Cleanup() {
 	if vs.discoveryTask == nil {
 		return
 	}
