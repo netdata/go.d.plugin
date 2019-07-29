@@ -11,9 +11,9 @@ import (
 
 func (vs *VSphere) collectVMs(mx map[string]int64) error {
 	// NOTE: returns unsorted if at least one types.PerfMetricId Instance is not ""
-	ems := vs.CollectVMsMetrics(vs.resources.VMs)
+	ems := vs.ScrapeVMsMetrics(vs.resources.VMs)
 	if len(ems) == 0 {
-		return errors.New("failed to collect vms metrics")
+		return errors.New("failed to scrape vms metrics")
 	}
 
 	vs.processVMsMetrics(mx, ems)

@@ -1,4 +1,4 @@
-package collect
+package scrape
 
 import (
 	"sync"
@@ -15,28 +15,28 @@ type APIClient interface {
 	PerformanceMetrics([]types.PerfQuerySpec) ([]performance.EntityMetric, error)
 }
 
-func NewVSphereMetricCollector(client APIClient) *VSphereMetricCollector {
-	return &VSphereMetricCollector{
+func NewVSphereMetricScraper(client APIClient) *VSphereMetricScraper {
+	return &VSphereMetricScraper{
 		APIClient: client,
 	}
 }
 
-type VSphereMetricCollector struct {
+type VSphereMetricScraper struct {
 	*logger.Logger
 	APIClient
 }
 
-func (c VSphereMetricCollector) CollectHostsMetrics(hosts rs.Hosts) []performance.EntityMetric {
+func (c VSphereMetricScraper) ScrapeHostsMetrics(hosts rs.Hosts) []performance.EntityMetric {
 	pqs := newHostsPerfQuerySpecs(hosts)
-	return c.collectMetrics(pqs)
+	return c.scrapeMetrics(pqs)
 }
 
-func (c VSphereMetricCollector) CollectVMsMetrics(vms rs.VMs) []performance.EntityMetric {
+func (c VSphereMetricScraper) ScrapeVMsMetrics(vms rs.VMs) []performance.EntityMetric {
 	pqs := newVMsPerfQuerySpecs(vms)
-	return c.collectMetrics(pqs)
+	return c.scrapeMetrics(pqs)
 }
 
-func (c VSphereMetricCollector) collectMetrics(pqs []types.PerfQuerySpec) []performance.EntityMetric {
+func (c VSphereMetricScraper) scrapeMetrics(pqs []types.PerfQuerySpec) []performance.EntityMetric {
 	// TODO: hardcoded
 	chunks := chunkify(pqs, 256)
 	tc := newThrottledCaller(5)
@@ -47,7 +47,7 @@ func (c VSphereMetricCollector) collectMetrics(pqs []types.PerfQuerySpec) []perf
 	for _, chunk := range chunks {
 		pqs := chunk
 		job := func() {
-			c.collect(&ms, lock, pqs)
+			c.scrape(&ms, lock, pqs)
 		}
 		tc.call(job)
 	}
@@ -56,7 +56,7 @@ func (c VSphereMetricCollector) collectMetrics(pqs []types.PerfQuerySpec) []perf
 	return ms
 }
 
-func (c VSphereMetricCollector) collect(metrics *[]performance.EntityMetric, lock *sync.Mutex, pqs []types.PerfQuerySpec) {
+func (c VSphereMetricScraper) scrape(metrics *[]performance.EntityMetric, lock *sync.Mutex, pqs []types.PerfQuerySpec) {
 	m, err := c.PerformanceMetrics(pqs)
 	if err != nil {
 		c.Error(err)

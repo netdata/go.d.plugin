@@ -1,4 +1,4 @@
-package collect
+package scrape
 
 import (
 	"crypto/tls"
@@ -39,11 +39,11 @@ func createSim() (*simulator.Model, *simulator.Server, error) {
 	return model, s, nil
 }
 
-func TestNewVSphereMetricCollector(t *testing.T) {
+func TestNewVSphereMetricScraper(t *testing.T) {
 
 }
 
-func TestVSphereMetricCollector_CollectHostsMetrics(t *testing.T) {
+func TestVSphereMetricScraper_ScrapeHostsMetrics(t *testing.T) {
 	model, srv, err := createSim()
 	require.NoError(t, err)
 	defer model.Remove()
@@ -56,12 +56,12 @@ func TestVSphereMetricCollector_CollectHostsMetrics(t *testing.T) {
 	res, err := d.Discover()
 	require.NoError(t, err)
 
-	mc := NewVSphereMetricCollector(c)
-	metrics := mc.CollectHostsMetrics(res.Hosts)
+	mc := NewVSphereMetricScraper(c)
+	metrics := mc.ScrapeHostsMetrics(res.Hosts)
 	assert.Len(t, metrics, len(res.Hosts))
 }
 
-func TestVSphereMetricCollector_CollectVMsMetrics(t *testing.T) {
+func TestVSphereMetricScraper_ScrapeVMsMetrics(t *testing.T) {
 	model, srv, err := createSim()
 	require.NoError(t, err)
 	defer model.Remove()
@@ -74,7 +74,7 @@ func TestVSphereMetricCollector_CollectVMsMetrics(t *testing.T) {
 	res, err := d.Discover()
 	require.NoError(t, err)
 
-	mc := NewVSphereMetricCollector(c)
-	metrics := mc.CollectVMsMetrics(res.VMs)
+	mc := NewVSphereMetricScraper(c)
+	metrics := mc.ScrapeVMsMetrics(res.VMs)
 	assert.Len(t, metrics, len(res.VMs))
 }

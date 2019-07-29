@@ -57,7 +57,7 @@ func (s *summary) WriteTo(rv map[string]int64, key string, mul, div int) {
 }
 
 // Reset resets all of its counters.
-// Call it before every collect loop.
+// Call it before every scrape loop.
 func (s *summary) Reset() {
 	s.min = math.MaxFloat64
 	s.max = -math.MaxFloat64

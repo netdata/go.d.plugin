@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules/vsphere/client"
-	"github.com/netdata/go.d.plugin/modules/vsphere/collect"
 	"github.com/netdata/go.d.plugin/modules/vsphere/discover"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
+	"github.com/netdata/go.d.plugin/modules/vsphere/scrape"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -40,9 +40,9 @@ type discoverer interface {
 	Discover() (*rs.Resources, error)
 }
 
-type metricCollector interface {
-	CollectHostsMetrics(rs.Hosts) []performance.EntityMetric
-	CollectVMsMetrics(rs.VMs) []performance.EntityMetric
+type metricScraper interface {
+	ScrapeHostsMetrics(rs.Hosts) []performance.EntityMetric
+	ScrapeVMsMetrics(rs.VMs) []performance.EntityMetric
 }
 
 // New creates VSphere with default values.
@@ -80,7 +80,7 @@ type VSphere struct {
 	resLock   *sync.RWMutex
 	resources *rs.Resources
 	discoverer
-	metricCollector
+	metricScraper
 	discoveryTask *task
 
 	charts *module.Charts
@@ -119,7 +119,7 @@ func (vs *VSphere) Init() bool {
 	}
 
 	cl := discover.NewVSphereDiscoverer(c)
-	mc := collect.NewVSphereMetricCollector(c)
+	mc := scrape.NewVSphereMetricScraper(c)
 
 	res, err := cl.Discover()
 	if err != nil {
@@ -127,7 +127,7 @@ func (vs *VSphere) Init() bool {
 		return false
 	}
 	vs.resources = res
-	vs.metricCollector = mc
+	vs.metricScraper = mc
 
 	return true
 }
