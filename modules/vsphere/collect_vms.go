@@ -16,28 +16,30 @@ func (vs *VSphere) collectVMs(mx map[string]int64) error {
 		return errors.New("failed to scrape vms metrics")
 	}
 
-	vs.processVMsMetrics(mx, ems)
+	collected := vs.collectVMsMetrics(mx, ems)
+	vs.updateVMsCharts(collected)
 	return nil
 }
 
-func (vs *VSphere) processVMsMetrics(mx map[string]int64, ems []performance.EntityMetric) {
-	updated := make(map[string]bool)
+func (vs *VSphere) collectVMsMetrics(mx map[string]int64, ems []performance.EntityMetric) map[string]bool {
+	collected := make(map[string]bool)
 	for _, em := range ems {
 		vm := vs.resources.VMs.Get(em.Entity.Value)
 		if vm == nil {
 			continue
 		}
 		writeVMMetrics(mx, vm, em.Value)
-		updated[vm.ID] = true
-		vs.collectedVMs[vm.ID] = 0
+		collected[vm.ID] = true
+		vs.discoveredVMs[vm.ID] = 0
 	}
 
-	for k := range vs.collectedVMs {
-		if updated[k] {
+	for k := range vs.discoveredVMs {
+		if collected[k] {
 			continue
 		}
-		vs.collectedVMs[k] += 1
+		vs.discoveredVMs[k] += 1
 	}
+	return collected
 }
 
 func writeVMMetrics(dst map[string]int64, vm *rs.VM, metrics []performance.MetricSeries) {

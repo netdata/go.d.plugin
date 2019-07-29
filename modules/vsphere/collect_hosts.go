@@ -16,28 +16,30 @@ func (vs *VSphere) collectHosts(mx map[string]int64) error {
 		return errors.New("failed to scrape hosts metrics")
 	}
 
-	vs.processHostsMetrics(mx, metrics)
+	collected := vs.collectHostsMetrics(mx, metrics)
+	vs.updateHostsCharts(collected)
 	return nil
 }
 
-func (vs *VSphere) processHostsMetrics(mx map[string]int64, metrics []performance.EntityMetric) {
-	updated := make(map[string]bool)
+func (vs *VSphere) collectHostsMetrics(mx map[string]int64, metrics []performance.EntityMetric) map[string]bool {
+	collected := make(map[string]bool)
 	for _, m := range metrics {
 		host := vs.resources.Hosts.Get(m.Entity.Value)
 		if host == nil {
 			continue
 		}
 		writeHostMetrics(mx, host, m.Value)
-		updated[host.ID] = true
-		vs.collectedHosts[host.ID] = 0
+		collected[host.ID] = true
+		vs.discoveredHosts[host.ID] = 0
 	}
 
-	for k := range vs.collectedHosts {
-		if updated[k] {
+	for k := range vs.discoveredHosts {
+		if collected[k] {
 			continue
 		}
-		vs.collectedHosts[k] += 1
+		vs.discoveredHosts[k] += 1
 	}
+	return collected
 }
 
 func writeHostMetrics(dst map[string]int64, host *rs.Host, metrics []performance.MetricSeries) {

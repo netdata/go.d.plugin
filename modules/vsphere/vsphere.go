@@ -58,12 +58,12 @@ func New() *VSphere {
 	}
 
 	return &VSphere{
-		resLock:        new(sync.RWMutex),
-		Config:         config,
-		charts:         &Charts{},
-		collectedHosts: make(map[string]int),
-		collectedVMs:   make(map[string]int),
-		charted:        make(map[string]bool),
+		collectionLock:  new(sync.RWMutex),
+		Config:          config,
+		charts:          &Charts{},
+		discoveredHosts: make(map[string]int),
+		discoveredVMs:   make(map[string]int),
+		charted:         make(map[string]bool),
 	}
 }
 
@@ -77,17 +77,17 @@ type VSphere struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	resLock   *sync.RWMutex
-	resources *rs.Resources
 	discoverer
 	metricScraper
 	discoveryTask *task
 
 	charts *module.Charts
 
-	collectedHosts map[string]int
-	collectedVMs   map[string]int
-	charted        map[string]bool
+	collectionLock  *sync.RWMutex
+	resources       *rs.Resources
+	discoveredHosts map[string]int
+	discoveredVMs   map[string]int
+	charted         map[string]bool
 }
 
 // Cleanup makes cleanup.

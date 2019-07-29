@@ -309,18 +309,16 @@ var (
 	}
 )
 
-func (vs *VSphere) updateCharts() {
-	vs.updateHostsCharts()
-	vs.updateVMsCharts()
-}
-
-func (vs *VSphere) updateHostsCharts() {
-	for _, h := range vs.resources.Hosts {
-		if vs.charted[h.ID] {
+func (vs *VSphere) updateHostsCharts(collected map[string]bool) {
+	for k := range collected {
+		if vs.charted[k] {
 			continue
 		}
-
-		vs.charted[h.ID] = true
+		h := vs.resources.Hosts.Get(k)
+		if h == nil {
+			continue
+		}
+		vs.charted[k] = true
 		cs := newHostCharts(h)
 		panicIf(vs.charts.Add(*cs...))
 	}
@@ -343,13 +341,16 @@ func setHostChart(chart *Chart, host *rs.Host, prio int) {
 	}
 }
 
-func (vs *VSphere) updateVMsCharts() {
-	for _, v := range vs.resources.VMs {
-		if vs.charted[v.ID] {
+func (vs *VSphere) updateVMsCharts(collected map[string]bool) {
+	for k := range collected {
+		if vs.charted[k] {
 			continue
 		}
-
-		vs.charted[v.ID] = true
+		v := vs.resources.VMs.Get(k)
+		if v == nil {
+			continue
+		}
+		vs.charted[k] = true
 		cs := newVMCHarts(v)
 		panicIf(vs.charts.Add(*cs...))
 	}
