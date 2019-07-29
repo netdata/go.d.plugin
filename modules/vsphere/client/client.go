@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"net/http"
 	"net/url"
 	"time"
 
@@ -23,6 +24,8 @@ const (
 	computeResource = "ComputeResource"
 	hostSystem      = "HostSystem"
 	virtualMachine  = "VirtualMachine"
+
+	maxIdleConnections = 32
 )
 
 type Config struct {
@@ -44,10 +47,25 @@ func newSoapClient(config Config) (*soap.Client, error) {
 	if err != nil || soapURL == nil {
 		return nil, err
 	}
-
 	soapURL.User = url.UserPassword(config.User, config.Password)
 	soapClient := soap.NewClient(soapURL, config.InsecureSkipVerify)
+
+	tlsConfig, err := web.NewTLSConfig(config.ClientTLSConfig)
+	if tlsConfig != nil && len(tlsConfig.Certificates) > 0 {
+		soapClient.SetCertificate(tlsConfig.Certificates[0])
+	}
+	if config.TLSCA != "" {
+		if err := soapClient.SetRootCAs(config.TLSCA); err != nil {
+			return nil, err
+		}
+	}
+
+	if t, ok := soapClient.Transport.(*http.Transport); ok {
+		t.MaxIdleConnsPerHost = maxIdleConnections
+		t.TLSHandshakeTimeout = config.Timeout
+	}
 	soapClient.Timeout = config.Timeout
+
 	return soapClient, nil
 }
 
@@ -79,10 +97,10 @@ func New(config Config) (*Client, error) {
 		SessionManager: session.NewManager(vimClient),
 	}
 
-	useInfo := url.UserPassword(config.User, config.Password)
+	userInfo := url.UserPassword(config.User, config.Password)
+	addKeepAlive(vmomiClient, userInfo)
 
-	addKeepAlive(vmomiClient, useInfo)
-	err = vmomiClient.Login(ctx, useInfo)
+	err = vmomiClient.Login(ctx, userInfo)
 	if err != nil {
 		return nil, err
 	}
