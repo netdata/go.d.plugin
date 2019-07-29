@@ -1,13 +1,12 @@
 package vsphere
 
 import (
-	"github.com/netdata/go.d.plugin/modules/vsphere/match"
-	"net/url"
 	"sync"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules/vsphere/client"
 	"github.com/netdata/go.d.plugin/modules/vsphere/discover"
+	"github.com/netdata/go.d.plugin/modules/vsphere/match"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 	"github.com/netdata/go.d.plugin/modules/vsphere/scrape"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -28,14 +27,11 @@ func init() {
 }
 
 const (
-	defaultURL              = "http://127.0.0.1"
-	defaultHTTPTimeout      = time.Second * 5
-	defaultDiscoverInterval = time.Minute * 5
-
-	vCenterURL = "https://192.168.0.154/sdk"
-	username   = "administrator@vsphere.local"
-	password   = "123qwe!@#QWE"
-	timeout    = time.Second * 10
+	defaultURL               = "https://192.168.0.154"
+	defaultHTTPTimeout       = time.Second * 10
+	defaultDiscoveryInterval = time.Minute * 5
+	username                 = "administrator@vsphere.local"
+	password                 = "123qwe!@#QWE"
 )
 
 type discoverer interface {
@@ -51,12 +47,16 @@ func New() *VSphere {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: defaultURL,
+				UserURL:  defaultURL,
+				Username: username,
+				Password: password,
 			},
 			Client: web.Client{
-				Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+				Timeout:         web.Duration{Duration: defaultHTTPTimeout},
+				ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
+			},
 		},
-		DiscoverInterval: web.Duration{Duration: defaultDiscoverInterval},
+		DiscoveryInterval: web.Duration{Duration: defaultDiscoveryInterval},
 	}
 
 	return &VSphere{
@@ -70,10 +70,10 @@ func New() *VSphere {
 }
 
 type Config struct {
-	web.HTTP         `yaml:",inline"`
-	DiscoverInterval web.Duration       `yaml:"discover_interval"`
-	HostsInclude     match.HostIncludes `yaml:"host_include"`
-	VMsInclude       match.VMIncludes   `yaml:"vm_include"`
+	web.HTTP          `yaml:",inline"`
+	DiscoveryInterval web.Duration       `yaml:"discovery_interval"`
+	HostsInclude      match.HostIncludes `yaml:"host_include"`
+	VMsInclude        match.VMIncludes   `yaml:"vm_include"`
 }
 
 type VSphere struct {
@@ -93,60 +93,69 @@ type VSphere struct {
 }
 
 func (vs VSphere) Cleanup() {
-	if vs.discoveryTask != nil {
+	if vs.discoveryTask == nil {
 		return
 	}
 	vs.discoveryTask.stop()
 }
 
-func (vs *VSphere) Init() bool {
-	u, err := url.Parse(vCenterURL)
-	if err != nil {
-		vs.Error(err)
-		return false
+func (vs VSphere) createVSphereClient() (*client.Client, error) {
+	config := client.Config{
+		URL:             vs.UserURL,
+		User:            vs.Username,
+		Password:        vs.Password,
+		Timeout:         vs.Timeout.Duration,
+		ClientTLSConfig: vs.ClientTLSConfig,
 	}
+	return client.New(config)
+}
 
-	c, err := client.New(client.Config{
-		URL:             u.String(),
-		User:            username,
-		Password:        password,
-		Timeout:         timeout,
-		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
-	})
-	if err != nil {
-		vs.Error(err)
-		return false
-	}
+func (vs *VSphere) createVSphereDiscoverer(c *client.Client) error {
+	d := discover.NewVSphereDiscoverer(c)
+	d.Logger = vs.Logger
 
 	hm, err := vs.HostsInclude.Parse()
 	if err != nil {
-		vs.Error(err)
-		return false
+		return err
 	}
-
+	if hm != nil {
+		d.HostMatcher = hm
+	}
 	vmm, err := vs.VMsInclude.Parse()
 	if err != nil {
-		vs.Error(err)
-		return false
-	}
-
-	cl := discover.NewVSphereDiscoverer(c)
-	if hm != nil {
-		cl.HostMatcher = hm
+		return err
 	}
 	if vmm != nil {
-		cl.VMMatcher = vmm
+		d.VMMatcher = vmm
 	}
-	mc := scrape.NewVSphereMetricScraper(c)
 
-	res, err := cl.Discover()
+	vs.discoverer = d
+	return nil
+}
+
+func (vs *VSphere) createVSphereMetricScraper(c *client.Client) {
+	ms := scrape.NewVSphereMetricScraper(c)
+	ms.Logger = vs.Logger
+	vs.metricScraper = ms
+}
+
+func (vs *VSphere) Init() bool {
+	c, err := vs.createVSphereClient()
 	if err != nil {
-		vs.Error(err)
+		vs.Errorf("error on creating vsphere client : %v", err)
 		return false
 	}
-	vs.resources = res
-	vs.metricScraper = mc
 
+	err = vs.createVSphereDiscoverer(c)
+	if err != nil {
+		vs.Errorf("error on creating vsphere discoverer : %v", err)
+		return false
+	}
+
+	vs.createVSphereMetricScraper(c)
+
+	vs.discoverOnce()
+	vs.goDiscovery()
 	return true
 }
 
@@ -154,7 +163,9 @@ func (vs VSphere) Check() bool {
 	return true
 }
 
-func (vs VSphere) Charts() *module.Charts { return vs.charts }
+func (vs VSphere) Charts() *Charts {
+	return vs.charts
+}
 
 func (vs *VSphere) Collect() map[string]int64 {
 	mx, err := vs.collect()

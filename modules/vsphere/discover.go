@@ -1,21 +1,23 @@
 package vsphere
 
 import (
-	"time"
-
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 )
 
-func (vs *VSphere) goDiscovery(runEvery time.Duration) *task {
-	discovery := func() {
-		res, err := vs.Discover()
-		if err != nil {
-			vs.Errorf("error on discovering : %v", err)
-			return
-		}
-		vs.consumeDiscovered(res)
+func (vs *VSphere) goDiscovery() {
+	if vs.discoveryTask != nil {
+		vs.discoveryTask.stop()
 	}
-	return newTask(discovery, runEvery)
+	vs.discoveryTask = newTask(vs.discoverOnce, vs.DiscoveryInterval.Duration)
+}
+
+func (vs *VSphere) discoverOnce() {
+	res, err := vs.Discover()
+	if err != nil {
+		vs.Errorf("error on discovering : %v", err)
+		return
+	}
+	vs.consumeDiscovered(res)
 }
 
 func (vs *VSphere) consumeDiscovered(res *rs.Resources) {
