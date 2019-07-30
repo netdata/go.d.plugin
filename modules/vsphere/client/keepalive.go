@@ -16,6 +16,7 @@ const (
 	keepAliveEvery = time.Second * 15
 )
 
+// TODO: survive vCenter reboot, it looks like we need to re New()
 func addKeepAlive(client *govmomi.Client, userinfo *url.Userinfo) {
 	f := func(rt soap.RoundTripper) error {
 		_, err := methods.GetCurrentTime(context.Background(), rt)
