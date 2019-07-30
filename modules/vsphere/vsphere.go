@@ -57,6 +57,8 @@ func New() *VSphere {
 			},
 		},
 		DiscoveryInterval: web.Duration{Duration: defaultDiscoveryInterval},
+		HostsInclude:      []string{"/*"},
+		VMsInclude:        []string{"/*"},
 	}
 
 	return &VSphere{

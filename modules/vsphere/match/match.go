@@ -1,7 +1,6 @@
 package match
 
 import (
-	"fmt"
 	"strings"
 
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
@@ -14,6 +13,58 @@ type HostMatcher interface {
 
 type VMMatcher interface {
 	Match(*rs.VM) bool
+}
+
+type (
+	hostDcMatcher      struct{ m matcher.Matcher }
+	hostClusterMatcher struct{ m matcher.Matcher }
+	hostHostMatcher    struct{ m matcher.Matcher }
+	vmDcMatcher        struct{ m matcher.Matcher }
+	vmClusterMatcher   struct{ m matcher.Matcher }
+	vmHostMatcher      struct{ m matcher.Matcher }
+	vmVMMatcher        struct{ m matcher.Matcher }
+	orHostMatcher      struct{ lhs, rhs HostMatcher }
+	orVMMatcher        struct{ lhs, rhs VMMatcher }
+	andHostMatcher     struct{ lhs, rhs HostMatcher }
+	andVMMatcher       struct{ lhs, rhs VMMatcher }
+)
+
+func (m hostDcMatcher) Match(host *rs.Host) bool { return m.m.MatchString(host.Hier.Dc.Name) }
+
+func (m hostClusterMatcher) Match(host *rs.Host) bool { return m.m.MatchString(host.Hier.Cluster.Name) }
+
+func (m hostHostMatcher) Match(host *rs.Host) bool { return m.m.MatchString(host.Name) }
+
+func (m vmDcMatcher) Match(vm *rs.VM) bool { return m.m.MatchString(vm.Hier.Dc.Name) }
+
+func (m vmClusterMatcher) Match(vm *rs.VM) bool { return m.m.MatchString(vm.Hier.Cluster.Name) }
+
+func (m vmHostMatcher) Match(vm *rs.VM) bool { return m.m.MatchString(vm.Hier.Host.Name) }
+
+func (m vmVMMatcher) Match(vm *rs.VM) bool { return m.m.MatchString(vm.Name) }
+
+func (m orHostMatcher) Match(host *rs.Host) bool { return m.lhs.Match(host) || m.rhs.Match(host) }
+
+func (m orVMMatcher) Match(vm *rs.VM) bool { return m.lhs.Match(vm) || m.rhs.Match(vm) }
+
+func (m andHostMatcher) Match(host *rs.Host) bool { return m.lhs.Match(host) && m.rhs.Match(host) }
+
+func (m andVMMatcher) Match(vm *rs.VM) bool { return m.lhs.Match(vm) && m.rhs.Match(vm) }
+
+func newAndHostMatcher(lhs, rhs HostMatcher, others ...HostMatcher) andHostMatcher {
+	m := andHostMatcher{lhs: lhs, rhs: rhs}
+	if len(others) > 0 {
+		return newAndHostMatcher(m, others[0], others[1:]...)
+	}
+	return m
+}
+
+func newAndVMMatcher(lhs, rhs VMMatcher, others ...VMMatcher) andVMMatcher {
+	m := andVMMatcher{lhs: lhs, rhs: rhs}
+	if len(others) > 0 {
+		return newAndVMMatcher(m, others[0], others[1:]...)
+	}
+	return m
 }
 
 func newOrHostMatcher(lhs, rhs HostMatcher, others ...HostMatcher) orHostMatcher {
@@ -30,53 +81,6 @@ func newOrVMMatcher(lhs, rhs VMMatcher, others ...VMMatcher) orVMMatcher {
 		return newOrVMMatcher(m, others[0], others[1:]...)
 	}
 	return m
-}
-
-type (
-	hostMatcher struct {
-		dc      matcher.Matcher
-		cluster matcher.Matcher
-		host    matcher.Matcher
-	}
-	vmMatcher struct {
-		dc      matcher.Matcher
-		cluster matcher.Matcher
-		host    matcher.Matcher
-		vm      matcher.Matcher
-	}
-	orHostMatcher struct{ lhs, rhs HostMatcher }
-	orVMMatcher   struct{ lhs, rhs VMMatcher }
-)
-
-func (m hostMatcher) Match(host *rs.Host) bool {
-	if !m.dc.MatchString(host.Hier.Dc.Name) {
-		return false
-	}
-	if !m.cluster.MatchString(host.Hier.Cluster.Name) {
-		return false
-	}
-	return m.host.MatchString(host.Name)
-}
-
-func (m vmMatcher) Match(vm *rs.VM) bool {
-	if !m.dc.MatchString(vm.Hier.Dc.Name) {
-		return false
-	}
-	if !m.cluster.MatchString(vm.Hier.Cluster.Name) {
-		return false
-	}
-	if !m.host.MatchString(vm.Hier.Host.Name) {
-		return false
-	}
-	return m.vm.MatchString(vm.Name)
-}
-
-func (m orHostMatcher) Match(host *rs.Host) bool {
-	return m.lhs.Match(host) || m.rhs.Match(host)
-}
-
-func (m orVMMatcher) Match(vm *rs.VM) bool {
-	return m.lhs.Match(vm) || m.rhs.Match(vm)
 }
 
 type (
@@ -124,60 +128,71 @@ func (hi HostIncludes) Parse() (HostMatcher, error) {
 	}
 }
 
+const (
+	datacenter = iota
+	cluster
+	host
+	vm
+)
+
 func parseHostIncludeString(s string) (HostMatcher, error) {
-	if strings.HasPrefix(s, "/") {
-		s = s[1:]
-	}
+	s = strings.Trim(s, "/")
 	// /dc/cluster/host
 	parts := strings.Split(s, "/")
-	if len(parts) != 3 {
-		return nil, fmt.Errorf("bad format : %s", s)
-	}
-	var hm hostMatcher
+	var ms []HostMatcher
 	for i, v := range parts {
 		m, err := parseMatchSubString(v)
 		if err != nil {
 			return nil, err
 		}
 		switch i {
-		case 0:
-			hm.dc = m
-		case 1:
-			hm.cluster = m
-		case 2:
-			hm.host = m
+		case datacenter:
+			ms = append(ms, hostDcMatcher{m})
+		case cluster:
+			ms = append(ms, hostClusterMatcher{m})
+		case host:
+			ms = append(ms, hostHostMatcher{m})
 		}
 	}
-	return &hm, nil
+	switch len(ms) {
+	case 0:
+		return nil, nil
+	case 1:
+		return ms[0], nil
+	default:
+		return newAndHostMatcher(ms[0], ms[1], ms[2:]...), nil
+	}
 }
 
 func parseVMIncludeString(s string) (VMMatcher, error) {
-	if strings.HasPrefix(s, "/") {
-		s = s[1:]
-	}
+	s = strings.Trim(s, "/")
 	// /dc/cluster/host/vm
 	parts := strings.Split(s, "/")
-	if len(parts) != 4 {
-		return nil, fmt.Errorf("bad format : %s", s)
-	}
-	var vmm vmMatcher
+	var ms []VMMatcher
 	for i, v := range parts {
 		m, err := parseMatchSubString(v)
 		if err != nil {
 			return nil, err
 		}
 		switch i {
-		case 0:
-			vmm.dc = m
-		case 1:
-			vmm.cluster = m
-		case 2:
-			vmm.host = m
-		case 3:
-			vmm.vm = m
+		case datacenter:
+			ms = append(ms, vmDcMatcher{m})
+		case cluster:
+			ms = append(ms, vmClusterMatcher{m})
+		case host:
+			ms = append(ms, vmHostMatcher{m})
+		case vm:
+			ms = append(ms, vmVMMatcher{m})
 		}
 	}
-	return &vmm, nil
+	switch len(ms) {
+	case 0:
+		return nil, nil
+	case 1:
+		return ms[0], nil
+	default:
+		return newAndVMMatcher(ms[0], ms[1], ms[2:]...), nil
+	}
 }
 
 func parseMatchSubString(sub string) (matcher.Matcher, error) {
