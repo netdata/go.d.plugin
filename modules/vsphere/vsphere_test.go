@@ -2,9 +2,11 @@ package vsphere
 
 import (
 	"crypto/tls"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/netdata/go.d.plugin/modules/vsphere/discover"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -43,6 +45,10 @@ func TestNew(t *testing.T) {
 	assert.Equal(t, defaultURL, job.UserURL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 	assert.Equal(t, defaultDiscoveryInterval, job.DiscoveryInterval.Duration)
+	assert.NotNil(t, job.collectionLock)
+	assert.NotNil(t, job.discoveredHosts)
+	assert.NotNil(t, job.discoveredVMs)
+	assert.NotNil(t, job.charted)
 }
 
 func TestVSphere_Init(t *testing.T) {
@@ -273,6 +279,87 @@ func TestVSphere_Collect(t *testing.T) {
 	assert.Len(t, job.discoveredHosts, count.Host)
 	assert.Len(t, job.discoveredVMs, count.Machine)
 	assert.Len(t, job.charted, count.Host+count.Machine)
+	assert.Len(t, *job.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts))
+}
+
+func TestVSphere_Collect_RemoveHostsVMsInRuntime(t *testing.T) {
+	model, srv, err := createSim()
+	require.NoError(t, err)
+	defer model.Remove()
+	defer srv.Close()
+
+	job := newTestJob(srv.URL.String())
+	defer job.Cleanup()
+	require.True(t, job.Init())
+	require.True(t, job.Check())
+	job.Collect()
+
+	okHost := "host-46"
+	okVM := "vm-62"
+	job.discoverer.(*discover.VSphereDiscoverer).HostMatcher = testHostMatcher{okHost}
+	job.discoverer.(*discover.VSphereDiscoverer).VMMatcher = testVMMatcher{okVM}
+
+	job.discoverOnce()
+	numOfRuns := 5
+	for i := 0; i < numOfRuns; i++ {
+		job.Collect()
+	}
+	for k, v := range job.discoveredHosts {
+		if k == okHost {
+			assert.Equal(t, 0, v)
+		} else {
+			assert.Equal(t, numOfRuns, v)
+		}
+	}
+	for k, v := range job.discoveredVMs {
+		if k == okVM {
+			assert.Equal(t, 0, v)
+		} else {
+			assert.Equal(t, numOfRuns, v)
+		}
+
+	}
+
+	for i := numOfRuns; i < failedUpdatesLimit; i++ {
+		job.Collect()
+	}
+	assert.Len(t, job.discoveredHosts, 1)
+	assert.Len(t, job.discoveredVMs, 1)
+	assert.Len(t, job.charted, 2)
+	for _, c := range *job.charts {
+		if strings.HasPrefix(c.ID, okHost) || strings.HasPrefix(c.ID, okVM) {
+			assert.False(t, c.Obsolete)
+		} else {
+			assert.True(t, c.Obsolete)
+		}
+	}
+}
+
+func TestVSphere_Collect_Run(t *testing.T) {
+	model, srv, err := createSim()
+	require.NoError(t, err)
+	defer model.Remove()
+	defer srv.Close()
+
+	job := newTestJob(srv.URL.String())
+	defer job.Cleanup()
+	job.DiscoveryInterval.Duration = time.Second * 2
+	require.True(t, job.Init())
+	require.True(t, job.Check())
+
+	loops := 20
+	for i := 0; i < loops; i++ {
+		assert.True(t, len(job.Collect()) > 0)
+		if i < 6 {
+			time.Sleep(time.Second)
+		}
+	}
+
+	count := model.Count()
+	assert.Len(t, job.discoveredHosts, count.Host)
+	assert.Len(t, job.discoveredVMs, count.Machine)
+	assert.Len(t, job.charted, count.Host+count.Machine)
+	assert.Len(t, *job.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts))
 }
 
 type testMetricScraper struct {
@@ -281,16 +368,14 @@ type testMetricScraper struct {
 
 func (s testMetricScraper) ScrapeHostsMetrics(hosts rs.Hosts) []performance.EntityMetric {
 	ms := s.metricScraper.ScrapeHostsMetrics(hosts)
-	setValueInMetrics(ms, 100)
-	return ms
+	return setValueInMetrics(ms, 100)
 }
 func (s testMetricScraper) ScrapeVMsMetrics(vms rs.VMs) []performance.EntityMetric {
 	ms := s.metricScraper.ScrapeVMsMetrics(vms)
-	setValueInMetrics(ms, 200)
-	return ms
+	return setValueInMetrics(ms, 200)
 }
 
-func setValueInMetrics(ms []performance.EntityMetric, value int64) {
+func setValueInMetrics(ms []performance.EntityMetric, value int64) []performance.EntityMetric {
 	for i := range ms {
 		for ii := range ms[i].Value {
 			v := &ms[i].Value[ii].Value
@@ -301,4 +386,13 @@ func setValueInMetrics(ms []performance.EntityMetric, value int64) {
 			}
 		}
 	}
+	return ms
 }
+
+type testHostMatcher struct{ name string }
+
+func (m testHostMatcher) Match(host *rs.Host) bool { return m.name == host.ID }
+
+type testVMMatcher struct{ name string }
+
+func (m testVMMatcher) Match(vm *rs.VM) bool { return m.name == vm.ID }
