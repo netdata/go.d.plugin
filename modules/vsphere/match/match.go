@@ -1,6 +1,7 @@
 package match
 
 import (
+	"fmt"
 	"strings"
 
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
@@ -95,6 +96,9 @@ func (vi VMIncludes) Parse() (VMMatcher, error) {
 		if err != nil {
 			return nil, err
 		}
+		if m == nil {
+			continue
+		}
 		ms = append(ms, m)
 	}
 
@@ -114,6 +118,9 @@ func (hi HostIncludes) Parse() (HostMatcher, error) {
 		m, err := parseHostIncludeString(v)
 		if err != nil {
 			return nil, err
+		}
+		if m == nil {
+			continue
 		}
 		ms = append(ms, m)
 	}
@@ -136,6 +143,9 @@ const (
 )
 
 func parseHostIncludeString(s string) (HostMatcher, error) {
+	if !isValidIncludeFormat(s) {
+		return nil, fmt.Errorf("bad format : %s", s)
+	}
 	s = strings.Trim(s, "/")
 	// /dc/cluster/host
 	parts := strings.Split(s, "/")
@@ -165,6 +175,9 @@ func parseHostIncludeString(s string) (HostMatcher, error) {
 }
 
 func parseVMIncludeString(s string) (VMMatcher, error) {
+	if !isValidIncludeFormat(s) {
+		return nil, fmt.Errorf("bad format : %s", s)
+	}
 	s = strings.Trim(s, "/")
 	// /dc/cluster/host/vm
 	parts := strings.Split(s, "/")
@@ -204,4 +217,8 @@ func parseMatchSubString(sub string) (matcher.Matcher, error) {
 		return matcher.TRUE(), nil
 	}
 	return matcher.NewSimplePatternsMatcher(sub)
+}
+
+func isValidIncludeFormat(line string) bool {
+	return strings.HasPrefix(line, "/")
 }
