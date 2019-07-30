@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 
@@ -41,13 +42,27 @@ func (c *VSphereMetricScraper) calcMaxQuery() {
 }
 
 func (c VSphereMetricScraper) ScrapeHostsMetrics(hosts rs.Hosts) []performance.EntityMetric {
+	t := time.Now()
 	pqs := newHostsPerfQuerySpecs(hosts)
-	return c.scrapeMetrics(pqs)
+	ms := c.scrapeMetrics(pqs)
+	c.Debugf("scraping metrics : requested hosts %d, got metrics %d, scraping took %s",
+		len(hosts),
+		len(ms),
+		time.Since(t),
+	)
+	return ms
 }
 
 func (c VSphereMetricScraper) ScrapeVMsMetrics(vms rs.VMs) []performance.EntityMetric {
+	t := time.Now()
 	pqs := newVMsPerfQuerySpecs(vms)
-	return c.scrapeMetrics(pqs)
+	ms := c.scrapeMetrics(pqs)
+	c.Debugf("scraping metrics : requested vms %d, got metrics %d, scraping took %s",
+		len(vms),
+		len(ms),
+		time.Since(t),
+	)
+	return ms
 }
 
 func (c VSphereMetricScraper) scrapeMetrics(pqs []types.PerfQuerySpec) []performance.EntityMetric {

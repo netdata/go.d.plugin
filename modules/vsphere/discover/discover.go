@@ -71,9 +71,11 @@ func (d VSphereDiscoverer) Discover() (*rs.Resources, error) {
 		return nil, fmt.Errorf("collecting metric lists : %v", err)
 	}
 
-	d.Infof("discovering : %d hosts, %d vms, the whole process took %s",
+	d.Infof("discovering : discovered %d/%d hosts, %d/%d vms, the whole process took %s",
 		len(res.Hosts),
+		len(raw.hosts),
 		len(res.VMs),
+		len(raw.vms),
 		time.Since(startTime))
 
 	return res, nil
@@ -89,7 +91,7 @@ var (
 )
 
 func (d VSphereDiscoverer) discover() (*resources, error) {
-	d.Debug("discovering : starting resource discovering")
+	d.Debug("discovering : starting resource discovering process")
 
 	start := time.Now()
 	t := start
@@ -97,35 +99,35 @@ func (d VSphereDiscoverer) discover() (*resources, error) {
 	if err != nil {
 		return nil, err
 	}
-	d.Debugf("discovering : found %d datacenters, discovering took %s", len(datacenters), time.Since(t))
+	d.Debugf("discovering : found %d dcs, process took %s", len(datacenters), time.Since(t))
 
 	t = time.Now()
 	folders, err := d.Folders(folderPathSet...)
 	if err != nil {
 		return nil, err
 	}
-	d.Debugf("discovering : found %d folders, discovering took %s", len(folders), time.Since(t))
+	d.Debugf("discovering : found %d folders, process took %s", len(folders), time.Since(t))
 
 	t = time.Now()
 	clusters, err := d.ComputeResources(clusterPathSet...)
 	if err != nil {
 		return nil, err
 	}
-	d.Debugf("discovering : found %d clusters, discovering took %s", len(clusters), time.Since(t))
+	d.Debugf("discovering : found %d clusters, process took %s", len(clusters), time.Since(t))
 
 	t = time.Now()
 	hosts, err := d.Hosts(hostPathSet...)
 	if err != nil {
 		return nil, err
 	}
-	d.Debugf("discovering : found %d hosts, discovering took %s", len(hosts), time.Since(t))
+	d.Debugf("discovering : found %d hosts, process took %s", len(hosts), time.Since(t))
 
 	t = time.Now()
 	vms, err := d.VirtualMachines(vmPathSet...)
 	if err != nil {
 		return nil, err
 	}
-	d.Debugf("discovering : found %d vms, discovering took %s", len(hosts), time.Since(t))
+	d.Debugf("discovering : found %d vms, process took %s", len(hosts), time.Since(t))
 
 	raw := resources{
 		dcs:      datacenters,
@@ -135,7 +137,7 @@ func (d VSphereDiscoverer) discover() (*resources, error) {
 		vms:      vms,
 	}
 
-	d.Infof("discovering : found %d datacenters, %d folders, %d clusters (%d dummy), %d hosts, %d vms, discovering took %s",
+	d.Infof("discovering : found %d dcs, %d folders, %d clusters (%d dummy), %d hosts, %d vms, process took %s",
 		len(raw.dcs),
 		len(raw.folders),
 		len(clusters),

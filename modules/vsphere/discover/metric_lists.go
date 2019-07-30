@@ -11,8 +11,7 @@ import (
 )
 
 func (d VSphereDiscoverer) collectMetricLists(res *rs.Resources) error {
-	d.Debug("discovering : starting metric list collection")
-	d.Debugf("discovering : will collect metric lists for %d hosts, %d vms", len(res.Hosts), len(res.VMs))
+	d.Debug("discovering : metric lists : starting resources metric lists collection process")
 	t := time.Now()
 	perfCounters, err := d.CounterInfoByName()
 	if err != nil {
@@ -28,8 +27,10 @@ func (d VSphereDiscoverer) collectMetricLists(res *rs.Resources) error {
 		v.MetricList = vmML
 	}
 
-	d.Debugf("discovering : found metric lists for %d hosts, %d vms, collection took %s",
+	d.Infof("discovering : metric lists : collected metric lists for %d/%d hosts, %d/%d vms, process took %s",
 		len(res.Hosts),
+		len(res.Hosts),
+		len(res.VMs),
 		len(res.VMs),
 		time.Since(t),
 	)

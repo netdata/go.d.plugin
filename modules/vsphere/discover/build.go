@@ -1,13 +1,16 @@
 package discover
 
 import (
+	"time"
+
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 
 	"github.com/vmware/govmomi/vim25/mo"
 )
 
 func (d VSphereDiscoverer) build(raw *resources) *rs.Resources {
-	d.Debug("discovering : starting building resources")
+	d.Debug("discovering : building : starting building resources process")
+	t := time.Now()
 
 	var res rs.Resources
 	res.Dcs = d.buildDatacenters(raw.dcs)
@@ -17,12 +20,18 @@ func (d VSphereDiscoverer) build(raw *resources) *rs.Resources {
 	res.Hosts = d.buildHosts(raw.hosts)
 	res.VMs = d.buildVMs(raw.vms)
 
-	d.Debugf("discovering : built %d datacenters, %d folders, %d clusters, %d hosts, %d vms",
+	d.Infof("discovering : building : built %d/%d dcs, %d/%d folders, %d/%d clusters, %d/%d hosts, %d/%d vms, process took %s",
 		len(res.Dcs),
+		len(raw.dcs),
 		len(res.Folders),
+		len(raw.folders),
 		len(res.Clusters),
+		len(raw.clusters),
 		len(res.Hosts),
+		len(raw.hosts),
 		len(res.VMs),
+		len(raw.vms),
+		time.Since(t),
 	)
 	return &res
 }
@@ -118,7 +127,7 @@ func (d VSphereDiscoverer) buildHosts(raw []mo.HostSystem) rs.Hosts {
 		hosts.Put(newHost(h))
 	}
 	if num > 0 {
-		d.Infof("discovering : found %d not powered on hosts, removing them", num)
+		d.Infof("discovering : building : removed %d hosts (not powered on)", num)
 	}
 	return hosts
 }
@@ -151,7 +160,7 @@ func (d VSphereDiscoverer) buildVMs(raw []mo.VirtualMachine) rs.VMs {
 		vms.Put(newVM(v))
 	}
 	if num > 0 {
-		d.Infof("discovering : found %d not powered on vms, removing them", num)
+		d.Infof("discovering : building : removed %d vms (not powered on)", num)
 	}
 	return vms
 }

@@ -161,7 +161,7 @@ func (vs *VSphere) Init() bool {
 	return true
 }
 
-func (vs VSphere) Check() bool {
+func (VSphere) Check() bool {
 	return true
 }
 

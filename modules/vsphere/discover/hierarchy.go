@@ -1,28 +1,26 @@
 package discover
 
 import (
-	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
+	"time"
 
-	"fmt"
+	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 )
 
 func (d VSphereDiscoverer) setHierarchy(res *rs.Resources) error {
-	d.Debug("discovering : starting hierarchy set process")
+	d.Debug("discovering : hierarchy : start setting resources hierarchy process")
+	t := time.Now()
 
 	c := d.setClustersHierarchy(res)
 	h := d.setHostsHierarchy(res)
 	v := d.setVMsHierarchy(res)
 
-	d.Infof("discovering : hierarchy properly set for %d/%d clusters, %d/%d hosts, %d/%d vms",
+	// notSet := len(res.Clusters) + len(res.Hosts) + len(res.VMs) - (c + h + v)
+	d.Infof("discovering : hierarchy : set %d/%d clusters, %d/%d hosts, %d/%d vms, process took %s",
 		c, len(res.Clusters),
 		h, len(res.Hosts),
 		v, len(res.VMs),
+		time.Since(t),
 	)
-
-	notSet := len(res.Clusters) + len(res.Hosts) + len(res.VMs) - (c + h + v)
-	if notSet > 0 {
-		return fmt.Errorf("discovering : %d resources have no hierarchy set", notSet)
-	}
 
 	return nil
 }

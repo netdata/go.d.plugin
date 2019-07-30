@@ -47,14 +47,7 @@ func writeVMMetrics(dst map[string]int64, vm *rs.VM, metrics []performance.Metri
 		if len(m.Value) == 0 || m.Value[0] == -1 {
 			continue
 		}
-		key := vmMetricKey(vm, m.Instance, m.Name)
+		key := fmt.Sprintf("%s_%s", vm.ID, m.Name)
 		dst[key] = m.Value[0]
 	}
-}
-
-func vmMetricKey(vm *rs.VM, instance, metricName string) string {
-	if instance == "" {
-		return fmt.Sprintf("%s_%s_%s", vm.ID, vm.Name, metricName)
-	}
-	return fmt.Sprintf("%s_%s_%s_%s", vm.ID, vm.Name, metricName, instance)
 }

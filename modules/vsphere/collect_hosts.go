@@ -47,14 +47,7 @@ func writeHostMetrics(dst map[string]int64, host *rs.Host, metrics []performance
 		if len(m.Value) == 0 || m.Value[0] == -1 {
 			continue
 		}
-		key := hostMetricKey(host, m.Instance, m.Name)
+		key := fmt.Sprintf("%s_%s", host.ID, m.Name)
 		dst[key] = m.Value[0]
 	}
-}
-
-func hostMetricKey(host *rs.Host, instance, metricName string) string {
-	if instance == "" {
-		return fmt.Sprintf("%s_%s_%s", host.ID, host.Name, metricName)
-	}
-	return fmt.Sprintf("%s_%s_%s_%s", host.ID, host.Name, metricName, instance)
 }
