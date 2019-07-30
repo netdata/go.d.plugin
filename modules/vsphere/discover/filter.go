@@ -22,7 +22,7 @@ func (d VSphereDiscoverer) removeUnmatched(res *rs.Resources) (removed int) {
 	d.Debug("discovering : starting filtering resources")
 	removed += d.removeUnmatchedHosts(res.Hosts)
 	removed += d.removeUnmatchedVMs(res.VMs)
-	return removed
+	return
 }
 
 func (d VSphereDiscoverer) removeUnmatchedHosts(hosts rs.Hosts) (removed int) {
@@ -32,9 +32,7 @@ func (d VSphereDiscoverer) removeUnmatchedHosts(hosts rs.Hosts) (removed int) {
 			hosts.Remove(v.ID)
 		}
 	}
-	if removed > 0 {
-		d.Infof("discovering : found %d unmatched hosts, removing them", removed)
-	}
+	d.Debugf("discovering : removed %d unmatched hosts", removed)
 	return removed
 }
 
@@ -45,8 +43,6 @@ func (d VSphereDiscoverer) removeUnmatchedVMs(vms rs.VMs) (removed int) {
 			vms.Remove(v.ID)
 		}
 	}
-	if removed > 0 {
-		d.Infof("discovering : found %d unmatched vms, removing them", removed)
-	}
+	d.Debugf("discovering : removed %d unmatched vms", removed)
 	return removed
 }
