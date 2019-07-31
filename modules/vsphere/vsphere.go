@@ -39,15 +39,6 @@ var (
 	defaultVMInclude   = []string{"/*"}
 )
 
-type discoverer interface {
-	Discover() (*rs.Resources, error)
-}
-
-type metricScraper interface {
-	ScrapeHostsMetrics(rs.Hosts) []performance.EntityMetric
-	ScrapeVMsMetrics(rs.VMs) []performance.EntityMetric
-}
-
 func New() *VSphere {
 	config := Config{
 		HTTP: web.HTTP{
@@ -74,6 +65,15 @@ func New() *VSphere {
 		discoveredVMs:   make(map[string]int),
 		charted:         make(map[string]bool),
 	}
+}
+
+type discoverer interface {
+	Discover() (*rs.Resources, error)
+}
+
+type metricScraper interface {
+	ScrapeHostsMetrics(rs.Hosts) []performance.EntityMetric
+	ScrapeVMsMetrics(rs.VMs) []performance.EntityMetric
 }
 
 type Config struct {

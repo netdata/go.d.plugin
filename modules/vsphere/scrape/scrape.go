@@ -45,9 +45,9 @@ func (c VSphereMetricScraper) ScrapeHostsMetrics(hosts rs.Hosts) []performance.E
 	t := time.Now()
 	pqs := newHostsPerfQuerySpecs(hosts)
 	ms := c.scrapeMetrics(pqs)
-	c.Debugf("scraping : requested metrics for %d hosts, got %d, process took %s",
-		len(hosts),
+	c.Debugf("scraping : scraped metrics for %d/%d hosts, process took %s",
 		len(ms),
+		len(hosts),
 		time.Since(t),
 	)
 	return ms
@@ -57,9 +57,9 @@ func (c VSphereMetricScraper) ScrapeVMsMetrics(vms rs.VMs) []performance.EntityM
 	t := time.Now()
 	pqs := newVMsPerfQuerySpecs(vms)
 	ms := c.scrapeMetrics(pqs)
-	c.Debugf("scraping : requested metrics for %d vms, got %d, process took %s",
-		len(vms),
+	c.Debugf("scraping : scraped metrics for %d/%d vms, process took %s",
 		len(ms),
+		len(vms),
 		time.Since(t),
 	)
 	return ms

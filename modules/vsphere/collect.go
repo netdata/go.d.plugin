@@ -8,6 +8,7 @@ func (vs *VSphere) collect() (map[string]int64, error) {
 
 	defer vs.removeStale()
 
+	vs.Debug("starting collection process")
 	t := time.Now()
 	mx := make(map[string]int64)
 	err := vs.collectHosts(mx)
@@ -19,7 +20,7 @@ func (vs *VSphere) collect() (map[string]int64, error) {
 	if err != nil {
 		return mx, err
 	}
-	vs.Debugf("metrics were successfully collected, process tool %s", time.Since(t))
+	vs.Debugf("metrics collected, process took %s", time.Since(t))
 
 	return mx, nil
 }
