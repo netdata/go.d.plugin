@@ -40,8 +40,9 @@ var (
 			ID:    "%s_cpu_usage_total",
 			Title: "Cpu Usage Total",
 			Units: "percentage",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.cpu_usage_total",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_cpu.usage.average", Name: "used", Div: 100},
 			},
@@ -53,8 +54,9 @@ var (
 			ID:    "%s_mem_usage_percentage",
 			Title: "Memory Usage Percentage",
 			Units: "percentage",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.mem_usage_percentage",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_mem.usage.average", Name: "used", Div: 100},
 			},
@@ -63,7 +65,7 @@ var (
 			ID:    "%s_mem_usage",
 			Title: "Memory Usage",
 			Units: "KiB",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.mem_usage",
 			Dims: Dims{
 				{ID: "%s_mem.granted.average", Name: "granted"},
@@ -76,8 +78,9 @@ var (
 			ID:    "%s_mem_swap_rate",
 			Title: "VMKernel Memory Swap Rate",
 			Units: "KiB/s",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.mem_swap_rate",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_mem.swapinRate.average", Name: "in"},
 				{ID: "%s_mem.swapoutRate.average", Name: "out"},
@@ -87,8 +90,9 @@ var (
 			ID:    "%s_mem_swap",
 			Title: "VMKernel Memory Swap",
 			Units: "KiB",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.mem_swap",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_mem.swapped.average", Name: "swapped"},
 			},
@@ -99,8 +103,9 @@ var (
 			ID:    "%s_net_bandwidth_total",
 			Title: "Network Bandwidth Total",
 			Units: "KiB/s",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.net_bandwidth_total",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_net.bytesRx.average", Name: "rx"},
 				{ID: "%s_net.bytesTx.average", Name: "tx", Mul: -1},
@@ -110,7 +115,7 @@ var (
 			ID:    "%s_net_packets_total",
 			Title: "Network Packets Total",
 			Units: "packets",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.net_packets_total",
 			Dims: Dims{
 				{ID: "%s_net.packetsRx.summation", Name: "rx"},
@@ -121,7 +126,7 @@ var (
 			ID:    "%s_net_drops_total",
 			Title: "Network Drops Total",
 			Units: "packets",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.net_drops_total",
 			Dims: Dims{
 				{ID: "%s_net.droppedRx.summation", Name: "rx"},
@@ -134,8 +139,9 @@ var (
 			ID:    "%s_disk_usage_total",
 			Title: "Disk Usage Total",
 			Units: "KiB/s",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.disk_usage_total",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_disk.read.average", Name: "read"},
 				{ID: "%s_disk.write.average", Name: "write", Mul: -1},
@@ -145,7 +151,7 @@ var (
 			ID:    "%s_disk_max_latency",
 			Title: "Disk Max Latency",
 			Units: "ms",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.disk_max_latency",
 			Dims: Dims{
 				{ID: "%s_disk.maxTotalLatency.latest", Name: "latency"},
@@ -157,7 +163,7 @@ var (
 			ID:    "%s_system_uptime",
 			Title: "System Uptime",
 			Units: "seconds",
-			Fam:   "vm %s",
+			Fam:   "vm %s (%s)",
 			Ctx:   "vsphere.system_uptime",
 			Dims: Dims{
 				{ID: "%s_sys.uptime.latest", Name: "time"},
@@ -183,6 +189,7 @@ var (
 			Units: "percentage",
 			Fam:   "host %s",
 			Ctx:   "vsphere.cpu_usage_total",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_cpu.usage.average", Name: "used", Div: 100},
 			},
@@ -196,6 +203,7 @@ var (
 			Units: "percentage",
 			Fam:   "host %s",
 			Ctx:   "vsphere.mem_usage_percentage",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_mem.usage.average", Name: "used", Div: 100},
 			},
@@ -216,10 +224,11 @@ var (
 		},
 		{
 			ID:    "%s_mem_swap_rate",
-			Title: "Memory Swap Rate",
+			Title: "VMKernel Memory Swap Rate",
 			Units: "KiB/s",
 			Fam:   "host %s",
 			Ctx:   "vsphere.mem_swap_rate",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_mem.swapinRate.average", Name: "in"},
 				{ID: "%s_mem.swapoutRate.average", Name: "out"},
@@ -233,6 +242,7 @@ var (
 			Units: "KiB/s",
 			Fam:   "host %s",
 			Ctx:   "vsphere.net_bandwidth_total",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_net.bytesRx.average", Name: "rx"},
 				{ID: "%s_net.bytesTx.average", Name: "tx", Mul: -1},
@@ -279,6 +289,7 @@ var (
 			Units: "KiB/s",
 			Fam:   "host %s",
 			Ctx:   "vsphere.disk_usage_total",
+			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_disk.read.average", Name: "read"},
 				{ID: "%s_disk.write.average", Name: "write", Mul: -1},
@@ -367,7 +378,7 @@ func newVMCHarts(vm *rs.VM) *Charts {
 func setVMChart(chart *Chart, vm *rs.VM, prio int) {
 	chart.Priority = prio
 	chart.ID = fmt.Sprintf(chart.ID, vm.ID)
-	chart.Fam = fmt.Sprintf(chart.Fam, vm.Name)
+	chart.Fam = fmt.Sprintf(chart.Fam, vm.Name, vm.Hier.Host.Name)
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, vm.ID)
 	}
