@@ -60,12 +60,12 @@ func overallStatusToInt(status string) int64 {
 	default:
 		return 0
 	case "grey":
-		return 1
+		return 0
 	case "green":
-		return 2
+		return 1
 	case "yellow":
-		return 3
+		return 2
 	case "red":
-		return 4
+		return 3
 	}
 }

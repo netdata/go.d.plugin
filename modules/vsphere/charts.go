@@ -41,7 +41,7 @@ var (
 			Title: "Cpu Usage Total",
 			Units: "percentage",
 			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_cpu_usage_total",
+			Ctx:   "vsphere.cpu_usage_total",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_cpu.usage.average", Name: "used", Div: 100},
@@ -104,7 +104,7 @@ var (
 			Title: "Network Bandwidth Total",
 			Units: "KiB/s",
 			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_net_bandwidth_total",
+			Ctx:   "vsphere.net_bandwidth_total",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_net.bytesRx.average", Name: "rx"},
@@ -116,7 +116,7 @@ var (
 			Title: "Network Packets Total",
 			Units: "packets",
 			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_net_packets_total",
+			Ctx:   "vsphere.net_packets_total",
 			Dims: Dims{
 				{ID: "%s_net.packetsRx.summation", Name: "rx"},
 				{ID: "%s_net.packetsTx.summation", Name: "tx", Mul: -1},
@@ -127,7 +127,7 @@ var (
 			Title: "Network Drops Total",
 			Units: "packets",
 			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_net_drops_total",
+			Ctx:   "vsphere.net_drops_total",
 			Dims: Dims{
 				{ID: "%s_net.droppedRx.summation", Name: "rx"},
 				{ID: "%s_net.droppedTx.summation", Name: "tx", Mul: -1},
@@ -140,7 +140,7 @@ var (
 			Title: "Disk Usage Total",
 			Units: "KiB/s",
 			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_disk_usage_total",
+			Ctx:   "vsphere.disk_usage_total",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_disk.read.average", Name: "read"},
@@ -152,7 +152,7 @@ var (
 			Title: "Disk Max Latency",
 			Units: "ms",
 			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_disk_max_latency",
+			Ctx:   "vsphere.disk_max_latency",
 			Dims: Dims{
 				{ID: "%s_disk.maxTotalLatency.latest", Name: "latency"},
 			},
@@ -161,10 +161,10 @@ var (
 	vmSystemCharts = Charts{
 		{
 			ID:    "%s_overall_status",
-			Title: "Overall Status",
+			Title: "Overall Alarm Status",
 			Units: "status",
 			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_overall_status",
+			Ctx:   "vsphere.overall_status",
 			Dims: Dims{
 				{ID: "%s_overall.status", Name: "status"},
 			},
@@ -174,7 +174,7 @@ var (
 			Title: "System Uptime",
 			Units: "seconds",
 			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_system_uptime",
+			Ctx:   "vsphere.system_uptime",
 			Dims: Dims{
 				{ID: "%s_sys.uptime.latest", Name: "time"},
 			},
@@ -198,7 +198,7 @@ var (
 			Title: "Cpu Usage Total",
 			Units: "percentage",
 			Fam:   "host %s",
-			Ctx:   "vsphere.host_cpu_usage_total",
+			Ctx:   "vsphere.cpu_usage_total",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_cpu.usage.average", Name: "used", Div: 100},
@@ -251,7 +251,7 @@ var (
 			Title: "Network Bandwidth Total",
 			Units: "KiB/s",
 			Fam:   "host %s",
-			Ctx:   "vsphere.host_net_bandwidth_total",
+			Ctx:   "vsphere.net_bandwidth_total",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_net.bytesRx.average", Name: "rx"},
@@ -263,7 +263,7 @@ var (
 			Title: "Network Packets Total",
 			Units: "packets",
 			Fam:   "host %s",
-			Ctx:   "vsphere.host_net_packets_total",
+			Ctx:   "vsphere.net_packets_total",
 			Dims: Dims{
 				{ID: "%s_net.packetsRx.summation", Name: "rx"},
 				{ID: "%s_net.packetsTx.summation", Name: "tx", Mul: -1},
@@ -274,7 +274,7 @@ var (
 			Title: "Network Drops Total",
 			Units: "packets",
 			Fam:   "host %s",
-			Ctx:   "vsphere.host_net_drops_total",
+			Ctx:   "vsphere.net_drops_total",
 			Dims: Dims{
 				{ID: "%s_net.droppedRx.summation", Name: "rx"},
 				{ID: "%s_net.droppedTx.summation", Name: "tx", Mul: -1},
@@ -285,7 +285,7 @@ var (
 			Title: "Network Errors Total",
 			Units: "errors",
 			Fam:   "host %s",
-			Ctx:   "vsphere.host_net_errors_total",
+			Ctx:   "vsphere.net_errors_total",
 			Dims: Dims{
 				{ID: "%s_net.errorsRx.summation", Name: "rx"},
 				{ID: "%s_net.errorsTx.summation", Name: "tx", Mul: -1},
@@ -298,7 +298,7 @@ var (
 			Title: "Disk Usage Total",
 			Units: "KiB/s",
 			Fam:   "host %s",
-			Ctx:   "vsphere.host_disk_usage_total",
+			Ctx:   "vsphere.disk_usage_total",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "%s_disk.read.average", Name: "read"},
@@ -310,7 +310,7 @@ var (
 			Title: "Disk Max Latency",
 			Units: "ms",
 			Fam:   "host %s",
-			Ctx:   "vsphere.host_disk_max_latency",
+			Ctx:   "vsphere.disk_max_latency",
 			Dims: Dims{
 				{ID: "%s_disk.maxTotalLatency.latest", Name: "latency"},
 			},
@@ -319,10 +319,10 @@ var (
 	hostSystemCharts = Charts{
 		{
 			ID:    "%s_overall_status",
-			Title: "Overall Status",
+			Title: "Overall Alarm Status",
 			Units: "status",
 			Fam:   "host %s",
-			Ctx:   "vsphere.vm_overall_status",
+			Ctx:   "vsphere.overall_status",
 			Dims: Dims{
 				{ID: "%s_overall.status", Name: "status"},
 			},
@@ -332,7 +332,7 @@ var (
 			Title: "System Uptime",
 			Units: "seconds",
 			Fam:   "host %s",
-			Ctx:   "vsphere.host_system_uptime",
+			Ctx:   "vsphere.system_uptime",
 			Dims: Dims{
 				{ID: "%s_sys.uptime.latest", Name: "time"},
 			},
