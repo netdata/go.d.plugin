@@ -137,10 +137,11 @@ func newHost(raw mo.HostSystem) *rs.Host {
 	// 192.168.0.202 host-28 domain-c52
 	// 192.168.0.203 host-33 domain-c52
 	return &rs.Host{
-		Name:     raw.Name,
-		ID:       raw.Reference().Value,
-		ParentID: raw.Parent.Value,
-		Ref:      raw.Reference(),
+		Name:          raw.Name,
+		ID:            raw.Reference().Value,
+		ParentID:      raw.Parent.Value,
+		OverallStatus: string(raw.Summary.OverallStatus),
+		Ref:           raw.Reference(),
 	}
 }
 
@@ -168,9 +169,10 @@ func (d VSphereDiscoverer) buildVMs(raw []mo.VirtualMachine) rs.VMs {
 func newVM(raw mo.VirtualMachine) *rs.VM {
 	// deb91 vm-25 group-v3 host-22
 	return &rs.VM{
-		Name:     raw.Name,
-		ID:       raw.Reference().Value,
-		ParentID: raw.Runtime.Host.Value,
-		Ref:      raw.Reference(),
+		Name:          raw.Name,
+		ID:            raw.Reference().Value,
+		ParentID:      raw.Runtime.Host.Value,
+		OverallStatus: string(raw.Summary.OverallStatus),
+		Ref:           raw.Reference(),
 	}
 }

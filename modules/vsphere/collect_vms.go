@@ -50,4 +50,6 @@ func writeVMMetrics(dst map[string]int64, vm *rs.VM, metrics []performance.Metri
 		key := fmt.Sprintf("%s_%s", vm.ID, m.Name)
 		dst[key] = m.Value[0]
 	}
+	key := fmt.Sprintf("%s_overall.status", vm.ID)
+	dst[key] = overallStatusToInt(vm.OverallStatus)
 }

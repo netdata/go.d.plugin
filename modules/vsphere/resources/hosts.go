@@ -13,12 +13,13 @@ type (
 
 	// A host is the virtual representation of the computing and memory resources of a physical machine running ESXi.
 	Host struct {
-		Name       string
-		ID         string
-		ParentID   string
-		Hier       HostHierarchy
-		MetricList performance.MetricList
-		Ref        types.ManagedObjectReference
+		Name          string
+		ID            string
+		ParentID      string
+		Hier          HostHierarchy
+		OverallStatus string
+		MetricList    performance.MetricList
+		Ref           types.ManagedObjectReference
 	}
 
 	Hosts map[string]*Host

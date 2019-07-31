@@ -86,8 +86,8 @@ var (
 	datacenterPathSet = []string{"name", "parent"}
 	folderPathSet     = []string{"name", "parent"}
 	clusterPathSet    = []string{"name", "parent"}
-	hostPathSet       = []string{"name", "parent", "runtime.powerState"}
-	vmPathSet         = []string{"name", "runtime.host", "runtime.powerState"}
+	hostPathSet       = []string{"name", "parent", "runtime.powerState", "summary.overallStatus"}
+	vmPathSet         = []string{"name", "runtime.host", "runtime.powerState", "summary.overallStatus"}
 )
 
 func (d VSphereDiscoverer) discover() (*resources, error) {

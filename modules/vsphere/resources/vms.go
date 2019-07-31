@@ -26,12 +26,13 @@ type (
 	}
 
 	VM struct {
-		Name       string
-		ID         string
-		ParentID   string
-		Hier       VMHierarchy
-		MetricList performance.MetricList
-		Ref        types.ManagedObjectReference
+		Name          string
+		ID            string
+		ParentID      string
+		Hier          VMHierarchy
+		OverallStatus string
+		MetricList    performance.MetricList
+		Ref           types.ManagedObjectReference
 	}
 
 	VMs map[string]*VM

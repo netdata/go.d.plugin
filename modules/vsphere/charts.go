@@ -160,6 +160,16 @@ var (
 	}
 	vmSystemCharts = Charts{
 		{
+			ID:    "%s_overall_status",
+			Title: "Overall Status",
+			Units: "status",
+			Fam:   "vm %s (%s)",
+			Ctx:   "vsphere.vm_overall_status",
+			Dims: Dims{
+				{ID: "%s_overall.status", Name: "status"},
+			},
+		},
+		{
 			ID:    "%s_system_uptime",
 			Title: "System Uptime",
 			Units: "seconds",
@@ -307,6 +317,16 @@ var (
 		},
 	}
 	hostSystemCharts = Charts{
+		{
+			ID:    "%s_overall_status",
+			Title: "Overall Status",
+			Units: "status",
+			Fam:   "host %s",
+			Ctx:   "vsphere.vm_overall_status",
+			Dims: Dims{
+				{ID: "%s_overall.status", Name: "status"},
+			},
+		},
 		{
 			ID:    "%s_system_uptime",
 			Title: "System Uptime",

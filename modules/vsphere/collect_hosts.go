@@ -50,4 +50,22 @@ func writeHostMetrics(dst map[string]int64, host *rs.Host, metrics []performance
 		key := fmt.Sprintf("%s_%s", host.ID, m.Name)
 		dst[key] = m.Value[0]
 	}
+	key := fmt.Sprintf("%s_overall.status", host.ID)
+	dst[key] = overallStatusToInt(host.OverallStatus)
+}
+
+func overallStatusToInt(status string) int64 {
+	// ManagedEntityStatus
+	switch status {
+	default:
+		return 0
+	case "grey":
+		return 1
+	case "green":
+		return 2
+	case "yellow":
+		return 3
+	case "red":
+		return 4
+	}
 }
