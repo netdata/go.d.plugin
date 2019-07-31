@@ -1,11 +1,14 @@
 package vsphere
 
+import "time"
+
 func (vs *VSphere) collect() (map[string]int64, error) {
 	vs.collectionLock.Lock()
 	defer vs.collectionLock.Unlock()
 
 	defer vs.removeStale()
 
+	t := time.Now()
 	mx := make(map[string]int64)
 	err := vs.collectHosts(mx)
 	if err != nil {
@@ -16,6 +19,7 @@ func (vs *VSphere) collect() (map[string]int64, error) {
 	if err != nil {
 		return mx, err
 	}
+	vs.Debugf("metrics were successfully collected, process tool %s", time.Since(t))
 
 	return mx, nil
 }

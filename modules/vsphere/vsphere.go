@@ -34,6 +34,11 @@ const (
 	password                 = "123qwe!@#QWE"
 )
 
+var (
+	defaultHostInclude = []string{"/*"}
+	defaultVMInclude   = []string{"/*"}
+)
+
 type discoverer interface {
 	Discover() (*rs.Resources, error)
 }
@@ -57,8 +62,8 @@ func New() *VSphere {
 			},
 		},
 		DiscoveryInterval: web.Duration{Duration: defaultDiscoveryInterval},
-		HostsInclude:      []string{"/*"},
-		VMsInclude:        []string{"/*"},
+		HostsInclude:      defaultHostInclude,
+		VMsInclude:        defaultVMInclude,
 	}
 
 	return &VSphere{
