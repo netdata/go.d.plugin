@@ -73,10 +73,10 @@ jobs:
     host_include : ['/*']
     vm_include   : ['/*'] 
 
-  - name     : vcenter2
-    url      : https://203.0.113.10
-    username : admin@vsphere.local
-    password : somepassword
+  - name         : vcenter2
+    url          : https://203.0.113.10
+    username     : admin@vsphere.local
+    password     : somepassword
     host_include : ['/*']
     vm_include   : ['/*']
 ```
