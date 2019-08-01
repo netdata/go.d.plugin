@@ -60,7 +60,7 @@ For hosts:
 
 ### configuration
 
-Needs only `url`, `username` and `password`
+Needs only `url`, `username` and `password`.
 
 Here is an example for 2 servers:
 
@@ -144,7 +144,7 @@ Example (all not related debug lines were removed):
 There you can see that discovering took `525.614041ms`, collecting metrics took `154.77997ms`.
 Discovering is a separate thread, it doesnt affect collecting. 
 
-`update_every` and `timeout` parameters should be adjusted based on this numbers.
+`update_every` and `timeout` parameters should be adjusted based on these numbers.
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/vsphere.conf).
 
