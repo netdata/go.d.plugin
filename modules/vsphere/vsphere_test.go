@@ -21,6 +21,7 @@ func newTestJob(vCenterURL string) *VSphere {
 	job.Username = "administrator"
 	job.Password = "password"
 	job.UserURL = vCenterURL
+	job.InsecureSkipVerify = true
 	return job
 }
 
@@ -42,9 +43,6 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
-	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
-	assert.Equal(t, defaultDiscoveryInterval, job.DiscoveryInterval.Duration)
 	assert.NotNil(t, job.collectionLock)
 	assert.NotNil(t, job.discoveredHosts)
 	assert.NotNil(t, job.discoveredVMs)
@@ -307,7 +305,7 @@ func TestVSphere_Collect_RemoveHostsVMsInRuntime(t *testing.T) {
 	job.discoverer.(*discover.VSphereDiscoverer).HostMatcher = testHostMatcher{okHost}
 	job.discoverer.(*discover.VSphereDiscoverer).VMMatcher = testVMMatcher{okVM}
 
-	job.discoverOnce()
+	assert.NoError(t, job.discoverOnce())
 	numOfRuns := 5
 	for i := 0; i < numOfRuns; i++ {
 		job.Collect()

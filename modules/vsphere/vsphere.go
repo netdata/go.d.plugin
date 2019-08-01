@@ -18,7 +18,7 @@ import (
 func init() {
 	creator := module.Creator{
 		Defaults: module.Defaults{
-			UpdateEvery: 5,
+			UpdateEvery: 20,
 		},
 		Create: func() module.Module { return New() },
 	}
@@ -26,35 +26,16 @@ func init() {
 	module.Register("vsphere", creator)
 }
 
-const (
-	defaultURL               = "https://192.168.0.154"
-	defaultHTTPTimeout       = time.Second * 10
-	defaultDiscoveryInterval = time.Minute * 5
-	username                 = "administrator@vsphere.local"
-	password                 = "123qwe!@#QWE"
-)
-
-var (
-	defaultHostInclude = []string{"/*"}
-	defaultVMInclude   = []string{"/*"}
-)
-
 func New() *VSphere {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{
-				UserURL:  defaultURL,
-				Username: username,
-				Password: password,
-			},
 			Client: web.Client{
-				Timeout:         web.Duration{Duration: defaultHTTPTimeout},
-				ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
+				Timeout: web.Duration{Duration: time.Second * 20},
 			},
 		},
-		DiscoveryInterval: web.Duration{Duration: defaultDiscoveryInterval},
-		HostsInclude:      defaultHostInclude,
-		VMsInclude:        defaultVMInclude,
+		DiscoveryInterval: web.Duration{Duration: time.Minute * 5},
+		HostsInclude:      []string{"/*"},
+		VMsInclude:        []string{"/*"},
 	}
 
 	return &VSphere{
@@ -85,7 +66,8 @@ type Config struct {
 
 type VSphere struct {
 	module.Base
-	Config `yaml:",inline"`
+	UpdateEvery int `yaml:"update_every"`
+	Config      `yaml:",inline"`
 
 	discoverer
 	metricScraper
@@ -146,7 +128,30 @@ func (vs *VSphere) createVSphereMetricScraper(c *client.Client) {
 	vs.metricScraper = ms
 }
 
+const (
+	minRecommendedUpdateEvery = 20
+)
+
+func (vs VSphere) checkConfigParams() bool {
+	if vs.UserURL == "" {
+		vs.Error("no URL set")
+		return false
+	}
+	if vs.Username == "" || vs.Password == "" {
+		vs.Errorf("no username or password set")
+		return false
+	}
+	if vs.UpdateEvery < minRecommendedUpdateEvery {
+		vs.Warningf("update_every is to low, minimum recommended is %d", minRecommendedUpdateEvery)
+	}
+	return true
+}
+
 func (vs *VSphere) Init() bool {
+	if !vs.checkConfigParams() {
+		return false
+	}
+
 	c, err := vs.createVSphereClient()
 	if err != nil {
 		vs.Errorf("error on creating vsphere client : %v", err)
@@ -161,12 +166,17 @@ func (vs *VSphere) Init() bool {
 
 	vs.createVSphereMetricScraper(c)
 
-	vs.discoverOnce()
+	err = vs.discoverOnce()
+	if err != nil {
+		vs.Error(err)
+		return false
+	}
 	vs.goDiscovery()
+
 	return true
 }
 
-func (VSphere) Check() bool {
+func (vs VSphere) Check() bool {
 	return true
 }
 
