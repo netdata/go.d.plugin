@@ -168,7 +168,7 @@ func (vs *VSphere) Init() bool {
 
 	err = vs.discoverOnce()
 	if err != nil {
-		vs.Error(err)
+		vs.Errorf("error on discovering : %v", err)
 		return false
 	}
 	vs.goDiscovery()
