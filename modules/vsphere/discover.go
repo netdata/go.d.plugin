@@ -9,16 +9,17 @@ func (vs *VSphere) goDiscovery() {
 		vs.discoveryTask.stop()
 	}
 	vs.Infof("starting discovery process, will do discovery every %s", vs.DiscoveryInterval)
-	vs.discoveryTask = newTask(vs.discoverOnce, vs.DiscoveryInterval.Duration)
+	vs.discoveryTask = newTask(func() { _ = vs.discoverOnce() }, vs.DiscoveryInterval.Duration)
 }
 
-func (vs *VSphere) discoverOnce() {
+func (vs *VSphere) discoverOnce() error {
 	res, err := vs.Discover()
 	if err != nil {
 		vs.Errorf("error on discovering : %v", err)
-		return
+		return err
 	}
 	vs.consumeDiscovered(res)
+	return nil
 }
 
 func (vs *VSphere) consumeDiscovered(res *rs.Resources) {
