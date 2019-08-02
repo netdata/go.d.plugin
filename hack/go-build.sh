@@ -12,7 +12,7 @@ GLDFLAGS=${GLDFLAGS:-}
 GLDFLAGS="$GLDFLAGS -X main.version=$VERSION"
 
 echo "Building binaries for version: $VERSION"
-if [ "${WHICH}" != "all" ]; then
+if [[ "${WHICH}" != "all" ]]; then
 	eval $(go env | grep -e "GOHOSTOS" -e "GOHOSTARCH")
 	: "${GOOS:=${GOHOSTOS}}"
 	: "${GOARCH:=${GOHOSTARCH}}"
@@ -24,6 +24,8 @@ else
 		GOARCH=${PLTFRM_SPLT[1]}
 		FILE="bin/go.d.plugin-${VERSION}.${GOOS}-${GOARCH}"
 		CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build ${GOFLAGS} -ldflags "${GLDFLAGS}" -o "${FILE}" github.com/netdata/go.d.plugin/cmd/godplugin
+		ARCHIVE="${FILE}.tar.gz"
+		tar -cvzf ${ARCHIVE} ${FILE}
+		rm ${FILE}
 	done
 fi
-
