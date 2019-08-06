@@ -25,7 +25,7 @@ else
 		FILE="bin/go.d.plugin-${VERSION}.${GOOS}-${GOARCH}"
 		CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build ${GOFLAGS} -ldflags "${GLDFLAGS}" -o "${FILE}" github.com/netdata/go.d.plugin/cmd/godplugin
 		ARCHIVE="${FILE}.tar.gz"
-		tar -cvzf ${ARCHIVE} ${FILE}
+		tar -C bin -cvzf ${ARCHIVE} ${FILE/bin\//}
 		rm ${FILE}
 	done
 fi
