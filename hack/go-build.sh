@@ -9,7 +9,7 @@ VERSION="${TRAVIS_TAG}"
 : "${VERSION:=$(git describe --tags --always --dirty)}"
 GOFLAGS=${GOFLAGS:-}
 GLDFLAGS=${GLDFLAGS:-}
-GLDFLAGS="$GLDFLAGS -X main.version=$VERSION"
+GLDFLAGS="$GLDFLAGS -X main.version=$VERSION -linkmode=external"
 
 echo "Building binaries for version: $VERSION"
 if [[ "${WHICH}" != "all" ]]; then
