@@ -5,7 +5,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
@@ -35,9 +34,8 @@ type client struct {
 }
 
 func newClient(c *http.Client, r web.Request) *client {
-	json := strings.Contains(r.UserURL, "&json") || strings.Contains(r.UserURL, "?json")
 	dec := decodeText
-	if json {
+	if _, ok := r.URL.Query()["json"]; ok {
 		dec = decodeJSON
 	}
 
