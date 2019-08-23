@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"strings"
 	"time"
 )
 
@@ -104,7 +103,6 @@ func read(dst []string, reader io.Reader) ([]string, error) {
 			break
 		}
 
-		line = strings.Trim(line, "\r\n ")
 		dst = append(dst, line)
 
 		num++
