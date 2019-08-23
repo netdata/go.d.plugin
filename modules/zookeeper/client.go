@@ -33,6 +33,12 @@ type client struct {
 	conn    net.Conn
 }
 
+func (c *client) disconnect() error {
+	err := c.conn.Close()
+	c.conn = nil
+	return err
+}
+
 func (c *client) isConnected() bool { return c.conn != nil }
 
 func (c *client) connect() (err error) {
@@ -62,6 +68,25 @@ func (c *client) read() (record []string, err error) {
 	}
 
 	return record, err
+}
+
+func (c *client) fetch(command string) (rows []string, err error) {
+	if c.isConnected() {
+		_ = c.disconnect()
+	}
+
+	err = c.connect()
+	if err != nil {
+		return nil, err
+	}
+	defer c.disconnect()
+
+	err = c.send(command)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.read()
 }
 
 func read(dst []string, reader io.Reader) ([]string, error) {
