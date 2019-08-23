@@ -1,8 +1,13 @@
 package zookeeper
 
 import (
-	"github.com/netdata/go-orchestrator/module"
+	"crypto/tls"
+	"fmt"
+	"time"
+
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
@@ -15,13 +20,20 @@ func init() {
 
 // Config is the Zookeeper module configuration.
 type Config struct {
-	Address string
-	Timeout web.Duration `yaml:"timeout"`
+	Address             string
+	Timeout             web.Duration `yaml:"timeout"`
+	UseTLS              bool         `yaml:"use_tls"`
+	web.ClientTLSConfig `yaml:",inline"`
 }
 
 // New creates Zookeeper with default values.
 func New() *Zookeeper {
-	return &Zookeeper{}
+	config := Config{
+		Address: "127.0.0.1:2181",
+		Timeout: web.Duration{Duration: time.Second},
+		UseTLS:  false,
+	}
+	return &Zookeeper{Config: config}
 }
 
 type zookeeperFetcher interface {
@@ -32,19 +44,47 @@ type zookeeperFetcher interface {
 type Zookeeper struct {
 	module.Base
 	zookeeperFetcher
+	Config `yaml:",inline"`
 }
 
 // Cleanup makes cleanup.
 func (Zookeeper) Cleanup() {}
 
+func (z *Zookeeper) createZookeeperFetcher() error {
+	tlsConf, err := web.NewTLSConfig(z.ClientTLSConfig)
+	if err != nil {
+		return fmt.Errorf("error on creating tls config : %v", err)
+	}
+	if tlsConf == nil {
+		tlsConf = &tls.Config{}
+	}
+
+	conf := clientConfig{
+		network: "tcp",
+		address: z.Address,
+		timeout: z.Timeout.Duration,
+		useTLS:  z.UseTLS,
+		tlsConf: tlsConf,
+	}
+
+	z.zookeeperFetcher = newClient(conf)
+	return nil
+}
+
 // Init makes initialization.
-func (Zookeeper) Init() bool {
+func (z *Zookeeper) Init() bool {
+	err := z.createZookeeperFetcher()
+	if err != nil {
+		z.Error(err)
+		return false
+	}
+
 	return true
 }
 
 // Check makes check.
-func (Zookeeper) Check() bool {
-	return true
+func (z *Zookeeper) Check() bool {
+	return len(z.Collect()) > 0
 }
 
 // Charts creates Charts.
@@ -52,7 +92,7 @@ func (Zookeeper) Charts() *Charts {
 	return charts.Copy()
 }
 
-// Collect collects metrics
+// Collect collects metrics.
 func (z *Zookeeper) Collect() map[string]int64 {
 	mx, err := z.collect()
 	if err != nil {
