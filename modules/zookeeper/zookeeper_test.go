@@ -28,11 +28,34 @@ func TestNew(t *testing.T) {
 }
 
 func TestZookeeper_Init(t *testing.T) {
+	job := New()
 
+	assert.True(t, job.Init())
+	assert.NotNil(t, job.zookeeperFetcher)
+}
+
+func TestZookeeper_InitErrorOnCreatingTLSConfig(t *testing.T) {
+	job := New()
+	job.UseTLS = true
+	job.ClientTLSConfig.TLSCA = "testdata/tls"
+
+	assert.False(t, job.Init())
 }
 
 func TestZookeeper_Check(t *testing.T) {
+	job := New()
+	require.True(t, job.Init())
+	job.zookeeperFetcher = &mockZookeeperFetcher{data: testMntrData}
 
+	assert.True(t, job.Check())
+}
+
+func TestZookeeper_CheckErrorOnFetch(t *testing.T) {
+	job := New()
+	require.True(t, job.Init())
+	job.zookeeperFetcher = &mockZookeeperFetcher{err: true}
+
+	assert.False(t, job.Check())
 }
 
 func TestZookeeper_Charts(t *testing.T) {

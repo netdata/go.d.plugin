@@ -50,11 +50,15 @@ type Zookeeper struct {
 // Cleanup makes cleanup.
 func (Zookeeper) Cleanup() {}
 
-func (z *Zookeeper) createZookeeperFetcher() error {
-	tlsConf, err := web.NewTLSConfig(z.ClientTLSConfig)
-	if err != nil {
-		return fmt.Errorf("error on creating tls config : %v", err)
+func (z *Zookeeper) createZookeeperFetcher() (err error) {
+	var tlsConf *tls.Config
+	if z.UseTLS {
+		tlsConf, err = web.NewTLSConfig(z.ClientTLSConfig)
+		if err != nil {
+			return fmt.Errorf("error on creating tls config : %v", err)
+		}
 	}
+
 	if tlsConf == nil {
 		tlsConf = &tls.Config{}
 	}
@@ -66,7 +70,6 @@ func (z *Zookeeper) createZookeeperFetcher() error {
 		useTLS:  z.UseTLS,
 		tlsConf: tlsConf,
 	}
-
 	z.zookeeperFetcher = newClient(conf)
 	return nil
 }
