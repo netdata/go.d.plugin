@@ -23,7 +23,7 @@ func newClient(config clientConfig) *client {
 		address:     config.address,
 		timeout:     config.timeout,
 		useTLS:      config.useTLS,
-		tlsConf:     config.tlsConf.Clone(),
+		tlsConf:     config.tlsConf,
 		reuseRecord: false,
 		record:      nil,
 		conn:        nil,
@@ -47,7 +47,7 @@ func (c client) dial() (net.Conn, error) {
 	}
 	var d net.Dialer
 	d.Timeout = c.timeout
-	return tls.DialWithDialer(&d, c.network, c.address, c.tlsConf.Clone())
+	return tls.DialWithDialer(&d, c.network, c.address, c.tlsConf)
 }
 
 func (c *client) connect() (err error) {
@@ -98,7 +98,9 @@ func (c *client) fetch(command string) (rows []string, err error) {
 	if err != nil {
 		return nil, err
 	}
-	defer c.disconnect()
+	defer func() {
+		_ = c.disconnect()
+	}()
 
 	err = c.send(command)
 	if err != nil {
@@ -108,32 +110,19 @@ func (c *client) fetch(command string) (rows []string, err error) {
 	return c.read()
 }
 
-const maxLinesToRead = 5001
+const maxLinesToRead = 500
 
 func read(dst []string, reader io.Reader) ([]string, error) {
 	dst = dst[:0]
-	var (
-		r    = bufio.NewReader(reader)
-		err  error
-		num  int
-		line string
-	)
-	for {
-		line, err = r.ReadString('\n')
-		if err != nil {
-			if err == io.EOF {
-				err = nil
-			}
-			break
-		}
+	var num int
+	s := bufio.NewScanner(reader)
 
-		dst = append(dst, line)
-
+	for s.Scan() {
+		dst = append(dst, s.Text())
 		num++
 		if num > maxLinesToRead {
-			err = fmt.Errorf("read line limit exceeded (%d)", maxLinesToRead)
-			break
+			return nil, fmt.Errorf("read line limit exceeded (%d)", maxLinesToRead)
 		}
 	}
-	return dst, err
+	return dst, s.Err()
 }

@@ -59,10 +59,6 @@ func (z *Zookeeper) createZookeeperFetcher() (err error) {
 		}
 	}
 
-	if tlsConf == nil {
-		tlsConf = &tls.Config{}
-	}
-
 	conf := clientConfig{
 		network: "tcp",
 		address: z.Address,
