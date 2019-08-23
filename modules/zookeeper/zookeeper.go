@@ -15,10 +15,8 @@ func init() {
 
 // Config is the Zookeeper module configuration.
 type Config struct {
-	Address        string
-	ConnectTimeout web.Duration `yaml:"connect_timeout"`
-	ReadTimeout    web.Duration `yaml:"read_timeout"`
-	WriteTimeout   web.Duration `yaml:"write_timeout"`
+	Address string
+	Timeout web.Duration `yaml:"timeout"`
 }
 
 // New creates Zookeeper with default values.

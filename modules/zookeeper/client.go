@@ -16,11 +16,9 @@ func newClient(config clientConfig) *client {
 }
 
 type clientConfig struct {
-	Address        string
-	ReuseRecord    bool
-	ConnectTimeout time.Duration
-	ReadTimeout    time.Duration
-	WriteTimeout   time.Duration
+	Address     string
+	ReuseRecord bool
+	Timeout     time.Duration
 }
 
 type dialFunc func(network, address string, timeout time.Duration) (net.Conn, error)
@@ -42,12 +40,12 @@ func (c *client) disconnect() error {
 func (c *client) isConnected() bool { return c.conn != nil }
 
 func (c *client) connect() (err error) {
-	c.conn, err = c.dial(c.network, c.Address, c.ConnectTimeout)
+	c.conn, err = c.dial(c.network, c.Address, c.Timeout)
 	return err
 }
 
 func (c *client) send(command string) error {
-	err := c.conn.SetWriteDeadline(time.Now().Add(c.WriteTimeout))
+	err := c.conn.SetWriteDeadline(time.Now().Add(c.Timeout))
 	if err != nil {
 		return err
 	}
@@ -56,7 +54,7 @@ func (c *client) send(command string) error {
 }
 
 func (c *client) read() (record []string, err error) {
-	if err = c.conn.SetReadDeadline(time.Now().Add(c.ReadTimeout)); err != nil {
+	if err = c.conn.SetReadDeadline(time.Now().Add(c.Timeout)); err != nil {
 		return nil, err
 	}
 
