@@ -16,6 +16,20 @@ func decodeJSON(r io.Reader, s *status) error {
 }
 
 func decodeText(r io.Reader, s *status) error {
+	parts := readParts(r)
+	if len(parts) == 0 {
+		return errors.New("invalid text format")
+	}
+
+	part, parts := parts[0], parts[1:]
+	if err := readStatus(part, s); err != nil {
+		return err
+	}
+
+	return readProcesses(parts, s)
+}
+
+func readParts(r io.Reader) [][]string {
 	sc := bufio.NewScanner(r)
 
 	var parts [][]string
@@ -38,13 +52,12 @@ func decodeText(r io.Reader, s *status) error {
 	if len(lines) > 0 {
 		parts = append(parts, lines)
 	}
-	if len(parts) == 0 {
-		return errors.New("invalid text format")
-	}
 
-	// Main processing
-	part, parts := parts[0], parts[1:]
-	for _, line := range part {
+	return parts
+}
+
+func readStatus(data []string, s *status) error {
+	for _, line := range data {
 		key, val, err := parseLine(line)
 		if err != nil {
 			return err
@@ -71,8 +84,11 @@ func decodeText(r io.Reader, s *status) error {
 		}
 	}
 
-	// Processes parsing
-	for _, part := range parts {
+	return nil
+}
+
+func readProcesses(procs [][]string, s *status) error {
+	for _, part := range procs {
 		proc := proc{}
 		for _, line := range part {
 			key, val, err := parseLine(line)

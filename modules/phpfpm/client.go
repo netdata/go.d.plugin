@@ -71,7 +71,7 @@ func (c client) fetchStatus(req *http.Request) (*status, error) {
 
 	s := &status{}
 	if err := c.dec(resp.Body, s); err != nil {
-		return nil, fmt.Errorf("error parsing response")
+		return nil, fmt.Errorf("error parsing response: %v", err)
 	}
 
 	return s, nil
