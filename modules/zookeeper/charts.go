@@ -11,7 +11,7 @@ type (
 var charts = Charts{
 	{
 		ID:    "requests",
-		Title: "Currently Executing Requests",
+		Title: "Outstanding Requests",
 		Units: "requests",
 		Fam:   "requests",
 		Ctx:   "zookeeper.requests",

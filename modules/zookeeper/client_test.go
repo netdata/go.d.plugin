@@ -3,11 +3,12 @@ package zookeeper
 import (
 	"bufio"
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"net"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
