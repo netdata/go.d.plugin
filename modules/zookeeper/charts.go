@@ -7,15 +7,106 @@ type (
 	Charts = module.Charts
 	// Dims is an alias for module.Dims
 	Dims = module.Dims
+	// Dims is an alias for module.Dims
+	Vars = module.Vars
 )
 
 var charts = Charts{
 	{
-		ID:    "random",
-		Title: "A Random Number", Units: "random", Fam: "random",
+		ID:    "requests",
+		Title: "Currently Executing Requests",
+		Units: "requests",
+		Fam:   "requests",
+		Ctx:   "zookeeper.requests",
 		Dims: Dims{
-			{ID: "random0", Name: "random 0"},
-			{ID: "random1", Name: "random 1"},
+			{ID: "outstanding_requests", Name: "outstanding"},
+		},
+	},
+	{
+		ID:    "requests_latency",
+		Title: "Requests Latency",
+		Units: "ms",
+		Fam:   "latency",
+		Ctx:   "zookeeper.requests_latency",
+		Dims: Dims{
+			{ID: "min_latency", Name: "min"},
+			{ID: "avg_latency", Name: "avg"},
+			{ID: "max_latency", Name: "max"},
+		},
+	},
+	{
+		ID:    "connections",
+		Title: "Alive Connections",
+		Units: "connections",
+		Fam:   "connections",
+		Ctx:   "zookeeper.connections",
+		Dims: Dims{
+			{ID: "num_alive_connections", Name: "alive"},
+		},
+	},
+	{
+		ID:    "packets",
+		Title: "Packets",
+		Units: "pps",
+		Fam:   "net",
+		Ctx:   "zookeeper.packets",
+		Dims: Dims{
+			{ID: "packets_received", Name: "received", Algo: module.Incremental},
+			{ID: "packets_sent", Name: "sent", Algo: module.Incremental, Mul: -1},
+		},
+	},
+	{
+		ID:    "file_descriptor",
+		Title: "Open File Descriptors",
+		Units: "file descriptors",
+		Fam:   "file descriptors",
+		Ctx:   "zookeeper.file_descriptor",
+		Dims: Dims{
+			{ID: "open_file_descriptor_count", Name: "open"},
+		},
+		Vars: Vars{
+			{ID: "max_file_descriptor_count"},
+		},
+	},
+	{
+		ID:    "nodes",
+		Title: "Number of Nodes",
+		Units: "number",
+		Fam:   "data tree",
+		Ctx:   "zookeeper.nodes",
+		Dims: Dims{
+			{ID: "znode_count", Name: "znode"},
+			{ID: "ephemerals_count", Name: "ephemerals"},
+		},
+	},
+	{
+		ID:    "watches",
+		Title: "Number of Watches",
+		Units: "number9",
+		Fam:   "data tree",
+		Ctx:   "zookeeper.watches",
+		Dims: Dims{
+			{ID: "watch_count", Name: "watches"},
+		},
+	},
+	{
+		ID:    "approximate_data_size",
+		Title: "Approximate Data Tree Size",
+		Units: "KiB",
+		Fam:   "data tree",
+		Ctx:   "zookeeper.approximate_data_size",
+		Dims: Dims{
+			{ID: "approximate_data_size", Name: "size", Div: 1024},
+		},
+	},
+	{
+		ID:    "server_state",
+		Title: "Server State",
+		Units: "state",
+		Fam:   "server state",
+		Ctx:   "zookeeper.server_state",
+		Dims: Dims{
+			{ID: "server_state", Name: "state"},
 		},
 	},
 }
