@@ -3,12 +3,9 @@ package zookeeper
 import "github.com/netdata/go-orchestrator/module"
 
 type (
-	// Charts is an alias for module.Charts
 	Charts = module.Charts
-	// Dims is an alias for module.Dims
-	Dims = module.Dims
-	// Dims is an alias for module.Dims
-	Vars = module.Vars
+	Dims   = module.Dims
+	Vars   = module.Vars
 )
 
 var charts = Charts{
@@ -26,7 +23,7 @@ var charts = Charts{
 		ID:    "requests_latency",
 		Title: "Requests Latency",
 		Units: "ms",
-		Fam:   "latency",
+		Fam:   "requests",
 		Ctx:   "zookeeper.requests_latency",
 		Dims: Dims{
 			{ID: "min_latency", Name: "min"},
@@ -71,7 +68,7 @@ var charts = Charts{
 	{
 		ID:    "nodes",
 		Title: "Number of Nodes",
-		Units: "number",
+		Units: "nodes",
 		Fam:   "data tree",
 		Ctx:   "zookeeper.nodes",
 		Dims: Dims{
@@ -82,7 +79,7 @@ var charts = Charts{
 	{
 		ID:    "watches",
 		Title: "Number of Watches",
-		Units: "number9",
+		Units: "watches",
 		Fam:   "data tree",
 		Ctx:   "zookeeper.watches",
 		Dims: Dims{
