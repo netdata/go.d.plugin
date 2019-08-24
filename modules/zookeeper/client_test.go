@@ -16,7 +16,7 @@ const (
 )
 
 func Test_clientFetch(t *testing.T) {
-	srv := &tcpServer{addr: testServerAddress}
+	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 10}
 	go srv.Run()
 	defer srv.Close()
 	time.Sleep(time.Second)
@@ -36,9 +36,27 @@ func Test_clientFetch(t *testing.T) {
 	assert.Len(t, rows, 10)
 }
 
+func Test_clientFetchReadLineLimitExceeded(t *testing.T) {
+	srv := &tcpServer{addr: testServerAddress, rowsNumResp: maxLinesToRead + 1}
+	go srv.Run()
+	defer srv.Close()
+	time.Sleep(time.Second)
+
+	c := newClient(clientConfig{
+		network: "tcp",
+		address: testServerAddress,
+		timeout: time.Second,
+	})
+
+	rows, err := c.fetch("whatever\n")
+	assert.Error(t, err)
+	assert.Len(t, rows, 0)
+}
+
 type tcpServer struct {
-	addr   string
-	server net.Listener
+	addr        string
+	server      net.Listener
+	rowsNumResp int
 }
 
 func (t *tcpServer) Run() (err error) {
@@ -79,7 +97,7 @@ func (t *tcpServer) handleConnection(conn net.Conn) {
 			return
 		}
 
-		resp := strings.Repeat(req, 10)
+		resp := strings.Repeat(req, t.rowsNumResp)
 		_, _ = rw.WriteString(resp)
 		_ = rw.Flush()
 		return
