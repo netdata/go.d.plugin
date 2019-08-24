@@ -44,6 +44,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/weblog"
 	_ "github.com/netdata/go.d.plugin/modules/wmi"
 	_ "github.com/netdata/go.d.plugin/modules/x509check"
+	_ "github.com/netdata/go.d.plugin/modules/zookeeper"
 )
 
 var (
