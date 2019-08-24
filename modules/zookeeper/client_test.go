@@ -45,12 +45,7 @@ func (t *tcpServer) Run() (err error) {
 	if err != nil {
 		return
 	}
-	for {
-		if err = t.handleConnections(); err != nil {
-			break
-		}
-	}
-	return
+	return t.handleConnections()
 }
 
 func (t *tcpServer) Close() (err error) {
