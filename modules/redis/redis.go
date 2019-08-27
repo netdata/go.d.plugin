@@ -48,8 +48,10 @@ type Config struct {
 // Redis module
 type Redis struct {
 	module.Base
-	Config `yaml:",inline"`
-	client *redis.Client
+	client      *redis.Client
+	bgSaveTime  int64
+	Config      `yaml:",inline"`
+	UpdateEvery int `yaml:"update_every"`
 }
 
 // Cleanup closes the connection to the Redis server
@@ -84,6 +86,7 @@ func (r *Redis) Init() bool {
 	}
 
 	r.client = client
+	r.bgSaveTime = 0
 
 	r.Debugf("using config %+v", r.Config)
 
@@ -110,7 +113,7 @@ func (r *Redis) Collect() map[string]int64 {
 		return nil
 	}
 
-	if err := parseMetrics(res.(string), metrics); err != nil {
+	if err := parseMetrics(res.(string), metrics, &r.bgSaveTime, r.UpdateEvery); err != nil {
 		r.Errorf("Got error while parsing metrics: %v", err)
 		r.Debugf("INFO: %+v", res)
 	}
@@ -129,11 +132,10 @@ var autoParseDims = []string{
 	"connected_clients", "blocked_clients",
 	"connected_slaves",
 	"rdb_changes_since_last_save",
-	"rdb_bgsave_in_progress",
 	"uptime_in_seconds",
 }
 
-func parseMetrics(info string, metrics map[string]int64) error {
+func parseMetrics(info string, metrics map[string]int64, bgSaveTime *int64, updateEvery int) error {
 	metricIdx, valueIdx := -1, -1
 	re := regexp.MustCompile("(?P<metric>[a-z0-9_]+):(?P<value>.*[^\r\n])")
 	for idx, group := range re.SubexpNames() {
@@ -172,6 +174,15 @@ func parseMetrics(info string, metrics map[string]int64) error {
 		return fmt.Errorf("could not fetch keys per db: %v", err)
 	}
 
+	// rdb_bgsave_in_progress calculation
+	if v, ok := data["rdb_bgsave_in_progress"]; ok && v != "0" {
+		*bgSaveTime += int64(updateEvery)
+	} else {
+		*bgSaveTime = 0
+	}
+	metrics["rdb_bgsave_in_progress"] = *bgSaveTime
+
+	// rdb_last_bgsave_status calculation
 	metrics["rdb_last_bgsave_status"] = 0
 	if v, ok := data["rdb_last_bgsave_status"]; ok && v == "ok" {
 		metrics["rdb_last_bgsave_status"] = 1

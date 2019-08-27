@@ -26,8 +26,9 @@ func TestRedis_Charts(t *testing.T) {
 }
 
 func TestRedis_Collect(t *testing.T) {
+	var bgSaveTime int64 = 2
 	metrics := make(map[string]int64)
-	err := parseMetrics(string(infoData), metrics)
+	err := parseMetrics(string(infoData), metrics, &bgSaveTime, 3)
 
 	require.Nil(t, err)
 
@@ -49,10 +50,11 @@ func TestRedis_Collect(t *testing.T) {
 		"blocked_clients":             8,
 		"connected_slaves":            3,
 		"rdb_changes_since_last_save": 7,
-		"rdb_bgsave_in_progress":      2,
+		"rdb_bgsave_in_progress":      5,
 		"rdb_last_bgsave_status":      1,
 		"uptime_in_seconds":           10277,
 	}
 
 	assert.Equal(t, expectedMetrics, metrics)
+	assert.EqualValues(t, 5, bgSaveTime)
 }

@@ -52,7 +52,7 @@ lazyfree_pending_objects:0
 # Persistence
 loading:0
 rdb_changes_since_last_save:7
-rdb_bgsave_in_progress:2
+rdb_bgsave_in_progress:1
 rdb_last_save_time:1566884856
 rdb_last_bgsave_status:ok
 rdb_last_bgsave_time_sec:-1
