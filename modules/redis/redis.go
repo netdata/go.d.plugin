@@ -172,6 +172,11 @@ func parseMetrics(info string, metrics map[string]int64) error {
 		return fmt.Errorf("could not fetch keys per db: %v", err)
 	}
 
+	metrics["rdb_last_bgsave_status"] = 0
+	if v, ok := data["rdb_last_bgsave_status"]; ok && v == "ok" {
+		metrics["rdb_last_bgsave_status"] = 1
+	}
+
 	return nil
 }
 

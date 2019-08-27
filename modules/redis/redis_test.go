@@ -50,6 +50,7 @@ func TestRedis_Collect(t *testing.T) {
 		"connected_slaves":            3,
 		"rdb_changes_since_last_save": 7,
 		"rdb_bgsave_in_progress":      2,
+		"rdb_last_bgsave_status":      1,
 		"uptime_in_seconds":           10277,
 	}
 
