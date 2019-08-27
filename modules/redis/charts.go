@@ -162,7 +162,7 @@ var charts = Charts{
 		// @TODO the "Type" on python was "absolute", couldn't find an "absolute" chart so I'm putting "Line"
 		Type: module.Line,
 		Dims: Dims{
-			{ID: "rdb_changes_since_last_save", Name: "rdb save"},
+			{ID: "rdb_bgsave_in_progress", Name: "rdb save"},
 		},
 	},
 	{

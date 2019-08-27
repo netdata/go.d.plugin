@@ -127,6 +127,10 @@ var autoParseDims = []string{
 	"evicted_keys",
 	"total_connections_received", "rejected_connections",
 	"connected_clients", "blocked_clients",
+	"connected_slaves",
+	"rdb_changes_since_last_save",
+	"rdb_bgsave_in_progress",
+	"uptime_in_seconds",
 }
 
 func parseMetrics(info string, metrics map[string]int64) error {

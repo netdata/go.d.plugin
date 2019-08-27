@@ -51,8 +51,8 @@ lazyfree_pending_objects:0
 
 # Persistence
 loading:0
-rdb_changes_since_last_save:0
-rdb_bgsave_in_progress:0
+rdb_changes_since_last_save:7
+rdb_bgsave_in_progress:2
 rdb_last_save_time:1566884856
 rdb_last_bgsave_status:ok
 rdb_last_bgsave_time_sec:-1
@@ -97,7 +97,7 @@ active_defrag_key_misses:0
 
 # Replication
 role:master
-connected_slaves:0
+connected_slaves:3
 master_replid:824b47d9d119fa90780990ae2bb29460937f26a1
 master_replid2:0000000000000000000000000000000000000000
 master_repl_offset:0
