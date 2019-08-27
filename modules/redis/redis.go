@@ -152,17 +152,11 @@ func parseMetrics(info string, metrics map[string]int64) error {
 		metrics[metric] = v
 	}
 
-	keyspaceHits, err := fetchFromData(data, "keyspace_hits")
+	// hit_rate calculation
+	var err error
+	metrics["hit_rate"], err = fetchHitRate(data)
 	if err != nil {
-		return err
-	}
-	keyspaceMisses, err := fetchFromData(data, "keyspace_misses")
-	if err != nil {
-		return err
-	}
-
-	if keyspaceHits > 0 || keyspaceMisses > 0 {
-		metrics["hit_rate"] = (keyspaceHits * 100) / (keyspaceHits + keyspaceMisses)
+		return fmt.Errorf("could not fetch hit rate: %v", err)
 	}
 
 	return nil
@@ -179,4 +173,21 @@ func fetchFromData(data map[string]interface{}, key string) (int64, error) {
 	}
 
 	return 0, fmt.Errorf("could not fetch %q", key)
+}
+
+func fetchHitRate(data map[string]interface{}) (int64, error) {
+	keySpaceHits, err := fetchFromData(data, "keyspace_hits")
+	if err != nil {
+		return 0, err
+	}
+	keySpaceMisses, err := fetchFromData(data, "keyspace_misses")
+	if err != nil {
+		return 0, err
+	}
+
+	if keySpaceHits > 0 || keySpaceMisses > 0 {
+		return (keySpaceHits * 100) / (keySpaceHits + keySpaceMisses), nil
+	}
+
+	return 0, nil
 }
