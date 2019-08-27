@@ -14,12 +14,6 @@ var (
 )
 
 func TestNew(t *testing.T) {
-	assert.Implements(t, (*module.Module)(nil), New())
-}
-
-func TestRedis_Init(t *testing.T) {
-	job := New()
-
 	assert.Implements(t, (*module.Module)(nil), job)
 	assert.Equal(t, defaultHost, job.Host)
 	assert.Equal(t, defaultPort, job.Port)
