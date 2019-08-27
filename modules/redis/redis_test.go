@@ -39,6 +39,9 @@ func TestRedis_Collect(t *testing.T) {
 		"used_memory_lua":           37888,
 		"total_net_input_bytes":     134274,
 		"total_net_output_bytes":    26591079,
+		"db0":                       1,
+		"db1":                       3,
+		"db2":                       2,
 	}
 
 	assert.Equal(t, expectedMetrics, metrics)

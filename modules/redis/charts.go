@@ -9,6 +9,10 @@ type (
 	Dims = module.Dims
 )
 
+const (
+	keysRedisChartId = "keys_redis"
+)
+
 var charts = Charts{
 	{
 		ID:    "operations",
@@ -70,7 +74,7 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "keys_redis",
+		ID:    keysRedisChartId,
 		Title: "Keys per Database",
 		Units: "keys",
 		Fam:   "keys",

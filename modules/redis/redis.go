@@ -138,7 +138,7 @@ func parseMetrics(info string, metrics map[string]int64) error {
 		}
 	}
 
-	data := make(map[string]interface{})
+	data := make(map[string]string)
 	for _, match := range re.FindAllStringSubmatch(string(info), -1) {
 		data[match[metricIdx]] = match[valueIdx]
 	}
@@ -159,12 +159,18 @@ func parseMetrics(info string, metrics map[string]int64) error {
 		return fmt.Errorf("could not fetch hit rate: %v", err)
 	}
 
+	// keys_redis calculation
+	// @TODO using global variable charts, think of another way
+	if err = fetchKeysPerDB(data, metrics, &charts); err != nil {
+		return fmt.Errorf("could not fetch keys per db: %v", err)
+	}
+
 	return nil
 }
 
-func fetchFromData(data map[string]interface{}, key string) (int64, error) {
+func fetchFromData(data map[string]string, key string) (int64, error) {
 	if v, ok := data[key]; ok {
-		parsed, err := strconv.Atoi(v.(string))
+		parsed, err := strconv.Atoi(v)
 		if err != nil {
 			return 0, fmt.Errorf("could not convert %q from %T(%+v) to int: %v", key, v, v, err)
 		}
@@ -175,7 +181,7 @@ func fetchFromData(data map[string]interface{}, key string) (int64, error) {
 	return 0, fmt.Errorf("could not fetch %q", key)
 }
 
-func fetchHitRate(data map[string]interface{}) (int64, error) {
+func fetchHitRate(data map[string]string) (int64, error) {
 	keySpaceHits, err := fetchFromData(data, "keyspace_hits")
 	if err != nil {
 		return 0, err
@@ -190,4 +196,41 @@ func fetchHitRate(data map[string]interface{}) (int64, error) {
 	}
 
 	return 0, nil
+}
+
+func fetchKeysPerDB(data map[string]string, metrics map[string]int64, charts *Charts) error {
+	if !charts.Has(keysRedisChartId) {
+		return fmt.Errorf("could not find chart %q", keysRedisChartId)
+	}
+
+	keysChart := charts.Get(keysRedisChartId)
+
+	keyMatch := regexp.MustCompile("^db[0-9]+$")
+	valueMatch := regexp.MustCompile("^keys=([0-9]+),.*")
+
+	for key, value := range data {
+		if !keyMatch.MatchString(key) {
+			continue
+		}
+
+		if !valueMatch.MatchString(value) {
+			return fmt.Errorf("unexpected keyspace format: %q", value)
+		}
+
+		if !keysChart.HasDim(key) {
+			dim := module.Dim{ID: key, Name: key}
+			if err := keysChart.AddDim(&dim); err != nil {
+				return fmt.Errorf("could not add dim %q to keys chart: %v", key, err)
+			}
+		}
+
+		keys, err := strconv.Atoi(valueMatch.FindStringSubmatch(value)[1])
+		if err != nil {
+			return fmt.Errorf("could not parse keys from keyspace %q: %v", value, err)
+		}
+
+		metrics[key] = int64(keys)
+	}
+
+	return nil
 }
