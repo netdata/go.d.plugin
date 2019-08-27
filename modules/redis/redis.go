@@ -124,6 +124,9 @@ var autoParseDims = []string{
 	"total_commands_processed", "instantaneous_ops_per_sec",
 	"used_memory", "used_memory_lua",
 	"total_net_input_bytes", "total_net_output_bytes",
+	"evicted_keys",
+	"total_connections_received", "rejected_connections",
+	"connected_clients", "blocked_clients",
 }
 
 func parseMetrics(info string, metrics map[string]int64) error {

@@ -20,10 +20,10 @@ executable:/usr/bin/redis-server
 config_file:/etc/redis/redis.conf
 
 # Clients
-connected_clients:1
+connected_clients:6
 client_longest_output_list:0
 client_biggest_input_buf:0
-blocked_clients:0
+blocked_clients:8
 
 # Memory
 used_memory:840400
@@ -75,14 +75,14 @@ total_net_input_bytes:134274
 total_net_output_bytes:26591079
 instantaneous_input_kbps:0.00
 instantaneous_output_kbps:0.00
-rejected_connections:0
+rejected_connections:7
 sync_full:0
 sync_partial_ok:0
 sync_partial_err:0
 expired_keys:0
 expired_stale_perc:0.00
 expired_time_cap_reached_count:0
-evicted_keys:0
+evicted_keys:123
 keyspace_hits:98
 keyspace_misses:2
 pubsub_channels:0
