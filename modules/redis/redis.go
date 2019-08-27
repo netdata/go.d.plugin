@@ -28,6 +28,7 @@ const (
 // New returns a pointer to a Redis instance with default values.
 func New() *Redis {
 	return &Redis{
+		charts: charts.Copy(),
 		Config: Config{
 			Host:     defaultHost,
 			Port:     defaultPort,
@@ -48,6 +49,7 @@ type Config struct {
 // Redis module
 type Redis struct {
 	module.Base
+	charts      *Charts
 	client      *redis.Client
 	bgSaveTime  int64
 	Config      `yaml:",inline"`
@@ -98,9 +100,9 @@ func (r *Redis) Check() bool {
 	return len(r.Collect()) > 0
 }
 
-// Charts returns a copy of the Redis charts
-func (Redis) Charts() *Charts {
-	return charts.Copy()
+// Charts returns the Redis charts
+func (r *Redis) Charts() *Charts {
+	return r.charts
 }
 
 // Collect returns a map of metrics
@@ -113,7 +115,8 @@ func (r *Redis) Collect() map[string]int64 {
 		return nil
 	}
 
-	if err := parseMetrics(res.(string), metrics, &r.bgSaveTime, r.UpdateEvery); err != nil {
+	err = parseMetrics(res.(string), r.charts, metrics, &r.bgSaveTime, r.UpdateEvery)
+	if err != nil {
 		r.Errorf("Got error while parsing metrics: %v", err)
 		r.Debugf("INFO: %+v", res)
 	}
@@ -135,7 +138,13 @@ var autoParseDims = []string{
 	"uptime_in_seconds",
 }
 
-func parseMetrics(info string, metrics map[string]int64, bgSaveTime *int64, updateEvery int) error {
+func parseMetrics(
+	info string,
+	charts *Charts,
+	metrics map[string]int64,
+	bgSaveTime *int64,
+	updateEvery int,
+) error {
 	metricIdx, valueIdx := -1, -1
 	re := regexp.MustCompile("(?P<metric>[a-z0-9_]+):(?P<value>.*[^\r\n])")
 	for idx, group := range re.SubexpNames() {
@@ -169,8 +178,7 @@ func parseMetrics(info string, metrics map[string]int64, bgSaveTime *int64, upda
 	}
 
 	// keys_redis calculation
-	// @TODO using global variable charts, think of another way
-	if err = fetchKeysPerDB(data, metrics, &charts); err != nil {
+	if err = fetchKeysPerDB(data, metrics, charts); err != nil {
 		return fmt.Errorf("could not fetch keys per db: %v", err)
 	}
 

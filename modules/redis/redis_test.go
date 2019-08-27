@@ -28,7 +28,7 @@ func TestRedis_Charts(t *testing.T) {
 func TestRedis_Collect(t *testing.T) {
 	var bgSaveTime int64 = 2
 	metrics := make(map[string]int64)
-	err := parseMetrics(string(infoData), metrics, &bgSaveTime, 3)
+	err := parseMetrics(string(infoData), charts.Copy(), metrics, &bgSaveTime, 3)
 
 	require.Nil(t, err)
 
