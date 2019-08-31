@@ -73,7 +73,7 @@ func NewHTTPRequest(req Request) (*http.Request, error) {
 	}
 
 	for k, v := range req.Headers {
-		if k == "host" {
+		if k == "host" || k == "Host" {
 			httpReq.Host = v
 			continue
 		}
