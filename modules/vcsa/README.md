@@ -17,12 +17,15 @@ It produces the following chart:
     - system
     
 Health statuses:
-  - `-1`: `unknown`. Module failed to decode status.
-  - `0`: `green`. The component is healthy.
-  - `1`: `yellow`. The component is healthy, but may have some problems.
-  - `2`: `orange`. The component is degraded, and may have serious problems.
-  - `3`: `red`. The component is unavailable, or will stop functioning soon.
-  - `4`: `gray`. No health data is available.
+
+| Numeric | Text | Description |
+| :---: | :---: | :--- |
+| `-1`  | `unknown`  | Module failed to decode status.|
+| `0`   | `green`  | The component is healthy.|
+| `1`   | `yellow`  | The component is healthy, but may have some problems.|
+| `2`   | `orange`  | The component is degraded, and may have serious problems.|
+| `3`   | `red`  | The component is unavailable, or will stop functioning soon.|
+| `4`   | `gray`  | No health data is available.|
 
 
 ### configuration
