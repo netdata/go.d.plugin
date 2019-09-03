@@ -17,7 +17,7 @@ type healthMetrics struct {
 	System           *int `stm:"system"`
 }
 
-func (vc *VCenter) collect() (map[string]int64, error) {
+func (vc *VCSA) collect() (map[string]int64, error) {
 	err := vc.client.Ping()
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (vc *VCenter) collect() (map[string]int64, error) {
 	return stm.ToMap(mx), nil
 }
 
-func (vc *VCenter) scrapeHealth(mx *healthMetrics, doConcurrently bool) {
+func (vc *VCSA) scrapeHealth(mx *healthMetrics, doConcurrently bool) {
 	type task func(*healthMetrics)
 
 	var tasks = []task{
@@ -85,7 +85,7 @@ func decodeHealth(v string) int {
 	}
 }
 
-func (vc *VCenter) scrapeApplMgmt(mx *healthMetrics) {
+func (vc *VCSA) scrapeApplMgmt(mx *healthMetrics) {
 	v, err := vc.client.ApplMgmt()
 	if err != nil {
 		vc.Error(err)
@@ -95,7 +95,7 @@ func (vc *VCenter) scrapeApplMgmt(mx *healthMetrics) {
 	mx.ApplMgmt = &i
 }
 
-func (vc *VCenter) scrapeDatabaseStorage(mx *healthMetrics) {
+func (vc *VCSA) scrapeDatabaseStorage(mx *healthMetrics) {
 	v, err := vc.client.DatabaseStorage()
 	if err != nil {
 		vc.Error(err)
@@ -105,7 +105,7 @@ func (vc *VCenter) scrapeDatabaseStorage(mx *healthMetrics) {
 	mx.DatabaseStorage = &i
 }
 
-func (vc *VCenter) scrapeLoad(mx *healthMetrics) {
+func (vc *VCSA) scrapeLoad(mx *healthMetrics) {
 	v, err := vc.client.Load()
 	if err != nil {
 		vc.Error(err)
@@ -115,7 +115,7 @@ func (vc *VCenter) scrapeLoad(mx *healthMetrics) {
 	mx.Load = &i
 }
 
-func (vc *VCenter) scrapeMem(mx *healthMetrics) {
+func (vc *VCSA) scrapeMem(mx *healthMetrics) {
 	v, err := vc.client.Mem()
 	if err != nil {
 		vc.Error(err)
@@ -125,7 +125,7 @@ func (vc *VCenter) scrapeMem(mx *healthMetrics) {
 	mx.Mem = &i
 }
 
-func (vc *VCenter) scrapeSoftwarePackages(mx *healthMetrics) {
+func (vc *VCSA) scrapeSoftwarePackages(mx *healthMetrics) {
 	v, err := vc.client.SoftwarePackages()
 	if err != nil {
 		vc.Error(err)
@@ -135,7 +135,7 @@ func (vc *VCenter) scrapeSoftwarePackages(mx *healthMetrics) {
 	mx.SoftwarePackages = &i
 }
 
-func (vc *VCenter) scrapeStorage(mx *healthMetrics) {
+func (vc *VCSA) scrapeStorage(mx *healthMetrics) {
 	v, err := vc.client.Storage()
 	if err != nil {
 		vc.Error(err)
@@ -145,7 +145,7 @@ func (vc *VCenter) scrapeStorage(mx *healthMetrics) {
 	mx.Storage = &i
 }
 
-func (vc *VCenter) scrapeSwap(mx *healthMetrics) {
+func (vc *VCSA) scrapeSwap(mx *healthMetrics) {
 	v, err := vc.client.Swap()
 	if err != nil {
 		vc.Error(err)
@@ -155,7 +155,7 @@ func (vc *VCenter) scrapeSwap(mx *healthMetrics) {
 	mx.Swap = &i
 }
 
-func (vc *VCenter) scrapeSystem(mx *healthMetrics) {
+func (vc *VCSA) scrapeSystem(mx *healthMetrics) {
 	v, err := vc.client.System()
 	if err != nil {
 		vc.Error(err)

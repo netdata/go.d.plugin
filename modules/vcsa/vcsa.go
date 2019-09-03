@@ -2,6 +2,7 @@ package vcsa
 
 import (
 	"crypto/tls"
+	"errors"
 	"golang.org/x/net/proxy"
 	"net/http"
 	"time"
@@ -27,26 +28,31 @@ func httpClientWithSocks5Proxy(proxyAddr string) (*http.Client, error) {
 
 func init() {
 	creator := module.Creator{
+		Defaults: module.Defaults{
+			// it seems health checks freq is 5 seconds, at least this is true for Overall Health according
+			// Last checked info on the dashboard (:5480)
+			UpdateEvery: 5,
+		},
 		Create: func() module.Module { return New() },
 	}
 
 	module.Register("vcsa", creator)
 }
 
-// New creates VCenter with default values.
-func New() *VCenter {
+// New creates VCSA with default values.
+func New() *VCSA {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{UserURL: "https://192.168.0.154", Username: "administrator@vsphere.local", Password: "123qwe!@#QWE"},
-			Client:  web.Client{Timeout: web.Duration{Duration: time.Second * 2}},
+			Client:  web.Client{Timeout: web.Duration{Duration: time.Second * 5}},
 		},
 	}
-	return &VCenter{
+	return &VCSA{
 		Config: config,
 	}
 }
 
-// Config is the VCenter module configuration.
+// Config is the VCSA module configuration.
 type Config struct {
 	web.HTTP `yaml:",inline"`
 }
@@ -65,8 +71,8 @@ type healthClient interface {
 	System() (string, error)
 }
 
-// VCenter VCenter module.
-type VCenter struct {
+// VCSA VCSA module.
+type VCSA struct {
 	module.Base
 	Config `yaml:",inline"`
 
@@ -74,18 +80,27 @@ type VCenter struct {
 }
 
 // Cleanup makes cleanup.
-func (vc VCenter) Cleanup() {
+func (vc VCSA) Cleanup() {
 	if vc.client == nil {
 		return
 	}
-
 	err := vc.client.Logout()
 	if err != nil {
-		vc.Errorf("error on logout : %vc", err)
+		vc.Errorf("error on logout : %v", err)
 	}
 }
 
-func (vc *VCenter) createHealthClient() error {
+func (vc VCSA) validateInitParameters() error {
+	if vc.UserURL == "" {
+		return errors.New("URL not set")
+	}
+	if vc.Username == "" || vc.Password == "" {
+		return errors.New("username or password not set")
+	}
+	return nil
+}
+
+func (vc *VCSA) createHealthClient() error {
 	httpClient, err := web.NewHTTPClient(vc.Client)
 	if err != nil {
 		return err
@@ -101,8 +116,14 @@ func (vc *VCenter) createHealthClient() error {
 }
 
 // Init makes initialization.
-func (vc *VCenter) Init() bool {
-	err := vc.createHealthClient()
+func (vc *VCSA) Init() bool {
+	err := vc.validateInitParameters()
+	if err != nil {
+		vc.Error(err)
+		return false
+	}
+
+	err = vc.createHealthClient()
 	if err != nil {
 		vc.Errorf("error on creating health client : %vc", err)
 		return false
@@ -114,7 +135,7 @@ func (vc *VCenter) Init() bool {
 }
 
 // Check makes check.
-func (vc *VCenter) Check() bool {
+func (vc *VCSA) Check() bool {
 	err := vc.client.Login()
 	if err != nil {
 		vc.Error(err)
@@ -124,12 +145,12 @@ func (vc *VCenter) Check() bool {
 }
 
 // Charts returns Charts.
-func (vc VCenter) Charts() *module.Charts {
+func (vc VCSA) Charts() *module.Charts {
 	return charts.Copy()
 }
 
 // Collect collects metrics.
-func (vc *VCenter) Collect() map[string]int64 {
+func (vc *VCSA) Collect() map[string]int64 {
 	mx, err := vc.collect()
 	if err != nil {
 		vc.Error(err)

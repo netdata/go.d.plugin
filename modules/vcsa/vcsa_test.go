@@ -11,7 +11,7 @@ import (
 func TestNew(t *testing.T) {
 	job := New()
 
-	assert.IsType(t, (*VCenter)(nil), job)
+	assert.IsType(t, (*VCSA)(nil), job)
 }
 
 func TestVCenter_Init(t *testing.T) {
