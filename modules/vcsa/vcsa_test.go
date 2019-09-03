@@ -97,7 +97,7 @@ func TestVCenter_Collect(t *testing.T) {
 	job.client = mock
 
 	expected := map[string]int64{
-		"appl_mgmt":         0,
+		"applmgmt":          0,
 		"database_storage":  0,
 		"load":              0,
 		"mem":               0,

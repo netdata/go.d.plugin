@@ -5,18 +5,36 @@ This module will collect health statistics from one or more [`vCenter Server App
 Requirement:
   - `vSphere` 6.5+
 
-It produces the following chart:
-  - Health Status in `status`
-    - appl_mgmt
+It produces the following charts:
+  - Overall System Health in `status`
+    - system
+    
+  - Components Health in `status`
+    - applmgmt
     - database_storage
     - load
     - mem
-    - software packages
     - storage
     - swap
-    - system
     
-Health statuses:
+  - Software Updates Health in `status`
+    - software_packages
+
+
+### health statuses
+    
+Overall System Health:
+
+| Numeric | Text | Description |
+| :---: | :---: | :--- |
+| `-1`  | `unknown`  | Module failed to decode status.|
+| `0`   | `green`  | All components in the appliance are healthy.|
+| `1`   | `yellow`  | One or more components in the appliance might become overloaded soon.|
+| `2`   | `orange`  | One or more components in the appliance might be degraded.|
+| `3`   | `red`  | One or more components in the appliance might be in an unusable status and the appliance might become unresponsive soon.|
+| `4`   | `gray`  | No health data is available.|
+
+Components Health:
 
 | Numeric | Text | Description |
 | :---: | :---: | :--- |
@@ -26,6 +44,16 @@ Health statuses:
 | `2`   | `orange`  | The component is degraded, and may have serious problems.|
 | `3`   | `red`  | The component is unavailable, or will stop functioning soon.|
 | `4`   | `gray`  | No health data is available.|
+
+Software Updates Health:
+
+| Numeric | Text | Description |
+| :---: | :---: | :--- |
+| `-1`  | `unknown`  | Module failed to decode status.|
+| `0`   | `green`  | No updates available.|
+| `2`   | `orange`  | Non-security patches might be available.|
+| `3`   | `red`  | Security patches might be available.|
+| `4`   | `gray`  | An error retrieving information on software updates.|
 
 
 ### configuration
