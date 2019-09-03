@@ -8,28 +8,42 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func testNewVCSA() *VCSA {
+	vc := New()
+	vc.UserURL = "https://127.0.0.1:38001"
+	vc.Username = "user"
+	vc.Password = "pass"
+	return vc
+}
+
 func TestNew(t *testing.T) {
 	job := New()
 
 	assert.IsType(t, (*VCSA)(nil), job)
 }
 
-func TestVCenter_Init(t *testing.T) {
-	job := New()
+func TestVCSA_Init(t *testing.T) {
+	job := testNewVCSA()
 
 	assert.True(t, job.Init())
 	assert.NotNil(t, job.client)
 }
 
-func TestVCenter_InitErrorOnCreatingClient(t *testing.T) {
+func TestVCenter_InitErrorOnValidatingInitParameters(t *testing.T) {
 	job := New()
+
+	assert.False(t, job.Init())
+}
+
+func TestVCenter_InitErrorOnCreatingClient(t *testing.T) {
+	job := testNewVCSA()
 	job.ClientTLSConfig.TLSCA = "testdata/tls"
 
 	assert.False(t, job.Init())
 }
 
 func TestVCenter_Check(t *testing.T) {
-	job := New()
+	job := testNewVCSA()
 	require.True(t, job.Init())
 	job.client = &mockVCenterHealthClient{}
 
@@ -37,7 +51,7 @@ func TestVCenter_Check(t *testing.T) {
 }
 
 func TestVCenter_CheckErrorOnLogin(t *testing.T) {
-	job := New()
+	job := testNewVCSA()
 	require.True(t, job.Init())
 	job.client = &mockVCenterHealthClient{
 		login: func() error { return errors.New("login mock error") },
@@ -47,7 +61,7 @@ func TestVCenter_CheckErrorOnLogin(t *testing.T) {
 }
 
 func TestVCenter_CheckEnsureLoggedIn(t *testing.T) {
-	job := New()
+	job := testNewVCSA()
 	require.True(t, job.Init())
 	mock := &mockVCenterHealthClient{}
 	job.client = mock
@@ -57,7 +71,7 @@ func TestVCenter_CheckEnsureLoggedIn(t *testing.T) {
 }
 
 func TestVCenter_Cleanup(t *testing.T) {
-	job := New()
+	job := testNewVCSA()
 	require.True(t, job.Init())
 	mock := &mockVCenterHealthClient{}
 	job.client = mock
@@ -67,7 +81,7 @@ func TestVCenter_Cleanup(t *testing.T) {
 }
 
 func TestVCenter_CleanupWithNilClient(t *testing.T) {
-	job := New()
+	job := testNewVCSA()
 
 	assert.NotPanics(t, job.Cleanup)
 }
@@ -77,7 +91,7 @@ func TestVCenter_Charts(t *testing.T) {
 }
 
 func TestVCenter_Collect(t *testing.T) {
-	job := New()
+	job := testNewVCSA()
 	require.True(t, job.Init())
 	mock := &mockVCenterHealthClient{}
 	job.client = mock
@@ -96,7 +110,7 @@ func TestVCenter_Collect(t *testing.T) {
 }
 
 func TestVCenter_CollectEnsurePingIsCalled(t *testing.T) {
-	job := New()
+	job := testNewVCSA()
 	require.True(t, job.Init())
 	mock := &mockVCenterHealthClient{}
 	job.client = mock
@@ -106,7 +120,7 @@ func TestVCenter_CollectEnsurePingIsCalled(t *testing.T) {
 }
 
 func TestVCenter_CollectErrorOnPing(t *testing.T) {
-	job := New()
+	job := testNewVCSA()
 	require.True(t, job.Init())
 	mock := &mockVCenterHealthClient{
 		ping: func() error { return errors.New("ping mock error") },
@@ -117,7 +131,7 @@ func TestVCenter_CollectErrorOnPing(t *testing.T) {
 }
 
 func TestVCenter_CollectErrorOnHealthCalls(t *testing.T) {
-	job := New()
+	job := testNewVCSA()
 	require.True(t, job.Init())
 	mock := &mockVCenterHealthClient{
 		applMgmt:         func() (string, error) { return "", errors.New("applMgmt mock error") },
