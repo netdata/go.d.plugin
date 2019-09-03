@@ -18,7 +18,7 @@ It produces the following charts:
     - swap
     
   - Software Updates Health in `status`
-    - software packages
+    - software_packages
 
 
 ### health statuses
