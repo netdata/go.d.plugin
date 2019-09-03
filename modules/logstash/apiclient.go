@@ -2,20 +2,40 @@ package logstash
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	"golang.org/x/xerrors"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 const (
-	jvmStatusPath = "/_node/stats/jvm"
+	jvmStatusPath = "/_node/stats"
 )
 
 type jvmStats struct {
-	JVM jvm `stm:"jvm"`
+	JVM       jvm                 `json:"jvm" stm:"jvm"`
+	Process   process             `json:"process" stm:"process"`
+	Event     events              `json:"event" stm:"event"`
+	Pipelines map[string]pipeline `json:"pipelines" stm:"pipelines"`
+}
+
+type pipeline struct {
+	Event events `stm:"event"`
+}
+
+type events struct {
+	In                        int `json:"in" stm:"in"`
+	Filtered                  int `json:"filtered" stm:"filtered"`
+	Out                       int `json:"out" stm:"out"`
+	DurationInMillis          int `json:"duration_in_millis" stm:"duration_in_millis"`
+	QueuePushDurationInMillis int `json:"queue_push_duration_in_millis" stm:"queue_push_duration_in_millis"`
+}
+
+type process struct {
+	OpenFileDescriptors int `json:"open_file_descriptors" stm:"open_file_descriptors"`
 }
 
 type jvm struct {
@@ -65,45 +85,35 @@ type apiClient struct {
 }
 
 func (a apiClient) jvmStats() (*jvmStats, error) {
-	var stats jvmStats
-
 	req, err := a.createRequest(jvmStatusPath)
-
 	if err != nil {
 		return nil, err
 	}
 
 	resp, err := a.doRequestOK(req)
-
-	defer closeBody(resp)
-
 	if err != nil {
 		return nil, err
 	}
+	defer closeBody(resp)
 
+	var stats jvmStats
 	if err = json.NewDecoder(resp.Body).Decode(&stats); err != nil {
 		return nil, err
 	}
-
 	return &stats, nil
 }
 
-func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
-	var (
-		resp *http.Response
-		err  error
-	)
-
+func (a apiClient) doRequestOK(req *http.Request) (resp *http.Response, err error) {
 	if resp, err = a.httpClient.Do(req); err != nil {
-		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
-
+		err = xerrors.Errorf("error on request to %s : %w", req.URL, err)
+		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+		err = xerrors.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+		return
 	}
-
-	return resp, err
+	return
 }
 
 func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
