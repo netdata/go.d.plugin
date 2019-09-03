@@ -33,7 +33,6 @@ var charts = Charts{
 			{ID: "mem"},
 			{ID: "storage"},
 			{ID: "swap"},
-			{ID: "system"},
 		},
 	},
 	{
