@@ -7,7 +7,7 @@ import (
 )
 
 type healthMetrics struct {
-	ApplMgmt         *int `stm:"appl_mgmt"`
+	ApplMgmt         *int `stm:"applmgmt"`
 	DatabaseStorage  *int `stm:"database_storage"`
 	Load             *int `stm:"load"`
 	Mem              *int `stm:"mem"`
