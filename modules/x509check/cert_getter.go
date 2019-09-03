@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"net/smtp"
 	"net/url"
 	"time"
 
@@ -23,6 +24,20 @@ var supportedSchemes = []string{
 	"udp",
 	"udp4",
 	"udp6",
+	"smtp",
+}
+
+func createTLSConfig(config web.ClientTLSConfig, hostname string) (*tls.Config, error) {
+	tlsCfg, err := web.NewTLSConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
+	if tlsCfg == nil {
+		tlsCfg = &tls.Config{}
+	}
+	tlsCfg.ServerName = hostname
+	return tlsCfg, nil
 }
 
 func newCertGetter(config Config) (certGetter, error) {
@@ -43,19 +58,19 @@ func newCertGetter(config Config) (certGetter, error) {
 		u.Scheme = "tcp"
 		fallthrough
 	case "udp", "udp4", "udp6", "tcp", "tcp4", "tcp6":
-		tlsCfg, err := web.NewTLSConfig(config.ClientTLSConfig)
-
+		tlsCfg, err := createTLSConfig(config.ClientTLSConfig, u.Hostname())
 		if err != nil {
 			return nil, fmt.Errorf("error on creating tls config : %v", err)
 		}
-
-		if tlsCfg == nil {
-			tlsCfg = &tls.Config{}
-		}
-
-		tlsCfg.ServerName = u.Hostname()
-
 		return newURLCertGetter(u, tlsCfg, config.Timeout.Duration), nil
+	case "smtp":
+		u.Scheme = "tcp"
+		tlsCfg, err := createTLSConfig(config.ClientTLSConfig, u.Hostname())
+		if err != nil {
+			return nil, fmt.Errorf("error on creating tls config : %v", err)
+		}
+		return newSMTPCertGetter(u, tlsCfg, config.Timeout.Duration), nil
+
 	}
 
 	return nil, fmt.Errorf("unsupported scheme in '%s', supported schemes : %v", u, supportedSchemes)
@@ -125,4 +140,46 @@ func (ug urlCertGetter) getCert() ([]*x509.Certificate, error) {
 	certs := conn.ConnectionState().PeerCertificates
 
 	return certs, nil
+}
+
+func newSMTPCertGetter(url *url.URL, tlsCfg *tls.Config, timeout time.Duration) *smtpCertGetter {
+	return &smtpCertGetter{
+		url:     url,
+		tlsCfg:  tlsCfg,
+		timeout: timeout,
+	}
+}
+
+type smtpCertGetter struct {
+	url     *url.URL
+	tlsCfg  *tls.Config
+	timeout time.Duration
+}
+
+func (sg smtpCertGetter) getCert() ([]*x509.Certificate, error) {
+	ipConn, err := net.DialTimeout(sg.url.Scheme, sg.url.Host, sg.timeout)
+	if err != nil {
+		return nil, fmt.Errorf("error on dial to '%s' : %v", sg.url, err)
+	}
+	defer ipConn.Close()
+
+	host, _, _ := net.SplitHostPort(sg.url.Host)
+
+	smtpClient, err := smtp.NewClient(ipConn, host)
+	if err != nil {
+		return nil, fmt.Errorf("error on creating smtp client : %v", err)
+	}
+	defer smtpClient.Quit()
+
+	err = smtpClient.StartTLS(sg.tlsCfg.Clone())
+	if err != nil {
+		return nil, fmt.Errorf("error on startTLS with '%s' : %v", sg.url, err)
+	}
+
+	conn, ok := smtpClient.TLSConnectionState()
+	if !ok {
+		return nil, fmt.Errorf("startTLS didn't succedd")
+	}
+
+	return conn.PeerCertificates, nil
 }
