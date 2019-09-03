@@ -40,6 +40,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/solr"
 	_ "github.com/netdata/go.d.plugin/modules/springboot2"
 	_ "github.com/netdata/go.d.plugin/modules/tengine"
+	_ "github.com/netdata/go.d.plugin/modules/vcsa"
 	_ "github.com/netdata/go.d.plugin/modules/vsphere"
 	_ "github.com/netdata/go.d.plugin/modules/weblog"
 	_ "github.com/netdata/go.d.plugin/modules/wmi"
