@@ -1,10 +1,7 @@
 package vcsa
 
 import (
-	"crypto/tls"
 	"errors"
-	"golang.org/x/net/proxy"
-	"net/http"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules/vcsa/client"
@@ -12,19 +9,6 @@ import (
 
 	"github.com/netdata/go-orchestrator/module"
 )
-
-func httpClientWithSocks5Proxy(proxyAddr string) (*http.Client, error) {
-	dialer, err := proxy.SOCKS5("tcp", proxyAddr, nil, proxy.Direct)
-	if err != nil {
-		return nil, err
-	}
-	_ = dialer
-
-	httpTransport := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
-	httpTransport.Dial = dialer.Dial
-	httpClient := &http.Client{Transport: httpTransport, Timeout: time.Second * 5}
-	return httpClient, nil
-}
 
 func init() {
 	creator := module.Creator{
@@ -43,8 +27,7 @@ func init() {
 func New() *VCSA {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: "https://192.168.0.154", Username: "administrator@vsphere.local", Password: "123qwe!@#QWE"},
-			Client:  web.Client{Timeout: web.Duration{Duration: time.Second * 5}},
+			Client: web.Client{Timeout: web.Duration{Duration: time.Second * 5}},
 		},
 	}
 	return &VCSA{
@@ -102,11 +85,6 @@ func (vc VCSA) validateInitParameters() error {
 
 func (vc *VCSA) createHealthClient() error {
 	httpClient, err := web.NewHTTPClient(vc.Client)
-	if err != nil {
-		return err
-	}
-
-	httpClient, err = httpClientWithSocks5Proxy("127.0.0.1:8888")
 	if err != nil {
 		return err
 	}
