@@ -11,21 +11,11 @@ type (
 
 var charts = Charts{
 	{
-		ID:    "overall_health",
-		Title: "Overall System Health",
+		ID:    "health",
+		Title: "Health Status",
 		Units: "status",
 		Fam:   "health",
-		Ctx:   "vcsa.overall_health",
-		Dims: Dims{
-			{ID: "system"},
-		},
-	},
-	{
-		ID:    "components_health",
-		Title: "System Key Components Health",
-		Units: "status",
-		Fam:   "health",
-		Ctx:   "vcsa.component_health",
+		Ctx:   "vcsa.health",
 		Dims: Dims{
 			{ID: "appl_mgmt"},
 			{ID: "database_storage"},
@@ -34,6 +24,7 @@ var charts = Charts{
 			{ID: "software_packages"},
 			{ID: "storage"},
 			{ID: "swap"},
+			{ID: "system"},
 		},
 	},
 }
