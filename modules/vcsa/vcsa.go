@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/netdata/go.d.plugin/modules/vcsa/client"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -95,7 +96,7 @@ func (vc *VCenter) createHealthClient() error {
 		return err
 	}
 
-	vc.client = newClient(httpClient, vc.UserURL, vc.Username, vc.Password)
+	vc.client = client.New(httpClient, vc.UserURL, vc.Username, vc.Password)
 	return nil
 }
 
