@@ -26,7 +26,7 @@ jobs:
     source : file:///home/me/cert.pem
 
   - name   : my_smtp_cert
-    source : smtp:///smtp.my_mail.org:587
+    source : smtp://smtp.my_mail.org:587
 ```
 
 For all available options and defaults please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/x509check.conf).
