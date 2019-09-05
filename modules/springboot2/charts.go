@@ -14,7 +14,7 @@ type (
 var charts = Charts{
 	{
 		ID:    "response_codes",
-		Title: "Response Codes", Units: "requests/s", Fam: "response_code", Type: module.Stacked,
+		Title: "Response Codes", Units: "requests/s", Fam: "response_code", Type: module.Stacked, Ctx: "springboot2.response_codes",
 		Dims: Dims{
 			{ID: "resp_2xx", Name: "2xx", Algo: module.Incremental},
 			{ID: "resp_5xx", Name: "5xx", Algo: module.Incremental},
@@ -25,7 +25,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "thread",
-		Title: "Threads", Units: "threads", Fam: "threads", Type: module.Area,
+		Title: "Threads", Units: "threads", Fam: "threads", Type: module.Area, Ctx: "springboot2.thread",
 		Dims: Dims{
 			{ID: "threads_daemon", Name: "daemon"},
 			{ID: "threads", Name: "total"},
@@ -33,7 +33,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "heap",
-		Title: "Overview", Units: "B", Fam: "heap", Type: module.Stacked,
+		Title: "Overview", Units: "B", Fam: "heap", Type: module.Stacked, Ctx: "springboot2.heap",
 		Dims: Dims{
 			{ID: "mem_free", Name: "free"},
 			{ID: "heap_used_eden", Name: "eden"},
@@ -43,7 +43,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "heap_eden",
-		Title: "Eden Space", Units: "B", Fam: "heap", Type: module.Area,
+		Title: "Eden Space", Units: "B", Fam: "heap", Type: module.Area, Ctx: "springboot2.heap_eden",
 		Dims: Dims{
 			{ID: "heap_used_eden", Name: "used"},
 			{ID: "heap_committed_eden", Name: "committed"},
@@ -51,7 +51,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "heap_survivor",
-		Title: "Survivor Space", Units: "B", Fam: "heap", Type: module.Area,
+		Title: "Survivor Space", Units: "B", Fam: "heap", Type: module.Area, Ctx: "springboot2.heap_survivor",
 		Dims: Dims{
 			{ID: "heap_used_survivor", Name: "used"},
 			{ID: "heap_committed_survivor", Name: "committed"},
@@ -59,7 +59,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "heap_old",
-		Title: "Old Space", Units: "B", Fam: "heap", Type: module.Area,
+		Title: "Old Space", Units: "B", Fam: "heap", Type: module.Area, Ctx: "springboot2.heap_old",
 		Dims: Dims{
 			{ID: "heap_used_old", Name: "used"},
 			{ID: "heap_committed_old", Name: "committed"},
@@ -67,7 +67,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "uptime",
-		Title: "The uptime of the Java virtual machine", Units: "seconds", Fam: "uptime", Type: module.Line,
+		Title: "The uptime of the Java virtual machine", Units: "seconds", Fam: "uptime", Type: module.Line, Ctx: "springboot2.uptime",
 		Dims: Dims{
 			{ID: "uptime", Name: "uptime", Div: 1000},
 		},
