@@ -1,6 +1,6 @@
 module github.com/netdata/go.d.plugin
 
-go 1.12
+go 1.13
 
 require (
 	github.com/cespare/xxhash v1.1.0 // indirect
@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/hpcloud/tail v1.0.0
 	github.com/miekg/dns v1.1.8
-	github.com/netdata/go-orchestrator v0.0.0-20190629213730-6df8bb4a4cbd
+	github.com/netdata/go-orchestrator v0.0.0-20190905093727-c793edba0e8f
 	github.com/prometheus/common v0.3.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
 	github.com/stretchr/testify v1.3.0
