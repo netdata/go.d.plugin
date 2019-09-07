@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	jvmStatusData, _ = ioutil.ReadFile("testdata/jvm-stats.txt")
+	jvmStatusData, _ = ioutil.ReadFile("testdata/stats.json")
 )
 
 func TestLogstash_Cleanup(t *testing.T) {
@@ -91,21 +91,32 @@ func TestLogstash_Collect(t *testing.T) {
 	assert.True(t, job.Init())
 
 	expected := map[string]int64{
-		"jvm_mem_pools_eden_used_in_bytes":                 2740472,
-		"jvm_gc_collectors_old_collection_count":           12,
-		"jvm_gc_collectors_eden_collection_time_in_millis": 4904,
-		"jvm_mem_heap_used_percent":                        14,
-		"jvm_mem_heap_used_in_bytes":                       151686096,
-		"jvm_mem_pools_survivor_committed_in_bytes":        8912896,
-		"jvm_mem_heap_committed_in_bytes":                  309866496,
-		"jvm_mem_pools_eden_committed_in_bytes":            71630848,
-		"jvm_gc_collectors_old_collection_time_in_millis":  607,
-		"jvm_threads_count":                                49,
-		"jvm_mem_pools_survivor_used_in_bytes":             288776,
-		"jvm_mem_pools_old_used_in_bytes":                  148656848,
-		"jvm_mem_pools_old_committed_in_bytes":             229322752,
-		"jvm_gc_collectors_eden_collection_count":          1033,
-		"jvm_uptime_in_millis":                             1809643,
+		"event_duration_in_millis":                                 0,
+		"event_filtered":                                           0,
+		"event_in":                                                 0,
+		"event_out":                                                0,
+		"event_queue_push_duration_in_millis":                      0,
+		"jvm_gc_collectors_eden_collection_count":                  5796,
+		"jvm_gc_collectors_eden_collection_time_in_millis":         45008,
+		"jvm_gc_collectors_old_collection_count":                   7,
+		"jvm_gc_collectors_old_collection_time_in_millis":          3263,
+		"jvm_mem_heap_committed_in_bytes":                          528154624,
+		"jvm_mem_heap_used_in_bytes":                               189973480,
+		"jvm_mem_heap_used_percent":                                35,
+		"jvm_mem_pools_eden_committed_in_bytes":                    69795840,
+		"jvm_mem_pools_eden_used_in_bytes":                         2600120,
+		"jvm_mem_pools_old_committed_in_bytes":                     449642496,
+		"jvm_mem_pools_old_used_in_bytes":                          185944824,
+		"jvm_mem_pools_survivor_committed_in_bytes":                8716288,
+		"jvm_mem_pools_survivor_used_in_bytes":                     1428536,
+		"jvm_threads_count":                                        28,
+		"jvm_uptime_in_millis":                                     699809475,
+		"pipelines_pipeline-1_event_duration_in_millis":            0,
+		"pipelines_pipeline-1_event_filtered":                      0,
+		"pipelines_pipeline-1_event_in":                            0,
+		"pipelines_pipeline-1_event_out":                           0,
+		"pipelines_pipeline-1_event_queue_push_duration_in_millis": 0,
+		"process_open_file_descriptors":                            101,
 	}
 
 	assert.Equal(t, expected, job.Collect())

@@ -23,6 +23,11 @@ services:
     ports:
       - 8080:8080
 
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.3.1
+    ports:
+    - 9600:9600
+
   httpd:
     image: httpd:2.4
     volumes:

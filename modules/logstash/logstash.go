@@ -44,6 +44,7 @@ type Logstash struct {
 	module.Base
 	Config    `yaml:",inline"`
 	apiClient *apiClient
+	charts    *Charts
 }
 
 // Cleanup makes cleanup.
@@ -80,7 +81,12 @@ func (l *Logstash) Init() bool {
 func (l *Logstash) Check() bool { return len(l.Collect()) > 0 }
 
 // Charts creates Charts.
-func (Logstash) Charts() *Charts { return charts.Copy() }
+func (l *Logstash) Charts() *Charts {
+	if l.charts == nil {
+		l.charts = charts.Copy()
+	}
+	return l.charts
+}
 
 // Collect collects metrics.
 func (l *Logstash) Collect() map[string]int64 {
@@ -89,6 +95,13 @@ func (l *Logstash) Collect() map[string]int64 {
 	if err != nil {
 		l.Error(err)
 		return nil
+	}
+
+	for id := range jvmStats.Pipelines {
+		chartID := "pipeline_" + id + "_event"
+		if !l.Charts().Has(chartID) {
+			l.Charts().Add(createPipelineChart(id)...)
+		}
 	}
 
 	return stm.ToMap(jvmStats)
