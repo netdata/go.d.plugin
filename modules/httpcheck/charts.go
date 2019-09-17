@@ -52,4 +52,14 @@ var charts = Charts{
 			//{ID: "body_read_error", Name: "body read error"},
 		},
 	},
+	{
+		ID:    "current_state_duration",
+		Title: "HTTP Current State Duration",
+		Units: "seconds",
+		Fam:   "status",
+		Ctx:   "httpcheck.in_state",
+		Dims: Dims{
+			{ID: "in_state", Name: "time"},
+		},
+	},
 }

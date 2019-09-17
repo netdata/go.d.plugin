@@ -43,6 +43,14 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 		hc.collectOKResponse(&mx, resp)
 	}
 
+	changed := hc.metrics.Status != mx.Status
+	if changed {
+		mx.InState = hc.UpdateEvery
+	} else {
+		mx.InState = hc.metrics.InState + hc.UpdateEvery
+	}
+	hc.metrics = mx
+
 	//if err == nil || mx.Status.RedirectError {
 	//	mx.ResponseTime = durationToMs(end)
 	//}
