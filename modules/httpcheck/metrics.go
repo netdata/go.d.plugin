@@ -2,6 +2,7 @@ package httpcheck
 
 type metrics struct {
 	Status         status `stm:""`
+	InState        int    `stm:"in_state"`
 	ResponseTime   int    `stm:"time"`
 	ResponseLength int    `stm:"length"`
 }

@@ -13,8 +13,11 @@ It produces the following charts:
  * timeout
  * bad content
  * bad status
+ 
+3. **HTTP Current State Duration** in seconds
+ * time
 
-3. **HTTP Response Body Length** in characters
+4. **HTTP Response Body Length** in characters
  * length
 
 ### check statuses

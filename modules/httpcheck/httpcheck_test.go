@@ -61,6 +61,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 
 	job.UserURL = testURL
 	job.ResponseMatch = body
+	job.UpdateEvery = 15
 	require.True(t, job.Init())
 
 	resp := &http.Response{
@@ -73,6 +74,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 		t,
 		stm.ToMap(metrics{
 			Status:         status{Success: true},
+			InState:        job.UpdateEvery,
 			ResponseLength: len(body),
 			ResponseTime:   0,
 		}),
@@ -175,6 +177,68 @@ func TestHTTPCheck_Collect_BadStatusError(t *testing.T) {
 	assert.Equal(
 		t,
 		stm.ToMap(metrics{Status: status{BadStatusCode: true}}),
+		job.Collect(),
+	)
+}
+
+func TestHTTPCheck_Collect_InState(t *testing.T) {
+	job := New()
+	goodBody := "hello"
+	badBody := "goodbye"
+
+	job.UserURL = testURL
+	job.ResponseMatch = goodBody
+	job.UpdateEvery = 15
+	require.True(t, job.Init())
+
+	resp := &http.Response{
+		StatusCode: http.StatusOK,
+		Body:       nopCloser{bytes.NewBufferString(goodBody)},
+	}
+	job.client = newClientFunc(resp, nil)
+
+	assert.Equal(
+		t,
+		stm.ToMap(metrics{
+			Status:         status{Success: true},
+			InState:        job.UpdateEvery,
+			ResponseLength: len(goodBody),
+			ResponseTime:   0,
+		}),
+		job.Collect(),
+	)
+
+	resp = &http.Response{
+		StatusCode: http.StatusOK,
+		Body:       nopCloser{bytes.NewBufferString(goodBody)},
+	}
+	job.client = newClientFunc(resp, nil)
+
+	assert.Equal(
+		t,
+		stm.ToMap(metrics{
+			Status:         status{Success: true},
+			InState:        job.UpdateEvery * 2,
+			ResponseLength: len(goodBody),
+			ResponseTime:   0,
+		}),
+		job.Collect(),
+	)
+
+	resp = &http.Response{
+		StatusCode: http.StatusOK,
+		Body:       nopCloser{bytes.NewBufferString(badBody)},
+	}
+	job.client = newClientFunc(resp, nil)
+
+	assert.Equal(
+		t,
+		stm.ToMap(metrics{
+			Status:         status{BadContent: true},
+			InState:        job.UpdateEvery,
+			ResponseLength: len(badBody),
+			ResponseTime:   0,
+		}),
 		job.Collect(),
 	)
 }
