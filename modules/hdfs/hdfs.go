@@ -44,6 +44,7 @@ type HDFS struct {
 	module.Base
 	Config `yaml:",inline"`
 
+	client *client
 	charts *Charts
 }
 
@@ -51,17 +52,26 @@ type HDFS struct {
 func (HDFS) Cleanup() {}
 
 // Init makes initialization.
-func (HDFS) Init() bool {
-	return false
+func (h *HDFS) Init() bool {
+	httpClient, err := web.NewHTTPClient(h.Client)
+	if err != nil {
+		h.Error(err)
+		return false
+	}
+
+	h.client = newClient(httpClient, h.Request)
+	return true
 }
 
 // Check makes check.
-func (HDFS) Check() bool {
-	return false
+func (h HDFS) Check() bool {
+	return len(h.Collect()) > 0
 }
 
 // Charts returns Charts.
-func (h HDFS) Charts() *module.Charts { return h.charts }
+func (h HDFS) Charts() *module.Charts {
+	return h.charts
+}
 
 // Collect collects metrics.
 func (h *HDFS) Collect() map[string]int64 {

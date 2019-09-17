@@ -11,7 +11,10 @@ import (
 )
 
 func newClient(httpClient *http.Client, request web.Request) *client {
-	return &client{httpClient: httpClient, request: request}
+	return &client{
+		httpClient: httpClient,
+		request:    request,
+	}
 }
 
 type client struct {
