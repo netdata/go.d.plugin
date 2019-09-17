@@ -59,7 +59,7 @@ func (cd configDir) isValidFilename(filename string) bool {
 	default:
 		return true
 	case strings.HasPrefix(filename, "."):
-	case strings.HasSuffix(filename, "~"):
+	case strings.HasPrefix(filename, "~"):
 	case strings.HasPrefix(filename, "#") && strings.HasSuffix(filename, "#"):
 	}
 	return false
@@ -207,7 +207,7 @@ func (f *ConfigFinder) recursiveFind(filename string) (configs []*configFile) {
 		return nil
 	}
 
-	files, dirs := config.get("config-file"), config.get("config-dir")
+	files, dirs := config.get("conf-file"), config.get("conf-dir")
 
 	f.visitedConfigs[filename] = true
 	configs = append(configs, config)
@@ -217,12 +217,18 @@ func (f *ConfigFinder) recursiveFind(filename string) (configs []*configFile) {
 	}
 
 	for _, dir := range dirs {
-		if f.visitedDirs[dir] {
+		if dir == "" {
 			continue
 		}
-		f.visitedDirs[dir] = true
 
-		files, err = parseConfDir(dir).findConfigs()
+		d := parseConfDir(dir)
+
+		if f.visitedDirs[d.path] {
+			continue
+		}
+		f.visitedDirs[d.path] = true
+
+		files, err = d.findConfigs()
 		if err != nil {
 			continue
 		}
