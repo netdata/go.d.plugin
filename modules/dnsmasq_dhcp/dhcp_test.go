@@ -17,9 +17,6 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.IsType(t, (*DnsmasqDHCP)(nil), job)
-	assert.Equal(t, defaultLeasesPath, job.LeasesPath)
-	assert.Equal(t, defaultConfPath, job.ConfPath)
-	assert.Equal(t, defaultConfDir, job.ConfDir)
 }
 
 func TestDnsmasqDHCP_Init(t *testing.T) {
@@ -31,11 +28,26 @@ func TestDnsmasqDHCP_Init(t *testing.T) {
 	assert.True(t, job.Init())
 }
 
-func TestDnsmasqDHCP_InitNG(t *testing.T) {
+func TestDnsmasqDHCP_InitEmptyLeasesPath(t *testing.T) {
 	job := New()
-	job.LeasesPath += "_"
-	job.ConfPath += "_"
-	job.ConfDir += "_"
+	job.LeasesPath = ""
+
+	assert.False(t, job.Init())
+}
+
+func TestDnsmasqDHCP_InitInvalidLeasesPath(t *testing.T) {
+	job := New()
+	job.LeasesPath = testLeasesPath
+	job.LeasesPath += "!"
+
+	assert.False(t, job.Init())
+}
+
+func TestDnsmasqDHCP_InitZeroDHCPRanges(t *testing.T) {
+	job := New()
+	job.LeasesPath = testLeasesPath
+	job.ConfPath = "testdata/dnsmasq3.conf"
+	job.ConfDir = ""
 
 	assert.False(t, job.Init())
 }
@@ -50,20 +62,6 @@ func TestDnsmasqDHCP_Check(t *testing.T) {
 	assert.True(t, job.Check())
 }
 
-func TestDnsmasqDHCP_CheckNG(t *testing.T) {
-	job := New()
-	job.LeasesPath = testLeasesPath
-	job.ConfPath = testConfPath
-	job.ConfDir = testConfDir
-
-	require.True(t, job.Init())
-
-	job.LeasesPath += "_"
-	job.ConfPath += "_"
-	job.ConfDir += "_"
-	assert.False(t, job.Check())
-}
-
 func TestDnsmasqDHCP_Charts(t *testing.T) {
 	job := New()
 	job.LeasesPath = testLeasesPath
@@ -75,7 +73,9 @@ func TestDnsmasqDHCP_Charts(t *testing.T) {
 	assert.NotNil(t, job.Charts())
 }
 
-func TestDnsmasqDHCP_Cleanup(t *testing.T) { assert.NotPanics(t, New().Cleanup) }
+func TestDnsmasqDHCP_Cleanup(t *testing.T) {
+	assert.NotPanics(t, New().Cleanup)
+}
 
 func TestDnsmasqDHCP_Collect(t *testing.T) {
 	job := New()
@@ -87,17 +87,42 @@ func TestDnsmasqDHCP_Collect(t *testing.T) {
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
-		"1230::-1230::9":                     6,
-		"1230::-1230::9_percentage":          60,
-		"1231::-1231::9":                     0,
-		"1231::-1231::9_percentage":          0,
-		"192.168.0.0-192.168.0.9":            5,
-		"192.168.0.0-192.168.0.9_percentage": 50,
-		"192.168.1.0-192.168.1.9":            4,
-		"192.168.1.0-192.168.1.9_percentage": 40,
-		"192.168.2.0-192.168.2.9":            3,
-		"192.168.2.0-192.168.2.9_percentage": 30,
+		"1230::1-1230::64":                         7,
+		"1230::1-1230::64_percentage":              7,
+		"1231::1-1231::64":                         1,
+		"1231::1-1231::64_percentage":              1,
+		"1232::1-1232::64":                         1,
+		"1232::1-1232::64_percentage":              1,
+		"1233::1-1233::64":                         1,
+		"1233::1-1233::64_percentage":              1,
+		"1234::1-1234::64":                         1,
+		"1234::1-1234::64_percentage":              1,
+		"192.168.0.1-192.168.0.100":                6,
+		"192.168.0.1-192.168.0.100_percentage":     6,
+		"192.168.1.1-192.168.1.100":                5,
+		"192.168.1.1-192.168.1.100_percentage":     5,
+		"192.168.2.1-192.168.2.100":                4,
+		"192.168.2.1-192.168.2.100_percentage":     4,
+		"192.168.3.1-192.168.3.100":                1,
+		"192.168.3.1-192.168.3.100_percentage":     1,
+		"192.168.4.1-192.168.4.100":                1,
+		"192.168.4.1-192.168.4.100_percentage":     1,
+		"192.168.200.1-192.168.200.100":            1,
+		"192.168.200.1-192.168.200.100_percentage": 1,
 	}
 
 	assert.Equal(t, expected, job.Collect())
+}
+
+func TestDnsmasqDHCP_CollectFailedToOpenLeasesPath(t *testing.T) {
+	job := New()
+	job.LeasesPath = testLeasesPath
+	job.ConfPath = testConfPath
+	job.ConfDir = testConfDir
+
+	require.True(t, job.Init())
+	require.True(t, job.Check())
+
+	job.LeasesPath = ""
+	assert.Nil(t, job.Collect())
 }

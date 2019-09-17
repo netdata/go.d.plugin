@@ -2,7 +2,7 @@ package dnsmasq_dhcp
 
 import (
 	"fmt"
-	"sort"
+	"net"
 	"time"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -18,18 +18,13 @@ func init() {
 	module.Register("dnsmasq_dhcp", creator)
 }
 
-const (
-	defaultLeasesPath = "/var/lib/misc/dnsmasq.leases"
-	defaultConfPath   = "/etc/dnsmasq.conf"
-	defaultConfDir    = "/etc/dnsmasq.d"
-)
-
 // New creates DnsmasqDHCP with default values.
 func New() *DnsmasqDHCP {
 	config := Config{
-		LeasesPath: defaultLeasesPath,
-		ConfPath:   defaultConfPath,
-		ConfDir:    defaultConfDir,
+		// debian defaults
+		LeasesPath: "/var/lib/misc/dnsmasq.leases",
+		ConfPath:   "/etc/dnsmasq.conf",
+		ConfDir:    "/etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new",
 	}
 
 	return &DnsmasqDHCP{
@@ -58,55 +53,56 @@ type DnsmasqDHCP struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	// dnsmasq.leases db modification time
-	modTime time.Time
-	ranges  []ip.IRange
-	mx      map[string]int64
+	leasesModTime time.Time
+	ranges        []ip.IRange
+	staticIPs     []net.IP
+	mx            map[string]int64
 }
 
 // Cleanup makes cleanup.
 func (DnsmasqDHCP) Cleanup() {}
 
-// Init makes initialization.
-func (d *DnsmasqDHCP) Init() bool {
-	d.Infof("start config : %s", d.Config)
+func (d DnsmasqDHCP) checkLeasesPath() bool {
+	if d.LeasesPath == "" {
+		d.Error("empty 'leases_path'")
+		return false
+	}
 
-	ranges, err := d.findDHCPRanges()
+	f, err := openFile(d.LeasesPath)
 	if err != nil {
 		d.Error(err)
 		return false
 	}
 
-	for _, raw := range ranges {
-		r := ip.ParseRange(raw)
-		if r == nil {
-			d.Warningf("error on parsing '%s' dhcp range, skipping it", raw)
-			continue
-		}
-		d.ranges = append(d.ranges, r)
-	}
+	_ = f.Close()
+	return true
+}
 
-	// orders: ipv4, ipv6
-	sort.Slice(
-		d.ranges,
-		func(i, j int) bool { return d.ranges[i].Family() < d.ranges[j].Family() },
-	)
-
-	if len(d.ranges) == 0 {
-		d.Info("haven't found any dhcp-ranges")
+// Init makes initialization.
+func (d *DnsmasqDHCP) Init() bool {
+	if !d.checkLeasesPath() {
 		return false
 	}
 
-	d.Infof("using dhcp-ranges : %v", d.ranges)
+	d.Infof("start config : %s", d.Config)
+	err := d.autodetection()
+	if err != nil {
+		d.Error(err)
+		return false
+	}
 
 	return true
 }
 
 // Check makes check.
-func (d *DnsmasqDHCP) Check() bool { return len(d.Collect()) > 0 }
+func (d *DnsmasqDHCP) Check() bool {
+	return len(d.Collect()) > 0
+}
 
 // Charts creates Charts.
-func (d DnsmasqDHCP) Charts() *Charts { return d.charts() }
+func (d DnsmasqDHCP) Charts() *Charts {
+	return d.charts()
+}
 
 // Collect collects metrics.
 func (d *DnsmasqDHCP) Collect() map[string]int64 {

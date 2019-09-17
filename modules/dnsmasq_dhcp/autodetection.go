@@ -1,120 +1,113 @@
 package dnsmasq_dhcp
 
 import (
-	"bufio"
+	"errors"
 	"fmt"
-	"io/ioutil"
 	"net"
-	"os"
-	"path"
 	"regexp"
+	"sort"
 	"strings"
+
+	"github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp/ip"
 )
 
-func (d *DnsmasqDHCP) findDHCPRanges() ([]string, error) {
-	cs, err := findConfigurations(d.ConfDir)
+func (d *DnsmasqDHCP) autodetection() error {
+	configs := findConfigurationFiles(d.ConfPath, d.ConfDir)
+
+	err := d.autodetectDHCPRanges(configs)
 	if err != nil {
-		d.Warningf("error during configuration dir scanning : %v", err)
+		return err
 	}
 
-	configs := []string{d.ConfPath}
-	configs = append(configs, cs...)
-	d.Infof("configuration files to read : %v", configs)
+	d.autodetectStaticIPs(configs)
+	return nil
+}
 
+func (d *DnsmasqDHCP) autodetectDHCPRanges(configs []*configFile) error {
+	var ipranges []ip.IRange
+	var parsed string
 	seen := make(map[string]bool)
-	var ranges []string
 
-	for _, config := range configs {
-		d.Debugf("reading %s", config)
-		rs, err := findDHCPRanges(config)
-		if err != nil {
-			return nil, err
-		}
+	for _, conf := range configs {
+		d.Debugf("looking in '%s'", conf.path)
 
-		for _, r := range rs {
-			d.Debugf("found '%s'", r)
-			if r = parseDHCPRangeLine(r); r == "" || seen[r] {
+		for _, value := range conf.get("dhcp-range") {
+			d.Debugf("found dhcp-range '%s'", value)
+			if parsed = parseDHCPRangeValue(value); parsed == "" || seen[parsed] {
+				continue
+			}
+			seen[parsed] = true
+
+			r := ip.ParseRange(parsed)
+			if r == nil {
+				d.Warningf("error on parsing dhcp-range '%s', skipping it", parsed)
 				continue
 			}
 
-			d.Debugf("adding '%s'", r)
-			seen[r] = true
-			ranges = append(ranges, r)
+			d.Debugf("adding dhcp-range '%s'", parsed)
+			ipranges = append(ipranges, r)
 		}
 	}
 
-	return ranges, nil
+	if len(ipranges) == 0 {
+		return errors.New("haven't found any dhcp-ranges")
+	}
+
+	// order: ipv4, ipv6
+	sort.Slice(
+		ipranges,
+		func(i, j int) bool { return ipranges[i].Family() < ipranges[j].Family() },
+	)
+
+	d.ranges = ipranges
+	return nil
 }
 
-func findConfigurations(confDir string) ([]string, error) {
-	fis, err := ioutil.ReadDir(confDir)
-	if err != nil {
-		return nil, err
-	}
+func (d *DnsmasqDHCP) autodetectStaticIPs(configs []*configFile) {
+	seen := make(map[string]bool)
+	var parsed string
 
-	var configs []string
-	for _, fi := range fis {
-		if !fi.Mode().IsRegular() || !strings.HasSuffix(fi.Name(), ".conf") {
-			continue
+	for _, conf := range configs {
+		d.Debugf("looking in '%s'", conf.path)
+
+		for _, value := range conf.get("dhcp-host") {
+			d.Debugf("found dhcp-host '%s'", value)
+			if parsed = parseDHCPHostValue(value); parsed == "" || seen[parsed] {
+				continue
+			}
+			seen[parsed] = true
+
+			v := net.ParseIP(parsed)
+			if v == nil {
+				d.Warningf("error on parsing dhcp-host '%s', skipping it", parsed)
+				continue
+			}
+
+			d.Debugf("adding dhcp-host '%s'", parsed)
+			d.staticIPs = append(d.staticIPs, v)
 		}
-		configs = append(configs, path.Join(confDir, fi.Name()))
 	}
-
-	return configs, nil
-}
-
-func findDHCPRanges(filePath string) ([]string, error) {
-	f, err := os.Open(filePath)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	fi, err := f.Stat()
-	if err != nil {
-		return nil, err
-	}
-
-	if !fi.Mode().IsRegular() {
-		return nil, fmt.Errorf("'%s' is not a regular file", filePath)
-	}
-
-	var ranges []string
-	s := bufio.NewScanner(f)
-
-	for s.Scan() {
-		line := s.Text()
-		if !strings.HasPrefix(line, "dhcp-range") {
-			continue
-		}
-		ranges = append(ranges, line)
-	}
-
-	return ranges, nil
 }
 
 /*
 Examples:
-  - dhcp-range=192.168.0.50,192.168.0.150,12h
-  - dhcp-range=192.168.0.50,192.168.0.150,255.255.255.0,12h
-  - dhcp-range=set:red,1.1.1.50,1.1.2.150, 255.255.252.0
-  - dhcp-range=192.168.0.0,static
-  - dhcp-range=1234::2, 1234::500, 64, 12h
-  - dhcp-range=1234::2, 1234::500
-  - dhcp-range=1234::2, 1234::500, slaac
-  - dhcp-range=1234::, ra-only
-  - dhcp-range=1234::, ra-names
-  - dhcp-range=1234::, ra-stateless
+  - 192.168.0.50,192.168.0.150,12h
+  - 192.168.0.50,192.168.0.150,255.255.255.0,12h
+  - set:red,1.1.1.50,1.1.2.150, 255.255.252.0
+  - 192.168.0.0,static
+  - 1234::2,1234::500, 64, 12h
+  - 1234::2,1234::500
+  - 1234::2,1234::500, slaac
+  - 1234::,ra-only
+  - 1234::,ra-names
+  - 1234::,ra-stateless
 */
-var reDHCPRange = regexp.MustCompile(`(?:[=,])([0-9a-f.:]+),([0-9a-f.:]+)`)
+var reDHCPRange = regexp.MustCompile(`([0-9a-f.:]+),([0-9a-f.:]+)`)
 
-// parseDHCPRangeLine expects lines that starts with 'dhcp-range='
-func parseDHCPRangeLine(s string) (r string) {
+func parseDHCPRangeValue(s string) (r string) {
 	if strings.Contains(s, "ra-stateless") {
 		return
 	}
-
-	s = strings.ReplaceAll(s, " ", "")
 
 	match := reDHCPRange.FindStringSubmatch(s)
 	if match == nil {
@@ -127,4 +120,27 @@ func parseDHCPRangeLine(s string) (r string) {
 	}
 
 	return fmt.Sprintf("%s-%s", start, end)
+}
+
+/*
+Examples:
+  - 11:22:33:44:55:66,192.168.0.60
+  - 11:22:33:44:55:66,fred,192.168.0.60,45m
+  - 11:22:33:44:55:66,12:34:56:78:90:12,192.168.0.60
+  - bert,192.168.0.70,infinite
+  - id:01:02:02:04,192.168.0.60
+  - id:ff:00:00:00:00:00:02:00:00:02:c9:00:f4:52:14:03:00:28:05:81,192.168.0.61
+  - id:marjorie,192.168.0.60
+  - id:00:01:00:01:16:d2:83:fc:92:d4:19:e2:d8:b2, fred, [1234::5]
+*/
+var (
+	reDHCPHostV4 = regexp.MustCompile(`(?:[0-9]{1,3}\.){3}[0-9]{1,3}`)
+	reDHCPHostV6 = regexp.MustCompile(`\[([0-9a-f.:]+)\]`)
+)
+
+func parseDHCPHostValue(s string) (r string) {
+	if strings.Contains(s, "[") {
+		return strings.Trim(reDHCPHostV6.FindString(s), "[]")
+	}
+	return reDHCPHostV4.FindString(s)
 }
