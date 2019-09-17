@@ -24,7 +24,7 @@ func New() *DnsmasqDHCP {
 		// debian defaults
 		LeasesPath: "/var/lib/misc/dnsmasq.leases",
 		ConfPath:   "/etc/dnsmasq.conf",
-		ConfDir:    "/etc/dnsmasq.d",
+		ConfDir:    "/etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new",
 	}
 
 	return &DnsmasqDHCP{
@@ -62,14 +62,35 @@ type DnsmasqDHCP struct {
 // Cleanup makes cleanup.
 func (DnsmasqDHCP) Cleanup() {}
 
+func (d DnsmasqDHCP) checkLeasesPath() bool {
+	if d.LeasesPath == "" {
+		d.Error("empty 'leases_path'")
+		return false
+	}
+
+	f, err := openFile(d.LeasesPath)
+	if err != nil {
+		d.Error(err)
+		return false
+	}
+
+	_ = f.Close()
+	return true
+}
+
 // Init makes initialization.
 func (d *DnsmasqDHCP) Init() bool {
+	if !d.checkLeasesPath() {
+		return false
+	}
+
 	d.Infof("start config : %s", d.Config)
 	err := d.autodetection()
 	if err != nil {
 		d.Error(err)
 		return false
 	}
+
 	return true
 }
 
