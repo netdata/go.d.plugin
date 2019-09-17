@@ -22,14 +22,14 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	notChanged := d.modTime.Equal(fi.ModTime())
+	notChanged := d.leasesModTime.Equal(fi.ModTime())
 	if notChanged {
 		d.Debug("leases db file modification time was not changed, returning old data")
 		return d.mx, nil
 	}
 	d.Debug("leases db file modification time is changed, reading it")
 
-	d.modTime = fi.ModTime()
+	d.leasesModTime = fi.ModTime()
 	d.mx = d.collectRangesStats(findIPs(f))
 
 	return d.mx, nil
@@ -39,6 +39,16 @@ func (d *DnsmasqDHCP) collectRangesStats(ips []net.IP) map[string]int64 {
 	mx := make(map[string]int64)
 
 	for _, ip := range ips {
+		for _, r := range d.ranges {
+			if !r.Contains(ip) {
+				continue
+			}
+			mx[r.String()]++
+			break
+		}
+	}
+
+	for _, ip := range d.staticIPs {
 		for _, r := range d.ranges {
 			if !r.Contains(ip) {
 				continue

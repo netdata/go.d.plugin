@@ -17,9 +17,6 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.IsType(t, (*DnsmasqDHCP)(nil), job)
-	assert.Equal(t, defaultLeasesPath, job.LeasesPath)
-	assert.Equal(t, defaultConfPath, job.ConfPath)
-	assert.Equal(t, defaultConfDir, job.ConfDir)
 }
 
 func TestDnsmasqDHCP_Init(t *testing.T) {
