@@ -30,7 +30,6 @@ func New() *HDFS {
 
 	return &HDFS{
 		Config: config,
-		charts: charts.Copy(),
 	}
 }
 
@@ -45,21 +44,28 @@ type HDFS struct {
 	Config `yaml:",inline"`
 
 	client *client
-	charts *Charts
 }
 
 // Cleanup makes cleanup.
 func (HDFS) Cleanup() {}
 
-// Init makes initialization.
-func (h *HDFS) Init() bool {
+func (h *HDFS) createClient() error {
 	httpClient, err := web.NewHTTPClient(h.Client)
 	if err != nil {
-		h.Error(err)
-		return false
+		return err
 	}
 
 	h.client = newClient(httpClient, h.Request)
+	return nil
+}
+
+// Init makes initialization.
+func (h *HDFS) Init() bool {
+	if err := h.createClient(); err != nil {
+		h.Errorf("error on creating client : %v", err)
+		return false
+	}
+
 	return true
 }
 
@@ -69,8 +75,8 @@ func (h HDFS) Check() bool {
 }
 
 // Charts returns Charts.
-func (h HDFS) Charts() *module.Charts {
-	return h.charts
+func (HDFS) Charts() *Charts {
+	return charts.Copy()
 }
 
 // Collect collects metrics.

@@ -1,41 +1,71 @@
 package hdfs
 
 import (
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 var (
 	testJvmData, _ = ioutil.ReadFile("testdata/jvm.json")
 )
 
-func Test_readFile(t *testing.T) {
+func Test_readTestData(t *testing.T) {
 	assert.NotNil(t, testJvmData)
 }
 
 func TestNew(t *testing.T) {
-
+	assert.Implements(t, (*module.Module)(nil), New())
 }
 
 func TestHDFS_Init(t *testing.T) {
+	job := New()
 
+	assert.True(t, job.Init())
+}
+
+func TestHDFS_InitErrorOnCreatingClientWrongTLSCA(t *testing.T) {
+	job := New()
+	job.ClientTLSConfig.TLSCA = "testdata/tls"
+
+	assert.False(t, job.Init())
 }
 
 func TestHDFS_Check(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				_, _ = w.Write(testJvmData)
+			}))
+	defer ts.Close()
 
+	job := New()
+	job.UserURL = ts.URL
+	require.True(t, job.Init())
+
+	assert.True(t, job.Check())
+}
+
+func TestHDFS_CheckNoResponse(t *testing.T) {
+	job := New()
+	job.UserURL = "http://127.0.0.1:38001/jmx"
+	require.True(t, job.Init())
+
+	assert.False(t, job.Check())
 }
 
 func TestHDFS_Charts(t *testing.T) {
-
+	assert.NotNil(t, New().Charts())
 }
 
 func TestHDFS_Cleanup(t *testing.T) {
-
+	New().Cleanup()
 }
 
 func TestHDFS_Collect(t *testing.T) {
@@ -77,4 +107,42 @@ func TestHDFS_Collect(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, job.Collect())
+}
+
+func TestHDFS_CollectNoResponse(t *testing.T) {
+	job := New()
+	job.UserURL = "http://127.0.0.1:38001/jmx"
+	require.True(t, job.Init())
+
+	assert.Nil(t, job.Collect())
+}
+
+func TestHDFS_CollectReceiveInvalidResponse(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				_, _ = w.Write([]byte("hello and\ngoodbye!\n"))
+			}))
+	defer ts.Close()
+
+	job := New()
+	job.UserURL = ts.URL
+	require.True(t, job.Init())
+
+	assert.Nil(t, job.Collect())
+}
+
+func TestHDFS_CollectReceive404(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusNotFound)
+			}))
+	defer ts.Close()
+
+	job := New()
+	job.UserURL = ts.URL
+	require.True(t, job.Init())
+
+	assert.Nil(t, job.Collect())
 }
