@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	testJvmData, _ = ioutil.ReadFile("testdata/jvm.json")
+	testDataNodeData, _ = ioutil.ReadFile("testdata/datanode.json")
 )
 
 func Test_readTestData(t *testing.T) {
-	assert.NotNil(t, testJvmData)
+	assert.NotNil(t, testDataNodeData)
 }
 
 func TestNew(t *testing.T) {
@@ -41,7 +41,7 @@ func TestHDFS_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(testJvmData)
+				_, _ = w.Write(testDataNodeData)
 			}))
 	defer ts.Close()
 
@@ -72,7 +72,7 @@ func TestHDFS_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(testJvmData)
+				_, _ = w.Write(testDataNodeData)
 			}))
 	defer ts.Close()
 
@@ -82,28 +82,28 @@ func TestHDFS_Collect(t *testing.T) {
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
-		"jvm_gc_count":                       1699,
+		"jvm_gc_count":                       155,
 		"jvm_gc_num_info_threshold_exceeded": 0,
 		"jvm_gc_num_warn_threshold_exceeded": 0,
-		"jvm_gc_time_millis":                 3483,
-		"jvm_gc_total_extra_sleep_time":      1944,
-		"jvm_log_error":                      0,
+		"jvm_gc_time_millis":                 672,
+		"jvm_gc_total_extra_sleep_time":      8783,
+		"jvm_log_error":                      1,
 		"jvm_log_fatal":                      0,
-		"jvm_log_info":                       3382077,
-		"jvm_log_warn":                       3378983,
-		"jvm_mem_heap_committed":             67,
+		"jvm_log_info":                       257,
+		"jvm_log_warn":                       2,
+		"jvm_mem_heap_committed":             60,
 		"jvm_mem_heap_max":                   843,
-		"jvm_mem_heap_used":                  26,
+		"jvm_mem_heap_used":                  18,
 		"jvm_mem_max":                        843,
-		"jvm_mem_non_heap_committed":         67,
+		"jvm_mem_non_heap_committed":         54,
 		"jvm_mem_non_heap_max":               -1,
-		"jvm_mem_non_heap_used":              66,
+		"jvm_mem_non_heap_used":              53,
 		"jvm_threads_blocked":                0,
 		"jvm_threads_new":                    0,
-		"jvm_threads_runnable":               7,
+		"jvm_threads_runnable":               11,
 		"jvm_threads_terminated":             0,
-		"jvm_threads_timed_waiting":          34,
-		"jvm_threads_waiting":                6,
+		"jvm_threads_timed_waiting":          25,
+		"jvm_threads_waiting":                11,
 	}
 
 	assert.Equal(t, expected, job.Collect())
