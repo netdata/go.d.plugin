@@ -1,24 +1,11 @@
 package hdfs
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
-
-func isJvm(data rawData) bool {
-	v, ok := data["modelerType"]
-	return ok && bytes.Equal(v, []byte("\"JvmMetrics\""))
-
-}
-
-func isFsn(data rawData) bool {
-	v, ok := data["modelerType"]
-	return ok && bytes.Equal(v, []byte("\"FSNamesystem\""))
-
-}
 
 type (
 	rawData map[string]json.RawMessage
@@ -40,13 +27,13 @@ func (r rawJMX) find(f func(rawData) bool) rawData {
 	return nil
 }
 
-func (r rawJMX) findJvm() rawData {
-	return r.find(isJvm)
-}
+func isJvm(data rawData) bool { return string(data["modelerType"]) == "JvmMetrics" }
 
-func (r rawJMX) findFsn() rawData {
-	return r.find(isFsn)
-}
+func isFsn(data rawData) bool { return string(data["modelerType"]) == "FSNamesystem" }
+
+func (r rawJMX) findJvm() rawData { return r.find(isJvm) }
+
+func (r rawJMX) findFsn() rawData { return r.find(isFsn) }
 
 func (h *HDFS) collect() (map[string]int64, error) {
 	var raw rawJMX
@@ -60,19 +47,40 @@ func (h *HDFS) collect() (map[string]int64, error) {
 	}
 
 	var mx metrics
-	err = h.collectJVM(&mx, raw)
+
+	switch h.nodeType {
+	default:
+		h.collectUnknownNode(&mx, raw)
+	case nameNodeType:
+		h.collectNameNode(&mx, raw)
+	case dataNodeType:
+		h.collectDataNode(&mx, raw)
+	}
+
+	return stm.ToMap(mx), nil
+}
+
+func (h HDFS) collectNameNode(mx *metrics, raw rawJMX) {
+	err := h.collectJVM(mx, raw)
 	if err != nil {
 		h.Errorf("error on collecting jvm : %v", err)
 	}
 
-	// Note: only name nodes contains 'fns', it would be better to identify node type on start
-	// and use appropriate collect method after
-	err = h.collectFns(&mx, raw)
+	err = h.collectFns(mx, raw)
 	if err != nil {
-		h.Errorf("error on collecting fns : %v", err)
+		h.Errorf("error on collecting fsn : %v", err)
 	}
+}
 
-	return stm.ToMap(mx), nil
+func (h HDFS) collectDataNode(mx *metrics, raw rawJMX) {
+	err := h.collectJVM(mx, raw)
+	if err != nil {
+		h.Errorf("error on collecting jvm : %v", err)
+	}
+}
+
+func (h HDFS) collectUnknownNode(mx *metrics, raw rawJMX) {
+	h.collectDataNode(mx, raw)
 }
 
 func (h HDFS) collectJVM(mx *metrics, raw rawJMX) error {

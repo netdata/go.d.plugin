@@ -1,6 +1,8 @@
 package hdfs
 
 import (
+	"bytes"
+	"errors"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -21,7 +23,7 @@ func New() *HDFS {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: "http://127.0.0.1:9870/jmx",
+				UserURL: "http://127.0.0.1:8081/jmx",
 			},
 			Client: web.Client{
 				Timeout: web.Duration{Duration: time.Second}},
@@ -33,6 +35,14 @@ func New() *HDFS {
 	}
 }
 
+type nodeType int
+
+const (
+	nameNodeType nodeType = iota
+	dataNodeType
+	unknownNodeType
+)
+
 // Config is the HDFS module configuration.
 type Config struct {
 	web.HTTP `yaml:",inline"`
@@ -43,28 +53,68 @@ type HDFS struct {
 	module.Base
 	Config `yaml:",inline"`
 
+	nodeType
 	client *client
 }
 
 // Cleanup makes cleanup.
 func (HDFS) Cleanup() {}
 
-func (h *HDFS) createClient() error {
+func (h HDFS) createClient() (*client, error) {
 	httpClient, err := web.NewHTTPClient(h.Client)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	h.client = newClient(httpClient, h.Request)
-	return nil
+	return newClient(httpClient, h.Request), nil
+}
+
+func (h *HDFS) determineNodeType() (nodeType, error) {
+	var raw rawJMX
+	err := h.client.doOKWithDecodeJSON(&raw)
+	if err != nil {
+		return -1, err
+	}
+
+	if raw.isEmpty() {
+		return -1, errors.New("empty response")
+	}
+
+	jvm := raw.findJvm()
+	if jvm == nil {
+		return -1, errors.New("couldn't find jvm in response")
+	}
+
+	v, ok := jvm["tag.ProcessName"]
+	if !ok {
+		return -1, errors.New("couldn't find process name in response")
+	}
+
+	switch {
+	default:
+		return unknownNodeType, nil
+	case bytes.Equal(v, []byte("\"NameNode\"")):
+		return nameNodeType, nil
+	case bytes.Equal(v, []byte("\"DataNode\"")):
+		return dataNodeType, nil
+	}
 }
 
 // Init makes initialization.
 func (h *HDFS) Init() bool {
-	if err := h.createClient(); err != nil {
+	cl, err := h.createClient()
+	if err != nil {
 		h.Errorf("error on creating client : %v", err)
 		return false
 	}
+	h.client = cl
+
+	t, err := h.determineNodeType()
+	if err != nil {
+		h.Errorf("error on node type determination : %v", err)
+		return false
+	}
+	h.nodeType = t
 
 	return true
 }
@@ -75,8 +125,15 @@ func (h HDFS) Check() bool {
 }
 
 // Charts returns Charts.
-func (HDFS) Charts() *Charts {
-	return charts.Copy()
+func (h HDFS) Charts() *Charts {
+	switch h.nodeType {
+	default:
+		return unknownNodeCharts.Copy()
+	case nameNodeType:
+		return nameNodeCharts.Copy()
+	case dataNodeType:
+		return dataNodeCharts.Copy()
+	}
 }
 
 // Collect collects metrics.
