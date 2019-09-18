@@ -70,7 +70,7 @@ func (p *Phpfpm) Init() bool {
 		return false
 	}
 
-	p.client = newClient(client, p.Request, )
+	p.client = newClient(client, p.Request)
 
 	p.Debugf("using URL %s", p.URL)
 	p.Debugf("using timeout: %s", p.Timeout.Duration)
