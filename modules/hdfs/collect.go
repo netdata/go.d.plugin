@@ -3,6 +3,7 @@ package hdfs
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
@@ -47,9 +48,10 @@ func (h *HDFS) collect() (map[string]int64, error) {
 	}
 
 	var mx metrics
-
 	switch h.nodeType {
 	default:
+		panic(fmt.Sprintf("unsupported node type : %s", h.nodeType))
+	case unknownNodeType:
 		h.collectUnknownNode(&mx, raw)
 	case nameNodeType:
 		h.collectNameNode(&mx, raw)
@@ -66,7 +68,7 @@ func (h HDFS) collectNameNode(mx *metrics, raw rawJMX) {
 		h.Errorf("error on collecting jvm : %v", err)
 	}
 
-	err = h.collectFns(mx, raw)
+	err = h.collectFsn(mx, raw)
 	if err != nil {
 		h.Errorf("error on collecting fsn : %v", err)
 	}
@@ -104,23 +106,23 @@ func (h HDFS) collectJVM(mx *metrics, raw rawJMX) error {
 	return nil
 }
 
-func (h HDFS) collectFns(mx *metrics, raw rawJMX) error {
-	rawFns := raw.findFsn()
-	if rawFns == nil {
+func (h HDFS) collectFsn(mx *metrics, raw rawJMX) error {
+	rawFsn := raw.findFsn()
+	if rawFsn == nil {
 		return nil
 	}
 
-	b, err := json.Marshal(rawFns)
+	b, err := json.Marshal(rawFsn)
 	if err != nil {
 		return err
 	}
 
-	var fns fsnNameSystemMetrics
-	err = json.Unmarshal(b, &fns)
+	var fsn fsnNameSystemMetrics
+	err = json.Unmarshal(b, &fsn)
 	if err != nil {
 		return err
 	}
 
-	mx.fsnNameSystemMetrics = &fns
+	mx.fsnNameSystemMetrics = &fsn
 	return nil
 }

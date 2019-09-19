@@ -38,7 +38,7 @@ func New() *HDFS {
 type nodeType string
 
 const (
-	unknownNodeType nodeType = "unknown"
+	unknownNodeType nodeType = "UnknownNode"
 	dataNodeType    nodeType = "DataNode"
 	nameNodeType    nodeType = "NameNode"
 )
@@ -128,6 +128,8 @@ func (h *HDFS) Check() bool {
 func (h HDFS) Charts() *Charts {
 	switch h.nodeType {
 	default:
+		return nil
+	case unknownNodeType:
 		return unknownNodeCharts()
 	case nameNodeType:
 		return nameNodeCharts()
