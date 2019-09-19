@@ -28,13 +28,15 @@ func (r rawJMX) find(f func(rawData) bool) rawData {
 	return nil
 }
 
-func isJvm(data rawData) bool { return string(data["modelerType"]) == "\"JvmMetrics\"" }
+func (r rawJMX) findJvm() rawData {
+	f := func(data rawData) bool { return string(data["modelerType"]) == "\"JvmMetrics\"" }
+	return r.find(f)
+}
 
-func isFsn(data rawData) bool { return string(data["modelerType"]) == "\"FSNamesystem\"" }
-
-func (r rawJMX) findJvm() rawData { return r.find(isJvm) }
-
-func (r rawJMX) findFsn() rawData { return r.find(isFsn) }
+func (r rawJMX) findFsn() rawData {
+	f := func(data rawData) bool { return string(data["modelerType"]) == "\"FSNamesystem\"" }
+	return r.find(f)
+}
 
 func (h *HDFS) collect() (map[string]int64, error) {
 	var raw rawJMX
@@ -50,7 +52,7 @@ func (h *HDFS) collect() (map[string]int64, error) {
 	var mx metrics
 	switch h.nodeType {
 	default:
-		panic(fmt.Sprintf("unsupported node type : %s", h.nodeType))
+		panic(fmt.Sprintf("unsupported node type : '%s'", h.nodeType))
 	case unknownNodeType:
 		h.collectUnknownNode(&mx, raw)
 	case nameNodeType:
