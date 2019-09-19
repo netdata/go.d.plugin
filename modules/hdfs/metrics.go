@@ -7,8 +7,8 @@ package hdfs
 // https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/Metrics.html
 
 type metrics struct {
-	*jvmMetrics   `stm:"jvm"`
-	*fsNameSystem `stm:"fsns"`
+	*jvmMetrics          `stm:"jvm"`
+	*fsNameSystemMetrics `stm:"fsns"`
 }
 
 type jvmMetrics struct {
@@ -38,7 +38,7 @@ type jvmMetrics struct {
 	LogInfo                    float64 `stm:"log_info"`
 }
 
-type fsNameSystem struct {
+type fsNameSystemMetrics struct {
 	HostName string `json:"tag.Hostname"`
 	HAState  string `json:"tag.HAState"`
 	//TotalSyncTimes                               float64 `json:"tag.tag.TotalSyncTimes"`

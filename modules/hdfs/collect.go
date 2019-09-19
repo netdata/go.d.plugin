@@ -33,7 +33,7 @@ func (r rawJMX) findJvm() rawData {
 	return r.find(f)
 }
 
-func (r rawJMX) findFsn() rawData {
+func (r rawJMX) findFSNameSystem() rawData {
 	f := func(data rawData) bool { return string(data["modelerType"]) == "\"FSNamesystem\"" }
 	return r.find(f)
 }
@@ -70,7 +70,7 @@ func (h HDFS) collectNameNode(mx *metrics, raw rawJMX) {
 		h.Errorf("error on collecting jvm : %v", err)
 	}
 
-	err = h.collectFsn(mx, raw)
+	err = h.collectFSNameSystem(mx, raw)
 	if err != nil {
 		h.Errorf("error on collecting fsn : %v", err)
 	}
@@ -108,8 +108,8 @@ func (h HDFS) collectJVM(mx *metrics, raw rawJMX) error {
 	return nil
 }
 
-func (h HDFS) collectFsn(mx *metrics, raw rawJMX) error {
-	rawFsn := raw.findFsn()
+func (h HDFS) collectFSNameSystem(mx *metrics, raw rawJMX) error {
+	rawFsn := raw.findFSNameSystem()
 	if rawFsn == nil {
 		return nil
 	}
@@ -119,12 +119,12 @@ func (h HDFS) collectFsn(mx *metrics, raw rawJMX) error {
 		return err
 	}
 
-	var fsn fsNameSystem
-	err = json.Unmarshal(b, &fsn)
+	var fs fsNameSystemMetrics
+	err = json.Unmarshal(b, &fs)
 	if err != nil {
 		return err
 	}
 
-	mx.fsNameSystem = &fsn
+	mx.fsNameSystemMetrics = &fs
 	return nil
 }
