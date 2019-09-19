@@ -218,6 +218,9 @@ func TestHDFS_CollectDataNode(t *testing.T) {
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
+		"fsds_capacity":                      53675536384,
+		"fsds_capacity_remaining":            32920760320,
+		"fsds_capacity_used":                 20754776064,
 		"jvm_gc_count":                       155,
 		"jvm_gc_num_info_threshold_exceeded": 0,
 		"jvm_gc_num_warn_threshold_exceeded": 0,

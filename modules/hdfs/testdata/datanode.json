@@ -29,6 +29,24 @@
       "LogError":1,
       "LogWarn":2,
       "LogInfo":257
+    },
+    {
+      "name":"Hadoop:service=DataNode,name=FSDatasetState",
+      "modelerType":"FSDatasetState",
+      "tag.Context":"FSDatasetState",
+      "tag.StorageInfo":"FSDataset{dirpath='[/data/hdfs/data]'}",
+      "tag.Hostname":"dev-slave-01.dev.local",
+      "Capacity":53675536384,
+      "DfsUsed":1186058240,
+      "Remaining":32920760320,
+      "NumFailedVolumes":0,
+      "LastVolumeFailureDate":0,
+      "EstimatedCapacityLostTotal":0,
+      "CacheUsed":0,
+      "CacheCapacity":0,
+      "NumBlocksCached":0,
+      "NumBlocksFailedToCache":0,
+      "NumBlocksFailedToUnCache":4
     }
   ]
 }

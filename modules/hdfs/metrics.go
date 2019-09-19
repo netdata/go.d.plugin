@@ -7,8 +7,9 @@ package hdfs
 // https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/Metrics.html
 
 type metrics struct {
-	*jvmMetrics          `stm:"jvm"`
-	*fsNameSystemMetrics `stm:"fsns"`
+	*jvmMetrics            `stm:"jvm"`
+	*fsNameSystemMetrics   `stm:"fsns"`
+	*fsDatasetStateMetrics `stm:"fsds"`
 }
 
 type jvmMetrics struct {
@@ -107,4 +108,21 @@ type fsNameSystemMetrics struct {
 	//NumInMaintenanceLiveDataNodes                float64 `stm:"num_in_maintenance_live_data_nodes"`
 	//NumInMaintenanceDeadDataNodes                float64 `stm:"num_in_maintenance_dead_data_nodes"`
 	//NumEnteringMaintenanceDataNodes              float64 `stm:"num_entering_maintenance_data_nodes"`
+}
+
+type fsDatasetStateMetrics struct {
+	HostName string  `json:"tag.Hostname"`
+	Capacity float64 `stm:"capacity"`
+	//DfsUsed                    float64 `stm:"DfsUsed"`
+	Remaining float64 `stm:"capacity_remaining"`
+	//NumFailedVolumes           float64 `stm:"NumFailedVolumes"`
+	//LastVolumeFailureDate      float64 `stm:"LastVolumeFailureDate"`
+	//EstimatedCapacityLostTotal float64 `stm:"EstimatedCapacityLostTotal"`
+	//CacheUsed                  float64 `stm:"CacheUsed"`
+	//CacheCapacity              float64 `stm:"CacheCapacity"`
+	//NumBlocksCached            float64 `stm:"NumBlocksCached"`
+	//NumBlocksFailedToCache     float64 `stm:"NumBlocksFailedToCache"`
+	//NumBlocksFailedToUnCache   float64 `stm:"NumBlocksFailedToUnCache"`
+
+	Used float64 `stm:"capacity_used"`
 }
