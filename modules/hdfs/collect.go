@@ -49,6 +49,12 @@ func (h *HDFS) collect() (map[string]int64, error) {
 		return nil, errors.New("empty response")
 	}
 
+	mx := h.collectRawJMX(raw)
+
+	return stm.ToMap(mx), nil
+}
+
+func (h HDFS) collectRawJMX(raw rawJMX) *metrics {
 	var mx metrics
 	switch h.nodeType {
 	default:
@@ -60,8 +66,7 @@ func (h *HDFS) collect() (map[string]int64, error) {
 	case dataNodeType:
 		h.collectDataNode(&mx, raw)
 	}
-
-	return stm.ToMap(mx), nil
+	return &mx
 }
 
 func (h HDFS) collectNameNode(mx *metrics, raw rawJMX) {
