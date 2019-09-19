@@ -1,7 +1,7 @@
 {
   "beans":[
     {
-      "name":"Hadoop:service=DataNode,name=JvmMetrics",
+      "name":"Hadoop:service=UnknownNode,name=JvmMetrics",
       "modelerType":"JvmMetrics",
       "tag.Context":"jvm",
       "tag.ProcessName":"UnknownNode",

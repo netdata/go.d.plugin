@@ -38,9 +38,8 @@ func New() *HDFS {
 type nodeType string
 
 const (
-	unknownNodeType nodeType = "UnknownNode"
-	dataNodeType    nodeType = "DataNode"
-	nameNodeType    nodeType = "NameNode"
+	dataNodeType nodeType = "DataNode"
+	nameNodeType nodeType = "NameNode"
 )
 
 // Config is the HDFS module configuration.
@@ -69,14 +68,6 @@ func (h HDFS) createClient() (*client, error) {
 	return newClient(httpClient, h.Request), nil
 }
 
-func parseNodeType(v string) nodeType {
-	t := nodeType(strings.Trim(v, "\""))
-	if t == nameNodeType || t == dataNodeType {
-		return t
-	}
-	return unknownNodeType
-}
-
 func (h *HDFS) determineNodeType() (nodeType, error) {
 	var raw rawJMX
 	err := h.client.doOKWithDecodeJSON(&raw)
@@ -97,7 +88,12 @@ func (h *HDFS) determineNodeType() (nodeType, error) {
 	if !ok {
 		return "", errors.New("couldn't find process name in response")
 	}
-	return parseNodeType(string(v)), nil
+
+	t := nodeType(strings.Trim(string(v), "\""))
+	if t == nameNodeType || t == dataNodeType {
+		return t, nil
+	}
+	return "", errors.New("unknown node type")
 }
 
 // Init makes initialization.
@@ -129,8 +125,6 @@ func (h HDFS) Charts() *Charts {
 	switch h.nodeType {
 	default:
 		return nil
-	case unknownNodeType:
-		return unknownNodeCharts()
 	case nameNodeType:
 		return nameNodeCharts()
 	case dataNodeType:

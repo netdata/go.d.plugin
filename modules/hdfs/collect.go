@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
@@ -43,6 +44,11 @@ func (r rawJMX) findFSDatasetState() rawData {
 	return r.find(f)
 }
 
+func (r rawJMX) findDataNodeActivity() rawData {
+	f := func(data rawData) bool { return strings.HasPrefix(string(data["modelerType"]), "\"DataNodeActivity") }
+	return r.find(f)
+}
+
 func (h *HDFS) collect() (map[string]int64, error) {
 	var raw rawJMX
 	err := h.client.doOKWithDecodeJSON(&raw)
@@ -64,8 +70,6 @@ func (h HDFS) collectRawJMX(raw rawJMX) *metrics {
 	switch h.nodeType {
 	default:
 		panic(fmt.Sprintf("unsupported node type : '%s'", h.nodeType))
-	case unknownNodeType:
-		h.collectUnknownNode(&mx, raw)
 	case nameNodeType:
 		h.collectNameNode(&mx, raw)
 	case dataNodeType:
@@ -96,12 +100,10 @@ func (h HDFS) collectDataNode(mx *metrics, raw rawJMX) {
 	if err != nil {
 		h.Errorf("error on collecting fs dataset state : %v", err)
 	}
-}
 
-func (h HDFS) collectUnknownNode(mx *metrics, raw rawJMX) {
-	err := h.collectJVM(mx, raw)
+	err = h.collectDataNodeActivity(mx, raw)
 	if err != nil {
-		h.Errorf("error on collecting jvm : %v", err)
+		h.Errorf("error on collecting datanode activity state : %v", err)
 	}
 }
 
@@ -111,13 +113,8 @@ func (h HDFS) collectJVM(mx *metrics, raw rawJMX) error {
 		return errors.New("couldn't find jvm data")
 	}
 
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
 	var jvm jvmMetrics
-	err = json.Unmarshal(b, &jvm)
+	err := writeJSONTo(&jvm, v)
 	if err != nil {
 		return err
 	}
@@ -132,16 +129,13 @@ func (h HDFS) collectFSNameSystem(mx *metrics, raw rawJMX) error {
 		return nil
 	}
 
-	b, err := json.Marshal(v)
+	var fs fsNameSystemMetrics
+	err := writeJSONTo(&fs, v)
 	if err != nil {
 		return err
 	}
 
-	var fs fsNameSystemMetrics
-	err = json.Unmarshal(b, &fs)
-	if err != nil {
-		return err
-	}
+	fs.CapacityUsed = fs.CapacityDfsUsed + fs.CapacityUsedNonDFS
 
 	mx.fsNameSystemMetrics = &fs
 	return nil
@@ -153,19 +147,39 @@ func (h HDFS) collectFSDatasetState(mx *metrics, raw rawJMX) error {
 		return nil
 	}
 
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
 	var fs fsDatasetStateMetrics
-	err = json.Unmarshal(b, &fs)
+	err := writeJSONTo(&fs, v)
 	if err != nil {
 		return err
 	}
 
-	fs.Used = fs.Capacity - fs.Remaining
+	fs.CapacityUsed = fs.Capacity - fs.Remaining
+	fs.CapacityUsedNonDFS = fs.CapacityUsed - fs.DfsUsed
 
 	mx.fsDatasetStateMetrics = &fs
 	return nil
+}
+
+func (h HDFS) collectDataNodeActivity(mx *metrics, raw rawJMX) error {
+	v := raw.findDataNodeActivity()
+	if v == nil {
+		return nil
+	}
+
+	var dna dataNodeActivityMetrics
+	err := writeJSONTo(&dna, v)
+	if err != nil {
+		return err
+	}
+
+	mx.dataNodeActivityMetrics = &dna
+	return nil
+}
+
+func writeJSONTo(dst interface{}, src interface{}) error {
+	b, err := json.Marshal(src)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(b, dst)
 }

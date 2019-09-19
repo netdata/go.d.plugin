@@ -7,9 +7,10 @@ package hdfs
 // https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/Metrics.html
 
 type metrics struct {
-	*jvmMetrics            `stm:"jvm"`
-	*fsNameSystemMetrics   `stm:"fsns"`
-	*fsDatasetStateMetrics `stm:"fsds"`
+	*jvmMetrics              `stm:"jvm"`  // both
+	*fsNameSystemMetrics     `stm:"fsns"` // namenode
+	*fsDatasetStateMetrics   `stm:"fsds"` // datanode
+	*dataNodeActivityMetrics `stm:"dna"`  // datanode
 }
 
 type jvmMetrics struct {
@@ -50,15 +51,15 @@ type fsNameSystemMetrics struct {
 	//TransactionsSinceLastLogRoll                 float64 `stm:"transactions_since_last_log_roll"`
 	//LastWrittenTransactionId                     float64 `stm:"last_written_transaction_id"`
 	//LastCheckpointTime                           float64 `stm:"last_checkpoint_time"`
-	//CapacityTotal                                float64 `stm:"capacity_total"`
+	CapacityTotal float64 `stm:"capacity_total"`
 	//CapacityTotalGB                              float64 `stm:"capacity_total_gb"`
-	CapacityUsed float64 `stm:"capacity_used"`
+	CapacityDfsUsed float64 `json:"CapacityUsed" stm:"capacity_used_dfs"`
 	//CapacityUsedGB                               float64 `stm:"capacity_used_gb"`
 	CapacityRemaining float64 `stm:"capacity_remaining"`
 	//ProvidedCapacityTotal                        float64 `stm:"provided_capacity_total"`
 	//CapacityRemainingGB                          float64 `stm:"capacity_remaining_gb"`
-	//CapacityUsedNonDFS                           float64 `stm:"capacity_used_non_dfs"`
-	TotalLoad float64 `stm:"total_load"`
+	CapacityUsedNonDFS float64 `stm:"capacity_used_non_dfs"`
+	TotalLoad          float64 `stm:"total_load"`
 	//SnapshottableDirectories                     float64 `stm:"snapshottable_directories"`
 	//Snapshots                                    float64 `stm:"snapshots"`
 	//NumEncryptionZones                           float64 `stm:"num_encryption_zones"`
@@ -108,12 +109,15 @@ type fsNameSystemMetrics struct {
 	//NumInMaintenanceLiveDataNodes                float64 `stm:"num_in_maintenance_live_data_nodes"`
 	//NumInMaintenanceDeadDataNodes                float64 `stm:"num_in_maintenance_dead_data_nodes"`
 	//NumEnteringMaintenanceDataNodes              float64 `stm:"num_entering_maintenance_data_nodes"`
+
+	// custom attributes
+	CapacityUsed float64 `json:"-" stm:"capacity_used"`
 }
 
 type fsDatasetStateMetrics struct {
-	HostName string  `json:"tag.Hostname"`
-	Capacity float64 `stm:"capacity"`
-	//DfsUsed                    float64 `stm:"DfsUsed"`
+	HostName  string  `json:"tag.Hostname"`
+	Capacity  float64 `stm:"capacity_total"`
+	DfsUsed   float64 `stm:"capacity_used_dfs"`
 	Remaining float64 `stm:"capacity_remaining"`
 	//NumFailedVolumes           float64 `stm:"NumFailedVolumes"`
 	//LastVolumeFailureDate      float64 `stm:"LastVolumeFailureDate"`
@@ -124,5 +128,91 @@ type fsDatasetStateMetrics struct {
 	//NumBlocksFailedToCache     float64 `stm:"NumBlocksFailedToCache"`
 	//NumBlocksFailedToUnCache   float64 `stm:"NumBlocksFailedToUnCache"`
 
-	Used float64 `stm:"capacity_used"`
+	// custom attributes
+	CapacityUsedNonDFS float64 `stm:"capacity_used_non_dfs"`
+	CapacityUsed       float64 `stm:"capacity_used"`
+}
+
+type dataNodeActivityMetrics struct {
+	BytesWritten float64 `stm:"bytes_written"`
+	//TotalWriteTime                             float64
+	BytesRead float64 `stm:"bytes_read"`
+	//TotalReadTime                              float64
+	//BlocksWritten float64
+	//BlocksRead    float64
+	//BlocksReplicated                           float64
+	//BlocksRemoved                              float64
+	//BlocksVerified                             float64
+	//BlockVerificationFailures                  float64
+	//BlocksCached                               float64
+	//BlocksUncached                             float64
+	//ReadsFromLocalClient                       float64
+	//ReadsFromRemoteClient                      float64
+	//WritesFromLocalClient                      float64
+	//WritesFromRemoteClient                     float64
+	//BlocksGetLocalPathInfo                     float64
+	//RemoteBytesRead                            float64
+	//RemoteBytesWritten                         float64
+	//RamDiskBlocksWrite                         float64
+	//RamDiskBlocksWriteFallback                 float64
+	//RamDiskBytesWrite                          float64
+	//RamDiskBlocksReadHits                      float64
+	//RamDiskBlocksEvicted                       float64
+	//RamDiskBlocksEvictedWithoutRead            float64
+	//RamDiskBlocksEvictionWindowMsNumOps        float64
+	//RamDiskBlocksEvictionWindowMsAvgTime       float64
+	//RamDiskBlocksLazyPersisted                 float64
+	//RamDiskBlocksDeletedBeforeLazyPersisted    float64
+	//RamDiskBytesLazyPersisted                  float64
+	//RamDiskBlocksLazyPersistWindowMsNumOps     float64
+	//RamDiskBlocksLazyPersistWindowMsAvgTime    float64
+	//FsyncCount                                 float64
+	//VolumeFailures                             float64
+	//DatanodeNetworkErrors                      float64
+	//DataNodeActiveXceiversCount                float64
+	//ReadBlockOpNumOps                          float64
+	//ReadBlockOpAvgTime                         float64
+	//WriteBlockOpNumOps                         float64
+	//WriteBlockOpAvgTime                        float64
+	//BlockChecksumOpNumOps                      float64
+	//BlockChecksumOpAvgTime                     float64
+	//CopyBlockOpNumOps                          float64
+	//CopyBlockOpAvgTime                         float64
+	//ReplaceBlockOpNumOps                       float64
+	//ReplaceBlockOpAvgTime                      float64
+	//HeartbeatsNumOps                           float64
+	//HeartbeatsAvgTime                          float64
+	//HeartbeatsTotalNumOps                      float64
+	//HeartbeatsTotalAvgTime                     float64
+	//LifelinesNumOps                            float64
+	//LifelinesAvgTime                           float64
+	//BlockReportsNumOps                         float64
+	//BlockReportsAvgTime                        float64
+	//IncrementalBlockReportsNumOps              float64
+	//IncrementalBlockReportsAvgTime             float64
+	//CacheReportsNumOps                         float64
+	//CacheReportsAvgTime                        float64
+	//PacketAckRoundTripTimeNanosNumOps          float64
+	//PacketAckRoundTripTimeNanosAvgTime         float64
+	//FlushNanosNumOps                           float64
+	//FlushNanosAvgTime                          float64
+	//FsyncNanosNumOps                           float64
+	//FsyncNanosAvgTime                          float64
+	//SendDataPacketBlockedOnNetworkNanosNumOps  float64
+	//SendDataPacketBlockedOnNetworkNanosAvgTime float64
+	//SendDataPacketTransferNanosNumOps          float64
+	//SendDataPacketTransferNanosAvgTime         float64
+	//BlocksInPendingIBR                         float64
+	//BlocksReceivingInPendingIBR                float64
+	//BlocksReceivedInPendingIBR                 float64
+	//BlocksDeletedInPendingIBR                  float64
+	//EcReconstructionTasks                      float64
+	//EcFailedReconstructionTasks                float64
+	//EcDecodingTimeNanos                        float64
+	//EcReconstructionBytesRead                  float64
+	//EcReconstructionBytesWritten               float64
+	//EcReconstructionRemoteBytesRead            float64
+	//EcReconstructionReadTimeMillis             float64
+	//EcReconstructionDecodingTimeMillis         float64
+	//EcReconstructionWriteTimeMillis            float64
 }

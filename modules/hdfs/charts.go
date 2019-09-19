@@ -99,6 +99,21 @@ var fsNameSystemCharts = Charts{
 			{ID: "fsns_capacity_remaining", Name: "remaining", Div: 1024},
 			{ID: "fsns_capacity_used", Name: "used", Div: 1024},
 		},
+		Vars: Vars{
+			{ID: "fsns_capacity_total"},
+		},
+	},
+	{
+		ID:    "fs_name_system_used_capacity",
+		Title: "Used Capacity Across All Datanodes",
+		Units: "KiB",
+		Fam:   "fs name system",
+		Ctx:   "hdfs.used_capacity",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "fsns_capacity_used_dfs", Name: "dfs", Div: 1024},
+			{ID: "fsns_capacity_used_non_dfs", Name: "non_dfs", Div: 1024},
+		},
 	},
 	{
 		ID:    "fs_name_system_load",
@@ -146,19 +161,44 @@ var fsDatasetStateCharts = Charts{
 			{ID: "fsds_capacity_remaining", Name: "remaining", Div: 1024},
 			{ID: "fsds_capacity_used", Name: "used", Div: 1024},
 		},
+		Vars: Vars{
+			{ID: "fsds_capacity_total"},
+		},
+	},
+	{
+		ID:    "fs_dataset_state_used_capacity",
+		Title: "Used Capacity",
+		Units: "KiB",
+		Fam:   "fs dataset",
+		Ctx:   "hdfs.used_capacity",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "fsds_capacity_used_dfs", Name: "dfs", Div: 1024},
+			{ID: "fsds_capacity_used_non_dfs", Name: "non_dfs", Div: 1024},
+		},
 	},
 }
 
-func unknownNodeCharts() *Charts {
-	charts := Charts{}
-	panicIfError(charts.Add(*jvmCharts.Copy()...))
-	return &charts
+var fsDataNodeActivityCharts = Charts{
+	{
+		ID:    "dna_bandwidth",
+		Title: "Bandwidth",
+		Units: "KiB/s",
+		Fam:   "activity",
+		Ctx:   "hdfs.bandwidth",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "dna_bytes_read", Name: "reads", Div: 1024, Algo: module.Incremental},
+			{ID: "dna_bytes_written", Name: "writes", Div: -1024, Algo: module.Incremental},
+		},
+	},
 }
 
 func dataNodeCharts() *Charts {
 	charts := Charts{}
 	panicIfError(charts.Add(*jvmCharts.Copy()...))
 	panicIfError(charts.Add(*fsDatasetStateCharts.Copy()...))
+	panicIfError(charts.Add(*fsDataNodeActivityCharts.Copy()...))
 	return &charts
 }
 
