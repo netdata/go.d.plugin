@@ -119,12 +119,12 @@ func (h HDFS) collectFsn(mx *metrics, raw rawJMX) error {
 		return err
 	}
 
-	var fsn fsnNameSystemMetrics
+	var fsn fsNameSystem
 	err = json.Unmarshal(b, &fsn)
 	if err != nil {
 		return err
 	}
 
-	mx.fsnNameSystemMetrics = &fsn
+	mx.fsNameSystem = &fsn
 	return nil
 }

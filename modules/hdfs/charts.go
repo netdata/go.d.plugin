@@ -13,7 +13,7 @@ var jvmCharts = Charts{
 		ID:    "heap_memory",
 		Title: "Heap Memory",
 		Units: "MiB",
-		Fam:   "heap memory",
+		Fam:   "jvm",
 		Ctx:   "hdfs.heap_memory",
 		Type:  module.Area,
 		Dims: Dims{
@@ -28,7 +28,7 @@ var jvmCharts = Charts{
 		ID:    "gc_count_total",
 		Title: "Total GC Count",
 		Units: "events/s",
-		Fam:   "gc",
+		Fam:   "jvm",
 		Ctx:   "hdfs.gc_count_total",
 		Dims: Dims{
 			{ID: "jvm_gc_count", Name: "gc", Algo: module.Incremental},
@@ -38,7 +38,7 @@ var jvmCharts = Charts{
 		ID:    "gc_time_total",
 		Title: "Total GC Time",
 		Units: "ms",
-		Fam:   "gc",
+		Fam:   "jvm",
 		Ctx:   "hdfs.gc_time_total",
 		Dims: Dims{
 			{ID: "jvm_gc_time_millis", Name: "time", Algo: module.Incremental},
@@ -48,7 +48,7 @@ var jvmCharts = Charts{
 		ID:    "gc_threshold",
 		Title: "Number of Times That the GC Threshold is Exceeded",
 		Units: "events/s",
-		Fam:   "gc",
+		Fam:   "jvm",
 		Ctx:   "hdfs.gc_threshold",
 		Dims: Dims{
 			{ID: "jvm_gc_num_info_threshold_exceeded", Name: "info", Algo: module.Incremental},
@@ -59,7 +59,7 @@ var jvmCharts = Charts{
 		ID:    "threads",
 		Title: "Current Number of Threads",
 		Units: "num",
-		Fam:   "threads",
+		Fam:   "jvm",
 		Ctx:   "hdfs.threads",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -75,7 +75,7 @@ var jvmCharts = Charts{
 		ID:    "logs_total",
 		Title: "Total Number of Logs",
 		Units: "events/s",
-		Fam:   "logs",
+		Fam:   "jvm",
 		Ctx:   "hdfs.logs_total",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -92,44 +92,44 @@ var fsnCharts = Charts{
 		ID:    "capacity",
 		Title: "Current Capacity Across All Datanodes",
 		Units: "KiB",
-		Fam:   "capacity",
+		Fam:   "fs name system",
 		Ctx:   "hdfs.capacity",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "fsn_capacity_remaining", Name: "remaining", Div: 1024},
-			{ID: "jvm_capacity_used", Name: "used", Div: 1024},
+			{ID: "fsns_capacity_remaining", Name: "remaining", Div: 1024},
+			{ID: "fsns_capacity_used", Name: "used", Div: 1024},
 		},
 	},
 	{
 		ID:    "load",
 		Title: "Current Number of Connections",
 		Units: "num",
-		Fam:   "load",
+		Fam:   "fs name system",
 		Ctx:   "hdfs.load",
 		Dims: Dims{
-			{ID: "fsn_total_load", Name: "connections"},
+			{ID: "fsns_total_load", Name: "connections"},
 		},
 	},
 	{
 		ID:    "volume_failures_total",
 		Title: "Total Number of Volume Failures Across All Datanodes",
 		Units: "events/s",
-		Fam:   "volume",
+		Fam:   "fs name system",
 		Ctx:   "hdfs.volume_failures_total",
 		Dims: Dims{
-			{ID: "fsn_volume_failures_total", Name: "failures"},
+			{ID: "fsns_volume_failures_total", Name: "failures", Algo: module.Incremental},
 		},
 	},
 	{
 		ID:    "data_nodes",
 		Title: "Number of Data Nodes",
 		Units: "num",
-		Fam:   "datanodes",
+		Fam:   "fs name system",
 		Ctx:   "hdfs.data_nodes",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "fsn_num_live_data_nodes", Name: "live"},
-			{ID: "jvm_num_dead_data_nodes", Name: "dead"},
+			{ID: "fsns_num_live_data_nodes", Name: "live"},
+			{ID: "fsns_num_dead_data_nodes", Name: "dead"},
 		},
 	},
 }

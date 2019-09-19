@@ -255,12 +255,12 @@ func TestHDFS_CollectNameNode(t *testing.T) {
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
-		"fsn_capacity_remaining":             65861697536,
-		"fsn_capacity_used":                  2372116480,
-		"fsn_num_dead_data_nodes":            0,
-		"fsn_num_live_data_nodes":            2,
-		"fsn_total_load":                     2,
-		"fsn_volume_failures_total":          0,
+		"fsns_capacity_remaining":            65861697536,
+		"fsns_capacity_used":                 2372116480,
+		"fsns_num_dead_data_nodes":           0,
+		"fsns_num_live_data_nodes":           2,
+		"fsns_total_load":                    2,
+		"fsns_volume_failures_total":         0,
 		"jvm_gc_count":                       1699,
 		"jvm_gc_num_info_threshold_exceeded": 0,
 		"jvm_gc_num_warn_threshold_exceeded": 0,

@@ -23,7 +23,7 @@ func New() *HDFS {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: "http://127.0.0.1:8081/jmx",
+				UserURL: "http://192.168.56.1:8081/jmx",
 			},
 			Client: web.Client{
 				Timeout: web.Duration{Duration: time.Second}},
