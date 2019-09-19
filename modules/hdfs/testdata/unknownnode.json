@@ -19,16 +19,16 @@
       "GcNumWarnThresholdExceeded":0,
       "GcNumInfoThresholdExceeded":0,
       "GcTotalExtraSleepTime":8783,
-      "ThreadsNew":0,
-      "ThreadsRunnable":11,
-      "ThreadsBlocked":0,
-      "ThreadsWaiting":11,
-      "ThreadsTimedWaiting":25,
-      "ThreadsTerminated":0,
-      "LogFatal":0,
-      "LogError":1,
-      "LogWarn":2,
-      "LogInfo":257
+      "ThreadsNew":1,
+      "ThreadsRunnable":2,
+      "ThreadsBlocked":3,
+      "ThreadsWaiting":4,
+      "ThreadsTimedWaiting":5,
+      "ThreadsTerminated":6,
+      "LogFatal":10,
+      "LogError":11,
+      "LogWarn":12,
+      "LogInfo":13
     }
   ]
 }

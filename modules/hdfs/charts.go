@@ -134,28 +134,26 @@ var fsnCharts = Charts{
 	},
 }
 
-var (
-	unknownNodeCharts = func() Charts {
-		charts := Charts{}
-		panicIf(charts.Add(*jvmCharts.Copy()...))
-		return charts
-	}()
+func unknownNodeCharts() *Charts {
+	charts := Charts{}
+	panicIfError(charts.Add(*jvmCharts.Copy()...))
+	return &charts
+}
 
-	dataNodeCharts = func() Charts {
-		charts := Charts{}
-		panicIf(charts.Add(*jvmCharts.Copy()...))
-		return charts
-	}()
+func dataNodeCharts() *Charts {
+	charts := Charts{}
+	panicIfError(charts.Add(*jvmCharts.Copy()...))
+	return &charts
+}
 
-	nameNodeCharts = func() Charts {
-		charts := Charts{}
-		panicIf(charts.Add(*jvmCharts.Copy()...))
-		panicIf(charts.Add(*fsnCharts.Copy()...))
-		return charts
-	}()
-)
+func nameNodeCharts() *Charts {
+	charts := Charts{}
+	panicIfError(charts.Add(*jvmCharts.Copy()...))
+	panicIfError(charts.Add(*fsnCharts.Copy()...))
+	return &charts
+}
 
-func panicIf(err error) {
+func panicIfError(err error) {
 	if err != nil {
 		panic(err)
 	}

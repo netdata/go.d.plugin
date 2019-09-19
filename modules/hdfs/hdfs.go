@@ -1,8 +1,8 @@
 package hdfs
 
 import (
-	"bytes"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -35,12 +35,12 @@ func New() *HDFS {
 	}
 }
 
-type nodeType int
+type nodeType string
 
 const (
-	nameNodeType nodeType = iota
-	dataNodeType
-	unknownNodeType
+	unknownNodeType nodeType = "unknown"
+	dataNodeType    nodeType = "DataNode"
+	nameNodeType    nodeType = "NameNode"
 )
 
 // Config is the HDFS module configuration.
@@ -69,35 +69,35 @@ func (h HDFS) createClient() (*client, error) {
 	return newClient(httpClient, h.Request), nil
 }
 
+func parseNodeType(v string) nodeType {
+	t := nodeType(strings.Trim(v, "\""))
+	if t == nameNodeType || t == dataNodeType {
+		return t
+	}
+	return unknownNodeType
+}
+
 func (h *HDFS) determineNodeType() (nodeType, error) {
 	var raw rawJMX
 	err := h.client.doOKWithDecodeJSON(&raw)
 	if err != nil {
-		return -1, err
+		return "", err
 	}
 
 	if raw.isEmpty() {
-		return -1, errors.New("empty response")
+		return "", errors.New("empty response")
 	}
 
 	jvm := raw.findJvm()
 	if jvm == nil {
-		return -1, errors.New("couldn't find jvm in response")
+		return "", errors.New("couldn't find jvm in response")
 	}
 
 	v, ok := jvm["tag.ProcessName"]
 	if !ok {
-		return -1, errors.New("couldn't find process name in response")
+		return "", errors.New("couldn't find process name in response")
 	}
-
-	switch {
-	default:
-		return unknownNodeType, nil
-	case bytes.Equal(v, []byte("\"NameNode\"")):
-		return nameNodeType, nil
-	case bytes.Equal(v, []byte("\"DataNode\"")):
-		return dataNodeType, nil
-	}
+	return parseNodeType(string(v)), nil
 }
 
 // Init makes initialization.
@@ -109,6 +109,11 @@ func (h *HDFS) Init() bool {
 	}
 	h.client = cl
 
+	return true
+}
+
+// Check makes check.
+func (h *HDFS) Check() bool {
 	t, err := h.determineNodeType()
 	if err != nil {
 		h.Errorf("error on node type determination : %v", err)
@@ -116,11 +121,6 @@ func (h *HDFS) Init() bool {
 	}
 	h.nodeType = t
 
-	return true
-}
-
-// Check makes check.
-func (h HDFS) Check() bool {
 	return len(h.Collect()) > 0
 }
 
@@ -128,11 +128,11 @@ func (h HDFS) Check() bool {
 func (h HDFS) Charts() *Charts {
 	switch h.nodeType {
 	default:
-		return unknownNodeCharts.Copy()
+		return unknownNodeCharts()
 	case nameNodeType:
-		return nameNodeCharts.Copy()
+		return nameNodeCharts()
 	case dataNodeType:
-		return dataNodeCharts.Copy()
+		return dataNodeCharts()
 	}
 }
 

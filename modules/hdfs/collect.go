@@ -27,9 +27,9 @@ func (r rawJMX) find(f func(rawData) bool) rawData {
 	return nil
 }
 
-func isJvm(data rawData) bool { return string(data["modelerType"]) == "JvmMetrics" }
+func isJvm(data rawData) bool { return string(data["modelerType"]) == "\"JvmMetrics\"" }
 
-func isFsn(data rawData) bool { return string(data["modelerType"]) == "FSNamesystem" }
+func isFsn(data rawData) bool { return string(data["modelerType"]) == "\"FSNamesystem\"" }
 
 func (r rawJMX) findJvm() rawData { return r.find(isJvm) }
 

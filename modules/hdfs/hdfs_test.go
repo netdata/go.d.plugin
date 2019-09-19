@@ -13,11 +13,13 @@ import (
 )
 
 var (
-	testDataNodeData, _ = ioutil.ReadFile("testdata/datanode.json")
-	testNameNodeData, _ = ioutil.ReadFile("testdata/namenode.json")
+	testUnknownNodeData, _ = ioutil.ReadFile("testdata/unknownnode.json")
+	testDataNodeData, _    = ioutil.ReadFile("testdata/datanode.json")
+	testNameNodeData, _    = ioutil.ReadFile("testdata/namenode.json")
 )
 
 func Test_readTestData(t *testing.T) {
+	assert.NotNil(t, testUnknownNodeData)
 	assert.NotNil(t, testDataNodeData)
 	assert.NotNil(t, testNameNodeData)
 }
@@ -43,6 +45,38 @@ func TestHDFS_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
+				_, _ = w.Write(testNameNodeData)
+			}))
+	defer ts.Close()
+
+	job := New()
+	job.UserURL = ts.URL
+	require.True(t, job.Init())
+
+	assert.True(t, job.Check())
+	assert.NotZero(t, job.nodeType)
+}
+
+func TestHDFS_CheckUnknownNodeType(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				_, _ = w.Write(testUnknownNodeData)
+			}))
+	defer ts.Close()
+
+	job := New()
+	job.UserURL = ts.URL
+	require.True(t, job.Init())
+
+	assert.True(t, job.Check())
+	assert.Equal(t, unknownNodeType, job.nodeType)
+}
+
+func TestHDFS_CheckDataNodeType(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
 				_, _ = w.Write(testDataNodeData)
 			}))
 	defer ts.Close()
@@ -52,6 +86,38 @@ func TestHDFS_Check(t *testing.T) {
 	require.True(t, job.Init())
 
 	assert.True(t, job.Check())
+	assert.Equal(t, dataNodeType, job.nodeType)
+}
+
+func TestHDFS_CheckNameNodeType(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				_, _ = w.Write(testNameNodeData)
+			}))
+	defer ts.Close()
+
+	job := New()
+	job.UserURL = ts.URL
+	require.True(t, job.Init())
+
+	assert.True(t, job.Check())
+	assert.Equal(t, nameNodeType, job.nodeType)
+}
+
+func TestHDFS_CheckErrorOnNodeTypeDetermination(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				_, _ = w.Write([]byte("{}"))
+			}))
+	defer ts.Close()
+
+	job := New()
+	job.UserURL = ts.URL
+	require.True(t, job.Init())
+
+	assert.False(t, job.Check())
 }
 
 func TestHDFS_CheckNoResponse(t *testing.T) {
@@ -64,6 +130,27 @@ func TestHDFS_CheckNoResponse(t *testing.T) {
 
 func TestHDFS_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
+}
+
+func TestHDFS_ChartsUnknownNode(t *testing.T) {
+	job := New()
+	job.nodeType = unknownNodeType
+
+	assert.Equal(t, unknownNodeCharts(), job.Charts())
+}
+
+func TestHDFS_ChartsDataNode(t *testing.T) {
+	job := New()
+	job.nodeType = dataNodeType
+
+	assert.Equal(t, dataNodeCharts(), job.Charts())
+}
+
+func TestHDFS_ChartsNameNode(t *testing.T) {
+	job := New()
+	job.nodeType = nameNodeType
+
+	assert.Equal(t, nameNodeCharts(), job.Charts())
 }
 
 func TestHDFS_Cleanup(t *testing.T) {
