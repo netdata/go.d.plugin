@@ -135,6 +135,31 @@
       "EcReconstructionReadTimeMillis":0,
       "EcReconstructionDecodingTimeMillis":0,
       "EcReconstructionWriteTimeMillis":0
+    },
+    {
+      "name":"Hadoop:service=DataNode,name=RpcActivityForPort9867",
+      "modelerType":"RpcActivityForPort9867",
+      "tag.port":"9867",
+      "tag.Context":"rpc",
+      "tag.NumOpenConnectionsPerUser":"{}",
+      "tag.Hostname":"dev-slave-01.dev.local",
+      "ReceivedBytes":7,
+      "SentBytes":187,
+      "RpcQueueTimeNumOps":0,
+      "RpcQueueTimeAvgTime":0.0,
+      "RpcProcessingTimeNumOps":0,
+      "RpcProcessingTimeAvgTime":0.0,
+      "DeferredRpcProcessingTimeNumOps":0,
+      "DeferredRpcProcessingTimeAvgTime":0.0,
+      "RpcAuthenticationFailures":0,
+      "RpcAuthenticationSuccesses":0,
+      "RpcAuthorizationFailures":0,
+      "RpcAuthorizationSuccesses":0,
+      "RpcClientBackoff":0,
+      "RpcSlowCalls":0,
+      "NumOpenConnections":0,
+      "CallQueueLength":0,
+      "NumDroppedConnections":0
     }
   ]
 }

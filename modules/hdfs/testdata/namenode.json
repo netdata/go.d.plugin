@@ -102,6 +102,31 @@
       "NumInMaintenanceLiveDataNodes":0,
       "NumInMaintenanceDeadDataNodes":0,
       "NumEnteringMaintenanceDataNodes":0
+    },
+    {
+      "name":"Hadoop:service=NameNode,name=RpcActivityForPort9000",
+      "modelerType":"RpcActivityForPort9000",
+      "tag.port":"9000",
+      "tag.Context":"rpc",
+      "tag.NumOpenConnectionsPerUser":"{\"hadoop\":2}",
+      "tag.Hostname":"dev-master-02.dev.local",
+      "ReceivedBytes":240431351,
+      "SentBytes":25067414,
+      "RpcQueueTimeNumOps":585402,
+      "RpcQueueTimeAvgTime":0.05813953488372093,
+      "RpcProcessingTimeNumOps":585402,
+      "RpcProcessingTimeAvgTime":0.0,
+      "DeferredRpcProcessingTimeNumOps":0,
+      "DeferredRpcProcessingTimeAvgTime":0.0,
+      "RpcAuthenticationFailures":0,
+      "RpcAuthenticationSuccesses":0,
+      "RpcAuthorizationFailures":0,
+      "RpcAuthorizationSuccesses":14327,
+      "RpcClientBackoff":0,
+      "RpcSlowCalls":0,
+      "NumOpenConnections":2,
+      "CallQueueLength":0,
+      "NumDroppedConnections":0
     }
   ]
 }

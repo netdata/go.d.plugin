@@ -87,6 +87,71 @@ var jvmCharts = Charts{
 	},
 }
 
+var rpcActivityCharts = Charts{
+	{
+		ID:    "rpc_bandwidth",
+		Title: "RPC Bandwidth",
+		Units: "kilobits/s",
+		Fam:   "rpc",
+		Ctx:   "hdfs.rpc_bandwidth",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "rpc_received_bytes", Name: "received", Div: 1000, Algo: module.Incremental},
+			{ID: "rpc_sent_bytes", Name: "sent", Div: -1000, Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "rpc_calls",
+		Title: "RPC calls",
+		Units: "events/s",
+		Fam:   "rpc",
+		Ctx:   "hdfs.rpc_calls",
+		Dims: Dims{
+			{ID: "rpc_queue_time_num_ops", Name: "calls", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "rpc_open_connections",
+		Title: "RPC Open Connections",
+		Units: "connections",
+		Fam:   "rpc",
+		Ctx:   "hdfs.open_connections",
+		Dims: Dims{
+			{ID: "rpc_num_open_connections", Name: "open"},
+		},
+	},
+	{
+		ID:    "rpc_call_queue_length",
+		Title: "RPC Call Queue Length",
+		Units: "num",
+		Fam:   "rpc",
+		Ctx:   "hdfs.call_queue_length",
+		Dims: Dims{
+			{ID: "rpc_call_queue_length", Name: "length"},
+		},
+	},
+	{
+		ID:    "rpc_avg_queue_time",
+		Title: "RPC Avg Queue Time",
+		Units: "ms",
+		Fam:   "rpc",
+		Ctx:   "hdfs.avg_queue_time",
+		Dims: Dims{
+			{ID: "rpc_queue_time_avg_time", Name: "time", Div: 1000},
+		},
+	},
+	{
+		ID:    "rpc_avg_processing_time",
+		Title: "RPC Avg Processing Time",
+		Units: "ms",
+		Fam:   "rpc",
+		Ctx:   "hdfs.avg_processing_time",
+		Dims: Dims{
+			{ID: "rpc_processing_time_avg_time", Name: "time", Div: 1000},
+		},
+	},
+}
+
 var fsNameSystemCharts = Charts{
 	{
 		ID:    "fs_name_system_capacity",
@@ -197,6 +262,7 @@ var fsDataNodeActivityCharts = Charts{
 func dataNodeCharts() *Charts {
 	charts := Charts{}
 	panicIfError(charts.Add(*jvmCharts.Copy()...))
+	panicIfError(charts.Add(*rpcActivityCharts.Copy()...))
 	panicIfError(charts.Add(*fsDatasetStateCharts.Copy()...))
 	panicIfError(charts.Add(*fsDataNodeActivityCharts.Copy()...))
 	return &charts
@@ -205,6 +271,7 @@ func dataNodeCharts() *Charts {
 func nameNodeCharts() *Charts {
 	charts := Charts{}
 	panicIfError(charts.Add(*jvmCharts.Copy()...))
+	panicIfError(charts.Add(*rpcActivityCharts.Copy()...))
 	panicIfError(charts.Add(*fsNameSystemCharts.Copy()...))
 	return &charts
 }

@@ -153,6 +153,16 @@ func TestHDFS_CollectDataNode(t *testing.T) {
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
+	//m := job.Collect()
+	//l := make([]string, 0)
+	//for k := range m {
+	//	l = append(l, k)
+	//}
+	//sort.Strings(l)
+	//for _, v := range l {
+	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", v, m[v]))
+	//}
+
 	expected := map[string]int64{
 		"dna_bytes_read":                     80689178,
 		"dna_bytes_written":                  500960407,
@@ -179,6 +189,13 @@ func TestHDFS_CollectDataNode(t *testing.T) {
 		"jvm_threads_terminated":             0,
 		"jvm_threads_timed_waiting":          25,
 		"jvm_threads_waiting":                11,
+		"rpc_call_queue_length":              0,
+		"rpc_num_open_connections":           0,
+		"rpc_processing_time_avg_time":       0,
+		"rpc_queue_time_avg_time":            0,
+		"rpc_queue_time_num_ops":             0,
+		"rpc_received_bytes":                 7,
+		"rpc_sent_bytes":                     187,
 	}
 
 	assert.Equal(t, expected, job.Collect())
@@ -225,6 +242,13 @@ func TestHDFS_CollectNameNode(t *testing.T) {
 		"jvm_threads_terminated":             0,
 		"jvm_threads_timed_waiting":          34,
 		"jvm_threads_waiting":                6,
+		"rpc_call_queue_length":              0,
+		"rpc_num_open_connections":           2,
+		"rpc_processing_time_avg_time":       0,
+		"rpc_queue_time_avg_time":            58,
+		"rpc_queue_time_num_ops":             585402,
+		"rpc_received_bytes":                 240431351,
+		"rpc_sent_bytes":                     25067414,
 	}
 
 	assert.Equal(t, expected, job.Collect())

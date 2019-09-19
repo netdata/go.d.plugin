@@ -7,10 +7,11 @@ package hdfs
 // https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/Metrics.html
 
 type metrics struct {
-	*jvmMetrics              `stm:"jvm"`  // both
-	*fsNameSystemMetrics     `stm:"fsns"` // namenode
-	*fsDatasetStateMetrics   `stm:"fsds"` // datanode
-	*dataNodeActivityMetrics `stm:"dna"`  // datanode
+	Jvm              *jvmMetrics              `stm:"jvm"`  // both
+	Rpc              *rpcActivityMetrics      `stm:"rpc"`  // both
+	FSNameSystem     *fsNameSystemMetrics     `stm:"fsns"` // namenode
+	FSDatasetState   *fsDatasetStateMetrics   `stm:"fsds"` // datanode
+	DataNodeActivity *dataNodeActivityMetrics `stm:"dna"`  // datanode
 }
 
 type jvmMetrics struct {
@@ -38,6 +39,26 @@ type jvmMetrics struct {
 	LogError                   float64 `stm:"log_error"`
 	LogWarn                    float64 `stm:"log_warn"`
 	LogInfo                    float64 `stm:"log_info"`
+}
+
+type rpcActivityMetrics struct {
+	ReceivedBytes       float64 `stm:"received_bytes"`
+	SentBytes           float64 `stm:"sent_bytes"`
+	RpcQueueTimeNumOps  float64 `stm:"queue_time_num_ops"`
+	RpcQueueTimeAvgTime float64 `stm:"queue_time_avg_time,1000,1"`
+	//RpcProcessingTimeNumOps  float64
+	RpcProcessingTimeAvgTime float64 `stm:"processing_time_avg_time,1000,1"`
+	//DeferredRpcProcessingTimeNumOps  float64
+	//DeferredRpcProcessingTimeAvgTime float64
+	//RpcAuthenticationFailures        float64
+	//RpcAuthenticationSuccesses       float64
+	//RpcAuthorizationFailures         float64
+	//RpcAuthorizationSuccesses        float64
+	//RpcClientBackoff                 float64
+	//RpcSlowCalls                     float64
+	NumOpenConnections float64 `stm:"num_open_connections"`
+	CallQueueLength    float64 `stm:"call_queue_length"`
+	//NumDroppedConnections            float64
 }
 
 type fsNameSystemMetrics struct {
@@ -134,6 +155,7 @@ type fsDatasetStateMetrics struct {
 }
 
 type dataNodeActivityMetrics struct {
+	HostName     string  `json:"tag.Hostname"`
 	BytesWritten float64 `stm:"bytes_written"`
 	//TotalWriteTime                             float64
 	BytesRead float64 `stm:"bytes_read"`

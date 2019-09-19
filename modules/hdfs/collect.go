@@ -34,6 +34,11 @@ func (r rawJMX) findJvm() rawData {
 	return r.find(f)
 }
 
+func (r rawJMX) findRPCActivity() rawData {
+	f := func(data rawData) bool { return strings.HasPrefix(string(data["modelerType"]), "\"RpcActivityForPort") }
+	return r.find(f)
+}
+
 func (r rawJMX) findFSNameSystem() rawData {
 	f := func(data rawData) bool { return string(data["modelerType"]) == "\"FSNamesystem\"" }
 	return r.find(f)
@@ -81,36 +86,46 @@ func (h HDFS) collectRawJMX(raw rawJMX) *metrics {
 func (h HDFS) collectNameNode(mx *metrics, raw rawJMX) {
 	err := h.collectJVM(mx, raw)
 	if err != nil {
-		h.Errorf("error on collecting jvm : %v", err)
+		h.Debugf("error on collecting jvm : %v", err)
+	}
+
+	err = h.collectRPCActivity(mx, raw)
+	if err != nil {
+		h.Debugf("error on collecting rpc activity : %v", err)
 	}
 
 	err = h.collectFSNameSystem(mx, raw)
 	if err != nil {
-		h.Errorf("error on collecting fs name system : %v", err)
+		h.Debugf("error on collecting fs name system : %v", err)
 	}
 }
 
 func (h HDFS) collectDataNode(mx *metrics, raw rawJMX) {
 	err := h.collectJVM(mx, raw)
 	if err != nil {
-		h.Errorf("error on collecting jvm : %v", err)
+		h.Debugf("error on collecting jvm : %v", err)
+	}
+
+	err = h.collectRPCActivity(mx, raw)
+	if err != nil {
+		h.Debugf("error on collecting rpc activity : %v", err)
 	}
 
 	err = h.collectFSDatasetState(mx, raw)
 	if err != nil {
-		h.Errorf("error on collecting fs dataset state : %v", err)
+		h.Debugf("error on collecting fs dataset state : %v", err)
 	}
 
 	err = h.collectDataNodeActivity(mx, raw)
 	if err != nil {
-		h.Errorf("error on collecting datanode activity state : %v", err)
+		h.Debugf("error on collecting datanode activity state : %v", err)
 	}
 }
 
 func (h HDFS) collectJVM(mx *metrics, raw rawJMX) error {
 	v := raw.findJvm()
 	if v == nil {
-		return errors.New("couldn't find jvm data")
+		return nil
 	}
 
 	var jvm jvmMetrics
@@ -119,7 +134,23 @@ func (h HDFS) collectJVM(mx *metrics, raw rawJMX) error {
 		return err
 	}
 
-	mx.jvmMetrics = &jvm
+	mx.Jvm = &jvm
+	return nil
+}
+
+func (h HDFS) collectRPCActivity(mx *metrics, raw rawJMX) error {
+	v := raw.findRPCActivity()
+	if v == nil {
+		return nil
+	}
+
+	var rpc rpcActivityMetrics
+	err := writeJSONTo(&rpc, v)
+	if err != nil {
+		return err
+	}
+
+	mx.Rpc = &rpc
 	return nil
 }
 
@@ -137,7 +168,7 @@ func (h HDFS) collectFSNameSystem(mx *metrics, raw rawJMX) error {
 
 	fs.CapacityUsed = fs.CapacityDfsUsed + fs.CapacityUsedNonDFS
 
-	mx.fsNameSystemMetrics = &fs
+	mx.FSNameSystem = &fs
 	return nil
 }
 
@@ -156,7 +187,7 @@ func (h HDFS) collectFSDatasetState(mx *metrics, raw rawJMX) error {
 	fs.CapacityUsed = fs.Capacity - fs.Remaining
 	fs.CapacityUsedNonDFS = fs.CapacityUsed - fs.DfsUsed
 
-	mx.fsDatasetStateMetrics = &fs
+	mx.FSDatasetState = &fs
 	return nil
 }
 
@@ -172,7 +203,7 @@ func (h HDFS) collectDataNodeActivity(mx *metrics, raw rawJMX) error {
 		return err
 	}
 
-	mx.dataNodeActivityMetrics = &dna
+	mx.DataNodeActivity = &dna
 	return nil
 }
 
