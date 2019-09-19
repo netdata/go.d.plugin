@@ -17,8 +17,8 @@ type jvmMetrics struct {
 	//MemNonHeapUsedM            float64 `stm:"mem_non_heap_used,1000,1"`
 	//MemNonHeapCommittedM       float64 `stm:"mem_non_heap_committed,1000,1"`
 	//MemNonHeapMaxM             float64 `stm:"mem_non_heap_max"`
-	MemHeapUsedM      float64 `stm:"mem_heap_used"`
-	MemHeapCommittedM float64 `stm:"mem_heap_committed"`
+	MemHeapUsedM      float64 `stm:"mem_heap_used,1000,1"`
+	MemHeapCommittedM float64 `stm:"mem_heap_committed,1000,1"`
 	MemHeapMaxM       float64 `stm:"mem_heap_max"`
 	//MemMaxM                    float64 `stm:"mem_max"`
 	GcCount                    float64 `stm:"gc_count"`

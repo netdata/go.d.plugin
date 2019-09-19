@@ -170,6 +170,16 @@ func TestHDFS_CollectUnknownNode(t *testing.T) {
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
+	//m := job.Collect()
+	//l := make([]string, 0)
+	//for k := range m {
+	//	l = append(l, k)
+	//}
+	//sort.Strings(l)
+	//for _, v := range l {
+	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", v, m[v]))
+	//}
+
 	expected := map[string]int64{
 		"jvm_gc_count":                       155,
 		"jvm_gc_num_info_threshold_exceeded": 0,
@@ -180,9 +190,9 @@ func TestHDFS_CollectUnknownNode(t *testing.T) {
 		"jvm_log_fatal":                      10,
 		"jvm_log_info":                       13,
 		"jvm_log_warn":                       12,
-		"jvm_mem_heap_committed":             60,
+		"jvm_mem_heap_committed":             60500,
 		"jvm_mem_heap_max":                   843,
-		"jvm_mem_heap_used":                  18,
+		"jvm_mem_heap_used":                  18885,
 		"jvm_threads_blocked":                3,
 		"jvm_threads_new":                    1,
 		"jvm_threads_runnable":               2,
@@ -217,9 +227,9 @@ func TestHDFS_CollectDataNode(t *testing.T) {
 		"jvm_log_fatal":                      0,
 		"jvm_log_info":                       257,
 		"jvm_log_warn":                       2,
-		"jvm_mem_heap_committed":             60,
+		"jvm_mem_heap_committed":             60500,
 		"jvm_mem_heap_max":                   843,
-		"jvm_mem_heap_used":                  18,
+		"jvm_mem_heap_used":                  18885,
 		"jvm_threads_blocked":                0,
 		"jvm_threads_new":                    0,
 		"jvm_threads_runnable":               11,
@@ -244,16 +254,6 @@ func TestHDFS_CollectNameNode(t *testing.T) {
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
-	//m := job.Collect()
-	//l := make([]string, 0)
-	//for k := range m {
-	//	l = append(l, k)
-	//}
-	//sort.Strings(l)
-	//for _, v := range l {
-	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", v, m[v]))
-	//}
-
 	expected := map[string]int64{
 		"fsn_capacity_remaining":             65861697536,
 		"fsn_capacity_used":                  2372116480,
@@ -270,9 +270,9 @@ func TestHDFS_CollectNameNode(t *testing.T) {
 		"jvm_log_fatal":                      0,
 		"jvm_log_info":                       3382077,
 		"jvm_log_warn":                       3378983,
-		"jvm_mem_heap_committed":             67,
+		"jvm_mem_heap_committed":             67000,
 		"jvm_mem_heap_max":                   843,
-		"jvm_mem_heap_used":                  26,
+		"jvm_mem_heap_used":                  26603,
 		"jvm_threads_blocked":                0,
 		"jvm_threads_new":                    0,
 		"jvm_threads_runnable":               7,
