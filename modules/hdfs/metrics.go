@@ -139,11 +139,11 @@ type fsNameSystemMetrics struct {
 }
 
 type fsDatasetStateMetrics struct {
-	HostName  string  `json:"tag.Hostname"`
-	Capacity  float64 `stm:"capacity_total"`
-	DfsUsed   float64 `stm:"capacity_used_dfs"`
-	Remaining float64 `stm:"capacity_remaining"`
-	//NumFailedVolumes           float64 `stm:"NumFailedVolumes"`
+	HostName         string  `json:"tag.Hostname"`
+	Capacity         float64 `stm:"capacity_total"`
+	DfsUsed          float64 `stm:"capacity_used_dfs"`
+	Remaining        float64 `stm:"capacity_remaining"`
+	NumFailedVolumes float64 `stm:"num_failed_volumes"`
 	//LastVolumeFailureDate      float64 `stm:"LastVolumeFailureDate"`
 	//EstimatedCapacityLostTotal float64 `stm:"EstimatedCapacityLostTotal"`
 	//CacheUsed                  float64 `stm:"CacheUsed"`

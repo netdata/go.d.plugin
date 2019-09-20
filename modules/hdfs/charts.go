@@ -275,6 +275,16 @@ var fsDatasetStateCharts = Charts{
 			{ID: "fsds_capacity_used_non_dfs", Name: "non_dfs", Div: 1024},
 		},
 	},
+	{
+		ID:    "fs_dataset_state_num_failed_volumes",
+		Title: "Number of Failed Volumes",
+		Units: "num",
+		Fam:   "fs dataset",
+		Ctx:   "hdfs.num_failed_volumes",
+		Dims: Dims{
+			{ID: "fsds_num_failed_volumes", Name: "failed volumes"},
+		},
+	},
 }
 
 var fsDataNodeActivityCharts = Charts{

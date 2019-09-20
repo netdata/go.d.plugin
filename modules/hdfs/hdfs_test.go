@@ -160,6 +160,7 @@ func TestHDFS_CollectDataNode(t *testing.T) {
 		"fsds_capacity_used":                 20754776064,
 		"fsds_capacity_used_dfs":             1186058240,
 		"fsds_capacity_used_non_dfs":         19568717824,
+		"fsds_num_failed_volumes":            0,
 		"jvm_gc_count":                       155,
 		"jvm_gc_num_info_threshold_exceeded": 0,
 		"jvm_gc_num_warn_threshold_exceeded": 0,
