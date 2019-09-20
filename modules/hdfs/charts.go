@@ -182,12 +182,12 @@ var fsNameSystemCharts = Charts{
 	},
 	{
 		ID:    "fs_name_system_load",
-		Title: "Number of Connections",
-		Units: "num",
+		Title: "Number of Concurrent File Accesses (read/write) Across All DataNodes",
+		Units: "load",
 		Fam:   "fs name system",
 		Ctx:   "hdfs.load",
 		Dims: Dims{
-			{ID: "fsns_total_load", Name: "connections"},
+			{ID: "fsns_total_load", Name: "load"},
 		},
 	},
 	{
@@ -201,6 +201,38 @@ var fsNameSystemCharts = Charts{
 		},
 	},
 	{
+		ID:    "fs_files_total",
+		Title: "Number of Tracked Files",
+		Units: "num",
+		Fam:   "fs name system",
+		Ctx:   "hdfs.files_total",
+		Dims: Dims{
+			{ID: "fsns_files_total", Name: "files"},
+		},
+	},
+	{
+		ID:    "fs_blocks_total",
+		Title: "Number of Allocated Blocks in the System",
+		Units: "num",
+		Fam:   "fs name system",
+		Ctx:   "hdfs.blocks_total",
+		Dims: Dims{
+			{ID: "fsns_blocks_total", Name: "blocks"},
+		},
+	},
+	{
+		ID:    "fs_problem_blocks",
+		Title: "Number of Problem Blocks (can point to an unhealthy cluster)",
+		Units: "num",
+		Fam:   "fs name system",
+		Ctx:   "hdfs.blocks",
+		Dims: Dims{
+			{ID: "fsns_corrupt_blocks", Name: "corrupt"},
+			{ID: "fsns_missing_blocks", Name: "missing"},
+			{ID: "fsns_under_replicated_blocks", Name: "under_replicated"},
+		},
+	},
+	{
 		ID:    "fs_name_system_data_nodes",
 		Title: "Number of Data Nodes",
 		Units: "num",
@@ -210,6 +242,7 @@ var fsNameSystemCharts = Charts{
 		Dims: Dims{
 			{ID: "fsns_num_live_data_nodes", Name: "live"},
 			{ID: "fsns_num_dead_data_nodes", Name: "dead"},
+			{ID: "fsns_stale_data_nodes", Name: "stale"},
 		},
 	},
 }

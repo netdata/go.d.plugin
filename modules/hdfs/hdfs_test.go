@@ -6,10 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/netdata/go-orchestrator/module"
 )
 
 var (
@@ -215,14 +214,20 @@ func TestHDFS_CollectNameNode(t *testing.T) {
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
+		"fsns_blocks_total":                  15,
 		"fsns_capacity_remaining":            65861697536,
 		"fsns_capacity_total":                107351072768,
 		"fsns_capacity_used":                 41489375232,
 		"fsns_capacity_used_dfs":             2372116480,
 		"fsns_capacity_used_non_dfs":         39117258752,
+		"fsns_corrupt_blocks":                0,
+		"fsns_files_total":                   12,
+		"fsns_missing_blocks":                0,
 		"fsns_num_dead_data_nodes":           0,
 		"fsns_num_live_data_nodes":           2,
+		"fsns_stale_data_nodes":              0,
 		"fsns_total_load":                    2,
+		"fsns_under_replicated_blocks":       0,
 		"fsns_volume_failures_total":         0,
 		"jvm_gc_count":                       1699,
 		"jvm_gc_num_info_threshold_exceeded": 0,

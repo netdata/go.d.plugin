@@ -6,6 +6,9 @@ package hdfs
 // Metrics description
 // https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/Metrics.html
 
+// Good article
+// https://www.datadoghq.com/blog/monitor-hadoop-metrics/#hdfs-metrics
+
 type metrics struct {
 	Jvm              *jvmMetrics              `stm:"jvm"`  // both
 	Rpc              *rpcActivityMetrics      `stm:"rpc"`  // both
@@ -65,7 +68,7 @@ type fsNameSystemMetrics struct {
 	HostName string `json:"tag.Hostname"`
 	HAState  string `json:"tag.HAState"`
 	//TotalSyncTimes                               float64 `json:"tag.tag.TotalSyncTimes"`
-	//MissingBlocks                                float64 `stm:"missing_blocks"`
+	MissingBlocks float64 `stm:"missing_blocks"`
 	//MissingReplOneBlocks                         float64 `stm:"missing_repl_one_blocks"`
 	//ExpiredHeartbeats                            float64 `stm:"expired_heartbeats"`
 	//TransactionsSinceLastCheckpoint              float64 `stm:"transactions_since_last_checkpoint"`
@@ -85,17 +88,17 @@ type fsNameSystemMetrics struct {
 	//Snapshots                                    float64 `stm:"snapshots"`
 	//NumEncryptionZones                           float64 `stm:"num_encryption_zones"`
 	//LockQueueLength                              float64 `stm:"lock_queue_length"`
-	//BlocksTotal                                  float64 `stm:"blocks_total"`
+	BlocksTotal float64 `stm:"blocks_total"`
 	//NumFilesUnderConstruction                    float64 `stm:"num_files_under_construction"`
 	//NumActiveClients                             float64 `stm:"num_active_clients"`
-	//FilesTotal                                   float64 `stm:"files_total"`
-	//PendingReplicationBlocks                     float64 `stm:"pending_replication_blocks"`
-	//PendingReconstructionBlocks                  float64 `stm:"pending_reconstruction_blocks"`
-	//UnderReplicatedBlocks                        float64 `stm:"under_replicated_blocks"`
+	FilesTotal float64 `stm:"files_total"`
+	//PendingReplicationBlocks    float64 `stm:"pending_replication_blocks"`
+	//PendingReconstructionBlocks float64 `stm:"pending_reconstruction_blocks"`
+	UnderReplicatedBlocks float64 `stm:"under_replicated_blocks"`
 	//LowRedundancyBlocks                          float64 `stm:"low_redundancy_blocks"`
-	//CorruptBlocks                                float64 `stm:"corrupt_blocks"`
-	//ScheduledReplicationBlocks                   float64 `stm:"scheduled_replication_blocks"`
-	//PendingDeletionBlocks                        float64 `stm:"pending_deletion_blocks"`
+	CorruptBlocks float64 `stm:"corrupt_blocks"`
+	//ScheduledReplicationBlocks float64 `stm:"scheduled_replication_blocks"`
+	//PendingDeletionBlocks      float64 `stm:"pending_deletion_blocks"`
 	//LowRedundancyReplicatedBlocks                float64 `stm:"low_redundancy_replicated_blocks"`
 	//CorruptReplicatedBlocks                      float64 `stm:"corrupt_replicated_blocks"`
 	//MissingReplicatedBlocks                      float64 `stm:"missing_replicated_blocks"`
@@ -124,7 +127,7 @@ type fsNameSystemMetrics struct {
 	VolumeFailuresTotal float64 `stm:"volume_failures_total"`
 	//EstimatedCapacityLostTotal                   float64 `stm:"estimated_capacity_lost_total"`
 	//NumDecommissioningDataNodes                  float64 `stm:"num_decommissioning_data_nodes"`
-	//StaleDataNodes                               float64 `stm:"stale_data_nodes"`
+	StaleDataNodes float64 `stm:"stale_data_nodes"`
 	//NumStaleStorages                             float64 `stm:"num_stale_storages"`
 	//TotalSyncCount                               float64 `stm:"total_sync_count"`
 	//NumInMaintenanceLiveDataNodes                float64 `stm:"num_in_maintenance_live_data_nodes"`

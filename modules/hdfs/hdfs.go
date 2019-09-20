@@ -68,7 +68,7 @@ func (h HDFS) createClient() (*client, error) {
 	return newClient(httpClient, h.Request), nil
 }
 
-func (h *HDFS) determineNodeType() (nodeType, error) {
+func (h HDFS) determineNodeType() (nodeType, error) {
 	var raw rawJMX
 	err := h.client.doOKWithDecodeJSON(&raw)
 	if err != nil {
@@ -86,7 +86,7 @@ func (h *HDFS) determineNodeType() (nodeType, error) {
 
 	v, ok := jvm["tag.ProcessName"]
 	if !ok {
-		return "", errors.New("couldn't find process name in response")
+		return "", errors.New("couldn't find process name in JvmMetrics")
 	}
 
 	t := nodeType(strings.Trim(string(v), "\""))
