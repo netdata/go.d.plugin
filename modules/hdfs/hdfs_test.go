@@ -152,16 +152,6 @@ func TestHDFS_CollectDataNode(t *testing.T) {
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
-	//m := job.Collect()
-	//l := make([]string, 0)
-	//for k := range m {
-	//	l = append(l, k)
-	//}
-	//sort.Strings(l)
-	//for _, v := range l {
-	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", v, m[v]))
-	//}
-
 	expected := map[string]int64{
 		"dna_bytes_read":                     80689178,
 		"dna_bytes_written":                  500960407,
