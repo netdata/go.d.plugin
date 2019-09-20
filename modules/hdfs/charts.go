@@ -102,8 +102,8 @@ var rpcActivityCharts = Charts{
 	},
 	{
 		ID:    "rpc_calls",
-		Title: "RPC calls",
-		Units: "events/s",
+		Title: "RPC Calls",
+		Units: "calls/s",
 		Fam:   "rpc",
 		Ctx:   "hdfs.rpc_calls",
 		Dims: Dims{
@@ -234,7 +234,7 @@ var fsNameSystemCharts = Charts{
 	},
 	{
 		ID:    "fs_name_system_data_nodes",
-		Title: "Number of Data Nodes",
+		Title: "Number of Data Nodes By Status",
 		Units: "num",
 		Fam:   "fs name system",
 		Ctx:   "hdfs.data_nodes",
