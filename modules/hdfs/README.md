@@ -1,6 +1,8 @@
 # hdfs
 
-This module will monitor one or more [`Hadoop Distributed File System`](https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html) (HDFS) nodes over `Java Management Extensions` (JMX) through the web interface of an HDFS daemon.
+This module will monitor one or more [`Hadoop Distributed File System`](https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html) (HDFS) nodes depending on configuration.
+
+It access HDFS metrics over `Java Management Extensions` (JMX) through the web interface of an HDFS daemon.
 
 **Requirements:**
  * `hdfs` node with accessible `/jmx` endpoint
