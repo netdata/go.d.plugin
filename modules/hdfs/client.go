@@ -48,10 +48,10 @@ func (c *client) doOK() (*http.Response, error) {
 
 func (c *client) doOKWithDecodeJSON(dst interface{}) error {
 	resp, err := c.doOK()
+	defer closeBody(resp)
 	if err != nil {
 		return err
 	}
-	defer closeBody(resp)
 
 	err = json.NewDecoder(resp.Body).Decode(dst)
 	if err != nil {
