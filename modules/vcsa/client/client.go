@@ -192,10 +192,10 @@ func (c *Client) doOK(req web.Request) (*http.Response, error) {
 
 func (c *Client) doOKWithDecode(req web.Request, dst interface{}) error {
 	resp, err := c.doOK(req)
+	defer closeBody(resp)
 	if err != nil {
 		return err
 	}
-	defer closeBody(resp)
 
 	err = json.NewDecoder(resp.Body).Decode(dst)
 	if err != nil {
