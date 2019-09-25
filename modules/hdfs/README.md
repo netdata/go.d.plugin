@@ -55,10 +55,10 @@ Here is an example for 2 servers:
 
 ```yaml
 jobs:
-  - name    : master
+  - name    : namenode
     url     : http://127.0.0.1:9870/jmx
       
-  - name    : slave
+  - name    : datanode
     url     : http://127.0.0.1:9864/jmx
 ```
 
