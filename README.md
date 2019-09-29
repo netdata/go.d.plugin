@@ -33,6 +33,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example) *
  - [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)
  - [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius) *
+ - [hdfs](https://github.com/netdata/go.d.plugin/tree/master/modules/hdfs)
  - [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck)
  - [k8s_kubelet](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubelet)
  - [k8s_kubeproxy](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubeproxy)
@@ -43,16 +44,19 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx) *
  - [openvpn](https://github.com/netdata/go.d.plugin/tree/master/modules/openvpn)
  - [pihole](https://github.com/netdata/go.d.plugin/tree/master/modules/pihole)
+ - [phpfpm](https://github.com/netdata/go.d.plugin/tree/master/modules/phpfpm) *
  - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)
  - [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
  - [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)
  - [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
  - [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)
  - [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)
+ - [vcsa](https://github.com/netdata/go.d.plugin/tree/master/modules/vcsa)
  - [vsphere](https://github.com/netdata/go.d.plugin/tree/master/modules/vsphere)
  - [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) *
  - [wmi](https://github.com/netdata/go.d.plugin/tree/master/modules/wmi)
  - [x509check](https://github.com/netdata/go.d.plugin/tree/master/modules/x509check)
+ - [zookeeper](https://github.com/netdata/go.d.plugin/tree/master/modules/zookeeper)
 
 `*` - disabled by default.
 

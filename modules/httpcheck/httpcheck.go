@@ -55,9 +55,11 @@ type client interface {
 type HTTPCheck struct {
 	module.Base
 	Config           `yaml:",inline"`
+	UpdateEvery      int `yaml:"update_every"`
 	acceptedStatuses map[int]bool
 	reResponse       *regexp.Regexp
 	client           client
+	metrics          metrics
 }
 
 // Cleanup makes cleanup.
