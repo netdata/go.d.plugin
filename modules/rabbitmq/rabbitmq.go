@@ -1,9 +1,9 @@
 package rabbitmq
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -20,27 +20,24 @@ func init() {
 	module.Register("rabbitmq", creator)
 }
 
-const (
-	defaultURL         = "http://localhost:15672"
-	defaultUsername    = "guest"
-	defaultPassword    = "guest"
-	defaultHTTPTimeout = time.Second
-)
-
 // New creates RabbitMQ with default values.
 func New() *RabbitMQ {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL:  defaultURL,
-				Username: defaultUsername,
-				Password: defaultPassword,
+				UserURL:  "http://localhost:15672",
+				Username: "guest",
+				Password: "guest",
 			},
-			Client: web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
 		},
 	}
 
-	return &RabbitMQ{Config: config}
+	return &RabbitMQ{
+		Config:          config,
+		charts:          charts(),
+		collectedVhosts: make(map[string]bool),
+	}
 }
 
 // Config is the RabbitMQ module configuration.
@@ -51,67 +48,68 @@ type Config struct {
 // RabbitMQ RabbitMQ module.
 type RabbitMQ struct {
 	module.Base
-	Config    `yaml:",inline"`
-	apiClient *apiClient
+	Config `yaml:",inline"`
+
+	client          *client
+	collectedVhosts map[string]bool
+	charts          *Charts
 }
 
 // Cleanup makes cleanup.
 func (RabbitMQ) Cleanup() {}
 
+func (r RabbitMQ) createClient() (*client, error) {
+	if err := r.ParseUserURL(); err != nil {
+		return nil, fmt.Errorf("error on parsing url '%s' : %v", r.UserURL, err)
+	}
+
+	httpClient, err := web.NewHTTPClient(r.Client)
+	if err != nil {
+		return nil, fmt.Errorf("error on creating http client : %v", err)
+	}
+
+	client := newClient(httpClient, r.Request)
+	return client, nil
+}
+
 // Init makes initialization.
 func (r *RabbitMQ) Init() bool {
-	if err := r.ParseUserURL(); err != nil {
-		r.Errorf("error on parsing url '%s' : %v", r.UserURL, err)
-		return false
-	}
-
-	if r.URL.Host == "" {
-		r.Error("URL is not set")
-		return false
-	}
-
-	client, err := web.NewHTTPClient(r.Client)
-
+	client, err := r.createClient()
 	if err != nil {
 		r.Error(err)
 		return false
 	}
 
-	r.apiClient = newAPIClient(client, r.Request)
-
+	r.client = client
 	r.Debugf("using URL %s", r.URL)
 	r.Debugf("using timeout: %s", r.Timeout.Duration)
-
 	return true
 }
 
 // Check makes check.
 func (r *RabbitMQ) Check() bool {
+	err := r.client.findNodeName()
+	if err != nil {
+		r.Error(err)
+		return false
+	}
 	return len(r.Collect()) > 0
 }
 
 // Charts creates Charts.
-func (RabbitMQ) Charts() *Charts {
-	return charts.Copy()
+func (r RabbitMQ) Charts() *Charts {
+	return r.charts
 }
 
 // Collect collects stats.
 func (r *RabbitMQ) Collect() map[string]int64 {
-	var (
-		overview overview
-		node     node
-		err      error
-	)
-
-	if overview, err = r.apiClient.getOverview(); err != nil {
+	mx, err := r.collect()
+	if err != nil {
 		r.Error(err)
-		return nil
 	}
 
-	if node, err = r.apiClient.getNodeStats(); err != nil {
-		r.Error(err)
+	if len(mx) == 0 {
 		return nil
 	}
-
-	return stm.ToMap(overview, node)
+	return mx
 }
