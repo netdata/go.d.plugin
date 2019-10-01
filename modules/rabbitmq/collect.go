@@ -115,10 +115,7 @@ func (r *RabbitMQ) parse(mx *metrics) map[string]int64 {
 	}
 	if mx.hasVhostsStats() {
 		for _, vhost := range mx.vhosts {
-			if vhost.MessageStats == nil {
-				continue
-			}
-			for k, v := range stm.ToMap(vhost.MessageStats) {
+			for k, v := range stm.ToMap(vhost) {
 				ms[fmt.Sprintf("vhost_%s_%s", vhost.Name, k)] = v
 			}
 		}

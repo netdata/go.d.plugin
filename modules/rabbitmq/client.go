@@ -18,57 +18,61 @@ const (
 )
 
 // https://www.rabbitmq.com/monitoring.html
-type overviewStats struct {
-	objectTotals `json:"object_totals" stm:"object_totals"`
-	queueTotals  `json:"queue_totals" stm:"queue_totals"`
-	messageStats `json:"message_stats" stm:"message_stats"`
-	Node         string
-}
+type (
+	overviewStats struct {
+		ObjectTotals *objectTotals `json:"object_totals" stm:"object_totals"`
+		QueueTotals  *queueTotals  `json:"queue_totals" stm:"queue_totals"`
+		MessageStats *messageStats `json:"message_stats" stm:"message_stats"`
+		Node         string
+	}
 
-type objectTotals struct {
-	Consumers   int `stm:"consumers"`
-	Queues      int `stm:"queues"`
-	Exchanges   int `stm:"exchanges"`
-	Connections int `stm:"connections"`
-	Channels    int `stm:"channels"`
-}
+	objectTotals struct {
+		Consumers   int `stm:"consumers"`
+		Queues      int `stm:"queues"`
+		Exchanges   int `stm:"exchanges"`
+		Connections int `stm:"connections"`
+		Channels    int `stm:"channels"`
+	}
 
-type queueTotals struct {
-	MessagesReady          int `json:"messages_ready" stm:"messages_ready"`
-	MessagesUnacknowledged int `json:"messages_unacknowledged" stm:"messages_unacknowledged"`
-}
+	queueTotals struct {
+		MessagesReady          int `json:"messages_ready" stm:"messages_ready"`
+		MessagesUnacknowledged int `json:"messages_unacknowledged" stm:"messages_unacknowledged"`
+	}
 
-// https://rawcdn.githack.com/rabbitmq/rabbitmq-management/master/priv/www/doc/stats.html
-type messageStats struct {
-	Ack              int `stm:"ack"`
-	Publish          int `stm:"publish"`
-	PublishIn        int `json:"publish_in" stm:"publish_in"`
-	PublishOut       int `json:"publish_out" stm:"publish_out"`
-	Confirm          int `stm:"confirm"`
-	Deliver          int `stm:"deliver"`
-	DeliverNoAck     int `json:"deliver_no_ack" stm:"deliver_no_ack"`
-	Get              int `stm:"get"`
-	GetNoAck         int `json:"get_no_ack" stm:"get_no_ack"`
-	DeliverGet       int `json:"deliver_get" stm:"deliver_get"`
-	Redeliver        int `stm:"redeliver"`
-	ReturnUnroutable int `json:"return_unroutable" stm:"return_unroutable"`
-}
+	// https://rawcdn.githack.com/rabbitmq/rabbitmq-management/master/priv/www/doc/stats.html
+	messageStats struct {
+		Ack              int `stm:"ack"`
+		Publish          int `stm:"publish"`
+		PublishIn        int `json:"publish_in" stm:"publish_in"`
+		PublishOut       int `json:"publish_out" stm:"publish_out"`
+		Confirm          int `stm:"confirm"`
+		Deliver          int `stm:"deliver"`
+		DeliverNoAck     int `json:"deliver_no_ack" stm:"deliver_no_ack"`
+		Get              int `stm:"get"`
+		GetNoAck         int `json:"get_no_ack" stm:"get_no_ack"`
+		DeliverGet       int `json:"deliver_get" stm:"deliver_get"`
+		Redeliver        int `stm:"redeliver"`
+		ReturnUnroutable int `json:"return_unroutable" stm:"return_unroutable"`
+	}
+)
 
 type nodeStats struct {
-	FDUsed      int `json:"fd_used" stm:"fd_used"`
-	MemUsed     int `json:"mem_used" stm:"mem_used"`
-	SocketsUsed int `json:"sockets_used" stm:"sockets_used"`
-	ProcUsed    int `json:"proc_used" stm:"proc_used"`
-	DiskFree    int `json:"disk_free" stm:"disk_free"`
-	RunQueue    int `json:"run_queue" stm:"run_queue"`
+	FDUsed      *int `json:"fd_used" stm:"fd_used"`
+	MemUsed     *int `json:"mem_used" stm:"mem_used"`
+	SocketsUsed *int `json:"sockets_used" stm:"sockets_used"`
+	ProcUsed    *int `json:"proc_used" stm:"proc_used"`
+	DiskFree    *int `json:"disk_free" stm:"disk_free"`
+	RunQueue    *int `json:"run_queue" stm:"run_queue"`
 }
 
-type vhostStats struct {
-	Name         string
-	MessageStats *messageStats `json:"message_stats"`
-}
+type (
+	vhostStats struct {
+		Name         string
+		MessageStats *messageStats `json:"message_stats" stm:"message_stats"`
+	}
 
-type vhostsStats []vhostStats
+	vhostsStats []vhostStats
+)
 
 func newClient(httpClient *http.Client, request web.Request) *client {
 	return &client{httpClient: httpClient, request: request}
