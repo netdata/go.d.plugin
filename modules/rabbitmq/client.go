@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,10 +14,11 @@ import (
 const (
 	overviewURLPath = "/api/overview"
 	nodeURLPath     = "/api/node/"
+	vhostsURLPath   = "/api/vhosts"
 )
 
 // https://www.rabbitmq.com/monitoring.html
-type overview struct {
+type overviewStats struct {
 	objectTotals `json:"object_totals" stm:"object_totals"`
 	queueTotals  `json:"queue_totals" stm:"queue_totals"`
 	messageStats `json:"message_stats" stm:"message_stats"`
@@ -52,7 +54,7 @@ type messageStats struct {
 	ReturnUnroutable int `json:"return_unroutable" stm:"return_unroutable"`
 }
 
-type node struct {
+type nodeStats struct {
 	FDUsed      int `json:"fd_used" stm:"fd_used"`
 	MemUsed     int `json:"mem_used" stm:"mem_used"`
 	SocketsUsed int `json:"sockets_used" stm:"sockets_used"`
@@ -61,92 +63,106 @@ type node struct {
 	RunQueue    int `json:"run_queue" stm:"run_queue"`
 }
 
-func newAPIClient(client *http.Client, request web.Request) *apiClient {
-	return &apiClient{httpClient: client, request: request}
+type vhostStats struct {
+	Name         string
+	MessageStats *messageStats `json:"message_stats"`
 }
 
-type apiClient struct {
+type vhostsStats []vhostStats
+
+func newClient(httpClient *http.Client, request web.Request) *client {
+	return &client{httpClient: httpClient, request: request}
+}
+
+type client struct {
 	request    web.Request
 	httpClient *http.Client
 	nodeName   string
 }
 
-func (a *apiClient) getOverview() (overview, error) {
-	var overview overview
-
-	req, err := a.createRequest(overviewURLPath)
-
+func (c *client) findNodeName() error {
+	stats, err := c.scrapeOverview()
 	if err != nil {
-		return overview, fmt.Errorf("error on creating request : %v", err)
+		return err
 	}
-
-	resp, err := a.doRequestOK(req)
-
-	defer closeBody(resp)
-
-	if err != nil {
-		return overview, err
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&overview); err != nil {
-		return overview, fmt.Errorf("erorr on decode request to %s : %s", req.URL, err)
-	}
-
-	a.nodeName = overview.Node
-
-	return overview, nil
+	c.nodeName = stats.Node
+	return nil
 }
 
-func (a apiClient) getNodeStats() (node, error) {
-	var node node
+func (c *client) scrapeOverview() (*overviewStats, error) {
+	var stats overviewStats
 
-	req, err := a.createRequest(nodeURLPath + a.nodeName)
+	req := c.request.Copy()
+	req.URL.Path = overviewURLPath
 
+	err := c.doOKWithDecode(req, &stats)
 	if err != nil {
-		return node, fmt.Errorf("error on creating request : %v", err)
+		return nil, err
 	}
-
-	resp, err := a.doRequestOK(req)
-
-	defer closeBody(resp)
-
-	if err != nil {
-		return node, err
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&node); err != nil {
-		return node, fmt.Errorf("erorr on decode request to %s : %s", req.URL, err)
-	}
-
-	return node, nil
+	return &stats, nil
 }
 
-func (a apiClient) doRequest(req *http.Request) (*http.Response, error) {
-	return a.httpClient.Do(req)
+func (c *client) scrapeNodeStats() (*nodeStats, error) {
+	if c.nodeName == "" {
+		return nil, errors.New("node name not set")
+	}
+	var stats nodeStats
+
+	req := c.request.Copy()
+	req.URL.Path = nodeURLPath + c.nodeName
+
+	err := c.doOKWithDecode(req, &stats)
+	if err != nil {
+		return nil, err
+	}
+	return &stats, nil
 }
 
-func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
-	var (
-		resp *http.Response
-		err  error
-	)
+func (c *client) scrapeVhostsStats() (vhostsStats, error) {
+	var stats vhostsStats
 
-	if resp, err = a.doRequest(req); err != nil {
-		return resp, fmt.Errorf("error on request to %s : %v", req.URL, err)
+	req := c.request.Copy()
+	req.URL.Path = vhostsURLPath
 
+	err := c.doOKWithDecode(req, &stats)
+	if err != nil {
+		return nil, err
+	}
+	return stats, nil
+}
+
+func (c *client) do(req web.Request) (*http.Response, error) {
+	httpReq, err := web.NewHTTPRequest(req)
+	if err != nil {
+		return nil, fmt.Errorf("error on creating http request to %s : %v", req.UserURL, err)
+	}
+	return c.httpClient.Do(httpReq)
+}
+
+func (c *client) doOK(req web.Request) (*http.Response, error) {
+	resp, err := c.do(req)
+	if err != nil {
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+		return resp, fmt.Errorf("%s returned %d", req.UserURL, resp.StatusCode)
 	}
-
-	return resp, err
+	return resp, nil
 }
 
-func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
-	req := a.request.Copy()
-	req.URL.Path = urlPath
-	return web.NewHTTPRequest(req)
+func (c *client) doOKWithDecode(req web.Request, dst interface{}) error {
+	resp, err := c.doOK(req)
+	defer closeBody(resp)
+	if err != nil {
+		return err
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(dst)
+	if err != nil {
+		return fmt.Errorf("error on decoding response from %s : %v", req.UserURL, err)
+	}
+	return nil
 }
 
 func closeBody(resp *http.Response) {

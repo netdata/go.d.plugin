@@ -1,10 +1,16 @@
 package rabbitmq
 
-import "github.com/netdata/go-orchestrator/module"
+import (
+	"fmt"
+
+	"github.com/netdata/go-orchestrator/module"
+)
 
 type (
 	// Charts is an alias for module.Charts
 	Charts = module.Charts
+	// Chart is an alias for module.Chart
+	Chart = module.Chart
 	// Dims is an alias for module.Dims
 	Dims = module.Dims
 )
@@ -118,4 +124,55 @@ var charts = Charts{
 			{ID: "disk_free", Name: "free", Div: 1024 * 1024 * 1024},
 		},
 	},
+}
+
+var vhostMessagesChart = Chart{
+	ID:    "vhost_%s_message_stats",
+	Title: "Vhost \"%s\" Messages",
+	Units: "msg/s",
+	Fam:   "vhosts",
+	Ctx:   "rabbitmq.vhost_messages",
+	Type:  module.Stacked,
+	Dims: Dims{
+		{ID: "vhost_%s_message_stats_ack", Name: "ack", Algo: module.Incremental},
+		{ID: "vhost_%s_message_stats_confirm", Name: "confirm", Algo: module.Incremental},
+		{ID: "vhost_%s_message_stats_deliver", Name: "deliver", Algo: module.Incremental},
+		{ID: "vhost_%s_message_stats_get", Name: "get", Algo: module.Incremental},
+		{ID: "vhost_%s_message_stats_get_no_ack", Name: "get_no_ack", Algo: module.Incremental},
+		{ID: "vhost_%s_message_stats_publish", Name: "publish", Algo: module.Incremental},
+		{ID: "vhost_%s_message_stats_redeliver", Name: "redeliver", Algo: module.Incremental},
+		{ID: "vhost_%s_message_stats_return_unroutable", Name: "return_unroutable", Algo: module.Incremental},
+	},
+}
+
+func (r *RabbitMQ) updateCharts(mx *metrics) {
+	r.updateVhostsCharts(mx)
+}
+
+func (r *RabbitMQ) updateVhostsCharts(mx *metrics) {
+	for _, v := range mx.vhosts {
+		if v.MessageStats == nil {
+			continue
+		}
+		if r.collectedVhosts[v.Name] {
+			continue
+		}
+		r.collectedVhosts[v.Name] = true
+		r.addVhostCharts(v.Name)
+	}
+}
+
+func (r *RabbitMQ) addVhostCharts(name string) {
+	chart := vhostMessagesChart.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, name)
+	chart.Title = fmt.Sprintf(chart.Title, name)
+
+	for _, dim := range chart.Dims {
+		dim.ID = fmt.Sprintf(dim.ID, name)
+	}
+
+	err := r.charts.Add(chart)
+	if err != nil {
+		r.Warningf("error on adding '%s' chart : %v", chart.ID, err)
+	}
 }
