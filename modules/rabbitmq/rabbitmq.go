@@ -35,7 +35,7 @@ func New() *RabbitMQ {
 
 	return &RabbitMQ{
 		Config:          config,
-		charts:          charts.Copy(),
+		charts:          charts(),
 		collectedVhosts: make(map[string]bool),
 	}
 }
