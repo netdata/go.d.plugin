@@ -138,7 +138,7 @@ func (c *client) scrapeVhostsStats() (vhostsStats, error) {
 func (c *client) do(req web.Request) (*http.Response, error) {
 	httpReq, err := web.NewHTTPRequest(req)
 	if err != nil {
-		return nil, fmt.Errorf("error on creating http request to %s : %v", req.UserURL, err)
+		return nil, fmt.Errorf("error on creating http request to %s : %v", req.URL, err)
 	}
 	return c.httpClient.Do(httpReq)
 }
@@ -150,7 +150,7 @@ func (c *client) doOK(req web.Request) (*http.Response, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("%s returned %d", req.UserURL, resp.StatusCode)
+		return resp, fmt.Errorf("%s returned %d", req.URL, resp.StatusCode)
 	}
 	return resp, nil
 }
@@ -164,7 +164,7 @@ func (c *client) doOKWithDecode(req web.Request, dst interface{}) error {
 
 	err = json.NewDecoder(resp.Body).Decode(dst)
 	if err != nil {
-		return fmt.Errorf("error on decoding response from %s : %v", req.UserURL, err)
+		return fmt.Errorf("error on decoding response from %s : %v", req.URL, err)
 	}
 	return nil
 }
