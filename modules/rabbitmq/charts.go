@@ -30,7 +30,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "message_rates",
-		Title: "Message Rates",
+		Title: "Messages",
 		Units: "messages/s",
 		Fam:   "overview",
 		Ctx:   "rabbitmq.message_rates",
@@ -129,7 +129,7 @@ var charts = Charts{
 var vhostMessagesChart = Chart{
 	ID:    "vhost_%s_message_stats",
 	Title: "Vhost \"%s\" Messages",
-	Units: "msg/s",
+	Units: "messages/s",
 	Fam:   "vhosts",
 	Ctx:   "rabbitmq.vhost_messages",
 	Type:  module.Stacked,

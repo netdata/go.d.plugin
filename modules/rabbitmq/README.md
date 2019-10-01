@@ -1,45 +1,29 @@
 # rabbitmq
 
-Module monitor rabbitmq performance and health metrics.
+Module monitors [`RabbitMQ`](https://www.rabbitmq.com/) performance and health metrics.
 
-Following charts are drawn:
+It collects data using following endpoints:
+  - `/api/overview`
+  - `/api/node/{node_name}`
+  - `/api/vhosts`
 
-1. **Queued Messages**
- * ready
- * unacknowledged
+#### charts
 
-2. **Message Rates**
- * ack
- * redelivered
- * deliver
- * publish
+It produces the following charts:
+  - Queued Messages in `messages`
+  - Messages in `messages/s`
+  - Global Counts in `counts`
+  - File Descriptors in `descriptors`
+  - Socket Descriptors in `descriptors`
+  - Erlang Processes in `processes`
+  - Erlang run queue in `processes`
+  - Memory in `MiB`
+  - Disk Space in `GiB`
 
-3. **Global Counts**
- * channels
- * consumers
- * connections
- * queues
- * exchanges
+Per vhost charts:
+  - Messages in `messages/s`
 
-4. **File Descriptors**
- * used descriptors
-
-5. **Socket Descriptors**
- * used descriptors
-
-6. **Erlang processes**
- * used processes
-
-7. **Erlang run queue**
- * Erlang run queue
-
-8. **Memory**
- * free memory in megabytes
-
-9. **Disk Space**
- * free disk space in gigabytes
-
-### configuration
+#### configuration
 
 ```yaml
 jobs:
@@ -47,9 +31,10 @@ jobs:
     url : http://localhost:15672
       
   - name: remote
-    url : http://100.64.0.1:15672
+    url : http://203.0.113.10:15672
 
 ```
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/rabbitmq.conf).
 
 When no configuration file is found, module tries to connect to: `localhost:15672`.
 
