@@ -141,7 +141,7 @@ var (
 		ID:    "vhost_%s_message_stats",
 		Title: "Vhost \"%s\" Messages",
 		Units: "messages/s",
-		Fam:   "vhosts",
+		Fam:   "vhost %s",
 		Ctx:   "rabbitmq.vhost_messages",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -175,9 +175,11 @@ func (r *RabbitMQ) updateVhostsCharts(mx *metrics) {
 }
 
 func (r *RabbitMQ) addVhostCharts(name string) {
+	name = cleanVhostName(name)
 	chart := vhostMessagesChart.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Title = fmt.Sprintf(chart.Title, name)
+	chart.Fam = fmt.Sprintf(chart.Fam, name)
 
 	for _, dim := range chart.Dims {
 		dim.ID = fmt.Sprintf(dim.ID, name)
