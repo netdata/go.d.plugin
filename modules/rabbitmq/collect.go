@@ -2,7 +2,6 @@ package rabbitmq
 
 import (
 	"fmt"
-	"strings"
 	"sync"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
@@ -117,18 +116,10 @@ func (r *RabbitMQ) parse(mx *metrics) map[string]int64 {
 	if mx.hasVhostsStats() {
 		for _, vhost := range mx.vhosts {
 			for k, v := range stm.ToMap(vhost) {
-				name := cleanVhostName(vhost.Name)
-				ms[fmt.Sprintf("vhost_%s_%s", name, k)] = v
+				ms[fmt.Sprintf("vhost_%s_%s", vhost.Name, k)] = v
 			}
 		}
 	}
 
 	return ms
-}
-
-func cleanVhostName(name string) string {
-	if name == "/" {
-		return name
-	}
-	return strings.TrimPrefix(name, "/")
 }

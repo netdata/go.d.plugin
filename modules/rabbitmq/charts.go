@@ -175,7 +175,6 @@ func (r *RabbitMQ) updateVhostsCharts(mx *metrics) {
 }
 
 func (r *RabbitMQ) addVhostCharts(name string) {
-	name = cleanVhostName(name)
 	chart := vhostMessagesChart.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Title = fmt.Sprintf(chart.Title, name)
