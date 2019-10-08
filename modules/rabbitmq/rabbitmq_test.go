@@ -26,7 +26,7 @@ func newTestRabbitMQHTTPServer() *httptest.Server {
 					w.WriteHeader(404)
 				case "/api/overview":
 					_, _ = w.Write(testOverviewData)
-				case "/api/node/rabbit@rbt0":
+				case "/api/nodes/rabbit@rbt0":
 					_, _ = w.Write(testNodeData)
 				case "/api/vhosts":
 					_, _ = w.Write(testVhostsData)
