@@ -13,7 +13,7 @@ import (
 
 const (
 	overviewURLPath = "/api/overview"
-	nodeURLPath     = "/api/node/"
+	nodeURLPath     = "/api/nodes"
 	vhostsURLPath   = "/api/vhosts"
 )
 
