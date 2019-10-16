@@ -22,7 +22,7 @@ package weblog
 //		case 0: // 64.242.88.10 - - [07/Mar/2004:16:05:49 -0800] "GET /twiki/bin/edit/Main/Double_bounce_sender?topicparent=Main.ConfigurationVariables HTTP/1.1" 401 12846
 //			assert.Equal(t, "64.242.88.10", row.RemoteAddr)
 //			assert.Equal(t, "GET /twiki/bin/edit/Main/Double_bounce_sender?topicparent=Main.ConfigurationVariables HTTP/1.1", row.Request)
-//			assert.Equal(t, "GET", row.ReqMethod)
+//			assert.Equal(t, "GET", row.ReqHTTPMethod)
 //			assert.Equal(t, "/twiki/bin/edit/Main/Double_bounce_sender?topicparent=Main.ConfigurationVariables", row.ReqURI)
 //			assert.Equal(t, "1.1", row.ReqHTTPVersion)
 //			assert.Equal(t, 401, row.RespCodeStatus)
@@ -30,7 +30,7 @@ package weblog
 //		case 1: // 64.242.88.10 - - [07/Mar/2004:16:06:51 -0800] "GET /twiki/bin/rdiff/TWiki/NewUserTemplate?rev1=1.3&rev2=1.2 HTTP/1.1" 200 4523
 //			assert.Equal(t, "64.242.88.10", row.RemoteAddr)
 //			assert.Equal(t, "GET /twiki/bin/rdiff/TWiki/NewUserTemplate?rev1=1.3&rev2=1.2 HTTP/1.1", row.Request)
-//			assert.Equal(t, "GET", row.ReqMethod)
+//			assert.Equal(t, "GET", row.ReqHTTPMethod)
 //			assert.Equal(t, "/twiki/bin/rdiff/TWiki/NewUserTemplate?rev1=1.3&rev2=1.2", row.ReqURI)
 //			assert.Equal(t, "1.1", row.ReqHTTPVersion)
 //			assert.Equal(t, 200, row.RespCodeStatus)
@@ -43,7 +43,7 @@ package weblog
 //		case 49: // 64.242.88.10 - - [07/Mar/2004:17:53:45 -0800] "GET /twiki/bin/search/Main/SearchResult?scope=text®ex=on&search=Office%20*Locations[^A-Za-z] HTTP/1.1" 200 7771
 //			assert.Equal(t, "64.242.88.10", row.RemoteAddr)
 //			assert.Equal(t, "GET /twiki/bin/search/Main/SearchResult?scope=text®ex=on&search=Office%20*Locations[^A-Za-z] HTTP/1.1", row.Request)
-//			assert.Equal(t, "GET", row.ReqMethod)
+//			assert.Equal(t, "GET", row.ReqHTTPMethod)
 //			assert.Equal(t, "/twiki/bin/search/Main/SearchResult?scope=text®ex=on&search=Office%20*Locations[^A-Za-z]", row.ReqURI)
 //			assert.Equal(t, "1.1", row.ReqHTTPVersion)
 //			assert.Equal(t, 200, row.RespCodeStatus)

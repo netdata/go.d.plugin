@@ -72,7 +72,7 @@ func Test_LogLine_assignRequest(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				assert.Equal(t, tt.wantMethod, log.ReqMethod)
+				assert.Equal(t, tt.wantMethod, log.ReqHTTPMethod)
 				assert.Equal(t, tt.wantUri, log.ReqURI)
 				assert.Equal(t, tt.wantVersion, log.ReqHTTPVersion)
 			}

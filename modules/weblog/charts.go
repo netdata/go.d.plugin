@@ -82,7 +82,7 @@ var (
 
 	requestsPerHTTPMethod = Chart{
 		ID:    "requests_per_http_method",
-		Title: "Requests Per HTTP ReqMethod",
+		Title: "Requests Per HTTP ReqHTTPMethod",
 		Units: "requests/s",
 		Fam:   "http methods",
 		Ctx:   "web_log.requests_per_http_method",

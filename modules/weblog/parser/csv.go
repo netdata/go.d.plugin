@@ -96,7 +96,7 @@ func newCSVFormat(logFormat string) *csvFormat {
 		case "$request_length":
 			format.fieldIndexes[fieldReqSize] = i + offset
 		case "$request_time":
-			format.fieldIndexes[fieldReqTime] = i + offset
+			format.fieldIndexes[fieldRespTime] = i + offset
 		case "$upstream_response_time":
 			format.fieldIndexes[fieldUpstreamRespTime] = i + offset
 		case "$server_name", "$http_host", "$host", "$hostname":

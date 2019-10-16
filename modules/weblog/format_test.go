@@ -110,7 +110,7 @@ package weblog
 //			LogLine{
 //				RemoteAddr: `10.131.201.180`,
 //				Request:    `GET / HTTP/1.1`,
-//				ReqMethod:     `GET`,
+//				ReqHTTPMethod:     `GET`,
 //				ReqURI:        "/",
 //				ReqHTTPVersion:    "1.1",
 //				RespCodeStatus:     200,
@@ -124,7 +124,7 @@ package weblog
 //			LogLine{
 //				RemoteAddr: `10.131.201.180`,
 //				Request:    `GET / HTTP/1.1`,
-//				ReqMethod:     `GET`,
+//				ReqHTTPMethod:     `GET`,
 //				ReqURI:        "/",
 //				ReqHTTPVersion:    "1.1",
 //				RespCodeStatus:     200,
@@ -138,7 +138,7 @@ package weblog
 //			LogLine{
 //				RemoteAddr: `10.131.201.180`,
 //				Request:    `GET / HTTP/1.1`,
-//				ReqMethod:     `GET`,
+//				ReqHTTPMethod:     `GET`,
 //				ReqURI:        "/",
 //				ReqHTTPVersion:    "1.1",
 //				RespCodeStatus:     200,

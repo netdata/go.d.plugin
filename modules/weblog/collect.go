@@ -62,45 +62,22 @@ func (w *WebLog) collectLogLines() (int, error) {
 }
 
 func (w *WebLog) collectLogLine(line parser.LogLine) {
-	if line.HasReqURI() && !w.filter.MatchString(line.ReqURI) {
+	if !isEmptyString(line.ReqURI) && !w.filter.MatchString(line.ReqURI) {
 		return
 	}
 
 	w.metrics.Requests.Inc()
-
-	if line.HasVhost() {
-		w.collectVhost(line.Vhost)
-	}
-	if line.HasClientAddr() {
-		w.collectClient(line.ClientAddr)
-	}
-	if line.HasReqMethod() {
-		w.collectHTTPMethod(line.ReqMethod)
-	}
-	if line.HasReqURI() && len(w.urlCategories) > 0 {
-		w.collectURI(line.ReqURI)
-	}
-	if line.HasReqHTTPVersion() {
-		w.collectHTTPVersion(line.ReqHTTPVersion)
-	}
-	if line.HasRespCodeStatus() {
-		w.collectRespStatusCode(line.RespCodeStatus)
-	}
-	if line.HasReqSize() {
-		w.collectReqSize(line.ReqSize)
-	}
-	if line.HasRespSize() {
-		w.collectRespSize(line.RespSize)
-	}
-	if line.HasRespTime() {
-		w.collectRespTime(line.RespTime)
-	}
-	if line.HasUpstreamRespTime() {
-		w.collectUpstreamRespTime(line.UpstreamRespTime)
-	}
-	if line.HasCustom() && len(w.userCategories) > 0 {
-		w.collectCustom(line.Custom)
-	}
+	w.collectVhost(line.Vhost)
+	w.collectClientAddr(line.ClientAddr)
+	w.collectReqHTTPMethod(line.ReqHTTPMethod)
+	w.collectReqURI(line.ReqURI)
+	w.collectReqHTTPVersion(line.ReqHTTPVersion)
+	w.collectRespStatusCode(line.RespCodeStatus)
+	w.collectReqSize(line.ReqSize)
+	w.collectRespSize(line.RespSize)
+	w.collectRespTime(line.RespTime)
+	w.collectUpstreamRespTime(line.UpstreamRespTime)
+	w.collectCustom(line.Custom)
 }
 
 func (w *WebLog) collectUnmatched() {
@@ -109,13 +86,19 @@ func (w *WebLog) collectUnmatched() {
 }
 
 func (w *WebLog) collectVhost(vhost string) {
+	if isEmptyString(vhost) {
+		return
+	}
 	w.collected.vhost = true
 
 	c, _ := w.metrics.ReqVhost.GetP(vhost)
 	c.Inc()
 }
 
-func (w *WebLog) collectClient(client string) {
+func (w *WebLog) collectClientAddr(client string) {
+	if isEmptyString(client) {
+		return
+	}
 	w.collected.client = true
 
 	// TODO: not always IP address
@@ -129,14 +112,20 @@ func (w *WebLog) collectClient(client string) {
 	w.metrics.UniqueIPv4.Insert(client)
 }
 
-func (w *WebLog) collectHTTPMethod(method string) {
+func (w *WebLog) collectReqHTTPMethod(method string) {
+	if isEmptyString(method) {
+		return
+	}
 	w.collected.method = true
 
 	c, _ := w.metrics.ReqMethod.GetP(method)
 	c.Inc()
 }
 
-func (w *WebLog) collectURI(uri string) {
+func (w *WebLog) collectReqURI(uri string) {
+	if isEmptyString(uri) || len(w.urlCategories) == 0 {
+		return
+	}
 	w.collected.uri = true
 
 	for _, cat := range w.urlCategories {
@@ -149,7 +138,10 @@ func (w *WebLog) collectURI(uri string) {
 	}
 }
 
-func (w *WebLog) collectHTTPVersion(version string) {
+func (w *WebLog) collectReqHTTPVersion(version string) {
+	if isEmptyString(version) {
+		return
+	}
 	w.collected.version = true
 
 	c, _ := w.metrics.ReqVersion.GetP(version)
@@ -157,6 +149,9 @@ func (w *WebLog) collectHTTPVersion(version string) {
 }
 
 func (w *WebLog) collectRespStatusCode(status int) {
+	if isEmptyNumber(status) {
+		return
+	}
 	w.collected.status = true
 
 	switch {
@@ -189,18 +184,27 @@ func (w *WebLog) collectRespStatusCode(status int) {
 }
 
 func (w *WebLog) collectReqSize(size int) {
+	if isEmptyNumber(size) {
+		return
+	}
 	w.collected.reqSize = true
 
 	w.metrics.BytesSent.Add(float64(size))
 }
 
 func (w *WebLog) collectRespSize(size int) {
+	if isEmptyNumber(size) {
+		return
+	}
 	w.collected.respSize = true
 
 	w.metrics.BytesReceived.Add(float64(size))
 }
 
 func (w *WebLog) collectRespTime(respTime float64) {
+	if isEmptyNumber(int(respTime)) {
+		return
+	}
 	w.collected.respTime = true
 
 	w.metrics.RespTime.Observe(respTime)
@@ -211,6 +215,9 @@ func (w *WebLog) collectRespTime(respTime float64) {
 }
 
 func (w *WebLog) collectUpstreamRespTime(respTime float64) {
+	if isEmptyNumber(int(respTime)) {
+		return
+	}
 	w.collected.upRespTime = true
 
 	w.metrics.RespTimeUpstream.Observe(respTime)
@@ -221,6 +228,9 @@ func (w *WebLog) collectUpstreamRespTime(respTime float64) {
 }
 
 func (w *WebLog) collectCustom(custom string) {
+	if isEmptyString(custom) || len(w.userCategories) == 0 {
+		return
+	}
 	w.collected.custom = true
 
 	for _, cat := range w.userCategories {
@@ -232,3 +242,7 @@ func (w *WebLog) collectCustom(custom string) {
 		return
 	}
 }
+
+func isEmptyString(s string) bool { return s != parser.EmptyString }
+
+func isEmptyNumber(n int) bool { return n != parser.EmptyNumber }

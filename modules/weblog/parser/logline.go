@@ -1,18 +1,17 @@
 package parser
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
-
-	"golang.org/x/xerrors"
 )
 
 type (
 	LogLine struct {
 		Vhost            string
 		ClientAddr       string
-		ReqMethod        string
+		ReqHTTPMethod    string
 		ReqURI           string
 		ReqHTTPVersion   string
 		RespCodeStatus   int
@@ -41,7 +40,7 @@ type (
 | req_size           | $request_length         | $I               | request length (including request line, header, and request body), apache: need mod_logio
 | resp_size          | $bytes_sent             | %O               | number of bytes sent to a client, including headers
 | resp_size          | $body_bytes_sent        | %B               | number of bytes sent to a client, not including headers
-| req_time           | $request_time           | %D               | the time taken to serve the request. Apache: in microseconds, nginx: in seconds with a milliseconds resolution
+| resp_time          | $request_time           | %D               | the time taken to serve the request. Apache: in microseconds, nginx: in seconds with a milliseconds resolution
 | upstream_resp_time | $upstream_response_time | -                | keeps time spent on receiving the response from the upstream server; the time is kept in seconds with millisecond resolution. Times of several responses are separated by commas and colons
 | custom             | -                       | -                |
 */
@@ -56,7 +55,7 @@ const (
 	fieldRespStatus       = "resp_status"
 	fieldReqSize          = "req_size"
 	fieldRespSize         = "resp_size"
-	fieldReqTime          = "req_time"
+	fieldRespTime         = "resp_time"
 	fieldUpstreamRespTime = "upstream_resp_time"
 	fieldCustom           = "custom"
 )
@@ -67,16 +66,17 @@ const (
 )
 
 var (
-	reClient     = regexp.MustCompile(`^([\da-f.:]+|localhost)$`)
-	reReqMethod  = regexp.MustCompile(`^[A-Z]+$`)
-	reURI        = regexp.MustCompile(`^/[^\s]*$`)
-	reReqVersion = regexp.MustCompile(`^\d+(\.\d+)?$`)
-	reServerName = regexp.MustCompile(`^[a-zA-Z0-9.-:]+$`)
+	// TODO: reClientAddr doesnt work with %h and HostnameLookups is On.
+	reVhost          = regexp.MustCompile(`^[a-zA-Z0-9.-:]+$`)
+	reClientAddr     = regexp.MustCompile(`^([\da-f.:]+|localhost)$`)
+	reReqHTTPMethod  = regexp.MustCompile(`^[A-Z]+$`)
+	reURI            = regexp.MustCompile(`^/[^\s]*$`)
+	reReqHTTPVersion = regexp.MustCompile(`^\d+(\.\d+)?$`)
 
 	emptyLogLine = LogLine{
 		Vhost:            EmptyString,
 		ClientAddr:       EmptyString,
-		ReqMethod:        EmptyString,
+		ReqHTTPMethod:    EmptyString,
 		ReqURI:           EmptyString,
 		ReqHTTPVersion:   EmptyString,
 		Custom:           EmptyString,
@@ -88,27 +88,27 @@ var (
 	}
 )
 
-func (l LogLine) HasVhost() bool { return l.Vhost != EmptyString }
+func (l LogLine) hasVhost() bool { return l.Vhost != EmptyString }
 
-func (l LogLine) HasClientAddr() bool { return l.ClientAddr != EmptyString }
+func (l LogLine) hasClientAddr() bool { return l.ClientAddr != EmptyString }
 
-func (l LogLine) HasReqMethod() bool { return l.ReqMethod != EmptyString }
+func (l LogLine) hasReqHTTPMethod() bool { return l.ReqHTTPMethod != EmptyString }
 
-func (l LogLine) HasReqURI() bool { return l.ReqURI != EmptyString }
+func (l LogLine) hasReqURI() bool { return l.ReqURI != EmptyString }
 
-func (l LogLine) HasReqHTTPVersion() bool { return l.ReqHTTPVersion != EmptyString }
+func (l LogLine) hasReqHTTPVersion() bool { return l.ReqHTTPVersion != EmptyString }
 
-func (l LogLine) HasRespCodeStatus() bool { return l.RespCodeStatus != EmptyNumber }
+func (l LogLine) hasRespCodeStatus() bool { return l.RespCodeStatus != EmptyNumber }
 
-func (l LogLine) HasReqSize() bool { return l.ReqSize != EmptyNumber }
+func (l LogLine) hasReqSize() bool { return l.ReqSize != EmptyNumber }
 
-func (l LogLine) HasRespSize() bool { return l.RespSize != EmptyNumber }
+func (l LogLine) hasRespSize() bool { return l.RespSize != EmptyNumber }
 
-func (l LogLine) HasRespTime() bool { return l.RespTime != EmptyNumber }
+func (l LogLine) hasRespTime() bool { return l.RespTime != EmptyNumber }
 
-func (l LogLine) HasUpstreamRespTime() bool { return l.UpstreamRespTime != EmptyNumber }
+func (l LogLine) hasUpstreamRespTime() bool { return l.UpstreamRespTime != EmptyNumber }
 
-func (l LogLine) HasCustom() bool { return l.Custom != EmptyString }
+func (l LogLine) hasCustom() bool { return l.Custom != EmptyString }
 
 func (l LogLine) Verify() error {
 	err := l.verifyMandatoryFields()
@@ -119,42 +119,42 @@ func (l LogLine) Verify() error {
 }
 
 func (l LogLine) verifyMandatoryFields() error {
-	if !l.HasRespCodeStatus() {
-		return xerrors.New("missing mandatory field: status")
+	if !l.hasRespCodeStatus() {
+		return fmt.Errorf("missing mandatory field: %s", fieldRespStatus)
 	}
 	if l.RespCodeStatus < 100 || l.RespCodeStatus >= 600 {
-		return xerrors.Errorf("invalid status field: %d", l.RespCodeStatus)
+		return fmt.Errorf("invalid '%s' field: %d", fieldRespStatus, l.RespCodeStatus)
 	}
 	return nil
 }
 
 func (l LogLine) verifyOptionalFields() error {
-	if l.HasVhost() && !reServerName.MatchString(l.Vhost) {
-		return xerrors.Errorf("invalid vhost field: '%s'", l.Vhost)
+	if l.hasVhost() && !reVhost.MatchString(l.Vhost) {
+		return fmt.Errorf("invalid '%s' field: %s", fieldVhost, l.Vhost)
 	}
-	if l.HasClientAddr() && !reClient.MatchString(l.ClientAddr) {
-		return xerrors.Errorf("invalid client field: %q", l.ClientAddr)
+	if l.hasClientAddr() && !reClientAddr.MatchString(l.ClientAddr) {
+		return fmt.Errorf("invalid  '%s' field: %s", fieldClientAddr, l.ClientAddr)
 	}
-	if l.HasReqMethod() && !reReqMethod.MatchString(l.ReqMethod) {
-		return xerrors.Errorf("invalid method field: '%s'", l.ReqMethod)
+	if l.hasReqHTTPMethod() && !reReqHTTPMethod.MatchString(l.ReqHTTPMethod) {
+		return fmt.Errorf("invalid '%s' field: %s", fieldReqMethod, l.ReqHTTPMethod)
 	}
-	if l.HasReqURI() && !reURI.MatchString(l.ReqURI) {
-		return xerrors.Errorf("invalid ReqURI field: '%s'", l.ReqURI)
+	if l.hasReqURI() && !reURI.MatchString(l.ReqURI) {
+		return fmt.Errorf("invalid '%s' field: %s", fieldReqURI, l.ReqURI)
 	}
-	if l.HasReqHTTPVersion() && !reReqVersion.MatchString(l.ReqHTTPVersion) {
-		return xerrors.Errorf("invalid protocol field: '%s'", l.ReqHTTPVersion)
+	if l.hasReqHTTPVersion() && !reReqHTTPVersion.MatchString(l.ReqHTTPVersion) {
+		return fmt.Errorf("invalid '%s' field: %s", fieldReqProtocol, l.ReqHTTPVersion)
 	}
-	if l.HasReqSize() && l.ReqSize < 0 {
-		return xerrors.Errorf("invalid request size field: %d", l.ReqSize)
+	if l.hasReqSize() && l.ReqSize < 0 {
+		return fmt.Errorf("invalid '%s' field: %d", fieldReqSize, l.ReqSize)
 	}
-	if l.HasRespSize() && l.RespSize < 0 {
-		return xerrors.Errorf("invalid response size field: %d", l.RespSize)
+	if l.hasRespSize() && l.RespSize < 0 {
+		return fmt.Errorf("invalid '%s' field: %d", fieldRespSize, l.RespSize)
 	}
-	if l.HasRespTime() && l.RespTime < 0 {
-		return xerrors.Errorf("invalid response time field: %f", l.RespTime)
+	if l.hasRespTime() && l.RespTime < 0 {
+		return fmt.Errorf("invalid '%s' field: %f", fieldRespTime, l.RespTime)
 	}
-	if l.HasUpstreamRespTime() && l.UpstreamRespTime < 0 {
-		return xerrors.Errorf("invalid upstream response time field: %f", l.UpstreamRespTime)
+	if l.hasUpstreamRespTime() && l.UpstreamRespTime < 0 {
+		return fmt.Errorf("invalid '%s' field: %f", fieldUpstreamRespTime, l.UpstreamRespTime)
 	}
 	return nil
 }
@@ -168,18 +168,18 @@ func (l *LogLine) assign(field string, value string, timeMultiplier float64) (er
 	case fieldRequest:
 		err = l.assignRequest(value)
 	case fieldReqMethod:
-		l.ReqMethod = value
+		l.ReqHTTPMethod = value
 	case fieldReqURI:
 		l.ReqURI = value
 	case fieldReqProtocol:
-		err = l.assignProtocol(value)
+		err = l.assignReqHTTPVersion(value)
 	case fieldRespStatus:
-		err = l.assignStatus(value)
+		err = l.assignReqCodeStatus(value)
 	case fieldRespSize:
 		err = l.assignRespSize(value)
 	case fieldReqSize:
 		err = l.assignReqSize(value)
-	case fieldReqTime:
+	case fieldRespTime:
 		err = l.assignRespTime(value, timeMultiplier)
 	case fieldUpstreamRespTime:
 		err = l.assignUpstreamRespTime(value, timeMultiplier)
@@ -196,37 +196,37 @@ func (l *LogLine) assignRequest(request string) error {
 	req := request
 	idx := strings.IndexByte(req, ' ')
 	if idx < 0 {
-		return xerrors.Errorf("invalid request: %q", request)
+		return fmt.Errorf("invalid request: %q", request)
 	}
-	l.ReqMethod = req[0:idx]
+	l.ReqHTTPMethod = req[0:idx]
 	req = req[idx+1:]
 
 	idx = strings.IndexByte(req, ' ')
 	if idx < 0 {
-		return xerrors.Errorf("invalid request: %q", request)
+		return fmt.Errorf("invalid request: %q", request)
 	}
 	l.ReqURI = req[0:idx]
 	req = req[idx+1:]
 
-	return l.assignProtocol(req)
+	return l.assignReqHTTPVersion(req)
 }
 
-func (l *LogLine) assignProtocol(proto string) error {
+func (l *LogLine) assignReqHTTPVersion(proto string) error {
 	if len(proto) <= 5 || !strings.HasPrefix(proto, "HTTP/") {
-		return xerrors.Errorf("invalid protocol: %q", proto)
+		return fmt.Errorf("invalid protocol: %q", proto)
 	}
 	l.ReqHTTPVersion = proto[5:]
 	return nil
 }
 
-func (l *LogLine) assignStatus(status string) error {
+func (l *LogLine) assignReqCodeStatus(status string) error {
 	if status == "-" {
 		return nil
 	}
 	var err error
 	l.RespCodeStatus, err = strconv.Atoi(status)
 	if err != nil {
-		return xerrors.Errorf("invalid status: %q: %w", status, err)
+		return fmt.Errorf("invalid status: %q: %w", status, err)
 	}
 	return nil
 }
@@ -239,7 +239,7 @@ func (l *LogLine) assignReqSize(size string) error {
 	var err error
 	l.ReqSize, err = strconv.Atoi(size)
 	if err != nil {
-		return xerrors.Errorf("invalid request size: %q: %w", size, err)
+		return fmt.Errorf("invalid request size: %q: %w", size, err)
 	}
 	return nil
 }
@@ -252,7 +252,7 @@ func (l *LogLine) assignRespSize(size string) error {
 	var err error
 	l.RespSize, err = strconv.Atoi(size)
 	if err != nil {
-		return xerrors.Errorf("invalid response size: %q: %w", size, err)
+		return fmt.Errorf("invalid response size: %q: %w", size, err)
 	}
 	return nil
 }
@@ -263,7 +263,7 @@ func (l *LogLine) assignRespTime(time string, timeScale float64) error {
 	}
 	val, err := strconv.ParseFloat(time, 64)
 	if err != nil {
-		return xerrors.Errorf("invalid response time: %q: %w", time, err)
+		return fmt.Errorf("invalid response time: %q: %w", time, err)
 	}
 	l.RespTime = val * timeScale
 	return nil
@@ -278,7 +278,7 @@ func (l *LogLine) assignUpstreamRespTime(time string, timeScale float64) error {
 	}
 	val, err := strconv.ParseFloat(time, 64)
 	if err != nil {
-		return xerrors.Errorf("invalid upstream response time: %q: %w", time, err)
+		return fmt.Errorf("invalid upstream response time: %q: %w", time, err)
 	}
 	l.UpstreamRespTime = val * timeScale
 	return nil
