@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"sort"
 	"testing"
 	"time"
 
@@ -50,12 +51,26 @@ func TestWebLog_Collect(t *testing.T) {
 	time.Sleep(150 * time.Millisecond)
 
 	weblog := New()
+	defer weblog.Cleanup()
+
 	weblog.Config.Path = tmp.Name()
 
 	ok := weblog.Init()
 	require.True(t, ok)
 	ok = weblog.Check()
 	require.True(t, ok)
+
+	time.Sleep(150 * time.Millisecond)
+
+	m := weblog.Collect()
+	l := make([]string, 0)
+	for k := range m {
+		l = append(l, k)
+	}
+	sort.Strings(l)
+	for _, v := range l {
+		fmt.Println(fmt.Sprintf("\"%s\": %d,", v, m[v]))
+	}
 
 	done <- 1
 	<-wait

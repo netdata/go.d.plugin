@@ -26,10 +26,10 @@ type (
 
 func newCSVParser(config Config, in io.Reader) (*csvParser, error) {
 	format := newCSVFormat(config.CSV.Format)
-	if !format.hasField(fieldClient) || !format.hasField(fieldStatus) || !format.hasField(fieldRespSize) {
+	if !format.hasField(fieldClientAddr) || !format.hasField(fieldRespStatus) || !format.hasField(fieldRespSize) {
 		return nil, xerrors.New("missing some mandatory fields")
 	}
-	if !format.hasField(fieldRequest) && (!format.hasField(fieldMethod) || !format.hasField(fieldURI)) {
+	if !format.hasField(fieldRequest) && (!format.hasField(fieldReqMethod) || !format.hasField(fieldReqURI)) {
 		return nil, xerrors.New("missing some mandatory fields")
 	}
 	return &csvParser{
@@ -80,23 +80,23 @@ func newCSVFormat(logFormat string) *csvFormat {
 		field = strings.Trim(field, `'"[]`)
 		switch field {
 		case "$remote_addr":
-			format.fieldIndexes[fieldClient] = i + offset
+			format.fieldIndexes[fieldClientAddr] = i + offset
 		case "$request":
 			format.fieldIndexes[fieldRequest] = i + offset
 		case "$request_method":
-			format.fieldIndexes[fieldMethod] = i + offset
+			format.fieldIndexes[fieldReqMethod] = i + offset
 		case "$request_uri":
-			format.fieldIndexes[fieldURI] = i + offset
+			format.fieldIndexes[fieldReqURI] = i + offset
 		case "server_protocol":
-			format.fieldIndexes[fieldProtocol] = i + offset
+			format.fieldIndexes[fieldReqProtocol] = i + offset
 		case "$status":
-			format.fieldIndexes[fieldStatus] = i + offset
+			format.fieldIndexes[fieldRespStatus] = i + offset
 		case "$body_bytes_sent", "$bytes_sent":
 			format.fieldIndexes[fieldRespSize] = i + offset
 		case "$request_length":
 			format.fieldIndexes[fieldReqSize] = i + offset
 		case "$request_time":
-			format.fieldIndexes[fieldRespTime] = i + offset
+			format.fieldIndexes[fieldReqTime] = i + offset
 		case "$upstream_response_time":
 			format.fieldIndexes[fieldUpstreamRespTime] = i + offset
 		case "$server_name", "$http_host", "$host", "$hostname":
@@ -125,7 +125,10 @@ func (f *csvFormat) parse(record []string, timeMultiplier float64) (log LogLine,
 	}
 
 	for field, idx := range f.fieldIndexes {
-		log.assign(field, record[idx], timeMultiplier)
+		err = log.assign(field, record[idx], timeMultiplier)
+		if err != nil {
+			return log, err
+		}
 	}
 	return log, nil
 }

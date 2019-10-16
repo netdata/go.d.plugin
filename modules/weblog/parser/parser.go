@@ -7,6 +7,10 @@ import (
 	"golang.org/x/xerrors"
 )
 
+type Error struct{ msg string }
+
+func (e Error) Error() string { return e.msg }
+
 type (
 	Parser interface {
 		ReadLine() (LogLine, error)

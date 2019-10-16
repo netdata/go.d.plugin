@@ -26,7 +26,7 @@ func TestLogLine_Verify(t *testing.T) {
 		{"invalid vhost", `client=127.0.0.1 method=GET uri=/ status=200 resp_size=10 vhost=my_server.com`},
 		{"invalid client", `client=my_server method=GET uri=/ status=200 resp_size=10`},
 		{"invalid method", `client=127.0.0.1 method=foo uri=/ status=200 resp_size=10`},
-		{"invalid URI", `client=127.0.0.1 method=GET uri=foo status=200 resp_size=10`},
+		{"invalid ReqURI", `client=127.0.0.1 method=GET uri=foo status=200 resp_size=10`},
 		{"invalid protocol", `client=127.0.0.1 method=GET uri=/ status=200 resp_size=10 version=a`},
 		{"invalid status", `client=127.0.0.1 method=GET uri=/ status=50 resp_size=10`},
 		{"invalid response size", `client=127.0.0.1 method=GET uri=/ status=200 resp_size=-10`},
@@ -72,9 +72,9 @@ func Test_LogLine_assignRequest(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				assert.Equal(t, tt.wantMethod, log.Method)
-				assert.Equal(t, tt.wantUri, log.URI)
-				assert.Equal(t, tt.wantVersion, log.Version)
+				assert.Equal(t, tt.wantMethod, log.ReqMethod)
+				assert.Equal(t, tt.wantUri, log.ReqURI)
+				assert.Equal(t, tt.wantVersion, log.ReqHTTPVersion)
 			}
 		})
 	}
