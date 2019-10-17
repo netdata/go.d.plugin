@@ -139,21 +139,6 @@ func (w *WebLog) initCategories() error {
 	return nil
 }
 
-func (w *WebLog) Init() bool {
-	if err := w.initFilter(); err != nil {
-		w.Error(err)
-		return false
-	}
-
-	if err := w.initCategories(); err != nil {
-		w.Error(err)
-		return false
-	}
-
-	w.metrics = NewMetricsData(w.Config)
-	return true
-}
-
 func (w *WebLog) initLogReader() error {
 	file, err := logreader.Open(w.Path, w.ExcludePath, w.Logger)
 	if err != nil {
@@ -184,6 +169,21 @@ func (w *WebLog) initParser() error {
 		return fmt.Errorf("error on verifying parsed log line : %v", err)
 	}
 	return nil
+}
+
+func (w *WebLog) Init() bool {
+	if err := w.initFilter(); err != nil {
+		w.Error(err)
+		return false
+	}
+
+	if err := w.initCategories(); err != nil {
+		w.Error(err)
+		return false
+	}
+
+	w.metrics = NewMetricsData(w.Config)
+	return true
 }
 
 func (w *WebLog) Check() bool {

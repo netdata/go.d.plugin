@@ -1,4 +1,4 @@
-package weblog
+package parser
 
 //
 //import (

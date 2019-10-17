@@ -26,21 +26,20 @@ func (w WebLog) logPanicStackIfAny() {
 	panic(err)
 }
 
-func (w *WebLog) collect() (map[string]int64, error) {
+func (w *WebLog) collect() (mx map[string]int64, err error) {
 	defer w.logPanicStackIfAny()
 	w.metrics.Reset()
+	var n int
 
-	n, err := w.collectLogLines()
-	if err != nil {
-		return nil, err
+	n, err = w.collectLogLines()
+
+	if n > 0 || n == 0 && err == nil {
+		mx = stm.ToMap(w.metrics)
 	}
-
 	if n > 0 {
 		w.updateCharts()
 	}
-
-	result := stm.ToMap(w.metrics)
-	return result, nil
+	return mx, err
 }
 
 func (w *WebLog) collectLogLines() (int, error) {
@@ -49,16 +48,16 @@ func (w *WebLog) collectLogLines() (int, error) {
 		line, err := w.parser.ReadLine()
 		if err != nil {
 			if err == io.EOF {
-				break
+				return n, nil
 			}
-			// TODO: collect unmatched
-			// w.collectUnmatched()
-			return n, err
+			if !isParseError(err) {
+				return n, err
+			}
+			w.collectUnmatched()
 		}
 		n++
 		w.collectLogLine(line)
 	}
-	return n, nil
 }
 
 func (w *WebLog) collectLogLine(line parser.LogLine) {
@@ -243,6 +242,9 @@ func (w *WebLog) collectCustom(custom string) {
 	}
 }
 
-func isEmptyString(s string) bool { return s != parser.EmptyString }
+func isEmptyString(s string) bool { return s == parser.EmptyString }
 
-func isEmptyNumber(n int) bool { return n != parser.EmptyNumber }
+func isEmptyNumber(n int) bool { return n == parser.EmptyNumber }
+
+// TODO: fix
+func isParseError(err error) bool { return false }

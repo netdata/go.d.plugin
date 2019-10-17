@@ -21,7 +21,6 @@ const (
 
 // NOTE: inconsistency between contexts with python web_log
 // TODO: current histogram charts are misleading in netdata
-// TODO: panicIfErr
 
 var charts = Charts{
 	{
@@ -465,45 +464,44 @@ func (w *WebLog) addCustomChartIfNotExist() {
 func (w *WebLog) updateVhostChart() {
 	chart := w.Charts().Get(requestsPerVhost.ID)
 
-	for vhost := range w.metrics.ReqVhost {
-		if w.chartsCache.vhosts.addIfNotExist(vhost) {
+	for v := range w.metrics.ReqVhost {
+		if w.chartsCache.vhosts.addIfNotExist(v) {
 			continue
 		}
-		addDimensionToVhostChart(chart, vhost)
+		addDimensionToVhostChart(chart, v)
 	}
 }
 
 func (w *WebLog) updateHTTPMethodChart() {
 	chart := w.Charts().Get(requestsPerHTTPMethod.ID)
 
-	for method := range w.metrics.ReqMethod {
-		if w.chartsCache.methods.addIfNotExist(method) {
+	for v := range w.metrics.ReqMethod {
+		if w.chartsCache.methods.addIfNotExist(v) {
 			continue
 		}
-		addDimensionToHTTPMethodChart(chart, method)
+		addDimensionToHTTPMethodChart(chart, v)
 	}
 }
 
 func (w *WebLog) updateHTTPVersionChart() {
 	chart := w.Charts().Get(requestsPerHTTPVersion.ID)
 
-	for version := range w.metrics.ReqVersion {
-		if w.chartsCache.created.addIfNotExist(version) {
+	for v := range w.metrics.ReqVersion {
+		if w.chartsCache.created.addIfNotExist(v) {
 			continue
 		}
-		addDimensionToHTTPVersionChart(chart, version)
+		addDimensionToHTTPVersionChart(chart, v)
 	}
 }
 
 func (w *WebLog) updateRespCodesDetailedChart() {
 	var chart *Chart
-	for code := range w.metrics.RespCode {
-		if w.chartsCache.codes.addIfNotExist(code) {
+	for v := range w.metrics.RespCode {
+		if w.chartsCache.codes.addIfNotExist(v) {
 			continue
 		}
-
-		chart = w.respCodesDetailedChartByCode(code)
-		addDimensionToRespCodesDetailedChart(chart, code)
+		chart = w.respCodesDetailedChartByCode(v)
+		addDimensionToRespCodesDetailedChart(chart, v)
 	}
 }
 
