@@ -131,6 +131,7 @@ func (r *Reader) Close() (err error) {
 }
 
 func (r *Reader) reopen() error {
+	r.log.Debugf("reopen, look for: %s", r.path)
 	_ = r.Close()
 	return r.open()
 }
