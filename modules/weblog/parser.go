@@ -5,14 +5,9 @@ import (
 	"fmt"
 	"io"
 	"regexp"
-	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/logs/parse"
 )
-
-/*
-127.0.0.1 - - [28/Jan/2019:11:18:12 +0900] "GET /order/books HTTP/1.1" 200 6295 "https://www.test.com/order" "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" - 12625
-*/
 
 var (
 	//reSpace = regexp.MustCompile(`\s+`)
@@ -47,19 +42,8 @@ var (
 //	return reSpace.ReplaceAllString(s, " ")
 //}
 
-type (
-	parserConfig struct {
-		LogType        string             `yaml:"log_type"`
-		TimeMultiplier float64            `yaml:"time_multiplier"`
-		CSV            parse.CSVConfig    `yaml:"csv_config"`
-		LTSV           parse.LTSVConfig   `yaml:"ltsv_config"`
-		RegExp         parse.RegExpConfig `yaml:"regexp_config"`
-	}
-)
-
-var defaultParserConfig = parserConfig{
-	LogType:        typeAuto,
-	TimeMultiplier: time.Second.Seconds(),
+var defaultParserConfig = parse.Config{
+	LogType: parse.TypeAuto,
 	CSV: parse.CSVConfig{
 		Delimiter: ' ',
 	},
@@ -70,29 +54,7 @@ var defaultParserConfig = parserConfig{
 	RegExp: parse.RegExpConfig{},
 }
 
-const (
-	typeAuto   = "auto"
-	typeCSV    = "csv"
-	typeLTSV   = "ltsv"
-	typeRegExp = "regexp"
-)
-
-func newParser(config parserConfig, in io.Reader, record []byte) (parse.Parser, error) {
-	switch config.LogType {
-	case typeAuto:
-		return guessParser(config, in, record)
-	case typeCSV:
-		return parse.NewCSVParser(config.CSV, in)
-	case typeLTSV:
-		return parse.NewLTSVParser(config.LTSV, in)
-	case typeRegExp:
-		return parse.NewRegExpParser(config.RegExp, in)
-	default:
-		return nil, fmt.Errorf("invalid type: %q", config.LogType)
-	}
-}
-
-func guessParser(config parserConfig, in io.Reader, record []byte) (parse.Parser, error) {
+func guessParser(config parse.Config, in io.Reader, record []byte) (parse.Parser, error) {
 	if reLTSV.Match(record) {
 		return parse.NewLTSVParser(config.LTSV, in)
 	}

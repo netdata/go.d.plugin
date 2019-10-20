@@ -5,6 +5,7 @@ import (
 	logsparse "github.com/netdata/go.d.plugin/pkg/logs/parse"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/metrics"
+	"time"
 
 	"github.com/netdata/go-orchestrator/module"
 )
@@ -26,6 +27,7 @@ func New() *WebLog {
 			AggregateResponseCodes: true,
 			Histogram:              metrics.DefBuckets,
 			Parser:                 defaultParserConfig,
+			TimeMultiplier:         time.Second.Seconds(),
 		},
 		charts: charts.Copy(),
 		chartsCache: chartsCache{
@@ -45,7 +47,8 @@ type (
 	}
 
 	Config struct {
-		Parser                 parserConfig       `yaml:",inline"`
+		Parser                 logsparse.Config   `yaml:",inline"`
+		TimeMultiplier         float64            `yaml:"time_multiplies"`
 		Path                   string             `yaml:"path" validate:"required"`
 		ExcludePath            string             `yaml:"exclude_path"`
 		Filter                 matcher.SimpleExpr `yaml:"filter"`
@@ -102,7 +105,7 @@ func (w *WebLog) Init() bool {
 }
 
 func (w *WebLog) Check() bool {
-	// Note: these inits are here to make autodetection retry working
+	// Note: these inits are here to make auto detection retry working
 	if err := w.initLogReader(); err != nil {
 		w.Warning("check failed: ", err)
 		return false

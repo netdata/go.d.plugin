@@ -2,6 +2,7 @@ package weblog
 
 import (
 	"fmt"
+	"github.com/netdata/go.d.plugin/pkg/logs/parse"
 
 	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
@@ -76,7 +77,7 @@ func (w *WebLog) initParser() error {
 		return fmt.Errorf("error on reading last line : %v", err)
 	}
 
-	w.parser, err = newParser(w.Config.Parser, w.file, lastLine)
+	w.parser, err = parse.NewParser(w.Config.Parser, w.file, lastLine, guessParser)
 	if err != nil {
 		return fmt.Errorf("error on creating parser : %v", err)
 	}
