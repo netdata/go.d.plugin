@@ -6,11 +6,10 @@ import (
 	"io"
 	"regexp"
 
-	"github.com/netdata/go.d.plugin/pkg/logs/parse"
+	"github.com/netdata/go.d.plugin/pkg/logs"
 )
 
 var (
-	//reSpace = regexp.MustCompile(`\s+`)
 	reLTSV = regexp.MustCompile(`^[a-zA-Z0-9]+:[^\t]*(\t[a-zA-Z0-9]+:[^\t]*)*$`)
 
 	csvCommon = `           $remote_addr - $remote_user [time local] "$request" $resp_status $body_bytes_sent`
@@ -38,50 +37,36 @@ var (
 	}
 )
 
-//func removeDuplicateSpaces(s string) string {
-//	return reSpace.ReplaceAllString(s, " ")
-//}
+func guessParser(record []byte) logs.Guess {
+	return func(config logs.Config, in io.Reader) (parser logs.Parser, e error) {
+		if reLTSV.Match(record) {
+			return logs.NewLTSVParser(config.LTSV, in)
+		}
 
-var defaultParserConfig = parse.Config{
-	LogType: parse.TypeAuto,
-	CSV: parse.CSVConfig{
-		Delimiter: ' ',
-	},
-	LTSV: parse.LTSVConfig{
-		FieldDelimiter: '\t',
-		ValueDelimiter: ':',
-	},
-	RegExp: parse.RegExpConfig{},
-}
+		for _, format := range guessOrder {
+			cfg := config.CSV
+			cfg.Format = format
+			cfg.TrimLeadingSpace = true
 
-func guessParser(config parse.Config, in io.Reader, record []byte) (parse.Parser, error) {
-	if reLTSV.Match(record) {
-		return parse.NewLTSVParser(config.LTSV, in)
+			parser, err := logs.NewCSVParser(cfg, in)
+			if err != nil {
+				return nil, err
+			}
+
+			line := newEmptyLogLine()
+			err = parser.Parse(record, line)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			fmt.Println(line)
+			if err = line.Verify(); err != nil {
+				fmt.Println(err)
+				continue
+			}
+			return parser, nil
+		}
+		return nil, errors.New("cannot determine log format")
 	}
-
-	for _, format := range guessOrder {
-		cfg := config.CSV
-		cfg.Format = format
-		cfg.TrimLeadingSpace = true
-
-		parser, err := parse.NewCSVParser(cfg, in)
-		if err != nil {
-			return nil, err
-		}
-
-		line := newEmptyLogLine()
-		err = parser.Parse(record, line)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		fmt.Println(line)
-		if err = line.Verify(); err != nil {
-			fmt.Println(err)
-			continue
-		}
-		return parser, nil
-	}
-	return nil, errors.New("cannot determine log format")
 }

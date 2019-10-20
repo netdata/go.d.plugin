@@ -1,11 +1,11 @@
 package weblog
 
 import (
+	"time"
+
 	"github.com/netdata/go.d.plugin/pkg/logs"
-	logsparse "github.com/netdata/go.d.plugin/pkg/logs/parse"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/metrics"
-	"time"
 
 	"github.com/netdata/go-orchestrator/module"
 )
@@ -22,11 +22,23 @@ func init() {
 }
 
 func New() *WebLog {
+	parserConfig := logs.Config{
+		LogType: logs.TypeAuto,
+		CSV: logs.CSVConfig{
+			Delimiter: ' ',
+		},
+		LTSV: logs.LTSVConfig{
+			FieldDelimiter: '\t',
+			ValueDelimiter: ':',
+		},
+		RegExp: logs.RegExpConfig{},
+	}
+
 	return &WebLog{
 		Config: Config{
 			AggregateResponseCodes: true,
 			Histogram:              metrics.DefBuckets,
-			Parser:                 defaultParserConfig,
+			Parser:                 parserConfig,
 			TimeMultiplier:         time.Second.Seconds(),
 		},
 		charts: charts.Copy(),
@@ -47,7 +59,7 @@ type (
 	}
 
 	Config struct {
-		Parser                 logsparse.Config   `yaml:",inline"`
+		Parser                 logs.Config        `yaml:",inline"`
 		TimeMultiplier         float64            `yaml:"time_multiplies"`
 		Path                   string             `yaml:"path" validate:"required"`
 		ExcludePath            string             `yaml:"exclude_path"`
@@ -64,15 +76,15 @@ type (
 		charts *module.Charts
 
 		file   *logs.Reader
-		parser logsparse.Parser
+		parser logs.Parser
 		line   *LogLine
 
-		metrics        *MetricsData
-		filter         matcher.Matcher
-		urlCategories  []*category
-		userCategories []*category
+		mx       *MetricsData
+		filter   matcher.Matcher
+		urlCats  []*category
+		userCats []*category
 
-		collected struct {
+		col struct {
 			vhost      bool
 			client     bool
 			method     bool
@@ -100,7 +112,7 @@ func (w *WebLog) Init() bool {
 		return false
 	}
 
-	w.metrics = NewMetricsData(w.Config)
+	w.mx = NewMetricsData(w.Config)
 	return true
 }
 

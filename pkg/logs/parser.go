@@ -1,4 +1,4 @@
-package parse
+package logs
 
 import (
 	"errors"
@@ -6,16 +6,16 @@ import (
 	"io"
 )
 
-type Error struct {
+type ParseError struct {
 	msg string
 	err error
 }
 
-func (e Error) Error() string { return e.msg }
+func (e ParseError) Error() string { return e.msg }
 
-func (e Error) Unwrap() error { return e.err }
+func (e ParseError) Unwrap() error { return e.err }
 
-func IsParseError(err error) bool { return errors.As(err, &Error{}) }
+func IsParseError(err error) bool { return errors.As(err, &ParseError{}) }
 
 type (
 	LogLine interface {
@@ -28,7 +28,7 @@ type (
 		Info() string
 	}
 
-	Guess func(config Config, in io.Reader, record []byte) (Parser, error)
+	Guess func(config Config, in io.Reader) (Parser, error)
 )
 
 const (
@@ -45,13 +45,13 @@ type Config struct {
 	RegExp  RegExpConfig `yaml:"regexp_config"`
 }
 
-func NewParser(config Config, in io.Reader, record []byte, guess Guess) (Parser, error) {
+func NewParser(config Config, in io.Reader, guess Guess) (Parser, error) {
 	switch config.LogType {
 	case TypeAuto:
 		if guess == nil {
 			return nil, fmt.Errorf("log_type is '%s', but guess is nil", TypeAuto)
 		}
-		return guess(config, in, record)
+		return guess(config, in)
 	case TypeCSV:
 		return NewCSVParser(config.CSV, in)
 	case TypeLTSV:

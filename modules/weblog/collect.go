@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/netdata/go.d.plugin/pkg/logs/parse"
+	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
@@ -28,13 +28,13 @@ func (w WebLog) logPanicStackIfAny() {
 
 func (w *WebLog) collect() (mx map[string]int64, err error) {
 	defer w.logPanicStackIfAny()
-	w.metrics.Reset()
+	w.mx.Reset()
 	var n int
 
 	n, err = w.collectLogLines()
 
 	if n > 0 || n == 0 && err == nil {
-		mx = stm.ToMap(w.metrics)
+		mx = stm.ToMap(w.mx)
 	}
 	if n > 0 {
 		w.updateCharts()
@@ -51,7 +51,7 @@ func (w *WebLog) collectLogLines() (int, error) {
 			if err == io.EOF {
 				return n, nil
 			}
-			if !parse.IsParseError(err) {
+			if !logs.IsParseError(err) {
 				return n, err
 			}
 			w.collectUnmatched()
@@ -66,7 +66,7 @@ func (w *WebLog) collectLogLine() {
 		return
 	}
 
-	w.metrics.Requests.Inc()
+	w.mx.Requests.Inc()
 	w.collectVhost()
 	w.collectClientAddr()
 	w.collectReqHTTPMethod()
@@ -81,17 +81,17 @@ func (w *WebLog) collectLogLine() {
 }
 
 func (w *WebLog) collectUnmatched() {
-	w.metrics.Requests.Inc()
-	w.metrics.ReqUnmatched.Inc()
+	w.mx.Requests.Inc()
+	w.mx.ReqUnmatched.Inc()
 }
 
 func (w *WebLog) collectVhost() {
 	if !w.line.hasVhost() {
 		return
 	}
-	w.collected.vhost = true
+	w.col.vhost = true
 
-	c, _ := w.metrics.ReqVhost.GetP(w.line.Vhost)
+	c, _ := w.mx.ReqVhost.GetP(w.line.Vhost)
 	c.Inc()
 }
 
@@ -100,40 +100,40 @@ func (w *WebLog) collectClientAddr() {
 		return
 	}
 
-	w.collected.client = true
+	w.col.client = true
 
 	// TODO: not always IP address
 	if strings.ContainsRune(w.line.ClientAddr, ':') {
-		w.metrics.ReqIpv6.Inc()
-		w.metrics.UniqueIPv6.Insert(w.line.ClientAddr)
+		w.mx.ReqIpv6.Inc()
+		w.mx.UniqueIPv6.Insert(w.line.ClientAddr)
 		return
 	}
 
-	w.metrics.ReqIpv4.Inc()
-	w.metrics.UniqueIPv4.Insert(w.line.ClientAddr)
+	w.mx.ReqIpv4.Inc()
+	w.mx.UniqueIPv4.Insert(w.line.ClientAddr)
 }
 
 func (w *WebLog) collectReqHTTPMethod() {
 	if !w.line.hasReqHTTPMethod() {
 		return
 	}
-	w.collected.method = true
+	w.col.method = true
 
-	c, _ := w.metrics.ReqMethod.GetP(w.line.ReqHTTPMethod)
+	c, _ := w.mx.ReqMethod.GetP(w.line.ReqHTTPMethod)
 	c.Inc()
 }
 
 func (w *WebLog) collectReqURI() {
-	if !w.line.hasReqURI() || len(w.urlCategories) == 0 {
+	if !w.line.hasReqURI() || len(w.urlCats) == 0 {
 		return
 	}
-	w.collected.uri = true
+	w.col.uri = true
 
-	for _, cat := range w.urlCategories {
-		if !cat.Matcher.MatchString(w.line.ReqURI) {
+	for _, cat := range w.urlCats {
+		if !cat.MatchString(w.line.ReqURI) {
 			continue
 		}
-		c, _ := w.metrics.ReqURI.GetP(cat.name)
+		c, _ := w.mx.ReqURI.GetP(cat.name)
 		c.Inc()
 		return
 	}
@@ -143,9 +143,9 @@ func (w *WebLog) collectReqHTTPVersion() {
 	if !w.line.hasReqHTTPVersion() {
 		return
 	}
-	w.collected.version = true
+	w.col.version = true
 
-	c, _ := w.metrics.ReqVersion.GetP(w.line.ReqHTTPVersion)
+	c, _ := w.mx.ReqVersion.GetP(w.line.ReqHTTPVersion)
 	c.Inc()
 }
 
@@ -153,35 +153,35 @@ func (w *WebLog) collectRespStatusCode() {
 	if !w.line.hasRespCodeStatus() {
 		return
 	}
-	w.collected.status = true
+	w.col.status = true
 	status := w.line.RespCodeStatus
 
 	switch {
 	case status >= 100 && status < 300, status == 304:
-		w.metrics.RespSuccessful.Inc()
+		w.mx.RespSuccessful.Inc()
 	case status >= 300 && status < 400:
-		w.metrics.RespRedirect.Inc()
+		w.mx.RespRedirect.Inc()
 	case status >= 400 && status < 500:
-		w.metrics.RespClientError.Inc()
+		w.mx.RespClientError.Inc()
 	case status >= 500 && status < 600:
-		w.metrics.RespServerError.Inc()
+		w.mx.RespServerError.Inc()
 	}
 
 	switch status / 100 {
 	case 1:
-		w.metrics.Resp1xx.Inc()
+		w.mx.Resp1xx.Inc()
 	case 2:
-		w.metrics.Resp2xx.Inc()
+		w.mx.Resp2xx.Inc()
 	case 3:
-		w.metrics.Resp3xx.Inc()
+		w.mx.Resp3xx.Inc()
 	case 4:
-		w.metrics.Resp4xx.Inc()
+		w.mx.Resp4xx.Inc()
 	case 5:
-		w.metrics.Resp5xx.Inc()
+		w.mx.Resp5xx.Inc()
 	}
 
 	statusStr := strconv.Itoa(status)
-	c, _ := w.metrics.RespCode.GetP(statusStr)
+	c, _ := w.mx.RespCode.GetP(statusStr)
 	c.Inc()
 }
 
@@ -189,57 +189,57 @@ func (w *WebLog) collectReqSize() {
 	if !w.line.hasReqSize() {
 		return
 	}
-	w.collected.reqSize = true
+	w.col.reqSize = true
 
-	w.metrics.BytesSent.Add(float64(w.line.ReqSize))
+	w.mx.BytesSent.Add(float64(w.line.ReqSize))
 }
 
 func (w *WebLog) collectRespSize() {
 	if !w.line.hasRespSize() {
 		return
 	}
-	w.collected.respSize = true
+	w.col.respSize = true
 
-	w.metrics.BytesReceived.Add(float64(w.line.RespSize))
+	w.mx.BytesReceived.Add(float64(w.line.RespSize))
 }
 
 func (w *WebLog) collectRespTime() {
 	if !w.line.hasRespTime() {
 		return
 	}
-	w.collected.respTime = true
+	w.col.respTime = true
 
-	w.metrics.RespTime.Observe(w.line.RespTime)
-	if w.metrics.RespTimeHist == nil {
+	w.mx.RespTime.Observe(w.line.RespTime)
+	if w.mx.RespTimeHist == nil {
 		return
 	}
-	w.metrics.RespTimeHist.Observe(w.line.RespTime)
+	w.mx.RespTimeHist.Observe(w.line.RespTime)
 }
 
 func (w *WebLog) collectUpstreamRespTime() {
 	if !w.line.hasUpstreamRespTime() {
 		return
 	}
-	w.collected.upRespTime = true
+	w.col.upRespTime = true
 
-	w.metrics.RespTimeUpstream.Observe(w.line.UpstreamRespTime)
-	if w.metrics.RespTimeUpstreamHist == nil {
+	w.mx.RespTimeUpstream.Observe(w.line.UpstreamRespTime)
+	if w.mx.RespTimeUpstreamHist == nil {
 		return
 	}
-	w.metrics.RespTimeUpstreamHist.Observe(w.line.UpstreamRespTime)
+	w.mx.RespTimeUpstreamHist.Observe(w.line.UpstreamRespTime)
 }
 
 func (w *WebLog) collectCustom() {
-	if !w.line.hasCustom() || len(w.userCategories) == 0 {
+	if !w.line.hasCustom() || len(w.userCats) == 0 {
 		return
 	}
-	w.collected.custom = true
+	w.col.custom = true
 
-	for _, cat := range w.userCategories {
-		if !cat.Matcher.MatchString(w.line.Custom) {
+	for _, cat := range w.userCats {
+		if !cat.MatchString(w.line.Custom) {
 			continue
 		}
-		c, _ := w.metrics.ReqCustom.GetP(cat.name)
+		c, _ := w.mx.ReqCustom.GetP(cat.name)
 		c.Inc()
 		return
 	}

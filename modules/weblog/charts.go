@@ -323,38 +323,38 @@ func newResponseTimeUpstreamHistogramChart(histogram []float64) *Chart {
 }
 
 func (w *WebLog) updateCharts() {
-	if w.collected.vhost {
+	if w.col.vhost {
 		w.addVhostChart()
 		w.updateVhostChart()
 	}
-	if w.collected.client {
+	if w.col.client {
 		w.addClientCharts()
 	}
-	if w.collected.method {
+	if w.col.method {
 		w.addHTTPMethodChart()
 		w.updateHTTPMethodChart()
 	}
-	if w.collected.uri {
+	if w.col.uri {
 		w.addURIChart()
 	}
-	if w.collected.version {
+	if w.col.version {
 		w.addHTTPVersionChart()
 		w.updateHTTPVersionChart()
 	}
-	if w.collected.status {
+	if w.col.status {
 		w.addRespCodesDetailedChart()
 		w.updateRespCodesDetailedChart()
 	}
-	if w.collected.reqSize || w.collected.respSize {
+	if w.col.reqSize || w.col.respSize {
 		w.addBandwidthChart()
 	}
-	if w.collected.respTime {
+	if w.col.respTime {
 		w.addRespTimeCharts()
 	}
-	if w.collected.upRespTime {
+	if w.col.upRespTime {
 		w.addUpstreamRespTimeCharts()
 	}
-	if w.collected.custom {
+	if w.col.custom {
 		w.addCustomChart()
 	}
 }
@@ -388,7 +388,7 @@ func (w *WebLog) addURIChart() {
 		return
 	}
 
-	chart := newRequestsPerURLCategoriesChart(w.urlCategories)
+	chart := newRequestsPerURLCategoriesChart(w.urlCats)
 	panicIfErr(w.Charts().Add(chart))
 }
 
@@ -457,14 +457,14 @@ func (w *WebLog) addCustomChart() {
 		return
 	}
 
-	chart := newRequestsPerCustomCategoriesChart(w.userCategories)
+	chart := newRequestsPerCustomCategoriesChart(w.userCats)
 	panicIfErr(w.Charts().Add(chart))
 }
 
 func (w *WebLog) updateVhostChart() {
 	chart := w.Charts().Get(requestsPerVhost.ID)
 
-	for v := range w.metrics.ReqVhost {
+	for v := range w.mx.ReqVhost {
 		if w.chartsCache.vhosts.addIfNotExist(v) {
 			continue
 		}
@@ -475,7 +475,7 @@ func (w *WebLog) updateVhostChart() {
 func (w *WebLog) updateHTTPMethodChart() {
 	chart := w.Charts().Get(requestsPerHTTPMethod.ID)
 
-	for v := range w.metrics.ReqMethod {
+	for v := range w.mx.ReqMethod {
 		if w.chartsCache.methods.addIfNotExist(v) {
 			continue
 		}
@@ -486,7 +486,7 @@ func (w *WebLog) updateHTTPMethodChart() {
 func (w *WebLog) updateHTTPVersionChart() {
 	chart := w.Charts().Get(requestsPerHTTPVersion.ID)
 
-	for v := range w.metrics.ReqVersion {
+	for v := range w.mx.ReqVersion {
 		if w.chartsCache.versions.addIfNotExist(v) {
 			continue
 		}
@@ -496,7 +496,7 @@ func (w *WebLog) updateHTTPVersionChart() {
 
 func (w *WebLog) updateRespCodesDetailedChart() {
 	var chart *Chart
-	for v := range w.metrics.RespCode {
+	for v := range w.mx.RespCode {
 		if w.chartsCache.codes.addIfNotExist(v) {
 			continue
 		}

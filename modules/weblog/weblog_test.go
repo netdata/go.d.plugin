@@ -29,17 +29,17 @@ func TestWebLog_Init(t *testing.T) {
 	assert.True(t, weblog.filter.MatchString("/abc.php"))
 	assert.False(t, weblog.filter.MatchString("/abc.html"))
 
-	assert.Len(t, weblog.urlCategories, 2)
-	assert.Equal(t, "foo", weblog.urlCategories[0].name)
-	assert.True(t, weblog.urlCategories[0].Matcher.MatchString("foo"))
-	assert.Equal(t, "bar", weblog.urlCategories[1].name)
-	assert.True(t, weblog.urlCategories[1].Matcher.MatchString("bar"))
+	assert.Len(t, weblog.urlCats, 2)
+	assert.Equal(t, "foo", weblog.urlCats[0].name)
+	assert.True(t, weblog.urlCats[0].Matcher.MatchString("foo"))
+	assert.Equal(t, "bar", weblog.urlCats[1].name)
+	assert.True(t, weblog.urlCats[1].Matcher.MatchString("bar"))
 
-	assert.Len(t, weblog.userCategories, 2)
-	assert.Equal(t, "baz", weblog.userCategories[0].name)
-	assert.True(t, weblog.userCategories[0].Matcher.MatchString("baz"))
-	assert.Equal(t, "foobar", weblog.userCategories[1].name)
-	assert.True(t, weblog.userCategories[1].Matcher.MatchString("foobar"))
+	assert.Len(t, weblog.userCats, 2)
+	assert.Equal(t, "baz", weblog.userCats[0].name)
+	assert.True(t, weblog.userCats[0].Matcher.MatchString("baz"))
+	assert.Equal(t, "foobar", weblog.userCats[1].name)
+	assert.True(t, weblog.userCats[1].Matcher.MatchString("foobar"))
 }
 
 func TestWebLog_Collect(t *testing.T) {

@@ -1,4 +1,4 @@
-package parse
+package logs
 
 import (
 	"bytes"
@@ -118,7 +118,7 @@ func newCSVFormat(config CSVConfig) (*csvFormat, error) {
 
 func (f *csvFormat) parse(records []string, logLine LogLine) error {
 	if len(records) <= f.maxIndex {
-		return &Error{
+		return &ParseError{
 			msg: fmt.Sprintf("csv unmatched line, expect at least %d fields, got %d", f.maxIndex+1, len(records)),
 		}
 	}
@@ -126,7 +126,7 @@ func (f *csvFormat) parse(records []string, logLine LogLine) error {
 	for field, idx := range f.fieldIndexes {
 		err := logLine.Assign(field, records[idx])
 		if err != nil {
-			return &Error{
+			return &ParseError{
 				msg: fmt.Sprintf("csv error on assigning : %v", err),
 				err: err,
 			}
@@ -139,7 +139,7 @@ func handleCSVReadError(err error) error {
 	if !isCSVParseError(err) {
 		return err
 	}
-	return &Error{
+	return &ParseError{
 		msg: fmt.Sprintf("csv error on parsing : %v", err),
 		err: err,
 	}

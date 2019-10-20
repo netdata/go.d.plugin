@@ -1,4 +1,4 @@
-package parse
+package logs
 
 import (
 	"bufio"
@@ -62,7 +62,7 @@ func (p *LTSVParser) Parse(line []byte, logLine LogLine) error {
 		}
 		err := logLine.Assign(labelString, string(value))
 		if err != nil {
-			return &Error{
+			return &ParseError{
 				msg: fmt.Sprintf("ltsv error on assigning : %v", err),
 				err: err,
 			}
@@ -70,7 +70,7 @@ func (p *LTSVParser) Parse(line []byte, logLine LogLine) error {
 		return nil
 	})
 	if !IsParseError(err) {
-		err = &Error{
+		err = &ParseError{
 			msg: fmt.Sprintf("ltsv error on parsing : %v", err),
 			err: err,
 		}

@@ -2,15 +2,13 @@ package weblog
 
 import (
 	"fmt"
-	"github.com/netdata/go.d.plugin/pkg/logs/parse"
-
 	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
 
 type category struct {
-	name    string
-	Matcher matcher.Matcher
+	name string
+	matcher.Matcher
 }
 
 func newCategory(raw rawCategory) (*category, error) {
@@ -47,7 +45,7 @@ func (w *WebLog) initCategories() error {
 		if err != nil {
 			return fmt.Errorf("error on creating url categories %s: %v", raw, err)
 		}
-		w.urlCategories = append(w.urlCategories, cat)
+		w.urlCats = append(w.urlCats, cat)
 	}
 
 	for _, raw := range w.UserCategories {
@@ -55,7 +53,7 @@ func (w *WebLog) initCategories() error {
 		if err != nil {
 			return fmt.Errorf("error on creating user categories %s: %v", raw, err)
 		}
-		w.userCategories = append(w.userCategories, cat)
+		w.userCats = append(w.userCats, cat)
 	}
 
 	return nil
@@ -77,7 +75,7 @@ func (w *WebLog) initParser() error {
 		return fmt.Errorf("error on reading last line : %v", err)
 	}
 
-	w.parser, err = parse.NewParser(w.Config.Parser, w.file, lastLine, guessParser)
+	w.parser, err = logs.NewParser(w.Config.Parser, w.file, guessParser(lastLine))
 	if err != nil {
 		return fmt.Errorf("error on creating parser : %v", err)
 	}
@@ -93,5 +91,6 @@ func (w *WebLog) initParser() error {
 	}
 
 	w.line = logLine
+	w.line.timeScale = w.TimeMultiplier
 	return nil
 }

@@ -1,4 +1,4 @@
-package parse
+package logs
 
 import (
 	"bufio"
@@ -47,7 +47,7 @@ func (p *RegExpParser) ReadLine(logLine LogLine) error {
 func (p *RegExpParser) Parse(line []byte, logLine LogLine) error {
 	match := p.pattern.FindSubmatch(line)
 	if match == nil {
-		return &Error{msg: "regexp unmatched line"}
+		return &ParseError{msg: "regexp unmatched line"}
 	}
 
 	for i, name := range p.pattern.SubexpNames() {
@@ -56,7 +56,7 @@ func (p *RegExpParser) Parse(line []byte, logLine LogLine) error {
 		}
 		err := logLine.Assign(name, string(match[i]))
 		if err != nil {
-			return &Error{
+			return &ParseError{
 				msg: fmt.Sprintf("regexp error on assigning : %v", err),
 				err: err,
 			}
