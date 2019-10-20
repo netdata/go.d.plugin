@@ -143,7 +143,7 @@ func find(path, exclude string) string {
 	return finder{}.find(path, exclude)
 }
 
-// TODO: findLastFile logic probably wrong + tests
+// TODO: tests
 type finder struct{}
 
 func (f finder) find(path, exclude string) string {
@@ -175,6 +175,7 @@ func (f finder) filter(files []string, exclude string) []string {
 	return fs
 }
 
+// TODO: the logic is probably wrong
 func (f finder) findLastFile(files []string) string {
 	sort.Strings(files)
 	for i := len(files) - 1; i >= 0; i-- {

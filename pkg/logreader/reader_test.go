@@ -14,33 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type testReader struct {
-	*bufio.Reader
-}
-
-func (r *testReader) readUntilEOF() (n int, err error) {
-	for {
-		_, err = r.ReadBytes('\n')
-		if err != nil {
-			break
-		}
-		n++
-	}
-	return n, err
-}
-
-func (r *testReader) readUntilEOFTimes(times int) (sum int, err error) {
-	var n int
-	for i := 0; i < times; i++ {
-		n, err = r.readUntilEOF()
-		if err != io.EOF {
-			break
-		}
-		sum += n
-	}
-	return sum, err
-}
-
 func TestReader_Read(t *testing.T) {
 	reader, teardown := prepareTestReader(t)
 	defer teardown()
@@ -88,6 +61,7 @@ func TestReader_Read_HandleFileRotationWithDelay(t *testing.T) {
 	filename := reader.CurrentFilename()
 	_ = os.Remove(filename)
 
+	// trigger reopen first time
 	n, err := r.readUntilEOFTimes(maxEOF)
 	assert.Equal(t, ErrNoMatchedFile, err)
 	assert.Equal(t, 0, n)
@@ -96,6 +70,7 @@ func TestReader_Read_HandleFileRotationWithDelay(t *testing.T) {
 	require.NoError(t, err)
 	_ = f.Close()
 
+	// trigger reopen 2nd time
 	n, err = r.readUntilEOF()
 	assert.Equal(t, io.EOF, err)
 	assert.Equal(t, 0, n)
@@ -192,6 +167,33 @@ func TestReader_CurrentFilename(t *testing.T) {
 	defer teardown()
 
 	assert.Equal(t, reader.file.Name(), reader.CurrentFilename())
+}
+
+type testReader struct {
+	*bufio.Reader
+}
+
+func (r *testReader) readUntilEOF() (n int, err error) {
+	for {
+		_, err = r.ReadBytes('\n')
+		if err != nil {
+			break
+		}
+		n++
+	}
+	return n, err
+}
+
+func (r *testReader) readUntilEOFTimes(times int) (sum int, err error) {
+	var n int
+	for i := 0; i < times; i++ {
+		n, err = r.readUntilEOF()
+		if err != io.EOF {
+			break
+		}
+		sum += n
+	}
+	return sum, err
 }
 
 func prepareTempFile(t *testing.T, pattern string) string {
