@@ -12,13 +12,15 @@ import (
 )
 
 const (
-	maxEOF = 600
+	maxEOF = 60
 )
 
 var (
 	ErrNoMatchedFile = errors.New("no matched files")
 )
 
+// TODO: better reopen algorithm
+// TODO: handle truncate
 // Reader is a log rotate aware Reader
 type Reader struct {
 	file          *os.File
@@ -56,13 +58,13 @@ func Open(path string, excludePath string, log *logger.Logger) (*Reader, error) 
 }
 
 // CurrentFilename get current opened file name
-func (f *Reader) CurrentFilename() string {
-	return f.file.Name()
+func (r *Reader) CurrentFilename() string {
+	return r.file.Name()
 }
 
-func (f *Reader) open() error {
-	path := f.findFile()
-	f.log.Debug("open log file: ", path)
+func (r *Reader) open() error {
+	path := r.findFile()
+	r.log.Debug("open log file: ", path)
 	if path == "" {
 		return ErrNoMatchedFile
 	}
@@ -77,118 +79,110 @@ func (f *Reader) open() error {
 	if _, err = file.Seek(stat.Size(), io.SeekStart); err != nil {
 		return err
 	}
-	f.file = file
+	r.file = file
 	return nil
 }
 
-func (f *Reader) Read(p []byte) (n int, err error) {
-	n, err = f.file.Read(p)
-	if err == io.EOF {
-		f.eofCounter++
-		f.continuousEOF++
-		if f.eofCounter >= maxEOF && f.continuousEOF >= 2 {
-			if err2 := f.reopen(); err2 != nil {
-				err = err2
-			}
+func (r *Reader) Read(p []byte) (n int, err error) {
+	n, err = r.file.Read(p)
+	if err != nil {
+		switch err {
+		case io.EOF:
+			err = r.handleEOFErr()
+		case os.ErrInvalid: // r.file is nil after Close
+			err = r.handleInvalidArgErr()
 		}
-	} else {
-		f.continuousEOF = 0
-	}
-	return
-}
-
-func (f *Reader) Close() (err error) {
-	if f == nil || f.file == nil {
 		return
 	}
-	f.log.Debug("close log file: ", f.file.Name())
-	err = f.file.Close()
-	f.file = nil
-	f.eofCounter = 0
+	r.continuousEOF = 0
 	return
 }
 
-func (f *Reader) reopen() error {
-	f.Close()
-	return f.open()
+func (r *Reader) handleEOFErr() (err error) {
+	err = io.EOF
+	r.eofCounter++
+	r.continuousEOF++
+	if r.eofCounter < maxEOF || r.continuousEOF < 2 {
+		return err
+	}
+	if err2 := r.reopen(); err2 != nil {
+		err = err2
+	}
+	return err
 }
 
-func (f *Reader) findFile() string {
-	files, _ := filepath.Glob(f.path)
+func (r *Reader) handleInvalidArgErr() (err error) {
+	err = io.EOF
+	if err2 := r.reopen(); err2 != nil {
+		err = err2
+	}
+	return err
+}
+
+func (r *Reader) Close() (err error) {
+	if r == nil || r.file == nil {
+		return
+	}
+	r.log.Debug("close log file: ", r.file.Name())
+	err = r.file.Close()
+	r.file = nil
+	r.eofCounter = 0
+	return
+}
+
+func (r *Reader) reopen() error {
+	_ = r.Close()
+	return r.open()
+}
+
+func (r *Reader) findFile() string {
+	return find(r.path, r.excludePath)
+}
+
+func find(path, exclude string) string {
+	return finder{}.find(path, exclude)
+}
+
+// TODO: findLastFile logic probably wrong + tests
+type finder struct{}
+
+func (f finder) find(path, exclude string) string {
+	files, _ := filepath.Glob(path)
 	if len(files) == 0 {
 		return ""
 	}
 
-	if f.excludePath != "" {
-		files2 := make([]string, 0, len(files))
-		for _, file := range files {
-			if ok, _ := filepath.Match(f.excludePath, file); !ok {
-				files2 = append(files2, file)
-			}
-		}
-		if len(files2) == 0 {
-			return ""
-		}
-		files = files2
+	files = f.filter(files, exclude)
+	if len(files) == 0 {
+		return ""
 	}
 
+	return f.findLastFile(files)
+}
+
+func (f finder) filter(files []string, exclude string) []string {
+	if exclude == "" {
+		return files
+	}
+
+	fs := make([]string, 0, len(files))
+	for _, file := range files {
+		if ok, _ := filepath.Match(exclude, file); ok {
+			continue
+		}
+		fs = append(fs, file)
+	}
+	return fs
+}
+
+func (f finder) findLastFile(files []string) string {
 	sort.Strings(files)
 	for i := len(files) - 1; i >= 0; i-- {
 		stat, err := os.Stat(files[i])
-		if err == nil && !stat.IsDir() {
-			return files[i]
+		if err != nil || !stat.Mode().IsRegular() {
+			continue
 		}
+		return files[i]
 	}
 	return ""
-}
-
-const DefaultMaxLineWidth = 4 * 1024 // assume disk block size is 4K
-
-var ErrTooLongLine = errors.New("too long line")
-
-// ReadLastLine returns the last line of the file and any read error encountered.
-// It expect last line width <= maxLineWidth.
-// If maxLineWidth <= 0, it defaults to DefaultMaxLineWidth.
-func ReadLastLine(filename string, maxLineWidth int64) ([]byte, error) {
-	if maxLineWidth <= 0 {
-		maxLineWidth = DefaultMaxLineWidth
-	}
-	f, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer func() { _ = f.Close() }()
-
-	stat, _ := f.Stat()
-	endPos := stat.Size()
-	if endPos == 0 {
-		return []byte{}, nil
-	}
-	startPos := endPos - maxLineWidth
-	if startPos < 0 {
-		startPos = 0
-	}
-	buf := make([]byte, endPos-startPos)
-	n, err := f.ReadAt(buf, startPos)
-	if err != nil {
-		return nil, err
-	}
-	lnPos := 0
-	foundLn := false
-	for i := n - 2; i >= 0; i-- {
-		ch := buf[i]
-		if ch == '\n' {
-			foundLn = true
-			lnPos = i
-			break
-		}
-	}
-	if foundLn {
-		return buf[lnPos+1 : n], nil
-	}
-	if startPos == 0 {
-		return buf[0:n], nil
-	}
-
-	return nil, ErrTooLongLine
 }

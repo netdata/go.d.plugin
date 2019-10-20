@@ -324,49 +324,49 @@ func newResponseTimeUpstreamHistogramChart(histogram []float64) *Chart {
 
 func (w *WebLog) updateCharts() {
 	if w.collected.vhost {
-		w.addVhostChartIfNotExist()
+		w.addVhostChart()
 		w.updateVhostChart()
 	}
 	if w.collected.client {
-		w.addClientChartsIfNotExist()
+		w.addClientCharts()
 	}
 	if w.collected.method {
-		w.addHTTPMethodChartIfNotExist()
+		w.addHTTPMethodChart()
 		w.updateHTTPMethodChart()
 	}
 	if w.collected.uri {
-		w.addURIChartIfNotExist()
+		w.addURIChart()
 	}
 	if w.collected.version {
-		w.addHTTPVersionChartIfNotExist()
+		w.addHTTPVersionChart()
 		w.updateHTTPVersionChart()
 	}
 	if w.collected.status {
-		w.addRespCodesDetailedChartIfNotExist()
+		w.addRespCodesDetailedChart()
 		w.updateRespCodesDetailedChart()
 	}
 	if w.collected.reqSize || w.collected.respSize {
-		w.addBandwidthChartIfNotExist()
+		w.addBandwidthChart()
 	}
 	if w.collected.respTime {
-		w.addRespTimeChartsIfNotExist()
+		w.addRespTimeCharts()
 	}
 	if w.collected.upRespTime {
-		w.addUpstreamRespTimeChartsIfNotExist()
+		w.addUpstreamRespTimeCharts()
 	}
 	if w.collected.custom {
-		w.addCustomChartIfNotExist()
+		w.addCustomChart()
 	}
 }
 
-func (w *WebLog) addVhostChartIfNotExist() {
+func (w *WebLog) addVhostChart() {
 	if w.chartsCache.created.addIfNotExist(requestsPerVhost.ID) {
 		return
 	}
 	panicIfErr(w.Charts().Add(requestsPerVhost.Copy()))
 }
 
-func (w *WebLog) addClientChartsIfNotExist() {
+func (w *WebLog) addClientCharts() {
 	if w.chartsCache.created.addIfNotExist(requestsPerIPProto.ID) {
 		return
 	}
@@ -375,7 +375,7 @@ func (w *WebLog) addClientChartsIfNotExist() {
 	panicIfErr(w.Charts().Add(uniqueReqPerIPCurPoll.Copy()))
 }
 
-func (w *WebLog) addHTTPMethodChartIfNotExist() {
+func (w *WebLog) addHTTPMethodChart() {
 	if w.chartsCache.created.addIfNotExist(requestsPerHTTPMethod.ID) {
 		return
 	}
@@ -383,7 +383,7 @@ func (w *WebLog) addHTTPMethodChartIfNotExist() {
 	panicIfErr(w.Charts().Add(requestsPerHTTPMethod.Copy()))
 }
 
-func (w *WebLog) addURIChartIfNotExist() {
+func (w *WebLog) addURIChart() {
 	if w.chartsCache.created.addIfNotExist(requestsPerURL.ID) {
 		return
 	}
@@ -392,7 +392,7 @@ func (w *WebLog) addURIChartIfNotExist() {
 	panicIfErr(w.Charts().Add(chart))
 }
 
-func (w *WebLog) addHTTPVersionChartIfNotExist() {
+func (w *WebLog) addHTTPVersionChart() {
 	if w.chartsCache.created.addIfNotExist(requestsPerHTTPVersion.ID) {
 		return
 	}
@@ -400,7 +400,7 @@ func (w *WebLog) addHTTPVersionChartIfNotExist() {
 	panicIfErr(w.Charts().Add(requestsPerHTTPVersion.Copy()))
 }
 
-func (w *WebLog) addRespCodesDetailedChartIfNotExist() {
+func (w *WebLog) addRespCodesDetailedChart() {
 	if w.chartsCache.created.addIfNotExist(responseCodesDetailed.ID) {
 		return
 	}
@@ -414,7 +414,7 @@ func (w *WebLog) addRespCodesDetailedChartIfNotExist() {
 	panicIfErr(w.Charts().Add(newResponseCodesDetailedPerFamilyCharts()...))
 }
 
-func (w *WebLog) addBandwidthChartIfNotExist() {
+func (w *WebLog) addBandwidthChart() {
 	if w.chartsCache.created.addIfNotExist(bandwidth.ID) {
 		return
 	}
@@ -422,7 +422,7 @@ func (w *WebLog) addBandwidthChartIfNotExist() {
 	panicIfErr(w.Charts().Add(bandwidth.Copy()))
 }
 
-func (w *WebLog) addRespTimeChartsIfNotExist() {
+func (w *WebLog) addRespTimeCharts() {
 	if w.chartsCache.created.addIfNotExist(responseTime.ID) {
 		return
 	}
@@ -437,7 +437,7 @@ func (w *WebLog) addRespTimeChartsIfNotExist() {
 	panicIfErr(w.Charts().Add(chart))
 }
 
-func (w *WebLog) addUpstreamRespTimeChartsIfNotExist() {
+func (w *WebLog) addUpstreamRespTimeCharts() {
 	if w.chartsCache.created.addIfNotExist(responseTimeUpstream.ID) {
 		return
 	}
@@ -452,7 +452,7 @@ func (w *WebLog) addUpstreamRespTimeChartsIfNotExist() {
 	panicIfErr(w.Charts().Add(chart))
 }
 
-func (w *WebLog) addCustomChartIfNotExist() {
+func (w *WebLog) addCustomChart() {
 	if w.chartsCache.created.addIfNotExist(requestsPerUserDefined.ID) {
 		return
 	}
@@ -468,7 +468,7 @@ func (w *WebLog) updateVhostChart() {
 		if w.chartsCache.vhosts.addIfNotExist(v) {
 			continue
 		}
-		addDimensionToVhostChart(chart, v)
+		addDimToVhostChart(chart, v)
 	}
 }
 
@@ -479,7 +479,7 @@ func (w *WebLog) updateHTTPMethodChart() {
 		if w.chartsCache.methods.addIfNotExist(v) {
 			continue
 		}
-		addDimensionToHTTPMethodChart(chart, v)
+		addDimToHTTPMethodChart(chart, v)
 	}
 }
 
@@ -487,10 +487,10 @@ func (w *WebLog) updateHTTPVersionChart() {
 	chart := w.Charts().Get(requestsPerHTTPVersion.ID)
 
 	for v := range w.metrics.ReqVersion {
-		if w.chartsCache.created.addIfNotExist(v) {
+		if w.chartsCache.versions.addIfNotExist(v) {
 			continue
 		}
-		addDimensionToHTTPVersionChart(chart, v)
+		addDimToHTTPVersionChart(chart, v)
 	}
 }
 
@@ -501,7 +501,7 @@ func (w *WebLog) updateRespCodesDetailedChart() {
 			continue
 		}
 		chart = w.respCodesDetailedChartByCode(v)
-		addDimensionToRespCodesDetailedChart(chart, v)
+		addDimToRespCodesDetailedChart(chart, v)
 	}
 }
 
@@ -520,7 +520,7 @@ func (w *WebLog) respCodesDetailedChartByCode(code string) *Chart {
 	return w.Charts().Get(id)
 }
 
-func addDimensionToRespCodesDetailedChart(chart *Chart, code string) {
+func addDimToRespCodesDetailedChart(chart *Chart, code string) {
 	dimID := "req_code_" + code
 	dim := &Dim{
 		ID:   dimID,
@@ -531,7 +531,7 @@ func addDimensionToRespCodesDetailedChart(chart *Chart, code string) {
 	chart.MarkNotCreated()
 }
 
-func addDimensionToHTTPVersionChart(chart *Chart, version string) {
+func addDimToHTTPVersionChart(chart *Chart, version string) {
 	dimID := "req_version_" + version
 	dim := &Dim{
 		ID:   dimID,
@@ -542,7 +542,7 @@ func addDimensionToHTTPVersionChart(chart *Chart, version string) {
 	chart.MarkNotCreated()
 }
 
-func addDimensionToHTTPMethodChart(chart *Chart, method string) {
+func addDimToHTTPMethodChart(chart *Chart, method string) {
 	dimID := "req_method_" + method
 	dim := &Dim{
 		ID:   dimID,
@@ -553,7 +553,7 @@ func addDimensionToHTTPMethodChart(chart *Chart, method string) {
 	chart.MarkNotCreated()
 }
 
-func addDimensionToVhostChart(chart *Chart, vhost string) {
+func addDimToVhostChart(chart *Chart, vhost string) {
 	dimID := "req_vhost_" + vhost
 	dim := &Dim{
 		ID:   dimID,

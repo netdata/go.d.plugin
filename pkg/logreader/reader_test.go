@@ -1,147 +1,242 @@
 package logreader
 
 import (
-	"encoding/csv"
+	"bufio"
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sync"
 	"testing"
 	"time"
 
-	"github.com/netdata/go-orchestrator/logger"
-
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestFile_Read(t *testing.T) {
-	tmpFileName1 := filepath.Join(os.TempDir(), "test_read.1.log")
-	tmpFileName2 := filepath.Join(os.TempDir(), "test_read.2.log")
-	tmpFileName3 := filepath.Join(os.TempDir(), "test_read.3.log")
-	defer os.Remove(tmpFileName1)
-	defer os.Remove(tmpFileName2)
-	defer os.Remove(tmpFileName3)
-
-	var wg sync.WaitGroup
-	wg.Add(2)
-
-	go func() {
-		defer wg.Done()
-		writeLog(t, tmpFileName1, time.Millisecond*10)
-		writeLog(t, tmpFileName2, time.Millisecond*10)
-		writeLog(t, tmpFileName3, time.Millisecond*10)
-	}()
-
-	time.Sleep(time.Millisecond * 10)
-
-	go func() {
-		defer wg.Done()
-		readLog(t)
-	}()
-
-	wg.Wait()
+type testReader struct {
+	*bufio.Reader
 }
 
-func TestFile_Read2(t *testing.T) {
-	tmpFileName1 := filepath.Join(os.TempDir(), "test_read.1.log")
-	tmpFileName2 := filepath.Join(os.TempDir(), "test_read.1.log")
-	tmpFileName3 := filepath.Join(os.TempDir(), "test_read.1.log")
-	defer os.Remove(tmpFileName1)
-	defer os.Remove(tmpFileName2)
-	defer os.Remove(tmpFileName3)
-
-	var wg sync.WaitGroup
-	wg.Add(2)
-
-	go func() {
-		defer wg.Done()
-		writeLog(t, tmpFileName1, time.Millisecond*10)
-		writeLog(t, tmpFileName2, time.Millisecond*10)
-		writeLog(t, tmpFileName3, time.Millisecond*10)
-	}()
-
-	time.Sleep(time.Millisecond * 10)
-
-	go func() {
-		defer wg.Done()
-		readLog(t)
-	}()
-
-	wg.Wait()
-}
-
-func readLog(t *testing.T) {
-	t.Helper()
-	file, err := Open(filepath.Join(os.TempDir(), "test_read.*.log"), "", logger.New("go.d", "web_log", "test"))
-	require.NoError(t, err)
-	defer file.Close()
-	r := csv.NewReader(file)
-	r.Comma = ' '
-	r.ReuseRecord = true
-	r.FieldsPerRecord = -1
-	for i := 0; i < 50; i++ {
-		record, err := r.Read()
-		if err == nil {
-			fmt.Printf("[%d] line:  %v\n", i, record)
-		} else {
-			fmt.Printf("[%d] error: %v\n", i, err)
+func (r *testReader) readUntilEOF() (n int, err error) {
+	for {
+		_, err = r.ReadBytes('\n')
+		if err != nil {
+			break
 		}
-		time.Sleep(time.Millisecond * 15)
+		n++
+	}
+	return n, err
+}
+
+func (r *testReader) readUntilEOFTimes(times int) (sum int, err error) {
+	var n int
+	for i := 0; i < times; i++ {
+		n, err = r.readUntilEOF()
+		if err != io.EOF {
+			break
+		}
+		sum += n
+	}
+	return sum, err
+}
+
+func TestReader_Read(t *testing.T) {
+	reader, teardown := prepareTestReader(t)
+	defer teardown()
+
+	r := testReader{bufio.NewReader(reader)}
+	filename := reader.CurrentFilename()
+	numLogs := 5
+	var sum int
+
+	for i := 0; i < 10; i++ {
+		appendLogs(t, filename, time.Millisecond*10, numLogs)
+		n, err := r.readUntilEOF()
+		sum += n
+
+		assert.Equal(t, io.EOF, err)
+		assert.Equal(t, numLogs*(i+1), sum)
 	}
 }
 
-func writeLog(t *testing.T, filename string, interval time.Duration) {
-	t.Helper()
-	base := filepath.Base(filename)
-	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+func TestReader_Read_HandleFileRotation(t *testing.T) {
+	reader, teardown := prepareTestReader(t)
+	defer teardown()
+
+	r := testReader{bufio.NewReader(reader)}
+	filename := reader.CurrentFilename()
+	numLogs := 5
+	rotateFile(t, filename)
+	appendLogs(t, filename, time.Millisecond*10, numLogs)
+
+	n, err := r.readUntilEOFTimes(maxEOF)
+	assert.Equal(t, io.EOF, err)
+	assert.Equal(t, 0, n)
+
+	appendLogs(t, filename, time.Millisecond*10, numLogs)
+	n, err = r.readUntilEOF()
+	assert.Equal(t, io.EOF, err)
+	assert.Equal(t, numLogs, n)
+}
+
+func TestReader_Read_HandleFileRotationWithDelay(t *testing.T) {
+	reader, teardown := prepareTestReader(t)
+	defer teardown()
+
+	r := testReader{bufio.NewReader(reader)}
+	filename := reader.CurrentFilename()
+	_ = os.Remove(filename)
+
+	n, err := r.readUntilEOFTimes(maxEOF)
+	assert.Equal(t, ErrNoMatchedFile, err)
+	assert.Equal(t, 0, n)
+
+	f, err := os.Create(filename)
 	require.NoError(t, err)
-	require.NotNil(t, file)
-	defer file.Close()
+	_ = f.Close()
 
-	for i := 0; i < 15; i++ {
-		fmt.Fprintln(file, "line", i, "filename", base)
-		time.Sleep(interval)
-	}
+	n, err = r.readUntilEOF()
+	assert.Equal(t, io.EOF, err)
+	assert.Equal(t, 0, n)
+
+	numLogs := 5
+	appendLogs(t, filename, time.Millisecond*10, numLogs)
+	n, err = r.readUntilEOF()
+	assert.Equal(t, io.EOF, err)
+	assert.Equal(t, numLogs, n)
 }
 
-func TestReadLastLine(t *testing.T) {
-	tests := []struct {
-		name     string
-		content  string
-		expected string
-		err      error
-	}{
-		{"empty", "", "", nil},
-		{"empty-ln", "\n", "\n", nil},
-		{"one-line", "hello", "hello", nil},
-		{"one-line-ln", "hello\n", "hello\n", nil},
-		{"multi-line", "hello\nworld", "world", nil},
-		{"multi-line-ln", "hello\nworld\n", "world\n", nil},
-		{"long-line", "hello hello hello", "", ErrTooLongLine},
-		{"long-line-ln", "hello hello hello\n", "", ErrTooLongLine},
+func TestReader_Close(t *testing.T) {
+	reader, teardown := prepareTestReader(t)
+	defer teardown()
+
+	assert.NoError(t, reader.Close())
+	assert.Nil(t, reader.file)
+}
+
+func TestReader_Close_NilFile(t *testing.T) {
+	var r Reader
+	assert.NoError(t, r.Close())
+}
+
+func TestOpen(t *testing.T) {
+	tempFileName1 := prepareTempFile(t, "*-web_log-open-test-1.log")
+	tempFileName2 := prepareTempFile(t, "*-web_log-open-test-2.log")
+	tempFileName3 := prepareTempFile(t, "*-web_log-open-test-3.log")
+	defer func() {
+		_ = os.Remove(tempFileName1)
+		_ = os.Remove(tempFileName2)
+		_ = os.Remove(tempFileName3)
+	}()
+
+	makePath := func(s string) string {
+		return filepath.Join(os.TempDir(), s)
 	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			filename := prepareFile(t, test.content)
-			defer os.Remove(filename)
-			line, err := ReadLastLine(filename, 10)
-			if test.err != nil {
-				assert.Contains(t, err.Error(), test.err.Error())
+
+	tests := []struct {
+		name    string
+		path    string
+		exclude string
+		err     bool
+	}{
+		{
+			name: "match without exclude",
+			path: makePath("*-web_log-open-test-[1-3].log"),
+		},
+		{
+			name:    "match with exclude",
+			path:    makePath("*-web_log-open-test-[1-3].log"),
+			exclude: makePath("*-web_log-open-test-[2-3].log"),
+		},
+		{
+			name:    "exclude everything",
+			path:    makePath("*-web_log-open-test-[1-3].log"),
+			exclude: makePath("*"),
+			err:     true,
+		},
+		{
+			name: "no match",
+			path: makePath("*-web_log-no-match-test-[1-3].log"),
+			err:  true,
+		},
+		{
+			name: "bad path pattern",
+			path: "[qw",
+			err:  true,
+		},
+		{
+			name: "bad exclude path pattern",
+			path: "[qw",
+			err:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r, err := Open(tt.path, tt.exclude, nil)
+
+			if tt.err {
+				assert.Error(t, err)
 			} else {
-				assert.Equal(t, test.expected, string(line))
+				assert.NoError(t, err)
+				assert.NotNil(t, r.file)
+				_ = r.Close()
 			}
 		})
 	}
 }
 
-func prepareFile(t *testing.T, content string) string {
+func TestReader_CurrentFilename(t *testing.T) {
+	reader, teardown := prepareTestReader(t)
+	defer teardown()
+
+	assert.Equal(t, reader.file.Name(), reader.CurrentFilename())
+}
+
+func prepareTempFile(t *testing.T, pattern string) string {
 	t.Helper()
-	file, err := ioutil.TempFile("", "go-test")
+	f, err := ioutil.TempFile("", pattern)
 	require.NoError(t, err)
+	return f.Name()
+}
+
+func prepareTestReader(t *testing.T) (reader *Reader, teardown func()) {
+	t.Helper()
+	filename := prepareTempFile(t, "*-web_log-test.log")
+	f, err := os.Open(filename)
+	require.NoError(t, err)
+
+	teardown = func() {
+		_ = os.Remove(filename)
+		_ = reader.file.Close()
+	}
+	reader = &Reader{
+		file: f,
+		path: filename,
+	}
+	return reader, teardown
+}
+
+func rotateFile(t *testing.T, filename string) {
+	t.Helper()
+	require.NoError(t, os.Remove(filename))
+	f, err := os.Create(filename)
+	require.NoError(t, err)
+	_ = f.Close()
+}
+
+func appendLogs(t *testing.T, filename string, interval time.Duration, numOfLogs int) {
+	t.Helper()
+	base := filepath.Base(filename)
+	file, err := os.OpenFile(filename, os.O_RDWR|os.O_APPEND, os.ModeAppend)
+	require.NoError(t, err)
+	require.NotNil(t, file)
 	defer file.Close()
 
-	_, _ = file.WriteString(content)
-	return file.Name()
+	for i := 0; i < numOfLogs; i++ {
+		_, err = fmt.Fprintln(file, "line", i, "filename", base)
+		require.NoError(t, err)
+		time.Sleep(interval)
+	}
 }
