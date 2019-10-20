@@ -1,4 +1,4 @@
-package logreader
+package logs
 
 import (
 	"io/ioutil"

@@ -2,9 +2,8 @@ package weblog
 
 import (
 	"fmt"
-
 	"github.com/netdata/go.d.plugin/modules/weblog/parser"
-	"github.com/netdata/go.d.plugin/pkg/logreader"
+	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/metrics"
 
@@ -57,7 +56,7 @@ type (
 		Config `yaml:",inline"`
 		charts *module.Charts
 
-		file   *logreader.Reader
+		file   *logs.Reader
 		parser parser.Parser
 
 		metrics        *MetricsData
@@ -140,7 +139,7 @@ func (w *WebLog) initCategories() error {
 }
 
 func (w *WebLog) initLogReader() error {
-	file, err := logreader.Open(w.Path, w.ExcludePath, w.Logger)
+	file, err := logs.Open(w.Path, w.ExcludePath, w.Logger)
 	if err != nil {
 		return fmt.Errorf("error on creating logreader : %v", err)
 	}
@@ -150,7 +149,7 @@ func (w *WebLog) initLogReader() error {
 }
 
 func (w *WebLog) initParser() error {
-	lastLine, err := logreader.ReadLastLine(w.file.CurrentFilename(), 0)
+	lastLine, err := logs.ReadLastLine(w.file.CurrentFilename(), 0)
 	if err != nil {
 		return fmt.Errorf("error on reading last line : %v", err)
 	}
