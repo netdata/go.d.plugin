@@ -15,11 +15,11 @@ import (
 func TestWebLog_Init(t *testing.T) {
 	weblog := New()
 	weblog.Config.Filter.Includes = []string{"~ .php$"}
-	weblog.Config.URLCategories = []RawCategory{
+	weblog.Config.URLCategories = []rawCategory{
 		{"foo", "= foo"},
 		{"bar", "= bar"},
 	}
-	weblog.Config.UserCategories = []RawCategory{
+	weblog.Config.UserCategories = []rawCategory{
 		{"baz", "= baz"},
 		{"foobar", "= foobar"},
 	}

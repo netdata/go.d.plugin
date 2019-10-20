@@ -256,7 +256,7 @@ func newResponseCodesDetailedPerFamilyCharts() []*Chart {
 	}
 }
 
-func newRequestsPerURLCategoriesChart(cats []*Category) *Chart {
+func newRequestsPerURLCategoriesChart(cats []*category) *Chart {
 	chart := requestsPerURL.Copy()
 	for _, c := range cats {
 		dim := &Dim{
@@ -269,7 +269,7 @@ func newRequestsPerURLCategoriesChart(cats []*Category) *Chart {
 	return chart
 }
 
-func newRequestsPerCustomCategoriesChart(cats []*Category) *Chart {
+func newRequestsPerCustomCategoriesChart(cats []*category) *Chart {
 	chart := requestsPerUserDefined.Copy()
 	for _, c := range cats {
 		dim := &Dim{
@@ -609,3 +609,32 @@ func panicIfErr(err error) {
 //		},
 //	}
 //}
+
+type (
+	cache map[string]struct{}
+
+	chartsCache struct {
+		created  cache
+		vhosts   cache
+		methods  cache
+		versions cache
+		codes    cache
+	}
+)
+
+func (c cache) has(v string) bool {
+	_, ok := c[v]
+	return ok
+}
+
+func (c cache) add(v string) {
+	c[v] = struct{}{}
+}
+
+func (c cache) addIfNotExist(v string) (exist bool) {
+	if c.has(v) {
+		return true
+	}
+	c.add(v)
+	return
+}

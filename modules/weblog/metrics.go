@@ -88,7 +88,7 @@ func (m *MetricsData) Reset() {
 	m.RespTimeUpstream.Reset()
 }
 
-func newCounterVecFromCategories(cats []RawCategory) metrics.CounterVec {
+func newCounterVecFromCategories(cats []rawCategory) metrics.CounterVec {
 	c := metrics.NewCounterVec()
 	for _, v := range cats {
 		_, _ = c.GetP(v.Name)

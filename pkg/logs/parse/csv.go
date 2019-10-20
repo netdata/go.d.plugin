@@ -11,14 +11,15 @@ import (
 
 type (
 	CSVConfig struct {
-		Delimiter rune   `yaml:"delimiter"`
-		Format    string `yaml:"format"`
+		Delimiter        rune   `yaml:"delimiter"`
+		TrimLeadingSpace bool   `yaml:"trim_leading_space"`
+		Format           string `yaml:"format"`
 	}
 
 	CSVParser struct {
-		delimiter rune
-		reader    *csv.Reader
-		format    *csvFormat
+		config CSVConfig
+		reader *csv.Reader
+		format *csvFormat
 	}
 
 	csvFormat struct {
@@ -34,9 +35,10 @@ func (c *CSVConfig) applyDefaults() {
 	}
 }
 
-func newCSVReader(in io.Reader, delimiter rune) *csv.Reader {
+func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 	r := csv.NewReader(in)
-	r.Comma = delimiter
+	r.Comma = config.Delimiter
+	r.TrimLeadingSpace = config.TrimLeadingSpace
 	r.ReuseRecord = true
 	r.FieldsPerRecord = -1
 	return r
@@ -49,15 +51,15 @@ func NewCSVParser(config CSVConfig, in io.Reader) (*CSVParser, error) {
 
 	config.applyDefaults()
 
-	format, err := newCSVFormat(config.Format)
+	format, err := newCSVFormat(config)
 	if err != nil {
 		return nil, fmt.Errorf("error on creating csv format : %v", err)
 	}
 
 	p := &CSVParser{
-		delimiter: config.Delimiter,
-		reader:    newCSVReader(in, config.Delimiter),
-		format:    format,
+		config: config,
+		reader: newCSVReader(in, config),
+		format: format,
 	}
 	return p, nil
 }
@@ -71,7 +73,7 @@ func (p *CSVParser) ReadLine(logLine LogLine) error {
 }
 
 func (p *CSVParser) Parse(line []byte, logLine LogLine) error {
-	r := newCSVReader(bytes.NewBuffer(line), p.delimiter)
+	r := newCSVReader(bytes.NewBuffer(line), p.config)
 	records, err := r.Read()
 	if err != nil {
 		return handleCSVReadError(err)
@@ -83,16 +85,18 @@ func (p CSVParser) Info() string {
 	return p.format.Raw
 }
 
-func newCSVFormat(logFormat string) (*csvFormat, error) {
-	r := csv.NewReader(strings.NewReader(logFormat))
-	r.Comma = ' ' // TODO: hardcode?
+func newCSVFormat(config CSVConfig) (*csvFormat, error) {
+	r := csv.NewReader(strings.NewReader(config.Format))
+	r.Comma = config.Delimiter
+	r.TrimLeadingSpace = config.TrimLeadingSpace
+
 	fields, err := r.Read()
 	if err != nil {
 		return nil, err
 	}
 
 	format := &csvFormat{
-		Raw:          logFormat,
+		Raw:          config.Format,
 		fieldIndexes: make(map[string]int),
 	}
 
@@ -102,7 +106,7 @@ func newCSVFormat(logFormat string) (*csvFormat, error) {
 		if !strings.HasPrefix(field, "$") {
 			continue
 		}
-		format.fieldIndexes[field] = i
+		format.fieldIndexes[field[1:]] = i
 		if max < i {
 			max = i
 		}
@@ -115,7 +119,7 @@ func newCSVFormat(logFormat string) (*csvFormat, error) {
 func (f *csvFormat) parse(records []string, logLine LogLine) error {
 	if len(records) <= f.maxIndex {
 		return &Error{
-			msg: fmt.Sprintf("csv unmatched line, expect %d fields, got %d", f.maxIndex+1, len(records)),
+			msg: fmt.Sprintf("csv unmatched line, expect at least %d fields, got %d", f.maxIndex+1, len(records)),
 		}
 	}
 

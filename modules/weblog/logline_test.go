@@ -1,14 +1,5 @@
-package parser
+package weblog
 
-//
-//import (
-//	"testing"
-//	"time"
-//
-//	"github.com/stretchr/testify/assert"
-//	"github.com/stretchr/testify/require"
-//)
-//
 //func TestLogLine_Verify(t *testing.T) {
 //	parser, err := newLTSVParser(Config{
 //		TimeMultiplier: time.Second.Seconds(),

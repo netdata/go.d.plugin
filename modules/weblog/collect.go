@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/netdata/go.d.plugin/modules/weblog/parser"
+	"github.com/netdata/go.d.plugin/pkg/logs/parse"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
@@ -45,38 +45,39 @@ func (w *WebLog) collect() (mx map[string]int64, err error) {
 func (w *WebLog) collectLogLines() (int, error) {
 	var n int
 	for {
-		line, err := w.parser.ReadLine()
+		w.line.reset()
+		err := w.parser.ReadLine(w.line)
 		if err != nil {
 			if err == io.EOF {
 				return n, nil
 			}
-			if !isParseError(err) {
+			if !parse.IsParseError(err) {
 				return n, err
 			}
 			w.collectUnmatched()
 		}
 		n++
-		w.collectLogLine(line)
+		w.collectLogLine()
 	}
 }
 
-func (w *WebLog) collectLogLine(line parser.LogLine) {
-	if !isEmptyString(line.ReqURI) && !w.filter.MatchString(line.ReqURI) {
+func (w *WebLog) collectLogLine() {
+	if w.line.hasReqURI() && !w.filter.MatchString(w.line.ReqURI) {
 		return
 	}
 
 	w.metrics.Requests.Inc()
-	w.collectVhost(line.Vhost)
-	w.collectClientAddr(line.ClientAddr)
-	w.collectReqHTTPMethod(line.ReqHTTPMethod)
-	w.collectReqURI(line.ReqURI)
-	w.collectReqHTTPVersion(line.ReqHTTPVersion)
-	w.collectRespStatusCode(line.RespCodeStatus)
-	w.collectReqSize(line.ReqSize)
-	w.collectRespSize(line.RespSize)
-	w.collectRespTime(line.RespTime)
-	w.collectUpstreamRespTime(line.UpstreamRespTime)
-	w.collectCustom(line.Custom)
+	w.collectVhost()
+	w.collectClientAddr()
+	w.collectReqHTTPMethod()
+	w.collectReqURI()
+	w.collectReqHTTPVersion()
+	w.collectRespStatusCode()
+	w.collectReqSize()
+	w.collectRespSize()
+	w.collectRespTime()
+	w.collectUpstreamRespTime()
+	w.collectCustom()
 }
 
 func (w *WebLog) collectUnmatched() {
@@ -84,51 +85,52 @@ func (w *WebLog) collectUnmatched() {
 	w.metrics.ReqUnmatched.Inc()
 }
 
-func (w *WebLog) collectVhost(vhost string) {
-	if isEmptyString(vhost) {
+func (w *WebLog) collectVhost() {
+	if !w.line.hasVhost() {
 		return
 	}
 	w.collected.vhost = true
 
-	c, _ := w.metrics.ReqVhost.GetP(vhost)
+	c, _ := w.metrics.ReqVhost.GetP(w.line.Vhost)
 	c.Inc()
 }
 
-func (w *WebLog) collectClientAddr(client string) {
-	if isEmptyString(client) {
+func (w *WebLog) collectClientAddr() {
+	if !w.line.hasClientAddr() {
 		return
 	}
+
 	w.collected.client = true
 
 	// TODO: not always IP address
-	if strings.ContainsRune(client, ':') {
+	if strings.ContainsRune(w.line.ClientAddr, ':') {
 		w.metrics.ReqIpv6.Inc()
-		w.metrics.UniqueIPv6.Insert(client)
+		w.metrics.UniqueIPv6.Insert(w.line.ClientAddr)
 		return
 	}
 
 	w.metrics.ReqIpv4.Inc()
-	w.metrics.UniqueIPv4.Insert(client)
+	w.metrics.UniqueIPv4.Insert(w.line.ClientAddr)
 }
 
-func (w *WebLog) collectReqHTTPMethod(method string) {
-	if isEmptyString(method) {
+func (w *WebLog) collectReqHTTPMethod() {
+	if !w.line.hasReqHTTPMethod() {
 		return
 	}
 	w.collected.method = true
 
-	c, _ := w.metrics.ReqMethod.GetP(method)
+	c, _ := w.metrics.ReqMethod.GetP(w.line.ReqHTTPMethod)
 	c.Inc()
 }
 
-func (w *WebLog) collectReqURI(uri string) {
-	if isEmptyString(uri) || len(w.urlCategories) == 0 {
+func (w *WebLog) collectReqURI() {
+	if !w.line.hasReqURI() || len(w.urlCategories) == 0 {
 		return
 	}
 	w.collected.uri = true
 
 	for _, cat := range w.urlCategories {
-		if !cat.Matcher.MatchString(uri) {
+		if !cat.Matcher.MatchString(w.line.ReqURI) {
 			continue
 		}
 		c, _ := w.metrics.ReqURI.GetP(cat.name)
@@ -137,21 +139,22 @@ func (w *WebLog) collectReqURI(uri string) {
 	}
 }
 
-func (w *WebLog) collectReqHTTPVersion(version string) {
-	if isEmptyString(version) {
+func (w *WebLog) collectReqHTTPVersion() {
+	if !w.line.hasReqHTTPVersion() {
 		return
 	}
 	w.collected.version = true
 
-	c, _ := w.metrics.ReqVersion.GetP(version)
+	c, _ := w.metrics.ReqVersion.GetP(w.line.ReqHTTPVersion)
 	c.Inc()
 }
 
-func (w *WebLog) collectRespStatusCode(status int) {
-	if isEmptyNumber(status) {
+func (w *WebLog) collectRespStatusCode() {
+	if !w.line.hasRespCodeStatus() {
 		return
 	}
 	w.collected.status = true
+	status := w.line.RespCodeStatus
 
 	switch {
 	case status >= 100 && status < 300, status == 304:
@@ -182,58 +185,58 @@ func (w *WebLog) collectRespStatusCode(status int) {
 	c.Inc()
 }
 
-func (w *WebLog) collectReqSize(size int) {
-	if isEmptyNumber(size) {
+func (w *WebLog) collectReqSize() {
+	if !w.line.hasReqSize() {
 		return
 	}
 	w.collected.reqSize = true
 
-	w.metrics.BytesSent.Add(float64(size))
+	w.metrics.BytesSent.Add(float64(w.line.ReqSize))
 }
 
-func (w *WebLog) collectRespSize(size int) {
-	if isEmptyNumber(size) {
+func (w *WebLog) collectRespSize() {
+	if !w.line.hasRespSize() {
 		return
 	}
 	w.collected.respSize = true
 
-	w.metrics.BytesReceived.Add(float64(size))
+	w.metrics.BytesReceived.Add(float64(w.line.RespSize))
 }
 
-func (w *WebLog) collectRespTime(respTime float64) {
-	if isEmptyNumber(int(respTime)) {
+func (w *WebLog) collectRespTime() {
+	if !w.line.hasRespTime() {
 		return
 	}
 	w.collected.respTime = true
 
-	w.metrics.RespTime.Observe(respTime)
+	w.metrics.RespTime.Observe(w.line.RespTime)
 	if w.metrics.RespTimeHist == nil {
 		return
 	}
-	w.metrics.RespTimeHist.Observe(respTime)
+	w.metrics.RespTimeHist.Observe(w.line.RespTime)
 }
 
-func (w *WebLog) collectUpstreamRespTime(respTime float64) {
-	if isEmptyNumber(int(respTime)) {
+func (w *WebLog) collectUpstreamRespTime() {
+	if !w.line.hasUpstreamRespTime() {
 		return
 	}
 	w.collected.upRespTime = true
 
-	w.metrics.RespTimeUpstream.Observe(respTime)
+	w.metrics.RespTimeUpstream.Observe(w.line.UpstreamRespTime)
 	if w.metrics.RespTimeUpstreamHist == nil {
 		return
 	}
-	w.metrics.RespTimeUpstreamHist.Observe(respTime)
+	w.metrics.RespTimeUpstreamHist.Observe(w.line.UpstreamRespTime)
 }
 
-func (w *WebLog) collectCustom(custom string) {
-	if isEmptyString(custom) || len(w.userCategories) == 0 {
+func (w *WebLog) collectCustom() {
+	if !w.line.hasCustom() || len(w.userCategories) == 0 {
 		return
 	}
 	w.collected.custom = true
 
 	for _, cat := range w.userCategories {
-		if !cat.Matcher.MatchString(custom) {
+		if !cat.Matcher.MatchString(w.line.Custom) {
 			continue
 		}
 		c, _ := w.metrics.ReqCustom.GetP(cat.name)
@@ -241,10 +244,3 @@ func (w *WebLog) collectCustom(custom string) {
 		return
 	}
 }
-
-func isEmptyString(s string) bool { return s == parser.EmptyString }
-
-func isEmptyNumber(n int) bool { return n == parser.EmptyNumber }
-
-// TODO: fix
-func isParseError(err error) bool { return false }
