@@ -126,10 +126,7 @@ func (f *csvFormat) parse(records []string, logLine LogLine) error {
 	for field, idx := range f.fieldIndexes {
 		err := logLine.Assign(field, records[idx])
 		if err != nil {
-			return &ParseError{
-				msg: fmt.Sprintf("csv error on assigning : %v", err),
-				err: err,
-			}
+			return &ParseError{msg: fmt.Sprintf("csv error on assigning : %v", err), err: err}
 		}
 	}
 	return nil
@@ -139,10 +136,7 @@ func handleCSVReadError(err error) error {
 	if !isCSVParseError(err) {
 		return err
 	}
-	return &ParseError{
-		msg: fmt.Sprintf("csv error on parsing : %v", err),
-		err: err,
-	}
+	return &ParseError{msg: fmt.Sprintf("csv error on parsing : %v", err), err: err}
 }
 
 func isCSVParseError(err error) bool {

@@ -37,8 +37,8 @@ var (
 	}
 )
 
-func guessParser(record []byte) logs.Guess {
-	return func(config logs.Config, in io.Reader) (parser logs.Parser, e error) {
+func (w *WebLog) guessParser(record []byte) logs.Guesser {
+	f := func(config logs.Config, in io.Reader) (parser logs.Parser, e error) {
 		if reLTSV.Match(record) {
 			return logs.NewLTSVParser(config.LTSV, in)
 		}
@@ -69,4 +69,5 @@ func guessParser(record []byte) logs.Guess {
 		}
 		return nil, errors.New("cannot determine log format")
 	}
+	return logs.GuessFunc(f)
 }

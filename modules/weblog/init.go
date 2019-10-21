@@ -2,6 +2,7 @@ package weblog
 
 import (
 	"fmt"
+
 	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
@@ -13,7 +14,7 @@ type category struct {
 
 func newCategory(raw rawCategory) (*category, error) {
 	if raw.Name == "" || raw.Match == "" {
-		return nil, fmt.Errorf("category bad syntax")
+		return nil, fmt.Errorf("category bad syntax : %v", raw)
 	}
 
 	m, err := matcher.Parse(raw.Match)
@@ -30,13 +31,11 @@ func (w *WebLog) initFilter() (err error) {
 		return
 	}
 
-	m, err := w.Filter.Parse()
+	w.filter, err = w.Filter.Parse()
 	if err != nil {
 		return fmt.Errorf("error on creating filter %s: %v", w.Filter, err)
 	}
-
-	w.filter = m
-	return
+	return err
 }
 
 func (w *WebLog) initCategories() error {
@@ -60,12 +59,12 @@ func (w *WebLog) initCategories() error {
 }
 
 func (w *WebLog) initLogReader() error {
-	file, err := logs.Open(w.Path, w.ExcludePath, w.Logger)
+	reader, err := logs.Open(w.Path, w.ExcludePath, w.Logger)
 	if err != nil {
-		return fmt.Errorf("error on creating logreader : %v", err)
+		return fmt.Errorf("error on creating log reader : %v", err)
 	}
 
-	w.file = file
+	w.file = reader
 	return nil
 }
 
@@ -75,7 +74,8 @@ func (w *WebLog) initParser() error {
 		return fmt.Errorf("error on reading last line : %v", err)
 	}
 
-	w.parser, err = logs.NewParser(w.Config.Parser, w.file, guessParser(lastLine))
+	guess := w.guessParser(lastLine)
+	w.parser, err = logs.NewParser(w.Config.Parser, w.file, guess)
 	if err != nil {
 		return fmt.Errorf("error on creating parser : %v", err)
 	}

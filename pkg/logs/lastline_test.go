@@ -33,6 +33,7 @@ func TestReadLastLine(t *testing.T) {
 			line, err := ReadLastLine(filename, 10)
 
 			if test.err != nil {
+				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), test.err.Error())
 			} else {
 				assert.Equal(t, test.expected, string(line))

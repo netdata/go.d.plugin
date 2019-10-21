@@ -73,16 +73,16 @@ type (
 	WebLog struct {
 		module.Base
 		Config `yaml:",inline"`
-		charts *module.Charts
 
-		file   *logs.Reader
-		parser logs.Parser
-		line   *LogLine
-
-		mx       *MetricsData
+		file     *logs.Reader
+		parser   logs.Parser
+		line     *LogLine
 		filter   matcher.Matcher
 		urlCats  []*category
 		userCats []*category
+
+		mx     *MetricsData
+		charts *module.Charts
 
 		col struct {
 			vhost      bool

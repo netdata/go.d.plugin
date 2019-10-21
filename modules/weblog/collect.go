@@ -99,7 +99,6 @@ func (w *WebLog) collectClientAddr() {
 	if !w.line.hasClientAddr() {
 		return
 	}
-
 	w.col.client = true
 
 	// TODO: not always IP address
