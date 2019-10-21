@@ -33,7 +33,7 @@ func (w *WebLog) collect() (mx map[string]int64, err error) {
 
 	n, err = w.collectLogLines()
 
-	if n > 0 || n == 0 && err == nil {
+	if n > 0 || err == nil {
 		mx = stm.ToMap(w.mx)
 	}
 	if n > 0 {
@@ -55,7 +55,9 @@ func (w *WebLog) collectLogLines() (int, error) {
 				return n, err
 			}
 			w.collectUnmatched()
+			continue
 		}
+
 		n++
 		w.collectLogLine()
 	}
