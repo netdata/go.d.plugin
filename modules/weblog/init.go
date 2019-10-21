@@ -74,8 +74,7 @@ func (w *WebLog) initParser() error {
 		return fmt.Errorf("error on reading last line : %v", err)
 	}
 
-	guess := w.guessParser(lastLine)
-	w.parser, err = logs.NewParser(w.Config.Parser, w.file, guess)
+	w.parser, err = w.newParser(lastLine)
 	if err != nil {
 		return fmt.Errorf("error on creating parser : %v", err)
 	}

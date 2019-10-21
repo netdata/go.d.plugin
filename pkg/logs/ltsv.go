@@ -22,18 +22,7 @@ type (
 	}
 )
 
-func (c *LTSVConfig) applyDefaults() {
-	if c.FieldDelimiter == 0 {
-		c.FieldDelimiter = '\t'
-	}
-	if c.ValueDelimiter == 0 {
-		c.ValueDelimiter = ':'
-	}
-}
-
 func NewLTSVParser(config LTSVConfig, in io.Reader) (*LTSVParser, error) {
-	config.applyDefaults()
-
 	p := &LTSVParser{
 		r: bufio.NewReader(in),
 		parser: ltsv.Parser{

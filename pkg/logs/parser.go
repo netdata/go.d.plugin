@@ -27,18 +27,9 @@ type (
 		Parse(line []byte, logLine LogLine) error
 		Info() string
 	}
-
-	Guesser interface {
-		Guess(config ParserConfig, in io.Reader) (Parser, error)
-	}
-
-	GuessFunc func(config ParserConfig, in io.Reader) (Parser, error)
 )
 
-func (f GuessFunc) Guess(config ParserConfig, in io.Reader) (Parser, error) { return f(config, in) }
-
 const (
-	TypeAuto   = "auto"
 	TypeCSV    = "csv"
 	TypeLTSV   = "ltsv"
 	TypeRegExp = "regexp"
@@ -51,13 +42,8 @@ type ParserConfig struct {
 	RegExp  RegExpConfig `yaml:"regexp_config"`
 }
 
-func NewParser(config ParserConfig, in io.Reader, guess Guesser) (Parser, error) {
+func NewParser(config ParserConfig, in io.Reader) (Parser, error) {
 	switch config.LogType {
-	case TypeAuto:
-		if guess == nil {
-			return nil, errors.New("guess is nil")
-		}
-		return guess.Guess(config, in)
 	case TypeCSV:
 		return NewCSVParser(config.CSV, in)
 	case TypeLTSV:

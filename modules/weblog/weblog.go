@@ -23,7 +23,7 @@ func init() {
 
 func New() *WebLog {
 	cfg := logs.ParserConfig{
-		LogType: logs.TypeAuto,
+		LogType: typeAuto,
 		CSV: logs.CSVConfig{
 			Delimiter: ' ',
 		},

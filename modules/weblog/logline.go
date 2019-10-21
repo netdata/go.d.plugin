@@ -7,6 +7,23 @@ import (
 	"strings"
 )
 
+const (
+	fieldVhost         = "vhost"
+	fieldPort          = "port"
+	fieldVhostWithPort = "vhost:port"
+	fieldClient        = "client"
+	fieldRequest       = "request"
+	fieldReqMethod     = "req_method"
+	fieldReqURI        = "req_uri"
+	fieldReqProto      = "req_proto"
+	fieldStatus        = "status"
+	fieldReqSize       = "req_size"
+	fieldRespSize      = "resp_size"
+	fieldRespTime      = "resp_time"
+	fieldUpsRespTime   = "ups_resp_time"
+	fieldCustom        = "custom"
+)
+
 // nginx: http://nginx.org/en/docs/varindex.html
 // apache: http://httpd.apache.org/docs/current/mod/mod_log_config.html#logformat
 
@@ -14,7 +31,8 @@ import (
 /*
 | name               | nginx                   | apache    |
 |--------------------|-------------------------|-----------|
-| vhost              | $server_name            | %v        | name of the server which accepted a request
+| vhost              | $http                   | %v        | name of the server which accepted a request
+| port               | $server_port            | %p        | port of the server which accepted a request
 | client             | $remote_addr            | %a (%h)   | apache %h: logs the IP address if HostnameLookups is Off
 | request            | $request                | %r        | req_method + req_uri + req_protocol
 | req_method         | $request_method         | %m        |
@@ -29,46 +47,35 @@ import (
 | custom             | -                       | -         |
 */
 
-const (
-	fieldVhost       = "vhost"
-	fieldClient      = "client"
-	fieldRequest     = "request"
-	fieldReqMethod   = "req_method"
-	fieldReqURI      = "req_uri"
-	fieldReqProto    = "req_proto"
-	fieldStatus      = "status"
-	fieldReqSize     = "req_size"
-	fieldRespSize    = "resp_size"
-	fieldRespTime    = "resp_time"
-	fieldUpsRespTime = "ups_resp_time"
-	fieldCustom      = "custom"
-)
-
-var fieldMapping = map[string]string{
-	"$server_name":            fieldVhost,
-	"$remote_addr":            fieldClient,
-	"$request_method":         fieldReqMethod,
-	"$request_uri":            fieldReqURI,
-	"$server_protocol":        fieldReqProto,
-	"$status":                 fieldStatus,
-	"$request_length":         fieldReqSize,
-	"$bytes_sent":             fieldRespSize,
-	"$body_bytes_sent":        fieldRespSize,
-	"$request_time":           fieldRespTime,
-	"$upstream_response_time": fieldUpsRespTime,
-	"$custom":                 fieldCustom,
-	"%v":                      fieldVhost,
-	"%a":                      fieldClient,
-	"%h":                      fieldClient,
-	"%m":                      fieldReqMethod,
-	"%U":                      fieldReqURI,
-	"%H":                      fieldReqProto,
-	"%s":                      fieldStatus,
-	"%>s":                     fieldStatus,
-	"%I":                      fieldReqSize,
-	"%O":                      fieldRespSize,
-	"%B":                      fieldRespSize,
-	"%D":                      fieldRespTime,
+var fieldsMapping = map[string]string{
+	"http":                   fieldVhost,
+	"server_port":            fieldPort,
+	"host:$server_port":      fieldVhostWithPort,
+	"remote_addr":            fieldClient,
+	"request_method":         fieldReqMethod,
+	"request_uri":            fieldReqURI,
+	"server_protocol":        fieldReqProto,
+	"status":                 fieldStatus,
+	"request_length":         fieldReqSize,
+	"bytes_sent":             fieldRespSize,
+	"body_bytes_sent":        fieldRespSize,
+	"request_time":           fieldRespTime,
+	"upstream_response_time": fieldUpsRespTime,
+	"custom":                 fieldCustom,
+	"v":                      fieldVhost,
+	"p":                      fieldPort,
+	"v:%p":                   fieldVhostWithPort,
+	"a":                      fieldClient,
+	"h":                      fieldClient,
+	"m":                      fieldReqMethod,
+	"U":                      fieldReqURI,
+	"H":                      fieldReqProto,
+	"s":                      fieldStatus,
+	">s":                     fieldStatus,
+	"I":                      fieldReqSize,
+	"O":                      fieldRespSize,
+	"B":                      fieldRespSize,
+	"D":                      fieldRespTime,
 }
 
 func newEmptyLogLine() *LogLine {
@@ -79,6 +86,7 @@ func newEmptyLogLine() *LogLine {
 
 type LogLine struct {
 	Vhost            string
+	Port             int
 	ClientAddr       string
 	ReqHTTPMethod    string
 	ReqURI           string
@@ -114,6 +122,9 @@ func (l LogLine) Verify() error {
 	if l.hasVhost() && !reVhost.MatchString(l.Vhost) {
 		return fmt.Errorf("invalid '%s' field: %s", fieldVhost, l.Vhost)
 	}
+	if l.hasPort() && l.Port < 80 {
+		return fmt.Errorf("invalid '%s' field: %d", fieldPort, l.Port)
+	}
 	if l.hasClientAddr() && !reClientAddr.MatchString(l.ClientAddr) {
 		return fmt.Errorf("invalid  '%s' field: %s", fieldClient, l.ClientAddr)
 	}
@@ -142,14 +153,20 @@ func (l LogLine) Verify() error {
 }
 
 func (l *LogLine) Assign(field string, value string) (err error) {
-	v, ok := fieldMapping[field]
+	v, ok := fieldsMapping[field]
 	if !ok {
 		return
 	}
 
 	switch v {
+	default:
+		err = fmt.Errorf("unknown field : %s", v)
 	case fieldVhost:
 		l.Vhost = value
+	case fieldPort:
+		err = l.assignPort(value)
+	case fieldVhostWithPort:
+		err = l.assignVhostWithPort(value)
 	case fieldClient:
 		l.ClientAddr = value
 	case fieldRequest:
@@ -174,6 +191,24 @@ func (l *LogLine) Assign(field string, value string) (err error) {
 		l.Custom = value
 	}
 	return err
+}
+
+func (l *LogLine) assignPort(port string) error {
+	v, err := strconv.Atoi(port)
+	if err != nil {
+		return fmt.Errorf("invalid port: %q: %w", port, err)
+	}
+	l.Port = v
+	return nil
+}
+
+func (l *LogLine) assignVhostWithPort(vhostPort string) error {
+	idx := strings.LastIndexByte(vhostPort, ':')
+	if idx == -1 {
+		return fmt.Errorf("invalid vhost with port: %q", vhostPort)
+	}
+	l.Vhost = vhostPort[0:idx]
+	return l.assignPort(vhostPort[idx+1:])
 }
 
 func (l *LogLine) assignRequest(request string) error {
@@ -273,6 +308,8 @@ func (l *LogLine) assignUpstreamRespTime(time string) error {
 
 func (l LogLine) hasVhost() bool { return !isEmptyString(l.Vhost) }
 
+func (l LogLine) hasPort() bool { return !isEmptyNumber(l.Port) }
+
 func (l LogLine) hasClientAddr() bool { return !isEmptyString(l.ClientAddr) }
 
 func (l LogLine) hasReqHTTPMethod() bool { return !isEmptyString(l.ReqHTTPMethod) }
@@ -304,6 +341,7 @@ const (
 
 func (l *LogLine) reset() {
 	l.Vhost = emptyString
+	l.Port = emptyNumber
 	l.ClientAddr = emptyString
 	l.ReqHTTPMethod = emptyString
 	l.ReqURI = emptyString

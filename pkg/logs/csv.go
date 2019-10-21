@@ -11,9 +11,10 @@ import (
 
 type (
 	CSVConfig struct {
-		Delimiter        rune   `yaml:"delimiter"`
-		TrimLeadingSpace bool   `yaml:"trim_leading_space"`
-		Format           string `yaml:"format"`
+		Delimiter        rune                             `yaml:"delimiter"`
+		TrimLeadingSpace bool                             `yaml:"trim_leading_space"`
+		Format           string                           `yaml:"format"`
+		CheckField       func(string) (string, bool, int) `yaml:"-"`
 	}
 
 	CSVParser struct {
@@ -29,12 +30,6 @@ type (
 	}
 )
 
-func (c *CSVConfig) applyDefaults() {
-	if c.Delimiter == 0 {
-		c.Delimiter = ' '
-	}
-}
-
 func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 	r := csv.NewReader(in)
 	r.Comma = config.Delimiter
@@ -48,8 +43,6 @@ func NewCSVParser(config CSVConfig, in io.Reader) (*CSVParser, error) {
 	if config.Format == "" {
 		return nil, errors.New("empty csv format")
 	}
-
-	config.applyDefaults()
 
 	format, err := newCSVFormat(config)
 	if err != nil {
@@ -100,15 +93,26 @@ func newCSVFormat(config CSVConfig) (*csvFormat, error) {
 		fieldIndexes: make(map[string]int),
 	}
 
+	check := checkCSVFormatField
+	if config.CheckField != nil {
+		check = config.CheckField
+	}
+
 	var max int
+	var offset int
 	for i, field := range fields {
-		field = strings.Trim(field, `"`) // TODO: fix?
-		if !isValidVar(field) {
+		field = strings.Trim(field, `"`)
+
+		n, ok, v := check(field)
+		offset += v
+		if !ok {
 			continue
 		}
-		format.fieldIndexes[field] = i
-		if max < i {
-			max = i
+
+		idx := i + offset
+		format.fieldIndexes[n] = idx
+		if max < idx {
+			max = idx
 		}
 	}
 
@@ -143,8 +147,9 @@ func isCSVParseError(err error) bool {
 	return errors.Is(err, csv.ErrBareQuote) || errors.Is(err, csv.ErrFieldCount) || errors.Is(err, csv.ErrQuote)
 }
 
-func isValidVar(v string) bool { return isNginxVar(v) || isApacheVar(v) }
-
-func isNginxVar(v string) bool { return strings.HasPrefix(v, "$") }
-
-func isApacheVar(v string) bool { return strings.HasPrefix(v, "%") }
+func checkCSVFormatField(name string) (newName string, valid bool, offset int) {
+	if len(name) < 2 || !strings.HasPrefix(name, "$") {
+		valid = false
+	}
+	return name, valid, offset
+}
