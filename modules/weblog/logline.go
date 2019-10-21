@@ -12,51 +12,64 @@ import (
 
 // TODO: do we really we need "custom" :thinking:
 /*
-| name               | nginx                   | apache           |
-|--------------------|-------------------------|------------------|
-| vhost              | $server_name            | %v               | name of the server which accepted a request
-| client_addr        | $remote_addr            | %a (%h)          | apache %h: logs the IP address if HostnameLookups is Off
-| request            | $request                | %r               | req_method + req_uri + req_protocol
-| req_method         | $request_method         | %m               |
-| req_uri            | $request_uri            | %U               | nginx: w/ queries, apache: w/o
-| req_protocol       | $server_protocol        | %H               | request protocol, usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”
-| resp_status        | $status                 | %s (%>s)         | response status
-| req_size           | $request_length         | $I               | request length (including request line, header, and request body), apache: need mod_logio
-| resp_size          | $bytes_sent             | %O               | number of bytes sent to a client, including headers
-| resp_size          | $body_bytes_sent        | %B               | number of bytes sent to a client, not including headers
-| resp_time          | $request_time           | %D               | the time taken to serve the request. Apache: in microseconds, nginx: in seconds with a milliseconds resolution
-| upstream_resp_time | $upstream_response_time | -                | keeps time spent on receiving the response from the upstream server; the time is kept in seconds with millisecond resolution. Times of several responses are separated by commas and colons
-| custom             | -                       | -                |
+| name               | nginx                   | apache    |
+|--------------------|-------------------------|-----------|
+| vhost              | $server_name            | %v        | name of the server which accepted a request
+| client             | $remote_addr            | %a (%h)   | apache %h: logs the IP address if HostnameLookups is Off
+| request            | $request                | %r        | req_method + req_uri + req_protocol
+| req_method         | $request_method         | %m        |
+| req_uri            | $request_uri            | %U        | nginx: w/ queries, apache: w/o
+| req_proto          | $server_protocol        | %H        | request protocol, usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”
+| resp_status        | $status                 | %s (%>s)  | response status
+| req_size           | $request_length         | $I        | request length (including request line, header, and request body), apache: need mod_logio
+| resp_size          | $bytes_sent             | %O        | number of bytes sent to a client, including headers
+| resp_size          | $body_bytes_sent        | %B        | number of bytes sent to a client, not including headers
+| req_time           | $request_time           | %D        | the time taken to serve the request. Apache: in microseconds, nginx: in seconds with a milliseconds resolution
+| ups_resp_time      | $upstream_response_time | -         | keeps time spent on receiving the response from the upstream server; the time is kept in seconds with millisecond resolution. Times of several responses are separated by commas and colons
+| custom             | -                       | -         |
 */
 
 const (
-	fieldVhost            = "vhost"
-	fieldClientAddr       = "client_addr"
-	fieldRequest          = "request"
-	fieldReqMethod        = "req_method"
-	fieldReqURI           = "req_uri"
-	fieldReqProtocol      = "req_protocol"
-	fieldRespStatus       = "resp_status"
-	fieldReqSize          = "req_size"
-	fieldRespSize         = "resp_size"
-	fieldRespTime         = "resp_time"
-	fieldUpstreamRespTime = "upstream_resp_time"
-	fieldCustom           = "custom"
+	fieldVhost       = "vhost"
+	fieldClient      = "client"
+	fieldRequest     = "request"
+	fieldReqMethod   = "req_method"
+	fieldReqURI      = "req_uri"
+	fieldReqProto    = "req_proto"
+	fieldStatus      = "status"
+	fieldReqSize     = "req_size"
+	fieldRespSize    = "resp_size"
+	fieldRespTime    = "resp_time"
+	fieldUpsRespTime = "ups_resp_time"
+	fieldCustom      = "custom"
 )
 
-const (
-	emptyString = "__empty_string__"
-	emptyNumber = -9999
-)
-
-var (
-	// TODO: reClientAddr doesnt work with %h and HostnameLookups is On.
-	reVhost          = regexp.MustCompile(`^[a-zA-Z0-9.-:]+$`)
-	reClientAddr     = regexp.MustCompile(`^([\da-f.:]+|localhost)$`)
-	reReqHTTPMethod  = regexp.MustCompile(`^[A-Z]+$`)
-	reURI            = regexp.MustCompile(`^/[^\s]*$`)
-	reReqHTTPVersion = regexp.MustCompile(`^\d+(\.\d+)?$`)
-)
+var fieldMapping = map[string]string{
+	"$server_name":            fieldVhost,
+	"$remote_addr":            fieldClient,
+	"$request_method":         fieldReqMethod,
+	"$request_uri":            fieldReqURI,
+	"$server_protocol":        fieldReqProto,
+	"$status":                 fieldStatus,
+	"$request_length":         fieldReqSize,
+	"$bytes_sent":             fieldRespSize,
+	"$body_bytes_sent":        fieldRespSize,
+	"$request_time":           fieldRespTime,
+	"$upstream_response_time": fieldUpsRespTime,
+	"$custom":                 fieldCustom,
+	"%v":                      fieldVhost,
+	"%a":                      fieldClient,
+	"%h":                      fieldClient,
+	"%m":                      fieldReqMethod,
+	"%U":                      fieldReqURI,
+	"%H":                      fieldReqProto,
+	"%s":                      fieldStatus,
+	"%>s":                     fieldStatus,
+	"%I":                      fieldReqSize,
+	"%O":                      fieldRespSize,
+	"%B":                      fieldRespSize,
+	"%D":                      fieldRespTime,
+}
 
 func newEmptyLogLine() *LogLine {
 	var l LogLine
@@ -64,84 +77,45 @@ func newEmptyLogLine() *LogLine {
 	return &l
 }
 
-type (
-	LogLine struct {
-		Vhost            string
-		ClientAddr       string
-		ReqHTTPMethod    string
-		ReqURI           string
-		ReqHTTPVersion   string
-		RespCodeStatus   int
-		ReqSize          int
-		RespSize         int
-		RespTime         float64
-		UpstreamRespTime float64
-		Custom           string
+type LogLine struct {
+	Vhost            string
+	ClientAddr       string
+	ReqHTTPMethod    string
+	ReqURI           string
+	ReqHTTPVersion   string
+	RespCodeStatus   int
+	ReqSize          int
+	RespSize         int
+	RespTime         float64
+	UpstreamRespTime float64
+	Custom           string
 
-		timeScale float64
-	}
+	timeScale float64
+}
+
+var (
+	// TODO: reClientAddr doesnt work with %h when HostnameLookups is On.
+	reVhost          = regexp.MustCompile(`^[a-zA-Z0-9.-:]+$`)
+	reClientAddr     = regexp.MustCompile(`^([\da-f.:]+|localhost)$`)
+	reReqHTTPMethod  = regexp.MustCompile(`^[A-Z]+$`)
+	reURI            = regexp.MustCompile(`^/[^\s]*$`)
+	reReqHTTPVersion = regexp.MustCompile(`^\d+(\.\d+)?$`)
 )
 
-func (l *LogLine) reset() {
-	l.Vhost = emptyString
-	l.ClientAddr = emptyString
-	l.ReqHTTPMethod = emptyString
-	l.ReqURI = emptyString
-	l.ReqHTTPVersion = emptyString
-	l.Custom = emptyString
-	l.RespCodeStatus = emptyNumber
-	l.ReqSize = emptyNumber
-	l.RespSize = emptyNumber
-	l.RespTime = emptyNumber
-	l.UpstreamRespTime = emptyNumber
-}
-
-func (l LogLine) hasVhost() bool { return !isEmptyString(l.Vhost) }
-
-func (l LogLine) hasClientAddr() bool { return !isEmptyString(l.ClientAddr) }
-
-func (l LogLine) hasReqHTTPMethod() bool { return !isEmptyString(l.ReqHTTPMethod) }
-
-func (l LogLine) hasReqURI() bool { return !isEmptyString(l.ReqURI) }
-
-func (l LogLine) hasReqHTTPVersion() bool { return !isEmptyString(l.ReqHTTPVersion) }
-
-func (l LogLine) hasRespCodeStatus() bool { return !isEmptyNumber(l.RespCodeStatus) }
-
-func (l LogLine) hasReqSize() bool { return !isEmptyNumber(l.ReqSize) }
-
-func (l LogLine) hasRespSize() bool { return !isEmptyNumber(l.RespSize) }
-
-func (l LogLine) hasRespTime() bool { return !isEmptyNumber(int(l.RespTime)) }
-
-func (l LogLine) hasUpstreamRespTime() bool { return !isEmptyNumber(int(l.UpstreamRespTime)) }
-
-func (l LogLine) hasCustom() bool { return !isEmptyString(l.Custom) }
-
 func (l LogLine) Verify() error {
-	err := l.verifyMandatoryFields()
-	if err != nil {
-		return err
-	}
-	return l.verifyOptionalFields()
-}
-
-func (l LogLine) verifyMandatoryFields() error {
 	if !l.hasRespCodeStatus() {
-		return fmt.Errorf("missing mandatory field: %s", fieldRespStatus)
+		return fmt.Errorf("missing mandatory field: %s", fieldStatus)
 	}
 	if l.RespCodeStatus < 100 || l.RespCodeStatus >= 600 {
-		return fmt.Errorf("invalid '%s' field: %d", fieldRespStatus, l.RespCodeStatus)
+		return fmt.Errorf("invalid '%s' field: %d", fieldStatus, l.RespCodeStatus)
 	}
-	return nil
-}
 
-func (l LogLine) verifyOptionalFields() error {
+	// optional checks
 	if l.hasVhost() && !reVhost.MatchString(l.Vhost) {
 		return fmt.Errorf("invalid '%s' field: %s", fieldVhost, l.Vhost)
 	}
 	if l.hasClientAddr() && !reClientAddr.MatchString(l.ClientAddr) {
-		return fmt.Errorf("invalid  '%s' field: %s", fieldClientAddr, l.ClientAddr)
+		return fmt.Errorf("invalid  '%s' field: %s", fieldClient, l.ClientAddr)
 	}
 	if l.hasReqHTTPMethod() && !reReqHTTPMethod.MatchString(l.ReqHTTPMethod) {
 		return fmt.Errorf("invalid '%s' field: %s", fieldReqMethod, l.ReqHTTPMethod)
@@ -150,7 +124,7 @@ func (l LogLine) verifyOptionalFields() error {
 		return fmt.Errorf("invalid '%s' field: %s", fieldReqURI, l.ReqURI)
 	}
 	if l.hasReqHTTPVersion() && !reReqHTTPVersion.MatchString(l.ReqHTTPVersion) {
-		return fmt.Errorf("invalid '%s' field: %s", fieldReqProtocol, l.ReqHTTPVersion)
+		return fmt.Errorf("invalid '%s' field: %s", fieldReqProto, l.ReqHTTPVersion)
 	}
 	if l.hasReqSize() && l.ReqSize < 0 {
 		return fmt.Errorf("invalid '%s' field: %d", fieldReqSize, l.ReqSize)
@@ -162,16 +136,21 @@ func (l LogLine) verifyOptionalFields() error {
 		return fmt.Errorf("invalid '%s' field: %f", fieldRespTime, l.RespTime)
 	}
 	if l.hasUpstreamRespTime() && l.UpstreamRespTime < 0 {
-		return fmt.Errorf("invalid '%s' field: %f", fieldUpstreamRespTime, l.UpstreamRespTime)
+		return fmt.Errorf("invalid '%s' field: %f", fieldUpsRespTime, l.UpstreamRespTime)
 	}
 	return nil
 }
 
 func (l *LogLine) Assign(field string, value string) (err error) {
-	switch field {
+	v, ok := fieldMapping[field]
+	if !ok {
+		return
+	}
+
+	switch v {
 	case fieldVhost:
 		l.Vhost = value
-	case fieldClientAddr:
+	case fieldClient:
 		l.ClientAddr = value
 	case fieldRequest:
 		err = l.assignRequest(value)
@@ -179,9 +158,9 @@ func (l *LogLine) Assign(field string, value string) (err error) {
 		l.ReqHTTPMethod = value
 	case fieldReqURI:
 		l.ReqURI = value
-	case fieldReqProtocol:
+	case fieldReqProto:
 		err = l.assignReqHTTPVersion(value)
-	case fieldRespStatus:
+	case fieldStatus:
 		err = l.assignReqCodeStatus(value)
 	case fieldRespSize:
 		err = l.assignRespSize(value)
@@ -189,7 +168,7 @@ func (l *LogLine) Assign(field string, value string) (err error) {
 		err = l.assignReqSize(value)
 	case fieldRespTime:
 		err = l.assignRespTime(value)
-	case fieldUpstreamRespTime:
+	case fieldUpsRespTime:
 		err = l.assignUpstreamRespTime(value)
 	case fieldCustom:
 		l.Custom = value
@@ -292,6 +271,47 @@ func (l *LogLine) assignUpstreamRespTime(time string) error {
 	return nil
 }
 
+func (l LogLine) hasVhost() bool { return !isEmptyString(l.Vhost) }
+
+func (l LogLine) hasClientAddr() bool { return !isEmptyString(l.ClientAddr) }
+
+func (l LogLine) hasReqHTTPMethod() bool { return !isEmptyString(l.ReqHTTPMethod) }
+
+func (l LogLine) hasReqURI() bool { return !isEmptyString(l.ReqURI) }
+
+func (l LogLine) hasReqHTTPVersion() bool { return !isEmptyString(l.ReqHTTPVersion) }
+
+func (l LogLine) hasRespCodeStatus() bool { return !isEmptyNumber(l.RespCodeStatus) }
+
+func (l LogLine) hasReqSize() bool { return !isEmptyNumber(l.ReqSize) }
+
+func (l LogLine) hasRespSize() bool { return !isEmptyNumber(l.RespSize) }
+
+func (l LogLine) hasRespTime() bool { return !isEmptyNumber(int(l.RespTime)) }
+
+func (l LogLine) hasUpstreamRespTime() bool { return !isEmptyNumber(int(l.UpstreamRespTime)) }
+
+func (l LogLine) hasCustom() bool { return !isEmptyString(l.Custom) }
+
 func isEmptyString(s string) bool { return s == emptyString }
 
 func isEmptyNumber(n int) bool { return n == emptyNumber }
+
+const (
+	emptyString = "__empty_string__"
+	emptyNumber = -9999
+)
+
+func (l *LogLine) reset() {
+	l.Vhost = emptyString
+	l.ClientAddr = emptyString
+	l.ReqHTTPMethod = emptyString
+	l.ReqURI = emptyString
+	l.ReqHTTPVersion = emptyString
+	l.RespCodeStatus = emptyNumber
+	l.ReqSize = emptyNumber
+	l.RespSize = emptyNumber
+	l.RespTime = emptyNumber
+	l.UpstreamRespTime = emptyNumber
+	l.Custom = emptyString
+}

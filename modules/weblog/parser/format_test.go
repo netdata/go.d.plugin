@@ -25,7 +25,7 @@ package parser
 //			Format{
 //				TimeScale:        1,
 //				maxIndex:         8,
-//				RemoteAddr:       0,
+//				ClientAddr:       0,
 //				Request:          5,
 //				RespCodeStatus:           6,
 //				BytesSent:        7,
@@ -40,7 +40,7 @@ package parser
 //			Format{
 //				TimeScale:        1,
 //				maxIndex:         10,
-//				RemoteAddr:       0,
+//				ClientAddr:       0,
 //				Request:          5,
 //				RespCodeStatus:           6,
 //				BytesSent:        7,
@@ -55,7 +55,7 @@ package parser
 //			Format{
 //				TimeScale:        1,
 //				maxIndex:         13,
-//				RemoteAddr:       0,
+//				ClientAddr:       0,
 //				Request:          5,
 //				RespCodeStatus:           6,
 //				BytesSent:        7,
@@ -70,7 +70,7 @@ package parser
 //			Format{
 //				TimeScale:        1,
 //				maxIndex:         14,
-//				RemoteAddr:       0,
+//				ClientAddr:       0,
 //				Request:          5,
 //				RespCodeStatus:           6,
 //				BytesSent:        7,
@@ -108,7 +108,7 @@ package parser
 //	}{
 //		{"simple common", []string{`10.131.201.180`, `-`, `-`, `[07/Mar/2002:15:46:25`, `+0900]`, `GET / HTTP/1.1`, `200`, `1620`},
 //			LogLine{
-//				RemoteAddr: `10.131.201.180`,
+//				ClientAddr: `10.131.201.180`,
 //				Request:    `GET / HTTP/1.1`,
 //				ReqHTTPMethod:     `GET`,
 //				ReqURI:        "/",
@@ -122,7 +122,7 @@ package parser
 //		},
 //		{"simple combined", []string{`10.131.201.180`, `-`, `-`, `[07/Mar/2002:15:46:25`, `+0900]`, `GET / HTTP/1.1`, `200`, `1620`, `-`, `-`},
 //			LogLine{
-//				RemoteAddr: `10.131.201.180`,
+//				ClientAddr: `10.131.201.180`,
 //				Request:    `GET / HTTP/1.1`,
 //				ReqHTTPMethod:     `GET`,
 //				ReqURI:        "/",
@@ -136,7 +136,7 @@ package parser
 //		},
 //		{"simple custom", []string{`10.131.201.180`, `-`, `-`, `[07/Mar/2002:15:46:25`, `+0900]`, `GET / HTTP/1.1`, `200`, `1620`, `-`, `-`, `-`, `128`, `www.example.com`},
 //			LogLine{
-//				RemoteAddr: `10.131.201.180`,
+//				ClientAddr: `10.131.201.180`,
 //				Request:    `GET / HTTP/1.1`,
 //				ReqHTTPMethod:     `GET`,
 //				ReqURI:        "/",

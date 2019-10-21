@@ -22,7 +22,7 @@ func init() {
 }
 
 func New() *WebLog {
-	parserConfig := logs.Config{
+	cfg := logs.ParserConfig{
 		LogType: logs.TypeAuto,
 		CSV: logs.CSVConfig{
 			Delimiter: ' ',
@@ -38,7 +38,7 @@ func New() *WebLog {
 		Config: Config{
 			AggregateResponseCodes: true,
 			Histogram:              metrics.DefBuckets,
-			Parser:                 parserConfig,
+			Parser:                 cfg,
 			TimeMultiplier:         time.Second.Seconds(),
 		},
 		charts: charts.Copy(),
@@ -59,8 +59,8 @@ type (
 	}
 
 	Config struct {
-		Parser                 logs.Config        `yaml:",inline"`
-		TimeMultiplier         float64            `yaml:"time_multiplies"`
+		Parser                 logs.ParserConfig  `yaml:",inline"`
+		TimeMultiplier         float64            `yaml:"time_multiplier"`
 		Path                   string             `yaml:"path" validate:"required"`
 		ExcludePath            string             `yaml:"exclude_path"`
 		Filter                 matcher.SimpleExpr `yaml:"filter"`

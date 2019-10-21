@@ -2,7 +2,6 @@ package weblog
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"regexp"
 
@@ -12,7 +11,7 @@ import (
 var (
 	reLTSV = regexp.MustCompile(`^[a-zA-Z0-9]+:[^\t]*(\t[a-zA-Z0-9]+:[^\t]*)*$`)
 
-	csvCommon = `           $remote_addr - $remote_user [time local] "$request" $resp_status $body_bytes_sent`
+	csvCommon = `           $remote_addr - $remote_user [time local] "$request" $status $body_bytes_sent`
 	//csvCombined      = `           $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"`
 	//csvCustom1       = `           $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $uid_got                  $request_time`
 	//csvCustom2       = `           $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time'`
@@ -38,7 +37,7 @@ var (
 )
 
 func (w *WebLog) guessParser(record []byte) logs.Guesser {
-	f := func(config logs.Config, in io.Reader) (parser logs.Parser, e error) {
+	f := func(config logs.ParserConfig, in io.Reader) (parser logs.Parser, e error) {
 		if reLTSV.Match(record) {
 			return logs.NewLTSVParser(config.LTSV, in)
 		}
@@ -54,15 +53,11 @@ func (w *WebLog) guessParser(record []byte) logs.Guesser {
 			}
 
 			line := newEmptyLogLine()
-			err = parser.Parse(record, line)
-			if err != nil {
-				fmt.Println(err)
+			if err := parser.Parse(record, line); err != nil {
 				continue
 			}
 
-			fmt.Println(line)
 			if err = line.Verify(); err != nil {
-				fmt.Println(err)
 				continue
 			}
 			return parser, nil

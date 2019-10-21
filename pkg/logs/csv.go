@@ -103,10 +103,10 @@ func newCSVFormat(config CSVConfig) (*csvFormat, error) {
 	var max int
 	for i, field := range fields {
 		field = strings.Trim(field, `"`) // TODO: fix?
-		if !strings.HasPrefix(field, "$") {
+		if !isValidVar(field) {
 			continue
 		}
-		format.fieldIndexes[field[1:]] = i
+		format.fieldIndexes[field] = i
 		if max < i {
 			max = i
 		}
@@ -142,3 +142,9 @@ func handleCSVReadError(err error) error {
 func isCSVParseError(err error) bool {
 	return errors.Is(err, csv.ErrBareQuote) || errors.Is(err, csv.ErrFieldCount) || errors.Is(err, csv.ErrQuote)
 }
+
+func isValidVar(v string) bool { return isNginxVar(v) || isApacheVar(v) }
+
+func isNginxVar(v string) bool { return strings.HasPrefix(v, "$") }
+
+func isApacheVar(v string) bool { return strings.HasPrefix(v, "%") }
