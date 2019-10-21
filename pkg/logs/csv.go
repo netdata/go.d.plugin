@@ -149,7 +149,8 @@ func isCSVParseError(err error) bool {
 
 func checkCSVFormatField(name string) (newName string, valid bool, offset int) {
 	if len(name) < 2 || !strings.HasPrefix(name, "$") {
-		valid = false
+		return
 	}
-	return name, valid, offset
+	valid = true
+	return
 }
