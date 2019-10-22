@@ -8,9 +8,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/netdata/go-orchestrator/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func init() {
+	logger.SetSeverity(logger.DEBUG)
+}
 
 func TestWebLog_Init(t *testing.T) {
 	weblog := New()

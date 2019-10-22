@@ -7,23 +7,6 @@ import (
 	"strings"
 )
 
-const (
-	fieldVhost         = "vhost"
-	fieldPort          = "port"
-	fieldVhostWithPort = "vhost:port"
-	fieldClient        = "client"
-	fieldRequest       = "request"
-	fieldReqMethod     = "req_method"
-	fieldReqURI        = "req_uri"
-	fieldReqProto      = "req_proto"
-	fieldStatus        = "status"
-	fieldReqSize       = "req_size"
-	fieldRespSize      = "resp_size"
-	fieldRespTime      = "resp_time"
-	fieldUpsRespTime   = "ups_resp_time"
-	fieldCustom        = "custom"
-)
-
 // nginx: http://nginx.org/en/docs/varindex.html
 // apache: http://httpd.apache.org/docs/current/mod/mod_log_config.html#logformat
 
@@ -31,8 +14,9 @@ const (
 /*
 | name               | nginx                   | apache    |
 |--------------------|-------------------------|-----------|
-| vhost              | $http                   | %v        | name of the server which accepted a request
+| vhost              | $host ($http_host)      | %v        | name of the server which accepted a request
 | port               | $server_port            | %p        | port of the server which accepted a request
+| scheme             | $scheme                 | -         | request scheme, “http” or “https”
 | client             | $remote_addr            | %a (%h)   | apache %h: logs the IP address if HostnameLookups is Off
 | request            | $request                | %r        | req_method + req_uri + req_protocol
 | req_method         | $request_method         | %m        |
@@ -47,10 +31,30 @@ const (
 | custom             | -                       | -         |
 */
 
+const (
+	fieldVhost         = "vhost"
+	fieldPort          = "port"
+	fieldVhostWithPort = "vhost:port"
+	fieldScheme        = "scheme"
+	fieldClient        = "client"
+	fieldRequest       = "request"
+	fieldReqMethod     = "req_method"
+	fieldReqURI        = "req_uri"
+	fieldReqProto      = "req_proto"
+	fieldStatus        = "status"
+	fieldReqSize       = "req_size"
+	fieldRespSize      = "resp_size"
+	fieldRespTime      = "resp_time"
+	fieldUpsRespTime   = "ups_resp_time"
+	fieldCustom        = "custom"
+)
+
 var fieldsMapping = map[string]string{
-	"http":                   fieldVhost,
+	"host":                   fieldVhost,
+	"http_host":              fieldVhost,
 	"server_port":            fieldPort,
 	"host:$server_port":      fieldVhostWithPort,
+	"scheme":                 fieldScheme,
 	"remote_addr":            fieldClient,
 	"request_method":         fieldReqMethod,
 	"request_uri":            fieldReqURI,
@@ -86,12 +90,13 @@ func newEmptyLogLine() *LogLine {
 
 type LogLine struct {
 	Vhost            string
-	Port             int
+	Scheme           string
+	Port             string // Apache has no $scheme, this is workaround to collect per scheme requests. Lame.
 	ClientAddr       string
 	ReqHTTPMethod    string
 	ReqURI           string
 	ReqHTTPVersion   string
-	RespCodeStatus   int
+	RespCode         int
 	ReqSize          int
 	RespSize         int
 	RespTime         float64
@@ -101,72 +106,23 @@ type LogLine struct {
 	timeScale float64
 }
 
-var (
-	// TODO: reClientAddr doesnt work with %h when HostnameLookups is On.
-	reVhost          = regexp.MustCompile(`^[a-zA-Z0-9.-:]+$`)
-	reClientAddr     = regexp.MustCompile(`^([\da-f.:]+|localhost)$`)
-	reReqHTTPMethod  = regexp.MustCompile(`^[A-Z]+$`)
-	reURI            = regexp.MustCompile(`^/[^\s]*$`)
-	reReqHTTPVersion = regexp.MustCompile(`^\d+(\.\d+)?$`)
-)
-
-func (l LogLine) Verify() error {
-	if !l.hasRespCodeStatus() {
-		return fmt.Errorf("missing mandatory field: %s", fieldStatus)
-	}
-	if l.RespCodeStatus < 100 || l.RespCodeStatus >= 600 {
-		return fmt.Errorf("invalid '%s' field: %d", fieldStatus, l.RespCodeStatus)
-	}
-
-	// optional checks
-	if l.hasVhost() && !reVhost.MatchString(l.Vhost) {
-		return fmt.Errorf("invalid '%s' field: %s", fieldVhost, l.Vhost)
-	}
-	if l.hasPort() && l.Port < 80 {
-		return fmt.Errorf("invalid '%s' field: %d", fieldPort, l.Port)
-	}
-	if l.hasClientAddr() && !reClientAddr.MatchString(l.ClientAddr) {
-		return fmt.Errorf("invalid  '%s' field: %s", fieldClient, l.ClientAddr)
-	}
-	if l.hasReqHTTPMethod() && !reReqHTTPMethod.MatchString(l.ReqHTTPMethod) {
-		return fmt.Errorf("invalid '%s' field: %s", fieldReqMethod, l.ReqHTTPMethod)
-	}
-	if l.hasReqURI() && !reURI.MatchString(l.ReqURI) {
-		return fmt.Errorf("invalid '%s' field: %s", fieldReqURI, l.ReqURI)
-	}
-	if l.hasReqHTTPVersion() && !reReqHTTPVersion.MatchString(l.ReqHTTPVersion) {
-		return fmt.Errorf("invalid '%s' field: %s", fieldReqProto, l.ReqHTTPVersion)
-	}
-	if l.hasReqSize() && l.ReqSize < 0 {
-		return fmt.Errorf("invalid '%s' field: %d", fieldReqSize, l.ReqSize)
-	}
-	if l.hasRespSize() && l.RespSize < 0 {
-		return fmt.Errorf("invalid '%s' field: %d", fieldRespSize, l.RespSize)
-	}
-	if l.hasRespTime() && l.RespTime < 0 {
-		return fmt.Errorf("invalid '%s' field: %f", fieldRespTime, l.RespTime)
-	}
-	if l.hasUpstreamRespTime() && l.UpstreamRespTime < 0 {
-		return fmt.Errorf("invalid '%s' field: %f", fieldUpsRespTime, l.UpstreamRespTime)
-	}
-	return nil
-}
-
-func (l *LogLine) Assign(field string, value string) (err error) {
-	v, ok := fieldsMapping[field]
+func (l *LogLine) Assign(variable string, value string) (err error) {
+	field, ok := fieldsMapping[variable]
 	if !ok {
 		return
 	}
 
-	switch v {
+	switch field {
 	default:
-		err = fmt.Errorf("unknown field : %s", v)
+		err = fmt.Errorf("unknown field : %s", field)
 	case fieldVhost:
 		l.Vhost = value
 	case fieldPort:
-		err = l.assignPort(value)
+		l.Port = value
 	case fieldVhostWithPort:
 		err = l.assignVhostWithPort(value)
+	case fieldScheme:
+		l.Scheme = value
 	case fieldClient:
 		l.ClientAddr = value
 	case fieldRequest:
@@ -193,22 +149,14 @@ func (l *LogLine) Assign(field string, value string) (err error) {
 	return err
 }
 
-func (l *LogLine) assignPort(port string) error {
-	v, err := strconv.Atoi(port)
-	if err != nil {
-		return fmt.Errorf("invalid port: %q: %w", port, err)
-	}
-	l.Port = v
-	return nil
-}
-
 func (l *LogLine) assignVhostWithPort(vhostPort string) error {
 	idx := strings.LastIndexByte(vhostPort, ':')
 	if idx == -1 {
 		return fmt.Errorf("invalid vhost with port: %q", vhostPort)
 	}
 	l.Vhost = vhostPort[0:idx]
-	return l.assignPort(vhostPort[idx+1:])
+	l.Port = vhostPort[idx+1:]
+	return nil
 }
 
 func (l *LogLine) assignRequest(request string) error {
@@ -246,7 +194,7 @@ func (l *LogLine) assignReqCodeStatus(status string) error {
 		return nil
 	}
 	var err error
-	l.RespCodeStatus, err = strconv.Atoi(status)
+	l.RespCode, err = strconv.Atoi(status)
 	if err != nil {
 		return fmt.Errorf("invalid status: %q: %w", status, err)
 	}
@@ -306,9 +254,56 @@ func (l *LogLine) assignUpstreamRespTime(time string) error {
 	return nil
 }
 
+func (l LogLine) Verify() error {
+	if !l.hasRespCode() {
+		return fmt.Errorf("missing mandatory field: %s", fieldStatus)
+	}
+	if !l.isRespCodeValid() {
+		return fmt.Errorf("invalid '%s' field: %d", fieldStatus, l.RespCode)
+	}
+
+	// optional checks
+	if l.hasVhost() && !l.isVhostValid() {
+		return fmt.Errorf("invalid '%s' field: %s", fieldVhost, l.Vhost)
+	}
+	if l.hasPort() && !l.isPortValid() {
+		return fmt.Errorf("invalid '%s' field: %s", fieldPort, l.Port)
+	}
+	if l.hasScheme() && !l.isSchemeValid() {
+		return fmt.Errorf("invalid '%s' field: %s", fieldScheme, l.Scheme)
+	}
+	if l.hasClientAddr() && !l.isClientAddrValid() {
+		return fmt.Errorf("invalid  '%s' field: %s", fieldClient, l.ClientAddr)
+	}
+	if l.hasReqHTTPMethod() && !l.isHTTPMethodValid() {
+		return fmt.Errorf("invalid '%s' field: %s", fieldReqMethod, l.ReqHTTPMethod)
+	}
+	if l.hasReqURI() && !l.isReqURIValid() {
+		return fmt.Errorf("invalid '%s' field: %s", fieldReqURI, l.ReqURI)
+	}
+	if l.hasReqHTTPVersion() && !l.isHTTPVersionValid() {
+		return fmt.Errorf("invalid '%s' field: %s", fieldReqProto, l.ReqHTTPVersion)
+	}
+	if l.hasReqSize() && !l.isReqSizeValid() {
+		return fmt.Errorf("invalid '%s' field: %d", fieldReqSize, l.ReqSize)
+	}
+	if l.hasRespSize() && !l.isRespSizeValid() {
+		return fmt.Errorf("invalid '%s' field: %d", fieldRespSize, l.RespSize)
+	}
+	if l.hasRespTime() && !l.isRespTimeValid() {
+		return fmt.Errorf("invalid '%s' field: %f", fieldRespTime, l.RespTime)
+	}
+	if l.hasUpstreamRespTime() && !l.isUpstreamRespTimeValid() {
+		return fmt.Errorf("invalid '%s' field: %f", fieldUpsRespTime, l.UpstreamRespTime)
+	}
+	return nil
+}
+
 func (l LogLine) hasVhost() bool { return !isEmptyString(l.Vhost) }
 
-func (l LogLine) hasPort() bool { return !isEmptyNumber(l.Port) }
+func (l LogLine) hasPort() bool { return !isEmptyString(l.Port) }
+
+func (l LogLine) hasScheme() bool { return !isEmptyString(l.Scheme) }
 
 func (l LogLine) hasClientAddr() bool { return !isEmptyString(l.ClientAddr) }
 
@@ -318,7 +313,7 @@ func (l LogLine) hasReqURI() bool { return !isEmptyString(l.ReqURI) }
 
 func (l LogLine) hasReqHTTPVersion() bool { return !isEmptyString(l.ReqHTTPVersion) }
 
-func (l LogLine) hasRespCodeStatus() bool { return !isEmptyNumber(l.RespCodeStatus) }
+func (l LogLine) hasRespCode() bool { return !isEmptyNumber(l.RespCode) }
 
 func (l LogLine) hasReqSize() bool { return !isEmptyNumber(l.ReqSize) }
 
@@ -330,9 +325,42 @@ func (l LogLine) hasUpstreamRespTime() bool { return !isEmptyNumber(int(l.Upstre
 
 func (l LogLine) hasCustom() bool { return !isEmptyString(l.Custom) }
 
-func isEmptyString(s string) bool { return s == emptyString }
+func isEmptyString(s string) bool { return s == emptyString || s == "" }
 
 func isEmptyNumber(n int) bool { return n == emptyNumber }
+
+var (
+	// TODO: reClientAddr doesnt work with %h when HostnameLookups is On.
+	reVhost          = regexp.MustCompile(`^[a-zA-Z0-9.-:]+$`)
+	reClientAddr     = regexp.MustCompile(`^([\da-f.:]+|localhost)$`)
+	reReqHTTPMethod  = regexp.MustCompile(`^[A-Z]+$`)
+	reURI            = regexp.MustCompile(`^/[^\s]*$`)
+	reReqHTTPVersion = regexp.MustCompile(`^\d+(\.\d+)?$`)
+)
+
+func (l LogLine) isVhostValid() bool { return reVhost.MatchString(l.Vhost) }
+
+func (l LogLine) isSchemeValid() bool { return l.Scheme == "http" || l.Scheme == "https" }
+
+func (l LogLine) isClientAddrValid() bool { return reClientAddr.MatchString(l.ClientAddr) }
+
+func (l LogLine) isHTTPMethodValid() bool { return reReqHTTPMethod.MatchString(l.ReqHTTPMethod) }
+
+func (l LogLine) isReqURIValid() bool { return reURI.MatchString(l.ReqURI) }
+
+func (l LogLine) isHTTPVersionValid() bool { return reReqHTTPVersion.MatchString(l.ReqHTTPVersion) }
+
+func (l LogLine) isReqSizeValid() bool { return l.ReqSize >= 0 }
+
+func (l LogLine) isRespSizeValid() bool { return l.RespSize >= 0 }
+
+func (l LogLine) isRespTimeValid() bool { return l.RespTime >= 0 }
+
+func (l LogLine) isUpstreamRespTimeValid() bool { return l.UpstreamRespTime > 0 }
+
+func (l LogLine) isRespCodeValid() bool { return l.RespCode >= 100 || l.RespCode <= 600 }
+
+func (l LogLine) isPortValid() bool { v, err := strconv.Atoi(l.Port); return err != nil && v > 80 }
 
 const (
 	emptyString = "__empty_string__"
@@ -341,12 +369,13 @@ const (
 
 func (l *LogLine) reset() {
 	l.Vhost = emptyString
-	l.Port = emptyNumber
+	l.Port = emptyString
+	l.Scheme = emptyString
 	l.ClientAddr = emptyString
 	l.ReqHTTPMethod = emptyString
 	l.ReqURI = emptyString
 	l.ReqHTTPVersion = emptyString
-	l.RespCodeStatus = emptyNumber
+	l.RespCode = emptyNumber
 	l.ReqSize = emptyNumber
 	l.RespSize = emptyNumber
 	l.RespTime = emptyNumber

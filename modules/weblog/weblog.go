@@ -25,7 +25,8 @@ func New() *WebLog {
 	cfg := logs.ParserConfig{
 		LogType: typeAuto,
 		CSV: logs.CSVConfig{
-			Delimiter: ' ',
+			Delimiter:  ' ',
+			CheckField: checkCSVFormatField,
 		},
 		LTSV: logs.LTSVConfig{
 			FieldDelimiter: '\t',
@@ -39,12 +40,13 @@ func New() *WebLog {
 			AggregateResponseCodes: true,
 			Histogram:              metrics.DefBuckets,
 			Parser:                 cfg,
-			TimeMultiplier:         time.Second.Seconds(),
+			TimeMultiplier:         time.Second.Seconds(), // TODO: do we even need it?
 		},
 		charts: charts.Copy(),
 		chartsCache: chartsCache{
 			created:  make(cache),
 			vhosts:   make(cache),
+			ports:    make(cache),
 			methods:  make(cache),
 			codes:    make(cache),
 			versions: make(cache),
@@ -86,6 +88,8 @@ type (
 
 		col struct {
 			vhost      bool
+			port       bool
+			scheme     bool
 			client     bool
 			method     bool
 			uri        bool

@@ -79,9 +79,31 @@ var (
 		},
 	}
 
+	requestsPerPort = Chart{
+		ID:    "requests_per_port",
+		Title: "Requests Per Port",
+		Units: "requests/s",
+		Fam:   "port",
+		Ctx:   "web_log.requests_per_port",
+		Type:  module.Stacked,
+	}
+
+	requestsPerScheme = Chart{
+		ID:    "requests_per_scheme",
+		Title: "Requests Per Scheme",
+		Units: "requests/s",
+		Fam:   "scheme",
+		Ctx:   "web_log.requests_per_scheme",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "req_http_scheme", Name: "http", Algo: module.Incremental},
+			{ID: "req_https_scheme", Name: "https", Algo: module.Incremental},
+		},
+	}
+
 	requestsPerHTTPMethod = Chart{
 		ID:    "requests_per_http_method",
-		Title: "Requests Per HTTP ReqHTTPMethod",
+		Title: "Requests Per HTTP Method",
 		Units: "requests/s",
 		Fam:   "http methods",
 		Ctx:   "web_log.requests_per_http_method",
@@ -91,7 +113,7 @@ var (
 
 	requestsPerHTTPVersion = Chart{
 		ID:    "requests_per_http_version",
-		Title: "Requests Per HTTP ReqHTTPVersion",
+		Title: "Requests Per HTTP Version",
 		Units: "requests/s",
 		Fam:   "http versions",
 		Ctx:   "web_log.requests_per_http_version",
@@ -327,6 +349,13 @@ func (w *WebLog) updateCharts() {
 		w.addVhostChart()
 		w.updateVhostChart()
 	}
+	if w.col.port {
+		w.addPortChart()
+		w.updatePortChart()
+	}
+	if w.col.scheme {
+		w.addSchemeChart()
+	}
 	if w.col.client {
 		w.addClientCharts()
 	}
@@ -364,6 +393,20 @@ func (w *WebLog) addVhostChart() {
 		return
 	}
 	panicIfErr(w.Charts().Add(requestsPerVhost.Copy()))
+}
+
+func (w *WebLog) addPortChart() {
+	if w.chartsCache.created.addIfNotExist(requestsPerPort.ID) {
+		return
+	}
+	panicIfErr(w.Charts().Add(requestsPerPort.Copy()))
+}
+
+func (w *WebLog) addSchemeChart() {
+	if w.chartsCache.created.addIfNotExist(requestsPerScheme.ID) {
+		return
+	}
+	panicIfErr(w.Charts().Add(requestsPerScheme.Copy()))
 }
 
 func (w *WebLog) addClientCharts() {
@@ -472,6 +515,17 @@ func (w *WebLog) updateVhostChart() {
 	}
 }
 
+func (w *WebLog) updatePortChart() {
+	chart := w.Charts().Get(requestsPerPort.ID)
+
+	for v := range w.mx.ReqPort {
+		if w.chartsCache.ports.addIfNotExist(v) {
+			continue
+		}
+		addDimToPortChart(chart, v)
+	}
+}
+
 func (w *WebLog) updateHTTPMethodChart() {
 	chart := w.Charts().Get(requestsPerHTTPMethod.ID)
 
@@ -564,6 +618,17 @@ func addDimToVhostChart(chart *Chart, vhost string) {
 	chart.MarkNotCreated()
 }
 
+func addDimToPortChart(chart *Chart, port string) {
+	dimID := "req_port_" + port
+	dim := &Dim{
+		ID:   dimID,
+		Name: port,
+		Algo: module.Incremental,
+	}
+	panicIfErr(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
 // TODO: get rid of
 func panicIfErr(err error) {
 	if err != nil {
@@ -616,6 +681,7 @@ type (
 	chartsCache struct {
 		created  cache
 		vhosts   cache
+		ports    cache
 		methods  cache
 		versions cache
 		codes    cache

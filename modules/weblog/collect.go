@@ -70,6 +70,8 @@ func (w *WebLog) collectLogLine() {
 
 	w.mx.Requests.Inc()
 	w.collectVhost()
+	w.collectPort()
+	w.collectScheme()
 	w.collectClientAddr()
 	w.collectReqHTTPMethod()
 	w.collectReqURI()
@@ -97,6 +99,16 @@ func (w *WebLog) collectVhost() {
 	c.Inc()
 }
 
+func (w *WebLog) collectPort() {
+	if !w.line.hasPort() {
+		return
+	}
+	w.col.port = true
+
+	c, _ := w.mx.ReqPort.GetP(w.line.Port)
+	c.Inc()
+}
+
 func (w *WebLog) collectClientAddr() {
 	if !w.line.hasClientAddr() {
 		return
@@ -112,6 +124,19 @@ func (w *WebLog) collectClientAddr() {
 
 	w.mx.ReqIpv4.Inc()
 	w.mx.UniqueIPv4.Insert(w.line.ClientAddr)
+}
+
+func (w *WebLog) collectScheme() {
+	if !w.line.hasScheme() {
+		return
+	}
+	w.col.scheme = true
+
+	if w.line.Scheme == "https" {
+		w.mx.ReqHTTPSScheme.Inc()
+	} else {
+		w.mx.ReqHTTPScheme.Inc()
+	}
 }
 
 func (w *WebLog) collectReqHTTPMethod() {
@@ -151,11 +176,11 @@ func (w *WebLog) collectReqHTTPVersion() {
 }
 
 func (w *WebLog) collectRespStatusCode() {
-	if !w.line.hasRespCodeStatus() {
+	if !w.line.hasRespCode() {
 		return
 	}
 	w.col.status = true
-	status := w.line.RespCodeStatus
+	status := w.line.RespCode
 
 	switch {
 	case status >= 100 && status < 300, status == 304:

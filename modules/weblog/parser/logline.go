@@ -15,7 +15,7 @@ package parser
 //		ReqHTTPMethod    string
 //		ReqURI           string
 //		ReqHTTPVersion   string
-//		RespCodeStatus   int
+//		RespCode   int
 //		ReqSize          int
 //		RespSize         int
 //		RespTime         float64
@@ -81,7 +81,7 @@ package parser
 //		ReqURI:           EmptyString,
 //		ReqHTTPVersion:   EmptyString,
 //		Custom:           EmptyString,
-//		RespCodeStatus:   EmptyNumber,
+//		RespCode:   EmptyNumber,
 //		ReqSize:          EmptyNumber,
 //		RespSize:         EmptyNumber,
 //		RespTime:         EmptyNumber,
@@ -99,7 +99,7 @@ package parser
 //
 //func (l LogLine) hasReqHTTPVersion() bool { return l.ReqHTTPVersion != EmptyString }
 //
-//func (l LogLine) hasRespCodeStatus() bool { return l.RespCodeStatus != EmptyNumber }
+//func (l LogLine) hasRespCodeStatus() bool { return l.RespCode != EmptyNumber }
 //
 //func (l LogLine) hasReqSize() bool { return l.ReqSize != EmptyNumber }
 //
@@ -123,8 +123,8 @@ package parser
 //	if !l.hasRespCodeStatus() {
 //		return fmt.Errorf("missing mandatory field: %s", fieldRespStatus)
 //	}
-//	if l.RespCodeStatus < 100 || l.RespCodeStatus >= 600 {
-//		return fmt.Errorf("invalid '%s' field: %d", fieldRespStatus, l.RespCodeStatus)
+//	if l.RespCode < 100 || l.RespCode >= 600 {
+//		return fmt.Errorf("invalid '%s' field: %d", fieldRespStatus, l.RespCode)
 //	}
 //	return nil
 //}
@@ -225,7 +225,7 @@ package parser
 //		return nil
 //	}
 //	var err error
-//	l.RespCodeStatus, err = strconv.Atoi(status)
+//	l.RespCode, err = strconv.Atoi(status)
 //	if err != nil {
 //		return fmt.Errorf("invalid status: %q: %w", status, err)
 //	}

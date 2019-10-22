@@ -22,7 +22,10 @@ type MetricsData struct {
 	Requests     metrics.Counter `stm:"requests"`
 	ReqUnmatched metrics.Counter `stm:"req_unmatched"`
 
-	ReqVhost metrics.CounterVec `stm:"req_vhost"`
+	ReqVhost       metrics.CounterVec `stm:"req_vhost"`
+	ReqPort        metrics.CounterVec `stm:"req_port"`
+	ReqHTTPScheme  metrics.Counter    `stm:"req_http_scheme"`
+	ReqHTTPSScheme metrics.Counter    `stm:"req_https_scheme"`
 
 	ReqIpv4    metrics.Counter       `stm:"req_ipv4"`
 	ReqIpv6    metrics.Counter       `stm:"req_ipv6"`
@@ -78,6 +81,7 @@ func NewMetricsData(config Config) *MetricsData {
 		ReqURI:    newCounterVecFromCategories(config.URLCategories),
 		ReqCustom: newCounterVecFromCategories(config.UserCategories),
 		ReqVhost:  metrics.NewCounterVec(),
+		ReqPort:   metrics.NewCounterVec(),
 	}
 }
 

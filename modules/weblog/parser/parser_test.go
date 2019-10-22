@@ -25,7 +25,7 @@ package parser
 //			assert.Equal(t, "GET", row.ReqHTTPMethod)
 //			assert.Equal(t, "/twiki/bin/edit/Main/Double_bounce_sender?topicparent=Main.ConfigurationVariables", row.ReqURI)
 //			assert.Equal(t, "1.1", row.ReqHTTPVersion)
-//			assert.Equal(t, 401, row.RespCodeStatus)
+//			assert.Equal(t, 401, row.RespCode)
 //			assert.Equal(t, 12846, row.BytesSent)
 //		case 1: // 64.242.88.10 - - [07/Mar/2004:16:06:51 -0800] "GET /twiki/bin/rdiff/TWiki/NewUserTemplate?rev1=1.3&rev2=1.2 HTTP/1.1" 200 4523
 //			assert.Equal(t, "64.242.88.10", row.ClientAddr)
@@ -33,12 +33,12 @@ package parser
 //			assert.Equal(t, "GET", row.ReqHTTPMethod)
 //			assert.Equal(t, "/twiki/bin/rdiff/TWiki/NewUserTemplate?rev1=1.3&rev2=1.2", row.ReqURI)
 //			assert.Equal(t, "1.1", row.ReqHTTPVersion)
-//			assert.Equal(t, 200, row.RespCodeStatus)
+//			assert.Equal(t, 200, row.RespCode)
 //			assert.Equal(t, 4523, row.BytesSent)
 //		case 33: // lj1036.inktomisearch.com - - [07/Mar/2004:17:18:36 -0800] "GET /robots.txt HTTP/1.0" 200 68
 //			assert.Equal(t, "lj1036.inktomisearch.com", row.ClientAddr)
 //			assert.Equal(t, "GET /robots.txt HTTP/1.0", row.Request)
-//			assert.Equal(t, 200, row.RespCodeStatus)
+//			assert.Equal(t, 200, row.RespCode)
 //			assert.Equal(t, 68, row.BytesSent)
 //		case 49: // 64.242.88.10 - - [07/Mar/2004:17:53:45 -0800] "GET /twiki/bin/search/Main/SearchResult?scope=text®ex=on&search=Office%20*Locations[^A-Za-z] HTTP/1.1" 200 7771
 //			assert.Equal(t, "64.242.88.10", row.ClientAddr)
@@ -46,7 +46,7 @@ package parser
 //			assert.Equal(t, "GET", row.ReqHTTPMethod)
 //			assert.Equal(t, "/twiki/bin/search/Main/SearchResult?scope=text®ex=on&search=Office%20*Locations[^A-Za-z]", row.ReqURI)
 //			assert.Equal(t, "1.1", row.ReqHTTPVersion)
-//			assert.Equal(t, 200, row.RespCodeStatus)
+//			assert.Equal(t, 200, row.RespCode)
 //			assert.Equal(t, 7771, row.BytesSent)
 //		}
 //	}
