@@ -258,42 +258,42 @@ func (l LogLine) Verify() error {
 	if !l.hasRespCode() {
 		return fmt.Errorf("missing mandatory field: %s", fieldStatus)
 	}
-	if !l.isRespCodeValid() {
+	if !l.validRespCode() {
 		return fmt.Errorf("invalid '%s' field: %d", fieldStatus, l.RespCode)
 	}
 
 	// optional checks
-	if l.hasVhost() && !l.isVhostValid() {
+	if l.hasVhost() && !l.validVhost() {
 		return fmt.Errorf("invalid '%s' field: %s", fieldVhost, l.Vhost)
 	}
-	if l.hasPort() && !l.isPortValid() {
+	if l.hasPort() && !l.validPort() {
 		return fmt.Errorf("invalid '%s' field: %s", fieldPort, l.Port)
 	}
-	if l.hasScheme() && !l.isSchemeValid() {
+	if l.hasScheme() && !l.validScheme() {
 		return fmt.Errorf("invalid '%s' field: %s", fieldScheme, l.Scheme)
 	}
-	if l.hasClientAddr() && !l.isClientAddrValid() {
+	if l.hasClientAddr() && !l.validClientAddr() {
 		return fmt.Errorf("invalid  '%s' field: %s", fieldClient, l.ClientAddr)
 	}
-	if l.hasReqHTTPMethod() && !l.isHTTPMethodValid() {
+	if l.hasReqHTTPMethod() && !l.validHTTPMethod() {
 		return fmt.Errorf("invalid '%s' field: %s", fieldReqMethod, l.ReqHTTPMethod)
 	}
-	if l.hasReqURI() && !l.isReqURIValid() {
+	if l.hasReqURI() && !l.validReqURI() {
 		return fmt.Errorf("invalid '%s' field: %s", fieldReqURI, l.ReqURI)
 	}
-	if l.hasReqHTTPVersion() && !l.isHTTPVersionValid() {
+	if l.hasReqHTTPVersion() && !l.validHTTPVersion() {
 		return fmt.Errorf("invalid '%s' field: %s", fieldReqProto, l.ReqHTTPVersion)
 	}
-	if l.hasReqSize() && !l.isReqSizeValid() {
+	if l.hasReqSize() && !l.validReqSize() {
 		return fmt.Errorf("invalid '%s' field: %d", fieldReqSize, l.ReqSize)
 	}
-	if l.hasRespSize() && !l.isRespSizeValid() {
+	if l.hasRespSize() && !l.validRespSize() {
 		return fmt.Errorf("invalid '%s' field: %d", fieldRespSize, l.RespSize)
 	}
-	if l.hasRespTime() && !l.isRespTimeValid() {
+	if l.hasRespTime() && !l.validRespTime() {
 		return fmt.Errorf("invalid '%s' field: %f", fieldRespTime, l.RespTime)
 	}
-	if l.hasUpstreamRespTime() && !l.isUpstreamRespTimeValid() {
+	if l.hasUpstreamRespTime() && !l.validUpstreamRespTime() {
 		return fmt.Errorf("invalid '%s' field: %f", fieldUpsRespTime, l.UpstreamRespTime)
 	}
 	return nil
@@ -333,34 +333,34 @@ var (
 	// TODO: reClientAddr doesnt work with %h when HostnameLookups is On.
 	reVhost          = regexp.MustCompile(`^[a-zA-Z0-9.-:]+$`)
 	reClientAddr     = regexp.MustCompile(`^([\da-f.:]+|localhost)$`)
-	reReqHTTPMethod  = regexp.MustCompile(`^[A-Z]+$`)
+	reReqHTTPMethod  = regexp.MustCompile(`^GET|HEAD|POST|PUT|PATCH|DELETE|CONNECT|OPTIONS|TRACE$`)
 	reURI            = regexp.MustCompile(`^/[^\s]*$`)
 	reReqHTTPVersion = regexp.MustCompile(`^\d+(\.\d+)?$`)
 )
 
-func (l LogLine) isVhostValid() bool { return reVhost.MatchString(l.Vhost) }
+func (l LogLine) validVhost() bool { return reVhost.MatchString(l.Vhost) }
 
-func (l LogLine) isSchemeValid() bool { return l.Scheme == "http" || l.Scheme == "https" }
+func (l LogLine) validScheme() bool { return l.Scheme == "http" || l.Scheme == "https" }
 
-func (l LogLine) isClientAddrValid() bool { return reClientAddr.MatchString(l.ClientAddr) }
+func (l LogLine) validClientAddr() bool { return reClientAddr.MatchString(l.ClientAddr) }
 
-func (l LogLine) isHTTPMethodValid() bool { return reReqHTTPMethod.MatchString(l.ReqHTTPMethod) }
+func (l LogLine) validHTTPMethod() bool { return reReqHTTPMethod.MatchString(l.ReqHTTPMethod) }
 
-func (l LogLine) isReqURIValid() bool { return reURI.MatchString(l.ReqURI) }
+func (l LogLine) validReqURI() bool { return reURI.MatchString(l.ReqURI) }
 
-func (l LogLine) isHTTPVersionValid() bool { return reReqHTTPVersion.MatchString(l.ReqHTTPVersion) }
+func (l LogLine) validHTTPVersion() bool { return reReqHTTPVersion.MatchString(l.ReqHTTPVersion) }
 
-func (l LogLine) isReqSizeValid() bool { return l.ReqSize >= 0 }
+func (l LogLine) validReqSize() bool { return l.ReqSize >= 0 }
 
-func (l LogLine) isRespSizeValid() bool { return l.RespSize >= 0 }
+func (l LogLine) validRespSize() bool { return l.RespSize >= 0 }
 
-func (l LogLine) isRespTimeValid() bool { return l.RespTime >= 0 }
+func (l LogLine) validRespTime() bool { return l.RespTime >= 0 }
 
-func (l LogLine) isUpstreamRespTimeValid() bool { return l.UpstreamRespTime > 0 }
+func (l LogLine) validUpstreamRespTime() bool { return l.UpstreamRespTime > 0 }
 
-func (l LogLine) isRespCodeValid() bool { return l.RespCode >= 100 || l.RespCode <= 600 }
+func (l LogLine) validRespCode() bool { return l.RespCode >= 100 || l.RespCode <= 600 }
 
-func (l LogLine) isPortValid() bool { v, err := strconv.Atoi(l.Port); return err != nil && v > 80 }
+func (l LogLine) validPort() bool { v, err := strconv.Atoi(l.Port); return err != nil && v > 80 }
 
 const (
 	emptyString = "__empty_string__"
