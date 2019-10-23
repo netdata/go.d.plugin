@@ -69,19 +69,19 @@ func (w *WebLog) collectLogLine() {
 	}
 
 	w.mx.Requests.Inc()
-	w.collectVhost()
-	w.collectPort()
-	w.collectScheme()
-	w.collectClientAddr()
-	w.collectReqHTTPMethod()
+	//w.collectVhost()
+	//w.collectPort()
+	//w.collectScheme()
+	//w.collectClientAddr()
+	//w.collectReqHTTPMethod()
 	w.collectReqURI()
-	w.collectReqHTTPVersion()
-	w.collectRespStatusCode()
-	w.collectReqSize()
-	w.collectRespSize()
-	w.collectRespTime()
-	w.collectUpstreamRespTime()
-	w.collectCustom()
+	//w.collectReqHTTPVersion()
+	//w.collectRespStatusCode()
+	//w.collectReqSize()
+	//w.collectRespSize()
+	//w.collectRespTime()
+	//w.collectUpstreamRespTime()
+	//w.collectCustom()
 }
 
 func (w *WebLog) collectUnmatched() {
@@ -159,9 +159,11 @@ func (w *WebLog) collectReqURI() {
 		if !cat.MatchString(w.line.ReqURI) {
 			continue
 		}
+
 		c, _ := w.mx.ReqURI.GetP(cat.name)
 		c.Inc()
-		return
+
+		w.collectStatsPerURI(cat.name)
 	}
 }
 
@@ -268,5 +270,30 @@ func (w *WebLog) collectCustom() {
 		c, _ := w.mx.ReqCustom.GetP(cat.name)
 		c.Inc()
 		return
+	}
+}
+
+func (w *WebLog) collectStatsPerURI(uriCat string) {
+	v, ok := w.mx.CategorizedStats[uriCat]
+	if !ok {
+		return
+	}
+
+	if w.line.hasRespCode() {
+		status := strconv.Itoa(w.line.RespCode)
+		c, _ := v.RespCode.GetP(status)
+		c.Inc()
+	}
+
+	if w.line.hasReqSize() {
+		v.BytesSent.Add(float64(w.line.ReqSize))
+	}
+
+	if w.line.hasRespSize() {
+		v.BytesReceived.Add(float64(w.line.RespSize))
+	}
+
+	if w.line.hasRespTime() {
+		v.RespTime.Observe(w.line.RespTime)
 	}
 }

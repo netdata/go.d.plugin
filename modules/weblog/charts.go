@@ -278,6 +278,45 @@ func newResponseCodesDetailedPerFamilyCharts() []*Chart {
 	}
 }
 
+// TODO: per ReqURI category charts
+func newURIStatsCharts(uriCat string) []*Chart {
+	return []*Chart{
+		{
+			ID:    responseCodesDetailed.ID + "_" + uriCat,
+			Title: "Detailed Response Codes",
+			Units: "requests/s",
+			Fam:   "uru " + uriCat,
+			Ctx:   "web_log.response_codes_detailed_per_uri",
+			Type:  module.Stacked,
+		},
+		{
+			ID:    bandwidth.ID + "_" + uriCat,
+			Title: "Bandwidth",
+			Units: "kilobits/s",
+			Fam:   "uri " + uriCat,
+			Ctx:   "web_log.bandwidth_per_uri",
+			Type:  module.Area,
+			Dims: Dims{
+				{ID: uriCat + "_resp_length", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
+				{ID: uriCat + "_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
+			},
+		},
+		{
+			ID:    responseTime.ID + "_" + uriCat,
+			Title: "Processing Time",
+			Units: "milliseconds",
+			Fam:   "uri " + uriCat,
+			Ctx:   "web_log.response_time_per_uri",
+			Type:  module.Area,
+			Dims: Dims{
+				{ID: uriCat + "_resp_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
+				{ID: uriCat + "_resp_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
+				{ID: uriCat + "_resp_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
+			},
+		},
+	}
+}
+
 func newRequestsPerURLCategoriesChart(cats []*category) *Chart {
 	chart := requestsPerURL.Copy()
 	for _, c := range cats {
@@ -635,45 +674,6 @@ func panicIfErr(err error) {
 		panic(err)
 	}
 }
-
-// TODO: per ReqURI category charts
-//func perCategoryStats(id string) []*Chart {
-//	return []*Chart{
-//		{
-//			ID:    responseCodesDetailed.ID + "_" + id,
-//			Title: "Detailed Response Codes",
-//			Units: "requests/s",
-//			Fam:   "url " + id,
-//			Ctx:   "web_log.response_codes_detailed_per_url",
-//			Type:  module.Stacked,
-//		},
-//		{
-//			ID:    bandwidth.ID + "_" + id,
-//			Title: "Bandwidth",
-//			Units: "kilobits/s",
-//			Fam:   "url " + id,
-//			Ctx:   "web_log.bandwidth_per_url",
-//			Type:  module.Area,
-//			Dims: Dims{
-//				{ID: id + "_resp_length", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
-//				{ID: id + "_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
-//			},
-//		},
-//		{
-//			ID:    responseTime.ID + "_" + id,
-//			Title: "Processing Time",
-//			Units: "milliseconds",
-//			Fam:   "url " + id,
-//			Ctx:   "web_log.response_time_per_url",
-//			Type:  module.Area,
-//			Dims: Dims{
-//				{ID: id + "_resp_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
-//				{ID: id + "_resp_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
-//				{ID: id + "_resp_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
-//			},
-//		},
-//	}
-//}
 
 type (
 	cache map[string]struct{}

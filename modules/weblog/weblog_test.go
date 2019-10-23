@@ -56,6 +56,7 @@ func TestWebLog_Collect(t *testing.T) {
 	time.Sleep(150 * time.Millisecond)
 
 	weblog := New()
+	weblog.URLCategories = []rawCategory{{"BOOKS", "* *"}}
 	defer weblog.Cleanup()
 
 	weblog.Config.Path = tmp.Name()

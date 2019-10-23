@@ -4,6 +4,10 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/metrics"
 )
 
+func newWebLogSummary() metrics.Summary {
+	return &weblogSummary{metrics.NewSummary()}
+}
+
 type weblogSummary struct {
 	metrics.Summary
 }
@@ -18,70 +22,76 @@ func (s weblogSummary) WriteTo(rv map[string]int64, key string, mul, div int) {
 	}
 }
 
-type MetricsData struct {
-	Requests     metrics.Counter `stm:"requests"`
-	ReqUnmatched metrics.Counter `stm:"req_unmatched"`
+type (
+	MetricsData struct {
+		Requests     metrics.Counter `stm:"requests"`
+		ReqUnmatched metrics.Counter `stm:"req_unmatched"`
 
-	ReqVhost       metrics.CounterVec `stm:"req_vhost"`
-	ReqPort        metrics.CounterVec `stm:"req_port"`
-	ReqHTTPScheme  metrics.Counter    `stm:"req_http_scheme"`
-	ReqHTTPSScheme metrics.Counter    `stm:"req_https_scheme"`
+		ReqVhost metrics.CounterVec `stm:"req_vhost"`
+		ReqPort  metrics.CounterVec `stm:"req_port"`
 
-	ReqIpv4    metrics.Counter       `stm:"req_ipv4"`
-	ReqIpv6    metrics.Counter       `stm:"req_ipv6"`
-	UniqueIPv4 metrics.UniqueCounter `stm:"unique_current_poll_ipv4"`
-	UniqueIPv6 metrics.UniqueCounter `stm:"unique_current_poll_ipv6"`
+		ReqHTTPScheme  metrics.Counter `stm:"req_http_scheme"`
+		ReqHTTPSScheme metrics.Counter `stm:"req_https_scheme"`
 
-	ReqMethod  metrics.CounterVec `stm:"req_method"`
-	ReqURI     metrics.CounterVec `stm:"req_uri"`
-	ReqVersion metrics.CounterVec `stm:"req_version"`
+		ReqIpv4    metrics.Counter       `stm:"req_ipv4"`
+		ReqIpv6    metrics.Counter       `stm:"req_ipv6"`
+		UniqueIPv4 metrics.UniqueCounter `stm:"req_ipv4_uniq"` // TODO: ?
+		UniqueIPv6 metrics.UniqueCounter `stm:"req_ipv6_uniq"`
 
-	RespCode metrics.CounterVec `stm:"req_code"`
+		ReqMethod  metrics.CounterVec `stm:"req_method"`
+		ReqURI     metrics.CounterVec `stm:"req_uri"`
+		ReqVersion metrics.CounterVec `stm:"req_version"`
 
-	RespSuccessful  metrics.Counter `stm:"resp_successful"`
-	RespRedirect    metrics.Counter `stm:"resp_redirect"`
-	RespClientError metrics.Counter `stm:"resp_client_error"`
-	RespServerError metrics.Counter `stm:"resp_server_error"`
+		RespCode        metrics.CounterVec `stm:"req_code"`
+		RespSuccessful  metrics.Counter    `stm:"resp_successful"`
+		RespRedirect    metrics.Counter    `stm:"resp_redirect"`
+		RespClientError metrics.Counter    `stm:"resp_client_error"`
+		RespServerError metrics.Counter    `stm:"resp_server_error"`
+		Resp1xx         metrics.Counter    `stm:"resp_1xx"`
+		Resp2xx         metrics.Counter    `stm:"resp_2xx"`
+		Resp3xx         metrics.Counter    `stm:"resp_3xx"`
+		Resp4xx         metrics.Counter    `stm:"resp_4xx"`
+		Resp5xx         metrics.Counter    `stm:"resp_5xx"`
 
-	Resp1xx metrics.Counter `stm:"resp_1xx"`
-	Resp2xx metrics.Counter `stm:"resp_2xx"`
-	Resp3xx metrics.Counter `stm:"resp_3xx"`
-	Resp4xx metrics.Counter `stm:"resp_4xx"`
-	Resp5xx metrics.Counter `stm:"resp_5xx"`
+		BytesSent     metrics.Counter `stm:"bytes_sent"`
+		BytesReceived metrics.Counter `stm:"bytes_received"`
 
-	BytesSent     metrics.Counter `stm:"bytes_sent"`
-	BytesReceived metrics.Counter `stm:"bytes_received"`
+		RespTime             metrics.Summary   `stm:"resp_time,1000"`
+		RespTimeHist         metrics.Histogram `stm:"resp_time_hist"`
+		RespTimeUpstream     metrics.Summary   `stm:"resp_time_upstream,1000"`
+		RespTimeUpstreamHist metrics.Histogram `stm:"resp_time_upstream_hist"`
 
-	RespTime             metrics.Summary   `stm:"resp_time,1000"`
-	RespTimeHist         metrics.Histogram `stm:"resp_time_hist"`
-	RespTimeUpstream     metrics.Summary   `stm:"resp_time_upstream,1000"`
-	RespTimeUpstreamHist metrics.Histogram `stm:"resp_time_upstream_hist"`
+		ReqCustom metrics.CounterVec `stm:"req_custom"`
 
-	ReqCustom metrics.CounterVec `stm:"req_custom"`
+		CategorizedStats categorizedStats `stm:"uri"`
+	}
 
-	CategorizedRequests  metrics.CounterVec `stm:"cat_requests"`
-	CategorizedBandwidth metrics.CounterVec `stm:"cat_bandwidth"`
-	CategorizedRespTime  metrics.Summary    `stm:"cat_resp_time"`
-}
+	categoryMetrics struct {
+		RespCode      metrics.CounterVec `stm:"req_code"`
+		BytesSent     metrics.Counter    `stm:"bytes_sent"`
+		BytesReceived metrics.Counter    `stm:"bytes_received"`
+		RespTime      metrics.Summary    `stm:"resp_time,1000"`
+	}
+
+	categorizedStats map[string]*categoryMetrics
+)
 
 func NewMetricsData(config Config) *MetricsData {
 	return &MetricsData{
+		ReqVhost:             metrics.NewCounterVec(),
+		ReqPort:              metrics.NewCounterVec(),
 		RespCode:             metrics.NewCounterVec(),
 		ReqMethod:            metrics.NewCounterVec(),
 		ReqVersion:           metrics.NewCounterVec(),
-		RespTime:             &weblogSummary{metrics.NewSummary()},
+		RespTime:             newWebLogSummary(),
 		RespTimeHist:         metrics.NewHistogram(config.Histogram),
-		RespTimeUpstream:     &weblogSummary{metrics.NewSummary()},
+		RespTimeUpstream:     newWebLogSummary(),
 		RespTimeUpstreamHist: metrics.NewHistogram(config.Histogram),
 		UniqueIPv4:           metrics.NewUniqueCounter(true),
 		UniqueIPv6:           metrics.NewUniqueCounter(true),
-		CategorizedRequests:  metrics.NewCounterVec(),
-		CategorizedRespTime:  metrics.NewSummary(),
-
-		ReqURI:    newCounterVecFromCategories(config.URLCategories),
-		ReqCustom: newCounterVecFromCategories(config.UserCategories),
-		ReqVhost:  metrics.NewCounterVec(),
-		ReqPort:   metrics.NewCounterVec(),
+		ReqURI:               newCounterVecFromCategories(config.URLCategories),
+		ReqCustom:            newCounterVecFromCategories(config.UserCategories),
+		CategorizedStats:     newCategorizedStats(config.URLCategories),
 	}
 }
 
@@ -90,6 +100,20 @@ func (m *MetricsData) Reset() {
 	m.UniqueIPv6.Reset()
 	m.RespTime.Reset()
 	m.RespTimeUpstream.Reset()
+	for _, v := range m.CategorizedStats {
+		v.RespTime.Reset()
+	}
+}
+
+func newCategorizedStats(cats []rawCategory) map[string]*categoryMetrics {
+	stats := make(categorizedStats)
+	for _, v := range cats {
+		stats[v.Name] = &categoryMetrics{
+			RespCode: metrics.NewCounterVec(),
+			RespTime: newWebLogSummary(),
+		}
+	}
+	return stats
 }
 
 func newCounterVecFromCategories(cats []rawCategory) metrics.CounterVec {

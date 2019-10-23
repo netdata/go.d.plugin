@@ -83,8 +83,9 @@ type (
 		urlCats  []*category
 		userCats []*category
 
-		mx     *MetricsData
-		charts *module.Charts
+		mx          *MetricsData
+		charts      *module.Charts
+		chartsCache chartsCache
 
 		col struct {
 			vhost      bool
@@ -101,7 +102,6 @@ type (
 			upRespTime bool
 			custom     bool
 		}
-		chartsCache chartsCache
 	}
 )
 
