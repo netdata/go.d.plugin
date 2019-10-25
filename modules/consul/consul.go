@@ -2,6 +2,7 @@ package consul
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/matcher"
@@ -189,6 +190,8 @@ func (c *Consul) addCheckToChart(check *agentCheck) {
 		chart = c.charts.Get("unbound_checks")
 	}
 
+	tags := strings.Join(check.ServiceTags, ",")
 	_ = chart.AddDim(&Dim{ID: check.CheckID})
+	_ = chart.AddDim(&Dim{ID: tags})
 	chart.MarkNotCreated()
 }
