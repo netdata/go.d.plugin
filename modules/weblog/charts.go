@@ -81,7 +81,7 @@ var (
 
 	requestsPerPort = Chart{
 		ID:    "requests_per_port",
-		Title: "Requests Per Port",
+		Title: "Requests Per port",
 		Units: "requests/s",
 		Fam:   "port",
 		Ctx:   "web_log.requests_per_port",
@@ -90,7 +90,7 @@ var (
 
 	requestsPerScheme = Chart{
 		ID:    "requests_per_scheme",
-		Title: "Requests Per Scheme",
+		Title: "Requests Per scheme",
 		Units: "requests/s",
 		Fam:   "scheme",
 		Ctx:   "web_log.requests_per_scheme",
@@ -135,7 +135,7 @@ var (
 
 	uniqueReqPerIPCurPoll = Chart{
 		ID:    "clients_current",
-		Title: "Current Poll Unique ClientAddr IPs",
+		Title: "Current Poll Unique client IPs",
 		Units: "unique ips",
 		Fam:   "clients",
 		Ctx:   "web_log.current_poll_ips",
@@ -217,7 +217,7 @@ var (
 
 	requestsPerVhost = Chart{
 		ID:    "requests_per_vhost",
-		Title: "Requests Per Vhost",
+		Title: "Requests Per vhost",
 		Units: "requests/s",
 		Fam:   "vhost",
 		Ctx:   "web_log.requests_per_vhost",
@@ -278,7 +278,7 @@ func newResponseCodesDetailedPerFamilyCharts() []*Chart {
 	}
 }
 
-// TODO: per ReqURI category charts
+// TODO: per uri category charts
 func newURIStatsCharts(uriCat string) []*Chart {
 	return []*Chart{
 		{

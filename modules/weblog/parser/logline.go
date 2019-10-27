@@ -10,17 +10,17 @@ package parser
 //
 //type (
 //	LogLine struct {
-//		Vhost            string
-//		ClientAddr       string
-//		ReqHTTPMethod    string
-//		ReqURI           string
-//		ReqHTTPVersion   string
-//		RespCode   int
-//		ReqSize          int
-//		RespSize         int
-//		RespTime         float64
-//		UpstreamRespTime float64
-//		Custom           string
+//		vhost            string
+//		client       string
+//		reqHTTPMethod    string
+//		reqURI           string
+//		reqHTTPVersion   string
+//		respCode   int
+//		reqSize          int
+//		respSize         int
+//		respTime         float64
+//		upstreamRespTime float64
+//		custom           string
 //	}
 //)
 //
@@ -75,43 +75,43 @@ package parser
 //	reReqHTTPVersion = regexp.MustCompile(`^\d+(\.\d+)?$`)
 //
 //	emptyLogLine = LogLine{
-//		Vhost:            EmptyString,
-//		ClientAddr:       EmptyString,
-//		ReqHTTPMethod:    EmptyString,
-//		ReqURI:           EmptyString,
-//		ReqHTTPVersion:   EmptyString,
-//		Custom:           EmptyString,
-//		RespCode:   EmptyNumber,
-//		ReqSize:          EmptyNumber,
-//		RespSize:         EmptyNumber,
-//		RespTime:         EmptyNumber,
-//		UpstreamRespTime: EmptyNumber,
+//		vhost:            EmptyString,
+//		client:       EmptyString,
+//		reqHTTPMethod:    EmptyString,
+//		reqURI:           EmptyString,
+//		reqHTTPVersion:   EmptyString,
+//		custom:           EmptyString,
+//		respCode:   EmptyNumber,
+//		reqSize:          EmptyNumber,
+//		respSize:         EmptyNumber,
+//		respTime:         EmptyNumber,
+//		upstreamRespTime: EmptyNumber,
 //	}
 //)
 //
-//func (l LogLine) hasVhost() bool { return l.Vhost != EmptyString }
+//func (l LogLine) hasVhost() bool { return l.vhost != EmptyString }
 //
-//func (l LogLine) hasClientAddr() bool { return l.ClientAddr != EmptyString }
+//func (l LogLine) hasClientAddr() bool { return l.client != EmptyString }
 //
-//func (l LogLine) hasReqHTTPMethod() bool { return l.ReqHTTPMethod != EmptyString }
+//func (l LogLine) hasReqHTTPMethod() bool { return l.reqHTTPMethod != EmptyString }
 //
-//func (l LogLine) hasReqURI() bool { return l.ReqURI != EmptyString }
+//func (l LogLine) hasReqURI() bool { return l.reqURI != EmptyString }
 //
-//func (l LogLine) hasReqHTTPVersion() bool { return l.ReqHTTPVersion != EmptyString }
+//func (l LogLine) hasReqHTTPVersion() bool { return l.reqHTTPVersion != EmptyString }
 //
-//func (l LogLine) hasRespCodeStatus() bool { return l.RespCode != EmptyNumber }
+//func (l LogLine) hasRespCodeStatus() bool { return l.respCode != EmptyNumber }
 //
-//func (l LogLine) hasReqSize() bool { return l.ReqSize != EmptyNumber }
+//func (l LogLine) hasReqSize() bool { return l.reqSize != EmptyNumber }
 //
-//func (l LogLine) hasRespSize() bool { return l.RespSize != EmptyNumber }
+//func (l LogLine) hasRespSize() bool { return l.respSize != EmptyNumber }
 //
-//func (l LogLine) hasRespTime() bool { return l.RespTime != EmptyNumber }
+//func (l LogLine) hasRespTime() bool { return l.respTime != EmptyNumber }
 //
-//func (l LogLine) hasUpstreamRespTime() bool { return l.UpstreamRespTime != EmptyNumber }
+//func (l LogLine) hasUpstreamRespTime() bool { return l.upstreamRespTime != EmptyNumber }
 //
-//func (l LogLine) hasCustom() bool { return l.Custom != EmptyString }
+//func (l LogLine) hasCustom() bool { return l.custom != EmptyString }
 //
-//func (l LogLine) Verify() error {
+//func (l LogLine) verify() error {
 //	err := l.verifyMandatoryFields()
 //	if err != nil {
 //		return err
@@ -123,39 +123,39 @@ package parser
 //	if !l.hasRespCodeStatus() {
 //		return fmt.Errorf("missing mandatory field: %s", fieldRespStatus)
 //	}
-//	if l.RespCode < 100 || l.RespCode >= 600 {
-//		return fmt.Errorf("invalid '%s' field: %d", fieldRespStatus, l.RespCode)
+//	if l.respCode < 100 || l.respCode >= 600 {
+//		return fmt.Errorf("invalid '%s' field: %d", fieldRespStatus, l.respCode)
 //	}
 //	return nil
 //}
 //
 //func (l LogLine) verifyOptionalFields() error {
-//	if l.hasVhost() && !reVhost.MatchString(l.Vhost) {
-//		return fmt.Errorf("invalid '%s' field: %s", fieldVhost, l.Vhost)
+//	if l.hasVhost() && !reVhost.MatchString(l.vhost) {
+//		return fmt.Errorf("invalid '%s' field: %s", fieldVhost, l.vhost)
 //	}
-//	if l.hasClientAddr() && !reClientAddr.MatchString(l.ClientAddr) {
-//		return fmt.Errorf("invalid  '%s' field: %s", fieldClientAddr, l.ClientAddr)
+//	if l.hasClientAddr() && !reClientAddr.MatchString(l.client) {
+//		return fmt.Errorf("invalid  '%s' field: %s", fieldClientAddr, l.client)
 //	}
-//	if l.hasReqHTTPMethod() && !reReqHTTPMethod.MatchString(l.ReqHTTPMethod) {
-//		return fmt.Errorf("invalid '%s' field: %s", fieldReqMethod, l.ReqHTTPMethod)
+//	if l.hasReqHTTPMethod() && !reReqHTTPMethod.MatchString(l.reqHTTPMethod) {
+//		return fmt.Errorf("invalid '%s' field: %s", fieldReqMethod, l.reqHTTPMethod)
 //	}
-//	if l.hasReqURI() && !reURI.MatchString(l.ReqURI) {
-//		return fmt.Errorf("invalid '%s' field: %s", fieldReqURI, l.ReqURI)
+//	if l.hasReqURI() && !reURI.MatchString(l.reqURI) {
+//		return fmt.Errorf("invalid '%s' field: %s", fieldReqURI, l.reqURI)
 //	}
-//	if l.hasReqHTTPVersion() && !reReqHTTPVersion.MatchString(l.ReqHTTPVersion) {
-//		return fmt.Errorf("invalid '%s' field: %s", fieldReqProtocol, l.ReqHTTPVersion)
+//	if l.hasReqHTTPVersion() && !reReqHTTPVersion.MatchString(l.reqHTTPVersion) {
+//		return fmt.Errorf("invalid '%s' field: %s", fieldReqProtocol, l.reqHTTPVersion)
 //	}
-//	if l.hasReqSize() && l.ReqSize < 0 {
-//		return fmt.Errorf("invalid '%s' field: %d", fieldReqSize, l.ReqSize)
+//	if l.hasReqSize() && l.reqSize < 0 {
+//		return fmt.Errorf("invalid '%s' field: %d", fieldReqSize, l.reqSize)
 //	}
-//	if l.hasRespSize() && l.RespSize < 0 {
-//		return fmt.Errorf("invalid '%s' field: %d", fieldRespSize, l.RespSize)
+//	if l.hasRespSize() && l.respSize < 0 {
+//		return fmt.Errorf("invalid '%s' field: %d", fieldRespSize, l.respSize)
 //	}
-//	if l.hasRespTime() && l.RespTime < 0 {
-//		return fmt.Errorf("invalid '%s' field: %f", fieldRespTime, l.RespTime)
+//	if l.hasRespTime() && l.respTime < 0 {
+//		return fmt.Errorf("invalid '%s' field: %f", fieldRespTime, l.respTime)
 //	}
-//	if l.hasUpstreamRespTime() && l.UpstreamRespTime < 0 {
-//		return fmt.Errorf("invalid '%s' field: %f", fieldUpstreamRespTime, l.UpstreamRespTime)
+//	if l.hasUpstreamRespTime() && l.upstreamRespTime < 0 {
+//		return fmt.Errorf("invalid '%s' field: %f", fieldUpstreamRespTime, l.upstreamRespTime)
 //	}
 //	return nil
 //}
@@ -163,15 +163,15 @@ package parser
 //func (l *LogLine) assign(field string, value string, timeMultiplier float64) (err error) {
 //	switch field {
 //	case fieldVhost:
-//		l.Vhost = value
+//		l.vhost = value
 //	case fieldClientAddr:
-//		l.ClientAddr = value
+//		l.client = value
 //	case fieldRequest:
 //		err = l.assignRequest(value)
 //	case fieldReqMethod:
-//		l.ReqHTTPMethod = value
+//		l.reqHTTPMethod = value
 //	case fieldReqURI:
-//		l.ReqURI = value
+//		l.reqURI = value
 //	case fieldReqProtocol:
 //		err = l.assignReqHTTPVersion(value)
 //	case fieldRespStatus:
@@ -185,7 +185,7 @@ package parser
 //	case fieldUpstreamRespTime:
 //		err = l.assignUpstreamRespTime(value, timeMultiplier)
 //	case fieldCustom:
-//		l.Custom = value
+//		l.custom = value
 //	}
 //	return err
 //}
@@ -199,14 +199,14 @@ package parser
 //	if idx < 0 {
 //		return fmt.Errorf("invalid request: %q", request)
 //	}
-//	l.ReqHTTPMethod = req[0:idx]
+//	l.reqHTTPMethod = req[0:idx]
 //	req = req[idx+1:]
 //
 //	idx = strings.IndexByte(req, ' ')
 //	if idx < 0 {
 //		return fmt.Errorf("invalid request: %q", request)
 //	}
-//	l.ReqURI = req[0:idx]
+//	l.reqURI = req[0:idx]
 //	req = req[idx+1:]
 //
 //	return l.assignReqHTTPVersion(req)
@@ -216,7 +216,7 @@ package parser
 //	if len(proto) <= 5 || !strings.HasPrefix(proto, "HTTP/") {
 //		return fmt.Errorf("invalid protocol: %q", proto)
 //	}
-//	l.ReqHTTPVersion = proto[5:]
+//	l.reqHTTPVersion = proto[5:]
 //	return nil
 //}
 //
@@ -225,7 +225,7 @@ package parser
 //		return nil
 //	}
 //	var err error
-//	l.RespCode, err = strconv.Atoi(status)
+//	l.respCode, err = strconv.Atoi(status)
 //	if err != nil {
 //		return fmt.Errorf("invalid status: %q: %w", status, err)
 //	}
@@ -234,11 +234,11 @@ package parser
 //
 //func (l *LogLine) assignReqSize(size string) error {
 //	if size == "-" {
-//		l.ReqSize = 0
+//		l.reqSize = 0
 //		return nil
 //	}
 //	var err error
-//	l.ReqSize, err = strconv.Atoi(size)
+//	l.reqSize, err = strconv.Atoi(size)
 //	if err != nil {
 //		return fmt.Errorf("invalid request size: %q: %w", size, err)
 //	}
@@ -247,11 +247,11 @@ package parser
 //
 //func (l *LogLine) assignRespSize(size string) error {
 //	if size == "-" {
-//		l.RespSize = 0
+//		l.respSize = 0
 //		return nil
 //	}
 //	var err error
-//	l.RespSize, err = strconv.Atoi(size)
+//	l.respSize, err = strconv.Atoi(size)
 //	if err != nil {
 //		return fmt.Errorf("invalid response size: %q: %w", size, err)
 //	}
@@ -266,7 +266,7 @@ package parser
 //	if err != nil {
 //		return fmt.Errorf("invalid response time: %q: %w", time, err)
 //	}
-//	l.RespTime = val * timeScale
+//	l.respTime = val * timeScale
 //	return nil
 //}
 //
@@ -281,6 +281,6 @@ package parser
 //	if err != nil {
 //		return fmt.Errorf("invalid upstream response time: %q: %w", time, err)
 //	}
-//	l.UpstreamRespTime = val * timeScale
+//	l.upstreamRespTime = val * timeScale
 //	return nil
 //}

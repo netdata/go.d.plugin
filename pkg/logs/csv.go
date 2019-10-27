@@ -14,7 +14,7 @@ type (
 		Delimiter        rune                             `yaml:"delimiter"`
 		TrimLeadingSpace bool                             `yaml:"trim_leading_space"`
 		Format           string                           `yaml:"format"`
-		CheckField       func(string) (string, bool, int) `yaml:"-"`
+		CheckField       func(string) (string, int, bool) `yaml:"-"`
 	}
 
 	CSVParser struct {
@@ -103,7 +103,7 @@ func newCSVFormat(config CSVConfig) (*csvFormat, error) {
 	for i, field := range fields {
 		field = strings.Trim(field, `"`)
 
-		n, ok, v := check(field)
+		n, v, ok := check(field)
 		offset += v
 		if !ok {
 			continue
@@ -147,10 +147,9 @@ func isCSVParseError(err error) bool {
 	return errors.Is(err, csv.ErrBareQuote) || errors.Is(err, csv.ErrFieldCount) || errors.Is(err, csv.ErrQuote)
 }
 
-func checkCSVFormatField(name string) (newName string, valid bool, offset int) {
+func checkCSVFormatField(name string) (newName string, offset int, valid bool) {
 	if len(name) < 2 || !strings.HasPrefix(name, "$") {
-		return
+		return "", 0, false
 	}
-	valid = true
-	return
+	return name, 0, true
 }

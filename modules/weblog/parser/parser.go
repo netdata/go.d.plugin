@@ -71,7 +71,7 @@ package parser
 //		cfg.CSV.Format = format
 //		parser, _ := newCSVParser(cfg, in)
 //		log, err := parser.Parse(line)
-//		if err == nil && log.Verify() == nil {
+//		if err == nil && log.verify() == nil {
 //			return parser, nil
 //		}
 //	}

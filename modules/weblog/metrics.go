@@ -26,6 +26,7 @@ type (
 	MetricsData struct {
 		Requests     metrics.Counter `stm:"requests"`
 		ReqUnmatched metrics.Counter `stm:"req_unmatched"`
+		ReqFiltered  metrics.Counter `stm:"req_filtered"`
 
 		ReqVhost metrics.CounterVec `stm:"req_vhost"`
 		ReqPort  metrics.CounterVec `stm:"req_port"`

@@ -78,7 +78,7 @@ type (
 
 		file     *logs.Reader
 		parser   logs.Parser
-		line     *LogLine
+		line     *logLine
 		filter   matcher.Matcher
 		urlCats  []*category
 		userCats []*category

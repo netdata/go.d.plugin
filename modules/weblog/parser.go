@@ -93,7 +93,7 @@ func (w *WebLog) guessParser(record []byte) (logs.Parser, error) {
 			continue
 		}
 
-		if err = line.Verify(); err != nil {
+		if err = line.verify(); err != nil {
 			continue
 		}
 		return parser, nil
@@ -101,19 +101,14 @@ func (w *WebLog) guessParser(record []byte) (logs.Parser, error) {
 	return nil, errors.New("cannot determine log format")
 }
 
-func checkCSVFormatField(name string) (newName string, valid bool, offset int) {
+func checkCSVFormatField(name string) (newName string, offset int, valid bool) {
 	if name == "[$time_local]" || name == "$time_local" {
-		offset = 1
-		return
+		return "", 1, false
 	}
-
 	if !isValidVar(name) {
-		return
+		return "", 0, false
 	}
-
-	newName = name[1:]
-	valid = true
-	return
+	return name[1:], 0, true
 }
 
 func isValidVar(v string) bool { return len(v) > 1 && (isNginxVar(v) || isApacheVar(v)) }

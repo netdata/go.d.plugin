@@ -85,11 +85,10 @@ func (w *WebLog) initParser() error {
 		return fmt.Errorf("error on parsing last line : %v (%s)", err, lastLine)
 	}
 
-	if err = logLine.Verify(); err != nil {
+	if err = logLine.verify(); err != nil {
 		return fmt.Errorf("error on verifying parsed log line : %v", err)
 	}
 
 	w.line = logLine
-	w.line.timeScale = w.TimeMultiplier
 	return nil
 }

@@ -27,7 +27,7 @@ package parser
 //		{"invalid vhost", `client=127.0.0.1 method=GET uri=/ status=200 resp_size=10 vhost=my_server.com`},
 //		{"invalid client", `client=my_server method=GET uri=/ status=200 resp_size=10`},
 //		{"invalid method", `client=127.0.0.1 method=foo uri=/ status=200 resp_size=10`},
-//		{"invalid ReqURI", `client=127.0.0.1 method=GET uri=foo status=200 resp_size=10`},
+//		{"invalid reqURI", `client=127.0.0.1 method=GET uri=foo status=200 resp_size=10`},
 //		{"invalid protocol", `client=127.0.0.1 method=GET uri=/ status=200 resp_size=10 version=a`},
 //		{"invalid status", `client=127.0.0.1 method=GET uri=/ status=50 resp_size=10`},
 //		{"invalid response size", `client=127.0.0.1 method=GET uri=/ status=200 resp_size=-10`},
@@ -39,7 +39,7 @@ package parser
 //		t.Run(tt.name, func(t *testing.T) {
 //			log, err := parser.Parse([]byte(tt.line))
 //			require.NoError(t, err)
-//			err = log.Verify()
+//			err = log.verify()
 //			if tt.name == "" {
 //				assert.NoError(t, err)
 //			} else {
@@ -73,9 +73,9 @@ package parser
 //				require.Error(t, err)
 //			} else {
 //				require.NoError(t, err)
-//				assert.Equal(t, tt.wantMethod, log.ReqHTTPMethod)
-//				assert.Equal(t, tt.wantUri, log.ReqURI)
-//				assert.Equal(t, tt.wantVersion, log.ReqHTTPVersion)
+//				assert.Equal(t, tt.wantMethod, log.reqHTTPMethod)
+//				assert.Equal(t, tt.wantUri, log.reqURI)
+//				assert.Equal(t, tt.wantVersion, log.reqHTTPVersion)
 //			}
 //		})
 //	}
