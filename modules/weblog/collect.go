@@ -64,7 +64,7 @@ func (w *WebLog) collectLogLines() (int, error) {
 
 func (w *WebLog) collectLogLine() {
 	// TODO: chart filtered?
-	if w.line.hasReqURI() && !w.filter.MatchString(w.line.reqURI) {
+	if w.line.hasReqURL() && !w.filter.MatchString(w.line.reqURL) {
 		w.mx.ReqFiltered.Inc()
 		return
 	}
@@ -75,7 +75,7 @@ func (w *WebLog) collectLogLine() {
 	w.collectReqScheme()
 	w.collectReqClient()
 	w.collectReqMethod()
-	w.collectReqURI()
+	w.collectReqURL()
 	w.collectReqProto()
 	w.collectRespStatus()
 	w.collectReqSize()
@@ -150,21 +150,21 @@ func (w *WebLog) collectReqMethod() {
 	c.Inc()
 }
 
-func (w *WebLog) collectReqURI() {
-	if !w.line.hasReqURI() || len(w.urlCats) == 0 {
+func (w *WebLog) collectReqURL() {
+	if !w.line.hasReqURL() || len(w.urlCats) == 0 {
 		return
 	}
 	w.col.uri = true
 
 	for _, cat := range w.urlCats {
-		if !cat.MatchString(w.line.reqURI) {
+		if !cat.MatchString(w.line.reqURL) {
 			continue
 		}
 
 		c, _ := w.mx.ReqURI.GetP(cat.name)
 		c.Inc()
 
-		w.collectStatsPerURI(cat.name)
+		w.collectStatsPerURL(cat.name)
 		return
 	}
 }
@@ -275,7 +275,7 @@ func (w *WebLog) collectCustom() {
 	}
 }
 
-func (w *WebLog) collectStatsPerURI(uriCat string) {
+func (w *WebLog) collectStatsPerURL(uriCat string) {
 	v, ok := w.mx.CategorizedStats[uriCat]
 	if !ok {
 		return

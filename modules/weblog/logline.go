@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 // nginx: http://nginx.org/en/docs/varindex.html
@@ -15,20 +16,20 @@ import (
 /*
 | name               | nginx                   | apache    |
 |--------------------|-------------------------|-----------|
-| vhost              | $host ($http_host)      | %v        | name of the server which accepted a request
-| port               | $server_port            | %p        | port of the server which accepted a request
-| req_scheme         | $scheme                 | -         | request scheme, “http” or “https”
-| req_client         | $remote_addr            | %a (%h)   | apache %h: logs the IP address if HostnameLookups is Off
-| request            | $request                | %r        | req_method + req_uri + req_protocol
+| vhost              | $host ($http_host)      | %v        | name of the server which accepted a request.
+| port               | $server_port            | %p        |
+| req_scheme         | $scheme                 | -         | “http” or “https”.
+| req_client         | $remote_addr            | %a (%h)   | %h: logs the IP address if HostnameLookups is Off.
+| request            | $request                | %r        | req_method + req_uri + req_protocol.
 | req_method         | $request_method         | %m        |
-| req_uri            | $request_uri            | %U        | nginx: w/ queries, apache: w/o
-| req_proto          | $server_protocol        | %H        | request protocol, usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”
-| resp_status        | $status                 | %s (%>s)  | response respStatus
-| req_size           | $request_length         | $I        | request length (including request line, header, and request body), apache: need mod_logio
-| resp_size          | $bytes_sent             | %O        | number of bytes sent to a client, including headers
-| resp_size          | $body_bytes_sent        | %B        | number of bytes sent to a client, not including headers
-| req_time           | $request_time           | %D        | the time taken to serve the request. Apache: in microseconds, nginx: in seconds with a milliseconds resolution
-| ups_resp_time      | $upstream_response_time | -         | keeps time spent on receiving the response from the upstream server; the time is kept in seconds with millisecond resolution. Times of several responses are separated by commas and colons
+| req_url            | $request_uri            | %U        | nginx: w/ queries, apache: w/o.
+| req_proto          | $server_protocol        | %H        | usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”.
+| resp_status        | $status                 | %s (%>s)  |
+| req_size           | $request_length         | $I        | w/ http headers, apache: need "mod_logio".
+| resp_size          | $bytes_sent             | %O        | w/ http headers.
+| resp_size          | $body_bytes_sent        | %B (%b)   | w/o http headers. %b '-' when no bytes are sent.
+| req_time           | $request_time           | %D        | the time taken to serve the request.
+| ups_resp_time      | $upstream_response_time | -         | time spent on rec the response from the upstream server.
 | custom             | -                       | -         |
 */
 
@@ -40,7 +41,7 @@ const (
 	fieldReqClient     = "req_client"
 	fieldRequest       = "request"
 	fieldReqMethod     = "req_method"
-	fieldReqURI        = "req_uri"
+	fieldReqURL        = "req_url"
 	fieldReqProto      = "req_proto"
 	fieldReqSize       = "req_size"
 	fieldRespStatus    = "resp_status"
@@ -50,39 +51,40 @@ const (
 	fieldCustom        = "custom"
 )
 
-var fieldsMapping = map[string]string{
-	"host":                   fieldVhost,
-	"http_host":              fieldVhost,
-	"server_port":            fieldPort,
-	"host:$server_port":      fieldVhostWithPort,
-	"scheme":                 fieldReqScheme,
-	"remote_addr":            fieldReqClient,
-	"request":                fieldRequest,
-	"request_method":         fieldReqMethod,
-	"request_uri":            fieldReqURI,
-	"server_protocol":        fieldReqProto,
-	"status":                 fieldRespStatus,
-	"request_length":         fieldReqSize,
-	"bytes_sent":             fieldRespSize,
-	"body_bytes_sent":        fieldRespSize,
-	"request_time":           fieldRespTime,
-	"upstream_response_time": fieldUpsRespTime,
-	"custom":                 fieldCustom,
-	"v":                      fieldVhost,
-	"p":                      fieldPort,
-	"v:%p":                   fieldVhostWithPort,
-	"a":                      fieldReqClient,
-	"h":                      fieldReqClient,
-	"r":                      fieldRequest,
-	"m":                      fieldReqMethod,
-	"U":                      fieldReqURI,
-	"H":                      fieldReqProto,
-	"s":                      fieldRespStatus,
-	">s":                     fieldRespStatus,
-	"I":                      fieldReqSize,
-	"O":                      fieldRespSize,
-	"B":                      fieldRespSize,
-	"D":                      fieldRespTime,
+func lookupField(v string) (field string, ok bool) {
+	switch v {
+	case "host", "http_host", "v":
+		field = fieldVhost
+	case "server_port", "p":
+		field = fieldPort
+	case "host:$server_port", "v:%p":
+		field = fieldVhostWithPort
+	case "scheme":
+		field = fieldReqScheme
+	case "remote_addr", "a", "h":
+		field = fieldReqClient
+	case "request", "r":
+		field = fieldRequest
+	case "request_method", "m":
+		field = fieldReqMethod
+	case "request_uri", "U":
+		field = fieldReqURL
+	case "server_protocol", "H":
+		field = fieldReqProto
+	case "status", "s", ">s":
+		field = fieldRespStatus
+	case "request_length", "I":
+		field = fieldReqSize
+	case "bytes_sent", "body_bytes_sent", "b", "O", "B":
+		field = fieldRespSize
+	case "request_time", "D":
+		field = fieldRespTime
+	case "upstream_response_time":
+		field = fieldUpsRespTime
+	case "custom":
+		field = fieldCustom
+	}
+	return field, field != ""
 }
 
 var (
@@ -112,12 +114,12 @@ func newEmptyLogLine() *logLine {
 
 type logLine struct {
 	vhost string
-	port  string // Apache has no $scheme, this is workaround to collect per scheme requests. Lame.
+	port  string // apache has no $scheme, this is workaround to collect per scheme requests. Lame.
 
 	reqScheme string
 	reqClient string
 	reqMethod string
-	reqURI    string
+	reqURL    string
 	reqProto  string
 	reqSize   int
 
@@ -134,7 +136,7 @@ func (l *logLine) Assign(variable string, value string) (err error) {
 	if value == "" {
 		return
 	}
-	field, ok := fieldsMapping[variable]
+	field, ok := lookupField(variable)
 	if !ok {
 		return
 	}
@@ -143,21 +145,21 @@ func (l *logLine) Assign(variable string, value string) (err error) {
 	default:
 		err = fmt.Errorf("assign '%s': %w", field, errUnknownField)
 	case fieldVhost:
-		l.vhost = value
+		err = l.assignVhost(value)
 	case fieldPort:
-		l.port = value
+		err = l.assignPort(value)
 	case fieldVhostWithPort:
 		err = l.assignVhostWithPort(value)
 	case fieldReqScheme:
-		l.reqScheme = value
+		err = l.assignReqScheme(value)
 	case fieldReqClient:
-		l.reqClient = value
+		err = l.assignReqClient(value)
 	case fieldRequest:
 		err = l.assignRequest(value)
 	case fieldReqMethod:
-		l.reqMethod = value
-	case fieldReqURI:
-		l.reqURI = value
+		err = l.assignReqMethod(value)
+	case fieldReqURL:
+		err = l.assignReqURL(value)
 	case fieldReqProto:
 		err = l.assignReqProto(value)
 	case fieldRespStatus:
@@ -176,13 +178,62 @@ func (l *logLine) Assign(variable string, value string) (err error) {
 	return err
 }
 
+func (l *logLine) assignVhost(vhost string) error {
+	if vhost == "-" {
+		return nil
+	}
+	// nginx $host and $http_host returns ipv6 in [], apache not
+	if idx := strings.IndexByte(vhost, ']'); idx > 0 {
+		vhost = vhost[1:idx]
+	}
+	l.vhost = vhost
+	return nil
+}
+
+func (l *logLine) assignPort(port string) error {
+	if port == "-" {
+		return nil
+	}
+	if !isValidPort(port) {
+		return fmt.Errorf("assign '%s' : %w", port, errBadPort)
+	}
+	l.port = port
+	return nil
+}
+
 func (l *logLine) assignVhostWithPort(vhostPort string) error {
+	if vhostPort == "-" {
+		return nil
+	}
 	idx := strings.LastIndexByte(vhostPort, ':')
 	if idx == -1 {
 		return fmt.Errorf("assign '%s' : %w", vhostPort, errBadVhostPort)
 	}
-	l.vhost = vhostPort[0:idx]
-	l.port = vhostPort[idx+1:]
+	if err := l.assignPort(vhostPort[idx+1:]); err != nil {
+		return fmt.Errorf("assign '%s' : %w", vhostPort, errBadVhostPort)
+	}
+	if err := l.assignVhost(vhostPort[0:idx]); err != nil {
+		return fmt.Errorf("assign '%s' : %w", vhostPort, errBadVhostPort)
+	}
+	return nil
+}
+
+func (l *logLine) assignReqScheme(scheme string) error {
+	if scheme == "-" {
+		return nil
+	}
+	if !isValidScheme(scheme) {
+		return fmt.Errorf("assign '%s' : %w", scheme, errBadReqScheme)
+	}
+	l.reqScheme = scheme
+	return nil
+}
+
+func (l *logLine) assignReqClient(client string) error {
+	if client == "-" {
+		return nil
+	}
+	l.reqClient = client
 	return nil
 }
 
@@ -190,34 +241,53 @@ func (l *logLine) assignRequest(request string) error {
 	if request == "-" {
 		return nil
 	}
-	idx := strings.IndexByte(request, ' ')
-	if idx < 0 {
+	first := strings.IndexByte(request, ' ')
+	if first < 0 {
 		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
 	}
-	// TODO: fail or continue?
-	method := request[0:idx]
+	last := strings.LastIndexByte(request, ' ')
+	if first == last {
+		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
+	}
+	proto := request[last+1:]
+	url := request[first+1 : last]
+	method := request[0:first]
+	if err := l.assignReqMethod(method); err != nil {
+		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
+	}
+	if err := l.assignReqURL(url); err != nil {
+		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
+	}
+	if err := l.assignReqProto(proto); err != nil {
+		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
+	}
+	return nil
+}
+
+func (l *logLine) assignReqMethod(method string) error {
+	if method == "-" {
+		return nil
+	}
 	if !isValidReqMethod(method) {
-		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
-	}
-
-	rest := request[idx+1:]
-	idx = strings.IndexByte(rest, ' ')
-	if idx < 0 {
-		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
-	}
-	uri := rest[0:idx]
-	rest = rest[idx+1:]
-
-	if err := l.assignReqProto(rest); err != nil {
-		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
+		return fmt.Errorf("assign '%s' : %w", method, errBadReqMethod)
 	}
 	l.reqMethod = method
-	l.reqURI = uri
+	return nil
+}
+
+func (l *logLine) assignReqURL(url string) error {
+	if url == "-" {
+		return nil
+	}
+	l.reqURL = url
 	return nil
 }
 
 func (l *logLine) assignReqProto(proto string) error {
-	if len(proto) <= 5 || !strings.HasPrefix(proto, "HTTP/") {
+	if proto == "-" {
+		return nil
+	}
+	if len(proto) <= 5 || !strings.HasPrefix(proto, "HTTP/") || !isValidReqProto(proto[5:]) {
 		return fmt.Errorf("assign '%s': %w", proto, errBadReqProto)
 	}
 	l.reqProto = proto[5:]
@@ -226,11 +296,10 @@ func (l *logLine) assignReqProto(proto string) error {
 
 func (l *logLine) assignRespStatus(status string) error {
 	if status == "-" {
-		// TODO: hm?
 		return nil
 	}
 	v, err := strconv.Atoi(status)
-	if err != nil {
+	if err != nil || !isValidRespStatus(v) {
 		return fmt.Errorf("assign '%s': %w", status, errBadRespStatus)
 	}
 	l.respStatus = v
@@ -239,11 +308,10 @@ func (l *logLine) assignRespStatus(status string) error {
 
 func (l *logLine) assignReqSize(size string) error {
 	if size == "-" {
-		l.reqSize = 0
 		return nil
 	}
 	v, err := strconv.Atoi(size)
-	if err != nil {
+	if err != nil || !isValidSize(v) {
 		return fmt.Errorf("assign '%s': %w", size, errBadReqSize)
 	}
 	l.reqSize = v
@@ -251,12 +319,13 @@ func (l *logLine) assignReqSize(size string) error {
 }
 
 func (l *logLine) assignRespSize(size string) error {
+	// apache: %b. In CLF format, i.e. a '-' rather than a 0 when no bytes are sent.
 	if size == "-" {
 		l.respSize = 0
 		return nil
 	}
 	v, err := strconv.Atoi(size)
-	if err != nil {
+	if err != nil || !isValidSize(v) {
 		return fmt.Errorf("assign '%s': %w", size, errBadRespSize)
 	}
 	l.respSize = v
@@ -267,11 +336,11 @@ func (l *logLine) assignRespTime(time string) error {
 	if time == "-" {
 		return nil
 	}
-	val, err := strconv.ParseFloat(time, 64)
-	if err != nil {
+	v, err := strconv.ParseFloat(time, 64)
+	if err != nil || !isValidTime(v) {
 		return fmt.Errorf("assign '%s': %w", time, errBadRespTime)
 	}
-	l.respTime = val * respTimeMultiplier(time)
+	l.respTime = v * respTimeMultiplier(time)
 	return nil
 }
 
@@ -279,14 +348,15 @@ func (l *logLine) assignUpstreamRespTime(time string) error {
 	if time == "-" {
 		return nil
 	}
+	// times of several responses are separated by commas and colons.
 	if idx := strings.IndexByte(time, ','); idx >= 0 {
 		time = time[0:idx]
 	}
-	val, err := strconv.ParseFloat(time, 64)
-	if err != nil {
+	v, err := strconv.ParseFloat(time, 64)
+	if err != nil || !isValidTime(v) {
 		return fmt.Errorf("assign '%s': %w", time, errBadUpstreamRespTime)
 	}
-	l.upsRespTime = val * respTimeMultiplier(time)
+	l.upsRespTime = v * respTimeMultiplier(time)
 	return nil
 }
 
@@ -314,8 +384,8 @@ func (l logLine) verify() error {
 	if l.hasReqMethod() && !l.validReqMethod() {
 		return fmt.Errorf("verify '%s': %w", l.reqMethod, errBadReqMethod)
 	}
-	if l.hasReqURI() && !l.validReqURI() {
-		return fmt.Errorf("verify '%s': %w", l.reqURI, errBadReqURI)
+	if l.hasReqURL() && !l.validReqURL() {
+		return fmt.Errorf("verify '%s': %w", l.reqURL, errBadReqURI)
 	}
 	if l.hasReqProto() && !l.validReqProto() {
 		return fmt.Errorf("verify '%s': %w", l.reqProto, errBadReqProto)
@@ -345,7 +415,7 @@ func (l logLine) hasReqClient() bool { return !isEmptyString(l.reqClient) }
 
 func (l logLine) hasReqMethod() bool { return !isEmptyString(l.reqMethod) }
 
-func (l logLine) hasReqURI() bool { return !isEmptyString(l.reqURI) }
+func (l logLine) hasReqURL() bool { return !isEmptyString(l.reqURL) }
 
 func (l logLine) hasReqProto() bool { return !isEmptyString(l.reqProto) }
 
@@ -361,36 +431,56 @@ func (l logLine) hasUpstreamRespTime() bool { return !isEmptyNumber(int(l.upsRes
 
 func (l logLine) hasCustom() bool { return !isEmptyString(l.custom) }
 
-var (
-	// TODO: reClient doesnt work with %h when HostnameLookups is On.
-	reVhost  = regexp.MustCompile(`^[a-zA-Z0-9-:.]+$`)
-	reClient = regexp.MustCompile(`^([\da-f:.]+|localhost)$`)
-	reURI    = regexp.MustCompile(`^/[^\s]*$`)
-)
-
 func (l logLine) validVhost() bool { return reVhost.MatchString(l.vhost) }
 
-func (l logLine) validPort() bool { v, err := strconv.Atoi(l.port); return err == nil && v >= 80 }
+func (l logLine) validPort() bool { return isValidPort(l.port) }
 
-func (l logLine) validReqScheme() bool { return l.reqScheme == "http" || l.reqScheme == "https" }
+func (l logLine) validReqScheme() bool { return isValidScheme(l.reqScheme) }
 
 func (l logLine) validReqClient() bool { return reClient.MatchString(l.reqClient) }
 
 func (l logLine) validReqMethod() bool { return isValidReqMethod(l.reqMethod) }
 
-func (l logLine) validReqURI() bool { return reURI.MatchString(l.reqURI) }
+func (l logLine) validReqURL() bool { return isValidURL(l.reqMethod, l.reqURL) }
 
 func (l logLine) validReqProto() bool { return isValidReqProto(l.reqProto) }
 
-func (l logLine) validReqSize() bool { return l.reqSize >= 0 }
+func (l logLine) validReqSize() bool { return isValidSize(l.reqSize) }
 
-func (l logLine) validRespSize() bool { return l.respSize >= 0 }
+func (l logLine) validRespSize() bool { return isValidSize(l.respSize) }
 
-func (l logLine) validRespTime() bool { return l.respTime >= 0 }
+func (l logLine) validRespTime() bool { return isValidTime(l.respTime) }
 
-func (l logLine) validUpstreamRespTime() bool { return l.upsRespTime >= 0 }
+func (l logLine) validUpstreamRespTime() bool { return isValidTime(l.upsRespTime) }
 
-func (l logLine) validRespStatus() bool { return l.respStatus >= 100 && l.respStatus <= 600 }
+func (l logLine) validRespStatus() bool { return isValidRespStatus(l.respStatus) }
+
+func (l *logLine) reset() {
+	l.vhost = emptyString
+	l.port = emptyString
+	l.reqScheme = emptyString
+	l.reqClient = emptyString
+	l.reqMethod = emptyString
+	l.reqURL = emptyString
+	l.reqProto = emptyString
+	l.reqSize = emptyNumber
+	l.respStatus = emptyNumber
+	l.respSize = emptyNumber
+	l.respTime = emptyNumber
+	l.upsRespTime = emptyNumber
+	l.custom = emptyString
+}
+
+var (
+	// TODO: reClient doesnt work with %h when HostnameLookups is On.
+	reVhost  = regexp.MustCompile(`^[a-zA-Z0-9-:.]+$`)
+	reClient = regexp.MustCompile(`^([\da-f:.]+|localhost)$`)
+)
+
+const (
+	emptyString = "__empty_string__"
+	emptyNumber = -9999
+)
 
 func isEmptyString(s string) bool {
 	return s == emptyString || s == ""
@@ -398,6 +488,14 @@ func isEmptyString(s string) bool {
 
 func isEmptyNumber(n int) bool {
 	return n == emptyNumber
+}
+
+func isValidURL(method, url string) bool {
+	// CONNECT www.example.com:443 HTTP/1.1
+	if method == "CONNECT" {
+		return !hasSpace(url)
+	}
+	return url[0] == '/' && !hasSpace(url)
 }
 
 func isValidReqMethod(method string) bool {
@@ -422,36 +520,42 @@ func isValidReqProto(version string) bool {
 	return false
 }
 
-const (
-	// Apache time is in microseconds, Nginx time is in seconds with a milliseconds resolution.
-	apacheTimeMul = 1
-	nginxTimeMul  = 1000000
-)
-
-func respTimeMultiplier(time string) float64 {
-	if strings.IndexByte(time, '.') > 0 {
-		return nginxTimeMul
-	}
-	return apacheTimeMul
+func isValidPort(port string) bool {
+	v, err := strconv.Atoi(port)
+	return err == nil && v >= 80 && v <= 49151
 }
 
-const (
-	emptyString = "__empty_string__"
-	emptyNumber = -9999
-)
+func isValidScheme(scheme string) bool {
+	return scheme == "http" || scheme == "https"
+}
 
-func (l *logLine) reset() {
-	l.vhost = emptyString
-	l.port = emptyString
-	l.reqScheme = emptyString
-	l.reqClient = emptyString
-	l.reqMethod = emptyString
-	l.reqURI = emptyString
-	l.reqProto = emptyString
-	l.reqSize = emptyNumber
-	l.respStatus = emptyNumber
-	l.respSize = emptyNumber
-	l.respTime = emptyNumber
-	l.upsRespTime = emptyNumber
-	l.custom = emptyString
+func isValidRespStatus(status int) bool {
+	return status >= 100 && status <= 600
+}
+
+func isValidSize(size int) bool {
+	return size >= 0
+}
+
+func isValidTime(time float64) bool {
+	return time >= 0
+}
+
+func hasSpace(s string) bool {
+	for _, v := range s {
+		if unicode.IsSpace(v) {
+			return true
+		}
+	}
+	return false
+}
+
+func respTimeMultiplier(time string) float64 {
+	// Convert to microseconds:
+	//   - apache time is in microseconds.
+	//   - nginx time is in seconds with a milliseconds resolution.
+	if strings.IndexByte(time, '.') > 0 {
+		return 1000000 // nginx
+	}
+	return 1 // apache
 }
