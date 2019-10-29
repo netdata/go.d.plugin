@@ -9,8 +9,20 @@ import (
 	"unicode"
 )
 
-// nginx: http://nginx.org/en/docs/varindex.html
-// apache: http://httpd.apache.org/docs/current/mod/mod_log_config.html#logformat
+// TODO: it is not clear how to handle "-", current handling is not good
+// In general it is:
+//   - If a field is unused in a particular entry dash "-" marks the omitted field.
+// In addition to that "-" is used as zero value in:
+//   - apache: %b '-' when no bytes are sent.
+//
+// Log Format:
+//  - CLF: https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format
+//  - ELF: https://www.w3.org/TR/WD-logfile.html
+//  - Apache CLF: https://httpd.apache.org/docs/trunk/logs.html#common
+
+// Variables:
+//  - nginx: http://nginx.org/en/docs/varindex.html
+//  - apache: http://httpd.apache.org/docs/current/mod/mod_log_config.html#logformat
 
 // TODO: do we really we need "custom" :thinking:
 /*
@@ -287,7 +299,7 @@ func (l *logLine) assignReqProto(proto string) error {
 	if proto == "-" {
 		return nil
 	}
-	if len(proto) <= 5 || !strings.HasPrefix(proto, "HTTP/") || !isValidReqProto(proto[5:]) {
+	if !isValidReqProto(proto) {
 		return fmt.Errorf("assign '%s': %w", proto, errBadReqProto)
 	}
 	l.reqProto = proto[5:]
@@ -443,7 +455,7 @@ func (l logLine) validReqMethod() bool { return isValidReqMethod(l.reqMethod) }
 
 func (l logLine) validReqURL() bool { return isValidURL(l.reqMethod, l.reqURL) }
 
-func (l logLine) validReqProto() bool { return isValidReqProto(l.reqProto) }
+func (l logLine) validReqProto() bool { return isValidReqProtoVer(l.reqProto) }
 
 func (l logLine) validReqSize() bool { return isValidSize(l.reqSize) }
 
@@ -509,7 +521,11 @@ func isValidReqMethod(method string) bool {
 	return false
 }
 
-func isValidReqProto(version string) bool {
+func isValidReqProto(proto string) bool {
+	return len(proto) >= 6 && strings.HasPrefix(proto, "HTTP/") && isValidReqProtoVer(proto[5:])
+}
+
+func isValidReqProtoVer(version string) bool {
 	if version == "1.1" {
 		return true
 	}
