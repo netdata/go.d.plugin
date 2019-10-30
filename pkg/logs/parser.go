@@ -15,7 +15,7 @@ func (e ParseError) Error() string { return e.msg }
 
 func (e ParseError) Unwrap() error { return e.err }
 
-func IsParseError(err error) bool { v := &ParseError{}; return errors.As(err, &v) }
+func IsParseError(err error) bool { var v *ParseError; return errors.As(err, &v) }
 
 type (
 	LogLine interface {
