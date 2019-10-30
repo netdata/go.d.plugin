@@ -24,20 +24,11 @@ type (
 	}
 
 	csvFormat struct {
-		Raw          string
+		raw          string
 		maxIndex     int
 		fieldIndexes map[string]int
 	}
 )
-
-func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
-	r := csv.NewReader(in)
-	r.Comma = config.Delimiter
-	r.TrimLeadingSpace = config.TrimLeadingSpace
-	r.ReuseRecord = true
-	r.FieldsPerRecord = -1
-	return r
-}
 
 func NewCSVParser(config CSVConfig, in io.Reader) (*CSVParser, error) {
 	if config.Format == "" {
@@ -45,8 +36,8 @@ func NewCSVParser(config CSVConfig, in io.Reader) (*CSVParser, error) {
 	}
 
 	format, err := newCSVFormat(config)
-	if err != nil {
-		return nil, fmt.Errorf("error on creating csv format : %v", err)
+	if err != nil || len(format.fieldIndexes) == 0 {
+		return nil, fmt.Errorf("bad csv format: %v", err)
 	}
 
 	p := &CSVParser{
@@ -57,25 +48,47 @@ func NewCSVParser(config CSVConfig, in io.Reader) (*CSVParser, error) {
 	return p, nil
 }
 
-func (p *CSVParser) ReadLine(logLine LogLine) error {
-	records, err := p.reader.Read()
+func (p *CSVParser) ReadLine(line LogLine) error {
+	record, err := p.reader.Read()
 	if err != nil {
 		return handleCSVReadError(err)
 	}
-	return p.format.parse(records, logLine)
+	return p.format.parse(record, line)
 }
 
-func (p *CSVParser) Parse(line []byte, logLine LogLine) error {
-	r := newCSVReader(bytes.NewBuffer(line), p.config)
-	records, err := r.Read()
+func (p *CSVParser) Parse(row []byte, line LogLine) error {
+	r := newCSVReader(bytes.NewBuffer(row), p.config)
+	record, err := r.Read()
 	if err != nil {
 		return handleCSVReadError(err)
 	}
-	return p.format.parse(records, logLine)
+	return p.format.parse(record, line)
 }
 
 func (p CSVParser) Info() string {
-	return p.format.Raw
+	return fmt.Sprintf("csv: %s", p.format.raw)
+}
+
+func (f *csvFormat) parse(record []string, line LogLine) error {
+	if len(record) <= f.maxIndex {
+		return &ParseError{msg: "csv parse: unmatched line"}
+	}
+
+	for field, idx := range f.fieldIndexes {
+		if err := line.Assign(field, record[idx]); err != nil {
+			return &ParseError{msg: fmt.Sprintf("csv parse: %v", err), err: err}
+		}
+	}
+	return nil
+}
+
+func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
+	r := csv.NewReader(in)
+	r.Comma = config.Delimiter
+	r.TrimLeadingSpace = config.TrimLeadingSpace
+	r.ReuseRecord = true
+	r.FieldsPerRecord = -1
+	return r
 }
 
 func newCSVFormat(config CSVConfig) (*csvFormat, error) {
@@ -88,59 +101,51 @@ func newCSVFormat(config CSVConfig) (*csvFormat, error) {
 		return nil, err
 	}
 
-	format := &csvFormat{
-		Raw:          config.Format,
-		fieldIndexes: make(map[string]int),
-	}
-
 	check := checkCSVFormatField
 	if config.CheckField != nil {
 		check = config.CheckField
 	}
 
+	fieldIndexes := make(map[string]int)
+	var info string
 	var max int
 	var offset int
+
 	for i, field := range fields {
 		field = strings.Trim(field, `"`)
 
-		n, v, ok := check(field)
-		offset += v
-		if !ok {
+		name, addOffset, valid := check(field)
+		offset += addOffset
+		if !valid {
 			continue
 		}
 
 		idx := i + offset
-		format.fieldIndexes[n] = idx
+		_, ok := fieldIndexes[name]
+		if ok {
+			return nil, fmt.Errorf("duplicate field: %s", name)
+		}
+		fieldIndexes[name] = idx
+		info += fmt.Sprintf(" %d:%s", idx, name)
 		if max < idx {
 			max = idx
 		}
 	}
 
-	format.maxIndex = max
+	format := &csvFormat{
+		raw:          config.Format,
+		maxIndex:     max,
+		fieldIndexes: fieldIndexes,
+	}
+
 	return format, nil
 }
 
-func (f *csvFormat) parse(records []string, logLine LogLine) error {
-	if len(records) <= f.maxIndex {
-		return &ParseError{
-			msg: fmt.Sprintf("csv unmatched line, expect at least %d fields, got %d", f.maxIndex+1, len(records)),
-		}
-	}
-
-	for field, idx := range f.fieldIndexes {
-		err := logLine.Assign(field, records[idx])
-		if err != nil {
-			return &ParseError{msg: fmt.Sprintf("csv error on assigning : %v", err), err: err}
-		}
-	}
-	return nil
-}
-
 func handleCSVReadError(err error) error {
-	if !isCSVParseError(err) {
-		return err
+	if isCSVParseError(err) {
+		return &ParseError{msg: fmt.Sprintf("csv parse: %v", err), err: err}
 	}
-	return &ParseError{msg: fmt.Sprintf("csv error on parsing : %v", err), err: err}
+	return err
 }
 
 func isCSVParseError(err error) bool {
