@@ -15,7 +15,6 @@ import (
 const (
 	emptyLogLine = "emptyLogLine"
 	emptyStr     = ""
-	hyphen       = "-"
 )
 
 func TestLogLine_Assign(t *testing.T) {
@@ -230,7 +229,7 @@ func TestLogLine_Assign(t *testing.T) {
 				{v: "15", wantLine: "req_size=15"},
 				{v: "1000000", wantLine: "req_size=1000000"},
 				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
+				{v: hyphen, wantLine: "req_size=0"},
 				{v: "-1", wantLine: emptyLogLine, wantErr: errBadReqSize},
 				{v: "100.222", wantLine: emptyLogLine, wantErr: errBadReqSize},
 				{v: "invalid", wantLine: emptyLogLine, wantErr: errBadReqSize},
@@ -243,6 +242,7 @@ func TestLogLine_Assign(t *testing.T) {
 				"body_bytes_sent",
 				"O",
 				"B",
+				"b",
 			},
 			[]testCase{
 				{v: "15", wantLine: "resp_size=15"},

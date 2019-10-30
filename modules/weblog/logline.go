@@ -190,8 +190,10 @@ func (l *logLine) Assign(variable string, value string) (err error) {
 	return err
 }
 
+const hyphen = "-"
+
 func (l *logLine) assignVhost(vhost string) error {
-	if vhost == "-" {
+	if vhost == hyphen {
 		return nil
 	}
 	// nginx $host and $http_host returns ipv6 in [], apache not
@@ -203,7 +205,7 @@ func (l *logLine) assignVhost(vhost string) error {
 }
 
 func (l *logLine) assignPort(port string) error {
-	if port == "-" {
+	if port == hyphen {
 		return nil
 	}
 	if !isValidPort(port) {
@@ -214,7 +216,7 @@ func (l *logLine) assignPort(port string) error {
 }
 
 func (l *logLine) assignVhostWithPort(vhostPort string) error {
-	if vhostPort == "-" {
+	if vhostPort == hyphen {
 		return nil
 	}
 	idx := strings.LastIndexByte(vhostPort, ':')
@@ -231,7 +233,7 @@ func (l *logLine) assignVhostWithPort(vhostPort string) error {
 }
 
 func (l *logLine) assignReqScheme(scheme string) error {
-	if scheme == "-" {
+	if scheme == hyphen {
 		return nil
 	}
 	if !isValidScheme(scheme) {
@@ -242,7 +244,7 @@ func (l *logLine) assignReqScheme(scheme string) error {
 }
 
 func (l *logLine) assignReqClient(client string) error {
-	if client == "-" {
+	if client == hyphen {
 		return nil
 	}
 	l.reqClient = client
@@ -250,7 +252,7 @@ func (l *logLine) assignReqClient(client string) error {
 }
 
 func (l *logLine) assignRequest(request string) error {
-	if request == "-" {
+	if request == hyphen {
 		return nil
 	}
 	first := strings.IndexByte(request, ' ')
@@ -277,7 +279,7 @@ func (l *logLine) assignRequest(request string) error {
 }
 
 func (l *logLine) assignReqMethod(method string) error {
-	if method == "-" {
+	if method == hyphen {
 		return nil
 	}
 	if !isValidReqMethod(method) {
@@ -288,7 +290,7 @@ func (l *logLine) assignReqMethod(method string) error {
 }
 
 func (l *logLine) assignReqURL(url string) error {
-	if url == "-" {
+	if url == hyphen {
 		return nil
 	}
 	l.reqURL = url
@@ -296,7 +298,7 @@ func (l *logLine) assignReqURL(url string) error {
 }
 
 func (l *logLine) assignReqProto(proto string) error {
-	if proto == "-" {
+	if proto == hyphen {
 		return nil
 	}
 	if !isValidReqProto(proto) {
@@ -307,7 +309,7 @@ func (l *logLine) assignReqProto(proto string) error {
 }
 
 func (l *logLine) assignRespStatus(status string) error {
-	if status == "-" {
+	if status == hyphen {
 		return nil
 	}
 	v, err := strconv.Atoi(status)
@@ -319,7 +321,9 @@ func (l *logLine) assignRespStatus(status string) error {
 }
 
 func (l *logLine) assignReqSize(size string) error {
-	if size == "-" {
+	// apache: can be "-" according web_log py regexp.
+	if size == hyphen {
+		l.reqSize = 0
 		return nil
 	}
 	v, err := strconv.Atoi(size)
@@ -332,7 +336,7 @@ func (l *logLine) assignReqSize(size string) error {
 
 func (l *logLine) assignRespSize(size string) error {
 	// apache: %b. In CLF format, i.e. a '-' rather than a 0 when no bytes are sent.
-	if size == "-" {
+	if size == hyphen {
 		l.respSize = 0
 		return nil
 	}
@@ -345,7 +349,7 @@ func (l *logLine) assignRespSize(size string) error {
 }
 
 func (l *logLine) assignRespTime(time string) error {
-	if time == "-" {
+	if time == hyphen {
 		return nil
 	}
 	v, err := strconv.ParseFloat(time, 64)
@@ -357,7 +361,7 @@ func (l *logLine) assignRespTime(time string) error {
 }
 
 func (l *logLine) assignUpstreamRespTime(time string) error {
-	if time == "-" {
+	if time == hyphen {
 		return nil
 	}
 	// times of several responses are separated by commas and colons.
