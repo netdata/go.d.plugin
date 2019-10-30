@@ -21,12 +21,16 @@ type (
 
 func NewRegExpParser(config RegExpConfig, in io.Reader) (*RegExpParser, error) {
 	if config.Pattern == "" {
-		return nil, errors.New("empty regexp pattern")
+		return nil, errors.New("empty pattern")
 	}
 
 	pattern, err := regexp.Compile(config.Pattern)
 	if err != nil {
-		return nil, fmt.Errorf("error on compiling regexp pattern : %w", err)
+		return nil, fmt.Errorf("compile: %w", err)
+	}
+
+	if pattern.NumSubexp() == 0 {
+		return nil, errors.New("pattern has no named subgroups")
 	}
 
 	p := &RegExpParser{
@@ -36,25 +40,25 @@ func NewRegExpParser(config RegExpConfig, in io.Reader) (*RegExpParser, error) {
 	return p, nil
 }
 
-func (p *RegExpParser) ReadLine(logLine LogLine) error {
+func (p *RegExpParser) ReadLine(line LogLine) error {
 	s, err := p.r.ReadSlice('\n')
 	if err != nil && len(s) == 0 {
 		return err
 	}
-	return p.Parse(s, logLine)
+	return p.Parse(s, line)
 }
 
-func (p *RegExpParser) Parse(line []byte, logLine LogLine) error {
-	match := p.pattern.FindSubmatch(line)
+func (p *RegExpParser) Parse(record []byte, line LogLine) error {
+	match := p.pattern.FindSubmatch(record)
 	if match == nil {
-		return &ParseError{msg: "regexp unmatched line"}
+		return &ParseError{msg: "regexp unmatched record"}
 	}
 
 	for i, name := range p.pattern.SubexpNames() {
 		if name == "" || match[i] == nil {
 			continue
 		}
-		err := logLine.Assign(name, string(match[i]))
+		err := line.Assign(name, string(match[i]))
 		if err != nil {
 			return &ParseError{
 				msg: fmt.Sprintf("regexp error on assigning : %v", err),
@@ -66,5 +70,5 @@ func (p *RegExpParser) Parse(line []byte, logLine LogLine) error {
 }
 
 func (p RegExpParser) Info() string {
-	return p.pattern.String()
+	return fmt.Sprintf("regexp: %s", p.pattern.String())
 }
