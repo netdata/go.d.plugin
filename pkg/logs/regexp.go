@@ -50,8 +50,8 @@ func (p *RegExpParser) ReadLine(line LogLine) error {
 
 func (p *RegExpParser) Parse(record []byte, line LogLine) error {
 	match := p.pattern.FindSubmatch(record)
-	if match == nil {
-		return &ParseError{msg: "regexp unmatched record"}
+	if len(match) == 0 {
+		return &ParseError{msg: "regexp parse: unmatched record"}
 	}
 
 	for i, name := range p.pattern.SubexpNames() {
@@ -60,15 +60,12 @@ func (p *RegExpParser) Parse(record []byte, line LogLine) error {
 		}
 		err := line.Assign(name, string(match[i]))
 		if err != nil {
-			return &ParseError{
-				msg: fmt.Sprintf("regexp error on assigning : %v", err),
-				err: err,
-			}
+			return &ParseError{msg: fmt.Sprintf("regexp parse: %v", err), err: err}
 		}
 	}
 	return nil
 }
 
 func (p RegExpParser) Info() string {
-	return fmt.Sprintf("regexp: %s", p.pattern.String())
+	return fmt.Sprintf("regexp: %s", p.pattern)
 }

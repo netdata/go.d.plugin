@@ -46,16 +46,18 @@ func TestRegExpParser_Info(t *testing.T) {
 
 func TestRegExpParser_ReadLine(t *testing.T) {
 	tests := []struct {
-		name     string
-		row      string
-		pattern  string
-		wantLine logLine
-		wantErr  bool
+		name         string
+		row          string
+		pattern      string
+		wantLine     logLine
+		wantErr      bool
+		wantParseErr bool
 	}{
 		{name: "match", row: "1 2", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantLine: logLine{"1", "2"}},
-		{name: "no match", row: "A B", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true},
-		{name: "error on reading", row: "", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true},
-		{name: "error on assigning", row: "1 2", pattern: `(?P<AA>\d+) (?P<BB>\d+)`, wantErr: true},
+		{name: "no match", row: "A B", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true, wantParseErr: true},
+		{name: "no match empty row", row: "\n", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true, wantParseErr: true},
+		{name: "error on reading EOF", row: "", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true},
+		{name: "error on assigning", row: "1 2", pattern: `(?P<AA>\d+) (?P<BB>\d+)`, wantErr: true, wantParseErr: true},
 	}
 
 	for _, tt := range tests {
@@ -67,7 +69,13 @@ func TestRegExpParser_ReadLine(t *testing.T) {
 
 			err = p.ReadLine(&line)
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
+				if tt.wantParseErr {
+					fmt.Println(err)
+					assert.True(t, IsParseError(err))
+				} else {
+					assert.False(t, IsParseError(err))
+				}
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.wantLine, line)
@@ -86,6 +94,7 @@ func TestRegExpParser_Parse(t *testing.T) {
 	}{
 		{name: "match", row: "1 2", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantLine: logLine{"1", "2"}},
 		{name: "no match", row: "A B", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true},
+		{name: "no match empty row", row: "", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true},
 		{name: "error on assigning", row: "1 2", pattern: `(?P<AA>\d+) (?P<BB>\d+)`, wantErr: true},
 	}
 
@@ -97,7 +106,8 @@ func TestRegExpParser_Parse(t *testing.T) {
 
 			err = p.Parse([]byte(tt.row), &line)
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
+				assert.True(t, IsParseError(err))
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.wantLine, line)
@@ -117,7 +127,7 @@ func (l *logLine) Assign(name, val string) error {
 	case "B":
 		l.B = val
 	default:
-		return errors.New("unknown var")
+		return errors.New("unknown var name")
 	}
 	return nil
 }
