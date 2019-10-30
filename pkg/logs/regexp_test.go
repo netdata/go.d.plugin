@@ -2,7 +2,6 @@ package logs
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"testing"
 
@@ -36,14 +35,6 @@ func TestNewRegExpParser(t *testing.T) {
 	}
 }
 
-func TestRegExpParser_Info(t *testing.T) {
-	pattern := `(?P<A>\d+) (?P<B>\d+)`
-	p, err := NewRegExpParser(RegExpConfig{Pattern: pattern}, nil)
-	require.NoError(t, err)
-	expectedInfo := fmt.Sprintf("regexp: %s", pattern)
-	assert.Equal(t, expectedInfo, p.Info())
-}
-
 func TestRegExpParser_ReadLine(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -52,8 +43,8 @@ func TestRegExpParser_ReadLine(t *testing.T) {
 		wantErr      bool
 		wantParseErr bool
 	}{
-		{name: "match no error", row: "1 2", pattern: `(?P<A>\d+) (?P<B>\d+)`},
-		{name: "match error on assigning", row: "1 2", pattern: `(?P<AA>\d+) (?P<BB>\d+)`, wantErr: true, wantParseErr: true},
+		{name: "match and no error", row: "1 2", pattern: `(?P<A>\d+) (?P<B>\d+)`},
+		{name: "match but error on assigning", row: "1 2", pattern: `(?P<A>\d+) (?P<ERR>\d+)`, wantErr: true, wantParseErr: true},
 		{name: "no match", row: "A B", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true, wantParseErr: true},
 		{name: "error on reading EOF", row: "", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true},
 	}
@@ -87,8 +78,8 @@ func TestRegExpParser_Parse(t *testing.T) {
 		pattern string
 		wantErr bool
 	}{
-		{name: "match no error", row: "1 2", pattern: `(?P<A>\d+) (?P<B>\d+)`},
-		{name: "match error on assigning", row: "1 2", pattern: `(?P<AA>\d+) (?P<BB>\d+)`, wantErr: true},
+		{name: "match and no error", row: "1 2", pattern: `(?P<A>\d+) (?P<B>\d+)`},
+		{name: "match but error on assigning", row: "1 2", pattern: `(?P<A>\d+) (?P<ERR>\d+)`, wantErr: true},
 		{name: "no match", row: "A B", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true},
 	}
 
@@ -109,13 +100,18 @@ func TestRegExpParser_Parse(t *testing.T) {
 	}
 }
 
+func TestRegExpParser_Info(t *testing.T) {
+	pattern := `(?P<A>\d+) (?P<B>\d+)`
+	p, err := NewRegExpParser(RegExpConfig{Pattern: pattern}, nil)
+	require.NoError(t, err)
+	assert.True(t, strings.Contains(p.Info(), pattern))
+}
+
 type logLine struct{}
 
 func (l logLine) Assign(name, val string) error {
-	switch name {
-	case "A", "B":
-	default:
-		return errors.New("unknown var name")
+	if name == "ERR" {
+		return errors.New("assign error")
 	}
 	return nil
 }
