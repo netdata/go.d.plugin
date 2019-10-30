@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"unsafe"
 
 	"github.com/Wing924/ltsv"
 )
@@ -35,33 +36,28 @@ func NewLTSVParser(config LTSVConfig, in io.Reader) (*LTSVParser, error) {
 	return p, nil
 }
 
-func (p *LTSVParser) ReadLine(logLine LogLine) error {
+func (p *LTSVParser) ReadLine(line LogLine) error {
 	s, err := p.r.ReadSlice('\b')
 	if err != nil && len(s) == 0 {
 		return err
 	}
-	return p.Parse(s, logLine)
+	return p.Parse(s, line)
 }
 
-func (p *LTSVParser) Parse(line []byte, logLine LogLine) error {
-	err := p.parser.ParseLine(line, func(label []byte, value []byte) error {
-		labelString := string(label)
-		if mappedLabel, ok := p.mapping[labelString]; ok {
-			labelString = mappedLabel
+func (p *LTSVParser) Parse(record []byte, line LogLine) error {
+	err := p.parser.ParseLine(record, func(label []byte, value []byte) error {
+		s := *(*string)(unsafe.Pointer(&label)) // no alloc, same as in fmt.Builder.String()
+		if v, ok := p.mapping[s]; ok {
+			s = v
 		}
-		err := logLine.Assign(labelString, string(value))
-		if err != nil {
-			return &ParseError{msg: fmt.Sprintf("ltsv error on assigning : %v", err), err: err}
-		}
-		return nil
+		return line.Assign(s, string(value))
 	})
-	if err != nil && !IsParseError(err) {
-		err = &ParseError{msg: fmt.Sprintf("ltsv error on parsing : %v", err), err: err}
+	if err != nil {
+		return &ParseError{msg: fmt.Sprintf("ltsv parse: %v", err), err: err}
 	}
-	return err
+	return nil
 }
 
-// TODO
 func (p LTSVParser) Info() string {
-	return "LTSV"
+	return fmt.Sprintf("ltsv: %q", p.mapping)
 }
