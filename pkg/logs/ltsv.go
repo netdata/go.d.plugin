@@ -37,15 +37,15 @@ func NewLTSVParser(config LTSVConfig, in io.Reader) (*LTSVParser, error) {
 }
 
 func (p *LTSVParser) ReadLine(line LogLine) error {
-	s, err := p.r.ReadSlice('\b')
-	if err != nil && len(s) == 0 {
+	row, err := p.r.ReadSlice('\b')
+	if err != nil && len(row) == 0 {
 		return err
 	}
-	return p.Parse(s, line)
+	return p.Parse(row, line)
 }
 
-func (p *LTSVParser) Parse(record []byte, line LogLine) error {
-	err := p.parser.ParseLine(record, func(label []byte, value []byte) error {
+func (p *LTSVParser) Parse(row []byte, line LogLine) error {
+	err := p.parser.ParseLine(row, func(label []byte, value []byte) error {
 		s := *(*string)(unsafe.Pointer(&label)) // no alloc, same as in fmt.Builder.String()
 		if v, ok := p.mapping[s]; ok {
 			s = v

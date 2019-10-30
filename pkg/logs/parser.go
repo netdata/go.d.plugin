@@ -19,12 +19,12 @@ func IsParseError(err error) bool { var v *ParseError; return errors.As(err, &v)
 
 type (
 	LogLine interface {
-		Assign(field string, value string) error
+		Assign(name string, value string) error
 	}
 
 	Parser interface {
 		ReadLine(LogLine) error
-		Parse(line []byte, logLine LogLine) error
+		Parse(row []byte, line LogLine) error
 		Info() string
 	}
 )

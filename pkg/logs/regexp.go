@@ -41,17 +41,17 @@ func NewRegExpParser(config RegExpConfig, in io.Reader) (*RegExpParser, error) {
 }
 
 func (p *RegExpParser) ReadLine(line LogLine) error {
-	s, err := p.r.ReadSlice('\n')
-	if err != nil && len(s) == 0 {
+	row, err := p.r.ReadSlice('\n')
+	if err != nil && len(row) == 0 {
 		return err
 	}
-	return p.Parse(s, line)
+	return p.Parse(row, line)
 }
 
-func (p *RegExpParser) Parse(record []byte, line LogLine) error {
-	match := p.pattern.FindSubmatch(record)
+func (p *RegExpParser) Parse(row []byte, line LogLine) error {
+	match := p.pattern.FindSubmatch(row)
 	if len(match) == 0 {
-		return &ParseError{msg: "regexp parse: unmatched record"}
+		return &ParseError{msg: "regexp parse: unmatched line"}
 	}
 
 	for i, name := range p.pattern.SubexpNames() {
