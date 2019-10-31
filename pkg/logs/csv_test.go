@@ -9,14 +9,76 @@ import (
 )
 
 var testCSVConfig = CSVConfig{
-	Delimiter:        ' ',
-	TrimLeadingSpace: false,
-	Format:           "$A $B !C $D",
-	CheckField:       checkCSVFormatField,
+	Delimiter: ' ',
+	Format:    "$A %B",
 }
 
 func TestNewCSVParser(t *testing.T) {
+	tests := []struct {
+		name    string
+		format  string
+		wantErr bool
+	}{
+		{name: "valid format", format: "$A $B"},
+		{name: "empty format", wantErr: true},
+		{name: "bad format: csv read error", format: "$A $B \"$C", wantErr: true},
+		{name: "bad format: duplicate fields", format: "$A $A", wantErr: true},
+		{name: "bad format: zero fields", format: "!A !B", wantErr: true},
+	}
 
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := testCSVConfig
+			c.Format = tt.format
+			p, err := NewCSVParser(c, nil)
+			if tt.wantErr {
+				assert.Error(t, err)
+				assert.Nil(t, p)
+			} else {
+				assert.NoError(t, err)
+				assert.NotNil(t, p)
+			}
+		})
+	}
+}
+
+func TestNewCSVFormat(t *testing.T) {
+	tests := []struct {
+		format     string
+		wantFormat csvFormat
+		wantErr    bool
+	}{
+		{format: "$A $B", wantFormat: csvFormat{maxIndex: 1, fields: []csvField{{"$A", 0}, {"$B", 1}}}},
+		{format: "$A $B !C $E", wantFormat: csvFormat{maxIndex: 3, fields: []csvField{{"$A", 0}, {"$B", 1}, {"$E", 3}}}},
+		{format: "!A !B !C $E", wantFormat: csvFormat{maxIndex: 3, fields: []csvField{{"$E", 3}}}},
+		{format: "$A $OFFSET $B", wantFormat: csvFormat{maxIndex: 3, fields: []csvField{{"$A", 0}, {"$B", 3}}}},
+		{format: "$A $OFFSET $B $OFFSET !A", wantFormat: csvFormat{maxIndex: 3, fields: []csvField{{"$A", 0}, {"$B", 3}}}},
+		{format: "$A $OFFSET $OFFSET $B", wantFormat: csvFormat{maxIndex: 5, fields: []csvField{{"$A", 0}, {"$B", 5}}}},
+		{format: "$OFFSET $A $OFFSET $B", wantFormat: csvFormat{maxIndex: 5, fields: []csvField{{"$A", 2}, {"$B", 5}}}},
+		{format: "$A \"$A", wantErr: true},
+		{format: "$A $A", wantErr: true},
+		{format: "!A !A", wantErr: true},
+		{format: "", wantErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.format, func(t *testing.T) {
+			c := testCSVConfig
+			c.Format = tt.format
+			c.CheckField = testCheckCSVFormatField
+			tt.wantFormat.raw = tt.format
+
+			f, err := newCSVFormat(c)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+				assert.Nil(t, f)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.wantFormat, *f)
+			}
+		})
+	}
 }
 
 func TestCSVParser_ReadLine(t *testing.T) {
@@ -98,4 +160,14 @@ func TestCSVParser_Info(t *testing.T) {
 	p, err := NewCSVParser(testCSVConfig, nil)
 	require.NoError(t, err)
 	assert.NotZero(t, p.Info())
+}
+
+func testCheckCSVFormatField(name string) (newName string, offset int, valid bool) {
+	if len(name) < 2 || !strings.HasPrefix(name, "$") {
+		return "", 0, false
+	}
+	if name == "$OFFSET" {
+		return "", 1, false
+	}
+	return name, 0, true
 }

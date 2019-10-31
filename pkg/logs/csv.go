@@ -24,9 +24,14 @@ type (
 	}
 
 	csvFormat struct {
-		raw          string
-		maxIndex     int
-		fieldIndexes map[string]int
+		raw      string
+		maxIndex int
+		fields   []csvField
+	}
+
+	csvField struct {
+		name string
+		idx  int
 	}
 )
 
@@ -36,8 +41,8 @@ func NewCSVParser(config CSVConfig, in io.Reader) (*CSVParser, error) {
 	}
 
 	format, err := newCSVFormat(config)
-	if err != nil || len(format.fieldIndexes) == 0 {
-		return nil, fmt.Errorf("bad csv format: %v", err)
+	if err != nil {
+		return nil, fmt.Errorf("bad csv format '%s': %v", config.Format, err)
 	}
 
 	p := &CSVParser{
@@ -51,7 +56,10 @@ func NewCSVParser(config CSVConfig, in io.Reader) (*CSVParser, error) {
 func (p *CSVParser) ReadLine(line LogLine) error {
 	record, err := p.reader.Read()
 	if err != nil {
-		return handleCSVReadError(err)
+		if isCSVParseError(err) {
+			return &ParseError{msg: fmt.Sprintf("csv parse: %v", err), err: err}
+		}
+		return err
 	}
 	return p.format.parse(record, line)
 }
@@ -60,7 +68,10 @@ func (p *CSVParser) Parse(row []byte, line LogLine) error {
 	r := newCSVReader(bytes.NewBuffer(row), p.config)
 	record, err := r.Read()
 	if err != nil {
-		return handleCSVReadError(err)
+		if isCSVParseError(err) {
+			return &ParseError{msg: fmt.Sprintf("csv parse: %v", err), err: err}
+		}
+		return err
 	}
 	return p.format.parse(record, line)
 }
@@ -74,8 +85,8 @@ func (f *csvFormat) parse(record []string, line LogLine) error {
 		return &ParseError{msg: "csv parse: unmatched line"}
 	}
 
-	for field, idx := range f.fieldIndexes {
-		if err := line.Assign(field, record[idx]); err != nil {
+	for _, v := range f.fields {
+		if err := line.Assign(v.name, record[v.idx]); err != nil {
 			return &ParseError{msg: fmt.Sprintf("csv parse: %v", err), err: err}
 		}
 	}
@@ -96,56 +107,53 @@ func newCSVFormat(config CSVConfig) (*csvFormat, error) {
 	r.Comma = config.Delimiter
 	r.TrimLeadingSpace = config.TrimLeadingSpace
 
-	fields, err := r.Read()
+	record, err := r.Read()
 	if err != nil {
 		return nil, err
 	}
 
-	check := checkCSVFormatField
-	if config.CheckField != nil {
-		check = config.CheckField
+	fields, err := createCSVFields(record, config.CheckField)
+	if err != nil {
+		return nil, err
 	}
 
-	fieldIndexes := make(map[string]int)
-	var info string
-	var max int
+	if len(fields) == 0 {
+		return nil, errors.New("zero fields")
+	}
+
+	format := &csvFormat{
+		raw:      config.Format,
+		maxIndex: fields[len(fields)-1].idx,
+		fields:   fields,
+	}
+	return format, nil
+}
+
+func createCSVFields(format []string, check func(string) (string, int, bool)) ([]csvField, error) {
+	if check == nil {
+		check = checkCSVFormatField
+	}
+	var fields []csvField
 	var offset int
+	seen := make(map[string]bool)
 
-	for i, field := range fields {
-		field = strings.Trim(field, `"`)
+	for i, name := range format {
+		name = strings.Trim(name, `"`)
 
-		name, addOffset, valid := check(field)
+		name, addOffset, valid := check(name)
 		offset += addOffset
 		if !valid {
 			continue
 		}
-
-		idx := i + offset
-		_, ok := fieldIndexes[name]
-		if ok {
+		if seen[name] {
 			return nil, fmt.Errorf("duplicate field: %s", name)
 		}
-		fieldIndexes[name] = idx
-		info += fmt.Sprintf(" %d:%s", idx, name)
-		if max < idx {
-			max = idx
-		}
-	}
+		seen[name] = true
 
-	format := &csvFormat{
-		raw:          config.Format,
-		maxIndex:     max,
-		fieldIndexes: fieldIndexes,
+		idx := i + offset
+		fields = append(fields, csvField{name, idx})
 	}
-
-	return format, nil
-}
-
-func handleCSVReadError(err error) error {
-	if isCSVParseError(err) {
-		return &ParseError{msg: fmt.Sprintf("csv parse: %v", err), err: err}
-	}
-	return err
+	return fields, nil
 }
 
 func isCSVParseError(err error) bool {
