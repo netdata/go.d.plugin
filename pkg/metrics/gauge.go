@@ -23,8 +23,8 @@ type (
 )
 
 var (
-	// assume Counter implements stm.Value
 	_ stm.Value = Gauge(0)
+	_ stm.Value = GaugeVec{}
 )
 
 // WriteTo writes it's value into given map.

@@ -29,7 +29,7 @@ type (
 
 var (
 	_ stm.Value = mapUniqueCounter{}
-	_ stm.Value = &hyperLogLogUniqueCounter{}
+	_ stm.Value = hyperLogLogUniqueCounter{}
 	_ stm.Value = UniqueCounterVec{}
 )
 
@@ -59,7 +59,7 @@ func (c mapUniqueCounter) Reset() {
 }
 
 // WriteTo writes it's value into given map.
-func (c *hyperLogLogUniqueCounter) WriteTo(rv map[string]int64, key string, mul, div int) {
+func (c hyperLogLogUniqueCounter) WriteTo(rv map[string]int64, key string, mul, div int) {
 	rv[key] = int64(float64(c.Value()*mul) / float64(div))
 }
 

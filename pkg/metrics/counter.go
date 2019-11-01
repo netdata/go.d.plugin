@@ -28,8 +28,8 @@ type (
 )
 
 var (
-	// assume Counter implements stm.Value
 	_ stm.Value = Counter{}
+	_ stm.Value = CounterVec{}
 )
 
 // WriteTo writes it's value into given map.
