@@ -46,7 +46,7 @@ func TestRegExpParser_ReadLine(t *testing.T) {
 		{name: "match and no error", row: "1 2", pattern: `(?P<A>\d+) (?P<B>\d+)`},
 		{name: "match but error on assigning", row: "1 2", pattern: `(?P<A>\d+) (?P<ERR>\d+)`, wantErr: true, wantParseErr: true},
 		{name: "not match", row: "A B", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true, wantParseErr: true},
-		{name: "not match multiline", row: "a b\n3 4", pattern: `(?P<A>\d+) (?P<B>\d+)`},
+		{name: "not match multiline", row: "a b\n3 4", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true, wantParseErr: true},
 		{name: "error on reading EOF", row: "", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true},
 	}
 
@@ -82,7 +82,7 @@ func TestRegExpParser_Parse(t *testing.T) {
 		{name: "match and no error", row: "1 2", pattern: `(?P<A>\d+) (?P<B>\d+)`},
 		{name: "match but error on assigning", row: "1 2", pattern: `(?P<A>\d+) (?P<ERR>\d+)`, wantErr: true},
 		{name: "not match", row: "A B", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true},
-		{name: "not match multiline", row: "a b\n3 4", pattern: `(?P<A>\d+) (?P<B>\d+)`},
+		{name: "not match multiline", row: "a b\n3 4", pattern: `(?P<A>\d+) (?P<B>\d+)`, wantErr: true},
 	}
 
 	for _, tt := range tests {
