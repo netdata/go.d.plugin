@@ -421,55 +421,31 @@ func (l logLine) verify() error {
 	return nil
 }
 
-func (l logLine) hasVhost() bool { return !isEmptyString(l.vhost) }
-
-func (l logLine) hasPort() bool { return !isEmptyString(l.port) }
-
-func (l logLine) hasReqScheme() bool { return !isEmptyString(l.reqScheme) }
-
-func (l logLine) hasReqClient() bool { return !isEmptyString(l.reqClient) }
-
-func (l logLine) hasReqMethod() bool { return !isEmptyString(l.reqMethod) }
-
-func (l logLine) hasReqURL() bool { return !isEmptyString(l.reqURL) }
-
-func (l logLine) hasReqProto() bool { return !isEmptyString(l.reqProto) }
-
-func (l logLine) hasRespStatus() bool { return !isEmptyNumber(l.respStatus) }
-
-func (l logLine) hasReqSize() bool { return !isEmptyNumber(l.reqSize) }
-
-func (l logLine) hasRespSize() bool { return !isEmptyNumber(l.respSize) }
-
-func (l logLine) hasRespTime() bool { return !isEmptyNumber(int(l.respTime)) }
-
-func (l logLine) hasUpstreamRespTime() bool { return !isEmptyNumber(int(l.upsRespTime)) }
-
-func (l logLine) hasCustom() bool { return !isEmptyString(l.custom) }
-
-func (l logLine) validVhost() bool { return reVhost.MatchString(l.vhost) }
-
-func (l logLine) validPort() bool { return isValidPort(l.port) }
-
-func (l logLine) validReqScheme() bool { return isValidScheme(l.reqScheme) }
-
-func (l logLine) validReqClient() bool { return reClient.MatchString(l.reqClient) }
-
-func (l logLine) validReqMethod() bool { return isValidReqMethod(l.reqMethod) }
-
-func (l logLine) validReqURL() bool { return isValidURL(l.reqMethod, l.reqURL) }
-
-func (l logLine) validReqProto() bool { return isValidReqProtoVer(l.reqProto) }
-
-func (l logLine) validReqSize() bool { return isValidSize(l.reqSize) }
-
-func (l logLine) validRespSize() bool { return isValidSize(l.respSize) }
-
-func (l logLine) validRespTime() bool { return isValidTime(l.respTime) }
-
+func (l logLine) hasVhost() bool              { return !isEmptyString(l.vhost) }
+func (l logLine) hasPort() bool               { return !isEmptyString(l.port) }
+func (l logLine) hasReqScheme() bool          { return !isEmptyString(l.reqScheme) }
+func (l logLine) hasReqClient() bool          { return !isEmptyString(l.reqClient) }
+func (l logLine) hasReqMethod() bool          { return !isEmptyString(l.reqMethod) }
+func (l logLine) hasReqURL() bool             { return !isEmptyString(l.reqURL) }
+func (l logLine) hasReqProto() bool           { return !isEmptyString(l.reqProto) }
+func (l logLine) hasRespStatus() bool         { return !isEmptyNumber(l.respStatus) }
+func (l logLine) hasReqSize() bool            { return !isEmptyNumber(l.reqSize) }
+func (l logLine) hasRespSize() bool           { return !isEmptyNumber(l.respSize) }
+func (l logLine) hasRespTime() bool           { return !isEmptyNumber(int(l.respTime)) }
+func (l logLine) hasUpstreamRespTime() bool   { return !isEmptyNumber(int(l.upsRespTime)) }
+func (l logLine) hasCustom() bool             { return !isEmptyString(l.custom) }
+func (l logLine) validVhost() bool            { return reVhost.MatchString(l.vhost) }
+func (l logLine) validPort() bool             { return isValidPort(l.port) }
+func (l logLine) validReqScheme() bool        { return isValidScheme(l.reqScheme) }
+func (l logLine) validReqClient() bool        { return reClient.MatchString(l.reqClient) }
+func (l logLine) validReqMethod() bool        { return isValidReqMethod(l.reqMethod) }
+func (l logLine) validReqURL() bool           { return isValidURL(l.reqMethod, l.reqURL) }
+func (l logLine) validReqProto() bool         { return isValidReqProtoVer(l.reqProto) }
+func (l logLine) validReqSize() bool          { return isValidSize(l.reqSize) }
+func (l logLine) validRespSize() bool         { return isValidSize(l.respSize) }
+func (l logLine) validRespTime() bool         { return isValidTime(l.respTime) }
 func (l logLine) validUpstreamRespTime() bool { return isValidTime(l.upsRespTime) }
-
-func (l logLine) validRespStatus() bool { return isValidRespStatus(l.respStatus) }
+func (l logLine) validRespStatus() bool       { return isValidRespStatus(l.respStatus) }
 
 func (l *logLine) reset() {
 	l.vhost = emptyString
@@ -509,9 +485,20 @@ func isEmptyNumber(n int) bool {
 func isValidURL(method, url string) bool {
 	// CONNECT www.example.com:443 HTTP/1.1
 	if method == "CONNECT" {
-		return !hasSpace(url)
+		return !hasBadURICharacters(url)
 	}
-	return url[0] == '/' && !hasSpace(url)
+	return url[0] == '/' && !hasBadURICharacters(url)
+}
+
+func hasBadURICharacters(s string) bool {
+	// A URI specified by RFC1738, relative URIs are specified by RFC1808.
+	// URIs cannot by definition include whitespace or ASCII control characters.
+	for _, v := range s {
+		if unicode.IsSpace(v) || unicode.IsControl(v) {
+			return true
+		}
+	}
+	return false
 }
 
 func isValidReqMethod(method string) bool {
@@ -559,15 +546,6 @@ func isValidSize(size int) bool {
 
 func isValidTime(time float64) bool {
 	return time >= 0
-}
-
-func hasSpace(s string) bool {
-	for _, v := range s {
-		if unicode.IsSpace(v) {
-			return true
-		}
-	}
-	return false
 }
 
 func respTimeMultiplier(time string) float64 {
