@@ -14,7 +14,7 @@ type category struct {
 
 func newCategory(raw rawCategory) (*category, error) {
 	if raw.Name == "" || raw.Match == "" {
-		return nil, fmt.Errorf("category bad syntax : %v", raw)
+		return nil, fmt.Errorf("category bad syntax: %v", raw)
 	}
 
 	m, err := matcher.Parse(raw.Match)
@@ -42,7 +42,7 @@ func (w *WebLog) initCategories() error {
 	for _, raw := range w.URLCategories {
 		cat, err := newCategory(raw)
 		if err != nil {
-			return fmt.Errorf("error on creating url categories %s: %v", raw, err)
+			return fmt.Errorf("error on creating url category %s: %v", raw, err)
 		}
 		w.urlCats = append(w.urlCats, cat)
 	}
@@ -50,7 +50,7 @@ func (w *WebLog) initCategories() error {
 	for _, raw := range w.UserCategories {
 		cat, err := newCategory(raw)
 		if err != nil {
-			return fmt.Errorf("error on creating user categories %s: %v", raw, err)
+			return fmt.Errorf("error on creating user category %s: %v", raw, err)
 		}
 		w.userCats = append(w.userCats, cat)
 	}
@@ -61,7 +61,7 @@ func (w *WebLog) initCategories() error {
 func (w *WebLog) initLogReader() error {
 	reader, err := logs.Open(w.Path, w.ExcludePath, w.Logger)
 	if err != nil {
-		return fmt.Errorf("error on creating log reader : %v", err)
+		return fmt.Errorf("error on creating log reader: %v", err)
 	}
 
 	w.file = reader
@@ -71,24 +71,25 @@ func (w *WebLog) initLogReader() error {
 func (w *WebLog) initParser() error {
 	lastLine, err := logs.ReadLastLine(w.file.CurrentFilename(), 0)
 	if err != nil {
-		return fmt.Errorf("error on reading last line : %v", err)
+		return fmt.Errorf("error on reading last line: %v", err)
 	}
 
 	w.parser, err = w.newParser(lastLine)
 	if err != nil {
-		return fmt.Errorf("error on creating parser : %v", err)
+		return fmt.Errorf("error on creating parser: %v", err)
 	}
 
-	logLine := newEmptyLogLine()
-	err = w.parser.Parse(lastLine, logLine)
+	line := newEmptyLogLine()
+	err = w.parser.Parse(lastLine, line)
 	if err != nil {
-		return fmt.Errorf("error on parsing last line : %v (%s)", err, lastLine)
+		return fmt.Errorf("error on parsing last line: %v (%s)", err, lastLine)
 	}
 
-	if err = logLine.verify(); err != nil {
-		return fmt.Errorf("error on verifying parsed log line : %v", err)
+	if err = line.verify(); err != nil {
+		return fmt.Errorf("error on verifying parsed log line: %v", err)
 	}
 
-	w.line = logLine
+	line.reset()
+	w.line = line
 	return nil
 }

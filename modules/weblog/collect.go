@@ -115,13 +115,13 @@ func (w *WebLog) collectReqClient() {
 	}
 	w.col.client = true
 
-	// TODO: not always IP address
 	if strings.ContainsRune(w.line.reqClient, ':') {
 		w.mx.ReqIpv6.Inc()
 		w.mx.UniqueIPv6.Insert(w.line.reqClient)
 		return
 	}
 
+	// NOTE: count hostname as IPv4 address
 	w.mx.ReqIpv4.Inc()
 	w.mx.UniqueIPv4.Insert(w.line.reqClient)
 }
