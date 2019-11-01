@@ -1,8 +1,6 @@
 package weblog
 
 import (
-	"time"
-
 	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/metrics"
@@ -40,7 +38,6 @@ func New() *WebLog {
 			AggregateResponseCodes: true,
 			Histogram:              metrics.DefBuckets,
 			Parser:                 cfg,
-			TimeMultiplier:         time.Second.Seconds(), // TODO: do we even need it?
 		},
 		charts: charts.Copy(),
 		chartsCache: chartsCache{
@@ -62,8 +59,7 @@ type (
 
 	Config struct {
 		Parser                 logs.ParserConfig  `yaml:",inline"`
-		TimeMultiplier         float64            `yaml:"time_multiplier"`
-		Path                   string             `yaml:"path" validate:"required"`
+		Path                   string             `yaml:"path"`
 		ExcludePath            string             `yaml:"exclude_path"`
 		Filter                 matcher.SimpleExpr `yaml:"filter"`
 		URLCategories          []rawCategory      `yaml:"categories"`

@@ -37,7 +37,7 @@ func NewLTSVParser(config LTSVConfig, in io.Reader) (*LTSVParser, error) {
 }
 
 func (p *LTSVParser) ReadLine(line LogLine) error {
-	row, err := p.r.ReadSlice('\b')
+	row, err := p.r.ReadSlice('\n')
 	if err != nil && len(row) == 0 {
 		return err
 	}

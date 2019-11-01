@@ -111,10 +111,18 @@ func checkCSVFormatField(name string) (newName string, offset int, valid bool) {
 	return name[1:], 0, true
 }
 
-func isValidVar(v string) bool { return len(v) > 1 && (isNginxVar(v) || isApacheVar(v)) }
+func isValidVar(v string) bool {
+	return len(v) > 1 && (isNginxVar(v) || isApacheVar(v))
+}
 
-func isNginxVar(v string) bool { return strings.HasPrefix(v, "$") }
+func isNginxVar(v string) bool {
+	return strings.HasPrefix(v, "$")
+}
 
-func isApacheVar(v string) bool { return strings.HasPrefix(v, "%") }
+func isApacheVar(v string) bool {
+	return strings.HasPrefix(v, "%")
+}
 
-func cleanCSVFormat(format string) string { return strings.Join(strings.Fields(format), " ") }
+func cleanCSVFormat(format string) string {
+	return strings.Join(strings.Fields(format), " ")
+}

@@ -56,7 +56,6 @@ func (w *WebLog) collectLogLines() (int, error) {
 			}
 			w.collectUnmatched()
 		}
-
 		n++
 		w.collectLogLine()
 	}
