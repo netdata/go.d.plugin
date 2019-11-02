@@ -36,11 +36,11 @@ type (
 
 		ReqIpv4    metrics.Counter       `stm:"req_ipv4"`
 		ReqIpv6    metrics.Counter       `stm:"req_ipv6"`
-		UniqueIPv4 metrics.UniqueCounter `stm:"req_ipv4_uniq"` // TODO: ?
+		UniqueIPv4 metrics.UniqueCounter `stm:"req_ipv4_uniq"`
 		UniqueIPv6 metrics.UniqueCounter `stm:"req_ipv6_uniq"`
 
 		ReqMethod  metrics.CounterVec `stm:"req_method"`
-		ReqURI     metrics.CounterVec `stm:"req_uri"`
+		ReqURL     metrics.CounterVec `stm:"req_url"`
 		ReqVersion metrics.CounterVec `stm:"req_version"`
 
 		RespCode        metrics.CounterVec `stm:"req_code"`
@@ -64,7 +64,7 @@ type (
 
 		ReqCustom metrics.CounterVec `stm:"req_custom"`
 
-		CategorizedStats categorizedStats `stm:"uri"`
+		CategorizedStats categorizedStats `stm:"url"`
 	}
 
 	categoryMetrics struct {
@@ -90,7 +90,7 @@ func NewMetricsData(config Config) *MetricsData {
 		RespTimeUpstreamHist: metrics.NewHistogram(config.Histogram),
 		UniqueIPv4:           metrics.NewUniqueCounter(true),
 		UniqueIPv6:           metrics.NewUniqueCounter(true),
-		ReqURI:               newCounterVecFromCategories(config.URLCategories),
+		ReqURL:               newCounterVecFromCategories(config.URLCategories),
 		ReqCustom:            newCounterVecFromCategories(config.UserCategories),
 		CategorizedStats:     newCategorizedStats(config.URLCategories),
 	}

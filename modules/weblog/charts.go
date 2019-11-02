@@ -290,47 +290,47 @@ var (
 	}
 )
 
-func newURLRespCodesChart(urlCat string) *Chart {
+func newURLRespCodesChart(url string) *Chart {
 	return &Chart{
-		ID:       respCodes.ID + "_" + urlCat,
+		ID:       respCodes.ID + "_" + url,
 		Title:    "Response Status Codes",
 		Units:    "responses/s",
-		Fam:      "url " + urlCat,
+		Fam:      "url " + url,
 		Ctx:      "web_log.response_status_codes_per_url",
 		Type:     module.Stacked,
 		Priority: prioURLStats,
 	}
 }
 
-func newURLBandwidthChart(urlCat string) *Chart {
+func newURLBandwidthChart(url string) *Chart {
 	return &Chart{
-		ID:       bandwidth.ID + "_" + urlCat,
+		ID:       bandwidth.ID + "_" + url,
 		Title:    "Bandwidth",
 		Units:    "kilobits/s",
-		Fam:      "url " + urlCat,
+		Fam:      "url " + url,
 		Ctx:      "web_log.bandwidth_per_url",
 		Type:     module.Area,
 		Priority: prioURLStats + 1,
 		Dims: Dims{
-			{ID: urlCat + "_resp_length", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
-			{ID: urlCat + "_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
+			{ID: url + "_resp_length", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
+			{ID: url + "_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
 		},
 	}
 }
 
-func newURLRespTimeChart(urlCat string) *Chart {
+func newURLRespTimeChart(url string) *Chart {
 	return &Chart{
-		ID:       respTime.ID + "_" + urlCat,
+		ID:       respTime.ID + "_" + url,
 		Title:    "Processing Time",
 		Units:    "milliseconds",
-		Fam:      "url " + urlCat,
+		Fam:      "url " + url,
 		Ctx:      "web_log.response_time_per_url",
 		Type:     module.Area,
 		Priority: prioURLStats + 2,
 		Dims: Dims{
-			{ID: urlCat + "_resp_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
-			{ID: urlCat + "_resp_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
-			{ID: urlCat + "_resp_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
+			{ID: url + "_resp_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
+			{ID: url + "_resp_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
+			{ID: url + "_resp_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
 		},
 	}
 }
@@ -411,7 +411,7 @@ func newReqPerCustomCatsChart(cats []*category) *Chart {
 	return chart
 }
 
-func newRespTimeHistogramChart(histogram []float64) *Chart {
+func newRespTimeHistChart(histogram []float64) *Chart {
 	chart := respTimeHist.Copy()
 	for i, v := range histogram {
 		dimID := fmt.Sprintf("resp_time_hist_bucket_%d", i+1)
@@ -431,7 +431,7 @@ func newRespTimeHistogramChart(histogram []float64) *Chart {
 	return chart
 }
 
-func newUpsRespTimeHistogramChart(histogram []float64) *Chart {
+func newUpsRespTimeHistChart(histogram []float64) *Chart {
 	chart := upsRespTimeHist.Copy()
 	for i, v := range histogram {
 		dimID := fmt.Sprintf("resp_time_upstream_hist_bucket_%d", i+1)
@@ -623,7 +623,7 @@ func (w *WebLog) addRespTimeCharts() {
 		return
 	}
 
-	chart := newRespTimeHistogramChart(w.Histogram)
+	chart := newRespTimeHistChart(w.Histogram)
 	panicIfErr(w.Charts().Add(chart))
 }
 
@@ -638,7 +638,7 @@ func (w *WebLog) addUpstreamRespTimeCharts() {
 		return
 	}
 
-	chart := newUpsRespTimeHistogramChart(w.Histogram)
+	chart := newUpsRespTimeHistChart(w.Histogram)
 	panicIfErr(w.Charts().Add(chart))
 }
 

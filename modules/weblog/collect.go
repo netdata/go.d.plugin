@@ -164,7 +164,7 @@ func (w *WebLog) collectReqURL() {
 			continue
 		}
 
-		c, _ := w.mx.ReqURI.GetP(cat.name)
+		c, _ := w.mx.ReqURL.GetP(cat.name)
 		c.Inc()
 
 		w.collectStatsPerURL(cat.name)
