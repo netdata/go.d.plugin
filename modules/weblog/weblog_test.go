@@ -78,7 +78,7 @@ func TestWebLog_Collect(t *testing.T) {
 	weblog.parser = p
 	weblog.line = newEmptyLogLine()
 
-	//m := weblog.Collect()
+	//m := weblog.Collect¢()
 	//l := make([]string, 0)
 	//for k := range m {
 	//	l = append(l, k)
@@ -164,101 +164,124 @@ func TestWebLog_Collect(t *testing.T) {
 		"resp_time_upstream_max":           499000,
 		"resp_time_upstream_min":           4000,
 		"resp_time_upstream_sum":           93257000,
-		"uri_com_bytes_received":           371169,
-		"uri_com_bytes_sent":               366726,
-		"uri_com_req_code_100":             8,
-		"uri_com_req_code_101":             14,
-		"uri_com_req_code_200":             15,
-		"uri_com_req_code_201":             10,
-		"uri_com_req_code_300":             7,
-		"uri_com_req_code_301":             7,
-		"uri_com_req_code_400":             13,
-		"uri_com_req_code_401":             13,
-		"uri_com_req_code_500":             16,
-		"uri_com_req_code_501":             15,
-		"uri_com_resp_time_avg":            241508,
-		"uri_com_resp_time_count":          118,
-		"uri_com_resp_time_max":            486000,
-		"uri_com_resp_time_min":            15000,
-		"uri_com_resp_time_sum":            28498000,
-		"uri_net_bytes_received":           390107,
-		"uri_net_bytes_sent":               373219,
-		"uri_net_req_code_100":             17,
-		"uri_net_req_code_101":             16,
-		"uri_net_req_code_200":             15,
-		"uri_net_req_code_201":             9,
-		"uri_net_req_code_300":             11,
-		"uri_net_req_code_301":             13,
-		"uri_net_req_code_400":             14,
-		"uri_net_req_code_401":             6,
-		"uri_net_req_code_500":             13,
-		"uri_net_req_code_501":             13,
-		"uri_net_resp_time_avg":            243267,
-		"uri_net_resp_time_count":          127,
-		"uri_net_resp_time_max":            499000,
-		"uri_net_resp_time_min":            4000,
-		"uri_net_resp_time_sum":            30895000,
-		"uri_org_bytes_received":           391623,
-		"uri_org_bytes_sent":               425644,
-		"uri_org_req_code_100":             16,
-		"uri_org_req_code_101":             14,
-		"uri_org_req_code_200":             14,
-		"uri_org_req_code_201":             10,
-		"uri_org_req_code_300":             17,
-		"uri_org_req_code_301":             20,
-		"uri_org_req_code_400":             13,
-		"uri_org_req_code_401":             10,
-		"uri_org_req_code_500":             13,
-		"uri_org_req_code_501":             12,
-		"uri_org_resp_time_avg":            270496,
-		"uri_org_resp_time_count":          139,
-		"uri_org_resp_time_max":            499000,
-		"uri_org_resp_time_min":            7000,
-		"uri_org_resp_time_sum":            37599000,
+		"url_com_bytes_received":           371169,
+		"url_com_bytes_sent":               366726,
+		"url_com_req_code_100":             8,
+		"url_com_req_code_101":             14,
+		"url_com_req_code_200":             15,
+		"url_com_req_code_201":             10,
+		"url_com_req_code_300":             7,
+		"url_com_req_code_301":             7,
+		"url_com_req_code_400":             13,
+		"url_com_req_code_401":             13,
+		"url_com_req_code_500":             16,
+		"url_com_req_code_501":             15,
+		"url_com_resp_time_avg":            241508,
+		"url_com_resp_time_count":          118,
+		"url_com_resp_time_max":            486000,
+		"url_com_resp_time_min":            15000,
+		"url_com_resp_time_sum":            28498000,
+		"url_net_bytes_received":           390107,
+		"url_net_bytes_sent":               373219,
+		"url_net_req_code_100":             17,
+		"url_net_req_code_101":             16,
+		"url_net_req_code_200":             15,
+		"url_net_req_code_201":             9,
+		"url_net_req_code_300":             11,
+		"url_net_req_code_301":             13,
+		"url_net_req_code_400":             14,
+		"url_net_req_code_401":             6,
+		"url_net_req_code_500":             13,
+		"url_net_req_code_501":             13,
+		"url_net_resp_time_avg":            243267,
+		"url_net_resp_time_count":          127,
+		"url_net_resp_time_max":            499000,
+		"url_net_resp_time_min":            4000,
+		"url_net_resp_time_sum":            30895000,
+		"url_org_bytes_received":           391623,
+		"url_org_bytes_sent":               425644,
+		"url_org_req_code_100":             16,
+		"url_org_req_code_101":             14,
+		"url_org_req_code_200":             14,
+		"url_org_req_code_201":             10,
+		"url_org_req_code_300":             17,
+		"url_org_req_code_301":             20,
+		"url_org_req_code_400":             13,
+		"url_org_req_code_401":             10,
+		"url_org_req_code_500":             13,
+		"url_org_req_code_501":             12,
+		"url_org_resp_time_avg":            270496,
+		"url_org_resp_time_count":          139,
+		"url_org_resp_time_max":            499000,
+		"url_org_resp_time_min":            7000,
+		"url_org_resp_time_sum":            37599000,
 	}
 	_ = expected
 
 	assert.Equal(t, expected, weblog.Collect())
 	testDynamicCharts(t, weblog)
+
+	//sort.Slice(*weblog.charts, func(i, j int) bool {
+	//	return (*weblog.charts)[i].Priority < (*weblog.charts)[j].Priority
+	//})
+	//
+	//for _, v := range *weblog.charts {
+	//	if v.Priority == 0 {
+	//		continue
+	//	}
+	//	fmt.Println(v.ID, v.Fam, v.Priority)
+	//}
+	//fmt.Println()
+	//
+	//for _, v := range *weblog.charts {
+	//	if v.Priority != 0 {
+	//		continue
+	//	}
+	//	fmt.Println(v.ID, v.Fam, v.Priority)
+	//}
 }
 
 func testDynamicCharts(t *testing.T, w *WebLog) {
 	if w.AggregateResponseCodes {
-		chart := w.Charts().Get(responseCodesDetailed.ID)
+		chart := w.Charts().Get(respCodes.ID)
 		require.NotNil(t, chart)
 		assert.Len(t, chart.Dims, len(w.mx.RespCode))
 	} else {
-		// TODO: !w.AggregateResponseCodes
+		for _, v := range []string{"_1xx", "_2xx", "_3xx", "_4xx", "_5xx"} {
+			chart := w.Charts().Get(respCodes.ID + v)
+			require.NotNil(t, chart)
+			assert.True(t, len(chart.Dims) > 0)
+		}
 	}
 	if w.col.vhost {
-		chart := w.Charts().Get(requestsPerVhost.ID)
+		chart := w.Charts().Get(reqPerVhost.ID)
 		require.NotNil(t, chart)
 		assert.Len(t, chart.Dims, len(w.mx.ReqVhost))
 	}
 	if w.col.port {
-		chart := w.Charts().Get(requestsPerPort.ID)
+		chart := w.Charts().Get(reqPerPort.ID)
 		require.NotNil(t, chart)
 		assert.Len(t, chart.Dims, len(w.mx.ReqPort))
 	}
 	if w.col.scheme {
-		assert.NotNil(t, w.Charts().Get(requestsPerScheme.ID))
+		assert.NotNil(t, w.Charts().Get(reqPerScheme.ID))
 	}
 	if w.col.client {
-		assert.NotNil(t, w.Charts().Get(requestsPerIPProto.ID))
-		assert.NotNil(t, w.Charts().Get(uniqueReqPerIPCurPoll.ID))
+		assert.NotNil(t, w.Charts().Get(reqPerIPProto.ID))
+		assert.NotNil(t, w.Charts().Get(uniqIPsCurPoll.ID))
 	}
 	if w.col.method {
-		chart := w.Charts().Get(requestsPerHTTPMethod.ID)
+		chart := w.Charts().Get(reqPerMethod.ID)
 		require.NotNil(t, chart)
 		assert.Len(t, chart.Dims, len(w.mx.ReqMethod))
 	}
-	if w.col.uri && len(w.urlCats) != 0 {
-		chart := w.Charts().Get(requestsPerURL.ID)
+	if w.col.url && len(w.urlCats) != 0 {
+		chart := w.Charts().Get(reqPerURL.ID)
 		require.NotNil(t, chart)
 		assert.Len(t, chart.Dims, len(w.urlCats))
 	}
 	if w.col.version {
-		chart := w.Charts().Get(requestsPerHTTPVersion.ID)
+		chart := w.Charts().Get(reqPerVersion.ID)
 		require.NotNil(t, chart)
 		assert.Len(t, chart.Dims, len(w.mx.ReqVersion))
 	}
@@ -266,20 +289,36 @@ func testDynamicCharts(t *testing.T, w *WebLog) {
 		assert.NotNil(t, w.Charts().Get(bandwidth.ID))
 	}
 	if w.col.custom && len(w.userCats) != 0 {
-		chart := w.Charts().Get(requestsPerUserDefined.ID)
+		chart := w.Charts().Get(reqPerCustom.ID)
 		require.NotNil(t, chart)
 		assert.Len(t, chart.Dims, len(w.mx.ReqCustom))
 	}
 	if w.col.respTime {
-		assert.NotNil(t, w.Charts().Get(responseTime.ID))
+		assert.NotNil(t, w.Charts().Get(respTime.ID))
 		if len(w.Histogram) != 0 {
-			assert.NotNil(t, w.Charts().Get(responseTimeHistogram.ID))
+			assert.NotNil(t, w.Charts().Get(respTimeHist.ID))
 		}
 	}
 	if w.col.upRespTime {
-		assert.NotNil(t, w.Charts().Get(responseTimeUpstream.ID))
+		assert.NotNil(t, w.Charts().Get(upsRespTime.ID))
 		if len(w.Histogram) != 0 {
-			assert.NotNil(t, w.Charts().Get(responseTimeUpstreamHistogram.ID))
+			assert.NotNil(t, w.Charts().Get(upsRespTimeHist.ID))
+		}
+	}
+
+	if w.col.url {
+		for _, cat := range w.urlCats {
+			assert.NotNil(t, w.Charts().Get(respCodes.ID+"_"+cat.name))
+		}
+		if w.col.reqSize || w.col.respSize {
+			for _, cat := range w.urlCats {
+				assert.NotNil(t, w.Charts().Get(bandwidth.ID+"_"+cat.name))
+			}
+		}
+		if w.col.respTime {
+			for _, cat := range w.urlCats {
+				assert.NotNil(t, w.Charts().Get(respTime.ID+"_"+cat.name))
+			}
 		}
 	}
 }

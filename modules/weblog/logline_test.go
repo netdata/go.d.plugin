@@ -204,19 +204,19 @@ func TestLogLine_Assign(t *testing.T) {
 				">s",
 			},
 			[]testCase{
-				{v: "100", wantLine: "resp_status=100"},
-				{v: "200", wantLine: "resp_status=200"},
-				{v: "300", wantLine: "resp_status=300"},
-				{v: "400", wantLine: "resp_status=400"},
-				{v: "500", wantLine: "resp_status=500"},
-				{v: "600", wantLine: "resp_status=600"},
+				{v: "100", wantLine: "resp_status_code=100"},
+				{v: "200", wantLine: "resp_status_code=200"},
+				{v: "300", wantLine: "resp_status_code=300"},
+				{v: "400", wantLine: "resp_status_code=400"},
+				{v: "500", wantLine: "resp_status_code=500"},
+				{v: "600", wantLine: "resp_status_code=600"},
 				{v: emptyStr, wantLine: emptyLogLine},
 				{v: hyphen, wantLine: emptyLogLine},
-				{v: "99", wantLine: emptyLogLine, wantErr: errBadRespStatus},
-				{v: "601", wantLine: emptyLogLine, wantErr: errBadRespStatus},
-				{v: "200 ", wantLine: emptyLogLine, wantErr: errBadRespStatus},
-				{v: "0.222", wantLine: emptyLogLine, wantErr: errBadRespStatus},
-				{v: "localhost", wantLine: emptyLogLine, wantErr: errBadRespStatus},
+				{v: "99", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{v: "601", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{v: "200 ", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{v: "0.222", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{v: "localhost", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
 			},
 		},
 		{
@@ -406,9 +406,9 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "req_url=/icons/openlogo-75.png"},
 				{line: "req_method=CONNECT req_url=http://192.168.0.1/"},
 				{line: emptyLogLine},
-				{line: "req_url=status?full&json", wantErr: errBadReqURI},
-				{line: "\"req_url=/ \"", wantErr: errBadReqURI},
-				{line: "req_url=http://192.168.0.1/", wantErr: errBadReqURI},
+				{line: "req_url=status?full&json", wantErr: errBadReqURL},
+				{line: "\"req_url=/ \"", wantErr: errBadReqURL},
+				{line: "req_url=http://192.168.0.1/", wantErr: errBadReqURL},
 			},
 		},
 		{
@@ -429,16 +429,16 @@ func TestLogLine_verify(t *testing.T) {
 		{
 			"Status",
 			[]testCase{
-				{line: "resp_status=100"},
-				{line: "resp_status=200"},
-				{line: "resp_status=300"},
-				{line: "resp_status=400"},
-				{line: "resp_status=500"},
-				{line: "resp_status=600"},
+				{line: "resp_status_code=100"},
+				{line: "resp_status_code=200"},
+				{line: "resp_status_code=300"},
+				{line: "resp_status_code=400"},
+				{line: "resp_status_code=500"},
+				{line: "resp_status_code=600"},
 				{line: emptyLogLine, wantErr: errMandatoryField},
-				{line: "resp_status=-1", wantErr: errBadRespStatus},
-				{line: "resp_status=99", wantErr: errBadRespStatus},
-				{line: "resp_status=601", wantErr: errBadRespStatus},
+				{line: "resp_status_code=-1", wantErr: errBadRespStatusCode},
+				{line: "resp_status_code=99", wantErr: errBadRespStatusCode},
+				{line: "resp_status_code=601", wantErr: errBadRespStatusCode},
 			},
 		},
 		{
@@ -492,7 +492,7 @@ func TestLogLine_verify(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				line := prepareLogLine(t, c.line)
 				if tt.name != "Status" {
-					line.respStatus = 200
+					line.respStatusCode = 200
 				}
 
 				err := line.verify()
@@ -546,10 +546,10 @@ func prepareLogLine(t *testing.T, from string) logLine {
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
 			line.reqSize = i
-		case fieldRespStatus:
+		case fieldRespStatusCode:
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
-			line.respStatus = i
+			line.respStatusCode = i
 		case fieldRespSize:
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)

@@ -56,6 +56,10 @@ func (w *WebLog) collectLogLines() (int, error) {
 			}
 			w.collectUnmatched()
 		}
+		if !w.line.hasRespStatusCode() {
+			w.collectUnmatched()
+			continue
+		}
 		n++
 		w.collectLogLine()
 	}
@@ -76,7 +80,7 @@ func (w *WebLog) collectLogLine() {
 	w.collectReqMethod()
 	w.collectReqURL()
 	w.collectReqProto()
-	w.collectRespStatus()
+	w.collectRespStatusCode()
 	w.collectReqSize()
 	w.collectRespSize()
 	w.collectRespTime()
@@ -153,7 +157,7 @@ func (w *WebLog) collectReqURL() {
 	if !w.line.hasReqURL() || len(w.urlCats) == 0 {
 		return
 	}
-	w.col.uri = true
+	w.col.url = true
 
 	for _, cat := range w.urlCats {
 		if !cat.MatchString(w.line.reqURL) {
@@ -178,12 +182,12 @@ func (w *WebLog) collectReqProto() {
 	c.Inc()
 }
 
-func (w *WebLog) collectRespStatus() {
-	if !w.line.hasRespStatus() {
+func (w *WebLog) collectRespStatusCode() {
+	if !w.line.hasRespStatusCode() {
 		return
 	}
 	w.col.status = true
-	status := w.line.respStatus
+	status := w.line.respStatusCode
 
 	switch {
 	case status >= 100 && status < 300, status == 304:
@@ -280,8 +284,8 @@ func (w *WebLog) collectStatsPerURL(uriCat string) {
 		return
 	}
 
-	if w.line.hasRespStatus() {
-		status := strconv.Itoa(w.line.respStatus)
+	if w.line.hasRespStatusCode() {
+		status := strconv.Itoa(w.line.respStatusCode)
 		c, _ := v.RespCode.GetP(status)
 		c.Inc()
 	}

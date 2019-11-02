@@ -89,7 +89,7 @@ type (
 			scheme     bool
 			client     bool
 			method     bool
-			uri        bool
+			url        bool
 			version    bool
 			status     bool
 			reqSize    bool
