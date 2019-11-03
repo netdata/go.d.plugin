@@ -88,8 +88,6 @@ func (w *WebLog) initParser() error {
 	if err = line.verify(); err != nil {
 		return fmt.Errorf("error on verifying parsed log line: %v", err)
 	}
-
-	line.reset()
 	w.line = line
 	return nil
 }

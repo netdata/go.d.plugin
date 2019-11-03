@@ -35,18 +35,9 @@ func New() *WebLog {
 
 	return &WebLog{
 		Config: Config{
-			AggregateResponseCodes: true,
-			Histogram:              metrics.DefBuckets,
-			Parser:                 cfg,
-		},
-		charts: charts.Copy(),
-		chartsCache: chartsCache{
-			created:  make(cache),
-			vhosts:   make(cache),
-			ports:    make(cache),
-			methods:  make(cache),
-			codes:    make(cache),
-			versions: make(cache),
+			GroupRespCodes: false,
+			Histogram:      metrics.DefBuckets,
+			Parser:         cfg,
 		},
 	}
 }
@@ -58,14 +49,14 @@ type (
 	}
 
 	Config struct {
-		Parser                 logs.ParserConfig  `yaml:",inline"`
-		Path                   string             `yaml:"path"`
-		ExcludePath            string             `yaml:"exclude_path"`
-		Filter                 matcher.SimpleExpr `yaml:"filter"`
-		URLCategories          []rawCategory      `yaml:"categories"`
-		UserCategories         []rawCategory      `yaml:"user_categories"`
-		Histogram              []float64          `yaml:"histogram"`
-		AggregateResponseCodes bool               `yaml:"aggregate_response_codes"`
+		Parser         logs.ParserConfig  `yaml:",inline"`
+		Path           string             `yaml:"path"`
+		ExcludePath    string             `yaml:"exclude_path"`
+		Filter         matcher.SimpleExpr `yaml:"filter"`
+		URLCategories  []rawCategory      `yaml:"categories"`
+		UserCategories []rawCategory      `yaml:"user_categories"`
+		Histogram      []float64          `yaml:"histogram"`
+		GroupRespCodes bool               `yaml:"group_response_codes"`
 	}
 
 	WebLog struct {
@@ -79,25 +70,8 @@ type (
 		urlCats  []*category
 		userCats []*category
 
-		mx          *MetricsData
-		charts      *module.Charts
-		chartsCache chartsCache
-
-		col struct {
-			vhost      bool
-			port       bool
-			scheme     bool
-			client     bool
-			method     bool
-			url        bool
-			version    bool
-			status     bool
-			reqSize    bool
-			respSize   bool
-			respTime   bool
-			upRespTime bool
-			custom     bool
-		}
+		mx     *MetricsData
+		charts *module.Charts
 	}
 )
 
@@ -131,6 +105,9 @@ func (w *WebLog) Check() bool {
 }
 
 func (w *WebLog) Charts() *module.Charts {
+	if w.charts == nil {
+		w.charts = w.createCharts(w.line)
+	}
 	return w.charts
 }
 

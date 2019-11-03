@@ -28,22 +28,7 @@ type (
 		ReqUnmatched metrics.Counter `stm:"req_unmatched"`
 		ReqFiltered  metrics.Counter `stm:"req_filtered"`
 
-		ReqVhost metrics.CounterVec `stm:"req_vhost"`
-		ReqPort  metrics.CounterVec `stm:"req_port"`
-
-		ReqHTTPScheme  metrics.Counter `stm:"req_http_scheme"`
-		ReqHTTPSScheme metrics.Counter `stm:"req_https_scheme"`
-
-		ReqIpv4    metrics.Counter       `stm:"req_ipv4"`
-		ReqIpv6    metrics.Counter       `stm:"req_ipv6"`
-		UniqueIPv4 metrics.UniqueCounter `stm:"req_ipv4_uniq"`
-		UniqueIPv6 metrics.UniqueCounter `stm:"req_ipv6_uniq"`
-
-		ReqMethod  metrics.CounterVec `stm:"req_method"`
-		ReqURL     metrics.CounterVec `stm:"req_url"`
-		ReqVersion metrics.CounterVec `stm:"req_version"`
-
-		RespCode        metrics.CounterVec `stm:"req_code"`
+		RespStatusCode  metrics.CounterVec `stm:"resp_code"`
 		RespSuccessful  metrics.Counter    `stm:"resp_successful"`
 		RespRedirect    metrics.Counter    `stm:"resp_redirect"`
 		RespClientError metrics.Counter    `stm:"resp_client_error"`
@@ -54,15 +39,25 @@ type (
 		Resp4xx         metrics.Counter    `stm:"resp_4xx"`
 		Resp5xx         metrics.Counter    `stm:"resp_5xx"`
 
-		BytesSent     metrics.Counter `stm:"bytes_sent"`
-		BytesReceived metrics.Counter `stm:"bytes_received"`
+		UniqueIPv4      metrics.UniqueCounter `stm:"uniq_ipv4"`
+		UniqueIPv6      metrics.UniqueCounter `stm:"uniq_ipv6"`
+		BytesSent       metrics.Counter       `stm:"bytes_sent"`
+		BytesReceived   metrics.Counter       `stm:"bytes_received"`
+		ReqProcTime     metrics.Summary       `stm:"req_proc_time"`
+		ReqProcTimeHist metrics.Histogram     `stm:"req_proc_time_hist"`
+		UpsRespTime     metrics.Summary       `stm:"upstream_resp_time"`
+		UpsRespTimeHist metrics.Histogram     `stm:"upstream_resp_time_hist"`
 
-		RespTime             metrics.Summary   `stm:"resp_time,1000"`
-		RespTimeHist         metrics.Histogram `stm:"resp_time_hist"`
-		RespTimeUpstream     metrics.Summary   `stm:"resp_time_upstream,1000"`
-		RespTimeUpstreamHist metrics.Histogram `stm:"resp_time_upstream_hist"`
-
-		ReqCustom metrics.CounterVec `stm:"req_custom"`
+		ReqVhost       metrics.CounterVec `stm:"req_vhost"`
+		ReqPort        metrics.CounterVec `stm:"req_port"`
+		ReqHTTPScheme  metrics.Counter    `stm:"req_http_scheme"`
+		ReqHTTPSScheme metrics.Counter    `stm:"req_https_scheme"`
+		ReqIPv4        metrics.Counter    `stm:"req_ipv4"`
+		ReqIPv6        metrics.Counter    `stm:"req_ipv6"`
+		ReqMethod      metrics.CounterVec `stm:"req_method"`
+		ReqURL         metrics.CounterVec `stm:"req_url"`
+		ReqVersion     metrics.CounterVec `stm:"req_version"`
+		ReqCustom      metrics.CounterVec `stm:"req_custom"`
 
 		CategorizedStats categorizedStats `stm:"url"`
 	}
@@ -71,7 +66,7 @@ type (
 		RespCode      metrics.CounterVec `stm:"req_code"`
 		BytesSent     metrics.Counter    `stm:"bytes_sent"`
 		BytesReceived metrics.Counter    `stm:"bytes_received"`
-		RespTime      metrics.Summary    `stm:"resp_time,1000"`
+		ReqProcTime   metrics.Summary    `stm:"req_proc_time"`
 	}
 
 	categorizedStats map[string]*categoryMetrics
@@ -79,30 +74,30 @@ type (
 
 func NewMetricsData(config Config) *MetricsData {
 	return &MetricsData{
-		ReqVhost:             metrics.NewCounterVec(),
-		ReqPort:              metrics.NewCounterVec(),
-		RespCode:             metrics.NewCounterVec(),
-		ReqMethod:            metrics.NewCounterVec(),
-		ReqVersion:           metrics.NewCounterVec(),
-		RespTime:             newWebLogSummary(),
-		RespTimeHist:         metrics.NewHistogram(config.Histogram),
-		RespTimeUpstream:     newWebLogSummary(),
-		RespTimeUpstreamHist: metrics.NewHistogram(config.Histogram),
-		UniqueIPv4:           metrics.NewUniqueCounter(true),
-		UniqueIPv6:           metrics.NewUniqueCounter(true),
-		ReqURL:               newCounterVecFromCategories(config.URLCategories),
-		ReqCustom:            newCounterVecFromCategories(config.UserCategories),
-		CategorizedStats:     newCategorizedStats(config.URLCategories),
+		ReqVhost:         metrics.NewCounterVec(),
+		ReqPort:          metrics.NewCounterVec(),
+		RespStatusCode:   metrics.NewCounterVec(),
+		ReqMethod:        metrics.NewCounterVec(),
+		ReqVersion:       metrics.NewCounterVec(),
+		ReqProcTime:      newWebLogSummary(),
+		ReqProcTimeHist:  metrics.NewHistogram(config.Histogram),
+		UpsRespTime:      newWebLogSummary(),
+		UpsRespTimeHist:  metrics.NewHistogram(config.Histogram),
+		UniqueIPv4:       metrics.NewUniqueCounter(true),
+		UniqueIPv6:       metrics.NewUniqueCounter(true),
+		ReqURL:           newCounterVecFromCategories(config.URLCategories),
+		ReqCustom:        newCounterVecFromCategories(config.UserCategories),
+		CategorizedStats: newCategorizedStats(config.URLCategories),
 	}
 }
 
 func (m *MetricsData) Reset() {
 	m.UniqueIPv4.Reset()
 	m.UniqueIPv6.Reset()
-	m.RespTime.Reset()
-	m.RespTimeUpstream.Reset()
+	m.ReqProcTime.Reset()
+	m.UpsRespTime.Reset()
 	for _, v := range m.CategorizedStats {
-		v.RespTime.Reset()
+		v.ReqProcTime.Reset()
 	}
 }
 
@@ -110,8 +105,8 @@ func newCategorizedStats(cats []rawCategory) map[string]*categoryMetrics {
 	stats := make(categorizedStats)
 	for _, v := range cats {
 		stats[v.Name] = &categoryMetrics{
-			RespCode: metrics.NewCounterVec(),
-			RespTime: newWebLogSummary(),
+			RespCode:    metrics.NewCounterVec(),
+			ReqProcTime: newWebLogSummary(),
 		}
 	}
 	return stats

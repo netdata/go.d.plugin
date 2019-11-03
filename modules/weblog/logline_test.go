@@ -204,19 +204,19 @@ func TestLogLine_Assign(t *testing.T) {
 				">s",
 			},
 			[]testCase{
-				{v: "100", wantLine: "resp_status_code=100"},
-				{v: "200", wantLine: "resp_status_code=200"},
-				{v: "300", wantLine: "resp_status_code=300"},
-				{v: "400", wantLine: "resp_status_code=400"},
-				{v: "500", wantLine: "resp_status_code=500"},
-				{v: "600", wantLine: "resp_status_code=600"},
+				{v: "100", wantLine: "resp_code=100"},
+				{v: "200", wantLine: "resp_code=200"},
+				{v: "300", wantLine: "resp_code=300"},
+				{v: "400", wantLine: "resp_code=400"},
+				{v: "500", wantLine: "resp_code=500"},
+				{v: "600", wantLine: "resp_code=600"},
 				{v: emptyStr, wantLine: emptyLogLine},
 				{v: hyphen, wantLine: emptyLogLine},
-				{v: "99", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{v: "601", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{v: "200 ", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{v: "0.222", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{v: "localhost", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{v: "99", wantLine: emptyLogLine, wantErr: errBadRespCode},
+				{v: "601", wantLine: emptyLogLine, wantErr: errBadRespCode},
+				{v: "200 ", wantLine: emptyLogLine, wantErr: errBadRespCode},
+				{v: "0.222", wantLine: emptyLogLine, wantErr: errBadRespCode},
+				{v: "localhost", wantLine: emptyLogLine, wantErr: errBadRespCode},
 			},
 		},
 		{
@@ -255,19 +255,19 @@ func TestLogLine_Assign(t *testing.T) {
 			},
 		},
 		{
-			"Response time",
+			"Request processing time",
 			[]string{
 				"request_time",
 				"D",
 			},
 			[]testCase{
-				{v: "100222", wantLine: "resp_time=100222"},
-				{v: "100.222", wantLine: "resp_time=100222000"},
+				{v: "100222", wantLine: "req_proc_time=100222"},
+				{v: "100.222", wantLine: "req_proc_time=100222000"},
 				{v: emptyStr, wantLine: emptyLogLine},
 				{v: hyphen, wantLine: emptyLogLine},
-				{v: "-1", wantLine: emptyLogLine, wantErr: errBadRespTime},
-				{v: "0.333,0.444,0.555", wantLine: emptyLogLine, wantErr: errBadRespTime},
-				{v: "number", wantLine: emptyLogLine, wantErr: errBadRespTime},
+				{v: "-1", wantLine: emptyLogLine, wantErr: errBadReqProcTime},
+				{v: "0.333,0.444,0.555", wantLine: emptyLogLine, wantErr: errBadReqProcTime},
+				{v: "number", wantLine: emptyLogLine, wantErr: errBadReqProcTime},
 			},
 		},
 		{
@@ -429,16 +429,16 @@ func TestLogLine_verify(t *testing.T) {
 		{
 			"Status",
 			[]testCase{
-				{line: "resp_status_code=100"},
-				{line: "resp_status_code=200"},
-				{line: "resp_status_code=300"},
-				{line: "resp_status_code=400"},
-				{line: "resp_status_code=500"},
-				{line: "resp_status_code=600"},
+				{line: "resp_code=100"},
+				{line: "resp_code=200"},
+				{line: "resp_code=300"},
+				{line: "resp_code=400"},
+				{line: "resp_code=500"},
+				{line: "resp_code=600"},
 				{line: emptyLogLine, wantErr: errMandatoryField},
-				{line: "resp_status_code=-1", wantErr: errBadRespStatusCode},
-				{line: "resp_status_code=99", wantErr: errBadRespStatusCode},
-				{line: "resp_status_code=601", wantErr: errBadRespStatusCode},
+				{line: "resp_code=-1", wantErr: errBadRespCode},
+				{line: "resp_code=99", wantErr: errBadRespCode},
+				{line: "resp_code=601", wantErr: errBadRespCode},
 			},
 		},
 		{
@@ -462,14 +462,14 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Response time",
+			"Request Processing time",
 			[]testCase{
-				{line: "resp_time=0"},
-				{line: "resp_time=0.000"},
-				{line: "resp_time=100"},
-				{line: "resp_time=1000000.123"},
+				{line: "req_proc_time=0"},
+				{line: "req_proc_time=0.000"},
+				{line: "req_proc_time=100"},
+				{line: "req_proc_time=1000000.123"},
 				{line: emptyLogLine},
-				{line: "resp_time=-1", wantErr: errBadRespTime},
+				{line: "req_proc_time=-1", wantErr: errBadReqProcTime},
 			},
 		},
 		{
@@ -492,7 +492,7 @@ func TestLogLine_verify(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				line := prepareLogLine(t, c.line)
 				if tt.name != "Status" {
-					line.respStatusCode = 200
+					line.respCode = 200
 				}
 
 				err := line.verify()
@@ -546,18 +546,18 @@ func prepareLogLine(t *testing.T, from string) logLine {
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
 			line.reqSize = i
-		case fieldRespStatusCode:
+		case fieldRespCode:
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
-			line.respStatusCode = i
+			line.respCode = i
 		case fieldRespSize:
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
 			line.respSize = i
-		case fieldRespTime:
+		case fieldReqProcTime:
 			i, err := strconv.ParseFloat(val, 64)
 			require.NoError(t, err)
-			line.respTime = i
+			line.reqProcTime = i
 		case fieldUpsRespTime:
 			i, err := strconv.ParseFloat(val, 64)
 			require.NoError(t, err)

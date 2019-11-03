@@ -26,18 +26,16 @@ func (w WebLog) logPanicStackIfAny() {
 	panic(err)
 }
 
-func (w *WebLog) collect() (mx map[string]int64, err error) {
+func (w *WebLog) collect() (map[string]int64, error) {
 	defer w.logPanicStackIfAny()
 	w.mx.Reset()
-	var n int
 
-	n, err = w.collectLogLines()
+	var mx map[string]int64
+
+	n, err := w.collectLogLines()
 
 	if n > 0 || err == nil {
 		mx = stm.ToMap(w.mx)
-	}
-	if n > 0 {
-		w.updateCharts()
 	}
 	return mx, err
 }
@@ -55,8 +53,10 @@ func (w *WebLog) collectLogLines() (int, error) {
 				return n, err
 			}
 			w.collectUnmatched()
+			continue
 		}
-		if !w.line.hasRespStatusCode() {
+
+		if !w.line.hasRespCode() {
 			w.collectUnmatched()
 			continue
 		}
@@ -66,13 +66,11 @@ func (w *WebLog) collectLogLines() (int, error) {
 }
 
 func (w *WebLog) collectLogLine() {
-	// TODO: chart filtered?
+	w.mx.Requests.Inc()
 	if w.line.hasReqURL() && !w.filter.MatchString(w.line.reqURL) {
 		w.mx.ReqFiltered.Inc()
 		return
 	}
-
-	w.mx.Requests.Inc()
 	w.collectVhost()
 	w.collectPort()
 	w.collectReqScheme()
@@ -80,10 +78,10 @@ func (w *WebLog) collectLogLine() {
 	w.collectReqMethod()
 	w.collectReqURL()
 	w.collectReqProto()
-	w.collectRespStatusCode()
+	w.collectRespCode()
 	w.collectReqSize()
 	w.collectRespSize()
-	w.collectRespTime()
+	w.collectReqProcTime()
 	w.collectUpstreamRespTime()
 	w.collectCustom()
 }
@@ -97,9 +95,11 @@ func (w *WebLog) collectVhost() {
 	if !w.line.hasVhost() {
 		return
 	}
-	w.col.vhost = true
 
-	c, _ := w.mx.ReqVhost.GetP(w.line.vhost)
+	c, ok := w.mx.ReqVhost.GetP(w.line.vhost)
+	if !ok {
+		w.updateVhostChart(w.line.vhost)
+	}
 	c.Inc()
 }
 
@@ -107,9 +107,11 @@ func (w *WebLog) collectPort() {
 	if !w.line.hasPort() {
 		return
 	}
-	w.col.port = true
 
-	c, _ := w.mx.ReqPort.GetP(w.line.port)
+	c, ok := w.mx.ReqPort.GetP(w.line.port)
+	if !ok {
+		w.updatePortChart(w.line.port)
+	}
 	c.Inc()
 }
 
@@ -117,16 +119,14 @@ func (w *WebLog) collectReqClient() {
 	if !w.line.hasReqClient() {
 		return
 	}
-	w.col.client = true
 
 	if strings.ContainsRune(w.line.reqClient, ':') {
-		w.mx.ReqIpv6.Inc()
+		w.mx.ReqIPv6.Inc()
 		w.mx.UniqueIPv6.Insert(w.line.reqClient)
 		return
 	}
-
 	// NOTE: count hostname as IPv4 address
-	w.mx.ReqIpv4.Inc()
+	w.mx.ReqIPv4.Inc()
 	w.mx.UniqueIPv4.Insert(w.line.reqClient)
 }
 
@@ -134,7 +134,6 @@ func (w *WebLog) collectReqScheme() {
 	if !w.line.hasReqScheme() {
 		return
 	}
-	w.col.scheme = true
 
 	if w.line.reqScheme == "https" {
 		w.mx.ReqHTTPSScheme.Inc()
@@ -147,9 +146,11 @@ func (w *WebLog) collectReqMethod() {
 	if !w.line.hasReqMethod() {
 		return
 	}
-	w.col.method = true
 
-	c, _ := w.mx.ReqMethod.GetP(w.line.reqMethod)
+	c, ok := w.mx.ReqMethod.GetP(w.line.reqMethod)
+	if !ok {
+		w.updateReqMethodChart(w.line.reqMethod)
+	}
 	c.Inc()
 }
 
@@ -157,7 +158,6 @@ func (w *WebLog) collectReqURL() {
 	if !w.line.hasReqURL() || len(w.urlCats) == 0 {
 		return
 	}
-	w.col.url = true
 
 	for _, cat := range w.urlCats {
 		if !cat.MatchString(w.line.reqURL) {
@@ -176,19 +176,21 @@ func (w *WebLog) collectReqProto() {
 	if !w.line.hasReqProto() {
 		return
 	}
-	w.col.version = true
 
-	c, _ := w.mx.ReqVersion.GetP(w.line.reqProto)
+	c, ok := w.mx.ReqVersion.GetP(w.line.reqProto)
+	if !ok {
+		w.updateReqVersionChart(w.line.reqProto)
+	}
 	c.Inc()
 }
 
-func (w *WebLog) collectRespStatusCode() {
-	if !w.line.hasRespStatusCode() {
+func (w *WebLog) collectRespCode() {
+	if !w.line.hasRespCode() {
 		return
 	}
-	w.col.status = true
-	status := w.line.respStatusCode
 
+	status := w.line.respCode
+	// TODO: this grouping is confusing since it uses terms from rfc7231
 	switch {
 	case status >= 100 && status < 300, status == 304:
 		w.mx.RespSuccessful.Inc()
@@ -214,7 +216,10 @@ func (w *WebLog) collectRespStatusCode() {
 	}
 
 	statusStr := strconv.Itoa(status)
-	c, _ := w.mx.RespCode.GetP(statusStr)
+	c, ok := w.mx.RespStatusCode.GetP(statusStr)
+	if !ok {
+		w.updateRespCodesChart(statusStr)
+	}
 	c.Inc()
 }
 
@@ -222,7 +227,6 @@ func (w *WebLog) collectReqSize() {
 	if !w.line.hasReqSize() {
 		return
 	}
-	w.col.reqSize = true
 
 	w.mx.BytesSent.Add(float64(w.line.reqSize))
 }
@@ -231,42 +235,38 @@ func (w *WebLog) collectRespSize() {
 	if !w.line.hasRespSize() {
 		return
 	}
-	w.col.respSize = true
 
 	w.mx.BytesReceived.Add(float64(w.line.respSize))
 }
 
-func (w *WebLog) collectRespTime() {
-	if !w.line.hasRespTime() {
+func (w *WebLog) collectReqProcTime() {
+	if !w.line.hasReqProcTime() {
 		return
 	}
-	w.col.respTime = true
 
-	w.mx.RespTime.Observe(w.line.respTime)
-	if w.mx.RespTimeHist == nil {
+	w.mx.ReqProcTime.Observe(w.line.reqProcTime)
+	if w.mx.ReqProcTimeHist == nil {
 		return
 	}
-	w.mx.RespTimeHist.Observe(w.line.respTime)
+	w.mx.ReqProcTimeHist.Observe(w.line.reqProcTime)
 }
 
 func (w *WebLog) collectUpstreamRespTime() {
 	if !w.line.hasUpstreamRespTime() {
 		return
 	}
-	w.col.upRespTime = true
 
-	w.mx.RespTimeUpstream.Observe(w.line.upsRespTime)
-	if w.mx.RespTimeUpstreamHist == nil {
+	w.mx.UpsRespTime.Observe(w.line.upsRespTime)
+	if w.mx.UpsRespTimeHist == nil {
 		return
 	}
-	w.mx.RespTimeUpstreamHist.Observe(w.line.upsRespTime)
+	w.mx.UpsRespTimeHist.Observe(w.line.upsRespTime)
 }
 
 func (w *WebLog) collectCustom() {
 	if !w.line.hasCustom() || len(w.userCats) == 0 {
 		return
 	}
-	w.col.custom = true
 
 	for _, cat := range w.userCats {
 		if !cat.MatchString(w.line.custom) {
@@ -278,15 +278,18 @@ func (w *WebLog) collectCustom() {
 	}
 }
 
-func (w *WebLog) collectStatsPerURL(uriCat string) {
-	v, ok := w.mx.CategorizedStats[uriCat]
+func (w *WebLog) collectStatsPerURL(urlName string) {
+	v, ok := w.mx.CategorizedStats[urlName]
 	if !ok {
 		return
 	}
 
-	if w.line.hasRespStatusCode() {
-		status := strconv.Itoa(w.line.respStatusCode)
-		c, _ := v.RespCode.GetP(status)
+	if w.line.hasRespCode() {
+		status := strconv.Itoa(w.line.respCode)
+		c, ok := v.RespCode.GetP(status)
+		if !ok {
+			w.updateURLRespCodesChart(urlName, status)
+		}
 		c.Inc()
 	}
 
@@ -298,7 +301,7 @@ func (w *WebLog) collectStatsPerURL(uriCat string) {
 		v.BytesReceived.Add(float64(w.line.respSize))
 	}
 
-	if w.line.hasRespTime() {
-		v.RespTime.Observe(w.line.respTime)
+	if w.line.hasReqProcTime() {
+		v.ReqProcTime.Observe(w.line.reqProcTime)
 	}
 }
