@@ -268,10 +268,10 @@ func TestWebLog_Collect(t *testing.T) {
 //		require.NotNil(t, chart)
 //		assert.Len(t, chart.Dims, len(w.mx.ReqMethod))
 //	}
-//	if w.col.url && len(w.urlCats) != 0 {
+//	if w.col.url && len(w.catURL) != 0 {
 //		chart := w.Charts().Get(reqPerURL.ID)
 //		require.NotNil(t, chart)
-//		assert.Len(t, chart.Dims, len(w.urlCats))
+//		assert.Len(t, chart.Dims, len(w.catURL))
 //	}
 //	if w.col.version {
 //		chart := w.Charts().Get(reqPerVersion.ID)
@@ -281,7 +281,7 @@ func TestWebLog_Collect(t *testing.T) {
 //	if w.col.reqSize || w.col.respSize {
 //		assert.NotNil(t, w.Charts().Get(bandwidth.ID))
 //	}
-//	if w.col.custom && len(w.userCats) != 0 {
+//	if w.col.custom && len(w.catCustom) != 0 {
 //		chart := w.Charts().Get(reqPerCustom.ID)
 //		require.NotNil(t, chart)
 //		assert.Len(t, chart.Dims, len(w.mx.ReqCustom))
@@ -300,16 +300,16 @@ func TestWebLog_Collect(t *testing.T) {
 //	}
 //
 //	if w.col.url {
-//		for _, cat := range w.urlCats {
+//		for _, cat := range w.catURL {
 //			assert.NotNil(t, w.Charts().Get(respCodes.ID+"_"+cat.name))
 //		}
 //		if w.col.reqSize || w.col.respSize {
-//			for _, cat := range w.urlCats {
+//			for _, cat := range w.catURL {
 //				assert.NotNil(t, w.Charts().Get(bandwidth.ID+"_"+cat.name))
 //			}
 //		}
 //		if w.col.reqProcTime {
-//			for _, cat := range w.urlCats {
+//			for _, cat := range w.catURL {
 //				assert.NotNil(t, w.Charts().Get(reqProcTime.ID+"_"+cat.name))
 //			}
 //		}

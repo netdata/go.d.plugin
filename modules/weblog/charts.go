@@ -336,7 +336,7 @@ var (
 	}
 	reqPerCustom = Chart{
 		ID:       "requests_custom",
-		Title:    "Requests Per User Defined Custom Category",
+		Title:    "Requests Per User Defined Custom Categories",
 		Units:    "requests/s",
 		Fam:      "req custom",
 		Ctx:      "web_log.requests_custom",
@@ -359,18 +359,11 @@ func newRespTimeHistChart(histogram []float64) *Chart {
 	for i, v := range histogram {
 		dimID := fmt.Sprintf("resp_time_hist_bucket_%d", i+1)
 		name := fmt.Sprintf("%.3f", v)
-		dim := &Dim{
-			ID:   dimID,
-			Name: name,
-			Algo: module.Incremental,
-		}
+
+		dim := &Dim{ID: dimID, Name: name, Algo: module.Incremental}
 		check(chart.AddDim(dim))
 	}
-	check(chart.AddDim(&Dim{
-		ID:   "resp_time_hist_count",
-		Name: "+Inf",
-		Algo: module.Incremental,
-	}))
+	check(chart.AddDim(&Dim{ID: "resp_time_hist_count", Name: "+Inf", Algo: module.Incremental}))
 	return chart
 }
 
@@ -379,11 +372,8 @@ func newUpsRespTimeHistChart(histogram []float64) *Chart {
 	for i, v := range histogram {
 		dimID := fmt.Sprintf("upstream_resp_time_hist_bucket_%d", i+1)
 		name := fmt.Sprintf("%.3f", v)
-		dim := &Dim{
-			ID:   dimID,
-			Name: name,
-			Algo: module.Incremental,
-		}
+
+		dim := &Dim{ID: dimID, Name: name, Algo: module.Incremental}
 		check(chart.AddDim(dim))
 	}
 	check(chart.AddDim(&Dim{
@@ -394,73 +384,65 @@ func newUpsRespTimeHistChart(histogram []float64) *Chart {
 	return chart
 }
 
-func newReqPerURLCatsChart(cats []*category) *Chart {
+func newReqPerURLChart(cs []*category) *Chart {
 	chart := reqPerURL.Copy()
-	for _, c := range cats {
-		dim := &Dim{
-			ID:   "req_url_" + c.name,
-			Name: c.name,
-			Algo: module.Incremental,
-		}
+	for _, c := range cs {
+		dim := &Dim{ID: "req_url_" + c.name, Name: c.name, Algo: module.Incremental}
 		check(chart.AddDim(dim))
 	}
 	return chart
 }
 
-func newReqPerCustomCatsChart(cats []*category) *Chart {
+func newReqPerCustomChart(cs []*category) *Chart {
 	chart := reqPerCustom.Copy()
-	for _, c := range cats {
-		dim := &Dim{
-			ID:   "req_custom_" + c.name,
-			Name: c.name,
-			Algo: module.Incremental,
-		}
+	for _, c := range cs {
+		dim := &Dim{ID: "req_custom_" + c.name, Name: c.name, Algo: module.Incremental}
 		check(chart.AddDim(dim))
 	}
 	return chart
 }
 
-func newURLRespCodesChart(urlName string) *Chart {
+func newURLRespCodesChart(name string) *Chart {
 	return &Chart{
-		ID:       respCodes.ID + "_" + urlName,
+		ID:       respCodes.ID + "_" + name,
 		Title:    "Response Codes",
 		Units:    "responses/s",
-		Fam:      "url " + urlName,
+		Fam:      "url " + name,
 		Ctx:      "web_log.response_codes_per_url",
 		Type:     module.Stacked,
 		Priority: prioURLStats,
 	}
 }
 
-func newURLBandwidthChart(urlName string) *Chart {
+func newURLBandwidthChart(name string) *Chart {
 	return &Chart{
-		ID:       bandwidth.ID + "_" + urlName,
+		ID:       bandwidth.ID + "_" + name,
 		Title:    "Bandwidth",
 		Units:    "kilobits/s",
-		Fam:      "url " + urlName,
+		Fam:      "url " + name,
 		Ctx:      "web_log.bandwidth_per_url",
 		Type:     module.Area,
 		Priority: prioURLStats + 1,
 		Dims: Dims{
-			{ID: urlName + "_bytes_received", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
-			{ID: urlName + "_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
+			{ID: name + "_bytes_received", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
+			{ID: name + "_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
 		},
 	}
 }
 
-func newURLRespTimeChart(urlName string) *Chart {
+func newURLRespTimeChart(name string) *Chart {
 	return &Chart{
-		ID:       respTime.ID + "_" + urlName,
+		ID:       respTime.ID + "_" + name,
 		Title:    "Request Processing Time",
 		Units:    "milliseconds",
-		Fam:      "url " + urlName,
+		Fam:      "url " + name,
 		Ctx:      "web_log.request_processing_time_per_url",
 		Type:     module.Area,
 		Priority: prioURLStats + 2,
 		Dims: Dims{
-			{ID: urlName + "_req_proc_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
-			{ID: urlName + "_req_proc_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
-			{ID: urlName + "_req_proc_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
+			{ID: name + "_req_proc_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
+			{ID: name + "_req_proc_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
+			{ID: name + "_req_proc_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
 		},
 	}
 }
@@ -493,11 +475,13 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 	if line.hasReqMethod() {
 		check(charts.Add(reqPerMethod.Copy()))
 	}
-	if line.hasReqURL() && len(w.urlCats) > 0 {
-		check(charts.Add(newReqPerURLCatsChart(w.urlCats)))
+	if line.hasReqURL() && len(w.catURL) > 0 {
+		chart := newReqPerURLChart(w.catURL)
+		check(charts.Add(chart))
 
-		for _, c := range w.urlCats {
-			check(charts.Add(newURLRespCodesChart(c.name)))
+		for _, c := range w.catURL {
+			chart := newURLRespCodesChart(c.name)
+			check(charts.Add(chart))
 		}
 	}
 	if line.hasReqProto() {
@@ -506,65 +490,120 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 	if line.hasReqSize() || line.hasRespSize() {
 		check(charts.Add(bandwidth.Copy()))
 
-		for _, c := range w.urlCats {
-			check(charts.Add(newURLBandwidthChart(c.name)))
+		for _, c := range w.catURL {
+			chart := newURLBandwidthChart(c.name)
+			check(charts.Add(chart))
 		}
 	}
 	if line.hasReqProcTime() {
 		check(charts.Add(respTime.Copy()))
 		if len(w.Histogram) != 0 {
-			check(charts.Add(newRespTimeHistChart(w.Histogram)))
+			chart := newRespTimeHistChart(w.Histogram)
+			check(charts.Add(chart))
 		}
 
-		for _, c := range w.urlCats {
-			check(charts.Add(newURLRespTimeChart(c.name)))
+		for _, c := range w.catURL {
+			chart := newURLRespTimeChart(c.name)
+			check(charts.Add(chart))
 		}
 	}
 	if line.hasUpstreamRespTime() {
 		check(charts.Add(upsRespTime.Copy()))
 		if len(w.Histogram) != 0 {
-			check(charts.Add(newUpsRespTimeHistChart(w.Histogram)))
+			chart := newUpsRespTimeHistChart(w.Histogram)
+			check(charts.Add(chart))
 		}
 	}
-	if line.hasCustom() && len(w.userCats) > 0 {
-		check(charts.Add(newReqPerCustomCatsChart(w.userCats)))
+	if line.hasCustom() && len(w.catCustom) > 0 {
+		chart := newReqPerCustomChart(w.catCustom)
+		check(charts.Add(chart))
 	}
 
 	return &charts
 }
 
-func (w *WebLog) updateVhostChart(vhost string) {
+func (w *WebLog) addDimToVhostChart(vhost string) {
 	chart := w.Charts().Get(reqPerVhost.ID)
-	addDimToVhostChart(chart, vhost)
-}
 
-func (w *WebLog) updatePortChart(port string) {
-	chart := w.Charts().Get(reqPerPort.ID)
-	addDimToPortChart(chart, port)
-}
-
-func (w *WebLog) updateReqMethodChart(method string) {
-	chart := w.Charts().Get(reqPerMethod.ID)
-	addDimToReqMethodChart(chart, method)
-}
-
-func (w *WebLog) updateReqVersionChart(version string) {
-	chart := w.Charts().Get(reqPerVersion.ID)
-	addDimToReqVersionChart(chart, version)
-}
-
-func (w *WebLog) updateRespCodesChart(code string) {
-	if chart := w.respCodesChartByCode(code); chart != nil {
-		addDimToRespCodesChart(chart, code)
+	dim := &Dim{
+		ID:   "req_vhost_" + vhost,
+		Name: vhost,
+		Algo: module.Incremental,
 	}
+
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
 }
 
-func (w *WebLog) updateURLRespCodesChart(urlName, code string) {
-	chart := w.Charts().Get(respCodes.ID + "_" + urlName)
-	addDimToURLRespCodesChart(chart, urlName, code)
+func (w *WebLog) addDimToPortChart(port string) {
+	chart := w.Charts().Get(reqPerPort.ID)
+
+	dim := &Dim{
+		ID:   "req_port_" + port,
+		Name: port,
+		Algo: module.Incremental,
+	}
+
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
 }
 
-func (w *WebLog) respCodesChartByCode(code string) *Chart {
+func (w *WebLog) addDimToReqMethodChart(method string) {
+	chart := w.Charts().Get(reqPerMethod.ID)
+
+	dim := &Dim{
+		ID:   "req_method_" + method,
+		Name: method,
+		Algo: module.Incremental,
+	}
+
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToReqVersionChart(version string) {
+	chart := w.Charts().Get(reqPerVersion.ID)
+
+	dim := &Dim{
+		ID:   "req_version_" + version,
+		Name: version,
+		Algo: module.Incremental,
+	}
+
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToRespCodesChart(code string) {
+	chart := w.findRespCodesChartByCode(code)
+	if chart == nil {
+		return
+	}
+
+	dim := &Dim{
+		ID:   "resp_code_" + code,
+		Name: code,
+		Algo: module.Incremental,
+	}
+
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToURLRespCodesChart(name, code string) {
+	chart := w.Charts().Get(respCodes.ID + "_" + name)
+
+	dim := &Dim{
+		ID:   name + "_resp_code_" + code,
+		Name: code,
+		Algo: module.Incremental,
+	}
+
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) findRespCodesChartByCode(code string) *Chart {
 	if !w.GroupRespCodes {
 		return w.Charts().Get(respCodes.ID)
 	}
@@ -589,72 +628,6 @@ func (w *WebLog) respCodesChartByCode(code string) *Chart {
 		check(w.Charts().Add(chart.Copy()))
 	}
 	return w.Charts().Get(chart.ID)
-}
-
-func addDimToRespCodesChart(chart *Chart, code string) {
-	dimID := "resp_code_" + code
-	dim := &Dim{
-		ID:   dimID,
-		Name: code,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
-}
-
-func addDimToURLRespCodesChart(chart *Chart, urlName, code string) {
-	dimID := fmt.Sprintf("%s_resp_code_%s", urlName, code)
-	dim := &Dim{
-		ID:   dimID,
-		Name: code,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
-}
-
-func addDimToReqVersionChart(chart *Chart, version string) {
-	dimID := "req_version_" + version
-	dim := &Dim{
-		ID:   dimID,
-		Name: version,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
-}
-
-func addDimToReqMethodChart(chart *Chart, method string) {
-	dimID := "req_method_" + method
-	dim := &Dim{
-		ID:   dimID,
-		Name: method,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
-}
-
-func addDimToVhostChart(chart *Chart, vhost string) {
-	dimID := "req_vhost_" + vhost
-	dim := &Dim{
-		ID:   dimID,
-		Name: vhost,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
-}
-
-func addDimToPortChart(chart *Chart, port string) {
-	dimID := "req_port_" + port
-	dim := &Dim{
-		ID:   dimID,
-		Name: port,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
 }
 
 // TODO: get rid of

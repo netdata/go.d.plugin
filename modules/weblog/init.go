@@ -44,7 +44,7 @@ func (w *WebLog) initCategories() error {
 		if err != nil {
 			return fmt.Errorf("error on creating url category %s: %v", raw, err)
 		}
-		w.urlCats = append(w.urlCats, cat)
+		w.catURL = append(w.catURL, cat)
 	}
 
 	for _, raw := range w.UserCategories {
@@ -52,7 +52,7 @@ func (w *WebLog) initCategories() error {
 		if err != nil {
 			return fmt.Errorf("error on creating user category %s: %v", raw, err)
 		}
-		w.userCats = append(w.userCats, cat)
+		w.catCustom = append(w.catCustom, cat)
 	}
 
 	return nil

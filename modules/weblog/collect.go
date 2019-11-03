@@ -52,15 +52,15 @@ func (w *WebLog) collectLogLines() (int, error) {
 			if !logs.IsParseError(err) {
 				return n, err
 			}
-			w.collectUnmatched()
-			continue
-		}
-
-		if !w.line.hasRespCode() {
+			n++
 			w.collectUnmatched()
 			continue
 		}
 		n++
+		if !w.line.hasRespCode() {
+			w.collectUnmatched()
+			continue
+		}
 		w.collectLogLine()
 	}
 }
@@ -98,7 +98,7 @@ func (w *WebLog) collectVhost() {
 
 	c, ok := w.mx.ReqVhost.GetP(w.line.vhost)
 	if !ok {
-		w.updateVhostChart(w.line.vhost)
+		w.addDimToVhostChart(w.line.vhost)
 	}
 	c.Inc()
 }
@@ -110,7 +110,7 @@ func (w *WebLog) collectPort() {
 
 	c, ok := w.mx.ReqPort.GetP(w.line.port)
 	if !ok {
-		w.updatePortChart(w.line.port)
+		w.addDimToPortChart(w.line.port)
 	}
 	c.Inc()
 }
@@ -149,21 +149,20 @@ func (w *WebLog) collectReqMethod() {
 
 	c, ok := w.mx.ReqMethod.GetP(w.line.reqMethod)
 	if !ok {
-		w.updateReqMethodChart(w.line.reqMethod)
+		w.addDimToReqMethodChart(w.line.reqMethod)
 	}
 	c.Inc()
 }
 
 func (w *WebLog) collectReqURL() {
-	if !w.line.hasReqURL() || len(w.urlCats) == 0 {
+	if !w.line.hasReqURL() || len(w.catURL) == 0 {
 		return
 	}
 
-	for _, cat := range w.urlCats {
+	for _, cat := range w.catURL {
 		if !cat.MatchString(w.line.reqURL) {
 			continue
 		}
-
 		c, _ := w.mx.ReqURL.GetP(cat.name)
 		c.Inc()
 
@@ -179,7 +178,7 @@ func (w *WebLog) collectReqProto() {
 
 	c, ok := w.mx.ReqVersion.GetP(w.line.reqProto)
 	if !ok {
-		w.updateReqVersionChart(w.line.reqProto)
+		w.addDimToReqVersionChart(w.line.reqProto)
 	}
 	c.Inc()
 }
@@ -218,7 +217,7 @@ func (w *WebLog) collectRespCode() {
 	statusStr := strconv.Itoa(status)
 	c, ok := w.mx.RespStatusCode.GetP(statusStr)
 	if !ok {
-		w.updateRespCodesChart(statusStr)
+		w.addDimToRespCodesChart(statusStr)
 	}
 	c.Inc()
 }
@@ -264,11 +263,11 @@ func (w *WebLog) collectUpstreamRespTime() {
 }
 
 func (w *WebLog) collectCustom() {
-	if !w.line.hasCustom() || len(w.userCats) == 0 {
+	if !w.line.hasCustom() || len(w.catCustom) == 0 {
 		return
 	}
 
-	for _, cat := range w.userCats {
+	for _, cat := range w.catCustom {
 		if !cat.MatchString(w.line.custom) {
 			continue
 		}
@@ -278,8 +277,8 @@ func (w *WebLog) collectCustom() {
 	}
 }
 
-func (w *WebLog) collectStatsPerURL(urlName string) {
-	v, ok := w.mx.CategorizedStats[urlName]
+func (w *WebLog) collectStatsPerURL(name string) {
+	v, ok := w.mx.CategorizedStats[name]
 	if !ok {
 		return
 	}
@@ -288,7 +287,7 @@ func (w *WebLog) collectStatsPerURL(urlName string) {
 		status := strconv.Itoa(w.line.respCode)
 		c, ok := v.RespCode.GetP(status)
 		if !ok {
-			w.updateURLRespCodesChart(urlName, status)
+			w.addDimToURLRespCodesChart(name, status)
 		}
 		c.Inc()
 	}

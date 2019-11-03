@@ -63,12 +63,12 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
-		file     *logs.Reader
-		parser   logs.Parser
-		line     *logLine
-		filter   matcher.Matcher
-		urlCats  []*category
-		userCats []*category
+		file      *logs.Reader
+		parser    logs.Parser
+		line      *logLine
+		filter    matcher.Matcher
+		catURL    []*category
+		catCustom []*category
 
 		mx     *MetricsData
 		charts *module.Charts
