@@ -57,7 +57,7 @@ func (w *WebLog) collectLogLines() (int, error) {
 			continue
 		}
 		n++
-		if !w.line.hasRespCode() {
+		if !w.line.hasRespStatusCode() {
 			w.collectUnmatched()
 			continue
 		}
@@ -78,7 +78,7 @@ func (w *WebLog) collectLogLine() {
 	w.collectReqMethod()
 	w.collectReqURL()
 	w.collectReqProto()
-	w.collectRespCode()
+	w.collectRespStatusCode()
 	w.collectReqSize()
 	w.collectRespSize()
 	w.collectReqProcTime()
@@ -155,18 +155,18 @@ func (w *WebLog) collectReqMethod() {
 }
 
 func (w *WebLog) collectReqURL() {
-	if !w.line.hasReqURL() || len(w.catURL) == 0 {
+	if !w.line.hasReqURL() || len(w.patURL) == 0 {
 		return
 	}
 
-	for _, cat := range w.catURL {
-		if !cat.MatchString(w.line.reqURL) {
+	for _, p := range w.patURL {
+		if !p.MatchString(w.line.reqURL) {
 			continue
 		}
-		c, _ := w.mx.ReqURL.GetP(cat.name)
+		c, _ := w.mx.ReqURLPattern.GetP(p.name)
 		c.Inc()
 
-		w.collectStatsPerURL(cat.name)
+		w.collectURLPatternStats(p.name)
 		return
 	}
 }
@@ -183,25 +183,30 @@ func (w *WebLog) collectReqProto() {
 	c.Inc()
 }
 
-func (w *WebLog) collectRespCode() {
-	if !w.line.hasRespCode() {
+func (w *WebLog) collectRespStatusCode() {
+	if !w.line.hasRespStatusCode() {
 		return
 	}
 
-	status := w.line.respCode
+	code := w.line.respStatusCode
+	//  1xx (Informational): The request was received, continuing process.
+	//  2xx (Successful): The request was successfully received, understood, and accepted.
+	//  3xx (Redirection): Further action needs to be taken in order to complete the request.
+	//  4xx (Client Error): The request contains bad syntax or cannot be fulfilled.
+	//  5xx (Server Error): The server failed to fulfill an apparently valid request.
 	// TODO: this grouping is confusing since it uses terms from rfc7231
 	switch {
-	case status >= 100 && status < 300, status == 304:
+	case code >= 100 && code < 300, code == 304:
 		w.mx.RespSuccessful.Inc()
-	case status >= 300 && status < 400:
+	case code >= 300 && code < 400:
 		w.mx.RespRedirect.Inc()
-	case status >= 400 && status < 500:
+	case code >= 400 && code < 500:
 		w.mx.RespClientError.Inc()
-	case status >= 500 && status < 600:
+	case code >= 500 && code < 600:
 		w.mx.RespServerError.Inc()
 	}
 
-	switch status / 100 {
+	switch code / 100 {
 	case 1:
 		w.mx.Resp1xx.Inc()
 	case 2:
@@ -214,10 +219,10 @@ func (w *WebLog) collectRespCode() {
 		w.mx.Resp5xx.Inc()
 	}
 
-	statusStr := strconv.Itoa(status)
-	c, ok := w.mx.RespStatusCode.GetP(statusStr)
+	codeStr := strconv.Itoa(code)
+	c, ok := w.mx.RespStatusCode.GetP(codeStr)
 	if !ok {
-		w.addDimToRespCodesChart(statusStr)
+		w.addDimToRespStatusCodeChart(codeStr)
 	}
 	c.Inc()
 }
@@ -263,31 +268,31 @@ func (w *WebLog) collectUpstreamRespTime() {
 }
 
 func (w *WebLog) collectCustom() {
-	if !w.line.hasCustom() || len(w.catCustom) == 0 {
+	if !w.line.hasCustom() || len(w.patCustom) == 0 {
 		return
 	}
 
-	for _, cat := range w.catCustom {
-		if !cat.MatchString(w.line.custom) {
+	for _, p := range w.patCustom {
+		if !p.MatchString(w.line.custom) {
 			continue
 		}
-		c, _ := w.mx.ReqCustom.GetP(cat.name)
+		c, _ := w.mx.ReqCustomPattern.GetP(p.name)
 		c.Inc()
 		return
 	}
 }
 
-func (w *WebLog) collectStatsPerURL(name string) {
-	v, ok := w.mx.CategorizedStats[name]
+func (w *WebLog) collectURLPatternStats(name string) {
+	v, ok := w.mx.URLPatternStats[name]
 	if !ok {
 		return
 	}
 
-	if w.line.hasRespCode() {
-		status := strconv.Itoa(w.line.respCode)
-		c, ok := v.RespCode.GetP(status)
+	if w.line.hasRespStatusCode() {
+		status := strconv.Itoa(w.line.respStatusCode)
+		c, ok := v.RespStatusCode.GetP(status)
 		if !ok {
-			w.addDimToURLRespCodesChart(name, status)
+			w.addDimToURLPatternRespStatusCodeChart(name, status)
 		}
 		c.Inc()
 	}

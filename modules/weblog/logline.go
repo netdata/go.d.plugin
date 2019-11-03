@@ -36,7 +36,7 @@ import (
 | req_method         | $request_method         | %m        |
 | req_url            | $request_uri            | %U        | nginx: w/ queries, apache: w/o.
 | req_proto          | $server_protocol        | %H        | usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”.
-| resp_code          | $status                 | %s (%>s)  |
+| resp_status_code   | $status                 | %s (%>s)  |
 | req_size           | $request_length         | $I        | w/ http headers, apache: need "mod_logio".
 | resp_size          | $bytes_sent             | %O        | w/ http headers.
 | resp_size          | $body_bytes_sent        | %B (%b)   | w/o http headers. %b '-' when no bytes are sent.
@@ -46,21 +46,21 @@ import (
 */
 
 const (
-	fieldVhost         = "vhost"
-	fieldPort          = "port"
-	fieldVhostWithPort = "vhost_port"
-	fieldReqScheme     = "req_scheme"
-	fieldReqClient     = "req_client"
-	fieldRequest       = "request"
-	fieldReqMethod     = "req_method"
-	fieldReqURL        = "req_url"
-	fieldReqProto      = "req_proto"
-	fieldReqSize       = "req_size"
-	fieldRespCode      = "resp_code"
-	fieldRespSize      = "resp_size"
-	fieldReqProcTime   = "req_proc_time"
-	fieldUpsRespTime   = "ups_resp_time"
-	fieldCustom        = "custom"
+	fieldVhost          = "vhost"
+	fieldPort           = "port"
+	fieldVhostWithPort  = "vhost_port"
+	fieldReqScheme      = "req_scheme"
+	fieldReqClient      = "req_client"
+	fieldRequest        = "request"
+	fieldReqMethod      = "req_method"
+	fieldReqURL         = "req_url"
+	fieldReqProto       = "req_proto"
+	fieldReqSize        = "req_size"
+	fieldRespStatusCode = "resp_code"
+	fieldRespSize       = "resp_size"
+	fieldReqProcTime    = "req_proc_time"
+	fieldUpsRespTime    = "ups_resp_time"
+	fieldCustom         = "custom"
 )
 
 func lookupField(v string) (field string, ok bool) {
@@ -84,7 +84,7 @@ func lookupField(v string) (field string, ok bool) {
 	case "server_protocol", "H":
 		field = fieldReqProto
 	case "status", "s", ">s":
-		field = fieldRespCode
+		field = fieldRespStatusCode
 	case "request_length", "I":
 		field = fieldReqSize
 	case "bytes_sent", "body_bytes_sent", "b", "O", "B":
@@ -112,7 +112,7 @@ var (
 	errBadReqURL           = errors.New("bad req url")
 	errBadReqProto         = errors.New("bad req protocol")
 	errBadReqSize          = errors.New("bad req size")
-	errBadRespCode         = errors.New("bad resp code")
+	errBadRespStatusCode   = errors.New("bad resp status code")
 	errBadRespSize         = errors.New("bad resp size")
 	errBadReqProcTime      = errors.New("bad req processing time")
 	errBadUpstreamRespTime = errors.New("bad upstream resp time")
@@ -125,19 +125,19 @@ func newEmptyLogLine() *logLine {
 }
 
 type logLine struct {
-	vhost       string
-	port        string // apache has no $scheme, this is workaround to collect per scheme requests. Lame.
-	reqScheme   string
-	reqClient   string
-	reqMethod   string
-	reqURL      string
-	reqProto    string
-	reqSize     int
-	reqProcTime float64
-	respCode    int
-	respSize    int
-	upsRespTime float64
-	custom      string
+	vhost          string
+	port           string // apache has no $scheme, this is workaround to collect per scheme requests. Lame.
+	reqScheme      string
+	reqClient      string
+	reqMethod      string
+	reqURL         string
+	reqProto       string
+	reqSize        int
+	reqProcTime    float64
+	respStatusCode int
+	respSize       int
+	upsRespTime    float64
+	custom         string
 }
 
 func (l *logLine) Assign(variable string, value string) (err error) {
@@ -170,8 +170,8 @@ func (l *logLine) Assign(variable string, value string) (err error) {
 		err = l.assignReqURL(value)
 	case fieldReqProto:
 		err = l.assignReqProto(value)
-	case fieldRespCode:
-		err = l.assignRespCode(value)
+	case fieldRespStatusCode:
+		err = l.assignRespStatusCode(value)
 	case fieldRespSize:
 		err = l.assignRespSize(value)
 	case fieldReqSize:
@@ -304,15 +304,15 @@ func (l *logLine) assignReqProto(proto string) error {
 	return nil
 }
 
-func (l *logLine) assignRespCode(status string) error {
+func (l *logLine) assignRespStatusCode(status string) error {
 	if status == hyphen {
 		return nil
 	}
 	v, err := strconv.Atoi(status)
-	if err != nil || !isValidRespCode(v) {
-		return fmt.Errorf("assign '%s': %w", status, errBadRespCode)
+	if err != nil || !isValidRespStatusCode(v) {
+		return fmt.Errorf("assign '%s': %w", status, errBadRespStatusCode)
 	}
-	l.respCode = v
+	l.respStatusCode = v
 	return nil
 }
 
@@ -377,11 +377,11 @@ func (l *logLine) assignUpstreamRespTime(time string) error {
 }
 
 func (l logLine) verify() error {
-	if !l.hasRespCode() {
-		return fmt.Errorf("%s: %w", fieldRespCode, errMandatoryField)
+	if !l.hasRespStatusCode() {
+		return fmt.Errorf("%s: %w", fieldRespStatusCode, errMandatoryField)
 	}
-	if !l.validRespCode() {
-		return fmt.Errorf("verify '%d': %w", l.respCode, errBadRespCode)
+	if !l.validRespStatusCode() {
+		return fmt.Errorf("verify '%d': %w", l.respStatusCode, errBadRespStatusCode)
 	}
 
 	// optional checks
@@ -428,7 +428,7 @@ func (l logLine) hasReqClient() bool          { return !isEmptyString(l.reqClien
 func (l logLine) hasReqMethod() bool          { return !isEmptyString(l.reqMethod) }
 func (l logLine) hasReqURL() bool             { return !isEmptyString(l.reqURL) }
 func (l logLine) hasReqProto() bool           { return !isEmptyString(l.reqProto) }
-func (l logLine) hasRespCode() bool           { return !isEmptyNumber(l.respCode) }
+func (l logLine) hasRespStatusCode() bool     { return !isEmptyNumber(l.respStatusCode) }
 func (l logLine) hasReqSize() bool            { return !isEmptyNumber(l.reqSize) }
 func (l logLine) hasRespSize() bool           { return !isEmptyNumber(l.respSize) }
 func (l logLine) hasReqProcTime() bool        { return !isEmptyNumber(int(l.reqProcTime)) }
@@ -445,7 +445,7 @@ func (l logLine) validReqSize() bool          { return isValidSize(l.reqSize) }
 func (l logLine) validRespSize() bool         { return isValidSize(l.respSize) }
 func (l logLine) validReqProcTime() bool      { return isValidTime(l.reqProcTime) }
 func (l logLine) validUpstreamRespTime() bool { return isValidTime(l.upsRespTime) }
-func (l logLine) validRespCode() bool         { return isValidRespCode(l.respCode) }
+func (l logLine) validRespStatusCode() bool   { return isValidRespStatusCode(l.respStatusCode) }
 
 func (l *logLine) reset() {
 	l.vhost = emptyString
@@ -456,7 +456,7 @@ func (l *logLine) reset() {
 	l.reqURL = emptyString
 	l.reqProto = emptyString
 	l.reqSize = emptyNumber
-	l.respCode = emptyNumber
+	l.respStatusCode = emptyNumber
 	l.respSize = emptyNumber
 	l.reqProcTime = emptyNumber
 	l.upsRespTime = emptyNumber
@@ -536,7 +536,7 @@ func isValidScheme(scheme string) bool {
 	return scheme == "http" || scheme == "https"
 }
 
-func isValidRespCode(code int) bool {
+func isValidRespStatusCode(code int) bool {
 	// rfc7231
 	// Informational responses (100–199),
 	// Successful responses (200–299),

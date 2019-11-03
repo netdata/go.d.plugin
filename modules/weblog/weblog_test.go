@@ -43,12 +43,12 @@ var (
 		Path:        "testdata/full.log",
 		ExcludePath: "",
 		Filter:      matcher.SimpleExpr{Excludes: []string{"~ ^/invalid"}},
-		URLCategories: []rawCategory{
+		URLPatterns: []userPattern{
 			{Name: "com", Match: "~ com$"},
 			{Name: "org", Match: "~ org$"},
 			{Name: "net", Match: "~ net$"},
 		},
-		UserCategories: []rawCategory{
+		CustomPatterns: []userPattern{
 			{Name: "dark", Match: "~ dark$"},
 			{Name: "light", Match: "~ light$"},
 		},
@@ -91,8 +91,8 @@ func TestWebLog_Collect(t *testing.T) {
 	expected := map[string]int64{
 		"bytes_received":                   1152899,
 		"bytes_sent":                       1165589,
-		"req_custom_dark":                  170,
-		"req_custom_light":                 214,
+		"req_custom_ptn_dark":              170,
+		"req_custom_ptn_light":             214,
 		"req_filtered":                     116,
 		"req_http_scheme":                  187,
 		"req_https_scheme":                 197,
@@ -119,9 +119,9 @@ func TestWebLog_Collect(t *testing.T) {
 		"req_proc_time_min":                4,
 		"req_proc_time_sum":                96992,
 		"req_unmatched":                    0,
-		"req_url_com":                      118,
-		"req_url_net":                      127,
-		"req_url_org":                      139,
+		"req_url_ptn_com":                  118,
+		"req_url_ptn_net":                  127,
+		"req_url_ptn_org":                  139,
 		"req_version_1.1":                  135,
 		"req_version_2":                    120,
 		"req_version_2.0":                  129,
@@ -137,18 +137,18 @@ func TestWebLog_Collect(t *testing.T) {
 		"resp_4xx":                         69,
 		"resp_5xx":                         82,
 		"resp_client_error":                69,
-		"resp_code_100":                    41,
-		"resp_code_101":                    44,
-		"resp_code_200":                    44,
-		"resp_code_201":                    29,
-		"resp_code_300":                    35,
-		"resp_code_301":                    40,
-		"resp_code_400":                    40,
-		"resp_code_401":                    29,
-		"resp_code_500":                    42,
-		"resp_code_501":                    40,
 		"resp_redirect":                    75,
 		"resp_server_error":                82,
+		"resp_status_code_100":             41,
+		"resp_status_code_101":             44,
+		"resp_status_code_200":             44,
+		"resp_status_code_201":             29,
+		"resp_status_code_300":             35,
+		"resp_status_code_301":             40,
+		"resp_status_code_400":             40,
+		"resp_status_code_401":             29,
+		"resp_status_code_500":             42,
+		"resp_status_code_501":             40,
 		"resp_successful":                  158,
 		"uniq_ipv4":                        3,
 		"uniq_ipv6":                        2,
@@ -164,57 +164,57 @@ func TestWebLog_Collect(t *testing.T) {
 		"upstream_resp_time_max":           499,
 		"upstream_resp_time_min":           4,
 		"upstream_resp_time_sum":           93257,
-		"url_com_bytes_received":           371169,
-		"url_com_bytes_sent":               366726,
-		"url_com_req_code_100":             8,
-		"url_com_req_code_101":             14,
-		"url_com_req_code_200":             15,
-		"url_com_req_code_201":             10,
-		"url_com_req_code_300":             7,
-		"url_com_req_code_301":             7,
-		"url_com_req_code_400":             13,
-		"url_com_req_code_401":             13,
-		"url_com_req_code_500":             16,
-		"url_com_req_code_501":             15,
-		"url_com_req_proc_time_avg":        241,
-		"url_com_req_proc_time_count":      118,
-		"url_com_req_proc_time_max":        486,
-		"url_com_req_proc_time_min":        15,
-		"url_com_req_proc_time_sum":        28498,
-		"url_net_bytes_received":           390107,
-		"url_net_bytes_sent":               373219,
-		"url_net_req_code_100":             17,
-		"url_net_req_code_101":             16,
-		"url_net_req_code_200":             15,
-		"url_net_req_code_201":             9,
-		"url_net_req_code_300":             11,
-		"url_net_req_code_301":             13,
-		"url_net_req_code_400":             14,
-		"url_net_req_code_401":             6,
-		"url_net_req_code_500":             13,
-		"url_net_req_code_501":             13,
-		"url_net_req_proc_time_avg":        243,
-		"url_net_req_proc_time_count":      127,
-		"url_net_req_proc_time_max":        499,
-		"url_net_req_proc_time_min":        4,
-		"url_net_req_proc_time_sum":        30895,
-		"url_org_bytes_received":           391623,
-		"url_org_bytes_sent":               425644,
-		"url_org_req_code_100":             16,
-		"url_org_req_code_101":             14,
-		"url_org_req_code_200":             14,
-		"url_org_req_code_201":             10,
-		"url_org_req_code_300":             17,
-		"url_org_req_code_301":             20,
-		"url_org_req_code_400":             13,
-		"url_org_req_code_401":             10,
-		"url_org_req_code_500":             13,
-		"url_org_req_code_501":             12,
-		"url_org_req_proc_time_avg":        270,
-		"url_org_req_proc_time_count":      139,
-		"url_org_req_proc_time_max":        499,
-		"url_org_req_proc_time_min":        7,
-		"url_org_req_proc_time_sum":        37599,
+		"url_ptn_com_bytes_received":       371169,
+		"url_ptn_com_bytes_sent":           366726,
+		"url_ptn_com_req_proc_time_avg":    241,
+		"url_ptn_com_req_proc_time_count":  118,
+		"url_ptn_com_req_proc_time_max":    486,
+		"url_ptn_com_req_proc_time_min":    15,
+		"url_ptn_com_req_proc_time_sum":    28498,
+		"url_ptn_com_resp_status_code_100": 8,
+		"url_ptn_com_resp_status_code_101": 14,
+		"url_ptn_com_resp_status_code_200": 15,
+		"url_ptn_com_resp_status_code_201": 10,
+		"url_ptn_com_resp_status_code_300": 7,
+		"url_ptn_com_resp_status_code_301": 7,
+		"url_ptn_com_resp_status_code_400": 13,
+		"url_ptn_com_resp_status_code_401": 13,
+		"url_ptn_com_resp_status_code_500": 16,
+		"url_ptn_com_resp_status_code_501": 15,
+		"url_ptn_net_bytes_received":       390107,
+		"url_ptn_net_bytes_sent":           373219,
+		"url_ptn_net_req_proc_time_avg":    243,
+		"url_ptn_net_req_proc_time_count":  127,
+		"url_ptn_net_req_proc_time_max":    499,
+		"url_ptn_net_req_proc_time_min":    4,
+		"url_ptn_net_req_proc_time_sum":    30895,
+		"url_ptn_net_resp_status_code_100": 17,
+		"url_ptn_net_resp_status_code_101": 16,
+		"url_ptn_net_resp_status_code_200": 15,
+		"url_ptn_net_resp_status_code_201": 9,
+		"url_ptn_net_resp_status_code_300": 11,
+		"url_ptn_net_resp_status_code_301": 13,
+		"url_ptn_net_resp_status_code_400": 14,
+		"url_ptn_net_resp_status_code_401": 6,
+		"url_ptn_net_resp_status_code_500": 13,
+		"url_ptn_net_resp_status_code_501": 13,
+		"url_ptn_org_bytes_received":       391623,
+		"url_ptn_org_bytes_sent":           425644,
+		"url_ptn_org_req_proc_time_avg":    270,
+		"url_ptn_org_req_proc_time_count":  139,
+		"url_ptn_org_req_proc_time_max":    499,
+		"url_ptn_org_req_proc_time_min":    7,
+		"url_ptn_org_req_proc_time_sum":    37599,
+		"url_ptn_org_resp_status_code_100": 16,
+		"url_ptn_org_resp_status_code_101": 14,
+		"url_ptn_org_resp_status_code_200": 14,
+		"url_ptn_org_resp_status_code_201": 10,
+		"url_ptn_org_resp_status_code_300": 17,
+		"url_ptn_org_resp_status_code_301": 20,
+		"url_ptn_org_resp_status_code_400": 13,
+		"url_ptn_org_resp_status_code_401": 10,
+		"url_ptn_org_resp_status_code_500": 13,
+		"url_ptn_org_resp_status_code_501": 12,
 	}
 	_ = expected
 
@@ -268,10 +268,10 @@ func TestWebLog_Collect(t *testing.T) {
 //		require.NotNil(t, chart)
 //		assert.Len(t, chart.Dims, len(w.mx.ReqMethod))
 //	}
-//	if w.col.url && len(w.catURL) != 0 {
-//		chart := w.Charts().Get(reqPerURL.ID)
+//	if w.col.url && len(w.patURL) != 0 {
+//		chart := w.Charts().Get(reqPerURLPattern.ID)
 //		require.NotNil(t, chart)
-//		assert.Len(t, chart.Dims, len(w.catURL))
+//		assert.Len(t, chart.Dims, len(w.patURL))
 //	}
 //	if w.col.version {
 //		chart := w.Charts().Get(reqPerVersion.ID)
@@ -281,10 +281,10 @@ func TestWebLog_Collect(t *testing.T) {
 //	if w.col.reqSize || w.col.respSize {
 //		assert.NotNil(t, w.Charts().Get(bandwidth.ID))
 //	}
-//	if w.col.custom && len(w.catCustom) != 0 {
-//		chart := w.Charts().Get(reqPerCustom.ID)
+//	if w.col.custom && len(w.patCustom) != 0 {
+//		chart := w.Charts().Get(reqPerCustomPattern.ID)
 //		require.NotNil(t, chart)
-//		assert.Len(t, chart.Dims, len(w.mx.ReqCustom))
+//		assert.Len(t, chart.Dims, len(w.mx.ReqCustomPattern))
 //	}
 //	if w.col.reqProcTime {
 //		assert.NotNil(t, w.Charts().Get(reqProcTime.ID))
@@ -300,16 +300,16 @@ func TestWebLog_Collect(t *testing.T) {
 //	}
 //
 //	if w.col.url {
-//		for _, cat := range w.catURL {
+//		for _, cat := range w.patURL {
 //			assert.NotNil(t, w.Charts().Get(respCodes.ID+"_"+cat.name))
 //		}
 //		if w.col.reqSize || w.col.respSize {
-//			for _, cat := range w.catURL {
+//			for _, cat := range w.patURL {
 //				assert.NotNil(t, w.Charts().Get(bandwidth.ID+"_"+cat.name))
 //			}
 //		}
 //		if w.col.reqProcTime {
-//			for _, cat := range w.catURL {
+//			for _, cat := range w.patURL {
 //				assert.NotNil(t, w.Charts().Get(reqProcTime.ID+"_"+cat.name))
 //			}
 //		}

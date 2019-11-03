@@ -28,7 +28,7 @@ type (
 		ReqUnmatched metrics.Counter `stm:"req_unmatched"`
 		ReqFiltered  metrics.Counter `stm:"req_filtered"`
 
-		RespStatusCode  metrics.CounterVec `stm:"resp_code"`
+		RespStatusCode  metrics.CounterVec `stm:"resp_status_code"`
 		RespSuccessful  metrics.Counter    `stm:"resp_successful"`
 		RespRedirect    metrics.Counter    `stm:"resp_redirect"`
 		RespClientError metrics.Counter    `stm:"resp_client_error"`
@@ -48,28 +48,28 @@ type (
 		UpsRespTime     metrics.Summary       `stm:"upstream_resp_time"`
 		UpsRespTimeHist metrics.Histogram     `stm:"upstream_resp_time_hist"`
 
-		ReqVhost       metrics.CounterVec `stm:"req_vhost"`
-		ReqPort        metrics.CounterVec `stm:"req_port"`
-		ReqHTTPScheme  metrics.Counter    `stm:"req_http_scheme"`
-		ReqHTTPSScheme metrics.Counter    `stm:"req_https_scheme"`
-		ReqIPv4        metrics.Counter    `stm:"req_ipv4"`
-		ReqIPv6        metrics.Counter    `stm:"req_ipv6"`
-		ReqMethod      metrics.CounterVec `stm:"req_method"`
-		ReqURL         metrics.CounterVec `stm:"req_url"`
-		ReqVersion     metrics.CounterVec `stm:"req_version"`
-		ReqCustom      metrics.CounterVec `stm:"req_custom"`
+		ReqVhost         metrics.CounterVec `stm:"req_vhost"`
+		ReqPort          metrics.CounterVec `stm:"req_port"`
+		ReqHTTPScheme    metrics.Counter    `stm:"req_http_scheme"`
+		ReqHTTPSScheme   metrics.Counter    `stm:"req_https_scheme"`
+		ReqIPv4          metrics.Counter    `stm:"req_ipv4"`
+		ReqIPv6          metrics.Counter    `stm:"req_ipv6"`
+		ReqMethod        metrics.CounterVec `stm:"req_method"`
+		ReqURLPattern    metrics.CounterVec `stm:"req_url_ptn"`
+		ReqVersion       metrics.CounterVec `stm:"req_version"`
+		ReqCustomPattern metrics.CounterVec `stm:"req_custom_ptn"`
 
-		CategorizedStats categorizedStats `stm:"url"`
+		URLPatternStats patternStats `stm:"url_ptn"`
 	}
 
-	categoryMetrics struct {
-		RespCode      metrics.CounterVec `stm:"req_code"`
-		BytesSent     metrics.Counter    `stm:"bytes_sent"`
-		BytesReceived metrics.Counter    `stm:"bytes_received"`
-		ReqProcTime   metrics.Summary    `stm:"req_proc_time"`
+	patternMetrics struct {
+		RespStatusCode metrics.CounterVec `stm:"resp_status_code"`
+		BytesSent      metrics.Counter    `stm:"bytes_sent"`
+		BytesReceived  metrics.Counter    `stm:"bytes_received"`
+		ReqProcTime    metrics.Summary    `stm:"req_proc_time"`
 	}
 
-	categorizedStats map[string]*categoryMetrics
+	patternStats map[string]*patternMetrics
 )
 
 func NewMetricsData(config Config) *MetricsData {
@@ -85,9 +85,9 @@ func NewMetricsData(config Config) *MetricsData {
 		UpsRespTimeHist:  metrics.NewHistogram(config.Histogram),
 		UniqueIPv4:       metrics.NewUniqueCounter(true),
 		UniqueIPv6:       metrics.NewUniqueCounter(true),
-		ReqURL:           newCounterVecFromCategories(config.URLCategories),
-		ReqCustom:        newCounterVecFromCategories(config.UserCategories),
-		CategorizedStats: newCategorizedStats(config.URLCategories),
+		ReqURLPattern:    newCounterVecFromPatterns(config.URLPatterns),
+		ReqCustomPattern: newCounterVecFromPatterns(config.CustomPatterns),
+		URLPatternStats:  newPatternStats(config.URLPatterns),
 	}
 }
 
@@ -96,26 +96,26 @@ func (m *MetricsData) Reset() {
 	m.UniqueIPv6.Reset()
 	m.ReqProcTime.Reset()
 	m.UpsRespTime.Reset()
-	for _, v := range m.CategorizedStats {
+	for _, v := range m.URLPatternStats {
 		v.ReqProcTime.Reset()
 	}
 }
 
-func newCategorizedStats(cats []rawCategory) map[string]*categoryMetrics {
-	stats := make(categorizedStats)
-	for _, v := range cats {
-		stats[v.Name] = &categoryMetrics{
-			RespCode:    metrics.NewCounterVec(),
-			ReqProcTime: newWebLogSummary(),
+func newPatternStats(ps []userPattern) patternStats {
+	stats := make(patternStats)
+	for _, p := range ps {
+		stats[p.Name] = &patternMetrics{
+			RespStatusCode: metrics.NewCounterVec(),
+			ReqProcTime:    newWebLogSummary(),
 		}
 	}
 	return stats
 }
 
-func newCounterVecFromCategories(cats []rawCategory) metrics.CounterVec {
+func newCounterVecFromPatterns(ps []userPattern) metrics.CounterVec {
 	c := metrics.NewCounterVec()
-	for _, v := range cats {
-		_, _ = c.GetP(v.Name)
+	for _, p := range ps {
+		_, _ = c.GetP(p.Name)
 	}
 	return c
 }

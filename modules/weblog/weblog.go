@@ -43,7 +43,7 @@ func New() *WebLog {
 }
 
 type (
-	rawCategory struct {
+	userPattern struct {
 		Name  string `yaml:"name"`
 		Match string `yaml:"match"`
 	}
@@ -53,8 +53,8 @@ type (
 		Path           string             `yaml:"path"`
 		ExcludePath    string             `yaml:"exclude_path"`
 		Filter         matcher.SimpleExpr `yaml:"filter"`
-		URLCategories  []rawCategory      `yaml:"categories"`
-		UserCategories []rawCategory      `yaml:"user_categories"`
+		URLPatterns    []userPattern      `yaml:"url_patterns"`
+		CustomPatterns []userPattern      `yaml:"custom_patterns"`
 		Histogram      []float64          `yaml:"histogram"`
 		GroupRespCodes bool               `yaml:"group_response_codes"`
 	}
@@ -67,8 +67,8 @@ type (
 		parser    logs.Parser
 		line      *logLine
 		filter    matcher.Matcher
-		catURL    []*category
-		catCustom []*category
+		patURL    []*pattern
+		patCustom []*pattern
 
 		mx     *MetricsData
 		charts *module.Charts
@@ -81,7 +81,7 @@ func (w *WebLog) Init() bool {
 		return false
 	}
 
-	if err := w.initCategories(); err != nil {
+	if err := w.initPatterns(); err != nil {
 		w.Error(err)
 		return false
 	}

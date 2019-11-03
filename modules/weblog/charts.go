@@ -15,32 +15,32 @@ type (
 )
 
 const (
-	defaultPriority     = orchestrator.DefaultJobPriority
-	prioReqTotal        = defaultPriority
-	prioReqUnreported   = defaultPriority + 1
-	prioRespStatuses    = defaultPriority + 2
-	prioRespCodesGroups = defaultPriority + 3
-	prioRespCodes       = defaultPriority + 4
-	prioRespCodes1xx    = defaultPriority + 5
-	prioRespCodes2xx    = defaultPriority + 6
-	prioRespCodes3xx    = defaultPriority + 7
-	prioRespCodes4xx    = defaultPriority + 8
-	prioRespCodes5xx    = defaultPriority + 9
-	prioBandwidth       = defaultPriority + 10
-	prioReqProcTime     = defaultPriority + 11
-	prioRespTimeHist    = defaultPriority + 12
-	prioUpsRespTime     = defaultPriority + 13
-	prioUpsRespTimeHist = defaultPriority + 14
-	prioUniqIP          = defaultPriority + 15
-	prioReqVhost        = defaultPriority + 16
-	prioReqPort         = defaultPriority + 17
-	prioReqScheme       = defaultPriority + 18
-	prioReqMethod       = defaultPriority + 19
-	prioReqVersion      = defaultPriority + 20
-	prioReqIPProto      = defaultPriority + 21
-	prioReqCustom       = defaultPriority + 22
-	prioReqURL          = defaultPriority + 23
-	prioURLStats        = defaultPriority + 25 // 3 charts per URL TODO: order?
+	defaultPriority      = orchestrator.DefaultJobPriority
+	prioReqTotal         = defaultPriority
+	prioReqUnreported    = defaultPriority + 1
+	prioRespStatuses     = defaultPriority + 2
+	prioRespCodesClass   = defaultPriority + 3
+	prioRespCodes        = defaultPriority + 4
+	prioRespCodes1xx     = defaultPriority + 5
+	prioRespCodes2xx     = defaultPriority + 6
+	prioRespCodes3xx     = defaultPriority + 7
+	prioRespCodes4xx     = defaultPriority + 8
+	prioRespCodes5xx     = defaultPriority + 9
+	prioBandwidth        = defaultPriority + 10
+	prioReqProcTime      = defaultPriority + 11
+	prioRespTimeHist     = defaultPriority + 12
+	prioUpsRespTime      = defaultPriority + 13
+	prioUpsRespTimeHist  = defaultPriority + 14
+	prioUniqIP           = defaultPriority + 15
+	prioReqVhost         = defaultPriority + 16
+	prioReqPort          = defaultPriority + 17
+	prioReqScheme        = defaultPriority + 18
+	prioReqMethod        = defaultPriority + 19
+	prioReqVersion       = defaultPriority + 20
+	prioReqIPProto       = defaultPriority + 21
+	prioReqCustomPattern = defaultPriority + 22
+	prioReqURLPattern    = defaultPriority + 23
+	prioURLPatternStats  = defaultPriority + 25 // 3 charts per URL TODO: order?
 )
 
 // NOTE: inconsistency between contexts with python web_log
@@ -82,11 +82,11 @@ var (
 	}
 
 	reqUnreported = Chart{
-		ID:       "requests_unreported",
+		ID:       "unreported_requests",
 		Title:    "Unreported Requests",
 		Units:    "requests/s",
 		Fam:      "requests",
-		Ctx:      "web_log.requests_unreported",
+		Ctx:      "web_log.unreported_requests",
 		Type:     module.Stacked,
 		Priority: prioReqUnreported,
 		Dims: Dims{
@@ -98,29 +98,13 @@ var (
 
 // Responses
 var (
-	respCodesGroups = Chart{
-		ID:       "response_codes_group",
-		Title:    "Response Codes Per Group",
-		Units:    "responses/s",
-		Fam:      "responses",
-		Ctx:      "web_log.response_codes_group",
-		Type:     module.Stacked,
-		Priority: prioRespCodesGroups,
-		Dims: Dims{
-			{ID: "resp_2xx", Name: "2xx", Algo: module.Incremental},
-			{ID: "resp_5xx", Name: "5xx", Algo: module.Incremental},
-			{ID: "resp_3xx", Name: "3xx", Algo: module.Incremental},
-			{ID: "resp_4xx", Name: "4xx", Algo: module.Incremental},
-			{ID: "resp_1xx", Name: "1xx", Algo: module.Incremental},
-		},
-	}
 	// netdata specific grouping
 	respStatuses = Chart{
-		ID:       "response_statuses",
-		Title:    "Response Statuses",
+		ID:       "status_responses",
+		Title:    "Responses Per Status",
 		Units:    "responses/s",
 		Fam:      "responses",
-		Ctx:      "web_log.response_statuses",
+		Ctx:      "web_log.status_responses",
 		Type:     module.Stacked,
 		Priority: prioRespStatuses,
 		Dims: Dims{
@@ -130,57 +114,73 @@ var (
 			{ID: "resp_server_error", Name: "error", Algo: module.Incremental},
 		},
 	}
-	respCodes = Chart{
-		ID:       "response_codes",
-		Title:    "Response Codes",
+	respCodeClass = Chart{
+		ID:       "status_code_class_responses",
+		Title:    "Responses Per Status Code Class",
 		Units:    "responses/s",
 		Fam:      "responses",
-		Ctx:      "web_log.response_codes",
+		Ctx:      "web_log.status_code_class_responses",
+		Type:     module.Stacked,
+		Priority: prioRespCodesClass,
+		Dims: Dims{
+			{ID: "resp_2xx", Name: "2xx", Algo: module.Incremental},
+			{ID: "resp_5xx", Name: "5xx", Algo: module.Incremental},
+			{ID: "resp_3xx", Name: "3xx", Algo: module.Incremental},
+			{ID: "resp_4xx", Name: "4xx", Algo: module.Incremental},
+			{ID: "resp_1xx", Name: "1xx", Algo: module.Incremental},
+		},
+	}
+	respCodes = Chart{
+		ID:       "status_code_responses",
+		Title:    "Responses Per Status Code",
+		Units:    "responses/s",
+		Fam:      "responses",
+		Ctx:      "web_log.status_code_responses",
 		Type:     module.Stacked,
 		Priority: prioRespCodes,
 	}
 	respCodes1xx = Chart{
-		ID:       "response_codes_1xx",
-		Title:    "Informational Response Codes",
+		ID:       "status_code_class_1xx_responses",
+		Title:    "Informational Responses Per Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
-		Ctx:      "web_log.response_codes_1xx",
+		Ctx:      "web_log.status_code_class_1xx_responses",
 		Type:     module.Stacked,
 		Priority: prioRespCodes1xx,
 	}
 	respCodes2xx = Chart{
-		ID:       "response_codes_2xx",
-		Title:    "Successful Response Codes",
+		ID:       "status_code_class_2xx_responses",
+		Title:    "Successful Responses Per Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
-		Ctx:      "web_log.response_codes_2xx",
+		Ctx:      "web_log.status_code_class_2xx_responses",
 		Type:     module.Stacked,
 		Priority: prioRespCodes2xx,
 	}
 	respCodes3xx = Chart{
-		ID:       "response_codes_3xx",
-		Title:    "Redirects Response Codes",
+		ID:       "status_code_class_3xx_responses",
+		Title:    "Redirects Responses Per Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
-		Ctx:      "web_log.response_codes_3xx",
+		Ctx:      "web_log.status_code_class_3xx_responses",
 		Type:     module.Stacked,
 		Priority: prioRespCodes3xx,
 	}
 	respCodes4xx = Chart{
-		ID:       "response_codes_4xx",
-		Title:    "Client Errors Response Codes",
+		ID:       "status_code_class_4xx_responses",
+		Title:    "Client Errors Responses Per Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
-		Ctx:      "web_log.response_codes_4xx",
+		Ctx:      "web_log.status_code_class_4xx_responses",
 		Type:     module.Stacked,
 		Priority: prioRespCodes4xx,
 	}
 	respCodes5xx = Chart{
-		ID:       "response_codes_5xx",
-		Title:    "Server Errors Codes 5xx",
+		ID:       "status_code_class_5xx_responses",
+		Title:    "Server Errors Responses Per Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
-		Ctx:      "web_log.response_codes_5xx",
+		Ctx:      "web_log.status_code_class_5xx_responses",
 		Type:     module.Stacked,
 		Priority: prioRespCodes5xx,
 	}
@@ -219,11 +219,11 @@ var (
 		},
 	}
 	respTimeHist = Chart{
-		ID:       "request_processing_time_histogram",
-		Title:    "Request Processing Time Histogram",
+		ID:       "requests_processing_time_histogram",
+		Title:    "Requests Processing Time Histogram",
 		Units:    "requests/s",
 		Fam:      "timings",
-		Ctx:      "web_log.request_processing_time_histogram",
+		Ctx:      "web_log.requests_processing_time_histogram",
 		Priority: prioRespTimeHist,
 	}
 )
@@ -238,17 +238,17 @@ var (
 		Ctx:      "web_log.upstream_response_time",
 		Priority: prioUpsRespTime,
 		Dims: Dims{
-			{ID: "upstream_req_proc_time_min", Name: "min", Div: 1000},
-			{ID: "upstream_req_proc_time_max", Name: "max", Div: 1000},
-			{ID: "upstream_req_proc_time_avg", Name: "avg", Div: 1000},
+			{ID: "upstream_resp_time_min", Name: "min", Div: 1000},
+			{ID: "upstream_resp_time_max", Name: "max", Div: 1000},
+			{ID: "upstream_resp_time_avg", Name: "avg", Div: 1000},
 		},
 	}
 	upsRespTimeHist = Chart{
-		ID:       "upstream_response_time_histogram",
-		Title:    "Upstream Response Time Histogram",
-		Units:    "requests/s",
+		ID:       "upstream_responses_time_histogram",
+		Title:    "Upstream Responses Time Histogram",
+		Units:    "responses/s",
 		Fam:      "timings",
-		Ctx:      "web_log.upstream_response_time_histogram",
+		Ctx:      "web_log.upstream_responses_time_histogram",
 		Priority: prioUpsRespTimeHist,
 	}
 )
@@ -273,29 +273,29 @@ var (
 // Requester Per N
 var (
 	reqPerVhost = Chart{
-		ID:       "requests_vhost",
+		ID:       "vhost_requests",
 		Title:    "Requests Per Vhost",
 		Units:    "requests/s",
 		Fam:      "req vhost",
-		Ctx:      "web_log.requests_vhost",
+		Ctx:      "web_log.vhost_requests",
 		Type:     module.Stacked,
 		Priority: prioReqVhost,
 	}
 	reqPerPort = Chart{
-		ID:       "requests_port",
+		ID:       "port_requests",
 		Title:    "Requests Per Port",
 		Units:    "requests/s",
 		Fam:      "req port",
-		Ctx:      "web_log.requests_port",
+		Ctx:      "web_log.port_requests",
 		Type:     module.Stacked,
 		Priority: prioReqPort,
 	}
 	reqPerScheme = Chart{
-		ID:       "requests_scheme",
+		ID:       "scheme_requests",
 		Title:    "Requests Per Scheme",
 		Units:    "requests/s",
 		Fam:      "req scheme",
-		Ctx:      "web_log.requests_scheme",
+		Ctx:      "web_log.scheme_requests",
 		Type:     module.Stacked,
 		Priority: prioReqScheme,
 		Dims: Dims{
@@ -304,29 +304,29 @@ var (
 		},
 	}
 	reqPerMethod = Chart{
-		ID:       "requests_http_method",
+		ID:       "http_method_requests",
 		Title:    "Requests Per HTTP Method",
 		Units:    "requests/s",
 		Fam:      "req method",
-		Ctx:      "web_log.requests_http_method",
+		Ctx:      "web_log.http_method_requests",
 		Type:     module.Stacked,
 		Priority: prioReqMethod,
 	}
 	reqPerVersion = Chart{
-		ID:       "requests_http_version",
+		ID:       "http_version_requests",
 		Title:    "Requests Per HTTP Version",
 		Units:    "requests/s",
 		Fam:      "req version",
-		Ctx:      "web_log.requests_http_version",
+		Ctx:      "web_log.http_version_requests",
 		Type:     module.Stacked,
 		Priority: prioReqVersion,
 	}
 	reqPerIPProto = Chart{
-		ID:       "requests_ip_proto",
+		ID:       "ip_proto_requests",
 		Title:    "Requests Per IP Protocol",
 		Units:    "requests/s",
 		Fam:      "req ip protocol",
-		Ctx:      "web_log.requests_ip_proto",
+		Ctx:      "web_log.ip_proto_requests",
 		Type:     module.Stacked,
 		Priority: prioReqIPProto,
 		Dims: Dims{
@@ -334,46 +334,52 @@ var (
 			{ID: "req_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
-	reqPerCustom = Chart{
-		ID:       "requests_custom",
-		Title:    "Requests Per User Defined Custom Categories",
+	reqPerCustomPattern = Chart{
+		ID:       "custom_pattern_requests",
+		Title:    "Requests Per Custom Pattern",
 		Units:    "requests/s",
-		Fam:      "req custom",
-		Ctx:      "web_log.requests_custom",
+		Fam:      "req custom pattern",
+		Ctx:      "web_log.custom_pattern_requests",
 		Type:     module.Stacked,
-		Priority: prioReqCustom,
+		Priority: prioReqCustomPattern,
 	}
-	reqPerURL = Chart{
-		ID:       "requests_url",
-		Title:    "Requests Per Url",
+	reqPerURLPattern = Chart{
+		ID:       "url_pattern_requests",
+		Title:    "Requests Per URL Pattern",
 		Units:    "requests/s",
-		Fam:      "req url",
-		Ctx:      "web_log.requests_url",
+		Fam:      "req url pattern",
+		Ctx:      "web_log.url_pattern_requests",
 		Type:     module.Stacked,
-		Priority: prioReqURL,
+		Priority: prioReqURLPattern,
 	}
 )
 
 func newRespTimeHistChart(histogram []float64) *Chart {
 	chart := respTimeHist.Copy()
 	for i, v := range histogram {
-		dimID := fmt.Sprintf("resp_time_hist_bucket_%d", i+1)
-		name := fmt.Sprintf("%.3f", v)
-
-		dim := &Dim{ID: dimID, Name: name, Algo: module.Incremental}
+		dim := &Dim{
+			ID:   fmt.Sprintf("resp_time_hist_bucket_%d", i+1),
+			Name: fmt.Sprintf("%.3f", v),
+			Algo: module.Incremental,
+		}
 		check(chart.AddDim(dim))
 	}
-	check(chart.AddDim(&Dim{ID: "resp_time_hist_count", Name: "+Inf", Algo: module.Incremental}))
+	check(chart.AddDim(&Dim{
+		ID:   "resp_time_hist_count",
+		Name: "+Inf",
+		Algo: module.Incremental,
+	}))
 	return chart
 }
 
 func newUpsRespTimeHistChart(histogram []float64) *Chart {
 	chart := upsRespTimeHist.Copy()
 	for i, v := range histogram {
-		dimID := fmt.Sprintf("upstream_resp_time_hist_bucket_%d", i+1)
-		name := fmt.Sprintf("%.3f", v)
-
-		dim := &Dim{ID: dimID, Name: name, Algo: module.Incremental}
+		dim := &Dim{
+			ID:   fmt.Sprintf("upstream_resp_time_hist_bucket_%d", i+1),
+			Name: fmt.Sprintf("%.3f", v),
+			Algo: module.Incremental,
+		}
 		check(chart.AddDim(dim))
 	}
 	check(chart.AddDim(&Dim{
@@ -384,65 +390,73 @@ func newUpsRespTimeHistChart(histogram []float64) *Chart {
 	return chart
 }
 
-func newReqPerURLChart(cs []*category) *Chart {
-	chart := reqPerURL.Copy()
-	for _, c := range cs {
-		dim := &Dim{ID: "req_url_" + c.name, Name: c.name, Algo: module.Incremental}
+func newReqPerURLPatternChart(ps []*pattern) *Chart {
+	chart := reqPerURLPattern.Copy()
+	for _, p := range ps {
+		dim := &Dim{
+			ID:   "req_url_ptn_" + p.name,
+			Name: p.name,
+			Algo: module.Incremental,
+		}
 		check(chart.AddDim(dim))
 	}
 	return chart
 }
 
-func newReqPerCustomChart(cs []*category) *Chart {
-	chart := reqPerCustom.Copy()
-	for _, c := range cs {
-		dim := &Dim{ID: "req_custom_" + c.name, Name: c.name, Algo: module.Incremental}
+func newReqPerCustomPatternChart(ps []*pattern) *Chart {
+	chart := reqPerCustomPattern.Copy()
+	for _, p := range ps {
+		dim := &Dim{
+			ID:   "req_custom_ptn" + p.name,
+			Name: p.name,
+			Algo: module.Incremental,
+		}
 		check(chart.AddDim(dim))
 	}
 	return chart
 }
 
-func newURLRespCodesChart(name string) *Chart {
+func newURLPatternRespStatusCodeChart(name string) *Chart {
 	return &Chart{
-		ID:       respCodes.ID + "_" + name,
-		Title:    "Response Codes",
+		ID:       fmt.Sprintf("url_pattern_%s_%s", name, respCodes.ID),
+		Title:    "Responses Per Status Code",
 		Units:    "responses/s",
-		Fam:      "url " + name,
-		Ctx:      "web_log.response_codes_per_url",
+		Fam:      "url pattern " + name,
+		Ctx:      fmt.Sprintf("web_log.url_pattern_%s_status_code_responses", name),
 		Type:     module.Stacked,
-		Priority: prioURLStats,
+		Priority: prioURLPatternStats,
 	}
 }
 
-func newURLBandwidthChart(name string) *Chart {
+func newURLPatternBandwidthChart(name string) *Chart {
 	return &Chart{
-		ID:       bandwidth.ID + "_" + name,
+		ID:       fmt.Sprintf("url_pattern_%s_%s", name, bandwidth.ID),
 		Title:    "Bandwidth",
 		Units:    "kilobits/s",
-		Fam:      "url " + name,
-		Ctx:      "web_log.bandwidth_per_url",
+		Fam:      "url pattern " + name,
+		Ctx:      fmt.Sprintf("web_log.url_pattern_%s_bandwidth", name),
 		Type:     module.Area,
-		Priority: prioURLStats + 1,
+		Priority: prioURLPatternStats + 1,
 		Dims: Dims{
-			{ID: name + "_bytes_received", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
-			{ID: name + "_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
+			{ID: "url_ptn_" + name + "_bytes_received", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
+			{ID: "url_ptn_" + name + "_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
 		},
 	}
 }
 
-func newURLRespTimeChart(name string) *Chart {
+func newURLPatternReqProcTimeChart(name string) *Chart {
 	return &Chart{
-		ID:       respTime.ID + "_" + name,
+		ID:       fmt.Sprintf("url_pattern_%s_%s", name, respTime.ID),
 		Title:    "Request Processing Time",
 		Units:    "milliseconds",
-		Fam:      "url " + name,
-		Ctx:      "web_log.request_processing_time_per_url",
+		Fam:      "url pattern " + name,
+		Ctx:      fmt.Sprintf("web_log.url_pattern_%s_request_processing_time", name),
 		Type:     module.Area,
-		Priority: prioURLStats + 2,
+		Priority: prioURLPatternStats + 2,
 		Dims: Dims{
-			{ID: name + "_req_proc_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
-			{ID: name + "_req_proc_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
-			{ID: name + "_req_proc_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
+			{ID: "url_ptn_" + name + "_req_proc_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
+			{ID: "url_ptn_" + name + "_req_proc_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
+			{ID: "url_ptn_" + name + "_req_proc_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
 		},
 	}
 }
@@ -451,13 +465,13 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 	charts := Charts{
 		reqTotal.Copy(),
 		reqUnreported.Copy(),
-		respCodesGroups.Copy(),
+		respCodeClass.Copy(),
 		respStatuses.Copy(),
 	}
-	if w.GroupRespCodes {
+	if !w.GroupRespCodes {
 		check(charts.Add(respCodes.Copy()))
 	} else {
-		// NOTE: per fam resp codes charts are added during runtime
+		// NOTE: per group resp code charts are added during runtime
 	}
 	if line.hasVhost() {
 		check(charts.Add(reqPerVhost.Copy()))
@@ -475,12 +489,12 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 	if line.hasReqMethod() {
 		check(charts.Add(reqPerMethod.Copy()))
 	}
-	if line.hasReqURL() && len(w.catURL) > 0 {
-		chart := newReqPerURLChart(w.catURL)
+	if line.hasReqURL() && len(w.patURL) > 0 {
+		chart := newReqPerURLPatternChart(w.patURL)
 		check(charts.Add(chart))
 
-		for _, c := range w.catURL {
-			chart := newURLRespCodesChart(c.name)
+		for _, p := range w.patURL {
+			chart := newURLPatternRespStatusCodeChart(p.name)
 			check(charts.Add(chart))
 		}
 	}
@@ -490,8 +504,8 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 	if line.hasReqSize() || line.hasRespSize() {
 		check(charts.Add(bandwidth.Copy()))
 
-		for _, c := range w.catURL {
-			chart := newURLBandwidthChart(c.name)
+		for _, p := range w.patURL {
+			chart := newURLPatternBandwidthChart(p.name)
 			check(charts.Add(chart))
 		}
 	}
@@ -502,8 +516,8 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 			check(charts.Add(chart))
 		}
 
-		for _, c := range w.catURL {
-			chart := newURLRespTimeChart(c.name)
+		for _, p := range w.patURL {
+			chart := newURLPatternReqProcTimeChart(p.name)
 			check(charts.Add(chart))
 		}
 	}
@@ -514,8 +528,8 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 			check(charts.Add(chart))
 		}
 	}
-	if line.hasCustom() && len(w.catCustom) > 0 {
-		chart := newReqPerCustomChart(w.catCustom)
+	if line.hasCustom() && len(w.patCustom) > 0 {
+		chart := newReqPerCustomPatternChart(w.patCustom)
 		check(charts.Add(chart))
 	}
 
@@ -574,8 +588,8 @@ func (w *WebLog) addDimToReqVersionChart(version string) {
 	chart.MarkNotCreated()
 }
 
-func (w *WebLog) addDimToRespCodesChart(code string) {
-	chart := w.findRespCodesChartByCode(code)
+func (w *WebLog) addDimToRespStatusCodeChart(code string) {
+	chart := w.findRespCodeChart(code)
 	if chart == nil {
 		return
 	}
@@ -590,11 +604,11 @@ func (w *WebLog) addDimToRespCodesChart(code string) {
 	chart.MarkNotCreated()
 }
 
-func (w *WebLog) addDimToURLRespCodesChart(name, code string) {
-	chart := w.Charts().Get(respCodes.ID + "_" + name)
-
+func (w *WebLog) addDimToURLPatternRespStatusCodeChart(name, code string) {
+	id := fmt.Sprintf("url_pattern_%s_%s", name, respCodes.ID)
+	chart := w.Charts().Get(id)
 	dim := &Dim{
-		ID:   name + "_resp_code_" + code,
+		ID:   fmt.Sprintf("url_pattern_%s_resp_status_code_%s", name, code),
 		Name: code,
 		Algo: module.Incremental,
 	}
@@ -603,13 +617,13 @@ func (w *WebLog) addDimToURLRespCodesChart(name, code string) {
 	chart.MarkNotCreated()
 }
 
-func (w *WebLog) findRespCodesChartByCode(code string) *Chart {
+func (w *WebLog) findRespCodeChart(code string) *Chart {
 	if !w.GroupRespCodes {
 		return w.Charts().Get(respCodes.ID)
 	}
 
 	var chart Chart
-	switch v := code[:1]; v {
+	switch class := code[:1]; class {
 	case "1":
 		chart = respCodes1xx
 	case "2":

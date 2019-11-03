@@ -212,11 +212,11 @@ func TestLogLine_Assign(t *testing.T) {
 				{v: "600", wantLine: "resp_code=600"},
 				{v: emptyStr, wantLine: emptyLogLine},
 				{v: hyphen, wantLine: emptyLogLine},
-				{v: "99", wantLine: emptyLogLine, wantErr: errBadRespCode},
-				{v: "601", wantLine: emptyLogLine, wantErr: errBadRespCode},
-				{v: "200 ", wantLine: emptyLogLine, wantErr: errBadRespCode},
-				{v: "0.222", wantLine: emptyLogLine, wantErr: errBadRespCode},
-				{v: "localhost", wantLine: emptyLogLine, wantErr: errBadRespCode},
+				{v: "99", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{v: "601", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{v: "200 ", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{v: "0.222", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{v: "localhost", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
 			},
 		},
 		{
@@ -436,9 +436,9 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "resp_code=500"},
 				{line: "resp_code=600"},
 				{line: emptyLogLine, wantErr: errMandatoryField},
-				{line: "resp_code=-1", wantErr: errBadRespCode},
-				{line: "resp_code=99", wantErr: errBadRespCode},
-				{line: "resp_code=601", wantErr: errBadRespCode},
+				{line: "resp_code=-1", wantErr: errBadRespStatusCode},
+				{line: "resp_code=99", wantErr: errBadRespStatusCode},
+				{line: "resp_code=601", wantErr: errBadRespStatusCode},
 			},
 		},
 		{
@@ -492,7 +492,7 @@ func TestLogLine_verify(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				line := prepareLogLine(t, c.line)
 				if tt.name != "Status" {
-					line.respCode = 200
+					line.respStatusCode = 200
 				}
 
 				err := line.verify()
@@ -546,10 +546,10 @@ func prepareLogLine(t *testing.T, from string) logLine {
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
 			line.reqSize = i
-		case fieldRespCode:
+		case fieldRespStatusCode:
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
-			line.respCode = i
+			line.respStatusCode = i
 		case fieldRespSize:
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)

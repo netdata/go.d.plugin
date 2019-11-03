@@ -7,22 +7,21 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
 
-type category struct {
+type pattern struct {
 	name string
 	matcher.Matcher
 }
 
-func newCategory(raw rawCategory) (*category, error) {
-	if raw.Name == "" || raw.Match == "" {
-		return nil, fmt.Errorf("category bad syntax: %v", raw)
+func newPattern(up userPattern) (*pattern, error) {
+	if up.Name == "" || up.Match == "" {
+		return nil, fmt.Errorf("pattern bad syntax: %v", up)
 	}
 
-	m, err := matcher.Parse(raw.Match)
+	m, err := matcher.Parse(up.Match)
 	if err != nil {
 		return nil, err
 	}
-
-	return &category{name: raw.Name, Matcher: m}, nil
+	return &pattern{name: up.Name, Matcher: m}, nil
 }
 
 func (w *WebLog) initFilter() (err error) {
@@ -38,23 +37,22 @@ func (w *WebLog) initFilter() (err error) {
 	return err
 }
 
-func (w *WebLog) initCategories() error {
-	for _, raw := range w.URLCategories {
-		cat, err := newCategory(raw)
+func (w *WebLog) initPatterns() error {
+	for _, up := range w.URLPatterns {
+		p, err := newPattern(up)
 		if err != nil {
-			return fmt.Errorf("error on creating url category %s: %v", raw, err)
+			return fmt.Errorf("error on creating url pattern %s: %v", up, err)
 		}
-		w.catURL = append(w.catURL, cat)
+		w.patURL = append(w.patURL, p)
 	}
 
-	for _, raw := range w.UserCategories {
-		cat, err := newCategory(raw)
+	for _, up := range w.CustomPatterns {
+		p, err := newPattern(up)
 		if err != nil {
-			return fmt.Errorf("error on creating user category %s: %v", raw, err)
+			return fmt.Errorf("error on creating user pattern %s: %v", up, err)
 		}
-		w.catCustom = append(w.catCustom, cat)
+		w.patCustom = append(w.patCustom, p)
 	}
-
 	return nil
 }
 
