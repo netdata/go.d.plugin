@@ -354,6 +354,46 @@ var (
 	}
 )
 
+// URL pattern stats
+var (
+	perURLPatternRespStatusCode = Chart{
+		ID:       "url_pattern_%s_status_code_responses",
+		Title:    "Responses Per Status Code",
+		Units:    "responses/s",
+		Fam:      "url pattern %s",
+		Ctx:      "web_log.url_pattern_%s_status_code_responses",
+		Type:     module.Stacked,
+		Priority: prioURLPatternStats,
+	}
+	perURLPatternBandwidth = Chart{
+		ID:       "url_pattern_%s_bandwidth",
+		Title:    "Bandwidth",
+		Units:    "kilobits/s",
+		Fam:      "url pattern %s",
+		Ctx:      "web_log.url_pattern_%s_bandwidth",
+		Type:     module.Area,
+		Priority: prioURLPatternStats + 1,
+		Dims: Dims{
+			{ID: "url_ptn_%s_bytes_received", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
+			{ID: "url_ptn_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
+		},
+	}
+	perURLPatternReqProcTime = Chart{
+		ID:       "url_pattern_%s_request_processing_time",
+		Title:    "Request Processing Time",
+		Units:    "milliseconds",
+		Fam:      "url pattern %s",
+		Ctx:      "web_log.url_pattern_%s_request_processing_time",
+		Type:     module.Area,
+		Priority: prioURLPatternStats + 2,
+		Dims: Dims{
+			{ID: "url_ptn_%s_req_proc_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
+			{ID: "url_ptn_%s_req_proc_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
+			{ID: "url_ptn_%s_req_proc_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
+		},
+	}
+)
+
 func newRespTimeHistChart(histogram []float64) *Chart {
 	chart := respTimeHist.Copy()
 	for i, v := range histogram {
@@ -417,48 +457,30 @@ func newReqPerCustomPatternChart(ps []*pattern) *Chart {
 }
 
 func newURLPatternRespStatusCodeChart(name string) *Chart {
-	return &Chart{
-		ID:       fmt.Sprintf("url_pattern_%s_%s", name, respCodes.ID),
-		Title:    "Responses Per Status Code",
-		Units:    "responses/s",
-		Fam:      "url pattern " + name,
-		Ctx:      fmt.Sprintf("web_log.url_pattern_%s_status_code_responses", name),
-		Type:     module.Stacked,
-		Priority: prioURLPatternStats,
-	}
+	chart := perURLPatternRespStatusCode.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, name)
+	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
+	return chart
 }
 
 func newURLPatternBandwidthChart(name string) *Chart {
-	return &Chart{
-		ID:       fmt.Sprintf("url_pattern_%s_%s", name, bandwidth.ID),
-		Title:    "Bandwidth",
-		Units:    "kilobits/s",
-		Fam:      "url pattern " + name,
-		Ctx:      fmt.Sprintf("web_log.url_pattern_%s_bandwidth", name),
-		Type:     module.Area,
-		Priority: prioURLPatternStats + 1,
-		Dims: Dims{
-			{ID: "url_ptn_" + name + "_bytes_received", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
-			{ID: "url_ptn_" + name + "_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
-		},
+	chart := perURLPatternBandwidth.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, name)
+	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
+	for _, d := range chart.Dims {
+		d.ID = fmt.Sprintf(d.ID, name)
 	}
+	return chart
 }
 
 func newURLPatternReqProcTimeChart(name string) *Chart {
-	return &Chart{
-		ID:       fmt.Sprintf("url_pattern_%s_%s", name, respTime.ID),
-		Title:    "Request Processing Time",
-		Units:    "milliseconds",
-		Fam:      "url pattern " + name,
-		Ctx:      fmt.Sprintf("web_log.url_pattern_%s_request_processing_time", name),
-		Type:     module.Area,
-		Priority: prioURLPatternStats + 2,
-		Dims: Dims{
-			{ID: "url_ptn_" + name + "_req_proc_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
-			{ID: "url_ptn_" + name + "_req_proc_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
-			{ID: "url_ptn_" + name + "_req_proc_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
-		},
+	chart := perURLPatternReqProcTime.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, name)
+	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
+	for _, d := range chart.Dims {
+		d.ID = fmt.Sprintf(d.ID, name)
 	}
+	return chart
 }
 
 func (w *WebLog) createCharts(line *logLine) *Charts {
@@ -605,10 +627,10 @@ func (w *WebLog) addDimToRespStatusCodeChart(code string) {
 }
 
 func (w *WebLog) addDimToURLPatternRespStatusCodeChart(name, code string) {
-	id := fmt.Sprintf("url_pattern_%s_%s", name, respCodes.ID)
+	id := fmt.Sprintf(perURLPatternRespStatusCode.ID, name)
 	chart := w.Charts().Get(id)
 	dim := &Dim{
-		ID:   fmt.Sprintf("url_pattern_%s_resp_status_code_%s", name, code),
+		ID:   fmt.Sprintf("url_ptn_%s_resp_status_code_%s", name, code),
 		Name: code,
 		Algo: module.Incremental,
 	}
