@@ -484,6 +484,9 @@ func newURLPatternReqProcTimeChart(name string) *Chart {
 }
 
 func (w *WebLog) createCharts(line *logLine) *Charts {
+	// Following charts are created during runtime:
+	//   - respCodes1xx, respCodes2xx, respCodes3xx, respCodes4xx, respCodes6xx
+	//   -
 	charts := Charts{
 		reqTotal.Copy(),
 		reqUnreported.Copy(),
@@ -492,8 +495,6 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 	}
 	if !w.GroupRespCodes {
 		check(charts.Add(respCodes.Copy()))
-	} else {
-		// NOTE: per group resp code charts are added during runtime
 	}
 	if line.hasVhost() {
 		check(charts.Add(reqPerVhost.Copy()))
@@ -603,7 +604,7 @@ func (w *WebLog) addDimToReqVersionChart(version string) {
 }
 
 func (w *WebLog) addDimToRespStatusCodeChart(code string) {
-	chart := w.findRespCodeChart(code)
+	chart := w.findRespStatusCodeChart(code)
 	if chart == nil {
 		return
 	}
@@ -629,7 +630,7 @@ func (w *WebLog) addDimToURLPatternRespStatusCodeChart(name, code string) {
 	chart.MarkNotCreated()
 }
 
-func (w *WebLog) findRespCodeChart(code string) *Chart {
+func (w *WebLog) findRespStatusCodeChart(code string) *Chart {
 	if !w.GroupRespCodes {
 		return w.Charts().Get(respCodes.ID)
 	}

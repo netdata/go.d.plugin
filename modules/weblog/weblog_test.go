@@ -265,31 +265,44 @@ func testCharts(t *testing.T, w *WebLog) {
 }
 
 func testReqProcTimeCharts(t *testing.T, w *WebLog) {
-	if !isEmptySummary(w.mx.ReqProcTime) {
+	if isEmptySummary(w.mx.ReqProcTime) {
+		assert.Falsef(t, w.Charts().Has(reqProcTime.ID), "chart '%s' is created", reqProcTime.ID)
+	} else {
 		assert.Truef(t, w.Charts().Has(reqProcTime.ID), "chart '%s' is not created", reqProcTime.ID)
 	}
 
-	if !isEmptyHistogram(w.mx.ReqProcTimeHist) {
+	if isEmptyHistogram(w.mx.ReqProcTimeHist) {
+		assert.Falsef(t, w.Charts().Has(reqProcTimeHist.ID), "chart '%s' is created", reqProcTimeHist.ID)
+	} else {
 		assert.Truef(t, w.Charts().Has(reqProcTimeHist.ID), "chart '%s' is not created", reqProcTimeHist.ID)
 	}
 }
 
 func testUpsRespTimeCharts(t *testing.T, w *WebLog) {
-	if !isEmptySummary(w.mx.UpsRespTime) {
+	if isEmptySummary(w.mx.UpsRespTime) {
+		assert.Falsef(t, w.Charts().Has(upsRespTime.ID), "chart '%s' is created", upsRespTime.ID)
+	} else {
 		assert.Truef(t, w.Charts().Has(upsRespTime.ID), "chart '%s' is not created", upsRespTime.ID)
 	}
 
-	if !isEmptyHistogram(w.mx.UpsRespTimeHist) {
+	if isEmptyHistogram(w.mx.UpsRespTimeHist) {
+		assert.Falsef(t, w.Charts().Has(upsRespTimeHist.ID), "chart '%s' is created", upsRespTimeHist.ID)
+	} else {
 		assert.Truef(t, w.Charts().Has(upsRespTimeHist.ID), "chart '%s' is not created", upsRespTimeHist.ID)
 	}
 }
 
 func testReqVhostChart(t *testing.T, w *WebLog) {
+	chart := w.Charts().Get(reqPerVhost.ID)
 	if len(w.mx.ReqVhost) == 0 {
+		assert.Nilf(t, chart, "chart '%s' is created", reqPerVhost.ID)
 		return
 	}
-	chart := w.Charts().Get(reqPerVhost.ID)
-	require.NotNilf(t, chart, "chart '%s' is not created", reqPerVhost.ID)
+
+	assert.NotNilf(t, chart, "chart '%s' is not created", reqPerVhost.ID)
+	if chart == nil {
+		return
+	}
 	for v := range w.mx.ReqVhost {
 		id := "req_vhost_" + v
 		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' vhost, expected '%s'", reqPerVhost.ID, v, id)
@@ -298,10 +311,15 @@ func testReqVhostChart(t *testing.T, w *WebLog) {
 
 func testReqPortChart(t *testing.T, w *WebLog) {
 	if len(w.mx.ReqPort) == 0 {
+		assert.Nilf(t, w.Charts().Get(reqPerPort.ID), "chart '%s' is created", reqPerPort.ID)
 		return
 	}
+
 	chart := w.Charts().Get(reqPerPort.ID)
-	require.NotNilf(t, chart, "chart '%s' is not created", reqPerPort.ID)
+	assert.NotNilf(t, chart, "chart '%s' is not created", reqPerPort.ID)
+	if chart == nil {
+		return
+	}
 	for v := range w.mx.ReqPort {
 		id := "req_port_" + v
 		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' port, expected '%s'", reqPerPort.ID, v, id)
@@ -310,10 +328,15 @@ func testReqPortChart(t *testing.T, w *WebLog) {
 
 func testReqMethodChart(t *testing.T, w *WebLog) {
 	if len(w.mx.ReqMethod) == 0 {
+		assert.Nilf(t, w.Charts().Get(reqPerMethod.ID), "chart '%s' is created", reqPerMethod.ID)
 		return
 	}
+
 	chart := w.Charts().Get(reqPerMethod.ID)
-	require.NotNilf(t, chart, "chart '%s' is not created", reqPerMethod.ID)
+	assert.NotNilf(t, chart, "chart '%s' is not created", reqPerMethod.ID)
+	if chart == nil {
+		return
+	}
 	for v := range w.mx.ReqMethod {
 		id := "req_method_" + v
 		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' method, expected '%s'", reqPerMethod.ID, v, id)
@@ -322,10 +345,15 @@ func testReqMethodChart(t *testing.T, w *WebLog) {
 
 func testReqVersionChart(t *testing.T, w *WebLog) {
 	if len(w.mx.ReqVersion) == 0 {
+		assert.Nilf(t, w.Charts().Get(reqPerVersion.ID), "chart '%s' is created", reqPerVersion.ID)
 		return
 	}
+
 	chart := w.Charts().Get(reqPerVersion.ID)
-	require.NotNilf(t, chart, "chart '%s' is not created", reqPerVersion.ID)
+	assert.NotNilf(t, chart, "chart '%s' is not created", reqPerVersion.ID)
+	if chart == nil {
+		return
+	}
 	for v := range w.mx.ReqVersion {
 		id := "req_version_" + v
 		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' version, expected '%s'", reqPerVersion.ID, v, id)
@@ -334,32 +362,44 @@ func testReqVersionChart(t *testing.T, w *WebLog) {
 
 func testReqSchemeChart(t *testing.T, w *WebLog) {
 	if w.mx.ReqHTTPScheme.Value() == 0 && w.mx.ReqHTTPScheme.Value() == 0 {
-		return
+		assert.Nilf(t, w.Charts().Get(reqPerScheme.ID), "chart '%s' is created", reqPerScheme.ID)
+	} else {
+		assert.NotNilf(t, w.Charts().Get(reqPerScheme.ID), "chart '%s' is not created", reqPerScheme.ID)
 	}
-	assert.Truef(t, w.Charts().Has(reqPerScheme.ID), "chart '%s' is not created", reqPerScheme.ID)
 }
 
 func testReqClientCharts(t *testing.T, w *WebLog) {
-	if w.mx.ReqIPv4.Value() != 0 || w.mx.ReqIPv6.Value() != 0 {
+	if w.mx.ReqIPv4.Value() == 0 && w.mx.ReqIPv6.Value() == 0 {
+		assert.Falsef(t, w.Charts().Has(reqPerIPProto.ID), "chart '%s' is created", reqPerIPProto.ID)
+	} else {
 		assert.Truef(t, w.Charts().Has(reqPerIPProto.ID), "chart '%s' is not created", reqPerIPProto.ID)
 	}
-	if w.mx.UniqueIPv4.Value() != 0 || w.mx.UniqueIPv6.Value() != 0 {
-		assert.True(t, w.Charts().Has(uniqIPsCurPoll.ID), "chart '%s' is not created", uniqIPsCurPoll.ID)
+
+	if w.mx.UniqueIPv4.Value() == 0 && w.mx.UniqueIPv6.Value() == 0 {
+		assert.Falsef(t, w.Charts().Has(uniqIPsCurPoll.ID), "chart '%s' is created", uniqIPsCurPoll.ID)
+	} else {
+		assert.Truef(t, w.Charts().Has(uniqIPsCurPoll.ID), "chart '%s' is not created", uniqIPsCurPoll.ID)
 	}
 }
 func testBandwidthChart(t *testing.T, w *WebLog) {
 	if w.mx.BytesSent.Value() == 0 && w.mx.BytesReceived.Value() == 0 {
-		return
+		assert.Falsef(t, w.Charts().Has(bandwidth.ID), "chart '%s' is created", bandwidth.ID)
+	} else {
+		assert.Truef(t, w.Charts().Has(bandwidth.ID), "chart '%s' is not created", bandwidth.ID)
 	}
-	assert.True(t, w.Charts().Has(bandwidth.ID), "chart '%s' is not created", bandwidth.ID)
 }
 
 func testReqURLPatternChart(t *testing.T, w *WebLog) {
 	if len(w.mx.ReqURLPattern) == 0 || len(w.patURL) == 0 {
+		assert.Nilf(t, w.Charts().Get(reqPerURLPattern.ID), "chart '%s' is created", reqPerURLPattern.ID)
 		return
 	}
+
 	chart := w.Charts().Get(reqPerURLPattern.ID)
 	assert.NotNilf(t, chart, "chart '%s' is not created", reqPerURLPattern.ID)
+	if chart == nil {
+		return
+	}
 	for v := range w.mx.ReqURLPattern {
 		id := "req_url_ptn_" + v
 		assert.True(t, chart.HasDim(id), "chart '%s' has no dim for '%s' pattern, expected '%s'", reqPerURLPattern.ID, v, id)
@@ -368,10 +408,15 @@ func testReqURLPatternChart(t *testing.T, w *WebLog) {
 
 func testReqCustomPatternChart(t *testing.T, w *WebLog) {
 	if len(w.mx.ReqCustomPattern) == 0 || len(w.patCustom) == 0 {
+		assert.Nilf(t, w.Charts().Get(reqPerCustomPattern.ID), "chart '%s' is created", reqPerCustomPattern.ID)
 		return
 	}
+
 	chart := w.Charts().Get(reqPerCustomPattern.ID)
 	assert.NotNilf(t, chart, "chart '%s' is not created", reqPerCustomPattern.ID)
+	if chart == nil {
+		return
+	}
 	for v := range w.mx.ReqCustomPattern {
 		id := "req_custom_ptn_" + v
 		assert.True(t, chart.HasDim(id), "chart '%s' has no dim for '%s' pattern, expected '%s'", reqPerCustomPattern.ID, v, id)
@@ -380,31 +425,39 @@ func testReqCustomPatternChart(t *testing.T, w *WebLog) {
 
 func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
 	for _, p := range w.patURL {
-		id := fmt.Sprintf(perURLPatternRespStatusCode.ID, p.name)
-		chart := w.Charts().Get(id)
-		assert.NotNil(t, chart)
+		chartID := fmt.Sprintf(perURLPatternRespStatusCode.ID, p.name)
+		chart := w.Charts().Get(chartID)
+		assert.NotNilf(t, chart, "chart '%s' is not created", chartID)
+		if chart == nil {
+			continue
+		}
+
 		for name, stats := range w.mx.URLPatternStats {
 			if name != p.name {
 				continue
 			}
-			for code := range stats.RespStatusCode {
-				id := fmt.Sprintf("url_ptn_%s_resp_status_code_%s", name, code)
-				assert.True(t, chart.HasDim(id))
+			for v := range stats.RespStatusCode {
+				id := fmt.Sprintf("url_ptn_%s_resp_status_code_%s", name, v)
+				assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' code, expected '%s'", chartID, v, id)
 			}
 		}
 	}
 
-	if w.mx.BytesSent.Value() != 0 || w.mx.BytesReceived.Value() != 0 {
-		for _, p := range w.patURL {
-			id := fmt.Sprintf(perURLPatternBandwidth.ID, p.name)
-			assert.True(t, w.Charts().Has(id))
+	for _, p := range w.patURL {
+		id := fmt.Sprintf(perURLPatternBandwidth.ID, p.name)
+		if w.mx.BytesSent.Value() == 0 && w.mx.BytesReceived.Value() == 0 {
+			assert.Falsef(t, w.Charts().Has(id), "chart '%s' is created", id)
+		} else {
+			assert.Truef(t, w.Charts().Has(id), "chart '%s' is not created", id)
 		}
 	}
 
-	if !isEmptySummary(w.mx.ReqProcTime) {
-		for _, p := range w.patURL {
-			id := fmt.Sprintf(perURLPatternReqProcTime.ID, p.name)
-			assert.True(t, w.Charts().Has(id))
+	for _, p := range w.patURL {
+		id := fmt.Sprintf(perURLPatternReqProcTime.ID, p.name)
+		if isEmptySummary(w.mx.ReqProcTime) {
+			assert.Falsef(t, w.Charts().Has(id), "chart '%s' is created", id)
+		} else {
+			assert.Truef(t, w.Charts().Has(id), "chart '%s' is not created", id)
 		}
 	}
 }
@@ -412,7 +465,10 @@ func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
 func testRespStatusCodeChart(t *testing.T, w *WebLog) {
 	if !w.GroupRespCodes {
 		chart := w.Charts().Get(respCodes.ID)
-		require.NotNilf(t, chart, "chart '%s' is not created", respCodes.ID)
+		assert.NotNilf(t, chart, "chart '%s' is not created", respCodes.ID)
+		if chart == nil {
+			return
+		}
 		for v := range w.mx.RespStatusCode {
 			id := "resp_status_code_" + v
 			assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' code, expected '%s'", respCodes.ID, v, id)
@@ -429,20 +485,33 @@ func testRespStatusCodeChart(t *testing.T, w *WebLog) {
 		return codes
 	}
 
-	for i, chartID := range []string{respCodes1xx.ID, respCodes2xx.ID, respCodes3xx.ID, respCodes4xx.ID, respCodes5xx.ID} {
+	var n int
+	ids := []string{
+		respCodes1xx.ID,
+		respCodes2xx.ID,
+		respCodes3xx.ID,
+		respCodes4xx.ID,
+		respCodes5xx.ID,
+	}
+	for i, chartID := range ids {
 		class := strconv.Itoa(i + 1)
 		codes := findCodes(class)
+		n += len(codes)
 		chart := w.Charts().Get(chartID)
 		if len(codes) == 0 {
 			assert.Nilf(t, chart, "chart '%s' is created", chartID)
 			continue
 		}
 		assert.NotNilf(t, chart, "chart '%s' is not created", chartID)
+		if chart == nil {
+			return
+		}
 		for _, v := range codes {
 			id := "resp_status_code_" + v
 			assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' code, expected '%s'", chartID, v, id)
 		}
 	}
+	assert.Equal(t, len(w.mx.RespStatusCode), n)
 }
 
 var (

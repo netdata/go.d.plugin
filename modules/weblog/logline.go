@@ -24,7 +24,6 @@ import (
 //  - nginx: http://nginx.org/en/docs/varindex.html
 //  - apache: http://httpd.apache.org/docs/current/mod/mod_log_config.html#logformat
 
-// TODO: do we really we need "custom" :thinking:
 /*
 | name               | nginx                   | apache    |
 |--------------------|-------------------------|-----------|
@@ -45,6 +44,13 @@ import (
 | custom             | -                       | -         |
 */
 
+/*
+Apache:
+Since httpd 2.0, unlike 1.3, the %b and %B format strings do not represent the number of bytes sent to the client,
+but simply the size in bytes of the HTTP response. It will will differ, for instance, if the connection is aborted,
+or if SSL is used.
+The %O format provided by mod_logio will log the actual number of bytes sent over the network
+*/
 const (
 	fieldVhost          = "vhost"
 	fieldPort           = "port"
