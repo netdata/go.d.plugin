@@ -205,7 +205,7 @@ var (
 
 // Timings
 var (
-	respTime = Chart{
+	reqProcTime = Chart{
 		ID:       "request_processing_time",
 		Title:    "Request Processing Time",
 		Units:    "milliseconds",
@@ -218,7 +218,7 @@ var (
 			{ID: "req_proc_time_avg", Name: "avg", Div: 1000},
 		},
 	}
-	respTimeHist = Chart{
+	reqProcTimeHist = Chart{
 		ID:       "requests_processing_time_histogram",
 		Title:    "Requests Processing Time Histogram",
 		Units:    "requests/s",
@@ -395,7 +395,7 @@ var (
 )
 
 func newRespTimeHistChart(histogram []float64) *Chart {
-	chart := respTimeHist.Copy()
+	chart := reqProcTimeHist.Copy()
 	for i, v := range histogram {
 		dim := &Dim{
 			ID:   fmt.Sprintf("resp_time_hist_bucket_%d", i+1),
@@ -532,7 +532,7 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 		}
 	}
 	if line.hasReqProcTime() {
-		check(charts.Add(respTime.Copy()))
+		check(charts.Add(reqProcTime.Copy()))
 		if len(w.Histogram) != 0 {
 			chart := newRespTimeHistChart(w.Histogram)
 			check(charts.Add(chart))
