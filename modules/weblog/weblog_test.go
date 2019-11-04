@@ -89,8 +89,8 @@ func TestWebLog_Collect(t *testing.T) {
 	//	l = append(l, k)
 	//}
 	//sort.Strings(l)
-	//for _, v := range l {
-	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", v, m[v]))
+	//for _, value := range l {
+	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
 	//}
 
 	expected := map[string]int64{
@@ -253,8 +253,8 @@ func testCharts(t *testing.T, w *WebLog) {
 	testReqVhostChart(t, w)
 	testReqPortChart(t, w)
 	testReqSchemeChart(t, w)
-	testReqMethodChart(t, w)
-	testReqVersionChart(t, w)
+	testReqHTTPMethodChart(t, w)
+	testReqHTTPVersionChart(t, w)
 	testReqClientCharts(t, w)
 	testBandwidthChart(t, w)
 	testReqURLPatternChart(t, w)
@@ -326,7 +326,7 @@ func testReqPortChart(t *testing.T, w *WebLog) {
 	}
 }
 
-func testReqMethodChart(t *testing.T, w *WebLog) {
+func testReqHTTPMethodChart(t *testing.T, w *WebLog) {
 	if len(w.mx.ReqMethod) == 0 {
 		assert.Falsef(t, w.Charts().Has(reqPerMethod.ID), "chart '%s' is created", reqPerMethod.ID)
 		return
@@ -343,7 +343,7 @@ func testReqMethodChart(t *testing.T, w *WebLog) {
 	}
 }
 
-func testReqVersionChart(t *testing.T, w *WebLog) {
+func testReqHTTPVersionChart(t *testing.T, w *WebLog) {
 	if len(w.mx.ReqVersion) == 0 {
 		assert.Falsef(t, w.Charts().Has(reqPerVersion.ID), "chart '%s' is created", reqPerVersion.ID)
 		return
@@ -381,6 +381,7 @@ func testReqClientCharts(t *testing.T, w *WebLog) {
 		assert.Truef(t, w.Charts().Has(uniqIPsCurPoll.ID), "chart '%s' is not created", uniqIPsCurPoll.ID)
 	}
 }
+
 func testBandwidthChart(t *testing.T, w *WebLog) {
 	if w.mx.BytesSent.Value() == 0 && w.mx.BytesReceived.Value() == 0 {
 		assert.Falsef(t, w.Charts().Has(bandwidth.ID), "chart '%s' is created", bandwidth.ID)
@@ -434,6 +435,9 @@ func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
 
 		stats, ok := w.mx.URLPatternStats[p.name]
 		assert.Truef(t, ok, "url pattern '%s' has no metric in w.mx.URLPatternStats", p.name)
+		if !ok {
+			continue
+		}
 		for v := range stats.RespStatusCode {
 			id := fmt.Sprintf("url_ptn_%s_resp_status_code_%s", p.name, v)
 			assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' code, expected '%s'", chartID, v, id)

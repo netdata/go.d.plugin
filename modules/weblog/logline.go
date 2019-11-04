@@ -41,6 +41,8 @@ import (
 | resp_size          | $body_bytes_sent        | %B (%b)   | w/o http headers. %b '-' when no bytes are sent.
 | req_proc_time      | $request_time           | %D        | the time taken to serve the request.
 | ups_resp_time      | $upstream_response_time | -         | time spent on rec the response from the upstream server.
+| ssl_proto          | $ssl_protocol           | -         | protocol of an established SSL connection.
+| ssl_cipher_suite   | $ssl_cipher             | -         | string of ciphers used for an established SSL connection.
 | custom             | -                       | -         |
 */
 
@@ -66,6 +68,8 @@ const (
 	fieldRespSize       = "resp_size"
 	fieldReqProcTime    = "req_proc_time"
 	fieldUpsRespTime    = "ups_resp_time"
+	fieldSSLProto       = "ssl_proto"
+	fieldSSLCipherSuite = "ssl_cipher_suite"
 	fieldCustom         = "custom"
 )
 
@@ -99,6 +103,10 @@ func lookupField(v string) (field string, ok bool) {
 		field = fieldReqProcTime
 	case "upstream_response_time":
 		field = fieldUpsRespTime
+	case "ssl_protocol":
+		field = fieldSSLProto
+	case "ssl_cipher":
+		field = fieldSSLCipherSuite
 	case "custom":
 		field = fieldCustom
 	}
@@ -122,6 +130,8 @@ var (
 	errBadRespSize         = errors.New("bad resp size")
 	errBadReqProcTime      = errors.New("bad req processing time")
 	errBadUpstreamRespTime = errors.New("bad upstream resp time")
+	errBadSSLProto         = errors.New("bad ssl protocol")
+	errBadSSLCipherSuite   = errors.New("bad ssl cipher suite")
 )
 
 func newEmptyLogLine() *logLine {
@@ -143,6 +153,8 @@ type logLine struct {
 	respStatusCode int
 	respSize       int
 	upsRespTime    float64
+	sslProto       string
+	sslCipherSuite string
 	custom         string
 }
 
@@ -186,8 +198,12 @@ func (l *logLine) Assign(variable string, value string) (err error) {
 		err = l.assignReqProcTime(value)
 	case fieldUpsRespTime:
 		err = l.assignUpstreamRespTime(value)
+	case fieldSSLProto:
+		err = l.assignSSLProto(value)
+	case fieldSSLCipherSuite:
+		err = l.assignSSLCipherSuite(value)
 	case fieldCustom:
-		l.custom = value
+		err = l.assignCustom(value)
 	}
 	return err
 }
@@ -382,6 +398,36 @@ func (l *logLine) assignUpstreamRespTime(time string) error {
 	return nil
 }
 
+func (l *logLine) assignSSLProto(proto string) error {
+	if proto == hyphen {
+		return nil
+	}
+	if !isValidSSLProto(proto) {
+		return fmt.Errorf("assign '%s': %w", proto, errBadSSLProto)
+	}
+	l.sslProto = proto
+	return nil
+}
+
+func (l *logLine) assignSSLCipherSuite(cipher string) error {
+	if cipher == hyphen {
+		return nil
+	}
+	if idx := strings.IndexByte(cipher, '-'); idx <= 0 {
+		return fmt.Errorf("assign '%s': %w", cipher, errBadSSLCipherSuite)
+	}
+	l.sslCipherSuite = cipher
+	return nil
+}
+
+func (l *logLine) assignCustom(custom string) error {
+	if custom == hyphen {
+		return nil
+	}
+	l.custom = custom
+	return nil
+}
+
 func (l logLine) verify() error {
 	if !l.hasRespStatusCode() {
 		return fmt.Errorf("%s: %w", fieldRespStatusCode, errMandatoryField)
@@ -424,6 +470,12 @@ func (l logLine) verify() error {
 	if l.hasUpstreamRespTime() && !l.validUpstreamRespTime() {
 		return fmt.Errorf("verify '%f': %w", l.upsRespTime, errBadUpstreamRespTime)
 	}
+	if l.hasSSLProto() && !l.validSSLProto() {
+		return fmt.Errorf("verify '%s': %w", l.sslProto, errBadSSLProto)
+	}
+	if l.hasSSLCipherSuite() && !l.validSSLCipherSuite() {
+		return fmt.Errorf("verify '%s': %w", l.sslCipherSuite, errBadSSLCipherSuite)
+	}
 	return nil
 }
 
@@ -439,6 +491,8 @@ func (l logLine) hasReqSize() bool            { return !isEmptyNumber(l.reqSize)
 func (l logLine) hasRespSize() bool           { return !isEmptyNumber(l.respSize) }
 func (l logLine) hasReqProcTime() bool        { return !isEmptyNumber(int(l.reqProcTime)) }
 func (l logLine) hasUpstreamRespTime() bool   { return !isEmptyNumber(int(l.upsRespTime)) }
+func (l logLine) hasSSLProto() bool           { return !isEmptyString(l.sslProto) }
+func (l logLine) hasSSLCipherSuite() bool     { return !isEmptyString(l.sslCipherSuite) }
 func (l logLine) hasCustom() bool             { return !isEmptyString(l.custom) }
 func (l logLine) validVhost() bool            { return reVhost.MatchString(l.vhost) }
 func (l logLine) validPort() bool             { return isValidPort(l.port) }
@@ -447,11 +501,13 @@ func (l logLine) validReqClient() bool        { return reClient.MatchString(l.re
 func (l logLine) validReqMethod() bool        { return isValidReqMethod(l.reqMethod) }
 func (l logLine) validReqURL() bool           { return isValidURL(l.reqMethod, l.reqURL) }
 func (l logLine) validReqProto() bool         { return isValidReqProtoVer(l.reqProto) }
+func (l logLine) validRespStatusCode() bool   { return isValidRespStatusCode(l.respStatusCode) }
 func (l logLine) validReqSize() bool          { return isValidSize(l.reqSize) }
 func (l logLine) validRespSize() bool         { return isValidSize(l.respSize) }
 func (l logLine) validReqProcTime() bool      { return isValidTime(l.reqProcTime) }
 func (l logLine) validUpstreamRespTime() bool { return isValidTime(l.upsRespTime) }
-func (l logLine) validRespStatusCode() bool   { return isValidRespStatusCode(l.respStatusCode) }
+func (l logLine) validSSLProto() bool         { return isValidSSLProto(l.sslProto) }
+func (l logLine) validSSLCipherSuite() bool   { return reCipherSuite.MatchString(l.sslCipherSuite) }
 
 func (l *logLine) reset() {
 	l.vhost = emptyString
@@ -466,13 +522,16 @@ func (l *logLine) reset() {
 	l.respSize = emptyNumber
 	l.reqProcTime = emptyNumber
 	l.upsRespTime = emptyNumber
+	l.sslProto = emptyString
+	l.sslCipherSuite = emptyString
 	l.custom = emptyString
 }
 
 var (
 	// TODO: reClient doesnt work with %h when HostnameLookups is On.
-	reVhost  = regexp.MustCompile(`^[a-zA-Z0-9-:.]+$`)
-	reClient = regexp.MustCompile(`^([\da-f:.]+|localhost)$`)
+	reVhost       = regexp.MustCompile(`^[a-zA-Z0-9-:.]+$`)
+	reClient      = regexp.MustCompile(`^([\da-f:.]+|localhost)$`)
+	reCipherSuite = regexp.MustCompile(`^[A-Z0-9-]+$`) // openssl -v
 )
 
 const (
@@ -558,6 +617,17 @@ func isValidSize(size int) bool {
 
 func isValidTime(time float64) bool {
 	return time >= 0
+}
+
+func isValidSSLProto(proto string) bool {
+	if proto == "TLSv1.2" {
+		return true
+	}
+	switch proto {
+	case "TLSv1.3", "SSLv2", "SSLv3", "TLSv1", "TLSv1.1":
+		return true
+	}
+	return false
 }
 
 func respTimeMultiplier(time string) float64 {

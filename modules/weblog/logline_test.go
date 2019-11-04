@@ -18,283 +18,317 @@ const (
 )
 
 func TestLogLine_Assign(t *testing.T) {
-	type testCase struct {
-		v        string
+	type test struct {
+		input    string
 		wantLine string
 		wantErr  error
 	}
-	tests := []struct {
+	type groupTest struct {
 		name  string
 		vars  []string
-		cases []testCase
-	}{
+		tests []test
+	}
+	tests := []groupTest{
 		{
-			"Vhost",
-			[]string{
+			name: "Vhost",
+			vars: []string{
 				"host",
 				"http_host",
 				"v",
 			},
-			[]testCase{
-				{v: "1.1.1.1", wantLine: "vhost=1.1.1.1"},
-				{v: "::1", wantLine: "vhost=::1"},
-				{v: "[::1]", wantLine: "vhost=::1"},
-				{v: "1ce:1ce::babe", wantLine: "vhost=1ce:1ce::babe"},
-				{v: "[1ce:1ce::babe]", wantLine: "vhost=1ce:1ce::babe"},
-				{v: "localhost", wantLine: "vhost=localhost"},
-				{v: "debian10.debian", wantLine: "vhost=debian10.debian"},
-				{v: "my_vhost", wantLine: "vhost=my_vhost"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
+			tests: []test{
+				{input: "1.1.1.1", wantLine: "vhost=1.1.1.1"},
+				{input: "::1", wantLine: "vhost=::1"},
+				{input: "[::1]", wantLine: "vhost=::1"},
+				{input: "1ce:1ce::babe", wantLine: "vhost=1ce:1ce::babe"},
+				{input: "[1ce:1ce::babe]", wantLine: "vhost=1ce:1ce::babe"},
+				{input: "localhost", wantLine: "vhost=localhost"},
+				{input: "debian10.debian", wantLine: "vhost=debian10.debian"},
+				{input: "my_vhost", wantLine: "vhost=my_vhost"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
 			},
 		},
 		{
-			"Port",
-			[]string{
+			name: "Server Port",
+			vars: []string{
 				"server_port",
 				"p",
 			},
-			[]testCase{
-				{v: "80", wantLine: "port=80"},
-				{v: "8081", wantLine: "port=8081"},
-				{v: "30000", wantLine: "port=30000"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
-				{v: "-1", wantLine: emptyLogLine, wantErr: errBadPort},
-				{v: "0", wantLine: emptyLogLine, wantErr: errBadPort},
-				{v: "50000", wantLine: emptyLogLine, wantErr: errBadPort},
+			tests: []test{
+				{input: "80", wantLine: "port=80"},
+				{input: "8081", wantLine: "port=8081"},
+				{input: "30000", wantLine: "port=30000"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "-1", wantLine: emptyLogLine, wantErr: errBadPort},
+				{input: "0", wantLine: emptyLogLine, wantErr: errBadPort},
+				{input: "50000", wantLine: emptyLogLine, wantErr: errBadPort},
 			},
 		},
 		{
-			"Vhost with port",
-			[]string{
+			name: "Vhost With Port",
+			vars: []string{
 				"host:$server_port",
 				"v:%p",
 			},
-			[]testCase{
-				{v: "1.1.1.1:80", wantLine: "vhost=1.1.1.1 port=80"},
-				{v: "::1:80", wantLine: "vhost=::1 port=80"},
-				{v: "[::1]:80", wantLine: "vhost=::1 port=80"},
-				{v: "1ce:1ce::babe:80", wantLine: "vhost=1ce:1ce::babe port=80"},
-				{v: "debian10.debian:81", wantLine: "vhost=debian10.debian port=81"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
-				{v: "1.1.1.1", wantLine: emptyLogLine, wantErr: errBadVhostPort},
-				{v: "1.1.1.1:", wantLine: emptyLogLine, wantErr: errBadVhostPort},
-				{v: "1.1.1.1 80", wantLine: emptyLogLine, wantErr: errBadVhostPort},
-				{v: "1.1.1.1:20", wantLine: emptyLogLine, wantErr: errBadVhostPort},
-				{v: "1.1.1.1:50000", wantLine: emptyLogLine, wantErr: errBadVhostPort},
+			tests: []test{
+				{input: "1.1.1.1:80", wantLine: "vhost=1.1.1.1 port=80"},
+				{input: "::1:80", wantLine: "vhost=::1 port=80"},
+				{input: "[::1]:80", wantLine: "vhost=::1 port=80"},
+				{input: "1ce:1ce::babe:80", wantLine: "vhost=1ce:1ce::babe port=80"},
+				{input: "debian10.debian:81", wantLine: "vhost=debian10.debian port=81"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "1.1.1.1", wantLine: emptyLogLine, wantErr: errBadVhostPort},
+				{input: "1.1.1.1:", wantLine: emptyLogLine, wantErr: errBadVhostPort},
+				{input: "1.1.1.1 80", wantLine: emptyLogLine, wantErr: errBadVhostPort},
+				{input: "1.1.1.1:20", wantLine: emptyLogLine, wantErr: errBadVhostPort},
+				{input: "1.1.1.1:50000", wantLine: emptyLogLine, wantErr: errBadVhostPort},
 			},
 		},
 		{
-			"Scheme",
-			[]string{
+			name: "Scheme",
+			vars: []string{
 				"scheme",
 			},
-			[]testCase{
-				{v: "http", wantLine: "req_scheme=http"},
-				{v: "https", wantLine: "req_scheme=https"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
-				{v: "HTTP", wantLine: emptyLogLine, wantErr: errBadReqScheme},
-				{v: "HTTPS", wantLine: emptyLogLine, wantErr: errBadReqScheme},
+			tests: []test{
+				{input: "http", wantLine: "req_scheme=http"},
+				{input: "https", wantLine: "req_scheme=https"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "HTTP", wantLine: emptyLogLine, wantErr: errBadReqScheme},
+				{input: "HTTPS", wantLine: emptyLogLine, wantErr: errBadReqScheme},
 			},
 		},
 		{
-			"Client",
-			[]string{
+			name: "Client",
+			vars: []string{
 				"remote_addr",
 				"a",
 				"h",
 			},
-			[]testCase{
-				{v: "1.1.1.1", wantLine: "req_client=1.1.1.1"},
-				{v: "debian10", wantLine: "req_client=debian10"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
+			tests: []test{
+				{input: "1.1.1.1", wantLine: "req_client=1.1.1.1"},
+				{input: "debian10", wantLine: "req_client=debian10"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
 			},
 		},
 		{
-			"Request",
-			[]string{
+			name: "Request",
+			vars: []string{
 				"request",
 				"r",
 			},
-			[]testCase{
-				{v: "GET / HTTP/1.0", wantLine: "req_method=GET req_url=/ req_proto=1.0"},
-				{v: "HEAD /ihs.gif HTTP/1.0", wantLine: "req_method=HEAD req_url=/ihs.gif req_proto=1.0"},
-				{v: "POST /ihs.gif HTTP/1.0", wantLine: "req_method=POST req_url=/ihs.gif req_proto=1.0"},
-				{v: "PUT /ihs.gif HTTP/1.0", wantLine: "req_method=PUT req_url=/ihs.gif req_proto=1.0"},
-				{v: "PATCH /ihs.gif HTTP/1.0", wantLine: "req_method=PATCH req_url=/ihs.gif req_proto=1.0"},
-				{v: "DELETE /ihs.gif HTTP/1.0", wantLine: "req_method=DELETE req_url=/ihs.gif req_proto=1.0"},
-				{v: "OPTIONS /ihs.gif HTTP/1.0", wantLine: "req_method=OPTIONS req_url=/ihs.gif req_proto=1.0"},
-				{v: "TRACE /ihs.gif HTTP/1.0", wantLine: "req_method=TRACE req_url=/ihs.gif req_proto=1.0"},
-				{v: "CONNECT ip.cn:443 HTTP/1.1", wantLine: "req_method=CONNECT req_url=ip.cn:443 req_proto=1.1"},
-				{v: "GET / HTTP/1.1", wantLine: "req_method=GET req_url=/ req_proto=1.1"},
-				{v: "GET / HTTP/2", wantLine: "req_method=GET req_url=/ req_proto=2"},
-				{v: "GET / HTTP/2.0", wantLine: "req_method=GET req_url=/ req_proto=2.0"},
-				{v: "GET /invalid_version http/1.1", wantLine: "req_method=GET req_url=/invalid_version", wantErr: errBadRequest},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
-				{v: "GET no_version", wantLine: emptyLogLine, wantErr: errBadRequest},
-				{v: "GOT / HTTP/2", wantLine: emptyLogLine, wantErr: errBadRequest},
-				{v: "get / HTTP/2", wantLine: emptyLogLine, wantErr: errBadRequest},
-				{v: "x04\x01\x00P$3\xFE\xEA\x00", wantLine: emptyLogLine, wantErr: errBadRequest},
+			tests: []test{
+				{input: "GET / HTTP/1.0", wantLine: "req_method=GET req_url=/ req_proto=1.0"},
+				{input: "HEAD /ihs.gif HTTP/1.0", wantLine: "req_method=HEAD req_url=/ihs.gif req_proto=1.0"},
+				{input: "POST /ihs.gif HTTP/1.0", wantLine: "req_method=POST req_url=/ihs.gif req_proto=1.0"},
+				{input: "PUT /ihs.gif HTTP/1.0", wantLine: "req_method=PUT req_url=/ihs.gif req_proto=1.0"},
+				{input: "PATCH /ihs.gif HTTP/1.0", wantLine: "req_method=PATCH req_url=/ihs.gif req_proto=1.0"},
+				{input: "DELETE /ihs.gif HTTP/1.0", wantLine: "req_method=DELETE req_url=/ihs.gif req_proto=1.0"},
+				{input: "OPTIONS /ihs.gif HTTP/1.0", wantLine: "req_method=OPTIONS req_url=/ihs.gif req_proto=1.0"},
+				{input: "TRACE /ihs.gif HTTP/1.0", wantLine: "req_method=TRACE req_url=/ihs.gif req_proto=1.0"},
+				{input: "CONNECT ip.cn:443 HTTP/1.1", wantLine: "req_method=CONNECT req_url=ip.cn:443 req_proto=1.1"},
+				{input: "GET / HTTP/1.1", wantLine: "req_method=GET req_url=/ req_proto=1.1"},
+				{input: "GET / HTTP/2", wantLine: "req_method=GET req_url=/ req_proto=2"},
+				{input: "GET / HTTP/2.0", wantLine: "req_method=GET req_url=/ req_proto=2.0"},
+				{input: "GET /invalid_version http/1.1", wantLine: "req_method=GET req_url=/invalid_version", wantErr: errBadRequest},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "GET no_version", wantLine: emptyLogLine, wantErr: errBadRequest},
+				{input: "GOT / HTTP/2", wantLine: emptyLogLine, wantErr: errBadRequest},
+				{input: "get / HTTP/2", wantLine: emptyLogLine, wantErr: errBadRequest},
+				{input: "x04\x01\x00P$3\xFE\xEA\x00", wantLine: emptyLogLine, wantErr: errBadRequest},
 			},
 		},
 		{
-			"Method",
-			[]string{
+			name: "Request HTTP Method",
+			vars: []string{
 				"request_method",
 				"m",
 			},
-			[]testCase{
-				{v: "GET", wantLine: "req_method=GET"},
-				{v: "HEAD", wantLine: "req_method=HEAD"},
-				{v: "POST", wantLine: "req_method=POST"},
-				{v: "PUT", wantLine: "req_method=PUT"},
-				{v: "PATCH", wantLine: "req_method=PATCH"},
-				{v: "DELETE", wantLine: "req_method=DELETE"},
-				{v: "OPTIONS", wantLine: "req_method=OPTIONS"},
-				{v: "TRACE", wantLine: "req_method=TRACE"},
-				{v: "CONNECT", wantLine: "req_method=CONNECT"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
-				{v: "GET no_version", wantLine: emptyLogLine, wantErr: errBadReqMethod},
-				{v: "GOT / HTTP/2", wantLine: emptyLogLine, wantErr: errBadReqMethod},
-				{v: "get / HTTP/2", wantLine: emptyLogLine, wantErr: errBadReqMethod},
+			tests: []test{
+				{input: "GET", wantLine: "req_method=GET"},
+				{input: "HEAD", wantLine: "req_method=HEAD"},
+				{input: "POST", wantLine: "req_method=POST"},
+				{input: "PUT", wantLine: "req_method=PUT"},
+				{input: "PATCH", wantLine: "req_method=PATCH"},
+				{input: "DELETE", wantLine: "req_method=DELETE"},
+				{input: "OPTIONS", wantLine: "req_method=OPTIONS"},
+				{input: "TRACE", wantLine: "req_method=TRACE"},
+				{input: "CONNECT", wantLine: "req_method=CONNECT"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "GET no_version", wantLine: emptyLogLine, wantErr: errBadReqMethod},
+				{input: "GOT / HTTP/2", wantLine: emptyLogLine, wantErr: errBadReqMethod},
+				{input: "get / HTTP/2", wantLine: emptyLogLine, wantErr: errBadReqMethod},
 			},
 		},
 		{
-			"URL",
-			[]string{
+			name: "Request URL",
+			vars: []string{
 				"request_uri",
 				"U",
 			},
-			[]testCase{
-				{v: "/server-status?auto", wantLine: "req_url=/server-status?auto"},
-				{v: "/default.html", wantLine: "req_url=/default.html"},
-				{v: "10.0.0.1:3128", wantLine: "req_url=10.0.0.1:3128"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
+			tests: []test{
+				{input: "/server-status?auto", wantLine: "req_url=/server-status?auto"},
+				{input: "/default.html", wantLine: "req_url=/default.html"},
+				{input: "10.0.0.1:3128", wantLine: "req_url=10.0.0.1:3128"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
 			},
 		},
 		{
-			"Protocol",
-			[]string{
+			name: "Request HTTP Protocol",
+			vars: []string{
 				"server_protocol",
 				"H",
 			},
-			[]testCase{
-				{v: "HTTP/1.0", wantLine: "req_proto=1.0"},
-				{v: "HTTP/1.1", wantLine: "req_proto=1.1"},
-				{v: "HTTP/2", wantLine: "req_proto=2"},
-				{v: "HTTP/2.0", wantLine: "req_proto=2.0"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
-				{v: "1.1", wantLine: emptyLogLine, wantErr: errBadReqProto},
-				{v: "http/1.1", wantLine: emptyLogLine, wantErr: errBadReqProto},
+			tests: []test{
+				{input: "HTTP/1.0", wantLine: "req_proto=1.0"},
+				{input: "HTTP/1.1", wantLine: "req_proto=1.1"},
+				{input: "HTTP/2", wantLine: "req_proto=2"},
+				{input: "HTTP/2.0", wantLine: "req_proto=2.0"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "1.1", wantLine: emptyLogLine, wantErr: errBadReqProto},
+				{input: "http/1.1", wantLine: emptyLogLine, wantErr: errBadReqProto},
 			},
 		},
 		{
-			"Status",
-			[]string{
+			name: "Response Status Code",
+			vars: []string{
 				"status",
 				"s",
 				">s",
 			},
-			[]testCase{
-				{v: "100", wantLine: "resp_code=100"},
-				{v: "200", wantLine: "resp_code=200"},
-				{v: "300", wantLine: "resp_code=300"},
-				{v: "400", wantLine: "resp_code=400"},
-				{v: "500", wantLine: "resp_code=500"},
-				{v: "600", wantLine: "resp_code=600"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
-				{v: "99", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{v: "601", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{v: "200 ", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{v: "0.222", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{v: "localhost", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+			tests: []test{
+				{input: "100", wantLine: "resp_code=100"},
+				{input: "200", wantLine: "resp_code=200"},
+				{input: "300", wantLine: "resp_code=300"},
+				{input: "400", wantLine: "resp_code=400"},
+				{input: "500", wantLine: "resp_code=500"},
+				{input: "600", wantLine: "resp_code=600"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "99", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{input: "601", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{input: "200 ", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{input: "0.222", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{input: "localhost", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
 			},
 		},
 		{
-			"Request size",
-			[]string{
+			name: "Request Size",
+			vars: []string{
 				"request_length",
 				"I",
 			},
-			[]testCase{
-				{v: "15", wantLine: "req_size=15"},
-				{v: "1000000", wantLine: "req_size=1000000"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: "req_size=0"},
-				{v: "-1", wantLine: emptyLogLine, wantErr: errBadReqSize},
-				{v: "100.222", wantLine: emptyLogLine, wantErr: errBadReqSize},
-				{v: "invalid", wantLine: emptyLogLine, wantErr: errBadReqSize},
+			tests: []test{
+				{input: "15", wantLine: "req_size=15"},
+				{input: "1000000", wantLine: "req_size=1000000"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: "req_size=0"},
+				{input: "-1", wantLine: emptyLogLine, wantErr: errBadReqSize},
+				{input: "100.222", wantLine: emptyLogLine, wantErr: errBadReqSize},
+				{input: "invalid", wantLine: emptyLogLine, wantErr: errBadReqSize},
 			},
 		},
 		{
-			"Response size",
-			[]string{
+			name: "Response Size",
+			vars: []string{
 				"bytes_sent",
 				"body_bytes_sent",
 				"O",
 				"B",
 				"b",
 			},
-			[]testCase{
-				{v: "15", wantLine: "resp_size=15"},
-				{v: "1000000", wantLine: "resp_size=1000000"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: "resp_size=0"},
-				{v: "-1", wantLine: emptyLogLine, wantErr: errBadRespSize},
-				{v: "100.222", wantLine: emptyLogLine, wantErr: errBadRespSize},
-				{v: "invalid", wantLine: emptyLogLine, wantErr: errBadRespSize},
+			tests: []test{
+				{input: "15", wantLine: "resp_size=15"},
+				{input: "1000000", wantLine: "resp_size=1000000"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: "resp_size=0"},
+				{input: "-1", wantLine: emptyLogLine, wantErr: errBadRespSize},
+				{input: "100.222", wantLine: emptyLogLine, wantErr: errBadRespSize},
+				{input: "invalid", wantLine: emptyLogLine, wantErr: errBadRespSize},
 			},
 		},
 		{
-			"Request processing time",
-			[]string{
+			name: "Request Processing Time",
+			vars: []string{
 				"request_time",
 				"D",
 			},
-			[]testCase{
-				{v: "100222", wantLine: "req_proc_time=100222"},
-				{v: "100.222", wantLine: "req_proc_time=100222000"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
-				{v: "-1", wantLine: emptyLogLine, wantErr: errBadReqProcTime},
-				{v: "0.333,0.444,0.555", wantLine: emptyLogLine, wantErr: errBadReqProcTime},
-				{v: "number", wantLine: emptyLogLine, wantErr: errBadReqProcTime},
+			tests: []test{
+				{input: "100222", wantLine: "req_proc_time=100222"},
+				{input: "100.222", wantLine: "req_proc_time=100222000"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "-1", wantLine: emptyLogLine, wantErr: errBadReqProcTime},
+				{input: "0.333,0.444,0.555", wantLine: emptyLogLine, wantErr: errBadReqProcTime},
+				{input: "number", wantLine: emptyLogLine, wantErr: errBadReqProcTime},
 			},
 		},
 		{
-			"Upstream response time",
-			[]string{
+			name: "Upstream Response Time",
+			vars: []string{
 				"upstream_response_time",
 			},
-			[]testCase{
-				{v: "100222", wantLine: "ups_resp_time=100222"},
-				{v: "100.222", wantLine: "ups_resp_time=100222000"},
-				{v: "0.333,0.444,0.555", wantLine: "ups_resp_time=333000"},
-				{v: emptyStr, wantLine: emptyLogLine},
-				{v: hyphen, wantLine: emptyLogLine},
-				{v: "-1", wantLine: emptyLogLine, wantErr: errBadUpstreamRespTime},
-				{v: "number", wantLine: emptyLogLine, wantErr: errBadUpstreamRespTime},
+			tests: []test{
+				{input: "100222", wantLine: "ups_resp_time=100222"},
+				{input: "100.222", wantLine: "ups_resp_time=100222000"},
+				{input: "0.333,0.444,0.555", wantLine: "ups_resp_time=333000"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "-1", wantLine: emptyLogLine, wantErr: errBadUpstreamRespTime},
+				{input: "number", wantLine: emptyLogLine, wantErr: errBadUpstreamRespTime},
+			},
+		},
+		{
+			name: "SSL Protocol",
+			vars: []string{
+				"ssl_protocol",
+			},
+			tests: []test{
+				{input: "SSLv2", wantLine: "ssl_proto=SSLv2"},
+				{input: "TLSv1", wantLine: "ssl_proto=TLSv1"},
+				{input: "TLSv1.1", wantLine: "ssl_proto=TLSv1.1"},
+				{input: "TLSv1.2", wantLine: "ssl_proto=TLSv1.2"},
+				{input: "TLSv1.3", wantLine: "ssl_proto=TLSv1.3"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "-1", wantLine: emptyLogLine, wantErr: errBadSSLProto},
+				{input: "invalid", wantLine: emptyLogLine, wantErr: errBadSSLProto},
+			},
+		},
+		{
+			name: "SSL Cipher Suite",
+			vars: []string{
+				"ssl_cipher",
+			},
+			tests: []test{
+				{input: "ECDHE-RSA-AES256-SHA", wantLine: "ssl_cipher_suite=ECDHE-RSA-AES256-SHA"},
+				{input: "DHE-RSA-AES256-SHA", wantLine: "ssl_cipher_suite=DHE-RSA-AES256-SHA"},
+				{input: "AES256-SHA", wantLine: "ssl_cipher_suite=AES256-SHA"},
+				{input: "PSK-RC4-SHA", wantLine: "ssl_cipher_suite=PSK-RC4-SHA"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+				{input: "-1", wantLine: emptyLogLine, wantErr: errBadSSLCipherSuite},
+				{input: "invalid", wantLine: emptyLogLine, wantErr: errBadSSLCipherSuite},
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		for _, varName := range tt.vars {
-			for i, tc := range tt.cases {
-				name := fmt.Sprintf("[%s:%d]var='%s'|val='%s'", tt.name, i+1, varName, tc.v)
+			for i, tc := range tt.tests {
+				name := fmt.Sprintf("[%s:%d]var='%s'|val='%s'", tt.name, i+1, varName, tc.input)
 				t.Run(name, func(t *testing.T) {
 
 					line := newEmptyLogLine()
-					err := line.Assign(varName, tc.v)
+					err := line.Assign(varName, tc.input)
 
 					if tc.wantErr != nil {
 						require.Error(t, err)
@@ -312,17 +346,17 @@ func TestLogLine_Assign(t *testing.T) {
 }
 
 func TestLogLine_verify(t *testing.T) {
-	type testCase struct {
+	type test struct {
 		line    string
 		wantErr error
 	}
 	tests := []struct {
 		name  string
-		cases []testCase
+		tests []test
 	}{
 		{
-			"Vhost",
-			[]testCase{
+			name: "Vhost",
+			tests: []test{
 				{line: "vhost=192.168.0.1"},
 				{line: "vhost=debian10.debian"},
 				{line: "vhost=1ce:1ce::babe"},
@@ -333,8 +367,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Port",
-			[]testCase{
+			name: "Server Port",
+			tests: []test{
 				{line: "port=80"},
 				{line: "port=8081"},
 				{line: emptyLogLine},
@@ -344,8 +378,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Vhost with port",
-			[]testCase{
+			name: "Vhost With Port",
+			tests: []test{
 				{line: "vhost=1.1.1.1 port=80"},
 				{line: "vhost=::1 port=8081"},
 				{line: "vhost=1ce:1ce::babe port=81"},
@@ -357,8 +391,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Scheme",
-			[]testCase{
+			name: "Scheme",
+			tests: []test{
 				{line: "req_scheme=http"},
 				{line: "req_scheme=https"},
 				{line: emptyLogLine},
@@ -369,8 +403,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Client",
-			[]testCase{
+			name: "Client",
+			tests: []test{
 				{line: "req_client=1.1.1.1"},
 				{line: "req_client=::1"},
 				{line: "req_client=1ce:1ce::babe"},
@@ -381,8 +415,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Method",
-			[]testCase{
+			name: "Request HTTP Method",
+			tests: []test{
 				{line: "req_method=GET"},
 				{line: "req_method=POST"},
 				{line: "req_method=TRACE"},
@@ -399,8 +433,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"URL",
-			[]testCase{
+			name: "Request URL",
+			tests: []test{
 				{line: "req_url=/"},
 				{line: "req_url=/status?full&json"},
 				{line: "req_url=/icons/openlogo-75.png"},
@@ -412,8 +446,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Protocol",
-			[]testCase{
+			name: "Request HTTP Protocol",
+			tests: []test{
 				{line: "req_proto=1"},
 				{line: "req_proto=1.0"},
 				{line: "req_proto=1.1"},
@@ -427,8 +461,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Status",
-			[]testCase{
+			name: "Response Status Code",
+			tests: []test{
 				{line: "resp_code=100"},
 				{line: "resp_code=200"},
 				{line: "resp_code=300"},
@@ -442,8 +476,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Request size",
-			[]testCase{
+			name: "Request size",
+			tests: []test{
 				{line: "req_size=0"},
 				{line: "req_size=100"},
 				{line: "req_size=1000000"},
@@ -452,8 +486,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Response size",
-			[]testCase{
+			name: "Response size",
+			tests: []test{
 				{line: "resp_size=0"},
 				{line: "resp_size=100"},
 				{line: "resp_size=1000000"},
@@ -462,8 +496,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Request Processing time",
-			[]testCase{
+			name: "Request Processing Time",
+			tests: []test{
 				{line: "req_proc_time=0"},
 				{line: "req_proc_time=0.000"},
 				{line: "req_proc_time=100"},
@@ -473,8 +507,8 @@ func TestLogLine_verify(t *testing.T) {
 			},
 		},
 		{
-			"Upstream response time",
-			[]testCase{
+			name: "Upstream Response Time",
+			tests: []test{
 				{line: "ups_resp_time=0"},
 				{line: "ups_resp_time=0.000"},
 				{line: "ups_resp_time=100"},
@@ -483,15 +517,49 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "ups_resp_time=-1", wantErr: errBadUpstreamRespTime},
 			},
 		},
+		{
+			name: "Upstream Response Time",
+			tests: []test{
+				{line: "ups_resp_time=0"},
+				{line: "ups_resp_time=0.000"},
+				{line: "ups_resp_time=100"},
+				{line: "ups_resp_time=1000000.123"},
+				{line: emptyLogLine},
+				{line: "ups_resp_time=-1", wantErr: errBadUpstreamRespTime},
+			},
+		},
+		{
+			name: "SSL Protocol",
+			tests: []test{
+				{line: "ssl_proto=SSLv2"},
+				{line: "ssl_proto=TLSv1"},
+				{line: "ssl_proto=TLSv1.1"},
+				{line: "ssl_proto=TLSv1.2"},
+				{line: "ssl_proto=TLSv1.3"},
+				{line: emptyLogLine},
+				{line: "ssl_proto=invalid", wantErr: errBadSSLProto},
+			},
+		},
+		{
+			name: "SSL Cipher Suite",
+			tests: []test{
+				{line: "ssl_cipher_suite=ECDHE-RSA-AES256-SHA"},
+				{line: "ssl_cipher_suite=DHE-RSA-AES256-SHA"},
+				{line: "ssl_cipher_suite=AES256-SHA"},
+				{line: "ssl_cipher_suite=PSK-RC4-SHA"},
+				{line: emptyLogLine},
+				{line: "ssl_cipher_suite=invalid", wantErr: errBadSSLCipherSuite},
+			},
+		},
 	}
 
 	for _, tt := range tests {
-		for i, c := range tt.cases {
-			name := fmt.Sprintf("name=%s|wantLine='%s'(%d)", tt.name, c.line, i+1)
+		for i, c := range tt.tests {
+			name := fmt.Sprintf("name=%s|line='%s'(%d)", tt.name, c.line, i+1)
 
 			t.Run(name, func(t *testing.T) {
 				line := prepareLogLine(t, c.line)
-				if tt.name != "Status" {
+				if tt.name != "Response Status Code" {
 					line.respStatusCode = 200
 				}
 
@@ -562,6 +630,10 @@ func prepareLogLine(t *testing.T, from string) logLine {
 			i, err := strconv.ParseFloat(val, 64)
 			require.NoError(t, err)
 			line.upsRespTime = i
+		case fieldSSLProto:
+			line.sslProto = val
+		case fieldSSLCipherSuite:
+			line.sslCipherSuite = val
 		case fieldCustom:
 			line.custom = val
 		default:
