@@ -447,7 +447,7 @@ func newReqPerCustomPatternChart(ps []*pattern) *Chart {
 	chart := reqPerCustomPattern.Copy()
 	for _, p := range ps {
 		dim := &Dim{
-			ID:   "req_custom_ptn" + p.name,
+			ID:   "req_custom_ptn_" + p.name,
 			Name: p.name,
 			Algo: module.Incremental,
 		}
@@ -560,52 +560,44 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 
 func (w *WebLog) addDimToVhostChart(vhost string) {
 	chart := w.Charts().Get(reqPerVhost.ID)
-
 	dim := &Dim{
 		ID:   "req_vhost_" + vhost,
 		Name: vhost,
 		Algo: module.Incremental,
 	}
-
 	check(chart.AddDim(dim))
 	chart.MarkNotCreated()
 }
 
 func (w *WebLog) addDimToPortChart(port string) {
 	chart := w.Charts().Get(reqPerPort.ID)
-
 	dim := &Dim{
 		ID:   "req_port_" + port,
 		Name: port,
 		Algo: module.Incremental,
 	}
-
 	check(chart.AddDim(dim))
 	chart.MarkNotCreated()
 }
 
 func (w *WebLog) addDimToReqMethodChart(method string) {
 	chart := w.Charts().Get(reqPerMethod.ID)
-
 	dim := &Dim{
 		ID:   "req_method_" + method,
 		Name: method,
 		Algo: module.Incremental,
 	}
-
 	check(chart.AddDim(dim))
 	chart.MarkNotCreated()
 }
 
 func (w *WebLog) addDimToReqVersionChart(version string) {
 	chart := w.Charts().Get(reqPerVersion.ID)
-
 	dim := &Dim{
 		ID:   "req_version_" + version,
 		Name: version,
 		Algo: module.Incremental,
 	}
-
 	check(chart.AddDim(dim))
 	chart.MarkNotCreated()
 }
@@ -615,13 +607,11 @@ func (w *WebLog) addDimToRespStatusCodeChart(code string) {
 	if chart == nil {
 		return
 	}
-
 	dim := &Dim{
-		ID:   "resp_code_" + code,
+		ID:   "resp_status_code_" + code,
 		Name: code,
 		Algo: module.Incremental,
 	}
-
 	check(chart.AddDim(dim))
 	chart.MarkNotCreated()
 }

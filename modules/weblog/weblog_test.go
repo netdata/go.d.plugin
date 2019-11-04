@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"math/rand"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -219,102 +220,177 @@ func TestWebLog_Collect(t *testing.T) {
 	_ = expected
 
 	assert.Equal(t, expected, weblog.Collect())
-	//testDynamicCharts(t, weblog)
-
-	//sort.Slice(*weblog.charts, func(i, j int) bool {
-	//	return (*weblog.charts)[i].Priority < (*weblog.charts)[j].Priority
-	//})
-	//
-	//for _, v := range *weblog.charts {
-	//	if v.Priority == 0 {
-	//		t.Fatal(v.ID, "NO PRIORITY")
-	//
-	//	}
-	//	fmt.Printf("%s '%s' %d\n", v.ID, v.Fam, v.Priority)
-	//}
+	testCharts(t, weblog)
 }
 
-//func testDynamicCharts(t *testing.T, w *WebLog) {
-//	if w.GroupRespCodes {
-//		chart := w.Charts().Get(respCodes.ID)
-//		require.NotNil(t, chart)
-//		assert.Len(t, chart.Dims, len(w.mx.RespStatusCode))
-//	} else {
-//		for _, v := range []string{"_1xx", "_2xx", "_3xx", "_4xx", "_5xx", "_other"} {
-//			chart := w.Charts().Get(respCodes.ID + v)
-//			require.NotNil(t, chart)
-//			assert.True(t, len(chart.Dims) > 0)
-//		}
-//	}
-//	if w.col.vhost {
-//		chart := w.Charts().Get(reqPerVhost.ID)
-//		require.NotNil(t, chart)
-//		assert.Len(t, chart.Dims, len(w.mx.ReqVhost))
-//	}
-//	if w.col.port {
-//		chart := w.Charts().Get(reqPerPort.ID)
-//		require.NotNil(t, chart)
-//		assert.Len(t, chart.Dims, len(w.mx.ReqPort))
-//	}
-//	if w.col.scheme {
-//		assert.NotNil(t, w.Charts().Get(reqPerScheme.ID))
-//	}
-//	if w.col.client {
-//		assert.NotNil(t, w.Charts().Get(reqPerIPProto.ID))
-//		assert.NotNil(t, w.Charts().Get(uniqIPsCurPoll.ID))
-//	}
-//	if w.col.method {
-//		chart := w.Charts().Get(reqPerMethod.ID)
-//		require.NotNil(t, chart)
-//		assert.Len(t, chart.Dims, len(w.mx.ReqMethod))
-//	}
-//	if w.col.url && len(w.patURL) != 0 {
-//		chart := w.Charts().Get(reqPerURLPattern.ID)
-//		require.NotNil(t, chart)
-//		assert.Len(t, chart.Dims, len(w.patURL))
-//	}
-//	if w.col.version {
-//		chart := w.Charts().Get(reqPerVersion.ID)
-//		require.NotNil(t, chart)
-//		assert.Len(t, chart.Dims, len(w.mx.ReqVersion))
-//	}
-//	if w.col.reqSize || w.col.respSize {
-//		assert.NotNil(t, w.Charts().Get(bandwidth.ID))
-//	}
-//	if w.col.custom && len(w.patCustom) != 0 {
-//		chart := w.Charts().Get(reqPerCustomPattern.ID)
-//		require.NotNil(t, chart)
-//		assert.Len(t, chart.Dims, len(w.mx.ReqCustomPattern))
-//	}
-//	if w.col.reqProcTime {
-//		assert.NotNil(t, w.Charts().Get(reqProcTime.ID))
-//		if len(w.Histogram) != 0 {
-//			assert.NotNil(t, w.Charts().Get(respTimeHist.ID))
-//		}
-//	}
-//	if w.col.upRespTime {
-//		assert.NotNil(t, w.Charts().Get(upsRespTime.ID))
-//		if len(w.Histogram) != 0 {
-//			assert.NotNil(t, w.Charts().Get(upsRespTimeHist.ID))
-//		}
-//	}
-//
-//	if w.col.url {
-//		for _, cat := range w.patURL {
-//			assert.NotNil(t, w.Charts().Get(respCodes.ID+"_"+cat.name))
-//		}
-//		if w.col.reqSize || w.col.respSize {
-//			for _, cat := range w.patURL {
-//				assert.NotNil(t, w.Charts().Get(bandwidth.ID+"_"+cat.name))
-//			}
-//		}
-//		if w.col.reqProcTime {
-//			for _, cat := range w.patURL {
-//				assert.NotNil(t, w.Charts().Get(reqProcTime.ID+"_"+cat.name))
-//			}
-//		}
-//	}
-//}
+func testCharts(t *testing.T, w *WebLog) {
+	testRespStatusCodeChart(t, w)
+	testReqVhostChart(t, w)
+	testReqPortChart(t, w)
+	testReqSchemeChart(t, w)
+	testReqMethodChart(t, w)
+	testReqVersionChart(t, w)
+	testReqClientCharts(t, w)
+	testBandwidthChart(t, w)
+	testReqURLPatternChart(t, w)
+	testReqCustomPatternChart(t, w)
+	testURLPatternStatsCharts(t, w)
+	//if w.col.reqProcTime {
+	//	assert.NotNil(t, w.Charts().Get(reqProcTime.ID))
+	//	if len(w.Histogram) != 0 {
+	//		assert.NotNil(t, w.Charts().Get(respTimeHist.ID))
+	//	}
+	//}
+	//if w.col.upRespTime {
+	//	assert.NotNil(t, w.Charts().Get(upsRespTime.ID))
+	//	if len(w.Histogram) != 0 {
+	//		assert.NotNil(t, w.Charts().Get(upsRespTimeHist.ID))
+	//	}
+	//}
+	//
+}
+
+func testReqVhostChart(t *testing.T, w *WebLog) {
+	if len(w.mx.ReqVhost) == 0 {
+		return
+	}
+	chart := w.Charts().Get(reqPerVhost.ID)
+	require.NotNil(t, chart)
+	for vhost := range w.mx.ReqVhost {
+		assert.Truef(t, chart.HasDim("req_vhost_"+vhost), "req per vhost "+vhost)
+	}
+}
+
+func testReqPortChart(t *testing.T, w *WebLog) {
+	if len(w.mx.ReqPort) == 0 {
+		return
+	}
+	chart := w.Charts().Get(reqPerPort.ID)
+	require.NotNil(t, chart)
+	for port := range w.mx.ReqPort {
+		assert.Truef(t, chart.HasDim("req_port_"+port), "req per port "+port)
+	}
+}
+
+func testReqMethodChart(t *testing.T, w *WebLog) {
+	if len(w.mx.ReqMethod) == 0 {
+		return
+	}
+	chart := w.Charts().Get(reqPerMethod.ID)
+	require.NotNil(t, chart)
+	for port := range w.mx.ReqMethod {
+		assert.Truef(t, chart.HasDim("req_method_"+port), "req per method "+port)
+	}
+}
+
+func testReqVersionChart(t *testing.T, w *WebLog) {
+	if len(w.mx.ReqVersion) == 0 {
+		return
+	}
+	chart := w.Charts().Get(reqPerVersion.ID)
+	require.NotNil(t, chart)
+	for port := range w.mx.ReqVersion {
+		assert.Truef(t, chart.HasDim("req_version_"+port), "req per version "+port)
+	}
+}
+
+func testReqSchemeChart(t *testing.T, w *WebLog) {
+	if w.mx.ReqHTTPScheme.Value() == 0 && w.mx.ReqHTTPScheme.Value() == 0 {
+		return
+	}
+	assert.True(t, w.Charts().Has(reqPerScheme.ID))
+}
+
+func testReqClientCharts(t *testing.T, w *WebLog) {
+	if w.mx.ReqIPv4.Value() != 0 || w.mx.ReqIPv6.Value() != 0 {
+		assert.True(t, w.Charts().Has(reqPerIPProto.ID))
+	}
+	if w.mx.UniqueIPv4.Value() != 0 || w.mx.UniqueIPv6.Value() != 0 {
+		assert.True(t, w.Charts().Has(uniqIPsCurPoll.ID))
+	}
+}
+func testBandwidthChart(t *testing.T, w *WebLog) {
+	if w.mx.BytesSent.Value() == 0 && w.mx.BytesReceived.Value() == 0 {
+		return
+	}
+	assert.True(t, w.Charts().Has(bandwidth.ID))
+}
+
+func testReqURLPatternChart(t *testing.T, w *WebLog) {
+	if len(w.mx.ReqURLPattern) == 0 || len(w.patURL) == 0 {
+		return
+	}
+	chart := w.Charts().Get(reqPerURLPattern.ID)
+	assert.NotNil(t, chart)
+	for p := range w.mx.ReqURLPattern {
+		assert.True(t, chart.HasDim("req_url_ptn_"+p))
+	}
+}
+
+func testReqCustomPatternChart(t *testing.T, w *WebLog) {
+	if len(w.mx.ReqCustomPattern) == 0 || len(w.patCustom) == 0 {
+		return
+	}
+	chart := w.Charts().Get(reqPerCustomPattern.ID)
+	assert.NotNil(t, chart)
+	for p := range w.mx.ReqCustomPattern {
+		assert.True(t, chart.HasDim("req_custom_ptn_"+p))
+	}
+}
+
+func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
+	for _, p := range w.patURL {
+		id := fmt.Sprintf(perURLPatternRespStatusCode.ID, p.name)
+		chart := w.Charts().Get(id)
+		assert.NotNil(t, chart)
+		for name, stats := range w.mx.URLPatternStats {
+			if name != p.name {
+				continue
+			}
+			for code := range stats.RespStatusCode {
+				id := fmt.Sprintf("url_ptn_%s_resp_status_code_%s", name, code)
+				assert.True(t, chart.HasDim(id))
+			}
+		}
+	}
+
+	if w.mx.BytesSent.Value() != 0 || w.mx.BytesReceived.Value() != 0 {
+		for _, p := range w.patURL {
+			id := fmt.Sprintf(perURLPatternBandwidth.ID, p.name)
+			assert.True(t, w.Charts().Has(id))
+		}
+	}
+	//	if w.col.reqProcTime {
+	//		for _, cat := range w.patURL {
+	//			assert.NotNil(t, w.Charts().Get(reqProcTime.ID+"_"+cat.name))
+	//		}
+	//	}
+	//}
+
+}
+
+func testRespStatusCodeChart(t *testing.T, w *WebLog) {
+	if !w.GroupRespCodes {
+		chart := w.Charts().Get(respCodes.ID)
+		require.NotNil(t, chart)
+		for code := range w.mx.RespStatusCode {
+			assert.Truef(t, chart.HasDim("resp_status_code_"+code), "resp status code "+code)
+		}
+		return
+	}
+
+	for i, id := range []string{respCodes1xx.ID, respCodes2xx.ID, respCodes3xx.ID, respCodes4xx.ID, respCodes5xx.ID} {
+		class := strconv.Itoa(i + 1)
+		for code := range w.mx.RespStatusCode {
+			if code[:1] != class {
+				continue
+			}
+			chart := w.Charts().Get(id)
+			require.NotNil(t, chart)
+			assert.Truef(t, chart.HasDim("resp_status_code_"+code), "resp status code "+code)
+		}
+	}
+}
 
 // generateLogs is used to populate 'testdata/full.log'
 func generateLogs(w io.Writer, matched, unmatched int) error {
