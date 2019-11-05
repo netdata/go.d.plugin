@@ -566,26 +566,31 @@ func isEmptyHistogram(h metrics.Histogram) bool { return reflect.DeepEqual(h, em
 // generateLogs is used to populate 'testdata/full.log'
 func generateLogs(w io.Writer, matched, unmatched int) error {
 	var (
-		vhosts   = []string{"localhost", "test.example.com", "test.example.org", "198.51.100.1", "2001:db8:1ce::1"}
-		schemes  = []string{"http", "https"}
-		clients  = []string{"localhost", "203.0.113.1", "203.0.113.2", "2001:db8:2ce:1", "2001:db8:2ce:2"}
-		methods  = []string{"GET", "HEAD", "POST"}
-		urls     = []string{"invalid.example", "example.com", "example.org", "example.net"}
-		versions = []string{"1.1", "2", "2.0"}
-		statuses = []int{100, 101, 200, 201, 300, 301, 400, 401, 500, 501}
-		customs  = []string{"dark", "light"}
+		vhost     = []string{"localhost", "test.example.com", "test.example.org", "198.51.100.1", "2001:db8:1ce::1"}
+		scheme    = []string{"http", "https"}
+		client    = []string{"localhost", "203.0.113.1", "203.0.113.2", "2001:db8:2ce:1", "2001:db8:2ce:2"}
+		method    = []string{"GET", "HEAD", "POST"}
+		url       = []string{"invalid.example", "example.com", "example.org", "example.net"}
+		version   = []string{"1.1", "2", "2.0"}
+		status    = []int{100, 101, 200, 201, 300, 301, 400, 401} // not 5xx on purpose
+		sslProto  = []string{"TLSv1", "TLSv1.1", "TLSv1.2", "TLSv1.3", "SSLv2", "SSLv3"}
+		sslCipher = []string{"ECDHE-RSA-AES256-SHA", "DHE-RSA-AES256-SHA", "AES256-SHA", "PSK-RC4-SHA"}
+
+		customs = []string{"dark", "light"}
 	)
-	// test.example.com:80 http 203.0.113.1 "GET / HTTP/1.1" 200 1674 2674 3674 4674 custom_dark
+	// test.example.com:80 http 203.0.113.1 TLSv1 AES256-SHA "GET / HTTP/1.1" 200 1674 2674 3674 4674 custom_dark
 	for i := 0; i < matched; i++ {
-		_, err := fmt.Fprintf(w, "%s:%d %s %s \"%s /%s HTTP/%s\" %d %d %d %d %d custom_%s\n",
-			randFromString(vhosts),
+		_, err := fmt.Fprintf(w, "%s:%d %s %s %s %s \"%s /%s HTTP/%s\" %d %d %d %d %d custom_%s\n",
+			randFromString(vhost),
 			randInt(80, 85),
-			randFromString(schemes),
-			randFromString(clients),
-			randFromString(methods),
-			randFromString(urls),
-			randFromString(versions),
-			randFromInt(statuses),
+			randFromString(scheme),
+			randFromString(client),
+			randFromString(sslProto),
+			randFromString(sslCipher),
+			randFromString(method),
+			randFromString(url),
+			randFromString(version),
+			randFromInt(status),
 			randInt(1000, 5000),
 			randInt(1000, 5000),
 			randInt(1, 500),
