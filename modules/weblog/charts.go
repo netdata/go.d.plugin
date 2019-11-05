@@ -51,7 +51,7 @@ const (
 // Total Requests       [requests]
 // Unreported Requests  [requests]
 // Resp Statuses        [responses]
-// Resp Codes Per Group [responses]
+// Resp Codes By Class  [responses]
 // Resp Codes           [responses]
 // Bandwidth            [bandwidth]
 // Resp Time            [timings]
@@ -59,14 +59,14 @@ const (
 // Resp Time Ups        [upstream]
 // Resp Time Hist Ups   [upstream]
 // Uniq IPs             [clients]
-// Req Per Vhost        [req vhost]
-// Req Per Port         [req port]
-// Req Per Scheme       [req scheme]
-// Req Per Method       [req method]
-// Req Per Version      [req version]
-// Req Per IP Proto     [req ip proto]
-// Req Per Custom       [req custom]
-// Req Per URL          [req url]
+// Req By Vhost        [req vhost]
+// Req By Port         [req port]
+// Req By Scheme       [req scheme]
+// Req By Method       [req method]
+// Req By Version      [req version]
+// Req By IP Proto     [req ip proto]
+// Req By Custom       [req custom]
+// Req By URL          [req url]
 // URL Stats            [url <name>]
 
 // Requests
@@ -102,11 +102,11 @@ var (
 var (
 	// netdata specific grouping
 	respStatuses = Chart{
-		ID:       "status_responses",
-		Title:    "Responses Per Status",
+		ID:       "type_responses",
+		Title:    "Responses By Type",
 		Units:    "responses/s",
 		Fam:      "responses",
-		Ctx:      "web_log.status_responses",
+		Ctx:      "web_log.type_responses",
 		Type:     module.Stacked,
 		Priority: prioRespStatuses,
 		Dims: Dims{
@@ -118,7 +118,7 @@ var (
 	}
 	respCodeClass = Chart{
 		ID:       "status_code_class_responses",
-		Title:    "Responses Per Status Code Class",
+		Title:    "Responses By Status Code Class",
 		Units:    "responses/s",
 		Fam:      "responses",
 		Ctx:      "web_log.status_code_class_responses",
@@ -134,7 +134,7 @@ var (
 	}
 	respCodes = Chart{
 		ID:       "status_code_responses",
-		Title:    "Responses Per Status Code",
+		Title:    "Responses By Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
 		Ctx:      "web_log.status_code_responses",
@@ -143,7 +143,7 @@ var (
 	}
 	respCodes1xx = Chart{
 		ID:       "status_code_class_1xx_responses",
-		Title:    "Informational Responses Per Status Code",
+		Title:    "Informational Responses By Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
 		Ctx:      "web_log.status_code_class_1xx_responses",
@@ -152,7 +152,7 @@ var (
 	}
 	respCodes2xx = Chart{
 		ID:       "status_code_class_2xx_responses",
-		Title:    "Successful Responses Per Status Code",
+		Title:    "Successful Responses By Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
 		Ctx:      "web_log.status_code_class_2xx_responses",
@@ -161,7 +161,7 @@ var (
 	}
 	respCodes3xx = Chart{
 		ID:       "status_code_class_3xx_responses",
-		Title:    "Redirects Responses Per Status Code",
+		Title:    "Redirects Responses By Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
 		Ctx:      "web_log.status_code_class_3xx_responses",
@@ -170,7 +170,7 @@ var (
 	}
 	respCodes4xx = Chart{
 		ID:       "status_code_class_4xx_responses",
-		Title:    "Client Errors Responses Per Status Code",
+		Title:    "Client Errors Responses By Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
 		Ctx:      "web_log.status_code_class_4xx_responses",
@@ -179,7 +179,7 @@ var (
 	}
 	respCodes5xx = Chart{
 		ID:       "status_code_class_5xx_responses",
-		Title:    "Server Errors Responses Per Status Code",
+		Title:    "Server Errors Responses By Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
 		Ctx:      "web_log.status_code_class_5xx_responses",
@@ -272,29 +272,29 @@ var (
 	}
 )
 
-// Requester Per N
+// Requester By N
 var (
-	reqPerVhost = Chart{
+	reqByVhost = Chart{
 		ID:       "vhost_requests",
-		Title:    "Requests Per Vhost",
+		Title:    "Requests By Vhost",
 		Units:    "requests/s",
 		Fam:      "vhost",
 		Ctx:      "web_log.vhost_requests",
 		Type:     module.Stacked,
 		Priority: prioReqVhost,
 	}
-	reqPerPort = Chart{
+	reqByPort = Chart{
 		ID:       "port_requests",
-		Title:    "Requests Per Port",
+		Title:    "Requests By Port",
 		Units:    "requests/s",
 		Fam:      "port",
 		Ctx:      "web_log.port_requests",
 		Type:     module.Stacked,
 		Priority: prioReqPort,
 	}
-	reqPerScheme = Chart{
+	reqByScheme = Chart{
 		ID:       "scheme_requests",
-		Title:    "Requests Per Scheme",
+		Title:    "Requests By Scheme",
 		Units:    "requests/s",
 		Fam:      "scheme",
 		Ctx:      "web_log.scheme_requests",
@@ -305,27 +305,27 @@ var (
 			{ID: "req_https_scheme", Name: "https", Algo: module.Incremental},
 		},
 	}
-	reqPerMethod = Chart{
+	reqByMethod = Chart{
 		ID:       "http_method_requests",
-		Title:    "Requests Per HTTP Method",
+		Title:    "Requests By HTTP Method",
 		Units:    "requests/s",
 		Fam:      "http method",
 		Ctx:      "web_log.http_method_requests",
 		Type:     module.Stacked,
 		Priority: prioReqMethod,
 	}
-	reqPerVersion = Chart{
+	reqByVersion = Chart{
 		ID:       "http_version_requests",
-		Title:    "Requests Per HTTP Version",
+		Title:    "Requests By HTTP Version",
 		Units:    "requests/s",
 		Fam:      "http version",
 		Ctx:      "web_log.http_version_requests",
 		Type:     module.Stacked,
 		Priority: prioReqVersion,
 	}
-	reqPerIPProto = Chart{
+	reqByIPProto = Chart{
 		ID:       "ip_proto_requests",
-		Title:    "Requests Per IP Protocol",
+		Title:    "Requests By IP Protocol",
 		Units:    "requests/s",
 		Fam:      "ip proto",
 		Ctx:      "web_log.ip_proto_requests",
@@ -336,36 +336,36 @@ var (
 			{ID: "req_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
-	reqPerSSLProto = Chart{
+	reqBySSLProto = Chart{
 		ID:       "ssl_proto_requests",
-		Title:    "Requests Per SSL Connection Protocol",
+		Title:    "Requests By SSL Connection Protocol",
 		Units:    "requests/s",
 		Fam:      "ssl conn",
 		Ctx:      "web_log.ssl_proto_requests",
 		Type:     module.Stacked,
 		Priority: prioReqSSLProto,
 	}
-	reqPerSSLCipherSuite = Chart{
+	reqBySSLCipherSuite = Chart{
 		ID:       "ssl_cipher_suite_requests",
-		Title:    "Requests Per SSL Connection Cipher Suite",
+		Title:    "Requests By SSL Connection Cipher Suite",
 		Units:    "requests/s",
 		Fam:      "ssl conn",
 		Ctx:      "web_log.ssl_cipher_suite_requests",
 		Type:     module.Stacked,
 		Priority: prioReqSSLCipherSuite,
 	}
-	reqPerCustomPattern = Chart{
+	reqByCustomPattern = Chart{
 		ID:       "custom_pattern_requests",
-		Title:    "Requests Per Custom Pattern",
+		Title:    "Requests By Custom Pattern",
 		Units:    "requests/s",
 		Fam:      "custom ptn",
 		Ctx:      "web_log.custom_pattern_requests",
 		Type:     module.Stacked,
 		Priority: prioReqCustomPattern,
 	}
-	reqPerURLPattern = Chart{
+	reqByURLPattern = Chart{
 		ID:       "url_pattern_requests",
-		Title:    "Requests Per URL Pattern",
+		Title:    "Requests By URL Pattern",
 		Units:    "requests/s",
 		Fam:      "url ptn",
 		Ctx:      "web_log.url_pattern_requests",
@@ -376,16 +376,16 @@ var (
 
 // URL pattern stats
 var (
-	perURLPatternRespStatusCode = Chart{
+	byURLPatternRespStatusCode = Chart{
 		ID:       "url_pattern_%s_status_code_responses",
-		Title:    "Responses Per Status Code",
+		Title:    "Responses By Status Code",
 		Units:    "responses/s",
 		Fam:      "url ptn %s",
 		Ctx:      "web_log.url_pattern_%s_status_code_responses",
 		Type:     module.Stacked,
 		Priority: prioURLPatternStats,
 	}
-	perURLPatternBandwidth = Chart{
+	byURLPatternBandwidth = Chart{
 		ID:       "url_pattern_%s_bandwidth",
 		Title:    "Bandwidth",
 		Units:    "kilobits/s",
@@ -398,7 +398,7 @@ var (
 			{ID: "url_ptn_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
 		},
 	}
-	perURLPatternReqProcTime = Chart{
+	byURLPatternReqProcTime = Chart{
 		ID:       "url_pattern_%s_request_processing_time",
 		Title:    "Request Processing Time",
 		Units:    "milliseconds",
@@ -450,8 +450,8 @@ func newUpsRespTimeHistChart(histogram []float64) *Chart {
 	return chart
 }
 
-func newReqPerURLPatternChart(ps []*pattern) *Chart {
-	chart := reqPerURLPattern.Copy()
+func newReqByURLPatternChart(ps []*pattern) *Chart {
+	chart := reqByURLPattern.Copy()
 	for _, p := range ps {
 		dim := &Dim{
 			ID:   "req_url_ptn_" + p.name,
@@ -463,8 +463,8 @@ func newReqPerURLPatternChart(ps []*pattern) *Chart {
 	return chart
 }
 
-func newReqPerCustomPatternChart(ps []*pattern) *Chart {
-	chart := reqPerCustomPattern.Copy()
+func newReqByCustomPatternChart(ps []*pattern) *Chart {
+	chart := reqByCustomPattern.Copy()
 	for _, p := range ps {
 		dim := &Dim{
 			ID:   "req_custom_ptn_" + p.name,
@@ -477,7 +477,7 @@ func newReqPerCustomPatternChart(ps []*pattern) *Chart {
 }
 
 func newURLPatternRespStatusCodeChart(name string) *Chart {
-	chart := perURLPatternRespStatusCode.Copy()
+	chart := byURLPatternRespStatusCode.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
@@ -485,7 +485,7 @@ func newURLPatternRespStatusCodeChart(name string) *Chart {
 }
 
 func newURLPatternBandwidthChart(name string) *Chart {
-	chart := perURLPatternBandwidth.Copy()
+	chart := byURLPatternBandwidth.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
@@ -496,7 +496,7 @@ func newURLPatternBandwidthChart(name string) *Chart {
 }
 
 func newURLPatternReqProcTimeChart(name string) *Chart {
-	chart := perURLPatternReqProcTime.Copy()
+	chart := byURLPatternReqProcTime.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
@@ -509,7 +509,7 @@ func newURLPatternReqProcTimeChart(name string) *Chart {
 func (w *WebLog) createCharts(line *logLine) *Charts {
 	// Following charts are created during runtime:
 	//   - respCodes1xx, respCodes2xx, respCodes3xx, respCodes4xx, respCodes6xx
-	//   - reqPerSSLProto, reqPerSSLCipherSuite
+	//   - reqBySSLProto, reqBySSLCipherSuite
 	charts := Charts{
 		reqTotal.Copy(),
 		reqUnreported.Copy(),
@@ -520,23 +520,23 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 		check(charts.Add(respCodes.Copy()))
 	}
 	if line.hasVhost() {
-		check(charts.Add(reqPerVhost.Copy()))
+		check(charts.Add(reqByVhost.Copy()))
 	}
 	if line.hasPort() {
-		check(charts.Add(reqPerPort.Copy()))
+		check(charts.Add(reqByPort.Copy()))
 	}
 	if line.hasReqScheme() {
-		check(charts.Add(reqPerScheme.Copy()))
+		check(charts.Add(reqByScheme.Copy()))
 	}
 	if line.hasReqClient() {
-		check(charts.Add(reqPerIPProto.Copy()))
+		check(charts.Add(reqByIPProto.Copy()))
 		check(charts.Add(uniqIPsCurPoll.Copy()))
 	}
 	if line.hasReqMethod() {
-		check(charts.Add(reqPerMethod.Copy()))
+		check(charts.Add(reqByMethod.Copy()))
 	}
 	if line.hasReqURL() && len(w.patURL) > 0 {
-		chart := newReqPerURLPatternChart(w.patURL)
+		chart := newReqByURLPatternChart(w.patURL)
 		check(charts.Add(chart))
 
 		for _, p := range w.patURL {
@@ -545,7 +545,7 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 		}
 	}
 	if line.hasReqProto() {
-		check(charts.Add(reqPerVersion.Copy()))
+		check(charts.Add(reqByVersion.Copy()))
 	}
 	if line.hasReqSize() || line.hasRespSize() {
 		check(charts.Add(bandwidth.Copy()))
@@ -575,7 +575,7 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 		}
 	}
 	if line.hasCustom() && len(w.patCustom) > 0 {
-		chart := newReqPerCustomPatternChart(w.patCustom)
+		chart := newReqByCustomPatternChart(w.patCustom)
 		check(charts.Add(chart))
 	}
 
@@ -583,7 +583,7 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 }
 
 func (w *WebLog) addDimToVhostChart(vhost string) {
-	chart := w.Charts().Get(reqPerVhost.ID)
+	chart := w.Charts().Get(reqByVhost.ID)
 	dim := &Dim{
 		ID:   "req_vhost_" + vhost,
 		Name: vhost,
@@ -594,7 +594,7 @@ func (w *WebLog) addDimToVhostChart(vhost string) {
 }
 
 func (w *WebLog) addDimToPortChart(port string) {
-	chart := w.Charts().Get(reqPerPort.ID)
+	chart := w.Charts().Get(reqByPort.ID)
 	dim := &Dim{
 		ID:   "req_port_" + port,
 		Name: port,
@@ -605,7 +605,7 @@ func (w *WebLog) addDimToPortChart(port string) {
 }
 
 func (w *WebLog) addDimToReqMethodChart(method string) {
-	chart := w.Charts().Get(reqPerMethod.ID)
+	chart := w.Charts().Get(reqByMethod.ID)
 	dim := &Dim{
 		ID:   "req_method_" + method,
 		Name: method,
@@ -616,7 +616,7 @@ func (w *WebLog) addDimToReqMethodChart(method string) {
 }
 
 func (w *WebLog) addDimToReqVersionChart(version string) {
-	chart := w.Charts().Get(reqPerVersion.ID)
+	chart := w.Charts().Get(reqByVersion.ID)
 	dim := &Dim{
 		ID:   "req_version_" + version,
 		Name: version,
@@ -627,9 +627,9 @@ func (w *WebLog) addDimToReqVersionChart(version string) {
 }
 
 func (w *WebLog) addDimToSSLProtoChart(proto string) {
-	chart := w.Charts().Get(reqPerSSLProto.ID)
+	chart := w.Charts().Get(reqBySSLProto.ID)
 	if chart == nil {
-		chart = reqPerSSLProto.Copy()
+		chart = reqBySSLProto.Copy()
 		check(w.Charts().Add(chart))
 	}
 	dim := &Dim{
@@ -642,9 +642,9 @@ func (w *WebLog) addDimToSSLProtoChart(proto string) {
 }
 
 func (w *WebLog) addDimToSSLCipherSuiteChart(cipher string) {
-	chart := w.Charts().Get(reqPerSSLCipherSuite.ID)
+	chart := w.Charts().Get(reqBySSLCipherSuite.ID)
 	if chart == nil {
-		chart = reqPerSSLCipherSuite.Copy()
+		chart = reqBySSLCipherSuite.Copy()
 		check(w.Charts().Add(chart))
 	}
 	dim := &Dim{
@@ -671,7 +671,7 @@ func (w *WebLog) addDimToRespStatusCodeChart(code string) {
 }
 
 func (w *WebLog) addDimToURLPatternRespStatusCodeChart(name, code string) {
-	id := fmt.Sprintf(perURLPatternRespStatusCode.ID, name)
+	id := fmt.Sprintf(byURLPatternRespStatusCode.ID, name)
 	chart := w.Charts().Get(id)
 	dim := &Dim{
 		ID:   fmt.Sprintf("url_ptn_%s_resp_status_code_%s", name, code),
