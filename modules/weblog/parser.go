@@ -76,7 +76,10 @@ func (w *WebLog) guessParser(record []byte) (logs.Parser, error) {
 	if reLTSV.Match(record) {
 		return logs.NewLTSVParser(w.Parser.LTSV, w.file)
 	}
+	return w.guessCSVParser(record)
+}
 
+func (w *WebLog) guessCSVParser(record []byte) (logs.Parser, error) {
 	for _, format := range guessOrder {
 		format = cleanCSVFormat(format)
 		cfg := w.Parser.CSV

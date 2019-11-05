@@ -70,7 +70,7 @@ type (
 		patURL    []*pattern
 		patCustom []*pattern
 
-		mx     *MetricsData
+		mx     *metricsData
 		charts *module.Charts
 	}
 )
@@ -86,7 +86,7 @@ func (w *WebLog) Init() bool {
 		return false
 	}
 
-	w.mx = NewMetricsData(w.Config)
+	w.mx = newMetricsData(w.Config)
 	return true
 }
 
