@@ -21,7 +21,13 @@ import (
 )
 
 var (
-	testFormat = []string{
+	testCommonFormat = []string{
+		"$remote_addr",
+		`"$request"`,
+		"$status",
+		"$body_bytes_sent",
+	}
+	testFullFormat = []string{
 		"$host:$server_port",
 		"$scheme",
 		"$remote_addr",
@@ -41,7 +47,7 @@ var (
 			CSV: logs.CSVConfig{
 				Delimiter:        ' ',
 				TrimLeadingSpace: false,
-				Format:           strings.Join(testFormat, " "),
+				Format:           strings.Join(testFullFormat, " "),
 				CheckField:       checkCSVFormatField,
 			},
 		},
@@ -65,11 +71,13 @@ var (
 )
 
 var (
-	testFullLog, _ = ioutil.ReadFile("testdata/full.log")
+	testCommonLog, _ = ioutil.ReadFile("testdata/common.log")
+	testFullLog, _   = ioutil.ReadFile("testdata/full.log")
 )
 
 func Test_readTestData(t *testing.T) {
 	assert.NotNil(t, testFullLog)
+	assert.NotNil(t, testCommonLog)
 }
 
 func TestNew(t *testing.T) {
@@ -263,7 +271,153 @@ func TestWebLog_Collect(t *testing.T) {
 		"url_ptn_org_resp_status_code_400":          20,
 		"url_ptn_org_resp_status_code_401":          16,
 	}
-	_ = expected
+
+	assert.Equal(t, expected, weblog.Collect())
+	testCharts(t, weblog)
+}
+
+func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
+	weblog := New()
+	weblog.Config = testConfig
+	weblog.Config.Parser.CSV.Format = strings.Join(testCommonFormat, " ")
+	require.True(t, weblog.Init())
+
+	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testCommonLog))
+	require.NoError(t, err)
+	weblog.parser = p
+	weblog.line = newEmptyLogLine()
+
+	expected := map[string]int64{
+		"bytes_received":                        1158464,
+		"bytes_sent":                            0,
+		"req_custom_ptn_dark":                   0,
+		"req_custom_ptn_light":                  0,
+		"req_custom_ptn_not_match":              0,
+		"req_filtered":                          121,
+		"req_http_scheme":                       0,
+		"req_https_scheme":                      0,
+		"req_ipv4":                              221,
+		"req_ipv6":                              158,
+		"req_method_GET":                        119,
+		"req_method_HEAD":                       133,
+		"req_method_POST":                       127,
+		"req_proc_time_avg":                     0,
+		"req_proc_time_count":                   0,
+		"req_proc_time_hist_bucket_1":           0,
+		"req_proc_time_hist_bucket_10":          0,
+		"req_proc_time_hist_bucket_11":          0,
+		"req_proc_time_hist_bucket_2":           0,
+		"req_proc_time_hist_bucket_3":           0,
+		"req_proc_time_hist_bucket_4":           0,
+		"req_proc_time_hist_bucket_5":           0,
+		"req_proc_time_hist_bucket_6":           0,
+		"req_proc_time_hist_bucket_7":           0,
+		"req_proc_time_hist_bucket_8":           0,
+		"req_proc_time_hist_bucket_9":           0,
+		"req_proc_time_hist_count":              0,
+		"req_proc_time_hist_sum":                0,
+		"req_proc_time_max":                     0,
+		"req_proc_time_min":                     0,
+		"req_proc_time_sum":                     0,
+		"req_unmatched":                         50,
+		"req_url_ptn_com":                       121,
+		"req_url_ptn_net":                       125,
+		"req_url_ptn_not_match":                 0,
+		"req_url_ptn_org":                       133,
+		"req_version_1.1":                       138,
+		"req_version_2":                         117,
+		"req_version_2.0":                       124,
+		"requests":                              550,
+		"resp_1xx":                              86,
+		"resp_2xx":                              95,
+		"resp_3xx":                              97,
+		"resp_4xx":                              101,
+		"resp_5xx":                              0,
+		"resp_client_error":                     101,
+		"resp_redirect":                         97,
+		"resp_server_error":                     0,
+		"resp_status_code_100":                  40,
+		"resp_status_code_101":                  46,
+		"resp_status_code_200":                  51,
+		"resp_status_code_201":                  44,
+		"resp_status_code_300":                  55,
+		"resp_status_code_301":                  42,
+		"resp_status_code_400":                  53,
+		"resp_status_code_401":                  48,
+		"resp_successful":                       181,
+		"uniq_ipv4":                             3,
+		"uniq_ipv6":                             2,
+		"upstream_resp_time_avg":                0,
+		"upstream_resp_time_count":              0,
+		"upstream_resp_time_hist_bucket_1":      0,
+		"upstream_resp_time_hist_bucket_10":     0,
+		"upstream_resp_time_hist_bucket_11":     0,
+		"upstream_resp_time_hist_bucket_2":      0,
+		"upstream_resp_time_hist_bucket_3":      0,
+		"upstream_resp_time_hist_bucket_4":      0,
+		"upstream_resp_time_hist_bucket_5":      0,
+		"upstream_resp_time_hist_bucket_6":      0,
+		"upstream_resp_time_hist_bucket_7":      0,
+		"upstream_resp_time_hist_bucket_8":      0,
+		"upstream_resp_time_hist_bucket_9":      0,
+		"upstream_resp_time_hist_count":         0,
+		"upstream_resp_time_hist_sum":           0,
+		"upstream_resp_time_max":                0,
+		"upstream_resp_time_min":                0,
+		"upstream_resp_time_sum":                0,
+		"url_ptn_com_bytes_received":            384842,
+		"url_ptn_com_bytes_sent":                0,
+		"url_ptn_com_req_proc_time_avg":         0,
+		"url_ptn_com_req_proc_time_count":       0,
+		"url_ptn_com_req_proc_time_max":         0,
+		"url_ptn_com_req_proc_time_min":         0,
+		"url_ptn_com_req_proc_time_sum":         0,
+		"url_ptn_com_resp_status_code_100":      12,
+		"url_ptn_com_resp_status_code_101":      16,
+		"url_ptn_com_resp_status_code_200":      20,
+		"url_ptn_com_resp_status_code_201":      17,
+		"url_ptn_com_resp_status_code_300":      16,
+		"url_ptn_com_resp_status_code_301":      9,
+		"url_ptn_com_resp_status_code_400":      18,
+		"url_ptn_com_resp_status_code_401":      13,
+		"url_ptn_net_bytes_received":            364364,
+		"url_ptn_net_bytes_sent":                0,
+		"url_ptn_net_req_proc_time_avg":         0,
+		"url_ptn_net_req_proc_time_count":       0,
+		"url_ptn_net_req_proc_time_max":         0,
+		"url_ptn_net_req_proc_time_min":         0,
+		"url_ptn_net_req_proc_time_sum":         0,
+		"url_ptn_net_resp_status_code_100":      13,
+		"url_ptn_net_resp_status_code_101":      14,
+		"url_ptn_net_resp_status_code_200":      14,
+		"url_ptn_net_resp_status_code_201":      12,
+		"url_ptn_net_resp_status_code_300":      21,
+		"url_ptn_net_resp_status_code_301":      10,
+		"url_ptn_net_resp_status_code_400":      23,
+		"url_ptn_net_resp_status_code_401":      18,
+		"url_ptn_not_match_bytes_received":      0,
+		"url_ptn_not_match_bytes_sent":          0,
+		"url_ptn_not_match_req_proc_time_avg":   0,
+		"url_ptn_not_match_req_proc_time_count": 0,
+		"url_ptn_not_match_req_proc_time_max":   0,
+		"url_ptn_not_match_req_proc_time_min":   0,
+		"url_ptn_not_match_req_proc_time_sum":   0,
+		"url_ptn_org_bytes_received":            409258,
+		"url_ptn_org_bytes_sent":                0,
+		"url_ptn_org_req_proc_time_avg":         0,
+		"url_ptn_org_req_proc_time_count":       0,
+		"url_ptn_org_req_proc_time_max":         0,
+		"url_ptn_org_req_proc_time_min":         0,
+		"url_ptn_org_req_proc_time_sum":         0,
+		"url_ptn_org_resp_status_code_100":      15,
+		"url_ptn_org_resp_status_code_101":      16,
+		"url_ptn_org_resp_status_code_200":      17,
+		"url_ptn_org_resp_status_code_201":      15,
+		"url_ptn_org_resp_status_code_300":      18,
+		"url_ptn_org_resp_status_code_301":      23,
+		"url_ptn_org_resp_status_code_400":      12,
+		"url_ptn_org_resp_status_code_401":      17,
+	}
 
 	assert.Equal(t, expected, weblog.Collect())
 	testCharts(t, weblog)
@@ -414,7 +568,7 @@ func testBandwidthChart(t *testing.T, w *WebLog) {
 }
 
 func testReqURLPatternChart(t *testing.T, w *WebLog) {
-	if len(w.mx.ReqURLPattern) == 0 || len(w.patURL) == 0 {
+	if isEmptyCounterVec(w.mx.ReqURLPattern) {
 		assert.Falsef(t, w.Charts().Has(reqPerURLPattern.ID), "chart '%s' is created", reqPerURLPattern.ID)
 		return
 	}
@@ -465,7 +619,7 @@ func testSSLCipherSuiteChart(t *testing.T, w *WebLog) {
 }
 
 func testReqCustomPatternChart(t *testing.T, w *WebLog) {
-	if len(w.mx.ReqCustomPattern) == 0 || len(w.patCustom) == 0 {
+	if isEmptyCounterVec(w.mx.ReqCustomPattern) {
 		assert.Falsef(t, w.Charts().Has(reqPerCustomPattern.ID), "chart '%s' is created", reqPerCustomPattern.ID)
 		return
 	}
@@ -579,6 +733,15 @@ var (
 
 func isEmptySummary(s metrics.Summary) bool     { return reflect.DeepEqual(s, emptySummary) }
 func isEmptyHistogram(h metrics.Histogram) bool { return reflect.DeepEqual(h, emptyHistogram) }
+
+func isEmptyCounterVec(cv metrics.CounterVec) bool {
+	for _, c := range cv {
+		if c.Value() > 0 {
+			return false
+		}
+	}
+	return true
+}
 
 // generateLogs is used to populate 'testdata/full.log'
 func generateLogs(w io.Writer, matched, unmatched int) error {
