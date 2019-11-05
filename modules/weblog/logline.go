@@ -53,69 +53,9 @@ but simply the size in bytes of the HTTP response. It will will differ, for inst
 or if SSL is used.
 The %O format provided by mod_logio will log the actual number of bytes sent over the network
 */
-const (
-	fieldVhost          = "vhost"
-	fieldPort           = "port"
-	fieldVhostWithPort  = "vhost_port"
-	fieldReqScheme      = "req_scheme"
-	fieldReqClient      = "req_client"
-	fieldRequest        = "request"
-	fieldReqMethod      = "req_method"
-	fieldReqURL         = "req_url"
-	fieldReqProto       = "req_proto"
-	fieldReqSize        = "req_size"
-	fieldRespStatusCode = "resp_code"
-	fieldRespSize       = "resp_size"
-	fieldReqProcTime    = "req_proc_time"
-	fieldUpsRespTime    = "ups_resp_time"
-	fieldSSLProto       = "ssl_proto"
-	fieldSSLCipherSuite = "ssl_cipher_suite"
-	fieldCustom         = "custom"
-)
-
-func lookupField(v string) (field string, ok bool) {
-	switch v {
-	case "host", "http_host", "v":
-		field = fieldVhost
-	case "server_port", "p":
-		field = fieldPort
-	case "host:$server_port", "v:%p":
-		field = fieldVhostWithPort
-	case "scheme":
-		field = fieldReqScheme
-	case "remote_addr", "a", "h":
-		field = fieldReqClient
-	case "request", "r":
-		field = fieldRequest
-	case "request_method", "m":
-		field = fieldReqMethod
-	case "request_uri", "U":
-		field = fieldReqURL
-	case "server_protocol", "H":
-		field = fieldReqProto
-	case "status", "s", ">s":
-		field = fieldRespStatusCode
-	case "request_length", "I":
-		field = fieldReqSize
-	case "bytes_sent", "body_bytes_sent", "b", "O", "B":
-		field = fieldRespSize
-	case "request_time", "D":
-		field = fieldReqProcTime
-	case "upstream_response_time":
-		field = fieldUpsRespTime
-	case "ssl_protocol":
-		field = fieldSSLProto
-	case "ssl_cipher":
-		field = fieldSSLCipherSuite
-	case "custom":
-		field = fieldCustom
-	}
-	return field, field != ""
-}
 
 var (
 	errMandatoryField      = errors.New("missing mandatory field")
-	errUnknownField        = errors.New("unknown field")
 	errBadVhost            = errors.New("bad vhost")
 	errBadVhostPort        = errors.New("bad vhost with port")
 	errBadPort             = errors.New("bad port")
@@ -158,51 +98,45 @@ type logLine struct {
 	custom         string
 }
 
-func (l *logLine) Assign(variable string, value string) (err error) {
+func (l *logLine) Assign(field string, value string) (err error) {
 	if value == "" {
-		return
-	}
-	field, ok := lookupField(variable)
-	if !ok {
 		return
 	}
 
 	switch field {
-	default:
-		err = fmt.Errorf("assign '%s': %w", field, errUnknownField)
-	case fieldVhost:
+	case "host", "http_host", "v":
 		err = l.assignVhost(value)
-	case fieldPort:
+	case "server_port", "p":
 		err = l.assignPort(value)
-	case fieldVhostWithPort:
+	case "host:$server_port", "v:%p":
 		err = l.assignVhostWithPort(value)
-	case fieldReqScheme:
+	case "scheme":
 		err = l.assignReqScheme(value)
-	case fieldReqClient:
+	case "remote_addr", "a", "h":
 		err = l.assignReqClient(value)
-	case fieldRequest:
+	case "request", "r":
 		err = l.assignRequest(value)
-	case fieldReqMethod:
+	case "request_method", "m":
 		err = l.assignReqMethod(value)
-	case fieldReqURL:
+	case "request_uri", "U":
 		err = l.assignReqURL(value)
-	case fieldReqProto:
+	case "server_protocol", "H":
 		err = l.assignReqProto(value)
-	case fieldRespStatusCode:
+	case "status", "s", ">s":
 		err = l.assignRespStatusCode(value)
-	case fieldRespSize:
-		err = l.assignRespSize(value)
-	case fieldReqSize:
+	case "request_length", "I":
 		err = l.assignReqSize(value)
-	case fieldReqProcTime:
+	case "bytes_sent", "body_bytes_sent", "b", "O", "B":
+		err = l.assignRespSize(value)
+	case "request_time", "D":
 		err = l.assignReqProcTime(value)
-	case fieldUpsRespTime:
+	case "upstream_response_time":
 		err = l.assignUpstreamRespTime(value)
-	case fieldSSLProto:
+	case "ssl_protocol":
 		err = l.assignSSLProto(value)
-	case fieldSSLCipherSuite:
+	case "ssl_cipher":
 		err = l.assignSSLCipherSuite(value)
-	case fieldCustom:
+	case "custom":
 		err = l.assignCustom(value)
 	}
 	return err
@@ -430,7 +364,7 @@ func (l *logLine) assignCustom(custom string) error {
 
 func (l logLine) verify() error {
 	if !l.hasRespStatusCode() {
-		return fmt.Errorf("%s: %w", fieldRespStatusCode, errMandatoryField)
+		return fmt.Errorf("resp_status_code: %w", errMandatoryField)
 	}
 	if !l.validRespStatusCode() {
 		return fmt.Errorf("verify '%d': %w", l.respStatusCode, errBadRespStatusCode)

@@ -324,7 +324,7 @@ func TestLogLine_Assign(t *testing.T) {
 	for _, tt := range tests {
 		for _, varName := range tt.vars {
 			for i, tc := range tt.tests {
-				name := fmt.Sprintf("[%s:%d]var='%s'|val='%s'", tt.name, i+1, varName, tc.input)
+				name := fmt.Sprintf("[%s:%d]var='%s'|input='%s'", tt.name, i+1, varName, tc.input)
 				t.Run(name, func(t *testing.T) {
 
 					line := newEmptyLogLine()
@@ -596,45 +596,45 @@ func prepareLogLine(t *testing.T, from string) logLine {
 		require.Len(t, parts, 2)
 		field, val := parts[0], parts[1]
 		switch field {
-		case fieldVhost:
+		case "vhost":
 			line.vhost = val
-		case fieldPort:
+		case "port":
 			line.port = val
-		case fieldReqScheme:
+		case "req_scheme":
 			line.reqScheme = val
-		case fieldReqClient:
+		case "req_client":
 			line.reqClient = val
-		case fieldReqMethod:
+		case "req_method":
 			line.reqMethod = val
-		case fieldReqURL:
+		case "req_url":
 			line.reqURL = val
-		case fieldReqProto:
+		case "req_proto":
 			line.reqProto = val
-		case fieldReqSize:
+		case "req_size":
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
 			line.reqSize = i
-		case fieldRespStatusCode:
+		case "resp_code":
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
 			line.respStatusCode = i
-		case fieldRespSize:
+		case "resp_size":
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
 			line.respSize = i
-		case fieldReqProcTime:
+		case "req_proc_time":
 			i, err := strconv.ParseFloat(val, 64)
 			require.NoError(t, err)
 			line.reqProcTime = i
-		case fieldUpsRespTime:
+		case "ups_resp_time":
 			i, err := strconv.ParseFloat(val, 64)
 			require.NoError(t, err)
 			line.upsRespTime = i
-		case fieldSSLProto:
+		case "ssl_proto":
 			line.sslProto = val
-		case fieldSSLCipherSuite:
+		case "ssl_cipher_suite":
 			line.sslCipherSuite = val
-		case fieldCustom:
+		case "custom":
 			line.custom = val
 		default:
 			t.Fatalf("cant prepare logLine, unknown field: %s", field)
