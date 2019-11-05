@@ -18,7 +18,7 @@ type (
 	}
 
 	CSVParser struct {
-		config CSVConfig
+		Config CSVConfig
 		reader *csv.Reader
 		format *csvFormat
 	}
@@ -46,7 +46,7 @@ func NewCSVParser(config CSVConfig, in io.Reader) (*CSVParser, error) {
 	}
 
 	p := &CSVParser{
-		config: config,
+		Config: config,
 		reader: newCSVReader(in, config),
 		format: format,
 	}
@@ -56,22 +56,16 @@ func NewCSVParser(config CSVConfig, in io.Reader) (*CSVParser, error) {
 func (p *CSVParser) ReadLine(line LogLine) error {
 	record, err := p.reader.Read()
 	if err != nil {
-		if isCSVParseError(err) {
-			return &ParseError{msg: fmt.Sprintf("csv parse: %v", err), err: err}
-		}
-		return err
+		return handleCSVReaderError(err)
 	}
 	return p.format.parse(record, line)
 }
 
 func (p *CSVParser) Parse(row []byte, line LogLine) error {
-	r := newCSVReader(bytes.NewBuffer(row), p.config)
+	r := newCSVReader(bytes.NewBuffer(row), p.Config)
 	record, err := r.Read()
 	if err != nil {
-		if isCSVParseError(err) {
-			return &ParseError{msg: fmt.Sprintf("csv parse: %v", err), err: err}
-		}
-		return err
+		return handleCSVReaderError(err)
 	}
 	return p.format.parse(record, line)
 }
@@ -154,6 +148,13 @@ func createCSVFields(format []string, check func(string) (string, int, bool)) ([
 		fields = append(fields, csvField{name, idx})
 	}
 	return fields, nil
+}
+
+func handleCSVReaderError(err error) error {
+	if isCSVParseError(err) {
+		return &ParseError{msg: fmt.Sprintf("csv parse: %v", err), err: err}
+	}
+	return err
 }
 
 func isCSVParseError(err error) bool {
