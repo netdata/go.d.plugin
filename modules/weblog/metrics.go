@@ -23,7 +23,7 @@ func (s weblogSummary) WriteTo(rv map[string]int64, key string, mul, div int) {
 }
 
 type (
-	MetricsData struct {
+	metricsData struct {
 		Requests     metrics.Counter `stm:"requests"`
 		ReqUnmatched metrics.Counter `stm:"req_unmatched"`
 		ReqFiltered  metrics.Counter `stm:"req_filtered"`
@@ -74,13 +74,13 @@ type (
 	patternStats map[string]*patternMetrics
 )
 
-func NewMetricsData(config Config) *MetricsData {
-	return &MetricsData{
+func newMetricsData(config Config) *metricsData {
+	return &metricsData{
 		ReqVhost:          metrics.NewCounterVec(),
 		ReqPort:           metrics.NewCounterVec(),
-		RespStatusCode:    metrics.NewCounterVec(),
 		ReqMethod:         metrics.NewCounterVec(),
 		ReqVersion:        metrics.NewCounterVec(),
+		RespStatusCode:    metrics.NewCounterVec(),
 		ReqSSLProto:       metrics.NewCounterVec(),
 		ReqSSLCipherSuite: metrics.NewCounterVec(),
 		ReqProcTime:       newWebLogSummary(),
@@ -95,7 +95,7 @@ func NewMetricsData(config Config) *MetricsData {
 	}
 }
 
-func (m *MetricsData) Reset() {
+func (m *metricsData) reset() {
 	m.UniqueIPv4.Reset()
 	m.UniqueIPv6.Reset()
 	m.ReqProcTime.Reset()

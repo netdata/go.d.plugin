@@ -28,7 +28,7 @@ func (w WebLog) logPanicStackIfAny() {
 
 func (w *WebLog) collect() (map[string]int64, error) {
 	defer w.logPanicStackIfAny()
-	w.mx.Reset()
+	w.mx.reset()
 
 	var mx map[string]int64
 
