@@ -278,7 +278,7 @@ var (
 		ID:       "vhost_requests",
 		Title:    "Requests Per Vhost",
 		Units:    "requests/s",
-		Fam:      "req vhost",
+		Fam:      "vhost",
 		Ctx:      "web_log.vhost_requests",
 		Type:     module.Stacked,
 		Priority: prioReqVhost,
@@ -287,7 +287,7 @@ var (
 		ID:       "port_requests",
 		Title:    "Requests Per Port",
 		Units:    "requests/s",
-		Fam:      "req port",
+		Fam:      "port",
 		Ctx:      "web_log.port_requests",
 		Type:     module.Stacked,
 		Priority: prioReqPort,
@@ -296,7 +296,7 @@ var (
 		ID:       "scheme_requests",
 		Title:    "Requests Per Scheme",
 		Units:    "requests/s",
-		Fam:      "req scheme",
+		Fam:      "scheme",
 		Ctx:      "web_log.scheme_requests",
 		Type:     module.Stacked,
 		Priority: prioReqScheme,
@@ -309,7 +309,7 @@ var (
 		ID:       "http_method_requests",
 		Title:    "Requests Per HTTP Method",
 		Units:    "requests/s",
-		Fam:      "req method",
+		Fam:      "http method",
 		Ctx:      "web_log.http_method_requests",
 		Type:     module.Stacked,
 		Priority: prioReqMethod,
@@ -318,7 +318,7 @@ var (
 		ID:       "http_version_requests",
 		Title:    "Requests Per HTTP Version",
 		Units:    "requests/s",
-		Fam:      "req version",
+		Fam:      "http version",
 		Ctx:      "web_log.http_version_requests",
 		Type:     module.Stacked,
 		Priority: prioReqVersion,
@@ -327,7 +327,7 @@ var (
 		ID:       "ip_proto_requests",
 		Title:    "Requests Per IP Protocol",
 		Units:    "requests/s",
-		Fam:      "req ip protocol",
+		Fam:      "ip proto",
 		Ctx:      "web_log.ip_proto_requests",
 		Type:     module.Stacked,
 		Priority: prioReqIPProto,
@@ -340,7 +340,7 @@ var (
 		ID:       "ssl_proto_requests",
 		Title:    "Requests Per SSL Connection Protocol",
 		Units:    "requests/s",
-		Fam:      "req ssl conn",
+		Fam:      "ssl conn",
 		Ctx:      "web_log.ssl_proto_requests",
 		Type:     module.Stacked,
 		Priority: prioReqSSLProto,
@@ -349,7 +349,7 @@ var (
 		ID:       "ssl_cipher_suite_requests",
 		Title:    "Requests Per SSL Connection Cipher Suite",
 		Units:    "requests/s",
-		Fam:      "reg ssl conn",
+		Fam:      "ssl conn",
 		Ctx:      "web_log.ssl_cipher_suite_requests",
 		Type:     module.Stacked,
 		Priority: prioReqSSLCipherSuite,
@@ -358,7 +358,7 @@ var (
 		ID:       "custom_pattern_requests",
 		Title:    "Requests Per Custom Pattern",
 		Units:    "requests/s",
-		Fam:      "req custom pattern",
+		Fam:      "custom ptn",
 		Ctx:      "web_log.custom_pattern_requests",
 		Type:     module.Stacked,
 		Priority: prioReqCustomPattern,
@@ -367,7 +367,7 @@ var (
 		ID:       "url_pattern_requests",
 		Title:    "Requests Per URL Pattern",
 		Units:    "requests/s",
-		Fam:      "req url pattern",
+		Fam:      "url ptn",
 		Ctx:      "web_log.url_pattern_requests",
 		Type:     module.Stacked,
 		Priority: prioReqURLPattern,
@@ -380,7 +380,7 @@ var (
 		ID:       "url_pattern_%s_status_code_responses",
 		Title:    "Responses Per Status Code",
 		Units:    "responses/s",
-		Fam:      "url pattern %s",
+		Fam:      "url ptn %s",
 		Ctx:      "web_log.url_pattern_%s_status_code_responses",
 		Type:     module.Stacked,
 		Priority: prioURLPatternStats,
@@ -389,7 +389,7 @@ var (
 		ID:       "url_pattern_%s_bandwidth",
 		Title:    "Bandwidth",
 		Units:    "kilobits/s",
-		Fam:      "url pattern %s",
+		Fam:      "url ptn %s",
 		Ctx:      "web_log.url_pattern_%s_bandwidth",
 		Type:     module.Area,
 		Priority: prioURLPatternStats + 1,
@@ -402,7 +402,7 @@ var (
 		ID:       "url_pattern_%s_request_processing_time",
 		Title:    "Request Processing Time",
 		Units:    "milliseconds",
-		Fam:      "url pattern %s",
+		Fam:      "url ptn %s",
 		Ctx:      "web_log.url_pattern_%s_request_processing_time",
 		Type:     module.Area,
 		Priority: prioURLPatternStats + 2,
@@ -418,14 +418,14 @@ func newRespTimeHistChart(histogram []float64) *Chart {
 	chart := reqProcTimeHist.Copy()
 	for i, v := range histogram {
 		dim := &Dim{
-			ID:   fmt.Sprintf("resp_time_hist_bucket_%d", i+1),
+			ID:   fmt.Sprintf("req_proc_time_hist_bucket_%d", i+1),
 			Name: fmt.Sprintf("%.3f", v),
 			Algo: module.Incremental,
 		}
 		check(chart.AddDim(dim))
 	}
 	check(chart.AddDim(&Dim{
-		ID:   "resp_time_hist_count",
+		ID:   "req_proc_time_hist_count",
 		Name: "+Inf",
 		Algo: module.Incremental,
 	}))
@@ -479,6 +479,7 @@ func newReqPerCustomPatternChart(ps []*pattern) *Chart {
 func newURLPatternRespStatusCodeChart(name string) *Chart {
 	chart := perURLPatternRespStatusCode.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
+	chart.Fam = fmt.Sprintf(chart.Fam, name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
 	return chart
 }
@@ -486,6 +487,7 @@ func newURLPatternRespStatusCodeChart(name string) *Chart {
 func newURLPatternBandwidthChart(name string) *Chart {
 	chart := perURLPatternBandwidth.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
+	chart.Fam = fmt.Sprintf(chart.Fam, name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, name)
@@ -496,6 +498,7 @@ func newURLPatternBandwidthChart(name string) *Chart {
 func newURLPatternReqProcTimeChart(name string) *Chart {
 	chart := perURLPatternReqProcTime.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
+	chart.Fam = fmt.Sprintf(chart.Fam, name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, name)
