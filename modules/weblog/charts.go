@@ -15,32 +15,34 @@ type (
 )
 
 const (
-	defaultPriority      = orchestrator.DefaultJobPriority
-	prioReqTotal         = defaultPriority
-	prioReqUnreported    = defaultPriority + 1
-	prioRespStatuses     = defaultPriority + 2
-	prioRespCodesClass   = defaultPriority + 3
-	prioRespCodes        = defaultPriority + 4
-	prioRespCodes1xx     = defaultPriority + 5
-	prioRespCodes2xx     = defaultPriority + 6
-	prioRespCodes3xx     = defaultPriority + 7
-	prioRespCodes4xx     = defaultPriority + 8
-	prioRespCodes5xx     = defaultPriority + 9
-	prioBandwidth        = defaultPriority + 10
-	prioReqProcTime      = defaultPriority + 11
-	prioRespTimeHist     = defaultPriority + 12
-	prioUpsRespTime      = defaultPriority + 13
-	prioUpsRespTimeHist  = defaultPriority + 14
-	prioUniqIP           = defaultPriority + 15
-	prioReqVhost         = defaultPriority + 16
-	prioReqPort          = defaultPriority + 17
-	prioReqScheme        = defaultPriority + 18
-	prioReqMethod        = defaultPriority + 19
-	prioReqVersion       = defaultPriority + 20
-	prioReqIPProto       = defaultPriority + 21
-	prioReqCustomPattern = defaultPriority + 22
-	prioReqURLPattern    = defaultPriority + 23
-	prioURLPatternStats  = defaultPriority + 25 // 3 charts per URL TODO: order?
+	defaultPriority       = orchestrator.DefaultJobPriority
+	prioReqTotal          = defaultPriority
+	prioReqUnreported     = defaultPriority + 1
+	prioRespStatuses      = defaultPriority + 2
+	prioRespCodesClass    = defaultPriority + 3
+	prioRespCodes         = defaultPriority + 4
+	prioRespCodes1xx      = defaultPriority + 5
+	prioRespCodes2xx      = defaultPriority + 6
+	prioRespCodes3xx      = defaultPriority + 7
+	prioRespCodes4xx      = defaultPriority + 8
+	prioRespCodes5xx      = defaultPriority + 9
+	prioBandwidth         = defaultPriority + 10
+	prioReqProcTime       = defaultPriority + 11
+	prioRespTimeHist      = defaultPriority + 12
+	prioUpsRespTime       = defaultPriority + 13
+	prioUpsRespTimeHist   = defaultPriority + 14
+	prioUniqIP            = defaultPriority + 15
+	prioReqVhost          = defaultPriority + 16
+	prioReqPort           = defaultPriority + 17
+	prioReqScheme         = defaultPriority + 18
+	prioReqMethod         = defaultPriority + 19
+	prioReqVersion        = defaultPriority + 20
+	prioReqIPProto        = defaultPriority + 21
+	prioReqSSLProto       = defaultPriority + 22
+	prioReqSSLCipherSuite = defaultPriority + 23
+	prioReqCustomPattern  = defaultPriority + 40
+	prioReqURLPattern     = defaultPriority + 41
+	prioURLPatternStats   = defaultPriority + 42 // 3 charts per URL TODO: order?
 )
 
 // NOTE: inconsistency between contexts with python web_log
@@ -334,6 +336,24 @@ var (
 			{ID: "req_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
+	reqPerSSLProto = Chart{
+		ID:       "ssl_proto_requests",
+		Title:    "Requests Per SSL Connection Protocol",
+		Units:    "requests/s",
+		Fam:      "req ssl conn",
+		Ctx:      "web_log.ssl_proto_requests",
+		Type:     module.Stacked,
+		Priority: prioReqSSLProto,
+	}
+	reqPerSSLCipherSuite = Chart{
+		ID:       "ssl_cipher_suite_requests",
+		Title:    "Requests Per SSL Connection Cipher Suite",
+		Units:    "requests/s",
+		Fam:      "reg ssl conn",
+		Ctx:      "web_log.ssl_cipher_suite_requests",
+		Type:     module.Stacked,
+		Priority: prioReqSSLCipherSuite,
+	}
 	reqPerCustomPattern = Chart{
 		ID:       "custom_pattern_requests",
 		Title:    "Requests Per Custom Pattern",
@@ -486,7 +506,7 @@ func newURLPatternReqProcTimeChart(name string) *Chart {
 func (w *WebLog) createCharts(line *logLine) *Charts {
 	// Following charts are created during runtime:
 	//   - respCodes1xx, respCodes2xx, respCodes3xx, respCodes4xx, respCodes6xx
-	//   -
+	//   - reqPerSSLProto, reqPerSSLCipherSuite
 	charts := Charts{
 		reqTotal.Copy(),
 		reqUnreported.Copy(),
@@ -597,6 +617,36 @@ func (w *WebLog) addDimToReqVersionChart(version string) {
 	dim := &Dim{
 		ID:   "req_version_" + version,
 		Name: version,
+		Algo: module.Incremental,
+	}
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToSSLProtoChart(proto string) {
+	chart := w.Charts().Get(reqPerSSLProto.ID)
+	if chart == nil {
+		chart = reqPerSSLProto.Copy()
+		check(w.Charts().Add(chart))
+	}
+	dim := &Dim{
+		ID:   "req_ssl_proto_" + proto,
+		Name: proto,
+		Algo: module.Incremental,
+	}
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToSSLCipherSuiteChart(cipher string) {
+	chart := w.Charts().Get(reqPerSSLCipherSuite.ID)
+	if chart == nil {
+		chart = reqPerSSLCipherSuite.Copy()
+		check(w.Charts().Add(chart))
+	}
+	dim := &Dim{
+		ID:   "req_ssl_cipher_suite_" + cipher,
+		Name: cipher,
 		Algo: module.Incremental,
 	}
 	check(chart.AddDim(dim))

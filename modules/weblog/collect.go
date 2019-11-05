@@ -83,6 +83,8 @@ func (w *WebLog) collectLogLine() {
 	w.collectRespSize()
 	w.collectReqProcTime()
 	w.collectUpstreamRespTime()
+	w.collectSSLProto()
+	w.collectSSLCipherSuite()
 	w.collectCustom()
 }
 
@@ -95,7 +97,6 @@ func (w *WebLog) collectVhost() {
 	if !w.line.hasVhost() {
 		return
 	}
-
 	c, ok := w.mx.ReqVhost.GetP(w.line.vhost)
 	if !ok {
 		w.addDimToVhostChart(w.line.vhost)
@@ -107,7 +108,6 @@ func (w *WebLog) collectPort() {
 	if !w.line.hasPort() {
 		return
 	}
-
 	c, ok := w.mx.ReqPort.GetP(w.line.port)
 	if !ok {
 		w.addDimToPortChart(w.line.port)
@@ -119,7 +119,6 @@ func (w *WebLog) collectReqClient() {
 	if !w.line.hasReqClient() {
 		return
 	}
-
 	if strings.ContainsRune(w.line.reqClient, ':') {
 		w.mx.ReqIPv6.Inc()
 		w.mx.UniqueIPv6.Insert(w.line.reqClient)
@@ -134,7 +133,6 @@ func (w *WebLog) collectReqScheme() {
 	if !w.line.hasReqScheme() {
 		return
 	}
-
 	if w.line.reqScheme == "https" {
 		w.mx.ReqHTTPSScheme.Inc()
 	} else {
@@ -146,7 +144,6 @@ func (w *WebLog) collectReqMethod() {
 	if !w.line.hasReqMethod() {
 		return
 	}
-
 	c, ok := w.mx.ReqMethod.GetP(w.line.reqMethod)
 	if !ok {
 		w.addDimToReqMethodChart(w.line.reqMethod)
@@ -158,7 +155,6 @@ func (w *WebLog) collectReqURL() {
 	if !w.line.hasReqURL() || len(w.patURL) == 0 {
 		return
 	}
-
 	for _, p := range w.patURL {
 		if !p.MatchString(w.line.reqURL) {
 			continue
@@ -175,7 +171,6 @@ func (w *WebLog) collectReqProto() {
 	if !w.line.hasReqProto() {
 		return
 	}
-
 	c, ok := w.mx.ReqVersion.GetP(w.line.reqProto)
 	if !ok {
 		w.addDimToReqVersionChart(w.line.reqProto)
@@ -187,7 +182,6 @@ func (w *WebLog) collectRespStatusCode() {
 	if !w.line.hasRespStatusCode() {
 		return
 	}
-
 	code := w.line.respStatusCode
 	//  1xx (Informational): The request was received, continuing process.
 	//  2xx (Successful): The request was successfully received, understood, and accepted.
@@ -231,7 +225,6 @@ func (w *WebLog) collectReqSize() {
 	if !w.line.hasReqSize() {
 		return
 	}
-
 	w.mx.BytesSent.Add(float64(w.line.reqSize))
 }
 
@@ -239,7 +232,6 @@ func (w *WebLog) collectRespSize() {
 	if !w.line.hasRespSize() {
 		return
 	}
-
 	w.mx.BytesReceived.Add(float64(w.line.respSize))
 }
 
@@ -247,7 +239,6 @@ func (w *WebLog) collectReqProcTime() {
 	if !w.line.hasReqProcTime() {
 		return
 	}
-
 	w.mx.ReqProcTime.Observe(w.line.reqProcTime)
 	if w.mx.ReqProcTimeHist == nil {
 		return
@@ -259,7 +250,6 @@ func (w *WebLog) collectUpstreamRespTime() {
 	if !w.line.hasUpstreamRespTime() {
 		return
 	}
-
 	w.mx.UpsRespTime.Observe(w.line.upsRespTime)
 	if w.mx.UpsRespTimeHist == nil {
 		return
@@ -267,11 +257,32 @@ func (w *WebLog) collectUpstreamRespTime() {
 	w.mx.UpsRespTimeHist.Observe(w.line.upsRespTime)
 }
 
+func (w *WebLog) collectSSLProto() {
+	if !w.line.hasSSLProto() {
+		return
+	}
+	c, ok := w.mx.ReqSSLProto.GetP(w.line.sslProto)
+	if !ok {
+		w.addDimToSSLProtoChart(w.line.sslProto)
+	}
+	c.Inc()
+}
+
+func (w *WebLog) collectSSLCipherSuite() {
+	if !w.line.hasSSLCipherSuite() {
+		return
+	}
+	c, ok := w.mx.ReqSSLCipherSuite.GetP(w.line.sslCipherSuite)
+	if !ok {
+		w.addDimToSSLCipherSuiteChart(w.line.sslCipherSuite)
+	}
+	c.Inc()
+}
+
 func (w *WebLog) collectCustom() {
 	if !w.line.hasCustom() || len(w.patCustom) == 0 {
 		return
 	}
-
 	for _, p := range w.patCustom {
 		if !p.MatchString(w.line.custom) {
 			continue
@@ -287,7 +298,6 @@ func (w *WebLog) collectURLPatternStats(name string) {
 	if !ok {
 		return
 	}
-
 	if w.line.hasRespStatusCode() {
 		status := strconv.Itoa(w.line.respStatusCode)
 		c, ok := v.RespStatusCode.GetP(status)

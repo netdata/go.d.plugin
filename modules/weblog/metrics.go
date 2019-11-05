@@ -48,16 +48,18 @@ type (
 		UpsRespTime     metrics.Summary       `stm:"upstream_resp_time"`
 		UpsRespTimeHist metrics.Histogram     `stm:"upstream_resp_time_hist"`
 
-		ReqVhost         metrics.CounterVec `stm:"req_vhost"`
-		ReqPort          metrics.CounterVec `stm:"req_port"`
-		ReqHTTPScheme    metrics.Counter    `stm:"req_http_scheme"`
-		ReqHTTPSScheme   metrics.Counter    `stm:"req_https_scheme"`
-		ReqIPv4          metrics.Counter    `stm:"req_ipv4"`
-		ReqIPv6          metrics.Counter    `stm:"req_ipv6"`
-		ReqMethod        metrics.CounterVec `stm:"req_method"`
-		ReqURLPattern    metrics.CounterVec `stm:"req_url_ptn"`
-		ReqVersion       metrics.CounterVec `stm:"req_version"`
-		ReqCustomPattern metrics.CounterVec `stm:"req_custom_ptn"`
+		ReqVhost          metrics.CounterVec `stm:"req_vhost"`
+		ReqPort           metrics.CounterVec `stm:"req_port"`
+		ReqHTTPScheme     metrics.Counter    `stm:"req_http_scheme"`
+		ReqHTTPSScheme    metrics.Counter    `stm:"req_https_scheme"`
+		ReqIPv4           metrics.Counter    `stm:"req_ipv4"`
+		ReqIPv6           metrics.Counter    `stm:"req_ipv6"`
+		ReqMethod         metrics.CounterVec `stm:"req_method"`
+		ReqURLPattern     metrics.CounterVec `stm:"req_url_ptn"`
+		ReqVersion        metrics.CounterVec `stm:"req_version"`
+		ReqCustomPattern  metrics.CounterVec `stm:"req_custom_ptn"`
+		ReqSSLProto       metrics.CounterVec `stm:"req_ssl_proto"`
+		ReqSSLCipherSuite metrics.CounterVec `stm:"req_ssl_cipher_suite"`
 
 		URLPatternStats patternStats `stm:"url_ptn"`
 	}
@@ -74,20 +76,22 @@ type (
 
 func NewMetricsData(config Config) *MetricsData {
 	return &MetricsData{
-		ReqVhost:         metrics.NewCounterVec(),
-		ReqPort:          metrics.NewCounterVec(),
-		RespStatusCode:   metrics.NewCounterVec(),
-		ReqMethod:        metrics.NewCounterVec(),
-		ReqVersion:       metrics.NewCounterVec(),
-		ReqProcTime:      newWebLogSummary(),
-		ReqProcTimeHist:  metrics.NewHistogram(config.Histogram),
-		UpsRespTime:      newWebLogSummary(),
-		UpsRespTimeHist:  metrics.NewHistogram(config.Histogram),
-		UniqueIPv4:       metrics.NewUniqueCounter(true),
-		UniqueIPv6:       metrics.NewUniqueCounter(true),
-		ReqURLPattern:    newCounterVecFromPatterns(config.URLPatterns),
-		ReqCustomPattern: newCounterVecFromPatterns(config.CustomPatterns),
-		URLPatternStats:  newPatternStats(config.URLPatterns),
+		ReqVhost:          metrics.NewCounterVec(),
+		ReqPort:           metrics.NewCounterVec(),
+		RespStatusCode:    metrics.NewCounterVec(),
+		ReqMethod:         metrics.NewCounterVec(),
+		ReqVersion:        metrics.NewCounterVec(),
+		ReqSSLProto:       metrics.NewCounterVec(),
+		ReqSSLCipherSuite: metrics.NewCounterVec(),
+		ReqProcTime:       newWebLogSummary(),
+		ReqProcTimeHist:   metrics.NewHistogram(config.Histogram),
+		UpsRespTime:       newWebLogSummary(),
+		UpsRespTimeHist:   metrics.NewHistogram(config.Histogram),
+		UniqueIPv4:        metrics.NewUniqueCounter(true),
+		UniqueIPv6:        metrics.NewUniqueCounter(true),
+		ReqURLPattern:     newCounterVecFromPatterns(config.URLPatterns),
+		ReqCustomPattern:  newCounterVecFromPatterns(config.CustomPatterns),
+		URLPatternStats:   newPatternStats(config.URLPatterns),
 	}
 }
 

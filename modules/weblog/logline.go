@@ -364,7 +364,7 @@ func (l *logLine) assignCustom(custom string) error {
 
 func (l logLine) verify() error {
 	if !l.hasRespStatusCode() {
-		return fmt.Errorf("resp_status_code: %w", errMandatoryField)
+		return fmt.Errorf("response status code: %w", errMandatoryField)
 	}
 	if !l.validRespStatusCode() {
 		return fmt.Errorf("verify '%d': %w", l.respStatusCode, errBadRespStatusCode)
