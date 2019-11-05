@@ -190,7 +190,7 @@ func (w *WebLog) collectRespStatusCode() {
 	//  5xx (Server Error): The server failed to fulfill an apparently valid request.
 	// TODO: this grouping is confusing since it uses terms from rfc7231
 	switch {
-	case code >= 100 && code < 300, code == 304:
+	case code >= 100 && code < 300, code == 304, code == 401:
 		w.mx.RespSuccessful.Inc()
 	case code >= 300 && code < 400:
 		w.mx.RespRedirect.Inc()
