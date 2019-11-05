@@ -1,3 +1,0 @@
-127.0.0.1 - - [28/Jan/2019:11:18:12 +0900] "GET /order/books HTTP/1.1" 200 6295 "https://www.test.com/order" "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" - 12625
-localhost - - [28/Jan/2019:11:18:12 +0900] "GET / HTTP/1.1" 200 8126 "https://www.test.com/confirm_order" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134" - 28508
-133.1.2.3 - - [28/Jan/2019:11:18:12 +0900] "GET /favicon.ico HTTP/1.1" 200 635 "https://www.test.com/" "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" - 770
