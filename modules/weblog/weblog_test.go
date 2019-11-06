@@ -21,19 +21,19 @@ import (
 )
 
 var (
-	testCSVCommonFormat = []string{
+	testCSVCommonFormat = strings.Join([]string{
 		"$remote_addr",
 		`"$request"`,
 		"$status",
 		"$body_bytes_sent",
-	}
+	}, " ")
 	testCommonConfig = Config{
 		Parser: logs.ParserConfig{
 			LogType: logs.TypeCSV,
 			CSV: logs.CSVConfig{
 				Delimiter:        ' ',
 				TrimLeadingSpace: false,
-				Format:           strings.Join(testCSVCommonFormat, " "),
+				Format:           testCSVCommonFormat,
 				CheckField:       checkCSVFormatField,
 			},
 		},
@@ -45,7 +45,7 @@ var (
 		Histogram:      nil,
 		GroupRespCodes: false,
 	}
-	testCSVFullFormat = []string{
+	testCSVFullFormat = strings.Join([]string{
 		"$host:$server_port",
 		"$scheme",
 		"$remote_addr",
@@ -58,14 +58,14 @@ var (
 		"$request_time",
 		"$upstream_response_time",
 		"$custom",
-	}
+	}, " ")
 	testFullConfig = Config{
 		Parser: logs.ParserConfig{
 			LogType: logs.TypeCSV,
 			CSV: logs.CSVConfig{
 				Delimiter:        ' ',
 				TrimLeadingSpace: false,
-				Format:           strings.Join(testCSVFullFormat, " "),
+				Format:           testCSVFullFormat,
 				CheckField:       checkCSVFormatField,
 			},
 		},
@@ -119,14 +119,7 @@ func TestWebLog_Cleanup(t *testing.T) {
 }
 
 func TestWebLog_Collect(t *testing.T) {
-	weblog := New()
-	weblog.Config = testFullConfig
-	require.True(t, weblog.Init())
-
-	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testFullLog))
-	require.NoError(t, err)
-	weblog.parser = p
-	weblog.line = newEmptyLogLine()
+	weblog := prepareWebLogCollectFull(t)
 
 	//m := weblog.Collect()
 	//l := make([]string, 0)
@@ -295,14 +288,7 @@ func TestWebLog_Collect(t *testing.T) {
 }
 
 func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
-	weblog := New()
-	weblog.Config = testCommonConfig
-	require.True(t, weblog.Init())
-
-	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testCommonLog))
-	require.NoError(t, err)
-	weblog.parser = p
-	weblog.line = newEmptyLogLine()
+	weblog := prepareWebLogCollectCommon(t)
 
 	expected := map[string]int64{
 		"bytes_received":                    1523326,
@@ -379,6 +365,32 @@ func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
 
 	assert.Equal(t, expected, weblog.Collect())
 	testCharts(t, weblog)
+}
+
+func prepareWebLogCollectFull(t *testing.T) *WebLog {
+	t.Helper()
+	weblog := New()
+	weblog.Config = testFullConfig
+	require.True(t, weblog.Init())
+
+	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testFullLog))
+	require.NoError(t, err)
+	weblog.parser = p
+	weblog.line = newEmptyLogLine()
+	return weblog
+}
+
+func prepareWebLogCollectCommon(t *testing.T) *WebLog {
+	t.Helper()
+	weblog := New()
+	weblog.Config = testCommonConfig
+	require.True(t, weblog.Init())
+
+	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testCommonLog))
+	require.NoError(t, err)
+	weblog.parser = p
+	weblog.line = newEmptyLogLine()
+	return weblog
 }
 
 func testCharts(t *testing.T, w *WebLog) {
