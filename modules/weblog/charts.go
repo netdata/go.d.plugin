@@ -525,7 +525,6 @@ func newURLPatternReqProcTimeChart(name string) *Chart {
 // TODO: this method is hard to read, should be refactored/simplified
 func (w WebLog) createCharts(line *logLine) *Charts {
 	// Following charts are created during runtime:
-	//   - respCodes1xx, respCodes2xx, respCodes3xx, respCodes4xx, respCodes6xx - no reason to show empty charts
 	//   - reqBySSLProto, reqBySSLCipherSuite - it is likely line has no SSL stuff at this moment
 	charts := Charts{
 		reqTotal.Copy(),
@@ -536,7 +535,11 @@ func (w WebLog) createCharts(line *logLine) *Charts {
 	if !w.GroupRespCodes {
 		check(charts.Add(respCodes.Copy()))
 	} else {
-		// created during runtime
+		check(charts.Add(respCodes1xx.Copy()))
+		check(charts.Add(respCodes2xx.Copy()))
+		check(charts.Add(respCodes3xx.Copy()))
+		check(charts.Add(respCodes4xx.Copy()))
+		check(charts.Add(respCodes5xx.Copy()))
 	}
 	if line.hasVhost() {
 		check(charts.Add(reqByVhost.Copy()))
@@ -721,10 +724,6 @@ func (w *WebLog) findRespCodesChart(code string) *Chart {
 		chart = respCodes5xx
 	default:
 		return nil
-	}
-
-	if !w.Charts().Has(chart.ID) {
-		check(w.Charts().Add(chart.Copy()))
 	}
 	return w.Charts().Get(chart.ID)
 }

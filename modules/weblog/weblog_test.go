@@ -694,10 +694,6 @@ func testRespStatusCodeChart(t *testing.T, w *WebLog) {
 		codes := findCodes(class)
 		n += len(codes)
 		chart := w.Charts().Get(chartID)
-		if len(codes) == 0 {
-			assert.Nilf(t, chart, "chart '%s' is created", chartID)
-			continue
-		}
 		assert.NotNilf(t, chart, "chart '%s' is not created", chartID)
 		if chart == nil {
 			return
