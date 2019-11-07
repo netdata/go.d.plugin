@@ -634,8 +634,8 @@ func prepareLogLine(t *testing.T, from string) logLine {
 			line.sslProto = val
 		case "ssl_cipher_suite":
 			line.sslCipherSuite = val
-		case "custom":
-			line.custom = val
+		//case "custom":
+		//	line.custom = val
 		default:
 			t.Fatalf("cant prepare logLine, unknown field: %s", field)
 		}

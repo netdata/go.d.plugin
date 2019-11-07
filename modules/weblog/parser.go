@@ -84,7 +84,6 @@ func (w *WebLog) guessCSVParser(record []byte) (logs.Parser, error) {
 		format = cleanCSVFormat(format)
 		cfg := w.Parser.CSV
 		cfg.Format = format
-		cfg.TrimLeadingSpace = true
 
 		parser, err := logs.NewCSVParser(cfg, w.file)
 		if err != nil {
@@ -104,26 +103,31 @@ func (w *WebLog) guessCSVParser(record []byte) (logs.Parser, error) {
 	return nil, errors.New("cannot determine log format")
 }
 
-func checkCSVFormatField(name string) (newName string, offset int, valid bool) {
-	if name == "[$time_local]" || name == "$time_local" {
+func checkCSVFormatField(field string) (newName string, offset int, valid bool) {
+	if isTimeField(field) {
 		return "", 1, false
 	}
-	if !isValidVar(name) {
+	if !isValidField(field) {
 		return "", 0, false
 	}
-	return name[1:], 0, true
+	// remove $|% to have same field names with regexp parser,
+	// these symbols aren't allowed in sub exp names
+	return field[1:], 0, true
 }
 
-func isValidVar(v string) bool {
-	return len(v) > 1 && (isNginxVar(v) || isApacheVar(v))
+func isTimeField(field string) bool {
+	return field == "[$time_local]" || field == "$time_local" || field == "%t"
 }
 
-func isNginxVar(v string) bool {
-	return strings.HasPrefix(v, "$")
+func isValidField(field string) bool {
+	return len(field) > 1 && (isNginxField(field) || isApacheField(field))
+}
+func isNginxField(field string) bool {
+	return strings.HasPrefix(field, "$")
 }
 
-func isApacheVar(v string) bool {
-	return strings.HasPrefix(v, "%")
+func isApacheField(field string) bool {
+	return strings.HasPrefix(field, "%")
 }
 
 func cleanCSVFormat(format string) string {

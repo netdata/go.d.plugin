@@ -15,34 +15,34 @@ type (
 )
 
 const (
-	defaultPriority       = orchestrator.DefaultJobPriority
-	prioReqTotal          = defaultPriority
-	prioReqUnreported     = defaultPriority + 1
-	prioRespStatuses      = defaultPriority + 2
-	prioRespCodesClass    = defaultPriority + 3
-	prioRespCodes         = defaultPriority + 4
-	prioRespCodes1xx      = defaultPriority + 5
-	prioRespCodes2xx      = defaultPriority + 6
-	prioRespCodes3xx      = defaultPriority + 7
-	prioRespCodes4xx      = defaultPriority + 8
-	prioRespCodes5xx      = defaultPriority + 9
-	prioBandwidth         = defaultPriority + 10
-	prioReqProcTime       = defaultPriority + 11
-	prioRespTimeHist      = defaultPriority + 12
-	prioUpsRespTime       = defaultPriority + 13
-	prioUpsRespTimeHist   = defaultPriority + 14
-	prioUniqIP            = defaultPriority + 15
-	prioReqVhost          = defaultPriority + 16
-	prioReqPort           = defaultPriority + 17
-	prioReqScheme         = defaultPriority + 18
-	prioReqMethod         = defaultPriority + 19
-	prioReqVersion        = defaultPriority + 20
-	prioReqIPProto        = defaultPriority + 21
-	prioReqSSLProto       = defaultPriority + 22
-	prioReqSSLCipherSuite = defaultPriority + 23
-	prioReqCustomPattern  = defaultPriority + 40
-	prioReqURLPattern     = defaultPriority + 41
-	prioURLPatternStats   = defaultPriority + 42 // 3 charts per URL TODO: order?
+	defaultPriority           = orchestrator.DefaultJobPriority
+	prioReqTotal              = defaultPriority
+	prioReqUnreported         = defaultPriority + 1
+	prioRespStatuses          = defaultPriority + 2
+	prioRespCodesClass        = defaultPriority + 3
+	prioRespCodes             = defaultPriority + 4
+	prioRespCodes1xx          = defaultPriority + 5
+	prioRespCodes2xx          = defaultPriority + 6
+	prioRespCodes3xx          = defaultPriority + 7
+	prioRespCodes4xx          = defaultPriority + 8
+	prioRespCodes5xx          = defaultPriority + 9
+	prioBandwidth             = defaultPriority + 10
+	prioReqProcTime           = defaultPriority + 11
+	prioRespTimeHist          = defaultPriority + 12
+	prioUpsRespTime           = defaultPriority + 13
+	prioUpsRespTimeHist       = defaultPriority + 14
+	prioUniqIP                = defaultPriority + 15
+	prioReqVhost              = defaultPriority + 16
+	prioReqPort               = defaultPriority + 17
+	prioReqScheme             = defaultPriority + 18
+	prioReqMethod             = defaultPriority + 19
+	prioReqVersion            = defaultPriority + 20
+	prioReqIPProto            = defaultPriority + 21
+	prioReqSSLProto           = defaultPriority + 22
+	prioReqSSLCipherSuite     = defaultPriority + 23
+	prioReqCustomFieldPattern = defaultPriority + 40 // chart per custom field, alphabetical order
+	prioReqURLPattern         = defaultPriority + 41
+	prioURLPatternStats       = defaultPriority + 42 // 3 charts per url pattern, alphabetical order
 )
 
 // NOTE: inconsistency between contexts with python web_log
@@ -83,12 +83,12 @@ var (
 		},
 	}
 
-	reqUnreported = Chart{
-		ID:       "unreported_requests",
-		Title:    "Unreported Requests",
+	reqExcluded = Chart{
+		ID:       "excluded_requests",
+		Title:    "Excluded Requests",
 		Units:    "requests/s",
 		Fam:      "requests",
-		Ctx:      "web_log.unreported_requests",
+		Ctx:      "web_log.excluded_requests",
 		Type:     module.Stacked,
 		Priority: prioReqUnreported,
 		Dims: Dims{
@@ -258,11 +258,11 @@ var (
 // Clients
 var (
 	uniqIPsCurPoll = Chart{
-		ID:       "uniq_clients_current_poll",
-		Title:    "Unique Clients Current Poll",
+		ID:       "current_poll_uniq_clients",
+		Title:    "Current Poll Unique Clients",
 		Units:    "clients",
 		Fam:      "clients",
-		Ctx:      "web_log.uniq_clients_current_poll",
+		Ctx:      "web_log.current_poll_uniq_clients",
 		Type:     module.Stacked,
 		Priority: prioUniqIP,
 		Dims: Dims{
@@ -272,7 +272,7 @@ var (
 	}
 )
 
-// Requester By N
+// Request By N
 var (
 	reqByVhost = Chart{
 		ID:       "vhost_requests",
@@ -354,29 +354,33 @@ var (
 		Type:     module.Stacked,
 		Priority: prioReqSSLCipherSuite,
 	}
-	reqByCustomPattern = Chart{
-		ID:       "custom_pattern_requests",
-		Title:    "Requests By Custom Pattern",
-		Units:    "requests/s",
-		Fam:      "custom ptn",
-		Ctx:      "web_log.custom_pattern_requests",
-		Type:     module.Stacked,
-		Priority: prioReqCustomPattern,
-	}
+)
+
+// Request By N Patterns
+var (
 	reqByURLPattern = Chart{
 		ID:       "url_pattern_requests",
-		Title:    "Requests By URL Pattern",
+		Title:    "URL Field, Requests By Pattern",
 		Units:    "requests/s",
 		Fam:      "url ptn",
 		Ctx:      "web_log.url_pattern_requests",
 		Type:     module.Stacked,
 		Priority: prioReqURLPattern,
 	}
+	reqByCustomPattern = Chart{
+		ID:       "custom_field_%s_pattern_requests",
+		Title:    "Custom Field %s, Requests By Pattern",
+		Units:    "requests/s",
+		Fam:      "custom field",
+		Ctx:      "web_log.custom_field_%s_pattern_requests",
+		Type:     module.Stacked,
+		Priority: prioReqCustomFieldPattern,
+	}
 )
 
 // URL pattern stats
 var (
-	byURLPatternRespStatusCode = Chart{
+	urlPatternRespCodes = Chart{
 		ID:       "url_pattern_%s_status_code_responses",
 		Title:    "Responses By Status Code",
 		Units:    "responses/s",
@@ -385,7 +389,7 @@ var (
 		Type:     module.Stacked,
 		Priority: prioURLPatternStats,
 	}
-	byURLPatternBandwidth = Chart{
+	urlPatternBandwidth = Chart{
 		ID:       "url_pattern_%s_bandwidth",
 		Title:    "Bandwidth",
 		Units:    "kilobits/s",
@@ -398,7 +402,7 @@ var (
 			{ID: "url_ptn_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
 		},
 	}
-	byURLPatternReqProcTime = Chart{
+	urlPatternReqProcTime = Chart{
 		ID:       "url_pattern_%s_request_processing_time",
 		Title:    "Request Processing Time",
 		Units:    "milliseconds",
@@ -414,7 +418,7 @@ var (
 	}
 )
 
-func newRespTimeHistChart(histogram []float64) *Chart {
+func newReqProcTimeHistChart(histogram []float64) *Chart {
 	chart := reqProcTimeHist.Copy()
 	for i, v := range histogram {
 		dim := &Dim{
@@ -450,12 +454,12 @@ func newUpsRespTimeHistChart(histogram []float64) *Chart {
 	return chart
 }
 
-func newReqByURLPatternChart(ps []*pattern) *Chart {
+func newReqByURLPatternChart(patterns []userPattern) *Chart {
 	chart := reqByURLPattern.Copy()
-	for _, p := range ps {
+	for _, p := range patterns {
 		dim := &Dim{
-			ID:   "req_url_ptn_" + p.name,
-			Name: p.name,
+			ID:   "req_url_ptn_" + p.Name,
+			Name: p.Name,
 			Algo: module.Incremental,
 		}
 		check(chart.AddDim(dim))
@@ -463,12 +467,24 @@ func newReqByURLPatternChart(ps []*pattern) *Chart {
 	return chart
 }
 
-func newReqByCustomPatternChart(ps []*pattern) *Chart {
+func newReqByCustomPatternCharts(fields []customField) []*Chart {
+	charts := Charts{}
+	for _, f := range fields {
+		chart := newReqByCustomPatternChart(f)
+		check(charts.Add(chart))
+	}
+	return charts
+}
+
+func newReqByCustomPatternChart(f customField) *Chart {
 	chart := reqByCustomPattern.Copy()
-	for _, p := range ps {
+	chart.ID = fmt.Sprintf(chart.ID, f.Name)
+	chart.Title = fmt.Sprintf(chart.Title, f.Name)
+	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
+	for _, p := range f.Patterns {
 		dim := &Dim{
-			ID:   "req_custom_ptn_" + p.name,
-			Name: p.name,
+			ID:   fmt.Sprintf("req_custom_field_%s_%s", f.Name, p.Name),
+			Name: p.Name,
 			Algo: module.Incremental,
 		}
 		check(chart.AddDim(dim))
@@ -477,7 +493,7 @@ func newReqByCustomPatternChart(ps []*pattern) *Chart {
 }
 
 func newURLPatternRespStatusCodeChart(name string) *Chart {
-	chart := byURLPatternRespStatusCode.Copy()
+	chart := urlPatternRespCodes.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
@@ -485,7 +501,7 @@ func newURLPatternRespStatusCodeChart(name string) *Chart {
 }
 
 func newURLPatternBandwidthChart(name string) *Chart {
-	chart := byURLPatternBandwidth.Copy()
+	chart := urlPatternBandwidth.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
@@ -496,7 +512,7 @@ func newURLPatternBandwidthChart(name string) *Chart {
 }
 
 func newURLPatternReqProcTimeChart(name string) *Chart {
-	chart := byURLPatternReqProcTime.Copy()
+	chart := urlPatternReqProcTime.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
@@ -506,18 +522,21 @@ func newURLPatternReqProcTimeChart(name string) *Chart {
 	return chart
 }
 
-func (w *WebLog) createCharts(line *logLine) *Charts {
+// TODO: this method is hard to read, should be refactored/simplified
+func (w WebLog) createCharts(line *logLine) *Charts {
 	// Following charts are created during runtime:
-	//   - respCodes1xx, respCodes2xx, respCodes3xx, respCodes4xx, respCodes6xx
-	//   - reqBySSLProto, reqBySSLCipherSuite
+	//   - respCodes1xx, respCodes2xx, respCodes3xx, respCodes4xx, respCodes6xx - no reason to show empty charts
+	//   - reqBySSLProto, reqBySSLCipherSuite - it is likely line has no SSL stuff at this moment
 	charts := Charts{
 		reqTotal.Copy(),
-		reqUnreported.Copy(),
+		reqExcluded.Copy(),
 		respCodeClass.Copy(),
 		respStatuses.Copy(),
 	}
 	if !w.GroupRespCodes {
 		check(charts.Add(respCodes.Copy()))
+	} else {
+		// created during runtime
 	}
 	if line.hasVhost() {
 		check(charts.Add(reqByVhost.Copy()))
@@ -535,12 +554,12 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 	if line.hasReqMethod() {
 		check(charts.Add(reqByMethod.Copy()))
 	}
-	if line.hasReqURL() && len(w.patURL) > 0 {
-		chart := newReqByURLPatternChart(w.patURL)
+	if line.hasReqURL() && len(w.URLPatterns) > 0 {
+		chart := newReqByURLPatternChart(w.URLPatterns)
 		check(charts.Add(chart))
 
-		for _, p := range w.patURL {
-			chart := newURLPatternRespStatusCodeChart(p.name)
+		for _, p := range w.URLPatterns {
+			chart := newURLPatternRespStatusCodeChart(p.Name)
 			check(charts.Add(chart))
 		}
 	}
@@ -550,20 +569,20 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 	if line.hasReqSize() || line.hasRespSize() {
 		check(charts.Add(bandwidth.Copy()))
 
-		for _, p := range w.patURL {
-			chart := newURLPatternBandwidthChart(p.name)
+		for _, p := range w.URLPatterns {
+			chart := newURLPatternBandwidthChart(p.Name)
 			check(charts.Add(chart))
 		}
 	}
 	if line.hasReqProcTime() {
 		check(charts.Add(reqProcTime.Copy()))
 		if len(w.Histogram) != 0 {
-			chart := newRespTimeHistChart(w.Histogram)
+			chart := newReqProcTimeHistChart(w.Histogram)
 			check(charts.Add(chart))
 		}
 
-		for _, p := range w.patURL {
-			chart := newURLPatternReqProcTimeChart(p.name)
+		for _, p := range w.URLPatterns {
+			chart := newURLPatternReqProcTimeChart(p.Name)
 			check(charts.Add(chart))
 		}
 	}
@@ -574,9 +593,9 @@ func (w *WebLog) createCharts(line *logLine) *Charts {
 			check(charts.Add(chart))
 		}
 	}
-	if line.hasCustom() && len(w.patCustom) > 0 {
-		chart := newReqByCustomPatternChart(w.patCustom)
-		check(charts.Add(chart))
+	if line.hasCustom() && len(w.CustomFields) > 0 {
+		cs := newReqByCustomPatternCharts(w.CustomFields)
+		check(charts.Add(cs...))
 	}
 
 	return &charts
@@ -656,8 +675,8 @@ func (w *WebLog) addDimToSSLCipherSuiteChart(cipher string) {
 	chart.MarkNotCreated()
 }
 
-func (w *WebLog) addDimToRespStatusCodeChart(code string) {
-	chart := w.findRespStatusCodeChart(code)
+func (w *WebLog) addDimToRespCodesChart(code string) {
+	chart := w.findRespCodesChart(code)
 	if chart == nil {
 		return
 	}
@@ -670,8 +689,8 @@ func (w *WebLog) addDimToRespStatusCodeChart(code string) {
 	chart.MarkNotCreated()
 }
 
-func (w *WebLog) addDimToURLPatternRespStatusCodeChart(name, code string) {
-	id := fmt.Sprintf(byURLPatternRespStatusCode.ID, name)
+func (w *WebLog) addDimToURLPatternRespCodesChart(name, code string) {
+	id := fmt.Sprintf(urlPatternRespCodes.ID, name)
 	chart := w.Charts().Get(id)
 	dim := &Dim{
 		ID:   fmt.Sprintf("url_ptn_%s_resp_status_code_%s", name, code),
@@ -683,7 +702,7 @@ func (w *WebLog) addDimToURLPatternRespStatusCodeChart(name, code string) {
 	chart.MarkNotCreated()
 }
 
-func (w *WebLog) findRespStatusCodeChart(code string) *Chart {
+func (w *WebLog) findRespCodesChart(code string) *Chart {
 	if !w.GroupRespCodes {
 		return w.Charts().Get(respCodes.ID)
 	}

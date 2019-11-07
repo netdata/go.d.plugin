@@ -76,27 +76,38 @@ var (
 
 func newEmptyLogLine() *logLine {
 	var l logLine
+	l.custom.fields = make(map[string]struct{})
+	l.custom.values = make([]customValue, 0, 20)
 	l.reset()
 	return &l
 }
 
-type logLine struct {
-	vhost          string
-	port           string // apache has no $scheme, this is workaround to collect per scheme requests. Lame.
-	reqScheme      string
-	reqClient      string
-	reqMethod      string
-	reqURL         string
-	reqProto       string
-	reqSize        int
-	reqProcTime    float64
-	respStatusCode int
-	respSize       int
-	upsRespTime    float64
-	sslProto       string
-	sslCipherSuite string
-	custom         string
-}
+type (
+	logLine struct {
+		vhost          string
+		port           string // apache has no $scheme, this is workaround to collect per scheme requests. Lame.
+		reqScheme      string
+		reqClient      string
+		reqMethod      string
+		reqURL         string
+		reqProto       string
+		reqSize        int
+		reqProcTime    float64
+		respStatusCode int
+		respSize       int
+		upsRespTime    float64
+		sslProto       string
+		sslCipherSuite string
+		custom         struct {
+			fields map[string]struct{}
+			values []customValue
+		}
+	}
+	customValue struct {
+		name  string
+		value string
+	}
+)
 
 func (l *logLine) Assign(field string, value string) (err error) {
 	if value == "" {
@@ -136,13 +147,23 @@ func (l *logLine) Assign(field string, value string) (err error) {
 		err = l.assignSSLProto(value)
 	case "ssl_cipher":
 		err = l.assignSSLCipherSuite(value)
-	case "custom":
-		err = l.assignCustom(value)
+	default:
+		err = l.assignCustom(field, value)
 	}
 	return err
 }
 
 const hyphen = "-"
+
+func (l *logLine) assignCustom(field, value string) error {
+	if len(l.custom.fields) == 0 || value == hyphen {
+		return nil
+	}
+	if _, ok := l.custom.fields[field]; ok {
+		l.custom.values = append(l.custom.values, customValue{name: field, value: value})
+	}
+	return nil
+}
 
 func (l *logLine) assignVhost(vhost string) error {
 	if vhost == hyphen {
@@ -354,14 +375,6 @@ func (l *logLine) assignSSLCipherSuite(cipher string) error {
 	return nil
 }
 
-func (l *logLine) assignCustom(custom string) error {
-	if custom == hyphen {
-		return nil
-	}
-	l.custom = custom
-	return nil
-}
-
 func (l logLine) verify() error {
 	if !l.hasRespStatusCode() {
 		return fmt.Errorf("response status code: %w", errMandatoryField)
@@ -427,7 +440,7 @@ func (l logLine) hasReqProcTime() bool        { return !isEmptyNumber(int(l.reqP
 func (l logLine) hasUpstreamRespTime() bool   { return !isEmptyNumber(int(l.upsRespTime)) }
 func (l logLine) hasSSLProto() bool           { return !isEmptyString(l.sslProto) }
 func (l logLine) hasSSLCipherSuite() bool     { return !isEmptyString(l.sslCipherSuite) }
-func (l logLine) hasCustom() bool             { return !isEmptyString(l.custom) }
+func (l logLine) hasCustom() bool             { return len(l.custom.values) > 0 }
 func (l logLine) validVhost() bool            { return reVhost.MatchString(l.vhost) }
 func (l logLine) validPort() bool             { return isValidPort(l.port) }
 func (l logLine) validReqScheme() bool        { return isValidScheme(l.reqScheme) }
@@ -458,7 +471,7 @@ func (l *logLine) reset() {
 	l.upsRespTime = emptyNumber
 	l.sslProto = emptyString
 	l.sslCipherSuite = emptyString
-	l.custom = emptyString
+	l.custom.values = l.custom.values[:0]
 }
 
 var (

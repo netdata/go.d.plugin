@@ -152,10 +152,10 @@ func (w *WebLog) collectReqMethod() {
 }
 
 func (w *WebLog) collectReqURL() {
-	if !w.line.hasReqURL() || len(w.patURL) == 0 {
+	if !w.line.hasReqURL() || len(w.urlPatterns) == 0 {
 		return
 	}
-	for _, p := range w.patURL {
+	for _, p := range w.urlPatterns {
 		if !p.MatchString(w.line.reqURL) {
 			continue
 		}
@@ -216,7 +216,7 @@ func (w *WebLog) collectRespStatusCode() {
 	codeStr := strconv.Itoa(code)
 	c, ok := w.mx.RespStatusCode.GetP(codeStr)
 	if !ok {
-		w.addDimToRespStatusCodeChart(codeStr)
+		w.addDimToRespCodesChart(codeStr)
 	}
 	c.Inc()
 }
@@ -279,20 +279,6 @@ func (w *WebLog) collectSSLCipherSuite() {
 	c.Inc()
 }
 
-func (w *WebLog) collectCustom() {
-	if !w.line.hasCustom() || len(w.patCustom) == 0 {
-		return
-	}
-	for _, p := range w.patCustom {
-		if !p.MatchString(w.line.custom) {
-			continue
-		}
-		c, _ := w.mx.ReqCustomPattern.GetP(p.name)
-		c.Inc()
-		return
-	}
-}
-
 func (w *WebLog) collectURLPatternStats(name string) {
 	v, ok := w.mx.URLPatternStats[name]
 	if !ok {
@@ -302,7 +288,7 @@ func (w *WebLog) collectURLPatternStats(name string) {
 		status := strconv.Itoa(w.line.respStatusCode)
 		c, ok := v.RespStatusCode.GetP(status)
 		if !ok {
-			w.addDimToURLPatternRespStatusCodeChart(name, status)
+			w.addDimToURLPatternRespCodesChart(name, status)
 		}
 		c.Inc()
 	}
@@ -317,5 +303,30 @@ func (w *WebLog) collectURLPatternStats(name string) {
 
 	if w.line.hasReqProcTime() {
 		v.ReqProcTime.Observe(w.line.reqProcTime)
+	}
+}
+
+func (w *WebLog) collectCustom() {
+	if !w.line.hasCustom() {
+		return
+	}
+	for _, cv := range w.line.custom.values {
+		patterns, ok := w.customFields[cv.name]
+		if !ok {
+			continue
+		}
+		for _, p := range patterns {
+			if !p.MatchString(cv.value) {
+				continue
+			}
+			v, ok := w.mx.ReqCustomField[cv.name]
+			// TODO: this cannot happen
+			if !ok {
+				break
+			}
+			c, _ := v.GetP(p.name)
+			c.Inc()
+			break
+		}
 	}
 }

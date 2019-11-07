@@ -47,6 +47,10 @@ type (
 		Name  string `yaml:"name"`
 		Match string `yaml:"match"`
 	}
+	customField struct {
+		Name     string        `yaml:"name"`
+		Patterns []userPattern `yaml:"patterns"`
+	}
 
 	Config struct {
 		Parser         logs.ParserConfig  `yaml:",inline"`
@@ -54,7 +58,7 @@ type (
 		ExcludePath    string             `yaml:"exclude_path"`
 		Filter         matcher.SimpleExpr `yaml:"filter"`
 		URLPatterns    []userPattern      `yaml:"url_patterns"`
-		CustomPatterns []userPattern      `yaml:"custom_patterns"`
+		CustomFields   []customField      `yaml:"custom_fields"`
 		Histogram      []float64          `yaml:"histogram"`
 		GroupRespCodes bool               `yaml:"group_response_codes"`
 	}
@@ -63,12 +67,12 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
-		file      *logs.Reader
-		parser    logs.Parser
-		line      *logLine
-		filter    matcher.Matcher
-		patURL    []*pattern
-		patCustom []*pattern
+		file         *logs.Reader
+		parser       logs.Parser
+		line         *logLine
+		filter       matcher.Matcher
+		urlPatterns  []*pattern
+		customFields map[string][]*pattern
 
 		mx     *metricsData
 		charts *module.Charts
@@ -81,11 +85,17 @@ func (w *WebLog) Init() bool {
 		return false
 	}
 
-	if err := w.initPatterns(); err != nil {
+	if err := w.initURLPatterns(); err != nil {
 		w.Error(err)
 		return false
 	}
 
+	if err := w.initCustomFields(); err != nil {
+		w.Error(err)
+		return false
+	}
+
+	w.initLogLine()
 	w.mx = newMetricsData(w.Config)
 	return true
 }

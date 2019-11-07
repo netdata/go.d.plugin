@@ -14,7 +14,7 @@ type pattern struct {
 
 func newPattern(up userPattern) (*pattern, error) {
 	if up.Name == "" || up.Match == "" {
-		return nil, fmt.Errorf("pattern bad syntax: %v", up)
+		return nil, fmt.Errorf("pattern bad syntax: %+v", up)
 	}
 
 	m, err := matcher.Parse(up.Match)
@@ -32,28 +32,45 @@ func (w *WebLog) initFilter() (err error) {
 
 	w.filter, err = w.Filter.Parse()
 	if err != nil {
-		return fmt.Errorf("error on creating filter %s: %v", w.Filter, err)
+		return fmt.Errorf("error on creating filter %+v: %v", w.Filter, err)
 	}
 	return err
 }
 
-func (w *WebLog) initPatterns() error {
+func (w *WebLog) initURLPatterns() error {
 	for _, up := range w.URLPatterns {
 		p, err := newPattern(up)
 		if err != nil {
-			return fmt.Errorf("error on creating url pattern %s: %v", up, err)
+			return fmt.Errorf("error on creating url pattern %+v: %v", up, err)
 		}
-		w.patURL = append(w.patURL, p)
-	}
-
-	for _, up := range w.CustomPatterns {
-		p, err := newPattern(up)
-		if err != nil {
-			return fmt.Errorf("error on creating user pattern %s: %v", up, err)
-		}
-		w.patCustom = append(w.patCustom, p)
+		w.urlPatterns = append(w.urlPatterns, p)
 	}
 	return nil
+}
+
+func (w *WebLog) initCustomFields() error {
+	if len(w.CustomFields) == 0 {
+		return nil
+	}
+
+	w.customFields = make(map[string][]*pattern)
+	for _, cf := range w.CustomFields {
+		for _, up := range cf.Patterns {
+			p, err := newPattern(up)
+			if err != nil {
+				return fmt.Errorf("error on creating custom field '%s' pattern %+v: %v", cf.Name, up, err)
+			}
+			w.customFields[cf.Name] = append(w.customFields[cf.Name], p)
+		}
+	}
+	return nil
+}
+
+func (w *WebLog) initLogLine() {
+	w.line = newEmptyLogLine()
+	for v := range w.customFields {
+		w.line.custom.fields[v] = struct{}{}
+	}
 }
 
 func (w *WebLog) initLogReader() error {
@@ -77,15 +94,13 @@ func (w *WebLog) initParser() error {
 		return fmt.Errorf("error on creating parser: %v", err)
 	}
 
-	line := newEmptyLogLine()
-	err = w.parser.Parse(lastLine, line)
+	err = w.parser.Parse(lastLine, w.line)
 	if err != nil {
-		return fmt.Errorf("error on parsing last line: %v (%s)", err, lastLine)
+		return fmt.Errorf("error on parsing last line: %v (%s)", err, string(lastLine))
 	}
 
-	if err = line.verify(); err != nil {
+	if err = w.line.verify(); err != nil {
 		return fmt.Errorf("error on verifying parsed log line: %v", err)
 	}
-	w.line = line
 	return nil
 }

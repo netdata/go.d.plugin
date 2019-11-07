@@ -57,21 +57,18 @@ type (
 		ReqMethod         metrics.CounterVec `stm:"req_method"`
 		ReqURLPattern     metrics.CounterVec `stm:"req_url_ptn"`
 		ReqVersion        metrics.CounterVec `stm:"req_version"`
-		ReqCustomPattern  metrics.CounterVec `stm:"req_custom_ptn"`
 		ReqSSLProto       metrics.CounterVec `stm:"req_ssl_proto"`
 		ReqSSLCipherSuite metrics.CounterVec `stm:"req_ssl_cipher_suite"`
 
-		URLPatternStats patternStats `stm:"url_ptn"`
+		ReqCustomField  map[string]metrics.CounterVec `stm:"req_custom_field"`
+		URLPatternStats map[string]*patternMetrics    `stm:"url_ptn"`
 	}
-
 	patternMetrics struct {
 		RespStatusCode metrics.CounterVec `stm:"resp_status_code"`
 		BytesSent      metrics.Counter    `stm:"bytes_sent"`
 		BytesReceived  metrics.Counter    `stm:"bytes_received"`
 		ReqProcTime    metrics.Summary    `stm:"req_proc_time"`
 	}
-
-	patternStats map[string]*patternMetrics
 )
 
 func newMetricsData(config Config) *metricsData {
@@ -90,8 +87,8 @@ func newMetricsData(config Config) *metricsData {
 		UniqueIPv4:        metrics.NewUniqueCounter(true),
 		UniqueIPv6:        metrics.NewUniqueCounter(true),
 		ReqURLPattern:     newCounterVecFromPatterns(config.URLPatterns),
-		ReqCustomPattern:  newCounterVecFromPatterns(config.CustomPatterns),
-		URLPatternStats:   newPatternStats(config.URLPatterns),
+		ReqCustomField:    newReqCustomField(config.CustomFields),
+		URLPatternStats:   newURLPatternStats(config.URLPatterns),
 	}
 }
 
@@ -105,9 +102,17 @@ func (m *metricsData) reset() {
 	}
 }
 
-func newPatternStats(ps []userPattern) patternStats {
-	stats := make(patternStats)
-	for _, p := range ps {
+func newCounterVecFromPatterns(patterns []userPattern) metrics.CounterVec {
+	c := metrics.NewCounterVec()
+	for _, p := range patterns {
+		_, _ = c.GetP(p.Name)
+	}
+	return c
+}
+
+func newURLPatternStats(patterns []userPattern) map[string]*patternMetrics {
+	stats := make(map[string]*patternMetrics)
+	for _, p := range patterns {
 		stats[p.Name] = &patternMetrics{
 			RespStatusCode: metrics.NewCounterVec(),
 			ReqProcTime:    newWebLogSummary(),
@@ -116,10 +121,10 @@ func newPatternStats(ps []userPattern) patternStats {
 	return stats
 }
 
-func newCounterVecFromPatterns(ps []userPattern) metrics.CounterVec {
-	c := metrics.NewCounterVec()
-	for _, p := range ps {
-		_, _ = c.GetP(p.Name)
+func newReqCustomField(fields []customField) map[string]metrics.CounterVec {
+	cf := make(map[string]metrics.CounterVec)
+	for _, f := range fields {
+		cf[f.Name] = newCounterVecFromPatterns(f.Patterns)
 	}
-	return c
+	return cf
 }
