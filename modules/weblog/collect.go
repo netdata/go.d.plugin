@@ -67,10 +67,6 @@ func (w *WebLog) collectLogLines() (int, error) {
 
 func (w *WebLog) collectLogLine() {
 	w.mx.Requests.Inc()
-	if w.line.hasReqURL() && !w.filter.MatchString(w.line.reqURL) {
-		w.mx.ReqFiltered.Inc()
-		return
-	}
 	w.collectVhost()
 	w.collectPort()
 	w.collectReqScheme()

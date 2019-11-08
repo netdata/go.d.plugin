@@ -26,7 +26,6 @@ type (
 	metricsData struct {
 		Requests     metrics.Counter `stm:"requests"`
 		ReqUnmatched metrics.Counter `stm:"req_unmatched"`
-		ReqFiltered  metrics.Counter `stm:"req_filtered"`
 
 		RespStatusCode metrics.CounterVec `stm:"resp_status_code"`
 		Resp1xx        metrics.Counter    `stm:"resp_1xx"`

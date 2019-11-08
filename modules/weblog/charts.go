@@ -92,7 +92,6 @@ var (
 		Type:     module.Stacked,
 		Priority: prioReqUnreported,
 		Dims: Dims{
-			{ID: "req_filtered", Name: "filtered", Algo: module.Incremental},
 			{ID: "req_unmatched", Name: "unmatched", Algo: module.Incremental},
 		},
 	}

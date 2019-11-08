@@ -24,19 +24,6 @@ func newPattern(up userPattern) (*pattern, error) {
 	return &pattern{name: up.Name, Matcher: m}, nil
 }
 
-func (w *WebLog) initFilter() (err error) {
-	if w.Filter.Empty() {
-		w.filter = matcher.TRUE()
-		return
-	}
-
-	w.filter, err = w.Filter.Parse()
-	if err != nil {
-		return fmt.Errorf("error on creating filter %+v: %v", w.Filter, err)
-	}
-	return err
-}
-
 func (w *WebLog) initURLPatterns() error {
 	for _, up := range w.URLPatterns {
 		p, err := newPattern(up)
