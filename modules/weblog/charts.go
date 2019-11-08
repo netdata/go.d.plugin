@@ -18,7 +18,7 @@ const (
 	defaultPriority           = orchestrator.DefaultJobPriority
 	prioReqTotal              = defaultPriority
 	prioReqUnreported         = defaultPriority + 1
-	prioRespStatuses          = defaultPriority + 2
+	prioReqType               = defaultPriority + 2
 	prioRespCodesClass        = defaultPriority + 3
 	prioRespCodes             = defaultPriority + 4
 	prioRespCodes1xx          = defaultPriority + 5
@@ -96,26 +96,26 @@ var (
 			{ID: "req_unmatched", Name: "unmatched", Algo: module.Incremental},
 		},
 	}
+	// netdata specific grouping
+	reqTypes = Chart{
+		ID:       "type_requests",
+		Title:    "Requests By Type",
+		Units:    "requests/s",
+		Fam:      "responses",
+		Ctx:      "web_log.type_requests",
+		Type:     module.Stacked,
+		Priority: prioReqType,
+		Dims: Dims{
+			{ID: "req_type_success", Name: "success", Algo: module.Incremental},
+			{ID: "req_type_bad", Name: "bad", Algo: module.Incremental},
+			{ID: "req_type_redirect", Name: "redirect", Algo: module.Incremental},
+			{ID: "req_type_error", Name: "error", Algo: module.Incremental},
+		},
+	}
 )
 
 // Responses
 var (
-	// netdata specific grouping
-	respStatuses = Chart{
-		ID:       "type_responses",
-		Title:    "Responses By Type",
-		Units:    "responses/s",
-		Fam:      "responses",
-		Ctx:      "web_log.type_responses",
-		Type:     module.Stacked,
-		Priority: prioRespStatuses,
-		Dims: Dims{
-			{ID: "resp_successful", Name: "success", Algo: module.Incremental},
-			{ID: "resp_client_error", Name: "bad", Algo: module.Incremental},
-			{ID: "resp_redirect", Name: "redirect", Algo: module.Incremental},
-			{ID: "resp_server_error", Name: "error", Algo: module.Incremental},
-		},
-	}
 	respCodeClass = Chart{
 		ID:       "status_code_class_responses",
 		Title:    "Responses By Status Code Class",
@@ -529,8 +529,8 @@ func (w WebLog) createCharts(line *logLine) *Charts {
 	charts := Charts{
 		reqTotal.Copy(),
 		reqExcluded.Copy(),
+		reqTypes.Copy(),
 		respCodeClass.Copy(),
-		respStatuses.Copy(),
 	}
 	if !w.GroupRespCodes {
 		check(charts.Add(respCodes.Copy()))

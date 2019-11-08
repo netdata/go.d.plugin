@@ -27,6 +27,7 @@ var (
 		"$status",
 		"$body_bytes_sent",
 	}, " ")
+
 	testCommonConfig = Config{
 		Parser: logs.ParserConfig{
 			LogType: logs.TypeCSV,
@@ -45,6 +46,9 @@ var (
 		Histogram:      nil,
 		GroupRespCodes: false,
 	}
+)
+
+var (
 	testCSVFullFormat = strings.Join([]string{
 		"$host:$server_port",
 		"$scheme",
@@ -60,6 +64,7 @@ var (
 		"$custom_one",
 		"$custom_two",
 	}, " ")
+
 	testFullConfig = Config{
 		Parser: logs.ParserConfig{
 			LogType: logs.TypeCSV,
@@ -195,6 +200,10 @@ func TestWebLog_Collect(t *testing.T) {
 		"req_ssl_proto_TLSv1.1":                     57,
 		"req_ssl_proto_TLSv1.2":                     62,
 		"req_ssl_proto_TLSv1.3":                     55,
+		"req_type_bad":                              41,
+		"req_type_error":                            0,
+		"req_type_redirect":                         78,
+		"req_type_success":                          213,
 		"req_unmatched":                             45,
 		"req_url_ptn_com":                           116,
 		"req_url_ptn_net":                           107,
@@ -214,9 +223,6 @@ func TestWebLog_Collect(t *testing.T) {
 		"resp_3xx":                                  78,
 		"resp_4xx":                                  76,
 		"resp_5xx":                                  0,
-		"resp_client_error":                         41,
-		"resp_redirect":                             78,
-		"resp_server_error":                         0,
 		"resp_status_code_100":                      47,
 		"resp_status_code_101":                      36,
 		"resp_status_code_200":                      47,
@@ -225,7 +231,6 @@ func TestWebLog_Collect(t *testing.T) {
 		"resp_status_code_301":                      39,
 		"resp_status_code_400":                      41,
 		"resp_status_code_401":                      35,
-		"resp_successful":                           213,
 		"uniq_ipv4":                                 3,
 		"uniq_ipv6":                                 2,
 		"upstream_resp_time_avg":                    246,
@@ -336,6 +341,10 @@ func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
 		"req_proc_time_max":                 0,
 		"req_proc_time_min":                 0,
 		"req_proc_time_sum":                 0,
+		"req_type_bad":                      76,
+		"req_type_error":                    0,
+		"req_type_redirect":                 126,
+		"req_type_success":                  298,
 		"req_unmatched":                     50,
 		"req_version_1.1":                   186,
 		"req_version_2":                     152,
@@ -346,9 +355,6 @@ func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
 		"resp_3xx":                          126,
 		"resp_4xx":                          137,
 		"resp_5xx":                          0,
-		"resp_client_error":                 76,
-		"resp_redirect":                     126,
-		"resp_server_error":                 0,
 		"resp_status_code_100":              52,
 		"resp_status_code_101":              60,
 		"resp_status_code_200":              64,
@@ -357,7 +363,6 @@ func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
 		"resp_status_code_301":              58,
 		"resp_status_code_400":              76,
 		"resp_status_code_401":              61,
-		"resp_successful":                   298,
 		"uniq_ipv4":                         3,
 		"uniq_ipv6":                         2,
 		"upstream_resp_time_avg":            0,

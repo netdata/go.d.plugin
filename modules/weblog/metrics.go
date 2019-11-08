@@ -28,16 +28,17 @@ type (
 		ReqUnmatched metrics.Counter `stm:"req_unmatched"`
 		ReqFiltered  metrics.Counter `stm:"req_filtered"`
 
-		RespStatusCode  metrics.CounterVec `stm:"resp_status_code"`
-		RespSuccessful  metrics.Counter    `stm:"resp_successful"`
-		RespRedirect    metrics.Counter    `stm:"resp_redirect"`
-		RespClientError metrics.Counter    `stm:"resp_client_error"`
-		RespServerError metrics.Counter    `stm:"resp_server_error"`
-		Resp1xx         metrics.Counter    `stm:"resp_1xx"`
-		Resp2xx         metrics.Counter    `stm:"resp_2xx"`
-		Resp3xx         metrics.Counter    `stm:"resp_3xx"`
-		Resp4xx         metrics.Counter    `stm:"resp_4xx"`
-		Resp5xx         metrics.Counter    `stm:"resp_5xx"`
+		RespStatusCode metrics.CounterVec `stm:"resp_status_code"`
+		Resp1xx        metrics.Counter    `stm:"resp_1xx"`
+		Resp2xx        metrics.Counter    `stm:"resp_2xx"`
+		Resp3xx        metrics.Counter    `stm:"resp_3xx"`
+		Resp4xx        metrics.Counter    `stm:"resp_4xx"`
+		Resp5xx        metrics.Counter    `stm:"resp_5xx"`
+
+		ReqTypeSuccess  metrics.Counter `stm:"req_type_success"`
+		ReqTypeRedirect metrics.Counter `stm:"req_type_redirect"`
+		ReqTypeBad      metrics.Counter `stm:"req_type_bad"`
+		ReqTypeError    metrics.Counter `stm:"req_type_error"`
 
 		UniqueIPv4      metrics.UniqueCounter `stm:"uniq_ipv4"`
 		UniqueIPv6      metrics.UniqueCounter `stm:"uniq_ipv6"`

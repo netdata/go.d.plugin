@@ -191,13 +191,13 @@ func (w *WebLog) collectRespStatusCode() {
 	// TODO: this grouping is confusing since it uses terms from rfc7231
 	switch {
 	case code >= 100 && code < 300, code == 304, code == 401:
-		w.mx.RespSuccessful.Inc()
+		w.mx.ReqTypeSuccess.Inc()
 	case code >= 300 && code < 400:
-		w.mx.RespRedirect.Inc()
+		w.mx.ReqTypeRedirect.Inc()
 	case code >= 400 && code < 500:
-		w.mx.RespClientError.Inc()
+		w.mx.ReqTypeBad.Inc()
 	case code >= 500 && code < 600:
-		w.mx.RespServerError.Inc()
+		w.mx.ReqTypeError.Inc()
 	}
 
 	switch code / 100 {
