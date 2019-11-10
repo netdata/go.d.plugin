@@ -51,7 +51,7 @@ func TestWebLog_guessParser(t *testing.T) {
 		},
 	}
 
-	weblog := New()
+	weblog := prepareWebLog()
 
 	for _, tc := range tests {
 		for i, input := range tc.inputs {
@@ -166,7 +166,7 @@ func TestWebLog_guessCSVParser(t *testing.T) {
 		},
 	}
 
-	weblog := New()
+	weblog := prepareWebLog()
 
 	for i, tc := range tests {
 		for _, input := range tc.inputs {
@@ -183,5 +183,26 @@ func TestWebLog_guessCSVParser(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func prepareWebLog() *WebLog {
+	cfg := logs.ParserConfig{
+		LogType: typeAuto,
+		CSV: logs.CSVConfig{
+			Delimiter:  ' ',
+			CheckField: checkCSVFormatField,
+		},
+		LTSV: logs.LTSVConfig{
+			FieldDelimiter: '\t',
+			ValueDelimiter: ':',
+		},
+	}
+
+	return &WebLog{
+		Config: Config{
+			GroupRespCodes: false,
+			Parser:         cfg,
+		},
 	}
 }

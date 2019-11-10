@@ -11,6 +11,7 @@ import (
 
 type (
 	CSVConfig struct {
+		FieldsPerRecord  int                              `yaml:"fields_per_record"`
 		Delimiter        rune                             `yaml:"delimiter"`
 		TrimLeadingSpace bool                             `yaml:"trim_leading_space"`
 		Format           string                           `yaml:"format"`
@@ -91,8 +92,8 @@ func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 	r := csv.NewReader(in)
 	r.Comma = config.Delimiter
 	r.TrimLeadingSpace = config.TrimLeadingSpace
+	r.FieldsPerRecord = config.FieldsPerRecord
 	r.ReuseRecord = true
-	r.FieldsPerRecord = -1
 	return r
 }
 

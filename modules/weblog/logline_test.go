@@ -24,14 +24,14 @@ func TestLogLine_Assign(t *testing.T) {
 		wantErr  error
 	}
 	type groupTest struct {
-		name  string
-		vars  []string
-		tests []test
+		name   string
+		fields []string
+		tests  []test
 	}
 	tests := []groupTest{
 		{
 			name: "Vhost",
-			vars: []string{
+			fields: []string{
 				"host",
 				"http_host",
 				"v",
@@ -51,7 +51,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Server Port",
-			vars: []string{
+			fields: []string{
 				"server_port",
 				"p",
 			},
@@ -68,7 +68,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Vhost With Port",
-			vars: []string{
+			fields: []string{
 				"host:$server_port",
 				"v:%p",
 			},
@@ -89,7 +89,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Scheme",
-			vars: []string{
+			fields: []string{
 				"scheme",
 			},
 			tests: []test{
@@ -103,7 +103,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Client",
-			vars: []string{
+			fields: []string{
 				"remote_addr",
 				"a",
 				"h",
@@ -117,7 +117,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Request",
-			vars: []string{
+			fields: []string{
 				"request",
 				"r",
 			},
@@ -145,7 +145,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Request HTTP Method",
-			vars: []string{
+			fields: []string{
 				"request_method",
 				"m",
 			},
@@ -168,7 +168,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Request URL",
-			vars: []string{
+			fields: []string{
 				"request_uri",
 				"U",
 			},
@@ -182,7 +182,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Request HTTP Protocol",
-			vars: []string{
+			fields: []string{
 				"server_protocol",
 				"H",
 			},
@@ -199,7 +199,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Response Status Code",
-			vars: []string{
+			fields: []string{
 				"status",
 				"s",
 				">s",
@@ -213,16 +213,16 @@ func TestLogLine_Assign(t *testing.T) {
 				{input: "600", wantLine: "resp_code=600"},
 				{input: emptyStr, wantLine: emptyLogLine},
 				{input: hyphen, wantLine: emptyLogLine},
-				{input: "99", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{input: "601", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{input: "200 ", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{input: "0.222", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
-				{input: "localhost", wantLine: emptyLogLine, wantErr: errBadRespStatusCode},
+				{input: "99", wantLine: emptyLogLine, wantErr: errBadRespCode},
+				{input: "601", wantLine: emptyLogLine, wantErr: errBadRespCode},
+				{input: "200 ", wantLine: emptyLogLine, wantErr: errBadRespCode},
+				{input: "0.222", wantLine: emptyLogLine, wantErr: errBadRespCode},
+				{input: "localhost", wantLine: emptyLogLine, wantErr: errBadRespCode},
 			},
 		},
 		{
 			name: "Request Size",
-			vars: []string{
+			fields: []string{
 				"request_length",
 				"I",
 			},
@@ -238,7 +238,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Response Size",
-			vars: []string{
+			fields: []string{
 				"bytes_sent",
 				"body_bytes_sent",
 				"O",
@@ -257,7 +257,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Request Processing Time",
-			vars: []string{
+			fields: []string{
 				"request_time",
 				"D",
 			},
@@ -273,7 +273,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "Upstream Response Time",
-			vars: []string{
+			fields: []string{
 				"upstream_response_time",
 			},
 			tests: []test{
@@ -282,13 +282,13 @@ func TestLogLine_Assign(t *testing.T) {
 				{input: "0.333,0.444,0.555", wantLine: "ups_resp_time=333000"},
 				{input: emptyStr, wantLine: emptyLogLine},
 				{input: hyphen, wantLine: emptyLogLine},
-				{input: "-1", wantLine: emptyLogLine, wantErr: errBadUpstreamRespTime},
-				{input: "number", wantLine: emptyLogLine, wantErr: errBadUpstreamRespTime},
+				{input: "-1", wantLine: emptyLogLine, wantErr: errBadUpsRespTime},
+				{input: "number", wantLine: emptyLogLine, wantErr: errBadUpsRespTime},
 			},
 		},
 		{
 			name: "SSL Protocol",
-			vars: []string{
+			fields: []string{
 				"ssl_protocol",
 			},
 			tests: []test{
@@ -305,7 +305,7 @@ func TestLogLine_Assign(t *testing.T) {
 		},
 		{
 			name: "SSL Cipher Suite",
-			vars: []string{
+			fields: []string{
 				"ssl_cipher",
 			},
 			tests: []test{
@@ -319,15 +319,47 @@ func TestLogLine_Assign(t *testing.T) {
 				{input: "invalid", wantLine: emptyLogLine, wantErr: errBadSSLCipherSuite},
 			},
 		},
+		{
+			name: "Custom Fields",
+			fields: []string{
+				"custom_field",
+			},
+			tests: []test{
+				{input: "POST", wantLine: "custom_field=POST"},
+				{input: "/example.com", wantLine: "custom_field=/example.com"},
+				{input: "HTTP/1.1", wantLine: "custom_field=HTTP/1.1"},
+				{input: "0.333,0.444,0.555", wantLine: "custom_field=0.333,0.444,0.555"},
+				{input: "-1", wantLine: "custom_field=-1"},
+				{input: "invalid", wantLine: "custom_field=invalid"},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+			},
+		},
+		{
+			name: "Custom Fields Not Exist",
+			fields: []string{
+				"custom_field_not_exist",
+			},
+			tests: []test{
+				{input: "POST", wantLine: emptyLogLine},
+				{input: "/example.com", wantLine: emptyLogLine},
+				{input: "HTTP/1.1", wantLine: emptyLogLine},
+				{input: "0.333,0.444,0.555", wantLine: emptyLogLine},
+				{input: "-1", wantLine: emptyLogLine},
+				{input: "invalid", wantLine: emptyLogLine},
+				{input: emptyStr, wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine},
+			},
+		},
 	}
 
 	for _, tt := range tests {
-		for _, varName := range tt.vars {
+		for _, varName := range tt.fields {
 			for i, tc := range tt.tests {
-				name := fmt.Sprintf("[%s:%d]var='%s'|input='%s'", tt.name, i+1, varName, tc.input)
+				name := fmt.Sprintf("[%s:%d]field='%s'|input='%s'", tt.name, i+1, varName, tc.input)
 				t.Run(name, func(t *testing.T) {
 
-					line := newEmptyLogLine()
+					line := newEmptyLogLineWithFields()
 					err := line.Assign(varName, tc.input)
 
 					if tc.wantErr != nil {
@@ -361,7 +393,6 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "vhost=debian10.debian"},
 				{line: "vhost=1ce:1ce::babe"},
 				{line: "vhost=localhost"},
-				{line: emptyLogLine},
 				{line: "vhost=invalid_vhost", wantErr: errBadVhost},
 				{line: "vhost=http://192.168.0.1/", wantErr: errBadVhost},
 			},
@@ -371,7 +402,6 @@ func TestLogLine_verify(t *testing.T) {
 			tests: []test{
 				{line: "port=80"},
 				{line: "port=8081"},
-				{line: emptyLogLine},
 				{line: "port=79", wantErr: errBadPort},
 				{line: "port=50000", wantErr: errBadPort},
 				{line: "port=0.0.0.0", wantErr: errBadPort},
@@ -384,7 +414,6 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "vhost=::1 port=8081"},
 				{line: "vhost=1ce:1ce::babe port=81"},
 				{line: "vhost=debian10.debian port=81"},
-				{line: emptyLogLine},
 				{line: "vhost=::1 port=79", wantErr: errBadPort},
 				{line: "vhost=::1 port=50000", wantErr: errBadPort},
 				{line: "vhost=::1 port=0.0.0.0", wantErr: errBadPort},
@@ -395,7 +424,6 @@ func TestLogLine_verify(t *testing.T) {
 			tests: []test{
 				{line: "req_scheme=http"},
 				{line: "req_scheme=https"},
-				{line: emptyLogLine},
 				{line: "req_scheme=not_https", wantErr: errBadReqScheme},
 				{line: "req_scheme=HTTP", wantErr: errBadReqScheme},
 				{line: "req_scheme=HTTPS", wantErr: errBadReqScheme},
@@ -409,7 +437,6 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "req_client=::1"},
 				{line: "req_client=1ce:1ce::babe"},
 				{line: "req_client=localhost"},
-				{line: emptyLogLine},
 				{line: "req_client=debian10.debian", wantErr: errBadReqClient},
 				{line: "req_client=invalid", wantErr: errBadReqClient},
 			},
@@ -426,7 +453,6 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "req_method=PUT"},
 				{line: "req_method=PATCH"},
 				{line: "req_method=HEAD"},
-				{line: emptyLogLine},
 				{line: "req_method=Get", wantErr: errBadReqMethod},
 				{line: "req_method=get", wantErr: errBadReqMethod},
 				{line: "req_method=-", wantErr: errBadReqMethod},
@@ -439,7 +465,6 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "req_url=/status?full&json"},
 				{line: "req_url=/icons/openlogo-75.png"},
 				{line: "req_method=CONNECT req_url=http://192.168.0.1/"},
-				{line: emptyLogLine},
 				{line: "req_url=status?full&json", wantErr: errBadReqURL},
 				{line: "\"req_url=/ \"", wantErr: errBadReqURL},
 				{line: "req_url=http://192.168.0.1/", wantErr: errBadReqURL},
@@ -453,7 +478,6 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "req_proto=1.1"},
 				{line: "req_proto=2.0"},
 				{line: "req_proto=2"},
-				{line: emptyLogLine},
 				{line: "req_proto=0.9", wantErr: errBadReqProto},
 				{line: "req_proto=1.1.1", wantErr: errBadReqProto},
 				{line: "req_proto=2.2", wantErr: errBadReqProto},
@@ -469,10 +493,9 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "resp_code=400"},
 				{line: "resp_code=500"},
 				{line: "resp_code=600"},
-				{line: emptyLogLine, wantErr: errMandatoryField},
-				{line: "resp_code=-1", wantErr: errBadRespStatusCode},
-				{line: "resp_code=99", wantErr: errBadRespStatusCode},
-				{line: "resp_code=601", wantErr: errBadRespStatusCode},
+				{line: "resp_code=-1", wantErr: errBadRespCode},
+				{line: "resp_code=99", wantErr: errBadRespCode},
+				{line: "resp_code=601", wantErr: errBadRespCode},
 			},
 		},
 		{
@@ -481,7 +504,6 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "req_size=0"},
 				{line: "req_size=100"},
 				{line: "req_size=1000000"},
-				{line: emptyLogLine},
 				{line: "req_size=-1", wantErr: errBadReqSize},
 			},
 		},
@@ -491,7 +513,6 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "resp_size=0"},
 				{line: "resp_size=100"},
 				{line: "resp_size=1000000"},
-				{line: emptyLogLine},
 				{line: "resp_size=-1", wantErr: errBadRespSize},
 			},
 		},
@@ -502,7 +523,6 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "req_proc_time=0.000"},
 				{line: "req_proc_time=100"},
 				{line: "req_proc_time=1000000.123"},
-				{line: emptyLogLine},
 				{line: "req_proc_time=-1", wantErr: errBadReqProcTime},
 			},
 		},
@@ -513,8 +533,7 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "ups_resp_time=0.000"},
 				{line: "ups_resp_time=100"},
 				{line: "ups_resp_time=1000000.123"},
-				{line: emptyLogLine},
-				{line: "ups_resp_time=-1", wantErr: errBadUpstreamRespTime},
+				{line: "ups_resp_time=-1", wantErr: errBadUpsRespTime},
 			},
 		},
 		{
@@ -524,8 +543,7 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "ups_resp_time=0.000"},
 				{line: "ups_resp_time=100"},
 				{line: "ups_resp_time=1000000.123"},
-				{line: emptyLogLine},
-				{line: "ups_resp_time=-1", wantErr: errBadUpstreamRespTime},
+				{line: "ups_resp_time=-1", wantErr: errBadUpsRespTime},
 			},
 		},
 		{
@@ -536,7 +554,6 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "ssl_proto=TLSv1.1"},
 				{line: "ssl_proto=TLSv1.2"},
 				{line: "ssl_proto=TLSv1.3"},
-				{line: emptyLogLine},
 				{line: "ssl_proto=invalid", wantErr: errBadSSLProto},
 			},
 		},
@@ -547,8 +564,25 @@ func TestLogLine_verify(t *testing.T) {
 				{line: "ssl_cipher_suite=DHE-RSA-AES256-SHA"},
 				{line: "ssl_cipher_suite=AES256-SHA"},
 				{line: "ssl_cipher_suite=PSK-RC4-SHA"},
-				{line: emptyLogLine},
 				{line: "ssl_cipher_suite=invalid", wantErr: errBadSSLCipherSuite},
+			},
+		},
+		{
+			name: "Custom Fields",
+			tests: []test{
+				{line: "custom_field=POST"},
+				{line: "custom_field=/example.com"},
+				{line: "custom_field=HTTP/1.1"},
+				{line: "custom_field=0.333,0.444,0.555"},
+				{line: "custom_field=-1"},
+				{line: "custom_field=invalid"},
+			},
+		},
+		{
+			name: "Empty Line",
+			tests: []test{
+				{line: "custom_field_not_exit=POST", wantErr: errEmptyLine},
+				{line: emptyLogLine, wantErr: errEmptyLine},
 			},
 		},
 	}
@@ -559,9 +593,6 @@ func TestLogLine_verify(t *testing.T) {
 
 			t.Run(name, func(t *testing.T) {
 				line := prepareLogLine(t, c.line)
-				if tt.name != "Response Status Code" {
-					line.respStatusCode = 200
-				}
 
 				err := line.verify()
 
@@ -576,17 +607,23 @@ func TestLogLine_verify(t *testing.T) {
 	}
 }
 
+func newEmptyLogLineWithFields() *logLine {
+	l := newEmptyLogLine()
+	l.custom.fields = map[string]struct{}{"custom_field": {}}
+	return l
+}
+
 func prepareLogLine(t *testing.T, from string) logLine {
 	require.NotZero(t, from)
 
 	if from == emptyLogLine {
-		return *newEmptyLogLine()
+		return *newEmptyLogLineWithFields()
 	}
 
 	t.Helper()
 	r := csv.NewReader(strings.NewReader(from))
 	r.Comma = ' '
-	line := newEmptyLogLine()
+	line := newEmptyLogLineWithFields()
 
 	rs, err := r.Read()
 	require.NoError(t, err)
@@ -617,7 +654,7 @@ func prepareLogLine(t *testing.T, from string) logLine {
 		case "resp_code":
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
-			line.respStatusCode = i
+			line.respCode = i
 		case "resp_size":
 			i, err := strconv.Atoi(val)
 			require.NoError(t, err)
@@ -634,10 +671,8 @@ func prepareLogLine(t *testing.T, from string) logLine {
 			line.sslProto = val
 		case "ssl_cipher_suite":
 			line.sslCipherSuite = val
-		//case "custom":
-		//	line.custom = val
-		default:
-			t.Fatalf("cant prepare logLine, unknown field: %s", field)
+		case "custom_field":
+			line.custom.values = append(line.custom.values, customValue{name: field, value: val})
 		}
 	}
 	return *line

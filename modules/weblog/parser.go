@@ -110,7 +110,7 @@ func checkCSVFormatField(field string) (newName string, offset int, valid bool) 
 	if !isValidField(field) {
 		return "", 0, false
 	}
-	// remove $|% to have same field names with regexp parser,
+	// remove `$` and `%` to have same field names with regexp parser,
 	// these symbols aren't allowed in sub exp names
 	return field[1:], 0, true
 }

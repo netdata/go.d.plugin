@@ -2,7 +2,6 @@ package weblog
 
 import (
 	"github.com/netdata/go.d.plugin/pkg/logs"
-	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/metrics"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -23,8 +22,9 @@ func New() *WebLog {
 	cfg := logs.ParserConfig{
 		LogType: typeAuto,
 		CSV: logs.CSVConfig{
-			Delimiter:  ' ',
-			CheckField: checkCSVFormatField,
+			FieldsPerRecord: -1,
+			Delimiter:       ' ',
+			CheckField:      checkCSVFormatField,
 		},
 		LTSV: logs.LTSVConfig{
 			FieldDelimiter: '\t',
@@ -53,14 +53,13 @@ type (
 	}
 
 	Config struct {
-		Parser         logs.ParserConfig  `yaml:",inline"`
-		Path           string             `yaml:"path"`
-		ExcludePath    string             `yaml:"exclude_path"`
-		Filter         matcher.SimpleExpr `yaml:"filter"`
-		URLPatterns    []userPattern      `yaml:"url_patterns"`
-		CustomFields   []customField      `yaml:"custom_fields"`
-		Histogram      []float64          `yaml:"histogram"`
-		GroupRespCodes bool               `yaml:"group_response_codes"`
+		Parser         logs.ParserConfig `yaml:",inline"`
+		Path           string            `yaml:"path"`
+		ExcludePath    string            `yaml:"exclude_path"`
+		URLPatterns    []userPattern     `yaml:"url_patterns"`
+		CustomFields   []customField     `yaml:"custom_fields"`
+		Histogram      []float64         `yaml:"histogram"`
+		GroupRespCodes bool              `yaml:"group_response_codes"`
 	}
 
 	WebLog struct {
@@ -70,7 +69,6 @@ type (
 		file         *logs.Reader
 		parser       logs.Parser
 		line         *logLine
-		filter       matcher.Matcher
 		urlPatterns  []*pattern
 		customFields map[string][]*pattern
 
@@ -80,11 +78,6 @@ type (
 )
 
 func (w *WebLog) Init() bool {
-	if err := w.initFilter(); err != nil {
-		w.Error(err)
-		return false
-	}
-
 	if err := w.initURLPatterns(); err != nil {
 		w.Error(err)
 		return false

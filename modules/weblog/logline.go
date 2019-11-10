@@ -35,7 +35,7 @@ import (
 | req_method         | $request_method         | %m        |
 | req_url            | $request_uri            | %U        | nginx: w/ queries, apache: w/o.
 | req_proto          | $server_protocol        | %H        | usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”.
-| resp_status_code   | $status                 | %s (%>s)  |
+| resp_status        | $status                 | %s (%>s)  |
 | req_size           | $request_length         | $I        | w/ http headers, apache: need "mod_logio".
 | resp_size          | $bytes_sent             | %O        | w/ http headers.
 | resp_size          | $body_bytes_sent        | %B (%b)   | w/o http headers. %b '-' when no bytes are sent.
@@ -55,23 +55,23 @@ The %O format provided by mod_logio will log the actual number of bytes sent ove
 */
 
 var (
-	errMandatoryField      = errors.New("missing mandatory field")
-	errBadVhost            = errors.New("bad vhost")
-	errBadVhostPort        = errors.New("bad vhost with port")
-	errBadPort             = errors.New("bad port")
-	errBadReqScheme        = errors.New("bad req scheme")
-	errBadReqClient        = errors.New("bad req client")
-	errBadRequest          = errors.New("bad request")
-	errBadReqMethod        = errors.New("bad req method")
-	errBadReqURL           = errors.New("bad req url")
-	errBadReqProto         = errors.New("bad req protocol")
-	errBadReqSize          = errors.New("bad req size")
-	errBadRespStatusCode   = errors.New("bad resp status code")
-	errBadRespSize         = errors.New("bad resp size")
-	errBadReqProcTime      = errors.New("bad req processing time")
-	errBadUpstreamRespTime = errors.New("bad upstream resp time")
-	errBadSSLProto         = errors.New("bad ssl protocol")
-	errBadSSLCipherSuite   = errors.New("bad ssl cipher suite")
+	errEmptyLine         = errors.New("empty line")
+	errBadVhost          = errors.New("bad vhost")
+	errBadVhostPort      = errors.New("bad vhost with port")
+	errBadPort           = errors.New("bad port")
+	errBadReqScheme      = errors.New("bad req scheme")
+	errBadReqClient      = errors.New("bad req client")
+	errBadRequest        = errors.New("bad request")
+	errBadReqMethod      = errors.New("bad req method")
+	errBadReqURL         = errors.New("bad req url")
+	errBadReqProto       = errors.New("bad req protocol")
+	errBadReqSize        = errors.New("bad req size")
+	errBadRespCode       = errors.New("bad resp status code")
+	errBadRespSize       = errors.New("bad resp size")
+	errBadReqProcTime    = errors.New("bad req processing time")
+	errBadUpsRespTime    = errors.New("bad upstream resp time")
+	errBadSSLProto       = errors.New("bad ssl protocol")
+	errBadSSLCipherSuite = errors.New("bad ssl cipher suite")
 )
 
 func newEmptyLogLine() *logLine {
@@ -84,6 +84,10 @@ func newEmptyLogLine() *logLine {
 
 type (
 	logLine struct {
+		lineWebFields
+		custom lineCustomFields
+	}
+	lineWebFields struct {
 		vhost          string
 		port           string // apache has no $scheme, this is workaround to collect per scheme requests. Lame.
 		reqScheme      string
@@ -93,15 +97,15 @@ type (
 		reqProto       string
 		reqSize        int
 		reqProcTime    float64
-		respStatusCode int
+		respCode       int
 		respSize       int
 		upsRespTime    float64
 		sslProto       string
 		sslCipherSuite string
-		custom         struct {
-			fields map[string]struct{}
-			values []customValue
-		}
+	}
+	lineCustomFields struct {
+		fields map[string]struct{}
+		values []customValue
 	}
 	customValue struct {
 		name  string
@@ -134,7 +138,7 @@ func (l *logLine) Assign(field string, value string) (err error) {
 	case "server_protocol", "H":
 		err = l.assignReqProto(value)
 	case "status", "s", ">s":
-		err = l.assignRespStatusCode(value)
+		err = l.assignRespCode(value)
 	case "request_length", "I":
 		err = l.assignReqSize(value)
 	case "bytes_sent", "body_bytes_sent", "b", "O", "B":
@@ -142,7 +146,7 @@ func (l *logLine) Assign(field string, value string) (err error) {
 	case "request_time", "D":
 		err = l.assignReqProcTime(value)
 	case "upstream_response_time":
-		err = l.assignUpstreamRespTime(value)
+		err = l.assignUpsRespTime(value)
 	case "ssl_protocol":
 		err = l.assignSSLProto(value)
 	case "ssl_cipher":
@@ -281,15 +285,15 @@ func (l *logLine) assignReqProto(proto string) error {
 	return nil
 }
 
-func (l *logLine) assignRespStatusCode(status string) error {
+func (l *logLine) assignRespCode(status string) error {
 	if status == hyphen {
 		return nil
 	}
 	v, err := strconv.Atoi(status)
-	if err != nil || !isValidRespStatusCode(v) {
-		return fmt.Errorf("assign '%s': %w", status, errBadRespStatusCode)
+	if err != nil || !isValidRespCode(v) {
+		return fmt.Errorf("assign '%s': %w", status, errBadRespCode)
 	}
-	l.respStatusCode = v
+	l.respCode = v
 	return nil
 }
 
@@ -337,7 +341,7 @@ func (l *logLine) assignReqProcTime(time string) error {
 	return nil
 }
 
-func (l *logLine) assignUpstreamRespTime(time string) error {
+func (l *logLine) assignUpsRespTime(time string) error {
 	if time == hyphen {
 		return nil
 	}
@@ -347,7 +351,7 @@ func (l *logLine) assignUpstreamRespTime(time string) error {
 	}
 	v, err := strconv.ParseFloat(time, 64)
 	if err != nil || !isValidTime(v) {
-		return fmt.Errorf("assign '%s': %w", time, errBadUpstreamRespTime)
+		return fmt.Errorf("assign '%s': %w", time, errBadUpsRespTime)
 	}
 	l.upsRespTime = v * respTimeMultiplier(time)
 	return nil
@@ -376,14 +380,12 @@ func (l *logLine) assignSSLCipherSuite(cipher string) error {
 }
 
 func (l logLine) verify() error {
-	if !l.hasRespStatusCode() {
-		return fmt.Errorf("response status code: %w", errMandatoryField)
+	if l.isEmpty() {
+		return fmt.Errorf("verify: %w", errEmptyLine)
 	}
-	if !l.validRespStatusCode() {
-		return fmt.Errorf("verify '%d': %w", l.respStatusCode, errBadRespStatusCode)
+	if l.hasRespCode() && !l.validRespCode() {
+		return fmt.Errorf("verify '%d': %w", l.respCode, errBadRespCode)
 	}
-
-	// optional checks
 	if l.hasVhost() && !l.validVhost() {
 		return fmt.Errorf("verify '%s': %w", l.vhost, errBadVhost)
 	}
@@ -414,8 +416,8 @@ func (l logLine) verify() error {
 	if l.hasReqProcTime() && !l.validReqProcTime() {
 		return fmt.Errorf("verify '%f': %w", l.reqProcTime, errBadReqProcTime)
 	}
-	if l.hasUpstreamRespTime() && !l.validUpstreamRespTime() {
-		return fmt.Errorf("verify '%f': %w", l.upsRespTime, errBadUpstreamRespTime)
+	if l.hasUpsRespTime() && !l.validUpsRespTime() {
+		return fmt.Errorf("verify '%f': %w", l.upsRespTime, errBadUpsRespTime)
 	}
 	if l.hasSSLProto() && !l.validSSLProto() {
 		return fmt.Errorf("verify '%s': %w", l.sslProto, errBadSSLProto)
@@ -426,51 +428,40 @@ func (l logLine) verify() error {
 	return nil
 }
 
-func (l logLine) hasVhost() bool              { return !isEmptyString(l.vhost) }
-func (l logLine) hasPort() bool               { return !isEmptyString(l.port) }
-func (l logLine) hasReqScheme() bool          { return !isEmptyString(l.reqScheme) }
-func (l logLine) hasReqClient() bool          { return !isEmptyString(l.reqClient) }
-func (l logLine) hasReqMethod() bool          { return !isEmptyString(l.reqMethod) }
-func (l logLine) hasReqURL() bool             { return !isEmptyString(l.reqURL) }
-func (l logLine) hasReqProto() bool           { return !isEmptyString(l.reqProto) }
-func (l logLine) hasRespStatusCode() bool     { return !isEmptyNumber(l.respStatusCode) }
-func (l logLine) hasReqSize() bool            { return !isEmptyNumber(l.reqSize) }
-func (l logLine) hasRespSize() bool           { return !isEmptyNumber(l.respSize) }
-func (l logLine) hasReqProcTime() bool        { return !isEmptyNumber(int(l.reqProcTime)) }
-func (l logLine) hasUpstreamRespTime() bool   { return !isEmptyNumber(int(l.upsRespTime)) }
-func (l logLine) hasSSLProto() bool           { return !isEmptyString(l.sslProto) }
-func (l logLine) hasSSLCipherSuite() bool     { return !isEmptyString(l.sslCipherSuite) }
-func (l logLine) hasCustom() bool             { return len(l.custom.values) > 0 }
-func (l logLine) validVhost() bool            { return reVhost.MatchString(l.vhost) }
-func (l logLine) validPort() bool             { return isValidPort(l.port) }
-func (l logLine) validReqScheme() bool        { return isValidScheme(l.reqScheme) }
-func (l logLine) validReqClient() bool        { return reClient.MatchString(l.reqClient) }
-func (l logLine) validReqMethod() bool        { return isValidReqMethod(l.reqMethod) }
-func (l logLine) validReqURL() bool           { return isValidURL(l.reqMethod, l.reqURL) }
-func (l logLine) validReqProto() bool         { return isValidReqProtoVer(l.reqProto) }
-func (l logLine) validRespStatusCode() bool   { return isValidRespStatusCode(l.respStatusCode) }
-func (l logLine) validReqSize() bool          { return isValidSize(l.reqSize) }
-func (l logLine) validRespSize() bool         { return isValidSize(l.respSize) }
-func (l logLine) validReqProcTime() bool      { return isValidTime(l.reqProcTime) }
-func (l logLine) validUpstreamRespTime() bool { return isValidTime(l.upsRespTime) }
-func (l logLine) validSSLProto() bool         { return isValidSSLProto(l.sslProto) }
-func (l logLine) validSSLCipherSuite() bool   { return reCipherSuite.MatchString(l.sslCipherSuite) }
+func (l logLine) isEmpty() bool             { return !l.hasWebFields() && !l.hasCustomFields() }
+func (l logLine) hasCustomFields() bool     { return len(l.custom.values) > 0 }
+func (l logLine) hasWebFields() bool        { return l.lineWebFields != emptyWebFields }
+func (l logLine) hasVhost() bool            { return !isEmptyString(l.vhost) }
+func (l logLine) hasPort() bool             { return !isEmptyString(l.port) }
+func (l logLine) hasReqScheme() bool        { return !isEmptyString(l.reqScheme) }
+func (l logLine) hasReqClient() bool        { return !isEmptyString(l.reqClient) }
+func (l logLine) hasReqMethod() bool        { return !isEmptyString(l.reqMethod) }
+func (l logLine) hasReqURL() bool           { return !isEmptyString(l.reqURL) }
+func (l logLine) hasReqProto() bool         { return !isEmptyString(l.reqProto) }
+func (l logLine) hasRespCode() bool         { return !isEmptyNumber(l.respCode) }
+func (l logLine) hasReqSize() bool          { return !isEmptyNumber(l.reqSize) }
+func (l logLine) hasRespSize() bool         { return !isEmptyNumber(l.respSize) }
+func (l logLine) hasReqProcTime() bool      { return !isEmptyNumber(int(l.reqProcTime)) }
+func (l logLine) hasUpsRespTime() bool      { return !isEmptyNumber(int(l.upsRespTime)) }
+func (l logLine) hasSSLProto() bool         { return !isEmptyString(l.sslProto) }
+func (l logLine) hasSSLCipherSuite() bool   { return !isEmptyString(l.sslCipherSuite) }
+func (l logLine) validVhost() bool          { return reVhost.MatchString(l.vhost) }
+func (l logLine) validPort() bool           { return isValidPort(l.port) }
+func (l logLine) validReqScheme() bool      { return isValidScheme(l.reqScheme) }
+func (l logLine) validReqClient() bool      { return reClient.MatchString(l.reqClient) }
+func (l logLine) validReqMethod() bool      { return isValidReqMethod(l.reqMethod) }
+func (l logLine) validReqURL() bool         { return isValidURL(l.reqMethod, l.reqURL) }
+func (l logLine) validReqProto() bool       { return isValidReqProtoVer(l.reqProto) }
+func (l logLine) validRespCode() bool       { return isValidRespCode(l.respCode) }
+func (l logLine) validReqSize() bool        { return isValidSize(l.reqSize) }
+func (l logLine) validRespSize() bool       { return isValidSize(l.respSize) }
+func (l logLine) validReqProcTime() bool    { return isValidTime(l.reqProcTime) }
+func (l logLine) validUpsRespTime() bool    { return isValidTime(l.upsRespTime) }
+func (l logLine) validSSLProto() bool       { return isValidSSLProto(l.sslProto) }
+func (l logLine) validSSLCipherSuite() bool { return reCipherSuite.MatchString(l.sslCipherSuite) }
 
 func (l *logLine) reset() {
-	l.vhost = emptyString
-	l.port = emptyString
-	l.reqScheme = emptyString
-	l.reqClient = emptyString
-	l.reqMethod = emptyString
-	l.reqURL = emptyString
-	l.reqProto = emptyString
-	l.reqSize = emptyNumber
-	l.respStatusCode = emptyNumber
-	l.respSize = emptyNumber
-	l.reqProcTime = emptyNumber
-	l.upsRespTime = emptyNumber
-	l.sslProto = emptyString
-	l.sslCipherSuite = emptyString
+	l.lineWebFields = emptyWebFields
 	l.custom.values = l.custom.values[:0]
 }
 
@@ -480,6 +471,23 @@ var (
 	reClient      = regexp.MustCompile(`^([\da-f:.]+|localhost)$`)
 	reCipherSuite = regexp.MustCompile(`^[A-Z0-9-]+$`) // openssl -v
 )
+
+var emptyWebFields = lineWebFields{
+	vhost:          emptyString,
+	port:           emptyString,
+	reqScheme:      emptyString,
+	reqClient:      emptyString,
+	reqMethod:      emptyString,
+	reqURL:         emptyString,
+	reqProto:       emptyString,
+	reqSize:        emptyNumber,
+	reqProcTime:    emptyNumber,
+	respCode:       emptyNumber,
+	respSize:       emptyNumber,
+	upsRespTime:    emptyNumber,
+	sslProto:       emptyString,
+	sslCipherSuite: emptyString,
+}
 
 const (
 	emptyString = "__empty_string__"
@@ -548,7 +556,7 @@ func isValidScheme(scheme string) bool {
 	return scheme == "http" || scheme == "https"
 }
 
-func isValidRespStatusCode(code int) bool {
+func isValidRespCode(code int) bool {
 	// rfc7231
 	// Informational responses (100–199),
 	// Successful responses (200–299),

@@ -27,17 +27,17 @@ type (
 		Requests     metrics.Counter `stm:"requests"`
 		ReqUnmatched metrics.Counter `stm:"req_unmatched"`
 
-		RespStatusCode metrics.CounterVec `stm:"resp_status_code"`
-		Resp1xx        metrics.Counter    `stm:"resp_1xx"`
-		Resp2xx        metrics.Counter    `stm:"resp_2xx"`
-		Resp3xx        metrics.Counter    `stm:"resp_3xx"`
-		Resp4xx        metrics.Counter    `stm:"resp_4xx"`
-		Resp5xx        metrics.Counter    `stm:"resp_5xx"`
+		RespCode metrics.CounterVec `stm:"resp_code"`
+		Resp1xx  metrics.Counter    `stm:"resp_1xx"`
+		Resp2xx  metrics.Counter    `stm:"resp_2xx"`
+		Resp3xx  metrics.Counter    `stm:"resp_3xx"`
+		Resp4xx  metrics.Counter    `stm:"resp_4xx"`
+		Resp5xx  metrics.Counter    `stm:"resp_5xx"`
 
-		ReqTypeSuccess  metrics.Counter `stm:"req_type_success"`
-		ReqTypeRedirect metrics.Counter `stm:"req_type_redirect"`
-		ReqTypeBad      metrics.Counter `stm:"req_type_bad"`
-		ReqTypeError    metrics.Counter `stm:"req_type_error"`
+		ReqSuccess  metrics.Counter `stm:"req_success"`
+		ReqRedirect metrics.Counter `stm:"req_redirect"`
+		ReqBad      metrics.Counter `stm:"req_bad"`
+		ReqError    metrics.Counter `stm:"req_error"`
 
 		UniqueIPv4      metrics.UniqueCounter `stm:"uniq_ipv4"`
 		UniqueIPv6      metrics.UniqueCounter `stm:"uniq_ipv6"`
@@ -50,24 +50,24 @@ type (
 
 		ReqVhost          metrics.CounterVec `stm:"req_vhost"`
 		ReqPort           metrics.CounterVec `stm:"req_port"`
-		ReqHTTPScheme     metrics.Counter    `stm:"req_http_scheme"`
-		ReqHTTPSScheme    metrics.Counter    `stm:"req_https_scheme"`
-		ReqIPv4           metrics.Counter    `stm:"req_ipv4"`
-		ReqIPv6           metrics.Counter    `stm:"req_ipv6"`
 		ReqMethod         metrics.CounterVec `stm:"req_method"`
 		ReqURLPattern     metrics.CounterVec `stm:"req_url_ptn"`
 		ReqVersion        metrics.CounterVec `stm:"req_version"`
 		ReqSSLProto       metrics.CounterVec `stm:"req_ssl_proto"`
 		ReqSSLCipherSuite metrics.CounterVec `stm:"req_ssl_cipher_suite"`
+		ReqHTTPScheme     metrics.Counter    `stm:"req_http_scheme"`
+		ReqHTTPSScheme    metrics.Counter    `stm:"req_https_scheme"`
+		ReqIPv4           metrics.Counter    `stm:"req_ipv4"`
+		ReqIPv6           metrics.Counter    `stm:"req_ipv6"`
 
-		ReqCustomField  map[string]metrics.CounterVec `stm:"req_custom_field"`
+		ReqCustomField  map[string]metrics.CounterVec `stm:"custom_field"`
 		URLPatternStats map[string]*patternMetrics    `stm:"url_ptn"`
 	}
 	patternMetrics struct {
-		RespStatusCode metrics.CounterVec `stm:"resp_status_code"`
-		BytesSent      metrics.Counter    `stm:"bytes_sent"`
-		BytesReceived  metrics.Counter    `stm:"bytes_received"`
-		ReqProcTime    metrics.Summary    `stm:"req_proc_time"`
+		RespCode      metrics.CounterVec `stm:"resp_code"`
+		BytesSent     metrics.Counter    `stm:"bytes_sent"`
+		BytesReceived metrics.Counter    `stm:"bytes_received"`
+		ReqProcTime   metrics.Summary    `stm:"req_proc_time"`
 	}
 )
 
@@ -77,7 +77,7 @@ func newMetricsData(config Config) *metricsData {
 		ReqPort:           metrics.NewCounterVec(),
 		ReqMethod:         metrics.NewCounterVec(),
 		ReqVersion:        metrics.NewCounterVec(),
-		RespStatusCode:    metrics.NewCounterVec(),
+		RespCode:          metrics.NewCounterVec(),
 		ReqSSLProto:       metrics.NewCounterVec(),
 		ReqSSLCipherSuite: metrics.NewCounterVec(),
 		ReqProcTime:       newWebLogSummary(),
@@ -114,8 +114,8 @@ func newURLPatternStats(patterns []userPattern) map[string]*patternMetrics {
 	stats := make(map[string]*patternMetrics)
 	for _, p := range patterns {
 		stats[p.Name] = &patternMetrics{
-			RespStatusCode: metrics.NewCounterVec(),
-			ReqProcTime:    newWebLogSummary(),
+			RespCode:    metrics.NewCounterVec(),
+			ReqProcTime: newWebLogSummary(),
 		}
 	}
 	return stats

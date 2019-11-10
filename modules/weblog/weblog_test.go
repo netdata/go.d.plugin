@@ -20,98 +20,15 @@ import (
 )
 
 var (
-	testCSVCommonFormat = strings.Join([]string{
-		"$remote_addr",
-		`"$request"`,
-		"$status",
-		"$body_bytes_sent",
-	}, " ")
-
-	testCommonConfig = Config{
-		Parser: logs.ParserConfig{
-			LogType: logs.TypeCSV,
-			CSV: logs.CSVConfig{
-				Delimiter:        ' ',
-				TrimLeadingSpace: false,
-				Format:           testCSVCommonFormat,
-				CheckField:       checkCSVFormatField,
-			},
-		},
-		Path:           "testdata/common.log",
-		ExcludePath:    "",
-		URLPatterns:    nil,
-		CustomFields:   nil,
-		Histogram:      nil,
-		GroupRespCodes: false,
-	}
-)
-
-var (
-	testCSVFullFormat = strings.Join([]string{
-		"$host:$server_port",
-		"$scheme",
-		"$remote_addr",
-		"$ssl_protocol",
-		"$ssl_cipher",
-		`"$request"`,
-		"$status",
-		"$body_bytes_sent",
-		"$request_length",
-		"$request_time",
-		"$upstream_response_time",
-		"$custom_one",
-		"$custom_two",
-	}, " ")
-
-	testFullConfig = Config{
-		Parser: logs.ParserConfig{
-			LogType: logs.TypeCSV,
-			CSV: logs.CSVConfig{
-				Delimiter:        ' ',
-				TrimLeadingSpace: false,
-				Format:           testCSVFullFormat,
-				CheckField:       checkCSVFormatField,
-			},
-		},
-		Path:        "testdata/full.log",
-		ExcludePath: "",
-		URLPatterns: []userPattern{
-			{Name: "com", Match: "~ com$"},
-			{Name: "org", Match: "~ org$"},
-			{Name: "net", Match: "~ net$"},
-			{Name: "not_match", Match: "* !*"},
-		},
-		CustomFields: []customField{
-			{
-				Name: "custom_one",
-				Patterns: []userPattern{
-					{Name: "dark", Match: "= dark"},
-					{Name: "light", Match: "= light"},
-					{Name: "not_match", Match: "* !*"},
-				},
-			},
-			{
-				Name: "custom_two",
-				Patterns: []userPattern{
-					{Name: "beer", Match: "= beer"},
-					{Name: "wine", Match: "= wine"},
-					{Name: "not_match", Match: "* !*"},
-				},
-			},
-		},
-		Histogram:      metrics.DefBuckets,
-		GroupRespCodes: true,
-	}
-)
-
-var (
 	testCommonLog, _ = ioutil.ReadFile("testdata/common.log")
 	testFullLog, _   = ioutil.ReadFile("testdata/full.log")
+	testCustomLog, _ = ioutil.ReadFile("testdata/custom.log")
 )
 
 func Test_readTestData(t *testing.T) {
 	assert.NotNil(t, testFullLog)
 	assert.NotNil(t, testCommonLog)
+	assert.NotNil(t, testCustomLog)
 }
 
 func TestNew(t *testing.T) {
@@ -150,12 +67,12 @@ func TestWebLog_Collect(t *testing.T) {
 	expected := map[string]int64{
 		"bytes_received":                            1384573,
 		"bytes_sent":                                1352758,
-		"req_custom_field_custom_one_dark":          230,
-		"req_custom_field_custom_one_light":         225,
-		"req_custom_field_custom_one_not_match":     0,
-		"req_custom_field_custom_two_beer":          223,
-		"req_custom_field_custom_two_not_match":     0,
-		"req_custom_field_custom_two_wine":          232,
+		"custom_field_drink_beer":                   0,
+		"custom_field_drink_wine":                   0,
+		"custom_field_side_dark":                    0,
+		"custom_field_side_light":                   0,
+		"req_bad":                                   54,
+		"req_error":                                 0,
 		"req_http_scheme":                           236,
 		"req_https_scheme":                          219,
 		"req_ipv4":                                  275,
@@ -186,6 +103,7 @@ func TestWebLog_Collect(t *testing.T) {
 		"req_proc_time_max":                         498,
 		"req_proc_time_min":                         2,
 		"req_proc_time_sum":                         112018,
+		"req_redirect":                              101,
 		"req_ssl_cipher_suite_AES256-SHA":           127,
 		"req_ssl_cipher_suite_DHE-RSA-AES256-SHA":   127,
 		"req_ssl_cipher_suite_ECDHE-RSA-AES256-SHA": 105,
@@ -196,10 +114,7 @@ func TestWebLog_Collect(t *testing.T) {
 		"req_ssl_proto_TLSv1.1":                     73,
 		"req_ssl_proto_TLSv1.2":                     81,
 		"req_ssl_proto_TLSv1.3":                     75,
-		"req_type_bad":                              54,
-		"req_type_error":                            0,
-		"req_type_redirect":                         101,
-		"req_type_success":                          300,
+		"req_success":                               300,
 		"req_unmatched":                             45,
 		"req_url_ptn_com":                           116,
 		"req_url_ptn_net":                           107,
@@ -219,14 +134,14 @@ func TestWebLog_Collect(t *testing.T) {
 		"resp_3xx":                                  101,
 		"resp_4xx":                                  100,
 		"resp_5xx":                                  0,
-		"resp_status_code_100":                      68,
-		"resp_status_code_101":                      55,
-		"resp_status_code_200":                      66,
-		"resp_status_code_201":                      65,
-		"resp_status_code_300":                      51,
-		"resp_status_code_301":                      50,
-		"resp_status_code_400":                      54,
-		"resp_status_code_401":                      46,
+		"resp_code_100":                             68,
+		"resp_code_101":                             55,
+		"resp_code_200":                             66,
+		"resp_code_201":                             65,
+		"resp_code_300":                             51,
+		"resp_code_301":                             50,
+		"resp_code_400":                             54,
+		"resp_code_401":                             46,
 		"uniq_ipv4":                                 3,
 		"uniq_ipv6":                                 2,
 		"upstream_resp_time_avg":                    241,
@@ -254,14 +169,14 @@ func TestWebLog_Collect(t *testing.T) {
 		"url_ptn_com_req_proc_time_max":             493,
 		"url_ptn_com_req_proc_time_min":             8,
 		"url_ptn_com_req_proc_time_sum":             28118,
-		"url_ptn_com_resp_status_code_100":          19,
-		"url_ptn_com_resp_status_code_101":          10,
-		"url_ptn_com_resp_status_code_200":          16,
-		"url_ptn_com_resp_status_code_201":          18,
-		"url_ptn_com_resp_status_code_300":          13,
-		"url_ptn_com_resp_status_code_301":          11,
-		"url_ptn_com_resp_status_code_400":          15,
-		"url_ptn_com_resp_status_code_401":          14,
+		"url_ptn_com_resp_code_100":                 19,
+		"url_ptn_com_resp_code_101":                 10,
+		"url_ptn_com_resp_code_200":                 16,
+		"url_ptn_com_resp_code_201":                 18,
+		"url_ptn_com_resp_code_300":                 13,
+		"url_ptn_com_resp_code_301":                 11,
+		"url_ptn_com_resp_code_400":                 15,
+		"url_ptn_com_resp_code_401":                 14,
 		"url_ptn_net_bytes_received":                331553,
 		"url_ptn_net_bytes_sent":                    316867,
 		"url_ptn_net_req_proc_time_avg":             261,
@@ -269,14 +184,14 @@ func TestWebLog_Collect(t *testing.T) {
 		"url_ptn_net_req_proc_time_max":             498,
 		"url_ptn_net_req_proc_time_min":             11,
 		"url_ptn_net_req_proc_time_sum":             28006,
-		"url_ptn_net_resp_status_code_100":          12,
-		"url_ptn_net_resp_status_code_101":          12,
-		"url_ptn_net_resp_status_code_200":          16,
-		"url_ptn_net_resp_status_code_201":          18,
-		"url_ptn_net_resp_status_code_300":          12,
-		"url_ptn_net_resp_status_code_301":          13,
-		"url_ptn_net_resp_status_code_400":          12,
-		"url_ptn_net_resp_status_code_401":          12,
+		"url_ptn_net_resp_code_100":                 12,
+		"url_ptn_net_resp_code_101":                 12,
+		"url_ptn_net_resp_code_200":                 16,
+		"url_ptn_net_resp_code_201":                 18,
+		"url_ptn_net_resp_code_300":                 12,
+		"url_ptn_net_resp_code_301":                 13,
+		"url_ptn_net_resp_code_400":                 12,
+		"url_ptn_net_resp_code_401":                 12,
 		"url_ptn_not_match_bytes_received":          0,
 		"url_ptn_not_match_bytes_sent":              0,
 		"url_ptn_not_match_req_proc_time_avg":       0,
@@ -291,14 +206,14 @@ func TestWebLog_Collect(t *testing.T) {
 		"url_ptn_org_req_proc_time_max":             498,
 		"url_ptn_org_req_proc_time_min":             4,
 		"url_ptn_org_req_proc_time_sum":             25884,
-		"url_ptn_org_resp_status_code_100":          16,
-		"url_ptn_org_resp_status_code_101":          14,
-		"url_ptn_org_resp_status_code_200":          15,
-		"url_ptn_org_resp_status_code_201":          12,
-		"url_ptn_org_resp_status_code_300":          14,
-		"url_ptn_org_resp_status_code_301":          15,
-		"url_ptn_org_resp_status_code_400":          14,
-		"url_ptn_org_resp_status_code_401":          9,
+		"url_ptn_org_resp_code_100":                 16,
+		"url_ptn_org_resp_code_101":                 14,
+		"url_ptn_org_resp_code_200":                 15,
+		"url_ptn_org_resp_code_201":                 12,
+		"url_ptn_org_resp_code_300":                 14,
+		"url_ptn_org_resp_code_301":                 15,
+		"url_ptn_org_resp_code_400":                 14,
+		"url_ptn_org_resp_code_401":                 9,
 	}
 
 	assert.Equal(t, expected, weblog.Collect())
@@ -309,14 +224,16 @@ func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
 	weblog := prepareWebLogCollectCommon(t)
 
 	expected := map[string]int64{
-		"bytes_received":                    1523326,
+		"bytes_received":                    1426307,
 		"bytes_sent":                        0,
+		"req_bad":                           66,
+		"req_error":                         0,
 		"req_http_scheme":                   0,
 		"req_https_scheme":                  0,
-		"req_ipv4":                          296,
-		"req_ipv6":                          204,
-		"req_method_GET":                    169,
-		"req_method_HEAD":                   165,
+		"req_ipv4":                          265,
+		"req_ipv6":                          192,
+		"req_method_GET":                    132,
+		"req_method_HEAD":                   159,
 		"req_method_POST":                   166,
 		"req_proc_time_avg":                 0,
 		"req_proc_time_count":               0,
@@ -336,28 +253,26 @@ func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
 		"req_proc_time_max":                 0,
 		"req_proc_time_min":                 0,
 		"req_proc_time_sum":                 0,
-		"req_type_bad":                      76,
-		"req_type_error":                    0,
-		"req_type_redirect":                 126,
-		"req_type_success":                  298,
-		"req_unmatched":                     50,
-		"req_version_1.1":                   186,
-		"req_version_2":                     152,
-		"req_version_2.0":                   162,
-		"requests":                          550,
-		"resp_1xx":                          112,
-		"resp_2xx":                          125,
-		"resp_3xx":                          126,
-		"resp_4xx":                          137,
+		"req_redirect":                      97,
+		"req_success":                       294,
+		"req_unmatched":                     43,
+		"req_version_1.1":                   157,
+		"req_version_2":                     144,
+		"req_version_2.0":                   156,
+		"requests":                          500,
+		"resp_1xx":                          130,
+		"resp_2xx":                          103,
+		"resp_3xx":                          97,
+		"resp_4xx":                          127,
 		"resp_5xx":                          0,
-		"resp_status_code_100":              52,
-		"resp_status_code_101":              60,
-		"resp_status_code_200":              64,
-		"resp_status_code_201":              61,
-		"resp_status_code_300":              68,
-		"resp_status_code_301":              58,
-		"resp_status_code_400":              76,
-		"resp_status_code_401":              61,
+		"resp_code_100":                     66,
+		"resp_code_101":                     64,
+		"resp_code_200":                     50,
+		"resp_code_201":                     53,
+		"resp_code_300":                     47,
+		"resp_code_301":                     50,
+		"resp_code_400":                     66,
+		"resp_code_401":                     61,
 		"uniq_ipv4":                         3,
 		"uniq_ipv6":                         2,
 		"upstream_resp_time_avg":            0,
@@ -384,32 +299,77 @@ func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
 	testCharts(t, weblog)
 }
 
-func prepareWebLogCollectFull(t *testing.T) *WebLog {
-	t.Helper()
-	weblog := New()
-	weblog.Config = testFullConfig
-	require.True(t, weblog.Init())
+func TestWebLog_Collect_CustomLogs(t *testing.T) {
+	weblog := prepareWebLogCollectCustom(t)
 
-	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testFullLog))
-	require.NoError(t, err)
-	weblog.parser = p
-	return weblog
-}
+	expected := map[string]int64{
+		"bytes_received":                    0,
+		"bytes_sent":                        0,
+		"custom_field_drink_beer":           52,
+		"custom_field_drink_wine":           40,
+		"custom_field_side_dark":            46,
+		"custom_field_side_light":           46,
+		"req_bad":                           0,
+		"req_error":                         0,
+		"req_http_scheme":                   0,
+		"req_https_scheme":                  0,
+		"req_ipv4":                          0,
+		"req_ipv6":                          0,
+		"req_proc_time_avg":                 0,
+		"req_proc_time_count":               0,
+		"req_proc_time_hist_bucket_1":       0,
+		"req_proc_time_hist_bucket_10":      0,
+		"req_proc_time_hist_bucket_11":      0,
+		"req_proc_time_hist_bucket_2":       0,
+		"req_proc_time_hist_bucket_3":       0,
+		"req_proc_time_hist_bucket_4":       0,
+		"req_proc_time_hist_bucket_5":       0,
+		"req_proc_time_hist_bucket_6":       0,
+		"req_proc_time_hist_bucket_7":       0,
+		"req_proc_time_hist_bucket_8":       0,
+		"req_proc_time_hist_bucket_9":       0,
+		"req_proc_time_hist_count":          0,
+		"req_proc_time_hist_sum":            0,
+		"req_proc_time_max":                 0,
+		"req_proc_time_min":                 0,
+		"req_proc_time_sum":                 0,
+		"req_redirect":                      0,
+		"req_success":                       0,
+		"req_unmatched":                     8,
+		"requests":                          100,
+		"resp_1xx":                          0,
+		"resp_2xx":                          0,
+		"resp_3xx":                          0,
+		"resp_4xx":                          0,
+		"resp_5xx":                          0,
+		"uniq_ipv4":                         0,
+		"uniq_ipv6":                         0,
+		"upstream_resp_time_avg":            0,
+		"upstream_resp_time_count":          0,
+		"upstream_resp_time_hist_bucket_1":  0,
+		"upstream_resp_time_hist_bucket_10": 0,
+		"upstream_resp_time_hist_bucket_11": 0,
+		"upstream_resp_time_hist_bucket_2":  0,
+		"upstream_resp_time_hist_bucket_3":  0,
+		"upstream_resp_time_hist_bucket_4":  0,
+		"upstream_resp_time_hist_bucket_5":  0,
+		"upstream_resp_time_hist_bucket_6":  0,
+		"upstream_resp_time_hist_bucket_7":  0,
+		"upstream_resp_time_hist_bucket_8":  0,
+		"upstream_resp_time_hist_bucket_9":  0,
+		"upstream_resp_time_hist_count":     0,
+		"upstream_resp_time_hist_sum":       0,
+		"upstream_resp_time_max":            0,
+		"upstream_resp_time_min":            0,
+		"upstream_resp_time_sum":            0,
+	}
 
-func prepareWebLogCollectCommon(t *testing.T) *WebLog {
-	t.Helper()
-	weblog := New()
-	weblog.Config = testCommonConfig
-	require.True(t, weblog.Init())
-
-	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testCommonLog))
-	require.NoError(t, err)
-	weblog.parser = p
-	return weblog
+	assert.Equal(t, expected, weblog.Collect())
+	testCharts(t, weblog)
 }
 
 func testCharts(t *testing.T, w *WebLog) {
-	testRespStatusCodeChart(t, w)
+	testRespCodeChart(t, w)
 	testReqVhostChart(t, w)
 	testReqPortChart(t, w)
 	testReqSchemeChart(t, w)
@@ -418,12 +378,12 @@ func testCharts(t *testing.T, w *WebLog) {
 	testReqClientCharts(t, w)
 	testBandwidthChart(t, w)
 	testReqURLPatternChart(t, w)
-	testReqCustomFieldCharts(t, w)
 	testURLPatternStatsCharts(t, w)
 	testReqProcTimeCharts(t, w)
 	testUpsRespTimeCharts(t, w)
 	testSSLProtoChart(t, w)
 	testSSLCipherSuiteChart(t, w)
+	//testReqCustomFieldCharts(t, w)
 }
 
 func testReqProcTimeCharts(t *testing.T, w *WebLog) {
@@ -605,7 +565,7 @@ func testSSLCipherSuiteChart(t *testing.T, w *WebLog) {
 
 func testReqCustomFieldCharts(t *testing.T, w *WebLog) {
 	for _, cf := range w.CustomFields {
-		id := fmt.Sprintf(reqByCustomPattern.ID, cf.Name)
+		id := fmt.Sprintf(reqByCustomFieldPattern.ID, cf.Name)
 		chart := w.Charts().Get(id)
 		assert.NotNilf(t, chart, "chart '%s' is not created", id)
 		if chart == nil {
@@ -613,7 +573,7 @@ func testReqCustomFieldCharts(t *testing.T, w *WebLog) {
 		}
 
 		for _, p := range cf.Patterns {
-			id := fmt.Sprintf("req_custom_field_%s_%s", cf.Name, p.Name)
+			id := fmt.Sprintf("custom_field_%s_%s", cf.Name, p.Name)
 			assert.True(t, chart.HasDim(id), "chart '%s' has no dim for '%s' pattern, expected '%s'", chart.ID, p, id)
 		}
 	}
@@ -633,8 +593,8 @@ func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
 		if !ok {
 			continue
 		}
-		for v := range stats.RespStatusCode {
-			id := fmt.Sprintf("url_ptn_%s_resp_status_code_%s", p.Name, v)
+		for v := range stats.RespCode {
+			id := fmt.Sprintf("url_ptn_%s_resp_code_%s", p.Name, v)
 			assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' code, expected '%s'", chartID, v, id)
 		}
 	}
@@ -658,22 +618,30 @@ func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
 	}
 }
 
-func testRespStatusCodeChart(t *testing.T, w *WebLog) {
+func testRespCodeChart(t *testing.T, w *WebLog) {
+	if isEmptyCounterVec(w.mx.RespCode) {
+		if !w.GroupRespCodes {
+			chart := w.Charts().Get(respCodes.ID)
+			assert.Nilf(t, chart, "chart '%s' is not created", respCodes.ID)
+			return
+		}
+	}
+
 	if !w.GroupRespCodes {
 		chart := w.Charts().Get(respCodes.ID)
 		assert.NotNilf(t, chart, "chart '%s' is not created", respCodes.ID)
 		if chart == nil {
 			return
 		}
-		for v := range w.mx.RespStatusCode {
-			id := "resp_status_code_" + v
+		for v := range w.mx.RespCode {
+			id := "resp_code_" + v
 			assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' code, expected '%s'", chart.ID, v, id)
 		}
 		return
 	}
 
 	findCodes := func(class string) (codes []string) {
-		for v := range w.mx.RespStatusCode {
+		for v := range w.mx.RespCode {
 			if v[:1] == class {
 				codes = append(codes, v)
 			}
@@ -699,11 +667,11 @@ func testRespStatusCodeChart(t *testing.T, w *WebLog) {
 			return
 		}
 		for _, v := range codes {
-			id := "resp_status_code_" + v
+			id := "resp_code_" + v
 			assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' code, expected '%s'", chartID, v, id)
 		}
 	}
-	assert.Equal(t, len(w.mx.RespStatusCode), n)
+	assert.Equal(t, len(w.mx.RespCode), n)
 }
 
 var (
@@ -721,6 +689,160 @@ func isEmptyCounterVec(cv metrics.CounterVec) bool {
 		}
 	}
 	return true
+}
+
+func prepareWebLogCollectFull(t *testing.T) *WebLog {
+	t.Helper()
+	format := strings.Join([]string{
+		"$host:$server_port",
+		"$scheme",
+		"$remote_addr",
+		"$ssl_protocol",
+		"$ssl_cipher",
+		`"$request"`,
+		"$status",
+		"$body_bytes_sent",
+		"$request_length",
+		"$request_time",
+		"$upstream_response_time",
+		"$custom_one",
+		"$custom_two",
+	}, " ")
+
+	cfg := Config{
+		Parser: logs.ParserConfig{
+			LogType: logs.TypeCSV,
+			CSV: logs.CSVConfig{
+				FieldsPerRecord:  -1,
+				Delimiter:        ' ',
+				TrimLeadingSpace: false,
+				Format:           format,
+				CheckField:       checkCSVFormatField,
+			},
+		},
+		Path:        "testdata/full.log",
+		ExcludePath: "",
+		URLPatterns: []userPattern{
+			{Name: "com", Match: "~ com$"},
+			{Name: "org", Match: "~ org$"},
+			{Name: "net", Match: "~ net$"},
+			{Name: "not_match", Match: "* !*"},
+		},
+		CustomFields: []customField{
+			{
+				Name: "side",
+				Patterns: []userPattern{
+					{Name: "dark", Match: "= dark"},
+					{Name: "light", Match: "= light"},
+				},
+			},
+			{
+				Name: "drink",
+				Patterns: []userPattern{
+					{Name: "beer", Match: "= beer"},
+					{Name: "wine", Match: "= wine"},
+				},
+			},
+		},
+		Histogram:      metrics.DefBuckets,
+		GroupRespCodes: true,
+	}
+	weblog := New()
+	weblog.Config = cfg
+	require.True(t, weblog.Init())
+
+	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testFullLog))
+	require.NoError(t, err)
+	weblog.parser = p
+	return weblog
+}
+
+func prepareWebLogCollectCommon(t *testing.T) *WebLog {
+	t.Helper()
+	format := strings.Join([]string{
+		"$remote_addr",
+		`"$request"`,
+		"$status",
+		"$body_bytes_sent",
+	}, " ")
+
+	cfg := Config{
+		Parser: logs.ParserConfig{
+			LogType: logs.TypeCSV,
+			CSV: logs.CSVConfig{
+				FieldsPerRecord:  -1,
+				Delimiter:        ' ',
+				TrimLeadingSpace: false,
+				Format:           format,
+				CheckField:       checkCSVFormatField,
+			},
+		},
+		Path:           "testdata/common.log",
+		ExcludePath:    "",
+		URLPatterns:    nil,
+		CustomFields:   nil,
+		Histogram:      nil,
+		GroupRespCodes: false,
+	}
+
+	weblog := New()
+	weblog.Config = cfg
+	require.True(t, weblog.Init())
+
+	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testCommonLog))
+	require.NoError(t, err)
+	weblog.parser = p
+	return weblog
+}
+
+func prepareWebLogCollectCustom(t *testing.T) *WebLog {
+	t.Helper()
+	format := strings.Join([]string{
+		"$side",
+		"$drink",
+	}, " ")
+
+	cfg := Config{
+		Parser: logs.ParserConfig{
+			LogType: logs.TypeCSV,
+			CSV: logs.CSVConfig{
+				FieldsPerRecord:  2,
+				Delimiter:        ' ',
+				TrimLeadingSpace: false,
+				Format:           format,
+				CheckField:       checkCSVFormatField,
+			},
+		},
+		CustomFields: []customField{
+			{
+				Name: "side",
+				Patterns: []userPattern{
+					{Name: "dark", Match: "= dark"},
+					{Name: "light", Match: "= light"},
+				},
+			},
+			{
+				Name: "drink",
+				Patterns: []userPattern{
+					{Name: "beer", Match: "= beer"},
+					{Name: "wine", Match: "= wine"},
+				},
+			},
+		},
+		Path:           "testdata/custom.log",
+		ExcludePath:    "",
+		URLPatterns:    nil,
+		Histogram:      nil,
+		GroupRespCodes: false,
+	}
+	weblog := New()
+	weblog.Config = cfg
+	require.True(t, weblog.Init())
+
+	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testCustomLog))
+	require.NoError(t, err)
+	weblog.parser = p
+	return weblog
 }
 
 // generateLogs is used to populate 'testdata/full.log'

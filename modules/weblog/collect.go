@@ -57,11 +57,11 @@ func (w *WebLog) collectLogLines() (int, error) {
 			continue
 		}
 		n++
-		if !w.line.hasRespStatusCode() {
+		if w.line.isEmpty() {
 			w.collectUnmatched()
-			continue
+		} else {
+			w.collectLogLine()
 		}
-		w.collectLogLine()
 	}
 }
 
@@ -74,14 +74,14 @@ func (w *WebLog) collectLogLine() {
 	w.collectReqMethod()
 	w.collectReqURL()
 	w.collectReqProto()
-	w.collectRespStatusCode()
+	w.collectRespCode()
 	w.collectReqSize()
 	w.collectRespSize()
 	w.collectReqProcTime()
-	w.collectUpstreamRespTime()
+	w.collectUpsRespTime()
 	w.collectSSLProto()
 	w.collectSSLCipherSuite()
-	w.collectCustom()
+	w.collectCustomFields()
 }
 
 func (w *WebLog) collectUnmatched() {
@@ -174,11 +174,11 @@ func (w *WebLog) collectReqProto() {
 	c.Inc()
 }
 
-func (w *WebLog) collectRespStatusCode() {
-	if !w.line.hasRespStatusCode() {
+func (w *WebLog) collectRespCode() {
+	if !w.line.hasRespCode() {
 		return
 	}
-	code := w.line.respStatusCode
+	code := w.line.respCode
 	//  1xx (Informational): The request was received, continuing process.
 	//  2xx (Successful): The request was successfully received, understood, and accepted.
 	//  3xx (Redirection): Further action needs to be taken in order to complete the request.
@@ -187,13 +187,13 @@ func (w *WebLog) collectRespStatusCode() {
 	// TODO: this grouping is confusing since it uses terms from rfc7231
 	switch {
 	case code >= 100 && code < 300, code == 304, code == 401:
-		w.mx.ReqTypeSuccess.Inc()
+		w.mx.ReqSuccess.Inc()
 	case code >= 300 && code < 400:
-		w.mx.ReqTypeRedirect.Inc()
+		w.mx.ReqRedirect.Inc()
 	case code >= 400 && code < 500:
-		w.mx.ReqTypeBad.Inc()
+		w.mx.ReqBad.Inc()
 	case code >= 500 && code < 600:
-		w.mx.ReqTypeError.Inc()
+		w.mx.ReqError.Inc()
 	}
 
 	switch code / 100 {
@@ -210,7 +210,7 @@ func (w *WebLog) collectRespStatusCode() {
 	}
 
 	codeStr := strconv.Itoa(code)
-	c, ok := w.mx.RespStatusCode.GetP(codeStr)
+	c, ok := w.mx.RespCode.GetP(codeStr)
 	if !ok {
 		w.addDimToRespCodesChart(codeStr)
 	}
@@ -242,8 +242,8 @@ func (w *WebLog) collectReqProcTime() {
 	w.mx.ReqProcTimeHist.Observe(w.line.reqProcTime)
 }
 
-func (w *WebLog) collectUpstreamRespTime() {
-	if !w.line.hasUpstreamRespTime() {
+func (w *WebLog) collectUpsRespTime() {
+	if !w.line.hasUpsRespTime() {
 		return
 	}
 	w.mx.UpsRespTime.Observe(w.line.upsRespTime)
@@ -280,9 +280,9 @@ func (w *WebLog) collectURLPatternStats(name string) {
 	if !ok {
 		return
 	}
-	if w.line.hasRespStatusCode() {
-		status := strconv.Itoa(w.line.respStatusCode)
-		c, ok := v.RespStatusCode.GetP(status)
+	if w.line.hasRespCode() {
+		status := strconv.Itoa(w.line.respCode)
+		c, ok := v.RespCode.GetP(status)
 		if !ok {
 			w.addDimToURLPatternRespCodesChart(name, status)
 		}
@@ -302,25 +302,20 @@ func (w *WebLog) collectURLPatternStats(name string) {
 	}
 }
 
-func (w *WebLog) collectCustom() {
-	if !w.line.hasCustom() {
+func (w *WebLog) collectCustomFields() {
+	if !w.line.hasCustomFields() {
 		return
 	}
 	for _, cv := range w.line.custom.values {
-		patterns, ok := w.customFields[cv.name]
-		if !ok {
-			continue
-		}
-		for _, p := range patterns {
-			if !p.MatchString(cv.value) {
+		for _, pattern := range w.customFields[cv.name] {
+			if !pattern.MatchString(cv.value) {
 				continue
 			}
 			v, ok := w.mx.ReqCustomField[cv.name]
-			// TODO: this cannot happen
 			if !ok {
 				break
 			}
-			c, _ := v.GetP(p.name)
+			c, _ := v.GetP(pattern.name)
 			c.Inc()
 			break
 		}
