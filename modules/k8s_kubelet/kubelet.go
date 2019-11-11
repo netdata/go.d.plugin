@@ -1,17 +1,13 @@
 package k8s_kubelet
 
 import (
+	"io/ioutil"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
-)
-
-const (
-	defaultURL         = "http://127.0.0.1:10255/metrics"
-	defaultHTTPTimeout = time.Second * 2
 )
 
 func init() {
@@ -30,57 +26,58 @@ func init() {
 func New() *Kubelet {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				UserURL: "http://127.0.0.1:10255/metrics",
+				Headers: make(map[string]string),
+			},
+			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
 		},
+		TokenPath: "/var/run/secrets/kubernetes.io/serviceaccount/token",
 	}
 
 	return &Kubelet{
-		Config:                        config,
-		charts:                        charts.Copy(),
-		collectedVolumeManagerPlugins: make(map[string]bool),
+		Config:             config,
+		charts:             charts.Copy(),
+		collectedVMPlugins: make(map[string]bool),
 	}
 }
 
-// Config is the DockerEngine module configuration.
-type Config struct {
-	web.HTTP `yaml:",inline"`
-}
+type (
+	Config struct {
+		web.HTTP  `yaml:",inline"`
+		TokenPath string `yaml:"token_path"`
+	}
 
-// Kubelet Kubelet module.
-type Kubelet struct {
-	module.Base
-	Config `yaml:",inline"`
+	Kubelet struct {
+		module.Base
+		Config `yaml:",inline"`
 
-	prom   prometheus.Prometheus
-	charts *Charts
-	// volume_manager_total_volumes
-	collectedVolumeManagerPlugins map[string]bool
-}
+		prom   prometheus.Prometheus
+		charts *Charts
+		// volume_manager_total_volumes
+		collectedVMPlugins map[string]bool
+	}
+)
 
 // Cleanup makes cleanup.
 func (Kubelet) Cleanup() {}
 
 // Init makes initialization.
 func (k *Kubelet) Init() bool {
-	if err := k.ParseUserURL(); err != nil {
-		k.Errorf("error on parsing url '%s' : %v", k.UserURL, err)
-		return false
-	}
-
-	if k.URL.Host == "" {
-		k.Error("URL is not set")
-		return false
+	b, err := ioutil.ReadFile(k.TokenPath)
+	if err != nil {
+		k.Warningf("error on reading service account token from '%s': %v", k.TokenPath, err)
+	} else {
+		k.Request.Headers["Authorization"] = "Bearer " + string(b)
 	}
 
 	client, err := web.NewHTTPClient(k.Client)
 	if err != nil {
-		k.Errorf("error on creating http client : %v", err)
+		k.Errorf("error on creating http client: %v", err)
 		return false
 	}
 
 	k.prom = prometheus.New(client, k.Request)
-
 	return true
 }
 
