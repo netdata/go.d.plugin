@@ -10,33 +10,54 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var testMetrics, _ = ioutil.ReadFile("testdata/metrics.txt")
+var (
+	testMetricsData, _ = ioutil.ReadFile("testdata/metrics.txt")
+	testTokenData, _   = ioutil.ReadFile("testdata/token.txt")
+)
+
+func Test_readTestData(t *testing.T) {
+	assert.NotNil(t, testMetricsData)
+	assert.NotNil(t, testTokenData)
+}
 
 func TestNew(t *testing.T) {
 	job := New()
 
 	assert.IsType(t, (*Kubelet)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
-	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
-func TestKubeProxy_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
+func TestKubelet_Charts(t *testing.T) {
+	assert.NotNil(t, New().Charts())
+}
 
-func TestKubeProxy_Cleanup(t *testing.T) { New().Cleanup() }
+func TestKubelet_Cleanup(t *testing.T) {
+	New().Cleanup()
+}
 
-func TestKubeProxy_Init(t *testing.T) { assert.True(t, New().Init()) }
+func TestKubelet_Init(t *testing.T) {
+	assert.True(t, New().Init())
+}
 
-func TestKubeProxy_InitNG(t *testing.T) {
+func TestKubelet_Init_ReadServiceAccountToken(t *testing.T) {
 	job := New()
-	job.UserURL = ""
+	job.TokenPath = "testdata/token.txt"
+
+	assert.True(t, job.Init())
+	assert.Equal(t, "Bearer "+string(testTokenData), job.Request.Headers["Authorization"])
+}
+
+func TestKubelet_InitErrorOnCreatingClientWrongTLSCA(t *testing.T) {
+	job := New()
+	job.ClientTLSConfig.TLSCA = "testdata/tls"
+
 	assert.False(t, job.Init())
 }
 
-func TestKubeProxy_Check(t *testing.T) {
+func TestKubelet_Check(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(testMetrics)
+				_, _ = w.Write(testMetricsData)
 			}))
 	defer ts.Close()
 
@@ -46,18 +67,18 @@ func TestKubeProxy_Check(t *testing.T) {
 	assert.True(t, job.Check())
 }
 
-func TestKubeProxy_CheckNG(t *testing.T) {
+func TestKubelet_Check_ConnectionRefused(t *testing.T) {
 	job := New()
 	job.UserURL = "http://127.0.0.1:38001/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
 
-func TestKubeProxy_Collect(t *testing.T) {
+func TestKubelet_Collect(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write(testMetrics)
+				_, _ = w.Write(testMetricsData)
 			}))
 	defer ts.Close()
 
@@ -65,16 +86,6 @@ func TestKubeProxy_Collect(t *testing.T) {
 	job.UserURL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	require.True(t, job.Check())
-
-	//m := job.Collect()
-	//l := make([]string, 0)
-	//for k := range m {
-	//	l = append(l, k)
-	//}
-	//sort.Strings(l)
-	//for _, v := range l {
-	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", v, m[v]))
-	//}
 
 	expected := map[string]int64{
 		"apiserver_audit_requests_rejected_total":                                    0,
@@ -162,7 +173,7 @@ func TestKubeProxy_Collect(t *testing.T) {
 	assert.Equal(t, expected, job.Collect())
 }
 
-func TestKubeProxy_InvalidData(t *testing.T) {
+func TestKubelet_Collect_ReceiveInvalidResponse(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
@@ -176,7 +187,7 @@ func TestKubeProxy_InvalidData(t *testing.T) {
 	assert.False(t, job.Check())
 }
 
-func TestKubeProxy_404(t *testing.T) {
+func TestKubelet_Collect_Receive404(t *testing.T) {
 	ts := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
