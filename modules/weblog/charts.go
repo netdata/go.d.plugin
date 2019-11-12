@@ -478,15 +478,6 @@ func newReqByCustomFieldPatternChart(f customField) *Chart {
 	return chart
 }
 
-func newMatchesByCustomFieldPatternCharts(fields []customField) Charts {
-	charts := Charts{}
-	for _, f := range fields {
-		chart := newMatchesByCustomFieldPatternChart(f)
-		check(charts.Add(chart))
-	}
-	return charts
-}
-
 func newMatchesByCustomFieldPatternChart(f customField) *Chart {
 	chart := matchesByCustomFieldPattern.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, f.Name)
@@ -533,226 +524,218 @@ func newURLPatternReqProcTimeChart(name string) *Chart {
 	return chart
 }
 
-// TODO: fix
-func (w WebLog) createCharts(line *logLine) (*Charts, error) {
+func (w *WebLog) createCharts(line *logLine) error {
+	w.charts = nil
 	if w.customLog {
-		return w.createCustomCharts(), nil
+		return w.createCustomCharts()
 	}
-	return w.createWebCharts(line), nil
+	return w.createWebCharts(line)
 }
 
-func (w WebLog) createCustomCharts() *Charts {
-	charts := Charts{}
-	_ = charts.Add(newMatchesByCustomFieldPatternCharts(w.CustomFields)...)
-	return &charts
-}
-
-// TODO: this method is hard to read, should be refactored/simplified
-func (w WebLog) createWebCharts(line *logLine) *Charts {
-	// Following charts are created during runtime:
-	//   - reqBySSLProto, reqBySSLCipherSuite - it is likely line has no SSL stuff at this moment
-	charts := Charts{
+func (w *WebLog) createCustomCharts() error {
+	// TODO: fix, shouldnt be requests
+	charts := &Charts{
 		reqTotal.Copy(),
 		reqExcluded.Copy(),
 	}
-	if line.hasRespCode() {
-		check(charts.Add(reqTypes.Copy()))
-		check(charts.Add(respCodeClass.Copy()))
-		if !w.GroupRespCodes {
-			check(charts.Add(respCodes.Copy()))
-		} else {
-			check(charts.Add(respCodes1xx.Copy()))
-			check(charts.Add(respCodes2xx.Copy()))
-			check(charts.Add(respCodes3xx.Copy()))
-			check(charts.Add(respCodes4xx.Copy()))
-			check(charts.Add(respCodes5xx.Copy()))
-		}
+	if err := addCustomFieldsCharts(charts, w.CustomFields); err != nil {
+		return err
+	}
+	w.charts = charts
+	return nil
+}
+
+func (w *WebLog) createWebCharts(line *logLine) error {
+	// Following charts are created during runtime:
+	//   - reqBySSLProto, reqBySSLCipherSuite - it is likely line has no SSL stuff at this moment
+	charts := &Charts{
+		reqTotal.Copy(),
+		reqExcluded.Copy(),
 	}
 	if line.hasVhost() {
-		check(charts.Add(reqByVhost.Copy()))
+		if err := addVhostCharts(charts); err != nil {
+			return err
+		}
 	}
 	if line.hasPort() {
-		check(charts.Add(reqByPort.Copy()))
+		if err := addPortCharts(charts); err != nil {
+			return err
+		}
 	}
 	if line.hasReqScheme() {
-		check(charts.Add(reqByScheme.Copy()))
+		if err := addSchemeCharts(charts); err != nil {
+			return err
+		}
 	}
 	if line.hasReqClient() {
-		check(charts.Add(reqByIPProto.Copy()))
-		check(charts.Add(uniqIPsCurPoll.Copy()))
+		if err := addClientCharts(charts); err != nil {
+			return err
+		}
 	}
 	if line.hasReqMethod() {
-		check(charts.Add(reqByMethod.Copy()))
+		if err := addMethodCharts(charts); err != nil {
+			return err
+		}
 	}
-	if line.hasReqURL() && len(w.URLPatterns) > 0 {
-		chart := newReqByURLPatternChart(w.URLPatterns)
-		check(charts.Add(chart))
-
-		for _, p := range w.URLPatterns {
-			chart := newURLPatternRespCodesChart(p.Name)
-			check(charts.Add(chart))
+	if line.hasReqURL() {
+		if err := addURLCharts(charts, w.URLPatterns); err != nil {
+			return err
 		}
 	}
 	if line.hasReqProto() {
-		check(charts.Add(reqByVersion.Copy()))
+		if err := addReqProtoCharts(charts); err != nil {
+			return err
+		}
+	}
+	if line.hasRespCode() {
+		if err := addRespCodesCharts(charts, w.GroupRespCodes); err != nil {
+			return err
+		}
 	}
 	if line.hasReqSize() || line.hasRespSize() {
-		check(charts.Add(bandwidth.Copy()))
-
-		for _, p := range w.URLPatterns {
-			chart := newURLPatternBandwidthChart(p.Name)
-			check(charts.Add(chart))
+		if err := addBandwidthCharts(charts, w.URLPatterns); err != nil {
+			return err
 		}
 	}
 	if line.hasReqProcTime() {
-		check(charts.Add(reqProcTime.Copy()))
-		if len(w.Histogram) != 0 {
-			chart := newReqProcTimeHistChart(w.Histogram)
-			check(charts.Add(chart))
-		}
-
-		for _, p := range w.URLPatterns {
-			chart := newURLPatternReqProcTimeChart(p.Name)
-			check(charts.Add(chart))
+		if err := addReqProcTimeCharts(charts, w.Histogram, w.URLPatterns); err != nil {
+			return err
 		}
 	}
 	if line.hasUpsRespTime() {
-		check(charts.Add(upsRespTime.Copy()))
-		if len(w.Histogram) != 0 {
-			chart := newUpsRespTimeHistChart(w.Histogram)
-			check(charts.Add(chart))
+		if err := addUpstreamRespTimeCharts(charts, w.Histogram); err != nil {
+			return err
 		}
 	}
-	if line.hasCustomFields() && len(w.CustomFields) > 0 {
-		cs := newReqByCustomFieldPatternCharts(w.CustomFields)
-		check(charts.Add(cs...))
+	if line.hasCustomFields() {
+		if err := addWebCustomFieldsCharts(charts, w.CustomFields); err != nil {
+			return err
+		}
 	}
-
-	return &charts
+	w.charts = charts
+	return nil
 }
 
-func (w *WebLog) addDimToVhostChart(vhost string) {
-	chart := w.Charts().Get(reqByVhost.ID)
-	dim := &Dim{
-		ID:   "req_vhost_" + vhost,
-		Name: vhost,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
+func addVhostCharts(charts *Charts) error {
+	return charts.Add(reqByVhost.Copy())
 }
 
-func (w *WebLog) addDimToPortChart(port string) {
-	chart := w.Charts().Get(reqByPort.ID)
-	dim := &Dim{
-		ID:   "req_port_" + port,
-		Name: port,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
+func addPortCharts(charts *Charts) error {
+	return charts.Add(reqByPort.Copy())
 }
 
-func (w *WebLog) addDimToReqMethodChart(method string) {
-	chart := w.Charts().Get(reqByMethod.ID)
-	dim := &Dim{
-		ID:   "req_method_" + method,
-		Name: method,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
+func addSchemeCharts(charts *Charts) error {
+	return charts.Add(reqByScheme.Copy())
 }
 
-func (w *WebLog) addDimToReqVersionChart(version string) {
-	chart := w.Charts().Get(reqByVersion.ID)
-	dim := &Dim{
-		ID:   "req_version_" + version,
-		Name: version,
-		Algo: module.Incremental,
+func addClientCharts(charts *Charts) error {
+	if err := charts.Add(reqByIPProto.Copy()); err != nil {
+		return err
 	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
+	return charts.Add(uniqIPsCurPoll.Copy())
 }
 
-func (w *WebLog) addDimToSSLProtoChart(proto string) {
-	chart := w.Charts().Get(reqBySSLProto.ID)
-	if chart == nil {
-		chart = reqBySSLProto.Copy()
-		check(w.Charts().Add(chart))
-	}
-	dim := &Dim{
-		ID:   "req_ssl_proto_" + proto,
-		Name: proto,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
+func addMethodCharts(charts *Charts) error {
+	return charts.Add(reqByMethod.Copy())
 }
 
-func (w *WebLog) addDimToSSLCipherSuiteChart(cipher string) {
-	chart := w.Charts().Get(reqBySSLCipherSuite.ID)
-	if chart == nil {
-		chart = reqBySSLCipherSuite.Copy()
-		check(w.Charts().Add(chart))
-	}
-	dim := &Dim{
-		ID:   "req_ssl_cipher_suite_" + cipher,
-		Name: cipher,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
-}
-
-func (w *WebLog) addDimToRespCodesChart(code string) {
-	chart := w.findRespCodesChart(code)
-	if chart == nil {
-		return
-	}
-	dim := &Dim{
-		ID:   "resp_code_" + code,
-		Name: code,
-		Algo: module.Incremental,
-	}
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
-}
-
-func (w *WebLog) addDimToURLPatternRespCodesChart(name, code string) {
-	id := fmt.Sprintf(urlPatternRespCodes.ID, name)
-	chart := w.Charts().Get(id)
-	dim := &Dim{
-		ID:   fmt.Sprintf("url_ptn_%s_resp_code_%s", name, code),
-		Name: code,
-		Algo: module.Incremental,
-	}
-
-	check(chart.AddDim(dim))
-	chart.MarkNotCreated()
-}
-
-func (w *WebLog) findRespCodesChart(code string) *Chart {
-	if !w.GroupRespCodes {
-		return w.Charts().Get(respCodes.ID)
-	}
-
-	var chart Chart
-	switch class := code[:1]; class {
-	case "1":
-		chart = respCodes1xx
-	case "2":
-		chart = respCodes2xx
-	case "3":
-		chart = respCodes3xx
-	case "4":
-		chart = respCodes4xx
-	case "5":
-		chart = respCodes5xx
-	default:
+func addURLCharts(charts *Charts, patterns []userPattern) error {
+	if len(patterns) == 0 {
 		return nil
 	}
-	return w.Charts().Get(chart.ID)
+	chart := newReqByURLPatternChart(patterns)
+	if err := charts.Add(chart); err != nil {
+		return err
+	}
+	for _, p := range patterns {
+		chart := newURLPatternRespCodesChart(p.Name)
+		if err := charts.Add(chart); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func addReqProtoCharts(charts *Charts) error {
+	return charts.Add(reqByVersion.Copy())
+}
+
+func addRespCodesCharts(charts *Charts, group bool) error {
+	if err := charts.Add(reqTypes.Copy()); err != nil {
+		return err
+	}
+	if err := charts.Add(respCodeClass.Copy()); err != nil {
+		return err
+	}
+	if !group {
+		return charts.Add(respCodes.Copy())
+	}
+	for _, c := range []Chart{respCodes1xx, respCodes2xx, respCodes3xx, respCodes4xx, respCodes5xx} {
+		if err := charts.Add(c.Copy()); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func addBandwidthCharts(charts *Charts, patterns []userPattern) error {
+	if err := charts.Add(bandwidth.Copy()); err != nil {
+		return err
+	}
+
+	for _, p := range patterns {
+		chart := newURLPatternBandwidthChart(p.Name)
+		if err := charts.Add(chart); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func addReqProcTimeCharts(charts *Charts, histogram []float64, patterns []userPattern) error {
+	if err := charts.Add(reqProcTime.Copy()); err != nil {
+		return err
+	}
+	for _, p := range patterns {
+		chart := newURLPatternReqProcTimeChart(p.Name)
+		if err := charts.Add(chart); err != nil {
+			return err
+		}
+	}
+	if len(histogram) == 0 {
+		return nil
+	}
+	chart := newReqProcTimeHistChart(histogram)
+	return charts.Add(chart)
+}
+
+func addUpstreamRespTimeCharts(charts *Charts, histogram []float64) error {
+	if err := charts.Add(upsRespTime.Copy()); err != nil {
+		return err
+	}
+	if len(histogram) == 0 {
+		return nil
+	}
+	chart := newUpsRespTimeHistChart(histogram)
+	return charts.Add(chart)
+}
+
+func addWebCustomFieldsCharts(charts *Charts, fields []customField) error {
+	if len(fields) == 0 {
+		return nil
+	}
+	cs := newReqByCustomFieldPatternCharts(fields)
+	return charts.Add(cs...)
+}
+
+func addCustomFieldsCharts(charts *Charts, fields []customField) error {
+	for _, f := range fields {
+		chart := newMatchesByCustomFieldPatternChart(f)
+		if err := charts.Add(chart); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // TODO: get rid of

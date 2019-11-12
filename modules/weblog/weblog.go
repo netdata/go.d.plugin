@@ -108,11 +108,9 @@ func (w *WebLog) Check() bool {
 	}
 	w.customLog = !w.line.hasWebFields() && w.line.hasCustomFields()
 
-	charts, err := w.createCharts(w.line)
-	if err != nil {
+	if err := w.createCharts(w.line); err != nil {
 		w.Warning("check failed: ", err)
 	}
-	w.charts = charts
 	return true
 }
 

@@ -1,6 +1,8 @@
 package weblog
 
 import (
+	"fmt"
+	"github.com/netdata/go-orchestrator/module"
 	"io"
 	"runtime"
 	"strconv"
@@ -148,7 +150,7 @@ func (w *WebLog) collectReqMethod() {
 }
 
 func (w *WebLog) collectReqURL() {
-	if !w.line.hasReqURL() || len(w.urlPatterns) == 0 {
+	if !w.line.hasReqURL() {
 		return
 	}
 	for _, p := range w.urlPatterns {
@@ -320,4 +322,128 @@ func (w *WebLog) collectCustomFields() {
 			break
 		}
 	}
+}
+
+func (w *WebLog) addDimToVhostChart(vhost string) {
+	chart := w.Charts().Get(reqByVhost.ID)
+	dim := &Dim{
+		ID:   "req_vhost_" + vhost,
+		Name: vhost,
+		Algo: module.Incremental,
+	}
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToPortChart(port string) {
+	chart := w.Charts().Get(reqByPort.ID)
+	dim := &Dim{
+		ID:   "req_port_" + port,
+		Name: port,
+		Algo: module.Incremental,
+	}
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToReqMethodChart(method string) {
+	chart := w.Charts().Get(reqByMethod.ID)
+	dim := &Dim{
+		ID:   "req_method_" + method,
+		Name: method,
+		Algo: module.Incremental,
+	}
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToReqVersionChart(version string) {
+	chart := w.Charts().Get(reqByVersion.ID)
+	dim := &Dim{
+		ID:   "req_version_" + version,
+		Name: version,
+		Algo: module.Incremental,
+	}
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToSSLProtoChart(proto string) {
+	chart := w.Charts().Get(reqBySSLProto.ID)
+	if chart == nil {
+		chart = reqBySSLProto.Copy()
+		check(w.Charts().Add(chart))
+	}
+	dim := &Dim{
+		ID:   "req_ssl_proto_" + proto,
+		Name: proto,
+		Algo: module.Incremental,
+	}
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToSSLCipherSuiteChart(cipher string) {
+	chart := w.Charts().Get(reqBySSLCipherSuite.ID)
+	if chart == nil {
+		chart = reqBySSLCipherSuite.Copy()
+		check(w.Charts().Add(chart))
+	}
+	dim := &Dim{
+		ID:   "req_ssl_cipher_suite_" + cipher,
+		Name: cipher,
+		Algo: module.Incremental,
+	}
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToRespCodesChart(code string) {
+	chart := w.findRespCodesChart(code)
+	if chart == nil {
+		return
+	}
+	dim := &Dim{
+		ID:   "resp_code_" + code,
+		Name: code,
+		Algo: module.Incremental,
+	}
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToURLPatternRespCodesChart(name, code string) {
+	id := fmt.Sprintf(urlPatternRespCodes.ID, name)
+	chart := w.Charts().Get(id)
+	dim := &Dim{
+		ID:   fmt.Sprintf("url_ptn_%s_resp_code_%s", name, code),
+		Name: code,
+		Algo: module.Incremental,
+	}
+
+	check(chart.AddDim(dim))
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) findRespCodesChart(code string) *Chart {
+	if !w.GroupRespCodes {
+		return w.Charts().Get(respCodes.ID)
+	}
+
+	var chart Chart
+	switch class := code[:1]; class {
+	case "1":
+		chart = respCodes1xx
+	case "2":
+		chart = respCodes2xx
+	case "3":
+		chart = respCodes3xx
+	case "4":
+		chart = respCodes4xx
+	case "5":
+		chart = respCodes5xx
+	default:
+		return nil
+	}
+	return w.Charts().Get(chart.ID)
 }
