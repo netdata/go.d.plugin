@@ -1,6 +1,7 @@
 package weblog
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/netdata/go.d.plugin/pkg/logs"
@@ -42,6 +43,9 @@ func (w *WebLog) initCustomFields() error {
 
 	w.customFields = make(map[string][]*pattern)
 	for _, cf := range w.CustomFields {
+		if cf.Name == "" {
+			return errors.New("error on creating custom field: name not set")
+		}
 		for _, up := range cf.Patterns {
 			p, err := newPattern(up)
 			if err != nil {
