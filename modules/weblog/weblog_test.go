@@ -369,52 +369,24 @@ func TestWebLog_Collect_CustomLogs(t *testing.T) {
 }
 
 func testCharts(t *testing.T, w *WebLog) {
-	testRespCodeChart(t, w)
-	testReqVhostChart(t, w)
-	testReqPortChart(t, w)
-	testReqSchemeChart(t, w)
-	testReqHTTPMethodChart(t, w)
-	testReqHTTPVersionChart(t, w)
-	testReqClientCharts(t, w)
+	testVhostChart(t, w)
+	testPortChart(t, w)
+	testSchemeChart(t, w)
+	testClientCharts(t, w)
+	testHTTPMethodChart(t, w)
+	testURLPatternChart(t, w)
+	testHTTPVersionChart(t, w)
+	testRespCodeCharts(t, w)
 	testBandwidthChart(t, w)
-	testReqURLPatternChart(t, w)
-	testURLPatternStatsCharts(t, w)
 	testReqProcTimeCharts(t, w)
 	testUpsRespTimeCharts(t, w)
 	testSSLProtoChart(t, w)
 	testSSLCipherSuiteChart(t, w)
-	testReqCustomFieldCharts(t, w)
+	testURLPatternStatsCharts(t, w)
+	testCustomFieldCharts(t, w)
 }
 
-func testReqProcTimeCharts(t *testing.T, w *WebLog) {
-	if isEmptySummary(w.mx.ReqProcTime) {
-		assert.Falsef(t, w.Charts().Has(reqProcTime.ID), "chart '%s' is created", reqProcTime.ID)
-	} else {
-		assert.Truef(t, w.Charts().Has(reqProcTime.ID), "chart '%s' is not created", reqProcTime.ID)
-	}
-
-	if isEmptyHistogram(w.mx.ReqProcTimeHist) {
-		assert.Falsef(t, w.Charts().Has(reqProcTimeHist.ID), "chart '%s' is created", reqProcTimeHist.ID)
-	} else {
-		assert.Truef(t, w.Charts().Has(reqProcTimeHist.ID), "chart '%s' is not created", reqProcTimeHist.ID)
-	}
-}
-
-func testUpsRespTimeCharts(t *testing.T, w *WebLog) {
-	if isEmptySummary(w.mx.UpsRespTime) {
-		assert.Falsef(t, w.Charts().Has(upsRespTime.ID), "chart '%s' is created", upsRespTime.ID)
-	} else {
-		assert.Truef(t, w.Charts().Has(upsRespTime.ID), "chart '%s' is not created", upsRespTime.ID)
-	}
-
-	if isEmptyHistogram(w.mx.UpsRespTimeHist) {
-		assert.Falsef(t, w.Charts().Has(upsRespTimeHist.ID), "chart '%s' is created", upsRespTimeHist.ID)
-	} else {
-		assert.Truef(t, w.Charts().Has(upsRespTimeHist.ID), "chart '%s' is not created", upsRespTimeHist.ID)
-	}
-}
-
-func testReqVhostChart(t *testing.T, w *WebLog) {
+func testVhostChart(t *testing.T, w *WebLog) {
 	if len(w.mx.ReqVhost) == 0 {
 		assert.Falsef(t, w.Charts().Has(reqByVhost.ID), "chart '%s' is created", reqByVhost.ID)
 		return
@@ -431,7 +403,7 @@ func testReqVhostChart(t *testing.T, w *WebLog) {
 	}
 }
 
-func testReqPortChart(t *testing.T, w *WebLog) {
+func testPortChart(t *testing.T, w *WebLog) {
 	if len(w.mx.ReqPort) == 0 {
 		assert.Falsef(t, w.Charts().Has(reqByPort.ID), "chart '%s' is created", reqByPort.ID)
 		return
@@ -448,7 +420,29 @@ func testReqPortChart(t *testing.T, w *WebLog) {
 	}
 }
 
-func testReqHTTPMethodChart(t *testing.T, w *WebLog) {
+func testSchemeChart(t *testing.T, w *WebLog) {
+	if w.mx.ReqHTTPScheme.Value() == 0 && w.mx.ReqHTTPScheme.Value() == 0 {
+		assert.Falsef(t, w.Charts().Has(reqByScheme.ID), "chart '%s' is created", reqByScheme.ID)
+	} else {
+		assert.Truef(t, w.Charts().Has(reqByScheme.ID), "chart '%s' is not created", reqByScheme.ID)
+	}
+}
+
+func testClientCharts(t *testing.T, w *WebLog) {
+	if w.mx.ReqIPv4.Value() == 0 && w.mx.ReqIPv6.Value() == 0 {
+		assert.Falsef(t, w.Charts().Has(reqByIPProto.ID), "chart '%s' is created", reqByIPProto.ID)
+	} else {
+		assert.Truef(t, w.Charts().Has(reqByIPProto.ID), "chart '%s' is not created", reqByIPProto.ID)
+	}
+
+	if w.mx.UniqueIPv4.Value() == 0 && w.mx.UniqueIPv6.Value() == 0 {
+		assert.Falsef(t, w.Charts().Has(uniqIPsCurPoll.ID), "chart '%s' is created", uniqIPsCurPoll.ID)
+	} else {
+		assert.Truef(t, w.Charts().Has(uniqIPsCurPoll.ID), "chart '%s' is not created", uniqIPsCurPoll.ID)
+	}
+}
+
+func testHTTPMethodChart(t *testing.T, w *WebLog) {
 	if len(w.mx.ReqMethod) == 0 {
 		assert.Falsef(t, w.Charts().Has(reqByMethod.ID), "chart '%s' is created", reqByMethod.ID)
 		return
@@ -465,54 +459,7 @@ func testReqHTTPMethodChart(t *testing.T, w *WebLog) {
 	}
 }
 
-func testReqHTTPVersionChart(t *testing.T, w *WebLog) {
-	if len(w.mx.ReqVersion) == 0 {
-		assert.Falsef(t, w.Charts().Has(reqByVersion.ID), "chart '%s' is created", reqByVersion.ID)
-		return
-	}
-
-	chart := w.Charts().Get(reqByVersion.ID)
-	assert.NotNilf(t, chart, "chart '%s' is not created", reqByVersion.ID)
-	if chart == nil {
-		return
-	}
-	for v := range w.mx.ReqVersion {
-		id := "req_version_" + v
-		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' version, expected '%s'", chart.ID, v, id)
-	}
-}
-
-func testReqSchemeChart(t *testing.T, w *WebLog) {
-	if w.mx.ReqHTTPScheme.Value() == 0 && w.mx.ReqHTTPScheme.Value() == 0 {
-		assert.Falsef(t, w.Charts().Has(reqByScheme.ID), "chart '%s' is created", reqByScheme.ID)
-	} else {
-		assert.Truef(t, w.Charts().Has(reqByScheme.ID), "chart '%s' is not created", reqByScheme.ID)
-	}
-}
-
-func testReqClientCharts(t *testing.T, w *WebLog) {
-	if w.mx.ReqIPv4.Value() == 0 && w.mx.ReqIPv6.Value() == 0 {
-		assert.Falsef(t, w.Charts().Has(reqByIPProto.ID), "chart '%s' is created", reqByIPProto.ID)
-	} else {
-		assert.Truef(t, w.Charts().Has(reqByIPProto.ID), "chart '%s' is not created", reqByIPProto.ID)
-	}
-
-	if w.mx.UniqueIPv4.Value() == 0 && w.mx.UniqueIPv6.Value() == 0 {
-		assert.Falsef(t, w.Charts().Has(uniqIPsCurPoll.ID), "chart '%s' is created", uniqIPsCurPoll.ID)
-	} else {
-		assert.Truef(t, w.Charts().Has(uniqIPsCurPoll.ID), "chart '%s' is not created", uniqIPsCurPoll.ID)
-	}
-}
-
-func testBandwidthChart(t *testing.T, w *WebLog) {
-	if w.mx.BytesSent.Value() == 0 && w.mx.BytesReceived.Value() == 0 {
-		assert.Falsef(t, w.Charts().Has(bandwidth.ID), "chart '%s' is created", bandwidth.ID)
-	} else {
-		assert.Truef(t, w.Charts().Has(bandwidth.ID), "chart '%s' is not created", bandwidth.ID)
-	}
-}
-
-func testReqURLPatternChart(t *testing.T, w *WebLog) {
+func testURLPatternChart(t *testing.T, w *WebLog) {
 	if isEmptyCounterVec(w.mx.ReqURLPattern) {
 		assert.Falsef(t, w.Charts().Has(reqByURLPattern.ID), "chart '%s' is created", reqByURLPattern.ID)
 		return
@@ -529,107 +476,36 @@ func testReqURLPatternChart(t *testing.T, w *WebLog) {
 	}
 }
 
-func testSSLProtoChart(t *testing.T, w *WebLog) {
-	if len(w.mx.ReqSSLProto) == 0 {
-		assert.Falsef(t, w.Charts().Has(reqBySSLProto.ID), "chart '%s' is created", reqBySSLProto.ID)
+func testHTTPVersionChart(t *testing.T, w *WebLog) {
+	if len(w.mx.ReqVersion) == 0 {
+		assert.Falsef(t, w.Charts().Has(reqByVersion.ID), "chart '%s' is created", reqByVersion.ID)
 		return
 	}
 
-	chart := w.Charts().Get(reqBySSLProto.ID)
-	assert.NotNilf(t, chart, "chart '%s' is not created", reqBySSLProto.ID)
+	chart := w.Charts().Get(reqByVersion.ID)
+	assert.NotNilf(t, chart, "chart '%s' is not created", reqByVersion.ID)
 	if chart == nil {
 		return
 	}
-	for v := range w.mx.ReqSSLProto {
-		id := "req_ssl_proto_" + v
-		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' ssl proto, expected '%s'", chart.ID, v, id)
+	for v := range w.mx.ReqVersion {
+		id := "req_version_" + v
+		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' version, expected '%s'", chart.ID, v, id)
 	}
 }
 
-func testSSLCipherSuiteChart(t *testing.T, w *WebLog) {
-	if len(w.mx.ReqSSLCipherSuite) == 0 {
-		assert.Falsef(t, w.Charts().Has(reqBySSLCipherSuite.ID), "chart '%s' is created", reqBySSLCipherSuite.ID)
-		return
-	}
-
-	chart := w.Charts().Get(reqBySSLCipherSuite.ID)
-	assert.NotNilf(t, chart, "chart '%s' is not created", reqBySSLCipherSuite.ID)
-	if chart == nil {
-		return
-	}
-	for v := range w.mx.ReqSSLCipherSuite {
-		id := "req_ssl_cipher_suite_" + v
-		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' ssl cipher suite, expected '%s'", chart.ID, v, id)
-	}
-}
-
-func testReqCustomFieldCharts(t *testing.T, w *WebLog) {
-	for _, cf := range w.CustomFields {
-		var id string
-		if w.customLog {
-			id = fmt.Sprintf(matchesByCustomFieldPattern.ID, cf.Name)
-		} else {
-			id = fmt.Sprintf(reqByCustomFieldPattern.ID, cf.Name)
-		}
-		chart := w.Charts().Get(id)
-		assert.NotNilf(t, chart, "chart '%s' is not created", id)
-		if chart == nil {
-			continue
-		}
-
-		for _, p := range cf.Patterns {
-			id := fmt.Sprintf("custom_field_%s_%s", cf.Name, p.Name)
-			assert.True(t, chart.HasDim(id), "chart '%s' has no dim for '%s' pattern, expected '%s'", chart.ID, p, id)
-		}
-	}
-}
-
-func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
-	for _, p := range w.URLPatterns {
-		chartID := fmt.Sprintf(urlPatternRespCodes.ID, p.Name)
-		chart := w.Charts().Get(chartID)
-		assert.NotNilf(t, chart, "chart '%s' is not created", chartID)
-		if chart == nil {
-			continue
-		}
-
-		stats, ok := w.mx.URLPatternStats[p.Name]
-		assert.Truef(t, ok, "url pattern '%s' has no metric in w.mx.URLPatternStats", p.Name)
-		if !ok {
-			continue
-		}
-		for v := range stats.RespCode {
-			id := fmt.Sprintf("url_ptn_%s_resp_code_%s", p.Name, v)
-			assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' code, expected '%s'", chartID, v, id)
-		}
-	}
-
-	for _, p := range w.URLPatterns {
-		id := fmt.Sprintf(urlPatternBandwidth.ID, p.Name)
-		if w.mx.BytesSent.Value() == 0 && w.mx.BytesReceived.Value() == 0 {
-			assert.Falsef(t, w.Charts().Has(id), "chart '%s' is created", id)
-		} else {
-			assert.Truef(t, w.Charts().Has(id), "chart '%s' is not created", id)
-		}
-	}
-
-	for _, p := range w.URLPatterns {
-		id := fmt.Sprintf(urlPatternReqProcTime.ID, p.Name)
-		if isEmptySummary(w.mx.ReqProcTime) {
-			assert.Falsef(t, w.Charts().Has(id), "chart '%s' is created", id)
-		} else {
-			assert.Truef(t, w.Charts().Has(id), "chart '%s' is not created", id)
-		}
-	}
-}
-
-func testRespCodeChart(t *testing.T, w *WebLog) {
+func testRespCodeCharts(t *testing.T, w *WebLog) {
 	if isEmptyCounterVec(w.mx.RespCode) {
-		if !w.GroupRespCodes {
-			chart := w.Charts().Get(respCodes.ID)
-			assert.Nilf(t, chart, "chart '%s' is not created", respCodes.ID)
-			return
+		for _, id := range []string{
+			respCodes.ID,
+			respCodes1xx.ID,
+			respCodes2xx.ID,
+			respCodes3xx.ID,
+			respCodes4xx.ID,
+			respCodes5xx.ID,
+		} {
+			assert.Falsef(t, w.Charts().Has(id), "chart '%s' is created", id)
 		}
+		return
 	}
 
 	if !w.GroupRespCodes {
@@ -677,6 +553,137 @@ func testRespCodeChart(t *testing.T, w *WebLog) {
 		}
 	}
 	assert.Equal(t, len(w.mx.RespCode), n)
+}
+
+func testBandwidthChart(t *testing.T, w *WebLog) {
+	if w.mx.BytesSent.Value() == 0 && w.mx.BytesReceived.Value() == 0 {
+		assert.Falsef(t, w.Charts().Has(bandwidth.ID), "chart '%s' is created", bandwidth.ID)
+	} else {
+		assert.Truef(t, w.Charts().Has(bandwidth.ID), "chart '%s' is not created", bandwidth.ID)
+	}
+}
+
+func testReqProcTimeCharts(t *testing.T, w *WebLog) {
+	if isEmptySummary(w.mx.ReqProcTime) {
+		assert.Falsef(t, w.Charts().Has(reqProcTime.ID), "chart '%s' is created", reqProcTime.ID)
+	} else {
+		assert.Truef(t, w.Charts().Has(reqProcTime.ID), "chart '%s' is not created", reqProcTime.ID)
+	}
+
+	if isEmptyHistogram(w.mx.ReqProcTimeHist) {
+		assert.Falsef(t, w.Charts().Has(reqProcTimeHist.ID), "chart '%s' is created", reqProcTimeHist.ID)
+	} else {
+		assert.Truef(t, w.Charts().Has(reqProcTimeHist.ID), "chart '%s' is not created", reqProcTimeHist.ID)
+	}
+}
+
+func testUpsRespTimeCharts(t *testing.T, w *WebLog) {
+	if isEmptySummary(w.mx.UpsRespTime) {
+		assert.Falsef(t, w.Charts().Has(upsRespTime.ID), "chart '%s' is created", upsRespTime.ID)
+	} else {
+		assert.Truef(t, w.Charts().Has(upsRespTime.ID), "chart '%s' is not created", upsRespTime.ID)
+	}
+
+	if isEmptyHistogram(w.mx.UpsRespTimeHist) {
+		assert.Falsef(t, w.Charts().Has(upsRespTimeHist.ID), "chart '%s' is created", upsRespTimeHist.ID)
+	} else {
+		assert.Truef(t, w.Charts().Has(upsRespTimeHist.ID), "chart '%s' is not created", upsRespTimeHist.ID)
+	}
+}
+
+func testSSLProtoChart(t *testing.T, w *WebLog) {
+	if len(w.mx.ReqSSLProto) == 0 {
+		assert.Falsef(t, w.Charts().Has(reqBySSLProto.ID), "chart '%s' is created", reqBySSLProto.ID)
+		return
+	}
+
+	chart := w.Charts().Get(reqBySSLProto.ID)
+	assert.NotNilf(t, chart, "chart '%s' is not created", reqBySSLProto.ID)
+	if chart == nil {
+		return
+	}
+	for v := range w.mx.ReqSSLProto {
+		id := "req_ssl_proto_" + v
+		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' ssl proto, expected '%s'", chart.ID, v, id)
+	}
+}
+
+func testSSLCipherSuiteChart(t *testing.T, w *WebLog) {
+	if len(w.mx.ReqSSLCipherSuite) == 0 {
+		assert.Falsef(t, w.Charts().Has(reqBySSLCipherSuite.ID), "chart '%s' is created", reqBySSLCipherSuite.ID)
+		return
+	}
+
+	chart := w.Charts().Get(reqBySSLCipherSuite.ID)
+	assert.NotNilf(t, chart, "chart '%s' is not created", reqBySSLCipherSuite.ID)
+	if chart == nil {
+		return
+	}
+	for v := range w.mx.ReqSSLCipherSuite {
+		id := "req_ssl_cipher_suite_" + v
+		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' ssl cipher suite, expected '%s'", chart.ID, v, id)
+	}
+}
+
+func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
+	for _, p := range w.URLPatterns {
+		chartID := fmt.Sprintf(urlPatternRespCodes.ID, p.Name)
+
+		if isEmptyCounterVec(w.mx.RespCode) {
+			assert.Falsef(t, w.Charts().Has(chartID), "chart '%s' is created", chartID)
+			continue
+		}
+
+		chart := w.Charts().Get(chartID)
+		assert.NotNilf(t, chart, "chart '%s' is not created", chartID)
+		if chart == nil {
+			continue
+		}
+
+		stats, ok := w.mx.URLPatternStats[p.Name]
+		assert.Truef(t, ok, "url pattern '%s' has no metric in w.mx.URLPatternStats", p.Name)
+		if !ok {
+			continue
+		}
+		for v := range stats.RespCode {
+			id := fmt.Sprintf("url_ptn_%s_resp_code_%s", p.Name, v)
+			assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' code, expected '%s'", chartID, v, id)
+		}
+	}
+
+	for _, p := range w.URLPatterns {
+		id := fmt.Sprintf(urlPatternBandwidth.ID, p.Name)
+		if w.mx.BytesSent.Value() == 0 && w.mx.BytesReceived.Value() == 0 {
+			assert.Falsef(t, w.Charts().Has(id), "chart '%s' is created", id)
+		} else {
+			assert.Truef(t, w.Charts().Has(id), "chart '%s' is not created", id)
+		}
+	}
+
+	for _, p := range w.URLPatterns {
+		id := fmt.Sprintf(urlPatternReqProcTime.ID, p.Name)
+		if isEmptySummary(w.mx.ReqProcTime) {
+			assert.Falsef(t, w.Charts().Has(id), "chart '%s' is created", id)
+		} else {
+			assert.Truef(t, w.Charts().Has(id), "chart '%s' is not created", id)
+		}
+	}
+}
+
+func testCustomFieldCharts(t *testing.T, w *WebLog) {
+	for _, cf := range w.CustomFields {
+		id := fmt.Sprintf(reqByCustomFieldPattern.ID, cf.Name)
+		chart := w.Charts().Get(id)
+		assert.NotNilf(t, chart, "chart '%s' is not created", id)
+		if chart == nil {
+			continue
+		}
+
+		for _, p := range cf.Patterns {
+			id := fmt.Sprintf("custom_field_%s_%s", cf.Name, p.Name)
+			assert.True(t, chart.HasDim(id), "chart '%s' has no dim for '%s' pattern, expected '%s'", chart.ID, p, id)
+		}
+	}
 }
 
 var (

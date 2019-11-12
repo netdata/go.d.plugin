@@ -73,9 +73,8 @@ type (
 		urlPatterns  []*pattern
 		customFields map[string][]*pattern
 
-		customLog bool
-		mx        *metricsData
-		charts    *module.Charts
+		mx     *metricsData
+		charts *module.Charts
 	}
 )
 
@@ -106,7 +105,6 @@ func (w *WebLog) Check() bool {
 		w.Warning("check failed: ", err)
 		return false
 	}
-	w.customLog = !w.line.hasWebFields() && w.line.hasCustomFields()
 
 	if err := w.createCharts(w.line); err != nil {
 		w.Warning("check failed: ", err)

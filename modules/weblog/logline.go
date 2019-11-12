@@ -159,16 +159,6 @@ func (l *logLine) Assign(field string, value string) (err error) {
 
 const hyphen = "-"
 
-func (l *logLine) assignCustom(field, value string) error {
-	if len(l.custom.fields) == 0 || value == hyphen {
-		return nil
-	}
-	if _, ok := l.custom.fields[field]; ok {
-		l.custom.values = append(l.custom.values, customValue{name: field, value: value})
-	}
-	return nil
-}
-
 func (l *logLine) assignVhost(vhost string) error {
 	if vhost == hyphen {
 		return nil
@@ -376,6 +366,16 @@ func (l *logLine) assignSSLCipherSuite(cipher string) error {
 		return fmt.Errorf("assign '%s': %w", cipher, errBadSSLCipherSuite)
 	}
 	l.sslCipherSuite = cipher
+	return nil
+}
+
+func (l *logLine) assignCustom(field, value string) error {
+	if len(l.custom.fields) == 0 || value == hyphen {
+		return nil
+	}
+	if _, ok := l.custom.fields[field]; ok {
+		l.custom.values = append(l.custom.values, customValue{name: field, value: value})
+	}
 	return nil
 }
 

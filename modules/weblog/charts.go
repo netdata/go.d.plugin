@@ -1,6 +1,7 @@
 package weblog
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/netdata/go-orchestrator"
@@ -353,14 +354,6 @@ var (
 		Type:     module.Stacked,
 		Priority: prioReqCustomFieldPattern,
 	}
-	matchesByCustomFieldPattern = Chart{
-		ID:    "custom_field_%s_matches_by_pattern",
-		Title: "Matches By Pattern",
-		Units: "matches/s",
-		Fam:   "%s",
-		Ctx:   "web_log.custom_field_%s_pattern_matches",
-		Type:  module.Stacked,
-	}
 )
 
 // URL pattern stats
@@ -447,61 +440,11 @@ func newUpsRespTimeHistChart(histogram []float64) (*Chart, error) {
 	return chart, nil
 }
 
-func newReqByURLPatternChart(patterns []userPattern) (*Chart, error) {
+func newURLPatternChart(patterns []userPattern) (*Chart, error) {
 	chart := reqByURLPattern.Copy()
 	for _, p := range patterns {
 		dim := &Dim{
 			ID:   "req_url_ptn_" + p.Name,
-			Name: p.Name,
-			Algo: module.Incremental,
-		}
-		if err := chart.AddDim(dim); err != nil {
-			return nil, err
-		}
-	}
-	return chart, nil
-}
-
-func newReqByCustomFieldPatternCharts(fields []customField) (Charts, error) {
-	charts := Charts{}
-	for _, f := range fields {
-		chart, err := newReqByCustomFieldPatternChart(f)
-		if err != nil {
-			return nil, err
-		}
-		if err := charts.Add(chart); err != nil {
-			return nil, err
-		}
-	}
-	return charts, nil
-}
-
-func newReqByCustomFieldPatternChart(f customField) (*Chart, error) {
-	chart := reqByCustomFieldPattern.Copy()
-	chart.ID = fmt.Sprintf(chart.ID, f.Name)
-	chart.Title = fmt.Sprintf(chart.Title, f.Name)
-	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
-	for _, p := range f.Patterns {
-		dim := &Dim{
-			ID:   fmt.Sprintf("custom_field_%s_%s", f.Name, p.Name),
-			Name: p.Name,
-			Algo: module.Incremental,
-		}
-		if err := chart.AddDim(dim); err != nil {
-			return nil, err
-		}
-	}
-	return chart, nil
-}
-
-func newMatchesByCustomFieldPatternChart(f customField) (*Chart, error) {
-	chart := matchesByCustomFieldPattern.Copy()
-	chart.ID = fmt.Sprintf(chart.ID, f.Name)
-	chart.Fam = fmt.Sprintf(chart.Fam, f.Name)
-	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
-	for _, p := range f.Patterns {
-		dim := &Dim{
-			ID:   fmt.Sprintf("custom_field_%s_%s", f.Name, p.Name),
 			Name: p.Name,
 			Algo: module.Incremental,
 		}
@@ -542,28 +485,43 @@ func newURLPatternReqProcTimeChart(name string) *Chart {
 	return chart
 }
 
+func newCustomFieldCharts(fields []customField) (Charts, error) {
+	charts := Charts{}
+	for _, f := range fields {
+		chart, err := newCustomFieldChart(f)
+		if err != nil {
+			return nil, err
+		}
+		if err := charts.Add(chart); err != nil {
+			return nil, err
+		}
+	}
+	return charts, nil
+}
+
+func newCustomFieldChart(f customField) (*Chart, error) {
+	chart := reqByCustomFieldPattern.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, f.Name)
+	chart.Title = fmt.Sprintf(chart.Title, f.Name)
+	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
+	for _, p := range f.Patterns {
+		dim := &Dim{
+			ID:   fmt.Sprintf("custom_field_%s_%s", f.Name, p.Name),
+			Name: p.Name,
+			Algo: module.Incremental,
+		}
+		if err := chart.AddDim(dim); err != nil {
+			return nil, err
+		}
+	}
+	return chart, nil
+}
+
 func (w *WebLog) createCharts(line *logLine) error {
+	if line.isEmpty() {
+		return errors.New("empty line")
+	}
 	w.charts = nil
-	if w.customLog {
-		return w.createCustomLogCharts()
-	}
-	return w.createWebCharts(line)
-}
-
-func (w *WebLog) createCustomLogCharts() error {
-	// TODO: fix, shouldnt be requests
-	charts := &Charts{
-		reqTotal.Copy(),
-		reqExcluded.Copy(),
-	}
-	if err := addCustomFieldsCharts(charts, w.CustomFields); err != nil {
-		return err
-	}
-	w.charts = charts
-	return nil
-}
-
-func (w *WebLog) createWebCharts(line *logLine) error {
 	// Following charts are created during runtime:
 	//   - reqBySSLProto, reqBySSLCipherSuite - it is likely line has no SSL stuff at this moment
 	charts := &Charts{
@@ -626,7 +584,7 @@ func (w *WebLog) createWebCharts(line *logLine) error {
 		}
 	}
 	if line.hasCustomFields() {
-		if err := addWebCustomFieldsCharts(charts, w.CustomFields); err != nil {
+		if err := addCustomFieldsCharts(charts, w.CustomFields); err != nil {
 			return err
 		}
 	}
@@ -661,7 +619,7 @@ func addURLCharts(charts *Charts, patterns []userPattern) error {
 	if len(patterns) == 0 {
 		return nil
 	}
-	chart, err := newReqByURLPatternChart(patterns)
+	chart, err := newURLPatternChart(patterns)
 	if err != nil {
 		return err
 	}
@@ -747,26 +705,13 @@ func addUpstreamRespTimeCharts(charts *Charts, histogram []float64) error {
 	return charts.Add(chart)
 }
 
-func addWebCustomFieldsCharts(charts *Charts, fields []customField) error {
+func addCustomFieldsCharts(charts *Charts, fields []customField) error {
 	if len(fields) == 0 {
 		return nil
 	}
-	cs, err := newReqByCustomFieldPatternCharts(fields)
+	cs, err := newCustomFieldCharts(fields)
 	if err != nil {
 		return err
 	}
 	return charts.Add(cs...)
-}
-
-func addCustomFieldsCharts(charts *Charts, fields []customField) error {
-	for _, f := range fields {
-		chart, err := newMatchesByCustomFieldPatternChart(f)
-		if err != nil {
-			return err
-		}
-		if err := charts.Add(chart); err != nil {
-			return err
-		}
-	}
-	return nil
 }

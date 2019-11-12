@@ -2,7 +2,6 @@ package weblog
 
 import (
 	"fmt"
-	"github.com/netdata/go-orchestrator/module"
 	"io"
 	"runtime"
 	"strconv"
@@ -10,6 +9,8 @@ import (
 
 	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/stm"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func (w WebLog) logPanicStackIfAny() {
@@ -180,13 +181,8 @@ func (w *WebLog) collectRespCode() {
 	if !w.line.hasRespCode() {
 		return
 	}
+
 	code := w.line.respCode
-	//  1xx (Informational): The request was received, continuing process.
-	//  2xx (Successful): The request was successfully received, understood, and accepted.
-	//  3xx (Redirection): Further action needs to be taken in order to complete the request.
-	//  4xx (Client Error): The request contains bad syntax or cannot be fulfilled.
-	//  5xx (Server Error): The server failed to fulfill an apparently valid request.
-	// TODO: this grouping is confusing since it uses terms from rfc7231
 	switch {
 	case code >= 100 && code < 300, code == 304, code == 401:
 		w.mx.ReqSuccess.Inc()
