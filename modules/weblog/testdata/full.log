@@ -1,500 +1,500 @@
-test.example.com:82 http 203.0.113.1 SSLv2 AES256-SHA "POST /example.net HTTP/2.0" 301 3474 3198 440 468 light wine
-localhost:81 http 203.0.113.1 SSLv3 PSK-RC4-SHA "POST /invalid.example HTTP/2" 100 1493 4958 179 494 dark beer
-test.example.com:84 https 2001:db8:2ce:1 TLSv1.2 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/2" 101 4924 1258 350 257 light wine
-198.51.100.1:80 https 2001:db8:2ce:1 TLSv1.3 ECDHE-RSA-AES256-SHA "POST /example.com HTTP/1.1" 201 4490 3673 134 135 dark beer
-test.example.org:82 https 203.0.113.1 SSLv3 DHE-RSA-AES256-SHA "POST /example.net HTTP/2" 300 2524 4393 200 382 dark wine
-2001:db8:1ce::1:84 http 203.0.113.2 SSLv3 AES256-SHA "POST /invalid.example HTTP/2.0" 301 3116 4556 41 287 dark wine
-2001:db8:1ce::1:82 http 203.0.113.2 TLSv1.2 DHE-RSA-AES256-SHA "POST /example.net HTTP/1.1" 300 3394 2252 346 261 light beer
-localhost:82 http 2001:db8:2ce:1 TLSv1.1 PSK-RC4-SHA "HEAD /invalid.example HTTP/2" 100 4804 1691 302 378 light wine
-2001:db8:1ce::1:81 https 2001:db8:2ce:2 TLSv1.3 AES256-SHA "POST /invalid.example HTTP/2.0" 201 2318 3563 302 131 light wine
-test.example.org:80 https 203.0.113.1 SSLv2 ECDHE-RSA-AES256-SHA "GET /example.net HTTP/2" 100 4869 1922 86 35 dark beer
-localhost:83 https 203.0.113.2 SSLv3 AES256-SHA "GET /example.com HTTP/2.0" 100 4952 1964 374 178 dark wine
-test.example.com:82 https 203.0.113.1 TLSv1 DHE-RSA-AES256-SHA "HEAD /example.org HTTP/2" 401 1513 4982 5 357 light wine
-test.example.com:81 http 203.0.113.1 TLSv1 DHE-RSA-AES256-SHA "GET /example.org HTTP/1.1" 301 4002 3171 177 496 dark beer
-test.example.com:81 https 2001:db8:2ce:1 TLSv1.1 PSK-RC4-SHA "POST /example.org HTTP/2" 100 2825 2050 389 171 dark beer
+198.51.100.1:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 301 4715 4113 174 465 https TLSv1.2 ECDHE-RSA-AES256-SHA dark beer
 Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.org:82 http 2001:db8:2ce:2 TLSv1.2 ECDHE-RSA-AES256-SHA "HEAD /example.com HTTP/2" 201 3900 3698 154 350 dark beer
-localhost:83 http 203.0.113.2 SSLv2 AES256-SHA "HEAD /invalid.example HTTP/1.1" 200 4459 4302 50 69 dark beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.com:82 https 2001:db8:2ce:2 TLSv1.1 AES256-SHA "POST /example.com HTTP/2.0" 400 3208 3008 326 279 dark wine
-test.example.org:84 http localhost TLSv1.3 PSK-RC4-SHA "GET /example.org HTTP/1.1" 400 4939 2205 148 494 dark wine
-2001:db8:1ce::1:81 https localhost TLSv1.1 DHE-RSA-AES256-SHA "GET /example.org HTTP/2.0" 201 1666 3089 447 61 dark beer
-2001:db8:1ce::1:80 http 2001:db8:2ce:2 SSLv2 AES256-SHA "HEAD /example.net HTTP/2.0" 101 3183 1899 365 332 dark wine
-test.example.com:80 https 203.0.113.2 TLSv1.3 PSK-RC4-SHA "POST /invalid.example HTTP/1.1" 200 2195 2755 456 274 dark wine
-test.example.org:80 https 203.0.113.2 TLSv1 DHE-RSA-AES256-SHA "HEAD /example.net HTTP/2.0" 401 3349 1494 106 95 light beer
-test.example.org:82 https localhost TLSv1.2 DHE-RSA-AES256-SHA "GET /example.org HTTP/2" 400 2287 2208 432 394 light beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-198.51.100.1:84 https 203.0.113.1 TLSv1.2 DHE-RSA-AES256-SHA "GET /example.net HTTP/1.1" 400 3929 1362 249 110 light beer
-2001:db8:1ce::1:81 http 2001:db8:2ce:2 TLSv1 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 400 4513 1127 483 189 light beer
-198.51.100.1:80 https 203.0.113.1 TLSv1.2 ECDHE-RSA-AES256-SHA "POST /example.org HTTP/2.0" 200 1194 3790 86 406 light wine
-198.51.100.1:81 http localhost TLSv1.2 ECDHE-RSA-AES256-SHA "HEAD /example.org HTTP/1.1" 400 1429 1088 117 339 light beer
-2001:db8:1ce::1:80 https localhost TLSv1.1 ECDHE-RSA-AES256-SHA "HEAD /example.org HTTP/2" 401 1269 4334 327 448 dark beer
-localhost:83 http 2001:db8:2ce:1 TLSv1.3 DHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/1.1" 401 3748 2956 454 69 light beer
-198.51.100.1:81 http 203.0.113.2 SSLv3 AES256-SHA "GET /invalid.example HTTP/2" 401 2264 3174 296 2 light wine
-2001:db8:1ce::1:81 https 2001:db8:2ce:1 TLSv1.2 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/1.1" 101 1905 3757 436 446 light beer
-localhost:82 http 2001:db8:2ce:2 TLSv1.1 DHE-RSA-AES256-SHA "GET /example.com HTTP/1.1" 301 2729 2031 247 30 dark beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-localhost:83 https localhost TLSv1.2 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/1.1" 400 3963 2600 232 149 dark beer
-2001:db8:1ce::1:82 http 203.0.113.1 SSLv2 DHE-RSA-AES256-SHA "GET /example.com HTTP/2" 300 2269 2479 168 62 dark wine
-198.51.100.1:81 http 203.0.113.2 SSLv2 ECDHE-RSA-AES256-SHA "POST /invalid.example HTTP/1.1" 200 2472 3979 251 493 light wine
-2001:db8:1ce::1:80 https localhost TLSv1.2 ECDHE-RSA-AES256-SHA "GET /example.org HTTP/2" 101 3783 3688 490 106 dark wine
-test.example.com:82 http 2001:db8:2ce:2 TLSv1.3 AES256-SHA "HEAD /example.com HTTP/1.1" 300 4731 3701 413 496 light beer
-localhost:83 https 203.0.113.1 TLSv1 PSK-RC4-SHA "POST /example.org HTTP/1.1" 300 1662 3059 56 474 dark wine
-test.example.org:80 http 203.0.113.2 SSLv2 DHE-RSA-AES256-SHA "HEAD /example.com HTTP/2" 301 1072 3149 387 254 light wine
+2001:db8:1ce::1:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 301 1130 1202 409 450 https TLSv1 DHE-RSA-AES256-SHA light beer
+198.51.100.1:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 201 4020 1217 492 135 https TLSv1.2 PSK-RC4-SHA light wine
+test.example.org:82 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 401 3784 2349 266 63 http TLSv1 ECDHE-RSA-AES256-SHA dark wine
+localhost:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 201 2149 3834 178 197 https TLSv1.1 AES256-SHA dark wine
+198.51.100.1:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 200 1442 4125 23 197 https TLSv1.3 DHE-RSA-AES256-SHA light wine
+test.example.com:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 300 4134 3965 259 296 https TLSv1.3 PSK-RC4-SHA dark wine
+test.example.com:84 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 401 1224 3352 135 468 http SSLv2 PSK-RC4-SHA light wine
+localhost:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2.0" 200 2504 4754 58 371 http TLSv1.1 DHE-RSA-AES256-SHA dark beer
 Unmatched! The rat the cat the dog chased killed ate the malt!
 Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.org:83 http localhost SSLv3 DHE-RSA-AES256-SHA "GET /example.net HTTP/1.1" 400 3281 1689 155 355 light beer
-2001:db8:1ce::1:80 http 203.0.113.2 TLSv1 DHE-RSA-AES256-SHA "GET /example.com HTTP/2.0" 300 2037 3050 77 464 light wine
-localhost:81 http 2001:db8:2ce:1 SSLv3 PSK-RC4-SHA "GET /invalid.example HTTP/2.0" 400 1961 1061 56 291 light wine
-198.51.100.1:82 https 2001:db8:2ce:2 SSLv3 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/2" 100 3147 3770 430 298 dark wine
-2001:db8:1ce::1:84 https 2001:db8:2ce:1 TLSv1.2 AES256-SHA "HEAD /example.net HTTP/1.1" 301 3772 2582 436 303 light wine
-198.51.100.1:81 https 2001:db8:2ce:2 TLSv1.1 DHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 201 2518 3359 51 30 light beer
-test.example.org:80 https 2001:db8:2ce:2 TLSv1.2 AES256-SHA "HEAD /example.org HTTP/1.1" 301 4536 1210 64 482 dark wine
-198.51.100.1:84 https 203.0.113.2 SSLv3 PSK-RC4-SHA "HEAD /example.com HTTP/2.0" 100 1249 3700 354 472 dark beer
-test.example.org:84 https 2001:db8:2ce:1 TLSv1.2 AES256-SHA "POST /example.net HTTP/1.1" 200 1615 4407 400 413 light wine
-test.example.org:84 http 2001:db8:2ce:2 TLSv1.3 AES256-SHA "GET /example.org HTTP/2.0" 100 3848 1327 117 390 dark wine
-2001:db8:1ce::1:80 http 2001:db8:2ce:2 SSLv2 AES256-SHA "GET /example.com HTTP/2.0" 401 4894 4216 89 107 dark beer
-198.51.100.1:80 http 2001:db8:2ce:1 TLSv1.1 DHE-RSA-AES256-SHA "POST /example.com HTTP/2" 100 3148 1347 187 312 light wine
-test.example.com:81 http 203.0.113.2 SSLv3 DHE-RSA-AES256-SHA "GET /example.com HTTP/1.1" 300 3716 2765 187 274 dark beer
-localhost:81 https 2001:db8:2ce:2 SSLv2 PSK-RC4-SHA "GET /invalid.example HTTP/2.0" 101 2263 3168 21 98 dark beer
-198.51.100.1:84 http 2001:db8:2ce:1 SSLv2 AES256-SHA "POST /invalid.example HTTP/2.0" 300 1128 4896 58 276 dark wine
+2001:db8:1ce::1:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/1.1" 200 4898 2787 398 476 http SSLv2 DHE-RSA-AES256-SHA dark beer
+test.example.org:83 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 100 4957 1848 324 158 https TLSv1.2 AES256-SHA dark wine
+test.example.org:80 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 301 1752 1717 75 317 https SSLv3 PSK-RC4-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:82 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 301 3799 4120 71 17 http TLSv1.3 ECDHE-RSA-AES256-SHA dark beer
+198.51.100.1:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 101 1870 3945 392 323 http TLSv1.1 PSK-RC4-SHA light beer
+test.example.com:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 200 1261 3535 52 271 https TLSv1.1 DHE-RSA-AES256-SHA dark wine
+test.example.com:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 101 3228 3545 476 168 http TLSv1.1 AES256-SHA light beer
+test.example.com:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2" 300 4731 1574 362 184 https SSLv2 ECDHE-RSA-AES256-SHA light wine
+198.51.100.1:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 300 4868 1803 23 388 https TLSv1.3 DHE-RSA-AES256-SHA dark beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.org:83 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 100 3744 3546 296 437 http SSLv2 DHE-RSA-AES256-SHA light beer
+test.example.org:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 401 4858 1493 151 240 http SSLv2 AES256-SHA light wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 300 1367 4284 45 443 https TLSv1.1 AES256-SHA light beer
+localhost:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 100 4392 4982 143 110 http SSLv3 AES256-SHA light beer
+2001:db8:1ce::1:84 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 101 4606 3311 410 273 https TLSv1 PSK-RC4-SHA dark beer
+198.51.100.1:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2.0" 100 1163 1526 10 186 https SSLv2 AES256-SHA light beer
+test.example.org:83 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2" 301 3262 3789 144 124 https TLSv1.3 DHE-RSA-AES256-SHA light wine
+198.51.100.1:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 400 1365 1447 325 186 http TLSv1.2 PSK-RC4-SHA dark beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+2001:db8:1ce::1:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 301 4546 4409 295 153 http SSLv3 ECDHE-RSA-AES256-SHA light beer
+localhost:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 300 2297 3318 139 227 https TLSv1 ECDHE-RSA-AES256-SHA dark wine
+localhost:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 100 4671 4285 371 7 https SSLv3 ECDHE-RSA-AES256-SHA dark beer
+test.example.org:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 400 3651 1135 172 159 https TLSv1.1 DHE-RSA-AES256-SHA light beer
+localhost:82 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 101 3958 3959 350 121 https SSLv2 DHE-RSA-AES256-SHA dark beer
+localhost:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 200 1652 3813 190 11 https SSLv3 AES256-SHA dark wine
+test.example.org:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 101 1228 2344 251 366 https TLSv1 ECDHE-RSA-AES256-SHA light beer
+test.example.org:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 200 1860 3118 187 419 https TLSv1 PSK-RC4-SHA light wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+localhost:82 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 401 4518 3837 18 219 http TLSv1.3 DHE-RSA-AES256-SHA dark beer
+localhost:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 201 2108 2472 257 470 http TLSv1.1 PSK-RC4-SHA dark beer
+2001:db8:1ce::1:82 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 101 2020 1076 262 106 https TLSv1.3 PSK-RC4-SHA light wine
+localhost:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/1.1" 100 4815 3052 49 322 https TLSv1.3 DHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 300 1642 4001 421 194 https TLSv1 PSK-RC4-SHA light wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+2001:db8:1ce::1:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 201 3805 2597 25 187 http TLSv1.1 AES256-SHA dark wine
+2001:db8:1ce::1:84 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2.0" 301 3435 1760 474 318 https TLSv1.2 ECDHE-RSA-AES256-SHA light wine
+localhost:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 101 1911 4082 356 301 https TLSv1 DHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2" 100 2536 1664 115 474 http SSLv3 PSK-RC4-SHA dark beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 401 3757 3987 441 469 http SSLv2 ECDHE-RSA-AES256-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+2001:db8:1ce::1:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 400 1221 4244 232 421 https TLSv1.1 ECDHE-RSA-AES256-SHA dark wine
+localhost:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 101 2001 2405 6 140 http TLSv1 DHE-RSA-AES256-SHA light wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+198.51.100.1:81 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 400 4442 4396 64 49 https TLSv1.1 AES256-SHA light beer
+2001:db8:1ce::1:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 401 1461 4623 46 47 https TLSv1.3 ECDHE-RSA-AES256-SHA light beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 101 4709 2156 249 137 https TLSv1.3 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:84 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2" 201 2332 3311 172 266 https TLSv1.1 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 301 3571 3672 188 389 https SSLv2 AES256-SHA light wine
+localhost:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/1.1" 100 1739 3940 403 399 https SSLv3 DHE-RSA-AES256-SHA dark wine
+test.example.org:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 300 2332 3788 473 372 http SSLv3 DHE-RSA-AES256-SHA dark wine
+test.example.org:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2.0" 201 4476 1339 420 120 https TLSv1.3 ECDHE-RSA-AES256-SHA light beer
+test.example.org:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 101 1040 4417 294 81 http SSLv2 PSK-RC4-SHA dark beer
+test.example.org:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 200 1908 1611 265 324 http TLSv1 ECDHE-RSA-AES256-SHA light wine
+test.example.org:83 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 300 4725 3638 328 442 https SSLv3 DHE-RSA-AES256-SHA dark wine
+198.51.100.1:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 100 3943 3001 163 391 http TLSv1.1 AES256-SHA light beer
+198.51.100.1:84 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2" 101 3635 4361 30 431 https SSLv2 DHE-RSA-AES256-SHA light beer
+test.example.com:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 201 3348 2997 321 462 http TLSv1 PSK-RC4-SHA dark beer
+localhost:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 101 3213 3414 218 267 http TLSv1.3 PSK-RC4-SHA dark wine
+localhost:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 400 2845 2448 46 165 https TLSv1 AES256-SHA light beer
+test.example.org:82 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2.0" 301 2789 1791 227 314 http SSLv3 ECDHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 301 2283 4644 304 402 http TLSv1.1 PSK-RC4-SHA light wine
+localhost:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2.0" 201 4748 3274 80 481 http SSLv2 AES256-SHA light beer
+localhost:81 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 300 2327 1772 328 174 http TLSv1 ECDHE-RSA-AES256-SHA light beer
+test.example.org:81 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/1.1" 401 1180 3482 115 138 http SSLv2 DHE-RSA-AES256-SHA dark beer
+198.51.100.1:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2" 300 2758 1482 432 426 http TLSv1.1 PSK-RC4-SHA dark wine
+2001:db8:1ce::1:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 200 4793 3549 258 490 https SSLv3 AES256-SHA light wine
+198.51.100.1:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 200 4211 3691 49 241 http TLSv1.2 PSK-RC4-SHA light wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 201 4853 1043 361 46 http SSLv3 ECDHE-RSA-AES256-SHA dark beer
+localhost:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 400 1025 3378 28 134 https TLSv1.2 DHE-RSA-AES256-SHA light wine
+198.51.100.1:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 400 2124 1528 147 144 http TLSv1.1 DHE-RSA-AES256-SHA dark wine
+test.example.com:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 201 4910 1613 194 385 https TLSv1.1 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 100 2792 3271 491 104 https SSLv3 DHE-RSA-AES256-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2" 300 4722 4182 344 237 https TLSv1 DHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:82 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/1.1" 201 3945 3511 153 388 https TLSv1 PSK-RC4-SHA light beer
+test.example.com:81 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 100 1456 4467 418 70 http TLSv1 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:80 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2.0" 401 1307 1537 422 379 http TLSv1 PSK-RC4-SHA light wine
+2001:db8:1ce::1:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 400 4768 2420 95 366 http TLSv1.3 DHE-RSA-AES256-SHA light beer
+localhost:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 100 4274 4529 296 270 http SSLv3 PSK-RC4-SHA dark beer
+test.example.org:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 101 1181 3640 182 479 https TLSv1.3 AES256-SHA light wine
+198.51.100.1:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 400 2101 2029 377 210 http TLSv1.3 AES256-SHA dark wine
+test.example.com:83 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 400 2373 1785 157 373 https SSLv2 DHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:83 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 400 4812 4212 89 36 https TLSv1.2 AES256-SHA light wine
+198.51.100.1:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 201 1421 4737 194 483 https TLSv1.1 AES256-SHA light wine
+2001:db8:1ce::1:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 200 3485 1976 369 77 https SSLv2 AES256-SHA dark wine
+2001:db8:1ce::1:83 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/1.1" 100 4414 4356 317 178 http SSLv3 DHE-RSA-AES256-SHA light wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+198.51.100.1:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 200 1151 2186 490 362 https TLSv1.3 DHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:81 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2" 400 2991 3256 184 166 https TLSv1.3 PSK-RC4-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+localhost:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2" 300 3872 2708 139 378 http TLSv1.3 PSK-RC4-SHA dark beer
+localhost:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 201 2991 3430 178 104 http TLSv1.2 ECDHE-RSA-AES256-SHA light wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+2001:db8:1ce::1:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 400 2825 4431 30 249 http TLSv1.3 ECDHE-RSA-AES256-SHA light wine
+test.example.org:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 100 1319 4859 435 44 http TLSv1.2 ECDHE-RSA-AES256-SHA light beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+localhost:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 300 3962 1663 23 264 https TLSv1.2 DHE-RSA-AES256-SHA dark wine
+localhost:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/1.1" 201 4465 2310 493 99 https TLSv1.1 AES256-SHA dark beer
+test.example.com:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 100 2942 4946 119 27 https TLSv1.1 PSK-RC4-SHA dark wine
+test.example.org:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 201 3243 2992 432 260 http TLSv1 AES256-SHA light wine
+2001:db8:1ce::1:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 301 2312 3695 112 330 http SSLv2 ECDHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/1.1" 400 3118 3248 347 114 https TLSv1 ECDHE-RSA-AES256-SHA light wine
+test.example.com:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 100 3126 4402 19 375 https SSLv3 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2.0" 201 2671 2153 195 310 https SSLv2 ECDHE-RSA-AES256-SHA light wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 401 1582 3558 292 394 http TLSv1.3 PSK-RC4-SHA light wine
+test.example.com:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 201 4969 4169 281 71 http TLSv1.2 PSK-RC4-SHA dark beer
+test.example.org:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 200 4531 3111 272 437 https TLSv1.2 DHE-RSA-AES256-SHA dark wine
+198.51.100.1:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/1.1" 401 1746 4177 224 89 https TLSv1.3 AES256-SHA dark beer
+localhost:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 200 4147 4505 454 65 https TLSv1.1 ECDHE-RSA-AES256-SHA light beer
+localhost:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 300 2235 3397 290 243 https TLSv1.3 DHE-RSA-AES256-SHA dark beer
+localhost:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 201 1633 3774 146 394 https TLSv1.2 AES256-SHA light wine
+2001:db8:1ce::1:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 100 4580 2717 219 305 https TLSv1.3 PSK-RC4-SHA dark beer
+test.example.com:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2.0" 401 1395 3562 303 392 http SSLv2 DHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:80 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 201 4827 1947 419 323 https TLSv1.2 DHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 301 1116 4737 55 448 http TLSv1.2 ECDHE-RSA-AES256-SHA light beer
+test.example.org:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2" 401 3130 4303 71 401 https TLSv1.1 DHE-RSA-AES256-SHA light wine
+localhost:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2.0" 200 4968 4988 75 411 http TLSv1 AES256-SHA dark wine
+198.51.100.1:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2" 401 1586 4626 58 248 http TLSv1.2 ECDHE-RSA-AES256-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+198.51.100.1:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 300 2652 2273 379 240 https TLSv1.2 ECDHE-RSA-AES256-SHA dark wine
+test.example.org:81 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 101 2696 1585 383 365 http SSLv2 ECDHE-RSA-AES256-SHA dark beer
+localhost:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 200 4278 2629 350 109 http TLSv1.3 ECDHE-RSA-AES256-SHA light wine
+localhost:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2.0" 301 3012 3094 37 44 http SSLv2 PSK-RC4-SHA light beer
+localhost:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 100 3197 1038 391 416 https TLSv1.2 AES256-SHA dark beer
+test.example.org:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 100 1842 1947 402 267 https SSLv3 PSK-RC4-SHA light wine
+198.51.100.1:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 200 3365 4296 23 143 https TLSv1.2 AES256-SHA dark beer
+2001:db8:1ce::1:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 301 3630 4425 343 460 http TLSv1.3 ECDHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:81 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 101 3175 2967 441 86 http TLSv1.1 ECDHE-RSA-AES256-SHA light wine
+198.51.100.1:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 100 4423 2052 251 81 https TLSv1.3 DHE-RSA-AES256-SHA dark wine
+test.example.com:83 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 400 3440 4089 408 442 https SSLv3 PSK-RC4-SHA dark beer
+test.example.org:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 100 3827 3457 288 305 http TLSv1 PSK-RC4-SHA dark beer
+198.51.100.1:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 101 1292 2131 382 334 http TLSv1 ECDHE-RSA-AES256-SHA light wine
+198.51.100.1:83 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 400 2026 1831 417 123 http TLSv1.1 ECDHE-RSA-AES256-SHA light beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:84 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 401 4300 3883 270 160 https TLSv1 PSK-RC4-SHA light wine
+localhost:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2" 300 1360 1687 49 356 https SSLv3 ECDHE-RSA-AES256-SHA dark beer
+localhost:81 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 201 2871 3581 214 269 https TLSv1.1 AES256-SHA dark wine
+test.example.org:83 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 201 4426 4191 74 358 http TLSv1.1 PSK-RC4-SHA light beer
+198.51.100.1:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 200 3533 2075 370 403 https TLSv1.2 DHE-RSA-AES256-SHA dark wine
+test.example.com:82 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 100 3660 3471 272 136 http TLSv1 AES256-SHA light beer
+test.example.org:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/1.1" 200 1999 3259 277 254 https TLSv1.3 AES256-SHA dark wine
+198.51.100.1:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 300 3103 2906 200 141 http TLSv1.2 DHE-RSA-AES256-SHA light wine
+198.51.100.1:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 400 4197 4507 159 311 https SSLv3 AES256-SHA dark wine
+test.example.com:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 300 1049 4682 464 353 http TLSv1.2 ECDHE-RSA-AES256-SHA dark wine
+test.example.com:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 200 2163 2112 266 133 https TLSv1.1 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:82 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 400 4310 2281 107 217 https SSLv2 AES256-SHA light beer
+198.51.100.1:83 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 400 4215 2676 425 244 https SSLv3 PSK-RC4-SHA dark beer
+2001:db8:1ce::1:84 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 200 3707 1631 300 224 http TLSv1 PSK-RC4-SHA light wine
+test.example.com:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 201 2082 4603 150 200 http TLSv1.2 DHE-RSA-AES256-SHA dark wine
+test.example.com:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 301 3547 4120 146 234 https TLSv1.1 PSK-RC4-SHA dark beer
+test.example.org:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 101 1999 2794 47 420 https TLSv1.1 DHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/1.1" 100 2648 4958 389 16 https SSLv3 AES256-SHA light beer
+localhost:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 201 1202 2909 26 340 http TLSv1 DHE-RSA-AES256-SHA light wine
+localhost:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 201 1393 3045 248 421 https TLSv1.1 ECDHE-RSA-AES256-SHA light wine
+localhost:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 101 2739 4561 61 257 http SSLv3 ECDHE-RSA-AES256-SHA dark beer
+localhost:82 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 301 4127 4190 374 278 https TLSv1 AES256-SHA light beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+localhost:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 201 3442 1472 366 373 https SSLv2 ECDHE-RSA-AES256-SHA light wine
+test.example.org:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 301 1745 1279 207 55 https SSLv3 DHE-RSA-AES256-SHA light beer
+test.example.com:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2.0" 400 1462 2721 168 385 https TLSv1.1 DHE-RSA-AES256-SHA light beer
+198.51.100.1:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 100 1680 2358 342 237 https TLSv1.2 PSK-RC4-SHA light wine
+2001:db8:1ce::1:83 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 101 1242 3123 296 479 https SSLv2 DHE-RSA-AES256-SHA light wine
+test.example.com:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 200 1525 4029 39 30 https TLSv1.1 AES256-SHA dark wine
+localhost:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 301 4348 4902 121 103 https TLSv1.3 ECDHE-RSA-AES256-SHA light beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.org:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 201 4992 1046 5 408 https TLSv1.3 ECDHE-RSA-AES256-SHA dark wine
+test.example.com:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 401 1331 2834 232 212 https TLSv1.1 DHE-RSA-AES256-SHA dark wine
+test.example.com:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 100 1281 3004 261 61 https TLSv1.1 DHE-RSA-AES256-SHA dark beer
+localhost:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 300 3985 2627 249 397 https SSLv2 PSK-RC4-SHA dark beer
+2001:db8:1ce::1:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/1.1" 201 2835 3195 194 308 http TLSv1.2 ECDHE-RSA-AES256-SHA light beer
+198.51.100.1:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 101 4413 2887 257 108 https TLSv1 PSK-RC4-SHA light beer
+198.51.100.1:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 300 2514 2890 186 53 https TLSv1.3 ECDHE-RSA-AES256-SHA dark beer
+198.51.100.1:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 200 2396 3424 101 295 http SSLv2 PSK-RC4-SHA light wine
+2001:db8:1ce::1:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 201 4849 3176 453 302 http TLSv1.1 AES256-SHA dark beer
+2001:db8:1ce::1:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 200 4191 2809 300 205 https TLSv1 ECDHE-RSA-AES256-SHA dark wine
+localhost:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 300 2920 1745 421 80 http TLSv1.1 AES256-SHA dark wine
+localhost:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 100 3313 1900 226 163 http TLSv1.3 PSK-RC4-SHA light wine
+localhost:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2.0" 401 2298 1179 181 229 https TLSv1 PSK-RC4-SHA dark beer
+2001:db8:1ce::1:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 401 4604 4392 239 20 http SSLv2 ECDHE-RSA-AES256-SHA dark beer
+test.example.org:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 401 2077 2339 132 433 https TLSv1.2 ECDHE-RSA-AES256-SHA dark beer
+198.51.100.1:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 201 4448 2085 496 68 https SSLv3 AES256-SHA light wine
+localhost:80 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 201 3219 2834 226 50 https SSLv3 PSK-RC4-SHA light wine
+test.example.org:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 101 2908 3137 50 236 http TLSv1 DHE-RSA-AES256-SHA light beer
+test.example.org:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 301 4350 1578 469 206 http TLSv1.2 ECDHE-RSA-AES256-SHA light beer
+localhost:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 301 3255 1349 245 492 http TLSv1.3 AES256-SHA dark wine
+test.example.com:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 201 3960 2563 455 228 http SSLv3 DHE-RSA-AES256-SHA light beer
+test.example.org:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 301 3302 1004 184 392 https TLSv1 ECDHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2.0" 401 1565 4150 93 130 https TLSv1 AES256-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+localhost:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 401 2251 2071 373 471 http TLSv1.2 AES256-SHA light wine
+198.51.100.1:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 200 1589 2077 159 389 http TLSv1.1 ECDHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 401 1081 2154 103 244 https TLSv1.1 AES256-SHA light wine
+198.51.100.1:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 101 3824 4262 478 439 https TLSv1 DHE-RSA-AES256-SHA light beer
+test.example.org:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 200 2123 3904 183 420 https TLSv1.1 DHE-RSA-AES256-SHA light wine
+localhost:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 100 4324 4867 411 30 https TLSv1.1 ECDHE-RSA-AES256-SHA light beer
+198.51.100.1:82 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 300 2462 3054 286 47 http SSLv3 ECDHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:82 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 101 3389 4012 81 113 https TLSv1.2 DHE-RSA-AES256-SHA dark beer
+test.example.org:82 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 301 1469 3001 134 460 http TLSv1.1 AES256-SHA dark wine
+test.example.com:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 201 1962 1869 269 191 https SSLv3 ECDHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2.0" 400 1807 3457 477 77 https TLSv1 ECDHE-RSA-AES256-SHA dark beer
+localhost:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2" 201 2041 2072 464 193 http SSLv3 ECDHE-RSA-AES256-SHA light wine
+198.51.100.1:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 301 2731 1114 92 45 http TLSv1.1 DHE-RSA-AES256-SHA light beer
+localhost:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2" 300 4016 4766 425 405 https TLSv1.1 PSK-RC4-SHA light beer
+test.example.com:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 201 3480 3735 420 338 https TLSv1.1 ECDHE-RSA-AES256-SHA light beer
+198.51.100.1:82 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 301 4654 2443 495 322 https TLSv1.3 PSK-RC4-SHA light beer
+2001:db8:1ce::1:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 301 1575 1083 214 55 http TLSv1.2 AES256-SHA dark wine
+localhost:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 101 3791 3173 436 449 http TLSv1 AES256-SHA dark beer
+test.example.org:82 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 301 4446 4004 298 459 https TLSv1.1 ECDHE-RSA-AES256-SHA dark beer
+test.example.com:82 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 300 3414 4751 49 391 http TLSv1.2 ECDHE-RSA-AES256-SHA light wine
+test.example.org:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2" 401 2058 2053 250 290 http TLSv1 AES256-SHA dark beer
+test.example.com:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 200 2115 4533 461 278 https SSLv3 AES256-SHA dark wine
+test.example.com:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 300 3872 1292 172 275 https TLSv1.1 AES256-SHA light wine
+localhost:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2" 201 4947 4545 50 414 http SSLv3 AES256-SHA dark wine
+2001:db8:1ce::1:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 400 1012 3777 305 193 https TLSv1.3 DHE-RSA-AES256-SHA light beer
+localhost:84 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 201 1862 1381 420 109 http TLSv1.2 ECDHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 300 3579 3376 434 67 https TLSv1 PSK-RC4-SHA light beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.org:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 401 4937 1232 470 280 http TLSv1 DHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 100 4926 4244 82 284 http SSLv2 ECDHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2.0" 100 4783 4925 497 340 http TLSv1 ECDHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 100 3308 1377 208 232 http SSLv2 PSK-RC4-SHA light wine
+localhost:82 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 101 4285 4695 426 481 https TLSv1.3 DHE-RSA-AES256-SHA dark wine
+localhost:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 100 1953 2196 101 129 https SSLv3 PSK-RC4-SHA light beer
+localhost:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 200 2169 4267 65 181 http TLSv1.3 AES256-SHA light wine
+test.example.org:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 301 1698 1366 116 101 http TLSv1.3 DHE-RSA-AES256-SHA dark beer
+test.example.com:80 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 200 3534 4390 114 479 https TLSv1.3 ECDHE-RSA-AES256-SHA dark beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.org:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 101 3583 1060 400 28 http TLSv1.3 PSK-RC4-SHA light wine
+test.example.com:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 100 3078 4116 60 444 http TLSv1.3 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 401 3975 2201 438 419 http SSLv2 AES256-SHA dark beer
+test.example.org:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 100 3756 2827 424 411 https TLSv1.3 DHE-RSA-AES256-SHA dark beer
+test.example.com:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 400 2898 3218 258 198 http SSLv2 PSK-RC4-SHA dark wine
+localhost:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 201 2076 3000 320 196 http SSLv2 PSK-RC4-SHA light beer
+198.51.100.1:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 201 1439 4814 47 360 http TLSv1 ECDHE-RSA-AES256-SHA dark wine
+test.example.org:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 301 2871 2870 491 411 https SSLv2 ECDHE-RSA-AES256-SHA dark beer
+test.example.com:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 200 2744 3085 11 151 http SSLv3 ECDHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 101 1241 1752 324 154 https TLSv1.2 DHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 301 3834 4235 270 331 https TLSv1.2 PSK-RC4-SHA dark beer
+test.example.com:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2" 200 2431 3778 103 78 http TLSv1.2 PSK-RC4-SHA light beer
+198.51.100.1:81 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2" 200 2250 1787 340 132 http TLSv1.3 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:81 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 200 4838 1201 79 10 http SSLv2 AES256-SHA dark beer
+2001:db8:1ce::1:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 400 2953 1165 492 245 http TLSv1.2 PSK-RC4-SHA light wine
+198.51.100.1:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 200 2540 3818 490 295 http TLSv1.3 DHE-RSA-AES256-SHA dark beer
+test.example.com:83 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 400 4469 3199 203 107 https TLSv1.2 ECDHE-RSA-AES256-SHA light wine
+test.example.com:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 201 3270 3948 223 443 http TLSv1 ECDHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 300 4902 1169 359 328 http TLSv1.3 PSK-RC4-SHA dark wine
+test.example.org:80 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/1.1" 400 1788 4502 355 220 http TLSv1 PSK-RC4-SHA dark beer
+198.51.100.1:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 100 1565 2909 127 435 http TLSv1.3 PSK-RC4-SHA light wine
+test.example.com:83 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2" 101 4507 2396 259 100 https SSLv3 PSK-RC4-SHA light beer
+198.51.100.1:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 100 3119 2306 387 395 http TLSv1.1 DHE-RSA-AES256-SHA light beer
+localhost:82 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2" 100 1473 4928 364 371 https SSLv3 ECDHE-RSA-AES256-SHA light wine
+198.51.100.1:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 100 1449 3719 390 401 http TLSv1.2 ECDHE-RSA-AES256-SHA dark wine
+test.example.com:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 301 1897 1428 438 210 http TLSv1.1 ECDHE-RSA-AES256-SHA light wine
+localhost:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 300 1381 1043 367 453 http TLSv1.2 DHE-RSA-AES256-SHA light wine
+localhost:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 400 3495 2740 375 378 http TLSv1 DHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:84 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 301 4754 4667 293 56 https SSLv2 ECDHE-RSA-AES256-SHA dark wine
+test.example.org:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 200 3447 3853 454 348 http TLSv1 PSK-RC4-SHA light beer
+198.51.100.1:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 401 4669 2808 89 235 https TLSv1.3 PSK-RC4-SHA dark beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+localhost:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 401 3134 1040 401 33 https SSLv3 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:80 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 200 3823 3615 48 110 https SSLv3 PSK-RC4-SHA light beer
+test.example.org:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 301 2971 3712 2 325 https TLSv1.1 AES256-SHA dark beer
+2001:db8:1ce::1:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 301 2932 2388 482 302 http SSLv2 AES256-SHA light wine
+198.51.100.1:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 400 2009 3888 347 59 http TLSv1 AES256-SHA light wine
+2001:db8:1ce::1:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 401 4252 3808 285 384 https TLSv1.1 ECDHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 301 2664 1505 455 419 https TLSv1.1 DHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2" 400 2474 2102 40 377 http TLSv1.3 PSK-RC4-SHA light beer
+test.example.com:81 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 301 4478 4105 239 420 https TLSv1 DHE-RSA-AES256-SHA light wine
+test.example.org:81 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 201 4461 1737 416 129 https TLSv1.3 PSK-RC4-SHA dark wine
+198.51.100.1:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/1.1" 100 2381 2018 34 247 http TLSv1.3 DHE-RSA-AES256-SHA light beer
+test.example.com:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 101 3138 3141 178 333 http TLSv1.2 DHE-RSA-AES256-SHA dark wine
+test.example.com:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 300 2203 4463 450 497 http TLSv1.3 PSK-RC4-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:81 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2.0" 400 3937 4320 30 151 http TLSv1.2 PSK-RC4-SHA dark beer
+test.example.com:82 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 100 2858 4431 92 38 http SSLv2 PSK-RC4-SHA light beer
+2001:db8:1ce::1:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2" 301 3339 1333 291 479 http TLSv1.2 PSK-RC4-SHA dark wine
+test.example.org:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 201 1799 1725 184 24 http TLSv1 AES256-SHA light wine
+localhost:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 400 4743 1337 381 494 http SSLv2 DHE-RSA-AES256-SHA dark beer
+198.51.100.1:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 300 4542 4411 280 383 http TLSv1 AES256-SHA dark wine
+198.51.100.1:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 101 3600 2913 361 411 https TLSv1.2 AES256-SHA light wine
+198.51.100.1:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 100 2860 4491 431 82 https TLSv1.3 DHE-RSA-AES256-SHA light wine
+localhost:82 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 201 4544 1146 86 146 http TLSv1.2 PSK-RC4-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+198.51.100.1:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 401 1412 3023 474 170 https TLSv1.3 DHE-RSA-AES256-SHA dark wine
+198.51.100.1:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 201 2870 4503 86 428 https TLSv1.2 ECDHE-RSA-AES256-SHA light beer
+198.51.100.1:83 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 200 2250 1801 236 283 https TLSv1.2 PSK-RC4-SHA dark beer
+test.example.org:81 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 100 3859 2489 455 150 http SSLv3 PSK-RC4-SHA light beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:81 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 400 4322 3740 68 383 http TLSv1 AES256-SHA light wine
+localhost:83 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/1.1" 400 1369 3435 223 363 http TLSv1 AES256-SHA dark beer
+test.example.org:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 101 1863 1538 81 9 https TLSv1 DHE-RSA-AES256-SHA light beer
+localhost:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2" 100 4390 2872 173 68 https TLSv1.3 DHE-RSA-AES256-SHA dark beer
+test.example.com:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 300 2549 4334 353 127 http TLSv1 AES256-SHA light beer
+test.example.com:80 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 300 2314 3541 376 69 https TLSv1.3 ECDHE-RSA-AES256-SHA light beer
+test.example.org:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 301 2883 3804 95 80 https TLSv1 PSK-RC4-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+2001:db8:1ce::1:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 201 3245 4083 153 481 https TLSv1 PSK-RC4-SHA dark beer
+localhost:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 401 4633 2483 350 196 https TLSv1.3 ECDHE-RSA-AES256-SHA dark beer
+198.51.100.1:84 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 201 1944 2389 217 413 http TLSv1.2 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 401 4159 4546 294 252 http TLSv1.2 DHE-RSA-AES256-SHA dark wine
+test.example.org:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 200 2100 1268 115 431 http SSLv2 ECDHE-RSA-AES256-SHA dark wine
+test.example.com:83 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 301 4386 3222 41 383 http TLSv1.1 AES256-SHA light wine
+test.example.org:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2.0" 200 4859 2780 28 16 https SSLv2 DHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2.0" 301 1541 2755 114 194 https TLSv1 ECDHE-RSA-AES256-SHA light wine
+198.51.100.1:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 300 2058 3951 312 428 http TLSv1.3 PSK-RC4-SHA dark beer
+198.51.100.1:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 400 3076 4237 341 115 http TLSv1.3 AES256-SHA dark wine
+test.example.com:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 300 3384 2583 2 348 http TLSv1.3 ECDHE-RSA-AES256-SHA dark wine
+localhost:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/1.1" 200 1283 4090 311 39 https SSLv3 DHE-RSA-AES256-SHA dark wine
+localhost:81 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 100 1620 3450 491 119 http TLSv1.1 PSK-RC4-SHA dark beer
+test.example.com:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2" 200 3572 3267 95 80 http TLSv1.2 PSK-RC4-SHA dark beer
+localhost:80 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 300 2628 2670 52 307 http TLSv1.1 AES256-SHA dark beer
+2001:db8:1ce::1:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 101 3332 4865 246 348 https TLSv1.2 ECDHE-RSA-AES256-SHA light beer
+test.example.com:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 201 3766 1704 147 217 https SSLv2 DHE-RSA-AES256-SHA dark beer
+test.example.com:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 200 3763 3904 305 366 http TLSv1.3 DHE-RSA-AES256-SHA dark beer
+198.51.100.1:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 201 4205 4011 38 144 http SSLv3 DHE-RSA-AES256-SHA light wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+2001:db8:1ce::1:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 101 4573 3168 317 94 https TLSv1 PSK-RC4-SHA light beer
+localhost:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 201 1481 1798 190 170 http TLSv1.1 ECDHE-RSA-AES256-SHA dark wine
+test.example.com:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 201 1603 1276 51 465 https SSLv2 PSK-RC4-SHA dark wine
+test.example.org:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 101 2050 2654 283 287 https TLSv1.1 PSK-RC4-SHA dark wine
+198.51.100.1:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 201 4943 2143 43 167 http TLSv1.1 ECDHE-RSA-AES256-SHA light beer
+198.51.100.1:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/1.1" 401 3854 4082 318 477 https TLSv1.1 ECDHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 100 3235 4635 377 206 http TLSv1.1 AES256-SHA light beer
+2001:db8:1ce::1:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 401 4508 2872 185 243 https TLSv1.3 AES256-SHA light beer
+test.example.com:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 401 4943 3560 48 473 http TLSv1.1 AES256-SHA light beer
+test.example.com:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 300 2693 3536 157 430 https SSLv3 DHE-RSA-AES256-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+2001:db8:1ce::1:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 300 4321 4966 420 264 http TLSv1.2 DHE-RSA-AES256-SHA dark beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.org:80 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 101 1470 1279 423 248 https TLSv1 DHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 100 2306 4406 237 51 http SSLv2 PSK-RC4-SHA light beer
+2001:db8:1ce::1:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/1.1" 301 1766 2834 429 428 https TLSv1.3 DHE-RSA-AES256-SHA dark wine
+test.example.org:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 300 2997 2317 288 312 http SSLv3 PSK-RC4-SHA dark beer
+localhost:84 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 301 2968 1042 124 330 https TLSv1.3 AES256-SHA dark wine
+test.example.org:83 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 301 1458 4510 268 136 http SSLv2 ECDHE-RSA-AES256-SHA light wine
+test.example.org:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 301 4830 2063 255 352 http SSLv2 ECDHE-RSA-AES256-SHA dark beer
+test.example.org:84 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 200 1490 2187 282 484 http TLSv1.3 PSK-RC4-SHA dark wine
+localhost:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 100 1015 2608 460 331 http TLSv1.1 AES256-SHA dark beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+localhost:81 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 200 4831 1333 57 68 https TLSv1 ECDHE-RSA-AES256-SHA dark wine
+localhost:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 101 2554 1624 18 215 http TLSv1.1 PSK-RC4-SHA dark wine
+198.51.100.1:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2.0" 401 1579 3208 463 31 https TLSv1.1 DHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:80 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 201 2239 1301 165 27 https SSLv3 ECDHE-RSA-AES256-SHA dark beer
+test.example.org:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 200 3874 1581 257 203 http TLSv1.3 AES256-SHA dark beer
+localhost:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 400 2498 2533 317 269 https TLSv1.1 ECDHE-RSA-AES256-SHA light beer
+198.51.100.1:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 101 2898 1790 277 180 https TLSv1 DHE-RSA-AES256-SHA light wine
+198.51.100.1:80 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 200 2899 2599 70 323 http TLSv1.1 PSK-RC4-SHA dark wine
+test.example.org:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 300 4546 4841 112 34 https SSLv3 ECDHE-RSA-AES256-SHA dark wine
+localhost:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2" 401 4016 3596 394 463 https TLSv1.1 ECDHE-RSA-AES256-SHA dark beer
+localhost:83 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 200 1946 2492 32 123 http SSLv3 DHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 201 2296 3174 55 473 http TLSv1.3 ECDHE-RSA-AES256-SHA light wine
+198.51.100.1:82 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 201 3037 3632 472 280 https TLSv1.1 DHE-RSA-AES256-SHA light wine
+198.51.100.1:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 200 1721 1520 211 157 http TLSv1.2 DHE-RSA-AES256-SHA light beer
+localhost:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 401 4044 3518 390 146 http TLSv1.1 DHE-RSA-AES256-SHA light beer
+test.example.com:84 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 101 4527 3718 95 207 https TLSv1.3 AES256-SHA dark beer
+2001:db8:1ce::1:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 400 2309 4551 423 304 https TLSv1.1 AES256-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.com:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 401 3864 2883 115 211 https TLSv1.3 PSK-RC4-SHA light wine
+test.example.com:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2" 201 3417 3422 340 242 https SSLv2 PSK-RC4-SHA dark wine
+test.example.org:80 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 201 4012 2880 45 302 http SSLv2 AES256-SHA light wine
+test.example.com:82 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 300 2834 2781 282 213 http SSLv2 PSK-RC4-SHA dark wine
+test.example.org:83 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2" 300 3421 1800 422 72 http TLSv1 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 300 3052 3602 153 320 https SSLv3 ECDHE-RSA-AES256-SHA light beer
+localhost:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2.0" 400 1578 4720 230 458 https SSLv3 AES256-SHA light wine
+test.example.org:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 100 1998 3117 220 166 http SSLv2 DHE-RSA-AES256-SHA dark beer
+test.example.com:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2" 100 2041 4031 295 66 http TLSv1.2 DHE-RSA-AES256-SHA light beer
+test.example.org:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 401 4941 3742 174 434 https TLSv1.3 PSK-RC4-SHA dark beer
+localhost:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 100 1153 2169 24 196 https SSLv2 PSK-RC4-SHA dark wine
+test.example.com:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 400 1289 2496 189 98 https SSLv2 PSK-RC4-SHA dark beer
+localhost:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2" 401 4343 2877 90 314 http SSLv2 AES256-SHA light wine
+localhost:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 200 1203 2163 465 460 https TLSv1.1 PSK-RC4-SHA dark wine
+test.example.org:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2.0" 300 2301 3063 36 178 https TLSv1.1 DHE-RSA-AES256-SHA dark beer
+test.example.org:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 201 4306 1154 408 297 https TLSv1 AES256-SHA light beer
+198.51.100.1:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 300 1178 3204 79 101 http SSLv2 DHE-RSA-AES256-SHA dark beer
+localhost:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 200 4431 4442 348 155 http TLSv1.2 DHE-RSA-AES256-SHA light beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.org:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 400 3897 3618 199 149 https TLSv1.3 ECDHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 300 2221 4730 324 338 https SSLv3 AES256-SHA dark beer
+198.51.100.1:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 100 2030 4453 152 414 https TLSv1 ECDHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:81 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 301 4937 1625 213 265 https TLSv1.2 PSK-RC4-SHA light beer
+localhost:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 400 1503 3735 466 485 https TLSv1.2 PSK-RC4-SHA light beer
+2001:db8:1ce::1:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2" 200 3255 2804 105 111 http SSLv3 AES256-SHA dark wine
+test.example.com:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 300 2376 2896 82 287 https SSLv2 AES256-SHA dark wine
+198.51.100.1:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/1.1" 100 3525 3376 192 247 https SSLv2 PSK-RC4-SHA light wine
+localhost:83 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 300 2813 1800 365 231 https TLSv1.1 PSK-RC4-SHA light wine
+localhost:81 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 201 3589 2334 317 406 https TLSv1.2 PSK-RC4-SHA dark wine
+test.example.org:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 100 3216 3159 17 344 http TLSv1.3 PSK-RC4-SHA light beer
+test.example.org:84 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 300 4047 2788 196 105 http TLSv1.2 DHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 301 4253 1092 219 172 https SSLv2 PSK-RC4-SHA light beer
+test.example.com:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 300 2612 4876 113 492 http TLSv1 PSK-RC4-SHA dark beer
+test.example.org:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 400 1039 4957 283 391 https SSLv2 ECDHE-RSA-AES256-SHA dark beer
+localhost:80 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 300 2175 1025 349 62 https TLSv1.2 PSK-RC4-SHA light wine
+198.51.100.1:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 201 2512 4199 87 90 https TLSv1.2 AES256-SHA dark beer
+test.example.com:80 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 300 3685 3490 288 456 http TLSv1.3 ECDHE-RSA-AES256-SHA light beer
+test.example.com:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 201 4163 2730 115 186 http TLSv1.3 PSK-RC4-SHA light beer
+test.example.org:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 201 4000 1751 482 232 https TLSv1.1 AES256-SHA dark beer
+test.example.com:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2" 301 4544 1246 191 426 http TLSv1.3 AES256-SHA light beer
+test.example.org:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 201 2202 1079 44 93 http TLSv1.1 ECDHE-RSA-AES256-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+198.51.100.1:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 301 2329 3996 388 386 https SSLv2 DHE-RSA-AES256-SHA dark wine
+test.example.org:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 101 3564 2870 499 23 https SSLv2 DHE-RSA-AES256-SHA light wine
+localhost:84 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 401 3729 1376 161 313 http TLSv1 DHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:81 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2.0" 300 4158 3864 444 149 https TLSv1.2 ECDHE-RSA-AES256-SHA light wine
+test.example.com:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2" 301 1809 4286 447 418 http TLSv1 AES256-SHA light beer
+198.51.100.1:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 100 1942 2004 497 427 https SSLv2 DHE-RSA-AES256-SHA dark wine
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.org:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 300 4471 3841 438 176 https TLSv1.3 PSK-RC4-SHA dark beer
+test.example.com:82 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 400 1613 3836 362 432 http SSLv2 ECDHE-RSA-AES256-SHA dark wine
+test.example.org:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2" 300 4394 2628 344 69 http TLSv1.2 AES256-SHA light wine
+localhost:84 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 201 4269 4494 178 149 http SSLv2 ECDHE-RSA-AES256-SHA light wine
+198.51.100.1:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2.0" 100 3413 1039 317 109 http TLSv1.1 DHE-RSA-AES256-SHA light wine
+test.example.org:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 201 1110 1662 194 353 https TLSv1.1 AES256-SHA dark wine
+2001:db8:1ce::1:84 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/1.1" 301 3742 1514 220 406 http TLSv1 DHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2" 200 2060 4756 406 119 http SSLv3 DHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:82 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 301 3663 1293 377 420 http TLSv1.2 ECDHE-RSA-AES256-SHA light wine
+test.example.com:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2.0" 301 3708 2360 98 293 https TLSv1.2 DHE-RSA-AES256-SHA dark wine
+198.51.100.1:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/1.1" 400 4376 4393 488 173 https SSLv3 PSK-RC4-SHA dark wine
+localhost:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/1.1" 100 1129 2917 122 93 http SSLv3 DHE-RSA-AES256-SHA light beer
+localhost:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 200 4769 2155 492 41 https TLSv1 AES256-SHA dark beer
+2001:db8:1ce::1:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 201 4710 3030 349 392 http TLSv1 AES256-SHA light wine
+198.51.100.1:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2" 100 2642 2759 363 112 http TLSv1.1 DHE-RSA-AES256-SHA light beer
+Unmatched! The rat the cat the dog chased killed ate the malt!
+test.example.org:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 401 3964 1986 204 377 https SSLv2 DHE-RSA-AES256-SHA light beer
+198.51.100.1:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 401 1053 3953 284 13 http TLSv1.2 ECDHE-RSA-AES256-SHA light wine
+test.example.com:80 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 301 4436 4981 79 323 https SSLv2 ECDHE-RSA-AES256-SHA dark wine
+test.example.com:83 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 101 3207 2032 206 398 https SSLv3 PSK-RC4-SHA light wine
+2001:db8:1ce::1:80 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 200 3938 1928 216 31 https SSLv2 ECDHE-RSA-AES256-SHA light wine
 Unmatched! The rat the cat the dog chased killed ate the malt!
 Unmatched! The rat the cat the dog chased killed ate the malt!
-198.51.100.1:81 https localhost SSLv2 AES256-SHA "GET /example.net HTTP/2" 101 3418 2142 113 96 dark wine
-localhost:82 https 2001:db8:2ce:2 TLSv1.2 AES256-SHA "GET /example.org HTTP/1.1" 201 2672 1739 353 115 dark beer
-test.example.com:80 https 203.0.113.2 TLSv1.1 DHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 101 2650 4409 432 106 dark beer
-test.example.com:82 https localhost TLSv1.1 DHE-RSA-AES256-SHA "POST /invalid.example HTTP/2.0" 101 4893 1391 304 399 dark wine
-198.51.100.1:83 https localhost SSLv2 AES256-SHA "POST /invalid.example HTTP/1.1" 201 2424 4545 28 478 light beer
-2001:db8:1ce::1:84 http 203.0.113.2 TLSv1.2 DHE-RSA-AES256-SHA "HEAD /example.net HTTP/2" 400 3587 4939 59 439 light wine
-test.example.com:80 https 2001:db8:2ce:2 TLSv1.3 AES256-SHA "POST /example.com HTTP/1.1" 100 3592 4808 450 234 dark wine
-test.example.com:82 http 2001:db8:2ce:2 TLSv1 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/2" 400 4392 4281 237 484 light beer
-localhost:84 https 203.0.113.2 TLSv1.2 ECDHE-RSA-AES256-SHA "GET /example.net HTTP/1.1" 300 4316 1879 160 432 light beer
+198.51.100.1:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2.0" 100 2193 1470 144 245 https TLSv1.3 ECDHE-RSA-AES256-SHA light wine
+2001:db8:1ce::1:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 400 1646 3973 373 78 https TLSv1 ECDHE-RSA-AES256-SHA dark beer
+localhost:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2" 301 3038 3256 361 321 https TLSv1.2 PSK-RC4-SHA dark wine
+198.51.100.1:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2" 401 4535 2424 44 158 http TLSv1.1 ECDHE-RSA-AES256-SHA light wine
+localhost:80 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 301 1366 3163 63 236 http TLSv1 ECDHE-RSA-AES256-SHA light beer
 Unmatched! The rat the cat the dog chased killed ate the malt!
-198.51.100.1:83 http localhost TLSv1.1 ECDHE-RSA-AES256-SHA "HEAD /example.com HTTP/2" 401 2905 1261 66 275 dark wine
-2001:db8:1ce::1:80 http 203.0.113.2 TLSv1.1 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/1.1" 400 4752 4581 348 413 dark beer
-test.example.com:83 https 2001:db8:2ce:2 SSLv2 PSK-RC4-SHA "GET /example.com HTTP/2.0" 300 3046 4960 121 67 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.org:83 https localhost TLSv1.3 ECDHE-RSA-AES256-SHA "POST /example.net HTTP/2" 301 2860 1856 464 181 light wine
-test.example.com:80 http 2001:db8:2ce:2 TLSv1.2 PSK-RC4-SHA "HEAD /invalid.example HTTP/2" 301 2438 1148 312 186 dark beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-2001:db8:1ce::1:81 http 2001:db8:2ce:2 SSLv3 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/2.0" 201 2997 1879 97 118 light beer
-localhost:81 http localhost TLSv1.2 AES256-SHA "HEAD /example.net HTTP/2.0" 400 4178 2142 410 390 light wine
-test.example.org:84 http 203.0.113.2 TLSv1.1 DHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 200 4432 1057 310 345 dark beer
-test.example.org:82 https 2001:db8:2ce:2 TLSv1 AES256-SHA "GET /invalid.example HTTP/1.1" 300 2192 3120 2 375 dark wine
-test.example.org:83 https 203.0.113.1 TLSv1.2 PSK-RC4-SHA "HEAD /example.org HTTP/2" 301 2449 4751 436 69 dark beer
-2001:db8:1ce::1:80 http 2001:db8:2ce:2 TLSv1.3 PSK-RC4-SHA "HEAD /example.net HTTP/2.0" 201 3702 4187 344 246 light beer
-2001:db8:1ce::1:81 http 2001:db8:2ce:2 SSLv2 PSK-RC4-SHA "GET /invalid.example HTTP/2.0" 200 4148 1712 245 54 light beer
-198.51.100.1:83 https 203.0.113.1 TLSv1.1 ECDHE-RSA-AES256-SHA "POST /example.org HTTP/2.0" 100 4856 3319 109 145 dark beer
-test.example.com:81 https localhost TLSv1.3 AES256-SHA "HEAD /example.org HTTP/1.1" 201 2835 2858 176 86 light beer
-localhost:82 http 2001:db8:2ce:2 TLSv1.2 PSK-RC4-SHA "GET /invalid.example HTTP/2.0" 401 3733 1799 24 429 dark wine
-test.example.org:80 https 203.0.113.1 SSLv2 PSK-RC4-SHA "HEAD /invalid.example HTTP/2" 100 2761 4104 65 242 dark beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-2001:db8:1ce::1:81 http 2001:db8:2ce:1 TLSv1.1 PSK-RC4-SHA "HEAD /example.com HTTP/1.1" 401 3543 2094 156 28 light beer
-test.example.com:81 https 203.0.113.2 SSLv2 ECDHE-RSA-AES256-SHA "GET /example.org HTTP/2.0" 100 3889 4117 48 317 light wine
-198.51.100.1:81 https 203.0.113.2 TLSv1 AES256-SHA "HEAD /example.org HTTP/2" 201 3261 3815 101 41 light beer
-test.example.com:82 http 203.0.113.1 SSLv2 PSK-RC4-SHA "GET /example.com HTTP/1.1" 400 1169 1058 8 228 light beer
-test.example.org:82 https 203.0.113.1 TLSv1.3 DHE-RSA-AES256-SHA "GET /example.net HTTP/1.1" 201 3514 3515 99 117 dark wine
-test.example.com:83 https localhost TLSv1.3 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 301 4490 2529 320 495 light wine
-test.example.org:81 https 2001:db8:2ce:2 SSLv3 PSK-RC4-SHA "GET /invalid.example HTTP/2" 100 2511 3512 435 198 light beer
-2001:db8:1ce::1:81 http 2001:db8:2ce:2 SSLv2 AES256-SHA "GET /example.net HTTP/2.0" 300 1099 3683 81 358 light beer
-test.example.org:82 https 203.0.113.2 TLSv1.3 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/2" 100 3705 3323 227 131 light beer
-198.51.100.1:84 http 2001:db8:2ce:1 TLSv1.1 AES256-SHA "POST /example.net HTTP/2.0" 400 4349 1582 51 458 dark beer
-test.example.com:84 https 203.0.113.2 TLSv1.3 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2.0" 100 1949 1569 156 440 light beer
-test.example.com:84 http 2001:db8:2ce:1 SSLv2 DHE-RSA-AES256-SHA "GET /example.com HTTP/2.0" 200 2159 1546 373 315 dark wine
-test.example.com:81 http localhost TLSv1.3 AES256-SHA "GET /example.org HTTP/2" 201 1373 2754 33 205 dark beer
-198.51.100.1:82 http 203.0.113.1 TLSv1.1 PSK-RC4-SHA "GET /example.org HTTP/2.0" 301 1819 1026 264 311 dark beer
-test.example.org:81 https 2001:db8:2ce:1 TLSv1 DHE-RSA-AES256-SHA "HEAD /example.org HTTP/2.0" 300 1811 4544 7 292 light beer
-test.example.com:84 http 2001:db8:2ce:2 TLSv1.2 AES256-SHA "GET /example.org HTTP/2.0" 300 2935 1969 193 379 dark beer
-198.51.100.1:83 https 203.0.113.1 TLSv1.3 DHE-RSA-AES256-SHA "POST /example.org HTTP/2.0" 401 3058 3917 265 357 dark beer
-198.51.100.1:84 http 2001:db8:2ce:2 TLSv1.3 DHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 200 3906 3956 82 50 light beer
-198.51.100.1:81 http localhost TLSv1.2 ECDHE-RSA-AES256-SHA "HEAD /example.org HTTP/2.0" 301 3520 2026 399 201 dark beer
-test.example.com:82 http 203.0.113.1 SSLv3 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 100 4630 2061 112 120 dark beer
-test.example.com:82 http 2001:db8:2ce:2 TLSv1.2 PSK-RC4-SHA "POST /invalid.example HTTP/1.1" 400 3980 3799 118 436 light beer
-2001:db8:1ce::1:84 http 203.0.113.1 SSLv3 ECDHE-RSA-AES256-SHA "GET /invalid.example HTTP/2.0" 200 3780 1734 126 213 light beer
-198.51.100.1:80 http localhost TLSv1.2 AES256-SHA "GET /example.net HTTP/2" 100 2360 1772 57 190 light wine
-2001:db8:1ce::1:82 http 2001:db8:2ce:2 TLSv1.1 PSK-RC4-SHA "POST /example.net HTTP/1.1" 300 3354 4497 179 169 light wine
-localhost:83 https 2001:db8:2ce:2 TLSv1.2 ECDHE-RSA-AES256-SHA "POST /example.com HTTP/2.0" 100 2725 1246 285 493 light wine
-test.example.org:81 https 2001:db8:2ce:1 TLSv1.1 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/1.1" 100 3751 3340 115 110 dark beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-2001:db8:1ce::1:81 https localhost SSLv2 AES256-SHA "HEAD /example.net HTTP/2" 401 4521 4254 118 228 light beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-localhost:81 http 2001:db8:2ce:1 SSLv2 AES256-SHA "HEAD /invalid.example HTTP/1.1" 101 1046 2980 362 402 light wine
-localhost:82 https 2001:db8:2ce:1 TLSv1 PSK-RC4-SHA "POST /example.net HTTP/2" 100 3873 3695 253 21 dark wine
-test.example.org:80 http 2001:db8:2ce:1 TLSv1 AES256-SHA "GET /example.net HTTP/2" 401 2633 4414 494 359 light beer
-test.example.com:83 http localhost SSLv3 ECDHE-RSA-AES256-SHA "HEAD /example.com HTTP/1.1" 101 2861 4696 17 298 dark wine
-2001:db8:1ce::1:80 http localhost TLSv1.3 ECDHE-RSA-AES256-SHA "GET /example.org HTTP/2" 401 4523 3443 427 138 dark beer
-test.example.com:83 http 2001:db8:2ce:1 TLSv1 ECDHE-RSA-AES256-SHA "GET /example.net HTTP/2" 201 3046 2913 301 356 light beer
-localhost:80 https 2001:db8:2ce:1 TLSv1.2 PSK-RC4-SHA "POST /example.net HTTP/1.1" 400 4084 3855 120 62 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-198.51.100.1:81 https 2001:db8:2ce:2 TLSv1.2 PSK-RC4-SHA "HEAD /invalid.example HTTP/2" 101 4426 1530 124 252 light beer
-test.example.org:80 http 2001:db8:2ce:1 TLSv1.2 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/2.0" 100 2782 1489 343 427 light beer
-localhost:84 http localhost SSLv3 PSK-RC4-SHA "HEAD /example.com HTTP/1.1" 201 3639 3440 489 482 light beer
-198.51.100.1:81 http 2001:db8:2ce:2 TLSv1.1 AES256-SHA "POST /example.org HTTP/1.1" 201 1222 1288 320 498 light wine
-localhost:80 http 2001:db8:2ce:1 TLSv1.3 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/2" 301 3568 1808 80 153 light wine
-localhost:80 https 203.0.113.1 SSLv2 DHE-RSA-AES256-SHA "HEAD /example.com HTTP/2.0" 400 2114 4922 302 263 light wine
-test.example.com:82 http 2001:db8:2ce:1 TLSv1.2 AES256-SHA "HEAD /example.com HTTP/1.1" 201 4915 3820 443 26 dark wine
-localhost:82 https 203.0.113.1 TLSv1 DHE-RSA-AES256-SHA "POST /example.org HTTP/2" 300 3302 1399 196 29 dark wine
-2001:db8:1ce::1:81 https 2001:db8:2ce:1 SSLv3 AES256-SHA "GET /example.org HTTP/1.1" 101 4591 4080 370 257 dark wine
-198.51.100.1:80 http 203.0.113.1 TLSv1 AES256-SHA "HEAD /example.org HTTP/2" 101 1198 2463 402 168 light wine
-198.51.100.1:83 https 2001:db8:2ce:1 SSLv2 AES256-SHA "GET /example.com HTTP/2.0" 300 1147 4641 114 474 dark wine
-test.example.com:83 http 203.0.113.2 TLSv1.3 DHE-RSA-AES256-SHA "POST /example.com HTTP/2" 201 1767 1732 11 141 light wine
-test.example.org:82 https localhost SSLv2 DHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 200 3948 2817 409 75 dark beer
-localhost:81 http 2001:db8:2ce:1 TLSv1.3 DHE-RSA-AES256-SHA "POST /example.com HTTP/2" 200 1101 3546 52 397 dark wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.org:80 http 2001:db8:2ce:2 TLSv1 PSK-RC4-SHA "GET /invalid.example HTTP/2" 101 4150 3445 456 89 dark beer
-test.example.com:81 https 203.0.113.2 TLSv1 AES256-SHA "HEAD /invalid.example HTTP/2" 101 2995 1385 21 43 dark wine
-localhost:84 http 2001:db8:2ce:2 SSLv3 ECDHE-RSA-AES256-SHA "POST /invalid.example HTTP/2" 101 3723 3826 259 495 dark beer
-test.example.com:81 https localhost TLSv1 DHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 400 3206 2295 143 76 light beer
-test.example.com:82 https 203.0.113.1 SSLv2 AES256-SHA "GET /example.org HTTP/2" 101 2588 3571 4 328 dark beer
-test.example.org:84 http 203.0.113.1 TLSv1.3 PSK-RC4-SHA "GET /example.org HTTP/2.0" 200 3557 4556 80 29 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-198.51.100.1:82 https 203.0.113.1 TLSv1 ECDHE-RSA-AES256-SHA "HEAD /example.net HTTP/1.1" 301 4750 2838 14 461 dark beer
-test.example.org:84 http localhost TLSv1 PSK-RC4-SHA "POST /example.org HTTP/2.0" 300 3841 3890 172 346 light beer
-2001:db8:1ce::1:84 http 2001:db8:2ce:1 SSLv3 DHE-RSA-AES256-SHA "GET /example.com HTTP/2" 200 3394 2063 166 242 dark beer
-localhost:84 https 203.0.113.1 TLSv1.1 AES256-SHA "GET /example.org HTTP/2.0" 300 3094 1239 362 468 dark beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-2001:db8:1ce::1:80 https localhost SSLv3 AES256-SHA "POST /example.net HTTP/2.0" 201 4918 1327 249 175 dark beer
-2001:db8:1ce::1:83 https 2001:db8:2ce:2 SSLv3 AES256-SHA "POST /invalid.example HTTP/2" 101 1555 4155 37 392 light wine
-198.51.100.1:80 https 2001:db8:2ce:2 TLSv1.3 DHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 401 4253 2592 188 123 light beer
-198.51.100.1:84 https 203.0.113.1 TLSv1.2 AES256-SHA "POST /example.net HTTP/2" 401 3839 4388 481 232 dark wine
-test.example.com:82 https 2001:db8:2ce:1 TLSv1.1 PSK-RC4-SHA "HEAD /example.com HTTP/2.0" 301 2390 2820 127 26 dark wine
-2001:db8:1ce::1:80 https 203.0.113.1 TLSv1.1 PSK-RC4-SHA "GET /example.org HTTP/1.1" 301 1998 4636 276 142 dark wine
-2001:db8:1ce::1:81 http 203.0.113.2 SSLv2 ECDHE-RSA-AES256-SHA "POST /example.net HTTP/2" 100 4138 2879 381 402 light wine
-localhost:80 https 203.0.113.1 TLSv1.2 PSK-RC4-SHA "HEAD /example.com HTTP/2" 201 4046 3036 178 354 dark wine
-localhost:80 https 2001:db8:2ce:1 TLSv1 DHE-RSA-AES256-SHA "HEAD /example.org HTTP/1.1" 401 1623 1491 482 248 light beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-2001:db8:1ce::1:81 https localhost SSLv3 PSK-RC4-SHA "GET /example.com HTTP/2.0" 301 2225 3399 77 341 light wine
-test.example.com:81 http 203.0.113.1 TLSv1 DHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 200 3534 2245 111 82 light wine
-localhost:84 http localhost TLSv1.2 AES256-SHA "POST /example.net HTTP/2" 301 3095 3252 211 217 light wine
-localhost:80 https 203.0.113.2 SSLv2 AES256-SHA "POST /example.net HTTP/2" 301 2291 4388 452 281 light beer
-198.51.100.1:82 http localhost TLSv1 ECDHE-RSA-AES256-SHA "GET /example.org HTTP/1.1" 401 1432 1120 337 433 light beer
-test.example.org:81 https 203.0.113.2 SSLv3 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/1.1" 401 1293 2248 211 378 light beer
-test.example.org:80 http 2001:db8:2ce:2 SSLv2 PSK-RC4-SHA "HEAD /example.net HTTP/1.1" 101 1590 2490 264 435 dark wine
-localhost:83 http localhost SSLv2 AES256-SHA "HEAD /invalid.example HTTP/2" 300 2413 1900 424 126 dark wine
-test.example.com:83 https 2001:db8:2ce:1 TLSv1 ECDHE-RSA-AES256-SHA "GET /example.org HTTP/2.0" 100 3780 1536 399 47 dark wine
-test.example.com:83 http 2001:db8:2ce:1 TLSv1.1 DHE-RSA-AES256-SHA "POST /example.com HTTP/2.0" 201 2019 3078 224 234 light wine
-2001:db8:1ce::1:81 http localhost TLSv1.2 AES256-SHA "GET /example.net HTTP/1.1" 201 1769 1199 171 80 light beer
-test.example.com:80 https 2001:db8:2ce:2 TLSv1.3 AES256-SHA "POST /example.com HTTP/2" 301 3362 1922 303 77 dark wine
-198.51.100.1:80 https 2001:db8:2ce:2 TLSv1.2 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/1.1" 100 4555 4899 265 1 light wine
-localhost:81 http 203.0.113.2 TLSv1 DHE-RSA-AES256-SHA "POST /example.net HTTP/1.1" 101 4181 2792 224 280 dark beer
-2001:db8:1ce::1:80 https 203.0.113.1 SSLv2 PSK-RC4-SHA "POST /example.org HTTP/2" 200 3656 2083 468 85 dark wine
-test.example.com:80 http localhost SSLv2 DHE-RSA-AES256-SHA "HEAD /example.com HTTP/2.0" 301 4931 1942 398 109 dark wine
-198.51.100.1:83 https 203.0.113.2 TLSv1.3 AES256-SHA "GET /example.org HTTP/2" 101 1050 4293 177 476 dark wine
-localhost:81 http 203.0.113.2 TLSv1.3 PSK-RC4-SHA "POST /invalid.example HTTP/2" 201 4325 4188 412 204 dark wine
-2001:db8:1ce::1:83 http 2001:db8:2ce:2 TLSv1.2 PSK-RC4-SHA "HEAD /invalid.example HTTP/2.0" 400 2074 2039 142 81 light beer
+2001:db8:1ce::1:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 200 4332 3413 59 412 http TLSv1.1 DHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 200 3347 4042 218 143 https TLSv1.2 DHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.other HTTP/2" 101 2549 3079 207 113 https TLSv1.3 AES256-SHA light wine
+test.example.com:81 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/1.1" 101 4605 2701 285 224 http SSLv3 AES256-SHA dark wine
+test.example.com:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/1.1" 400 4963 2096 449 476 https SSLv3 AES256-SHA dark beer
 Unmatched! The rat the cat the dog chased killed ate the malt!
 Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.com:80 https 2001:db8:2ce:2 TLSv1.3 DHE-RSA-AES256-SHA "POST /example.com HTTP/1.1" 100 3213 4869 424 336 light beer
-198.51.100.1:81 http localhost TLSv1.1 DHE-RSA-AES256-SHA "GET /example.com HTTP/2" 300 1664 2604 99 443 light beer
-localhost:80 https 2001:db8:2ce:1 TLSv1 AES256-SHA "GET /example.net HTTP/2" 100 4410 4401 400 208 light wine
-2001:db8:1ce::1:80 http 203.0.113.1 TLSv1.3 PSK-RC4-SHA "GET /example.com HTTP/2" 401 4296 4185 402 422 dark beer
-198.51.100.1:82 http 203.0.113.2 TLSv1 AES256-SHA "GET /example.net HTTP/2" 200 4125 4712 117 389 dark wine
-test.example.org:83 http localhost SSLv3 ECDHE-RSA-AES256-SHA "HEAD /example.net HTTP/2.0" 300 3121 3855 188 18 light wine
-test.example.com:82 https 203.0.113.1 TLSv1.1 ECDHE-RSA-AES256-SHA "POST /example.net HTTP/2" 400 1438 2890 169 182 light wine
-test.example.org:80 https 203.0.113.1 TLSv1.3 ECDHE-RSA-AES256-SHA "POST /example.org HTTP/2" 401 2589 2611 314 40 dark wine
-test.example.org:82 https 2001:db8:2ce:2 SSLv2 DHE-RSA-AES256-SHA "HEAD /example.net HTTP/2" 100 2672 3256 167 45 dark wine
-test.example.org:82 https 2001:db8:2ce:2 SSLv3 AES256-SHA "HEAD /example.org HTTP/1.1" 400 3377 4577 498 131 light beer
-localhost:84 https 203.0.113.2 SSLv2 DHE-RSA-AES256-SHA "GET /example.net HTTP/1.1" 300 1736 1802 133 205 light wine
-test.example.com:81 http localhost TLSv1.1 DHE-RSA-AES256-SHA "POST /example.org HTTP/2.0" 201 4738 4543 322 203 light beer
-test.example.com:81 http 2001:db8:2ce:1 TLSv1 AES256-SHA "POST /example.org HTTP/2" 101 2439 4959 110 325 light wine
+2001:db8:1ce::1:82 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/1.1" 101 4345 2389 145 446 https TLSv1 PSK-RC4-SHA light wine
+198.51.100.1:84 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 201 1050 4840 351 106 https TLSv1.2 AES256-SHA dark beer
+localhost:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/1.1" 300 4089 4457 160 277 http TLSv1.3 PSK-RC4-SHA dark wine
+localhost:80 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.org HTTP/2.0" 100 1766 3641 395 336 http SSLv2 ECDHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 101 1412 1768 434 79 http SSLv2 ECDHE-RSA-AES256-SHA light wine
+localhost:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 300 1912 3209 86 370 https SSLv2 PSK-RC4-SHA dark beer
+localhost:84 localhost - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2.0" 200 4033 1579 355 409 http TLSv1.3 AES256-SHA dark wine
+198.51.100.1:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2.0" 201 1671 3585 339 63 http TLSv1.3 DHE-RSA-AES256-SHA dark wine
+localhost:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/1.1" 400 4248 1510 425 430 https TLSv1.3 ECDHE-RSA-AES256-SHA light wine
+test.example.org:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 100 4498 1403 239 96 https TLSv1 DHE-RSA-AES256-SHA dark wine
+198.51.100.1:83 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2.0" 401 2126 4588 167 138 https TLSv1.3 PSK-RC4-SHA light beer
+localhost:83 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 101 1279 4755 490 108 http TLSv1.1 ECDHE-RSA-AES256-SHA dark beer
+test.example.org:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 301 1536 2798 241 305 http SSLv2 AES256-SHA light beer
+test.example.com:80 localhost - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/1.1" 400 2593 3461 118 347 https TLSv1 DHE-RSA-AES256-SHA light wine
+test.example.com:83 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 201 2867 3625 418 496 http SSLv2 PSK-RC4-SHA light wine
+198.51.100.1:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/1.1" 401 4317 1085 443 410 http SSLv2 AES256-SHA dark wine
+2001:db8:1ce::1:82 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.net HTTP/2.0" 301 1813 4623 250 246 http TLSv1 ECDHE-RSA-AES256-SHA light wine
+test.example.com:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.org HTTP/2.0" 301 4548 1008 387 9 https SSLv3 AES256-SHA light wine
+localhost:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/2.0" 101 4678 4085 210 103 https TLSv1 AES256-SHA light beer
+test.example.com:82 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 401 4897 3938 74 116 http TLSv1.2 PSK-RC4-SHA light beer
+test.example.com:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/1.1" 200 3022 1961 203 393 http TLSv1.3 ECDHE-RSA-AES256-SHA dark beer
+2001:db8:1ce::1:83 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 301 1574 3104 364 165 https TLSv1.2 AES256-SHA light beer
 Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.com:80 https 2001:db8:2ce:2 SSLv2 DHE-RSA-AES256-SHA "POST /example.net HTTP/2" 201 4484 2334 289 132 dark beer
-2001:db8:1ce::1:81 https 203.0.113.2 SSLv2 PSK-RC4-SHA "HEAD /invalid.example HTTP/2" 201 3929 1354 71 160 light wine
-test.example.com:80 http localhost SSLv3 DHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 301 2090 1108 98 350 dark beer
+test.example.com:82 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/1.1" 301 2944 3376 68 384 http TLSv1.3 PSK-RC4-SHA light wine
+localhost:84 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 101 4616 4363 17 28 https SSLv2 ECDHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:83 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2.0" 200 2308 4193 20 257 http SSLv2 PSK-RC4-SHA dark wine
+test.example.org:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.other HTTP/2" 300 3503 4056 336 375 https TLSv1.2 DHE-RSA-AES256-SHA dark beer
+localhost:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "POST /example.com HTTP/2" 101 4109 2823 250 369 https TLSv1.1 ECDHE-RSA-AES256-SHA dark beer
+localhost:81 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/2.0" 300 2069 3457 174 159 http TLSv1.1 ECDHE-RSA-AES256-SHA dark beer
+localhost:80 localhost - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 101 2781 3947 414 406 https TLSv1.1 DHE-RSA-AES256-SHA dark beer
+198.51.100.1:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 301 1390 1379 214 31 http TLSv1.3 DHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:82 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.com HTTP/1.1" 201 1546 1014 44 351 http TLSv1.1 AES256-SHA light beer
+2001:db8:1ce::1:81 2001:db8:2ce:1 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.org HTTP/2.0" 400 1600 4635 219 104 http TLSv1.1 DHE-RSA-AES256-SHA light beer
+2001:db8:1ce::1:80 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 201 3604 4845 378 237 http TLSv1.3 ECDHE-RSA-AES256-SHA dark beer
+test.example.org:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "HEAD /example.net HTTP/2" 400 1409 3810 180 163 https TLSv1.1 ECDHE-RSA-AES256-SHA dark wine
+2001:db8:1ce::1:84 2001:db8:2ce:2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.com HTTP/2" 201 1673 1858 43 405 https SSLv2 AES256-SHA light wine
+198.51.100.1:82 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 301 4846 3590 105 492 http SSLv2 PSK-RC4-SHA dark beer
+test.example.org:81 203.0.113.1 - - [22/Mar/2009:09:30:31 +0100] "GET /example.net HTTP/1.1" 100 4818 2058 362 393 http TLSv1.2 AES256-SHA dark beer
 Unmatched! The rat the cat the dog chased killed ate the malt!
-2001:db8:1ce::1:81 http 2001:db8:2ce:2 SSLv3 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/1.1" 200 4249 1095 422 271 light wine
-198.51.100.1:83 http 2001:db8:2ce:1 SSLv2 AES256-SHA "HEAD /example.com HTTP/2.0" 100 4506 2756 364 142 light wine
-2001:db8:1ce::1:80 http 203.0.113.1 SSLv2 AES256-SHA "POST /example.com HTTP/2.0" 201 4287 2948 273 182 dark wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-198.51.100.1:81 http 2001:db8:2ce:1 TLSv1.3 AES256-SHA "GET /example.org HTTP/2" 400 3003 1880 104 403 light wine
-test.example.org:80 https 203.0.113.1 TLSv1.2 ECDHE-RSA-AES256-SHA "HEAD /example.net HTTP/2.0" 401 1946 1445 307 301 dark wine
-test.example.com:83 https 203.0.113.1 TLSv1.2 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2.0" 300 1680 3795 153 17 light beer
-2001:db8:1ce::1:82 https 203.0.113.1 TLSv1.2 DHE-RSA-AES256-SHA "HEAD /example.org HTTP/2.0" 100 2402 1056 320 355 light wine
-198.51.100.1:84 https 203.0.113.1 SSLv2 AES256-SHA "HEAD /example.net HTTP/2.0" 101 1180 2241 439 354 light wine
-test.example.org:82 http 2001:db8:2ce:1 TLSv1.2 AES256-SHA "GET /invalid.example HTTP/2.0" 200 3451 4236 142 224 light beer
-test.example.com:81 https 203.0.113.2 SSLv2 PSK-RC4-SHA "HEAD /example.com HTTP/2.0" 301 4314 1238 15 342 dark wine
-test.example.com:80 http 203.0.113.2 TLSv1.1 AES256-SHA "HEAD /example.com HTTP/2" 101 1136 2991 194 410 light beer
-test.example.org:84 https 2001:db8:2ce:1 SSLv2 AES256-SHA "POST /invalid.example HTTP/1.1" 401 2468 1166 341 163 light wine
-localhost:82 https localhost SSLv2 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/2.0" 201 2362 3822 40 156 light wine
-198.51.100.1:83 https 2001:db8:2ce:1 TLSv1.2 PSK-RC4-SHA "GET /invalid.example HTTP/1.1" 100 4647 3521 318 433 dark wine
-test.example.org:80 https 203.0.113.1 SSLv2 ECDHE-RSA-AES256-SHA "HEAD /example.net HTTP/1.1" 200 1980 4067 405 16 light wine
-test.example.com:83 http localhost TLSv1.3 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/2" 401 4759 1462 259 396 dark beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-198.51.100.1:83 https 203.0.113.2 TLSv1.3 AES256-SHA "GET /invalid.example HTTP/1.1" 400 3920 2481 465 116 light beer
-2001:db8:1ce::1:80 https 203.0.113.2 TLSv1.3 DHE-RSA-AES256-SHA "HEAD /example.org HTTP/2.0" 400 3634 1433 51 47 dark wine
-2001:db8:1ce::1:81 https 203.0.113.1 TLSv1.3 AES256-SHA "POST /example.net HTTP/1.1" 100 2646 4723 249 232 dark beer
-198.51.100.1:80 http localhost TLSv1.3 DHE-RSA-AES256-SHA "HEAD /example.org HTTP/2" 301 1559 1495 48 366 light beer
-localhost:80 https 203.0.113.2 TLSv1.3 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2.0" 300 2988 2112 76 415 light wine
-test.example.com:82 https 203.0.113.1 TLSv1.1 PSK-RC4-SHA "POST /example.org HTTP/2.0" 400 3321 1554 227 169 dark beer
-test.example.com:84 http 2001:db8:2ce:1 TLSv1.1 AES256-SHA "GET /invalid.example HTTP/2.0" 200 3885 2595 311 319 dark wine
-test.example.org:80 http 203.0.113.2 TLSv1 PSK-RC4-SHA "POST /example.net HTTP/1.1" 400 2176 1730 378 416 dark wine
-test.example.org:84 http 2001:db8:2ce:2 TLSv1 DHE-RSA-AES256-SHA "POST /example.org HTTP/2" 301 4231 4162 412 457 dark beer
-198.51.100.1:82 https 2001:db8:2ce:2 TLSv1 DHE-RSA-AES256-SHA "GET /example.org HTTP/2" 300 2590 2587 470 257 dark beer
-test.example.org:84 https 203.0.113.2 SSLv3 PSK-RC4-SHA "POST /example.com HTTP/1.1" 401 3733 2154 276 30 light beer
-test.example.com:80 http 2001:db8:2ce:1 SSLv3 DHE-RSA-AES256-SHA "POST /example.com HTTP/2.0" 200 3107 2831 461 161 light beer
-test.example.org:80 http 2001:db8:2ce:1 SSLv2 ECDHE-RSA-AES256-SHA "GET /example.net HTTP/2" 100 3929 1484 281 315 light beer
-198.51.100.1:80 https 2001:db8:2ce:2 SSLv3 AES256-SHA "POST /example.com HTTP/2" 300 2564 4600 193 161 light beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-2001:db8:1ce::1:83 http 2001:db8:2ce:1 TLSv1.1 DHE-RSA-AES256-SHA "GET /example.com HTTP/1.1" 400 4657 3438 98 280 dark beer
-test.example.org:80 http 2001:db8:2ce:2 TLSv1.2 AES256-SHA "GET /invalid.example HTTP/2" 100 1547 4622 11 230 dark wine
-test.example.org:80 http 203.0.113.2 SSLv2 PSK-RC4-SHA "GET /example.com HTTP/2.0" 200 2734 1731 79 107 light beer
-198.51.100.1:84 https 203.0.113.1 TLSv1.3 DHE-RSA-AES256-SHA "GET /example.com HTTP/2" 301 2743 2468 362 104 light beer
-2001:db8:1ce::1:82 http 2001:db8:2ce:1 TLSv1 ECDHE-RSA-AES256-SHA "HEAD /example.com HTTP/2.0" 401 4381 4081 170 309 dark wine
-198.51.100.1:81 https 2001:db8:2ce:2 TLSv1 ECDHE-RSA-AES256-SHA "HEAD /example.org HTTP/2.0" 300 4605 4146 17 426 dark beer
-localhost:80 http localhost TLSv1.3 PSK-RC4-SHA "POST /example.com HTTP/2.0" 100 1609 1179 199 371 light beer
-2001:db8:1ce::1:84 http 203.0.113.2 TLSv1.1 PSK-RC4-SHA "HEAD /invalid.example HTTP/2.0" 200 3849 4910 190 180 dark wine
-test.example.org:80 http 2001:db8:2ce:1 SSLv3 AES256-SHA "POST /example.org HTTP/2.0" 201 3463 2386 14 499 light beer
-localhost:84 http 203.0.113.1 TLSv1 PSK-RC4-SHA "HEAD /example.org HTTP/1.1" 100 4816 4608 48 259 light wine
-198.51.100.1:84 http 203.0.113.2 TLSv1.1 ECDHE-RSA-AES256-SHA "POST /example.org HTTP/2" 100 1445 4912 75 124 dark beer
-test.example.com:80 http 203.0.113.2 SSLv2 AES256-SHA "GET /example.net HTTP/2" 101 1159 1184 415 51 light beer
-test.example.com:80 https localhost TLSv1.2 ECDHE-RSA-AES256-SHA "POST /example.com HTTP/2.0" 400 3273 2808 123 84 dark wine
-198.51.100.1:80 http 2001:db8:2ce:1 TLSv1.2 AES256-SHA "HEAD /example.org HTTP/1.1" 200 1512 1748 283 284 light wine
-test.example.org:83 https 203.0.113.1 SSLv3 PSK-RC4-SHA "POST /example.com HTTP/1.1" 400 3926 3330 199 23 dark wine
-198.51.100.1:80 https 203.0.113.1 SSLv2 PSK-RC4-SHA "POST /invalid.example HTTP/2" 201 1853 3405 347 400 dark beer
-198.51.100.1:80 https 203.0.113.1 TLSv1.2 DHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 100 2738 1799 365 36 dark beer
-198.51.100.1:83 https 2001:db8:2ce:2 TLSv1.3 DHE-RSA-AES256-SHA "HEAD /example.org HTTP/1.1" 100 2259 2555 190 480 light beer
-2001:db8:1ce::1:81 https 203.0.113.2 TLSv1 PSK-RC4-SHA "POST /invalid.example HTTP/2.0" 300 1841 1447 206 194 light wine
-198.51.100.1:84 https 203.0.113.2 SSLv2 PSK-RC4-SHA "HEAD /example.com HTTP/2.0" 401 3360 3646 213 232 light beer
-test.example.org:80 http 2001:db8:2ce:1 TLSv1 DHE-RSA-AES256-SHA "POST /invalid.example HTTP/2.0" 201 3262 3552 310 176 dark wine
-198.51.100.1:84 http 2001:db8:2ce:2 SSLv3 DHE-RSA-AES256-SHA "GET /example.org HTTP/1.1" 100 1351 4946 59 95 dark beer
-2001:db8:1ce::1:80 https localhost TLSv1.1 PSK-RC4-SHA "GET /example.com HTTP/1.1" 301 2093 3523 155 77 light wine
-198.51.100.1:83 http 203.0.113.2 TLSv1.1 DHE-RSA-AES256-SHA "POST /example.com HTTP/2.0" 401 1595 3565 241 356 light beer
-198.51.100.1:81 https 203.0.113.2 TLSv1.2 PSK-RC4-SHA "GET /example.com HTTP/2.0" 401 4941 4081 143 75 light wine
-198.51.100.1:80 http 203.0.113.2 SSLv3 PSK-RC4-SHA "GET /example.org HTTP/2" 300 4383 1169 498 371 dark beer
-test.example.com:80 https localhost TLSv1.3 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/1.1" 301 4924 3551 485 477 dark wine
-2001:db8:1ce::1:84 http 2001:db8:2ce:1 TLSv1.3 ECDHE-RSA-AES256-SHA "HEAD /example.com HTTP/2.0" 201 3710 2561 120 88 dark beer
-localhost:82 http 2001:db8:2ce:2 TLSv1 PSK-RC4-SHA "GET /example.com HTTP/2" 300 3746 1133 373 62 dark beer
-test.example.org:82 https 203.0.113.1 TLSv1.3 DHE-RSA-AES256-SHA "POST /example.net HTTP/2.0" 201 4470 3535 257 102 light beer
-localhost:82 https 2001:db8:2ce:1 TLSv1.3 PSK-RC4-SHA "POST /invalid.example HTTP/1.1" 401 4407 4079 98 92 light wine
-198.51.100.1:83 http 2001:db8:2ce:2 TLSv1.1 AES256-SHA "GET /example.net HTTP/1.1" 101 2350 4661 90 252 light beer
-198.51.100.1:81 http localhost TLSv1 AES256-SHA "GET /invalid.example HTTP/2.0" 300 4524 3501 112 425 light beer
-2001:db8:1ce::1:84 https 2001:db8:2ce:1 SSLv2 DHE-RSA-AES256-SHA "POST /example.org HTTP/2.0" 200 2944 1903 270 11 light beer
-test.example.org:83 https 203.0.113.1 TLSv1.3 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/1.1" 201 3451 2335 460 149 light wine
-test.example.com:84 https localhost TLSv1.3 AES256-SHA "POST /invalid.example HTTP/2" 400 1130 3944 458 336 dark beer
-test.example.com:81 https 203.0.113.2 SSLv3 AES256-SHA "HEAD /example.com HTTP/2" 201 2344 4080 120 52 light wine
-test.example.com:81 https 203.0.113.2 TLSv1.2 PSK-RC4-SHA "POST /invalid.example HTTP/2.0" 101 2846 2899 335 378 light beer
-198.51.100.1:82 http localhost SSLv2 DHE-RSA-AES256-SHA "GET /example.org HTTP/2" 200 3036 4354 40 346 light beer
-198.51.100.1:84 http 203.0.113.2 SSLv3 PSK-RC4-SHA "GET /example.net HTTP/1.1" 401 4577 2259 392 138 dark beer
-test.example.org:81 http 203.0.113.1 SSLv2 AES256-SHA "HEAD /invalid.example HTTP/2" 401 3421 2832 251 45 dark beer
-localhost:80 http 203.0.113.2 SSLv3 DHE-RSA-AES256-SHA "POST /example.net HTTP/1.1" 200 2480 4691 400 385 light beer
-test.example.com:82 http 203.0.113.2 SSLv3 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/2" 300 4970 3622 52 176 dark beer
-test.example.com:81 http 2001:db8:2ce:2 SSLv2 PSK-RC4-SHA "POST /invalid.example HTTP/2.0" 400 4398 1503 64 322 dark wine
-localhost:82 https 2001:db8:2ce:2 TLSv1.1 AES256-SHA "GET /example.com HTTP/1.1" 201 4968 3951 244 208 light wine
-test.example.com:84 http 203.0.113.1 TLSv1.2 DHE-RSA-AES256-SHA "HEAD /example.net HTTP/1.1" 200 2085 3713 465 444 light beer
-test.example.com:80 https 2001:db8:2ce:1 SSLv3 AES256-SHA "POST /example.net HTTP/2.0" 200 3124 2153 58 174 dark wine
-test.example.com:83 https 2001:db8:2ce:2 SSLv2 DHE-RSA-AES256-SHA "POST /invalid.example HTTP/1.1" 200 2040 3472 432 420 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-2001:db8:1ce::1:83 https 2001:db8:2ce:1 TLSv1.2 AES256-SHA "POST /invalid.example HTTP/2" 400 3957 1172 348 110 light wine
-198.51.100.1:84 http 2001:db8:2ce:1 SSLv2 AES256-SHA "GET /example.org HTTP/2" 301 1188 3856 264 327 dark wine
-test.example.org:80 http 203.0.113.2 TLSv1.1 PSK-RC4-SHA "GET /example.net HTTP/1.1" 100 4271 2811 49 195 dark beer
-2001:db8:1ce::1:80 https 203.0.113.2 SSLv3 ECDHE-RSA-AES256-SHA "POST /invalid.example HTTP/2.0" 101 1431 1378 444 143 light wine
-2001:db8:1ce::1:80 https 203.0.113.2 TLSv1 DHE-RSA-AES256-SHA "GET /example.org HTTP/1.1" 100 3433 4964 357 79 light wine
-198.51.100.1:81 http 2001:db8:2ce:2 TLSv1.3 AES256-SHA "POST /example.com HTTP/1.1" 200 1493 4983 210 276 dark beer
-2001:db8:1ce::1:82 https localhost TLSv1 ECDHE-RSA-AES256-SHA "POST /invalid.example HTTP/1.1" 201 4690 2503 173 496 dark beer
-localhost:84 https 203.0.113.1 TLSv1.2 DHE-RSA-AES256-SHA "POST /example.net HTTP/1.1" 400 2531 2094 482 397 light wine
-test.example.com:81 https localhost TLSv1 PSK-RC4-SHA "GET /example.net HTTP/1.1" 301 1489 1668 442 54 dark wine
-test.example.com:84 https 203.0.113.1 TLSv1.1 ECDHE-RSA-AES256-SHA "GET /invalid.example HTTP/2.0" 100 2207 2277 209 13 light wine
-localhost:80 https 2001:db8:2ce:2 SSLv2 ECDHE-RSA-AES256-SHA "GET /invalid.example HTTP/2" 301 3032 2760 424 383 light beer
-198.51.100.1:84 http 203.0.113.1 TLSv1 DHE-RSA-AES256-SHA "POST /example.com HTTP/2" 201 3795 4777 476 352 light beer
-test.example.com:84 http 203.0.113.2 SSLv2 ECDHE-RSA-AES256-SHA "GET /invalid.example HTTP/2.0" 200 3117 1280 285 19 light wine
-198.51.100.1:82 http 203.0.113.1 TLSv1.2 AES256-SHA "GET /example.org HTTP/2" 400 2482 3521 283 200 dark wine
-198.51.100.1:83 http localhost TLSv1 DHE-RSA-AES256-SHA "HEAD /example.net HTTP/1.1" 200 3332 2309 197 198 dark wine
-test.example.org:80 https 203.0.113.2 SSLv3 AES256-SHA "GET /invalid.example HTTP/1.1" 400 4153 1517 104 475 light wine
-test.example.com:80 http 2001:db8:2ce:1 TLSv1.3 ECDHE-RSA-AES256-SHA "POST /invalid.example HTTP/1.1" 301 4246 4886 153 21 light beer
-198.51.100.1:83 https 2001:db8:2ce:2 TLSv1 PSK-RC4-SHA "POST /example.net HTTP/2" 200 4014 4806 252 68 light wine
-test.example.com:82 https 203.0.113.1 TLSv1.2 AES256-SHA "POST /invalid.example HTTP/2" 101 1363 2866 168 166 light wine
-localhost:82 http 2001:db8:2ce:2 SSLv3 ECDHE-RSA-AES256-SHA "POST /example.com HTTP/2.0" 101 3331 2060 33 65 light wine
-2001:db8:1ce::1:80 http 203.0.113.2 TLSv1.1 DHE-RSA-AES256-SHA "GET /example.com HTTP/2.0" 401 3394 3220 393 88 dark beer
-198.51.100.1:80 https 203.0.113.1 SSLv2 PSK-RC4-SHA "POST /example.net HTTP/1.1" 301 1643 3163 332 65 dark wine
-localhost:84 https 2001:db8:2ce:2 TLSv1.2 ECDHE-RSA-AES256-SHA "HEAD /example.org HTTP/2" 101 1575 3237 140 308 dark beer
-localhost:82 http 2001:db8:2ce:2 TLSv1.3 PSK-RC4-SHA "POST /invalid.example HTTP/2" 400 2244 3229 489 80 dark wine
-test.example.org:83 http 2001:db8:2ce:1 TLSv1.1 DHE-RSA-AES256-SHA "GET /example.org HTTP/2" 401 3021 3947 378 363 light wine
-2001:db8:1ce::1:84 https 203.0.113.1 SSLv3 AES256-SHA "POST /invalid.example HTTP/1.1" 301 1079 3505 461 326 dark wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-198.51.100.1:83 https localhost TLSv1.1 DHE-RSA-AES256-SHA "POST /example.com HTTP/2.0" 100 4195 2361 130 44 light wine
-test.example.com:84 http 2001:db8:2ce:1 TLSv1.1 AES256-SHA "HEAD /invalid.example HTTP/2.0" 100 1758 4194 402 303 light wine
-test.example.org:84 https 2001:db8:2ce:1 TLSv1.3 DHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/1.1" 100 3775 3500 358 85 light wine
-localhost:81 http 2001:db8:2ce:2 TLSv1.1 AES256-SHA "HEAD /example.com HTTP/2" 100 3604 4016 449 21 light wine
-198.51.100.1:84 http 203.0.113.2 TLSv1.2 DHE-RSA-AES256-SHA "HEAD /example.org HTTP/2.0" 101 3120 1733 13 484 light beer
-2001:db8:1ce::1:84 http 203.0.113.2 TLSv1.3 DHE-RSA-AES256-SHA "GET /example.org HTTP/2.0" 400 3045 4662 57 247 dark beer
-test.example.org:84 http 2001:db8:2ce:2 TLSv1.1 ECDHE-RSA-AES256-SHA "POST /example.com HTTP/2.0" 400 2778 3671 169 287 light beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.org:80 http 2001:db8:2ce:2 SSLv3 DHE-RSA-AES256-SHA "POST /invalid.example HTTP/1.1" 400 2567 3565 81 173 light beer
-localhost:82 https 203.0.113.2 TLSv1.3 DHE-RSA-AES256-SHA "POST /example.org HTTP/1.1" 300 4642 2814 84 17 light wine
-localhost:83 https localhost TLSv1.2 PSK-RC4-SHA "HEAD /example.com HTTP/2" 200 4961 2350 191 125 dark beer
-2001:db8:1ce::1:83 http localhost SSLv3 DHE-RSA-AES256-SHA "POST /example.com HTTP/2" 401 4568 2825 137 417 dark beer
-localhost:83 http localhost TLSv1.2 ECDHE-RSA-AES256-SHA "GET /example.org HTTP/2.0" 300 4857 1509 77 132 dark wine
-localhost:82 https localhost TLSv1.3 AES256-SHA "GET /example.org HTTP/2.0" 200 3244 1465 52 473 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-2001:db8:1ce::1:84 https 2001:db8:2ce:2 TLSv1.3 ECDHE-RSA-AES256-SHA "POST /example.org HTTP/2.0" 401 2330 2528 309 405 light beer
-198.51.100.1:84 http 2001:db8:2ce:1 TLSv1.2 DHE-RSA-AES256-SHA "HEAD /example.com HTTP/1.1" 101 2373 1008 344 374 light beer
-198.51.100.1:82 http 203.0.113.1 SSLv2 DHE-RSA-AES256-SHA "GET /example.com HTTP/2" 200 1264 2227 152 366 light beer
-test.example.com:82 https 203.0.113.1 TLSv1.2 PSK-RC4-SHA "POST /example.com HTTP/1.1" 201 1775 1464 428 69 light beer
-localhost:80 http localhost TLSv1.2 AES256-SHA "GET /example.com HTTP/2" 400 3448 3930 399 293 dark beer
-test.example.com:81 https 203.0.113.1 SSLv2 PSK-RC4-SHA "POST /example.com HTTP/1.1" 200 3626 3741 493 239 light beer
-test.example.com:80 https localhost SSLv2 DHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 301 4856 3661 306 81 dark wine
-localhost:83 https 203.0.113.2 SSLv3 PSK-RC4-SHA "GET /invalid.example HTTP/2" 301 2490 4572 72 339 dark wine
-localhost:81 https 2001:db8:2ce:2 SSLv2 DHE-RSA-AES256-SHA "GET /example.net HTTP/1.1" 201 2232 4815 329 381 dark beer
-test.example.org:83 https localhost SSLv3 DHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/1.1" 200 4306 3446 116 452 dark beer
-198.51.100.1:82 https 2001:db8:2ce:1 TLSv1.2 AES256-SHA "HEAD /example.com HTTP/2" 100 1933 1884 274 205 light beer
-test.example.org:82 http 2001:db8:2ce:1 TLSv1.3 ECDHE-RSA-AES256-SHA "POST /example.net HTTP/2" 101 2362 1426 395 94 light wine
-test.example.org:81 http 203.0.113.2 SSLv2 AES256-SHA "GET /example.net HTTP/1.1" 201 4164 3252 441 400 dark wine
-test.example.com:81 http 203.0.113.2 TLSv1.1 DHE-RSA-AES256-SHA "POST /invalid.example HTTP/2.0" 100 2076 2856 130 91 dark beer
-test.example.org:84 http 203.0.113.1 TLSv1 DHE-RSA-AES256-SHA "HEAD /example.net HTTP/2" 200 2320 3818 216 144 light wine
-2001:db8:1ce::1:81 http 2001:db8:2ce:1 TLSv1 AES256-SHA "POST /invalid.example HTTP/2.0" 100 1158 2485 257 122 dark beer
-198.51.100.1:81 http 2001:db8:2ce:1 TLSv1.2 AES256-SHA "HEAD /example.com HTTP/1.1" 100 4281 3245 100 224 light wine
-test.example.org:80 https localhost SSLv3 DHE-RSA-AES256-SHA "GET /example.org HTTP/2.0" 100 2461 3082 485 72 dark wine
-2001:db8:1ce::1:82 https 203.0.113.2 TLSv1.1 AES256-SHA "HEAD /example.net HTTP/2.0" 300 3352 2776 484 197 dark wine
-localhost:83 https localhost SSLv2 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 301 3083 4238 102 38 dark beer
-2001:db8:1ce::1:83 https 2001:db8:2ce:1 TLSv1 DHE-RSA-AES256-SHA "HEAD /example.com HTTP/1.1" 300 2979 3590 353 141 light wine
-test.example.org:80 https 203.0.113.2 TLSv1.1 AES256-SHA "GET /example.org HTTP/2.0" 301 3642 1094 427 364 dark beer
-test.example.com:82 https 2001:db8:2ce:1 SSLv2 AES256-SHA "GET /example.org HTTP/2.0" 400 4730 4711 263 423 light wine
-2001:db8:1ce::1:80 http localhost TLSv1.2 AES256-SHA "POST /example.net HTTP/2" 200 2542 4569 407 205 light wine
-localhost:80 http 203.0.113.1 TLSv1.3 ECDHE-RSA-AES256-SHA "HEAD /example.net HTTP/2.0" 401 3965 3654 350 115 dark beer
-198.51.100.1:83 https 2001:db8:2ce:2 TLSv1 DHE-RSA-AES256-SHA "GET /example.com HTTP/2.0" 400 3054 3367 403 483 dark beer
-test.example.org:81 http 2001:db8:2ce:1 SSLv2 PSK-RC4-SHA "GET /example.org HTTP/1.1" 200 4055 3657 440 212 dark beer
-localhost:83 https 203.0.113.2 TLSv1.2 PSK-RC4-SHA "GET /example.org HTTP/2.0" 100 3218 1949 252 22 dark wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-localhost:81 http 203.0.113.2 TLSv1.1 DHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 301 1759 1863 408 157 dark beer
-2001:db8:1ce::1:84 http 203.0.113.1 TLSv1.3 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 300 1790 1593 436 6 dark wine
-test.example.com:82 https 2001:db8:2ce:1 TLSv1.3 ECDHE-RSA-AES256-SHA "POST /example.net HTTP/2" 201 3160 2545 334 232 dark beer
-localhost:82 http localhost SSLv3 PSK-RC4-SHA "HEAD /example.net HTTP/2" 201 1708 4284 389 127 dark wine
-198.51.100.1:80 http localhost TLSv1 PSK-RC4-SHA "GET /example.com HTTP/1.1" 200 1993 3493 317 94 light beer
-test.example.org:82 http 203.0.113.1 TLSv1.3 AES256-SHA "HEAD /example.net HTTP/1.1" 201 1348 3366 223 355 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.org:80 https 2001:db8:2ce:2 TLSv1.2 ECDHE-RSA-AES256-SHA "POST /example.com HTTP/2" 101 4983 3861 284 475 light wine
-198.51.100.1:80 http 2001:db8:2ce:2 TLSv1.1 AES256-SHA "HEAD /invalid.example HTTP/1.1" 300 1434 4748 203 293 light wine
-198.51.100.1:82 http 2001:db8:2ce:1 SSLv2 ECDHE-RSA-AES256-SHA "GET /example.net HTTP/2" 401 4121 1240 437 464 light wine
-2001:db8:1ce::1:84 http 2001:db8:2ce:1 TLSv1 PSK-RC4-SHA "GET /invalid.example HTTP/2" 201 3584 2943 54 12 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-198.51.100.1:81 http 2001:db8:2ce:1 SSLv2 ECDHE-RSA-AES256-SHA "POST /invalid.example HTTP/1.1" 101 1231 1200 246 486 dark beer
-test.example.com:83 http 2001:db8:2ce:2 SSLv2 AES256-SHA "GET /invalid.example HTTP/2.0" 300 2680 1387 12 134 dark beer
-test.example.org:82 https localhost TLSv1 ECDHE-RSA-AES256-SHA "POST /example.com HTTP/1.1" 100 2755 3361 69 50 light wine
-test.example.org:81 https 203.0.113.1 TLSv1.2 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/1.1" 200 1588 4368 453 183 dark wine
-test.example.com:80 http 203.0.113.1 TLSv1 ECDHE-RSA-AES256-SHA "POST /example.net HTTP/2.0" 100 1646 1333 17 90 dark wine
-localhost:83 http 2001:db8:2ce:1 SSLv3 DHE-RSA-AES256-SHA "POST /example.net HTTP/1.1" 401 3218 3142 133 274 light wine
-test.example.com:80 http 2001:db8:2ce:2 SSLv2 DHE-RSA-AES256-SHA "HEAD /example.net HTTP/2.0" 300 2548 3128 462 197 dark wine
-2001:db8:1ce::1:81 https 2001:db8:2ce:2 TLSv1 PSK-RC4-SHA "POST /example.net HTTP/2" 201 4746 3988 11 375 dark beer
-test.example.com:80 https 2001:db8:2ce:1 SSLv2 PSK-RC4-SHA "POST /example.org HTTP/2.0" 200 3675 2193 470 426 dark beer
-test.example.org:81 https 203.0.113.2 TLSv1.2 DHE-RSA-AES256-SHA "POST /example.org HTTP/2.0" 101 1273 2426 135 444 light wine
-localhost:81 http localhost TLSv1.3 PSK-RC4-SHA "GET /example.com HTTP/1.1" 400 3507 3270 86 261 dark beer
-2001:db8:1ce::1:81 https 2001:db8:2ce:1 TLSv1.2 AES256-SHA "POST /example.net HTTP/2.0" 200 1500 2639 261 217 dark beer
-localhost:82 https 203.0.113.2 SSLv2 ECDHE-RSA-AES256-SHA "POST /example.net HTTP/1.1" 101 1016 4021 301 140 dark wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.org:80 http 2001:db8:2ce:1 TLSv1.2 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2.0" 201 4864 3422 145 235 light beer
-test.example.com:84 https 203.0.113.2 TLSv1.2 PSK-RC4-SHA "POST /example.org HTTP/2" 200 2503 1167 449 439 dark beer
-test.example.com:81 http localhost SSLv2 AES256-SHA "POST /example.org HTTP/2" 301 3908 4771 441 405 dark wine
-localhost:80 http localhost TLSv1 ECDHE-RSA-AES256-SHA "HEAD /example.com HTTP/2.0" 100 1771 1774 382 211 dark beer
-test.example.org:81 http 203.0.113.2 TLSv1.1 DHE-RSA-AES256-SHA "POST /example.com HTTP/2" 101 2166 1987 225 280 light beer
-2001:db8:1ce::1:84 https 2001:db8:2ce:2 SSLv3 ECDHE-RSA-AES256-SHA "HEAD /example.net HTTP/2" 300 4918 3602 313 368 dark wine
-localhost:83 https 2001:db8:2ce:1 TLSv1.2 AES256-SHA "POST /example.net HTTP/1.1" 201 4214 1695 413 25 light beer
-test.example.org:84 http 203.0.113.2 TLSv1.1 DHE-RSA-AES256-SHA "HEAD /example.org HTTP/2.0" 400 3690 4625 369 115 light wine
-198.51.100.1:83 https 203.0.113.1 TLSv1 PSK-RC4-SHA "GET /example.org HTTP/1.1" 100 4803 1778 64 411 light beer
-198.51.100.1:80 http 2001:db8:2ce:1 SSLv2 AES256-SHA "POST /invalid.example HTTP/2" 101 1019 4718 424 324 light beer
-test.example.org:81 http 203.0.113.2 TLSv1 ECDHE-RSA-AES256-SHA "GET /example.net HTTP/2" 200 1232 4177 143 362 dark beer
-test.example.org:81 http 2001:db8:2ce:1 SSLv3 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 400 1466 1640 305 23 dark wine
-test.example.com:84 http 203.0.113.1 SSLv2 DHE-RSA-AES256-SHA "POST /invalid.example HTTP/1.1" 300 3440 3832 162 209 light wine
-localhost:81 http localhost TLSv1.3 AES256-SHA "POST /example.net HTTP/2.0" 401 3683 3754 17 75 light beer
-2001:db8:1ce::1:80 https 2001:db8:2ce:2 SSLv2 AES256-SHA "GET /example.com HTTP/1.1" 101 2368 3817 428 74 dark beer
-test.example.com:80 http 203.0.113.2 SSLv3 DHE-RSA-AES256-SHA "POST /example.org HTTP/2.0" 201 1370 2114 136 259 dark beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.com:81 https 203.0.113.1 TLSv1 ECDHE-RSA-AES256-SHA "GET /example.net HTTP/1.1" 400 1186 3609 163 300 dark wine
-test.example.org:80 https 203.0.113.2 SSLv3 AES256-SHA "HEAD /example.net HTTP/1.1" 301 2584 1754 85 430 dark wine
-2001:db8:1ce::1:80 https localhost SSLv3 DHE-RSA-AES256-SHA "GET /example.org HTTP/2" 101 3926 2410 69 300 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-198.51.100.1:83 http localhost TLSv1.2 DHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 201 2371 2412 493 483 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.org:83 https localhost TLSv1 AES256-SHA "HEAD /invalid.example HTTP/1.1" 201 1565 4895 37 220 dark wine
-2001:db8:1ce::1:81 https 203.0.113.1 SSLv3 DHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/1.1" 200 4509 3199 352 485 light wine
-2001:db8:1ce::1:84 https 203.0.113.1 SSLv3 PSK-RC4-SHA "POST /example.org HTTP/1.1" 200 2243 3111 316 6 dark beer
-localhost:83 https localhost SSLv3 DHE-RSA-AES256-SHA "POST /example.net HTTP/1.1" 101 2763 2540 234 207 dark wine
-2001:db8:1ce::1:81 https 203.0.113.2 TLSv1.3 DHE-RSA-AES256-SHA "POST /example.net HTTP/2" 200 1931 1553 301 208 dark wine
-test.example.org:81 http localhost TLSv1.1 AES256-SHA "GET /example.com HTTP/2.0" 401 1711 4867 107 25 dark beer
-test.example.com:80 https 2001:db8:2ce:2 TLSv1 ECDHE-RSA-AES256-SHA "GET /example.org HTTP/2.0" 301 4271 3092 48 481 dark beer
-test.example.org:82 http 203.0.113.2 TLSv1 AES256-SHA "POST /example.com HTTP/2" 200 1931 3294 379 112 dark beer
-198.51.100.1:83 https 203.0.113.1 TLSv1 AES256-SHA "HEAD /example.org HTTP/2" 200 3255 4099 316 106 light wine
-198.51.100.1:82 https 2001:db8:2ce:1 TLSv1.3 PSK-RC4-SHA "HEAD /example.org HTTP/1.1" 101 1465 2767 91 62 light wine
-198.51.100.1:80 https 203.0.113.1 TLSv1.1 AES256-SHA "GET /example.org HTTP/2.0" 101 1204 2533 496 391 light beer
-localhost:83 https 2001:db8:2ce:1 TLSv1 DHE-RSA-AES256-SHA "POST /invalid.example HTTP/2.0" 201 2428 3662 148 68 light beer
-2001:db8:1ce::1:80 https 203.0.113.2 SSLv2 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/1.1" 300 2890 3654 447 63 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.com:84 http localhost TLSv1.1 ECDHE-RSA-AES256-SHA "POST /invalid.example HTTP/2" 301 2251 1492 400 119 light wine
-198.51.100.1:83 https 203.0.113.1 TLSv1.2 AES256-SHA "POST /example.net HTTP/2" 301 3710 1810 168 177 dark wine
-localhost:80 http 2001:db8:2ce:1 TLSv1.3 DHE-RSA-AES256-SHA "HEAD /example.net HTTP/2.0" 300 4461 4429 121 72 light beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-localhost:83 http 203.0.113.2 TLSv1.2 PSK-RC4-SHA "GET /example.com HTTP/1.1" 201 2978 4088 62 461 dark beer
-198.51.100.1:81 http localhost TLSv1.1 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/2" 100 2356 4626 367 136 dark wine
-test.example.com:80 http 203.0.113.1 TLSv1 AES256-SHA "POST /example.com HTTP/2.0" 401 3533 1927 59 338 dark wine
-localhost:83 https 2001:db8:2ce:2 SSLv3 ECDHE-RSA-AES256-SHA "POST /invalid.example HTTP/2.0" 201 3273 3510 274 86 dark wine
-test.example.com:81 http localhost SSLv2 AES256-SHA "POST /example.com HTTP/2.0" 100 1011 1645 474 60 light beer
-2001:db8:1ce::1:84 http 203.0.113.2 SSLv3 DHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 201 4300 4505 219 467 dark wine
-198.51.100.1:83 http 203.0.113.2 TLSv1.3 AES256-SHA "POST /example.org HTTP/2.0" 201 1108 3719 53 182 dark wine
-2001:db8:1ce::1:82 http 203.0.113.1 SSLv2 DHE-RSA-AES256-SHA "HEAD /example.org HTTP/2" 101 2006 3460 84 287 dark beer
-test.example.org:80 http localhost TLSv1.2 AES256-SHA "HEAD /invalid.example HTTP/2" 200 2136 1358 213 435 dark beer
-test.example.org:83 http localhost TLSv1.1 AES256-SHA "POST /invalid.example HTTP/1.1" 301 4769 2769 433 358 dark beer
-Unmatched! The rat the cat the dog chased killed ate the malt!
-localhost:84 https 203.0.113.1 TLSv1.3 AES256-SHA "POST /example.com HTTP/1.1" 201 3486 1215 92 475 light beer
-198.51.100.1:80 http localhost SSLv2 ECDHE-RSA-AES256-SHA "GET /example.org HTTP/2.0" 200 3651 3007 296 241 dark beer
-test.example.com:82 https 203.0.113.2 SSLv2 DHE-RSA-AES256-SHA "POST /invalid.example HTTP/1.1" 201 1553 1792 270 149 dark beer
-198.51.100.1:81 http 2001:db8:2ce:1 SSLv3 AES256-SHA "HEAD /example.com HTTP/2.0" 200 2338 1825 486 252 light beer
-test.example.com:84 http 2001:db8:2ce:1 SSLv3 ECDHE-RSA-AES256-SHA "HEAD /example.com HTTP/2" 100 1947 1130 213 107 light wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-test.example.com:80 https 2001:db8:2ce:1 TLSv1.3 ECDHE-RSA-AES256-SHA "POST /example.org HTTP/2.0" 301 3847 2643 113 499 dark wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-localhost:83 http localhost TLSv1.1 DHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/1.1" 100 2814 2845 489 187 light wine
-198.51.100.1:84 http 203.0.113.2 TLSv1.1 ECDHE-RSA-AES256-SHA "HEAD /example.org HTTP/2.0" 301 3672 4025 178 419 light wine
-localhost:81 http localhost TLSv1.1 ECDHE-RSA-AES256-SHA "POST /example.org HTTP/1.1" 201 2610 2405 285 8 light beer
-198.51.100.1:82 http 203.0.113.1 TLSv1.1 AES256-SHA "HEAD /invalid.example HTTP/1.1" 401 4502 4270 22 400 light wine
-2001:db8:1ce::1:80 https localhost TLSv1.1 ECDHE-RSA-AES256-SHA "GET /example.net HTTP/2" 300 4017 1470 204 155 dark beer
-localhost:84 http 2001:db8:2ce:2 TLSv1.2 AES256-SHA "GET /example.net HTTP/2.0" 400 3161 1143 377 89 light beer
-198.51.100.1:80 http 2001:db8:2ce:1 SSLv2 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/2.0" 100 2791 2976 145 65 dark wine
-2001:db8:1ce::1:83 https 2001:db8:2ce:2 SSLv3 AES256-SHA "HEAD /invalid.example HTTP/2" 201 4509 1010 179 63 dark beer
-test.example.org:80 https localhost SSLv3 PSK-RC4-SHA "GET /invalid.example HTTP/2.0" 100 1003 3783 260 326 dark wine
-test.example.com:84 https 203.0.113.2 SSLv2 ECDHE-RSA-AES256-SHA "HEAD /example.com HTTP/2" 201 4779 2006 61 16 dark beer
-localhost:83 http localhost TLSv1.3 PSK-RC4-SHA "POST /example.com HTTP/2" 200 4674 3447 448 58 light beer
-198.51.100.1:81 https 2001:db8:2ce:1 TLSv1.1 DHE-RSA-AES256-SHA "HEAD /example.com HTTP/2.0" 400 2279 2678 433 73 dark wine
-Unmatched! The rat the cat the dog chased killed ate the malt!
-2001:db8:1ce::1:81 http 2001:db8:2ce:1 SSLv3 AES256-SHA "POST /example.com HTTP/1.1" 400 4880 1990 370 351 light beer
-test.example.org:82 http localhost TLSv1.2 PSK-RC4-SHA "POST /example.com HTTP/2" 200 4379 4411 293 82 dark wine
-test.example.org:80 https 2001:db8:2ce:2 TLSv1.2 AES256-SHA "HEAD /example.org HTTP/1.1" 400 2483 3549 390 295 dark wine
-test.example.org:81 http 203.0.113.1 TLSv1.1 ECDHE-RSA-AES256-SHA "HEAD /example.org HTTP/2" 100 4893 3452 449 471 light beer
-localhost:84 http 2001:db8:2ce:2 SSLv3 ECDHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 401 4144 1794 267 472 light wine
-test.example.org:81 http localhost TLSv1.1 AES256-SHA "HEAD /example.net HTTP/1.1" 201 3881 3473 90 249 light wine
-198.51.100.1:81 https 203.0.113.1 TLSv1 ECDHE-RSA-AES256-SHA "HEAD /invalid.example HTTP/1.1" 200 1120 1872 404 114 dark wine
-localhost:81 http 2001:db8:2ce:2 SSLv2 ECDHE-RSA-AES256-SHA "GET /example.com HTTP/2" 401 4454 2970 109 350 dark beer
-test.example.org:81 http 2001:db8:2ce:1 TLSv1.1 PSK-RC4-SHA "POST /example.com HTTP/1.1" 300 3290 4840 8 82 light wine
-test.example.org:80 http 203.0.113.1 SSLv2 DHE-RSA-AES256-SHA "HEAD /example.net HTTP/2" 101 1829 3329 311 107 dark beer
-localhost:81 https 203.0.113.2 TLSv1.1 DHE-RSA-AES256-SHA "GET /example.com HTTP/2.0" 400 4939 2516 436 156 dark wine
-test.example.org:82 https 203.0.113.1 TLSv1.3 ECDHE-RSA-AES256-SHA "POST /example.com HTTP/2.0" 201 1668 3007 51 379 light wine
-test.example.com:81 http 203.0.113.1 SSLv2 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/1.1" 200 3291 4701 452 7 light beer
-198.51.100.1:80 https 203.0.113.2 SSLv2 PSK-RC4-SHA "POST /invalid.example HTTP/2.0" 101 1806 3179 351 262 dark wine
-localhost:81 http 203.0.113.1 TLSv1.3 DHE-RSA-AES256-SHA "HEAD /example.net HTTP/2.0" 401 4511 4599 465 132 dark wine
-test.example.com:83 https 2001:db8:2ce:1 TLSv1 PSK-RC4-SHA "POST /invalid.example HTTP/2" 100 4045 2794 218 35 dark wine
-2001:db8:1ce::1:82 https localhost SSLv3 AES256-SHA "HEAD /example.com HTTP/2" 100 2126 3840 141 63 light beer
-localhost:83 http 203.0.113.1 SSLv2 ECDHE-RSA-AES256-SHA "HEAD /example.com HTTP/2" 101 3617 1274 366 237 light wine
-2001:db8:1ce::1:84 http 203.0.113.2 TLSv1.3 PSK-RC4-SHA "POST /invalid.example HTTP/2.0" 301 3496 3108 289 130 dark wine
-test.example.org:82 https 2001:db8:2ce:2 TLSv1.3 AES256-SHA "HEAD /invalid.example HTTP/2" 200 2109 3593 432 394 dark wine
-test.example.com:84 http 203.0.113.2 TLSv1.2 PSK-RC4-SHA "HEAD /example.net HTTP/2.0" 200 4704 4431 498 485 light beer
-test.example.org:81 https 2001:db8:2ce:2 TLSv1.1 AES256-SHA "POST /invalid.example HTTP/2" 401 1251 1859 324 375 light wine
-test.example.org:81 http 203.0.113.2 SSLv2 AES256-SHA "HEAD /example.com HTTP/2.0" 300 1898 4830 213 206 dark wine
-test.example.com:84 https 203.0.113.2 TLSv1 DHE-RSA-AES256-SHA "POST /invalid.example HTTP/2.0" 101 3817 3477 45 372 light beer
-test.example.com:82 https 203.0.113.2 TLSv1 ECDHE-RSA-AES256-SHA "POST /example.org HTTP/2" 400 4791 1600 358 256 light wine
-test.example.com:83 http 203.0.113.1 TLSv1.2 PSK-RC4-SHA "POST /invalid.example HTTP/2" 101 1366 2940 181 68 light beer
-198.51.100.1:82 https 203.0.113.1 TLSv1 DHE-RSA-AES256-SHA "GET /invalid.example HTTP/1.1" 101 4087 4148 301 212 dark wine
-localhost:82 http localhost TLSv1.3 ECDHE-RSA-AES256-SHA "GET /example.org HTTP/1.1" 200 2727 3744 58 459 dark beer
-2001:db8:1ce::1:80 http 2001:db8:2ce:1 TLSv1 PSK-RC4-SHA "GET /example.com HTTP/2" 200 2286 1793 385 496 dark beer
-test.example.org:84 http 203.0.113.2 TLSv1.1 ECDHE-RSA-AES256-SHA "POST /example.net HTTP/2" 201 1025 4077 19 235 dark wine
-2001:db8:1ce::1:83 http 203.0.113.1 TLSv1.1 PSK-RC4-SHA "GET /example.org HTTP/2" 201 2213 2110 84 494 dark wine
-198.51.100.1:80 http 2001:db8:2ce:1 TLSv1.1 PSK-RC4-SHA "GET /example.com HTTP/1.1" 101 2733 3094 252 305 dark wine
-localhost:82 https 2001:db8:2ce:1 SSLv3 DHE-RSA-AES256-SHA "POST /example.org HTTP/1.1" 100 3988 3678 245 364 dark beer
-2001:db8:1ce::1:84 https 2001:db8:2ce:2 SSLv2 DHE-RSA-AES256-SHA "POST /example.org HTTP/1.1" 300 2519 3040 387 420 dark wine
-test.example.org:83 https 2001:db8:2ce:2 TLSv1.1 PSK-RC4-SHA "HEAD /example.org HTTP/1.1" 101 3032 4084 425 156 light wine
-198.51.100.1:80 http 2001:db8:2ce:1 TLSv1.3 ECDHE-RSA-AES256-SHA "HEAD /example.org HTTP/2" 200 2392 2377 479 198 dark beer
-2001:db8:1ce::1:84 http localhost TLSv1 AES256-SHA "GET /example.org HTTP/1.1" 301 4862 3563 302 259 light beer
-localhost:80 http localhost TLSv1.1 ECDHE-RSA-AES256-SHA "POST /example.net HTTP/1.1" 100 2863 4312 41 57 dark wine
-test.example.org:80 http 203.0.113.1 TLSv1.2 PSK-RC4-SHA "POST /example.org HTTP/1.1" 400 2228 4815 187 496 light wine
-localhost:82 http 2001:db8:2ce:1 TLSv1.2 ECDHE-RSA-AES256-SHA "HEAD /example.org HTTP/2.0" 300 4548 1918 125 31 dark beer
-localhost:84 https 2001:db8:2ce:1 TLSv1.2 DHE-RSA-AES256-SHA "GET /example.org HTTP/2" 300 2377 2239 24 51 dark wine
-test.example.org:80 http 203.0.113.2 TLSv1.3 DHE-RSA-AES256-SHA "GET /example.net HTTP/2.0" 101 2718 2793 391 321 dark beer
+test.example.com:81 203.0.113.2 - - [22/Mar/2009:09:30:31 +0100] "GET /example.other HTTP/2.0" 101 4719 4878 382 257 https TLSv1.1 AES256-SHA light wine
