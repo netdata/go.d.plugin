@@ -22,9 +22,10 @@ func New() *WebLog {
 	cfg := logs.ParserConfig{
 		LogType: typeAuto,
 		CSV: logs.CSVConfig{
-			FieldsPerRecord: -1,
-			Delimiter:       ' ',
-			CheckField:      checkCSVFormatField,
+			FieldsPerRecord:  -1,
+			Delimiter:        ' ',
+			TrimLeadingSpace: false,
+			CheckField:       checkCSVFormatField,
 		},
 		LTSV: logs.LTSVConfig{
 			FieldDelimiter: '\t',
@@ -72,8 +73,9 @@ type (
 		urlPatterns  []*pattern
 		customFields map[string][]*pattern
 
-		mx     *metricsData
-		charts *module.Charts
+		customLog bool
+		mx        *metricsData
+		charts    *module.Charts
 	}
 )
 
@@ -104,13 +106,17 @@ func (w *WebLog) Check() bool {
 		w.Warning("check failed: ", err)
 		return false
 	}
+	w.customLog = !w.line.hasWebFields() && w.line.hasCustomFields()
+
+	charts, err := w.createCharts(w.line)
+	if err != nil {
+		w.Warning("check failed: ", err)
+	}
+	w.charts = charts
 	return true
 }
 
 func (w *WebLog) Charts() *module.Charts {
-	if w.charts == nil {
-		w.charts = w.createCharts(w.line)
-	}
 	return w.charts
 }
 
@@ -127,5 +133,7 @@ func (w *WebLog) Collect() map[string]int64 {
 }
 
 func (w *WebLog) Cleanup() {
-	_ = w.file.Close()
+	if w.file != nil {
+		_ = w.file.Close()
+	}
 }

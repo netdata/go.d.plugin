@@ -67,10 +67,10 @@ func TestWebLog_Collect(t *testing.T) {
 	expected := map[string]int64{
 		"bytes_received":                            1384573,
 		"bytes_sent":                                1352758,
-		"custom_field_drink_beer":                   0,
-		"custom_field_drink_wine":                   0,
-		"custom_field_side_dark":                    0,
-		"custom_field_side_light":                   0,
+		"custom_field_drink_beer":                   223,
+		"custom_field_drink_wine":                   232,
+		"custom_field_side_dark":                    230,
+		"custom_field_side_light":                   225,
 		"req_bad":                                   54,
 		"req_error":                                 0,
 		"req_http_scheme":                           236,
@@ -383,7 +383,7 @@ func testCharts(t *testing.T, w *WebLog) {
 	testUpsRespTimeCharts(t, w)
 	testSSLProtoChart(t, w)
 	testSSLCipherSuiteChart(t, w)
-	//testReqCustomFieldCharts(t, w)
+	testReqCustomFieldCharts(t, w)
 }
 
 func testReqProcTimeCharts(t *testing.T, w *WebLog) {
@@ -565,7 +565,12 @@ func testSSLCipherSuiteChart(t *testing.T, w *WebLog) {
 
 func testReqCustomFieldCharts(t *testing.T, w *WebLog) {
 	for _, cf := range w.CustomFields {
-		id := fmt.Sprintf(reqByCustomFieldPattern.ID, cf.Name)
+		var id string
+		if w.customLog {
+			id = fmt.Sprintf(matchesByCustomFieldPattern.ID, cf.Name)
+		} else {
+			id = fmt.Sprintf(reqByCustomFieldPattern.ID, cf.Name)
+		}
 		chart := w.Charts().Get(id)
 		assert.NotNilf(t, chart, "chart '%s' is not created", id)
 		if chart == nil {
@@ -705,8 +710,8 @@ func prepareWebLogCollectFull(t *testing.T) *WebLog {
 		"$request_length",
 		"$request_time",
 		"$upstream_response_time",
-		"$custom_one",
-		"$custom_two",
+		"$side",
+		"$drink",
 	}, " ")
 
 	cfg := Config{
@@ -750,6 +755,8 @@ func prepareWebLogCollectFull(t *testing.T) *WebLog {
 	weblog := New()
 	weblog.Config = cfg
 	require.True(t, weblog.Init())
+	require.True(t, weblog.Check())
+	defer weblog.Cleanup()
 
 	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testFullLog))
 	require.NoError(t, err)
@@ -788,6 +795,8 @@ func prepareWebLogCollectCommon(t *testing.T) *WebLog {
 	weblog := New()
 	weblog.Config = cfg
 	require.True(t, weblog.Init())
+	require.True(t, weblog.Check())
+	defer weblog.Cleanup()
 
 	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testCommonLog))
 	require.NoError(t, err)
@@ -838,6 +847,8 @@ func prepareWebLogCollectCustom(t *testing.T) *WebLog {
 	weblog := New()
 	weblog.Config = cfg
 	require.True(t, weblog.Init())
+	require.True(t, weblog.Check())
+	defer weblog.Cleanup()
 
 	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testCustomLog))
 	require.NoError(t, err)

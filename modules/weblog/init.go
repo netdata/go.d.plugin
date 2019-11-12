@@ -61,6 +61,7 @@ func (w *WebLog) initLogLine() {
 }
 
 func (w *WebLog) initLogReader() error {
+	w.Cleanup()
 	reader, err := logs.Open(w.Path, w.ExcludePath, w.Logger)
 	if err != nil {
 		return fmt.Errorf("error on creating log reader: %v", err)

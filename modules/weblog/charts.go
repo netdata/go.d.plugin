@@ -533,18 +533,12 @@ func newURLPatternReqProcTimeChart(name string) *Chart {
 	return chart
 }
 
-func (w WebLog) createCharts(line *logLine) *Charts {
-	if line.hasWebFields() {
-		return w.createWebCharts(line)
+// TODO: fix
+func (w WebLog) createCharts(line *logLine) (*Charts, error) {
+	if w.customLog {
+		return w.createCustomCharts(), nil
 	}
-	//TODO: fix
-	//if line.hasCustomFields() && len(w.CustomFields) > 0 {
-	//	return w.createCustomCharts()
-	//}
-	if len(w.CustomFields) > 0 {
-		return w.createCustomCharts()
-	}
-	return nil
+	return w.createWebCharts(line), nil
 }
 
 func (w WebLog) createCustomCharts() *Charts {
