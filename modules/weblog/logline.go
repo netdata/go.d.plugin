@@ -431,20 +431,20 @@ func (l logLine) verify() error {
 func (l logLine) empty() bool                 { return !l.hasWebFields() && !l.hasCustomFields() }
 func (l logLine) hasCustomFields() bool       { return len(l.custom.values) > 0 }
 func (l logLine) hasWebFields() bool          { return l.lineWebFields != emptyWebFields }
-func (l logLine) hasVhost() bool              { return !isStringEmpty(l.vhost) }
-func (l logLine) hasPort() bool               { return !isStringEmpty(l.port) }
-func (l logLine) hasReqScheme() bool          { return !isStringEmpty(l.reqScheme) }
-func (l logLine) hasReqClient() bool          { return !isStringEmpty(l.reqClient) }
-func (l logLine) hasReqMethod() bool          { return !isStringEmpty(l.reqMethod) }
-func (l logLine) hasReqURL() bool             { return !isStringEmpty(l.reqURL) }
-func (l logLine) hasReqProto() bool           { return !isStringEmpty(l.reqProto) }
-func (l logLine) hasRespCode() bool           { return !isNumberEmpty(l.respCode) }
-func (l logLine) hasReqSize() bool            { return !isNumberEmpty(l.reqSize) }
-func (l logLine) hasRespSize() bool           { return !isNumberEmpty(l.respSize) }
-func (l logLine) hasReqProcTime() bool        { return !isNumberEmpty(int(l.reqProcTime)) }
-func (l logLine) hasUpsRespTime() bool        { return !isNumberEmpty(int(l.upsRespTime)) }
-func (l logLine) hasSSLProto() bool           { return !isStringEmpty(l.sslProto) }
-func (l logLine) hasSSLCipherSuite() bool     { return !isStringEmpty(l.sslCipherSuite) }
+func (l logLine) hasVhost() bool              { return !isEmptyString(l.vhost) }
+func (l logLine) hasPort() bool               { return !isEmptyString(l.port) }
+func (l logLine) hasReqScheme() bool          { return !isEmptyString(l.reqScheme) }
+func (l logLine) hasReqClient() bool          { return !isEmptyString(l.reqClient) }
+func (l logLine) hasReqMethod() bool          { return !isEmptyString(l.reqMethod) }
+func (l logLine) hasReqURL() bool             { return !isEmptyString(l.reqURL) }
+func (l logLine) hasReqProto() bool           { return !isEmptyString(l.reqProto) }
+func (l logLine) hasRespCode() bool           { return !isEmptyNumber(l.respCode) }
+func (l logLine) hasReqSize() bool            { return !isEmptyNumber(l.reqSize) }
+func (l logLine) hasRespSize() bool           { return !isEmptyNumber(l.respSize) }
+func (l logLine) hasReqProcTime() bool        { return !isEmptyNumber(int(l.reqProcTime)) }
+func (l logLine) hasUpsRespTime() bool        { return !isEmptyNumber(int(l.upsRespTime)) }
+func (l logLine) hasSSLProto() bool           { return !isEmptyString(l.sslProto) }
+func (l logLine) hasSSLCipherSuite() bool     { return !isEmptyString(l.sslCipherSuite) }
 func (l logLine) isVhostValid() bool          { return reVhost.MatchString(l.vhost) }
 func (l logLine) isPortValid() bool           { return isPortValid(l.port) }
 func (l logLine) isSchemeValid() bool         { return isSchemeValid(l.reqScheme) }
@@ -494,11 +494,11 @@ const (
 	emptyNumber = -9999
 )
 
-func isStringEmpty(s string) bool {
+func isEmptyString(s string) bool {
 	return s == emptyString || s == ""
 }
 
-func isNumberEmpty(n int) bool {
+func isEmptyNumber(n int) bool {
 	return n == emptyNumber
 }
 
