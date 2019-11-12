@@ -61,7 +61,6 @@ var (
 			{ID: "requests", Algo: module.Incremental},
 		},
 	}
-
 	reqExcluded = Chart{
 		ID:       "excluded_requests",
 		Title:    "Excluded Requests",
@@ -404,7 +403,7 @@ var (
 	}
 )
 
-func newReqProcTimeHistChart(histogram []float64) *Chart {
+func newReqProcTimeHistChart(histogram []float64) (*Chart, error) {
 	chart := reqProcTimeHist.Copy()
 	for i, v := range histogram {
 		dim := &Dim{
@@ -412,17 +411,21 @@ func newReqProcTimeHistChart(histogram []float64) *Chart {
 			Name: fmt.Sprintf("%.3f", v),
 			Algo: module.Incremental,
 		}
-		check(chart.AddDim(dim))
+		if err := chart.AddDim(dim); err != nil {
+			return nil, err
+		}
 	}
-	check(chart.AddDim(&Dim{
+	if err := chart.AddDim(&Dim{
 		ID:   "req_proc_time_hist_count",
 		Name: "+Inf",
 		Algo: module.Incremental,
-	}))
-	return chart
+	}); err != nil {
+		return nil, err
+	}
+	return chart, nil
 }
 
-func newUpsRespTimeHistChart(histogram []float64) *Chart {
+func newUpsRespTimeHistChart(histogram []float64) (*Chart, error) {
 	chart := upsRespTimeHist.Copy()
 	for i, v := range histogram {
 		dim := &Dim{
@@ -430,17 +433,21 @@ func newUpsRespTimeHistChart(histogram []float64) *Chart {
 			Name: fmt.Sprintf("%.3f", v),
 			Algo: module.Incremental,
 		}
-		check(chart.AddDim(dim))
+		if err := chart.AddDim(dim); err != nil {
+			return nil, err
+		}
 	}
-	check(chart.AddDim(&Dim{
+	if err := chart.AddDim(&Dim{
 		ID:   "upstream_resp_time_hist_count",
 		Name: "+Inf",
 		Algo: module.Incremental,
-	}))
-	return chart
+	}); err != nil {
+		return nil, err
+	}
+	return chart, nil
 }
 
-func newReqByURLPatternChart(patterns []userPattern) *Chart {
+func newReqByURLPatternChart(patterns []userPattern) (*Chart, error) {
 	chart := reqByURLPattern.Copy()
 	for _, p := range patterns {
 		dim := &Dim{
@@ -448,21 +455,28 @@ func newReqByURLPatternChart(patterns []userPattern) *Chart {
 			Name: p.Name,
 			Algo: module.Incremental,
 		}
-		check(chart.AddDim(dim))
+		if err := chart.AddDim(dim); err != nil {
+			return nil, err
+		}
 	}
-	return chart
+	return chart, nil
 }
 
-func newReqByCustomFieldPatternCharts(fields []customField) Charts {
+func newReqByCustomFieldPatternCharts(fields []customField) (Charts, error) {
 	charts := Charts{}
 	for _, f := range fields {
-		chart := newReqByCustomFieldPatternChart(f)
-		check(charts.Add(chart))
+		chart, err := newReqByCustomFieldPatternChart(f)
+		if err != nil {
+			return nil, err
+		}
+		if err := charts.Add(chart); err != nil {
+			return nil, err
+		}
 	}
-	return charts
+	return charts, nil
 }
 
-func newReqByCustomFieldPatternChart(f customField) *Chart {
+func newReqByCustomFieldPatternChart(f customField) (*Chart, error) {
 	chart := reqByCustomFieldPattern.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, f.Name)
 	chart.Title = fmt.Sprintf(chart.Title, f.Name)
@@ -473,12 +487,14 @@ func newReqByCustomFieldPatternChart(f customField) *Chart {
 			Name: p.Name,
 			Algo: module.Incremental,
 		}
-		check(chart.AddDim(dim))
+		if err := chart.AddDim(dim); err != nil {
+			return nil, err
+		}
 	}
-	return chart
+	return chart, nil
 }
 
-func newMatchesByCustomFieldPatternChart(f customField) *Chart {
+func newMatchesByCustomFieldPatternChart(f customField) (*Chart, error) {
 	chart := matchesByCustomFieldPattern.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, f.Name)
 	chart.Fam = fmt.Sprintf(chart.Fam, f.Name)
@@ -489,9 +505,11 @@ func newMatchesByCustomFieldPatternChart(f customField) *Chart {
 			Name: p.Name,
 			Algo: module.Incremental,
 		}
-		check(chart.AddDim(dim))
+		if err := chart.AddDim(dim); err != nil {
+			return nil, err
+		}
 	}
-	return chart
+	return chart, nil
 }
 
 func newURLPatternRespCodesChart(name string) *Chart {
@@ -527,12 +545,12 @@ func newURLPatternReqProcTimeChart(name string) *Chart {
 func (w *WebLog) createCharts(line *logLine) error {
 	w.charts = nil
 	if w.customLog {
-		return w.createCustomCharts()
+		return w.createCustomLogCharts()
 	}
 	return w.createWebCharts(line)
 }
 
-func (w *WebLog) createCustomCharts() error {
+func (w *WebLog) createCustomLogCharts() error {
 	// TODO: fix, shouldnt be requests
 	charts := &Charts{
 		reqTotal.Copy(),
@@ -643,7 +661,10 @@ func addURLCharts(charts *Charts, patterns []userPattern) error {
 	if len(patterns) == 0 {
 		return nil
 	}
-	chart := newReqByURLPatternChart(patterns)
+	chart, err := newReqByURLPatternChart(patterns)
+	if err != nil {
+		return err
+	}
 	if err := charts.Add(chart); err != nil {
 		return err
 	}
@@ -705,7 +726,10 @@ func addReqProcTimeCharts(charts *Charts, histogram []float64, patterns []userPa
 	if len(histogram) == 0 {
 		return nil
 	}
-	chart := newReqProcTimeHistChart(histogram)
+	chart, err := newReqProcTimeHistChart(histogram)
+	if err != nil {
+		return err
+	}
 	return charts.Add(chart)
 }
 
@@ -716,7 +740,10 @@ func addUpstreamRespTimeCharts(charts *Charts, histogram []float64) error {
 	if len(histogram) == 0 {
 		return nil
 	}
-	chart := newUpsRespTimeHistChart(histogram)
+	chart, err := newUpsRespTimeHistChart(histogram)
+	if err != nil {
+		return err
+	}
 	return charts.Add(chart)
 }
 
@@ -724,23 +751,22 @@ func addWebCustomFieldsCharts(charts *Charts, fields []customField) error {
 	if len(fields) == 0 {
 		return nil
 	}
-	cs := newReqByCustomFieldPatternCharts(fields)
+	cs, err := newReqByCustomFieldPatternCharts(fields)
+	if err != nil {
+		return err
+	}
 	return charts.Add(cs...)
 }
 
 func addCustomFieldsCharts(charts *Charts, fields []customField) error {
 	for _, f := range fields {
-		chart := newMatchesByCustomFieldPatternChart(f)
+		chart, err := newMatchesByCustomFieldPatternChart(f)
+		if err != nil {
+			return err
+		}
 		if err := charts.Add(chart); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-// TODO: get rid of
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

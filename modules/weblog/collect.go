@@ -326,45 +326,73 @@ func (w *WebLog) collectCustomFields() {
 
 func (w *WebLog) addDimToVhostChart(vhost string) {
 	chart := w.Charts().Get(reqByVhost.ID)
+	if chart == nil {
+		w.Warningf("add dimension: no '%s' chart", reqByVhost.ID)
+		return
+	}
 	dim := &Dim{
 		ID:   "req_vhost_" + vhost,
 		Name: vhost,
 		Algo: module.Incremental,
 	}
-	check(chart.AddDim(dim))
+	if err := chart.AddDim(dim); err != nil {
+		w.Warning(err)
+		return
+	}
 	chart.MarkNotCreated()
 }
 
 func (w *WebLog) addDimToPortChart(port string) {
 	chart := w.Charts().Get(reqByPort.ID)
+	if chart == nil {
+		w.Warningf("add dimension: no '%s' chart", reqByPort.ID)
+		return
+	}
 	dim := &Dim{
 		ID:   "req_port_" + port,
 		Name: port,
 		Algo: module.Incremental,
 	}
-	check(chart.AddDim(dim))
+	if err := chart.AddDim(dim); err != nil {
+		w.Warning(err)
+		return
+	}
 	chart.MarkNotCreated()
 }
 
 func (w *WebLog) addDimToReqMethodChart(method string) {
 	chart := w.Charts().Get(reqByMethod.ID)
+	if chart == nil {
+		w.Warningf("add dimension: no '%s' chart", reqByMethod.ID)
+		return
+	}
 	dim := &Dim{
 		ID:   "req_method_" + method,
 		Name: method,
 		Algo: module.Incremental,
 	}
-	check(chart.AddDim(dim))
+	if err := chart.AddDim(dim); err != nil {
+		w.Warning(err)
+		return
+	}
 	chart.MarkNotCreated()
 }
 
 func (w *WebLog) addDimToReqVersionChart(version string) {
 	chart := w.Charts().Get(reqByVersion.ID)
+	if chart == nil {
+		w.Warningf("add dimension: no '%s' chart", reqByVersion.ID)
+		return
+	}
 	dim := &Dim{
 		ID:   "req_version_" + version,
 		Name: version,
 		Algo: module.Incremental,
 	}
-	check(chart.AddDim(dim))
+	if err := chart.AddDim(dim); err != nil {
+		w.Warning(err)
+		return
+	}
 	chart.MarkNotCreated()
 }
 
@@ -372,14 +400,20 @@ func (w *WebLog) addDimToSSLProtoChart(proto string) {
 	chart := w.Charts().Get(reqBySSLProto.ID)
 	if chart == nil {
 		chart = reqBySSLProto.Copy()
-		check(w.Charts().Add(chart))
+		if err := w.Charts().Add(chart); err != nil {
+			w.Warning(err)
+			return
+		}
 	}
 	dim := &Dim{
 		ID:   "req_ssl_proto_" + proto,
 		Name: proto,
 		Algo: module.Incremental,
 	}
-	check(chart.AddDim(dim))
+	if err := chart.AddDim(dim); err != nil {
+		w.Warning(err)
+		return
+	}
 	chart.MarkNotCreated()
 }
 
@@ -387,20 +421,27 @@ func (w *WebLog) addDimToSSLCipherSuiteChart(cipher string) {
 	chart := w.Charts().Get(reqBySSLCipherSuite.ID)
 	if chart == nil {
 		chart = reqBySSLCipherSuite.Copy()
-		check(w.Charts().Add(chart))
+		if err := w.Charts().Add(chart); err != nil {
+			w.Warning(err)
+			return
+		}
 	}
 	dim := &Dim{
 		ID:   "req_ssl_cipher_suite_" + cipher,
 		Name: cipher,
 		Algo: module.Incremental,
 	}
-	check(chart.AddDim(dim))
+	if err := chart.AddDim(dim); err != nil {
+		w.Warning(err)
+		return
+	}
 	chart.MarkNotCreated()
 }
 
 func (w *WebLog) addDimToRespCodesChart(code string) {
 	chart := w.findRespCodesChart(code)
 	if chart == nil {
+		w.Warning("add dimension: cant find resp codes chart")
 		return
 	}
 	dim := &Dim{
@@ -408,20 +449,30 @@ func (w *WebLog) addDimToRespCodesChart(code string) {
 		Name: code,
 		Algo: module.Incremental,
 	}
-	check(chart.AddDim(dim))
+	if err := chart.AddDim(dim); err != nil {
+		w.Warning(err)
+		return
+	}
 	chart.MarkNotCreated()
 }
 
 func (w *WebLog) addDimToURLPatternRespCodesChart(name, code string) {
 	id := fmt.Sprintf(urlPatternRespCodes.ID, name)
 	chart := w.Charts().Get(id)
+	if chart == nil {
+		w.Warningf("add dimension: no '%s' chart", id)
+		return
+	}
 	dim := &Dim{
 		ID:   fmt.Sprintf("url_ptn_%s_resp_code_%s", name, code),
 		Name: code,
 		Algo: module.Incremental,
 	}
 
-	check(chart.AddDim(dim))
+	if err := chart.AddDim(dim); err != nil {
+		w.Warning(err)
+		return
+	}
 	chart.MarkNotCreated()
 }
 
@@ -430,20 +481,20 @@ func (w *WebLog) findRespCodesChart(code string) *Chart {
 		return w.Charts().Get(respCodes.ID)
 	}
 
-	var chart Chart
+	var id string
 	switch class := code[:1]; class {
 	case "1":
-		chart = respCodes1xx
+		id = respCodes1xx.ID
 	case "2":
-		chart = respCodes2xx
+		id = respCodes2xx.ID
 	case "3":
-		chart = respCodes3xx
+		id = respCodes3xx.ID
 	case "4":
-		chart = respCodes4xx
+		id = respCodes4xx.ID
 	case "5":
-		chart = respCodes5xx
+		id = respCodes5xx.ID
 	default:
 		return nil
 	}
-	return w.Charts().Get(chart.ID)
+	return w.Charts().Get(id)
 }
