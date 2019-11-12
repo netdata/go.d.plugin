@@ -60,7 +60,7 @@ func (w *WebLog) collectLogLines() (int, error) {
 			continue
 		}
 		n++
-		if w.line.isEmpty() {
+		if w.line.empty() {
 			w.collectUnmatched()
 		} else {
 			w.collectLogLine()

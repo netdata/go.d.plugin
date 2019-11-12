@@ -518,7 +518,7 @@ func newCustomFieldChart(f customField) (*Chart, error) {
 }
 
 func (w *WebLog) createCharts(line *logLine) error {
-	if line.isEmpty() {
+	if line.empty() {
 		return errors.New("empty line")
 	}
 	w.charts = nil

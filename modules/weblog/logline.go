@@ -175,7 +175,7 @@ func (l *logLine) assignPort(port string) error {
 	if port == hyphen {
 		return nil
 	}
-	if !isValidPort(port) {
+	if !isPortValid(port) {
 		return fmt.Errorf("assign '%s' : %w", port, errBadPort)
 	}
 	l.port = port
@@ -203,7 +203,7 @@ func (l *logLine) assignReqScheme(scheme string) error {
 	if scheme == hyphen {
 		return nil
 	}
-	if !isValidScheme(scheme) {
+	if !isSchemeValid(scheme) {
 		return fmt.Errorf("assign '%s' : %w", scheme, errBadReqScheme)
 	}
 	l.reqScheme = scheme
@@ -249,7 +249,7 @@ func (l *logLine) assignReqMethod(method string) error {
 	if method == hyphen {
 		return nil
 	}
-	if !isValidReqMethod(method) {
+	if !isReqMethodValid(method) {
 		return fmt.Errorf("assign '%s' : %w", method, errBadReqMethod)
 	}
 	l.reqMethod = method
@@ -268,7 +268,7 @@ func (l *logLine) assignReqProto(proto string) error {
 	if proto == hyphen {
 		return nil
 	}
-	if !isValidReqProto(proto) {
+	if !isReqProtoValid(proto) {
 		return fmt.Errorf("assign '%s': %w", proto, errBadReqProto)
 	}
 	l.reqProto = proto[5:]
@@ -280,7 +280,7 @@ func (l *logLine) assignRespCode(status string) error {
 		return nil
 	}
 	v, err := strconv.Atoi(status)
-	if err != nil || !isValidRespCode(v) {
+	if err != nil || !isRespCodeValid(v) {
 		return fmt.Errorf("assign '%s': %w", status, errBadRespCode)
 	}
 	l.respCode = v
@@ -294,7 +294,7 @@ func (l *logLine) assignReqSize(size string) error {
 		return nil
 	}
 	v, err := strconv.Atoi(size)
-	if err != nil || !isValidSize(v) {
+	if err != nil || !isSizeValid(v) {
 		return fmt.Errorf("assign '%s': %w", size, errBadReqSize)
 	}
 	l.reqSize = v
@@ -308,7 +308,7 @@ func (l *logLine) assignRespSize(size string) error {
 		return nil
 	}
 	v, err := strconv.Atoi(size)
-	if err != nil || !isValidSize(v) {
+	if err != nil || !isSizeValid(v) {
 		return fmt.Errorf("assign '%s': %w", size, errBadRespSize)
 	}
 	l.respSize = v
@@ -324,10 +324,10 @@ func (l *logLine) assignReqProcTime(time string) error {
 		return nil
 	}
 	v, err := strconv.ParseFloat(time, 64)
-	if err != nil || !isValidTime(v) {
+	if err != nil || !isTimeValid(v) {
 		return fmt.Errorf("assign '%s': %w", time, errBadReqProcTime)
 	}
-	l.reqProcTime = v * respTimeMultiplier(time)
+	l.reqProcTime = v * timeMultiplier(time)
 	return nil
 }
 
@@ -340,10 +340,10 @@ func (l *logLine) assignUpsRespTime(time string) error {
 		time = time[0:idx]
 	}
 	v, err := strconv.ParseFloat(time, 64)
-	if err != nil || !isValidTime(v) {
+	if err != nil || !isTimeValid(v) {
 		return fmt.Errorf("assign '%s': %w", time, errBadUpsRespTime)
 	}
-	l.upsRespTime = v * respTimeMultiplier(time)
+	l.upsRespTime = v * timeMultiplier(time)
 	return nil
 }
 
@@ -351,7 +351,7 @@ func (l *logLine) assignSSLProto(proto string) error {
 	if proto == hyphen {
 		return nil
 	}
-	if !isValidSSLProto(proto) {
+	if !isSSLProtoValid(proto) {
 		return fmt.Errorf("assign '%s': %w", proto, errBadSSLProto)
 	}
 	l.sslProto = proto
@@ -380,85 +380,85 @@ func (l *logLine) assignCustom(field, value string) error {
 }
 
 func (l logLine) verify() error {
-	if l.isEmpty() {
+	if l.empty() {
 		return fmt.Errorf("verify: %w", errEmptyLine)
 	}
-	if l.hasRespCode() && !l.validRespCode() {
+	if l.hasRespCode() && !l.isRespCodeValid() {
 		return fmt.Errorf("verify '%d': %w", l.respCode, errBadRespCode)
 	}
-	if l.hasVhost() && !l.validVhost() {
+	if l.hasVhost() && !l.isVhostValid() {
 		return fmt.Errorf("verify '%s': %w", l.vhost, errBadVhost)
 	}
-	if l.hasPort() && !l.validPort() {
+	if l.hasPort() && !l.isPortValid() {
 		return fmt.Errorf("verify '%s': %w", l.port, errBadPort)
 	}
-	if l.hasReqScheme() && !l.validReqScheme() {
+	if l.hasReqScheme() && !l.isSchemeValid() {
 		return fmt.Errorf("verify '%s': %w", l.reqScheme, errBadReqScheme)
 	}
-	if l.hasReqClient() && !l.validReqClient() {
+	if l.hasReqClient() && !l.isClientValid() {
 		return fmt.Errorf("verify '%s': %w", l.reqClient, errBadReqClient)
 	}
-	if l.hasReqMethod() && !l.validReqMethod() {
+	if l.hasReqMethod() && !l.isMethodValid() {
 		return fmt.Errorf("verify '%s': %w", l.reqMethod, errBadReqMethod)
 	}
-	if l.hasReqURL() && !l.validReqURL() {
+	if l.hasReqURL() && !l.isURLValid() {
 		return fmt.Errorf("verify '%s': %w", l.reqURL, errBadReqURL)
 	}
-	if l.hasReqProto() && !l.validReqProto() {
+	if l.hasReqProto() && !l.isProtoValid() {
 		return fmt.Errorf("verify '%s': %w", l.reqProto, errBadReqProto)
 	}
-	if l.hasReqSize() && !l.validReqSize() {
+	if l.hasReqSize() && !l.isReqSizeValid() {
 		return fmt.Errorf("verify '%d': %w", l.reqSize, errBadReqSize)
 	}
-	if l.hasRespSize() && !l.validRespSize() {
+	if l.hasRespSize() && !l.isRespSizeValid() {
 		return fmt.Errorf("verify '%d': %w", l.respSize, errBadRespSize)
 	}
-	if l.hasReqProcTime() && !l.validReqProcTime() {
+	if l.hasReqProcTime() && !l.isReqProcTimeValid() {
 		return fmt.Errorf("verify '%f': %w", l.reqProcTime, errBadReqProcTime)
 	}
-	if l.hasUpsRespTime() && !l.validUpsRespTime() {
+	if l.hasUpsRespTime() && !l.isUpsRespTimeValid() {
 		return fmt.Errorf("verify '%f': %w", l.upsRespTime, errBadUpsRespTime)
 	}
-	if l.hasSSLProto() && !l.validSSLProto() {
+	if l.hasSSLProto() && !l.isSSLProtoValid() {
 		return fmt.Errorf("verify '%s': %w", l.sslProto, errBadSSLProto)
 	}
-	if l.hasSSLCipherSuite() && !l.validSSLCipherSuite() {
+	if l.hasSSLCipherSuite() && !l.isSSLCipherSuiteValid() {
 		return fmt.Errorf("verify '%s': %w", l.sslCipherSuite, errBadSSLCipherSuite)
 	}
 	return nil
 }
 
-func (l logLine) isEmpty() bool             { return !l.hasWebFields() && !l.hasCustomFields() }
-func (l logLine) hasCustomFields() bool     { return len(l.custom.values) > 0 }
-func (l logLine) hasWebFields() bool        { return l.lineWebFields != emptyWebFields }
-func (l logLine) hasVhost() bool            { return !isEmptyString(l.vhost) }
-func (l logLine) hasPort() bool             { return !isEmptyString(l.port) }
-func (l logLine) hasReqScheme() bool        { return !isEmptyString(l.reqScheme) }
-func (l logLine) hasReqClient() bool        { return !isEmptyString(l.reqClient) }
-func (l logLine) hasReqMethod() bool        { return !isEmptyString(l.reqMethod) }
-func (l logLine) hasReqURL() bool           { return !isEmptyString(l.reqURL) }
-func (l logLine) hasReqProto() bool         { return !isEmptyString(l.reqProto) }
-func (l logLine) hasRespCode() bool         { return !isEmptyNumber(l.respCode) }
-func (l logLine) hasReqSize() bool          { return !isEmptyNumber(l.reqSize) }
-func (l logLine) hasRespSize() bool         { return !isEmptyNumber(l.respSize) }
-func (l logLine) hasReqProcTime() bool      { return !isEmptyNumber(int(l.reqProcTime)) }
-func (l logLine) hasUpsRespTime() bool      { return !isEmptyNumber(int(l.upsRespTime)) }
-func (l logLine) hasSSLProto() bool         { return !isEmptyString(l.sslProto) }
-func (l logLine) hasSSLCipherSuite() bool   { return !isEmptyString(l.sslCipherSuite) }
-func (l logLine) validVhost() bool          { return reVhost.MatchString(l.vhost) }
-func (l logLine) validPort() bool           { return isValidPort(l.port) }
-func (l logLine) validReqScheme() bool      { return isValidScheme(l.reqScheme) }
-func (l logLine) validReqClient() bool      { return reClient.MatchString(l.reqClient) }
-func (l logLine) validReqMethod() bool      { return isValidReqMethod(l.reqMethod) }
-func (l logLine) validReqURL() bool         { return isValidURL(l.reqMethod, l.reqURL) }
-func (l logLine) validReqProto() bool       { return isValidReqProtoVer(l.reqProto) }
-func (l logLine) validRespCode() bool       { return isValidRespCode(l.respCode) }
-func (l logLine) validReqSize() bool        { return isValidSize(l.reqSize) }
-func (l logLine) validRespSize() bool       { return isValidSize(l.respSize) }
-func (l logLine) validReqProcTime() bool    { return isValidTime(l.reqProcTime) }
-func (l logLine) validUpsRespTime() bool    { return isValidTime(l.upsRespTime) }
-func (l logLine) validSSLProto() bool       { return isValidSSLProto(l.sslProto) }
-func (l logLine) validSSLCipherSuite() bool { return reCipherSuite.MatchString(l.sslCipherSuite) }
+func (l logLine) empty() bool                 { return !l.hasWebFields() && !l.hasCustomFields() }
+func (l logLine) hasCustomFields() bool       { return len(l.custom.values) > 0 }
+func (l logLine) hasWebFields() bool          { return l.lineWebFields != emptyWebFields }
+func (l logLine) hasVhost() bool              { return !isStringEmpty(l.vhost) }
+func (l logLine) hasPort() bool               { return !isStringEmpty(l.port) }
+func (l logLine) hasReqScheme() bool          { return !isStringEmpty(l.reqScheme) }
+func (l logLine) hasReqClient() bool          { return !isStringEmpty(l.reqClient) }
+func (l logLine) hasReqMethod() bool          { return !isStringEmpty(l.reqMethod) }
+func (l logLine) hasReqURL() bool             { return !isStringEmpty(l.reqURL) }
+func (l logLine) hasReqProto() bool           { return !isStringEmpty(l.reqProto) }
+func (l logLine) hasRespCode() bool           { return !isNumberEmpty(l.respCode) }
+func (l logLine) hasReqSize() bool            { return !isNumberEmpty(l.reqSize) }
+func (l logLine) hasRespSize() bool           { return !isNumberEmpty(l.respSize) }
+func (l logLine) hasReqProcTime() bool        { return !isNumberEmpty(int(l.reqProcTime)) }
+func (l logLine) hasUpsRespTime() bool        { return !isNumberEmpty(int(l.upsRespTime)) }
+func (l logLine) hasSSLProto() bool           { return !isStringEmpty(l.sslProto) }
+func (l logLine) hasSSLCipherSuite() bool     { return !isStringEmpty(l.sslCipherSuite) }
+func (l logLine) isVhostValid() bool          { return reVhost.MatchString(l.vhost) }
+func (l logLine) isPortValid() bool           { return isPortValid(l.port) }
+func (l logLine) isSchemeValid() bool         { return isSchemeValid(l.reqScheme) }
+func (l logLine) isClientValid() bool         { return reClient.MatchString(l.reqClient) }
+func (l logLine) isMethodValid() bool         { return isReqMethodValid(l.reqMethod) }
+func (l logLine) isURLValid() bool            { return isURLValid(l.reqMethod, l.reqURL) }
+func (l logLine) isProtoValid() bool          { return isReqProtoVerValid(l.reqProto) }
+func (l logLine) isRespCodeValid() bool       { return isRespCodeValid(l.respCode) }
+func (l logLine) isReqSizeValid() bool        { return isSizeValid(l.reqSize) }
+func (l logLine) isRespSizeValid() bool       { return isSizeValid(l.respSize) }
+func (l logLine) isReqProcTimeValid() bool    { return isTimeValid(l.reqProcTime) }
+func (l logLine) isUpsRespTimeValid() bool    { return isTimeValid(l.upsRespTime) }
+func (l logLine) isSSLProtoValid() bool       { return isSSLProtoValid(l.sslProto) }
+func (l logLine) isSSLCipherSuiteValid() bool { return reCipherSuite.MatchString(l.sslCipherSuite) }
 
 func (l *logLine) reset() {
 	l.lineWebFields = emptyWebFields
@@ -494,15 +494,15 @@ const (
 	emptyNumber = -9999
 )
 
-func isEmptyString(s string) bool {
+func isStringEmpty(s string) bool {
 	return s == emptyString || s == ""
 }
 
-func isEmptyNumber(n int) bool {
+func isNumberEmpty(n int) bool {
 	return n == emptyNumber
 }
 
-func isValidURL(method, url string) bool {
+func isURLValid(method, url string) bool {
 	// CONNECT www.example.com:443 HTTP/1.1
 	if method == "CONNECT" {
 		return !hasBadURICharacter(url)
@@ -521,7 +521,7 @@ func hasBadURICharacter(s string) bool {
 	return false
 }
 
-func isValidReqMethod(method string) bool {
+func isReqMethodValid(method string) bool {
 	if method == "GET" {
 		return true
 	}
@@ -532,11 +532,11 @@ func isValidReqMethod(method string) bool {
 	return false
 }
 
-func isValidReqProto(proto string) bool {
-	return len(proto) >= 6 && strings.HasPrefix(proto, "HTTP/") && isValidReqProtoVer(proto[5:])
+func isReqProtoValid(proto string) bool {
+	return len(proto) >= 6 && strings.HasPrefix(proto, "HTTP/") && isReqProtoVerValid(proto[5:])
 }
 
-func isValidReqProtoVer(version string) bool {
+func isReqProtoVerValid(version string) bool {
 	if version == "1.1" {
 		return true
 	}
@@ -547,16 +547,16 @@ func isValidReqProtoVer(version string) bool {
 	return false
 }
 
-func isValidPort(port string) bool {
+func isPortValid(port string) bool {
 	v, err := strconv.Atoi(port)
 	return err == nil && v >= 80 && v <= 49151
 }
 
-func isValidScheme(scheme string) bool {
+func isSchemeValid(scheme string) bool {
 	return scheme == "http" || scheme == "https"
 }
 
-func isValidRespCode(code int) bool {
+func isRespCodeValid(code int) bool {
 	// rfc7231
 	// Informational responses (100–199),
 	// Successful responses (200–299),
@@ -566,15 +566,15 @@ func isValidRespCode(code int) bool {
 	return code >= 100 && code <= 600
 }
 
-func isValidSize(size int) bool {
+func isSizeValid(size int) bool {
 	return size >= 0
 }
 
-func isValidTime(time float64) bool {
+func isTimeValid(time float64) bool {
 	return time >= 0
 }
 
-func isValidSSLProto(proto string) bool {
+func isSSLProtoValid(proto string) bool {
 	if proto == "TLSv1.2" {
 		return true
 	}
@@ -585,7 +585,7 @@ func isValidSSLProto(proto string) bool {
 	return false
 }
 
-func respTimeMultiplier(time string) float64 {
+func timeMultiplier(time string) float64 {
 	// Convert to microseconds:
 	//   - nginx time is in seconds with a milliseconds resolution.
 	if strings.IndexByte(time, '.') > 0 {
