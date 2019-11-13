@@ -34,10 +34,10 @@ type (
 		Resp4xx  metrics.Counter    `stm:"resp_4xx"`
 		Resp5xx  metrics.Counter    `stm:"resp_5xx"`
 
-		ReqSuccess  metrics.Counter `stm:"req_success"`
-		ReqRedirect metrics.Counter `stm:"req_redirect"`
-		ReqBad      metrics.Counter `stm:"req_bad"`
-		ReqError    metrics.Counter `stm:"req_error"`
+		ReqSuccess  metrics.Counter `stm:"req_type_success"`
+		ReqRedirect metrics.Counter `stm:"req_type_redirect"`
+		ReqBad      metrics.Counter `stm:"req_type_bad"`
+		ReqError    metrics.Counter `stm:"req_type_error"`
 
 		UniqueIPv4      metrics.UniqueCounter `stm:"uniq_ipv4"`
 		UniqueIPv6      metrics.UniqueCounter `stm:"uniq_ipv6"`

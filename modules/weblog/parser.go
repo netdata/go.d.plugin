@@ -56,6 +56,9 @@ var (
 	}
 )
 
+func cleanCSVFormat(format string) string       { return strings.Join(strings.Fields(format), " ") }
+func cleanApacheLogFormat(format string) string { return strings.ReplaceAll(format, `\`, "") }
+
 const (
 	typeAuto = "auto"
 )
@@ -68,6 +71,7 @@ func (w *WebLog) newParser(record []byte) (logs.Parser, error) {
 	if w.Parser.LogType == typeAuto {
 		return w.guessParser(record)
 	}
+	w.Parser.CSV.Format = cleanApacheLogFormat(w.Parser.CSV.Format)
 	return logs.NewParser(w.Parser, w.file)
 }
 
@@ -107,7 +111,7 @@ func checkCSVFormatField(field string) (newName string, offset int, valid bool) 
 	if isTimeField(field) {
 		return "", 1, false
 	}
-	if !isValidField(field) {
+	if !isFieldValid(field) {
 		return "", 0, false
 	}
 	// remove `$` and `%` to have same field names with regexp parser,
@@ -119,7 +123,7 @@ func isTimeField(field string) bool {
 	return field == "[$time_local]" || field == "$time_local" || field == "%t"
 }
 
-func isValidField(field string) bool {
+func isFieldValid(field string) bool {
 	return len(field) > 1 && (isNginxField(field) || isApacheField(field))
 }
 func isNginxField(field string) bool {
@@ -128,8 +132,4 @@ func isNginxField(field string) bool {
 
 func isApacheField(field string) bool {
 	return strings.HasPrefix(field, "%")
-}
-
-func cleanCSVFormat(format string) string {
-	return strings.Join(strings.Fields(format), " ")
 }
