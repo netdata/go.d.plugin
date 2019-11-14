@@ -1,8 +1,9 @@
 package unbound
 
 import (
-	"github.com/netdata/go-orchestrator/module"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
@@ -22,6 +23,10 @@ func New() *Unbound {
 	}
 }
 
+type unboundClient interface {
+	send(command string) ([]string, error)
+}
+
 type (
 	Config struct {
 		Address             string       `yaml:"address"`
@@ -33,13 +38,18 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
+		client unboundClient
 		charts *module.Charts
+		mx     *metricsData
 	}
 )
 
 func (Unbound) Cleanup() {}
 
-func (u *Unbound) Init() bool { return true }
+func (u *Unbound) Init() bool {
+	u.mx = &metricsData{}
+	return true
+}
 
 func (u Unbound) Check() bool { return false }
 
