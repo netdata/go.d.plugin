@@ -41,7 +41,7 @@ func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
 
 func (u *Unbound) collectStats(stats []entry) map[string]int64 {
 	var resetTimings bool
-	if u.cumulative {
+	if u.Cumulative {
 		n := findTotalQueries(stats)
 		resetTimings = n > 0 && n == u.prevTotQueries
 		u.prevTotQueries = n

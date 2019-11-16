@@ -18,8 +18,10 @@ func init() {
 
 func New() *Unbound {
 	config := Config{
-		Address: "192.168.88.223:8953",
-		Timeout: web.Duration{Duration: time.Second * 2},
+		// "/etc/unbound/unbound.conf"
+		Address:  "192.168.88.223:8953",
+		ConfPath: "/Users/ilyam/Projects/goland/go.d.plugin/modules/unbound/testdata/unbound.conf",
+		Timeout:  web.Duration{Duration: time.Second * 2},
 	}
 
 	return &Unbound{
@@ -39,6 +41,8 @@ type (
 		Address             string       `yaml:"address"`
 		ConfPath            string       `yaml:"conf_path"`
 		Timeout             web.Duration `yaml:"timeout"`
+		DisableTLS          bool         `yaml:"disable_tls"`
+		Cumulative          bool         `yaml:"cumulative_stats"`
 		web.ClientTLSConfig `yaml:",inline"`
 	}
 	Unbound struct {
@@ -50,7 +54,6 @@ type (
 		curCache collectCache
 
 		prevTotQueries float64
-		cumulative     bool
 		hasExtCharts   bool
 
 		charts *module.Charts
@@ -60,12 +63,19 @@ type (
 func (Unbound) Cleanup() {}
 
 func (u *Unbound) Init() bool {
-	u.client = newClient(clientConfig{
-		address: u.Address,
-		timeout: u.Timeout.Duration,
-		useTLS:  false,
-		tlsConf: nil,
-	})
+	cfg, err := readConfig(u.ConfPath)
+	if err != nil {
+		u.Warning(err)
+	}
+	if cfg != nil {
+		if cfg.isRemoteControlDisabled() {
+			u.Info("")
+			return false
+		}
+		u.applyConfig(cfg)
+	}
+
+	u.client = u.createClient()
 	return true
 }
 
@@ -87,4 +97,33 @@ func (u *Unbound) Collect() map[string]int64 {
 	}
 
 	return mx
+}
+
+func (u *Unbound) applyConfig(cfg *unboundConfig) {
+	if cfg.hasServerSection() {
+		if cfg.Server.StatisticsCumulative.isSet() {
+			u.Cumulative = cfg.Server.StatisticsCumulative.bool()
+		}
+	}
+	if !cfg.hasRemoteControlSection() {
+		return
+	}
+	if cfg.RemoteControl.ControlUseCert.isSet() {
+		u.DisableTLS = cfg.RemoteControl.ControlUseCert.bool()
+	}
+	if cfg.RemoteControl.ControlKeyFile.isSet() {
+		u.TLSKey = string(cfg.RemoteControl.ControlKeyFile)
+	}
+	if cfg.RemoteControl.ControlCertFile.isSet() {
+		u.TLSCert = string(cfg.RemoteControl.ControlCertFile)
+	}
+}
+
+func (u *Unbound) createClient() unboundClient {
+	return newClient(clientConfig{
+		address: u.Address,
+		timeout: u.Timeout.Duration,
+		useTLS:  false,
+		tlsConf: nil,
+	})
 }
