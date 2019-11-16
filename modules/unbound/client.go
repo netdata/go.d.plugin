@@ -65,56 +65,42 @@ func (c *client) disconnect() error {
 	return err
 }
 
-func (c *client) isConnected() bool {
-	return c.conn != nil
-}
-
-func (c *client) write(command string) error {
+func (c *client) write(command string) (int, error) {
 	err := c.conn.SetWriteDeadline(time.Now().Add(c.timeout))
 	if err != nil {
-		return err
+		return 0, err
 	}
-	_, err = c.conn.Write([]byte(command))
-	return err
+	return c.conn.Write([]byte(command))
 }
 
 func (c *client) read() (record []string, err error) {
 	if err = c.conn.SetReadDeadline(time.Now().Add(c.timeout)); err != nil {
 		return nil, err
 	}
-
 	if c.reuseRecord {
 		record, err = read(c.record, c.conn)
 		c.record = record
 	} else {
 		record, err = read(nil, c.conn)
 	}
-
 	return record, err
 }
 
 func (c *client) send(command string) (lines []string, err error) {
-	if c.isConnected() {
-		_ = c.disconnect()
-	}
-
-	err = c.connect()
-	if err != nil {
+	if err = c.connect(); err != nil {
 		return nil, err
 	}
 	defer func() {
 		_ = c.disconnect()
 	}()
-
-	err = c.write(command)
-	if err != nil {
+	if _, err = c.write(command); err != nil {
 		return nil, err
 	}
-
 	return c.read()
 }
 
-const maxLinesToRead = 500
+// just a high value, number of lines depends on number of threads, every thread adds 20 lines
+const maxLinesToRead = 2000
 
 // https://github.com/NLnetLabs/unbound/blob/master/doc/control_proto_spec.txt
 // Server executes command. And sends reply in ascii text over channel, closes the channel when done.

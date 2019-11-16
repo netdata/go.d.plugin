@@ -1,6 +1,8 @@
 package unbound
 
 import (
+	"time"
+
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -15,11 +17,16 @@ func init() {
 }
 
 func New() *Unbound {
-	config := Config{}
+	config := Config{
+		Address: "192.168.88.223:8953",
+		Timeout: web.Duration{Duration: time.Second * 2},
+	}
 
 	return &Unbound{
-		Config: config,
-		charts: nil,
+		Config:   config,
+		charts:   charts.Copy(),
+		curCache: newCollectCache(),
+		cache:    newCollectCache(),
 	}
 }
 
@@ -38,20 +45,32 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
-		client unboundClient
+		client   unboundClient
+		cache    collectCache
+		curCache collectCache
+
+		cumulative   bool
+		hasExtCharts bool
+
 		charts *module.Charts
-		mx     *metricsData
 	}
 )
 
 func (Unbound) Cleanup() {}
 
 func (u *Unbound) Init() bool {
-	u.mx = &metricsData{}
+	u.client = newClient(clientConfig{
+		address: u.Address,
+		timeout: u.Timeout.Duration,
+		useTLS:  false,
+		tlsConf: nil,
+	})
 	return true
 }
 
-func (u Unbound) Check() bool { return false }
+func (u Unbound) Check() bool {
+	return true
+}
 
 func (u Unbound) Charts() *module.Charts { return u.charts }
 

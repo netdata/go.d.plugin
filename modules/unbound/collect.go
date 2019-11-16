@@ -3,209 +3,134 @@ package unbound
 import (
 	"errors"
 	"fmt"
-	"sort"
 	"strconv"
 	"strings"
-
-	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
-type (
-	stats []stat
-	stat  struct {
-		name  string
-		value float64
-	}
-)
+// https://github.com/NLnetLabs/unbound/blob/master/smallapp/unbound-control.c
+// https://github.com/NLnetLabs/unbound/blob/master/libunbound/unbound.h (ub_server_stats, ub_shm_stat_info)
+// https://docs.menandmice.com/display/MM/Unbound+request-list+demystified
+// https://docs.datadoghq.com/integrations/unbound/#metrics
 
 func (u *Unbound) collect() (map[string]int64, error) {
-	if err := u.collectStats(); err != nil {
+	stats, err := u.scrapeUnboundStats()
+	if err != nil {
 		return nil, err
 	}
-	return stm.ToMap(u.mx), nil
+
+	u.curCache.clear()
+	mx := u.collectStats(stats)
+	u.updateCharts()
+	return mx, nil
 }
 
-func (u *Unbound) collectStats() error {
-	resp, err := u.client.send("UBCT1 stats_noreset\n")
+func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
+	output, err := u.client.send("UBCT1 stats\n")
 	if err != nil {
-		return err
+		return nil, err
 	}
-	switch len(resp) {
+	switch len(output) {
 	case 0:
-		return errors.New("empty response")
+		return nil, errors.New("empty response")
 	case 1:
-		// 	In case of error the first line of the response is: error <descriptive text possible> \n
-		//	For many commands the  response is 'ok\n', but it is not the case for 'stats'.
-		return errors.New(resp[0])
+		// 	in case of error the first line of the response is: error <descriptive text possible> \n
+		return nil, errors.New(output[0])
 	}
-
-	stats, err := convertToUnboundStats(resp)
-	if err != nil {
-		return err
-	}
-
-	for _, s := range stats {
-		u.collectStat(s)
-	}
-	return nil
+	return parseStatsOutput(output)
 }
 
-func (u *Unbound) collectStat(s stat) {
-	switch {
-	case strings.HasPrefix(s.name, "thread"):
-		u.collectThread(s)
-	case strings.HasPrefix(s.name, "total."):
-		u.collectTotal(s)
-	case strings.HasPrefix(s.name, "time."):
-		u.collectTime(s)
-	case strings.HasPrefix(s.name, "num.query.type."):
-		u.collectQueryType(s)
-	case strings.HasPrefix(s.name, "num.query.class."):
-		u.collectQueryClass(s)
-	case strings.HasPrefix(s.name, "num.query.opcode."):
-		u.collectQueryOpCode(s)
-	case strings.HasPrefix(s.name, "num.answer.rcode."):
-		u.collectAnswerRCode(s)
-	case strings.HasPrefix(s.name, "mem."):
-		u.collectMem(s)
-	}
-}
-
-func (u *Unbound) collectMem(s stat) {
-
-}
-
-func (u *Unbound) collectThread(s stat) {
-	//thread0.*
-	i := strings.IndexByte(s.name, '.')
-	if i == -1 || i < 6 {
-		return
-	}
-	threadID := s.name[6:i]
-	c, ok := u.mx.Thread[threadID]
-	if !ok {
-		c = &common{}
-		u.mx.Thread[threadID] = c
-	}
-	s.name = s.name[i+1:]
-	collectCommon(c, s)
-}
-
-func (u *Unbound) collectTotal(s stat) {
-	i := strings.IndexByte(s.name, '.')
-	s.name = s.name[i+1:]
-	collectCommon(&u.mx.common, s)
-}
-
-func (u *Unbound) collectTime(s stat) {
-	switch s.name {
-	case "time.up":
-		u.mx.Uptime = s.value
-	}
-}
-
-func (u *Unbound) collectQueryType(s stat) {
-	i := len("num.query.type.")
-	typ := s.name[i:]
-	v, ok := u.mx.QueryType[typ]
-	if !ok {
-		//TODO:
-	}
-	u.mx.QueryType[typ] += v
-}
-
-func (u *Unbound) collectQueryClass(s stat) {
-	i := len("num.query.class.")
-	class := s.name[i:]
-	v, ok := u.mx.QueryClass[class]
-	if !ok {
-		//TODO:
-	}
-	u.mx.QueryClass[class] += v
-}
-
-func (u *Unbound) collectQueryOpCode(s stat) {
-	i := len("num.query.opcode.")
-	opcode := s.name[i:]
-	v, ok := u.mx.QueryOpCode[opcode]
-	if !ok {
-		//TODO:
-	}
-	u.mx.QueryOpCode[opcode] += v
-}
-
-func (u *Unbound) collectAnswerRCode(s stat) {
-	i := len("num.answer.rcode.")
-	rcode := s.name[i:]
-	v, ok := u.mx.AnswerRCode[rcode]
-	if !ok {
-		//TODO:
-	}
-	u.mx.AnswerRCode[rcode] += v
-}
-
-func collectCommon(c *common, s stat) {
-	switch s.name {
-	case "num.queries":
-		c.Queries = s.value
-	case "num.queries_ip_ratelimited":
-		c.QueriesIPRL = s.value
-	case "num.cachehits":
-		c.Cache.Hits = s.value
-	case "num.cachemiss":
-		c.Cache.Miss = s.value
-	case "num.prefetch":
-		c.Prefetch = s.value
-	case "num.zero_ttl":
-		c.ZeroTTL = s.value
-	case "num.recursivereplies":
-		c.RecursiveReplies = s.value
-	case "num.dnscrypt.crypted":
-		c.DNSCrypt.Crypted = s.value
-	case "num.dnscrypt.cert":
-		c.DNSCrypt.Cert = s.value
-	case "num.dnscrypt.cleartext":
-		c.DNSCrypt.ClearText = s.value
-	case "num.dnscrypt.malformed":
-		c.DNSCrypt.Malformed = s.value
-	case "requestlist.avg":
-		c.RequestList.Avg = s.value
-	case "requestlist.max":
-		c.RequestList.Max = s.value
-	case "requestlist.overwritten":
-		c.RequestList.Overwritten = s.value
-	case "requestlist.exceeded":
-		c.RequestList.Exceeded = s.value
-	case "requestlist.current.all":
-		c.RequestList.CurrentAll = s.value
-	case "requestlist.current.user":
-		c.RequestList.CurrentUser = s.value
-	case "recursion.time.avg":
-		c.RecursionTime.Avg = s.value
-	case "recursion.time.median":
-		c.RecursionTime.Median = s.value
-	case "tcpusage":
-		c.TCPUsage = s.value
-	}
-}
-
-func convertToUnboundStats(lines []string) (stats, error) {
-	sort.Strings(lines)
-	var ubs stats
-	for _, line := range lines {
-		// 'stats' output is a list of [name]=[value] lines.
-		parts := strings.Split(line, "=")
-		if len(parts) != 2 {
-			return nil, fmt.Errorf("bad stats syntax: %s", line)
+func (u *Unbound) collectStats(stats []entry) map[string]int64 {
+	mx := make(map[string]int64, len(stats))
+	for _, e := range stats {
+		if e.hasPrefix("histogram") {
+			continue
 		}
+		// *.requestlist.avg, *.recursion.time.avg, *recursion.time.median
+		if e.hasSuffix("avg") || e.hasSuffix("median") {
+			e.value *= 1000
+		}
+		switch {
+		case e.hasPrefix("thread"):
+			v := extractThreadID(e.key)
+			u.curCache.threads[v] = true
+		case e.hasPrefix("num.query.type"):
+			v := extractQueryType(e.key)
+			u.curCache.queryType[v] = true
+		case e.hasPrefix("num.query.class"):
+			v := extractQueryClass(e.key)
+			u.curCache.queryClass[v] = true
+		case e.hasPrefix("num.query.opcode"):
+			v := extractQueryOpCode(e.key)
+			u.curCache.queryOpCode[v] = true
+		case e.hasPrefix("num.query.flags"):
+			v := extractQueryFlag(e.key)
+			u.curCache.queryFlags[v] = true
+		case e.hasPrefix("num.answer.rcode"):
+			v := extractAnswerRCode(e.key)
+			u.curCache.answerRCode[v] = true
+		}
+		mx[e.key] = int64(e.value)
+	}
+	return mx
+}
 
-		name, value := parts[0], parts[1]
-		v, err := strconv.ParseFloat(value, 10)
+func extractThreadID(key string) string    { idx := strings.IndexByte(key, '.'); return key[6:idx] }
+func extractQueryType(key string) string   { i := len("num.query.type."); return key[i:] }
+func extractQueryClass(key string) string  { i := len("num.query.class."); return key[i:] }
+func extractQueryOpCode(key string) string { i := len("num.query.opcode."); return key[i:] }
+func extractQueryFlag(key string) string   { i := len("num.query.flags."); return key[i:] }
+func extractAnswerRCode(key string) string { i := len("num.answer.rcode."); return key[i:] }
+
+type entry struct {
+	key   string
+	value float64
+}
+
+func (e entry) hasPrefix(prefix string) bool { return strings.HasPrefix(e.key, prefix) }
+func (e entry) hasSuffix(suffix string) bool { return strings.HasSuffix(e.key, suffix) }
+
+func parseStatsOutput(output []string) ([]entry, error) {
+	var es []entry
+	for _, v := range output {
+		e, err := parseStatsLine(v)
 		if err != nil {
 			return nil, err
 		}
-
-		ubs = append(ubs, stat{name, v})
+		es = append(es, e)
 	}
-	return ubs, nil
+	return es, nil
+}
+
+func parseStatsLine(line string) (entry, error) {
+	// 'stats' output is a list of [key]=[value] lines.
+	parts := strings.Split(line, "=")
+	if len(parts) != 2 {
+		return entry{}, fmt.Errorf("bad line syntax: %s", line)
+	}
+	f, err := strconv.ParseFloat(parts[1], 10)
+	return entry{key: parts[0], value: f}, err
+}
+
+func newCollectCache() collectCache {
+	return collectCache{
+		threads:     make(map[string]bool),
+		queryType:   make(map[string]bool),
+		queryClass:  make(map[string]bool),
+		queryOpCode: make(map[string]bool),
+		queryFlags:  make(map[string]bool),
+		answerRCode: make(map[string]bool),
+	}
+}
+
+type collectCache struct {
+	threads     map[string]bool
+	queryType   map[string]bool
+	queryClass  map[string]bool
+	queryOpCode map[string]bool
+	queryFlags  map[string]bool
+	answerRCode map[string]bool
+}
+
+func (c *collectCache) clear() {
+	*c = newCollectCache()
 }
