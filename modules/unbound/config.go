@@ -38,7 +38,7 @@ func (c unboundConfig) hasRemoteControlSection() bool {
 	return c.RemoteControl != nil
 }
 func (c unboundConfig) isRemoteControlDisabled() bool {
-	return c.hasRemoteControlSection() && c.RemoteControl.ControlEnable.isSet() && c.RemoteControl.ControlEnable.bool()
+	return c.hasRemoteControlSection() && c.RemoteControl.ControlEnable.isSet() && !c.RemoteControl.ControlEnable.bool()
 }
 
 func adjustUnboundConfig(cfg []byte) []byte {

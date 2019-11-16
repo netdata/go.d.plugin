@@ -1,6 +1,8 @@
 package unbound
 
 import (
+	"crypto/tls"
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -69,25 +71,31 @@ func (u *Unbound) Init() bool {
 	}
 	if cfg != nil {
 		if cfg.isRemoteControlDisabled() {
-			u.Info("")
+			u.Info("remote control is disabled in the configuration file")
 			return false
 		}
 		u.applyConfig(cfg)
 	}
 
-	u.client = u.createClient()
+	cl, err := u.createClient()
+	if err != nil {
+		u.Errorf("creating client: %v", err)
+		return false
+	}
+	u.client = cl
 	return true
 }
 
-func (u Unbound) Check() bool {
-	return true
+func (u *Unbound) Check() bool {
+	return len(u.Collect()) > 0
 }
 
-func (u Unbound) Charts() *module.Charts { return u.charts }
+func (u Unbound) Charts() *module.Charts {
+	return u.charts
+}
 
 func (u *Unbound) Collect() map[string]int64 {
 	mx, err := u.collect()
-
 	if err != nil {
 		u.Error(err)
 	}
@@ -119,11 +127,21 @@ func (u *Unbound) applyConfig(cfg *unboundConfig) {
 	}
 }
 
-func (u *Unbound) createClient() unboundClient {
-	return newClient(clientConfig{
+func (u *Unbound) createClient() (uClient unboundClient, err error) {
+	useTLS := !isUnixSocket(u.Address) && !u.DisableTLS
+	var tlsCfg *tls.Config
+	if useTLS {
+		if tlsCfg, err = web.NewTLSConfig(u.ClientTLSConfig); err != nil {
+			return nil, err
+		}
+	}
+	uClient = newClient(clientConfig{
 		address: u.Address,
 		timeout: u.Timeout.Duration,
-		useTLS:  false,
-		tlsConf: nil,
+		useTLS:  useTLS,
+		tlsConf: tlsCfg,
 	})
+	return uClient, err
 }
+
+func isUnixSocket(address string) bool { return strings.HasPrefix(address, "/") }
