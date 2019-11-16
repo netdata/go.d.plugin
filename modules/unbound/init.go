@@ -23,27 +23,27 @@ func (s strBool) isSet() bool { return s != "" }
 func (s strBool) bool() bool  { return s == "yes" }
 
 type unboundConfig struct {
-	Server *struct {
-		StatisticsCumulative strBool `yaml:"statistics-cumulative"`
+	Srv *struct {
+		Cumulative strBool `yaml:"statistics-cumulative"`
 	} `yaml:"server"`
-	RemoteControl *struct {
-		ControlEnable    strBool `yaml:"control-enable"`
-		ControlInterface str     `yaml:"control-interface"`
-		ControlPort      str     `yaml:"control-port"`
-		ControlUseCert   strBool `yaml:"control-use-cert"`
-		ControlKeyFile   str     `yaml:"control-key-file"`
-		ControlCertFile  str     `yaml:"control-cert-file"`
+	RC *struct {
+		Enable    strBool `yaml:"control-enable"`
+		Interface str     `yaml:"control-interface"`
+		Port      str     `yaml:"control-port"`
+		UseCert   strBool `yaml:"control-use-cert"`
+		KeyFile   str     `yaml:"control-key-file"`
+		CertFile  str     `yaml:"control-cert-file"`
 	} `yaml:"remote-control"`
 }
 
-func (c unboundConfig) hasServerSection() bool {
-	return c.Server != nil
+func (c unboundConfig) hasServer() bool {
+	return c.Srv != nil
 }
-func (c unboundConfig) hasRemoteControlSection() bool {
-	return c.RemoteControl != nil
+func (c unboundConfig) hasRemoteControl() bool {
+	return c.RC != nil
 }
 func (c unboundConfig) isRemoteControlDisabled() bool {
-	return c.hasRemoteControlSection() && c.RemoteControl.ControlEnable.isSet() && !c.RemoteControl.ControlEnable.bool()
+	return c.hasRemoteControl() && c.RC.Enable.isSet() && !c.RC.Enable.bool()
 }
 
 func (u *Unbound) initConfig() bool {
@@ -66,29 +66,28 @@ func (u *Unbound) initConfig() bool {
 }
 
 func (u *Unbound) applyConfig(cfg *unboundConfig) {
-	if cfg.hasServerSection() {
-		if cfg.Server.StatisticsCumulative.isSet() {
-			u.Cumulative = cfg.Server.StatisticsCumulative.bool()
-		}
+	if cfg.hasServer() && cfg.Srv.Cumulative.isSet() {
+		u.Cumulative = cfg.Srv.Cumulative.bool()
 	}
-	if !cfg.hasRemoteControlSection() {
+	if !cfg.hasRemoteControl() {
 		return
 	}
-	if cfg.RemoteControl.ControlUseCert.isSet() {
-		u.DisableTLS = cfg.RemoteControl.ControlUseCert.bool()
+	if cfg.RC.UseCert.isSet() {
+		u.DisableTLS = cfg.RC.UseCert.bool()
 	}
-	if cfg.RemoteControl.ControlKeyFile.isSet() {
-		u.TLSKey = string(cfg.RemoteControl.ControlKeyFile)
+	if cfg.RC.KeyFile.isSet() {
+		u.TLSKey = string(cfg.RC.KeyFile)
 	}
-	if cfg.RemoteControl.ControlCertFile.isSet() {
-		u.TLSCert = string(cfg.RemoteControl.ControlCertFile)
+	if cfg.RC.CertFile.isSet() {
+		u.TLSCert = string(cfg.RC.CertFile)
 	}
-	if cfg.RemoteControl.ControlInterface.isSet() {
-		u.Address = string(cfg.RemoteControl.ControlInterface)
+	if cfg.RC.Interface.isSet() {
+		u.Address = string(cfg.RC.Interface)
 	}
-	if cfg.RemoteControl.ControlPort.isSet() && !isUnixSocket(u.Address) {
+	if cfg.RC.Port.isSet() && !isUnixSocket(u.Address) {
 		host, _, _ := net.SplitHostPort(u.Address)
-		u.Address = net.JoinHostPort(host, string(cfg.RemoteControl.ControlPort))
+		port := string(cfg.RC.Port)
+		u.Address = net.JoinHostPort(host, port)
 	}
 }
 
@@ -96,6 +95,9 @@ func (u *Unbound) initClient() (err error) {
 	var tlsCfg *tls.Config
 
 	useTLS := !isUnixSocket(u.Address) && !u.DisableTLS
+	//if useTLS && (u.TLSCert == "" || u.TLSKey == "") {
+	//	return errors.New("")
+	//}
 	if useTLS {
 		if tlsCfg, err = web.NewTLSConfig(u.ClientTLSConfig); err != nil {
 			return err
