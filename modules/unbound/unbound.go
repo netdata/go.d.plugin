@@ -1,8 +1,6 @@
 package unbound
 
 import (
-	"crypto/tls"
-	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -65,24 +63,14 @@ type (
 func (Unbound) Cleanup() {}
 
 func (u *Unbound) Init() bool {
-	cfg, err := readConfig(u.ConfPath)
-	if err != nil {
-		u.Warning(err)
-	}
-	if cfg != nil {
-		if cfg.isRemoteControlDisabled() {
-			u.Info("remote control is disabled in the configuration file")
-			return false
-		}
-		u.applyConfig(cfg)
+	if !u.initConfig() {
+		return false
 	}
 
-	cl, err := u.createClient()
-	if err != nil {
+	if err := u.initClient(); err != nil {
 		u.Errorf("creating client: %v", err)
 		return false
 	}
-	u.client = cl
 	return true
 }
 
@@ -106,42 +94,3 @@ func (u *Unbound) Collect() map[string]int64 {
 
 	return mx
 }
-
-func (u *Unbound) applyConfig(cfg *unboundConfig) {
-	if cfg.hasServerSection() {
-		if cfg.Server.StatisticsCumulative.isSet() {
-			u.Cumulative = cfg.Server.StatisticsCumulative.bool()
-		}
-	}
-	if !cfg.hasRemoteControlSection() {
-		return
-	}
-	if cfg.RemoteControl.ControlUseCert.isSet() {
-		u.DisableTLS = cfg.RemoteControl.ControlUseCert.bool()
-	}
-	if cfg.RemoteControl.ControlKeyFile.isSet() {
-		u.TLSKey = string(cfg.RemoteControl.ControlKeyFile)
-	}
-	if cfg.RemoteControl.ControlCertFile.isSet() {
-		u.TLSCert = string(cfg.RemoteControl.ControlCertFile)
-	}
-}
-
-func (u *Unbound) createClient() (uClient unboundClient, err error) {
-	useTLS := !isUnixSocket(u.Address) && !u.DisableTLS
-	var tlsCfg *tls.Config
-	if useTLS {
-		if tlsCfg, err = web.NewTLSConfig(u.ClientTLSConfig); err != nil {
-			return nil, err
-		}
-	}
-	uClient = newClient(clientConfig{
-		address: u.Address,
-		timeout: u.Timeout.Duration,
-		useTLS:  useTLS,
-		tlsConf: tlsCfg,
-	})
-	return uClient, err
-}
-
-func isUnixSocket(address string) bool { return strings.HasPrefix(address, "/") }
