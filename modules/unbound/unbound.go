@@ -49,8 +49,9 @@ type (
 		cache    collectCache
 		curCache collectCache
 
-		cumulative   bool
-		hasExtCharts bool
+		prevTotQueries float64
+		cumulative     bool
+		hasExtCharts   bool
 
 		charts *module.Charts
 	}

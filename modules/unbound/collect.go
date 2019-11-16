@@ -1,7 +1,6 @@
 package unbound
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -25,29 +24,39 @@ func (u *Unbound) collect() (map[string]int64, error) {
 }
 
 func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
-	output, err := u.client.send("UBCT1 stats\n")
+	const command = "UBCT1 stats"
+	output, err := u.client.send(command + "\n")
 	if err != nil {
 		return nil, err
 	}
 	switch len(output) {
 	case 0:
-		return nil, errors.New("empty response")
+		return nil, fmt.Errorf("command '%s': empty resopnse", command)
 	case 1:
 		// 	in case of error the first line of the response is: error <descriptive text possible> \n
-		return nil, errors.New(output[0])
+		return nil, fmt.Errorf("command '%s': '%s'", command, output[0])
 	}
 	return parseStatsOutput(output)
 }
 
 func (u *Unbound) collectStats(stats []entry) map[string]int64 {
+	var resetTimings bool
+	if u.cumulative {
+		n := findTotalQueries(stats)
+		resetTimings = n > 0 && n == u.prevTotQueries
+		u.prevTotQueries = n
+	}
+
 	mx := make(map[string]int64, len(stats))
+
 	for _, e := range stats {
-		if e.hasPrefix("histogram") {
-			continue
-		}
 		// *.requestlist.avg, *.recursion.time.avg, *recursion.time.median
 		if e.hasSuffix("avg") || e.hasSuffix("median") {
-			e.value *= 1000
+			if resetTimings {
+				e.value = 0
+			} else {
+				e.value *= 1000
+			}
 		}
 		switch {
 		case e.hasPrefix("thread"):
@@ -74,6 +83,15 @@ func (u *Unbound) collectStats(stats []entry) map[string]int64 {
 	return mx
 }
 
+func findTotalQueries(stats []entry) float64 {
+	for _, e := range stats {
+		if e.key == "total.num.queries" {
+			return e.value
+		}
+	}
+	return -1
+}
+
 func extractThreadID(key string) string    { idx := strings.IndexByte(key, '.'); return key[6:idx] }
 func extractQueryType(key string) string   { i := len("num.query.type."); return key[i:] }
 func extractQueryClass(key string) string  { i := len("num.query.class."); return key[i:] }
@@ -95,6 +113,9 @@ func parseStatsOutput(output []string) ([]entry, error) {
 		e, err := parseStatsLine(v)
 		if err != nil {
 			return nil, err
+		}
+		if e.hasPrefix("histogram") {
+			continue
 		}
 		es = append(es, e)
 	}
