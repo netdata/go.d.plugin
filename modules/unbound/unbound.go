@@ -26,7 +26,6 @@ func New() *Unbound {
 
 	return &Unbound{
 		Config:   config,
-		charts:   charts.Copy(),
 		curCache: newCollectCache(),
 		cache:    newCollectCache(),
 	}
@@ -53,8 +52,11 @@ type (
 		cache    collectCache
 		curCache collectCache
 
-		prevTotQueries float64
-		hasExtCharts   bool
+		// used in cumulative mode
+		prevCacheMiss  float64
+		prevRecReplies float64
+
+		hasExtCharts bool
 
 		charts *module.Charts
 	}
@@ -71,6 +73,7 @@ func (u *Unbound) Init() bool {
 		u.Errorf("creating client: %v", err)
 		return false
 	}
+	u.charts = charts(u.Cumulative)
 	return true
 }
 
@@ -78,7 +81,7 @@ func (u *Unbound) Check() bool {
 	return len(u.Collect()) > 0
 }
 
-func (u Unbound) Charts() *module.Charts {
+func (u Unbound) Charts() *Charts {
 	return u.charts
 }
 
@@ -91,6 +94,5 @@ func (u *Unbound) Collect() map[string]int64 {
 	if len(mx) == 0 {
 		return nil
 	}
-
 	return mx
 }

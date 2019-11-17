@@ -40,26 +40,16 @@ func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
 }
 
 func (u *Unbound) collectStats(stats []entry) map[string]int64 {
-	var resetTimings bool
-	if u.Cumulative {
-		n := findTotalQueries(stats)
-		resetTimings = n > 0 && n == u.prevTotQueries
-		u.prevTotQueries = n
-	}
-
+	reqListMul, recurTimeMul := u.findMultipliers(stats)
 	mx := make(map[string]int64, len(stats))
 
 	for _, e := range stats {
-		// *.requestlist.avg, *.recursion.time.avg, *recursion.time.median
-		if e.hasSuffix("avg") || e.hasSuffix("median") {
-			if resetTimings {
-				e.value = 0
-			} else {
-				e.value *= 1000
-			}
-		}
 		switch {
-		case e.hasPrefix("thread"):
+		case e.hasSuffix("requestlist.avg"):
+			e.value *= reqListMul
+		case e.hasSuffix("recursion.time.avg"), e.hasSuffix("recursion.time.median"):
+			e.value *= recurTimeMul
+		case e.hasPrefix("thread") && e.hasSuffix("num.queries"):
 			v := extractThreadID(e.key)
 			u.curCache.threads[v] = true
 		case e.hasPrefix("num.query.type"):
@@ -83,13 +73,36 @@ func (u *Unbound) collectStats(stats []entry) map[string]int64 {
 	return mx
 }
 
-func findTotalQueries(stats []entry) float64 {
+func (u *Unbound) findMultipliers(stats []entry) (float64, float64) {
+	reqListMul, recurTimeMul := float64(1000), float64(1000)
+	if !u.Cumulative {
+		return reqListMul, recurTimeMul
+	}
+	cacheMisses, recurReplies := findCacheMissAndRecurReplies(stats)
+	if u.prevCacheMiss == cacheMisses {
+		reqListMul = 0
+	}
+	if u.prevRecReplies == recurReplies {
+		reqListMul = 0
+	}
+	u.prevCacheMiss, u.prevRecReplies = cacheMisses, recurReplies
+	return reqListMul, recurTimeMul
+}
+
+func findCacheMissAndRecurReplies(stats []entry) (float64, float64) {
+	cacheMisses, recurReplies := float64(-1), float64(-1)
 	for _, e := range stats {
-		if e.key == "total.num.queries" {
-			return e.value
+		switch e.key {
+		case "total.num.cachemiss":
+			cacheMisses = e.value
+		case "total.num.recursivereplies":
+			recurReplies = e.value
+		}
+		if cacheMisses != -1 && recurReplies != -1 {
+			break
 		}
 	}
-	return -1
+	return cacheMisses, recurReplies
 }
 
 func extractThreadID(key string) string    { idx := strings.IndexByte(key, '.'); return key[6:idx] }
