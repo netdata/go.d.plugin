@@ -17,7 +17,6 @@ func (u *Unbound) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	u.curCache.clear()
 	mx := u.collectStats(stats)
 	u.updateCharts()
 	return mx, nil
@@ -40,6 +39,7 @@ func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
 }
 
 func (u *Unbound) collectStats(stats []entry) map[string]int64 {
+	u.curCache.clear()
 	reqListMul, recurTimeMul := u.findMultipliers(stats)
 	mx := make(map[string]int64, len(stats))
 
@@ -78,31 +78,18 @@ func (u *Unbound) findMultipliers(stats []entry) (float64, float64) {
 	if !u.Cumulative {
 		return reqListMul, recurTimeMul
 	}
-	cacheMisses, recurReplies := findCacheMissAndRecurReplies(stats)
-	if u.prevCacheMiss == cacheMisses {
-		reqListMul = 0
-	}
-	if u.prevRecReplies == recurReplies {
-		reqListMul = 0
-	}
-	u.prevCacheMiss, u.prevRecReplies = cacheMisses, recurReplies
-	return reqListMul, recurTimeMul
-}
 
-func findCacheMissAndRecurReplies(stats []entry) (float64, float64) {
-	cacheMisses, recurReplies := float64(-1), float64(-1)
-	for _, e := range stats {
-		switch e.key {
-		case "total.num.cachemiss":
-			cacheMisses = e.value
-		case "total.num.recursivereplies":
-			recurReplies = e.value
-		}
-		if cacheMisses != -1 && recurReplies != -1 {
-			break
-		}
+	var v float64
+	if v = findEntry("total.num.cachemiss", stats); v == u.prev.cacheMiss {
+		reqListMul = 0
 	}
-	return cacheMisses, recurReplies
+	u.prev.cacheMiss = v
+
+	if v = findEntry("total.num.recursivereplies", stats); v == u.prev.recurReplies {
+		recurTimeMul = 0
+	}
+	u.prev.recurReplies = v
+	return reqListMul, recurTimeMul
 }
 
 func extractThreadID(key string) string    { idx := strings.IndexByte(key, '.'); return key[6:idx] }
@@ -119,6 +106,15 @@ type entry struct {
 
 func (e entry) hasPrefix(prefix string) bool { return strings.HasPrefix(e.key, prefix) }
 func (e entry) hasSuffix(suffix string) bool { return strings.HasSuffix(e.key, suffix) }
+
+func findEntry(key string, entries []entry) float64 {
+	for _, e := range entries {
+		if e.key == key {
+			return e.value
+		}
+	}
+	return -1
+}
 
 func parseStatsOutput(output []string) ([]entry, error) {
 	var es []entry

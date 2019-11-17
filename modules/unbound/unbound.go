@@ -53,8 +53,10 @@ type (
 		curCache collectCache
 
 		// used in cumulative mode
-		prevCacheMiss  float64
-		prevRecReplies float64
+		prev struct {
+			cacheMiss    float64
+			recurReplies float64
+		}
 
 		hasExtCharts bool
 
