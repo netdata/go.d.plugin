@@ -40,17 +40,24 @@ func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
 
 func (u *Unbound) collectStats(stats []entry) map[string]int64 {
 	u.curCache.clear()
-	reqListMul, recurTimeMul := u.findMultipliers(stats)
+	mul := float64(1000000)
+	if u.Cumulative {
+		v := findEntry("total.num.cachemiss", stats)
+		if v == u.prevCacheMiss {
+			mul = 0
+		}
+		u.prevCacheMiss = v
+	}
 	mx := make(map[string]int64, len(stats))
 
 	for _, e := range stats {
 		switch {
 		case e.hasSuffix("requestlist.avg"):
-			e.value *= reqListMul
+			e.value *= mul
 		case e.hasSuffix("recursion.time.avg"), e.hasSuffix("recursion.time.median"):
-			e.value *= recurTimeMul
+			e.value *= mul
 		case e.hasPrefix("thread") && e.hasSuffix("num.queries"):
-			v := extractThreadID(e.key)
+			v := extractThread(e.key)
 			u.curCache.threads[v] = true
 		case e.hasPrefix("num.query.type"):
 			v := extractQueryType(e.key)
@@ -73,26 +80,7 @@ func (u *Unbound) collectStats(stats []entry) map[string]int64 {
 	return mx
 }
 
-func (u *Unbound) findMultipliers(stats []entry) (float64, float64) {
-	reqListMul, recurTimeMul := float64(1000), float64(1000)
-	if !u.Cumulative {
-		return reqListMul, recurTimeMul
-	}
-
-	var v float64
-	if v = findEntry("total.num.cachemiss", stats); v == u.prev.cacheMiss {
-		reqListMul = 0
-	}
-	u.prev.cacheMiss = v
-
-	if v = findEntry("total.num.recursivereplies", stats); v == u.prev.recurReplies {
-		recurTimeMul = 0
-	}
-	u.prev.recurReplies = v
-	return reqListMul, recurTimeMul
-}
-
-func extractThreadID(key string) string    { idx := strings.IndexByte(key, '.'); return key[6:idx] }
+func extractThread(key string) string      { idx := strings.IndexByte(key, '.'); return key[:idx] }
 func extractQueryType(key string) string   { i := len("num.query.type."); return key[i:] }
 func extractQueryClass(key string) string  { i := len("num.query.class."); return key[i:] }
 func extractQueryOpCode(key string) string { i := len("num.query.opcode."); return key[i:] }
