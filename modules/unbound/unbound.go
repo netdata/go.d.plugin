@@ -19,10 +19,11 @@ func init() {
 func New() *Unbound {
 	config := Config{
 		// "/etc/unbound/unbound.conf"
-		Address:    "192.168.88.223:8953",
-		ConfPath:   "/Users/ilyam/Projects/goland/go.d.plugin/modules/unbound/testdata/unbound.conf",
+		Address: "192.168.88.223:8953",
+		//ConfPath:   "/Users/ilyam/Projects/goland/go.d.plugin/modules/unbound/testdata/unbound.conf",
 		Timeout:    web.Duration{Duration: time.Second * 2},
 		DisableTLS: true,
+		//Cumulative:true,
 	}
 
 	return &Unbound{
@@ -71,7 +72,13 @@ func (u *Unbound) Init() bool {
 		u.Errorf("creating client: %v", err)
 		return false
 	}
+
 	u.charts = charts(u.Cumulative)
+
+	u.Debugf("using address: %s, cumulative: %v, disable_tls: %v, timeout: %s", u.Address, u.Cumulative, u.DisableTLS, u.Timeout)
+	if !u.DisableTLS {
+		u.Debugf("using tls_skip_verify: %v, tls_key: %s, tls_cert: %s", u.InsecureSkipVerify, u.TLSKey, u.TLSCert)
+	}
 	return true
 }
 

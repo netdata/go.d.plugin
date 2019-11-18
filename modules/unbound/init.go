@@ -3,6 +3,7 @@ package unbound
 import (
 	"bytes"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -60,7 +61,7 @@ func (u *Unbound) initConfig() bool {
 		u.Info("'conf_path' not set, skipping parameters auto detection")
 		return true
 	}
-	u.Info("reading '%s'", u.ConfPath)
+	u.Infof("reading '%s'", u.ConfPath)
 	cfg, err := readConfig(u.ConfPath)
 	if err != nil {
 		u.Warningf("%v, skipping parameters auto detection", err)
@@ -77,44 +78,59 @@ func (u *Unbound) initConfig() bool {
 func (u *Unbound) applyConfig(cfg *unboundConfig) {
 	u.Debugf("applying configuration:\n%s", cfg)
 	if cfg.hasServer() && cfg.Srv.Cumulative.isSet() {
-		u.Debugf("found 'statistics-cumulative', applying 'cumulative_stats': %v", cfg.Srv.Cumulative.bool())
-		u.Cumulative = cfg.Srv.Cumulative.bool()
+		if cfg.Srv.Cumulative.bool() != u.Cumulative {
+			u.Debugf("changing 'cumulative_stats': %v => %v", u.Cumulative, cfg.Srv.Cumulative.bool())
+			u.Cumulative = cfg.Srv.Cumulative.bool()
+		}
 	}
+
 	if !cfg.hasRemoteControl() {
 		return
 	}
 	if cfg.RC.UseCert.isSet() {
-		u.Debugf("found 'control-use-cert', applying 'disable_tls': %v", !cfg.RC.UseCert.bool())
-		u.DisableTLS = !cfg.RC.UseCert.bool()
+		if cfg.RC.UseCert.bool() != u.DisableTLS {
+			u.Debugf("changing 'disable_tls': %v => %v", u.DisableTLS, !cfg.RC.UseCert.bool())
+			u.DisableTLS = !cfg.RC.UseCert.bool()
+		}
 	}
+
 	if cfg.RC.KeyFile.isSet() {
-		u.Debugf("found 'control-key-file', applying 'tls_key': %s", cfg.RC.KeyFile)
-		u.TLSKey = string(cfg.RC.KeyFile)
+		if string(cfg.RC.KeyFile) != u.TLSKey {
+			u.Debugf("changing 'tls_key': '%s' => '%s'", u.TLSKey, cfg.RC.KeyFile)
+			u.TLSKey = string(cfg.RC.KeyFile)
+		}
 	}
+
 	if cfg.RC.CertFile.isSet() {
-		u.Debugf("found 'control-cert-file', applying 'tls_cert': %s", cfg.RC.CertFile)
-		u.TLSCert = string(cfg.RC.CertFile)
+		if string(cfg.RC.CertFile) != u.TLSCert {
+			u.Debugf("changing 'tls_cert': '%s' => '%s'", u.TLSCert, cfg.RC.CertFile)
+			u.TLSCert = string(cfg.RC.CertFile)
+		}
 	}
+
 	if cfg.RC.Interface.isSet() {
-		u.Debugf("found 'control-interface', applying 'address': %s", cfg.RC.CertFile)
-		u.Address = string(cfg.RC.Interface)
+		if v := adjustControlInterface(string(cfg.RC.Interface)); v != u.Address {
+			u.Debugf("changing 'address': '%s' => '%s'", u.Address, v)
+			u.Address = v
+		}
 	}
+
 	if cfg.RC.Port.isSet() && !isUnixSocket(u.Address) {
-		host, _, _ := net.SplitHostPort(u.Address)
-		port := string(cfg.RC.Port)
-		address := net.JoinHostPort(host, port)
-		u.Debugf("found 'control-port', applying 'address': %s", cfg.RC.CertFile)
-		u.Address = address
+		if host, port, err := net.SplitHostPort(u.Address); err == nil && port != string(cfg.RC.Port) {
+			port := string(cfg.RC.Port)
+			address := net.JoinHostPort(host, port)
+			u.Debugf("changing 'address': '%s' => '%s'", u.Address, address)
+			u.Address = address
+		}
 	}
 }
 
 func (u *Unbound) initClient() (err error) {
 	var tlsCfg *tls.Config
-
 	useTLS := !isUnixSocket(u.Address) && !u.DisableTLS
-	//if useTLS && (u.TLSCert == "" || u.TLSKey == "") {
-	//	return errors.New("")
-	//}
+	if useTLS && (u.TLSCert == "" || u.TLSKey == "") {
+		return errors.New("'tls_cert' or 'tls_key' is missing")
+	}
 	if useTLS {
 		if tlsCfg, err = web.NewTLSConfig(u.ClientTLSConfig); err != nil {
 			return err
@@ -128,6 +144,16 @@ func (u *Unbound) initClient() (err error) {
 		tlsConf: tlsCfg,
 	})
 	return nil
+}
+
+func adjustControlInterface(value string) string {
+	if isUnixSocket(value) {
+		return value
+	}
+	if value == "0.0.0.0" {
+		value = "127.0.0.1"
+	}
+	return net.JoinHostPort(value, "8953")
 }
 
 func isUnixSocket(address string) bool {
@@ -150,6 +176,6 @@ func readConfig(config string) (*unboundConfig, error) {
 }
 
 func adjustUnboundConfig(cfg []byte) []byte {
-	// unbound config is not yaml syntax file, but the fix makes it readable at least
+	// unbound config format is not yaml, but the fix makes it readable at least
 	return bytes.ReplaceAll(cfg, []byte("\t"), []byte(" "))
 }
