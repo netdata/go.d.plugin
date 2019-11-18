@@ -48,8 +48,13 @@ func (u *Unbound) collectStats(stats []entry) map[string]int64 {
 
 func (u *Unbound) collectCumulativeStats(stats []entry) map[string]int64 {
 	mul := float64(1000000)
+	// following stats reset only on cachemiss event in cumulative mode
+	// - *.requestlist.avg,
+	// - *.recursion.time.avg
+	// - *.recursion.time.median
 	v := findEntry("total.num.cachemiss", stats)
 	if v == u.prevCacheMiss {
+		// so we need to reset them if there is no such event
 		mul = 0
 	}
 	u.prevCacheMiss = v
