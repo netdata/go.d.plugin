@@ -19,9 +19,10 @@ func init() {
 func New() *Unbound {
 	config := Config{
 		// "/etc/unbound/unbound.conf"
-		Address:  "192.168.88.223:8953",
-		ConfPath: "/Users/ilyam/Projects/goland/go.d.plugin/modules/unbound/testdata/unbound.conf",
-		Timeout:  web.Duration{Duration: time.Second * 2},
+		Address:    "192.168.88.223:8953",
+		ConfPath:   "/Users/ilyam/Projects/goland/go.d.plugin/modules/unbound/testdata/unbound.conf",
+		Timeout:    web.Duration{Duration: time.Second * 2},
+		DisableTLS: true,
 	}
 
 	return &Unbound{
@@ -52,13 +53,8 @@ type (
 		cache    collectCache
 		curCache collectCache
 
-		// used in cumulative mode
-		prev struct {
-			cacheMiss    float64
-			recurReplies float64
-		}
-
-		hasExtCharts bool
+		prevCacheMiss    float64 // needed for cumulative mode
+		extChartsCreated bool
 
 		charts *module.Charts
 	}

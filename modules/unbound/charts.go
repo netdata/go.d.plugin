@@ -318,6 +318,16 @@ var (
 		Fam:   "query flag",
 		Ctx:   "unbound.flag_queries",
 		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "num.query.flags.QR", Name: "QR"},
+			{ID: "num.query.flags.AA", Name: "AA"},
+			{ID: "num.query.flags.TC", Name: "TC"},
+			{ID: "num.query.flags.RD", Name: "RD"},
+			{ID: "num.query.flags.RA", Name: "RA"},
+			{ID: "num.query.flags.Z", Name: "Z"},
+			{ID: "num.query.flags.AD", Name: "AD"},
+			{ID: "num.query.flags.CD", Name: "CD"},
+		},
 	}
 	answerRCodeChart = Chart{
 		ID:    "answer_rcode",
@@ -338,7 +348,8 @@ func (u *Unbound) updateCharts() {
 			}
 		}
 	}
-	if hasExtendedData := len(u.curCache.queryFlags) > 0; !hasExtendedData {
+	// only 0-6 rcodes answers always included
+	if hasExtendedData := len(u.curCache.answerRCode) > 0; !hasExtendedData {
 		return
 	}
 
@@ -368,12 +379,6 @@ func (u *Unbound) updateCharts() {
 			u.addDimToQueryOpCodeChart(v)
 		}
 	}
-	for v := range u.curCache.queryFlags {
-		if !u.cache.queryFlags[v] {
-			u.cache.queryFlags[v] = true
-			u.addDimToQueryFlagsChart(v)
-		}
-	}
 	for v := range u.curCache.answerRCode {
 		if !u.cache.answerRCode[v] {
 			u.cache.answerRCode[v] = true
@@ -397,9 +402,6 @@ func (u *Unbound) addDimToQueryClassChart(class string) {
 }
 func (u *Unbound) addDimToQueryOpCodeChart(opcode string) {
 	u.addDimToChart(queryOpCodeChart.ID, "num.query.opcode."+opcode, opcode)
-}
-func (u *Unbound) addDimToQueryFlagsChart(flag string) {
-	u.addDimToChart(queryFlagChart.ID, "num.query.flags."+flag, flag)
 }
 func (u *Unbound) addDimToAnswerRcodeChart(rcode string) {
 	u.addDimToChart(answerRCodeChart.ID, "num.answer.rcode."+rcode, rcode)

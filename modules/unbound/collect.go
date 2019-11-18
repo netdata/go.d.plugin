@@ -8,6 +8,7 @@ import (
 
 // https://github.com/NLnetLabs/unbound/blob/master/smallapp/unbound-control.c
 // https://github.com/NLnetLabs/unbound/blob/master/libunbound/unbound.h (ub_server_stats, ub_shm_stat_info)
+// https://github.com/NLnetLabs/unbound/blob/master/daemon/remote.c
 // https://docs.menandmice.com/display/MM/Unbound+request-list+demystified
 // https://docs.datadoghq.com/integrations/unbound/#metrics
 
@@ -39,17 +40,58 @@ func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
 }
 
 func (u *Unbound) collectStats(stats []entry) map[string]int64 {
-	u.curCache.clear()
-	mul := float64(1000000)
 	if u.Cumulative {
-		v := findEntry("total.num.cachemiss", stats)
-		if v == u.prevCacheMiss {
-			mul = 0
-		}
-		u.prevCacheMiss = v
+		return u.collectCumulativeStats(stats)
 	}
-	mx := make(map[string]int64, len(stats))
+	return u.collectNonCumulativeStats(stats)
+}
 
+func (u *Unbound) collectCumulativeStats(stats []entry) map[string]int64 {
+	mul := float64(1000000)
+	v := findEntry("total.num.cachemiss", stats)
+	if v == u.prevCacheMiss {
+		mul = 0
+	}
+	u.prevCacheMiss = v
+	return u.processStats(stats, mul)
+}
+
+func (u *Unbound) collectNonCumulativeStats(stats []entry) map[string]int64 {
+	mul := float64(1000000)
+	mx := u.processStats(stats, mul)
+
+	// see 'static int print_ext(RES* ssl, struct ub_stats_info* s)' in
+	// https://github.com/NLnetLabs/unbound/blob/master/daemon/remote.c
+	// - zero value queries type not included
+	// - zero value queries class not included
+	// - zero value queries opcode not included
+	// - only 0-6 rcodes answers always included, other zero value rcodes not included
+	for k := range u.cache.queryType {
+		if _, ok := u.curCache.queryType[k]; !ok {
+			mx["num.query.type."+k] = 0
+		}
+	}
+	for k := range u.cache.queryClass {
+		if _, ok := u.curCache.queryClass[k]; !ok {
+			mx["num.query.class."+k] = 0
+		}
+	}
+	for k := range u.cache.queryOpCode {
+		if _, ok := u.curCache.queryOpCode[k]; !ok {
+			mx["num.query.opcode."+k] = 0
+		}
+	}
+	for k := range u.cache.answerRCode {
+		if _, ok := u.curCache.answerRCode[k]; !ok {
+			mx["num.answer.rcode."+k] = 0
+		}
+	}
+	return mx
+}
+
+func (u *Unbound) processStats(stats []entry, mul float64) map[string]int64 {
+	u.curCache.clear()
+	mx := make(map[string]int64, len(stats))
 	for _, e := range stats {
 		switch {
 		case e.hasSuffix("requestlist.avg"):
@@ -68,9 +110,6 @@ func (u *Unbound) collectStats(stats []entry) map[string]int64 {
 		case e.hasPrefix("num.query.opcode"):
 			v := extractQueryOpCode(e.key)
 			u.curCache.queryOpCode[v] = true
-		case e.hasPrefix("num.query.flags"):
-			v := extractQueryFlag(e.key)
-			u.curCache.queryFlags[v] = true
 		case e.hasPrefix("num.answer.rcode"):
 			v := extractAnswerRCode(e.key)
 			u.curCache.answerRCode[v] = true
@@ -84,7 +123,6 @@ func extractThread(key string) string      { idx := strings.IndexByte(key, '.');
 func extractQueryType(key string) string   { i := len("num.query.type."); return key[i:] }
 func extractQueryClass(key string) string  { i := len("num.query.class."); return key[i:] }
 func extractQueryOpCode(key string) string { i := len("num.query.opcode."); return key[i:] }
-func extractQueryFlag(key string) string   { i := len("num.query.flags."); return key[i:] }
 func extractAnswerRCode(key string) string { i := len("num.answer.rcode."); return key[i:] }
 
 type entry struct {
@@ -135,7 +173,6 @@ func newCollectCache() collectCache {
 		queryType:   make(map[string]bool),
 		queryClass:  make(map[string]bool),
 		queryOpCode: make(map[string]bool),
-		queryFlags:  make(map[string]bool),
 		answerRCode: make(map[string]bool),
 	}
 }
@@ -145,7 +182,6 @@ type collectCache struct {
 	queryType   map[string]bool
 	queryClass  map[string]bool
 	queryOpCode map[string]bool
-	queryFlags  map[string]bool
 	answerRCode map[string]bool
 }
 
