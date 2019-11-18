@@ -27,7 +27,7 @@ func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
 	const command = "UBCT1 stats"
 	output, err := u.client.send(command + "\n")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("send command '%s': %w", command, err)
 	}
 	switch len(output) {
 	case 0:
@@ -47,7 +47,7 @@ func (u *Unbound) collectStats(stats []entry) map[string]int64 {
 }
 
 func (u *Unbound) collectCumulativeStats(stats []entry) map[string]int64 {
-	mul := float64(1000000)
+	mul := float64(1000)
 	// following stats reset only on cachemiss event in cumulative mode
 	// - *.requestlist.avg,
 	// - *.recursion.time.avg
@@ -62,7 +62,7 @@ func (u *Unbound) collectCumulativeStats(stats []entry) map[string]int64 {
 }
 
 func (u *Unbound) collectNonCumulativeStats(stats []entry) map[string]int64 {
-	mul := float64(1000000)
+	mul := float64(1000)
 	mx := u.processStats(stats, mul)
 
 	// see 'static int print_ext(RES* ssl, struct ub_stats_info* s)' in
@@ -99,9 +99,8 @@ func (u *Unbound) processStats(stats []entry, mul float64) map[string]int64 {
 	mx := make(map[string]int64, len(stats))
 	for _, e := range stats {
 		switch {
-		case e.hasSuffix("requestlist.avg"):
-			e.value *= mul
-		case e.hasSuffix("recursion.time.avg"), e.hasSuffix("recursion.time.median"):
+		// 	*.requestlist.avg, *.recursion.time.avg, *.recursion.time.median
+		case e.hasSuffix(".avg"), e.hasSuffix(".median"):
 			e.value *= mul
 		case e.hasPrefix("thread") && e.hasSuffix("num.queries"):
 			v := extractThread(e.key)

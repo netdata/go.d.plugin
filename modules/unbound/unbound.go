@@ -18,12 +18,16 @@ func init() {
 
 func New() *Unbound {
 	config := Config{
-		// "/etc/unbound/unbound.conf"
-		Address: "192.168.88.223:8953",
-		//ConfPath:   "/Users/ilyam/Projects/goland/go.d.plugin/modules/unbound/testdata/unbound.conf",
-		Timeout:    web.Duration{Duration: time.Second * 2},
-		DisableTLS: true,
-		//Cumulative:true,
+		Address:    "127.0.0.1:8953",
+		ConfPath:   "/etc/unbound/unbound.conf",
+		Timeout:    web.Duration{Duration: time.Second},
+		Cumulative: false,
+		DisableTLS: false,
+		ClientTLSConfig: web.ClientTLSConfig{
+			TLSCert:            "/etc/unbound/unbound_control.pem",
+			TLSKey:             "/etc/unbound/unbound_control.key",
+			InsecureSkipVerify: true,
+		},
 	}
 
 	return &Unbound{
@@ -64,7 +68,7 @@ type (
 func (Unbound) Cleanup() {}
 
 func (u *Unbound) Init() bool {
-	if !u.initConfig() {
+	if enabled := u.initConfig(); !enabled {
 		return false
 	}
 
@@ -86,7 +90,7 @@ func (u *Unbound) Check() bool {
 	return len(u.Collect()) > 0
 }
 
-func (u Unbound) Charts() *Charts {
+func (u Unbound) Charts() *module.Charts {
 	return u.charts
 }
 

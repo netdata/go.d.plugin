@@ -171,8 +171,8 @@ var (
 		Fam:   "responses",
 		Ctx:   "unbound.recursion_time_total",
 		Dims: Dims{
-			{ID: "total.recursion.time.avg", Name: "avg", Div: 1000},
-			{ID: "total.recursion.time.median", Name: "median", Div: 1000},
+			{ID: "total.recursion.time.avg", Name: "avg"},
+			{ID: "total.recursion.time.median", Name: "median"},
 		},
 	}
 	reqListUtilChart = Chart{
@@ -182,7 +182,7 @@ var (
 		Fam:   "request list",
 		Ctx:   "unbound.request_list_utilization_total",
 		Dims: Dims{
-			{ID: "total.requestlist.avg", Name: "avg", Div: 1000000},
+			{ID: "total.requestlist.avg", Name: "avg", Div: 1000},
 			{ID: "total.requestlist.max", Name: "max"}, // all time max in cumulative mode, never resets
 		},
 	}

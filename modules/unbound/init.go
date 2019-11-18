@@ -20,8 +20,9 @@ type (
 )
 
 func (s str) isSet() bool     { return s != "" }
+func (s str) value() string   { return string(s) }
 func (s strBool) isSet() bool { return s != "" }
-func (s strBool) bool() bool  { return s == "yes" }
+func (s strBool) value() bool { return s == "yes" }
 
 type unboundConfig struct {
 	Srv *struct {
@@ -37,19 +38,15 @@ type unboundConfig struct {
 	} `yaml:"remote-control"`
 }
 
-func (c unboundConfig) String() string { b, _ := yaml.Marshal(c); return string(b) }
+func (c unboundConfig) String() string         { b, _ := yaml.Marshal(c); return string(b) }
+func (c unboundConfig) hasServer() bool        { return c.Srv != nil }
+func (c unboundConfig) hasRemoteControl() bool { return c.RC != nil }
 
-func (c unboundConfig) hasServer() bool {
-	return c.Srv != nil
-}
-func (c unboundConfig) hasRemoteControl() bool {
-	return c.RC != nil
-}
 func (c unboundConfig) isRemoteControlDisabled() bool {
-	return c.hasRemoteControl() && c.RC.Enable.isSet() && !c.RC.Enable.bool()
+	return c.hasRemoteControl() && c.RC.Enable.isSet() && !c.RC.Enable.value()
 }
 
-func (u *Unbound) initConfig() bool {
+func (u *Unbound) initConfig() (enabled bool) {
 	// TODO: config parameters auto detection by reading the config file feature is questionable
 	// unbound config file is not in yaml format, it looks like yaml but it is not, for example it allows such config
 	// remote-control:
@@ -78,9 +75,9 @@ func (u *Unbound) initConfig() bool {
 func (u *Unbound) applyConfig(cfg *unboundConfig) {
 	u.Debugf("applying configuration:\n%s", cfg)
 	if cfg.hasServer() && cfg.Srv.Cumulative.isSet() {
-		if cfg.Srv.Cumulative.bool() != u.Cumulative {
-			u.Debugf("changing 'cumulative_stats': %v => %v", u.Cumulative, cfg.Srv.Cumulative.bool())
-			u.Cumulative = cfg.Srv.Cumulative.bool()
+		if cfg.Srv.Cumulative.value() != u.Cumulative {
+			u.Debugf("changing 'cumulative_stats': %v => %v", u.Cumulative, cfg.Srv.Cumulative.value())
+			u.Cumulative = cfg.Srv.Cumulative.value()
 		}
 	}
 
@@ -88,37 +85,36 @@ func (u *Unbound) applyConfig(cfg *unboundConfig) {
 		return
 	}
 	if cfg.RC.UseCert.isSet() {
-		if cfg.RC.UseCert.bool() != u.DisableTLS {
-			u.Debugf("changing 'disable_tls': %v => %v", u.DisableTLS, !cfg.RC.UseCert.bool())
-			u.DisableTLS = !cfg.RC.UseCert.bool()
+		if cfg.RC.UseCert.value() != u.DisableTLS {
+			u.Debugf("changing 'disable_tls': %v => %v", u.DisableTLS, !cfg.RC.UseCert.value())
+			u.DisableTLS = !cfg.RC.UseCert.value()
 		}
 	}
 
 	if cfg.RC.KeyFile.isSet() {
-		if string(cfg.RC.KeyFile) != u.TLSKey {
+		if cfg.RC.KeyFile.value() != u.TLSKey {
 			u.Debugf("changing 'tls_key': '%s' => '%s'", u.TLSKey, cfg.RC.KeyFile)
-			u.TLSKey = string(cfg.RC.KeyFile)
+			u.TLSKey = cfg.RC.KeyFile.value()
 		}
 	}
 
 	if cfg.RC.CertFile.isSet() {
-		if string(cfg.RC.CertFile) != u.TLSCert {
+		if cfg.RC.CertFile.value() != u.TLSCert {
 			u.Debugf("changing 'tls_cert': '%s' => '%s'", u.TLSCert, cfg.RC.CertFile)
-			u.TLSCert = string(cfg.RC.CertFile)
+			u.TLSCert = cfg.RC.CertFile.value()
 		}
 	}
 
 	if cfg.RC.Interface.isSet() {
-		if v := adjustControlInterface(string(cfg.RC.Interface)); v != u.Address {
+		if v := adjustControlInterface(cfg.RC.Interface.value()); v != u.Address {
 			u.Debugf("changing 'address': '%s' => '%s'", u.Address, v)
 			u.Address = v
 		}
 	}
 
 	if cfg.RC.Port.isSet() && !isUnixSocket(u.Address) {
-		if host, port, err := net.SplitHostPort(u.Address); err == nil && port != string(cfg.RC.Port) {
-			port := string(cfg.RC.Port)
-			address := net.JoinHostPort(host, port)
+		if host, port, err := net.SplitHostPort(u.Address); err == nil && port != cfg.RC.Port.value() {
+			address := net.JoinHostPort(host, cfg.RC.Port.value())
 			u.Debugf("changing 'address': '%s' => '%s'", u.Address, address)
 			u.Address = address
 		}
