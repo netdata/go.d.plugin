@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/pkg/web"
+
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -41,11 +43,73 @@ func TestNew(t *testing.T) {
 }
 
 func TestUnbound_Init(t *testing.T) {
+	unbound := New()
+	unbound.ConfPath = ""
+	unbound.DisableTLS = true
 
+	assert.True(t, unbound.Init())
+}
+
+func TestUnbound_Init_SetEverythingFromUnboundConf(t *testing.T) {
+	unbound := New()
+	unbound.ConfPath = "testdata/unbound.conf"
+	expectedConfig := Config{
+		Address:    "10.0.0.1:8954",
+		ConfPath:   unbound.ConfPath,
+		Timeout:    unbound.Timeout,
+		DisableTLS: true,
+		Cumulative: true,
+		ClientTLSConfig: web.ClientTLSConfig{
+			TLSCert:            "/etc/unbound/unbound_control_other.pem",
+			TLSKey:             "/etc/unbound/unbound_control_other.key",
+			InsecureSkipVerify: unbound.InsecureSkipVerify,
+		},
+	}
+
+	assert.True(t, unbound.Init())
+	assert.Equal(t, expectedConfig, unbound.Config)
+}
+
+func TestUnbound_Init_DisabledInUnboundConf(t *testing.T) {
+	unbound := New()
+	unbound.ConfPath = "testdata/unbound_disabled.conf"
+	unbound.DisableTLS = true
+
+	assert.False(t, unbound.Init())
+}
+
+func TestUnbound_Init_HandleEmptyConfig(t *testing.T) {
+	unbound := New()
+	unbound.ConfPath = "testdata/unbound_empty.conf"
+	unbound.DisableTLS = true
+
+	assert.True(t, unbound.Init())
+}
+
+func TestUnbound_Init_HandleNonExistentConfig(t *testing.T) {
+	unbound := New()
+	unbound.ConfPath = "testdata/unbound_non_existent.conf"
+	unbound.DisableTLS = true
+
+	assert.True(t, unbound.Init())
 }
 
 func TestUnbound_Check(t *testing.T) {
+	unbound := New()
+	unbound.DisableTLS = true
+	require.True(t, unbound.Init())
+	unbound.client = mockUnboundClient{data: commonStatsData, err: false}
 
+	assert.True(t, unbound.Check())
+}
+
+func TestUnbound_Check_ErrorDuringScrapingUnbound(t *testing.T) {
+	unbound := New()
+	unbound.DisableTLS = true
+	require.True(t, unbound.Init())
+	unbound.client = mockUnboundClient{err: true}
+
+	assert.False(t, unbound.Check())
 }
 
 func TestUnbound_Cleanup(t *testing.T) {

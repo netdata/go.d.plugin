@@ -85,7 +85,7 @@ func (u *Unbound) applyConfig(cfg *unboundConfig) {
 		return
 	}
 	if cfg.RC.UseCert.isSet() {
-		if cfg.RC.UseCert.value() != u.DisableTLS {
+		if cfg.RC.UseCert.value() == u.DisableTLS {
 			u.Debugf("changing 'disable_tls': %v => %v", u.DisableTLS, !cfg.RC.UseCert.value())
 			u.DisableTLS = !cfg.RC.UseCert.value()
 		}

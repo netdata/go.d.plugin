@@ -6,11 +6,10 @@ import (
 	"strings"
 )
 
-// https://github.com/NLnetLabs/unbound/blob/master/smallapp/unbound-control.c
-// https://github.com/NLnetLabs/unbound/blob/master/libunbound/unbound.h (ub_server_stats, ub_shm_stat_info)
-// https://github.com/NLnetLabs/unbound/blob/master/daemon/remote.c
-// https://docs.menandmice.com/display/MM/Unbound+request-list+demystified
-// https://docs.datadoghq.com/integrations/unbound/#metrics
+// https://github.com/NLnetLabs/unbound/blob/master/daemon/remote.c (do_stats: print_stats, print_thread_stats, print_mem, print_uptime, print_ext)
+// https://github.com/NLnetLabs/unbound/blob/master/libunbound/unbound.h (structs: ub_server_stats, ub_shm_stat_info)
+// https://docs.datadoghq.com/integrations/unbound/#metrics (stats description)
+// https://docs.menandmice.com/display/MM/Unbound+request-list+demystified (request lists explanation)
 
 func (u *Unbound) collect() (map[string]int64, error) {
 	stats, err := u.scrapeUnboundStats()
@@ -24,7 +23,10 @@ func (u *Unbound) collect() (map[string]int64, error) {
 }
 
 func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
-	const command = "UBCT1 stats"
+	var command = "UBCT1 stats"
+	if u.Cumulative {
+		command = "UBCT1 stats_noreset"
+	}
 	output, err := u.client.send(command + "\n")
 	if err != nil {
 		return nil, fmt.Errorf("send command '%s': %w", command, err)
