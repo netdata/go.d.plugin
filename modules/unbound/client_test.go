@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	srvAddress = "127.0.0.1:38001"
+	srvAddress = "127.0.0.1:38002"
 )
 
 func Test_clientSend(t *testing.T) {
