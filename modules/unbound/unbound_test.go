@@ -49,11 +49,15 @@ func TestUnbound_Check(t *testing.T) {
 }
 
 func TestUnbound_Cleanup(t *testing.T) {
-
+	New().Cleanup()
 }
 
 func TestUnbound_Charts(t *testing.T) {
+	unbound := New()
+	unbound.DisableTLS = true
+	require.True(t, unbound.Init())
 
+	assert.NotNil(t, unbound.Charts())
 }
 
 func TestUnbound_Collect(t *testing.T) {
@@ -62,17 +66,124 @@ func TestUnbound_Collect(t *testing.T) {
 	require.True(t, unbound.Init())
 	unbound.client = mockUnboundClient{data: commonStatsData, err: false}
 
-	//m := unbound.Collect()
-	//_ = m
-	//l := make([]string, 0)
-	//for k := range m {
-	//	l = append(l, k)
-	//}
-	//sort.Strings(l)
-	//for _, v := range l {
-	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", v, m[v]))
-	//}
-	expected := map[string]int64{
+	assert.Equal(t, expectedCommon, unbound.Collect())
+}
+
+func TestUnbound_Collect_ExtendedStats(t *testing.T) {
+	unbound := New()
+	unbound.DisableTLS = true
+	require.True(t, unbound.Init())
+	unbound.client = mockUnboundClient{data: extStatsData, err: false}
+
+	assert.Equal(t, expectedExtended, unbound.Collect())
+}
+
+func TestUnbound_Collect_LifeCycleCumulativeExtendedStats(t *testing.T) {
+	tests := []struct {
+		input    []byte
+		expected map[string]int64
+	}{
+		{input: lifeCycleCumulativeData1, expected: expectedCumulative1},
+		{input: lifeCycleCumulativeData2, expected: expectedCumulative2},
+		{input: lifeCycleCumulativeData3, expected: expectedCumulative3},
+	}
+
+	unbound := New()
+	unbound.DisableTLS = true
+	unbound.Cumulative = true
+	require.True(t, unbound.Init())
+	ubClient := &mockUnboundClient{err: false}
+	unbound.client = ubClient
+
+	for i, test := range tests {
+		t.Run(fmt.Sprintf("run %d", i+1), func(t *testing.T) {
+			ubClient.data = test.input
+			assert.Equal(t, test.expected, unbound.Collect())
+		})
+	}
+}
+
+func TestUnbound_Collect_LifeCycleResetExtendedStats(t *testing.T) {
+	tests := []struct {
+		input    []byte
+		expected map[string]int64
+	}{
+		{input: lifeCycleResetData1, expected: expectedReset1},
+		{input: lifeCycleResetData2, expected: expectedReset2},
+		{input: lifeCycleResetData3, expected: expectedReset3},
+	}
+
+	unbound := New()
+	unbound.DisableTLS = true
+	unbound.Cumulative = false
+	require.True(t, unbound.Init())
+	ubClient := &mockUnboundClient{err: false}
+	unbound.client = ubClient
+
+	for i, test := range tests {
+		t.Run(fmt.Sprintf("run %d", i+1), func(t *testing.T) {
+			ubClient.data = test.input
+			assert.Equal(t, test.expected, unbound.Collect())
+		})
+	}
+}
+
+func TestUnbound_Collect_EmptyResponse(t *testing.T) {
+	unbound := New()
+	unbound.DisableTLS = true
+	require.True(t, unbound.Init())
+	unbound.client = mockUnboundClient{data: []byte{}, err: false}
+
+	assert.Nil(t, unbound.Collect())
+}
+
+func TestUnbound_Collect_ErrorResponse(t *testing.T) {
+	unbound := New()
+	unbound.DisableTLS = true
+	require.True(t, unbound.Init())
+	unbound.client = mockUnboundClient{data: []byte("error unknown command 'unknown'"), err: false}
+
+	assert.Nil(t, unbound.Collect())
+}
+
+func TestUnbound_Collect_ErrorOnSend(t *testing.T) {
+	unbound := New()
+	unbound.DisableTLS = true
+	require.True(t, unbound.Init())
+	unbound.client = mockUnboundClient{err: true}
+
+	assert.Nil(t, unbound.Collect())
+}
+
+func TestUnbound_Collect_ErrorOnParseBadSyntax(t *testing.T) {
+	unbound := New()
+	unbound.DisableTLS = true
+	require.True(t, unbound.Init())
+	data := strings.Repeat("zk_avg_latency	0\nzk_min_latency	0\nzk_mix_latency	0\n", 10)
+	unbound.client = mockUnboundClient{data: []byte(data), err: false}
+
+	assert.Nil(t, unbound.Collect())
+}
+
+type mockUnboundClient struct {
+	data []byte
+	err  bool
+}
+
+func (m mockUnboundClient) send(command string) ([]string, error) {
+	if m.err {
+		return nil, errors.New("mock send error")
+	}
+	rv := make([]string, 0, 160)
+	s := bufio.NewScanner(bytes.NewReader(m.data))
+	for s.Scan() {
+		rv = append(rv, s.Text())
+	}
+	return rv, nil
+}
+
+var (
+	expectedCommon = map[string]int64{
 		"thread0.num.cachehits":              21,
 		"thread0.num.cachemiss":              7,
 		"thread0.num.dnscrypt.cert":          0,
@@ -138,16 +249,7 @@ func TestUnbound_Collect(t *testing.T) {
 		"total.tcpusage":                     0,
 	}
 
-	assert.Equal(t, expected, unbound.Collect())
-}
-
-func TestUnbound_Collect_ExtendedStats(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
-	require.True(t, unbound.Init())
-	unbound.client = mockUnboundClient{data: extStatsData, err: false}
-
-	expected := map[string]int64{
+	expectedExtended = map[string]int64{
 		"dnscrypt_nonce.cache.count":                 0,
 		"dnscrypt_shared_secret.cache.count":         0,
 		"infra.cache.count":                          205,
@@ -268,132 +370,7 @@ func TestUnbound_Collect_ExtendedStats(t *testing.T) {
 		"unwanted.queries":                           0,
 		"unwanted.replies":                           0,
 	}
-
-	assert.Equal(t, expected, unbound.Collect())
-}
-
-func TestUnbound_Collect_LifeCycleCumulativeExtendedStats(t *testing.T) {
-	tests := []struct {
-		input    []byte
-		expected map[string]int64
-	}{
-		{
-			input:    lifeCycleCumulativeData1,
-			expected: expectedCumulative1,
-		},
-		{
-			input:    lifeCycleCumulativeData2,
-			expected: expectedCumulative2,
-		},
-		{
-			input:    lifeCycleCumulativeData3,
-			expected: expectedCumulative3,
-		},
-	}
-
-	unbound := New()
-	unbound.DisableTLS = true
-	unbound.Cumulative = true
-	require.True(t, unbound.Init())
-	ubClient := &mockUnboundClient{err: false}
-	unbound.client = ubClient
-
-	for i, test := range tests {
-		t.Run(fmt.Sprintf("run %d", i+1), func(t *testing.T) {
-			ubClient.data = test.input
-			assert.Equal(t, test.expected, unbound.Collect())
-		})
-	}
-}
-
-func TestUnbound_Collect_LifeCycleResetExtendedStats(t *testing.T) {
-	tests := []struct {
-		input    []byte
-		expected map[string]int64
-	}{
-		{
-			input:    lifeCycleResetData1,
-			expected: expectedReset1,
-		},
-		{
-			input:    lifeCycleResetData2,
-			expected: expectedReset2,
-		},
-		{
-			input:    lifeCycleResetData3,
-			expected: expectedReset3,
-		},
-	}
-	_ = tests
-
-	unbound := New()
-	unbound.DisableTLS = true
-	unbound.Cumulative = false
-	require.True(t, unbound.Init())
-	ubClient := &mockUnboundClient{err: false}
-	unbound.client = ubClient
-
-	for i, test := range tests {
-		t.Run(fmt.Sprintf("run %d", i+1), func(t *testing.T) {
-			ubClient.data = test.input
-			assert.Equal(t, test.expected, unbound.Collect())
-		})
-	}
-}
-
-func TestUnbound_Collect_EmptyResponse(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
-	require.True(t, unbound.Init())
-	unbound.client = mockUnboundClient{data: []byte{}, err: false}
-
-	assert.Nil(t, unbound.Collect())
-}
-
-func TestUnbound_Collect_ErrorResponse(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
-	require.True(t, unbound.Init())
-	unbound.client = mockUnboundClient{data: []byte("error unknown command 'unknown'"), err: false}
-
-	assert.Nil(t, unbound.Collect())
-}
-
-func TestUnbound_Collect_ErrorOnSend(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
-	require.True(t, unbound.Init())
-	unbound.client = mockUnboundClient{err: true}
-
-	assert.Nil(t, unbound.Collect())
-}
-
-func TestUnbound_Collect_BadSyntaxResponse(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
-	require.True(t, unbound.Init())
-	data := strings.Repeat("zk_avg_latency	0\nzk_min_latency	0\nzk_mix_latency	0\n", 10)
-	unbound.client = mockUnboundClient{data: []byte(data), err: false}
-
-	assert.Nil(t, unbound.Collect())
-}
-
-type mockUnboundClient struct {
-	data []byte
-	err  bool
-}
-
-func (m mockUnboundClient) send(command string) ([]string, error) {
-	if m.err {
-		return nil, errors.New("mock send error")
-	}
-	var rv []string
-	s := bufio.NewScanner(bytes.NewReader(m.data))
-	for s.Scan() {
-		rv = append(rv, s.Text())
-	}
-	return rv, nil
-}
+)
 
 var (
 	expectedCumulative1 = map[string]int64{
