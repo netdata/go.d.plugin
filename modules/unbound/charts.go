@@ -140,6 +140,7 @@ var (
 			{ID: "total.num.zero_ttl", Name: "responses"},
 		},
 	}
+	// ifdef USE_DNSCRYPT
 	dnsCryptChart = Chart{
 		ID:    "total_dnscrypt_queries",
 		Title: "Total DNSCrypt Queries",
@@ -182,7 +183,7 @@ var (
 		Ctx:   "unbound.request_list_utilization_total",
 		Dims: Dims{
 			{ID: "total.requestlist.avg", Name: "avg", Div: 1000000},
-			//{ID: "total.requestlist.max", Name: "max"}, //
+			{ID: "total.requestlist.max", Name: "max"}, // all time max in cumulative mode, never resets
 		},
 	}
 	reqListCurUtilChart = Chart{
@@ -231,6 +232,7 @@ var (
 )
 
 var (
+	// TODO: do not add dnscrypt stuff by default?
 	memCacheChart = Chart{
 		ID:    "cache_memory",
 		Title: "Cache Memory",
@@ -241,10 +243,11 @@ var (
 		Dims: Dims{
 			{ID: "mem.cache.message", Name: "message", Div: 1024},
 			{ID: "mem.cache.rrset", Name: "rrset", Div: 1024},
-			{ID: "mem.cache.dnscrypt_nonce", Name: "dnscrypt_nonce", Div: 1024},
-			{ID: "mem.cache.dnscrypt_shared_secret", Name: "dnscrypt_shared_secret", Div: 1024},
+			{ID: "mem.cache.dnscrypt_nonce", Name: "dnscrypt_nonce", Div: 1024},                 // ifdef USE_DNSCRYPT
+			{ID: "mem.cache.dnscrypt_shared_secret", Name: "dnscrypt_shared_secret", Div: 1024}, // ifdef USE_DNSCRYPT
 		},
 	}
+	// TODO: do not add subnet and ipsecmod stuff by default?
 	memModChart = Chart{
 		ID:    "mod_memory",
 		Title: "Module Memory",
@@ -253,11 +256,11 @@ var (
 		Ctx:   "unbound.mod_memory",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "mem.mod.ipsecmod", Name: "ipsec", Div: 1024},
 			{ID: "mem.mod.iterator", Name: "iterator", Div: 1024},
 			{ID: "mem.mod.respip", Name: "respip", Div: 1024},
-			{ID: "mem.mod.subnet", Name: "subnet", Div: 1024},
 			{ID: "mem.mod.validator", Name: "validator", Div: 1024},
+			{ID: "mem.mod.subnet", Name: "subnet", Div: 1024},  // ifdef CLIENT_SUBNET
+			{ID: "mem.mod.ipsecmod", Name: "ipsec", Div: 1024}, // ifdef USE_IPSECMOD
 		},
 	}
 	memStreamWaitChart = Chart{
@@ -348,7 +351,7 @@ func (u *Unbound) updateCharts() {
 			}
 		}
 	}
-	// only 0-6 rcodes answers always included
+	// 0-6 rcodes always included
 	if hasExtendedData := len(u.curCache.answerRCode) > 0; !hasExtendedData {
 		return
 	}
