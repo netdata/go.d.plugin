@@ -15,26 +15,26 @@ const (
 	testServerAddress = "127.0.0.1:38001"
 )
 
-func Test_clientFetch(t *testing.T) {
-	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 10}
-	go srv.Run()
-	defer srv.Close()
-	time.Sleep(time.Second)
-
-	c := newClient(clientConfig{
-		network: "tcp",
-		address: testServerAddress,
-		timeout: time.Second,
-	})
-
-	rows, err := c.fetch("whatever\n")
-	assert.NoError(t, err)
-	assert.Len(t, rows, 10)
-
-	rows, err = c.fetch("whatever\n")
-	assert.NoError(t, err)
-	assert.Len(t, rows, 10)
-}
+//func Test_clientFetch(t *testing.T) {
+//	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 10}
+//	go srv.Run()
+//	defer srv.Close()
+//	time.Sleep(time.Second)
+//
+//	c := newClient(clientConfig{
+//		network: "tcp",
+//		address: testServerAddress,
+//		timeout: time.Second,
+//	})
+//
+//	rows, err := c.fetch("whatever\n")
+//	assert.NoError(t, err)
+//	assert.Len(t, rows, 10)
+//
+//	rows, err = c.fetch("whatever\n")
+//	assert.NoError(t, err)
+//	assert.Len(t, rows, 10)
+//}
 
 func Test_clientFetchReadLineLimitExceeded(t *testing.T) {
 	srv := &tcpServer{addr: testServerAddress, rowsNumResp: maxLinesToRead + 1}
