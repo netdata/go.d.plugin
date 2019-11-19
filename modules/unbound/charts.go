@@ -20,37 +20,37 @@ type (
 )
 
 const (
-	queriesPrio = orchestrator.DefaultJobPriority + iota
-	ipRateLimitedQueriesPrio
-	queryTypePrio
-	queryClassPrio
-	queryOpCodePrio
-	queryFlagPrio
-	dnsCryptPrio
+	prioQueries = orchestrator.DefaultJobPriority + iota
+	prioIPRateLimitedQueries
+	prioQueryType
+	prioQueryClass
+	prioQueryOpCode
+	prioQueryFlag
+	prioDNSCryptQueries
 
-	recurRepliesPrio
-	replyRCodePrio
+	prioRecurReplies
+	prioReplyRCode
 
-	recurTimePrio
+	prioRecurTime
 
-	cachePrio
-	cachePercentagePrio
-	prefetchPrio
-	zeroTTLPrio
-	cacheCountPrio
+	prioCache
+	prioCachePercentage
+	prioCachePrefetch
+	prioZeroTTL
+	prioCacheCount
 
-	reqListUsagePrio
-	reqListCurUsagePrio
-	reqListJostlePrio
+	prioReqListUsage
+	prioReqListCurUsage
+	prioReqListJostle
 
-	tcpUsagePrio
+	prioTCPUsage
 
-	memCachePrio
-	memModPrio
-	memStreamWaitPrio
-	uptimePrio
+	prioMemCache
+	prioMemMod
+	prioMemStreamWait
+	prioUptime
 
-	threadPriority
+	prioThread
 )
 
 func charts(cumulative bool) *Charts {
@@ -91,7 +91,7 @@ func threadCharts(thread string, cumulative bool) *Charts {
 	_ = charts.Remove(uptimeChart.ID)
 
 	for i, chart := range *charts {
-		convertTotalChartToThread(chart, thread, threadPriority+i)
+		convertTotalChartToThread(chart, thread, prioThread+i)
 	}
 	return charts
 }
@@ -115,7 +115,7 @@ var (
 		Units:    "queries",
 		Fam:      "queries",
 		Ctx:      "unbound.queries",
-		Priority: queriesPrio,
+		Priority: prioQueries,
 		Dims: Dims{
 			{ID: "total.num.queries", Name: "queries"},
 		},
@@ -126,7 +126,7 @@ var (
 		Units:    "queries",
 		Fam:      "queries",
 		Ctx:      "unbound.queries_ip_ratelimited",
-		Priority: ipRateLimitedQueriesPrio,
+		Priority: prioIPRateLimitedQueries,
 		Dims: Dims{
 			{ID: "total.num.queries_ip_ratelimited", Name: "ratelimited"},
 		},
@@ -138,7 +138,7 @@ var (
 		Units:    "queries",
 		Fam:      "queries",
 		Ctx:      "unbound.dnscrypt_queries",
-		Priority: dnsCryptPrio,
+		Priority: prioDNSCryptQueries,
 		Dims: Dims{
 			{ID: "total.num.dnscrypt.crypted", Name: "crypted"},
 			{ID: "total.num.dnscrypt.cert", Name: "cert"},
@@ -153,7 +153,7 @@ var (
 		Fam:      "cache",
 		Ctx:      "unbound.cache",
 		Type:     module.Stacked,
-		Priority: cachePrio,
+		Priority: prioCache,
 		Dims: Dims{
 			{ID: "total.num.cachehits", Name: "hits"},
 			{ID: "total.num.cachemiss", Name: "miss"},
@@ -166,7 +166,7 @@ var (
 		Fam:      "cache",
 		Ctx:      "unbound.cache_percentage",
 		Type:     module.Stacked,
-		Priority: cachePercentagePrio,
+		Priority: prioCachePercentage,
 		Dims: Dims{
 			{ID: "total.num.cachehits", Name: "hits", Algo: module.PercentOfAbsolute},
 			{ID: "total.num.cachemiss", Name: "miss", Algo: module.PercentOfAbsolute},
@@ -178,7 +178,7 @@ var (
 		Units:    "prefetches",
 		Fam:      "cache",
 		Ctx:      "unbound.prefetch",
-		Priority: prefetchPrio,
+		Priority: prioCachePrefetch,
 		Dims: Dims{
 			{ID: "total.num.prefetch", Name: "prefetches"},
 		},
@@ -189,7 +189,7 @@ var (
 		Units:    "replies",
 		Fam:      "cache",
 		Ctx:      "unbound.zero_ttl_replies",
-		Priority: zeroTTLPrio,
+		Priority: prioZeroTTL,
 		Dims: Dims{
 			{ID: "total.num.zero_ttl", Name: "zero_ttl"},
 		},
@@ -200,7 +200,7 @@ var (
 		Units:    "replies",
 		Fam:      "replies",
 		Ctx:      "unbound.recursive_replies",
-		Priority: recurRepliesPrio,
+		Priority: prioRecurReplies,
 		Dims: Dims{
 			{ID: "total.num.recursivereplies", Name: "recursive"},
 		},
@@ -211,7 +211,7 @@ var (
 		Units:    "milliseconds",
 		Fam:      "recursion timings",
 		Ctx:      "unbound.recursion_time",
-		Priority: recurTimePrio,
+		Priority: prioRecurTime,
 		Dims: Dims{
 			{ID: "total.recursion.time.avg", Name: "avg"},
 			{ID: "total.recursion.time.median", Name: "median"},
@@ -223,7 +223,7 @@ var (
 		Units:    "queries",
 		Fam:      "request list",
 		Ctx:      "unbound.request_list_usage",
-		Priority: reqListUsagePrio,
+		Priority: prioReqListUsage,
 		Dims: Dims{
 			{ID: "total.requestlist.avg", Name: "avg", Div: 1000},
 			{ID: "total.requestlist.max", Name: "max"}, // all time max in cumulative mode, never resets
@@ -236,7 +236,7 @@ var (
 		Fam:      "request list",
 		Ctx:      "unbound.current_request_list_usage",
 		Type:     module.Area,
-		Priority: reqListCurUsagePrio,
+		Priority: prioReqListCurUsage,
 		Dims: Dims{
 			{ID: "total.requestlist.current.all", Name: "all"},
 			{ID: "total.requestlist.current.user", Name: "user"},
@@ -248,7 +248,7 @@ var (
 		Units:    "queries",
 		Fam:      "request list",
 		Ctx:      "unbound.request_list_jostle_list",
-		Priority: reqListJostlePrio,
+		Priority: prioReqListJostle,
 		Dims: Dims{
 			{ID: "total.requestlist.overwritten", Name: "overwritten"},
 			{ID: "total.requestlist.exceeded", Name: "dropped"},
@@ -260,7 +260,7 @@ var (
 		Units:    "buffers",
 		Fam:      "tcp buffers",
 		Ctx:      "unbound.tcpusage",
-		Priority: tcpUsagePrio,
+		Priority: prioTCPUsage,
 		Dims: Dims{
 			{ID: "total.tcpusage", Name: "usage"},
 		},
@@ -271,7 +271,7 @@ var (
 		Units:    "seconds",
 		Fam:      "uptime",
 		Ctx:      "unbound.uptime",
-		Priority: uptimePrio,
+		Priority: prioUptime,
 		Dims: Dims{
 			{ID: "time.up", Name: "time"},
 		},
@@ -288,7 +288,7 @@ var (
 		Fam:      "mem",
 		Ctx:      "unbound.cache_memory",
 		Type:     module.Stacked,
-		Priority: memCachePrio,
+		Priority: prioMemCache,
 		Dims: Dims{
 			{ID: "mem.cache.message", Name: "message", Div: 1024},
 			{ID: "mem.cache.rrset", Name: "rrset", Div: 1024},
@@ -304,7 +304,7 @@ var (
 		Fam:      "mem",
 		Ctx:      "unbound.mod_memory",
 		Type:     module.Stacked,
-		Priority: memModPrio,
+		Priority: prioMemMod,
 		Dims: Dims{
 			{ID: "mem.mod.iterator", Name: "iterator", Div: 1024},
 			{ID: "mem.mod.respip", Name: "respip", Div: 1024},
@@ -319,7 +319,7 @@ var (
 		Units:    "KB",
 		Fam:      "mem",
 		Ctx:      "unbound.mem_streamwait",
-		Priority: memStreamWaitPrio,
+		Priority: prioMemStreamWait,
 		Dims: Dims{
 			{ID: "mem.streamwait", Name: "streamwait", Div: 1024},
 		},
@@ -332,7 +332,7 @@ var (
 		Fam:      "cache",
 		Ctx:      "unbound.cache_count",
 		Type:     module.Stacked,
-		Priority: cacheCountPrio,
+		Priority: prioCacheCount,
 		Dims: Dims{
 			{ID: "infra.cache.count", Name: "infra"},
 			{ID: "key.cache.count", Name: "key"},
@@ -349,7 +349,7 @@ var (
 		Fam:      "queries",
 		Ctx:      "unbound.type_queries",
 		Type:     module.Stacked,
-		Priority: queryTypePrio,
+		Priority: prioQueryType,
 	}
 	queryClassChart = Chart{
 		ID:       "queries_by_class",
@@ -358,7 +358,7 @@ var (
 		Fam:      "queries",
 		Ctx:      "unbound.class_queries",
 		Type:     module.Stacked,
-		Priority: queryClassPrio,
+		Priority: prioQueryClass,
 	}
 	queryOpCodeChart = Chart{
 		ID:       "queries_by_opcode",
@@ -367,7 +367,7 @@ var (
 		Fam:      "queries",
 		Ctx:      "unbound.opcode_queries",
 		Type:     module.Stacked,
-		Priority: queryOpCodePrio,
+		Priority: prioQueryOpCode,
 	}
 	queryFlagChart = Chart{
 		ID:       "queries_by_flag",
@@ -376,7 +376,7 @@ var (
 		Fam:      "queries",
 		Ctx:      "unbound.flag_queries",
 		Type:     module.Stacked,
-		Priority: queryFlagPrio,
+		Priority: prioQueryFlag,
 		Dims: Dims{
 			{ID: "num.query.flags.QR", Name: "QR"},
 			{ID: "num.query.flags.AA", Name: "AA"},
@@ -395,7 +395,7 @@ var (
 		Fam:      "replies",
 		Ctx:      "unbound.rcode_answers",
 		Type:     module.Stacked,
-		Priority: replyRCodePrio,
+		Priority: prioReplyRCode,
 	}
 )
 
