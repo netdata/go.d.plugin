@@ -131,6 +131,7 @@ func TestUnbound_Collect(t *testing.T) {
 	unbound.client = mockUnboundClient{data: commonStatsData, err: false}
 
 	assert.Equal(t, expectedCommon, unbound.Collect())
+	testCharts(t, unbound)
 }
 
 func TestUnbound_Collect_ExtendedStats(t *testing.T) {
@@ -140,6 +141,7 @@ func TestUnbound_Collect_ExtendedStats(t *testing.T) {
 	unbound.client = mockUnboundClient{data: extStatsData, err: false}
 
 	assert.Equal(t, expectedExtended, unbound.Collect())
+	testCharts(t, unbound)
 }
 
 func TestUnbound_Collect_LifeCycleCumulativeExtendedStats(t *testing.T) {
@@ -165,6 +167,8 @@ func TestUnbound_Collect_LifeCycleCumulativeExtendedStats(t *testing.T) {
 			assert.Equal(t, test.expected, unbound.Collect())
 		})
 	}
+
+	testCharts(t, unbound)
 }
 
 func TestUnbound_Collect_LifeCycleResetExtendedStats(t *testing.T) {
@@ -190,6 +194,8 @@ func TestUnbound_Collect_LifeCycleResetExtendedStats(t *testing.T) {
 			assert.Equal(t, test.expected, unbound.Collect())
 		})
 	}
+
+	testCharts(t, unbound)
 }
 
 func TestUnbound_Collect_EmptyResponse(t *testing.T) {
@@ -244,6 +250,54 @@ func (m mockUnboundClient) send(command string) ([]string, error) {
 		rv = append(rv, s.Text())
 	}
 	return rv, nil
+}
+
+func testCharts(t *testing.T, u *Unbound) {
+	t.Helper()
+	testThreadCharts(t, u)
+	testExtendedCharts(t, u)
+}
+
+func testThreadCharts(t *testing.T, u *Unbound) {
+	for thread := range u.cache.threads {
+		for _, chart := range *threadCharts(thread, u.Cumulative) {
+			assert.Truef(t, u.Charts().Has(chart.ID), "chart '%s' is not created for '%s' thread", chart.ID, thread)
+		}
+	}
+}
+
+func testExtendedCharts(t *testing.T, u *Unbound) {
+	if len(u.cache.answerRCode) == 0 {
+		return
+	}
+	for _, chart := range *extendedCharts(u.Cumulative) {
+		assert.Truef(t, u.Charts().Has(chart.ID), "chart '%s' is not added", chart.ID)
+	}
+
+	if chart := u.Charts().Get(queryTypeChart.ID); chart != nil {
+		for typ := range u.cache.queryType {
+			dimID := "num.query.type." + typ
+			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has no dim for '%s' type, expected '%s'", chart.ID, typ, dimID)
+		}
+	}
+	if chart := u.Charts().Get(queryClassChart.ID); chart != nil {
+		for class := range u.cache.queryClass {
+			dimID := "num.query.class." + class
+			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has no dim for '%s' class, expected '%s'", chart.ID, class, dimID)
+		}
+	}
+	if chart := u.Charts().Get(queryOpCodeChart.ID); chart != nil {
+		for opcode := range u.cache.queryOpCode {
+			dimID := "num.query.opcode." + opcode
+			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has no dim for '%s' opcode, expected '%s'", chart.ID, opcode, dimID)
+		}
+	}
+	if chart := u.Charts().Get(answerRCodeChart.ID); chart != nil {
+		for rcode := range u.cache.answerRCode {
+			dimID := "num.answer.rcode." + rcode
+			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has no dim for '%s' rcode, expected '%s'", chart.ID, rcode, dimID)
+		}
+	}
 }
 
 var (
