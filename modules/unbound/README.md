@@ -8,20 +8,66 @@ This module monitors one or more [`Unbound`](https://nlnetlabs.nl/projects/unbou
 
 If using unix socket:
 
--  socket should be readable and writeable by `netdata` user
+-   socket should be readable and writeable by `netdata` user
 
 If using ip socket and TLS is disabled:
 
--  socket should be accessible via network
+-   socket should be accessible via network
 
 If TLS is enabled, in addition:
 
--  `control-key-file` should be readable by `netdata` user
--  `control-cert-file` should be readable by `netdata` user
+-   `control-key-file` should be readable by `netdata` user
+-   `control-cert-file` should be readable by `netdata` user
 
 For auto detection parameters from `unbound.conf`:
 
--  `unbound.conf` should be readable by `netdata` user  
+-  `unbound.conf` should be readable by `netdata` user
+
+#### Charts
+
+Module produces following summary charts:
+
+-   Received Queries in `queries`
+-   Rate Limited Queries in `queries`
+-   DNSCrypt Queries in `queries`
+-   Cache Statistics in `events`
+-   Cache Statistics Percentage in `events`
+-   Cache Prefetches in `prefetches`
+-   Replies Served From Expired Cache in `replies`
+-   Replies That Needed Recursive Processing in `replies`
+-   Time Spent On Recursive Processing in `milliseconds`
+-   Request List Usage in `queries`
+-   Current Request List Usage in `queries`
+-   Request List Jostle List Events in `queries`
+-   TCP Handler Buffers in `buffers`
+-   Uptime `seconds`
+
+If `extended-statistics` is enabled:
+
+-   Queries By Type in `queries`
+-   Queries By Class in `queries`
+-   Queries By OpCode in `queries`
+-   Queries By Flag in `queries`
+-   Replies By RCode in `replies`
+-   Cache Items Count in `items`
+-   Cache Memory in `KB`
+-   Module Memory in `KB`
+-   TCP and TLS Stream Waif Buffer Memory in `KB`
+
+Per thread charts (only if number of threads > 1):
+-   Received Queries in `queries`
+-   Rate Limited Queries in `queries`
+-   DNSCrypt Queries in `queries`
+-   Cache Statistics in `events`
+-   Cache Statistics Percentage in `events`
+-   Cache Prefetches in `prefetches`
+-   Replies Served From Expired Cache in `replies`
+-   Replies That Needed Recursive Processing in `replies`
+-   Time Spent On Recursive Processing in `milliseconds`
+-   Request List Usage in `queries`
+-   Current Request List Usage in `queries`
+-   Request List Jostle List Events in `queries`
+-   TCP Handler Buffers in `buffers`
 
 
 ### Configuration
@@ -30,11 +76,11 @@ Needs only `address` to server's `remote-control` interface if TLS is disabled o
 Otherwise you need to set path to the `control-key-file` and `control-cert-file` files.
 
 Module tries to auto detect following parameters reading `unbound.conf`:
-  - address
-  - cumulative
-  - use_tls
-  - tls_cert
-  - tls_key
+-   address
+-   cumulative
+-   use_tls
+-   tls_cert
+-   tls_key
 
 Module supports both cumulative and non cumulative modes. Default is non cumulative. If your server has enabled 
 `statistics-cumulative` but module fails to auto detect it (`unbound.conf` is not readable or it is a remote server) 
