@@ -79,8 +79,8 @@ func (u *Unbound) Init() bool {
 
 	u.charts = charts(u.Cumulative)
 
-	u.Debugf("using address: %s, cumulative: %v, disable_tls: %v, timeout: %s", u.Address, u.Cumulative, u.UseTLS, u.Timeout)
-	if !u.UseTLS {
+	u.Debugf("using address: %s, cumulative: %v, use_tls: %v, timeout: %s", u.Address, u.Cumulative, u.UseTLS, u.Timeout)
+	if u.UseTLS {
 		u.Debugf("using tls_skip_verify: %v, tls_key: %s, tls_cert: %s", u.InsecureSkipVerify, u.TLSKey, u.TLSCert)
 	}
 	return true
