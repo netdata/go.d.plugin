@@ -2,7 +2,7 @@
 
 This module monitors one or more [`Unbound`](https://nlnetlabs.nl/projects/unbound/about/) servers, depending on your configuration.
 
-#### Requirements
+## Requirements
 
 -   `Unbound` with enabled `remote-control` interface (see [unbound.conf](https://nlnetlabs.nl/documentation/unbound/unbound.conf))
 
@@ -23,7 +23,7 @@ For auto detection parameters from `unbound.conf`:
 
 -  `unbound.conf` should be readable by `netdata` user
 
-#### Charts
+## Charts
 
 Module produces following summary charts:
 
@@ -55,6 +55,7 @@ If `extended-statistics` is enabled:
 -   TCP and TLS Stream Waif Buffer Memory in `KB`
 
 Per thread charts (only if number of threads > 1):
+
 -   Received Queries in `queries`
 -   Rate Limited Queries in `queries`
 -   DNSCrypt Queries in `queries`
@@ -70,20 +71,20 @@ Per thread charts (only if number of threads > 1):
 -   TCP Handler Buffers in `buffers`
 
 
-### Configuration
+## Configuration
 
-Needs only `address` to server's `remote-control` interface if TLS is disabled or `address` is unix socket.
+This Unbound collector only needs the `address` to aserver's `remote-control` interface if TLS is disabled or `address` is unix socket.
 Otherwise you need to set path to the `control-key-file` and `control-cert-file` files.
 
-Module tries to auto detect following parameters reading `unbound.conf`:
+The module tries to auto-detect following parameters reading `unbound.conf`:
 -   address
 -   cumulative
 -   use_tls
 -   tls_cert
 -   tls_key
 
-Module supports both cumulative and non cumulative modes. Default is non cumulative. If your server has enabled 
-`statistics-cumulative` but module fails to auto detect it (`unbound.conf` is not readable or it is a remote server) 
+Module supports both cumulative and non-cumulative modes. Default is non-cumulative. If your server has enabled 
+`statistics-cumulative`, but the module fails to auto-detect it (`unbound.conf` is not readable or it is a remote server), 
 you need to set it manually in the configuration file. 
 
 Here is an example for several servers:
@@ -113,7 +114,8 @@ jobs:
 For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/unbound.conf).
 
 
-### Troubleshooting 
+## Troubleshooting
+
 Ensure that the control protocol is actually configured correctly.
 Run following command as `root` user:
 > unbound-control stats_noreset
