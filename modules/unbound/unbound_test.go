@@ -38,14 +38,15 @@ func Test_readTestData(t *testing.T) {
 	assert.NotNil(t, lifeCycleResetData3)
 }
 
+func nonTLSUnbound() *Unbound { unbound := New(); unbound.UseTLS = false; return unbound }
+
 func TestNew(t *testing.T) {
 	assert.Implements(t, (*module.Module)(nil), New())
 }
 
 func TestUnbound_Init(t *testing.T) {
-	unbound := New()
+	unbound := nonTLSUnbound()
 	unbound.ConfPath = ""
-	unbound.DisableTLS = true
 
 	assert.True(t, unbound.Init())
 }
@@ -57,8 +58,8 @@ func TestUnbound_Init_SetEverythingFromUnboundConf(t *testing.T) {
 		Address:    "10.0.0.1:8954",
 		ConfPath:   unbound.ConfPath,
 		Timeout:    unbound.Timeout,
-		DisableTLS: true,
 		Cumulative: true,
+		UseTLS:     false,
 		ClientTLSConfig: web.ClientTLSConfig{
 			TLSCert:            "/etc/unbound/unbound_control_other.pem",
 			TLSKey:             "/etc/unbound/unbound_control_other.key",
@@ -71,32 +72,28 @@ func TestUnbound_Init_SetEverythingFromUnboundConf(t *testing.T) {
 }
 
 func TestUnbound_Init_DisabledInUnboundConf(t *testing.T) {
-	unbound := New()
+	unbound := nonTLSUnbound()
 	unbound.ConfPath = "testdata/unbound_disabled.conf"
-	unbound.DisableTLS = true
 
 	assert.False(t, unbound.Init())
 }
 
 func TestUnbound_Init_HandleEmptyConfig(t *testing.T) {
-	unbound := New()
+	unbound := nonTLSUnbound()
 	unbound.ConfPath = "testdata/unbound_empty.conf"
-	unbound.DisableTLS = true
 
 	assert.True(t, unbound.Init())
 }
 
 func TestUnbound_Init_HandleNonExistentConfig(t *testing.T) {
-	unbound := New()
+	unbound := nonTLSUnbound()
 	unbound.ConfPath = "testdata/unbound_non_existent.conf"
-	unbound.DisableTLS = true
 
 	assert.True(t, unbound.Init())
 }
 
 func TestUnbound_Check(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	require.True(t, unbound.Init())
 	unbound.client = mockUnboundClient{data: commonStatsData, err: false}
 
@@ -104,8 +101,7 @@ func TestUnbound_Check(t *testing.T) {
 }
 
 func TestUnbound_Check_ErrorDuringScrapingUnbound(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	require.True(t, unbound.Init())
 	unbound.client = mockUnboundClient{err: true}
 
@@ -117,16 +113,14 @@ func TestUnbound_Cleanup(t *testing.T) {
 }
 
 func TestUnbound_Charts(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	require.True(t, unbound.Init())
 
 	assert.NotNil(t, unbound.Charts())
 }
 
 func TestUnbound_Collect(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	require.True(t, unbound.Init())
 	unbound.client = mockUnboundClient{data: commonStatsData, err: false}
 
@@ -135,8 +129,7 @@ func TestUnbound_Collect(t *testing.T) {
 }
 
 func TestUnbound_Collect_ExtendedStats(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	require.True(t, unbound.Init())
 	unbound.client = mockUnboundClient{data: extStatsData, err: false}
 
@@ -154,8 +147,7 @@ func TestUnbound_Collect_LifeCycleCumulativeExtendedStats(t *testing.T) {
 		{input: lifeCycleCumulativeData3, expected: expectedCumulative3},
 	}
 
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	unbound.Cumulative = true
 	require.True(t, unbound.Init())
 	ubClient := &mockUnboundClient{err: false}
@@ -181,8 +173,7 @@ func TestUnbound_Collect_LifeCycleResetExtendedStats(t *testing.T) {
 		{input: lifeCycleResetData3, expected: expectedReset3},
 	}
 
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	unbound.Cumulative = false
 	require.True(t, unbound.Init())
 	ubClient := &mockUnboundClient{err: false}
@@ -199,8 +190,7 @@ func TestUnbound_Collect_LifeCycleResetExtendedStats(t *testing.T) {
 }
 
 func TestUnbound_Collect_EmptyResponse(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	require.True(t, unbound.Init())
 	unbound.client = mockUnboundClient{data: []byte{}, err: false}
 
@@ -208,8 +198,7 @@ func TestUnbound_Collect_EmptyResponse(t *testing.T) {
 }
 
 func TestUnbound_Collect_ErrorResponse(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	require.True(t, unbound.Init())
 	unbound.client = mockUnboundClient{data: []byte("error unknown command 'unknown'"), err: false}
 
@@ -217,8 +206,7 @@ func TestUnbound_Collect_ErrorResponse(t *testing.T) {
 }
 
 func TestUnbound_Collect_ErrorOnSend(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	require.True(t, unbound.Init())
 	unbound.client = mockUnboundClient{err: true}
 
@@ -226,8 +214,7 @@ func TestUnbound_Collect_ErrorOnSend(t *testing.T) {
 }
 
 func TestUnbound_Collect_ErrorOnParseBadSyntax(t *testing.T) {
-	unbound := New()
-	unbound.DisableTLS = true
+	unbound := nonTLSUnbound()
 	require.True(t, unbound.Init())
 	data := strings.Repeat("zk_avg_latency	0\nzk_min_latency	0\nzk_mix_latency	0\n", 10)
 	unbound.client = mockUnboundClient{data: []byte(data), err: false}

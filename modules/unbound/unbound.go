@@ -22,7 +22,7 @@ func New() *Unbound {
 		ConfPath:   "/etc/unbound/unbound.conf",
 		Timeout:    web.Duration{Duration: time.Second},
 		Cumulative: false,
-		DisableTLS: false,
+		UseTLS:     true,
 		ClientTLSConfig: web.ClientTLSConfig{
 			TLSCert:            "/etc/unbound/unbound_control.pem",
 			TLSKey:             "/etc/unbound/unbound_control.key",
@@ -46,8 +46,8 @@ type (
 		Address             string       `yaml:"address"`
 		ConfPath            string       `yaml:"conf_path"`
 		Timeout             web.Duration `yaml:"timeout"`
-		DisableTLS          bool         `yaml:"disable_tls"`
 		Cumulative          bool         `yaml:"cumulative_stats"`
+		UseTLS              bool         `yaml:"use_tls"`
 		web.ClientTLSConfig `yaml:",inline"`
 	}
 	Unbound struct {
@@ -79,8 +79,8 @@ func (u *Unbound) Init() bool {
 
 	u.charts = charts(u.Cumulative)
 
-	u.Debugf("using address: %s, cumulative: %v, disable_tls: %v, timeout: %s", u.Address, u.Cumulative, u.DisableTLS, u.Timeout)
-	if !u.DisableTLS {
+	u.Debugf("using address: %s, cumulative: %v, disable_tls: %v, timeout: %s", u.Address, u.Cumulative, u.UseTLS, u.Timeout)
+	if !u.UseTLS {
 		u.Debugf("using tls_skip_verify: %v, tls_key: %s, tls_cert: %s", u.InsecureSkipVerify, u.TLSKey, u.TLSCert)
 	}
 	return true

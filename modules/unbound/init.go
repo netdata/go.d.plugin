@@ -85,9 +85,9 @@ func (u *Unbound) applyConfig(cfg *unboundConfig) {
 		return
 	}
 	if cfg.RC.UseCert.isSet() {
-		if cfg.RC.UseCert.value() == u.DisableTLS {
-			u.Debugf("changing 'disable_tls': %v => %v", u.DisableTLS, !cfg.RC.UseCert.value())
-			u.DisableTLS = !cfg.RC.UseCert.value()
+		if cfg.RC.UseCert.value() != u.UseTLS {
+			u.Debugf("changing 'use_tls': %v => %v", u.UseTLS, cfg.RC.UseCert.value())
+			u.UseTLS = cfg.RC.UseCert.value()
 		}
 	}
 
@@ -123,7 +123,7 @@ func (u *Unbound) applyConfig(cfg *unboundConfig) {
 
 func (u *Unbound) initClient() (err error) {
 	var tlsCfg *tls.Config
-	useTLS := !isUnixSocket(u.Address) && !u.DisableTLS
+	useTLS := !isUnixSocket(u.Address) && u.UseTLS
 	if useTLS && (u.TLSCert == "" || u.TLSKey == "") {
 		return errors.New("'tls_cert' or 'tls_key' is missing")
 	}
