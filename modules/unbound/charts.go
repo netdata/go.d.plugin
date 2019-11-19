@@ -1,6 +1,7 @@
 package unbound
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/netdata/go-orchestrator"
@@ -23,7 +24,7 @@ var threadPriority = orchestrator.DefaultJobPriority + len(*charts(true)) + len(
 func charts(cumulative bool) *Charts {
 	return &Charts{
 		makeIncrIf(queriesChart.Copy(), cumulative),
-		makeIncrIf(queriesIPRLChart.Copy(), cumulative),
+		makeIncrIf(ipRateLimitedQueriesChart.Copy(), cumulative),
 		makeIncrIf(cacheChart.Copy(), cumulative),
 		makePercOfIncrIf(cachePercentageChart.Copy(), cumulative),
 		makeIncrIf(prefetchChart.Copy(), cumulative),
@@ -64,10 +65,10 @@ func threadCharts(thread string, cumulative bool) *Charts {
 }
 
 func convertTotalChartToThread(chart *Chart, thread string, priority int) {
-	chart.ID = strings.Replace(chart.ID, "total", thread, 1)
-	chart.Title = strings.Replace(chart.Title, "Total", strings.Title(thread), 1)
+	chart.ID = fmt.Sprintf("%s_%s", thread, chart.ID)
+	chart.Title = fmt.Sprintf("%s %s", strings.Title(thread), thread)
 	chart.Fam = thread + "_stats"
-	chart.Ctx = strings.Replace(chart.Ctx, "total", thread, 1)
+	chart.Ctx = fmt.Sprintf("%s_%s", chart.Ctx, thread)
 	chart.Priority = priority
 	for _, dim := range chart.Dims {
 		dim.ID = strings.Replace(dim.ID, "total", thread, 1)
@@ -77,31 +78,31 @@ func convertTotalChartToThread(chart *Chart, thread string, priority int) {
 // NOTE: chart id  should start with 'total_', name with 'Total ', ctx should ends in `_total` (convertTotalChartToThread)
 var (
 	queriesChart = Chart{
-		ID:    "total_queries",
-		Title: "Total Queries",
+		ID:    "queries",
+		Title: "Received Queries",
 		Units: "queries",
 		Fam:   "queries",
-		Ctx:   "unbound.queries_total",
+		Ctx:   "unbound.queries",
 		Dims: Dims{
 			{ID: "total.num.queries", Name: "queries"},
 		},
 	}
-	queriesIPRLChart = Chart{
-		ID:    "total_queries_ip_ratelimited",
-		Title: "Total Queries IP Rate Limited",
+	ipRateLimitedQueriesChart = Chart{
+		ID:    "queries_ip_ratelimited",
+		Title: "Rate Limited Queries",
 		Units: "queries",
 		Fam:   "queries",
-		Ctx:   "unbound.queries_ip_ratelimited_total",
+		Ctx:   "unbound.queries_ip_ratelimited",
 		Dims: Dims{
-			{ID: "total.num.queries_ip_ratelimited", Name: "queries"},
+			{ID: "total.num.queries_ip_ratelimited", Name: "ratelimited"},
 		},
 	}
 	cacheChart = Chart{
-		ID:    "total_cache",
-		Title: "Total Cache",
+		ID:    "cache",
+		Title: "Cache Statistics",
 		Units: "events",
 		Fam:   "cache",
-		Ctx:   "unbound.cache_total",
+		Ctx:   "unbound.cache",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "total.num.cachehits", Name: "hits"},
@@ -109,11 +110,11 @@ var (
 		},
 	}
 	cachePercentageChart = Chart{
-		ID:    "total_cache_percentage",
-		Title: "Total Cache Percentage",
+		ID:    "cache_percentage",
+		Title: "Cache Statistics Percentage",
 		Units: "percentage",
 		Fam:   "cache",
-		Ctx:   "unbound.cache_percantage_total",
+		Ctx:   "unbound.cache_percentage",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "total.num.cachehits", Name: "hits", Algo: module.PercentOfAbsolute},
@@ -121,32 +122,32 @@ var (
 		},
 	}
 	prefetchChart = Chart{
-		ID:    "total_queries_prefetch",
-		Title: "Total Cache Prefetches",
-		Units: "queries",
+		ID:    "cache_prefetch",
+		Title: "Cache Prefetches",
+		Units: "prefetches",
 		Fam:   "cache",
-		Ctx:   "unbound.queries_prefetch_total",
+		Ctx:   "unbound.prefetch",
 		Dims: Dims{
-			{ID: "total.num.prefetch", Name: "queries"},
+			{ID: "total.num.prefetch", Name: "prefetches"},
 		},
 	}
 	zeroTTLChart = Chart{
-		ID:    "total_zero_ttl_responses",
-		Title: "Total Answers Served From Expired Cache",
-		Units: "responses",
+		ID:    "zero_ttl_replies",
+		Title: "Replies Served From Expired Cache",
+		Units: "replies",
 		Fam:   "cache",
-		Ctx:   "unbound.zero_ttl_responses_total",
+		Ctx:   "unbound.zero_ttl_replies",
 		Dims: Dims{
-			{ID: "total.num.zero_ttl", Name: "responses"},
+			{ID: "total.num.zero_ttl", Name: "zero_ttl"},
 		},
 	}
 	// ifdef USE_DNSCRYPT
 	dnsCryptChart = Chart{
-		ID:    "total_dnscrypt_queries",
-		Title: "Total DNSCrypt Queries",
+		ID:    "dnscrypt_queries",
+		Title: "DNSCrypt Queries",
 		Units: "queries",
-		Fam:   "dnscrypt",
-		Ctx:   "unbound.dnscrypt_queries_total",
+		Fam:   "dnscrypt queries",
+		Ctx:   "unbound.dnscrypt_queries",
 		Dims: Dims{
 			{ID: "total.num.dnscrypt.crypted", Name: "crypted"},
 			{ID: "total.num.dnscrypt.cert", Name: "cert"},
@@ -155,20 +156,20 @@ var (
 		},
 	}
 	recurRepliesChart = Chart{
-		ID:    "total_recursive_replies",
-		Title: "Total number of replies sent to queries that needed recursive processing",
-		Units: "responses",
-		Fam:   "responses",
-		Ctx:   "unbound.recursive_replies_total",
+		ID:    "recursive_replies",
+		Title: "Replies That Needed Recursive Processing",
+		Units: "replies",
+		Fam:   "recursion",
+		Ctx:   "unbound.recursive_replies",
 		Dims: Dims{
 			{ID: "total.num.recursivereplies", Name: "recursive"},
 		},
 	}
 	recurTimeChart = Chart{
-		ID:    "total_recursion_time",
-		Title: "Total Time t took to answer queries that needed recursive processing",
+		ID:    "recursion_time",
+		Title: "Time Spent On Recursive Processing",
 		Units: "milliseconds",
-		Fam:   "responses",
+		Fam:   "recursion",
 		Ctx:   "unbound.recursion_time_total",
 		Dims: Dims{
 			{ID: "total.recursion.time.avg", Name: "avg"},
@@ -176,22 +177,22 @@ var (
 		},
 	}
 	reqListUtilChart = Chart{
-		ID:    "total_request_list_utilization",
-		Title: "Total Request List Utilization",
+		ID:    "request_list_utilization",
+		Title: "Request List Utilization",
 		Units: "queries",
 		Fam:   "request list",
-		Ctx:   "unbound.request_list_utilization_total",
+		Ctx:   "unbound.request_list_utilization",
 		Dims: Dims{
 			{ID: "total.requestlist.avg", Name: "avg", Div: 1000},
 			{ID: "total.requestlist.max", Name: "max"}, // all time max in cumulative mode, never resets
 		},
 	}
 	reqListCurUtilChart = Chart{
-		ID:    "total_current_request_list_utilization",
-		Title: "Total Current Request List Utilization",
+		ID:    "current_request_list_utilization",
+		Title: "Current Request List Utilization",
 		Units: "queries",
 		Fam:   "request list",
-		Ctx:   "unbound.current_request_list_utilization_total",
+		Ctx:   "unbound.current_request_list_utilization",
 		Type:  module.Area,
 		Dims: Dims{
 			{ID: "total.requestlist.current.all", Name: "all"},
@@ -199,24 +200,24 @@ var (
 		},
 	}
 	reqListJostleChart = Chart{
-		ID:    "total_request_list_jostle_list",
-		Title: "Total Request List Jostle List Events",
-		Units: "events",
+		ID:    "request_list_jostle_list",
+		Title: "Request List Jostle List Events",
+		Units: "queries",
 		Fam:   "request list",
-		Ctx:   "unbound.request_list_jostle_list_total",
+		Ctx:   "unbound.request_list_jostle_list",
 		Dims: Dims{
 			{ID: "total.requestlist.overwritten", Name: "overwritten"},
 			{ID: "total.requestlist.exceeded", Name: "dropped"},
 		},
 	}
 	tcpUsageChart = Chart{
-		ID:    "total_tcpusage",
-		Title: "Total TCP Accept List Usage",
-		Units: "events",
-		Fam:   "tcpusage",
-		Ctx:   "unbound.tcpusage_total",
+		ID:    "tcpusage",
+		Title: "TCP Handler Buffers",
+		Units: "buffers",
+		Fam:   "tcp buffers",
+		Ctx:   "unbound.tcpusage",
 		Dims: Dims{
-			{ID: "total.tcpusage", Name: "tcpusage"},
+			{ID: "total.tcpusage", Name: "usage"},
 		},
 	}
 	uptimeChart = Chart{
@@ -276,7 +277,7 @@ var (
 	// NOTE: same family as for cacheChart
 	cacheCountChart = Chart{
 		ID:    "cache_count",
-		Title: "Cache Count",
+		Title: "Cache Items Count",
 		Units: "items",
 		Fam:   "cache",
 		Ctx:   "unbound.cache_count",
@@ -291,34 +292,34 @@ var (
 		},
 	}
 	queryTypeChart = Chart{
-		ID:    "query_type",
+		ID:    "queries_by_type",
 		Title: "Queries By Type",
 		Units: "queries",
-		Fam:   "query type",
+		Fam:   "queries by type",
 		Ctx:   "unbound.type_queries",
 		Type:  module.Stacked,
 	}
 	queryClassChart = Chart{
-		ID:    "query_class",
+		ID:    "queries_by_class",
 		Title: "Queries By Class",
 		Units: "queries",
-		Fam:   "query class",
+		Fam:   "queries by class",
 		Ctx:   "unbound.class_queries",
 		Type:  module.Stacked,
 	}
 	queryOpCodeChart = Chart{
-		ID:    "query_opcode",
+		ID:    "queries_by_opcode",
 		Title: "Queries By OpCode",
 		Units: "queries",
-		Fam:   "query opcode",
+		Fam:   "queries by opcode",
 		Ctx:   "unbound.opcode_queries",
 		Type:  module.Stacked,
 	}
 	queryFlagChart = Chart{
-		ID:    "query_flag",
+		ID:    "queries_by_flag",
 		Title: "Queries By Flag",
 		Units: "queries",
-		Fam:   "query flag",
+		Fam:   "queries by flag",
 		Ctx:   "unbound.flag_queries",
 		Type:  module.Stacked,
 		Dims: Dims{
@@ -333,10 +334,10 @@ var (
 		},
 	}
 	answerRCodeChart = Chart{
-		ID:    "answer_rcode",
-		Title: "Answers By Rcode",
-		Units: "answers",
-		Fam:   "answer rcode",
+		ID:    "replies_by_rcode",
+		Title: "Replies By Rcode",
+		Units: "replies",
+		Fam:   "replies by rcode",
 		Ctx:   "unbound.rcode_answers",
 		Type:  module.Stacked,
 	}
