@@ -19,7 +19,39 @@ type (
 	Dim = module.Dim
 )
 
-var threadPriority = orchestrator.DefaultJobPriority + len(*charts(true)) + len(*extendedCharts(true)) + 10
+const (
+	queriesPrio = orchestrator.DefaultJobPriority + iota
+	ipRateLimitedQueriesPrio
+	queryTypePrio
+	queryClassPrio
+	queryOpCodePrio
+	queryFlagPrio
+	dnsCryptPrio
+
+	recurRepliesPrio
+	replyRCodePrio
+
+	recurTimePrio
+
+	cachePrio
+	cachePercentagePrio
+	prefetchPrio
+	zeroTTLPrio
+	cacheCountPrio
+
+	reqListUtilPrio
+	reqListCurUtilPrio
+	reqListJostlePrio
+
+	tcpUsagePrio
+
+	memCachePrio
+	memModPrio
+	memStreamWaitPrio
+	uptimePrio
+
+	threadPriority
+)
 
 func charts(cumulative bool) *Charts {
 	return &Charts{
@@ -66,7 +98,7 @@ func threadCharts(thread string, cumulative bool) *Charts {
 
 func convertTotalChartToThread(chart *Chart, thread string, priority int) {
 	chart.ID = fmt.Sprintf("%s_%s", thread, chart.ID)
-	chart.Title = fmt.Sprintf("%s %s", strings.Title(thread), thread)
+	chart.Title = fmt.Sprintf("%s %s", strings.Title(thread), chart.Title)
 	chart.Fam = thread + "_stats"
 	chart.Ctx = fmt.Sprintf("%s_%s", chart.Ctx, thread)
 	chart.Priority = priority
@@ -75,79 +107,86 @@ func convertTotalChartToThread(chart *Chart, thread string, priority int) {
 	}
 }
 
-// NOTE: chart id  should start with 'total_', name with 'Total ', ctx should ends in `_total` (convertTotalChartToThread)
+// Common stats charts
 var (
 	queriesChart = Chart{
-		ID:    "queries",
-		Title: "Received Queries",
-		Units: "queries",
-		Fam:   "queries",
-		Ctx:   "unbound.queries",
+		ID:       "queries",
+		Title:    "Received Queries",
+		Units:    "queries",
+		Fam:      "queries",
+		Ctx:      "unbound.queries",
+		Priority: queriesPrio,
 		Dims: Dims{
 			{ID: "total.num.queries", Name: "queries"},
 		},
 	}
 	ipRateLimitedQueriesChart = Chart{
-		ID:    "queries_ip_ratelimited",
-		Title: "Rate Limited Queries",
-		Units: "queries",
-		Fam:   "queries",
-		Ctx:   "unbound.queries_ip_ratelimited",
+		ID:       "queries_ip_ratelimited",
+		Title:    "Rate Limited Queries",
+		Units:    "queries",
+		Fam:      "queries",
+		Ctx:      "unbound.queries_ip_ratelimited",
+		Priority: ipRateLimitedQueriesPrio,
 		Dims: Dims{
 			{ID: "total.num.queries_ip_ratelimited", Name: "ratelimited"},
 		},
 	}
 	cacheChart = Chart{
-		ID:    "cache",
-		Title: "Cache Statistics",
-		Units: "events",
-		Fam:   "cache",
-		Ctx:   "unbound.cache",
-		Type:  module.Stacked,
+		ID:       "cache",
+		Title:    "Cache Statistics",
+		Units:    "events",
+		Fam:      "cache",
+		Ctx:      "unbound.cache",
+		Type:     module.Stacked,
+		Priority: cachePrio,
 		Dims: Dims{
 			{ID: "total.num.cachehits", Name: "hits"},
 			{ID: "total.num.cachemiss", Name: "miss"},
 		},
 	}
 	cachePercentageChart = Chart{
-		ID:    "cache_percentage",
-		Title: "Cache Statistics Percentage",
-		Units: "percentage",
-		Fam:   "cache",
-		Ctx:   "unbound.cache_percentage",
-		Type:  module.Stacked,
+		ID:       "cache_percentage",
+		Title:    "Cache Statistics Percentage",
+		Units:    "percentage",
+		Fam:      "cache",
+		Ctx:      "unbound.cache_percentage",
+		Type:     module.Stacked,
+		Priority: cachePercentagePrio,
 		Dims: Dims{
 			{ID: "total.num.cachehits", Name: "hits", Algo: module.PercentOfAbsolute},
 			{ID: "total.num.cachemiss", Name: "miss", Algo: module.PercentOfAbsolute},
 		},
 	}
 	prefetchChart = Chart{
-		ID:    "cache_prefetch",
-		Title: "Cache Prefetches",
-		Units: "prefetches",
-		Fam:   "cache",
-		Ctx:   "unbound.prefetch",
+		ID:       "cache_prefetch",
+		Title:    "Cache Prefetches",
+		Units:    "prefetches",
+		Fam:      "cache",
+		Ctx:      "unbound.prefetch",
+		Priority: prefetchPrio,
 		Dims: Dims{
 			{ID: "total.num.prefetch", Name: "prefetches"},
 		},
 	}
 	zeroTTLChart = Chart{
-		ID:    "zero_ttl_replies",
-		Title: "Replies Served From Expired Cache",
-		Units: "replies",
-		Fam:   "cache",
-		Ctx:   "unbound.zero_ttl_replies",
+		ID:       "zero_ttl_replies",
+		Title:    "Replies Served From Expired Cache",
+		Units:    "replies",
+		Fam:      "cache",
+		Ctx:      "unbound.zero_ttl_replies",
+		Priority: zeroTTLPrio,
 		Dims: Dims{
 			{ID: "total.num.zero_ttl", Name: "zero_ttl"},
 		},
 	}
 	// ifdef USE_DNSCRYPT
 	dnsCryptChart = Chart{
-		ID:    "dnscrypt_queries",
-		Title: "DNSCrypt Queries",
-		Units: "queries",
-		Fam:   "dnscrypt queries",
-		Ctx:   "unbound.dnscrypt_queries",
+		ID:       "dnscrypt_queries",
+		Title:    "DNSCrypt Queries",
+		Units:    "queries",
+		Fam:      "queries",
+		Ctx:      "unbound.dnscrypt_queries",
+		Priority: dnsCryptPrio,
 		Dims: Dims{
 			{ID: "total.num.dnscrypt.crypted", Name: "crypted"},
 			{ID: "total.num.dnscrypt.cert", Name: "cert"},
@@ -156,91 +195,100 @@ var (
 		},
 	}
 	recurRepliesChart = Chart{
-		ID:    "recursive_replies",
-		Title: "Replies That Needed Recursive Processing",
-		Units: "replies",
-		Fam:   "recursion",
-		Ctx:   "unbound.recursive_replies",
+		ID:       "recursive_replies",
+		Title:    "Replies That Needed Recursive Processing",
+		Units:    "replies",
+		Fam:      "replies",
+		Ctx:      "unbound.recursive_replies",
+		Priority: recurRepliesPrio,
 		Dims: Dims{
 			{ID: "total.num.recursivereplies", Name: "recursive"},
 		},
 	}
 	recurTimeChart = Chart{
-		ID:    "recursion_time",
-		Title: "Time Spent On Recursive Processing",
-		Units: "milliseconds",
-		Fam:   "recursion",
-		Ctx:   "unbound.recursion_time_total",
+		ID:       "recursion_time",
+		Title:    "Time Spent On Recursive Processing",
+		Units:    "milliseconds",
+		Fam:      "recursion timings",
+		Ctx:      "unbound.recursion_time",
+		Priority: recurTimePrio,
 		Dims: Dims{
 			{ID: "total.recursion.time.avg", Name: "avg"},
 			{ID: "total.recursion.time.median", Name: "median"},
 		},
 	}
 	reqListUtilChart = Chart{
-		ID:    "request_list_utilization",
-		Title: "Request List Utilization",
-		Units: "queries",
-		Fam:   "request list",
-		Ctx:   "unbound.request_list_utilization",
+		ID:       "request_list_utilization",
+		Title:    "Request List Utilization",
+		Units:    "queries",
+		Fam:      "request list",
+		Ctx:      "unbound.request_list_utilization",
+		Priority: reqListUtilPrio,
 		Dims: Dims{
 			{ID: "total.requestlist.avg", Name: "avg", Div: 1000},
 			{ID: "total.requestlist.max", Name: "max"}, // all time max in cumulative mode, never resets
 		},
 	}
 	reqListCurUtilChart = Chart{
-		ID:    "current_request_list_utilization",
-		Title: "Current Request List Utilization",
-		Units: "queries",
-		Fam:   "request list",
-		Ctx:   "unbound.current_request_list_utilization",
-		Type:  module.Area,
+		ID:       "current_request_list_utilization",
+		Title:    "Current Request List Utilization",
+		Units:    "queries",
+		Fam:      "request list",
+		Ctx:      "unbound.current_request_list_utilization",
+		Type:     module.Area,
+		Priority: reqListCurUtilPrio,
 		Dims: Dims{
 			{ID: "total.requestlist.current.all", Name: "all"},
 			{ID: "total.requestlist.current.user", Name: "user"},
 		},
 	}
 	reqListJostleChart = Chart{
-		ID:    "request_list_jostle_list",
-		Title: "Request List Jostle List Events",
-		Units: "queries",
-		Fam:   "request list",
-		Ctx:   "unbound.request_list_jostle_list",
+		ID:       "request_list_jostle_list",
+		Title:    "Request List Jostle List Events",
+		Units:    "queries",
+		Fam:      "request list",
+		Ctx:      "unbound.request_list_jostle_list",
+		Priority: reqListJostlePrio,
 		Dims: Dims{
 			{ID: "total.requestlist.overwritten", Name: "overwritten"},
 			{ID: "total.requestlist.exceeded", Name: "dropped"},
 		},
 	}
 	tcpUsageChart = Chart{
-		ID:    "tcpusage",
-		Title: "TCP Handler Buffers",
-		Units: "buffers",
-		Fam:   "tcp buffers",
-		Ctx:   "unbound.tcpusage",
+		ID:       "tcpusage",
+		Title:    "TCP Handler Buffers",
+		Units:    "buffers",
+		Fam:      "tcp buffers",
+		Ctx:      "unbound.tcpusage",
+		Priority: tcpUsagePrio,
 		Dims: Dims{
 			{ID: "total.tcpusage", Name: "usage"},
 		},
 	}
 	uptimeChart = Chart{
-		ID:    "uptime",
-		Title: "Uptime",
-		Units: "seconds",
-		Fam:   "uptime",
-		Ctx:   "unbound.uptime",
+		ID:       "uptime",
+		Title:    "Uptime",
+		Units:    "seconds",
+		Fam:      "uptime",
+		Ctx:      "unbound.uptime",
+		Priority: uptimePrio,
 		Dims: Dims{
 			{ID: "time.up", Name: "time"},
 		},
 	}
 )
 
+// Extended stats charts
 var (
 	// TODO: do not add dnscrypt stuff by default?
 	memCacheChart = Chart{
-		ID:    "cache_memory",
-		Title: "Cache Memory",
-		Units: "KB",
-		Fam:   "mem",
-		Ctx:   "unbound.cache_memory",
-		Type:  module.Stacked,
+		ID:       "cache_memory",
+		Title:    "Cache Memory",
+		Units:    "KB",
+		Fam:      "mem",
+		Ctx:      "unbound.cache_memory",
+		Type:     module.Stacked,
+		Priority: memCachePrio,
 		Dims: Dims{
 			{ID: "mem.cache.message", Name: "message", Div: 1024},
 			{ID: "mem.cache.rrset", Name: "rrset", Div: 1024},
@@ -250,12 +298,13 @@ var (
 	}
 	// TODO: do not add subnet and ipsecmod stuff by default?
 	memModChart = Chart{
-		ID:    "mod_memory",
-		Title: "Module Memory",
-		Units: "KB",
-		Fam:   "mem",
-		Ctx:   "unbound.mod_memory",
-		Type:  module.Stacked,
+		ID:       "mod_memory",
+		Title:    "Module Memory",
+		Units:    "KB",
+		Fam:      "mem",
+		Ctx:      "unbound.mod_memory",
+		Type:     module.Stacked,
+		Priority: memModPrio,
 		Dims: Dims{
 			{ID: "mem.mod.iterator", Name: "iterator", Div: 1024},
 			{ID: "mem.mod.respip", Name: "respip", Div: 1024},
@@ -265,23 +314,25 @@ var (
 		},
 	}
 	memStreamWaitChart = Chart{
-		ID:    "mem_stream_wait",
-		Title: "TCP and TLS Stream Waif Buffer Memory",
-		Units: "KB",
-		Fam:   "mem",
-		Ctx:   "unbound.mem_streamwait",
+		ID:       "mem_stream_wait",
+		Title:    "TCP and TLS Stream Waif Buffer Memory",
+		Units:    "KB",
+		Fam:      "mem",
+		Ctx:      "unbound.mem_streamwait",
+		Priority: memStreamWaitPrio,
 		Dims: Dims{
 			{ID: "mem.streamwait", Name: "streamwait", Div: 1024},
 		},
 	}
 	// NOTE: same family as for cacheChart
 	cacheCountChart = Chart{
-		ID:    "cache_count",
-		Title: "Cache Items Count",
-		Units: "items",
-		Fam:   "cache",
-		Ctx:   "unbound.cache_count",
-		Type:  module.Stacked,
+		ID:       "cache_count",
+		Title:    "Cache Items Count",
+		Units:    "items",
+		Fam:      "cache",
+		Ctx:      "unbound.cache_count",
+		Type:     module.Stacked,
+		Priority: cacheCountPrio,
 		Dims: Dims{
 			{ID: "infra.cache.count", Name: "infra"},
 			{ID: "key.cache.count", Name: "key"},
@@ -292,36 +343,40 @@ var (
 		},
 	}
 	queryTypeChart = Chart{
-		ID:    "queries_by_type",
-		Title: "Queries By Type",
-		Units: "queries",
-		Fam:   "queries by type",
-		Ctx:   "unbound.type_queries",
-		Type:  module.Stacked,
+		ID:       "queries_by_type",
+		Title:    "Queries By Type",
+		Units:    "queries",
+		Fam:      "queries",
+		Ctx:      "unbound.type_queries",
+		Type:     module.Stacked,
+		Priority: queryTypePrio,
 	}
 	queryClassChart = Chart{
-		ID:    "queries_by_class",
-		Title: "Queries By Class",
-		Units: "queries",
-		Fam:   "queries by class",
-		Ctx:   "unbound.class_queries",
-		Type:  module.Stacked,
+		ID:       "queries_by_class",
+		Title:    "Queries By Class",
+		Units:    "queries",
+		Fam:      "queries",
+		Ctx:      "unbound.class_queries",
+		Type:     module.Stacked,
+		Priority: queryClassPrio,
 	}
 	queryOpCodeChart = Chart{
-		ID:    "queries_by_opcode",
-		Title: "Queries By OpCode",
-		Units: "queries",
-		Fam:   "queries by opcode",
-		Ctx:   "unbound.opcode_queries",
-		Type:  module.Stacked,
+		ID:       "queries_by_opcode",
+		Title:    "Queries By OpCode",
+		Units:    "queries",
+		Fam:      "queries",
+		Ctx:      "unbound.opcode_queries",
+		Type:     module.Stacked,
+		Priority: queryOpCodePrio,
 	}
 	queryFlagChart = Chart{
-		ID:    "queries_by_flag",
-		Title: "Queries By Flag",
-		Units: "queries",
-		Fam:   "queries by flag",
-		Ctx:   "unbound.flag_queries",
-		Type:  module.Stacked,
+		ID:       "queries_by_flag",
+		Title:    "Queries By Flag",
+		Units:    "queries",
+		Fam:      "queries",
+		Ctx:      "unbound.flag_queries",
+		Type:     module.Stacked,
+		Priority: queryFlagPrio,
 		Dims: Dims{
 			{ID: "num.query.flags.QR", Name: "QR"},
 			{ID: "num.query.flags.AA", Name: "AA"},
@@ -334,12 +389,13 @@ var (
 		},
 	}
 	answerRCodeChart = Chart{
-		ID:    "replies_by_rcode",
-		Title: "Replies By Rcode",
-		Units: "replies",
-		Fam:   "replies by rcode",
-		Ctx:   "unbound.rcode_answers",
-		Type:  module.Stacked,
+		ID:       "replies_by_rcode",
+		Title:    "Replies By Rcode",
+		Units:    "replies",
+		Fam:      "replies",
+		Ctx:      "unbound.rcode_answers",
+		Type:     module.Stacked,
+		Priority: replyRCodePrio,
 	}
 )
 

@@ -50,7 +50,7 @@ func (u *Unbound) collectStats(stats []entry) map[string]int64 {
 
 func (u *Unbound) collectCumulativeStats(stats []entry) map[string]int64 {
 	mul := float64(1000)
-	// following stats reset only on cachemiss event in cumulative mode
+	// following stats change only on cachemiss event in cumulative mode
 	// - *.requestlist.avg,
 	// - *.recursion.time.avg
 	// - *.recursion.time.median
