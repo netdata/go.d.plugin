@@ -39,8 +39,8 @@ const (
 	zeroTTLPrio
 	cacheCountPrio
 
-	reqListUtilPrio
-	reqListCurUtilPrio
+	reqListUsagePrio
+	reqListCurUsagePrio
 	reqListJostlePrio
 
 	tcpUsagePrio
@@ -64,8 +64,8 @@ func charts(cumulative bool) *Charts {
 		makeIncrIf(dnsCryptChart.Copy(), cumulative),
 		makeIncrIf(recurRepliesChart.Copy(), cumulative),
 		recurTimeChart.Copy(),
-		reqListUtilChart.Copy(),
-		reqListCurUtilChart.Copy(),
+		reqListUsageChart.Copy(),
+		reqListCurUsageChart.Copy(),
 		makeIncrIf(reqListJostleChart.Copy(), cumulative),
 		tcpUsageChart.Copy(),
 		uptimeChart.Copy(),
@@ -131,6 +131,21 @@ var (
 			{ID: "total.num.queries_ip_ratelimited", Name: "ratelimited"},
 		},
 	}
+	// ifdef USE_DNSCRYPT
+	dnsCryptChart = Chart{
+		ID:       "dnscrypt_queries",
+		Title:    "DNSCrypt Queries",
+		Units:    "queries",
+		Fam:      "queries",
+		Ctx:      "unbound.dnscrypt_queries",
+		Priority: dnsCryptPrio,
+		Dims: Dims{
+			{ID: "total.num.dnscrypt.crypted", Name: "crypted"},
+			{ID: "total.num.dnscrypt.cert", Name: "cert"},
+			{ID: "total.num.dnscrypt.cleartext", Name: "cleartext"},
+			{ID: "total.num.dnscrypt.malformed", Name: "malformed"},
+		},
+	}
 	cacheChart = Chart{
 		ID:       "cache",
 		Title:    "Cache Statistics",
@@ -179,21 +194,6 @@ var (
 			{ID: "total.num.zero_ttl", Name: "zero_ttl"},
 		},
 	}
-	// ifdef USE_DNSCRYPT
-	dnsCryptChart = Chart{
-		ID:       "dnscrypt_queries",
-		Title:    "DNSCrypt Queries",
-		Units:    "queries",
-		Fam:      "queries",
-		Ctx:      "unbound.dnscrypt_queries",
-		Priority: dnsCryptPrio,
-		Dims: Dims{
-			{ID: "total.num.dnscrypt.crypted", Name: "crypted"},
-			{ID: "total.num.dnscrypt.cert", Name: "cert"},
-			{ID: "total.num.dnscrypt.cleartext", Name: "cleartext"},
-			{ID: "total.num.dnscrypt.malformed", Name: "malformed"},
-		},
-	}
 	recurRepliesChart = Chart{
 		ID:       "recursive_replies",
 		Title:    "Replies That Needed Recursive Processing",
@@ -217,26 +217,26 @@ var (
 			{ID: "total.recursion.time.median", Name: "median"},
 		},
 	}
-	reqListUtilChart = Chart{
-		ID:       "request_list_utilization",
-		Title:    "Request List Utilization",
+	reqListUsageChart = Chart{
+		ID:       "request_list_usage",
+		Title:    "Request List Usage",
 		Units:    "queries",
 		Fam:      "request list",
-		Ctx:      "unbound.request_list_utilization",
-		Priority: reqListUtilPrio,
+		Ctx:      "unbound.request_list_usage",
+		Priority: reqListUsagePrio,
 		Dims: Dims{
 			{ID: "total.requestlist.avg", Name: "avg", Div: 1000},
 			{ID: "total.requestlist.max", Name: "max"}, // all time max in cumulative mode, never resets
 		},
 	}
-	reqListCurUtilChart = Chart{
-		ID:       "current_request_list_utilization",
-		Title:    "Current Request List Utilization",
+	reqListCurUsageChart = Chart{
+		ID:       "current_request_list_usage",
+		Title:    "Current Request List Usage",
 		Units:    "queries",
 		Fam:      "request list",
-		Ctx:      "unbound.current_request_list_utilization",
+		Ctx:      "unbound.current_request_list_usage",
 		Type:     module.Area,
-		Priority: reqListCurUtilPrio,
+		Priority: reqListCurUsagePrio,
 		Dims: Dims{
 			{ID: "total.requestlist.current.all", Name: "all"},
 			{ID: "total.requestlist.current.user", Name: "user"},
@@ -390,7 +390,7 @@ var (
 	}
 	answerRCodeChart = Chart{
 		ID:       "replies_by_rcode",
-		Title:    "Replies By Rcode",
+		Title:    "Replies By RCode",
 		Units:    "replies",
 		Fam:      "replies",
 		Ctx:      "unbound.rcode_answers",
