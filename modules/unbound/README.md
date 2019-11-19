@@ -26,10 +26,10 @@ For auto detection parameters from `unbound.conf`:
 
 ### Configuration
 
-Needs only `address` to server's remote-control interface if TLS is disabled or `address` is unix socket.
+Needs only `address` to server's `remote-control` interface if TLS is disabled or `address` is unix socket.
 Otherwise you need to set path to the `control-key-file` and `control-cert-file` files.
 
-Module tries to auto detect following parameter reading `unbound.conf`:
+Module tries to auto detect following parameters reading `unbound.conf`:
   - address (`control-interface` and `control-port`)
   - cumulative (`statistics-cumulative`)
   - use_tls (`control-use-cert`)
@@ -56,7 +56,7 @@ jobs:
     use_tls: no
 
   - name: remote_cumulative
-    address: 203.0.113.10:8953
+    address: 203.0.113.11:8953
     use_tls: no
     cumulative: yes
       
@@ -65,5 +65,19 @@ jobs:
 ```
  
 For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/unbound.conf).
+
+
+### Troubleshooting 
+Ensure that the control protocol is actually configured correctly.
+Run following command as `root` user:
+> unbound-control stats_noreset
+
+It should print out a bunch of info about the internal statistics of the server.
+If this returns an error, you don't have the control protocol set up correctly.
+
+Check the module debug output.
+Run following command as `netdata` user:
+
+> ./go.d.plugin -d -m unbound
 
 ---
