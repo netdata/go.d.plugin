@@ -30,11 +30,11 @@ Needs only `address` to server's `remote-control` interface if TLS is disabled o
 Otherwise you need to set path to the `control-key-file` and `control-cert-file` files.
 
 Module tries to auto detect following parameters reading `unbound.conf`:
-  - address (`control-interface` and `control-port`)
-  - cumulative (`statistics-cumulative`)
-  - use_tls (`control-use-cert`)
-  - tls_cert (`control-cert-file`)
-  - tls_key (`control-key-file`)
+  - address
+  - cumulative
+  - use_tls
+  - tls_cert
+  - tls_key
 
 Module supports both cumulative and non cumulative modes. Default is non cumulative. If your server has enabled 
 `statistics-cumulative` but module fails to auto detect it (`unbound.conf` is not readable or it is a remote server) 
