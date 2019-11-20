@@ -16,34 +16,39 @@ type (
 )
 
 const (
-	defaultPriority           = orchestrator.DefaultJobPriority
-	prioReqTotal              = defaultPriority
-	prioReqExcluded           = defaultPriority + 1
-	prioReqType               = defaultPriority + 2
-	prioRespCodesClass        = defaultPriority + 3
-	prioRespCodes             = defaultPriority + 4
-	prioRespCodes1xx          = defaultPriority + 5
-	prioRespCodes2xx          = defaultPriority + 6
-	prioRespCodes3xx          = defaultPriority + 7
-	prioRespCodes4xx          = defaultPriority + 8
-	prioRespCodes5xx          = defaultPriority + 9
-	prioBandwidth             = defaultPriority + 10
-	prioReqProcTime           = defaultPriority + 11
-	prioRespTimeHist          = defaultPriority + 12
-	prioUpsRespTime           = defaultPriority + 13
-	prioUpsRespTimeHist       = defaultPriority + 14
-	prioUniqIP                = defaultPriority + 15
-	prioReqVhost              = defaultPriority + 16
-	prioReqPort               = defaultPriority + 17
-	prioReqScheme             = defaultPriority + 18
-	prioReqMethod             = defaultPriority + 19
-	prioReqVersion            = defaultPriority + 20
-	prioReqIPProto            = defaultPriority + 21
-	prioReqSSLProto           = defaultPriority + 22
-	prioReqSSLCipherSuite     = defaultPriority + 23
-	prioReqCustomFieldPattern = defaultPriority + 40 // chart per custom field, alphabetical order
-	prioReqURLPattern         = defaultPriority + 41
-	prioURLPatternStats       = defaultPriority + 42 // 3 charts per url pattern, alphabetical order
+	prioReqTotal = orchestrator.DefaultJobPriority + iota
+	prioReqExcluded
+	prioReqType
+
+	prioRespCodesClass
+	prioRespCodes
+	prioRespCodes1xx
+	prioRespCodes2xx
+	prioRespCodes3xx
+	prioRespCodes4xx
+	prioRespCodes5xx
+
+	prioBandwidth
+
+	prioReqProcTime
+	prioRespTimeHist
+	prioUpsRespTime
+	prioUpsRespTimeHist
+
+	prioUniqIP
+
+	prioReqVhost
+	prioReqPort
+	prioReqScheme
+	prioReqMethod
+	prioReqVersion
+	prioReqIPProto
+	prioReqSSLProto
+	prioReqSSLCipherSuite
+
+	prioReqCustomFieldPattern = iota + 20 // chart per custom field, alphabetical order
+	prioReqURLPattern
+	prioURLPatternStats // 3 charts per url pattern, alphabetical order
 )
 
 // NOTE: inconsistency with python web_log
@@ -79,15 +84,15 @@ var (
 		ID:       "requests_by_type",
 		Title:    "Requests By Type",
 		Units:    "requests/s",
-		Fam:      "responses",
+		Fam:      "requests",
 		Ctx:      "web_log.type_requests",
 		Type:     module.Stacked,
 		Priority: prioReqType,
 		Dims: Dims{
-			{ID: "req_success", Name: "success", Algo: module.Incremental},
-			{ID: "req_bad", Name: "bad", Algo: module.Incremental},
-			{ID: "req_redirect", Name: "redirect", Algo: module.Incremental},
-			{ID: "req_error", Name: "error", Algo: module.Incremental},
+			{ID: "req_type_success", Name: "success", Algo: module.Incremental},
+			{ID: "req_type_bad", Name: "bad", Algo: module.Incremental},
+			{ID: "req_type_redirect", Name: "redirect", Algo: module.Incremental},
+			{ID: "req_type_error", Name: "error", Algo: module.Incremental},
 		},
 	}
 )

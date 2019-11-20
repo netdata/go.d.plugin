@@ -273,8 +273,9 @@ func TestWebLog_Collect(t *testing.T) {
 		"url_ptn_org_resp_code_401":                 9,
 	}
 
-	assert.Equal(t, expected, weblog.Collect())
-	testCharts(t, weblog)
+	mx := weblog.Collect()
+	assert.Equal(t, expected, mx)
+	testCharts(t, weblog, mx)
 }
 
 func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
@@ -352,8 +353,9 @@ func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
 		"upstream_resp_time_sum":            0,
 	}
 
-	assert.Equal(t, expected, weblog.Collect())
-	testCharts(t, weblog)
+	mx := weblog.Collect()
+	assert.Equal(t, expected, mx)
+	testCharts(t, weblog, mx)
 }
 
 func TestWebLog_Collect_CustomLogs(t *testing.T) {
@@ -421,11 +423,12 @@ func TestWebLog_Collect_CustomLogs(t *testing.T) {
 		"upstream_resp_time_sum":            0,
 	}
 
-	assert.Equal(t, expected, weblog.Collect())
-	testCharts(t, weblog)
+	mx := weblog.Collect()
+	assert.Equal(t, expected, mx)
+	testCharts(t, weblog, mx)
 }
 
-func testCharts(t *testing.T, w *WebLog) {
+func testCharts(t *testing.T, w *WebLog, mx map[string]int64) {
 	testVhostChart(t, w)
 	testPortChart(t, w)
 	testSchemeChart(t, w)
@@ -441,6 +444,17 @@ func testCharts(t *testing.T, w *WebLog) {
 	testSSLCipherSuiteChart(t, w)
 	testURLPatternStatsCharts(t, w)
 	testCustomFieldCharts(t, w)
+
+	testChartsDimIDs(t, w, mx)
+}
+
+func testChartsDimIDs(t *testing.T, w *WebLog, mx map[string]int64) {
+	for _, chart := range *w.Charts() {
+		for _, dim := range chart.Dims {
+			_, ok := mx[dim.ID]
+			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+	}
 }
 
 func testVhostChart(t *testing.T, w *WebLog) {
