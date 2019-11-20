@@ -122,8 +122,8 @@ func TestWebLog_Collect(t *testing.T) {
 	//}
 
 	expected := map[string]int64{
-		"bytes_received":                            1373185,
-		"bytes_sent":                                1374096,
+		"bytes_received":                            1374096,
+		"bytes_sent":                                1373185,
 		"custom_field_drink_beer":                   221,
 		"custom_field_drink_wine":                   231,
 		"custom_field_side_dark":                    231,
@@ -219,8 +219,8 @@ func TestWebLog_Collect(t *testing.T) {
 		"upstream_resp_time_max":                    497,
 		"upstream_resp_time_min":                    7,
 		"upstream_resp_time_sum":                    115615,
-		"url_ptn_com_bytes_received":                372669,
-		"url_ptn_com_bytes_sent":                    379864,
+		"url_ptn_com_bytes_received":                379864,
+		"url_ptn_com_bytes_sent":                    372669,
 		"url_ptn_com_req_proc_time_avg":             212,
 		"url_ptn_com_req_proc_time_count":           120,
 		"url_ptn_com_req_proc_time_max":             495,
@@ -234,8 +234,8 @@ func TestWebLog_Collect(t *testing.T) {
 		"url_ptn_com_resp_code_301":                 12,
 		"url_ptn_com_resp_code_400":                 13,
 		"url_ptn_com_resp_code_401":                 13,
-		"url_ptn_net_bytes_received":                339867,
-		"url_ptn_net_bytes_sent":                    349988,
+		"url_ptn_net_bytes_received":                349988,
+		"url_ptn_net_bytes_sent":                    339867,
 		"url_ptn_net_req_proc_time_avg":             260,
 		"url_ptn_net_req_proc_time_count":           116,
 		"url_ptn_net_req_proc_time_max":             499,
@@ -256,8 +256,8 @@ func TestWebLog_Collect(t *testing.T) {
 		"url_ptn_not_match_req_proc_time_max":       0,
 		"url_ptn_not_match_req_proc_time_min":       0,
 		"url_ptn_not_match_req_proc_time_sum":       0,
-		"url_ptn_org_bytes_received":                340095,
-		"url_ptn_org_bytes_sent":                    331836,
+		"url_ptn_org_bytes_received":                331836,
+		"url_ptn_org_bytes_sent":                    340095,
 		"url_ptn_org_req_proc_time_avg":             263,
 		"url_ptn_org_req_proc_time_count":           113,
 		"url_ptn_org_req_proc_time_max":             497,
@@ -282,8 +282,8 @@ func TestWebLog_Collect_CommonLogFormat(t *testing.T) {
 	weblog := prepareWebLogCollectCommon(t)
 
 	expected := map[string]int64{
-		"bytes_received":                    1388056,
-		"bytes_sent":                        0,
+		"bytes_received":                    0,
+		"bytes_sent":                        1388056,
 		"req_http_scheme":                   0,
 		"req_https_scheme":                  0,
 		"req_ipv4":                          283,

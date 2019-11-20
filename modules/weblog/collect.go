@@ -288,11 +288,11 @@ func (w *WebLog) collectURLPatternStats(name string) {
 	}
 
 	if w.line.hasReqSize() {
-		v.BytesSent.Add(float64(w.line.reqSize))
+		v.BytesReceived.Add(float64(w.line.reqSize))
 	}
 
 	if w.line.hasRespSize() {
-		v.BytesReceived.Add(float64(w.line.respSize))
+		v.BytesSent.Add(float64(w.line.respSize))
 	}
 
 	if w.line.hasReqProcTime() {
