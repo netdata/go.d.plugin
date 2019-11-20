@@ -391,7 +391,6 @@ var (
 		Units:    "milliseconds",
 		Fam:      "url ptn %s",
 		Ctx:      "web_log.url_pattern_%s_request_processing_time",
-		Type:     module.Area,
 		Priority: prioURLPatternStats + 2,
 		Dims: Dims{
 			{ID: "url_ptn_%s_req_proc_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
