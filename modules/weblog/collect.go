@@ -219,14 +219,14 @@ func (w *WebLog) collectReqSize() {
 	if !w.line.hasReqSize() {
 		return
 	}
-	w.mx.BytesSent.Add(float64(w.line.reqSize))
+	w.mx.BytesReceived.Add(float64(w.line.reqSize))
 }
 
 func (w *WebLog) collectRespSize() {
 	if !w.line.hasRespSize() {
 		return
 	}
-	w.mx.BytesReceived.Add(float64(w.line.respSize))
+	w.mx.BytesSent.Add(float64(w.line.respSize))
 }
 
 func (w *WebLog) collectReqProcTime() {
