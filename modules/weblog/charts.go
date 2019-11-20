@@ -46,7 +46,7 @@ const (
 	prioReqSSLProto
 	prioReqSSLCipherSuite
 
-	prioReqCustomFieldPattern = iota + 20 // chart per custom field, alphabetical order
+	prioReqCustomFieldPattern // chart per custom field, alphabetical order
 	prioReqURLPattern
 	prioURLPatternStats // 3 charts per url pattern, alphabetical order
 )
