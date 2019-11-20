@@ -393,9 +393,9 @@ var (
 		Ctx:      "web_log.url_pattern_%s_request_processing_time",
 		Priority: prioURLPatternStats + 2,
 		Dims: Dims{
-			{ID: "url_ptn_%s_req_proc_time_min", Name: "min", Algo: module.Incremental, Div: 1000},
-			{ID: "url_ptn_%s_req_proc_time_max", Name: "max", Algo: module.Incremental, Div: 1000},
-			{ID: "url_ptn_%s_req_proc_time_avg", Name: "avg", Algo: module.Incremental, Div: 1000},
+			{ID: "url_ptn_%s_req_proc_time_min", Name: "min", Div: 1000},
+			{ID: "url_ptn_%s_req_proc_time_max", Name: "max", Div: 1000},
+			{ID: "url_ptn_%s_req_proc_time_avg", Name: "avg", Div: 1000},
 		},
 	}
 )
