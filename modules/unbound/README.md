@@ -31,7 +31,7 @@ Module produces following summary charts:
 -   Rate Limited Queries in `queries`
 -   DNSCrypt Queries in `queries`
 -   Cache Statistics in `events`
--   Cache Statistics Percentage in `events`
+-   Cache Statistics Percentage in `percentage`
 -   Cache Prefetches in `prefetches`
 -   Replies Served From Expired Cache in `replies`
 -   Replies That Needed Recursive Processing in `replies`
@@ -52,7 +52,7 @@ If `extended-statistics` is enabled:
 -   Cache Items Count in `items`
 -   Cache Memory in `KB`
 -   Module Memory in `KB`
--   TCP and TLS Stream Waif Buffer Memory in `KB`
+-   TCP and TLS Stream Wait Buffer Memory in `KB`
 
 Per thread charts (only if number of threads > 1):
 
