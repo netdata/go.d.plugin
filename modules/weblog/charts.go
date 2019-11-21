@@ -244,7 +244,7 @@ var (
 		ID:       "current_poll_uniq_clients",
 		Title:    "Current Poll Unique Clients",
 		Units:    "clients",
-		Fam:      "clients",
+		Fam:      "client",
 		Ctx:      "web_log.current_poll_uniq_clients",
 		Type:     module.Stacked,
 		Priority: prioUniqIP,
