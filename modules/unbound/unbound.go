@@ -10,10 +10,6 @@ import (
 
 func init() {
 	creator := module.Creator{
-		// TODO: python one is so broken, we need just to obsolete it and enable this one
-		Defaults: module.Defaults{
-			Disabled: true,
-		},
 		Create: func() module.Module { return New() },
 	}
 
