@@ -1,61 +1,258 @@
 # web_log
 
-## Log Format
+This module parses [`Apache`](https://httpd.apache.org/) and [`Ngninx`](https://nginx.org/en/) web servers logs.
 
-### Default Supported Log Formats
+## Charts
 
-|Index           |0              |1              |2          |3          |4        |5          |6          |7             |8                 |9                 |10                    |11                    |12           |
-|----------------|---------------|---------------|-----------|-----------|---------|-----------|-----------|--------------|------------------|------------------|----------------------|----------------------|-------------|
-|*common*        |**remote_addr**|logname        |remote_user|time       |time_zone|**request**|**status** |**bytes_sent**|                  |                  |                      |                      |             |  
-|*combined*      |**remote_addr**|logname        |remote_user|time       |time_zone|**request**|**status** |**bytes_sent**|refer             |UA                |                      |                      |             |  
-|*custom1*       |**remote_addr**|logname        |remote_user|time       |time_zone|**request**|**status** |**bytes_sent**|refer             |UA                |Cookie                |**resp_time**         |             |  
-|*custom2*       |**remote_addr**|logname        |remote_user|time       |time_zone|**request**|**status** |**bytes_sent**|**request_length**|**resp_time**     |                      |                      |             |  
-|*custom3*       |**remote_addr**|logname        |remote_user|time       |time_zone|**request**|**status** |**bytes_sent**|**request_length**|**resp_time**     |**upstream_resp_time**|                      |             |  
-|*vhost_common*  |**vhost**      |**remote_addr**|logname    |remote_user|time     |time_zone  |**request**|**status**    |**bytes_sent**    |                  |                      |                      |             |
-|*vhost_combined*|**vhost**      |**remote_addr**|logname    |remote_user|time     |time_zone  |**request**|**status**    |**bytes_sent**    |refer             |UA                    |                      |             |
-|*vhost_custom1* |**vhost**      |**remote_addr**|logname    |remote_user|time     |time_zone  |**request**|**status**    |**bytes_sent**    |refer             |UA                    |Cookie                |**resp_time**|
-|*vhost_custom2* |**vhost**      |**remote_addr**|logname    |remote_user|time     |time_zone  |**request**|**status**    |**bytes_sent**    |**request_length**|**resp_time**         |                      |             |
-|*vhost_custom3* |**vhost**      |**remote_addr**|logname    |remote_user|time     |time_zone  |**request**|**status**    |**bytes_sent**    |**request_length**|**resp_time**         |**upstream_resp_time**|             |
+Module produces following charts:
 
-* **vhost**: `www.example.com`
-* **remote_addr**: `64.242.88.10`
-* logname: `-`
-* remote_user: `-`
-* time: `[07/Mar/2004:16:47:12`
-* time_zone: `+09:00]`
-* **request**: `"GET /robots.txt HTTP/1.1"`
-* **status**: `200`
-* **bytes_sent**: `56`
-* **request_length**: `32`
-* refer: `http://www.example.com/`
-* UA: `"Mozilla/5.0"`
-* Cookie: `uid=xxxxxx`
-* **resp_time**: `0.05`
-* **upstream_resp_time**: `"0.05, 0.03"`
+-   Total Requests in `requests/s`
+-   Excluded Requests in `requests/s`
+-   Requests By Type in `requests/s`
+-   Responses By Status Code Class in `responses/s`
+-   Responses By Status Code in `responses/s`
+-   Informational Responses By Status Code in `responses/s`
+-   Successful Responses By Status Code in `responses/s`
+-   Redirects Responses By Status Code in `responses/s`
+-   Client Errors Responses By Status Code in `responses/s`
+-   Server Errors Responses By Status Code in `responses/s`
+-   Bandwidth in `kilobits/s`
+-   Request Processing Time in `milliseconds`
+-   Requests Processing Time Histogram in `requests/s`
+-   Upstream Response Time in `requests/s`
+-   Upstream Responses Time Histogram in `responses/s`
+-   Current Poll Unique Clients in `clients`
+-   Requests By Vhost in `requests/s`
+-   Requests By Port in `requests/s`
+-   Requests By Scheme in `requests/s`
+-   Requests By HTTP Method in `requests/s`
+-   Requests By HTTP Version in `requests/s`
+-   Requests By IP Protocol in `requests/s`
+-   Requests By SSL Connection Protocol in `requests/s`
+-   Requests By SSL Connection Cipher Suite in `requests/s`
+-   URL Field Requests By Pattern `requests/s`
 
-### Examples
+For every Custom field:
+-   Requests By Pattern in `requests/s`
 
-#### Apache
+For every URL pattern:
 
-```apache
-LogFormat    "%h %l %u %t \"%r\" %>s %b" common
-LogFormat    "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
-LogFormat    "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O %D" combinedio
-LogFormat "%v %h %l %u %t \"%r\" %>s %b" vhost_common
-LogFormat "%v %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
-LogFormat "%v %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O %D" vhost_combinedio
+-   Responses By Status Code in `responses/s`
+-   Bandwidth in `kilobits/s`
+-   Request Processing Time in `milliseconds`
+
+## Log Parsers
+
+Weblog supports 3 different log parsers:
+
+-   CSV
+-   [LTSV](http://ltsv.org/)
+-   RegExp
+
+The rule is simple. If your log is in LTSV format you use LTSV parser, otherwise you use CSV.
+We highly suggest to prefer CSV over RegExp, because it is much faster. RegExp should be used only if LTSV and CSV parsers dont work. 
+
+There is an example job for every log parser.
+
+```yaml
+jobs:
+  - name: csv_parser_example
+    path: /path/to/file.log
+    log_type: csv
+    csv_config:
+      format: 'FORMAT'
+      fields_per_record: -1
+      delimiter: ' '
+      trim_leading_space: no
+
+  - name: ltsv_parser_example
+    path: /path/to/file.log
+    log_type: ltsv
+    ltsv_config:
+      field_delimiter: ' '
+      value_delimiter: ':'
+      mapping:
+        label1: field1
+        label2: field2
+
+  - name: regexp_parser_example
+    path: /path/to/file.log
+    log_type: regexp
+    regexp_config:
+      pattern: 'PATTERN'
 ```
 
-#### Nginx
+## Log Parser Auto-Detection
 
-```nginx
-log_format common                    '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent';
-log_format combined                  '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"';
-log_format combinedio                '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $bytes_sent $request_time';
-log_format custom3                   '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time "$upstream_response_time"';
-log_format vhost_common   '$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent';
-log_format vhost_combined '$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"';
-log_format vhost_custom1  '$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $uid_got $request_time';
-log_format vhost_custom3  '$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time';
-log_format vhost_custom3  '$http_host $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $request_length $request_time "$upstream_response_time"';
+If `log_type` parameter is set to `auto` (which is default), weblog will try to auto-detect appropriate log parser and log format.
+To be able to do it the module reads last line from the log file.
+
+To auto-detect parser type the module checks if the line is in LTSV format first. If it is not the case it assumes that the format is CSV.
+
+To auto-detect CSV format weblog uses list of predefined csv formats, it tries to parse the line using each of them. The order is:
+-   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time $upstream_response_time`
+-   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time`
+-   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time $upstream_response_time`
+-   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time`
+-   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent`
+-   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent`
+-   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time $upstream_response_time`
+-   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time`
+-   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time $upstream_response_time`
+-   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time`
+-   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent`
+-   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent`
+
+The first one that matches will be used later. If you use default Apache/Nginx log format auto-detect will do for you.
+If it doesnt work you need [to set format manually](#custom-log-format).
+
+## Known Fields
+
+Weblog is aware how to parse and interpret following fields.
+These are [Nginx](http://nginx.org/en/docs/varindex.html) and [Apache](http://httpd.apache.org/docs/current/mod/mod_log_config.html) log format variables.
+
+| nginx                   | apache    | description                                   |
+|-------------------------|-----------|-----------------------------------------------|
+| $host ($http_host)      | %v        | Name of the server which accepted a request.
+| $server_port            | %p        | Port of the server which accepted a request.
+| $scheme                 | -         | Request scheme. "http" or "https".
+| $remote_addr            | %a (%h)   | Client address.
+| $request                | %r        | Full original request line. The line is "$request_method $request_uri $request_uri".
+| $request_method         | %m        | Request method. Usually "GET" or "POST".
+| $request_uri            | %U        | Full original request URI.
+| $server_protocol        | %H        | Request protocol. Usually "HTTP/1.0", "HTTP/1.1", or "HTTP/2.0".
+| $status                 | %s (%>s)  | Response status code.
+| $request_length         | %I        | Bytes received from a client, including request and headers.
+| $bytes_sent             | %O        | Bytes sent to a client, including request and headers.
+| $body_bytes_sent        | %B (%b)   | Bytes sent to a client, not counting the response header.
+| $request_time           | %D        | Request processing time.
+| $upstream_response_time | -         | Time spent on receiving the response from the upstream server.
+| $ssl_protocol           | -         | Protocol of an established SSL connection.
+| $ssl_cipher             | -         | String of ciphers used for an established SSL connection.
+
+In addition to that weblog understands [user defined fields](#custom-fields-feature).
+
+Notes:
+-   Apache `%h` logs the IP address if [HostnameLookups](https://httpd.apache.org/docs/2.4/mod/core.html#hostnamelookups) is Off.
+ Weblog counts hostname as IPv4 address. We recommend either to disable HostnameLookups or use `%a` instead of `%h`. 
+-   Nginx logs URI with query parameters, Apache doesnt.
+-   To get `%I` and `%O` working you need to enable [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html) on Apache.
+-   `$request` is parsed into `$request_method`, `$request_uri` and `$server_protocol`. If you have `$request` in your log format, 
+there is no sense to have others.
+-   Don't use both `$bytes_sent` and `$body_bytes_sent` (`%O` and `%B` or `%b`). The module does not distinguish between these parameters.
+
+
+## Custom Log Format
+
+Custom log format is easy. Use [known fields](#known-fields) to construct your log format.
+
+-   If using CSV parser
+
+Since weblog understands Nginx and Apache variables all you need is to copy your log format and... that is it!
+If there is a field that is not known by the weblog it's not a problem. It will skip it during parsing.
+But we suggest to replace all unknown fields with `-` for optimization purposes.
+
+Let's take as an example some non default format.
+
+```bash
+# apache
+LogFormat "\"%{Referer}i\" \"%{User-agent}i\" %h %l %u %t \"%r\" %>s %b" custom
+
+# nginx
+log_format custom '"$http_referer" "$http_user_agent" '
+                  '$remote_addr - $remote_user [$time_local] '
+                  '"$request" $status $body_bytes_sent'
 ```
+
+To get it working we need to copy the format without any changes (make it a line for nginx). Replacing unknown fields
+is optional but recommended.
+
+Special case:
+
+`%t` and `$time_local` represents time in [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format).
+It is a special case because it's in fact 2 fields after csv parse (ex.: `[22/Mar/2009:09:30:31 +0100]`).
+Weblog understands it and you don't need to replace it with `-` (if we want to do it we need to make it `- -`).
+
+```yaml
+jobs:
+  - name: apache_csv_custom_format_example
+    path: /path/to/file.log
+    log_type: csv
+    csv_config
+      format: '- - %h - - %t \"%r\" %>s %b'
+
+  - name: nginx_csv_custom_format_example
+    path: /path/to/file.log
+    log_type: csv
+    csv_config
+      format: '- - $remote_addr - - [$time_local] "$request" $status $body_bytes_sent'
+```
+
+-   If using LTSV parser
+
+Provide fields mapping if needed. Dont use `$` and `%` prefixes for mapped field names. They are only needed in CSV format.
+
+-   If using RegExp parser
+
+Use pattern with subexpressions names. These names should be known by weblog.
+
+
+## Custom Fields Feature
+
+Weblog is able to extract user defined fields and count patterns matches against these fields.
+
+This feature needs:
+-   custom log format with user defined fields
+-   list of patterns to match against appropriate fields
+
+Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
+ 
+There is an example with 2 custom fields - `http_referer` and `$http_user_agent`. Weblog is unaware of these fields, but
+we can get some info from them.
+
+```yaml
+  - name: nginx_csv_custom_fields_example
+    path: /path/to/file.log
+    log_type: csv
+    csv_config
+      format: '- - $remote_addr - - [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"'
+    custom_fields:
+      - name:  http_referer     # same name as in 'format' without $
+        patterns:
+          - name:  cacti
+            match: '= cacti'
+          - name:  observium
+            match: '= observium'
+      - name:  http_user_agent  # same name as in 'format' without $
+        patterns:
+          - name:  android
+            match: '= Android'
+          - name:  iphone
+            match: '= iPhone'
+          - name:  other
+            match: '* *'
+```
+
+## Configuration
+
+This module needs only `path` to log file. If it fails to auto-detect your log format you need [to set it manually](#custom-log-format). 
+
+```yaml
+jobs:
+  - name: nginx
+    path: /var/log/nginx/access.log
+
+  - name: apache
+    path: /var/log/apache2/access.log
+    log_type: csv
+    csv_config
+      format: '- - %h - - %t \"%r\" %>s %b'
+```
+ 
+For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/web_log.conf).
+
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m web_log
