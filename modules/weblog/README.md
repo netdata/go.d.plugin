@@ -49,8 +49,7 @@ Weblog supports 3 different log parsers:
 -   [LTSV](http://ltsv.org/)
 -   RegExp
 
-The rule is simple. If your log is in LTSV format you use LTSV parser, otherwise you use CSV.
-We highly suggest to prefer CSV over RegExp, because it is much faster. RegExp should be used only if LTSV and CSV parsers dont work. 
+Try to avoid using RegExp because it's much slower than the other two parsers. RegExp should be used only if LTSV and CSV parsers dont work for you.
 
 There is an example job for every log parser.
 
@@ -84,8 +83,8 @@ jobs:
 
 ## Log Parser Auto-Detection
 
-If `log_type` parameter is set to `auto` (which is default), weblog will try to auto-detect appropriate log parser and log format.
-To be able to do it the module reads last line from the log file.
+If `log_type` parameter is set to `auto` (which is default), weblog will try to auto-detect appropriate log parser and log format
+using the last of the log file.
 
 To auto-detect parser type the module checks if the line is in LTSV format first. If it is not the case it assumes that the format is CSV.
 
@@ -111,7 +110,7 @@ If it doesnt work you need [to set format manually](#custom-log-format).
 
 These are [Nginx](http://nginx.org/en/docs/varindex.html) and [Apache](http://httpd.apache.org/docs/current/mod/mod_log_config.html) log format variables.
 
-Weblog is aware how to parse and interpret the fields.
+Weblog is aware how to parse and interpret the fields:
 
 | nginx                   | apache    | description                                   |
 |-------------------------|-----------|-----------------------------------------------|
