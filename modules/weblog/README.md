@@ -89,17 +89,20 @@ To be able to do it the module reads last line from the log file.
 
 To auto-detect parser type the module checks if the line is in LTSV format first. If it is not the case it assumes that the format is CSV.
 
-To auto-detect CSV format weblog uses list of predefined csv formats, it tries to parse the line using each of them. The order is:
--   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time $upstream_response_time`
--   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time`
--   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time $upstream_response_time`
--   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time`
--   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent`
--   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time $upstream_response_time`
--   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time`
--   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time $upstream_response_time`
--   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time`
--   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent`
+To auto-detect CSV format weblog uses list of predefined csv formats. It tries to parse the line using each of them in the following order:
+
+```
+$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time $upstream_response_time
+$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time
+$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time $upstream_response_time
+$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time
+$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent
+                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time $upstream_response_time
+                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time
+                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time $upstream_response_time
+                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time
+                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent
+```
 
 The first one that matches will be used later. If you use default Apache/Nginx log format auto-detect will do for you.
 If it doesnt work you need [to set format manually](#custom-log-format).
