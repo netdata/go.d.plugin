@@ -73,9 +73,9 @@ func (w *WebLog) newParser(record []byte) (logs.Parser, error) {
 		w.Debugf("log_type is %s, will try format auto-detection", typeAuto)
 		return w.guessParser(record)
 	}
-	w.Debugf("log_type is %s, skipping auto-detection", w.Parser.LogType)
-	w.Parser.CSV.Format = cleanApacheLogFormat(w.Parser.CSV.Format)
 
+	w.Parser.CSV.Format = cleanApacheLogFormat(w.Parser.CSV.Format)
+	w.Debugf("log_type is %s, skipping auto-detection", w.Parser.LogType)
 	switch w.Parser.LogType {
 	case logs.TypeCSV:
 		w.Debugf("config: %+v", w.Parser.CSV)

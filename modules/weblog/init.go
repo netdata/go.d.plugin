@@ -95,7 +95,7 @@ func (w *WebLog) createParser() error {
 		return fmt.Errorf("read last line: %v", err)
 	}
 	lastLine = bytes.TrimRight(lastLine, "\n")
-	w.Debugf("read last line: '%s'", string(lastLine))
+	w.Debugf("last line: '%s'", string(lastLine))
 
 	w.parser, err = w.newParser(lastLine)
 	if err != nil {
