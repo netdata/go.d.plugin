@@ -174,7 +174,7 @@ is optional but recommended.
 
 Special case:
 
-`%t` and `$time_local` represents time in [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format).
+`%t` and `$time_local` represent time in [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format).
 It is a special case because it's in fact 2 fields after csv parse (ex.: `[22/Mar/2009:09:30:31 +0100]`).
 Weblog understands it and you don't need to replace it with `-` (if we want to do it we need to make it `- -`).
 
