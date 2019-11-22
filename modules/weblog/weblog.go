@@ -2,16 +2,15 @@ package weblog
 
 import (
 	"github.com/netdata/go.d.plugin/pkg/logs"
-	"github.com/netdata/go.d.plugin/pkg/metrics"
 
 	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
 	creator := module.Creator{
-		Defaults: module.Defaults{
-			Disabled: true,
-		},
+		//Defaults: module.Defaults{
+		//	Disabled: true,
+		//},
 		Create: func() module.Module { return New() },
 	}
 
@@ -33,11 +32,10 @@ func New() *WebLog {
 		},
 		RegExp: logs.RegExpConfig{},
 	}
-
 	return &WebLog{
 		Config: Config{
-			GroupRespCodes: false,
-			Histogram:      metrics.DefBuckets,
+			ExcludePath:    "*.gz",
+			GroupRespCodes: true,
 			Parser:         cfg,
 		},
 	}
@@ -79,29 +77,29 @@ type (
 )
 
 func (w *WebLog) Init() bool {
-	if err := w.initURLPatterns(); err != nil {
-		w.Error(err)
+	if err := w.createURLPatterns(); err != nil {
+		w.Error("init failed: ", err)
 		return false
 	}
 
-	if err := w.initCustomFields(); err != nil {
-		w.Error(err)
+	if err := w.createCustomFields(); err != nil {
+		w.Error("init failed: ", err)
 		return false
 	}
 
-	w.initLogLine()
+	w.createLogLine()
 	w.mx = newMetricsData(w.Config)
 	return true
 }
 
 func (w *WebLog) Check() bool {
 	// Note: these inits are here to make auto detection retry working
-	if err := w.initLogReader(); err != nil {
+	if err := w.createLogReader(); err != nil {
 		w.Warning("check failed: ", err)
 		return false
 	}
 
-	if err := w.initParser(); err != nil {
+	if err := w.createParser(); err != nil {
 		w.Warning("check failed: ", err)
 		return false
 	}
