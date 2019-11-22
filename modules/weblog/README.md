@@ -136,14 +136,15 @@ In addition to that weblog understands [user defined fields](#custom-fields-feat
 
 Notes:
 -   Apache `%h` logs the IP address if [HostnameLookups](https://httpd.apache.org/docs/2.4/mod/core.html#hostnamelookups) is Off.
- Weblog counts hostname as IPv4 address. We recommend either to disable HostnameLookups or use `%a` instead of `%h`. 
--   Since httpd 2.0, unlike 1.3, the %b and %B format strings do not represent the number of bytes sent to the client,
-but simply the size in bytes of the HTTP response. It will will differ, for instance, if the connection is aborted,
-or if SSL is used. The %O format provided by mod_logio will log the actual number of bytes sent over the network
+    Weblog counts hostname as IPv4 address. We recommend either to disable HostnameLookups or use `%a` instead of `%h`. 
+-   Since httpd 2.0, unlike 1.3, the `%b` and `%B` format strings do not represent the number of bytes sent to the client,
+    but simply the size in bytes of the HTTP response. It will will differ, for instance, if the connection is aborted,
+    or if SSL is used. The `%O` format provided by [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html)
+    will log the actual number of bytes sent over the network.
+-   To get `%I` and `%O` working you need to enable `mod_logio` on Apache.
 -   Nginx logs URI with query parameters, Apache doesnt.
--   To get `%I` and `%O` working you need to enable [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html) on Apache.
 -   `$request` is parsed into `$request_method`, `$request_uri` and `$server_protocol`. If you have `$request` in your log format, 
-there is no sense to have others.
+    there is no sense to have others.
 -   Don't use both `$bytes_sent` and `$body_bytes_sent` (`%O` and `%B` or `%b`). The module does not distinguish between these parameters.
 
 
