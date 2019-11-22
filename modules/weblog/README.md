@@ -226,15 +226,15 @@ we still can get some info from them.
       - name:  http_referer     # same name as in 'format' without $
         patterns:
           - name:  cacti
-            match: '= cacti'
+            match: '~ cacti'
           - name:  observium
-            match: '= observium'
+            match: '~ observium'
       - name:  http_user_agent  # same name as in 'format' without $
         patterns:
           - name:  android
-            match: '= Android'
+            match: '~ Android'
           - name:  iphone
-            match: '= iPhone'
+            match: '~ iPhone'
           - name:  other
             match: '* *'
 ```
