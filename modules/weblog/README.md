@@ -95,12 +95,10 @@ To auto-detect CSV format weblog uses list of predefined csv formats, it tries t
 -   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time $upstream_response_time`
 -   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time`
 -   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent`
--   `$host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent`
 -   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time $upstream_response_time`
 -   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time`
 -   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time $upstream_response_time`
 -   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent     $request_length $request_time`
--   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent`
 -   `                   $remote_addr - - [$time_local] "$request" $status $body_bytes_sent`
 
 The first one that matches will be used later. If you use default Apache/Nginx log format auto-detect will do for you.
@@ -108,8 +106,9 @@ If it doesnt work you need [to set format manually](#custom-log-format).
 
 ## Known Fields
 
-Weblog is aware how to parse and interpret following fields.
 These are [Nginx](http://nginx.org/en/docs/varindex.html) and [Apache](http://httpd.apache.org/docs/current/mod/mod_log_config.html) log format variables.
+
+Weblog is aware how to parse and interpret the fields.
 
 | nginx                   | apache    | description                                   |
 |-------------------------|-----------|-----------------------------------------------|
@@ -207,8 +206,8 @@ This feature needs:
 
 Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
  
-There is an example with 2 custom fields - `http_referer` and `$http_user_agent`. Weblog is unaware of these fields, but
-we can get some info from them.
+There is an example with 2 custom fields - `$http_referer` and `$http_user_agent`. Weblog is unaware of these fields, but
+we still can get some info from them.
 
 ```yaml
   - name: nginx_csv_custom_fields_example
