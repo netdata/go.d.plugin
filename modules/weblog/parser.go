@@ -13,6 +13,7 @@ Default apache log format:
  - "%v:%p %h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
  - "%h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined
  - "%h %l %u %t \"%r\" %>s %O" common
+ - "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\" %I %O" Combined I/O (https://httpd.apache.org/docs/2.4/mod/mod_logio.html)
 
 Default nginx log format:
  - '$remote_addr - $remote_user [$time_local] '
@@ -69,26 +70,42 @@ var (
 
 func (w *WebLog) newParser(record []byte) (logs.Parser, error) {
 	if w.Parser.LogType == typeAuto {
+		w.Debugf("log_type is %s, will try format auto-detection", typeAuto)
 		return w.guessParser(record)
 	}
+	w.Debugf("log_type is %s, skipping auto-detection", w.Parser.LogType)
 	w.Parser.CSV.Format = cleanApacheLogFormat(w.Parser.CSV.Format)
+
+	switch w.Parser.LogType {
+	case logs.TypeCSV:
+		w.Debugf("config: %+v", w.Parser.CSV)
+	case logs.TypeLTSV:
+		w.Debugf("config: %+v", w.Parser.LogType)
+	case logs.TypeRegExp:
+		w.Debugf("config: %+v", w.Parser.RegExp)
+	}
 	return logs.NewParser(w.Parser, w.file)
 }
 
 func (w *WebLog) guessParser(record []byte) (logs.Parser, error) {
-	w.Debug("starting log format auto detection")
+	w.Debug("starting log type auto-detection")
 	if reLTSV.Match(record) {
+		w.Debug("log type is LTSV")
 		return logs.NewLTSVParser(w.Parser.LTSV, w.file)
 	}
+	w.Debug("log type is CSV")
 	return w.guessCSVParser(record)
 }
 
 func (w *WebLog) guessCSVParser(record []byte) (logs.Parser, error) {
+	w.Debug("starting csv log format auto-detection")
+	w.Debugf("config: %+v", w.Parser.CSV)
 	for _, format := range guessOrder {
 		format = cleanCSVFormat(format)
 		cfg := w.Parser.CSV
 		cfg.Format = format
 
+		w.Debugf("trying format: '%s'", format)
 		parser, err := logs.NewCSVParser(cfg, w.file)
 		if err != nil {
 			return nil, err
@@ -96,15 +113,17 @@ func (w *WebLog) guessCSVParser(record []byte) (logs.Parser, error) {
 
 		line := newEmptyLogLine()
 		if err := parser.Parse(record, line); err != nil {
+			w.Debug("parse: ", err)
 			continue
 		}
 
 		if err = line.verify(); err != nil {
+			w.Debug("verify: ", err)
 			continue
 		}
 		return parser, nil
 	}
-	return nil, errors.New("cannot determine log format")
+	return nil, errors.New("cannot auto-detect log format, use custom log format")
 }
 
 func checkCSVFormatField(field string) (newName string, offset int, valid bool) {

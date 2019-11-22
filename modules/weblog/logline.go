@@ -25,33 +25,24 @@ import (
 //  - apache: http://httpd.apache.org/docs/current/mod/mod_log_config.html#logformat
 
 /*
-| name               | nginx                   | apache    |
-|--------------------|-------------------------|-----------|
-| vhost              | $host ($http_host)      | %v        | name of the server which accepted a request.
-| port               | $server_port            | %p        |
-| req_scheme         | $scheme                 | -         | “http” or “https”.
-| req_client         | $remote_addr            | %a (%h)   | %h: logs the IP address if HostnameLookups is Off.
-| request            | $request                | %r        | req_method + req_uri + req_protocol.
-| req_method         | $request_method         | %m        |
-| req_url            | $request_uri            | %U        | nginx: w/ queries, apache: w/o.
-| req_proto          | $server_protocol        | %H        | usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”.
-| resp_status        | $status                 | %s (%>s)  |
-| req_size           | $request_length         | $I        | w/ http headers, apache: need "mod_logio".
-| resp_size          | $bytes_sent             | %O        | w/ http headers.
-| resp_size          | $body_bytes_sent        | %B (%b)   | w/o http headers. %b '-' when no bytes are sent.
-| req_proc_time      | $request_time           | %D        | the time taken to serve the request.
-| ups_resp_time      | $upstream_response_time | -         | time spent on rec the response from the upstream server.
-| ssl_proto          | $ssl_protocol           | -         | protocol of an established SSL connection.
-| ssl_cipher_suite   | $ssl_cipher             | -         | string of ciphers used for an established SSL connection.
-| custom             | -                       | -         |
-*/
-
-/*
-Apache:
-Since httpd 2.0, unlike 1.3, the %b and %B format strings do not represent the number of bytes sent to the client,
-but simply the size in bytes of the HTTP response. It will will differ, for instance, if the connection is aborted,
-or if SSL is used.
-The %O format provided by mod_logio will log the actual number of bytes sent over the network
+| nginx                   | apache    | description                                   |
+|-------------------------|-----------|-----------------------------------------------|
+| $host ($http_host)      | %v        | Name of the server which accepted a request.
+| $server_port            | %p        | Port of the server which accepted a request.
+| $scheme                 | -         | Request scheme. "http" or "https".
+| $remote_addr            | %a (%h)   | Client address.
+| $request                | %r        | Full original request line. The line is "$request_method $request_uri $request_uri".
+| $request_method         | %m        | Request method. Usually "GET" or "POST".
+| $request_uri            | %U        | Full original request URI.
+| $server_protocol        | %H        | Request protocol. Usually "HTTP/1.0", "HTTP/1.1", or "HTTP/2.0".
+| $status                 | %s (%>s)  | Response status code.
+| $request_length         | %I        | Bytes received from a client, including request and headers.
+| $bytes_sent             | %O        | Bytes sent to a client, including request and headers.
+| $body_bytes_sent        | %B (%b)   | Bytes sent to a client, not counting the response header.
+| $request_time           | %D        | Request processing time.
+| $upstream_response_time | -         | Time spent on receiving the response from the upstream server.
+| $ssl_protocol           | -         | Protocol of an established SSL connection.
+| $ssl_cipher             | -         | String of ciphers used for an established SSL connection.
 */
 
 var (
