@@ -213,27 +213,24 @@ func (l *logLine) assignRequest(request string) error {
 	if request == hyphen {
 		return nil
 	}
-	first := strings.IndexByte(request, ' ')
-	if first < 0 {
+	var first, last int
+
+	if first = strings.IndexByte(request, ' '); first < 0 {
 		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
 	}
-	last := strings.LastIndexByte(request, ' ')
-	if first == last {
+	if last = strings.LastIndexByte(request, ' '); first == last {
 		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
 	}
 	proto := request[last+1:]
 	url := request[first+1 : last]
 	method := request[0:first]
 	if err := l.assignReqMethod(method); err != nil {
-		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
+		return err
 	}
 	if err := l.assignReqURL(url); err != nil {
-		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
+		return err
 	}
-	if err := l.assignReqProto(proto); err != nil {
-		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
-	}
-	return nil
+	return l.assignReqProto(proto)
 }
 
 func (l *logLine) assignReqMethod(method string) error {
