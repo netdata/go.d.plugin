@@ -214,7 +214,6 @@ func (l *logLine) assignRequest(request string) error {
 		return nil
 	}
 	var first, last int
-
 	if first = strings.IndexByte(request, ' '); first < 0 {
 		return fmt.Errorf("assign '%s': %w", request, errBadRequest)
 	}
