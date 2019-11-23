@@ -84,7 +84,7 @@ jobs:
 ## Log Parser Auto-Detection
 
 If `log_type` parameter is set to `auto` (which is default), weblog will try to auto-detect appropriate log parser and log format
-using the last of the log file.
+using the last line of the log file.
 
 To auto-detect parser type the module checks if the line is in LTSV format first. If it is not the case it assumes that the format is CSV.
 
