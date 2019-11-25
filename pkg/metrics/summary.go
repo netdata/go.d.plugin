@@ -2,6 +2,8 @@ package metrics
 
 import (
 	"math"
+
+	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
 type (
@@ -17,12 +19,24 @@ type (
 		Reset()
 	}
 
+	// SummaryVec is a Collector that bundles a set of Summary which have different values for their names.
+	// This is used if you want to count the same thing partitioned by various dimensions
+	// (e.g. number of HTTP response time, partitioned by response code and method).
+	//
+	// Create instances with NewSummaryVec.
+	SummaryVec map[string]Summary
+
 	summary struct {
 		min   float64
 		max   float64
 		sum   float64
 		count int64
 	}
+)
+
+var (
+	_ stm.Value = summary{}
+	_ stm.Value = SummaryVec{}
 )
 
 // NewSummary creates a new Summary.
@@ -40,7 +54,7 @@ func NewSummary() Summary {
 //   ${key}_min        gauge, for min of it's observed values from last Reset calls (only exists if count > 0)
 //   ${key}_max        gauge, for max of it's observed values from last Reset calls (only exists if count > 0)
 //   ${key}_avg        gauge, for avg of it's observed values from last Reset calls (only exists if count > 0)
-func (s *summary) WriteTo(rv map[string]int64, key string, mul, div int) {
+func (s summary) WriteTo(rv map[string]int64, key string, mul, div int) {
 	if s.count > 0 {
 		rv[key+"_min"] = int64(s.min * float64(mul) / float64(div))
 		rv[key+"_max"] = int64(s.max * float64(mul) / float64(div))
@@ -75,4 +89,34 @@ func (s *summary) Observe(v float64) {
 	}
 	s.sum += v
 	s.count++
+}
+
+// NewSummaryVec creates a new SummaryVec instance.
+func NewSummaryVec() SummaryVec {
+	return SummaryVec{}
+}
+
+// WriteTo writes it's value into given map.
+func (c SummaryVec) WriteTo(rv map[string]int64, key string, mul, div int) {
+	for name, value := range c {
+		value.WriteTo(rv, key+"_"+name, mul, div)
+	}
+}
+
+// Get gets counter instance by name.
+func (c SummaryVec) Get(name string) Summary {
+	item, ok := c[name]
+	if ok {
+		return item
+	}
+	item = NewSummary()
+	c[name] = item
+	return item
+}
+
+// Reset resets its all summaries.
+func (c SummaryVec) Reset() {
+	for _, value := range c {
+		value.Reset()
+	}
 }

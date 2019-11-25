@@ -31,6 +31,9 @@ func ToMap(s ...interface{}) map[string]int64 {
 }
 
 func toMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
+	if !value.IsValid() {
+		logger.Panicf("value is not valid key=%s", key)
+	}
 	if value.CanInterface() {
 		val, ok := value.Interface().(Value)
 		if ok {
@@ -85,6 +88,9 @@ func convertStruct(value reflect.Value, rv map[string]int64, key string) {
 }
 
 func convertMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
+	if value.IsNil() {
+		logger.Panicf("value is nil key=%s", key)
+	}
 	for _, k := range value.MapKeys() {
 		toMap(value.MapIndex(k), rv, joinPrefix(key, k.String()), mul, div)
 	}

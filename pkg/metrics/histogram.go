@@ -3,6 +3,8 @@ package metrics
 import (
 	"fmt"
 	"sort"
+
+	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
 type (
@@ -27,6 +29,10 @@ type (
 		sum         float64
 		count       int64
 	}
+)
+
+var (
+	_ stm.Value = histogram{}
 )
 
 // DefBuckets are the default histogram buckets. The default buckets are
@@ -103,7 +109,7 @@ func NewHistogram(buckets []float64) Histogram {
 //   ${key}_bucket_2   counter, for 2nd bucket count
 //   ...
 //   ${key}_bucket_N   counter, for Nth bucket count
-func (h *histogram) WriteTo(rv map[string]int64, key string, mul, div int) {
+func (h histogram) WriteTo(rv map[string]int64, key string, mul, div int) {
 	rv[key+"_sum"] = int64(h.sum * float64(mul) / float64(div))
 	rv[key+"_count"] = h.count
 	var conn int64

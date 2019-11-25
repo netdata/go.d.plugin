@@ -13,6 +13,7 @@ services:
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
+      - ./mocks/tmp:/usr/local/apache2/logs:ro
     depends_on:
       - springboot2
       - httpd
@@ -31,18 +32,23 @@ services:
     image: httpd:2.4
     volumes:
       - ./mocks/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - ./mocks/tmp:/usr/local/apache2/logs:rw
 
-  springboot2_random:
-    image: alpine
+  blackbox_probe:
+    build: mocks/blackbox
     depends_on:
       - springboot2
+      - httpd
     command:
       - '/bin/sh'
       - '-c'
       - |
         while :; do
-          wget -O /dev/null http://springboot2:8080/hello || :
-          wget -O /dev/null http://springboot2:8080/hello || :
-          wget -O /dev/null http://springboot2:8080/ || :
+          curl -o /dev/null http://springboot2:8080/hello || :
+          curl -o /dev/null http://springboot2:8080/hello || :
+          curl -o /dev/null http://springboot2:8080/ || :
+          curl -o /dev/null http://httpd/ || :
+          curl -o /dev/null -XPOST http://httpd/post || :
+          curl -o /dev/null http://httpd/not_exist || :
           sleep 0.7
         done

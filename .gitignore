@@ -1,3 +1,5 @@
 .idea
 bin/
 mocks/springboot2/.gradle/
+mocks/tmp/*
+!mocks/tmp/.gitkeep

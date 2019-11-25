@@ -14,11 +14,17 @@ type (
 	// memory usage, but also "counts" that can go up and down, like the number of
 	// running goroutines.
 	Gauge float64
+
+	// GaugeVec is a Collector that bundles a set of Gauges which have different values for their names.
+	// This is used if you want to count the same thing partitioned by various dimensions
+	//
+	// Create instances with NewGaugeVec.
+	GaugeVec map[string]*Gauge
 )
 
 var (
-	// assume Counter implements stm.Value
 	_ stm.Value = Gauge(0)
+	_ stm.Value = GaugeVec{}
 )
 
 // WriteTo writes it's value into given map.
@@ -63,4 +69,33 @@ func (g *Gauge) Sub(delta float64) {
 // SetToCurrentTime sets the atomicGauge to the current Unix time in second.
 func (g *Gauge) SetToCurrentTime() {
 	*g = Gauge(time.Now().UnixNano()) / 1e9
+}
+
+// NewGaugeVec creates a new GaugeVec
+func NewGaugeVec() GaugeVec {
+	return GaugeVec{}
+}
+
+// WriteTo writes it's value into given map.
+func (g GaugeVec) WriteTo(rv map[string]int64, key string, mul, div int) {
+	for name, value := range g {
+		rv[key+"_"+name] = int64(value.Value() * float64(mul) / float64(div))
+	}
+}
+
+// Get gets counter instance by name
+func (g GaugeVec) Get(name string) *Gauge {
+	item, _ := g.GetP(name)
+	return item
+}
+
+// Get gets counter instance by name
+func (g GaugeVec) GetP(name string) (gauge *Gauge, ok bool) {
+	gauge, ok = g[name]
+	if ok {
+		return
+	}
+	gauge = new(Gauge)
+	g[name] = gauge
+	return
 }

@@ -1,9 +1,7 @@
 package weblog
 
 import (
-	"fmt"
-
-	"github.com/netdata/go.d.plugin/pkg/simpletail"
+	"github.com/netdata/go.d.plugin/pkg/logs"
 
 	"github.com/netdata/go-orchestrator/module"
 )
@@ -20,208 +18,116 @@ func init() {
 }
 
 func New() *WebLog {
+	cfg := logs.ParserConfig{
+		LogType: typeAuto,
+		CSV: logs.CSVConfig{
+			FieldsPerRecord:  -1,
+			Delimiter:        ' ',
+			TrimLeadingSpace: false,
+			CheckField:       checkCSVFormatField,
+		},
+		LTSV: logs.LTSVConfig{
+			FieldDelimiter: '\t',
+			ValueDelimiter: ':',
+		},
+		RegExp: logs.RegExpConfig{},
+	}
 	return &WebLog{
-		DoCodesAggregate: true,
-		DoAllTimeIPs:     true,
-
-		worker: newWorker(),
+		Config: Config{
+			ExcludePath:    "*.gz",
+			GroupRespCodes: true,
+			Parser:         cfg,
+		},
 	}
 }
 
-type WebLog struct {
-	module.Base
-
-	Path             string        `yaml:"path" validate:"required"`
-	Filter           rawfilter     `yaml:"filter"`
-	URLCats          []rawcategory `yaml:"categories"`
-	UserCats         []rawcategory `yaml:"user_categories"`
-	CustomParser     csvPattern    `yaml:"custom_log_format"`
-	Histogram        []int         `yaml:"histogram"`
-	DoCodesAggregate bool          `yaml:"response_codes_aggregate"`
-	DoAllTimeIPs     bool          `yaml:"all_time_ips"`
-
-	worker *worker
-	charts *module.Charts
-	gm     groupMap
-}
-
-func (w *WebLog) Cleanup() {
-	w.worker.stop()
-}
-
-func (w *WebLog) initFilter() error {
-	f, err := newFilter(w.Filter)
-
-	if err != nil {
-		return fmt.Errorf("error on creating filter %s: %s", w.Filter, err)
+type (
+	userPattern struct {
+		Name  string `yaml:"name"`
+		Match string `yaml:"match"`
+	}
+	customField struct {
+		Name     string        `yaml:"name"`
+		Patterns []userPattern `yaml:"patterns"`
 	}
 
-	w.worker.filter = f
-
-	return nil
-}
-
-func (w *WebLog) initCategories() error {
-	for _, raw := range w.URLCats {
-		cat, err := newCategory(raw)
-		if err != nil {
-			return fmt.Errorf("error on creating category %s : %s", raw, err)
-		}
-		w.worker.urlCats = append(w.worker.urlCats, cat)
-		w.worker.metrics[cat.name] = 0
+	Config struct {
+		Parser         logs.ParserConfig `yaml:",inline"`
+		Path           string            `yaml:"path"`
+		ExcludePath    string            `yaml:"exclude_path"`
+		URLPatterns    []userPattern     `yaml:"url_patterns"`
+		CustomFields   []customField     `yaml:"custom_fields"`
+		Histogram      []float64         `yaml:"histogram"`
+		GroupRespCodes bool              `yaml:"group_response_codes"`
 	}
 
-	for _, cat := range w.worker.urlCats {
-		w.worker.timings.add(cat.name)
+	WebLog struct {
+		module.Base
+		Config `yaml:",inline"`
+
+		file         *logs.Reader
+		parser       logs.Parser
+		line         *logLine
+		urlPatterns  []*pattern
+		customFields map[string][]*pattern
+
+		mx     *metricsData
+		charts *module.Charts
 	}
-
-	w.worker.timings.reset()
-
-	for _, raw := range w.UserCats {
-		cat, err := newCategory(raw)
-		if err != nil {
-			return fmt.Errorf("error on creating category %s : %s", raw, err)
-		}
-		w.worker.userCats = append(w.worker.userCats, cat)
-		w.worker.metrics[cat.name] = 0
-	}
-
-	return nil
-}
-
-func (w *WebLog) initHistograms() (err error) {
-	if len(w.Histogram) == 0 {
-		return nil
-	}
-
-	var h histogram
-
-	if h, err = newHistogram(keyRespTimeHistogram, w.Histogram); err != nil {
-		return fmt.Errorf("error on creating histogram %v : %s", w.Histogram, err)
-	}
-
-	w.worker.histograms[keyRespTimeHistogram] = h
-
-	if h, err = newHistogram(keyRespTimeUpstreamHistogram, w.Histogram); err != nil {
-		return fmt.Errorf("error on creating histogram %v : %s", w.Histogram, err)
-	}
-
-	w.worker.histograms[keyRespTimeUpstreamHistogram] = h
-
-	for _, h := range w.worker.histograms {
-		for _, v := range h {
-			w.worker.metrics[v.id] = 0
-		}
-	}
-
-	return nil
-}
-
-func (w *WebLog) initParser() error {
-	b, err := simpletail.ReadLastLine(w.Path)
-
-	if err != nil {
-		return err
-	}
-
-	line := string(b)
-	var p parser
-
-	if len(w.CustomParser) > 0 {
-		p, err = newParser(line, w.CustomParser)
-	} else {
-		p, err = newParser(line, csvDefaultPatterns...)
-	}
-
-	if err != nil {
-		return err
-	}
-
-	w.worker.parser = p
-	w.gm, _ = p.parse(line)
-
-	return nil
-}
+)
 
 func (w *WebLog) Init() bool {
-	w.worker.doCodesAggregate = w.DoCodesAggregate
-	w.worker.doAllTimeIPs = w.DoAllTimeIPs
-
-	if err := w.initParser(); err != nil {
-		w.Error(err)
+	if err := w.createURLPatterns(); err != nil {
+		w.Error("init failed: ", err)
 		return false
 	}
 
-	if err := w.initFilter(); err != nil {
-		w.Error(err)
+	if err := w.createCustomFields(); err != nil {
+		w.Error("init failed: ", err)
 		return false
 	}
 
-	if err := w.initCategories(); err != nil {
-		w.Error(err)
-		return false
-	}
-
-	if err := w.initHistograms(); err != nil {
-		w.Error(err)
-		return false
-	}
-
+	w.createLogLine()
+	w.mx = newMetricsData(w.Config)
 	return true
 }
 
 func (w *WebLog) Check() bool {
-	t, err := w.worker.tailFactory(w.Path)
-
-	if err != nil {
-		w.Errorf("error on creating tail : %s", err)
+	// Note: these inits are here to make auto detection retry working
+	if err := w.createLogReader(); err != nil {
+		w.Warning("check failed: ", err)
 		return false
 	}
 
-	w.worker.tail = t
-	w.Infof("used parser : %s", w.worker.parser.info())
+	if err := w.createParser(); err != nil {
+		w.Warning("check failed: ", err)
+		return false
+	}
 
-	w.createCharts()
-
-	go w.worker.parseLoop()
-
+	if err := w.createCharts(w.line); err != nil {
+		w.Warning("check failed: ", err)
+	}
 	return true
 }
 
+func (w *WebLog) Charts() *module.Charts {
+	return w.charts
+}
+
 func (w *WebLog) Collect() map[string]int64 {
-	w.worker.pause()
-	defer w.worker.unpause()
-
-	for k, v := range w.worker.timings {
-		if !v.active() {
-			continue
-		}
-		w.worker.metrics[k+"_min"] += int64(v.min)
-		w.worker.metrics[k+"_avg"] += int64(v.avg())
-		w.worker.metrics[k+"_max"] += int64(v.max)
+	mx, err := w.collect()
+	if err != nil {
+		w.Error(err)
 	}
 
-	for _, h := range w.worker.histograms {
-		for _, v := range h {
-			w.worker.metrics[v.id] = int64(v.count)
-		}
+	if len(mx) == 0 {
+		return nil
 	}
+	return mx
+}
 
-	w.worker.timings.reset()
-	w.worker.uniqIPs = make(map[string]bool)
-
-	m := make(map[string]int64)
-
-	for k, v := range w.worker.metrics {
-		m[k] = v
+func (w *WebLog) Cleanup() {
+	if w.file != nil {
+		_ = w.file.Close()
 	}
-
-	for _, task := range w.worker.chartUpdate {
-		chart := w.charts.Get(task.id)
-		_ = chart.AddDim(task.dim)
-		chart.MarkNotCreated()
-	}
-	w.worker.chartUpdate = w.worker.chartUpdate[:0]
-
-	return m
 }

@@ -1,3 +1,4 @@
+DEV_MODULES := all
 
 all: download vet test build
 
@@ -30,7 +31,7 @@ fmt:
 	hack/go-fmt.sh .
 
 .PHONY: vet
-vet: 
+vet:
 	go vet ./...
 
 .PHONY: release
@@ -46,7 +47,7 @@ dev-build:
 	docker-compose build
 
 dev-up:
-	docker-compose up -d
+	docker-compose up -d --remove-orphans
 
 .PHONY: dev-exec
 dev-exec: ## Get into development environment
@@ -57,3 +58,6 @@ dev-log:
 
 dev-run: ## Run go.d.plugin inside development environment
 	go run github.com/netdata/go.d.plugin/cmd/godplugin -d -c conf.d
+
+dev-mock: ## Run go.d.plugin inside development environment with mock config
+	go run github.com/netdata/go.d.plugin/cmd/godplugin -d -c ./mocks/conf.d -m $(DEV_MODULES)

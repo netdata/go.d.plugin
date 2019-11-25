@@ -323,6 +323,14 @@ func TestToMap_badTag(t *testing.T) {
 	})
 }
 
+func TestToMap_nilValue(t *testing.T) {
+	assert.Panics(t, func() {
+		s := struct {
+			a metrics.CounterVec `stm:"a"`
+		}{nil}
+		stm.ToMap(s)
+	})
+}
 func TestToMap_bool(t *testing.T) {
 	s := struct {
 		A bool `stm:"a"`
