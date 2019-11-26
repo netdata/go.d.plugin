@@ -51,7 +51,6 @@ func TestNew(t *testing.T) {
 
 func TestUnbound_Init(t *testing.T) {
 	unbound := nonTLSUnbound()
-	unbound.ConfPath = ""
 
 	assert.True(t, unbound.Init())
 }
