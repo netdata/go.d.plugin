@@ -23,7 +23,7 @@ type jvmStats struct {
 }
 
 type pipeline struct {
-	Event events `stm:"event"`
+	Event events `json:"events" stm:"event"`
 }
 
 type events struct {
