@@ -38,7 +38,12 @@ func Test_readTestData(t *testing.T) {
 	assert.NotNil(t, lifeCycleResetData3)
 }
 
-func nonTLSUnbound() *Unbound { unbound := New(); unbound.UseTLS = false; return unbound }
+func nonTLSUnbound() *Unbound {
+	unbound := New()
+	unbound.ConfPath = ""
+	unbound.UseTLS = false
+	return unbound
+}
 
 func TestNew(t *testing.T) {
 	assert.Implements(t, (*module.Module)(nil), New())
@@ -46,7 +51,6 @@ func TestNew(t *testing.T) {
 
 func TestUnbound_Init(t *testing.T) {
 	unbound := nonTLSUnbound()
-	unbound.ConfPath = ""
 
 	assert.True(t, unbound.Init())
 }
