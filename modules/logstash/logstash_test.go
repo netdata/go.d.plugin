@@ -25,8 +25,6 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
-	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
 func TestLogstash_Init(t *testing.T) {
@@ -111,11 +109,11 @@ func TestLogstash_Collect(t *testing.T) {
 		"jvm_mem_pools_survivor_used_in_bytes":                     1428536,
 		"jvm_threads_count":                                        28,
 		"jvm_uptime_in_millis":                                     699809475,
-		"pipelines_pipeline-1_event_duration_in_millis":            0,
-		"pipelines_pipeline-1_event_filtered":                      0,
-		"pipelines_pipeline-1_event_in":                            0,
-		"pipelines_pipeline-1_event_out":                           0,
-		"pipelines_pipeline-1_event_queue_push_duration_in_millis": 0,
+		"pipelines_pipeline-1_event_duration_in_millis":            5027018,
+		"pipelines_pipeline-1_event_filtered":                      567639,
+		"pipelines_pipeline-1_event_in":                            567639,
+		"pipelines_pipeline-1_event_out":                           567639,
+		"pipelines_pipeline-1_event_queue_push_duration_in_millis": 84241,
 		"process_open_file_descriptors":                            101,
 	}
 
