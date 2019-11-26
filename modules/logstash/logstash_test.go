@@ -25,8 +25,6 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
-	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
 func TestLogstash_Init(t *testing.T) {
