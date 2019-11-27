@@ -179,7 +179,7 @@ type selectedStatistics struct {
 
 func (s *ScaleIO) collect() (map[string]int64, error) {
 	var stats selectedStatistics
-	err := s.apiClient.SelectedStatistics(&stats, selectedStatisticsQuery)
+	err := s.client.SelectedStatistics(&stats, selectedStatisticsQuery)
 	if err != nil {
 		return nil, err
 	}

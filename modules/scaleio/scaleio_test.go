@@ -3,7 +3,6 @@ package scaleio
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/netdata/go.d.plugin/pkg/web"
 	"io/ioutil"
 	"testing"
 
@@ -13,57 +12,55 @@ import (
 )
 
 var (
-	testSelectedStatsData, _ = ioutil.ReadFile("testdata/selected_statistics.json")
+	selectedStatisticsData, _ = ioutil.ReadFile("testdata/selected_statistics.json")
 )
 
-func TestNewTest(t *testing.T) {
-	job := New()
-	job.Config = Config{
-		HTTP: web.HTTP{
-			Request: web.Request{
-				UserURL:  "https://192.168.88.221",
-				Username: "admin",
-				Password: "123qwe!@#QWE",
-			},
-			Client: web.Client{
-				Timeout: web.Duration{Duration: defaultHTTPTimeout},
-				ClientTLSConfig: web.ClientTLSConfig{
-					InsecureSkipVerify: true,
-				},
-			},
-		},
-	}
-
-	require.True(t, job.Init())
-	require.True(t, job.Check())
-	//m := make(map[string]interface{})
-	//if err := job.apiClient.SelectedStatistics(&m, selectedStatisticsQuery); err != nil {
-	//	fmt.Println(err)
-	//} else {
-	//	fmt.Println(m)
-	//}
-
-	//mx := newMetrics()
-	//if err := job.collectSdcStats(mx); err != nil {
-	//	fmt.Println(err)
-	//}
-	//m := stm.ToMap(mx.Sdc)
-	//l := make([]string, 0)
-	//for k := range m {
-	//	l = append(l, k)
-	//}
-	//sort.Strings(l)
-	//for _, value := range l {
-	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
-	//}
-}
+//func TestNewTest(t *testing.T) {
+//	job := New()
+//	job.Config = Config{
+//		HTTP: web.HTTP{
+//			Request: web.Request{
+//				UserURL:  "https://192.168.88.221",
+//				Username: "admin",
+//				Password: "123qwe!@#QWE",
+//			},
+//			Client: web.Client{
+//				Timeout: web.Duration{Duration: time.Second * 10},
+//				ClientTLSConfig: web.ClientTLSConfig{
+//					InsecureSkipVerify: true,
+//				},
+//			},
+//		},
+//	}
+//
+//	require.True(t, job.Init())
+//	require.True(t, job.Check())
+//	//m := make(map[string]interface{})
+//	//if err := job.apiClient.SelectedStatistics(&m, selectedStatisticsQuery); err != nil {
+//	//	fmt.Println(err)
+//	//} else {
+//	//	fmt.Println(m)
+//	//}
+//
+//	//mx := newMetrics()
+//	//if err := job.collectSdcStats(mx); err != nil {
+//	//	fmt.Println(err)
+//	//}
+//	//m := stm.ToMap(mx.Sdc)
+//	//l := make([]string, 0)
+//	//for k := range m {
+//	//	l = append(l, k)
+//	//}
+//	//sort.Strings(l)
+//	//for _, value := range l {
+//	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
+//	//}
+//}
 
 func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
-	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
 func TestScaleIO_Init(t *testing.T) {
@@ -73,7 +70,7 @@ func TestScaleIO_Init(t *testing.T) {
 	job.Password = "password"
 
 	require.True(t, job.Init())
-	assert.NotNil(t, job.apiClient)
+	assert.NotNil(t, job.client)
 }
 
 func TestScaleIO_InitNG(t *testing.T) {
@@ -89,7 +86,7 @@ func TestScaleIO_Check(t *testing.T) {
 	job.Password = "password"
 
 	require.True(t, job.Init())
-	job.apiClient = &okAPIClient{}
+	job.client = &okAPIClient{}
 	require.True(t, job.Check())
 }
 
@@ -112,12 +109,12 @@ func TestScaleIO_Cleanup(t *testing.T) {
 	job.Password = "password"
 
 	require.True(t, job.Init())
-	job.apiClient = &okAPIClient{}
+	job.client = &okAPIClient{}
 	require.True(t, job.Check())
 
-	assert.True(t, job.apiClient.IsLoggedIn())
+	assert.True(t, job.client.IsLoggedIn())
 	job.Cleanup()
-	assert.False(t, job.apiClient.IsLoggedIn())
+	assert.False(t, job.client.IsLoggedIn())
 }
 
 func TestScaleIO_Collect(t *testing.T) {
@@ -127,7 +124,7 @@ func TestScaleIO_Collect(t *testing.T) {
 	job.Password = "password"
 
 	require.True(t, job.Init())
-	job.apiClient = &okAPIClient{}
+	job.client = &okAPIClient{}
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
@@ -271,19 +268,11 @@ type okAPIClient struct {
 	loggedIn bool
 }
 
-func (o *okAPIClient) Login() error {
-	o.loggedIn = true
-	return nil
-}
-
-func (o *okAPIClient) Logout() error {
-	o.loggedIn = false
-	return nil
-}
-
+func (o *okAPIClient) Login() error    { o.loggedIn = true; return nil }
+func (o *okAPIClient) Logout() error   { o.loggedIn = false; return nil }
 func (o okAPIClient) IsLoggedIn() bool { return o.loggedIn }
 
 func (okAPIClient) SelectedStatistics(dst interface{}, query string) error {
-	r := bytes.NewBuffer(testSelectedStatsData)
+	r := bytes.NewBuffer(selectedStatisticsData)
 	return json.NewDecoder(r).Decode(dst)
 }
