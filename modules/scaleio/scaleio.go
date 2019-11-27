@@ -19,7 +19,7 @@ func init() {
 
 const (
 	defaultURL         = "https://127.0.0.1"
-	defaultHTTPTimeout = time.Second * 2
+	defaultHTTPTimeout = time.Second * 10
 )
 
 // New creates ScaleIO with default values.
@@ -42,7 +42,7 @@ type scaleIOAPIClient interface {
 	Login() error
 	Logout() error
 	IsLoggedIn() bool
-	GetSelectedStatistics(dst interface{}, query string) error
+	SelectedStatistics(dst interface{}, query string) error
 }
 
 // ScaleIO ScaleIO module.
