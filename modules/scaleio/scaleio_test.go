@@ -3,6 +3,7 @@ package scaleio
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/netdata/go.d.plugin/pkg/web"
 	"io/ioutil"
 	"testing"
 
@@ -15,37 +16,47 @@ var (
 	testSelectedStatsData, _ = ioutil.ReadFile("testdata/selected_statistics.json")
 )
 
-//func TestNewTest(t *testing.T) {
-//	job := New()
-//	job.Config = Config{
-//		HTTP: web.HTTP{
-//			Request: web.Request{
-//				UserURL:  "https://192.168.88.221",
-//				Username: "admin",
-//				Password: "123qwe!@#QWE",
-//			},
-//			Client: web.Client{
-//				Timeout: web.Duration{Duration: defaultHTTPTimeout},
-//				ClientTLSConfig: web.ClientTLSConfig{
-//					InsecureSkipVerify: true,
-//				},
-//			},
-//		},
-//	}
-//	require.True(t, job.Init())
-//	require.True(t, job.Check())
-//	m := make(map[string]interface{})
-//	if err := job.apiClient.SelectedStatistics(&m, selectedStatisticsQuery2); err != nil {
-//		job.Warning(err)
-//		return
-//	}
-//	b, err := json.Marshal(m)
-//	if err != nil {
-//		fmt.Println(err)
-//	} else {
-//		fmt.Println(string(b))
-//	}
-//}
+func TestNewTest(t *testing.T) {
+	job := New()
+	job.Config = Config{
+		HTTP: web.HTTP{
+			Request: web.Request{
+				UserURL:  "https://192.168.88.221",
+				Username: "admin",
+				Password: "123qwe!@#QWE",
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+				ClientTLSConfig: web.ClientTLSConfig{
+					InsecureSkipVerify: true,
+				},
+			},
+		},
+	}
+
+	require.True(t, job.Init())
+	require.True(t, job.Check())
+	//m := make(map[string]interface{})
+	//if err := job.apiClient.SelectedStatistics(&m, selectedStatisticsQuery); err != nil {
+	//	fmt.Println(err)
+	//} else {
+	//	fmt.Println(m)
+	//}
+
+	//mx := newMetrics()
+	//if err := job.collectSdcStats(mx); err != nil {
+	//	fmt.Println(err)
+	//}
+	//m := stm.ToMap(mx.Sdc)
+	//l := make([]string, 0)
+	//for k := range m {
+	//	l = append(l, k)
+	//}
+	//sort.Strings(l)
+	//for _, value := range l {
+	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
+	//}
+}
 
 func TestNew(t *testing.T) {
 	job := New()

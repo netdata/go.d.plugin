@@ -10,6 +10,7 @@ type metrics struct {
 		Rebuild    systemRebuild    `stm:"rebuild"`
 		Components systemComponents `stm:"num_of"`
 	} `stm:"system"`
+	Sdc map[string]sdcStatistics `stm:"sdc"`
 }
 
 type (
@@ -69,6 +70,13 @@ type (
 		Forward  bwIOPSPending `stm:"forward"`
 		Backward bwIOPSPending `stm:"backward"`
 		Normal   bwIOPSPending `stm:"normal"`
+	}
+)
+
+type (
+	sdcStatistics struct {
+		bwIOPS        `stm:""`
+		MappedVolumes mtx.Gauge `stm:"num_of_mapped_volumes"`
 	}
 )
 
