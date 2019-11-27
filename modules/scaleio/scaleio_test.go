@@ -15,6 +15,38 @@ var (
 	testSelectedStatsData, _ = ioutil.ReadFile("testdata/selected_statistics.json")
 )
 
+//func TestNewTest(t *testing.T) {
+//	job := New()
+//	job.Config = Config{
+//		HTTP: web.HTTP{
+//			Request: web.Request{
+//				UserURL:  "https://192.168.88.221",
+//				Username: "admin",
+//				Password: "123qwe!@#QWE",
+//			},
+//			Client: web.Client{
+//				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+//				ClientTLSConfig: web.ClientTLSConfig{
+//					InsecureSkipVerify: true,
+//				},
+//			},
+//		},
+//	}
+//	require.True(t, job.Init())
+//	require.True(t, job.Check())
+//	m := make(map[string]interface{})
+//	if err := job.apiClient.SelectedStatistics(&m, selectedStatisticsQuery2); err != nil {
+//		job.Warning(err)
+//		return
+//	}
+//	b, err := json.Marshal(m)
+//	if err != nil {
+//		fmt.Println(err)
+//	} else {
+//		fmt.Println(string(b))
+//	}
+//}
+
 func TestNew(t *testing.T) {
 	job := New()
 
@@ -240,7 +272,7 @@ func (o *okAPIClient) Logout() error {
 
 func (o okAPIClient) IsLoggedIn() bool { return o.loggedIn }
 
-func (okAPIClient) GetSelectedStatistics(dst interface{}, query string) error {
+func (okAPIClient) SelectedStatistics(dst interface{}, query string) error {
 	r := bytes.NewBuffer(testSelectedStatsData)
 	return json.NewDecoder(r).Decode(dst)
 }
