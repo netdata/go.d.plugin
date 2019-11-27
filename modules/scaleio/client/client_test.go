@@ -56,18 +56,18 @@ func TestClient_Logout(t *testing.T) {
 	assert.False(t, client.IsLoggedIn())
 }
 
-func TestClient_GetAPIVersion(t *testing.T) {
+func TestClient_APIVersion(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
 	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
 
-	ver, err := client.GetAPIVersion()
+	ver, err := client.APIVersion()
 	require.NoError(t, err)
 	assert.Equal(t, &Version{Major: 2, Minor: 5}, ver)
 }
 
-func TestClient_GetSelectedStatistics(t *testing.T) {
+func TestClient_SelectedStatistics(t *testing.T) {
 	ts := newTestServer()
 	defer ts.Close()
 
@@ -77,7 +77,7 @@ func TestClient_GetSelectedStatistics(t *testing.T) {
 	dst := &struct {
 		A, B int
 	}{}
-	require.NoError(t, client.GetSelectedStatistics(dst, ""))
+	require.NoError(t, client.SelectedStatistics(dst, ""))
 	assert.Equal(t, 1, dst.A)
 	assert.Equal(t, 2, dst.B)
 }

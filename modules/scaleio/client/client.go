@@ -66,8 +66,8 @@ func (c *Client) Logout() error {
 	return c.doWithDecode(nil, nil, req, false, false)
 }
 
-// GetAPIVersion returns FxFlex Gateway API version.
-func (c *Client) GetAPIVersion() (*Version, error) {
+// APIVersion returns FxFlex Gateway API version.
+func (c *Client) APIVersion() (*Version, error) {
 	req := c.request.Copy()
 	req.URL.Path = pathVersion
 	req.Password = c.token.get()
@@ -78,8 +78,8 @@ func (c *Client) GetAPIVersion() (*Version, error) {
 	return ver, err
 }
 
-// GetSelectedStatistics makes the query and decodes response into the passed structure.
-func (c *Client) GetSelectedStatistics(dst interface{}, query string) error {
+// SelectedStatistics makes the query and decodes response into the passed structure.
+func (c *Client) SelectedStatistics(dst interface{}, query string) error {
 	req := c.request.Copy()
 	req.URL.Path = pathSelectedStatistics
 	req.Password = c.token.get()
