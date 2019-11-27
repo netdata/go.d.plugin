@@ -165,7 +165,7 @@ type selectedStatistics struct {
 
 func (s *ScaleIO) collectSystemOverview(mx *metrics) error {
 	var stats selectedStatistics
-	err := s.apiClient.GetSelectedStatistics(&stats, selectedSystemStatsQuery)
+	err := s.apiClient.SelectedStatistics(&stats, selectedSystemStatsQuery)
 	if err != nil {
 		return err
 	}
