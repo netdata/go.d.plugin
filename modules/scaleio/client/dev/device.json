@@ -1,0 +1,40 @@
+{
+  "aggregatedState": "NeverFailed",
+  "capacityLimitInKb": 103808000,
+  "deviceCurrentPathName": "/dev/sdb",
+  "deviceOriginalPathName": "/dev/sdb",
+  "deviceState": "Normal",
+  "errorState": "None",
+  "id": "ebbd9d6400000000",
+  "ledSetting": "Off",
+  "links": [
+    {
+      "href": "/api/instances/Device::ebbd9d6400000000",
+      "rel": "self"
+    },
+    {
+      "href": "/api/instances/Device::ebbd9d6400000000/relationships/Statistics",
+      "rel": "/api/Device/relationship/Statistics"
+    },
+    {
+      "href": "/api/instances/Sds::130dcabd00000000",
+      "rel": "/api/parent/relationship/sdsId"
+    },
+    {
+      "href": "/api/instances/StoragePool::40395b7b00000000",
+      "rel": "/api/parent/relationship/storagePoolId"
+    }
+  ],
+  "longSuccessfulIos": {
+    "longWindow": null,
+    "mediumWindow": null,
+    "shortWindow": null
+  },
+  "maxCapacityInKb": 103808000,
+  "name": "sdb",
+  "rfcacheErrorDeviceDoesNotExist": false,
+  "sdsId": "130dcabd00000000",
+  "ssdEndOfLifeState": "NeverFailed",
+  "storagePoolId": "40395b7b00000000",
+  "temperatureState": "NeverFailed"
+}

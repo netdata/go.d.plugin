@@ -1,0 +1,60 @@
+{
+  "authenticationError": "None",
+  "certificateInfo": null,
+  "drlMode": "Volatile",
+  "faultSetId": null,
+  "id": "130dcabd00000000",
+  "ipList": [
+    {
+      "ip": "100.127.0.11",
+      "role": "all"
+    }
+  ],
+  "links": [
+    {
+      "href": "/api/instances/Sds::130dcabd00000000",
+      "rel": "self"
+    },
+    {
+      "href": "/api/instances/Sds::130dcabd00000000/relationships/Statistics",
+      "rel": "/api/Sds/relationship/Statistics"
+    },
+    {
+      "href": "/api/instances/Sds::130dcabd00000000/relationships/Device",
+      "rel": "/api/Sds/relationship/Device"
+    },
+    {
+      "href": "/api/instances/Sds::130dcabd00000000/relationships/RfcacheDevice",
+      "rel": "/api/Sds/relationship/RfcacheDevice"
+    },
+    {
+      "href": "/api/instances/ProtectionDomain::74d855a900000000",
+      "rel": "/api/parent/relationship/protectionDomainId"
+    }
+  ],
+  "maintenanceState": "NoMaintenance",
+  "mdmConnectionState": "Disconnected",
+  "membershipState": "Decoupled",
+  "name": "SDS_[100.127.0.11]",
+  "numOfIoBuffers": null,
+  "onVmWare": false,
+  "perfProfile": "Default",
+  "port": 7072,
+  "protectionDomainId": "74d855a900000000",
+  "rfcacheEnabled": true,
+  "rfcacheErrorApiVersionMismatch": false,
+  "rfcacheErrorDeviceDoesNotExist": false,
+  "rfcacheErrorInconsistentCacheConfiguration": false,
+  "rfcacheErrorInconsistentSourceConfiguration": false,
+  "rfcacheErrorInvalidDriverPath": false,
+  "rfcacheErrorLowResources": false,
+  "rmcacheEnabled": true,
+  "rmcacheFrozen": false,
+  "rmcacheMemoryAllocationState": "RmcacheMemoryAllocationStateInvalid",
+  "rmcacheSizeInKb": 131072,
+  "sdsConfigurationFailure": null,
+  "sdsDecoupled": null,
+  "sdsReceiveBufferAllocationFailures": null,
+  "sdsState": "Normal",
+  "softwareVersionInfo": null
+}

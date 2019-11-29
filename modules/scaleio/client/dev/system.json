@@ -1,0 +1,182 @@
+{
+  "authenticationMethod": "Native",
+  "capacityAlertCriticalThresholdPercent": 90,
+  "capacityAlertHighThresholdPercent": 80,
+  "capacityTimeLeftInDays": "Unlimited",
+  "cliPasswordAllowed": true,
+  "daysInstalled": 16,
+  "defaultIsVolumeObfuscated": false,
+  "enterpriseFeaturesEnabled": true,
+  "id": "499634a44778afc0",
+  "installId": "3e9fc5811a7efb00",
+  "isInitialLicense": true,
+  "links": [
+    {
+      "href": "/api/instances/System::499634a44778afc0",
+      "rel": "self"
+    },
+    {
+      "href": "/api/instances/System::499634a44778afc0/relationships/Statistics",
+      "rel": "/api/System/relationship/Statistics"
+    },
+    {
+      "href": "/api/instances/System::499634a44778afc0/relationships/ProtectionDomain",
+      "rel": "/api/System/relationship/ProtectionDomain"
+    },
+    {
+      "href": "/api/instances/System::499634a44778afc0/relationships/Sdc",
+      "rel": "/api/System/relationship/Sdc"
+    },
+    {
+      "href": "/api/instances/System::499634a44778afc0/relationships/User",
+      "rel": "/api/System/relationship/User"
+    }
+  ],
+  "managementClientSecureCommunicationEnabled": true,
+  "maxCapacityInGb": "Unlimited",
+  "mdmCluster": {
+    "clusterMode": "ThreeNodes",
+    "clusterState": "ClusteredDegraded",
+    "goodNodesNum": 2,
+    "goodReplicasNum": 1,
+    "id": "5302483491453710272",
+    "master": {
+      "id": "65ed0ee3247d0a00",
+      "ips": [
+        "100.127.0.10"
+      ],
+      "managementIPs": [
+        "100.127.0.10"
+      ],
+      "name": "Manager1",
+      "opensslVersion": "OpenSSL 1.0.2g  1 Mar 2016",
+      "port": 9011,
+      "role": "Manager",
+      "versionInfo": "R2_6.11000.0",
+      "virtualInterfaces": []
+    },
+    "slaves": [
+      {
+        "id": "4cc44104130ce7b1",
+        "ips": [
+          "100.127.0.11"
+        ],
+        "managementIPs": [
+          "100.127.0.11"
+        ],
+        "name": "Manager2",
+        "opensslVersion": "N/A",
+        "port": 9011,
+        "role": "Manager",
+        "status": "Disconnected",
+        "virtualInterfaces": []
+      }
+    ],
+    "tieBreakers": [
+      {
+        "id": "35bf9d62661a6db2",
+        "ips": [
+          "100.127.0.12"
+        ],
+        "managementIPs": [
+          "100.127.0.12"
+        ],
+        "name": "Tie-Breaker1",
+        "opensslVersion": "N/A",
+        "port": 9011,
+        "role": "TieBreaker",
+        "status": "Normal",
+        "versionInfo": "R2_6.11000.0"
+      }
+    ]
+  },
+  "mdmManagementPort": 6611,
+  "mdmToSdsPolicy": "Authentication",
+  "perfProfile": "Default",
+  "remoteReadOnlyLimitState": false,
+  "restrictedSdcMode": "None",
+  "restrictedSdcModeEnabled": false,
+  "sdcLongOperationsCounterParameters": {
+    "longWindow": {
+      "threshold": 1000000,
+      "windowSizeInSec": 86400
+    },
+    "mediumWindow": {
+      "threshold": 100000,
+      "windowSizeInSec": 3600
+    },
+    "shortWindow": {
+      "threshold": 10000,
+      "windowSizeInSec": 60
+    }
+  },
+  "sdcMdmNetworkDisconnectionsCounterParameters": {
+    "longWindow": {
+      "threshold": 700,
+      "windowSizeInSec": 86400
+    },
+    "mediumWindow": {
+      "threshold": 500,
+      "windowSizeInSec": 3600
+    },
+    "shortWindow": {
+      "threshold": 300,
+      "windowSizeInSec": 60
+    }
+  },
+  "sdcMemoryAllocationFailuresCounterParameters": {
+    "longWindow": {
+      "threshold": 700,
+      "windowSizeInSec": 86400
+    },
+    "mediumWindow": {
+      "threshold": 500,
+      "windowSizeInSec": 3600
+    },
+    "shortWindow": {
+      "threshold": 300,
+      "windowSizeInSec": 60
+    }
+  },
+  "sdcSdsConnectivityInfo": {
+    "disconnectedSdcId": null,
+    "disconnectedSdcName": null,
+    "disconnectedSdsId": null,
+    "disconnectedSdsIp": null,
+    "disconnectedSdsName": null,
+    "sdcSdsConnectivityStatus": "AllConnected"
+  },
+  "sdcSdsNetworkDisconnectionsCounterParameters": {
+    "longWindow": {
+      "threshold": 20000,
+      "windowSizeInSec": 86400
+    },
+    "mediumWindow": {
+      "threshold": 4000,
+      "windowSizeInSec": 3600
+    },
+    "shortWindow": {
+      "threshold": 800,
+      "windowSizeInSec": 60
+    }
+  },
+  "sdcSocketAllocationFailuresCounterParameters": {
+    "longWindow": {
+      "threshold": 700,
+      "windowSizeInSec": 86400
+    },
+    "mediumWindow": {
+      "threshold": 500,
+      "windowSizeInSec": 3600
+    },
+    "shortWindow": {
+      "threshold": 300,
+      "windowSizeInSec": 60
+    }
+  },
+  "showGuid": true,
+  "swid": "",
+  "systemVersionName": "DellEMC ScaleIO Version: R2_6.11000.113",
+  "tlsVersion": "TLSv1.2",
+  "upgradeState": "NoUpgrade"
+}

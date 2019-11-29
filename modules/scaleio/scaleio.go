@@ -27,14 +27,12 @@ func New() *ScaleIO {
 	}
 	return &ScaleIO{
 		Config: config,
+		charts: systemCharts.Copy(),
+		charted: charted{
+			sdc:  make(map[string]bool),
+			pool: make(map[string]bool),
+		},
 	}
-}
-
-type scaleIOClient interface {
-	Login() error
-	Logout() error
-	IsLoggedIn() bool
-	SelectedStatistics(dst interface{}, query string) error
 }
 
 type (
@@ -46,20 +44,27 @@ type (
 	ScaleIO struct {
 		module.Base
 		Config `yaml:",inline"`
-		client scaleIOClient
+		client *client.Client
+		charts *module.Charts
+
+		discovered instances
+		charted    charted
+
+		lastDiscoveryOK bool
+		runs            int
+	}
+	instances struct {
+		sdc  map[string]client.Sdc
+		pool map[string]client.StoragePool
+	}
+	charted struct {
+		sdc  map[string]bool
+		pool map[string]bool
 	}
 )
 
 // Init makes initialization.
 func (s *ScaleIO) Init() bool {
-	if err := s.ParseUserURL(); err != nil {
-		s.Errorf("error on parsing URL '%s' : %v", s.UserURL, err)
-		return false
-	}
-	if s.URL.Host == "" {
-		s.Error("URL is not set")
-		return false
-	}
 	if s.Username == "" || s.Password == "" {
 		s.Error("username and password aren't set")
 		return false
@@ -67,12 +72,12 @@ func (s *ScaleIO) Init() bool {
 
 	c, err := client.New(s.Client, s.Request)
 	if err != nil {
-		s.Errorf("error on creating ScaleIO client : %v", err)
+		s.Errorf("error on creating ScaleIO client: %v", err)
 		return false
 	}
 	s.client = c
 
-	s.Debugf("using URL %s", s.URL)
+	s.Debugf("using URL %s", s.UserURL)
 	s.Debugf("using timeout: %s", s.Timeout.Duration)
 	return true
 }
@@ -83,23 +88,26 @@ func (s *ScaleIO) Check() bool {
 		s.Error(err)
 		return false
 	}
-	return len(s.Collect()) > 0
+	return true
+	//return len(s.Collect()) > 0
 }
 
 // Charts returns Charts.
-func (s ScaleIO) Charts() *module.Charts {
-	return charts.Copy()
+func (s *ScaleIO) Charts() *module.Charts {
+	return s.charts
 }
 
 // Collect collects metrics.
 func (s *ScaleIO) Collect() map[string]int64 {
 	mx, err := s.collect()
-
 	if err != nil {
 		s.Error(err)
 		return nil
 	}
 
+	if len(mx) == 0 {
+		return nil
+	}
 	return mx
 }
 

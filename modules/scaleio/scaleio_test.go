@@ -1,278 +1,362 @@
 package scaleio
 
 import (
-	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"testing"
+	"time"
 
-	"github.com/netdata/go-orchestrator/module"
-	"github.com/stretchr/testify/assert"
+	"github.com/netdata/go.d.plugin/pkg/web"
+
 	"github.com/stretchr/testify/require"
 )
 
 var (
 	selectedStatisticsData, _ = ioutil.ReadFile("testdata/selected_statistics.json")
 )
-
-//func TestNewTest(t *testing.T) {
-//	job := New()
-//	job.Config = Config{
-//		HTTP: web.HTTP{
-//			Request: web.Request{
-//				UserURL:  "https://192.168.88.221",
-//				Username: "admin",
-//				Password: "123qwe!@#QWE",
-//			},
-//			Client: web.Client{
-//				Timeout: web.Duration{Duration: time.Second * 10},
-//				ClientTLSConfig: web.ClientTLSConfig{
-//					InsecureSkipVerify: true,
-//				},
-//			},
-//		},
-//	}
-//
-//	require.True(t, job.Init())
-//	require.True(t, job.Check())
-//	//m := make(map[string]interface{})
-//	//if err := job.apiClient.SelectedStatistics(&m, selectedStatisticsQuery); err != nil {
-//	//	fmt.Println(err)
-//	//} else {
-//	//	fmt.Println(m)
-//	//}
-//
-//	//mx := newMetrics()
-//	//if err := job.collectSdcStats(mx); err != nil {
-//	//	fmt.Println(err)
-//	//}
-//	//m := stm.ToMap(mx.Sdc)
-//	//l := make([]string, 0)
-//	//for k := range m {
-//	//	l = append(l, k)
-//	//}
-//	//sort.Strings(l)
-//	//for _, value := range l {
-//	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
-//	//}
-//}
+var (
+	selectedStatisticsQuery2 = `
+{
+	"selectedStatisticsList": [
+		{
+			"type": "System",
+			"allIds": [],
+			"properties": [
+				"maxCapacityInKb1",
+				"capacityInUseInKb",
+				"capacityAvailableForVolumeAllocationInKb"
+			]
+		}
+	]
+}
+`
+)
 
 func TestNew(t *testing.T) {
-	job := New()
-
-	assert.Implements(t, (*module.Module)(nil), job)
+	v, _ := json.MarshalIndent(query, "", " ")
+	fmt.Println(string(v))
 }
 
-func TestScaleIO_Init(t *testing.T) {
+func TestNewTest(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001"
-	job.Username = "username"
-	job.Password = "password"
-
-	require.True(t, job.Init())
-	assert.NotNil(t, job.client)
-}
-
-func TestScaleIO_InitNG(t *testing.T) {
-	job := New()
-
-	assert.False(t, job.Init())
-}
-
-func TestScaleIO_Check(t *testing.T) {
-	job := New()
-	job.UserURL = "http://127.0.0.1:38001"
-	job.Username = "username"
-	job.Password = "password"
-
-	require.True(t, job.Init())
-	job.client = &okAPIClient{}
-	require.True(t, job.Check())
-}
-
-func TestScaleIO_CheckNG(t *testing.T) {
-	job := New()
-	job.UserURL = "http://127.0.0.1:38001"
-	job.Username = "username"
-	job.Password = "password"
-
-	require.True(t, job.Init())
-	assert.False(t, job.Check())
-}
-
-func TestScaleIO_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
-
-func TestScaleIO_Cleanup(t *testing.T) {
-	job := New()
-	job.UserURL = "http://127.0.0.1:38001"
-	job.Username = "username"
-	job.Password = "password"
-
-	require.True(t, job.Init())
-	job.client = &okAPIClient{}
-	require.True(t, job.Check())
-
-	assert.True(t, job.client.IsLoggedIn())
-	job.Cleanup()
-	assert.False(t, job.client.IsLoggedIn())
-}
-
-func TestScaleIO_Collect(t *testing.T) {
-	job := New()
-	job.UserURL = "http://127.0.0.1:38001"
-	job.Username = "username"
-	job.Password = "password"
-
-	require.True(t, job.Init())
-	job.client = &okAPIClient{}
-	require.True(t, job.Check())
-
-	expected := map[string]int64{
-		"system_backend_primary_bandwidth_read":           0,
-		"system_backend_primary_bandwidth_read_write":     82616000,
-		"system_backend_primary_bandwidth_write":          82616000,
-		"system_backend_primary_io_size_read":             0,
-		"system_backend_primary_io_size_read_write":       320963,
-		"system_backend_primary_io_size_write":            320963,
-		"system_backend_primary_iops_read":                0,
-		"system_backend_primary_iops_read_write":          257399,
-		"system_backend_primary_iops_write":               257399,
-		"system_backend_secondary_bandwidth_read":         0,
-		"system_backend_secondary_bandwidth_read_write":   82432000,
-		"system_backend_secondary_bandwidth_write":        82432000,
-		"system_backend_secondary_io_size_read":           0,
-		"system_backend_secondary_io_size_read_write":     396689,
-		"system_backend_secondary_io_size_write":          396689,
-		"system_backend_secondary_iops_read":              0,
-		"system_backend_secondary_iops_read_write":        207800,
-		"system_backend_secondary_iops_write":             207800,
-		"system_backend_total_bandwidth_read":             0,
-		"system_backend_total_bandwidth_read_write":       165048000,
-		"system_backend_total_bandwidth_write":            165048000,
-		"system_backend_total_io_size_read":               0,
-		"system_backend_total_io_size_read_write":         717652,
-		"system_backend_total_io_size_write":              717652,
-		"system_backend_total_iops_read":                  0,
-		"system_backend_total_iops_read_write":            465200,
-		"system_backend_total_iops_write":                 465200,
-		"system_capacity_available_for_volume_allocation": 67108864,
-		"system_capacity_decreased":                       0,
-		"system_capacity_degraded":                        0,
-		"system_capacity_failed":                          0,
-		"system_capacity_in_maintenance":                  0,
-		"system_capacity_in_use":                          65386496,
-		"system_capacity_limit":                           337638400,
-		"system_capacity_max_capacity":                    337638400,
-		"system_capacity_protected":                       65386496,
-		"system_capacity_semi_protected":                  0,
-		"system_capacity_snap_in_use":                     17451008,
-		"system_capacity_snap_in_use_occupied":            0,
-		"system_capacity_spare":                           118172672,
-		"system_capacity_thick_in_use":                    16777216,
-		"system_capacity_thin_allocated":                  67108864,
-		"system_capacity_thin_free":                       18499584,
-		"system_capacity_thin_in_use":                     48609280,
-		"system_capacity_unreachable_unused":              0,
-		"system_capacity_unused":                          154079232,
-		"system_frontend_user_data_bandwidth_read":        0,
-		"system_frontend_user_data_bandwidth_read_write":  87404000,
-		"system_frontend_user_data_bandwidth_write":       87404000,
-		"system_frontend_user_data_io_size_read":          0,
-		"system_frontend_user_data_io_size_read_write":    346841,
-		"system_frontend_user_data_io_size_write":         346841,
-		"system_frontend_user_data_iops_read":             0,
-		"system_frontend_user_data_iops_read_write":       252000,
-		"system_frontend_user_data_iops_write":            252000,
-		"system_num_of_devices":                           3,
-		"system_num_of_fault_sets":                        2,
-		"system_num_of_mapped_to_all_volumes":             0,
-		"system_num_of_mapped_volumes":                    2,
-		"system_num_of_protection_domains":                2,
-		"system_num_of_rfcache_devices":                   0,
-		"system_num_of_scsi_initiators":                   0,
-		"system_num_of_sdc":                               3,
-		"system_num_of_sds":                               3,
-		"system_num_of_snapshots":                         0,
-		"system_num_of_storage_pools":                     2,
-		"system_num_of_thick_base_volumes":                1,
-		"system_num_of_thin_base_volumes":                 3,
-		"system_num_of_unmapped_volumes":                  2,
-		"system_num_of_volumes":                           4,
-		"system_num_of_volumes_in_deletion":               0,
-		"system_num_of_vtrees":                            4,
-		"system_rebalance_bandwidth_read":                 0,
-		"system_rebalance_bandwidth_read_write":           0,
-		"system_rebalance_bandwidth_write":                0,
-		"system_rebalance_io_size_read":                   0,
-		"system_rebalance_io_size_read_write":             0,
-		"system_rebalance_io_size_write":                  0,
-		"system_rebalance_iops_read":                      0,
-		"system_rebalance_iops_read_write":                0,
-		"system_rebalance_iops_write":                     0,
-		"system_rebalance_pending_capacity_in_Kb":         0,
-		"system_rebuild_backward_bandwidth_read":          0,
-		"system_rebuild_backward_bandwidth_read_write":    0,
-		"system_rebuild_backward_bandwidth_write":         0,
-		"system_rebuild_backward_io_size_read":            0,
-		"system_rebuild_backward_io_size_read_write":      0,
-		"system_rebuild_backward_io_size_write":           0,
-		"system_rebuild_backward_iops_read":               0,
-		"system_rebuild_backward_iops_read_write":         0,
-		"system_rebuild_backward_iops_write":              0,
-		"system_rebuild_backward_pending_capacity_in_Kb":  0,
-		"system_rebuild_forward_bandwidth_read":           0,
-		"system_rebuild_forward_bandwidth_read_write":     0,
-		"system_rebuild_forward_bandwidth_write":          0,
-		"system_rebuild_forward_io_size_read":             0,
-		"system_rebuild_forward_io_size_read_write":       0,
-		"system_rebuild_forward_io_size_write":            0,
-		"system_rebuild_forward_iops_read":                0,
-		"system_rebuild_forward_iops_read_write":          0,
-		"system_rebuild_forward_iops_write":               0,
-		"system_rebuild_forward_pending_capacity_in_Kb":   0,
-		"system_rebuild_normal_bandwidth_read":            0,
-		"system_rebuild_normal_bandwidth_read_write":      0,
-		"system_rebuild_normal_bandwidth_write":           0,
-		"system_rebuild_normal_io_size_read":              0,
-		"system_rebuild_normal_io_size_read_write":        0,
-		"system_rebuild_normal_io_size_write":             0,
-		"system_rebuild_normal_iops_read":                 0,
-		"system_rebuild_normal_iops_read_write":           0,
-		"system_rebuild_normal_iops_write":                0,
-		"system_rebuild_normal_pending_capacity_in_Kb":    0,
-		"system_rebuild_total_bandwidth_read":             0,
-		"system_rebuild_total_bandwidth_read_write":       0,
-		"system_rebuild_total_bandwidth_write":            0,
-		"system_rebuild_total_io_size_read":               0,
-		"system_rebuild_total_io_size_read_write":         0,
-		"system_rebuild_total_io_size_write":              0,
-		"system_rebuild_total_iops_read":                  0,
-		"system_rebuild_total_iops_read_write":            0,
-		"system_rebuild_total_iops_write":                 0,
-		"system_rebuild_total_pending_capacity_in_Kb":     0,
-		"system_total_bandwidth_read":                     0,
-		"system_total_bandwidth_read_write":               165048000,
-		"system_total_bandwidth_write":                    165048000,
-		"system_total_io_size_read":                       0,
-		"system_total_io_size_read_write":                 354789,
-		"system_total_io_size_write":                      354789,
-		"system_total_iops_read":                          0,
-		"system_total_iops_read_write":                    465200,
-		"system_total_iops_write":                         465200,
+	job.Config = Config{
+		HTTP: web.HTTP{
+			Request: web.Request{
+				UserURL:  "https://192.168.88.221",
+				Username: "admin",
+				Password: "123qwe!@#QWE",
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second * 10},
+				ClientTLSConfig: web.ClientTLSConfig{
+					InsecureSkipVerify: true,
+				},
+			},
+		},
 	}
 
-	assert.Equal(t, expected, job.Collect())
+	require.True(t, job.Init())
+	require.True(t, job.Check())
+	defer job.client.Logout()
+	job.ParseUserURL()
+
+	ins, err := job.client.Instances()
+	fmt.Println(ins, 123)
+	return
+
+	m := job.Collect()
+
+	//m := make(map[string]interface{})
+	//m := make([]interface{}, 0)
+	req := job.Request
+	req.URL.Path = "/api/instances"
+	if err := job.client.DoJSONWithRetry(&m, req); err != nil {
+		fmt.Println(err)
+		return
+	}
+	//err := job.client.SelectedStatistics(&m, selectedStatisticsQuery2)
+	//if err != nil {
+	//	parts := strings.Split(err.Error(), ":")
+	//	parts = strings.Split(parts[3], ",")
+	//	parts[0] = strings.TrimSpace(parts[0])
+	//	parts[len(parts)-1] = strings.TrimRight(parts[len(parts)-1], ".")
+	//	sort.Strings(parts)
+	//	fmt.Println("[")
+	//	for _, v := range parts {
+	//		fmt.Printf("\"%s\",\n", v)
+	//	}
+	//	fmt.Println("]")
+	//	return
+	//}
+
+	b, err := json.MarshalIndent(m, "", " ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(string(b))
+
+	//mx := newMetrics()
+	//if err := job.collectSdcStatistics(mx); err != nil {
+	//	fmt.Println(err)
+	//}
+	//m := stm.ToMap(mx.Sdc)
+	//l := make([]string, 0)
+	//for k := range m {
+	//	l = append(l, k)
+	//}
+	//sort.Strings(l)
+	//for _, value := range l {
+	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
+	//}
 }
 
-type okAPIClient struct {
-	loggedIn bool
-}
+//func TestNew(t *testing.T) {
+//	job := New()
+//
+//	assert.Implements(t, (*module.Module)(nil), job)
+//}
+//
+//func TestScaleIO_Init(t *testing.T) {
+//	job := New()
+//	job.UserURL = "http://127.0.0.1:38001"
+//	job.Username = "username"
+//	job.Password = "password"
+//
+//	require.True(t, job.Init())
+//	assert.NotNil(t, job.client)
+//}
+//
+//func TestScaleIO_InitNG(t *testing.T) {
+//	job := New()
+//
+//	assert.False(t, job.Init())
+//}
+//
+//func TestScaleIO_Check(t *testing.T) {
+//	job := New()
+//	job.UserURL = "http://127.0.0.1:38001"
+//	job.Username = "username"
+//	job.Password = "password"
+//
+//	require.True(t, job.Init())
+//	job.client = &okAPIClient{}
+//	require.True(t, job.Check())
+//}
+//
+//func TestScaleIO_CheckNG(t *testing.T) {
+//	job := New()
+//	job.UserURL = "http://127.0.0.1:38001"
+//	job.Username = "username"
+//	job.Password = "password"
+//
+//	require.True(t, job.Init())
+//	assert.False(t, job.Check())
+//}
+//
+//func TestScaleIO_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
+//
+//func TestScaleIO_Cleanup(t *testing.T) {
+//	job := New()
+//	job.UserURL = "http://127.0.0.1:38001"
+//	job.Username = "username"
+//	job.Password = "password"
+//
+//	require.True(t, job.Init())
+//	job.client = &okAPIClient{}
+//	require.True(t, job.Check())
+//
+//	assert.True(t, job.client.LoggedIn())
+//	job.Cleanup()
+//	assert.False(t, job.client.LoggedIn())
+//}
+//
+//func TestScaleIO_Collect(t *testing.T) {
+//	job := New()
+//	job.UserURL = "http://127.0.0.1:38001"
+//	job.Username = "username"
+//	job.Password = "password"
+//
+//	require.True(t, job.Init())
+//	job.client = &okAPIClient{}
+//	require.True(t, job.Check())
+//
+//	expected := map[string]int64{
+//		"system_backend_primary_bandwidth_read":           0,
+//		"system_backend_primary_bandwidth_read_write":     82616000,
+//		"system_backend_primary_bandwidth_write":          82616000,
+//		"system_backend_primary_io_size_read":             0,
+//		"system_backend_primary_io_size_read_write":       320963,
+//		"system_backend_primary_io_size_write":            320963,
+//		"system_backend_primary_iops_read":                0,
+//		"system_backend_primary_iops_read_write":          257399,
+//		"system_backend_primary_iops_write":               257399,
+//		"system_backend_secondary_bandwidth_read":         0,
+//		"system_backend_secondary_bandwidth_read_write":   82432000,
+//		"system_backend_secondary_bandwidth_write":        82432000,
+//		"system_backend_secondary_io_size_read":           0,
+//		"system_backend_secondary_io_size_read_write":     396689,
+//		"system_backend_secondary_io_size_write":          396689,
+//		"system_backend_secondary_iops_read":              0,
+//		"system_backend_secondary_iops_read_write":        207800,
+//		"system_backend_secondary_iops_write":             207800,
+//		"system_backend_total_bandwidth_read":             0,
+//		"system_backend_total_bandwidth_read_write":       165048000,
+//		"system_backend_total_bandwidth_write":            165048000,
+//		"system_backend_total_io_size_read":               0,
+//		"system_backend_total_io_size_read_write":         717652,
+//		"system_backend_total_io_size_write":              717652,
+//		"system_backend_total_iops_read":                  0,
+//		"system_backend_total_iops_read_write":            465200,
+//		"system_backend_total_iops_write":                 465200,
+//		"system_capacity_available_for_volume_allocation": 67108864,
+//		"system_capacity_decreased":                       0,
+//		"system_capacity_degraded":                        0,
+//		"system_capacity_failed":                          0,
+//		"system_capacity_in_maintenance":                  0,
+//		"system_capacity_in_use":                          65386496,
+//		"system_capacity_limit":                           337638400,
+//		"system_capacity_max_capacity":                    337638400,
+//		"system_capacity_protected":                       65386496,
+//		"system_capacity_semi_protected":                  0,
+//		"system_capacity_snap_in_use":                     17451008,
+//		"system_capacity_snap_in_use_occupied":            0,
+//		"system_capacity_spare":                           118172672,
+//		"system_capacity_thick_in_use":                    16777216,
+//		"system_capacity_thin_allocated":                  67108864,
+//		"system_capacity_thin_free":                       18499584,
+//		"system_capacity_thin_in_use":                     48609280,
+//		"system_capacity_unreachable_unused":              0,
+//		"system_capacity_unused":                          154079232,
+//		"system_frontend_user_data_bandwidth_read":        0,
+//		"system_frontend_user_data_bandwidth_read_write":  87404000,
+//		"system_frontend_user_data_bandwidth_write":       87404000,
+//		"system_frontend_user_data_io_size_read":          0,
+//		"system_frontend_user_data_io_size_read_write":    346841,
+//		"system_frontend_user_data_io_size_write":         346841,
+//		"system_frontend_user_data_iops_read":             0,
+//		"system_frontend_user_data_iops_read_write":       252000,
+//		"system_frontend_user_data_iops_write":            252000,
+//		"system_num_of_devices":                           3,
+//		"system_num_of_fault_sets":                        2,
+//		"system_num_of_mapped_to_all_volumes":             0,
+//		"system_num_of_mapped_volumes":                    2,
+//		"system_num_of_protection_domains":                2,
+//		"system_num_of_rfcache_devices":                   0,
+//		"system_num_of_scsi_initiators":                   0,
+//		"system_num_of_sdc":                               3,
+//		"system_num_of_sds":                               3,
+//		"system_num_of_snapshots":                         0,
+//		"system_num_of_storage_pools":                     2,
+//		"system_num_of_thick_base_volumes":                1,
+//		"system_num_of_thin_base_volumes":                 3,
+//		"system_num_of_unmapped_volumes":                  2,
+//		"system_num_of_volumes":                           4,
+//		"system_num_of_volumes_in_deletion":               0,
+//		"system_num_of_vtrees":                            4,
+//		"system_rebalance_bandwidth_read":                 0,
+//		"system_rebalance_bandwidth_read_write":           0,
+//		"system_rebalance_bandwidth_write":                0,
+//		"system_rebalance_io_size_read":                   0,
+//		"system_rebalance_io_size_read_write":             0,
+//		"system_rebalance_io_size_write":                  0,
+//		"system_rebalance_iops_read":                      0,
+//		"system_rebalance_iops_read_write":                0,
+//		"system_rebalance_iops_write":                     0,
+//		"system_rebalance_pending_capacity_in_Kb":         0,
+//		"system_rebuild_backward_bandwidth_read":          0,
+//		"system_rebuild_backward_bandwidth_read_write":    0,
+//		"system_rebuild_backward_bandwidth_write":         0,
+//		"system_rebuild_backward_io_size_read":            0,
+//		"system_rebuild_backward_io_size_read_write":      0,
+//		"system_rebuild_backward_io_size_write":           0,
+//		"system_rebuild_backward_iops_read":               0,
+//		"system_rebuild_backward_iops_read_write":         0,
+//		"system_rebuild_backward_iops_write":              0,
+//		"system_rebuild_backward_pending_capacity_in_Kb":  0,
+//		"system_rebuild_forward_bandwidth_read":           0,
+//		"system_rebuild_forward_bandwidth_read_write":     0,
+//		"system_rebuild_forward_bandwidth_write":          0,
+//		"system_rebuild_forward_io_size_read":             0,
+//		"system_rebuild_forward_io_size_read_write":       0,
+//		"system_rebuild_forward_io_size_write":            0,
+//		"system_rebuild_forward_iops_read":                0,
+//		"system_rebuild_forward_iops_read_write":          0,
+//		"system_rebuild_forward_iops_write":               0,
+//		"system_rebuild_forward_pending_capacity_in_Kb":   0,
+//		"system_rebuild_normal_bandwidth_read":            0,
+//		"system_rebuild_normal_bandwidth_read_write":      0,
+//		"system_rebuild_normal_bandwidth_write":           0,
+//		"system_rebuild_normal_io_size_read":              0,
+//		"system_rebuild_normal_io_size_read_write":        0,
+//		"system_rebuild_normal_io_size_write":             0,
+//		"system_rebuild_normal_iops_read":                 0,
+//		"system_rebuild_normal_iops_read_write":           0,
+//		"system_rebuild_normal_iops_write":                0,
+//		"system_rebuild_normal_pending_capacity_in_Kb":    0,
+//		"system_rebuild_total_bandwidth_read":             0,
+//		"system_rebuild_total_bandwidth_read_write":       0,
+//		"system_rebuild_total_bandwidth_write":            0,
+//		"system_rebuild_total_io_size_read":               0,
+//		"system_rebuild_total_io_size_read_write":         0,
+//		"system_rebuild_total_io_size_write":              0,
+//		"system_rebuild_total_iops_read":                  0,
+//		"system_rebuild_total_iops_read_write":            0,
+//		"system_rebuild_total_iops_write":                 0,
+//		"system_rebuild_total_pending_capacity_in_Kb":     0,
+//		"system_total_bandwidth_read":                     0,
+//		"system_total_bandwidth_read_write":               165048000,
+//		"system_total_bandwidth_write":                    165048000,
+//		"system_total_io_size_read":                       0,
+//		"system_total_io_size_read_write":                 354789,
+//		"system_total_io_size_write":                      354789,
+//		"system_total_iops_read":                          0,
+//		"system_total_iops_read_write":                    465200,
+//		"system_total_iops_write":                         465200,
+//	}
+//
+//	assert.Equal(t, expected, job.Collect())
+//}
+//
+//type okAPIClient struct {
+//	loggedIn bool
+//}
+//
+//func (o *okAPIClient) Login() error  { o.loggedIn = true; return nil }
+//func (o *okAPIClient) Logout() error { o.loggedIn = false; return nil }
+//func (o okAPIClient) LoggedIn() bool { return o.loggedIn }
+//func (o okAPIClient) Sdc() ([]client.Sdc, error) {
+//	return nil, nil
+//}
+//func (o okAPIClient) StoragePool() ([]client.StoragePool, error) {
+//	return nil, nil
+//}
+//
+//func (okAPIClient) SelectedStatistics(dst interface{}, query string) error {
+//	r := bytes.NewBuffer(selectedStatisticsData)
+//	return json.NewDecoder(r).Decode(dst)
+//}
 
-func (o *okAPIClient) Login() error    { o.loggedIn = true; return nil }
-func (o *okAPIClient) Logout() error   { o.loggedIn = false; return nil }
-func (o okAPIClient) IsLoggedIn() bool { return o.loggedIn }
-
-func (okAPIClient) SelectedStatistics(dst interface{}, query string) error {
-	r := bytes.NewBuffer(selectedStatisticsData)
-	return json.NewDecoder(r).Decode(dst)
-}
+//func newTestServer() *httptest.Server {
+//	handle := func(w http.ResponseWriter, r *http.Request) {
+//		if !strings.HasPrefix(r.URL.Path, "/api/") {
+//			w.WriteHeader(http.StatusNotFound)
+//			return
+//		}
+//		switch r.URL.Path {
+//		default:
+//			w.WriteHeader(http.StatusBadRequest)
+//		case pathLogin:
+//			_, _ = w.Write([]byte(testToken))
+//		case pathLogout:
+//		case pathVersion:
+//			_, _ = w.Write([]byte(testVersion))
+//		case pathSelectedStatistics:
+//			_, _ = w.Write([]byte(`{"A": 1, "B": 2}`))
+//		}
+//	}
+//
+//	return httptest.NewServer(http.HandlerFunc(handle))
+//}

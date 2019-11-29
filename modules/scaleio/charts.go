@@ -1,6 +1,12 @@
 package scaleio
 
-import "github.com/netdata/go-orchestrator/module"
+import (
+	"fmt"
+
+	"github.com/netdata/go.d.plugin/modules/scaleio/client"
+
+	"github.com/netdata/go-orchestrator/module"
+)
 
 type (
 	// Charts is an alias for module.Charts
@@ -9,7 +15,7 @@ type (
 	Dims = module.Dims
 )
 
-var charts = Charts{
+var systemCharts = Charts{
 	// Capacity
 	{
 		ID:    "system_capacity_total",
@@ -108,16 +114,6 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "system_workload_primary_io_size_total",
-		Title: "Primary Backend I/O Size Total (Read and Write)",
-		Units: "KB",
-		Fam:   "i/o workload",
-		Ctx:   "scaleio.system_workload_primary_io_size_total",
-		Dims: Dims{
-			{ID: "system_backend_primary_io_size_read_write", Name: "io_size", Div: 1000},
-		},
-	},
-	{
 		ID:    "system_workload_primary_iops",
 		Title: "Primary Backend IOPS",
 		Units: "iops/s",
@@ -127,6 +123,16 @@ var charts = Charts{
 		Dims: Dims{
 			{ID: "system_backend_primary_iops_read", Name: "read", Div: 1000},
 			{ID: "system_backend_primary_iops_write", Name: "write", Mul: -1, Div: 1000},
+		},
+	},
+	{
+		ID:    "system_workload_primary_io_size_total",
+		Title: "Primary Backend I/O Size Total (Read and Write)",
+		Units: "KB",
+		Fam:   "i/o workload",
+		Ctx:   "scaleio.system_workload_primary_io_size_total",
+		Dims: Dims{
+			{ID: "system_backend_primary_io_size_read_write", Name: "io_size", Div: 1000},
 		},
 	},
 	// Rebalance
@@ -182,13 +188,12 @@ var charts = Charts{
 		Units: "number",
 		Fam:   "components",
 		Ctx:   "scaleio.system_defined_components",
-		Type:  module.Stacked,
+		//Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "system_num_of_devices", Name: "devices"},
 			{ID: "system_num_of_fault_sets", Name: "fault_sets"},
 			{ID: "system_num_of_protection_domains", Name: "protection_domains"},
 			{ID: "system_num_of_rfcache_devices", Name: "rfcache_devices"},
-			{ID: "system_num_of_scsi_initiators", Name: "scsi_initiators"},
 			{ID: "system_num_of_sdc", Name: "sdc"},
 			{ID: "system_num_of_sds", Name: "sds"},
 			{ID: "system_num_of_snapshots", Name: "snapshots"},
@@ -221,4 +226,184 @@ var charts = Charts{
 			{ID: "system_num_of_unmapped_volumes", Name: "unmapped"},
 		},
 	},
+}
+
+var storagePoolCharts = Charts{
+	{
+		ID:    "storage_pool_%s_capacity_total",
+		Title: "Total Capacity",
+		Units: "KB",
+		Fam:   "pool %s",
+		Ctx:   "scaleio.storage_pool_%s_capacity_total",
+		Dims: Dims{
+			{ID: "storage_pool_%s_capacity_max_capacity", Name: "total"},
+		},
+	},
+	{
+		ID:    "storage_pool_%s_capacity",
+		Title: "Capacity",
+		Units: "KB",
+		Fam:   "pool %s",
+		Type:  module.Stacked,
+		Ctx:   "scaleio.storage_pool_%s_capacity",
+		Dims: Dims{
+			{ID: "storage_pool_%s_capacity_protected", Name: "protected"},
+			{ID: "storage_pool_%s_capacity_degraded", Name: "degraded"},
+			{ID: "storage_pool_%s_capacity_spare", Name: "spare"},
+			{ID: "storage_pool_%s_capacity_failed", Name: "failed"},
+			{ID: "storage_pool_%s_capacity_decreased", Name: "decreased"},
+			{ID: "storage_pool_%s_capacity_unreachable_unused", Name: "unavailable"},
+			{ID: "storage_pool_%s_capacity_in_maintenance", Name: "in_maintenance"},
+			{ID: "storage_pool_%s_capacity_unused", Name: "unused"},
+		},
+	},
+	{
+		ID:    "storage_pool_%s_available_volume_allocation",
+		Title: "Available For Volume Allocation",
+		Units: "KB",
+		Fam:   "pool %s",
+		Ctx:   "scaleio.storage_pool_%s_available_volume_allocation",
+		Dims: Dims{
+			{ID: "storage_pool_%s_capacity_available_for_volume_allocation", Name: "available"},
+		},
+	},
+	{
+		ID:    "storage_pool_%s_components",
+		Title: "Components",
+		Units: "number",
+		Fam:   "pool %s",
+		Ctx:   "scaleio.storage_pool_%s_components",
+		//Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "storage_pool_%s_num_of_devices", Name: "devices"},
+			{ID: "storage_pool_%s_num_of_snapshots", Name: "snapshots"},
+			{ID: "storage_pool_%s_num_of_volumes", Name: "volumes"},
+			{ID: "storage_pool_%s_num_of_vtrees", Name: "vtrees"},
+		},
+	},
+}
+
+var sdcCharts = Charts{
+	{
+		ID:    "sdc_%s_mdm_connection_state",
+		Title: "MDM Connection State",
+		Units: "bool",
+		Fam:   "sdc %s",
+		Ctx:   "scaleio.sdc_%s_mdm_connection_state",
+		Dims: Dims{
+			{ID: "sdc_%s_mdm_connection_state", Name: "connected"},
+		},
+	},
+	{
+		ID:    "sdc_%s_bandwidth",
+		Title: "Bandwidth",
+		Units: "KB/s",
+		Fam:   "sdc %s",
+		Ctx:   "scaleio.sdc_%s_bandwidth",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "sdc_%s_bandwidth_read", Name: "read", Div: 1000},
+			{ID: "sdc_%s_bandwidth_write", Name: "write", Mul: -1, Div: 1000},
+		},
+	},
+	{
+		ID:    "sdc_%s_iops",
+		Title: "IOPS",
+		Units: "iops/s",
+		Fam:   "sdc %s",
+		Ctx:   "scaleio.sdc_%s_iops",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "sdc_%s_iops_read", Name: "read", Div: 1000},
+			{ID: "sdc_%s_iops_write", Name: "write", Mul: -1, Div: 1000},
+		},
+	},
+	{
+		ID:    "sdc_%s_io_size",
+		Title: "I/O Size",
+		Units: "KB",
+		Fam:   "sdc %s",
+		Ctx:   "scaleio.sdc_%s_io_size",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "sdc_%s_io_size_read", Name: "read", Div: 1000},
+			{ID: "sdc_%s_io_size_write", Name: "write", Mul: -1, Div: 1000},
+		},
+	},
+	{
+		ID:    "sdc_%s_num_of_mapped_volumed",
+		Title: "Mapped Volumes",
+		Units: "volumes",
+		Fam:   "sdc %s",
+		Ctx:   "scaleio.sdc_%s_num_of_mapped_volumed",
+		Dims: Dims{
+			{ID: "sdc_%s_num_of_mapped_volumes", Name: "mapped"},
+		},
+	},
+}
+
+func newStoragePoolCharts(pool client.StoragePool) *Charts {
+	charts := storagePoolCharts.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, pool.ID)
+		chart.Fam = fmt.Sprintf(chart.Fam, pool.Name)
+		chart.Ctx = fmt.Sprintf(chart.Ctx, pool.ID)
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, pool.ID)
+		}
+	}
+	return charts
+}
+
+func newSdcCharts(sdc client.Sdc) *Charts {
+	charts := sdcCharts.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, sdc.ID)
+		chart.Fam = fmt.Sprintf(chart.Fam, sdc.SdcIp)
+		chart.Ctx = fmt.Sprintf(chart.Ctx, sdc.ID)
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, sdc.ID)
+		}
+	}
+	return charts
+}
+
+// TODO: remove stale charts?
+func (s *ScaleIO) updateCharts() {
+	s.updateStoragePoolCharts()
+	s.updateSdcCharts()
+}
+
+func (s *ScaleIO) updateStoragePoolCharts() {
+	for k, v := range s.discovered.pool {
+		if s.charted.pool[k] {
+			continue
+		}
+		s.charted.pool[k] = true
+		s.addStoragePoolCharts(v)
+	}
+}
+
+func (s *ScaleIO) updateSdcCharts() {
+	for k, v := range s.discovered.sdc {
+		if s.charted.sdc[k] {
+			continue
+		}
+		s.charted.sdc[k] = true
+		s.addSdcCharts(v)
+	}
+}
+
+func (s *ScaleIO) addStoragePoolCharts(pool client.StoragePool) {
+	charts := newStoragePoolCharts(pool)
+	if err := s.Charts().Add(*charts...); err != nil {
+		s.Warningf("couldn't add charts for storage pool '%s(%s)': %v", pool.ID, pool.Name, err)
+	}
+}
+
+func (s *ScaleIO) addSdcCharts(sdc client.Sdc) {
+	charts := newSdcCharts(sdc)
+	if err := s.Charts().Add(*charts...); err != nil {
+		s.Warningf("couldn't add charts for sdc '%s(%s)': %v", sdc.ID, sdc.SdcIp, err)
+	}
 }
