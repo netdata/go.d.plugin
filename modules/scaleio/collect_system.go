@@ -11,11 +11,10 @@ func (s *ScaleIO) collectSystemOverview(mx *metrics, stats client.SelectedStatis
 }
 
 func collectSystemCapacity(mx *metrics, stats client.SelectedStatistics) {
-	m := &mx.SystemOverview.Capacity
-	collectCapacity(m, stats.System.CapacityStatistics)
+	collectCapacity(&mx.SystemOverview.Capacity, stats.System.CapacityStatistics)
 }
 
-func collectCapacity(m *systemCapacity, s client.CapacityStatistics) {
+func collectCapacity(m *capacity, s client.CapacityStatistics) {
 	// Health
 	m.Protected = s.ProtectedCapacityInKb
 	m.InMaintenance = s.InMaintenanceCapacityInKb
@@ -46,7 +45,6 @@ func collectCapacity(m *systemCapacity, s client.CapacityStatistics) {
 	// Other
 	m.InUse = s.CapacityInUseInKb
 	m.AvailableForVolumeAllocation = s.CapacityAvailableForVolumeAllocationInKb
-	m.Utilization = div(100*s.CapacityInUseInKb, s.MaxCapacityInKb-s.SpareCapacityInKb)
 }
 
 func collectSystemComponents(mx *metrics, stats client.SelectedStatistics) {

@@ -13,7 +13,7 @@ type metrics struct {
 }
 
 type (
-	systemCapacity struct {
+	capacity struct {
 		MaxCapacity int64 `stm:"max_capacity"`
 		ThickInUse  int64 `stm:"thick_in_use"`
 		ThinInUse   int64 `stm:"thin_in_use"`
@@ -24,7 +24,7 @@ type (
 
 		InUse                        int64   `stm:"in_use"`
 		AvailableForVolumeAllocation int64   `stm:"available_for_volume_allocation"`
-		Utilization                  float64 `stm:"utilization,100,1"`
+		Utilization                  float64 `stm:"utilization,100,1"` // TODO: only StoragePool (sparePercentage)
 
 		Protected         int64 `stm:"protected"`
 		InMaintenance     int64 `stm:"in_maintenance"`
@@ -32,6 +32,7 @@ type (
 		Failed            int64 `stm:"failed"`
 		UnreachableUnused int64 `stm:"unreachable_unused"`
 	}
+	systemCapacity   = capacity
 	systemComponents struct {
 		Devices            int64 `stm:"devices"`
 		FaultSets          int64 `stm:"fault_sets"`

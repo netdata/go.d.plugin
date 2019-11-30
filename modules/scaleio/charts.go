@@ -54,16 +54,6 @@ var systemCharts = Charts{
 		},
 	},
 	{
-		ID:    "system_capacity_utilization",
-		Title: "Capacity Utilization",
-		Units: "percentage",
-		Fam:   "capacity",
-		Ctx:   "scaleio.system_capacity_utilization",
-		Dims: Dims{
-			{ID: "system_capacity_utilization", Name: "utilization", Div: 100},
-		},
-	},
-	{
 		ID:    "system_available_volume_allocation",
 		Title: "Available For Volume Allocation",
 		Units: "KB",

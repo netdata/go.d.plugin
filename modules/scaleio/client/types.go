@@ -32,8 +32,9 @@ type Sdc struct {
 }
 
 type StoragePool struct {
-	Name string `json:"name"`
-	ID   string `json:"id"`
+	Name            string `json:"name"`
+	ID              string `json:"id"`
+	SparePercentage int64
 }
 
 type Instances struct {
@@ -67,25 +68,24 @@ type SelectedStatistics struct {
 	StoragePool map[string]StoragePoolStatistics
 }
 
-type CapacityStatistics struct {
-	CapacityAvailableForVolumeAllocationInKb int64
-	MaxCapacityInKb                          int64
-	CapacityLimitInKb                        int64
-	ProtectedCapacityInKb                    int64
-	DegradedFailedCapacityInKb               int64
-	DegradedHealthyCapacityInKb              int64
-	SpareCapacityInKb                        int64
-	FailedCapacityInKb                       int64
-	UnreachableUnusedCapacityInKb            int64
-	InMaintenanceCapacityInKb                int64
-	ThinCapacityAllocatedInKb                int64
-	ThinCapacityInUseInKb                    int64
-	ThickCapacityInUseInKb                   int64
-	SnapCapacityInUseOccupiedInKb            int64
-	CapacityInUseInKb                        int64
-}
-
 type (
+	CapacityStatistics struct {
+		CapacityAvailableForVolumeAllocationInKb int64
+		MaxCapacityInKb                          int64
+		CapacityLimitInKb                        int64
+		ProtectedCapacityInKb                    int64
+		DegradedFailedCapacityInKb               int64
+		DegradedHealthyCapacityInKb              int64
+		SpareCapacityInKb                        int64
+		FailedCapacityInKb                       int64
+		UnreachableUnusedCapacityInKb            int64
+		InMaintenanceCapacityInKb                int64
+		ThinCapacityAllocatedInKb                int64
+		ThinCapacityInUseInKb                    int64
+		ThickCapacityInUseInKb                   int64
+		SnapCapacityInUseOccupiedInKb            int64
+		CapacityInUseInKb                        int64
+	}
 	SystemStatistics struct {
 		CapacityStatistics
 
