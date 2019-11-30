@@ -19,7 +19,7 @@ func (s *ScaleIO) collectStoragePool(mx *metrics, stats client.SelectedStatistic
 }
 
 func collectStoragePoolCapacity(m *storagePoolStatistics, s client.StoragePoolStatistics, pool client.StoragePool) {
-	collectCapacity(&m.Capacity, s.CapacityStatistics)
+	collectCapacity(&m.Capacity.capacity, s.CapacityStatistics)
 	m.Capacity.Utilization = calcCapacityUtilization(s.CapacityInUseInKb, s.MaxCapacityInKb, pool.SparePercentage)
 }
 
@@ -32,8 +32,5 @@ func collectStoragePoolComponents(m *storagePoolStatistics, s client.StoragePool
 
 func calcCapacityUtilization(inUse int64, max int64, sparePercent int64) float64 {
 	spare := float64(max) / 100 * float64(sparePercent)
-	return divFloat(
-		float64(100*inUse),
-		float64(max)-spare,
-	)
+	return divFloat(float64(100*inUse), float64(max)-spare)
 }

@@ -61,23 +61,33 @@ func TestNewTest(t *testing.T) {
 	defer job.client.Logout()
 	job.ParseUserURL()
 
-	v, err := job.client.SelectedStatistics(query)
+	i, err := job.client.Instances()
 	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(v.System.SnapCapacityInUseOccupiedInKb)
-	return
-
-	m := job.Collect()
-
-	//m := make(map[string]interface{})
-	//m := make([]interface{}, 0)
-	req := job.Request
-	req.URL.Path = "/api/instances"
-	if err := job.client.DoJSONWithRetry(&m, req); err != nil {
 		fmt.Println(err)
 		return
 	}
+
+	fmt.Println(i.SdcList[1].Name, i.SdcList[1].SdcIp)
+
+	return
+
+	//v, err := job.client.SelectedStatistics(query)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//fmt.Println(v.System.SnapCapacityInUseOccupiedInKb)
+	//return
+	//
+	//m := job.Collect()
+
+	//m := make(map[string]interface{})
+	//m := make([]interface{}, 0)
+	//req := job.Request
+	//req.URL.Path = "/api/instances"
+	//if err := job.client.DoJSONWithRetry(&m, req); err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
 	//err := job.client.SelectedStatistics(&m, selectedStatisticsQuery2)
 	//if err != nil {
 	//	parts := strings.Split(err.Error(), ":")
@@ -93,13 +103,13 @@ func TestNewTest(t *testing.T) {
 	//	return
 	//}
 
-	b, err := json.MarshalIndent(m, "", " ")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Println(string(b))
+	//b, err := json.MarshalIndent(m, "", " ")
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//
+	//fmt.Println(string(b))
 
 	//mx := newMetrics()
 	//if err := job.collectSdcStatistics(mx); err != nil {

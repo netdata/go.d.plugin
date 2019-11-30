@@ -70,31 +70,32 @@ Relationships:
 - VTree            // StoragePool
 */
 
-func New(webClient web.Client, request web.Request) (*Client, error) {
-	httpClient, err := web.NewHTTPClient(webClient)
-	if err != nil {
-		return nil, err
-	}
-	if err := request.ParseUserURL(); err != nil {
-		return nil, err
+// New creates new ScaleIO client.
+func New(client *http.Client, request web.Request) *Client {
+	_ = request.ParseUserURL()
+	if client == nil {
+		client = http.DefaultClient
 	}
 	return &Client{
-		httpClient: httpClient,
+		httpClient: client,
 		request:    request,
 		token:      newToken(),
-	}, nil
+	}
 }
 
+// Client represents ScaleIO client.
 type Client struct {
 	httpClient *http.Client
 	request    web.Request
 	token      *token
 }
 
+// LoggedIn reports whether the client is logged in.
 func (c Client) LoggedIn() bool {
 	return c.token.isSet()
 }
 
+// Login connects to FxFlex Gateway to get the token that is used for later authentication for other requests.
 func (c *Client) Login() error {
 	if c.LoggedIn() {
 		_ = c.Logout()
@@ -115,6 +116,7 @@ func (c *Client) Login() error {
 	return nil
 }
 
+// Logout sends logout request and unsets token.
 func (c *Client) Logout() error {
 	if !c.LoggedIn() {
 		return nil
@@ -127,6 +129,7 @@ func (c *Client) Logout() error {
 	return err
 }
 
+// APIVersion returns FxFlex Gateway API version.
 func (c *Client) APIVersion() (Version, error) {
 	req := c.createAPIVersionRequest()
 	resp, err := c.doOK(req)
@@ -137,6 +140,7 @@ func (c *Client) APIVersion() (Version, error) {
 	return decodeVersion(resp.Body)
 }
 
+// SelectedStatistics returns selected statistics.
 func (c *Client) SelectedStatistics(query SelectedStatisticsQuery) (SelectedStatistics, error) {
 	b, _ := json.Marshal(query)
 	req := c.createSelectedStatisticsRequest(b)
@@ -145,6 +149,7 @@ func (c *Client) SelectedStatistics(query SelectedStatisticsQuery) (SelectedStat
 	return stats, err
 }
 
+// Instances returns all instances.
 func (c *Client) Instances() (Instances, error) {
 	req := c.createInstancesRequest()
 	var instances Instances
@@ -217,6 +222,7 @@ func (c *Client) doOKWithRetry(req web.Request) (*http.Response, error) {
 		if err = c.Login(); err != nil {
 			return resp, err
 		}
+		req.Password = c.token.get()
 		return c.doOK(req)
 	}
 	if err = checkStatusCode(resp); err != nil {
@@ -232,11 +238,6 @@ func (c *Client) doJSONWithRetry(dst interface{}, req web.Request) error {
 		return err
 	}
 	return json.NewDecoder(resp.Body).Decode(dst)
-}
-
-func (c *Client) DoJSONWithRetry(dst interface{}, req web.Request) error {
-	req.Password = c.token.get()
-	return c.doJSONWithRetry(dst, req)
 }
 
 func closeBody(resp *http.Response) {

@@ -22,9 +22,8 @@ type (
 		Decreased   int64 `stm:"decreased"` // not in statistics, should be calculated
 		Unused      int64 `stm:"unused"`
 
-		InUse                        int64   `stm:"in_use"`
-		AvailableForVolumeAllocation int64   `stm:"available_for_volume_allocation"`
-		Utilization                  float64 `stm:"utilization,100,1"` // TODO: only StoragePool (sparePercentage)
+		InUse                        int64 `stm:"in_use"`
+		AvailableForVolumeAllocation int64 `stm:"available_for_volume_allocation"`
 
 		Protected         int64 `stm:"protected"`
 		InMaintenance     int64 `stm:"in_maintenance"`
@@ -89,7 +88,10 @@ type (
 			Snapshots int64 `stm:"snapshots"`
 		} `stm:"num_of"`
 	}
-	storagePoolCapacity = systemCapacity
+	storagePoolCapacity struct {
+		capacity
+		Utilization float64 `stm:"utilization,100,1"` // TODO: only StoragePool (sparePercentage)
+	}
 )
 
 type (

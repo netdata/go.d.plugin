@@ -26,20 +26,20 @@ type Bwc struct {
 }
 
 type Sdc struct {
-	SdcIp              string `json:"SdcIp"`
-	MdmConnectionState string `json:"mdmConnectionState"`
-	ID                 string `json:"id"`
+	ID                 string
+	SdcIp              string
+	MdmConnectionState string
 }
 
 type StoragePool struct {
-	Name            string `json:"name"`
-	ID              string `json:"id"`
+	ID              string
+	Name            string
 	SparePercentage int64
 }
 
 type Instances struct {
-	StoragePool []StoragePool `json:"storagePoolList"`
-	Sdc         []Sdc         `json:"sdcList"`
+	StoragePoolList []StoragePool
+	SdcList         []Sdc
 }
 
 type (
@@ -47,10 +47,10 @@ type (
 		List []SelectedObject `json:"selectedStatisticsList"`
 	}
 	SelectedObject struct {
-		Type       string   `json:"type"`
+		Type       string
 		IDs        []string `json:"ids,omitempty"`
 		ALLIDs     allIds   `json:"allIds,omitempty"`
-		Properties []string `json:"properties"`
+		Properties []string
 	}
 	allIds bool
 )

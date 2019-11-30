@@ -11,6 +11,9 @@ import (
 
 func init() {
 	creator := module.Creator{
+		//Defaults: module.Defaults{
+		//	UpdateEvery: 5,
+		//},
 		Create: func() module.Module { return New() },
 	}
 
