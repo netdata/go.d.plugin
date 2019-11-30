@@ -3,7 +3,7 @@ package scaleio
 type metrics struct {
 	SystemOverview struct {
 		Capacity   systemCapacity   `stm:"capacity"`
-		IOWorkload systemIOWorkload `stm:""`
+		IOWorkload systemWorkload   `stm:""`
 		Rebalance  systemRebalance  `stm:"rebalance"`
 		Rebuild    systemRebuild    `stm:"rebuild"`
 		Components systemComponents `stm:"num_of"`
@@ -13,48 +13,43 @@ type metrics struct {
 }
 
 type (
-	systemComponents struct {
-		Devices            float64 `stm:"devices"`
-		FaultSets          float64 `stm:"fault_sets"`
-		ProtectionDomains  float64 `stm:"protection_domains"`
-		RfcacheDevices     float64 `stm:"rfcache_devices"`
-		ScsiInitiators     float64 `stm:"scsi_initiators"`
-		Sdc                float64 `stm:"sdc"`
-		Sds                float64 `stm:"sds"`
-		Snapshots          float64 `stm:"snapshots"`
-		StoragePools       float64 `stm:"storage_pools"`
-		MappedToAllVolumes float64 `stm:"mapped_to_all_volumes"`
-		ThickBaseVolumes   float64 `stm:"thick_base_volumes"`
-		ThinBaseVolumes    float64 `stm:"thin_base_volumes"`
-		UnmappedVolumes    float64 `stm:"unmapped_volumes"`
-		MappedVolumes      float64 `stm:"mapped_volumes"`
-		Volumes            float64 `stm:"volumes"`
-		VolumesInDeletion  float64 `stm:"volumes_in_deletion"`
-		VTrees             float64 `stm:"vtrees"`
-	}
-
 	systemCapacity struct {
-		MaxCapacity                  float64 `stm:"max_capacity"`
-		Protected                    float64 `stm:"protected"`
-		InMaintenance                float64 `stm:"in_maintenance"`
-		Degraded                     float64 `stm:"degraded"`
-		Failed                       float64 `stm:"failed"`
-		Spare                        float64 `stm:"spare"`
-		UnreachableUnused            float64 `stm:"unreachable_unused"`
-		Unused                       float64 `stm:"unused"`
-		Decreased                    float64 `stm:"decreased"` // not in statistics, should be calculated
-		AvailableForVolumeAllocation float64 `stm:"available_for_volume_allocation"`
-		InUse                        float64 `stm:"in_use"`
-		Limit                        float64 `stm:"limit"`
-		SemiProtected                float64 `stm:"semi_protected"`
-		SnapInUse                    float64 `stm:"snap_in_use"`
-		SnapInUseOccupied            float64 `stm:"snap_in_use_occupied"`
-		ThickInUse                   float64 `stm:"thick_in_use"`
-		ThinAllocated                float64 `stm:"thin_allocated"`
-		ThinInUse                    float64 `stm:"thin_in_use"`
-		ThinFree                     float64 `stm:"thin_free"`
+		MaxCapacity int64 `stm:"max_capacity"`
+		ThickInUse  int64 `stm:"thick_in_use"`
+		ThinInUse   int64 `stm:"thin_in_use"`
+		Snapshot    int64 `stm:"snapshot"`
+		Spare       int64 `stm:"spare"`
+		Decreased   int64 `stm:"decreased"` // not in statistics, should be calculated
+		Unused      int64 `stm:"unused"`
+
+		InUse                        int64   `stm:"in_use"`
+		AvailableForVolumeAllocation int64   `stm:"available_for_volume_allocation"`
+		Utilization                  float64 `stm:"utilization,100,1"`
+
+		Protected         int64 `stm:"protected"`
+		InMaintenance     int64 `stm:"in_maintenance"`
+		Degraded          int64 `stm:"degraded"`
+		Failed            int64 `stm:"failed"`
+		UnreachableUnused int64 `stm:"unreachable_unused"`
 	}
-	systemIOWorkload struct {
+	systemComponents struct {
+		Devices            int64 `stm:"devices"`
+		FaultSets          int64 `stm:"fault_sets"`
+		ProtectionDomains  int64 `stm:"protection_domains"`
+		RfcacheDevices     int64 `stm:"rfcache_devices"`
+		Sdc                int64 `stm:"sdc"`
+		Sds                int64 `stm:"sds"`
+		Snapshots          int64 `stm:"snapshots"`
+		StoragePools       int64 `stm:"storage_pools"`
+		MappedToAllVolumes int64 `stm:"mapped_to_all_volumes"`
+		ThickBaseVolumes   int64 `stm:"thick_base_volumes"`
+		ThinBaseVolumes    int64 `stm:"thin_base_volumes"`
+		UnmappedVolumes    int64 `stm:"unmapped_volumes"`
+		MappedVolumes      int64 `stm:"mapped_volumes"`
+		Volumes            int64 `stm:"volumes"`
+		VTrees             int64 `stm:"vtrees"`
+	}
+	systemWorkload struct {
 		Total   bwIOPS `stm:"total"`
 		Backend struct {
 			Total     bwIOPS `stm:"total"`
@@ -63,8 +58,11 @@ type (
 		} `stm:"backend"`
 		Frontend bwIOPS `stm:"frontend_user_data"`
 	}
-	systemRebalance bwIOPSPending
-	systemRebuild   struct {
+	systemRebalance struct {
+		TimeUntilFinish float64 `stm:"time_until_finish"`
+		bwIOPSPending   `stm:""`
+	}
+	systemRebuild struct {
 		Total    bwIOPSPending `stm:"total"`
 		Forward  bwIOPSPending `stm:"forward"`
 		Backward bwIOPSPending `stm:"backward"`
@@ -75,8 +73,8 @@ type (
 type (
 	sdcStatistics struct {
 		bwIOPS             `stm:""`
-		MappedVolumes      float64 `stm:"num_of_mapped_volumes"`
-		MDMConnectionState bool    `stm:"mdm_connection_state"`
+		MappedVolumes      int64 `stm:"num_of_mapped_volumes"`
+		MDMConnectionState bool  `stm:"mdm_connection_state"`
 	}
 )
 
@@ -84,24 +82,13 @@ type (
 	storagePoolStatistics struct {
 		Capacity   storagePoolCapacity `stm:"capacity"`
 		Components struct {
-			Devices   float64 `stm:"devices"`
-			Volumes   float64 `stm:"volumes"`
-			Vtrees    float64 `stm:"vtrees"`
-			Snapshots float64 `stm:"snapshots"`
+			Devices   int64 `stm:"devices"`
+			Volumes   int64 `stm:"volumes"`
+			Vtrees    int64 `stm:"vtrees"`
+			Snapshots int64 `stm:"snapshots"`
 		} `stm:"num_of"`
 	}
-	storagePoolCapacity struct {
-		MaxCapacity                  float64 `stm:"max_capacity"`
-		Protected                    float64 `stm:"protected"`
-		InMaintenance                float64 `stm:"in_maintenance"`
-		Degraded                     float64 `stm:"degraded"`
-		Failed                       float64 `stm:"failed"`
-		Spare                        float64 `stm:"spare"`
-		UnreachableUnused            float64 `stm:"unreachable_unused"`
-		Unused                       float64 `stm:"unused"`
-		Decreased                    float64 `stm:"decreased"` // not in statistics, should be calculated
-		AvailableForVolumeAllocation float64 `stm:"available_for_volume_allocation"`
-	}
+	storagePoolCapacity = systemCapacity
 )
 
 type (
@@ -117,7 +104,7 @@ type (
 	}
 	bwIOPSPending struct {
 		bwIOPS  `stm:""`
-		Pending float64 `stm:"pending_capacity_in_Kb"`
+		Pending int64 `stm:"pending_capacity_in_Kb"`
 	}
 )
 

@@ -25,6 +25,7 @@ func (s *ScaleIO) collectSdc(mx *metrics, stats client.SelectedStatistics) {
 		)
 		m.MappedVolumes = v.NumOfMappedVolumes
 		m.MDMConnectionState = isSdcConnected(sdc.MdmConnectionState)
+
 		mx.Sdc[k] = m
 	}
 }

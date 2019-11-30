@@ -61,8 +61,11 @@ func TestNewTest(t *testing.T) {
 	defer job.client.Logout()
 	job.ParseUserURL()
 
-	ins, err := job.client.Instances()
-	fmt.Println(ins, 123)
+	v, err := job.client.SelectedStatistics(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(v.System.SnapCapacityInUseOccupiedInKb)
 	return
 
 	m := job.Collect()

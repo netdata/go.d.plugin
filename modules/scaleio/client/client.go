@@ -139,8 +139,7 @@ func (c *Client) APIVersion() (Version, error) {
 
 func (c *Client) SelectedStatistics(query SelectedStatisticsQuery) (SelectedStatistics, error) {
 	b, _ := json.Marshal(query)
-
-	req := c.createSelectedStatisticsRequest(string(b))
+	req := c.createSelectedStatisticsRequest(b)
 	var stats SelectedStatistics
 	err := c.doJSONWithRetry(&stats, req)
 	return stats, err
@@ -151,20 +150,6 @@ func (c *Client) Instances() (Instances, error) {
 	var instances Instances
 	err := c.doJSONWithRetry(&instances, req)
 	return instances, err
-}
-
-func (c *Client) StoragePool() ([]StoragePool, error) {
-	req := c.createStoragePoolRequest()
-	var pools []StoragePool
-	err := c.doJSONWithRetry(&pools, req)
-	return pools, err
-}
-
-func (c *Client) Sdc() ([]Sdc, error) {
-	req := c.createSdcRequest()
-	var sdcs []Sdc
-	err := c.doJSONWithRetry(&sdcs, req)
-	return sdcs, err
 }
 
 func (c Client) createLoginRequest() web.Request {
@@ -187,33 +172,19 @@ func (c Client) createAPIVersionRequest() web.Request {
 	return req
 }
 
-func (c Client) createSelectedStatisticsRequest(query string) web.Request {
+func (c Client) createSelectedStatisticsRequest(query []byte) web.Request {
 	req := c.request.Copy()
 	req.URL.Path = "/api/instances/querySelectedStatistics"
 	req.Password = c.token.get()
 	req.Method = http.MethodPost
 	req.Headers["Content-Type"] = "application/json"
-	req.Body = query
+	req.Body = string(query)
 	return req
 }
 
 func (c Client) createInstancesRequest() web.Request {
 	req := c.request.Copy()
 	req.URL.Path = "/api/instances"
-	req.Password = c.token.get()
-	return req
-}
-
-func (c Client) createStoragePoolRequest() web.Request {
-	req := c.request.Copy()
-	req.URL.Path = "/api/types/StoragePool/instances"
-	req.Password = c.token.get()
-	return req
-}
-
-func (c Client) createSdcRequest() web.Request {
-	req := c.request.Copy()
-	req.URL.Path = "/api/types/Sdc/instances"
 	req.Password = c.token.get()
 	return req
 }

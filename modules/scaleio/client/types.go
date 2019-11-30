@@ -25,27 +25,15 @@ type Bwc struct {
 	TotalWeightInKb int64
 }
 
-type Link struct {
-	Rel  string `json:"rel"`
-	HREF string `json:"href"`
-}
-
 type Sdc struct {
-	SystemID           string `json:"systemId"`
-	SdcApproved        bool   `json:"sdcApproved"`
 	SdcIp              string `json:"SdcIp"`
-	SdcGuid            string `json:"sdcGuid"`
 	MdmConnectionState string `json:"mdmConnectionState"`
-	Name               string `json:"name"`
 	ID                 string `json:"id"`
-	Links              []Link `json:"links"`
 }
 
 type StoragePool struct {
-	ProtectionDomainID string `json:"protectionDomainId"`
-	Name               string `json:"name"`
-	ID                 string `json:"id"`
-	Links              []Link `json:"links"`
+	Name string `json:"name"`
+	ID   string `json:"id"`
 }
 
 type Instances struct {
@@ -54,8 +42,6 @@ type Instances struct {
 }
 
 type (
-	allIds bool
-
 	SelectedStatisticsQuery struct {
 		List []SelectedObject `json:"selectedStatisticsList"`
 	}
@@ -65,6 +51,7 @@ type (
 		ALLIDs     allIds   `json:"allIds,omitempty"`
 		Properties []string `json:"properties"`
 	}
+	allIds bool
 )
 
 func (b allIds) MarshalJSON() ([]byte, error) {
@@ -80,44 +67,50 @@ type SelectedStatistics struct {
 	StoragePool map[string]StoragePoolStatistics
 }
 
+type CapacityStatistics struct {
+	CapacityAvailableForVolumeAllocationInKb int64
+	MaxCapacityInKb                          int64
+	CapacityLimitInKb                        int64
+	ProtectedCapacityInKb                    int64
+	DegradedFailedCapacityInKb               int64
+	DegradedHealthyCapacityInKb              int64
+	SpareCapacityInKb                        int64
+	FailedCapacityInKb                       int64
+	UnreachableUnusedCapacityInKb            int64
+	InMaintenanceCapacityInKb                int64
+	ThinCapacityAllocatedInKb                int64
+	ThinCapacityInUseInKb                    int64
+	ThickCapacityInUseInKb                   int64
+	SnapCapacityInUseOccupiedInKb            int64
+	CapacityInUseInKb                        int64
+}
+
 type (
 	SystemStatistics struct {
-		CapacityAvailableForVolumeAllocationInKb float64
-		MaxCapacityInKb                          float64
-		CapacityLimitInKb                        float64
-		ProtectedCapacityInKb                    float64
-		DegradedFailedCapacityInKb               float64
-		DegradedHealthyCapacityInKb              float64
-		SpareCapacityInKb                        float64
-		FailedCapacityInKb                       float64
-		UnreachableUnusedCapacityInKb            float64
-		InMaintenanceCapacityInKb                float64
-		ThinCapacityAllocatedInKb                float64
-		ThinCapacityInUseInKb                    float64
-		ThickCapacityInUseInKb                   float64
+		CapacityStatistics
 
-		NumOfDevices            float64
-		NumOfFaultSets          float64
-		NumOfProtectionDomains  float64
-		NumOfRfcacheDevices     float64
-		NumOfSdc                float64
-		NumOfSds                float64
-		NumOfSnapshots          float64
-		NumOfStoragePools       float64
-		NumOfVolumes            float64
-		NumOfVtrees             float64
-		NumOfThickBaseVolumes   float64
-		NumOfThinBaseVolumes    float64
-		NumOfMappedToAllVolumes float64
-		NumOfUnmappedVolumes    float64
+		NumOfDevices            int64
+		NumOfFaultSets          int64
+		NumOfProtectionDomains  int64
+		NumOfRfcacheDevices     int64
+		NumOfSdc                int64
+		NumOfSds                int64
+		NumOfSnapshots          int64
+		NumOfStoragePools       int64
+		NumOfVolumes            int64
+		NumOfVtrees             int64
+		NumOfThickBaseVolumes   int64
+		NumOfThinBaseVolumes    int64
+		NumOfMappedToAllVolumes int64
+		NumOfUnmappedVolumes    int64
 
 		RebalanceReadBwc             Bwc
 		RebalanceWriteBwc            Bwc
-		PendingRebalanceCapacityInKb float64
+		PendingRebalanceCapacityInKb int64
 
-		PendingNormRebuildCapacityInKb float64
-		PendingBckRebuildCapacityInKb  float64
-		PendingFwdRebuildCapacityInKb  float64
+		PendingNormRebuildCapacityInKb int64
+		PendingBckRebuildCapacityInKb  int64
+		PendingFwdRebuildCapacityInKb  int64
 		NormRebuildReadBwc             Bwc // TODO: ???
 		NormRebuildWriteBwc            Bwc // TODO: ???
 		BckRebuildReadBwc              Bwc // failed node/disk is back alive
@@ -134,965 +127,950 @@ type (
 		TotalReadBwc      Bwc // *ReadBwc
 		TotalWriteBwc     Bwc // *WriteBwc
 
-		BackgroundScanCompareCount     float64
-		BackgroundScannedInMB          float64
-		ActiveBckRebuildCapacityInKb   float64
-		ActiveFwdRebuildCapacityInKb   float64
-		ActiveMovingCapacityInKb       float64
-		ActiveMovingInBckRebuildJobs   float64
-		ActiveMovingInFwdRebuildJobs   float64
-		ActiveMovingInNormRebuildJobs  float64
-		ActiveMovingInRebalanceJobs    float64
-		ActiveMovingOutBckRebuildJobs  float64
-		ActiveMovingOutFwdRebuildJobs  float64
-		ActiveMovingOutNormRebuildJobs float64
-		ActiveMovingRebalanceJobs      float64
-		ActiveNormRebuildCapacityInKb  float64
-		ActiveRebalanceCapacityInKb    float64
-		AtRestCapacityInKb             float64
-		BckRebuildCapacityInKb         float64
-		CapacityInUseInKb              float64
-		DegradedFailedVacInKb          float64
-		DegradedHealthyVacInKb         float64
-		FailedVacInKb                  float64
-		FixedReadErrorCount            float64
-		FwdRebuildCapacityInKb         float64
-		InMaintenanceVacInKb           float64
-		InUseVacInKb                   float64
-		MovingCapacityInKb             float64
-		NormRebuildCapacityInKb        float64
-
-		//NumOfScsiInitiators                             float64  // removed from version 3 of ScaleIO/VxFlex API
-		//PendingMovingCapacityInKb                       float64
-		//PendingMovingInBckRebuildJobs                   float64
-		//PendingMovingInFwdRebuildJobs                   float64
-		//PendingMovingInNormRebuildJobs                  float64
-		//PendingMovingInRebalanceJobs                    float64
-		//PendingMovingOutBckRebuildJobs                  float64
-		//PendingMovingOutFwdRebuildJobs                  float64
-		//PendingMovingOutNormrebuildJobs                 float64
-		//PendingMovingRebalanceJobs                      float64
-		//PrimaryReadFromDevBwc                           float64
-		//PrimaryReadFromRmcacheBwc                       float64
-		//PrimaryVacInKb                                  float64
-		//ProtectedVacInKb                                float64
-		//ProtectionDomainIds                             float64
-		//RebalanceCapacityInKb                           float64
-		//RebalancePerReceiveJobNetThrottlingInKbps       float64
-		//RebalanceWaitSendQLength                        float64
-		//RebuildPerReceiveJobNetThrottlingInKbps         float64
-		//RebuildWaitSendQLength                          float64
-		//RfacheReadHit                                   float64
-		//RfacheWriteHit                                  float64
-		//RfcacheAvgReadTime                              float64
-		//RfcacheAvgWriteTime                             float64
-		//RfcacheFdAvgReadTime                            float64
-		//RfcacheFdAvgWriteTime                           float64
-		//RfcacheFdCacheOverloaded                        float64
-		//RfcacheFdInlightReads                           float64
-		//RfcacheFdInlightWrites                          float64
-		//RfcacheFdIoErrors                               float64
-		//RfcacheFdMonitorErrorStuckIo                    float64
-		//RfcacheFdReadTimeGreater1Min                    float64
-		//RfcacheFdReadTimeGreater1Sec                    float64
-		//RfcacheFdReadTimeGreater500Millis               float64
-		//RfcacheFdReadTimeGreater5Sec                    float64
-		//RfcacheFdReadsReceived                          float64
-		//RfcacheFdWriteTimeGreater1Min                   float64
-		//RfcacheFdWriteTimeGreater1Sec                   float64
-		//RfcacheFdWriteTimeGreater500Millis              float64
-		//RfcacheFdWriteTimeGreater5Sec                   float64
-		//RfcacheFdWritesReceived                         float64
-		//RfcacheIoErrors                                 float64
-		//RfcacheIosOutstanding                           float64
-		//RfcacheIosSkipped                               float64
-		//RfcachePooIosOutstanding                        float64
-		//RfcachePoolCachePages                           float64
-		//RfcachePoolEvictions                            float64
-		//RfcachePoolInLowMemoryCondition                 float64
-		//RfcachePoolIoTimeGreater1Min                    float64
-		//RfcachePoolLockTimeGreater1Sec                  float64
-		//RfcachePoolLowResourcesInitiatedPassthroughMode float64
-		//RfcachePoolNumCacheDevs                         float64
-		//RfcachePoolNumSrcDevs                           float64
-		//RfcachePoolPagesInuse                           float64
-		//RfcachePoolReadHit                              float64
-		//RfcachePoolReadMiss                             float64
-		//RfcachePoolReadPendingG10Millis                 float64
-		//RfcachePoolReadPendingG1Millis                  float64
-		//RfcachePoolReadPendingG1Sec                     float64
-		//RfcachePoolReadPendingG500Micro                 float64
-		//RfcachePoolReadsPending                         float64
-		//RfcachePoolSize                                 float64
-		//RfcachePoolSourceIdMismatch                     float64
-		//RfcachePoolSuspendedIos                         float64
-		//RfcachePoolSuspendedPequestsRedundantSearchs    float64
-		//RfcachePoolWriteHit                             float64
-		//RfcachePoolWriteMiss                            float64
-		//RfcachePoolWritePending                         float64
-		//RfcachePoolWritePendingG10Millis                float64
-		//RfcachePoolWritePendingG1Millis                 float64
-		//RfcachePoolWritePendingG1Sec                    float64
-		//RfcachePoolWritePendingG500Micro                float64
-		//RfcacheReadMiss                                 float64
-		//RfcacheReadsFromCache                           float64
-		//RfcacheReadsPending                             float64
-		//RfcacheReadsReceived                            float64
-		//RfcacheReadsSkipped                             float64
-		//RfcacheReadsSkippedAlignedSizeTooLarge          float64
-		//RfcacheReadsSkippedHeavyLoad                    float64
-		//RfcacheReadsSkippedInternalError                float64
-		//RfcacheReadsSkippedLockIos                      float64
-		//RfcacheReadsSkippedLowResources                 float64
-		//RfcacheReadsSkippedMaxIoSize                    float64
-		//RfcacheReadsSkippedStuckIo                      float64
-		//RfcacheSkippedUnlinedWrite                      float64
-		//RfcacheSourceDeviceReads                        float64
-		//RfcacheSourceDeviceWrites                       float64
-		//RfcacheWriteMiss                                float64
-		//RfcacheWritePending                             float64
-		//RfcacheWritesReceived                           float64
-		//RfcacheWritesSkippedCacheMiss                   float64
-		//RfcacheWritesSkippedHeavyLoad                   float64
-		//RfcacheWritesSkippedInternalError               float64
-		//RfcacheWritesSkippedLowResources                float64
-		//RfcacheWritesSkippedMaxIoSize                   float64
-		//RfcacheWritesSkippedStuckIo                     float64
-		//RmPendingAllocatedInKb                          float64
-		//Rmcache128kbEntryCount                          float64
-		//Rmcache16kbEntryCount                           float64
-		//Rmcache32kbEntryCount                           float64
-		//Rmcache4kbEntryCount                            float64
-		//Rmcache64kbEntryCount                           float64
-		//Rmcache8kbEntryCount                            float64
-		//RmcacheBigBlockEvictionCount                    float64
-		//RmcacheBigBlockEvictionSizeCountInKb            float64
-		//RmcacheCurrNumOf128kbEntries                    float64
-		//RmcacheCurrNumOf16kbEntries                     float64
-		//RmcacheCurrNumOf32kbEntries                     float64
-		//RmcacheCurrNumOf4kbEntries                      float64
-		//RmcacheCurrNumOf64kbEntries                     float64
-		//RmcacheCurrNumOf8kbEntries                      float64
-		//RmcacheEntryEvictionCount                       float64
-		//RmcacheEntryEvictionSizeCountInKb               float64
-		//RmcacheNoEvictionCount                          float64
-		//RmcacheSizeInKb                                 float64
-		//RmcacheSizeInUseInKb                            float64
-		//RmcacheSkipCountCacheAllBusy                    float64
-		//RmcacheSkipCountLargeIo                         float64
-		//RmcacheSkipCountUnaligned4kbIo                  float64
-		//ScsiInitiatorIds                                float64
-		//SdcIds                                          float64
-		//SecondaryReadFromDevBwc                         float64
-		//SecondaryReadFromRmcacheBwc                     float64
-		//SecondaryVacInKb                                float64
-		//SemiProtectedCapacityInKb                       float64
-		//SemiProtectedVacInKb                            float64
-		//SnapCapacityInUseInKb                           float64
-		//SnapCapacityInUseOccupiedInKb                   float64
-		//UnusedCapacityInKb                              float64
+		//SnapCapacityInUseInKb                           int64
+		//BackgroundScanCompareCount                      int64
+		//BackgroundScannedInMB                           int64
+		//ActiveBckRebuildCapacityInKb                    int64
+		//ActiveFwdRebuildCapacityInKb                    int64
+		//ActiveMovingCapacityInKb                        int64
+		//ActiveMovingInBckRebuildJobs                    int64
+		//ActiveMovingInFwdRebuildJobs                    int64
+		//ActiveMovingInNormRebuildJobs                   int64
+		//ActiveMovingInRebalanceJobs                     int64
+		//ActiveMovingOutBckRebuildJobs                   int64
+		//ActiveMovingOutFwdRebuildJobs                   int64
+		//ActiveMovingOutNormRebuildJobs                  int64
+		//ActiveMovingRebalanceJobs                       int64
+		//ActiveNormRebuildCapacityInKb                   int64
+		//ActiveRebalanceCapacityInKb                     int64
+		//AtRestCapacityInKb                              int64
+		//BckRebuildCapacityInKb                          int64
+		//DegradedFailedVacInKb                           int64
+		//DegradedHealthyVacInKb                          int64
+		//FailedVacInKb                                   int64
+		//FixedReadErrorCount                             int64
+		//FwdRebuildCapacityInKb                          int64
+		//InMaintenanceVacInKb                            int64
+		//InUseVacInKb                                    int64
+		//MovingCapacityInKb                              int64
+		//NormRebuildCapacityInKb                         int64
+		//NumOfScsiInitiators                             int64 // removed from version 3 of ScaleIO/VxFlex API
+		//PendingMovingCapacityInKb                       int64
+		//PendingMovingInBckRebuildJobs                   int64
+		//PendingMovingInFwdRebuildJobs                   int64
+		//PendingMovingInNormRebuildJobs                  int64
+		//PendingMovingInRebalanceJobs                    int64
+		//PendingMovingOutBckRebuildJobs                  int64
+		//PendingMovingOutFwdRebuildJobs                  int64
+		//PendingMovingOutNormrebuildJobs                 int64
+		//PendingMovingRebalanceJobs                      int64
+		//PrimaryReadFromDevBwc                           int64
+		//PrimaryReadFromRmcacheBwc                       int64
+		//PrimaryVacInKb                                  int64
+		//ProtectedVacInKb                                int64
+		//ProtectionDomainIds                             int64
+		//RebalanceCapacityInKb                           int64
+		//RebalancePerReceiveJobNetThrottlingInKbps       int64
+		//RebalanceWaitSendQLength                        int64
+		//RebuildPerReceiveJobNetThrottlingInKbps         int64
+		//RebuildWaitSendQLength                          int64
+		//RfacheReadHit                                   int64
+		//RfacheWriteHit                                  int64
+		//RfcacheAvgReadTime                              int64
+		//RfcacheAvgWriteTime                             int64
+		//RfcacheFdAvgReadTime                            int64
+		//RfcacheFdAvgWriteTime                           int64
+		//RfcacheFdCacheOverloaded                        int64
+		//RfcacheFdInlightReads                           int64
+		//RfcacheFdInlightWrites                          int64
+		//RfcacheFdIoErrors                               int64
+		//RfcacheFdMonitorErrorStuckIo                    int64
+		//RfcacheFdReadTimeGreater1Min                    int64
+		//RfcacheFdReadTimeGreater1Sec                    int64
+		//RfcacheFdReadTimeGreater500Millis               int64
+		//RfcacheFdReadTimeGreater5Sec                    int64
+		//RfcacheFdReadsReceived                          int64
+		//RfcacheFdWriteTimeGreater1Min                   int64
+		//RfcacheFdWriteTimeGreater1Sec                   int64
+		//RfcacheFdWriteTimeGreater500Millis              int64
+		//RfcacheFdWriteTimeGreater5Sec                   int64
+		//RfcacheFdWritesReceived                         int64
+		//RfcacheIoErrors                                 int64
+		//RfcacheIosOutstanding                           int64
+		//RfcacheIosSkipped                               int64
+		//RfcachePooIosOutstanding                        int64
+		//RfcachePoolCachePages                           int64
+		//RfcachePoolEvictions                            int64
+		//RfcachePoolInLowMemoryCondition                 int64
+		//RfcachePoolIoTimeGreater1Min                    int64
+		//RfcachePoolLockTimeGreater1Sec                  int64
+		//RfcachePoolLowResourcesInitiatedPassthroughMode int64
+		//RfcachePoolNumCacheDevs                         int64
+		//RfcachePoolNumSrcDevs                           int64
+		//RfcachePoolPagesInuse                           int64
+		//RfcachePoolReadHit                              int64
+		//RfcachePoolReadMiss                             int64
+		//RfcachePoolReadPendingG10Millis                 int64
+		//RfcachePoolReadPendingG1Millis                  int64
+		//RfcachePoolReadPendingG1Sec                     int64
+		//RfcachePoolReadPendingG500Micro                 int64
+		//RfcachePoolReadsPending                         int64
+		//RfcachePoolSize                                 int64
+		//RfcachePoolSourceIdMismatch                     int64
+		//RfcachePoolSuspendedIos                         int64
+		//RfcachePoolSuspendedPequestsRedundantSearchs    int64
+		//RfcachePoolWriteHit                             int64
+		//RfcachePoolWriteMiss                            int64
+		//RfcachePoolWritePending                         int64
+		//RfcachePoolWritePendingG10Millis                int64
+		//RfcachePoolWritePendingG1Millis                 int64
+		//RfcachePoolWritePendingG1Sec                    int64
+		//RfcachePoolWritePendingG500Micro                int64
+		//RfcacheReadMiss                                 int64
+		//RfcacheReadsFromCache                           int64
+		//RfcacheReadsPending                             int64
+		//RfcacheReadsReceived                            int64
+		//RfcacheReadsSkipped                             int64
+		//RfcacheReadsSkippedAlignedSizeTooLarge          int64
+		//RfcacheReadsSkippedHeavyLoad                    int64
+		//RfcacheReadsSkippedInternalError                int64
+		//RfcacheReadsSkippedLockIos                      int64
+		//RfcacheReadsSkippedLowResources                 int64
+		//RfcacheReadsSkippedMaxIoSize                    int64
+		//RfcacheReadsSkippedStuckIo                      int64
+		//RfcacheSkippedUnlinedWrite                      int64
+		//RfcacheSourceDeviceReads                        int64
+		//RfcacheSourceDeviceWrites                       int64
+		//RfcacheWriteMiss                                int64
+		//RfcacheWritePending                             int64
+		//RfcacheWritesReceived                           int64
+		//RfcacheWritesSkippedCacheMiss                   int64
+		//RfcacheWritesSkippedHeavyLoad                   int64
+		//RfcacheWritesSkippedInternalError               int64
+		//RfcacheWritesSkippedLowResources                int64
+		//RfcacheWritesSkippedMaxIoSize                   int64
+		//RfcacheWritesSkippedStuckIo                     int64
+		//RmPendingAllocatedInKb                          int64
+		//Rmcache128kbEntryCount                          int64
+		//Rmcache16kbEntryCount                           int64
+		//Rmcache32kbEntryCount                           int64
+		//Rmcache4kbEntryCount                            int64
+		//Rmcache64kbEntryCount                           int64
+		//Rmcache8kbEntryCount                            int64
+		//RmcacheBigBlockEvictionCount                    int64
+		//RmcacheBigBlockEvictionSizeCountInKb            int64
+		//RmcacheCurrNumOf128kbEntries                    int64
+		//RmcacheCurrNumOf16kbEntries                     int64
+		//RmcacheCurrNumOf32kbEntries                     int64
+		//RmcacheCurrNumOf4kbEntries                      int64
+		//RmcacheCurrNumOf64kbEntries                     int64
+		//RmcacheCurrNumOf8kbEntries                      int64
+		//RmcacheEntryEvictionCount                       int64
+		//RmcacheEntryEvictionSizeCountInKb               int64
+		//RmcacheNoEvictionCount                          int64
+		//RmcacheSizeInKb                                 int64
+		//RmcacheSizeInUseInKb                            int64
+		//RmcacheSkipCountCacheAllBusy                    int64
+		//RmcacheSkipCountLargeIo                         int64
+		//RmcacheSkipCountUnaligned4kbIo                  int64
+		//ScsiInitiatorIds                                int64
+		//SdcIds                                          int64
+		//SecondaryReadFromDevBwc                         int64
+		//SecondaryReadFromRmcacheBwc                     int64
+		//SecondaryVacInKb                                int64
+		//SemiProtectedCapacityInKb                       int64
+		//SemiProtectedVacInKb                            int64
+		//SnapCapacityInUseOccupiedInKb                   int64
+		//UnusedCapacityInKb                              int64
 	}
 
 	SdcStatistics struct {
-		NumOfMappedVolumes float64
+		NumOfMappedVolumes int64
 		UserDataReadBwc    Bwc
 		UserDataWriteBwc   Bwc
-		//VolumeIds          float64
+		//VolumeIds          int64
 	}
 
 	StoragePoolStatistics struct {
-		CapacityAvailableForVolumeAllocationInKb float64
-		MaxCapacityInKb                          float64
-		CapacityLimitInKb                        float64
-		DegradedFailedCapacityInKb               float64
-		DegradedHealthyCapacityInKb              float64
-		FailedCapacityInKb                       float64
-		InMaintenanceCapacityInKb                float64
-		ProtectedCapacityInKb                    float64
-		SpareCapacityInKb                        float64
-		UnreachableUnusedCapacityInKb            float64
+		CapacityStatistics
 
-		NumOfDevices   float64
-		NumOfVolumes   float64
-		NumOfVtrees    float64
-		NumOfSnapshots float64
+		NumOfDevices   int64
+		NumOfVolumes   int64
+		NumOfVtrees    int64
+		NumOfSnapshots int64
 
-		//BackgroundScanCompareCount             float64
-		//BackgroundScannedInMB                  float64
-		//ActiveBckRebuildCapacityInKb           float64
-		//ActiveFwdRebuildCapacityInKb           float64
-		//ActiveMovingCapacityInKb               float64
-		//ActiveMovingInBckRebuildJobs           float64
-		//ActiveMovingInFwdRebuildJobs           float64
-		//ActiveMovingInNormRebuildJobs          float64
-		//ActiveMovingInRebalanceJobs            float64
-		//ActiveMovingOutBckRebuildJobs          float64
-		//ActiveMovingOutFwdRebuildJobs          float64
-		//ActiveMovingOutNormRebuildJobs         float64
-		//ActiveMovingRebalanceJobs              float64
-		//ActiveNormRebuildCapacityInKb          float64
-		//ActiveRebalanceCapacityInKb            float64
-		//AtRestCapacityInKb                     float64
-		//BckRebuildCapacityInKb                 float64
-		//BckRebuildReadBwc                      float64
-		//BckRebuildWriteBwc                     float64
-		//CapacityInUseInKb                      float64
-		//DegradedFailedVacInKb                  float64
-		//DegradedHealthyVacInKb                 float64
-		//DeviceIds                              float64
-		//FailedVacInKb                          float64
-		//FixedReadErrorCount                    float64
-		//FwdRebuildCapacityInKb                 float64
-		//FwdRebuildReadBwc                      float64
-		//FwdRebuildWriteBwc                     float64
-		//InMaintenanceVacInKb                   float64
-		//InUseVacInKb                           float64
-		//MovingCapacityInKb                     float64
-		//NormRebuildCapacityInKb                float64
-		//NormRebuildReadBwc                     float64
-		//NormRebuildWriteBwc                    float64
-		//NumOfMappedToAllVolumes                float64
-		//NumOfThickBaseVolumes                  float64
-		//NumOfThinBaseVolumes                   float64
-		//NumOfUnmappedVolumes                   float64
-		//NumOfVolumesInDeletion                 float64
-		//PendingBckRebuildCapacityInKb          float64
-		//PendingFwdRebuildCapacityInKb          float64
-		//PendingMovingCapacityInKb              float64
-		//PendingMovingInBckRebuildJobs          float64
-		//PendingMovingInFwdRebuildJobs          float64
-		//PendingMovingInNormRebuildJobs         float64
-		//PendingMovingInRebalanceJobs           float64
-		//PendingMovingOutBckRebuildJobs         float64
-		//PendingMovingOutFwdRebuildJobs         float64
-		//PendingMovingOutNormrebuildJobs        float64
-		//PendingMovingRebalanceJobs             float64
-		//PendingNormRebuildCapacityInKb         float64
-		//PendingRebalanceCapacityInKb           float64
-		//PrimaryReadBwc                         float64
-		//PrimaryReadFromDevBwc                  float64
-		//PrimaryReadFromRmcacheBwc              float64
-		//PrimaryVacInKb                         float64
-		//PrimaryWriteBwc                        float64
-		//ProtectedVacInKb                       float64
-		//RebalanceCapacityInKb                  float64
-		//RebalanceReadBwc                       float64
-		//RebalanceWriteBwc                      float64
-		//RfacheReadHit                          float64
-		//RfacheWriteHit                         float64
-		//RfcacheAvgReadTime                     float64
-		//RfcacheAvgWriteTime                    float64
-		//RfcacheIoErrors                        float64
-		//RfcacheIosOutstanding                  float64
-		//RfcacheIosSkipped                      float64
-		//RfcacheReadMiss                        float64
-		//RfcacheReadsFromCache                  float64
-		//RfcacheReadsPending                    float64
-		//RfcacheReadsReceived                   float64
-		//RfcacheReadsSkipped                    float64
-		//RfcacheReadsSkippedAlignedSizeTooLarge float64
-		//RfcacheReadsSkippedHeavyLoad           float64
-		//RfcacheReadsSkippedInternalError       float64
-		//RfcacheReadsSkippedLockIos             float64
-		//RfcacheReadsSkippedLowResources        float64
-		//RfcacheReadsSkippedMaxIoSize           float64
-		//RfcacheReadsSkippedStuckIo             float64
-		//RfcacheSkippedUnlinedWrite             float64
-		//RfcacheSourceDeviceReads               float64
-		//RfcacheSourceDeviceWrites              float64
-		//RfcacheWriteMiss                       float64
-		//RfcacheWritePending                    float64
-		//RfcacheWritesReceived                  float64
-		//RfcacheWritesSkippedCacheMiss          float64
-		//RfcacheWritesSkippedHeavyLoad          float64
-		//RfcacheWritesSkippedInternalError      float64
-		//RfcacheWritesSkippedLowResources       float64
-		//RfcacheWritesSkippedMaxIoSize          float64
-		//RfcacheWritesSkippedStuckIo            float64
-		//RmPendingAllocatedInKb                 float64
-		//SecondaryReadBwc                       float64
-		//SecondaryReadFromDevBwc                float64
-		//SecondaryReadFromRmcacheBwc            float64
-		//SecondaryVacInKb                       float64
-		//SecondaryWriteBwc                      float64
-		//SemiProtectedCapacityInKb              float64
-		//SemiProtectedVacInKb                   float64
-		//SnapCapacityInUseInKb                  float64
-		//SnapCapacityInUseOccupiedInKb          float64
-		//ThickCapacityInUseInKb                 float64
-		//ThinCapacityAllocatedInKb              float64
-		//ThinCapacityInUseInKb                  float64
-		//TotalReadBwc                           float64
-		//TotalWriteBwc                          float64
-		//UnusedCapacityInKb                     float64
-		//UserDataReadBwc                        float64
-		//UserDataWriteBwc                       float64
-		//VolumeIds                              float64
-		//VtreeIds                               float64
+		//SnapCapacityInUseInKb                  int64
+		//BackgroundScanCompareCount             int64
+		//BackgroundScannedInMB                  int64
+		//ActiveBckRebuildCapacityInKb           int64
+		//ActiveFwdRebuildCapacityInKb           int64
+		//ActiveMovingCapacityInKb               int64
+		//ActiveMovingInBckRebuildJobs           int64
+		//ActiveMovingInFwdRebuildJobs           int64
+		//ActiveMovingInNormRebuildJobs          int64
+		//ActiveMovingInRebalanceJobs            int64
+		//ActiveMovingOutBckRebuildJobs          int64
+		//ActiveMovingOutFwdRebuildJobs          int64
+		//ActiveMovingOutNormRebuildJobs         int64
+		//ActiveMovingRebalanceJobs              int64
+		//ActiveNormRebuildCapacityInKb          int64
+		//ActiveRebalanceCapacityInKb            int64
+		//AtRestCapacityInKb                     int64
+		//BckRebuildCapacityInKb                 int64
+		//BckRebuildReadBwc                      int64
+		//BckRebuildWriteBwc                     int64
+		//DegradedFailedVacInKb                  int64
+		//DegradedHealthyVacInKb                 int64
+		//DeviceIds                              int64
+		//FailedVacInKb                          int64
+		//FixedReadErrorCount                    int64
+		//FwdRebuildCapacityInKb                 int64
+		//FwdRebuildReadBwc                      int64
+		//FwdRebuildWriteBwc                     int64
+		//InMaintenanceVacInKb                   int64
+		//InUseVacInKb                           int64
+		//MovingCapacityInKb                     int64
+		//NormRebuildCapacityInKb                int64
+		//NormRebuildReadBwc                     int64
+		//NormRebuildWriteBwc                    int64
+		//NumOfMappedToAllVolumes                int64
+		//NumOfThickBaseVolumes                  int64
+		//NumOfThinBaseVolumes                   int64
+		//NumOfUnmappedVolumes                   int64
+		//NumOfVolumesInDeletion                 int64
+		//PendingBckRebuildCapacityInKb          int64
+		//PendingFwdRebuildCapacityInKb          int64
+		//PendingMovingCapacityInKb              int64
+		//PendingMovingInBckRebuildJobs          int64
+		//PendingMovingInFwdRebuildJobs          int64
+		//PendingMovingInNormRebuildJobs         int64
+		//PendingMovingInRebalanceJobs           int64
+		//PendingMovingOutBckRebuildJobs         int64
+		//PendingMovingOutFwdRebuildJobs         int64
+		//PendingMovingOutNormrebuildJobs        int64
+		//PendingMovingRebalanceJobs             int64
+		//PendingNormRebuildCapacityInKb         int64
+		//PendingRebalanceCapacityInKb           int64
+		//PrimaryReadBwc                         int64
+		//PrimaryReadFromDevBwc                  int64
+		//PrimaryReadFromRmcacheBwc              int64
+		//PrimaryVacInKb                         int64
+		//PrimaryWriteBwc                        int64
+		//ProtectedVacInKb                       int64
+		//RebalanceCapacityInKb                  int64
+		//RebalanceReadBwc                       int64
+		//RebalanceWriteBwc                      int64
+		//RfacheReadHit                          int64
+		//RfacheWriteHit                         int64
+		//RfcacheAvgReadTime                     int64
+		//RfcacheAvgWriteTime                    int64
+		//RfcacheIoErrors                        int64
+		//RfcacheIosOutstanding                  int64
+		//RfcacheIosSkipped                      int64
+		//RfcacheReadMiss                        int64
+		//RfcacheReadsFromCache                  int64
+		//RfcacheReadsPending                    int64
+		//RfcacheReadsReceived                   int64
+		//RfcacheReadsSkipped                    int64
+		//RfcacheReadsSkippedAlignedSizeTooLarge int64
+		//RfcacheReadsSkippedHeavyLoad           int64
+		//RfcacheReadsSkippedInternalError       int64
+		//RfcacheReadsSkippedLockIos             int64
+		//RfcacheReadsSkippedLowResources        int64
+		//RfcacheReadsSkippedMaxIoSize           int64
+		//RfcacheReadsSkippedStuckIo             int64
+		//RfcacheSkippedUnlinedWrite             int64
+		//RfcacheSourceDeviceReads               int64
+		//RfcacheSourceDeviceWrites              int64
+		//RfcacheWriteMiss                       int64
+		//RfcacheWritePending                    int64
+		//RfcacheWritesReceived                  int64
+		//RfcacheWritesSkippedCacheMiss          int64
+		//RfcacheWritesSkippedHeavyLoad          int64
+		//RfcacheWritesSkippedInternalError      int64
+		//RfcacheWritesSkippedLowResources       int64
+		//RfcacheWritesSkippedMaxIoSize          int64
+		//RfcacheWritesSkippedStuckIo            int64
+		//RmPendingAllocatedInKb                 int64
+		//SecondaryReadBwc                       int64
+		//SecondaryReadFromDevBwc                int64
+		//SecondaryReadFromRmcacheBwc            int64
+		//SecondaryVacInKb                       int64
+		//SecondaryWriteBwc                      int64
+		//SemiProtectedCapacityInKb              int64
+		//SemiProtectedVacInKb                   int64
+		//SnapCapacityInUseOccupiedInKb          int64
+		//TotalReadBwc                           int64
+		//TotalWriteBwc                          int64
+		//UnusedCapacityInKb                     int64
+		//UserDataReadBwc                        int64
+		//UserDataWriteBwc                       int64
+		//VolumeIds                              int64
+		//VtreeIds                               int64
 	}
 	DeviceStatistic struct {
-		//	BackgroundScanCompareCount             float64
-		//	BackgroundScannedInMB                  float64
-		//	ActiveMovingInBckRebuildJobs           float64
-		//	ActiveMovingInFwdRebuildJobs           float64
-		//	ActiveMovingInNormRebuildJobs          float64
-		//	ActiveMovingInRebalanceJobs            float64
-		//	ActiveMovingOutBckRebuildJobs          float64
-		//	ActiveMovingOutFwdRebuildJobs          float64
-		//	ActiveMovingOutNormRebuildJobs         float64
-		//	ActiveMovingRebalanceJobs              float64
-		//	AvgReadLatencyInMicrosec               float64
-		//	AvgReadSizeInBytes                     float64
-		//	AvgWriteLatencyInMicrosec              float64
-		//	AvgWriteSizeInBytes                    float64
-		//	BckRebuildReadBwc                      float64
-		//	BckRebuildWriteBwc                     float64
-		//	CapacityInUseInKb                      float64
-		//	CapacityLimitInKb                      float64
-		//	DegradedFailedVacInKb                  float64
-		//	DegradedHealthyVacInKb                 float64
-		//	FailedVacInKb                          float64
-		//	FixedReadErrorCount                    float64
-		//	FwdRebuildReadBwc                      float64
-		//	FwdRebuildWriteBwc                     float64
-		//	InMaintenanceVacInKb                   float64
-		//	InUseVacInKb                           float64
-		//	MaxCapacityInKb                        float64
-		//	NormRebuildReadBwc                     float64
-		//	NormRebuildWriteBwc                    float64
-		//	PendingMovingInBckRebuildJobs          float64
-		//	PendingMovingInFwdRebuildJobs          float64
-		//	PendingMovingInNormRebuildJobs         float64
-		//	PendingMovingInRebalanceJobs           float64
-		//	PendingMovingOutBckRebuildJobs         float64
-		//	PendingMovingOutFwdRebuildJobs         float64
-		//	PendingMovingOutNormrebuildJobs        float64
-		//	PendingMovingRebalanceJobs             float64
-		//	PrimaryReadBwc                         float64
-		//	PrimaryReadFromDevBwc                  float64
-		//	PrimaryReadFromRmcacheBwc              float64
-		//	PrimaryVacInKb                         float64
-		//	PrimaryWriteBwc                        float64
-		//	ProtectedVacInKb                       float64
-		//	RebalanceReadBwc                       float64
-		//	RebalanceWriteBwc                      float64
-		//	RfacheReadHit                          float64
-		//	RfacheWriteHit                         float64
-		//	RfcacheAvgReadTime                     float64
-		//	RfcacheAvgWriteTime                    float64
-		//	RfcacheIoErrors                        float64
-		//	RfcacheIosOutstanding                  float64
-		//	RfcacheIosSkipped                      float64
-		//	RfcacheReadMiss                        float64
-		//	RfcacheReadsFromCache                  float64
-		//	RfcacheReadsPending                    float64
-		//	RfcacheReadsReceived                   float64
-		//	RfcacheReadsSkipped                    float64
-		//	RfcacheReadsSkippedAlignedSizeTooLarge float64
-		//	RfcacheReadsSkippedHeavyLoad           float64
-		//	RfcacheReadsSkippedInternalError       float64
-		//	RfcacheReadsSkippedLockIos             float64
-		//	RfcacheReadsSkippedLowResources        float64
-		//	RfcacheReadsSkippedMaxIoSize           float64
-		//	RfcacheReadsSkippedStuckIo             float64
-		//	RfcacheSkippedUnlinedWrite             float64
-		//	RfcacheSourceDeviceReads               float64
-		//	RfcacheSourceDeviceWrites              float64
-		//	RfcacheWriteMiss                       float64
-		//	RfcacheWritePending                    float64
-		//	RfcacheWritesReceived                  float64
-		//	RfcacheWritesSkippedCacheMiss          float64
-		//	RfcacheWritesSkippedHeavyLoad          float64
-		//	RfcacheWritesSkippedInternalError      float64
-		//	RfcacheWritesSkippedLowResources       float64
-		//	RfcacheWritesSkippedMaxIoSize          float64
-		//	RfcacheWritesSkippedStuckIo            float64
-		//	RmPendingAllocatedInKb                 float64
-		//	SecondaryReadBwc                       float64
-		//	SecondaryReadFromDevBwc                float64
-		//	SecondaryReadFromRmcacheBwc            float64
-		//	SecondaryVacInKb                       float64
-		//	SecondaryWriteBwc                      float64
-		//	SemiProtectedVacInKb                   float64
-		//	SnapCapacityInUseInKb                  float64
-		//	SnapCapacityInUseOccupiedInKb          float64
-		//	ThickCapacityInUseInKb                 float64
-		//	ThinCapacityAllocatedInKb              float64
-		//	ThinCapacityInUseInKb                  float64
-		//	TotalReadBwc                           float64
-		//	TotalWriteBwc                          float64
-		//	UnreachableUnusedCapacityInKb          float64
-		//	UnusedCapacityInKb                     float64
+		//	BackgroundScanCompareCount             int64
+		//	BackgroundScannedInMB                  int64
+		//	ActiveMovingInBckRebuildJobs           int64
+		//	ActiveMovingInFwdRebuildJobs           int64
+		//	ActiveMovingInNormRebuildJobs          int64
+		//	ActiveMovingInRebalanceJobs            int64
+		//	ActiveMovingOutBckRebuildJobs          int64
+		//	ActiveMovingOutFwdRebuildJobs          int64
+		//	ActiveMovingOutNormRebuildJobs         int64
+		//	ActiveMovingRebalanceJobs              int64
+		//	AvgReadLatencyInMicrosec               int64
+		//	AvgReadSizeInBytes                     int64
+		//	AvgWriteLatencyInMicrosec              int64
+		//	AvgWriteSizeInBytes                    int64
+		//	BckRebuildReadBwc                      int64
+		//	BckRebuildWriteBwc                     int64
+		//	CapacityInUseInKb                      int64
+		//	CapacityLimitInKb                      int64
+		//	DegradedFailedVacInKb                  int64
+		//	DegradedHealthyVacInKb                 int64
+		//	FailedVacInKb                          int64
+		//	FixedReadErrorCount                    int64
+		//	FwdRebuildReadBwc                      int64
+		//	FwdRebuildWriteBwc                     int64
+		//	InMaintenanceVacInKb                   int64
+		//	InUseVacInKb                           int64
+		//	MaxCapacityInKb                        int64
+		//	NormRebuildReadBwc                     int64
+		//	NormRebuildWriteBwc                    int64
+		//	PendingMovingInBckRebuildJobs          int64
+		//	PendingMovingInFwdRebuildJobs          int64
+		//	PendingMovingInNormRebuildJobs         int64
+		//	PendingMovingInRebalanceJobs           int64
+		//	PendingMovingOutBckRebuildJobs         int64
+		//	PendingMovingOutFwdRebuildJobs         int64
+		//	PendingMovingOutNormrebuildJobs        int64
+		//	PendingMovingRebalanceJobs             int64
+		//	PrimaryReadBwc                         int64
+		//	PrimaryReadFromDevBwc                  int64
+		//	PrimaryReadFromRmcacheBwc              int64
+		//	PrimaryVacInKb                         int64
+		//	PrimaryWriteBwc                        int64
+		//	ProtectedVacInKb                       int64
+		//	RebalanceReadBwc                       int64
+		//	RebalanceWriteBwc                      int64
+		//	RfacheReadHit                          int64
+		//	RfacheWriteHit                         int64
+		//	RfcacheAvgReadTime                     int64
+		//	RfcacheAvgWriteTime                    int64
+		//	RfcacheIoErrors                        int64
+		//	RfcacheIosOutstanding                  int64
+		//	RfcacheIosSkipped                      int64
+		//	RfcacheReadMiss                        int64
+		//	RfcacheReadsFromCache                  int64
+		//	RfcacheReadsPending                    int64
+		//	RfcacheReadsReceived                   int64
+		//	RfcacheReadsSkipped                    int64
+		//	RfcacheReadsSkippedAlignedSizeTooLarge int64
+		//	RfcacheReadsSkippedHeavyLoad           int64
+		//	RfcacheReadsSkippedInternalError       int64
+		//	RfcacheReadsSkippedLockIos             int64
+		//	RfcacheReadsSkippedLowResources        int64
+		//	RfcacheReadsSkippedMaxIoSize           int64
+		//	RfcacheReadsSkippedStuckIo             int64
+		//	RfcacheSkippedUnlinedWrite             int64
+		//	RfcacheSourceDeviceReads               int64
+		//	RfcacheSourceDeviceWrites              int64
+		//	RfcacheWriteMiss                       int64
+		//	RfcacheWritePending                    int64
+		//	RfcacheWritesReceived                  int64
+		//	RfcacheWritesSkippedCacheMiss          int64
+		//	RfcacheWritesSkippedHeavyLoad          int64
+		//	RfcacheWritesSkippedInternalError      int64
+		//	RfcacheWritesSkippedLowResources       int64
+		//	RfcacheWritesSkippedMaxIoSize          int64
+		//	RfcacheWritesSkippedStuckIo            int64
+		//	RmPendingAllocatedInKb                 int64
+		//	SecondaryReadBwc                       int64
+		//	SecondaryReadFromDevBwc                int64
+		//	SecondaryReadFromRmcacheBwc            int64
+		//	SecondaryVacInKb                       int64
+		//	SecondaryWriteBwc                      int64
+		//	SemiProtectedVacInKb                   int64
+		//	SnapCapacityInUseInKb                  int64
+		//	SnapCapacityInUseOccupiedInKb          int64
+		//	ThickCapacityInUseInKb                 int64
+		//	ThinCapacityAllocatedInKb              int64
+		//	ThinCapacityInUseInKb                  int64
+		//	TotalReadBwc                           int64
+		//	TotalWriteBwc                          int64
+		//	UnreachableUnusedCapacityInKb          int64
+		//	UnusedCapacityInKb                     int64
 	}
 	FaultSetStatistics struct {
-		//	BackgroundScanCompareCount                      float64
-		//	BackgroundScannedInMB                           float64
-		//	ActiveMovingInBckRebuildJobs                    float64
-		//	ActiveMovingInFwdRebuildJobs                    float64
-		//	ActiveMovingInNormRebuildJobs                   float64
-		//	ActiveMovingInRebalanceJobs                     float64
-		//	ActiveMovingOutBckRebuildJobs                   float64
-		//	ActiveMovingOutFwdRebuildJobs                   float64
-		//	ActiveMovingOutNormRebuildJobs                  float64
-		//	ActiveMovingRebalanceJobs                       float64
-		//	BckRebuildReadBwc                               float64
-		//	BckRebuildWriteBwc                              float64
-		//	CapacityInUseInKb                               float64
-		//	CapacityLimitInKb                               float64
-		//	DegradedFailedVacInKb                           float64
-		//	DegradedHealthyVacInKb                          float64
-		//	FailedVacInKb                                   float64
-		//	FixedReadErrorCount                             float64
-		//	FwdRebuildReadBwc                               float64
-		//	FwdRebuildWriteBwc                              float64
-		//	InMaintenanceVacInKb                            float64
-		//	InUseVacInKb                                    float64
-		//	MaxCapacityInKb                                 float64
-		//	NormRebuildReadBwc                              float64
-		//	NormRebuildWriteBwc                             float64
-		//	NumOfSds                                        float64
-		//	PendingMovingInBckRebuildJobs                   float64
-		//	PendingMovingInFwdRebuildJobs                   float64
-		//	PendingMovingInNormRebuildJobs                  float64
-		//	PendingMovingInRebalanceJobs                    float64
-		//	PendingMovingOutBckRebuildJobs                  float64
-		//	PendingMovingOutFwdRebuildJobs                  float64
-		//	PendingMovingOutNormrebuildJobs                 float64
-		//	PendingMovingRebalanceJobs                      float64
-		//	PrimaryReadBwc                                  float64
-		//	PrimaryReadFromDevBwc                           float64
-		//	PrimaryReadFromRmcacheBwc                       float64
-		//	PrimaryVacInKb                                  float64
-		//	PrimaryWriteBwc                                 float64
-		//	ProtectedVacInKb                                float64
-		//	RebalancePerReceiveJobNetThrottlingInKbps       float64
-		//	RebalanceReadBwc                                float64
-		//	RebalanceWaitSendQLength                        float64
-		//	RebalanceWriteBwc                               float64
-		//	RebuildPerReceiveJobNetThrottlingInKbps         float64
-		//	RebuildWaitSendQLength                          float64
-		//	RfacheReadHit                                   float64
-		//	RfacheWriteHit                                  float64
-		//	RfcacheAvgReadTime                              float64
-		//	RfcacheAvgWriteTime                             float64
-		//	RfcacheFdAvgReadTime                            float64
-		//	RfcacheFdAvgWriteTime                           float64
-		//	RfcacheFdCacheOverloaded                        float64
-		//	RfcacheFdInlightReads                           float64
-		//	RfcacheFdInlightWrites                          float64
-		//	RfcacheFdIoErrors                               float64
-		//	RfcacheFdMonitorErrorStuckIo                    float64
-		//	RfcacheFdReadTimeGreater1Min                    float64
-		//	RfcacheFdReadTimeGreater1Sec                    float64
-		//	RfcacheFdReadTimeGreater500Millis               float64
-		//	RfcacheFdReadTimeGreater5Sec                    float64
-		//	RfcacheFdReadsReceived                          float64
-		//	RfcacheFdWriteTimeGreater1Min                   float64
-		//	RfcacheFdWriteTimeGreater1Sec                   float64
-		//	RfcacheFdWriteTimeGreater500Millis              float64
-		//	RfcacheFdWriteTimeGreater5Sec                   float64
-		//	RfcacheFdWritesReceived                         float64
-		//	RfcacheIoErrors                                 float64
-		//	RfcacheIosOutstanding                           float64
-		//	RfcacheIosSkipped                               float64
-		//	RfcachePooIosOutstanding                        float64
-		//	RfcachePoolCachePages                           float64
-		//	RfcachePoolEvictions                            float64
-		//	RfcachePoolInLowMemoryCondition                 float64
-		//	RfcachePoolIoTimeGreater1Min                    float64
-		//	RfcachePoolLockTimeGreater1Sec                  float64
-		//	RfcachePoolLowResourcesInitiatedPassthroughMode float64
-		//	RfcachePoolNumCacheDevs                         float64
-		//	RfcachePoolNumSrcDevs                           float64
-		//	RfcachePoolPagesInuse                           float64
-		//	RfcachePoolReadHit                              float64
-		//	RfcachePoolReadMiss                             float64
-		//	RfcachePoolReadPendingG10Millis                 float64
-		//	RfcachePoolReadPendingG1Millis                  float64
-		//	RfcachePoolReadPendingG1Sec                     float64
-		//	RfcachePoolReadPendingG500Micro                 float64
-		//	RfcachePoolReadsPending                         float64
-		//	RfcachePoolSize                                 float64
-		//	RfcachePoolSourceIdMismatch                     float64
-		//	RfcachePoolSuspendedIos                         float64
-		//	RfcachePoolSuspendedPequestsRedundantSearchs    float64
-		//	RfcachePoolWriteHit                             float64
-		//	RfcachePoolWriteMiss                            float64
-		//	RfcachePoolWritePending                         float64
-		//	RfcachePoolWritePendingG10Millis                float64
-		//	RfcachePoolWritePendingG1Millis                 float64
-		//	RfcachePoolWritePendingG1Sec                    float64
-		//	RfcachePoolWritePendingG500Micro                float64
-		//	RfcacheReadMiss                                 float64
-		//	RfcacheReadsFromCache                           float64
-		//	RfcacheReadsPending                             float64
-		//	RfcacheReadsReceived                            float64
-		//	RfcacheReadsSkipped                             float64
-		//	RfcacheReadsSkippedAlignedSizeTooLarge          float64
-		//	RfcacheReadsSkippedHeavyLoad                    float64
-		//	RfcacheReadsSkippedInternalError                float64
-		//	RfcacheReadsSkippedLockIos                      float64
-		//	RfcacheReadsSkippedLowResources                 float64
-		//	RfcacheReadsSkippedMaxIoSize                    float64
-		//	RfcacheReadsSkippedStuckIo                      float64
-		//	RfcacheSkippedUnlinedWrite                      float64
-		//	RfcacheSourceDeviceReads                        float64
-		//	RfcacheSourceDeviceWrites                       float64
-		//	RfcacheWriteMiss                                float64
-		//	RfcacheWritePending                             float64
-		//	RfcacheWritesReceived                           float64
-		//	RfcacheWritesSkippedCacheMiss                   float64
-		//	RfcacheWritesSkippedHeavyLoad                   float64
-		//	RfcacheWritesSkippedInternalError               float64
-		//	RfcacheWritesSkippedLowResources                float64
-		//	RfcacheWritesSkippedMaxIoSize                   float64
-		//	RfcacheWritesSkippedStuckIo                     float64
-		//	RmPendingAllocatedInKb                          float64
-		//	Rmcache128kbEntryCount                          float64
-		//	Rmcache16kbEntryCount                           float64
-		//	Rmcache32kbEntryCount                           float64
-		//	Rmcache4kbEntryCount                            float64
-		//	Rmcache64kbEntryCount                           float64
-		//	Rmcache8kbEntryCount                            float64
-		//	RmcacheBigBlockEvictionCount                    float64
-		//	RmcacheBigBlockEvictionSizeCountInKb            float64
-		//	RmcacheCurrNumOf128kbEntries                    float64
-		//	RmcacheCurrNumOf16kbEntries                     float64
-		//	RmcacheCurrNumOf32kbEntries                     float64
-		//	RmcacheCurrNumOf4kbEntries                      float64
-		//	RmcacheCurrNumOf64kbEntries                     float64
-		//	RmcacheCurrNumOf8kbEntries                      float64
-		//	RmcacheEntryEvictionCount                       float64
-		//	RmcacheEntryEvictionSizeCountInKb               float64
-		//	RmcacheNoEvictionCount                          float64
-		//	RmcacheSizeInKb                                 float64
-		//	RmcacheSizeInUseInKb                            float64
-		//	RmcacheSkipCountCacheAllBusy                    float64
-		//	RmcacheSkipCountLargeIo                         float64
-		//	RmcacheSkipCountUnaligned4kbIo                  float64
-		//	SdsIds                                          float64
-		//	SecondaryReadBwc                                float64
-		//	SecondaryReadFromDevBwc                         float64
-		//	SecondaryReadFromRmcacheBwc                     float64
-		//	SecondaryVacInKb                                float64
-		//	SecondaryWriteBwc                               float64
-		//	SemiProtectedVacInKb                            float64
-		//	SnapCapacityInUseInKb                           float64
-		//	SnapCapacityInUseOccupiedInKb                   float64
-		//	ThickCapacityInUseInKb                          float64
-		//	ThinCapacityAllocatedInKb                       float64
-		//	ThinCapacityInUseInKb                           float64
-		//	TotalReadBwc                                    float64
-		//	TotalWriteBwc                                   float64
-		//	UnreachableUnusedCapacityInKb                   float64
-		//	UnusedCapacityInKb                              float64
+		//	BackgroundScanCompareCount                      int64
+		//	BackgroundScannedInMB                           int64
+		//	ActiveMovingInBckRebuildJobs                    int64
+		//	ActiveMovingInFwdRebuildJobs                    int64
+		//	ActiveMovingInNormRebuildJobs                   int64
+		//	ActiveMovingInRebalanceJobs                     int64
+		//	ActiveMovingOutBckRebuildJobs                   int64
+		//	ActiveMovingOutFwdRebuildJobs                   int64
+		//	ActiveMovingOutNormRebuildJobs                  int64
+		//	ActiveMovingRebalanceJobs                       int64
+		//	BckRebuildReadBwc                               int64
+		//	BckRebuildWriteBwc                              int64
+		//	CapacityInUseInKb                               int64
+		//	CapacityLimitInKb                               int64
+		//	DegradedFailedVacInKb                           int64
+		//	DegradedHealthyVacInKb                          int64
+		//	FailedVacInKb                                   int64
+		//	FixedReadErrorCount                             int64
+		//	FwdRebuildReadBwc                               int64
+		//	FwdRebuildWriteBwc                              int64
+		//	InMaintenanceVacInKb                            int64
+		//	InUseVacInKb                                    int64
+		//	MaxCapacityInKb                                 int64
+		//	NormRebuildReadBwc                              int64
+		//	NormRebuildWriteBwc                             int64
+		//	NumOfSds                                        int64
+		//	PendingMovingInBckRebuildJobs                   int64
+		//	PendingMovingInFwdRebuildJobs                   int64
+		//	PendingMovingInNormRebuildJobs                  int64
+		//	PendingMovingInRebalanceJobs                    int64
+		//	PendingMovingOutBckRebuildJobs                  int64
+		//	PendingMovingOutFwdRebuildJobs                  int64
+		//	PendingMovingOutNormrebuildJobs                 int64
+		//	PendingMovingRebalanceJobs                      int64
+		//	PrimaryReadBwc                                  int64
+		//	PrimaryReadFromDevBwc                           int64
+		//	PrimaryReadFromRmcacheBwc                       int64
+		//	PrimaryVacInKb                                  int64
+		//	PrimaryWriteBwc                                 int64
+		//	ProtectedVacInKb                                int64
+		//	RebalancePerReceiveJobNetThrottlingInKbps       int64
+		//	RebalanceReadBwc                                int64
+		//	RebalanceWaitSendQLength                        int64
+		//	RebalanceWriteBwc                               int64
+		//	RebuildPerReceiveJobNetThrottlingInKbps         int64
+		//	RebuildWaitSendQLength                          int64
+		//	RfacheReadHit                                   int64
+		//	RfacheWriteHit                                  int64
+		//	RfcacheAvgReadTime                              int64
+		//	RfcacheAvgWriteTime                             int64
+		//	RfcacheFdAvgReadTime                            int64
+		//	RfcacheFdAvgWriteTime                           int64
+		//	RfcacheFdCacheOverloaded                        int64
+		//	RfcacheFdInlightReads                           int64
+		//	RfcacheFdInlightWrites                          int64
+		//	RfcacheFdIoErrors                               int64
+		//	RfcacheFdMonitorErrorStuckIo                    int64
+		//	RfcacheFdReadTimeGreater1Min                    int64
+		//	RfcacheFdReadTimeGreater1Sec                    int64
+		//	RfcacheFdReadTimeGreater500Millis               int64
+		//	RfcacheFdReadTimeGreater5Sec                    int64
+		//	RfcacheFdReadsReceived                          int64
+		//	RfcacheFdWriteTimeGreater1Min                   int64
+		//	RfcacheFdWriteTimeGreater1Sec                   int64
+		//	RfcacheFdWriteTimeGreater500Millis              int64
+		//	RfcacheFdWriteTimeGreater5Sec                   int64
+		//	RfcacheFdWritesReceived                         int64
+		//	RfcacheIoErrors                                 int64
+		//	RfcacheIosOutstanding                           int64
+		//	RfcacheIosSkipped                               int64
+		//	RfcachePooIosOutstanding                        int64
+		//	RfcachePoolCachePages                           int64
+		//	RfcachePoolEvictions                            int64
+		//	RfcachePoolInLowMemoryCondition                 int64
+		//	RfcachePoolIoTimeGreater1Min                    int64
+		//	RfcachePoolLockTimeGreater1Sec                  int64
+		//	RfcachePoolLowResourcesInitiatedPassthroughMode int64
+		//	RfcachePoolNumCacheDevs                         int64
+		//	RfcachePoolNumSrcDevs                           int64
+		//	RfcachePoolPagesInuse                           int64
+		//	RfcachePoolReadHit                              int64
+		//	RfcachePoolReadMiss                             int64
+		//	RfcachePoolReadPendingG10Millis                 int64
+		//	RfcachePoolReadPendingG1Millis                  int64
+		//	RfcachePoolReadPendingG1Sec                     int64
+		//	RfcachePoolReadPendingG500Micro                 int64
+		//	RfcachePoolReadsPending                         int64
+		//	RfcachePoolSize                                 int64
+		//	RfcachePoolSourceIdMismatch                     int64
+		//	RfcachePoolSuspendedIos                         int64
+		//	RfcachePoolSuspendedPequestsRedundantSearchs    int64
+		//	RfcachePoolWriteHit                             int64
+		//	RfcachePoolWriteMiss                            int64
+		//	RfcachePoolWritePending                         int64
+		//	RfcachePoolWritePendingG10Millis                int64
+		//	RfcachePoolWritePendingG1Millis                 int64
+		//	RfcachePoolWritePendingG1Sec                    int64
+		//	RfcachePoolWritePendingG500Micro                int64
+		//	RfcacheReadMiss                                 int64
+		//	RfcacheReadsFromCache                           int64
+		//	RfcacheReadsPending                             int64
+		//	RfcacheReadsReceived                            int64
+		//	RfcacheReadsSkipped                             int64
+		//	RfcacheReadsSkippedAlignedSizeTooLarge          int64
+		//	RfcacheReadsSkippedHeavyLoad                    int64
+		//	RfcacheReadsSkippedInternalError                int64
+		//	RfcacheReadsSkippedLockIos                      int64
+		//	RfcacheReadsSkippedLowResources                 int64
+		//	RfcacheReadsSkippedMaxIoSize                    int64
+		//	RfcacheReadsSkippedStuckIo                      int64
+		//	RfcacheSkippedUnlinedWrite                      int64
+		//	RfcacheSourceDeviceReads                        int64
+		//	RfcacheSourceDeviceWrites                       int64
+		//	RfcacheWriteMiss                                int64
+		//	RfcacheWritePending                             int64
+		//	RfcacheWritesReceived                           int64
+		//	RfcacheWritesSkippedCacheMiss                   int64
+		//	RfcacheWritesSkippedHeavyLoad                   int64
+		//	RfcacheWritesSkippedInternalError               int64
+		//	RfcacheWritesSkippedLowResources                int64
+		//	RfcacheWritesSkippedMaxIoSize                   int64
+		//	RfcacheWritesSkippedStuckIo                     int64
+		//	RmPendingAllocatedInKb                          int64
+		//	Rmcache128kbEntryCount                          int64
+		//	Rmcache16kbEntryCount                           int64
+		//	Rmcache32kbEntryCount                           int64
+		//	Rmcache4kbEntryCount                            int64
+		//	Rmcache64kbEntryCount                           int64
+		//	Rmcache8kbEntryCount                            int64
+		//	RmcacheBigBlockEvictionCount                    int64
+		//	RmcacheBigBlockEvictionSizeCountInKb            int64
+		//	RmcacheCurrNumOf128kbEntries                    int64
+		//	RmcacheCurrNumOf16kbEntries                     int64
+		//	RmcacheCurrNumOf32kbEntries                     int64
+		//	RmcacheCurrNumOf4kbEntries                      int64
+		//	RmcacheCurrNumOf64kbEntries                     int64
+		//	RmcacheCurrNumOf8kbEntries                      int64
+		//	RmcacheEntryEvictionCount                       int64
+		//	RmcacheEntryEvictionSizeCountInKb               int64
+		//	RmcacheNoEvictionCount                          int64
+		//	RmcacheSizeInKb                                 int64
+		//	RmcacheSizeInUseInKb                            int64
+		//	RmcacheSkipCountCacheAllBusy                    int64
+		//	RmcacheSkipCountLargeIo                         int64
+		//	RmcacheSkipCountUnaligned4kbIo                  int64
+		//	SdsIds                                          int64
+		//	SecondaryReadBwc                                int64
+		//	SecondaryReadFromDevBwc                         int64
+		//	SecondaryReadFromRmcacheBwc                     int64
+		//	SecondaryVacInKb                                int64
+		//	SecondaryWriteBwc                               int64
+		//	SemiProtectedVacInKb                            int64
+		//	SnapCapacityInUseInKb                           int64
+		//	SnapCapacityInUseOccupiedInKb                   int64
+		//	ThickCapacityInUseInKb                          int64
+		//	ThinCapacityAllocatedInKb                       int64
+		//	ThinCapacityInUseInKb                           int64
+		//	TotalReadBwc                                    int64
+		//	TotalWriteBwc                                   int64
+		//	UnreachableUnusedCapacityInKb                   int64
+		//	UnusedCapacityInKb                              int64
 	}
 	ProtectionDomainStatistics struct {
-		//	BackgroundScanCompareCount                      float64
-		//	BackgroundScannedInMB                           float64
-		//	ActiveBckRebuildCapacityInKb                    float64
-		//	ActiveFwdRebuildCapacityInKb                    float64
-		//	ActiveMovingCapacityInKb                        float64
-		//	ActiveMovingInBckRebuildJobs                    float64
-		//	ActiveMovingInFwdRebuildJobs                    float64
-		//	ActiveMovingInNormRebuildJobs                   float64
-		//	ActiveMovingInRebalanceJobs                     float64
-		//	ActiveMovingOutBckRebuildJobs                   float64
-		//	ActiveMovingOutFwdRebuildJobs                   float64
-		//	ActiveMovingOutNormRebuildJobs                  float64
-		//	ActiveMovingRebalanceJobs                       float64
-		//	ActiveNormRebuildCapacityInKb                   float64
-		//	ActiveRebalanceCapacityInKb                     float64
-		//	AtRestCapacityInKb                              float64
-		//	BckRebuildCapacityInKb                          float64
-		//	BckRebuildReadBwc                               float64
-		//	BckRebuildWriteBwc                              float64
-		//	CapacityAvailableForVolumeAllocationInKb        float64
-		//	CapacityInUseInKb                               float64
-		//	CapacityLimitInKb                               float64
-		//	DegradedFailedCapacityInKb                      float64
-		//	DegradedFailedVacInKb                           float64
-		//	DegradedHealthyCapacityInKb                     float64
-		//	DegradedHealthyVacInKb                          float64
-		//	FailedCapacityInKb                              float64
-		//	FailedVacInKb                                   float64
-		//	FaultSetIds                                     float64
-		//	FixedReadErrorCount                             float64
-		//	FwdRebuildCapacityInKb                          float64
-		//	FwdRebuildReadBwc                               float64
-		//	FwdRebuildWriteBwc                              float64
-		//	InMaintenanceCapacityInKb                       float64
-		//	InMaintenanceVacInKb                            float64
-		//	InUseVacInKb                                    float64
-		//	MaxCapacityInKb                                 float64
-		//	MovingCapacityInKb                              float64
-		//	NormRebuildCapacityInKb                         float64
-		//	NormRebuildReadBwc                              float64
-		//	NormRebuildWriteBwc                             float64
-		//	NumOfFaultSets                                  float64
-		//	NumOfMappedToAllVolumes                         float64
-		//	NumOfSds                                        float64
-		//	NumOfSnapshots                                  float64
-		//	NumOfStoragePools                               float64
-		//	NumOfThickBaseVolumes                           float64
-		//	NumOfThinBaseVolumes                            float64
-		//	NumOfUnmappedVolumes                            float64
-		//	NumOfVolumesInDeletion                          float64
-		//	PendingBckRebuildCapacityInKb                   float64
-		//	PendingFwdRebuildCapacityInKb                   float64
-		//	PendingMovingCapacityInKb                       float64
-		//	PendingMovingInBckRebuildJobs                   float64
-		//	PendingMovingInFwdRebuildJobs                   float64
-		//	PendingMovingInNormRebuildJobs                  float64
-		//	PendingMovingInRebalanceJobs                    float64
-		//	PendingMovingOutBckRebuildJobs                  float64
-		//	PendingMovingOutFwdRebuildJobs                  float64
-		//	PendingMovingOutNormrebuildJobs                 float64
-		//	PendingMovingRebalanceJobs                      float64
-		//	PendingNormRebuildCapacityInKb                  float64
-		//	PendingRebalanceCapacityInKb                    float64
-		//	PrimaryReadBwc                                  float64
-		//	PrimaryReadFromDevBwc                           float64
-		//	PrimaryReadFromRmcacheBwc                       float64
-		//	PrimaryVacInKb                                  float64
-		//	PrimaryWriteBwc                                 float64
-		//	ProtectedCapacityInKb                           float64
-		//	ProtectedVacInKb                                float64
-		//	RebalanceCapacityInKb                           float64
-		//	RebalancePerReceiveJobNetThrottlingInKbps       float64
-		//	RebalanceReadBwc                                float64
-		//	RebalanceWaitSendQLength                        float64
-		//	RebalanceWriteBwc                               float64
-		//	RebuildPerReceiveJobNetThrottlingInKbps         float64
-		//	RebuildWaitSendQLength                          float64
-		//	RfacheReadHit                                   float64
-		//	RfacheWriteHit                                  float64
-		//	RfcacheAvgReadTime                              float64
-		//	RfcacheAvgWriteTime                             float64
-		//	RfcacheFdAvgReadTime                            float64
-		//	RfcacheFdAvgWriteTime                           float64
-		//	RfcacheFdCacheOverloaded                        float64
-		//	RfcacheFdInlightReads                           float64
-		//	RfcacheFdInlightWrites                          float64
-		//	RfcacheFdIoErrors                               float64
-		//	RfcacheFdMonitorErrorStuckIo                    float64
-		//	RfcacheFdReadTimeGreater1Min                    float64
-		//	RfcacheFdReadTimeGreater1Sec                    float64
-		//	RfcacheFdReadTimeGreater500Millis               float64
-		//	RfcacheFdReadTimeGreater5Sec                    float64
-		//	RfcacheFdReadsReceived                          float64
-		//	RfcacheFdWriteTimeGreater1Min                   float64
-		//	RfcacheFdWriteTimeGreater1Sec                   float64
-		//	RfcacheFdWriteTimeGreater500Millis              float64
-		//	RfcacheFdWriteTimeGreater5Sec                   float64
-		//	RfcacheFdWritesReceived                         float64
-		//	RfcacheIoErrors                                 float64
-		//	RfcacheIosOutstanding                           float64
-		//	RfcacheIosSkipped                               float64
-		//	RfcachePooIosOutstanding                        float64
-		//	RfcachePoolCachePages                           float64
-		//	RfcachePoolEvictions                            float64
-		//	RfcachePoolInLowMemoryCondition                 float64
-		//	RfcachePoolIoTimeGreater1Min                    float64
-		//	RfcachePoolLockTimeGreater1Sec                  float64
-		//	RfcachePoolLowResourcesInitiatedPassthroughMode float64
-		//	RfcachePoolNumCacheDevs                         float64
-		//	RfcachePoolNumSrcDevs                           float64
-		//	RfcachePoolPagesInuse                           float64
-		//	RfcachePoolReadHit                              float64
-		//	RfcachePoolReadMiss                             float64
-		//	RfcachePoolReadPendingG10Millis                 float64
-		//	RfcachePoolReadPendingG1Millis                  float64
-		//	RfcachePoolReadPendingG1Sec                     float64
-		//	RfcachePoolReadPendingG500Micro                 float64
-		//	RfcachePoolReadsPending                         float64
-		//	RfcachePoolSize                                 float64
-		//	RfcachePoolSourceIdMismatch                     float64
-		//	RfcachePoolSuspendedIos                         float64
-		//	RfcachePoolSuspendedPequestsRedundantSearchs    float64
-		//	RfcachePoolWriteHit                             float64
-		//	RfcachePoolWriteMiss                            float64
-		//	RfcachePoolWritePending                         float64
-		//	RfcachePoolWritePendingG10Millis                float64
-		//	RfcachePoolWritePendingG1Millis                 float64
-		//	RfcachePoolWritePendingG1Sec                    float64
-		//	RfcachePoolWritePendingG500Micro                float64
-		//	RfcacheReadMiss                                 float64
-		//	RfcacheReadsFromCache                           float64
-		//	RfcacheReadsPending                             float64
-		//	RfcacheReadsReceived                            float64
-		//	RfcacheReadsSkipped                             float64
-		//	RfcacheReadsSkippedAlignedSizeTooLarge          float64
-		//	RfcacheReadsSkippedHeavyLoad                    float64
-		//	RfcacheReadsSkippedInternalError                float64
-		//	RfcacheReadsSkippedLockIos                      float64
-		//	RfcacheReadsSkippedLowResources                 float64
-		//	RfcacheReadsSkippedMaxIoSize                    float64
-		//	RfcacheReadsSkippedStuckIo                      float64
-		//	RfcacheSkippedUnlinedWrite                      float64
-		//	RfcacheSourceDeviceReads                        float64
-		//	RfcacheSourceDeviceWrites                       float64
-		//	RfcacheWriteMiss                                float64
-		//	RfcacheWritePending                             float64
-		//	RfcacheWritesReceived                           float64
-		//	RfcacheWritesSkippedCacheMiss                   float64
-		//	RfcacheWritesSkippedHeavyLoad                   float64
-		//	RfcacheWritesSkippedInternalError               float64
-		//	RfcacheWritesSkippedLowResources                float64
-		//	RfcacheWritesSkippedMaxIoSize                   float64
-		//	RfcacheWritesSkippedStuckIo                     float64
-		//	RmPendingAllocatedInKb                          float64
-		//	Rmcache128kbEntryCount                          float64
-		//	Rmcache16kbEntryCount                           float64
-		//	Rmcache32kbEntryCount                           float64
-		//	Rmcache4kbEntryCount                            float64
-		//	Rmcache64kbEntryCount                           float64
-		//	Rmcache8kbEntryCount                            float64
-		//	RmcacheBigBlockEvictionCount                    float64
-		//	RmcacheBigBlockEvictionSizeCountInKb            float64
-		//	RmcacheCurrNumOf128kbEntries                    float64
-		//	RmcacheCurrNumOf16kbEntries                     float64
-		//	RmcacheCurrNumOf32kbEntries                     float64
-		//	RmcacheCurrNumOf4kbEntries                      float64
-		//	RmcacheCurrNumOf64kbEntries                     float64
-		//	RmcacheCurrNumOf8kbEntries                      float64
-		//	RmcacheEntryEvictionCount                       float64
-		//	RmcacheEntryEvictionSizeCountInKb               float64
-		//	RmcacheNoEvictionCount                          float64
-		//	RmcacheSizeInKb                                 float64
-		//	RmcacheSizeInUseInKb                            float64
-		//	RmcacheSkipCountCacheAllBusy                    float64
-		//	RmcacheSkipCountLargeIo                         float64
-		//	RmcacheSkipCountUnaligned4kbIo                  float64
-		//	SdsIds                                          float64
-		//	SecondaryReadBwc                                float64
-		//	SecondaryReadFromDevBwc                         float64
-		//	SecondaryReadFromRmcacheBwc                     float64
-		//	SecondaryVacInKb                                float64
-		//	SecondaryWriteBwc                               float64
-		//	SemiProtectedCapacityInKb                       float64
-		//	SemiProtectedVacInKb                            float64
-		//	SnapCapacityInUseInKb                           float64
-		//	SnapCapacityInUseOccupiedInKb                   float64
-		//	SpareCapacityInKb                               float64
-		//	StoragePoolIds                                  float64
-		//	ThickCapacityInUseInKb                          float64
-		//	ThinCapacityAllocatedInKb                       float64
-		//	ThinCapacityInUseInKb                           float64
-		//	TotalReadBwc                                    float64
-		//	TotalWriteBwc                                   float64
-		//	UnreachableUnusedCapacityInKb                   float64
-		//	UnusedCapacityInKb                              float64
-		//	UserDataReadBwc                                 float64
-		//	UserDataWriteBwc                                float64
+		//	BackgroundScanCompareCount                      int64
+		//	BackgroundScannedInMB                           int64
+		//	ActiveBckRebuildCapacityInKb                    int64
+		//	ActiveFwdRebuildCapacityInKb                    int64
+		//	ActiveMovingCapacityInKb                        int64
+		//	ActiveMovingInBckRebuildJobs                    int64
+		//	ActiveMovingInFwdRebuildJobs                    int64
+		//	ActiveMovingInNormRebuildJobs                   int64
+		//	ActiveMovingInRebalanceJobs                     int64
+		//	ActiveMovingOutBckRebuildJobs                   int64
+		//	ActiveMovingOutFwdRebuildJobs                   int64
+		//	ActiveMovingOutNormRebuildJobs                  int64
+		//	ActiveMovingRebalanceJobs                       int64
+		//	ActiveNormRebuildCapacityInKb                   int64
+		//	ActiveRebalanceCapacityInKb                     int64
+		//	AtRestCapacityInKb                              int64
+		//	BckRebuildCapacityInKb                          int64
+		//	BckRebuildReadBwc                               int64
+		//	BckRebuildWriteBwc                              int64
+		//	CapacityAvailableForVolumeAllocationInKb        int64
+		//	CapacityInUseInKb                               int64
+		//	CapacityLimitInKb                               int64
+		//	DegradedFailedCapacityInKb                      int64
+		//	DegradedFailedVacInKb                           int64
+		//	DegradedHealthyCapacityInKb                     int64
+		//	DegradedHealthyVacInKb                          int64
+		//	FailedCapacityInKb                              int64
+		//	FailedVacInKb                                   int64
+		//	FaultSetIds                                     int64
+		//	FixedReadErrorCount                             int64
+		//	FwdRebuildCapacityInKb                          int64
+		//	FwdRebuildReadBwc                               int64
+		//	FwdRebuildWriteBwc                              int64
+		//	InMaintenanceCapacityInKb                       int64
+		//	InMaintenanceVacInKb                            int64
+		//	InUseVacInKb                                    int64
+		//	MaxCapacityInKb                                 int64
+		//	MovingCapacityInKb                              int64
+		//	NormRebuildCapacityInKb                         int64
+		//	NormRebuildReadBwc                              int64
+		//	NormRebuildWriteBwc                             int64
+		//	NumOfFaultSets                                  int64
+		//	NumOfMappedToAllVolumes                         int64
+		//	NumOfSds                                        int64
+		//	NumOfSnapshots                                  int64
+		//	NumOfStoragePools                               int64
+		//	NumOfThickBaseVolumes                           int64
+		//	NumOfThinBaseVolumes                            int64
+		//	NumOfUnmappedVolumes                            int64
+		//	NumOfVolumesInDeletion                          int64
+		//	PendingBckRebuildCapacityInKb                   int64
+		//	PendingFwdRebuildCapacityInKb                   int64
+		//	PendingMovingCapacityInKb                       int64
+		//	PendingMovingInBckRebuildJobs                   int64
+		//	PendingMovingInFwdRebuildJobs                   int64
+		//	PendingMovingInNormRebuildJobs                  int64
+		//	PendingMovingInRebalanceJobs                    int64
+		//	PendingMovingOutBckRebuildJobs                  int64
+		//	PendingMovingOutFwdRebuildJobs                  int64
+		//	PendingMovingOutNormrebuildJobs                 int64
+		//	PendingMovingRebalanceJobs                      int64
+		//	PendingNormRebuildCapacityInKb                  int64
+		//	PendingRebalanceCapacityInKb                    int64
+		//	PrimaryReadBwc                                  int64
+		//	PrimaryReadFromDevBwc                           int64
+		//	PrimaryReadFromRmcacheBwc                       int64
+		//	PrimaryVacInKb                                  int64
+		//	PrimaryWriteBwc                                 int64
+		//	ProtectedCapacityInKb                           int64
+		//	ProtectedVacInKb                                int64
+		//	RebalanceCapacityInKb                           int64
+		//	RebalancePerReceiveJobNetThrottlingInKbps       int64
+		//	RebalanceReadBwc                                int64
+		//	RebalanceWaitSendQLength                        int64
+		//	RebalanceWriteBwc                               int64
+		//	RebuildPerReceiveJobNetThrottlingInKbps         int64
+		//	RebuildWaitSendQLength                          int64
+		//	RfacheReadHit                                   int64
+		//	RfacheWriteHit                                  int64
+		//	RfcacheAvgReadTime                              int64
+		//	RfcacheAvgWriteTime                             int64
+		//	RfcacheFdAvgReadTime                            int64
+		//	RfcacheFdAvgWriteTime                           int64
+		//	RfcacheFdCacheOverloaded                        int64
+		//	RfcacheFdInlightReads                           int64
+		//	RfcacheFdInlightWrites                          int64
+		//	RfcacheFdIoErrors                               int64
+		//	RfcacheFdMonitorErrorStuckIo                    int64
+		//	RfcacheFdReadTimeGreater1Min                    int64
+		//	RfcacheFdReadTimeGreater1Sec                    int64
+		//	RfcacheFdReadTimeGreater500Millis               int64
+		//	RfcacheFdReadTimeGreater5Sec                    int64
+		//	RfcacheFdReadsReceived                          int64
+		//	RfcacheFdWriteTimeGreater1Min                   int64
+		//	RfcacheFdWriteTimeGreater1Sec                   int64
+		//	RfcacheFdWriteTimeGreater500Millis              int64
+		//	RfcacheFdWriteTimeGreater5Sec                   int64
+		//	RfcacheFdWritesReceived                         int64
+		//	RfcacheIoErrors                                 int64
+		//	RfcacheIosOutstanding                           int64
+		//	RfcacheIosSkipped                               int64
+		//	RfcachePooIosOutstanding                        int64
+		//	RfcachePoolCachePages                           int64
+		//	RfcachePoolEvictions                            int64
+		//	RfcachePoolInLowMemoryCondition                 int64
+		//	RfcachePoolIoTimeGreater1Min                    int64
+		//	RfcachePoolLockTimeGreater1Sec                  int64
+		//	RfcachePoolLowResourcesInitiatedPassthroughMode int64
+		//	RfcachePoolNumCacheDevs                         int64
+		//	RfcachePoolNumSrcDevs                           int64
+		//	RfcachePoolPagesInuse                           int64
+		//	RfcachePoolReadHit                              int64
+		//	RfcachePoolReadMiss                             int64
+		//	RfcachePoolReadPendingG10Millis                 int64
+		//	RfcachePoolReadPendingG1Millis                  int64
+		//	RfcachePoolReadPendingG1Sec                     int64
+		//	RfcachePoolReadPendingG500Micro                 int64
+		//	RfcachePoolReadsPending                         int64
+		//	RfcachePoolSize                                 int64
+		//	RfcachePoolSourceIdMismatch                     int64
+		//	RfcachePoolSuspendedIos                         int64
+		//	RfcachePoolSuspendedPequestsRedundantSearchs    int64
+		//	RfcachePoolWriteHit                             int64
+		//	RfcachePoolWriteMiss                            int64
+		//	RfcachePoolWritePending                         int64
+		//	RfcachePoolWritePendingG10Millis                int64
+		//	RfcachePoolWritePendingG1Millis                 int64
+		//	RfcachePoolWritePendingG1Sec                    int64
+		//	RfcachePoolWritePendingG500Micro                int64
+		//	RfcacheReadMiss                                 int64
+		//	RfcacheReadsFromCache                           int64
+		//	RfcacheReadsPending                             int64
+		//	RfcacheReadsReceived                            int64
+		//	RfcacheReadsSkipped                             int64
+		//	RfcacheReadsSkippedAlignedSizeTooLarge          int64
+		//	RfcacheReadsSkippedHeavyLoad                    int64
+		//	RfcacheReadsSkippedInternalError                int64
+		//	RfcacheReadsSkippedLockIos                      int64
+		//	RfcacheReadsSkippedLowResources                 int64
+		//	RfcacheReadsSkippedMaxIoSize                    int64
+		//	RfcacheReadsSkippedStuckIo                      int64
+		//	RfcacheSkippedUnlinedWrite                      int64
+		//	RfcacheSourceDeviceReads                        int64
+		//	RfcacheSourceDeviceWrites                       int64
+		//	RfcacheWriteMiss                                int64
+		//	RfcacheWritePending                             int64
+		//	RfcacheWritesReceived                           int64
+		//	RfcacheWritesSkippedCacheMiss                   int64
+		//	RfcacheWritesSkippedHeavyLoad                   int64
+		//	RfcacheWritesSkippedInternalError               int64
+		//	RfcacheWritesSkippedLowResources                int64
+		//	RfcacheWritesSkippedMaxIoSize                   int64
+		//	RfcacheWritesSkippedStuckIo                     int64
+		//	RmPendingAllocatedInKb                          int64
+		//	Rmcache128kbEntryCount                          int64
+		//	Rmcache16kbEntryCount                           int64
+		//	Rmcache32kbEntryCount                           int64
+		//	Rmcache4kbEntryCount                            int64
+		//	Rmcache64kbEntryCount                           int64
+		//	Rmcache8kbEntryCount                            int64
+		//	RmcacheBigBlockEvictionCount                    int64
+		//	RmcacheBigBlockEvictionSizeCountInKb            int64
+		//	RmcacheCurrNumOf128kbEntries                    int64
+		//	RmcacheCurrNumOf16kbEntries                     int64
+		//	RmcacheCurrNumOf32kbEntries                     int64
+		//	RmcacheCurrNumOf4kbEntries                      int64
+		//	RmcacheCurrNumOf64kbEntries                     int64
+		//	RmcacheCurrNumOf8kbEntries                      int64
+		//	RmcacheEntryEvictionCount                       int64
+		//	RmcacheEntryEvictionSizeCountInKb               int64
+		//	RmcacheNoEvictionCount                          int64
+		//	RmcacheSizeInKb                                 int64
+		//	RmcacheSizeInUseInKb                            int64
+		//	RmcacheSkipCountCacheAllBusy                    int64
+		//	RmcacheSkipCountLargeIo                         int64
+		//	RmcacheSkipCountUnaligned4kbIo                  int64
+		//	SdsIds                                          int64
+		//	SecondaryReadBwc                                int64
+		//	SecondaryReadFromDevBwc                         int64
+		//	SecondaryReadFromRmcacheBwc                     int64
+		//	SecondaryVacInKb                                int64
+		//	SecondaryWriteBwc                               int64
+		//	SemiProtectedCapacityInKb                       int64
+		//	SemiProtectedVacInKb                            int64
+		//	SnapCapacityInUseInKb                           int64
+		//	SnapCapacityInUseOccupiedInKb                   int64
+		//	SpareCapacityInKb                               int64
+		//	StoragePoolIds                                  int64
+		//	ThickCapacityInUseInKb                          int64
+		//	ThinCapacityAllocatedInKb                       int64
+		//	ThinCapacityInUseInKb                           int64
+		//	TotalReadBwc                                    int64
+		//	TotalWriteBwc                                   int64
+		//	UnreachableUnusedCapacityInKb                   int64
+		//	UnusedCapacityInKb                              int64
+		//	UserDataReadBwc                                 int64
+		//	UserDataWriteBwc                                int64
 	}
 	RFCacheDeviceStatistics struct {
-		//	RfcacheFdAvgReadTime               float64
-		//	RfcacheFdAvgWriteTime              float64
-		//	RfcacheFdCacheOverloaded           float64
-		//	RfcacheFdInlightReads              float64
-		//	RfcacheFdInlightWrites             float64
-		//	RfcacheFdIoErrors                  float64
-		//	RfcacheFdMonitorErrorStuckIo       float64
-		//	RfcacheFdReadTimeGreater1Min       float64
-		//	RfcacheFdReadTimeGreater1Sec       float64
-		//	RfcacheFdReadTimeGreater500Millis  float64
-		//	RfcacheFdReadTimeGreater5Sec       float64
-		//	RfcacheFdReadsReceived             float64
-		//	RfcacheFdWriteTimeGreater1Min      float64
-		//	RfcacheFdWriteTimeGreater1Sec      float64
-		//	RfcacheFdWriteTimeGreater500Millis float64
-		//	RfcacheFdWriteTimeGreater5Sec      float64
-		//	RfcacheFdWritesReceived            float64
+		//	RfcacheFdAvgReadTime               int64
+		//	RfcacheFdAvgWriteTime              int64
+		//	RfcacheFdCacheOverloaded           int64
+		//	RfcacheFdInlightReads              int64
+		//	RfcacheFdInlightWrites             int64
+		//	RfcacheFdIoErrors                  int64
+		//	RfcacheFdMonitorErrorStuckIo       int64
+		//	RfcacheFdReadTimeGreater1Min       int64
+		//	RfcacheFdReadTimeGreater1Sec       int64
+		//	RfcacheFdReadTimeGreater500Millis  int64
+		//	RfcacheFdReadTimeGreater5Sec       int64
+		//	RfcacheFdReadsReceived             int64
+		//	RfcacheFdWriteTimeGreater1Min      int64
+		//	RfcacheFdWriteTimeGreater1Sec      int64
+		//	RfcacheFdWriteTimeGreater500Millis int64
+		//	RfcacheFdWriteTimeGreater5Sec      int64
+		//	RfcacheFdWritesReceived            int64
 	}
 	SdsStatistics struct {
-		//	BackgroundScanCompareCount                      float64
-		//	BackgroundScannedInMB                           float64
-		//	ActiveMovingInBckRebuildJobs                    float64
-		//	ActiveMovingInFwdRebuildJobs                    float64
-		//	ActiveMovingInNormRebuildJobs                   float64
-		//	ActiveMovingInRebalanceJobs                     float64
-		//	ActiveMovingOutBckRebuildJobs                   float64
-		//	ActiveMovingOutFwdRebuildJobs                   float64
-		//	ActiveMovingOutNormRebuildJobs                  float64
-		//	ActiveMovingRebalanceJobs                       float64
-		//	BckRebuildReadBwc                               float64
-		//	BckRebuildWriteBwc                              float64
-		//	CapacityInUseInKb                               float64
-		//	CapacityLimitInKb                               float64
-		//	DegradedFailedVacInKb                           float64
-		//	DegradedHealthyVacInKb                          float64
-		//	DeviceIds                                       float64
-		//	FailedVacInKb                                   float64
-		//	FixedReadErrorCount                             float64
-		//	FwdRebuildReadBwc                               float64
-		//	FwdRebuildWriteBwc                              float64
-		//	InMaintenanceVacInKb                            float64
-		//	InUseVacInKb                                    float64
-		//	MaxCapacityInKb                                 float64
-		//	NormRebuildReadBwc                              float64
-		//	NormRebuildWriteBwc                             float64
-		//	NumOfDevices                                    float64
-		//	NumOfRfcacheDevices                             float64
-		//	PendingMovingInBckRebuildJobs                   float64
-		//	PendingMovingInFwdRebuildJobs                   float64
-		//	PendingMovingInNormRebuildJobs                  float64
-		//	PendingMovingInRebalanceJobs                    float64
-		//	PendingMovingOutBckRebuildJobs                  float64
-		//	PendingMovingOutFwdRebuildJobs                  float64
-		//	PendingMovingOutNormrebuildJobs                 float64
-		//	PendingMovingRebalanceJobs                      float64
-		//	PrimaryReadBwc                                  float64
-		//	PrimaryReadFromDevBwc                           float64
-		//	PrimaryReadFromRmcacheBwc                       float64
-		//	PrimaryVacInKb                                  float64
-		//	PrimaryWriteBwc                                 float64
-		//	ProtectedVacInKb                                float64
-		//	RebalancePerReceiveJobNetThrottlingInKbps       float64
-		//	RebalanceReadBwc                                float64
-		//	RebalanceWaitSendQLength                        float64
-		//	RebalanceWriteBwc                               float64
-		//	RebuildPerReceiveJobNetThrottlingInKbps         float64
-		//	RebuildWaitSendQLength                          float64
-		//	RfacheReadHit                                   float64
-		//	RfacheWriteHit                                  float64
-		//	RfcacheAvgReadTime                              float64
-		//	RfcacheAvgWriteTime                             float64
-		//	RfcacheDeviceIds                                float64
-		//	RfcacheFdAvgReadTime                            float64
-		//	RfcacheFdAvgWriteTime                           float64
-		//	RfcacheFdCacheOverloaded                        float64
-		//	RfcacheFdInlightReads                           float64
-		//	RfcacheFdInlightWrites                          float64
-		//	RfcacheFdIoErrors                               float64
-		//	RfcacheFdMonitorErrorStuckIo                    float64
-		//	RfcacheFdReadTimeGreater1Min                    float64
-		//	RfcacheFdReadTimeGreater1Sec                    float64
-		//	RfcacheFdReadTimeGreater500Millis               float64
-		//	RfcacheFdReadTimeGreater5Sec                    float64
-		//	RfcacheFdReadsReceived                          float64
-		//	RfcacheFdWriteTimeGreater1Min                   float64
-		//	RfcacheFdWriteTimeGreater1Sec                   float64
-		//	RfcacheFdWriteTimeGreater500Millis              float64
-		//	RfcacheFdWriteTimeGreater5Sec                   float64
-		//	RfcacheFdWritesReceived                         float64
-		//	RfcacheIoErrors                                 float64
-		//	RfcacheIosOutstanding                           float64
-		//	RfcacheIosSkipped                               float64
-		//	RfcachePooIosOutstanding                        float64
-		//	RfcachePoolCachePages                           float64
-		//	RfcachePoolContinuosMem                         float64
-		//	RfcachePoolEvictions                            float64
-		//	RfcachePoolInLowMemoryCondition                 float64
-		//	RfcachePoolIoTimeGreater1Min                    float64
-		//	RfcachePoolLockTimeGreater1Sec                  float64
-		//	RfcachePoolLowResourcesInitiatedPassthroughMode float64
-		//	RfcachePoolMaxIoSize                            float64
-		//	RfcachePoolNumCacheDevs                         float64
-		//	RfcachePoolNumOfDriverTheads                    float64
-		//	RfcachePoolNumSrcDevs                           float64
-		//	RfcachePoolOpmode                               float64
-		//	RfcachePoolPageSize                             float64
-		//	RfcachePoolPagesInuse                           float64
-		//	RfcachePoolReadHit                              float64
-		//	RfcachePoolReadMiss                             float64
-		//	RfcachePoolReadPendingG10Millis                 float64
-		//	RfcachePoolReadPendingG1Millis                  float64
-		//	RfcachePoolReadPendingG1Sec                     float64
-		//	RfcachePoolReadPendingG500Micro                 float64
-		//	RfcachePoolReadsPending                         float64
-		//	RfcachePoolSize                                 float64
-		//	RfcachePoolSourceIdMismatch                     float64
-		//	RfcachePoolSuspendedIos                         float64
-		//	RfcachePoolSuspendedIosMax                      float64
-		//	RfcachePoolSuspendedPequestsRedundantSearchs    float64
-		//	RfcachePoolWriteHit                             float64
-		//	RfcachePoolWriteMiss                            float64
-		//	RfcachePoolWritePending                         float64
-		//	RfcachePoolWritePendingG10Millis                float64
-		//	RfcachePoolWritePendingG1Millis                 float64
-		//	RfcachePoolWritePendingG1Sec                    float64
-		//	RfcachePoolWritePendingG500Micro                float64
-		//	RfcacheReadMiss                                 float64
-		//	RfcacheReadsFromCache                           float64
-		//	RfcacheReadsPending                             float64
-		//	RfcacheReadsReceived                            float64
-		//	RfcacheReadsSkipped                             float64
-		//	RfcacheReadsSkippedAlignedSizeTooLarge          float64
-		//	RfcacheReadsSkippedHeavyLoad                    float64
-		//	RfcacheReadsSkippedInternalError                float64
-		//	RfcacheReadsSkippedLockIos                      float64
-		//	RfcacheReadsSkippedLowResources                 float64
-		//	RfcacheReadsSkippedMaxIoSize                    float64
-		//	RfcacheReadsSkippedStuckIo                      float64
-		//	RfcacheSkippedUnlinedWrite                      float64
-		//	RfcacheSourceDeviceReads                        float64
-		//	RfcacheSourceDeviceWrites                       float64
-		//	RfcacheWriteMiss                                float64
-		//	RfcacheWritePending                             float64
-		//	RfcacheWritesReceived                           float64
-		//	RfcacheWritesSkippedCacheMiss                   float64
-		//	RfcacheWritesSkippedHeavyLoad                   float64
-		//	RfcacheWritesSkippedInternalError               float64
-		//	RfcacheWritesSkippedLowResources                float64
-		//	RfcacheWritesSkippedMaxIoSize                   float64
-		//	RfcacheWritesSkippedStuckIo                     float64
-		//	RmPendingAllocatedInKb                          float64
-		//	Rmcache128kbEntryCount                          float64
-		//	Rmcache16kbEntryCount                           float64
-		//	Rmcache32kbEntryCount                           float64
-		//	Rmcache4kbEntryCount                            float64
-		//	Rmcache64kbEntryCount                           float64
-		//	Rmcache8kbEntryCount                            float64
-		//	RmcacheBigBlockEvictionCount                    float64
-		//	RmcacheBigBlockEvictionSizeCountInKb            float64
-		//	RmcacheCurrNumOf128kbEntries                    float64
-		//	RmcacheCurrNumOf16kbEntries                     float64
-		//	RmcacheCurrNumOf32kbEntries                     float64
-		//	RmcacheCurrNumOf4kbEntries                      float64
-		//	RmcacheCurrNumOf64kbEntries                     float64
-		//	RmcacheCurrNumOf8kbEntries                      float64
-		//	RmcacheEntryEvictionCount                       float64
-		//	RmcacheEntryEvictionSizeCountInKb               float64
-		//	RmcacheNoEvictionCount                          float64
-		//	RmcacheSizeInKb                                 float64
-		//	RmcacheSizeInUseInKb                            float64
-		//	RmcacheSkipCountCacheAllBusy                    float64
-		//	RmcacheSkipCountLargeIo                         float64
-		//	RmcacheSkipCountUnaligned4kbIo                  float64
-		//	SecondaryReadBwc                                float64
-		//	SecondaryReadFromDevBwc                         float64
-		//	SecondaryReadFromRmcacheBwc                     float64
-		//	SecondaryVacInKb                                float64
-		//	SecondaryWriteBwc                               float64
-		//	SemiProtectedVacInKb                            float64
-		//	SnapCapacityInUseInKb                           float64
-		//	SnapCapacityInUseOccupiedInKb                   float64
-		//	ThickCapacityInUseInKb                          float64
-		//	ThinCapacityAllocatedInKb                       float64
-		//	ThinCapacityInUseInKb                           float64
-		//	TotalReadBwc                                    float64
-		//	TotalWriteBwc                                   float64
-		//	UnreachableUnusedCapacityInKb                   float64
-		//	UnusedCapacityInKb                              float64
+		//	BackgroundScanCompareCount                      int64
+		//	BackgroundScannedInMB                           int64
+		//	ActiveMovingInBckRebuildJobs                    int64
+		//	ActiveMovingInFwdRebuildJobs                    int64
+		//	ActiveMovingInNormRebuildJobs                   int64
+		//	ActiveMovingInRebalanceJobs                     int64
+		//	ActiveMovingOutBckRebuildJobs                   int64
+		//	ActiveMovingOutFwdRebuildJobs                   int64
+		//	ActiveMovingOutNormRebuildJobs                  int64
+		//	ActiveMovingRebalanceJobs                       int64
+		//	BckRebuildReadBwc                               int64
+		//	BckRebuildWriteBwc                              int64
+		//	CapacityInUseInKb                               int64
+		//	CapacityLimitInKb                               int64
+		//	DegradedFailedVacInKb                           int64
+		//	DegradedHealthyVacInKb                          int64
+		//	DeviceIds                                       int64
+		//	FailedVacInKb                                   int64
+		//	FixedReadErrorCount                             int64
+		//	FwdRebuildReadBwc                               int64
+		//	FwdRebuildWriteBwc                              int64
+		//	InMaintenanceVacInKb                            int64
+		//	InUseVacInKb                                    int64
+		//	MaxCapacityInKb                                 int64
+		//	NormRebuildReadBwc                              int64
+		//	NormRebuildWriteBwc                             int64
+		//	NumOfDevices                                    int64
+		//	NumOfRfcacheDevices                             int64
+		//	PendingMovingInBckRebuildJobs                   int64
+		//	PendingMovingInFwdRebuildJobs                   int64
+		//	PendingMovingInNormRebuildJobs                  int64
+		//	PendingMovingInRebalanceJobs                    int64
+		//	PendingMovingOutBckRebuildJobs                  int64
+		//	PendingMovingOutFwdRebuildJobs                  int64
+		//	PendingMovingOutNormrebuildJobs                 int64
+		//	PendingMovingRebalanceJobs                      int64
+		//	PrimaryReadBwc                                  int64
+		//	PrimaryReadFromDevBwc                           int64
+		//	PrimaryReadFromRmcacheBwc                       int64
+		//	PrimaryVacInKb                                  int64
+		//	PrimaryWriteBwc                                 int64
+		//	ProtectedVacInKb                                int64
+		//	RebalancePerReceiveJobNetThrottlingInKbps       int64
+		//	RebalanceReadBwc                                int64
+		//	RebalanceWaitSendQLength                        int64
+		//	RebalanceWriteBwc                               int64
+		//	RebuildPerReceiveJobNetThrottlingInKbps         int64
+		//	RebuildWaitSendQLength                          int64
+		//	RfacheReadHit                                   int64
+		//	RfacheWriteHit                                  int64
+		//	RfcacheAvgReadTime                              int64
+		//	RfcacheAvgWriteTime                             int64
+		//	RfcacheDeviceIds                                int64
+		//	RfcacheFdAvgReadTime                            int64
+		//	RfcacheFdAvgWriteTime                           int64
+		//	RfcacheFdCacheOverloaded                        int64
+		//	RfcacheFdInlightReads                           int64
+		//	RfcacheFdInlightWrites                          int64
+		//	RfcacheFdIoErrors                               int64
+		//	RfcacheFdMonitorErrorStuckIo                    int64
+		//	RfcacheFdReadTimeGreater1Min                    int64
+		//	RfcacheFdReadTimeGreater1Sec                    int64
+		//	RfcacheFdReadTimeGreater500Millis               int64
+		//	RfcacheFdReadTimeGreater5Sec                    int64
+		//	RfcacheFdReadsReceived                          int64
+		//	RfcacheFdWriteTimeGreater1Min                   int64
+		//	RfcacheFdWriteTimeGreater1Sec                   int64
+		//	RfcacheFdWriteTimeGreater500Millis              int64
+		//	RfcacheFdWriteTimeGreater5Sec                   int64
+		//	RfcacheFdWritesReceived                         int64
+		//	RfcacheIoErrors                                 int64
+		//	RfcacheIosOutstanding                           int64
+		//	RfcacheIosSkipped                               int64
+		//	RfcachePooIosOutstanding                        int64
+		//	RfcachePoolCachePages                           int64
+		//	RfcachePoolContinuosMem                         int64
+		//	RfcachePoolEvictions                            int64
+		//	RfcachePoolInLowMemoryCondition                 int64
+		//	RfcachePoolIoTimeGreater1Min                    int64
+		//	RfcachePoolLockTimeGreater1Sec                  int64
+		//	RfcachePoolLowResourcesInitiatedPassthroughMode int64
+		//	RfcachePoolMaxIoSize                            int64
+		//	RfcachePoolNumCacheDevs                         int64
+		//	RfcachePoolNumOfDriverTheads                    int64
+		//	RfcachePoolNumSrcDevs                           int64
+		//	RfcachePoolOpmode                               int64
+		//	RfcachePoolPageSize                             int64
+		//	RfcachePoolPagesInuse                           int64
+		//	RfcachePoolReadHit                              int64
+		//	RfcachePoolReadMiss                             int64
+		//	RfcachePoolReadPendingG10Millis                 int64
+		//	RfcachePoolReadPendingG1Millis                  int64
+		//	RfcachePoolReadPendingG1Sec                     int64
+		//	RfcachePoolReadPendingG500Micro                 int64
+		//	RfcachePoolReadsPending                         int64
+		//	RfcachePoolSize                                 int64
+		//	RfcachePoolSourceIdMismatch                     int64
+		//	RfcachePoolSuspendedIos                         int64
+		//	RfcachePoolSuspendedIosMax                      int64
+		//	RfcachePoolSuspendedPequestsRedundantSearchs    int64
+		//	RfcachePoolWriteHit                             int64
+		//	RfcachePoolWriteMiss                            int64
+		//	RfcachePoolWritePending                         int64
+		//	RfcachePoolWritePendingG10Millis                int64
+		//	RfcachePoolWritePendingG1Millis                 int64
+		//	RfcachePoolWritePendingG1Sec                    int64
+		//	RfcachePoolWritePendingG500Micro                int64
+		//	RfcacheReadMiss                                 int64
+		//	RfcacheReadsFromCache                           int64
+		//	RfcacheReadsPending                             int64
+		//	RfcacheReadsReceived                            int64
+		//	RfcacheReadsSkipped                             int64
+		//	RfcacheReadsSkippedAlignedSizeTooLarge          int64
+		//	RfcacheReadsSkippedHeavyLoad                    int64
+		//	RfcacheReadsSkippedInternalError                int64
+		//	RfcacheReadsSkippedLockIos                      int64
+		//	RfcacheReadsSkippedLowResources                 int64
+		//	RfcacheReadsSkippedMaxIoSize                    int64
+		//	RfcacheReadsSkippedStuckIo                      int64
+		//	RfcacheSkippedUnlinedWrite                      int64
+		//	RfcacheSourceDeviceReads                        int64
+		//	RfcacheSourceDeviceWrites                       int64
+		//	RfcacheWriteMiss                                int64
+		//	RfcacheWritePending                             int64
+		//	RfcacheWritesReceived                           int64
+		//	RfcacheWritesSkippedCacheMiss                   int64
+		//	RfcacheWritesSkippedHeavyLoad                   int64
+		//	RfcacheWritesSkippedInternalError               int64
+		//	RfcacheWritesSkippedLowResources                int64
+		//	RfcacheWritesSkippedMaxIoSize                   int64
+		//	RfcacheWritesSkippedStuckIo                     int64
+		//	RmPendingAllocatedInKb                          int64
+		//	Rmcache128kbEntryCount                          int64
+		//	Rmcache16kbEntryCount                           int64
+		//	Rmcache32kbEntryCount                           int64
+		//	Rmcache4kbEntryCount                            int64
+		//	Rmcache64kbEntryCount                           int64
+		//	Rmcache8kbEntryCount                            int64
+		//	RmcacheBigBlockEvictionCount                    int64
+		//	RmcacheBigBlockEvictionSizeCountInKb            int64
+		//	RmcacheCurrNumOf128kbEntries                    int64
+		//	RmcacheCurrNumOf16kbEntries                     int64
+		//	RmcacheCurrNumOf32kbEntries                     int64
+		//	RmcacheCurrNumOf4kbEntries                      int64
+		//	RmcacheCurrNumOf64kbEntries                     int64
+		//	RmcacheCurrNumOf8kbEntries                      int64
+		//	RmcacheEntryEvictionCount                       int64
+		//	RmcacheEntryEvictionSizeCountInKb               int64
+		//	RmcacheNoEvictionCount                          int64
+		//	RmcacheSizeInKb                                 int64
+		//	RmcacheSizeInUseInKb                            int64
+		//	RmcacheSkipCountCacheAllBusy                    int64
+		//	RmcacheSkipCountLargeIo                         int64
+		//	RmcacheSkipCountUnaligned4kbIo                  int64
+		//	SecondaryReadBwc                                int64
+		//	SecondaryReadFromDevBwc                         int64
+		//	SecondaryReadFromRmcacheBwc                     int64
+		//	SecondaryVacInKb                                int64
+		//	SecondaryWriteBwc                               int64
+		//	SemiProtectedVacInKb                            int64
+		//	SnapCapacityInUseInKb                           int64
+		//	SnapCapacityInUseOccupiedInKb                   int64
+		//	ThickCapacityInUseInKb                          int64
+		//	ThinCapacityAllocatedInKb                       int64
+		//	ThinCapacityInUseInKb                           int64
+		//	TotalReadBwc                                    int64
+		//	TotalWriteBwc                                   int64
+		//	UnreachableUnusedCapacityInKb                   int64
+		//	UnusedCapacityInKb                              int64
 	}
 	VolumeStatistics struct {
-		//	ChildVolumeIds            float64
-		//	DescendantVolumeIds       float64
-		//	MappedSdcIds              float64
-		//	NumOfChildVolumes         float64
-		//	NumOfDescendantVolumes    float64
-		//	NumOfMappedScsiInitiators float64
-		//	NumOfMappedSdcs           float64
-		//	UserDataReadBwc           float64
-		//	UserDataWriteBwc          float64
+		//	ChildVolumeIds            int64
+		//	DescendantVolumeIds       int64
+		//	MappedSdcIds              int64
+		//	NumOfChildVolumes         int64
+		//	NumOfDescendantVolumes    int64
+		//	NumOfMappedScsiInitiators int64
+		//	NumOfMappedSdcs           int64
+		//	UserDataReadBwc           int64
+		//	UserDataWriteBwc          int64
 	}
 	VTreeStatistics struct {
-		//	BaseNetCapacityInUseInKb float64
-		//	NetCapacityInUseInKb     float64
-		//	NumOfVolumes             float64
-		//	SnapNetCapacityInUseInKb float64
-		//	TrimmedCapacityInKb      float64
-		//	VolumeIds                float64
+		//	BaseNetCapacityInUseInKb int64
+		//	NetCapacityInUseInKb     int64
+		//	NumOfVolumes             int64
+		//	SnapNetCapacityInUseInKb int64
+		//	TrimmedCapacityInKb      int64
+		//	VolumeIds                int64
 	}
 )

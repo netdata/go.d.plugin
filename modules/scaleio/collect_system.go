@@ -4,45 +4,49 @@ import "github.com/netdata/go.d.plugin/modules/scaleio/client"
 
 func (s *ScaleIO) collectSystemOverview(mx *metrics, stats client.SelectedStatistics) {
 	collectSystemCapacity(mx, stats)
-	collectSystemComponents(mx, stats)
-	collectSystemIOWorkload(mx, stats)
+	collectSystemWorkload(mx, stats)
 	collectSystemRebalance(mx, stats)
 	collectSystemRebuild(mx, stats)
+	collectSystemComponents(mx, stats)
 }
 
 func collectSystemCapacity(mx *metrics, stats client.SelectedStatistics) {
 	m := &mx.SystemOverview.Capacity
-	s := stats.System
+	collectCapacity(m, stats.System.CapacityStatistics)
+}
 
-	// Physical Capacity Calculation (as in the ScaleIO GUI)
-	{
-		m.AvailableForVolumeAllocation = s.CapacityAvailableForVolumeAllocationInKb
-		m.MaxCapacity = s.MaxCapacityInKb
+func collectCapacity(m *systemCapacity, s client.CapacityStatistics) {
+	// Health
+	m.Protected = s.ProtectedCapacityInKb
+	m.InMaintenance = s.InMaintenanceCapacityInKb
+	m.Degraded = sum(s.DegradedFailedCapacityInKb, s.DegradedHealthyCapacityInKb)
+	m.Failed = s.FailedCapacityInKb
+	m.UnreachableUnused = s.UnreachableUnusedCapacityInKb
 
-		m.Decreased = sum(s.MaxCapacityInKb, -s.CapacityLimitInKb) // TODO: probably wrong
-		m.Degraded = sum(s.DegradedFailedCapacityInKb, s.DegradedHealthyCapacityInKb)
-		m.Failed = s.FailedCapacityInKb
-		m.InMaintenance = s.InMaintenanceCapacityInKb
-		m.Protected = s.ProtectedCapacityInKb
-		m.Spare = s.SpareCapacityInKb
-		m.UnreachableUnused = s.UnreachableUnusedCapacityInKb
-		// Note: can't use 'UnusedCapacityInKb' directly, dashboard shows calculated value
-		used := sum(
-			s.ProtectedCapacityInKb,
-			s.InMaintenanceCapacityInKb,
-			m.Decreased,
-			m.Degraded,
-			s.FailedCapacityInKb,
-			s.SpareCapacityInKb,
-			s.UnreachableUnusedCapacityInKb,
-		)
-		m.Unused = sum(s.MaxCapacityInKb, -used)
-	}
-
+	// Capacity
+	m.MaxCapacity = s.MaxCapacityInKb
 	m.ThickInUse = s.ThickCapacityInUseInKb
-	m.ThinAllocated = s.ThinCapacityAllocatedInKb
 	m.ThinInUse = s.ThinCapacityInUseInKb
-	m.ThinFree = sum(s.ThinCapacityAllocatedInKb, -s.ThinCapacityInUseInKb)
+	m.Snapshot = s.SnapCapacityInUseOccupiedInKb
+	m.Spare = s.SpareCapacityInKb
+	m.Decreased = sum(s.MaxCapacityInKb, -s.CapacityLimitInKb) // TODO: probably wrong
+	// Note: can't use 'UnusedCapacityInKb' directly, dashboard shows calculated value
+	used := sum(
+		s.ProtectedCapacityInKb,
+		s.InMaintenanceCapacityInKb,
+		m.Decreased,
+		m.Degraded,
+		s.FailedCapacityInKb,
+		s.SpareCapacityInKb,
+		s.UnreachableUnusedCapacityInKb,
+		s.SnapCapacityInUseOccupiedInKb,
+	)
+	m.Unused = sum(s.MaxCapacityInKb, -used)
+
+	// Other
+	m.InUse = s.CapacityInUseInKb
+	m.AvailableForVolumeAllocation = s.CapacityAvailableForVolumeAllocationInKb
+	m.Utilization = div(100*s.CapacityInUseInKb, s.MaxCapacityInKb-s.SpareCapacityInKb)
 }
 
 func collectSystemComponents(mx *metrics, stats client.SelectedStatistics) {
@@ -60,14 +64,13 @@ func collectSystemComponents(mx *metrics, stats client.SelectedStatistics) {
 	m.StoragePools = s.NumOfStoragePools
 	m.VTrees = s.NumOfVtrees
 	m.Volumes = s.NumOfVolumes
-
 	m.ThickBaseVolumes = s.NumOfThickBaseVolumes
 	m.ThinBaseVolumes = s.NumOfThinBaseVolumes
 	m.UnmappedVolumes = s.NumOfUnmappedVolumes
 	m.MappedVolumes = sum(s.NumOfVolumes, -s.NumOfUnmappedVolumes)
 }
 
-func collectSystemIOWorkload(mx *metrics, stats client.SelectedStatistics) {
+func collectSystemWorkload(mx *metrics, stats client.SelectedStatistics) {
 	m := &mx.SystemOverview.IOWorkload
 	s := stats.System
 
@@ -88,8 +91,8 @@ func collectSystemIOWorkload(mx *metrics, stats client.SelectedStatistics) {
 		calcBW(s.SecondaryWriteBwc),
 	)
 	m.Backend.Total.BW.set(
-		sum(m.Backend.Primary.BW.Read, m.Backend.Secondary.BW.Read),
-		sum(m.Backend.Primary.BW.Write, m.Backend.Secondary.BW.Write),
+		sumFloat(m.Backend.Primary.BW.Read, m.Backend.Secondary.BW.Read),
+		sumFloat(m.Backend.Primary.BW.Write, m.Backend.Secondary.BW.Write),
 	)
 
 	m.Total.IOPS.set(
@@ -109,8 +112,8 @@ func collectSystemIOWorkload(mx *metrics, stats client.SelectedStatistics) {
 		calcIOPS(s.SecondaryWriteBwc),
 	)
 	m.Backend.Total.IOPS.set(
-		sum(m.Backend.Primary.IOPS.Read, m.Backend.Secondary.IOPS.Read),
-		sum(m.Backend.Primary.IOPS.Write, m.Backend.Secondary.IOPS.Write),
+		sumFloat(m.Backend.Primary.IOPS.Read, m.Backend.Secondary.IOPS.Read),
+		sumFloat(m.Backend.Primary.IOPS.Write, m.Backend.Secondary.IOPS.Write),
 	)
 
 	m.Total.IOSize.set(
@@ -130,8 +133,8 @@ func collectSystemIOWorkload(mx *metrics, stats client.SelectedStatistics) {
 		calcIOSize(s.SecondaryWriteBwc),
 	)
 	m.Backend.Total.IOSize.set(
-		sum(m.Backend.Primary.IOSize.Read, m.Backend.Secondary.IOSize.Read),
-		sum(m.Backend.Primary.IOSize.Write, m.Backend.Secondary.IOSize.Write),
+		sumFloat(m.Backend.Primary.IOSize.Read, m.Backend.Secondary.IOSize.Read),
+		sumFloat(m.Backend.Primary.IOSize.Write, m.Backend.Secondary.IOSize.Write),
 	)
 }
 
@@ -152,8 +155,8 @@ func collectSystemRebuild(mx *metrics, stats client.SelectedStatistics) {
 		calcBW(s.NormRebuildWriteBwc),
 	)
 	m.Total.BW.set(
-		sum(m.Forward.BW.Read, m.Backward.BW.Read, m.Normal.BW.Read),
-		sum(m.Forward.BW.Write, m.Backward.BW.Write, m.Normal.BW.Write),
+		sumFloat(m.Forward.BW.Read, m.Backward.BW.Read, m.Normal.BW.Read),
+		sumFloat(m.Forward.BW.Write, m.Backward.BW.Write, m.Normal.BW.Write),
 	)
 
 	m.Forward.IOPS.set(
@@ -169,8 +172,8 @@ func collectSystemRebuild(mx *metrics, stats client.SelectedStatistics) {
 		calcIOPS(s.NormRebuildWriteBwc),
 	)
 	m.Total.IOPS.set(
-		sum(m.Forward.IOPS.Read, m.Backward.IOPS.Read, m.Normal.IOPS.Read),
-		sum(m.Forward.IOPS.Write, m.Backward.IOPS.Write, m.Normal.IOPS.Write),
+		sumFloat(m.Forward.IOPS.Read, m.Backward.IOPS.Read, m.Normal.IOPS.Read),
+		sumFloat(m.Forward.IOPS.Write, m.Backward.IOPS.Write, m.Normal.IOPS.Write),
 	)
 
 	m.Forward.IOSize.set(
@@ -186,11 +189,10 @@ func collectSystemRebuild(mx *metrics, stats client.SelectedStatistics) {
 		calcIOSize(s.NormRebuildWriteBwc),
 	)
 	m.Total.IOSize.set(
-		sum(m.Forward.IOSize.Read, m.Backward.IOSize.Read, m.Normal.IOSize.Read),
-		sum(m.Forward.IOSize.Write, m.Backward.IOSize.Write, m.Normal.IOSize.Write),
+		sumFloat(m.Forward.IOSize.Read, m.Backward.IOSize.Read, m.Normal.IOSize.Read),
+		sumFloat(m.Forward.IOSize.Write, m.Backward.IOSize.Write, m.Normal.IOSize.Write),
 	)
 
-	// --Pending Capacity--
 	m.Forward.Pending = s.PendingFwdRebuildCapacityInKb
 	m.Backward.Pending = s.PendingBckRebuildCapacityInKb
 	m.Normal.Pending = s.PendingNormRebuildCapacityInKb
@@ -217,22 +219,34 @@ func collectSystemRebalance(mx *metrics, stats client.SelectedStatistics) {
 	)
 
 	m.Pending = s.PendingRebalanceCapacityInKb
+	m.TimeUntilFinish = divFloat(float64(m.Pending), m.BW.ReadWrite)
 }
 
 func calcBW(bwc client.Bwc) float64     { return div(bwc.TotalWeightInKb, bwc.NumSeconds) }
 func calcIOPS(bwc client.Bwc) float64   { return div(bwc.NumOccured, bwc.NumSeconds) }
 func calcIOSize(bwc client.Bwc) float64 { return div(bwc.TotalWeightInKb, bwc.NumOccured) }
 
-func sum(vs ...float64) (res float64) {
-	for _, v := range vs {
+func sum(a, b int64, others ...int64) (res int64) {
+	for _, v := range others {
 		res += v
 	}
-	return res
+	return res + a + b
+}
+
+func sumFloat(a, b float64, others ...float64) (res float64) {
+	for _, v := range others {
+		res += v
+	}
+	return res + a + b
 }
 
 func div(a, b int64) float64 {
+	return divFloat(float64(a), float64(b))
+}
+
+func divFloat(a, b float64) float64 {
 	if b == 0 {
 		return 0
 	}
-	return float64(a) / float64(b)
+	return a / b
 }

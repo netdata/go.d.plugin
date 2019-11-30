@@ -9,38 +9,21 @@ func (s *ScaleIO) collectStoragePool(mx *metrics, stats client.SelectedStatistic
 		if _, ok := s.discovered.pool[k]; !ok {
 			continue
 		}
-
 		var m storagePoolStatistics
-		m.Capacity.AvailableForVolumeAllocation = v.CapacityAvailableForVolumeAllocationInKb
-		m.Capacity.MaxCapacity = v.MaxCapacityInKb
-
-		{
-			// General Capacity
-			m.Capacity.Decreased = sum(v.MaxCapacityInKb, -v.CapacityLimitInKb)
-			m.Capacity.Degraded = sum(v.DegradedFailedCapacityInKb, v.DegradedHealthyCapacityInKb)
-			m.Capacity.Failed = v.FailedCapacityInKb
-			m.Capacity.InMaintenance = v.InMaintenanceCapacityInKb
-			m.Capacity.Protected = v.ProtectedCapacityInKb
-			m.Capacity.Spare = v.SpareCapacityInKb
-			m.Capacity.UnreachableUnused = v.UnreachableUnusedCapacityInKb
-			// Note: can't use 'UnusedCapacityInKb' directly, dashboard shows calculated value
-			used := sum(
-				v.ProtectedCapacityInKb,
-				v.InMaintenanceCapacityInKb,
-				m.Capacity.Decreased,
-				m.Capacity.Degraded,
-				v.FailedCapacityInKb,
-				v.SpareCapacityInKb,
-				v.UnreachableUnusedCapacityInKb,
-			)
-			m.Capacity.Unused = sum(v.MaxCapacityInKb, -used)
-		}
-
-		m.Components.Devices = v.NumOfDevices
-		m.Components.Snapshots = v.NumOfSnapshots
-		m.Components.Volumes = v.NumOfVolumes
-		m.Components.Vtrees = v.NumOfVtrees
+		collectStoragePoolCapacity(&m, v)
+		collectStoragePoolComponents(&m, v)
 
 		mx.StoragePool[k] = m
 	}
+}
+
+func collectStoragePoolCapacity(m *storagePoolStatistics, s client.StoragePoolStatistics) {
+	collectCapacity(&m.Capacity, s.CapacityStatistics)
+}
+
+func collectStoragePoolComponents(m *storagePoolStatistics, s client.StoragePoolStatistics) {
+	m.Components.Devices = s.NumOfDevices
+	m.Components.Snapshots = s.NumOfSnapshots
+	m.Components.Volumes = s.NumOfVolumes
+	m.Components.Vtrees = s.NumOfVtrees
 }

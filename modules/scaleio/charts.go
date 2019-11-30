@@ -19,7 +19,7 @@ var systemCharts = Charts{
 	// Capacity
 	{
 		ID:    "system_capacity_total",
-		Title: "System Total Capacity",
+		Title: "Total Capacity",
 		Units: "KB",
 		Fam:   "capacity",
 		Ctx:   "scaleio.system_capacity_total",
@@ -28,55 +28,64 @@ var systemCharts = Charts{
 		},
 	},
 	{
-		ID:    "system_capacity",
-		Title: "System Capacity",
+		ID:    "system_capacity_in_use",
+		Title: "Capacity In Use",
+		Units: "KB",
+		Fam:   "capacity",
+		Ctx:   "scaleio.system_capacity_in_use",
+		Dims: Dims{
+			{ID: "system_capacity_in_use", Name: "in_use"},
+		},
+	},
+	{
+		ID:    "system_capacity_usage",
+		Title: "Capacity Usage",
 		Units: "KB",
 		Fam:   "capacity",
 		Type:  module.Stacked,
-		Ctx:   "scaleio.system_capacity",
+		Ctx:   "scaleio.system_capacity_usage",
 		Dims: Dims{
-			{ID: "system_capacity_protected", Name: "protected"},
-			{ID: "system_capacity_degraded", Name: "degraded"},
-			{ID: "system_capacity_spare", Name: "spare"},
-			{ID: "system_capacity_failed", Name: "failed"},
+			{ID: "system_capacity_thick_in_use", Name: "thick"},
 			{ID: "system_capacity_decreased", Name: "decreased"},
-			{ID: "system_capacity_unreachable_unused", Name: "unavailable"},
-			{ID: "system_capacity_in_maintenance", Name: "in_maintenance"},
+			{ID: "system_capacity_thin_in_use", Name: "thin"},
+			{ID: "system_capacity_snapshot", Name: "snapshot"},
+			{ID: "system_capacity_spare", Name: "spare"},
 			{ID: "system_capacity_unused", Name: "unused"},
 		},
 	},
 	{
-		ID:    "system_capacity_available_volume_allocation",
+		ID:    "system_capacity_utilization",
+		Title: "Capacity Utilization",
+		Units: "percentage",
+		Fam:   "capacity",
+		Ctx:   "scaleio.system_capacity_utilization",
+		Dims: Dims{
+			{ID: "system_capacity_utilization", Name: "utilization", Div: 100},
+		},
+	},
+	{
+		ID:    "system_available_volume_allocation",
 		Title: "Available For Volume Allocation",
 		Units: "KB",
 		Fam:   "capacity",
-		Ctx:   "scaleio.system_capacity_available_volume_allocation",
+		Ctx:   "scaleio.system_available_volume_allocation",
 		Dims: Dims{
 			{ID: "system_capacity_available_for_volume_allocation", Name: "available"},
 		},
 	},
 	{
-		ID:    "system_capacity_volume_usage_by_type",
-		Title: "Volume Usage By Type",
+		ID:    "system_capacity_health_state",
+		Title: "Capacity Health State",
 		Units: "KB",
-		Fam:   "capacity",
-		Ctx:   "scaleio.system_capacity_volume_usage_by_type",
+		Fam:   "health",
 		Type:  module.Stacked,
+		Ctx:   "scaleio.system_capacity_health_state",
 		Dims: Dims{
-			{ID: "system_capacity_thick_in_use", Name: "thick"},
-			{ID: "system_capacity_thin_in_use", Name: "thin"},
-		},
-	},
-	{
-		ID:    "system_capacity_thin_volume_usage",
-		Title: "Thin Volume Usage",
-		Units: "KB",
-		Fam:   "capacity",
-		Ctx:   "scaleio.system_capacity_thin_volume_usage",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: "system_capacity_thin_free", Name: "free"},
-			{ID: "system_capacity_thin_in_use", Name: "used"},
+			{ID: "system_capacity_protected", Name: "protected"},
+			{ID: "system_capacity_degraded", Name: "degraded"},
+			{ID: "system_capacity_in_maintenance", Name: "in_maintenance"},
+			{ID: "system_capacity_failed", Name: "failed"},
+			{ID: "system_capacity_unreachable_unused", Name: "unavailable"},
 		},
 	},
 	// I/O Workload BW
@@ -84,7 +93,7 @@ var systemCharts = Charts{
 		ID:    "system_workload_primary_bandwidth_total",
 		Title: "Primary Backend Bandwidth Total (Read and Write)",
 		Units: "KB/s",
-		Fam:   "i/o workload",
+		Fam:   "workload",
 		Ctx:   "scaleio.system_workload_primary_bandwidth_total",
 		Dims: Dims{
 			{ID: "system_backend_primary_bandwidth_read_write", Name: "total", Div: 1000},
@@ -94,7 +103,7 @@ var systemCharts = Charts{
 		ID:    "system_workload_primary_bandwidth",
 		Title: "Primary Backend Bandwidth",
 		Units: "KB/s",
-		Fam:   "i/o workload",
+		Fam:   "workload",
 		Ctx:   "scaleio.system_workload_primary_bandwidth",
 		Type:  module.Area,
 		Dims: Dims{
@@ -107,7 +116,7 @@ var systemCharts = Charts{
 		ID:    "system_workload_primary_iops_total",
 		Title: "Primary Backend IOPS Total (Read and Write)",
 		Units: "iops/s",
-		Fam:   "i/o workload",
+		Fam:   "workload",
 		Ctx:   "scaleio.system_workload_primary_iops_total",
 		Dims: Dims{
 			{ID: "system_backend_primary_iops_read_write", Name: "total", Div: 1000},
@@ -117,7 +126,7 @@ var systemCharts = Charts{
 		ID:    "system_workload_primary_iops",
 		Title: "Primary Backend IOPS",
 		Units: "iops/s",
-		Fam:   "i/o workload",
+		Fam:   "workload",
 		Ctx:   "scaleio.system_workload_primary_iops",
 		Type:  module.Area,
 		Dims: Dims{
@@ -129,7 +138,7 @@ var systemCharts = Charts{
 		ID:    "system_workload_primary_io_size_total",
 		Title: "Primary Backend I/O Size Total (Read and Write)",
 		Units: "KB",
-		Fam:   "i/o workload",
+		Fam:   "workload",
 		Ctx:   "scaleio.system_workload_primary_io_size_total",
 		Dims: Dims{
 			{ID: "system_backend_primary_io_size_read_write", Name: "io_size", Div: 1000},
@@ -156,6 +165,16 @@ var systemCharts = Charts{
 		Ctx:   "scaleio.system_rebalance_left",
 		Dims: Dims{
 			{ID: "system_rebalance_pending_capacity_in_Kb", Name: "left"},
+		},
+	},
+	{
+		ID:    "system_rebalance_time_until_finish",
+		Title: "System Rebalance Approximate Time Until Finish",
+		Units: "seconds",
+		Fam:   "rebalance",
+		Ctx:   "scaleio.rebalance_time_until_finish",
+		Dims: Dims{
+			{ID: "system_rebalance_time_until_finish", Name: "time"},
 		},
 	},
 	// Rebuild
@@ -240,21 +259,39 @@ var storagePoolCharts = Charts{
 		},
 	},
 	{
-		ID:    "storage_pool_%s_capacity",
-		Title: "Capacity",
+		ID:    "storage_pool_%s_capacity_in_use",
+		Title: "Capacity In Use",
+		Units: "KB",
+		Fam:   "pool %s",
+		Ctx:   "scaleio.storage_pool_%s_capacity_in_use",
+		Dims: Dims{
+			{ID: "storage_pool_%s_capacity_in_use", Name: "in_use"},
+		},
+	},
+	{
+		ID:    "storage_pool_%s_capacity_usage",
+		Title: "Capacity Usage",
 		Units: "KB",
 		Fam:   "pool %s",
 		Type:  module.Stacked,
-		Ctx:   "scaleio.storage_pool_%s_capacity",
+		Ctx:   "scaleio.storage_pool_%s_capacity_usage",
 		Dims: Dims{
-			{ID: "storage_pool_%s_capacity_protected", Name: "protected"},
-			{ID: "storage_pool_%s_capacity_degraded", Name: "degraded"},
-			{ID: "storage_pool_%s_capacity_spare", Name: "spare"},
-			{ID: "storage_pool_%s_capacity_failed", Name: "failed"},
+			{ID: "storage_pool_%s_capacity_thick_in_use", Name: "thick"},
 			{ID: "storage_pool_%s_capacity_decreased", Name: "decreased"},
-			{ID: "storage_pool_%s_capacity_unreachable_unused", Name: "unavailable"},
-			{ID: "storage_pool_%s_capacity_in_maintenance", Name: "in_maintenance"},
+			{ID: "storage_pool_%s_capacity_thin_in_use", Name: "thin"},
+			{ID: "storage_pool_%s_capacity_snapshot", Name: "snapshot"},
+			{ID: "storage_pool_%s_capacity_spare", Name: "spare"},
 			{ID: "storage_pool_%s_capacity_unused", Name: "unused"},
+		},
+	},
+	{
+		ID:    "storage_pool_%s_capacity_utilization",
+		Title: "Capacity Utilization",
+		Units: "percentage",
+		Fam:   "pool %s",
+		Ctx:   "scaleio.storage_pool_%s_capacity_utilization",
+		Dims: Dims{
+			{ID: "storage_pool_%s_capacity_utilization", Name: "utilization", Div: 100},
 		},
 	},
 	{
@@ -268,12 +305,26 @@ var storagePoolCharts = Charts{
 		},
 	},
 	{
+		ID:    "storage_pool_%s_capacity_health_state",
+		Title: "Capacity Health State",
+		Units: "KB",
+		Fam:   "pool %s",
+		Type:  module.Stacked,
+		Ctx:   "scaleio.storage_pool_%s_capacity_health_state",
+		Dims: Dims{
+			{ID: "storage_pool_%s_capacity_protected", Name: "protected"},
+			{ID: "storage_pool_%s_capacity_degraded", Name: "degraded"},
+			{ID: "storage_pool_%s_capacity_in_maintenance", Name: "in_maintenance"},
+			{ID: "storage_pool_%s_capacity_failed", Name: "failed"},
+			{ID: "storage_pool_%s_capacity_unreachable_unused", Name: "unavailable"},
+		},
+	},
+	{
 		ID:    "storage_pool_%s_components",
 		Title: "Components",
 		Units: "number",
 		Fam:   "pool %s",
 		Ctx:   "scaleio.storage_pool_%s_components",
-		//Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "storage_pool_%s_num_of_devices", Name: "devices"},
 			{ID: "storage_pool_%s_num_of_snapshots", Name: "snapshots"},
@@ -281,6 +332,19 @@ var storagePoolCharts = Charts{
 			{ID: "storage_pool_%s_num_of_vtrees", Name: "vtrees"},
 		},
 	},
+}
+
+func newStoragePoolCharts(pool client.StoragePool) *Charts {
+	charts := storagePoolCharts.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, pool.ID)
+		chart.Fam = fmt.Sprintf(chart.Fam, pool.Name)
+		chart.Ctx = fmt.Sprintf(chart.Ctx, pool.ID)
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, pool.ID)
+		}
+	}
+	return charts
 }
 
 var sdcCharts = Charts{
@@ -340,19 +404,6 @@ var sdcCharts = Charts{
 			{ID: "sdc_%s_num_of_mapped_volumes", Name: "mapped"},
 		},
 	},
-}
-
-func newStoragePoolCharts(pool client.StoragePool) *Charts {
-	charts := storagePoolCharts.Copy()
-	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, pool.ID)
-		chart.Fam = fmt.Sprintf(chart.Fam, pool.Name)
-		chart.Ctx = fmt.Sprintf(chart.Ctx, pool.ID)
-		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, pool.ID)
-		}
-	}
-	return charts
 }
 
 func newSdcCharts(sdc client.Sdc) *Charts {
