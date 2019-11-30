@@ -71,16 +71,19 @@ Relationships:
 */
 
 // New creates new ScaleIO client.
-func New(client *http.Client, request web.Request) *Client {
-	_ = request.ParseUserURL()
-	if client == nil {
-		client = http.DefaultClient
+func New(client web.Client, request web.Request) (*Client, error) {
+	httpClient, err := web.NewHTTPClient(client)
+	if err != nil {
+		return nil, err
+	}
+	if err = request.ParseUserURL(); err != nil {
+		return nil, err
 	}
 	return &Client{
-		httpClient: client,
+		httpClient: httpClient,
 		request:    request,
 		token:      newToken(),
-	}
+	}, nil
 }
 
 // Client represents ScaleIO client.
