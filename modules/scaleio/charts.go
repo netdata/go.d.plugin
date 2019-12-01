@@ -5,14 +5,20 @@ import (
 
 	"github.com/netdata/go.d.plugin/modules/scaleio/client"
 
+	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/module"
 )
 
 type (
-	// Charts is an alias for module.Charts
+	// Charts is an alias for module.Charts.
 	Charts = module.Charts
-	// Dims is an alias for module.Dims
+	// Dims is an alias for module.Dims.
 	Dims = module.Dims
+)
+
+var (
+	prioStoragePool = orchestrator.DefaultJobPriority + len(systemCharts) + 10
+	prioSdc         = prioStoragePool + len(storagePoolCharts) + 10
 )
 
 var systemCharts = Charts{
@@ -197,7 +203,6 @@ var systemCharts = Charts{
 		Units: "number",
 		Fam:   "components",
 		Ctx:   "scaleio.system_defined_components",
-		//Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "system_num_of_devices", Name: "devices"},
 			{ID: "system_num_of_fault_sets", Name: "fault_sets"},
@@ -326,10 +331,11 @@ var storagePoolCharts = Charts{
 
 func newStoragePoolCharts(pool client.StoragePool) *Charts {
 	charts := storagePoolCharts.Copy()
-	for _, chart := range *charts {
+	for i, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, pool.ID)
 		chart.Fam = fmt.Sprintf(chart.Fam, pool.Name)
 		chart.Ctx = fmt.Sprintf(chart.Ctx, pool.ID)
+		chart.Priority = prioStoragePool + i
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, pool.ID)
 		}
@@ -398,10 +404,11 @@ var sdcCharts = Charts{
 
 func newSdcCharts(sdc client.Sdc) *Charts {
 	charts := sdcCharts.Copy()
-	for _, chart := range *charts {
+	for i, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, sdc.ID)
 		chart.Fam = fmt.Sprintf(chart.Fam, sdc.SdcIp)
 		chart.Ctx = fmt.Sprintf(chart.Ctx, sdc.ID)
+		chart.Priority = prioSdc + i
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, sdc.ID)
 		}

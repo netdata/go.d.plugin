@@ -34,7 +34,7 @@ func TestScaleIO_Init(t *testing.T) {
 
 	assert.True(t, scaleIO.Init())
 }
-func TestScaleIO_Init_UsernameOrPasswordNotSet(t *testing.T) {
+func TestScaleIO_Init_UsernameAndPasswordNotSet(t *testing.T) {
 	assert.False(t, New().Init())
 }
 
@@ -83,17 +83,6 @@ func TestScaleIO_Collect(t *testing.T) {
 	defer srv.Close()
 	require.True(t, scaleIO.Init())
 	require.True(t, scaleIO.Check())
-
-	//m := scaleIO.Collect()
-	//l := make([]string, 0)
-	//for k := range m {
-	//	l = append(l, k)
-	//}
-	//sort.Strings(l)
-	//for _, value := range l {
-	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
-	//}
-	//return
 
 	expected := map[string]int64{
 		"sdc_6076fd0f00000000_bandwidth_read":                                    0,
