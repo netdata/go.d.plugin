@@ -28,7 +28,7 @@ var systemCharts = Charts{
 	{
 		ID:    "system_capacity_total",
 		Title: "Total Capacity",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "capacity",
 		Ctx:   "scaleio.system_capacity_total",
 		Dims: Dims{
@@ -38,7 +38,7 @@ var systemCharts = Charts{
 	{
 		ID:    "system_capacity_in_use",
 		Title: "Capacity In Use",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "capacity",
 		Ctx:   "scaleio.system_capacity_in_use",
 		Dims: Dims{
@@ -48,7 +48,7 @@ var systemCharts = Charts{
 	{
 		ID:    "system_capacity_usage",
 		Title: "Capacity Usage",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "capacity",
 		Type:  module.Stacked,
 		Ctx:   "scaleio.system_capacity_usage",
@@ -62,11 +62,11 @@ var systemCharts = Charts{
 		},
 	},
 	{
-		ID:    "system_available_volume_allocation",
+		ID:    "system_capacity_available_volume_allocation",
 		Title: "Available For Volume Allocation",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "capacity",
-		Ctx:   "scaleio.system_available_volume_allocation",
+		Ctx:   "scaleio.system_capacity_available_volume_allocation",
 		Dims: Dims{
 			{ID: "system_capacity_available_for_volume_allocation", Name: "available"},
 		},
@@ -74,7 +74,7 @@ var systemCharts = Charts{
 	{
 		ID:    "system_capacity_health_state",
 		Title: "Capacity Health State",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "health",
 		Type:  module.Stacked,
 		Ctx:   "scaleio.system_capacity_health_state",
@@ -90,7 +90,7 @@ var systemCharts = Charts{
 	{
 		ID:    "system_workload_primary_bandwidth_total",
 		Title: "Primary Backend Bandwidth Total (Read and Write)",
-		Units: "KB/s",
+		Units: "KiB/s",
 		Fam:   "workload",
 		Ctx:   "scaleio.system_workload_primary_bandwidth_total",
 		Dims: Dims{
@@ -100,7 +100,7 @@ var systemCharts = Charts{
 	{
 		ID:    "system_workload_primary_bandwidth",
 		Title: "Primary Backend Bandwidth",
-		Units: "KB/s",
+		Units: "KiB/s",
 		Fam:   "workload",
 		Ctx:   "scaleio.system_workload_primary_bandwidth",
 		Type:  module.Area,
@@ -135,7 +135,7 @@ var systemCharts = Charts{
 	{
 		ID:    "system_workload_primary_io_size_total",
 		Title: "Primary Backend I/O Size Total (Read and Write)",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "workload",
 		Ctx:   "scaleio.system_workload_primary_io_size_total",
 		Dims: Dims{
@@ -145,8 +145,8 @@ var systemCharts = Charts{
 	// Rebalance
 	{
 		ID:    "system_rebalance",
-		Title: "System Rebalance",
-		Units: "KB/s",
+		Title: "Rebalance",
+		Units: "KiB/s",
 		Fam:   "rebalance",
 		Type:  module.Area,
 		Ctx:   "scaleio.system_rebalance",
@@ -157,8 +157,8 @@ var systemCharts = Charts{
 	},
 	{
 		ID:    "system_rebalance_left",
-		Title: "System Rebalance Pending Capacity",
-		Units: "KB",
+		Title: "Rebalance Pending Capacity",
+		Units: "KiB",
 		Fam:   "rebalance",
 		Ctx:   "scaleio.system_rebalance_left",
 		Dims: Dims{
@@ -167,7 +167,7 @@ var systemCharts = Charts{
 	},
 	{
 		ID:    "system_rebalance_time_until_finish",
-		Title: "System Rebalance Approximate Time Until Finish",
+		Title: "Rebalance Approximate Time Until Finish",
 		Units: "seconds",
 		Fam:   "rebalance",
 		Ctx:   "scaleio.rebalance_time_until_finish",
@@ -178,8 +178,8 @@ var systemCharts = Charts{
 	// Rebuild
 	{
 		ID:    "system_rebuild",
-		Title: "System Rebuild Bandwidth Total (Forward, Backward and Normal)",
-		Units: "KB/s",
+		Title: "Rebuild Bandwidth Total (Forward, Backward and Normal)",
+		Units: "KiB/s",
 		Fam:   "rebuild",
 		Ctx:   "scaleio.system_rebuild",
 		Type:  module.Area,
@@ -190,8 +190,8 @@ var systemCharts = Charts{
 	},
 	{
 		ID:    "system_rebuild_left",
-		Title: "System Rebuild Pending Capacity Total (Forward, Backward and Normal)",
-		Units: "KB",
+		Title: "Rebuild Pending Capacity Total (Forward, Backward and Normal)",
+		Units: "KiB",
 		Fam:   "rebuild",
 		Ctx:   "scaleio.system_rebuild_left",
 		Dims: Dims{
@@ -201,7 +201,7 @@ var systemCharts = Charts{
 	// Components
 	{
 		ID:    "system_defined_components",
-		Title: "System Defined Components",
+		Title: "Components",
 		Units: "number",
 		Fam:   "components",
 		Ctx:   "scaleio.system_defined_components",
@@ -248,7 +248,7 @@ var storagePoolCharts = Charts{
 	{
 		ID:    "storage_pool_%s_capacity_total",
 		Title: "Total Capacity",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "pool %s",
 		Ctx:   "scaleio.storage_pool_%s_capacity_total",
 		Dims: Dims{
@@ -258,7 +258,7 @@ var storagePoolCharts = Charts{
 	{
 		ID:    "storage_pool_%s_capacity_in_use",
 		Title: "Capacity In Use",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "pool %s",
 		Ctx:   "scaleio.storage_pool_%s_capacity_in_use",
 		Dims: Dims{
@@ -268,7 +268,7 @@ var storagePoolCharts = Charts{
 	{
 		ID:    "storage_pool_%s_capacity_usage",
 		Title: "Capacity Usage",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "pool %s",
 		Type:  module.Stacked,
 		Ctx:   "scaleio.storage_pool_%s_capacity_usage",
@@ -296,11 +296,11 @@ var storagePoolCharts = Charts{
 		},
 	},
 	{
-		ID:    "storage_pool_%s_available_volume_allocation",
+		ID:    "storage_pool_%s_capacity_available_volume_allocation",
 		Title: "Available For Volume Allocation",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "pool %s",
-		Ctx:   "scaleio.storage_pool_%s_available_volume_allocation",
+		Ctx:   "scaleio.storage_pool_%s_capacity_available_volume_allocation",
 		Dims: Dims{
 			{ID: "storage_pool_%s_capacity_available_for_volume_allocation", Name: "available"},
 		},
@@ -308,7 +308,7 @@ var storagePoolCharts = Charts{
 	{
 		ID:    "storage_pool_%s_capacity_health_state",
 		Title: "Capacity Health State",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "pool %s",
 		Type:  module.Stacked,
 		Ctx:   "scaleio.storage_pool_%s_capacity_health_state",
@@ -356,7 +356,7 @@ var sdcCharts = Charts{
 	{
 		ID:    "sdc_%s_mdm_connection_state",
 		Title: "MDM Connection State",
-		Units: "bool",
+		Units: "boolean",
 		Fam:   "sdc %s",
 		Ctx:   "scaleio.sdc_%s_mdm_connection_state",
 		Dims: Dims{
@@ -366,7 +366,7 @@ var sdcCharts = Charts{
 	{
 		ID:    "sdc_%s_bandwidth",
 		Title: "Bandwidth",
-		Units: "KB/s",
+		Units: "KiB/s",
 		Fam:   "sdc %s",
 		Ctx:   "scaleio.sdc_%s_bandwidth",
 		Type:  module.Area,
@@ -390,7 +390,7 @@ var sdcCharts = Charts{
 	{
 		ID:    "sdc_%s_io_size",
 		Title: "I/O Size",
-		Units: "KB",
+		Units: "KiB",
 		Fam:   "sdc %s",
 		Ctx:   "scaleio.sdc_%s_io_size",
 		Type:  module.Area,
