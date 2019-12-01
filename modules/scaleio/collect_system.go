@@ -2,16 +2,16 @@ package scaleio
 
 import "github.com/netdata/go.d.plugin/modules/scaleio/client"
 
-func (s *ScaleIO) collectSystemOverview(mx *metrics, stats client.SelectedStatistics) {
-	collectSystemCapacity(mx, stats)
-	collectSystemWorkload(mx, stats)
-	collectSystemRebalance(mx, stats)
-	collectSystemRebuild(mx, stats)
-	collectSystemComponents(mx, stats)
+func (s *ScaleIO) collectSystemOverview(mx *metrics, ss client.SelectedStatistics) {
+	collectSystemCapacity(mx, ss)
+	collectSystemWorkload(mx, ss)
+	collectSystemRebalance(mx, ss)
+	collectSystemRebuild(mx, ss)
+	collectSystemComponents(mx, ss)
 }
 
-func collectSystemCapacity(mx *metrics, stats client.SelectedStatistics) {
-	collectCapacity(&mx.SystemOverview.Capacity, stats.System.CapacityStatistics)
+func collectSystemCapacity(mx *metrics, ss client.SelectedStatistics) {
+	collectCapacity(&mx.SystemOverview.Capacity, ss.System.CapacityStatistics)
 }
 
 func collectCapacity(m *capacity, s client.CapacityStatistics) {

@@ -423,22 +423,22 @@ func (s *ScaleIO) updateCharts() {
 }
 
 func (s *ScaleIO) updateStoragePoolCharts() {
-	for k, v := range s.discovered.pool {
-		if s.charted.pool[k] {
+	for _, pool := range s.discovered.pool {
+		if s.charted[pool.ID] {
 			continue
 		}
-		s.charted.pool[k] = true
-		s.addStoragePoolCharts(v)
+		s.charted[pool.ID] = true
+		s.addStoragePoolCharts(pool)
 	}
 }
 
 func (s *ScaleIO) updateSdcCharts() {
-	for k, v := range s.discovered.sdc {
-		if s.charted.sdc[k] {
+	for _, sdc := range s.discovered.sdc {
+		if s.charted[sdc.ID] {
 			continue
 		}
-		s.charted.sdc[k] = true
-		s.addSdcCharts(v)
+		s.charted[sdc.ID] = true
+		s.addSdcCharts(sdc)
 	}
 }
 

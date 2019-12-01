@@ -29,12 +29,9 @@ func New() *ScaleIO {
 		},
 	}
 	return &ScaleIO{
-		Config: config,
-		charts: systemCharts.Copy(),
-		charted: charted{
-			sdc:  make(map[string]bool),
-			pool: make(map[string]bool),
-		},
+		Config:  config,
+		charts:  systemCharts.Copy(),
+		charted: make(map[string]bool),
 	}
 }
 
@@ -51,7 +48,7 @@ type (
 		charts *module.Charts
 
 		discovered instances
-		charted    charted
+		charted    map[string]bool
 
 		lastDiscoveryOK bool
 		runs            int
@@ -59,10 +56,6 @@ type (
 	instances struct {
 		sdc  map[string]client.Sdc
 		pool map[string]client.StoragePool
-	}
-	charted struct {
-		sdc  map[string]bool
-		pool map[string]bool
 	}
 )
 

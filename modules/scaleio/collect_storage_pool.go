@@ -2,32 +2,32 @@ package scaleio
 
 import "github.com/netdata/go.d.plugin/modules/scaleio/client"
 
-func (s *ScaleIO) collectStoragePool(mx *metrics, stats client.SelectedStatistics) {
-	mx.StoragePool = make(map[string]storagePoolStatistics, len(stats.StoragePool))
+func (s *ScaleIO) collectStoragePool(mx *metrics, ss client.SelectedStatistics) {
+	mx.StoragePool = make(map[string]storagePoolMetrics, len(ss.StoragePool))
 
-	for k, v := range stats.StoragePool {
-		pool, ok := s.discovered.pool[k]
+	for id, stats := range ss.StoragePool {
+		pool, ok := s.discovered.pool[id]
 		if !ok {
 			continue
 		}
-		var m storagePoolStatistics
-		collectStoragePoolCapacity(&m, v, pool)
-		collectStoragePoolComponents(&m, v)
+		var m storagePoolMetrics
+		collectStoragePoolCapacity(&m, stats, pool)
+		collectStoragePoolComponents(&m, stats)
 
-		mx.StoragePool[k] = m
+		mx.StoragePool[id] = m
 	}
 }
 
-func collectStoragePoolCapacity(m *storagePoolStatistics, s client.StoragePoolStatistics, pool client.StoragePool) {
-	collectCapacity(&m.Capacity.capacity, s.CapacityStatistics)
-	m.Capacity.Utilization = calcCapacityUtilization(s.CapacityInUseInKb, s.MaxCapacityInKb, pool.SparePercentage)
+func collectStoragePoolCapacity(pm *storagePoolMetrics, ps client.StoragePoolStatistics, pool client.StoragePool) {
+	collectCapacity(&pm.Capacity.capacity, ps.CapacityStatistics)
+	pm.Capacity.Utilization = calcCapacityUtilization(ps.CapacityInUseInKb, ps.MaxCapacityInKb, pool.SparePercentage)
 }
 
-func collectStoragePoolComponents(m *storagePoolStatistics, s client.StoragePoolStatistics) {
-	m.Components.Devices = s.NumOfDevices
-	m.Components.Snapshots = s.NumOfSnapshots
-	m.Components.Volumes = s.NumOfVolumes
-	m.Components.Vtrees = s.NumOfVtrees
+func collectStoragePoolComponents(pm *storagePoolMetrics, ps client.StoragePoolStatistics) {
+	pm.Components.Devices = ps.NumOfDevices
+	pm.Components.Snapshots = ps.NumOfSnapshots
+	pm.Components.Volumes = ps.NumOfVolumes
+	pm.Components.Vtrees = ps.NumOfVtrees
 }
 
 func calcCapacityUtilization(inUse int64, max int64, sparePercent int64) float64 {

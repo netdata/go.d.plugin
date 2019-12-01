@@ -8,8 +8,8 @@ type metrics struct {
 		Rebuild    systemRebuild    `stm:"rebuild"`
 		Components systemComponents `stm:"num_of"`
 	} `stm:"system"`
-	Sdc         map[string]sdcStatistics         `stm:"sdc"`
-	StoragePool map[string]storagePoolStatistics `stm:"storage_pool"`
+	Sdc         map[string]sdcMetrics         `stm:"sdc"`
+	StoragePool map[string]storagePoolMetrics `stm:"storage_pool"`
 }
 
 type (
@@ -71,7 +71,7 @@ type (
 )
 
 type (
-	sdcStatistics struct {
+	sdcMetrics struct {
 		bwIOPS             `stm:""`
 		MappedVolumes      int64 `stm:"num_of_mapped_volumes"`
 		MDMConnectionState bool  `stm:"mdm_connection_state"`
@@ -79,7 +79,7 @@ type (
 )
 
 type (
-	storagePoolStatistics struct {
+	storagePoolMetrics struct {
 		Capacity   storagePoolCapacity `stm:"capacity"`
 		Components struct {
 			Devices   int64 `stm:"devices"`

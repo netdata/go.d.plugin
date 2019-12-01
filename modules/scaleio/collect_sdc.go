@@ -2,31 +2,31 @@ package scaleio
 
 import "github.com/netdata/go.d.plugin/modules/scaleio/client"
 
-func (s *ScaleIO) collectSdc(mx *metrics, stats client.SelectedStatistics) {
-	mx.Sdc = make(map[string]sdcStatistics, len(stats.Sdc))
+func (s *ScaleIO) collectSdc(mx *metrics, ss client.SelectedStatistics) {
+	mx.Sdc = make(map[string]sdcMetrics, len(ss.Sdc))
 
-	for k, v := range stats.Sdc {
-		sdc, ok := s.discovered.sdc[k]
+	for id, stats := range ss.Sdc {
+		sdc, ok := s.discovered.sdc[id]
 		if !ok {
 			continue
 		}
-		var m sdcStatistics
+		var m sdcMetrics
 		m.BW.set(
-			calcBW(v.UserDataReadBwc),
-			calcBW(v.UserDataWriteBwc),
+			calcBW(stats.UserDataReadBwc),
+			calcBW(stats.UserDataWriteBwc),
 		)
 		m.IOPS.set(
-			calcIOPS(v.UserDataReadBwc),
-			calcIOPS(v.UserDataWriteBwc),
+			calcIOPS(stats.UserDataReadBwc),
+			calcIOPS(stats.UserDataWriteBwc),
 		)
 		m.IOSize.set(
-			calcIOSize(v.UserDataReadBwc),
-			calcIOSize(v.UserDataWriteBwc),
+			calcIOSize(stats.UserDataReadBwc),
+			calcIOSize(stats.UserDataWriteBwc),
 		)
-		m.MappedVolumes = v.NumOfMappedVolumes
+		m.MappedVolumes = stats.NumOfMappedVolumes
 		m.MDMConnectionState = isSdcConnected(sdc.MdmConnectionState)
 
-		mx.Sdc[k] = m
+		mx.Sdc[id] = m
 	}
 }
 
