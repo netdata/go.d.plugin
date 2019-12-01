@@ -20,10 +20,12 @@ func (s *ScaleIO) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	var mx metrics
-	s.collectSystemOverview(&mx, stats)
-	s.collectSdc(&mx, stats)
-	s.collectStoragePool(&mx, stats)
+	mx := metrics{
+		System:      s.collectSystem(stats.System),
+		StoragePool: s.collectStoragePool(stats.StoragePool),
+		Sdc:         s.collectSdc(stats.Sdc),
+	}
+
 	s.updateCharts()
 	return stm.ToMap(mx), nil
 }

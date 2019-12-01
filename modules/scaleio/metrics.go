@@ -1,35 +1,37 @@
 package scaleio
 
 type metrics struct {
-	SystemOverview struct {
-		Capacity   systemCapacity   `stm:"capacity"`
-		IOWorkload systemWorkload   `stm:""`
-		Rebalance  systemRebalance  `stm:"rebalance"`
-		Rebuild    systemRebuild    `stm:"rebuild"`
-		Components systemComponents `stm:"num_of"`
-	} `stm:"system"`
+	System      systemMetrics                 `stm:"system"`
 	Sdc         map[string]sdcMetrics         `stm:"sdc"`
 	StoragePool map[string]storagePoolMetrics `stm:"storage_pool"`
 }
 
+type capacity struct {
+	MaxCapacity int64 `stm:"max_capacity"`
+	ThickInUse  int64 `stm:"thick_in_use"`
+	ThinInUse   int64 `stm:"thin_in_use"`
+	Snapshot    int64 `stm:"snapshot"`
+	Spare       int64 `stm:"spare"`
+	Decreased   int64 `stm:"decreased"` // not in statistics, should be calculated
+	Unused      int64 `stm:"unused"`
+
+	InUse                        int64 `stm:"in_use"`
+	AvailableForVolumeAllocation int64 `stm:"available_for_volume_allocation"`
+
+	Protected         int64 `stm:"protected"`
+	InMaintenance     int64 `stm:"in_maintenance"`
+	Degraded          int64 `stm:"degraded"`
+	Failed            int64 `stm:"failed"`
+	UnreachableUnused int64 `stm:"unreachable_unused"`
+}
+
 type (
-	capacity struct {
-		MaxCapacity int64 `stm:"max_capacity"`
-		ThickInUse  int64 `stm:"thick_in_use"`
-		ThinInUse   int64 `stm:"thin_in_use"`
-		Snapshot    int64 `stm:"snapshot"`
-		Spare       int64 `stm:"spare"`
-		Decreased   int64 `stm:"decreased"` // not in statistics, should be calculated
-		Unused      int64 `stm:"unused"`
-
-		InUse                        int64 `stm:"in_use"`
-		AvailableForVolumeAllocation int64 `stm:"available_for_volume_allocation"`
-
-		Protected         int64 `stm:"protected"`
-		InMaintenance     int64 `stm:"in_maintenance"`
-		Degraded          int64 `stm:"degraded"`
-		Failed            int64 `stm:"failed"`
-		UnreachableUnused int64 `stm:"unreachable_unused"`
+	systemMetrics struct {
+		Capacity   systemCapacity   `stm:"capacity"`
+		Workload   systemWorkload   `stm:""`
+		Rebalance  systemRebalance  `stm:"rebalance"`
+		Rebuild    systemRebuild    `stm:"rebuild"`
+		Components systemComponents `stm:"num_of"`
 	}
 	systemCapacity   = capacity
 	systemComponents struct {
@@ -89,8 +91,12 @@ type (
 		} `stm:"num_of"`
 	}
 	storagePoolCapacity struct {
-		capacity    `stm:""`
-		Utilization float64 `stm:"utilization,100,1"` // TODO: only StoragePool (sparePercentage)
+		capacity       `stm:""`
+		Utilization    float64 `stm:"utilization,100,1"` // TODO: only StoragePool (sparePercentage)
+		AlertThreshold struct {
+			Critical int64 `stm:"critical_threshold"`
+			High     int64 `stm:"high_threshold"`
+		} `stm:"alert"`
 	}
 )
 

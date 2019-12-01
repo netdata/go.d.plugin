@@ -118,6 +118,8 @@ func TestScaleIO_Collect(t *testing.T) {
 		"sdc_6076fd1100000002_iops_write":                                        145000,
 		"sdc_6076fd1100000002_mdm_connection_state":                              0,
 		"sdc_6076fd1100000002_num_of_mapped_volumes":                             1,
+		"storage_pool_40395b7b00000000_capacity_alert_critical_threshold":        90,
+		"storage_pool_40395b7b00000000_capacity_alert_high_threshold":            80,
 		"storage_pool_40395b7b00000000_capacity_available_for_volume_allocation": 100663296,
 		"storage_pool_40395b7b00000000_capacity_decreased":                       0,
 		"storage_pool_40395b7b00000000_capacity_degraded":                        0,
@@ -137,6 +139,8 @@ func TestScaleIO_Collect(t *testing.T) {
 		"storage_pool_40395b7b00000000_num_of_snapshots":                         1,
 		"storage_pool_40395b7b00000000_num_of_volumes":                           3,
 		"storage_pool_40395b7b00000000_num_of_vtrees":                            2,
+		"storage_pool_4039828b00000001_capacity_alert_critical_threshold":        90,
+		"storage_pool_4039828b00000001_capacity_alert_high_threshold":            80,
 		"storage_pool_4039828b00000001_capacity_available_for_volume_allocation": 142606336,
 		"storage_pool_4039828b00000001_capacity_decreased":                       0,
 		"storage_pool_4039828b00000001_capacity_degraded":                        0,
@@ -302,7 +306,7 @@ func testCharts(t *testing.T, scaleIO *ScaleIO, collected map[string]int64) {
 	t.Helper()
 	ensureStoragePoolChartsAreCreated(t, scaleIO)
 	ensureSdcChartsAreCreated(t, scaleIO)
-	ensureCollectedHasAllChartsDimIDs(t, scaleIO, collected)
+	ensureCollectedHasAllChartsDimsVarsIDs(t, scaleIO, collected)
 }
 
 func ensureStoragePoolChartsAreCreated(t *testing.T, scaleIO *ScaleIO) {
@@ -321,11 +325,15 @@ func ensureSdcChartsAreCreated(t *testing.T, scaleIO *ScaleIO) {
 	}
 }
 
-func ensureCollectedHasAllChartsDimIDs(t *testing.T, scaleIO *ScaleIO, collected map[string]int64) {
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, scaleIO *ScaleIO, collected map[string]int64) {
 	for _, chart := range *scaleIO.Charts() {
 		for _, dim := range chart.Dims {
 			_, ok := collected[dim.ID]
 			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+		for _, v := range chart.Vars {
+			_, ok := collected[v.ID]
+			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
 		}
 	}
 }

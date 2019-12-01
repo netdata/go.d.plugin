@@ -36,9 +36,11 @@ type Sdc struct {
 
 // Sdc represents ScaleIO Storage Pool.
 type StoragePool struct {
-	ID              string
-	Name            string
-	SparePercentage int64
+	ID                             string
+	Name                           string
+	SparePercentage                int64
+	CapacityAlertCriticalThreshold int64
+	CapacityAlertHighThreshold     int64
 }
 
 // Sdc represents '/api/instances' response.

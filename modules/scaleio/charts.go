@@ -14,6 +14,8 @@ type (
 	Charts = module.Charts
 	// Dims is an alias for module.Dims.
 	Dims = module.Dims
+	// Vars is an alias for module.Vars.
+	Vars = module.Vars
 )
 
 var (
@@ -288,6 +290,10 @@ var storagePoolCharts = Charts{
 		Dims: Dims{
 			{ID: "storage_pool_%s_capacity_utilization", Name: "utilization", Div: 100},
 		},
+		Vars: Vars{
+			{ID: "storage_pool_%s_capacity_alert_high_threshold"},
+			{ID: "storage_pool_%s_capacity_alert_critical_threshold"},
+		},
 	},
 	{
 		ID:    "storage_pool_%s_available_volume_allocation",
@@ -338,6 +344,9 @@ func newStoragePoolCharts(pool client.StoragePool) *Charts {
 		chart.Priority = prioStoragePool + i
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, pool.ID)
+		}
+		for _, v := range chart.Vars {
+			v.ID = fmt.Sprintf(v.ID, pool.ID)
 		}
 	}
 	return charts

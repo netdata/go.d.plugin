@@ -2,25 +2,28 @@ package scaleio
 
 import "github.com/netdata/go.d.plugin/modules/scaleio/client"
 
-func (s *ScaleIO) collectStoragePool(mx *metrics, ss client.SelectedStatistics) {
-	mx.StoragePool = make(map[string]storagePoolMetrics, len(ss.StoragePool))
+func (s ScaleIO) collectStoragePool(ss map[string]client.StoragePoolStatistics) map[string]storagePoolMetrics {
+	ms := make(map[string]storagePoolMetrics, len(ss))
 
-	for id, stats := range ss.StoragePool {
+	for id, stats := range ss {
 		pool, ok := s.discovered.pool[id]
 		if !ok {
 			continue
 		}
-		var m storagePoolMetrics
-		collectStoragePoolCapacity(&m, stats, pool)
-		collectStoragePoolComponents(&m, stats)
+		var pm storagePoolMetrics
+		collectStoragePoolCapacity(&pm, stats, pool)
+		collectStoragePoolComponents(&pm, stats)
 
-		mx.StoragePool[id] = m
+		ms[id] = pm
 	}
+	return ms
 }
 
 func collectStoragePoolCapacity(pm *storagePoolMetrics, ps client.StoragePoolStatistics, pool client.StoragePool) {
 	collectCapacity(&pm.Capacity.capacity, ps.CapacityStatistics)
 	pm.Capacity.Utilization = calcCapacityUtilization(ps.CapacityInUseInKb, ps.MaxCapacityInKb, pool.SparePercentage)
+	pm.Capacity.AlertThreshold.Critical = pool.CapacityAlertCriticalThreshold
+	pm.Capacity.AlertThreshold.High = pool.CapacityAlertHighThreshold
 }
 
 func collectStoragePoolComponents(pm *storagePoolMetrics, ps client.StoragePoolStatistics) {

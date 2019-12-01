@@ -2,10 +2,10 @@ package scaleio
 
 import "github.com/netdata/go.d.plugin/modules/scaleio/client"
 
-func (s *ScaleIO) collectSdc(mx *metrics, ss client.SelectedStatistics) {
-	mx.Sdc = make(map[string]sdcMetrics, len(ss.Sdc))
+func (s ScaleIO) collectSdc(ss map[string]client.SdcStatistics) map[string]sdcMetrics {
+	ms := make(map[string]sdcMetrics, len(ss))
 
-	for id, stats := range ss.Sdc {
+	for id, stats := range ss {
 		sdc, ok := s.discovered.sdc[id]
 		if !ok {
 			continue
@@ -26,8 +26,9 @@ func (s *ScaleIO) collectSdc(mx *metrics, ss client.SelectedStatistics) {
 		m.MappedVolumes = stats.NumOfMappedVolumes
 		m.MDMConnectionState = isSdcConnected(sdc.MdmConnectionState)
 
-		mx.Sdc[id] = m
+		ms[id] = m
 	}
+	return ms
 }
 
 func isSdcConnected(state string) bool {
