@@ -89,7 +89,7 @@ type (
 		} `stm:"num_of"`
 	}
 	storagePoolCapacity struct {
-		capacity
+		capacity    `stm:""`
 		Utilization float64 `stm:"utilization,100,1"` // TODO: only StoragePool (sparePercentage)
 	}
 )
