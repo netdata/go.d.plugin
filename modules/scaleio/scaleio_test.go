@@ -2,374 +2,305 @@ package scaleio
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"net/http/httptest"
 	"testing"
-	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
+	"github.com/netdata/go.d.plugin/modules/scaleio/client"
 
+	"github.com/netdata/go-orchestrator/module"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 var (
 	selectedStatisticsData, _ = ioutil.ReadFile("testdata/selected_statistics.json")
+	instancesData, _          = ioutil.ReadFile("testdata/instances.json")
 )
-var (
-	selectedStatisticsQuery2 = `
-{
-	"selectedStatisticsList": [
-		{
-			"type": "System",
-			"allIds": [],
-			"properties": [
-				"maxCapacityInKb1",
-				"capacityInUseInKb",
-				"capacityAvailableForVolumeAllocationInKb"
-			]
-		}
-	]
+
+func Test_readTestData(t *testing.T) {
+	assert.NotNil(t, selectedStatisticsData)
+	assert.NotNil(t, instancesData)
 }
-`
-)
 
 func TestNew(t *testing.T) {
-	v, _ := json.MarshalIndent(query, "", " ")
-	fmt.Println(string(v))
+	assert.Implements(t, (*module.Module)(nil), New())
 }
 
-func TestNewTest(t *testing.T) {
+func TestScaleIO_Init(t *testing.T) {
+	scaleIO := New()
+	scaleIO.Username = "username"
+	scaleIO.Password = "password"
+
+	assert.True(t, scaleIO.Init())
+}
+func TestScaleIO_Init_UsernameOrPasswordNotSet(t *testing.T) {
+	assert.False(t, New().Init())
+}
+
+func TestScaleIO_Init_ErrorOnCreatingClientWrongTLSCA(t *testing.T) {
 	job := New()
-	job.Config = Config{
-		HTTP: web.HTTP{
-			Request: web.Request{
-				UserURL:  "https://192.168.88.221",
-				Username: "admin",
-				Password: "123qwe!@#QWE",
-			},
-			Client: web.Client{
-				Timeout: web.Duration{Duration: time.Second * 10},
-				ClientTLSConfig: web.ClientTLSConfig{
-					InsecureSkipVerify: true,
-				},
-			},
-		},
-	}
+	job.Username = "username"
+	job.Password = "password"
+	job.ClientTLSConfig.TLSCA = "testdata/tls"
 
-	require.True(t, job.Init())
-	require.True(t, job.Check())
-	defer job.client.Logout()
-	job.ParseUserURL()
-
-	i, err := job.client.Instances()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Println(i.SdcList[1].Name, i.SdcList[1].SdcIp)
-
-	return
-
-	//v, err := job.client.SelectedStatistics(query)
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-	//fmt.Println(v.System.SnapCapacityInUseOccupiedInKb)
-	//return
-	//
-	//m := job.Collect()
-
-	//m := make(map[string]interface{})
-	//m := make([]interface{}, 0)
-	//req := job.Request
-	//req.URL.Path = "/api/instances"
-	//if err := job.client.DoJSONWithRetry(&m, req); err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//err := job.client.SelectedStatistics(&m, selectedStatisticsQuery2)
-	//if err != nil {
-	//	parts := strings.Split(err.Error(), ":")
-	//	parts = strings.Split(parts[3], ",")
-	//	parts[0] = strings.TrimSpace(parts[0])
-	//	parts[len(parts)-1] = strings.TrimRight(parts[len(parts)-1], ".")
-	//	sort.Strings(parts)
-	//	fmt.Println("[")
-	//	for _, v := range parts {
-	//		fmt.Printf("\"%s\",\n", v)
-	//	}
-	//	fmt.Println("]")
-	//	return
-	//}
-
-	//b, err := json.MarshalIndent(m, "", " ")
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//
-	//fmt.Println(string(b))
-
-	//mx := newMetrics()
-	//if err := job.collectSdcStatistics(mx); err != nil {
-	//	fmt.Println(err)
-	//}
-	//m := stm.ToMap(mx.Sdc)
-	//l := make([]string, 0)
-	//for k := range m {
-	//	l = append(l, k)
-	//}
-	//sort.Strings(l)
-	//for _, value := range l {
-	//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
-	//}
+	assert.False(t, job.Init())
 }
 
-//func TestNew(t *testing.T) {
-//	job := New()
-//
-//	assert.Implements(t, (*module.Module)(nil), job)
-//}
-//
-//func TestScaleIO_Init(t *testing.T) {
-//	job := New()
-//	job.UserURL = "http://127.0.0.1:38001"
-//	job.Username = "username"
-//	job.Password = "password"
-//
-//	require.True(t, job.Init())
-//	assert.NotNil(t, job.client)
-//}
-//
-//func TestScaleIO_InitNG(t *testing.T) {
-//	job := New()
-//
-//	assert.False(t, job.Init())
-//}
-//
-//func TestScaleIO_Check(t *testing.T) {
-//	job := New()
-//	job.UserURL = "http://127.0.0.1:38001"
-//	job.Username = "username"
-//	job.Password = "password"
-//
-//	require.True(t, job.Init())
-//	job.client = &okAPIClient{}
-//	require.True(t, job.Check())
-//}
-//
-//func TestScaleIO_CheckNG(t *testing.T) {
-//	job := New()
-//	job.UserURL = "http://127.0.0.1:38001"
-//	job.Username = "username"
-//	job.Password = "password"
-//
-//	require.True(t, job.Init())
-//	assert.False(t, job.Check())
-//}
-//
-//func TestScaleIO_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
-//
-//func TestScaleIO_Cleanup(t *testing.T) {
-//	job := New()
-//	job.UserURL = "http://127.0.0.1:38001"
-//	job.Username = "username"
-//	job.Password = "password"
-//
-//	require.True(t, job.Init())
-//	job.client = &okAPIClient{}
-//	require.True(t, job.Check())
-//
-//	assert.True(t, job.client.LoggedIn())
-//	job.Cleanup()
-//	assert.False(t, job.client.LoggedIn())
-//}
-//
-//func TestScaleIO_Collect(t *testing.T) {
-//	job := New()
-//	job.UserURL = "http://127.0.0.1:38001"
-//	job.Username = "username"
-//	job.Password = "password"
-//
-//	require.True(t, job.Init())
-//	job.client = &okAPIClient{}
-//	require.True(t, job.Check())
-//
-//	expected := map[string]int64{
-//		"system_backend_primary_bandwidth_read":           0,
-//		"system_backend_primary_bandwidth_read_write":     82616000,
-//		"system_backend_primary_bandwidth_write":          82616000,
-//		"system_backend_primary_io_size_read":             0,
-//		"system_backend_primary_io_size_read_write":       320963,
-//		"system_backend_primary_io_size_write":            320963,
-//		"system_backend_primary_iops_read":                0,
-//		"system_backend_primary_iops_read_write":          257399,
-//		"system_backend_primary_iops_write":               257399,
-//		"system_backend_secondary_bandwidth_read":         0,
-//		"system_backend_secondary_bandwidth_read_write":   82432000,
-//		"system_backend_secondary_bandwidth_write":        82432000,
-//		"system_backend_secondary_io_size_read":           0,
-//		"system_backend_secondary_io_size_read_write":     396689,
-//		"system_backend_secondary_io_size_write":          396689,
-//		"system_backend_secondary_iops_read":              0,
-//		"system_backend_secondary_iops_read_write":        207800,
-//		"system_backend_secondary_iops_write":             207800,
-//		"system_backend_total_bandwidth_read":             0,
-//		"system_backend_total_bandwidth_read_write":       165048000,
-//		"system_backend_total_bandwidth_write":            165048000,
-//		"system_backend_total_io_size_read":               0,
-//		"system_backend_total_io_size_read_write":         717652,
-//		"system_backend_total_io_size_write":              717652,
-//		"system_backend_total_iops_read":                  0,
-//		"system_backend_total_iops_read_write":            465200,
-//		"system_backend_total_iops_write":                 465200,
-//		"system_capacity_available_for_volume_allocation": 67108864,
-//		"system_capacity_decreased":                       0,
-//		"system_capacity_degraded":                        0,
-//		"system_capacity_failed":                          0,
-//		"system_capacity_in_maintenance":                  0,
-//		"system_capacity_in_use":                          65386496,
-//		"system_capacity_limit":                           337638400,
-//		"system_capacity_max_capacity":                    337638400,
-//		"system_capacity_protected":                       65386496,
-//		"system_capacity_semi_protected":                  0,
-//		"system_capacity_snap_in_use":                     17451008,
-//		"system_capacity_snap_in_use_occupied":            0,
-//		"system_capacity_spare":                           118172672,
-//		"system_capacity_thick_in_use":                    16777216,
-//		"system_capacity_thin_allocated":                  67108864,
-//		"system_capacity_thin_free":                       18499584,
-//		"system_capacity_thin_in_use":                     48609280,
-//		"system_capacity_unreachable_unused":              0,
-//		"system_capacity_unused":                          154079232,
-//		"system_frontend_user_data_bandwidth_read":        0,
-//		"system_frontend_user_data_bandwidth_read_write":  87404000,
-//		"system_frontend_user_data_bandwidth_write":       87404000,
-//		"system_frontend_user_data_io_size_read":          0,
-//		"system_frontend_user_data_io_size_read_write":    346841,
-//		"system_frontend_user_data_io_size_write":         346841,
-//		"system_frontend_user_data_iops_read":             0,
-//		"system_frontend_user_data_iops_read_write":       252000,
-//		"system_frontend_user_data_iops_write":            252000,
-//		"system_num_of_devices":                           3,
-//		"system_num_of_fault_sets":                        2,
-//		"system_num_of_mapped_to_all_volumes":             0,
-//		"system_num_of_mapped_volumes":                    2,
-//		"system_num_of_protection_domains":                2,
-//		"system_num_of_rfcache_devices":                   0,
-//		"system_num_of_scsi_initiators":                   0,
-//		"system_num_of_sdc":                               3,
-//		"system_num_of_sds":                               3,
-//		"system_num_of_snapshots":                         0,
-//		"system_num_of_storage_pools":                     2,
-//		"system_num_of_thick_base_volumes":                1,
-//		"system_num_of_thin_base_volumes":                 3,
-//		"system_num_of_unmapped_volumes":                  2,
-//		"system_num_of_volumes":                           4,
-//		"system_num_of_volumes_in_deletion":               0,
-//		"system_num_of_vtrees":                            4,
-//		"system_rebalance_bandwidth_read":                 0,
-//		"system_rebalance_bandwidth_read_write":           0,
-//		"system_rebalance_bandwidth_write":                0,
-//		"system_rebalance_io_size_read":                   0,
-//		"system_rebalance_io_size_read_write":             0,
-//		"system_rebalance_io_size_write":                  0,
-//		"system_rebalance_iops_read":                      0,
-//		"system_rebalance_iops_read_write":                0,
-//		"system_rebalance_iops_write":                     0,
-//		"system_rebalance_pending_capacity_in_Kb":         0,
-//		"system_rebuild_backward_bandwidth_read":          0,
-//		"system_rebuild_backward_bandwidth_read_write":    0,
-//		"system_rebuild_backward_bandwidth_write":         0,
-//		"system_rebuild_backward_io_size_read":            0,
-//		"system_rebuild_backward_io_size_read_write":      0,
-//		"system_rebuild_backward_io_size_write":           0,
-//		"system_rebuild_backward_iops_read":               0,
-//		"system_rebuild_backward_iops_read_write":         0,
-//		"system_rebuild_backward_iops_write":              0,
-//		"system_rebuild_backward_pending_capacity_in_Kb":  0,
-//		"system_rebuild_forward_bandwidth_read":           0,
-//		"system_rebuild_forward_bandwidth_read_write":     0,
-//		"system_rebuild_forward_bandwidth_write":          0,
-//		"system_rebuild_forward_io_size_read":             0,
-//		"system_rebuild_forward_io_size_read_write":       0,
-//		"system_rebuild_forward_io_size_write":            0,
-//		"system_rebuild_forward_iops_read":                0,
-//		"system_rebuild_forward_iops_read_write":          0,
-//		"system_rebuild_forward_iops_write":               0,
-//		"system_rebuild_forward_pending_capacity_in_Kb":   0,
-//		"system_rebuild_normal_bandwidth_read":            0,
-//		"system_rebuild_normal_bandwidth_read_write":      0,
-//		"system_rebuild_normal_bandwidth_write":           0,
-//		"system_rebuild_normal_io_size_read":              0,
-//		"system_rebuild_normal_io_size_read_write":        0,
-//		"system_rebuild_normal_io_size_write":             0,
-//		"system_rebuild_normal_iops_read":                 0,
-//		"system_rebuild_normal_iops_read_write":           0,
-//		"system_rebuild_normal_iops_write":                0,
-//		"system_rebuild_normal_pending_capacity_in_Kb":    0,
-//		"system_rebuild_total_bandwidth_read":             0,
-//		"system_rebuild_total_bandwidth_read_write":       0,
-//		"system_rebuild_total_bandwidth_write":            0,
-//		"system_rebuild_total_io_size_read":               0,
-//		"system_rebuild_total_io_size_read_write":         0,
-//		"system_rebuild_total_io_size_write":              0,
-//		"system_rebuild_total_iops_read":                  0,
-//		"system_rebuild_total_iops_read_write":            0,
-//		"system_rebuild_total_iops_write":                 0,
-//		"system_rebuild_total_pending_capacity_in_Kb":     0,
-//		"system_total_bandwidth_read":                     0,
-//		"system_total_bandwidth_read_write":               165048000,
-//		"system_total_bandwidth_write":                    165048000,
-//		"system_total_io_size_read":                       0,
-//		"system_total_io_size_read_write":                 354789,
-//		"system_total_io_size_write":                      354789,
-//		"system_total_iops_read":                          0,
-//		"system_total_iops_read_write":                    465200,
-//		"system_total_iops_write":                         465200,
-//	}
-//
-//	assert.Equal(t, expected, job.Collect())
-//}
-//
-//type okAPIClient struct {
-//	loggedIn bool
-//}
-//
-//func (o *okAPIClient) Login() error  { o.loggedIn = true; return nil }
-//func (o *okAPIClient) Logout() error { o.loggedIn = false; return nil }
-//func (o okAPIClient) LoggedIn() bool { return o.loggedIn }
-//func (o okAPIClient) Sdc() ([]client.Sdc, error) {
-//	return nil, nil
-//}
-//func (o okAPIClient) StoragePool() ([]client.StoragePool, error) {
-//	return nil, nil
-//}
-//
-//func (okAPIClient) SelectedStatistics(dst interface{}, query string) error {
-//	r := bytes.NewBuffer(selectedStatisticsData)
-//	return json.NewDecoder(r).Decode(dst)
-//}
+func TestScaleIO_Check(t *testing.T) {
+	srv, _, scaleIO := prepareSrvMockScaleIO(t)
+	defer srv.Close()
+	require.True(t, scaleIO.Init())
 
-//func newTestServer() *httptest.Server {
-//	handle := func(w http.ResponseWriter, r *http.Request) {
-//		if !strings.HasPrefix(r.URL.Path, "/api/") {
-//			w.WriteHeader(http.StatusNotFound)
-//			return
-//		}
-//		switch r.URL.Path {
-//		default:
-//			w.WriteHeader(http.StatusBadRequest)
-//		case pathLogin:
-//			_, _ = w.Write([]byte(testToken))
-//		case pathLogout:
-//		case pathVersion:
-//			_, _ = w.Write([]byte(testVersion))
-//		case pathSelectedStatistics:
-//			_, _ = w.Write([]byte(`{"A": 1, "B": 2}`))
-//		}
-//	}
-//
-//	return httptest.NewServer(http.HandlerFunc(handle))
-//}
+	assert.True(t, scaleIO.Check())
+}
+
+func TestScaleIO_Check_ErrorOnLogin(t *testing.T) {
+	srv, mock, scaleIO := prepareSrvMockScaleIO(t)
+	defer srv.Close()
+	require.True(t, scaleIO.Init())
+	mock.Password = "new password"
+
+	assert.False(t, scaleIO.Check())
+}
+
+func TestScaleIO_Charts(t *testing.T) {
+	assert.NotNil(t, New().Charts())
+}
+
+func TestScaleIO_Cleanup(t *testing.T) {
+	srv, _, scaleIO := prepareSrvMockScaleIO(t)
+	defer srv.Close()
+
+	require.True(t, scaleIO.Init())
+	require.True(t, scaleIO.Check())
+
+	_ = scaleIO.client.Logout()
+	assert.False(t, scaleIO.client.LoggedIn())
+}
+
+func TestScaleIO_Collect(t *testing.T) {
+	srv, _, scaleIO := prepareSrvMockScaleIO(t)
+	defer srv.Close()
+
+	require.True(t, scaleIO.Init())
+	require.True(t, scaleIO.Check())
+
+	expected := map[string]int64{
+		"sdc_6076fd0f00000000_bandwidth_read":                0,
+		"sdc_6076fd0f00000000_bandwidth_read_write":          0,
+		"sdc_6076fd0f00000000_bandwidth_write":               0,
+		"sdc_6076fd0f00000000_io_size_read":                  0,
+		"sdc_6076fd0f00000000_io_size_read_write":            0,
+		"sdc_6076fd0f00000000_io_size_write":                 0,
+		"sdc_6076fd0f00000000_iops_read":                     0,
+		"sdc_6076fd0f00000000_iops_read_write":               0,
+		"sdc_6076fd0f00000000_iops_write":                    0,
+		"sdc_6076fd0f00000000_mdm_connection_state":          1,
+		"sdc_6076fd0f00000000_num_of_mapped_volumes":         1,
+		"sdc_6076fd1000000001_bandwidth_read":                2000,
+		"sdc_6076fd1000000001_bandwidth_read_write":          127840000,
+		"sdc_6076fd1000000001_bandwidth_write":               127838000,
+		"sdc_6076fd1000000001_io_size_read":                  2000,
+		"sdc_6076fd1000000001_io_size_read_write":            791123,
+		"sdc_6076fd1000000001_io_size_write":                 789123,
+		"sdc_6076fd1000000001_iops_read":                     1000,
+		"sdc_6076fd1000000001_iops_read_write":               163000,
+		"sdc_6076fd1000000001_iops_write":                    162000,
+		"sdc_6076fd1000000001_mdm_connection_state":          0,
+		"sdc_6076fd1000000001_num_of_mapped_volumes":         1,
+		"sdc_6076fd1100000002_bandwidth_read":                0,
+		"sdc_6076fd1100000002_bandwidth_read_write":          129580000,
+		"sdc_6076fd1100000002_bandwidth_write":               129580000,
+		"sdc_6076fd1100000002_io_size_read":                  0,
+		"sdc_6076fd1100000002_io_size_read_write":            1004496,
+		"sdc_6076fd1100000002_io_size_write":                 1004496,
+		"sdc_6076fd1100000002_iops_read":                     0,
+		"sdc_6076fd1100000002_iops_read_write":               129000,
+		"sdc_6076fd1100000002_iops_write":                    129000,
+		"sdc_6076fd1100000002_mdm_connection_state":          0,
+		"sdc_6076fd1100000002_num_of_mapped_volumes":         1,
+		"storage_pool_40395b7b00000000_capacity_utilization": 1510,
+		"storage_pool_40395b7b00000000_num_of_devices":       3,
+		"storage_pool_40395b7b00000000_num_of_snapshots":     1,
+		"storage_pool_40395b7b00000000_num_of_volumes":       3,
+		"storage_pool_40395b7b00000000_num_of_vtrees":        2,
+		"storage_pool_4039828b00000001_capacity_utilization": 0,
+		"storage_pool_4039828b00000001_num_of_devices":       3,
+		"storage_pool_4039828b00000001_num_of_snapshots":     0,
+		"storage_pool_4039828b00000001_num_of_volumes":       0,
+		"storage_pool_4039828b00000001_num_of_vtrees":        0,
+		"system_backend_primary_bandwidth_read":              800,
+		"system_backend_primary_bandwidth_read_write":        249035199,
+		"system_backend_primary_bandwidth_write":             249034400,
+		"system_backend_primary_io_size_read":                4000,
+		"system_backend_primary_io_size_read_write":          892139,
+		"system_backend_primary_io_size_write":               888139,
+		"system_backend_primary_iops_read":                   200,
+		"system_backend_primary_iops_read_write":             280599,
+		"system_backend_primary_iops_write":                  280400,
+		"system_backend_secondary_bandwidth_read":            0,
+		"system_backend_secondary_bandwidth_read_write":      250278400,
+		"system_backend_secondary_bandwidth_write":           250278400,
+		"system_backend_secondary_io_size_read":              0,
+		"system_backend_secondary_io_size_read_write":        890670,
+		"system_backend_secondary_io_size_write":             890670,
+		"system_backend_secondary_iops_read":                 0,
+		"system_backend_secondary_iops_read_write":           281000,
+		"system_backend_secondary_iops_write":                281000,
+		"system_backend_total_bandwidth_read":                800,
+		"system_backend_total_bandwidth_read_write":          499313600,
+		"system_backend_total_bandwidth_write":               499312800,
+		"system_backend_total_io_size_read":                  4000,
+		"system_backend_total_io_size_read_write":            1782810,
+		"system_backend_total_io_size_write":                 1778810,
+		"system_backend_total_iops_read":                     200,
+		"system_backend_total_iops_read_write":               561600,
+		"system_backend_total_iops_write":                    561400,
+		"system_capacity_available_for_volume_allocation":    243269632,
+		"system_capacity_decreased":                          0,
+		"system_capacity_degraded":                           0,
+		"system_capacity_failed":                             0,
+		"system_capacity_in_maintenance":                     0,
+		"system_capacity_in_use":                             42342400,
+		"system_capacity_max_capacity":                       643819520,
+		"system_capacity_protected":                          42342400,
+		"system_capacity_snapshot":                           743424,
+		"system_capacity_spare":                              64380928,
+		"system_capacity_thick_in_use":                       0,
+		"system_capacity_thin_in_use":                        41598976,
+		"system_capacity_unreachable_unused":                 0,
+		"system_capacity_unused":                             536352768,
+		"system_frontend_user_data_bandwidth_read":           3000,
+		"system_frontend_user_data_bandwidth_read_write":     257519000,
+		"system_frontend_user_data_bandwidth_write":          257516000,
+		"system_frontend_user_data_io_size_read":             1500,
+		"system_frontend_user_data_io_size_read_write":       859886,
+		"system_frontend_user_data_io_size_write":            858386,
+		"system_frontend_user_data_iops_read":                2000,
+		"system_frontend_user_data_iops_read_write":          302000,
+		"system_frontend_user_data_iops_write":               300000,
+		"system_num_of_devices":                              6,
+		"system_num_of_fault_sets":                           0,
+		"system_num_of_mapped_to_all_volumes":                0,
+		"system_num_of_mapped_volumes":                       3,
+		"system_num_of_protection_domains":                   1,
+		"system_num_of_rfcache_devices":                      0,
+		"system_num_of_sdc":                                  3,
+		"system_num_of_sds":                                  3,
+		"system_num_of_snapshots":                            1,
+		"system_num_of_storage_pools":                        2,
+		"system_num_of_thick_base_volumes":                   0,
+		"system_num_of_thin_base_volumes":                    2,
+		"system_num_of_unmapped_volumes":                     0,
+		"system_num_of_volumes":                              3,
+		"system_num_of_vtrees":                               2,
+		"system_rebalance_bandwidth_read":                    0,
+		"system_rebalance_bandwidth_read_write":              0,
+		"system_rebalance_bandwidth_write":                   0,
+		"system_rebalance_io_size_read":                      0,
+		"system_rebalance_io_size_read_write":                0,
+		"system_rebalance_io_size_write":                     0,
+		"system_rebalance_iops_read":                         0,
+		"system_rebalance_iops_read_write":                   0,
+		"system_rebalance_iops_write":                        0,
+		"system_rebalance_pending_capacity_in_Kb":            0,
+		"system_rebalance_time_until_finish":                 0,
+		"system_rebuild_backward_bandwidth_read":             0,
+		"system_rebuild_backward_bandwidth_read_write":       0,
+		"system_rebuild_backward_bandwidth_write":            0,
+		"system_rebuild_backward_io_size_read":               0,
+		"system_rebuild_backward_io_size_read_write":         0,
+		"system_rebuild_backward_io_size_write":              0,
+		"system_rebuild_backward_iops_read":                  0,
+		"system_rebuild_backward_iops_read_write":            0,
+		"system_rebuild_backward_iops_write":                 0,
+		"system_rebuild_backward_pending_capacity_in_Kb":     0,
+		"system_rebuild_forward_bandwidth_read":              0,
+		"system_rebuild_forward_bandwidth_read_write":        0,
+		"system_rebuild_forward_bandwidth_write":             0,
+		"system_rebuild_forward_io_size_read":                0,
+		"system_rebuild_forward_io_size_read_write":          0,
+		"system_rebuild_forward_io_size_write":               0,
+		"system_rebuild_forward_iops_read":                   0,
+		"system_rebuild_forward_iops_read_write":             0,
+		"system_rebuild_forward_iops_write":                  0,
+		"system_rebuild_forward_pending_capacity_in_Kb":      0,
+		"system_rebuild_normal_bandwidth_read":               0,
+		"system_rebuild_normal_bandwidth_read_write":         0,
+		"system_rebuild_normal_bandwidth_write":              0,
+		"system_rebuild_normal_io_size_read":                 0,
+		"system_rebuild_normal_io_size_read_write":           0,
+		"system_rebuild_normal_io_size_write":                0,
+		"system_rebuild_normal_iops_read":                    0,
+		"system_rebuild_normal_iops_read_write":              0,
+		"system_rebuild_normal_iops_write":                   0,
+		"system_rebuild_normal_pending_capacity_in_Kb":       0,
+		"system_rebuild_total_bandwidth_read":                0,
+		"system_rebuild_total_bandwidth_read_write":          0,
+		"system_rebuild_total_bandwidth_write":               0,
+		"system_rebuild_total_io_size_read":                  0,
+		"system_rebuild_total_io_size_read_write":            0,
+		"system_rebuild_total_io_size_write":                 0,
+		"system_rebuild_total_iops_read":                     0,
+		"system_rebuild_total_iops_read_write":               0,
+		"system_rebuild_total_iops_write":                    0,
+		"system_rebuild_total_pending_capacity_in_Kb":        0,
+		"system_total_bandwidth_read":                        800,
+		"system_total_bandwidth_read_write":                  499313600,
+		"system_total_bandwidth_write":                       499312800,
+		"system_total_io_size_read":                          4000,
+		"system_total_io_size_read_write":                    893406,
+		"system_total_io_size_write":                         889406,
+		"system_total_iops_read":                             200,
+		"system_total_iops_read_write":                       561600,
+		"system_total_iops_write":                            561400,
+	}
+
+	assert.Equal(t, expected, scaleIO.Collect())
+}
+
+func TestScaleIO_Collect_ConnectionRefused(t *testing.T) {
+	srv, _, scaleIO := prepareSrvMockScaleIO(t)
+	defer srv.Close()
+
+	require.True(t, scaleIO.Init())
+	require.True(t, scaleIO.Check())
+	scaleIO.client.Request.URL.Host = "127.0.0.1:38001"
+
+	assert.Nil(t, scaleIO.Collect())
+}
+
+func prepareSrvMockScaleIO(t *testing.T) (*httptest.Server, *client.MockScaleIOAPIServer, *ScaleIO) {
+	t.Helper()
+	const (
+		user     = "user"
+		password = "password"
+		version  = "2.5"
+		token    = "token"
+	)
+	var stats client.SelectedStatistics
+	err := json.Unmarshal(selectedStatisticsData, &stats)
+	require.NoError(t, err)
+
+	var ins client.Instances
+	err = json.Unmarshal(instancesData, &ins)
+	require.NoError(t, err)
+
+	mock := client.MockScaleIOAPIServer{
+		User:       user,
+		Password:   password,
+		Version:    version,
+		Token:      token,
+		Instances:  ins,
+		Statistics: stats,
+	}
+	srv := httptest.NewServer(&mock)
+	require.NoError(t, err)
+
+	scaleIO := New()
+	scaleIO.UserURL = srv.URL
+	scaleIO.Username = user
+	scaleIO.Password = password
+	return srv, &mock, scaleIO
+}

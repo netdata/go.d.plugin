@@ -80,16 +80,16 @@ func New(client web.Client, request web.Request) (*Client, error) {
 		return nil, err
 	}
 	return &Client{
+		Request:    request,
 		httpClient: httpClient,
-		request:    request,
 		token:      newToken(),
 	}, nil
 }
 
 // Client represents ScaleIO client.
 type Client struct {
+	Request    web.Request
 	httpClient *http.Client
-	request    web.Request
 	token      *token
 }
 
@@ -161,27 +161,27 @@ func (c *Client) Instances() (Instances, error) {
 }
 
 func (c Client) createLoginRequest() web.Request {
-	req := c.request.Copy()
+	req := c.Request.Copy()
 	req.URL.Path = "/api/login"
 	return req
 }
 
 func (c Client) createLogoutRequest() web.Request {
-	req := c.request.Copy()
+	req := c.Request.Copy()
 	req.URL.Path = "/api/logout"
 	req.Password = c.token.get()
 	return req
 }
 
 func (c Client) createAPIVersionRequest() web.Request {
-	req := c.request.Copy()
+	req := c.Request.Copy()
 	req.URL.Path = "/api/version"
 	req.Password = c.token.get()
 	return req
 }
 
 func (c Client) createSelectedStatisticsRequest(query []byte) web.Request {
-	req := c.request.Copy()
+	req := c.Request.Copy()
 	req.URL.Path = "/api/instances/querySelectedStatistics"
 	req.Password = c.token.get()
 	req.Method = http.MethodPost
@@ -191,7 +191,7 @@ func (c Client) createSelectedStatisticsRequest(query []byte) web.Request {
 }
 
 func (c Client) createInstancesRequest() web.Request {
-	req := c.request.Copy()
+	req := c.Request.Copy()
 	req.URL.Path = "/api/instances"
 	req.Password = c.token.get()
 	return req
@@ -296,7 +296,7 @@ type token struct {
 }
 
 func newToken() *token        { return &token{mux: &sync.RWMutex{}} }
+func (t *token) get() string  { t.mux.RLock(); defer t.mux.RUnlock(); return t.value }
 func (t *token) set(v string) { t.mux.Lock(); defer t.mux.Unlock(); t.value = v }
 func (t *token) unset()       { t.set("") }
-func (t *token) get() string  { t.mux.RLock(); defer t.mux.RUnlock(); return t.value }
 func (t *token) isSet() bool  { return t.get() != "" }

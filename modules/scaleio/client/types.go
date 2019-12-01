@@ -14,61 +14,79 @@ func (e apiError) Error() string {
 	return e.Message
 }
 
+// Version represents API version.
 type Version struct {
 	Major int64
 	Minor int64
 }
 
+// Bwc Bwc.
 type Bwc struct {
 	NumOccured      int64
 	NumSeconds      int64
 	TotalWeightInKb int64
 }
 
+// Sdc represents ScaleIO Data Client.
 type Sdc struct {
 	ID                 string
 	SdcIp              string
 	MdmConnectionState string
 }
 
+// Sdc represents ScaleIO Storage Pool.
 type StoragePool struct {
 	ID              string
 	Name            string
 	SparePercentage int64
 }
 
+// Sdc represents '/api/instances' response.
 type Instances struct {
 	StoragePoolList []StoragePool
 	SdcList         []Sdc
 }
 
 type (
+	// SelectedStatisticsQuery represents '/api/instances/querySelectedStatistics' query.
 	SelectedStatisticsQuery struct {
 		List []SelectedObject `json:"selectedStatisticsList"`
 	}
+	// SelectedObject represents '/api/instances/querySelectedStatistics' query object.
 	SelectedObject struct {
-		Type       string
-		IDs        []string `json:"ids,omitempty"`
-		ALLIDs     allIds   `json:"allIds,omitempty"`
-		Properties []string
+		Type string `json:"type"` // object type (System, ProtectionDomain, Sds, StoragePool, Device, Volume, VTree, Sdc, FaultSet, RfcacheDevice).
+
+		// the following parameters are not relevant to the System type and can be omitted:
+		IDs    []string `json:"ids,omitempty"`    // list of objects ids
+		AllIDs allIds   `json:"allIds,omitempty"` // all available objects
+
+		Properties []string `json:"properties"` // list of properties to fetch
 	}
 	allIds bool
 )
 
 func (b allIds) MarshalJSON() ([]byte, error) {
+	// should be set to empty value if AllIDs is true.
 	if b {
 		return []byte("[]"), nil
 	}
 	return nil, nil
 }
+func (b *allIds) UnmarshalJSON([]byte) error {
+	*b = true
+	return nil
+}
 
+// SelectedStatistics represents '/api/instances/querySelectedStatistics' response.
 type SelectedStatistics struct {
 	System      SystemStatistics
 	Sdc         map[string]SdcStatistics
 	StoragePool map[string]StoragePoolStatistics
 }
 
+// Those commented out structure fields are not deleted on purpose. We need them to see what other metrics can be collected.
 type (
+	// CapacityStatistics is System/StoragePool capacity statistics.
 	CapacityStatistics struct {
 		CapacityAvailableForVolumeAllocationInKb int64
 		MaxCapacityInKb                          int64
@@ -283,14 +301,12 @@ type (
 		//SnapCapacityInUseOccupiedInKb                   int64
 		//UnusedCapacityInKb                              int64
 	}
-
 	SdcStatistics struct {
 		NumOfMappedVolumes int64
 		UserDataReadBwc    Bwc
 		UserDataWriteBwc   Bwc
 		//VolumeIds          int64
 	}
-
 	StoragePoolStatistics struct {
 		CapacityStatistics
 

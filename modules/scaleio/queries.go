@@ -70,7 +70,7 @@ var query = client.SelectedStatisticsQuery{
 		},
 		{
 			Type:   "StoragePool",
-			ALLIDs: true,
+			AllIDs: true,
 			Properties: []string{
 				"maxCapacityInKb",
 				"thickCapacityInUseInKb",
@@ -97,7 +97,7 @@ var query = client.SelectedStatisticsQuery{
 		},
 		{
 			Type:   "Sdc",
-			ALLIDs: true,
+			AllIDs: true,
 			Properties: []string{
 				"userDataReadBwc",
 				"userDataWriteBwc",

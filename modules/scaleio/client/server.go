@@ -2,8 +2,9 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
-	"strings"
 )
 
 // MockScaleIOAPIServer represents VxFlex OS Gateway.
@@ -17,13 +18,11 @@ type MockScaleIOAPIServer struct {
 }
 
 func (s MockScaleIOAPIServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !strings.HasPrefix(r.URL.Path, "/api/") {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
 	switch r.URL.Path {
 	default:
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
+		msg := fmt.Sprintf("unkown URL path: %s", r.URL.Path)
+		writeAPIError(w, msg)
 	case "/api/login":
 		s.handleLogin(w, r)
 	case "/api/logout":
@@ -40,10 +39,14 @@ func (s MockScaleIOAPIServer) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 func (s MockScaleIOAPIServer) handleLogin(w http.ResponseWriter, r *http.Request) {
 	if user, pass, ok := r.BasicAuth(); !ok || user != s.User || pass != s.Password {
 		w.WriteHeader(http.StatusUnauthorized)
+		msg := fmt.Sprintf("user got/expected: %s/%s, pass got/expected: %s/%s", user, s.User, pass, s.Password)
+		writeAPIError(w, msg)
 		return
 	}
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusBadRequest)
+		msg := fmt.Sprintf("wrong method: '%s', expected '%s'", r.Method, http.MethodGet)
+		writeAPIError(w, msg)
 		return
 	}
 	_, _ = w.Write([]byte(s.Token))
@@ -52,9 +55,14 @@ func (s MockScaleIOAPIServer) handleLogin(w http.ResponseWriter, r *http.Request
 func (s MockScaleIOAPIServer) handleLogout(w http.ResponseWriter, r *http.Request) {
 	if _, pass, ok := r.BasicAuth(); !ok || pass != s.Token {
 		w.WriteHeader(http.StatusUnauthorized)
+		msg := fmt.Sprintf("token got/expected: %s/%s", pass, s.Token)
+		writeAPIError(w, msg)
+		return
 	}
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusBadRequest)
+		msg := fmt.Sprintf("wrong method: '%s', expected '%s'", r.Method, http.MethodGet)
+		writeAPIError(w, msg)
 		return
 	}
 }
@@ -62,10 +70,14 @@ func (s MockScaleIOAPIServer) handleLogout(w http.ResponseWriter, r *http.Reques
 func (s MockScaleIOAPIServer) handleVersion(w http.ResponseWriter, r *http.Request) {
 	if _, pass, ok := r.BasicAuth(); !ok || pass != s.Token {
 		w.WriteHeader(http.StatusUnauthorized)
+		msg := fmt.Sprintf("token got/expected: %s/%s", pass, s.Token)
+		writeAPIError(w, msg)
 		return
 	}
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusBadRequest)
+		msg := fmt.Sprintf("wrong method: '%s', expected '%s'", r.Method, http.MethodGet)
+		writeAPIError(w, msg)
 		return
 	}
 	_, _ = w.Write([]byte(s.Version))
@@ -74,32 +86,62 @@ func (s MockScaleIOAPIServer) handleVersion(w http.ResponseWriter, r *http.Reque
 func (s MockScaleIOAPIServer) handleInstances(w http.ResponseWriter, r *http.Request) {
 	if _, pass, ok := r.BasicAuth(); !ok || pass != s.Token {
 		w.WriteHeader(http.StatusUnauthorized)
+		msg := fmt.Sprintf("token got/expected: %s/%s", pass, s.Token)
+		writeAPIError(w, msg)
 		return
 	}
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusBadRequest)
+		msg := fmt.Sprintf("wrong method: '%s', expected '%s'", r.Method, http.MethodGet)
+		writeAPIError(w, msg)
 		return
 	}
-	b, _ := json.Marshal(s.Instances)
+	b, err := json.Marshal(s.Instances)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := fmt.Sprintf("marshal Instances: %v", err)
+		writeAPIError(w, msg)
+		return
+	}
 	_, _ = w.Write(b)
 }
 
 func (s MockScaleIOAPIServer) handleQuerySelectedStatistics(w http.ResponseWriter, r *http.Request) {
 	if _, pass, ok := r.BasicAuth(); !ok || pass != s.Token {
 		w.WriteHeader(http.StatusUnauthorized)
+		msg := fmt.Sprintf("token got/expected: %s/%s", pass, s.Token)
+		writeAPIError(w, msg)
 		return
 	}
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusBadRequest)
+		msg := fmt.Sprintf("wrong method: '%s', expected '%s'", r.Method, http.MethodPost)
+		writeAPIError(w, msg)
 		return
 	}
 	if r.Header.Get("Content-Type") != "application/json" {
 		w.WriteHeader(http.StatusBadRequest)
+		writeAPIError(w, "no \"Content-Type: application/json\" in the header")
 		return
 	}
 	if err := json.NewDecoder(r.Body).Decode(&SelectedStatisticsQuery{}); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		msg := fmt.Sprintf("body decode error: %v", err)
+		writeAPIError(w, msg)
+		return
 	}
-	b, _ := json.Marshal(s.Statistics)
+	b, err := json.Marshal(s.Statistics)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := fmt.Sprintf("marshal SelectedStatistics: %v", err)
+		writeAPIError(w, msg)
+		return
+	}
+	_, _ = w.Write(b)
+}
+
+func writeAPIError(w io.Writer, msg string) {
+	err := apiError{Message: msg}
+	b, _ := json.Marshal(err)
 	_, _ = w.Write(b)
 }
