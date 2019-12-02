@@ -11,9 +11,6 @@ import (
 
 func init() {
 	creator := module.Creator{
-		//Defaults: module.Defaults{
-		//	UpdateEvery: 5,
-		//},
 		Create: func() module.Module { return New() },
 	}
 
@@ -25,7 +22,7 @@ func New() *ScaleIO {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{UserURL: "https://127.0.0.1"},
-			Client:  web.Client{Timeout: web.Duration{Duration: time.Second * 10}},
+			Client:  web.Client{Timeout: web.Duration{Duration: time.Second}},
 		},
 	}
 	return &ScaleIO{
@@ -84,8 +81,7 @@ func (s *ScaleIO) Check() bool {
 		s.Error(err)
 		return false
 	}
-	return true
-	//return len(s.Collect()) > 0
+	return len(s.Collect()) > 0
 }
 
 // Charts returns Charts.

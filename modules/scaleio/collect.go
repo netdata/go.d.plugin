@@ -1,6 +1,8 @@
 package scaleio
 
 import (
+	"time"
+
 	"github.com/netdata/go.d.plugin/modules/scaleio/client"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
@@ -31,11 +33,15 @@ func (s *ScaleIO) collect() (map[string]int64, error) {
 }
 
 func (s *ScaleIO) discovery() error {
+	start := time.Now()
+	s.Debugf("starting discovery")
 	ins, err := s.client.Instances()
 	if err != nil {
 		s.lastDiscoveryOK = false
 		return err
 	}
+	s.Debugf("discovering: discovered %d storage pools, %d sdcs, it took %s",
+		len(ins.StoragePoolList), len(ins.SdcList), time.Since(start))
 
 	s.discovered.pool = make(map[string]client.StoragePool, len(ins.StoragePoolList))
 	for _, pool := range ins.StoragePoolList {
