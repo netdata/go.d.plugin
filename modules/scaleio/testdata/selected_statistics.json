@@ -1,4 +1,487 @@
 {
+  "Sdc": {
+    "6076fd0f00000000": {
+      "numOfMappedVolumes": 1,
+      "userDataReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 1,
+        "totalWeightInKb": 0
+      },
+      "userDataWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 1,
+        "totalWeightInKb": 0
+      },
+      "volumeIds": [
+        "993a5c6d00000002"
+      ]
+    },
+    "6076fd1000000001": {
+      "numOfMappedVolumes": 1,
+      "userDataReadBwc": {
+        "numOccured": 1,
+        "numSeconds": 1,
+        "totalWeightInKb": 1
+      },
+      "userDataWriteBwc": {
+        "numOccured": 169,
+        "numSeconds": 1,
+        "totalWeightInKb": 117399
+      },
+      "volumeIds": [
+        "993a355d00000000"
+      ]
+    },
+    "6076fd1100000002": {
+      "numOfMappedVolumes": 1,
+      "userDataReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 1,
+        "totalWeightInKb": 0
+      },
+      "userDataWriteBwc": {
+        "numOccured": 145,
+        "numSeconds": 1,
+        "totalWeightInKb": 118972
+      },
+      "volumeIds": [
+        "993a355e00000001"
+      ]
+    }
+  },
+  "StoragePool": {
+    "40395b7b00000000": {
+      "BackgroundScanCompareCount": 0,
+      "BackgroundScannedInMB": 0,
+      "activeBckRebuildCapacityInKb": 0,
+      "activeFwdRebuildCapacityInKb": 0,
+      "activeMovingCapacityInKb": 0,
+      "activeMovingInBckRebuildJobs": 0,
+      "activeMovingInFwdRebuildJobs": 0,
+      "activeMovingInNormRebuildJobs": 0,
+      "activeMovingInRebalanceJobs": 0,
+      "activeMovingOutBckRebuildJobs": 0,
+      "activeMovingOutFwdRebuildJobs": 0,
+      "activeMovingOutNormRebuildJobs": 0,
+      "activeMovingRebalanceJobs": 0,
+      "activeNormRebuildCapacityInKb": 0,
+      "activeRebalanceCapacityInKb": 0,
+      "atRestCapacityInKb": 50110464,
+      "bckRebuildCapacityInKb": 0,
+      "bckRebuildReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "bckRebuildWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "capacityAvailableForVolumeAllocationInKb": 100663296,
+      "capacityInUseInKb": 50110464,
+      "capacityLimitInKb": 311424000,
+      "degradedFailedCapacityInKb": 0,
+      "degradedFailedVacInKb": 0,
+      "degradedHealthyCapacityInKb": 0,
+      "degradedHealthyVacInKb": 0,
+      "deviceIds": [
+        "ebbdc47a00000000",
+        "ebbf9d6500010000",
+        "ebbfc47900020000"
+      ],
+      "failedCapacityInKb": 0,
+      "failedVacInKb": 0,
+      "fixedReadErrorCount": 0,
+      "fwdRebuildCapacityInKb": 0,
+      "fwdRebuildReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "fwdRebuildWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "inMaintenanceCapacityInKb": 0,
+      "inMaintenanceVacInKb": 0,
+      "inUseVacInKb": 67108864,
+      "maxCapacityInKb": 311424000,
+      "movingCapacityInKb": 0,
+      "normRebuildCapacityInKb": 0,
+      "normRebuildReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "normRebuildWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "numOfDevices": 3,
+      "numOfMappedToAllVolumes": 0,
+      "numOfSnapshots": 1,
+      "numOfThickBaseVolumes": 0,
+      "numOfThinBaseVolumes": 2,
+      "numOfUnmappedVolumes": 0,
+      "numOfVolumes": 3,
+      "numOfVolumesInDeletion": 0,
+      "numOfVtrees": 2,
+      "pendingBckRebuildCapacityInKb": 0,
+      "pendingFwdRebuildCapacityInKb": 0,
+      "pendingMovingCapacityInKb": 0,
+      "pendingMovingInBckRebuildJobs": 0,
+      "pendingMovingInFwdRebuildJobs": 0,
+      "pendingMovingInNormRebuildJobs": 0,
+      "pendingMovingInRebalanceJobs": 0,
+      "pendingMovingOutBckRebuildJobs": 0,
+      "pendingMovingOutFwdRebuildJobs": 0,
+      "pendingMovingOutNormrebuildJobs": 0,
+      "pendingMovingRebalanceJobs": 0,
+      "pendingNormRebuildCapacityInKb": 0,
+      "pendingRebalanceCapacityInKb": 0,
+      "primaryReadBwc": {
+        "numOccured": 1,
+        "numSeconds": 5,
+        "totalWeightInKb": 4
+      },
+      "primaryReadFromDevBwc": {
+        "numOccured": 1,
+        "numSeconds": 5,
+        "totalWeightInKb": 4
+      },
+      "primaryReadFromRmcacheBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "primaryVacInKb": 33554432,
+      "primaryWriteBwc": {
+        "numOccured": 1556,
+        "numSeconds": 5,
+        "totalWeightInKb": 1193408
+      },
+      "protectedCapacityInKb": 50110464,
+      "protectedVacInKb": 67108864,
+      "rebalanceCapacityInKb": 0,
+      "rebalanceReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "rebalanceWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "rfacheReadHit": 0,
+      "rfacheWriteHit": 0,
+      "rfcacheAvgReadTime": 0,
+      "rfcacheAvgWriteTime": 0,
+      "rfcacheIoErrors": 0,
+      "rfcacheIosOutstanding": 0,
+      "rfcacheIosSkipped": 0,
+      "rfcacheReadMiss": 0,
+      "rfcacheReadsFromCache": 0,
+      "rfcacheReadsPending": 0,
+      "rfcacheReadsReceived": 0,
+      "rfcacheReadsSkipped": 0,
+      "rfcacheReadsSkippedAlignedSizeTooLarge": 0,
+      "rfcacheReadsSkippedHeavyLoad": 0,
+      "rfcacheReadsSkippedInternalError": 0,
+      "rfcacheReadsSkippedLockIos": 0,
+      "rfcacheReadsSkippedLowResources": 0,
+      "rfcacheReadsSkippedMaxIoSize": 0,
+      "rfcacheReadsSkippedStuckIo": 0,
+      "rfcacheSkippedUnlinedWrite": 0,
+      "rfcacheSourceDeviceReads": 0,
+      "rfcacheSourceDeviceWrites": 0,
+      "rfcacheWriteMiss": 0,
+      "rfcacheWritePending": 0,
+      "rfcacheWritesReceived": 0,
+      "rfcacheWritesSkippedCacheMiss": 0,
+      "rfcacheWritesSkippedHeavyLoad": 0,
+      "rfcacheWritesSkippedInternalError": 0,
+      "rfcacheWritesSkippedLowResources": 0,
+      "rfcacheWritesSkippedMaxIoSize": 0,
+      "rfcacheWritesSkippedStuckIo": 0,
+      "rmPendingAllocatedInKb": 0,
+      "secondaryReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "secondaryReadFromDevBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "secondaryReadFromRmcacheBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "secondaryVacInKb": 33554432,
+      "secondaryWriteBwc": {
+        "numOccured": 1530,
+        "numSeconds": 5,
+        "totalWeightInKb": 1169632
+      },
+      "semiProtectedCapacityInKb": 0,
+      "semiProtectedVacInKb": 0,
+      "snapCapacityInUseInKb": 16699392,
+      "snapCapacityInUseOccupiedInKb": 749568,
+      "spareCapacityInKb": 31141888,
+      "thickCapacityInUseInKb": 0,
+      "thinCapacityAllocatedInKb": 67108864,
+      "thinCapacityInUseInKb": 49360896,
+      "totalReadBwc": {
+        "numOccured": 1,
+        "numSeconds": 5,
+        "totalWeightInKb": 4
+      },
+      "totalWriteBwc": {
+        "numOccured": 3086,
+        "numSeconds": 5,
+        "totalWeightInKb": 2363040
+      },
+      "unreachableUnusedCapacityInKb": 0,
+      "unusedCapacityInKb": 230171648,
+      "userDataReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "userDataWriteBwc": {
+        "numOccured": 285,
+        "numSeconds": 1,
+        "totalWeightInKb": 227170
+      },
+      "volumeIds": [
+        "993a355d00000000",
+        "993a5c6d00000002",
+        "993a355e00000001"
+      ],
+      "vtreeIds": [
+        "252fd6e300000000",
+        "252fd6e400000001"
+      ]
+    },
+    "4039828b00000001": {
+      "BackgroundScanCompareCount": 0,
+      "BackgroundScannedInMB": 0,
+      "activeBckRebuildCapacityInKb": 0,
+      "activeFwdRebuildCapacityInKb": 0,
+      "activeMovingCapacityInKb": 0,
+      "activeMovingInBckRebuildJobs": 0,
+      "activeMovingInFwdRebuildJobs": 0,
+      "activeMovingInNormRebuildJobs": 0,
+      "activeMovingInRebalanceJobs": 0,
+      "activeMovingOutBckRebuildJobs": 0,
+      "activeMovingOutFwdRebuildJobs": 0,
+      "activeMovingOutNormRebuildJobs": 0,
+      "activeMovingRebalanceJobs": 0,
+      "activeNormRebuildCapacityInKb": 0,
+      "activeRebalanceCapacityInKb": 0,
+      "atRestCapacityInKb": 0,
+      "bckRebuildCapacityInKb": 0,
+      "bckRebuildReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "bckRebuildWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "capacityAvailableForVolumeAllocationInKb": 142606336,
+      "capacityInUseInKb": 0,
+      "capacityLimitInKb": 332395520,
+      "degradedFailedCapacityInKb": 0,
+      "degradedFailedVacInKb": 0,
+      "degradedHealthyCapacityInKb": 0,
+      "degradedHealthyVacInKb": 0,
+      "deviceIds": [
+        "ebbdc47b00000001",
+        "ebbfc47300010001",
+        "ebbfc47700020001"
+      ],
+      "failedCapacityInKb": 0,
+      "failedVacInKb": 0,
+      "fixedReadErrorCount": 0,
+      "fwdRebuildCapacityInKb": 0,
+      "fwdRebuildReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "fwdRebuildWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "inMaintenanceCapacityInKb": 0,
+      "inMaintenanceVacInKb": 0,
+      "inUseVacInKb": 0,
+      "maxCapacityInKb": 332395520,
+      "movingCapacityInKb": 0,
+      "normRebuildCapacityInKb": 0,
+      "normRebuildReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "normRebuildWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "numOfDevices": 3,
+      "numOfMappedToAllVolumes": 0,
+      "numOfSnapshots": 0,
+      "numOfThickBaseVolumes": 0,
+      "numOfThinBaseVolumes": 0,
+      "numOfUnmappedVolumes": 0,
+      "numOfVolumes": 0,
+      "numOfVolumesInDeletion": 0,
+      "numOfVtrees": 0,
+      "pendingBckRebuildCapacityInKb": 0,
+      "pendingFwdRebuildCapacityInKb": 0,
+      "pendingMovingCapacityInKb": 0,
+      "pendingMovingInBckRebuildJobs": 0,
+      "pendingMovingInFwdRebuildJobs": 0,
+      "pendingMovingInNormRebuildJobs": 0,
+      "pendingMovingInRebalanceJobs": 0,
+      "pendingMovingOutBckRebuildJobs": 0,
+      "pendingMovingOutFwdRebuildJobs": 0,
+      "pendingMovingOutNormrebuildJobs": 0,
+      "pendingMovingRebalanceJobs": 0,
+      "pendingNormRebuildCapacityInKb": 0,
+      "pendingRebalanceCapacityInKb": 0,
+      "primaryReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "primaryReadFromDevBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "primaryReadFromRmcacheBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "primaryVacInKb": 0,
+      "primaryWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "protectedCapacityInKb": 0,
+      "protectedVacInKb": 0,
+      "rebalanceCapacityInKb": 0,
+      "rebalanceReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "rebalanceWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "rfacheReadHit": 0,
+      "rfacheWriteHit": 0,
+      "rfcacheAvgReadTime": 0,
+      "rfcacheAvgWriteTime": 0,
+      "rfcacheIoErrors": 0,
+      "rfcacheIosOutstanding": 0,
+      "rfcacheIosSkipped": 0,
+      "rfcacheReadMiss": 0,
+      "rfcacheReadsFromCache": 0,
+      "rfcacheReadsPending": 0,
+      "rfcacheReadsReceived": 0,
+      "rfcacheReadsSkipped": 0,
+      "rfcacheReadsSkippedAlignedSizeTooLarge": 0,
+      "rfcacheReadsSkippedHeavyLoad": 0,
+      "rfcacheReadsSkippedInternalError": 0,
+      "rfcacheReadsSkippedLockIos": 0,
+      "rfcacheReadsSkippedLowResources": 0,
+      "rfcacheReadsSkippedMaxIoSize": 0,
+      "rfcacheReadsSkippedStuckIo": 0,
+      "rfcacheSkippedUnlinedWrite": 0,
+      "rfcacheSourceDeviceReads": 0,
+      "rfcacheSourceDeviceWrites": 0,
+      "rfcacheWriteMiss": 0,
+      "rfcacheWritePending": 0,
+      "rfcacheWritesReceived": 0,
+      "rfcacheWritesSkippedCacheMiss": 0,
+      "rfcacheWritesSkippedHeavyLoad": 0,
+      "rfcacheWritesSkippedInternalError": 0,
+      "rfcacheWritesSkippedLowResources": 0,
+      "rfcacheWritesSkippedMaxIoSize": 0,
+      "rfcacheWritesSkippedStuckIo": 0,
+      "rmPendingAllocatedInKb": 0,
+      "secondaryReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "secondaryReadFromDevBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "secondaryReadFromRmcacheBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "secondaryVacInKb": 0,
+      "secondaryWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "semiProtectedCapacityInKb": 0,
+      "semiProtectedVacInKb": 0,
+      "snapCapacityInUseInKb": 3145728,
+      "snapCapacityInUseOccupiedInKb": 0,
+      "spareCapacityInKb": 33239040,
+      "thickCapacityInUseInKb": 0,
+      "thinCapacityAllocatedInKb": 0,
+      "thinCapacityInUseInKb": 0,
+      "totalReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "totalWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "unreachableUnusedCapacityInKb": 0,
+      "unusedCapacityInKb": 299156480,
+      "userDataReadBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "userDataWriteBwc": {
+        "numOccured": 0,
+        "numSeconds": 0,
+        "totalWeightInKb": 0
+      },
+      "volumeIds": [],
+      "vtreeIds": []
+    }
+  },
   "System": {
     "BackgroundScanCompareCount": 0,
     "BackgroundScannedInMB": 0,
@@ -15,7 +498,7 @@
     "activeMovingRebalanceJobs": 0,
     "activeNormRebuildCapacityInKb": 0,
     "activeRebalanceCapacityInKb": 0,
-    "atRestCapacityInKb": 65386496,
+    "atRestCapacityInKb": 50110464,
     "bckRebuildCapacityInKb": 0,
     "bckRebuildReadBwc": {
       "numOccured": 0,
@@ -27,9 +510,9 @@
       "numSeconds": 0,
       "totalWeightInKb": 0
     },
-    "capacityAvailableForVolumeAllocationInKb": 67108864,
-    "capacityInUseInKb": 65386496,
-    "capacityLimitInKb": 337638400,
+    "capacityAvailableForVolumeAllocationInKb": 243269632,
+    "capacityInUseInKb": 50110464,
+    "capacityLimitInKb": 643819520,
     "degradedFailedCapacityInKb": 0,
     "degradedFailedVacInKb": 0,
     "degradedHealthyCapacityInKb": 0,
@@ -50,8 +533,8 @@
     },
     "inMaintenanceCapacityInKb": 0,
     "inMaintenanceVacInKb": 0,
-    "inUseVacInKb": 83886080,
-    "maxCapacityInKb": 337638400,
+    "inUseVacInKb": 67108864,
+    "maxCapacityInKb": 643819520,
     "movingCapacityInKb": 0,
     "normRebuildCapacityInKb": 0,
     "normRebuildReadBwc": {
@@ -64,22 +547,22 @@
       "numSeconds": 0,
       "totalWeightInKb": 0
     },
-    "numOfDevices": 3,
-    "numOfFaultSets": 2,
+    "numOfDevices": 6,
+    "numOfFaultSets": 0,
     "numOfMappedToAllVolumes": 0,
-    "numOfProtectionDomains": 2,
+    "numOfProtectionDomains": 1,
     "numOfRfcacheDevices": 0,
     "numOfScsiInitiators": 0,
     "numOfSdc": 3,
     "numOfSds": 3,
-    "numOfSnapshots": 0,
+    "numOfSnapshots": 1,
     "numOfStoragePools": 2,
-    "numOfThickBaseVolumes": 1,
-    "numOfThinBaseVolumes": 3,
-    "numOfUnmappedVolumes": 2,
-    "numOfVolumes": 4,
+    "numOfThickBaseVolumes": 0,
+    "numOfThinBaseVolumes": 2,
+    "numOfUnmappedVolumes": 0,
+    "numOfVolumes": 3,
     "numOfVolumesInDeletion": 0,
-    "numOfVtrees": 4,
+    "numOfVtrees": 2,
     "pendingBckRebuildCapacityInKb": 0,
     "pendingFwdRebuildCapacityInKb": 0,
     "pendingMovingCapacityInKb": 0,
@@ -94,31 +577,30 @@
     "pendingNormRebuildCapacityInKb": 0,
     "pendingRebalanceCapacityInKb": 0,
     "primaryReadBwc": {
-      "numOccured": 0,
-      "numSeconds": 0,
-      "totalWeightInKb": 0
+      "numOccured": 1,
+      "numSeconds": 5,
+      "totalWeightInKb": 4
     },
     "primaryReadFromDevBwc": {
-      "numOccured": 0,
-      "numSeconds": 0,
-      "totalWeightInKb": 0
+      "numOccured": 1,
+      "numSeconds": 5,
+      "totalWeightInKb": 4
     },
     "primaryReadFromRmcacheBwc": {
       "numOccured": 0,
       "numSeconds": 0,
       "totalWeightInKb": 0
     },
-    "primaryVacInKb": 41943040,
+    "primaryVacInKb": 33554432,
     "primaryWriteBwc": {
-      "numOccured": 1287,
+      "numOccured": 1556,
       "numSeconds": 5,
-      "totalWeightInKb": 413080
+      "totalWeightInKb": 1193408
     },
-    "protectedCapacityInKb": 65386496,
-    "protectedVacInKb": 83886080,
+    "protectedCapacityInKb": 50110464,
+    "protectedVacInKb": 67108864,
     "protectionDomainIds": [
-      "bdbe7d9700000000",
-      "bdbecbb700000001"
+      "74d855a900000000"
     ],
     "rebalanceCapacityInKb": 0,
     "rebalancePerReceiveJobNetThrottlingInKbps": 0,
@@ -236,9 +718,9 @@
     "rmcacheSkipCountUnaligned4kbIo": 0,
     "scsiInitiatorIds": [],
     "sdcIds": [
-      "21a862dd00000000",
-      "21a862de00000001",
-      "21a862df00000002"
+      "6076fd0f00000000",
+      "6076fd1000000001",
+      "6076fd1100000002"
     ],
     "secondaryReadBwc": {
       "numOccured": 0,
@@ -255,41 +737,41 @@
       "numSeconds": 0,
       "totalWeightInKb": 0
     },
-    "secondaryVacInKb": 41943040,
+    "secondaryVacInKb": 33554432,
     "secondaryWriteBwc": {
-      "numOccured": 1039,
+      "numOccured": 1530,
       "numSeconds": 5,
-      "totalWeightInKb": 412160
+      "totalWeightInKb": 1169632
     },
     "semiProtectedCapacityInKb": 0,
     "semiProtectedVacInKb": 0,
-    "snapCapacityInUseInKb": 17451008,
-    "snapCapacityInUseOccupiedInKb": 0,
-    "spareCapacityInKb": 118172672,
-    "thickCapacityInUseInKb": 16777216,
+    "snapCapacityInUseInKb": 19845120,
+    "snapCapacityInUseOccupiedInKb": 749568,
+    "spareCapacityInKb": 64380928,
+    "thickCapacityInUseInKb": 0,
     "thinCapacityAllocatedInKb": 67108864,
-    "thinCapacityInUseInKb": 48609280,
+    "thinCapacityInUseInKb": 49360896,
     "totalReadBwc": {
-      "numOccured": 0,
-      "numSeconds": 0,
-      "totalWeightInKb": 0
+      "numOccured": 1,
+      "numSeconds": 5,
+      "totalWeightInKb": 4
     },
     "totalWriteBwc": {
-      "numOccured": 2326,
+      "numOccured": 3086,
       "numSeconds": 5,
-      "totalWeightInKb": 825240
+      "totalWeightInKb": 2363040
     },
     "unreachableUnusedCapacityInKb": 0,
-    "unusedCapacityInKb": 154079232,
+    "unusedCapacityInKb": 529328128,
     "userDataReadBwc": {
       "numOccured": 0,
       "numSeconds": 0,
       "totalWeightInKb": 0
     },
     "userDataWriteBwc": {
-      "numOccured": 252,
+      "numOccured": 285,
       "numSeconds": 1,
-      "totalWeightInKb": 87404
+      "totalWeightInKb": 227170
     }
   }
 }

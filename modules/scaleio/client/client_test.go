@@ -1,9 +1,7 @@
 package client
 
 import (
-	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -12,94 +10,131 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	testToken   = "token"
-	testVersion = "2.5"
-)
-
-func TestNewClient(t *testing.T) {
-	client, _ := New(web.Client{}, web.Request{})
-	assert.IsType(t, (*Client)(nil), client)
-	assert.NotNil(t, client.httpClient)
-	assert.NotNil(t, client.token)
-}
-
-func TestClient_IsLoggedIn(t *testing.T) {
-	ts := newTestServer()
-	defer ts.Close()
-
-	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
-
-	require.NoError(t, client.Login())
-	assert.True(t, client.IsLoggedIn())
+func TestNew(t *testing.T) {
+	_, err := New(web.Client{}, web.Request{})
+	assert.NoError(t, err)
 }
 
 func TestClient_Login(t *testing.T) {
-	ts := newTestServer()
-	defer ts.Close()
+	srv, client := prepareSrvClient(t)
+	defer srv.Close()
 
-	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
-
-	require.NoError(t, client.Login())
+	assert.NoError(t, client.Login())
 	assert.Equal(t, testToken, client.token.get())
 }
 
 func TestClient_Logout(t *testing.T) {
-	ts := newTestServer()
-	defer ts.Close()
-
-	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
+	srv, client := prepareSrvClient(t)
+	defer srv.Close()
 
 	require.NoError(t, client.Login())
-	require.True(t, client.IsLoggedIn())
+
 	assert.NoError(t, client.Logout())
-	assert.False(t, client.IsLoggedIn())
+	assert.False(t, client.token.isSet())
+
 }
 
-func TestClient_GetAPIVersion(t *testing.T) {
-	ts := newTestServer()
-	defer ts.Close()
+func TestClient_LoggedIn(t *testing.T) {
+	srv, client := prepareSrvClient(t)
+	defer srv.Close()
 
-	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
+	assert.False(t, client.LoggedIn())
+	assert.NoError(t, client.Login())
+	assert.True(t, client.LoggedIn())
+}
 
-	ver, err := client.GetAPIVersion()
+func TestClient_APIVersion(t *testing.T) {
+	srv, client := prepareSrvClient(t)
+	defer srv.Close()
+
+	err := client.Login()
 	require.NoError(t, err)
-	assert.Equal(t, &Version{Major: 2, Minor: 5}, ver)
+
+	version, err := client.APIVersion()
+	assert.NoError(t, err)
+	assert.Equal(t, Version{Major: 2, Minor: 5}, version)
 }
 
-func TestClient_GetSelectedStatistics(t *testing.T) {
-	ts := newTestServer()
-	defer ts.Close()
+func TestClient_Instances(t *testing.T) {
+	srv, client := prepareSrvClient(t)
+	defer srv.Close()
 
-	client, _ := New(web.Client{}, web.Request{UserURL: ts.URL})
+	err := client.Login()
+	require.NoError(t, err)
 
-	require.NoError(t, client.Login())
-	dst := &struct {
-		A, B int
-	}{}
-	require.NoError(t, client.GetSelectedStatistics(dst, ""))
-	assert.Equal(t, 1, dst.A)
-	assert.Equal(t, 2, dst.B)
+	instances, err := client.Instances()
+	assert.NoError(t, err)
+	assert.Equal(t, testInstances, instances)
 }
 
-func newTestServer() *httptest.Server {
-	handle := func(w http.ResponseWriter, r *http.Request) {
-		if !strings.HasPrefix(r.URL.Path, "/api/") {
-			w.WriteHeader(http.StatusNotFound)
-			return
-		}
-		switch r.URL.Path {
-		default:
-			w.WriteHeader(http.StatusBadRequest)
-		case pathLogin:
-			_, _ = w.Write([]byte(testToken))
-		case pathLogout:
-		case pathVersion:
-			_, _ = w.Write([]byte(testVersion))
-		case pathSelectedStatistics:
-			_, _ = w.Write([]byte(`{"A": 1, "B": 2}`))
-		}
+func TestClient_Instances_RetryOnExpiredToken(t *testing.T) {
+	srv, client := prepareSrvClient(t)
+	defer srv.Close()
+
+	instances, err := client.Instances()
+	assert.NoError(t, err)
+	assert.Equal(t, testInstances, instances)
+}
+
+func TestClient_SelectedStatistics(t *testing.T) {
+	srv, client := prepareSrvClient(t)
+	defer srv.Close()
+
+	err := client.Login()
+	require.NoError(t, err)
+
+	stats, err := client.SelectedStatistics(SelectedStatisticsQuery{})
+	assert.NoError(t, err)
+	assert.Equal(t, testStatistics, stats)
+}
+
+func TestClient_SelectedStatistics_RetryOnExpiredToken(t *testing.T) {
+	srv, client := prepareSrvClient(t)
+	defer srv.Close()
+
+	stats, err := client.SelectedStatistics(SelectedStatisticsQuery{})
+	assert.Equal(t, testStatistics, stats)
+	assert.NoError(t, err)
+	assert.Equal(t, testStatistics, stats)
+}
+
+func prepareSrvClient(t *testing.T) (*httptest.Server, *Client) {
+	t.Helper()
+	srv := httptest.NewServer(MockScaleIOAPIServer{
+		User:       testUser,
+		Password:   testPassword,
+		Version:    testVersion,
+		Token:      testToken,
+		Instances:  testInstances,
+		Statistics: testStatistics,
+	})
+	client, err := New(web.Client{}, web.Request{
+		UserURL:  srv.URL,
+		Username: testUser,
+		Password: testPassword,
+	})
+	assert.NoError(t, err)
+	return srv, client
+}
+
+var (
+	testUser      = "user"
+	testPassword  = "password"
+	testVersion   = "2.5"
+	testToken     = "token"
+	testInstances = Instances{
+		StoragePoolList: []StoragePool{
+			{ID: "id1", Name: "Marketing", SparePercentage: 10},
+			{ID: "id2", Name: "Finance", SparePercentage: 10},
+		},
+		SdcList: []Sdc{
+			{ID: "id1", SdcIp: "10.0.0.1", MdmConnectionState: "Connected"},
+			{ID: "id2", SdcIp: "10.0.0.2", MdmConnectionState: "Connected"},
+		},
 	}
-
-	return httptest.NewServer(http.HandlerFunc(handle))
-}
+	testStatistics = SelectedStatistics{
+		System:      SystemStatistics{NumOfDevices: 1},
+		Sdc:         map[string]SdcStatistics{"id1": {}, "id2": {}},
+		StoragePool: map[string]StoragePoolStatistics{"id1": {}, "id2": {}},
+	}
+)

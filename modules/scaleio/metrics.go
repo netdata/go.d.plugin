@@ -1,97 +1,124 @@
 package scaleio
 
-import mtx "github.com/netdata/go.d.plugin/pkg/metrics"
-
 type metrics struct {
-	SystemOverview struct {
+	System      systemMetrics                 `stm:"system"`
+	Sdc         map[string]sdcMetrics         `stm:"sdc"`
+	StoragePool map[string]storagePoolMetrics `stm:"storage_pool"`
+}
+
+type capacity struct {
+	MaxCapacity int64 `stm:"max_capacity"`
+	ThickInUse  int64 `stm:"thick_in_use"`
+	ThinInUse   int64 `stm:"thin_in_use"`
+	Snapshot    int64 `stm:"snapshot"`
+	Spare       int64 `stm:"spare"`
+	Decreased   int64 `stm:"decreased"` // not in statistics, should be calculated
+	Unused      int64 `stm:"unused"`
+
+	InUse                        int64 `stm:"in_use"`
+	AvailableForVolumeAllocation int64 `stm:"available_for_volume_allocation"`
+
+	Protected         int64 `stm:"protected"`
+	InMaintenance     int64 `stm:"in_maintenance"`
+	Degraded          int64 `stm:"degraded"`
+	Failed            int64 `stm:"failed"`
+	UnreachableUnused int64 `stm:"unreachable_unused"`
+}
+
+type (
+	systemMetrics struct {
 		Capacity   systemCapacity   `stm:"capacity"`
-		IOWorkload systemIOWorkload `stm:""`
+		Workload   systemWorkload   `stm:""`
 		Rebalance  systemRebalance  `stm:"rebalance"`
 		Rebuild    systemRebuild    `stm:"rebuild"`
 		Components systemComponents `stm:"num_of"`
-	} `stm:"system"`
-}
+	}
+	systemCapacity   = capacity
+	systemComponents struct {
+		Devices            int64 `stm:"devices"`
+		FaultSets          int64 `stm:"fault_sets"`
+		ProtectionDomains  int64 `stm:"protection_domains"`
+		RfcacheDevices     int64 `stm:"rfcache_devices"`
+		Sdc                int64 `stm:"sdc"`
+		Sds                int64 `stm:"sds"`
+		Snapshots          int64 `stm:"snapshots"`
+		StoragePools       int64 `stm:"storage_pools"`
+		MappedToAllVolumes int64 `stm:"mapped_to_all_volumes"`
+		ThickBaseVolumes   int64 `stm:"thick_base_volumes"`
+		ThinBaseVolumes    int64 `stm:"thin_base_volumes"`
+		UnmappedVolumes    int64 `stm:"unmapped_volumes"`
+		MappedVolumes      int64 `stm:"mapped_volumes"`
+		Volumes            int64 `stm:"volumes"`
+		VTrees             int64 `stm:"vtrees"`
+	}
+	systemWorkload struct {
+		Total   bwIOPS `stm:"total"`
+		Backend struct {
+			Total     bwIOPS `stm:"total"`
+			Primary   bwIOPS `stm:"primary"`
+			Secondary bwIOPS `stm:"secondary"`
+		} `stm:"backend"`
+		Frontend bwIOPS `stm:"frontend_user_data"`
+	}
+	systemRebalance struct {
+		TimeUntilFinish float64 `stm:"time_until_finish"`
+		bwIOPSPending   `stm:""`
+	}
+	systemRebuild struct {
+		Total    bwIOPSPending `stm:"total"`
+		Forward  bwIOPSPending `stm:"forward"`
+		Backward bwIOPSPending `stm:"backward"`
+		Normal   bwIOPSPending `stm:"normal"`
+	}
+)
 
-type systemComponents struct {
-	Devices            mtx.Gauge `stm:"devices"`
-	FaultSets          mtx.Gauge `stm:"fault_sets"`
-	ProtectionDomains  mtx.Gauge `stm:"protection_domains"`
-	RfcacheDevices     mtx.Gauge `stm:"rfcache_devices"`
-	ScsiInitiators     mtx.Gauge `stm:"scsi_initiators"`
-	Sdc                mtx.Gauge `stm:"sdc"`
-	Sds                mtx.Gauge `stm:"sds"`
-	Snapshots          mtx.Gauge `stm:"snapshots"`
-	StoragePools       mtx.Gauge `stm:"storage_pools"`
-	MappedToAllVolumes mtx.Gauge `stm:"mapped_to_all_volumes"`
-	ThickBaseVolumes   mtx.Gauge `stm:"thick_base_volumes"`
-	ThinBaseVolumes    mtx.Gauge `stm:"thin_base_volumes"`
-	UnmappedVolumes    mtx.Gauge `stm:"unmapped_volumes"`
-	MappedVolumes      mtx.Gauge `stm:"mapped_volumes"`
-	Volumes            mtx.Gauge `stm:"volumes"`
-	VolumesInDeletion  mtx.Gauge `stm:"volumes_in_deletion"`
-	Vtrees             mtx.Gauge `stm:"vtrees"`
-}
+type (
+	sdcMetrics struct {
+		bwIOPS             `stm:""`
+		MappedVolumes      int64 `stm:"num_of_mapped_volumes"`
+		MDMConnectionState bool  `stm:"mdm_connection_state"`
+	}
+)
 
-type systemCapacity struct {
-	MaxCapacity                  mtx.Gauge `stm:"max_capacity"`
-	Protected                    mtx.Gauge `stm:"protected"`
-	InMaintenance                mtx.Gauge `stm:"in_maintenance"`
-	Degraded                     mtx.Gauge `stm:"degraded"`
-	Failed                       mtx.Gauge `stm:"failed"`
-	Spare                        mtx.Gauge `stm:"spare"`
-	UnreachableUnused            mtx.Gauge `stm:"unreachable_unused"`
-	Unused                       mtx.Gauge `stm:"unused"`
-	Decreased                    mtx.Gauge `stm:"decreased"` // not in statistics, should be calculated
-	AvailableForVolumeAllocation mtx.Gauge `stm:"available_for_volume_allocation"`
-	InUse                        mtx.Gauge `stm:"in_use"`
-	Limit                        mtx.Gauge `stm:"limit"`
-	SemiProtected                mtx.Gauge `stm:"semi_protected"`
-	SnapInUse                    mtx.Gauge `stm:"snap_in_use"`
-	SnapInUseOccupied            mtx.Gauge `stm:"snap_in_use_occupied"`
-	ThickInUse                   mtx.Gauge `stm:"thick_in_use"`
-	ThinAllocated                mtx.Gauge `stm:"thin_allocated"`
-	ThinInUse                    mtx.Gauge `stm:"thin_in_use"`
-	ThinFree                     mtx.Gauge `stm:"thin_free"`
-}
+type (
+	storagePoolMetrics struct {
+		Capacity   storagePoolCapacity `stm:"capacity"`
+		Components struct {
+			Devices   int64 `stm:"devices"`
+			Volumes   int64 `stm:"volumes"`
+			Vtrees    int64 `stm:"vtrees"`
+			Snapshots int64 `stm:"snapshots"`
+		} `stm:"num_of"`
+	}
+	storagePoolCapacity struct {
+		capacity       `stm:""`
+		Utilization    float64 `stm:"utilization,100,1"` // TODO: only StoragePool (sparePercentage)
+		AlertThreshold struct {
+			Critical int64 `stm:"critical_threshold"`
+			High     int64 `stm:"high_threshold"`
+		} `stm:"alert"`
+	}
+)
 
-type readWrite struct {
-	Read      mtx.Gauge `stm:"read,1000,1"`
-	Write     mtx.Gauge `stm:"write,1000,1"`
-	ReadWrite mtx.Gauge `stm:"read_write,1000,1"`
-}
+type (
+	readWrite struct {
+		Read      float64 `stm:"read,1000,1"`
+		Write     float64 `stm:"write,1000,1"`
+		ReadWrite float64 `stm:"read_write,1000,1"`
+	}
+	bwIOPS struct {
+		BW     readWrite `stm:"bandwidth"`
+		IOPS   readWrite `stm:"iops"`
+		IOSize readWrite `stm:"io_size"`
+	}
+	bwIOPSPending struct {
+		bwIOPS  `stm:""`
+		Pending int64 `stm:"pending_capacity_in_Kb"`
+	}
+)
 
 func (rw *readWrite) set(r, w float64) {
-	rw.Read.Set(r)
-	rw.Write.Set(w)
-	rw.ReadWrite.Set(r + w)
-}
-
-type bwIOPS struct {
-	BW     readWrite `stm:"bandwidth"`
-	IOPS   readWrite `stm:"iops"`
-	IOSize readWrite `stm:"io_size"`
-}
-
-type bwIOPSPending struct {
-	bwIOPS  `stm:""`
-	Pending mtx.Gauge `stm:"pending_capacity_in_Kb"`
-}
-
-type systemIOWorkload struct {
-	Total   bwIOPS `stm:"total"`
-	Backend struct {
-		Total     bwIOPS `stm:"total"`
-		Primary   bwIOPS `stm:"primary"`
-		Secondary bwIOPS `stm:"secondary"`
-	} `stm:"backend"`
-	Frontend bwIOPS `stm:"frontend_user_data"`
-}
-
-type systemRebalance bwIOPSPending
-
-type systemRebuild struct {
-	Total    bwIOPSPending `stm:"total"`
-	Forward  bwIOPSPending `stm:"forward"`
-	Backward bwIOPSPending `stm:"backward"`
-	Normal   bwIOPSPending `stm:"normal"`
+	rw.Read = r
+	rw.Write = w
+	rw.ReadWrite = r + w
 }
