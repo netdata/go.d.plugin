@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
@@ -19,12 +18,17 @@ var (
 	testStatusFullText, _ = ioutil.ReadFile("testdata/status-full.txt")
 )
 
+func Test_readTestData(t *testing.T) {
+	assert.NotNil(t, testStatusJSON)
+	assert.NotNil(t, testStatusFullJSON)
+	assert.NotNil(t, testStatusText)
+	assert.NotNil(t, testStatusFullText)
+}
+
 func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, "http://127.0.0.1/status?full&json", job.UserURL)
-	assert.Equal(t, time.Second, job.Timeout.Duration)
 }
 
 func TestPhpfpm_Init(t *testing.T) {
