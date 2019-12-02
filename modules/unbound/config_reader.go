@@ -26,15 +26,24 @@ Unbound stop processing and exits on any error:
  - recursive include
 */
 
-var neededParams = map[string]bool{
-	"include":               true,
-	"statistics-cumulative": true,
-	"control-enable":        true,
-	"control-interface":     true,
-	"control-port":          true,
-	"control-use-cert":      true,
-	"control-key-file":      true,
-	"control-cert-file":     true,
+var configAttributes = []string{
+	"include",
+	"statistics-cumulative",
+	"control-enable",
+	"control-interface",
+	"control-port",
+	"control-use-cert",
+	"control-key-file",
+	"control-cert-file",
+}
+
+func neededAttribute(line string) bool {
+	for _, v := range configAttributes {
+		if strings.HasPrefix(line, v) {
+			return true
+		}
+	}
+	return false
 }
 
 type configFileReader struct {
@@ -42,7 +51,7 @@ type configFileReader struct {
 }
 
 func (c configFileReader) read(filename string) ([][]string, error) {
-	var attributes [][]string
+	var attrs [][]string
 	if c.visited[filename] {
 		return nil, fmt.Errorf("file '%s' already visited previuosly", filename)
 	}
@@ -57,7 +66,7 @@ func (c configFileReader) read(filename string) ([][]string, error) {
 	sc := bufio.NewScanner(f)
 	for sc.Scan() {
 		line := strings.TrimSpace(sc.Text())
-		if strings.HasPrefix(line, "#") || line == "" {
+		if strings.HasPrefix(line, "#") || line == "" || !neededAttribute(line) {
 			continue
 		}
 
@@ -66,12 +75,8 @@ func (c configFileReader) read(filename string) ([][]string, error) {
 			return nil, fmt.Errorf("file '%s', error on parsing line '%s': %v", filename, line, err)
 		}
 
-		if !neededParams[key] {
-			continue
-		}
-
 		if key != "include" {
-			attributes = append(attributes, []string{key, value})
+			attrs = append(attrs, []string{key, value})
 			continue
 		}
 
@@ -80,10 +85,10 @@ func (c configFileReader) read(filename string) ([][]string, error) {
 			return nil, err
 		}
 		for _, v := range attrs {
-			attributes = append(attributes, v)
+			attrs = append(attrs, v)
 		}
 	}
-	return attributes, nil
+	return attrs, nil
 }
 
 func (c configFileReader) handleInclude(value string) ([][]string, error) {
@@ -94,17 +99,17 @@ func (c configFileReader) handleInclude(value string) ([][]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	var attributes [][]string
+	var attrs [][]string
 	for _, name := range filenames {
 		attrs, err := c.read(name)
 		if err != nil {
 			return nil, err
 		}
 		for _, v := range attrs {
-			attributes = append(attributes, v)
+			attrs = append(attrs, v)
 		}
 	}
-	return attributes, nil
+	return attrs, nil
 }
 
 func (configFileReader) parseLine(line string) (string, string, error) {
@@ -112,9 +117,7 @@ func (configFileReader) parseLine(line string) (string, string, error) {
 	if len(parts) < 2 {
 		return "", "", errors.New("bad syntax")
 	}
-
-	key := strings.TrimSpace(parts[0])
-	value := strings.Trim(parts[1], "\" ")
+	key, value := cleanKeyValue(parts[0], parts[1])
 	return key, value, nil
 }
 
@@ -139,4 +142,13 @@ func isGlobPattern(value string) bool {
 		magicChars = `*?[\`
 	}
 	return strings.ContainsAny(value, magicChars)
+}
+
+func cleanKeyValue(key, value string) (string, string) {
+	if i := strings.IndexByte(value, '#'); i > 0 {
+		value = value[:i-1]
+	}
+	key = strings.TrimSpace(key)
+	value = strings.Trim(strings.TrimSpace(value), "\"'")
+	return key, value
 }
