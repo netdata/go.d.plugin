@@ -7,19 +7,19 @@ import (
 )
 
 func (p *Phpfpm) collect() (map[string]int64, error) {
-	status, err := p.client.Status()
+	st, err := p.client.Status()
 	if err != nil {
 		return nil, err
 	}
 
-	data := stm.ToMap(status)
-	if len(status.Processes) == 0 {
+	data := stm.ToMap(st)
+	if len(st.Processes) == 0 {
 		return data, nil
 	}
 
-	statProcesses(data, status.Processes, "ReqDur", func(p proc) int64 { return p.Duration })
-	statProcesses(data, status.Processes, "ReqCpu", func(p proc) int64 { return int64(p.CPU) })
-	statProcesses(data, status.Processes, "ReqMem", func(p proc) int64 { return p.Memory })
+	statProcesses(data, st.Processes, "ReqDur", func(p proc) int64 { return int64(p.Duration) })
+	statProcesses(data, st.Processes, "ReqCpu", func(p proc) int64 { return int64(p.CPU) })
+	statProcesses(data, st.Processes, "ReqMem", func(p proc) int64 { return p.Memory })
 
 	return data, nil
 }

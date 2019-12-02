@@ -46,13 +46,12 @@ func readParts(r io.Reader) [][]string {
 		if line == "" {
 			continue
 		}
-
 		lines = append(lines, line)
 	}
+
 	if len(lines) > 0 {
 		parts = append(parts, lines)
 	}
-
 	return parts
 }
 
@@ -66,53 +65,43 @@ func readStatus(data []string, s *status) error {
 		switch key {
 		case "active processes":
 			s.Active = parseInt(val)
-
 		case "max active processes":
 			s.MaxActive = parseInt(val)
-
 		case "idle processes":
 			s.Idle = parseInt(val)
-
 		case "accepted conn":
 			s.Requests = parseInt(val)
-
 		case "max children reached":
 			s.Reached = parseInt(val)
-
 		case "slow requests":
 			s.Slow = parseInt(val)
 		}
 	}
-
 	return nil
 }
 
 func readProcesses(procs [][]string, s *status) error {
 	for _, part := range procs {
-		proc := proc{}
+		var proc proc
 		for _, line := range part {
 			key, val, err := parseLine(line)
 			if err != nil {
 				return err
 			}
+
 			switch key {
 			case "state":
 				proc.State = val
-
 			case "request duration":
-				proc.Duration = parseInt(val)
-
+				proc.Duration = requestDuration(parseInt(val))
 			case "last request cpu":
 				proc.CPU = parseFloat(val)
-
 			case "last request memory":
 				proc.Memory = parseInt(val)
 			}
 		}
-
 		s.Processes = append(s.Processes, proc)
 	}
-
 	return nil
 }
 
