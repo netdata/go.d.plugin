@@ -49,7 +49,7 @@ state:                Idle
 start time:           21/Aug/2019:09:04:50 +0200
 start since:          1079
 requests:             10
-request duration:     834
+request duration:     18446744073709551227
 request method:       GET
 request URI:          /status?full
 content length:       0

@@ -50,7 +50,7 @@
       "start time": 1566371090,
       "start since": 1119,
       "requests": 11,
-      "request duration": 834,
+      "request duration": 18446744073709551227,
       "request method": "GET",
       "request uri": "/status?json&full",
       "content length": 0,

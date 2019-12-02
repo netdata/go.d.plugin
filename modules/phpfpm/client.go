@@ -5,26 +5,39 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-type status struct {
-	Active    int64  `json:"active processes" stm:"active"`
-	MaxActive int64  `json:"max active processes" stm:"maxActive"`
-	Idle      int64  `json:"idle processes" stm:"idle"`
-	Requests  int64  `json:"accepted conn" stm:"requests"`
-	Reached   int64  `json:"max children reached" stm:"reached"`
-	Slow      int64  `json:"slow requests" stm:"slow"`
-	Processes []proc `json:"processes"`
-}
+type (
+	status struct {
+		Active    int64  `json:"active processes" stm:"active"`
+		MaxActive int64  `json:"max active processes" stm:"maxActive"`
+		Idle      int64  `json:"idle processes" stm:"idle"`
+		Requests  int64  `json:"accepted conn" stm:"requests"`
+		Reached   int64  `json:"max children reached" stm:"reached"`
+		Slow      int64  `json:"slow requests" stm:"slow"`
+		Processes []proc `json:"processes"`
+	}
+	requestDuration int64
+	proc            struct {
+		PID      int64           `json:"pid"`
+		State    string          `json:"state"`
+		Duration requestDuration `json:"request duration"`
+		CPU      float64         `json:"last request cpu"`
+		Memory   int64           `json:"last request memory"`
+	}
+)
 
-type proc struct {
-	PID      int64   `json:"pid"`
-	State    string  `json:"state"`
-	Duration int64   `json:"request duration"`
-	CPU      float64 `json:"last request cpu"`
-	Memory   int64   `json:"last request memory"`
+// UnmarshalJSON customise JSON for timestamp.
+func (rd *requestDuration) UnmarshalJSON(b []byte) error {
+	if rdc, err := strconv.Atoi(string(b)); err != nil {
+		*rd = 0
+	} else {
+		*rd = requestDuration(rdc)
+	}
+	return nil
 }
 
 type client struct {
@@ -49,20 +62,19 @@ func newClient(c *http.Client, r web.Request) *client {
 func (c client) Status() (*status, error) {
 	req, err := web.NewHTTPRequest(c.req)
 	if err != nil {
-		return nil, fmt.Errorf("error on creating request : %v", err)
+		return nil, fmt.Errorf("error on creating request: %v", err)
 	}
-
 	return c.fetchStatus(req)
 }
 
 func (c client) fetchStatus(req *http.Request) (*status, error) {
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error on request : %v", err)
+		return nil, fmt.Errorf("error on request: %v", err)
 	}
 	defer func() {
-		io.Copy(ioutil.Discard, resp.Body)
-		resp.Body.Close()
+		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_ = resp.Body.Close()
 	}()
 
 	if resp.StatusCode != http.StatusOK {
