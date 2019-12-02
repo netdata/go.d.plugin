@@ -46,6 +46,10 @@ func neededAttribute(line string) bool {
 	return false
 }
 
+func readConfigFile(entryPath string) ([][]string, error) {
+	return configFileReader{visited: make(map[string]bool)}.read(entryPath)
+}
+
 type configFileReader struct {
 	visited map[string]bool
 }
@@ -53,7 +57,7 @@ type configFileReader struct {
 func (c configFileReader) read(filename string) ([][]string, error) {
 	var attrs [][]string
 	if c.visited[filename] {
-		return nil, fmt.Errorf("file '%s' already visited previuosly", filename)
+		return nil, fmt.Errorf("file '%s' has been visited", filename)
 	}
 	c.visited[filename] = true
 
@@ -66,7 +70,7 @@ func (c configFileReader) read(filename string) ([][]string, error) {
 	sc := bufio.NewScanner(f)
 	for sc.Scan() {
 		line := strings.TrimSpace(sc.Text())
-		if strings.HasPrefix(line, "#") || line == "" || !neededAttribute(line) {
+		if line == "" || strings.HasPrefix(line, "#") || !neededAttribute(line) {
 			continue
 		}
 
