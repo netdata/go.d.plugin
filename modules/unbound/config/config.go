@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -13,6 +14,21 @@ type UnboundConfig struct {
 	useCert    string // control-use-cert
 	keyFile    string // control-key-file
 	certFile   string // control-cert-file
+}
+
+func (c UnboundConfig) String() string {
+	format := strings.Join([]string{
+		"[",
+		`"statistics-cumulative": '%s', `,
+		`"control-enable": '%s', `,
+		`"control-interface": '%s', `,
+		`"control-port": '%s', `,
+		`"control-user-cert": '%s', `,
+		`"control-key-file": '%s', `,
+		`"control-cert-file": '%s'`,
+		"]",
+	}, "")
+	return fmt.Sprintf(format, c.cumulative, c.enable, c.iface, c.port, c.useCert, c.keyFile, c.certFile)
 }
 
 func (c UnboundConfig) Empty() bool                      { return c == UnboundConfig{} }

@@ -38,7 +38,7 @@ func (u *Unbound) initConfig() (enabled bool) {
 }
 
 func (u *Unbound) applyConfig(cfg *config.UnboundConfig) {
-	u.Infof("applying configuration: %+v", cfg)
+	u.Infof("applying configuration: %s", cfg)
 	if v, ok := cfg.Cumulative(); ok && v != u.Cumulative {
 		u.Debugf("changing 'cumulative_stats': %v => %v", u.Cumulative, v)
 		u.Cumulative = v
