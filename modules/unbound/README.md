@@ -22,6 +22,7 @@ If TLS is enabled, in addition:
 For auto detection parameters from `unbound.conf`:
 
 -  `unbound.conf` should be readable by `netdata` user
+- if you have several configuration files (include feature) all of them should be readable by `netdata` user
 
 ## Charts
 
