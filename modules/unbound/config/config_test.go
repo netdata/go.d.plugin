@@ -6,6 +6,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestUnboundConfig_Empty(t *testing.T) {
+	assert.True(t, UnboundConfig{}.Empty())
+	assert.False(t, UnboundConfig{enable: "yes"}.Empty())
+}
+
 func TestUnboundConfig_Cumulative(t *testing.T) {
 	tests := []struct {
 		input     string

@@ -15,6 +15,7 @@ type UnboundConfig struct {
 	certFile   string // control-cert-file
 }
 
+func (c UnboundConfig) Empty() bool                      { return c == UnboundConfig{} }
 func (c UnboundConfig) Cumulative() (bool, bool)         { return c.cumulative == "yes", c.cumulative != "" }
 func (c UnboundConfig) ControlEnabled() (bool, bool)     { return c.enable == "yes", c.enable != "" }
 func (c UnboundConfig) ControlInterface() (string, bool) { return c.iface, c.iface != "" }

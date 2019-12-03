@@ -23,6 +23,11 @@ func (u *Unbound) initConfig() (enabled bool) {
 		return true
 	}
 
+	if cfg.Empty() {
+		u.Debug("empty configuration")
+		return true
+	}
+
 	if enabled, ok := cfg.ControlEnabled(); ok && !enabled {
 		u.Info("remote control is disabled in the configuration file")
 		return false
@@ -34,30 +39,29 @@ func (u *Unbound) initConfig() (enabled bool) {
 
 func (u *Unbound) applyConfig(cfg *config.UnboundConfig) {
 	u.Infof("applying configuration: %+v", cfg)
-
 	if v, ok := cfg.Cumulative(); ok && v != u.Cumulative {
 		u.Debugf("changing 'cumulative_stats': %v => %v", u.Cumulative, v)
 		u.Cumulative = v
 	}
-	if v, ok := cfg.ControlUseCert(); ok && v != u.UseTLS {
-		u.Debugf("changing 'use_tls': %v => %v", u.UseTLS, v)
-		u.UseTLS = v
+	if useCert, ok := cfg.ControlUseCert(); ok && useCert != u.UseTLS {
+		u.Debugf("changing 'use_tls': %v => %v", u.UseTLS, useCert)
+		u.UseTLS = useCert
 	}
-	if v, ok := cfg.ControlKeyFile(); ok && v != u.TLSKey {
-		u.Debugf("changing 'tls_key': '%s' => '%s'", u.TLSKey, v)
-		u.TLSKey = v
+	if keyFile, ok := cfg.ControlKeyFile(); ok && keyFile != u.TLSKey {
+		u.Debugf("changing 'tls_key': '%s' => '%s'", u.TLSKey, keyFile)
+		u.TLSKey = keyFile
 	}
-	if v, ok := cfg.ControlCertFile(); ok && v != u.TLSCert {
-		u.Debugf("changing 'tls_cert': '%s' => '%s'", u.TLSCert, v)
-		u.TLSCert = v
+	if certFile, ok := cfg.ControlCertFile(); ok && certFile != u.TLSCert {
+		u.Debugf("changing 'tls_cert': '%s' => '%s'", u.TLSCert, certFile)
+		u.TLSCert = certFile
 	}
-	if v, ok := cfg.ControlInterface(); ok && adjustControlInterface(v) != u.Address {
-		u.Debugf("changing 'address': '%s' => '%s'", u.Address, v)
-		u.Address = adjustControlInterface(v)
+	if iface, ok := cfg.ControlInterface(); ok && adjustControlInterface(iface) != u.Address {
+		u.Debugf("changing 'address': '%s' => '%s'", u.Address, iface)
+		u.Address = adjustControlInterface(iface)
 	}
-	if v, ok := cfg.ControlPort(); ok && !isUnixSocket(u.Address) {
-		if host, port, err := net.SplitHostPort(u.Address); err == nil && port != v {
-			address := net.JoinHostPort(host, v)
+	if port, ok := cfg.ControlPort(); ok && !isUnixSocket(u.Address) {
+		if host, curPort, err := net.SplitHostPort(u.Address); err == nil && curPort != port {
+			address := net.JoinHostPort(host, port)
 			u.Debugf("changing 'address': '%s' => '%s'", u.Address, address)
 			u.Address = address
 		}
