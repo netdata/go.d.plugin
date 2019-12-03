@@ -128,8 +128,9 @@ func TestUnbound_Collect(t *testing.T) {
 	require.True(t, unbound.Init())
 	unbound.client = mockUnboundClient{data: commonStatsData, err: false}
 
-	assert.Equal(t, expectedCommon, unbound.Collect())
-	testCharts(t, unbound)
+	collected := unbound.Collect()
+	assert.Equal(t, expectedCommon, collected)
+	testCharts(t, unbound, collected)
 }
 
 func TestUnbound_Collect_ExtendedStats(t *testing.T) {
@@ -137,8 +138,9 @@ func TestUnbound_Collect_ExtendedStats(t *testing.T) {
 	require.True(t, unbound.Init())
 	unbound.client = mockUnboundClient{data: extStatsData, err: false}
 
-	assert.Equal(t, expectedExtended, unbound.Collect())
-	testCharts(t, unbound)
+	collected := unbound.Collect()
+	assert.Equal(t, expectedExtended, collected)
+	testCharts(t, unbound, collected)
 }
 
 func TestUnbound_Collect_LifeCycleCumulativeExtendedStats(t *testing.T) {
@@ -157,14 +159,16 @@ func TestUnbound_Collect_LifeCycleCumulativeExtendedStats(t *testing.T) {
 	ubClient := &mockUnboundClient{err: false}
 	unbound.client = ubClient
 
+	var collected map[string]int64
 	for i, test := range tests {
 		t.Run(fmt.Sprintf("run %d", i+1), func(t *testing.T) {
 			ubClient.data = test.input
-			assert.Equal(t, test.expected, unbound.Collect())
+			collected = unbound.Collect()
+			assert.Equal(t, test.expected, collected)
 		})
 	}
 
-	testCharts(t, unbound)
+	testCharts(t, unbound, collected)
 }
 
 func TestUnbound_Collect_LifeCycleResetExtendedStats(t *testing.T) {
@@ -183,14 +187,16 @@ func TestUnbound_Collect_LifeCycleResetExtendedStats(t *testing.T) {
 	ubClient := &mockUnboundClient{err: false}
 	unbound.client = ubClient
 
+	var collected map[string]int64
 	for i, test := range tests {
 		t.Run(fmt.Sprintf("run %d", i+1), func(t *testing.T) {
 			ubClient.data = test.input
-			assert.Equal(t, test.expected, unbound.Collect())
+			collected = unbound.Collect()
+			assert.Equal(t, test.expected, collected)
 		})
 	}
 
-	testCharts(t, unbound)
+	testCharts(t, unbound, collected)
 }
 
 func TestUnbound_Collect_EmptyResponse(t *testing.T) {
@@ -243,13 +249,14 @@ func (m mockUnboundClient) send(command string) ([]string, error) {
 	return rv, nil
 }
 
-func testCharts(t *testing.T, u *Unbound) {
+func testCharts(t *testing.T, unbound *Unbound, collected map[string]int64) {
 	t.Helper()
-	testThreadCharts(t, u)
-	testExtendedCharts(t, u)
+	ensureChartsCreatedForEveryThread(t, unbound)
+	ensureExtendedChartsCreated(t, unbound)
+	ensureCollectedHasAllChartsDimsVarsIDs(t, unbound, collected)
 }
 
-func testThreadCharts(t *testing.T, u *Unbound) {
+func ensureChartsCreatedForEveryThread(t *testing.T, u *Unbound) {
 	for thread := range u.cache.threads {
 		for _, chart := range *threadCharts(thread, u.Cumulative) {
 			assert.Truef(t, u.Charts().Has(chart.ID), "chart '%s' is not created for '%s' thread", chart.ID, thread)
@@ -257,7 +264,7 @@ func testThreadCharts(t *testing.T, u *Unbound) {
 	}
 }
 
-func testExtendedCharts(t *testing.T, u *Unbound) {
+func ensureExtendedChartsCreated(t *testing.T, u *Unbound) {
 	if len(u.cache.answerRCode) == 0 {
 		return
 	}
@@ -287,6 +294,22 @@ func testExtendedCharts(t *testing.T, u *Unbound) {
 		for rcode := range u.cache.answerRCode {
 			dimID := "num.answer.rcode." + rcode
 			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has no dim for '%s' rcode, expected '%s'", chart.ID, rcode, dimID)
+		}
+	}
+}
+
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, u *Unbound, collected map[string]int64) {
+	for _, chart := range *u.Charts() {
+		for _, dim := range chart.Dims {
+			if dim.ID == "mem.mod.ipsecmod" {
+				continue
+			}
+			_, ok := collected[dim.ID]
+			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+		for _, v := range chart.Vars {
+			_, ok := collected[v.ID]
+			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
 		}
 	}
 }
