@@ -15,8 +15,8 @@ func TestParse(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "valid recursion include",
-			path: "testdata/valid_rec.conf",
+			name: "valid include",
+			path: "testdata/valid_include.conf",
 			wantCfg: UnboundConfig{
 				cumulative: "yes",
 				enable:     "yes",
