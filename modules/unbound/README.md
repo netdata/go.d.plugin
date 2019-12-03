@@ -74,7 +74,7 @@ Per thread charts (only if number of threads > 1):
 
 ## Configuration
 
-This Unbound collector only needs the `address` to aserver's `remote-control` interface if TLS is disabled or `address` is unix socket.
+This Unbound collector only needs the `address` to a server's `remote-control` interface if TLS is disabled or `address` of unix socket.
 Otherwise you need to set path to the `control-key-file` and `control-cert-file` files.
 
 The module tries to auto-detect following parameters reading `unbound.conf`:
