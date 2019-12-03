@@ -10,20 +10,6 @@ import (
 	"strings"
 )
 
-/*
-
-How it works:
-- Files can be included using the include: directive. It can appear anywhere, it accepts a single file name as argument.
-- Processing continues as if the text  from  the included file was copied into the config file at that point.
-- Wildcards can be used to include multiple files, see glob(7).
-- Unbound stop processing and exits on any error (syntax error, recursive include etc)
-
-TODO:
-If also using chroot, using full path names for the included files works, relative pathnames for the included names
-work if the directory where the daemon is started equals its chroot/working directory or is specified before
-the include statement with  directory:  dir.
-*/
-
 type option struct{ name, value string }
 
 const (
@@ -45,7 +31,17 @@ func isOptionUsed(opt option) bool {
 	return false
 }
 
-// Parse
+// TODO:
+// If also using chroot, using full path names for the included files works, relative pathnames for the included names
+// work if the directory where the daemon is started equals its chroot/working directory or is specified before
+// the include statement with  directory:  dir.
+
+// Parse parses Unbound configuration files into UnboundConfig.
+// It follows logic described in the 'man unbound.conf':
+//  - Files can be included using the include: directive. It can appear anywhere, it accepts a single file name as argument.
+//  - Processing continues as if the text  from  the included file was copied into the config file at that point.
+//  - Wildcards can be used to include multiple files.
+// It stops processing on any error: syntax error, recursive include, glob matches directory etc.
 func Parse(entryPath string) (*UnboundConfig, error) {
 	options, err := parse(entryPath, nil)
 	if err != nil {
@@ -89,32 +85,23 @@ func parse(filename string, visited map[string]bool) ([]option, error) {
 			continue
 		}
 
-		opts, err := handleInclude(opt.value, visited)
+		filenames, err := globInclude(opt.value)
 		if err != nil {
 			return nil, err
 		}
-		options = append(options, opts...)
+
+		for _, name := range filenames {
+			opts, err := parse(name, visited)
+			if err != nil {
+				return nil, err
+			}
+			options = append(options, opts...)
+		}
 	}
 	return options, nil
 }
 
-func handleInclude(include string, visited map[string]bool) ([]option, error) {
-	filenames, err := filenamesFromInclude(include)
-	if err != nil {
-		return nil, err
-	}
-	var options []option
-	for _, filename := range filenames {
-		opts, err := parse(filename, visited)
-		if err != nil {
-			return nil, err
-		}
-		options = append(options, opts...)
-	}
-	return options, nil
-}
-
-func filenamesFromInclude(include string) ([]string, error) {
+func globInclude(include string) ([]string, error) {
 	if isGlobPattern(include) {
 		return filepath.Glob(include)
 	}
