@@ -11,34 +11,35 @@ import (
 )
 
 /*
-Files can be included using the include: directive.
-It can appear anywhere, it accepts a single file name as argument.
 
-Processing continues as if the text  from  the included file was copied into the config file at that point.
+How it works:
+- Files can be included using the include: directive. It can appear anywhere, it accepts a single file name as argument.
+- Processing continues as if the text  from  the included file was copied into the config file at that point.
+- Wildcards can be used to include multiple files, see glob(7).
+- Unbound stop processing and exits on any error (syntax error, recursive include etc)
 
+TODO:
 If also using chroot, using full path names for the included files works, relative pathnames for the included names
 work if the directory where the daemon is started equals its chroot/working directory or is specified before
-the include statement with  directory:  dir. Wildcards can be used to include multiple files, see glob(7).
-
-
-Unbound stop processing and exits on any error:
- - syntax error
- - recursive include
+the include statement with  directory:  dir.
 */
 
 type option struct{ name, value string }
 
+const (
+	optInclude    = "include"
+	optCumulative = "statistics-cumulative"
+	optEnable     = "control-enable"
+	optInterface  = "control-interface"
+	optPort       = "control-port"
+	optUseCert    = "control-use-cert"
+	optKeyFile    = "control-key-file"
+	optCertFile   = "control-cert-file"
+)
+
 func isOptionUsed(opt option) bool {
 	switch opt.name {
-	case
-		"include",
-		"statistics-cumulative",
-		"control-enable",
-		"control-interface",
-		"control-port",
-		"control-use-cert",
-		"control-use-key-file",
-		"control-use-cert-file":
+	case optInclude, optCumulative, optEnable, optInterface, optPort, optUseCert, optKeyFile, optCertFile:
 		return true
 	}
 	return false
