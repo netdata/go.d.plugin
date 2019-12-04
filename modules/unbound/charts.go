@@ -100,7 +100,7 @@ func convertTotalChartToThread(chart *Chart, thread string, priority int) {
 	chart.ID = fmt.Sprintf("%s_%s", thread, chart.ID)
 	chart.Title = fmt.Sprintf("%s %s", strings.Title(thread), chart.Title)
 	chart.Fam = thread + "_stats"
-	chart.Ctx = fmt.Sprintf("%s_%s", chart.Ctx, thread)
+	chart.Ctx = "thread_" + chart.Ctx
 	chart.Priority = priority
 	for _, dim := range chart.Dims {
 		dim.ID = strings.Replace(dim.ID, "total", thread, 1)
