@@ -250,7 +250,7 @@ var storagePoolCharts = Charts{
 		Title: "Total Capacity",
 		Units: "KiB",
 		Fam:   "pool %s",
-		Ctx:   "scaleio.storage_pool_%s_capacity_total",
+		Ctx:   "scaleio.storage_pool_capacity_total",
 		Dims: Dims{
 			{ID: "storage_pool_%s_capacity_max_capacity", Name: "total"},
 		},
@@ -260,7 +260,7 @@ var storagePoolCharts = Charts{
 		Title: "Capacity In Use",
 		Units: "KiB",
 		Fam:   "pool %s",
-		Ctx:   "scaleio.storage_pool_%s_capacity_in_use",
+		Ctx:   "scaleio.storage_pool_capacity_in_use",
 		Dims: Dims{
 			{ID: "storage_pool_%s_capacity_in_use", Name: "in_use"},
 		},
@@ -271,7 +271,7 @@ var storagePoolCharts = Charts{
 		Units: "KiB",
 		Fam:   "pool %s",
 		Type:  module.Stacked,
-		Ctx:   "scaleio.storage_pool_%s_capacity_usage",
+		Ctx:   "scaleio.storage_pool_capacity_usage",
 		Dims: Dims{
 			{ID: "storage_pool_%s_capacity_thick_in_use", Name: "thick"},
 			{ID: "storage_pool_%s_capacity_decreased", Name: "decreased"},
@@ -286,7 +286,7 @@ var storagePoolCharts = Charts{
 		Title: "Capacity Utilization",
 		Units: "percentage",
 		Fam:   "pool %s",
-		Ctx:   "scaleio.storage_pool_%s_capacity_utilization",
+		Ctx:   "scaleio.storage_pool_capacity_utilization",
 		Dims: Dims{
 			{ID: "storage_pool_%s_capacity_utilization", Name: "utilization", Div: 100},
 		},
@@ -300,7 +300,7 @@ var storagePoolCharts = Charts{
 		Title: "Available For Volume Allocation",
 		Units: "KiB",
 		Fam:   "pool %s",
-		Ctx:   "scaleio.storage_pool_%s_capacity_available_volume_allocation",
+		Ctx:   "scaleio.storage_pool_capacity_available_volume_allocation",
 		Dims: Dims{
 			{ID: "storage_pool_%s_capacity_available_for_volume_allocation", Name: "available"},
 		},
@@ -311,7 +311,7 @@ var storagePoolCharts = Charts{
 		Units: "KiB",
 		Fam:   "pool %s",
 		Type:  module.Stacked,
-		Ctx:   "scaleio.storage_pool_%s_capacity_health_state",
+		Ctx:   "scaleio.storage_pool_capacity_health_state",
 		Dims: Dims{
 			{ID: "storage_pool_%s_capacity_protected", Name: "protected"},
 			{ID: "storage_pool_%s_capacity_degraded", Name: "degraded"},
@@ -325,7 +325,7 @@ var storagePoolCharts = Charts{
 		Title: "Components",
 		Units: "number",
 		Fam:   "pool %s",
-		Ctx:   "scaleio.storage_pool_%s_components",
+		Ctx:   "scaleio.storage_pool_components",
 		Dims: Dims{
 			{ID: "storage_pool_%s_num_of_devices", Name: "devices"},
 			{ID: "storage_pool_%s_num_of_snapshots", Name: "snapshots"},
@@ -340,7 +340,6 @@ func newStoragePoolCharts(pool client.StoragePool) *Charts {
 	for i, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, pool.ID)
 		chart.Fam = fmt.Sprintf(chart.Fam, pool.Name)
-		chart.Ctx = fmt.Sprintf(chart.Ctx, pool.ID)
 		chart.Priority = prioStoragePool + i
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, pool.ID)
@@ -358,7 +357,7 @@ var sdcCharts = Charts{
 		Title: "MDM Connection State",
 		Units: "boolean",
 		Fam:   "sdc %s",
-		Ctx:   "scaleio.sdc_%s_mdm_connection_state",
+		Ctx:   "scaleio.sdc_mdm_connection_state",
 		Dims: Dims{
 			{ID: "sdc_%s_mdm_connection_state", Name: "connected"},
 		},
@@ -368,7 +367,7 @@ var sdcCharts = Charts{
 		Title: "Bandwidth",
 		Units: "KiB/s",
 		Fam:   "sdc %s",
-		Ctx:   "scaleio.sdc_%s_bandwidth",
+		Ctx:   "scaleio.sdc_bandwidth",
 		Type:  module.Area,
 		Dims: Dims{
 			{ID: "sdc_%s_bandwidth_read", Name: "read", Div: 1000},
@@ -380,7 +379,7 @@ var sdcCharts = Charts{
 		Title: "IOPS",
 		Units: "iops/s",
 		Fam:   "sdc %s",
-		Ctx:   "scaleio.sdc_%s_iops",
+		Ctx:   "scaleio.sdc_iops",
 		Type:  module.Area,
 		Dims: Dims{
 			{ID: "sdc_%s_iops_read", Name: "read", Div: 1000},
@@ -392,7 +391,7 @@ var sdcCharts = Charts{
 		Title: "I/O Size",
 		Units: "KiB",
 		Fam:   "sdc %s",
-		Ctx:   "scaleio.sdc_%s_io_size",
+		Ctx:   "scaleio.sdc_io_size",
 		Type:  module.Area,
 		Dims: Dims{
 			{ID: "sdc_%s_io_size_read", Name: "read", Div: 1000},
@@ -404,7 +403,7 @@ var sdcCharts = Charts{
 		Title: "Mapped Volumes",
 		Units: "volumes",
 		Fam:   "sdc %s",
-		Ctx:   "scaleio.sdc_%s_num_of_mapped_volumed",
+		Ctx:   "scaleio.sdc_num_of_mapped_volumed",
 		Dims: Dims{
 			{ID: "sdc_%s_num_of_mapped_volumes", Name: "mapped"},
 		},
@@ -416,7 +415,6 @@ func newSdcCharts(sdc client.Sdc) *Charts {
 	for i, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, sdc.ID)
 		chart.Fam = fmt.Sprintf(chart.Fam, sdc.SdcIp)
-		chart.Ctx = fmt.Sprintf(chart.Ctx, sdc.ID)
 		chart.Priority = prioSdc + i
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, sdc.ID)
