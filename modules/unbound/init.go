@@ -39,9 +39,9 @@ func (u *Unbound) initConfig() (enabled bool) {
 
 func (u *Unbound) applyConfig(cfg *config.UnboundConfig) {
 	u.Infof("applying configuration: %s", cfg)
-	if v, ok := cfg.Cumulative(); ok && v != u.Cumulative {
-		u.Debugf("changing 'cumulative_stats': %v => %v", u.Cumulative, v)
-		u.Cumulative = v
+	if cumulative, ok := cfg.Cumulative(); ok && cumulative != u.Cumulative {
+		u.Debugf("changing 'cumulative_stats': %v => %v", u.Cumulative, cumulative)
+		u.Cumulative = cumulative
 	}
 	if useCert, ok := cfg.ControlUseCert(); ok && useCert != u.UseTLS {
 		u.Debugf("changing 'use_tls': %v => %v", u.UseTLS, useCert)
@@ -56,8 +56,9 @@ func (u *Unbound) applyConfig(cfg *config.UnboundConfig) {
 		u.TLSCert = certFile
 	}
 	if iface, ok := cfg.ControlInterface(); ok && adjustControlInterface(iface) != u.Address {
-		u.Debugf("changing 'address': '%s' => '%s'", u.Address, iface)
-		u.Address = adjustControlInterface(iface)
+		address := adjustControlInterface(iface)
+		u.Debugf("changing 'address': '%s' => '%s'", u.Address, address)
+		u.Address = address
 	}
 	if port, ok := cfg.ControlPort(); ok && !isUnixSocket(u.Address) {
 		if host, curPort, err := net.SplitHostPort(u.Address); err == nil && curPort != port {
