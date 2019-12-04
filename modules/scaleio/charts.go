@@ -288,7 +288,7 @@ var storagePoolCharts = Charts{
 		Fam:   "pool %s",
 		Ctx:   "scaleio.storage_pool_capacity_utilization",
 		Dims: Dims{
-			{ID: "storage_pool_%s_capacity_utilization", Name: "utilization", Div: 100},
+			{ID: "storage_pool_%s_capacity_utilization", Name: "used", Div: 100},
 		},
 		Vars: Vars{
 			{ID: "storage_pool_%s_capacity_alert_high_threshold"},
