@@ -54,6 +54,9 @@ func parse(filename string, visited map[string]bool) ([]option, error) {
 	if visited == nil {
 		visited = make(map[string]bool)
 	}
+	if visited[filename] {
+		return nil, fmt.Errorf("'%s' already visited", filename)
+	}
 	visited[filename] = true
 
 	f, err := open(filename)
