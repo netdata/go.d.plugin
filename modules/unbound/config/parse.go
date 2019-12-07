@@ -83,7 +83,7 @@ func parse(filename string, visited map[string]bool) ([]option, error) {
 			continue
 		}
 
-		if opt.name != "include" {
+		if opt.name != optInclude {
 			options = append(options, opt)
 			continue
 		}
