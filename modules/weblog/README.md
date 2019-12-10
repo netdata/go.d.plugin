@@ -219,7 +219,7 @@ we still can get some info from them.
   - name: nginx_csv_custom_fields_example
     path: /path/to/file.log
     log_type: csv
-    csv_config
+    csv_config:
       format: '- - $remote_addr - - [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"'
     custom_fields:
       - name:  http_referer     # same name as in 'format' without $
