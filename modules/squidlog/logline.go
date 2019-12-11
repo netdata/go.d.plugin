@@ -3,6 +3,7 @@ package squidlog
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -108,7 +109,12 @@ func (l *logLine) Assign(field string, value string) (err error) {
 	return err
 }
 
+const hyphen = "-"
+
 func (l *logLine) assignRespTime(time string) error {
+	if time == hyphen {
+		return fmt.Errorf("assign '%s': %w", time, errBadRespTime)
+	}
 	v, err := strconv.Atoi(time)
 	if err != nil || !isRespTimeValid(v) {
 		return fmt.Errorf("assign '%s': %w", time, errBadRespTime)
@@ -116,12 +122,17 @@ func (l *logLine) assignRespTime(time string) error {
 	l.respTime = v
 	return nil
 }
+
 func (l *logLine) assignClientAddress(address string) error {
+	if address == hyphen {
+		return fmt.Errorf("assign '%s': %w", address, errBadClientAddr)
+	}
+	l.clientAddr = address
 	return nil
 }
 
 func (l *logLine) assignCacheCode(code string) error {
-	if !isCacheCodeValid(code) {
+	if code == hyphen || !isCacheCodeValid(code) {
 		return fmt.Errorf("assign '%s': %w", code, errBadCacheCode)
 	}
 	l.cacheCode = code
@@ -129,6 +140,9 @@ func (l *logLine) assignCacheCode(code string) error {
 }
 
 func (l *logLine) assignHTTPCode(code string) error {
+	if code == hyphen {
+		return fmt.Errorf("assign '%s': %w", code, errBadHTTPCode)
+	}
 	v, err := strconv.Atoi(code)
 	if err != nil || !isHTTPCodeValid(v) {
 		return fmt.Errorf("assign '%s': %w", code, errBadHTTPCode)
@@ -138,6 +152,9 @@ func (l *logLine) assignHTTPCode(code string) error {
 }
 
 func (l *logLine) assignRespSize(size string) error {
+	if size == hyphen {
+		return fmt.Errorf("assign '%s': %w", size, errBadRespSize)
+	}
 	v, err := strconv.Atoi(size)
 	if err != nil || !isRespSizeValid(v) {
 		return fmt.Errorf("assign '%s': %w", size, errBadRespSize)
@@ -147,7 +164,7 @@ func (l *logLine) assignRespSize(size string) error {
 }
 
 func (l *logLine) assignReqMethod(method string) error {
-	if !isReqMethodValid(method) {
+	if method == hyphen || !isReqMethodValid(method) {
 		return fmt.Errorf("assign '%s': %w", method, errBadReqMethod)
 	}
 	l.reqMethod = method
@@ -155,7 +172,7 @@ func (l *logLine) assignReqMethod(method string) error {
 }
 
 func (l *logLine) assignHierCode(code string) error {
-	if !isHierCodeValid(code) {
+	if code == hyphen || !isHierCodeValid(code) {
 		return fmt.Errorf("assign '%s': %w", code, errBadHierCode)
 	}
 	l.hierCode = code
@@ -165,17 +182,22 @@ func (l *logLine) assignHierCode(code string) error {
 func (l *logLine) assignMimeType(mime string) error {
 	// ICP exchanges usually don't have any content type, and thus are logged "-".
 	//Also, some weird replies have content types ":" or even empty ones.
-	if mime == "-" || mime == ":" {
+	if mime == hyphen || mime == ":" {
 		return nil
 	}
-	l.mimeType = mime
+	// format: type/subtype, type/subtype;parameter=value
+	i := strings.IndexByte(mime, '/')
+	if i <= 0 || !isMimeTypeValid(mime[:i]) {
+		return fmt.Errorf("assign '%s': %w", mime, errBadMimeType)
+	}
+	l.mimeType = mime[:i] // drop subtype
 	return nil
 }
 
 func (l *logLine) assignServerAddress(address string) error {
 	// Logged as "-" if there is no hierarchy information.
 	// For TCP HIT, TCP failures, cachemgr requests and all UDP requests, there is no hierarchy information.
-	if address == "-" {
+	if address == hyphen {
 		return nil
 	}
 	l.serverAddr = address
@@ -227,14 +249,14 @@ func (l logLine) hasHierCode() bool          { return !isEmptyString(l.hierCode)
 func (l logLine) hasMimeType() bool          { return !isEmptyString(l.mimeType) }
 func (l logLine) hasServerAddress() bool     { return !isEmptyString(l.serverAddr) }
 func (l logLine) isRespTimeValid() bool      { return isRespTimeValid(l.respTime) }
-func (l logLine) isClientAddressValid() bool { return false }
+func (l logLine) isClientAddressValid() bool { return reAddress.MatchString(l.clientAddr) }
 func (l logLine) isCacheCodeValid() bool     { return isCacheCodeValid(l.cacheCode) }
 func (l logLine) isHTTPCodeValid() bool      { return isHTTPCodeValid(l.httpCode) }
 func (l logLine) isRespSizeValid() bool      { return isRespSizeValid(l.respSize) }
 func (l logLine) isReqMethodValid() bool     { return isReqMethodValid(l.reqMethod) }
 func (l logLine) isHierCodeValid() bool      { return isHierCodeValid(l.hierCode) }
-func (l logLine) isMimeTypeValid() bool      { return false }
-func (l logLine) isServerAddressValid() bool { return false }
+func (l logLine) isMimeTypeValid() bool      { return isMimeTypeValid(l.mimeType) }
+func (l logLine) isServerAddressValid() bool { return reAddress.MatchString(l.serverAddr) }
 
 func (l *logLine) reset() {
 	l.clientAddr = emptyString
@@ -253,6 +275,11 @@ var emptyLogLine = *newEmptyLogLine()
 const (
 	emptyString = "__empty_string__"
 	emptyNumber = -9999
+)
+
+var (
+	// IPv4, IPv6, FQDN.
+	reAddress = regexp.MustCompile(`^([A-Za-z0-9-:.])$`)
 )
 
 func isEmptyString(s string) bool {
@@ -315,6 +342,19 @@ func isReqMethodValid(method string) bool {
 	case "ICP_QUERY", "PURGE":
 		return true
 	case "PROPFIND", "PROPATCH", "MKCOL", "COPY", "MOVE", "LOCK", "UNLOCK": // rfc2518
+		return true
+	}
+	return false
+}
+
+// isMimeTypeValid expects only mime type part.
+func isMimeTypeValid(mimeType string) bool {
+	// https://www.iana.org/assignments/media-types/media-types.xhtml
+	if mimeType == "text" {
+		return true
+	}
+	switch mimeType {
+	case "application", "audio", "font", "example", "image", "message", "model", "multipart", "video":
 		return true
 	}
 	return false
