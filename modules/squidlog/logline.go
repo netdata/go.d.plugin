@@ -95,8 +95,8 @@ const (
 	fieldRespSize   = "resp_size"
 	fieldReqMethod  = "req_method"
 	fieldHierCode   = "hier_code"
-	fieldMimeType   = "mime_type"
 	fieldServerAddr = "server_address"
+	fieldMimeType   = "mime_type"
 	fieldResultCode = "result_code"
 	fieldHierarchy  = "hierarchy"
 )
@@ -325,7 +325,7 @@ const (
 
 var (
 	// IPv4, IPv6, FQDN.
-	reAddress = regexp.MustCompile(`^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|[a-f0-9:]+|[a-zA-Z0-9.]+)$`)
+	reAddress = regexp.MustCompile(`^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|[a-f0-9:]+|[a-zA-Z0-9-.]+)$`)
 )
 
 func isEmptyString(s string) bool {
@@ -346,12 +346,10 @@ func isCacheCodeValid(code string) bool {
 	if code == "NONE" {
 		return true
 	}
-	if i := strings.IndexByte(code, '_'); i <= 0 {
+	if len(code) < 5 { // TCP_*
 		return false
-	} else {
-		code = code[:i]
 	}
-	return code == "TCP" || code == "UDP"
+	return code[:4] == "TCP_" || code[:4] == "UDP_"
 }
 
 func isHTTPCodeValid(code int) bool {
@@ -382,12 +380,10 @@ func isReqMethodValid(method string) bool {
 // isHierCodeValid does not guarantee hierarchy code is valid, but it is very likely.
 func isHierCodeValid(code string) bool {
 	// https://wiki.squid-cache.org/SquidFaq/SquidLogs#Hierarchy_Codes
-	if i := strings.IndexByte(code, '_'); i <= 0 {
+	if len(code) < 6 { // HIER_*
 		return false
-	} else {
-		code = code[:i]
 	}
-	return code == "HIER" || code == "TIMEOUT"
+	return code[:5] == "HIER_"
 }
 
 // isMimeTypeValid expects only mime type part.
@@ -397,7 +393,7 @@ func isMimeTypeValid(mimeType string) bool {
 		return true
 	}
 	switch mimeType {
-	case "application", "audio", "font", "example", "image", "message", "model", "multipart", "video":
+	case "application", "audio", "font", "image", "message", "model", "multipart", "video":
 		return true
 	}
 	return false
