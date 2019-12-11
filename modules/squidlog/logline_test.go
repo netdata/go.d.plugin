@@ -29,7 +29,35 @@ func TestLogLine_Assign(t *testing.T) {
 				{input: "1000", wantLine: logLine{respTime: 1000}},
 				{input: "", wantLine: emptyLogLine},
 				{input: "-1", wantLine: emptyLogLine, wantErr: errBadRespTime},
+				{input: "0.000", wantLine: emptyLogLine, wantErr: errBadRespTime},
 				{input: hyphen, wantLine: emptyLogLine, wantErr: errBadRespTime},
+			},
+		},
+		{
+			name:  "Client Address",
+			field: fieldClientAddr,
+			cases: []subTest{
+				{input: "127.0.0.1", wantLine: logLine{clientAddr: "127.0.0.1"}},
+				{input: "::1", wantLine: logLine{clientAddr: "::1"}},
+				{input: "kadr20.m1.netdata.lan", wantLine: logLine{clientAddr: "kadr20.m1.netdata.lan"}},
+				{input: "±!@#$%^&*()", wantLine: logLine{clientAddr: "±!@#$%^&*()"}},
+				{input: "", wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine, wantErr: errBadClientAddr},
+			},
+		},
+		{
+			name:  "Cache Code",
+			field: fieldCacheCode,
+			cases: []subTest{
+				{input: "TCP_MISS", wantLine: logLine{cacheCode: "TCP_MISS"}},
+				{input: "TCP_DENIED", wantLine: logLine{cacheCode: "TCP_DENIED"}},
+				{input: "TCP_CLIENT_REFRESH_MISS", wantLine: logLine{cacheCode: "TCP_CLIENT_REFRESH_MISS"}},
+				{input: "UDP_MISS_NOFETCH", wantLine: logLine{cacheCode: "UDP_MISS_NOFETCH"}},
+				{input: "UDP_INVALID", wantLine: logLine{cacheCode: "UDP_INVALID"}},
+				{input: "NONE", wantLine: logLine{cacheCode: "NONE"}},
+				{input: "", wantLine: emptyLogLine},
+				{input: hyphen, wantLine: emptyLogLine, wantErr: errBadCacheCode},
+				{input: "NONE_MISS", wantLine: emptyLogLine, wantErr: errBadCacheCode},
 			},
 		},
 	}
@@ -44,12 +72,12 @@ func TestLogLine_Assign(t *testing.T) {
 
 				if tc.wantErr != nil {
 					require.Error(t, err)
-					assert.True(t, errors.Is(err, tc.wantErr))
+					assert.Truef(t, errors.Is(err, tc.wantErr), "expected '%v' error, got '%v'", tc.wantErr, err)
 				} else {
 					require.NoError(t, err)
 				}
 
-				expected := prepareLogLine(t, tt.field, tc.wantLine)
+				expected := prepareLogLine(tt.field, tc.wantLine)
 				assert.Equal(t, expected, *line)
 			})
 		}
@@ -60,8 +88,8 @@ func TestLogLine_verify(t *testing.T) {
 
 }
 
-func prepareLogLine(t *testing.T, field string, template logLine) logLine {
-	if template == emptyLogLine {
+func prepareLogLine(field string, template logLine) logLine {
+	if template.empty() {
 		return template
 	}
 
