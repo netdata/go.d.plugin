@@ -3,6 +3,7 @@ package squidlog
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -223,7 +224,7 @@ func TestLogLine_Assign(t *testing.T) {
 					require.NoError(t, err)
 				}
 
-				expected := prepareLogLine(tt.field, tc.wantLine)
+				expected := prepareAssignLogLine(t, tt.field, tc.wantLine)
 				assert.Equal(t, expected, *line)
 			})
 		}
@@ -231,10 +232,76 @@ func TestLogLine_Assign(t *testing.T) {
 }
 
 func TestLogLine_verify(t *testing.T) {
+	type subTest struct {
+		input   string
+		wantErr error
+	}
+	type test = struct {
+		name  string
+		field string
+		cases []subTest
+	}
+	tests := []test{
+		{
+			name:  "Response Time",
+			field: fieldRespTime,
+			cases: []subTest{
+				{input: "0"},
+				{input: "1000"},
+				{input: "-1", wantErr: errBadRespTime},
+			},
+		},
+		{
+			name:  "Client Address",
+			field: fieldClientAddr,
+			cases: []subTest{
+				{input: "127.0.0.1"},
+				{input: "::1"},
+				{input: "kadr20.m1.netdata.lan"},
+				{input: ""},
+				{input: "±!@#$%^&*()", wantErr: errBadClientAddr},
+			},
+		},
+		{
+			name:  "Cache Code",
+			field: fieldCacheCode,
+			cases: []subTest{
+				{input: "TCP_MISS"},
+				{input: "TCP_DENIED"},
+				{input: "TCP_CLIENT_REFRESH_MISS"},
+				{input: "UDP_MISS_NOFETCH"},
+				{input: "UDP_INVALID"},
+				{input: "NONE"},
+				{input: ""},
+				{input: "TCP", wantErr: errBadCacheCode},
+				{input: "UDP", wantErr: errBadCacheCode},
+				{input: "NONE_MISS", wantErr: errBadCacheCode},
+			},
+		},
+	}
 
+	for _, tt := range tests {
+		for i, tc := range tt.cases {
+			name := fmt.Sprintf("[%s:%d]field='%s'|input='%s'", tt.name, i+1, tt.field, tc.input)
+			t.Run(name, func(t *testing.T) {
+				line := prepareVerifyLogLine(t, tt.field, tc.input)
+
+				err := line.verify()
+
+				if tc.wantErr != nil {
+					require.Error(t, err)
+					assert.Truef(t, errors.Is(err, tc.wantErr), "expected '%v' error, got '%v'", tc.wantErr, err)
+				} else {
+					require.NoError(t, err)
+				}
+			})
+		}
+	}
 }
 
-func prepareLogLine(field string, template logLine) logLine {
+func prepareAssignLogLine(t *testing.T, field string, template logLine) logLine {
+	t.Helper()
+
 	if template.empty() {
 		return template
 	}
@@ -243,6 +310,8 @@ func prepareLogLine(field string, template logLine) logLine {
 	line.reset()
 
 	switch field {
+	default:
+		t.Errorf("prepareAssignLogLine unknown field: '%s'", field)
 	case fieldRespTime:
 		line.respTime = template.respTime
 	case fieldClientAddr:
@@ -267,6 +336,43 @@ func prepareLogLine(field string, template logLine) logLine {
 	case fieldHierarchy:
 		line.hierCode = template.hierCode
 		line.serverAddr = template.serverAddr
+	}
+	return line
+}
+
+func prepareVerifyLogLine(t *testing.T, field string, value string) logLine {
+	t.Helper()
+
+	var line logLine
+	line.reset()
+
+	switch field {
+	default:
+		t.Errorf("prepareVerifyLogLine unknown field: '%s'", field)
+	case fieldRespTime:
+		v, err := strconv.Atoi(value)
+		require.NoError(t, err)
+		line.respTime = v
+	case fieldClientAddr:
+		line.clientAddr = value
+	case fieldCacheCode:
+		line.cacheCode = value
+	case fieldHTTPCode:
+		v, err := strconv.Atoi(value)
+		require.NoError(t, err)
+		line.httpCode = v
+	case fieldRespSize:
+		v, err := strconv.Atoi(value)
+		require.NoError(t, err)
+		line.respSize = v
+	case fieldReqMethod:
+		line.reqMethod = value
+	case fieldHierCode:
+		line.hierCode = value
+	case fieldMimeType:
+		line.mimeType = value
+	case fieldServerAddr:
+		line.serverAddr = value
 	}
 	return line
 }
