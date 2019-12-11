@@ -343,23 +343,20 @@ func isRespTimeValid(time int) bool {
 // isCacheCodeValid does not guarantee cache result code is valid, but it is very likely.
 func isCacheCodeValid(code string) bool {
 	// https://wiki.squid-cache.org/SquidFaq/SquidLogs#Squid_result_codes
+	if code == "NONE" {
+		return true
+	}
 	if i := strings.IndexByte(code, '_'); i <= 0 {
-		// TODO: is at least 1 '_' required?
 		return false
 	} else {
 		code = code[:i]
 	}
-	return code == "TCP" || code == "UDP" || code == "NONE"
+	return code == "TCP" || code == "UDP"
 }
 
 func isHTTPCodeValid(code int) bool {
-	// rfc7231
-	// Informational responses (100–199),
-	// Successful responses (200–299),
-	// Redirects (300–399),
-	// Client errors (400–499),
-	// Server errors (500–599).
-	return code >= 100 && code <= 600
+	// https://wiki.squid-cache.org/SquidFaq/SquidLogs#HTTP_status_codes
+	return code == 0 || code >= 100 && code <= 603
 }
 
 func isRespSizeValid(size int) bool {
