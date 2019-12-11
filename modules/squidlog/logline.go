@@ -325,7 +325,7 @@ const (
 
 var (
 	// IPv4, IPv6, FQDN.
-	reAddress = regexp.MustCompile(`^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|(?:[a-f0-9:]){3,}|[a-zA-Z0-9-.]{3,})$`)
+	reAddress = regexp.MustCompile(`^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|[a-f0-9:]{3,}|[a-zA-Z0-9-.]{3,})$`)
 )
 
 func isEmptyString(s string) bool {
