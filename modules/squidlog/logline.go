@@ -41,6 +41,10 @@ Valid Capture Name: [A-Za-z0-9_]+
 | server_address          | %<A               | Server FQDN or peer name.
 | mime_type               | %mt               | MIME content type.
 
+// Following needed to make default log format csv parsable
+| result_code             | %Ss/%03>Hs        | cache code and http code.
+| hierarchy               | %Sh/%<a           | hierarchy code and server address.
+
 Notes:
 - %<a: older versions of Squid would put the origin server hostname here.
 */
@@ -56,6 +60,8 @@ var (
 	errBadHierCode   = errors.New("bad hier code")
 	errBadServerAddr = errors.New("bad server address")
 	errBadMimeType   = errors.New("bad mime type")
+	errBadResultCode = errors.New("bad result code")
+	errBadHierarchy  = errors.New("bad hierarchy")
 )
 
 func newEmptyLogLine() *logLine {
@@ -105,6 +111,10 @@ func (l *logLine) Assign(field string, value string) (err error) {
 		err = l.assignMimeType(value)
 	case "server_address":
 		err = l.assignServerAddress(value)
+	case "result_code":
+		err = l.assignResultCode(value)
+	case "hierarchy":
+		err = l.assignHierarchy(value)
 	}
 	return err
 }
@@ -151,6 +161,17 @@ func (l *logLine) assignHTTPCode(code string) error {
 	return nil
 }
 
+func (l *logLine) assignResultCode(code string) error {
+	i := strings.IndexByte(code, '/')
+	if i <= 0 {
+		return fmt.Errorf("assign '%s': %w", code, errBadResultCode)
+	}
+	if err := l.assignCacheCode(code[:i]); err != nil {
+		return err
+	}
+	return l.assignHTTPCode(code[i+1:])
+}
+
 func (l *logLine) assignRespSize(size string) error {
 	if size == hyphen {
 		return fmt.Errorf("assign '%s': %w", size, errBadRespSize)
@@ -179,6 +200,27 @@ func (l *logLine) assignHierCode(code string) error {
 	return nil
 }
 
+func (l *logLine) assignServerAddress(address string) error {
+	// Logged as "-" if there is no hierarchy information.
+	// For TCP HIT, TCP failures, cachemgr requests and all UDP requests, there is no hierarchy information.
+	if address == hyphen {
+		return nil
+	}
+	l.serverAddr = address
+	return nil
+}
+
+func (l *logLine) assignHierarchy(hierarchy string) error {
+	i := strings.IndexByte(hierarchy, '/')
+	if i <= 0 {
+		return fmt.Errorf("assign '%s': %w", hierarchy, errBadHierarchy)
+	}
+	if err := l.assignHierCode(hierarchy[:i]); err != nil {
+		return err
+	}
+	return l.assignServerAddress(hierarchy[i+1:])
+}
+
 func (l *logLine) assignMimeType(mime string) error {
 	// ICP exchanges usually don't have any content type, and thus are logged "-".
 	//Also, some weird replies have content types ":" or even empty ones.
@@ -191,16 +233,6 @@ func (l *logLine) assignMimeType(mime string) error {
 		return fmt.Errorf("assign '%s': %w", mime, errBadMimeType)
 	}
 	l.mimeType = mime[:i] // drop subtype
-	return nil
-}
-
-func (l *logLine) assignServerAddress(address string) error {
-	// Logged as "-" if there is no hierarchy information.
-	// For TCP HIT, TCP failures, cachemgr requests and all UDP requests, there is no hierarchy information.
-	if address == hyphen {
-		return nil
-	}
-	l.serverAddr = address
 	return nil
 }
 
@@ -229,11 +261,11 @@ func (l logLine) verify() error {
 	if l.hasHierCode() && !l.isHierCodeValid() {
 		return fmt.Errorf("verify '%s': %w", l.hierCode, errBadHierCode)
 	}
-	if l.hasMimeType() && !l.isMimeTypeValid() {
-		return fmt.Errorf("verify '%s': %w", l.mimeType, errBadMimeType)
-	}
 	if l.hasServerAddress() && !l.isServerAddressValid() {
 		return fmt.Errorf("verify '%s': %w", l.serverAddr, errBadServerAddr)
+	}
+	if l.hasMimeType() && !l.isMimeTypeValid() {
+		return fmt.Errorf("verify '%s': %w", l.mimeType, errBadMimeType)
 	}
 	return nil
 }
@@ -246,8 +278,8 @@ func (l logLine) hasHTTPCode() bool          { return !isEmptyNumber(l.httpCode)
 func (l logLine) hasRespSize() bool          { return !isEmptyNumber(l.respSize) }
 func (l logLine) hasReqMethod() bool         { return !isEmptyString(l.reqMethod) }
 func (l logLine) hasHierCode() bool          { return !isEmptyString(l.hierCode) }
-func (l logLine) hasMimeType() bool          { return !isEmptyString(l.mimeType) }
 func (l logLine) hasServerAddress() bool     { return !isEmptyString(l.serverAddr) }
+func (l logLine) hasMimeType() bool          { return !isEmptyString(l.mimeType) }
 func (l logLine) isRespTimeValid() bool      { return isRespTimeValid(l.respTime) }
 func (l logLine) isClientAddressValid() bool { return reAddress.MatchString(l.clientAddr) }
 func (l logLine) isCacheCodeValid() bool     { return isCacheCodeValid(l.cacheCode) }
@@ -255,19 +287,19 @@ func (l logLine) isHTTPCodeValid() bool      { return isHTTPCodeValid(l.httpCode
 func (l logLine) isRespSizeValid() bool      { return isRespSizeValid(l.respSize) }
 func (l logLine) isReqMethodValid() bool     { return isReqMethodValid(l.reqMethod) }
 func (l logLine) isHierCodeValid() bool      { return isHierCodeValid(l.hierCode) }
-func (l logLine) isMimeTypeValid() bool      { return isMimeTypeValid(l.mimeType) }
 func (l logLine) isServerAddressValid() bool { return reAddress.MatchString(l.serverAddr) }
+func (l logLine) isMimeTypeValid() bool      { return isMimeTypeValid(l.mimeType) }
 
 func (l *logLine) reset() {
-	l.clientAddr = emptyString
-	l.serverAddr = emptyString
 	l.respTime = emptyNumber
-	l.reqMethod = emptyString
+	l.clientAddr = emptyString
+	l.cacheCode = emptyString
 	l.httpCode = emptyNumber
 	l.respSize = emptyNumber
-	l.mimeType = emptyString
-	l.cacheCode = emptyString
+	l.reqMethod = emptyString
 	l.hierCode = emptyString
+	l.serverAddr = emptyString
+	l.mimeType = emptyString
 }
 
 var emptyLogLine = *newEmptyLogLine()
@@ -279,7 +311,7 @@ const (
 
 var (
 	// IPv4, IPv6, FQDN.
-	reAddress = regexp.MustCompile(`^([A-Za-z0-9-:.])$`)
+	reAddress = regexp.MustCompile(`^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|[a-f0-9:]+|[a-zA-Z0-9.]+)$`)
 )
 
 func isEmptyString(s string) bool {
@@ -288,6 +320,10 @@ func isEmptyString(s string) bool {
 
 func isEmptyNumber(n int) bool {
 	return n == emptyNumber
+}
+
+func isRespTimeValid(time int) bool {
+	return time >= 0
 }
 
 // isCacheCodeValid does not guarantee cache result code is valid, but it is very likely.
@@ -302,17 +338,6 @@ func isCacheCodeValid(code string) bool {
 	return code == "TCP" || code == "UDP" || code == "NONE"
 }
 
-// isHierCodeValid does not guarantee hierarchy code is valid, but it is very likely.
-func isHierCodeValid(code string) bool {
-	// https://wiki.squid-cache.org/SquidFaq/SquidLogs#Hierarchy_Codes
-	if i := strings.IndexByte(code, '_'); i <= 0 {
-		return false
-	} else {
-		code = code[:i]
-	}
-	return code == "HIER" || code == "TIMEOUT"
-}
-
 func isHTTPCodeValid(code int) bool {
 	// rfc7231
 	// Informational responses (100–199),
@@ -321,10 +346,6 @@ func isHTTPCodeValid(code int) bool {
 	// Client errors (400–499),
 	// Server errors (500–599).
 	return code >= 100 && code <= 600
-}
-
-func isRespTimeValid(time int) bool {
-	return time >= 0
 }
 
 func isRespSizeValid(size int) bool {
@@ -345,6 +366,17 @@ func isReqMethodValid(method string) bool {
 		return true
 	}
 	return false
+}
+
+// isHierCodeValid does not guarantee hierarchy code is valid, but it is very likely.
+func isHierCodeValid(code string) bool {
+	// https://wiki.squid-cache.org/SquidFaq/SquidLogs#Hierarchy_Codes
+	if i := strings.IndexByte(code, '_'); i <= 0 {
+		return false
+	} else {
+		code = code[:i]
+	}
+	return code == "HIER" || code == "TIMEOUT"
 }
 
 // isMimeTypeValid expects only mime type part.
