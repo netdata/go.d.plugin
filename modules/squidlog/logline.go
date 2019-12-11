@@ -87,33 +87,47 @@ type (
 	}
 )
 
+const (
+	fieldRespTime   = "resp_time"
+	fieldClientAddr = "client_address"
+	fieldCacheCode  = "cache_code"
+	fieldHTTPCode   = "http_code"
+	fieldRespSize   = "resp_size"
+	fieldReqMethod  = "req_method"
+	fieldHierCode   = "hier_code"
+	fieldMimeType   = "mime_type"
+	fieldServerAddr = "server_address"
+	fieldResultCode = "result_code"
+	fieldHierarchy  = "hierarchy"
+)
+
 func (l *logLine) Assign(field string, value string) (err error) {
 	if value == "" {
 		return
 	}
 
 	switch field {
-	case "resp_time":
+	case fieldRespTime:
 		err = l.assignRespTime(value)
-	case "client_address":
+	case fieldClientAddr:
 		err = l.assignClientAddress(value)
-	case "cache_code":
+	case fieldCacheCode:
 		err = l.assignCacheCode(value)
-	case "http_code":
+	case fieldHTTPCode:
 		err = l.assignHTTPCode(value)
-	case "resp_size":
+	case fieldRespSize:
 		err = l.assignRespSize(value)
-	case "req_method":
+	case fieldReqMethod:
 		err = l.assignReqMethod(value)
-	case "hier_code":
+	case fieldHierCode:
 		err = l.assignHierCode(value)
-	case "mime_type":
+	case fieldMimeType:
 		err = l.assignMimeType(value)
-	case "server_address":
+	case fieldServerAddr:
 		err = l.assignServerAddress(value)
-	case "result_code":
+	case fieldResultCode:
 		err = l.assignResultCode(value)
-	case "hierarchy":
+	case fieldHierarchy:
 		err = l.assignHierarchy(value)
 	}
 	return err
