@@ -7,10 +7,6 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/logs"
 )
 
-func (s *SquidLog) createLogLine() {
-	s.line = &logLine{}
-}
-
 func (s *SquidLog) createLogReader() error {
 	s.Cleanup()
 	s.Debug("starting log reader creating")

@@ -63,8 +63,8 @@ type (
 )
 
 func (s *SquidLog) Init() bool {
-	s.createLogLine()
-	//s.mx = newMetricsData(s.Config)
+	s.line = newEmptyLogLine()
+	s.mx = newMetricsData()
 	return true
 }
 
