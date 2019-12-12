@@ -24,11 +24,13 @@ type metricsData struct {
 	ReqUnmatched metrics.Counter `stm:"req_unmatched"`
 
 	HTTPCode metrics.CounterVec `stm:"http_code"`
+	HTTP0xx  metrics.Counter    `stm:"http_0xx"`
 	HTTP1xx  metrics.Counter    `stm:"http_1xx"`
 	HTTP2xx  metrics.Counter    `stm:"http_2xx"`
 	HTTP3xx  metrics.Counter    `stm:"http_3xx"`
 	HTTP4xx  metrics.Counter    `stm:"http_4xx"`
 	HTTP5xx  metrics.Counter    `stm:"http_5xx"`
+	HTTP6xx  metrics.Counter    `stm:"http_6xx"`
 
 	ReqSuccess  metrics.Counter `stm:"req_type_success"`
 	ReqRedirect metrics.Counter `stm:"req_type_redirect"`
@@ -50,6 +52,7 @@ type metricsData struct {
 
 	HierCode metrics.CounterVec `stm:"hier_code"`
 	MimeType metrics.CounterVec `stm:"mime_type"`
+	Server   metrics.CounterVec `stm:"server_address"`
 }
 
 func (m *metricsData) reset() {
