@@ -3,6 +3,7 @@ package squidlog
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/logs"
 )
@@ -43,4 +44,26 @@ func (s *SquidLog) createParser() error {
 		return fmt.Errorf("verify last line: %v (%s)", err, string(lastLine))
 	}
 	return nil
+}
+
+func checkCSVFormatField(name string) (newName string, offset int, valid bool) {
+	name = cleanField(name)
+	if !knownField(name) {
+		return "", 0, false
+	}
+	return name, 0, true
+}
+
+func cleanField(name string) string {
+	return strings.TrimLeft(name, "$%")
+}
+
+func knownField(name string) bool {
+	switch name {
+	case fieldRespTime, fieldClientAddr, fieldCacheCode, fieldHTTPCode, fieldRespSize, fieldReqMethod:
+		fallthrough
+	case fieldHierCode, fieldServerAddr, fieldMimeType, fieldResultCode, fieldHierarchy:
+		return true
+	}
+	return false
 }

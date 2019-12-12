@@ -8,13 +8,13 @@ import (
 
 func init() {
 	creator := module.Creator{
-		Defaults: module.Defaults{
-			Disabled: true,
-		},
+		//Defaults: module.Defaults{
+		//	Disabled: true,
+		//},
 		Create: func() module.Module { return New() },
 	}
 
-	module.Register("squid_log", creator)
+	module.Register("squidlog", creator)
 }
 
 func New() *SquidLog {
@@ -23,8 +23,9 @@ func New() *SquidLog {
 		CSV: logs.CSVConfig{
 			FieldsPerRecord:  -1,
 			Delimiter:        ' ',
-			TrimLeadingSpace: false,
-			//CheckField:       checkCSVFormatField,
+			TrimLeadingSpace: true,
+			Format:           "- $resp_time $client_address $result_code $resp_size $req_method - - $hierarchy $mime_type",
+			CheckField:       checkCSVFormatField,
 		},
 		LTSV: logs.LTSVConfig{
 			FieldDelimiter: '\t',
@@ -34,19 +35,18 @@ func New() *SquidLog {
 	}
 	return &SquidLog{
 		Config: Config{
-			ExcludePath:    "*.gz",
-			GroupRespCodes: true,
-			Parser:         cfg,
+			Path:        "/var/log/squid/access.log",
+			ExcludePath: "*.gz",
+			Parser:      cfg,
 		},
 	}
 }
 
 type (
 	Config struct {
-		Parser         logs.ParserConfig `yaml:",inline"`
-		Path           string            `yaml:"path"`
-		ExcludePath    string            `yaml:"exclude_path"`
-		GroupRespCodes bool              `yaml:"group_response_codes"`
+		Parser      logs.ParserConfig `yaml:",inline"`
+		Path        string            `yaml:"path"`
+		ExcludePath string            `yaml:"exclude_path"`
 	}
 
 	SquidLog struct {

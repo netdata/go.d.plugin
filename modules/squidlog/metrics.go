@@ -71,6 +71,7 @@ func newMetricsData() *metricsData {
 		CacheCodeLoadSourceTag: metrics.NewCounterVec(),
 		CacheCodeErrorTag:      metrics.NewCounterVec(),
 		HierCode:               metrics.NewCounterVec(),
+		Server:                 metrics.NewCounterVec(),
 		MimeType:               metrics.NewCounterVec(),
 	}
 }

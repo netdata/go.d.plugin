@@ -69,7 +69,7 @@ func (s *SquidLog) collectLogLines() (int, error) {
 
 func (s *SquidLog) collectLogLine() {
 	s.mx.Requests.Inc()
-	s.collectRespSize()
+	s.collectRespTime()
 	s.collectClientAddress()
 	s.collectCacheCode()
 	s.collectHTTPCode()
