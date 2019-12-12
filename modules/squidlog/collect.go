@@ -82,7 +82,7 @@ func (s *SquidLog) collectLogLine() {
 
 func (s *SquidLog) collectUnmatched() {
 	s.mx.Requests.Inc()
-	s.mx.ReqUnmatched.Inc()
+	s.mx.Unmatched.Inc()
 }
 
 func (s *SquidLog) collectRespTime() {
@@ -110,9 +110,9 @@ func (s *SquidLog) collectCacheCode() {
 	}
 	c.Inc()
 
-	parts := strings.Split(s.line.cacheCode, "_")
-	for _, part := range parts {
-		s.collectCacheCodePart(part)
+	tags := strings.Split(s.line.cacheCode, "_")
+	for _, tag := range tags {
+		s.collectCacheCodeTag(tag)
 	}
 }
 
@@ -123,7 +123,7 @@ func (s *SquidLog) collectHTTPCode() {
 
 	code := s.line.httpCode
 	switch {
-	case code >= 100 && code < 300, code == 304, code == 401, code == 0:
+	case code >= 100 && code < 300, code == 0, code == 304, code == 401:
 		s.mx.ReqSuccess.Inc()
 	case code >= 300 && code < 400:
 		s.mx.ReqRedirect.Inc()
@@ -135,25 +135,25 @@ func (s *SquidLog) collectHTTPCode() {
 
 	switch code / 100 {
 	case 0:
-		s.mx.HTTP0xx.Inc()
+		s.mx.HTTPResp0xx.Inc()
 	case 1:
-		s.mx.HTTP1xx.Inc()
+		s.mx.HTTPResp1xx.Inc()
 	case 2:
-		s.mx.HTTP2xx.Inc()
+		s.mx.HTTPResp2xx.Inc()
 	case 3:
-		s.mx.HTTP3xx.Inc()
+		s.mx.HTTPResp3xx.Inc()
 	case 4:
-		s.mx.HTTP4xx.Inc()
+		s.mx.HTTPResp4xx.Inc()
 	case 5:
-		s.mx.HTTP5xx.Inc()
+		s.mx.HTTPResp5xx.Inc()
 	case 6:
-		s.mx.HTTP6xx.Inc()
+		s.mx.HTTPResp6xx.Inc()
 	}
 
 	codeStr := strconv.Itoa(code)
-	c, ok := s.mx.HTTPCode.GetP(codeStr)
+	c, ok := s.mx.HTTPRespCode.GetP(codeStr)
 	if !ok {
-		s.addDimToRespCodesChart(codeStr)
+		s.addDimToHTTPRespCodesChart(codeStr)
 	}
 	c.Inc()
 }
@@ -209,85 +209,107 @@ func (s *SquidLog) collectMimeType() {
 	c.Inc()
 }
 
-func (s *SquidLog) collectCacheCodePart(codePart string) {
+func (s *SquidLog) collectCacheCodeTag(tag string) {
 	// https://wiki.squid-cache.org/SquidFaq/SquidLogs#Squid_result_codes
-	switch codePart {
+	switch tag {
 	default:
 	case "TCP", "UDP", "NONE":
-		c, ok := s.mx.CacheCodeTransport.GetP(codePart)
+		c, ok := s.mx.CacheCodeTransportTag.GetP(tag)
 		if !ok {
-			s.addDimToCacheCodeTransportChart(codePart)
+			s.addDimToCacheCodeTransportTagChart(tag)
 		}
 		c.Inc()
 	case "CF", "CLIENT", "IMS", "ASYNC", "SWAPFAIL", "REFRESH", "SHARED", "REPLY":
-		c, ok := s.mx.CacheCodeHandling.GetP(codePart)
+		c, ok := s.mx.CacheCodeHandlingTag.GetP(tag)
 		if !ok {
-			s.addDimToCacheCodeHandlingChart(codePart)
+			s.addDimToCacheCodeHandlingTagChart(tag)
 		}
 		c.Inc()
 	case "NEGATIVE", "STALE", "OFFLINE", "INVALID", "FAIL", "MODIFIED", "UNMODIFIED", "REDIRECT":
-		c, ok := s.mx.CacheCodeObject.GetP(codePart)
+		c, ok := s.mx.CacheCodeObjectTag.GetP(tag)
 		if !ok {
-			s.addDimToCacheCodeObjectChart(codePart)
+			s.addDimToCacheCodeObjectTagChart(tag)
 		}
 		c.Inc()
 	case "HIT", "MEM", "MISS", "DENIED", "NOFETCH", "TUNNEL":
-		c, ok := s.mx.CacheCodeLoadSource.GetP(codePart)
+		c, ok := s.mx.CacheCodeLoadSourceTag.GetP(tag)
 		if !ok {
-			s.addDimToCacheCodeLoadSourceChart(codePart)
+			s.addDimToCacheCodeLoadSourceTagChart(tag)
 		}
 		c.Inc()
 	case "ABORTED", "TIMEOUT", "IGNORED":
-		c, ok := s.mx.CacheCodeError.GetP(codePart)
+		c, ok := s.mx.CacheCodeErrorTag.GetP(tag)
 		if !ok {
-			s.addDimToCacheCodeErrorChart(codePart)
+			s.addDimToCacheCodeErrorTagChart(tag)
 		}
 		c.Inc()
 	}
 }
 
-func (s *SquidLog) addDimToCacheCodeTransportChart(codePart string) {
-	s.addDimToChart(cacheCodeTransport.ID, "cache_code_transport_"+codePart, codePart)
+func (s *SquidLog) addDimToCacheCodeChart(code string) {
+	chartID := cacheCodeChart.ID
+	dimID := "cache_result_code_" + code
+	s.addDimToChart(chartID, dimID, code)
 }
 
-func (s *SquidLog) addDimToCacheCodeHandlingChart(codePart string) {
-	s.addDimToChart(cacheCodeHandling.ID, "cache_code_handling_"+codePart, codePart)
+func (s *SquidLog) addDimToCacheCodeTransportTagChart(tag string) {
+	chartID := cacheCodeTransportTagChart.ID
+	dimID := "cache_transport_tag_" + tag
+	s.addDimToChart(chartID, dimID, tag)
 }
 
-func (s *SquidLog) addDimToCacheCodeObjectChart(codePart string) {
-	s.addDimToChart(cacheCodeObject.ID, "cache_code_object_"+codePart, codePart)
+func (s *SquidLog) addDimToCacheCodeHandlingTagChart(tag string) {
+	chartID := cacheCodeHandlingTagChart.ID
+	dimID := "cache_handling_tag_" + tag
+	s.addDimToChart(chartID, dimID, tag)
 }
 
-func (s *SquidLog) addDimToCacheCodeLoadSourceChart(codePart string) {
-	s.addDimToChart(cacheCodeLoadSource.ID, "cache_code_load_source_"+codePart, codePart)
+func (s *SquidLog) addDimToCacheCodeObjectTagChart(tag string) {
+	chartID := cacheCodeObjectTagChart.ID
+	dimID := "cache_object_tag_" + tag
+	s.addDimToChart(chartID, dimID, tag)
 }
 
-func (s *SquidLog) addDimToCacheCodeErrorChart(codePart string) {
-	s.addDimToChart(cacheCodeError.ID, "cache_code_error_"+codePart, codePart)
+func (s *SquidLog) addDimToCacheCodeLoadSourceTagChart(tag string) {
+	chartID := cacheCodeLoadSourceTagChart.ID
+	dimID := "cache_load_source_tag_" + tag
+	s.addDimToChart(chartID, dimID, tag)
 }
 
-func (s *SquidLog) addDimToMimeTypeChart(mime string) {
-	s.addDimToChart(reqByMimeType.ID, "mime_type_"+mime, mime)
+func (s *SquidLog) addDimToCacheCodeErrorTagChart(tag string) {
+	chartID := cacheCodeErrorTagChart.ID
+	dimID := "cache_error_tag_" + tag
+	s.addDimToChart(chartID, dimID, tag)
 }
 
-func (s *SquidLog) addDimToServerAddressChart(address string) {
-	s.addDimToChart(reqByServer.ID, "server_address_"+address, address)
-}
-
-func (s *SquidLog) addDimToHierCodeChart(code string) {
-	s.addDimToChart(reqByHierCode.ID, "hier_code_"+code, code)
+func (s *SquidLog) addDimToHTTPRespCodesChart(tag string) {
+	chartID := httpRespCodesChart.ID
+	dimID := "http_resp_code_" + tag
+	s.addDimToChart(chartID, dimID, tag)
 }
 
 func (s *SquidLog) addDimToReqMethodChart(method string) {
-	s.addDimToChart(reqByMethod.ID, "req_method_"+method, method)
+	chartID := reqMethodChart.ID
+	dimID := "req_method_" + method
+	s.addDimToChart(chartID, dimID, method)
 }
 
-func (s *SquidLog) addDimToRespCodesChart(code string) {
-	s.addDimToChart(respCodes.ID, "http_code_"+code, code)
+func (s *SquidLog) addDimToHierCodeChart(code string) {
+	chartID := hierCodeChart.ID
+	dimID := "hier_code_" + code
+	s.addDimToChart(chartID, dimID, code)
 }
 
-func (s *SquidLog) addDimToCacheCodeChart(code string) {
-	s.addDimToChart(cacheCode.ID, "cache_code_"+code, code)
+func (s *SquidLog) addDimToServerAddressChart(address string) {
+	chartID := serverAddrChart.ID
+	dimID := "server_address_" + address
+	s.addDimToChart(chartID, dimID, address)
+}
+
+func (s *SquidLog) addDimToMimeTypeChart(mimeType string) {
+	chartID := mimeTypeChart.ID
+	dimID := "mime_type_" + mimeType
+	s.addDimToChart(chartID, dimID, mimeType)
 }
 
 func (s *SquidLog) addDimToChart(chartID, dimID, dimName string) {
@@ -296,7 +318,11 @@ func (s *SquidLog) addDimToChart(chartID, dimID, dimName string) {
 		s.Warningf("add '%s' dim: couldn't find '%s' chart", dimID, chartID)
 		return
 	}
-	dim := &Dim{ID: dimID, Name: dimName, Algo: module.Incremental}
+	dim := &Dim{
+		ID:   dimID,
+		Name: dimName,
+		Algo: module.Incremental,
+	}
 	if err := chart.AddDim(dim); err != nil {
 		s.Warningf("add '%s' dim: %v", dimID, err)
 		return
