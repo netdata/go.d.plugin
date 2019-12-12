@@ -19,19 +19,33 @@ const (
 	prioReqExcluded
 	prioReqType
 
-	prioRespCodesClass
-	prioRespCodes
-
-	prioBandwidth
-	prioRespTime
+	prioHTTPRespCodesClass
+	prioHTTPRespCodes
 
 	prioUniqClients
+
+	prioBandwidth
+
+	prioRespTime
+
+	prioCacheCode
+	prioCacheTransportTag
+	prioCacheHandlingTag
+	prioCacheObjectTag
+	prioCacheLoadSourceTag
+	prioCacheErrorTag
+
 	prioReqMethod
+
+	prioHierCode
+	prioServers
+
+	prioMimeType
 )
 
-// Requests
 var (
-	reqTotal = Chart{
+	// Requests
+	reqTotalChart = Chart{
 		ID:       "requests",
 		Title:    "Total Requests",
 		Units:    "requests/s",
@@ -42,19 +56,18 @@ var (
 			{ID: "requests", Algo: module.Incremental},
 		},
 	}
-	reqExcluded = Chart{
+	reqExcludedChart = Chart{
 		ID:       "excluded_requests",
 		Title:    "Excluded Requests",
 		Units:    "requests/s",
 		Fam:      "requests",
 		Ctx:      "squid.excluded_requests",
-		Type:     module.Stacked,
 		Priority: prioReqExcluded,
 		Dims: Dims{
-			{ID: "req_unmatched", Name: "unmatched", Algo: module.Incremental},
+			{ID: "unmatched", Algo: module.Incremental},
 		},
 	}
-	reqTypes = Chart{
+	reqTypesChart = Chart{
 		ID:       "requests_by_type",
 		Title:    "Requests By Type",
 		Units:    "requests/s",
@@ -69,77 +82,56 @@ var (
 			{ID: "req_type_error", Name: "error", Algo: module.Incremental},
 		},
 	}
-)
 
-// Responses
-var (
-	respCodeClass = Chart{
-		ID:       "responses_by_status_code_class",
-		Title:    "Responses By Status Code Class",
+	// Responses
+	httpRespCodeClassChart = Chart{
+		ID:       "responses_by_http_status_code_class",
+		Title:    "Responses By HTTP Status Code Class",
 		Units:    "responses/s",
 		Fam:      "responses",
-		Ctx:      "squid.status_code_class_responses",
+		Ctx:      "squid.http_status_code_class_responses",
 		Type:     module.Stacked,
-		Priority: prioRespCodesClass,
+		Priority: prioHTTPRespCodesClass,
 		Dims: Dims{
-			{ID: "resp_2xx", Name: "2xx", Algo: module.Incremental},
-			{ID: "resp_5xx", Name: "5xx", Algo: module.Incremental},
-			{ID: "resp_3xx", Name: "3xx", Algo: module.Incremental},
-			{ID: "resp_4xx", Name: "4xx", Algo: module.Incremental},
-			{ID: "resp_1xx", Name: "1xx", Algo: module.Incremental},
-			{ID: "resp_0xx", Name: "0xx", Algo: module.Incremental},
-			{ID: "resp_6xx", Name: "6xx", Algo: module.Incremental},
+			{ID: "http_resp_2xx", Name: "2xx", Algo: module.Incremental},
+			{ID: "http_resp_5xx", Name: "5xx", Algo: module.Incremental},
+			{ID: "http_resp_3xx", Name: "3xx", Algo: module.Incremental},
+			{ID: "http_resp_4xx", Name: "4xx", Algo: module.Incremental},
+			{ID: "http_resp_1xx", Name: "1xx", Algo: module.Incremental},
+			{ID: "http_resp_0xx", Name: "0xx", Algo: module.Incremental},
+			{ID: "http_resp_6xx", Name: "6xx", Algo: module.Incremental},
 		},
 	}
-	respCodes = Chart{
-		ID:       "responses_by_status_code",
-		Title:    "Responses By Status Code",
+	httpRespCodesChart = Chart{
+		ID:       "responses_by_http_status_code",
+		Title:    "Responses By HTTP Status Code",
 		Units:    "responses/s",
 		Fam:      "responses",
-		Ctx:      "squid.status_code_responses",
+		Ctx:      "squid.http_status_code_responses",
 		Type:     module.Stacked,
-		Priority: prioRespCodes,
+		Priority: prioHTTPRespCodes,
 	}
-)
 
-// Bandwidth
-var (
-	bandwidth = Chart{
+	// Bandwidth
+	bandwidthChart = Chart{
 		ID:       "bandwidth",
 		Title:    "Bandwidth",
 		Units:    "kilobits/s",
 		Fam:      "bandwidth",
 		Ctx:      "squid.bandwidth",
-		Type:     module.Area,
 		Priority: prioBandwidth,
 		Dims: Dims{
-			{ID: "bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
+			{ID: "bytes_sent", Name: "sent", Algo: module.Incremental, Div: 1000},
 		},
 	}
-)
 
-// Clients
-var (
-	uniqClientsCurPoll = Chart{
-		ID:       "uniq_clients",
-		Title:    "Unique Clients",
-		Units:    "clients/s",
-		Fam:      "client",
-		Ctx:      "squid.uniq_clients",
-		Priority: prioUniqClients,
-		Dims: Dims{
-			{ID: "uniq_clients", Name: "clients"},
-		},
-	}
-)
-
-var (
-	respTime = Chart{
+	// Response Time
+	respTimeChart = Chart{
 		ID:       "response_time",
 		Title:    "Response Time",
 		Units:    "milliseconds",
 		Fam:      "timings",
-		Ctx:      "squid.request_processing_time",
+		Ctx:      "squid.response_time",
 		Priority: prioRespTime,
 		Dims: Dims{
 			{ID: "resp_time_min", Name: "min", Div: 1000},
@@ -147,10 +139,78 @@ var (
 			{ID: "resp_time_avg", Name: "avg", Div: 1000},
 		},
 	}
-)
 
-var (
-	reqByMethod = Chart{
+	// Clients
+	uniqClientsChart = Chart{
+		ID:       "uniq_clients",
+		Title:    "Unique Clients",
+		Units:    "clients/s",
+		Fam:      "clients",
+		Ctx:      "squid.uniq_clients",
+		Priority: prioUniqClients,
+		Dims: Dims{
+			{ID: "uniq_clients", Name: "clients"},
+		},
+	}
+
+	// Cache Code Result
+	cacheCodeChart = Chart{
+		ID:       "requests_by_cache_result_code",
+		Title:    "Requests By Cache Result Code",
+		Units:    "requests/s",
+		Fam:      "cache result",
+		Ctx:      "squid.cache_result_code_requests",
+		Priority: prioCacheCode,
+		Type:     module.Stacked,
+	}
+	cacheCodeTransportTagChart = Chart{
+		ID:       "requests_by_cache_result_code_transport_tag",
+		Title:    "Requests By Cache Result Delivery Transport Tag",
+		Units:    "requests/s",
+		Fam:      "cache result",
+		Ctx:      "squid.cache_result_code_transport_tag_requests",
+		Type:     module.Stacked,
+		Priority: prioCacheTransportTag,
+	}
+	cacheCodeHandlingTagChart = Chart{
+		ID:       "requests_by_cache_result_code_handling_tag",
+		Title:    "Requests By Cache Result Handling Tag",
+		Units:    "requests/s",
+		Fam:      "cache result",
+		Ctx:      "squid.cache_result_code_handling_tag_requests",
+		Type:     module.Stacked,
+		Priority: prioCacheHandlingTag,
+	}
+	cacheCodeObjectTagChart = Chart{
+		ID:       "requests_by_cache_code_object_tag",
+		Title:    "Requests By Cache Result Produced Object Tag",
+		Units:    "requests/s",
+		Fam:      "cache result",
+		Ctx:      "squid.cache_code_object_tag_requests",
+		Type:     module.Stacked,
+		Priority: prioCacheObjectTag,
+	}
+	cacheCodeLoadSourceTagChart = Chart{
+		ID:       "requests_by_cache_code_load_source_tag",
+		Title:    "Requests By Cache Result Load Source Tag",
+		Units:    "requests/s",
+		Fam:      "cache result",
+		Ctx:      "squid.cache_code_load_source_tag_requests",
+		Type:     module.Stacked,
+		Priority: prioCacheLoadSourceTag,
+	}
+	cacheCodeErrorTagChart = Chart{
+		ID:       "requests_by_cache_code_error_tag",
+		Title:    "Requests By Cache Result Errors Tag",
+		Units:    "requests/s",
+		Fam:      "cache result",
+		Ctx:      "squid.cache_code_error_tag_requests",
+		Type:     module.Stacked,
+		Priority: prioCacheErrorTag,
+	}
+
+	// HTTP Method
+	reqMethodChart = Chart{
 		ID:       "requests_by_http_method",
 		Title:    "Requests By HTTP Method",
 		Units:    "requests/s",
@@ -159,90 +219,36 @@ var (
 		Type:     module.Stacked,
 		Priority: prioReqMethod,
 	}
-	reqByMimeType = Chart{
+
+	// MIME Type
+	mimeTypeChart = Chart{
 		ID:       "requests_by_mime_type",
 		Title:    "Requests By MIME Type",
 		Units:    "requests/s",
 		Fam:      "mime type",
 		Ctx:      "squid.mime_type_requests",
 		Type:     module.Stacked,
-		Priority: prioReqMethod,
+		Priority: prioMimeType,
 	}
-	reqByHierCode = Chart{
+
+	// Hierarchy
+	hierCodeChart = Chart{
 		ID:       "requests_by_hier_code",
-		Title:    "Requests By HIER Code",
+		Title:    "Requests By Hierarchy Code",
 		Units:    "requests/s",
-		Fam:      "hier code",
+		Fam:      "hierarchy",
 		Ctx:      "squid.hier_code_requests",
 		Type:     module.Stacked,
-		Priority: prioReqMethod,
+		Priority: prioHierCode,
 	}
-
-	reqByServer = Chart{
-		ID:       "requests_by_server_address",
-		Title:    "Requests By Server Address",
+	serverAddrChart = Chart{
+		ID:       "forwarded_requests_by_server_address",
+		Title:    "Forwarded Requests By Server Address",
 		Units:    "requests/s",
-		Fam:      "http method",
-		Ctx:      "squid.http_method_requests",
+		Fam:      "hierarchy",
+		Ctx:      "squid.server_address_forwarded_requests",
 		Type:     module.Stacked,
-		Priority: prioReqMethod,
-	}
-)
-
-var (
-	cacheCode = Chart{
-		ID:       "cache_result_code",
-		Title:    "Requests Cache Result Code",
-		Units:    "result/s",
-		Fam:      "cache code",
-		Ctx:      "squid.cache_result_code",
-		Type:     module.Stacked,
-		Priority: prioReqMethod,
-	}
-	cacheCodeTransport = Chart{
-		ID:       "requests_by_cache_code_transport",
-		Title:    "Requests By Cache Code Transport",
-		Units:    "requests/s",
-		Fam:      "cache code",
-		Ctx:      "squid.cache_code_transport_requests",
-		Type:     module.Stacked,
-		Priority: prioReqMethod,
-	}
-	cacheCodeHandling = Chart{
-		ID:       "requests_by_cache_code_handling",
-		Title:    "Requests By Cache Code Handling",
-		Units:    "requests/s",
-		Fam:      "cache code",
-		Ctx:      "squid.cache_code_handling_requests",
-		Type:     module.Stacked,
-		Priority: prioReqMethod,
-	}
-	cacheCodeObject = Chart{
-		ID:       "requests_by_cache_code_object",
-		Title:    "Requests By Cache Code Object",
-		Units:    "requests/s",
-		Fam:      "cache code",
-		Ctx:      "squid.cache_code_object_requests",
-		Type:     module.Stacked,
-		Priority: prioReqMethod,
-	}
-	cacheCodeLoadSource = Chart{
-		ID:       "requests_by_cache_code_load_source",
-		Title:    "Requests By Cache Code Load Source",
-		Units:    "requests/s",
-		Fam:      "cache code",
-		Ctx:      "squid.cache_code_load_source_requests",
-		Type:     module.Stacked,
-		Priority: prioReqMethod,
-	}
-	cacheCodeError = Chart{
-		ID:       "requests_by_cache_code_error",
-		Title:    "Requests By Cache Code Error",
-		Units:    "requests/s",
-		Fam:      "cache code",
-		Ctx:      "squid.cache_code_error_requests",
-		Type:     module.Stacked,
-		Priority: prioReqMethod,
+		Priority: prioServers,
 	}
 )
 
@@ -250,12 +256,9 @@ func (s *SquidLog) createCharts(line *logLine) error {
 	if line.empty() {
 		return errors.New("empty line")
 	}
-	s.charts = nil
-	// Following charts are created during runtime:
-	//   - reqBySSLProto, reqBySSLCipherSuite - it is likely line has no SSL stuff at this moment
 	charts := &Charts{
-		reqTotal.Copy(),
-		reqExcluded.Copy(),
+		reqTotalChart.Copy(),
+		reqExcludedChart.Copy(),
 	}
 	if line.hasRespTime() {
 		if err := addRespTimeCharts(charts); err != nil {
@@ -273,7 +276,7 @@ func (s *SquidLog) createCharts(line *logLine) error {
 		}
 	}
 	if line.hasHTTPCode() {
-		if err := addHTTPCodeCharts(charts); err != nil {
+		if err := addHTTPRespCodeCharts(charts); err != nil {
 			return err
 		}
 	}
@@ -307,21 +310,21 @@ func (s *SquidLog) createCharts(line *logLine) error {
 }
 
 func addRespTimeCharts(charts *Charts) error {
-	return charts.Add(respTime.Copy())
+	return charts.Add(respTimeChart.Copy())
 }
 
 func addClientAddressCharts(charts *Charts) error {
-	return charts.Add(uniqClientsCurPoll.Copy())
+	return charts.Add(uniqClientsChart.Copy())
 }
 
 func addCacheCodeCharts(charts *Charts) error {
 	cs := []Chart{
-		cacheCode,
-		cacheCodeTransport,
-		cacheCodeHandling,
-		cacheCodeObject,
-		cacheCodeLoadSource,
-		cacheCodeError,
+		cacheCodeChart,
+		cacheCodeTransportTagChart,
+		cacheCodeHandlingTagChart,
+		cacheCodeObjectTagChart,
+		cacheCodeLoadSourceTagChart,
+		cacheCodeErrorTagChart,
 	}
 	for _, chart := range cs {
 		if err := charts.Add(chart.Copy()); err != nil {
@@ -330,11 +333,11 @@ func addCacheCodeCharts(charts *Charts) error {
 	}
 	return nil
 }
-func addHTTPCodeCharts(charts *Charts) error {
+func addHTTPRespCodeCharts(charts *Charts) error {
 	cs := []Chart{
-		reqTypes,
-		respCodeClass,
-		respCodes,
+		reqTypesChart,
+		httpRespCodeClassChart,
+		httpRespCodesChart,
 	}
 	for _, chart := range cs {
 		if err := charts.Add(chart.Copy()); err != nil {
@@ -345,20 +348,20 @@ func addHTTPCodeCharts(charts *Charts) error {
 }
 
 func addRespSizeCharts(charts *Charts) error {
-	return charts.Add(bandwidth.Copy())
+	return charts.Add(bandwidthChart.Copy())
 }
 
 func addMethodCharts(charts *Charts) error {
-	return charts.Add(reqByMethod.Copy())
+	return charts.Add(reqMethodChart.Copy())
 }
 
 func addHierCodeCharts(charts *Charts) error {
-	return charts.Add(reqByHierCode.Copy())
+	return charts.Add(hierCodeChart.Copy())
 }
 func addServerAddressCharts(charts *Charts) error {
-	return charts.Add(reqByServer.Copy())
+	return charts.Add(serverAddrChart.Copy())
 }
 
 func addMimeTypeCharts(charts *Charts) error {
-	return charts.Add(reqByMimeType.Copy())
+	return charts.Add(mimeTypeChart.Copy())
 }
