@@ -133,7 +133,7 @@ func TestSquidLog_Collect(t *testing.T) {
 		"requests":                                           500,
 		"resp_time_avg":                                      3015,
 		"resp_time_count":                                    484,
-		"resp_time_max":                                      4998,
+		"resp_time_max":                                      4988,
 		"resp_time_min":                                      1002,
 		"resp_time_sum":                                      1459711,
 		"server_address_2001:db8:2ce:a":                      79,
@@ -151,6 +151,7 @@ func TestSquidLog_Collect(t *testing.T) {
 func prepareSquidCollect(t *testing.T) *SquidLog {
 	t.Helper()
 	squid := New()
+	squid.Path = "testdata/access.log"
 	require.True(t, squid.Init())
 	require.True(t, squid.Check())
 	defer squid.Cleanup()
