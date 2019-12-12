@@ -20,39 +20,37 @@ func (s summary) WriteTo(rv map[string]int64, key string, mul, div int) {
 }
 
 type metricsData struct {
-	Requests     metrics.Counter `stm:"requests"`
-	ReqUnmatched metrics.Counter `stm:"req_unmatched"`
+	Requests  metrics.Counter `stm:"requests"`
+	Unmatched metrics.Counter `stm:"unmatched"`
 
-	HTTPCode metrics.CounterVec `stm:"http_code"`
-	HTTP0xx  metrics.Counter    `stm:"http_0xx"`
-	HTTP1xx  metrics.Counter    `stm:"http_1xx"`
-	HTTP2xx  metrics.Counter    `stm:"http_2xx"`
-	HTTP3xx  metrics.Counter    `stm:"http_3xx"`
-	HTTP4xx  metrics.Counter    `stm:"http_4xx"`
-	HTTP5xx  metrics.Counter    `stm:"http_5xx"`
-	HTTP6xx  metrics.Counter    `stm:"http_6xx"`
+	HTTPRespCode metrics.CounterVec `stm:"http_resp_code"`
+	HTTPResp0xx  metrics.Counter    `stm:"http_resp_0xx"`
+	HTTPResp1xx  metrics.Counter    `stm:"http_resp_1xx"`
+	HTTPResp2xx  metrics.Counter    `stm:"http_resp_2xx"`
+	HTTPResp3xx  metrics.Counter    `stm:"http_resp_3xx"`
+	HTTPResp4xx  metrics.Counter    `stm:"http_resp_4xx"`
+	HTTPResp5xx  metrics.Counter    `stm:"http_resp_5xx"`
+	HTTPResp6xx  metrics.Counter    `stm:"http_resp_6xx"`
 
 	ReqSuccess  metrics.Counter `stm:"req_type_success"`
 	ReqRedirect metrics.Counter `stm:"req_type_redirect"`
 	ReqBad      metrics.Counter `stm:"req_type_bad"`
 	ReqError    metrics.Counter `stm:"req_type_error"`
 
-	BytesSent metrics.Counter `stm:"bytes_sent"`
-	RespTime  metrics.Summary `stm:"resp_time"`
-
+	BytesSent     metrics.Counter       `stm:"bytes_sent"`
+	RespTime      metrics.Summary       `stm:"resp_time"`
 	UniqueClients metrics.UniqueCounter `stm:"uniq_clients"`
 
-	ReqMethod           metrics.CounterVec `stm:"req_method"`
-	CacheCode           metrics.CounterVec `stm:"cache_code"`
-	CacheCodeTransport  metrics.CounterVec `stm:"cache_code_transport"`
-	CacheCodeHandling   metrics.CounterVec `stm:"cache_code_handling"`
-	CacheCodeObject     metrics.CounterVec `stm:"cache_code_object"`
-	CacheCodeLoadSource metrics.CounterVec `stm:"cache_code_load_source"`
-	CacheCodeError      metrics.CounterVec `stm:"cache_code_error"`
-
-	HierCode metrics.CounterVec `stm:"hier_code"`
-	MimeType metrics.CounterVec `stm:"mime_type"`
-	Server   metrics.CounterVec `stm:"server_address"`
+	ReqMethod              metrics.CounterVec `stm:"req_method"`
+	CacheCode              metrics.CounterVec `stm:"cache_result_code"`
+	CacheCodeTransportTag  metrics.CounterVec `stm:"cache_transport_tag"`
+	CacheCodeHandlingTag   metrics.CounterVec `stm:"cache_handling_tag"`
+	CacheCodeObjectTag     metrics.CounterVec `stm:"cache_object_tag"`
+	CacheCodeLoadSourceTag metrics.CounterVec `stm:"cache_load_source_tag"`
+	CacheCodeErrorTag      metrics.CounterVec `stm:"cache_error_tag"`
+	HierCode               metrics.CounterVec `stm:"hier_code"`
+	MimeType               metrics.CounterVec `stm:"mime_type"`
+	Server                 metrics.CounterVec `stm:"server_address"`
 }
 
 func (m *metricsData) reset() {
@@ -62,17 +60,17 @@ func (m *metricsData) reset() {
 
 func newMetricsData() *metricsData {
 	return &metricsData{
-		RespTime:            newSummary(),
-		UniqueClients:       metrics.NewUniqueCounter(true),
-		HTTPCode:            metrics.NewCounterVec(),
-		ReqMethod:           metrics.NewCounterVec(),
-		CacheCode:           metrics.NewCounterVec(),
-		CacheCodeTransport:  metrics.NewCounterVec(),
-		CacheCodeHandling:   metrics.NewCounterVec(),
-		CacheCodeObject:     metrics.NewCounterVec(),
-		CacheCodeLoadSource: metrics.NewCounterVec(),
-		CacheCodeError:      metrics.NewCounterVec(),
-		HierCode:            metrics.NewCounterVec(),
-		MimeType:            metrics.NewCounterVec(),
+		RespTime:               newSummary(),
+		UniqueClients:          metrics.NewUniqueCounter(true),
+		HTTPRespCode:           metrics.NewCounterVec(),
+		ReqMethod:              metrics.NewCounterVec(),
+		CacheCode:              metrics.NewCounterVec(),
+		CacheCodeTransportTag:  metrics.NewCounterVec(),
+		CacheCodeHandlingTag:   metrics.NewCounterVec(),
+		CacheCodeObjectTag:     metrics.NewCounterVec(),
+		CacheCodeLoadSourceTag: metrics.NewCounterVec(),
+		CacheCodeErrorTag:      metrics.NewCounterVec(),
+		HierCode:               metrics.NewCounterVec(),
+		MimeType:               metrics.NewCounterVec(),
 	}
 }
