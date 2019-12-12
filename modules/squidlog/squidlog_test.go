@@ -66,7 +66,10 @@ func TestSquid_Check_ErrorOnCreatingParserEmptyLine(t *testing.T) {
 }
 
 func TestSquidLog_Charts(t *testing.T) {
-	assert.NotNil(t, New().Charts())
+	assert.Nil(t, New().Charts())
+
+	squid := prepareSquidCollect(t)
+	assert.NotNil(t, squid.Charts())
 
 }
 
