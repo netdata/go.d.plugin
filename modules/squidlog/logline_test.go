@@ -121,7 +121,6 @@ func TestLogLine_Assign(t *testing.T) {
 				{input: emptyStr, wantLine: emptyLogLine},
 				{input: hyphen, wantLine: emptyLogLine, wantErr: errBadReqMethod},
 				{input: "get", wantLine: emptyLogLine, wantErr: errBadReqMethod},
-				{input: "get", wantLine: emptyLogLine, wantErr: errBadReqMethod},
 				{input: "0.000", wantLine: emptyLogLine, wantErr: errBadReqMethod},
 				{input: "TCP_MISS", wantLine: emptyLogLine, wantErr: errBadReqMethod},
 			},
@@ -258,7 +257,7 @@ func TestLogLine_verify(t *testing.T) {
 				{input: "127.0.0.1"},
 				{input: "::1"},
 				{input: "kadr20.m1.netdata.lan"},
-				{input: ""},
+				{input: emptyStr},
 				{input: "±!@#$%^&*()", wantErr: errBadClientAddr},
 			},
 		},
@@ -272,10 +271,108 @@ func TestLogLine_verify(t *testing.T) {
 				{input: "UDP_MISS_NOFETCH"},
 				{input: "UDP_INVALID"},
 				{input: "NONE"},
-				{input: ""},
+				{input: emptyStr},
 				{input: "TCP", wantErr: errBadCacheCode},
 				{input: "UDP", wantErr: errBadCacheCode},
 				{input: "NONE_MISS", wantErr: errBadCacheCode},
+			},
+		},
+		{
+			name:  "HTTP Code",
+			field: fieldHTTPCode,
+			cases: []subTest{
+				{input: "000"},
+				{input: "100"},
+				{input: "200"},
+				{input: "300"},
+				{input: "400"},
+				{input: "500"},
+				{input: "603"},
+				{input: "1", wantErr: errBadHTTPCode},
+				{input: "604", wantErr: errBadHTTPCode},
+			},
+		},
+		{
+			name:  "Response Size",
+			field: fieldRespSize,
+			cases: []subTest{
+				{input: "0"},
+				{input: "1000"},
+				{input: "-1", wantErr: errBadRespSize},
+			},
+		},
+		{
+			name:  "Request Method",
+			field: fieldReqMethod,
+			cases: []subTest{
+				{input: "GET"},
+				{input: "HEAD"},
+				{input: "POST"},
+				{input: "PUT"},
+				{input: "PATCH"},
+				{input: "DELETE"},
+				{input: "CONNECT"},
+				{input: "OPTIONS"},
+				{input: "TRACE"},
+				{input: "ICP_QUERY"},
+				{input: "PURGE"},
+				{input: "PROPFIND"},
+				{input: "PROPATCH"},
+				{input: "MKCOL"},
+				{input: "COPY"},
+				{input: "MOVE"},
+				{input: "LOCK"},
+				{input: "UNLOCK"},
+				{input: emptyStr},
+				{input: "get", wantErr: errBadReqMethod},
+				{input: "TCP_MISS", wantErr: errBadReqMethod},
+			},
+		},
+		{
+			name:  "Hier Code",
+			field: fieldHierCode,
+			cases: []subTest{
+				{input: "HIER_NONE"},
+				{input: "HIER_SIBLING_HIT"},
+				{input: "HIER_NO_CACHE_DIGEST_DIRECT"},
+				{input: emptyStr},
+				{input: "0.000", wantErr: errBadHierCode},
+				{input: "TCP_MISS", wantErr: errBadHierCode},
+				{input: "HIER", wantErr: errBadHierCode},
+				{input: "HIER_", wantErr: errBadHierCode},
+				{input: "NONE", wantErr: errBadHierCode},
+				{input: "SIBLING_HIT", wantErr: errBadHierCode},
+				{input: "NO_CACHE_DIGEST_DIRECT", wantErr: errBadHierCode},
+			},
+		},
+		{
+			name:  "Server Address",
+			field: fieldServerAddr,
+			cases: []subTest{
+				{input: "127.0.0.1"},
+				{input: "::1"},
+				{input: "kadr20.m1.netdata.lan"},
+				{input: emptyStr},
+				{input: "±!@#$%^&*()", wantErr: errBadServerAddr},
+			},
+		},
+		{
+			name:  "Mime Type",
+			field: fieldMimeType,
+			cases: []subTest{
+				{input: "application"},
+				{input: "audio"},
+				{input: "font"},
+				{input: "image"},
+				{input: "message"},
+				{input: "model"},
+				{input: "multipart"},
+				{input: "text"},
+				{input: "video"},
+				{input: emptyStr},
+				{input: "example/example", wantErr: errBadMimeType},
+				{input: "unknown", wantErr: errBadMimeType},
+				{input: "/", wantErr: errBadMimeType},
 			},
 		},
 	}
@@ -301,7 +398,6 @@ func TestLogLine_verify(t *testing.T) {
 
 func prepareAssignLogLine(t *testing.T, field string, template logLine) logLine {
 	t.Helper()
-
 	if template.empty() {
 		return template
 	}
@@ -342,7 +438,6 @@ func prepareAssignLogLine(t *testing.T, field string, template logLine) logLine 
 
 func prepareVerifyLogLine(t *testing.T, field string, value string) logLine {
 	t.Helper()
-
 	var line logLine
 	line.reset()
 
