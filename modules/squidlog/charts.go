@@ -1,6 +1,8 @@
 package squidlog
 
 import (
+	"errors"
+
 	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/module"
 )
@@ -21,6 +23,7 @@ const (
 	prioRespCodes
 
 	prioBandwidth
+	prioRespTime
 
 	prioUniqClients
 	prioReqMethod
@@ -51,7 +54,6 @@ var (
 			{ID: "req_unmatched", Name: "unmatched", Algo: module.Incremental},
 		},
 	}
-	// netdata specific grouping
 	reqTypes = Chart{
 		ID:       "requests_by_type",
 		Title:    "Requests By Type",
@@ -132,6 +134,22 @@ var (
 )
 
 var (
+	respTime = Chart{
+		ID:       "response_time",
+		Title:    "Response Time",
+		Units:    "milliseconds",
+		Fam:      "timings",
+		Ctx:      "squid.request_processing_time",
+		Priority: prioRespTime,
+		Dims: Dims{
+			{ID: "resp_time_min", Name: "min", Div: 1000},
+			{ID: "resp_time_max", Name: "max", Div: 1000},
+			{ID: "resp_time_avg", Name: "avg", Div: 1000},
+		},
+	}
+)
+
+var (
 	reqByMethod = Chart{
 		ID:       "requests_by_http_method",
 		Title:    "Requests By HTTP Method",
@@ -141,8 +159,206 @@ var (
 		Type:     module.Stacked,
 		Priority: prioReqMethod,
 	}
+	reqByMimeType = Chart{
+		ID:       "requests_by_mime_type",
+		Title:    "Requests By MIME Type",
+		Units:    "requests/s",
+		Fam:      "mime type",
+		Ctx:      "squid.mime_type_requests",
+		Type:     module.Stacked,
+		Priority: prioReqMethod,
+	}
+	reqByHierCode = Chart{
+		ID:       "requests_by_hier_code",
+		Title:    "Requests By HIER Code",
+		Units:    "requests/s",
+		Fam:      "hier code",
+		Ctx:      "squid.hier_code_requests",
+		Type:     module.Stacked,
+		Priority: prioReqMethod,
+	}
+
+	reqByServer = Chart{
+		ID:       "requests_by_server_address",
+		Title:    "Requests By Server Address",
+		Units:    "requests/s",
+		Fam:      "http method",
+		Ctx:      "squid.http_method_requests",
+		Type:     module.Stacked,
+		Priority: prioReqMethod,
+	}
+)
+
+var (
+	cacheCode = Chart{
+		ID:       "cache_result_code",
+		Title:    "Requests Cache Result Code",
+		Units:    "result/s",
+		Fam:      "cache code",
+		Ctx:      "squid.cache_result_code",
+		Type:     module.Stacked,
+		Priority: prioReqMethod,
+	}
+	cacheCodeTransport = Chart{
+		ID:       "requests_by_cache_code_transport",
+		Title:    "Requests By Cache Code Transport",
+		Units:    "requests/s",
+		Fam:      "cache code",
+		Ctx:      "squid.cache_code_transport_requests",
+		Type:     module.Stacked,
+		Priority: prioReqMethod,
+	}
+	cacheCodeHandling = Chart{
+		ID:       "requests_by_cache_code_handling",
+		Title:    "Requests By Cache Code Handling",
+		Units:    "requests/s",
+		Fam:      "cache code",
+		Ctx:      "squid.cache_code_handling_requests",
+		Type:     module.Stacked,
+		Priority: prioReqMethod,
+	}
+	cacheCodeObject = Chart{
+		ID:       "requests_by_cache_code_object",
+		Title:    "Requests By Cache Code Object",
+		Units:    "requests/s",
+		Fam:      "cache code",
+		Ctx:      "squid.cache_code_object_requests",
+		Type:     module.Stacked,
+		Priority: prioReqMethod,
+	}
+	cacheCodeLoadSource = Chart{
+		ID:       "requests_by_cache_code_load_source",
+		Title:    "Requests By Cache Code Load Source",
+		Units:    "requests/s",
+		Fam:      "cache code",
+		Ctx:      "squid.cache_code_load_source_requests",
+		Type:     module.Stacked,
+		Priority: prioReqMethod,
+	}
+	cacheCodeError = Chart{
+		ID:       "requests_by_cache_code_error",
+		Title:    "Requests By Cache Code Error",
+		Units:    "requests/s",
+		Fam:      "cache code",
+		Ctx:      "squid.cache_code_error_requests",
+		Type:     module.Stacked,
+		Priority: prioReqMethod,
+	}
 )
 
 func (s *SquidLog) createCharts(line *logLine) error {
+	if line.empty() {
+		return errors.New("empty line")
+	}
+	s.charts = nil
+	// Following charts are created during runtime:
+	//   - reqBySSLProto, reqBySSLCipherSuite - it is likely line has no SSL stuff at this moment
+	charts := &Charts{
+		reqTotal.Copy(),
+		reqExcluded.Copy(),
+	}
+	if line.hasRespTime() {
+		if err := addRespTimeCharts(charts); err != nil {
+			return err
+		}
+	}
+	if line.hasClientAddress() {
+		if err := addClientAddressCharts(charts); err != nil {
+			return err
+		}
+	}
+	if line.hasCacheCode() {
+		if err := addCacheCodeCharts(charts); err != nil {
+			return err
+		}
+	}
+	if line.hasHTTPCode() {
+		if err := addHTTPCodeCharts(charts); err != nil {
+			return err
+		}
+	}
+	if line.hasRespSize() {
+		if err := addRespSizeCharts(charts); err != nil {
+			return err
+		}
+	}
+	if line.hasReqMethod() {
+		if err := addMethodCharts(charts); err != nil {
+			return err
+		}
+	}
+	if line.hasHierCode() {
+		if err := addHierCodeCharts(charts); err != nil {
+			return err
+		}
+	}
+	if line.hasServerAddress() {
+		if err := addServerAddressCharts(charts); err != nil {
+			return err
+		}
+	}
+	if line.hasMimeType() {
+		if err := addMimeTypeCharts(charts); err != nil {
+			return err
+		}
+	}
+	s.charts = charts
 	return nil
+}
+
+func addRespTimeCharts(charts *Charts) error {
+	return charts.Add(respTime.Copy())
+}
+
+func addClientAddressCharts(charts *Charts) error {
+	return charts.Add(uniqClientsCurPoll.Copy())
+}
+
+func addCacheCodeCharts(charts *Charts) error {
+	cs := []Chart{
+		cacheCode,
+		cacheCodeTransport,
+		cacheCodeHandling,
+		cacheCodeObject,
+		cacheCodeLoadSource,
+		cacheCodeError,
+	}
+	for _, chart := range cs {
+		if err := charts.Add(chart.Copy()); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func addHTTPCodeCharts(charts *Charts) error {
+	cs := []Chart{
+		reqTypes,
+		respCodeClass,
+		respCodes,
+	}
+	for _, chart := range cs {
+		if err := charts.Add(chart.Copy()); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func addRespSizeCharts(charts *Charts) error {
+	return charts.Add(bandwidth.Copy())
+}
+
+func addMethodCharts(charts *Charts) error {
+	return charts.Add(reqByMethod.Copy())
+}
+
+func addHierCodeCharts(charts *Charts) error {
+	return charts.Add(reqByHierCode.Copy())
+}
+func addServerAddressCharts(charts *Charts) error {
+	return charts.Add(reqByServer.Copy())
+}
+
+func addMimeTypeCharts(charts *Charts) error {
+	return charts.Add(reqByMimeType.Copy())
 }
