@@ -83,12 +83,12 @@ var (
 		},
 	}
 
-	// Responses
+	// HTTP Code
 	httpRespCodeClassChart = Chart{
 		ID:       "responses_by_http_status_code_class",
 		Title:    "Responses By HTTP Status Code Class",
 		Units:    "responses/s",
-		Fam:      "responses",
+		Fam:      "http code",
 		Ctx:      "squid.http_status_code_class_responses",
 		Type:     module.Stacked,
 		Priority: prioHTTPRespCodesClass,
@@ -106,7 +106,7 @@ var (
 		ID:       "responses_by_http_status_code",
 		Title:    "Responses By HTTP Status Code",
 		Units:    "responses/s",
-		Fam:      "responses",
+		Fam:      "http code",
 		Ctx:      "squid.http_status_code_responses",
 		Type:     module.Stacked,
 		Priority: prioHTTPRespCodes,

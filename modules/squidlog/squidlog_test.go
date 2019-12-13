@@ -3,7 +3,6 @@ package squidlog
 import (
 	"bytes"
 	"fmt"
-	"github.com/netdata/go.d.plugin/pkg/metrics"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -11,6 +10,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/logs"
+	"github.com/netdata/go.d.plugin/pkg/metrics"
 
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
