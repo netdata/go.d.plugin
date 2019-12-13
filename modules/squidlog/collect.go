@@ -303,29 +303,55 @@ func (s *SquidLog) addDimToHierCodeChart(code string) {
 func (s *SquidLog) addDimToServerAddressChart(address string) {
 	chartID := serverAddrChart.ID
 	dimID := pxSrvAddr + address
-	s.addDimToChart(chartID, dimID, address)
+	s.addDimToChartOrCreateIfNotExist(chartID, dimID, address)
 }
 
 func (s *SquidLog) addDimToMimeTypeChart(mimeType string) {
 	chartID := mimeTypeChart.ID
 	dimID := pxMimeType + mimeType
-	s.addDimToChart(chartID, dimID, mimeType)
+	s.addDimToChartOrCreateIfNotExist(chartID, dimID, mimeType)
 }
 
 func (s *SquidLog) addDimToChart(chartID, dimID, dimName string) {
 	chart := s.Charts().Get(chartID)
 	if chart == nil {
-		s.Warningf("add '%s' dim: couldn't find '%s' chart", dimID, chartID)
+		s.Warningf("add '%s' dim: couldn't find '%s' chart in charts", dimID, chartID)
 		return
 	}
-	dim := &Dim{
-		ID:   dimID,
-		Name: dimName,
-		Algo: module.Incremental,
-	}
+
+	dim := &Dim{ID: dimID, Name: dimName, Algo: module.Incremental}
+
 	if err := chart.AddDim(dim); err != nil {
 		s.Warningf("add '%s' dim: %v", dimID, err)
 		return
 	}
 	chart.MarkNotCreated()
+}
+
+func (s *SquidLog) addDimToChartOrCreateIfNotExist(chartID, dimID, dimName string) {
+	if s.Charts().Has(chartID) {
+		s.addDimToChart(chartID, dimID, dimName)
+		return
+	}
+
+	chart := newChartByID(chartID)
+	if chart == nil {
+		s.Warningf("add '%s' dim: couldn't create '%s' chart", dimID, chartID)
+		return
+	}
+	if err := s.Charts().Add(chart); err != nil {
+		s.Warning(err)
+		return
+	}
+	s.addDimToChart(chartID, dimID, dimName)
+}
+
+func newChartByID(chartID string) *Chart {
+	switch chartID {
+	case serverAddrChart.ID:
+		return serverAddrChart.Copy()
+	case mimeTypeChart.ID:
+		return mimeTypeChart.Copy()
+	}
+	return nil
 }
