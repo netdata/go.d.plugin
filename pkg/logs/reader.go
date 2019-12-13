@@ -65,7 +65,7 @@ func (r *Reader) CurrentFilename() string {
 func (r *Reader) open() error {
 	path := r.findFile()
 	if path == "" {
-		r.log.Debug("couldn't find log file, used path: '%s', exclude_path: '%s'", r.path, r.excludePath)
+		r.log.Debugf("couldn't find log file, used path: '%s', exclude_path: '%s'", r.path, r.excludePath)
 		return ErrNoMatchedFile
 	}
 	r.log.Debug("open log file: ", path)
