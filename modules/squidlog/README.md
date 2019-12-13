@@ -72,6 +72,9 @@ Custom log format is easy. Use [known fields](#known-fields) to construct your l
 
 -   If using CSV parser
 
+**Note**: can be used only if all known squid format codes are separated by csv delimiter.
+For example, if you have `%Ss:%Sh`, csv parser cant extract `%Ss` and `%Sh` from it and you need to use RegExp parser.
+
 Copy your current log format. Replace all known squid format codes with corresponding [known](#known-fields) fields. Replaces others with "-".
 
 ```yaml
@@ -101,6 +104,7 @@ Provide fields mapping. You need to map your label names to [known](#known-field
 -   If using RegExp parser
 
 Use pattern with subexpressions names. These names should be [known](#known-fields) by squidlog.
+We recommend to use https://regex101.com/ to test your regular expression.
 
 ```yaml
 jobs:
@@ -108,7 +112,7 @@ jobs:
     path: /var/log/squid/access.log
     log_type: regexp
     regexp_config:
-      format: '^[0-9.]+\s+(?P<resp_time>[0-9]+) (?P<client_address>[\da-f.:]+) (?P<cache_code>[A-Z_]+)/(?P<http_code>[0-9]+) (?P<resp_size>[0-9]+) (?P<req_method>[A-Z]+) [^ ]+ [^ ]+ (?P<hier_code>[A-Z_]+)/[\da-z.:-]+ (?P<mime_type>[A-Za-z-]+)'
+      format: '^[0-9.]+\s+(?P<resp_time>[0-9]+) (?P<client_address>[\da-f.:]+) (?P<cache_code>[A-Z_]+)\/(?P<http_code>[0-9]+) (?P<resp_size>[0-9]+) (?P<req_method>[A-Z]+) [^ ]+ [^ ]+ (?P<hier_code>[A-Z_]+)\/[\da-z.:-]+ (?P<mime_type>[A-Za-z-]+)'
 ```
 
 ## Configuration
