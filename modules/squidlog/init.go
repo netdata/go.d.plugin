@@ -11,10 +11,12 @@ import (
 func (s *SquidLog) createLogReader() error {
 	s.Cleanup()
 	s.Debug("starting log reader creating")
+
 	reader, err := logs.Open(s.Path, s.ExcludePath, s.Logger)
 	if err != nil {
 		return fmt.Errorf("creating log reader: %v", err)
 	}
+
 	s.Debugf("created log reader, current file '%s'", reader.CurrentFilename())
 	s.file = reader
 	return nil
@@ -26,6 +28,7 @@ func (s *SquidLog) createParser() error {
 	if err != nil {
 		return fmt.Errorf("read last line: %v", err)
 	}
+
 	lastLine = bytes.TrimRight(lastLine, "\n")
 	s.Debugf("last line: '%s'", string(lastLine))
 

@@ -14,7 +14,7 @@ func init() {
 		Create: func() module.Module { return New() },
 	}
 
-	module.Register("squidlog", creator)
+	module.Register("squid_log", creator)
 }
 
 func New() *SquidLog {
@@ -27,11 +27,6 @@ func New() *SquidLog {
 			Format:           "- $resp_time $client_address $result_code $resp_size $req_method - - $hierarchy $mime_type",
 			CheckField:       checkCSVFormatField,
 		},
-		LTSV: logs.LTSVConfig{
-			FieldDelimiter: '\t',
-			ValueDelimiter: ':',
-		},
-		RegExp: logs.RegExpConfig{},
 	}
 	return &SquidLog{
 		Config: Config{
