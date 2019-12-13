@@ -129,7 +129,7 @@ func (s *SquidLog) collectHTTPCode() {
 		s.mx.ReqRedirect.Inc()
 	case code >= 400 && code < 500:
 		s.mx.ReqBad.Inc()
-	case code >= 500 && code < 603:
+	case code >= 500 && code <= 603:
 		s.mx.ReqError.Inc()
 	}
 
