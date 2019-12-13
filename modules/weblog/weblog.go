@@ -106,6 +106,7 @@ func (w *WebLog) Check() bool {
 
 	if err := w.createCharts(w.line); err != nil {
 		w.Warning("check failed: ", err)
+		return false
 	}
 	return true
 }
