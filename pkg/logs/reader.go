@@ -64,10 +64,11 @@ func (r *Reader) CurrentFilename() string {
 
 func (r *Reader) open() error {
 	path := r.findFile()
-	r.log.Debug("open log file: ", path)
 	if path == "" {
+		r.log.Debugf("couldn't find log file, used path: '%s', exclude_path: '%s'", r.path, r.excludePath)
 		return ErrNoMatchedFile
 	}
+	r.log.Debug("open log file: ", path)
 	file, err := os.Open(path)
 	if err != nil {
 		return err
