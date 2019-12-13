@@ -52,7 +52,7 @@ type metricsData struct {
 	ReqError    metrics.Counter `stm:"req_type_error"`
 
 	BytesSent     metrics.Counter       `stm:"bytes_sent"`
-	RespTime      metrics.Summary       `stm:"resp_time"`
+	RespTime      metrics.Summary       `stm:"resp_time,1000,1"`
 	UniqueClients metrics.UniqueCounter `stm:"uniq_clients"`
 
 	ReqMethod              metrics.CounterVec `stm:"req_method"`
