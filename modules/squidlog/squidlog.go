@@ -8,9 +8,9 @@ import (
 
 func init() {
 	creator := module.Creator{
-		//Defaults: module.Defaults{
-		//	Disabled: true,
-		//},
+		Defaults: module.Defaults{
+			Disabled: true,
+		},
 		Create: func() module.Module { return New() },
 	}
 
@@ -77,6 +77,7 @@ func (s *SquidLog) Check() bool {
 
 	if err := s.createCharts(s.line); err != nil {
 		s.Warning("check failed: ", err)
+		return false
 	}
 	return true
 }
