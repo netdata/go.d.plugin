@@ -1,6 +1,8 @@
 # squid_log
 
-This module parses [`Squid`](http://www.squid-cache.org/) caching proxy logs.
+[`Squid`](http://www.squid-cache.org/) is a caching and forwarding HTTP web proxy.
+
+This module parses `Squid` access logs.
 
 ## Charts
 
@@ -27,17 +29,17 @@ Module produces following charts:
 
 ## Log Parsers
 
-Squidlog supports 3 different log parsers:
+Squidlog supports 3 log parsers:
 
 -   CSV
--   [LTSV](http://ltsv.org/)
+-   LTSV
 -   RegExp
 
 RegExp is the slowest among them but it is very likely you will need to use it if your log format is not default.
 
 ## Known Fields
 
-These are [Squid](http://www.squid-cache.org/Doc/config/logformat/) log format codes.
+These are `Squid` [log format codes](http://www.squid-cache.org/Doc/config/logformat/).
 
 Squidlog is aware how to parse and interpret following codes:
 
@@ -56,7 +58,7 @@ Squidlog is aware how to parse and interpret following codes:
 | mime_type               | %mt               | MIME content type.
 
 In addition, to make `Squid` [native log format](https://wiki.squid-cache.org/Features/LogFormat#Squid_native_access.log_format_in_detail) csv parsable,
-Squidlog understands these groups of codes:
+squidlog understands these groups of codes:
 
 | field                   | squid format code | description                                                            |
 |-------------------------|-------------------|------------------------------------------------------------------------|
@@ -70,6 +72,8 @@ Custom log format is easy. Use [known fields](#known-fields) to construct your l
 
 -   If using CSV parser
 
+Copy your current log format. Replace all known squid format codes with corresponding [known](#known-fields) fields. Replaces others with "-".
+
 ```yaml
 jobs:
   - name: squid_log_custom_csv_exampla
@@ -78,8 +82,6 @@ jobs:
     csv_config:
       format: '- resp_time client_address result_code resp_size req_method - - hierarchy mime_type'
 ```
-
-Copy your current log format. Replace all known squid format codes with appropriate [known](#known-fields) fields. Replaces others with "-".
 
 -   If using LTSV parser
 
@@ -118,9 +120,6 @@ If you use custom log format you need [to set it manually](#custom-log-format).
 jobs:
   - name: squid
     path: /var/log/squid/access.log
-    log_type: csv
-    csv_config
-      format: '- - %h - - %t \"%r\" %>s %b'
 ```
  
 For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/squid_log.conf).
