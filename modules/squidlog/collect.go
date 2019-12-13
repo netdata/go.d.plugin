@@ -248,67 +248,67 @@ func (s *SquidLog) collectCacheCodeTag(tag string) {
 
 func (s *SquidLog) addDimToCacheCodeChart(code string) {
 	chartID := cacheCodeChart.ID
-	dimID := "cache_result_code_" + code
+	dimID := pxCacheCode + code
 	s.addDimToChart(chartID, dimID, code)
 }
 
 func (s *SquidLog) addDimToCacheCodeTransportTagChart(tag string) {
 	chartID := cacheCodeTransportTagChart.ID
-	dimID := "cache_transport_tag_" + tag
+	dimID := pxTransportTag + tag
 	s.addDimToChart(chartID, dimID, tag)
 }
 
 func (s *SquidLog) addDimToCacheCodeHandlingTagChart(tag string) {
 	chartID := cacheCodeHandlingTagChart.ID
-	dimID := "cache_handling_tag_" + tag
+	dimID := pxHandlingTag + tag
 	s.addDimToChart(chartID, dimID, tag)
 }
 
 func (s *SquidLog) addDimToCacheCodeObjectTagChart(tag string) {
 	chartID := cacheCodeObjectTagChart.ID
-	dimID := "cache_object_tag_" + tag
+	dimID := pxObjectTag + tag
 	s.addDimToChart(chartID, dimID, tag)
 }
 
 func (s *SquidLog) addDimToCacheCodeLoadSourceTagChart(tag string) {
 	chartID := cacheCodeLoadSourceTagChart.ID
-	dimID := "cache_load_source_tag_" + tag
+	dimID := pxSourceTag + tag
 	s.addDimToChart(chartID, dimID, tag)
 }
 
 func (s *SquidLog) addDimToCacheCodeErrorTagChart(tag string) {
 	chartID := cacheCodeErrorTagChart.ID
-	dimID := "cache_error_tag_" + tag
+	dimID := pxErrorTag + tag
 	s.addDimToChart(chartID, dimID, tag)
 }
 
 func (s *SquidLog) addDimToHTTPRespCodesChart(tag string) {
 	chartID := httpRespCodesChart.ID
-	dimID := "http_resp_code_" + tag
+	dimID := pxHTTPCode + tag
 	s.addDimToChart(chartID, dimID, tag)
 }
 
 func (s *SquidLog) addDimToReqMethodChart(method string) {
 	chartID := reqMethodChart.ID
-	dimID := "req_method_" + method
+	dimID := pxReqMethod + method
 	s.addDimToChart(chartID, dimID, method)
 }
 
 func (s *SquidLog) addDimToHierCodeChart(code string) {
 	chartID := hierCodeChart.ID
-	dimID := "hier_code_" + code
+	dimID := pxHierCode + code
 	s.addDimToChart(chartID, dimID, code)
 }
 
 func (s *SquidLog) addDimToServerAddressChart(address string) {
 	chartID := serverAddrChart.ID
-	dimID := "server_address_" + address
+	dimID := pxSrvAddr + address
 	s.addDimToChart(chartID, dimID, address)
 }
 
 func (s *SquidLog) addDimToMimeTypeChart(mimeType string) {
 	chartID := mimeTypeChart.ID
-	dimID := "mime_type_" + mimeType
+	dimID := pxMimeType + mimeType
 	s.addDimToChart(chartID, dimID, mimeType)
 }
 

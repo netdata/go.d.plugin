@@ -19,6 +19,20 @@ func (s summary) WriteTo(rv map[string]int64, key string, mul, div int) {
 	}
 }
 
+const (
+	pxHTTPCode     = "http_resp_code_"
+	pxReqMethod    = "req_method_"
+	pxCacheCode    = "cache_result_code_"
+	pxTransportTag = "cache_transport_tag_"
+	pxHandlingTag  = "cache_handling_tag_"
+	pxObjectTag    = "cache_object_tag_"
+	pxSourceTag    = "cache_load_source_tag_"
+	pxErrorTag     = "cache_error_tag_"
+	pxHierCode     = "hier_code_"
+	pxMimeType     = "mime_type_"
+	pxSrvAddr      = "server_address_"
+)
+
 type metricsData struct {
 	Requests  metrics.Counter `stm:"requests"`
 	Unmatched metrics.Counter `stm:"unmatched"`

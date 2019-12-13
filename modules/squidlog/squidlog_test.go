@@ -3,6 +3,7 @@ package squidlog
 import (
 	"bytes"
 	"fmt"
+	"github.com/netdata/go.d.plugin/pkg/metrics"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -148,7 +149,10 @@ func TestSquidLog_Collect(t *testing.T) {
 		"unmatched":                                          16,
 	}
 
-	assert.Equal(t, expected, squid.Collect())
+	collected := squid.Collect()
+
+	assert.Equal(t, expected, collected)
+	testCharts(t, squid, collected)
 }
 
 func TestSquidLog_Collect_ReturnOldDataIfNothingRead(t *testing.T) {
@@ -223,8 +227,55 @@ func TestSquidLog_Collect_ReturnOldDataIfNothingRead(t *testing.T) {
 	}
 
 	_ = squid.Collect()
+	collected := squid.Collect()
 
-	assert.Equal(t, expected, squid.Collect())
+	assert.Equal(t, expected, collected)
+	testCharts(t, squid, collected)
+}
+
+func testCharts(t *testing.T, squidlog *SquidLog, collected map[string]int64) {
+	t.Helper()
+	ensureChartsDynamicDimsCreated(t, squidlog)
+	ensureCollectedHasAllChartsDimsVarsIDs(t, squidlog, collected)
+}
+
+func ensureChartsDynamicDimsCreated(t *testing.T, squid *SquidLog) {
+	ensureDynamicDimsCreated(t, squid, cacheCodeChart.ID, pxCacheCode, squid.mx.CacheCode)
+	ensureDynamicDimsCreated(t, squid, cacheCodeTransportTagChart.ID, pxTransportTag, squid.mx.CacheCodeTransportTag)
+	ensureDynamicDimsCreated(t, squid, cacheCodeHandlingTagChart.ID, pxHandlingTag, squid.mx.CacheCodeHandlingTag)
+	ensureDynamicDimsCreated(t, squid, cacheCodeObjectTagChart.ID, pxObjectTag, squid.mx.CacheCodeObjectTag)
+	ensureDynamicDimsCreated(t, squid, cacheCodeLoadSourceTagChart.ID, pxSourceTag, squid.mx.CacheCodeLoadSourceTag)
+	ensureDynamicDimsCreated(t, squid, cacheCodeErrorTagChart.ID, pxErrorTag, squid.mx.CacheCodeErrorTag)
+	ensureDynamicDimsCreated(t, squid, httpRespCodesChart.ID, pxHTTPCode, squid.mx.HTTPRespCode)
+	ensureDynamicDimsCreated(t, squid, reqMethodChart.ID, pxReqMethod, squid.mx.ReqMethod)
+	ensureDynamicDimsCreated(t, squid, hierCodeChart.ID, pxHierCode, squid.mx.HierCode)
+	ensureDynamicDimsCreated(t, squid, serverAddrChart.ID, pxSrvAddr, squid.mx.Server)
+	ensureDynamicDimsCreated(t, squid, mimeTypeChart.ID, pxMimeType, squid.mx.MimeType)
+}
+
+func ensureDynamicDimsCreated(t *testing.T, squid *SquidLog, chartID, dimPrefix string, data metrics.CounterVec) {
+	chart := squid.Charts().Get(chartID)
+	assert.NotNilf(t, chart, "chart '%s' is not created", chartID)
+	if chart == nil {
+		return
+	}
+	for v := range data {
+		id := dimPrefix + v
+		assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s', expected '%s'", chart.ID, v, id)
+	}
+}
+
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, s *SquidLog, collected map[string]int64) {
+	for _, chart := range *s.Charts() {
+		for _, dim := range chart.Dims {
+			_, ok := collected[dim.ID]
+			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+		for _, v := range chart.Vars {
+			_, ok := collected[v.ID]
+			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
+		}
+	}
 }
 
 func prepareSquidCollect(t *testing.T) *SquidLog {
