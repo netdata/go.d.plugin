@@ -75,12 +75,12 @@ func newEmptyLogLine() *logLine {
 
 type (
 	logLine struct {
-		lineWebFields
-		custom lineCustomFields
+		web
+		custom custom
 	}
-	lineWebFields struct {
+	web struct {
 		vhost          string
-		port           string // apache has no $scheme, this is workaround to collect per scheme requests. Lame.
+		port           string
 		reqScheme      string
 		reqClient      string
 		reqMethod      string
@@ -94,7 +94,7 @@ type (
 		sslProto       string
 		sslCipherSuite string
 	}
-	lineCustomFields struct {
+	custom struct {
 		fields map[string]struct{}
 		values []customValue
 	}
@@ -417,7 +417,7 @@ func (l logLine) verify() error {
 
 func (l logLine) empty() bool                 { return !l.hasWebFields() && !l.hasCustomFields() }
 func (l logLine) hasCustomFields() bool       { return len(l.custom.values) > 0 }
-func (l logLine) hasWebFields() bool          { return l.lineWebFields != emptyWebFields }
+func (l logLine) hasWebFields() bool          { return l.web != emptyWebFields }
 func (l logLine) hasVhost() bool              { return !isEmptyString(l.vhost) }
 func (l logLine) hasPort() bool               { return !isEmptyString(l.port) }
 func (l logLine) hasReqScheme() bool          { return !isEmptyString(l.reqScheme) }
@@ -448,7 +448,7 @@ func (l logLine) isSSLProtoValid() bool       { return isSSLProtoValid(l.sslProt
 func (l logLine) isSSLCipherSuiteValid() bool { return reCipherSuite.MatchString(l.sslCipherSuite) }
 
 func (l *logLine) reset() {
-	l.lineWebFields = emptyWebFields
+	l.web = emptyWebFields
 	l.custom.values = l.custom.values[:0]
 }
 
@@ -459,7 +459,7 @@ var (
 	reCipherSuite = regexp.MustCompile(`^[A-Z0-9-]+$`) // openssl -v
 )
 
-var emptyWebFields = lineWebFields{
+var emptyWebFields = web{
 	vhost:          emptyString,
 	port:           emptyString,
 	reqScheme:      emptyString,
@@ -520,7 +520,7 @@ func isReqMethodValid(method string) bool {
 }
 
 func isReqProtoValid(proto string) bool {
-	return len(proto) >= 6 && strings.HasPrefix(proto, "HTTP/") && isReqProtoVerValid(proto[5:])
+	return len(proto) >= 6 && proto[:5] == "HTTP/" && isReqProtoVerValid(proto[5:])
 }
 
 func isReqProtoVerValid(version string) bool {
