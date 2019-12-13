@@ -48,6 +48,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
  - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)
  - [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
  - [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)
+  - [squidlog](https://github.com/netdata/go.d.plugin/tree/master/modules/squidlog) *
  - [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
  - [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)
  - [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)
