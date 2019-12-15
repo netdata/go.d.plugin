@@ -33,6 +33,7 @@ Module produces following charts:
 -   URL Field Requests By Pattern `requests/s`
 
 For every Custom field:
+
 -   Requests By Pattern in `requests/s`
 
 For every URL pattern:
@@ -134,6 +135,7 @@ Weblog is aware how to parse and interpret the fields:
 In addition to that weblog understands [user defined fields](#custom-fields-feature).
 
 Notes:
+
 -   Apache `%h` logs the IP address if [HostnameLookups](https://httpd.apache.org/docs/2.4/mod/core.html#hostnamelookups) is Off.
     Weblog counts hostname as IPv4 address. We recommend either to disable HostnameLookups or use `%a` instead of `%h`. 
 -   Since httpd 2.0, unlike 1.3, the `%b` and `%B` format strings do not represent the number of bytes sent to the client,
