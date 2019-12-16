@@ -50,7 +50,7 @@ var (
 		Title:    "Total Requests",
 		Units:    "requests/s",
 		Fam:      "requests",
-		Ctx:      "squid.requests",
+		Ctx:      "squidlog.requests",
 		Priority: prioReqTotal,
 		Dims: Dims{
 			{ID: "requests", Algo: module.Incremental},
@@ -61,7 +61,7 @@ var (
 		Title:    "Excluded Requests",
 		Units:    "requests/s",
 		Fam:      "requests",
-		Ctx:      "squid.excluded_requests",
+		Ctx:      "squidlog.excluded_requests",
 		Priority: prioReqExcluded,
 		Dims: Dims{
 			{ID: "unmatched", Algo: module.Incremental},
@@ -72,7 +72,7 @@ var (
 		Title:    "Requests By Type",
 		Units:    "requests/s",
 		Fam:      "requests",
-		Ctx:      "squid.type_requests",
+		Ctx:      "squidlog.type_requests",
 		Type:     module.Stacked,
 		Priority: prioReqType,
 		Dims: Dims{
@@ -89,7 +89,7 @@ var (
 		Title:    "Responses By HTTP Status Code Class",
 		Units:    "responses/s",
 		Fam:      "http code",
-		Ctx:      "squid.http_status_code_class_responses",
+		Ctx:      "squidlog.http_status_code_class_responses",
 		Type:     module.Stacked,
 		Priority: prioHTTPRespCodesClass,
 		Dims: Dims{
@@ -107,7 +107,7 @@ var (
 		Title:    "Responses By HTTP Status Code",
 		Units:    "responses/s",
 		Fam:      "http code",
-		Ctx:      "squid.http_status_code_responses",
+		Ctx:      "squidlog.http_status_code_responses",
 		Type:     module.Stacked,
 		Priority: prioHTTPRespCodes,
 	}
@@ -118,7 +118,7 @@ var (
 		Title:    "Bandwidth",
 		Units:    "kilobits/s",
 		Fam:      "bandwidth",
-		Ctx:      "squid.bandwidth",
+		Ctx:      "squidlog.bandwidth",
 		Priority: prioBandwidth,
 		Dims: Dims{
 			{ID: "bytes_sent", Name: "sent", Algo: module.Incremental, Div: 1000},
@@ -131,7 +131,7 @@ var (
 		Title:    "Response Time",
 		Units:    "milliseconds",
 		Fam:      "timings",
-		Ctx:      "squid.response_time",
+		Ctx:      "squidlog.response_time",
 		Priority: prioRespTime,
 		Dims: Dims{
 			{ID: "resp_time_min", Name: "min", Div: 1000},
@@ -146,7 +146,7 @@ var (
 		Title:    "Unique Clients",
 		Units:    "clients/s",
 		Fam:      "clients",
-		Ctx:      "squid.uniq_clients",
+		Ctx:      "squidlog.uniq_clients",
 		Priority: prioUniqClients,
 		Dims: Dims{
 			{ID: "uniq_clients", Name: "clients"},
@@ -159,7 +159,7 @@ var (
 		Title:    "Requests By Cache Result Code",
 		Units:    "requests/s",
 		Fam:      "cache result",
-		Ctx:      "squid.cache_result_code_requests",
+		Ctx:      "squidlog.cache_result_code_requests",
 		Priority: prioCacheCode,
 		Type:     module.Stacked,
 	}
@@ -168,7 +168,7 @@ var (
 		Title:    "Requests By Cache Result Delivery Transport Tag",
 		Units:    "requests/s",
 		Fam:      "cache result",
-		Ctx:      "squid.cache_result_code_transport_tag_requests",
+		Ctx:      "squidlog.cache_result_code_transport_tag_requests",
 		Type:     module.Stacked,
 		Priority: prioCacheTransportTag,
 	}
@@ -177,7 +177,7 @@ var (
 		Title:    "Requests By Cache Result Handling Tag",
 		Units:    "requests/s",
 		Fam:      "cache result",
-		Ctx:      "squid.cache_result_code_handling_tag_requests",
+		Ctx:      "squidlog.cache_result_code_handling_tag_requests",
 		Type:     module.Stacked,
 		Priority: prioCacheHandlingTag,
 	}
@@ -186,7 +186,7 @@ var (
 		Title:    "Requests By Cache Result Produced Object Tag",
 		Units:    "requests/s",
 		Fam:      "cache result",
-		Ctx:      "squid.cache_code_object_tag_requests",
+		Ctx:      "squidlog.cache_code_object_tag_requests",
 		Type:     module.Stacked,
 		Priority: prioCacheObjectTag,
 	}
@@ -195,7 +195,7 @@ var (
 		Title:    "Requests By Cache Result Load Source Tag",
 		Units:    "requests/s",
 		Fam:      "cache result",
-		Ctx:      "squid.cache_code_load_source_tag_requests",
+		Ctx:      "squidlog.cache_code_load_source_tag_requests",
 		Type:     module.Stacked,
 		Priority: prioCacheLoadSourceTag,
 	}
@@ -204,7 +204,7 @@ var (
 		Title:    "Requests By Cache Result Errors Tag",
 		Units:    "requests/s",
 		Fam:      "cache result",
-		Ctx:      "squid.cache_code_error_tag_requests",
+		Ctx:      "squidlog.cache_code_error_tag_requests",
 		Type:     module.Stacked,
 		Priority: prioCacheErrorTag,
 	}
@@ -215,7 +215,7 @@ var (
 		Title:    "Requests By HTTP Method",
 		Units:    "requests/s",
 		Fam:      "http method",
-		Ctx:      "squid.http_method_requests",
+		Ctx:      "squidlog.http_method_requests",
 		Type:     module.Stacked,
 		Priority: prioReqMethod,
 	}
@@ -226,7 +226,7 @@ var (
 		Title:    "Requests By MIME Type",
 		Units:    "requests/s",
 		Fam:      "mime type",
-		Ctx:      "squid.mime_type_requests",
+		Ctx:      "squidlog.mime_type_requests",
 		Type:     module.Stacked,
 		Priority: prioMimeType,
 	}
@@ -237,7 +237,7 @@ var (
 		Title:    "Requests By Hierarchy Code",
 		Units:    "requests/s",
 		Fam:      "hierarchy",
-		Ctx:      "squid.hier_code_requests",
+		Ctx:      "squidlog.hier_code_requests",
 		Type:     module.Stacked,
 		Priority: prioHierCode,
 	}
@@ -246,7 +246,7 @@ var (
 		Title:    "Forwarded Requests By Server Address",
 		Units:    "requests/s",
 		Fam:      "hierarchy",
-		Ctx:      "squid.server_address_forwarded_requests",
+		Ctx:      "squidlog.server_address_forwarded_requests",
 		Type:     module.Stacked,
 		Priority: prioServers,
 	}

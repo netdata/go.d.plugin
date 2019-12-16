@@ -1,4 +1,4 @@
-# squid_log
+# squidlog
 
 [`Squid`](http://www.squid-cache.org/) is a caching and forwarding HTTP web proxy.
 
