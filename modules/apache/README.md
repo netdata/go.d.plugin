@@ -1,53 +1,36 @@
 # apache
 
-This module will monitor one or more [`Apache`](https://httpd.apache.org/) servers depending on configuration.
+[`Apache`](https://httpd.apache.org/) is an open-source HTTP server for modern operating systems including UNIX and Windows.
 
-**Requirements:**
- * `Apache` with enabled [`mod_status`](https://httpd.apache.org/docs/2.4/mod/mod_status.html)
+This module will monitor one or more `Apache` servers depending on configuration.
+
+## Requirements
+
+ -   `Apache` with enabled [`mod_status`](https://httpd.apache.org/docs/2.4/mod/mod_status.html)
+
+## Charts
 
 It produces the following charts:
 
-1. **Requests** in requests/s
- * requests
+-   Requests in `requests/s`
 
-2. **Connections** in connections
- * connections
+-   Connections in `connections`
 
-3. **Async Connections** in connections
- * keepalive
- * closing
- * writing
+-   Async Connections in `connections`
  
-4. **Scoreboard** in connections
- * waiting
- * starting
- * reading
- * sending
- * keepalive
- * dns lookup
- * closing
- * logging
- * finishing
- * idle cleanup
- * open
+-   Scoreboard in `connections`
 
-4. **Bandwidth** in kilobits/s
- * sent
+-   Bandwidth in `kilobits/s`
 
-5. **Workers** in workers
- * idle
- * busy
+-   Workers in `workers`
 
-6. **Lifetime Average Number Of Requests Per Second** in requests/s
- * requests
+-   Lifetime Average Number Of Requests Per Second in `requests/s`
 
-7. **Lifetime Average Number Of Bytes Served Per Second** in KiB/s
- * served
+-   Lifetime Average Number Of Bytes Served Per Second in `KiB/s`
 
-8. **Lifetime Average Response Size** in KiB
- * size
+-   Lifetime Average Response Size in `KiB`
 
-### configuration
+## Configuration
 
 Needs only `url` to server's `server-status?auto`
 
@@ -59,11 +42,13 @@ jobs:
     url : http://127.0.0.1/server-status?auto
       
   - name: remote
-    url : http://100.64.0.1/server-status?auto
+    url : http://203.0.113.10/server-status?auto
 ```
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/apache.conf).
 
-Without configuration, module attempts to connect to `http://127.0.0.1/server-status?auto`
+## Troubleshooting
 
----
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m apache
