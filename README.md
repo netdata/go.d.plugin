@@ -16,49 +16,52 @@ Shipped with `netdata`.
 
 ## Contributing
 If you have time and willing to help, there are a lof of ways to contribute:
- - Fix and [report bugs](https://github.com/netdata/go.d.plugin/issues/new)
- - [Review code and feature proposals](https://github.com/netdata/go.d.plugin/pulls)
- - [Contribute modules](https://github.com/netdata/go.d.plugin/blob/master/CONTRIBUTING.md) (wip, module interface may be changed soon)
+
+-   Fix and [report bugs](https://github.com/netdata/go.d.plugin/issues/new)
+-   [Review code and feature proposals](https://github.com/netdata/go.d.plugin/pulls)
+-   [Contribute modules](https://github.com/netdata/go.d.plugin/blob/master/CONTRIBUTING.md) (wip, module interface may be changed soon)
 
 ## Available modules
- - [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)
- - [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache) *
- - [bind](https://github.com/netdata/go.d.plugin/tree/master/modules/bind) *
- - [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)
- - [coredns](https://github.com/netdata/go.d.plugin/tree/master/modules/coredns)
- - [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery)
- - [dnsmasq_dhcp](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq_dhcp)
- - [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine)
- - [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)
- - [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example) *
- - [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)
- - [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius) *
- - [hdfs](https://github.com/netdata/go.d.plugin/tree/master/modules/hdfs)
- - [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck)
- - [k8s_kubelet](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubelet)
- - [k8s_kubeproxy](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubeproxy)
- - [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd) *
- - [lighttpd2](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd2)
- - [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)
- - [mysql](https://github.com/netdata/go.d.plugin/tree/master/modules/mysql) *
- - [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx) *
- - [openvpn](https://github.com/netdata/go.d.plugin/tree/master/modules/openvpn)
- - [pihole](https://github.com/netdata/go.d.plugin/tree/master/modules/pihole)
- - [phpfpm](https://github.com/netdata/go.d.plugin/tree/master/modules/phpfpm) *
- - [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)
- - [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
- - [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)
-  - [squidlog](https://github.com/netdata/go.d.plugin/tree/master/modules/squidlog) *
- - [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
- - [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)
- - [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)
- - [unbound](https://github.com/netdata/go.d.plugin/tree/master/modules/unbound)
- - [vcsa](https://github.com/netdata/go.d.plugin/tree/master/modules/vcsa)
- - [vsphere](https://github.com/netdata/go.d.plugin/tree/master/modules/vsphere)
- - [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) *
- - [wmi](https://github.com/netdata/go.d.plugin/tree/master/modules/wmi)
- - [x509check](https://github.com/netdata/go.d.plugin/tree/master/modules/x509check)
- - [zookeeper](https://github.com/netdata/go.d.plugin/tree/master/modules/zookeeper)
+
+-   [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)
+-   [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache) *
+-   [bind](https://github.com/netdata/go.d.plugin/tree/master/modules/bind) *
+-   [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)
+-   [coredns](https://github.com/netdata/go.d.plugin/tree/master/modules/coredns)
+-   [dnsmasq_dhcp](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq_dhcp)
+-   [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery)
+-   [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine)
+-   [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)
+-   [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example) *
+-   [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)
+-   [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius) *
+-   [hdfs](https://github.com/netdata/go.d.plugin/tree/master/modules/hdfs)
+-   [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck)
+-   [k8s_kubelet](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubelet)
+-   [k8s_kubeproxy](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubeproxy)
+-   [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd) *
+-   [lighttpd2](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd2)
+-   [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)
+-   [mysql](https://github.com/netdata/go.d.plugin/tree/master/modules/mysql) *
+-   [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx) *
+-   [openvpn](https://github.com/netdata/go.d.plugin/tree/master/modules/openvpn)
+-   [phpdaemon](https://github.com/netdata/go.d.plugin/tree/master/modules/phpdaemon)
+-   [phpfpm](https://github.com/netdata/go.d.plugin/tree/master/modules/phpfpm) *
+-   [pihole](https://github.com/netdata/go.d.plugin/tree/master/modules/pihole)
+-   [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)
+-   [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq) *
+-   [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)
+-   [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)
+-   [squidlog](https://github.com/netdata/go.d.plugin/tree/master/modules/squidlog) *
+-   [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)
+-   [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)
+-   [unbound](https://github.com/netdata/go.d.plugin/tree/master/modules/unbound)
+-   [vcsa](https://github.com/netdata/go.d.plugin/tree/master/modules/vcsa)
+-   [vsphere](https://github.com/netdata/go.d.plugin/tree/master/modules/vsphere)
+-   [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) *
+-   [wmi](https://github.com/netdata/go.d.plugin/tree/master/modules/wmi)
+-   [x509check](https://github.com/netdata/go.d.plugin/tree/master/modules/x509check)
+-   [zookeeper](https://github.com/netdata/go.d.plugin/tree/master/modules/zookeeper)
 
 `*` - disabled by default.
 
@@ -69,14 +72,16 @@ Configurations are incompatible. All rewritten in `go` modules are disabled by d
 This is a temporary solution, we are working on it.
 
 To enable module please do the following:
- - explicitly disable python module in `python.d.conf`
- - explicitly enable go module in `go.d.conf`
- - move python module jobs to go module configuration file (change syntax, see go module configuration file for details).
- - restart `netdata.service`
+
+-   explicitly disable python module in `python.d.conf`
+-   explicitly enable go module in `go.d.conf`
+-   move python module jobs to go module configuration file (change syntax, see go module configuration file for details).
+-   restart `netdata.service`
 
 If case of problems:
- - check `error.log` for module related errors (`grep <module name> error.log`)
- - run plugin in [debug mode](#how-to-debug-a-go-module)
+
+-   check `error.log` for module related errors (`grep <module name> error.log`)
+-   run plugin in [debug mode](#troubleshooting)
 
 ## Configuration
 
@@ -85,10 +90,10 @@ If case of problems:
 
 Configurations are written in [YAML](http://yaml.org/).
 
- * [plugin configuration](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf)
- * [specific module configuration](https://github.com/netdata/go.d.plugin/tree/master/config/go.d)
+-   [plugin configuration](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf)
+-   [specific module configuration](https://github.com/netdata/go.d.plugin/tree/master/config/go.d)
 
-## How to debug a go module
+## Troubleshooting
 
 Plugin CLI:
 ```
@@ -105,7 +110,7 @@ Help Options:
 
 ```
 
-Specific module debug:
+To debug specific module:
 ```
 # become user netdata
 sudo su -s /bin/bash netdata
