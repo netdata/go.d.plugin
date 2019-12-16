@@ -14,7 +14,7 @@ func init() {
 		Create: func() module.Module { return New() },
 	}
 
-	module.Register("squid_log", creator)
+	module.Register("squidlog", creator)
 }
 
 func New() *SquidLog {
