@@ -1,14 +1,18 @@
 # dnsmasq_dhcp
 
-This module will monitor [`Dnsmasq DHCP`](http://www.thekelleys.org.uk/dnsmasq/doc.html) leases database.
+[`Dnsmasq`]((http://www.thekelleys.org.uk/dnsmasq/doc.html)) is a lightweight, easy to configure, DNS forwarder and DHCP server.
+
+This module monitors `Dnsmasq DHCP` leases database.
+
+## Charts
 
 It produces the following set of charts for every dhcp-range:
 
-1. **DHCP Range Allocated Leases** in leases
+-   DHCP Range Allocated Leases in `leases`
 
-2. **DHCP Range Utilization** in percentage
+-   DHCP Range Utilization in `percentage`
 
-### configuration
+## Auto-detection
 
 Module automatically detects all configured dhcp-ranges reading `dnsmasq` configuration files.
 
@@ -16,6 +20,8 @@ By default it uses:
  - `/var/lib/misc/dnsmasq.leases` to read leases.
  - `/etc/dnsmasq.conf` to detect dhcp-ranges.
  - `/etc/dnsmasq.d` to find additional configurations.
+
+## Configuration 
 
 Here is an example:
 
@@ -29,4 +35,8 @@ jobs:
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/dnsmasq_dhcp.conf).
 
----
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m dnsmasq_dhcp
