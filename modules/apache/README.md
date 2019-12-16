@@ -24,17 +24,15 @@ It produces the following charts:
 
 ## Configuration
 
-Needs only `url` to server's `server-status?auto`
-
-Here is an example for 2 servers:
+Needs only `url` to server's `server-status?auto`. Here is an example for 2 servers:
 
 ```yaml
 jobs:
   - name: local
-    url : http://127.0.0.1/server-status?auto
+    url: http://127.0.0.1/server-status?auto
       
   - name: remote
-    url : http://203.0.113.10/server-status?auto
+    url: http://203.0.113.10/server-status?auto
 ```
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/apache.conf).

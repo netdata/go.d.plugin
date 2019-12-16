@@ -49,9 +49,7 @@ Per View Statistics (the following set will be added for each bind view):
 
 ## Configuration
 
-Needs only `url`.
-
-Here is an example for several servers:
+Needs only `url`. Here is an example for several servers:
 
 ```yaml
 jobs:

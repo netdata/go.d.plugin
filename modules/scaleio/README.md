@@ -58,9 +58,7 @@ Sdc charts:
  
 ## Configuration
 
-Needs only `url` of VxFlex OS Gateway API, MDM `username` and `password`.
-
-Here is an example for 2 instances:
+Needs only `url` of VxFlex OS Gateway API, MDM `username` and `password`. Here is an example for 2 instances:
 
 ```yaml
 jobs:

@@ -22,7 +22,7 @@ It produces following charts:
 
 ## Configuration
 
-Needs only `url` to server's `status`. Here is an example for local server:
+Needs only `url` to server's `status`. Here is an example for local server an remote servers:
 
 ```yaml
 jobs:

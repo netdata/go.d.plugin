@@ -39,9 +39,7 @@ Per zone charts (if configured):
 
 ## Configuration
 
-The module needs only the `url` to a CoreDNS `metrics-address`.
-
-Here is an example:
+The module needs only the `url` to a CoreDNS `metrics-address`. Here is an example for several instances:
 
 ```yaml
 jobs:

@@ -19,7 +19,7 @@ It produces following charts:
 
 ## Configuration
 
-Needs only `url` to server's `stub_status`. Here is an example for local server:
+Needs only `url` to server's `stub_status`. Here is an example for local and remote servers:
 
 ```yaml
 jobs:

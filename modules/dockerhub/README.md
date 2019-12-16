@@ -17,7 +17,7 @@ It produces the following charts:
 
 ## Configuration
 
-Needs only list of repositories. Here is an example:
+Needs only list of `repositories`. Here is an example:
 
 ```yaml
 jobs:
