@@ -1,11 +1,15 @@
 # zookeeper
 
-This module monitors one or more [`Zookeeper`](https://zookeeper.apache.org/) servers, depending on your configuration.
+[`ZooKeeper`](https://zookeeper.apache.org/) is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. 
 
-**Requirements:**
+This module monitors one or more `ZooKeeper` servers, depending on your configuration.
+
+## Requirements
 
 -   `Zookeeper` with accessible client port
 -   whitelisted `mntr` command
+
+## Charts
 
 It produces the following charts:
 
@@ -19,11 +23,9 @@ It produces the following charts:
 -   Approximate Data Tree Size in `KiB`
 -   Server State in `state`
 
-### Configuration
+## Configuration
 
-Needs only `address` to server's client port.
-
-Here is an example for 2 servers:
+Needs only `address` to server's client port. Here is an example for 2 servers:
 
 ```yaml
 jobs:
@@ -36,4 +38,8 @@ jobs:
 
 For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/zookeeper.conf).
 
----
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m zookeeper
