@@ -1,8 +1,8 @@
 # kubelet
 
-The [`Kubelet`](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)  is the primary “node agent” that runs on each node in the kubernetes environment.
+[`Kubelet`](https://kubernetes.io/docs/concepts/overview/components/#kubelet) is an agent that runs on each node in the cluster. It makes sure that containers are running in a pod.
 
-This module will monitor one or more `Kubelet` instances depending on configuration.
+This module will monitor one or more `kubelet` instances depending on configuration.
 
 ## Charts
 
@@ -32,7 +32,7 @@ Per every plugin:
  
 ## Configuration
 
-Needs only `url` to kubelet metric-address. Here is an example for 2 instances:
+Needs only `url` to `kubelet` metric-address. Here is an example for 2 instances:
 
 ```yaml
 jobs:
