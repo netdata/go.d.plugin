@@ -1,31 +1,24 @@
 # phpdaemon
 
-This module collects [`phpdaemon`](https://github.com/kakserpom/phpdaemon) workers statistics via http.
+[`phpdaemon`](https://github.com/kakserpom/phpdaemon) is an asynchronous server-side framework for Web and network applications implemented in PHP using libevent.
 
-**Requirements:**
- * `phpdaemon` with enabled `http` server.
- * statistics should be reported in `json` format.
+This module collects `phpdaemon` workers statistics via http.
+
+## Requirements
+
+-   `phpdaemon` with enabled `http` server.
+-   statistics should be reported in `json` format.
+
+## Charts
 
 It produces the following charts:
 
-1. **Workers** in workers
- * alive
- * shutdown
+-   Workers in `workers`
+-   Alive Workers State in `workers`
+-   Idle Workers State in `workers`
+-   Uptime in `seconds`
 
-2. **Alive Workers State** in workers
- * idle
- * busy
- * reloading
-
-3. **Idle Workers State** in workers
- * preinit
- * init
- * initialized
- 
-4. **Uptime** in seconds
- * time
- 
-### configuration
+## Configuration
 
 Here is an example for 2 instances:
 
@@ -40,15 +33,13 @@ jobs:
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/phpdaemon.conf).
 
-Without configuration, module attempts to connect to `http://127.0.0.1:8509/FullStatus`
-
-### phpdaemon configuration
+## phpdaemon configuration
 
 Instruction from [@METAJIJI](https://github.com/METAJIJI)
 
 For enable `phpd` statistics on http, you must enable the http server and write an application.
 
-Application is important, because standalone application [ServerStatus.php](https://github.com/kakserpom/phpdaemon/blob/master/PHPDaemon/Applications/ServerStatus.php) provide statistics in html format and unusable for `netdata`. 
+Application is important, because standalone application [ServerStatus.php](https://github.com/kakserpom/phpdaemon/blob/master/PHPDaemon/Applications/ServerStatus.php) provides statistics in html format and unusable for `netdata`. 
 
 > /opt/phpdaemon/conf/phpd.conf
 
@@ -111,4 +102,8 @@ class FullStatusRequest extends Generic {
 }
 ```
 
----
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m phpdaemon
