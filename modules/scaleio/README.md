@@ -1,6 +1,8 @@
 # ScaleIO
 
-This module will monitor one or more [ScaleIO (VxFlex OS)](https://www.dellemc.com/en-us/storage/data-storage/software-defined-storage.htm) instances via VxFlex OS Gateway API.
+[`Dell EMC ScaleIO`](https://www.dellemc.com/en-us/storage/data-storage/software-defined-storage.htm) is a software-defined storage product from Dell EMC that creates a server-based storage area network from local application server storage using existing customer hardware or EMC servers.
+
+This module monitors one or more `ScaleIO (VxFlex OS)` instances via VxFlex OS Gateway API.
 
 It collects metrics for following ScaleIO components:
 
@@ -73,9 +75,8 @@ jobs:
     username: admin
     password: password
 ```
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/scaleio.conf).
 
-Without configuration module won't work.
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/scaleio.conf).
 
 ## Troubleshooting
 
@@ -84,4 +85,3 @@ Run following command as `netdata` user:
 
 > ./go.d.plugin -d -m scaleio
 
----
