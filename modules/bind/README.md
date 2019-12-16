@@ -78,10 +78,10 @@ For all available options please see module [configuration file](https://github.
 Ensure that the `statistics-channels` feature is configured correctly.
 Run following command:
 
-> curl "http://localhost:8653/json/v1/server"
+> `curl "http://localhost:8653/json/v1/server"`
 
 It should print out a bunch of info about the statistics of the server.
 
 Check the module debug output. Run the following command as `netdata` user:
 
-> ./go.d.plugin -d -m bind
+> `./go.d.plugin -d -m bind`
