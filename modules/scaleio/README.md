@@ -1,16 +1,16 @@
-# ScaleIO
+# scaleio
 
 [`Dell EMC ScaleIO`](https://www.dellemc.com/en-us/storage/data-storage/software-defined-storage.htm) is a software-defined storage product from Dell EMC that creates a server-based storage area network from local application server storage using existing customer hardware or EMC servers.
 
 This module monitors one or more `ScaleIO (VxFlex OS)` instances via VxFlex OS Gateway API.
 
-It collects metrics for following ScaleIO components:
+It collects metrics for following `ScaleIO` components:
 
 -   System
 -   Storage Pool
 -   Sdc
 
-ScaleIO module is tested on:
+`ScaleIO` module is tested on:
 
 -   VxFlex OS v2.6.1.1_113, REST API v2.5
 -   VxFlex OS v3.0.0.1_134, REST API v3.0
