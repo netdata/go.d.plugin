@@ -1,6 +1,8 @@
 # unbound
 
-This module monitors one or more [`Unbound`](https://nlnetlabs.nl/projects/unbound/about/) servers, depending on your configuration.
+[`Unbound`](https://nlnetlabs.nl/projects/unbound/about/) is a validating, recursive, and caching DNS resolver product from NLnet Labs.
+
+This module monitors one or more `Unbound` servers, depending on your configuration.
 
 ## Requirements
 
@@ -114,7 +116,6 @@ jobs:
  
 For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/unbound.conf).
 
-
 ## Troubleshooting
 
 Ensure that the control protocol is actually configured correctly.
@@ -128,5 +129,3 @@ Check the module debug output.
 Run following command as `netdata` user:
 
 > ./go.d.plugin -d -m unbound
-
----
