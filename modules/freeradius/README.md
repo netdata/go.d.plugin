@@ -1,91 +1,67 @@
 # freeradius
 
+[`FreeRADIUS`](https://freeradius.org/) is a modular, high performance free RADIUS suite.
+
+This module will monitor one or more `FreeRADIUS` servers depending on configuration.
+
+## Requirements
+
+-   `FreeRADIUS` with enabled status feature.
+
+The configuration for the status server is automatically created in the sites-available directory.
+By default, server is enabled and can be queried from every client.
+
+To enable status feature do the following:
+
+-   `cd sites-enabled`
+
+-   `ln -s ../sites-available/status status`
+
+-   restart FreeRADIUS server
+
+
+## Charts
+
 It produces following charts:
 
-1. **Authentication** in pps
- * requests
- * responses
+-   Authentication in `pps`
  
-2. **Authentication Responses** in pps
- * accepts
- * rejects
- * challenges
+-   Authentication Responses in `pps`
  
- 3. **Bad Authentication Requests** in pps
- * dropped
- * duplicate
- * invalid
- * malformed
- * unknown-types
+-   Bad Authentication Requests in `pps`
  
- 4. **Proxy Authentication** in pps
-  * requests
-  * responses
+-   Proxy Authentication in `pps`
   
- 5. **Proxy Authentication Responses** in pps
-  * accepts
-  * rejects
-  * challenges
+-   Proxy Authentication Responses in `pps`
   
- 6. **Proxy Bad Authentication Requests** in pps
-  * dropped
-  * duplicate
-  * invalid
-  * malformed
-  * unknown-types
+-   Proxy Bad Authentication Requests in `pps`
 
-7. **Accounting** in pps
- * requests
- * responses
+-   Accounting in `pps`
 
-8. **Bad Accounting Requests** in pps 
-  * dropped
-  * duplicate
-  * invalid
-  * malformed
-  * unknown-types
+-   Bad Accounting Requests in `pps` 
 
-9. **Proxy Accounting** in pps
- * requests
- * responses
+-   Proxy Accounting in `pps`
 
-10. **Proxy Bad Accounting Requests** in pps 
-  * dropped
-  * duplicate
-  * invalid
-  * malformed
-  * unknown-types
+-   Proxy Bad Accounting Requests in `pps` 
 
-
-### configuration
-
-Module specific options:
- * `host`    - server address. Default is 127.0.0.1.
- * `port`    - server port. Default is 18121.
- * `secret`  - secret. Default is `adminsecret`.
- * `timeout` - request timeout. Default is 1 seconds.
+## Configuration
  
-Without configuration, module will try to connect to 127.0.0.1:18121 and will use `adminsecret` as a secret.
- 
-Configuration sample:
+Here is an example for 2 servers:
 
 ```yaml
 jobs:
   - name: local
-    host : 127.0.0.1
+    host: 127.0.0.1
+
+  - name: remote
+    host: 203.0.113.10
+    secret: secret 
 ```
 
-### prerequisite
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/freeradius.conf).
 
-Module query FreeRADIUS using `StatusServer` packet. FreeRADIUS status feature is disabled by default.
-Should be enabled.
+## Troubleshooting
 
-The configuration for the status server is automatically created in the sites-available directory.
-By default, server is enabled and can be queried from every client.
-FreeRADIUS will only respond to status-server messages if the status-server virtual server has been enabled.
+Check the module debug output. Run the following command as `netdata` user:
 
-To enable FreeRADIUS status do the following:
- * cd sites-enabled
- * ln -s ../sites-available/status status
- * restart FreeRADIUS server
----
+> ./go.d.plugin -d -m freeradius
