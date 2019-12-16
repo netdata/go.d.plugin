@@ -1,49 +1,28 @@
 # lighttpd2
 
-This module will monitor one or more [`Lighttpd2`](https://redmine.lighttpd.net/projects/lighttpd2/wiki) servers depending on configuration.
+[`Lighttpd2`](https://redmine.lighttpd.net/projects/lighttpd2) is a work in progress version of open-source web server.
 
-**Requirements:**
- * `lighttpd2` with enabled [`mod_status`](https://doc.lighttpd.net/lighttpd2/mod_status.html)
+This module will monitor one or more `Lighttpd2` servers depending on configuration.
+
+## Requirements
+
+-   `lighttpd2` with enabled [`mod_status`](https://doc.lighttpd.net/lighttpd2/mod_status.html)
+
+## Charts
 
 It produces the following charts:
 
-1. **Requests** in requests/s
- * requests
+-   Requests in `requests/s`
+-   Status Codes in `requests/s`
+-   Traffic in `kilobits/s`
+-   Connections in `connections`
+-   Connection States in  `connection`
+-   Memory Usage in `KiB`
+-   Uptime in `seconds`
 
-2. **Status Codes** in requests/s
- * 1xx
- * 2xx
- * 3xx
- * 4xx
- * 5xx
+## Configuration
 
-3. **Traffic** in kilobits/s
- * in
- * out
-
-4. **Connections** in connections
- * connections
- 
-5. **Connection States** amount connection in every state
- * start
- * read header
- * handle request
- * write response
- * keepalive
- * upgraded
- 
-6. **Memory Usage** in KiB
- * usage
-
-7. **Uptime** in seconds
- * uptime
-
-
-### configuration
-
-Needs only `url` to server's `server-status?format=plain`
-
-Here is an example for 2 servers:
+Needs only `url` to server's `server-status?format=plain`. Here is an example for 2 servers:
 
 ```yaml
 jobs:
@@ -51,11 +30,14 @@ jobs:
     url : http://127.0.0.1/server-status?format=plain
       
   - name: remote
-    url : http://100.64.0.1/server-status?format=plain
+    url : http://203.0.113.10/server-status?format=plain
 ```
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/lighttpd2.conf).
 
-Without configuration, module attempts to connect to `http://localhost/server-status?format=plain`
+## Troubleshooting
 
----
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m lighttpd2
+

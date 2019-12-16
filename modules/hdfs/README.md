@@ -1,13 +1,16 @@
 # hdfs
 
-This module monitors one or more [`Hadoop Distributed File
-System`](https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html) (HDFS) nodes, depending on your configuration.
+The [`Hadoop Distributed File System ( HDFS )`](https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html) is a distributed file system designed to run on commodity hardware.
+
+This module monitors one or more `Hadoop Distributed File System` nodes, depending on your configuration.
 
 Netdata accesses HDFS metrics over `Java Management Extensions` (JMX) through the web interface of an HDFS daemon.
 
-**Requirements:**
+## Requirements
 
 -   `hdfs` node with accessible `/jmx` endpoint
+
+## Charts
 
 It produces the following charts for `namenode`:
 
@@ -32,7 +35,7 @@ It produces the following charts for `namenode`:
 -   Number of Problem Blocks (can point to an unhealthy cluster) in `num`
 -   Number of Data Nodes By Status in `num`
   
-It produces the following charts for `datanode`:
+For `datanode`:
 
 -   Heap Memory in `MiB`
 -   GC Events in `events/s`
@@ -50,21 +53,24 @@ It produces the following charts for `datanode`:
 -   Used Capacity in `KiB`
 -   Bandwidth in `KiB/s`
 
-### configuration
+## Configuration
 
-Needs only `url` to server's `/jmx` endpoint.
-
-Here is an example for 2 servers:
+Needs only `url` to server's `/jmx` endpoint. Here is an example for 2 servers:
 
 ```yaml
 jobs:
-  - name    : namenode
-    url     : http://127.0.0.1:9870/jmx
+  - name: namenode
+    url: http://127.0.0.1:9870/jmx
       
-  - name    : datanode
-    url     : http://127.0.0.1:9864/jmx
+  - name: datanode
+    url: http://127.0.0.1:9864/jmx
 ```
 
 For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/hdfs.conf).
 
----
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m hdfs
+

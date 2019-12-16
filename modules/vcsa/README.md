@@ -1,27 +1,20 @@
 # vcsa
 
-This module will collect health statistics from one or more [`vCenter Server Appliance`](https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html) using [`Health API`](https://code.vmware.com/apis/60/vcenter-server-appliance-management).
+The [`vCenter Server Appliance`](https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html) using [`Health API`](https://code.vmware.com/apis/60/vcenter-server-appliance-management) is a preconfigured Linux virtual machine, which is optimized for running VMware vCenter Server® and the associated services on Linux.
 
-Requirement:
-  - `vSphere` 6.5+
+This module collects health statistics from one or more [`vCenter Server Appliance`] servers.
 
-It produces the following charts:
-  - Overall System Health in `status`
-    - system
-    
-  - Components Health in `status`
-    - applmgmt
-    - database_storage
-    - load
-    - mem
-    - storage
-    - swap
-    
-  - Software Updates Health in `status`
-    - software_packages
+## Requirements
 
+-  `vSphere` 6.5+
 
-### health statuses
+## Charts
+
+-   Overall System Health in `status`
+-   Components Health in `status`
+-   Software Updates Health in `status`
+
+## Health statuses
     
 Overall System Health:
 
@@ -56,25 +49,27 @@ Software Updates Health:
 | `4`   | `gray`  | An error retrieving information on software updates.|
 
 
-### configuration
+## Configuration
 
-Needs only `url`, `username` and `password`.
-
-Here is an example for 2 servers:
+Needs only `url`, `username` and `password`. Here is an example for 2 servers:
 
 ```yaml
 jobs:
-  - name         : vcsa1
-    url          : https://203.0.113.0
-    username     : admin@vsphere.local
-    password     : somepassword
+  - name: vcsa1
+    url: https://203.0.113.0
+    username: admin@vsphere.local
+    password: somepassword
 
-  - name         : vcsa2
-    url          : https://203.0.113.10
-    username     : admin@vsphere.local
-    password     : somepassword
+  - name: vcsa2
+    url: https://203.0.113.10
+    username: admin@vsphere.local
+    password: somepassword
 ```
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/vcenter.conf).
 
----
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m vcsa

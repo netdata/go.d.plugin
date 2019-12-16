@@ -2,9 +2,8 @@
 
 This module will monitor one or more Windows machines, using the [wmi_exporter](https://github.com/martinlindhe/wmi_exporter).
 
-**wmi_exporter configuration**
-
 Module collects metrics from following collectors:
+
    - cpu
    - memory
    - net
@@ -19,121 +18,62 @@ Run `wmi_exporter` with these collectors:
 
 Installation: please follow [official guide](https://github.com/martinlindhe/wmi_exporter#installation).
  
-### charts
+## Charts
 
 #### cpu 
 
-1. **Total CPU Utilization (all cores)** in percentage
-  * dpc
-  * user
-  * privileged
-  * interrupt
-
-2. **Received and Serviced Deferred Procedure Calls (DPC)** in dpc/c
-
-3. **Received and Serviced Hardware Interrupts** in interrupts/s
-
-4. **CPU Utilization** Per Core in percentage
-  * dpc
-  * user
-  * privileged
-  * interrupt
-
-5. **Time Spent in Low-Power Idle State** Per Core in percentage
-  * c1
-  * c2
-  * c3
+-   Total CPU Utilization (all cores) in `percentage`
+-   Received and Serviced Deferred Procedure Calls (DPC) in `dpc/c`
+-   Received and Serviced Hardware Interrupts in `interrupts/s`
+-   CPU Utilization Per Core in `percentage`
+-   Time Spent in Low-Power Idle State Per Core in `percentage`
 
 #### memory
  
-1. **Memory Utilization** in KiB
-  * available
-  * used
-
-2. **Memory Page Faults** in events/s
-  * page faults
-
-3. **Swap Utilization** in KiB
-  * available
-  * used
-
-4. **Swap Operations** in operations/s
-  * read
-  * write
-
-5. **Swap Pages** pages/s
-  * read
-  * written
-
-6. **Cached Data** in KiB
-  * cached
-
-7. **Cache Faults** in events/s
-  * cache faults
-
-8. **System Memory Pool** in KiB
-  * paged
-  * non-pages
+-   Memory Utilization in `KiB`
+-   Memory Page Faults in `events/s`
+-   Swap Utilization in `KiB`
+-   Swap Operations in `operations/s`
+-   Swap Pages in `pages/s`
+-   Cached Data in `KiB`
+-   Cache Faults in `events/s`
+-   System Memory Pool in `KiB`
 
 #### network
  
-1. **Bandwidth** Per NIC in kilobits/s
-  * received
-  * sent
-
-2. **Packets** Per NIC in packets/s
-  * received
-  * sent
-
-3. **Errors** Per NIC in errors/s
-  * inbound
-  * outbound
-
-4. **Discards** Per NIC in discards/s
-  * inbound
-  * outbound
+-   Bandwidth Per NIC in `kilobits/s`
+-   Packets Per NIC in `packets/s`
+-   Errors Per NIC in `errors/s`
+-   Discards Per NIC in `discards/s`
 
 #### disk
  
-1. **Utilization** Per Disk in KiB
-  * free
-  * used
-
-2. **Bandwidth** Per Disk in KiB/s
-  * read
-  * write
-
-3. **Operations** Per Disk in operations/s
-  * reads
-  * writes
+-   Utilization Per Disk in `KiB`
+-   Bandwidth Per Disk in `KiB/s`
+-   Operations Per Disk in `operations/s`
   
 #### system
  
-1. **Processes** in number
-  * processes
+-   Processes in `number`
+-   Threads in `number`
+-   Uptime in `seconds`
+  
+## Configuration
 
-2. **Threads** in number
-  * threads
-
-3. **Uptime** in seconds
-  * time
-
- 
- 
-### configuration
-
-Needs only `url` to `wmi_exporter` metrics endpoint.
-
-Here is an example for 2 instances:
+Needs only `url` to `wmi_exporter` metrics endpoint. Here is an example for 2 instances:
 
 ```yaml
 jobs:
   - name : win_server1
-    url  : http://10.0.0.1:9182/metrics
+    url  : http://203.0.113.10:9182/metrics
 
   - name : win_server2
-    url  : http://10.0.0.2:9182/metrics
+    url  : http://203.0.113.11:9182/metrics
 ```
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/wmi.conf).
 
----
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m wmi

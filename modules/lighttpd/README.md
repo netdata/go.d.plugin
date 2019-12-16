@@ -1,46 +1,26 @@
 # lighttpd
 
-This module will monitor one or more [`Lighttpd`](https://www.lighttpd.net/) servers depending on configuration.
+[`Lighttpd`](https://www.lighttpd.net/) is an open-source web server optimized for speed-critical environments while remaining standards-compliant, secure and flexible
 
-**Requirements:**
- * `lighttpd` with enabled [`mod_status`](https://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModStatus)
+This module will monitor one or more `Lighttpd` servers depending on configuration.
+
+## Requirements
+
+-   `lighttpd` with enabled [`mod_status`](https://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModStatus).
+
+## Charts
 
 It produces the following charts:
 
-1. **Requests** in requests/s
- * requests
+-   Requests in `requests/s`
+-   Bandwidth in `kilobytes/s`
+-   Servers in `servers`
+-   Scoreboard in `connections`
+-   Uptime in `seconds`
 
-2. **Bandwidth** in kilobytes/s
- * sent
+## Configuration
 
-3. **Servers** in servers
- * idle
- * busy
-
-4. **Scoreboard** in connections
- * waiting
- * open
- * close
- * hard error
- * keepalive
- * read
- * read post
- * write
- * handle request
- * requests start
- * requests end
- * response start
- * requests end
-
-5. **Uptime** in seconds
- * uptime
-
-
-### configuration
-
-Needs only `url` to server's `server-status?auto`
-
-Here is an example for 2 servers:
+Needs only `url` to server's `server-status?auto`. Here is an example for 2 servers:
 
 ```yaml
 jobs:
@@ -48,11 +28,13 @@ jobs:
     url : http://127.0.0.1/server-status?auto
       
   - name: remote
-    url : http://100.64.0.1/server-status?auto
+    url : http://203.0.113.10/server-status?auto
 ```
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/lighttpd.conf).
 
-Without configuration, module attempts to connect to `http://127.0.0.1/server-status?auto`
+## Troubleshooting
 
----
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m lighttpd

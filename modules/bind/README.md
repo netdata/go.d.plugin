@@ -1,66 +1,18 @@
 # bind
 
-This module will monitor one or more Bind(named) servers depending on configuration.
+[`Bind9`](https://www.isc.org/bind/) (or named) is a very flexible, full-featured DNS system. 
 
-**Requirements:**
- * `bind` version 9.9+ with configured `statistics-channels`
+This module will monitor one or more `Bind9` servers depending on configuration.
 
-It produces the following charts:
+## Requirements
 
-1. Received Requests by IP version (IPv4, IPv6)
-2. Successful Queries
-3. Recursive Clients
-4. Queries by IP Protocol (TCP, UDP)
-5. Queries Analysis
-6. Received Updates
-7. Query Failures
-8. Query Failures Analysis
-9. Server Statistics
-10. Incoming Requests by OpCode
-11. Incoming Requests by Query Type
+-   `bind` version 9.9+ with configured `statistics-channels`
 
-Per View Statistics (the following set will be added for each bind view):
-1. Resolver Active Queries
-2. Resolver Statistics
-3. Resolver Round Trip Timings
-4. Resolver Requests by Query Type
-4. Resolver Cache Hits
+For detail information on how to get your bind installation ready, please refer to the following articles:
 
-### configuration
-
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/bind.conf).
-___
-
-Needs only `url`.
-
-Here is an example for 2 servers:
-
-```yaml
-jobs:
-  - name: local
-    url: http://127.0.0.1:8653/json/v1
-
-  - name: local
-    url: http://127.0.0.1:8653/xml/v3
-```
-
-Without configuration, module will use `http://127.0.0.1:8653/json/v1`
-
-**Views**: by default module doesn't collect views statistics.
-
-To enable it please configure `permit_view`:
-
-```yaml
-jobs:
-  - name: local
-    url: http://127.0.0.1:8653/json/v1
-    permit_view: '!_* *'
-```
-
-Syntax: [simple patterns](https://docs.netdata.cloud/libnetdata/simple_pattern/).
-
-### bind configuration
-For detail information on how to get your bind installation ready, please refer to the [bind statistics channel developer comments](http://jpmens.net/2013/03/18/json-in-bind-9-s-statistics-server/) and to [bind documentation](https://ftp.isc.org/isc/bind/9.10.3/doc/arm/Bv9ARM.ch06.html#statistics) or [bind Knowledge Base article AA-01123](https://kb.isc.org/article/AA-01123/0).
+-   [bind statistics channel developer comments](http://jpmens.net/2013/03/18/json-in-bind-9-s-statistics-server/)
+-   [bind documentation](https://ftp.isc.org/isc/bind/9.10.3/doc/arm/Bv9ARM.ch06.html#statistics)
+-   [bind Knowledge Base article AA-01123](https://kb.isc.org/article/AA-01123/0).
 
 Normally, you will need something like this in your `named.conf.options`:
 
@@ -71,12 +23,63 @@ statistics-channels {
 };
 ```
 
-(use the IPv4 or IPv6 line depending on what you are using, you can also use both)
+## Charts 
 
-Verify it works by running the following command:
+It produces the following charts:
 
-```sh
-curl "http://localhost:8653/json/v1/server"
+-   Global Received Requests by IP version (IPv4, IPv6) in `requests/s`
+-   Global Successful Queries in `queries/s`
+-   Global Recursive Clients in `clients`
+-   Global Queries by IP Protocol (TCP, UDP) in `queries/s`
+-   Global Queries Analysis in `queries/s`
+-   Global Received Updates in `updates/s`
+-   Global Query Failures in `failures/s`
+-   Global Query Failures Analysis in `failures/s`
+-   Global Server Statistics in `operations/s`
+-   Global Incoming Requests by OpCode in `requests/s`
+-   Global Incoming Requests by Query Type in `requests/s`
+
+Per View Statistics (the following set will be added for each bind view):
+
+-   Resolver Active Queries in `queries`
+-   Resolver Statistics in `operations/s`
+-   Resolver Round Trip Time in `queries/s`
+-   Resolver Requests by Query Type in `requests/s`
+-   Resolver Cache Hits in `operations/s`
+
+## Configuration
+
+Needs only `url`. Here is an example for several servers:
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:8653/json/v1
+
+  - name: local
+    url: http://127.0.0.1:8653/xml/v3
+
+  - name: remote
+    url: http://203.0.113.10:8653/xml/v3
+
+  - name: local_with_views
+    url: http://127.0.0.1:8653/json/v1
+    permit_view: '!_* *'
 ```
 
----
+View filter syntax: [simple patterns](https://docs.netdata.cloud/libnetdata/simple_pattern/).
+
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/bind.conf).
+
+## Troubleshooting
+
+Ensure that the `statistics-channels` feature is configured correctly.
+Run following command:
+
+> curl "http://localhost:8653/json/v1/server"
+
+It should print out a bunch of info about the statistics of the server.
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m bind

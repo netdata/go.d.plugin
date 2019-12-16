@@ -1,26 +1,17 @@
 # httpcheck
 
-This module will monitor one or more http servers for availability and response time.
+This module monitors one or more http servers availability and response time.
+
+## Charts
 
 It produces the following charts:
 
-1. **HTTP Response Time** in ms
- * ms
+-   HTTP Response Time in `ms`
+-   HTTP Check Status in `boolean`
+-   HTTP Current State Duration in `seconds`
+-   HTTP Response Body Length in `characters`
 
-2. **HTTP Check Status** in boolean
- * success
- * no connection
- * timeout
- * bad content
- * bad status
- 
-3. **HTTP Current State Duration** in seconds
- * time
-
-4. **HTTP Response Body Length** in characters
- * length
-
-### check statuses
+## Check statuses
 
 | Status        | Description|
 | ------------- |-------------|
@@ -31,7 +22,7 @@ It produces the following charts:
 | no connection |Any other network error not specifically handled by the module|
 
 
-### configuration
+## Configuration
  
 Here is an example for 2 servers:
 
@@ -42,10 +33,18 @@ jobs:
       
   - name: cool_website2
     url: http://cool.website2:8080/home
-    status_accepted: [200, 201, 202]
+    status_accepted:
+      - 200
+      - 201
+      - 202
     response_match: <title>My cool website!<\/title>
 ```
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/httpcheck.conf).
 
----
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m httpcheck
+
