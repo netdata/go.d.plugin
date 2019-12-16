@@ -2,31 +2,20 @@
 
 This module provides DNS query time in milliseconds.
 
-It produces one chart:
+## Charts
 
-1. **Query Time** in milliseconds
- * server1
- * server2
- ...
+It produces only one chart:
 
-### configuration
+-   Query Time in `milliseconds`
 
-Module specific options:
- * `domains`     - list of domains.
- * `servers`     - list of servers.
- * `port`        - server port. Default is 53.
- * `network`     - network transport. Default is upd. Supported options: udp, tcp, tcp-tls.
- * `record_type` - query record type. Default is A. Supported options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV.
- * `timeout`     - query read timeout. Default is 2 seconds.
-
-Mandatory options: `domains` and `servers`. All other are optional.
+## Configuration
 
 Here is an example:
 
 ```yaml
 jobs:
   - name: job1
-    domains :
+    domains:
       - google.com
       - github.com
       - reddit.com
@@ -35,7 +24,10 @@ jobs:
       - 8.8.4.4
 ```
 
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/dns_query.conf).
 
-Without configuration, module won't work.
+## Troubleshooting
 
----
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m dns_query
