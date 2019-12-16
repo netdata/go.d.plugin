@@ -1,6 +1,6 @@
 # x509check
 
-This module checks the time until a x509 certificate expires.
+This module checks the time until a x509 certificate expiration.
 
 ## Charts
 
