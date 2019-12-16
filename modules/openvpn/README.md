@@ -1,45 +1,35 @@
 # openvpn
 
-This module will monitor one or more OpenVPN instances via Management Interface.
+[`OpenVPN`](https://openvpn.net/) is an open-source commercial software that implements virtual private network techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote access facilities.
 
-**Requirements:**
- * OpenVPN with enabled [`management-interface`](https://openvpn.net/community-resources/management-interface/)
+This module will monitor one or more `OpenVPN` instances via Management Interface.
 
+## Requirements
+
+-   `OpenVPN` with enabled [`management-interface`](https://openvpn.net/community-resources/management-interface/).
+
+## Charts
 
 It produces the following charts:
 
-1. **Total Number Of Active Clients** in clients
- * clients
+-   Total Number Of Active Clients in `clients`
+-   Total Traffic in `kilobits/s`
 
-2. **Total Traffic** in kilobits/s
- * in
- * out
- 
 Per user charts (disabled by default, see `per_user_stats` in the module config file):
 
-1. **User Traffic** in kilobits/s
- * received
- * sent
-
-2. **User Connection Time** in seconds
- * time
+-   User Traffic in `kilobits/s`
+-   User Connection Time in `seconds`
  
- 
-### configuration
+## Configuration
 
-`openvpn` collector is disabled by default. Should be explicitly enabled in [go.d.conf](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
+This collector is disabled by default. Should be explicitly enabled in [go.d.conf](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
 
 Reason:
  >  Currently,the OpenVPN daemon can at most support a single management client any one time.
 
-So to not break other tools that uses Management Interface we decided to disable it by default.
+We disabled it to not break other tools which uses `Management Interface`.
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/openvpn.conf).
-___
-
-Needs only `address` of OpenVPN Management Interface.
-
-Here is an example for 2 OpenVPN instances:
+Needs only `address` of OpenVPN `Management Interface`. Here is an example for 2 `OpenVPN` instances:
 
 ```yaml
 jobs:
@@ -47,9 +37,13 @@ jobs:
     address : /dev/openvpn
       
   - name: remote
-    address : 100.64.0.1:7505
+    address : 203.0.113.10:7505
 ```
 
-Without configuration, module attempts to connect to `127.0.0.1:7505`
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/openvpn.conf).
 
----
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m openvpn
