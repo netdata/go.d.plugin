@@ -5,6 +5,7 @@
 This module will monitor one or more `Fluentd` servers depending on configuration. It gathers metrics from plugin endpoint provided by [in_monitor plugin](https://docs.fluentd.org/v1.0/articles/monitoring-rest-api).
 
 ## Requirements
+
 -   `fluentd` with enabled monitoring agent
 
 ## Charts
