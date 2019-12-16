@@ -1,15 +1,19 @@
 # rabbitmq
 
-Module monitors [`RabbitMQ`](https://www.rabbitmq.com/) performance and health metrics.
+[`RabbitMQ`](https://www.rabbitmq.com/) is the open source message broker.
+
+This module  monitors `RabbitMQ` performance and health metrics.
 
 It collects data using following endpoints:
-  - `/api/overview`
-  - `/api/node/{node_name}`
-  - `/api/vhosts`
 
-#### charts
+-   `/api/overview`
+-   `/api/node/{node_name}`
+-   `/api/vhosts`
+
+## Charts
 
 It produces the following charts:
+
   - Queued Messages in `messages`
   - Messages in `messages/s`
   - Global Counts in `counts`
@@ -21,9 +25,12 @@ It produces the following charts:
   - Disk Space in `GiB`
 
 Per vhost charts:
+
   - Messages in `messages/s`
 
-#### configuration
+## Configuration
+
+Here is an example for 2 servers:
 
 ```yaml
 jobs:
@@ -36,6 +43,8 @@ jobs:
 ```
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/rabbitmq.conf).
 
-When no configuration file is found, module tries to connect to: `localhost:15672`.
+## Troubleshooting
 
----
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m rabbitmq
