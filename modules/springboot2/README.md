@@ -1,55 +1,45 @@
 # springboot2
 
-This module will monitor one or more Java Spring-boot 2 applications depending on configuration.
-Netdata can be used to monitor running Java [Spring Boot 2](https://spring.io/) applications 
-that expose their metrics with the use of the **Spring Boot Actuator** 
-included in Spring Boot library.
+This module monitors one or more Java Spring-boot 2 applications depending on configuration.
+Netdata can be used to monitor running Java [Spring Boot 2](https://spring.io/) applications that expose their metrics with the use of the **Spring Boot Actuator** included in Spring Boot library.
+
+Springboot2 module looks up `http://localhost:8080/actuator/prometheus` and `http://127.0.0.1:8080/actuator/prometheus` to detect Spring Boot application by default.
+
+## Charts
+
+-   Response Codes in `requests/s`
+-   Threads in `threads`
+-   Heap Memory Usage Overview in `bytes`
+-   Heap Memory Usage Eden Space in `bytes`
+-   Heap Memory Usage Survivor Space in `bytes`
+-   Heap Memory Usage Old Space in `bytes`
+-   Uptime in `seconds`
 
 ## Configuration
 
 The Spring Boot Actuator exposes these metrics over HTTP and is very easy to use:
-* add `org.springframework.boot:spring-boot-starter-actuator` and `io.micrometer:micrometer-registry-prometheus` to your application dependencies
-* set `management.endpoints.web.exposure.include=*` in your `application.properties`
 
-Please refer [Spring Boot Actuator: Production-ready features](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready.html) 
-and [81. Actuator - Part IX. ‘How-to’ guides](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-actuator.html) 
-for more information.
+-   add `org.springframework.boot:spring-boot-starter-actuator` and `io.micrometer:micrometer-registry-prometheus` to your application dependencies
+-   set `management.endpoints.web.exposure.include=*` in your `application.properties`
 
-## Charts
+Please refer to the [Spring Boot Actuator: Production-ready features](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready.html) 
+and [81. Actuator - Part IX. ‘How-to’ guides](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-actuator.html) for more information.
 
-* **Response Codes** in requests/s
-  * 1xx
-  * 2xx
-  * 3xx
-  * 4xx
-  * 5xx
+Here is an example for 2 servers:
 
-* **Threads**
-  * daemon
-  * total
+```yaml
+jobs:
+  - name: local
+    url: http://localhost:8080/actuator/prometheus
 
-* **Heap Mmeory Usage** in bytes
-  * overview
-    * used
-    * committed
-  * Eden space
-    * used
-    * committed
-  * Survivor space
-    * used
-    * committed
-  * Old space
-    * used
-    * committed
+  - name: remote
+    url: http://203.0.113.10:8080/actuator/prometheus
+```
 
-* **uptime** in seconds
-  * uptime
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/springboot2.conf).
 
-## Usage
+## Troubleshooting
 
-The springboot module is enabled by default. It looks up `http://localhost:8080/actuator/prometheus` 
-and `http://127.0.0.1:8080/actuator/prometheus` to detect Spring Boot application by default. 
-You can change it by editing `/etc/netdata/go.d/springboot2.conf` 
-(to edit it on your system run `/etc/netdata/edit-config go.d/springboot2.conf`).
+Check the module debug output. Run the following command as `netdata` user:
 
-Please check [springboot2.conf](../../config/go.d/springboot2.conf) for more examples.
+> ./go.d.plugin -d -m springboot2
