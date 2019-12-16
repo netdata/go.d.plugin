@@ -1,17 +1,18 @@
 # consul
 
-This module will monitor consul health checks.
+[`Consul`](https://www.consul.io/) is a service networking solution to connect and secure services across any runtime platform and public or private cloud.
+
+This module monitors `Consul` health checks.
+
+## Charts
 
 It produces the following charts:
 
-1. **Service Checks** in status
- * check id
+-   Service Checks in `status`
 
-2. **Unbound Checks** in status
- * check id
+-   Unbound Checks in `status`
 
-
-### configuration
+## configuration
 
 Here is an example for 2 servers:
 
@@ -21,9 +22,13 @@ jobs:
     url : http://127.0.0.1:8500
       
   - name: remote
-    url : http://100.64.0.1:8500
+    url : http://203.0.113.10:8500
 ```
 
-Without configuration, module attempts to connect to `http://127.0.0.1:8500`
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/consul.conf).
 
----
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m consul
