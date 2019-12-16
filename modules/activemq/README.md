@@ -9,9 +9,7 @@ This plugin collects queues and topics metrics using ActiveMQ Console API.
 It produces following charts per queue and per topic:
 
 -   Messages in `messages/s`
- 
 -   Unprocessed Messages in `messages`
- 
 -   Consumers in `consumers`
 
 ## Configuration

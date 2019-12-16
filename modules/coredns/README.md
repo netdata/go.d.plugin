@@ -2,7 +2,7 @@
 
 [`CoreDNS`](https://coredns.io/) is a fast and flexible DNS server.
 
-This module monitor one or more CoreDNS instances depending on configuration.
+This module monitor one or more `CoreDNS` instances depending on configuration.
 
 ## Charts
 

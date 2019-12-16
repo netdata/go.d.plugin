@@ -9,15 +9,10 @@ This module will collect `Docker Hub` repositories statistics.
 It produces the following charts:
 
 -   Pulls Summary in `pulls`
-
 -   Pulls in `pulls`
- 
 -   Pulls Rate in `pulls/s`
-
 -   Stars in `stars/s`
-  
 -   Current Status in `status`
-  
 -   Time Since Last Update in `seconds`
 
 ## Configuration

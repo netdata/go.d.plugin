@@ -6,28 +6,20 @@ This module will monitor one or more `Apache` servers depending on configuration
 
 ## Requirements
 
- -   `Apache` with enabled [`mod_status`](https://httpd.apache.org/docs/2.4/mod/mod_status.html)
+-   `Apache` with enabled [`mod_status`](https://httpd.apache.org/docs/2.4/mod/mod_status.html)
 
 ## Charts
 
 It produces the following charts:
 
 -   Requests in `requests/s`
-
 -   Connections in `connections`
-
 -   Async Connections in `connections`
- 
 -   Scoreboard in `connections`
-
 -   Bandwidth in `kilobits/s`
-
 -   Workers in `workers`
-
 -   Lifetime Average Number Of Requests Per Second in `requests/s`
-
 -   Lifetime Average Number Of Bytes Served Per Second in `KiB/s`
-
 -   Lifetime Average Response Size in `KiB`
 
 ## Configuration

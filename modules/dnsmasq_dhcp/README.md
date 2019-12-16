@@ -9,7 +9,6 @@ This module monitors `Dnsmasq DHCP` leases database.
 It produces the following set of charts for every dhcp-range:
 
 -   DHCP Range Allocated Leases in `leases`
-
 -   DHCP Range Utilization in `percentage`
 
 ## Auto-detection
@@ -17,9 +16,10 @@ It produces the following set of charts for every dhcp-range:
 Module automatically detects all configured dhcp-ranges reading `dnsmasq` configuration files.
 
 By default it uses:
- - `/var/lib/misc/dnsmasq.leases` to read leases.
- - `/etc/dnsmasq.conf` to detect dhcp-ranges.
- - `/etc/dnsmasq.d` to find additional configurations.
+
+-   `/var/lib/misc/dnsmasq.leases` to read leases.
+-   `/etc/dnsmasq.conf` to detect dhcp-ranges.
+-   `/etc/dnsmasq.d` to find additional configurations.
 
 ## Configuration 
 

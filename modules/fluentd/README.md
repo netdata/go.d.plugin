@@ -12,9 +12,7 @@ This module will monitor one or more `Fluentd` servers depending on configuratio
 It produces the following charts:
 
 -   Plugin Retry Count in `count`
-
 -   Plugin Buffer Queue Length in `queue length`
-
 -   Plugin Buffer Total Size in `buffer`
 
 ## Configuration

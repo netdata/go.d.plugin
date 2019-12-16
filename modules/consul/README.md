@@ -9,7 +9,6 @@ This module monitors `Consul` health checks.
 It produces the following charts:
 
 -   Service Checks in `status`
-
 -   Unbound Checks in `status`
 
 ## configuration

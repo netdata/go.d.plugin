@@ -13,21 +13,15 @@ This module will monitor one or more `Docker Engines` depending on configuration
 It produces the following charts:
 
 -   Container Actions in `actions/s`
-
 -   Container States in `containers`
-
 -   Builder Builds Fails By Reason in `fails/s`
- 
 -   Health Checks in `events/s`
 
 If Docker is running in in [Swarm mode](https://docs.docker.com/engine/swarm/) and the instance is a Swarm manager:
 
 -   Swarm Manager Leader in `bool`
-
 -   Swarm Manager Object Store in `count`
- 
 -   Swarm Manager Nodes Per State in `count`
- 
 -   Swarm Manager Tasks Per State in `count`
 
 ## Configuration

@@ -14,9 +14,7 @@ By default, server is enabled and can be queried from every client.
 To enable status feature do the following:
 
 -   `cd sites-enabled`
-
 -   `ln -s ../sites-available/status status`
-
 -   restart FreeRADIUS server
 
 
@@ -25,23 +23,14 @@ To enable status feature do the following:
 It produces following charts:
 
 -   Authentication in `pps`
- 
 -   Authentication Responses in `pps`
- 
 -   Bad Authentication Requests in `pps`
- 
 -   Proxy Authentication in `pps`
-  
 -   Proxy Authentication Responses in `pps`
-  
 -   Proxy Bad Authentication Requests in `pps`
-
 -   Accounting in `pps`
-
 -   Bad Accounting Requests in `pps` 
-
 -   Proxy Accounting in `pps`
-
 -   Proxy Bad Accounting Requests in `pps` 
 
 ## Configuration
