@@ -1,28 +1,26 @@
 # activemq
 
+[`ActiveMQ`](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java Message Service client.
+
 This plugin collects queues and topics metrics using ActiveMQ Console API.
+
+## Charts
 
 It produces following charts per queue and per topic:
 
-1. **Messages** in messages/s
- * enqueued
- * dequeued
- * unprocessed
+-   Messages in `messages/s`
  
-2. **Unprocessed Messages** in messages
- * unprocessed
+-   Unprocessed Messages in `messages`
  
-3. **Consumers** in consumers
- * consumers
- 
+-   Consumers in `consumers`
 
-### configuration
+## Configuration
 
 Here is an example for 2 servers:
 
 ```yaml
 jobs:
-  - name: job1
+  - name: local
     url: http://127.0.0.1:8161
     webadmin: admin
     max_queues: 100
@@ -31,10 +29,14 @@ jobs:
     topics_filter: '!sandr* *'
     
   - name: remote
-    url: http://100.127.0.1:8161
+    url: http://203.0.113.10:8161
     webadmin: admin
 ```
 
-Without configuration, module won't work.
+For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/activemq.conf).
 
----
+## Troubleshooting
+
+Check the module debug output. Run the following command as `netdata` user:
+
+> ./go.d.plugin -d -m activemq
