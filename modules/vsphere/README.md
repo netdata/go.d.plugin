@@ -2,7 +2,7 @@
 
 [`VMware vCenter Server`](https://www.vmware.com/products/vcenter-server.html) is advanced server management software that provides a centralized platform for controlling your VMware vSphere environments.
 
-This module collects hosts and vms performance statistics from one or more [`vCenter`] servers depending on configuration.
+This module collects hosts and vms performance statistics from one or more `vCenter` servers depending on configuration.
 
 ## Charts
 
