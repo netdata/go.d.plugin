@@ -297,7 +297,8 @@ func (s *SquidLog) addDimToReqMethodChart(method string) {
 func (s *SquidLog) addDimToHierCodeChart(code string) {
 	chartID := hierCodeChart.ID
 	dimID := pxHierCode + code
-	s.addDimToChart(chartID, dimID, code)
+	dimName := code[5:] // remove "HIER_"
+	s.addDimToChart(chartID, dimID, dimName)
 }
 
 func (s *SquidLog) addDimToServerAddressChart(address string) {
