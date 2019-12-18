@@ -346,10 +346,7 @@ func isCacheCodeValid(code string) bool {
 	if code == "NONE" {
 		return true
 	}
-	if len(code) < 5 { // TCP_*
-		return false
-	}
-	return code[:4] == "TCP_" || code[:4] == "UDP_"
+	return len(code) > 5 && (code[:4] == "TCP_" || code[:4] == "UDP_")
 }
 
 func isHTTPCodeValid(code int) bool {
@@ -380,10 +377,7 @@ func isReqMethodValid(method string) bool {
 // isHierCodeValid does not guarantee hierarchy code is valid, but it is very likely.
 func isHierCodeValid(code string) bool {
 	// https://wiki.squid-cache.org/SquidFaq/SquidLogs#Hierarchy_Codes
-	if len(code) < 6 { // HIER_*
-		return false
-	}
-	return code[:5] == "HIER_"
+	return len(code) > 6 && code[:5] == "HIER_"
 }
 
 // isMimeTypeValid expects only mime type part.
