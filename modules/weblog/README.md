@@ -119,7 +119,7 @@ Weblog is aware how to parse and interpret the fields:
 | $server_port            | %p        | Port of the server which accepted a request.
 | $scheme                 | -         | Request scheme. "http" or "https".
 | $remote_addr            | %a (%h)   | Client address.
-| $request                | %r        | Full original request line. The line is "$request_method $request_uri $request_uri".
+| $request                | %r        | Full original request line. The line is "$request_method $request_uri $server_protocol".
 | $request_method         | %m        | Request method. Usually "GET" or "POST".
 | $request_uri            | %U        | Full original request URI.
 | $server_protocol        | %H        | Request protocol. Usually "HTTP/1.0", "HTTP/1.1", or "HTTP/2.0".
@@ -185,13 +185,13 @@ jobs:
   - name: apache_csv_custom_format_example
     path: /path/to/file.log
     log_type: csv
-    csv_config
+    csv_config:
       format: '- - %h - - %t \"%r\" %>s %b'
 
   - name: nginx_csv_custom_format_example
     path: /path/to/file.log
     log_type: csv
-    csv_config
+    csv_config:
       format: '- - $remote_addr - - [$time_local] "$request" $status $body_bytes_sent'
 ```
 
