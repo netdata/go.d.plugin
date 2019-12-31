@@ -515,6 +515,8 @@ func isReqMethodValid(method string) bool {
 	switch method {
 	case "HEAD", "POST", "PUT", "PATCH", "DELETE", "CONNECT", "OPTIONS", "TRACE":
 		return true
+	case "MKCOL", "PROPFIND", "MOVE", "SEARCH":
+		return true
 	}
 	return false
 }
