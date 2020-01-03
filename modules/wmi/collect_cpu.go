@@ -1,134 +1,139 @@
 package wmi
 
-import "github.com/netdata/go.d.plugin/pkg/prometheus"
+import (
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
+	"sort"
+)
 
 const (
 	collectorCPU = "cpu"
 
-	metricCPUCstateTotal     = "wmi_cpu_cstate_seconds_total"
+	metricCPUCStateTotal     = "wmi_cpu_cstate_seconds_total"
 	metricCPUDPCsTotal       = "wmi_cpu_dpcs_total"
 	metricCPUInterruptsTotal = "wmi_cpu_interrupts_total"
 	metricCPUTimeTotal       = "wmi_cpu_time_total"
 )
 
-func collectCPU(mx *metrics, pms prometheus.Metrics) bool {
+func doCollectCPU(pms prometheus.Metrics) bool {
 	enabled, success := checkCollector(pms, collectorCPU)
-	if !(enabled && success) {
-		return false
-	}
-	mx.CPU = &cpu{}
-
-	collectCPUCoresCStates(mx, pms)
-	collectCPUCoresDPCs(mx, pms)
-	collectCPUCoresInterrupts(mx, pms)
-	collectCPUCoresUsage(mx, pms)
-
-	mx.CPU.Cores.sort()
-	collectCPUSummary(mx)
-
-	return true
+	return enabled && success
 }
 
-func collectCPUSummary(mx *metrics) {
-	for _, c := range mx.CPU.Cores {
-		mx.CPU.User += c.User
-		mx.CPU.Privileged += c.Privileged
-		mx.CPU.Interrupt += c.Interrupt
-		mx.CPU.Idle += c.Idle
-		mx.CPU.DPC += c.DPC
+func collectCPU(pms prometheus.Metrics) *cpuMetrics {
+	if !doCollectCPU(pms) {
+		return nil
 	}
+
+	cm := &cpuMetrics{}
+	collectCPUCoresCStates(cm, pms)
+	collectCPUCoresDPCs(cm, pms)
+	collectCPUCoresInterrupts(cm, pms)
+	collectCPUCoresUsage(cm, pms)
+	collectCPUSummary(cm)
+	sortCPUCores(&cm.Cores)
+	return cm
 }
 
-func collectCPUCoresCStates(mx *metrics, pms prometheus.Metrics) {
-	core := newCPUCore("")
+func collectCPUCoresCStates(cm *cpuMetrics, pms prometheus.Metrics) {
+	var core *cpuCore
 
-	for _, pm := range pms.FindByName(metricCPUCstateTotal) {
-		var (
-			coreID = pm.Labels.Get("core")
-			state  = pm.Labels.Get("state")
-			value  = pm.Value
-		)
+	for _, pm := range pms.FindByName(metricCPUCStateTotal) {
+		coreID := pm.Labels.Get("core")
+		state := pm.Labels.Get("state")
 		if coreID == "" || state == "" {
 			continue
 		}
-		if core.ID != coreID {
-			core = mx.CPU.Cores.get(coreID, true)
+
+		if core == nil || core.ID != coreID {
+			core = cm.Cores.get(coreID)
 		}
+
 		switch state {
 		default:
 		case "c1":
-			core.C1 = value
+			core.C1 = pm.Value
 		case "c2":
-			core.C2 = value
+			core.C2 = pm.Value
 		case "c3":
-			core.C3 = value
+			core.C3 = pm.Value
 		}
 	}
 }
 
-func collectCPUCoresInterrupts(mx *metrics, pms prometheus.Metrics) {
-	core := newCPUCore("")
+func collectCPUCoresInterrupts(cm *cpuMetrics, pms prometheus.Metrics) {
+	var core *cpuCore
 
 	for _, pm := range pms.FindByName(metricCPUInterruptsTotal) {
-		var (
-			coreID = pm.Labels.Get("core")
-			value  = pm.Value
-		)
+		coreID := pm.Labels.Get("core")
 		if coreID == "" {
 			continue
 		}
-		if core.ID != coreID {
-			core = mx.CPU.Cores.get(coreID, true)
+
+		if core == nil || core.ID != coreID {
+			core = cm.Cores.get(coreID)
 		}
-		core.InterruptsTotal = value
+
+		core.InterruptsTotal = pm.Value
 	}
 }
 
-func collectCPUCoresUsage(mx *metrics, pms prometheus.Metrics) {
-	core := newCPUCore("")
+func collectCPUCoresUsage(cm *cpuMetrics, pms prometheus.Metrics) {
+	var core *cpuCore
 
 	for _, pm := range pms.FindByName(metricCPUTimeTotal) {
-		var (
-			coreID = pm.Labels.Get("core")
-			mode   = pm.Labels.Get("mode")
-			value  = pm.Value
-		)
+		coreID := pm.Labels.Get("core")
+		mode := pm.Labels.Get("mode")
 		if coreID == "" || mode == "" {
 			continue
 		}
-		if core.ID != coreID {
-			core = mx.CPU.Cores.get(coreID, true)
+
+		if core == nil || core.ID != coreID {
+			core = cm.Cores.get(coreID)
 		}
+
 		switch mode {
 		default:
 		case "dpc":
-			core.DPC = value
+			core.DPC = pm.Value
 		case "idle":
-			core.Idle = value
+			core.Idle = pm.Value
 		case "interrupt":
-			core.Interrupt = value
+			core.Interrupt = pm.Value
 		case "privileged":
-			core.Privileged = value
+			core.Privileged = pm.Value
 		case "user":
-			core.User = value
+			core.User = pm.Value
 		}
 	}
 }
 
-func collectCPUCoresDPCs(mx *metrics, pms prometheus.Metrics) {
-	core := newCPUCore("")
+func collectCPUCoresDPCs(cm *cpuMetrics, pms prometheus.Metrics) {
+	var core *cpuCore
 
 	for _, pm := range pms.FindByName(metricCPUDPCsTotal) {
-		var (
-			coreID = pm.Labels.Get("core")
-			value  = pm.Value
-		)
+		coreID := pm.Labels.Get("core")
 		if coreID == "" {
 			continue
 		}
-		if core.ID != coreID {
-			core = mx.CPU.Cores.get(coreID, true)
+
+		if core == nil || core.ID != coreID {
+			core = cm.Cores.get(coreID)
 		}
-		core.DPCsTotal = value
+
+		core.DPCsTotal = pm.Value
 	}
+}
+
+func collectCPUSummary(cm *cpuMetrics) {
+	for _, c := range cm.Cores {
+		cm.User += c.User
+		cm.Privileged += c.Privileged
+		cm.Interrupt += c.Interrupt
+		cm.Idle += c.Idle
+		cm.DPC += c.DPC
+	}
+}
+
+func sortCPUCores(cores *cpuCores) {
+	sort.Slice(*cores, func(i, j int) bool { return (*cores)[i].id < (*cores)[j].id })
 }

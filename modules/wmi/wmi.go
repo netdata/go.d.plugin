@@ -1,16 +1,13 @@
 package wmi
 
 import (
+	"errors"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
-)
-
-const (
-	defaultHTTPTimeout = time.Second * 2
 )
 
 func init() {
@@ -25,79 +22,83 @@ func init() {
 func New() *WMI {
 	config := Config{
 		HTTP: web.HTTP{
-			Client: web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Client: web.Client{Timeout: web.Duration{Duration: time.Second * 2}},
 		},
 	}
 	return &WMI{
 		Config: config,
-		charts: collectionCharts.Copy(),
-		collected: collected{
+		cache: cache{
 			collection: make(map[string]bool),
 			collectors: make(map[string]bool),
 			cores:      make(map[string]bool),
 			nics:       make(map[string]bool),
 			volumes:    make(map[string]bool),
 		},
+		charts: collectionCharts(),
 	}
 }
 
-// Config is the WMI module configuration.
-type Config struct {
-	web.HTTP `yaml:",inline"`
-}
-
-type collected struct {
-	collection map[string]bool
-	collectors map[string]bool
-	cores      map[string]bool
-	nics       map[string]bool
-	volumes    map[string]bool
-}
-
-// WMI WMI module.
-type WMI struct {
-	module.Base
-	Config `yaml:",inline"`
-
-	charts *Charts
-	prom   prometheus.Prometheus
-
-	collected collected
-}
-
-// Cleanup makes cleanup.
-func (WMI) Cleanup() {}
-
-// Init makes initialization.
-func (w *WMI) Init() bool {
-	if err := w.ParseUserURL(); err != nil {
-		w.Errorf("error on parsing url '%s' : %v", w.UserURL, err)
-		return false
+type (
+	// Config is the WMI module configuration.
+	Config struct {
+		web.HTTP `yaml:",inline"`
 	}
 
-	if w.URL.Host == "" {
-		w.Error("URL is not set")
-		return false
+	// WMI WMI module.
+	WMI struct {
+		module.Base
+		Config `yaml:",inline"`
+		prom   prometheus.Prometheus
+		cache  cache
+		charts *Charts
 	}
 
+	cache struct {
+		collectors map[string]bool
+		collection map[string]bool
+		cores      map[string]bool
+		nics       map[string]bool
+		volumes    map[string]bool
+	}
+)
+
+func (w *WMI) validateConfig() error {
+	if w.UserURL == "" {
+		return errors.New("URL is not set")
+	}
+	return nil
+}
+
+func (w *WMI) initClient() error {
 	client, err := web.NewHTTPClient(w.Client)
 	if err != nil {
-		w.Errorf("error on creating http client : %v", err)
+		return err
+	}
+	w.prom = prometheus.New(client, w.Request)
+	return nil
+}
+
+func (w *WMI) Init() bool {
+	if err := w.validateConfig(); err != nil {
+		w.Errorf("error on validating config: %v", err)
 		return false
 	}
 
-	w.prom = prometheus.New(client, w.Request)
-
+	if err := w.initClient(); err != nil {
+		w.Errorf("error on creating prometheus client: %v", err)
+		return false
+	}
 	return true
 }
 
-// Check makes check.
-func (w WMI) Check() bool { return len(w.Collect()) > 0 }
+func (w WMI) Check() bool {
+	return len(w.Collect()) > 0
+}
 
-// Charts creates Charts.
-func (w WMI) Charts() *Charts { return w.charts }
+func (w WMI) Charts() *Charts {
+	return w.charts
+}
 
-// Collect collects metrics.
 func (w *WMI) Collect() map[string]int64 {
 	mx, err := w.collect()
 	if err != nil {
@@ -109,3 +110,5 @@ func (w *WMI) Collect() map[string]int64 {
 	}
 	return mx
 }
+
+func (WMI) Cleanup() {}

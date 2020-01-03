@@ -1,7 +1,6 @@
 package wmi
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -18,48 +17,51 @@ const (
 	metricSysThreads                  = "wmi_system_threads"
 )
 
-func collectSystem(mx *metrics, pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorSystem)
-	if !(enabled && success) {
-		return false
-	}
-	mx.System = &system{}
-
-	names := []string{
-		metricSysContextSwitchesTotal,
-		metricSysExceptionDispatchesTotal,
-		metricSysProcessorQueueLength,
-		metricSysSystemCallsTotal,
-		metricSysSystemUpTime,
-		metricSysThreads,
-	}
-
-	for _, name := range names {
-		collectSystemAny(mx, pms, name)
-	}
-
-	mx.System.SystemUpTime = time.Now().Unix() - int64(mx.System.SystemBootTime)
-
-	return true
+var systemMetricsNames = []string{
+	metricSysContextSwitchesTotal,
+	metricSysExceptionDispatchesTotal,
+	metricSysProcessorQueueLength,
+	metricSysSystemCallsTotal,
+	metricSysSystemUpTime,
+	metricSysThreads,
 }
 
-func collectSystemAny(mx *metrics, pms prometheus.Metrics, name string) {
-	value := pms.FindByName(name).Max()
+func doCollectSystem(pms prometheus.Metrics) bool {
+	enabled, success := checkCollector(pms, collectorSystem)
+	return enabled && success
+}
 
+func collectSystem(pms prometheus.Metrics) *systemMetrics {
+	if !doCollectSystem(pms) {
+		return nil
+	}
+
+	sm := &systemMetrics{}
+	for _, name := range systemMetricsNames {
+		collectSystemMetric(sm, pms, name)
+	}
+	sm.SystemUpTime = time.Now().Unix() - int64(sm.SystemBootTime)
+	return sm
+}
+
+func collectSystemMetric(sm *systemMetrics, pms prometheus.Metrics, name string) {
+	value := pms.FindByName(name).Max()
+	assignSystemMetric(sm, name, value)
+}
+
+func assignSystemMetric(sm *systemMetrics, name string, value float64) {
 	switch name {
-	default:
-		panic(fmt.Sprintf("unknown metric name during system collection : %s", name))
 	case metricSysContextSwitchesTotal:
-		mx.System.ContextSwitchesTotal = value
+		sm.ContextSwitchesTotal = value
 	case metricSysExceptionDispatchesTotal:
-		mx.System.ExceptionDispatchesTotal = value
+		sm.ExceptionDispatchesTotal = value
 	case metricSysProcessorQueueLength:
-		mx.System.ProcessorQueueLength = value
+		sm.ProcessorQueueLength = value
 	case metricSysSystemCallsTotal:
-		mx.System.SystemCallsTotal = value
+		sm.SystemCallsTotal = value
 	case metricSysSystemUpTime:
-		mx.System.SystemBootTime = value
+		sm.SystemBootTime = value
 	case metricSysThreads:
-		mx.System.Threads = value
+		sm.Threads = value
 	}
 }

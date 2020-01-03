@@ -1,38 +1,31 @@
 package wmi
 
-import (
-	"sort"
-	"strconv"
-)
-
-func newMetrics() *metrics { return &metrics{} }
+import "strconv"
 
 type metrics struct {
 	// https://github.com/martinlindhe/wmi_exporter/tree/master/docs
-	CPU         *cpu         `stm:"cpu"`
-	Memory      *memory      `stm:"memory"`
-	Net         *network     `stm:"net"`
-	LogicalDisk *logicalDisk `stm:"logical_disk"`
-	OS          *os          `stm:"os"`
-	System      *system      `stm:"system"`
-	Collectors  *collectors  `stm:""`
+	CPU         *cpuMetrics         `stm:"cpu"`
+	Memory      *memoryMetrics      `stm:"memory"`
+	Net         *networkMetrics     `stm:"net"`
+	LogicalDisk *logicalDiskMetrics `stm:"logical_disk"`
+	OS          *osMetrics          `stm:"os"`
+	System      *systemMetrics      `stm:"system"`
+	Logon       *logonMetrics       `stm:"logon"`
+	Collectors  *collectors         `stm:""`
 }
 
-func (m metrics) hasCPU() bool { return m.CPU != nil }
-
-func (m metrics) hasMem() bool { return m.Memory != nil }
-
-func (m metrics) hasNet() bool { return m.Net != nil }
-
-func (m metrics) hasLDisk() bool { return m.LogicalDisk != nil }
-
-func (m metrics) hasOS() bool { return m.OS != nil }
-
-func (m metrics) hasSystem() bool { return m.System != nil }
+func (m metrics) hasCPU() bool         { return m.CPU != nil }
+func (m metrics) hasMemory() bool      { return m.Memory != nil }
+func (m metrics) hasNet() bool         { return m.Net != nil }
+func (m metrics) hasLogicalDisk() bool { return m.LogicalDisk != nil }
+func (m metrics) hasOS() bool          { return m.OS != nil }
+func (m metrics) hasSystem() bool      { return m.System != nil }
+func (m metrics) hasLogon() bool       { return m.Logon != nil }
+func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
 
 // cpu
 type (
-	cpu struct {
+	cpuMetrics struct {
 		cpuTimeTotal `stm:""`
 		Cores        cpuCores `stm:"core"`
 	}
@@ -69,7 +62,7 @@ type (
 // Win32_PerfRawData_PerfOS_Memory
 // https://technet.microsoft.com/en-ca/aa394314(v=vs.71)
 // http://wutils.com/wmi/root/cimv2/win32_perfrawdata_perfos_memory/
-type memory struct {
+type memoryMetrics struct {
 	UsedBytes         *float64 `stm:"used_bytes,1000,1"`          // os.VisibleMemoryBytes - AvailableBytes
 	NotCommittedBytes float64  `stm:"not_committed_bytes,1000,1"` // CommitLimit - CommittedBytes
 	StandbyCacheTotal float64  `stm:"standby_cache_total,1000,1"` // StandbyCacheCoreBytes + StandbyCacheNormalPriorityBytes + StandbyCacheReserveBytes
@@ -111,7 +104,7 @@ type memory struct {
 
 // network
 type (
-	network struct {
+	networkMetrics struct {
 		NICs netNICs `stm:""`
 	}
 
@@ -140,7 +133,7 @@ type (
 
 // logical disk
 type (
-	logicalDisk struct {
+	logicalDiskMetrics struct {
 		Volumes volumes `stm:""`
 	}
 
@@ -165,12 +158,14 @@ type (
 		FreeSpace       float64 `stm:"free_space,1000,1"`          // PercentFreeSpace
 		IdleTime        float64 `stm:"idle_seconds_total,1000,1"`  // PercentIdleTime
 		SplitIOs        float64 `stm:"split_ios_total"`            // SplitIOPerSec
+		ReadLatency     float64 `stm:"read_latency,1000,1"`        //AvgDiskSecPerRead
+		WriteLatency    float64 `stm:"write_latency,1000,1"`       // AvgDiskSecPerWrite
 	}
 )
 
 // Win32_PerfRawData_PerfOS_System
 // https://docs.microsoft.com/en-us/previous-versions/aa394272(v%3Dvs.85)
-type system struct {
+type systemMetrics struct {
 	SystemUpTime int64 `stm:"up_time"`
 
 	ContextSwitchesTotal     float64 `stm:"context_switches_total,1000,1"`     // ContextSwitchesPersec
@@ -183,7 +178,7 @@ type system struct {
 
 // Win32_OperatingSystem
 // https://docs.microsoft.com/en-us/windows/desktop/CIMWin32Prov/win32-operatingsystem
-type os struct {
+type osMetrics struct {
 	PhysicalMemoryFreeBytes float64 `stm:"physical_memory_free_bytes,1000,1"` // FreePhysicalMemory
 	PagingFreeBytes         float64 `stm:"paging_free_bytes,1000,1"`          // FreeSpaceInPagingFiles
 	VirtualMemoryFreeBytes  float64 `stm:"virtual_memory_free_bytes,1000,1"`  // FreeVirtualMemory
@@ -198,6 +193,26 @@ type os struct {
 	// Timezone                float64 `stm:"timezone"`                          // LocalDateTime
 }
 
+// Win32_LogonSession
+// https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-logonsession
+type logonMetrics struct {
+	Type struct {
+		System                  float64 `stm:"system"`
+		Interactive             float64 `stm:"interactive"`
+		Network                 float64 `stm:"network"`
+		Batch                   float64 `stm:"batch"`
+		Service                 float64 `stm:"service"`
+		Proxy                   float64 `stm:"proxy"`
+		Unlock                  float64 `stm:"unlock"`
+		NetworkCleartext        float64 `stm:"network_clear_text"`
+		NewCredentials          float64 `stm:"new_credentials"`
+		RemoteInteractive       float64 `stm:"remote_interactive"`
+		CachedInteractive       float64 `stm:"cached_interactive"`
+		CachedRemoteInteractive float64 `stm:"cached_remote_interactive"`
+		CachedUnlock            float64 `stm:"cached_unlock"`
+	} `stm:"type"`
+}
+
 type (
 	collectors []*collector
 	collector  struct {
@@ -210,36 +225,9 @@ type (
 )
 
 func newCollector(id string) *collector { return &collector{STMKey: id, ID: id} }
-
-func (cs *collectors) get(id string, createIfNotExist bool) (cr *collector) {
-	for _, c := range *cs {
-		if c.ID == id {
-			return c
-		}
-	}
-	if createIfNotExist {
-		cr = newCollector(id)
-		*cs = append(*cs, cr)
-	}
-	return cr
-}
-
-func newCPUCore(id string) *cpuCore { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
-
-func (cc *cpuCores) get(id string, createIfNotExist bool) (core *cpuCore) {
-	for _, c := range *cc {
-		if c.ID == id {
-			return c
-		}
-	}
-	if createIfNotExist {
-		core = newCPUCore(id)
-		*cc = append(*cc, core)
-	}
-	return core
-}
-
-func (cc *cpuCores) sort() { sort.Slice(*cc, func(i, j int) bool { return (*cc)[i].id < (*cc)[j].id }) }
+func newCPUCore(id string) *cpuCore     { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
+func newNIC(id string) *netNIC          { return &netNIC{STMKey: id, ID: id} }
+func newVolume(id string) *volume       { return &volume{STMKey: id, ID: id} }
 
 func getCPUIntID(id string) int {
 	if id == "" {
@@ -252,32 +240,46 @@ func getCPUIntID(id string) int {
 	return v
 }
 
-func newNIC(id string) *netNIC { return &netNIC{STMKey: id, ID: id} }
-
-func (ns *netNICs) get(id string, createIfNotExist bool) (nic *netNIC) {
-	for _, n := range *ns {
-		if n.ID == id {
-			return n
+func (cs *collectors) get(id string) *collector {
+	for _, cr := range *cs {
+		if cr.ID == id {
+			return cr
 		}
 	}
-	if createIfNotExist {
-		nic = newNIC(id)
-		*ns = append(*ns, nic)
+	cr := newCollector(id)
+	*cs = append(*cs, cr)
+	return cr
+}
+
+func (cc *cpuCores) get(id string) *cpuCore {
+	for _, core := range *cc {
+		if core.ID == id {
+			return core
+		}
 	}
+	core := newCPUCore(id)
+	*cc = append(*cc, core)
+	return core
+}
+
+func (ns *netNICs) get(id string) *netNIC {
+	for _, nic := range *ns {
+		if nic.ID == id {
+			return nic
+		}
+	}
+	nic := newNIC(id)
+	*ns = append(*ns, nic)
 	return nic
 }
 
-func newVolume(id string) *volume { return &volume{STMKey: id, ID: id} }
-
-func (vs *volumes) get(id string, createIfNotExist bool) (vol *volume) {
+func (vs *volumes) get(id string) *volume {
 	for _, v := range *vs {
 		if v.ID == id {
 			return v
 		}
 	}
-	if createIfNotExist {
-		vol = newVolume(id)
-		*vs = append(*vs, vol)
-	}
+	vol := newVolume(id)
+	*vs = append(*vs, vol)
 	return vol
 }

@@ -3,6 +3,7 @@ package wmi
 import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
+
 	"github.com/prometheus/prometheus/pkg/labels"
 )
 
@@ -12,27 +13,29 @@ func (w *WMI) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	mx := newMetrics()
-
-	w.collectScraped(mx, scraped)
+	mx := collectScraped(scraped)
 	w.updateCharts(mx)
 
 	return stm.ToMap(mx), nil
 }
 
-func (w *WMI) collectScraped(mx *metrics, scraped prometheus.Metrics) {
-	collectCollection(mx, scraped)
-	collectCPU(mx, scraped)
-	collectOS(mx, scraped)
-	collectMemory(mx, scraped)
-	collectSystem(mx, scraped)
-	collectNet(mx, scraped)
-	collectLogicalDisk(mx, scraped)
+func collectScraped(scraped prometheus.Metrics) *metrics {
+	mx := metrics{
+		CPU:         collectCPU(scraped),
+		Memory:      collectMemory(scraped),
+		Net:         collectNet(scraped),
+		LogicalDisk: collectLogicalDisk(scraped),
+		OS:          collectOS(scraped),
+		System:      collectSystem(scraped),
+		Logon:       collectLogon(scraped),
+		Collectors:  collectCollection(scraped),
+	}
 
-	if mx.hasOS() && mx.hasMem() {
-		v := sum(mx.OS.VisibleMemoryBytes, -mx.Memory.AvailableBytes)
+	if mx.hasOS() && mx.hasMemory() {
+		v := mx.OS.VisibleMemoryBytes - mx.Memory.AvailableBytes
 		mx.Memory.UsedBytes = &v
 	}
+	return &mx
 }
 
 func checkCollector(pms prometheus.Metrics, name string) (enabled, success bool) {
@@ -44,11 +47,4 @@ func checkCollector(pms prometheus.Metrics, name string) (enabled, success bool)
 	pms = pms.FindByName(metricCollectorSuccess)
 	ms := pms.Match(m)
 	return ms.Len() > 0, ms.Max() == 1
-}
-
-func sum(vs ...float64) (s float64) {
-	for _, v := range vs {
-		s += v
-	}
-	return s
 }
