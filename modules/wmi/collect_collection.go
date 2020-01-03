@@ -1,42 +1,49 @@
 package wmi
 
-import "github.com/netdata/go.d.plugin/pkg/prometheus"
+import (
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
+)
 
 const (
 	metricCollectorDuration = "wmi_exporter_collector_duration_seconds"
 	metricCollectorSuccess  = "wmi_exporter_collector_success"
 )
 
-func collectCollection(mx *metrics, pms prometheus.Metrics) {
-	mx.Collectors = &collectors{}
-	collectCollectionDuration(mx, pms)
-	collectCollectionSuccess(mx, pms)
+var collectorMetricsNames = []string{
+	metricCollectorDuration,
+	metricCollectorSuccess,
 }
 
-func collectCollectionDuration(mx *metrics, pms prometheus.Metrics) {
-	cr := newCollector("")
-	for _, pm := range pms.FindByName(metricCollectorDuration) {
-		name := pm.Labels.Get("collector")
-		if name == "" {
+func collectCollection(pms prometheus.Metrics) *collectors {
+	mx := &collectors{}
+	for _, name := range collectorMetricsNames {
+		collectCollectorMetric(mx, pms, name)
+	}
+	return mx
+}
+
+func collectCollectorMetric(mx *collectors, pms prometheus.Metrics, name string) {
+	var col *collector
+
+	for _, pm := range pms.FindByName(name) {
+		colName := pm.Labels.Get("collector")
+		if colName == "" {
 			continue
 		}
-		if cr.ID != name {
-			cr = mx.Collectors.get(name, true)
+
+		if col == nil || col.ID != colName {
+			col = mx.get(colName)
 		}
-		cr.Duration = pm.Value
+
+		assignCollectorMetric(col, name, pm.Value)
 	}
 }
 
-func collectCollectionSuccess(mx *metrics, pms prometheus.Metrics) {
-	cr := newCollector("")
-	for _, pm := range pms.FindByName(metricCollectorSuccess) {
-		name := pm.Labels.Get("collector")
-		if name == "" {
-			continue
-		}
-		if cr.ID != name {
-			cr = mx.Collectors.get(name, true)
-		}
-		cr.Success = pm.Value == 1
+func assignCollectorMetric(col *collector, name string, value float64) {
+	switch name {
+	case metricCollectorDuration:
+		col.Duration = value
+	case metricCollectorSuccess:
+		col.Success = value == 1
 	}
 }

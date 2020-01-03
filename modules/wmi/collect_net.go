@@ -1,7 +1,6 @@
 package wmi
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -24,77 +23,85 @@ const (
 	metricNetCurrentBandwidth         = "wmi_net_current_bandwidth"
 )
 
-func collectNet(mx *metrics, pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorNet)
-	if !(enabled && success) {
-		return false
-	}
-	mx.Net = &network{}
-
-	names := []string{
-		metricNetBytesReceivedTotal,
-		metricNetBytesSentTotal,
-		metricNetBytesTotal,
-		metricNetPacketsOutboundDiscarded,
-		metricNetPacketsOutboundErrors,
-		metricNetPacketsReceivedDiscarded,
-		metricNetPacketsReceivedErrors,
-		metricNetPacketsReceivedTotal,
-		metricNetPacketsReceivedUnknown,
-		metricNetPacketsTotal,
-		metricNetPacketsSentTotal,
-		metricNetCurrentBandwidth,
-	}
-
-	for _, name := range names {
-		collectNetAny(mx, pms, name)
-	}
-
-	return true
+var netMetricNames = []string{
+	metricNetBytesReceivedTotal,
+	metricNetBytesSentTotal,
+	metricNetBytesTotal,
+	metricNetPacketsOutboundDiscarded,
+	metricNetPacketsOutboundErrors,
+	metricNetPacketsReceivedDiscarded,
+	metricNetPacketsReceivedErrors,
+	metricNetPacketsReceivedTotal,
+	metricNetPacketsReceivedUnknown,
+	metricNetPacketsTotal,
+	metricNetPacketsSentTotal,
+	metricNetCurrentBandwidth,
 }
 
-func collectNetAny(mx *metrics, pms prometheus.Metrics, name string) {
-	nic := newNIC("")
+func doCollectNet(pms prometheus.Metrics) bool {
+	enabled, success := checkCollector(pms, collectorNet)
+	return enabled && success
+}
+
+func collectNet(pms prometheus.Metrics) *networkMetrics {
+	if !doCollectNet(pms) {
+		return nil
+	}
+
+	nm := &networkMetrics{}
+	for _, name := range netMetricNames {
+		collectNetMetric(nm, pms, name)
+	}
+	return nm
+}
+
+func collectNetMetric(nm *networkMetrics, pms prometheus.Metrics, name string) {
+	var nic *netNIC
 
 	for _, pm := range pms.FindByName(name) {
-		var (
-			nicID = pm.Labels.Get("nic")
-			value = pm.Value
-		)
+		nicID := pm.Labels.Get("nic")
 		if nicID == "" {
 			continue
 		}
-		nicID = strings.Replace(nicID, "__", "_", -1)
-		if nic.ID != nicID {
-			nic = mx.Net.NICs.get(nicID, true)
+
+		nicID = cleanNICID(nicID)
+		if nic == nil || nic.ID != nicID {
+			nic = nm.NICs.get(nicID)
 		}
-		switch name {
-		default:
-			panic(fmt.Sprintf("unknown metric name during net collection : %s", name))
-		case metricNetBytesReceivedTotal:
-			nic.BytesReceivedTotal = value
-		case metricNetBytesSentTotal:
-			nic.BytesSentTotal = value
-		case metricNetBytesTotal:
-			nic.BytesTotal = value
-		case metricNetPacketsOutboundDiscarded:
-			nic.PacketsOutboundDiscarded = value
-		case metricNetPacketsOutboundErrors:
-			nic.PacketsOutboundErrors = value
-		case metricNetPacketsReceivedDiscarded:
-			nic.PacketsReceivedDiscarded = value
-		case metricNetPacketsReceivedErrors:
-			nic.PacketsReceivedErrors = value
-		case metricNetPacketsReceivedTotal:
-			nic.PacketsReceivedTotal = value
-		case metricNetPacketsReceivedUnknown:
-			nic.PacketsReceivedUnknown = value
-		case metricNetPacketsTotal:
-			nic.PacketsTotal = value
-		case metricNetPacketsSentTotal:
-			nic.PacketsSentTotal = value
-		case metricNetCurrentBandwidth:
-			nic.CurrentBandwidth = value
-		}
+
+		assignNICMetric(nic, name, pm.Value)
 	}
+}
+
+func assignNICMetric(nic *netNIC, name string, value float64) {
+	switch name {
+	case metricNetBytesReceivedTotal:
+		nic.BytesReceivedTotal = value
+	case metricNetBytesSentTotal:
+		nic.BytesSentTotal = value
+	case metricNetBytesTotal:
+		nic.BytesTotal = value
+	case metricNetPacketsOutboundDiscarded:
+		nic.PacketsOutboundDiscarded = value
+	case metricNetPacketsOutboundErrors:
+		nic.PacketsOutboundErrors = value
+	case metricNetPacketsReceivedDiscarded:
+		nic.PacketsReceivedDiscarded = value
+	case metricNetPacketsReceivedErrors:
+		nic.PacketsReceivedErrors = value
+	case metricNetPacketsReceivedTotal:
+		nic.PacketsReceivedTotal = value
+	case metricNetPacketsReceivedUnknown:
+		nic.PacketsReceivedUnknown = value
+	case metricNetPacketsTotal:
+		nic.PacketsTotal = value
+	case metricNetPacketsSentTotal:
+		nic.PacketsSentTotal = value
+	case metricNetCurrentBandwidth:
+		nic.CurrentBandwidth = value
+	}
+}
+
+func cleanNICID(id string) string {
+	return strings.Replace(id, "__", "_", -1)
 }

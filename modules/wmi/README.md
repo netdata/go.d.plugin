@@ -4,16 +4,17 @@ This module will monitor one or more Windows machines, using the [wmi_exporter](
 
 Module collects metrics from following collectors:
 
-   - cpu
-   - memory
-   - net
-   - logical_disk
-   - os
-   - system
+-   cpu
+-   memory
+-   net
+-   logical_disk
+-   os
+-   system
+-   logon
 
 Run `wmi_exporter` with these collectors:     
     
- > wmi-exporter-0.7.0-386.exe --collectors.enabled="cpu,memory,net,logical_disk,os,system"
+ > wmi-exporter-0.9.0-386.exe --collectors.enabled="cpu,memory,net,logical_disk,os,system,logon"
  
 
 Installation: please follow [official guide](https://github.com/martinlindhe/wmi_exporter#installation).
@@ -51,12 +52,17 @@ Installation: please follow [official guide](https://github.com/martinlindhe/wmi
 -   Utilization Per Disk in `KiB`
 -   Bandwidth Per Disk in `KiB/s`
 -   Operations Per Disk in `operations/s`
+-   Average Read/Write Latency Disk in `milliseconds`
   
 #### system
  
 -   Processes in `number`
 -   Threads in `number`
 -   Uptime in `seconds`
+
+#### logon
+ 
+-   Active User Logon Sessions By Type in `sessions`
   
 ## Configuration
 
@@ -70,6 +76,7 @@ jobs:
   - name : win_server2
     url  : http://203.0.113.11:9182/metrics
 ```
+
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/wmi.conf).
 
 ## Troubleshooting

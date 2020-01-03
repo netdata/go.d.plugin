@@ -1,8 +1,6 @@
 package wmi
 
 import (
-	"fmt"
-
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
@@ -43,131 +41,132 @@ const (
 	metricMemWriteCopiesTotal                = "wmi_memory_write_copies_total"
 )
 
-func collectMemory(mx *metrics, pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorMemory)
-	if !(enabled && success) {
-		return false
-	}
-	mx.Memory = &memory{}
-
-	names := []string{
-		metricMemAvailBytes,
-		metricMemCacheBytes,
-		metricMemCacheBytesPeak,
-		metricMemCacheFaultsTotal,
-		metricMemCommitLimit,
-		metricMemCommittedBytes,
-		metricMemDemandZeroFaultsTotal,
-		metricMemFreeAndZeroPageListBytes,
-		metricMemFreeSystemPageTableEntries,
-		metricMemModifiedPageListBytes,
-		metricMemPageFaultsTotal,
-		metricMemSwapPageReadsTotal,
-		metricMemSwapPagesReadTotal,
-		metricMemSwapPagesWrittenTotal,
-		metricMemSwapPageOperationsTotal,
-		metricMemSwapPageWritesTotal,
-		metricMemPoolNonpagedAllocsTotal,
-		metricMemPoolNonpagedBytesTotal,
-		metricMemPoolPagedAllocsTotal,
-		metricMemPoolPagedBytes,
-		metricMemPoolPagedResidentBytes,
-		metricMemStandbyCacheCoreBytes,
-		metricMemStandbyCacheNormalPriorityBytes,
-		metricMemStandbyCacheReserveBytes,
-		metricMemSystemCacheResidentBytes,
-		metricMemSystemCodeResidentBytes,
-		metricMemSystemCodeTotalBytes,
-		metricMemSystemDriverResidentBytes,
-		metricMemSystemDriverTotalBytes,
-		metricMemTransitionFaultsTotal,
-		metricMemTransitionPagesRepurposedTotal,
-		metricMemWriteCopiesTotal,
-	}
-
-	for _, name := range names {
-		collectMemoryAny(mx, pms, name)
-	}
-	mx.Memory.NotCommittedBytes = sum(mx.Memory.CommitLimit, -mx.Memory.CommittedBytes)
-	mx.Memory.StandbyCacheTotal = sum(
-		mx.Memory.StandbyCacheReserveBytes,
-		mx.Memory.StandbyCacheNormalPriorityBytes,
-		mx.Memory.StandbyCacheCoreBytes,
-	)
-	mx.Memory.Cached = sum(mx.Memory.StandbyCacheTotal, mx.Memory.ModifiedPageListBytes)
-
-	return true
+var memoryMetricNames = []string{
+	metricMemAvailBytes,
+	metricMemCacheBytes,
+	metricMemCacheBytesPeak,
+	metricMemCacheFaultsTotal,
+	metricMemCommitLimit,
+	metricMemCommittedBytes,
+	metricMemDemandZeroFaultsTotal,
+	metricMemFreeAndZeroPageListBytes,
+	metricMemFreeSystemPageTableEntries,
+	metricMemModifiedPageListBytes,
+	metricMemPageFaultsTotal,
+	metricMemSwapPageReadsTotal,
+	metricMemSwapPagesReadTotal,
+	metricMemSwapPagesWrittenTotal,
+	metricMemSwapPageOperationsTotal,
+	metricMemSwapPageWritesTotal,
+	metricMemPoolNonpagedAllocsTotal,
+	metricMemPoolNonpagedBytesTotal,
+	metricMemPoolPagedAllocsTotal,
+	metricMemPoolPagedBytes,
+	metricMemPoolPagedResidentBytes,
+	metricMemStandbyCacheCoreBytes,
+	metricMemStandbyCacheNormalPriorityBytes,
+	metricMemStandbyCacheReserveBytes,
+	metricMemSystemCacheResidentBytes,
+	metricMemSystemCodeResidentBytes,
+	metricMemSystemCodeTotalBytes,
+	metricMemSystemDriverResidentBytes,
+	metricMemSystemDriverTotalBytes,
+	metricMemTransitionFaultsTotal,
+	metricMemTransitionPagesRepurposedTotal,
+	metricMemWriteCopiesTotal,
 }
 
-func collectMemoryAny(mx *metrics, pms prometheus.Metrics, name string) {
-	value := pms.FindByName(name).Max()
+func doCollectMemory(pms prometheus.Metrics) bool {
+	enabled, success := checkCollector(pms, collectorMemory)
+	return enabled && success
+}
 
+func collectMemory(pms prometheus.Metrics) *memoryMetrics {
+	if !doCollectMemory(pms) {
+		return nil
+	}
+
+	mm := &memoryMetrics{}
+	for _, name := range memoryMetricNames {
+		collectMemoryMetric(mm, pms, name)
+	}
+
+	mm.NotCommittedBytes = mm.CommitLimit - mm.CommittedBytes
+	mm.StandbyCacheTotal = mm.StandbyCacheReserveBytes + mm.StandbyCacheNormalPriorityBytes + mm.StandbyCacheCoreBytes
+	mm.Cached = mm.StandbyCacheTotal + mm.ModifiedPageListBytes
+	return mm
+}
+
+func collectMemoryMetric(mm *memoryMetrics, pms prometheus.Metrics, name string) {
+	value := pms.FindByName(name).Max()
+	assignMemoryMetric(mm, name, value)
+}
+
+func assignMemoryMetric(mm *memoryMetrics, name string, value float64) {
 	switch name {
-	default:
-		panic(fmt.Sprintf("unknown metric name during memory collection : %s", name))
 	case metricMemAvailBytes:
-		mx.Memory.AvailableBytes = value
+		mm.AvailableBytes = value
 	case metricMemCacheBytes:
-		mx.Memory.CacheBytes = value
+		mm.CacheBytes = value
 	case metricMemCacheBytesPeak:
-		mx.Memory.CacheBytesPeak = value
+		mm.CacheBytesPeak = value
 	case metricMemCacheFaultsTotal:
-		mx.Memory.CacheFaultsTotal = value
+		mm.CacheFaultsTotal = value
 	case metricMemCommitLimit:
-		mx.Memory.CommitLimit = value
+		mm.CommitLimit = value
 	case metricMemCommittedBytes:
-		mx.Memory.CommittedBytes = value
+		mm.CommittedBytes = value
 	case metricMemDemandZeroFaultsTotal:
-		mx.Memory.DemandZeroFaultsTotal = value
+		mm.DemandZeroFaultsTotal = value
 	case metricMemFreeAndZeroPageListBytes:
-		mx.Memory.FreeAndZeroPageListBytes = value
+		mm.FreeAndZeroPageListBytes = value
 	case metricMemFreeSystemPageTableEntries:
-		mx.Memory.FreeSystemPageTableEntries = value
+		mm.FreeSystemPageTableEntries = value
 	case metricMemModifiedPageListBytes:
-		mx.Memory.ModifiedPageListBytes = value
+		mm.ModifiedPageListBytes = value
 	case metricMemPageFaultsTotal:
-		mx.Memory.PageFaultsTotal = value
+		mm.PageFaultsTotal = value
 	case metricMemSwapPageReadsTotal:
-		mx.Memory.SwapPageReadsTotal = value
+		mm.SwapPageReadsTotal = value
 	case metricMemSwapPagesReadTotal:
-		mx.Memory.SwapPagesReadTotal = value
+		mm.SwapPagesReadTotal = value
 	case metricMemSwapPagesWrittenTotal:
-		mx.Memory.SwapPagesWrittenTotal = value
+		mm.SwapPagesWrittenTotal = value
 	case metricMemSwapPageOperationsTotal:
-		mx.Memory.SwapPageOperationsTotal = value
+		mm.SwapPageOperationsTotal = value
 	case metricMemSwapPageWritesTotal:
-		mx.Memory.SwapPageWritesTotal = value
+		mm.SwapPageWritesTotal = value
 	case metricMemPoolNonpagedAllocsTotal:
-		mx.Memory.PoolNonPagedAllocsTotal = value
+		mm.PoolNonPagedAllocsTotal = value
 	case metricMemPoolNonpagedBytesTotal:
-		mx.Memory.PoolNonPagedBytes = value
+		mm.PoolNonPagedBytes = value
 	case metricMemPoolPagedAllocsTotal:
-		mx.Memory.PoolPagedAllocsTotal = value
+		mm.PoolPagedAllocsTotal = value
 	case metricMemPoolPagedBytes:
-		mx.Memory.PoolPagedBytes = value
+		mm.PoolPagedBytes = value
 	case metricMemPoolPagedResidentBytes:
-		mx.Memory.PoolPagedResidentBytes = value
+		mm.PoolPagedResidentBytes = value
 	case metricMemStandbyCacheCoreBytes:
-		mx.Memory.StandbyCacheCoreBytes = value
+		mm.StandbyCacheCoreBytes = value
 	case metricMemStandbyCacheNormalPriorityBytes:
-		mx.Memory.StandbyCacheNormalPriorityBytes = value
+		mm.StandbyCacheNormalPriorityBytes = value
 	case metricMemStandbyCacheReserveBytes:
-		mx.Memory.StandbyCacheReserveBytes = value
+		mm.StandbyCacheReserveBytes = value
 	case metricMemSystemCacheResidentBytes:
-		mx.Memory.SystemCacheResidentBytes = value
+		mm.SystemCacheResidentBytes = value
 	case metricMemSystemCodeResidentBytes:
-		mx.Memory.SystemCodeResidentBytes = value
+		mm.SystemCodeResidentBytes = value
 	case metricMemSystemCodeTotalBytes:
-		mx.Memory.SystemCodeTotalBytes = value
+		mm.SystemCodeTotalBytes = value
 	case metricMemSystemDriverResidentBytes:
-		mx.Memory.SystemDriverResidentBytes = value
+		mm.SystemDriverResidentBytes = value
 	case metricMemSystemDriverTotalBytes:
-		mx.Memory.SystemDriverTotalBytes = value
+		mm.SystemDriverTotalBytes = value
 	case metricMemTransitionFaultsTotal:
-		mx.Memory.TransitionFaultsTotal = value
+		mm.TransitionFaultsTotal = value
 	case metricMemTransitionPagesRepurposedTotal:
-		mx.Memory.TransitionPagesRePurposedTotal = value
+		mm.TransitionPagesRePurposedTotal = value
 	case metricMemWriteCopiesTotal:
-		mx.Memory.WriteCopiesTotal = value
+		mm.WriteCopiesTotal = value
 	}
 }

@@ -1,8 +1,6 @@
 package wmi
 
 import (
-	"fmt"
-
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
@@ -22,61 +20,65 @@ const (
 	metricOSTime                    = "wmi_os_time"
 )
 
-func collectOS(mx *metrics, pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorOS)
-	if !(enabled && success) {
-		return false
-	}
-	mx.OS = &os{}
-
-	names := []string{
-		metricOSPhysicalMemoryFreeBytes,
-		metricOSPagingFreeBytes,
-		metricOSVirtualMemoryFreeBytes,
-		metricOSProcessesLimit,
-		metricOSProcessMemoryLimitBytes,
-		metricOSProcesses,
-		metricOSUsers,
-		metricOSPagingLimitBytes,
-		metricOSVirtualMemoryBytes,
-		metricOSVisibleMemoryBytes,
-		metricOSTime,
-	}
-
-	for _, name := range names {
-		collectOSAny(mx, pms, name)
-	}
-
-	return true
+var osMetricsNames = []string{
+	metricOSPhysicalMemoryFreeBytes,
+	metricOSPagingFreeBytes,
+	metricOSVirtualMemoryFreeBytes,
+	metricOSProcessesLimit,
+	metricOSProcessMemoryLimitBytes,
+	metricOSProcesses,
+	metricOSUsers,
+	metricOSPagingLimitBytes,
+	metricOSVirtualMemoryBytes,
+	metricOSVisibleMemoryBytes,
+	metricOSTime,
 }
 
-func collectOSAny(mx *metrics, pms prometheus.Metrics, name string) {
-	value := pms.FindByName(name).Max()
+func doCollectOS(pms prometheus.Metrics) bool {
+	enabled, success := checkCollector(pms, collectorOS)
+	return enabled && success
+}
 
+func collectOS(pms prometheus.Metrics) *osMetrics {
+	if !doCollectOS(pms) {
+		return nil
+	}
+
+	osm := &osMetrics{}
+	for _, name := range osMetricsNames {
+		collectOSMetric(osm, pms, name)
+	}
+	return osm
+}
+
+func collectOSMetric(osm *osMetrics, pms prometheus.Metrics, name string) {
+	value := pms.FindByName(name).Max()
+	assignOSMetric(osm, name, value)
+}
+
+func assignOSMetric(mx *osMetrics, name string, value float64) {
 	switch name {
-	default:
-		panic(fmt.Sprintf("unknown metric name during OS collection : %s", name))
 	case metricOSPhysicalMemoryFreeBytes:
-		mx.OS.PhysicalMemoryFreeBytes = value
+		mx.PhysicalMemoryFreeBytes = value
 	case metricOSPagingFreeBytes:
-		mx.OS.PagingFreeBytes = value
+		mx.PagingFreeBytes = value
 	case metricOSVirtualMemoryFreeBytes:
-		mx.OS.VirtualMemoryFreeBytes = value
+		mx.VirtualMemoryFreeBytes = value
 	case metricOSProcessesLimit:
-		mx.OS.ProcessesLimit = value
+		mx.ProcessesLimit = value
 	case metricOSProcessMemoryLimitBytes:
-		mx.OS.ProcessMemoryLimitBytes = value
+		mx.ProcessMemoryLimitBytes = value
 	case metricOSProcesses:
-		mx.OS.Processes = value
+		mx.Processes = value
 	case metricOSUsers:
-		mx.OS.Users = value
+		mx.Users = value
 	case metricOSPagingLimitBytes:
-		mx.OS.PagingLimitBytes = value
+		mx.PagingLimitBytes = value
 	case metricOSVirtualMemoryBytes:
-		mx.OS.VirtualMemoryBytes = value
+		mx.VirtualMemoryBytes = value
 	case metricOSVisibleMemoryBytes:
-		mx.OS.VisibleMemoryBytes = value
+		mx.VisibleMemoryBytes = value
 	case metricOSTime:
-		mx.OS.Time = value
+		mx.Time = value
 	}
 }
