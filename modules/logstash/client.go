@@ -2,11 +2,10 @@ package logstash
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-
-	"golang.org/x/xerrors"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
@@ -75,16 +74,16 @@ type gcCollector struct {
 	CollectionCount        int `json:"collection_count" stm:"collection_count"`
 }
 
-func newAPIClient(client *http.Client, request web.Request) *apiClient {
-	return &apiClient{httpClient: client, request: request}
+func newClient(httpClient *http.Client, request web.Request) *client {
+	return &client{httpClient: httpClient, request: request}
 }
 
-type apiClient struct {
+type client struct {
 	httpClient *http.Client
 	request    web.Request
 }
 
-func (a apiClient) jvmStats() (*jvmStats, error) {
+func (a client) jvmStats() (*jvmStats, error) {
 	req, err := a.createRequest(jvmStatusPath)
 	if err != nil {
 		return nil, err
@@ -103,20 +102,20 @@ func (a apiClient) jvmStats() (*jvmStats, error) {
 	return &stats, nil
 }
 
-func (a apiClient) doRequestOK(req *http.Request) (resp *http.Response, err error) {
+func (a client) doRequestOK(req *http.Request) (resp *http.Response, err error) {
 	if resp, err = a.httpClient.Do(req); err != nil {
-		err = xerrors.Errorf("error on request to %s : %w", req.URL, err)
+		err = fmt.Errorf("error on request to %s : %w", req.URL, err)
 		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		err = xerrors.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
+		err = fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
 		return
 	}
 	return
 }
 
-func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
+func (a client) createRequest(urlPath string) (*http.Request, error) {
 	req := a.request.Copy()
 	req.URL.Path = urlPath
 	return web.NewHTTPRequest(req)

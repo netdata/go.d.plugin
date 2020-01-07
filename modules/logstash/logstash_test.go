@@ -6,8 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
-
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -17,55 +15,53 @@ var (
 	jvmStatusData, _ = ioutil.ReadFile("testdata/stats.json")
 )
 
+func Test_readTestData(t *testing.T) {
+	assert.NotNil(t, jvmStatusData)
+}
+
 func TestLogstash_Cleanup(t *testing.T) {
 	New().Cleanup()
 }
 
 func TestNew(t *testing.T) {
-	job := New()
+	logstash := New()
 
-	assert.Implements(t, (*module.Module)(nil), job)
+	assert.Implements(t, (*module.Module)(nil), logstash)
 }
 
 func TestLogstash_Init(t *testing.T) {
-	job := New()
+	logstash := New()
 
-	require.True(t, job.Init())
-	assert.NotNil(t, job.apiClient)
+	assert.True(t, logstash.Init())
 }
 
-func TestLogstash_InitNG(t *testing.T) {
-	job := New()
+func TestLogstash_Init_ErrorOnValidatingConfigURLNotSet(t *testing.T) {
+	logstash := New()
+	logstash.UserURL = ""
 
-	job.HTTP.Request = web.Request{UserURL: ""}
-	assert.False(t, job.Init())
+	assert.False(t, logstash.Init())
+}
+
+func TestWMI_Init_ErrorOnCreatingClientWrongTLSCA(t *testing.T) {
+	logstash := New()
+	logstash.ClientTLSConfig.TLSCA = "testdata/tls"
+
+	assert.False(t, logstash.Init())
 }
 
 func TestLogstash_Check(t *testing.T) {
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path == jvmStatusPath {
-					_, _ = w.Write(jvmStatusData)
-					return
-				}
-			}))
-
+	logstash, ts := prepareClientServerValidResponse(t)
 	defer ts.Close()
 
-	job := New()
-
-	job.UserURL = ts.URL
-	require.True(t, job.Init())
-	assert.True(t, job.Check())
+	assert.True(t, logstash.Check())
 }
 
-func TestLogstash_CheckNG(t *testing.T) {
-	job := New()
+func TestWMI_Check_ErrorOnCollectConnectionRefused(t *testing.T) {
+	logstash := New()
+	logstash.UserURL = "http://127.0.0.1:38001/metrics"
+	require.True(t, logstash.Init())
 
-	job.UserURL = "http://127.0.0.1:38001"
-	require.True(t, job.Init())
-	assert.False(t, job.Check())
+	assert.False(t, logstash.Check())
 }
 
 func TestLogstash_Charts(t *testing.T) {
@@ -73,20 +69,8 @@ func TestLogstash_Charts(t *testing.T) {
 }
 
 func TestLogstash_Collect(t *testing.T) {
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path == jvmStatusPath {
-					_, _ = w.Write(jvmStatusData)
-					return
-				}
-			}))
+	logstash, ts := prepareClientServerValidResponse(t)
 	defer ts.Close()
-
-	job := New()
-	job.UserURL = ts.URL
-
-	assert.True(t, job.Init())
 
 	expected := map[string]int64{
 		"event_duration_in_millis":                                 0,
@@ -117,36 +101,86 @@ func TestLogstash_Collect(t *testing.T) {
 		"process_open_file_descriptors":                            101,
 	}
 
-	assert.Equal(t, expected, job.Collect())
+	collected := logstash.Collect()
+	assert.Equal(t, expected, collected)
+	testCharts(t, logstash, collected)
 }
 
-func TestLogstash_InvalidData(t *testing.T) {
-	ts := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path == jvmStatusPath {
-					_, _ = w.Write([]byte("hello and goodbye"))
-					return
-				}
-			}))
+func TestLogstash_Collect_ReturnsNothingWhenBadData(t *testing.T) {
+	logstash, ts := prepareClientServerBadData(t)
 	defer ts.Close()
 
-	job := New()
-	job.UserURL = ts.URL
-
-	require.True(t, job.Init())
-	assert.False(t, job.Check())
+	assert.Nil(t, logstash.Collect())
 }
 
-func TestLogstash_404(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(404)
-	}))
+func TestLogstash_Collect_ReturnsNothingWhen404(t *testing.T) {
+	logstash, ts := prepareClientServerResponse404(t)
 	defer ts.Close()
 
-	job := New()
-	job.UserURL = ts.URL
+	assert.Nil(t, logstash.Collect())
+}
 
-	require.True(t, job.Init())
-	assert.False(t, job.Check())
+func testCharts(t *testing.T, logstash *Logstash, collected map[string]int64) {
+	ensurePipelinesChartsCreated(t, logstash)
+	ensureCollectedHasAllChartsDimsVarsIDs(t, logstash, collected)
+}
+
+func ensurePipelinesChartsCreated(t *testing.T, logstash *Logstash) int {
+	for id := range logstash.collectedPipelines {
+		for _, chart := range *pipelineCharts(id) {
+			assert.Truef(t, logstash.Charts().Has(chart.ID), "chart '%' is not created", chart.ID)
+		}
+	}
+}
+
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, logstash *Logstash, collected map[string]int64) {
+	for _, chart := range *logstash.Charts() {
+		for _, dim := range chart.Dims {
+			_, ok := collected[dim.ID]
+			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+		for _, v := range chart.Vars {
+			_, ok := collected[v.ID]
+			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
+		}
+	}
+}
+
+func prepareClientServerValidResponse(t *testing.T) (*Logstash, *httptest.Server) {
+	t.Helper()
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write(jvmStatusData)
+		}))
+
+	logstash := New()
+	logstash.UserURL = ts.URL
+	require.True(t, logstash.Init())
+	return logstash, ts
+}
+
+func prepareClientServerBadData(t *testing.T) (*Logstash, *httptest.Server) {
+	t.Helper()
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte("hello and\n goodbye"))
+		}))
+
+	logstash := New()
+	logstash.UserURL = ts.URL
+	require.True(t, logstash.Init())
+	return logstash, ts
+}
+
+func prepareClientServerResponse404(t *testing.T) (*Logstash, *httptest.Server) {
+	t.Helper()
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+
+	logstash := New()
+	logstash.UserURL = ts.URL
+	require.True(t, logstash.Init())
+	return logstash, ts
 }

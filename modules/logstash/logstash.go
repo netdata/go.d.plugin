@@ -1,6 +1,8 @@
 package logstash
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -24,7 +26,11 @@ func New() *Logstash {
 			Client:  web.Client{Timeout: web.Duration{Duration: time.Second}},
 		},
 	}
-	return &Logstash{Config: config}
+	return &Logstash{
+		Config:             config,
+		charts:             charts.Copy(),
+		collectedPipelines: make(map[string]bool),
+	}
 }
 
 type (
@@ -35,29 +41,42 @@ type (
 	// Logstash Logstash module.
 	Logstash struct {
 		module.Base
-		Config    `yaml:",inline"`
-		apiClient *apiClient
-		charts    *Charts
+		Config             `yaml:",inline"`
+		client             *client
+		charts             *Charts
+		collectedPipelines map[string]bool
 	}
 )
 
-// Init makes initialization.
-func (l *Logstash) Init() bool {
+func (l *Logstash) validateConfig() error {
 	if err := l.ParseUserURL(); err != nil {
-		l.Errorf("error on parsing url '%s' : %v", l.Request.UserURL, err)
-		return false
+		return fmt.Errorf("parse url: %w", err)
 	}
 	if l.URL.Host == "" {
-		l.Error("URL is not set")
-		return false
+		return errors.New("URL is not set")
 	}
+	return nil
+}
 
+func (l *Logstash) createClient() error {
 	client, err := web.NewHTTPClient(l.Client)
 	if err != nil {
-		l.Error(err)
+		return err
+	}
+	l.client = newClient(client, l.Request)
+	return nil
+}
+
+// Init makes initialization.
+func (l *Logstash) Init() bool {
+	if err := l.validateConfig(); err != nil {
+		l.Errorf("error on validating config: %v", err)
 		return false
 	}
-	l.apiClient = newAPIClient(client, l.Request)
+	if err := l.createClient(); err != nil {
+		l.Errorf("error on creating client: %v", err)
+		return false
+	}
 
 	l.Debugf("using URL %s", l.URL)
 	l.Debugf("using timeout: %s", l.Timeout.Duration)
@@ -65,13 +84,12 @@ func (l *Logstash) Init() bool {
 }
 
 // Check makes check.
-func (l *Logstash) Check() bool { return len(l.Collect()) > 0 }
+func (l *Logstash) Check() bool {
+	return len(l.Collect()) > 0
+}
 
 // Charts creates Charts.
 func (l *Logstash) Charts() *Charts {
-	if l.charts == nil {
-		l.charts = charts.Copy()
-	}
 	return l.charts
 }
 

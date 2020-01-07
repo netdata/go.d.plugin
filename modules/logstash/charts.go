@@ -1,6 +1,10 @@
 package logstash
 
-import "github.com/netdata/go-orchestrator/module"
+import (
+	"fmt"
+
+	"github.com/netdata/go-orchestrator/module"
+)
 
 type (
 	// Charts is an alias for module.Charts
@@ -152,30 +156,41 @@ var charts = Charts{
 	},
 }
 
-func createPipelineChart(id string) Charts {
-	return Charts{
-		{
-			ID:    "pipeline_" + id + "_event",
-			Title: id + " Pipeline Events",
-			Units: "events/s",
-			Fam:   id,
-			Ctx:   "logstash.pipeline_event",
-			Dims: Dims{
-				{ID: "event_in", Name: "in", Algo: module.Incremental},
-				{ID: "event_filtered", Name: "filtered", Algo: module.Incremental},
-				{ID: "event_out", Name: "out", Algo: module.Incremental},
-			},
+var pipelineChartsTemplate = Charts{
+	{
+		ID:    "pipeline_%s_event",
+		Title: "%s Pipeline Events",
+		Units: "events/s",
+		Fam:   "%s",
+		Ctx:   "logstash.pipeline_event",
+		Dims: Dims{
+			{ID: "pipelines_%s_event_in", Name: "in", Algo: module.Incremental},
+			{ID: "pipelines_%s_event_filtered", Name: "filtered", Algo: module.Incremental},
+			{ID: "pipelines_%s_event_out", Name: "out", Algo: module.Incremental},
 		},
-		{
-			ID:    "pipeline_" + id + "_event_duration",
-			Title: id + " Pipeline Events Duration",
-			Units: "seconds",
-			Fam:   id,
-			Ctx:   "logstash.pipeline_event_duration",
-			Dims: Dims{
-				{ID: "event_duration_in_millis", Name: "event", Div: 1000, Algo: module.Incremental},
-				{ID: "event_queue_push_duration_in_millis", Name: "queue", Div: 1000, Algo: module.Incremental},
-			},
+	},
+	{
+		ID:    "pipeline_%s_event_duration",
+		Title: "%s Pipeline Events Duration",
+		Units: "seconds",
+		Fam:   "%s",
+		Ctx:   "logstash.pipeline_event_duration",
+		Dims: Dims{
+			{ID: "pipelines_%s_event_duration_in_millis", Name: "event", Div: 1000, Algo: module.Incremental},
+			{ID: "pipelines_%s_event_queue_push_duration_in_millis", Name: "queue", Div: 1000, Algo: module.Incremental},
 		},
+	},
+}
+
+func pipelineCharts(id string) *Charts {
+	cs := pipelineChartsTemplate.Copy()
+	for _, chart := range *cs {
+		chart.ID = fmt.Sprintf(chart.ID, id)
+		chart.Title = fmt.Sprintf(chart.Title, id)
+		chart.Fam = fmt.Sprintf(chart.Fam, id)
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, id)
+		}
 	}
+	return cs
 }
