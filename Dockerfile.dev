@@ -5,7 +5,7 @@ WORKDIR /workspace
 
 ENV GOOS=linux
 ENV GOARCH=amd64
-ENV CGO_ENABLED=0
+ENV CGO_ENABLED=1
 
 ADD go.mod go.sum ./
 

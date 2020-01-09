@@ -49,7 +49,7 @@ func toMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
 		convertMap(value, rv, key, mul, div)
 	case reflect.Bool:
 		convertBool(value, rv, key)
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		convertInteger(value, rv, key, mul, div)
 	case reflect.Float32, reflect.Float64:
 		convertFloat(value, rv, key, mul, div)
