@@ -11,42 +11,46 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	srvAddress = "127.0.0.1:38002"
-)
+func Test_clientNewNetwork(t *testing.T) {
+	tests := []struct {
+		address     string
+		wantNetwork string
+	}{
+		{"127.0.0.1", "tcp"},
+		{"127.0.0.1:8953", "tcp"},
+		{"/usr/local/etc/unbound/run/unbound.ctl", "unix"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.address, func(t *testing.T) {
+			conf := clientConfig{address: tt.address}
+			cl := newClient(conf)
+			assert.Equalf(t, tt.wantNetwork, cl.network, "expected '%s' client network, got '%s'", tt.wantNetwork, cl.network)
+		})
+	}
+}
 
 func Test_clientSend(t *testing.T) {
-	srv := &tcpServer{addr: srvAddress, respNumLines: 10}
-	go srv.Run()
+	const numLines = 10
+	cl, srv := prepareClientServer(numLines)
 	defer srv.Close()
 	time.Sleep(time.Second)
 
-	c := newClient(clientConfig{
-		address: srvAddress,
-		timeout: time.Second,
-	})
-
-	lines, err := c.send("whatever\n")
+	lines, err := cl.send("whatever\n")
 	assert.NoError(t, err)
-	assert.Len(t, lines, 10)
+	assert.Len(t, lines, numLines)
 
-	lines, err = c.send("whatever\n")
+	lines, err = cl.send("whatever\n")
 	assert.NoError(t, err)
-	assert.Len(t, lines, 10)
+	assert.Len(t, lines, numLines)
 }
 
 func Test_clientSend_ReadLineLimitExceeded(t *testing.T) {
-	srv := &tcpServer{addr: srvAddress, respNumLines: maxLinesToRead + 1}
-	go srv.Run()
+	cl, srv := prepareClientServer(maxLinesToRead + 1)
 	defer srv.Close()
 	time.Sleep(time.Second)
 
-	c := newClient(clientConfig{
-		address: srvAddress,
-		timeout: time.Second,
-	})
-
-	lines, err := c.send("whatever\n")
+	lines, err := cl.send("whatever\n")
 	assert.Error(t, err)
 	assert.Len(t, lines, 0)
 }
@@ -95,4 +99,18 @@ func (t *tcpServer) handleConnection(conn net.Conn) {
 	resp := strings.Repeat(req, t.respNumLines)
 	_, _ = rw.WriteString(resp)
 	_ = rw.Flush()
+}
+
+func prepareClientServer(respNumLines int) (*client, *tcpServer) {
+	srv := &tcpServer{
+		addr:         "127.0.0.1:38002",
+		respNumLines: respNumLines,
+	}
+	go srv.Run()
+
+	cl := newClient(clientConfig{
+		address: srv.addr,
+		timeout: time.Second,
+	})
+	return cl, srv
 }

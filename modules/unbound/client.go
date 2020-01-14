@@ -6,44 +6,44 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"strings"
 	"time"
 )
 
-type clientConfig struct {
-	address string
-	timeout time.Duration
-	useTLS  bool
-	tlsConf *tls.Config
-}
-
-func newClient(config clientConfig) *client {
+func newClient(conf clientConfig) *client {
 	network := "tcp"
-	if strings.HasPrefix("/", config.address) {
+	if isUnixSocket(conf.address) {
 		network = "unix"
 	}
 	return &client{
 		network:     network,
-		address:     config.address,
-		timeout:     config.timeout,
-		useTLS:      config.useTLS,
-		tlsConf:     config.tlsConf,
+		address:     conf.address,
+		timeout:     conf.timeout,
+		useTLS:      conf.useTLS,
+		tlsConf:     conf.tlsConf,
 		reuseRecord: true,
 		record:      nil,
 		conn:        nil,
 	}
 }
 
-type client struct {
-	network     string
-	address     string
-	timeout     time.Duration
-	useTLS      bool
-	tlsConf     *tls.Config
-	reuseRecord bool
-	record      []string
-	conn        net.Conn
-}
+type (
+	clientConfig struct {
+		address string
+		timeout time.Duration
+		useTLS  bool
+		tlsConf *tls.Config
+	}
+	client struct {
+		network     string
+		address     string
+		timeout     time.Duration
+		useTLS      bool
+		tlsConf     *tls.Config
+		reuseRecord bool
+		record      []string
+		conn        net.Conn
+	}
+)
 
 func (c client) dial() (net.Conn, error) {
 	if !c.useTLS {
@@ -90,9 +90,8 @@ func (c *client) send(command string) (lines []string, err error) {
 	if err = c.connect(); err != nil {
 		return nil, err
 	}
-	defer func() {
-		_ = c.disconnect()
-	}()
+	defer c.disconnect()
+
 	if _, err = c.write(command); err != nil {
 		return nil, err
 	}
