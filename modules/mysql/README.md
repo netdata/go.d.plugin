@@ -81,6 +81,16 @@ If no configuration is given, module will attempt to connect to mysql server via
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/mysql.conf).
 
+MySQL user specified in configuration should have at least `USAGE, REPLICATION CLIENT` permissions.
+
+To create the user, enter following to MySQL shell:
+
+```sql
+CREATE USER 'netdata'@'localhost';
+GRANT USAGE, REPLICATION CLIENT ON *.* TO 'netdata'@'localhost';
+FLUSH PRIVILEGES;
+```
+
 ## Troubleshooting
 
 Check the module debug output. Run the following command as `netdata` user:
