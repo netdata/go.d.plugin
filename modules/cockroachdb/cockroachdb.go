@@ -85,7 +85,6 @@ func (c *CockroachDB) Collect() map[string]int64 {
 	mx, err := c.collect()
 	if err != nil {
 		c.Error(err)
-		return nil
 	}
 
 	if len(mx) == 0 {
