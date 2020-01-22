@@ -10,6 +10,7 @@ type (
 			Total          float64 `stm:"total"`
 			Available      float64 `stm:"available"`
 			Used           float64 `stm:"used"`
+			Reserved       float64 `stm:"reserved"`
 			PercentageUsed float64 `stm:"percentage_used"`
 		} `stm:"capacity"`
 		LiveBytes float64 `stm:"live_bytes"`
@@ -19,8 +20,8 @@ type (
 			SSTables           float64 `stm:"num_sstables"`
 			BlockCache         struct {
 				Hits    float64 `stm:"hits"`
-				Miss    float64 `stm:"hits"`
-				HitRate float64 `stm:"hit_rate,1000,1"`
+				Misses  float64 `stm:"misses"`
+				HitRate float64 `stm:"hit_rate"`
 			} `stm:"block_cache"`
 			Compactions float64 `stm:"compactions"`
 			Flushes     float64 `stm:"flushes"`
