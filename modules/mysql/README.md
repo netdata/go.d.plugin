@@ -4,6 +4,18 @@
 
 This module will monitor one or more `MySQL` servers depending on configuration.
 
+## Requirements
+
+MySQL user specified in configuration should have at least `USAGE, REPLICATION CLIENT` permissions.
+
+To create the user, enter following to MySQL shell:
+
+```sql
+CREATE USER 'netdata'@'localhost';
+GRANT USAGE, REPLICATION CLIENT ON *.* TO 'netdata'@'localhost';
+FLUSH PRIVILEGES;
+```
+
 ## Charts
 
 It will produce following charts:
@@ -80,16 +92,6 @@ If no configuration is given, module will attempt to connect to mysql server via
 
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/mysql.conf).
-
-MySQL user specified in configuration should have at least `USAGE, REPLICATION CLIENT` permissions.
-
-To create the user, enter following to MySQL shell:
-
-```sql
-CREATE USER 'netdata'@'localhost';
-GRANT USAGE, REPLICATION CLIENT ON *.* TO 'netdata'@'localhost';
-FLUSH PRIVILEGES;
-```
 
 ## Troubleshooting
 
