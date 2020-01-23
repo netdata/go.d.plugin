@@ -110,7 +110,7 @@ var charts = Charts{
 	{
 		ID:    "rocksdb_cache_operations",
 		Title: "RocksDB Block Cache Operations",
-		Units: "operations",
+		Units: "operations/s",
 		Fam:   "rocksdb",
 		Ctx:   "cockroachdb.rocksdb_cache_operations",
 		Type:  module.Area,
@@ -181,6 +181,63 @@ var charts = Charts{
 		Ctx:   "cockroachdb.timeseries_write_bytes",
 		Dims: Dims{
 			{ID: "storage_timeseries_write_bytes", Name: "written", Algo: module.Incremental},
+		},
+	},
+
+	{
+		ID:    "nodes",
+		Title: "Nodes",
+		Units: "nodes",
+		Fam:   "runtime",
+		Ctx:   "cockroachdb.nodes",
+		Dims: Dims{
+			{ID: "runtime_live_nodes", Name: "live"},
+		},
+	},
+
+	{
+		ID:    "system_uptime",
+		Title: "Nodes",
+		Units: "seconds",
+		Fam:   "runtime",
+		Ctx:   "cockroachdb.uptime",
+		Dims: Dims{
+			{ID: "runtime_uptime", Name: "uptime"},
+		},
+	},
+
+	{
+		ID:    "rss_memory_usage",
+		Title: "RSS Memory Usage",
+		Units: "KiB",
+		Fam:   "runtime",
+		Ctx:   "cockroachdb.rss_memory_usage",
+		Dims: Dims{
+			{ID: "runtime_memory_rss", Name: "rss", Div: 1024},
+		},
+	},
+	{
+		ID:    "code_memory_usage",
+		Title: "GO/CGO Memory Usage",
+		Units: "KiB",
+		Fam:   "runtime",
+		Ctx:   "cockroachdb.code_memory_usage",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "runtime_memory_go_alloc_bytes", Name: "go", Div: 1024},
+			{ID: "runtime_memory_cgo_alloc_bytes", Name: "cgo", Div: 1024},
+		},
+	},
+	{
+		ID:    "code_memory_allocations",
+		Title: "GO/CGO Memory Allocations",
+		Units: "KiB/s",
+		Fam:   "runtime",
+		Ctx:   "cockroachdb.code_memory_allocations",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "runtime_memory_go_total_bytes", Name: "go", Div: 1024, Algo: module.Incremental},
+			{ID: "runtime_memory_cgo_total_bytes", Name: "cgo", Div: 1024, Algo: module.Incremental},
 		},
 	},
 }

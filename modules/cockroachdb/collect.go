@@ -25,6 +25,7 @@ func (c *CockroachDB) collect() (map[string]int64, error) {
 func collectScraped(scraped prometheus.Metrics) metrics {
 	return metrics{
 		Storage: collectStorage(scraped),
+		Runtime: collectRuntime(scraped),
 	}
 }
 

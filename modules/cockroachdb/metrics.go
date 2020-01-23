@@ -2,9 +2,11 @@ package cockroachdb
 
 // https://github.com/cockroachdb/cockroach/blob/master/pkg/storage/metrics.go
 // https://github.com/cockroachdb/cockroach/blob/master/pkg/ts/metrics.go
+// https://github.com/cockroachdb/cockroach/blob/master/pkg/server/status/runtime.go
 
 type metrics struct {
 	Storage storageMetrics `stm:"storage"`
+	Runtime runtimeMetrics `stm:"runtime"`
 }
 
 type (
@@ -42,5 +44,19 @@ type (
 			WriteErrors  float64 `stm:"write_errors"`
 			WriteBytes   float64 `stm:"write_bytes"`
 		} `stm:"timeseries"`
+	}
+)
+
+type (
+	runtimeMetrics struct {
+		LiveNodes float64 `stm:"live_nodes"`
+		SysUptime float64 `stm:"uptime"`
+		Memory    struct {
+			RSS           float64 `stm:"rss"`
+			GoAllocBytes  float64 `stm:"go_alloc_bytes"`
+			GoTotalBytes  float64 `stm:"go_total_bytes"`
+			CGoAllocBytes float64 `stm:"cgo_alloc_bytes"`
+			CGoTotalBytes float64 `stm:"cgo_total_bytes"`
+		} `stm:"memory"`
 	}
 )
