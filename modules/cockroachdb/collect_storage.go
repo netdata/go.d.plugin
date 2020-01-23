@@ -14,10 +14,14 @@ func collectStorage(pms prometheus.Metrics) storageMetrics {
 
 func collectStorageCapacity(sm *storageMetrics, pms prometheus.Metrics) {
 	sm.Capacity.Total = pms.FindByName("capacity").Max()
-	sm.Capacity.Available = pms.FindByName("capacity_available").Max()
 	sm.Capacity.Used = pms.FindByName("capacity_used").Max()
 	sm.Capacity.Reserved = pms.FindByName("capacity_reserved").Max()
-	sm.Capacity.PercentageUsed = calcCapacityUsedPercentage(*sm)
+	sm.Capacity.Available = pms.FindByName("capacity_available").Max()
+
+	sm.Capacity.Unusable = sm.Capacity.Total - (sm.Capacity.Available + sm.Capacity.Used) // implying Used includes Reserved
+	sm.Capacity.Usable = sm.Capacity.Used + sm.Capacity.Available
+	sm.Capacity.TotalUsedPercentage = calcTotalCapacityUsedPercentage(*sm)
+	sm.Capacity.UsableUsedPercentage = calcUsableCapacityUsedPercentage(*sm)
 }
 
 func collectStorageLiveBytes(sm *storageMetrics, pms prometheus.Metrics) {
@@ -32,6 +36,7 @@ func collectStorageRockDB(sm *storageMetrics, pms prometheus.Metrics) {
 	sm.RocksDB.Flushes = pms.FindByName("rocksdb_flushes").Max()
 	sm.RocksDB.BlockCache.Hits = pms.FindByName("rocksdb_block_cache_hits").Max()
 	sm.RocksDB.BlockCache.Misses = pms.FindByName("rocksdb_block_cache_misses").Max()
+	sm.RocksDB.BlockCache.Bytes = pms.FindByName("rocksdb_block_cache_usage").Max()
 	sm.RocksDB.BlockCache.HitRate = calcRocksDBCacheHitRate(*sm)
 }
 
@@ -47,16 +52,25 @@ func collectStorageTimeSeries(sm *storageMetrics, pms prometheus.Metrics) {
 	sm.TimeSeries.WriteBytes = pms.FindByName("timeseries_write_bytes").Max()
 }
 
-func calcCapacityUsedPercentage(sm storageMetrics) float64 {
+const percentagePrecision = 1000
+
+func calcTotalCapacityUsedPercentage(sm storageMetrics) float64 {
 	if sm.Capacity.Total == 0 {
 		return 100
 	}
-	return (1 - sm.Capacity.Available/sm.Capacity.Total) * 100 * 1000
+	return (sm.Capacity.Unusable + sm.Capacity.Used) / sm.Capacity.Total * 100 * percentagePrecision
+}
+
+func calcUsableCapacityUsedPercentage(sm storageMetrics) float64 {
+	if sm.Capacity.Usable == 0 {
+		return 100
+	}
+	return sm.Capacity.Used / sm.Capacity.Usable * 100 * percentagePrecision
 }
 
 func calcRocksDBCacheHitRate(sm storageMetrics) float64 {
 	if sm.RocksDB.BlockCache.Hits+sm.RocksDB.BlockCache.Misses == 0 {
 		return 0
 	}
-	return sm.RocksDB.BlockCache.Hits / (sm.RocksDB.BlockCache.Hits + sm.RocksDB.BlockCache.Misses) * 100 * 1000
+	return sm.RocksDB.BlockCache.Hits / (sm.RocksDB.BlockCache.Hits + sm.RocksDB.BlockCache.Misses) * 100 * percentagePrecision
 }

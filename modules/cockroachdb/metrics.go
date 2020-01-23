@@ -1,5 +1,8 @@
 package cockroachdb
 
+// https://github.com/cockroachdb/cockroach/blob/master/pkg/storage/metrics.go
+// https://github.com/cockroachdb/cockroach/blob/master/pkg/ts/metrics.go
+
 type metrics struct {
 	Storage storageMetrics `stm:"storage"`
 }
@@ -7,18 +10,22 @@ type metrics struct {
 type (
 	storageMetrics struct {
 		Capacity struct {
-			Total          float64 `stm:"total"`
-			Available      float64 `stm:"available"`
-			Used           float64 `stm:"used"`
-			Reserved       float64 `stm:"reserved"`
-			PercentageUsed float64 `stm:"percentage_used"`
+			Total                float64 `stm:"total"`
+			Used                 float64 `stm:"used"`
+			Reserved             float64 `stm:"reserved"`
+			Available            float64 `stm:"available"`
+			Unusable             float64 `stm:"unusable"`
+			Usable               float64 `stm:"usable"`
+			TotalUsedPercentage  float64 `stm:"total_used_percentage"`
+			UsableUsedPercentage float64 `stm:"usable_used_percentage"`
 		} `stm:"capacity"`
 		LiveBytes float64 `stm:"live_bytes"`
 		SysBytes  float64 `stm:"sys_bytes"`
 		RocksDB   struct {
-			ReadAmplifications float64 `stm:"read_amplifications"`
+			ReadAmplifications float64 `stm:"read_amplification"`
 			SSTables           float64 `stm:"num_sstables"`
 			BlockCache         struct {
+				Bytes   float64 `stm:"bytes"`
 				Hits    float64 `stm:"hits"`
 				Misses  float64 `stm:"misses"`
 				HitRate float64 `stm:"hit_rate"`

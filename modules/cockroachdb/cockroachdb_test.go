@@ -43,30 +43,35 @@ func TestCockroachDB_Collect(t *testing.T) {
 	defer srv.Close()
 
 	expected := map[string]int64{
-		"storage_capacity_available":           40402062147584,
-		"storage_capacity_percentage_used":     37070,
-		"storage_capacity_reserved":            0,
-		"storage_capacity_total":               64202351837184,
-		"storage_capacity_used":                131897916,
-		"storage_file_descriptors_open":        47,
-		"storage_file_descriptors_soft_limit":  1048576,
-		"storage_live_bytes":                   81979227,
-		"storage_rocksdb_block_cache_hit_rate": 92104,
-		"storage_rocksdb_block_cache_hits":     94825,
-		"storage_rocksdb_block_cache_misses":   8129,
-		"storage_rocksdb_compactions":          7,
-		"storage_rocksdb_flushes":              13,
-		"storage_rocksdb_num_sstables":         8,
-		"storage_rocksdb_read_amplifications":  1,
-		"storage_sys_bytes":                    13327,
-		"storage_timeseries_write_bytes":       82810041,
-		"storage_timeseries_write_errors":      0,
-		"storage_timeseries_write_samples":     845784,
+		"storage_capacity_available":              40402062147584,
+		"storage_capacity_unusable":               23800157791684,
+		"storage_capacity_usable":                 40402194045500,
+		"storage_capacity_total_used_percentage":  37070,
+		"storage_capacity_usable_used_percentage": 0,
+		"storage_capacity_reserved":               0,
+		"storage_capacity_total":                  64202351837184,
+		"storage_capacity_used":                   131897916,
+		"storage_file_descriptors_open":           47,
+		"storage_file_descriptors_soft_limit":     1048576,
+		"storage_live_bytes":                      81979227,
+		"storage_rocksdb_block_cache_hit_rate":    92104,
+		"storage_rocksdb_block_cache_hits":        94825,
+		"storage_rocksdb_block_cache_bytes":       39397184,
+		"storage_rocksdb_block_cache_misses":      8129,
+		"storage_rocksdb_compactions":             7,
+		"storage_rocksdb_flushes":                 13,
+		"storage_rocksdb_num_sstables":            8,
+		"storage_rocksdb_read_amplification":      1,
+		"storage_sys_bytes":                       13327,
+		"storage_timeseries_write_bytes":          82810041,
+		"storage_timeseries_write_errors":         0,
+		"storage_timeseries_write_samples":        845784,
 	}
 
 	collected := cockroachDB.Collect()
 
 	assert.Equal(t, expected, collected)
+	testCharts(t, cockroachDB, collected)
 }
 
 func testCharts(t *testing.T, cockroachDB *CockroachDB, collected map[string]int64) {
