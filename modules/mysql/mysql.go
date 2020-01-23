@@ -44,8 +44,10 @@ func New() *MySQL { return &MySQL{charts: charts.Copy(), doSlave: true} }
 
 // Cleanup performs cleanup.
 func (m *MySQL) Cleanup() {
-	err := m.db.Close()
-	if err != nil {
+	if m.db == nil {
+		return
+	}
+	if err := m.db.Close(); err != nil {
 		m.Errorf("cleanup: error on closing the mysql database [%s]: %v", m.DSN, err)
 	}
 }
