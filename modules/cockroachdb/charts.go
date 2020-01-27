@@ -10,64 +10,9 @@ type (
 )
 
 var charts = Charts{
-	chartLiveNodes.Copy(),
-	chartHeardBeats.Copy(),
-
-	chartCapacity.Copy(),
-	chartCapacityUsability.Copy(),
-	chartCapacityUsable.Copy(),
-	chartCapacityUsedPercentage.Copy(),
-
-	chartUsedLiveData.Copy(),
-	chartLogicalDataBytes.Copy(),
-	chartLogicalData.Copy(),
-
-	chartRocksDBReadAmplification.Copy(),
-	chartRocksDBTableOperations.Copy(),
-	chartRocksDBCacheUsage.Copy(),
-	chartRocksDBCacheOperations.Copy(),
-	chartRocksDBCacheHitRage.Copy(),
-	chartRocksDBSSTables.Copy(),
-
-	chartTimeSeriesWrittenSamples.Copy(),
-	chartTimeSeriesWriteErrors.Copy(),
-	chartTimeSeriesWrittenBytes.Copy(),
-
-	chartSQLConnections.Copy(),
-	chartSQLTraffic.Copy(),
-	chartSQLQueries.Copy(),
-	chartSQLErroredQueries.Copy(),
-	chartSQLActiveDistQueries.Copy(),
-	chartSQLActiveFlowsForDistQueries.Copy(),
-	chartSQLTransactions.Copy(),
-	chartSQLSchemaChanges.Copy(),
-
-	chartRanges.Copy(),
-	chartRangesWithProblems.Copy(),
-	chartRangesEvents.Copy(),
-	chartRangesSnapshotEvents.Copy(),
-
-	chartReplicas.Copy(),
-	chartReplicasQuiescence.Copy(),
-	chartReplicasLeaders.Copy(),
-	chartReplicasLeaseHolder.Copy(),
-
-	chartRebalancingQueries.Copy(),
-	chartRebalancingWrites.Copy(),
-
-	chartSlowRequests.Copy(),
-
-	chartRPCClockOffset.Copy(),
-
-	chartGoroutines.Copy(),
-	chartGoCgoHeapMemory.Copy(),
-	chartCGoCalls.Copy(),
-	chartGCRuns.Copy(),
-	chartGCPauseTime.Copy(),
-
-	chartProcessCPUUsage.Copy(),
-	chartProcessCPUUsagePercent.Copy(),
 	chartProcessCPUUsageCombinedPercent.Copy(),
+	chartProcessCPUUsagePercent.Copy(),
+	chartProcessCPUUsage.Copy(),
 	chartProcessMemory.Copy(),
 	chartProcessFDUsage.Copy(),
 
@@ -77,8 +22,188 @@ var charts = Charts{
 	chartHostNetworkBandwidth.Copy(),
 	chartHostNetworkPackets.Copy(),
 
+	chartLiveNodes.Copy(),
+	chartHeardBeats.Copy(),
+
+	chartCapacity.Copy(),
+	chartCapacityUsability.Copy(),
+	chartCapacityUsable.Copy(),
+	chartCapacityUsedPercentage.Copy(),
+
+	chartSQLConnections.Copy(),
+	chartSQLTraffic.Copy(),
+	chartSQLStatementsTotal.Copy(),
+	chartSQLErrors.Copy(),
+	chartSQLStartedDDLStatements.Copy(),
+	chartSQLExecutedDDLStatements.Copy(),
+	chartSQLStartedDMLStatements.Copy(),
+	chartSQLExecutedDMLStatements.Copy(),
+	chartSQLStartedTCLStatements.Copy(),
+	chartSQLExecutedTCLStatements.Copy(),
+	chartSQLActiveDistQueries.Copy(),
+	chartSQLActiveFlowsForDistQueries.Copy(),
+
+	chartUsedLiveData.Copy(),
+	chartLogicalDataBytes.Copy(),
+	chartLogicalData.Copy(),
+
+	chartKVTransactions.Copy(),
+	chartKVTransactionsRestarts.Copy(),
+
+	chartRanges.Copy(),
+	chartRangesWithProblems.Copy(),
+	chartRangesEvents.Copy(),
+	chartRangesSnapshotEvents.Copy(),
+
+	chartRocksDBReadAmplification.Copy(),
+	chartRocksDBTableOperations.Copy(),
+	chartRocksDBCacheUsage.Copy(),
+	chartRocksDBCacheOperations.Copy(),
+	chartRocksDBCacheHitRage.Copy(),
+	chartRocksDBSSTables.Copy(),
+
+	chartReplicas.Copy(),
+	chartReplicasQuiescence.Copy(),
+	chartReplicasLeaders.Copy(),
+	chartReplicasLeaseHolder.Copy(),
+
+	chartRebalancingQueries.Copy(),
+	chartRebalancingWrites.Copy(),
+
+	chartTimeSeriesWrittenSamples.Copy(),
+	chartTimeSeriesWriteErrors.Copy(),
+	chartTimeSeriesWrittenBytes.Copy(),
+
+	chartSlowRequests.Copy(),
+
+	chartGoroutines.Copy(),
+	chartGoCgoHeapMemory.Copy(),
+	chartCGoCalls.Copy(),
+	chartGCRuns.Copy(),
+	chartGCPauseTime.Copy(),
+
 	chartUptime.Copy(),
 }
+
+// Process
+var (
+	chartProcessCPUUsage = Chart{
+		ID:    "process_cpu_time",
+		Title: "Process CPU Time",
+		Units: "ms",
+		Fam:   "process",
+		Ctx:   "cockroachdb.process_cpu_time",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricSysCPUUserNs, Name: "user", Algo: module.Incremental, Div: 1e6},
+			{ID: metricSysCPUSysNs, Name: "sys", Algo: module.Incremental, Div: 1e6},
+		},
+	}
+	chartProcessCPUUsagePercent = Chart{
+		ID:    "process_cpu_time_percentage",
+		Title: "Process CPU Time Percentage",
+		Units: "percentage",
+		Fam:   "process",
+		Ctx:   "cockroachdb.process_cpu_time_percentage",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricSysCPUUserPercent, Name: "user", Div: precision},
+			{ID: metricSysCPUSysPercent, Name: "sys", Div: precision},
+		},
+	}
+	chartProcessCPUUsageCombinedPercent = Chart{
+		ID:    "process_cpu_time_combined_percentage",
+		Title: "Process CPU Time Percentage",
+		Units: "percentage",
+		Fam:   "process",
+		Ctx:   "cockroachdb.process_cpu_time_combined_percentage",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricSysCPUCombinedPercentNormalized, Name: "usage", Div: precision},
+		},
+	}
+	chartProcessMemory = Chart{
+		ID:    "process_memory",
+		Title: "Process Memory Usage",
+		Units: "KiB",
+		Fam:   "process",
+		Ctx:   "cockroachdb.process_memory",
+		Dims: Dims{
+			{ID: metricSysRSS, Name: "rss", Div: 1024},
+		},
+	}
+	chartProcessFDUsage = Chart{
+		ID:    "process_file_descriptors",
+		Title: "File Descriptors Statistics",
+		Units: "file descriptors",
+		Fam:   "process",
+		Ctx:   "cockroachdb.process_file_descriptors",
+		Dims: Dims{
+			{ID: metricSysFDOpen, Name: "open"},
+		},
+		Vars: Vars{
+			{ID: metricSysFDSoftLimit},
+		},
+	}
+)
+
+// Host
+var (
+	chartHostDiskBandwidth = Chart{
+		ID:    "host_disk_bandwidth",
+		Title: "Host Disk Bandwidth",
+		Units: "KiB/s",
+		Fam:   "host",
+		Ctx:   "cockroachdb.host_disk_bandwidth",
+		Dims: Dims{
+			{ID: metricSysHostDiskReadBytes, Name: "read", Div: 1024, Algo: module.Incremental},
+			{ID: metricSysHostDiskWriteBytes, Name: "write", Div: -1024, Algo: module.Incremental},
+		},
+	}
+	chartHostDiskOperations = Chart{
+		ID:    "host_disk_operations",
+		Title: "Host Disk Operations",
+		Units: "operations/s",
+		Fam:   "host",
+		Ctx:   "cockroachdb.host_disk_operations",
+		Dims: Dims{
+			{ID: metricSysHostDiskReadCount, Name: "reads", Algo: module.Incremental},
+			{ID: metricSysHostDiskWriteCount, Name: "writes", Mul: -1, Algo: module.Incremental},
+		},
+	}
+	chartHostDiskIOPS = Chart{
+		ID:    "host_disk_iops_in_progress",
+		Title: "Host Disk IOPS In Progress",
+		Units: "iops",
+		Fam:   "host",
+		Ctx:   "cockroachdb.host_disk_iops_in_progress",
+		Dims: Dims{
+			{ID: metricSysHostDiskIOPSInProgress, Name: "in progress"},
+		},
+	}
+	chartHostNetworkBandwidth = Chart{
+		ID:    "host_network_bandwidth",
+		Title: "Host Network Bandwidth",
+		Units: "kilobits/s",
+		Fam:   "host",
+		Ctx:   "cockroachdb.host_network_bandwidth",
+		Dims: Dims{
+			{ID: metricSysHostNetRecvBytes, Name: "received", Div: 1000, Algo: module.Incremental},
+			{ID: metricSysHostNetSendBytes, Name: "sent", Div: -1000, Algo: module.Incremental},
+		},
+	}
+	chartHostNetworkPackets = Chart{
+		ID:    "host_network_packets",
+		Title: "Host Network Packets",
+		Units: "pps",
+		Fam:   "host",
+		Ctx:   "cockroachdb.host_network_packets",
+		Dims: Dims{
+			{ID: metricSysHostNetRecvPackets, Name: "received", Algo: module.Incremental},
+			{ID: metricSysHostNetSendPackets, Name: "sent", Algo: module.Incremental},
+		},
+	}
+)
 
 // Liveness
 var (
@@ -101,7 +226,7 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: metricHeartBeatSuccesses, Name: "successful", Algo: module.Incremental},
-			{ID: metricHeartBeatFailures, Name: "unsuccessful", Algo: module.Incremental},
+			{ID: metricHeartBeatFailures, Name: "failed", Algo: module.Incremental},
 		},
 	}
 )
@@ -155,6 +280,157 @@ var (
 	}
 )
 
+// SQL
+var (
+	chartSQLConnections = Chart{
+		ID:    "sql_connections",
+		Title: "Active SQL Connections",
+		Units: "connections",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_connections",
+		Dims: Dims{
+			{ID: metricSQLConnections, Name: "active"},
+		},
+	}
+	chartSQLTraffic = Chart{
+		ID:    "sql_traffic",
+		Title: "SQL Traffic",
+		Units: "KiB",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_traffic",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: metricSQLBytesIn, Name: "received", Div: 1024, Algo: module.Incremental},
+			{ID: metricSQLBytesOut, Name: "sent", Div: -11024, Algo: module.Incremental},
+		},
+	}
+	chartSQLStatementsTotal = Chart{
+		ID:    "sql_statements_total",
+		Title: "SQL Successfully Executed Statements Total",
+		Units: "statements",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_statements_total",
+		Dims: Dims{
+			{ID: metricSQLQueryCount, Name: "total", Algo: module.Incremental},
+		},
+	}
+	chartSQLErrors = Chart{
+		ID:    "sql_errors",
+		Title: "SQL Statements and Transaction Errors",
+		Units: "errors",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_errors",
+		Dims: Dims{
+			{ID: metricSQLFailureCount, Name: "statement", Algo: module.Incremental},
+			{ID: metricSQLTXNAbortCount, Name: "transaction", Algo: module.Incremental},
+		},
+	}
+	chartSQLStartedDDLStatements = Chart{
+		ID:    "sql_started_ddl_statements",
+		Title: "SQL Started DDL Statements",
+		Units: "statements",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_started_ddl_statements",
+		Dims: Dims{
+			{ID: metricSQLDDLStartedCount, Name: "DDL"},
+		},
+	}
+	chartSQLExecutedDDLStatements = Chart{
+		ID:    "sql_executed_ddl_statements",
+		Title: "SQL Successfully Executed DDL Statements",
+		Units: "statements",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_executed_ddl_statements",
+		Dims: Dims{
+			{ID: metricSQLDDLCount, Name: "DDL"},
+		},
+	}
+	chartSQLStartedDMLStatements = Chart{
+		ID:    "sql_started_dml_statements",
+		Title: "SQL Started DML Statements",
+		Units: "statements",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_started_dml_statements",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricSQLSelectStartedCount, Name: "SELECT", Algo: module.Incremental},
+			{ID: metricSQLUpdateStartedCount, Name: "UPDATE", Algo: module.Incremental},
+			{ID: metricSQLInsertStartedCount, Name: "INSERT", Algo: module.Incremental},
+			{ID: metricSQLDeleteStartedCount, Name: "DELETE", Algo: module.Incremental},
+		},
+	}
+	chartSQLExecutedDMLStatements = Chart{
+		ID:    "sql_executed_dml_statements",
+		Title: "SQL Successfully Executed DML Statements",
+		Units: "statements",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_executed_dml_statements",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricSQLSelectCount, Name: "SELECT", Algo: module.Incremental},
+			{ID: metricSQLUpdateCount, Name: "UPDATE", Algo: module.Incremental},
+			{ID: metricSQLInsertCount, Name: "INSERT", Algo: module.Incremental},
+			{ID: metricSQLDeleteCount, Name: "DELETE", Algo: module.Incremental},
+		},
+	}
+	chartSQLStartedTCLStatements = Chart{
+		ID:    "sql_started_tcl_statements",
+		Title: "SQL Started TCL Statements",
+		Units: "statements",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_started_tcl_statements",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricSQLTXNBeginStartedCount, Name: "BEGIN", Algo: module.Incremental},
+			{ID: metricSQLTXNCommitStartedCount, Name: "COMMIT", Algo: module.Incremental},
+			{ID: metricSQLTXNRollbackStartedCount, Name: "ROLLBACK", Algo: module.Incremental},
+			{ID: metricSQLSavepointStartedCount, Name: "SAVEPOINT", Algo: module.Incremental},
+			{ID: metricSQLRestartSavepointStartedCount, Name: "SAVEPOINT cockroach_restart", Algo: module.Incremental},
+			{ID: metricSQLRestartSavepointReleaseStartedCount, Name: "RELEASE SAVEPOINT cockroach_restart", Algo: module.Incremental},
+			{ID: metricSQLRestartSavepointRollbackStartedCount, Name: "ROLLBACK TO SAVEPOINT cockroach_restart", Algo: module.Incremental},
+		},
+	}
+	chartSQLExecutedTCLStatements = Chart{
+		ID:    "sql_executed_tcl_statements",
+		Title: "SQL Successfully Executed TCL Statements",
+		Units: "statements",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_executed_tcl_statements",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricSQLTXNBeginCount, Name: "BEGIN", Algo: module.Incremental},
+			{ID: metricSQLTXNCommitCount, Name: "COMMIT", Algo: module.Incremental},
+			{ID: metricSQLTXNRollbackCount, Name: "ROLLBACK", Algo: module.Incremental},
+			{ID: metricSQLSavepointCount, Name: "SAVEPOINT", Algo: module.Incremental},
+			{ID: metricSQLRestartSavepointCount, Name: "SAVEPOINT cockroach_restart", Algo: module.Incremental},
+			{ID: metricSQLRestartSavepointReleaseCount, Name: "RELEASE SAVEPOINT cockroach_restart", Algo: module.Incremental},
+			{ID: metricSQLRestartSavepointRollbackCount, Name: "ROLLBACK TO SAVEPOINT cockroach_restart", Algo: module.Incremental},
+		},
+	}
+	chartSQLActiveDistQueries = Chart{
+		ID:    "sql_active_distributed_queries",
+		Title: "Number of Distributed SQL Queries Currently Active",
+		Units: "queries",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_active_distributed_queries",
+		Dims: Dims{
+			{ID: metricSQLDistSQLQueriesActive, Name: "active"},
+		},
+	}
+	chartSQLActiveFlowsForDistQueries = Chart{
+		ID:    "sql_distributed_flows",
+		Title: "Number of Distributed SQL Flows",
+		Units: "flows",
+		Fam:   "sql",
+		Ctx:   "cockroachdb.sql_distributed_flows",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricSQLDistSQLFlowsActive, Name: "active"},
+			{ID: metricSQLDistSQLFlowsQueued, Name: "queued"},
+		},
+	}
+)
+
 // Storage
 var (
 	chartUsedLiveData = Chart{
@@ -190,6 +466,96 @@ var (
 		Dims: Dims{
 			{ID: metricKeyCount, Name: "keys"},
 			{ID: metricValCount, Name: "values"},
+		},
+	}
+)
+
+// KV Transactions
+var (
+	chartKVTransactions = Chart{
+		ID:    "kv_transactions",
+		Title: "KV Transactions",
+		Units: "transactions",
+		Fam:   "kv transactions",
+		Ctx:   "cockroachdb.kv_transactions",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: metricTxnCommits, Name: "committed", Algo: module.Incremental},
+			{ID: metricTxnCommits1PC, Name: "fast-path_committed", Algo: module.Incremental},
+			{ID: metricTxnAborts, Name: "aborted", Algo: module.Incremental},
+		},
+	}
+	chartKVTransactionsRestarts = Chart{
+		ID:    "kv_transactions_restarts",
+		Title: "KV Transactions Restarts",
+		Units: "restarts",
+		Fam:   "kv transactions",
+		Ctx:   "cockroachdb.kv_transactions_restarts",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricTxnRestartsWriteTooOld, Name: "write too old", Algo: module.Incremental},
+			{ID: metricTxnRestartsWriteTooOldMulti, Name: "write too old (multiple)", Algo: module.Incremental},
+			{ID: metricTxnRestartsSerializable, Name: "forwarded timestamp (iso=serializable)", Algo: module.Incremental},
+			{ID: metricTxnRestartsAsyncWriteFailure, Name: "async consensus failure", Algo: module.Incremental},
+			{ID: metricTxnRestartsReadWithInUncertainty, Name: "read within uncertainty interval", Algo: module.Incremental},
+			{ID: metricTxnRestartsTxnAborted, Name: "aborted", Algo: module.Incremental},
+			{ID: metricTxnRestartsTxnPush, Name: "push failure", Algo: module.Incremental},
+			{ID: metricTxnRestartsUnknown, Name: "unknown", Algo: module.Incremental},
+		},
+	}
+)
+
+// Ranges
+var (
+	chartRanges = Chart{
+		ID:    "ranges",
+		Title: "Number of Ranges",
+		Units: "ranges",
+		Fam:   "ranges",
+		Ctx:   "cockroachdb.ranges",
+		Dims: Dims{
+			{ID: metricRanges, Name: "ranges"},
+		},
+	}
+	chartRangesWithProblems = Chart{
+		ID:    "ranges_replica_problems",
+		Title: "Ranges With Problems",
+		Units: "ranges",
+		Fam:   "ranges",
+		Ctx:   "cockroachdb.ranges_replica_problems",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricRangesUnavailable, Name: "unavailable"},
+			{ID: metricRangesUnderReplicated, Name: "under_replicated"},
+			{ID: metricRangesOverReplicated, Name: "over_replicated"},
+		},
+	}
+	chartRangesEvents = Chart{
+		ID:    "ranges_events",
+		Title: "Ranges Events",
+		Units: "events",
+		Fam:   "ranges",
+		Ctx:   "cockroachdb.ranges_events",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricRangeSplits, Name: "split", Algo: module.Incremental},
+			{ID: metricRangeAdds, Name: "add", Algo: module.Incremental},
+			{ID: metricRangeRemoves, Name: "remove", Algo: module.Incremental},
+			{ID: metricRangeMerges, Name: "merge", Algo: module.Incremental},
+		},
+	}
+	chartRangesSnapshotEvents = Chart{
+		ID:    "ranges_snapshots",
+		Title: "Ranges Snapshots",
+		Units: "snapshots",
+		Fam:   "ranges",
+		Ctx:   "cockroachdb.ranges_snapshots",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricRangeSnapshotsGenerated, Name: "generated", Algo: module.Incremental},
+			{ID: metricRangeSnapshotsNormalApplied, Name: "applied (raft-initiated)", Algo: module.Incremental},
+			{ID: metricRangeSnapshotsLearnerApplied, Name: "applied (learner)", Algo: module.Incremental},
+			{ID: metricRangeSnapshotsPreemptiveApplied, Name: "applied (preemptive)", Algo: module.Incremental},
 		},
 	}
 )
@@ -263,6 +629,78 @@ var (
 	}
 )
 
+// Replicas
+var (
+	chartReplicas = Chart{
+		ID:    "replicas",
+		Title: "Number of Replicas",
+		Units: "num",
+		Fam:   "replication",
+		Ctx:   "cockroachdb.replicas",
+		Dims: Dims{
+			{ID: metricReplicas, Name: "replicas"},
+		},
+	}
+	chartReplicasQuiescence = Chart{
+		ID:    "replicas_quiescence",
+		Title: "Replicas Quiescence",
+		Units: "replicas",
+		Fam:   "replication",
+		Ctx:   "cockroachdb.replicas_quiescence",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: metricReplicasQuiescent, Name: "quiescent"},
+			{ID: metricReplicasActive, Name: "active"},
+		},
+	}
+	chartReplicasLeaders = Chart{
+		ID:    "replicas_leaders",
+		Title: "Number of Raft Leaders",
+		Units: "num",
+		Fam:   "replication",
+		Ctx:   "cockroachdb.replicas",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: metricReplicasLeaders, Name: "leaders"},
+			{ID: metricReplicasLeadersNotLeaseholders, Name: "not leaseholders"},
+		},
+	}
+	chartReplicasLeaseHolder = Chart{
+		ID:    "replicas_leaseholders",
+		Title: "Number of Leaseholders",
+		Units: "num",
+		Fam:   "replication",
+		Ctx:   "cockroachdb.replicas_leaseholders",
+		Dims: Dims{
+			{ID: metricReplicasLeaseholders, Name: "leaseholders"},
+		},
+	}
+)
+
+// Rebalancing
+var (
+	chartRebalancingQueries = Chart{
+		ID:    "rebalancing_queries",
+		Title: "Rebalancing Average Queries",
+		Units: "queries/s",
+		Fam:   "rebalancing",
+		Ctx:   "cockroachdb.rebalancing_queries",
+		Dims: Dims{
+			{ID: metricRebalancingQueriesPerSecond, Name: "queries", Div: precision},
+		},
+	}
+	chartRebalancingWrites = Chart{
+		ID:    "rebalancing_writes",
+		Title: "Rebalancing Average Number of Written Keys To The Store",
+		Units: "writes/s",
+		Fam:   "rebalancing",
+		Ctx:   "cockroachdb.rebalancing_queries",
+		Dims: Dims{
+			{ID: metricRebalancingWritesPerSecond, Name: "write", Div: precision},
+		},
+	}
+)
+
 // Time Series
 var (
 	chartTimeSeriesWrittenSamples = Chart{
@@ -293,133 +731,6 @@ var (
 		Ctx:   "cockroachdb.timeseries_write_bytes",
 		Dims: Dims{
 			{ID: metricTimeSeriesWriteBytes, Name: "written", Algo: module.Incremental},
-		},
-	}
-)
-
-// Ranges
-var (
-	chartRanges = Chart{
-		ID:    "ranges",
-		Title: "Number of Ranges",
-		Units: "ranges",
-		Fam:   "ranges",
-		Ctx:   "cockroachdb.ranges",
-		Dims: Dims{
-			{ID: metricRanges, Name: "ranges"},
-		},
-	}
-	chartRangesWithProblems = Chart{
-		ID:    "ranges_replica_problems",
-		Title: "Ranges With Problems",
-		Units: "ranges",
-		Fam:   "ranges",
-		Ctx:   "cockroachdb.ranges_replica_problems",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: metricRangesUnavailable, Name: "unavailable"},
-			{ID: metricRangesUnderReplicated, Name: "under_replicated"},
-			{ID: metricRangesOverReplicated, Name: "over_replicated"},
-		},
-	}
-	chartRangesEvents = Chart{
-		ID:    "ranges_events",
-		Title: "Ranges Events",
-		Units: "events",
-		Fam:   "ranges",
-		Ctx:   "cockroachdb.ranges_events",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: metricRangeSplits, Name: "split", Algo: module.Incremental},
-			{ID: metricRangeAdds, Name: "add", Algo: module.Incremental},
-			{ID: metricRangeRemoves, Name: "remove", Algo: module.Incremental},
-			{ID: metricRangeMerges, Name: "merge", Algo: module.Incremental},
-		},
-	}
-	chartRangesSnapshotEvents = Chart{
-		ID:    "ranges_snapshots",
-		Title: "Ranges Snapshots",
-		Units: "snapshots",
-		Fam:   "ranges",
-		Ctx:   "cockroachdb.ranges_snapshots",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: metricRangeSnapshotsGenerated, Name: "generated", Algo: module.Incremental},
-			{ID: metricRangeSnapshotsNormalApplied, Name: "applied", Algo: module.Incremental},
-			{ID: metricRangeSnapshotsLearnerApplied, Name: "applied learner", Algo: module.Incremental},
-			{ID: metricRangeSnapshotsPreemptiveApplied, Name: "applied pre-emptive", Algo: module.Incremental},
-		},
-	}
-)
-
-// Replicas
-var (
-	chartReplicas = Chart{
-		ID:    "replicas",
-		Title: "Number of Replicas",
-		Units: "num",
-		Fam:   "replicas",
-		Ctx:   "cockroachdb.replicas",
-		Dims: Dims{
-			{ID: metricReplicas, Name: "replicas"},
-		},
-	}
-	chartReplicasQuiescence = Chart{
-		ID:    "replicas_quiescence",
-		Title: "Replicas Quiescence",
-		Units: "replicas",
-		Fam:   "replicas",
-		Ctx:   "cockroachdb.replicas_quiescence",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: metricReplicasQuiescent, Name: "quiescent"},
-			{ID: metricReplicasActive, Name: "active"},
-		},
-	}
-	chartReplicasLeaders = Chart{
-		ID:    "replicas_leaders",
-		Title: "Number of Raft Leaders",
-		Units: "num",
-		Fam:   "replicas",
-		Ctx:   "cockroachdb.replicas",
-		Type:  module.Area,
-		Dims: Dims{
-			{ID: metricReplicasLeaders, Name: "leaders"},
-			{ID: metricReplicasLeadersNotLeaseholders, Name: "not leaseholders"},
-		},
-	}
-	chartReplicasLeaseHolder = Chart{
-		ID:    "replicas_leaseholders",
-		Title: "Number of Leaseholders",
-		Units: "num",
-		Fam:   "replicas",
-		Ctx:   "cockroachdb.replicas_leaseholders",
-		Dims: Dims{
-			{ID: metricReplicasLeaseholders, Name: "leaseholders"},
-		},
-	}
-)
-
-// Rebalancing
-var (
-	chartRebalancingQueries = Chart{
-		ID:    "rebalancing_queries",
-		Title: "Rebalancing Average Queries",
-		Units: "queries/s",
-		Fam:   "rebalancing",
-		Ctx:   "cockroachdb.rebalancing_queries",
-		Dims: Dims{
-			{ID: metricRebalancingQueriesPerSecond, Name: "queries", Div: precision},
-		},
-	}
-	chartRebalancingWrites = Chart{
-		ID:    "rebalancing_writes",
-		Title: "Rebalancing Average Number of Written Keys To The Store",
-		Units: "writes/s",
-		Fam:   "rebalancing",
-		Ctx:   "cockroachdb.rebalancing_queries",
-		Dims: Dims{
-			{ID: metricRebalancingWritesPerSecond, Name: "write", Div: precision},
 		},
 	}
 )
@@ -497,172 +808,6 @@ var (
 	}
 )
 
-// SQL
-var (
-	chartSQLConnections = Chart{
-		ID:    "sql_connections",
-		Title: "Active SQL Connections",
-		Units: "connections",
-		Fam:   "sql",
-		Ctx:   "cockroachdb.sql_connections",
-		Dims: Dims{
-			{ID: metricSQLConnections, Name: "active"},
-		},
-	}
-	chartSQLTraffic = Chart{
-		ID:    "sql_traffic",
-		Title: "SQL Traffic",
-		Units: "KiB",
-		Fam:   "sql",
-		Ctx:   "cockroachdb.sql_traffic",
-		Type:  module.Area,
-		Dims: Dims{
-			{ID: metricSQLBytesIn, Name: "received", Div: 1024, Algo: module.Incremental},
-			{ID: metricSQLBytesOut, Name: "sent", Div: -11024, Algo: module.Incremental},
-		},
-	}
-	chartSQLQueries = Chart{
-		ID:    "sql_queries",
-		Title: "SQL Queries Successfully Executed",
-		Units: "queries",
-		Fam:   "sql",
-		Ctx:   "cockroachdb.sql_queries",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: metricSQLSelectCount, Name: "SELECT", Algo: module.Incremental},
-			{ID: metricSQLUpdateCount, Name: "UPDATE", Algo: module.Incremental},
-			{ID: metricSQLInsertCount, Name: "INSERT", Algo: module.Incremental},
-			{ID: metricSQLDeleteCount, Name: "DELETE", Algo: module.Incremental},
-		},
-	}
-	chartSQLErroredQueries = Chart{
-		ID:    "sql_errored_queries",
-		Title: "SQL Queries Resulting in a Planning or Runtime Error",
-		Units: "errors",
-		Fam:   "sql",
-		Ctx:   "cockroachdb.sql_errored_queries",
-		Dims: Dims{
-			{ID: metricSQLFailureCount, Name: "errors", Algo: module.Incremental},
-		},
-	}
-	chartSQLActiveDistQueries = Chart{
-		ID:    "sql_active_distributed_queries",
-		Title: "Number of Distributed SQL Queries Currently Active",
-		Units: "queries",
-		Fam:   "sql",
-		Ctx:   "cockroachdb.sql_active_distributed_queries",
-		Dims: Dims{
-			{ID: metricSQLDistSQLQueriesActive, Name: "active"},
-		},
-	}
-	chartSQLActiveFlowsForDistQueries = Chart{
-		ID:    "sql_active_distributed_flows",
-		Title: "Number of Distributed SQL Flows Currently Active",
-		Units: "flows",
-		Fam:   "sql",
-		Ctx:   "cockroachdb.sql_active_distributed_flows",
-		Dims: Dims{
-			{ID: metricSQLDistSQLFlowsActive, Name: "active"},
-		},
-	}
-	chartSQLTransactions = Chart{
-		ID:    "sql_transactions",
-		Title: "SQL Transactions Successfully Executed",
-		Units: "transactions",
-		Fam:   "sql",
-		Ctx:   "cockroachdb.sql_queries",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: metricSQLTXNBeginCount, Name: "BEGIN"},
-			{ID: metricSQLTXNCommitCount, Name: "COMMIT"},
-			{ID: metricSQLTXNRollbackCount, Name: "ROLLBACK"},
-			{ID: metricSQLTXNAbortCount, Name: "ABORT"},
-		},
-	}
-	chartSQLSchemaChanges = Chart{
-		ID:    "sql_schema_changes",
-		Title: "SQL DDL Statements Successfully Executed",
-		Units: "queries",
-		Fam:   "sql",
-		Ctx:   "cockroachdb.sql_schema_changes",
-		Dims: Dims{
-			{ID: metricSQLDDLCount, Name: "DDL"},
-		},
-	}
-)
-
-var (
-	chartProcessCPUUsage = Chart{
-		ID:    "process_cpu_time",
-		Title: "Process CPU Time",
-		Units: "ms",
-		Fam:   "process statistics",
-		Ctx:   "cockroachdb.process_cpu_time",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: metricSysCPUUserNs, Name: "user", Algo: module.Incremental, Div: 1e6},
-			{ID: metricSysCPUSysNs, Name: "sys", Algo: module.Incremental, Div: 1e6},
-		},
-	}
-	chartProcessCPUUsagePercent = Chart{
-		ID:    "process_cpu_time_percentage",
-		Title: "Process CPU Time Percentage",
-		Units: "percentage",
-		Fam:   "process statistics",
-		Ctx:   "cockroachdb.process_cpu_time_percentage",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: metricSysCPUUserPercent, Name: "user", Div: precision},
-			{ID: metricSysCPUSysPercent, Name: "sys", Div: precision},
-		},
-	}
-	chartProcessCPUUsageCombinedPercent = Chart{
-		ID:    "process_cpu_time_combined_percentage",
-		Title: "Process CPU Time Percentage",
-		Units: "percentage",
-		Fam:   "process statistics",
-		Ctx:   "cockroachdb.process_cpu_time_combined_percentage",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: metricSysCPUCombinedPercentNormalized, Name: "usage", Div: precision},
-		},
-	}
-	chartProcessMemory = Chart{
-		ID:    "process_memory",
-		Title: "Process Memory Usage",
-		Units: "KiB",
-		Fam:   "process statistics",
-		Ctx:   "cockroachdb.process_memory",
-		Dims: Dims{
-			{ID: metricSysRSS, Name: "rss", Div: 1024},
-		},
-	}
-	chartProcessFDUsage = Chart{
-		ID:    "process_file_descriptors",
-		Title: "File Descriptors Statistics",
-		Units: "file descriptors",
-		Fam:   "process statistics",
-		Ctx:   "cockroachdb.process_file_descriptors",
-		Dims: Dims{
-			{ID: metricSysFDOpen, Name: "open"},
-		},
-		Vars: Vars{
-			{ID: metricSysFDSoftLimit},
-		},
-	}
-)
-
-var chartRPCClockOffset = Chart{
-	ID:    "mean_clock_offset",
-	Title: "Mean Clock Offset Against With Other Nodes",
-	Units: "us",
-	Fam:   "rpc",
-	Ctx:   "cockroachdb.mean_clock_offset",
-	Dims: Dims{
-		{ID: metricClockOffsetMeanNs, Name: "clock offset", Div: 1e3},
-	},
-}
-
 var chartUptime = Chart{
 	ID:    "system_uptime",
 	Title: "Nodes",
@@ -673,60 +818,3 @@ var chartUptime = Chart{
 		{ID: metricSysUptime, Name: "uptime"},
 	},
 }
-
-var (
-	chartHostDiskBandwidth = Chart{
-		ID:    "host_disk_bandwidth",
-		Title: "Host Disk Bandwidth",
-		Units: "KiB/s",
-		Fam:   "host statistics",
-		Ctx:   "cockroachdb.host_disk_bandwidth",
-		Dims: Dims{
-			{ID: metricSysHostDiskReadBytes, Name: "read", Div: 1024, Algo: module.Incremental},
-			{ID: metricSysHostDiskWriteBytes, Name: "write", Div: -1024, Algo: module.Incremental},
-		},
-	}
-	chartHostDiskOperations = Chart{
-		ID:    "host_disk_operations",
-		Title: "Host Disk Operations",
-		Units: "operations/s",
-		Fam:   "host statistics",
-		Ctx:   "cockroachdb.host_disk_operations",
-		Dims: Dims{
-			{ID: metricSysHostDiskReadCount, Name: "reads", Algo: module.Incremental},
-			{ID: metricSysHostDiskWriteCount, Name: "writes", Mul: -1, Algo: module.Incremental},
-		},
-	}
-	chartHostDiskIOPS = Chart{
-		ID:    "host_disk_iops_in_progress",
-		Title: "Host Disk IOPS In Progress",
-		Units: "iops",
-		Fam:   "host statistics",
-		Ctx:   "cockroachdb.host_disk_iops_in_progress",
-		Dims: Dims{
-			{ID: metricSysHostDiskIOPSInProgress, Name: "in progress"},
-		},
-	}
-	chartHostNetworkBandwidth = Chart{
-		ID:    "host_network_bandwidth",
-		Title: "Host Network Bandwidth",
-		Units: "kilobits/s",
-		Fam:   "host statistics",
-		Ctx:   "cockroachdb.host_network_bandwidth",
-		Dims: Dims{
-			{ID: metricSysHostNetRecvBytes, Name: "received", Div: 1000, Algo: module.Incremental},
-			{ID: metricSysHostNetSendBytes, Name: "sent", Div: -1000, Algo: module.Incremental},
-		},
-	}
-	chartHostNetworkPackets = Chart{
-		ID:    "host_network_packets",
-		Title: "Host Network Packets",
-		Units: "pps",
-		Fam:   "host statistics",
-		Ctx:   "cockroachdb.host_network_packets",
-		Dims: Dims{
-			{ID: metricSysHostNetRecvPackets, Name: "received", Algo: module.Incremental},
-			{ID: metricSysHostNetSendPackets, Name: "sent", Algo: module.Incremental},
-		},
-	}
-)
