@@ -1,5 +1,8 @@
 package cockroachdb
 
+// Architecture Overview
+// https://www.cockroachlabs.com/docs/stable/architecture/overview.html
+
 const (
 	// Storage Dashboard
 	// https://github.com/cockroachdb/cockroach/blob/master/pkg/storage/metrics.go
@@ -24,20 +27,25 @@ const (
 	metricTimeSeriesWriteBytes   = "timeseries_write_bytes"
 
 	// Runtime Dashboard
+	//https://github.com/cockroachdb/cockroach/blob/master/pkg/storage/node_liveness.go
+	metricLiveNodes          = "liveness_livenodes"
+	metricHeartBeatSuccesses = "liveness_heartbeatsuccesses"
+	metricHeartBeatFailures  = "liveness_heartbeatfailures"
 	// https://github.com/cockroachdb/cockroach/blob/master/pkg/server/status/runtime.go
-	metricLiveNodes         = "liveness_livenodes"
-	metricSysUptime         = "sys_uptime"
-	metricSysRSS            = "sys_rss"
-	metricSysGoAllocBytes   = "sys_go_allocbytes"
-	metricSysGoTotalBytes   = "sys_go_totalbytes"
-	metricSysCGoAllocBytes  = "sys_cgo_allocbytes"
-	metricSysCGoTotalBytes  = "sys_cgo_totalbytes"
-	metricSysCGoCalls       = "sys_cgocalls"
-	metricSysGoroutines     = "sys_goroutines"
-	metricSysGCCount        = "sys_gc_count"
-	metricSysGCPauseNs      = "sys_gc_pause_ns"
-	metricSysCPUUserNs      = "sys_cpu_user_ns"
-	metricSysCPUSysNs       = "sys_cpu_sys_ns"
+	metricSysUptime                       = "sys_uptime"
+	metricSysRSS                          = "sys_rss"
+	metricSysGoAllocBytes                 = "sys_go_allocbytes"
+	metricSysCGoAllocBytes                = "sys_cgo_allocbytes"
+	metricSysCGoCalls                     = "sys_cgocalls"
+	metricSysGoroutines                   = "sys_goroutines"
+	metricSysGCCount                      = "sys_gc_count"
+	metricSysGCPauseNs                    = "sys_gc_pause_ns"
+	metricSysCPUUserNs                    = "sys_cpu_user_ns"
+	metricSysCPUSysNs                     = "sys_cpu_sys_ns"
+	metricSysCPUUserPercent               = "sys_cpu_user_percent"
+	metricSysCPUSysPercent                = "sys_cpu_sys_percent"
+	metricSysCPUCombinedPercentNormalized = "sys_cpu_combined_percent_normalized"
+	// https://github.com/cockroachdb/cockroach/blob/master/pkg/rpc/clock_offset.go
 	metricClockOffsetMeanNs = "clock_offset_meannanos"
 
 	// SQL Dashboard
@@ -81,6 +89,8 @@ const (
 	metricReplicasQuiescent               = "replicas_quiescent"
 	metricKeyBytes                        = "keybytes"
 	metricValBytes                        = "valbytes"
+	metricKeyCount                        = "keycount"
+	metricValCount                        = "valcount"
 	metricRebalancingQueriesPerSecond     = "rebalancing_queriespersecond"
 	metricRebalancingWritesPerSecond      = "rebalancing_writespersecond"
 
@@ -107,9 +117,10 @@ const (
 	// calculated metrics
 	metricCapacityUsable               = "capacity_usable"
 	metricCapacityUnusable             = "capacity_unusable"
-	metricCapacityUsedPercentage       = "capacity_used_percentage"
-	metricCapacityUsableUsedPercentage = "capacity_usable_used_percentage"
+	metricCapacityUsedPercentage       = "capacity_used_percent"
+	metricCapacityUsableUsedPercentage = "capacity_usable_used_percent"
 	metricRocksDBBlockCacheHitRate     = "rocksdb_block_cache_hit_rate"
+	metricReplicasActive               = "replicas_active"
 )
 
 var metrics = []string{
@@ -133,18 +144,21 @@ var metrics = []string{
 	metricTimeSeriesWriteBytes,
 
 	metricLiveNodes,
+	metricHeartBeatSuccesses,
+	metricHeartBeatFailures,
 	metricSysUptime,
 	metricSysRSS,
 	metricSysGoAllocBytes,
-	metricSysGoTotalBytes,
 	metricSysCGoAllocBytes,
-	metricSysCGoTotalBytes,
 	metricSysCGoCalls,
 	metricSysGoroutines,
 	metricSysGCCount,
 	metricSysGCPauseNs,
 	metricSysCPUUserNs,
 	metricSysCPUSysNs,
+	metricSysCPUUserPercent,
+	metricSysCPUSysPercent,
+	metricSysCPUCombinedPercentNormalized,
 	metricClockOffsetMeanNs,
 
 	metricSQLConnections,
@@ -183,10 +197,22 @@ var metrics = []string{
 	metricReplicasQuiescent,
 	metricKeyBytes,
 	metricValBytes,
+	metricKeyCount,
+	metricValCount,
 	metricRebalancingQueriesPerSecond,
 	metricRebalancingWritesPerSecond,
 
 	metricRequestsSlowLease,
 	metricRequestsSlowLatch,
 	metricRequestsSlowRaft,
+
+	metricSysHostDiskReadBytes,
+	metricSysHostDiskWriteBytes,
+	metricSysHostDiskReadCount,
+	metricSysHostDiskWriteCount,
+	metricSysHostDiskIOPSInProgress,
+	metricSysHostNetSendBytes,
+	metricSysHostNetRecvBytes,
+	metricSysHostNetSendPackets,
+	metricSysHostNetRecvPackets,
 }

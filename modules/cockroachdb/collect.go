@@ -27,6 +27,8 @@ func (c *CockroachDB) collect() (map[string]int64, error) {
 	calcTotalCapacityUsedPercentage(mx)
 	calcUsableCapacityUsedPercentage(mx)
 	calcRocksDBCacheHitRate(mx)
+	calcActiveReplicas(mx)
+	calcCPUUsagePercent(mx)
 
 	return stm.ToMap(mx), nil
 }
@@ -111,10 +113,40 @@ func calcRocksDBCacheHitRate(mx map[string]float64) {
 	}
 }
 
+func calcActiveReplicas(mx map[string]float64) {
+	if !hasAll(mx, metricReplicasQuiescent) {
+		return
+	}
+	total := mx[metricReplicas]
+	quiescent := mx[metricReplicasQuiescent]
+
+	mx[metricReplicasActive] = total - quiescent
+}
+
+func calcCPUUsagePercent(mx map[string]float64) {
+	if hasAll(mx, metricSysCPUUserPercent) {
+		mx[metricSysCPUUserPercent] *= 100
+	}
+	if hasAll(mx, metricSysCPUSysPercent) {
+		mx[metricSysCPUSysPercent] *= 100
+	}
+	if hasAll(mx, metricSysCPUCombinedPercentNormalized) {
+		mx[metricSysCPUCombinedPercentNormalized] *= 100
+	}
+}
+
 func isMetricFloat(name string) bool {
 	// only Float metrics (see NewGaugeFloat64 in the cockroach repo):
-	// - GcPausePercent, CPUUserPercent, AverageQueriesPerSecond, AverageWritesPerSecond
-	return name == metricRebalancingQueriesPerSecond || name == metricRebalancingWritesPerSecond
+	// - GcPausePercent, CPUUserPercent, CPUCombinedPercentNorm, AverageQueriesPerSecond, AverageWritesPerSecond
+	switch name {
+	case metricSysCPUUserPercent,
+		metricSysCPUSysPercent,
+		metricSysCPUCombinedPercentNormalized,
+		metricRebalancingQueriesPerSecond,
+		metricRebalancingWritesPerSecond:
+		return true
+	}
+	return false
 }
 
 func hasAll(mx map[string]float64, key string, rest ...string) bool {
