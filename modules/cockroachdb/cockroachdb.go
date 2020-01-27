@@ -9,8 +9,16 @@ import (
 	"github.com/netdata/go-orchestrator/module"
 )
 
+// DefaultMetricsSampleInterval hard coded to 10
+// https://github.com/cockroachdb/cockroach/blob/d5ffbf76fb4c4ef802836529188e4628476879bd/pkg/server/config.go#L56-L58
+//const cockroachDBSamplingInterval = 10
+const cockroachDBSamplingInterval = 1
+
 func init() {
 	creator := module.Creator{
+		//Defaults: module.Defaults{
+		//	UpdateEvery: cockroachDBSamplingInterval,
+		//},
 		Create: func() module.Module { return New() },
 	}
 
@@ -36,7 +44,8 @@ func New() *CockroachDB {
 
 type (
 	Config struct {
-		web.HTTP `yaml:",inline"`
+		web.HTTP    `yaml:",inline"`
+		UpdateEvery int `yaml:"update_every"`
 	}
 
 	CockroachDB struct {
@@ -52,7 +61,7 @@ func (c *CockroachDB) validateConfig() error {
 	return nil
 }
 
-func (c *CockroachDB) createClient() error {
+func (c *CockroachDB) initClient() error {
 	client, err := web.NewHTTPClient(c.Client)
 	if err != nil {
 		return err
@@ -67,10 +76,12 @@ func (c *CockroachDB) Init() bool {
 		c.Errorf("error on validating config: %v", err)
 		return false
 	}
-
-	if err := c.createClient(); err != nil {
-		c.Errorf("error on creating client: %v", err)
+	if err := c.initClient(); err != nil {
+		c.Errorf("error on initializing client: %v", err)
 		return false
+	}
+	if c.UpdateEvery < cockroachDBSamplingInterval {
+		c.Warningf("")
 	}
 	return true
 }
@@ -79,7 +90,7 @@ func (c *CockroachDB) Check() bool {
 	return len(c.Collect()) > 0
 }
 
-func (c CockroachDB) Charts() *Charts {
+func (c *CockroachDB) Charts() *Charts {
 	return c.charts
 }
 
