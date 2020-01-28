@@ -12,15 +12,17 @@ import (
 )
 
 var (
-	testStatusJSON, _     = ioutil.ReadFile("testdata/status.json")
-	testStatusFullJSON, _ = ioutil.ReadFile("testdata/status-full.json")
-	testStatusText, _     = ioutil.ReadFile("testdata/status.txt")
-	testStatusFullText, _ = ioutil.ReadFile("testdata/status-full.txt")
+	testStatusJSON, _           = ioutil.ReadFile("testdata/status.json")
+	testStatusFullJSON, _       = ioutil.ReadFile("testdata/status-full.json")
+	testStatusFullNoIdleJSON, _ = ioutil.ReadFile("testdata/status-full-no-idle.json")
+	testStatusText, _           = ioutil.ReadFile("testdata/status.txt")
+	testStatusFullText, _       = ioutil.ReadFile("testdata/status-full.txt")
 )
 
 func Test_readTestData(t *testing.T) {
 	assert.NotNil(t, testStatusJSON)
 	assert.NotNil(t, testStatusFullJSON)
+	assert.NotNil(t, testStatusFullNoIdleJSON)
 	assert.NotNil(t, testStatusText)
 	assert.NotNil(t, testStatusFullText)
 }
@@ -131,6 +133,31 @@ func TestPhpfpm_CollectJSONFull(t *testing.T) {
 		"minReqMem": 2093045,
 		"maxReqMem": 2097152,
 		"avgReqMem": 2095098,
+	}
+	assert.Equal(t, want, got)
+}
+
+func TestPhpfpm_CollectNoIdleProcessesJSONFull(t *testing.T) {
+	ts := httptest.NewServer(
+		http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				_, _ = w.Write(testStatusFullNoIdleJSON)
+			}))
+	defer ts.Close()
+
+	job := New()
+	job.UserURL = ts.URL + "/?json"
+	require.True(t, job.Init())
+
+	got := job.Collect()
+
+	want := map[string]int64{
+		"active":    1,
+		"idle":      1,
+		"maxActive": 1,
+		"reached":   0,
+		"requests":  22,
+		"slow":      0,
 	}
 	assert.Equal(t, want, got)
 }
