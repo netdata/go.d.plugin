@@ -62,7 +62,7 @@ It produces the following charts:
 #### KV Transactions
 
 -   KV Transactions in `transactions`
--   KV Transaction Restarts in `restarts`1
+-   KV Transaction Restarts in `restarts`
 
 #### Ranges
 
