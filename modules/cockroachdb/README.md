@@ -127,6 +127,11 @@ jobs:
     url: http://203.0.113.10/_status/vars
 ```
 
+## Update every
+
+Default `update_every` is 10 seconds because `CockroachDB` default sampling interval is 10 seconds and it is not user configurable.
+It doesnt make sense to decrease the value.
+
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/cockroachdb.conf).
 
 ## Troubleshooting
