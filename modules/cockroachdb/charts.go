@@ -531,11 +531,11 @@ var (
 		},
 	}
 	chartRangesWithProblems = Chart{
-		ID:    "ranges_replica_problems",
-		Title: "Problem Ranges",
+		ID:    "ranges_replication_problem",
+		Title: "Ranges Replication Problems",
 		Units: "ranges",
 		Fam:   "ranges",
-		Ctx:   "cockroachdb.ranges_replica_problems",
+		Ctx:   "cockroachdb.ranges_replication_problem",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: metricRangesUnavailable, Name: "unavailable"},
