@@ -17,6 +17,7 @@ const (
 	metricSysRSS                          = "sys_rss"
 	metricSysFDOpen                       = "sys_fd_open"
 	metricSysFDSoftLimit                  = "sys_fd_softlimit"
+	metricSysUptime                       = "sys_uptime"
 )
 
 // Host Disk/Network Cumulative
@@ -173,6 +174,19 @@ const (
 	metricReplicasQuiescent              = "replicas_quiescent"
 )
 
+// Queues
+const (
+	// https://github.com/cockroachdb/cockroach/blob/master/pkg/storage/metrics.go
+	metricQueueGCProcessFailure            = "queue_gc_process_failure"
+	metricQueueReplicaGCProcessFailure     = "queue_replicagc_process_failure"
+	metricQueueReplicateProcessFailure     = "queue_replicate_process_failure"
+	metricQueueSplitProcessFailure         = "queue_split_process_failure"
+	metricQueueConsistencyProcessFailure   = "queue_consistency_process_failure"
+	metricQueueRaftLogProcessFailure       = "queue_raftlog_process_failure"
+	metricQueueRaftSnapshotProcessFailure  = "queue_raftsnapshot_process_failure"
+	metricQueueTSMaintenanceProcessFailure = "queue_tsmaintenance_process_failure"
+)
+
 // Rebalancing
 const (
 	// https://github.com/cockroachdb/cockroach/blob/master/pkg/storage/metrics.go
@@ -207,8 +221,6 @@ const (
 	metricSysGCPauseNs     = "sys_gc_pause_ns"
 )
 
-const metricSysUptime = "sys_uptime"
-
 const (
 	// Calculated Metrics
 	metricCapacityUsable               = "capacity_usable"
@@ -228,6 +240,7 @@ var metrics = []string{
 	metricSysRSS,
 	metricSysFDOpen,
 	metricSysFDSoftLimit,
+	metricSysUptime,
 
 	metricSysHostDiskReadBytes,
 	metricSysHostDiskWriteBytes,
@@ -330,6 +343,15 @@ var metrics = []string{
 	metricReplicasLeaseholders,
 	metricReplicasQuiescent,
 
+	metricQueueGCProcessFailure,
+	metricQueueReplicaGCProcessFailure,
+	metricQueueReplicateProcessFailure,
+	metricQueueSplitProcessFailure,
+	metricQueueConsistencyProcessFailure,
+	metricQueueRaftLogProcessFailure,
+	metricQueueRaftSnapshotProcessFailure,
+	metricQueueTSMaintenanceProcessFailure,
+
 	metricRebalancingQueriesPerSecond,
 	metricRebalancingWritesPerSecond,
 
@@ -347,6 +369,4 @@ var metrics = []string{
 	metricSysGoroutines,
 	metricSysGCCount,
 	metricSysGCPauseNs,
-
-	metricSysUptime,
 }
