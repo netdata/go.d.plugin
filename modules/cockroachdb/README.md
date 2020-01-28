@@ -121,10 +121,10 @@ Needs only `url` to server's `_status/vars`. Here is an example for 2 servers:
 ```yaml
 jobs:
   - name: local
-    url: http://127.0.0.1/_status/vars
+    url: http://127.0.0.1:8080/_status/vars
       
   - name: remote
-    url: http://203.0.113.10/_status/vars
+    url: http://203.0.113.10:8080/_status/vars
 ```
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/cockroachdb.conf).
