@@ -8,7 +8,7 @@ This module will monitor one or more `CockroachDB` databases, depending on your 
 
 It produces the following charts:
 
-### Process Statistics
+#### Process Statistics
 
 -   Combined CPU Time Percentage, Normalized 0-1 by Number of Cores in `percantage`
 -   CPU Time Percentage in `percentage`
@@ -17,7 +17,7 @@ It produces the following charts:
 -   File Descriptors in `fd`
 -   Uptime in `seconds`
 
-### Host Statistics
+#### Host Statistics
 
 -   Host Disk Cumulative Bandwidth in `KiB`
 -   Host Disk Cumulative Operations in `operations`
@@ -26,19 +26,19 @@ It produces the following charts:
 -   Host Network Cumulative Packets in `packets`
 -   Uptime in `seconds`
 
-### Liveness
+#### Liveness
 
 -   Live Nodes in the Cluster in `num`
 -   Node Liveness Heartbeats in `heartbeats`
 
-### Capacity
+#### Capacity
 
 -   Total Storage Capacity in `KiB`
 -   Storage Capacity Usability in `KiB`
 -   Storage Usable Capacity in `KiB`
 -   Storage Used Capacity Utilization in `percentage`
 
-### SQL
+#### SQL
 
 -   Active SQL Connections in `connections`
 -   SQL Bandwidth in `KiB`
@@ -53,25 +53,25 @@ It produces the following charts:
 -   Active Distributed SQL Queries in `queries`
 -   Distributed SQL Flows in `flows`
 
-### Storage
+#### Storage
 
 -   Used Live Data in `KiB`
 -   Logical Data in `KiB`
 -   Logical Data Count in `num`
 
-### KV Transactions
+#### KV Transactions
 
 -   KV Transactions in `transactions`
 -   KV Transaction Restarts in `restarts`1
 
-### Ranges
+#### Ranges
 
 -   Ranges in `num`
 -   Problem Ranges in `ranges`
 -   Range Events in `events`
 -   Range Snapshot Events in `events`
 
-### RocksDB
+#### RocksDB
 
 -   RocksDB Read Amplification in `reads/query`
 -   RocksDB Table Operations in `operations`
@@ -79,7 +79,7 @@ It produces the following charts:
 -   RocksDB Block Cache Hit Rate in `percentage`
 -   RocksDB SSTables in `num`
 
-### Replication
+#### Replication
 
 -   Number of Replicas in `num`
 -   Replicas Quiescence in `replicas`
@@ -87,26 +87,26 @@ It produces the following charts:
 -   Number of Leaseholders in `num`
 -   RocksDB SSTables in `num`
 
-### Queues
+#### Queues
 
 -   Queues Processing Failures in `failures`
 
-### Rebalancing
+#### Rebalancing
 
 -   Rebalancing Average Queries in `queries/s`
 -   Rebalancing Average Writes in `writes/s`
 
-### Time Series
+#### Time Series
 
 -   Time Series Written Samples in `samples`
 -   Time Series Write Errors in `errors`
 -   Time Series Bytes Written in `KiB`
 
-### Slow Requests
+#### Slow Requests
 
 -   Slow Requests in `requests`
 
-### Go/Cgo
+#### Go/Cgo
 
 -   Heap Memory Usage in `KiB`
 -   Number of Goroutines in `num`
