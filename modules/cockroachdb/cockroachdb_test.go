@@ -1,57 +1,76 @@
 package cockroachdb
 
 import (
-	"fmt"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"sort"
 	"testing"
+
+	"github.com/netdata/go-orchestrator/module"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
-	testMetricsData, _ = ioutil.ReadFile("testdata/metrics.txt")
+	metricsData, _      = ioutil.ReadFile("testdata/metrics.txt")
+	wrongMetricsData, _ = ioutil.ReadFile("testdata/non_cockroachdb.txt")
 )
 
 func Test_readTestData(t *testing.T) {
-	assert.NotNil(t, testMetricsData)
+	assert.NotNil(t, metricsData)
+	assert.NotNil(t, wrongMetricsData)
 }
 
 func TestNew(t *testing.T) {
-
+	assert.Implements(t, (*module.Module)(nil), New())
 }
 
 func TestCockroachDB_Init(t *testing.T) {
+	cdb := prepareCockroachDB()
 
+	assert.True(t, cdb.Init())
+}
+
+func TestCockroachDB_Init_ErrorOnValidatingConfigURLIsNotSet(t *testing.T) {
+	cdb := prepareCockroachDB()
+	cdb.UserURL = ""
+
+	assert.False(t, cdb.Init())
+}
+
+func TestWMI_Init_ErrorOnInitializingClientWrongTLSCA(t *testing.T) {
+	cdb := prepareCockroachDB()
+	cdb.ClientTLSConfig.TLSCA = "testdata/tls"
+
+	assert.False(t, cdb.Init())
 }
 
 func TestCockroachDB_Check(t *testing.T) {
+	cdb, srv := prepareClientServer(t)
+	defer srv.Close()
 
+	assert.True(t, cdb.Check())
+}
+
+func TestCockroachDB_Check_ErrorOnCollectConnectionRefused(t *testing.T) {
+	cdb := New()
+	cdb.UserURL = "http://127.0.0.1:38001/metrics"
+	require.True(t, cdb.Init())
+
+	assert.False(t, cdb.Check())
 }
 
 func TestCockroachDB_Charts(t *testing.T) {
-
+	assert.NotNil(t, New().Charts())
 }
 
 func TestCockroachDB_Cleanup(t *testing.T) {
-
+	assert.NotPanics(t, New().Cleanup)
 }
 
 func TestCockroachDB_Collect(t *testing.T) {
-	cockroachDB, srv := prepareClientServer(t)
+	cdb, srv := prepareClientServer(t)
 	defer srv.Close()
-
-	m := cockroachDB.Collect()
-	l := make([]string, 0)
-	for k := range m {
-		l = append(l, k)
-	}
-	sort.Strings(l)
-	for _, value := range l {
-		fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
-	}
 
 	expected := map[string]int64{
 		"capacity":                                     64202351837184,
@@ -67,6 +86,14 @@ func TestCockroachDB_Collect(t *testing.T) {
 		"liveness_heartbeatfailures":                   2,
 		"liveness_heartbeatsuccesses":                  2720,
 		"liveness_livenodes":                           3,
+		"queue_consistency_process_failure":            0,
+		"queue_gc_process_failure":                     0,
+		"queue_raftlog_process_failure":                0,
+		"queue_raftsnapshot_process_failure":           0,
+		"queue_replicagc_process_failure":              0,
+		"queue_replicate_process_failure":              0,
+		"queue_split_process_failure":                  0,
+		"queue_tsmaintenance_process_failure":          0,
 		"range_adds":                                   0,
 		"range_merges":                                 0,
 		"range_removes":                                0,
@@ -177,15 +204,41 @@ func TestCockroachDB_Collect(t *testing.T) {
 		"valcount":                                     124081,
 	}
 
-	collected := cockroachDB.Collect()
-
+	collected := cdb.Collect()
 	assert.Equal(t, expected, collected)
-
-	//testCharts(t, cockroachDB, collected)
+	testCharts(t, cdb, collected)
 }
 
-func testCharts(t *testing.T, cockroachDB *CockroachDB, collected map[string]int64) {
-	ensureCollectedHasAllChartsDimsVarsIDs(t, cockroachDB, collected)
+func TestCockroachDB_Collect_ReturnsNilIfNotCockroachDBMetrics(t *testing.T) {
+	cdb, srv := prepareClientServerNotCockroachDBMetricResponse(t)
+	defer srv.Close()
+
+	assert.Nil(t, cdb.Collect())
+}
+
+func TestWMI_Collect_ReturnsNilIfConnectionRefused(t *testing.T) {
+	cdb := prepareCockroachDB()
+	require.True(t, cdb.Init())
+
+	assert.Nil(t, cdb.Collect())
+}
+
+func TestWMI_Collect_ReturnsNilIfReceiveInvalidResponse(t *testing.T) {
+	wmi, ts := prepareClientServerInvalidDataResponse(t)
+	defer ts.Close()
+
+	assert.Nil(t, wmi.Collect())
+}
+
+func TestWMI_Collect_ReturnsNilIfReceiveResponse404(t *testing.T) {
+	wmi, ts := prepareClientServerResponse404(t)
+	defer ts.Close()
+
+	assert.Nil(t, wmi.Collect())
+}
+
+func testCharts(t *testing.T, cdb *CockroachDB, collected map[string]int64) {
+	ensureCollectedHasAllChartsDimsVarsIDs(t, cdb, collected)
 }
 
 func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, c *CockroachDB, collected map[string]int64) {
@@ -201,16 +254,63 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, c *CockroachDB, collec
 	}
 }
 
+func prepareCockroachDB() *CockroachDB {
+	cdb := New()
+	cdb.UserURL = "http://127.0.0.1:38001/metrics"
+	return cdb
+}
+
 func prepareClientServer(t *testing.T) (*CockroachDB, *httptest.Server) {
 	t.Helper()
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write(testMetricsData)
+			_, _ = w.Write(metricsData)
 		}))
 
-	cockroachDB := New()
-	cockroachDB.UserURL = ts.URL
-	require.True(t, cockroachDB.Init())
+	cdb := New()
+	cdb.UserURL = ts.URL
+	require.True(t, cdb.Init())
 
-	return cockroachDB, ts
+	return cdb, ts
+}
+
+func prepareClientServerNotCockroachDBMetricResponse(t *testing.T) (*CockroachDB, *httptest.Server) {
+	t.Helper()
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write(wrongMetricsData)
+		}))
+
+	cdb := New()
+	cdb.UserURL = ts.URL
+	require.True(t, cdb.Init())
+
+	return cdb, ts
+}
+
+func prepareClientServerInvalidDataResponse(t *testing.T) (*CockroachDB, *httptest.Server) {
+	t.Helper()
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte("hello and\n goodbye"))
+		}))
+
+	cdb := New()
+	cdb.UserURL = ts.URL
+	require.True(t, cdb.Init())
+
+	return cdb, ts
+}
+
+func prepareClientServerResponse404(t *testing.T) (*CockroachDB, *httptest.Server) {
+	t.Helper()
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+
+	cdb := New()
+	cdb.UserURL = ts.URL
+	require.True(t, cdb.Init())
+	return cdb, ts
 }
