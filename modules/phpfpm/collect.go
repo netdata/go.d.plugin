@@ -12,23 +12,43 @@ func (p *Phpfpm) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	data := stm.ToMap(st)
-	if len(st.Processes) == 0 {
-		return data, nil
+	mx := stm.ToMap(st)
+	if !hasRunningProcesses(st.Processes) {
+		return mx, nil
 	}
 
-	statProcesses(data, st.Processes, "ReqDur", func(p proc) int64 { return int64(p.Duration) })
-	statProcesses(data, st.Processes, "ReqCpu", func(p proc) int64 { return int64(p.CPU) })
-	statProcesses(data, st.Processes, "ReqMem", func(p proc) int64 { return p.Memory })
+	calcIdleProcessesRequestsDuration(mx, st.Processes)
+	calcIdleProcessesLastRequestCPU(mx, st.Processes)
+	calcIdleProcessesLastRequestMemory(mx, st.Processes)
+	return mx, nil
+}
 
-	return data, nil
+func calcIdleProcessesRequestsDuration(mx map[string]int64, processes []proc) {
+	statProcesses(mx, processes, "ReqDur", func(p proc) int64 { return int64(p.Duration) })
+}
+
+func calcIdleProcessesLastRequestCPU(mx map[string]int64, processes []proc) {
+	statProcesses(mx, processes, "ReqCpu", func(p proc) int64 { return int64(p.CPU) })
+}
+
+func calcIdleProcessesLastRequestMemory(mx map[string]int64, processes []proc) {
+	statProcesses(mx, processes, "ReqMem", func(p proc) int64 { return p.Memory })
+}
+
+func hasRunningProcesses(processes []proc) bool {
+	for _, p := range processes {
+		if p.State != "Idle" {
+			return true
+		}
+	}
+	return false
 }
 
 type accessor func(p proc) int64
 
-func statProcesses(m map[string]int64, procs []proc, met string, acc accessor) {
+func statProcesses(m map[string]int64, processes []proc, met string, acc accessor) {
 	var sum, count, min, max int64
-	for _, proc := range procs {
+	for _, proc := range processes {
 		if proc.State != "Idle" {
 			continue
 		}
