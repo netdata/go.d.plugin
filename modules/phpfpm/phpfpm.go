@@ -1,6 +1,7 @@
 package phpfpm
 
 import (
+	"errors"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -19,7 +20,6 @@ func init() {
 	module.Register("phpfpm", creator)
 }
 
-// New returns a php-fpm module with default values.
 func New() *Phpfpm {
 	config := Config{
 		HTTP: web.HTTP{
@@ -34,11 +34,9 @@ func New() *Phpfpm {
 }
 
 type (
-	// Config is the php-fpm module configuration.
 	Config struct {
 		web.HTTP `yaml:",inline"`
 	}
-	// Phpfpm collets php-fpm metrics.
 	Phpfpm struct {
 		module.Base
 		Config `yaml:",inline"`
@@ -46,40 +44,49 @@ type (
 	}
 )
 
-// Init makes initialization.
-func (p *Phpfpm) Init() bool {
+func (p *Phpfpm) validateConfig() error {
 	if err := p.ParseUserURL(); err != nil {
-		p.Errorf("error on parsing url '%s' : %v", p.UserURL, err)
-		return false
+		return err
 	}
 	if p.URL.Host == "" {
-		p.Error("URL is not set")
-		return false
+		return errors.New("URL is not set")
+	}
+	return nil
+}
+
+func (p *Phpfpm) initClient() error {
+	cl, err := web.NewHTTPClient(p.Client)
+	if err != nil {
+		return err
 	}
 
-	client, err := web.NewHTTPClient(p.Client)
-	if err != nil {
-		p.Error(err)
+	p.client = newClient(cl, p.Request)
+	return nil
+}
+
+func (p *Phpfpm) Init() bool {
+	if err := p.validateConfig(); err != nil {
+		p.Errorf("error on validating config: %v", err)
 		return false
 	}
-	p.client = newClient(client, p.Request)
+	if err := p.initClient(); err != nil {
+		p.Errorf("error on initializing client: %v", err)
+		return false
+	}
 
 	p.Debugf("using URL %s", p.URL)
 	p.Debugf("using timeout: %s", p.Timeout.Duration)
 	return true
 }
 
-// Check checks the module can collect metrics.
 func (p *Phpfpm) Check() bool {
 	return len(p.Collect()) > 0
 }
 
-// Charts creates Charts.
 func (Phpfpm) Charts() *Charts {
 	return charts.Copy()
 }
 
-// Collect returns collected metrics.
 func (p *Phpfpm) Collect() map[string]int64 {
 	mx, err := p.collect()
 	if err != nil {
@@ -92,5 +99,4 @@ func (p *Phpfpm) Collect() map[string]int64 {
 	return mx
 }
 
-// Cleanup makes cleanup.
 func (Phpfpm) Cleanup() {}

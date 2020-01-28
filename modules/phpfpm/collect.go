@@ -13,7 +13,7 @@ func (p *Phpfpm) collect() (map[string]int64, error) {
 	}
 
 	mx := stm.ToMap(st)
-	if !hasRunningProcesses(st.Processes) {
+	if !hasIdleProcesses(st.Processes) {
 		return mx, nil
 	}
 
@@ -35,9 +35,9 @@ func calcIdleProcessesLastRequestMemory(mx map[string]int64, processes []proc) {
 	statProcesses(mx, processes, "ReqMem", func(p proc) int64 { return p.Memory })
 }
 
-func hasRunningProcesses(processes []proc) bool {
+func hasIdleProcesses(processes []proc) bool {
 	for _, p := range processes {
-		if p.State != "Idle" {
+		if p.State == "Idle" {
 			return true
 		}
 	}
