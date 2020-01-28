@@ -1,6 +1,7 @@
 package cockroachdb
 
 import (
+	"errors"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -11,8 +12,7 @@ import (
 
 // DefaultMetricsSampleInterval hard coded to 10
 // https://github.com/cockroachdb/cockroach/blob/d5ffbf76fb4c4ef802836529188e4628476879bd/pkg/server/config.go#L56-L58
-//const cockroachDBSamplingInterval = 10
-const cockroachDBSamplingInterval = 1
+const cockroachDBSamplingInterval = 10
 
 func init() {
 	creator := module.Creator{
@@ -29,8 +29,7 @@ func New() *CockroachDB {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				//UserURL: "http://127.0.0.1:8080/_status/vars",
-				UserURL: "http://192.168.56.1:8080/_status/vars",
+				UserURL: "http://127.0.0.1:8080/_status/vars",
 			},
 			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
 		},
@@ -58,6 +57,9 @@ type (
 )
 
 func (c *CockroachDB) validateConfig() error {
+	if c.UserURL == "" {
+		return errors.New("URL is not set")
+	}
 	return nil
 }
 
@@ -81,7 +83,8 @@ func (c *CockroachDB) Init() bool {
 		return false
 	}
 	if c.UpdateEvery < cockroachDBSamplingInterval {
-		c.Warningf("")
+		c.Warningf("'update_every'(%d) is lower then CockroachDB default sampling interval (%d)",
+			c.UpdateEvery, cockroachDBSamplingInterval)
 	}
 	return true
 }

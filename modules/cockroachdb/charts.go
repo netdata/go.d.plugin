@@ -125,7 +125,7 @@ var (
 	}
 	chartProcessMemory = Chart{
 		ID:    "process_memory",
-		Title: "Memory",
+		Title: "Memory Usage",
 		Units: "KiB",
 		Fam:   "process",
 		Ctx:   "cockroachdb.process_memory",
@@ -471,7 +471,7 @@ var (
 	}
 	chartLogicalDataCount = Chart{
 		ID:    "logical_data_count",
-		Title: "Logical Data",
+		Title: "Logical Data Count",
 		Units: "num",
 		Fam:   "storage",
 		Ctx:   "cockroachdb.logical_data_count",
@@ -694,7 +694,7 @@ var (
 var (
 	chartQueuesProcessingFailures = Chart{
 		ID:    "queue_processing_failures",
-		Title: "Queues Processing failures",
+		Title: "Queues Processing Failures",
 		Units: "failures",
 		Fam:   "queues",
 		Ctx:   "cockroachdb.queue_processing_failures",
@@ -787,11 +787,11 @@ var (
 	}
 )
 
-// Go/CGo
+// Go/Cgo
 var (
 	chartGoCgoHeapMemory = Chart{
 		ID:    "code_heap_memory_usage",
-		Title: "Go/CGo Heap Memory Usage",
+		Title: "Heap Memory Usage",
 		Units: "KiB",
 		Fam:   "go/cgo",
 		Ctx:   "cockroachdb.code_heap_memory_usage",
@@ -803,8 +803,8 @@ var (
 	}
 	chartGoroutines = Chart{
 		ID:    "goroutines_count",
-		Title: "Goroutines Count",
-		Units: "goroutines",
+		Title: "Number of Goroutines",
+		Units: "num",
 		Fam:   "go/cgo",
 		Ctx:   "cockroachdb.goroutines",
 		Dims: Dims{
@@ -814,7 +814,7 @@ var (
 	chartGCRuns = Chart{
 		ID:    "gc_count",
 		Title: "GC Runs",
-		Units: "invokes/s",
+		Units: "invokes",
 		Fam:   "go/cgo",
 		Ctx:   "cockroachdb.gc_count",
 		Dims: Dims{
@@ -833,7 +833,7 @@ var (
 	}
 	chartCGoCalls = Chart{
 		ID:    "cgo_calls",
-		Title: "CGo Calls",
+		Title: "Cgo Calls",
 		Units: "calls",
 		Fam:   "go/cgo",
 		Ctx:   "cockroachdb.cgo_calls",
