@@ -16,9 +16,9 @@ const cockroachDBSamplingInterval = 10
 
 func init() {
 	creator := module.Creator{
-		//Defaults: module.Defaults{
-		//	UpdateEvery: cockroachDBSamplingInterval,
-		//},
+		Defaults: module.Defaults{
+			UpdateEvery: cockroachDBSamplingInterval,
+		},
 		Create: func() module.Module { return New() },
 	}
 
