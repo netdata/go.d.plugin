@@ -12,7 +12,7 @@ type (
 var charts = Charts{
 	{
 		ID:    "connections",
-		Title: "PHP-FPM Active Connections",
+		Title: "Active Connections",
 		Units: "connections",
 		Fam:   "active connections",
 		Ctx:   "phpfpm.connections",
@@ -24,7 +24,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "requests",
-		Title: "PHP-FPM Requests",
+		Title: "Requests",
 		Units: "requests/s",
 		Fam:   "requests",
 		Ctx:   "phpfpm.requests",
@@ -34,7 +34,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "performance",
-		Title: "PHP-FPM Performance",
+		Title: "Performance",
 		Units: "status",
 		Fam:   "performance",
 		Ctx:   "phpfpm.performance",
@@ -45,7 +45,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "request_duration",
-		Title: "PHP-FPM Request Duration",
+		Title: "Requests Duration Among All Idle Processes",
 		Units: "milliseconds",
 		Fam:   "request duration",
 		Ctx:   "phpfpm.request_duration",
@@ -57,7 +57,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "request_cpu",
-		Title: "PHP-FPM Request CPU",
+		Title: "Last Request CPU Usage Among All Idle Processes",
 		Units: "percentage",
 		Fam:   "request CPU",
 		Ctx:   "phpfpm.request_cp",
@@ -69,7 +69,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "request_mem",
-		Title: "PHP-FPM Request Memory",
+		Title: "Last Request Memory Usage Among All Idle Processes",
 		Units: "KB",
 		Fam:   "request memory",
 		Ctx:   "phpfpm.request_mem",
