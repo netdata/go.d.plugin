@@ -16,9 +16,9 @@ It produces following charts:
 -   Active Connections in `connections`
 -   Requests in `requests/s`
 -   Performance in `status`
--   Request Duration in `milliseconds`
--   Request CPU in `percentage`
--   Request Memory in `KB`
+-   Requests Duration Among All Idle Processes in `milliseconds`
+-   Last Request CPU Usage Among All Idle Processes in `percentage`
+-   Last Request Memory Usage Among All Idle Processes in `KB`
 
 ## Configuration
 
