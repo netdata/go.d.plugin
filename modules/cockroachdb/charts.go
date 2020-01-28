@@ -509,6 +509,7 @@ var (
 			{ID: metricTxnRestartsWriteTooOld, Name: "write too old", Algo: module.Incremental},
 			{ID: metricTxnRestartsWriteTooOldMulti, Name: "write too old (multiple)", Algo: module.Incremental},
 			{ID: metricTxnRestartsSerializable, Name: "forwarded timestamp (iso=serializable)", Algo: module.Incremental},
+			{ID: metricTxnRestartsPossibleReplay, Name: "possible reply", Algo: module.Incremental},
 			{ID: metricTxnRestartsAsyncWriteFailure, Name: "async consensus failure", Algo: module.Incremental},
 			{ID: metricTxnRestartsReadWithInUncertainty, Name: "read within uncertainty interval", Algo: module.Incremental},
 			{ID: metricTxnRestartsTxnAborted, Name: "aborted", Algo: module.Incremental},

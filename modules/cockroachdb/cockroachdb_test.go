@@ -193,6 +193,7 @@ func TestCockroachDB_Collect(t *testing.T) {
 		"txn_commits":                                  7472,
 		"txn_commits1PC":                               3206,
 		"txn_restarts_asyncwritefailure":               0,
+		"txn_restarts_possiblereplay":                  0,
 		"txn_restarts_readwithinuncertainty":           0,
 		"txn_restarts_serializable":                    0,
 		"txn_restarts_txnaborted":                      0,

@@ -48,7 +48,7 @@ const (
 	metricCapacity          = "capacity"
 	metricCapacityAvailable = "capacity_available"
 	metricCapacityUsed      = "capacity_used"
-	metricCapacityReserved  = "capacity_reserved"
+	//metricCapacityReserved  = "capacity_reserved"
 )
 
 // SQL
@@ -125,6 +125,7 @@ const (
 	metricTxnRestartsWriteTooOld           = "txn_restarts_writetooold"
 	metricTxnRestartsWriteTooOldMulti      = "txn_restarts_writetoooldmulti"
 	metricTxnRestartsSerializable          = "txn_restarts_serializable"
+	metricTxnRestartsPossibleReplay        = "txn_restarts_possiblereplay"
 	metricTxnRestartsAsyncWriteFailure     = "txn_restarts_asyncwritefailure"
 	metricTxnRestartsReadWithInUncertainty = "txn_restarts_readwithinuncertainty"
 	metricTxnRestartsTxnAborted            = "txn_restarts_txnaborted"
@@ -166,8 +167,8 @@ const (
 // Replication
 const (
 	// https://github.com/cockroachdb/cockroach/blob/master/pkg/storage/metrics.go
-	metricReplicas                       = "replicas"
-	metricReplicasReserved               = "replicas_reserved"
+	metricReplicas = "replicas"
+	// metricReplicasReserved               = "replicas_reserved"
 	metricReplicasLeaders                = "replicas_leaders"
 	metricReplicasLeadersNotLeaseholders = "replicas_leaders_not_leaseholders"
 	metricReplicasLeaseholders           = "replicas_leaseholders"
@@ -310,6 +311,7 @@ var metrics = []string{
 	metricTxnRestartsWriteTooOld,
 	metricTxnRestartsWriteTooOldMulti,
 	metricTxnRestartsSerializable,
+	metricTxnRestartsPossibleReplay,
 	metricTxnRestartsAsyncWriteFailure,
 	metricTxnRestartsReadWithInUncertainty,
 	metricTxnRestartsTxnAborted,
