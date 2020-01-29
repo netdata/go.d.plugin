@@ -614,7 +614,7 @@ var (
 		Units: "operations",
 		Fam:   "rocksdb",
 		Ctx:   "cockroachdb.rocksdb_cache_operations",
-		Type:  module.Area,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: metricRocksDBBlockCacheHits, Name: "hits", Algo: module.Incremental},
 			{ID: metricRocksDBBlockCacheMisses, Name: "misses", Algo: module.Incremental},
