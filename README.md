@@ -26,6 +26,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 -   [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)
 -   [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache) *
 -   [bind](https://github.com/netdata/go.d.plugin/tree/master/modules/bind) *
+-   [cockroachdb](https://github.com/netdata/go.d.plugin/tree/master/modules/cockroachdb) *
 -   [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)
 -   [coredns](https://github.com/netdata/go.d.plugin/tree/master/modules/coredns)
 -   [dnsmasq_dhcp](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq_dhcp)
