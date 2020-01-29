@@ -96,7 +96,7 @@ var (
 		Ctx:   "cockroachdb.process_cpu_time_combined_percentage",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: metricSysCPUCombinedPercentNormalized, Name: "utilization", Div: precision},
+			{ID: metricSysCPUCombinedPercentNormalized, Name: "used", Div: precision},
 		},
 	}
 	chartProcessCPUPercent = Chart{
