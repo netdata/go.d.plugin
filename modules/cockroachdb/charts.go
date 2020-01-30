@@ -159,6 +159,7 @@ var (
 )
 
 // Host
+// Host
 var (
 	chartHostDiskBandwidth = Chart{
 		ID:    "host_disk_bandwidth",
@@ -166,6 +167,7 @@ var (
 		Units: "KiB",
 		Fam:   "host",
 		Ctx:   "cockroachdb.host_disk_bandwidth",
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: metricSysHostDiskReadBytes, Name: "read", Div: 1024, Algo: module.Incremental},
 			{ID: metricSysHostDiskWriteBytes, Name: "write", Div: -1024, Algo: module.Incremental},
@@ -198,6 +200,7 @@ var (
 		Units: "kilobits",
 		Fam:   "host",
 		Ctx:   "cockroachdb.host_network_bandwidth",
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: metricSysHostNetRecvBytes, Name: "received", Div: 1000, Algo: module.Incremental},
 			{ID: metricSysHostNetSendBytes, Name: "sent", Div: -1000, Algo: module.Incremental},
@@ -211,7 +214,7 @@ var (
 		Ctx:   "cockroachdb.host_network_packets",
 		Dims: Dims{
 			{ID: metricSysHostNetRecvPackets, Name: "received", Algo: module.Incremental},
-			{ID: metricSysHostNetSendPackets, Name: "sent", Algo: module.Incremental},
+			{ID: metricSysHostNetSendPackets, Name: "sent", Mul: -1, Algo: module.Incremental},
 		},
 	}
 )
