@@ -1,6 +1,6 @@
 # tengine
 
-[`Tengine`] is a web server originated by Taobao, the largest e-commerce website in Asia. It is based on the Nginx HTTP server and has many advanced features.
+[`Tengine`](https://tengine.taobao.org/) is a web server originated by Taobao, the largest e-commerce website in Asia. It is based on the Nginx HTTP server and has many advanced features.
 
 This module monitors one or more `Tengine` instances depending on configuration.
 
