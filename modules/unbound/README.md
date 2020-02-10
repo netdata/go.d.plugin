@@ -1,4 +1,4 @@
-# unbound
+# Unbound monitoring with Netdata
 
 [`Unbound`](https://nlnetlabs.nl/projects/unbound/about/) is a validating, recursive, and caching DNS resolver product from NLnet Labs.
 
