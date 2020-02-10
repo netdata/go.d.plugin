@@ -1,4 +1,4 @@
-# phpdaemon
+# Phpdaemon monitoring with Netdata
 
 [`phpdaemon`](https://github.com/kakserpom/phpdaemon) is an asynchronous server-side framework for Web and network applications implemented in PHP using libevent.
 
