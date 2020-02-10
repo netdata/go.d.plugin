@@ -1,4 +1,4 @@
-# scaleio
+# ScaleIO monitoring with Netdata
 
 [`Dell EMC ScaleIO`](https://www.dellemc.com/en-us/storage/data-storage/software-defined-storage.htm) is a software-defined storage product from Dell EMC that creates a server-based storage area network from local application server storage using existing customer hardware or EMC servers.
 
