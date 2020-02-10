@@ -1,4 +1,4 @@
-# solr
+# Solr monitoring with Netdata
 
 [`Solr`](https://lucene.apache.org/solr/) is an open-source enterprise-search platform, written in Java, from the Apache Lucene project.
 
