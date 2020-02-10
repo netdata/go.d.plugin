@@ -1,4 +1,4 @@
-# activemq
+# ActiveMQ monitoring with Netdata
 
 [`ActiveMQ`](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java Message Service client.
 
