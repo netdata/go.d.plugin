@@ -1,4 +1,4 @@
-# portcheck
+# Any TCP endpoint monitoring with Netdata
 
 This module will monitors one or more TCP services availability and response time.
 

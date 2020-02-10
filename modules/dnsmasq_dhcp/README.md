@@ -1,4 +1,4 @@
-# dnsmasq_dhcp
+# Dnsmasq DHCP monitoring with Netdata
 
 [`Dnsmasq`](http://www.thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure, DNS forwarder and DHCP server.
 

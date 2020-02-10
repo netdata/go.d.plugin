@@ -1,4 +1,4 @@
-# squidlog
+# Squid logs monitoring with Netdata
 
 [`Squid`](http://www.squid-cache.org/) is a caching and forwarding HTTP web proxy.
 

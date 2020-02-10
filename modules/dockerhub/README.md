@@ -1,4 +1,4 @@
-# dockerhub
+# Docker Hub repositories monitoring with Netdata
 
 [`Docker Hub`](https://docs.docker.com/docker-hub/) is a service provided by Docker for finding and sharing container images with your team.
  

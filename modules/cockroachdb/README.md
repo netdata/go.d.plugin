@@ -1,4 +1,4 @@
-# cockroachdb
+# CockroachDB monitoring with Netdata
 
 [`CockroachDB`](https://www.cockroachlabs.com/)  is the SQL database for building global, scalable cloud services that survive disasters.
 

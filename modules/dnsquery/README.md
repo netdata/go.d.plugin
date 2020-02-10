@@ -1,6 +1,6 @@
-# dns_query
+# DNS queries monitoring with Netdata
 
-This module provides DNS query time in milliseconds.
+This module provides DNS query RTT in milliseconds.
 
 ## Charts
 

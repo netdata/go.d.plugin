@@ -1,4 +1,4 @@
-# coredns
+# CoreDNS monitoring with Netdata
 
 [`CoreDNS`](https://coredns.io/) is a fast and flexible DNS server.
 

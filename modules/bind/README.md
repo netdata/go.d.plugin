@@ -1,8 +1,8 @@
-# bind
+# Bind9 monitoring with Netdata
 
 [`Bind9`](https://www.isc.org/bind/) (or named) is a very flexible, full-featured DNS system. 
 
-This module will monitor one or more `Bind9` servers depending on configuration.
+This module will monitor one or more `Bind9` servers, depending on your configuration.
 
 ## Requirements
 

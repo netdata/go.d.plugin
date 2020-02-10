@@ -1,4 +1,4 @@
-# wmi
+# Windows Machines monitoring with Netdata
 
 This module will monitor one or more Windows machines, using the [wmi_exporter](https://github.com/martinlindhe/wmi_exporter).
 

@@ -1,4 +1,4 @@
-# vsphere
+# VMware vCenter Server (vSphere) monitoring with Netdata
 
 [`VMware vCenter Server`](https://www.vmware.com/products/vcenter-server.html) is advanced server management software that provides a centralized platform for controlling your VMware vSphere environments.
 

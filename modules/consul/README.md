@@ -1,4 +1,4 @@
-# consul
+# Consul monitoring with Netdata
 
 [`Consul`](https://www.consul.io/) is a service networking solution to connect and secure services across any runtime platform and public or private cloud.
 

@@ -1,8 +1,8 @@
-# fluentd
+# Fluentd monitoring with Netdata
 
 [`Fluentd`](https://www.fluentd.org/) is an open source data collector for unified logging layer.
 
-This module will monitor one or more `Fluentd` servers depending on configuration. It gathers metrics from plugin endpoint provided by [in_monitor plugin](https://docs.fluentd.org/v1.0/articles/monitoring-rest-api).
+This module will monitor one or more `Fluentd` servers, depending on your configuration. It gathers metrics from plugin endpoint provided by [in_monitor plugin](https://docs.fluentd.org/v1.0/articles/monitoring-rest-api).
 
 ## Requirements
 

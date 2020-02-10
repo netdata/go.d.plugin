@@ -1,8 +1,8 @@
-# mysql
+# MySQL monitoring with Netdata
 
 [`MySQL`](https://www.mysql.com/) is an open-source relational database management system.
 
-This module will monitor one or more `MySQL` servers depending on configuration.
+This module will monitor one or more `MySQL` servers, depending on your configuration.
 
 ## Requirements
 

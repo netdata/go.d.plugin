@@ -1,4 +1,4 @@
-# rabbitmq
+# RabbitMQ monitoring with Netdata
 
 [`RabbitMQ`](https://www.rabbitmq.com/) is the open source message broker.
 

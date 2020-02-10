@@ -1,4 +1,4 @@
-# httpcheck
+# Any HTTP endpoints monitoring with Netdata
 
 This module monitors one or more http servers availability and response time.
 

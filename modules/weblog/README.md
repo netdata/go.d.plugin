@@ -1,6 +1,6 @@
-# web_log
+# Apache/NGINX logs monitoring with Netdata
 
-This module parses [`Apache`](https://httpd.apache.org/) and [`Ngninx`](https://nginx.org/en/) web servers logs.
+This module parses [`Apache`](https://httpd.apache.org/) and [`NGINX`](https://nginx.org/en/) web servers logs.
 
 ## Charts
 
@@ -104,12 +104,12 @@ $host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes
                    $remote_addr - - [$time_local] "$request" $status $body_bytes_sent
 ```
 
-The first one that matches will be used later. If you use default Apache/Nginx log format auto-detect will do for you.
+The first one that matches will be used later. If you use default Apache/NGINX log format auto-detect will do for you.
 If it doesnt work you need [to set format manually](#custom-log-format).
 
 ## Known Fields
 
-These are [Nginx](http://nginx.org/en/docs/varindex.html) and [Apache](http://httpd.apache.org/docs/current/mod/mod_log_config.html) log format variables.
+These are [NGINX](http://nginx.org/en/docs/varindex.html) and [Apache](http://httpd.apache.org/docs/current/mod/mod_log_config.html) log format variables.
 
 Weblog is aware how to parse and interpret the fields:
 
@@ -143,7 +143,7 @@ Notes:
     or if SSL is used. The `%O` format provided by [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html)
     will log the actual number of bytes sent over the network.
 -   To get `%I` and `%O` working you need to enable `mod_logio` on Apache.
--   Nginx logs URI with query parameters, Apache doesnt.
+-   NGINX logs URI with query parameters, Apache doesnt.
 -   `$request` is parsed into `$request_method`, `$request_uri` and `$server_protocol`. If you have `$request` in your log format, 
     there is no sense to have others.
 -   Don't use both `$bytes_sent` and `$body_bytes_sent` (`%O` and `%B` or `%b`). The module does not distinguish between these parameters.
@@ -155,7 +155,8 @@ Custom log format is easy. Use [known fields](#known-fields) to construct your l
 
 -   If using CSV parser
 
-Since weblog understands Nginx and Apache variables all you need is to copy your log format and... that is it!
+Since weblog understands 
+ and Apache variables all you need is to copy your log format and... that is it!
 If there is a field that is not known by the weblog it's not a problem. It will skip it during parsing.
 But we suggest to replace all unknown fields with `-` for optimization purposes.
 

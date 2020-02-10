@@ -1,8 +1,8 @@
-# lighttpd2
+# Lighttpd2 monitoring with Netdata
 
 [`Lighttpd2`](https://redmine.lighttpd.net/projects/lighttpd2) is a work in progress version of open-source web server.
 
-This module will monitor one or more `Lighttpd2` servers depending on configuration.
+This module will monitor one or more `Lighttpd2` servers, depending on your configuration.
 
 ## Requirements
 

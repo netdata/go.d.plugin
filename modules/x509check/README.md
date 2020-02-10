@@ -1,4 +1,4 @@
-# x509check
+# x509 certificates monitoring with Netdata
 
 This module checks the time until a x509 certificate expiration.
 

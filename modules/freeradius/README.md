@@ -1,8 +1,8 @@
-# freeradius
+# FreeRADIUS monitoring with Netdata
 
 [`FreeRADIUS`](https://freeradius.org/) is a modular, high performance free RADIUS suite.
 
-This module will monitor one or more `FreeRADIUS` servers depending on configuration.
+This module will monitor one or more `FreeRADIUS` servers, depending on your configuration.
 
 ## Requirements
 

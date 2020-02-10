@@ -1,8 +1,8 @@
-# phpfpm
+# PHP-FPM monitoring with Netdata
 
 [`PHP-FPM`](https://php-fpm.org/) is an alternative PHP FastCGI implementation with some additional features useful for sites of any size, especially busier sites.
 
-This module will monitor one or more `php-fpm` instances depending on configuration.
+This module will monitor one or more `php-fpm` instances, depending on your configuration.
 
 ## Requirements
 
