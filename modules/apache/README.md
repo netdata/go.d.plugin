@@ -1,8 +1,8 @@
-# apache
+# Apache monitoring with Netdata
 
 [`Apache`](https://httpd.apache.org/) is an open-source HTTP server for modern operating systems including UNIX and Windows.
 
-This module will monitor one or more `Apache` servers depending on configuration.
+This module will monitor one or more `Apache` servers, depending on your configuration.
 
 ## Requirements
 
