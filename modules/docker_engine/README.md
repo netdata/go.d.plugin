@@ -1,8 +1,8 @@
-# docker_engine
+# Docker Engine monitoring with Netdata
 
 [`Docker Engine`](https://docs.docker.com/engine/) is the industry’s de facto container runtime that runs on various Linux (CentOS, Debian, Fedora, Oracle Linux, RHEL, SUSE, and Ubuntu) and Windows Server operating systems.
 
-This module will monitor one or more `Docker Engines` depending on configuration.
+This module will monitor one or more `Docker Engines` applications, depending on your configuration.
 
 ## Requirements
 
