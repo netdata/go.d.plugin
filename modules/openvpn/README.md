@@ -1,4 +1,4 @@
-# openvpn
+# OpenVPN monitoring with Netdata
 
 [`OpenVPN`](https://openvpn.net/) is an open-source commercial software that implements virtual private network techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote access facilities.
 
