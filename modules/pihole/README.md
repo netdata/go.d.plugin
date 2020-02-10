@@ -1,4 +1,4 @@
-# pihole
+# Pi-hole monitoring with Netdata
 
 [`Pi-hole`](https://pi-hole.net) is a Linux network-level advertisement and Internet tracker blocking application which acts as a DNS sinkhole, intended for use on a private network.
 
