@@ -1,8 +1,8 @@
-# logstash
+# Logstash monitoring with Netdata
 
 [`Logstash`](https://www.elastic.co/products/logstash) is an open-source data processing pipeline that allows you to collect, process, and load data into `Elasticsearch`.
 
-This module will monitor one or more `Logstash` instances depending on configuration.
+This module will monitor one or more `Logstash` instances, depending on your configuration.
 
 ## Charts
 
