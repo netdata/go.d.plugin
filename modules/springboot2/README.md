@@ -17,6 +17,14 @@ Springboot2 module looks up `http://localhost:8080/actuator/prometheus` and `htt
 
 ## Configuration
 
+Edit the `go.d/springboot2.conf` configuration file using `edit-config` from the your agent's [config
+directory](../../../../docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
+
+```bash
+cd /etc/netdata # Replace this path with your Netdata config directory
+sudo ./edit-config go.d/springboot2.conf
+```
+
 The Spring Boot Actuator exposes these metrics over HTTP and is very easy to use:
 
 -   add `org.springframework.boot:spring-boot-starter-actuator` and `io.micrometer:micrometer-registry-prometheus` to your application dependencies

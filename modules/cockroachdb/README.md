@@ -116,6 +116,14 @@ It produces the following charts:
 
 ## Configuration
 
+Edit the `go.d/cockroachdb.conf` configuration file using `edit-config` from the your agent's [config
+directory](../../../../docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
+
+```bash
+cd /etc/netdata # Replace this path with your Netdata config directory
+sudo ./edit-config go.d/cockroachdb.conf
+```
+
 Needs only `url` to server's `_status/vars`. Here is an example for 2 servers:
 
 ```yaml
