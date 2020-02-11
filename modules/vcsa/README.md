@@ -51,6 +51,14 @@ Software Updates Health:
 
 ## Configuration
 
+Edit the `go.d/vsca.conf` configuration file using `edit-config` from the your agent's [config
+directory](../../../../docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
+
+```bash
+cd /etc/netdata # Replace this path with your Netdata config directory
+sudo ./edit-config go.d/vsca.conf
+```
+
 Needs only `url`, `username` and `password`. Here is an example for 2 servers:
 
 ```yaml

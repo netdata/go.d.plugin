@@ -117,6 +117,14 @@ jobs:
 
 ## Configuration
 
+Edit the `go.d/squidlog.conf` configuration file using `edit-config` from the your agent's [config
+directory](../../../../docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
+
+```bash
+cd /etc/netdata # Replace this path with your Netdata config directory
+sudo ./edit-config go.d/squidlog.conf
+```
+
 This module needs only `path` to log file if you use [native log format](https://wiki.squid-cache.org/Features/LogFormat#Squid_native_access.log_format_in_detail).
 If you use custom log format you need [to set it manually](#custom-log-format). 
 
