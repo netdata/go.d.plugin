@@ -79,7 +79,7 @@ func main() {
 	plugin := newPlugin(opt)
 
 	if !plugin.Setup() {
-		return
+		os.Exit(1)
 	}
 
 	plugin.Serve()
@@ -97,8 +97,9 @@ func parseCLI() *cli.Option {
 	opt, err := cli.Parse(os.Args)
 	if err != nil {
 		if isHelp(err) {
-			os.Exit(1)
+			os.Exit(0)
 		}
+		os.Exit(1)
 	}
 	return opt
 }
