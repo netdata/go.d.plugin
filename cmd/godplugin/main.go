@@ -1,11 +1,11 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"path"
 
+	"github.com/jessevdk/go-flags"
 	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/cli"
 	"github.com/netdata/go-orchestrator/logger"
@@ -96,10 +96,14 @@ func newPlugin(opt *cli.Option) *orchestrator.Orchestrator {
 func parseCLI() *cli.Option {
 	opt, err := cli.Parse(os.Args)
 	if err != nil {
-		if err != flag.ErrHelp {
+		if isHelp(err) {
 			os.Exit(1)
 		}
-		os.Exit(0)
 	}
 	return opt
+}
+
+func isHelp(err error) bool {
+	flagsErr, ok := err.(*flags.Error)
+	return ok && flagsErr.Type == flags.ErrHelp
 }
