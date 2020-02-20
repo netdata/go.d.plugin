@@ -122,7 +122,7 @@ func decodeServerResponse(resp *radius.Packet) map[string]int64 {
 	return map[string]int64{
 		"access-requests":               int64(FreeRADIUSTotalAccessRequests_Get(resp)),
 		"access-accepts":                int64(FreeRADIUSTotalAccessAccepts_Get(resp)),
-		"access-rejects":                int64(FreeRADIUSTotalAccessRequests_Get(resp)),
+		"access-rejects":                int64(FreeRADIUSTotalAccessRejects_Get(resp)),
 		"access-challenges":             int64(FreeRADIUSTotalAccessChallenges_Get(resp)),
 		"auth-responses":                int64(FreeRADIUSTotalAuthResponses_Get(resp)),
 		"auth-duplicate-requests":       int64(FreeRADIUSTotalAuthDuplicateRequests_Get(resp)),
@@ -132,7 +132,7 @@ func decodeServerResponse(resp *radius.Packet) map[string]int64 {
 		"auth-unknown-types":            int64(FreeRADIUSTotalAuthUnknownTypes_Get(resp)),
 		"proxy-access-requests":         int64(FreeRADIUSTotalProxyAccessRequests_Get(resp)),
 		"proxy-access-accepts":          int64(FreeRADIUSTotalProxyAccessAccepts_Get(resp)),
-		"proxy-access-rejects":          int64(FreeRADIUSTotalProxyAccessRequests_Get(resp)),
+		"proxy-access-rejects":          int64(FreeRADIUSTotalProxyAccessRejects_Get(resp)),
 		"proxy-access-challenges":       int64(FreeRADIUSTotalProxyAccessChallenges_Get(resp)),
 		"proxy-auth-responses":          int64(FreeRADIUSTotalProxyAuthResponses_Get(resp)),
 		"proxy-auth-duplicate-requests": int64(FreeRADIUSTotalProxyAuthDuplicateRequests_Get(resp)),

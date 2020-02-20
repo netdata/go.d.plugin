@@ -98,7 +98,7 @@ func (m mockOKRadiusServer) Exchange(ctx context.Context, packet *radius.Packet,
 
 	_ = FreeRADIUSTotalAccessRequests_Add(resp, 10)
 	_ = FreeRADIUSTotalAccessAccepts_Add(resp, 10)
-	_ = FreeRADIUSTotalAccessRequests_Add(resp, 10)
+	_ = FreeRADIUSTotalAccessRejects_Add(resp, 10)
 	_ = FreeRADIUSTotalAccessChallenges_Add(resp, 10)
 	_ = FreeRADIUSTotalAuthResponses_Add(resp, 10)
 	_ = FreeRADIUSTotalAuthDuplicateRequests_Add(resp, 10)
@@ -108,7 +108,7 @@ func (m mockOKRadiusServer) Exchange(ctx context.Context, packet *radius.Packet,
 	_ = FreeRADIUSTotalAuthUnknownTypes_Add(resp, 10)
 	_ = FreeRADIUSTotalProxyAccessRequests_Add(resp, 10)
 	_ = FreeRADIUSTotalProxyAccessAccepts_Add(resp, 10)
-	_ = FreeRADIUSTotalProxyAccessRequests_Add(resp, 10)
+	_ = FreeRADIUSTotalProxyAccessRejects_Add(resp, 10)
 	_ = FreeRADIUSTotalProxyAccessChallenges_Add(resp, 10)
 	_ = FreeRADIUSTotalProxyAuthResponses_Add(resp, 10)
 	_ = FreeRADIUSTotalProxyAuthDuplicateRequests_Add(resp, 10)
