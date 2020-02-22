@@ -13,6 +13,8 @@ require (
 	github.com/prometheus/prometheus v2.5.0+incompatible
 	github.com/stretchr/testify v1.4.0
 	github.com/vmware/govmomi v0.22.1
+	golang.org/x/net v0.0.0-20191027093000-83d349e8ac1a // indirect
+	golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 // indirect
 	gopkg.in/yaml.v2 v2.2.7
 	layeh.com/radius v0.0.0-20190322222518-890bc1058917
 )
