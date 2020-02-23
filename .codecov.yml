@@ -8,7 +8,7 @@ coverage:
   range: "70...100"
 
   status:
-    project: yes
+    project: true
     patch: yes
     changes: no
 
@@ -23,7 +23,7 @@ parsers:
 comment:
   layout: "header"
   behavior: default
-  require_changes: yes
+  require_changes: true
 
 ignore:
-  - "modules/freeradius/dictionary.go"
+  - "modules/freeradius/api/dictionary.go"

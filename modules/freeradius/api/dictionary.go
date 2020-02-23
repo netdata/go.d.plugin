@@ -1,4 +1,4 @@
-package freeradius
+package api
 
 import (
 	"strconv"
