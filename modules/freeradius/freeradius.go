@@ -1,14 +1,13 @@
 package freeradius
 
 import (
-	"context"
 	"errors"
 	"time"
 
+	"github.com/netdata/go.d.plugin/modules/freeradius/api"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
-	"layeh.com/radius"
 )
 
 func init() {
@@ -36,7 +35,7 @@ func New() *FreeRADIUS {
 
 type (
 	client interface {
-		Exchange(ctx context.Context, packet *radius.Packet, address string) (*radius.Packet, error)
+		Status() (*api.Status, error)
 	}
 	Config struct {
 		Address string
@@ -65,10 +64,12 @@ func (f FreeRADIUS) validateConfig() error {
 }
 
 func (f *FreeRADIUS) initClient() {
-	f.client = &radius.Client{
-		Retry:           time.Second,
-		MaxPacketErrors: 10,
-	}
+	f.client = api.New(api.Config{
+		Address: f.Address,
+		Port:    f.Port,
+		Secret:  f.Secret,
+		Timeout: f.Timeout.Duration,
+	})
 }
 
 func (f *FreeRADIUS) Init() bool {
