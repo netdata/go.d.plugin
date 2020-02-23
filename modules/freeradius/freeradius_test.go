@@ -161,9 +161,12 @@ func (m mockFreeRADIUSClient) setResponse(resp *radius.Packet) {
 		if len(parts) != 2 {
 			continue
 		}
-		name := strings.TrimSpace(parts[0])
-		value := strToInt(strings.TrimSpace(parts[1]))
+		value, err := strconv.ParseInt(strings.TrimSpace(parts[1]), 10, 64)
+		if err != nil {
+			continue
+		}
 
+		name := strings.TrimSpace(parts[0])
 		switch name {
 		case "FreeRADIUS-Total-Access-Requests":
 			_ = FreeRADIUSTotalAccessRequests_Add(resp, FreeRADIUSTotalAccessRequests(value))
@@ -239,5 +242,3 @@ func (m mockFreeRADIUSClient) setResponse(resp *radius.Packet) {
 		}
 	}
 }
-
-func strToInt(value string) int { v, _ := strconv.Atoi(value); return v }
