@@ -10,7 +10,6 @@ import (
 
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"layeh.com/radius"
 )
 
@@ -63,14 +62,6 @@ func TestFreeRADIUS_Check(t *testing.T) {
 func TestFreeRADIUS_Check_ReturnsFalseIfClientExchangeReturnsError(t *testing.T) {
 	freeRADIUS := New()
 	freeRADIUS.client = newErrorMockFreeRADIUSClient()
-
-	assert.False(t, freeRADIUS.Check())
-}
-
-func TestFreeRADIUS_Check_ReturnsFalseIfServerNotResponding(t *testing.T) {
-	freeRADIUS := New()
-	freeRADIUS.Address = "127.0.0.1:38010"
-	require.True(t, freeRADIUS.Init())
 
 	assert.False(t, freeRADIUS.Check())
 }
@@ -130,14 +121,6 @@ func TestFreeRADIUS_Collect_ReturnsNilIfClientExchangeReturnsError(t *testing.T)
 	assert.Nil(t, freeRADIUS.Collect())
 }
 
-func TestFreeRADIUS_Collect_ReturnsNilIfServerNotResponding(t *testing.T) {
-	freeRADIUS := New()
-	freeRADIUS.Address = "127.0.0.1:38010"
-	require.True(t, freeRADIUS.Init())
-
-	assert.Nil(t, freeRADIUS.Collect())
-}
-
 func TestFreeRADIUS_Cleanup(t *testing.T) {
 	New().Cleanup()
 }
@@ -162,7 +145,7 @@ type mockFreeRADIUSClient struct {
 	response      []byte
 }
 
-func (m mockFreeRADIUSClient) Exchange(ctx context.Context, packet *radius.Packet, address string) (*radius.Packet, error) {
+func (m mockFreeRADIUSClient) Exchange(_ context.Context, _ *radius.Packet, _ string) (*radius.Packet, error) {
 	if m.errOnExchange {
 		return nil, errors.New("mock Exchange error")
 	}
