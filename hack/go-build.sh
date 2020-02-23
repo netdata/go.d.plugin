@@ -33,7 +33,7 @@ WHICH="$1"
 VERSION="${TRAVIS_TAG:-$(git describe --tags --always --dirty)}"
 
 GOLDFLAGS=${GLDFLAGS:-}
-GOLDFLAGS="$GOLDFLAGS -X main.version=$VERSION"
+GOLDFLAGS="$GOLDFLAGS -w -s -X main.version=$VERSION"
 
 build_all_platforms() {
   for PLATFORM in "${PLATFORMS[@]}"; do
