@@ -48,7 +48,7 @@ func TestFreeRADIUS_Check(t *testing.T) {
 	assert.True(t, freeRADIUS.Check())
 }
 
-func TestFreeRADIUS_Check_ReturnsFalseIfClientExchangeReturnsError(t *testing.T) {
+func TestFreeRADIUS_Check_ReturnsFalseIfClientStatusReturnsError(t *testing.T) {
 	freeRADIUS := New()
 	freeRADIUS.client = newErrorMockClient()
 
@@ -105,7 +105,7 @@ func TestFreeRADIUS_Collect(t *testing.T) {
 	ensureCollectedHasAllChartsDimsVarsIDs(t, freeRADIUS, collected)
 }
 
-func TestFreeRADIUS_Collect_ReturnsNilIfClientExchangeReturnsError(t *testing.T) {
+func TestFreeRADIUS_Collect_ReturnsNilIfClientStatusReturnsError(t *testing.T) {
 	freeRADIUS := New()
 	freeRADIUS.client = newErrorMockClient()
 
