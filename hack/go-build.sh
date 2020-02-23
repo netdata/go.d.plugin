@@ -30,10 +30,10 @@ getarch() {
 
 WHICH="$1"
 
-VERSION="${TRAVIS_TAG:=$(git describe --tags --always --dirty)}"
+VERSION="${TRAVIS_TAG:-$(git describe --tags --always --dirty)}"
 
 GOLDFLAGS=${GLDFLAGS:-}
-GOLDFLAGS="$GOLDFLAGS -w -s -X main.version=$VERSION"
+GOLDFLAGS="$GOLDFLAGS -X main.version=$VERSION"
 
 build_all_platforms() {
   for PLATFORM in "${PLATFORMS[@]}"; do
@@ -61,8 +61,8 @@ build_specific_platform() {
 
 build_current_platform() {
   eval "$(go env | grep -e "GOHOSTOS" -e "GOHOSTARCH")"
-  GOOS=${GOOS:=$GOHOSTOS}
-  GOARCH=${GOARCH:=$GOHOSTARCH}
+  GOOS=${GOOS:-$GOHOSTOS}
+  GOARCH=${GOARCH:-$GOHOSTARCH}
 
   echo "Building for os/arch ${GOOS}/${GOARCH}"
   CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build -o bin/godplugin -ldflags "${GOLDFLAGS}" github.com/netdata/go.d.plugin/cmd/godplugin
