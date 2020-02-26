@@ -4,7 +4,7 @@
 
 This module will monitor one or more `VerneMQ` instances, depending on your configuration.
 
-`vernemq` module is tested on following versions:
+`vernemq` module is tested on the following versions:
 -   v1.10.1
 
 ## Charts
@@ -90,7 +90,7 @@ It produces the following charts:
 -   MQTTv4/v5 UNSUBSCRIBE and UNSUBACK in `packets/s`
 -   MQTTv4/v5 Failed UNSUBSCRIBE Operation due to a Netsplit in `ops/s`
 
-### MQTT PUBLISH
+#### MQTT PUBLISH
 
 -   MQTTv4/v5 QOS 0,1,2 PUBLISH in `packets/s`
 -   MQTTv4/v5 Failed PUBLISH Operations due to a Netsplit in `ops/s`
