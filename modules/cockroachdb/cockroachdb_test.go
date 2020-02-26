@@ -31,14 +31,14 @@ func TestCockroachDB_Init(t *testing.T) {
 	assert.True(t, cdb.Init())
 }
 
-func TestCockroachDB_Init_ErrorOnValidatingConfigURLIsNotSet(t *testing.T) {
+func TestCockroachDB_Init_ReturnsFalseIfConfigURLIsNotSet(t *testing.T) {
 	cdb := prepareCockroachDB()
 	cdb.UserURL = ""
 
 	assert.False(t, cdb.Init())
 }
 
-func TestWMI_Init_ErrorOnInitializingClientWrongTLSCA(t *testing.T) {
+func TestCockroachDB_Init_ReturnsFalseIfClientWrongTLSCA(t *testing.T) {
 	cdb := prepareCockroachDB()
 	cdb.ClientTLSConfig.TLSCA = "testdata/tls"
 
@@ -52,7 +52,7 @@ func TestCockroachDB_Check(t *testing.T) {
 	assert.True(t, cdb.Check())
 }
 
-func TestCockroachDB_Check_ErrorOnCollectConnectionRefused(t *testing.T) {
+func TestCockroachDB_Check_ReturnsFalseIfConnectionRefused(t *testing.T) {
 	cdb := New()
 	cdb.UserURL = "http://127.0.0.1:38001/metrics"
 	require.True(t, cdb.Init())
@@ -217,25 +217,25 @@ func TestCockroachDB_Collect_ReturnsNilIfNotCockroachDBMetrics(t *testing.T) {
 	assert.Nil(t, cdb.Collect())
 }
 
-func TestWMI_Collect_ReturnsNilIfConnectionRefused(t *testing.T) {
+func TestCockroachDB_Collect_ReturnsNilIfConnectionRefused(t *testing.T) {
 	cdb := prepareCockroachDB()
 	require.True(t, cdb.Init())
 
 	assert.Nil(t, cdb.Collect())
 }
 
-func TestWMI_Collect_ReturnsNilIfReceiveInvalidResponse(t *testing.T) {
-	wmi, ts := prepareClientServerInvalidDataResponse(t)
+func TestCockroachDB_Collect_ReturnsNilIfReceiveInvalidResponse(t *testing.T) {
+	cdb, ts := prepareClientServerInvalidDataResponse(t)
 	defer ts.Close()
 
-	assert.Nil(t, wmi.Collect())
+	assert.Nil(t, cdb.Collect())
 }
 
-func TestWMI_Collect_ReturnsNilIfReceiveResponse404(t *testing.T) {
-	wmi, ts := prepareClientServerResponse404(t)
+func TestCockroachDB_Collect_ReturnsNilIfReceiveResponse404(t *testing.T) {
+	cdb, ts := prepareClientServerResponse404(t)
 	defer ts.Close()
 
-	assert.Nil(t, wmi.Collect())
+	assert.Nil(t, cdb.Collect())
 }
 
 func testCharts(t *testing.T, cdb *CockroachDB, collected map[string]int64) {
