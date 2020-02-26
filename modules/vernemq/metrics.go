@@ -136,7 +136,7 @@ const (
 	metricRetainMemory   = "retain_memory"
 	metricRetainMessages = "retain_messages"
 
-	// Cluster Communication
+	// Cluster
 	metricClusterBytesDropped  = "cluster_bytes_dropped"
 	metricClusterBytesReceived = "cluster_bytes_received"
 	metricClusterBytesSent     = "cluster_bytes_sent"

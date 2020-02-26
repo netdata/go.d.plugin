@@ -88,11 +88,11 @@ var charts = Charts{
 	chartUptime.Copy(),
 }
 
-// Clients
+// Sockets
 var (
 	chartOpenSockets = Chart{
 		ID:    "sockets",
-		Title: "Sockets",
+		Title: "Open Sockets",
 		Units: "sockets",
 		Fam:   "sockets",
 		Ctx:   "vernemq.sockets",
@@ -102,11 +102,11 @@ var (
 	}
 	chartSocketEvents = Chart{
 		ID:    "socket_events",
-		Title: "Socket open and close events",
+		Title: "Socket Open and Close Events",
 		Units: "events/s",
 		Fam:   "sockets",
 		Ctx:   "vernemq.socket_operations",
-		Type:  module.Area,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: metricSocketOpen, Name: "open", Algo: module.Incremental},
 			{ID: metricSocketClose, Name: "close", Algo: module.Incremental},
@@ -114,7 +114,7 @@ var (
 	}
 	chartClientKeepaliveExpired = Chart{
 		ID:    "client_keepalive_expired",
-		Title: "Closed sockets due to clients failed to communicate within the keepalive time period",
+		Title: "Closed Sockets due to Keepalive Time Expired",
 		Units: "sockets/s",
 		Fam:   "sockets",
 		Ctx:   "vernemq.client_keepalive_expired",
@@ -124,7 +124,7 @@ var (
 	}
 	chartSocketCloseTimeout = Chart{
 		ID:    "socket_close_timeout",
-		Title: "Closed sockets due to no CONNECT frame has been received on time",
+		Title: "Closed Sockets due to CONNECT Frame Hasn't Been Received On Time",
 		Units: "sockets/s",
 		Fam:   "sockets",
 		Ctx:   "vernemq.socket_close_timeout",
@@ -134,7 +134,7 @@ var (
 	}
 	chartSocketErrors = Chart{
 		ID:    "socket_errors",
-		Title: "Socket errors",
+		Title: "Socket Errors",
 		Units: "errors/s",
 		Fam:   "sockets",
 		Ctx:   "vernemq.socket_errors",
@@ -148,7 +148,7 @@ var (
 var (
 	chartQueueProcesses = Chart{
 		ID:    "queue_processes",
-		Title: "Living queues (started queue processes) in an online or an offline state",
+		Title: "Living Queues in an Online or an Offline State",
 		Units: "queue processes",
 		Fam:   "queues",
 		Ctx:   "vernemq.queue_processes",
@@ -158,11 +158,11 @@ var (
 	}
 	chartQueueProcessesEvents = Chart{
 		ID:    "queue_processes_events",
-		Title: "Queue processes setup and teardown events",
+		Title: "Queue Processes Setup and Teardown Events",
 		Units: "events/s",
 		Fam:   "queues",
 		Ctx:   "vernemq.queue_processes_operations",
-		Type:  module.Area,
+		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: metricQueueSetup, Name: "setup", Algo: module.Incremental},
 			{ID: metricQueueTeardown, Name: "teardown", Algo: module.Incremental},
@@ -170,7 +170,7 @@ var (
 	}
 	chartQueueProcessesOfflineStorage = Chart{
 		ID:    "queue_process_init_from_storage",
-		Title: "Queue processes that has been initialized from offline storage",
+		Title: "Queue Processes Initialized from Offline Storage",
 		Units: "queue processes/s",
 		Fam:   "queues",
 		Ctx:   "vernemq.queue_process_init_from_storage",
@@ -180,7 +180,7 @@ var (
 	}
 	chartQueueMessagesInQueues = Chart{
 		ID:    "queue_messages_in_queues",
-		Title: "PUBLISH messages that currently in the queues",
+		Title: "PUBLISH Messages that Currently in the Queues",
 		Units: "messages",
 		Fam:   "queues",
 		Ctx:   "vernemq.queue_messages_in_queues",
@@ -190,7 +190,7 @@ var (
 	}
 	chartQueueMessages = Chart{
 		ID:    "queue_messages",
-		Title: "Queue processes received and sent PUBLISH messages",
+		Title: "Received and Sent PUBLISH Messages",
 		Units: "messages/s",
 		Fam:   "queues",
 		Ctx:   "vernemq.queue_messages",
@@ -202,7 +202,7 @@ var (
 	}
 	chartQueueUndeliveredMessages = Chart{
 		ID:    "queue_undelivered_messages",
-		Title: "Queue processes undelivered PUBLISH messages",
+		Title: "Undelivered PUBLISH Messages",
 		Units: "messages/s",
 		Fam:   "queues",
 		Ctx:   "vernemq.queue_undelivered_messages",
@@ -219,7 +219,7 @@ var (
 var (
 	chartRouterSubscriptions = Chart{
 		ID:    "router_subscriptions",
-		Title: "Subscriptions in the routing table",
+		Title: "Subscriptions in the Routing Table",
 		Units: "subscriptions",
 		Fam:   "subscriptions",
 		Ctx:   "vernemq.router_subscriptions",
@@ -229,7 +229,7 @@ var (
 	}
 	chartRouterMatchedSubscriptions = Chart{
 		ID:    "router_matched_subscriptions",
-		Title: "Matched subscriptions",
+		Title: "Matched Subscriptions",
 		Units: "subscriptions/s",
 		Fam:   "subscriptions",
 		Ctx:   "vernemq.router_matched_subscriptions",
@@ -241,7 +241,7 @@ var (
 	}
 	chartRouterMemory = Chart{
 		ID:    "router_memory",
-		Title: "Routing table memory usage",
+		Title: "Routing Table Memory Usage",
 		Units: "KiB",
 		Fam:   "subscriptions",
 		Ctx:   "vernemq.router_memory",
@@ -285,7 +285,7 @@ var (
 	}
 	chartSystemContextSwitches = Chart{
 		ID:    "system_context_switches",
-		Title: "Context switches",
+		Title: "Context Switches",
 		Units: "ops/s",
 		Fam:   "erlang vm",
 		Ctx:   "vernemq.system_context_switches",
@@ -295,7 +295,7 @@ var (
 	}
 	chartSystemIO = Chart{
 		ID:    "system_io",
-		Title: "Traffic received/sent through ports",
+		Title: "Received and Sent Traffic through Ports",
 		Units: "KiB/s",
 		Fam:   "erlang vm",
 		Ctx:   "vernemq.system_io",
@@ -307,7 +307,7 @@ var (
 	}
 	chartSystemRunQueue = Chart{
 		ID:    "system_run_queue",
-		Title: "Processes that are ready to run on all run-queue",
+		Title: "Processes that are Ready to Run on All Run-Queue",
 		Units: "processes",
 		Fam:   "erlang vm",
 		Ctx:   "vernemq.system_run_queue",
@@ -337,7 +337,7 @@ var (
 	}
 	chartSystemMemoryAllocated = Chart{
 		ID:    "system_allocated_memory",
-		Title: "Memory allocated by the Erlang processes and by the emulator",
+		Title: "Memory Allocated by the Erlang Processes and by the Emulator",
 		Units: "KiB",
 		Fam:   "erlang vm",
 		Ctx:   "vernemq.system_allocated_memory",
@@ -354,7 +354,7 @@ var (
 	chartBandwidth = Chart{
 		ID:    "bandwidth",
 		Title: "Bandwidth",
-		Units: "KiB",
+		Units: "KiB/s",
 		Fam:   "bandwidth",
 		Ctx:   "vernemq.bandwidth",
 		Type:  module.Area,
@@ -393,7 +393,7 @@ var (
 var (
 	chartClusterCommunicationBandwidth = Chart{
 		ID:    "cluster_bandwidth",
-		Title: "Cluster communication bandwidth",
+		Title: "Communication with Other Nodes from the Cluster",
 		Units: "KiB/s",
 		Fam:   "cluster",
 		Ctx:   "vernemq.cluster_bandwidth",
@@ -404,7 +404,7 @@ var (
 	}
 	chartClusterCommunicationDropped = Chart{
 		ID:    "cluster_dropped",
-		Title: "Cluster communication dropped traffic",
+		Title: "Dropped Traffic During Communication",
 		Units: "KiB/s",
 		Fam:   "cluster",
 		Ctx:   "vernemq.cluster_dropped",
@@ -414,7 +414,7 @@ var (
 	}
 	chartNetSplitUnresolved = Chart{
 		ID:    "netsplit_unresolved",
-		Title: "Unresolved netsplits",
+		Title: "Unresolved Netsplits",
 		Units: "netsplits",
 		Fam:   "cluster",
 		Ctx:   "vernemq.netsplit_unresolved",
@@ -424,7 +424,7 @@ var (
 	}
 	chartNetSplitEvents = Chart{
 		ID:    "netsplit_events",
-		Title: "Netsplit events",
+		Title: "Netsplit Events",
 		Units: "netsplits/s",
 		Fam:   "cluster",
 		Ctx:   "vernemq.netsplits",
@@ -436,26 +436,11 @@ var (
 	}
 )
 
-// MQTT Ping
-var (
-	chartMQTTv4v5PING = Chart{
-		ID:    "mqtt_ping",
-		Title: "MQTTv4/v5 PING",
-		Units: "packets/s",
-		Fam:   "mqtt ping",
-		Ctx:   "vernemq.mqtt_ping",
-		Dims: Dims{
-			{ID: metricPINGREQReceived, Name: "PINGREQ", Algo: module.Incremental},
-			{ID: metricPINGRESPSent, Name: "PINGRESP", Algo: module.Incremental, Mul: -1},
-		},
-	}
-)
-
-// MQTT Auth
+// AUTH
 var (
 	chartMQTTv5AUTH = Chart{
 		ID:    "mqtt_auth",
-		Title: "MQTTv5 auth",
+		Title: "MQTTv5 AUTH",
 		Units: "packets/s",
 		Fam:   "mqtt auth",
 		Ctx:   "vernemq.mqtt_auth",
@@ -466,7 +451,7 @@ var (
 	}
 	chartMQTTv5AUTHReceivedReason = Chart{
 		ID:    "mqtt_auth_received_reason",
-		Title: "MQTTv5 AUTH received by reason",
+		Title: "MQTTv5 AUTH Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt auth",
 		Ctx:   "vernemq.mqtt_auth_received_reason",
@@ -479,7 +464,7 @@ var (
 	}
 	chartMQTTv5AUTHSentReason = Chart{
 		ID:    "mqtt_auth_sent_reason",
-		Title: "MQTTv5 AUTH sent by reason",
+		Title: "MQTTv5 AUTH Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt auth",
 		Ctx:   "vernemq.mqtt_auth_sent_reason",
@@ -492,78 +477,22 @@ var (
 	}
 )
 
-// MQTT Subscribe
-var (
-	chartMQTTv4v5SUBSCRIBE = Chart{
-		ID:    "mqtt_subscribe",
-		Title: "MQTTv4/v5 SUBSCRIBE",
-		Units: "packets/s",
-		Fam:   "mqtt subscribe",
-		Ctx:   "vernemq.mqtt_subscribe",
-		Dims: Dims{
-			{ID: metricSUBSCRIBEReceived, Name: "SUBSCRIBE", Algo: module.Incremental},
-			{ID: metricSUBACKSent, Name: "SUBACK", Algo: module.Incremental, Mul: -1},
-		},
-	}
-	chartMQTTv4v5SUBSCRIBEError = Chart{
-		ID:    "mqtt_subscribe_error",
-		Title: "MQTTv4/v5 failed SUBSCRIBE operations due to a netsplit",
-		Units: "ops/s",
-		Fam:   "mqtt subscribe",
-		Ctx:   "vernemq.mqtt_subscribe_error",
-		Dims: Dims{
-			{ID: metricSUBSCRIBEError, Name: "failed", Algo: module.Incremental},
-		},
-	}
-	chartMQTTv4v5SUBSCRIBEAuthError = Chart{
-		ID:    "mqtt_subscribe_auth_error",
-		Title: "MQTTv4/v5 unauthorized SUBSCRIBE attempts",
-		Units: "attempts/s",
-		Fam:   "mqtt subscribe",
-		Ctx:   "vernemq.mqtt_subscribe_auth_error",
-		Dims: Dims{
-			{ID: metricSUBSCRIBEAuthError, Name: "unauth", Algo: module.Incremental},
-		},
-	}
-	chartMQTTv4v5UNSUBSCRIBE = Chart{
-		ID:    "mqtt_unsubscribe",
-		Title: "MQTTv4/v5 UNSUBSCRIBE",
-		Units: "packets/s",
-		Fam:   "mqtt unsubscribe",
-		Ctx:   "vernemq.mqtt_unsubscribe",
-		Dims: Dims{
-			{ID: metricUNSUBSCRIBEReceived, Name: "UNSUBSCRIBE", Algo: module.Incremental},
-			{ID: metricUNSUBACKSent, Name: "UNSUBACK", Algo: module.Incremental, Mul: -1},
-		},
-	}
-	chartMQTTv4v5UNSUBSCRIBEError = Chart{
-		ID:    "mqtt_unsubscribe_error",
-		Title: "MQTTv4/v5 failed UNSUBSCRIBE operation due to a netsplit",
-		Units: "ops/s",
-		Fam:   "mqtt unsubscribe",
-		Ctx:   "vernemq.mqtt_unsubscribe_error",
-		Dims: Dims{
-			{ID: metricUNSUBSCRIBEError, Name: "failed", Algo: module.Incremental},
-		},
-	}
-)
-
-// MQTT Connect
+// CONNECT
 var (
 	chartMQTTv4v5CONNECT = Chart{
 		ID:    "mqtt_connect",
-		Title: "MQTTv4/v5 CONNECT",
+		Title: "MQTTv4/v5 CONNECT and CONNACK",
 		Units: "packets/s",
 		Fam:   "mqtt connect",
 		Ctx:   "vernemq.mqtt_connect",
 		Dims: Dims{
 			{ID: metricCONNECTReceived, Name: "CONNECT", Algo: module.Incremental},
-			{ID: metricSUBACKSent, Name: "CONNACK", Algo: module.Incremental, Mul: -1},
+			{ID: metricCONNACKSent, Name: "CONNACK", Algo: module.Incremental, Mul: -1},
 		},
 	}
 	chartMQTTv4v5CONNECTSentReason = Chart{
 		ID:    "mqtt_connect_sent_reason",
-		Title: "MQTTv4/v5 CONNECT sent by reason",
+		Title: "MQTTv4/v5 CONNACK Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt connect",
 		Ctx:   "vernemq.mqtt_sent_reason",
@@ -596,6 +525,7 @@ var (
 	}
 )
 
+// DISCONNECT
 var (
 	chartMQTTv4v5DISCONNECT = Chart{
 		ID:    "mqtt_disconnect",
@@ -610,7 +540,7 @@ var (
 	}
 	chartMQTTv5DISCONNECTReceivedReason = Chart{
 		ID:    "mqtt_disconnect_received_reason",
-		Title: "MQTTv5 DISCONNECT received by reason",
+		Title: "MQTTv5 DISCONNECT Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt disconnect",
 		Ctx:   "vernemq.mqtt_disconnect_received_reason",
@@ -634,7 +564,7 @@ var (
 	}
 	chartMQTTv5DISCONNECTSentReason = Chart{
 		ID:    "mqtt_disconnect_sent_reason",
-		Title: "MQTTv5 DISCONNECT sent by reason",
+		Title: "MQTTv5 DISCONNECT Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt disconnect",
 		Ctx:   "vernemq.mqtt_disconnect_sent_reason",
@@ -658,7 +588,67 @@ var (
 	}
 )
 
-// MQTT Publish
+// SUBSCRIBE
+var (
+	chartMQTTv4v5SUBSCRIBE = Chart{
+		ID:    "mqtt_subscribe",
+		Title: "MQTTv4/v5 SUBSCRIBE and SUBACK",
+		Units: "packets/s",
+		Fam:   "mqtt subscribe",
+		Ctx:   "vernemq.mqtt_subscribe",
+		Dims: Dims{
+			{ID: metricSUBSCRIBEReceived, Name: "SUBSCRIBE", Algo: module.Incremental},
+			{ID: metricSUBACKSent, Name: "SUBACK", Algo: module.Incremental, Mul: -1},
+		},
+	}
+	chartMQTTv4v5SUBSCRIBEError = Chart{
+		ID:    "mqtt_subscribe_error",
+		Title: "MQTTv4/v5 Failed SUBSCRIBE Operations due to a Netsplit",
+		Units: "ops/s",
+		Fam:   "mqtt subscribe",
+		Ctx:   "vernemq.mqtt_subscribe_error",
+		Dims: Dims{
+			{ID: metricSUBSCRIBEError, Name: "failed", Algo: module.Incremental},
+		},
+	}
+	chartMQTTv4v5SUBSCRIBEAuthError = Chart{
+		ID:    "mqtt_subscribe_auth_error",
+		Title: "MQTTv4/v5 Unauthorized SUBSCRIBE Attempts",
+		Units: "attempts/s",
+		Fam:   "mqtt subscribe",
+		Ctx:   "vernemq.mqtt_subscribe_auth_error",
+		Dims: Dims{
+			{ID: metricSUBSCRIBEAuthError, Name: "unauth", Algo: module.Incremental},
+		},
+	}
+)
+
+// UNSUBSCRIBE
+var (
+	chartMQTTv4v5UNSUBSCRIBE = Chart{
+		ID:    "mqtt_unsubscribe",
+		Title: "MQTTv4/v5 UNSUBSCRIBE and UNSUBACK",
+		Units: "packets/s",
+		Fam:   "mqtt unsubscribe",
+		Ctx:   "vernemq.mqtt_unsubscribe",
+		Dims: Dims{
+			{ID: metricUNSUBSCRIBEReceived, Name: "UNSUBSCRIBE", Algo: module.Incremental},
+			{ID: metricUNSUBACKSent, Name: "UNSUBACK", Algo: module.Incremental, Mul: -1},
+		},
+	}
+	chartMQTTv4v5UNSUBSCRIBEError = Chart{
+		ID:    "mqtt_unsubscribe_error",
+		Title: "MQTTv4/v5 Failed UNSUBSCRIBE Operations due to a Netsplit",
+		Units: "ops/s",
+		Fam:   "mqtt unsubscribe",
+		Ctx:   "vernemq.mqtt_unsubscribe_error",
+		Dims: Dims{
+			{ID: metricUNSUBSCRIBEError, Name: "failed", Algo: module.Incremental},
+		},
+	}
+)
+
+// PUBLISH
 var (
 	chartMQTTv4v5PUBLISH = Chart{
 		ID:    "mqtt_publish",
@@ -673,7 +663,7 @@ var (
 	}
 	chartMQTTv4v5PUBLISHErrors = Chart{
 		ID:    "mqtt_publish_errors",
-		Title: "MQTTv4/v5 failed PUBLISH operations due to a netsplit",
+		Title: "MQTTv4/v5 Failed PUBLISH Operations due to a Netsplit",
 		Units: "ops/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_publish_errors",
@@ -683,7 +673,7 @@ var (
 	}
 	chartMQTTv4v5PUBLISHAuthErrors = Chart{
 		ID:    "mqtt_publish_auth_errors",
-		Title: "MQTTv4/v5 unauthorized PUBLISH attempts",
+		Title: "MQTTv4/v5 Unauthorized PUBLISH Attempts",
 		Units: "attempts/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_publish_auth_errors",
@@ -705,7 +695,7 @@ var (
 	}
 	chartMQTTv5PUBACKReceivedReason = Chart{
 		ID:    "mqtt_puback_received_reason",
-		Title: "MQTTv5 PUBACK QOS 1 received by reason",
+		Title: "MQTTv5 PUBACK QOS 1 Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_puback_received_reason",
@@ -724,26 +714,26 @@ var (
 	}
 	chartMQTTv5PUBACKSentReason = Chart{
 		ID:    "mqtt_puback_sent_reason",
-		Title: "MQTTv5 PUBACK QOS 1 sent by reason",
+		Title: "MQTTv5 PUBACK QOS 1 Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_puback_sent_reason",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: join(metricPUBACKReceived, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "no_matching_subscribers"), Name: "no_matching_subscribers", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "unspecified_error"), Name: "unspecified_error", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "impl_specific_error"), Name: "impl_specific_error", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "not_authorized"), Name: "not_authorized", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "topic_name_invalid"), Name: "topic_name_invalid", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "packet_id_in_use"), Name: "packet_id_in_use", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "quota_exceeded"), Name: "quota_exceeded", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "payload_format_invalid"), Name: "payload_format_invalid", Algo: module.Incremental},
+			{ID: join(metricPUBACKSent, "success"), Name: "success", Algo: module.Incremental},
+			{ID: join(metricPUBACKSent, "no_matching_subscribers"), Name: "no_matching_subscribers", Algo: module.Incremental},
+			{ID: join(metricPUBACKSent, "unspecified_error"), Name: "unspecified_error", Algo: module.Incremental},
+			{ID: join(metricPUBACKSent, "impl_specific_error"), Name: "impl_specific_error", Algo: module.Incremental},
+			{ID: join(metricPUBACKSent, "not_authorized"), Name: "not_authorized", Algo: module.Incremental},
+			{ID: join(metricPUBACKSent, "topic_name_invalid"), Name: "topic_name_invalid", Algo: module.Incremental},
+			{ID: join(metricPUBACKSent, "packet_id_in_use"), Name: "packet_id_in_use", Algo: module.Incremental},
+			{ID: join(metricPUBACKSent, "quota_exceeded"), Name: "quota_exceeded", Algo: module.Incremental},
+			{ID: join(metricPUBACKSent, "payload_format_invalid"), Name: "payload_format_invalid", Algo: module.Incremental},
 		},
 	}
 	chartMQTTv4v5PUBACKUnexpected = Chart{
 		ID:    "mqtt_puback_unexpected",
-		Title: "MQTTv4/v5 PUBACK QOS 1 received unexpected messages",
+		Title: "MQTTv4/v5 PUBACK QOS 1 Received Unexpected Messages",
 		Units: "messages/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_puback_invalid_error",
@@ -764,7 +754,7 @@ var (
 	}
 	chartMQTTv5PUBRECReceivedReason = Chart{
 		ID:    "mqtt_pubrec_received_reason",
-		Title: "MQTTv5 PUBREC QOS 2 received by reason",
+		Title: "MQTTv5 PUBREC QOS 2 Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrec_received_reason",
@@ -783,7 +773,7 @@ var (
 	}
 	chartMQTTv5PUBRECSentReason = Chart{
 		ID:    "mqtt_pubrec_sent_reason",
-		Title: "MQTTv5 PUBREC QOS 2 sent by reason",
+		Title: "MQTTv5 PUBREC QOS 2 Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrec_sent_reason",
@@ -802,7 +792,7 @@ var (
 	}
 	chartMQTTv4PUBRECUnexpected = Chart{
 		ID:    "mqtt_pubrec_unexpected",
-		Title: "MQTTv4 PUBREC QOS 2 received unexpected Messages",
+		Title: "MQTTv4 PUBREC QOS 2 Received Unexpected Messages",
 		Units: "messages/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrec_invalid_error",
@@ -823,7 +813,7 @@ var (
 	}
 	chartMQTTv5PUBRELReceivedReason = Chart{
 		ID:    "mqtt_pubrel_received_reason",
-		Title: "MQTTv5 PUBREL QOS 2 received by reason",
+		Title: "MQTTv5 PUBREL QOS 2 Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrel_received_reason",
@@ -835,7 +825,7 @@ var (
 	}
 	chartMQTTv5PUBRELSentReason = Chart{
 		ID:    "mqtt_pubrel_sent_reason",
-		Title: "MQTTv5 PUBREL QOS 2 sent by reason",
+		Title: "MQTTv5 PUBREL QOS 2 Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrel_sent_reason",
@@ -858,7 +848,7 @@ var (
 	}
 	chartMQTTv5PUBCOMReceivedReason = Chart{
 		ID:    "mqtt_pubcomp_received_reason",
-		Title: "MQTTv5 PUBCOMP QOS 2 received by reason",
+		Title: "MQTTv5 PUBCOMP QOS 2 Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubcomp_received_reason",
@@ -870,7 +860,7 @@ var (
 	}
 	chartMQTTv5PUBCOMSentReason = Chart{
 		ID:    "mqtt_pubcomp_sent_reason",
-		Title: "MQTTv5 PUBCOMP QOS 2 sent by reason",
+		Title: "MQTTv5 PUBCOMP QOS 2 Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubcomp_sent_reason",
@@ -882,12 +872,27 @@ var (
 	}
 	chartMQTTv4v5PUBCOMPUnexpected = Chart{
 		ID:    "mqtt_pubcomp_unexpected",
-		Title: "MQTTv4/v5 PUBCOMP QOS 2 received unexpected Messages",
+		Title: "MQTTv4/v5 PUBCOMP QOS 2 Received Unexpected Messages",
 		Units: "messages/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubcomp_invalid_error",
 		Dims: Dims{
 			{ID: metricPUNCOMPInvalid, Name: "unexpected", Algo: module.Incremental},
+		},
+	}
+)
+
+// PING
+var (
+	chartMQTTv4v5PING = Chart{
+		ID:    "mqtt_ping",
+		Title: "MQTTv4/v5 PING",
+		Units: "packets/s",
+		Fam:   "mqtt ping",
+		Ctx:   "vernemq.mqtt_ping",
+		Dims: Dims{
+			{ID: metricPINGREQReceived, Name: "PINGREQ", Algo: module.Incremental},
+			{ID: metricPINGRESPSent, Name: "PINGRESP", Algo: module.Incremental, Mul: -1},
 		},
 	}
 )

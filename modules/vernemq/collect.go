@@ -35,7 +35,7 @@ func collect(pms prometheus.Metrics) map[string]float64 {
 	collectErlangVM(mx, pms)
 	collectBandwidth(mx, pms)
 	collectRetain(mx, pms)
-	collectClusterCommunication(mx, pms)
+	collectCluster(mx, pms)
 	collectUptime(mx, pms)
 
 	collectAUTH(mx, pms)
@@ -160,7 +160,9 @@ func collectQueues(mx map[string]float64, pms prometheus.Metrics) {
 
 func calcQueueMessagesCurrent(mx map[string]float64) float64 {
 	undelivered := mx[metricQueueMessageDrop] + mx[metricQueueMessageExpired] + mx[metricQueueMessageUnhandled]
-	return mx[metricQueueMessageIn] - mx[metricQueueMessageOut] - undelivered
+	out := mx[metricQueueMessageOut]
+	in := mx[metricQueueMessageIn]
+	return in - (out + undelivered)
 }
 
 func collectSubscriptions(mx map[string]float64, pms prometheus.Metrics) {
@@ -220,7 +222,7 @@ func collectRetain(mx map[string]float64, pms prometheus.Metrics) {
 	collectNonMQTT(mx, pms)
 }
 
-func collectClusterCommunication(mx map[string]float64, pms prometheus.Metrics) {
+func collectCluster(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		metricClusterBytesDropped,
 		metricClusterBytesReceived,
