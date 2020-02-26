@@ -1,6 +1,7 @@
 package vernemq
 
 import (
+	"errors"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -48,6 +49,9 @@ type (
 )
 
 func (v VerneMQ) validateConfig() error {
+	if v.UserURL == "" {
+		return errors.New("URL is not set")
+	}
 	return nil
 }
 
