@@ -39,7 +39,6 @@ GOLDFLAGS="$GOLDFLAGS -w -s -X main.version=$VERSION"
 build() {
   echo "Building ${GOOS}/${GOARCH}"
   CGO_ENABLED=0 GOOS="$1" GOARCH="$2" go build -ldflags "${GOLDFLAGS}" -o "$3" "github.com/netdata/go.d.plugin/cmd/godplugin"
-  return
 }
 
 build_all_platforms() {
@@ -48,10 +47,7 @@ build_all_platforms() {
     GOARCH=$(getarch "$PLATFORM")
     FILE="bin/go.d.plugin-${VERSION}.${GOOS}-${GOARCH}"
 
-    if ! build "$GOOS" "$GOARCH" "$FILE"; then
-      echo "Couldn't build for ${GOOS}/${GOARCH}"
-      continue
-    fi
+    build "$GOOS" "$GOARCH" "$FILE"
 
     ARCHIVE="${FILE}.tar.gz"
     tar -C bin -cvzf "${ARCHIVE}" "${FILE/bin\//}"
