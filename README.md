@@ -58,6 +58,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 -   [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)
 -   [unbound](https://github.com/netdata/go.d.plugin/tree/master/modules/unbound)
 -   [vcsa](https://github.com/netdata/go.d.plugin/tree/master/modules/vcsa)
+-   [vernemq](https://github.com/netdata/go.d.plugin/tree/master/modules/vernemq)
 -   [vsphere](https://github.com/netdata/go.d.plugin/tree/master/modules/vsphere)
 -   [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog) *
 -   [wmi](https://github.com/netdata/go.d.plugin/tree/master/modules/wmi)
