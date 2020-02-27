@@ -837,13 +837,10 @@ func (v *VerneMQ) notifyNewScheduler(name string) {
 		return
 	}
 
-	num := name[len("system_utilization_scheduler_"):]
-	v.addDimToSchedulerUtilizationChart(name, num)
-}
-
-func (v *VerneMQ) addDimToSchedulerUtilizationChart(dimID, dimName string) {
 	id := chartSchedulerUtilization.ID
-	v.addDimToChart(id, dimID, dimName, false)
+	num := name[len("system_utilization_scheduler_"):]
+
+	v.addDimToChart(id, name, num, false)
 }
 
 func (v *VerneMQ) notifyNewReason(name, reason string) {
@@ -855,101 +852,40 @@ func (v *VerneMQ) notifyNewReason(name, reason string) {
 		return
 	}
 
+	var chart Chart
 	switch name {
 	case metricAUTHReceived:
-		v.addDimToAUTHReceivedReason(key, reason)
+		chart = chartMQTTv5AUTHReceivedReason
 	case metricAUTHSent:
-		v.addDimToAUTHSentReason(key, reason)
+		chart = chartMQTTv5AUTHSentReason
 	case metricCONNACKSent:
-		v.addDimToCONNACKSentReason(key, reason)
+		chart = chartMQTTv4v5CONNACKSentReason
 	case metricDISCONNECTReceived:
-		v.addDimToDISCONNECTReceivedReason(key, reason)
+		chart = chartMQTTv5DISCONNECTReceivedReason
 	case metricDISCONNECTSent:
-		v.addDimToDISCONNECTSentReason(key, reason)
+		chart = chartMQTTv5DISCONNECTSentReason
 	case metricPUBACKReceived:
-		v.addDimToPUBACKReceivedReason(key, reason)
+		chart = chartMQTTv5PUBACKReceivedReason
 	case metricPUBACKSent:
-		v.addDimToPUBACKSentReason(key, reason)
+		chart = chartMQTTv5PUBACKSentReason
 	case metricPUBRECReceived:
-		v.addDimToPUBRECReceivedReason(key, reason)
+		chart = chartMQTTv5PUBRECReceivedReason
 	case metricPUBRECSent:
-		v.addDimToPUBRECSentReason(key, reason)
+		chart = chartMQTTv5PUBRECSentReason
 	case metricPUBRELReceived:
-		v.addDimToPUBRELReceivedReason(key, reason)
+		chart = chartMQTTv5PUBRELReceivedReason
 	case metricPUBRELSent:
-		v.addDimToPUBRELSentReason(key, reason)
+		chart = chartMQTTv5PUBRELSentReason
 	case metricPUBCOMPReceived:
-		v.addDimToPUBCOMPReceivedReason(key, reason)
+		chart = chartMQTTv5PUBCOMPReceivedReason
 	case metricPUBCOMPSent:
-		v.addDimToPUBCOMPSentReason(key, reason)
+		chart = chartMQTTv5PUBCOMPSentReason
 	default:
 		v.Warningf("unknown metric name, wont be added to the charts: '%s'", name)
+		return
 	}
-}
 
-func (v *VerneMQ) addDimToAUTHReceivedReason(dimID, reason string) {
-	id := chartMQTTv5AUTHReceivedReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToAUTHSentReason(dimID, reason string) {
-	id := chartMQTTv5AUTHSentReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToCONNACKSentReason(dimID, reason string) {
-	id := chartMQTTv4v5CONNACKSentReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToDISCONNECTReceivedReason(dimID, reason string) {
-	id := chartMQTTv5DISCONNECTReceivedReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToDISCONNECTSentReason(dimID, reason string) {
-	id := chartMQTTv5DISCONNECTSentReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToPUBACKReceivedReason(dimID, reason string) {
-	id := chartMQTTv5PUBACKReceivedReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToPUBACKSentReason(dimID, reason string) {
-	id := chartMQTTv5PUBACKSentReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToPUBRECReceivedReason(dimID, reason string) {
-	id := chartMQTTv5PUBRECReceivedReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToPUBRECSentReason(dimID, reason string) {
-	id := chartMQTTv5PUBRECSentReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToPUBRELReceivedReason(dimID, reason string) {
-	id := chartMQTTv5PUBRELReceivedReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToPUBRELSentReason(dimID, reason string) {
-	id := chartMQTTv5PUBRELSentReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToPUBCOMPReceivedReason(dimID, reason string) {
-	id := chartMQTTv5PUBCOMPReceivedReason.ID
-	v.addDimToChart(id, dimID, reason, true)
-}
-
-func (v *VerneMQ) addDimToPUBCOMPSentReason(dimID, reason string) {
-	id := chartMQTTv5PUBCOMPSentReason.ID
-	v.addDimToChart(id, dimID, reason, true)
+	v.addDimToChart(chart.ID, key, reason, true)
 }
 
 func (v *VerneMQ) addDimToChart(chartID, dimID, dimName string, inc bool) {
