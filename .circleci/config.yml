@@ -4,28 +4,28 @@ jobs:
     docker:
       - image: circleci/golang:1.13
     steps:
-    - checkout
-    - restore_cache:
-        keys:
-        - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
-    - run: go get -t -v -d ./...
-    - save_cache:
-        key: go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
-        paths:
-        - /go/pkg/mod
-    - run: CGO_ENABLED=0 go build -o /tmp/godplugin github.com/netdata/go.d.plugin/cmd/godplugin
-    - run: /tmp/godplugin --help || true
-    - store_artifacts:
-        path: /tmp/godplugin
+      - checkout
+      - restore_cache:
+          keys:
+            - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+      - run: go get -t -v -d ./...
+      - save_cache:
+          key: go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+          paths:
+            - /go/pkg/mod
+      - run: CGO_ENABLED=0 go build -o /tmp/godplugin github.com/netdata/go.d.plugin/cmd/godplugin
+      - run: /tmp/godplugin --help || true
+      - store_artifacts:
+          path: /tmp/godplugin
   vet:
     docker:
-    - image: circleci/golang:1.13
+      - image: circleci/golang:1.13
     steps:
-    - checkout
-    - restore_cache:
-        keys:
-        - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
-    - run: go vet ./...
+      - checkout
+      - restore_cache:
+          keys:
+            - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+      - run: go vet ./...
   fmt:
     docker:
       - image: circleci/golang:1.13
@@ -39,26 +39,26 @@ jobs:
           command: "! go fmt ./... 2>&1 | read"
   test:
     docker:
-    - image: circleci/golang:1.13
+      - image: circleci/golang:1.13
     steps:
-    - checkout
-    - restore_cache:
-        keys:
-        - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
-    - run: go test ./... -coverprofile=coverage.txt -race -cover -covermode=atomic
-    - run: bash <(curl -s https://codecov.io/bash)
+      - checkout
+      - restore_cache:
+          keys:
+            - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+      - run: go test ./... -coverprofile=coverage.txt -race -cover -covermode=atomic
+      - run: bash <(curl -s https://codecov.io/bash)
 
 workflows:
   version: 2
   build_and_test:
     jobs:
-    - compile
-    - vet:
-        requires:
-        - compile
-    - fmt:
-        requires:
-          - compile
-    - test:
-        requires:
-        - compile
+      - compile
+      - vet:
+          requires:
+            - compile
+      - fmt:
+          requires:
+            - compile
+      - test:
+          requires:
+            - compile
