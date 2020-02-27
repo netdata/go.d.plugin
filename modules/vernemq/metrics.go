@@ -43,8 +43,8 @@ const (
 	metricCONNACKSent     = "mqtt_connack_sent"     // v4 has 'return_code' label, v5 has 'reason_code'
 
 	// SUBSCRIBE
-	metricSUBSCRIBEReceived  = "mqtt_subscribe_received"   // v4, v5
-	metricSUBACKSent         = "mqtt_suback_sent"          // v4, v5
+	                    metricSUBSCRIBEReceived  = "mqtt_subscribe_received"   // v4, v5
+	                    metricSUBACKSent         = "mqtt_suback_sent"          // v4, v5
 	metricSUBSCRIBEError     = "mqtt_subscribe_error"      // v4, v5
 	metricSUBSCRIBEAuthError = "mqtt_subscribe_auth_error" // v4, v5
 
