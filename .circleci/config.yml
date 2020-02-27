@@ -26,6 +26,17 @@ jobs:
         keys:
         - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
     - run: go vet ./...
+  fmt:
+    docker:
+      - image: circleci/golang:1.13
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - go_mod-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+      - run:
+          name: "Enforce Go Formatted Code"
+          command: "! go fmt ./... 2>&1 | read"
   test:
     docker:
     - image: circleci/golang:1.13
@@ -45,6 +56,9 @@ workflows:
     - vet:
         requires:
         - compile
+    - fmt:
+        requires:
+          - compile
     - test:
         requires:
         - compile
