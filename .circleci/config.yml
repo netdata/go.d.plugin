@@ -2,7 +2,7 @@ version: 2
 jobs:
   compile:
     docker:
-      - image: circleci/golang:1.13
+      - image: circleci/golang:1.14
     steps:
     - checkout
     - restore_cache:
@@ -19,7 +19,7 @@ jobs:
         path: /tmp/godplugin
   vet:
     docker:
-    - image: circleci/golang:1.13
+    - image: circleci/golang:1.14
     steps:
     - checkout
     - restore_cache:
@@ -28,7 +28,7 @@ jobs:
     - run: go vet ./...
   test:
     docker:
-    - image: circleci/golang:1.13
+    - image: circleci/golang:1.14
     steps:
     - checkout
     - restore_cache:
