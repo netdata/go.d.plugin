@@ -22,50 +22,50 @@ func (v *VerneMQ) collect() (map[string]int64, error) {
 		return nil, errors.New("returned metrics aren't VerneMQ metrics")
 	}
 
-	mx := collect(pms)
+	mx := v.collectVerneMQ(pms)
 
 	return stm.ToMap(mx), nil
 }
 
-func collect(pms prometheus.Metrics) map[string]float64 {
+func (v *VerneMQ) collectVerneMQ(pms prometheus.Metrics) map[string]float64 {
 	mx := make(map[string]float64)
 	collectSockets(mx, pms)
 	collectQueues(mx, pms)
 	collectSubscriptions(mx, pms)
-	collectErlangVM(mx, pms)
+	v.collectErlangVM(mx, pms)
 	collectBandwidth(mx, pms)
 	collectRetain(mx, pms)
 	collectCluster(mx, pms)
 	collectUptime(mx, pms)
 
-	collectAUTH(mx, pms)
-	collectCONNECT(mx, pms)
-	collectDISCONNECT(mx, pms)
-	collectSUBSCRIBE(mx, pms)
-	collectUNSUBSCRIBE(mx, pms)
-	collectPUBLISH(mx, pms)
-	collectPING(mx, pms)
-	collectMQTTInvalidMsgSize(mx, pms)
+	v.collectAUTH(mx, pms)
+	v.collectCONNECT(mx, pms)
+	v.collectDISCONNECT(mx, pms)
+	v.collectSUBSCRIBE(mx, pms)
+	v.collectUNSUBSCRIBE(mx, pms)
+	v.collectPUBLISH(mx, pms)
+	v.collectPING(mx, pms)
+	v.collectMQTTInvalidMsgSize(mx, pms)
 	return mx
 }
 
-func collectCONNECT(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectCONNECT(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		metricCONNECTReceived,
 		metricCONNACKSent,
 	)
-	collectMQTT(mx, pms)
+	v.collectMQTT(mx, pms)
 }
 
-func collectDISCONNECT(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectDISCONNECT(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		metricDISCONNECTReceived,
 		metricDISCONNECTSent,
 	)
-	collectMQTT(mx, pms)
+	v.collectMQTT(mx, pms)
 }
 
-func collectPUBLISH(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectPUBLISH(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		metricPUBACKReceived,
 		metricPUBACKSent,
@@ -87,47 +87,47 @@ func collectPUBLISH(mx map[string]float64, pms prometheus.Metrics) {
 		metricPUBRELReceived,
 		metricPUBRELSent,
 	)
-	collectMQTT(mx, pms)
+	v.collectMQTT(mx, pms)
 }
 
-func collectSUBSCRIBE(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectSUBSCRIBE(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		metricSUBSCRIBEReceived,
 		metricSUBACKSent,
 		metricSUBSCRIBEError,
 		metricSUBSCRIBEAuthError,
 	)
-	collectMQTT(mx, pms)
+	v.collectMQTT(mx, pms)
 }
 
-func collectUNSUBSCRIBE(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectUNSUBSCRIBE(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		metricUNSUBSCRIBEReceived,
 		metricUNSUBACKSent,
 		metricUNSUBSCRIBEError,
 	)
-	collectMQTT(mx, pms)
+	v.collectMQTT(mx, pms)
 }
 
-func collectPING(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectPING(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		metricPINGREQReceived,
 		metricPINGRESPSent,
 	)
-	collectMQTT(mx, pms)
+	v.collectMQTT(mx, pms)
 }
 
-func collectAUTH(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectAUTH(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		metricAUTHReceived,
 		metricAUTHSent,
 	)
-	collectMQTT(mx, pms)
+	v.collectMQTT(mx, pms)
 }
 
-func collectMQTTInvalidMsgSize(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectMQTTInvalidMsgSize(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByName(metricMQTTInvalidMsgSizeError)
-	collectMQTT(mx, pms)
+	v.collectMQTT(mx, pms)
 }
 
 func collectSockets(mx map[string]float64, pms prometheus.Metrics) {
@@ -175,8 +175,8 @@ func collectSubscriptions(mx map[string]float64, pms prometheus.Metrics) {
 	collectNonMQTT(mx, pms)
 }
 
-func collectErlangVM(mx map[string]float64, pms prometheus.Metrics) {
-	collectSchedulersUtilization(mx, pms)
+func (v *VerneMQ) collectErlangVM(mx map[string]float64, pms prometheus.Metrics) {
+	v.collectSchedulersUtilization(mx, pms)
 	pms = pms.FindByNames(
 		metricSystemContextSwitches,
 		metricSystemGCCount,
@@ -193,15 +193,11 @@ func collectErlangVM(mx map[string]float64, pms prometheus.Metrics) {
 	collectNonMQTT(mx, pms)
 }
 
-func collectSchedulersUtilization(mx map[string]float64, pms prometheus.Metrics) {
-	var exit bool
+func (v *VerneMQ) collectSchedulersUtilization(mx map[string]float64, pms prometheus.Metrics) {
 	for _, pm := range pms {
-		switch {
-		case isSchedulerUtilizationMetric(pm):
+		if isSchedulerUtilizationMetric(pm) {
 			mx[pm.Name()] += pm.Value
-			exit = true
-		case exit:
-			return
+			v.notifyNewScheduler(pm.Name())
 		}
 	}
 }
@@ -245,7 +241,7 @@ func collectNonMQTT(mx map[string]float64, pms prometheus.Metrics) {
 	}
 }
 
-func collectMQTT(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectMQTT(mx map[string]float64, pms prometheus.Metrics) {
 	for _, pm := range pms {
 		if !isMQTTMetric(pm) {
 			continue
@@ -261,6 +257,8 @@ func collectMQTT(mx map[string]float64, pms prometheus.Metrics) {
 		if reason := reasonCodeLabelValue(pm); reason != "" {
 			mx[join(pm.Name(), reason)] += pm.Value
 			mx[join(pm.Name(), "v", version, reason)] += pm.Value
+
+			v.notifyNewReason(pm.Name(), reason)
 		}
 	}
 }
@@ -283,27 +281,6 @@ func reasonCodeLabelValue(pm prometheus.Metric) string {
 
 func versionLabelValue(pm prometheus.Metric) string {
 	return pm.Labels.Get("mqtt_version")
-}
-
-func isReasonCodeNotSuccess(name, reason string) bool {
-	switch name {
-	case
-		metricCONNACKSent,
-		metricPUBACKReceived,
-		metricPUBACKSent,
-		metricPUBCOMPReceived,
-		metricPUBCOMPSent,
-		metricPUBRECReceived,
-		metricPUBRECSent,
-		metricPUBRELReceived,
-		metricPUBRELSent:
-		return reason != "success"
-	case
-		metricDISCONNECTReceived,
-		metricDISCONNECTSent:
-		return reason != "normal_disconnect"
-	}
-	return false
 }
 
 func join(a, b string, rest ...string) string {

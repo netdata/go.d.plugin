@@ -6,6 +6,7 @@ type (
 	Charts = module.Charts
 	Chart  = module.Chart
 	Dims   = module.Dims
+	Dim    = module.Dim
 )
 
 var charts = Charts{
@@ -26,7 +27,8 @@ var charts = Charts{
 	chartRouterMatchedSubscriptions.Copy(),
 	chartRouterMemory.Copy(),
 
-	chartSystemUtilization.Copy(),
+	chartAverageSchedulerUtilization.Copy(),
+	chartSchedulerUtilization.Copy(),
 	chartSystemProcesses.Copy(),
 	chartSystemReductions.Copy(),
 	chartSystemContextSwitches.Copy(),
@@ -51,7 +53,7 @@ var charts = Charts{
 	chartMQTTv5AUTHSentReason.Copy(),
 
 	chartMQTTv4v5CONNECT.Copy(),
-	chartMQTTv4v5CONNECTSentReason.Copy(),
+	chartMQTTv4v5CONNACKSentReason.Copy(),
 
 	chartMQTTv4v5DISCONNECT.Copy(),
 	chartMQTTv5DISCONNECTReceivedReason.Copy(),
@@ -79,8 +81,8 @@ var charts = Charts{
 	chartMQTTv5PUBRELReceivedReason.Copy(),
 	chartMQTTv5PUBRELSentReason.Copy(),
 	chartMQTTv4v5PUBCOMP.Copy(),
-	chartMQTTv5PUBCOMReceivedReason.Copy(),
-	chartMQTTv5PUBCOMSentReason.Copy(),
+	chartMQTTv5PUBCOMPReceivedReason.Copy(),
+	chartMQTTv5PUBCOMPSentReason.Copy(),
 	chartMQTTv4v5PUBCOMPUnexpected.Copy(),
 
 	chartMQTTv4v5PING.Copy(),
@@ -124,7 +126,7 @@ var (
 	}
 	chartSocketCloseTimeout = Chart{
 		ID:    "socket_close_timeout",
-		Title: "Closed Sockets due to CONNECT Frame Hasn't Been Received On Time",
+		Title: "Closed Sockets due to no CONNECT Frame On Time",
 		Units: "sockets/s",
 		Fam:   "sockets",
 		Ctx:   "vernemq.socket_close_timeout",
@@ -253,15 +255,23 @@ var (
 
 // Erlang VM
 var (
-	chartSystemUtilization = Chart{
-		ID:    "system_utilization",
+	chartAverageSchedulerUtilization = Chart{
+		ID:    "average_scheduler_utilization",
 		Title: "Average Scheduler Utilization",
 		Units: "percentage",
 		Fam:   "erlang vm",
-		Ctx:   "vernemq.system_utilization",
+		Ctx:   "vernemq.average_scheduler_utilization",
 		Dims: Dims{
 			{ID: metricSystemUtilization, Name: "utilization"},
 		},
+	}
+	chartSchedulerUtilization = Chart{
+		ID:    "scheduler_utilization",
+		Title: "Scheduler Utilization",
+		Units: "percentage",
+		Fam:   "erlang vm",
+		Type:  module.Stacked,
+		Ctx:   "vernemq.system_utilization_scheduler",
 	}
 	chartSystemProcesses = Chart{
 		ID:    "system_processes",
@@ -458,8 +468,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricAUTHReceived, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricAUTHReceived, "continue_authentication"), Name: "continue", Algo: module.Incremental},
-			{ID: join(metricAUTHReceived, "reauthenticate"), Name: "reauthenticate", Algo: module.Incremental},
 		},
 	}
 	chartMQTTv5AUTHSentReason = Chart{
@@ -471,8 +479,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricAUTHSent, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricAUTHSent, "continue_authentication"), Name: "continue", Algo: module.Incremental},
-			{ID: join(metricAUTHSent, "reauthenticate"), Name: "reauthenticate", Algo: module.Incremental},
 		},
 	}
 )
@@ -490,8 +496,8 @@ var (
 			{ID: metricCONNACKSent, Name: "CONNACK", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	chartMQTTv4v5CONNECTSentReason = Chart{
-		ID:    "mqtt_connect_sent_reason",
+	chartMQTTv4v5CONNACKSentReason = Chart{
+		ID:    "mqtt_connack_sent_reason",
 		Title: "MQTTv4/v5 CONNACK Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt connect",
@@ -499,28 +505,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricCONNACKSent, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "unsupported_protocol_version"), Name: "unsupported_protocol_version", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "client_identifier_not_valid"), Name: "client_identifier_not_valid", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "server_unavailable"), Name: "server_unavailable", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "bad_username_or_password"), Name: "bad_username_or_password", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "not_authorized"), Name: "not_authorized", Algo: module.Incremental},
-
-			{ID: join(metricCONNACKSent, "unspecified_error"), Name: "unspecified_error", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "malformed_packet"), Name: "malformed_packet", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "protocol_error"), Name: "protocol_error", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "impl_specific_error"), Name: "impl_specific_error", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "server_busy"), Name: "server_busy", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "banned"), Name: "banned", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "bad_authentication_method"), Name: "bad_authentication_method", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "topic_name_invalid"), Name: "topic_name_invalid", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "packet_too_large"), Name: "packet_too_large", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "quota_exceeded"), Name: "quota_exceeded", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "payload_format_invalid"), Name: "payload_format_invalid", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "retain_not_supported"), Name: "retain_not_supported", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "qos_not_supported"), Name: "qos_not_supported", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "use_another_server"), Name: "use_another_server", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "server_moved"), Name: "server_moved", Algo: module.Incremental},
-			{ID: join(metricCONNACKSent, "connection_rate_exceeded"), Name: "connection_rate_exceeded", Algo: module.Incremental},
 		},
 	}
 )
@@ -547,19 +531,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricDISCONNECTReceived, "normal_disconnect"), Name: "normal_disconnect", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "disconnect_with_will_msg"), Name: "disconnect_with_will_msg", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "unspecified_error"), Name: "unspecified_error", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "malformed_packet"), Name: "malformed_packet", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "protocol_error"), Name: "protocol_error", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "impl_specific_error"), Name: "impl_specific_error", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "topic_name_invalid"), Name: "topic_name_invalid", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "receive_max_exceeded"), Name: "receive_max_exceeded", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "topic_alias_invalid"), Name: "topic_alias_invalid", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "packet_too_large"), Name: "packet_too_large", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "message_rate_too_high"), Name: "message_rate_too_high", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "quota_exceeded"), Name: "quota_exceeded", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "administrative_action"), Name: "administrative_action", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTReceived, "payload_format_invalid"), Name: "payload_format_invalid", Algo: module.Incremental},
 		},
 	}
 	chartMQTTv5DISCONNECTSentReason = Chart{
@@ -571,32 +542,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricDISCONNECTSent, "normal_disconnect"), Name: "normal_disconnect", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "unspecified_error"), Name: "unspecified_error", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "malformed_packet"), Name: "malformed_packet", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "protocol_error"), Name: "protocol_error", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "impl_specific_error"), Name: "impl_specific_error", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "not_authorized"), Name: "not_authorized", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "server_busy"), Name: "server_busy", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "server_shutting_down"), Name: "server_shutting_down", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "keep_alive_timeout"), Name: "keep_alive_timeout", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "session_taken_over"), Name: "session_taken_over", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "topic_filter_invalid"), Name: "topic_filter_invalid", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "topic_name_invalid"), Name: "topic_name_invalid", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "receive_max_exceeded"), Name: "receive_max_exceeded", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "topic_alias_invalid"), Name: "topic_alias_invalid", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "packet_too_large"), Name: "packet_too_large", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "message_rate_too_high"), Name: "message_rate_too_high", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "quota_exceeded"), Name: "quota_exceeded", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "administrative_action"), Name: "administrative_action", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "retain_not_supported"), Name: "retain_not_supported", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "qos_not_supported"), Name: "qos_not_supported", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "use_another_server"), Name: "use_another_server", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "server_moved"), Name: "server_moved", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "shared_subs_not_supported"), Name: "shared_subs_not_supported", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "connection_rate_exceeded"), Name: "connection_rate_exceeded", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "max_connect_time"), Name: "max_connect_time", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "subscription_ids_not_supported"), Name: "subscription_ids_not_supported", Algo: module.Incremental},
-			{ID: join(metricDISCONNECTSent, "wildcard_subs_not_supported"), Name: "wildcard_subs_not_supported", Algo: module.Incremental},
 		},
 	}
 )
@@ -715,14 +660,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricPUBACKReceived, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "no_matching_subscribers"), Name: "no_matching_subscribers", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "unspecified_error"), Name: "unspecified_error", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "impl_specific_error"), Name: "impl_specific_error", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "not_authorized"), Name: "not_authorized", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "topic_name_invalid"), Name: "topic_name_invalid", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "packet_id_in_use"), Name: "packet_id_in_use", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "quota_exceeded"), Name: "quota_exceeded", Algo: module.Incremental},
-			{ID: join(metricPUBACKReceived, "payload_format_invalid"), Name: "payload_format_invalid", Algo: module.Incremental},
 		},
 	}
 	chartMQTTv5PUBACKSentReason = Chart{
@@ -734,14 +671,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricPUBACKSent, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricPUBACKSent, "no_matching_subscribers"), Name: "no_matching_subscribers", Algo: module.Incremental},
-			{ID: join(metricPUBACKSent, "unspecified_error"), Name: "unspecified_error", Algo: module.Incremental},
-			{ID: join(metricPUBACKSent, "impl_specific_error"), Name: "impl_specific_error", Algo: module.Incremental},
-			{ID: join(metricPUBACKSent, "not_authorized"), Name: "not_authorized", Algo: module.Incremental},
-			{ID: join(metricPUBACKSent, "topic_name_invalid"), Name: "topic_name_invalid", Algo: module.Incremental},
-			{ID: join(metricPUBACKSent, "packet_id_in_use"), Name: "packet_id_in_use", Algo: module.Incremental},
-			{ID: join(metricPUBACKSent, "quota_exceeded"), Name: "quota_exceeded", Algo: module.Incremental},
-			{ID: join(metricPUBACKSent, "payload_format_invalid"), Name: "payload_format_invalid", Algo: module.Incremental},
 		},
 	}
 	chartMQTTv4v5PUBACKUnexpected = Chart{
@@ -774,14 +703,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricPUBRECReceived, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricPUBRECReceived, "no_matching_subscribers"), Name: "no_matching_subscribers", Algo: module.Incremental},
-			{ID: join(metricPUBRECReceived, "unspecified_error"), Name: "unspecified_error", Algo: module.Incremental},
-			{ID: join(metricPUBRECReceived, "impl_specific_error"), Name: "impl_specific_error", Algo: module.Incremental},
-			{ID: join(metricPUBRECReceived, "not_authorized"), Name: "not_authorized", Algo: module.Incremental},
-			{ID: join(metricPUBRECReceived, "topic_name_invalid"), Name: "topic_name_invalid", Algo: module.Incremental},
-			{ID: join(metricPUBRECReceived, "packet_id_in_use"), Name: "packet_id_in_use", Algo: module.Incremental},
-			{ID: join(metricPUBRECReceived, "quota_exceeded"), Name: "quota_exceeded", Algo: module.Incremental},
-			{ID: join(metricPUBRECReceived, "payload_format_invalid"), Name: "payload_format_invalid", Algo: module.Incremental},
 		},
 	}
 	chartMQTTv5PUBRECSentReason = Chart{
@@ -793,14 +714,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricPUBRECSent, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricPUBRECSent, "no_matching_subscribers"), Name: "no_matching_subscribers", Algo: module.Incremental},
-			{ID: join(metricPUBRECSent, "unspecified_error"), Name: "unspecified_error", Algo: module.Incremental},
-			{ID: join(metricPUBRECSent, "impl_specific_error"), Name: "impl_specific_error", Algo: module.Incremental},
-			{ID: join(metricPUBRECSent, "not_authorized"), Name: "not_authorized", Algo: module.Incremental},
-			{ID: join(metricPUBRECSent, "topic_name_invalid"), Name: "topic_name_invalid", Algo: module.Incremental},
-			{ID: join(metricPUBRECSent, "packet_id_in_use"), Name: "packet_id_in_use", Algo: module.Incremental},
-			{ID: join(metricPUBRECSent, "quota_exceeded"), Name: "quota_exceeded", Algo: module.Incremental},
-			{ID: join(metricPUBRECSent, "payload_format_invalid"), Name: "payload_format_invalid", Algo: module.Incremental},
 		},
 	}
 	chartMQTTv4PUBRECUnexpected = Chart{
@@ -833,7 +746,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricPUBRELReceived, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricPUBRELReceived, "packet_id_not_found"), Name: "packet_id_not_found", Algo: module.Incremental},
 		},
 	}
 	chartMQTTv5PUBRELSentReason = Chart{
@@ -845,7 +757,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricPUBRELSent, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricPUBRELSent, "packet_id_not_found"), Name: "packet_id_not_found", Algo: module.Incremental},
 		},
 	}
 	chartMQTTv4v5PUBCOMP = Chart{
@@ -859,7 +770,7 @@ var (
 			{ID: metricPUBCOMPSent, Name: "sent", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	chartMQTTv5PUBCOMReceivedReason = Chart{
+	chartMQTTv5PUBCOMPReceivedReason = Chart{
 		ID:    "mqtt_pubcomp_received_reason",
 		Title: "MQTTv5 PUBCOMP QOS 2 Received by Reason",
 		Units: "packets/s",
@@ -868,10 +779,9 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricPUBCOMPReceived, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricPUBCOMPReceived, "packet_id_not_found"), Name: "packet_id_not_found", Algo: module.Incremental},
 		},
 	}
-	chartMQTTv5PUBCOMSentReason = Chart{
+	chartMQTTv5PUBCOMPSentReason = Chart{
 		ID:    "mqtt_pubcomp_sent_reason",
 		Title: "MQTTv5 PUBCOMP QOS 2 Sent by Reason",
 		Units: "packets/s",
@@ -880,7 +790,6 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricPUBCOMPSent, "success"), Name: "success", Algo: module.Incremental},
-			{ID: join(metricPUBCOMPSent, "packet_id_not_found"), Name: "packet_id_not_found", Algo: module.Incremental},
 		},
 	}
 	chartMQTTv4v5PUBCOMPUnexpected = Chart{
@@ -922,3 +831,142 @@ var (
 		},
 	}
 )
+
+func (v *VerneMQ) notifyNewScheduler(name string) {
+	if v.cache.hasP(name) {
+		return
+	}
+
+	num := name[len("system_utilization_scheduler_"):]
+	v.addDimToSchedulerUtilizationChart(name, num)
+}
+
+func (v *VerneMQ) addDimToSchedulerUtilizationChart(dimID, dimName string) {
+	id := chartSchedulerUtilization.ID
+	v.addDimToChart(id, dimID, dimName, false)
+}
+
+func (v *VerneMQ) notifyNewReason(name, reason string) {
+	if reason == "success" || reason == "normal_disconnect" {
+		return
+	}
+	key := join(name, reason)
+	if v.cache.hasP(key) {
+		return
+	}
+
+	switch name {
+	case metricAUTHReceived:
+		v.addDimToAUTHReceivedReason(key, reason)
+	case metricAUTHSent:
+		v.addDimToAUTHSentReason(key, reason)
+	case metricCONNACKSent:
+		v.addDimToCONNACKSentReason(key, reason)
+	case metricDISCONNECTReceived:
+		v.addDimToDISCONNECTReceivedReason(key, reason)
+	case metricDISCONNECTSent:
+		v.addDimToDISCONNECTSentReason(key, reason)
+	case metricPUBACKReceived:
+		v.addDimToPUBACKReceivedReason(key, reason)
+	case metricPUBACKSent:
+		v.addDimToPUBACKSentReason(key, reason)
+	case metricPUBRECReceived:
+		v.addDimToPUBRECReceivedReason(key, reason)
+	case metricPUBRECSent:
+		v.addDimToPUBRECSentReason(key, reason)
+	case metricPUBRELReceived:
+		v.addDimToPUBRELReceivedReason(key, reason)
+	case metricPUBRELSent:
+		v.addDimToPUBRELSentReason(key, reason)
+	case metricPUBCOMPReceived:
+		v.addDimToPUBCOMPReceivedReason(key, reason)
+	case metricPUBCOMPSent:
+		v.addDimToPUBCOMPSentReason(key, reason)
+	default:
+		v.Warningf("unknown metric name, wont be added to the charts: '%s'", name)
+	}
+}
+
+func (v *VerneMQ) addDimToAUTHReceivedReason(dimID, reason string) {
+	id := chartMQTTv5AUTHReceivedReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToAUTHSentReason(dimID, reason string) {
+	id := chartMQTTv5AUTHSentReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToCONNACKSentReason(dimID, reason string) {
+	id := chartMQTTv4v5CONNACKSentReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToDISCONNECTReceivedReason(dimID, reason string) {
+	id := chartMQTTv5DISCONNECTReceivedReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToDISCONNECTSentReason(dimID, reason string) {
+	id := chartMQTTv5DISCONNECTSentReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToPUBACKReceivedReason(dimID, reason string) {
+	id := chartMQTTv5PUBACKReceivedReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToPUBACKSentReason(dimID, reason string) {
+	id := chartMQTTv5PUBACKSentReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToPUBRECReceivedReason(dimID, reason string) {
+	id := chartMQTTv5PUBRECReceivedReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToPUBRECSentReason(dimID, reason string) {
+	id := chartMQTTv5PUBRECSentReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToPUBRELReceivedReason(dimID, reason string) {
+	id := chartMQTTv5PUBRELReceivedReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToPUBRELSentReason(dimID, reason string) {
+	id := chartMQTTv5PUBRELSentReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToPUBCOMPReceivedReason(dimID, reason string) {
+	id := chartMQTTv5PUBCOMPReceivedReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToPUBCOMPSentReason(dimID, reason string) {
+	id := chartMQTTv5PUBCOMPSentReason.ID
+	v.addDimToChart(id, dimID, reason, true)
+}
+
+func (v *VerneMQ) addDimToChart(chartID, dimID, dimName string, inc bool) {
+	chart := v.Charts().Get(chartID)
+	if chart == nil {
+		v.Warningf("add '%s' dim: couldn't find '%s' chart", dimID, chartID)
+		return
+	}
+
+	dim := &Dim{ID: dimID, Name: dimName}
+	if inc {
+		dim.Algo = module.Incremental
+	}
+
+	if err := chart.AddDim(dim); err != nil {
+		v.Warningf("add '%s' dim: %v", dimID, err)
+		return
+	}
+	chart.MarkNotCreated()
+}

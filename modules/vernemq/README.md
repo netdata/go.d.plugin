@@ -16,7 +16,7 @@ It produces the following charts:
 -   Open Sockets in `sockets`
 -   Socket Open and Close Events in `sockets/s`
 -   Closed Sockets due to Keepalive Time Expired in `sockets/s`
--   Closed Sockets due to CONNECT Frame Hasn't Been Received On Time in `sockets/s`
+-   Closed Sockets due to no CONNECT Frame On Time in `sockets/s`
 -   Socket Errors in `errors/s`
 
 #### Queues
