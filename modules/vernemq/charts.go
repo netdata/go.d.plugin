@@ -893,7 +893,7 @@ func (v *VerneMQ) addAbsDimToChart(chartID, dimID, dimName string) {
 }
 
 func (v *VerneMQ) addIncDimToChart(chartID, dimID, dimName string) {
-	v.addDimToChart(chartID, dimID, dimName, false)
+	v.addDimToChart(chartID, dimID, dimName, true)
 }
 
 func (v *VerneMQ) addDimToChart(chartID, dimID, dimName string, inc bool) {
