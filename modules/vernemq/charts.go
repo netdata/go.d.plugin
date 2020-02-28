@@ -414,7 +414,7 @@ var (
 	}
 	chartClusterCommunicationDropped = Chart{
 		ID:    "cluster_dropped",
-		Title: "Dropped Traffic During Communication",
+		Title: "Traffic Dropped During Communication",
 		Units: "KiB/s",
 		Fam:   "cluster",
 		Ctx:   "vernemq.cluster_dropped",
@@ -501,7 +501,7 @@ var (
 		Title: "MQTTv4/v5 CONNACK Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt connect",
-		Ctx:   "vernemq.mqtt_sent_reason",
+		Ctx:   "vernemq.mqtt_connack_sent_reason",
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: join(metricCONNACKSent, "success"), Name: "success", Algo: module.Incremental},
@@ -840,7 +840,7 @@ func (v *VerneMQ) notifyNewScheduler(name string) {
 	id := chartSchedulerUtilization.ID
 	num := name[len("system_utilization_scheduler_"):]
 
-	v.addDimToChart(id, name, num, false)
+	v.addAbsDimToChart(id, name, num)
 }
 
 func (v *VerneMQ) notifyNewReason(name, reason string) {
@@ -885,7 +885,15 @@ func (v *VerneMQ) notifyNewReason(name, reason string) {
 		return
 	}
 
-	v.addDimToChart(chart.ID, key, reason, true)
+	v.addIncDimToChart(chart.ID, key, reason)
+}
+
+func (v *VerneMQ) addAbsDimToChart(chartID, dimID, dimName string) {
+	v.addDimToChart(chartID, dimID, dimName, false)
+}
+
+func (v *VerneMQ) addIncDimToChart(chartID, dimID, dimName string) {
+	v.addDimToChart(chartID, dimID, dimName, false)
 }
 
 func (v *VerneMQ) addDimToChart(chartID, dimID, dimName string, inc bool) {
