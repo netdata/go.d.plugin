@@ -46,46 +46,46 @@ var charts = Charts{
 	chartClusterCommunicationBandwidth.Copy(),
 	chartClusterCommunicationDropped.Copy(),
 	chartNetSplitUnresolved.Copy(),
-	chartNetSplitEvents.Copy(),
+	chartNetSplits.Copy(),
 
 	chartMQTTv5AUTH.Copy(),
 	chartMQTTv5AUTHReceivedReason.Copy(),
 	chartMQTTv5AUTHSentReason.Copy(),
 
-	chartMQTTv4v5CONNECT.Copy(),
-	chartMQTTv4v5CONNACKSentReason.Copy(),
+	chartMQTTv3v5CONNECT.Copy(),
+	chartMQTTv3v5CONNACKSentReason.Copy(),
 
-	chartMQTTv4v5DISCONNECT.Copy(),
+	chartMQTTv3v5DISCONNECT.Copy(),
 	chartMQTTv5DISCONNECTReceivedReason.Copy(),
 	chartMQTTv5DISCONNECTSentReason.Copy(),
 
-	chartMQTTv4v5SUBSCRIBE.Copy(),
-	chartMQTTv4v5SUBSCRIBEError.Copy(),
-	chartMQTTv4v5SUBSCRIBEAuthError.Copy(),
+	chartMQTTv3v5SUBSCRIBE.Copy(),
+	chartMQTTv3v5SUBSCRIBEError.Copy(),
+	chartMQTTv3v5SUBSCRIBEAuthError.Copy(),
 
-	chartMQTTv4v5UNSUBSCRIBE.Copy(),
-	chartMQTTv4v5UNSUBSCRIBEError.Copy(),
+	chartMQTTv3v5UNSUBSCRIBE.Copy(),
+	chartMQTTv3v5UNSUBSCRIBEError.Copy(),
 
-	chartMQTTv4v5PUBLISH.Copy(),
-	chartMQTTv4v5PUBLISHErrors.Copy(),
-	chartMQTTv4v5PUBLISHAuthErrors.Copy(),
-	chartMQTTv4v5PUBACK.Copy(),
+	chartMQTTv3v5PUBLISH.Copy(),
+	chartMQTTv3v5PUBLISHErrors.Copy(),
+	chartMQTTv3v5PUBLISHAuthErrors.Copy(),
+	chartMQTTv3v5PUBACK.Copy(),
 	chartMQTTv5PUBACKReceivedReason.Copy(),
 	chartMQTTv5PUBACKSentReason.Copy(),
-	chartMQTTv4v5PUBACKUnexpected.Copy(),
-	chartMQTTv4v5PUBREC.Copy(),
+	chartMQTTv3v5PUBACKUnexpected.Copy(),
+	chartMQTTv3v5PUBREC.Copy(),
 	chartMQTTv5PUBRECReceivedReason.Copy(),
 	chartMQTTv5PUBRECSentReason.Copy(),
-	chartMQTTv4PUBRECUnexpected.Copy(),
-	chartMQTTv4v5PUBREL.Copy(),
+	chartMQTTv3PUBRECUnexpected.Copy(),
+	chartMQTTv3v5PUBREL.Copy(),
 	chartMQTTv5PUBRELReceivedReason.Copy(),
 	chartMQTTv5PUBRELSentReason.Copy(),
-	chartMQTTv4v5PUBCOMP.Copy(),
+	chartMQTTv3v5PUBCOMP.Copy(),
 	chartMQTTv5PUBCOMPReceivedReason.Copy(),
 	chartMQTTv5PUBCOMPSentReason.Copy(),
-	chartMQTTv4v5PUBCOMPUnexpected.Copy(),
+	chartMQTTv3v5PUBCOMPUnexpected.Copy(),
 
-	chartMQTTv4v5PING.Copy(),
+	chartMQTTv3v5PING.Copy(),
 
 	chartUptime.Copy(),
 }
@@ -187,7 +187,7 @@ var (
 		Fam:   "queues",
 		Ctx:   "vernemq.queue_messages_in_queues",
 		Dims: Dims{
-			{ID: "queue_messages_current", Name: "in"},
+			{ID: "queue_messages_current", Name: "messages"},
 		},
 	}
 	chartQueueMessages = Chart{
@@ -317,7 +317,7 @@ var (
 	}
 	chartSystemRunQueue = Chart{
 		ID:    "system_run_queue",
-		Title: "Processes that are Ready to Run on All Run-Queue",
+		Title: "Processes that are Ready to Run on All Run-Queues",
 		Units: "processes",
 		Fam:   "erlang vm",
 		Ctx:   "vernemq.system_run_queue",
@@ -403,7 +403,7 @@ var (
 var (
 	chartClusterCommunicationBandwidth = Chart{
 		ID:    "cluster_bandwidth",
-		Title: "Communication with Other Nodes from the Cluster",
+		Title: "Communication with Other Cluster Nodes",
 		Units: "KiB/s",
 		Fam:   "cluster",
 		Ctx:   "vernemq.cluster_bandwidth",
@@ -414,7 +414,7 @@ var (
 	}
 	chartClusterCommunicationDropped = Chart{
 		ID:    "cluster_dropped",
-		Title: "Traffic Dropped During Communication",
+		Title: "Traffic Dropped During Communication with Other Cluster Nodes",
 		Units: "KiB/s",
 		Fam:   "cluster",
 		Ctx:   "vernemq.cluster_dropped",
@@ -432,9 +432,9 @@ var (
 			{ID: "netsplit_unresolved", Name: "unresolved"},
 		},
 	}
-	chartNetSplitEvents = Chart{
-		ID:    "netsplit_events",
-		Title: "Netsplit Events",
+	chartNetSplits = Chart{
+		ID:    "netsplit",
+		Title: "Netsplits",
 		Units: "netsplits/s",
 		Fam:   "cluster",
 		Ctx:   "vernemq.netsplits",
@@ -450,7 +450,7 @@ var (
 var (
 	chartMQTTv5AUTH = Chart{
 		ID:    "mqtt_auth",
-		Title: "MQTTv5 AUTH",
+		Title: "v5 AUTH",
 		Units: "packets/s",
 		Fam:   "mqtt auth",
 		Ctx:   "vernemq.mqtt_auth",
@@ -461,7 +461,7 @@ var (
 	}
 	chartMQTTv5AUTHReceivedReason = Chart{
 		ID:    "mqtt_auth_received_reason",
-		Title: "MQTTv5 AUTH Received by Reason",
+		Title: "v5 AUTH Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt auth",
 		Ctx:   "vernemq.mqtt_auth_received_reason",
@@ -472,7 +472,7 @@ var (
 	}
 	chartMQTTv5AUTHSentReason = Chart{
 		ID:    "mqtt_auth_sent_reason",
-		Title: "MQTTv5 AUTH Sent by Reason",
+		Title: "v5 AUTH Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt auth",
 		Ctx:   "vernemq.mqtt_auth_sent_reason",
@@ -485,9 +485,9 @@ var (
 
 // CONNECT
 var (
-	chartMQTTv4v5CONNECT = Chart{
+	chartMQTTv3v5CONNECT = Chart{
 		ID:    "mqtt_connect",
-		Title: "MQTTv4/v5 CONNECT and CONNACK",
+		Title: "v3/v5 CONNECT and CONNACK",
 		Units: "packets/s",
 		Fam:   "mqtt connect",
 		Ctx:   "vernemq.mqtt_connect",
@@ -496,9 +496,9 @@ var (
 			{ID: metricCONNACKSent, Name: "CONNACK", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	chartMQTTv4v5CONNACKSentReason = Chart{
+	chartMQTTv3v5CONNACKSentReason = Chart{
 		ID:    "mqtt_connack_sent_reason",
-		Title: "MQTTv4/v5 CONNACK Sent by Reason",
+		Title: "v3/v5 CONNACK Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt connect",
 		Ctx:   "vernemq.mqtt_connack_sent_reason",
@@ -511,9 +511,9 @@ var (
 
 // DISCONNECT
 var (
-	chartMQTTv4v5DISCONNECT = Chart{
+	chartMQTTv3v5DISCONNECT = Chart{
 		ID:    "mqtt_disconnect",
-		Title: "MQTTv4/v5 DISCONNECT",
+		Title: "v3/v5 DISCONNECT",
 		Units: "packets/s",
 		Fam:   "mqtt disconnect",
 		Ctx:   "vernemq.mqtt_disconnect",
@@ -524,7 +524,7 @@ var (
 	}
 	chartMQTTv5DISCONNECTReceivedReason = Chart{
 		ID:    "mqtt_disconnect_received_reason",
-		Title: "MQTTv5 DISCONNECT Received by Reason",
+		Title: "v5 DISCONNECT Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt disconnect",
 		Ctx:   "vernemq.mqtt_disconnect_received_reason",
@@ -535,7 +535,7 @@ var (
 	}
 	chartMQTTv5DISCONNECTSentReason = Chart{
 		ID:    "mqtt_disconnect_sent_reason",
-		Title: "MQTTv5 DISCONNECT Sent by Reason",
+		Title: "v5 DISCONNECT Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt disconnect",
 		Ctx:   "vernemq.mqtt_disconnect_sent_reason",
@@ -548,9 +548,9 @@ var (
 
 // SUBSCRIBE
 var (
-	chartMQTTv4v5SUBSCRIBE = Chart{
+	chartMQTTv3v5SUBSCRIBE = Chart{
 		ID:    "mqtt_subscribe",
-		Title: "MQTTv4/v5 SUBSCRIBE and SUBACK",
+		Title: "v3/v5 SUBSCRIBE and SUBACK",
 		Units: "packets/s",
 		Fam:   "mqtt subscribe",
 		Ctx:   "vernemq.mqtt_subscribe",
@@ -559,9 +559,9 @@ var (
 			{ID: metricSUBACKSent, Name: "SUBACK", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	chartMQTTv4v5SUBSCRIBEError = Chart{
+	chartMQTTv3v5SUBSCRIBEError = Chart{
 		ID:    "mqtt_subscribe_error",
-		Title: "MQTTv4/v5 Failed SUBSCRIBE Operations due to a Netsplit",
+		Title: "v3/v5 Failed SUBSCRIBE Operations due to a Netsplit",
 		Units: "ops/s",
 		Fam:   "mqtt subscribe",
 		Ctx:   "vernemq.mqtt_subscribe_error",
@@ -569,9 +569,9 @@ var (
 			{ID: metricSUBSCRIBEError, Name: "failed", Algo: module.Incremental},
 		},
 	}
-	chartMQTTv4v5SUBSCRIBEAuthError = Chart{
+	chartMQTTv3v5SUBSCRIBEAuthError = Chart{
 		ID:    "mqtt_subscribe_auth_error",
-		Title: "MQTTv4/v5 Unauthorized SUBSCRIBE Attempts",
+		Title: "v3/v5 Unauthorized SUBSCRIBE Attempts",
 		Units: "attempts/s",
 		Fam:   "mqtt subscribe",
 		Ctx:   "vernemq.mqtt_subscribe_auth_error",
@@ -583,9 +583,9 @@ var (
 
 // UNSUBSCRIBE
 var (
-	chartMQTTv4v5UNSUBSCRIBE = Chart{
+	chartMQTTv3v5UNSUBSCRIBE = Chart{
 		ID:    "mqtt_unsubscribe",
-		Title: "MQTTv4/v5 UNSUBSCRIBE and UNSUBACK",
+		Title: "v3/v5 UNSUBSCRIBE and UNSUBACK",
 		Units: "packets/s",
 		Fam:   "mqtt unsubscribe",
 		Ctx:   "vernemq.mqtt_unsubscribe",
@@ -594,9 +594,9 @@ var (
 			{ID: metricUNSUBACKSent, Name: "UNSUBACK", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	chartMQTTv4v5UNSUBSCRIBEError = Chart{
+	chartMQTTv3v5UNSUBSCRIBEError = Chart{
 		ID:    "mqtt_unsubscribe_error",
-		Title: "MQTTv4/v5 Failed UNSUBSCRIBE Operations due to a Netsplit",
+		Title: "v3/v5 Failed UNSUBSCRIBE Operations due to a Netsplit",
 		Units: "ops/s",
 		Fam:   "mqtt unsubscribe",
 		Ctx:   "vernemq.mqtt_unsubscribe_error",
@@ -608,9 +608,9 @@ var (
 
 // PUBLISH
 var (
-	chartMQTTv4v5PUBLISH = Chart{
+	chartMQTTv3v5PUBLISH = Chart{
 		ID:    "mqtt_publish",
-		Title: "MQTTv4/v5 QOS 0,1,2 PUBLISH",
+		Title: "v3/v5 QoS 0,1,2 PUBLISH",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_publish",
@@ -619,9 +619,9 @@ var (
 			{ID: metricPUBSLIHSent, Name: "sent", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	chartMQTTv4v5PUBLISHErrors = Chart{
+	chartMQTTv3v5PUBLISHErrors = Chart{
 		ID:    "mqtt_publish_errors",
-		Title: "MQTTv4/v5 Failed PUBLISH Operations due to a Netsplit",
+		Title: "v3/v5 Failed PUBLISH Operations due to a Netsplit",
 		Units: "ops/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_publish_errors",
@@ -629,9 +629,9 @@ var (
 			{ID: metricPUBLISHError, Name: "failed", Algo: module.Incremental},
 		},
 	}
-	chartMQTTv4v5PUBLISHAuthErrors = Chart{
+	chartMQTTv3v5PUBLISHAuthErrors = Chart{
 		ID:    "mqtt_publish_auth_errors",
-		Title: "MQTTv4/v5 Unauthorized PUBLISH Attempts",
+		Title: "v3/v5 Unauthorized PUBLISH Attempts",
 		Units: "attempts/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_publish_auth_errors",
@@ -640,9 +640,9 @@ var (
 			{ID: metricPUBLISHAuthError, Name: "unauth", Algo: module.Incremental},
 		},
 	}
-	chartMQTTv4v5PUBACK = Chart{
+	chartMQTTv3v5PUBACK = Chart{
 		ID:    "mqtt_puback",
-		Title: "MQTTv4/v5 QOS 1 PUBACK",
+		Title: "v3/v5 QoS 1 PUBACK",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_puback",
@@ -653,7 +653,7 @@ var (
 	}
 	chartMQTTv5PUBACKReceivedReason = Chart{
 		ID:    "mqtt_puback_received_reason",
-		Title: "MQTTv5 PUBACK QOS 1 Received by Reason",
+		Title: "v5 PUBACK QoS 1 Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_puback_received_reason",
@@ -664,7 +664,7 @@ var (
 	}
 	chartMQTTv5PUBACKSentReason = Chart{
 		ID:    "mqtt_puback_sent_reason",
-		Title: "MQTTv5 PUBACK QOS 1 Sent by Reason",
+		Title: "v5 PUBACK QoS 1 Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_puback_sent_reason",
@@ -673,9 +673,9 @@ var (
 			{ID: join(metricPUBACKSent, "success"), Name: "success", Algo: module.Incremental},
 		},
 	}
-	chartMQTTv4v5PUBACKUnexpected = Chart{
+	chartMQTTv3v5PUBACKUnexpected = Chart{
 		ID:    "mqtt_puback_unexpected",
-		Title: "MQTTv4/v5 PUBACK QOS 1 Received Unexpected Messages",
+		Title: "v3/v5 PUBACK QoS 1 Received Unexpected Messages",
 		Units: "messages/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_puback_invalid_error",
@@ -683,9 +683,9 @@ var (
 			{ID: metricPUBACKInvalid, Name: "unexpected", Algo: module.Incremental},
 		},
 	}
-	chartMQTTv4v5PUBREC = Chart{
+	chartMQTTv3v5PUBREC = Chart{
 		ID:    "mqtt_pubrec",
-		Title: "MQTTv4/v5 PUBREC QOS 2",
+		Title: "v3/v5 PUBREC QoS 2",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrec",
@@ -696,7 +696,7 @@ var (
 	}
 	chartMQTTv5PUBRECReceivedReason = Chart{
 		ID:    "mqtt_pubrec_received_reason",
-		Title: "MQTTv5 PUBREC QOS 2 Received by Reason",
+		Title: "v5 PUBREC QoS 2 Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrec_received_reason",
@@ -707,7 +707,7 @@ var (
 	}
 	chartMQTTv5PUBRECSentReason = Chart{
 		ID:    "mqtt_pubrec_sent_reason",
-		Title: "MQTTv5 PUBREC QOS 2 Sent by Reason",
+		Title: "v5 PUBREC QoS 2 Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrec_sent_reason",
@@ -716,9 +716,9 @@ var (
 			{ID: join(metricPUBRECSent, "success"), Name: "success", Algo: module.Incremental},
 		},
 	}
-	chartMQTTv4PUBRECUnexpected = Chart{
+	chartMQTTv3PUBRECUnexpected = Chart{
 		ID:    "mqtt_pubrec_unexpected",
-		Title: "MQTTv4 PUBREC QOS 2 Received Unexpected Messages",
+		Title: "v3 PUBREC QoS 2 Received Unexpected Messages",
 		Units: "messages/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrec_invalid_error",
@@ -726,9 +726,9 @@ var (
 			{ID: metricPUBRECInvalid, Name: "unexpected", Algo: module.Incremental},
 		},
 	}
-	chartMQTTv4v5PUBREL = Chart{
+	chartMQTTv3v5PUBREL = Chart{
 		ID:    "mqtt_pubrel",
-		Title: "MQTTv4/v5 PUBREL QOS 2",
+		Title: "v3/v5 PUBREL QoS 2",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrel",
@@ -739,7 +739,7 @@ var (
 	}
 	chartMQTTv5PUBRELReceivedReason = Chart{
 		ID:    "mqtt_pubrel_received_reason",
-		Title: "MQTTv5 PUBREL QOS 2 Received by Reason",
+		Title: "v5 PUBREL QoS 2 Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrel_received_reason",
@@ -750,7 +750,7 @@ var (
 	}
 	chartMQTTv5PUBRELSentReason = Chart{
 		ID:    "mqtt_pubrel_sent_reason",
-		Title: "MQTTv5 PUBREL QOS 2 Sent by Reason",
+		Title: "v5 PUBREL QoS 2 Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubrel_sent_reason",
@@ -759,9 +759,9 @@ var (
 			{ID: join(metricPUBRELSent, "success"), Name: "success", Algo: module.Incremental},
 		},
 	}
-	chartMQTTv4v5PUBCOMP = Chart{
+	chartMQTTv3v5PUBCOMP = Chart{
 		ID:    "mqtt_pubcomp",
-		Title: "MQTTv4/v5 PUBCOMP QOS 2",
+		Title: "v3/v5 PUBCOMP QoS 2",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubcom",
@@ -772,7 +772,7 @@ var (
 	}
 	chartMQTTv5PUBCOMPReceivedReason = Chart{
 		ID:    "mqtt_pubcomp_received_reason",
-		Title: "MQTTv5 PUBCOMP QOS 2 Received by Reason",
+		Title: "v5 PUBCOMP QoS 2 Received by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubcomp_received_reason",
@@ -783,7 +783,7 @@ var (
 	}
 	chartMQTTv5PUBCOMPSentReason = Chart{
 		ID:    "mqtt_pubcomp_sent_reason",
-		Title: "MQTTv5 PUBCOMP QOS 2 Sent by Reason",
+		Title: "v5 PUBCOMP QoS 2 Sent by Reason",
 		Units: "packets/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubcomp_sent_reason",
@@ -792,9 +792,9 @@ var (
 			{ID: join(metricPUBCOMPSent, "success"), Name: "success", Algo: module.Incremental},
 		},
 	}
-	chartMQTTv4v5PUBCOMPUnexpected = Chart{
+	chartMQTTv3v5PUBCOMPUnexpected = Chart{
 		ID:    "mqtt_pubcomp_unexpected",
-		Title: "MQTTv4/v5 PUBCOMP QOS 2 Received Unexpected Messages",
+		Title: "v3/v5 PUBCOMP QoS 2 Received Unexpected Messages",
 		Units: "messages/s",
 		Fam:   "mqtt publish",
 		Ctx:   "vernemq.mqtt_pubcomp_invalid_error",
@@ -806,9 +806,9 @@ var (
 
 // PING
 var (
-	chartMQTTv4v5PING = Chart{
+	chartMQTTv3v5PING = Chart{
 		ID:    "mqtt_ping",
-		Title: "MQTTv4/v5 PING",
+		Title: "v3/v5 PING",
 		Units: "packets/s",
 		Fam:   "mqtt ping",
 		Ctx:   "vernemq.mqtt_ping",
@@ -859,7 +859,7 @@ func (v *VerneMQ) notifyNewReason(name, reason string) {
 	case metricAUTHSent:
 		chart = chartMQTTv5AUTHSentReason
 	case metricCONNACKSent:
-		chart = chartMQTTv4v5CONNACKSentReason
+		chart = chartMQTTv3v5CONNACKSentReason
 	case metricDISCONNECTReceived:
 		chart = chartMQTTv5DISCONNECTReceivedReason
 	case metricDISCONNECTSent:
