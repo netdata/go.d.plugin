@@ -41,7 +41,7 @@ It produces the following charts:
 -   Reductions in `ops/s`
 -   Context Switches in `ops/s`
 -   Received and Sent Traffic through Ports in `KiB/s`
--   Processes that are Ready to Run on All Run-Queue in `KiB/s`
+-   Processes that are Ready to Run on All Run-Queues in `KiB/s`
 -   GC Count in `KiB/s`
 -   GC Words Reclaimed in `KiB/s`
 -   Memory Allocated by the Erlang Processes and by the Emulator in `KiB`
@@ -57,63 +57,63 @@ It produces the following charts:
 
 #### Cluster
 
--   Communication with Other Nodes from the Cluster in `KiB/s`
--   Dropped Traffic During Communication in `KiB/s`
+-   Communication with Other Cluster Nodes in `KiB/s`
+-   Traffic Dropped During Communication with Other Cluster Nodes in `KiB/s`
 -   Unresolved Netsplits in `netsplits`
--   Netsplit Events in `netsplits/s`
+-   Netsplits in `netsplits/s`
 
 #### MQTT AUTH
 
--   MQTTv5 AUTH in `packets/s`
--   MQTTv5 AUTH Received by Reason in `packets/s`
--   MQTTv5 AUTH Sent by Reason in `packets/s`
+-   v5 AUTH in `packets/s`
+-   v5 AUTH Received by Reason in `packets/s`
+-   v5 AUTH Sent by Reason in `packets/s`
 
 #### MQTT CONNECT
 
--   MQTTv4/v5 CONNECT and CONNACK in `packets/s`
--   MQTTv4/v5 CONNACK Sent by Reason in `packets/s`
+-   v3/v5 CONNECT and CONNACK in `packets/s`
+-   v3/v5 CONNACK Sent by Reason in `packets/s`
 
 #### MQTT DISCONNECT
 
--   MQTTv4/v5 DISCONNECT in `packets/s`
--   MQTTv5 DISCONNECT Received by Reason in `packets/s`
--   MQTTv5 DISCONNECT Sent by Reason in `packets/s`
+-   v3/v5 DISCONNECT in `packets/s`
+-   v5 DISCONNECT Received by Reason in `packets/s`
+-   v5 DISCONNECT Sent by Reason in `packets/s`
 
 #### MQTT SUBSCRIBE
 
--   MQTTv4/v5 SUBSCRIBE and SUBACK in `packets/s`
--   MQTTv4/v5 Failed SUBSCRIBE Operations due to a Netsplit in `ops/s`
--   MQTTv4/v5 Unauthorized SUBSCRIBE Attempts in `attempts/s`
+-   v3/v5 SUBSCRIBE and SUBACK in `packets/s`
+-   v3/v5 Failed SUBSCRIBE Operations due to a Netsplit in `ops/s`
+-   v3/v5 Unauthorized SUBSCRIBE Attempts in `attempts/s`
 
 #### MQTT UNSUBSCRIBE
 
--   MQTTv4/v5 UNSUBSCRIBE and UNSUBACK in `packets/s`
--   MQTTv4/v5 Failed UNSUBSCRIBE Operation due to a Netsplit in `ops/s`
+-   v3/v5 UNSUBSCRIBE and UNSUBACK in `packets/s`
+-   v3/v5 Failed UNSUBSCRIBE Operation due to a Netsplit in `ops/s`
 
 #### MQTT PUBLISH
 
--   MQTTv4/v5 QOS 0,1,2 PUBLISH in `packets/s`
--   MQTTv4/v5 Failed PUBLISH Operations due to a Netsplit in `ops/s`
--   MQTTv4/v5 Unauthorized PUBLISH Attempts in `attempts/s`
--   MQTTv4/v5 QOS 1 PUBACK in `packets/s`
--   MQTTv5 PUBACK QOS 1 Received by Reason in `packets/s`
--   MQTTv5 PUBACK QOS 1 Sent by Reason in `packets/s`
--   MQTTv4/v5 PUBACK QOS 1 Received Unexpected Messages in `messages/s`
--   MQTTv4/v5 PUBREC QOS 2 in `packets/s`
--   MQTTv5 PUBREC QOS 2 Received by Reason in `packets/s`
--   MQTTv5 PUBREC QOS 2 Sent by Reason in `packets/s`
--   MQTTv4 PUBREC QOS 2 Received Unexpected Messages in `messages/s`
--   MQTTv4/v5 PUBREL QOS 2 in `packets/s`
--   MQTTv5 PUBREL QOS 2 Received by Reason in `packets/s`
--   MQTTv5 PUBREL QOS 2 Sent by Reason in `packets/s`
--   MQTTv4/v5 PUBCOMP QOS 2 in `packets/s`
--   MQTTv5 PUBCOMP QOS 2 Received by Reason in `packets/s`
--   MQTTv5 PUBCOMP QOS 2 Sent by Reason in `packets/s`
--   MQTTv4/v5 PUBCOMP QOS 2 Received Unexpected Messages in `messages/s`
+-   v3/v5 QoS 0,1,2 PUBLISH in `packets/s`
+-   v3/v5 Failed PUBLISH Operations due to a Netsplit in `ops/s`
+-   v3/v5 Unauthorized PUBLISH Attempts in `attempts/s`
+-   v3/v5 QoS 1 PUBACK in `packets/s`
+-   v5 PUBACK QoS 1 Received by Reason in `packets/s`
+-   v5 PUBACK QoS 1 Sent by Reason in `packets/s`
+-   v3/v5 PUBACK QoS 1 Received Unexpected Messages in `messages/s`
+-   v3/v5 PUBREC QoS 2 in `packets/s`
+-   v5 PUBREC QoS 2 Received by Reason in `packets/s`
+-   v5 PUBREC QoS 2 Sent by Reason in `packets/s`
+-   v3 PUBREC QoS 2 Received Unexpected Messages in `messages/s`
+-   v3/v5 PUBREL QoS 2 in `packets/s`
+-   v5 PUBREL QoS 2 Received by Reason in `packets/s`
+-   v5 PUBREL QoS 2 Sent by Reason in `packets/s`
+-   v3/v5 PUBCOMP QoS 2 in `packets/s`
+-   v5 PUBCOMP QoS 2 Received by Reason in `packets/s`
+-   v5 PUBCOMP QoS 2 Sent by Reason in `packets/s`
+-   v3/v5 PUBCOMP QoS 2 Received Unexpected Messages in `messages/s`
 
 #### MQTT PING
 
--   MQTTv4/v5 PING in `packets/s`
+-   v3/v5 PING in `packets/s`
 
 #### Uptime
 
