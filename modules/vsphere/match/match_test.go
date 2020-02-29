@@ -275,9 +275,9 @@ func TestVMIncludes_Parse(t *testing.T) {
 	}
 }
 
-func prepareIncludes(include string) (prepared []string) {
+func prepareIncludes(include string) []string {
 	trimmed := strings.Trim(include, "[]")
-	return append(prepared, strings.Split(trimmed, ",")...)
+	return strings.Split(trimmed, ",")
 }
 
 func mustSP(expr string) matcher.Matcher {
