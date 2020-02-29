@@ -15,46 +15,13 @@ import (
 	"github.com/vmware/govmomi/simulator"
 )
 
-func newTestClient(vCenterURL *url.URL) (*client.Client, error) {
-	return client.New(client.Config{
-		URL:             vCenterURL.String(),
-		User:            "admin",
-		Password:        "password",
-		Timeout:         time.Second * 3,
-		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
-	})
-}
-
-func createSim() (*simulator.Model, *simulator.Server, error) {
-	model := simulator.VPX()
-	model.Datacenter = 2
-	model.Folder = 3
-
-	err := model.Create()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	model.Service.TLS = new(tls.Config)
-
-	s := model.Service.NewServer()
-	return model, s, nil
-}
-
 func TestVSphereDiscoverer_Discover(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	d, _, teardown := prepareDiscovererSim(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	d := NewVSphereDiscoverer(c)
 	res, err := d.Discover()
-	require.NoError(t, err)
 
+	require.NoError(t, err)
 	assert.True(t, len(res.Dcs) > 0)
 	assert.True(t, len(res.Folders) > 0)
 	assert.True(t, len(res.Clusters) > 0)
@@ -65,18 +32,12 @@ func TestVSphereDiscoverer_Discover(t *testing.T) {
 }
 
 func TestVSphereDiscoverer_discover(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
+	d, model, teardown := prepareDiscovererSim(t)
+	defer teardown()
 
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	d := NewVSphereDiscoverer(c)
 	raw, err := d.discover()
-	require.NoError(t, err)
 
+	require.NoError(t, err)
 	count := model.Count()
 	assert.Lenf(t, raw.dcs, count.Datacenter, "datacenters")
 	assert.Lenf(t, raw.folders, count.Folder-1, "folders") // minus root folder
@@ -87,19 +48,14 @@ func TestVSphereDiscoverer_discover(t *testing.T) {
 }
 
 func TestVSphereDiscoverer_build(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
+	d, _, teardown := prepareDiscovererSim(t)
+	defer teardown()
 
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	d := NewVSphereDiscoverer(c)
 	raw, err := d.discover()
 	require.NoError(t, err)
 
 	res := d.build(raw)
+
 	assert.Lenf(t, res.Dcs, len(raw.dcs), "datacenters")
 	assert.Lenf(t, res.Folders, len(raw.folders), "folders")
 	assert.Lenf(t, res.Clusters, len(raw.clusters), "clusters")
@@ -108,36 +64,25 @@ func TestVSphereDiscoverer_build(t *testing.T) {
 }
 
 func TestVSphereDiscoverer_setHierarchy(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
+	d, _, teardown := prepareDiscovererSim(t)
+	defer teardown()
 
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	d := NewVSphereDiscoverer(c)
 	raw, err := d.discover()
 	require.NoError(t, err)
 	res := d.build(raw)
 
 	err = d.setHierarchy(res)
+
 	require.NoError(t, err)
 	assert.True(t, isHierarchySet(res))
 }
 
 func TestVSphereDiscoverer_removeUnmatched(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
+	d, _, teardown := prepareDiscovererSim(t)
+	defer teardown()
 
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	d := NewVSphereDiscoverer(c)
-	d.HostMatcher = testHostMatcher{}
-	d.VMMatcher = testVMMatcher{}
+	d.HostMatcher = falseHostMatcher{}
+	d.VMMatcher = falseVMMatcher{}
 	raw, err := d.discover()
 	require.NoError(t, err)
 	res := d.build(raw)
@@ -149,22 +94,45 @@ func TestVSphereDiscoverer_removeUnmatched(t *testing.T) {
 }
 
 func TestVSphereDiscoverer_collectMetricLists(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
+	d, _, teardown := prepareDiscovererSim(t)
+	defer teardown()
 
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	d := NewVSphereDiscoverer(c)
 	raw, err := d.discover()
 	require.NoError(t, err)
 
 	res := d.build(raw)
 	err = d.collectMetricLists(res)
+
 	require.NoError(t, err)
 	assert.True(t, isMetricListsCollected(res))
+}
+
+func prepareDiscovererSim(t *testing.T) (d *Discoverer, model *simulator.Model, teardown func()) {
+	model, srv := createSim(t)
+	teardown = func() { model.Remove(); srv.Close() }
+	c := newClient(t, srv.URL)
+
+	return New(c), model, teardown
+}
+
+func newClient(t *testing.T, vCenterURL *url.URL) *client.Client {
+	c, err := client.New(client.Config{
+		URL:             vCenterURL.String(),
+		User:            "admin",
+		Password:        "password",
+		Timeout:         time.Second * 3,
+		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
+	})
+	require.NoError(t, err)
+	return c
+}
+
+func createSim(t *testing.T) (*simulator.Model, *simulator.Server) {
+	model := simulator.VPX()
+	err := model.Create()
+	require.NoError(t, err)
+	model.Service.TLS = new(tls.Config)
+	return model, model.Service.NewServer()
 }
 
 func isHierarchySet(res *rs.Resources) bool {
@@ -200,14 +168,10 @@ func isMetricListsCollected(res *rs.Resources) bool {
 	return true
 }
 
-type testHostMatcher struct{}
+type falseHostMatcher struct{}
 
-func (testHostMatcher) Match(host *rs.Host) bool {
-	return false
-}
+func (falseHostMatcher) Match(*rs.Host) bool { return false }
 
-type testVMMatcher struct{}
+type falseVMMatcher struct{}
 
-func (testVMMatcher) Match(vm *rs.VM) bool {
-	return false
-}
+func (falseVMMatcher) Match(*rs.VM) bool { return false }

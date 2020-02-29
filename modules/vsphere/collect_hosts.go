@@ -11,7 +11,7 @@ import (
 
 func (vs *VSphere) collectHosts(mx map[string]int64) error {
 	// NOTE: returns unsorted if at least one types.PerfMetricId Instance is not ""
-	metrics := vs.ScrapeHostsMetrics(vs.resources.Hosts)
+	metrics := vs.ScrapeHosts(vs.resources.Hosts)
 	if len(metrics) == 0 {
 		return errors.New("failed to scrape hosts metrics")
 	}

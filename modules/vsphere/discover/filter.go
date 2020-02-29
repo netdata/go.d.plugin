@@ -6,21 +6,21 @@ import (
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 )
 
-func (d VSphereDiscoverer) matchHost(host *rs.Host) bool {
+func (d Discoverer) matchHost(host *rs.Host) bool {
 	if d.HostMatcher == nil {
 		return true
 	}
 	return d.HostMatcher.Match(host)
 }
 
-func (d VSphereDiscoverer) matchVM(vm *rs.VM) bool {
+func (d Discoverer) matchVM(vm *rs.VM) bool {
 	if d.VMMatcher == nil {
 		return true
 	}
 	return d.VMMatcher.Match(vm)
 }
 
-func (d VSphereDiscoverer) removeUnmatched(res *rs.Resources) (removed int) {
+func (d Discoverer) removeUnmatched(res *rs.Resources) (removed int) {
 	d.Debug("discovering : filtering : starting filtering resources process")
 	t := time.Now()
 	numH, numV := len(res.Hosts), len(res.VMs)
@@ -35,7 +35,7 @@ func (d VSphereDiscoverer) removeUnmatched(res *rs.Resources) (removed int) {
 	return
 }
 
-func (d VSphereDiscoverer) removeUnmatchedHosts(hosts rs.Hosts) (removed int) {
+func (d Discoverer) removeUnmatchedHosts(hosts rs.Hosts) (removed int) {
 	for _, v := range hosts {
 		if !d.matchHost(v) {
 			removed++
@@ -46,7 +46,7 @@ func (d VSphereDiscoverer) removeUnmatchedHosts(hosts rs.Hosts) (removed int) {
 	return removed
 }
 
-func (d VSphereDiscoverer) removeUnmatchedVMs(vms rs.VMs) (removed int) {
+func (d Discoverer) removeUnmatchedVMs(vms rs.VMs) (removed int) {
 	for _, v := range vms {
 		if !d.matchVM(v) {
 			removed++

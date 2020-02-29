@@ -1,426 +1,288 @@
 package match
 
 import (
+	"strings"
 	"testing"
 
-	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
-
+	"github.com/netdata/go.d.plugin/modules/vsphere/resources"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
+
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	trueHostDC  = hostDCMatcher{matcher.TRUE()}
+	falseHostDC = hostDCMatcher{matcher.FALSE()}
+	trueVMDC    = vmDCMatcher{matcher.TRUE()}
+	falseVMDC   = vmDCMatcher{matcher.FALSE()}
+)
+
 func TestOrHostMatcher_Match(t *testing.T) {
-	tests := []struct {
-		name     string
+	tests := map[string]struct {
 		expected bool
 		lhs      HostMatcher
 		rhs      HostMatcher
 	}{
-		{
-			name:     "true, true",
-			expected: true,
-			lhs:      hostDcMatcher{matcher.TRUE()},
-			rhs:      hostDcMatcher{matcher.TRUE()},
-		},
-		{
-			name:     "true, false",
-			expected: true,
-			lhs:      hostDcMatcher{matcher.TRUE()},
-			rhs:      hostDcMatcher{matcher.FALSE()},
-		},
-		{
-			name:     "false, true",
-			expected: true,
-			lhs:      hostDcMatcher{matcher.FALSE()},
-			rhs:      hostDcMatcher{matcher.TRUE()},
-		},
-		{
-			name:     "false, false",
-			expected: false,
-			lhs:      hostDcMatcher{matcher.FALSE()},
-			rhs:      hostDcMatcher{matcher.FALSE()},
-		},
+		"true, true":   {expected: true, lhs: trueHostDC, rhs: trueHostDC},
+		"true, false":  {expected: true, lhs: trueHostDC, rhs: falseHostDC},
+		"false, true":  {expected: true, lhs: falseHostDC, rhs: trueHostDC},
+		"false, false": {expected: false, lhs: falseHostDC, rhs: falseHostDC},
 	}
 
-	host := &rs.Host{}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.expected, orHostMatcher{lhs: test.lhs, rhs: test.rhs}.Match(host))
+	var host resources.Host
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			m := newOrHostMatcher(test.lhs, test.rhs)
+			assert.Equal(t, test.expected, m.Match(&host))
 		})
 	}
 }
 
 func TestAndHostMatcher_Match(t *testing.T) {
-	tests := []struct {
-		name     string
+	tests := map[string]struct {
 		expected bool
 		lhs      HostMatcher
 		rhs      HostMatcher
 	}{
-		{
-			name:     "true, true",
-			expected: true,
-			lhs:      hostDcMatcher{matcher.TRUE()},
-			rhs:      hostDcMatcher{matcher.TRUE()},
-		},
-		{
-			name:     "true, false",
-			expected: false,
-			lhs:      hostDcMatcher{matcher.TRUE()},
-			rhs:      hostDcMatcher{matcher.FALSE()},
-		},
-		{
-			name:     "false, true",
-			expected: false,
-			lhs:      hostDcMatcher{matcher.FALSE()},
-			rhs:      hostDcMatcher{matcher.TRUE()},
-		},
-		{
-			name:     "false, false",
-			expected: false,
-			lhs:      hostDcMatcher{matcher.FALSE()},
-			rhs:      hostDcMatcher{matcher.FALSE()},
-		},
+		"true, true":   {expected: true, lhs: trueHostDC, rhs: trueHostDC},
+		"true, false":  {expected: false, lhs: trueHostDC, rhs: falseHostDC},
+		"false, true":  {expected: false, lhs: falseHostDC, rhs: trueHostDC},
+		"false, false": {expected: false, lhs: falseHostDC, rhs: falseHostDC},
 	}
 
-	host := &rs.Host{}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.expected, andHostMatcher{lhs: test.lhs, rhs: test.rhs}.Match(host))
+	var host resources.Host
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			m := newAndHostMatcher(test.lhs, test.rhs)
+			assert.Equal(t, test.expected, m.Match(&host))
 		})
 	}
 }
 
 func TestOrVMMatcher_Match(t *testing.T) {
-	tests := []struct {
-		name     string
+	tests := map[string]struct {
 		expected bool
 		lhs      VMMatcher
 		rhs      VMMatcher
 	}{
-		{
-			name:     "true, true",
-			expected: true,
-			lhs:      vmDcMatcher{matcher.TRUE()},
-			rhs:      vmDcMatcher{matcher.TRUE()},
-		},
-		{
-			name:     "true, false",
-			expected: true,
-			lhs:      vmDcMatcher{matcher.TRUE()},
-			rhs:      vmDcMatcher{matcher.FALSE()},
-		},
-		{
-			name:     "false, true",
-			expected: true,
-			lhs:      vmDcMatcher{matcher.FALSE()},
-			rhs:      vmDcMatcher{matcher.TRUE()},
-		},
-		{
-			name:     "false, false",
-			expected: false,
-			lhs:      vmDcMatcher{matcher.FALSE()},
-			rhs:      vmDcMatcher{matcher.FALSE()},
-		},
+		"true, true":   {expected: true, lhs: trueVMDC, rhs: trueVMDC},
+		"true, false":  {expected: true, lhs: trueVMDC, rhs: falseVMDC},
+		"false, true":  {expected: true, lhs: falseVMDC, rhs: trueVMDC},
+		"false, false": {expected: false, lhs: falseVMDC, rhs: falseVMDC},
 	}
 
-	vm := &rs.VM{}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.expected, orVMMatcher{lhs: test.lhs, rhs: test.rhs}.Match(vm))
+	var vm resources.VM
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			m := newOrVMMatcher(test.lhs, test.rhs)
+			assert.Equal(t, test.expected, m.Match(&vm))
 		})
 	}
 }
 
 func TestAndVMMatcher_Match(t *testing.T) {
-	tests := []struct {
-		name     string
+	tests := map[string]struct {
 		expected bool
 		lhs      VMMatcher
 		rhs      VMMatcher
 	}{
-		{
-			name:     "true, true",
-			expected: true,
-			lhs:      vmDcMatcher{matcher.TRUE()},
-			rhs:      vmDcMatcher{matcher.TRUE()},
-		},
-		{
-			name:     "true, false",
-			expected: false,
-			lhs:      vmDcMatcher{matcher.TRUE()},
-			rhs:      vmDcMatcher{matcher.FALSE()},
-		},
-		{
-			name:     "false, true",
-			expected: false,
-			lhs:      vmDcMatcher{matcher.FALSE()},
-			rhs:      vmDcMatcher{matcher.TRUE()},
-		},
-		{
-			name:     "false, false",
-			expected: false,
-			lhs:      vmDcMatcher{matcher.FALSE()},
-			rhs:      vmDcMatcher{matcher.FALSE()},
-		},
+		"true, true":   {expected: true, lhs: trueVMDC, rhs: trueVMDC},
+		"true, false":  {expected: false, lhs: trueVMDC, rhs: falseVMDC},
+		"false, true":  {expected: false, lhs: falseVMDC, rhs: trueVMDC},
+		"false, false": {expected: false, lhs: falseVMDC, rhs: falseVMDC},
 	}
 
-	vm := &rs.VM{}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.expected, andVMMatcher{lhs: test.lhs, rhs: test.rhs}.Match(vm))
+	var vm resources.VM
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			m := newAndVMMatcher(test.lhs, test.rhs)
+			assert.Equal(t, test.expected, m.Match(&vm))
 		})
 	}
 }
 
 func TestHostIncludes_Parse(t *testing.T) {
-	tests := []struct {
-		name     string
+	tests := map[string]struct {
 		valid    bool
-		includes HostIncludes
 		expected HostMatcher
 	}{
-		{
-			name:     "",
-			includes: []string{""},
-			valid:    false,
-		},
-		{
-			name:     "*/C1/H1",
-			includes: []string{"*/C1/H1"},
-			valid:    false,
-		},
-		{
-			name:     "/",
-			includes: []string{"/"},
-			valid:    true,
-			expected: hostDcMatcher{matcher.FALSE()},
-		},
-		{
-			name:     "/*",
-			includes: []string{"/*"},
-			valid:    true,
-			expected: hostDcMatcher{matcher.TRUE()},
-		},
-		{
-			name:     "/!*",
-			includes: []string{"/!*"},
-			valid:    true,
-			expected: hostDcMatcher{matcher.FALSE()},
-		},
-		{
-			name:     "/!*/",
-			includes: []string{"/!*/"},
-			valid:    true,
-			expected: hostDcMatcher{matcher.FALSE()},
-		},
-		{
-			name:     "/!*/ ",
-			includes: []string{"/!*/ "},
-			valid:    true,
+		"":        {valid: false},
+		"*/C1/H1": {valid: false},
+		"/":       {valid: true, expected: falseHostDC},
+		"/*":      {valid: true, expected: trueHostDC},
+		"/!*":     {valid: true, expected: falseHostDC},
+		"/!*/":    {valid: true, expected: falseHostDC},
+		"/!*/ ": {
+			valid: true,
 			expected: andHostMatcher{
-				lhs: hostDcMatcher{matcher.FALSE()},
+				lhs: falseHostDC,
 				rhs: hostClusterMatcher{matcher.FALSE()},
 			},
 		},
-		{
-			name:     "/DC1* DC2* !*/Cluster*",
-			includes: []string{"/DC1* DC2* !*/Cluster*"},
-			valid:    true,
+		"/DC1* DC2* !*/Cluster*": {
+			valid: true,
 			expected: andHostMatcher{
-				lhs: hostDcMatcher{mustSimplePattern("DC1* DC2* !*")},
-				rhs: hostClusterMatcher{mustSimplePattern("Cluster*")},
+				lhs: hostDCMatcher{mustSP("DC1* DC2* !*")},
+				rhs: hostClusterMatcher{mustSP("Cluster*")},
 			},
 		},
-		{
-			name:     "/*/*/HOST1*",
-			includes: []string{"/*/*/HOST1*"},
-			valid:    true,
+		"/*/*/HOST1*": {
+			valid: true,
 			expected: andHostMatcher{
 				lhs: andHostMatcher{
-					lhs: hostDcMatcher{matcher.TRUE()},
+					lhs: trueHostDC,
 					rhs: hostClusterMatcher{matcher.TRUE()},
 				},
-				rhs: hostHostMatcher{mustSimplePattern("HOST1*")},
+				rhs: hostHostMatcher{mustSP("HOST1*")},
 			},
 		},
-		{
-			name:     "/*/*/HOST1*/*/*",
-			includes: []string{"/*/*/HOST1*/*/*"},
-			valid:    true,
+		"/*/*/HOST1*/*/*": {
+			valid: true,
 			expected: andHostMatcher{
 				lhs: andHostMatcher{
-					lhs: hostDcMatcher{matcher.TRUE()},
+					lhs: trueHostDC,
 					rhs: hostClusterMatcher{matcher.TRUE()},
 				},
-				rhs: hostHostMatcher{mustSimplePattern("HOST1*")},
+				rhs: hostHostMatcher{mustSP("HOST1*")},
 			},
 		},
-		{
-			name:     "[/DC1*, /DC2*]",
-			includes: []string{"/DC1*", "/DC2*"},
-			valid:    true,
+		"[/DC1*,/DC2*]": {
+			valid: true,
 			expected: orHostMatcher{
-				lhs: hostDcMatcher{mustSimplePattern("DC1*")},
-				rhs: hostDcMatcher{mustSimplePattern("DC2*")},
+				lhs: hostDCMatcher{mustSP("DC1*")},
+				rhs: hostDCMatcher{mustSP("DC2*")},
 			},
 		},
-		{
-			name:     "[/DC1*, /DC2*, /DC3/Cluster1*/H*]",
-			includes: []string{"/DC1*", "/DC2*", "/DC3*/Cluster1*/H*"},
-			valid:    true,
+		"[/DC1*,/DC2*,/DC3*/Cluster1*/H*]": {
+			valid: true,
 			expected: orHostMatcher{
 				lhs: orHostMatcher{
-					lhs: hostDcMatcher{mustSimplePattern("DC1*")},
-					rhs: hostDcMatcher{mustSimplePattern("DC2*")},
+					lhs: hostDCMatcher{mustSP("DC1*")},
+					rhs: hostDCMatcher{mustSP("DC2*")},
 				},
 				rhs: andHostMatcher{
 					lhs: andHostMatcher{
-						lhs: hostDcMatcher{mustSimplePattern("DC3*")},
-						rhs: hostClusterMatcher{mustSimplePattern("Cluster1*")},
+						lhs: hostDCMatcher{mustSP("DC3*")},
+						rhs: hostClusterMatcher{mustSP("Cluster1*")},
 					},
-					rhs: hostHostMatcher{mustSimplePattern("H*")},
+					rhs: hostHostMatcher{mustSP("H*")},
 				},
 			},
 		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			m, err := test.includes.Parse()
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			includes := prepareIncludes(name)
+			m, err := HostIncludes(includes).Parse()
+
 			if !test.valid {
 				assert.Error(t, err)
-				return
+			} else {
+				assert.Equal(t, test.expected, m)
 			}
-			assert.Equal(t, test.expected, m)
 		})
 	}
 }
 
 func TestVMIncludes_Parse(t *testing.T) {
-	tests := []struct {
-		name     string
+	tests := map[string]struct {
 		valid    bool
-		includes VMIncludes
+		includes []string
 		expected VMMatcher
 	}{
-		{
-			name:     "",
-			includes: []string{""},
-			valid:    false,
-		},
-		{
-			name:     "*/C1/H1/V1",
-			includes: []string{"*/C1/H1/V1"},
-			valid:    false,
-		},
-		{
-			name:     "/*",
-			includes: []string{"/*"},
-			valid:    true,
-			expected: vmDcMatcher{matcher.TRUE()},
-		},
-		{
-			name:     "/!*",
-			includes: []string{"/!*"},
-			valid:    true,
-			expected: vmDcMatcher{matcher.FALSE()},
-		},
-		{
-			name:     "/!*/",
-			includes: []string{"/!*/"},
-			valid:    true,
-			expected: vmDcMatcher{matcher.FALSE()},
-		},
-		{
-			name:     "/!*/ ",
-			includes: []string{"/!*/ "},
-			valid:    true,
+		"":           {valid: false},
+		"*/C1/H1/V1": {valid: false},
+		"/*":         {valid: true, expected: trueVMDC},
+		"/!*":        {valid: true, expected: falseVMDC},
+		"/!*/":       {valid: true, expected: falseVMDC},
+		"/!*/ ": {
+			valid: true,
 			expected: andVMMatcher{
-				lhs: vmDcMatcher{matcher.FALSE()},
+				lhs: falseVMDC,
 				rhs: vmClusterMatcher{matcher.FALSE()},
 			},
 		},
-		{
-			name:     "/DC1* DC2* !*/Cluster*",
-			includes: []string{"/DC1* DC2* !*/Cluster*"},
-			valid:    true,
+		"/DC1* DC2* !*/Cluster*": {
+			valid: true,
 			expected: andVMMatcher{
-				lhs: vmDcMatcher{mustSimplePattern("DC1* DC2* !*")},
-				rhs: vmClusterMatcher{mustSimplePattern("Cluster*")},
+				lhs: vmDCMatcher{mustSP("DC1* DC2* !*")},
+				rhs: vmClusterMatcher{mustSP("Cluster*")},
 			},
 		},
-		{
-			name:     "/*/*/HOST1",
-			includes: []string{"/*/*/HOST1"},
-			valid:    true,
+		"/*/*/HOST1": {
+			valid: true,
 			expected: andVMMatcher{
 				lhs: andVMMatcher{
-					lhs: vmDcMatcher{matcher.TRUE()},
+					lhs: trueVMDC,
 					rhs: vmClusterMatcher{matcher.TRUE()},
 				},
-				rhs: vmHostMatcher{mustSimplePattern("HOST1")},
+				rhs: vmHostMatcher{mustSP("HOST1")},
 			},
 		},
-		{
-			name:     "/*/*/HOST1*/*/*",
-			includes: []string{"/*/*/HOST1*/*/*"},
-			valid:    true,
+		"/*/*/HOST1*/*/*": {
+			valid: true,
 			expected: andVMMatcher{
 				lhs: andVMMatcher{
 					lhs: andVMMatcher{
-						lhs: vmDcMatcher{matcher.TRUE()},
+						lhs: trueVMDC,
 						rhs: vmClusterMatcher{matcher.TRUE()},
 					},
-					rhs: vmHostMatcher{mustSimplePattern("HOST1*")},
+					rhs: vmHostMatcher{mustSP("HOST1*")},
 				},
 				rhs: vmVMMatcher{matcher.TRUE()},
 			},
 		},
-		{
-			name:     "[/DC1*, /DC2*]",
-			includes: []string{"/DC1*", "/DC2*"},
-			valid:    true,
+		"[/DC1*,/DC2*]": {
+			valid: true,
 			expected: orVMMatcher{
-				lhs: vmDcMatcher{mustSimplePattern("DC1*")},
-				rhs: vmDcMatcher{mustSimplePattern("DC2*")},
+				lhs: vmDCMatcher{mustSP("DC1*")},
+				rhs: vmDCMatcher{mustSP("DC2*")},
 			},
 		},
-		{
-			name:     "[/DC1*, /DC2*, /DC3*/Cluster1*/H*/VM*]",
-			includes: []string{"/DC1*", "/DC2*", "/DC3*/Cluster1*/H*/VM*"},
-			valid:    true,
+		"[/DC1*,/DC2*,/DC3*/Cluster1*/H*/VM*]": {
+			valid: true,
 			expected: orVMMatcher{
 				lhs: orVMMatcher{
-					lhs: vmDcMatcher{mustSimplePattern("DC1*")},
-					rhs: vmDcMatcher{mustSimplePattern("DC2*")},
+					lhs: vmDCMatcher{mustSP("DC1*")},
+					rhs: vmDCMatcher{mustSP("DC2*")},
 				},
 				rhs: andVMMatcher{
 					lhs: andVMMatcher{
 						lhs: andVMMatcher{
-							lhs: vmDcMatcher{mustSimplePattern("DC3*")},
-							rhs: vmClusterMatcher{mustSimplePattern("Cluster1*")},
+							lhs: vmDCMatcher{mustSP("DC3*")},
+							rhs: vmClusterMatcher{mustSP("Cluster1*")},
 						},
-						rhs: vmHostMatcher{mustSimplePattern("H*")},
+						rhs: vmHostMatcher{mustSP("H*")},
 					},
-					rhs: vmVMMatcher{mustSimplePattern("VM*")},
+					rhs: vmVMMatcher{mustSP("VM*")},
 				},
 			},
 		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			m, err := test.includes.Parse()
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			includes := prepareIncludes(name)
+			m, err := VMIncludes(includes).Parse()
+
 			if !test.valid {
 				assert.Error(t, err)
-				return
+			} else {
+				assert.Equal(t, test.expected, m)
 			}
-			assert.Equal(t, test.expected, m)
 		})
 	}
 }
 
-func mustSimplePattern(expr string) matcher.Matcher {
+func prepareIncludes(include string) (prepared []string) {
+	trimmed := strings.Trim(include, "[]")
+	for _, v := range strings.Split(trimmed, ",") {
+		prepared = append(prepared, v)
+	}
+	return prepared
+}
+
+func mustSP(expr string) matcher.Matcher {
 	return matcher.Must(matcher.NewSimplePatternsMatcher(expr))
 }

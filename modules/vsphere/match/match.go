@@ -17,10 +17,10 @@ type VMMatcher interface {
 }
 
 type (
-	hostDcMatcher      struct{ m matcher.Matcher }
+	hostDCMatcher      struct{ m matcher.Matcher }
 	hostClusterMatcher struct{ m matcher.Matcher }
 	hostHostMatcher    struct{ m matcher.Matcher }
-	vmDcMatcher        struct{ m matcher.Matcher }
+	vmDCMatcher        struct{ m matcher.Matcher }
 	vmClusterMatcher   struct{ m matcher.Matcher }
 	vmHostMatcher      struct{ m matcher.Matcher }
 	vmVMMatcher        struct{ m matcher.Matcher }
@@ -30,58 +30,56 @@ type (
 	andVMMatcher       struct{ lhs, rhs VMMatcher }
 )
 
-func (m hostDcMatcher) Match(host *rs.Host) bool { return m.m.MatchString(host.Hier.Dc.Name) }
-
+func (m hostDCMatcher) Match(host *rs.Host) bool      { return m.m.MatchString(host.Hier.Dc.Name) }
 func (m hostClusterMatcher) Match(host *rs.Host) bool { return m.m.MatchString(host.Hier.Cluster.Name) }
-
-func (m hostHostMatcher) Match(host *rs.Host) bool { return m.m.MatchString(host.Name) }
-
-func (m vmDcMatcher) Match(vm *rs.VM) bool { return m.m.MatchString(vm.Hier.Dc.Name) }
-
-func (m vmClusterMatcher) Match(vm *rs.VM) bool { return m.m.MatchString(vm.Hier.Cluster.Name) }
-
-func (m vmHostMatcher) Match(vm *rs.VM) bool { return m.m.MatchString(vm.Hier.Host.Name) }
-
-func (m vmVMMatcher) Match(vm *rs.VM) bool { return m.m.MatchString(vm.Name) }
-
-func (m orHostMatcher) Match(host *rs.Host) bool { return m.lhs.Match(host) || m.rhs.Match(host) }
-
-func (m orVMMatcher) Match(vm *rs.VM) bool { return m.lhs.Match(vm) || m.rhs.Match(vm) }
-
-func (m andHostMatcher) Match(host *rs.Host) bool { return m.lhs.Match(host) && m.rhs.Match(host) }
-
-func (m andVMMatcher) Match(vm *rs.VM) bool { return m.lhs.Match(vm) && m.rhs.Match(vm) }
+func (m hostHostMatcher) Match(host *rs.Host) bool    { return m.m.MatchString(host.Name) }
+func (m vmDCMatcher) Match(vm *rs.VM) bool            { return m.m.MatchString(vm.Hier.Dc.Name) }
+func (m vmClusterMatcher) Match(vm *rs.VM) bool       { return m.m.MatchString(vm.Hier.Cluster.Name) }
+func (m vmHostMatcher) Match(vm *rs.VM) bool          { return m.m.MatchString(vm.Hier.Host.Name) }
+func (m vmVMMatcher) Match(vm *rs.VM) bool            { return m.m.MatchString(vm.Name) }
+func (m orHostMatcher) Match(host *rs.Host) bool      { return m.lhs.Match(host) || m.rhs.Match(host) }
+func (m orVMMatcher) Match(vm *rs.VM) bool            { return m.lhs.Match(vm) || m.rhs.Match(vm) }
+func (m andHostMatcher) Match(host *rs.Host) bool     { return m.lhs.Match(host) && m.rhs.Match(host) }
+func (m andVMMatcher) Match(vm *rs.VM) bool           { return m.lhs.Match(vm) && m.rhs.Match(vm) }
 
 func newAndHostMatcher(lhs, rhs HostMatcher, others ...HostMatcher) andHostMatcher {
 	m := andHostMatcher{lhs: lhs, rhs: rhs}
-	if len(others) > 0 {
+	switch len(others) {
+	case 0:
+		return m
+	default:
 		return newAndHostMatcher(m, others[0], others[1:]...)
 	}
-	return m
 }
 
 func newAndVMMatcher(lhs, rhs VMMatcher, others ...VMMatcher) andVMMatcher {
 	m := andVMMatcher{lhs: lhs, rhs: rhs}
-	if len(others) > 0 {
+	switch len(others) {
+	case 0:
+		return m
+	default:
 		return newAndVMMatcher(m, others[0], others[1:]...)
 	}
-	return m
 }
 
 func newOrHostMatcher(lhs, rhs HostMatcher, others ...HostMatcher) orHostMatcher {
 	m := orHostMatcher{lhs: lhs, rhs: rhs}
-	if len(others) > 0 {
+	switch len(others) {
+	case 0:
+		return m
+	default:
 		return newOrHostMatcher(m, others[0], others[1:]...)
 	}
-	return m
 }
 
 func newOrVMMatcher(lhs, rhs VMMatcher, others ...VMMatcher) orVMMatcher {
 	m := orVMMatcher{lhs: lhs, rhs: rhs}
-	if len(others) > 0 {
+	switch len(others) {
+	case 0:
+		return m
+	default:
 		return newOrVMMatcher(m, others[0], others[1:]...)
 	}
-	return m
 }
 
 type (
@@ -92,7 +90,7 @@ type (
 func (vi VMIncludes) Parse() (VMMatcher, error) {
 	var ms []VMMatcher
 	for _, v := range vi {
-		m, err := parseVMIncludeString(v)
+		m, err := parseVMInclude(v)
 		if err != nil {
 			return nil, err
 		}
@@ -115,7 +113,7 @@ func (vi VMIncludes) Parse() (VMMatcher, error) {
 func (hi HostIncludes) Parse() (HostMatcher, error) {
 	var ms []HostMatcher
 	for _, v := range hi {
-		m, err := parseHostIncludeString(v)
+		m, err := parseHostInclude(v)
 		if err != nil {
 			return nil, err
 		}
@@ -136,34 +134,40 @@ func (hi HostIncludes) Parse() (HostMatcher, error) {
 }
 
 const (
-	datacenter = iota
-	cluster
-	host
-	vm
+	datacenterIdx = iota
+	clusterIdx
+	hostIdx
+	vmIdx
 )
 
-func parseHostIncludeString(s string) (HostMatcher, error) {
-	if !isValidIncludeFormat(s) {
-		return nil, fmt.Errorf("bad format : %s", s)
+func cleanInclude(include string) string {
+	return strings.Trim(include, "/")
+}
+
+func parseHostInclude(include string) (HostMatcher, error) {
+	if !isIncludeFormatValid(include) {
+		return nil, fmt.Errorf("bad include format: %s", include)
 	}
-	s = strings.Trim(s, "/")
-	// /dc/cluster/host
-	parts := strings.Split(s, "/")
+
+	include = cleanInclude(include)
+	parts := strings.Split(include, "/") // /dc/clusterIdx/hostIdx
 	var ms []HostMatcher
+
 	for i, v := range parts {
-		m, err := parseMatchSubString(v)
+		m, err := parseSubInclude(v)
 		if err != nil {
 			return nil, err
 		}
 		switch i {
-		case datacenter:
-			ms = append(ms, hostDcMatcher{m})
-		case cluster:
+		case datacenterIdx:
+			ms = append(ms, hostDCMatcher{m})
+		case clusterIdx:
 			ms = append(ms, hostClusterMatcher{m})
-		case host:
+		case hostIdx:
 			ms = append(ms, hostHostMatcher{m})
 		}
 	}
+
 	switch len(ms) {
 	case 0:
 		return nil, nil
@@ -174,30 +178,32 @@ func parseHostIncludeString(s string) (HostMatcher, error) {
 	}
 }
 
-func parseVMIncludeString(s string) (VMMatcher, error) {
-	if !isValidIncludeFormat(s) {
-		return nil, fmt.Errorf("bad format : %s", s)
+func parseVMInclude(include string) (VMMatcher, error) {
+	if !isIncludeFormatValid(include) {
+		return nil, fmt.Errorf("bad include format: %s", include)
 	}
-	s = strings.Trim(s, "/")
-	// /dc/cluster/host/vm
-	parts := strings.Split(s, "/")
+
+	include = cleanInclude(include)
+	parts := strings.Split(include, "/") // /dc/clusterIdx/hostIdx/vmIdx
 	var ms []VMMatcher
+
 	for i, v := range parts {
-		m, err := parseMatchSubString(v)
+		m, err := parseSubInclude(v)
 		if err != nil {
 			return nil, err
 		}
 		switch i {
-		case datacenter:
-			ms = append(ms, vmDcMatcher{m})
-		case cluster:
+		case datacenterIdx:
+			ms = append(ms, vmDCMatcher{m})
+		case clusterIdx:
 			ms = append(ms, vmClusterMatcher{m})
-		case host:
+		case hostIdx:
 			ms = append(ms, vmHostMatcher{m})
-		case vm:
+		case vmIdx:
 			ms = append(ms, vmVMMatcher{m})
 		}
 	}
+
 	switch len(ms) {
 	case 0:
 		return nil, nil
@@ -208,7 +214,7 @@ func parseVMIncludeString(s string) (VMMatcher, error) {
 	}
 }
 
-func parseMatchSubString(sub string) (matcher.Matcher, error) {
+func parseSubInclude(sub string) (matcher.Matcher, error) {
 	sub = strings.TrimSpace(sub)
 	if sub == "" || sub == "!*" {
 		return matcher.FALSE(), nil
@@ -219,6 +225,6 @@ func parseMatchSubString(sub string) (matcher.Matcher, error) {
 	return matcher.NewSimplePatternsMatcher(sub)
 }
 
-func isValidIncludeFormat(line string) bool {
+func isIncludeFormatValid(line string) bool {
 	return strings.HasPrefix(line, "/")
 }

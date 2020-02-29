@@ -14,25 +14,25 @@ import (
 	"github.com/vmware/govmomi/vim25/types"
 )
 
-type APIClient interface {
+type Client interface {
 	Version() string
 	PerformanceMetrics([]types.PerfQuerySpec) ([]performance.EntityMetric, error)
 }
 
-func NewVSphereMetricScraper(client APIClient) *VSphereMetricScraper {
-	v := &VSphereMetricScraper{APIClient: client}
+func New(client Client) *Scraper {
+	v := &Scraper{Client: client}
 	v.calcMaxQuery()
 	return v
 }
 
-type VSphereMetricScraper struct {
+type Scraper struct {
 	*logger.Logger
-	APIClient
+	Client
 	maxQuery int
 }
 
 // Default settings for vCenter 6.5 and above is 256, prior versions of vCenter have this set to 64.
-func (c *VSphereMetricScraper) calcMaxQuery() {
+func (c *Scraper) calcMaxQuery() {
 	major, minor, err := parseVersion(c.Version())
 	if err != nil || major < 6 || minor == 0 {
 		c.maxQuery = 64
@@ -41,7 +41,7 @@ func (c *VSphereMetricScraper) calcMaxQuery() {
 	c.maxQuery = 256
 }
 
-func (c VSphereMetricScraper) ScrapeHostsMetrics(hosts rs.Hosts) []performance.EntityMetric {
+func (c Scraper) ScrapeHosts(hosts rs.Hosts) []performance.EntityMetric {
 	t := time.Now()
 	pqs := newHostsPerfQuerySpecs(hosts)
 	ms := c.scrapeMetrics(pqs)
@@ -53,7 +53,7 @@ func (c VSphereMetricScraper) ScrapeHostsMetrics(hosts rs.Hosts) []performance.E
 	return ms
 }
 
-func (c VSphereMetricScraper) ScrapeVMsMetrics(vms rs.VMs) []performance.EntityMetric {
+func (c Scraper) ScrapeVMs(vms rs.VMs) []performance.EntityMetric {
 	t := time.Now()
 	pqs := newVMsPerfQuerySpecs(vms)
 	ms := c.scrapeMetrics(pqs)
@@ -65,8 +65,7 @@ func (c VSphereMetricScraper) ScrapeVMsMetrics(vms rs.VMs) []performance.EntityM
 	return ms
 }
 
-func (c VSphereMetricScraper) scrapeMetrics(pqs []types.PerfQuerySpec) []performance.EntityMetric {
-	// TODO: hardcoded
+func (c Scraper) scrapeMetrics(pqs []types.PerfQuerySpec) []performance.EntityMetric {
 	tc := newThrottledCaller(5)
 	var ms []performance.EntityMetric
 	lock := &sync.Mutex{}
@@ -84,7 +83,7 @@ func (c VSphereMetricScraper) scrapeMetrics(pqs []types.PerfQuerySpec) []perform
 	return ms
 }
 
-func (c VSphereMetricScraper) scrape(metrics *[]performance.EntityMetric, lock *sync.Mutex, pqs []types.PerfQuerySpec) {
+func (c Scraper) scrape(metrics *[]performance.EntityMetric, lock *sync.Mutex, pqs []types.PerfQuerySpec) {
 	m, err := c.PerformanceMetrics(pqs)
 	if err != nil {
 		c.Error(err)
@@ -114,7 +113,7 @@ const (
 )
 
 func newHostsPerfQuerySpecs(hosts rs.Hosts) []types.PerfQuerySpec {
-	var pqs []types.PerfQuerySpec
+	pqs := make([]types.PerfQuerySpec, 0, len(hosts))
 	for _, host := range hosts {
 		pq := types.PerfQuerySpec{
 			Entity:     host.Ref,
@@ -129,7 +128,7 @@ func newHostsPerfQuerySpecs(hosts rs.Hosts) []types.PerfQuerySpec {
 }
 
 func newVMsPerfQuerySpecs(vms rs.VMs) []types.PerfQuerySpec {
-	var pqs []types.PerfQuerySpec
+	pqs := make([]types.PerfQuerySpec, 0, len(vms))
 	for _, vm := range vms {
 		pq := types.PerfQuerySpec{
 			Entity:     vm.Ref,
@@ -149,8 +148,10 @@ func parseVersion(version string) (major, minor int, err error) {
 		return 0, 0, fmt.Errorf("unparsable version string : %s", version)
 	}
 	if major, err = strconv.Atoi(parts[0]); err != nil {
-		return
+		return 0, 0, err
 	}
-	minor, err = strconv.Atoi(parts[1])
-	return
+	if minor, err = strconv.Atoi(parts[1]); err != nil {
+		return 0, 0, err
+	}
+	return major, minor, nil
 }

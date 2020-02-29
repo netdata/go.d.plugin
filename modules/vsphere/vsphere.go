@@ -1,6 +1,7 @@
 package vsphere
 
 import (
+	"errors"
 	"sync"
 	"time"
 
@@ -52,9 +53,9 @@ type discoverer interface {
 	Discover() (*rs.Resources, error)
 }
 
-type metricScraper interface {
-	ScrapeHostsMetrics(rs.Hosts) []performance.EntityMetric
-	ScrapeVMsMetrics(rs.VMs) []performance.EntityMetric
+type scraper interface {
+	ScrapeHosts(rs.Hosts) []performance.EntityMetric
+	ScrapeVMs(rs.VMs) []performance.EntityMetric
 }
 
 type Config struct {
@@ -70,7 +71,7 @@ type VSphere struct {
 	Config      `yaml:",inline"`
 
 	discoverer
-	metricScraper
+	scraper
 
 	collectionLock  *sync.RWMutex
 	resources       *rs.Resources
@@ -88,7 +89,7 @@ func (vs *VSphere) Cleanup() {
 	vs.discoveryTask.stop()
 }
 
-func (vs VSphere) createVSphereClient() (*client.Client, error) {
+func (vs VSphere) createClient() (*client.Client, error) {
 	config := client.Config{
 		URL:             vs.UserURL,
 		User:            vs.Username,
@@ -99,8 +100,8 @@ func (vs VSphere) createVSphereClient() (*client.Client, error) {
 	return client.New(config)
 }
 
-func (vs *VSphere) createVSphereDiscoverer(c *client.Client) error {
-	d := discover.NewVSphereDiscoverer(c)
+func (vs *VSphere) createDiscoverer(c *client.Client) error {
+	d := discover.New(c)
 	d.Logger = vs.Logger
 
 	hm, err := vs.HostsInclude.Parse()
@@ -122,53 +123,52 @@ func (vs *VSphere) createVSphereDiscoverer(c *client.Client) error {
 	return nil
 }
 
-func (vs *VSphere) createVSphereMetricScraper(c *client.Client) {
-	ms := scrape.NewVSphereMetricScraper(c)
+func (vs *VSphere) createScraper(c *client.Client) {
+	ms := scrape.New(c)
 	ms.Logger = vs.Logger
-	vs.metricScraper = ms
+	vs.scraper = ms
 }
 
 const (
 	minRecommendedUpdateEvery = 20
 )
 
-func (vs VSphere) checkConfigParams() bool {
+func (vs VSphere) validateConfig() error {
 	if vs.UserURL == "" {
-		vs.Error("no URL set")
-		return false
+		return errors.New("URL is not set")
 	}
 	if vs.Username == "" || vs.Password == "" {
-		vs.Errorf("no username or password set")
-		return false
+		return errors.New("username or password not set")
 	}
 	if vs.UpdateEvery < minRecommendedUpdateEvery {
 		vs.Warningf("update_every is to low, minimum recommended is %d", minRecommendedUpdateEvery)
 	}
-	return true
+	return nil
 }
 
 func (vs *VSphere) Init() bool {
-	if !vs.checkConfigParams() {
+	if err := vs.validateConfig(); err != nil {
+		vs.Errorf("error on validating config: %v", err)
 		return false
 	}
 
-	c, err := vs.createVSphereClient()
+	c, err := vs.createClient()
 	if err != nil {
-		vs.Errorf("error on creating vsphere client : %v", err)
+		vs.Errorf("error on creating vsphere client: %v", err)
 		return false
 	}
 
-	err = vs.createVSphereDiscoverer(c)
+	err = vs.createDiscoverer(c)
 	if err != nil {
-		vs.Errorf("error on creating vsphere discoverer : %v", err)
+		vs.Errorf("error on creating vsphere discoverer: %v", err)
 		return false
 	}
 
-	vs.createVSphereMetricScraper(c)
+	vs.createScraper(c)
 
 	err = vs.discoverOnce()
 	if err != nil {
-		vs.Errorf("error on discovering : %v", err)
+		vs.Errorf("error on discovering: %v", err)
 		return false
 	}
 	vs.goDiscovery()
@@ -186,7 +186,6 @@ func (vs VSphere) Charts() *Charts {
 
 func (vs *VSphere) Collect() map[string]int64 {
 	mx, err := vs.collect()
-
 	if err != nil {
 		vs.Error(err)
 	}
@@ -194,6 +193,5 @@ func (vs *VSphere) Collect() map[string]int64 {
 	if len(mx) == 0 {
 		return nil
 	}
-
 	return mx
 }

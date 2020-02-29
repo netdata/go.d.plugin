@@ -6,7 +6,7 @@ import (
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 )
 
-func (d VSphereDiscoverer) setHierarchy(res *rs.Resources) error {
+func (d Discoverer) setHierarchy(res *rs.Resources) error {
 	d.Debug("discovering : hierarchy : start setting resources hierarchy process")
 	t := time.Now()
 
@@ -25,7 +25,7 @@ func (d VSphereDiscoverer) setHierarchy(res *rs.Resources) error {
 	return nil
 }
 
-func (d VSphereDiscoverer) setClustersHierarchy(res *rs.Resources) (set int) {
+func (d Discoverer) setClustersHierarchy(res *rs.Resources) (set int) {
 	for _, cluster := range res.Clusters {
 		if setClusterHierarchy(cluster, res) {
 			set++
@@ -34,7 +34,7 @@ func (d VSphereDiscoverer) setClustersHierarchy(res *rs.Resources) (set int) {
 	return set
 }
 
-func (d VSphereDiscoverer) setHostsHierarchy(res *rs.Resources) (set int) {
+func (d Discoverer) setHostsHierarchy(res *rs.Resources) (set int) {
 	for _, host := range res.Hosts {
 		if setHostHierarchy(host, res) {
 			set++
@@ -43,7 +43,7 @@ func (d VSphereDiscoverer) setHostsHierarchy(res *rs.Resources) (set int) {
 	return set
 }
 
-func (d VSphereDiscoverer) setVMsHierarchy(res *rs.Resources) (set int) {
+func (d Discoverer) setVMsHierarchy(res *rs.Resources) (set int) {
 	for _, vm := range res.VMs {
 		if setVMHierarchy(vm, res) {
 			set++

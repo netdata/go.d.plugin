@@ -13,7 +13,7 @@ import (
 	"github.com/vmware/govmomi/vim25/types"
 )
 
-type APIClient interface {
+type Client interface {
 	Datacenters(pathSet ...string) ([]mo.Datacenter, error)
 	Folders(pathSet ...string) ([]mo.Folder, error)
 	ComputeResources(pathSet ...string) ([]mo.ComputeResource, error)
@@ -23,15 +23,15 @@ type APIClient interface {
 	CounterInfoByName() (map[string]*types.PerfCounterInfo, error)
 }
 
-func NewVSphereDiscoverer(client APIClient) *VSphereDiscoverer {
-	return &VSphereDiscoverer{
-		APIClient: client,
+func New(client Client) *Discoverer {
+	return &Discoverer{
+		Client: client,
 	}
 }
 
-type VSphereDiscoverer struct {
+type Discoverer struct {
 	*logger.Logger
-	APIClient
+	Client
 	match.HostMatcher
 	match.VMMatcher
 }
@@ -44,7 +44,7 @@ type resources struct {
 	vms      []mo.VirtualMachine
 }
 
-func (d VSphereDiscoverer) Discover() (*rs.Resources, error) {
+func (d Discoverer) Discover() (*rs.Resources, error) {
 	startTime := time.Now()
 	raw, err := d.discover()
 	if err != nil {
@@ -90,7 +90,7 @@ var (
 	vmPathSet         = []string{"name", "runtime.host", "runtime.powerState", "summary.overallStatus"}
 )
 
-func (d VSphereDiscoverer) discover() (*resources, error) {
+func (d Discoverer) discover() (*resources, error) {
 	d.Debug("discovering : starting resource discovering process")
 
 	start := time.Now()

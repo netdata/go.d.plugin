@@ -15,234 +15,146 @@ import (
 	"github.com/vmware/govmomi/vim25/types"
 )
 
-func newTestClient(vCenterURL *url.URL) (*Client, error) {
-	return New(Config{
-		URL:             vCenterURL.String(),
-		User:            "admin",
-		Password:        "password",
-		Timeout:         time.Second * 3,
-		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
-	})
-}
-
-func createSim() (*simulator.Model, *simulator.Server, error) {
-	model := simulator.VPX()
-
-	err := model.Create()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	model.Service.TLS = new(tls.Config)
-
-	s := model.Service.NewServer()
-	return model, s, nil
-}
-
 func TestNew(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	assert.NotNil(t, c.client)
-	assert.NotNil(t, c.root)
-	assert.NotNil(t, c.perf)
-	v, err := c.IsSessionActive()
+	v, err := client.IsSessionActive()
 	assert.NoError(t, err)
 	assert.True(t, v)
 }
 
 func TestClient_Version(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	assert.NotEmpty(t, c.Version())
+	assert.NotEmpty(t, client.Version())
 }
 
 func TestClient_CounterInfoByName(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	v, err := c.CounterInfoByName()
+	v, err := client.CounterInfoByName()
 	assert.NoError(t, err)
 	assert.IsType(t, map[string]*types.PerfCounterInfo{}, v)
 	assert.NotEmpty(t, v)
 }
 
 func TestClient_IsSessionActive(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	v, err := c.IsSessionActive()
+	v, err := client.IsSessionActive()
 	assert.NoError(t, err)
 	assert.True(t, v)
 }
 
 func TestClient_Login(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
+	assert.NoError(t, client.Logout())
 
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	err = c.Logout()
+	err := client.Login(url.UserPassword("admin", "password"))
 	assert.NoError(t, err)
 
-	v, err := c.IsSessionActive()
+	ok, err := client.IsSessionActive()
 	assert.NoError(t, err)
-	assert.False(t, v)
-
-	err = c.Login(url.UserPassword("admin", "password"))
-	assert.NoError(t, err)
-
-	v, err = c.IsSessionActive()
-	assert.NoError(t, err)
-	assert.True(t, v)
+	assert.True(t, ok)
 }
 
 func TestClient_Logout(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
+	assert.NoError(t, client.Logout())
 
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	v, err := c.IsSessionActive()
-	assert.NoError(t, err)
-	assert.True(t, v)
-
-	err = c.Logout()
-	assert.NoError(t, err)
-
-	v, err = c.IsSessionActive()
+	v, err := client.IsSessionActive()
 	assert.NoError(t, err)
 	assert.False(t, v)
 }
 
 func TestClient_Datacenters(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	dcs, err := c.Datacenters()
+	dcs, err := client.Datacenters()
 	assert.NoError(t, err)
-	assert.IsType(t, []mo.Datacenter{}, dcs)
 	assert.NotEmpty(t, dcs)
 }
 
 func TestClient_Folders(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	folders, err := c.Folders()
+	folders, err := client.Folders()
 	assert.NoError(t, err)
-	assert.IsType(t, []mo.Folder{}, folders)
 	assert.NotEmpty(t, folders)
 }
 
 func TestClient_ComputeResources(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	computes, err := c.ComputeResources()
+	computes, err := client.ComputeResources()
 	assert.NoError(t, err)
-	assert.IsType(t, []mo.ComputeResource{}, computes)
 	assert.NotEmpty(t, computes)
 }
 
 func TestClient_Hosts(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	hosts, err := c.Hosts()
+	hosts, err := client.Hosts()
 	assert.NoError(t, err)
-	assert.IsType(t, []mo.HostSystem{}, hosts)
 	assert.NotEmpty(t, hosts)
 }
 
 func TestClient_VirtualMachines(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	vms, err := c.VirtualMachines()
+	vms, err := client.VirtualMachines()
 	assert.NoError(t, err)
-	assert.IsType(t, []mo.VirtualMachine{}, vms)
 	assert.NotEmpty(t, vms)
 }
 
 func TestClient_PerformanceMetrics(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
+	client, teardown := prepareClient(t)
+	defer teardown()
 
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
+	hosts, err := client.Hosts()
 	require.NoError(t, err)
-
-	hosts, err := c.Hosts()
-	require.NoError(t, err)
-	metrics, err := c.PerformanceMetrics(hostsPerfQuerySpecs(hosts))
+	metrics, err := client.PerformanceMetrics(hostsPerfQuerySpecs(hosts))
 	require.NoError(t, err)
 	assert.True(t, len(metrics) > 0)
+}
+
+func prepareClient(t *testing.T) (client *Client, teardown func()) {
+	model, srv := createSim(t)
+	teardown = func() { model.Remove(); srv.Close() }
+	return newClient(t, srv.URL), teardown
+}
+
+func newClient(t *testing.T, vCenterURL *url.URL) *Client {
+	client, err := New(Config{
+		URL:             vCenterURL.String(),
+		User:            "admin",
+		Password:        "password",
+		Timeout:         time.Second * 3,
+		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
+	})
+	require.NoError(t, err)
+	return client
+}
+
+func createSim(t *testing.T) (*simulator.Model, *simulator.Server) {
+	model := simulator.VPX()
+	err := model.Create()
+	require.NoError(t, err)
+	model.Service.TLS = new(tls.Config)
+	return model, model.Service.NewServer()
 }
 
 func hostsPerfQuerySpecs(hosts []mo.HostSystem) []types.PerfQuerySpec {
