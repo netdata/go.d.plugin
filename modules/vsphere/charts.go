@@ -340,64 +340,70 @@ var (
 	}
 )
 
-func (vs *VSphere) updateHostsCharts(collected map[string]bool) {
-	for k := range collected {
-		if vs.charted[k] {
+func (vs *VSphere) updateHostsCharts(collected map[string]string) {
+	for id, userID := range collected {
+		if vs.charted[userID] {
 			continue
 		}
-		h := vs.resources.Hosts.Get(k)
+		h := vs.resources.Hosts.Get(id)
 		if h == nil {
 			continue
 		}
-		vs.charted[k] = true
-		cs := newHostCharts(h)
-		panicIf(vs.charts.Add(*cs...))
+		vs.charted[userID] = true
+
+		cs := newHostCharts(h, userID)
+		if err := vs.charts.Add(*cs...); err != nil {
+			vs.Error(err)
+		}
 	}
 }
 
-func newHostCharts(host *rs.Host) *Charts {
+func newHostCharts(host *rs.Host, userID string) *Charts {
 	cs := hostCharts.Copy()
 	for i, c := range *cs {
-		setHostChart(c, host, hostPrio+i)
+		setHostChart(c, host, userID, hostPrio+i)
 	}
 	return cs
 }
 
-func setHostChart(chart *Chart, host *rs.Host, prio int) {
+func setHostChart(chart *Chart, host *rs.Host, userID string, prio int) {
 	chart.Priority = prio
-	chart.ID = fmt.Sprintf(chart.ID, host.ID)
+	chart.ID = fmt.Sprintf(chart.ID, userID)
 	chart.Fam = fmt.Sprintf(chart.Fam, host.Name)
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, host.ID)
 	}
 }
 
-func (vs *VSphere) updateVMsCharts(collected map[string]bool) {
-	for k := range collected {
-		if vs.charted[k] {
+func (vs *VSphere) updateVMsCharts(collected map[string]string) {
+	for id, userID := range collected {
+		if vs.charted[userID] {
 			continue
 		}
-		v := vs.resources.VMs.Get(k)
-		if v == nil {
+		vm := vs.resources.VMs.Get(id)
+		if vm == nil {
 			continue
 		}
-		vs.charted[k] = true
-		cs := newVMCHarts(v)
-		panicIf(vs.charts.Add(*cs...))
+		vs.charted[userID] = true
+
+		cs := newVMCHarts(vm, userID)
+		if err := vs.charts.Add(*cs...); err != nil {
+			vs.Error(err)
+		}
 	}
 }
 
-func newVMCHarts(vm *rs.VM) *Charts {
+func newVMCHarts(vm *rs.VM, userID string) *Charts {
 	cs := vmCharts.Copy()
 	for i, c := range *cs {
-		setVMChart(c, vm, vmPrio+i)
+		setVMChart(c, vm, userID, vmPrio+i)
 	}
 	return cs
 }
 
-func setVMChart(chart *Chart, vm *rs.VM, prio int) {
+func setVMChart(chart *Chart, vm *rs.VM, userID string, prio int) {
 	chart.Priority = prio
-	chart.ID = fmt.Sprintf(chart.ID, vm.ID)
+	chart.ID = fmt.Sprintf(chart.ID, userID)
 	chart.Fam = fmt.Sprintf(chart.Fam, vm.Name, vm.Hier.Host.Name)
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, vm.ID)
