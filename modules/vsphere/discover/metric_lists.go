@@ -10,7 +10,7 @@ import (
 	"github.com/vmware/govmomi/vim25/types"
 )
 
-func (d VSphereDiscoverer) collectMetricLists(res *rs.Resources) error {
+func (d Discoverer) collectMetricLists(res *rs.Resources) error {
 	d.Debug("discovering : metric lists : starting resources metric lists collection process")
 	t := time.Now()
 	perfCounters, err := d.CounterInfoByName()

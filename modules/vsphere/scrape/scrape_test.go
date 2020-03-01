@@ -8,6 +8,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/modules/vsphere/client"
 	"github.com/netdata/go.d.plugin/modules/vsphere/discover"
+	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/stretchr/testify/assert"
@@ -15,66 +16,53 @@ import (
 	"github.com/vmware/govmomi/simulator"
 )
 
-func newTestClient(vCenterURL *url.URL) (*client.Client, error) {
-	return client.New(client.Config{
+func TestNew(t *testing.T) {
+}
+
+func TestScraper_ScrapeVMs(t *testing.T) {
+	s, res, teardown := prepareScraper(t)
+	defer teardown()
+
+	metrics := s.ScrapeVMs(res.VMs)
+	assert.Len(t, metrics, len(res.VMs))
+}
+
+func TestScraper_ScrapeHosts(t *testing.T) {
+	s, res, teardown := prepareScraper(t)
+	defer teardown()
+
+	metrics := s.ScrapeHosts(res.Hosts)
+	assert.Len(t, metrics, len(res.Hosts))
+}
+
+func prepareScraper(t *testing.T) (s *Scraper, res *rs.Resources, teardown func()) {
+	model, srv := createSim(t)
+	teardown = func() { model.Remove(); srv.Close() }
+
+	c := newClient(t, srv.URL)
+	d := discover.New(c)
+	res, err := d.Discover()
+	require.NoError(t, err)
+
+	return New(c), res, teardown
+}
+
+func newClient(t *testing.T, vCenterURL *url.URL) *client.Client {
+	c, err := client.New(client.Config{
 		URL:             vCenterURL.String(),
 		User:            "admin",
 		Password:        "password",
 		Timeout:         time.Second * 3,
 		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
 	})
+	require.NoError(t, err)
+	return c
 }
 
-func createSim() (*simulator.Model, *simulator.Server, error) {
+func createSim(t *testing.T) (*simulator.Model, *simulator.Server) {
 	model := simulator.VPX()
-
 	err := model.Create()
-	if err != nil {
-		return nil, nil, err
-	}
-
+	require.NoError(t, err)
 	model.Service.TLS = new(tls.Config)
-
-	s := model.Service.NewServer()
-	return model, s, nil
-}
-
-func TestNewVSphereMetricScraper(t *testing.T) {
-
-}
-
-func TestVSphereMetricScraper_ScrapeHostsMetrics(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	d := discover.NewVSphereDiscoverer(c)
-	res, err := d.Discover()
-	require.NoError(t, err)
-
-	mc := NewVSphereMetricScraper(c)
-	metrics := mc.ScrapeHostsMetrics(res.Hosts)
-	assert.Len(t, metrics, len(res.Hosts))
-}
-
-func TestVSphereMetricScraper_ScrapeVMsMetrics(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
-
-	c, err := newTestClient(srv.URL)
-	require.NoError(t, err)
-
-	d := discover.NewVSphereDiscoverer(c)
-	res, err := d.Discover()
-	require.NoError(t, err)
-
-	mc := NewVSphereMetricScraper(c)
-	metrics := mc.ScrapeVMsMetrics(res.VMs)
-	assert.Len(t, metrics, len(res.VMs))
+	return model, model.Service.NewServer()
 }

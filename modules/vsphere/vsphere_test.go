@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules/vsphere/discover"
+	"github.com/netdata/go.d.plugin/modules/vsphere/match"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -16,59 +17,75 @@ import (
 	"github.com/vmware/govmomi/simulator"
 )
 
-func newTestJob(vCenterURL string) *VSphere {
-	job := New()
-	job.Username = "administrator"
-	job.Password = "password"
-	job.UserURL = vCenterURL
-	job.InsecureSkipVerify = true
-	return job
-}
-
-func createSim() (*simulator.Model, *simulator.Server, error) {
-	model := simulator.VPX()
-
-	err := model.Create()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	model.Service.TLS = new(tls.Config)
-
-	s := model.Service.NewServer()
-	return model, s, nil
-}
-
 func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.NotNil(t, job.collectionLock)
-	assert.NotNil(t, job.discoveredHosts)
-	assert.NotNil(t, job.discoveredVMs)
-	assert.NotNil(t, job.charted)
 }
 
 func TestVSphere_Init(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
-	job := newTestJob(srv.URL.String())
-	defer job.Cleanup()
+	vSphere, _, teardown := prepareVSphereSim(t)
+	defer teardown()
 
-	assert.True(t, job.Init())
-	assert.NotNil(t, job.discoverer)
-	assert.NotNil(t, job.metricScraper)
-	assert.NotNil(t, job.resources)
-	assert.NotNil(t, job.discoveryTask)
-	assert.True(t, job.discoveryTask.isRunning())
+	assert.True(t, vSphere.Init())
+	assert.NotNil(t, vSphere.discoverer)
+	assert.NotNil(t, vSphere.scraper)
+	assert.NotNil(t, vSphere.resources)
+	assert.NotNil(t, vSphere.discoveryTask)
+	assert.True(t, vSphere.discoveryTask.isRunning())
 }
 
-func TestVSphere_Init_NG(t *testing.T) {
-	job := newTestJob("http://127.0.0.1:32001")
+func TestVSphere_Init_ReturnsFalseIfURLNotSet(t *testing.T) {
+	vSphere, _, teardown := prepareVSphereSim(t)
+	defer teardown()
+	vSphere.UserURL = ""
 
-	assert.False(t, job.Init())
+	assert.False(t, vSphere.Init())
+}
+
+func TestVSphere_Init_ReturnsFalseIfUsernameNotSet(t *testing.T) {
+	vSphere, _, teardown := prepareVSphereSim(t)
+	defer teardown()
+	vSphere.Username = ""
+
+	assert.False(t, vSphere.Init())
+}
+
+func TestVSphere_Init_ReturnsFalseIfPasswordNotSet(t *testing.T) {
+	vSphere, _, teardown := prepareVSphereSim(t)
+	defer teardown()
+	vSphere.Password = ""
+
+	assert.False(t, vSphere.Init())
+}
+
+func TestVSphere_Init_ReturnsFalseIfClientWrongTLSCA(t *testing.T) {
+	vSphere, _, teardown := prepareVSphereSim(t)
+	defer teardown()
+	vSphere.ClientTLSConfig.TLSCA = "testdata/tls"
+
+	assert.False(t, vSphere.Init())
+}
+
+func TestVSphere_Init_ReturnsFalseIfConnectionRefused(t *testing.T) {
+	vSphere, _, teardown := prepareVSphereSim(t)
+	defer teardown()
+	vSphere.UserURL = "http://127.0.0.1:32001"
+
+	assert.False(t, vSphere.Init())
+}
+
+func TestVSphere_Init_ReturnsFalseIfInvalidHostVMIncludeFormat(t *testing.T) {
+	vSphere, _, teardown := prepareVSphereSim(t)
+	defer teardown()
+
+	vSphere.HostsInclude = match.HostIncludes{"invalid"}
+	assert.False(t, vSphere.Init())
+
+	vSphere.HostsInclude = vSphere.HostsInclude[:0]
+
+	vSphere.VMsInclude = match.VMIncludes{"invalid"}
+	assert.False(t, vSphere.Init())
 }
 
 func TestVSphere_Check(t *testing.T) {
@@ -80,34 +97,29 @@ func TestVSphere_Charts(t *testing.T) {
 }
 
 func TestVSphere_Cleanup(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
-	job := newTestJob(srv.URL.String())
-	require.True(t, job.Init())
+	vSphere, _, teardown := prepareVSphereSim(t)
+	defer teardown()
 
-	job.Cleanup()
+	require.True(t, vSphere.Init())
+
+	vSphere.Cleanup()
 	time.Sleep(time.Second)
-	assert.True(t, job.discoveryTask.isStopped())
-	assert.False(t, job.discoveryTask.isRunning())
+	assert.True(t, vSphere.discoveryTask.isStopped())
+	assert.False(t, vSphere.discoveryTask.isRunning())
 }
 
-func TestVSphere_Cleanup_NotInited(t *testing.T) {
-	New().Cleanup()
+func TestVSphere_Cleanup_NotPanicsIfNotInitialized(t *testing.T) {
+	assert.NotPanics(t, New().Cleanup)
 }
 
 func TestVSphere_Collect(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
+	vSphere, model, teardown := prepareVSphereSim(t)
+	defer teardown()
 
-	job := newTestJob(srv.URL.String())
-	defer job.Cleanup()
-	require.True(t, job.Init())
-	require.True(t, job.Check())
-	job.metricScraper = testMetricScraper{job.metricScraper}
+	require.True(t, vSphere.Init())
+	require.True(t, vSphere.Check())
+
+	vSphere.scraper = mockScraper{vSphere.scraper}
 
 	expected := map[string]int64{
 		"host-20_cpu.usage.average":           100,
@@ -279,61 +291,65 @@ func TestVSphere_Collect(t *testing.T) {
 		"vm-62_overall.status":                1,
 		"vm-62_sys.uptime.latest":             200,
 	}
-	assert.Equal(t, expected, job.Collect())
 
+	collected := vSphere.Collect()
+	assert.Equal(t, expected, collected)
 	count := model.Count()
-	assert.Len(t, job.discoveredHosts, count.Host)
-	assert.Len(t, job.discoveredVMs, count.Machine)
-	assert.Len(t, job.charted, count.Host+count.Machine)
-	assert.Len(t, *job.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts))
+	assert.Len(t, vSphere.discoveredHosts, count.Host)
+	assert.Len(t, vSphere.discoveredVMs, count.Machine)
+	assert.Len(t, vSphere.charted, count.Host+count.Machine)
+	assert.Len(t, *vSphere.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts))
+	ensureCollectedHasAllChartsDimsVarsIDs(t, vSphere, collected)
 }
 
 func TestVSphere_Collect_RemoveHostsVMsInRuntime(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
+	vSphere, _, teardown := prepareVSphereSim(t)
+	defer teardown()
 
-	job := newTestJob(srv.URL.String())
-	defer job.Cleanup()
-	require.True(t, job.Init())
-	require.True(t, job.Check())
-	job.Collect()
+	require.True(t, vSphere.Init())
+	require.True(t, vSphere.Check())
 
-	okHost := "host-46"
-	okVM := "vm-62"
-	job.discoverer.(*discover.VSphereDiscoverer).HostMatcher = testHostMatcher{okHost}
-	job.discoverer.(*discover.VSphereDiscoverer).VMMatcher = testVMMatcher{okVM}
+	okHostID := "host-46"
+	okVMID := "vm-62"
+	vSphere.discoverer.(*discover.Discoverer).HostMatcher = mockHostMatcher{okHostID}
+	vSphere.discoverer.(*discover.Discoverer).VMMatcher = mockVMMatcher{okVMID}
 
-	assert.NoError(t, job.discoverOnce())
+	require.NoError(t, vSphere.discoverOnce())
+
 	numOfRuns := 5
 	for i := 0; i < numOfRuns; i++ {
-		job.Collect()
+		vSphere.Collect()
 	}
-	for k, v := range job.discoveredHosts {
-		if k == okHost {
+
+	host := vSphere.resources.Hosts.Get(okHostID)
+	for k, v := range vSphere.discoveredHosts {
+		if k == vSphere.hostID(host) {
 			assert.Equal(t, 0, v)
 		} else {
 			assert.Equal(t, numOfRuns, v)
 		}
 	}
-	for k, v := range job.discoveredVMs {
-		if k == okVM {
-			assert.Equal(t, 0, v)
+
+	vm := vSphere.resources.VMs.Get(okVMID)
+	for id, fails := range vSphere.discoveredVMs {
+		if id == vSphere.vmID(vm) {
+			assert.Equal(t, 0, fails)
 		} else {
-			assert.Equal(t, numOfRuns, v)
+			assert.Equal(t, numOfRuns, fails)
 		}
 
 	}
 
 	for i := numOfRuns; i < failedUpdatesLimit; i++ {
-		job.Collect()
+		vSphere.Collect()
 	}
-	assert.Len(t, job.discoveredHosts, 1)
-	assert.Len(t, job.discoveredVMs, 1)
-	assert.Len(t, job.charted, 2)
-	for _, c := range *job.charts {
-		if strings.HasPrefix(c.ID, okHost) || strings.HasPrefix(c.ID, okVM) {
+
+	assert.Len(t, vSphere.discoveredHosts, 1)
+	assert.Len(t, vSphere.discoveredVMs, 1)
+	assert.Len(t, vSphere.charted, 2)
+
+	for _, c := range *vSphere.Charts() {
+		if strings.HasPrefix(c.ID, okHostID) || strings.HasPrefix(c.ID, okVMID) {
 			assert.False(t, c.Obsolete)
 		} else {
 			assert.True(t, c.Obsolete)
@@ -342,46 +358,119 @@ func TestVSphere_Collect_RemoveHostsVMsInRuntime(t *testing.T) {
 }
 
 func TestVSphere_Collect_Run(t *testing.T) {
-	model, srv, err := createSim()
-	require.NoError(t, err)
-	defer model.Remove()
-	defer srv.Close()
+	vSphere, model, teardown := prepareVSphereSim(t)
+	defer teardown()
 
-	job := newTestJob(srv.URL.String())
-	defer job.Cleanup()
-	job.DiscoveryInterval.Duration = time.Second * 2
-	require.True(t, job.Init())
-	require.True(t, job.Check())
+	vSphere.DiscoveryInterval.Duration = time.Second * 2
+	require.True(t, vSphere.Init())
+	require.True(t, vSphere.Check())
 
-	loops := 20
-	for i := 0; i < loops; i++ {
-		assert.True(t, len(job.Collect()) > 0)
+	runs := 20
+	for i := 0; i < runs; i++ {
+		assert.True(t, len(vSphere.Collect()) > 0)
 		if i < 6 {
 			time.Sleep(time.Second)
 		}
 	}
 
 	count := model.Count()
-	assert.Len(t, job.discoveredHosts, count.Host)
-	assert.Len(t, job.discoveredVMs, count.Machine)
-	assert.Len(t, job.charted, count.Host+count.Machine)
-	assert.Len(t, *job.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts))
+	assert.Len(t, vSphere.discoveredHosts, count.Host)
+	assert.Len(t, vSphere.discoveredVMs, count.Machine)
+	assert.Len(t, vSphere.charted, count.Host+count.Machine)
+	assert.Len(t, *vSphere.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts))
 }
 
-type testMetricScraper struct {
-	metricScraper
+func TestVSphere_chartIDsHasAllHierarchyData(t *testing.T) {
+	vSphere, _, teardown := prepareVSphereSim(t)
+	defer teardown()
+
+	vSphere.VMMetrics.Name = true
+	vSphere.VMMetrics.Host = true
+	vSphere.VMMetrics.Cluster = true
+	vSphere.VMMetrics.DataCenter = true
+	vSphere.HostMetrics.Name = true
+	vSphere.HostMetrics.Cluster = true
+	vSphere.HostMetrics.DataCenter = true
+
+	require.True(t, vSphere.Init())
+	require.True(t, vSphere.Check())
+	vSphere.Collect()
+
+	ensureChartsHasCorrectIDs(t, vSphere)
 }
 
-func (s testMetricScraper) ScrapeHostsMetrics(hosts rs.Hosts) []performance.EntityMetric {
-	ms := s.metricScraper.ScrapeHostsMetrics(hosts)
-	return setValueInMetrics(ms, 100)
-}
-func (s testMetricScraper) ScrapeVMsMetrics(vms rs.VMs) []performance.EntityMetric {
-	ms := s.metricScraper.ScrapeVMsMetrics(vms)
-	return setValueInMetrics(ms, 200)
+func ensureChartsHasCorrectIDs(t *testing.T, vSphere *VSphere) {
+	for _, vm := range vSphere.resources.VMs {
+		id := vSphere.vmID(vm)
+		var i int
+		for _, chart := range *vSphere.Charts() {
+			if strings.HasPrefix(chart.ID, id) {
+				i++
+			}
+		}
+		assert.Truef(t, i > 0, "zero charts for vm id: %s", id)
+	}
+
+	for _, host := range vSphere.resources.Hosts {
+		id := vSphere.hostID(host)
+		var i int
+		for _, chart := range *vSphere.Charts() {
+			if strings.HasPrefix(chart.ID, id) {
+				i++
+			}
+		}
+		assert.Truef(t, i > 0, "zero charts for host id: %s", id)
+	}
 }
 
-func setValueInMetrics(ms []performance.EntityMetric, value int64) []performance.EntityMetric {
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, vSphere *VSphere, collected map[string]int64) {
+	for _, chart := range *vSphere.Charts() {
+		for _, dim := range chart.Dims {
+			_, ok := collected[dim.ID]
+			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+		for _, v := range chart.Vars {
+			_, ok := collected[v.ID]
+			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
+		}
+	}
+}
+
+func prepareVSphereSim(t *testing.T) (vSphere *VSphere, model *simulator.Model, teardown func()) {
+	model, srv := createSim(t)
+	vSphere = New()
+	teardown = func() { model.Remove(); srv.Close(); vSphere.Cleanup() }
+
+	vSphere.Username = "administrator"
+	vSphere.Password = "password"
+	vSphere.UserURL = srv.URL.String()
+	vSphere.InsecureSkipVerify = true
+
+	return vSphere, model, teardown
+}
+
+func createSim(t *testing.T) (*simulator.Model, *simulator.Server) {
+	model := simulator.VPX()
+	err := model.Create()
+	require.NoError(t, err)
+	model.Service.TLS = new(tls.Config)
+	return model, model.Service.NewServer()
+}
+
+type mockScraper struct {
+	scraper
+}
+
+func (s mockScraper) ScrapeHosts(hosts rs.Hosts) []performance.EntityMetric {
+	ms := s.scraper.ScrapeHosts(hosts)
+	return populateMetrics(ms, 100)
+}
+func (s mockScraper) ScrapeVMs(vms rs.VMs) []performance.EntityMetric {
+	ms := s.scraper.ScrapeVMs(vms)
+	return populateMetrics(ms, 200)
+}
+
+func populateMetrics(ms []performance.EntityMetric, value int64) []performance.EntityMetric {
 	for i := range ms {
 		for ii := range ms[i].Value {
 			v := &ms[i].Value[ii].Value
@@ -395,10 +484,8 @@ func setValueInMetrics(ms []performance.EntityMetric, value int64) []performance
 	return ms
 }
 
-type testHostMatcher struct{ name string }
+type mockHostMatcher struct{ name string }
+type mockVMMatcher struct{ name string }
 
-func (m testHostMatcher) Match(host *rs.Host) bool { return m.name == host.ID }
-
-type testVMMatcher struct{ name string }
-
-func (m testVMMatcher) Match(vm *rs.VM) bool { return m.name == vm.ID }
+func (m mockHostMatcher) Match(host *rs.Host) bool { return m.name == host.ID }
+func (m mockVMMatcher) Match(vm *rs.VM) bool       { return m.name == vm.ID }

@@ -8,12 +8,12 @@ import (
 	"github.com/vmware/govmomi/vim25/mo"
 )
 
-func (d VSphereDiscoverer) build(raw *resources) *rs.Resources {
+func (d Discoverer) build(raw *resources) *rs.Resources {
 	d.Debug("discovering : building : starting building resources process")
 	t := time.Now()
 
 	var res rs.Resources
-	res.Dcs = d.buildDatacenters(raw.dcs)
+	res.DataCenters = d.buildDatacenters(raw.dcs)
 	res.Folders = d.buildFolders(raw.folders)
 	res.Clusters = d.buildClusters(raw.clusters)
 	fixClustersParentID(&res)
@@ -21,7 +21,7 @@ func (d VSphereDiscoverer) build(raw *resources) *rs.Resources {
 	res.VMs = d.buildVMs(raw.vms)
 
 	d.Infof("discovering : building : built %d/%d dcs, %d/%d folders, %d/%d clusters, %d/%d hosts, %d/%d vms, process took %s",
-		len(res.Dcs),
+		len(res.DataCenters),
 		len(raw.dcs),
 		len(res.Folders),
 		len(raw.folders),
@@ -52,8 +52,8 @@ func findClusterDcID(parentID string, folders rs.Folders) string {
 	return findClusterDcID(f.ParentID, folders)
 }
 
-func (VSphereDiscoverer) buildDatacenters(raw []mo.Datacenter) rs.Dcs {
-	dcs := make(rs.Dcs)
+func (Discoverer) buildDatacenters(raw []mo.Datacenter) rs.DataCenters {
+	dcs := make(rs.DataCenters)
 	for _, d := range raw {
 		dcs.Put(newDC(d))
 	}
@@ -68,7 +68,7 @@ func newDC(raw mo.Datacenter) *rs.Datacenter {
 	}
 }
 
-func (VSphereDiscoverer) buildFolders(raw []mo.Folder) rs.Folders {
+func (Discoverer) buildFolders(raw []mo.Folder) rs.Folders {
 	fs := make(rs.Folders)
 	for _, d := range raw {
 		fs.Put(newFolder(d))
@@ -88,7 +88,7 @@ func newFolder(raw mo.Folder) *rs.Folder {
 	}
 }
 
-func (VSphereDiscoverer) buildClusters(raw []mo.ComputeResource) rs.Clusters {
+func (Discoverer) buildClusters(raw []mo.ComputeResource) rs.Clusters {
 	clusters := make(rs.Clusters)
 	for _, c := range raw {
 		clusters.Put(newCluster(c))
@@ -111,7 +111,7 @@ const (
 	poweredOn = "poweredOn"
 )
 
-func (d VSphereDiscoverer) buildHosts(raw []mo.HostSystem) rs.Hosts {
+func (d Discoverer) buildHosts(raw []mo.HostSystem) rs.Hosts {
 	var num int
 	hosts := make(rs.Hosts)
 	for _, h := range raw {
@@ -145,7 +145,7 @@ func newHost(raw mo.HostSystem) *rs.Host {
 	}
 }
 
-func (d VSphereDiscoverer) buildVMs(raw []mo.VirtualMachine) rs.VMs {
+func (d Discoverer) buildVMs(raw []mo.VirtualMachine) rs.VMs {
 	var num int
 	vms := make(rs.VMs)
 	for _, v := range raw {
