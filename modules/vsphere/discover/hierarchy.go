@@ -53,11 +53,11 @@ func (d Discoverer) setVMsHierarchy(res *rs.Resources) (set int) {
 }
 
 func setClusterHierarchy(cluster *rs.Cluster, res *rs.Resources) bool {
-	dc := res.Dcs.Get(cluster.ParentID)
+	dc := res.DataCenters.Get(cluster.ParentID)
 	if dc == nil {
 		return false
 	}
-	cluster.Hier.Dc.Set(dc.ID, dc.Name)
+	cluster.Hier.DC.Set(dc.ID, dc.Name)
 	return cluster.Hier.IsSet()
 }
 
@@ -68,11 +68,11 @@ func setHostHierarchy(host *rs.Host, res *rs.Resources) bool {
 	}
 	host.Hier.Cluster.Set(cr.ID, cr.Name)
 
-	dc := res.Dcs.Get(cr.ParentID)
+	dc := res.DataCenters.Get(cr.ParentID)
 	if dc == nil {
 		return false
 	}
-	host.Hier.Dc.Set(dc.ID, dc.Name)
+	host.Hier.DC.Set(dc.ID, dc.Name)
 	return host.Hier.IsSet()
 }
 
@@ -89,10 +89,10 @@ func setVMHierarchy(vm *rs.VM, res *rs.Resources) bool {
 	}
 	vm.Hier.Cluster.Set(cr.ID, cr.Name)
 
-	dc := res.Dcs.Get(cr.ParentID)
+	dc := res.DataCenters.Get(cr.ParentID)
 	if dc == nil {
 		return false
 	}
-	vm.Hier.Dc.Set(dc.ID, dc.Name)
+	vm.Hier.DC.Set(dc.ID, dc.Name)
 	return vm.Hier.IsSet()
 }

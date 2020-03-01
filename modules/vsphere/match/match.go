@@ -30,10 +30,10 @@ type (
 	andVMMatcher       struct{ lhs, rhs VMMatcher }
 )
 
-func (m hostDCMatcher) Match(host *rs.Host) bool      { return m.m.MatchString(host.Hier.Dc.Name) }
+func (m hostDCMatcher) Match(host *rs.Host) bool      { return m.m.MatchString(host.Hier.DC.Name) }
 func (m hostClusterMatcher) Match(host *rs.Host) bool { return m.m.MatchString(host.Hier.Cluster.Name) }
 func (m hostHostMatcher) Match(host *rs.Host) bool    { return m.m.MatchString(host.Name) }
-func (m vmDCMatcher) Match(vm *rs.VM) bool            { return m.m.MatchString(vm.Hier.Dc.Name) }
+func (m vmDCMatcher) Match(vm *rs.VM) bool            { return m.m.MatchString(vm.Hier.DC.Name) }
 func (m vmClusterMatcher) Match(vm *rs.VM) bool       { return m.m.MatchString(vm.Hier.Cluster.Name) }
 func (m vmHostMatcher) Match(vm *rs.VM) bool          { return m.m.MatchString(vm.Hier.Host.Name) }
 func (m vmVMMatcher) Match(vm *rs.VM) bool            { return m.m.MatchString(vm.Name) }

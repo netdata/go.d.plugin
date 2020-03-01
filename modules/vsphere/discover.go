@@ -1,9 +1,5 @@
 package vsphere
 
-import (
-	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
-)
-
 func (vs *VSphere) goDiscovery() {
 	if vs.discoveryTask != nil {
 		vs.discoveryTask.stop()
@@ -24,12 +20,9 @@ func (vs *VSphere) discoverOnce() error {
 	if err != nil {
 		return err
 	}
-	vs.consumeDiscovered(res)
-	return nil
-}
 
-func (vs *VSphere) consumeDiscovered(res *rs.Resources) {
 	vs.collectionLock.Lock()
-	defer vs.collectionLock.Unlock()
 	vs.resources = res
+	vs.collectionLock.Unlock()
+	return nil
 }

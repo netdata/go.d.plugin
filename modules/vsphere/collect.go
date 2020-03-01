@@ -92,7 +92,7 @@ func (vs VSphere) hostID(host *rs.Host) (id string) {
 		id = join(id, "cluster", host.Hier.Cluster.Name)
 	}
 	if vs.HostMetrics.DataCenter {
-		id = join(id, "datacenter", host.Hier.Dc.Name)
+		id = join(id, "datacenter", host.Hier.DC.Name)
 	}
 	return cleanID(id)
 }
@@ -158,7 +158,7 @@ func (vs VSphere) vmID(vm *rs.VM) (id string) {
 		id = join(id, "cluster", vm.Hier.Cluster.Name)
 	}
 	if vs.VMMetrics.DataCenter {
-		id = join(id, "datacenter", vm.Hier.Dc.Name)
+		id = join(id, "datacenter", vm.Hier.DC.Name)
 	}
 	return cleanID(id)
 }

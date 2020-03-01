@@ -22,7 +22,7 @@ func TestVSphereDiscoverer_Discover(t *testing.T) {
 	res, err := d.Discover()
 
 	require.NoError(t, err)
-	assert.True(t, len(res.Dcs) > 0)
+	assert.True(t, len(res.DataCenters) > 0)
 	assert.True(t, len(res.Folders) > 0)
 	assert.True(t, len(res.Clusters) > 0)
 	assert.True(t, len(res.Hosts) > 0)
@@ -56,7 +56,7 @@ func TestVSphereDiscoverer_build(t *testing.T) {
 
 	res := d.build(raw)
 
-	assert.Lenf(t, res.Dcs, len(raw.dcs), "datacenters")
+	assert.Lenf(t, res.DataCenters, len(raw.dcs), "datacenters")
 	assert.Lenf(t, res.Folders, len(raw.folders), "folders")
 	assert.Lenf(t, res.Clusters, len(raw.clusters), "clusters")
 	assert.Lenf(t, res.Hosts, len(raw.hosts), "hosts")

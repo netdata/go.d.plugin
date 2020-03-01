@@ -13,7 +13,7 @@ func (d Discoverer) build(raw *resources) *rs.Resources {
 	t := time.Now()
 
 	var res rs.Resources
-	res.Dcs = d.buildDatacenters(raw.dcs)
+	res.DataCenters = d.buildDatacenters(raw.dcs)
 	res.Folders = d.buildFolders(raw.folders)
 	res.Clusters = d.buildClusters(raw.clusters)
 	fixClustersParentID(&res)
@@ -21,7 +21,7 @@ func (d Discoverer) build(raw *resources) *rs.Resources {
 	res.VMs = d.buildVMs(raw.vms)
 
 	d.Infof("discovering : building : built %d/%d dcs, %d/%d folders, %d/%d clusters, %d/%d hosts, %d/%d vms, process took %s",
-		len(res.Dcs),
+		len(res.DataCenters),
 		len(raw.dcs),
 		len(res.Folders),
 		len(raw.folders),
@@ -52,8 +52,8 @@ func findClusterDcID(parentID string, folders rs.Folders) string {
 	return findClusterDcID(f.ParentID, folders)
 }
 
-func (Discoverer) buildDatacenters(raw []mo.Datacenter) rs.Dcs {
-	dcs := make(rs.Dcs)
+func (Discoverer) buildDatacenters(raw []mo.Datacenter) rs.DataCenters {
+	dcs := make(rs.DataCenters)
 	for _, d := range raw {
 		dcs.Put(newDC(d))
 	}
