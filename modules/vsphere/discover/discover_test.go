@@ -15,7 +15,7 @@ import (
 	"github.com/vmware/govmomi/simulator"
 )
 
-func TestVSphereDiscoverer_Discover(t *testing.T) {
+func TestDiscoverer_Discover(t *testing.T) {
 	d, _, teardown := prepareDiscovererSim(t)
 	defer teardown()
 
@@ -31,7 +31,7 @@ func TestVSphereDiscoverer_Discover(t *testing.T) {
 	assert.True(t, isMetricListsCollected(res))
 }
 
-func TestVSphereDiscoverer_discover(t *testing.T) {
+func TestDiscoverer_discover(t *testing.T) {
 	d, model, teardown := prepareDiscovererSim(t)
 	defer teardown()
 
@@ -47,7 +47,7 @@ func TestVSphereDiscoverer_discover(t *testing.T) {
 	assert.Lenf(t, raw.vms, count.Machine, "hosts")
 }
 
-func TestVSphereDiscoverer_build(t *testing.T) {
+func TestDiscoverer_build(t *testing.T) {
 	d, _, teardown := prepareDiscovererSim(t)
 	defer teardown()
 
@@ -63,7 +63,7 @@ func TestVSphereDiscoverer_build(t *testing.T) {
 	assert.Lenf(t, res.VMs, len(raw.vms), "hosts")
 }
 
-func TestVSphereDiscoverer_setHierarchy(t *testing.T) {
+func TestDiscoverer_setHierarchy(t *testing.T) {
 	d, _, teardown := prepareDiscovererSim(t)
 	defer teardown()
 
@@ -77,7 +77,7 @@ func TestVSphereDiscoverer_setHierarchy(t *testing.T) {
 	assert.True(t, isHierarchySet(res))
 }
 
-func TestVSphereDiscoverer_removeUnmatched(t *testing.T) {
+func TestDiscoverer_removeUnmatched(t *testing.T) {
 	d, _, teardown := prepareDiscovererSim(t)
 	defer teardown()
 
@@ -93,7 +93,7 @@ func TestVSphereDiscoverer_removeUnmatched(t *testing.T) {
 	assert.Lenf(t, res.VMs, 0, "vms")
 }
 
-func TestVSphereDiscoverer_collectMetricLists(t *testing.T) {
+func TestDiscoverer_collectMetricLists(t *testing.T) {
 	d, _, teardown := prepareDiscovererSim(t)
 	defer teardown()
 
