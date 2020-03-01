@@ -60,20 +60,11 @@ type scraper interface {
 
 type Config struct {
 	web.HTTP          `yaml:",inline"`
-	DiscoveryInterval web.Duration       `yaml:"discovery_interval"`
-	HostsInclude      match.HostIncludes `yaml:"host_include"`
-	VMsInclude        match.VMIncludes   `yaml:"vm_include"`
-	HostMetrics       struct {
-		Name       bool
-		Cluster    bool
-		DataCenter bool
-	} `yaml:"host_metrics"`
-	VMMetrics struct {
-		Name       bool
-		Host       bool
-		Cluster    bool
-		DataCenter bool
-	} `yaml:"vm_metrics"`
+	DiscoveryInterval web.Duration                                   `yaml:"discovery_interval"`
+	HostsInclude      match.HostIncludes                             `yaml:"host_include"`
+	VMsInclude        match.VMIncludes                               `yaml:"vm_include"`
+	HostMetrics       struct{ Name, Cluster, DataCenter bool }       `yaml:"host_metrics"`
+	VMMetrics         struct{ Name, Host, Cluster, DataCenter bool } `yaml:"vm_metrics"`
 }
 
 type VSphere struct {
