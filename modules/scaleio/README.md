@@ -17,7 +17,9 @@ It collects metrics for following `ScaleIO` components:
 
 ## Charts
 
-System charts:
+It produces the following charts:
+
+### System
 
 -   Total Capacity in `KiB`
 -   Capacity In Use in `KiB`
@@ -38,7 +40,7 @@ System charts:
 -   Volumes By Type in `number`
 -   Volumes By Mapping in `number`
 
-Storage Pool charts:
+### Storage Pool
 
 -   Total Capacity in `KiB`
 -   Capacity In Use in `KiB`
@@ -48,7 +50,7 @@ Storage Pool charts:
 -   Capacity Health State in `KiB`
 -   Components in `number`
 
-Sdc charts:
+### SDC
 
 -   MDM Connection State in `boolean`
 -   Bandwidth in `KiB/s`
