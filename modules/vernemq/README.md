@@ -5,6 +5,7 @@
 This module will monitor one or more `VerneMQ` instances, depending on your configuration.
 
 `vernemq` module is tested on the following versions:
+
 -   v1.10.1
 
 ## Charts
