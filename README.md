@@ -2,11 +2,11 @@
 
 [![CircleCI](https://circleci.com/gh/netdata/go.d.plugin.svg?style=svg)](https://circleci.com/gh/netdata/go.d.plugin)
 
-`go.d.plugin` is a `netdata` external plugin. It is an **orchestrator** for data collection modules written in `go`.
+`go.d.plugin` is a `Netdata` external plugin. It is an **orchestrator** for data collection modules written in `go`.
 
 1. It runs as an independent process `ps fax` shows it.
-2. It is started and stopped automatically by `netdata`.
-3. It communicates with `netdata` via a unidirectional pipe (sending data to the `netdata` daemon).
+2. It is started and stopped automatically by `Netdata`.
+3. It communicates with `Netdata` via a unidirectional pipe (sending data to the `Netdata` daemon).
 4. Supports any number of data collection [modules](https://github.com/netdata/go.d.plugin/tree/master/modules).
 5. Allows each [module](https://github.com/netdata/go.d.plugin/tree/master/modules) to have any number of data collection **jobs**.
 
@@ -101,7 +101,7 @@ Configurations are written in [YAML](http://yaml.org/).
 
 Plugin CLI:
 
-```cmd
+```sh
 Usage:
   go.d.plugin [OPTIONS] [update every]
 
@@ -116,7 +116,7 @@ Help Options:
 
 To debug specific module:
 
-```cmd
+```sh
 # become user netdata
 sudo su -s /bin/bash netdata
 
