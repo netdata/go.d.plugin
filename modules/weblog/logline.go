@@ -456,7 +456,7 @@ var (
 	// TODO: reClient doesnt work with %h when HostnameLookups is On.
 	reVhost       = regexp.MustCompile(`^[a-zA-Z0-9-:.]+$`)
 	reClient      = regexp.MustCompile(`^([\da-f:.]+|localhost)$`)
-	reCipherSuite = regexp.MustCompile(`^[A-Z0-9-]+$`) // openssl -v
+	reCipherSuite = regexp.MustCompile(`^[A-Z0-9-_]+$`) // openssl -v
 )
 
 var emptyWebFields = web{
