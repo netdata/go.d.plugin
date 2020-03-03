@@ -349,7 +349,7 @@ func (l *logLine) assignSSLCipherSuite(cipher string) error {
 	if cipher == hyphen {
 		return nil
 	}
-	if idx := strings.IndexByte(cipher, '-'); idx <= 0 {
+	if strings.IndexByte(cipher, '-') <= 0 && strings.IndexByte(cipher, '_') <= 0 {
 		return fmt.Errorf("assign '%s': %w", cipher, errBadSSLCipherSuite)
 	}
 	l.sslCipherSuite = cipher
@@ -456,7 +456,7 @@ var (
 	// TODO: reClient doesnt work with %h when HostnameLookups is On.
 	reVhost       = regexp.MustCompile(`^[a-zA-Z0-9-:.]+$`)
 	reClient      = regexp.MustCompile(`^([\da-f:.]+|localhost)$`)
-	reCipherSuite = regexp.MustCompile(`^[A-Z0-9-]+$`) // openssl -v
+	reCipherSuite = regexp.MustCompile(`^[A-Z0-9-_]+$`) // openssl -v
 )
 
 var emptyWebFields = web{
