@@ -191,9 +191,11 @@ func join(a, prefix, value string) string {
 	return a + "_" + prefix + "-" + value
 }
 
-func cleanID(name string) string {
-	return strings.ReplaceAll(name, " ", "_")
+func cleanID(id string) string {
+	return r.Replace(id)
 }
+
+var r = strings.NewReplacer(" ", "_", ".", "_")
 
 func overallStatusToInt(status string) int64 {
 	// ManagedEntityStatus
