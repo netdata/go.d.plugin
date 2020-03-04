@@ -6,13 +6,16 @@ import (
 	"testing"
 
 	"github.com/netdata/go-orchestrator/module"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
-	job := New()
+	x509Check := New()
 
-	assert.Implements(t, (*module.Module)(nil), job)
+	assert.Implements(t, (*module.Module)(nil), x509Check)
 }
 
 func TestX509Check_Cleanup(t *testing.T) {
@@ -20,73 +23,137 @@ func TestX509Check_Cleanup(t *testing.T) {
 }
 
 func TestX509Check_Charts(t *testing.T) {
-	job := New()
+	x509Check := New()
 
-	assert.NotNil(t, job.Charts())
+	assert.NotNil(t, x509Check.Charts())
 }
 
 func TestX509Check_Init(t *testing.T) {
-	job := New()
-	job.Source = "https://example.org"
+	const (
+		file = iota
+		net
+		smtp
+	)
+	tests := map[string]struct {
+		config       Config
+		providerType int
+		err          bool
+	}{
+		"ok from net https": {
+			config:       Config{Source: "https://example.org"},
+			providerType: net,
+		},
+		"ok from net tcp": {
+			config:       Config{Source: "tcp://example.org"},
+			providerType: net,
+		},
+		"ok from file": {
+			config:       Config{Source: "file:///home/me/cert.pem"},
+			providerType: file,
+		},
+		"ok from smtp": {
+			config:       Config{Source: "smtp://smtp.my_mail.org:587"},
+			providerType: smtp,
+		},
+		"empty source": {
+			config: Config{Source: ""},
+			err:    true},
+		"unknown provider": {
+			config: Config{Source: "http://example.org"},
+			err:    true,
+		},
+		"nonexistent TLSCA": {
+			config: Config{Source: "https://example.org", ClientTLSConfig: web.ClientTLSConfig{TLSCA: "testdata/tls"}},
+			err:    true,
+		},
+	}
 
-	assert.True(t, job.Init())
-}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			x509Check := New()
+			x509Check.Config = test.config
 
-func TestX509Check_InitErrorOnCreatingGathererWrongTLSCA(t *testing.T) {
-	job := New()
-	job.Source = "https://example.org"
-	job.ClientTLSConfig.TLSCA = "testdata/tls"
+			if test.err {
+				assert.False(t, x509Check.Init())
+			} else {
+				require.True(t, x509Check.Init())
 
-	assert.False(t, job.Init())
+				var typeOK bool
+				switch test.providerType {
+				case file:
+					_, typeOK = x509Check.prov.(*fromFile)
+				case net:
+					_, typeOK = x509Check.prov.(*fromNet)
+				case smtp:
+					_, typeOK = x509Check.prov.(*fromSMTP)
+				}
+
+				assert.True(t, typeOK)
+			}
+		})
+	}
 }
 
 func TestX509Check_Check(t *testing.T) {
-	job := New()
-	job.gatherer = &mockGatherer{certs: []*x509.Certificate{{}}}
-	assert.True(t, job.Check())
+	x509Check := New()
+	x509Check.prov = &mockProvider{certs: []*x509.Certificate{{}}}
+
+	assert.True(t, x509Check.Check())
 }
 
-func TestX509Check_CheckError(t *testing.T) {
-	job := New()
-	job.gatherer = &mockGatherer{retErr: true}
-	assert.False(t, job.Check())
+func TestX509Check_Check_ReturnsFalseOnProviderError(t *testing.T) {
+	x509Check := New()
+	x509Check.prov = &mockProvider{err: true}
+
+	assert.False(t, x509Check.Check())
 }
 
 func TestX509Check_Collect(t *testing.T) {
-	job := New()
-	job.gatherer = &mockGatherer{certs: []*x509.Certificate{{}}}
-	mx := job.Collect()
+	x509Check := New()
+	x509Check.prov = &mockProvider{certs: []*x509.Certificate{{}}}
 
-	assert.NotZero(t, mx)
-	v, ok := mx["expiry"]
-	assert.True(t, ok)
-	assert.NotZero(t, v)
+	collected := x509Check.Collect()
+
+	assert.NotZero(t, collected)
+	ensureCollectedHasAllChartsDimsVarsIDs(t, x509Check, collected)
 }
 
-func TestX509Check_CollectErrorOnGathering(t *testing.T) {
-	job := New()
-	job.gatherer = &mockGatherer{retErr: true}
-	mx := job.Collect()
+func TestX509Check_Collect_ReturnsNilOnProviderError(t *testing.T) {
+	x509Check := New()
+	x509Check.prov = &mockProvider{err: true}
+
+	assert.Nil(t, x509Check.Collect())
+}
+
+func TestX509Check_Collect_ReturnsNilOnZeroCertificates(t *testing.T) {
+	x509Check := New()
+	x509Check.prov = &mockProvider{certs: []*x509.Certificate{}}
+	mx := x509Check.Collect()
 
 	assert.Nil(t, mx)
 }
 
-func TestX509Check_CollectZeroCertificates(t *testing.T) {
-	job := New()
-	job.gatherer = &mockGatherer{certs: []*x509.Certificate{}}
-	mx := job.Collect()
-
-	assert.Nil(t, mx)
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, x509Check *X509Check, collected map[string]int64) {
+	for _, chart := range *x509Check.Charts() {
+		for _, dim := range chart.Dims {
+			_, ok := collected[dim.ID]
+			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+		for _, v := range chart.Vars {
+			_, ok := collected[v.ID]
+			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
+		}
+	}
 }
 
-type mockGatherer struct {
-	certs  []*x509.Certificate
-	retErr bool
+type mockProvider struct {
+	certs []*x509.Certificate
+	err   bool
 }
 
-func (m mockGatherer) Gather() ([]*x509.Certificate, error) {
-	if m.retErr {
-		return nil, errors.New("mock error")
+func (m mockProvider) certificates() ([]*x509.Certificate, error) {
+	if m.err {
+		return nil, errors.New("mock certificates error")
 	}
 	return m.certs, nil
 }

@@ -6,7 +6,7 @@ import (
 )
 
 func (x *X509Check) collect() (map[string]int64, error) {
-	certs, err := x.Gather()
+	certs, err := x.prov.certificates()
 
 	if err != nil {
 		x.Error(err)
