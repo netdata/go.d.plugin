@@ -2,7 +2,6 @@ package pulsar
 
 // sad truth: https://github.com/apache/pulsar/issues/3289#issuecomment-578475801
 
-// root@c0f367a0af21:/pulsar/conf# grep stats broker.conf
 // statsUpdateFrequencyInSecs=60
 // statsUpdateInitialDelayInSecs=60
 // exposeTopicLevelMetricsInPrometheus=true
