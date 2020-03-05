@@ -15,7 +15,7 @@ package vernemq
 // Erlang VM:
 //  - http://erlang.org/documentation/doc-5.7.1/erts-5.7.1/doc/html/erlang.html
 
-// Not used metrics:
+// Not used metrics (https://docs.vernemq.com/monitoring/introduction):
 // - "mqtt_connack_accepted_sent"              // v4, not populated,  "mqtt_connack_sent" used instead
 // - "mqtt_connack_unacceptable_protocol_sent" // v4, not populated,  "mqtt_connack_sent" used instead
 // - "mqtt_connack_identifier_rejected_sent"   // v4, not populated,  "mqtt_connack_sent" used instead
