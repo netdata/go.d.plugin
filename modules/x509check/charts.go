@@ -3,12 +3,10 @@ package x509check
 import "github.com/netdata/go-orchestrator/module"
 
 type (
-	// Charts is an alias for module.Charts
 	Charts = module.Charts
-	// Dims is an alias for module.Dims
-	Dims = module.Dims
-	// Vars is an alias for module.Vars
-	Vars = module.Vars
+	Dims   = module.Dims
+	Vars   = module.Vars
+	Opts   = module.Opts
 )
 
 var charts = Charts{
@@ -18,6 +16,7 @@ var charts = Charts{
 		Units: "seconds",
 		Fam:   "expiration time",
 		Ctx:   "x509check.time_until_expiration",
+		Opts:  Opts{StoreFirst: true},
 		Dims: Dims{
 			{ID: "expiry"},
 		},
