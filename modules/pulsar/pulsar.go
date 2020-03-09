@@ -2,8 +2,10 @@ package pulsar
 
 import (
 	"errors"
+	"sync"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
@@ -17,7 +19,6 @@ func init() {
 		},
 		Create: func() module.Module { return New() },
 	}
-
 	module.Register("pulsar", creator)
 }
 
@@ -25,37 +26,55 @@ func New() *Pulsar {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: "http://127.0.0.1:8080/metrics",
+				UserURL: "http://192.168.56.1:8080/metrics",
 			},
 			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
 		},
 	}
-
 	return &Pulsar{
-		Config: config,
-		charts: nil, // TODO
-		cache:  make(cache),
+		Config:             config,
+		charts:             summaryCharts.Copy(),
+		nsCharts:           namespaceCharts.Copy(),
+		topicChartsMapping: topicChartsMapping(),
+		cache:              newCache(),
+		curCache:           newCache(),
 	}
 }
 
 type (
 	Config struct {
-		web.HTTP `yaml:",inline"`
+		web.HTTP   `yaml:",inline"`
+		TopicFiler matcher.SimpleExpr `yaml:"topic_filer"`
 	}
 
 	Pulsar struct {
 		module.Base
 		Config `yaml:",inline"`
 
-		prom   prometheus.Prometheus
-		charts *Charts
-		cache  cache
+		prom               prometheus.Prometheus
+		topicFilter        matcher.Matcher
+		cache              *cache
+		curCache           *cache
+		once               sync.Once
+		charts             *Charts
+		nsCharts           *Charts
+		topicChartsMapping map[string]string
 	}
 
-	cache map[string]bool
+	namespace struct{ name string }
+	topic     struct{ namespace, name string }
+	cache     struct {
+		namespaces map[namespace]bool
+		topics     map[topic]bool
+	}
 )
 
-func (c cache) hasP(v string) bool { ok := c[v]; c[v] = true; return ok }
+func newCache() *cache {
+	return &cache{
+		namespaces: make(map[namespace]bool),
+		topics:     make(map[topic]bool),
+	}
+}
 
 func (p Pulsar) validateConfig() error {
 	if p.UserURL == "" {
@@ -74,13 +93,31 @@ func (p *Pulsar) initClient() error {
 	return nil
 }
 
+func (p *Pulsar) initTopicFiler() error {
+	if p.TopicFiler.Empty() {
+		p.topicFilter = matcher.TRUE()
+		return nil
+	}
+
+	m, err := p.TopicFiler.Parse()
+	if err != nil {
+		return err
+	}
+	p.topicFilter = m
+	return nil
+}
+
 func (p *Pulsar) Init() bool {
 	if err := p.validateConfig(); err != nil {
-		p.Errorf("error on validating config: %v", err)
+		p.Errorf("config validation: %v", err)
 		return false
 	}
 	if err := p.initClient(); err != nil {
-		p.Errorf("error on initializing client: %v", err)
+		p.Errorf("client initializing: %v", err)
+		return false
+	}
+	if err := p.initTopicFiler(); err != nil {
+		p.Errorf("topic filer initialization: %v", err)
 		return false
 	}
 	return true
