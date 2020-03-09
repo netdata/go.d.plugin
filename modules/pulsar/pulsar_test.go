@@ -35,8 +35,8 @@ func TestNew(t *testing.T) {
 
 func TestPulsar_Init(t *testing.T) {
 	tests := map[string]struct {
-		config  Config
-		wantErr bool
+		config   Config
+		wantFail bool
 	}{
 		"default": {
 			config: New().Config,
@@ -48,17 +48,17 @@ func TestPulsar_Init(t *testing.T) {
 			config: Config{
 				HTTP:       web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:8080/metrics"}},
 				TopicFiler: matcher.SimpleExpr{Includes: []string{"+"}}},
-			wantErr: true,
+			wantFail: true,
 		},
 		"empty URL": {
-			config:  Config{HTTP: web.HTTP{Request: web.Request{UserURL: ""}}},
-			wantErr: true,
+			config:   Config{HTTP: web.HTTP{Request: web.Request{UserURL: ""}}},
+			wantFail: true,
 		},
 		"nonexistent TLS CA": {
 			config: Config{HTTP: web.HTTP{
 				Request: web.Request{UserURL: "http://127.0.0.1:8080/metric"},
 				Client:  web.Client{ClientTLSConfig: web.ClientTLSConfig{TLSCA: "testdata/tls"}}}},
-			wantErr: true,
+			wantFail: true,
 		},
 	}
 
@@ -67,7 +67,7 @@ func TestPulsar_Init(t *testing.T) {
 			pulsar := New()
 			pulsar.Config = test.config
 
-			if test.wantErr {
+			if test.wantFail {
 				assert.False(t, pulsar.Init())
 			} else {
 				assert.True(t, pulsar.Init())
@@ -82,15 +82,15 @@ func TestPulsar_Cleanup(t *testing.T) {
 
 func TestPulsar_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare func(*testing.T) (*Pulsar, *httptest.Server)
-		wantErr bool
+		prepare  func(*testing.T) (*Pulsar, *httptest.Server)
+		wantFail bool
 	}{
 		"standalone v2.5.0 namespaces": {prepare: prepareClientServerStdV250Namespaces},
 		"standalone v2.5.0 topics":     {prepare: prepareClientServerStdV250Topics},
-		"non pulsar":                   {prepare: prepareClientServerNonPulsar, wantErr: true},
-		"invalid data":                 {prepare: prepareClientServerInvalidData, wantErr: true},
-		"404":                          {prepare: prepareClientServer404, wantErr: true},
-		"connection refused":           {prepare: prepareClientServerConnectionRefused, wantErr: true},
+		"non pulsar":                   {prepare: prepareClientServerNonPulsar, wantFail: true},
+		"invalid data":                 {prepare: prepareClientServerInvalidData, wantFail: true},
+		"404":                          {prepare: prepareClientServer404, wantFail: true},
+		"connection refused":           {prepare: prepareClientServerConnectionRefused, wantFail: true},
 	}
 
 	for name, test := range tests {
@@ -98,7 +98,7 @@ func TestPulsar_Check(t *testing.T) {
 			pulsar, srv := test.prepare(t)
 			defer srv.Close()
 
-			if test.wantErr {
+			if test.wantFail {
 				assert.False(t, pulsar.Check())
 			} else {
 				assert.True(t, pulsar.Check())
