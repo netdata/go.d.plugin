@@ -135,10 +135,10 @@ Needs only `url` to server's `/metrics` endpoint. Here is an example for 2 serve
 ```yaml
 jobs:
   - name: local
-    url: http://127.0.0.1:88888/metrics
+    url: http://127.0.0.1:8888/metrics
       
   - name: remote
-    url: http://203.0.113.10:88888/metrics
+    url: http://203.0.113.10:8888/metrics
 ```
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/vernemq.conf).
