@@ -21,8 +21,8 @@ It produces the following charts:
 -   Throughput Rate in `KiB/s`
 -   Storage Size in `KiB`
 -   Messages Backlog Size in `messages`
--   Storage Write Latency Histogram in `entries`
--   Entry Size Histogram in `entries`
+-   Storage Write Latency Histogram in `entries/s`
+-   Entry Size Histogram in `entries/s`
 -   Subscriptions Delayed for Dispatching in `message batches`
 
 If `exposeTopicLevelMetricsInPrometheus` is set to true:
@@ -42,8 +42,8 @@ If replication is configured and `replicationMetricsEnabled` is set to true:
 -   Storage Size in `KiB`
 -   Storage Read/Write Operations Rate in `message batches/s`
 -   Messages Backlog Size in `messages`
--   Storage Write Latency Histogram in `entries`
--   Entry Size Histogram in `entries`
+-   Storage Write Latency Histogram in `entries/s`
+-   Entry Size Histogram in `entries/s`
 -   Subscriptions Delayed for Dispatching in `message batches`
 
 If `exposeTopicLevelMetricsInPrometheus` is set to true:
@@ -138,4 +138,4 @@ Module `update_every` should be equal to `statsUpdateFrequencyInSecs`.
 
 Check the module debug output. Run the following command as `netdata` user:
 
-> ./go.d.plugin -d -m vernemq
+> ./go.d.plugin -d -m pulsar

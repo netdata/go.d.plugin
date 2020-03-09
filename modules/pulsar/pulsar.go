@@ -15,7 +15,7 @@ import (
 func init() {
 	creator := module.Creator{
 		Defaults: module.Defaults{
-			// UpdateEvery: 60, // TODO: uncomment
+			UpdateEvery: 60,
 		},
 		Create: func() module.Module { return New() },
 	}
@@ -26,7 +26,7 @@ func New() *Pulsar {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: "http://192.168.56.1:8080/metrics",
+				UserURL: "http://127.0.0.1:8080/metrics",
 			},
 			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
 		},
