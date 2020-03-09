@@ -45,7 +45,7 @@ func New() *Pulsar {
 type (
 	Config struct {
 		web.HTTP   `yaml:",inline"`
-		TopicFiler matcher.SimpleExpr `yaml:"topic_filer"`
+		TopicFiler matcher.SimpleExpr `yaml:"topic_filter"`
 	}
 
 	Pulsar struct {
