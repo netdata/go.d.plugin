@@ -33,6 +33,7 @@ func New() *Pulsar {
 	}
 	return &Pulsar{
 		Config:             config,
+		once:               &sync.Once{},
 		charts:             summaryCharts.Copy(),
 		nsCharts:           namespaceCharts.Copy(),
 		topicChartsMapping: topicChartsMapping(),
@@ -55,7 +56,7 @@ type (
 		topicFilter        matcher.Matcher
 		cache              *cache
 		curCache           *cache
-		once               sync.Once
+		once               *sync.Once
 		charts             *Charts
 		nsCharts           *Charts
 		topicChartsMapping map[string]string
