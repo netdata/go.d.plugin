@@ -58,6 +58,10 @@ Unused broker metrics:
  + JVM metrics.
  + Zookeeper metrics.
  + Bookkeeper metrics.
+
+Hardcoded update interval? (60)
+ - pulsar_storage_write_latency_le_*
+ - pulsar_entry_size_le_*
 */
 
 /*
