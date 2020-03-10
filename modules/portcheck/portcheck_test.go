@@ -3,6 +3,7 @@ package portcheck
 import (
 	"errors"
 	"net"
+	"strings"
 	"testing"
 	"time"
 
@@ -60,6 +61,14 @@ func TestPortCheck_Collect(t *testing.T) {
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
+	copyLatency := func(dst, src map[string]int64) {
+		for k := range dst {
+			if strings.HasSuffix(k, "latency") {
+				dst[k] = src[k]
+			}
+		}
+	}
+
 	expected := map[string]int64{
 		"port_39001_current_state_duration": int64(job.UpdateEvery),
 		"port_39001_failed":                 0,
@@ -72,7 +81,10 @@ func TestPortCheck_Collect(t *testing.T) {
 		"port_39002_success":                1,
 		"port_39002_timeout":                0,
 	}
-	assert.Equal(t, expected, job.Collect())
+	collected := job.Collect()
+	copyLatency(expected, collected)
+
+	assert.Equal(t, expected, collected)
 
 	expected = map[string]int64{
 		"port_39001_current_state_duration": int64(job.UpdateEvery) * 2,
@@ -86,7 +98,10 @@ func TestPortCheck_Collect(t *testing.T) {
 		"port_39002_success":                1,
 		"port_39002_timeout":                0,
 	}
-	assert.Equal(t, expected, job.Collect())
+	collected = job.Collect()
+	copyLatency(expected, collected)
+
+	assert.Equal(t, expected, collected)
 
 	job.dial = testDial(errors.New("failed"))
 
@@ -102,7 +117,10 @@ func TestPortCheck_Collect(t *testing.T) {
 		"port_39002_success":                0,
 		"port_39002_timeout":                0,
 	}
-	assert.Equal(t, expected, job.Collect())
+	collected = job.Collect()
+	copyLatency(expected, collected)
+
+	assert.Equal(t, expected, collected)
 
 	job.dial = testDial(timeoutError{})
 
@@ -118,7 +136,10 @@ func TestPortCheck_Collect(t *testing.T) {
 		"port_39002_success":                0,
 		"port_39002_timeout":                1,
 	}
-	assert.Equal(t, expected, job.Collect())
+	collected = job.Collect()
+	copyLatency(expected, collected)
+
+	assert.Equal(t, expected, collected)
 }
 
 func testDial(err error) dialFunc {
