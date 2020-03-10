@@ -16,7 +16,7 @@ It produces the following charts:
 
 #### Summary
 
--   Components in `num`
+-   Broker Components in `num`
 -   Messages Rate in `messages/s`
 -   Throughput Rate in `KiB/s`
 -   Storage Size in `KiB`
@@ -36,7 +36,7 @@ If replication is configured and `replicationMetricsEnabled` is set to true:
 
 #### Namespace
 
--   Components in `num`
+-   Broker Components in `num`
 -   Messages Rate in `messages/s`
 -   Throughput Rate in `KiB/s`
 -   Storage Size in `KiB`
