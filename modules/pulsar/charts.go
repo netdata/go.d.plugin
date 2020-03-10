@@ -18,7 +18,7 @@ type (
 )
 
 var summaryCharts = Charts{
-	sumComponentsChart.Copy(),
+	sumBrokerComponentsChart.Copy(),
 
 	sumMessagesRateChart.Copy(),
 	sumThroughputRateChart.Copy(),
@@ -39,12 +39,12 @@ var summaryCharts = Charts{
 }
 
 var (
-	sumComponentsChart = Chart{
-		ID:    "components",
-		Title: "Components",
+	sumBrokerComponentsChart = Chart{
+		ID:    "broker_components",
+		Title: "Broker Components",
 		Units: "num",
 		Fam:   "ns summary",
-		Ctx:   "pulsar.components",
+		Ctx:   "pulsar.broker_components",
 		Type:  module.Stacked,
 		Opts:  Opts{StoreFirst: true},
 		Dims: Dims{
@@ -227,7 +227,7 @@ var (
 )
 
 var namespaceCharts = Charts{
-	nsComponentsChart.Copy(),
+	nsBrokerComponentsChart.Copy(),
 	topicProducersChart.Copy(),
 	topicSubscriptionsChart.Copy(),
 	topicConsumersChart.Copy(),
@@ -267,7 +267,7 @@ var namespaceCharts = Charts{
 }
 
 func toNamespaceChart(chart Chart) Chart {
-	if chart.ID == sumComponentsChart.ID {
+	if chart.ID == sumBrokerComponentsChart.ID {
 		_ = chart.RemoveDim("pulsar_namespaces_count")
 	}
 	chart.ID += "_namespace_%s"
@@ -283,7 +283,7 @@ func toNamespaceChart(chart Chart) Chart {
 }
 
 var (
-	nsComponentsChart              = toNamespaceChart(sumComponentsChart)
+	nsBrokerComponentsChart        = toNamespaceChart(sumBrokerComponentsChart)
 	nsMessagesRateChart            = toNamespaceChart(sumMessagesRateChart)
 	nsThroughputRateCharts         = toNamespaceChart(sumThroughputRateChart)
 	nsStorageSizeChart             = toNamespaceChart(sumStorageSizeChart)
