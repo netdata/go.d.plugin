@@ -53,6 +53,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [phpfpm](https://github.com/netdata/go.d.plugin/tree/master/modules/phpfpm)               | `PHP-FPM`                  | yes     |
 | [pihole](https://github.com/netdata/go.d.plugin/tree/master/modules/pihole)               | `Pi-hole`                  |         |
 | [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)         | `Any TCP Endpoint`         |         |
+| [pulsar](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)            | `Apache Pulsar`            |         |
 | [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq)           | `RabbitMQ`                 | yes     |
 | [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)             | `Dell EMC ScaleIO`         |         |
 | [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)                   | `Solr`                     |         |
