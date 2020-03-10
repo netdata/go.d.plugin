@@ -272,7 +272,10 @@ func toNamespaceChart(chart Chart) Chart {
 	}
 	chart.ID += "_namespace_%s"
 	chart.Fam = "ns %s"
-	chart.Ctx = "namespace_" + chart.Ctx
+	if idx := strings.IndexByte(chart.Ctx, '.'); idx > 0 {
+		// pulsar.messages_rate => pulsar.namespace_messages_rate
+		chart.Ctx = chart.Ctx[:idx+1] + "namespace_" + chart.Ctx[idx+1:]
+	}
 	for _, dim := range chart.Dims {
 		dim.ID += "_%s"
 	}
