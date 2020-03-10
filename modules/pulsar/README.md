@@ -14,7 +14,7 @@ It collects broker statistics from the [prometheus endpoint](https://pulsar.apac
 
 It produces the following charts:
 
-#### Summary
+### Summary
 
 -   Broker Components in `num`
 -   Messages Rate in `messages/s`
@@ -26,15 +26,17 @@ It produces the following charts:
 -   Subscriptions Delayed for Dispatching in `message batches`
 
 If `exposeTopicLevelMetricsInPrometheus` is set to true:
+
 -   Subscriptions Redelivered Message Rate in `messages/s`
 -   Subscriptions Blocked On Unacked Messages in `subscriptions`
 
 If replication is configured and `replicationMetricsEnabled` is set to true:
+
 -   Replication Rate in `messages/s`
 -   Replication Throughput Rate in `messages/s`
 -   Replication Backlog in `messages`
 
-#### Namespace
+### Namespace
 
 -   Broker Components in `num`
 -   Messages Rate in `messages/s`
@@ -57,7 +59,7 @@ If replication is configured and `replicationMetricsEnabled` is set to true:
 -   Replication Throughput Rate in `messages/s`
 -   Replication Backlog in `messages`
 
-#### Topic
+### Topic
 
 Topic charts are only available when `exposeTopicLevelMetricsInPrometheus` is set to true.
 
