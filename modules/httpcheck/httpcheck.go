@@ -79,7 +79,7 @@ func (hc *HTTPCheck) Init() bool {
 
 	client, err := web.NewHTTPClient(hc.Client)
 	if err != nil {
-		hc.Error("error on creating HTTP client : %v", err)
+		hc.Errorf("error on creating HTTP client : %v", err)
 		return false
 	}
 	hc.client = client
