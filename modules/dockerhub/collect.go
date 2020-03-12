@@ -55,7 +55,7 @@ func parseRepoTo(repo *repository, mx map[string]int64) error {
 	if err != nil {
 		return err
 	}
-	mx[fmt.Sprintf("last_updated_%s/%s", repo.User, repo.Name)] = int64(time.Now().Sub(t).Seconds())
+	mx[fmt.Sprintf("last_updated_%s/%s", repo.User, repo.Name)] = int64(time.Since(t).Seconds())
 	mx[fmt.Sprintf("star_count_%s/%s", repo.User, repo.Name)] = int64(repo.StarCount)
 	mx[fmt.Sprintf("pull_count_%s/%s", repo.User, repo.Name)] = int64(repo.PullCount)
 	mx[fmt.Sprintf("status_%s/%s", repo.User, repo.Name)] = int64(repo.Status)
