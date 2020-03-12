@@ -65,6 +65,5 @@ func loadCertificate(config *tls.Config, certFile, keyFile string) error {
 	}
 
 	config.Certificates = []tls.Certificate{cert}
-	config.BuildNameToCertificate()
 	return nil
 }
