@@ -50,7 +50,6 @@ jobs:
   - name: my_site_cert
     source: https://my_site.org:443
     check_revocation_status: yes
-
 ```
 
 ## Troubleshooting
