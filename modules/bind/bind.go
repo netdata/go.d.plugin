@@ -79,7 +79,7 @@ func (b *Bind) Init() bool {
 	client, err := web.NewHTTPClient(b.Client)
 
 	if err != nil {
-		b.Error("error on creating http client : %v", err)
+		b.Errorf("error on creating http client : %v", err)
 		return false
 	}
 
@@ -138,7 +138,7 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 		var (
 			algo    = module.Incremental
 			dimName = k
-			chartID = ""
+			chartID string
 		)
 		switch {
 		default:
@@ -227,15 +227,13 @@ func (b *Bind) collectServerStats(metrics map[string]int64, stats *serverStats) 
 		}
 		r := view.Resolver
 
-		if _, ok := r.Stats["BucketSize"]; ok {
-			delete(r.Stats, "BucketSize")
-		}
+		delete(r.Stats, "BucketSize")
 
 		for key, val := range r.Stats {
 			var (
 				algo     = module.Incremental
 				dimName  = key
-				chartKey = ""
+				chartKey string
 			)
 
 			switch {
