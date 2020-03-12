@@ -26,8 +26,6 @@ var (
 
 	// Show current daemon status information, in the same format as
 	// that produced by the OpenVPN --status directive.
-	commandStatus1 = "status 1\n"
-	commandStatus2 = "status 2\n"
 	commandStatus3 = "status 3\n"
 
 	// no description in docs ¯\(°_o)/¯
