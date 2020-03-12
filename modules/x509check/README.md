@@ -41,6 +41,18 @@ jobs:
 
 For all available options and defaults please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/x509check.conf).
 
+## Revocation status
+
+Revocation status check is disabled by default. To enable it set `check_revocation_status` to yes.
+
+```yaml
+jobs:
+  - name: my_site_cert
+    source: https://my_site.org:443
+    check_revocation_status: yes
+
+```
+
 ## Troubleshooting
 
 Check the module debug output. Run the following command as `netdata` user:
