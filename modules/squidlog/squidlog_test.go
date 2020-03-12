@@ -2,12 +2,8 @@ package squidlog
 
 import (
 	"bytes"
-	"fmt"
-	"io"
 	"io/ioutil"
-	"math/rand"
 	"testing"
-	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/metrics"
@@ -293,45 +289,45 @@ func prepareSquidCollect(t *testing.T) *SquidLog {
 }
 
 // generateLogs is used to populate 'testdata/access.log'
-func generateLogs(w io.Writer, num int) error {
-	var (
-		client    = []string{"localhost", "203.0.113.1", "203.0.113.2", "2001:db8:2ce:1", "2001:db8:2ce:2"}
-		cacheCode = []string{"TCP_CF_NEGATIVE_NEGATIVE_ABORTED", "UDP_CLIENT_STALE_MEM_ABORTED", "NONE"}
-		httpCode  = []string{"000", "100", "200", "300", "304", "400", "401", "500", "603"}
-		method    = []string{"GET", "HEAD", "POST", "COPY", "PURGE", "OPTIONS"}
-		hierCode  = []string{"HIER_PARENT_HIT", "HIER_SINGLE_PARENT", "HIER_CACHE_DIGEST_HIT", "HIER_NO_CACHE_DIGEST_DIRECT"}
-		server    = []string{"content-gateway", "203.0.113.100", "203.0.113.200", "2001:db8:2ce:a", "2001:db8:2ce:b", "-"}
-		mimeType  = []string{"application", "audio", "font", "image", "message", "model", "multipart", "video", "text"}
-	)
-
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	randFromString := func(s []string) string { return s[r.Intn(len(s))] }
-	randInt := func(min, max int) int { return r.Intn(max-min) + min }
-
-	var line string
-	for i := 0; i < num; i++ {
-		unmatched := randInt(1, 100) > 95
-		if i > 0 && unmatched {
-			line = "Unmatched! The rat the cat the dog chased killed ate the malt!\n"
-		} else {
-			// 1576177221.686     0 ::1 TCP_MISS/200 1621 GET cache_object://localhost/counters - HIER_NONE/- text/plain
-			line = fmt.Sprintf(
-				"1576177221.686     %d %s %s/%s %d %s cache_object://localhost/counters - %s/%s %s/plain\n",
-				randInt(1000, 5000),
-				randFromString(client),
-				randFromString(cacheCode),
-				randFromString(httpCode),
-				randInt(9000, 19000),
-				randFromString(method),
-				randFromString(hierCode),
-				randFromString(server),
-				randFromString(mimeType),
-			)
-		}
-		_, err := fmt.Fprint(w, line)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
+//func generateLogs(w io.Writer, num int) error {
+//	var (
+//		client    = []string{"localhost", "203.0.113.1", "203.0.113.2", "2001:db8:2ce:1", "2001:db8:2ce:2"}
+//		cacheCode = []string{"TCP_CF_NEGATIVE_NEGATIVE_ABORTED", "UDP_CLIENT_STALE_MEM_ABORTED", "NONE"}
+//		httpCode  = []string{"000", "100", "200", "300", "304", "400", "401", "500", "603"}
+//		method    = []string{"GET", "HEAD", "POST", "COPY", "PURGE", "OPTIONS"}
+//		hierCode  = []string{"HIER_PARENT_HIT", "HIER_SINGLE_PARENT", "HIER_CACHE_DIGEST_HIT", "HIER_NO_CACHE_DIGEST_DIRECT"}
+//		server    = []string{"content-gateway", "203.0.113.100", "203.0.113.200", "2001:db8:2ce:a", "2001:db8:2ce:b", "-"}
+//		mimeType  = []string{"application", "audio", "font", "image", "message", "model", "multipart", "video", "text"}
+//	)
+//
+//	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+//	randFromString := func(s []string) string { return s[r.Intn(len(s))] }
+//	randInt := func(min, max int) int { return r.Intn(max-min) + min }
+//
+//	var line string
+//	for i := 0; i < num; i++ {
+//		unmatched := randInt(1, 100) > 95
+//		if i > 0 && unmatched {
+//			line = "Unmatched! The rat the cat the dog chased killed ate the malt!\n"
+//		} else {
+//			// 1576177221.686     0 ::1 TCP_MISS/200 1621 GET cache_object://localhost/counters - HIER_NONE/- text/plain
+//			line = fmt.Sprintf(
+//				"1576177221.686     %d %s %s/%s %d %s cache_object://localhost/counters - %s/%s %s/plain\n",
+//				randInt(1000, 5000),
+//				randFromString(client),
+//				randFromString(cacheCode),
+//				randFromString(httpCode),
+//				randInt(9000, 19000),
+//				randFromString(method),
+//				randFromString(hierCode),
+//				randFromString(server),
+//				randFromString(mimeType),
+//			)
+//		}
+//		_, err := fmt.Fprint(w, line)
+//		if err != nil {
+//			return err
+//		}
+//	}
+//	return nil
+//}
