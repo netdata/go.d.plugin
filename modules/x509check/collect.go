@@ -2,32 +2,49 @@ package x509check
 
 import (
 	"crypto/x509"
+	"fmt"
 	"time"
+
+	"github.com/cloudflare/cfssl/revoke"
 )
 
 func (x *X509Check) collect() (map[string]int64, error) {
 	certs, err := x.prov.certificates()
-
 	if err != nil {
-		x.Error(err)
-		return nil, nil
+		return nil, err
 	}
 
 	if len(certs) == 0 {
-		x.Errorf("no certificate was provided by '%s'", x.Config.Source)
-		return nil, nil
+		return nil, fmt.Errorf("no certificate was provided by '%s'", x.Config.Source)
 	}
 
-	mx := map[string]int64{
-		"expiry":                         calcExpiry(certs),
-		"days_until_expiration_warning":  x.DaysUntilWarn,
-		"days_until_expiration_critical": x.DaysUntilCrit,
+	mx := make(map[string]int64)
+
+	x.collectExpiration(mx, certs)
+	if x.CheckRevocation {
+		x.collectRevocation(mx, certs)
 	}
 
 	return mx, nil
 }
 
-func calcExpiry(certs []*x509.Certificate) int64 {
-	now := time.Now()
-	return int64(certs[0].NotAfter.Sub(now).Seconds())
+func (x X509Check) collectExpiration(mx map[string]int64, certs []*x509.Certificate) {
+	expiry := certs[0].NotAfter.Sub(time.Now()).Seconds()
+	mx["expiry"] = int64(expiry)
+	mx["days_until_expiration_warning"] = x.DaysUntilWarn
+	mx["days_until_expiration_critical"] = x.DaysUntilCrit
+
+}
+
+func (x X509Check) collectRevocation(mx map[string]int64, certs []*x509.Certificate) {
+	rev, ok, err := revoke.VerifyCertificateError(certs[0])
+	if err != nil {
+		x.Debug(err)
+	}
+	switch {
+	case ok && rev:
+		mx["revoked"] = 1
+	case ok && !rev:
+		mx["revoked"] = 0
+	}
 }

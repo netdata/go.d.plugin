@@ -1,12 +1,13 @@
 # x509 certificates monitoring with Netdata
 
-This module checks the time until a x509 certificate expiration.
+This module checks the time until a x509 certificate expiration and its revocation status.
 
 ## Charts
 
-It produces only one chart:
+It produces the following charts:
 
 -   Time Until Certificate Expiration in `seconds`
+-   Revocation Status in `status`
  
 ## Configuration
 
