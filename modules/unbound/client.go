@@ -90,7 +90,7 @@ func (c *client) send(command string) (lines []string, err error) {
 	if err = c.connect(); err != nil {
 		return nil, err
 	}
-	defer c.disconnect()
+	defer func() { _ = c.disconnect() }()
 
 	if _, err = c.write(command); err != nil {
 		return nil, err

@@ -14,7 +14,7 @@ func (x *X509Check) collect() (map[string]int64, error) {
 	}
 
 	if len(certs) == 0 {
-		x.Error("no certificate was provided by '%s'", x.Config.Source)
+		x.Errorf("no certificate was provided by '%s'", x.Config.Source)
 		return nil, nil
 	}
 

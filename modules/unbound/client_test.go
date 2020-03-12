@@ -106,7 +106,7 @@ func prepareClientServer(respNumLines int) (*client, *tcpServer) {
 		addr:         "127.0.0.1:38002",
 		respNumLines: respNumLines,
 	}
-	go srv.Run()
+	go func() { _ = srv.Run() }()
 
 	cl := newClient(clientConfig{
 		address: srv.addr,

@@ -18,13 +18,11 @@ func (t *throttledCaller) call(job func()) {
 	t.wg.Add(1)
 	go func() {
 		defer t.wg.Done()
-		select {
-		case t.limit <- struct{}{}:
-			defer func() {
-				<-t.limit
-			}()
-			job()
-		}
+		t.limit <- struct{}{}
+		defer func() {
+			<-t.limit
+		}()
+		job()
 	}()
 }
 

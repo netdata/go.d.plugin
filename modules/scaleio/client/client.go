@@ -277,7 +277,9 @@ func decodeVersion(reader io.Reader) (ver Version, err error) {
 	if len(parts) != 2 {
 		return ver, fmt.Errorf("can't parse: %s", string(bs))
 	}
-	ver.Major, err = strconv.ParseInt(parts[0], 10, 64)
+	if ver.Major, err = strconv.ParseInt(parts[0], 10, 64); err != nil {
+		return ver, err
+	}
 	ver.Minor, err = strconv.ParseInt(parts[1], 10, 64)
 	return ver, err
 }

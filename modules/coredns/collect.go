@@ -24,10 +24,9 @@ var (
 	//   example:
 	//   coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="dropped"} 2
 	//   coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="ya.ru."} 2
-	metricRequestCountTotal            = "coredns_dns_request_count_total"
-	metricRequestTypeCountTotal        = "coredns_dns_request_type_count_total"
-	metricResponseRcodeCountTotal      = "coredns_dns_response_rcode_count_total"
-	metricRequestDurationSecondsBucket = "coredns_dns_request_duration_seconds_bucket"
+	metricRequestCountTotal       = "coredns_dns_request_count_total"
+	metricRequestTypeCountTotal   = "coredns_dns_request_type_count_total"
+	metricResponseRcodeCountTotal = "coredns_dns_response_rcode_count_total"
 )
 
 func (cd *CoreDNS) collect() (map[string]int64, error) {

@@ -51,6 +51,9 @@ func newSoapClient(config Config) (*soap.Client, error) {
 	soapClient := soap.NewClient(soapURL, config.InsecureSkipVerify)
 
 	tlsConfig, err := web.NewTLSConfig(config.ClientTLSConfig)
+	if err != nil {
+		return nil, err
+	}
 	if tlsConfig != nil && len(tlsConfig.Certificates) > 0 {
 		soapClient.SetCertificate(tlsConfig.Certificates[0])
 	}
