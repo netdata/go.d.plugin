@@ -29,7 +29,7 @@ func (x *X509Check) collect() (map[string]int64, error) {
 }
 
 func (x X509Check) collectExpiration(mx map[string]int64, certs []*x509.Certificate) {
-	expiry := certs[0].NotAfter.Sub(time.Now()).Seconds()
+	expiry := time.Until(certs[0].NotAfter).Seconds()
 	mx["expiry"] = int64(expiry)
 	mx["days_until_expiration_warning"] = x.DaysUntilWarn
 	mx["days_until_expiration_critical"] = x.DaysUntilCrit
