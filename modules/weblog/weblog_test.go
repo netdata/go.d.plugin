@@ -3,14 +3,11 @@ package weblog
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
-	"math/rand"
 	"reflect"
 	"strconv"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/metrics"
@@ -492,7 +489,7 @@ func testPortChart(t *testing.T, w *WebLog) {
 }
 
 func testSchemeChart(t *testing.T, w *WebLog) {
-	if w.mx.ReqHTTPScheme.Value() == 0 && w.mx.ReqHTTPScheme.Value() == 0 {
+	if w.mx.ReqHTTPScheme.Value() == 0 && w.mx.ReqHTTPSScheme.Value() == 0 {
 		assert.Falsef(t, w.Charts().Has(reqByScheme.ID), "chart '%s' is created", reqByScheme.ID)
 	} else {
 		assert.Truef(t, w.Charts().Has(reqByScheme.ID), "chart '%s' is not created", reqByScheme.ID)
@@ -941,59 +938,59 @@ func prepareWebLogCollectCustom(t *testing.T) *WebLog {
 }
 
 // generateLogs is used to populate 'testdata/full.log'
-func generateLogs(w io.Writer, num int) error {
-	var (
-		vhost     = []string{"localhost", "test.example.com", "test.example.org", "198.51.100.1", "2001:db8:1ce::1"}
-		scheme    = []string{"http", "https"}
-		client    = []string{"localhost", "203.0.113.1", "203.0.113.2", "2001:db8:2ce:1", "2001:db8:2ce:2"}
-		method    = []string{"GET", "HEAD", "POST"}
-		url       = []string{"example.other", "example.com", "example.org", "example.net"}
-		version   = []string{"1.1", "2", "2.0"}
-		status    = []int{100, 101, 200, 201, 300, 301, 400, 401} // no 5xx on purpose
-		sslProto  = []string{"TLSv1", "TLSv1.1", "TLSv1.2", "TLSv1.3", "SSLv2", "SSLv3"}
-		sslCipher = []string{"ECDHE-RSA-AES256-SHA", "DHE-RSA-AES256-SHA", "AES256-SHA", "PSK-RC4-SHA"}
-
-		customField1 = []string{"dark", "light"}
-		customField2 = []string{"beer", "wine"}
-	)
-
-	var line string
-	for i := 0; i < num; i++ {
-		unmatched := randInt(1, 100) > 90
-		if unmatched {
-			line = "Unmatched! The rat the cat the dog chased killed ate the malt!\n"
-		} else {
-			// test.example.com:80 203.0.113.1 - - "GET / HTTP/1.1" 200 1674 2674 3674 4674 http TLSv1 AES256-SHA dark beer
-			line = fmt.Sprintf(
-				"%s:%d %s - - [22/Mar/2009:09:30:31 +0100] \"%s /%s HTTP/%s\" %d %d %d %d %d %s %s %s %s %s\n",
-				randFromString(vhost),
-				randInt(80, 85),
-				randFromString(client),
-				randFromString(method),
-				randFromString(url),
-				randFromString(version),
-				randFromInt(status),
-				randInt(1000, 5000),
-				randInt(1000, 5000),
-				randInt(1, 500),
-				randInt(1, 500),
-				randFromString(scheme),
-				randFromString(sslProto),
-				randFromString(sslCipher),
-				randFromString(customField1),
-				randFromString(customField2),
-			)
-		}
-		_, err := fmt.Fprint(w, line)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-var r = rand.New(rand.NewSource(time.Now().UnixNano()))
-
-func randFromString(s []string) string { return s[r.Intn(len(s))] }
-func randFromInt(s []int) int          { return s[r.Intn(len(s))] }
-func randInt(min, max int) int         { return r.Intn(max-min) + min }
+//func generateLogs(w io.Writer, num int) error {
+//	var (
+//		vhost     = []string{"localhost", "test.example.com", "test.example.org", "198.51.100.1", "2001:db8:1ce::1"}
+//		scheme    = []string{"http", "https"}
+//		client    = []string{"localhost", "203.0.113.1", "203.0.113.2", "2001:db8:2ce:1", "2001:db8:2ce:2"}
+//		method    = []string{"GET", "HEAD", "POST"}
+//		url       = []string{"example.other", "example.com", "example.org", "example.net"}
+//		version   = []string{"1.1", "2", "2.0"}
+//		status    = []int{100, 101, 200, 201, 300, 301, 400, 401} // no 5xx on purpose
+//		sslProto  = []string{"TLSv1", "TLSv1.1", "TLSv1.2", "TLSv1.3", "SSLv2", "SSLv3"}
+//		sslCipher = []string{"ECDHE-RSA-AES256-SHA", "DHE-RSA-AES256-SHA", "AES256-SHA", "PSK-RC4-SHA"}
+//
+//		customField1 = []string{"dark", "light"}
+//		customField2 = []string{"beer", "wine"}
+//	)
+//
+//	var line string
+//	for i := 0; i < num; i++ {
+//		unmatched := randInt(1, 100) > 90
+//		if unmatched {
+//			line = "Unmatched! The rat the cat the dog chased killed ate the malt!\n"
+//		} else {
+//			// test.example.com:80 203.0.113.1 - - "GET / HTTP/1.1" 200 1674 2674 3674 4674 http TLSv1 AES256-SHA dark beer
+//			line = fmt.Sprintf(
+//				"%s:%d %s - - [22/Mar/2009:09:30:31 +0100] \"%s /%s HTTP/%s\" %d %d %d %d %d %s %s %s %s %s\n",
+//				randFromString(vhost),
+//				randInt(80, 85),
+//				randFromString(client),
+//				randFromString(method),
+//				randFromString(url),
+//				randFromString(version),
+//				randFromInt(status),
+//				randInt(1000, 5000),
+//				randInt(1000, 5000),
+//				randInt(1, 500),
+//				randInt(1, 500),
+//				randFromString(scheme),
+//				randFromString(sslProto),
+//				randFromString(sslCipher),
+//				randFromString(customField1),
+//				randFromString(customField2),
+//			)
+//		}
+//		_, err := fmt.Fprint(w, line)
+//		if err != nil {
+//			return err
+//		}
+//	}
+//	return nil
+//}
+//
+//var r = rand.New(rand.NewSource(time.Now().UnixNano()))
+//
+//func randFromString(s []string) string { return s[r.Intn(len(s))] }
+//func randFromInt(s []int) int          { return s[r.Intn(len(s))] }
+//func randInt(min, max int) int         { return r.Intn(max-min) + min }
