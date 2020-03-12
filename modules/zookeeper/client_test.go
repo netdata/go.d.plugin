@@ -17,8 +17,9 @@ const (
 
 func Test_clientFetch(t *testing.T) {
 	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 10}
-	go srv.Run()
+	go func() { _ = srv.Run() }()
 	defer srv.Close()
+
 	time.Sleep(time.Second)
 
 	c := newClient(clientConfig{
@@ -38,8 +39,9 @@ func Test_clientFetch(t *testing.T) {
 
 func Test_clientFetchReadLineLimitExceeded(t *testing.T) {
 	srv := &tcpServer{addr: testServerAddress, rowsNumResp: maxLinesToRead + 1}
-	go srv.Run()
+	go func() { _ = srv.Run() }()
 	defer srv.Close()
+
 	time.Sleep(time.Second)
 
 	c := newClient(clientConfig{
@@ -75,13 +77,10 @@ func (t *tcpServer) handleConnections() (err error) {
 	for {
 		conn, err := t.server.Accept()
 		if err != nil || conn == nil {
-			err = errors.New("could not accept connection")
-			break
+			return errors.New("could not accept connection")
 		}
-
 		go t.handleConnection(conn)
 	}
-	return
 }
 
 func (t *tcpServer) handleConnection(conn net.Conn) {
@@ -89,17 +88,13 @@ func (t *tcpServer) handleConnection(conn net.Conn) {
 	_ = conn.SetDeadline(time.Now().Add(time.Second * 2))
 
 	rw := bufio.NewReadWriter(bufio.NewReader(conn), bufio.NewWriter(conn))
-	for {
-		req, err := rw.ReadString('\n')
-		if err != nil {
-			_, _ = rw.WriteString("failed to read input")
-			_ = rw.Flush()
-			return
-		}
-
+	req, err := rw.ReadString('\n')
+	if err != nil {
+		_, _ = rw.WriteString("failed to read input")
+		_ = rw.Flush()
+	} else {
 		resp := strings.Repeat(req, t.rowsNumResp)
 		_, _ = rw.WriteString(resp)
 		_ = rw.Flush()
-		return
 	}
 }
