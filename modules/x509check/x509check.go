@@ -6,6 +6,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 
+	cfssllog "github.com/cloudflare/cfssl/log"
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -17,6 +18,7 @@ func init() {
 		Create: func() module.Module { return New() },
 	}
 
+	cfssllog.Level = cfssllog.LevelFatal
 	module.Register("x509check", creator)
 }
 
@@ -36,6 +38,7 @@ type Config struct {
 	Source              string
 	DaysUntilWarn       int64 `yaml:"days_until_expiration_warning"`
 	DaysUntilCrit       int64 `yaml:"days_until_expiration_critical"`
+	CheckRevocation     bool  `yaml:"check_revocation_status"`
 }
 
 type X509Check struct {
@@ -78,7 +81,10 @@ func (x *X509Check) Check() bool {
 	return len(x.Collect()) > 0
 }
 
-func (X509Check) Charts() *Charts {
+func (x X509Check) Charts() *Charts {
+	if x.CheckRevocation {
+		return withRevocationCharts.Copy()
+	}
 	return charts.Copy()
 }
 

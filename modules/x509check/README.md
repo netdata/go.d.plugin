@@ -1,12 +1,13 @@
 # x509 certificates monitoring with Netdata
 
-This module checks the time until a x509 certificate expiration.
+This module checks the time until a x509 certificate expiration and its revocation status.
 
 ## Charts
 
-It produces only one chart:
+It produces the following charts:
 
 -   Time Until Certificate Expiration in `seconds`
+-   Revocation Status in `status`
  
 ## Configuration
 
@@ -39,6 +40,17 @@ jobs:
 ```
 
 For all available options and defaults please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/x509check.conf).
+
+## Revocation status
+
+Revocation status check is disabled by default. To enable it set `check_revocation_status` to yes.
+
+```yaml
+jobs:
+  - name: my_site_cert
+    source: https://my_site.org:443
+    check_revocation_status: yes
+```
 
 ## Troubleshooting
 

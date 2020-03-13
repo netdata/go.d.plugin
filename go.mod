@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/Wing924/ltsv v0.3.1
 	github.com/axiomhq/hyperloglog v0.0.0-20191112132149-a4c4c47bc57f
+	github.com/cloudflare/cfssl v1.4.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/miekg/dns v1.1.27
