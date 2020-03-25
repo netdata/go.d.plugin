@@ -98,6 +98,14 @@ Configurations are written in [YAML](http://yaml.org/).
 -   [plugin configuration](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf)
 -   [specific module configuration](https://github.com/netdata/go.d.plugin/tree/master/config/go.d)
 
+## Developing
+
+-   Add your module to the [modules dir](https://github.com/netdata/go.d.plugin/tree/master/modules).
+-   Import the module in the [main.go](https://github.com/netdata/go.d.plugin/blob/master/cmd/godplugin/main.go).
+-   To build it execute `make` from the plugin root dir or `hack/go-build.sh`.
+-   Run it in the debug mode `bin/godplugin -d -m <MODULE_NAME>`.
+-   Use `make clean` when you are done with testing.
+
 ## Troubleshooting
 
 Plugin CLI:
