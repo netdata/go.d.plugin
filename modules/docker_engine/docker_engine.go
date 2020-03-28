@@ -1,17 +1,13 @@
 package docker_engine
 
 import (
+	"errors"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
-)
-
-const (
-	defaultURL         = "http://127.0.0.1:9323/metrics"
-	defaultHTTPTimeout = time.Second * 2
 )
 
 func init() {
@@ -22,12 +18,11 @@ func init() {
 	module.Register("docker_engine", creator)
 }
 
-// New creates DockerEngine with default values.
 func New() *DockerEngine {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{UserURL: "http://127.0.0.1:9323/metrics"},
+			Client:  web.Client{Timeout: web.Duration{Duration: time.Second}},
 		},
 	}
 	return &DockerEngine{
@@ -35,73 +30,81 @@ func New() *DockerEngine {
 	}
 }
 
-// Config is the DockerEngine module configuration.
-type Config struct {
-	web.HTTP `yaml:",inline"`
+type (
+	Config struct {
+		web.HTTP `yaml:",inline"`
+	}
+	DockerEngine struct {
+		module.Base
+		Config             `yaml:",inline"`
+		prom               prometheus.Prometheus
+		isSwarmManager     bool
+		hasContainerStates bool
+	}
+)
+
+func (de DockerEngine) validateConfig() error {
+	if de.Config.UserURL == "" {
+		return errors.New("URL is not set")
+	}
+	return nil
 }
 
-// DockerEngine DockerEngine module.
-type DockerEngine struct {
-	module.Base
-	Config         `yaml:",inline"`
-	prom           prometheus.Prometheus
-	isSwarmManager bool
-}
-
-// Cleanup makes cleanup.
-func (DockerEngine) Cleanup() {}
-
-// Init makes initialization.
-func (de *DockerEngine) Init() bool {
-	if err := de.ParseUserURL(); err != nil {
-		de.Errorf("error on parsing url '%s' : %v", de.UserURL, err)
-		return false
-	}
-
-	if de.URL.Host == "" {
-		de.Error("URL is not set")
-		return false
-	}
-
+func (de *DockerEngine) initClient() error {
 	client, err := web.NewHTTPClient(de.Client)
 	if err != nil {
-		de.Errorf("error on creating http client : %v", err)
-		return false
+		return err
 	}
 
 	de.prom = prometheus.New(client, de.Request)
+	return nil
+}
 
+func (de *DockerEngine) Init() bool {
+	if err := de.validateConfig(); err != nil {
+		de.Errorf("config validation: %v", err)
+		return false
+	}
+	if err := de.initClient(); err != nil {
+		de.Errorf("client initialization: %v", err)
+		return false
+	}
 	return true
 }
 
-// Check makes check.
 func (de *DockerEngine) Check() bool {
 	return len(de.Collect()) > 0
 }
 
-// Charts creates Charts.
 func (de DockerEngine) Charts() *Charts {
-	if !de.isSwarmManager {
-		return charts.Copy()
+	cs := charts.Copy()
+	if !de.hasContainerStates {
+		if err := cs.Remove("engine_daemon_container_states_containers"); err != nil {
+			de.Warning(err)
+		}
 	}
 
-	c := charts.Copy()
-	err := c.Add(*swarmManagerCharts.Copy()...)
-	if err != nil {
-		de.Error(err)
-		return nil
+	if !de.isSwarmManager {
+		return cs
 	}
-	return c
+
+	if err := cs.Add(*swarmManagerCharts.Copy()...); err != nil {
+		de.Warning(err)
+	}
+	return cs
 }
 
-// Collect collects metrics.
 func (de *DockerEngine) Collect() map[string]int64 {
 	mx, err := de.collect()
-
 	if err != nil {
 		de.Error(err)
 		return nil
 	}
 
+	if len(mx) == 0 {
+		return nil
+	}
 	return mx
 }
+
+func (DockerEngine) Cleanup() {}

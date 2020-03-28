@@ -1,75 +1,72 @@
 package docker_engine
 
-import (
-	mtx "github.com/netdata/go.d.plugin/pkg/metrics"
-)
-
 type metrics struct {
 	Container struct {
 		Actions struct {
-			Changes mtx.Gauge `stm:"changes"`
-			Commit  mtx.Gauge `stm:"commit"`
-			Create  mtx.Gauge `stm:"create"`
-			Delete  mtx.Gauge `stm:"delete"`
-			Start   mtx.Gauge `stm:"start"`
+			Changes float64 `stm:"changes"`
+			Commit  float64 `stm:"commit"`
+			Create  float64 `stm:"create"`
+			Delete  float64 `stm:"delete"`
+			Start   float64 `stm:"start"`
 		} `stm:"actions"`
-		States struct {
-			Paused  mtx.Gauge `stm:"paused"`
-			Running mtx.Gauge `stm:"running"`
-			Stopped mtx.Gauge `stm:"stopped"`
-		} `stm:"states"`
+		States *containerStates `stm:"states"`
 	} `stm:"container"`
 	Builder struct {
 		FailsByReason struct {
-			BuildCanceled                mtx.Gauge `stm:"build_canceled"`
-			BuildTargetNotReachableError mtx.Gauge `stm:"build_target_not_reachable_error"`
-			CommandNotSupportedError     mtx.Gauge `stm:"command_not_supported_error"`
-			DockerfileEmptyError         mtx.Gauge `stm:"dockerfile_empty_error"`
-			DockerfileSyntaxError        mtx.Gauge `stm:"dockerfile_syntax_error"`
-			ErrorProcessingCommandsError mtx.Gauge `stm:"error_processing_commands_error"`
-			MissingOnbuildArgumentsError mtx.Gauge `stm:"missing_onbuild_arguments_error"`
-			UnknownInstructionError      mtx.Gauge `stm:"unknown_instruction_error"`
+			BuildCanceled                float64 `stm:"build_canceled"`
+			BuildTargetNotReachableError float64 `stm:"build_target_not_reachable_error"`
+			CommandNotSupportedError     float64 `stm:"command_not_supported_error"`
+			DockerfileEmptyError         float64 `stm:"dockerfile_empty_error"`
+			DockerfileSyntaxError        float64 `stm:"dockerfile_syntax_error"`
+			ErrorProcessingCommandsError float64 `stm:"error_processing_commands_error"`
+			MissingOnbuildArgumentsError float64 `stm:"missing_onbuild_arguments_error"`
+			UnknownInstructionError      float64 `stm:"unknown_instruction_error"`
 		} `stm:"fails"`
 	} `stm:"builder"`
 	HealthChecks struct {
-		Failed mtx.Gauge `stm:"failed"`
+		Failed float64 `stm:"failed"`
 	} `stm:"health_checks"`
-
 	SwarmManager *swarmManager `stm:"swarm_manager"`
 }
 
+type containerStates struct {
+	Paused  float64 `stm:"paused"`
+	Running float64 `stm:"running"`
+	Stopped float64 `stm:"stopped"`
+}
+
 type swarmManager struct {
-	IsLeader mtx.Gauge `stm:"leader"`
-	Configs  mtx.Gauge `stm:"configs_total"`
-	Networks mtx.Gauge `stm:"networks_total"`
-	Secrets  mtx.Gauge `stm:"secrets_total"`
-	Services mtx.Gauge `stm:"services_total"`
+	IsLeader float64 `stm:"leader"`
+	Configs  float64 `stm:"configs_total"`
+	Networks float64 `stm:"networks_total"`
+	Secrets  float64 `stm:"secrets_total"`
+	Services float64 `stm:"services_total"`
 	Nodes    struct {
-		Total    mtx.Gauge `stm:"total"`
+		Total    float64 `stm:"total"`
 		PerState struct {
-			Disconnected mtx.Gauge `stm:"disconnected"`
-			Down         mtx.Gauge `stm:"down"`
-			Ready        mtx.Gauge `stm:"ready"`
-			Unknown      mtx.Gauge `stm:"unknown"`
+			Disconnected float64 `stm:"disconnected"`
+			Down         float64 `stm:"down"`
+			Ready        float64 `stm:"ready"`
+			Unknown      float64 `stm:"unknown"`
 		} `stm:"state"`
 	} `stm:"nodes"`
 	Tasks struct {
-		Total    mtx.Gauge `stm:"total"`
+		Total    float64 `stm:"total"`
 		PerState struct {
-			Accepted  mtx.Gauge `stm:"accepted"`
-			Assigned  mtx.Gauge `stm:"assigned"`
-			Complete  mtx.Gauge `stm:"complete"`
-			Failed    mtx.Gauge `stm:"failed"`
-			New       mtx.Gauge `stm:"new"`
-			Orphaned  mtx.Gauge `stm:"orphaned"`
-			Pending   mtx.Gauge `stm:"pending"`
-			Preparing mtx.Gauge `stm:"preparing"`
-			Ready     mtx.Gauge `stm:"ready"`
-			Rejected  mtx.Gauge `stm:"rejected"`
-			Remove    mtx.Gauge `stm:"remove"`
-			Running   mtx.Gauge `stm:"running"`
-			Shutdown  mtx.Gauge `stm:"shutdown"`
-			Starting  mtx.Gauge `stm:"starting"`
+			Accepted  float64 `stm:"accepted"`
+			Assigned  float64 `stm:"assigned"`
+			Complete  float64 `stm:"complete"`
+			Failed    float64 `stm:"failed"`
+			New       float64 `stm:"new"`
+			Orphaned  float64 `stm:"orphaned"`
+			Pending   float64 `stm:"pending"`
+			Preparing float64 `stm:"preparing"`
+			Ready     float64 `stm:"ready"`
+			Rejected  float64 `stm:"rejected"`
+			Remove    float64 `stm:"remove"`
+			Running   float64 `stm:"running"`
+			Shutdown  float64 `stm:"shutdown"`
+			Starting  float64 `stm:"starting"`
 		} `stm:"state"`
 	} `stm:"tasks"`
 }
