@@ -1,0 +1,7 @@
+extends: default
+
+yaml-files:
+  - 'config/*.conf'
+
+rules:
+  document-start: disable
