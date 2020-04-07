@@ -50,7 +50,7 @@ Per View Statistics (the following set will be added for each bind view):
 ## Configuration
 
 Edit the `go.d/bind.conf` configuration file using `edit-config` from the your agent's [config
-directory](/docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
+directory](../../../../docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
