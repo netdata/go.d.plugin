@@ -2,10 +2,8 @@ package whoisquery
 
 import (
 	"errors"
-	"time"
 
 	"github.com/netdata/go-orchestrator/module"
-	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -15,23 +13,19 @@ func init() {
 		},
 		Create: func() module.Module { return New() },
 	}
-
 	module.Register("whoisquery", creator)
 }
 
 func New() *WhoisQuery {
 	return &WhoisQuery{
 		Config: Config{
-			Timeout:       web.Duration{Duration: time.Second * 2},
-			DaysUntilWarn: 14,
-			DaysUntilCrit: 7,
+			DaysUntilWarn: 90,
+			DaysUntilCrit: 30,
 		},
 	}
 }
 
 type Config struct {
-	web.ClientTLSConfig `yaml:",inline"`
-	Timeout             web.Duration
 	Source              string
 	DaysUntilWarn       int64 `yaml:"days_until_expiration_warning"`
 	DaysUntilCrit       int64 `yaml:"days_until_expiration_critical"`
@@ -55,7 +49,6 @@ func (x *WhoisQuery) initProvider() error {
 	if err != nil {
 		return err
 	}
-
 	x.prov = p
 	return nil
 }

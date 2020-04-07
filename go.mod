@@ -8,6 +8,8 @@ require (
 	github.com/cloudflare/cfssl v1.4.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/jessevdk/go-flags v1.4.0
+	github.com/likexian/whois-go v1.5.0
+	github.com/likexian/whois-parser-go v1.10.4
 	github.com/miekg/dns v1.1.27
 	github.com/netdata/go-orchestrator v0.0.0-20200312103602-3597f4b39706
 	github.com/prometheus/common v0.9.0 // indirect

@@ -1,0 +1,129 @@
+package whoisquery
+
+import (
+	"errors"
+	"testing"
+
+	"github.com/netdata/go-orchestrator/module"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestNew(t *testing.T) {
+	whoisquery := New()
+
+	assert.Implements(t, (*module.Module)(nil), whoisquery)
+}
+
+func TestWhoisQuery_Cleanup(t *testing.T) {
+	New().Cleanup()
+}
+
+func TestWhoisQuery_Charts(t *testing.T) {
+	whoisquery := New()
+
+	assert.NotNil(t, whoisquery.Charts())
+}
+
+func TestWhoisQuery_Init(t *testing.T) {
+	const net = iota
+	tests := map[string]struct {
+		config       Config
+		providerType int
+		err          bool
+	}{
+		"ok from net": {
+			config:       Config{Source: "example.org"},
+			providerType: net,
+		},
+		"empty source": {
+			config: Config{Source: ""},
+			err:    true,
+		},
+		"with http": {
+			config: Config{Source: "http://example.org"},
+			err:    true,
+		},
+		"with https": {
+			config: Config{Source: "https://example.org"},
+			err:    true,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			whoisquery := New()
+			whoisquery.Config = test.config
+
+			if test.err {
+				assert.False(t, whoisquery.Init())
+			} else {
+				require.True(t, whoisquery.Init())
+
+				var typeOK bool
+				if test.providerType == net {
+					_, typeOK = whoisquery.prov.(*fromNet)
+				}
+
+				assert.True(t, typeOK)
+			}
+		})
+	}
+}
+
+func TestWhoisQuery_Check(t *testing.T) {
+	whoisquery := New()
+	whoisquery.prov = &mockProvider{remTime: 12345.678}
+
+	assert.True(t, whoisquery.Check())
+}
+
+func TestWhoisQuery_Check_ReturnsFalseOnProviderError(t *testing.T) {
+	whoisquery := New()
+	whoisquery.prov = &mockProvider{err: true}
+
+	assert.False(t, whoisquery.Check())
+}
+
+func TestWhoisQuery_Collect(t *testing.T) {
+	whoisquery := New()
+	whoisquery.prov = &mockProvider{remTime: 12345.678}
+
+	collected := whoisquery.Collect()
+
+	assert.NotZero(t, collected)
+	ensureCollectedHasAllChartsDimsVarsIDs(t, whoisquery, collected)
+}
+
+func TestWhoisQuery_Collect_ReturnsNilOnProviderError(t *testing.T) {
+	whoisquery := New()
+	whoisquery.prov = &mockProvider{err: true}
+
+	assert.Nil(t, whoisquery.Collect())
+}
+
+
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, whoisquery *WhoisQuery, collected map[string]int64) {
+	for _, chart := range *whoisquery.Charts() {
+		for _, dim := range chart.Dims {
+			_, ok := collected[dim.ID]
+			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+		for _, v := range chart.Vars {
+			_, ok := collected[v.ID]
+			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
+		}
+	}
+}
+
+type mockProvider struct {
+	remTime float64
+	err   bool
+}
+
+func (m mockProvider) remainingTime() (float64, error) {
+	if m.err {
+		return -1, errors.New("mock remaining time error")
+	}
+	return m.remTime, nil
+}

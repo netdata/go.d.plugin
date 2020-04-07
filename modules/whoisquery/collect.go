@@ -15,9 +15,7 @@ func (x *WhoisQuery) collect() (map[string]int64, error) {
 	}
 
 	mx := make(map[string]int64)
-
 	x.collectExpiration(mx, remainingTime)
-
 	return mx, nil
 }
 
