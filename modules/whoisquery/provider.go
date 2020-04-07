@@ -15,7 +15,6 @@ type provider interface {
 
 type fromNet struct {
 	domainAddress    string
-	timeout   time.Duration
 }
 
 func newProvider(config Config) (provider, error) {
@@ -28,20 +27,22 @@ func (f fromNet) remainingTime() (float64, error) {
 	
 	raw, err := whois.Whois(f.domainAddress)
 
-	result, err := whoisparser.Parse(raw)
 	if err == nil {
+		result, parserErr := whoisparser.Parse(raw)
+		if parserErr == nil {
 
-		expiryRaw := result.Domain.ExpirationDate
+			expiryRaw := result.Domain.ExpirationDate
 
-		// The result only has year-month-day
-		isExpiryDateOnly, _ := regexp.MatchString(`^\d{4}-\d{1,2}-\d{1,2}$`, expiryRaw)
-		if isExpiryDateOnly {
-			expiryRaw += "T0:00:00Z"
+			// The result only has year-month-day
+			isExpiryDateOnly, _ := regexp.MatchString(`^\d{4}-\d{1,2}-\d{1,2}$`, expiryRaw)
+			if isExpiryDateOnly {
+				expiryRaw += "T0:00:00Z"
+			}
+			expiry, _ := time.Parse(time.RFC3339, expiryRaw)
+			remainingToExpireSeconds := time.Until(expiry).Seconds()
+			return remainingToExpireSeconds, nil
 		}
-		expiry, _ := time.Parse(time.RFC3339, expiryRaw)
-		remainingToExpire := expiry.Sub(time.Now())
-		remainingToExpireSeconds := remainingToExpire.Seconds()
-		return remainingToExpireSeconds, nil
 	}
+
 	return -1, fmt.Errorf("%v", err)
 }
