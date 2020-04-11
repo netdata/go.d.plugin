@@ -26,9 +26,9 @@ func New() *WhoisQuery {
 }
 
 type Config struct {
-	Source              string
-	DaysUntilWarn       int64 `yaml:"days_until_expiration_warning"`
-	DaysUntilCrit       int64 `yaml:"days_until_expiration_critical"`
+	Source        string
+	DaysUntilWarn int64 `yaml:"days_until_expiration_warning"`
+	DaysUntilCrit int64 `yaml:"days_until_expiration_critical"`
 }
 
 type WhoisQuery struct {

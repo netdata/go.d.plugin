@@ -92,8 +92,8 @@ func TestWhoisQuery_Collect(t *testing.T) {
 	collected := whoisquery.Collect()
 
 	expected := map[string]int64{
-		"expiry"                        : 12345,
-		"days_until_expiration_warning" : 90,
+		"expiry":                         12345,
+		"days_until_expiration_warning":  90,
 		"days_until_expiration_critical": 30,
 	}
 
@@ -108,7 +108,6 @@ func TestWhoisQuery_Collect_ReturnsNilOnProviderError(t *testing.T) {
 
 	assert.Nil(t, whoisquery.Collect())
 }
-
 
 func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, whoisquery *WhoisQuery, collected map[string]int64) {
 	for _, chart := range *whoisquery.Charts() {
@@ -125,7 +124,7 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, whoisquery *WhoisQuery
 
 type mockProvider struct {
 	remTime float64
-	err   bool
+	err     bool
 }
 
 func (m mockProvider) remainingTime() (float64, error) {

@@ -14,14 +14,14 @@ type provider interface {
 }
 
 type fromNet struct {
-	domainAddress    string
+	domainAddress string
 }
 
 func newProvider(config Config) (provider, error) {
-	sourceDomain := string(config.Source)
+	sourceDomain := config.Source
 	validDomain, _ := regexp.MatchString(`^[a-zA-Z0-9\-]+\.[a-zA-Z0-9]+$`, sourceDomain)
-	if (!validDomain) {
-		return nil, fmt.Errorf("Incorrect domain pattern: %v", sourceDomain)
+	if !validDomain {
+		return nil, fmt.Errorf("incorrect domain pattern: %v", sourceDomain)
 	}
 	return &fromNet{domainAddress: sourceDomain}, nil
 }
@@ -29,12 +29,12 @@ func newProvider(config Config) (provider, error) {
 func (f fromNet) remainingTime() (float64, error) {
 	raw, err := whois.Whois(f.domainAddress)
 	if err != nil {
-		return 0, fmt.Errorf("%v", err)
+		return 0, err
 	}
 
-	result, parserErr := whoisparser.Parse(raw)
-	if parserErr != nil {
-		return 0, fmt.Errorf("%v", parserErr)
+	result, err := whoisparser.Parse(raw)
+	if err != nil {
+		return 0, err
 	}
 
 	expiryRaw := result.Domain.ExpirationDate
@@ -45,5 +45,5 @@ func (f fromNet) remainingTime() (float64, error) {
 	}
 	expiry, _ := time.Parse(time.RFC3339, expiryRaw)
 	remainingToExpireSeconds := time.Until(expiry).Seconds()
-	return remainingToExpireSeconds, nil	
+	return remainingToExpireSeconds, nil
 }

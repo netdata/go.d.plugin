@@ -26,4 +26,3 @@ var charts = Charts{
 		},
 	},
 }
-
