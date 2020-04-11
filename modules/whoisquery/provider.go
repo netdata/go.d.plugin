@@ -29,12 +29,12 @@ func newProvider(config Config) (provider, error) {
 func (f fromNet) remainingTime() (float64, error) {
 	raw, err := whois.Whois(f.domainAddress)
 	if err != nil {
-		return -1, fmt.Errorf("%v", err)
+		return 0, fmt.Errorf("%v", err)
 	}
 
 	result, parserErr := whoisparser.Parse(raw)
 	if parserErr != nil {
-		return -1, fmt.Errorf("%v", parserErr)
+		return 0, fmt.Errorf("%v", parserErr)
 	}
 
 	expiryRaw := result.Domain.ExpirationDate

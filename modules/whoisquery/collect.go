@@ -1,17 +1,9 @@
 package whoisquery
 
-import (
-	"fmt"
-)
-
 func (x *WhoisQuery) collect() (map[string]int64, error) {
 	remainingTime, err := x.prov.remainingTime()
 	if err != nil {
 		return nil, err
-	}
-
-	if remainingTime == -1 {
-		return nil, fmt.Errorf("no domain was provided by '%s'", x.Config.Source)
 	}
 
 	mx := make(map[string]int64)

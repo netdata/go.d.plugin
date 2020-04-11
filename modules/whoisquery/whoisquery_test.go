@@ -87,11 +87,18 @@ func TestWhoisQuery_Check_ReturnsFalseOnProviderError(t *testing.T) {
 
 func TestWhoisQuery_Collect(t *testing.T) {
 	whoisquery := New()
-	whoisquery.prov = &mockProvider{remTime: 12345.678}
+	whoisquery.prov = &mockProvider{remTime: 12345}
 
 	collected := whoisquery.Collect()
 
+	expected := map[string]int64{
+		"expiry"                        : 12345,
+		"days_until_expiration_warning" : 90,
+		"days_until_expiration_critical": 30,
+	}
+
 	assert.NotZero(t, collected)
+	assert.Equal(t, expected, collected)
 	ensureCollectedHasAllChartsDimsVarsIDs(t, whoisquery, collected)
 }
 
@@ -123,7 +130,7 @@ type mockProvider struct {
 
 func (m mockProvider) remainingTime() (float64, error) {
 	if m.err {
-		return -1, errors.New("mock remaining time error")
+		return 0, errors.New("mock remaining time error")
 	}
 	return m.remTime, nil
 }
