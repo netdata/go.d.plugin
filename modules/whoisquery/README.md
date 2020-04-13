@@ -3,7 +3,7 @@
 This collector module checks the remaining time until a domain is expired.
 
 ## Charts
-It produces the following chart:
+This collector produces the following chart:
 -   Time until domain expiry in `seconds`
 
 ## Configuration
