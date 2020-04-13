@@ -33,7 +33,7 @@ jobs:
 
 ```
 
-For all available options and defaults please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/whoisquery.conf).
+For all available options and defaults please, see the module's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/whoisquery.conf).
 
 ## Troubleshooting
 
