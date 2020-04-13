@@ -1,5 +1,6 @@
 # Whois domain expiry monitoring with Netdata
-This module checks the remaining time until a domain is expired
+
+This collector module checks the remaining time until a domain is expired.
 
 ## Charts
 It produces the following chart:
