@@ -16,7 +16,7 @@ sudo ./edit-config go.d/whoisquery.conf
 ```
 Needs only `source`.
 
-Use `days_until_expiration_warning` and `days_until_expiration_critical` for each job to indicate the expiry warning and critical days, the default values are 90 and 30 days.
+Use `days_until_expiration_warning` and `days_until_expiration_critical` for each job to indicate the expiry warning and critical days. The default values are 90 for warning, and 30 days for critical.
 
 Here is an example:
 
