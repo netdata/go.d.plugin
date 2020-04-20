@@ -183,7 +183,7 @@ func (d *DNSQuery) Collect() map[string]int64 {
 		}
 
 		if srv.err != nil {
-			d.Errorf("error on querying %s after %s query for %s : %s", srv.name, d.RecordType, domain, srv.err)
+			d.Debugf("error on querying %s after %s query for %s : %s", srv.name, d.RecordType, domain, srv.err)
 			continue
 		}
 
