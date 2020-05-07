@@ -1,3 +1,9 @@
+<!--
+title: "Apache Pulsar monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/pulsar/README.md
+sidebar_label: "Apache Pulsar"
+-->
+
 # Apache Pulsar monitoring with Netdata
 
 [`Apache Pulsar`](http://pulsar.apache.org/) is an open-source distributed pub-sub messaging system.

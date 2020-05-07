@@ -1,3 +1,9 @@
+<!--
+title: "Fluentd monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/fluentd/README.md
+sidebar_label: "Fluentd"
+-->
+
 # Fluentd monitoring with Netdata
 
 [`Fluentd`](https://www.fluentd.org/) is an open source data collector for unified logging layer.

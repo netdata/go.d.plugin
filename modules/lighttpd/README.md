@@ -1,3 +1,9 @@
+<!--
+title: "Lighttpd monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/lighttpd/README.md
+sidebar_label: "Lighttpd"
+-->
+
 # Lighttpd monitoring with Netdata
 
 [`Lighttpd`](https://www.lighttpd.net/) is an open-source web server optimized for speed-critical environments while remaining standards-compliant, secure and flexible

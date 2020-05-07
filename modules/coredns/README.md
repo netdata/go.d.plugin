@@ -1,3 +1,9 @@
+<!--
+title: "CoreDNS monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/coredns/README.md
+sidebar_label: "CoreDNS"
+-->
+
 # CoreDNS monitoring with Netdata
 
 [`CoreDNS`](https://coredns.io/) is a fast and flexible DNS server.

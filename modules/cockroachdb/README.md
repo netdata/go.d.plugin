@@ -1,3 +1,9 @@
+<!--
+title: "CockroachDB monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/cockroachdb/README.md
+sidebar_label: "CockroachDB"
+-->
+
 # CockroachDB monitoring with Netdata
 
 [`CockroachDB`](https://www.cockroachlabs.com/)  is the SQL database for building global, scalable cloud services that survive disasters.

@@ -1,3 +1,9 @@
+<!--
+title: "Dnsmasq DHCP monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/dnsmasq_dhcp/README.md
+sidebar_label: "Dnsmasq DHCP"
+-->
+
 # Dnsmasq DHCP monitoring with Netdata
 
 [`Dnsmasq`](http://www.thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure, DNS forwarder and DHCP server.

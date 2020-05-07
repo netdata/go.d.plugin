@@ -1,3 +1,9 @@
+<!--
+title: "Apache monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/apache/README.md
+sidebar_label: "Apache"
+-->
+
 # Apache monitoring with Netdata
 
 [`Apache`](https://httpd.apache.org/) is an open-source HTTP server for modern operating systems including UNIX and Windows.

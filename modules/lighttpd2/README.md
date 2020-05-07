@@ -1,3 +1,9 @@
+<!--
+title: "Lighttpd2 monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/lighttpd2/README.md
+sidebar_label: "Lighttpd2"
+-->
+
 # Lighttpd2 monitoring with Netdata
 
 [`Lighttpd2`](https://redmine.lighttpd.net/projects/lighttpd2) is a work in progress version of open-source web server.

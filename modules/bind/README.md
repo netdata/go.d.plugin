@@ -1,3 +1,9 @@
+<!--
+title: "Bind9 monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/bind/README.md
+sidebar_label: "Bind9"
+-->
+
 # Bind9 monitoring with Netdata
 
 [`Bind9`](https://www.isc.org/bind/) (or named) is a very flexible, full-featured DNS system. 

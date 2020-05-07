@@ -1,3 +1,9 @@
+<!--
+title: "Consul monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/consul/README.md
+sidebar_label: "Consul"
+-->
+
 # Consul monitoring with Netdata
 
 [`Consul`](https://www.consul.io/) is a service networking solution to connect and secure services across any runtime platform and public or private cloud.
