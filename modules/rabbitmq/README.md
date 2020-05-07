@@ -1,7 +1,7 @@
 <!--
 title: "RabbitMQ monitoring with Netdata"
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/rabbitmq/README.md
-sidebar_label: "RabbitMQ monitoring with Netdata"
+sidebar_label: "RabbitMQ"
 -->
 
 # RabbitMQ monitoring with Netdata

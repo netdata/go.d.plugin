@@ -1,7 +1,7 @@
 <!--
 title: "HDFS monitoring with Netdata"
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/hdfs/README.md
-sidebar_label: "HDFS monitoring with Netdata"
+sidebar_label: "HDFS"
 -->
 
 # HDFS monitoring with Netdata
