@@ -25,7 +25,7 @@ Per user charts (disabled by default, see `per_user_stats` in the module config 
 This collector is disabled by default. Should be explicitly enabled in [go.d.conf](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
 
 Reason:
- >  Currently,the OpenVPN daemon can at most support a single management client any one time.
+ >  Currently, the OpenVPN daemon can at most support a single management client any one time.
 
 We disabled it to not break other tools which uses `Management Interface`.
 
