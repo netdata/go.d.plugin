@@ -1,7 +1,7 @@
 <!--
 title: "ScaleIO monitoring with Netdata"
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/scaleio/README.md
-sidebar_label: "scaleio"
+sidebar_label: "ScaleIO"
 -->
 
 # ScaleIO monitoring with Netdata

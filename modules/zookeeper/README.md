@@ -1,10 +1,10 @@
 <!--
-title: "ZooKeeper monitoring with Netdata"
+title: "Apache ZooKeeper monitoring with Netdata"
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/zookeeper/README.md
 sidebar_label: "ZooKeeper"
 -->
 
-# ZooKeeper monitoring with Netdata
+# Apache ZooKeeper monitoring with Netdata
 
 [`ZooKeeper`](https://zookeeper.apache.org/) is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. 
 

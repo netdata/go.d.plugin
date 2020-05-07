@@ -1,7 +1,7 @@
 <!--
 title: "Apache Pulsar monitoring with Netdata"
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/pulsar/README.md
-sidebar_label: "Apache Pulsar"
+sidebar_label: "Pulsar"
 -->
 
 # Apache Pulsar monitoring with Netdata
