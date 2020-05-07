@@ -1,4 +1,10 @@
-# x509 certificates monitoring with Netdata
+<!--
+title: "x509 certificate monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/x509check/README.md
+sidebar_label: "x509 certificates"
+-->
+
+# x509 certificate monitoring with Netdata
 
 This module checks the time until a x509 certificate expiration and its revocation status.
 

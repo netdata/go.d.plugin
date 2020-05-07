@@ -1,3 +1,9 @@
+<!--
+title: "Docker Engine monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/docker_engine/README.md
+sidebar_label: "Docker Engine"
+-->
+
 # Docker Engine monitoring with Netdata
 
 [`Docker Engine`](https://docs.docker.com/engine/) is the industry’s de facto container runtime that runs on various Linux (CentOS, Debian, Fedora, Oracle Linux, RHEL, SUSE, and Ubuntu) and Windows Server operating systems.

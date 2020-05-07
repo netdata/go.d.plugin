@@ -1,3 +1,9 @@
+<!--
+title: "PHP-FPM monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/phpfpm/README.md
+sidebar_label: "PHP-FPM"
+-->
+
 # PHP-FPM monitoring with Netdata
 
 [`PHP-FPM`](https://php-fpm.org/) is an alternative PHP FastCGI implementation with some additional features useful for sites of any size, especially busier sites.

@@ -1,4 +1,10 @@
-# Any Spring Boot 2 application monitoring with Netdata
+<!--
+title: "Java Spring Boot 2 application monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/springboot2/README.md
+sidebar_label: "Java Spring Boot 2 applications"
+-->
+
+# Java Spring Boot 2 application monitoring with Netdata
 
 This module monitors one or more Java Spring-boot 2 applications depending on configuration.
 Netdata can be used to monitor running Java [Spring Boot 2](https://spring.io/) applications that expose their metrics with the use of the **Spring Boot Actuator** included in Spring Boot library.

@@ -1,3 +1,9 @@
+<!--
+title: "OpenVPN monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/openvpn/README.md
+sidebar_label: "OpenVPN"
+-->
+
 # OpenVPN monitoring with Netdata
 
 [`OpenVPN`](https://openvpn.net/) is an open-source commercial software that implements virtual private network techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote access facilities.

@@ -1,3 +1,9 @@
+<!--
+title: "MySQL monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/mysql/README.md
+sidebar_label: "MySQL"
+-->
+
 # MySQL monitoring with Netdata
 
 [`MySQL`](https://www.mysql.com/) is an open-source relational database management system.

@@ -1,3 +1,9 @@
+<!--
+title: "VerneMQ monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/vernemq/README.md
+sidebar_label: "VerneMQ"
+-->
+
 # VerneMQ monitoring with Netdata
 
 [`VerneMQ`](https://vernemq.com/) is a scalable and open source MQTT broker that connects IoT, M2M, Mobile, and web applications.

@@ -1,4 +1,10 @@
-# K8S Kubelet monitoring with Netdata
+<!--
+title: "Kubelet monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/k8s_kubelet/README.md
+sidebar_label: "Kubelet"
+-->
+
+# Kubelet monitoring with Netdata
 
 [`Kubelet`](https://kubernetes.io/docs/concepts/overview/components/#kubelet) is an agent that runs on each node in the cluster. It makes sure that containers are running in a pod.
 

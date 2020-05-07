@@ -1,4 +1,10 @@
-# Windows Machines monitoring with Netdata
+<!--
+title: "Windows machine monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/wmi/README.md
+sidebar_label: "Windows machines"
+-->
+
+# Windows machine monitoring with Netdata
 
 This module will monitor one or more Windows machines, using the [wmi_exporter](https://github.com/martinlindhe/wmi_exporter).
 

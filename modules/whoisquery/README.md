@@ -1,3 +1,9 @@
+<!--
+title: "Whois domain expiry monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/whoisquery/README.md
+sidebar_label: "Whois domain expiry"
+-->
+
 # Whois domain expiry monitoring with Netdata
 
 This collector module checks the remaining time until a domain is expired.

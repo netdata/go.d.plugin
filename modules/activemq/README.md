@@ -1,3 +1,9 @@
+<!--
+title: "ActiveMQ monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/activemq/README.md
+sidebar_label: "ActiveMQ"
+-->
+
 # ActiveMQ monitoring with Netdata
 
 [`ActiveMQ`](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java Message Service client.

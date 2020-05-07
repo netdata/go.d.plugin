@@ -1,4 +1,10 @@
-# Any HTTP endpoints monitoring with Netdata
+<!--
+title: "HTTP endpoint monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/httpcheck/README.md
+sidebar_label: "HTTP endpoints"
+-->
+
+# HTTP endpoint monitoring with Netdata
 
 This module monitors one or more http servers availability and response time.
 

@@ -1,3 +1,9 @@
+<!--
+title: "Unbound monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/unbound/README.md
+sidebar_label: "Unbound"
+-->
+
 # Unbound monitoring with Netdata
 
 [`Unbound`](https://nlnetlabs.nl/projects/unbound/about/) is a validating, recursive, and caching DNS resolver product from NLnet Labs.

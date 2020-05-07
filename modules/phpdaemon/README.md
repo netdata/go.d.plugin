@@ -1,6 +1,12 @@
-# Phpdaemon monitoring with Netdata
+<!--
+title: "phpDaemon monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/phpdaemon/README.md
+sidebar_label: "phpDaemon"
+-->
 
-[`phpdaemon`](https://github.com/kakserpom/phpdaemon) is an asynchronous server-side framework for Web and network applications implemented in PHP using libevent.
+# phpDaemon monitoring with Netdata
+
+[`phpDaemon`](https://github.com/kakserpom/phpdaemon) is an asynchronous server-side framework for Web and network applications implemented in PHP using libevent.
 
 This module collects `phpdaemon` workers statistics via http.
 

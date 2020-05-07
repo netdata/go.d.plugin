@@ -1,3 +1,9 @@
+<!--
+title: "NGINX monitoring"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/nginx/README.md
+sidebar_label: "NGINX"
+-->
+
 # NGINX monitoring with Netdata
 
 [`NGINX`](https://www.nginx.com/) is a web server which can also be used as a reverse proxy, load balancer, mail proxy and HTTP cache. 

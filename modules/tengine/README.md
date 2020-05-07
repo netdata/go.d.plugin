@@ -1,3 +1,9 @@
+<!--
+title: "Tengine monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/tengine/README.md
+sidebar_label: "Tengine"
+-->
+
 # Tengine monitoring with Netdata
 
 [`Tengine`](https://tengine.taobao.org/) is a web server originated by Taobao, the largest e-commerce website in Asia. It is based on the Nginx HTTP server and has many advanced features.

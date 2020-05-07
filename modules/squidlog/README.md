@@ -1,4 +1,10 @@
-# Squid logs monitoring with Netdata
+<!--
+title: "Web server log (Squid) monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/squidlog/README.md
+sidebar_label: "Web server logs (Squid)"
+-->
+
+# Squid log monitoring with Netdata
 
 [`Squid`](http://www.squid-cache.org/) is a caching and forwarding HTTP web proxy.
 

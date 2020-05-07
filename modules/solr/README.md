@@ -1,3 +1,9 @@
+<!--
+title: "Solr monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/solr/README.md
+sidebar_label: "Solr"
+-->
+
 # Solr monitoring with Netdata
 
 [`Solr`](https://lucene.apache.org/solr/) is an open-source enterprise-search platform, written in Java, from the Apache Lucene project.
