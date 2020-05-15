@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"unicode"
 )
 
 // TODO: it is not clear how to handle "-", current handling is not good
@@ -492,20 +491,9 @@ func isEmptyNumber(n int) bool {
 func isURLValid(method, url string) bool {
 	// CONNECT www.example.com:443 HTTP/1.1
 	if method == "CONNECT" {
-		return !hasBadURICharacter(url)
+		return true
 	}
-	return url[0] == '/' && !hasBadURICharacter(url)
-}
-
-func hasBadURICharacter(s string) bool {
-	// A URI specified by RFC1738, relative URIs are specified by RFC1808.
-	// URIs cannot by definition include whitespace or ASCII control characters.
-	for _, v := range s {
-		if unicode.IsSpace(v) || unicode.IsControl(v) {
-			return true
-		}
-	}
-	return false
+	return url != "" && url[0] == '/'
 }
 
 func isReqMethodValid(method string) bool {
