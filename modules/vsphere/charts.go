@@ -6,7 +6,6 @@ import (
 
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 
-	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -20,7 +19,7 @@ type (
 )
 
 const (
-	hostPrio = orchestrator.DefaultJobPriority
+	hostPrio = module.Priority
 	vmPrio   = hostPrio + 200
 )
 

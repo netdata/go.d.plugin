@@ -6,10 +6,10 @@ import (
 	"path"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/cli"
-	"github.com/netdata/go-orchestrator/logger"
+	"github.com/netdata/go-orchestrator/pkg/logger"
 	"github.com/netdata/go-orchestrator/pkg/multipath"
+	"github.com/netdata/go-orchestrator/plugin"
 
 	_ "github.com/netdata/go.d.plugin/modules/activemq"
 	_ "github.com/netdata/go.d.plugin/modules/apache"
@@ -57,57 +57,95 @@ import (
 )
 
 var (
-	cd, _       = os.Getwd()
-	configPaths = multipath.New(
-		os.Getenv("NETDATA_USER_CONFIG_DIR"),
-		os.Getenv("NETDATA_STOCK_CONFIG_DIR"),
+	cd, _     = os.Getwd()
+	name      = "go.d"
+	userDir   = os.Getenv("NETDATA_USER_CONFIG_DIR")
+	stockDir  = os.Getenv("NETDATA_STOCK_CONFIG_DIR")
+	varLibDir = os.Getenv("NETDATA_LIB_DIR")
+	watchPath = os.Getenv("NETDATA_PLUGINS_GOD_WATCH_PATH")
+
+	version = "unknown"
+)
+
+func confDir(opts *cli.Option) multipath.MultiPath {
+	if len(opts.ConfDir) > 0 {
+		return opts.ConfDir
+	}
+	if userDir != "" && stockDir != "" {
+		return multipath.New(
+			userDir,
+			stockDir,
+		)
+	}
+	return multipath.New(
 		path.Join(cd, "/../../../../etc/netdata"),
 		path.Join(cd, "/../../../../usr/lib/netdata/conf.d"),
 	)
-)
+}
 
-var version = "unknown"
+func modulesConfDir(opts *cli.Option) multipath.MultiPath {
+	if len(opts.ConfDir) > 0 {
+		return opts.ConfDir
+	}
+	if userDir != "" && stockDir != "" {
+		return multipath.New(
+			path.Join(userDir, name),
+			path.Join(stockDir, name),
+		)
+	}
+	return multipath.New(
+		path.Join(cd, "/../../../../etc/netdata", name),
+		path.Join(cd, "/../../../../usr/lib/netdata/conf.d", name),
+	)
+}
+
+func watchPaths(opts *cli.Option) []string {
+	if watchPath == "" {
+		return opts.WatchPath
+	}
+	return append(opts.WatchPath, watchPath)
+}
+
+func stateFile() string {
+	if varLibDir == "" {
+		return ""
+	}
+	return path.Join(varLibDir, "god-jobs-statuses.json")
+}
 
 func main() {
-	opt := parseCLI()
+	opts := parseCLI()
 
-	if opt.Version {
+	if opts.Version {
 		fmt.Println(fmt.Sprintf("go.d.plugin, version: %s", version))
 		return
 	}
-	if opt.Debug {
+
+	if opts.Debug {
 		logger.SetSeverity(logger.DEBUG)
 	}
 
-	plugin := newPlugin(opt)
+	p := plugin.New(plugin.Config{
+		Name:              name,
+		ConfDir:           confDir(opts),
+		ModulesConfDir:    modulesConfDir(opts),
+		ModulesSDConfPath: watchPaths(opts),
+		RunModule:         opts.Module,
+		MinUpdateEvery:    opts.UpdateEvery,
+		StateFile:         stateFile(),
+	})
 
-	if !plugin.Setup() {
-		os.Exit(1)
-	}
-
-	plugin.Serve()
-}
-
-func newPlugin(opt *cli.Option) *orchestrator.Orchestrator {
-	plugin := orchestrator.New()
-	plugin.Name = "go.d"
-	plugin.Option = opt
-	plugin.ConfigPath = configPaths
-	return plugin
+	p.Run()
 }
 
 func parseCLI() *cli.Option {
 	opt, err := cli.Parse(os.Args)
 	if err != nil {
-		if isHelp(err) {
+		if flagsErr, ok := err.(*flags.Error); ok && flagsErr.Type == flags.ErrHelp {
 			os.Exit(0)
+		} else {
+			os.Exit(1)
 		}
-		os.Exit(1)
 	}
 	return opt
-}
-
-func isHelp(err error) bool {
-	flagsErr, ok := err.(*flags.Error)
-	return ok && flagsErr.Type == flags.ErrHelp
 }

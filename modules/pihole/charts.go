@@ -1,7 +1,6 @@
 package pihole
 
 import (
-	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -146,7 +145,7 @@ var (
 		Fam:      "top clients",
 		Ctx:      "pihole.top_clients",
 		Type:     module.Stacked,
-		Priority: orchestrator.DefaultJobPriority + 10,
+		Priority: module.Priority + 10,
 	}
 
 	topPermittedDomainsChart = Chart{
@@ -156,7 +155,7 @@ var (
 		Fam:      "top domains",
 		Ctx:      "pihole.top_permitted_domains",
 		Type:     module.Stacked,
-		Priority: orchestrator.DefaultJobPriority + 20,
+		Priority: module.Priority + 20,
 	}
 
 	topBlockedDomainsChart = Chart{
@@ -166,7 +165,7 @@ var (
 		Fam:      "top domains",
 		Ctx:      "pihole.top_blocked_domains",
 		Type:     module.Stacked,
-		Priority: orchestrator.DefaultJobPriority + 30,
+		Priority: module.Priority + 30,
 	}
 )
 

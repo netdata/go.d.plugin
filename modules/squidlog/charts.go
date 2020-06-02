@@ -3,7 +3,6 @@ package squidlog
 import (
 	"errors"
 
-	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -15,7 +14,7 @@ type (
 )
 
 const (
-	prioReqTotal = orchestrator.DefaultJobPriority + iota
+	prioReqTotal = module.Priority + iota
 	prioReqExcluded
 	prioReqType
 

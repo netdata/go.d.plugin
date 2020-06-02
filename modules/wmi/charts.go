@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -24,7 +23,7 @@ type (
 )
 
 const (
-	prioCPUUtil = orchestrator.DefaultJobPriority + iota
+	prioCPUUtil = module.Priority + iota
 	prioCPUDPCs
 	prioCPUInterrupts
 	prioCPUCoreUtil
