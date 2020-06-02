@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -20,7 +19,7 @@ type (
 )
 
 const (
-	prioQueries = orchestrator.DefaultJobPriority + iota
+	prioQueries = module.Priority + iota
 	prioIPRateLimitedQueries
 	prioQueryType
 	prioQueryClass

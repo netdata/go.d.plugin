@@ -5,7 +5,6 @@ import (
 
 	"github.com/netdata/go.d.plugin/modules/scaleio/client"
 
-	"github.com/netdata/go-orchestrator"
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -19,7 +18,7 @@ type (
 )
 
 var (
-	prioStoragePool = orchestrator.DefaultJobPriority + len(systemCharts) + 10
+	prioStoragePool = module.Priority + len(systemCharts) + 10
 	prioSdc         = prioStoragePool + len(storagePoolCharts) + 10
 )
 

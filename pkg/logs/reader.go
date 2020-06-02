@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/netdata/go-orchestrator/logger"
+	"github.com/netdata/go-orchestrator/pkg/logger"
 )
 
 const (
