@@ -67,9 +67,9 @@ var (
 	version = "unknown"
 )
 
-func confDir(dirs []string) multipath.MultiPath {
-	if len(dirs) > 0 {
-		return dirs
+func confDir(opts *cli.Option) multipath.MultiPath {
+	if len(opts.ConfDir) > 0 {
+		return opts.ConfDir
 	}
 	if userDir != "" && stockDir != "" {
 		return multipath.New(
@@ -83,9 +83,9 @@ func confDir(dirs []string) multipath.MultiPath {
 	)
 }
 
-func modulesConfDir(dirs []string) multipath.MultiPath {
-	if len(dirs) > 0 {
-		return dirs
+func modulesConfDir(opts *cli.Option) multipath.MultiPath {
+	if len(opts.ConfDir) > 0 {
+		return opts.ConfDir
 	}
 	if userDir != "" && stockDir != "" {
 		return multipath.New(
@@ -99,11 +99,11 @@ func modulesConfDir(dirs []string) multipath.MultiPath {
 	)
 }
 
-func watchPaths(paths []string) []string {
+func watchPaths(opts *cli.Option) []string {
 	if watchPath == "" {
-		return paths
+		return opts.WatchPath
 	}
-	return append(paths, watchPath)
+	return append(opts.WatchPath, watchPath)
 }
 
 func stateFile() string {
@@ -114,24 +114,24 @@ func stateFile() string {
 }
 
 func main() {
-	opt := parseCLI()
+	opts := parseCLI()
 
-	if opt.Version {
+	if opts.Version {
 		fmt.Println(fmt.Sprintf("go.d.plugin, version: %s", version))
 		return
 	}
 
-	if opt.Debug {
+	if opts.Debug {
 		logger.SetSeverity(logger.DEBUG)
 	}
 
 	p := plugin.New(plugin.Config{
 		Name:              name,
-		ConfDir:           confDir(opt.ConfDir),
-		ModulesConfDir:    modulesConfDir(opt.ConfDir),
-		ModulesSDConfPath: watchPaths(opt.WatchPath),
-		RunModule:         opt.Module,
-		MinUpdateEvery:    opt.UpdateEvery,
+		ConfDir:           confDir(opts),
+		ModulesConfDir:    modulesConfDir(opts),
+		ModulesSDConfPath: watchPaths(opts),
+		RunModule:         opts.Module,
+		MinUpdateEvery:    opts.UpdateEvery,
 		StateFile:         stateFile(),
 	})
 
