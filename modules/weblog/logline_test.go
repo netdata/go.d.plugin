@@ -470,9 +470,10 @@ func TestLogLine_verify(t *testing.T) {
 				{line: logLine{web: web{reqURL: "/"}}},
 				{line: logLine{web: web{reqURL: "/status?full&json"}}},
 				{line: logLine{web: web{reqURL: "/icons/openlogo-75.png"}}},
-				{line: logLine{web: web{reqURL: "status?full&json"}}, wantErr: errBadReqURL},
-				{line: logLine{web: web{reqURL: "\"req_url=/ \""}}, wantErr: errBadReqURL},
-				{line: logLine{web: web{reqURL: "http://192.168.0.1/"}}, wantErr: errBadReqURL},
+				{line: logLine{web: web{reqURL: "status?full&json"}}},
+				{line: logLine{web: web{reqURL: "\"req_url=/ \""}}},
+				{line: logLine{web: web{reqURL: "http://192.168.0.1/"}}},
+				{line: logLine{web: web{reqURL: ""}}},
 			},
 		},
 		{

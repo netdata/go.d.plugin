@@ -246,6 +246,9 @@ func (l *logLine) assignReqURL(url string) error {
 	if url == hyphen {
 		return nil
 	}
+	if isEmptyString(url) {
+		return fmt.Errorf("assign '%s' : %w", url, errBadReqURL)
+	}
 	l.reqURL = url
 	return nil
 }
@@ -436,7 +439,7 @@ func (l logLine) isPortValid() bool           { return isPortValid(l.port) }
 func (l logLine) isSchemeValid() bool         { return isSchemeValid(l.reqScheme) }
 func (l logLine) isClientValid() bool         { return reClient.MatchString(l.reqClient) }
 func (l logLine) isMethodValid() bool         { return isReqMethodValid(l.reqMethod) }
-func (l logLine) isURLValid() bool            { return isURLValid(l.reqMethod, l.reqURL) }
+func (l logLine) isURLValid() bool            { return !isEmptyString(l.reqURL) }
 func (l logLine) isProtoValid() bool          { return isReqProtoVerValid(l.reqProto) }
 func (l logLine) isRespCodeValid() bool       { return isRespCodeValid(l.respCode) }
 func (l logLine) isReqSizeValid() bool        { return isSizeValid(l.reqSize) }
@@ -486,14 +489,6 @@ func isEmptyString(s string) bool {
 
 func isEmptyNumber(n int) bool {
 	return n == emptyNumber
-}
-
-func isURLValid(method, url string) bool {
-	// CONNECT www.example.com:443 HTTP/1.1
-	if method == "CONNECT" {
-		return true
-	}
-	return url != "" && url[0] == '/'
 }
 
 func isReqMethodValid(method string) bool {
