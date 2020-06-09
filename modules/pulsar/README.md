@@ -67,7 +67,8 @@ If replication is configured and `replicationMetricsEnabled` is set to true:
 
 ### Topic
 
-Topic charts are only available when `exposeTopicLevelMetricsInPrometheus` is set to true.
+Topic charts are only available when `exposeTopicLevelMetricsInPrometheus` is set to true. In addition, you need 
+to set `topic_filer` configuration option. If you have a lot of topics this is highly unrecommended.
 
 -   Producers in `producers`
 -   Subscriptions in `producers`
