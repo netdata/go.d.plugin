@@ -30,6 +30,10 @@ func New() *Pulsar {
 			},
 			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
 		},
+		TopicFiler: matcher.SimpleExpr{
+			Includes: nil,
+			Excludes: []string{"*"},
+		},
 	}
 	return &Pulsar{
 		Config:             config,
