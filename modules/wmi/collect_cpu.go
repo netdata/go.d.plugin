@@ -1,17 +1,18 @@
 package wmi
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"sort"
+
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
 const (
 	collectorCPU = "cpu"
 
-	metricCPUCStateTotal     = "wmi_cpu_cstate_seconds_total"
-	metricCPUDPCsTotal       = "wmi_cpu_dpcs_total"
-	metricCPUInterruptsTotal = "wmi_cpu_interrupts_total"
-	metricCPUTimeTotal       = "wmi_cpu_time_total"
+	metricCPUCStateTotal     = "windows_cpu_cstate_seconds_total"
+	metricCPUDPCsTotal       = "windows_cpu_dpcs_total"
+	metricCPUInterruptsTotal = "windows_cpu_interrupts_total"
+	metricCPUTimeTotal       = "windows_cpu_time_total"
 )
 
 func doCollectCPU(pms prometheus.Metrics) bool {

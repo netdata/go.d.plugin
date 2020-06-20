@@ -9,18 +9,18 @@ import (
 const (
 	collectorNet = "net"
 
-	metricNetBytesReceivedTotal       = "wmi_net_bytes_received_total"
-	metricNetBytesSentTotal           = "wmi_net_bytes_sent_total"
-	metricNetBytesTotal               = "wmi_net_bytes_total"
-	metricNetPacketsOutboundDiscarded = "wmi_net_packets_outbound_discarded"
-	metricNetPacketsOutboundErrors    = "wmi_net_packets_outbound_errors"
-	metricNetPacketsReceivedDiscarded = "wmi_net_packets_received_discarded"
-	metricNetPacketsReceivedErrors    = "wmi_net_packets_received_errors"
-	metricNetPacketsReceivedTotal     = "wmi_net_packets_received_total"
-	metricNetPacketsReceivedUnknown   = "wmi_net_packets_received_unknown"
-	metricNetPacketsTotal             = "wmi_net_packets_total"
-	metricNetPacketsSentTotal         = "wmi_net_packets_sent_total"
-	metricNetCurrentBandwidth         = "wmi_net_current_bandwidth"
+	metricNetBytesReceivedTotal       = "windows_net_bytes_received_total"
+	metricNetBytesSentTotal           = "windows_net_bytes_sent_total"
+	metricNetBytesTotal               = "windows_net_bytes_total"
+	metricNetPacketsOutboundDiscarded = "windows_net_packets_outbound_discarded"
+	metricNetPacketsOutboundErrors    = "windows_net_packets_outbound_errors"
+	metricNetPacketsReceivedDiscarded = "windows_net_packets_received_discarded"
+	metricNetPacketsReceivedErrors    = "windows_net_packets_received_errors"
+	metricNetPacketsReceivedTotal     = "windows_net_packets_received_total"
+	metricNetPacketsReceivedUnknown   = "windows_net_packets_received_unknown"
+	metricNetPacketsTotal             = "windows_net_packets_total"
+	metricNetPacketsSentTotal         = "windows_net_packets_sent_total"
+	metricNetCurrentBandwidth         = "windows_net_current_bandwidth"
 )
 
 var netMetricNames = []string{

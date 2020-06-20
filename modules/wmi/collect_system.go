@@ -9,12 +9,12 @@ import (
 const (
 	collectorSystem = "system"
 
-	metricSysContextSwitchesTotal     = "wmi_system_context_switches_total"
-	metricSysExceptionDispatchesTotal = "wmi_system_exception_dispatches_total"
-	metricSysProcessorQueueLength     = "wmi_system_processor_queue_length"
-	metricSysSystemCallsTotal         = "wmi_system_system_calls_total"
-	metricSysSystemUpTime             = "wmi_system_system_up_time"
-	metricSysThreads                  = "wmi_system_threads"
+	metricSysContextSwitchesTotal     = "windows_system_context_switches_total"
+	metricSysExceptionDispatchesTotal = "windows_system_exception_dispatches_total"
+	metricSysProcessorQueueLength     = "windows_system_processor_queue_length"
+	metricSysSystemCallsTotal         = "windows_system_system_calls_total"
+	metricSysSystemUpTime             = "windows_system_system_up_time"
+	metricSysThreads                  = "windows_system_threads"
 )
 
 var systemMetricsNames = []string{

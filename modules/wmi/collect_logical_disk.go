@@ -9,14 +9,14 @@ import (
 const (
 	collectorLogDisks = "logical_disk"
 
-	metricLDReadBytesTotal    = "wmi_logical_disk_read_bytes_total"
-	metricLDWriteBytesTotal   = "wmi_logical_disk_write_bytes_total"
-	metricLDReadsTotal        = "wmi_logical_disk_reads_total"
-	metricLDWritesTotal       = "wmi_logical_disk_writes_total"
-	metricLDSizeBytes         = "wmi_logical_disk_size_bytes"
-	metricLDFreeBytes         = "wmi_logical_disk_free_bytes"
-	metricLDReadLatencyTotal  = "wmi_logical_disk_read_latency_seconds_total"
-	metricLDWriteLatencyTotal = "wmi_logical_disk_write_latency_seconds_total"
+	metricLDReadBytesTotal    = "windows_logical_disk_read_bytes_total"
+	metricLDWriteBytesTotal   = "windows_logical_disk_write_bytes_total"
+	metricLDReadsTotal        = "windows_logical_disk_reads_total"
+	metricLDWritesTotal       = "windows_logical_disk_writes_total"
+	metricLDSizeBytes         = "windows_logical_disk_size_bytes"
+	metricLDFreeBytes         = "windows_logical_disk_free_bytes"
+	metricLDReadLatencyTotal  = "windows_logical_disk_read_latency_seconds_total"
+	metricLDWriteLatencyTotal = "windows_logical_disk_write_latency_seconds_total"
 )
 
 var ldMetricNames = []string{

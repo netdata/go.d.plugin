@@ -1,34 +1,44 @@
 package wmi
 
 import (
+	"errors"
+
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 
 	"github.com/prometheus/prometheus/pkg/labels"
 )
 
+func isValidWindowsExporterMetrics(pms prometheus.Metrics) bool {
+	return pms.FindByName(metricCollectorSuccess).Len() > 0
+}
+
 func (w *WMI) collect() (map[string]int64, error) {
-	scraped, err := w.prom.Scrape()
+	pms, err := w.prom.Scrape()
 	if err != nil {
 		return nil, err
 	}
 
-	mx := collectScraped(scraped)
+	if !isValidWindowsExporterMetrics(pms) {
+		return nil, errors.New("collected metrics aren't windows_exporter metrics")
+	}
+
+	mx := collect(pms)
 	w.updateCharts(mx)
 
 	return stm.ToMap(mx), nil
 }
 
-func collectScraped(scraped prometheus.Metrics) *metrics {
+func collect(pms prometheus.Metrics) *metrics {
 	mx := metrics{
-		CPU:         collectCPU(scraped),
-		Memory:      collectMemory(scraped),
-		Net:         collectNet(scraped),
-		LogicalDisk: collectLogicalDisk(scraped),
-		OS:          collectOS(scraped),
-		System:      collectSystem(scraped),
-		Logon:       collectLogon(scraped),
-		Collectors:  collectCollection(scraped),
+		CPU:         collectCPU(pms),
+		Memory:      collectMemory(pms),
+		Net:         collectNet(pms),
+		LogicalDisk: collectLogicalDisk(pms),
+		OS:          collectOS(pms),
+		System:      collectSystem(pms),
+		Logon:       collectLogon(pms),
+		Collectors:  collectCollection(pms),
 	}
 
 	if mx.hasOS() && mx.hasMemory() {

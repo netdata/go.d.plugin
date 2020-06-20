@@ -7,7 +7,7 @@ import (
 const (
 	collectorLogon = "logon"
 
-	metricLogonType = "wmi_logon_logon_type"
+	metricLogonType = "windows_logon_logon_type"
 )
 
 func doCollectLogon(pms prometheus.Metrics) bool {

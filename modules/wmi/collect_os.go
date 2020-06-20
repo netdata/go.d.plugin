@@ -7,17 +7,17 @@ import (
 const (
 	collectorOS = "os"
 
-	metricOSPhysicalMemoryFreeBytes = "wmi_os_physical_memory_free_bytes"
-	metricOSPagingFreeBytes         = "wmi_os_paging_free_bytes"
-	metricOSVirtualMemoryFreeBytes  = "wmi_os_virtual_memory_free_bytes"
-	metricOSProcessesLimit          = "wmi_os_processes_limit"
-	metricOSProcessMemoryLimitBytes = "wmi_os_process_memory_limit_bytes"
-	metricOSProcesses               = "wmi_os_processes"
-	metricOSUsers                   = "wmi_os_users"
-	metricOSPagingLimitBytes        = "wmi_os_paging_limit_bytes"
-	metricOSVirtualMemoryBytes      = "wmi_os_virtual_memory_bytes"
-	metricOSVisibleMemoryBytes      = "wmi_os_visible_memory_bytes"
-	metricOSTime                    = "wmi_os_time"
+	metricOSPhysicalMemoryFreeBytes = "windows_os_physical_memory_free_bytes"
+	metricOSPagingFreeBytes         = "windows_os_paging_free_bytes"
+	metricOSVirtualMemoryFreeBytes  = "windows_os_virtual_memory_free_bytes"
+	metricOSProcessesLimit          = "windows_os_processes_limit"
+	metricOSProcessMemoryLimitBytes = "windows_os_process_memory_limit_bytes"
+	metricOSProcesses               = "windows_os_processes"
+	metricOSUsers                   = "windows_os_users"
+	metricOSPagingLimitBytes        = "windows_os_paging_limit_bytes"
+	metricOSVirtualMemoryBytes      = "windows_os_virtual_memory_bytes"
+	metricOSVisibleMemoryBytes      = "windows_os_visible_memory_bytes"
+	metricOSTime                    = "windows_os_time"
 )
 
 var osMetricsNames = []string{
