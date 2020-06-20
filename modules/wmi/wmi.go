@@ -22,8 +22,7 @@ func init() {
 func New() *WMI {
 	config := Config{
 		HTTP: web.HTTP{
-			Client:  web.Client{Timeout: web.Duration{Duration: time.Second * 5}},
-			Request: web.Request{UserURL: "http://192.168.88.246:9182/metrics"},
+			Client: web.Client{Timeout: web.Duration{Duration: time.Second * 2}},
 		},
 	}
 	return &WMI{
