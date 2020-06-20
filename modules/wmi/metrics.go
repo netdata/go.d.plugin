@@ -3,7 +3,7 @@ package wmi
 import "strconv"
 
 type metrics struct {
-	// https://github.com/martinlindhe/wmi_exporter/tree/master/docs
+	// https://github.com/prometheus-community/windows_exporter/tree/master/docs#documentation
 	CPU         *cpuMetrics         `stm:"cpu"`
 	Memory      *memoryMetrics      `stm:"memory"`
 	Net         *networkMetrics     `stm:"net"`

@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	metricCollectorDuration = "wmi_exporter_collector_duration_seconds"
-	metricCollectorSuccess  = "wmi_exporter_collector_success"
+	metricCollectorDuration = "windows_exporter_collector_duration_seconds"
+	metricCollectorSuccess  = "windows_exporter_collector_success"
 )
 
 var collectorMetricsNames = []string{

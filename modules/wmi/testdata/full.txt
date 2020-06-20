@@ -82,397 +82,397 @@ go_memstats_sys_bytes 1.56663e+07
 # HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
 # TYPE process_start_time_seconds counter
 process_start_time_seconds 1.577966321e+09
-# HELP wmi_cpu_clock_interrupts_total Total number of received and serviced clock tick interrupts
-# TYPE wmi_cpu_clock_interrupts_total counter
-wmi_cpu_clock_interrupts_total{core="0,0"} 6.17432e+06
-wmi_cpu_clock_interrupts_total{core="0,1"} 6.169585e+06
-wmi_cpu_clock_interrupts_total{core="0,2"} 6.168073e+06
-wmi_cpu_clock_interrupts_total{core="0,3"} 6.164415e+06
-# HELP wmi_cpu_core_frequency_mhz Core frequency in megahertz
-# TYPE wmi_cpu_core_frequency_mhz gauge
-wmi_cpu_core_frequency_mhz{core="0,0"} 2195
-wmi_cpu_core_frequency_mhz{core="0,1"} 2195
-wmi_cpu_core_frequency_mhz{core="0,2"} 2195
-wmi_cpu_core_frequency_mhz{core="0,3"} 2195
-# HELP wmi_cpu_cstate_seconds_total Time spent in low-power idle state
-# TYPE wmi_cpu_cstate_seconds_total counter
-wmi_cpu_cstate_seconds_total{core="0,0",state="c1"} 28905.096248399997
-wmi_cpu_cstate_seconds_total{core="0,0",state="c2"} 0
-wmi_cpu_cstate_seconds_total{core="0,0",state="c3"} 0
-wmi_cpu_cstate_seconds_total{core="0,1",state="c1"} 29243.3328989
-wmi_cpu_cstate_seconds_total{core="0,1",state="c2"} 0
-wmi_cpu_cstate_seconds_total{core="0,1",state="c3"} 0
-wmi_cpu_cstate_seconds_total{core="0,2",state="c1"} 29914.2833381
-wmi_cpu_cstate_seconds_total{core="0,2",state="c2"} 0
-wmi_cpu_cstate_seconds_total{core="0,2",state="c3"} 0
-wmi_cpu_cstate_seconds_total{core="0,3",state="c1"} 29465.377036899998
-wmi_cpu_cstate_seconds_total{core="0,3",state="c2"} 0
-wmi_cpu_cstate_seconds_total{core="0,3",state="c3"} 0
-# HELP wmi_cpu_dpcs_total Total number of received and serviced deferred procedure calls (DPCs)
-# TYPE wmi_cpu_dpcs_total counter
-wmi_cpu_dpcs_total{core="0,0"} 305034
-wmi_cpu_dpcs_total{core="0,1"} 170434
-wmi_cpu_dpcs_total{core="0,2"} 162396
-wmi_cpu_dpcs_total{core="0,3"} 213509
-# HELP wmi_cpu_idle_break_events_total Total number of time processor was woken from idle
-# TYPE wmi_cpu_idle_break_events_total counter
-wmi_cpu_idle_break_events_total{core="0,0"} 4.9742103e+07
-wmi_cpu_idle_break_events_total{core="0,1"} 7.646923e+06
-wmi_cpu_idle_break_events_total{core="0,2"} 9.026009e+06
-wmi_cpu_idle_break_events_total{core="0,3"} 8.84647e+06
-# HELP wmi_cpu_interrupts_total Total number of received and serviced hardware interrupts
-# TYPE wmi_cpu_interrupts_total counter
-wmi_cpu_interrupts_total{core="0,0"} 5.9163056e+07
-wmi_cpu_interrupts_total{core="0,1"} 1.0966489e+07
-wmi_cpu_interrupts_total{core="0,2"} 1.1142989e+07
-wmi_cpu_interrupts_total{core="0,3"} 1.0967361e+07
-# HELP wmi_cpu_parking_status Parking Status represents whether a processor is parked or not
-# TYPE wmi_cpu_parking_status gauge
-wmi_cpu_parking_status{core="0,0"} 0
-wmi_cpu_parking_status{core="0,1"} 0
-wmi_cpu_parking_status{core="0,2"} 0
-wmi_cpu_parking_status{core="0,3"} 0
-# HELP wmi_cpu_processor_performance Processor Performance is the average performance of the processor while it is executing instructions, as a percentage of the nominal performance of the processor. On some processors, Processor Performance may exceed 100%
-# TYPE wmi_cpu_processor_performance gauge
-wmi_cpu_processor_performance{core="0,0"} 1.62741662968e+11
-wmi_cpu_processor_performance{core="0,1"} 1.41601874187e+11
-wmi_cpu_processor_performance{core="0,2"} 9.9667471887e+10
-wmi_cpu_processor_performance{core="0,3"} 1.27724115868e+11
-# HELP wmi_cpu_time_total Time that processor spent in different modes (idle, user, system, ...)
-# TYPE wmi_cpu_time_total counter
-wmi_cpu_time_total{core="0,0",mode="dpc"} 3.828125
-wmi_cpu_time_total{core="0,0",mode="idle"} 28535.546875
-wmi_cpu_time_total{core="0,0",mode="interrupt"} 22.734375
-wmi_cpu_time_total{core="0,0",mode="privileged"} 2113.09375
-wmi_cpu_time_total{core="0,0",mode="user"} 860.296875
-wmi_cpu_time_total{core="0,1",mode="dpc"} 1.5625
-wmi_cpu_time_total{core="0,1",mode="idle"} 29413.609375
-wmi_cpu_time_total{core="0,1",mode="interrupt"} 12.171875
-wmi_cpu_time_total{core="0,1",mode="privileged"} 943.984375
-wmi_cpu_time_total{core="0,1",mode="user"} 1151.109375
-wmi_cpu_time_total{core="0,2",mode="dpc"} 3.328125
-wmi_cpu_time_total{core="0,2",mode="idle"} 29943.328125
-wmi_cpu_time_total{core="0,2",mode="interrupt"} 16.84375
-wmi_cpu_time_total{core="0,2",mode="privileged"} 634.875
-wmi_cpu_time_total{core="0,2",mode="user"} 930.5
-wmi_cpu_time_total{core="0,3",mode="dpc"} 49.390625
-wmi_cpu_time_total{core="0,3",mode="idle"} 29285.5
-wmi_cpu_time_total{core="0,3",mode="interrupt"} 31.078125
-wmi_cpu_time_total{core="0,3",mode="privileged"} 1082.90625
-wmi_cpu_time_total{core="0,3",mode="user"} 1140.296875
-# HELP wmi_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which wmi_exporter was built.
-# TYPE wmi_exporter_build_info gauge
-wmi_exporter_build_info{branch="master",goversion="go1.12.3",revision="012b938b5451e5d10e2bb364876aac66cd85c54e",version="0.9.0"} 1
-# HELP wmi_exporter_collector_duration_seconds wmi_exporter: Duration of a collection.
-# TYPE wmi_exporter_collector_duration_seconds gauge
-wmi_exporter_collector_duration_seconds{collector="cpu"} 0.0008407
-wmi_exporter_collector_duration_seconds{collector="logical_disk"} 0
-wmi_exporter_collector_duration_seconds{collector="logon"} 0.1157879
-wmi_exporter_collector_duration_seconds{collector="memory"} 0
-wmi_exporter_collector_duration_seconds{collector="net"} 0
-wmi_exporter_collector_duration_seconds{collector="os"} 0.0744187
-wmi_exporter_collector_duration_seconds{collector="system"} 0
-# HELP wmi_exporter_collector_success wmi_exporter: Whether the collector was successful.
-# TYPE wmi_exporter_collector_success gauge
-wmi_exporter_collector_success{collector="cpu"} 1
-wmi_exporter_collector_success{collector="logical_disk"} 1
-wmi_exporter_collector_success{collector="logon"} 1
-wmi_exporter_collector_success{collector="memory"} 1
-wmi_exporter_collector_success{collector="net"} 1
-wmi_exporter_collector_success{collector="os"} 1
-wmi_exporter_collector_success{collector="system"} 1
-# HELP wmi_exporter_collector_timeout wmi_exporter: Whether the collector timed out.
-# TYPE wmi_exporter_collector_timeout gauge
-wmi_exporter_collector_timeout{collector="cpu"} 0
-wmi_exporter_collector_timeout{collector="logical_disk"} 0
-wmi_exporter_collector_timeout{collector="logon"} 0
-wmi_exporter_collector_timeout{collector="memory"} 0
-wmi_exporter_collector_timeout{collector="net"} 0
-wmi_exporter_collector_timeout{collector="os"} 0
-wmi_exporter_collector_timeout{collector="system"} 0
-# HELP wmi_exporter_perflib_snapshot_duration_seconds Duration of perflib snapshot capture
-# TYPE wmi_exporter_perflib_snapshot_duration_seconds gauge
-wmi_exporter_perflib_snapshot_duration_seconds 0.060907
-# HELP wmi_logical_disk_free_bytes Free space in bytes (LogicalDisk.PercentFreeSpace)
-# TYPE wmi_logical_disk_free_bytes gauge
-wmi_logical_disk_free_bytes{volume="C:"} 3.1390171136e+10
-wmi_logical_disk_free_bytes{volume="E:"} 1.0694426624e+10
-wmi_logical_disk_free_bytes{volume="HarddiskVolume1"} 1.27926272e+08
-# HELP wmi_logical_disk_idle_seconds_total Seconds that the disk was idle (LogicalDisk.PercentIdleTime)
-# TYPE wmi_logical_disk_idle_seconds_total counter
-wmi_logical_disk_idle_seconds_total{volume="C:"} 31460.6695907
-wmi_logical_disk_idle_seconds_total{volume="E:"} 30570.969930799998
-wmi_logical_disk_idle_seconds_total{volume="HarddiskVolume1"} 31497.2155788
-# HELP wmi_logical_disk_read_bytes_total The number of bytes transferred from the disk during read operations (LogicalDisk.DiskReadBytesPerSec)
-# TYPE wmi_logical_disk_read_bytes_total counter
-wmi_logical_disk_read_bytes_total{volume="C:"} 1.531812864e+09
-wmi_logical_disk_read_bytes_total{volume="E:"} 904704
-wmi_logical_disk_read_bytes_total{volume="HarddiskVolume1"} 22528
-# HELP wmi_logical_disk_read_latency_seconds_total Shows the average time, in seconds, of a read operation from the disk (LogicalDisk.AvgDiskSecPerRead)
-# TYPE wmi_logical_disk_read_latency_seconds_total counter
-wmi_logical_disk_read_latency_seconds_total{volume="C:"} 37.0233061
-wmi_logical_disk_read_latency_seconds_total{volume="E:"} 0.0409775
-wmi_logical_disk_read_latency_seconds_total{volume="HarddiskVolume1"} 0.0036576
-# HELP wmi_logical_disk_read_seconds_total Seconds that the disk was busy servicing read requests (LogicalDisk.PercentDiskReadTime)
-# TYPE wmi_logical_disk_read_seconds_total counter
-wmi_logical_disk_read_seconds_total{volume="C:"} 37.0233061
-wmi_logical_disk_read_seconds_total{volume="E:"} 0.0409775
-wmi_logical_disk_read_seconds_total{volume="HarddiskVolume1"} 0.0036576
-# HELP wmi_logical_disk_read_write_latency_seconds_total Shows the time, in seconds, of the average disk transfer (LogicalDisk.AvgDiskSecPerTransfer)
-# TYPE wmi_logical_disk_read_write_latency_seconds_total counter
-wmi_logical_disk_read_write_latency_seconds_total{volume="C:"} 55.332453
-wmi_logical_disk_read_write_latency_seconds_total{volume="E:"} 0.1252287
-wmi_logical_disk_read_write_latency_seconds_total{volume="HarddiskVolume1"} 0.044051099999999996
-# HELP wmi_logical_disk_reads_total The number of read operations on the disk (LogicalDisk.DiskReadsPerSec)
-# TYPE wmi_logical_disk_reads_total counter
-wmi_logical_disk_reads_total{volume="C:"} 38137
-wmi_logical_disk_reads_total{volume="E:"} 176
-wmi_logical_disk_reads_total{volume="HarddiskVolume1"} 9
-# HELP wmi_logical_disk_requests_queued The number of requests queued to the disk (LogicalDisk.CurrentDiskQueueLength)
-# TYPE wmi_logical_disk_requests_queued gauge
-wmi_logical_disk_requests_queued{volume="C:"} 0
-wmi_logical_disk_requests_queued{volume="E:"} 0
-wmi_logical_disk_requests_queued{volume="HarddiskVolume1"} 0
-# HELP wmi_logical_disk_size_bytes Total space in bytes (LogicalDisk.PercentFreeSpace_Base)
-# TYPE wmi_logical_disk_size_bytes gauge
-wmi_logical_disk_size_bytes{volume="C:"} 5.3076819968e+10
-wmi_logical_disk_size_bytes{volume="E:"} 1.0733223936e+10
-wmi_logical_disk_size_bytes{volume="HarddiskVolume1"} 6.06076928e+08
-# HELP wmi_logical_disk_split_ios_total The number of I/Os to the disk were split into multiple I/Os (LogicalDisk.SplitIOPerSec)
-# TYPE wmi_logical_disk_split_ios_total counter
-wmi_logical_disk_split_ios_total{volume="C:"} 2668
-wmi_logical_disk_split_ios_total{volume="E:"} 2
-wmi_logical_disk_split_ios_total{volume="HarddiskVolume1"} 4
-# HELP wmi_logical_disk_write_bytes_total The number of bytes transferred to the disk during write operations (LogicalDisk.DiskWriteBytesPerSec)
-# TYPE wmi_logical_disk_write_bytes_total counter
-wmi_logical_disk_write_bytes_total{volume="C:"} 9.613056e+08
-wmi_logical_disk_write_bytes_total{volume="E:"} 3.2892416e+07
-wmi_logical_disk_write_bytes_total{volume="HarddiskVolume1"} 90112
-# HELP wmi_logical_disk_write_latency_seconds_total Shows the average time, in seconds, of a write operation to the disk (LogicalDisk.AvgDiskSecPerWrite)
-# TYPE wmi_logical_disk_write_latency_seconds_total counter
-wmi_logical_disk_write_latency_seconds_total{volume="C:"} 18.3091469
-wmi_logical_disk_write_latency_seconds_total{volume="E:"} 0.0842512
-wmi_logical_disk_write_latency_seconds_total{volume="HarddiskVolume1"} 0.0403935
-# HELP wmi_logical_disk_write_seconds_total Seconds that the disk was busy servicing write requests (LogicalDisk.PercentDiskWriteTime)
-# TYPE wmi_logical_disk_write_seconds_total counter
-wmi_logical_disk_write_seconds_total{volume="C:"} 18.3091469
-wmi_logical_disk_write_seconds_total{volume="E:"} 0.0842512
-wmi_logical_disk_write_seconds_total{volume="HarddiskVolume1"} 0.0403935
-# HELP wmi_logical_disk_writes_total The number of write operations on the disk (LogicalDisk.DiskWritesPerSec)
-# TYPE wmi_logical_disk_writes_total counter
-wmi_logical_disk_writes_total{volume="C:"} 38039
-wmi_logical_disk_writes_total{volume="E:"} 294
-wmi_logical_disk_writes_total{volume="HarddiskVolume1"} 17
-# HELP wmi_logon_logon_type Number of active logon sessions (LogonSession.LogonType)
-# TYPE wmi_logon_logon_type gauge
-wmi_logon_logon_type{status="batch"} 0
-wmi_logon_logon_type{status="cached_interactive"} 0
-wmi_logon_logon_type{status="cached_remote_interactive"} 0
-wmi_logon_logon_type{status="cached_unlock"} 0
-wmi_logon_logon_type{status="interactive"} 2
-wmi_logon_logon_type{status="network"} 0
-wmi_logon_logon_type{status="network_clear_text"} 0
-wmi_logon_logon_type{status="new_credentials"} 0
-wmi_logon_logon_type{status="proxy"} 0
-wmi_logon_logon_type{status="remote_interactive"} 0
-wmi_logon_logon_type{status="service"} 0
-wmi_logon_logon_type{status="system"} 0
-wmi_logon_logon_type{status="unlock"} 0
-# HELP wmi_memory_available_bytes The amount of physical memory immediately available for allocation to a process or for system use. It is equal to the sum of memory assigned to the standby (cached), free and zero page lists (AvailableBytes)
-# TYPE wmi_memory_available_bytes gauge
-wmi_memory_available_bytes 2.62166528e+09
-# HELP wmi_memory_cache_bytes (CacheBytes)
-# TYPE wmi_memory_cache_bytes gauge
-wmi_memory_cache_bytes 5.5283712e+07
-# HELP wmi_memory_cache_bytes_peak (CacheBytesPeak)
-# TYPE wmi_memory_cache_bytes_peak gauge
-wmi_memory_cache_bytes_peak 8.1985536e+07
-# HELP wmi_memory_cache_faults_total (CacheFaultsPersec)
-# TYPE wmi_memory_cache_faults_total gauge
-wmi_memory_cache_faults_total 291802
-# HELP wmi_memory_commit_limit (CommitLimit)
-# TYPE wmi_memory_commit_limit gauge
-wmi_memory_commit_limit 5.770891264e+09
-# HELP wmi_memory_committed_bytes (CommittedBytes)
-# TYPE wmi_memory_committed_bytes gauge
-wmi_memory_committed_bytes 1.653608448e+09
-# HELP wmi_memory_demand_zero_faults_total The number of zeroed pages required to satisfy faults. Zeroed pages, pages emptied of previously stored data and filled with zeros, are a security feature of Windows that prevent processes from seeing data stored by earlier processes that used the memory space (DemandZeroFaults)
-# TYPE wmi_memory_demand_zero_faults_total gauge
-wmi_memory_demand_zero_faults_total 2.6234351e+07
-# HELP wmi_memory_free_and_zero_page_list_bytes (FreeAndZeroPageListBytes)
-# TYPE wmi_memory_free_and_zero_page_list_bytes gauge
-wmi_memory_free_and_zero_page_list_bytes 8.16140288e+08
-# HELP wmi_memory_free_system_page_table_entries (FreeSystemPageTableEntries)
-# TYPE wmi_memory_free_system_page_table_entries gauge
-wmi_memory_free_system_page_table_entries 1.2558385e+07
-# HELP wmi_memory_modified_page_list_bytes (ModifiedPageListBytes)
-# TYPE wmi_memory_modified_page_list_bytes gauge
-wmi_memory_modified_page_list_bytes 6.1304832e+07
-# HELP wmi_memory_page_faults_total (PageFaultsPersec)
-# TYPE wmi_memory_page_faults_total gauge
-wmi_memory_page_faults_total 3.8420407e+07
-# HELP wmi_memory_pool_nonpaged_allocs_total The number of calls to allocate space in the nonpaged pool. The nonpaged pool is an area of system memory area for objects that cannot be written to disk, and must remain in physical memory as long as they are allocated (PoolNonpagedAllocs)
-# TYPE wmi_memory_pool_nonpaged_allocs_total gauge
-wmi_memory_pool_nonpaged_allocs_total 0
-# HELP wmi_memory_pool_nonpaged_bytes_total (PoolNonpagedBytes)
-# TYPE wmi_memory_pool_nonpaged_bytes_total gauge
-wmi_memory_pool_nonpaged_bytes_total 7.4821632e+07
-# HELP wmi_memory_pool_paged_allocs_total (PoolPagedAllocs)
-# TYPE wmi_memory_pool_paged_allocs_total gauge
-wmi_memory_pool_paged_allocs_total 0
-# HELP wmi_memory_pool_paged_bytes (PoolPagedBytes)
-# TYPE wmi_memory_pool_paged_bytes gauge
-wmi_memory_pool_paged_bytes 1.18706176e+08
-# HELP wmi_memory_pool_paged_resident_bytes (PoolPagedResidentBytes)
-# TYPE wmi_memory_pool_paged_resident_bytes gauge
-wmi_memory_pool_paged_resident_bytes 9.9954688e+07
-# HELP wmi_memory_standby_cache_core_bytes (StandbyCacheCoreBytes)
-# TYPE wmi_memory_standby_cache_core_bytes gauge
-wmi_memory_standby_cache_core_bytes 1.58302208e+08
-# HELP wmi_memory_standby_cache_normal_priority_bytes (StandbyCacheNormalPriorityBytes)
-# TYPE wmi_memory_standby_cache_normal_priority_bytes gauge
-wmi_memory_standby_cache_normal_priority_bytes 3.10276096e+08
-# HELP wmi_memory_standby_cache_reserve_bytes (StandbyCacheReserveBytes)
-# TYPE wmi_memory_standby_cache_reserve_bytes gauge
-wmi_memory_standby_cache_reserve_bytes 1.336946688e+09
-# HELP wmi_memory_swap_page_operations_total Total number of swap page read and writes (PagesPersec)
-# TYPE wmi_memory_swap_page_operations_total gauge
-wmi_memory_swap_page_operations_total 524900
-# HELP wmi_memory_swap_page_reads_total Number of disk page reads (a single read operation reading several pages is still only counted once) (PageReadsPersec)
-# TYPE wmi_memory_swap_page_reads_total gauge
-wmi_memory_swap_page_reads_total 73613
-# HELP wmi_memory_swap_page_writes_total Number of disk page writes (a single write operation writing several pages is still only counted once) (PageWritesPersec)
-# TYPE wmi_memory_swap_page_writes_total gauge
-wmi_memory_swap_page_writes_total 61
-# HELP wmi_memory_swap_pages_read_total Number of pages read across all page reads (ie counting all pages read even if they are read in a single operation) (PagesInputPersec)
-# TYPE wmi_memory_swap_pages_read_total gauge
-wmi_memory_swap_pages_read_total 521808
-# HELP wmi_memory_swap_pages_written_total Number of pages written across all page writes (ie counting all pages written even if they are written in a single operation) (PagesOutputPersec)
-# TYPE wmi_memory_swap_pages_written_total gauge
-wmi_memory_swap_pages_written_total 3092
-# HELP wmi_memory_system_cache_resident_bytes (SystemCacheResidentBytes)
-# TYPE wmi_memory_system_cache_resident_bytes gauge
-wmi_memory_system_cache_resident_bytes 5.5283712e+07
-# HELP wmi_memory_system_code_resident_bytes (SystemCodeResidentBytes)
-# TYPE wmi_memory_system_code_resident_bytes gauge
-wmi_memory_system_code_resident_bytes 0
-# HELP wmi_memory_system_code_total_bytes (SystemCodeTotalBytes)
-# TYPE wmi_memory_system_code_total_bytes gauge
-wmi_memory_system_code_total_bytes 0
-# HELP wmi_memory_system_driver_resident_bytes (SystemDriverResidentBytes)
-# TYPE wmi_memory_system_driver_resident_bytes gauge
-wmi_memory_system_driver_resident_bytes 9.621504e+06
-# HELP wmi_memory_system_driver_total_bytes (SystemDriverTotalBytes)
-# TYPE wmi_memory_system_driver_total_bytes gauge
-wmi_memory_system_driver_total_bytes 1.6408576e+07
-# HELP wmi_memory_transition_faults_total (TransitionFaultsPersec)
-# TYPE wmi_memory_transition_faults_total gauge
-wmi_memory_transition_faults_total 1.2759543e+07
-# HELP wmi_memory_transition_pages_repurposed_total (TransitionPagesRePurposedPersec)
-# TYPE wmi_memory_transition_pages_repurposed_total gauge
-wmi_memory_transition_pages_repurposed_total 0
-# HELP wmi_memory_write_copies_total The number of page faults caused by attempting to write that were satisfied by copying the page from elsewhere in physical memory (WriteCopiesPersec)
-# TYPE wmi_memory_write_copies_total gauge
-wmi_memory_write_copies_total 271024
-# HELP wmi_net_bytes_received_total (Network.BytesReceivedPerSec)
-# TYPE wmi_net_bytes_received_total counter
-wmi_net_bytes_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 4.5418e+06
-wmi_net_bytes_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 1.0661733e+07
-# HELP wmi_net_bytes_sent_total (Network.BytesSentPerSec)
-# TYPE wmi_net_bytes_sent_total counter
-wmi_net_bytes_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 1.780848e+06
-wmi_net_bytes_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 1.86479806e+08
-# HELP wmi_net_bytes_total (Network.BytesTotalPerSec)
-# TYPE wmi_net_bytes_total counter
-wmi_net_bytes_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 6.322648e+06
-wmi_net_bytes_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 1.97141539e+08
-# HELP wmi_net_current_bandwidth (Network.CurrentBandwidth)
-# TYPE wmi_net_current_bandwidth gauge
-wmi_net_current_bandwidth{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 1e+09
-wmi_net_current_bandwidth{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 1e+09
-# HELP wmi_net_packets_outbound_discarded (Network.PacketsOutboundDiscarded)
-# TYPE wmi_net_packets_outbound_discarded counter
-wmi_net_packets_outbound_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
-wmi_net_packets_outbound_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
-# HELP wmi_net_packets_outbound_errors (Network.PacketsOutboundErrors)
-# TYPE wmi_net_packets_outbound_errors counter
-wmi_net_packets_outbound_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
-wmi_net_packets_outbound_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
-# HELP wmi_net_packets_received_discarded (Network.PacketsReceivedDiscarded)
-# TYPE wmi_net_packets_received_discarded counter
-wmi_net_packets_received_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
-wmi_net_packets_received_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
-# HELP wmi_net_packets_received_errors (Network.PacketsReceivedErrors)
-# TYPE wmi_net_packets_received_errors counter
-wmi_net_packets_received_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
-wmi_net_packets_received_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
-# HELP wmi_net_packets_received_total (Network.PacketsReceivedPerSec)
-# TYPE wmi_net_packets_received_total counter
-wmi_net_packets_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 10575
-wmi_net_packets_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 93134
-# HELP wmi_net_packets_received_unknown (Network.PacketsReceivedUnknown)
-# TYPE wmi_net_packets_received_unknown counter
-wmi_net_packets_received_unknown{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
-wmi_net_packets_received_unknown{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
-# HELP wmi_net_packets_sent_total (Network.PacketsSentPerSec)
-# TYPE wmi_net_packets_sent_total counter
-wmi_net_packets_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 9605
-wmi_net_packets_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 94947
-# HELP wmi_net_packets_total (Network.PacketsPerSec)
-# TYPE wmi_net_packets_total counter
-wmi_net_packets_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 20180
-wmi_net_packets_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 188081
-# HELP wmi_os_paging_free_bytes OperatingSystem.FreeSpaceInPagingFiles
-# TYPE wmi_os_paging_free_bytes gauge
-wmi_os_paging_free_bytes 1.468342272e+09
-# HELP wmi_os_paging_limit_bytes OperatingSystem.SizeStoredInPagingFiles
-# TYPE wmi_os_paging_limit_bytes gauge
-wmi_os_paging_limit_bytes 1.476395008e+09
-# HELP wmi_os_physical_memory_free_bytes OperatingSystem.FreePhysicalMemory
-# TYPE wmi_os_physical_memory_free_bytes gauge
-wmi_os_physical_memory_free_bytes 2.621657088e+09
-# HELP wmi_os_process_memory_limix_bytes OperatingSystem.MaxProcessMemorySize
-# TYPE wmi_os_process_memory_limix_bytes gauge
-wmi_os_process_memory_limix_bytes 1.40737488224256e+14
-# HELP wmi_os_processes OperatingSystem.NumberOfProcesses
-# TYPE wmi_os_processes gauge
-wmi_os_processes 121
-# HELP wmi_os_processes_limit OperatingSystem.MaxNumberOfProcesses
-# TYPE wmi_os_processes_limit gauge
-wmi_os_processes_limit 4.294967295e+09
-# HELP wmi_os_time OperatingSystem.LocalDateTime
-# TYPE wmi_os_time gauge
-wmi_os_time 1.577997682e+09
-# HELP wmi_os_timezone OperatingSystem.LocalDateTime
-# TYPE wmi_os_timezone gauge
-wmi_os_timezone{timezone="MSK"} 1
-# HELP wmi_os_users OperatingSystem.NumberOfUsers
-# TYPE wmi_os_users gauge
-wmi_os_users 2
-# HELP wmi_os_virtual_memory_bytes OperatingSystem.TotalVirtualMemorySize
-# TYPE wmi_os_virtual_memory_bytes gauge
-wmi_os_virtual_memory_bytes 5.770891264e+09
-# HELP wmi_os_virtual_memory_free_bytes OperatingSystem.FreeVirtualMemory
-# TYPE wmi_os_virtual_memory_free_bytes gauge
-wmi_os_virtual_memory_free_bytes 4.116611072e+09
-# HELP wmi_os_visible_memory_bytes OperatingSystem.TotalVisibleMemorySize
-# TYPE wmi_os_visible_memory_bytes gauge
-wmi_os_visible_memory_bytes 4.294496256e+09
-# HELP wmi_system_context_switches_total Total number of context switches (WMI source: PerfOS_System.ContextSwitchesPersec)
-# TYPE wmi_system_context_switches_total counter
-wmi_system_context_switches_total 4.9284345e+07
-# HELP wmi_system_exception_dispatches_total Total number of exceptions dispatched (WMI source: PerfOS_System.ExceptionDispatchesPersec)
-# TYPE wmi_system_exception_dispatches_total counter
-wmi_system_exception_dispatches_total 59337
-# HELP wmi_system_processor_queue_length Length of processor queue (WMI source: PerfOS_System.ProcessorQueueLength)
-# TYPE wmi_system_processor_queue_length gauge
-wmi_system_processor_queue_length 0
-# HELP wmi_system_system_calls_total Total number of system calls (WMI source: PerfOS_System.SystemCallsPersec)
-# TYPE wmi_system_system_calls_total counter
-wmi_system_system_calls_total 4.3057396e+08
-# HELP wmi_system_system_up_time System boot time (WMI source: PerfOS_System.SystemUpTime)
-# TYPE wmi_system_system_up_time gauge
-wmi_system_system_up_time 1.5779661735e+09
-# HELP wmi_system_threads Current number of threads (WMI source: PerfOS_System.Threads)
-# TYPE wmi_system_threads gauge
-wmi_system_threads 994
+# HELP windows_cpu_clock_interrupts_total Total number of received and serviced clock tick interrupts
+# TYPE windows_cpu_clock_interrupts_total counter
+windows_cpu_clock_interrupts_total{core="0,0"} 6.17432e+06
+windows_cpu_clock_interrupts_total{core="0,1"} 6.169585e+06
+windows_cpu_clock_interrupts_total{core="0,2"} 6.168073e+06
+windows_cpu_clock_interrupts_total{core="0,3"} 6.164415e+06
+# HELP windows_cpu_core_frequency_mhz Core frequency in megahertz
+# TYPE windows_cpu_core_frequency_mhz gauge
+windows_cpu_core_frequency_mhz{core="0,0"} 2195
+windows_cpu_core_frequency_mhz{core="0,1"} 2195
+windows_cpu_core_frequency_mhz{core="0,2"} 2195
+windows_cpu_core_frequency_mhz{core="0,3"} 2195
+# HELP windows_cpu_cstate_seconds_total Time spent in low-power idle state
+# TYPE windows_cpu_cstate_seconds_total counter
+windows_cpu_cstate_seconds_total{core="0,0",state="c1"} 28905.096248399997
+windows_cpu_cstate_seconds_total{core="0,0",state="c2"} 0
+windows_cpu_cstate_seconds_total{core="0,0",state="c3"} 0
+windows_cpu_cstate_seconds_total{core="0,1",state="c1"} 29243.3328989
+windows_cpu_cstate_seconds_total{core="0,1",state="c2"} 0
+windows_cpu_cstate_seconds_total{core="0,1",state="c3"} 0
+windows_cpu_cstate_seconds_total{core="0,2",state="c1"} 29914.2833381
+windows_cpu_cstate_seconds_total{core="0,2",state="c2"} 0
+windows_cpu_cstate_seconds_total{core="0,2",state="c3"} 0
+windows_cpu_cstate_seconds_total{core="0,3",state="c1"} 29465.377036899998
+windows_cpu_cstate_seconds_total{core="0,3",state="c2"} 0
+windows_cpu_cstate_seconds_total{core="0,3",state="c3"} 0
+# HELP windows_cpu_dpcs_total Total number of received and serviced deferred procedure calls (DPCs)
+# TYPE windows_cpu_dpcs_total counter
+windows_cpu_dpcs_total{core="0,0"} 305034
+windows_cpu_dpcs_total{core="0,1"} 170434
+windows_cpu_dpcs_total{core="0,2"} 162396
+windows_cpu_dpcs_total{core="0,3"} 213509
+# HELP windows_cpu_idle_break_events_total Total number of time processor was woken from idle
+# TYPE windows_cpu_idle_break_events_total counter
+windows_cpu_idle_break_events_total{core="0,0"} 4.9742103e+07
+windows_cpu_idle_break_events_total{core="0,1"} 7.646923e+06
+windows_cpu_idle_break_events_total{core="0,2"} 9.026009e+06
+windows_cpu_idle_break_events_total{core="0,3"} 8.84647e+06
+# HELP windows_cpu_interrupts_total Total number of received and serviced hardware interrupts
+# TYPE windows_cpu_interrupts_total counter
+windows_cpu_interrupts_total{core="0,0"} 5.9163056e+07
+windows_cpu_interrupts_total{core="0,1"} 1.0966489e+07
+windows_cpu_interrupts_total{core="0,2"} 1.1142989e+07
+windows_cpu_interrupts_total{core="0,3"} 1.0967361e+07
+# HELP windows_cpu_parking_status Parking Status represents whether a processor is parked or not
+# TYPE windows_cpu_parking_status gauge
+windows_cpu_parking_status{core="0,0"} 0
+windows_cpu_parking_status{core="0,1"} 0
+windows_cpu_parking_status{core="0,2"} 0
+windows_cpu_parking_status{core="0,3"} 0
+# HELP windows_cpu_processor_performance Processor Performance is the average performance of the processor while it is executing instructions, as a percentage of the nominal performance of the processor. On some processors, Processor Performance may exceed 100%
+# TYPE windows_cpu_processor_performance gauge
+windows_cpu_processor_performance{core="0,0"} 1.62741662968e+11
+windows_cpu_processor_performance{core="0,1"} 1.41601874187e+11
+windows_cpu_processor_performance{core="0,2"} 9.9667471887e+10
+windows_cpu_processor_performance{core="0,3"} 1.27724115868e+11
+# HELP windows_cpu_time_total Time that processor spent in different modes (idle, user, system, ...)
+# TYPE windows_cpu_time_total counter
+windows_cpu_time_total{core="0,0",mode="dpc"} 3.828125
+windows_cpu_time_total{core="0,0",mode="idle"} 28535.546875
+windows_cpu_time_total{core="0,0",mode="interrupt"} 22.734375
+windows_cpu_time_total{core="0,0",mode="privileged"} 2113.09375
+windows_cpu_time_total{core="0,0",mode="user"} 860.296875
+windows_cpu_time_total{core="0,1",mode="dpc"} 1.5625
+windows_cpu_time_total{core="0,1",mode="idle"} 29413.609375
+windows_cpu_time_total{core="0,1",mode="interrupt"} 12.171875
+windows_cpu_time_total{core="0,1",mode="privileged"} 943.984375
+windows_cpu_time_total{core="0,1",mode="user"} 1151.109375
+windows_cpu_time_total{core="0,2",mode="dpc"} 3.328125
+windows_cpu_time_total{core="0,2",mode="idle"} 29943.328125
+windows_cpu_time_total{core="0,2",mode="interrupt"} 16.84375
+windows_cpu_time_total{core="0,2",mode="privileged"} 634.875
+windows_cpu_time_total{core="0,2",mode="user"} 930.5
+windows_cpu_time_total{core="0,3",mode="dpc"} 49.390625
+windows_cpu_time_total{core="0,3",mode="idle"} 29285.5
+windows_cpu_time_total{core="0,3",mode="interrupt"} 31.078125
+windows_cpu_time_total{core="0,3",mode="privileged"} 1082.90625
+windows_cpu_time_total{core="0,3",mode="user"} 1140.296875
+# HELP windows_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which windows_exporter was built.
+# TYPE windows_exporter_build_info gauge
+windows_exporter_build_info{branch="master",goversion="go1.12.3",revision="012b938b5451e5d10e2bb364876aac66cd85c54e",version="0.9.0"} 1
+# HELP windows_exporter_collector_duration_seconds windows_exporter: Duration of a collection.
+# TYPE windows_exporter_collector_duration_seconds gauge
+windows_exporter_collector_duration_seconds{collector="cpu"} 0.0008407
+windows_exporter_collector_duration_seconds{collector="logical_disk"} 0
+windows_exporter_collector_duration_seconds{collector="logon"} 0.1157879
+windows_exporter_collector_duration_seconds{collector="memory"} 0
+windows_exporter_collector_duration_seconds{collector="net"} 0
+windows_exporter_collector_duration_seconds{collector="os"} 0.0744187
+windows_exporter_collector_duration_seconds{collector="system"} 0
+# HELP windows_exporter_collector_success windows_exporter: Whether the collector was successful.
+# TYPE windows_exporter_collector_success gauge
+windows_exporter_collector_success{collector="cpu"} 1
+windows_exporter_collector_success{collector="logical_disk"} 1
+windows_exporter_collector_success{collector="logon"} 1
+windows_exporter_collector_success{collector="memory"} 1
+windows_exporter_collector_success{collector="net"} 1
+windows_exporter_collector_success{collector="os"} 1
+windows_exporter_collector_success{collector="system"} 1
+# HELP windows_exporter_collector_timeout windows_exporter: Whether the collector timed out.
+# TYPE windows_exporter_collector_timeout gauge
+windows_exporter_collector_timeout{collector="cpu"} 0
+windows_exporter_collector_timeout{collector="logical_disk"} 0
+windows_exporter_collector_timeout{collector="logon"} 0
+windows_exporter_collector_timeout{collector="memory"} 0
+windows_exporter_collector_timeout{collector="net"} 0
+windows_exporter_collector_timeout{collector="os"} 0
+windows_exporter_collector_timeout{collector="system"} 0
+# HELP windows_exporter_perflib_snapshot_duration_seconds Duration of perflib snapshot capture
+# TYPE windows_exporter_perflib_snapshot_duration_seconds gauge
+windows_exporter_perflib_snapshot_duration_seconds 0.060907
+# HELP windows_logical_disk_free_bytes Free space in bytes (LogicalDisk.PercentFreeSpace)
+# TYPE windows_logical_disk_free_bytes gauge
+windows_logical_disk_free_bytes{volume="C:"} 3.1390171136e+10
+windows_logical_disk_free_bytes{volume="E:"} 1.0694426624e+10
+windows_logical_disk_free_bytes{volume="HarddiskVolume1"} 1.27926272e+08
+# HELP windows_logical_disk_idle_seconds_total Seconds that the disk was idle (LogicalDisk.PercentIdleTime)
+# TYPE windows_logical_disk_idle_seconds_total counter
+windows_logical_disk_idle_seconds_total{volume="C:"} 31460.6695907
+windows_logical_disk_idle_seconds_total{volume="E:"} 30570.969930799998
+windows_logical_disk_idle_seconds_total{volume="HarddiskVolume1"} 31497.2155788
+# HELP windows_logical_disk_read_bytes_total The number of bytes transferred from the disk during read operations (LogicalDisk.DiskReadBytesPerSec)
+# TYPE windows_logical_disk_read_bytes_total counter
+windows_logical_disk_read_bytes_total{volume="C:"} 1.531812864e+09
+windows_logical_disk_read_bytes_total{volume="E:"} 904704
+windows_logical_disk_read_bytes_total{volume="HarddiskVolume1"} 22528
+# HELP windows_logical_disk_read_latency_seconds_total Shows the average time, in seconds, of a read operation from the disk (LogicalDisk.AvgDiskSecPerRead)
+# TYPE windows_logical_disk_read_latency_seconds_total counter
+windows_logical_disk_read_latency_seconds_total{volume="C:"} 37.0233061
+windows_logical_disk_read_latency_seconds_total{volume="E:"} 0.0409775
+windows_logical_disk_read_latency_seconds_total{volume="HarddiskVolume1"} 0.0036576
+# HELP windows_logical_disk_read_seconds_total Seconds that the disk was busy servicing read requests (LogicalDisk.PercentDiskReadTime)
+# TYPE windows_logical_disk_read_seconds_total counter
+windows_logical_disk_read_seconds_total{volume="C:"} 37.0233061
+windows_logical_disk_read_seconds_total{volume="E:"} 0.0409775
+windows_logical_disk_read_seconds_total{volume="HarddiskVolume1"} 0.0036576
+# HELP windows_logical_disk_read_write_latency_seconds_total Shows the time, in seconds, of the average disk transfer (LogicalDisk.AvgDiskSecPerTransfer)
+# TYPE windows_logical_disk_read_write_latency_seconds_total counter
+windows_logical_disk_read_write_latency_seconds_total{volume="C:"} 55.332453
+windows_logical_disk_read_write_latency_seconds_total{volume="E:"} 0.1252287
+windows_logical_disk_read_write_latency_seconds_total{volume="HarddiskVolume1"} 0.044051099999999996
+# HELP windows_logical_disk_reads_total The number of read operations on the disk (LogicalDisk.DiskReadsPerSec)
+# TYPE windows_logical_disk_reads_total counter
+windows_logical_disk_reads_total{volume="C:"} 38137
+windows_logical_disk_reads_total{volume="E:"} 176
+windows_logical_disk_reads_total{volume="HarddiskVolume1"} 9
+# HELP windows_logical_disk_requests_queued The number of requests queued to the disk (LogicalDisk.CurrentDiskQueueLength)
+# TYPE windows_logical_disk_requests_queued gauge
+windows_logical_disk_requests_queued{volume="C:"} 0
+windows_logical_disk_requests_queued{volume="E:"} 0
+windows_logical_disk_requests_queued{volume="HarddiskVolume1"} 0
+# HELP windows_logical_disk_size_bytes Total space in bytes (LogicalDisk.PercentFreeSpace_Base)
+# TYPE windows_logical_disk_size_bytes gauge
+windows_logical_disk_size_bytes{volume="C:"} 5.3076819968e+10
+windows_logical_disk_size_bytes{volume="E:"} 1.0733223936e+10
+windows_logical_disk_size_bytes{volume="HarddiskVolume1"} 6.06076928e+08
+# HELP windows_logical_disk_split_ios_total The number of I/Os to the disk were split into multiple I/Os (LogicalDisk.SplitIOPerSec)
+# TYPE windows_logical_disk_split_ios_total counter
+windows_logical_disk_split_ios_total{volume="C:"} 2668
+windows_logical_disk_split_ios_total{volume="E:"} 2
+windows_logical_disk_split_ios_total{volume="HarddiskVolume1"} 4
+# HELP windows_logical_disk_write_bytes_total The number of bytes transferred to the disk during write operations (LogicalDisk.DiskWriteBytesPerSec)
+# TYPE windows_logical_disk_write_bytes_total counter
+windows_logical_disk_write_bytes_total{volume="C:"} 9.613056e+08
+windows_logical_disk_write_bytes_total{volume="E:"} 3.2892416e+07
+windows_logical_disk_write_bytes_total{volume="HarddiskVolume1"} 90112
+# HELP windows_logical_disk_write_latency_seconds_total Shows the average time, in seconds, of a write operation to the disk (LogicalDisk.AvgDiskSecPerWrite)
+# TYPE windows_logical_disk_write_latency_seconds_total counter
+windows_logical_disk_write_latency_seconds_total{volume="C:"} 18.3091469
+windows_logical_disk_write_latency_seconds_total{volume="E:"} 0.0842512
+windows_logical_disk_write_latency_seconds_total{volume="HarddiskVolume1"} 0.0403935
+# HELP windows_logical_disk_write_seconds_total Seconds that the disk was busy servicing write requests (LogicalDisk.PercentDiskWriteTime)
+# TYPE windows_logical_disk_write_seconds_total counter
+windows_logical_disk_write_seconds_total{volume="C:"} 18.3091469
+windows_logical_disk_write_seconds_total{volume="E:"} 0.0842512
+windows_logical_disk_write_seconds_total{volume="HarddiskVolume1"} 0.0403935
+# HELP windows_logical_disk_writes_total The number of write operations on the disk (LogicalDisk.DiskWritesPerSec)
+# TYPE windows_logical_disk_writes_total counter
+windows_logical_disk_writes_total{volume="C:"} 38039
+windows_logical_disk_writes_total{volume="E:"} 294
+windows_logical_disk_writes_total{volume="HarddiskVolume1"} 17
+# HELP windows_logon_logon_type Number of active logon sessions (LogonSession.LogonType)
+# TYPE windows_logon_logon_type gauge
+windows_logon_logon_type{status="batch"} 0
+windows_logon_logon_type{status="cached_interactive"} 0
+windows_logon_logon_type{status="cached_remote_interactive"} 0
+windows_logon_logon_type{status="cached_unlock"} 0
+windows_logon_logon_type{status="interactive"} 2
+windows_logon_logon_type{status="network"} 0
+windows_logon_logon_type{status="network_clear_text"} 0
+windows_logon_logon_type{status="new_credentials"} 0
+windows_logon_logon_type{status="proxy"} 0
+windows_logon_logon_type{status="remote_interactive"} 0
+windows_logon_logon_type{status="service"} 0
+windows_logon_logon_type{status="system"} 0
+windows_logon_logon_type{status="unlock"} 0
+# HELP windows_memory_available_bytes The amount of physical memory immediately available for allocation to a process or for system use. It is equal to the sum of memory assigned to the standby (cached), free and zero page lists (AvailableBytes)
+# TYPE windows_memory_available_bytes gauge
+windows_memory_available_bytes 2.62166528e+09
+# HELP windows_memory_cache_bytes (CacheBytes)
+# TYPE windows_memory_cache_bytes gauge
+windows_memory_cache_bytes 5.5283712e+07
+# HELP windows_memory_cache_bytes_peak (CacheBytesPeak)
+# TYPE windows_memory_cache_bytes_peak gauge
+windows_memory_cache_bytes_peak 8.1985536e+07
+# HELP windows_memory_cache_faults_total (CacheFaultsPersec)
+# TYPE windows_memory_cache_faults_total gauge
+windows_memory_cache_faults_total 291802
+# HELP windows_memory_commit_limit (CommitLimit)
+# TYPE windows_memory_commit_limit gauge
+windows_memory_commit_limit 5.770891264e+09
+# HELP windows_memory_committed_bytes (CommittedBytes)
+# TYPE windows_memory_committed_bytes gauge
+windows_memory_committed_bytes 1.653608448e+09
+# HELP windows_memory_demand_zero_faults_total The number of zeroed pages required to satisfy faults. Zeroed pages, pages emptied of previously stored data and filled with zeros, are a security feature of Windows that prevent processes from seeing data stored by earlier processes that used the memory space (DemandZeroFaults)
+# TYPE windows_memory_demand_zero_faults_total gauge
+windows_memory_demand_zero_faults_total 2.6234351e+07
+# HELP windows_memory_free_and_zero_page_list_bytes (FreeAndZeroPageListBytes)
+# TYPE windows_memory_free_and_zero_page_list_bytes gauge
+windows_memory_free_and_zero_page_list_bytes 8.16140288e+08
+# HELP windows_memory_free_system_page_table_entries (FreeSystemPageTableEntries)
+# TYPE windows_memory_free_system_page_table_entries gauge
+windows_memory_free_system_page_table_entries 1.2558385e+07
+# HELP windows_memory_modified_page_list_bytes (ModifiedPageListBytes)
+# TYPE windows_memory_modified_page_list_bytes gauge
+windows_memory_modified_page_list_bytes 6.1304832e+07
+# HELP windows_memory_page_faults_total (PageFaultsPersec)
+# TYPE windows_memory_page_faults_total gauge
+windows_memory_page_faults_total 3.8420407e+07
+# HELP windows_memory_pool_nonpaged_allocs_total The number of calls to allocate space in the nonpaged pool. The nonpaged pool is an area of system memory area for objects that cannot be written to disk, and must remain in physical memory as long as they are allocated (PoolNonpagedAllocs)
+# TYPE windows_memory_pool_nonpaged_allocs_total gauge
+windows_memory_pool_nonpaged_allocs_total 0
+# HELP windows_memory_pool_nonpaged_bytes_total (PoolNonpagedBytes)
+# TYPE windows_memory_pool_nonpaged_bytes_total gauge
+windows_memory_pool_nonpaged_bytes_total 7.4821632e+07
+# HELP windows_memory_pool_paged_allocs_total (PoolPagedAllocs)
+# TYPE windows_memory_pool_paged_allocs_total gauge
+windows_memory_pool_paged_allocs_total 0
+# HELP windows_memory_pool_paged_bytes (PoolPagedBytes)
+# TYPE windows_memory_pool_paged_bytes gauge
+windows_memory_pool_paged_bytes 1.18706176e+08
+# HELP windows_memory_pool_paged_resident_bytes (PoolPagedResidentBytes)
+# TYPE windows_memory_pool_paged_resident_bytes gauge
+windows_memory_pool_paged_resident_bytes 9.9954688e+07
+# HELP windows_memory_standby_cache_core_bytes (StandbyCacheCoreBytes)
+# TYPE windows_memory_standby_cache_core_bytes gauge
+windows_memory_standby_cache_core_bytes 1.58302208e+08
+# HELP windows_memory_standby_cache_normal_priority_bytes (StandbyCacheNormalPriorityBytes)
+# TYPE windows_memory_standby_cache_normal_priority_bytes gauge
+windows_memory_standby_cache_normal_priority_bytes 3.10276096e+08
+# HELP windows_memory_standby_cache_reserve_bytes (StandbyCacheReserveBytes)
+# TYPE windows_memory_standby_cache_reserve_bytes gauge
+windows_memory_standby_cache_reserve_bytes 1.336946688e+09
+# HELP windows_memory_swap_page_operations_total Total number of swap page read and writes (PagesPersec)
+# TYPE windows_memory_swap_page_operations_total gauge
+windows_memory_swap_page_operations_total 524900
+# HELP windows_memory_swap_page_reads_total Number of disk page reads (a single read operation reading several pages is still only counted once) (PageReadsPersec)
+# TYPE windows_memory_swap_page_reads_total gauge
+windows_memory_swap_page_reads_total 73613
+# HELP windows_memory_swap_page_writes_total Number of disk page writes (a single write operation writing several pages is still only counted once) (PageWritesPersec)
+# TYPE windows_memory_swap_page_writes_total gauge
+windows_memory_swap_page_writes_total 61
+# HELP windows_memory_swap_pages_read_total Number of pages read across all page reads (ie counting all pages read even if they are read in a single operation) (PagesInputPersec)
+# TYPE windows_memory_swap_pages_read_total gauge
+windows_memory_swap_pages_read_total 521808
+# HELP windows_memory_swap_pages_written_total Number of pages written across all page writes (ie counting all pages written even if they are written in a single operation) (PagesOutputPersec)
+# TYPE windows_memory_swap_pages_written_total gauge
+windows_memory_swap_pages_written_total 3092
+# HELP windows_memory_system_cache_resident_bytes (SystemCacheResidentBytes)
+# TYPE windows_memory_system_cache_resident_bytes gauge
+windows_memory_system_cache_resident_bytes 5.5283712e+07
+# HELP windows_memory_system_code_resident_bytes (SystemCodeResidentBytes)
+# TYPE windows_memory_system_code_resident_bytes gauge
+windows_memory_system_code_resident_bytes 0
+# HELP windows_memory_system_code_total_bytes (SystemCodeTotalBytes)
+# TYPE windows_memory_system_code_total_bytes gauge
+windows_memory_system_code_total_bytes 0
+# HELP windows_memory_system_driver_resident_bytes (SystemDriverResidentBytes)
+# TYPE windows_memory_system_driver_resident_bytes gauge
+windows_memory_system_driver_resident_bytes 9.621504e+06
+# HELP windows_memory_system_driver_total_bytes (SystemDriverTotalBytes)
+# TYPE windows_memory_system_driver_total_bytes gauge
+windows_memory_system_driver_total_bytes 1.6408576e+07
+# HELP windows_memory_transition_faults_total (TransitionFaultsPersec)
+# TYPE windows_memory_transition_faults_total gauge
+windows_memory_transition_faults_total 1.2759543e+07
+# HELP windows_memory_transition_pages_repurposed_total (TransitionPagesRePurposedPersec)
+# TYPE windows_memory_transition_pages_repurposed_total gauge
+windows_memory_transition_pages_repurposed_total 0
+# HELP windows_memory_write_copies_total The number of page faults caused by attempting to write that were satisfied by copying the page from elsewhere in physical memory (WriteCopiesPersec)
+# TYPE windows_memory_write_copies_total gauge
+windows_memory_write_copies_total 271024
+# HELP windows_net_bytes_received_total (Network.BytesReceivedPerSec)
+# TYPE windows_net_bytes_received_total counter
+windows_net_bytes_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 4.5418e+06
+windows_net_bytes_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 1.0661733e+07
+# HELP windows_net_bytes_sent_total (Network.BytesSentPerSec)
+# TYPE windows_net_bytes_sent_total counter
+windows_net_bytes_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 1.780848e+06
+windows_net_bytes_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 1.86479806e+08
+# HELP windows_net_bytes_total (Network.BytesTotalPerSec)
+# TYPE windows_net_bytes_total counter
+windows_net_bytes_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 6.322648e+06
+windows_net_bytes_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 1.97141539e+08
+# HELP windows_net_current_bandwidth (Network.CurrentBandwidth)
+# TYPE windows_net_current_bandwidth gauge
+windows_net_current_bandwidth{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 1e+09
+windows_net_current_bandwidth{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 1e+09
+# HELP windows_net_packets_outbound_discarded (Network.PacketsOutboundDiscarded)
+# TYPE windows_net_packets_outbound_discarded counter
+windows_net_packets_outbound_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
+windows_net_packets_outbound_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
+# HELP windows_net_packets_outbound_errors (Network.PacketsOutboundErrors)
+# TYPE windows_net_packets_outbound_errors counter
+windows_net_packets_outbound_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
+windows_net_packets_outbound_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
+# HELP windows_net_packets_received_discarded (Network.PacketsReceivedDiscarded)
+# TYPE windows_net_packets_received_discarded counter
+windows_net_packets_received_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
+windows_net_packets_received_discarded{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
+# HELP windows_net_packets_received_errors (Network.PacketsReceivedErrors)
+# TYPE windows_net_packets_received_errors counter
+windows_net_packets_received_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
+windows_net_packets_received_errors{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
+# HELP windows_net_packets_received_total (Network.PacketsReceivedPerSec)
+# TYPE windows_net_packets_received_total counter
+windows_net_packets_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 10575
+windows_net_packets_received_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 93134
+# HELP windows_net_packets_received_unknown (Network.PacketsReceivedUnknown)
+# TYPE windows_net_packets_received_unknown counter
+windows_net_packets_received_unknown{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 0
+windows_net_packets_received_unknown{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 0
+# HELP windows_net_packets_sent_total (Network.PacketsSentPerSec)
+# TYPE windows_net_packets_sent_total counter
+windows_net_packets_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 9605
+windows_net_packets_sent_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 94947
+# HELP windows_net_packets_total (Network.PacketsPerSec)
+# TYPE windows_net_packets_total counter
+windows_net_packets_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter"} 20180
+windows_net_packets_total{nic="Intel_R__PRO_1000_MT_Desktop_Adapter__2"} 188081
+# HELP windows_os_paging_free_bytes OperatingSystem.FreeSpaceInPagingFiles
+# TYPE windows_os_paging_free_bytes gauge
+windows_os_paging_free_bytes 1.468342272e+09
+# HELP windows_os_paging_limit_bytes OperatingSystem.SizeStoredInPagingFiles
+# TYPE windows_os_paging_limit_bytes gauge
+windows_os_paging_limit_bytes 1.476395008e+09
+# HELP windows_os_physical_memory_free_bytes OperatingSystem.FreePhysicalMemory
+# TYPE windows_os_physical_memory_free_bytes gauge
+windows_os_physical_memory_free_bytes 2.621657088e+09
+# HELP windows_os_process_memory_limix_bytes OperatingSystem.MaxProcessMemorySize
+# TYPE windows_os_process_memory_limix_bytes gauge
+windows_os_process_memory_limix_bytes 1.40737488224256e+14
+# HELP windows_os_processes OperatingSystem.NumberOfProcesses
+# TYPE windows_os_processes gauge
+windows_os_processes 121
+# HELP windows_os_processes_limit OperatingSystem.MaxNumberOfProcesses
+# TYPE windows_os_processes_limit gauge
+windows_os_processes_limit 4.294967295e+09
+# HELP windows_os_time OperatingSystem.LocalDateTime
+# TYPE windows_os_time gauge
+windows_os_time 1.577997682e+09
+# HELP windows_os_timezone OperatingSystem.LocalDateTime
+# TYPE windows_os_timezone gauge
+windows_os_timezone{timezone="MSK"} 1
+# HELP windows_os_users OperatingSystem.NumberOfUsers
+# TYPE windows_os_users gauge
+windows_os_users 2
+# HELP windows_os_virtual_memory_bytes OperatingSystem.TotalVirtualMemorySize
+# TYPE windows_os_virtual_memory_bytes gauge
+windows_os_virtual_memory_bytes 5.770891264e+09
+# HELP windows_os_virtual_memory_free_bytes OperatingSystem.FreeVirtualMemory
+# TYPE windows_os_virtual_memory_free_bytes gauge
+windows_os_virtual_memory_free_bytes 4.116611072e+09
+# HELP windows_os_visible_memory_bytes OperatingSystem.TotalVisibleMemorySize
+# TYPE windows_os_visible_memory_bytes gauge
+windows_os_visible_memory_bytes 4.294496256e+09
+# HELP windows_system_context_switches_total Total number of context switches (WMI source: PerfOS_System.ContextSwitchesPersec)
+# TYPE windows_system_context_switches_total counter
+windows_system_context_switches_total 4.9284345e+07
+# HELP windows_system_exception_dispatches_total Total number of exceptions dispatched (WMI source: PerfOS_System.ExceptionDispatchesPersec)
+# TYPE windows_system_exception_dispatches_total counter
+windows_system_exception_dispatches_total 59337
+# HELP windows_system_processor_queue_length Length of processor queue (WMI source: PerfOS_System.ProcessorQueueLength)
+# TYPE windows_system_processor_queue_length gauge
+windows_system_processor_queue_length 0
+# HELP windows_system_system_calls_total Total number of system calls (WMI source: PerfOS_System.SystemCallsPersec)
+# TYPE windows_system_system_calls_total counter
+windows_system_system_calls_total 4.3057396e+08
+# HELP windows_system_system_up_time System boot time (WMI source: PerfOS_System.SystemUpTime)
+# TYPE windows_system_system_up_time gauge
+windows_system_system_up_time 1.5779661735e+09
+# HELP windows_system_threads Current number of threads (WMI source: PerfOS_System.Threads)
+# TYPE windows_system_threads gauge
+windows_system_threads 994

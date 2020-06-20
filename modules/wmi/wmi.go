@@ -12,6 +12,9 @@ import (
 
 func init() {
 	creator := module.Creator{
+		Defaults: module.Defaults{
+			UpdateEvery: 5,
+		},
 		Create: func() module.Module { return New() },
 	}
 
@@ -22,7 +25,7 @@ func init() {
 func New() *WMI {
 	config := Config{
 		HTTP: web.HTTP{
-			Client: web.Client{Timeout: web.Duration{Duration: time.Second * 2}},
+			Client: web.Client{Timeout: web.Duration{Duration: time.Second * 5}},
 		},
 	}
 	return &WMI{

@@ -82,234 +82,234 @@ go_memstats_sys_bytes 1.1209852e+07
 # HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
 # TYPE process_start_time_seconds counter
 process_start_time_seconds 1.578049732e+09
-# HELP wmi_cpu_clock_interrupts_total Total number of received and serviced clock tick interrupts
-# TYPE wmi_cpu_clock_interrupts_total counter
-wmi_cpu_clock_interrupts_total{core="0,0"} 865485
-wmi_cpu_clock_interrupts_total{core="0,1"} 865149
-wmi_cpu_clock_interrupts_total{core="0,2"} 865055
-wmi_cpu_clock_interrupts_total{core="0,3"} 864517
-# HELP wmi_cpu_core_frequency_mhz Core frequency in megahertz
-# TYPE wmi_cpu_core_frequency_mhz gauge
-wmi_cpu_core_frequency_mhz{core="0,0"} 2195
-wmi_cpu_core_frequency_mhz{core="0,1"} 2195
-wmi_cpu_core_frequency_mhz{core="0,2"} 2195
-wmi_cpu_core_frequency_mhz{core="0,3"} 2195
-# HELP wmi_cpu_cstate_seconds_total Time spent in low-power idle state
-# TYPE wmi_cpu_cstate_seconds_total counter
-wmi_cpu_cstate_seconds_total{core="0,0",state="c1"} 9996.822630499999
-wmi_cpu_cstate_seconds_total{core="0,0",state="c2"} 0
-wmi_cpu_cstate_seconds_total{core="0,0",state="c3"} 0
-wmi_cpu_cstate_seconds_total{core="0,1",state="c1"} 8774.705585
-wmi_cpu_cstate_seconds_total{core="0,1",state="c2"} 0
-wmi_cpu_cstate_seconds_total{core="0,1",state="c3"} 0
-wmi_cpu_cstate_seconds_total{core="0,2",state="c1"} 9941.251291999999
-wmi_cpu_cstate_seconds_total{core="0,2",state="c2"} 0
-wmi_cpu_cstate_seconds_total{core="0,2",state="c3"} 0
-wmi_cpu_cstate_seconds_total{core="0,3",state="c1"} 9453.105773399999
-wmi_cpu_cstate_seconds_total{core="0,3",state="c2"} 0
-wmi_cpu_cstate_seconds_total{core="0,3",state="c3"} 0
-# HELP wmi_cpu_dpcs_total Total number of received and serviced deferred procedure calls (DPCs)
-# TYPE wmi_cpu_dpcs_total counter
-wmi_cpu_dpcs_total{core="0,0"} 119284
-wmi_cpu_dpcs_total{core="0,1"} 306334
-wmi_cpu_dpcs_total{core="0,2"} 185430
-wmi_cpu_dpcs_total{core="0,3"} 211020
-# HELP wmi_cpu_idle_break_events_total Total number of time processor was woken from idle
-# TYPE wmi_cpu_idle_break_events_total counter
-wmi_cpu_idle_break_events_total{core="0,0"} 1.5237428e+07
-wmi_cpu_idle_break_events_total{core="0,1"} 1.766724e+06
-wmi_cpu_idle_break_events_total{core="0,2"} 1.772391e+06
-wmi_cpu_idle_break_events_total{core="0,3"} 2.041106e+06
-# HELP wmi_cpu_interrupts_total Total number of received and serviced hardware interrupts
-# TYPE wmi_cpu_interrupts_total counter
-wmi_cpu_interrupts_total{core="0,0"} 1.7693361e+07
-wmi_cpu_interrupts_total{core="0,1"} 2.346399e+06
-wmi_cpu_interrupts_total{core="0,2"} 2.21262e+06
-wmi_cpu_interrupts_total{core="0,3"} 2.611467e+06
-# HELP wmi_cpu_parking_status Parking Status represents whether a processor is parked or not
-# TYPE wmi_cpu_parking_status gauge
-wmi_cpu_parking_status{core="0,0"} 0
-wmi_cpu_parking_status{core="0,1"} 0
-wmi_cpu_parking_status{core="0,2"} 0
-wmi_cpu_parking_status{core="0,3"} 0
-# HELP wmi_cpu_processor_performance Processor Performance is the average performance of the processor while it is executing instructions, as a percentage of the nominal performance of the processor. On some processors, Processor Performance may exceed 100%
-# TYPE wmi_cpu_processor_performance gauge
-wmi_cpu_processor_performance{core="0,0"} 3.9942315475e+10
-wmi_cpu_processor_performance{core="0,1"} 1.163246295e+11
-wmi_cpu_processor_performance{core="0,2"} 4.3415524418e+10
-wmi_cpu_processor_performance{core="0,3"} 7.3924619412e+10
-# HELP wmi_cpu_time_total Time that processor spent in different modes (idle, user, system, ...)
-# TYPE wmi_cpu_time_total counter
-wmi_cpu_time_total{core="0,0",mode="dpc"} 2.375
-wmi_cpu_time_total{core="0,0",mode="idle"} 10181.359375
-wmi_cpu_time_total{core="0,0",mode="interrupt"} 1.84375
-wmi_cpu_time_total{core="0,0",mode="privileged"} 185.484375
-wmi_cpu_time_total{core="0,0",mode="user"} 269.03125
-wmi_cpu_time_total{core="0,1",mode="dpc"} 20.0625
-wmi_cpu_time_total{core="0,1",mode="idle"} 8831.375
-wmi_cpu_time_total{core="0,1",mode="interrupt"} 6.109375
-wmi_cpu_time_total{core="0,1",mode="privileged"} 861.703125
-wmi_cpu_time_total{core="0,1",mode="user"} 942.796875
-wmi_cpu_time_total{core="0,2",mode="dpc"} 12.625
-wmi_cpu_time_total{core="0,2",mode="idle"} 9998.625
-wmi_cpu_time_total{core="0,2",mode="interrupt"} 11.0625
-wmi_cpu_time_total{core="0,2",mode="privileged"} 297.359375
-wmi_cpu_time_total{core="0,2",mode="user"} 339.890625
-wmi_cpu_time_total{core="0,3",mode="dpc"} 13.78125
-wmi_cpu_time_total{core="0,3",mode="idle"} 9463.03125
-wmi_cpu_time_total{core="0,3",mode="interrupt"} 105.625
-wmi_cpu_time_total{core="0,3",mode="privileged"} 411.40625
-wmi_cpu_time_total{core="0,3",mode="user"} 761.4375
-# HELP wmi_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which wmi_exporter was built.
-# TYPE wmi_exporter_build_info gauge
-wmi_exporter_build_info{branch="master",goversion="go1.12.3",revision="012b938b5451e5d10e2bb364876aac66cd85c54e",version="0.9.0"} 1
-# HELP wmi_exporter_collector_duration_seconds wmi_exporter: Duration of a collection.
-# TYPE wmi_exporter_collector_duration_seconds gauge
-wmi_exporter_collector_duration_seconds{collector="cpu"} 0
-wmi_exporter_collector_duration_seconds{collector="memory"} 0
-wmi_exporter_collector_duration_seconds{collector="os"} 0.044299
-# HELP wmi_exporter_collector_success wmi_exporter: Whether the collector was successful.
-# TYPE wmi_exporter_collector_success gauge
-wmi_exporter_collector_success{collector="cpu"} 1
-wmi_exporter_collector_success{collector="memory"} 1
-wmi_exporter_collector_success{collector="os"} 1
-# HELP wmi_exporter_collector_timeout wmi_exporter: Whether the collector timed out.
-# TYPE wmi_exporter_collector_timeout gauge
-wmi_exporter_collector_timeout{collector="cpu"} 0
-wmi_exporter_collector_timeout{collector="memory"} 0
-wmi_exporter_collector_timeout{collector="os"} 0
-# HELP wmi_exporter_perflib_snapshot_duration_seconds Duration of perflib snapshot capture
-# TYPE wmi_exporter_perflib_snapshot_duration_seconds gauge
-wmi_exporter_perflib_snapshot_duration_seconds 0.0539396
-# HELP wmi_memory_available_bytes The amount of physical memory immediately available for allocation to a process or for system use. It is equal to the sum of memory assigned to the standby (cached), free and zero page lists (AvailableBytes)
-# TYPE wmi_memory_available_bytes gauge
-wmi_memory_available_bytes 2.337222656e+09
-# HELP wmi_memory_cache_bytes (CacheBytes)
-# TYPE wmi_memory_cache_bytes gauge
-wmi_memory_cache_bytes 1.28589824e+08
-# HELP wmi_memory_cache_bytes_peak (CacheBytesPeak)
-# TYPE wmi_memory_cache_bytes_peak gauge
-wmi_memory_cache_bytes_peak 1.95198976e+08
-# HELP wmi_memory_cache_faults_total (CacheFaultsPersec)
-# TYPE wmi_memory_cache_faults_total gauge
-wmi_memory_cache_faults_total 7.675068e+06
-# HELP wmi_memory_commit_limit (CommitLimit)
-# TYPE wmi_memory_commit_limit gauge
-wmi_memory_commit_limit 5.770891264e+09
-# HELP wmi_memory_committed_bytes (CommittedBytes)
-# TYPE wmi_memory_committed_bytes gauge
-wmi_memory_committed_bytes 2.006388736e+09
-# HELP wmi_memory_demand_zero_faults_total The number of zeroed pages required to satisfy faults. Zeroed pages, pages emptied of previously stored data and filled with zeros, are a security feature of Windows that prevent processes from seeing data stored by earlier processes that used the memory space (DemandZeroFaults)
-# TYPE wmi_memory_demand_zero_faults_total gauge
-wmi_memory_demand_zero_faults_total 6.882552e+06
-# HELP wmi_memory_free_and_zero_page_list_bytes (FreeAndZeroPageListBytes)
-# TYPE wmi_memory_free_and_zero_page_list_bytes gauge
-wmi_memory_free_and_zero_page_list_bytes 3.04807936e+08
-# HELP wmi_memory_free_system_page_table_entries (FreeSystemPageTableEntries)
-# TYPE wmi_memory_free_system_page_table_entries gauge
-wmi_memory_free_system_page_table_entries 1.2558411e+07
-# HELP wmi_memory_modified_page_list_bytes (ModifiedPageListBytes)
-# TYPE wmi_memory_modified_page_list_bytes gauge
-wmi_memory_modified_page_list_bytes 2.0496384e+07
-# HELP wmi_memory_page_faults_total (PageFaultsPersec)
-# TYPE wmi_memory_page_faults_total gauge
-wmi_memory_page_faults_total 1.8061429e+07
-# HELP wmi_memory_pool_nonpaged_allocs_total The number of calls to allocate space in the nonpaged pool. The nonpaged pool is an area of system memory area for objects that cannot be written to disk, and must remain in physical memory as long as they are allocated (PoolNonpagedAllocs)
-# TYPE wmi_memory_pool_nonpaged_allocs_total gauge
-wmi_memory_pool_nonpaged_allocs_total 0
-# HELP wmi_memory_pool_nonpaged_bytes_total (PoolNonpagedBytes)
-# TYPE wmi_memory_pool_nonpaged_bytes_total gauge
-wmi_memory_pool_nonpaged_bytes_total 1.64827136e+08
-# HELP wmi_memory_pool_paged_allocs_total (PoolPagedAllocs)
-# TYPE wmi_memory_pool_paged_allocs_total gauge
-wmi_memory_pool_paged_allocs_total 0
-# HELP wmi_memory_pool_paged_bytes (PoolPagedBytes)
-# TYPE wmi_memory_pool_paged_bytes gauge
-wmi_memory_pool_paged_bytes 3.72215808e+08
-# HELP wmi_memory_pool_paged_resident_bytes (PoolPagedResidentBytes)
-# TYPE wmi_memory_pool_paged_resident_bytes gauge
-wmi_memory_pool_paged_resident_bytes 3.59211008e+08
-# HELP wmi_memory_standby_cache_core_bytes (StandbyCacheCoreBytes)
-# TYPE wmi_memory_standby_cache_core_bytes gauge
-wmi_memory_standby_cache_core_bytes 1.65449728e+08
-# HELP wmi_memory_standby_cache_normal_priority_bytes (StandbyCacheNormalPriorityBytes)
-# TYPE wmi_memory_standby_cache_normal_priority_bytes gauge
-wmi_memory_standby_cache_normal_priority_bytes 6.00199168e+08
-# HELP wmi_memory_standby_cache_reserve_bytes (StandbyCacheReserveBytes)
-# TYPE wmi_memory_standby_cache_reserve_bytes gauge
-wmi_memory_standby_cache_reserve_bytes 1.266765824e+09
-# HELP wmi_memory_swap_page_operations_total Total number of swap page read and writes (PagesPersec)
-# TYPE wmi_memory_swap_page_operations_total gauge
-wmi_memory_swap_page_operations_total 5.39697e+06
-# HELP wmi_memory_swap_page_reads_total Number of disk page reads (a single read operation reading several pages is still only counted once) (PageReadsPersec)
-# TYPE wmi_memory_swap_page_reads_total gauge
-wmi_memory_swap_page_reads_total 676801
-# HELP wmi_memory_swap_page_writes_total Number of disk page writes (a single write operation writing several pages is still only counted once) (PageWritesPersec)
-# TYPE wmi_memory_swap_page_writes_total gauge
-wmi_memory_swap_page_writes_total 804
-# HELP wmi_memory_swap_pages_read_total Number of pages read across all page reads (ie counting all pages read even if they are read in a single operation) (PagesInputPersec)
-# TYPE wmi_memory_swap_pages_read_total gauge
-wmi_memory_swap_pages_read_total 5.368093e+06
-# HELP wmi_memory_swap_pages_written_total Number of pages written across all page writes (ie counting all pages written even if they are written in a single operation) (PagesOutputPersec)
-# TYPE wmi_memory_swap_pages_written_total gauge
-wmi_memory_swap_pages_written_total 28877
-# HELP wmi_memory_system_cache_resident_bytes (SystemCacheResidentBytes)
-# TYPE wmi_memory_system_cache_resident_bytes gauge
-wmi_memory_system_cache_resident_bytes 1.28589824e+08
-# HELP wmi_memory_system_code_resident_bytes (SystemCodeResidentBytes)
-# TYPE wmi_memory_system_code_resident_bytes gauge
-wmi_memory_system_code_resident_bytes 0
-# HELP wmi_memory_system_code_total_bytes (SystemCodeTotalBytes)
-# TYPE wmi_memory_system_code_total_bytes gauge
-wmi_memory_system_code_total_bytes 0
-# HELP wmi_memory_system_driver_resident_bytes (SystemDriverResidentBytes)
-# TYPE wmi_memory_system_driver_resident_bytes gauge
-wmi_memory_system_driver_resident_bytes 9.486336e+06
-# HELP wmi_memory_system_driver_total_bytes (SystemDriverTotalBytes)
-# TYPE wmi_memory_system_driver_total_bytes gauge
-wmi_memory_system_driver_total_bytes 1.6224256e+07
-# HELP wmi_memory_transition_faults_total (TransitionFaultsPersec)
-# TYPE wmi_memory_transition_faults_total gauge
-wmi_memory_transition_faults_total 5.279307e+06
-# HELP wmi_memory_transition_pages_repurposed_total (TransitionPagesRePurposedPersec)
-# TYPE wmi_memory_transition_pages_repurposed_total gauge
-wmi_memory_transition_pages_repurposed_total 2.163369e+06
-# HELP wmi_memory_write_copies_total The number of page faults caused by attempting to write that were satisfied by copying the page from elsewhere in physical memory (WriteCopiesPersec)
-# TYPE wmi_memory_write_copies_total gauge
-wmi_memory_write_copies_total 166632
-# HELP wmi_os_paging_free_bytes OperatingSystem.FreeSpaceInPagingFiles
-# TYPE wmi_os_paging_free_bytes gauge
-wmi_os_paging_free_bytes 1.44535552e+09
-# HELP wmi_os_paging_limit_bytes OperatingSystem.SizeStoredInPagingFiles
-# TYPE wmi_os_paging_limit_bytes gauge
-wmi_os_paging_limit_bytes 1.476395008e+09
-# HELP wmi_os_physical_memory_free_bytes OperatingSystem.FreePhysicalMemory
-# TYPE wmi_os_physical_memory_free_bytes gauge
-wmi_os_physical_memory_free_bytes 2.335821824e+09
-# HELP wmi_os_process_memory_limix_bytes OperatingSystem.MaxProcessMemorySize
-# TYPE wmi_os_process_memory_limix_bytes gauge
-wmi_os_process_memory_limix_bytes 1.40737488224256e+14
-# HELP wmi_os_processes OperatingSystem.NumberOfProcesses
-# TYPE wmi_os_processes gauge
-wmi_os_processes 124
-# HELP wmi_os_processes_limit OperatingSystem.MaxNumberOfProcesses
-# TYPE wmi_os_processes_limit gauge
-wmi_os_processes_limit 4.294967295e+09
-# HELP wmi_os_time OperatingSystem.LocalDateTime
-# TYPE wmi_os_time gauge
-wmi_os_time 1.57804974e+09
-# HELP wmi_os_timezone OperatingSystem.LocalDateTime
-# TYPE wmi_os_timezone gauge
-wmi_os_timezone{timezone="MSK"} 1
-# HELP wmi_os_users OperatingSystem.NumberOfUsers
-# TYPE wmi_os_users gauge
-wmi_os_users 2
-# HELP wmi_os_virtual_memory_bytes OperatingSystem.TotalVirtualMemorySize
-# TYPE wmi_os_virtual_memory_bytes gauge
-wmi_os_virtual_memory_bytes 5.770891264e+09
-# HELP wmi_os_virtual_memory_free_bytes OperatingSystem.FreeVirtualMemory
-# TYPE wmi_os_virtual_memory_free_bytes gauge
-wmi_os_virtual_memory_free_bytes 3.76489984e+09
-# HELP wmi_os_visible_memory_bytes OperatingSystem.TotalVisibleMemorySize
-# TYPE wmi_os_visible_memory_bytes gauge
-wmi_os_visible_memory_bytes 4.294496256e+09
+# HELP windows_cpu_clock_interrupts_total Total number of received and serviced clock tick interrupts
+# TYPE windows_cpu_clock_interrupts_total counter
+windows_cpu_clock_interrupts_total{core="0,0"} 865485
+windows_cpu_clock_interrupts_total{core="0,1"} 865149
+windows_cpu_clock_interrupts_total{core="0,2"} 865055
+windows_cpu_clock_interrupts_total{core="0,3"} 864517
+# HELP windows_cpu_core_frequency_mhz Core frequency in megahertz
+# TYPE windows_cpu_core_frequency_mhz gauge
+windows_cpu_core_frequency_mhz{core="0,0"} 2195
+windows_cpu_core_frequency_mhz{core="0,1"} 2195
+windows_cpu_core_frequency_mhz{core="0,2"} 2195
+windows_cpu_core_frequency_mhz{core="0,3"} 2195
+# HELP windows_cpu_cstate_seconds_total Time spent in low-power idle state
+# TYPE windows_cpu_cstate_seconds_total counter
+windows_cpu_cstate_seconds_total{core="0,0",state="c1"} 9996.822630499999
+windows_cpu_cstate_seconds_total{core="0,0",state="c2"} 0
+windows_cpu_cstate_seconds_total{core="0,0",state="c3"} 0
+windows_cpu_cstate_seconds_total{core="0,1",state="c1"} 8774.705585
+windows_cpu_cstate_seconds_total{core="0,1",state="c2"} 0
+windows_cpu_cstate_seconds_total{core="0,1",state="c3"} 0
+windows_cpu_cstate_seconds_total{core="0,2",state="c1"} 9941.251291999999
+windows_cpu_cstate_seconds_total{core="0,2",state="c2"} 0
+windows_cpu_cstate_seconds_total{core="0,2",state="c3"} 0
+windows_cpu_cstate_seconds_total{core="0,3",state="c1"} 9453.105773399999
+windows_cpu_cstate_seconds_total{core="0,3",state="c2"} 0
+windows_cpu_cstate_seconds_total{core="0,3",state="c3"} 0
+# HELP windows_cpu_dpcs_total Total number of received and serviced deferred procedure calls (DPCs)
+# TYPE windows_cpu_dpcs_total counter
+windows_cpu_dpcs_total{core="0,0"} 119284
+windows_cpu_dpcs_total{core="0,1"} 306334
+windows_cpu_dpcs_total{core="0,2"} 185430
+windows_cpu_dpcs_total{core="0,3"} 211020
+# HELP windows_cpu_idle_break_events_total Total number of time processor was woken from idle
+# TYPE windows_cpu_idle_break_events_total counter
+windows_cpu_idle_break_events_total{core="0,0"} 1.5237428e+07
+windows_cpu_idle_break_events_total{core="0,1"} 1.766724e+06
+windows_cpu_idle_break_events_total{core="0,2"} 1.772391e+06
+windows_cpu_idle_break_events_total{core="0,3"} 2.041106e+06
+# HELP windows_cpu_interrupts_total Total number of received and serviced hardware interrupts
+# TYPE windows_cpu_interrupts_total counter
+windows_cpu_interrupts_total{core="0,0"} 1.7693361e+07
+windows_cpu_interrupts_total{core="0,1"} 2.346399e+06
+windows_cpu_interrupts_total{core="0,2"} 2.21262e+06
+windows_cpu_interrupts_total{core="0,3"} 2.611467e+06
+# HELP windows_cpu_parking_status Parking Status represents whether a processor is parked or not
+# TYPE windows_cpu_parking_status gauge
+windows_cpu_parking_status{core="0,0"} 0
+windows_cpu_parking_status{core="0,1"} 0
+windows_cpu_parking_status{core="0,2"} 0
+windows_cpu_parking_status{core="0,3"} 0
+# HELP windows_cpu_processor_performance Processor Performance is the average performance of the processor while it is executing instructions, as a percentage of the nominal performance of the processor. On some processors, Processor Performance may exceed 100%
+# TYPE windows_cpu_processor_performance gauge
+windows_cpu_processor_performance{core="0,0"} 3.9942315475e+10
+windows_cpu_processor_performance{core="0,1"} 1.163246295e+11
+windows_cpu_processor_performance{core="0,2"} 4.3415524418e+10
+windows_cpu_processor_performance{core="0,3"} 7.3924619412e+10
+# HELP windows_cpu_time_total Time that processor spent in different modes (idle, user, system, ...)
+# TYPE windows_cpu_time_total counter
+windows_cpu_time_total{core="0,0",mode="dpc"} 2.375
+windows_cpu_time_total{core="0,0",mode="idle"} 10181.359375
+windows_cpu_time_total{core="0,0",mode="interrupt"} 1.84375
+windows_cpu_time_total{core="0,0",mode="privileged"} 185.484375
+windows_cpu_time_total{core="0,0",mode="user"} 269.03125
+windows_cpu_time_total{core="0,1",mode="dpc"} 20.0625
+windows_cpu_time_total{core="0,1",mode="idle"} 8831.375
+windows_cpu_time_total{core="0,1",mode="interrupt"} 6.109375
+windows_cpu_time_total{core="0,1",mode="privileged"} 861.703125
+windows_cpu_time_total{core="0,1",mode="user"} 942.796875
+windows_cpu_time_total{core="0,2",mode="dpc"} 12.625
+windows_cpu_time_total{core="0,2",mode="idle"} 9998.625
+windows_cpu_time_total{core="0,2",mode="interrupt"} 11.0625
+windows_cpu_time_total{core="0,2",mode="privileged"} 297.359375
+windows_cpu_time_total{core="0,2",mode="user"} 339.890625
+windows_cpu_time_total{core="0,3",mode="dpc"} 13.78125
+windows_cpu_time_total{core="0,3",mode="idle"} 9463.03125
+windows_cpu_time_total{core="0,3",mode="interrupt"} 105.625
+windows_cpu_time_total{core="0,3",mode="privileged"} 411.40625
+windows_cpu_time_total{core="0,3",mode="user"} 761.4375
+# HELP windows_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which windows_exporter was built.
+# TYPE windows_exporter_build_info gauge
+windows_exporter_build_info{branch="master",goversion="go1.12.3",revision="012b938b5451e5d10e2bb364876aac66cd85c54e",version="0.9.0"} 1
+# HELP windows_exporter_collector_duration_seconds windows_exporter: Duration of a collection.
+# TYPE windows_exporter_collector_duration_seconds gauge
+windows_exporter_collector_duration_seconds{collector="cpu"} 0
+windows_exporter_collector_duration_seconds{collector="memory"} 0
+windows_exporter_collector_duration_seconds{collector="os"} 0.044299
+# HELP windows_exporter_collector_success windows_exporter: Whether the collector was successful.
+# TYPE windows_exporter_collector_success gauge
+windows_exporter_collector_success{collector="cpu"} 1
+windows_exporter_collector_success{collector="memory"} 1
+windows_exporter_collector_success{collector="os"} 1
+# HELP windows_exporter_collector_timeout windows_exporter: Whether the collector timed out.
+# TYPE windows_exporter_collector_timeout gauge
+windows_exporter_collector_timeout{collector="cpu"} 0
+windows_exporter_collector_timeout{collector="memory"} 0
+windows_exporter_collector_timeout{collector="os"} 0
+# HELP windows_exporter_perflib_snapshot_duration_seconds Duration of perflib snapshot capture
+# TYPE windows_exporter_perflib_snapshot_duration_seconds gauge
+windows_exporter_perflib_snapshot_duration_seconds 0.0539396
+# HELP windows_memory_available_bytes The amount of physical memory immediately available for allocation to a process or for system use. It is equal to the sum of memory assigned to the standby (cached), free and zero page lists (AvailableBytes)
+# TYPE windows_memory_available_bytes gauge
+windows_memory_available_bytes 2.337222656e+09
+# HELP windows_memory_cache_bytes (CacheBytes)
+# TYPE windows_memory_cache_bytes gauge
+windows_memory_cache_bytes 1.28589824e+08
+# HELP windows_memory_cache_bytes_peak (CacheBytesPeak)
+# TYPE windows_memory_cache_bytes_peak gauge
+windows_memory_cache_bytes_peak 1.95198976e+08
+# HELP windows_memory_cache_faults_total (CacheFaultsPersec)
+# TYPE windows_memory_cache_faults_total gauge
+windows_memory_cache_faults_total 7.675068e+06
+# HELP windows_memory_commit_limit (CommitLimit)
+# TYPE windows_memory_commit_limit gauge
+windows_memory_commit_limit 5.770891264e+09
+# HELP windows_memory_committed_bytes (CommittedBytes)
+# TYPE windows_memory_committed_bytes gauge
+windows_memory_committed_bytes 2.006388736e+09
+# HELP windows_memory_demand_zero_faults_total The number of zeroed pages required to satisfy faults. Zeroed pages, pages emptied of previously stored data and filled with zeros, are a security feature of Windows that prevent processes from seeing data stored by earlier processes that used the memory space (DemandZeroFaults)
+# TYPE windows_memory_demand_zero_faults_total gauge
+windows_memory_demand_zero_faults_total 6.882552e+06
+# HELP windows_memory_free_and_zero_page_list_bytes (FreeAndZeroPageListBytes)
+# TYPE windows_memory_free_and_zero_page_list_bytes gauge
+windows_memory_free_and_zero_page_list_bytes 3.04807936e+08
+# HELP windows_memory_free_system_page_table_entries (FreeSystemPageTableEntries)
+# TYPE windows_memory_free_system_page_table_entries gauge
+windows_memory_free_system_page_table_entries 1.2558411e+07
+# HELP windows_memory_modified_page_list_bytes (ModifiedPageListBytes)
+# TYPE windows_memory_modified_page_list_bytes gauge
+windows_memory_modified_page_list_bytes 2.0496384e+07
+# HELP windows_memory_page_faults_total (PageFaultsPersec)
+# TYPE windows_memory_page_faults_total gauge
+windows_memory_page_faults_total 1.8061429e+07
+# HELP windows_memory_pool_nonpaged_allocs_total The number of calls to allocate space in the nonpaged pool. The nonpaged pool is an area of system memory area for objects that cannot be written to disk, and must remain in physical memory as long as they are allocated (PoolNonpagedAllocs)
+# TYPE windows_memory_pool_nonpaged_allocs_total gauge
+windows_memory_pool_nonpaged_allocs_total 0
+# HELP windows_memory_pool_nonpaged_bytes_total (PoolNonpagedBytes)
+# TYPE windows_memory_pool_nonpaged_bytes_total gauge
+windows_memory_pool_nonpaged_bytes_total 1.64827136e+08
+# HELP windows_memory_pool_paged_allocs_total (PoolPagedAllocs)
+# TYPE windows_memory_pool_paged_allocs_total gauge
+windows_memory_pool_paged_allocs_total 0
+# HELP windows_memory_pool_paged_bytes (PoolPagedBytes)
+# TYPE windows_memory_pool_paged_bytes gauge
+windows_memory_pool_paged_bytes 3.72215808e+08
+# HELP windows_memory_pool_paged_resident_bytes (PoolPagedResidentBytes)
+# TYPE windows_memory_pool_paged_resident_bytes gauge
+windows_memory_pool_paged_resident_bytes 3.59211008e+08
+# HELP windows_memory_standby_cache_core_bytes (StandbyCacheCoreBytes)
+# TYPE windows_memory_standby_cache_core_bytes gauge
+windows_memory_standby_cache_core_bytes 1.65449728e+08
+# HELP windows_memory_standby_cache_normal_priority_bytes (StandbyCacheNormalPriorityBytes)
+# TYPE windows_memory_standby_cache_normal_priority_bytes gauge
+windows_memory_standby_cache_normal_priority_bytes 6.00199168e+08
+# HELP windows_memory_standby_cache_reserve_bytes (StandbyCacheReserveBytes)
+# TYPE windows_memory_standby_cache_reserve_bytes gauge
+windows_memory_standby_cache_reserve_bytes 1.266765824e+09
+# HELP windows_memory_swap_page_operations_total Total number of swap page read and writes (PagesPersec)
+# TYPE windows_memory_swap_page_operations_total gauge
+windows_memory_swap_page_operations_total 5.39697e+06
+# HELP windows_memory_swap_page_reads_total Number of disk page reads (a single read operation reading several pages is still only counted once) (PageReadsPersec)
+# TYPE windows_memory_swap_page_reads_total gauge
+windows_memory_swap_page_reads_total 676801
+# HELP windows_memory_swap_page_writes_total Number of disk page writes (a single write operation writing several pages is still only counted once) (PageWritesPersec)
+# TYPE windows_memory_swap_page_writes_total gauge
+windows_memory_swap_page_writes_total 804
+# HELP windows_memory_swap_pages_read_total Number of pages read across all page reads (ie counting all pages read even if they are read in a single operation) (PagesInputPersec)
+# TYPE windows_memory_swap_pages_read_total gauge
+windows_memory_swap_pages_read_total 5.368093e+06
+# HELP windows_memory_swap_pages_written_total Number of pages written across all page writes (ie counting all pages written even if they are written in a single operation) (PagesOutputPersec)
+# TYPE windows_memory_swap_pages_written_total gauge
+windows_memory_swap_pages_written_total 28877
+# HELP windows_memory_system_cache_resident_bytes (SystemCacheResidentBytes)
+# TYPE windows_memory_system_cache_resident_bytes gauge
+windows_memory_system_cache_resident_bytes 1.28589824e+08
+# HELP windows_memory_system_code_resident_bytes (SystemCodeResidentBytes)
+# TYPE windows_memory_system_code_resident_bytes gauge
+windows_memory_system_code_resident_bytes 0
+# HELP windows_memory_system_code_total_bytes (SystemCodeTotalBytes)
+# TYPE windows_memory_system_code_total_bytes gauge
+windows_memory_system_code_total_bytes 0
+# HELP windows_memory_system_driver_resident_bytes (SystemDriverResidentBytes)
+# TYPE windows_memory_system_driver_resident_bytes gauge
+windows_memory_system_driver_resident_bytes 9.486336e+06
+# HELP windows_memory_system_driver_total_bytes (SystemDriverTotalBytes)
+# TYPE windows_memory_system_driver_total_bytes gauge
+windows_memory_system_driver_total_bytes 1.6224256e+07
+# HELP windows_memory_transition_faults_total (TransitionFaultsPersec)
+# TYPE windows_memory_transition_faults_total gauge
+windows_memory_transition_faults_total 5.279307e+06
+# HELP windows_memory_transition_pages_repurposed_total (TransitionPagesRePurposedPersec)
+# TYPE windows_memory_transition_pages_repurposed_total gauge
+windows_memory_transition_pages_repurposed_total 2.163369e+06
+# HELP windows_memory_write_copies_total The number of page faults caused by attempting to write that were satisfied by copying the page from elsewhere in physical memory (WriteCopiesPersec)
+# TYPE windows_memory_write_copies_total gauge
+windows_memory_write_copies_total 166632
+# HELP windows_os_paging_free_bytes OperatingSystem.FreeSpaceInPagingFiles
+# TYPE windows_os_paging_free_bytes gauge
+windows_os_paging_free_bytes 1.44535552e+09
+# HELP windows_os_paging_limit_bytes OperatingSystem.SizeStoredInPagingFiles
+# TYPE windows_os_paging_limit_bytes gauge
+windows_os_paging_limit_bytes 1.476395008e+09
+# HELP windows_os_physical_memory_free_bytes OperatingSystem.FreePhysicalMemory
+# TYPE windows_os_physical_memory_free_bytes gauge
+windows_os_physical_memory_free_bytes 2.335821824e+09
+# HELP windows_os_process_memory_limix_bytes OperatingSystem.MaxProcessMemorySize
+# TYPE windows_os_process_memory_limix_bytes gauge
+windows_os_process_memory_limix_bytes 1.40737488224256e+14
+# HELP windows_os_processes OperatingSystem.NumberOfProcesses
+# TYPE windows_os_processes gauge
+windows_os_processes 124
+# HELP windows_os_processes_limit OperatingSystem.MaxNumberOfProcesses
+# TYPE windows_os_processes_limit gauge
+windows_os_processes_limit 4.294967295e+09
+# HELP windows_os_time OperatingSystem.LocalDateTime
+# TYPE windows_os_time gauge
+windows_os_time 1.57804974e+09
+# HELP windows_os_timezone OperatingSystem.LocalDateTime
+# TYPE windows_os_timezone gauge
+windows_os_timezone{timezone="MSK"} 1
+# HELP windows_os_users OperatingSystem.NumberOfUsers
+# TYPE windows_os_users gauge
+windows_os_users 2
+# HELP windows_os_virtual_memory_bytes OperatingSystem.TotalVirtualMemorySize
+# TYPE windows_os_virtual_memory_bytes gauge
+windows_os_virtual_memory_bytes 5.770891264e+09
+# HELP windows_os_virtual_memory_free_bytes OperatingSystem.FreeVirtualMemory
+# TYPE windows_os_virtual_memory_free_bytes gauge
+windows_os_virtual_memory_free_bytes 3.76489984e+09
+# HELP windows_os_visible_memory_bytes OperatingSystem.TotalVisibleMemorySize
+# TYPE windows_os_visible_memory_bytes gauge
+windows_os_visible_memory_bytes 4.294496256e+09
