@@ -3,14 +3,12 @@ package openvpn
 import (
 	"fmt"
 	"time"
-
-	"github.com/netdata/go.d.plugin/modules/openvpn/client"
 )
 
 func (o *OpenVPN) collect() (map[string]int64, error) {
 	var err error
-	if !o.apiClient.IsConnected() {
-		if err = o.apiClient.Connect(); err != nil {
+	if !o.client.IsConnected() {
+		if err = o.client.Connect(); err != nil {
 			return nil, err
 		}
 	}
@@ -18,7 +16,7 @@ func (o *OpenVPN) collect() (map[string]int64, error) {
 	defer func() {
 		// TODO: disconnect not on every error?
 		if err != nil {
-			_ = o.apiClient.Disconnect()
+			_ = o.client.Disconnect()
 		}
 	}()
 
@@ -38,7 +36,7 @@ func (o *OpenVPN) collect() (map[string]int64, error) {
 }
 
 func (o *OpenVPN) collectLoadStats(mx map[string]int64) error {
-	stats, err := o.apiClient.GetLoadStats()
+	stats, err := o.client.LoadStats()
 	if err != nil {
 		return err
 	}
@@ -46,48 +44,52 @@ func (o *OpenVPN) collectLoadStats(mx map[string]int64) error {
 	mx["clients"] = stats.NumOfClients
 	mx["bytes_in"] = stats.BytesIn
 	mx["bytes_out"] = stats.BytesOut
-
 	return nil
 }
 
 func (o *OpenVPN) collectUsers(mx map[string]int64) error {
-	users, err := o.apiClient.GetUsers()
+	users, err := o.client.Users()
 	if err != nil {
 		return err
 	}
 
 	now := time.Now().Unix()
+	var name string
 
-	for _, u := range users {
-		if !o.perUserMatcher.MatchString(u.Username) {
+	for _, user := range users {
+		if user.Username == "UNDEF" {
+			name = user.CommonName
+		} else {
+			name = user.Username
+		}
+
+		if !o.perUserMatcher.MatchString(name) {
 			continue
 		}
-		if !o.collectedUsers[u.Username] {
-			o.collectedUsers[u.Username] = true
-			if err := o.addUserCharts(u); err != nil {
+		if !o.collectedUsers[name] {
+			o.collectedUsers[name] = true
+			if err := o.addUserCharts(name); err != nil {
 				o.Warning(err)
 			}
 		}
-		mx[u.Username+"_bytes_received"] = u.BytesReceived
-		mx[u.Username+"_bytes_sent"] = u.BytesSent
-		mx[u.Username+"_connection_time"] = now - u.ConnectedSince
+		mx[name+"_bytes_received"] = user.BytesReceived
+		mx[name+"_bytes_sent"] = user.BytesSent
+		mx[name+"_connection_time"] = now - user.ConnectedSince
 	}
-
 	return nil
 }
 
-func (o *OpenVPN) addUserCharts(user client.User) error {
+func (o *OpenVPN) addUserCharts(userName string) error {
 	cs := userCharts.Copy()
 
 	for _, chart := range *cs {
-		chart.ID = fmt.Sprintf(chart.ID, user.Username)
-		chart.Fam = fmt.Sprintf(chart.Fam, user.Username)
+		chart.ID = fmt.Sprintf(chart.ID, userName)
+		chart.Fam = fmt.Sprintf(chart.Fam, userName)
 
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, user.Username)
+			dim.ID = fmt.Sprintf(dim.ID, userName)
 		}
 		chart.MarkNotCreated()
 	}
-
 	return o.charts.Add(*cs...)
 }
