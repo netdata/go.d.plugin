@@ -32,9 +32,9 @@ func TestClient_Connect(t *testing.T) {
 		_ = clientConn.Close()
 	}()
 
-	cl := &Client{dial: testDial(clientConn)}
-	assert.NoError(t, cl.Connect())
-	assert.True(t, cl.IsConnected())
+	client := &Client{dial: testDial(clientConn)}
+	assert.NoError(t, client.Connect())
+	assert.True(t, client.IsConnected())
 }
 
 func TestClient_Disconnect(t *testing.T) {
@@ -44,12 +44,12 @@ func TestClient_Disconnect(t *testing.T) {
 		_ = clientConn.Close()
 	}()
 
-	cl := &Client{dial: testDial(clientConn)}
-	assert.False(t, cl.IsConnected())
-	assert.NoError(t, cl.Connect())
-	assert.True(t, cl.IsConnected())
-	assert.NoError(t, cl.Disconnect())
-	assert.False(t, cl.IsConnected())
+	client := &Client{dial: testDial(clientConn)}
+	assert.False(t, client.IsConnected())
+	assert.NoError(t, client.Connect())
+	assert.True(t, client.IsConnected())
+	assert.NoError(t, client.Disconnect())
+	assert.False(t, client.IsConnected())
 }
 
 func TestClient_IsConnected(t *testing.T) {
@@ -59,10 +59,10 @@ func TestClient_IsConnected(t *testing.T) {
 		_ = clientConn.Close()
 	}()
 
-	cl := &Client{dial: testDial(clientConn)}
-	assert.False(t, cl.IsConnected())
-	assert.NoError(t, cl.Connect())
-	assert.True(t, cl.IsConnected())
+	client := &Client{dial: testDial(clientConn)}
+	assert.False(t, client.IsConnected())
+	assert.NoError(t, client.Connect())
+	assert.True(t, client.IsConnected())
 }
 
 func TestClient_GetVersion(t *testing.T) {
@@ -71,11 +71,11 @@ func TestClient_GetVersion(t *testing.T) {
 		_ = serverConn.Close()
 		_ = clientConn.Close()
 	}()
-	cl := newTestTCPClient(clientConn)
+	client := newTestTCPClient(clientConn)
 	srv := newTestTCPServer(serverConn)
 	go srv.serve()
 
-	ver, err := cl.GetVersion()
+	ver, err := client.Version()
 	assert.NoError(t, err)
 	expected := &Version{Major: 2, Minor: 3, Patch: 4, Management: 1}
 	assert.Equal(t, expected, ver)
@@ -87,11 +87,11 @@ func TestClient_GetLoadStats(t *testing.T) {
 		_ = serverConn.Close()
 		_ = clientConn.Close()
 	}()
-	cl := newTestTCPClient(clientConn)
+	client := newTestTCPClient(clientConn)
 	srv := newTestTCPServer(serverConn)
 	go srv.serve()
 
-	stats, err := cl.GetLoadStats()
+	stats, err := client.LoadStats()
 	assert.NoError(t, err)
 	expected := &LoadStats{NumOfClients: 1, BytesIn: 7811, BytesOut: 7667}
 	assert.Equal(t, expected, stats)
@@ -103,11 +103,11 @@ func TestClient_GetUsers(t *testing.T) {
 		_ = serverConn.Close()
 		_ = clientConn.Close()
 	}()
-	cl := newTestTCPClient(clientConn)
+	client := newTestTCPClient(clientConn)
 	srv := newTestTCPServer(serverConn)
 	go srv.serve()
 
-	users, err := cl.GetUsers()
+	users, err := client.Users()
 	assert.NoError(t, err)
 	expected := Users{{
 		CommonName:     "pepehome",

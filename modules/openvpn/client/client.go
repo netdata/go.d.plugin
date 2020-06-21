@@ -70,8 +70,8 @@ func (c *Client) Disconnect() error {
 	return err
 }
 
-//GetUsers GetUsers.
-func (c *Client) GetUsers() (Users, error) {
+// Users Users.
+func (c *Client) Users() (Users, error) {
 	lines, err := c.get(commandStatus3, readUntilEND)
 	if err != nil {
 		return nil, err
@@ -79,8 +79,8 @@ func (c *Client) GetUsers() (Users, error) {
 	return decodeUsers(lines)
 }
 
-// GetLoadStats GetLoadStats.
-func (c *Client) GetLoadStats() (*LoadStats, error) {
+// LoadStats LoadStats.
+func (c *Client) LoadStats() (*LoadStats, error) {
 	lines, err := c.get(commandLoadStats, readOneLine)
 	if err != nil {
 		return nil, err
@@ -88,8 +88,8 @@ func (c *Client) GetLoadStats() (*LoadStats, error) {
 	return decodeLoadStats(lines)
 }
 
-//GetVersion GetVersion.
-func (c *Client) GetVersion() (*Version, error) {
+// Version Version.
+func (c *Client) Version() (*Version, error) {
 	lines, err := c.get(commandVersion, readUntilEND)
 	if err != nil {
 		return nil, err

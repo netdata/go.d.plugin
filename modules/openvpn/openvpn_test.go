@@ -23,6 +23,15 @@ var (
 		ConnectedSince: 3,
 		Username:       "name",
 	}}
+	testUsersUNDEF = client.Users{{
+		CommonName:     "common_name",
+		RealAddress:    "1.2.3.4:4321",
+		VirtualAddress: "1.2.3.4",
+		BytesReceived:  1,
+		BytesSent:      2,
+		ConnectedSince: 3,
+		Username:       "UNDEF",
+	}}
 )
 
 func TestNew(t *testing.T) {
@@ -37,27 +46,31 @@ func TestNew(t *testing.T) {
 	assert.NotNil(t, job.collectedUsers)
 }
 
-func TestOpenVPN_Init(t *testing.T) { assert.True(t, New().Init()) }
+func TestOpenVPN_Init(t *testing.T) {
+	assert.True(t, New().Init())
+}
 
 func TestOpenVPN_Check(t *testing.T) {
 	job := New()
 
 	require.True(t, job.Init())
-	job.apiClient = &mockOKOpenVPNClient{}
+	job.client = prepareMockOpenVPNClient()
 	require.True(t, job.Check())
 }
 
-func TestOpenVPN_Charts(t *testing.T) { assert.NotNil(t, New().Charts()) }
+func TestOpenVPN_Charts(t *testing.T) {
+	assert.NotNil(t, New().Charts())
+}
 
 func TestOpenVPN_Cleanup(t *testing.T) {
 	job := New()
 
 	assert.NotPanics(t, job.Cleanup)
 	require.True(t, job.Init())
-	job.apiClient = &mockOKOpenVPNClient{}
+	job.client = prepareMockOpenVPNClient()
 	require.True(t, job.Check())
 	job.Cleanup()
-	assert.False(t, job.apiClient.IsConnected())
+	assert.False(t, job.client.IsConnected())
 }
 
 func TestOpenVPN_Collect(t *testing.T) {
@@ -65,7 +78,7 @@ func TestOpenVPN_Collect(t *testing.T) {
 
 	require.True(t, job.Init())
 	job.perUserMatcher = matcher.TRUE()
-	job.apiClient = &mockOKOpenVPNClient{}
+	job.client = prepareMockOpenVPNClient()
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
@@ -82,24 +95,49 @@ func TestOpenVPN_Collect(t *testing.T) {
 	assert.Equal(t, expected, mx)
 }
 
-type mockOKOpenVPNClient struct {
-	isConnected bool
+func TestOpenVPN_Collect_UNDEFUsername(t *testing.T) {
+	job := New()
+
+	require.True(t, job.Init())
+	job.perUserMatcher = matcher.TRUE()
+	cl := prepareMockOpenVPNClient()
+	cl.users = testUsersUNDEF
+	job.client = cl
+	require.True(t, job.Check())
+
+	expected := map[string]int64{
+		"bytes_in":                   1,
+		"bytes_out":                  1,
+		"clients":                    1,
+		"common_name_bytes_received": 1,
+		"common_name_bytes_sent":     2,
+	}
+
+	mx := job.Collect()
+	require.NotNil(t, mx)
+	delete(mx, "common_name_connection_time")
+	assert.Equal(t, expected, mx)
 }
 
-func (m *mockOKOpenVPNClient) Connect() error {
-	m.isConnected = true
-	return nil
+func prepareMockOpenVPNClient() *mockOpenVPNClient {
+	return &mockOpenVPNClient{
+		connected: false,
+		version:   testVersion,
+		loadStats: testLoadStats,
+		users:     testUsers,
+	}
 }
 
-func (m *mockOKOpenVPNClient) Disconnect() error {
-	m.isConnected = false
-	return nil
+type mockOpenVPNClient struct {
+	connected bool
+	version   client.Version
+	loadStats client.LoadStats
+	users     client.Users
 }
 
-func (m mockOKOpenVPNClient) IsConnected() bool { return m.isConnected }
-
-func (mockOKOpenVPNClient) GetVersion() (*client.Version, error) { return &testVersion, nil }
-
-func (mockOKOpenVPNClient) GetLoadStats() (*client.LoadStats, error) { return &testLoadStats, nil }
-
-func (mockOKOpenVPNClient) GetUsers() (client.Users, error) { return testUsers, nil }
+func (m *mockOpenVPNClient) Connect() error                       { m.connected = true; return nil }
+func (m *mockOpenVPNClient) Disconnect() error                    { m.connected = false; return nil }
+func (m mockOpenVPNClient) IsConnected() bool                     { return m.connected }
+func (m mockOpenVPNClient) Version() (*client.Version, error)     { return &m.version, nil }
+func (m mockOpenVPNClient) LoadStats() (*client.LoadStats, error) { return &m.loadStats, nil }
+func (m mockOpenVPNClient) Users() (client.Users, error)          { return m.users, nil }

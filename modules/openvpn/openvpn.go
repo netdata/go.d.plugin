@@ -56,16 +56,16 @@ type openVPNClient interface {
 	Connect() error
 	Disconnect() error
 	IsConnected() bool
-	GetVersion() (*client.Version, error)
-	GetLoadStats() (*client.LoadStats, error)
-	GetUsers() (client.Users, error)
+	Version() (*client.Version, error)
+	LoadStats() (*client.LoadStats, error)
+	Users() (client.Users, error)
 }
 
 // OpenVPN OpenVPN module.
 type OpenVPN struct {
 	module.Base
 	Config         `yaml:",inline"`
-	apiClient      openVPNClient
+	client         openVPNClient
 	charts         *Charts
 	collectedUsers map[string]bool
 	perUserMatcher matcher.Matcher
@@ -73,10 +73,10 @@ type OpenVPN struct {
 
 // Cleanup makes cleanup.
 func (o *OpenVPN) Cleanup() {
-	if o.apiClient == nil {
+	if o.client == nil {
 		return
 	}
-	_ = o.apiClient.Disconnect()
+	_ = o.client.Disconnect()
 }
 
 // Init makes initialization.
@@ -96,7 +96,7 @@ func (o *OpenVPN) Init() bool {
 		WriteTimeout:   o.WriteTimeout.Duration,
 		ReuseRecord:    true,
 	}
-	o.apiClient = client.New(config)
+	o.client = client.New(config)
 
 	o.Infof("using address: %s, connect timeout: %s, read timeout: %s, write timeout: %s",
 		o.Address, o.ConnectTimeout.Duration, o.ReadTimeout.Duration, o.WriteTimeout.Duration)
@@ -106,12 +106,12 @@ func (o *OpenVPN) Init() bool {
 
 // Check makes check.
 func (o *OpenVPN) Check() bool {
-	if err := o.apiClient.Connect(); err != nil {
+	if err := o.client.Connect(); err != nil {
 		o.Error(err)
 		return false
 	}
 
-	ver, err := o.apiClient.GetVersion()
+	ver, err := o.client.Version()
 	if err != nil {
 		o.Error(err)
 		o.Cleanup()
@@ -128,11 +128,12 @@ func (o OpenVPN) Charts() *Charts { return o.charts }
 // Collect collects metrics.
 func (o *OpenVPN) Collect() map[string]int64 {
 	mx, err := o.collect()
-
 	if err != nil {
 		o.Error(err)
-		return nil
 	}
 
+	if len(mx) == 0 {
+		return nil
+	}
 	return mx
 }
