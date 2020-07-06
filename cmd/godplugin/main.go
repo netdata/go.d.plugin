@@ -71,7 +71,7 @@ func confDir(opts *cli.Option) multipath.MultiPath {
 	if len(opts.ConfDir) > 0 {
 		return opts.ConfDir
 	}
-	if userDir != "" && stockDir != "" {
+	if userDir != "" || stockDir != "" {
 		return multipath.New(
 			userDir,
 			stockDir,
@@ -83,15 +83,18 @@ func confDir(opts *cli.Option) multipath.MultiPath {
 	)
 }
 
-func modulesConfDir(opts *cli.Option) multipath.MultiPath {
+func modulesConfDir(opts *cli.Option) (mpath multipath.MultiPath) {
 	if len(opts.ConfDir) > 0 {
 		return opts.ConfDir
 	}
-	if userDir != "" && stockDir != "" {
-		return multipath.New(
-			path.Join(userDir, name),
-			path.Join(stockDir, name),
-		)
+	if userDir != "" || stockDir != "" {
+		if userDir != "" {
+			mpath = append(mpath, path.Join(userDir, name))
+		}
+		if stockDir != "" {
+			mpath = append(mpath, path.Join(stockDir, name))
+		}
+		return multipath.New(mpath...)
 	}
 	return multipath.New(
 		path.Join(cd, "/../../../../etc/netdata", name),
