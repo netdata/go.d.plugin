@@ -19,12 +19,15 @@ type (
 	Prometheus interface {
 		// Scrape and parse prometheus format metrics
 		Scrape() (Metrics, error)
+		// Metadata returns last scrape metrics metadata
+		Metadata() Metadata
 	}
 
 	prometheus struct {
-		client  *http.Client
-		request web.Request
-		metrics Metrics
+		client   *http.Client
+		request  web.Request
+		metrics  Metrics
+		metadata Metadata
 
 		// internal use
 		buf     *bytes.Buffer
@@ -41,37 +44,40 @@ const (
 // New creates a Prometheus instance.
 func New(client *http.Client, request web.Request) Prometheus {
 	return &prometheus{
-		client:  client,
-		request: request,
-		buf:     bytes.NewBuffer(make([]byte, 0, 16000)),
+		client:   client,
+		request:  request,
+		metadata: make(Metadata),
+		buf:      bytes.NewBuffer(make([]byte, 0, 16000)),
 	}
 }
 
 // Scrape scrapes metrics, parses and sorts
 func (p *prometheus) Scrape() (Metrics, error) {
 	p.metrics.Reset()
-	if err := p.scrape(&p.metrics); err != nil {
+	p.metadata.reset()
+	if err := p.scrape(&p.metrics, p.metadata); err != nil {
 		return nil, err
 	}
 	p.metrics.Sort()
 	return p.metrics, nil
 }
 
-func (p *prometheus) scrape(metrics *Metrics) error {
-	p.buf.Reset()
-	err := p.fetch(p.buf)
-	if err != nil {
-		return err
-	}
-	return parse(p.buf.Bytes(), metrics)
+func (p prometheus) Metadata() Metadata {
+	return p.metadata
 }
 
-func parse(prometheusText []byte, metrics *Metrics) error {
-	var parser = textparse.NewPromParser(prometheusText)
+func (p *prometheus) scrape(metrics *Metrics, meta Metadata) error {
+	p.buf.Reset()
+	if err := p.fetch(p.buf); err != nil {
+		return err
+	}
+	return parse(p.buf.Bytes(), metrics, meta)
+}
 
+func parse(prometheusText []byte, metrics *Metrics, meta Metadata) error {
+	parser := textparse.NewPromParser(prometheusText)
 	for {
-		et, err := parser.Next()
-
+		entry, err := parser.Next()
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -79,16 +85,16 @@ func parse(prometheusText []byte, metrics *Metrics) error {
 			return err
 		}
 
-		switch et {
+		switch entry {
 		case textparse.EntrySeries:
 			var lbs labels.Labels
 			_, _, val := parser.Series()
 			parser.Metric(&lbs)
-
 			metrics.Add(Metric{lbs, val})
 		case textparse.EntryType:
+			meta.setType(parser.Type())
 		case textparse.EntryHelp:
-		case textparse.EntryComment:
+			meta.setHelp(parser.Help())
 		}
 	}
 	return nil
