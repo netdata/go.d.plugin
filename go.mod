@@ -15,6 +15,7 @@ require (
 	github.com/prometheus/common v0.10.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
 	github.com/stretchr/testify v1.6.0
+	github.com/tomasen/fcgi_client v0.0.0-20180423082037-2bb3d819fd19
 	github.com/vmware/govmomi v0.22.2
 	golang.org/x/net v0.0.0-20191027093000-83d349e8ac1a // indirect; needed for freebsd/arm64
 	gopkg.in/yaml.v2 v2.3.0

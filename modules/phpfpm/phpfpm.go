@@ -41,6 +41,8 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 		client *client
+		Socket     string `yaml:"socket"`
+		env        map[string]string
 	}
 )
 
@@ -65,6 +67,13 @@ func (p *Phpfpm) initClient() error {
 }
 
 func (p *Phpfpm) Init() bool {
+	if p.isSocket() {
+		err := p.initSocket()
+		if err != nil {
+			return false
+		}
+		return true
+	}
 	if err := p.validateConfig(); err != nil {
 		p.Errorf("error on validating config: %v", err)
 		return false
@@ -88,6 +97,10 @@ func (Phpfpm) Charts() *Charts {
 }
 
 func (p *Phpfpm) Collect() map[string]int64 {
+
+	if p.isSocket() {
+		return p.collectSocket()
+	}
 	mx, err := p.collect()
 	if err != nil {
 		p.Error(err)
