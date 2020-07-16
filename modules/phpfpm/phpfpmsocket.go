@@ -5,7 +5,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	fcgiclient "github.com/tomasen/fcgi_client"
 	"io/ioutil"
-	"log"
+	"os"
 )
 
 
@@ -14,7 +14,6 @@ func (p *Phpfpm) initSocket() error {
 
 	env := make(map[string]string)
 
-	env["SCRIPT_NAME"] = "/status"
 	env["SCRIPT_NAME"] = "/status"
 	env["SCRIPT_FILENAME"] = "/status"
 	env["SERVER_SOFTWARE"] = "go / fcgiclient "
@@ -30,7 +29,11 @@ func (p *Phpfpm) initSocket() error {
 }
 func (p *Phpfpm) isSocket() bool {
 	if len(p.Socket) > 0 {
-		return true
+		if _, err := os.Stat(p.Socket); err == nil {
+			return true
+		} else {
+			p.Errorf("the socket does not exist: %v", err)
+		}
 	}
 	return false
 }
@@ -39,23 +42,23 @@ func (p *Phpfpm) collectSocket() map[string]int64  {
 
 	socket, err := fcgiclient.Dial("unix", p.Socket)
 	if err != nil {
-		log.Println("err:", err)
+		p.Errorf("error on connecting to socket: %v", err)
 	}
 	resp, err := socket.Get(p.env)
 	if err != nil {
-		log.Println("err:", err)
+		p.Errorf("error on getting data from socket: %v", err)
 	}
 
 	content, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println("err:", err)
+		p.Errorf("error on reading socket: %v", err)
 	}
 
 	st := &status{}
 
 	err2 := json.Unmarshal(content, st)
 	if err2 != nil {
-		log.Println(err2)
+		p.Errorf("error on json Unmarshal: %v", err)
 	}
 
 	socket.Close()
