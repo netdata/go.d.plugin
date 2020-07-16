@@ -69,10 +69,7 @@ func (p *Phpfpm) initClient() error {
 func (p *Phpfpm) Init() bool {
 	if p.isSocket() {
 		err := p.initSocket()
-		if err != nil {
-			return false
-		}
-		return true
+		return err == nil
 	}
 	if err := p.validateConfig(); err != nil {
 		p.Errorf("error on validating config: %v", err)
