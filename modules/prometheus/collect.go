@@ -49,9 +49,9 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 		case textparse.MetricTypeUnknown:
 			pm := metrics[0]
 			switch {
-			case pm.Labels.Get("quantile") != "":
+			case pm.Labels.Has("quantile"):
 				p.collectSummary(mx, metrics, meta)
-			case pm.Labels.Get("le") != "":
+			case pm.Labels.Has("le"):
 				p.collectHistogram(mx, metrics, meta)
 			default:
 				p.collectAny(mx, metrics, meta)
@@ -104,7 +104,7 @@ func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, met
 		if !cache.hasDim(dimID, chartID) {
 			cache.putDim(dimID, chartID)
 			chart := cache.getChart(chartID)
-			dim := anyDimension(dimID, pm)
+			dim := anyDimension(dimID, pm, meta)
 			_ = chart.AddDim(dim)
 			chart.MarkNotCreated()
 		}

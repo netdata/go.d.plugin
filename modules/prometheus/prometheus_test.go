@@ -447,7 +447,6 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 
 			var active int
 			for _, chart := range *prom.Charts() {
-				fmt.Println(chart.ID)
 				if !chart.Obsolete {
 					active++
 				}
