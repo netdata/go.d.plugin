@@ -99,13 +99,17 @@ func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, met
 		if !cache.hasChart(chartID) {
 			chart := anyChart(chartID, pm, meta)
 			cache.putChart(chartID, chart)
-			_ = p.Charts().Add(chart)
+			if err := p.Charts().Add(chart); err != nil {
+				p.Warning(err)
+			}
 		}
 		if !cache.hasDim(dimID, chartID) {
 			cache.putDim(dimID, chartID)
 			chart := cache.getChart(chartID)
 			dim := anyDimension(dimID, pm, meta)
-			_ = chart.AddDim(dim)
+			if err := chart.AddDim(dim); err != nil {
+				p.Warning(err)
+			}
 			chart.MarkNotCreated()
 		}
 	}
