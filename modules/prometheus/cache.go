@@ -27,7 +27,6 @@ func (c metricsCache) remove(key string)                 { delete(c, key) }
 func (ce cacheEntry) hasChart(key string) bool                 { _, ok := ce.charts[key]; return ok }
 func (ce cacheEntry) putChart(key string, chart *module.Chart) { ce.charts[key] = chart }
 func (ce cacheEntry) getChart(key string) *module.Chart        { return ce.charts[key] }
-func (ce cacheEntry) removeChart(key string)                   { delete(ce.charts, key) }
 
 func (ce cacheEntry) hasDim(dimKey, chartKey string) bool {
 	if _, ok := ce.dims[dimKey]; !ok {
@@ -42,14 +41,4 @@ func (ce cacheEntry) putDim(dimKey, chartKey string) {
 		ce.dims[dimKey] = make(map[string]struct{})
 	}
 	ce.dims[dimKey][chartKey] = struct{}{}
-}
-
-func (ce cacheEntry) removeDim(dimKey, chartKey string) {
-	if _, ok := ce.dims[dimKey]; !ok {
-		return
-	}
-	delete(ce.dims[dimKey], chartKey)
-	if len(ce.dims) == 0 {
-		delete(ce.dims, dimKey)
-	}
 }
