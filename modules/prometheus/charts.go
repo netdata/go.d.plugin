@@ -7,6 +7,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 
 	"github.com/netdata/go-orchestrator/module"
+	"github.com/prometheus/prometheus/pkg/textparse"
 )
 
 type (
@@ -16,22 +17,22 @@ type (
 
 var statsCharts = Charts{
 	{
-		ID:    "collections_statistics",
-		Title: "Statistics",
+		ID:    "collect_statistics",
+		Title: "Collect statistics",
 		Units: "num",
 		Fam:   "collection",
-		Ctx:   "prometheus.collections_statistics",
+		Ctx:   "prometheus.collect_statistics",
 		Dims: Dims{
-			{ID: "series", Name: "series"},
-			{ID: "metrics", Name: "metrics"},
-			{ID: "charts", Name: "charts"},
+			{ID: "series"},
+			{ID: "metrics"},
+			{ID: "charts"},
 		},
 	},
 }
 
 func anyChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *module.Chart {
 	units := extractUnits(pm.Name())
-	if isIncremental(pm) {
+	if isIncremental(pm, meta) {
 		units += "/s"
 	}
 	return &module.Chart{
@@ -75,14 +76,14 @@ func histogramPercentChart(id string, pm prometheus.Metric, meta prometheus.Meta
 }
 
 func chartTitle(pm prometheus.Metric, meta prometheus.Metadata) string {
-	if v := meta.Help(pm.Name()); v != "" {
+	if help := meta.Help(pm.Name()); help != "" {
 		// ' used to wrap external plugins api messages, netdata parser cant handle ' inside ''
-		return strings.Replace(v, "'", "\"", -1)
+		return strings.Replace(help, "'", "\"", -1)
 	}
 	return fmt.Sprintf("Metric \"%s\"", pm.Name())
 }
 
-func anyDimension(id string, pm prometheus.Metric) *module.Dim {
+func anyDimension(id string, pm prometheus.Metric, meta prometheus.Metadata) *module.Dim {
 	name := id
 	// name => name
 	// name|value1=value1|value2=value2 => value1=value1|value2=value2
@@ -90,7 +91,7 @@ func anyDimension(id string, pm prometheus.Metric) *module.Dim {
 		name = id[len(pm.Name())+1:]
 	}
 	algorithm := module.Absolute
-	if isIncremental(pm) {
+	if isIncremental(pm, meta) {
 		algorithm = module.Incremental
 	}
 	return &module.Dim{
@@ -154,6 +155,18 @@ func extractUnits(metric string) string {
 	return metric[idx+1:]
 }
 
-func isIncremental(pm prometheus.Metric) bool {
-	return strings.HasSuffix(pm.Name(), "_total")
+func isIncremental(pm prometheus.Metric, meta prometheus.Metadata) bool {
+	switch meta.Type(pm.Name()) {
+	case textparse.MetricTypeCounter,
+		textparse.MetricTypeHistogram,
+		textparse.MetricTypeSummary:
+		return true
+	}
+	switch {
+	case strings.HasSuffix(pm.Name(), "_total"),
+		strings.HasSuffix(pm.Name(), "_sum"),
+		strings.HasSuffix(pm.Name(), "_count"):
+		return true
+	}
+	return false
 }
