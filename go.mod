@@ -3,6 +3,7 @@ module github.com/netdata/go.d.plugin
 go 1.14
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/Wing924/ltsv v0.3.1
 	github.com/axiomhq/hyperloglog v0.0.0-20191112132149-a4c4c47bc57f
 	github.com/cloudflare/cfssl v1.4.1
