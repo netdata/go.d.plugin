@@ -1,6 +1,8 @@
 package mysql
 
-import "github.com/netdata/go-orchestrator/module"
+import (
+	"github.com/netdata/go-orchestrator/module"
+)
 
 type (
 	// Charts is an alias for module.Charts
@@ -281,6 +283,17 @@ var charts = Charts{
 		},
 	},
 	{
+		ID:    "innodb_deadlocks",
+		Title: "InnoDB Deadlocks",
+		Units: "operations/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_deadlocks",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "Innodb_deadlocks", Name: "deadlocks", Algo: module.Incremental},
+		},
+	},
+	{
 		ID:    "innodb_rows",
 		Title: "InnoDB Row Operations",
 		Units: "operations/s",
@@ -484,31 +497,6 @@ var charts = Charts{
 	},
 }
 
-var slaveCharts = Charts{
-	{
-		ID:    "slave_behind",
-		Title: "Slave Behind Seconds",
-		Units: "seconds",
-		Fam:   "slave",
-		Ctx:   "mysql.slave_behind",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "seconds_behind_master", Name: "time"},
-		},
-	},
-	{
-		ID:    "slave_thread_running",
-		Title: "I/O / SQL Thread Running State",
-		Units: "bool",
-		Fam:   "slave",
-		Ctx:   "mysql.slave_thread_running",
-		Dims: Dims{
-			{ID: "slave_sql_running", Name: "sql"},
-			{ID: "slave_io_running", Name: "io"},
-		},
-	},
-}
-
 var galeraCharts = Charts{
 	{
 		ID:    "galera_writesets",
@@ -567,4 +555,187 @@ var galeraCharts = Charts{
 			{ID: "wsrep_flow_control_paused_ns", Name: "paused", Algo: module.Incremental, Div: 1000000},
 		},
 	},
+	{
+		ID:    "galera_cluster_status",
+		Title: "Cluster Component Status",
+		Units: "status",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_cluster_status",
+		Dims: Dims{
+			{ID: "wsrep_cluster_status", Name: "status"},
+		},
+	},
+	{
+		ID:    "galera_cluster_state",
+		Title: "Cluster Component State",
+		Units: "state",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_cluster_state",
+		Dims: Dims{
+			{ID: "wsrep_local_state", Name: "state"},
+		},
+	},
+	{
+		ID:    "galera_cluster_size",
+		Title: "Number of Nodes in the Cluster",
+		Units: "num",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_cluster_size",
+		Dims: Dims{
+			{ID: "wsrep_cluster_size", Name: "nodes"},
+		},
+	},
+	{
+		ID:    "galera_cluster_weight",
+		Title: "The Total Weight of the Current Members in the Cluster",
+		Units: "weight",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_cluster_weight",
+		Dims: Dims{
+			{ID: "wsrep_cluster_weight", Name: "weight"},
+		},
+	},
+	{
+		ID:    "galera_connected",
+		Title: "Whether the Node is Connected to the Cluster",
+		Units: "boolean",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_connected",
+		Dims: Dims{
+			{ID: "wsrep_connected", Name: "connected"},
+		},
+	},
+	{
+		ID:    "galera_ready",
+		Title: "Whether the Node is Ready to Accept Queries",
+		Units: "boolean",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_ready",
+		Dims: Dims{
+			{ID: "wsrep_ready", Name: "ready"},
+		},
+	},
+	{
+		ID:    "galera_open_transactions",
+		Title: "Open Transactions",
+		Units: "num",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_open_transactions",
+		Dims: Dims{
+			{ID: "wsrep_open_transactions", Name: "open transactions"},
+		},
+	},
+	{
+		ID:    "galera_thread_count",
+		Title: "Total Number of WSRep (applier/rollbacker) Threads",
+		Units: "num",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_thread_count",
+		Dims: Dims{
+			{ID: "wsrep_thread_count", Name: "threads"},
+		},
+	},
+}
+
+func newSlaveDefaultReplChannelCharts() module.Charts {
+	return module.Charts{
+		{
+			ID:    "slave_behind",
+			Title: "Slave Behind Seconds",
+			Units: "seconds",
+			Fam:   "slave",
+			Ctx:   "mysql.slave_behind",
+			Dims: Dims{
+				{ID: "seconds_behind_master", Name: "time"},
+			},
+		},
+		{
+			ID:    "slave_thread_running",
+			Title: "I/O / SQL Thread Running State",
+			Units: "bool",
+			Fam:   "slave",
+			Ctx:   "mysql.slave_thread_running",
+			Dims: Dims{
+				{ID: "slave_sql_running", Name: "sql"},
+				{ID: "slave_io_running", Name: "io"},
+			},
+		},
+	}
+}
+
+func newSlaveReplChannelCharts(channel string) module.Charts {
+	return module.Charts{
+		{
+			ID:    "slave_behind_" + channel,
+			Title: "Slave Behind Seconds Channel " + channel,
+			Units: "seconds",
+			Fam:   "slave",
+			Ctx:   "mysql.slave_behind",
+			Dims: Dims{
+				{ID: "seconds_behind_master_" + channel, Name: "time"},
+			},
+		},
+		{
+			ID:    "slave_thread_running",
+			Title: "I/O / SQL Thread Running State Channel " + channel,
+			Units: "bool",
+			Fam:   "slave",
+			Ctx:   "mysql.slave_thread_running",
+			Dims: Dims{
+				{ID: "slave_sql_running_" + channel, Name: "sql"},
+				{ID: "slave_io_running_" + channel, Name: "io"},
+			},
+		},
+	}
+}
+
+func newUserStatisticsCharts(user string) module.Charts {
+	return module.Charts{
+		{
+			ID:    "userstats_rows_" + user,
+			Title: "Rows Operations",
+			Units: "operations/s",
+			Fam:   "userstats " + user,
+			Ctx:   "mysql.userstats_rows",
+			Type:  module.Stacked,
+			Dims: Dims{
+				{ID: "userstats_" + user + "_Rows_read", Name: "read", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_Rows_send", Name: "send", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_Rows_updated", Name: "updated", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_Rows_inserted", Name: "inserted", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_Rows_deleted", Name: "deleted", Algo: module.Incremental},
+			},
+		},
+		{
+			ID:    "userstats_commands_" + user,
+			Title: "Commands",
+			Units: "commands/s",
+			Fam:   "userstats " + user,
+			Ctx:   "mysql.userstats_commands",
+			Type:  module.Stacked,
+			Dims: Dims{
+				{ID: "userstats_" + user + "_Select_commands", Name: "select", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_Update_commands", Name: "update", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_Other_commands", Name: "other", Algo: module.Incremental},
+			},
+		},
+	}
+}
+
+func (m *MySQL) addSlaveReplicationChannelCharts(channel string) {
+	var cs module.Charts
+	if channel == "" {
+		cs = newSlaveDefaultReplChannelCharts()
+	} else {
+		cs = newSlaveReplChannelCharts(channel)
+	}
+	if err := m.Charts().Add(cs...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addUserStatisticsCharts(user string) {
+	if err := m.Charts().Add(newUserStatisticsCharts(user)...); err != nil {
+		m.Warning(err)
+	}
 }
