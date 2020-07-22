@@ -676,7 +676,7 @@ func newSlaveReplChannelCharts(channel string) module.Charts {
 			},
 		},
 		{
-			ID:    "slave_thread_running",
+			ID:    "slave_thread_running_" + channel,
 			Title: "I/O / SQL Thread Running State Channel " + channel,
 			Units: "bool",
 			Fam:   "slave",

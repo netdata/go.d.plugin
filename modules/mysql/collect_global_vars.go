@@ -8,16 +8,6 @@ const (
 	queryGlobalVariables = "SHOW GLOBAL VARIABLES"
 )
 
-/*
-MariaDB [(none)]> SHOW GLOBAL VARIABLES;
-+------------------+-------+
-| Variable_name    | Value |
-+------------------+-------+
-| max_connections  | 151   |
-| table_open_cache | 2000  |
-+------------------+-------+
-*/
-
 var globalVariablesMetrics = []string{
 	"max_connections",
 	"table_open_cache",

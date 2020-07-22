@@ -26,7 +26,22 @@ func (m *MySQL) collect() (map[string]int64, error) {
 			m.doUserStatistics = false
 		}
 	}
+
+	calcThreadCacheMisses(collected)
 	return collected, nil
+}
+
+func calcThreadCacheMisses(collected map[string]int64) {
+	threads, ok1 := collected["threads_created"]
+	cons, ok2 := collected["connections"]
+	if !ok1 || !ok2 {
+		return
+	}
+	if threads == 0 || cons == 0 {
+		collected["thread_cache_misses"] = 0
+	} else {
+		collected["thread_cache_misses"] = int64(float64(threads) / float64(cons) * 10000)
+	}
 }
 
 func rowsAsMap(rows *sql.Rows) (map[string]string, error) {

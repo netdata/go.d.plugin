@@ -4,48 +4,18 @@ import (
 	"strconv"
 )
 
-/*
-MariaDB [(none)]> show user_statistics\G
-*************************** 1. row ***************************
-                       User: netdata
-          Total_connections: 4
-     Concurrent_connections: 0
-             Connected_time: 1270
-                  Busy_time: 0.020273
-                   Cpu_time: 0.0192592
-             Bytes_received: 646
-                 Bytes_sent: 25426
-       Binlog_bytes_written: 0
-                  Rows_read: 0
-                  Rows_sent: 22
-               Rows_deleted: 0
-              Rows_inserted: 0
-               Rows_updated: 0
-            Select_commands: 2
-            Update_commands: 0
-             Other_commands: 0
-        Commit_transactions: 0
-      Rollback_transactions: 0
-         Denied_connections: 10
-           Lost_connections: 0
-              Access_denied: 2
-              Empty_queries: 0
-      Total_ssl_connections: 0
-Max_statement_time_exceeded: 0
-*/
-
 const queryUserStatistics = "SHOW USER_STATISTICS"
 
 var userStatisticsMetrics = []string{
-	"Select_commands",
-	"Update_commands",
-	"Other_commands",
 	"Cpu_time",
 	"Rows_read",
 	"Rows_sent",
 	"Rows_deleted",
 	"Rows_inserted",
 	"Rows_updated",
+	"Select_commands",
+	"Update_commands",
+	"Other_commands",
 }
 
 func (m *MySQL) collectUserStatistics(collected map[string]int64) error {

@@ -15,37 +15,43 @@ func init() {
 		},
 		Create: func() module.Module { return New() },
 	}
-
 	module.Register("mysql", creator)
 }
 
-// MySQL is the mysql database module.
-type MySQL struct {
-	module.Base
-	db  *sql.DB
-	DSN string `yaml:"dsn"`
+type (
+	Config struct {
+		DSN string `yaml:"dsn"`
+	}
+	MySQL struct {
+		module.Base
+		Config `yaml:",inline"`
 
-	doSlaveStats      bool
-	doUserStatistics  bool
-	collectedChannels map[string]bool
-	collectedUsers    map[string]bool
+		db *sql.DB
 
-	charts *Charts
-}
+		doSlaveStats      bool
+		collectedChannels map[string]bool
 
-// New creates and returns a new empty MySQL module.
+		doUserStatistics bool
+		collectedUsers   map[string]bool
+
+		charts *Charts
+	}
+)
+
 func New() *MySQL {
+	config := Config{
+		DSN: "netdata:password@tcp(127.0.0.1:3306)/",
+	}
 	return &MySQL{
-		DSN:               "netdata:password@tcp(127.0.0.1:3306)/",
+		Config:            config,
 		charts:            &module.Charts{},
-		collectedChannels: make(map[string]bool),
-		collectedUsers:    make(map[string]bool),
 		doSlaveStats:      true,
 		doUserStatistics:  true,
+		collectedChannels: make(map[string]bool),
+		collectedUsers:    make(map[string]bool),
 	}
 }
 
-// Cleanup performs cleanup.
 func (m *MySQL) Cleanup() {
 	if m.db == nil {
 		return
@@ -53,9 +59,9 @@ func (m *MySQL) Cleanup() {
 	if err := m.db.Close(); err != nil {
 		m.Errorf("cleanup: error on closing the mysql database [%s]: %v", m.DSN, err)
 	}
+	m.db = nil
 }
 
-// Init makes initialization of the MySQL mod.
 func (m *MySQL) Init() bool {
 	if m.DSN == "" {
 		m.Error("DSN not set")
@@ -90,28 +96,14 @@ func (m *MySQL) openConnection() error {
 	return nil
 }
 
-// Check makes check.
 func (m *MySQL) Check() bool {
-	metrics := m.Collect()
-
-	if len(metrics) == 0 {
-		return false
-	}
-
-	// FIXME: not sure this check is valid
-	if _, ok := metrics["wsrep_local_recv_queue"]; ok {
-		_ = m.charts.Add(*galeraCharts.Copy()...)
-	}
-
-	return true
+	return len(m.Collect()) > 0
 }
 
-// Charts creates Charts.
 func (m *MySQL) Charts() *Charts {
 	return m.charts
 }
 
-// Collect collects health checks and metrics for MySQL.
 func (m *MySQL) Collect() map[string]int64 {
 	mx, err := m.collect()
 	if err != nil {
