@@ -3,14 +3,15 @@ package mysql
 import (
 	"bufio"
 	"bytes"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"strings"
 	"testing"
 
-	"database/sql/driver"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -25,6 +26,10 @@ var (
 	globalVariablesMySQLv8021, _      = ioutil.ReadFile("testdata/MySQLv8.0.21-[global_variables].txt")
 	slaveStatusSingleSrcMySQLv8021, _ = ioutil.ReadFile("testdata/MySQLv8.0.21-single-source-[slave_status].txt")
 	slaveStatusMultiSrcMySQLv8021, _  = ioutil.ReadFile("testdata/MySQLv8.0.21-multi-source-[slave_status].txt")
+)
+
+var (
+	errSQLSyntax = errors.New("you have an error in your SQL syntax")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
@@ -45,33 +50,32 @@ func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
-
-	mock.ExpectQuery("SHOW GLOBAL STATUS").
-		WillReturnRows(mustMockRows(t, globalStatusGaleraMariaDBv1054))
-	mock.ExpectQuery("SHOW GLOBAL VARIABLES").
-		WillReturnRows(mustMockRows(t, globalVariablesGaleraMariaDBv1054))
-	mock.ExpectQuery("SHOW SLAVE STATUS").
-		WillReturnRows(mustMockRows(t, slaveStatusMultiSrcMySQLv8021))
-	mock.ExpectQuery("SHOW USER_STATISTICS").
-		WillReturnRows(mustMockRows(t, userStatisticsGaleraMariaDBv1054))
-
-	mySQL := New()
-	mySQL.db = db
-
-	mx := mySQL.Collect()
-	for key, value := range mx {
-		fmt.Println(key, value)
-	}
+	assert.Implements(t, (*module.Module)(nil), New())
 }
 
 func TestMySQL_Init(t *testing.T) {
-	m := New()
-	defer m.Cleanup()
-	fmt.Println(m.Init())
+	tests := map[string]struct {
+		config   Config
+		wantFail bool
+	}{
+		"empty DSN": {
+			config:   Config{DSN: ""},
+			wantFail: true,
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mySQL := New()
+			mySQL.Config = test.config
+
+			if test.wantFail {
+				assert.False(t, mySQL.Init())
+			} else {
+				assert.True(t, mySQL.Init())
+			}
+		})
+	}
 }
 
 func TestMySQL_Cleanup(t *testing.T) {
@@ -108,15 +112,11 @@ func TestMySQL_Charts(t *testing.T) {
 }
 
 func TestMySQL_Check(t *testing.T) {
-
-}
-
-func TestMySQL_Collect(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func(t *testing.T) (mySQL *MySQL, cleanup func())
-		expected map[string]int64
+		prepare   func(t *testing.T) (mySQL *MySQL, cleanup func())
+		wantFalse bool
 	}{
-		"MariaDBv10.5.4-galera: all queries (single source replication)": {
+		"all queries success": {
 			prepare: func(t *testing.T) (mySQL *MySQL, cleanup func()) {
 				db, mock, err := sqlmock.New()
 				require.NoError(t, err)
@@ -124,16 +124,112 @@ func TestMySQL_Collect(t *testing.T) {
 				mySQL.db = db
 				cleanup = func() { _ = db.Close() }
 
-				mock.ExpectQuery("SHOW GLOBAL STATUS").
+				mock.ExpectQuery(queryGlobalStatus).
 					WillReturnRows(mustMockRows(t, globalStatusGaleraMariaDBv1054))
-				mock.ExpectQuery("SHOW GLOBAL VARIABLES").
+				mock.ExpectQuery(queryGlobalVariables).
 					WillReturnRows(mustMockRows(t, globalVariablesGaleraMariaDBv1054))
-				mock.ExpectQuery("SHOW SLAVE STATUS").
+				mock.ExpectQuery(querySlaveStatus).
 					WillReturnRows(mustMockRows(t, slaveStatusSingleSrcMariaDBv1054))
-				mock.ExpectQuery("SHOW USER_STATISTICS").
+				mock.ExpectQuery(queryUserStatistics).
 					WillReturnRows(mustMockRows(t, userStatisticsGaleraMariaDBv1054))
 
 				return mySQL, cleanup
+			},
+		},
+		"'SHOW SLAVE STATUS' fails": {
+			prepare: func(t *testing.T) (mySQL *MySQL, cleanup func()) {
+				db, mock, err := sqlmock.New()
+				require.NoError(t, err)
+				mySQL = New()
+				mySQL.db = db
+				cleanup = func() { _ = db.Close() }
+
+				mock.ExpectQuery(queryGlobalStatus).
+					WillReturnRows(mustMockRows(t, globalStatusGaleraMariaDBv1054))
+				mock.ExpectQuery(queryGlobalVariables).
+					WillReturnRows(mustMockRows(t, globalVariablesGaleraMariaDBv1054))
+				mock.ExpectQuery(querySlaveStatus).
+					WillReturnError(errSQLSyntax)
+				mock.ExpectQuery(queryUserStatistics).
+					WillReturnRows(mustMockRows(t, userStatisticsGaleraMariaDBv1054))
+
+				return mySQL, cleanup
+			},
+		},
+		"'SHOW USER_STATISTICS' fails": {
+			prepare: func(t *testing.T) (mySQL *MySQL, cleanup func()) {
+				db, mock, err := sqlmock.New()
+				require.NoError(t, err)
+				mySQL = New()
+				mySQL.db = db
+				cleanup = func() { _ = db.Close() }
+
+				mock.ExpectQuery(queryGlobalStatus).
+					WillReturnRows(mustMockRows(t, globalStatusGaleraMariaDBv1054))
+				mock.ExpectQuery(queryGlobalVariables).
+					WillReturnRows(mustMockRows(t, globalVariablesGaleraMariaDBv1054))
+				mock.ExpectQuery(querySlaveStatus).
+					WillReturnRows(mustMockRows(t, slaveStatusSingleSrcMariaDBv1054))
+				mock.ExpectQuery(queryUserStatistics).
+					WillReturnError(errSQLSyntax)
+
+				return mySQL, cleanup
+			},
+		},
+		"'SHOW GLOBAL STATUS' fails": {
+			prepare: func(t *testing.T) (mySQL *MySQL, cleanup func()) {
+				db, mock, err := sqlmock.New()
+				require.NoError(t, err)
+				mySQL = New()
+				mySQL.db = db
+				cleanup = func() { _ = db.Close() }
+
+				mock.ExpectQuery(queryGlobalStatus).
+					WillReturnError(errSQLSyntax)
+
+				return mySQL, cleanup
+			},
+			wantFalse: true,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mySQL, cleanup := test.prepare(t)
+			defer cleanup()
+
+			if test.wantFalse {
+				assert.False(t, mySQL.Check())
+			} else {
+				assert.True(t, mySQL.Check())
+			}
+		})
+	}
+}
+
+func TestMySQL_Collect(t *testing.T) {
+	tests := map[string]struct {
+		prepare  func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func())
+		expected map[string]int64
+	}{
+		"MariaDBv10.5.4-galera: all queries (single source replication)": {
+			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
+				db, mock, err := sqlmock.New()
+				require.NoError(t, err)
+				mySQL = New()
+				mySQL.db = db
+				cleanup = func() { _ = db.Close() }
+
+				mock.ExpectQuery(queryGlobalStatus).
+					WillReturnRows(mustMockRows(t, globalStatusGaleraMariaDBv1054))
+				mock.ExpectQuery(queryGlobalVariables).
+					WillReturnRows(mustMockRows(t, globalVariablesGaleraMariaDBv1054))
+				mock.ExpectQuery(querySlaveStatus).
+					WillReturnRows(mustMockRows(t, slaveStatusSingleSrcMariaDBv1054))
+				mock.ExpectQuery(queryUserStatistics).
+					WillReturnRows(mustMockRows(t, userStatisticsGaleraMariaDBv1054))
+
+				return mySQL, mock, cleanup
 			},
 			expected: map[string]int64{
 				"Aborted_connects":                      0,
@@ -284,23 +380,23 @@ func TestMySQL_Collect(t *testing.T) {
 			},
 		},
 		"MariaDBv10.5.4-galera: minimal: global status and variables": {
-			prepare: func(t *testing.T) (mySQL *MySQL, cleanup func()) {
+			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
 				db, mock, err := sqlmock.New()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
 				cleanup = func() { _ = db.Close() }
 
-				mock.ExpectQuery("SHOW GLOBAL STATUS").
+				mock.ExpectQuery(queryGlobalStatus).
 					WillReturnRows(mustMockRows(t, globalStatusGaleraMariaDBv1054))
-				mock.ExpectQuery("SHOW GLOBAL VARIABLES").
+				mock.ExpectQuery(queryGlobalVariables).
 					WillReturnRows(mustMockRows(t, globalVariablesGaleraMariaDBv1054))
-				mock.ExpectQuery("SHOW SLAVE STATUS").
-					WillReturnError(errors.New("you have an error in your SQL syntax"))
-				mock.ExpectQuery("SHOW USER_STATISTICS").
-					WillReturnError(errors.New("you have an error in your SQL syntax"))
+				mock.ExpectQuery(querySlaveStatus).
+					WillReturnError(errSQLSyntax)
+				mock.ExpectQuery(queryUserStatistics).
+					WillReturnError(errSQLSyntax)
 
-				return mySQL, cleanup
+				return mySQL, mock, cleanup
 			},
 			expected: map[string]int64{
 				"Aborted_connects":                      0,
@@ -432,23 +528,23 @@ func TestMySQL_Collect(t *testing.T) {
 			},
 		},
 		"MySQLv8.0.21: all queries (multi source replication)": {
-			prepare: func(t *testing.T) (mySQL *MySQL, cleanup func()) {
+			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
 				db, mock, err := sqlmock.New()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
 				cleanup = func() { _ = db.Close() }
 
-				mock.ExpectQuery("SHOW GLOBAL STATUS").
+				mock.ExpectQuery(queryGlobalStatus).
 					WillReturnRows(mustMockRows(t, globalStatusMySQLv8021))
-				mock.ExpectQuery("SHOW GLOBAL VARIABLES").
+				mock.ExpectQuery(queryGlobalVariables).
 					WillReturnRows(mustMockRows(t, globalVariablesMySQLv8021))
-				mock.ExpectQuery("SHOW SLAVE STATUS").
+				mock.ExpectQuery(querySlaveStatus).
 					WillReturnRows(mustMockRows(t, slaveStatusMultiSrcMySQLv8021))
-				mock.ExpectQuery("SHOW USER_STATISTICS").
-					WillReturnError(errors.New("you have an error in your SQL syntax"))
+				mock.ExpectQuery(queryUserStatistics).
+					WillReturnError(errSQLSyntax)
 
-				return mySQL, cleanup
+				return mySQL, mock, cleanup
 			},
 			expected: map[string]int64{
 				"Aborted_connects":                      0,
@@ -563,11 +659,12 @@ func TestMySQL_Collect(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mySQL, cleanup := test.prepare(t)
+			mySQL, mock, cleanup := test.prepare(t)
 			defer cleanup()
 
 			collected := mySQL.Collect()
 			assert.Equal(t, test.expected, collected)
+			assert.NoError(t, mock.ExpectationsWereMet())
 		})
 	}
 }
