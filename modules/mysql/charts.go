@@ -646,7 +646,7 @@ func newSlaveDefaultReplChannelCharts() module.Charts {
 			Fam:   "slave",
 			Ctx:   "mysql.slave_behind",
 			Dims: Dims{
-				{ID: "seconds_behind_master", Name: "time"},
+				{ID: "seconds_behind_master", Name: "seconds"},
 			},
 		},
 		{
@@ -656,8 +656,8 @@ func newSlaveDefaultReplChannelCharts() module.Charts {
 			Fam:   "slave",
 			Ctx:   "mysql.slave_thread_running",
 			Dims: Dims{
-				{ID: "slave_sql_running", Name: "sql"},
-				{ID: "slave_io_running", Name: "io"},
+				{ID: "slave_sql_running", Name: "sql_running"},
+				{ID: "slave_io_running", Name: "io_running"},
 			},
 		},
 	}
@@ -672,7 +672,7 @@ func newSlaveReplChannelCharts(channel string) module.Charts {
 			Fam:   "slave",
 			Ctx:   "mysql.slave_behind",
 			Dims: Dims{
-				{ID: "seconds_behind_master_" + channel, Name: "time"},
+				{ID: "seconds_behind_master_" + channel, Name: "seconds"},
 			},
 		},
 		{
@@ -682,8 +682,8 @@ func newSlaveReplChannelCharts(channel string) module.Charts {
 			Fam:   "slave",
 			Ctx:   "mysql.slave_thread_running",
 			Dims: Dims{
-				{ID: "slave_sql_running_" + channel, Name: "sql"},
-				{ID: "slave_io_running_" + channel, Name: "io"},
+				{ID: "slave_sql_running_" + channel, Name: "sql_running"},
+				{ID: "slave_io_running_" + channel, Name: "io_running"},
 			},
 		},
 	}
@@ -736,6 +736,12 @@ func (m *MySQL) addSlaveReplicationChannelCharts(channel string) {
 
 func (m *MySQL) addUserStatisticsCharts(user string) {
 	if err := m.Charts().Add(newUserStatisticsCharts(user)...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addGaleraCharts() {
+	if err := m.Charts().Add(*galeraCharts.Copy()...); err != nil {
 		m.Warning(err)
 	}
 }

@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -28,6 +29,8 @@ type (
 
 		db *sql.DB
 
+		checkGalera *sync.Once
+
 		doSlaveStats      bool
 		collectedChannels map[string]bool
 
@@ -45,6 +48,7 @@ func New() *MySQL {
 	return &MySQL{
 		Config:            config,
 		charts:            &module.Charts{},
+		checkGalera:       &sync.Once{},
 		doSlaveStats:      true,
 		doUserStatistics:  true,
 		collectedChannels: make(map[string]bool),

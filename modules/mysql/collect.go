@@ -11,15 +11,23 @@ func (m *MySQL) collect() (map[string]int64, error) {
 	if err := m.collectGlobalStatus(collected); err != nil {
 		return nil, fmt.Errorf("error on collecting global status: %v", err)
 	}
+	m.checkGalera.Do(func() {
+		if hasGaleraMetrics(collected) {
+			m.addGaleraCharts()
+		}
+	})
+
 	if err := m.collectGlobalVariables(collected); err != nil {
 		return nil, fmt.Errorf("error on collecting global variables: %v", err)
 	}
+
 	if m.doSlaveStats {
 		if err := m.collectSlaveStatus(collected); err != nil {
 			m.Errorf("error on collecting slave status: %v", err)
 			m.doSlaveStats = false
 		}
 	}
+
 	if m.doUserStatistics {
 		if err := m.collectUserStatistics(collected); err != nil {
 			m.Errorf("error on collecting user statistics: %v", err)
@@ -42,6 +50,11 @@ func calcThreadCacheMisses(collected map[string]int64) {
 	} else {
 		collected["thread_cache_misses"] = int64(float64(threads) / float64(cons) * 10000)
 	}
+}
+
+func hasGaleraMetrics(collected map[string]int64) bool {
+	_, ok := collected["wsrep_received"]
+	return ok
 }
 
 func rowsAsMap(rows *sql.Rows) (map[string]string, error) {
