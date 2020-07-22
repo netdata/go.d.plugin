@@ -11,11 +11,15 @@ func (m *MySQL) collect() (map[string]int64, error) {
 	if err := m.collectGlobalStatus(collected); err != nil {
 		return nil, fmt.Errorf("error on collecting global status: %v", err)
 	}
-	m.checkGalera.Do(func() {
-		if hasGaleraMetrics(collected) {
-			m.addGaleraCharts()
-		}
-	})
+	if hasInnodbDeadlocks(collected) {
+		m.addInnodbDeadlocks.Do(m.addInnodbDeadlocksChart)
+	}
+	if hasQCacheMetrics(collected) {
+		m.addQCacheOnce.Do(m.addQCacheCharts)
+	}
+	if hasGaleraMetrics(collected) {
+		m.addGaleraOnce.Do(m.addGaleraCharts)
+	}
 
 	if err := m.collectGlobalVariables(collected); err != nil {
 		return nil, fmt.Errorf("error on collecting global variables: %v", err)
@@ -52,8 +56,18 @@ func calcThreadCacheMisses(collected map[string]int64) {
 	}
 }
 
+func hasInnodbDeadlocks(collected map[string]int64) bool {
+	_, ok := collected["innodb_deadlocks"]
+	return ok
+}
+
 func hasGaleraMetrics(collected map[string]int64) bool {
 	_, ok := collected["wsrep_received"]
+	return ok
+}
+
+func hasQCacheMetrics(collected map[string]int64) bool {
+	_, ok := collected["qcache_hits"]
 	return ok
 }
 

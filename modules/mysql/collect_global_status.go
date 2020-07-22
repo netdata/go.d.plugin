@@ -116,6 +116,8 @@ var globalStatusMetrics = []string{
 	"Com_select",
 	"Com_update",
 	"Com_replace",
+	"Opened_tables",
+	"Open_tables",
 
 	"wsrep_local_recv_queue",
 	"wsrep_local_send_queue",
@@ -137,6 +139,8 @@ var globalStatusMetrics = []string{
 }
 
 func (m *MySQL) collectGlobalStatus(collected map[string]int64) error {
+	// MariaDB: https://mariadb.com/kb/en/server-status-variables/
+	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-status-variables.html
 	rows, err := m.db.Query(queryGlobalStatus)
 	if err != nil {
 		return err

@@ -29,7 +29,9 @@ type (
 
 		db *sql.DB
 
-		checkGalera *sync.Once
+		addInnodbDeadlocks *sync.Once
+		addGaleraOnce      *sync.Once
+		addQCacheOnce      *sync.Once
 
 		doSlaveStats      bool
 		collectedChannels map[string]bool
@@ -46,13 +48,15 @@ func New() *MySQL {
 		DSN: "netdata:password@tcp(127.0.0.1:3306)/",
 	}
 	return &MySQL{
-		Config:            config,
-		charts:            &module.Charts{},
-		checkGalera:       &sync.Once{},
-		doSlaveStats:      true,
-		doUserStatistics:  true,
-		collectedChannels: make(map[string]bool),
-		collectedUsers:    make(map[string]bool),
+		Config:             config,
+		charts:             charts.Copy(),
+		addInnodbDeadlocks: &sync.Once{},
+		addGaleraOnce:      &sync.Once{},
+		addQCacheOnce:      &sync.Once{},
+		doSlaveStats:       true,
+		doUserStatistics:   true,
+		collectedChannels:  make(map[string]bool),
+		collectedUsers:     make(map[string]bool),
 	}
 }
 

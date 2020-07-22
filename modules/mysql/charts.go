@@ -5,10 +5,9 @@ import (
 )
 
 type (
-	// Charts is an alias for module.Charts
 	Charts = module.Charts
-	// Dims is an alias for module.Dims
-	Dims = module.Dims
+	Chart  = module.Chart
+	Dims   = module.Dims
 )
 
 var charts = Charts{
@@ -48,7 +47,6 @@ var charts = Charts{
 			{ID: "com_delete", Name: "delete", Algo: module.Incremental},
 			{ID: "com_update", Name: "update", Algo: module.Incremental},
 			{ID: "com_insert", Name: "insert", Algo: module.Incremental},
-			{ID: "qcache_hits", Name: "cache hits", Algo: module.Incremental},
 			{ID: "com_replace", Name: "replace", Algo: module.Incremental},
 		},
 	},
@@ -283,17 +281,6 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "innodb_deadlocks",
-		Title: "InnoDB Deadlocks",
-		Units: "operations/s",
-		Fam:   "innodb",
-		Ctx:   "mysql.innodb_deadlocks",
-		Type:  module.Area,
-		Dims: Dims{
-			{ID: "Innodb_deadlocks", Name: "deadlocks", Algo: module.Incremental},
-		},
-	},
-	{
 		ID:    "innodb_rows",
 		Title: "InnoDB Row Operations",
 		Units: "operations/s",
@@ -366,51 +353,6 @@ var charts = Charts{
 		Dims: Dims{
 			{ID: "innodb_buffer_pool_reads", Name: "disk reads", Algo: module.Incremental},
 			{ID: "innodb_buffer_pool_wait_free", Name: "wait free", Algo: module.Incremental, Mul: -1, Div: 1},
-		},
-	},
-	{
-		ID:    "qcache_ops",
-		Title: "QCache Operations",
-		Units: "queries/s",
-		Fam:   "qcache",
-		Ctx:   "mysql.qcache_ops",
-		Dims: Dims{
-			{ID: "qcache_hits", Name: "hits", Algo: module.Incremental},
-			{ID: "qcache_lowmem_prunes", Name: "lowmem prunes", Algo: module.Incremental, Mul: -1},
-			{ID: "qcache_inserts", Name: "inserts", Algo: module.Incremental},
-			{ID: "qcache_not_cached", Name: "not cached", Algo: module.Incremental, Mul: -1},
-		},
-	},
-	{
-		ID:    "qcache",
-		Title: "QCache Queries in Cache",
-		Units: "queries",
-		Fam:   "qcache",
-		Ctx:   "mysql.qcache",
-		Dims: Dims{
-			{ID: "qcache_queries_in_cache", Name: "queries", Algo: module.Absolute},
-		},
-	},
-	{
-		ID:    "qcache_freemem",
-		Title: "QCache Free Memory",
-		Units: "MiB",
-		Fam:   "qcache",
-		Ctx:   "mysql.qcache_freemem",
-		Type:  module.Area,
-		Dims: Dims{
-			{ID: "qcache_free_memory", Name: "free", Div: 1024 * 1024},
-		},
-	},
-	{
-		ID:    "qcache_memblocks",
-		Title: "QCache Memory Blocks",
-		Units: "blocks",
-		Fam:   "qcache",
-		Ctx:   "mysql.qcache_memblocks",
-		Dims: Dims{
-			{ID: "qcache_free_blocks", Name: "free"},
-			{ID: "qcache_total_blocks", Name: "total"},
 		},
 	},
 	{
@@ -493,6 +435,88 @@ var charts = Charts{
 			{ID: "connection_errors_peer_address", Name: "peer addr", Algo: module.Incremental},
 			{ID: "connection_errors_select", Name: "select", Algo: module.Incremental},
 			{ID: "connection_errors_tcpwrap", Name: "tcpwrap", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "opened_tables",
+		Title: "Opened Tables",
+		Units: "tables/s",
+		Fam:   "open tables",
+		Ctx:   "mysql.opened_tables",
+		Dims: Dims{
+			{ID: "opened_tables", Name: "tables", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "open_tables",
+		Title: "Open Tables",
+		Units: "tables",
+		Fam:   "open tables",
+		Ctx:   "mysql.open_tables",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "table_open_cache", Name: "cache"},
+			{ID: "open_tables", Name: "tables"},
+		},
+	},
+}
+
+var innodbDeadlocksChart = Chart{
+	ID:    "innodb_deadlocks",
+	Title: "InnoDB Deadlocks",
+	Units: "operations/s",
+	Fam:   "innodb",
+	Ctx:   "mysql.innodb_deadlocks",
+	Type:  module.Area,
+	Dims: Dims{
+		{ID: "innodb_deadlocks", Name: "deadlocks", Algo: module.Incremental},
+	},
+}
+
+var queryCacheCharts = Charts{
+	{
+		ID:    "qcache_ops",
+		Title: "QCache Operations",
+		Units: "queries/s",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache_ops",
+		Dims: Dims{
+			{ID: "qcache_hits", Name: "hits", Algo: module.Incremental},
+			{ID: "qcache_lowmem_prunes", Name: "lowmem prunes", Algo: module.Incremental, Mul: -1},
+			{ID: "qcache_inserts", Name: "inserts", Algo: module.Incremental},
+			{ID: "qcache_not_cached", Name: "not cached", Algo: module.Incremental, Mul: -1},
+		},
+	},
+	{
+		ID:    "qcache",
+		Title: "QCache Queries in Cache",
+		Units: "queries",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache",
+		Dims: Dims{
+			{ID: "qcache_queries_in_cache", Name: "queries", Algo: module.Absolute},
+		},
+	},
+	{
+		ID:    "qcache_freemem",
+		Title: "QCache Free Memory",
+		Units: "MiB",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache_freemem",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "qcache_free_memory", Name: "free", Div: 1024 * 1024},
+		},
+	},
+	{
+		ID:    "qcache_memblocks",
+		Title: "QCache Memory Blocks",
+		Units: "blocks",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache_memblocks",
+		Dims: Dims{
+			{ID: "qcache_free_blocks", Name: "free"},
+			{ID: "qcache_total_blocks", Name: "total"},
 		},
 	},
 }
@@ -664,29 +688,15 @@ func newSlaveDefaultReplChannelCharts() module.Charts {
 }
 
 func newSlaveReplChannelCharts(channel string) module.Charts {
-	return module.Charts{
-		{
-			ID:    "slave_behind_" + channel,
-			Title: "Slave Behind Seconds Channel " + channel,
-			Units: "seconds",
-			Fam:   "slave",
-			Ctx:   "mysql.slave_behind",
-			Dims: Dims{
-				{ID: "seconds_behind_master_" + channel, Name: "seconds"},
-			},
-		},
-		{
-			ID:    "slave_thread_running_" + channel,
-			Title: "I/O / SQL Thread Running State Channel " + channel,
-			Units: "bool",
-			Fam:   "slave",
-			Ctx:   "mysql.slave_thread_running",
-			Dims: Dims{
-				{ID: "slave_sql_running_" + channel, Name: "sql_running"},
-				{ID: "slave_io_running_" + channel, Name: "io_running"},
-			},
-		},
+	cs := newSlaveDefaultReplChannelCharts()
+	for _, chart := range cs {
+		chart.ID += "_" + channel
+		chart.Title += " Channel " + channel
+		for _, dim := range chart.Dims {
+			dim.ID += "_" + channel
+		}
 	}
+	return cs
 }
 
 func newUserStatisticsCharts(user string) module.Charts {
@@ -736,6 +746,18 @@ func (m *MySQL) addSlaveReplicationChannelCharts(channel string) {
 
 func (m *MySQL) addUserStatisticsCharts(user string) {
 	if err := m.Charts().Add(newUserStatisticsCharts(user)...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addInnodbDeadlocksChart() {
+	if err := m.Charts().Add(innodbDeadlocksChart.Copy()); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addQCacheCharts() {
+	if err := m.Charts().Add(*queryCacheCharts.Copy()...); err != nil {
 		m.Warning(err)
 	}
 }
