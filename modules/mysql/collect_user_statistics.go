@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"strconv"
+	"strings"
 )
 
 const queryUserStatistics = "SHOW USER_STATISTICS"
@@ -55,7 +56,7 @@ func (m *MySQL) collectUserStatistics(collected map[string]int64) error {
 			if err != nil {
 				continue
 			}
-			collected[prefix+name] = value
+			collected[strings.ToLower(prefix+name)] = value
 		}
 	}
 	return rows.Err()

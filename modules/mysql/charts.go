@@ -699,11 +699,11 @@ func newUserStatisticsCharts(user string) module.Charts {
 			Ctx:   "mysql.userstats_rows",
 			Type:  module.Stacked,
 			Dims: Dims{
-				{ID: "userstats_" + user + "_Rows_read", Name: "read", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_Rows_send", Name: "send", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_Rows_updated", Name: "updated", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_Rows_inserted", Name: "inserted", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_Rows_deleted", Name: "deleted", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_rows_read", Name: "read", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_rows_sent", Name: "sent", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_rows_updated", Name: "updated", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_rows_inserted", Name: "inserted", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_rows_deleted", Name: "deleted", Algo: module.Incremental},
 			},
 		},
 		{
@@ -714,9 +714,9 @@ func newUserStatisticsCharts(user string) module.Charts {
 			Ctx:   "mysql.userstats_commands",
 			Type:  module.Stacked,
 			Dims: Dims{
-				{ID: "userstats_" + user + "_Select_commands", Name: "select", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_Update_commands", Name: "update", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_Other_commands", Name: "other", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_select_commands", Name: "select", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_update_commands", Name: "update", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_other_commands", Name: "other", Algo: module.Incremental},
 			},
 		},
 	}

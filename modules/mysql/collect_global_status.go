@@ -157,7 +157,7 @@ func (m *MySQL) collectGlobalStatus(collected map[string]int64) error {
 		if err != nil {
 			continue
 		}
-		collected[name] = value
+		collected[strings.ToLower(name)] = value
 	}
 	return nil
 }

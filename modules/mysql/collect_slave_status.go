@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"strconv"
+	"strings"
 )
 
 const querySlaveStatus = "SHOW SLAVE STATUS"
@@ -54,7 +55,7 @@ func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
 			if err != nil {
 				continue
 			}
-			collected[name+suffix] = value
+			collected[strings.ToLower(name+suffix)] = value
 		}
 	}
 	return rows.Err()
