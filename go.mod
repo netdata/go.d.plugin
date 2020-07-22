@@ -15,9 +15,11 @@ require (
 	github.com/netdata/go-orchestrator v0.0.0-20200723095135-3b7cd11e4fe1
 	github.com/prometheus/common v0.10.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
+	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/stretchr/testify v1.6.0
 	github.com/vmware/govmomi v0.22.2
 	golang.org/x/net v0.0.0-20191027093000-83d349e8ac1a // indirect; needed for freebsd/arm64
+	gopkg.in/ini.v1 v1.57.0
 	gopkg.in/yaml.v2 v2.3.0
 	layeh.com/radius v0.0.0-20190322222518-890bc1058917
 )

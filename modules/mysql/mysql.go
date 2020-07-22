@@ -21,7 +21,8 @@ func init() {
 
 type (
 	Config struct {
-		DSN string `yaml:"dsn"`
+		DSN   string `yaml:"dsn"`
+		MyCNF string `yaml:"my.cnf"`
 	}
 	MySQL struct {
 		module.Base
@@ -45,7 +46,7 @@ type (
 
 func New() *MySQL {
 	config := Config{
-		DSN: "netdata:password@tcp(127.0.0.1:3306)/",
+		DSN: "root@tcp(localhost:3306)/",
 	}
 	return &MySQL{
 		Config:             config,
@@ -71,6 +72,15 @@ func (m *MySQL) Cleanup() {
 }
 
 func (m *MySQL) Init() bool {
+	if m.DSN == "" && m.MyCNF != "" {
+		dsn, err := dsnFromFile(m.MyCNF)
+		if err != nil {
+			m.Error(err)
+			return false
+		}
+		m.DSN = dsn
+	}
+
 	if m.DSN == "" {
 		m.Error("DSN not set")
 		return false

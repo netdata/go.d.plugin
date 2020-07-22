@@ -15,6 +15,8 @@ var globalVariablesMetrics = []string{
 }
 
 func (m *MySQL) collectGlobalVariables(collected map[string]int64) error {
+	// MariaDB: https://mariadb.com/kb/en/server-system-variables/
+	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-system-variable-reference.html
 	rows, err := m.db.Query(queryGlobalVariables)
 	if err != nil {
 		return err

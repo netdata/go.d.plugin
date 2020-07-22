@@ -140,7 +140,7 @@ var globalStatusMetrics = []string{
 
 func (m *MySQL) collectGlobalStatus(collected map[string]int64) error {
 	// MariaDB: https://mariadb.com/kb/en/server-status-variables/
-	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-status-variables.html
+	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-status-variable-reference.html
 	rows, err := m.db.Query(queryGlobalStatus)
 	if err != nil {
 		return err
