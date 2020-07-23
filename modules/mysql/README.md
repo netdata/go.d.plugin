@@ -12,7 +12,7 @@ This module monitors one or more `MySQL` servers, depending on your configuratio
 
 ## Requirements
 
-This module executes these queries:
+Executed queries:
 
 ```sql
 SHOW GLOBAL STATUS;
@@ -38,7 +38,7 @@ FLUSH PRIVILEGES;
 ```
 
 The `netdata` user will have the ability to connect to the `MySQL` server on localhost without a password.
-It will only be able to gather `MySQL` statistics without being able to alter or affect `MySQL` operations in any way.
+It will only be able to gather statistics without being able to alter or affect operations in any way.
 
 ## Charts
 
