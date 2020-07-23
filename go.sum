@@ -91,8 +91,8 @@ github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJ
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/mreiferson/go-httpclient v0.0.0-20160630210159-31f0106b4474/go.mod h1:OQA4XLvDbMgS8P0CevmM4m9Q3Jq4phKUzcocxuGJ5m8=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
-github.com/netdata/go-orchestrator v0.0.0-20200723064644-e21d211f5a17 h1:rv2ls3XudJ2vvf720vfEOz9JFptV1L1+zMGiXNvueqg=
-github.com/netdata/go-orchestrator v0.0.0-20200723064644-e21d211f5a17/go.mod h1:CCjlIjrtcyyjKEJSeqpRq6ow7umQpU2ZbVTrZrQ+APg=
+github.com/netdata/go-orchestrator v0.0.0-20200723095135-3b7cd11e4fe1 h1:GDTIVfHV2ghwaRXkPHdjeXQg3skWqoDOv7PIOllyRRY=
+github.com/netdata/go-orchestrator v0.0.0-20200723095135-3b7cd11e4fe1/go.mod h1:CCjlIjrtcyyjKEJSeqpRq6ow7umQpU2ZbVTrZrQ+APg=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWbfPhv4DMiApHyliiK5xCTNVSPiaAs=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nkovacs/streamquote v0.0.0-20170412213628-49af9bddb229/go.mod h1:0aYXnNPJ8l7uZxf45rWW1a/uME32OF0rhiYGNQ2oF2E=
