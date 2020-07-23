@@ -678,7 +678,7 @@ func newSlaveDefaultReplChannelCharts() module.Charts {
 			Title: "I/O / SQL Thread Running State",
 			Units: "boolean",
 			Fam:   "slave",
-			Ctx:   "mysql.slave_thread_running",
+			Ctx:   "mysql.slave_status",
 			Dims: Dims{
 				{ID: "slave_sql_running", Name: "sql_running"},
 				{ID: "slave_io_running", Name: "io_running"},
