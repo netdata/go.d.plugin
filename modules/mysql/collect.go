@@ -12,7 +12,7 @@ func (m *MySQL) collect() (map[string]int64, error) {
 		return nil, fmt.Errorf("error on collecting global status: %v", err)
 	}
 	if hasInnodbDeadlocks(collected) {
-		m.addInnodbDeadlocks.Do(m.addInnodbDeadlocksChart)
+		m.addInnodbDeadlocksOnce.Do(m.addInnodbDeadlocksChart)
 	}
 	if hasQCacheMetrics(collected) {
 		m.addQCacheOnce.Do(m.addQCacheCharts)
@@ -25,10 +25,10 @@ func (m *MySQL) collect() (map[string]int64, error) {
 		return nil, fmt.Errorf("error on collecting global variables: %v", err)
 	}
 
-	if m.doSlaveStats {
+	if m.doSlaveStatus {
 		if err := m.collectSlaveStatus(collected); err != nil {
 			m.Errorf("error on collecting slave status: %v", err)
-			m.doSlaveStats = false
+			m.doSlaveStatus = false
 		}
 	}
 
@@ -44,11 +44,7 @@ func (m *MySQL) collect() (map[string]int64, error) {
 }
 
 func calcThreadCacheMisses(collected map[string]int64) {
-	threads, ok1 := collected["threads_created"]
-	cons, ok2 := collected["connections"]
-	if !ok1 || !ok2 {
-		return
-	}
+	threads, cons := collected["threads_created"], collected["connections"]
 	if threads == 0 || cons == 0 {
 		collected["thread_cache_misses"] = 0
 	} else {

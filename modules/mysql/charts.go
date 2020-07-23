@@ -135,7 +135,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "connections_active",
-		Title: "Connections Active",
+		Title: "Active Connections",
 		Units: "connections",
 		Fam:   "connections",
 		Ctx:   "mysql.connections_active",
@@ -621,7 +621,7 @@ var galeraCharts = Charts{
 	},
 	{
 		ID:    "galera_connected",
-		Title: "Whether the Node is Connected to the Cluster",
+		Title: "Cluster Connection Status",
 		Units: "boolean",
 		Fam:   "galera",
 		Ctx:   "mysql.galera_connected",
@@ -631,7 +631,7 @@ var galeraCharts = Charts{
 	},
 	{
 		ID:    "galera_ready",
-		Title: "Whether the Node is Ready to Accept Queries",
+		Title: "Accept Queries Readiness Status",
 		Units: "boolean",
 		Fam:   "galera",
 		Ctx:   "mysql.galera_ready",
@@ -676,7 +676,7 @@ func newSlaveDefaultReplChannelCharts() module.Charts {
 		{
 			ID:    "slave_thread_running",
 			Title: "I/O / SQL Thread Running State",
-			Units: "bool",
+			Units: "boolean",
 			Fam:   "slave",
 			Ctx:   "mysql.slave_thread_running",
 			Dims: Dims{

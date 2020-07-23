@@ -81,11 +81,10 @@ func convertSlaveSQLRunning(value string) string {
 }
 
 func convertSlaveIORunning(value string) string {
+	// NOTE: There is 'Connecting' state and probably others
 	switch value {
 	case "Yes":
 		return "1"
-	case "Connecting":
-		return "2"
 	default:
 		return "0"
 	}

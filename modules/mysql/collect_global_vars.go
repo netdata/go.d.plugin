@@ -6,7 +6,10 @@ import (
 )
 
 const (
-	queryGlobalVariables = "SHOW GLOBAL VARIABLES"
+	queryGlobalVariables = "SHOW GLOBAL VARIABLES WHERE " +
+		"Variable_name LIKE 'max_connections' " +
+		"OR " +
+		"Variable_name LIKE 'table_open_cache'"
 )
 
 var globalVariablesMetrics = []string{

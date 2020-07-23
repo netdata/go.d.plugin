@@ -30,11 +30,11 @@ type (
 
 		db *sql.DB
 
-		addInnodbDeadlocks *sync.Once
-		addGaleraOnce      *sync.Once
-		addQCacheOnce      *sync.Once
+		addInnodbDeadlocksOnce *sync.Once
+		addGaleraOnce          *sync.Once
+		addQCacheOnce          *sync.Once
 
-		doSlaveStats      bool
+		doSlaveStatus     bool
 		collectedChannels map[string]bool
 
 		doUserStatistics bool
@@ -49,15 +49,15 @@ func New() *MySQL {
 		DSN: "root@tcp(localhost:3306)/",
 	}
 	return &MySQL{
-		Config:             config,
-		charts:             charts.Copy(),
-		addInnodbDeadlocks: &sync.Once{},
-		addGaleraOnce:      &sync.Once{},
-		addQCacheOnce:      &sync.Once{},
-		doSlaveStats:       true,
-		doUserStatistics:   true,
-		collectedChannels:  make(map[string]bool),
-		collectedUsers:     make(map[string]bool),
+		Config:                 config,
+		charts:                 charts.Copy(),
+		addInnodbDeadlocksOnce: &sync.Once{},
+		addGaleraOnce:          &sync.Once{},
+		addQCacheOnce:          &sync.Once{},
+		doSlaveStatus:          true,
+		doUserStatistics:       true,
+		collectedChannels:      make(map[string]bool),
+		collectedUsers:         make(map[string]bool),
 	}
 }
 
