@@ -62,6 +62,7 @@ var (
 	userDir   = os.Getenv("NETDATA_USER_CONFIG_DIR")
 	stockDir  = os.Getenv("NETDATA_STOCK_CONFIG_DIR")
 	varLibDir = os.Getenv("NETDATA_LIB_DIR")
+	lockDir   = os.Getenv("NETDATA_LOCK_DIR")
 	watchPath = os.Getenv("NETDATA_PLUGINS_GOD_WATCH_PATH")
 
 	version = "unknown"
@@ -133,9 +134,10 @@ func main() {
 		ConfDir:           confDir(opts),
 		ModulesConfDir:    modulesConfDir(opts),
 		ModulesSDConfPath: watchPaths(opts),
+		StateFile:         stateFile(),
+		LockDir:           lockDir,
 		RunModule:         opts.Module,
 		MinUpdateEvery:    opts.UpdateEvery,
-		StateFile:         stateFile(),
 	})
 
 	p.Run()
