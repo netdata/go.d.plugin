@@ -5,7 +5,10 @@ import (
 	"strings"
 )
 
-const querySlaveStatus = "SHOW SLAVE STATUS"
+const (
+	querySlaveStatus     = "SHOW SLAVE STATUS"
+	queryAllSlavesStatus = "SHOW ALL SLAVES STATUS"
+)
 
 var slaveStatusMetrics = []string{
 	"Seconds_Behind_Master",
@@ -14,10 +17,15 @@ var slaveStatusMetrics = []string{
 }
 
 func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
-	// https://dev.mysql.com/doc/refman/18.0/en/show-slave-status.html
-	// https://dev.mysql.com/doc/refman/8.0/en/replication-channels.html
-	// https://github.com/gdaws/mysql-slave-status
-	rows, err := m.db.Query(querySlaveStatus)
+	var query string
+	if m.isMariaDB() {
+		query = queryAllSlavesStatus
+	} else {
+		query = querySlaveStatus
+	}
+	m.Debugf("executing query: '%s'", query)
+
+	rows, err := m.db.Query(query)
 	if err != nil {
 		return err
 	}
@@ -36,14 +44,19 @@ func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
 		}
 
 		set := rowAsMap(columns, values)
-		// NOTE: 'Connection_name' in MariaDB 10.0+, exposed only in 'SHOW ALL SLAVES STATUS'
-		// https://mariadb.com/kb/en/show-slave-status/#multi-source
-		channel := set["Channel_Name"]
-		suffix := slaveMetricSuffix(channel)
 
-		if !m.collectedChannels[channel] {
-			m.collectedChannels[channel] = true
-			m.addSlaveReplicationChannelCharts(channel)
+		var conn string
+		if m.isMariaDB() {
+			conn = set["Connection_name"]
+		} else {
+			conn = set["Channel_Name"]
+		}
+
+		suffix := slaveMetricSuffix(conn)
+
+		if !m.collectedReplConns[conn] {
+			m.collectedReplConns[conn] = true
+			m.addSlaveReplicationConnCharts(conn)
 		}
 
 		for _, name := range slaveStatusMetrics {
@@ -90,9 +103,9 @@ func convertSlaveIORunning(value string) string {
 	}
 }
 
-func slaveMetricSuffix(channel string) string {
-	if channel == "" {
+func slaveMetricSuffix(conn string) string {
+	if conn == "" {
 		return ""
 	}
-	return "_" + channel
+	return "_" + conn
 }

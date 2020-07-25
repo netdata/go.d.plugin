@@ -17,15 +17,21 @@ import (
 )
 
 var (
-	globalStatusGaleraMariaDBv1054, _    = ioutil.ReadFile("testdata/MariaDBv10.5.4-galera-[global_status].txt")
-	globalVariablesGaleraMariaDBv1054, _ = ioutil.ReadFile("testdata/MariaDBv10.5.4-galera-[global_variables].txt")
-	userStatisticsGaleraMariaDBv1054, _  = ioutil.ReadFile("testdata/MariaDBv10.5.4-galera-[user_statistics].txt")
-	slaveStatusSingleSrcMariaDBv1054, _  = ioutil.ReadFile("testdata/MariaDBv10.5.4-single-source-[slave_status].txt")
+	globalStatusGaleraMariaDBv1054, _ = ioutil.ReadFile(
+		"testdata/MariaDBv10.5.4-galera-[global_status].txt")
+	globalVariablesGaleraMariaDBv1054, _ = ioutil.ReadFile(
+		"testdata/MariaDBv10.5.4-galera-[global_variables].txt")
+	userStatisticsGaleraMariaDBv1054, _ = ioutil.ReadFile(
+		"testdata/MariaDBv10.5.4-galera-[user_statistics].txt")
+	allSlavesStatusMariaDBv1054, _ = ioutil.ReadFile(
+		"testdata/MariaDBv10.5.4-[all_slaves_status].txt")
 
-	globalStatusMySQLv8021, _         = ioutil.ReadFile("testdata/MySQLv8.0.21-[global_status].txt")
-	globalVariablesMySQLv8021, _      = ioutil.ReadFile("testdata/MySQLv8.0.21-[global_variables].txt")
-	slaveStatusSingleSrcMySQLv8021, _ = ioutil.ReadFile("testdata/MySQLv8.0.21-single-source-[slave_status].txt")
-	slaveStatusMultiSrcMySQLv8021, _  = ioutil.ReadFile("testdata/MySQLv8.0.21-multi-source-[slave_status].txt")
+	globalStatusMySQLv8021, _ = ioutil.ReadFile(
+		"testdata/MySQLv8.0.21-[global_status].txt")
+	globalVariablesMySQLv8021, _ = ioutil.ReadFile(
+		"testdata/MySQLv8.0.21-[global_variables].txt")
+	slaveStatusMySQLv8021, _ = ioutil.ReadFile(
+		"testdata/MySQLv8.0.21-[slave_status].txt")
 )
 
 var (
@@ -37,11 +43,11 @@ func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 		"globalStatusGaleraMariaDBv1054":    globalStatusGaleraMariaDBv1054,
 		"globalVariablesGaleraMariaDBv1054": globalVariablesGaleraMariaDBv1054,
 		"userStatisticsGaleraMariaDBv1054":  userStatisticsGaleraMariaDBv1054,
-		"slaveStatusSingleSrcMariaDBv1054":  slaveStatusSingleSrcMariaDBv1054,
-		"globalStatusMySQLv8021":            globalStatusMySQLv8021,
-		"globalVariablesMySQLv8021":         globalVariablesMySQLv8021,
-		"slaveStatusSingleSrcMySQLv8021":    slaveStatusSingleSrcMySQLv8021,
-		"slaveStatusMultiSrcMySQLv8021":     slaveStatusMultiSrcMySQLv8021,
+		"allSlavesStatusMariaDBv1054":       allSlavesStatusMariaDBv1054,
+
+		"globalStatusMySQLv8021":    globalStatusMySQLv8021,
+		"globalVariablesMySQLv8021": globalVariablesMySQLv8021,
+		"slaveStatusMySQLv8021":     slaveStatusMySQLv8021,
 	} {
 		require.NotNilf(t, data, fmt.Sprintf("read data: %s", name))
 		_, err := prepareMockRows(data)
@@ -128,8 +134,8 @@ func TestMySQL_Check(t *testing.T) {
 					WillReturnRows(mustMockRows(t, globalStatusGaleraMariaDBv1054))
 				mock.ExpectQuery(queryGlobalVariables).
 					WillReturnRows(mustMockRows(t, globalVariablesGaleraMariaDBv1054))
-				mock.ExpectQuery(querySlaveStatus).
-					WillReturnRows(mustMockRows(t, slaveStatusSingleSrcMariaDBv1054))
+				mock.ExpectQuery(queryAllSlavesStatus).
+					WillReturnRows(mustMockRows(t, allSlavesStatusMariaDBv1054))
 				mock.ExpectQuery(queryUserStatistics).
 					WillReturnRows(mustMockRows(t, userStatisticsGaleraMariaDBv1054))
 
@@ -168,8 +174,8 @@ func TestMySQL_Check(t *testing.T) {
 					WillReturnRows(mustMockRows(t, globalStatusGaleraMariaDBv1054))
 				mock.ExpectQuery(queryGlobalVariables).
 					WillReturnRows(mustMockRows(t, globalVariablesGaleraMariaDBv1054))
-				mock.ExpectQuery(querySlaveStatus).
-					WillReturnRows(mustMockRows(t, slaveStatusSingleSrcMariaDBv1054))
+				mock.ExpectQuery(queryAllSlavesStatus).
+					WillReturnRows(mustMockRows(t, allSlavesStatusMariaDBv1054))
 				mock.ExpectQuery(queryUserStatistics).
 					WillReturnError(errSQLSyntax)
 
@@ -224,8 +230,8 @@ func TestMySQL_Collect(t *testing.T) {
 					WillReturnRows(mustMockRows(t, globalStatusGaleraMariaDBv1054))
 				mock.ExpectQuery(queryGlobalVariables).
 					WillReturnRows(mustMockRows(t, globalVariablesGaleraMariaDBv1054))
-				mock.ExpectQuery(querySlaveStatus).
-					WillReturnRows(mustMockRows(t, slaveStatusSingleSrcMariaDBv1054))
+				mock.ExpectQuery(queryAllSlavesStatus).
+					WillReturnRows(mustMockRows(t, allSlavesStatusMariaDBv1054))
 				mock.ExpectQuery(queryUserStatistics).
 					WillReturnRows(mustMockRows(t, userStatisticsGaleraMariaDBv1054))
 
@@ -314,8 +320,8 @@ func TestMySQL_Collect(t *testing.T) {
 				"max_connections":                       151,
 				"max_used_connections":                  1,
 				"open_files":                            24,
-				"opened_files":                          80,
 				"open_tables":                           13,
+				"opened_files":                          80,
 				"opened_tables":                         19,
 				"qcache_free_blocks":                    1,
 				"qcache_free_memory":                    1031304,
@@ -327,14 +333,17 @@ func TestMySQL_Collect(t *testing.T) {
 				"qcache_total_blocks":                   1,
 				"queries":                               32,
 				"questions":                             24,
-				"seconds_behind_master":                 0,
+				"seconds_behind_master_master1":         0,
+				"seconds_behind_master_master2":         0,
 				"select_full_join":                      0,
 				"select_full_range_join":                0,
 				"select_range":                          0,
 				"select_range_check":                    0,
 				"select_scan":                           12,
-				"slave_io_running":                      1,
-				"slave_sql_running":                     1,
+				"slave_io_running_master1":              1,
+				"slave_io_running_master2":              1,
+				"slave_sql_running_master1":             1,
+				"slave_sql_running_master2":             1,
 				"slow_queries":                          0,
 				"sort_merge_passes":                     0,
 				"sort_range":                            0,
@@ -394,7 +403,7 @@ func TestMySQL_Collect(t *testing.T) {
 					WillReturnRows(mustMockRows(t, globalStatusGaleraMariaDBv1054))
 				mock.ExpectQuery(queryGlobalVariables).
 					WillReturnRows(mustMockRows(t, globalVariablesGaleraMariaDBv1054))
-				mock.ExpectQuery(querySlaveStatus).
+				mock.ExpectQuery(queryAllSlavesStatus).
 					WillReturnError(errSQLSyntax)
 				mock.ExpectQuery(queryUserStatistics).
 					WillReturnError(errSQLSyntax)
@@ -546,7 +555,7 @@ func TestMySQL_Collect(t *testing.T) {
 				mock.ExpectQuery(queryGlobalVariables).
 					WillReturnRows(mustMockRows(t, globalVariablesMySQLv8021))
 				mock.ExpectQuery(querySlaveStatus).
-					WillReturnRows(mustMockRows(t, slaveStatusMultiSrcMySQLv8021))
+					WillReturnRows(mustMockRows(t, slaveStatusMySQLv8021))
 				mock.ExpectQuery(queryUserStatistics).
 					WillReturnError(errSQLSyntax)
 

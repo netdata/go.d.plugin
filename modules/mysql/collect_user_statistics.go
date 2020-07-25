@@ -21,6 +21,8 @@ var userStatisticsMetrics = []string{
 
 func (m *MySQL) collectUserStatistics(collected map[string]int64) error {
 	// https://mariadb.com/kb/en/user-statistics/
+	m.Debugf("executing query: '%s'", queryUserStatistics)
+
 	rows, err := m.db.Query(queryUserStatistics)
 	if err != nil {
 		return err

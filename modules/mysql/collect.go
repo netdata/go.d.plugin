@@ -3,6 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 )
 
 func (m *MySQL) collect() (map[string]int64, error) {
@@ -41,6 +42,10 @@ func (m *MySQL) collect() (map[string]int64, error) {
 
 	calcThreadCacheMisses(collected)
 	return collected, nil
+}
+
+func (m MySQL) isMariaDB() bool {
+	return strings.Contains(strings.ToLower(m.version), "mariadb")
 }
 
 func calcThreadCacheMisses(collected map[string]int64) {

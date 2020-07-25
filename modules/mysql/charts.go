@@ -661,7 +661,7 @@ var galeraCharts = Charts{
 	},
 }
 
-func newSlaveDefaultReplChannelCharts() module.Charts {
+func newSlaveDefaultReplConnCharts() module.Charts {
 	return module.Charts{
 		{
 			ID:    "slave_behind",
@@ -687,13 +687,13 @@ func newSlaveDefaultReplChannelCharts() module.Charts {
 	}
 }
 
-func newSlaveReplChannelCharts(channel string) module.Charts {
-	cs := newSlaveDefaultReplChannelCharts()
+func newSlaveReplConnCharts(conn string) module.Charts {
+	cs := newSlaveDefaultReplConnCharts()
 	for _, chart := range cs {
-		chart.ID += "_" + channel
-		chart.Title += " Channel " + channel
+		chart.ID += "_" + conn
+		chart.Title += " Connection " + conn
 		for _, dim := range chart.Dims {
-			dim.ID += "_" + channel
+			dim.ID += "_" + conn
 		}
 	}
 	return cs
@@ -732,12 +732,12 @@ func newUserStatisticsCharts(user string) module.Charts {
 	}
 }
 
-func (m *MySQL) addSlaveReplicationChannelCharts(channel string) {
+func (m *MySQL) addSlaveReplicationConnCharts(conn string) {
 	var cs module.Charts
-	if channel == "" {
-		cs = newSlaveDefaultReplChannelCharts()
+	if conn == "" {
+		cs = newSlaveDefaultReplConnCharts()
 	} else {
-		cs = newSlaveReplChannelCharts(channel)
+		cs = newSlaveReplConnCharts(conn)
 	}
 	if err := m.Charts().Add(cs...); err != nil {
 		m.Warning(err)

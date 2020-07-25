@@ -28,17 +28,17 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
-		db *sql.DB
+		db      *sql.DB
+		version string
 
 		addInnodbDeadlocksOnce *sync.Once
 		addGaleraOnce          *sync.Once
 		addQCacheOnce          *sync.Once
 
-		doSlaveStatus     bool
-		collectedChannels map[string]bool
-
-		doUserStatistics bool
-		collectedUsers   map[string]bool
+		doSlaveStatus      bool
+		collectedReplConns map[string]bool
+		doUserStatistics   bool
+		collectedUsers     map[string]bool
 
 		charts *Charts
 	}
@@ -56,7 +56,7 @@ func New() *MySQL {
 		addQCacheOnce:          &sync.Once{},
 		doSlaveStatus:          true,
 		doUserStatistics:       true,
-		collectedChannels:      make(map[string]bool),
+		collectedReplConns:     make(map[string]bool),
 		collectedUsers:         make(map[string]bool),
 	}
 }
