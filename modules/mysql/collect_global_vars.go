@@ -15,7 +15,6 @@ const (
 )
 
 var globalVariablesMetrics = []string{
-	"version",
 	"max_connections",
 	"table_open_cache",
 }
@@ -36,13 +35,14 @@ func (m *MySQL) collectGlobalVariables(collected map[string]int64) error {
 		return err
 	}
 
+	if version := set["version"]; m.version == "" {
+		m.Debugf("application version: '%s'", version)
+		m.version = version
+	}
+
 	for _, name := range globalVariablesMetrics {
 		strValue, ok := set[name]
 		if !ok {
-			continue
-		}
-		if name == "version" {
-			m.version = strValue
 			continue
 		}
 		value, err := parseGlobalVariable(strValue)
