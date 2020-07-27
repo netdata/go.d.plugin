@@ -60,6 +60,7 @@ func charts(cumulative bool) *Charts {
 		makeIncrIf(cacheChart.Copy(), cumulative),
 		makePercOfIncrIf(cachePercentageChart.Copy(), cumulative),
 		makeIncrIf(prefetchChart.Copy(), cumulative),
+		makeIncrIf(expiredChart.Copy(), cumulative),
 		makeIncrIf(zeroTTLChart.Copy(), cumulative),
 		makeIncrIf(dnsCryptChart.Copy(), cumulative),
 		makeIncrIf(recurRepliesChart.Copy(), cumulative),
