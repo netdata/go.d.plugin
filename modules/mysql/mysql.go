@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"fmt"
 	"sync"
 	"time"
 
@@ -72,7 +73,7 @@ func (m *MySQL) Cleanup() {
 }
 
 func (m *MySQL) Init() bool {
-	if m.DSN == "" && m.MyCNF != "" {
+	if m.MyCNF != "" {
 		dsn, err := dsnFromFile(m.MyCNF)
 		if err != nil {
 			m.Error(err)
@@ -98,16 +99,14 @@ func (m *MySQL) Init() bool {
 func (m *MySQL) openConnection() error {
 	db, err := sql.Open("mysql", m.DSN)
 	if err != nil {
-		m.Errorf("error on opening a connection with the mysql database [%s]: %v", m.DSN, err)
-		return err
+		return fmt.Errorf("error on opening a connection with the mysql database [%s]: %v", m.DSN, err)
 	}
 
 	db.SetConnMaxLifetime(1 * time.Minute)
 
 	if err := db.Ping(); err != nil {
 		_ = db.Close()
-		m.Errorf("error on pinging the mysql database [%s]: %v", m.DSN, err)
-		return err
+		return fmt.Errorf("error on pinging the mysql database [%s]: %v", m.DSN, err)
 	}
 
 	m.db = db
