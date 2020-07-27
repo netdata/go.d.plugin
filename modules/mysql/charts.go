@@ -1,12 +1,13 @@
 package mysql
 
-import "github.com/netdata/go-orchestrator/module"
+import (
+	"github.com/netdata/go-orchestrator/module"
+)
 
 type (
-	// Charts is an alias for module.Charts
 	Charts = module.Charts
-	// Dims is an alias for module.Dims
-	Dims = module.Dims
+	Chart  = module.Chart
+	Dims   = module.Dims
 )
 
 var charts = Charts{
@@ -46,7 +47,6 @@ var charts = Charts{
 			{ID: "com_delete", Name: "delete", Algo: module.Incremental},
 			{ID: "com_update", Name: "update", Algo: module.Incremental},
 			{ID: "com_insert", Name: "insert", Algo: module.Incremental},
-			{ID: "qcache_hits", Name: "cache hits", Algo: module.Incremental},
 			{ID: "com_replace", Name: "replace", Algo: module.Incremental},
 		},
 	},
@@ -135,7 +135,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "connections_active",
-		Title: "Connections Active",
+		Title: "Active Connections",
 		Units: "connections",
 		Fam:   "connections",
 		Ctx:   "mysql.connections_active",
@@ -356,51 +356,6 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "qcache_ops",
-		Title: "QCache Operations",
-		Units: "queries/s",
-		Fam:   "qcache",
-		Ctx:   "mysql.qcache_ops",
-		Dims: Dims{
-			{ID: "qcache_hits", Name: "hits", Algo: module.Incremental},
-			{ID: "qcache_lowmem_prunes", Name: "lowmem prunes", Algo: module.Incremental, Mul: -1},
-			{ID: "qcache_inserts", Name: "inserts", Algo: module.Incremental},
-			{ID: "qcache_not_cached", Name: "not cached", Algo: module.Incremental, Mul: -1},
-		},
-	},
-	{
-		ID:    "qcache",
-		Title: "QCache Queries in Cache",
-		Units: "queries",
-		Fam:   "qcache",
-		Ctx:   "mysql.qcache",
-		Dims: Dims{
-			{ID: "qcache_queries_in_cache", Name: "queries", Algo: module.Absolute},
-		},
-	},
-	{
-		ID:    "qcache_freemem",
-		Title: "QCache Free Memory",
-		Units: "MiB",
-		Fam:   "qcache",
-		Ctx:   "mysql.qcache_freemem",
-		Type:  module.Area,
-		Dims: Dims{
-			{ID: "qcache_free_memory", Name: "free", Div: 1024 * 1024},
-		},
-	},
-	{
-		ID:    "qcache_memblocks",
-		Title: "QCache Memory Blocks",
-		Units: "blocks",
-		Fam:   "qcache",
-		Ctx:   "mysql.qcache_memblocks",
-		Dims: Dims{
-			{ID: "qcache_free_blocks", Name: "free"},
-			{ID: "qcache_total_blocks", Name: "total"},
-		},
-	},
-	{
 		ID:    "key_blocks",
 		Title: "MyISAM Key Cache Blocks",
 		Units: "blocks",
@@ -482,29 +437,86 @@ var charts = Charts{
 			{ID: "connection_errors_tcpwrap", Name: "tcpwrap", Algo: module.Incremental},
 		},
 	},
-}
-
-var slaveCharts = Charts{
 	{
-		ID:    "slave_behind",
-		Title: "Slave Behind Seconds",
-		Units: "seconds",
-		Fam:   "slave",
-		Ctx:   "mysql.slave_behind",
-		Type:  module.Line,
+		ID:    "opened_tables",
+		Title: "Opened Tables",
+		Units: "tables/s",
+		Fam:   "open tables",
+		Ctx:   "mysql.opened_tables",
 		Dims: Dims{
-			{ID: "seconds_behind_master", Name: "time"},
+			{ID: "opened_tables", Name: "tables", Algo: module.Incremental},
 		},
 	},
 	{
-		ID:    "slave_thread_running",
-		Title: "I/O / SQL Thread Running State",
-		Units: "bool",
-		Fam:   "slave",
-		Ctx:   "mysql.slave_thread_running",
+		ID:    "open_tables",
+		Title: "Open Tables",
+		Units: "tables",
+		Fam:   "open tables",
+		Ctx:   "mysql.open_tables",
+		Type:  module.Area,
 		Dims: Dims{
-			{ID: "slave_sql_running", Name: "sql"},
-			{ID: "slave_io_running", Name: "io"},
+			{ID: "table_open_cache", Name: "cache"},
+			{ID: "open_tables", Name: "tables"},
+		},
+	},
+}
+
+var innodbDeadlocksChart = Chart{
+	ID:    "innodb_deadlocks",
+	Title: "InnoDB Deadlocks",
+	Units: "operations/s",
+	Fam:   "innodb",
+	Ctx:   "mysql.innodb_deadlocks",
+	Type:  module.Area,
+	Dims: Dims{
+		{ID: "innodb_deadlocks", Name: "deadlocks", Algo: module.Incremental},
+	},
+}
+
+var queryCacheCharts = Charts{
+	{
+		ID:    "qcache_ops",
+		Title: "QCache Operations",
+		Units: "queries/s",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache_ops",
+		Dims: Dims{
+			{ID: "qcache_hits", Name: "hits", Algo: module.Incremental},
+			{ID: "qcache_lowmem_prunes", Name: "lowmem prunes", Algo: module.Incremental, Mul: -1},
+			{ID: "qcache_inserts", Name: "inserts", Algo: module.Incremental},
+			{ID: "qcache_not_cached", Name: "not cached", Algo: module.Incremental, Mul: -1},
+		},
+	},
+	{
+		ID:    "qcache",
+		Title: "QCache Queries in Cache",
+		Units: "queries",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache",
+		Dims: Dims{
+			{ID: "qcache_queries_in_cache", Name: "queries", Algo: module.Absolute},
+		},
+	},
+	{
+		ID:    "qcache_freemem",
+		Title: "QCache Free Memory",
+		Units: "MiB",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache_freemem",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "qcache_free_memory", Name: "free", Div: 1024 * 1024},
+		},
+	},
+	{
+		ID:    "qcache_memblocks",
+		Title: "QCache Memory Blocks",
+		Units: "blocks",
+		Fam:   "qcache",
+		Ctx:   "mysql.qcache_memblocks",
+		Dims: Dims{
+			{ID: "qcache_free_blocks", Name: "free"},
+			{ID: "qcache_total_blocks", Name: "total"},
 		},
 	},
 }
@@ -567,4 +579,191 @@ var galeraCharts = Charts{
 			{ID: "wsrep_flow_control_paused_ns", Name: "paused", Algo: module.Incremental, Div: 1000000},
 		},
 	},
+	{
+		ID:    "galera_cluster_status",
+		Title: "Cluster Component Status",
+		Units: "status",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_cluster_status",
+		Dims: Dims{
+			{ID: "wsrep_cluster_status", Name: "status"},
+		},
+	},
+	{
+		ID:    "galera_cluster_state",
+		Title: "Cluster Component State",
+		Units: "state",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_cluster_state",
+		Dims: Dims{
+			{ID: "wsrep_local_state", Name: "state"},
+		},
+	},
+	{
+		ID:    "galera_cluster_size",
+		Title: "Number of Nodes in the Cluster",
+		Units: "num",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_cluster_size",
+		Dims: Dims{
+			{ID: "wsrep_cluster_size", Name: "nodes"},
+		},
+	},
+	{
+		ID:    "galera_cluster_weight",
+		Title: "The Total Weight of the Current Members in the Cluster",
+		Units: "weight",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_cluster_weight",
+		Dims: Dims{
+			{ID: "wsrep_cluster_weight", Name: "weight"},
+		},
+	},
+	{
+		ID:    "galera_connected",
+		Title: "Cluster Connection Status",
+		Units: "boolean",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_connected",
+		Dims: Dims{
+			{ID: "wsrep_connected", Name: "connected"},
+		},
+	},
+	{
+		ID:    "galera_ready",
+		Title: "Accept Queries Readiness Status",
+		Units: "boolean",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_ready",
+		Dims: Dims{
+			{ID: "wsrep_ready", Name: "ready"},
+		},
+	},
+	{
+		ID:    "galera_open_transactions",
+		Title: "Open Transactions",
+		Units: "num",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_open_transactions",
+		Dims: Dims{
+			{ID: "wsrep_open_transactions", Name: "open transactions"},
+		},
+	},
+	{
+		ID:    "galera_thread_count",
+		Title: "Total Number of WSRep (applier/rollbacker) Threads",
+		Units: "num",
+		Fam:   "galera",
+		Ctx:   "mysql.galera_thread_count",
+		Dims: Dims{
+			{ID: "wsrep_thread_count", Name: "threads"},
+		},
+	},
+}
+
+func newSlaveDefaultReplConnCharts() module.Charts {
+	return module.Charts{
+		{
+			ID:    "slave_behind",
+			Title: "Slave Behind Seconds",
+			Units: "seconds",
+			Fam:   "slave",
+			Ctx:   "mysql.slave_behind",
+			Dims: Dims{
+				{ID: "seconds_behind_master", Name: "seconds"},
+			},
+		},
+		{
+			ID:    "slave_thread_running",
+			Title: "I/O / SQL Thread Running State",
+			Units: "boolean",
+			Fam:   "slave",
+			Ctx:   "mysql.slave_status",
+			Dims: Dims{
+				{ID: "slave_sql_running", Name: "sql_running"},
+				{ID: "slave_io_running", Name: "io_running"},
+			},
+		},
+	}
+}
+
+func newSlaveReplConnCharts(conn string) module.Charts {
+	cs := newSlaveDefaultReplConnCharts()
+	for _, chart := range cs {
+		chart.ID += "_" + conn
+		chart.Title += " Connection " + conn
+		for _, dim := range chart.Dims {
+			dim.ID += "_" + conn
+		}
+	}
+	return cs
+}
+
+func newUserStatisticsCharts(user string) module.Charts {
+	return module.Charts{
+		{
+			ID:    "userstats_rows_" + user,
+			Title: "Rows Operations",
+			Units: "operations/s",
+			Fam:   "userstats " + user,
+			Ctx:   "mysql.userstats_rows",
+			Type:  module.Stacked,
+			Dims: Dims{
+				{ID: "userstats_" + user + "_rows_read", Name: "read", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_rows_sent", Name: "sent", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_rows_updated", Name: "updated", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_rows_inserted", Name: "inserted", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_rows_deleted", Name: "deleted", Algo: module.Incremental},
+			},
+		},
+		{
+			ID:    "userstats_commands_" + user,
+			Title: "Commands",
+			Units: "commands/s",
+			Fam:   "userstats " + user,
+			Ctx:   "mysql.userstats_commands",
+			Type:  module.Stacked,
+			Dims: Dims{
+				{ID: "userstats_" + user + "_select_commands", Name: "select", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_update_commands", Name: "update", Algo: module.Incremental},
+				{ID: "userstats_" + user + "_other_commands", Name: "other", Algo: module.Incremental},
+			},
+		},
+	}
+}
+
+func (m *MySQL) addSlaveReplicationConnCharts(conn string) {
+	var cs module.Charts
+	if conn == "" {
+		cs = newSlaveDefaultReplConnCharts()
+	} else {
+		cs = newSlaveReplConnCharts(conn)
+	}
+	if err := m.Charts().Add(cs...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addUserStatisticsCharts(user string) {
+	if err := m.Charts().Add(newUserStatisticsCharts(user)...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addInnodbDeadlocksChart() {
+	if err := m.Charts().Add(innodbDeadlocksChart.Copy()); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addQCacheCharts() {
+	if err := m.Charts().Add(*queryCacheCharts.Copy()...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addGaleraCharts() {
+	if err := m.Charts().Add(*galeraCharts.Copy()...); err != nil {
+		m.Warning(err)
+	}
 }

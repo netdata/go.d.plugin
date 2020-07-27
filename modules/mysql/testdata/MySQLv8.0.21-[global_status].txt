@@ -1,0 +1,1416 @@
+*************************** 1. row ***************************
+Variable_name: Aborted_clients
+        Value: 0
+*************************** 2. row ***************************
+Variable_name: Aborted_connects
+        Value: 0
+*************************** 3. row ***************************
+Variable_name: Acl_cache_items_count
+        Value: 0
+*************************** 4. row ***************************
+Variable_name: Binlog_cache_disk_use
+        Value: 0
+*************************** 5. row ***************************
+Variable_name: Binlog_cache_use
+        Value: 2
+*************************** 6. row ***************************
+Variable_name: Binlog_stmt_cache_disk_use
+        Value: 0
+*************************** 7. row ***************************
+Variable_name: Binlog_stmt_cache_use
+        Value: 0
+*************************** 8. row ***************************
+Variable_name: Bytes_received
+        Value: 13552
+*************************** 9. row ***************************
+Variable_name: Bytes_sent
+        Value: 21281
+*************************** 10. row ***************************
+Variable_name: Caching_sha2_password_rsa_public_key
+        Value: -----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudIiSEB85xcbOZrJWnhH
+N4u9maPZsiZtCn1BYHJUKk5nldm6e0Kjun5G5wUMP4dytHUjdsltKj+HE5dUoBYQ
+ye4ZUktv7NVXhXL5sALYl7XMel65/eVUWHiv91a9Hi7wa6kzmaxVdSvgzrgcfCSk
+O0qgJ8g7ekB32c44WPNjk55v9ivWnMg/y89HXHhBpWA7Zliaq0CPUsjKbgIAgYEh
+xxNqyiN9LCC+Z2jNVYYnl45jJV3e8P368ZZ7+FJ2Z1uST9o0D45qCXWv7qSROGnC
+P9IJpVbT1hpVDTATY4N60LCCucTrkE2D7aSoModkzefJumBBnasnDvnIJqoAQA4D
+qwIDAQAB
+-----END PUBLIC KEY-----
+
+*************************** 11. row ***************************
+Variable_name: Com_admin_commands
+        Value: 57
+*************************** 12. row ***************************
+Variable_name: Com_assign_to_keycache
+        Value: 0
+*************************** 13. row ***************************
+Variable_name: Com_alter_db
+        Value: 0
+*************************** 14. row ***************************
+Variable_name: Com_alter_event
+        Value: 0
+*************************** 15. row ***************************
+Variable_name: Com_alter_function
+        Value: 0
+*************************** 16. row ***************************
+Variable_name: Com_alter_instance
+        Value: 0
+*************************** 17. row ***************************
+Variable_name: Com_alter_procedure
+        Value: 0
+*************************** 18. row ***************************
+Variable_name: Com_alter_resource_group
+        Value: 0
+*************************** 19. row ***************************
+Variable_name: Com_alter_server
+        Value: 0
+*************************** 20. row ***************************
+Variable_name: Com_alter_table
+        Value: 0
+*************************** 21. row ***************************
+Variable_name: Com_alter_tablespace
+        Value: 0
+*************************** 22. row ***************************
+Variable_name: Com_alter_user
+        Value: 0
+*************************** 23. row ***************************
+Variable_name: Com_alter_user_default_role
+        Value: 0
+*************************** 24. row ***************************
+Variable_name: Com_analyze
+        Value: 0
+*************************** 25. row ***************************
+Variable_name: Com_begin
+        Value: 0
+*************************** 26. row ***************************
+Variable_name: Com_binlog
+        Value: 0
+*************************** 27. row ***************************
+Variable_name: Com_call_procedure
+        Value: 0
+*************************** 28. row ***************************
+Variable_name: Com_change_db
+        Value: 1
+*************************** 29. row ***************************
+Variable_name: Com_change_master
+        Value: 0
+*************************** 30. row ***************************
+Variable_name: Com_change_repl_filter
+        Value: 0
+*************************** 31. row ***************************
+Variable_name: Com_check
+        Value: 0
+*************************** 32. row ***************************
+Variable_name: Com_checksum
+        Value: 0
+*************************** 33. row ***************************
+Variable_name: Com_clone
+        Value: 0
+*************************** 34. row ***************************
+Variable_name: Com_commit
+        Value: 0
+*************************** 35. row ***************************
+Variable_name: Com_create_db
+        Value: 1
+*************************** 36. row ***************************
+Variable_name: Com_create_event
+        Value: 0
+*************************** 37. row ***************************
+Variable_name: Com_create_function
+        Value: 0
+*************************** 38. row ***************************
+Variable_name: Com_create_index
+        Value: 0
+*************************** 39. row ***************************
+Variable_name: Com_create_procedure
+        Value: 0
+*************************** 40. row ***************************
+Variable_name: Com_create_role
+        Value: 0
+*************************** 41. row ***************************
+Variable_name: Com_create_server
+        Value: 0
+*************************** 42. row ***************************
+Variable_name: Com_create_table
+        Value: 34
+*************************** 43. row ***************************
+Variable_name: Com_create_resource_group
+        Value: 0
+*************************** 44. row ***************************
+Variable_name: Com_create_trigger
+        Value: 0
+*************************** 45. row ***************************
+Variable_name: Com_create_udf
+        Value: 0
+*************************** 46. row ***************************
+Variable_name: Com_create_user
+        Value: 1
+*************************** 47. row ***************************
+Variable_name: Com_create_view
+        Value: 0
+*************************** 48. row ***************************
+Variable_name: Com_create_spatial_reference_system
+        Value: 0
+*************************** 49. row ***************************
+Variable_name: Com_dealloc_sql
+        Value: 0
+*************************** 50. row ***************************
+Variable_name: Com_delete
+        Value: 0
+*************************** 51. row ***************************
+Variable_name: Com_delete_multi
+        Value: 0
+*************************** 52. row ***************************
+Variable_name: Com_do
+        Value: 0
+*************************** 53. row ***************************
+Variable_name: Com_drop_db
+        Value: 0
+*************************** 54. row ***************************
+Variable_name: Com_drop_event
+        Value: 0
+*************************** 55. row ***************************
+Variable_name: Com_drop_function
+        Value: 0
+*************************** 56. row ***************************
+Variable_name: Com_drop_index
+        Value: 0
+*************************** 57. row ***************************
+Variable_name: Com_drop_procedure
+        Value: 0
+*************************** 58. row ***************************
+Variable_name: Com_drop_resource_group
+        Value: 0
+*************************** 59. row ***************************
+Variable_name: Com_drop_role
+        Value: 0
+*************************** 60. row ***************************
+Variable_name: Com_drop_server
+        Value: 0
+*************************** 61. row ***************************
+Variable_name: Com_drop_spatial_reference_system
+        Value: 0
+*************************** 62. row ***************************
+Variable_name: Com_drop_table
+        Value: 0
+*************************** 63. row ***************************
+Variable_name: Com_drop_trigger
+        Value: 0
+*************************** 64. row ***************************
+Variable_name: Com_drop_user
+        Value: 0
+*************************** 65. row ***************************
+Variable_name: Com_drop_view
+        Value: 0
+*************************** 66. row ***************************
+Variable_name: Com_empty_query
+        Value: 0
+*************************** 67. row ***************************
+Variable_name: Com_execute_sql
+        Value: 0
+*************************** 68. row ***************************
+Variable_name: Com_explain_other
+        Value: 0
+*************************** 69. row ***************************
+Variable_name: Com_flush
+        Value: 1
+*************************** 70. row ***************************
+Variable_name: Com_get_diagnostics
+        Value: 0
+*************************** 71. row ***************************
+Variable_name: Com_grant
+        Value: 1
+*************************** 72. row ***************************
+Variable_name: Com_grant_roles
+        Value: 0
+*************************** 73. row ***************************
+Variable_name: Com_ha_close
+        Value: 0
+*************************** 74. row ***************************
+Variable_name: Com_ha_open
+        Value: 0
+*************************** 75. row ***************************
+Variable_name: Com_ha_read
+        Value: 0
+*************************** 76. row ***************************
+Variable_name: Com_help
+        Value: 0
+*************************** 77. row ***************************
+Variable_name: Com_import
+        Value: 0
+*************************** 78. row ***************************
+Variable_name: Com_insert
+        Value: 0
+*************************** 79. row ***************************
+Variable_name: Com_insert_select
+        Value: 0
+*************************** 80. row ***************************
+Variable_name: Com_install_component
+        Value: 0
+*************************** 81. row ***************************
+Variable_name: Com_install_plugin
+        Value: 0
+*************************** 82. row ***************************
+Variable_name: Com_kill
+        Value: 0
+*************************** 83. row ***************************
+Variable_name: Com_load
+        Value: 0
+*************************** 84. row ***************************
+Variable_name: Com_lock_instance
+        Value: 0
+*************************** 85. row ***************************
+Variable_name: Com_lock_tables
+        Value: 0
+*************************** 86. row ***************************
+Variable_name: Com_optimize
+        Value: 0
+*************************** 87. row ***************************
+Variable_name: Com_preload_keys
+        Value: 0
+*************************** 88. row ***************************
+Variable_name: Com_prepare_sql
+        Value: 0
+*************************** 89. row ***************************
+Variable_name: Com_purge
+        Value: 0
+*************************** 90. row ***************************
+Variable_name: Com_purge_before_date
+        Value: 0
+*************************** 91. row ***************************
+Variable_name: Com_release_savepoint
+        Value: 0
+*************************** 92. row ***************************
+Variable_name: Com_rename_table
+        Value: 0
+*************************** 93. row ***************************
+Variable_name: Com_rename_user
+        Value: 0
+*************************** 94. row ***************************
+Variable_name: Com_repair
+        Value: 0
+*************************** 95. row ***************************
+Variable_name: Com_replace
+        Value: 0
+*************************** 96. row ***************************
+Variable_name: Com_replace_select
+        Value: 0
+*************************** 97. row ***************************
+Variable_name: Com_reset
+        Value: 0
+*************************** 98. row ***************************
+Variable_name: Com_resignal
+        Value: 0
+*************************** 99. row ***************************
+Variable_name: Com_restart
+        Value: 0
+*************************** 100. row ***************************
+Variable_name: Com_revoke
+        Value: 0
+*************************** 101. row ***************************
+Variable_name: Com_revoke_all
+        Value: 0
+*************************** 102. row ***************************
+Variable_name: Com_revoke_roles
+        Value: 0
+*************************** 103. row ***************************
+Variable_name: Com_rollback
+        Value: 0
+*************************** 104. row ***************************
+Variable_name: Com_rollback_to_savepoint
+        Value: 0
+*************************** 105. row ***************************
+Variable_name: Com_savepoint
+        Value: 0
+*************************** 106. row ***************************
+Variable_name: Com_select
+        Value: 3
+*************************** 107. row ***************************
+Variable_name: Com_set_option
+        Value: 4
+*************************** 108. row ***************************
+Variable_name: Com_set_password
+        Value: 0
+*************************** 109. row ***************************
+Variable_name: Com_set_resource_group
+        Value: 0
+*************************** 110. row ***************************
+Variable_name: Com_set_role
+        Value: 0
+*************************** 111. row ***************************
+Variable_name: Com_signal
+        Value: 0
+*************************** 112. row ***************************
+Variable_name: Com_show_binlog_events
+        Value: 0
+*************************** 113. row ***************************
+Variable_name: Com_show_binlogs
+        Value: 0
+*************************** 114. row ***************************
+Variable_name: Com_show_charsets
+        Value: 0
+*************************** 115. row ***************************
+Variable_name: Com_show_collations
+        Value: 0
+*************************** 116. row ***************************
+Variable_name: Com_show_create_db
+        Value: 0
+*************************** 117. row ***************************
+Variable_name: Com_show_create_event
+        Value: 0
+*************************** 118. row ***************************
+Variable_name: Com_show_create_func
+        Value: 0
+*************************** 119. row ***************************
+Variable_name: Com_show_create_proc
+        Value: 0
+*************************** 120. row ***************************
+Variable_name: Com_show_create_table
+        Value: 0
+*************************** 121. row ***************************
+Variable_name: Com_show_create_trigger
+        Value: 0
+*************************** 122. row ***************************
+Variable_name: Com_show_databases
+        Value: 0
+*************************** 123. row ***************************
+Variable_name: Com_show_engine_logs
+        Value: 0
+*************************** 124. row ***************************
+Variable_name: Com_show_engine_mutex
+        Value: 0
+*************************** 125. row ***************************
+Variable_name: Com_show_engine_status
+        Value: 0
+*************************** 126. row ***************************
+Variable_name: Com_show_events
+        Value: 0
+*************************** 127. row ***************************
+Variable_name: Com_show_errors
+        Value: 0
+*************************** 128. row ***************************
+Variable_name: Com_show_fields
+        Value: 0
+*************************** 129. row ***************************
+Variable_name: Com_show_function_code
+        Value: 0
+*************************** 130. row ***************************
+Variable_name: Com_show_function_status
+        Value: 0
+*************************** 131. row ***************************
+Variable_name: Com_show_grants
+        Value: 0
+*************************** 132. row ***************************
+Variable_name: Com_show_keys
+        Value: 0
+*************************** 133. row ***************************
+Variable_name: Com_show_master_status
+        Value: 1
+*************************** 134. row ***************************
+Variable_name: Com_show_open_tables
+        Value: 0
+*************************** 135. row ***************************
+Variable_name: Com_show_plugins
+        Value: 0
+*************************** 136. row ***************************
+Variable_name: Com_show_privileges
+        Value: 0
+*************************** 137. row ***************************
+Variable_name: Com_show_procedure_code
+        Value: 0
+*************************** 138. row ***************************
+Variable_name: Com_show_procedure_status
+        Value: 0
+*************************** 139. row ***************************
+Variable_name: Com_show_processlist
+        Value: 0
+*************************** 140. row ***************************
+Variable_name: Com_show_profile
+        Value: 0
+*************************** 141. row ***************************
+Variable_name: Com_show_profiles
+        Value: 0
+*************************** 142. row ***************************
+Variable_name: Com_show_relaylog_events
+        Value: 0
+*************************** 143. row ***************************
+Variable_name: Com_show_slave_hosts
+        Value: 0
+*************************** 144. row ***************************
+Variable_name: Com_show_slave_status
+        Value: 0
+*************************** 145. row ***************************
+Variable_name: Com_show_status
+        Value: 2
+*************************** 146. row ***************************
+Variable_name: Com_show_storage_engines
+        Value: 0
+*************************** 147. row ***************************
+Variable_name: Com_show_table_status
+        Value: 0
+*************************** 148. row ***************************
+Variable_name: Com_show_tables
+        Value: 0
+*************************** 149. row ***************************
+Variable_name: Com_show_triggers
+        Value: 0
+*************************** 150. row ***************************
+Variable_name: Com_show_variables
+        Value: 0
+*************************** 151. row ***************************
+Variable_name: Com_show_warnings
+        Value: 0
+*************************** 152. row ***************************
+Variable_name: Com_show_create_user
+        Value: 0
+*************************** 153. row ***************************
+Variable_name: Com_shutdown
+        Value: 0
+*************************** 154. row ***************************
+Variable_name: Com_slave_start
+        Value: 0
+*************************** 155. row ***************************
+Variable_name: Com_slave_stop
+        Value: 0
+*************************** 156. row ***************************
+Variable_name: Com_group_replication_start
+        Value: 0
+*************************** 157. row ***************************
+Variable_name: Com_group_replication_stop
+        Value: 0
+*************************** 158. row ***************************
+Variable_name: Com_stmt_execute
+        Value: 0
+*************************** 159. row ***************************
+Variable_name: Com_stmt_close
+        Value: 0
+*************************** 160. row ***************************
+Variable_name: Com_stmt_fetch
+        Value: 0
+*************************** 161. row ***************************
+Variable_name: Com_stmt_prepare
+        Value: 0
+*************************** 162. row ***************************
+Variable_name: Com_stmt_reset
+        Value: 0
+*************************** 163. row ***************************
+Variable_name: Com_stmt_send_long_data
+        Value: 0
+*************************** 164. row ***************************
+Variable_name: Com_truncate
+        Value: 0
+*************************** 165. row ***************************
+Variable_name: Com_uninstall_component
+        Value: 0
+*************************** 166. row ***************************
+Variable_name: Com_uninstall_plugin
+        Value: 0
+*************************** 167. row ***************************
+Variable_name: Com_unlock_instance
+        Value: 0
+*************************** 168. row ***************************
+Variable_name: Com_unlock_tables
+        Value: 0
+*************************** 169. row ***************************
+Variable_name: Com_update
+        Value: 0
+*************************** 170. row ***************************
+Variable_name: Com_update_multi
+        Value: 0
+*************************** 171. row ***************************
+Variable_name: Com_xa_commit
+        Value: 0
+*************************** 172. row ***************************
+Variable_name: Com_xa_end
+        Value: 0
+*************************** 173. row ***************************
+Variable_name: Com_xa_prepare
+        Value: 0
+*************************** 174. row ***************************
+Variable_name: Com_xa_recover
+        Value: 0
+*************************** 175. row ***************************
+Variable_name: Com_xa_rollback
+        Value: 0
+*************************** 176. row ***************************
+Variable_name: Com_xa_start
+        Value: 0
+*************************** 177. row ***************************
+Variable_name: Com_stmt_reprepare
+        Value: 0
+*************************** 178. row ***************************
+Variable_name: Connection_errors_accept
+        Value: 0
+*************************** 179. row ***************************
+Variable_name: Connection_errors_internal
+        Value: 0
+*************************** 180. row ***************************
+Variable_name: Connection_errors_max_connections
+        Value: 0
+*************************** 181. row ***************************
+Variable_name: Connection_errors_peer_address
+        Value: 0
+*************************** 182. row ***************************
+Variable_name: Connection_errors_select
+        Value: 0
+*************************** 183. row ***************************
+Variable_name: Connection_errors_tcpwrap
+        Value: 0
+*************************** 184. row ***************************
+Variable_name: Connections
+        Value: 67
+*************************** 185. row ***************************
+Variable_name: Created_tmp_disk_tables
+        Value: 0
+*************************** 186. row ***************************
+Variable_name: Created_tmp_files
+        Value: 5
+*************************** 187. row ***************************
+Variable_name: Created_tmp_tables
+        Value: 2
+*************************** 188. row ***************************
+Variable_name: Current_tls_ca
+        Value: ca.pem
+*************************** 189. row ***************************
+Variable_name: Current_tls_capath
+        Value:
+*************************** 190. row ***************************
+Variable_name: Current_tls_cert
+        Value: server-cert.pem
+*************************** 191. row ***************************
+Variable_name: Current_tls_cipher
+        Value:
+*************************** 192. row ***************************
+Variable_name: Current_tls_ciphersuites
+        Value:
+*************************** 193. row ***************************
+Variable_name: Current_tls_crl
+        Value:
+*************************** 194. row ***************************
+Variable_name: Current_tls_crlpath
+        Value:
+*************************** 195. row ***************************
+Variable_name: Current_tls_key
+        Value: server-key.pem
+*************************** 196. row ***************************
+Variable_name: Current_tls_version
+        Value: TLSv1,TLSv1.1,TLSv1.2
+*************************** 197. row ***************************
+Variable_name: Delayed_errors
+        Value: 0
+*************************** 198. row ***************************
+Variable_name: Delayed_insert_threads
+        Value: 0
+*************************** 199. row ***************************
+Variable_name: Delayed_writes
+        Value: 0
+*************************** 200. row ***************************
+Variable_name: Flush_commands
+        Value: 3
+*************************** 201. row ***************************
+Variable_name: Handler_commit
+        Value: 552
+*************************** 202. row ***************************
+Variable_name: Handler_delete
+        Value: 0
+*************************** 203. row ***************************
+Variable_name: Handler_discover
+        Value: 0
+*************************** 204. row ***************************
+Variable_name: Handler_external_lock
+        Value: 5903
+*************************** 205. row ***************************
+Variable_name: Handler_mrr_init
+        Value: 0
+*************************** 206. row ***************************
+Variable_name: Handler_prepare
+        Value: 8
+*************************** 207. row ***************************
+Variable_name: Handler_read_first
+        Value: 34
+*************************** 208. row ***************************
+Variable_name: Handler_read_key
+        Value: 1635
+*************************** 209. row ***************************
+Variable_name: Handler_read_last
+        Value: 0
+*************************** 210. row ***************************
+Variable_name: Handler_read_next
+        Value: 3891
+*************************** 211. row ***************************
+Variable_name: Handler_read_prev
+        Value: 0
+*************************** 212. row ***************************
+Variable_name: Handler_read_rnd
+        Value: 0
+*************************** 213. row ***************************
+Variable_name: Handler_read_rnd_next
+        Value: 1011
+*************************** 214. row ***************************
+Variable_name: Handler_rollback
+        Value: 0
+*************************** 215. row ***************************
+Variable_name: Handler_savepoint
+        Value: 0
+*************************** 216. row ***************************
+Variable_name: Handler_savepoint_rollback
+        Value: 0
+*************************** 217. row ***************************
+Variable_name: Handler_update
+        Value: 316
+*************************** 218. row ***************************
+Variable_name: Handler_write
+        Value: 467
+*************************** 219. row ***************************
+Variable_name: Innodb_buffer_pool_dump_status
+        Value: Dumping of buffer pool not started
+*************************** 220. row ***************************
+Variable_name: Innodb_buffer_pool_load_status
+        Value: Buffer pool(s) load completed at 200722  7:53:18
+*************************** 221. row ***************************
+Variable_name: Innodb_buffer_pool_resize_status
+        Value:
+*************************** 222. row ***************************
+Variable_name: Innodb_buffer_pool_pages_data
+        Value: 962
+*************************** 223. row ***************************
+Variable_name: Innodb_buffer_pool_bytes_data
+        Value: 15761408
+*************************** 224. row ***************************
+Variable_name: Innodb_buffer_pool_pages_dirty
+        Value: 0
+*************************** 225. row ***************************
+Variable_name: Innodb_buffer_pool_bytes_dirty
+        Value: 0
+*************************** 226. row ***************************
+Variable_name: Innodb_buffer_pool_pages_flushed
+        Value: 170
+*************************** 227. row ***************************
+Variable_name: Innodb_buffer_pool_pages_free
+        Value: 7226
+*************************** 228. row ***************************
+Variable_name: Innodb_buffer_pool_pages_misc
+        Value: 4
+*************************** 229. row ***************************
+Variable_name: Innodb_buffer_pool_pages_total
+        Value: 8192
+*************************** 230. row ***************************
+Variable_name: Innodb_buffer_pool_read_ahead_rnd
+        Value: 0
+*************************** 231. row ***************************
+Variable_name: Innodb_buffer_pool_read_ahead
+        Value: 0
+*************************** 232. row ***************************
+Variable_name: Innodb_buffer_pool_read_ahead_evicted
+        Value: 0
+*************************** 233. row ***************************
+Variable_name: Innodb_buffer_pool_read_requests
+        Value: 14452
+*************************** 234. row ***************************
+Variable_name: Innodb_buffer_pool_reads
+        Value: 818
+*************************** 235. row ***************************
+Variable_name: Innodb_buffer_pool_wait_free
+        Value: 0
+*************************** 236. row ***************************
+Variable_name: Innodb_buffer_pool_write_requests
+        Value: 1696
+*************************** 237. row ***************************
+Variable_name: Innodb_data_fsyncs
+        Value: 76
+*************************** 238. row ***************************
+Variable_name: Innodb_data_pending_fsyncs
+        Value: 0
+*************************** 239. row ***************************
+Variable_name: Innodb_data_pending_reads
+        Value: 0
+*************************** 240. row ***************************
+Variable_name: Innodb_data_pending_writes
+        Value: 0
+*************************** 241. row ***************************
+Variable_name: Innodb_data_read
+        Value: 13472768
+*************************** 242. row ***************************
+Variable_name: Innodb_data_reads
+        Value: 840
+*************************** 243. row ***************************
+Variable_name: Innodb_data_writes
+        Value: 252
+*************************** 244. row ***************************
+Variable_name: Innodb_data_written
+        Value: 3002368
+*************************** 245. row ***************************
+Variable_name: Innodb_dblwr_pages_written
+        Value: 39
+*************************** 246. row ***************************
+Variable_name: Innodb_dblwr_writes
+        Value: 10
+*************************** 247. row ***************************
+Variable_name: Innodb_log_waits
+        Value: 0
+*************************** 248. row ***************************
+Variable_name: Innodb_log_write_requests
+        Value: 664
+*************************** 249. row ***************************
+Variable_name: Innodb_log_writes
+        Value: 26
+*************************** 250. row ***************************
+Variable_name: Innodb_os_log_fsyncs
+        Value: 25
+*************************** 251. row ***************************
+Variable_name: Innodb_os_log_pending_fsyncs
+        Value: 0
+*************************** 252. row ***************************
+Variable_name: Innodb_os_log_pending_writes
+        Value: 0
+*************************** 253. row ***************************
+Variable_name: Innodb_os_log_written
+        Value: 38912
+*************************** 254. row ***************************
+Variable_name: Innodb_page_size
+        Value: 16384
+*************************** 255. row ***************************
+Variable_name: Innodb_pages_created
+        Value: 145
+*************************** 256. row ***************************
+Variable_name: Innodb_pages_read
+        Value: 817
+*************************** 257. row ***************************
+Variable_name: Innodb_pages_written
+        Value: 180
+*************************** 258. row ***************************
+Variable_name: Innodb_redo_log_enabled
+        Value: ON
+*************************** 259. row ***************************
+Variable_name: Innodb_row_lock_current_waits
+        Value: 0
+*************************** 260. row ***************************
+Variable_name: Innodb_row_lock_time
+        Value: 0
+*************************** 261. row ***************************
+Variable_name: Innodb_row_lock_time_avg
+        Value: 0
+*************************** 262. row ***************************
+Variable_name: Innodb_row_lock_time_max
+        Value: 0
+*************************** 263. row ***************************
+Variable_name: Innodb_row_lock_waits
+        Value: 0
+*************************** 264. row ***************************
+Variable_name: Innodb_rows_deleted
+        Value: 0
+*************************** 265. row ***************************
+Variable_name: Innodb_rows_inserted
+        Value: 0
+*************************** 266. row ***************************
+Variable_name: Innodb_rows_read
+        Value: 0
+*************************** 267. row ***************************
+Variable_name: Innodb_rows_updated
+        Value: 0
+*************************** 268. row ***************************
+Variable_name: Innodb_system_rows_deleted
+        Value: 0
+*************************** 269. row ***************************
+Variable_name: Innodb_system_rows_inserted
+        Value: 2
+*************************** 270. row ***************************
+Variable_name: Innodb_system_rows_read
+        Value: 4510
+*************************** 271. row ***************************
+Variable_name: Innodb_system_rows_updated
+        Value: 316
+*************************** 272. row ***************************
+Variable_name: Innodb_sampled_pages_read
+        Value: 0
+*************************** 273. row ***************************
+Variable_name: Innodb_sampled_pages_skipped
+        Value: 0
+*************************** 274. row ***************************
+Variable_name: Innodb_num_open_files
+        Value: 17
+*************************** 275. row ***************************
+Variable_name: Innodb_truncated_status_writes
+        Value: 0
+*************************** 276. row ***************************
+Variable_name: Innodb_undo_tablespaces_total
+        Value: 2
+*************************** 277. row ***************************
+Variable_name: Innodb_undo_tablespaces_implicit
+        Value: 2
+*************************** 278. row ***************************
+Variable_name: Innodb_undo_tablespaces_explicit
+        Value: 0
+*************************** 279. row ***************************
+Variable_name: Innodb_undo_tablespaces_active
+        Value: 2
+*************************** 280. row ***************************
+Variable_name: Key_blocks_not_flushed
+        Value: 0
+*************************** 281. row ***************************
+Variable_name: Key_blocks_unused
+        Value: 6698
+*************************** 282. row ***************************
+Variable_name: Key_blocks_used
+        Value: 0
+*************************** 283. row ***************************
+Variable_name: Key_read_requests
+        Value: 0
+*************************** 284. row ***************************
+Variable_name: Key_reads
+        Value: 0
+*************************** 285. row ***************************
+Variable_name: Key_write_requests
+        Value: 0
+*************************** 286. row ***************************
+Variable_name: Key_writes
+        Value: 0
+*************************** 287. row ***************************
+Variable_name: Locked_connects
+        Value: 0
+*************************** 288. row ***************************
+Variable_name: Max_execution_time_exceeded
+        Value: 0
+*************************** 289. row ***************************
+Variable_name: Max_execution_time_set
+        Value: 0
+*************************** 290. row ***************************
+Variable_name: Max_execution_time_set_failed
+        Value: 0
+*************************** 291. row ***************************
+Variable_name: Max_used_connections
+        Value: 1
+*************************** 292. row ***************************
+Variable_name: Max_used_connections_time
+        Value: 2020-07-22 07:53:24
+*************************** 293. row ***************************
+Variable_name: Mysqlx_aborted_clients
+        Value: 0
+*************************** 294. row ***************************
+Variable_name: Mysqlx_address
+        Value: ::
+*************************** 295. row ***************************
+Variable_name: Mysqlx_bytes_received
+        Value: 0
+*************************** 296. row ***************************
+Variable_name: Mysqlx_bytes_received_compressed_payload
+        Value: 0
+*************************** 297. row ***************************
+Variable_name: Mysqlx_bytes_received_uncompressed_frame
+        Value: 0
+*************************** 298. row ***************************
+Variable_name: Mysqlx_bytes_sent
+        Value: 0
+*************************** 299. row ***************************
+Variable_name: Mysqlx_bytes_sent_compressed_payload
+        Value: 0
+*************************** 300. row ***************************
+Variable_name: Mysqlx_bytes_sent_uncompressed_frame
+        Value: 0
+*************************** 301. row ***************************
+Variable_name: Mysqlx_compression_algorithm
+        Value:
+*************************** 302. row ***************************
+Variable_name: Mysqlx_compression_level
+        Value:
+*************************** 303. row ***************************
+Variable_name: Mysqlx_connection_accept_errors
+        Value: 0
+*************************** 304. row ***************************
+Variable_name: Mysqlx_connection_errors
+        Value: 0
+*************************** 305. row ***************************
+Variable_name: Mysqlx_connections_accepted
+        Value: 0
+*************************** 306. row ***************************
+Variable_name: Mysqlx_connections_closed
+        Value: 0
+*************************** 307. row ***************************
+Variable_name: Mysqlx_connections_rejected
+        Value: 0
+*************************** 308. row ***************************
+Variable_name: Mysqlx_crud_create_view
+        Value: 0
+*************************** 309. row ***************************
+Variable_name: Mysqlx_crud_delete
+        Value: 0
+*************************** 310. row ***************************
+Variable_name: Mysqlx_crud_drop_view
+        Value: 0
+*************************** 311. row ***************************
+Variable_name: Mysqlx_crud_find
+        Value: 0
+*************************** 312. row ***************************
+Variable_name: Mysqlx_crud_insert
+        Value: 0
+*************************** 313. row ***************************
+Variable_name: Mysqlx_crud_modify_view
+        Value: 0
+*************************** 314. row ***************************
+Variable_name: Mysqlx_crud_update
+        Value: 0
+*************************** 315. row ***************************
+Variable_name: Mysqlx_cursor_close
+        Value: 0
+*************************** 316. row ***************************
+Variable_name: Mysqlx_cursor_fetch
+        Value: 0
+*************************** 317. row ***************************
+Variable_name: Mysqlx_cursor_open
+        Value: 0
+*************************** 318. row ***************************
+Variable_name: Mysqlx_errors_sent
+        Value: 0
+*************************** 319. row ***************************
+Variable_name: Mysqlx_errors_unknown_message_type
+        Value: 0
+*************************** 320. row ***************************
+Variable_name: Mysqlx_expect_close
+        Value: 0
+*************************** 321. row ***************************
+Variable_name: Mysqlx_expect_open
+        Value: 0
+*************************** 322. row ***************************
+Variable_name: Mysqlx_init_error
+        Value: 0
+*************************** 323. row ***************************
+Variable_name: Mysqlx_messages_sent
+        Value: 0
+*************************** 324. row ***************************
+Variable_name: Mysqlx_notice_global_sent
+        Value: 0
+*************************** 325. row ***************************
+Variable_name: Mysqlx_notice_other_sent
+        Value: 0
+*************************** 326. row ***************************
+Variable_name: Mysqlx_notice_warning_sent
+        Value: 0
+*************************** 327. row ***************************
+Variable_name: Mysqlx_notified_by_group_replication
+        Value: 0
+*************************** 328. row ***************************
+Variable_name: Mysqlx_port
+        Value: 33060
+*************************** 329. row ***************************
+Variable_name: Mysqlx_prep_deallocate
+        Value: 0
+*************************** 330. row ***************************
+Variable_name: Mysqlx_prep_execute
+        Value: 0
+*************************** 331. row ***************************
+Variable_name: Mysqlx_prep_prepare
+        Value: 0
+*************************** 332. row ***************************
+Variable_name: Mysqlx_rows_sent
+        Value: 0
+*************************** 333. row ***************************
+Variable_name: Mysqlx_sessions
+        Value: 0
+*************************** 334. row ***************************
+Variable_name: Mysqlx_sessions_accepted
+        Value: 0
+*************************** 335. row ***************************
+Variable_name: Mysqlx_sessions_closed
+        Value: 0
+*************************** 336. row ***************************
+Variable_name: Mysqlx_sessions_fatal_error
+        Value: 0
+*************************** 337. row ***************************
+Variable_name: Mysqlx_sessions_killed
+        Value: 0
+*************************** 338. row ***************************
+Variable_name: Mysqlx_sessions_rejected
+        Value: 0
+*************************** 339. row ***************************
+Variable_name: Mysqlx_socket
+        Value: /var/run/mysqld/mysqlx.sock
+*************************** 340. row ***************************
+Variable_name: Mysqlx_ssl_accepts
+        Value: 0
+*************************** 341. row ***************************
+Variable_name: Mysqlx_ssl_active
+        Value:
+*************************** 342. row ***************************
+Variable_name: Mysqlx_ssl_cipher
+        Value:
+*************************** 343. row ***************************
+Variable_name: Mysqlx_ssl_cipher_list
+        Value:
+*************************** 344. row ***************************
+Variable_name: Mysqlx_ssl_ctx_verify_depth
+        Value: 18446744073709551615
+*************************** 345. row ***************************
+Variable_name: Mysqlx_ssl_ctx_verify_mode
+        Value: 5
+*************************** 346. row ***************************
+Variable_name: Mysqlx_ssl_finished_accepts
+        Value: 0
+*************************** 347. row ***************************
+Variable_name: Mysqlx_ssl_server_not_after
+        Value: Jul 20 07:53:00 2030 GMT
+*************************** 348. row ***************************
+Variable_name: Mysqlx_ssl_server_not_before
+        Value: Jul 22 07:53:00 2020 GMT
+*************************** 349. row ***************************
+Variable_name: Mysqlx_ssl_verify_depth
+        Value:
+*************************** 350. row ***************************
+Variable_name: Mysqlx_ssl_verify_mode
+        Value:
+*************************** 351. row ***************************
+Variable_name: Mysqlx_ssl_version
+        Value:
+*************************** 352. row ***************************
+Variable_name: Mysqlx_stmt_create_collection
+        Value: 0
+*************************** 353. row ***************************
+Variable_name: Mysqlx_stmt_create_collection_index
+        Value: 0
+*************************** 354. row ***************************
+Variable_name: Mysqlx_stmt_disable_notices
+        Value: 0
+*************************** 355. row ***************************
+Variable_name: Mysqlx_stmt_drop_collection
+        Value: 0
+*************************** 356. row ***************************
+Variable_name: Mysqlx_stmt_drop_collection_index
+        Value: 0
+*************************** 357. row ***************************
+Variable_name: Mysqlx_stmt_enable_notices
+        Value: 0
+*************************** 358. row ***************************
+Variable_name: Mysqlx_stmt_ensure_collection
+        Value: 0
+*************************** 359. row ***************************
+Variable_name: Mysqlx_stmt_execute_mysqlx
+        Value: 0
+*************************** 360. row ***************************
+Variable_name: Mysqlx_stmt_execute_sql
+        Value: 0
+*************************** 361. row ***************************
+Variable_name: Mysqlx_stmt_execute_xplugin
+        Value: 0
+*************************** 362. row ***************************
+Variable_name: Mysqlx_stmt_get_collection_options
+        Value: 0
+*************************** 363. row ***************************
+Variable_name: Mysqlx_stmt_kill_client
+        Value: 0
+*************************** 364. row ***************************
+Variable_name: Mysqlx_stmt_list_clients
+        Value: 0
+*************************** 365. row ***************************
+Variable_name: Mysqlx_stmt_list_notices
+        Value: 0
+*************************** 366. row ***************************
+Variable_name: Mysqlx_stmt_list_objects
+        Value: 0
+*************************** 367. row ***************************
+Variable_name: Mysqlx_stmt_modify_collection_options
+        Value: 0
+*************************** 368. row ***************************
+Variable_name: Mysqlx_stmt_ping
+        Value: 0
+*************************** 369. row ***************************
+Variable_name: Mysqlx_worker_threads
+        Value: 2
+*************************** 370. row ***************************
+Variable_name: Mysqlx_worker_threads_active
+        Value: 0
+*************************** 371. row ***************************
+Variable_name: Not_flushed_delayed_rows
+        Value: 0
+*************************** 372. row ***************************
+Variable_name: Ongoing_anonymous_transaction_count
+        Value: 0
+*************************** 373. row ***************************
+Variable_name: Open_files
+        Value: 2
+*************************** 374. row ***************************
+Variable_name: Open_streams
+        Value: 0
+*************************** 375. row ***************************
+Variable_name: Open_table_definitions
+        Value: 42
+*************************** 376. row ***************************
+Variable_name: Open_tables
+        Value: 64
+*************************** 377. row ***************************
+Variable_name: Opened_files
+        Value: 2
+*************************** 378. row ***************************
+Variable_name: Opened_table_definitions
+        Value: 69
+*************************** 379. row ***************************
+Variable_name: Opened_tables
+        Value: 143
+*************************** 380. row ***************************
+Variable_name: Performance_schema_accounts_lost
+        Value: 0
+*************************** 381. row ***************************
+Variable_name: Performance_schema_cond_classes_lost
+        Value: 0
+*************************** 382. row ***************************
+Variable_name: Performance_schema_cond_instances_lost
+        Value: 0
+*************************** 383. row ***************************
+Variable_name: Performance_schema_digest_lost
+        Value: 0
+*************************** 384. row ***************************
+Variable_name: Performance_schema_file_classes_lost
+        Value: 0
+*************************** 385. row ***************************
+Variable_name: Performance_schema_file_handles_lost
+        Value: 0
+*************************** 386. row ***************************
+Variable_name: Performance_schema_file_instances_lost
+        Value: 0
+*************************** 387. row ***************************
+Variable_name: Performance_schema_hosts_lost
+        Value: 0
+*************************** 388. row ***************************
+Variable_name: Performance_schema_index_stat_lost
+        Value: 0
+*************************** 389. row ***************************
+Variable_name: Performance_schema_locker_lost
+        Value: 0
+*************************** 390. row ***************************
+Variable_name: Performance_schema_memory_classes_lost
+        Value: 0
+*************************** 391. row ***************************
+Variable_name: Performance_schema_metadata_lock_lost
+        Value: 0
+*************************** 392. row ***************************
+Variable_name: Performance_schema_mutex_classes_lost
+        Value: 0
+*************************** 393. row ***************************
+Variable_name: Performance_schema_mutex_instances_lost
+        Value: 0
+*************************** 394. row ***************************
+Variable_name: Performance_schema_nested_statement_lost
+        Value: 0
+*************************** 395. row ***************************
+Variable_name: Performance_schema_prepared_statements_lost
+        Value: 0
+*************************** 396. row ***************************
+Variable_name: Performance_schema_program_lost
+        Value: 0
+*************************** 397. row ***************************
+Variable_name: Performance_schema_rwlock_classes_lost
+        Value: 0
+*************************** 398. row ***************************
+Variable_name: Performance_schema_rwlock_instances_lost
+        Value: 0
+*************************** 399. row ***************************
+Variable_name: Performance_schema_session_connect_attrs_longest_seen
+        Value: 113
+*************************** 400. row ***************************
+Variable_name: Performance_schema_session_connect_attrs_lost
+        Value: 0
+*************************** 401. row ***************************
+Variable_name: Performance_schema_socket_classes_lost
+        Value: 0
+*************************** 402. row ***************************
+Variable_name: Performance_schema_socket_instances_lost
+        Value: 0
+*************************** 403. row ***************************
+Variable_name: Performance_schema_stage_classes_lost
+        Value: 0
+*************************** 404. row ***************************
+Variable_name: Performance_schema_statement_classes_lost
+        Value: 0
+*************************** 405. row ***************************
+Variable_name: Performance_schema_table_handles_lost
+        Value: 0
+*************************** 406. row ***************************
+Variable_name: Performance_schema_table_instances_lost
+        Value: 0
+*************************** 407. row ***************************
+Variable_name: Performance_schema_table_lock_stat_lost
+        Value: 0
+*************************** 408. row ***************************
+Variable_name: Performance_schema_thread_classes_lost
+        Value: 0
+*************************** 409. row ***************************
+Variable_name: Performance_schema_thread_instances_lost
+        Value: 0
+*************************** 410. row ***************************
+Variable_name: Performance_schema_users_lost
+        Value: 0
+*************************** 411. row ***************************
+Variable_name: Prepared_stmt_count
+        Value: 0
+*************************** 412. row ***************************
+Variable_name: Queries
+        Value: 125
+*************************** 413. row ***************************
+Variable_name: Questions
+        Value: 67
+*************************** 414. row ***************************
+Variable_name: Rsa_public_key
+        Value: -----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudIiSEB85xcbOZrJWnhH
+N4u9maPZsiZtCn1BYHJUKk5nldm6e0Kjun5G5wUMP4dytHUjdsltKj+HE5dUoBYQ
+ye4ZUktv7NVXhXL5sALYl7XMel65/eVUWHiv91a9Hi7wa6kzmaxVdSvgzrgcfCSk
+O0qgJ8g7ekB32c44WPNjk55v9ivWnMg/y89HXHhBpWA7Zliaq0CPUsjKbgIAgYEh
+xxNqyiN9LCC+Z2jNVYYnl45jJV3e8P368ZZ7+FJ2Z1uST9o0D45qCXWv7qSROGnC
+P9IJpVbT1hpVDTATY4N60LCCucTrkE2D7aSoModkzefJumBBnasnDvnIJqoAQA4D
+qwIDAQAB
+-----END PUBLIC KEY-----
+
+*************************** 415. row ***************************
+Variable_name: Secondary_engine_execution_count
+        Value: 0
+*************************** 416. row ***************************
+Variable_name: Select_full_join
+        Value: 0
+*************************** 417. row ***************************
+Variable_name: Select_full_range_join
+        Value: 0
+*************************** 418. row ***************************
+Variable_name: Select_range
+        Value: 0
+*************************** 419. row ***************************
+Variable_name: Select_range_check
+        Value: 0
+*************************** 420. row ***************************
+Variable_name: Select_scan
+        Value: 4
+*************************** 421. row ***************************
+Variable_name: Slave_open_temp_tables
+        Value: 0
+*************************** 422. row ***************************
+Variable_name: Slow_launch_threads
+        Value: 0
+*************************** 423. row ***************************
+Variable_name: Slow_queries
+        Value: 0
+*************************** 424. row ***************************
+Variable_name: Sort_merge_passes
+        Value: 0
+*************************** 425. row ***************************
+Variable_name: Sort_range
+        Value: 0
+*************************** 426. row ***************************
+Variable_name: Sort_rows
+        Value: 0
+*************************** 427. row ***************************
+Variable_name: Sort_scan
+        Value: 0
+*************************** 428. row ***************************
+Variable_name: Ssl_accept_renegotiates
+        Value: 0
+*************************** 429. row ***************************
+Variable_name: Ssl_accepts
+        Value: 0
+*************************** 430. row ***************************
+Variable_name: Ssl_callback_cache_hits
+        Value: 0
+*************************** 431. row ***************************
+Variable_name: Ssl_cipher
+        Value:
+*************************** 432. row ***************************
+Variable_name: Ssl_cipher_list
+        Value:
+*************************** 433. row ***************************
+Variable_name: Ssl_client_connects
+        Value: 0
+*************************** 434. row ***************************
+Variable_name: Ssl_connect_renegotiates
+        Value: 0
+*************************** 435. row ***************************
+Variable_name: Ssl_ctx_verify_depth
+        Value: 18446744073709551615
+*************************** 436. row ***************************
+Variable_name: Ssl_ctx_verify_mode
+        Value: 5
+*************************** 437. row ***************************
+Variable_name: Ssl_default_timeout
+        Value: 0
+*************************** 438. row ***************************
+Variable_name: Ssl_finished_accepts
+        Value: 0
+*************************** 439. row ***************************
+Variable_name: Ssl_finished_connects
+        Value: 0
+*************************** 440. row ***************************
+Variable_name: Ssl_server_not_after
+        Value: Jul 20 07:53:00 2030 GMT
+*************************** 441. row ***************************
+Variable_name: Ssl_server_not_before
+        Value: Jul 22 07:53:00 2020 GMT
+*************************** 442. row ***************************
+Variable_name: Ssl_session_cache_hits
+        Value: 0
+*************************** 443. row ***************************
+Variable_name: Ssl_session_cache_misses
+        Value: 0
+*************************** 444. row ***************************
+Variable_name: Ssl_session_cache_mode
+        Value: SERVER
+*************************** 445. row ***************************
+Variable_name: Ssl_session_cache_overflows
+        Value: 0
+*************************** 446. row ***************************
+Variable_name: Ssl_session_cache_size
+        Value: 128
+*************************** 447. row ***************************
+Variable_name: Ssl_session_cache_timeouts
+        Value: 0
+*************************** 448. row ***************************
+Variable_name: Ssl_sessions_reused
+        Value: 0
+*************************** 449. row ***************************
+Variable_name: Ssl_used_session_cache_entries
+        Value: 0
+*************************** 450. row ***************************
+Variable_name: Ssl_verify_depth
+        Value: 0
+*************************** 451. row ***************************
+Variable_name: Ssl_verify_mode
+        Value: 0
+*************************** 452. row ***************************
+Variable_name: Ssl_version
+        Value:
+*************************** 453. row ***************************
+Variable_name: Table_locks_immediate
+        Value: 2
+*************************** 454. row ***************************
+Variable_name: Table_locks_waited
+        Value: 0
+*************************** 455. row ***************************
+Variable_name: Table_open_cache_hits
+        Value: 2809
+*************************** 456. row ***************************
+Variable_name: Table_open_cache_misses
+        Value: 143
+*************************** 457. row ***************************
+Variable_name: Table_open_cache_overflows
+        Value: 0
+*************************** 458. row ***************************
+Variable_name: Tc_log_max_pages_used
+        Value: 0
+*************************** 459. row ***************************
+Variable_name: Tc_log_page_size
+        Value: 0
+*************************** 460. row ***************************
+Variable_name: Tc_log_page_waits
+        Value: 0
+*************************** 461. row ***************************
+Variable_name: Threads_cached
+        Value: 0
+*************************** 462. row ***************************
+Variable_name: Threads_connected
+        Value: 1
+*************************** 463. row ***************************
+Variable_name: Threads_created
+        Value: 1
+*************************** 464. row ***************************
+Variable_name: Threads_running
+        Value: 2
+*************************** 465. row ***************************
+Variable_name: Uptime
+        Value: 1699
+*************************** 466. row ***************************
+Variable_name: Uptime_since_flush_status
+        Value: 1699
