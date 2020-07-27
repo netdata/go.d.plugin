@@ -35,6 +35,7 @@ const (
 	prioCache
 	prioCachePercentage
 	prioCachePrefetch
+	prioCacheExpired
 	prioZeroTTL
 	prioCacheCount
 
@@ -107,6 +108,7 @@ func convertTotalChartToThread(chart *Chart, thread string, priority int) {
 }
 
 // Common stats charts
+// see https://nlnetlabs.nl/documentation/unbound/unbound-control for the stats provided by unbound-control
 var (
 	queriesChart = Chart{
 		ID:       "queries",
@@ -180,6 +182,17 @@ var (
 		Priority: prioCachePrefetch,
 		Dims: Dims{
 			{ID: "total.num.prefetch", Name: "prefetches"},
+		},
+	}
+	expiredChart = Chart{
+		ID:       "cache_expired",
+		Title:    "Cache Expiries",
+		Units:    "expiries",
+		Fam:      "cache",
+		Ctx:      "unbound.expired",
+		Priority: prioCacheExpired,
+		Dims: Dims{
+			{ID: "total.num.expired", Name: "expiries"},
 		},
 	}
 	zeroTTLChart = Chart{
