@@ -39,7 +39,7 @@ func anyChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *module
 		ID:    id,
 		Title: chartTitle(pm, meta),
 		Units: units,
-		Fam:   pm.Name(),
+		Fam:   chartFamily(pm),
 		Ctx:   "prometheus." + pm.Name(),
 		Type:  module.Line,
 	}
@@ -50,7 +50,7 @@ func summaryChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *mo
 		ID:    id,
 		Title: chartTitle(pm, meta),
 		Units: "observations",
-		Fam:   pm.Name(),
+		Fam:   chartFamily(pm),
 		Ctx:   "prometheus." + pm.Name(),
 		Type:  module.Stacked,
 	}
@@ -61,7 +61,7 @@ func summaryPercentChart(id string, pm prometheus.Metric, meta prometheus.Metada
 		ID:    id,
 		Title: chartTitle(pm, meta),
 		Units: "%",
-		Fam:   pm.Name(),
+		Fam:   chartFamily(pm),
 		Ctx:   "prometheus." + pm.Name() + "_percentage",
 		Type:  module.Stacked,
 	}
@@ -81,6 +81,25 @@ func chartTitle(pm prometheus.Metric, meta prometheus.Metadata) string {
 		return strings.Replace(help, "'", "\"", -1)
 	}
 	return fmt.Sprintf("Metric \"%s\"", pm.Name())
+}
+
+func chartFamily(pm prometheus.Metric) (fam string) {
+	if parts := strings.SplitN(pm.Name(), "_", 3); len(parts) < 3 {
+		fam = pm.Name()
+	} else {
+		fam = parts[0] + "_" + parts[1]
+	}
+
+	// remove number suffix if any
+	// load1, load5, load15 => load
+	i := len(fam) - 1
+	for i >= 0 && fam[i] >= '0' && fam[i] <= '9' {
+		i--
+	}
+	if i > 0 {
+		return fam[:i+1]
+	}
+	return fam
 }
 
 func anyDimension(id string, pm prometheus.Metric, meta prometheus.Metadata) *module.Dim {
