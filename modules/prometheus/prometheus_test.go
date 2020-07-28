@@ -26,10 +26,10 @@ func TestPrometheus_Init(t *testing.T) {
 		"non empty URL": {
 			config: Config{HTTP: web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}}},
 		},
-		//"default": {
-		//	config:   New().Config,
-		//	wantFail: true,
-		//},
+		"default": {
+			config:   New().Config,
+			wantFail: true,
+		},
 		"nonexistent TLS CA": {
 			config: Config{HTTP: web.HTTP{
 				Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"},
