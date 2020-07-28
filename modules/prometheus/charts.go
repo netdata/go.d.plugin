@@ -35,13 +35,17 @@ func anyChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *module
 	if isIncremental(pm, meta) && !isIncrementalUnitsException(units) {
 		units += "/s"
 	}
+	cType := module.Line
+	if strings.HasPrefix(units, "bytes") {
+		cType = module.Area
+	}
 	return &module.Chart{
 		ID:    id,
 		Title: chartTitle(pm, meta),
 		Units: units,
 		Fam:   chartFamily(pm),
 		Ctx:   "prometheus." + pm.Name(),
-		Type:  module.Line,
+		Type:  cType,
 	}
 }
 
