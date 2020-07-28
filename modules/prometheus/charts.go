@@ -32,7 +32,12 @@ var statsCharts = Charts{
 
 func anyChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *module.Chart {
 	units := extractUnits(pm.Name())
-	if isIncremental(pm, meta) {
+	if isIncremental(pm, meta) && !isIncrementalUnitsException(units) {
+		units += "/s"
+	}
+	switch {
+	case units == "seconds", units == "time":
+	case isIncremental(pm, meta):
 		units += "/s"
 	}
 	return &module.Chart{
@@ -43,6 +48,14 @@ func anyChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *module
 		Ctx:   "prometheus." + pm.Name(),
 		Type:  module.Line,
 	}
+}
+
+func isIncrementalUnitsException(units string) bool {
+	switch units {
+	case "seconds", "time":
+		return true
+	}
+	return false
 }
 
 func summaryChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *module.Chart {
@@ -102,7 +115,7 @@ func chartFamily(pm prometheus.Metric) (fam string) {
 	return fam
 }
 
-func anyDimension(id, name string, pm prometheus.Metric, meta prometheus.Metadata) *module.Dim {
+func anyChartDimension(id, name string, pm prometheus.Metric, meta prometheus.Metadata) *module.Dim {
 	algorithm := module.Absolute
 	if isIncremental(pm, meta) {
 		algorithm = module.Incremental

@@ -44,7 +44,7 @@ func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, met
 		if !cache.hasDim(dimID, chartID) {
 			cache.putDim(dimID, chartID)
 			chart := cache.getChart(chartID)
-			dim := anyDimension(dimID, dimName, pm, meta)
+			dim := anyChartDimension(dimID, dimName, pm, meta)
 			if err := chart.AddDim(dim); err != nil {
 				p.Warning(err)
 			}
