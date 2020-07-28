@@ -79,7 +79,7 @@ func newAnySplitSpecialCase(pms prometheus.Metrics) *anySplit {
 
 const (
 	maxChartsPerMetric = 20
-	desiredDim         = 10
+	desiredDim         = 20
 	maxDim             = desiredDim + 10
 )
 
