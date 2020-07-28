@@ -35,11 +35,6 @@ func anyChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *module
 	if isIncremental(pm, meta) && !isIncrementalUnitsException(units) {
 		units += "/s"
 	}
-	switch {
-	case units == "seconds", units == "time":
-	case isIncremental(pm, meta):
-		units += "/s"
-	}
 	return &module.Chart{
 		ID:    id,
 		Title: chartTitle(pm, meta),
