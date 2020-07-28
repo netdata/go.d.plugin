@@ -376,6 +376,13 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 			expectedNumCharts:       3,
 			expectedNumActiveCharts: 2,
 		},
+		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: > max number of charts": {
+			input: [][]string{
+				genMetrics(desiredDim*maxChartsPerMetric + 1),
+			},
+			expectedNumCharts:       0,
+			expectedNumActiveCharts: 0,
+		},
 		"SUMMARY, several time series": {
 			input: [][]string{
 				{

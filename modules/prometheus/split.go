@@ -84,18 +84,18 @@ const (
 )
 
 func newAnySplitGrouped(pms prometheus.Metrics) (*anySplit, error) {
-	if max := maxNumOfCharts(len(pms)); max > maxChartsPerMetric {
-		return nil, fmt.Errorf("to many charts, got %d charts, max %d", max, maxChartsPerMetric)
+	numOfCharts := desiredNumOfCharts(len(pms))
+	if numOfCharts > maxChartsPerMetric {
+		return nil, fmt.Errorf("to many charts, got %d charts, max %d", numOfCharts, maxChartsPerMetric)
 	}
 
-	desired := desiredNumOfCharts(len(pms))
 	s := &anySplit{
 		dimIDFunc:     func(pm prometheus.Metric) string { return joinLabels(pm) },
 		dimNameFunc:   func(pm prometheus.Metric) string { return joinLabelsExcept(pm, "__name__") },
-		doReSplitFunc: func(pms prometheus.Metrics) bool { return maxNumOfCharts(len(pms)) > desired },
+		doReSplitFunc: func(pms prometheus.Metrics) bool { return maxNumOfCharts(len(pms)) > numOfCharts },
 	}
 
-	if desired == 1 {
+	if numOfCharts == 1 {
 		s.chartIDFunc = func(pm prometheus.Metric) string { return pm.Name() }
 	} else {
 		var current uint64
@@ -105,7 +105,7 @@ func newAnySplitGrouped(pms prometheus.Metrics) (*anySplit, error) {
 			if group, ok := cache[id]; ok {
 				return pm.Name() + "_group" + strconv.FormatUint(group, 10)
 			}
-			if current >= desired {
+			if current >= numOfCharts {
 				current = 0
 			}
 			current++
