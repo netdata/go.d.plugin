@@ -102,13 +102,7 @@ func chartFamily(pm prometheus.Metric) (fam string) {
 	return fam
 }
 
-func anyDimension(id string, pm prometheus.Metric, meta prometheus.Metadata) *module.Dim {
-	name := id
-	// name => name
-	// name|value1=value1|value2=value2 => value1=value1|value2=value2
-	if name != pm.Name() && strings.HasPrefix(name, pm.Name()) {
-		name = id[len(pm.Name())+1:]
-	}
+func anyDimension(id, name string, pm prometheus.Metric, meta prometheus.Metadata) *module.Dim {
 	algorithm := module.Absolute
 	if isIncremental(pm, meta) {
 		algorithm = module.Incremental
@@ -121,37 +115,37 @@ func anyDimension(id string, pm prometheus.Metric, meta prometheus.Metadata) *mo
 	}
 }
 
-func summaryChartDimension(id string, pm prometheus.Metric) *module.Dim {
+func summaryChartDimension(id, name string) *module.Dim {
 	return &module.Dim{
 		ID:   id,
-		Name: pm.Labels.Get("quantile"),
+		Name: name,
 		Algo: module.Incremental,
 		Div:  precision,
 	}
 }
 
-func summaryPercentChartDim(id string, pm prometheus.Metric) *module.Dim {
+func summaryPercentChartDim(id, name string) *module.Dim {
 	return &module.Dim{
 		ID:   id,
-		Name: pm.Labels.Get("quantile"),
+		Name: name,
 		Algo: module.PercentOfIncremental,
 		Div:  precision,
 	}
 }
 
-func histogramChartDim(id string, pm prometheus.Metric) *module.Dim {
+func histogramChartDim(id, name string) *module.Dim {
 	return &module.Dim{
 		ID:   id,
-		Name: pm.Labels.Get("le"),
+		Name: name,
 		Algo: module.Incremental,
 		Div:  precision,
 	}
 }
 
-func histogramPercentChartDim(id string, pm prometheus.Metric) *module.Dim {
+func histogramPercentChartDim(id, name string) *module.Dim {
 	return &module.Dim{
 		ID:   id,
-		Name: pm.Labels.Get("le"),
+		Name: name,
 		Algo: module.PercentOfIncremental,
 		Div:  precision,
 	}

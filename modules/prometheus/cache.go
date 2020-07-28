@@ -1,8 +1,6 @@
 package prometheus
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/prometheus"
-
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -10,7 +8,7 @@ import (
 type (
 	metricsCache map[string]*cacheEntry
 	cacheEntry   struct {
-		split         func(metric prometheus.Metric) string
+		split         split
 		desiredCharts uint64
 		charts        chartsCache
 		dims          dimsCache
