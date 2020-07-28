@@ -30,8 +30,6 @@ func (p *Prometheus) collectSummary(mx map[string]int64, pms prometheus.Metrics,
 		dimID := cache.split.dimID(pm)
 		dimName := cache.split.dimName(pm)
 
-		percChartID := chartID + "_percentage"
-
 		mx[dimID] = int64(pm.Value * precision)
 
 		if !cache.hasChart(chartID) {
@@ -45,23 +43,6 @@ func (p *Prometheus) collectSummary(mx map[string]int64, pms prometheus.Metrics,
 			cache.putDim(dimID, chartID)
 			chart := cache.getChart(chartID)
 			dim := summaryChartDimension(dimID, dimName)
-			if err := chart.AddDim(dim); err != nil {
-				p.Warning(err)
-			}
-			chart.MarkNotCreated()
-		}
-
-		if !cache.hasChart(percChartID) {
-			chart := summaryPercentChart(percChartID, pm, meta)
-			cache.putChart(percChartID, chart)
-			if err := p.Charts().Add(chart); err != nil {
-				p.Warning(err)
-			}
-		}
-		if !cache.hasDim(dimID, percChartID) {
-			cache.putDim(dimID, percChartID)
-			chart := cache.getChart(percChartID)
-			dim := summaryPercentChartDim(dimID, dimName)
 			if err := chart.AddDim(dim); err != nil {
 				p.Warning(err)
 			}

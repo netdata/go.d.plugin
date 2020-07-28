@@ -26,8 +26,6 @@ func (p *Prometheus) collectHistogram(mx map[string]int64, pms prometheus.Metric
 		dimID := cache.split.dimID(pm)
 		dimName := cache.split.dimName(pm)
 
-		percChartID := chartID + "_percentage"
-
 		// {handler="/",le="0.1"} 1
 		// {handler="/",le="0.2"} 2
 		// {handler="/",le="0.4"} 3
@@ -50,23 +48,6 @@ func (p *Prometheus) collectHistogram(mx map[string]int64, pms prometheus.Metric
 			cache.putDim(dimID, chartID)
 			chart := cache.getChart(chartID)
 			dim := histogramChartDim(dimID, dimName)
-			if err := chart.AddDim(dim); err != nil {
-				p.Warning(err)
-			}
-			chart.MarkNotCreated()
-		}
-
-		if !cache.hasChart(percChartID) {
-			chart := histogramPercentChart(percChartID, pm, meta)
-			cache.putChart(percChartID, chart)
-			if err := p.Charts().Add(chart); err != nil {
-				p.Warning(err)
-			}
-		}
-		if !cache.hasDim(dimID, percChartID) {
-			cache.putDim(dimID, percChartID)
-			chart := cache.getChart(percChartID)
-			dim := histogramPercentChartDim(dimID, dimName)
 			if err := chart.AddDim(dim); err != nil {
 				p.Warning(err)
 			}

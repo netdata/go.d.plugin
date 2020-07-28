@@ -205,7 +205,7 @@ func TestPrometheus_Collect(t *testing.T) {
 				"prometheus_target_interval_length_seconds|interval=15s,quantile=0.99": 15000,
 				"series":  7,
 				"metrics": 3,
-				"charts":  int64(4 + len(statsCharts)),
+				"charts":  int64(3 + len(statsCharts)),
 			},
 		},
 		"SUMMARY no meta metrics": {
@@ -228,7 +228,7 @@ func TestPrometheus_Collect(t *testing.T) {
 				"prometheus_target_interval_length_seconds|interval=15s,quantile=0.99": 15000,
 				"series":  7,
 				"metrics": 3,
-				"charts":  int64(4 + len(statsCharts)),
+				"charts":  int64(3 + len(statsCharts)),
 			},
 		},
 		"HISTOGRAM metrics": {
@@ -265,7 +265,7 @@ func TestPrometheus_Collect(t *testing.T) {
 				"prometheus_tsdb_compaction_chunk_range_seconds_sum":                   150091952011000,
 				"series":  13,
 				"metrics": 3,
-				"charts":  int64(4 + len(statsCharts)),
+				"charts":  int64(3 + len(statsCharts)),
 			},
 		},
 		"HISTOGRAM no meta metrics": {
@@ -300,7 +300,7 @@ func TestPrometheus_Collect(t *testing.T) {
 				"prometheus_tsdb_compaction_chunk_range_seconds_sum":                   150091952011000,
 				"series":  13,
 				"metrics": 3,
-				"charts":  int64(4 + len(statsCharts)),
+				"charts":  int64(3 + len(statsCharts)),
 			},
 		},
 	}
@@ -402,8 +402,8 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 					`prometheus_target_interval_length_seconds_count{interval="30s"} 20967`,
 				},
 			},
-			expectedNumCharts:       6,
-			expectedNumActiveCharts: 6,
+			expectedNumCharts:       4,
+			expectedNumActiveCharts: 4,
 		},
 		"HISTOGRAM, several time series": {
 			input: [][]string{
@@ -434,8 +434,8 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 					`prometheus_http_request_duration_seconds_count{handler="/metrics"} 1`,
 				},
 			},
-			expectedNumCharts:       6,
-			expectedNumActiveCharts: 6,
+			expectedNumCharts:       4,
+			expectedNumActiveCharts: 4,
 		},
 	}
 

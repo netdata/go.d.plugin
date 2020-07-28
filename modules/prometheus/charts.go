@@ -68,23 +68,8 @@ func summaryChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *mo
 	}
 }
 
-func summaryPercentChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *module.Chart {
-	return &module.Chart{
-		ID:    id,
-		Title: chartTitle(pm, meta),
-		Units: "%",
-		Fam:   chartFamily(pm),
-		Ctx:   "prometheus." + pm.Name() + "_percentage",
-		Type:  module.Stacked,
-	}
-}
-
 func histogramChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *module.Chart {
 	return summaryChart(id, pm, meta)
-}
-
-func histogramPercentChart(id string, pm prometheus.Metric, meta prometheus.Metadata) *module.Chart {
-	return summaryPercentChart(id, pm, meta)
 }
 
 func chartTitle(pm prometheus.Metric, meta prometheus.Metadata) string {
@@ -136,29 +121,11 @@ func summaryChartDimension(id, name string) *module.Dim {
 	}
 }
 
-func summaryPercentChartDim(id, name string) *module.Dim {
-	return &module.Dim{
-		ID:   id,
-		Name: name,
-		Algo: module.PercentOfIncremental,
-		Div:  precision,
-	}
-}
-
 func histogramChartDim(id, name string) *module.Dim {
 	return &module.Dim{
 		ID:   id,
 		Name: name,
 		Algo: module.Incremental,
-		Div:  precision,
-	}
-}
-
-func histogramPercentChartDim(id, name string) *module.Dim {
-	return &module.Dim{
-		ID:   id,
-		Name: name,
-		Algo: module.PercentOfIncremental,
 		Div:  precision,
 	}
 }
