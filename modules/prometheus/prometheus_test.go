@@ -364,8 +364,8 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 				genMetrics(desiredDim + 1),
 				genMetrics(maxDim*2 + 1),
 			},
-			expectedNumCharts:       6,
-			expectedNumActiveCharts: 4,
+			expectedNumCharts:       5,
+			expectedNumActiveCharts: 3,
 		},
 		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: <= desired, 2nd: == max, 3rd: > max": {
 			input: [][]string{
