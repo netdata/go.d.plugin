@@ -8,10 +8,9 @@ import (
 type (
 	metricsCache map[string]*cacheEntry
 	cacheEntry   struct {
-		split         split
-		desiredCharts uint64
-		charts        chartsCache
-		dims          dimsCache
+		split  split
+		charts chartsCache
+		dims   dimsCache
 	}
 	chartsCache map[string]*module.Chart
 	dimsCache   map[string]map[string]struct{}
