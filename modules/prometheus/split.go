@@ -57,6 +57,9 @@ func newAnySplitSpecialCase(pms prometheus.Metrics) *anySplit {
 	if !strings.Contains(pm.Name(), "_cpu_") {
 		return nil
 	}
+	if !(pm.Labels.Has("mode") || pm.Labels.Has("state")) {
+		return nil
+	}
 
 	if pm.Labels.Has("cpu") {
 		return &anySplit{
