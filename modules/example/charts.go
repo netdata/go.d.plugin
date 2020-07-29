@@ -12,7 +12,10 @@ type (
 var charts = Charts{
 	{
 		ID:    "random",
-		Title: "A Random Number", Units: "random", Fam: "random",
+		Title: "A Random Number",
+		Units: "random",
+		Fam:   "random",
+		Ctx:   "example.random",
 		Dims: Dims{
 			{ID: "random0", Name: "random 0"},
 			{ID: "random1", Name: "random 1"},
