@@ -17,8 +17,8 @@ var charts = Charts{
 		Fam:   "random",
 		Ctx:   "example.random",
 		Dims: Dims{
-			{ID: "random0", Name: "random 0"},
-			{ID: "random1", Name: "random 1"},
+			{ID: "random0", Name: "random0"},
+			{ID: "random1", Name: "random1"},
 		},
 	},
 }
