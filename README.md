@@ -53,6 +53,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [phpfpm](https://github.com/netdata/go.d.plugin/tree/master/modules/phpfpm)               | `PHP-FPM`                  | yes     |
 | [pihole](https://github.com/netdata/go.d.plugin/tree/master/modules/pihole)               | `Pi-hole`                  |         |
 | [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)         | `Any TCP Endpoint`         |         |
+| [prometheus](https://github.com/netdata/go.d.plugin/tree/master/modules/prometheus)       | `Any Prometheus Endpoint`  |         |
 | [pulsar](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)            | `Apache Pulsar`            |         |
 | [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq)           | `RabbitMQ`                 | yes     |
 | [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)             | `Dell EMC ScaleIO`         |         |
@@ -65,7 +66,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [vernemq](https://github.com/netdata/go.d.plugin/tree/master/modules/vernemq)             | `VerneMQ`                  |         | 
 | [vsphere](https://github.com/netdata/go.d.plugin/tree/master/modules/vsphere)             | `VMware vCenter Server`    |         |
 | [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog)              | `Apache/NGINX`             | yes     |
-| [whoisquery](https://github.com/netdata/go.d.plugin/tree/master/modules/whoisquery)              | `Domain Expiry`             | yes     |
+| [whoisquery](https://github.com/netdata/go.d.plugin/tree/master/modules/whoisquery)       | `Domain Expiry`            | yes     |
 | [wmi](https://github.com/netdata/go.d.plugin/tree/master/modules/wmi)                     | `Windows Machines`         |         |
 | [x509check](https://github.com/netdata/go.d.plugin/tree/master/modules/x509check)         | `Digital Certificates`     |         |
 | [zookeeper](https://github.com/netdata/go.d.plugin/tree/master/modules/zookeeper)         | `ZooKeeper`                |         |
