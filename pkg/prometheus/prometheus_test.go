@@ -78,7 +78,7 @@ func TestPrometheusGzip(t *testing.T) {
 
 func TestParse(t *testing.T) {
 	res := Metrics{}
-	err := parse(testdata, &res)
+	err := parse(testdata, &res, Metadata{})
 	assert.NoError(t, err)
 
 	verifyTestData(t, res)

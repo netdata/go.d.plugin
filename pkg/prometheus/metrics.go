@@ -2,8 +2,11 @@ package prometheus
 
 import (
 	"sort"
+	"strings"
+	"unsafe"
 
 	"github.com/prometheus/prometheus/pkg/labels"
+	"github.com/prometheus/prometheus/pkg/textparse"
 )
 
 type (
@@ -12,7 +15,12 @@ type (
 		Labels labels.Labels
 		Value  float64
 	}
+	MetaEntry struct {
+		Help string
+		Type textparse.MetricType
+	}
 
+	Metadata map[string]*MetaEntry
 	// Metrics is a list of Metric
 	Metrics []Metric
 )
@@ -119,4 +127,56 @@ func (m Metrics) Max() float64 {
 		}
 	}
 	return max
+}
+
+func (m Metadata) Help(name string) string {
+	entry, ok := m[name]
+	if !ok {
+		if strings.HasSuffix(name, "_bucket") {
+			return m.Help(name[:len(name)-len("_bucket")])
+		}
+		return ""
+	}
+	return entry.Help
+}
+
+func (m Metadata) Type(name string) textparse.MetricType {
+	entry, ok := m[name]
+	if !ok {
+		if strings.HasSuffix(name, "_bucket") {
+			return m.Type(name[:len(name)-len("_bucket")])
+		}
+		return textparse.MetricTypeUnknown
+	}
+	return entry.Type
+}
+
+func (m Metadata) setHelp(metric, help []byte) {
+	entry, ok := m[unsafeString(metric)]
+	if !ok {
+		entry = &MetaEntry{Type: textparse.MetricTypeUnknown}
+		m[string(metric)] = entry
+	}
+	if entry.Help != unsafeString(help) {
+		entry.Help = string(help)
+	}
+}
+
+func (m Metadata) setType(metric []byte, mType textparse.MetricType) {
+	entry, ok := m[unsafeString(metric)]
+	if !ok {
+		entry = &MetaEntry{Type: textparse.MetricTypeUnknown}
+		m[string(metric)] = entry
+	}
+	entry.Type = mType
+}
+
+func (m Metadata) reset() {
+	for key := range m {
+		delete(m, key)
+	}
+}
+
+func unsafeString(b []byte) string {
+	return *((*string)(unsafe.Pointer(&b)))
 }
