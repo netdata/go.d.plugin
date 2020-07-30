@@ -144,7 +144,12 @@ func extractUnits(metric string) string {
 	case "_total", "_sum", "_count":
 		return extractUnits(metric[:idx])
 	}
-	return metric[idx+1:]
+	switch units := metric[idx+1:]; units {
+	case "hertz":
+		return "Hz"
+	default:
+		return units
+	}
 }
 
 func isIncremental(pm prometheus.Metric, meta prometheus.Metadata) bool {
