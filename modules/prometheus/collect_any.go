@@ -22,11 +22,6 @@ func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, met
 
 	cache := p.cache.get(name)
 
-	if cache.split.doReSplit(pms) {
-		p.cleanupMetric(name)
-		p.collectAny(mx, pms, meta)
-	}
-
 	for _, pm := range pms {
 		chartID := cache.split.chartID(pm)
 		dimID := cache.split.dimID(pm)
@@ -41,8 +36,8 @@ func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, met
 				p.Warning(err)
 			}
 		}
-		if !cache.hasDim(dimID, chartID) {
-			cache.putDim(dimID, chartID)
+		if !cache.hasDim(dimID) {
+			cache.putDim(dimID)
 			chart := cache.getChart(chartID)
 			dim := anyChartDimension(dimID, dimName, pm, meta)
 			if err := chart.AddDim(dim); err != nil {
@@ -50,5 +45,32 @@ func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, met
 			}
 			chart.MarkNotCreated()
 		}
+	}
+
+	var reSplit bool
+	for _, chart := range cache.charts {
+		if len(chart.Dims) > maxDim {
+			reSplit = true
+			break
+		}
+	}
+	if reSplit {
+		p.cleanupAnyMetric(name)
+		p.collectAny(mx, pms, meta)
+	}
+}
+
+func (p *Prometheus) cleanupAnyMetric(name string) {
+	if !p.cache.has(name) {
+		return
+	}
+	defer p.cache.remove(name)
+
+	for _, chart := range p.cache.get(name).charts {
+		for _, dim := range chart.Dims {
+			_ = chart.MarkDimRemove(dim.ID, true)
+		}
+		chart.MarkRemove()
+		chart.MarkNotCreated()
 	}
 }

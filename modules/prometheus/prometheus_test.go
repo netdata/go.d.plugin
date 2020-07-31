@@ -383,6 +383,14 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 			expectedNumCharts:       0,
 			expectedNumActiveCharts: 0,
 		},
+		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: = desired, 2nd: = desired but different set": {
+			input: [][]string{
+				genMetrics(desiredDim),
+				genMetricsStart(desiredDim+1, desiredDim),
+			},
+			expectedNumCharts:       2,
+			expectedNumActiveCharts: 1,
+		},
 		"SUMMARY, several time series": {
 			input: [][]string{
 				{
@@ -466,7 +474,11 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 }
 
 func genMetrics(num int) (metrics []string) {
-	for i := 0; i < num; i++ {
+	return genMetricsStart(0, num)
+}
+
+func genMetricsStart(start, num int) (metrics []string) {
+	for i := start; i < start+num; i++ {
 		line := fmt.Sprintf(`netdata_generated_metric_count{number="%d"} %d`, i, i)
 		metrics = append(metrics, line)
 	}
