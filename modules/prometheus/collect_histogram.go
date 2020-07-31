@@ -17,6 +17,7 @@ func (p *Prometheus) collectHistogram(mx map[string]int64, pms prometheus.Metric
 			dims:   make(dimsCache),
 		})
 	}
+	defer p.cleanupStaleHistogramCharts(name)
 
 	set := make(map[string]float64)
 	cache := p.cache.get(name)
@@ -44,8 +45,8 @@ func (p *Prometheus) collectHistogram(mx map[string]int64, pms prometheus.Metric
 				p.Warning(err)
 			}
 		}
-		if !cache.hasDim(dimID, chartID) {
-			cache.putDim(dimID, chartID)
+		if !cache.hasDim(dimID) {
+			cache.putDim(dimID)
 			chart := cache.getChart(chartID)
 			dim := histogramChartDim(dimID, dimName)
 			if err := chart.AddDim(dim); err != nil {
@@ -53,6 +54,27 @@ func (p *Prometheus) collectHistogram(mx map[string]int64, pms prometheus.Metric
 			}
 			chart.MarkNotCreated()
 		}
+	}
+}
+
+func (p *Prometheus) cleanupStaleHistogramCharts(name string) {
+	if !p.cache.has(name) {
+		return
+	}
+	cache := p.cache.get(name)
+	for _, chart := range cache.charts {
+		if chart.Retries < 10 {
+			continue
+		}
+
+		for _, dim := range chart.Dims {
+			cache.removeDim(dim.ID)
+			_ = chart.MarkDimRemove(dim.ID, true)
+		}
+		cache.removeChart(chart.ID)
+
+		chart.MarkRemove()
+		chart.MarkNotCreated()
 	}
 }
 

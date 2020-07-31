@@ -19,6 +19,8 @@ func (p *Prometheus) collectSummary(mx map[string]int64, pms prometheus.Metrics,
 		})
 	}
 
+	defer p.cleanupStaleSummaryCharts(name)
+
 	cache := p.cache.get(name)
 
 	for _, pm := range pms {
@@ -39,8 +41,8 @@ func (p *Prometheus) collectSummary(mx map[string]int64, pms prometheus.Metrics,
 				p.Warning(err)
 			}
 		}
-		if !cache.hasDim(dimID, chartID) {
-			cache.putDim(dimID, chartID)
+		if !cache.hasDim(dimID) {
+			cache.putDim(dimID)
 			chart := cache.getChart(chartID)
 			dim := summaryChartDimension(dimID, dimName)
 			if err := chart.AddDim(dim); err != nil {
@@ -48,6 +50,27 @@ func (p *Prometheus) collectSummary(mx map[string]int64, pms prometheus.Metrics,
 			}
 			chart.MarkNotCreated()
 		}
+	}
+}
+
+func (p *Prometheus) cleanupStaleSummaryCharts(name string) {
+	if !p.cache.has(name) {
+		return
+	}
+	cache := p.cache.get(name)
+	for _, chart := range cache.charts {
+		if chart.Retries < 10 {
+			continue
+		}
+
+		for _, dim := range chart.Dims {
+			cache.removeDim(dim.ID)
+			_ = chart.MarkDimRemove(dim.ID, true)
+		}
+		cache.removeChart(chart.ID)
+
+		chart.MarkRemove()
+		chart.MarkNotCreated()
 	}
 }
 

@@ -57,21 +57,6 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func (p *Prometheus) cleanupMetric(name string) {
-	if !p.cache.has(name) {
-		return
-	}
-	defer p.cache.remove(name)
-
-	for _, chart := range p.cache.get(name).charts {
-		for _, dim := range chart.Dims {
-			_ = chart.MarkDimRemove(dim.ID, true)
-		}
-		chart.MarkRemove()
-		chart.MarkNotCreated()
-	}
-}
-
 // TODO: should be done by prom pkg
 func buildMetricSet(pms prometheus.Metrics) (names []string, metrics map[string]prometheus.Metrics) {
 	names = make([]string, 0, len(pms))
