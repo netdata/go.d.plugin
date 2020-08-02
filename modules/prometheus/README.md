@@ -1,16 +1,20 @@
 <!--
 title: "Prometheus endpoint monitoring with Netdata"
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/portcheck/README.md
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/prometheus/README.md
 sidebar_label: "Prometheus endpoints"
 -->
 
 # Prometheus endpoint monitoring with Netdata
 
-This module collects metrics from one or more Prometheus endpoints.
+This module collects metrics from one or more [`Prometheus`](https://prometheus.io/) endpoints.
 
 ## Charts
 
-It produces one or more charts per every metric.
+It produces one or more charts for every metric.
+
+Number of charts depends on number of exposed metrics.
+For example, scraping [`node_exporter`](https://github.com/prometheus/node_exporter) produces 800+ metrics (300+ charts).
+
 
 ## Configuration
 
@@ -26,7 +30,7 @@ Needs only `url`. Here is an example for 2 endpoints:
 
 ```yaml
 jobs:
-  - name: local_node_exporter
+  - name: node_exporter_local
     url: http://127.0.0.1:9100/metrics
 
   - name: win10
