@@ -12,34 +12,29 @@ type split interface {
 	chartID(pm prometheus.Metric) string
 	dimID(pm prometheus.Metric) string
 	dimName(pm prometheus.Metric) string
-	doReSplit(pms prometheus.Metrics) bool
 }
 
 type anySplit struct {
-	chartIDFunc   func(pm prometheus.Metric) string
-	dimIDFunc     func(pm prometheus.Metric) string
-	dimNameFunc   func(pm prometheus.Metric) string
-	doReSplitFunc func(pms prometheus.Metrics) bool
+	chartIDFunc func(pm prometheus.Metric) string
+	dimIDFunc   func(pm prometheus.Metric) string
+	dimNameFunc func(pm prometheus.Metric) string
 }
 
-func (s anySplit) chartID(pm prometheus.Metric) string   { return s.chartIDFunc(pm) }
-func (s anySplit) dimID(pm prometheus.Metric) string     { return s.dimIDFunc(pm) }
-func (s anySplit) dimName(pm prometheus.Metric) string   { return s.dimNameFunc(pm) }
-func (s anySplit) doReSplit(pms prometheus.Metrics) bool { return s.doReSplitFunc(pms) }
+func (s anySplit) chartID(pm prometheus.Metric) string { return s.chartIDFunc(pm) }
+func (s anySplit) dimID(pm prometheus.Metric) string   { return s.dimIDFunc(pm) }
+func (s anySplit) dimName(pm prometheus.Metric) string { return s.dimNameFunc(pm) }
 
 type histogramSplit struct{}
 
 func (s histogramSplit) chartID(pm prometheus.Metric) string { return joinLabelsExcept(pm, "le") }
 func (s histogramSplit) dimID(pm prometheus.Metric) string   { return joinLabels(pm) }
 func (s histogramSplit) dimName(pm prometheus.Metric) string { return pm.Labels.Get("le") }
-func (s histogramSplit) doReSplit(_ prometheus.Metrics) bool { return false }
 
 type summarySplit struct{}
 
 func (s summarySplit) chartID(pm prometheus.Metric) string { return joinLabelsExcept(pm, "quantile") }
 func (s summarySplit) dimID(pm prometheus.Metric) string   { return joinLabels(pm) }
 func (s summarySplit) dimName(pm prometheus.Metric) string { return pm.Labels.Get("quantile") }
-func (s summarySplit) doReSplit(_ prometheus.Metrics) bool { return false }
 
 func newAnySplit(pms prometheus.Metrics) (*anySplit, error) {
 	if s := newAnySplitSpecialCase(pms); s != nil {
@@ -63,18 +58,16 @@ func newAnySplitSpecialCase(pms prometheus.Metrics) *anySplit {
 
 	if pm.Labels.Has("cpu") {
 		return &anySplit{
-			chartIDFunc:   func(pm prometheus.Metric) string { return joinLabelsOnly(pm, "__name__", "cpu") },
-			dimIDFunc:     func(pm prometheus.Metric) string { return joinLabels(pm) },
-			dimNameFunc:   func(pm prometheus.Metric) string { return joinLabelsExcept(pm, "__name__", "cpu") },
-			doReSplitFunc: func(pms prometheus.Metrics) bool { return false },
+			chartIDFunc: func(pm prometheus.Metric) string { return joinLabelsOnly(pm, "__name__", "cpu") },
+			dimIDFunc:   func(pm prometheus.Metric) string { return joinLabels(pm) },
+			dimNameFunc: func(pm prometheus.Metric) string { return joinLabelsExcept(pm, "__name__", "cpu") },
 		}
 	}
 	if pm.Labels.Has("core") {
 		return &anySplit{
-			chartIDFunc:   func(pm prometheus.Metric) string { return joinLabelsOnly(pm, "__name__", "core") },
-			dimIDFunc:     func(pm prometheus.Metric) string { return joinLabels(pm) },
-			dimNameFunc:   func(pm prometheus.Metric) string { return joinLabelsExcept(pm, "__name__", "core") },
-			doReSplitFunc: func(pms prometheus.Metrics) bool { return false },
+			chartIDFunc: func(pm prometheus.Metric) string { return joinLabelsOnly(pm, "__name__", "core") },
+			dimIDFunc:   func(pm prometheus.Metric) string { return joinLabels(pm) },
+			dimNameFunc: func(pm prometheus.Metric) string { return joinLabelsExcept(pm, "__name__", "core") },
 		}
 	}
 	return nil
@@ -93,9 +86,8 @@ func newAnySplitGrouped(pms prometheus.Metrics) (*anySplit, error) {
 	}
 
 	s := &anySplit{
-		dimIDFunc:     func(pm prometheus.Metric) string { return joinLabels(pm) },
-		dimNameFunc:   func(pm prometheus.Metric) string { return joinLabelsExcept(pm, "__name__") },
-		doReSplitFunc: func(pms prometheus.Metrics) bool { return maxNumOfCharts(len(pms)) > numOfCharts },
+		dimIDFunc:   func(pm prometheus.Metric) string { return joinLabels(pm) },
+		dimNameFunc: func(pm prometheus.Metric) string { return joinLabelsExcept(pm, "__name__") },
 	}
 
 	if numOfCharts == 1 {
