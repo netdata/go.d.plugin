@@ -174,9 +174,21 @@ loop:
 		comma = true
 		id.WriteString(label.Name)
 		id.WriteString("=")
-		id.WriteString(label.Value)
+		if strings.IndexByte(label.Value, '\\') >= 0 {
+			id.WriteString(decodeLabelValue(label.Value))
+		} else {
+			id.WriteString(label.Value)
+		}
 	}
 	return id.String()
+}
+
+func decodeLabelValue(value string) string {
+	v, err := strconv.Unquote("\"" + value + "\"")
+	if err != nil {
+		return value
+	}
+	return v
 }
 
 func contains(value string, in []string) bool {
