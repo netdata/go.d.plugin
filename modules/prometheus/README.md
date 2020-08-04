@@ -13,7 +13,7 @@ This module collects metrics from one or more [`Prometheus`](https://prometheus.
 It produces one or more charts for every metric.
 
 Number of charts depends on number of exposed metrics.
-For example, scraping [`node_exporter`](https://github.com/prometheus/node_exporter) produces 800+ metrics (300+ charts).
+For example, scraping [`node_exporter`](https://github.com/prometheus/node_exporter) produces 3000+ metrics.
 
 
 ## Configuration
