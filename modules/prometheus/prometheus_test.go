@@ -107,6 +107,21 @@ func TestPrometheus_Collect(t *testing.T) {
 		input             []string
 		expectedCollected map[string]int64
 	}{
+		`GAUGE metrics contains '\x' encoding`: {
+			input: []string{
+				`# HELP node_systemd_service_restart_total Current number of discovered targets.`,
+				`# TYPE node_systemd_service_restart_total gauge`,
+				`node_systemd_service_restart_total{state="systemd-fsck@dev-disk-by\\x2duuid-7D37\\x2dDD70.service"} 0`,
+				`node_systemd_service_restart_total{state="systemd-fsck@dev-disk-by\\x2duuid-eb5d5d19\\x2db0f6\\x2d4607\\x2dbebf\\x2de5bd557619e7.service"} 0`,
+			},
+			expectedCollected: map[string]int64{
+				"node_systemd_service_restart_total|state=systemd-fsck@dev-disk-by-uuid-7D37-DD70.service":                            0,
+				"node_systemd_service_restart_total|state=systemd-fsck@dev-disk-by-uuid-eb5d5d19-b0f6-4607-bebf-e5bd557619e7.service": 0,
+				"series":  2,
+				"metrics": 1,
+				"charts":  int64(1 + len(statsCharts)),
+			},
+		},
 		"GAUGE metrics": {
 			input: []string{
 				`# HELP prometheus_sd_discovered_targets Current number of discovered targets.`,
