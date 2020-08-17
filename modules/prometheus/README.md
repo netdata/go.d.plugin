@@ -7,8 +7,8 @@ sidebar_label: "Prometheus endpoints"
 
 # Prometheus endpoint monitoring with Netdata
 
-The generic Prometheus endpoint collector gathers metrics from one or more [`Prometheus`](https://prometheus.io/)
-endpoints that use the [OpenMetrics exposition format](https://prometheus.io/docs/instrumenting/exposition_formats/).
+The generic Prometheus endpoint collector gathers metrics from [`Prometheus`](https://prometheus.io/) endpoints that use
+the [OpenMetrics exposition format](https://prometheus.io/docs/instrumenting/exposition_formats/).
 
 As of v1.24, Netdata can autodetect more than 600 Prometheus endpoints, including support for Windows 10 via
 `windows_exporter`, and instantly generate new charts with the same high-granularity, per-second frequency as you expect
@@ -16,10 +16,6 @@ from other collectors.
 
 The full list of endpoints is available in the collector's [configuration
 file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
-
-> Netdata's compatibility with Prometheus endpoints was developed as part of our commitment to open standards and
-> interoperability. Learn more about these efforts in our [v1.24 blog
-> post](https://www.netdata.cloud/blog/release-1-24/).
 
 ## Charts
 
@@ -41,7 +37,7 @@ sudo ./edit-config go.d/prometheus.conf
 To add a new endpoint to collect metrics from, or change the URL that Netdata looks for, add or configure the `name` and
 `url` values. Endpoints can be both local or remote as long as they expose their metrics on the provided URL.
 
-Here is an example for two endpoints:
+Here is an example with two endpoints:
 
 ```yaml
 jobs:
@@ -60,9 +56,9 @@ file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.
 To troubleshoot issues with the Prometheus collector, run the `go.d.plugin` orchestrator with the debug option enabled.
 The output should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, which is usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case
-on your system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugins directory,
-switch to the `netdata` user.
+First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugins directory, switch
+to the `netdata` user.
 
 ```bash
 cd /usr/libexec/netdata/plugins.d/
