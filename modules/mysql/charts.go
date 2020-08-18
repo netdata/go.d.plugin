@@ -1,6 +1,8 @@
 package mysql
 
 import (
+	"strings"
+
 	"github.com/netdata/go-orchestrator/module"
 )
 
@@ -688,6 +690,7 @@ func newSlaveDefaultReplConnCharts() module.Charts {
 }
 
 func newSlaveReplConnCharts(conn string) module.Charts {
+	conn = strings.ToLower(conn)
 	cs := newSlaveDefaultReplConnCharts()
 	for _, chart := range cs {
 		chart.ID += "_" + conn
@@ -700,6 +703,7 @@ func newSlaveReplConnCharts(conn string) module.Charts {
 }
 
 func newUserStatisticsCharts(user string) module.Charts {
+	user = strings.ToLower(user)
 	return module.Charts{
 		{
 			ID:    "userstats_rows_" + user,
