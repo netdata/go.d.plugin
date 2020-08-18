@@ -690,11 +690,12 @@ func newSlaveDefaultReplConnCharts() module.Charts {
 }
 
 func newSlaveReplConnCharts(conn string) module.Charts {
+	orig := conn
 	conn = strings.ToLower(conn)
 	cs := newSlaveDefaultReplConnCharts()
 	for _, chart := range cs {
 		chart.ID += "_" + conn
-		chart.Title += " Connection " + conn
+		chart.Title += " Connection " + orig
 		for _, dim := range chart.Dims {
 			dim.ID += "_" + conn
 		}
