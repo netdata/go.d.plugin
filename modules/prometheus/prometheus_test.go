@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/pkg/prometheus/matcher"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -25,6 +26,13 @@ func TestPrometheus_Init(t *testing.T) {
 	}{
 		"non empty URL": {
 			config: Config{HTTP: web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}}},
+		},
+		"invalid filter syntax": {
+			config: Config{
+				HTTP:   web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
+				Filter: matcher.Expr{Allow: []string{`name{label=#"value"}`}},
+			},
+			wantFail: true,
 		},
 		"default": {
 			config:   New().Config,
@@ -338,6 +346,63 @@ func TestPrometheus_Collect(t *testing.T) {
 	}
 }
 
+func TestPrometheus_Collect_WithFiltering(t *testing.T) {
+	tests := map[string]struct {
+		input             []string
+		filter            matcher.Expr
+		expectedCollected map[string]int64
+	}{
+		"simple filtering": {
+			input: []string{
+				`# HELP prometheus_tsdb_compaction_chunk_range_seconds Final time range`,
+				`# TYPE prometheus_tsdb_compaction_chunk_range_seconds histogram`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="100"} 0`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="400"} 0`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1600"} 0`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6400"} 0`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="25600"} 1`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="102400"} 1`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="409600"} 1`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1.6384e+06"} 2000`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6.5536e+06"} 84164`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="2.62144e+07"} 84164`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="+Inf"} 84164`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_sum 1.50091952011e+11`,
+				`prometheus_tsdb_compaction_chunk_range_seconds_count 84164`,
+			},
+			filter: matcher.Expr{
+				Allow: []string{
+					"prometheus_*_sum prometheus_*_count",
+				},
+			},
+			expectedCollected: map[string]int64{
+				"prometheus_tsdb_compaction_chunk_range_seconds_count": 84164000,
+				"prometheus_tsdb_compaction_chunk_range_seconds_sum":   150091952011000,
+				"series":  2,
+				"metrics": 2,
+				"charts":  int64(2 + len(statsCharts)),
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			input := strings.Join(test.input, "\n")
+			prom, cleanup := preparePrometheusWithFilter(t, input, test.filter)
+			defer cleanup()
+
+			var collected map[string]int64
+
+			for i := 0; i < 10; i++ {
+				collected = prom.Collect()
+			}
+
+			assert.Equal(t, test.expectedCollected, collected)
+			ensureCollectedHasAllChartsDimsVarsIDs(t, prom, collected)
+		})
+	}
+}
+
 func TestPrometheus_Collect_Split(t *testing.T) {
 	tests := map[string]struct {
 		input                   [][]string
@@ -525,6 +590,21 @@ func preparePrometheus(t *testing.T, metrics string) (*Prometheus, func()) {
 
 	prom := New()
 	prom.UserURL = srv.URL
+	require.True(t, prom.Init())
+
+	return prom, srv.Close
+}
+
+func preparePrometheusWithFilter(t *testing.T, metrics string, filter matcher.Expr) (*Prometheus, func()) {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(metrics))
+		}))
+
+	prom := New()
+	prom.UserURL = srv.URL
+	prom.Filter = filter
 	require.True(t, prom.Init())
 
 	return prom, srv.Close

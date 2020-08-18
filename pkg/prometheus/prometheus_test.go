@@ -6,12 +6,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/pkg/prometheus/matcher"
 	"github.com/netdata/go.d.plugin/pkg/web"
-	"github.com/prometheus/prometheus/pkg/labels"
 
+	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var testdata, _ = ioutil.ReadFile("tests/testdata.txt")
@@ -49,6 +52,27 @@ func TestPrometheusPlain(t *testing.T) {
 	verifyTestData(t, res)
 }
 
+func TestPrometheusPlainWithFilter(t *testing.T) {
+	tsMux := http.NewServeMux()
+	tsMux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write(testdata)
+	})
+	ts := httptest.NewServer(tsMux)
+	defer ts.Close()
+
+	req := web.Request{UserURL: ts.URL + "/metrics"}
+	filter, err := matcher.Parse("go_gc*")
+	require.NoError(t, err)
+	prom := NewWithFilter(http.DefaultClient, req, filter)
+
+	res, err := prom.Scrape()
+	require.NoError(t, err)
+
+	for _, v := range res {
+		assert.Truef(t, strings.HasPrefix(v.Name(), "go_gc"), v.Name())
+	}
+}
+
 func TestPrometheusGzip(t *testing.T) {
 	counter := 0
 	rawTestData := [][]byte{testdata, testdataNometa}
@@ -78,27 +102,28 @@ func TestPrometheusGzip(t *testing.T) {
 
 func TestParse(t *testing.T) {
 	res := Metrics{}
-	err := parse(testdata, &res, Metadata{})
+	prom := prometheus{}
+	err := prom.parse(testdata, &res, Metadata{})
 	assert.NoError(t, err)
 
 	verifyTestData(t, res)
 }
 
-func verifyTestData(t *testing.T, m Metrics) {
-	assert.Equal(t, 410, len(m))
-	assert.Equal(t, "go_gc_duration_seconds", m[0].Labels.Get("__name__"))
-	assert.Equal(t, "0", m[0].Labels.Get("quantile"))
-	assert.InDelta(t, 4.9351e-05, m[0].Value, 0.0001)
+func verifyTestData(t *testing.T, ms Metrics) {
+	assert.Equal(t, 410, len(ms))
+	assert.Equal(t, "go_gc_duration_seconds", ms[0].Labels.Get("__name__"))
+	assert.Equal(t, "0", ms[0].Labels.Get("quantile"))
+	assert.InDelta(t, 4.9351e-05, ms[0].Value, 0.0001)
 
-	notExistYet := m.FindByName("not_exist_yet")
+	notExistYet := ms.FindByName("not_exist_yet")
 	assert.NotNil(t, notExistYet)
 	assert.Len(t, notExistYet, 0)
 
-	targetInterval := m.FindByName("prometheus_target_interval_length_seconds")
+	targetInterval := ms.FindByName("prometheus_target_interval_length_seconds")
 	assert.Len(t, targetInterval, 5)
 
-	matcher, _ := labels.NewMatcher(labels.MatchEqual, "quantile", "0.9")
-	intervalQ90 := targetInterval.Match(matcher)
+	m, _ := labels.NewMatcher(labels.MatchEqual, "quantile", "0.9")
+	intervalQ90 := targetInterval.Match(m)
 	assert.Len(t, intervalQ90, 1)
 	assert.InDelta(t, 0.052614556, intervalQ90[0].Value, 0.000001)
 }
