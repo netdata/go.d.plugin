@@ -5,12 +5,13 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/netdata/go.d.plugin/pkg/prometheus/matcher"
 	"io"
 	"io/ioutil"
 	"net/http"
 
+	"github.com/netdata/go.d.plugin/pkg/prometheus/matcher"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
 	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/pkg/textparse"
 )
@@ -103,7 +104,7 @@ func (p *prometheus) parse(prometheusText []byte, metrics *Metrics, meta Metadat
 			var lbs labels.Labels
 			_, _, val := parser.Series()
 			parser.Metric(&lbs)
-			if p.filter != nil && p.filter.Matches(lbs) {
+			if p.filter != nil && !p.filter.Matches(lbs) {
 				continue
 			}
 			metrics.Add(Metric{lbs, val})

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
+	"github.com/netdata/go.d.plugin/pkg/prometheus/matcher"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -39,6 +40,7 @@ func New() *Prometheus {
 type (
 	Config struct {
 		web.HTTP `yaml:",inline"`
+		Filter   matcher.Expr `yaml:"filter"`
 	}
 	Prometheus struct {
 		module.Base
@@ -60,11 +62,22 @@ func (p *Prometheus) Init() bool {
 
 	client, err := web.NewHTTPClient(p.Client)
 	if err != nil {
-		p.Error(err)
+		p.Errorf("initializing http client: %v", err)
 		return false
 	}
 
-	p.prom = prometheus.New(client, p.Request)
+	filter, err := p.Filter.Parse()
+	if err != nil {
+		p.Errorf("initializing filter: %v", err)
+		return false
+	}
+
+	if filter != nil {
+		p.prom = prometheus.NewWithFilter(client, p.Request, filter)
+	} else {
+		p.prom = prometheus.New(client, p.Request)
+	}
+
 	return true
 }
 

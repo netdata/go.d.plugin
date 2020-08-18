@@ -24,7 +24,7 @@ const (
 )
 
 var (
-	reLV = regexp.MustCompile(`^(?P<label_name>[a-zA-Z0-9_]+)(?P<format>=~|!~|=\*|!\*|=|!=)(?P<expr>.+)$`)
+	reLV = regexp.MustCompile(`^(?P<label_name>[a-zA-Z0-9_]+)(?P<format>=~|!~|=\*|!\*|=|!=)"(?P<expr>.+)"$`)
 )
 
 type labelMatcher struct {

@@ -61,7 +61,7 @@ func TestPrometheusPlainWithFilter(t *testing.T) {
 	defer ts.Close()
 
 	req := web.Request{UserURL: ts.URL + "/metrics"}
-	filter, err := matcher.Parse("!go_gc* *")
+	filter, err := matcher.Parse("go_gc*")
 	require.NoError(t, err)
 	prom := NewWithFilter(http.DefaultClient, req, filter)
 
