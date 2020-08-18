@@ -1,5 +1,5 @@
 *************************** 1. row ***************************
-               Connection_name: master1
+               Connection_name: Master1
                Slave_SQL_State: Slave has read all relay log; waiting for more updates
                 Slave_IO_State: Waiting for master to send event
                    Master_Host: master
@@ -61,7 +61,7 @@ Slave_Non_Transactional_Groups: 0
         Slave_heartbeat_period: 30.000
                 Gtid_Slave_Pos: 0-625-9
 *************************** 2. row ***************************
-               Connection_name: master2
+               Connection_name: Master2
                Slave_SQL_State: Slave has read all relay log; waiting for more updates
                 Slave_IO_State: Waiting for master to send event
                    Master_Host: master
