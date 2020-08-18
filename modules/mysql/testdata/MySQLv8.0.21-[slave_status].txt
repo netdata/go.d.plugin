@@ -1,6 +1,6 @@
 *************************** 1. row ***************************
                Slave_IO_State: Connecting to master
-                  Master_Host: master1
+                  Master_Host: Master1
                   Master_User: repl1
                   Master_Port: 3306
                 Connect_Retry: 60
@@ -61,7 +61,7 @@ Master_SSL_Verify_Server_Cert: No
             Network_Namespace:
 *************************** 2. row ***************************
                Slave_IO_State: Connecting to master
-                  Master_Host: master2
+                  Master_Host: Master2
                   Master_User: repl2
                   Master_Port: 3306
                 Connect_Retry: 60
