@@ -45,8 +45,6 @@ func (m labelMatcher) Matches(lbs labels.Labels) bool {
 func Parse(expr string) (Matcher, error) {
 	var matchers []Matcher
 	lvs := strings.Split(unsugarExpr(expr), ",")
-	fmt.Println("SUGAR", expr)
-	fmt.Println("UNSUGAR", lvs)
 
 	for _, lv := range lvs {
 		submatch := reLV.FindStringSubmatch(strings.TrimSpace(lv))
