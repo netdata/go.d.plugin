@@ -3,12 +3,12 @@ package matcher
 import "fmt"
 
 type Expr struct {
-	Includes []string `yaml:"includes"`
-	Excludes []string `yaml:"excludes"`
+	Allow []string `yaml:"allow"`
+	Deny  []string `yaml:"deny"`
 }
 
 func (e Expr) Empty() bool {
-	return len(e.Includes) == 0 && len(e.Excludes) == 0
+	return len(e.Allow) == 0 && len(e.Deny) == 0
 
 }
 
@@ -18,10 +18,10 @@ func (e Expr) Parse() (Matcher, error) {
 	}
 
 	var matchers []Matcher
-	var includes Matcher
-	var excludes Matcher
+	var allow Matcher
+	var deny Matcher
 
-	for _, item := range e.Includes {
+	for _, item := range e.Allow {
 		m, err := Parse(item)
 		if err != nil {
 			return nil, fmt.Errorf("parse matcher '%s': %v", item, err)
@@ -31,15 +31,15 @@ func (e Expr) Parse() (Matcher, error) {
 
 	switch len(matchers) {
 	case 0:
-		includes = trueMatcher{}
+		allow = trueMatcher{}
 	case 1:
-		includes = matchers[0]
+		allow = matchers[0]
 	default:
-		includes = or(matchers[0], matchers[1], matchers[2:]...)
+		allow = Or(matchers[0], matchers[1], matchers[2:]...)
 	}
 
 	matchers = matchers[:0]
-	for _, item := range e.Excludes {
+	for _, item := range e.Deny {
 		m, err := Parse(item)
 		if err != nil {
 			return nil, fmt.Errorf("parse matcher '%s': %v", item, err)
@@ -49,12 +49,12 @@ func (e Expr) Parse() (Matcher, error) {
 
 	switch len(matchers) {
 	case 0:
-		excludes = falseMatcher{}
+		deny = falseMatcher{}
 	case 1:
-		excludes = matchers[0]
+		deny = matchers[0]
 	default:
-		excludes = or(matchers[0], matchers[1], matchers[2:]...)
+		deny = Or(matchers[0], matchers[1], matchers[2:]...)
 	}
 
-	return and(includes, not(excludes)), nil
+	return And(allow, Not(deny)), nil
 }

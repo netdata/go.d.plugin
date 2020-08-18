@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
+	"github.com/netdata/go.d.plugin/pkg/prometheus/matcher"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -28,6 +29,7 @@ type (
 		request  web.Request
 		metrics  Metrics
 		metadata Metadata
+		filter   matcher.Matcher
 
 		// internal use
 		buf     *bytes.Buffer
@@ -47,6 +49,17 @@ func New(client *http.Client, request web.Request) Prometheus {
 		client:   client,
 		request:  request,
 		metadata: make(Metadata),
+		buf:      bytes.NewBuffer(make([]byte, 0, 16000)),
+	}
+}
+
+// New creates a Prometheus instance with the filter.
+func NewWithFilter(client *http.Client, request web.Request, filter matcher.Matcher) Prometheus {
+	return &prometheus{
+		client:   client,
+		request:  request,
+		metadata: make(Metadata),
+		filter:   filter,
 		buf:      bytes.NewBuffer(make([]byte, 0, 16000)),
 	}
 }
@@ -71,10 +84,10 @@ func (p *prometheus) scrape(metrics *Metrics, meta Metadata) error {
 	if err := p.fetch(p.buf); err != nil {
 		return err
 	}
-	return parse(p.buf.Bytes(), metrics, meta)
+	return p.parse(p.buf.Bytes(), metrics, meta)
 }
 
-func parse(prometheusText []byte, metrics *Metrics, meta Metadata) error {
+func (p *prometheus) parse(prometheusText []byte, metrics *Metrics, meta Metadata) error {
 	parser := textparse.NewPromParser(prometheusText)
 	for {
 		entry, err := parser.Next()
@@ -90,6 +103,9 @@ func parse(prometheusText []byte, metrics *Metrics, meta Metadata) error {
 			var lbs labels.Labels
 			_, _, val := parser.Series()
 			parser.Metric(&lbs)
+			if p.filter != nil && p.filter.Matches(lbs) {
+				continue
+			}
 			metrics.Add(Metric{lbs, val})
 		case textparse.EntryType:
 			meta.setType(parser.Type())

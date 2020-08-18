@@ -18,22 +18,25 @@ func (m negMatcher) Matches(lbs labels.Labels) bool { return !m.m.Matches(lbs) }
 func (m andMatcher) Matches(lbs labels.Labels) bool { return m.lhs.Matches(lbs) && m.rhs.Matches(lbs) }
 func (m orMatcher) Matches(lbs labels.Labels) bool  { return m.lhs.Matches(lbs) || m.rhs.Matches(lbs) }
 
-func and(lhs, rhs Matcher, others ...Matcher) andMatcher {
+// And returns a matcher which returns true only if all of it's sub-matcher return true
+func And(lhs, rhs Matcher, others ...Matcher) Matcher {
 	m := andMatcher{lhs: lhs, rhs: rhs}
 	if len(others) == 0 {
 		return m
 	}
-	return and(m, others[0], others[1:]...)
+	return And(m, others[0], others[1:]...)
 }
 
-func or(lhs, rhs Matcher, others ...Matcher) orMatcher {
+// Or returns a matcher which returns true if any of it's sub-matcher return true
+func Or(lhs, rhs Matcher, others ...Matcher) Matcher {
 	m := orMatcher{lhs: lhs, rhs: rhs}
 	if len(others) == 0 {
 		return m
 	}
-	return or(m, others[0], others[1:]...)
+	return Or(m, others[0], others[1:]...)
 }
 
-func not(m Matcher) Matcher {
+// Not returns a matcher which opposites the sub-matcher's result
+func Not(m Matcher) Matcher {
 	return negMatcher{m}
 }

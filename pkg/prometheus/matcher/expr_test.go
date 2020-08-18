@@ -11,25 +11,25 @@ func TestExpr_Empty(t *testing.T) {
 		expr     Expr
 		expected bool
 	}{
-		"empty (not nil): both includes and excludes": {
+		"empty (Not nil): both includes And excludes": {
 			expr: Expr{
-				Includes: []string{},
-				Excludes: []string{},
+				Allow: []string{},
+				Deny:  []string{},
 			},
 			expected: true,
 		},
-		"empty (nil): both includes and excludes": {
+		"empty (nil): both includes And excludes": {
 			expected: true,
 		},
 		"empty: only includes": {
 			expr: Expr{
-				Excludes: []string{""},
+				Deny: []string{""},
 			},
 			expected: false,
 		},
 		"empty: only excludes": {
 			expr: Expr{
-				Includes: []string{""},
+				Allow: []string{""},
 			},
 			expected: false,
 		},
@@ -52,16 +52,16 @@ func TestExpr_Parse(t *testing.T) {
 		expectedMatcher Matcher
 		expectedErr     bool
 	}{
-		"not set: both includes and excludes": {
+		"Not set: both includes And excludes": {
 			expr: Expr{},
 		},
-		"set: both includes and excludes": {
+		"set: both includes And excludes": {
 			expr: Expr{
-				Includes: []string{
+				Allow: []string{
 					"go_memstats_*",
 					"node_*",
 				},
-				Excludes: []string{
+				Deny: []string{
 					"go_memstats_frees_total",
 					"node_cooling_*",
 				},
@@ -71,7 +71,7 @@ func TestExpr_Parse(t *testing.T) {
 					lhs: mustGlobName("go_memstats_*"),
 					rhs: mustGlobName("node_*"),
 				},
-				rhs: not(orMatcher{
+				rhs: Not(orMatcher{
 					lhs: mustGlobName("go_memstats_frees_total"),
 					rhs: mustGlobName("node_cooling_*"),
 				}),
@@ -79,7 +79,7 @@ func TestExpr_Parse(t *testing.T) {
 		},
 		"set: only includes": {
 			expr: Expr{
-				Includes: []string{
+				Allow: []string{
 					"go_memstats_*",
 					"node_*",
 				},
@@ -89,19 +89,19 @@ func TestExpr_Parse(t *testing.T) {
 					lhs: mustGlobName("go_memstats_*"),
 					rhs: mustGlobName("node_*"),
 				},
-				rhs: not(falseMatcher{}),
+				rhs: Not(falseMatcher{}),
 			},
 		},
 		"set: only excludes": {
 			expr: Expr{
-				Excludes: []string{
+				Deny: []string{
 					"go_memstats_frees_total",
 					"node_cooling_*",
 				},
 			},
 			expectedMatcher: andMatcher{
 				lhs: trueMatcher{},
-				rhs: not(orMatcher{
+				rhs: Not(orMatcher{
 					lhs: mustGlobName("go_memstats_frees_total"),
 					rhs: mustGlobName("node_cooling_*"),
 				}),

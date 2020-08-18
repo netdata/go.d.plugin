@@ -39,7 +39,7 @@ func TestParse(t *testing.T) {
 			input: fmt.Sprintf(`go_memstats_*{label%s"value"}`, FmtNegEqual),
 			expectedMatcher: andMatcher{
 				lhs: mustGlobName("go_memstats_*"),
-				rhs: not(mustString("label", "value")),
+				rhs: Not(mustString("label", "value")),
 			},
 		},
 		"regexp format: metric name with labels": {
@@ -53,7 +53,7 @@ func TestParse(t *testing.T) {
 			input: fmt.Sprintf(`go_memstats_*{label%s"valu.+"}`, FmtNegRegexp),
 			expectedMatcher: andMatcher{
 				lhs: mustGlobName("go_memstats_*"),
-				rhs: not(mustRegexp("label", "valu.+")),
+				rhs: Not(mustRegexp("label", "valu.+")),
 			},
 		},
 		"glob format: metric name with labels": {
@@ -67,7 +67,7 @@ func TestParse(t *testing.T) {
 			input: fmt.Sprintf(`go_memstats_*{label%s"valu*"}`, FmtNegGlob),
 			expectedMatcher: andMatcher{
 				lhs: mustGlobName("go_memstats_*"),
-				rhs: not(mustGlob("label", "valu*")),
+				rhs: Not(mustGlob("label", "valu*")),
 			},
 		},
 		"simple patterns format: metric name with labels": {
@@ -81,7 +81,7 @@ func TestParse(t *testing.T) {
 			input: fmt.Sprintf(`go_memstats_*{label%s"value !val* *"}`, FmtNegGlob),
 			expectedMatcher: andMatcher{
 				lhs: mustGlobName("go_memstats_*"),
-				rhs: not(mustSP("label", "value !val* *")),
+				rhs: Not(mustSP("label", "value !val* *")),
 			},
 		},
 		"metric name with several labels": {
@@ -137,7 +137,5 @@ func mustSP(name string, pattern string) Matcher {
 	return labelMatcher{name: name, m: matcher.Must(matcher.NewSimplePatternsMatcher(pattern))}
 }
 
-func mustStringName(pattern string) Matcher { return mustString(labels.MetricName, pattern) }
-func mustRegexpName(pattern string) Matcher { return mustRegexp(labels.MetricName, pattern) }
-func mustGlobName(pattern string) Matcher   { return mustGlob(labels.MetricName, pattern) }
-func mustSPName(pattern string) Matcher     { return mustSP(labels.MetricName, pattern) }
+func mustGlobName(pattern string) Matcher { return mustGlob(labels.MetricName, pattern) }
+func mustSPName(pattern string) Matcher   { return mustSP(labels.MetricName, pattern) }

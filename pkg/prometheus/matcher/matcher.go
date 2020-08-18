@@ -81,7 +81,7 @@ func Parse(expr string) (Matcher, error) {
 		}
 
 		if neg := strings.HasPrefix(format, "!"); neg {
-			matchers = append(matchers, not(lm))
+			matchers = append(matchers, Not(lm))
 		} else {
 			matchers = append(matchers, lm)
 		}
@@ -93,7 +93,7 @@ func Parse(expr string) (Matcher, error) {
 	case 1:
 		return matchers[0], nil
 	default:
-		return and(matchers[0], matchers[1], matchers[2:]...), nil
+		return And(matchers[0], matchers[1], matchers[2:]...), nil
 	}
 }
 
