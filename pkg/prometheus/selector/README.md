@@ -6,7 +6,7 @@ Selectors allow selecting and filtering of a set of time series.
 
 In the simplest form you need to specify only a metric name.
 
-### Syntax:
+### Syntax
 
 ```cmd
  <line>                 ::= <metric_name_pattern>
