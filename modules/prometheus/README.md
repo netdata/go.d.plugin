@@ -48,8 +48,29 @@ jobs:
     url: http://203.0.113.0:9182/metrics
 ```
 
+### Time Series Selector (filtering)
+
+To filter unwanted time series (metrics) use `selector` configuration option.
+
+Here is an example:
+```yaml
+jobs:
+  - name: node_exporter_local
+    url: http://127.0.0.1:9100/metrics
+    selector:
+      allow:
+        - <SELECTOR_PATTERN>
+        - <SELECTOR_PATTERN>
+      deny:
+        - <SELECTOR_PATTERN>
+        - <SELECTOR_PATTERN>
+```
+
+To find `SELECTOR_PATTERN` syntax description and more examples see [selectors readme](https://github.com/netdata/go.d.plugin/pkg/prometheus/selector#time-series-selectors).
+
 For all available options, see the Prometheus collector's [configuration
 file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
+
 
 ## Troubleshooting
 

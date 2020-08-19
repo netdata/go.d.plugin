@@ -1,4 +1,4 @@
-# Time Series Selectors
+# Time Series Selector
 
 Selectors allow selecting and filtering of a set of time series.
 
