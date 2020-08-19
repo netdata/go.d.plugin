@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/pkg/prometheus/matcher"
+	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -27,10 +27,10 @@ func TestPrometheus_Init(t *testing.T) {
 		"non empty URL": {
 			config: Config{HTTP: web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}}},
 		},
-		"invalid filter syntax": {
+		"invalid selector syntax": {
 			config: Config{
-				HTTP:   web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
-				Filter: matcher.Expr{Allow: []string{`name{label=#"value"}`}},
+				HTTP:     web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
+				Selector: selector.Expr{Allow: []string{`name{label=#"value"}`}},
 			},
 			wantFail: true,
 		},
@@ -346,10 +346,10 @@ func TestPrometheus_Collect(t *testing.T) {
 	}
 }
 
-func TestPrometheus_Collect_WithFiltering(t *testing.T) {
+func TestPrometheus_Collect_WithSelector(t *testing.T) {
 	tests := map[string]struct {
 		input             []string
-		filter            matcher.Expr
+		sr                selector.Expr
 		expectedCollected map[string]int64
 	}{
 		"simple filtering": {
@@ -370,7 +370,7 @@ func TestPrometheus_Collect_WithFiltering(t *testing.T) {
 				`prometheus_tsdb_compaction_chunk_range_seconds_sum 1.50091952011e+11`,
 				`prometheus_tsdb_compaction_chunk_range_seconds_count 84164`,
 			},
-			filter: matcher.Expr{
+			sr: selector.Expr{
 				Allow: []string{
 					"prometheus_*_sum prometheus_*_count",
 				},
@@ -388,7 +388,7 @@ func TestPrometheus_Collect_WithFiltering(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			input := strings.Join(test.input, "\n")
-			prom, cleanup := preparePrometheusWithFilter(t, input, test.filter)
+			prom, cleanup := preparePrometheusWithSelector(t, input, test.sr)
 			defer cleanup()
 
 			var collected map[string]int64
@@ -595,7 +595,7 @@ func preparePrometheus(t *testing.T, metrics string) (*Prometheus, func()) {
 	return prom, srv.Close
 }
 
-func preparePrometheusWithFilter(t *testing.T, metrics string, filter matcher.Expr) (*Prometheus, func()) {
+func preparePrometheusWithSelector(t *testing.T, metrics string, sr selector.Expr) (*Prometheus, func()) {
 	t.Helper()
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -604,7 +604,7 @@ func preparePrometheusWithFilter(t *testing.T, metrics string, filter matcher.Ex
 
 	prom := New()
 	prom.UserURL = srv.URL
-	prom.Filter = filter
+	prom.Selector = sr
 	require.True(t, prom.Init())
 
 	return prom, srv.Close

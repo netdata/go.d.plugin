@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/netdata/go.d.plugin/pkg/prometheus/matcher"
+	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/prometheus/prometheus/pkg/labels"
@@ -30,7 +30,7 @@ type (
 		request  web.Request
 		metrics  Metrics
 		metadata Metadata
-		filter   matcher.Matcher
+		sr       selector.Selector
 
 		// internal use
 		buf     *bytes.Buffer
@@ -54,13 +54,13 @@ func New(client *http.Client, request web.Request) Prometheus {
 	}
 }
 
-// New creates a Prometheus instance with the filter.
-func NewWithFilter(client *http.Client, request web.Request, filter matcher.Matcher) Prometheus {
+// New creates a Prometheus instance with the selector.
+func NewWithSelector(client *http.Client, request web.Request, sr selector.Selector) Prometheus {
 	return &prometheus{
 		client:   client,
 		request:  request,
 		metadata: make(Metadata),
-		filter:   filter,
+		sr:       sr,
 		buf:      bytes.NewBuffer(make([]byte, 0, 16000)),
 	}
 }
@@ -104,7 +104,7 @@ func (p *prometheus) parse(prometheusText []byte, metrics *Metrics, meta Metadat
 			var lbs labels.Labels
 			_, _, val := parser.Series()
 			parser.Metric(&lbs)
-			if p.filter != nil && !p.filter.Matches(lbs) {
+			if p.sr != nil && !p.sr.Matches(lbs) {
 				continue
 			}
 			metrics.Add(Metric{lbs, val})
