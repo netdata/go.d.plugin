@@ -70,12 +70,12 @@ func TestExpr_Parse(t *testing.T) {
 			},
 			expectedSr: andSelector{
 				lhs: orSelector{
-					lhs: mustGlobName("go_memstats_*"),
-					rhs: mustGlobName("node_*"),
+					lhs: mustSPName("go_memstats_*"),
+					rhs: mustSPName("node_*"),
 				},
 				rhs: Not(orSelector{
-					lhs: mustGlobName("go_memstats_frees_total"),
-					rhs: mustGlobName("node_cooling_*"),
+					lhs: mustSPName("go_memstats_frees_total"),
+					rhs: mustSPName("node_cooling_*"),
 				}),
 			},
 		},
@@ -88,8 +88,8 @@ func TestExpr_Parse(t *testing.T) {
 			},
 			expectedSr: andSelector{
 				lhs: orSelector{
-					lhs: mustGlobName("go_memstats_*"),
-					rhs: mustGlobName("node_*"),
+					lhs: mustSPName("go_memstats_*"),
+					rhs: mustSPName("node_*"),
 				},
 				rhs: Not(falseSelector{}),
 			},
@@ -104,8 +104,8 @@ func TestExpr_Parse(t *testing.T) {
 			expectedSr: andSelector{
 				lhs: trueSelector{},
 				rhs: Not(orSelector{
-					lhs: mustGlobName("go_memstats_frees_total"),
-					rhs: mustGlobName("node_cooling_*"),
+					lhs: mustSPName("go_memstats_frees_total"),
+					rhs: mustSPName("node_cooling_*"),
 				}),
 			},
 		},
@@ -132,89 +132,84 @@ func TestExprSelector_Matches(t *testing.T) {
 	}{
 		"allow matches: single pattern": {
 			expr: Expr{
-				Allow: []string{
-					"go_*",
-				},
+				Allow: []string{"go_*"},
 			},
-			lbs: []labels.Label{
-				{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"},
-			},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
 			expectedMatches: true,
 		},
 		"allow matches: several patterns": {
 			expr: Expr{
-				Allow: []string{
-					"node_*",
-					"go_*",
-				},
+				Allow: []string{"node_*", "go_*"},
 			},
-			lbs: []labels.Label{
-				{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"},
-			},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
 			expectedMatches: true,
 		},
 		"allow not matches": {
 			expr: Expr{
-				Allow: []string{
-					"!go_*",
-				},
+				Allow: []string{"node_*"},
 			},
-			lbs: []labels.Label{
-				{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"},
-			},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
 			expectedMatches: false,
 		},
 		"deny matches: single pattern": {
 			expr: Expr{
-				Deny: []string{
-					"go_*",
-				},
+				Deny: []string{"go_*"},
 			},
-			lbs: []labels.Label{
-				{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"},
-			},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
 			expectedMatches: false,
 		},
 		"deny matches: several patterns": {
 			expr: Expr{
-				Deny: []string{
-					"node_*",
-					"go_*",
-				},
+				Deny: []string{"node_*", "go_*"},
 			},
-			lbs: []labels.Label{
-				{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"},
-			},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
 			expectedMatches: false,
+		},
+		"deny not matches": {
+			expr: Expr{
+				Deny: []string{"node_*"},
+			},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
+			expectedMatches: true,
 		},
 		"allow and deny matches: single pattern": {
 			expr: Expr{
-				Allow: []string{
-					"go_*",
-				},
-				Deny: []string{
-					"go_*",
-				},
+				Allow: []string{"go_*"},
+				Deny:  []string{"go_*"},
 			},
-			lbs: []labels.Label{
-				{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"},
-			},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
 			expectedMatches: false,
 		},
 		"allow and deny matches: several patterns": {
 			expr: Expr{
-				Allow: []string{
-					"node_*",
-					"go_*",
-				},
-				Deny: []string{
-					"node_*",
-					"go_*",
-				},
+				Allow: []string{"node_*", "go_*"},
+				Deny:  []string{"node_*", "go_*"},
 			},
-			lbs: []labels.Label{
-				{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
+			expectedMatches: false,
+		},
+		"allow matches and deny not matches": {
+			expr: Expr{
+				Allow: []string{"go_*"},
+				Deny:  []string{"node_*"},
 			},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
+			expectedMatches: true,
+		},
+		"allow not matches and deny matches": {
+			expr: Expr{
+				Allow: []string{"node_*"},
+				Deny:  []string{"go_*"},
+			},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
+			expectedMatches: false,
+		},
+		"allow not matches and deny not matches": {
+			expr: Expr{
+				Allow: []string{"node_*"},
+				Deny:  []string{"node_*"},
+			},
+			lbs:             []labels.Label{{Name: labels.MetricName, Value: "go_memstats_alloc_bytes"}},
 			expectedMatches: false,
 		},
 	}
