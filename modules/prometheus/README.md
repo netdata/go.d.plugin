@@ -59,14 +59,14 @@ jobs:
     url: http://127.0.0.1:9100/metrics
     selector:
       allow:
-        - <SELECTOR_PATTERN>
-        - <SELECTOR_PATTERN>
+        - <PATTERN>
+        - <PATTERN>
       deny:
-        - <SELECTOR_PATTERN>
-        - <SELECTOR_PATTERN>
+        - <PATTERN>
+        - <PATTERN>
 ```
 
-To find `SELECTOR_PATTERN` syntax description and more examples see [selectors readme](https://github.com/netdata/go.d.plugin/pkg/prometheus/selector#time-series-selectors).
+To find `PATTERN` syntax description and more examples see [selectors readme](https://github.com/netdata/go.d.plugin/pkg/prometheus/selector#time-series-selectors).
 
 For all available options, see the Prometheus collector's [configuration
 file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
