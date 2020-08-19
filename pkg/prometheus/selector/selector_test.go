@@ -1,4 +1,4 @@
-package matcher
+package selector
 
 import (
 	"fmt"
@@ -16,70 +16,70 @@ func TestLabelMatcher_Matches(t *testing.T) {
 
 func TestParse(t *testing.T) {
 	tests := map[string]struct {
-		input           string
-		expectedMatcher Matcher
-		expectedErr     bool
+		input       string
+		expectedSr  Selector
+		expectedErr bool
 	}{
 		"glob format: only metric name": {
-			input:           "go_memstats_*",
-			expectedMatcher: mustGlobName("go_memstats_*"),
+			input:      "go_memstats_*",
+			expectedSr: mustGlobName("go_memstats_*"),
 		},
 		"simple patterns format: only metric name": {
-			input:           "go_memstats_alloc_bytes !go_memstats_* *",
-			expectedMatcher: mustSPName("go_memstats_alloc_bytes !go_memstats_* *"),
+			input:      "go_memstats_alloc_bytes !go_memstats_* *",
+			expectedSr: mustSPName("go_memstats_alloc_bytes !go_memstats_* *"),
 		},
 		"string format: metric name with labels": {
 			input: fmt.Sprintf(`go_memstats_*{label%s"value"}`, FmtEqual),
-			expectedMatcher: andMatcher{
+			expectedSr: andSelector{
 				lhs: mustGlobName("go_memstats_*"),
 				rhs: mustString("label", "value"),
 			},
 		},
 		"neg string format: metric name with labels": {
 			input: fmt.Sprintf(`go_memstats_*{label%s"value"}`, FmtNegEqual),
-			expectedMatcher: andMatcher{
+			expectedSr: andSelector{
 				lhs: mustGlobName("go_memstats_*"),
 				rhs: Not(mustString("label", "value")),
 			},
 		},
 		"regexp format: metric name with labels": {
 			input: fmt.Sprintf(`go_memstats_*{label%s"valu.+"}`, FmtRegexp),
-			expectedMatcher: andMatcher{
+			expectedSr: andSelector{
 				lhs: mustGlobName("go_memstats_*"),
 				rhs: mustRegexp("label", "valu.+"),
 			},
 		},
 		"neg regexp format: metric name with labels": {
 			input: fmt.Sprintf(`go_memstats_*{label%s"valu.+"}`, FmtNegRegexp),
-			expectedMatcher: andMatcher{
+			expectedSr: andSelector{
 				lhs: mustGlobName("go_memstats_*"),
 				rhs: Not(mustRegexp("label", "valu.+")),
 			},
 		},
 		"glob format: metric name with labels": {
 			input: fmt.Sprintf(`go_memstats_*{label%s"valu*"}`, FmtGlob),
-			expectedMatcher: andMatcher{
+			expectedSr: andSelector{
 				lhs: mustGlobName("go_memstats_*"),
 				rhs: mustGlob("label", "valu*"),
 			},
 		},
 		"neg glob format: metric name with labels": {
 			input: fmt.Sprintf(`go_memstats_*{label%s"valu*"}`, FmtNegGlob),
-			expectedMatcher: andMatcher{
+			expectedSr: andSelector{
 				lhs: mustGlobName("go_memstats_*"),
 				rhs: Not(mustGlob("label", "valu*")),
 			},
 		},
 		"simple patterns format: metric name with labels": {
 			input: fmt.Sprintf(`go_memstats_*{label%s"value !val* *"}`, FmtGlob),
-			expectedMatcher: andMatcher{
+			expectedSr: andSelector{
 				lhs: mustGlobName("go_memstats_*"),
 				rhs: mustSP("label", "value !val* *"),
 			},
 		},
 		"neg simple patterns format: metric name with labels": {
 			input: fmt.Sprintf(`go_memstats_*{label%s"value !val* *"}`, FmtNegGlob),
-			expectedMatcher: andMatcher{
+			expectedSr: andSelector{
 				lhs: mustGlobName("go_memstats_*"),
 				rhs: Not(mustSP("label", "value !val* *")),
 			},
@@ -87,8 +87,8 @@ func TestParse(t *testing.T) {
 		"metric name with several labels": {
 			input: fmt.Sprintf(`go_memstats_*{label1%s"value1",label2%s"value2"}`,
 				FmtEqual, FmtEqual),
-			expectedMatcher: andMatcher{
-				lhs: andMatcher{
+			expectedSr: andSelector{
+				lhs: andSelector{
 					lhs: mustGlobName("go_memstats_*"),
 					rhs: mustString("label1", "value1"),
 				},
@@ -98,8 +98,8 @@ func TestParse(t *testing.T) {
 		"only labels (unsugar)": {
 			input: fmt.Sprintf(`{__name__%s"go_memstats_*",label1%s"value1",label2%s"value2"}`,
 				FmtGlob, FmtEqual, FmtEqual),
-			expectedMatcher: andMatcher{
-				lhs: andMatcher{
+			expectedSr: andSelector{
+				lhs: andSelector{
 					lhs: mustGlobName("go_memstats_*"),
 					rhs: mustString("label1", "value1"),
 				},
@@ -115,27 +115,27 @@ func TestParse(t *testing.T) {
 			if test.expectedErr {
 				assert.Error(t, err)
 			} else {
-				assert.Equal(t, test.expectedMatcher, m)
+				assert.Equal(t, test.expectedSr, m)
 			}
 		})
 	}
 }
 
-func mustString(name string, pattern string) Matcher {
-	return labelMatcher{name: name, m: matcher.Must(matcher.NewStringMatcher(pattern, true, true))}
+func mustString(name string, pattern string) Selector {
+	return labelSelector{name: name, m: matcher.Must(matcher.NewStringMatcher(pattern, true, true))}
 }
 
-func mustRegexp(name string, pattern string) Matcher {
-	return labelMatcher{name: name, m: matcher.Must(matcher.NewRegExpMatcher(pattern))}
+func mustRegexp(name string, pattern string) Selector {
+	return labelSelector{name: name, m: matcher.Must(matcher.NewRegExpMatcher(pattern))}
 }
 
-func mustGlob(name string, pattern string) Matcher {
-	return labelMatcher{name: name, m: matcher.Must(matcher.NewGlobMatcher(pattern))}
+func mustGlob(name string, pattern string) Selector {
+	return labelSelector{name: name, m: matcher.Must(matcher.NewGlobMatcher(pattern))}
 }
 
-func mustSP(name string, pattern string) Matcher {
-	return labelMatcher{name: name, m: matcher.Must(matcher.NewSimplePatternsMatcher(pattern))}
+func mustSP(name string, pattern string) Selector {
+	return labelSelector{name: name, m: matcher.Must(matcher.NewSimplePatternsMatcher(pattern))}
 }
 
-func mustGlobName(pattern string) Matcher { return mustGlob(labels.MetricName, pattern) }
-func mustSPName(pattern string) Matcher   { return mustSP(labels.MetricName, pattern) }
+func mustGlobName(pattern string) Selector { return mustGlob(labels.MetricName, pattern) }
+func mustSPName(pattern string) Selector   { return mustSP(labels.MetricName, pattern) }

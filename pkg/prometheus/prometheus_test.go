@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/pkg/prometheus/matcher"
+	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/prometheus/prometheus/pkg/labels"
@@ -52,7 +52,7 @@ func TestPrometheusPlain(t *testing.T) {
 	verifyTestData(t, res)
 }
 
-func TestPrometheusPlainWithFilter(t *testing.T) {
+func TestPrometheusPlainWithSelector(t *testing.T) {
 	tsMux := http.NewServeMux()
 	tsMux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(testdata)
@@ -61,9 +61,9 @@ func TestPrometheusPlainWithFilter(t *testing.T) {
 	defer ts.Close()
 
 	req := web.Request{UserURL: ts.URL + "/metrics"}
-	filter, err := matcher.Parse("go_gc*")
+	sr, err := selector.Parse("go_gc*")
 	require.NoError(t, err)
-	prom := NewWithFilter(http.DefaultClient, req, filter)
+	prom := NewWithSelector(http.DefaultClient, req, sr)
 
 	res, err := prom.Scrape()
 	require.NoError(t, err)

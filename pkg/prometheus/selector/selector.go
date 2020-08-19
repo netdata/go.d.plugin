@@ -1,4 +1,4 @@
-package matcher
+package selector
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/prometheus/prometheus/pkg/labels"
 )
 
-type Matcher interface {
+type Selector interface {
 	Matches(labels labels.Labels) bool
 }
 
@@ -27,23 +27,23 @@ var (
 	reLV = regexp.MustCompile(`^(?P<label_name>[a-zA-Z0-9_]+)(?P<format>=~|!~|=\*|!\*|=|!=)"(?P<expr>.+)"$`)
 )
 
-type labelMatcher struct {
+type labelSelector struct {
 	name string
 	m    matcher.Matcher
 }
 
-func (m labelMatcher) Matches(lbs labels.Labels) bool {
-	if m.name == labels.MetricName {
-		return m.m.MatchString(lbs[0].Value)
+func (s labelSelector) Matches(lbs labels.Labels) bool {
+	if s.name == labels.MetricName {
+		return s.m.MatchString(lbs[0].Value)
 	}
-	if label, ok := lookupLabel(m.name, lbs[1:]); ok {
-		return m.m.MatchString(label.Value)
+	if label, ok := lookupLabel(s.name, lbs[1:]); ok {
+		return s.m.MatchString(label.Value)
 	}
 	return false
 }
 
-func Parse(expr string) (Matcher, error) {
-	var matchers []Matcher
+func Parse(expr string) (Selector, error) {
+	var srs []Selector
 	lvs := strings.Split(unsugarExpr(expr), ",")
 
 	for _, lv := range lvs {
@@ -75,39 +75,55 @@ func Parse(expr string) (Matcher, error) {
 			return nil, err
 		}
 
-		lm := labelMatcher{
+		sr := labelSelector{
 			name: name,
 			m:    m,
 		}
 
 		if neg := strings.HasPrefix(format, "!"); neg {
-			matchers = append(matchers, Not(lm))
+			srs = append(srs, Not(sr))
 		} else {
-			matchers = append(matchers, lm)
+			srs = append(srs, sr)
 		}
 	}
 
-	switch len(matchers) {
+	switch len(srs) {
 	case 0:
 		return nil, nil
 	case 1:
-		return matchers[0], nil
+		return srs[0], nil
 	default:
-		return And(matchers[0], matchers[1], matchers[2:]...), nil
+		return And(srs[0], srs[1], srs[2:]...), nil
 	}
 }
 
 func unsugarExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
-	switch idx := strings.IndexByte(expr, '{'); true {
-	case idx == -1:
-		expr = fmt.Sprintf(`__name__%s"%s"`, FmtGlob, expr)
-	case idx > 0:
-		expr = fmt.Sprintf(`__name__%s"%s",%s`, FmtGlob, expr[:idx], strings.Trim(expr[idx:], "{}"))
-	default:
-		expr = strings.Trim(expr, "{}")
+	var metricName, matchers string
+
+	if idx := strings.IndexByte(expr, '{'); idx == -1 {
+		metricName = expr
+	} else if idx == 0 {
+		matchers = strings.Trim(expr, "{}")
+	} else {
+		metricName, matchers = expr[:idx], strings.Trim(expr[idx:], "{}")
 	}
-	return expr
+	metricName, matchers = strings.TrimSpace(metricName), strings.TrimSpace(matchers)
+
+	if metricName == "" {
+		return matchers
+	}
+
+	metricNameOp := FmtGlob
+	if len(strings.Fields(metricName)) == 1 && metricName[0] == '!' {
+		metricName = metricName[1:]
+		metricNameOp = FmtNegGlob
+	}
+
+	if matchers == "" {
+		return fmt.Sprintf(`__name__%s"%s"`, metricNameOp, metricName)
+	}
+	return fmt.Sprintf(`__name__%s"%s",%s`, metricNameOp, metricName, matchers)
 }
 
 func lookupLabel(name string, lbs labels.Labels) (labels.Label, bool) {

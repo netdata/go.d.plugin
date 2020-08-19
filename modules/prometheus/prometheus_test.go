@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/pkg/prometheus/matcher"
+	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -29,8 +29,8 @@ func TestPrometheus_Init(t *testing.T) {
 		},
 		"invalid filter syntax": {
 			config: Config{
-				HTTP:   web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
-				Filter: matcher.Expr{Allow: []string{`name{label=#"value"}`}},
+				HTTP:     web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
+				Selector: selector.Expr{Allow: []string{`name{label=#"value"}`}},
 			},
 			wantFail: true,
 		},
@@ -349,7 +349,7 @@ func TestPrometheus_Collect(t *testing.T) {
 func TestPrometheus_Collect_WithFiltering(t *testing.T) {
 	tests := map[string]struct {
 		input             []string
-		filter            matcher.Expr
+		filter            selector.Expr
 		expectedCollected map[string]int64
 	}{
 		"simple filtering": {
@@ -370,7 +370,7 @@ func TestPrometheus_Collect_WithFiltering(t *testing.T) {
 				`prometheus_tsdb_compaction_chunk_range_seconds_sum 1.50091952011e+11`,
 				`prometheus_tsdb_compaction_chunk_range_seconds_count 84164`,
 			},
-			filter: matcher.Expr{
+			filter: selector.Expr{
 				Allow: []string{
 					"prometheus_*_sum prometheus_*_count",
 				},
@@ -595,7 +595,7 @@ func preparePrometheus(t *testing.T, metrics string) (*Prometheus, func()) {
 	return prom, srv.Close
 }
 
-func preparePrometheusWithFilter(t *testing.T, metrics string, filter matcher.Expr) (*Prometheus, func()) {
+func preparePrometheusWithFilter(t *testing.T, metrics string, filter selector.Expr) (*Prometheus, func()) {
 	t.Helper()
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -604,7 +604,7 @@ func preparePrometheusWithFilter(t *testing.T, metrics string, filter matcher.Ex
 
 	prom := New()
 	prom.UserURL = srv.URL
-	prom.Filter = filter
+	prom.Selector = filter
 	require.True(t, prom.Init())
 
 	return prom, srv.Close
