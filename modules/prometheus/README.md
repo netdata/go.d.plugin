@@ -66,7 +66,7 @@ jobs:
         - <PATTERN>
 ```
 
-To find `PATTERN` syntax description and more examples see [selectors readme](https://github.com/netdata/go.d.plugin/pkg/prometheus/selector#time-series-selectors).
+To find `PATTERN` syntax description and more examples see [selectors readme](https://github.com/netdata/go.d.plugin/tree/master/pkg/prometheus/selector#time-series-selector).
 
 For all available options, see the Prometheus collector's [configuration
 file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
