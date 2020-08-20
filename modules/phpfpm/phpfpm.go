@@ -2,6 +2,7 @@ package phpfpm
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -36,17 +37,18 @@ func New() *Phpfpm {
 type (
 	Config struct {
 		web.HTTP `yaml:",inline"`
+		Socket     string `yaml:"socket"`
 	}
 	Phpfpm struct {
 		module.Base
 		Config `yaml:",inline"`
-		client *client
-		Socket     string `yaml:"socket"`
-		env        map[string]string
+		httpClient	 *httpClient
+		socketClient socketClient
+
 	}
 )
 
-func (p *Phpfpm) validateConfig() error {
+func (p *Phpfpm) validateHttpConfig() error {
 	if err := p.ParseUserURL(); err != nil {
 		return err
 	}
@@ -62,16 +64,49 @@ func (p *Phpfpm) initClient() error {
 		return err
 	}
 
-	p.client = newClient(cl, p.Request)
+	p.httpClient = newClient(cl, p.Request)
 	return nil
 }
 
+func (p *Phpfpm) initSocket() error {
+
+	env := make(map[string]string)
+
+	env["SCRIPT_NAME"] = "/status"
+	env["SCRIPT_FILENAME"] = "/status"
+	env["SERVER_SOFTWARE"] = "go / fcgiclient "
+	env["REMOTE_ADDR"] = "127.0.0.1"
+	env["QUERY_STRING"] = "json&full"
+	env["REQUEST_METHOD"] = "GET"
+	env["CONTENT_TYPE"] = "application/json"
+	p.socketClient.socket = p.Socket
+
+	p.socketClient.env = env
+	return nil
+
+}
+func (p *Phpfpm) validateSocketConfig() bool {
+	if len(p.Socket) > 0 {
+		if _, err := os.Stat(p.Socket); err == nil {
+			return true
+		} else {
+			p.Errorf("the socket does not exist: %v", err)
+		}
+	}
+	return false
+}
+
 func (p *Phpfpm) Init() bool {
-	if p.isSocket() {
+
+	if p.validateSocketConfig() {
 		err := p.initSocket()
+		p.Debugf("using Socket %s", p.Socket)
+		p.Debugf("using timeout: %s", p.Timeout.Duration)
 		return err == nil
 	}
-	if err := p.validateConfig(); err != nil {
+
+
+	if err := p.validateHttpConfig(); err != nil {
 		p.Errorf("error on validating config: %v", err)
 		return false
 	}
@@ -94,10 +129,6 @@ func (Phpfpm) Charts() *Charts {
 }
 
 func (p *Phpfpm) Collect() map[string]int64 {
-
-	if p.isSocket() {
-		return p.collectSocket()
-	}
 	mx, err := p.collect()
 	if err != nil {
 		p.Error(err)
