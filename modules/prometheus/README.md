@@ -57,6 +57,7 @@ Here is an example:
 jobs:
   - name: node_exporter_local
     url: http://127.0.0.1:9100/metrics
+    # (allow[0] || allow[1] || ...) && !(deny[0] || deny[1] || ...)
     selector:
       allow:
         - <PATTERN>
