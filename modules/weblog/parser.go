@@ -83,6 +83,8 @@ func (w *WebLog) newParser(record []byte) (logs.Parser, error) {
 		w.Debugf("config: %+v", w.Parser.LogType)
 	case logs.TypeRegExp:
 		w.Debugf("config: %+v", w.Parser.RegExp)
+	case logs.TypeJSON:
+		w.Debugf("config: %+v", w.Parser.JSON)
 	}
 	return logs.NewParser(w.Parser, w.file)
 }
