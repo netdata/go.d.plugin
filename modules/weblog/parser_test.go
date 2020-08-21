@@ -42,6 +42,18 @@ func TestWebLog_guessParser(t *testing.T) {
 			},
 		},
 		{
+			name:           "guessed json",
+			wantParserType: logs.TypeJSON,
+			inputs: []string{
+				`{}`,
+				` {}`,
+				` {} `,
+				`{"host": "example.com"}`,
+				`{"host": "example.com","time": "2020-08-04T20:23:27+03:00", "upstream_response_time": "0.776", "remote_addr": "1.2.3.4"}`,
+				` {"host": "example.com","time": "2020-08-04T20:23:27+03:00", "upstream_response_time": "0.776", "remote_addr": "1.2.3.4"}	`,
+			},
+		},
+		{
 			name:    "unknown",
 			wantErr: true,
 			inputs: []string{
@@ -71,6 +83,8 @@ func TestWebLog_guessParser(t *testing.T) {
 						assert.IsType(t, (*logs.LTSVParser)(nil), p)
 					case logs.TypeCSV:
 						require.IsType(t, (*logs.CSVParser)(nil), p)
+					case logs.TypeJSON:
+						require.IsType(t, (*logs.JSONParser)(nil), p)
 					}
 				}
 			})

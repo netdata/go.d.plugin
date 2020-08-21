@@ -28,6 +28,7 @@ func New() *WebLog {
 			ValueDelimiter: ':',
 		},
 		RegExp: logs.RegExpConfig{},
+		JSON:   logs.JSONConfig{},
 	}
 	return &WebLog{
 		Config: Config{
