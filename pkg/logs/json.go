@@ -12,7 +12,7 @@ type JSONConfig struct {
 }
 
 type JSONParser struct {
-	reader *bufio.Reader
+	reader  *bufio.Reader
 	mapping map[string]string
 }
 
@@ -23,8 +23,8 @@ func NewJSONParser(config JSONConfig, in io.Reader) (*JSONParser, error) {
 	}
 
 	parser := &JSONParser{
-		reader:		bufio.NewReader(in),
-		mapping:	fieldMap,
+		reader:  bufio.NewReader(in),
+		mapping: fieldMap,
 	}
 
 	return parser, nil
@@ -48,11 +48,11 @@ func (p *JSONParser) Parse(row []byte, line LogLine) error {
 	}
 
 	/* Now map the fields */
-	for logField,logValue := range parsedLine {
+	for logField, logValue := range parsedLine {
 		/* Convert logValue to string */
 		stringValue := fmt.Sprintf("%v", logValue)
 
-		if err := line.Assign( p.mapField(logField), stringValue ); err != nil {
+		if err := line.Assign(p.mapField(logField), stringValue); err != nil {
 			return err
 		}
 	}
@@ -61,7 +61,7 @@ func (p *JSONParser) Parse(row []byte, line LogLine) error {
 }
 
 func (p *JSONParser) mapField(field string) string {
-	if newLogLineField,exist := p.mapping[field]; exist {
+	if newLogLineField, exist := p.mapping[field]; exist {
 		return newLogLineField
 	}
 	return field
