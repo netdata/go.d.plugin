@@ -61,7 +61,7 @@ func (p *JSONParser) Parse(row []byte, line LogLine) error {
 }
 
 func (p *JSONParser) mapField(field string) string {
-	if newLogLineField,exist := p.mapping[field]; exist == true {
+	if newLogLineField,exist := p.mapping[field]; exist {
 		return newLogLineField
 	}
 	return field
