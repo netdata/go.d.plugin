@@ -8,24 +8,25 @@ import (
 )
 
 func (p *Prometheus) collectHistogram(mx map[string]int64, pms prometheus.Metrics, meta prometheus.Metadata) {
+	if !pms[0].Labels.Has("le") {
+		return
+	}
+
 	sortHistogram(pms)
 	name := pms[0].Name()
 	if !p.cache.has(name) {
-		p.cache.put(name, &cacheEntry{
-			split:  newHistogramSplit(),
-			charts: make(chartsCache),
-			dims:   make(dimsCache),
-		})
+		p.cache.put(name, newCacheEntry(nil))
 	}
+
 	defer p.cleanupStaleHistogramCharts(name)
 
 	set := make(map[string]float64)
 	cache := p.cache.get(name)
 
 	for _, pm := range pms {
-		chartID := cache.split.chartID(pm)
-		dimID := cache.split.dimID(pm)
-		dimName := cache.split.dimName(pm)
+		chartID := defaultHistogramGroup.chartID(pm)
+		dimID := defaultHistogramGroup.dimID(pm)
+		dimName := defaultHistogramGroup.dimName(pm)
 
 		// {handler="/",le="0.1"} 1
 		// {handler="/",le="0.2"} 2

@@ -34,6 +34,33 @@ func TestPrometheus_Init(t *testing.T) {
 			},
 			wantFail: true,
 		},
+		"invalid grouping selector syntax": {
+			config: Config{
+				HTTP: web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
+				Grouping: []GroupOption{
+					{Selector: `name{label=#"value"}`, ByLabel: "label"},
+				},
+			},
+			wantFail: true,
+		},
+		"empty grouping selector": {
+			config: Config{
+				HTTP: web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
+				Grouping: []GroupOption{
+					{Selector: "", ByLabel: "label"},
+				},
+			},
+			wantFail: true,
+		},
+		"empty grouping 'by_label'": {
+			config: Config{
+				HTTP: web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
+				Grouping: []GroupOption{
+					{Selector: "name", ByLabel: ""},
+				},
+			},
+			wantFail: true,
+		},
 		"default": {
 			config:   New().Config,
 			wantFail: true,
@@ -83,7 +110,6 @@ func TestPrometheus_Check(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestPrometheus_Charts(t *testing.T) {
@@ -111,35 +137,24 @@ func TestPrometheus_Collect_ReturnsNilOnError(t *testing.T) {
 }
 
 func TestPrometheus_Collect(t *testing.T) {
-	tests := map[string]struct {
-		input             []string
-		expectedCollected map[string]int64
-	}{
-		`GAUGE metrics contains '\x' encoding`: {
-			input: []string{
-				`# HELP node_systemd_service_restart_total Current number of discovered targets.`,
-				`# TYPE node_systemd_service_restart_total gauge`,
-				`node_systemd_service_restart_total{state="systemd-fsck@dev-disk-by\\x2duuid-7D37\\x2dDD70.service"} 0`,
-				`node_systemd_service_restart_total{state="systemd-fsck@dev-disk-by\\x2duuid-eb5d5d19\\x2db0f6\\x2d4607\\x2dbebf\\x2de5bd557619e7.service"} 0`,
+	type testGroup map[string]struct {
+		input         [][]string
+		wantCollected map[string]int64
+	}
+
+	testGAUGE := testGroup{
+		"with metadata": {
+			input: [][]string{
+				{
+					`# HELP prometheus_sd_discovered_targets Current number of discovered targets.`,
+					`# TYPE prometheus_sd_discovered_targets gauge`,
+					`prometheus_sd_discovered_targets{config="config-0",name="notify"} 0`,
+					`prometheus_sd_discovered_targets{config="node_exporter",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets{config="node_exporter_notebook",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets{config="prometheus",name="scrape"} 1`,
+				},
 			},
-			expectedCollected: map[string]int64{
-				"node_systemd_service_restart_total|state=systemd-fsck@dev-disk-by-uuid-7D37-DD70.service":                            0,
-				"node_systemd_service_restart_total|state=systemd-fsck@dev-disk-by-uuid-eb5d5d19-b0f6-4607-bebf-e5bd557619e7.service": 0,
-				"series":  2,
-				"metrics": 1,
-				"charts":  int64(1 + len(statsCharts)),
-			},
-		},
-		"GAUGE metrics": {
-			input: []string{
-				`# HELP prometheus_sd_discovered_targets Current number of discovered targets.`,
-				`# TYPE prometheus_sd_discovered_targets gauge`,
-				`prometheus_sd_discovered_targets{config="config-0",name="notify"} 0`,
-				`prometheus_sd_discovered_targets{config="node_exporter",name="scrape"} 1`,
-				`prometheus_sd_discovered_targets{config="node_exporter_notebook",name="scrape"} 1`,
-				`prometheus_sd_discovered_targets{config="prometheus",name="scrape"} 1`,
-			},
-			expectedCollected: map[string]int64{
+			wantCollected: map[string]int64{
 				"prometheus_sd_discovered_targets|config=config-0,name=notify":               0,
 				"prometheus_sd_discovered_targets|config=node_exporter_notebook,name=scrape": 1000,
 				"prometheus_sd_discovered_targets|config=node_exporter,name=scrape":          1000,
@@ -149,14 +164,16 @@ func TestPrometheus_Collect(t *testing.T) {
 				"charts":  int64(1 + len(statsCharts)),
 			},
 		},
-		"GAUGE no meta metrics": {
-			input: []string{
-				`prometheus_sd_discovered_targets{config="config-0",name="notify"} 0`,
-				`prometheus_sd_discovered_targets{config="node_exporter",name="scrape"} 1`,
-				`prometheus_sd_discovered_targets{config="node_exporter_notebook",name="scrape"} 1`,
-				`prometheus_sd_discovered_targets{config="prometheus",name="scrape"} 1`,
+		"without metadata": {
+			input: [][]string{
+				{
+					`prometheus_sd_discovered_targets{config="config-0",name="notify"} 0`,
+					`prometheus_sd_discovered_targets{config="node_exporter",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets{config="node_exporter_notebook",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets{config="prometheus",name="scrape"} 1`,
+				},
 			},
-			expectedCollected: map[string]int64{
+			wantCollected: map[string]int64{
 				"prometheus_sd_discovered_targets|config=config-0,name=notify":               0,
 				"prometheus_sd_discovered_targets|config=node_exporter_notebook,name=scrape": 1000,
 				"prometheus_sd_discovered_targets|config=node_exporter,name=scrape":          1000,
@@ -166,17 +183,22 @@ func TestPrometheus_Collect(t *testing.T) {
 				"charts":  int64(1 + len(statsCharts)),
 			},
 		},
-		"COUNTER metrics": {
-			input: []string{
-				`# HELP prometheus_sd_kubernetes_events_total The number of Kubernetes events handled.`,
-				`# TYPE prometheus_sd_kubernetes_events_total counter`,
-				`prometheus_sd_kubernetes_events_total{event="add",role="endpoints"} 1`,
-				`prometheus_sd_kubernetes_events_total{event="add",role="ingress"} 2`,
-				`prometheus_sd_kubernetes_events_total{event="add",role="node"} 3`,
-				`prometheus_sd_kubernetes_events_total{event="add",role="pod"} 4`,
-				`prometheus_sd_kubernetes_events_total{event="add",role="service"} 5`,
+	}
+
+	testCOUNTER := testGroup{
+		"with metadata": {
+			input: [][]string{
+				{
+					`# HELP prometheus_sd_kubernetes_events_total The number of Kubernetes events handled.`,
+					`# TYPE prometheus_sd_kubernetes_events_total counter`,
+					`prometheus_sd_kubernetes_events_total{event="add",role="endpoints"} 1`,
+					`prometheus_sd_kubernetes_events_total{event="add",role="ingress"} 2`,
+					`prometheus_sd_kubernetes_events_total{event="add",role="node"} 3`,
+					`prometheus_sd_kubernetes_events_total{event="add",role="pod"} 4`,
+					`prometheus_sd_kubernetes_events_total{event="add",role="service"} 5`,
+				},
 			},
-			expectedCollected: map[string]int64{
+			wantCollected: map[string]int64{
 				"prometheus_sd_kubernetes_events_total|event=add,role=endpoints": 1000,
 				"prometheus_sd_kubernetes_events_total|event=add,role=ingress":   2000,
 				"prometheus_sd_kubernetes_events_total|event=add,role=node":      3000,
@@ -187,15 +209,17 @@ func TestPrometheus_Collect(t *testing.T) {
 				"charts":  int64(1 + len(statsCharts)),
 			},
 		},
-		"COUNTER no meta metrics": {
-			input: []string{
-				`prometheus_sd_kubernetes_events_total{event="add",role="endpoints"} 1`,
-				`prometheus_sd_kubernetes_events_total{event="add",role="ingress"} 2`,
-				`prometheus_sd_kubernetes_events_total{event="add",role="node"} 3`,
-				`prometheus_sd_kubernetes_events_total{event="add",role="pod"} 4`,
-				`prometheus_sd_kubernetes_events_total{event="add",role="service"} 5`,
+		"without metadata": {
+			input: [][]string{
+				{
+					`prometheus_sd_kubernetes_events_total{event="add",role="endpoints"} 1`,
+					`prometheus_sd_kubernetes_events_total{event="add",role="ingress"} 2`,
+					`prometheus_sd_kubernetes_events_total{event="add",role="node"} 3`,
+					`prometheus_sd_kubernetes_events_total{event="add",role="pod"} 4`,
+					`prometheus_sd_kubernetes_events_total{event="add",role="service"} 5`,
+				},
 			},
-			expectedCollected: map[string]int64{
+			wantCollected: map[string]int64{
 				"prometheus_sd_kubernetes_events_total|event=add,role=endpoints": 1000,
 				"prometheus_sd_kubernetes_events_total|event=add,role=ingress":   2000,
 				"prometheus_sd_kubernetes_events_total|event=add,role=node":      3000,
@@ -206,19 +230,24 @@ func TestPrometheus_Collect(t *testing.T) {
 				"charts":  int64(1 + len(statsCharts)),
 			},
 		},
-		"SUMMARY metrics": {
-			input: []string{
-				`# HELP prometheus_target_interval_length_seconds Actual intervals between scrapes.`,
-				`# TYPE prometheus_target_interval_length_seconds summary`,
-				`prometheus_target_interval_length_seconds{interval="15s",quantile="0.01"} 14.999892842`,
-				`prometheus_target_interval_length_seconds{interval="15s",quantile="0.05"} 14.999933467`,
-				`prometheus_target_interval_length_seconds{interval="15s",quantile="0.5"} 15.000030499`,
-				`prometheus_target_interval_length_seconds{interval="15s",quantile="0.9"} 15.000099345`,
-				`prometheus_target_interval_length_seconds{interval="15s",quantile="0.99"} 15.000169848`,
-				`prometheus_target_interval_length_seconds_sum{interval="15s"} 314505.6192476938`,
-				`prometheus_target_interval_length_seconds_count{interval="15s"} 20967`,
+	}
+
+	testSUMMARY := testGroup{
+		"with metadata": {
+			input: [][]string{
+				{
+					`# HELP prometheus_target_interval_length_seconds Actual intervals between scrapes.`,
+					`# TYPE prometheus_target_interval_length_seconds summary`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.01"} 14.999892842`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.05"} 14.999933467`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.5"} 15.000030499`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.9"} 15.000099345`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.99"} 15.000169848`,
+					`prometheus_target_interval_length_seconds_sum{interval="15s"} 314505.6192476938`,
+					`prometheus_target_interval_length_seconds_count{interval="15s"} 20967`,
+				},
 			},
-			expectedCollected: map[string]int64{
+			wantCollected: map[string]int64{
 				"prometheus_target_interval_length_seconds_count|interval=15s":         20967000,
 				"prometheus_target_interval_length_seconds_sum|interval=15s":           314505619,
 				"prometheus_target_interval_length_seconds|interval=15s,quantile=0.01": 14999,
@@ -231,17 +260,19 @@ func TestPrometheus_Collect(t *testing.T) {
 				"charts":  int64(3 + len(statsCharts)),
 			},
 		},
-		"SUMMARY no meta metrics": {
-			input: []string{
-				`prometheus_target_interval_length_seconds{interval="15s",quantile="0.01"} 14.999892842`,
-				`prometheus_target_interval_length_seconds{interval="15s",quantile="0.05"} 14.999933467`,
-				`prometheus_target_interval_length_seconds{interval="15s",quantile="0.5"} 15.000030499`,
-				`prometheus_target_interval_length_seconds{interval="15s",quantile="0.9"} 15.000099345`,
-				`prometheus_target_interval_length_seconds{interval="15s",quantile="0.99"} 15.000169848`,
-				`prometheus_target_interval_length_seconds_sum{interval="15s"} 314505.6192476938`,
-				`prometheus_target_interval_length_seconds_count{interval="15s"} 20967`,
+		"without metadata": {
+			input: [][]string{
+				{
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.01"} 14.999892842`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.05"} 14.999933467`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.5"} 15.000030499`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.9"} 15.000099345`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.99"} 15.000169848`,
+					`prometheus_target_interval_length_seconds_sum{interval="15s"} 314505.6192476938`,
+					`prometheus_target_interval_length_seconds_count{interval="15s"} 20967`,
+				},
 			},
-			expectedCollected: map[string]int64{
+			wantCollected: map[string]int64{
 				"prometheus_target_interval_length_seconds_count|interval=15s":         20967000,
 				"prometheus_target_interval_length_seconds_sum|interval=15s":           314505619,
 				"prometheus_target_interval_length_seconds|interval=15s,quantile=0.01": 14999,
@@ -254,25 +285,30 @@ func TestPrometheus_Collect(t *testing.T) {
 				"charts":  int64(3 + len(statsCharts)),
 			},
 		},
-		"HISTOGRAM metrics": {
-			input: []string{
-				`# HELP prometheus_tsdb_compaction_chunk_range_seconds Final time range`,
-				`# TYPE prometheus_tsdb_compaction_chunk_range_seconds histogram`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="100"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="400"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1600"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6400"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="25600"} 1`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="102400"} 1`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="409600"} 1`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1.6384e+06"} 2000`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6.5536e+06"} 84164`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="2.62144e+07"} 84164`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="+Inf"} 84164`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_sum 1.50091952011e+11`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_count 84164`,
+	}
+
+	testHISTOGRAM := testGroup{
+		"with metadata": {
+			input: [][]string{
+				{
+					`# HELP prometheus_tsdb_compaction_chunk_range_seconds Final time range`,
+					`# TYPE prometheus_tsdb_compaction_chunk_range_seconds histogram`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="100"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="400"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1600"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6400"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="25600"} 1`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="102400"} 1`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="409600"} 1`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1.6384e+06"} 2000`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6.5536e+06"} 84164`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="2.62144e+07"} 84164`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="+Inf"} 84164`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_sum 1.50091952011e+11`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_count 84164`,
+				},
 			},
-			expectedCollected: map[string]int64{
+			wantCollected: map[string]int64{
 				"prometheus_tsdb_compaction_chunk_range_seconds_bucket|le=+Inf":        0,
 				"prometheus_tsdb_compaction_chunk_range_seconds_bucket|le=1.6384e+06":  1999000,
 				"prometheus_tsdb_compaction_chunk_range_seconds_bucket|le=100":         0,
@@ -291,23 +327,25 @@ func TestPrometheus_Collect(t *testing.T) {
 				"charts":  int64(3 + len(statsCharts)),
 			},
 		},
-		"HISTOGRAM no meta metrics": {
-			input: []string{
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="100"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="400"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1600"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6400"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="25600"} 1`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="102400"} 1`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="409600"} 1`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1.6384e+06"} 2000`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6.5536e+06"} 84164`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="2.62144e+07"} 84164`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="+Inf"} 84164`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_sum 1.50091952011e+11`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_count 84164`,
+		"without metadata": {
+			input: [][]string{
+				{
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="100"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="400"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1600"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6400"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="25600"} 1`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="102400"} 1`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="409600"} 1`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1.6384e+06"} 2000`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6.5536e+06"} 84164`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="2.62144e+07"} 84164`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="+Inf"} 84164`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_sum 1.50091952011e+11`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_count 84164`,
+				},
 			},
-			expectedCollected: map[string]int64{
+			wantCollected: map[string]int64{
 				"prometheus_tsdb_compaction_chunk_range_seconds_bucket|le=+Inf":        0,
 				"prometheus_tsdb_compaction_chunk_range_seconds_bucket|le=1.6384e+06":  1999000,
 				"prometheus_tsdb_compaction_chunk_range_seconds_bucket|le=100":         0,
@@ -328,47 +366,79 @@ func TestPrometheus_Collect(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			input := strings.Join(test.input, "\n")
-			prom, cleanup := preparePrometheus(t, input)
-			defer cleanup()
+	testSanitize := testGroup{
+		`metric contains '\x' encoding`: {
+			input: [][]string{
+				{
+					`# HELP node_restart_total Current number of discovered targets.`,
+					`# TYPE node_restart_total gauge`,
+					`node_restart_total{state="systemd-fsck@dev-disk-by\\x2duuid\\x2dDD70.service"} 0`,
+				},
+			},
+			wantCollected: map[string]int64{
+				"node_restart_total|state=systemd-fsck@dev-disk-by-uuid-DD70.service": 0,
 
-			var collected map[string]int64
+				"series":  1,
+				"metrics": 1,
+				"charts":  int64(1 + len(statsCharts)),
+			},
+		},
+	}
 
-			for i := 0; i < 10; i++ {
-				collected = prom.Collect()
-			}
+	tests := map[string]testGroup{
+		"GAUGE":     testGAUGE,
+		"COUNTER":   testCOUNTER,
+		"SUMMARY":   testSUMMARY,
+		"HISTOGRAM": testHISTOGRAM,
+		"Sanitize":  testSanitize,
+	}
 
-			assert.Equal(t, test.expectedCollected, collected)
-			ensureCollectedHasAllChartsDimsVarsIDs(t, prom, collected)
-		})
+	for groupName, group := range tests {
+		for name, test := range group {
+			name = fmt.Sprintf("%s: %s", groupName, name)
+
+			t.Run(name, func(t *testing.T) {
+				prom, cleanup := preparePrometheus(t, test.input)
+				defer cleanup()
+
+				var collected map[string]int64
+
+				for i := 0; i < 10; i++ {
+					collected = prom.Collect()
+				}
+
+				assert.Equal(t, test.wantCollected, collected)
+				ensureCollectedHasAllChartsDimsVarsIDs(t, prom, collected)
+			})
+		}
 	}
 }
 
 func TestPrometheus_Collect_WithSelector(t *testing.T) {
 	tests := map[string]struct {
-		input             []string
+		input             [][]string
 		sr                selector.Expr
 		expectedCollected map[string]int64
 	}{
 		"simple filtering": {
-			input: []string{
-				`# HELP prometheus_tsdb_compaction_chunk_range_seconds Final time range`,
-				`# TYPE prometheus_tsdb_compaction_chunk_range_seconds histogram`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="100"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="400"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1600"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6400"} 0`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="25600"} 1`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="102400"} 1`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="409600"} 1`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1.6384e+06"} 2000`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6.5536e+06"} 84164`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="2.62144e+07"} 84164`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="+Inf"} 84164`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_sum 1.50091952011e+11`,
-				`prometheus_tsdb_compaction_chunk_range_seconds_count 84164`,
+			input: [][]string{
+				{
+					`# HELP prometheus_tsdb_compaction_chunk_range_seconds Final time range`,
+					`# TYPE prometheus_tsdb_compaction_chunk_range_seconds histogram`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="100"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="400"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1600"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6400"} 0`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="25600"} 1`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="102400"} 1`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="409600"} 1`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="1.6384e+06"} 2000`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="6.5536e+06"} 84164`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="2.62144e+07"} 84164`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_bucket{le="+Inf"} 84164`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_sum 1.50091952011e+11`,
+					`prometheus_tsdb_compaction_chunk_range_seconds_count 84164`,
+				},
 			},
 			sr: selector.Expr{
 				Allow: []string{
@@ -387,8 +457,7 @@ func TestPrometheus_Collect_WithSelector(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			input := strings.Join(test.input, "\n")
-			prom, cleanup := preparePrometheusWithSelector(t, input, test.sr)
+			prom, cleanup := preparePrometheusWithSelector(t, test.input, test.sr)
 			defer cleanup()
 
 			var collected map[string]int64
@@ -403,75 +472,80 @@ func TestPrometheus_Collect_WithSelector(t *testing.T) {
 	}
 }
 
-func TestPrometheus_Collect_Split(t *testing.T) {
-	tests := map[string]struct {
-		input                   [][]string
-		expectedNumCharts       int
-		expectedNumActiveCharts int
-	}{
-		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: metrics <= desired": {
+func TestPrometheus_Collect_DefaultGrouping(t *testing.T) {
+	type testGroup map[string]struct {
+		input            [][]string
+		wantCharts       int
+		wantActiveCharts int
+	}
+
+	testGAUGEAndCOUNTER := testGroup{
+		"scrapes| 1st: <= desired": {
 			input: [][]string{
-				genMetrics(desiredDim),
+				genSimpleMetrics(desiredDim),
 			},
-			expectedNumCharts:       1,
-			expectedNumActiveCharts: 1,
+			wantCharts:       1,
+			wantActiveCharts: 1,
 		},
-		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: > desired": {
+		"scrapes| 1st: > desired (split into 2)": {
 			input: [][]string{
-				genMetrics(desiredDim + 1),
+				genSimpleMetrics(desiredDim + 1),
 			},
-			expectedNumCharts:       2,
-			expectedNumActiveCharts: 2,
+			wantCharts:       2,
+			wantActiveCharts: 2,
 		},
-		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: <= desired, 2nd: == max": {
+		"scrapes| 1st: > desired (split into 4)": {
 			input: [][]string{
-				genMetrics(desiredDim),
-				genMetrics(maxDim),
+				genSimpleMetrics(desiredDim*3 + 1),
 			},
-			expectedNumCharts:       1,
-			expectedNumActiveCharts: 1,
+			wantCharts:       4,
+			wantActiveCharts: 4,
 		},
-		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: <= desired, 2nd: > max": {
+		"scrapes| 1st: <= desired, 2nd: == max": {
 			input: [][]string{
-				genMetrics(desiredDim),
-				genMetrics(maxDim + 1),
+				genSimpleMetrics(desiredDim),
+				genSimpleMetrics(maxDim),
 			},
-			expectedNumCharts:       3,
-			expectedNumActiveCharts: 2,
+			wantCharts:       1,
+			wantActiveCharts: 1,
 		},
-		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: > desired, 2nd: > max": {
+		"scrapes| 1st: <= desired, 2nd: > max": {
 			input: [][]string{
-				genMetrics(desiredDim + 1),
-				genMetrics(maxDim*2 + 1),
+				genSimpleMetrics(desiredDim),
+				genSimpleMetrics(maxDim + 1),
 			},
-			expectedNumCharts:       5,
-			expectedNumActiveCharts: 3,
+			wantCharts:       3,
+			wantActiveCharts: 2,
 		},
-		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: <= desired, 2nd: == max, 3rd: > max": {
+		"scrapes| 1st: > desired, 2nd: > max": {
 			input: [][]string{
-				genMetrics(desiredDim),
-				genMetrics(maxDim),
-				genMetrics(maxDim + 1),
+				genSimpleMetrics(desiredDim + 1),
+				genSimpleMetrics(maxDim*2 + 1),
 			},
-			expectedNumCharts:       3,
-			expectedNumActiveCharts: 2,
+			wantCharts:       5,
+			wantActiveCharts: 3,
 		},
-		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: > max number of charts": {
+		"scrapes| 1st: <= desired, 2nd: == max, 3rd: > max": {
 			input: [][]string{
-				genMetrics(desiredDim*maxChartsPerMetric + 1),
+				genSimpleMetrics(desiredDim),
+				genSimpleMetrics(maxDim),
+				genSimpleMetrics(maxDim + 1),
 			},
-			expectedNumCharts:       0,
-			expectedNumActiveCharts: 0,
+			wantCharts:       3,
+			wantActiveCharts: 2,
 		},
-		"GAUGE|COUNTER|UNKNOWN, scrapes: 1st: = desired, 2nd: = desired but different set": {
+		"scrapes| 1st: = desired, 2nd: = desired but different set": {
 			input: [][]string{
-				genMetrics(desiredDim),
-				genMetricsStart(desiredDim+1, desiredDim),
+				genSimpleMetrics(desiredDim),
+				genSimpleMetricsFrom(desiredDim+1, desiredDim),
 			},
-			expectedNumCharts:       2,
-			expectedNumActiveCharts: 1,
+			wantCharts:       2,
+			wantActiveCharts: 1,
 		},
-		"SUMMARY, several time series": {
+	}
+
+	testSUMMARY := testGroup{
+		"several time series in one scrape": {
 			input: [][]string{
 				{
 					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.01"} 14.999892842`,
@@ -481,6 +555,7 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.99"} 15.000169848`,
 					`prometheus_target_interval_length_seconds_sum{interval="15s"} 314505.6192476938`,
 					`prometheus_target_interval_length_seconds_count{interval="15s"} 20967`,
+
 					`prometheus_target_interval_length_seconds{interval="30s",quantile="0.01"} 14.999892842`,
 					`prometheus_target_interval_length_seconds{interval="30s",quantile="0.05"} 14.999933467`,
 					`prometheus_target_interval_length_seconds{interval="30s",quantile="0.5"} 15.000030499`,
@@ -490,10 +565,37 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 					`prometheus_target_interval_length_seconds_count{interval="30s"} 20967`,
 				},
 			},
-			expectedNumCharts:       4,
-			expectedNumActiveCharts: 4,
+			wantCharts:       4,
+			wantActiveCharts: 4,
 		},
-		"HISTOGRAM, several time series": {
+		"several time series in several scrapes": {
+			input: [][]string{
+				{
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.01"} 14.999892842`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.05"} 14.999933467`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.5"} 15.000030499`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.9"} 15.000099345`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.99"} 15.000169848`,
+					`prometheus_target_interval_length_seconds_sum{interval="15s"} 314505.6192476938`,
+					`prometheus_target_interval_length_seconds_count{interval="15s"} 20967`,
+				},
+				{
+					`prometheus_target_interval_length_seconds{interval="30s",quantile="0.01"} 14.999892842`,
+					`prometheus_target_interval_length_seconds{interval="30s",quantile="0.05"} 14.999933467`,
+					`prometheus_target_interval_length_seconds{interval="30s",quantile="0.5"} 15.000030499`,
+					`prometheus_target_interval_length_seconds{interval="30s",quantile="0.9"} 15.000099345`,
+					`prometheus_target_interval_length_seconds{interval="30s",quantile="0.99"} 15.000169848`,
+					`prometheus_target_interval_length_seconds_sum{interval="30s"} 314505.6192476938`,
+					`prometheus_target_interval_length_seconds_count{interval="30s"} 20967`,
+				},
+			},
+			wantCharts:       4,
+			wantActiveCharts: 4,
+		},
+	}
+
+	testHISTOGRAM := testGroup{
+		"several time series in one scrape": {
 			input: [][]string{
 				{
 					`prometheus_http_request_duration_seconds_bucket{handler="/",le="0.1"} 1`,
@@ -508,6 +610,7 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 					`prometheus_http_request_duration_seconds_bucket{handler="/",le="+Inf"} 1`,
 					`prometheus_http_request_duration_seconds_sum{handler="/"} 5.9042e-05`,
 					`prometheus_http_request_duration_seconds_count{handler="/"} 1`,
+
 					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="0.1"} 1`,
 					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="0.2"} 1`,
 					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="0.4"} 1`,
@@ -522,44 +625,323 @@ func TestPrometheus_Collect_Split(t *testing.T) {
 					`prometheus_http_request_duration_seconds_count{handler="/metrics"} 1`,
 				},
 			},
-			expectedNumCharts:       4,
-			expectedNumActiveCharts: 4,
+			wantCharts:       4,
+			wantActiveCharts: 4,
+		},
+		"several time series in several scrapes": {
+			input: [][]string{
+				{
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="0.1"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="0.2"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="0.4"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="1"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="3"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="8"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="20"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="60"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="120"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="+Inf"} 1`,
+					`prometheus_http_request_duration_seconds_sum{handler="/"} 5.9042e-05`,
+					`prometheus_http_request_duration_seconds_count{handler="/"} 1`,
+				},
+				{
+					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="0.1"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="0.2"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="0.4"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="1"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="3"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="8"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="20"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="60"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="120"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/metrics",le="+Inf"} 1`,
+					`prometheus_http_request_duration_seconds_sum{handler="/metrics"} 5.9042e-05`,
+					`prometheus_http_request_duration_seconds_count{handler="/metrics"} 1`,
+				},
+			},
+			wantCharts:       4,
+			wantActiveCharts: 4,
 		},
 	}
 
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			var input []string
-			for _, v := range test.input {
-				input = append(input, strings.Join(v, "\n"))
-			}
-			prom, cleanup := preparePrometheusDynamic(t, input)
-			defer cleanup()
+	tests := map[string]testGroup{
+		"GAUGE,COUNTER": testGAUGEAndCOUNTER,
+		"SUMMARY":       testSUMMARY,
+		"HISTOGRAM":     testHISTOGRAM,
+	}
 
-			for i := 0; i < len(input); i++ {
-				prom.Collect()
-			}
+	for groupName, group := range tests {
+		for name, test := range group {
+			name = fmt.Sprintf("%s: %s", groupName, name)
 
-			var active int
-			for _, chart := range *prom.Charts() {
-				if !chart.Obsolete {
-					active++
+			t.Run(name, func(t *testing.T) {
+				prom, cleanup := preparePrometheus(t, test.input)
+				defer cleanup()
+
+				for i := 0; i < len(test.input); i++ {
+					prom.Collect()
 				}
-			}
 
-			assert.Equalf(t, test.expectedNumCharts+len(statsCharts), len(*prom.Charts()), "expected charts")
-			assert.Equalf(t, test.expectedNumActiveCharts+len(statsCharts), active, "expected active charts")
-		})
+				var active int
+				for _, chart := range *prom.Charts() {
+					if !chart.Obsolete {
+						active++
+					}
+				}
+				test.wantCharts += len(statsCharts)
+				test.wantActiveCharts += len(statsCharts)
+
+				assert.Equalf(t, test.wantCharts, len(*prom.Charts()), "expected charts")
+				assert.Equalf(t, test.wantActiveCharts, active, "expected active charts")
+			})
+		}
 	}
 }
 
-func genMetrics(num int) (metrics []string) {
-	return genMetricsStart(0, num)
+func TestPrometheus_Collect_UserDefinedGrouping(t *testing.T) {
+	type testGroup map[string]struct {
+		input            [][]string
+		grouping         []GroupOption
+		wantCharts       int
+		wantActiveCharts int
+	}
+
+	testGAUGEAndCOUNTER := testGroup{
+		"not matches, one grouping": {
+			input: [][]string{
+				genMetrics("generated", 0, desiredDim),
+			},
+			grouping: []GroupOption{
+				{Selector: "generated_not_exists", ByLabel: "value"},
+			},
+			wantCharts:       1,
+			wantActiveCharts: 1,
+		},
+		"not matches, several groupings": {
+			input: [][]string{
+				genMetrics("generated", 0, desiredDim),
+			},
+			grouping: []GroupOption{
+				{Selector: "generated_not_exists1", ByLabel: "value"},
+				{Selector: "generated_not_exists2", ByLabel: "value"},
+			},
+			wantCharts:       1,
+			wantActiveCharts: 1,
+		},
+		"matches but no label": {
+			input: [][]string{
+				genMetrics("generated", 0, desiredDim),
+			},
+			grouping: []GroupOption{
+				{Selector: "generated", ByLabel: "value_not_exists"},
+			},
+			wantCharts:       1,
+			wantActiveCharts: 1,
+		},
+		"matches, one grouping": {
+			input: [][]string{
+				genMetrics("generated", 0, desiredDim),
+				genMetrics("generated_not_matches", 0, desiredDim),
+			},
+			grouping: []GroupOption{
+				{Selector: "generated", ByLabel: "value"},
+			},
+			wantCharts:       3,
+			wantActiveCharts: 3,
+		},
+		"partial matches, one grouping": {
+			input: [][]string{
+				genMetrics("generated", 0, desiredDim),
+				genMetrics("generated_not_matches", 0, desiredDim),
+			},
+			grouping: []GroupOption{
+				{Selector: `generated{value="odd"}`, ByLabel: "value"},
+			},
+			wantCharts:       3,
+			wantActiveCharts: 3,
+		},
+		"matches, several groupings": {
+			input: [][]string{
+				genMetrics("generated1", 0, desiredDim),
+				genMetrics("generated2", 0, desiredDim),
+				genMetrics("generated_not_matches", 0, desiredDim),
+			},
+			grouping: []GroupOption{
+				{Selector: "generated1", ByLabel: "value"},
+				{Selector: "generated2", ByLabel: "value"},
+			},
+			wantCharts:       5,
+			wantActiveCharts: 5,
+		},
+		"partial matches, several groupings": {
+			input: [][]string{
+				genMetrics("generated1", 0, desiredDim),
+				genMetrics("generated2", 0, desiredDim),
+				genMetrics("generated_not_matches", 0, desiredDim),
+			},
+			grouping: []GroupOption{
+				{Selector: `generated1{value="odd"}`, ByLabel: "value"},
+				{Selector: `generated2{value="odd"}`, ByLabel: "value"},
+			},
+			wantCharts:       5,
+			wantActiveCharts: 5,
+		},
+		"matches, one grouping, one chart > desired": {
+			input: [][]string{
+				genMetrics("generated", 0, desiredDim*2+1),
+				genMetrics("generated_not_matches", 0, desiredDim),
+			},
+			grouping: []GroupOption{
+				{Selector: "generated", ByLabel: "value"},
+			},
+			wantCharts:       4,
+			wantActiveCharts: 4,
+		},
+		"matches, one grouping, two charts > desired": {
+			input: [][]string{
+				genMetrics("generated", 0, desiredDim*2+2),
+				genMetrics("generated_not_matches", 0, desiredDim),
+			},
+			grouping: []GroupOption{
+				{Selector: "generated", ByLabel: "value"},
+			},
+			wantCharts:       5,
+			wantActiveCharts: 5,
+		},
+		"matches, one grouping, 1st scrape < desired, 2nd = max": {
+			input: [][]string{
+				genMetrics("generated", 0, desiredDim*2),
+				genMetrics("generated", 0, maxDim*2),
+			},
+			grouping: []GroupOption{
+				{Selector: "generated", ByLabel: "value"},
+			},
+			wantCharts:       2,
+			wantActiveCharts: 2,
+		},
+		"matches, one grouping, 1st scrape < desired, 2nd > max": {
+			input: [][]string{
+				genMetrics("generated", 0, desiredDim*2),
+				genMetrics("generated", 0, maxDim*2+1),
+			},
+			grouping: []GroupOption{
+				{Selector: "generated", ByLabel: "value"},
+			},
+			wantCharts:       6,
+			wantActiveCharts: 4,
+		},
+		"group by 2 labels": {
+			input: [][]string{
+				genMetrics("generated", 0, 4),
+			},
+			grouping: []GroupOption{
+				{Selector: "generated", ByLabel: "number value"},
+			},
+			wantCharts:       4,
+			wantActiveCharts: 4,
+		},
+	}
+
+	testSUMMARY := testGroup{
+		"grouping matches, but doesnt apply": {
+			input: [][]string{
+				{
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.01"} 14.999892842`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.05"} 14.999933467`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.5"} 15.000030499`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.9"} 15.000099345`,
+					`prometheus_target_interval_length_seconds{interval="15s",quantile="0.99"} 15.000169848`,
+				},
+			},
+			grouping: []GroupOption{
+				{
+					Selector: "prometheus_target_interval_length_seconds",
+					ByLabel:  "quantile",
+				},
+			},
+			wantCharts:       1,
+			wantActiveCharts: 1,
+		},
+	}
+
+	testHISTOGRAM := testGroup{
+		"grouping matches, but doesnt apply": {
+			input: [][]string{
+				{
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="0.1"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="0.2"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="0.4"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="1"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="3"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="8"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="20"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="60"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="120"} 1`,
+					`prometheus_http_request_duration_seconds_bucket{handler="/",le="+Inf"} 1`,
+				},
+			},
+			grouping: []GroupOption{
+				{
+					Selector: "prometheus_http_request_duration_seconds_bucket",
+					ByLabel:  "le",
+				},
+			},
+			wantCharts:       1,
+			wantActiveCharts: 1,
+		},
+	}
+
+	tests := map[string]testGroup{
+		"GAUGE,COUNTER": testGAUGEAndCOUNTER,
+		"SUMMARY":       testSUMMARY,
+		"HISTOGRAM":     testHISTOGRAM,
+	}
+
+	for groupName, group := range tests {
+		for name, test := range group {
+			name = fmt.Sprintf("%s: %s", groupName, name)
+
+			t.Run(name, func(t *testing.T) {
+				prom, cleanup := preparePrometheusWithGrouping(t, test.input, test.grouping)
+				defer cleanup()
+
+				for i := 0; i < len(test.input); i++ {
+					prom.Collect()
+				}
+
+				var active int
+				for _, chart := range *prom.Charts() {
+					if !chart.Obsolete {
+						active++
+					}
+					fmt.Println(chart.ID, len(chart.Dims))
+				}
+				test.wantCharts += len(statsCharts)
+				test.wantActiveCharts += len(statsCharts)
+
+				assert.Equalf(t, test.wantCharts, len(*prom.Charts()), "expected charts")
+				assert.Equalf(t, test.wantActiveCharts, active, "expected active charts")
+			})
+		}
+	}
 }
 
-func genMetricsStart(start, num int) (metrics []string) {
-	for i := start; i < start+num; i++ {
-		line := fmt.Sprintf(`netdata_generated_metric_count{number="%d"} %d`, i, i)
+func genSimpleMetrics(num int) (metrics []string) {
+	return genMetrics("netdata_generated_metric_count", 0, num)
+}
+
+func genSimpleMetricsFrom(start, num int) (metrics []string) {
+	return genMetrics("netdata_generated_metric_count", start, num)
+}
+
+func genMetrics(name string, start, end int) (metrics []string) {
+	var line string
+	for i := start; i < start+end; i++ {
+		if i%2 == 0 {
+			line = fmt.Sprintf(`%s{number="%d",value="even"} %d`, name, i, i)
+		} else {
+			line = fmt.Sprintf(`%s{number="%d",value="odd"} %d`, name, i, i)
+		}
 		metrics = append(metrics, line)
 	}
 	return metrics
@@ -581,13 +963,11 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, prom *Prometheus, coll
 	}
 }
 
-func preparePrometheus(t *testing.T, metrics string) (*Prometheus, func()) {
+func preparePrometheus(t *testing.T, metrics [][]string) (*Prometheus, func()) {
 	t.Helper()
-	srv := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte(metrics))
-		}))
+	require.NotZero(t, metrics)
 
+	srv := preparePrometheusEndpoint(metrics)
 	prom := New()
 	prom.UserURL = srv.URL
 	require.True(t, prom.Init())
@@ -595,12 +975,10 @@ func preparePrometheus(t *testing.T, metrics string) (*Prometheus, func()) {
 	return prom, srv.Close
 }
 
-func preparePrometheusWithSelector(t *testing.T, metrics string, sr selector.Expr) (*Prometheus, func()) {
+func preparePrometheusWithSelector(t *testing.T, metrics [][]string, sr selector.Expr) (*Prometheus, func()) {
 	t.Helper()
-	srv := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte(metrics))
-		}))
+	require.NotZero(t, metrics)
+	srv := preparePrometheusEndpoint(metrics)
 
 	prom := New()
 	prom.UserURL = srv.URL
@@ -610,22 +988,14 @@ func preparePrometheusWithSelector(t *testing.T, metrics string, sr selector.Exp
 	return prom, srv.Close
 }
 
-func preparePrometheusDynamic(t *testing.T, metrics []string) (*Prometheus, func()) {
+func preparePrometheusWithGrouping(t *testing.T, metrics [][]string, grp []GroupOption) (*Prometheus, func()) {
 	t.Helper()
 	require.NotZero(t, metrics)
-	var i int
-	srv := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			if i <= len(metrics)-1 {
-				_, _ = w.Write([]byte(metrics[i]))
-			} else {
-				_, _ = w.Write([]byte(metrics[len(metrics)-1]))
-			}
-			i++
-		}))
+	srv := preparePrometheusEndpoint(metrics)
 
 	prom := New()
 	prom.UserURL = srv.URL
+	prom.Grouping = grp
 	require.True(t, prom.Init())
 
 	return prom, srv.Close
@@ -679,4 +1049,21 @@ func preparePrometheusConnectionRefused(t *testing.T) (*Prometheus, func()) {
 	require.True(t, prom.Init())
 
 	return prom, func() {}
+}
+
+func preparePrometheusEndpoint(metrics [][]string) *httptest.Server {
+	var rv []string
+	for _, v := range metrics {
+		rv = append(rv, strings.Join(v, "\n"))
+	}
+	var i int
+	return httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			if i <= len(metrics)-1 {
+				_, _ = w.Write([]byte(rv[i]))
+			} else {
+				_, _ = w.Write([]byte(rv[len(rv)-1]))
+			}
+			i++
+		}))
 }

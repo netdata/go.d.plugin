@@ -34,6 +34,12 @@ func (s labelSelector) Matches(lbs labels.Labels) bool {
 	return false
 }
 
+type Func func(lbs labels.Labels) bool
+
+func (fn Func) Matches(lbs labels.Labels) bool {
+	return fn(lbs)
+}
+
 func lookupLabel(name string, lbs labels.Labels) (labels.Label, bool) {
 	for _, label := range lbs {
 		if label.Name == name {

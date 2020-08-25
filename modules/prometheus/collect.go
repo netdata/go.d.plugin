@@ -39,15 +39,7 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 		case textparse.MetricTypeHistogram:
 			p.collectHistogram(mx, metrics, meta)
 		case textparse.MetricTypeUnknown:
-			pm := metrics[0]
-			switch {
-			case pm.Labels.Has("quantile"):
-				p.collectSummary(mx, metrics, meta)
-			case pm.Labels.Has("le"):
-				p.collectHistogram(mx, metrics, meta)
-			default:
-				p.collectAny(mx, metrics, meta)
-			}
+			p.collectUnknown(mx, metrics, meta)
 		}
 	}
 	p.Debugf("time series: %d, metrics: %d, charts: %d", len(pms), len(names), len(*p.Charts()))

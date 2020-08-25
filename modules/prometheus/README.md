@@ -69,6 +69,118 @@ jobs:
 
 To find `PATTERN` syntax description and more examples see [selectors readme](https://github.com/netdata/go.d.plugin/tree/master/pkg/prometheus/selector#time-series-selector).
 
+### Time Series Grouping
+
+This module groups time series into charts. It has built-in grouping logic (based on metric type).
+It is possible to extend it via `group` configuration option. 
+
+#### Gauge and Counter
+
+-   A chart per every metric.
+-   Dimensions are labels sets.
+-   Dimensions per chart limit is `50`. If there is more dimensions the chart split into several charts.
+-   Values as is.
+
+For instance, the following time series produce 1 chart.
+
+```cmd
+example_device_cur_state{name="0",type="Fan"} 0
+example_device_cur_state{name="1",type="Fan"} 0
+example_device_cur_state{name="10",type="Processor"} 0
+example_device_cur_state{name="11",type="intel_powerclamp"} -1
+example_device_cur_state{name="2",type="Fan"} 0
+example_device_cur_state{name="3",type="Fan"} 0
+example_device_cur_state{name="4",type="Fan"} 0
+example_device_cur_state{name="5",type="Processor"} 0
+example_device_cur_state{name="6",type="Processor"} 0
+example_device_cur_state{name="7",type="Processor"} 0
+example_device_cur_state{name="8",type="Processor"} 0
+example_device_cur_state{name="9",type="Processor"} 0
+```
+
+#### Custom Grouping (Gauge and Counter only)
+
+To group time series use `group` configuration option.
+
+Here is an example:
+
+```yaml
+jobs:
+  - name: node_exporter_local
+    url: http://127.0.0.1:9100/metrics
+    group:
+      - selector: <PATTERN>
+        by_label: <a space separated list of labels names>
+      - selector: <PATTERN>
+        by_label: <a space separated list of labels names> 
+```
+
+To find `PATTERN` syntax description and more examples see [selectors readme](https://github.com/netdata/go.d.plugin/tree/master/pkg/prometheus/selector#time-series-selector).
+
+This example configuration groups all time series with metric names equal to `example_device_cur_state`
+into multiple charts by `type` label. Number of charts is equal to number of `type` label values.
+
+```yaml
+jobs:
+  - name: node_exporter_local
+    url: http://127.0.0.1:9100/metrics
+    group:
+      - selector: example_device_cur_state
+        by_label: type 
+```
+
+
+#### Summary
+
+-   A chart per time series (label set).
+-   Dimensions are quantiles.
+-   Values as is.  
+
+For instance, the following time series produce 2 charts.
+
+```cmd
+example_duration_seconds{interval="15s",quantile="0"} 4.693e-06
+example_duration_seconds{interval="15s",quantile="0.25"} 2.4383e-05
+example_duration_seconds{interval="15s",quantile="0.5"} 0.00013458
+example_duration_seconds{interval="15s",quantile="0.75"} 0.000195183
+example_duration_seconds{interval="15s",quantile="1"} 0.005386229
+
+example_duration_seconds{interval="30s",quantile="0"} 4.693e-06
+example_duration_seconds{interval="30s",quantile="0.25"} 2.4383e-05
+example_duration_seconds{interval="30s",quantile="0.5"} 0.00013458
+example_duration_seconds{interval="30s",quantile="0.75"} 0.000195183
+example_duration_seconds{interval="30s",quantile="1"} 0.005386229
+```
+
+#### Histogram
+
+-   A chart per time series (label set).
+-   Dimensions are `le` buckets.
+-   Values are not as is because histogram buckets are cumulative (`le="0.3"` contains `le="1.2"`).
+    We calculate exact values for all buckets.  
+
+For instance, the following time series produce 2 charts.
+
+```cmd
+example_seconds_bucket{interval="15s",le="0.1"} 0
+example_seconds_bucket{interval="15s",le="0.25"} 0
+example_seconds_bucket{interval="15s",le="0.5"} 0
+example_seconds_bucket{interval="15s",le="1"} 0
+example_seconds_bucket{interval="15s",le="2.5"} 0
+example_seconds_bucket{interval="15s",le="5"} 0
+example_seconds_bucket{interval="15s",le="+Inf"} 0
+
+example_seconds_bucket{interval="30s",le="0.1"} 0
+example_seconds_bucket{interval="30s",le="0.25"} 0
+example_seconds_bucket{interval="30s",le="0.5"} 0
+example_seconds_bucket{interval="30s",le="1"} 0
+example_seconds_bucket{interval="30s",le="2.5"} 0
+example_seconds_bucket{interval="30s",le="5"} 0
+example_seconds_bucket{interval="30s",le="+Inf"} 0
+```
+
+---
+
 For all available options, see the Prometheus collector's [configuration
 file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
 

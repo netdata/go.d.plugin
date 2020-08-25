@@ -9,14 +9,14 @@ import (
 )
 
 func (p *Prometheus) collectSummary(mx map[string]int64, pms prometheus.Metrics, meta prometheus.Metadata) {
+	if !pms[0].Labels.Has("quantile") {
+		return
+	}
+
 	sortSummary(pms)
 	name := pms[0].Name()
 	if !p.cache.has(name) {
-		p.cache.put(name, &cacheEntry{
-			split:  newSummarySplit(),
-			charts: make(chartsCache),
-			dims:   make(dimsCache),
-		})
+		p.cache.put(name, newCacheEntry(nil))
 	}
 
 	defer p.cleanupStaleSummaryCharts(name)
@@ -28,9 +28,9 @@ func (p *Prometheus) collectSummary(mx map[string]int64, pms prometheus.Metrics,
 			continue
 		}
 
-		chartID := cache.split.chartID(pm)
-		dimID := cache.split.dimID(pm)
-		dimName := cache.split.dimName(pm)
+		chartID := defaultSummaryGroup.chartID(pm)
+		dimID := defaultSummaryGroup.dimID(pm)
+		dimName := defaultSummaryGroup.dimName(pm)
 
 		mx[dimID] = int64(pm.Value * precision)
 

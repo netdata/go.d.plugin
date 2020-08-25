@@ -31,7 +31,7 @@ func New() *Prometheus {
 	}
 	return &Prometheus{
 		Config:      config,
-		cache:       make(metricsCache),
+		cache:       make(collectCache),
 		skipMetrics: make(map[string]bool),
 		charts:      statsCharts.Copy(),
 	}
@@ -41,42 +41,51 @@ type (
 	Config struct {
 		web.HTTP `yaml:",inline"`
 		Selector selector.Expr `yaml:"selector"`
+		Grouping []GroupOption `yaml:"group"`
 	}
+	GroupOption struct {
+		Selector string `yaml:"selector"`
+		ByLabel  string `yaml:"by_label"`
+	}
+
 	Prometheus struct {
 		module.Base
-		Config      `yaml:",inline"`
-		prom        prometheus.Prometheus
-		charts      *module.Charts
-		cache       metricsCache
-		skipMetrics map[string]bool
+		Config `yaml:",inline"`
+
+		prom   prometheus.Prometheus
+		charts *module.Charts
+
+		optGroupings []optionalGrouping
+		cache        collectCache
+		skipMetrics  map[string]bool
+	}
+	optionalGrouping struct {
+		sr  selector.Selector
+		grp grouping
 	}
 )
 
 func (Prometheus) Cleanup() {}
 
 func (p *Prometheus) Init() bool {
-	if p.UserURL == "" {
-		p.Error("URL not set")
+	if err := p.validateConfig(); err != nil {
+		p.Errorf("validating config: %v", err)
 		return false
 	}
 
-	client, err := web.NewHTTPClient(p.Client)
+	prom, err := p.initPrometheusClient()
 	if err != nil {
-		p.Errorf("initializing http client: %v", err)
+		p.Errorf("init prometheus client: %v", err)
 		return false
 	}
+	p.prom = prom
 
-	sr, err := p.Selector.Parse()
+	optGrps, err := p.initOptionalGrouping()
 	if err != nil {
-		p.Errorf("initializing selector: %v", err)
+		p.Errorf("init grouping: %v", err)
 		return false
 	}
-
-	if sr != nil {
-		p.prom = prometheus.NewWithSelector(client, p.Request, sr)
-	} else {
-		p.prom = prometheus.New(client, p.Request)
-	}
+	p.optGroupings = optGrps
 
 	return true
 }
