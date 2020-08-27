@@ -61,7 +61,7 @@ type (
 	}
 	optionalGrouping struct {
 		sr  selector.Selector
-		grp grouping
+		grp grouper
 	}
 )
 
@@ -82,7 +82,7 @@ func (p *Prometheus) Init() bool {
 
 	optGrps, err := p.initOptionalGrouping()
 	if err != nil {
-		p.Errorf("init grouping: %v", err)
+		p.Errorf("init grouper: %v", err)
 		return false
 	}
 	p.optGroupings = optGrps

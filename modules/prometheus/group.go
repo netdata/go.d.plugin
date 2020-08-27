@@ -8,48 +8,48 @@ import (
 	"github.com/prometheus/prometheus/pkg/labels"
 )
 
-type grouping interface {
+type grouper interface {
 	chartID(pm prometheus.Metric) string
 	dimID(pm prometheus.Metric) string
 	dimName(pm prometheus.Metric) string
 }
 
-type anyGroup struct {
+type anyGrouper struct {
 	chartIDFunc func(pm prometheus.Metric) string
 	dimIDFunc   func(pm prometheus.Metric) string
 	dimNameFunc func(pm prometheus.Metric) string
 }
 
-func (g anyGroup) chartID(pm prometheus.Metric) string { return g.chartIDFunc(pm) }
-func (g anyGroup) dimID(pm prometheus.Metric) string   { return g.dimIDFunc(pm) }
-func (g anyGroup) dimName(pm prometheus.Metric) string { return g.dimNameFunc(pm) }
+func (g anyGrouper) chartID(pm prometheus.Metric) string { return g.chartIDFunc(pm) }
+func (g anyGrouper) dimID(pm prometheus.Metric) string   { return g.dimIDFunc(pm) }
+func (g anyGrouper) dimName(pm prometheus.Metric) string { return g.dimNameFunc(pm) }
 
 var (
-	defaultAnyGroup = anyGroup{
+	defaultAnyGrouping = anyGrouper{
 		chartIDFunc: func(pm prometheus.Metric) string { return pm.Name() },
 		dimIDFunc:   func(pm prometheus.Metric) string { return joinLabels(pm) },
 		dimNameFunc: func(pm prometheus.Metric) string { return joinLabelsExcept(pm, labels.MetricName) },
 	}
-	defaultHistogramGroup = anyGroup{
+	defaultHistogramGrouping = anyGrouper{
 		chartIDFunc: func(pm prometheus.Metric) string { return joinLabelsExcept(pm, "le") },
 		dimIDFunc:   func(pm prometheus.Metric) string { return joinLabels(pm) },
 		dimNameFunc: func(pm prometheus.Metric) string { return pm.Labels.Get("le") },
 	}
-	defaultSummaryGroup = anyGroup{
+	defaultSummaryGrouping = anyGrouper{
 		chartIDFunc: func(pm prometheus.Metric) string { return joinLabelsExcept(pm, "quantile") },
 		dimIDFunc:   func(pm prometheus.Metric) string { return joinLabels(pm) },
 		dimNameFunc: func(pm prometheus.Metric) string { return pm.Labels.Get("quantile") },
 	}
 )
 
-func newGroupingSplitN(grp grouping, numOfGroups uint64) grouping {
+func newGroupingSplitN(grp grouper, numOfGroups uint64) grouper {
 	if numOfGroups <= 1 {
 		return grp
 	}
 
 	var current uint64
 	cache := make(map[uint64]uint64)
-	return anyGroup{
+	return anyGrouper{
 		chartIDFunc: func(pm prometheus.Metric) string {
 			hash := pm.Labels.Hash()
 			if id, ok := cache[hash]; ok {
@@ -68,8 +68,8 @@ func newGroupingSplitN(grp grouping, numOfGroups uint64) grouping {
 	}
 }
 
-func newGroupingGroupedBy(lbs ...string) grouping {
-	return anyGroup{
+func newGroupingGroupedBy(lbs ...string) grouper {
+	return anyGrouper{
 		chartIDFunc: func(pm prometheus.Metric) string {
 			return joinLabelsOnly(pm, labels.MetricName, lbs...)
 		},

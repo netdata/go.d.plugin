@@ -24,9 +24,9 @@ func (p *Prometheus) collectHistogram(mx map[string]int64, pms prometheus.Metric
 	cache := p.cache.get(name)
 
 	for _, pm := range pms {
-		chartID := defaultHistogramGroup.chartID(pm)
-		dimID := defaultHistogramGroup.dimID(pm)
-		dimName := defaultHistogramGroup.dimName(pm)
+		chartID := defaultHistogramGrouping.chartID(pm)
+		dimID := defaultHistogramGrouping.dimID(pm)
+		dimName := defaultHistogramGrouping.dimName(pm)
 
 		// {handler="/",le="0.1"} 1
 		// {handler="/",le="0.2"} 2

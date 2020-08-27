@@ -19,9 +19,9 @@ type (
 	groupCache struct {
 		init       bool
 		user       []optionalGrouping
-		defaultGrp grouping
+		defaultGrp grouper
 		series     map[uint64]optionalGrouping // map[seriesHash]
-		charts     map[string]grouping         // map[chartID]
+		charts     map[string]grouper          // map[chartID]
 	}
 	chartsCache map[string]*module.Chart // map[chartID]
 	dimsCache   map[string]struct{}      // map[dimID]
@@ -32,7 +32,7 @@ func newCacheEntry(optGrps []optionalGrouping) *cacheEntry {
 		groups: groupCache{
 			user:   optGrps,
 			series: make(map[uint64]optionalGrouping),
-			charts: make(map[string]grouping),
+			charts: make(map[string]grouper),
 		},
 		charts: make(chartsCache),
 		dims:   make(dimsCache),
@@ -53,7 +53,7 @@ func (ce cacheEntry) hasDim(dimID string) bool { _, ok := ce.dims[dimID]; return
 func (ce cacheEntry) putDim(dimID string)      { ce.dims[dimID] = struct{}{} }
 func (ce cacheEntry) removeDim(dimID string)   { delete(ce.dims, dimID) }
 
-func (ce *cacheEntry) getGrouping(pm prometheus.Metric, pms prometheus.Metrics) grouping {
+func (ce *cacheEntry) getGrouping(pm prometheus.Metric, pms prometheus.Metrics) grouper {
 	if ce.groups.defaultGrp != nil {
 		return ce.groups.defaultGrp
 	}
@@ -61,7 +61,7 @@ func (ce *cacheEntry) getGrouping(pm prometheus.Metric, pms prometheus.Metrics) 
 		ce.groups.init = true
 		if len(ce.groups.user) == 0 || !isUserGroupingMatches(pms, ce.groups.user) {
 			num := desiredNumOfCharts(len(pms))
-			ce.groups.defaultGrp = newGroupingSplitN(defaultAnyGroup, num)
+			ce.groups.defaultGrp = newGroupingSplitN(defaultAnyGrouping, num)
 			return ce.groups.defaultGrp
 		}
 	}
@@ -92,11 +92,11 @@ func findTimeSeriesGrouping(lbs labels.Labels, userGrps []optionalGrouping) opti
 	}
 	return optionalGrouping{
 		sr:  sr,
-		grp: defaultAnyGroup,
+		grp: defaultAnyGrouping,
 	}
 }
 
-func findChartGrouping(pms prometheus.Metrics, id string, optGrp optionalGrouping) grouping {
+func findChartGrouping(pms prometheus.Metrics, id string, optGrp optionalGrouping) grouper {
 	var numOfSeries int
 	for _, pm := range pms {
 		if optGrp.sr.Matches(pm.Labels) && optGrp.grp.chartID(pm) == id {

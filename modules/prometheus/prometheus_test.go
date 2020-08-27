@@ -34,7 +34,7 @@ func TestPrometheus_Init(t *testing.T) {
 			},
 			wantFail: true,
 		},
-		"invalid grouping selector syntax": {
+		"invalid group selector syntax": {
 			config: Config{
 				HTTP: web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
 				Grouping: []GroupOption{
@@ -43,7 +43,7 @@ func TestPrometheus_Init(t *testing.T) {
 			},
 			wantFail: true,
 		},
-		"empty grouping selector": {
+		"empty group selector": {
 			config: Config{
 				HTTP: web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
 				Grouping: []GroupOption{
@@ -52,7 +52,7 @@ func TestPrometheus_Init(t *testing.T) {
 			},
 			wantFail: true,
 		},
-		"empty grouping 'by_label'": {
+		"empty group 'by_label'": {
 			config: Config{
 				HTTP: web.HTTP{Request: web.Request{UserURL: "http://127.0.0.1:9090/metric"}},
 				Grouping: []GroupOption{

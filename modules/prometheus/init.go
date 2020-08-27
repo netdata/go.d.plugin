@@ -40,16 +40,16 @@ func (p Prometheus) initOptionalGrouping() ([]optionalGrouping, error) {
 	var optGrps []optionalGrouping
 	for _, item := range p.Grouping {
 		if item.Selector == "" {
-			return nil, errors.New("empty grouping selector")
+			return nil, errors.New("empty group selector")
 		}
 
 		if item.ByLabel == "" {
-			return nil, fmt.Errorf("grouping selector '%s' has no 'by_label'", item.Selector)
+			return nil, fmt.Errorf("group selector '%s' has no 'by_label'", item.Selector)
 		}
 
 		sr, err := selector.Parse(item.Selector)
 		if err != nil {
-			return nil, fmt.Errorf("parsing grouping selector '%s': %v", item.Selector, err)
+			return nil, fmt.Errorf("parse group selector '%s': %v", item.Selector, err)
 		}
 		if sr == nil {
 			continue

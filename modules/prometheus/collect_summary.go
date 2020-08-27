@@ -28,9 +28,9 @@ func (p *Prometheus) collectSummary(mx map[string]int64, pms prometheus.Metrics,
 			continue
 		}
 
-		chartID := defaultSummaryGroup.chartID(pm)
-		dimID := defaultSummaryGroup.dimID(pm)
-		dimName := defaultSummaryGroup.dimName(pm)
+		chartID := defaultSummaryGrouping.chartID(pm)
+		dimID := defaultSummaryGrouping.dimID(pm)
+		dimName := defaultSummaryGrouping.dimName(pm)
 
 		mx[dimID] = int64(pm.Value * precision)
 
