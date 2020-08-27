@@ -82,7 +82,7 @@ func (p *Prometheus) Init() bool {
 
 	optGrps, err := p.initOptionalGrouping()
 	if err != nil {
-		p.Errorf("init grouper: %v", err)
+		p.Errorf("init grouping: %v", err)
 		return false
 	}
 	p.optGroupings = optGrps
