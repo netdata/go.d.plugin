@@ -181,8 +181,8 @@ func Test_And(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			require.GreaterOrEqual(t, len(test.srs), 2)
 
-			m := And(test.srs[0], test.srs[1], test.srs[2:]...)
-			assert.Equal(t, test.expected, m)
+			s := And(test.srs[0], test.srs[1], test.srs[2:]...)
+			assert.Equal(t, test.expected, s)
 		})
 	}
 }
@@ -217,8 +217,8 @@ func Test_Or(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			require.GreaterOrEqual(t, len(test.srs), 2)
 
-			m := Or(test.srs[0], test.srs[1], test.srs[2:]...)
-			assert.Equal(t, test.expected, m)
+			s := Or(test.srs[0], test.srs[1], test.srs[2:]...)
+			assert.Equal(t, test.expected, s)
 		})
 	}
 }

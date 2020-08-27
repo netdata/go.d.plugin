@@ -25,23 +25,23 @@ func True() Selector {
 
 // And returns a selector which returns true only if all of it's sub-selectors return true
 func And(lhs, rhs Selector, others ...Selector) Selector {
-	m := andSelector{lhs: lhs, rhs: rhs}
+	s := andSelector{lhs: lhs, rhs: rhs}
 	if len(others) == 0 {
-		return m
+		return s
 	}
-	return And(m, others[0], others[1:]...)
+	return And(s, others[0], others[1:]...)
 }
 
 // Or returns a selector which returns true if any of it's sub-selectors return true
 func Or(lhs, rhs Selector, others ...Selector) Selector {
-	m := orSelector{lhs: lhs, rhs: rhs}
+	s := orSelector{lhs: lhs, rhs: rhs}
 	if len(others) == 0 {
-		return m
+		return s
 	}
-	return Or(m, others[0], others[1:]...)
+	return Or(s, others[0], others[1:]...)
 }
 
 // Not returns a selector which returns the negation of the sub-selector's result
-func Not(m Selector) Selector {
-	return negSelector{m}
+func Not(s Selector) Selector {
+	return negSelector{s}
 }
