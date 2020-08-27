@@ -94,14 +94,14 @@ func joinLabelsExcept(pm prometheus.Metric, label string, otherLabels ...string)
 	return joinLabelsIf(pm, false, append(otherLabels, label)...)
 }
 
-func joinLabelsIf(pm prometheus.Metric, shouldContain bool, labels ...string) string {
+func joinLabelsIf(pm prometheus.Metric, shouldContain bool, lbs ...string) string {
 	// {__name__="name",value1="value1",value1="value2"} => name|value1=value1,value2=value2
 	var id strings.Builder
 	var comma bool
 loop:
 	for i, label := range pm.Labels {
-		if len(labels) > 0 {
-			if ok := contains(label.Name, labels); (!ok && shouldContain) || (ok && !shouldContain) {
+		if len(lbs) > 0 {
+			if ok := contains(lbs, label.Name); (!ok && shouldContain) || (ok && !shouldContain) {
 				continue loop
 			}
 		}
@@ -137,13 +137,13 @@ func decodeLabelValue(value string) string {
 	return v
 }
 
-func contains(value string, in []string) bool {
+func contains(in []string, value string) bool {
 	switch len(in) {
 	case 0:
 		return false
 	case 1:
 		return value == in[0]
 	default:
-		return value == in[0] || contains(value, in[1:])
+		return value == in[0] || contains(in[1:], value)
 	}
 }

@@ -55,25 +55,25 @@ func (p Prometheus) initOptionalGrouping() ([]optionalGrouping, error) {
 			continue
 		}
 
-		byLabels := strings.Fields(item.ByLabel)
+		names := strings.Fields(item.ByLabel)
 		fn := selector.Func(func(lbs labels.Labels) bool {
-			return lbs.Len() >= 3 && labelsContains(lbs, byLabels...) && sr.Matches(lbs)
+			return lbs.Len() >= 3 && labelsContainsAll(lbs, names...) && sr.Matches(lbs)
 		})
 		optGrps = append(optGrps, optionalGrouping{
 			sr:  fn,
-			grp: newGroupingGroupedBy(byLabels...),
+			grp: newGroupingGroupedBy(names...),
 		})
 	}
 	return optGrps, nil
 }
 
-func labelsContains(lbs labels.Labels, names ...string) bool {
+func labelsContainsAll(lbs labels.Labels, names ...string) bool {
 	switch len(names) {
 	case 0:
 		return true
 	case 1:
 		return lbs.Has(names[0])
 	default:
-		return lbs.Has(names[0]) && labelsContains(lbs, names[1:]...)
+		return lbs.Has(names[0]) && labelsContainsAll(lbs, names[1:]...)
 	}
 }
