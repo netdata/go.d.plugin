@@ -18,8 +18,8 @@ func (s negSelector) Matches(lbs labels.Labels) bool { return !s.s.Matches(lbs) 
 func (s andSelector) Matches(lbs labels.Labels) bool { return s.lhs.Matches(lbs) && s.rhs.Matches(lbs) }
 func (s orSelector) Matches(lbs labels.Labels) bool  { return s.lhs.Matches(lbs) || s.rhs.Matches(lbs) }
 
-// TRUE returns a matcher which always returns true
-func TRUE() Selector {
+// True returns a selector which always returns true
+func True() Selector {
 	return trueSelector{}
 }
 
@@ -41,7 +41,7 @@ func Or(lhs, rhs Selector, others ...Selector) Selector {
 	return Or(m, others[0], others[1:]...)
 }
 
-// Not returns a selector which opposites the sub-selector's result
+// Not returns a selector which returns the negation of the sub-selector's result
 func Not(m Selector) Selector {
 	return negSelector{m}
 }

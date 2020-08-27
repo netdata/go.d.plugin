@@ -83,7 +83,7 @@ func (ce *cacheEntry) getGrouping(pm prometheus.Metric, pms prometheus.Metrics) 
 }
 
 func findTimeSeriesGrouping(lbs labels.Labels, userGrps []optionalGrouping) optionalGrouping {
-	sr := selector.TRUE()
+	sr := selector.True()
 	for _, item := range userGrps {
 		if item.sr.Matches(lbs) {
 			return item
