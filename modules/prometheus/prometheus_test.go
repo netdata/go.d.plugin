@@ -385,12 +385,27 @@ func TestPrometheus_Collect(t *testing.T) {
 		},
 	}
 
+	limit := New().MaxTSPerMetric
+	testMaxTSPerMetric := testGroup{
+		"over the limit": {
+			input: [][]string{
+				genSimpleMetrics(limit + 1),
+			},
+			wantCollected: map[string]int64{
+				"series":  int64(limit + 1),
+				"metrics": 0,
+				"charts":  int64(len(statsCharts)),
+			},
+		},
+	}
+
 	tests := map[string]testGroup{
-		"GAUGE":     testGAUGE,
-		"COUNTER":   testCOUNTER,
-		"SUMMARY":   testSUMMARY,
-		"HISTOGRAM": testHISTOGRAM,
-		"Sanitize":  testSanitize,
+		"GAUGE":          testGAUGE,
+		"COUNTER":        testCOUNTER,
+		"SUMMARY":        testSUMMARY,
+		"HISTOGRAM":      testHISTOGRAM,
+		"Sanitize":       testSanitize,
+		"MaxTSPerMetric": testMaxTSPerMetric,
 	}
 
 	for groupName, group := range tests {

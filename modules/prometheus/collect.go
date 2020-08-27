@@ -21,7 +21,7 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 		return nil, nil
 	}
 
-	names, metricSet := buildMetricSet(pms)
+	names, metricSet := p.buildMetricSet(pms)
 	meta := p.prom.Metadata()
 	mx := make(map[string]int64)
 
@@ -50,7 +50,7 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 }
 
 // TODO: should be done by prom pkg
-func buildMetricSet(pms prometheus.Metrics) (names []string, metrics map[string]prometheus.Metrics) {
+func (p *Prometheus) buildMetricSet(pms prometheus.Metrics) (names []string, metrics map[string]prometheus.Metrics) {
 	names = make([]string, 0, len(pms))
 	metrics = make(map[string]prometheus.Metrics)
 
@@ -60,5 +60,15 @@ func buildMetricSet(pms prometheus.Metrics) (names []string, metrics map[string]
 		}
 		metrics[pm.Name()] = append(metrics[pm.Name()], pm)
 	}
-	return names, metrics
+
+	var i int
+	for _, name := range names {
+		if len(metrics[name]) > p.MaxTSPerMetric {
+			delete(metrics, name)
+		} else {
+			names[i] = name
+			i++
+		}
+	}
+	return names[:i], metrics
 }
