@@ -59,7 +59,7 @@ func TestJSONParser_ReadLine(t *testing.T) {
 			data:    `{ "host": "example.com" }`,
 		},
 		{
-			name:    "splits on newline", config: JSONConfig{},
+			name: "splits on newline", config: JSONConfig{},
 			wantErr: false,
 			data:    "{\"host\": \"example.com\"}\n{\"host\": \"acme.org\"}",
 		},
