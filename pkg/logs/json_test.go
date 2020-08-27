@@ -1,10 +1,11 @@
 package logs
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var testJSONConfig = JSONConfig{
@@ -17,8 +18,16 @@ func TestNewJSONParser(t *testing.T) {
 		wantErr bool
 		config  JSONConfig
 	}{
-		{name: "empty config", config: JSONConfig{}, wantErr: false},
-		{name: "empty config", config: testJSONConfig, wantErr: false},
+		{
+			name:    "empty config",
+			config:  JSONConfig{},
+			wantErr: false,
+		},
+		{
+			name:    "empty config",
+			config:  testJSONConfig,
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -43,10 +52,29 @@ func TestJSONParser_ReadLine(t *testing.T) {
 		config  JSONConfig
 		data    string
 	}{
-		{name: "no error", config: JSONConfig{}, wantErr: false, data: `{ "host": "example.com" }`},
-		{name: "splits on newline", config: JSONConfig{}, wantErr: false, data: "{\"host\": \"example.com\"}\n{\"host\": \"acme.org\"}"},
-		{name: "error on malformed JSON", config: JSONConfig{}, wantErr: true, data: `{ "host"": unquoted_string}`},
-		{name: "error on no data", config: JSONConfig{}, wantErr: true, data: ``},
+		{
+			name:    "no error",
+			config:  JSONConfig{},
+			wantErr: false,
+			data:    `{ "host": "example.com" }`,
+		},
+		{
+			name:    "splits on newline", config: JSONConfig{},
+			wantErr: false,
+			data:    "{\"host\": \"example.com\"}\n{\"host\": \"acme.org\"}",
+		},
+		{
+			name:    "error on malformed JSON",
+			config:  JSONConfig{},
+			wantErr: true,
+			data:    `{ "host"": unquoted_string}`,
+		},
+		{
+			name:    "error on no data",
+			config:  JSONConfig{},
+			wantErr: true,
+			data:    ``,
+		},
 	}
 
 	for _, tt := range tests {
@@ -75,10 +103,26 @@ func TestJSONParser_Parse(t *testing.T) {
 		fieldMap     map[string]string
 		wantParseErr bool
 	}{
-		{name: "malformed JSON", row: `{`, wantParseErr: true},
-		{name: "malformed JSON #2", row: `{ host: "example.com" }`, wantParseErr: true},
-		{name: "empty string", row: "", wantParseErr: true},
-		{name: "no field mapping", row: `{ "host": "example.com", "remote_addr": "127.0.0.1", "request_time": 0.05 }`, wantParseErr: false},
+		{
+			name:         "malformed JSON",
+			row:          `{`,
+			wantParseErr: true,
+		},
+		{
+			name:         "malformed JSON #2",
+			row:          `{ host: "example.com" }`,
+			wantParseErr: true,
+		},
+		{
+			name:         "empty string",
+			row:          "",
+			wantParseErr: true,
+		},
+		{
+			name:         "no field mapping",
+			row:          `{ "host": "example.com", "remote_addr": "127.0.0.1", "request_time": 0.05 }`,
+			wantParseErr: false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -106,10 +150,30 @@ func TestJSONParser_mapField(t *testing.T) {
 		expected string
 		fieldMap map[string]string
 	}{
-		{name: "defaults", field: "x", expected: "x", fieldMap: map[string]string{}},
-		{name: "mapping-non-existing", field: "x", expected: "x", fieldMap: map[string]string{"y": "z"}},
-		{name: "mapping-existing", field: "x", expected: "z", fieldMap: map[string]string{"x": "z"}},
-		{name: "mapping-identity", field: "x", expected: "x", fieldMap: map[string]string{"x": "x"}},
+		{
+			name:     "defaults",
+			field:    "x",
+			expected: "x",
+			fieldMap: map[string]string{},
+		},
+		{
+			name:     "mapping-non-existing",
+			field:    "x",
+			expected: "x",
+			fieldMap: map[string]string{"y": "z"},
+		},
+		{
+			name:     "mapping-existing",
+			field:    "x",
+			expected: "z",
+			fieldMap: map[string]string{"x": "z"},
+		},
+		{
+			name:     "mapping-identity",
+			field:    "x",
+			expected: "x",
+			fieldMap: map[string]string{"x": "x"},
+		},
 	}
 
 	for _, tt := range tests {
