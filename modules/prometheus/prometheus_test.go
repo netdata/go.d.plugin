@@ -914,7 +914,6 @@ func TestPrometheus_Collect_UserDefinedGrouping(t *testing.T) {
 					if !chart.Obsolete {
 						active++
 					}
-					fmt.Println(chart.ID, len(chart.Dims))
 				}
 				test.wantCharts += len(statsCharts)
 				test.wantActiveCharts += len(statsCharts)
