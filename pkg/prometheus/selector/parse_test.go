@@ -110,10 +110,6 @@ func mustRegexp(name string, pattern string) Selector {
 	return labelSelector{name: name, m: matcher.Must(matcher.NewRegExpMatcher(pattern))}
 }
 
-func mustGlob(name string, pattern string) Selector {
-	return labelSelector{name: name, m: matcher.Must(matcher.NewGlobMatcher(pattern))}
-}
-
 func mustSP(name string, pattern string) Selector {
 	return labelSelector{name: name, m: matcher.Must(matcher.NewSimplePatternsMatcher(pattern))}
 }

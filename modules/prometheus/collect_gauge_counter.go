@@ -4,28 +4,25 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
+const (
+	desiredDim = 50
+	maxDim     = desiredDim + 10
+)
+
 func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, meta prometheus.Metadata) {
 	name := pms[0].Name()
 	if !p.cache.has(name) {
-		s, err := newAnySplit(pms)
-		if err != nil {
-			p.skipMetrics[name] = true
-			p.Infof("skip metric '%s': %v", name, err)
-			return
-		}
-		p.cache.put(name, &cacheEntry{
-			split:  s,
-			charts: make(chartsCache),
-			dims:   make(dimsCache),
-		})
+		p.cache.put(name, newCacheEntry(p.optGroupings))
 	}
 
 	cache := p.cache.get(name)
 
 	for _, pm := range pms {
-		chartID := cache.split.chartID(pm)
-		dimID := cache.split.dimID(pm)
-		dimName := cache.split.dimName(pm)
+		grp := cache.getGrouping(pm, pms)
+
+		chartID := grp.chartID(pm)
+		dimID := grp.dimID(pm)
+		dimName := grp.dimName(pm)
 
 		mx[dimID] = int64(pm.Value * precision)
 
@@ -47,14 +44,14 @@ func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, met
 		}
 	}
 
-	var reSplit bool
+	var reGroup bool
 	for _, chart := range cache.charts {
 		if len(chart.Dims) > maxDim {
-			reSplit = true
+			reGroup = true
 			break
 		}
 	}
-	if reSplit {
+	if reGroup {
 		p.cleanupAnyMetric(name)
 		p.collectAny(mx, pms, meta)
 	}

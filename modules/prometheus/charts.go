@@ -18,7 +18,7 @@ type (
 var statsCharts = Charts{
 	{
 		ID:    "collect_statistics",
-		Title: "Collect statistics",
+		Title: "Collect Statistics",
 		Units: "num",
 		Fam:   "collection",
 		Ctx:   "prometheus.collect_statistics",
