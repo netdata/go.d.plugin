@@ -24,7 +24,7 @@ func TestNewJSONParser(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "empty config",
+			name:    "basic config",
 			config:  testJSONConfig,
 			wantErr: false,
 		},
