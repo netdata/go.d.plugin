@@ -3,17 +3,31 @@ package elasticsearch
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
 
 type esMetrics struct {
-	LocalNodeStats *esNodeStats     `stm:"node_stats"`
-	ClusterHealth  *esClusterHealth `stm:"cluster_health"`
-	ClusterStats   *esClusterStats  `stm:"cluster_stats"`
+	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-stats.html
+	LocalNodeStats *esNodeStats `stm:"node_stats"`
+	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html
+	ClusterHealth *esClusterHealth `stm:"cluster_health"`
+	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-stats.html
+	ClusterStats *esClusterStats `stm:"cluster_stats"`
 }
 
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-stats.html
 type (
 	esNodeStats struct {
-		Indices    esNodeIndicesStats    `stm:"indices"`
+		Indices esNodeIndicesStats `stm:"indices"`
+		Process struct {
+			OpenFileDescriptors int `stm:"open_file_descriptors" json:"open_file_descriptors"`
+			MaxFileDescriptors  int `stm:"max_file_descriptors" json:"max_file_descriptors"`
+		} `stm:"process"`
 		JVM        esNodeJVMStats        `stm:"jvm"`
 		ThreadPool esNodeThreadPoolStats `stm:"thread_pool" json:"thread_pool"`
+		Transport  struct {
+			RxSizeInBytes int `stm:"rx_size_in_bytes" json:"rx_size_in_bytes"`
+			TxSizeInBytes int `stm:"tx_size_in_bytes" json:"tx_size_in_bytes"`
+		} `stm:"transport"`
+		HTTP struct {
+			CurrentOpen int `stm:"current_open" json:"current_open"`
+		} `stm:"http"`
+		Breakers esNodeBreakersStats `stm:"breakers"`
 	}
 
 	esNodeIndicesStats struct {
@@ -38,6 +52,10 @@ type (
 			Total        int `stm:"total"`
 			TimeInMillis int `stm:"total_time_in_millis" json:"total_time_in_millis"`
 		} `stm:"refresh"`
+		FieldData struct {
+			MemorySizeInBytes int `stm:"memory_size_in_bytes" json:"memory_size_in_bytes"`
+			Evictions         int `stm:"evictions"`
+		} `stm:"fielddata"`
 		Segments struct {
 			Count                     int `json:"count"`
 			TermsMemoryInBytes        int `stm:"terms_memory_in_bytes" json:"terms_memory_in_bytes"`
@@ -87,7 +105,7 @@ type (
 				UsedInBytes          int `stm:"used_in_bytes" json:"used_in_bytes"`
 				TotalCapacityInBytes int `stm:"total_capacity_in_bytes" json:"total_capacity_in_bytes"`
 			} `stm:"direct"`
-		} `stm:"buffer_pools" json:"buffer_pools"`
+		} `stm:"buffer_pool" json:"buffer_pool"`
 	}
 
 	esNodeThreadPoolStats struct {
@@ -100,9 +118,14 @@ type (
 			Rejected int `stm:"rejected"`
 		} `stm:"write"`
 	}
+
+	esNodeBreakersStats struct {
+		FieldData struct {
+			Tripped int `stm:"tripped"`
+		} `stm:"fielddata"`
+	}
 )
 
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html
 type esClusterHealth struct {
 	//Status                      string `stm:"status"`
 	NumOfNodes                  int `stm:"number_of_nodes" json:"number_of_nodes"`
@@ -117,7 +140,6 @@ type esClusterHealth struct {
 	ActiveShardsPercentAsNumber int `stm:"active_shards_percent_as_number" json:"active_shards_percent_as_number"`
 }
 
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-stats.html
 type (
 	esClusterStats struct {
 		Nodes   esClusterNodesStats   `stm:"nodes"`
