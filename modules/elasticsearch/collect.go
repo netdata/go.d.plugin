@@ -14,27 +14,21 @@ import (
 
 func (es *Elasticsearch) collect() (map[string]int64, error) {
 	var mx esMetrics
-	es.scrapeElasticsearch(&mx, true)
+	es.scrapeElasticsearch(&mx)
 
 	return stm.ToMap(mx), nil
 }
 
-func (es *Elasticsearch) scrapeElasticsearch(mx *esMetrics, concurrently bool) {
-	tasks := []func(mx *esMetrics){
+func (es *Elasticsearch) scrapeElasticsearch(mx *esMetrics) {
+	wg := &sync.WaitGroup{}
+	for _, task := range []func(mx *esMetrics){
 		es.scrapeNodeStats,
 		es.scrapeClusterHealth,
 		es.scrapeClusterStats,
-	}
-
-	wg := &sync.WaitGroup{}
-	for _, task := range tasks {
-		if !concurrently {
-			task(mx)
-		} else {
-			wg.Add(1)
-			task := task
-			go func() { defer wg.Done(); task(mx) }()
-		}
+	} {
+		wg.Add(1)
+		task := task
+		go func() { defer wg.Done(); task(mx) }()
 	}
 	wg.Wait()
 }
