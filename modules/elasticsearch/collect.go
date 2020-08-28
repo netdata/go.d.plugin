@@ -11,14 +11,14 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-func (e *Elasticsearch) collect() (map[string]int64, error) {
+func (es *Elasticsearch) collect() (map[string]int64, error) {
 	var mx esMetrics
-	e.scrapeElasticsearch(&mx, true)
+	es.scrapeElasticsearch(&mx, true)
 
 	return stm.ToMap(mx), nil
 }
 
-func (e *Elasticsearch) scrapeElasticsearch(mx *esMetrics, concurrently bool) {
+func (es *Elasticsearch) scrapeElasticsearch(mx *esMetrics, concurrently bool) {
 	type scrapeJob func(mx *esMetrics)
 
 	wg := &sync.WaitGroup{}
@@ -30,9 +30,9 @@ func (e *Elasticsearch) scrapeElasticsearch(mx *esMetrics, concurrently bool) {
 	}
 
 	jobs := []scrapeJob{
-		e.scrapeNodeStats,
-		e.scrapeClusterHealth,
-		e.scrapeClusterStats,
+		es.scrapeNodeStats,
+		es.scrapeClusterHealth,
+		es.scrapeClusterStats,
 	}
 
 	for _, job := range jobs {
@@ -47,36 +47,36 @@ func (e *Elasticsearch) scrapeElasticsearch(mx *esMetrics, concurrently bool) {
 	wg.Wait()
 }
 
-func (e *Elasticsearch) scrapeNodeStats(mx *esMetrics) {
+func (es *Elasticsearch) scrapeNodeStats(mx *esMetrics) {
 
 }
 
-func (e *Elasticsearch) scrapeClusterHealth(mx *esMetrics) {
-	req, _ := web.NewHTTPRequest(e.Request)
+func (es *Elasticsearch) scrapeClusterHealth(mx *esMetrics) {
+	req, _ := web.NewHTTPRequest(es.Request)
 	req.URL.Path = "/_cluster/health"
 
-	resp, err := e.httpClient.Do(req)
+	resp, err := es.httpClient.Do(req)
 	if err != nil {
-		e.Warningf("error on HTTP request '%s': %v", req.URL, err)
+		es.Warningf("error on HTTP request '%s': %v", req.URL, err)
 		return
 	}
 	defer closeBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		e.Warningf("'%s' returned HTTP status code: %d", req.URL, resp.StatusCode)
+		es.Warningf("'%s' returned HTTP status code: %d", req.URL, resp.StatusCode)
 		return
 	}
 
 	var health esClusterHealth
 	if err := json.NewDecoder(resp.Body).Decode(&health); err != nil {
-		e.Warningf("decoding response from '%s': %v", req.URL, err)
+		es.Warningf("decoding response from '%s': %v", req.URL, err)
 		return
 	}
 
 	mx.ClusterHealth = &health
 }
 
-func (e *Elasticsearch) scrapeClusterStats(mx *esMetrics) {
+func (es *Elasticsearch) scrapeClusterStats(mx *esMetrics) {
 
 }
 

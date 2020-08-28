@@ -44,36 +44,41 @@ type (
 	}
 )
 
-func (Elasticsearch) Cleanup() {}
+func (es *Elasticsearch) Cleanup() {
+	if es.httpClient == nil {
+		return
+	}
+	es.httpClient.CloseIdleConnections()
+}
 
-func (e *Elasticsearch) Init() bool {
-	if e.UserURL == "" {
-		e.Error("URL not set")
+func (es *Elasticsearch) Init() bool {
+	if es.UserURL == "" {
+		es.Error("URL not set")
 		return false
 	}
 
-	client, err := web.NewHTTPClient(e.Client)
+	client, err := web.NewHTTPClient(es.Client)
 	if err != nil {
-		e.Errorf("init HTTP client: %v", err)
+		es.Errorf("init HTTP client: %v", err)
 		return false
 	}
-	e.httpClient = client
+	es.httpClient = client
 
 	return true
 }
 
-func (e *Elasticsearch) Check() bool {
-	return len(e.Collect()) > 0
+func (es *Elasticsearch) Check() bool {
+	return len(es.Collect()) > 0
 }
 
-func (e Elasticsearch) Charts() *module.Charts {
+func (es Elasticsearch) Charts() *module.Charts {
 	return nil
 }
 
-func (e Elasticsearch) Collect() map[string]int64 {
-	mx, err := e.collect()
+func (es Elasticsearch) Collect() map[string]int64 {
+	mx, err := es.collect()
 	if err != nil {
-		e.Error(err)
+		es.Error(err)
 	}
 
 	if len(mx) == 0 {
