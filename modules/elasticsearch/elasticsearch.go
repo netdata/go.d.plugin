@@ -1,6 +1,7 @@
 package elasticsearch
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -38,17 +39,31 @@ type (
 	Elasticsearch struct {
 		module.Base
 		Config `yaml:",inline"`
+
+		httpClient *http.Client
 	}
 )
 
 func (Elasticsearch) Cleanup() {}
 
 func (e *Elasticsearch) Init() bool {
-	return false
+	if e.UserURL == "" {
+		e.Error("URL not set")
+		return false
+	}
+
+	client, err := web.NewHTTPClient(e.Client)
+	if err != nil {
+		e.Errorf("init HTTP client: %v", err)
+		return false
+	}
+	e.httpClient = client
+
+	return true
 }
 
 func (e *Elasticsearch) Check() bool {
-	return false
+	return len(e.Collect()) > 0
 }
 
 func (e Elasticsearch) Charts() *module.Charts {
