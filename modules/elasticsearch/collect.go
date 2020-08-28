@@ -12,6 +12,12 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+const (
+	urlPathNodesLocalStats = "/_nodes/_local/stats"
+	urlPathClusterHealth   = "/_cluster/health"
+	urlPathClusterStats    = "/_cluster/stats"
+)
+
 func (es *Elasticsearch) collect() (map[string]int64, error) {
 	var mx esMetrics
 	es.scrapeElasticsearch(&mx)
@@ -22,7 +28,7 @@ func (es *Elasticsearch) collect() (map[string]int64, error) {
 func (es *Elasticsearch) scrapeElasticsearch(mx *esMetrics) {
 	wg := &sync.WaitGroup{}
 	for _, task := range []func(mx *esMetrics){
-		es.scrapeNodeStats,
+		es.scrapeLocalNodeStats,
 		es.scrapeClusterHealth,
 		es.scrapeClusterStats,
 	} {
@@ -33,13 +39,23 @@ func (es *Elasticsearch) scrapeElasticsearch(mx *esMetrics) {
 	wg.Wait()
 }
 
-func (es *Elasticsearch) scrapeNodeStats(mx *esMetrics) {
+func (es *Elasticsearch) scrapeLocalNodeStats(mx *esMetrics) {
+	req, _ := web.NewHTTPRequest(es.Request)
+	req.URL.Path = urlPathNodesLocalStats
 
+	var stats struct{ Nodes []esNodeStats }
+	if err := es.doOKDecode(req, &stats); err != nil {
+		es.Warning(err)
+		return
+	}
+	if len(stats.Nodes) > 0 {
+		mx.LocalNodeStats = &stats.Nodes[0]
+	}
 }
 
 func (es *Elasticsearch) scrapeClusterHealth(mx *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = "/_cluster/health"
+	req.URL.Path = urlPathClusterHealth
 
 	var health esClusterHealth
 	if err := es.doOKDecode(req, &health); err != nil {
@@ -51,7 +67,7 @@ func (es *Elasticsearch) scrapeClusterHealth(mx *esMetrics) {
 
 func (es *Elasticsearch) scrapeClusterStats(mx *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = "/_cluster/stats"
+	req.URL.Path = urlPathClusterStats
 
 	var stats esClusterStats
 	if err := es.doOKDecode(req, &stats); err != nil {

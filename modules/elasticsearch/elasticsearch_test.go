@@ -14,14 +14,16 @@ import (
 )
 
 var (
-	v790SingleClusterHealth, _ = ioutil.ReadFile("testdata/v790_single_cluster_health.json")
-	v790SingleClusterStats, _  = ioutil.ReadFile("testdata/v790_single_cluster_stats.json")
+	v790SingleNodesLocalStats, _ = ioutil.ReadFile("testdata/v790_single_nodes_local_stats.json")
+	v790SingleClusterHealth, _   = ioutil.ReadFile("testdata/v790_single_cluster_health.json")
+	v790SingleClusterStats, _    = ioutil.ReadFile("testdata/v790_single_cluster_stats.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"v790SingleClusterHealth": v790SingleClusterHealth,
-		"v790SingleClusterStats":  v790SingleClusterStats,
+		"v790SingleNodesLocalStats": v790SingleNodesLocalStats,
+		"v790SingleClusterHealth":   v790SingleClusterHealth,
+		"v790SingleClusterStats":    v790SingleClusterStats,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -130,9 +132,11 @@ func prepareElasticsearch(t *testing.T) (es *Elasticsearch, cleanup func()) {
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				switch r.URL.Path {
-				case "/_cluster/health":
+				case urlPathNodesLocalStats:
+					_, _ = w.Write(v790SingleNodesLocalStats)
+				case urlPathClusterHealth:
 					_, _ = w.Write(v790SingleClusterHealth)
-				case "/_cluster/stats":
+				case urlPathClusterStats:
 					_, _ = w.Write(v790SingleClusterStats)
 				default:
 					w.WriteHeader(http.StatusNotFound)

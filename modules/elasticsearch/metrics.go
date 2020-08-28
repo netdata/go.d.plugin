@@ -1,8 +1,13 @@
 package elasticsearch
 
 type esMetrics struct {
-	ClusterHealth *esClusterHealth `stm:"cluster_health"`
-	ClusterStats  *esClusterStats  `stm:"cluster_stats"`
+	LocalNodeStats *esNodeStats     `stm:"node_stats"`
+	ClusterHealth  *esClusterHealth `stm:"cluster_health"`
+	ClusterStats   *esClusterStats  `stm:"cluster_stats"`
+}
+
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-stats.html
+type esNodeStats struct {
 }
 
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html
@@ -20,6 +25,7 @@ type esClusterHealth struct {
 	ActiveShardsPercentAsNumber int `stm:"active_shards_percent_as_number" json:"active_shards_percent_as_number"`
 }
 
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-stats.html
 type esClusterStats struct {
 	Nodes struct {
 		Count struct {
