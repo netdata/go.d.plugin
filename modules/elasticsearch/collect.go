@@ -19,13 +19,13 @@ const (
 )
 
 func (es *Elasticsearch) collect() (map[string]int64, error) {
-	var mx esMetrics
-	es.scrapeElasticsearch(&mx)
+	mx := es.scrapeElasticsearch()
 
 	return stm.ToMap(mx), nil
 }
 
-func (es *Elasticsearch) scrapeElasticsearch(mx *esMetrics) {
+func (es *Elasticsearch) scrapeElasticsearch() *esMetrics {
+	var mx esMetrics
 	wg := &sync.WaitGroup{}
 	for _, task := range []func(mx *esMetrics){
 		es.scrapeLocalNodeStats,
@@ -34,9 +34,10 @@ func (es *Elasticsearch) scrapeElasticsearch(mx *esMetrics) {
 	} {
 		wg.Add(1)
 		task := task
-		go func() { defer wg.Done(); task(mx) }()
+		go func() { defer wg.Done(); task(&mx) }()
 	}
 	wg.Wait()
+	return &mx
 }
 
 func (es *Elasticsearch) scrapeLocalNodeStats(mx *esMetrics) {
