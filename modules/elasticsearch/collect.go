@@ -2,6 +2,7 @@ package elasticsearch
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -55,29 +56,42 @@ func (es *Elasticsearch) scrapeClusterHealth(mx *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
 	req.URL.Path = "/_cluster/health"
 
-	resp, err := es.httpClient.Do(req)
-	if err != nil {
-		es.Warningf("error on HTTP request '%s': %v", req.URL, err)
-		return
-	}
-	defer closeBody(resp)
-
-	if resp.StatusCode != http.StatusOK {
-		es.Warningf("'%s' returned HTTP status code: %d", req.URL, resp.StatusCode)
-		return
-	}
-
 	var health esClusterHealth
-	if err := json.NewDecoder(resp.Body).Decode(&health); err != nil {
-		es.Warningf("decoding response from '%s': %v", req.URL, err)
+	if err := es.doOKDecode(req, &health); err != nil {
+		es.Warning(err)
 		return
 	}
-
 	mx.ClusterHealth = &health
 }
 
 func (es *Elasticsearch) scrapeClusterStats(mx *esMetrics) {
+	req, _ := web.NewHTTPRequest(es.Request)
+	req.URL.Path = "/_cluster/health"
 
+	var stats esClusterStats
+	if err := es.doOKDecode(req, &stats); err != nil {
+		es.Warning(err)
+		return
+	}
+	mx.ClusterStats = &stats
+}
+
+func (es *Elasticsearch) doOKDecode(req *http.Request, in interface{}) error {
+	resp, err := es.httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error on HTTP request '%s': %v", req.URL, err)
+	}
+	defer closeBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("'%s' returned HTTP status code: %d", req.URL, resp.StatusCode)
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(in); err != nil {
+		return fmt.Errorf("error on decoding response from '%s': %v", req.URL, err)
+	}
+
+	return nil
 }
 
 func closeBody(resp *http.Response) {

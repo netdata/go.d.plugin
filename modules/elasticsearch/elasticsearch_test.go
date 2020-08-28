@@ -15,11 +15,13 @@ import (
 
 var (
 	v790SingleClusterHealth, _ = ioutil.ReadFile("testdata/v790_single_cluster_health.json")
+	v790SingleClusterStats, _  = ioutil.ReadFile("testdata/v790_single_cluster_stats.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
 		"v790SingleClusterHealth": v790SingleClusterHealth,
+		"v790SingleClusterStats":  v790SingleClusterStats,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -82,7 +84,7 @@ func TestElasticsearch_Collect(t *testing.T) {
 		prepare       func(t *testing.T) (es *Elasticsearch, cleanup func())
 		wantCollected map[string]int64
 	}{
-		"v790 cluster health": {
+		"v790": {
 			prepare: prepareElasticsearch,
 			wantCollected: map[string]int64{
 				"cluster_health_active_shards":                   0,
@@ -95,6 +97,17 @@ func TestElasticsearch_Collect(t *testing.T) {
 				"cluster_health_number_of_pending_tasks":         0,
 				"cluster_health_relocating_shards":               0,
 				"cluster_health_unassigned_shards":               0,
+				"cluster_stats_indices_count":                    0,
+				"cluster_stats_indices_docs_count":               0,
+				"cluster_stats_indices_query_cache_hit_count":    0,
+				"cluster_stats_indices_query_cache_miss_count":   0,
+				"cluster_stats_indices_shards_total":             0,
+				"cluster_stats_indices_store_size_in_bytes":      0,
+				"cluster_stats_nodes_count_coordinating_only":    0,
+				"cluster_stats_nodes_count_data":                 0,
+				"cluster_stats_nodes_count_ingest":               0,
+				"cluster_stats_nodes_count_master":               0,
+				"cluster_stats_nodes_count_total":                0,
 			},
 		},
 	}
@@ -119,6 +132,8 @@ func prepareElasticsearch(t *testing.T) (es *Elasticsearch, cleanup func()) {
 				switch r.URL.Path {
 				case "/_cluster/health":
 					_, _ = w.Write(v790SingleClusterHealth)
+				case "/_cluster/stats":
+					_, _ = w.Write(v790SingleClusterStats)
 				default:
 					w.WriteHeader(http.StatusNotFound)
 				}
