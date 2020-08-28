@@ -20,29 +20,20 @@ func (es *Elasticsearch) collect() (map[string]int64, error) {
 }
 
 func (es *Elasticsearch) scrapeElasticsearch(mx *esMetrics, concurrently bool) {
-	type scrapeJob func(mx *esMetrics)
-
-	wg := &sync.WaitGroup{}
-	wrap := func(job scrapeJob) scrapeJob {
-		return func(mx *esMetrics) {
-			job(mx)
-			wg.Done()
-		}
-	}
-
-	jobs := []scrapeJob{
+	tasks := []func(mx *esMetrics){
 		es.scrapeNodeStats,
 		es.scrapeClusterHealth,
 		es.scrapeClusterStats,
 	}
 
-	for _, job := range jobs {
+	wg := &sync.WaitGroup{}
+	for _, task := range tasks {
 		if !concurrently {
-			job(mx)
+			task(mx)
 		} else {
 			wg.Add(1)
-			job := wrap(job)
-			go job(mx)
+			task := task
+			go func() { defer wg.Done(); task(mx) }()
 		}
 	}
 	wg.Wait()
@@ -66,7 +57,7 @@ func (es *Elasticsearch) scrapeClusterHealth(mx *esMetrics) {
 
 func (es *Elasticsearch) scrapeClusterStats(mx *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = "/_cluster/health"
+	req.URL.Path = "/_cluster/stats"
 
 	var stats esClusterStats
 	if err := es.doOKDecode(req, &stats); err != nil {
