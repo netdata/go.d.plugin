@@ -63,6 +63,15 @@ func (es Elasticsearch) collectIndicesStats(mx map[string]int64, ms *esMetrics) 
 	if !ms.hasIndicesStats() {
 		return
 	}
+	key := func(name, metric string) string {
+		return fmt.Sprintf("index_stats_index_%s_%s", name, metric)
+	}
+	for _, index := range ms.IndicesStats {
+		mx[key(index.Index, "health")] = convertHealthStatus(index.Health)
+		mx[key(index.Index, "replica_count")] = strToInt(index.Rep)
+		mx[key(index.Index, "docs_count")] = strToInt(index.DocsCount)
+		mx[key(index.Index, "store_size")] = convertIndexStoreSizeToBytes(index.StoreSize)
+	}
 }
 
 func convertHealthStatus(status string) int64 {
@@ -97,6 +106,11 @@ func convertIndexStoreSizeToBytes(size string) int64 {
 		num, _ = strconv.ParseFloat(size[:len(size)-1], 64)
 	}
 	return int64(num)
+}
+
+func strToInt(s string) int64 {
+	v, _ := strconv.Atoi(s)
+	return int64(v)
 }
 
 func (es Elasticsearch) scrapeElasticsearch() *esMetrics {

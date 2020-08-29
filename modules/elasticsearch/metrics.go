@@ -176,7 +176,7 @@ type esClusterStats struct {
 type esIndexStats struct {
 	Index     string
 	Health    string
-	Rep       int64
-	DocsCount int64  `json:"docs.count"`
+	Rep       string
+	DocsCount string `json:"docs.count"`
 	StoreSize string `json:"store.size"`
 }
