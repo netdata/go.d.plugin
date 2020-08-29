@@ -4,14 +4,19 @@ package elasticsearch
 
 type esMetrics struct {
 	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-stats.html
-	LocalNodeStats *esNodeStats `stm:"node_stats"`
+	LocalNodeStats *esNodeStats
 	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html
-	ClusterHealth *esClusterHealth `stm:"cluster_health"`
+	ClusterHealth *esClusterHealth
 	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-stats.html
-	ClusterStats *esClusterStats `stm:"cluster_stats"`
+	ClusterStats *esClusterStats
 	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-indices.html
 	IndicesStats []esIndexStats
 }
+
+func (m esMetrics) hasLocalNodeStats() bool { return m.LocalNodeStats != nil }
+func (m esMetrics) hasClusterHealth() bool  { return m.ClusterHealth != nil }
+func (m esMetrics) hasClusterStats() bool   { return m.ClusterStats != nil }
+func (m esMetrics) hasIndicesStats() bool   { return len(m.IndicesStats) > 0 }
 
 type esNodeStats struct {
 	Indices struct {
@@ -119,7 +124,7 @@ type esNodeStats struct {
 }
 
 type esClusterHealth struct {
-	//Status                      string `stm:"status"`
+	Status                      string
 	NumOfNodes                  int `stm:"number_of_nodes" json:"number_of_nodes"`
 	NumOfDataNodes              int `stm:"number_of_data_nodes" json:"number_of_data_nodes"`
 	ActiveShards                int `stm:"active_shards" json:"active_shards"`
