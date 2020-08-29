@@ -13,6 +13,14 @@ type esMetrics struct {
 	IndicesStats []esIndexStats
 }
 
+func (m esMetrics) empty() bool {
+	switch {
+	case m.hasLocalNodeStats(), m.hasClusterHealth(), m.hasClusterStats(), m.hasIndicesStats():
+		return false
+	}
+	return true
+}
+
 func (m esMetrics) hasLocalNodeStats() bool { return m.LocalNodeStats != nil }
 func (m esMetrics) hasClusterHealth() bool  { return m.ClusterHealth != nil }
 func (m esMetrics) hasClusterStats() bool   { return m.ClusterStats != nil }

@@ -24,6 +24,9 @@ const (
 
 func (es *Elasticsearch) collect() (map[string]int64, error) {
 	ms := es.scrapeElasticsearch()
+	if ms.empty() {
+		return nil, nil
+	}
 
 	collected := make(map[string]int64)
 	es.collectLocalNodeStats(collected, ms)
