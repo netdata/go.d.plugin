@@ -97,14 +97,7 @@ func (es *Elasticsearch) scrapeIndicesStats(metrics *esMetrics) {
 		es.Warning(err)
 		return
 	}
-	metrics.IndicesStats = stats
-	//var i int
-	//for _, index := range stats {
-	//	if !strings.HasPrefix(index.Index, ".") {
-	//		stats[i] = index
-	//		i++
-	//	}
-	//}
+	metrics.IndicesStats = removeSystemIndices(stats)
 }
 
 func (es *Elasticsearch) doOKDecode(req *http.Request, in interface{}) error {
@@ -121,7 +114,6 @@ func (es *Elasticsearch) doOKDecode(req *http.Request, in interface{}) error {
 	if err := json.NewDecoder(resp.Body).Decode(in); err != nil {
 		return fmt.Errorf("error on decoding response from '%s': %v", req.URL, err)
 	}
-
 	return nil
 }
 
@@ -130,6 +122,18 @@ func closeBody(resp *http.Response) {
 		_, _ = io.Copy(ioutil.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
+}
+
+func removeSystemIndices(indices []esIndexStats) []esIndexStats {
+	var i int
+	for _, index := range indices {
+		if strings.HasPrefix(index.Index, ".") {
+			continue
+		}
+		indices[i] = index
+		i++
+	}
+	return indices[:i]
 }
 
 func convertHealthStatus(status string) int64 {

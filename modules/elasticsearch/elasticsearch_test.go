@@ -17,7 +17,7 @@ var (
 	v790SingleNodesLocalStats, _ = ioutil.ReadFile("testdata/v790_single_nodes_local_stats.json")
 	v790SingleClusterHealth, _   = ioutil.ReadFile("testdata/v790_single_cluster_health.json")
 	v790SingleClusterStats, _    = ioutil.ReadFile("testdata/v790_single_cluster_stats.json")
-	v790SingleCatIndicesStats, _ = ioutil.ReadFile("testdata/v790_cat_indices_stats.json")
+	v790SingleCatIndicesStats, _ = ioutil.ReadFile("testdata/v790_single_cat_indices_stats.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
