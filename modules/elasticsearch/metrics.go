@@ -51,13 +51,13 @@ type (
 		Flush struct {
 			Total        int `stm:"total"`
 			TimeInMillis int `stm:"total_time_in_millis" json:"total_time_in_millis"`
-		} `stm:"refresh"`
+		} `stm:"flush"`
 		FieldData struct {
 			MemorySizeInBytes int `stm:"memory_size_in_bytes" json:"memory_size_in_bytes"`
 			Evictions         int `stm:"evictions"`
 		} `stm:"fielddata"`
 		Segments struct {
-			Count                     int `json:"count"`
+			Count                     int `stm:"count" json:"count"`
 			TermsMemoryInBytes        int `stm:"terms_memory_in_bytes" json:"terms_memory_in_bytes"`
 			StoredFieldsMemoryInBytes int `stm:"stored_fields_memory_in_bytes" json:"stored_fields_memory_in_bytes"`
 			TermVectorsMemoryInBytes  int `stm:"term_vectors_memory_in_bytes" json:"term_vectors_memory_in_bytes"`

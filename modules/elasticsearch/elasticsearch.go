@@ -10,25 +10,26 @@ import (
 )
 
 func init() {
-	creator := module.Creator{
+	module.Register("elasticsearch", module.Creator{
 		Defaults: module.Defaults{
 			UpdateEvery: 5,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("elasticsearch", creator)
+	})
 }
 
 func New() *Elasticsearch {
-	config := Config{
-		HTTP: web.HTTP{
-			Request: web.Request{UserURL: "http://127.0.0.1:9200"},
-			Client:  web.Client{Timeout: web.Duration{Duration: time.Second * 5}},
-		},
-	}
 	return &Elasticsearch{
-		Config: config,
+		Config: Config{
+			HTTP: web.HTTP{
+				Request: web.Request{
+					UserURL: "http://127.0.0.1:9200",
+				},
+				Client: web.Client{
+					Timeout: web.Duration{Duration: time.Second * 5},
+				},
+			},
+		},
 	}
 }
 

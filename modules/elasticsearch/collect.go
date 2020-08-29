@@ -44,13 +44,16 @@ func (es *Elasticsearch) scrapeLocalNodeStats(mx *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
 	req.URL.Path = urlPathNodesLocalStats
 
-	var stats struct{ Nodes []esNodeStats }
+	var stats struct {
+		Nodes map[string]esNodeStats
+	}
 	if err := es.doOKDecode(req, &stats); err != nil {
 		es.Warning(err)
 		return
 	}
-	if len(stats.Nodes) > 0 {
-		mx.LocalNodeStats = &stats.Nodes[0]
+	for _, node := range stats.Nodes {
+		mx.LocalNodeStats = &node
+		break
 	}
 }
 
