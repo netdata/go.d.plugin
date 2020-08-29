@@ -9,28 +9,12 @@ type esMetrics struct {
 	ClusterHealth *esClusterHealth `stm:"cluster_health"`
 	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-stats.html
 	ClusterStats *esClusterStats `stm:"cluster_stats"`
+	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-indices.html
+	IndicesStats []esIndexStats
 }
 
-type (
-	esNodeStats struct {
-		Indices esNodeIndicesStats `stm:"indices"`
-		Process struct {
-			OpenFileDescriptors int `stm:"open_file_descriptors" json:"open_file_descriptors"`
-			MaxFileDescriptors  int `stm:"max_file_descriptors" json:"max_file_descriptors"`
-		} `stm:"process"`
-		JVM        esNodeJVMStats        `stm:"jvm"`
-		ThreadPool esNodeThreadPoolStats `stm:"thread_pool" json:"thread_pool"`
-		Transport  struct {
-			RxSizeInBytes int `stm:"rx_size_in_bytes" json:"rx_size_in_bytes"`
-			TxSizeInBytes int `stm:"tx_size_in_bytes" json:"tx_size_in_bytes"`
-		} `stm:"transport"`
-		HTTP struct {
-			CurrentOpen int `stm:"current_open" json:"current_open"`
-		} `stm:"http"`
-		Breakers esNodeBreakersStats `stm:"breakers"`
-	}
-
-	esNodeIndicesStats struct {
+type esNodeStats struct {
+	Indices struct {
 		Indexing struct {
 			IndexTotal        int `stm:"index_total" json:"index_total"`
 			IndexCurrent      int `stm:"index_current" json:"index_current"`
@@ -74,9 +58,12 @@ type (
 			UncommittedOperations  int `stm:"uncommitted_operations" json:"uncommitted_operations"`
 			UncommittedSizeInBytes int `stm:"uncommitted_size_in_bytes" json:"uncommitted_size_in_bytes"`
 		} `stm:"translog"`
-	}
-
-	esNodeJVMStats struct {
+	} `stm:"indices"`
+	Process struct {
+		OpenFileDescriptors int `stm:"open_file_descriptors" json:"open_file_descriptors"`
+		MaxFileDescriptors  int `stm:"max_file_descriptors" json:"max_file_descriptors"`
+	} `stm:"process"`
+	JVM struct {
 		Mem struct {
 			HeapUsedPercent      int `stm:"heap_used_percent" json:"heap_used_percent"`
 			HeapUsedInBytes      int `stm:"heap_used_in_bytes" json:"heap_used_in_bytes"`
@@ -106,9 +93,8 @@ type (
 				TotalCapacityInBytes int `stm:"total_capacity_in_bytes" json:"total_capacity_in_bytes"`
 			} `stm:"direct"`
 		} `stm:"buffer_pool" json:"buffer_pool"`
-	}
-
-	esNodeThreadPoolStats struct {
+	} `stm:"jvm"`
+	ThreadPool struct {
 		Search struct {
 			Queue    int `stm:"queue"`
 			Rejected int `stm:"rejected"`
@@ -117,14 +103,20 @@ type (
 			Queue    int `stm:"queue"`
 			Rejected int `stm:"rejected"`
 		} `stm:"write"`
-	}
-
-	esNodeBreakersStats struct {
+	} `stm:"thread_pool" json:"thread_pool"`
+	Transport struct {
+		RxSizeInBytes int `stm:"rx_size_in_bytes" json:"rx_size_in_bytes"`
+		TxSizeInBytes int `stm:"tx_size_in_bytes" json:"tx_size_in_bytes"`
+	} `stm:"transport"`
+	HTTP struct {
+		CurrentOpen int `stm:"current_open" json:"current_open"`
+	} `stm:"http"`
+	Breakers struct {
 		FieldData struct {
 			Tripped int `stm:"tripped"`
 		} `stm:"fielddata"`
-	}
-)
+	} `stm:"breakers"`
+}
 
 type esClusterHealth struct {
 	//Status                      string `stm:"status"`
@@ -140,13 +132,8 @@ type esClusterHealth struct {
 	ActiveShardsPercentAsNumber int `stm:"active_shards_percent_as_number" json:"active_shards_percent_as_number"`
 }
 
-type (
-	esClusterStats struct {
-		Nodes   esClusterNodesStats   `stm:"nodes"`
-		Indices esClusterIndicesStats `stm:"indices"`
-	}
-
-	esClusterNodesStats struct {
+type esClusterStats struct {
+	Nodes struct {
 		Count struct {
 			Data             int `stm:"data"`
 			Master           int `stm:"master"`
@@ -154,9 +141,8 @@ type (
 			CoordinatingOnly int `stm:"coordinating_only" json:"coordinating_only"`
 			Ingest           int `stm:"ingest"`
 		} `stm:"count"`
-	}
-
-	esClusterIndicesStats struct {
+	} `stm:"nodes"`
+	Indices struct {
 		Count int `stm:"count"`
 		Docs  struct {
 			Count int `stm:"count"`
@@ -171,5 +157,13 @@ type (
 		Shards struct {
 			Total int `stm:"total"`
 		} `stm:"shards"`
-	}
-)
+	} `stm:"indices"`
+}
+
+type esIndexStats struct {
+	Index     string
+	Health    string
+	Rep       int64
+	DocsCount int64  `json:"docs.count"`
+	StoreSize string `json:"store.size"`
+}

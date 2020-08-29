@@ -17,6 +17,7 @@ var (
 	v790SingleNodesLocalStats, _ = ioutil.ReadFile("testdata/v790_single_nodes_local_stats.json")
 	v790SingleClusterHealth, _   = ioutil.ReadFile("testdata/v790_single_cluster_health.json")
 	v790SingleClusterStats, _    = ioutil.ReadFile("testdata/v790_single_cluster_stats.json")
+	v790SingleCatIndicesStats, _ = ioutil.ReadFile("testdata/v790_cat_indices_stats.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
@@ -24,6 +25,7 @@ func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 		"v790SingleNodesLocalStats": v790SingleNodesLocalStats,
 		"v790SingleClusterHealth":   v790SingleClusterHealth,
 		"v790SingleClusterStats":    v790SingleClusterStats,
+		"v790SingleCatIndicesStats": v790SingleCatIndicesStats,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -180,7 +182,17 @@ func TestElasticsearch_Collect(t *testing.T) {
 
 func prepareElasticsearch(t *testing.T) (es *Elasticsearch, cleanup func()) {
 	t.Helper()
-	srv := httptest.NewServer(http.HandlerFunc(
+	srv := prepareElasticSearchEndpoint()
+
+	es = New()
+	es.UserURL = srv.URL
+	require.True(t, es.Init())
+
+	return es, srv.Close
+}
+
+func prepareElasticSearchEndpoint() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
 			case urlPathNodesLocalStats:
@@ -189,14 +201,10 @@ func prepareElasticsearch(t *testing.T) (es *Elasticsearch, cleanup func()) {
 				_, _ = w.Write(v790SingleClusterHealth)
 			case urlPathClusterStats:
 				_, _ = w.Write(v790SingleClusterStats)
+			case urlPathCatIndices:
+				_, _ = w.Write(v790SingleCatIndicesStats)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
 		}))
-
-	es = New()
-	es.UserURL = srv.URL
-	require.True(t, es.Init())
-
-	return es, srv.Close
 }

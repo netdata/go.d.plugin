@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math"
 	"net/http"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
@@ -16,6 +19,7 @@ const (
 	urlPathNodesLocalStats = "/_nodes/_local/stats"
 	urlPathClusterHealth   = "/_cluster/health"
 	urlPathClusterStats    = "/_cluster/stats"
+	urlPathCatIndices      = "/_cat/indices?format=json"
 )
 
 func (es *Elasticsearch) collect() (map[string]int64, error) {
@@ -25,22 +29,25 @@ func (es *Elasticsearch) collect() (map[string]int64, error) {
 }
 
 func (es *Elasticsearch) scrapeElasticsearch() *esMetrics {
-	var mx esMetrics
-	wg := &sync.WaitGroup{}
-	for _, task := range []func(mx *esMetrics){
+	tasks := []func(metrics *esMetrics){
 		es.scrapeLocalNodeStats,
 		es.scrapeClusterHealth,
 		es.scrapeClusterStats,
-	} {
+		es.scrapeIndicesStats,
+	}
+
+	var metrics esMetrics
+	wg := &sync.WaitGroup{}
+	for _, task := range tasks {
 		wg.Add(1)
 		task := task
-		go func() { defer wg.Done(); task(&mx) }()
+		go func() { defer wg.Done(); task(&metrics) }()
 	}
 	wg.Wait()
-	return &mx
+	return &metrics
 }
 
-func (es *Elasticsearch) scrapeLocalNodeStats(mx *esMetrics) {
+func (es *Elasticsearch) scrapeLocalNodeStats(metrics *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
 	req.URL.Path = urlPathNodesLocalStats
 
@@ -52,12 +59,12 @@ func (es *Elasticsearch) scrapeLocalNodeStats(mx *esMetrics) {
 		return
 	}
 	for _, node := range stats.Nodes {
-		mx.LocalNodeStats = &node
+		metrics.LocalNodeStats = &node
 		break
 	}
 }
 
-func (es *Elasticsearch) scrapeClusterHealth(mx *esMetrics) {
+func (es *Elasticsearch) scrapeClusterHealth(metrics *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
 	req.URL.Path = urlPathClusterHealth
 
@@ -66,10 +73,10 @@ func (es *Elasticsearch) scrapeClusterHealth(mx *esMetrics) {
 		es.Warning(err)
 		return
 	}
-	mx.ClusterHealth = &health
+	metrics.ClusterHealth = &health
 }
 
-func (es *Elasticsearch) scrapeClusterStats(mx *esMetrics) {
+func (es *Elasticsearch) scrapeClusterStats(metrics *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
 	req.URL.Path = urlPathClusterStats
 
@@ -78,7 +85,26 @@ func (es *Elasticsearch) scrapeClusterStats(mx *esMetrics) {
 		es.Warning(err)
 		return
 	}
-	mx.ClusterStats = &stats
+	metrics.ClusterStats = &stats
+}
+
+func (es *Elasticsearch) scrapeIndicesStats(metrics *esMetrics) {
+	req, _ := web.NewHTTPRequest(es.Request)
+	req.URL.Path = urlPathCatIndices
+
+	var stats []esIndexStats
+	if err := es.doOKDecode(req, &stats); err != nil {
+		es.Warning(err)
+		return
+	}
+	metrics.IndicesStats = stats
+	//var i int
+	//for _, index := range stats {
+	//	if !strings.HasPrefix(index.Index, ".") {
+	//		stats[i] = index
+	//		i++
+	//	}
+	//}
 }
 
 func (es *Elasticsearch) doOKDecode(req *http.Request, in interface{}) error {
@@ -104,4 +130,38 @@ func closeBody(resp *http.Response) {
 		_, _ = io.Copy(ioutil.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
+}
+
+func convertHealthStatus(status string) int64 {
+	switch status {
+	case "green":
+		return 0
+	case "yellow":
+		return 1
+	case "red":
+		return 2
+	default:
+		return 2
+	}
+}
+
+func convertIndexStoreSizeToBytes(size string) int64 {
+	var num float64
+	switch {
+	case strings.HasSuffix(size, "kb"):
+		num, _ = strconv.ParseFloat(size[:len(size)-2], 64)
+		num *= math.Pow(1024, 1)
+	case strings.HasSuffix(size, "mb"):
+		num, _ = strconv.ParseFloat(size[:len(size)-2], 64)
+		num *= math.Pow(1024, 2)
+	case strings.HasSuffix(size, "gb"):
+		num, _ = strconv.ParseFloat(size[:len(size)-2], 64)
+		num *= math.Pow(1024, 3)
+	case strings.HasSuffix(size, "tb"):
+		num, _ = strconv.ParseFloat(size[:len(size)-2], 64)
+		num *= math.Pow(1024, 4)
+	case strings.HasSuffix(size, "b"):
+		num, _ = strconv.ParseFloat(size[:len(size)-1], 64)
+	}
+	return int64(num)
 }
