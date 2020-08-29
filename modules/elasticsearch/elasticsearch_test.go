@@ -1,7 +1,6 @@
 package elasticsearch
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -113,18 +112,18 @@ func TestElasticsearch_Collect(t *testing.T) {
 				"cluster_stats_number_of_pending_tasks":                        0,
 				"cluster_stats_relocating_shards":                              0,
 				"cluster_stats_unassigned_shards":                              0,
-				"index_stats_index_my-index-000001_docs_count":                 0,
-				"index_stats_index_my-index-000001_health":                     1,
-				"index_stats_index_my-index-000001_replica_count":              1,
-				"index_stats_index_my-index-000001_store_size":                 208,
-				"index_stats_index_my-index-000002_docs_count":                 0,
-				"index_stats_index_my-index-000002_health":                     1,
-				"index_stats_index_my-index-000002_replica_count":              1,
-				"index_stats_index_my-index-000002_store_size":                 208,
-				"index_stats_index_my-index-000003_docs_count":                 0,
-				"index_stats_index_my-index-000003_health":                     1,
-				"index_stats_index_my-index-000003_replica_count":              1,
-				"index_stats_index_my-index-000003_store_size":                 208,
+				"indices_stats_my-index-000001_index_docs_count":               0,
+				"indices_stats_my-index-000001_index_health":                   1,
+				"indices_stats_my-index-000001_index_shards_count":             1,
+				"indices_stats_my-index-000001_index_store_size":               208,
+				"indices_stats_my-index-000002_index_docs_count":               0,
+				"indices_stats_my-index-000002_index_health":                   1,
+				"indices_stats_my-index-000002_index_shards_count":             1,
+				"indices_stats_my-index-000002_index_store_size":               208,
+				"indices_stats_my-index-000003_index_docs_count":               0,
+				"indices_stats_my-index-000003_index_health":                   1,
+				"indices_stats_my-index-000003_index_shards_count":             1,
+				"indices_stats_my-index-000003_index_store_size":               208,
 				"node_stats_breakers_fielddata_tripped":                        0,
 				"node_stats_http_current_open":                                 3,
 				"node_stats_indices_fielddata_evictions":                       0,
@@ -215,7 +214,6 @@ func prepareElasticSearchEndpoint() *httptest.Server {
 			case urlPathClusterStats:
 				_, _ = w.Write(v790SingleClusterStats)
 			case urlPathCatIndices:
-				fmt.Println("HERE")
 				_, _ = w.Write(v790SingleCatIndicesStats)
 			default:
 				w.WriteHeader(http.StatusNotFound)

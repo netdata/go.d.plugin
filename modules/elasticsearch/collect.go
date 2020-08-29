@@ -64,11 +64,11 @@ func (es Elasticsearch) collectIndicesStats(mx map[string]int64, ms *esMetrics) 
 		return
 	}
 	key := func(name, metric string) string {
-		return fmt.Sprintf("index_stats_index_%s_%s", name, metric)
+		return fmt.Sprintf("indices_stats_%s_index_%s", name, metric)
 	}
 	for _, index := range ms.IndicesStats {
 		mx[key(index.Index, "health")] = convertHealthStatus(index.Health)
-		mx[key(index.Index, "replica_count")] = strToInt(index.Rep)
+		mx[key(index.Index, "shards_count")] = strToInt(index.Rep)
 		mx[key(index.Index, "docs_count")] = strToInt(index.DocsCount)
 		mx[key(index.Index, "store_size")] = convertIndexStoreSizeToBytes(index.StoreSize)
 	}
