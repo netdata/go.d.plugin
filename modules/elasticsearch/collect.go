@@ -16,10 +16,10 @@ import (
 )
 
 const (
-	urlPathNodesLocalStats = "/_nodes/_local/stats"
-	urlPathClusterHealth   = "/_cluster/health"
-	urlPathClusterStats    = "/_cluster/stats"
-	urlPathCatLocalIndices = "/_cat/indices?local=true&format=json"
+	urlPathLocalNodeStats    = "/_nodes/_local/stats"
+	urlPathLocalIndicesStats = "/_cat/indices?local=true&format=json"
+	urlPathClusterHealth     = "/_cluster/health"
+	urlPathClusterStats      = "/_cluster/stats"
 )
 
 func (es *Elasticsearch) collect() (map[string]int64, error) {
@@ -134,7 +134,7 @@ func (es Elasticsearch) scrapeElasticsearch() *esMetrics {
 
 func (es Elasticsearch) scrapeLocalNodeStats(ms *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = urlPathNodesLocalStats
+	req.URL.Path = urlPathLocalNodeStats
 
 	var stats struct {
 		Nodes map[string]esNodeStats
@@ -175,7 +175,7 @@ func (es Elasticsearch) scrapeClusterStats(ms *esMetrics) {
 
 func (es *Elasticsearch) scrapeLocalIndicesStats(ms *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = urlPathCatLocalIndices
+	req.URL.Path = urlPathLocalIndicesStats
 
 	var stats []esIndexStats
 	if err := es.doOKDecode(req, &stats); err != nil {

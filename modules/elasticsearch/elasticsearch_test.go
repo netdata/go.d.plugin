@@ -230,13 +230,13 @@ func prepareElasticSearchEndpoint() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
-			case urlPathNodesLocalStats:
+			case urlPathLocalNodeStats:
 				_, _ = w.Write(v790SingleNodesLocalStats)
 			case urlPathClusterHealth:
 				_, _ = w.Write(v790SingleClusterHealth)
 			case urlPathClusterStats:
 				_, _ = w.Write(v790SingleClusterStats)
-			case urlPathCatLocalIndices:
+			case urlPathLocalIndicesStats:
 				_, _ = w.Write(v790SingleCatIndicesStats)
 			default:
 				w.WriteHeader(http.StatusNotFound)
