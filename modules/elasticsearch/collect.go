@@ -101,7 +101,7 @@ func (es *Elasticsearch) addIndexToCharts(index string) {
 			continue
 		}
 		if err := chart.AddDim(&dim); err != nil {
-			es.Warningf("add index '%s': %v", err)
+			es.Warningf("add index '%s': %v", index, err)
 			continue
 		}
 		chart.MarkNotCreated()
@@ -124,7 +124,7 @@ func (es *Elasticsearch) removeIndexFromCharts(index string) {
 			continue
 		}
 		if err := chart.MarkDimRemove(id, false); err != nil {
-			es.Warningf("remove index '%s': %v", err)
+			es.Warningf("remove index '%s': %v", index, err)
 			continue
 		}
 		chart.MarkNotCreated()
