@@ -26,6 +26,8 @@ func (m esMetrics) hasClusterHealth() bool     { return m.ClusterHealth != nil }
 func (m esMetrics) hasClusterStats() bool      { return m.ClusterStats != nil }
 func (m esMetrics) hasLocalIndicesStats() bool { return len(m.LocalIndicesStats) > 0 }
 
+// TODO: make metrics less verbose
+
 type esNodeStats struct {
 	Indices struct {
 		Indexing struct {
