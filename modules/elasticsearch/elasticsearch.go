@@ -96,7 +96,7 @@ func (es *Elasticsearch) Check() bool {
 	return len(es.Collect()) > 0
 }
 
-func (es *Elasticsearch) Charts() *module.Charts {
+func (es *Elasticsearch) Charts() *Charts {
 	return es.charts
 }
 

@@ -11,6 +11,7 @@ type (
 )
 
 // TODO: indices operations charts: query_latency, fetch_latency, index_latency, flush_latency
+// if they are needed at all..
 
 var (
 	nodeCharts = Charts{
@@ -214,7 +215,7 @@ var (
 		// Process
 		{
 			ID:    "node_file_descriptors",
-			Title: "File Descriptors",
+			Title: "Process File Descriptors",
 			Units: "num",
 			Fam:   "process",
 			Ctx:   "elasticsearch.node_file_descriptors",
@@ -251,8 +252,8 @@ var (
 		},
 		{
 			ID:    "node_jvm_buffer_pools_count",
-			Title: "JVM Buffer Pools",
-			Units: "pools",
+			Title: "JVM Buffer Pools Count",
+			Units: "num",
 			Fam:   "jvm",
 			Ctx:   "elasticsearch.node_jvm_buffer_pools_count",
 			Dims: Dims{
@@ -286,8 +287,8 @@ var (
 		},
 		{
 			ID:    "node_jvm_gc_count",
-			Title: "Garbage Collections",
-			Units: "events/s",
+			Title: "JVM Garbage Collections",
+			Units: "collections/s",
 			Fam:   "jvm",
 			Ctx:   "elasticsearch.node_jvm_gc_count",
 			Type:  module.Stacked,
@@ -298,7 +299,7 @@ var (
 		},
 		{
 			ID:    "node_jvm_gc_time",
-			Title: "Time Spent On Garbage Collections",
+			Title: "JVM Time Spent On Garbage Collections",
 			Units: "milliseconds",
 			Fam:   "jvm",
 			Ctx:   "elasticsearch.node_jvm_gc_time",
@@ -311,7 +312,7 @@ var (
 		// Thread Pool
 		{
 			ID:    "node_thread_pool_queued",
-			Title: "Queued Threads In Thread Pool",
+			Title: "Thread Pool Queued Threads Count",
 			Units: "num",
 			Fam:   "thread pool",
 			Ctx:   "elasticsearch.node_thread_pool_queued",
@@ -323,7 +324,7 @@ var (
 		},
 		{
 			ID:    "node_thread_pool_rejected",
-			Title: "Rejected Threads In Thread Pool",
+			Title: "Thread Pool Rejected Threads Count",
 			Units: "num",
 			Fam:   "thread pool",
 			Ctx:   "elasticsearch.node_thread_pool_rejected",
@@ -347,7 +348,7 @@ var (
 		},
 		{
 			ID:    "cluster_communication",
-			Title: "Cluster Communication",
+			Title: "Cluster Communication Bandwidth",
 			Units: "bytes/s",
 			Fam:   "transport",
 			Ctx:   "elasticsearch.cluster_communication",
@@ -469,11 +470,11 @@ var clusterHealthCharts = Charts{
 		},
 	},
 	{
-		ID:    "number_of_in_flight_fetch",
-		Title: "Unfinished Fetches",
+		ID:    "cluster_number_of_in_flight_fetch",
+		Title: "Cluster Unfinished Fetches",
 		Units: "num",
 		Fam:   "cluster health",
-		Ctx:   "elasticsearch.number_of_in_flight_fetch",
+		Ctx:   "elasticsearch.cluster_number_of_in_flight_fetch",
 		Dims: Dims{
 			{ID: "cluster_number_of_in_flight_fetch", Name: "in_flight_fetch"},
 		},
