@@ -297,10 +297,6 @@ func removeSystemIndices(indices []esIndexStats) []esIndexStats {
 
 func merge(dst, src map[string]int64, prefix string) {
 	for k, v := range src {
-		if prefix == "" {
-			dst[k] = v
-		} else {
-			dst[prefix+"_"+k] = v
-		}
+		dst[prefix+"_"+k] = v
 	}
 }
