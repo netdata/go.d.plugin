@@ -547,7 +547,7 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, es *Elasticsearch, col
 
 func prepareElasticsearch(t *testing.T, createES func() *Elasticsearch) (es *Elasticsearch, cleanup func()) {
 	t.Helper()
-	srv := prepareElasticSearchEndpoint()
+	srv := prepareElasticsearchEndpoint()
 
 	es = createES()
 	es.UserURL = srv.URL
@@ -595,7 +595,7 @@ func prepareElasticsearchConnectionRefused(t *testing.T) (*Elasticsearch, func()
 	return es, func() {}
 }
 
-func prepareElasticSearchEndpoint() *httptest.Server {
+func prepareElasticsearchEndpoint() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
