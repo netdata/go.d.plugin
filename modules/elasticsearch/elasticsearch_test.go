@@ -47,15 +47,17 @@ func TestElasticsearch_Init(t *testing.T) {
 		},
 		"URL not set": {
 			wantFail: true,
-			config: Config{web.HTTP{
-				Request: web.Request{UserURL: ""},
-			}},
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{UserURL: ""},
+				}},
 		},
 		"invalid TLSCA": {
 			wantFail: true,
-			config: Config{web.HTTP{
-				Client: web.Client{ClientTLSConfig: web.ClientTLSConfig{TLSCA: "testdata/tls"}},
-			}},
+			config: Config{
+				HTTP: web.HTTP{
+					Client: web.Client{ClientTLSConfig: web.ClientTLSConfig{TLSCA: "testdata/tls"}},
+				}},
 		},
 	}
 

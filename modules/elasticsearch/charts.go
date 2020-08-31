@@ -10,43 +10,9 @@ type (
 
 // TODO: indices operations charts: query_latency, fetch_latency, index_latency, flush_latency
 
-var _ = newLocalNodeCharts()
-
-func newLocalNodeCharts() *Charts {
-	charts := module.Charts{}
-	for _, cs := range []Charts{
-		nodeIndicesIndexingCharts,
-		nodeIndicesSearchCharts,
-		nodeIndicesRefreshCharts,
-		nodeIndicesFlushCharts,
-		nodeIndicesFielddataCharts,
-		nodeIndicesSegmentsCharts,
-		nodeIndicesTranslogCharts,
-		nodeProcessCharts,
-		nodeJVMCharts,
-		nodeThreadPoolCharts,
-		nodeTransportCharts,
-		nodeHTTPCharts,
-		nodeBreakersCharts,
-		nodeIndicesStatsCharts,
-	} {
-		if err := charts.Add(*cs.Copy()...); err != nil {
-			panic(err)
-		}
-	}
-	return &charts
-}
-
-func newClusterHealthCharts() *Charts {
-	return clusterHealthCharts.Copy()
-}
-
-func newClusterStatsCharts() *Charts {
-	return clusterStatsCharts.Copy()
-}
-
 var (
-	nodeIndicesIndexingCharts = Charts{
+	nodeCharts = Charts{
+		// Indices Indexing
 		{
 			ID:    "node_indices_indexing_operations",
 			Title: "Indexing Operations",
@@ -77,8 +43,7 @@ var (
 				{ID: "node_indices_indexing_index_time_in_millis", Name: "index", Algo: module.Incremental},
 			},
 		},
-	}
-	nodeIndicesSearchCharts = Charts{
+		// Indices Search
 		{
 			ID:    "node_indices_search_operations",
 			Title: "Search Operations",
@@ -115,8 +80,7 @@ var (
 				{ID: "node_indices_search_fetch_time_in_millis", Name: "fetch", Algo: module.Incremental},
 			},
 		},
-	}
-	nodeIndicesRefreshCharts = Charts{
+		// Indices Refresh
 		{
 			ID:    "node_indices_refresh_operations",
 			Title: "Refresh Operations",
@@ -137,8 +101,7 @@ var (
 				{ID: "node_indices_refresh_total_time_in_millis", Name: "refresh", Algo: module.Incremental},
 			},
 		},
-	}
-	nodeIndicesFlushCharts = Charts{
+		// Indices Flush
 		{
 			ID:    "node_indices_flush_operations",
 			Title: "Flush Operations",
@@ -159,8 +122,7 @@ var (
 				{ID: "node_indices_flush_total_time_in_millis", Name: "flush", Algo: module.Incremental},
 			},
 		},
-	}
-	nodeIndicesFielddataCharts = Charts{
+		// Indices Fielddata
 		{
 			ID:    "node_indices_fielddata_memory_usage",
 			Title: "Fielddata Cache Memory Usage",
@@ -182,8 +144,7 @@ var (
 				{ID: "node_indices_fielddata_evictions", Name: "evictions", Algo: module.Incremental},
 			},
 		},
-	}
-	nodeIndicesSegmentsCharts = Charts{
+		// Indices Segments
 		{
 			ID:    "node_indices_segments_count",
 			Title: "Segments Count",
@@ -223,8 +184,7 @@ var (
 				{ID: "node_indices_segments_fixed_bit_set_memory_in_bytes", Name: "fixed_bit_set"},
 			},
 		},
-	}
-	nodeIndicesTranslogCharts = Charts{
+		// Indices Translog
 		{
 			ID:    "node_indices_translog_operations",
 			Title: "Translog Operations",
@@ -249,8 +209,7 @@ var (
 				{ID: "node_indices_translog_uncommitted_size_in_bytes", Name: "uncommitted"},
 			},
 		},
-	}
-	nodeProcessCharts = Charts{
+		// Process
 		{
 			ID:    "node_file_descriptors",
 			Title: "File Descriptors",
@@ -264,8 +223,7 @@ var (
 				{ID: "node_process_max_file_descriptors"},
 			},
 		},
-	}
-	nodeJVMCharts = Charts{
+		// JVM
 		{
 			ID:    "node_jvm_mem_heap",
 			Title: "JVM Heap Percentage Currently in Use",
@@ -348,8 +306,7 @@ var (
 				{ID: "node_jvm_gc_collectors_old_collection_time_in_millis", Name: "old", Algo: module.Incremental},
 			},
 		},
-	}
-	nodeThreadPoolCharts = Charts{
+		// Thread Pool
 		{
 			ID:    "node_thread_pool_queued",
 			Title: "Queued Threads In Thread Pool",
@@ -374,8 +331,7 @@ var (
 				{ID: "node_thread_pool_search_rejected", Name: "search"},
 			},
 		},
-	}
-	nodeTransportCharts = Charts{
+		// Transport
 		{
 			ID:    "cluster_communication_packets",
 			Title: "Cluster Communication",
@@ -398,8 +354,7 @@ var (
 				{ID: "node_transport_tx_size_in_bytes", Name: "tx", Mul: -1, Algo: module.Incremental},
 			},
 		},
-	}
-	nodeHTTPCharts = Charts{
+		// HTTP
 		{
 			ID:    "http_connections",
 			Title: "HTTP Connections",
@@ -410,8 +365,7 @@ var (
 				{ID: "node_http_current_open", Name: "open"},
 			},
 		},
-	}
-	nodeBreakersCharts = Charts{
+		// Breakers
 		{
 			ID:    "breakers_trips",
 			Title: "Circuit Breaker Trips Count",

@@ -30,6 +30,10 @@ func New() *Elasticsearch {
 					Timeout: web.Duration{Duration: time.Second * 5},
 				},
 			},
+			DoNodeStats:     true,
+			DoClusterStats:  true,
+			DoClusterHealth: true,
+			DoIndicesStats:  false,
 		},
 		collectedIndices: make(map[string]bool),
 	}
@@ -37,7 +41,11 @@ func New() *Elasticsearch {
 
 type (
 	Config struct {
-		web.HTTP `yaml:",inline"`
+		web.HTTP        `yaml:",inline"`
+		DoNodeStats     bool `yaml:"node_stats"`
+		DoClusterHealth bool `yaml:"cluster_health"`
+		DoClusterStats  bool `yaml:"cluster_stats"`
+		DoIndicesStats  bool `yaml:"indices_stats"`
 	}
 	Elasticsearch struct {
 		module.Base
@@ -57,32 +65,34 @@ func (es *Elasticsearch) Cleanup() {
 }
 
 func (es *Elasticsearch) Init() bool {
-	if es.UserURL == "" {
-		es.Error("URL not set")
+	err := es.checkConfig()
+	if err != nil {
+		es.Errorf("check configuration: %v", err)
 		return false
 	}
 
-	client, err := web.NewHTTPClient(es.Client)
+	httpClient, err := es.initHTTPClient()
 	if err != nil {
 		es.Errorf("init HTTP client: %v", err)
 		return false
 	}
-	es.httpClient = client
+	es.httpClient = httpClient
 
-	es.charts = newLocalNodeCharts()
-	if err := es.charts.Add(*newClusterHealthCharts()...); err != nil {
-		es.Errorf("init charts: add cluster health charts: $v", err)
+	charts, err := es.initCharts()
+	if err != nil {
+		es.Errorf("init charts: %v", err)
 		return false
 	}
-	if err := es.charts.Add(*newClusterStatsCharts()...); err != nil {
-		es.Errorf("init charts: add cluster stats charts: $v", err)
-		return false
-	}
+	es.charts = charts
 
 	return true
 }
 
 func (es *Elasticsearch) Check() bool {
+	if err := es.pingElasticsearch(); err != nil {
+		es.Error(err)
+		return false
+	}
 	return len(es.Collect()) > 0
 }
 

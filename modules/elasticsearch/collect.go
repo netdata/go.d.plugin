@@ -116,22 +116,29 @@ func strToInt(s string) int64 {
 }
 
 func (es Elasticsearch) scrapeElasticsearch() *esMetrics {
-	tasks := []func(ms *esMetrics){
-		es.scrapeLocalNodeStats,
-		es.scrapeClusterHealth,
-		es.scrapeClusterStats,
-		es.scrapeLocalIndicesStats,
+	tasks := make([]func(ms *esMetrics), 0, 4)
+	if es.DoNodeStats {
+		tasks = append(tasks, es.scrapeLocalNodeStats)
+	}
+	if es.DoClusterHealth {
+		tasks = append(tasks, es.scrapeClusterHealth)
+	}
+	if es.DoClusterStats {
+		tasks = append(tasks, es.scrapeClusterStats)
+	}
+	if es.DoIndicesStats {
+		tasks = append(tasks, es.scrapeLocalIndicesStats)
 	}
 
-	var metrics esMetrics
+	var ms esMetrics
 	wg := &sync.WaitGroup{}
 	for _, task := range tasks {
 		wg.Add(1)
 		task := task
-		go func() { defer wg.Done(); task(&metrics) }()
+		go func() { defer wg.Done(); task(&ms) }()
 	}
 	wg.Wait()
-	return &metrics
+	return &ms
 }
 
 func (es Elasticsearch) scrapeLocalNodeStats(ms *esMetrics) {
@@ -186,6 +193,10 @@ func (es *Elasticsearch) scrapeLocalIndicesStats(ms *esMetrics) {
 		return
 	}
 	ms.LocalIndicesStats = removeSystemIndices(stats)
+}
+
+func (es Elasticsearch) pingElasticsearch() error {
+	return nil
 }
 
 func (es Elasticsearch) doOKDecode(req *http.Request, in interface{}) error {
