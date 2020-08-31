@@ -23,7 +23,7 @@ Each endpoint can be enabled/disabled in the module configuration file.
 
 Number of charts depends on enabled endpoints.
 
-### Local Node Metrics Charts
+### Local Node Stats
 
 Collected from `/_nodes/_local/stats` endpoint.
 Controlled by `collect_node_stats` option.
@@ -61,7 +61,7 @@ Enabled by default.
 -   HTTP Connections in `connections`
 -   Circuit Breaker Trips Count in `trips/s`
 
-### Local Indices Charts
+### Local Indices Stats
 
 Collected from `/_cat/indices?local=true` endpoint.
 Controlled by `collect_indices_stats` option.
@@ -72,7 +72,7 @@ Disabled by default.
 -   Index Docs Count in `num`
 -   Index Store Size in `bytes`
 
-### Cluster Health Charts
+### Cluster Health
 
 Collected from `/_cluster/health` endpoint.
 Controlled by `collect_cluster_health` option.
@@ -84,7 +84,7 @@ Enabled by default.
 -   Cluster Pending Tasks in `num`
 -   Cluster Unfinished Fetches in `num`
 
-### Cluster Stats Charts
+### Cluster Stats
 
 Collected from `/_cluster/stats` endpoint.
 Controlled by `collect_cluster_stats` option.
