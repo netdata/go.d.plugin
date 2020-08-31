@@ -12,6 +12,72 @@ This module monitors one or more `Elasticsearch` instances, depending on your co
 
 ## Charts
 
+### Local Node Statistics
+
+If `collect_node_stats` is `yes`. Default is `yes`.
+
+-   Indexing Operations in `operations/s`
+-   Indexing Operations Current in `operations`
+-   Time Spent On Indexing Operations in `milliseconds`
+-   Search Operations in `operations/s`
+-   Search Operations Current in `operations`
+-   Time Spent On Search Operations in `milliseconds`
+-   Refresh Operations in `operations/s`
+-   Time Spent On Refresh Operations in `milliseconds`
+-   Flush Operations in `operations/s`
+-   Time Spent On Flush Operations in `milliseconds`
+-   Fielddata Cache Memory Usage in `bytes`
+-   Fielddata Evictions in `evictions/s`
+-   Segments Count in `num`
+-   Segments Memory Usage Total in `bytes`
+-   Segments Memory Usage in `bytes`
+-   Translog Operations in `operations`
+-   Translog Size in `bytes`
+-   Process File Descriptors in `num`
+-   JVM Heap Percentage Currently in Use in `percentage`
+-   JVM Heap Commit And Usage in `bytes`
+-   JVM Buffer Pools Count in `num`
+-   JVM Buffer Pool Direct Memory in `bytes`
+-   JVM Buffer Pool Mapped Memory" in `bytes`
+-   JVM Garbage Collections in `collections/s`
+-   JVM Time Spent On Garbage Collections in `milliseconds`
+-   Thread Pool Queued Threads Count in `num`
+-   Thread Pool Rejected Threads Count in `num`
+-   Cluster Communication in `pps`
+-   Cluster Communication Bandwidth in `bytes/s`
+-   HTTP Connections in `connections`
+-   Circuit Breaker Trips Count in `trips/s`
+
+### Local Indices Stats
+
+If `collect_indices_stats` is `yes`. Default is `no`.
+
+-   Index Health in `status`
+-   Index Shards Count in `num`
+-   Index Docs Count in `num`
+-   Index Store Size in `bytes`
+
+### Cluster Health
+
+If `collect_cluster_health` is `yes`. Default is `yes`.
+
+-   Cluster Status in `status`
+-   Cluster Nodes Count in `num`
+-   Cluster Shards Count in `num`
+-   Cluster Pending Tasks in `num`
+-   Cluster Unfinished Fetches in `num`
+
+### Cluster Stats
+
+If `collect_cluster_stats` is `yes`. Default is `yes`.
+
+-   Cluster Indices Count in `num`
+-   Cluster Indices Shards Count in `num`
+-   Cluster Indices Docs Count in `num`
+-   Cluster Indices Store Size in `bytes`
+-   Cluster Indices Query Cache in `events/s`
+-   Cluster Nodes By Role Count in `num`
+
 
 ## Configuration
 
