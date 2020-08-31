@@ -43,7 +43,7 @@ func (es Elasticsearch) initCharts() (*Charts, error) {
 			return nil, err
 		}
 	}
-	if es.DoClusterHealth {
+	if es.DoClusterStats {
 		if err := charts.Add(*clusterStatsCharts.Copy()...); err != nil {
 			return nil, err
 		}

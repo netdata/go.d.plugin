@@ -33,7 +33,7 @@ func New() *Elasticsearch {
 			DoNodeStats:     true,
 			DoClusterStats:  true,
 			DoClusterHealth: true,
-			DoIndicesStats:  true,
+			DoIndicesStats:  false,
 		},
 		collectedIndices: make(map[string]bool),
 	}
