@@ -95,7 +95,7 @@ type esNodeStats struct {
 				} `stm:"old"`
 			} `stm:"collectors"`
 		} `stm:"gc"`
-		BufferPool struct {
+		BufferPools struct {
 			Mapped struct {
 				Count                float64 `stm:"count"`
 				UsedInBytes          float64 `stm:"used_in_bytes" json:"used_in_bytes"`
@@ -106,7 +106,7 @@ type esNodeStats struct {
 				UsedInBytes          float64 `stm:"used_in_bytes" json:"used_in_bytes"`
 				TotalCapacityInBytes float64 `stm:"total_capacity_in_bytes" json:"total_capacity_in_bytes"`
 			} `stm:"direct"`
-		} `stm:"buffer_pool" json:"buffer_pool"`
+		} `stm:"buffer_pools" json:"buffer_pools"`
 	} `stm:"jvm"`
 	ThreadPool struct {
 		Search struct {
@@ -128,9 +128,9 @@ type esNodeStats struct {
 		CurrentOpen float64 `stm:"current_open" json:"current_open"`
 	} `stm:"http"`
 	Breakers struct {
-		Requests struct {
+		Request struct {
 			Tripped float64 `stm:"tripped"`
-		} `stm:"requests"`
+		} `stm:"request"`
 		FieldData struct {
 			Tripped float64 `stm:"tripped"`
 		} `stm:"fielddata"`
