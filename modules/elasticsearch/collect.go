@@ -37,14 +37,14 @@ func (es *Elasticsearch) collect() (map[string]int64, error) {
 	return collected, nil
 }
 
-func (es Elasticsearch) collectLocalNodeStats(collected map[string]int64, ms *esMetrics) {
+func (Elasticsearch) collectLocalNodeStats(collected map[string]int64, ms *esMetrics) {
 	if !ms.hasLocalNodeStats() {
 		return
 	}
 	merge(collected, stm.ToMap(ms.LocalNodeStats), "node_stats")
 }
 
-func (es Elasticsearch) collectClusterHealth(collected map[string]int64, ms *esMetrics) {
+func (Elasticsearch) collectClusterHealth(collected map[string]int64, ms *esMetrics) {
 	if !ms.hasClusterHealth() {
 		return
 	}
@@ -52,14 +52,14 @@ func (es Elasticsearch) collectClusterHealth(collected map[string]int64, ms *esM
 	collected["cluster_health_status"] = convertHealthStatus(ms.ClusterHealth.Status)
 }
 
-func (es Elasticsearch) collectClusterStats(collected map[string]int64, ms *esMetrics) {
+func (Elasticsearch) collectClusterStats(collected map[string]int64, ms *esMetrics) {
 	if !ms.hasClusterStats() {
 		return
 	}
 	merge(collected, stm.ToMap(ms.ClusterHealth), "cluster_stats")
 }
 
-func (es Elasticsearch) collectIndicesStats(mx map[string]int64, ms *esMetrics) {
+func (es *Elasticsearch) collectIndicesStats(mx map[string]int64, ms *esMetrics) {
 	if !ms.hasIndicesStats() {
 		return
 	}
@@ -173,7 +173,7 @@ func (es Elasticsearch) scrapeClusterStats(ms *esMetrics) {
 	ms.ClusterStats = &stats
 }
 
-func (es Elasticsearch) scrapeIndicesStats(ms *esMetrics) {
+func (es *Elasticsearch) scrapeIndicesStats(ms *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
 	req.URL.Path = urlPathCatIndices
 

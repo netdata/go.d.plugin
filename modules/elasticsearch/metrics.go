@@ -55,6 +55,7 @@ type esNodeStats struct {
 		} `stm:"fielddata"`
 		Segments struct {
 			Count                     int `stm:"count" json:"count"`
+			MemoryInBytes             int `stm:"memory_in_bytes" json:"memory_in_bytes"`
 			TermsMemoryInBytes        int `stm:"terms_memory_in_bytes" json:"terms_memory_in_bytes"`
 			StoredFieldsMemoryInBytes int `stm:"stored_fields_memory_in_bytes" json:"stored_fields_memory_in_bytes"`
 			TermVectorsMemoryInBytes  int `stm:"term_vectors_memory_in_bytes" json:"term_vectors_memory_in_bytes"`
@@ -118,16 +119,33 @@ type esNodeStats struct {
 		} `stm:"write"`
 	} `stm:"thread_pool" json:"thread_pool"`
 	Transport struct {
+		RxCount       int `stm:"rx_count" json:"rx_count"`
 		RxSizeInBytes int `stm:"rx_size_in_bytes" json:"rx_size_in_bytes"`
+		TxCount       int `stm:"tx_count" json:"tx_count"`
 		TxSizeInBytes int `stm:"tx_size_in_bytes" json:"tx_size_in_bytes"`
 	} `stm:"transport"`
 	HTTP struct {
 		CurrentOpen int `stm:"current_open" json:"current_open"`
 	} `stm:"http"`
 	Breakers struct {
+		Requests struct {
+			Tripped int `stm:"tripped"`
+		} `stm:"requests"`
 		FieldData struct {
 			Tripped int `stm:"tripped"`
 		} `stm:"fielddata"`
+		InFlightRequests struct {
+			Tripped int `stm:"tripped"`
+		} `stm:"in_flight_requests" json:"in_flight_requests"`
+		ModelInference struct {
+			Tripped int `stm:"tripped"`
+		} `stm:"model_inference" json:"model_inference"`
+		Accounting struct {
+			Tripped int `stm:"tripped"`
+		} `stm:"accounting"`
+		Parent struct {
+			Tripped int `stm:"tripped"`
+		} `stm:"parent"`
 	} `stm:"breakers"`
 }
 

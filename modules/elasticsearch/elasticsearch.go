@@ -30,6 +30,7 @@ func New() *Elasticsearch {
 				},
 			},
 		},
+		collectedIndices: make(map[string]bool),
 	}
 }
 
@@ -41,7 +42,8 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
-		httpClient *http.Client
+		httpClient       *http.Client
+		collectedIndices map[string]bool
 	}
 )
 
