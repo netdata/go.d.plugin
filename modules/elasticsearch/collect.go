@@ -253,7 +253,10 @@ func (es *Elasticsearch) scrapeLocalIndicesStats(ms *esMetrics) {
 }
 
 func (es Elasticsearch) pingElasticsearch() error {
-	return nil
+	req, _ := web.NewHTTPRequest(es.Request)
+
+	var info struct{ Name string }
+	return es.doOKDecode(req, &info)
 }
 
 func (es Elasticsearch) doOKDecode(req *http.Request, in interface{}) error {

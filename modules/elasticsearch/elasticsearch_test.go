@@ -18,6 +18,7 @@ var (
 	v790SingleClusterHealth, _   = ioutil.ReadFile("testdata/v790_single_cluster_health.json")
 	v790SingleClusterStats, _    = ioutil.ReadFile("testdata/v790_single_cluster_stats.json")
 	v790SingleCatIndicesStats, _ = ioutil.ReadFile("testdata/v790_single_cat_indices_stats.json")
+	v790SingleInfo, _            = ioutil.ReadFile("testdata/v790_single_info.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
@@ -26,6 +27,7 @@ func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 		"v790SingleClusterHealth":   v790SingleClusterHealth,
 		"v790SingleClusterStats":    v790SingleClusterStats,
 		"v790SingleCatIndicesStats": v790SingleCatIndicesStats,
+		"v790SingleInfo":            v790SingleInfo,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -159,7 +161,7 @@ func TestElasticsearch_Init(t *testing.T) {
 
 func TestElasticsearch_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func(*testing.T) (prom *Elasticsearch, cleanup func())
+		prepare  func(*testing.T) (es *Elasticsearch, cleanup func())
 		wantFail bool
 	}{
 		"valid data":         {prepare: prepareElasticsearchValidData},
@@ -170,13 +172,13 @@ func TestElasticsearch_Check(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			prom, cleanup := test.prepare(t)
+			es, cleanup := test.prepare(t)
 			defer cleanup()
 
 			if test.wantFail {
-				assert.False(t, prom.Check())
+				assert.False(t, es.Check())
 			} else {
-				assert.True(t, prom.Check())
+				assert.True(t, es.Check())
 			}
 		})
 	}
@@ -535,7 +537,7 @@ func prepareElasticsearch404(t *testing.T) (*Elasticsearch, func()) {
 func prepareElasticsearchConnectionRefused(t *testing.T) (*Elasticsearch, func()) {
 	t.Helper()
 	es := New()
-	es.UserURL = "http://127.0.0.1:38001/metrics"
+	es.UserURL = "http://127.0.0.1:38001"
 	require.True(t, es.Init())
 
 	return es, func() {}
@@ -553,6 +555,8 @@ func prepareElasticSearchEndpoint() *httptest.Server {
 				_, _ = w.Write(v790SingleClusterStats)
 			case urlPathIndicesStats:
 				_, _ = w.Write(v790SingleCatIndicesStats)
+			case "/":
+				_, _ = w.Write(v790SingleInfo)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
