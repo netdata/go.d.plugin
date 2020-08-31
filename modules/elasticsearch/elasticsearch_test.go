@@ -37,11 +37,82 @@ func TestNew(t *testing.T) {
 
 func TestElasticsearch_Init(t *testing.T) {
 	tests := map[string]struct {
-		config   Config
-		wantFail bool
+		config          Config
+		wantNumOfCharts int
+		wantFail        bool
 	}{
 		"default": {
+			wantNumOfCharts: numOfCharts(
+				nodeCharts,
+				clusterHealthCharts,
+				clusterStatsCharts,
+			),
 			config: New().Config,
+		},
+		"all stats": {
+			wantNumOfCharts: numOfCharts(
+				nodeCharts,
+				clusterHealthCharts,
+				clusterStatsCharts,
+				nodeIndicesStatsCharts,
+			),
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+				},
+				DoNodeStats:     true,
+				DoClusterHealth: true,
+				DoClusterStats:  true,
+				DoIndicesStats:  true,
+			},
+		},
+		"only node_stats": {
+			wantNumOfCharts: len(nodeCharts),
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+				},
+				DoNodeStats:     true,
+				DoClusterHealth: false,
+				DoClusterStats:  false,
+				DoIndicesStats:  false,
+			},
+		},
+		"only cluster_health": {
+			wantNumOfCharts: len(clusterHealthCharts),
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+				},
+				DoNodeStats:     false,
+				DoClusterHealth: true,
+				DoClusterStats:  false,
+				DoIndicesStats:  false,
+			},
+		},
+		"only cluster_stats": {
+			wantNumOfCharts: len(clusterStatsCharts),
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+				},
+				DoNodeStats:     false,
+				DoClusterHealth: false,
+				DoClusterStats:  true,
+				DoIndicesStats:  false,
+			},
+		},
+		"only indices_stats": {
+			wantNumOfCharts: len(nodeIndicesStatsCharts),
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+				},
+				DoNodeStats:     false,
+				DoClusterHealth: false,
+				DoClusterStats:  false,
+				DoIndicesStats:  true,
+			},
 		},
 		"URL not set": {
 			wantFail: true,
@@ -57,6 +128,18 @@ func TestElasticsearch_Init(t *testing.T) {
 					Client: web.Client{ClientTLSConfig: web.ClientTLSConfig{TLSCA: "testdata/tls"}},
 				}},
 		},
+		"all API calls are disabled": {
+			wantFail: true,
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+				},
+				DoNodeStats:     false,
+				DoClusterHealth: false,
+				DoClusterStats:  false,
+				DoIndicesStats:  false,
+			},
+		},
 	}
 
 	for name, test := range tests {
@@ -68,6 +151,7 @@ func TestElasticsearch_Init(t *testing.T) {
 				assert.False(t, es.Init())
 			} else {
 				assert.True(t, es.Init())
+				assert.Equal(t, test.wantNumOfCharts, len(*es.Charts()))
 			}
 		})
 	}
@@ -473,4 +557,11 @@ func prepareElasticSearchEndpoint() *httptest.Server {
 				w.WriteHeader(http.StatusNotFound)
 			}
 		}))
+}
+
+func numOfCharts(charts ...Charts) (num int) {
+	for _, v := range charts {
+		num += len(v)
+	}
+	return num
 }
