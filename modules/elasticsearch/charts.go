@@ -288,7 +288,7 @@ var (
 		{
 			ID:    "node_jvm_gc_count",
 			Title: "JVM Garbage Collections",
-			Units: "collections/s",
+			Units: "gc/s",
 			Fam:   "jvm",
 			Ctx:   "elasticsearch.node_jvm_gc_count",
 			Type:  module.Stacked,
