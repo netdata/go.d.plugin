@@ -51,7 +51,7 @@ Enabled by default.
 -   JVM Heap Commit And Usage in `bytes`
 -   JVM Buffer Pools Count in `num`
 -   JVM Buffer Pool Direct Memory in `bytes`
--   JVM Buffer Pool Mapped Memory" in `bytes`
+-   JVM Buffer Pool Mapped Memory in `bytes`
 -   JVM Garbage Collections in `collections/s`
 -   JVM Time Spent On Garbage Collections in `milliseconds`
 -   Thread Pool Queued Threads Count in `num`
