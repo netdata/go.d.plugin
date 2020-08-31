@@ -74,11 +74,32 @@ func TestElasticsearch_Init(t *testing.T) {
 }
 
 func TestElasticsearch_Check(t *testing.T) {
+	tests := map[string]struct {
+		prepare  func(*testing.T) (prom *Elasticsearch, cleanup func())
+		wantFail bool
+	}{
+		"valid data":         {prepare: prepareElasticsearchValidData},
+		"invalid data":       {prepare: prepareElasticsearchInvalidData, wantFail: true},
+		"404":                {prepare: prepareElasticsearch404, wantFail: true},
+		"connection refused": {prepare: prepareElasticsearchConnectionRefused, wantFail: true},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			prom, cleanup := test.prepare(t)
+			defer cleanup()
+
+			if test.wantFail {
+				assert.False(t, prom.Check())
+			} else {
+				assert.True(t, prom.Check())
+			}
+		})
+	}
 }
 
 func TestElasticsearch_Charts(t *testing.T) {
-
+	assert.Nil(t, New().Charts())
 }
 
 func TestElasticsearch_Cleanup(t *testing.T) {
@@ -395,6 +416,45 @@ func prepareElasticsearch(t *testing.T, createES func() *Elasticsearch) (es *Ela
 	require.True(t, es.Init())
 
 	return es, srv.Close
+}
+
+func prepareElasticsearchValidData(t *testing.T) (es *Elasticsearch, cleanup func()) {
+	return prepareElasticsearch(t, New)
+}
+
+func prepareElasticsearchInvalidData(t *testing.T) (*Elasticsearch, func()) {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte("hello and\n goodbye"))
+		}))
+	es := New()
+	es.UserURL = srv.URL
+	require.True(t, es.Init())
+
+	return es, srv.Close
+}
+
+func prepareElasticsearch404(t *testing.T) (*Elasticsearch, func()) {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+	es := New()
+	es.UserURL = srv.URL
+	require.True(t, es.Init())
+
+	return es, srv.Close
+}
+
+func prepareElasticsearchConnectionRefused(t *testing.T) (*Elasticsearch, func()) {
+	t.Helper()
+	es := New()
+	es.UserURL = "http://127.0.0.1:38001/metrics"
+	require.True(t, es.Init())
+
+	return es, func() {}
 }
 
 func prepareElasticSearchEndpoint() *httptest.Server {
