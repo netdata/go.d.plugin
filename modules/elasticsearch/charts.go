@@ -13,31 +13,31 @@ type (
 var (
 	nodeStatsIndicesIndexingCharts = Charts{
 		{
-			ID:    "indices_index_total",
-			Title: "Index Operations Total",
+			ID:    "indices_indexing_operations",
+			Title: "Indexing Operations",
 			Units: "operations/s",
-			Fam:   "indices index",
-			Ctx:   "elasticsearch.indices_index_total",
+			Fam:   "indices indexing",
+			Ctx:   "elasticsearch.indices_indexing",
 			Dims: Dims{
 				{ID: "indices_indexing_index_total", Name: "index", Algo: module.Incremental},
 			},
 		},
 		{
-			ID:    "indices_index_current",
-			Title: "Index Operations Current",
+			ID:    "indices_indexing_operations_current",
+			Title: "Indexing Operations Current",
 			Units: "operations",
-			Fam:   "indices index",
-			Ctx:   "elasticsearch.indices_index_current",
+			Fam:   "indices indexing",
+			Ctx:   "elasticsearch.indices_indexing_current",
 			Dims: Dims{
 				{ID: "indices_indexing_index_current", Name: "index"},
 			},
 		},
 		{
-			ID:    "indices_index_time",
-			Title: "Time Spent On Index Operations",
+			ID:    "indices_indexing_operations_time",
+			Title: "Time Spent On Indexing Operations",
 			Units: "milliseconds",
-			Fam:   "indices index",
-			Ctx:   "elasticsearch.indices_index_time",
+			Fam:   "indices indexing",
+			Ctx:   "elasticsearch.indices_indexing_time",
 			Dims: Dims{
 				{ID: "indices_indexing_index_time_in_millis", Name: "query", Algo: module.Incremental},
 			},
@@ -45,11 +45,11 @@ var (
 	}
 	nodeStatsIndicesSearchCharts = Charts{
 		{
-			ID:    "indices_search_total",
-			Title: "Search Operations Total",
+			ID:    "indices_search_operations",
+			Title: "Search Operations",
 			Units: "operations/s",
 			Fam:   "indices search",
-			Ctx:   "elasticsearch.indices_search_total",
+			Ctx:   "elasticsearch.indices_search",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "indices_search_query_total", Name: "queries", Algo: module.Incremental},
@@ -57,9 +57,9 @@ var (
 			},
 		},
 		{
-			ID:    "indices_search_current",
+			ID:    "indices_search_operations_current",
 			Title: "Search Operations Current",
-			Units: "events/s",
+			Units: "operations",
 			Fam:   "indices search",
 			Ctx:   "elasticsearch.indices_search_current",
 			Type:  module.Stacked,
@@ -69,7 +69,7 @@ var (
 			},
 		},
 		{
-			ID:    "indices_search_time",
+			ID:    "indices_search_operations_time",
 			Title: "Time Spent On Search Operations",
 			Units: "milliseconds",
 			Fam:   "indices search",
@@ -80,21 +80,20 @@ var (
 				{ID: "indices_search_fetch_time_in_millis", Name: "fetch", Algo: module.Incremental},
 			},
 		},
-		// TODO: search_latency
 	}
 	nodeStatsIndicesRefreshCharts = Charts{
 		{
-			ID:    "indices_refresh_total",
-			Title: "Refresh Operations Total",
+			ID:    "indices_refresh_operations",
+			Title: "Refresh Operations",
 			Units: "operations/s",
 			Fam:   "indices refresh",
-			Ctx:   "elasticsearch.indices_refresh_total",
+			Ctx:   "elasticsearch.indices_refresh",
 			Dims: Dims{
 				{ID: "indices_refresh_total", Name: "refresh", Algo: module.Incremental},
 			},
 		},
 		{
-			ID:    "indices_refresh_time",
+			ID:    "indices_refresh_operations_time",
 			Title: "Time Spent On Refresh Operations",
 			Units: "milliseconds",
 			Fam:   "indices refresh",
@@ -106,17 +105,17 @@ var (
 	}
 	nodeStatsIndicesFlushCharts = Charts{
 		{
-			ID:    "indices_flush_total",
-			Title: "Flush Operations Total",
+			ID:    "indices_flush_operations",
+			Title: "Flush Operations",
 			Units: "operations/s",
 			Fam:   "indices flush",
-			Ctx:   "elasticsearch.indices_flush_total",
+			Ctx:   "elasticsearch.indices_flush",
 			Dims: Dims{
 				{ID: "indices_flush_total", Name: "flush", Algo: module.Incremental},
 			},
 		},
 		{
-			ID:    "indices_flush_time",
+			ID:    "indices_flush_operations_time",
 			Title: "Time Spent On Flush Operations",
 			Units: "milliseconds",
 			Fam:   "indices flush",
@@ -135,7 +134,7 @@ var (
 			Ctx:   "elasticsearch.indices_fielddata_memory_usage",
 			Type:  module.Area,
 			Dims: Dims{
-				{ID: "indices_fielddata_memory_size_in_bytes", Name: "total"},
+				{ID: "indices_fielddata_memory_size_in_bytes", Name: "used"},
 			},
 		},
 		{
@@ -397,6 +396,40 @@ var (
 	}
 )
 
+var nodeIndicesStatsCharts = Charts{
+	{
+		ID:    "node_index_health",
+		Title: "Index Health",
+		Units: "status",
+		Fam:   "indices stats",
+		Ctx:   "elasticsearch.node_index_health",
+	},
+	{
+		ID:    "node_index_shards_count",
+		Title: "Index Shards Count",
+		Units: "num",
+		Fam:   "indices stats",
+		Ctx:   "elasticsearch.node_index_shards_count",
+		Type:  module.Stacked,
+	},
+	{
+		ID:    "node_index_docs_count",
+		Title: "Index Docs Count",
+		Units: "num",
+		Fam:   "indices stats",
+		Ctx:   "elasticsearch.node_index_docs_count",
+		Type:  module.Stacked,
+	},
+	{
+		ID:    "node_index_store_size",
+		Title: "Index Store Size",
+		Units: "bytes",
+		Fam:   "indices stats",
+		Ctx:   "elasticsearch.node_index_store_size",
+		Type:  module.Stacked,
+	},
+}
+
 var clusterHealthCharts = Charts{
 	{
 		ID:    "cluster_status",
@@ -528,8 +561,4 @@ var clusterStatsCharts = Charts{
 			{ID: "cluster_nodes_count_remote_voting_only", Name: "voting_only"},
 		},
 	},
-}
-
-func (es *Elasticsearch) addIndexToCharts(index string) {
-
 }

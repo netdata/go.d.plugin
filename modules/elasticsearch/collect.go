@@ -49,14 +49,14 @@ func (Elasticsearch) collectClusterHealth(collected map[string]int64, ms *esMetr
 		return
 	}
 	merge(collected, stm.ToMap(ms.ClusterHealth), "cluster")
-	collected["cluster_health_status"] = convertHealthStatus(ms.ClusterHealth.Status)
+	collected["cluster_status"] = convertHealthStatus(ms.ClusterHealth.Status)
 }
 
 func (Elasticsearch) collectClusterStats(collected map[string]int64, ms *esMetrics) {
 	if !ms.hasClusterStats() {
 		return
 	}
-	merge(collected, stm.ToMap(ms.ClusterStats), "cluster_stats")
+	merge(collected, stm.ToMap(ms.ClusterStats), "cluster")
 }
 
 func (es *Elasticsearch) collectLocalIndicesStats(mx map[string]int64, ms *esMetrics) {
@@ -70,9 +70,11 @@ func (es *Elasticsearch) collectLocalIndicesStats(mx map[string]int64, ms *esMet
 		mx[key(index.Index, "health")] = convertHealthStatus(index.Health)
 		mx[key(index.Index, "shards_count")] = strToInt(index.Rep)
 		mx[key(index.Index, "docs_count")] = strToInt(index.DocsCount)
-		mx[key(index.Index, "store_size")] = convertIndexStoreSizeToBytes(index.StoreSize)
+		mx[key(index.Index, "store_size_in_bytes")] = convertIndexStoreSizeToBytes(index.StoreSize)
 	}
 }
+
+func (es *Elasticsearch) addIndexToCharts(index string) {}
 
 func convertHealthStatus(status string) int64 {
 	switch status {
