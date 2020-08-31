@@ -2,7 +2,6 @@ package elasticsearch
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -31,22 +30,22 @@ func (es Elasticsearch) initCharts() (*Charts, error) {
 	charts := module.Charts{}
 	if es.DoNodeStats {
 		if err := charts.Add(*nodeCharts.Copy()...); err != nil {
-			return nil, fmt.Errorf("add local node charts: %v", err)
+			return nil, err
 		}
 	}
 	if es.DoIndicesStats {
 		if err := charts.Add(*nodeIndicesStatsCharts.Copy()...); err != nil {
-			return nil, fmt.Errorf("add local indices charts: %v", err)
+			return nil, err
 		}
 	}
 	if es.DoClusterHealth {
 		if err := charts.Add(*clusterHealthCharts.Copy()...); err != nil {
-			return nil, fmt.Errorf("add cluster health charts: %v", err)
+			return nil, err
 		}
 	}
 	if es.DoClusterHealth {
 		if err := charts.Add(*clusterStatsCharts.Copy()...); err != nil {
-			return nil, fmt.Errorf("add cluster stats charts: %v", err)
+			return nil, err
 		}
 	}
 	if len(charts) == 0 {

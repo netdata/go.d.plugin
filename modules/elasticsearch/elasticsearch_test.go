@@ -1,11 +1,9 @@
 package elasticsearch
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"sort"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -206,15 +204,6 @@ func TestElasticsearch_Collect(t *testing.T) {
 			defer cleanup()
 
 			collected := es.Collect()
-
-			l := make([]string, 0)
-			for k := range collected {
-				l = append(l, k)
-			}
-			sort.Strings(l)
-			for _, value := range l {
-				fmt.Println(fmt.Sprintf("\"%s\": %d,", value, collected[value]))
-			}
 
 			assert.Equal(t, test.wantCollected, collected)
 		})

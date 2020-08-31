@@ -1,6 +1,8 @@
 package elasticsearch
 
-import "github.com/netdata/go-orchestrator/module"
+import (
+	"github.com/netdata/go-orchestrator/module"
+)
 
 type (
 	Charts = module.Charts
@@ -339,8 +341,8 @@ var (
 			Fam:   "transport",
 			Ctx:   "elasticsearch.cluster_communication_packets",
 			Dims: Dims{
-				{ID: "node_transport_rx_count", Name: "rx", Algo: module.Incremental},
-				{ID: "node_transport_tx_count", Name: "tx", Mul: -1, Algo: module.Incremental},
+				{ID: "node_transport_rx_count", Name: "received", Algo: module.Incremental},
+				{ID: "node_transport_tx_count", Name: "sent", Mul: -1, Algo: module.Incremental},
 			},
 		},
 		{
@@ -350,8 +352,8 @@ var (
 			Fam:   "transport",
 			Ctx:   "elasticsearch.cluster_communication",
 			Dims: Dims{
-				{ID: "node_transport_rx_size_in_bytes", Name: "rx", Algo: module.Incremental},
-				{ID: "node_transport_tx_size_in_bytes", Name: "tx", Mul: -1, Algo: module.Incremental},
+				{ID: "node_transport_rx_size_in_bytes", Name: "received", Algo: module.Incremental},
+				{ID: "node_transport_tx_size_in_bytes", Name: "sent", Mul: -1, Algo: module.Incremental},
 			},
 		},
 		// HTTP

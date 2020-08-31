@@ -3,6 +3,7 @@ package elasticsearch
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/netdata/go-orchestrator/module"
 	"io"
 	"io/ioutil"
 	"math"
@@ -63,18 +64,67 @@ func (es *Elasticsearch) collectLocalIndicesStats(mx map[string]int64, ms *esMet
 	if !ms.hasLocalIndicesStats() {
 		return
 	}
-	key := func(name, metric string) string {
-		return fmt.Sprintf("node_indices_stats_%s_index_%s", name, metric)
-	}
 	for _, index := range ms.LocalIndicesStats {
-		mx[key(index.Index, "health")] = convertHealthStatus(index.Health)
-		mx[key(index.Index, "shards_count")] = strToInt(index.Rep)
-		mx[key(index.Index, "docs_count")] = strToInt(index.DocsCount)
-		mx[key(index.Index, "store_size_in_bytes")] = convertIndexStoreSizeToBytes(index.StoreSize)
+		if !es.collectedIndices[index.Index] {
+			es.collectedIndices[index.Index] = true
+			es.addIndexToCharts(index.Index)
+		}
+		mx[indexDimID(index.Index, "health")] = convertHealthStatus(index.Health)
+		mx[indexDimID(index.Index, "shards_count")] = strToInt(index.Rep)
+		mx[indexDimID(index.Index, "docs_count")] = strToInt(index.DocsCount)
+		mx[indexDimID(index.Index, "store_size_in_bytes")] = convertIndexStoreSizeToBytes(index.StoreSize)
 	}
 }
 
-func (es *Elasticsearch) addIndexToCharts(index string) {}
+func (es *Elasticsearch) addIndexToCharts(index string) {
+	for _, chart := range *es.Charts() {
+		dim := module.Dim{Name: index}
+		switch chart.ID {
+		case "node_index_health":
+			dim.ID = indexDimID(index, "health")
+		case "node_index_shards_count":
+			dim.ID = indexDimID(index, "shards_count")
+		case "node_index_docs_count":
+			dim.ID = indexDimID(index, "docs_count")
+		case "node_index_store_size":
+			dim.ID = indexDimID(index, "store_size_in_bytes")
+		default:
+			continue
+		}
+		if err := chart.AddDim(&dim); err != nil {
+			es.Warningf("add index '%s': %v", err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (es *Elasticsearch) removeIndexFromCharts(index string) {
+	for _, chart := range *es.Charts() {
+		var id string
+		switch chart.ID {
+		case "node_index_health":
+			id = indexDimID(index, "health")
+		case "node_index_shards_count":
+			id = indexDimID(index, "shards_count")
+		case "node_index_docs_count":
+			id = indexDimID(index, "docs_count")
+		case "node_index_store_size":
+			id = indexDimID(index, "store_size_in_bytes")
+		default:
+			continue
+		}
+		if err := chart.MarkDimRemove(id, true); err != nil {
+			es.Warningf("add index '%s': %v", err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func indexDimID(index, metric string) string {
+	return fmt.Sprintf("node_indices_stats_%s_index_%s", index, metric)
+}
 
 func convertHealthStatus(status string) int64 {
 	switch status {
@@ -116,29 +166,27 @@ func strToInt(s string) int64 {
 }
 
 func (es Elasticsearch) scrapeElasticsearch() *esMetrics {
-	tasks := make([]func(ms *esMetrics), 0, 4)
+	ms := &esMetrics{}
+	wg := &sync.WaitGroup{}
+
 	if es.DoNodeStats {
-		tasks = append(tasks, es.scrapeLocalNodeStats)
+		wg.Add(1)
+		go func() { defer wg.Done(); es.scrapeLocalNodeStats(ms) }()
 	}
 	if es.DoClusterHealth {
-		tasks = append(tasks, es.scrapeClusterHealth)
+		wg.Add(1)
+		go func() { defer wg.Done(); es.scrapeClusterHealth(ms) }()
 	}
 	if es.DoClusterStats {
-		tasks = append(tasks, es.scrapeClusterStats)
+		wg.Add(1)
+		go func() { defer wg.Done(); es.scrapeClusterStats(ms) }()
 	}
 	if es.DoIndicesStats {
-		tasks = append(tasks, es.scrapeLocalIndicesStats)
-	}
-
-	var ms esMetrics
-	wg := &sync.WaitGroup{}
-	for _, task := range tasks {
 		wg.Add(1)
-		task := task
-		go func() { defer wg.Done(); task(&ms) }()
+		go func() { defer wg.Done(); es.scrapeLocalIndicesStats(ms) }()
 	}
 	wg.Wait()
-	return &ms
+	return ms
 }
 
 func (es Elasticsearch) scrapeLocalNodeStats(ms *esMetrics) {
