@@ -17,7 +17,7 @@ var (
 			Title: "Index Operations Total",
 			Units: "operations/s",
 			Fam:   "indices index",
-			Ctx:   "elastic.indices_index_total",
+			Ctx:   "elasticsearch.indices_index_total",
 			Dims: Dims{
 				{ID: "indices_indexing_index_total", Name: "index", Algo: module.Incremental},
 			},
@@ -27,7 +27,7 @@ var (
 			Title: "Index Operations Current",
 			Units: "operations",
 			Fam:   "indices index",
-			Ctx:   "elastic.indices_index_current",
+			Ctx:   "elasticsearch.indices_index_current",
 			Dims: Dims{
 				{ID: "indices_indexing_index_current", Name: "index"},
 			},
@@ -37,7 +37,7 @@ var (
 			Title: "Time Spent On Index Operations",
 			Units: "milliseconds",
 			Fam:   "indices index",
-			Ctx:   "elastic.indices_index_time",
+			Ctx:   "elasticsearch.indices_index_time",
 			Dims: Dims{
 				{ID: "indices_indexing_index_time_in_millis", Name: "query", Algo: module.Incremental},
 			},
@@ -49,7 +49,7 @@ var (
 			Title: "Search Operations Total",
 			Units: "operations/s",
 			Fam:   "indices search",
-			Ctx:   "elastic.indices_search_total",
+			Ctx:   "elasticsearch.indices_search_total",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "indices_search_query_total", Name: "queries", Algo: module.Incremental},
@@ -61,7 +61,7 @@ var (
 			Title: "Search Operations Current",
 			Units: "events/s",
 			Fam:   "indices search",
-			Ctx:   "elastic.indices_search_current",
+			Ctx:   "elasticsearch.indices_search_current",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "indices_search_query_current", Name: "queries"},
@@ -73,7 +73,7 @@ var (
 			Title: "Time Spent On Search Operations",
 			Units: "milliseconds",
 			Fam:   "indices search",
-			Ctx:   "elastic.indices_search_time",
+			Ctx:   "elasticsearch.indices_search_time",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "indices_search_query_time_in_millis", Name: "query", Algo: module.Incremental},
@@ -88,7 +88,7 @@ var (
 			Title: "Refresh Operations Total",
 			Units: "operations/s",
 			Fam:   "indices refresh",
-			Ctx:   "elastic.indices_refresh_total",
+			Ctx:   "elasticsearch.indices_refresh_total",
 			Dims: Dims{
 				{ID: "indices_refresh_total", Name: "refresh", Algo: module.Incremental},
 			},
@@ -98,7 +98,7 @@ var (
 			Title: "Time Spent On Refresh Operations",
 			Units: "milliseconds",
 			Fam:   "indices refresh",
-			Ctx:   "elastic.indices_refresh_time",
+			Ctx:   "elasticsearch.indices_refresh_time",
 			Dims: Dims{
 				{ID: "indices_refresh_total_time_in_millis", Name: "refresh", Algo: module.Incremental},
 			},
@@ -110,7 +110,7 @@ var (
 			Title: "Flush Operations Total",
 			Units: "operations/s",
 			Fam:   "indices flush",
-			Ctx:   "elastic.indices_flush_total",
+			Ctx:   "elasticsearch.indices_flush_total",
 			Dims: Dims{
 				{ID: "indices_flush_total", Name: "flush", Algo: module.Incremental},
 			},
@@ -120,7 +120,7 @@ var (
 			Title: "Time Spent On Flush Operations",
 			Units: "milliseconds",
 			Fam:   "indices flush",
-			Ctx:   "elastic.indices_flush_time",
+			Ctx:   "elasticsearch.indices_flush_time",
 			Dims: Dims{
 				{ID: "indices_flush_total_time_in_millis", Name: "flush", Algo: module.Incremental},
 			},
@@ -132,7 +132,7 @@ var (
 			Title: "Fielddata Cache Memory Usage",
 			Units: "bytes",
 			Fam:   "indices fielddata",
-			Ctx:   "elastic.indices_fielddata_memory_usage",
+			Ctx:   "elasticsearch.indices_fielddata_memory_usage",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "indices_fielddata_memory_size_in_bytes", Name: "total"},
@@ -143,7 +143,7 @@ var (
 			Title: "Fielddata Evictions",
 			Units: "evictions/s",
 			Fam:   "indices fielddata",
-			Ctx:   "elastic.indices_fielddata_evictions",
+			Ctx:   "elasticsearch.indices_fielddata_evictions",
 			Dims: Dims{
 				{ID: "indices_fielddata_evictions", Name: "evictions", Algo: module.Incremental},
 			},
@@ -155,7 +155,7 @@ var (
 			Title: "Segments Count",
 			Units: "num",
 			Fam:   "indices segments",
-			Ctx:   "elastic.indices_segments_count",
+			Ctx:   "elasticsearch.indices_segments_count",
 			Dims: Dims{
 				{ID: "indices_segments_count", Name: "segments"},
 			},
@@ -165,7 +165,7 @@ var (
 			Title: "Segments Memory Usage Total",
 			Units: "bytes",
 			Fam:   "indices segments",
-			Ctx:   "elastic.indices_segments_memory_usage_total",
+			Ctx:   "elasticsearch.indices_segments_memory_usage_total",
 			Dims: Dims{
 				{ID: "indices_memory_in_bytes", Name: "total"},
 			},
@@ -175,7 +175,7 @@ var (
 			Title: "Indices Segments Memory Usage",
 			Units: "bytes",
 			Fam:   "indices segments",
-			Ctx:   "elastic.indices_segments_memory_usage",
+			Ctx:   "elasticsearch.indices_segments_memory_usage",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "indices_segments_terms_memory_in_bytes", Name: "terms"},
@@ -196,7 +196,7 @@ var (
 			Title: "Translog Operations",
 			Units: "operations",
 			Fam:   "indices translog",
-			Ctx:   "elastic.indices_translog_operations",
+			Ctx:   "elasticsearch.indices_translog_operations",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "indices_translog_operations", Name: "total"},
@@ -208,7 +208,7 @@ var (
 			Title: "Translog Size",
 			Units: "bytes",
 			Fam:   "indices translog",
-			Ctx:   "elastic.indices_translog_size",
+			Ctx:   "elasticsearch.indices_translog_size",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "indices_translog_size_in_bytes", Name: "total"},
@@ -216,14 +216,13 @@ var (
 			},
 		},
 	}
-
 	nodeStatsProcessCharts = Charts{
 		{
 			ID:    "file_descriptors",
 			Title: "File Descriptors",
 			Units: "num",
 			Fam:   "process",
-			Ctx:   "elastic.file_descriptors",
+			Ctx:   "elasticsearch.file_descriptors",
 			Dims: Dims{
 				{ID: "node_stats_process_open_file_descriptors", Name: "open"},
 			},
@@ -232,14 +231,13 @@ var (
 			},
 		},
 	}
-
 	nodeStatsJVMCharts = Charts{
 		{
 			ID:    "jvm_mem_heap",
 			Title: "JVM Heap Percentage Currently in Use",
 			Units: "percentage",
 			Fam:   "jvm",
-			Ctx:   "elastic.jvm_heap",
+			Ctx:   "elasticsearch.jvm_heap",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "jvm_mem_heap_used_percent", Name: "inuse"},
@@ -250,7 +248,7 @@ var (
 			Title: "JVM Heap Commit And Usage",
 			Units: "bytes",
 			Fam:   "jvm",
-			Ctx:   "elastic.jvm_heap_bytes",
+			Ctx:   "elasticsearch.jvm_heap_bytes",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "jvm_mem_heap_committed_in_bytes", Name: "committed"},
@@ -262,7 +260,7 @@ var (
 			Title: "JVM Buffers",
 			Units: "pools",
 			Fam:   "jvm",
-			Ctx:   "elastic.jvm_buffer_pool_count",
+			Ctx:   "elasticsearch.jvm_buffer_pool_count",
 			Dims: Dims{
 				{ID: "jvm_buffer_pools_direct_count", Name: "direct"},
 				{ID: "jvm_buffer_pools_mapped_count", Name: "mapped"},
@@ -273,7 +271,7 @@ var (
 			Title: "JVM Direct Buffers Memory",
 			Units: "bytes",
 			Fam:   "jvm",
-			Ctx:   "elastic.jvm_direct_buffers_memory",
+			Ctx:   "elasticsearch.jvm_direct_buffers_memory",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "jvm_buffer_pools_direct_total_capacity_in_bytes", Name: "total"},
@@ -285,7 +283,7 @@ var (
 			Title: "JVM Mapped Buffers Memory",
 			Units: "bytes",
 			Fam:   "jvm",
-			Ctx:   "elastic.jvm_mapped_buffers_memory",
+			Ctx:   "elasticsearch.jvm_mapped_buffers_memory",
 			Type:  module.Area,
 			Dims: Dims{
 				{ID: "jvm_buffer_pools_mapped_total_capacity_in_bytes", Name: "total"},
@@ -297,7 +295,7 @@ var (
 			Title: "Garbage Collections",
 			Units: "events/s",
 			Fam:   "jvm",
-			Ctx:   "elastic.gc_count",
+			Ctx:   "elasticsearch.gc_count",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "jvm_gc_collectors_young_collection_count", Name: "young", Algo: module.Incremental},
@@ -309,7 +307,7 @@ var (
 			Title: "Time Spent On Garbage Collections",
 			Units: "milliseconds",
 			Fam:   "jvm",
-			Ctx:   "elastic.gc_time",
+			Ctx:   "elasticsearch.gc_time",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "jvm_gc_collectors_young_collection_time_in_millis", Name: "young", Algo: module.Incremental},
@@ -317,14 +315,13 @@ var (
 			},
 		},
 	}
-
 	nodeStatsThreadPoolCharts = Charts{
 		{
 			ID:    "thread_pool_queued",
 			Title: "Queued Threads In Thread Pool",
 			Units: "num",
 			Fam:   "thread pool",
-			Ctx:   "elastic.thread_pool_queued",
+			Ctx:   "elasticsearch.thread_pool_queued",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "thread_pool_write_queue", Name: "write"},
@@ -336,7 +333,7 @@ var (
 			Title: "Rejected Threads In Thread Pool",
 			Units: "num",
 			Fam:   "thread pool",
-			Ctx:   "elastic.thread_pool_rejected",
+			Ctx:   "elasticsearch.thread_pool_rejected",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "thread_pool_write_rejected", Name: "write"},
@@ -344,14 +341,13 @@ var (
 			},
 		},
 	}
-
 	nodeStatsTransportCharts = Charts{
 		{
 			ID:    "cluster_communication_packets",
 			Title: "Cluster Communication",
 			Units: "pps",
 			Fam:   "transport",
-			Ctx:   "elastic.cluster_communication_packets",
+			Ctx:   "elasticsearch.cluster_communication_packets",
 			Dims: Dims{
 				{ID: "node_stats_transport_rx_count", Name: "rx", Algo: module.Incremental},
 				{ID: "node_stats_transport_tx_count", Name: "tx", Mul: -1, Algo: module.Incremental},
@@ -362,34 +358,32 @@ var (
 			Title: "Cluster Communication",
 			Units: "bytes",
 			Fam:   "transport",
-			Ctx:   "elastic.cluster_communication",
+			Ctx:   "elasticsearch.cluster_communication",
 			Dims: Dims{
 				{ID: "node_stats_transport_rx_size_in_bytes", Name: "rx", Algo: module.Incremental},
 				{ID: "node_stats_transport_tx_size_in_bytes", Name: "tx", Mul: -1, Algo: module.Incremental},
 			},
 		},
 	}
-
 	nodeStatsHTTPCharts = Charts{
 		{
 			ID:    "http_connections",
 			Title: "HTTP Connections",
 			Units: "connections",
 			Fam:   "http",
-			Ctx:   "elastic.http_connections",
+			Ctx:   "elasticsearch.http_connections",
 			Dims: Dims{
 				{ID: "node_stats_http_current_open", Name: "open"},
 			},
 		},
 	}
-
 	nodeStatsBreakersCharts = Charts{
 		{
 			ID:    "breakers_trips",
 			Title: "Circuit Breaker Trips Count",
 			Units: "trips/s",
 			Fam:   "circuit breakers",
-			Ctx:   "elastic.breakers_trips",
+			Ctx:   "elasticsearch.breakers_trips",
 			Type:  module.Stacked,
 			Dims: Dims{
 				{ID: "node_breakers_requests_tripped", Name: "requests", Algo: module.Incremental},
@@ -403,9 +397,138 @@ var (
 	}
 )
 
-var clusterHealthCharts = Charts{}
+var clusterHealthCharts = Charts{
+	{
+		ID:    "cluster_status",
+		Title: "Cluster Status",
+		Units: "status",
+		Fam:   "cluster health",
+		Ctx:   "elasticsearch.cluster_status",
+		Dims: Dims{
+			{ID: "cluster_status", Name: "status"},
+		},
+	},
+	{
+		ID:    "cluster_number_of_nodes",
+		Title: "Cluster Nodes Count",
+		Units: "num",
+		Fam:   "cluster health",
+		Ctx:   "elasticsearch.cluster_number_of_nodes",
+		Dims: Dims{
+			{ID: "cluster_number_of_nodes", Name: "nodes"},
+			{ID: "cluster_number_of_data_nodes", Name: "data_nodes"},
+		},
+	},
+	{
+		ID:    "cluster_shards_count",
+		Title: "Cluster Shards Count",
+		Units: "num",
+		Fam:   "cluster health",
+		Ctx:   "elasticsearch.cluster_shards_count",
+		Dims: Dims{
+			{ID: "cluster_active_primary_shards", Name: "active_primary"},
+			{ID: "cluster_active_shards", Name: "active"},
+			{ID: "cluster_relocating_shards", Name: "relocating"},
+			{ID: "cluster_initializing_shards", Name: "initializing"},
+			{ID: "cluster_unassigned_shards", Name: "unassigned"},
+			{ID: "cluster_delayed_unassigned_shards", Name: "delayed_unassigned"},
+		},
+	},
+	{
+		ID:    "cluster_pending_tasks",
+		Title: "Cluster Pending Tasks",
+		Units: "num",
+		Fam:   "cluster health",
+		Ctx:   "elasticsearch.cluster_pending_tasks",
+		Dims: Dims{
+			{ID: "cluster_number_of_pending_tasks", Name: "pending"},
+		},
+	},
+	{
+		ID:    "number_of_in_flight_fetch",
+		Title: "Unfinished Fetches",
+		Units: "num",
+		Fam:   "cluster health",
+		Ctx:   "elasticsearch.number_of_in_flight_fetch",
+		Dims: Dims{
+			{ID: "number_of_in_flight_fetch", Name: "in_flight_fetch"},
+		},
+	},
+}
 
-var clusterStatsCharts = Charts{}
+var clusterStatsCharts = Charts{
+	{
+		ID:    "cluster_indices_count",
+		Title: "Cluster Indices Count",
+		Units: "num",
+		Fam:   "cluster stats",
+		Ctx:   "elasticsearch.cluster_indices_count",
+		Dims: Dims{
+			{ID: "cluster_indices_count", Name: "indices"},
+		},
+	},
+	{
+		ID:    "cluster_indices_shards_count",
+		Title: "Cluster Indices Shards Count",
+		Units: "num",
+		Fam:   "cluster stats",
+		Ctx:   "elasticsearch.cluster_indices_shards_count",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "cluster_stats_indices_shards_total", Name: "total"},
+			{ID: "cluster_stats_indices_shards_primaries", Name: "primaries"},
+			{ID: "cluster_stats_indices_shards_replication", Name: "replication"},
+		},
+	},
+	{
+		ID:    "cluster_indices_docs_count",
+		Title: "Cluster Indices Docs Count",
+		Units: "num",
+		Fam:   "cluster stats",
+		Ctx:   "elasticsearch.cluster_indices_docs_count",
+		Dims: Dims{
+			{ID: "cluster_indices_docs_count", Name: "docs"},
+		},
+	},
+	{
+		ID:    "cluster_indices_store_size",
+		Title: "Cluster Indices Store Size",
+		Units: "bytes",
+		Fam:   "cluster stats",
+		Ctx:   "elasticsearch.cluster_indices_store_size",
+		Dims: Dims{
+			{ID: "cluster_stats_indices_store_size_in_bytes", Name: "size"},
+		},
+	},
+	{
+		ID:    "cluster_indices_query_cache",
+		Title: "Cluster Indices Query Cache",
+		Units: "events/s",
+		Fam:   "cluster stats",
+		Ctx:   "elasticsearch.cluster_indices_query_cache",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "cluster_stats_indices_query_cache_hit_count", Name: "hit", Algo: module.Incremental},
+			{ID: "cluster_stats_indices_query_cache_miss_count", Name: "miss", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "cluster_nodes_by_role_count",
+		Title: "Cluster Nodes By Role Count",
+		Units: "num",
+		Fam:   "cluster stats",
+		Ctx:   "elasticsearch.cluster_nodes_by_role_count",
+		Dims: Dims{
+			{ID: "cluster_nodes_count_coordinating_only", Name: "coordinating_only"},
+			{ID: "cluster_nodes_count_data", Name: "data"},
+			{ID: "cluster_nodes_count_ingest", Name: "ingest"},
+			{ID: "cluster_nodes_count_master", Name: "master"},
+			{ID: "cluster_nodes_count_ml", Name: "ml"},
+			{ID: "cluster_nodes_count_remote_cluster_client", Name: "remote_cluster_client"},
+			{ID: "cluster_nodes_count_remote_voting_only", Name: "voting_only"},
+		},
+	},
+}
 
 func (es *Elasticsearch) addIndexToCharts(index string) {
 

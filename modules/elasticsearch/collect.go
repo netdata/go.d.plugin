@@ -19,7 +19,7 @@ const (
 	urlPathNodesLocalStats = "/_nodes/_local/stats"
 	urlPathClusterHealth   = "/_cluster/health"
 	urlPathClusterStats    = "/_cluster/stats"
-	urlPathCatIndices      = "/_cat/indices?format=json"
+	urlPathCatLocalIndices = "/_cat/indices?local=true&format=json"
 )
 
 func (es *Elasticsearch) collect() (map[string]int64, error) {
@@ -32,7 +32,7 @@ func (es *Elasticsearch) collect() (map[string]int64, error) {
 	es.collectLocalNodeStats(collected, ms)
 	es.collectClusterHealth(collected, ms)
 	es.collectClusterStats(collected, ms)
-	es.collectIndicesStats(collected, ms)
+	es.collectLocalIndicesStats(collected, ms)
 
 	return collected, nil
 }
@@ -41,14 +41,14 @@ func (Elasticsearch) collectLocalNodeStats(collected map[string]int64, ms *esMet
 	if !ms.hasLocalNodeStats() {
 		return
 	}
-	merge(collected, stm.ToMap(ms.LocalNodeStats), "node_stats")
+	merge(collected, stm.ToMap(ms.LocalNodeStats), "node")
 }
 
 func (Elasticsearch) collectClusterHealth(collected map[string]int64, ms *esMetrics) {
 	if !ms.hasClusterHealth() {
 		return
 	}
-	merge(collected, stm.ToMap(ms.ClusterHealth), "cluster_health")
+	merge(collected, stm.ToMap(ms.ClusterHealth), "cluster")
 	collected["cluster_health_status"] = convertHealthStatus(ms.ClusterHealth.Status)
 }
 
@@ -56,17 +56,17 @@ func (Elasticsearch) collectClusterStats(collected map[string]int64, ms *esMetri
 	if !ms.hasClusterStats() {
 		return
 	}
-	merge(collected, stm.ToMap(ms.ClusterHealth), "cluster_stats")
+	merge(collected, stm.ToMap(ms.ClusterStats), "cluster_stats")
 }
 
-func (es *Elasticsearch) collectIndicesStats(mx map[string]int64, ms *esMetrics) {
-	if !ms.hasIndicesStats() {
+func (es *Elasticsearch) collectLocalIndicesStats(mx map[string]int64, ms *esMetrics) {
+	if !ms.hasLocalIndicesStats() {
 		return
 	}
 	key := func(name, metric string) string {
-		return fmt.Sprintf("indices_stats_%s_index_%s", name, metric)
+		return fmt.Sprintf("node_indices_stats_%s_index_%s", name, metric)
 	}
-	for _, index := range ms.IndicesStats {
+	for _, index := range ms.LocalIndicesStats {
 		mx[key(index.Index, "health")] = convertHealthStatus(index.Health)
 		mx[key(index.Index, "shards_count")] = strToInt(index.Rep)
 		mx[key(index.Index, "docs_count")] = strToInt(index.DocsCount)
@@ -118,7 +118,7 @@ func (es Elasticsearch) scrapeElasticsearch() *esMetrics {
 		es.scrapeLocalNodeStats,
 		es.scrapeClusterHealth,
 		es.scrapeClusterStats,
-		es.scrapeIndicesStats,
+		es.scrapeLocalIndicesStats,
 	}
 
 	var metrics esMetrics
@@ -173,16 +173,16 @@ func (es Elasticsearch) scrapeClusterStats(ms *esMetrics) {
 	ms.ClusterStats = &stats
 }
 
-func (es *Elasticsearch) scrapeIndicesStats(ms *esMetrics) {
+func (es *Elasticsearch) scrapeLocalIndicesStats(ms *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = urlPathCatIndices
+	req.URL.Path = urlPathCatLocalIndices
 
 	var stats []esIndexStats
 	if err := es.doOKDecode(req, &stats); err != nil {
 		es.Warning(err)
 		return
 	}
-	ms.IndicesStats = removeSystemIndices(stats)
+	ms.LocalIndicesStats = removeSystemIndices(stats)
 }
 
 func (es Elasticsearch) doOKDecode(req *http.Request, in interface{}) error {

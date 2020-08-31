@@ -10,21 +10,21 @@ type esMetrics struct {
 	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-stats.html
 	ClusterStats *esClusterStats
 	// https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-indices.html
-	IndicesStats []esIndexStats
+	LocalIndicesStats []esIndexStats
 }
 
 func (m esMetrics) empty() bool {
 	switch {
-	case m.hasLocalNodeStats(), m.hasClusterHealth(), m.hasClusterStats(), m.hasIndicesStats():
+	case m.hasLocalNodeStats(), m.hasClusterHealth(), m.hasClusterStats(), m.hasLocalIndicesStats():
 		return false
 	}
 	return true
 }
 
-func (m esMetrics) hasLocalNodeStats() bool { return m.LocalNodeStats != nil }
-func (m esMetrics) hasClusterHealth() bool  { return m.ClusterHealth != nil }
-func (m esMetrics) hasClusterStats() bool   { return m.ClusterStats != nil }
-func (m esMetrics) hasIndicesStats() bool   { return len(m.IndicesStats) > 0 }
+func (m esMetrics) hasLocalNodeStats() bool    { return m.LocalNodeStats != nil }
+func (m esMetrics) hasClusterHealth() bool     { return m.ClusterHealth != nil }
+func (m esMetrics) hasClusterStats() bool      { return m.ClusterStats != nil }
+func (m esMetrics) hasLocalIndicesStats() bool { return len(m.LocalIndicesStats) > 0 }
 
 type esNodeStats struct {
 	Indices struct {
@@ -153,6 +153,7 @@ type esClusterHealth struct {
 	Status                      string
 	NumOfNodes                  int `stm:"number_of_nodes" json:"number_of_nodes"`
 	NumOfDataNodes              int `stm:"number_of_data_nodes" json:"number_of_data_nodes"`
+	ActivePrimaryShards         int `stm:"active_primary_shards" json:"active_primary_shards"`
 	ActiveShards                int `stm:"active_shards" json:"active_shards"`
 	RelocatingShards            int `stm:"relocating_shards" json:"relocating_shards"`
 	InitializingShards          int `stm:"initializing_shards" json:"initializing_shards"`
@@ -163,31 +164,49 @@ type esClusterHealth struct {
 	ActiveShardsPercentAsNumber int `stm:"active_shards_percent_as_number" json:"active_shards_percent_as_number"`
 }
 
+/*
+   "total": 1,
+   "coordinating_only": 0,
+   "data": 1,
+   "ingest": 1,
+   "master": 1,
+   "ml": 1,
+   "remote_cluster_client": 1,
+   "transform": 1,
+   "voting_only": 0
+*/
+
 type esClusterStats struct {
 	Nodes struct {
 		Count struct {
-			Data             int `stm:"data"`
-			Master           int `stm:"master"`
-			Total            int `stm:"total"`
-			CoordinatingOnly int `stm:"coordinating_only" json:"coordinating_only"`
-			Ingest           int `stm:"ingest"`
+			Total               int `stm:"total"`
+			CoordinatingOnly    int `stm:"coordinating_only" json:"coordinating_only"`
+			Data                int `stm:"data"`
+			Ingest              int `stm:"ingest"`
+			Master              int `stm:"master"`
+			ML                  int `stm:"ml"`
+			RemoteClusterClient int `stm:"remote_cluster_client" json:"remote_cluster_client"`
+			Transform           int `stm:"transform"`
+			VotingOnly          int `stm:"voting_only" json:"voting_only"`
 		} `stm:"count"`
 	} `stm:"nodes"`
 	Indices struct {
-		Count int `stm:"count"`
-		Docs  struct {
+		Count  int `stm:"count"`
+		Shards struct {
+			Total       int `stm:"total"`
+			Primaries   int `stm:"primaries"`
+			Replication int `stm:"replication"`
+		} `stm:"shards"`
+		Docs struct {
 			Count int `stm:"count"`
 		} `stm:"docs"`
+		Store struct {
+			SizeInBytes int `stm:"size_in_bytes" json:"size_in_bytes"`
+		} `stm:"store"`
 		QueryCache struct {
 			HitCount  int `stm:"hit_count" json:"hit_count"`
 			MissCount int `stm:"miss_count" json:"miss_count"`
 		} `stm:"query_cache" json:"query_cache"`
-		Store struct {
-			SizeInBytes int `stm:"size_in_bytes" json:"size_in_bytes"`
-		} `stm:"store"`
-		Shards struct {
-			Total int `stm:"total"`
-		} `stm:"shards"`
 	} `stm:"indices"`
 }
 
