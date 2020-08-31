@@ -240,7 +240,7 @@ func prepareElasticSearchEndpoint() *httptest.Server {
 				_, _ = w.Write(v790SingleClusterHealth)
 			case urlPathClusterStats:
 				_, _ = w.Write(v790SingleClusterStats)
-			case urlPathLocalIndicesStats:
+			case urlPathIndicesStats:
 				_, _ = w.Write(v790SingleCatIndicesStats)
 			default:
 				w.WriteHeader(http.StatusNotFound)

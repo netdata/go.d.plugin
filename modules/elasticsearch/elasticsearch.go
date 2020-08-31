@@ -24,6 +24,7 @@ func New() *Elasticsearch {
 			HTTP: web.HTTP{
 				Request: web.Request{
 					UserURL: "http://127.0.0.1:9200",
+					//UserURL: "http://192.168.88.250:9200/",
 				},
 				Client: web.Client{
 					Timeout: web.Duration{Duration: time.Second * 5},
@@ -43,6 +44,7 @@ type (
 		Config `yaml:",inline"`
 
 		httpClient       *http.Client
+		charts           *module.Charts
 		collectedIndices map[string]bool
 	}
 )
@@ -67,6 +69,16 @@ func (es *Elasticsearch) Init() bool {
 	}
 	es.httpClient = client
 
+	es.charts = newLocalNodeCharts()
+	if err := es.charts.Add(*newClusterHealthCharts()...); err != nil {
+		es.Errorf("init charts: add cluster health charts: $v", err)
+		return false
+	}
+	if err := es.charts.Add(*newClusterStatsCharts()...); err != nil {
+		es.Errorf("init charts: add cluster stats charts: $v", err)
+		return false
+	}
+
 	return true
 }
 
@@ -74,8 +86,8 @@ func (es *Elasticsearch) Check() bool {
 	return len(es.Collect()) > 0
 }
 
-func (es Elasticsearch) Charts() *module.Charts {
-	return nil
+func (es *Elasticsearch) Charts() *module.Charts {
+	return es.charts
 }
 
 func (es Elasticsearch) Collect() map[string]int64 {
