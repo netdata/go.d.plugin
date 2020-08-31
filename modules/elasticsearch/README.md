@@ -10,11 +10,24 @@ sidebar_label: "Elasticsearch"
 
 This module monitors one or more `Elasticsearch` instances, depending on your configuration.
 
+Used endpoints:
+
+-   Local node metrics: `/_nodes/_local/stats`
+-   Local node indices' metrics: `/_cat/indices?local=true`
+-   Cluster health metrics: `/_cluster/health`
+-   Cluster metrics: `/_cluster/stats`
+
+Each endpoint can be enabled/disabled in the module configuration file.
+
 ## Charts
 
-### Local Node Statistics
+Number of charts depends on enabled endpoints.
 
-If `collect_node_stats` is `yes`. Default is `yes`.
+### Local Node Metrics Charts
+
+Collected from `/_nodes/_local/stats` endpoint.
+Controlled by `collect_node_stats` option.
+Enabled by default. 
 
 -   Indexing Operations in `operations/s`
 -   Indexing Operations Current in `operations`
@@ -48,18 +61,22 @@ If `collect_node_stats` is `yes`. Default is `yes`.
 -   HTTP Connections in `connections`
 -   Circuit Breaker Trips Count in `trips/s`
 
-### Local Indices Stats
+### Local Indices Charts
 
-If `collect_indices_stats` is `yes`. Default is `no`.
+Collected from `/_cat/indices?local=true` endpoint.
+Controlled by `collect_indices_stats` option.
+Disabled by default.
 
 -   Index Health in `status`
 -   Index Shards Count in `num`
 -   Index Docs Count in `num`
 -   Index Store Size in `bytes`
 
-### Cluster Health
+### Cluster Health Charts
 
-If `collect_cluster_health` is `yes`. Default is `yes`.
+Collected from `/_cluster/health` endpoint.
+Controlled by `collect_cluster_health` option.
+Enabled by default.
 
 -   Cluster Status in `status`
 -   Cluster Nodes Count in `num`
@@ -67,9 +84,11 @@ If `collect_cluster_health` is `yes`. Default is `yes`.
 -   Cluster Pending Tasks in `num`
 -   Cluster Unfinished Fetches in `num`
 
-### Cluster Stats
+### Cluster Stats Charts
 
-If `collect_cluster_stats` is `yes`. Default is `yes`.
+Collected from `/_cluster/stats` endpoint.
+Controlled by `collect_cluster_stats` option.
+Enabled by default.
 
 -   Cluster Indices Count in `num`
 -   Cluster Indices Shards Count in `num`
@@ -96,10 +115,10 @@ Here is an example with two endpoints:
 
 ```yaml
 jobs:
-  - name: node_exporter_local
+  - name: local
     url: http://127.0.0.1:9200
 
-  - name: win10
+  - name: remote
     url: http://203.0.113.0:9200
 ```
 
