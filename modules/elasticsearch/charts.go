@@ -140,7 +140,7 @@ var (
 		{
 			ID:    "node_indices_fielddata_evictions",
 			Title: "Fielddata Evictions",
-			Units: "evictions/s",
+			Units: "operations/s",
 			Fam:   "indices fielddata",
 			Ctx:   "elasticsearch.node_indices_fielddata_evictions",
 			Dims: Dims{
@@ -151,7 +151,7 @@ var (
 		{
 			ID:    "node_indices_segments_count",
 			Title: "Segments Count",
-			Units: "num",
+			Units: "segments",
 			Fam:   "indices segments",
 			Ctx:   "elasticsearch.node_indices_segments_count",
 			Dims: Dims{
@@ -216,7 +216,7 @@ var (
 		{
 			ID:    "node_file_descriptors",
 			Title: "Process File Descriptors",
-			Units: "num",
+			Units: "fd",
 			Fam:   "process",
 			Ctx:   "elasticsearch.node_file_descriptors",
 			Dims: Dims{
@@ -253,7 +253,7 @@ var (
 		{
 			ID:    "node_jvm_buffer_pools_count",
 			Title: "JVM Buffer Pools Count",
-			Units: "num",
+			Units: "pools",
 			Fam:   "jvm",
 			Ctx:   "elasticsearch.node_jvm_buffer_pools_count",
 			Dims: Dims{
@@ -313,25 +313,51 @@ var (
 		{
 			ID:    "node_thread_pool_queued",
 			Title: "Thread Pool Queued Threads Count",
-			Units: "num",
+			Units: "threads",
 			Fam:   "thread pool",
 			Ctx:   "elasticsearch.node_thread_pool_queued",
 			Type:  module.Stacked,
 			Dims: Dims{
-				{ID: "node_thread_pool_write_queue", Name: "write"},
+				{ID: "node_thread_pool_generic_queue", Name: "generic"},
 				{ID: "node_thread_pool_search_queue", Name: "search"},
+				{ID: "node_thread_pool_search_throttled_queue", Name: "search_throttled"},
+				{ID: "node_thread_pool_get_queue", Name: "get"},
+				{ID: "node_thread_pool_analyze_queue", Name: "analyze"},
+				{ID: "node_thread_pool_write_queue", Name: "write"},
+				{ID: "node_thread_pool_snapshot_queue", Name: "snapshot"},
+				{ID: "node_thread_pool_warmer_queue", Name: "warmer"},
+				{ID: "node_thread_pool_refresh_queue", Name: "refresh"},
+				{ID: "node_thread_pool_listener_queue", Name: "listener"},
+				{ID: "node_thread_pool_fetch_shard_started_queue", Name: "fetch_shard_started"},
+				{ID: "node_thread_pool_fetch_shard_store_queue", Name: "fetch_shard_store"},
+				{ID: "node_thread_pool_flush_queue", Name: "flush"},
+				{ID: "node_thread_pool_force_merge_queue", Name: "force_merge"},
+				{ID: "node_thread_pool_management_queue", Name: "management"},
 			},
 		},
 		{
 			ID:    "node_thread_pool_rejected",
 			Title: "Thread Pool Rejected Threads Count",
-			Units: "num",
+			Units: "threads",
 			Fam:   "thread pool",
 			Ctx:   "elasticsearch.node_thread_pool_rejected",
 			Type:  module.Stacked,
 			Dims: Dims{
-				{ID: "node_thread_pool_write_rejected", Name: "write"},
+				{ID: "node_thread_pool_generic_rejected", Name: "generic"},
 				{ID: "node_thread_pool_search_rejected", Name: "search"},
+				{ID: "node_thread_pool_search_throttled_rejected", Name: "search_throttled"},
+				{ID: "node_thread_pool_get_rejected", Name: "get"},
+				{ID: "node_thread_pool_analyze_rejected", Name: "analyze"},
+				{ID: "node_thread_pool_write_rejected", Name: "write"},
+				{ID: "node_thread_pool_snapshot_rejected", Name: "snapshot"},
+				{ID: "node_thread_pool_warmer_rejected", Name: "warmer"},
+				{ID: "node_thread_pool_refresh_rejected", Name: "refresh"},
+				{ID: "node_thread_pool_listener_rejected", Name: "listener"},
+				{ID: "node_thread_pool_fetch_shard_started_rejected", Name: "fetch_shard_started"},
+				{ID: "node_thread_pool_fetch_shard_store_rejected", Name: "fetch_shard_store"},
+				{ID: "node_thread_pool_flush_rejected", Name: "flush"},
+				{ID: "node_thread_pool_force_merge_rejected", Name: "force_merge"},
+				{ID: "node_thread_pool_management_rejected", Name: "management"},
 			},
 		},
 		// Transport
@@ -399,7 +425,7 @@ var nodeIndicesStatsCharts = Charts{
 	{
 		ID:    "node_index_shards_count",
 		Title: "Index Shards Count",
-		Units: "num",
+		Units: "shards",
 		Fam:   "indices stats",
 		Ctx:   "elasticsearch.node_index_shards_count",
 		Type:  module.Stacked,
@@ -407,7 +433,7 @@ var nodeIndicesStatsCharts = Charts{
 	{
 		ID:    "node_index_docs_count",
 		Title: "Index Docs Count",
-		Units: "num",
+		Units: "docs",
 		Fam:   "indices stats",
 		Ctx:   "elasticsearch.node_index_docs_count",
 		Type:  module.Stacked,
@@ -436,7 +462,7 @@ var clusterHealthCharts = Charts{
 	{
 		ID:    "cluster_number_of_nodes",
 		Title: "Cluster Nodes Count",
-		Units: "num",
+		Units: "nodes",
 		Fam:   "cluster health",
 		Ctx:   "elasticsearch.cluster_number_of_nodes",
 		Dims: Dims{
@@ -447,7 +473,7 @@ var clusterHealthCharts = Charts{
 	{
 		ID:    "cluster_shards_count",
 		Title: "Cluster Shards Count",
-		Units: "num",
+		Units: "shards",
 		Fam:   "cluster health",
 		Ctx:   "elasticsearch.cluster_shards_count",
 		Dims: Dims{
@@ -462,7 +488,7 @@ var clusterHealthCharts = Charts{
 	{
 		ID:    "cluster_pending_tasks",
 		Title: "Cluster Pending Tasks",
-		Units: "num",
+		Units: "tasks",
 		Fam:   "cluster health",
 		Ctx:   "elasticsearch.cluster_pending_tasks",
 		Dims: Dims{
@@ -472,7 +498,7 @@ var clusterHealthCharts = Charts{
 	{
 		ID:    "cluster_number_of_in_flight_fetch",
 		Title: "Cluster Unfinished Fetches",
-		Units: "num",
+		Units: "fetches",
 		Fam:   "cluster health",
 		Ctx:   "elasticsearch.cluster_number_of_in_flight_fetch",
 		Dims: Dims{
@@ -485,7 +511,7 @@ var clusterStatsCharts = Charts{
 	{
 		ID:    "cluster_indices_count",
 		Title: "Cluster Indices Count",
-		Units: "num",
+		Units: "indices",
 		Fam:   "cluster stats",
 		Ctx:   "elasticsearch.cluster_indices_count",
 		Dims: Dims{
@@ -495,7 +521,7 @@ var clusterStatsCharts = Charts{
 	{
 		ID:    "cluster_indices_shards_count",
 		Title: "Cluster Indices Shards Count",
-		Units: "num",
+		Units: "shards",
 		Fam:   "cluster stats",
 		Ctx:   "elasticsearch.cluster_indices_shards_count",
 		Dims: Dims{
@@ -507,7 +533,7 @@ var clusterStatsCharts = Charts{
 	{
 		ID:    "cluster_indices_docs_count",
 		Title: "Cluster Indices Docs Count",
-		Units: "num",
+		Units: "docs",
 		Fam:   "cluster stats",
 		Ctx:   "elasticsearch.cluster_indices_docs_count",
 		Dims: Dims{
@@ -539,7 +565,7 @@ var clusterStatsCharts = Charts{
 	{
 		ID:    "cluster_nodes_by_role_count",
 		Title: "Cluster Nodes By Role Count",
-		Units: "num",
+		Units: "nodes",
 		Fam:   "cluster stats",
 		Ctx:   "elasticsearch.cluster_nodes_by_role_count",
 		Dims: Dims{

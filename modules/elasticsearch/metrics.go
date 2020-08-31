@@ -108,15 +108,68 @@ type esNodeStats struct {
 			} `stm:"direct"`
 		} `stm:"buffer_pools" json:"buffer_pools"`
 	} `stm:"jvm"`
+	// https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-threadpool.html
 	ThreadPool struct {
+		Generic struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"generic"`
 		Search struct {
 			Queue    float64 `stm:"queue"`
 			Rejected float64 `stm:"rejected"`
 		} `stm:"search"`
+		SearchThrottled struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"search_throttled" json:"search_throttled"`
+		Get struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"get"`
+		Analyze struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"analyze"`
 		Write struct {
 			Queue    float64 `stm:"queue"`
 			Rejected float64 `stm:"rejected"`
 		} `stm:"write"`
+		Snapshot struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"snapshot"`
+		Warmer struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"warmer"`
+		Refresh struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"refresh"`
+		Listener struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"listener"`
+		FetchShardStarted struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"fetch_shard_started" json:"fetch_shard_started"`
+		FetchShardStore struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"fetch_shard_store" json:"fetch_shard_store"`
+		Flush struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"flush"`
+		ForceMerge struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"force_merge" json:"force_merge"`
+		Management struct {
+			Queue    float64 `stm:"queue"`
+			Rejected float64 `stm:"rejected"`
+		} `stm:"management"`
 	} `stm:"thread_pool" json:"thread_pool"`
 	Transport struct {
 		RxCount       float64 `stm:"rx_count" json:"rx_count"`

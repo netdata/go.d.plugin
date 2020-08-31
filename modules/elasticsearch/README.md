@@ -40,22 +40,22 @@ Enabled by default.
 -   Flush Operations in `operations/s`
 -   Time Spent On Flush Operations in `milliseconds`
 -   Fielddata Cache Memory Usage in `bytes`
--   Fielddata Evictions in `evictions/s`
--   Segments Count in `num`
+-   Fielddata Evictions in `operations/s`
+-   Segments Count in `segments`
 -   Segments Memory Usage Total in `bytes`
 -   Segments Memory Usage in `bytes`
 -   Translog Operations in `operations`
 -   Translog Size in `bytes`
--   Process File Descriptors in `num`
+-   Process File Descriptors in `fd`
 -   JVM Heap Percentage Currently in Use in `percentage`
 -   JVM Heap Commit And Usage in `bytes`
--   JVM Buffer Pools Count in `num`
+-   JVM Buffer Pools Count in `pools`
 -   JVM Buffer Pool Direct Memory in `bytes`
 -   JVM Buffer Pool Mapped Memory in `bytes`
 -   JVM Garbage Collections in `gc/s`
 -   JVM Time Spent On Garbage Collections in `milliseconds`
--   Thread Pool Queued Threads Count in `num`
--   Thread Pool Rejected Threads Count in `num`
+-   Thread Pool Queued Threads Count in `threads`
+-   Thread Pool Rejected Threads Count in `threads`
 -   Cluster Communication in `pps`
 -   Cluster Communication Bandwidth in `bytes/s`
 -   HTTP Connections in `connections`
@@ -68,8 +68,8 @@ Controlled by `collect_indices_stats` option.
 Disabled by default.
 
 -   Index Health in `status`
--   Index Shards Count in `num`
--   Index Docs Count in `num`
+-   Index Shards Count in `shards`
+-   Index Docs Count in `docs`
 -   Index Store Size in `bytes`
 
 ### Cluster Health
@@ -79,10 +79,10 @@ Controlled by `collect_cluster_health` option.
 Enabled by default.
 
 -   Cluster Status in `status`
--   Cluster Nodes Count in `num`
--   Cluster Shards Count in `num`
--   Cluster Pending Tasks in `num`
--   Cluster Unfinished Fetches in `num`
+-   Cluster Nodes Count in `nodes`
+-   Cluster Shards Count in `shards`
+-   Cluster Pending Tasks in `tasks`
+-   Cluster Unfinished Fetches in `fetches`
 
 ### Cluster Stats
 
@@ -90,12 +90,12 @@ Collected from `/_cluster/stats` endpoint.
 Controlled by `collect_cluster_stats` option.
 Enabled by default.
 
--   Cluster Indices Count in `num`
--   Cluster Indices Shards Count in `num`
--   Cluster Indices Docs Count in `num`
+-   Cluster Indices Count in `indices`
+-   Cluster Indices Shards Count in `shards`
+-   Cluster Indices Docs Count in `docs`
 -   Cluster Indices Store Size in `bytes`
 -   Cluster Indices Query Cache in `events/s`
--   Cluster Nodes By Role Count in `num`
+-   Cluster Nodes By Role Count in `nodes`
 
 
 ## Configuration
