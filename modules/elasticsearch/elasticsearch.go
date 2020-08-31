@@ -42,10 +42,10 @@ func New() *Elasticsearch {
 type (
 	Config struct {
 		web.HTTP        `yaml:",inline"`
-		DoNodeStats     bool `yaml:"node_stats"`
-		DoClusterHealth bool `yaml:"cluster_health"`
-		DoClusterStats  bool `yaml:"cluster_stats"`
-		DoIndicesStats  bool `yaml:"indices_stats"`
+		DoNodeStats     bool `yaml:"collect_node_stats"`
+		DoClusterHealth bool `yaml:"collect_cluster_health"`
+		DoClusterStats  bool `yaml:"collect_cluster_stats"`
+		DoIndicesStats  bool `yaml:"collect_indices_stats"`
 	}
 	Elasticsearch struct {
 		module.Base
