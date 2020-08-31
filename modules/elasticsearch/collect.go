@@ -3,7 +3,6 @@ package elasticsearch
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/netdata/go-orchestrator/module"
 	"io"
 	"io/ioutil"
 	"math"
@@ -14,6 +13,8 @@ import (
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/netdata/go-orchestrator/module"
 )
 
 const (
@@ -64,7 +65,9 @@ func (es *Elasticsearch) collectLocalIndicesStats(mx map[string]int64, ms *esMet
 	if !ms.hasLocalIndicesStats() {
 		return
 	}
+	seen := make(map[string]struct{})
 	for _, index := range ms.LocalIndicesStats {
+		seen[index.Index] = struct{}{}
 		if !es.collectedIndices[index.Index] {
 			es.collectedIndices[index.Index] = true
 			es.addIndexToCharts(index.Index)
@@ -73,6 +76,12 @@ func (es *Elasticsearch) collectLocalIndicesStats(mx map[string]int64, ms *esMet
 		mx[indexDimID(index.Index, "shards_count")] = strToInt(index.Rep)
 		mx[indexDimID(index.Index, "docs_count")] = strToInt(index.DocsCount)
 		mx[indexDimID(index.Index, "store_size_in_bytes")] = convertIndexStoreSizeToBytes(index.StoreSize)
+	}
+	for index := range es.collectedIndices {
+		if _, ok := seen[index]; !ok {
+			delete(es.collectedIndices, index)
+			es.removeIndexFromCharts(index)
+		}
 	}
 }
 
@@ -114,16 +123,16 @@ func (es *Elasticsearch) removeIndexFromCharts(index string) {
 		default:
 			continue
 		}
-		if err := chart.MarkDimRemove(id, true); err != nil {
-			es.Warningf("add index '%s': %v", err)
+		if err := chart.MarkDimRemove(id, false); err != nil {
+			es.Warningf("remove index '%s': %v", err)
 			continue
 		}
 		chart.MarkNotCreated()
 	}
 }
 
-func indexDimID(index, metric string) string {
-	return fmt.Sprintf("node_indices_stats_%s_index_%s", index, metric)
+func indexDimID(name, metric string) string {
+	return fmt.Sprintf("node_indices_stats_%s_index_%s", name, metric)
 }
 
 func convertHealthStatus(status string) int64 {
