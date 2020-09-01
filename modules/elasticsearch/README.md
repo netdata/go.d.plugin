@@ -4,7 +4,7 @@ custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/elas
 sidebar_label: "Elasticsearch"
 -->
 
-# Elasticsearch endpoint monitoring with Netdata
+# Elasticsearch monitoring with Netdata
 
 [`Elasticsearch`](https://www.elastic.co/elasticsearch/) is a search engine based on the Lucene library.
 
