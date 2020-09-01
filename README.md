@@ -36,6 +36,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery)          | `DNS Query RTT`            |
 | [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine) | `Docker Engine`            |
 | [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)         | `Docker Hub`               |
+| [elasticsearch](https://github.com/netdata/go.d.plugin/tree/master/modules/elasticsearch) | `Elasticsearch`            |
 | [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example)             | -                          | 
 | [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)             | `Fluentd`                  |
 | [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius)       | `FreeRADIUS`               |
