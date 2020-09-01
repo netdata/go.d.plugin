@@ -2,11 +2,13 @@ package zookeeper
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/tls"
 	"fmt"
 	"io"
 	"net"
 	"time"
+	"unsafe"
 )
 
 type clientConfig struct {
@@ -110,7 +112,7 @@ func (c *client) fetch(command string) (rows []string, err error) {
 	return c.read()
 }
 
-const maxLinesToRead = 500
+const limitReadLines = 1000
 
 func read(dst []string, reader io.Reader) ([]string, error) {
 	dst = dst[:0]
@@ -118,11 +120,42 @@ func read(dst []string, reader io.Reader) ([]string, error) {
 	s := bufio.NewScanner(reader)
 
 	for s.Scan() {
-		dst = append(dst, s.Text())
-		num++
-		if num > maxLinesToRead {
-			return nil, fmt.Errorf("read line limit exceeded (%d)", maxLinesToRead)
+		if !isZKLine(s.Bytes()) || isMntrLineOK(s.Bytes()) {
+			dst = append(dst, s.Text())
+		}
+		if num += 1; num >= limitReadLines {
+			return nil, fmt.Errorf("read line limit exceeded (%d)", limitReadLines)
 		}
 	}
 	return dst, s.Err()
+}
+
+func isZKLine(line []byte) bool {
+	return bytes.HasPrefix(line, []byte("zk_"))
+}
+
+func isMntrLineOK(line []byte) bool {
+	idx := bytes.LastIndexByte(line, '\t')
+	return idx > 0 && collectedZKKeys[unsafeString(line)[:idx]]
+}
+
+func unsafeString(b []byte) string {
+	return *((*string)(unsafe.Pointer(&b)))
+}
+
+var collectedZKKeys = map[string]bool{
+	"zk_num_alive_connections":      true,
+	"zk_outstanding_requests":       true,
+	"zk_min_latency":                true,
+	"zk_avg_latency":                true,
+	"zk_max_latency":                true,
+	"zk_packets_received":           true,
+	"zk_packets_sent":               true,
+	"zk_open_file_descriptor_count": true,
+	"zk_max_file_descriptor_count":  true,
+	"zk_znode_count":                true,
+	"zk_ephemerals_count":           true,
+	"zk_watch_count":                true,
+	"zk_approximate_data_size":      true,
+	"zk_server_state":               true,
 }

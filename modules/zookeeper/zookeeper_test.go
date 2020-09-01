@@ -79,16 +79,19 @@ func TestZookeeper_Collect(t *testing.T) {
 		"max_latency":                0,
 		"min_latency":                0,
 		"num_alive_connections":      1,
-		"open_file_descriptor_count": 46,
+		"open_file_descriptor_count": 63,
 		"outstanding_requests":       0,
-		"packets_received":           464,
-		"packets_sent":               463,
+		"packets_received":           92,
+		"packets_sent":               182,
 		"server_state":               4,
 		"watch_count":                0,
 		"znode_count":                5,
 	}
 
-	assert.Equal(t, expected, job.Collect())
+	collected := job.Collect()
+
+	assert.Equal(t, expected, collected)
+	ensureCollectedHasAllChartsDimsVarsIDs(t, job, collected)
 }
 
 func TestZookeeper_CollectMntrNotInWhiteList(t *testing.T) {
@@ -123,22 +126,38 @@ func TestZookeeper_CollectMntrReceiveError(t *testing.T) {
 	assert.Nil(t, job.Collect())
 }
 
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, zk *Zookeeper, collected map[string]int64) {
+	for _, chart := range *zk.Charts() {
+		if chart.Obsolete {
+			continue
+		}
+		for _, dim := range chart.Dims {
+			_, ok := collected[dim.ID]
+			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+		for _, v := range chart.Vars {
+			_, ok := collected[v.ID]
+			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
+		}
+	}
+}
+
 type mockZookeeperFetcher struct {
 	data []byte
 	err  bool
 }
 
-func (m mockZookeeperFetcher) fetch(command string) ([]string, error) {
+func (m mockZookeeperFetcher) fetch(_ string) ([]string, error) {
 	if m.err {
 		return nil, errors.New("mock fetch error")
 	}
 
-	var rv []string
-
+	var lines []string
 	s := bufio.NewScanner(bytes.NewReader(m.data))
 	for s.Scan() {
-		rv = append(rv, s.Text())
+		if !isZKLine(s.Bytes()) || isMntrLineOK(s.Bytes()) {
+			lines = append(lines, s.Text())
+		}
 	}
-
-	return rv, nil
+	return lines, nil
 }

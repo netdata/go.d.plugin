@@ -38,7 +38,7 @@ func Test_clientFetch(t *testing.T) {
 }
 
 func Test_clientFetchReadLineLimitExceeded(t *testing.T) {
-	srv := &tcpServer{addr: testServerAddress, rowsNumResp: maxLinesToRead + 1}
+	srv := &tcpServer{addr: testServerAddress, rowsNumResp: limitReadLines + 1}
 	go func() { _ = srv.Run() }()
 	defer srv.Close()
 
