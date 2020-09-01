@@ -112,7 +112,7 @@ func (c *client) fetch(command string) (rows []string, err error) {
 	return c.read()
 }
 
-const limitReadLines = 1000
+const limitReadLines = 2000
 
 func read(dst []string, reader io.Reader) ([]string, error) {
 	dst = dst[:0]
