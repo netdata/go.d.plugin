@@ -26,9 +26,9 @@ var charts = Charts{
 		Fam:   "requests",
 		Ctx:   "zookeeper.requests_latency",
 		Dims: Dims{
-			{ID: "min_latency", Name: "min"},
-			{ID: "avg_latency", Name: "avg"},
-			{ID: "max_latency", Name: "max"},
+			{ID: "min_latency", Name: "min", Div: 1000},
+			{ID: "avg_latency", Name: "avg", Div: 1000},
+			{ID: "max_latency", Name: "max", Div: 1000},
 		},
 	},
 	{

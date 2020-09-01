@@ -73,11 +73,11 @@ func TestZookeeper_Collect(t *testing.T) {
 
 	expected := map[string]int64{
 		"approximate_data_size":      44,
-		"avg_latency":                0,
+		"avg_latency":                100,
 		"ephemerals_count":           0,
 		"max_file_descriptor_count":  1048576,
-		"max_latency":                0,
-		"min_latency":                0,
+		"max_latency":                100,
+		"min_latency":                100,
 		"num_alive_connections":      1,
 		"open_file_descriptor_count": 63,
 		"outstanding_requests":       0,

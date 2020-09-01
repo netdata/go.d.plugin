@@ -27,7 +27,7 @@ func (z *Zookeeper) collectMntr() (map[string]int64, error) {
 	mx := make(map[string]int64)
 	for _, line := range lines {
 		parts := strings.Fields(line)
-		if len(parts) != 2 {
+		if len(parts) != 2 || !strings.HasPrefix(parts[0], "zk_") {
 			continue
 		}
 
@@ -36,6 +36,12 @@ func (z *Zookeeper) collectMntr() (map[string]int64, error) {
 		case "version":
 		case "server_state":
 			mx[key] = convertServerState(value)
+		case "min_latency", "avg_latency", "max_latency":
+			v, err := strconv.ParseFloat(value, 64)
+			if err != nil {
+				continue
+			}
+			mx[key] = int64(v * 1000)
 		default:
 			v, err := strconv.ParseFloat(value, 64)
 			if err != nil {
