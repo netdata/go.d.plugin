@@ -7,8 +7,15 @@
 
 Depending on the symbol at the start of the string, the `matcher` will use one of the supported formats. 
 
-e.g `'* *'`: Because of the first `*`, `matcher` understands that it's in `glob` format, and according to the `glob` format the second `*` means that it will match *any* string. 
-  
+matcher | short format | long format
+ ------ | ------------ | ----------
+ string | ` =` | `string`
+ glob | `*` | `glob`
+ regexp | `~` | `regexp`
+ simple patterns | | `simple patterns`
+ 
+ 
+
 ### Syntax
 
 **Tip**: Read `::=` as `is defined as`.
@@ -26,8 +33,8 @@ Short Syntax
      <expr>      ::= any string
 
  Long Syntax
-
      [ <not> ] <format> <separator> <expr>
+     
      <format>    ::= [ 'string' | 'glob' | 'regexp' | 'simple_patterns' ]
      <not>       ::= '!'
                        negative expression
@@ -35,17 +42,17 @@ Short Syntax
      <expr>      ::= any string
 ```
 
-**Tip**: In short syntax, you can enable the glob format by starting the string with a `*`, while in the long syntax you need to define it more explicitly. The following examples are identical. `simple_patterns` can be used **only** with the long syntax.
+**Tip**: In short syntax, for example, you can enable the glob format by starting the string with a `*`, while in the long syntax you need to define it more explicitly. The following examples are identical. `simple_patterns` can be used **only** with the long syntax.
 
 Short Syntax: `'* * '`
 Long Syntax: `'glob':'*'`
 
 ### String matcher
-The string matcher reports whether the given value equals to the string ( use == ).
+The string matcher reports whether the given value equals to the string ( use = ).
 
-e.g <br>
-`'== foo'` will match only if the string is `'foo'`. <br>
-`'[!] == bar'` will match any string that is not `'bar'`.
+Examples: 
+ - `'== foo'` will match only if the string is `'foo'`.
+ - `'[!] == bar'` will match any string that is not `'bar'`.
 
 
 ### Glob matcher
@@ -69,7 +76,7 @@ The pattern syntax is:
         '\\' c      matches character c
         lo '-' hi   matches character c for lo <= c <= hi
 ```
-e.g 
+Examples:  
  - `* ?` will match any string that is a single character. 
  - `'?a'` will match any 2 character string that starts with any character and the second character is `a`, like `ba` but not `bb` or `bba`. 
  - `'[^abc]'` will match any character that is NOT a,b,c. `'[abc]'` will match only a, b, c.
