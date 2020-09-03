@@ -28,6 +28,7 @@ func New() *Prometheus {
 				Timeout: web.Duration{Duration: time.Second * 5},
 			},
 		},
+		MaxTS:          1000,
 		MaxTSPerMetric: 200,
 	}
 	return &Prometheus{
@@ -41,6 +42,7 @@ func New() *Prometheus {
 type (
 	Config struct {
 		web.HTTP       `yaml:",inline"`
+		MaxTS          int           `yaml:"max_time_series"`
 		MaxTSPerMetric int           `yaml:"max_time_series_per_metric"`
 		Selector       selector.Expr `yaml:"selector"`
 		Grouping       []GroupOption `yaml:"group"`
