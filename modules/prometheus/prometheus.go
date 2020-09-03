@@ -28,7 +28,7 @@ func New() *Prometheus {
 				Timeout: web.Duration{Duration: time.Second * 5},
 			},
 		},
-		MaxTS:          1000,
+		MaxTS:          3000,
 		MaxTSPerMetric: 200,
 	}
 	return &Prometheus{
