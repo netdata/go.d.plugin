@@ -142,7 +142,7 @@ func TestPrometheus_Collect(t *testing.T) {
 		wantCollected map[string]int64
 	}
 
-	testGAUGE := testGroup{
+	testGauge := testGroup{
 		"with metadata": {
 			input: [][]string{
 				{
@@ -185,7 +185,7 @@ func TestPrometheus_Collect(t *testing.T) {
 		},
 	}
 
-	testCOUNTER := testGroup{
+	testCounter := testGroup{
 		"with metadata": {
 			input: [][]string{
 				{
@@ -232,7 +232,7 @@ func TestPrometheus_Collect(t *testing.T) {
 		},
 	}
 
-	testSUMMARY := testGroup{
+	testSummary := testGroup{
 		"with metadata": {
 			input: [][]string{
 				{
@@ -287,7 +287,7 @@ func TestPrometheus_Collect(t *testing.T) {
 		},
 	}
 
-	testHISTOGRAM := testGroup{
+	testHistogram := testGroup{
 		"with metadata": {
 			input: [][]string{
 				{
@@ -367,11 +367,9 @@ func TestPrometheus_Collect(t *testing.T) {
 	}
 
 	testSanitize := testGroup{
-		`metric contains '\x' encoding`: {
+		`label value contains '\x' encoding`: {
 			input: [][]string{
 				{
-					`# HELP node_restart_total Current number of discovered targets.`,
-					`# TYPE node_restart_total gauge`,
 					`node_restart_total{state="systemd-fsck@dev-disk-by\\x2duuid\\x2dDD70.service"} 0`,
 				},
 			},
@@ -383,29 +381,53 @@ func TestPrometheus_Collect(t *testing.T) {
 				"charts":  int64(1 + len(statsCharts)),
 			},
 		},
-	}
-
-	limit := New().MaxTSPerMetric
-	testMaxTSPerMetric := testGroup{
-		"over the limit": {
+		`label value contains '\'`: {
 			input: [][]string{
-				genSimpleMetrics(limit + 1),
+				{
+					`http_time_to_write_seconds{code="200",route="^/([^/]+/){1,}[^/]+/uploads\z"} 0`,
+				},
 			},
 			wantCollected: map[string]int64{
-				"series":  int64(limit + 1),
-				"metrics": 0,
-				"charts":  int64(len(statsCharts)),
+				"http_time_to_write_seconds|code=200,route=^/([^/]+/){1,}[^/]+/uploads_z": 0,
+
+				"series":  1,
+				"metrics": 1,
+				"charts":  int64(1 + len(statsCharts)),
 			},
 		},
 	}
 
+	maxTSPerMetric := New().MaxTSPerMetric
+	maxTS := New().MaxTS
+	testTSLimits := testGroup{
+		"len(ts) > per metric limit": {
+			input: [][]string{
+				genSimpleMetrics(maxTSPerMetric + 1),
+			},
+			wantCollected: map[string]int64{
+				"series":  int64(maxTSPerMetric + 1),
+				"metrics": 0,
+				"charts":  int64(len(statsCharts)),
+			},
+		},
+		"len(ts) > global limit": {
+			input: func() [][]string {
+				var input []string
+				for i := 0; len(input) <= maxTS; i++ {
+					input = append(input, genMetrics(fmt.Sprintf("generated_metric_%d", i), 0, maxTSPerMetric)...)
+				}
+				return [][]string{input}
+			}(),
+		},
+	}
+
 	tests := map[string]testGroup{
-		"GAUGE":          testGAUGE,
-		"COUNTER":        testCOUNTER,
-		"SUMMARY":        testSUMMARY,
-		"HISTOGRAM":      testHISTOGRAM,
-		"Sanitize":       testSanitize,
-		"MaxTSPerMetric": testMaxTSPerMetric,
+		"Gauge":     testGauge,
+		"Counter":   testCounter,
+		"Summary":   testSummary,
+		"Histogram": testHistogram,
+		"Sanitize":  testSanitize,
+		"TSLimits":  testTSLimits,
 	}
 
 	for groupName, group := range tests {
@@ -418,12 +440,14 @@ func TestPrometheus_Collect(t *testing.T) {
 
 				var collected map[string]int64
 
-				for i := 0; i < 10; i++ {
+				for i := 0; i < len(test.input); i++ {
 					collected = prom.Collect()
 				}
 
 				assert.Equal(t, test.wantCollected, collected)
-				ensureCollectedHasAllChartsDimsVarsIDs(t, prom, collected)
+				if test.wantCollected != nil {
+					ensureCollectedHasAllChartsDimsVarsIDs(t, prom, collected)
+				}
 			})
 		}
 	}
@@ -494,7 +518,7 @@ func TestPrometheus_Collect_DefaultGrouping(t *testing.T) {
 		wantActiveCharts int
 	}
 
-	testGAUGEAndCOUNTER := testGroup{
+	testGaugeAndCounter := testGroup{
 		"scrapes| 1st: <= desired": {
 			input: [][]string{
 				genSimpleMetrics(desiredDim),
@@ -559,7 +583,7 @@ func TestPrometheus_Collect_DefaultGrouping(t *testing.T) {
 		},
 	}
 
-	testSUMMARY := testGroup{
+	testSummary := testGroup{
 		"several time series in one scrape": {
 			input: [][]string{
 				{
@@ -609,7 +633,7 @@ func TestPrometheus_Collect_DefaultGrouping(t *testing.T) {
 		},
 	}
 
-	testHISTOGRAM := testGroup{
+	testHistogram := testGroup{
 		"several time series in one scrape": {
 			input: [][]string{
 				{
@@ -680,9 +704,9 @@ func TestPrometheus_Collect_DefaultGrouping(t *testing.T) {
 	}
 
 	tests := map[string]testGroup{
-		"GAUGE,COUNTER": testGAUGEAndCOUNTER,
-		"SUMMARY":       testSUMMARY,
-		"HISTOGRAM":     testHISTOGRAM,
+		"Gauge,Counter": testGaugeAndCounter,
+		"Summary":       testSummary,
+		"Histogram":     testHistogram,
 	}
 
 	for groupName, group := range tests {
@@ -721,7 +745,7 @@ func TestPrometheus_Collect_UserDefinedGrouping(t *testing.T) {
 		wantActiveCharts int
 	}
 
-	testGAUGEAndCOUNTER := testGroup{
+	testGaugeAndCounter := testGroup{
 		"not matches, one grouping": {
 			input: [][]string{
 				genMetrics("generated", 0, desiredDim),
@@ -857,7 +881,7 @@ func TestPrometheus_Collect_UserDefinedGrouping(t *testing.T) {
 		},
 	}
 
-	testSUMMARY := testGroup{
+	testSummary := testGroup{
 		"grouping matches, but doesnt apply": {
 			input: [][]string{
 				{
@@ -879,7 +903,7 @@ func TestPrometheus_Collect_UserDefinedGrouping(t *testing.T) {
 		},
 	}
 
-	testHISTOGRAM := testGroup{
+	testHistogram := testGroup{
 		"grouping matches, but doesnt apply": {
 			input: [][]string{
 				{
@@ -907,9 +931,9 @@ func TestPrometheus_Collect_UserDefinedGrouping(t *testing.T) {
 	}
 
 	tests := map[string]testGroup{
-		"GAUGE,COUNTER": testGAUGEAndCOUNTER,
-		"SUMMARY":       testSUMMARY,
-		"HISTOGRAM":     testHISTOGRAM,
+		"Gauge,Counter": testGaugeAndCounter,
+		"Summary":       testSummary,
+		"Histogram":     testHistogram,
 	}
 
 	for groupName, group := range tests {
