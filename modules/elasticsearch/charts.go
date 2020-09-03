@@ -417,7 +417,7 @@ var (
 var nodeIndicesStatsCharts = Charts{
 	{
 		ID:    "node_index_health",
-		Title: "Index Health",
+		Title: "Index Health (0: green, 1: yellow, 2: red)",
 		Units: "status",
 		Fam:   "indices stats",
 		Ctx:   "elasticsearch.node_index_health",
@@ -451,7 +451,7 @@ var nodeIndicesStatsCharts = Charts{
 var clusterHealthCharts = Charts{
 	{
 		ID:    "cluster_status",
-		Title: "Cluster Status",
+		Title: "Cluster Status (0: green, 1: yellow, 2: red)",
 		Units: "status",
 		Fam:   "cluster health",
 		Ctx:   "elasticsearch.cluster_status",
