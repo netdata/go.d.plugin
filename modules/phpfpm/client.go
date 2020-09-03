@@ -11,6 +11,7 @@ import (
 	"strconv"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
+	"time"
 )
 
 type (
@@ -45,11 +46,9 @@ func (rd *requestDuration) UnmarshalJSON(b []byte) error {
 
 type client interface {
 	getStatus() (*status, error)
-
 }
 
 type httpClient struct {
-	module.Base
 	client *http.Client
 	req    web.Request
 	dec    decoder
@@ -62,22 +61,16 @@ func (c *httpClient) getStatus() (*status, error) {
 type socketClient struct {
 	module.Base
 	socket string
-	env     map[string]string
+	env    map[string]string
 }
 
 func (c *socketClient) getStatus() (*status, error) {
 	return c.Status()
 }
 
-func getStatus(p *Phpfpm)  (*status, error) {
-
+func getStatus(p *Phpfpm) (*status, error) {
 	st := &status{}
-
-	if st, err := p.socketClient.getStatus(); st != nil {
-		return st, err
-	}
-
-	if st, err := p.httpClient.getStatus(); st != nil {
+	if st, err := p.client.getStatus(); st != nil {
 		return st, err
 	}
 
@@ -128,7 +121,8 @@ func (c httpClient) fetchStatus(req *http.Request) (*status, error) {
 }
 
 func (c socketClient) Status() (*status, error) {
-	socket, err := fcgiclient.Dial("unix", c.socket)
+	var timeout = time.Duration(1) * 100000000
+	socket, err := fcgiclient.DialTimeout("unix", c.socket, timeout)
 	if err != nil {
 		return nil, fmt.Errorf("error on connecting to socket: %v", err)
 	}

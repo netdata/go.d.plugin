@@ -38,13 +38,13 @@ type (
 	Config struct {
 		web.HTTP `yaml:",inline"`
 		Socket     string `yaml:"socket"`
+		env 		map[string]string
+
 	}
 	Phpfpm struct {
 		module.Base
 		Config `yaml:",inline"`
-		httpClient	 *httpClient
-		socketClient socketClient
-
+		client client
 	}
 )
 
@@ -64,7 +64,7 @@ func (p *Phpfpm) initClient() error {
 		return err
 	}
 
-	p.httpClient = newClient(cl, p.Request)
+	p.client = newClient(cl, p.Request)
 	return nil
 }
 
@@ -79,9 +79,13 @@ func (p *Phpfpm) initSocket() error {
 	env["QUERY_STRING"] = "json&full"
 	env["REQUEST_METHOD"] = "GET"
 	env["CONTENT_TYPE"] = "application/json"
-	p.socketClient.socket = p.Socket
+	p.Config.Socket = p.Socket
 
-	p.socketClient.env = env
+	p.client = &socketClient{
+		Base:   module.Base{},
+		socket: p.Socket,
+		env:    env,
+	}
 	return nil
 
 }
