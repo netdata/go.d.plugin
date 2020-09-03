@@ -82,31 +82,31 @@ func (p *Phpfpm) initSocket() error {
 	p.Config.Socket = p.Socket
 
 	p.client = &socketClient{
-		Base:   module.Base{},
-		socket: p.Socket,
-		env:    env,
+		socket:  p.Socket,
+		env:     env,
+		timeout: p.Timeout.Duration,
 	}
 	return nil
 
 }
 func (p *Phpfpm) validateSocketConfig() bool {
-	if len(p.Socket) > 0 {
-		if _, err := os.Stat(p.Socket); err == nil {
-			return true
-		} else {
-			p.Errorf("the socket does not exist: %v", err)
-		}
+
+	if _, err := os.Stat(p.Socket); err != nil {
+		p.Errorf("the socket does not exist: %v", err)
+		return false
 	}
-	return false
+	return true
 }
 
 func (p *Phpfpm) Init() bool {
-
-	if p.validateSocketConfig() {
-		err := p.initSocket()
-		p.Debugf("using Socket %s", p.Socket)
-		p.Debugf("using timeout: %s", p.Timeout.Duration)
-		return err == nil
+	if len(p.Socket) > 0 {
+		if p.validateSocketConfig() {
+			err := p.initSocket()
+			p.Debugf("using Socket %s", p.Socket)
+			p.Debugf("using timeout: %s", p.Timeout.Duration)
+			return err == nil
+		}
+		return false
 	}
 
 

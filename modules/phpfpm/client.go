@@ -3,7 +3,6 @@ package phpfpm
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/netdata/go-orchestrator/module"
 	fcgiclient "github.com/tomasen/fcgi_client"
 	"io"
 	"io/ioutil"
@@ -59,22 +58,13 @@ func (c *httpClient) getStatus() (*status, error) {
 }
 
 type socketClient struct {
-	module.Base
 	socket string
+	timeout time.Duration
 	env    map[string]string
 }
 
 func (c *socketClient) getStatus() (*status, error) {
 	return c.Status()
-}
-
-func getStatus(p *Phpfpm) (*status, error) {
-	st := &status{}
-	if st, err := p.client.getStatus(); st != nil {
-		return st, err
-	}
-
-	return st, nil
 }
 
 func newClient(c *http.Client, r web.Request) *httpClient {
@@ -121,8 +111,7 @@ func (c httpClient) fetchStatus(req *http.Request) (*status, error) {
 }
 
 func (c socketClient) Status() (*status, error) {
-	var timeout = time.Duration(1) * 100000000
-	socket, err := fcgiclient.DialTimeout("unix", c.socket, timeout)
+	socket, err := fcgiclient.DialTimeout("unix", c.socket, c.timeout)
 	if err != nil {
 		return nil, fmt.Errorf("error on connecting to socket: %v", err)
 	}
