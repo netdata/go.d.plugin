@@ -36,7 +36,7 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/phpfpm.conf
 ```
 
-Needs only `url` to server's `status`. Here is an example for local server an remote servers:
+Needs only `url` or `socket`. Here is an example for local and remote servers:
 
 ```yaml
 jobs:
@@ -45,6 +45,9 @@ jobs:
 
   - name: local
     url: http://[::1]/status?full&json
+
+  - name: local_socket
+    socket: '/tmp/php-fpm.sock'
 
   - name: remote
     url: http://203.0.113.10/status?full&json
