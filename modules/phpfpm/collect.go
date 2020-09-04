@@ -7,7 +7,7 @@ import (
 )
 
 func (p *Phpfpm) collect() (map[string]int64, error) {
-	st, err := p.client.Status()
+	st, err := p.client.getStatus()
 	if err != nil {
 		return nil, err
 	}
