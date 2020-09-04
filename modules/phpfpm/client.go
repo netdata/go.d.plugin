@@ -3,14 +3,15 @@ package phpfpm
 import (
 	"encoding/json"
 	"fmt"
-	fcgiclient "github.com/tomasen/fcgi_client"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
-	"time"
+
+	fcgiclient "github.com/tomasen/fcgi_client"
 )
 
 type (
@@ -23,14 +24,14 @@ type (
 		Slow      int64  `json:"slow requests" stm:"slow"`
 		Processes []proc `json:"processes"`
 	}
-	requestDuration int64
-	proc            struct {
+	proc struct {
 		PID      int64           `json:"pid"`
 		State    string          `json:"state"`
 		Duration requestDuration `json:"request duration"`
 		CPU      float64         `json:"last request cpu"`
 		Memory   int64           `json:"last request memory"`
 	}
+	requestDuration int64
 )
 
 // UnmarshalJSON customise JSON for timestamp.
@@ -53,26 +54,11 @@ type httpClient struct {
 	dec    decoder
 }
 
-func (c *httpClient) getStatus() (*status, error) {
-	return c.Status()
-}
-
-type socketClient struct {
-	socket string
-	timeout time.Duration
-	env    map[string]string
-}
-
-func (c *socketClient) getStatus() (*status, error) {
-	return c.Status()
-}
-
-func newClient(c *http.Client, r web.Request) *httpClient {
+func newHTTPClient(c *http.Client, r web.Request) *httpClient {
 	dec := decodeText
 	if _, ok := r.URL.Query()["json"]; ok {
 		dec = decodeJSON
 	}
-
 	return &httpClient{
 		client: c,
 		req:    r,
@@ -80,18 +66,15 @@ func newClient(c *http.Client, r web.Request) *httpClient {
 	}
 }
 
-func (c httpClient) Status() (*status, error) {
+func (c *httpClient) getStatus() (*status, error) {
 	req, err := web.NewHTTPRequest(c.req)
 	if err != nil {
-		return nil, fmt.Errorf("error on creating request: %v", err)
+		return nil, fmt.Errorf("error on creating HTTP request: %v", err)
 	}
-	return c.fetchStatus(req)
-}
 
-func (c httpClient) fetchStatus(req *http.Request) (*status, error) {
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error on request: %v", err)
+		return nil, fmt.Errorf("error on HTTP request to '%s': %v", req.URL, err)
 	}
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, resp.Body)
@@ -102,41 +85,55 @@ func (c httpClient) fetchStatus(req *http.Request) (*status, error) {
 		return nil, fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
 	}
 
-	s := &status{}
-	if err := c.dec(resp.Body, s); err != nil {
-		return nil, fmt.Errorf("error parsing response: %v", err)
+	st := &status{}
+	if err := c.dec(resp.Body, st); err != nil {
+		return nil, fmt.Errorf("error parsing HTTP response from '%s': %v", req.URL, err)
 	}
-
-	return s, nil
+	return st, nil
 }
 
-func (c socketClient) Status() (*status, error) {
+type socketClient struct {
+	socket  string
+	timeout time.Duration
+	env     map[string]string
+}
+
+func newSocketClient(socket string, timeout time.Duration) *socketClient {
+	return &socketClient{
+		socket:  socket,
+		timeout: timeout,
+		env: map[string]string{
+			"SCRIPT_NAME":     "/status",
+			"SCRIPT_FILENAME": "/status",
+			"SERVER_SOFTWARE": "go / fcgiclient ",
+			"REMOTE_ADDR":     "127.0.0.1",
+			"QUERY_STRING":    "json&full",
+			"REQUEST_METHOD":  "GET",
+			"CONTENT_TYPE":    "application/json",
+		},
+	}
+}
+
+func (c *socketClient) getStatus() (*status, error) {
 	socket, err := fcgiclient.DialTimeout("unix", c.socket, c.timeout)
 	if err != nil {
-		return nil, fmt.Errorf("error on connecting to socket: %v", err)
+		return nil, fmt.Errorf("error on connecting to socket '%s': %v", c.socket, err)
 	}
-
-	return c.fetchStatus(socket)
-}
-
-func (c socketClient) fetchStatus(socket *fcgiclient.FCGIClient) (*status, error) {
+	defer socket.Close()
 
 	resp, err := socket.Get(c.env)
 	if err != nil {
-		return nil, fmt.Errorf("error on getting data from socket: %v", err)
+		return nil, fmt.Errorf("error on getting data from socket '%s': %v", c.socket, err)
 	}
 
 	content, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("error on reading socket: %v", err)
+		return nil, fmt.Errorf("error on reading respone from socket '%s': %v", c.socket, err)
 	}
 
-	socket.Close()
 	st := &status{}
-
-	err2 := json.Unmarshal(content, st)
-	if err2 != nil {
-		return nil, fmt.Errorf("error on json Unmarshal: %v", err)
+	if err := json.Unmarshal(content, st); err != nil {
+		return nil, fmt.Errorf("error on decoding response from socket '%s': %v", c.socket, err)
 	}
 	return st, nil
 }
