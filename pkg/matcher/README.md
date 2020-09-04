@@ -12,8 +12,10 @@ matcher | short format | long format
  string | ` =` | `string`
  glob | `*` | `glob`
  regexp | `~` | `regexp`
- simple patterns | | `simple patterns`
- 
+ simple patterns | | `simple_patterns`
+
+Example:
+ - `* pattern`: It will use the `glob` matcher to find the `pattern` in the string.
  
 
 ### Syntax
@@ -42,18 +44,30 @@ Short Syntax
      <expr>      ::= any string
 ```
 
-**Tip**: In short syntax, for example, you can enable the glob format by starting the string with a `*`, while in the long syntax you need to define it more explicitly. The following examples are identical. `simple_patterns` can be used **only** with the long syntax.
+**Remember**: In short syntax, for example, you can enable the glob format by starting the string with a `*`, while in the long syntax you need to define it more explicitly. The following examples are identical. `simple_patterns` can be used **only** with the long syntax.
 
-Short Syntax: `'* * '`
-Long Syntax: `'glob':'*'`
+Examples:
+ - Short Syntax: `'* * '`
+ - Long Syntax: `'glob':'*'`
 
 ### String matcher
 The string matcher reports whether the given value equals to the string ( use = ).
 
 Examples: 
- - `'== foo'` will match only if the string is `'foo'`.
- - `'[!] == bar'` will match any string that is not `'bar'`.
+ - `'= foo'` will match only if the string is `'foo'`.
+ - `'! = bar'` will match any string that is not `'bar'`.
 
+String matcher means **exact match** of the `string` with the `pattern`. There are other string match related cases:
+
+ - string has prefix `something`
+ - string has suffix `something`
+ - string contains `something`
+
+This is achievable using the `glob` matcher:
+
+ - `* PREFIX*`, means that it will match with any string that *starts* with `PREFIX`, e.g `PREFIXnetdata`
+ - `* *SUFFIX`, means that it will match with any string that *ends* with `SUFFIX`, e.g `netdataSUFFIX`
+ - `* *SUBSTRING*`, means that it will match with any string that *contains* `SUBSTRING`, e.g `netdataSUBSTRINGnetdata`
 
 ### Glob matcher
 
@@ -96,9 +110,9 @@ The simple patterns matcher reports whether the given value matches the simple p
 
 Simple patterns are a space separated list of words, that can have `*` as a wildcard. Each world may use any number of `*`. Simple patterns allow negative matches by prefixing a word with `!`.
 
-So, pattern = `!*bad* *` will match anything, except all those that contain the word bad.
-
-Simple patterns are quite powerful: pattern = `*foobar* !foo* !*bar *` matches everything containing foobar, except strings that start with foo or end with bar.
+Examples:
+  - `!*bad* *` will match anything, except all those that contain the word bad.
+  - `*foobar* !foo* !*bar *` matches everything containing foobar, except strings that start with foo or end with bar.
 
 
 
