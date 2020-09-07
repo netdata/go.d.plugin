@@ -35,6 +35,7 @@ const (
 	prioCache
 	prioCachePercentage
 	prioCachePrefetch
+	prioCacheExpired
 	prioZeroTTL
 	prioCacheCount
 
@@ -59,6 +60,7 @@ func charts(cumulative bool) *Charts {
 		makeIncrIf(cacheChart.Copy(), cumulative),
 		makePercOfIncrIf(cachePercentageChart.Copy(), cumulative),
 		makeIncrIf(prefetchChart.Copy(), cumulative),
+		makeIncrIf(expiredChart.Copy(), cumulative),
 		makeIncrIf(zeroTTLChart.Copy(), cumulative),
 		makeIncrIf(dnsCryptChart.Copy(), cumulative),
 		makeIncrIf(recurRepliesChart.Copy(), cumulative),
@@ -107,6 +109,7 @@ func convertTotalChartToThread(chart *Chart, thread string, priority int) {
 }
 
 // Common stats charts
+// see https://nlnetlabs.nl/documentation/unbound/unbound-control for the stats provided by unbound-control
 var (
 	queriesChart = Chart{
 		ID:       "queries",
@@ -180,6 +183,17 @@ var (
 		Priority: prioCachePrefetch,
 		Dims: Dims{
 			{ID: "total.num.prefetch", Name: "prefetches"},
+		},
+	}
+	expiredChart = Chart{
+		ID:       "cache_expired",
+		Title:    "Replies Served From Expired Cache",
+		Units:    "replies",
+		Fam:      "cache",
+		Ctx:      "unbound.expired",
+		Priority: prioCacheExpired,
+		Dims: Dims{
+			{ID: "total.num.expired", Name: "expiries"},
 		},
 	}
 	zeroTTLChart = Chart{
