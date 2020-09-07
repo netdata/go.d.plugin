@@ -107,12 +107,23 @@ func TestRegExpParser_Info(t *testing.T) {
 	assert.NotZero(t, p.Info())
 }
 
-type logLine struct{}
+type logLine struct {
+	assigned map[string]string
+}
 
-func (l logLine) Assign(name, val string) error {
+func newLogLine() *logLine {
+	return &logLine{
+		assigned: make(map[string]string),
+	}
+}
+
+func (l *logLine) Assign(name, val string) error {
 	switch name {
 	case "$ERR", "ERR":
 		return errors.New("assign error")
+	}
+	if l.assigned != nil {
+		l.assigned[name] = val
 	}
 	return nil
 }

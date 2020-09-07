@@ -66,6 +66,7 @@ const (
 
 var (
 	reLTSV = regexp.MustCompile(`^[a-zA-Z0-9]+:[^\t]*(\t[a-zA-Z0-9]+:[^\t]*)*$`)
+	reJSON = regexp.MustCompile(`^[[:space:]]*{.*}[[:space:]]*$`)
 )
 
 func (w *WebLog) newParser(record []byte) (logs.Parser, error) {
@@ -83,6 +84,8 @@ func (w *WebLog) newParser(record []byte) (logs.Parser, error) {
 		w.Debugf("config: %+v", w.Parser.LogType)
 	case logs.TypeRegExp:
 		w.Debugf("config: %+v", w.Parser.RegExp)
+	case logs.TypeJSON:
+		w.Debugf("config: %+v", w.Parser.JSON)
 	}
 	return logs.NewParser(w.Parser, w.file)
 }
@@ -92,6 +95,10 @@ func (w *WebLog) guessParser(record []byte) (logs.Parser, error) {
 	if reLTSV.Match(record) {
 		w.Debug("log type is LTSV")
 		return logs.NewLTSVParser(w.Parser.LTSV, w.file)
+	}
+	if reJSON.Match(record) {
+		w.Debug("log type is JSON")
+		return logs.NewJSONParser(w.Parser.JSON, w.file)
 	}
 	w.Debug("log type is CSV")
 	return w.guessCSVParser(record)

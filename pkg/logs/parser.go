@@ -33,6 +33,7 @@ const (
 	TypeCSV    = "csv"
 	TypeLTSV   = "ltsv"
 	TypeRegExp = "regexp"
+	TypeJSON   = "json"
 )
 
 type ParserConfig struct {
@@ -40,6 +41,7 @@ type ParserConfig struct {
 	CSV     CSVConfig    `yaml:"csv_config"`
 	LTSV    LTSVConfig   `yaml:"ltsv_config"`
 	RegExp  RegExpConfig `yaml:"regexp_config"`
+	JSON    JSONConfig   `yaml:"json_config"`
 }
 
 func NewParser(config ParserConfig, in io.Reader) (Parser, error) {
@@ -50,6 +52,8 @@ func NewParser(config ParserConfig, in io.Reader) (Parser, error) {
 		return NewLTSVParser(config.LTSV, in)
 	case TypeRegExp:
 		return NewRegExpParser(config.RegExp, in)
+	case TypeJSON:
+		return NewJSONParser(config.JSON, in)
 	default:
 		return nil, fmt.Errorf("invalid type: %q", config.LogType)
 	}
