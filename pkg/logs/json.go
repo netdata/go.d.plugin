@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"unsafe"
 
 	"github.com/valyala/fastjson"
 )
@@ -57,7 +56,7 @@ func (p *JSONParser) Parse(row []byte, line LogLine) error {
 			return
 		}
 
-		name := *(*string)(unsafe.Pointer(&key))
+		name := string(key)
 		if mapped, ok := p.mapping[name]; ok {
 			name = mapped
 		}
