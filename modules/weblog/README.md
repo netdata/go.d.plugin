@@ -50,13 +50,15 @@ For every URL pattern:
 
 ## Log Parsers
 
-Weblog supports 3 different log parsers:
+Weblog supports 4 different log parsers:
 
--   CSV
--   [LTSV](http://ltsv.org/)
--   RegExp
+-   `CSV`
+-   [`JSON`](https://www.json.org/json-en.html)
+-   [`LTSV`](http://ltsv.org/)
+-   `RegExp`
 
-Try to avoid using RegExp because it's much slower than the other two parsers. RegExp should be used only if LTSV and CSV parsers dont work for you.
+Try to avoid using `RegExp` because it's much slower than the other parsers.
+Prefer to use `LTSV` and `CSV` parses whenever is possible.
 
 There is an example job for every log parser.
 
@@ -70,6 +72,14 @@ jobs:
       fields_per_record: -1
       delimiter: ' '
       trim_leading_space: no
+
+  - name: json_parser_example
+    path: /path/to/file.log
+    log_type: json
+    json_config:
+      mapping:
+        label1: field1
+        label2: field2
 
   - name: ltsv_parser_example
     path: /path/to/file.log
@@ -90,12 +100,12 @@ jobs:
 
 ## Log Parser Auto-Detection
 
-If `log_type` parameter is set to `auto` (which is default), weblog will try to auto-detect appropriate log parser and log format
+If `log_type` parameter set to `auto` (which is default), weblog will try to auto-detect appropriate log parser and log format
 using the last line of the log file.
 
-To auto-detect parser type the module checks if the line is in LTSV format first. If it is not the case it assumes that the format is CSV.
+To auto-detect parser type the module checks if the line is in `LTSV` format first. If it is not the case it assumes that the format is `CSV`.
 
-To auto-detect CSV format weblog uses list of predefined csv formats. It tries to parse the line using each of them in the following order:
+To auto-detect `CSV` format weblog uses list of predefined csv formats. It tries to parse the line using each of them in the following order:
 
 ```sh
 $host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time $upstream_response_time
@@ -110,8 +120,8 @@ $host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes
                    $remote_addr - - [$time_local] "$request" $status $body_bytes_sent
 ```
 
-The first one that matches will be used later. If you use default Apache/NGINX log format auto-detect will do for you.
-If it doesnt work you need [to set format manually](#custom-log-format).
+The first one matches is used later. If you use default Apache/NGINX log format auto-detect will do for you.
+If it doesn't work you need [to set format manually](#custom-log-format).
 
 ## Known Fields
 
@@ -159,12 +169,11 @@ Notes:
 
 Custom log format is easy. Use [known fields](#known-fields) to construct your log format.
 
--   If using CSV parser
+-   If using `CSV` parser
 
-Since weblog understands 
- and Apache variables all you need is to copy your log format and... that is it!
+Since weblog understands NGINX and Apache variables all you need is to copy your log format and... that is it!
 If there is a field that is not known by the weblog it's not a problem. It will skip it during parsing.
-But we suggest to replace all unknown fields with `-` for optimization purposes.
+We suggest replace all unknown fields with `-` for optimization purposes.
 
 Let's take as an example some non default format.
 
@@ -183,7 +192,7 @@ is optional but recommended.
 
 Special case:
 
-`%t` and `$time_local` represent time in [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format).
+Both `%t` and `$time_local` fields represent time in [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format).
 It is a special case because it's in fact 2 fields after csv parse (ex.: `[22/Mar/2009:09:30:31 +0100]`).
 Weblog understands it and you don't need to replace it with `-` (if we want to do it we need to make it `- -`).
 
@@ -202,11 +211,15 @@ jobs:
       format: '- - $remote_addr - - [$time_local] "$request" $status $body_bytes_sent'
 ```
 
--   If using LTSV parser
+-   If using `JSON` parser
 
-Provide fields mapping if needed. Dont use `$` and `%` prefixes for mapped field names. They are only needed in CSV format.
+Provide fields [mapping](#known-fields) if needed. Don't use `$` and `%` prefixes for mapped field names. They are only needed in `CSV` format.
 
--   If using RegExp parser
+-   If using `LTSV` parser
+
+Provide fields [mapping](#known-fields) if needed. Don't use `$` and `%` prefixes for mapped field names. They are only needed in `CSV` format.
+
+-   If using `RegExp` parser
 
 Use pattern with subexpressions names. These names should be known by weblog.
 
