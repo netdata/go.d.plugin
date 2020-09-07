@@ -2,9 +2,11 @@ package logs
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io"
+	"unsafe"
+
+	"github.com/valyala/fastjson"
 )
 
 type JSONConfig struct {
@@ -13,58 +15,70 @@ type JSONConfig struct {
 
 type JSONParser struct {
 	reader  *bufio.Reader
+	parser  fastjson.Parser
+	buf     []byte
 	mapping map[string]string
 }
 
 func NewJSONParser(config JSONConfig, in io.Reader) (*JSONParser, error) {
-	fieldMap := config.Mapping
-	if fieldMap == nil {
-		fieldMap = make(map[string]string)
-	}
-
 	parser := &JSONParser{
 		reader:  bufio.NewReader(in),
-		mapping: fieldMap,
+		mapping: config.Mapping,
+		buf:     make([]byte, 0, 100),
 	}
-
 	return parser, nil
 }
 
 func (p *JSONParser) ReadLine(line LogLine) error {
 	row, err := p.reader.ReadSlice('\n')
-
 	if err != nil && len(row) == 0 {
 		return err
 	}
-
 	return p.Parse(row, line)
 }
 
 func (p *JSONParser) Parse(row []byte, line LogLine) error {
-	var parsedLine map[string]interface{}
-
-	if err := json.Unmarshal(row, &parsedLine); err != nil {
+	val, err := p.parser.ParseBytes(row)
+	if err != nil {
+		return err
+	}
+	obj, err := val.Object()
+	if err != nil {
 		return err
 	}
 
-	/* Now map the fields */
-	for logField, logValue := range parsedLine {
-		/* Convert logValue to string */
-		stringValue := fmt.Sprintf("%v", logValue)
-
-		if err := line.Assign(p.mapField(logField), stringValue); err != nil {
-			return err
+	obj.Visit(func(key []byte, v *fastjson.Value) {
+		if err != nil {
+			return
 		}
-	}
+		switch v.Type() {
+		case fastjson.TypeString, fastjson.TypeNumber:
+		default:
+			return
+		}
 
+		name := *(*string)(unsafe.Pointer(&key))
+		if mapped, ok := p.mapping[name]; ok {
+			name = mapped
+		}
+
+		p.buf = p.buf[:0]
+		p.buf = v.MarshalTo(p.buf)
+		if len(p.buf) == 0 {
+			return
+		}
+
+		if v.Type() == fastjson.TypeString {
+			// trim "
+			err = line.Assign(name, string(p.buf[1:len(p.buf)-1]))
+		} else {
+			err = line.Assign(name, string(p.buf))
+		}
+	})
+	if err != nil {
+		return &ParseError{msg: fmt.Sprintf("json parse: %v", err), err: err}
+	}
 	return nil
-}
-
-func (p *JSONParser) mapField(field string) string {
-	if newLogLineField, exist := p.mapping[field]; exist {
-		return newLogLineField
-	}
-	return field
 }
 
 func (p *JSONParser) Info() string {

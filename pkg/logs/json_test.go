@@ -15,8 +15,8 @@ var testJSONConfig = JSONConfig{
 func TestNewJSONParser(t *testing.T) {
 	tests := []struct {
 		name    string
-		wantErr bool
 		config  JSONConfig
+		wantErr bool
 	}{
 		{
 			name:    "empty config",
@@ -48,9 +48,9 @@ func TestNewJSONParser(t *testing.T) {
 func TestJSONParser_ReadLine(t *testing.T) {
 	tests := []struct {
 		name    string
-		wantErr bool
 		config  JSONConfig
 		data    string
+		wantErr bool
 	}{
 		{
 			name:    "no error",
@@ -59,7 +59,8 @@ func TestJSONParser_ReadLine(t *testing.T) {
 			data:    `{ "host": "example.com" }`,
 		},
 		{
-			name: "splits on newline", config: JSONConfig{},
+			name:    "splits on newline",
+			config:  JSONConfig{},
 			wantErr: false,
 			data:    "{\"host\": \"example.com\"}\n{\"host\": \"acme.org\"}",
 		},
@@ -139,51 +140,6 @@ func TestJSONParser_Parse(t *testing.T) {
 				assert.NoError(t, parseErr)
 			}
 
-		})
-	}
-}
-
-func TestJSONParser_mapField(t *testing.T) {
-	tests := []struct {
-		name     string
-		field    string
-		expected string
-		fieldMap map[string]string
-	}{
-		{
-			name:     "defaults",
-			field:    "x",
-			expected: "x",
-			fieldMap: map[string]string{},
-		},
-		{
-			name:     "mapping-non-existing",
-			field:    "x",
-			expected: "x",
-			fieldMap: map[string]string{"y": "z"},
-		},
-		{
-			name:     "mapping-existing",
-			field:    "x",
-			expected: "z",
-			fieldMap: map[string]string{"x": "z"},
-		},
-		{
-			name:     "mapping-identity",
-			field:    "x",
-			expected: "x",
-			fieldMap: map[string]string{"x": "x"},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p, err := NewJSONParser(JSONConfig{Mapping: tt.fieldMap}, nil)
-			assert.NoError(t, err)
-
-			actual := p.mapField(tt.field)
-
-			assert.Equal(t, tt.expected, actual)
 		})
 	}
 }
