@@ -8,33 +8,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var testJSONConfig = JSONConfig{
-	Mapping: map[string]string{"from_field_1": "to_field_1"},
-}
-
 func TestNewJSONParser(t *testing.T) {
-	tests := []struct {
-		name    string
+	tests := map[string]struct {
 		config  JSONConfig
 		wantErr bool
 	}{
-		{
-			name:    "empty config",
+		"empty config": {
 			config:  JSONConfig{},
 			wantErr: false,
 		},
-		{
-			name:    "basic config",
-			config:  testJSONConfig,
+		"with mappings": {
+			config:  JSONConfig{Mapping: map[string]string{"from_field_1": "to_field_1"}},
 			wantErr: false,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p, err := NewJSONParser(tt.config, nil)
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			p, err := NewJSONParser(test.config, nil)
 
-			if tt.wantErr {
+			if test.wantErr {
 				assert.Error(t, err)
 				assert.Nil(t, p)
 			} else {
@@ -46,100 +39,160 @@ func TestNewJSONParser(t *testing.T) {
 }
 
 func TestJSONParser_ReadLine(t *testing.T) {
-	tests := []struct {
-		name    string
-		config  JSONConfig
-		data    string
-		wantErr bool
+	tests := map[string]struct {
+		config       JSONConfig
+		input        string
+		wantAssigned map[string]string
+		wantErr      bool
 	}{
-		{
-			name:    "no error",
-			config:  JSONConfig{},
+		"string value": {
+			input:   `{ "string": "example.com" }`,
 			wantErr: false,
-			data:    `{ "host": "example.com" }`,
+			wantAssigned: map[string]string{
+				"string": "example.com",
+			},
 		},
-		{
-			name:    "splits on newline",
-			config:  JSONConfig{},
+		"int value": {
+			input:   `{ "int": 1 }`,
 			wantErr: false,
-			data:    "{\"host\": \"example.com\"}\n{\"host\": \"acme.org\"}",
+			wantAssigned: map[string]string{
+				"int": "1",
+			},
 		},
-		{
-			name:    "error on malformed JSON",
-			config:  JSONConfig{},
-			wantErr: true,
-			data:    `{ "host"": unquoted_string}`,
+		"float value": {
+			input:   `{ "float": 1.1 }`,
+			wantErr: false,
+			wantAssigned: map[string]string{
+				"float": "1.1",
+			},
 		},
-		{
-			name:    "error on no data",
-			config:  JSONConfig{},
+		"string, int, float values": {
+			input:   `{ "string": "example.com", "int": 1, "float": 1.1 }`,
+			wantErr: false,
+			wantAssigned: map[string]string{
+				"string": "example.com",
+				"int":    "1",
+				"float":  "1.1",
+			},
+		},
+		"string, int, float values with mappings": {
+			config: JSONConfig{Mapping: map[string]string{
+				"string": "STRING",
+				"int":    "INT",
+				"float":  "FLOAT",
+			}},
+			input:   `{ "string": "example.com", "int": 1, "float": 1.1 }`,
+			wantErr: false,
+			wantAssigned: map[string]string{
+				"STRING": "example.com",
+				"INT":    "1",
+				"FLOAT":  "1.1",
+			},
+		},
+		"error on malformed JSON": {
+			input:   `{ "host"": unquoted_string}`,
 			wantErr: true,
-			data:    ``,
+		},
+		"error on empty input": {
+			wantErr: true,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var line logLine
-			in := strings.NewReader(tt.data)
-			p, err := NewJSONParser(tt.config, in)
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			line := newLogLine()
+			in := strings.NewReader(test.input)
+			p, err := NewJSONParser(test.config, in)
 			require.NoError(t, err)
 			require.NotNil(t, p)
 
-			err = p.ReadLine(&line)
+			err = p.ReadLine(line)
 
-			if tt.wantErr {
+			if test.wantErr {
 				assert.Error(t, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
+				assert.Equal(t, test.wantAssigned, line.assigned)
 			}
 		})
 	}
 }
 
 func TestJSONParser_Parse(t *testing.T) {
-	tests := []struct {
-		name         string
-		row          string
-		fieldMap     map[string]string
-		wantParseErr bool
+	tests := map[string]struct {
+		config       JSONConfig
+		input        string
+		wantAssigned map[string]string
+		wantErr      bool
 	}{
-		{
-			name:         "malformed JSON",
-			row:          `{`,
-			wantParseErr: true,
+		"string value": {
+			input:   `{ "string": "example.com" }`,
+			wantErr: false,
+			wantAssigned: map[string]string{
+				"string": "example.com",
+			},
 		},
-		{
-			name:         "malformed JSON #2",
-			row:          `{ host: "example.com" }`,
-			wantParseErr: true,
+		"int value": {
+			input:   `{ "int": 1 }`,
+			wantErr: false,
+			wantAssigned: map[string]string{
+				"int": "1",
+			},
 		},
-		{
-			name:         "empty string",
-			row:          "",
-			wantParseErr: true,
+		"float value": {
+			input:   `{ "float": 1.1 }`,
+			wantErr: false,
+			wantAssigned: map[string]string{
+				"float": "1.1",
+			},
 		},
-		{
-			name:         "no field mapping",
-			row:          `{ "host": "example.com", "remote_addr": "127.0.0.1", "request_time": 0.05 }`,
-			wantParseErr: false,
+		"string, int, float values": {
+			input:   `{ "string": "example.com", "int": 1, "float": 1.1 }`,
+			wantErr: false,
+			wantAssigned: map[string]string{
+				"string": "example.com",
+				"int":    "1",
+				"float":  "1.1",
+			},
+		},
+		"string, int, float values with mappings": {
+			config: JSONConfig{Mapping: map[string]string{
+				"string": "STRING",
+				"int":    "INT",
+				"float":  "FLOAT",
+			}},
+			input:   `{ "string": "example.com", "int": 1, "float": 1.1 }`,
+			wantErr: false,
+			wantAssigned: map[string]string{
+				"STRING": "example.com",
+				"INT":    "1",
+				"FLOAT":  "1.1",
+			},
+		},
+		"error on malformed JSON": {
+			input:   `{ "host"": unquoted_string}`,
+			wantErr: true,
+		},
+		"error on empty input": {
+			wantErr: true,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var line logLine
-			p, err := NewJSONParser(JSONConfig{Mapping: tt.fieldMap}, nil)
-			assert.NoError(t, err)
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			line := newLogLine()
+			p, err := NewJSONParser(test.config, nil)
+			require.NoError(t, err)
+			require.NotNil(t, p)
 
-			parseErr := p.Parse([]byte(tt.row), line)
+			err = p.Parse([]byte(test.input), line)
 
-			if tt.wantParseErr {
-				assert.Error(t, parseErr)
+			if test.wantErr {
+				assert.Error(t, err)
 			} else {
-				assert.NoError(t, parseErr)
+				require.NoError(t, err)
+				assert.Equal(t, test.wantAssigned, line.assigned)
 			}
-
 		})
 	}
 }

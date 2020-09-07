@@ -63,15 +63,15 @@ func (p *JSONParser) Parse(row []byte, line LogLine) error {
 		}
 
 		p.buf = p.buf[:0]
-		p.buf = v.MarshalTo(p.buf)
-		if len(p.buf) == 0 {
+		if p.buf = v.MarshalTo(p.buf); len(p.buf) == 0 {
 			return
 		}
 
-		if v.Type() == fastjson.TypeString {
+		switch v.Type() {
+		case fastjson.TypeString:
 			// trim "
 			err = line.Assign(name, string(p.buf[1:len(p.buf)-1]))
-		} else {
+		default:
 			err = line.Assign(name, string(p.buf))
 		}
 	})
