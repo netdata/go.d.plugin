@@ -58,7 +58,7 @@ Weblog supports 4 different log parsers:
 -   `RegExp`
 
 Try to avoid using `RegExp` because it's much slower than the other parsers.
-Prefer to use `LTSV` and `CSV` parses whenever is possible.
+Prefer to use `LTSV` or `CSV` parser.
 
 There is an example job for every log parser.
 
