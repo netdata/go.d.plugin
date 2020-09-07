@@ -187,8 +187,8 @@ var (
 	}
 	expiredChart = Chart{
 		ID:       "cache_expired",
-		Title:    "Cache Expiries",
-		Units:    "expiries",
+		Title:    "Replies Served From Expired Cache",
+		Units:    "replies",
 		Fam:      "cache",
 		Ctx:      "unbound.expired",
 		Priority: prioCacheExpired,
