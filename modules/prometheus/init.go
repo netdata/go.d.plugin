@@ -3,6 +3,7 @@ package prometheus
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -30,10 +31,19 @@ func (p Prometheus) initPrometheusClient() (prometheus.Prometheus, error) {
 		return nil, fmt.Errorf("parsing selector: %v", err)
 	}
 
-	if sr != nil {
-		return prometheus.NewWithSelector(client, p.Request, sr), nil
+	req := p.Request.Copy()
+	if p.BearerTokenFile != "" {
+		token, err := ioutil.ReadFile(p.BearerTokenFile)
+		if err != nil {
+			return nil, fmt.Errorf("reading bearer token file: %v", err)
+		}
+		req.Headers["Authorization"] = "Bearer " + string(token)
 	}
-	return prometheus.New(client, p.Request), nil
+
+	if sr != nil {
+		return prometheus.NewWithSelector(client, req, sr), nil
+	}
+	return prometheus.New(client, req), nil
 }
 
 func (p Prometheus) initOptionalGrouping() ([]optionalGrouping, error) {
