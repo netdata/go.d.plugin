@@ -41,11 +41,12 @@ func New() *Prometheus {
 
 type (
 	Config struct {
-		web.HTTP       `yaml:",inline"`
-		MaxTS          int           `yaml:"max_time_series"`
-		MaxTSPerMetric int           `yaml:"max_time_series_per_metric"`
-		Selector       selector.Expr `yaml:"selector"`
-		Grouping       []GroupOption `yaml:"group"`
+		web.HTTP        `yaml:",inline"`
+		BearerTokenFile string        `yaml:"bearer_token_file"` // TODO: part of web.Request?
+		MaxTS           int           `yaml:"max_time_series"`
+		MaxTSPerMetric  int           `yaml:"max_time_series_per_metric"`
+		Selector        selector.Expr `yaml:"selector"`
+		Grouping        []GroupOption `yaml:"group"`
 	}
 	GroupOption struct {
 		Selector string `yaml:"selector"`
