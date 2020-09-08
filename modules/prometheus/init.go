@@ -26,11 +26,6 @@ func (p Prometheus) initPrometheusClient() (prometheus.Prometheus, error) {
 		return nil, fmt.Errorf("creating HTTP client: %v", err)
 	}
 
-	sr, err := p.Selector.Parse()
-	if err != nil {
-		return nil, fmt.Errorf("parsing selector: %v", err)
-	}
-
 	req := p.Request.Copy()
 	if p.BearerTokenFile != "" {
 		token, err := ioutil.ReadFile(p.BearerTokenFile)
@@ -38,6 +33,11 @@ func (p Prometheus) initPrometheusClient() (prometheus.Prometheus, error) {
 			return nil, fmt.Errorf("reading bearer token file: %v", err)
 		}
 		req.Headers["Authorization"] = "Bearer " + string(token)
+	}
+
+	sr, err := p.Selector.Parse()
+	if err != nil {
+		return nil, fmt.Errorf("parsing selector: %v", err)
 	}
 
 	if sr != nil {
