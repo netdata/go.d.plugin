@@ -23,7 +23,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 	assert.NotNil(t, job.charts)
 }
@@ -38,7 +38,7 @@ func TestApache_Init(t *testing.T) {
 func TestApache_InitNG(t *testing.T) {
 	job := New()
 
-	job.UserURL = ""
+	job.URL = ""
 	assert.False(t, job.Init())
 }
 
@@ -51,7 +51,7 @@ func TestApache_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/server-status?auto"
+	job.URL = ts.URL + "/server-status?auto"
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 }
@@ -59,7 +59,7 @@ func TestApache_Check(t *testing.T) {
 func TestApache_CheckNG(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1:38001/server-status?auto"
+	job.URL = "http://127.0.0.1:38001/server-status?auto"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -75,7 +75,7 @@ func TestApache_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/server-status?auto"
+	job.URL = ts.URL + "/server-status?auto"
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -111,7 +111,7 @@ func TestApache_CollectExtended(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/server-status?auto"
+	job.URL = ts.URL + "/server-status?auto"
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -153,7 +153,7 @@ func TestApache_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/server-status?auto"
+	job.URL = ts.URL + "/server-status?auto"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -167,7 +167,7 @@ func TestApache_LighttpdData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/server-status?auto"
+	job.URL = ts.URL + "/server-status?auto"
 	require.True(t, job.Init())
 	require.False(t, job.Check())
 }
@@ -181,7 +181,7 @@ func TestApache_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/server-status?auto"
+	job.URL = ts.URL + "/server-status?auto"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }

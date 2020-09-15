@@ -14,7 +14,7 @@ import (
 )
 
 func (p Prometheus) validateConfig() error {
-	if p.UserURL == "" {
+	if p.URL == "" {
 		return errors.New("URL not set")
 	}
 	return nil

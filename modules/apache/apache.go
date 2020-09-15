@@ -1,6 +1,7 @@
 package apache
 
 import (
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -25,8 +26,12 @@ const (
 func New() *Apache {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				URL: defaultURL,
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 	}
 	return &Apache{
@@ -53,23 +58,17 @@ func (Apache) Cleanup() {}
 
 // Init makes initialization.
 func (a *Apache) Init() bool {
-	if err := a.ParseUserURL(); err != nil {
-		a.Errorf("error on parsing url '%s' : %v", a.Request.UserURL, err)
-		return false
-	}
-
-	if a.URL.Host == "" {
+	if a.URL == "" {
 		a.Error("URL is not set")
 		return false
 	}
 
-	if a.URL.RawQuery != "auto" {
+	if !strings.HasSuffix(a.URL, "?auto") {
 		a.Errorf("bad URL, should ends in '?auto'")
 		return false
 	}
 
 	client, err := web.NewHTTPClient(a.Client)
-
 	if err != nil {
 		a.Errorf("error on creating http client : %v", err)
 		return false

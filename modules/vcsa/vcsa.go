@@ -27,7 +27,9 @@ func init() {
 func New() *VCSA {
 	config := Config{
 		HTTP: web.HTTP{
-			Client: web.Client{Timeout: web.Duration{Duration: time.Second * 5}},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second * 5},
+			},
 		},
 	}
 	return &VCSA{
@@ -74,7 +76,7 @@ func (vc VCSA) Cleanup() {
 }
 
 func (vc VCSA) validateInitParameters() error {
-	if vc.UserURL == "" {
+	if vc.URL == "" {
 		return errors.New("URL not set")
 	}
 	if vc.Username == "" || vc.Password == "" {
@@ -89,7 +91,7 @@ func (vc *VCSA) createHealthClient() error {
 		return err
 	}
 
-	vc.client = client.New(httpClient, vc.UserURL, vc.Username, vc.Password)
+	vc.client = client.New(httpClient, vc.URL, vc.Username, vc.Password)
 	return nil
 }
 
@@ -107,7 +109,7 @@ func (vc *VCSA) Init() bool {
 		return false
 	}
 
-	vc.Debugf("using URL %s", vc.UserURL)
+	vc.Debugf("using URL %s", vc.URL)
 	vc.Debugf("using timeout: %s", vc.Timeout.Duration)
 	return true
 }

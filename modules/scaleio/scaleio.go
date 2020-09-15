@@ -21,8 +21,12 @@ func init() {
 func New() *ScaleIO {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: "https://127.0.0.1"},
-			Client:  web.Client{Timeout: web.Duration{Duration: time.Second}},
+			Request: web.Request{
+				URL: "https://127.0.0.1",
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second},
+			},
 		},
 	}
 	return &ScaleIO{
@@ -70,7 +74,7 @@ func (s *ScaleIO) Init() bool {
 	}
 	s.client = c
 
-	s.Debugf("using URL %s", s.UserURL)
+	s.Debugf("using URL %s", s.URL)
 	s.Debugf("using timeout: %s", s.Timeout.Duration)
 	return true
 }

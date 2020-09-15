@@ -42,21 +42,17 @@ type apiClient struct {
 
 func (a apiClient) getServerStatus() (*serverStatus, error) {
 	req, err := web.NewHTTPRequest(a.request)
-
 	if err != nil {
 		return nil, fmt.Errorf("error on creating request : %v", err)
 	}
 
 	resp, err := a.doRequestOK(req)
-
 	defer closeBody(resp)
-
 	if err != nil {
 		return nil, err
 	}
 
 	status, err := parseResponse(resp.Body)
-
 	if err != nil {
 		return nil, fmt.Errorf("error on parsing response from %s : %v", req.URL, err)
 	}

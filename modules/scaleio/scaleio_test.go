@@ -297,7 +297,7 @@ func TestScaleIO_Collect_ConnectionRefused(t *testing.T) {
 	defer srv.Close()
 	require.True(t, scaleIO.Init())
 	require.True(t, scaleIO.Check())
-	scaleIO.client.Request.URL.Host = "127.0.0.1:38001"
+	scaleIO.client.Request.URL = "http://127.0.0.1:38001"
 
 	assert.Nil(t, scaleIO.Collect())
 }
@@ -366,7 +366,7 @@ func prepareSrvMockScaleIO(t *testing.T) (*httptest.Server, *client.MockScaleIOA
 	require.NoError(t, err)
 
 	scaleIO := New()
-	scaleIO.UserURL = srv.URL
+	scaleIO.URL = srv.URL
 	scaleIO.Username = user
 	scaleIO.Password = password
 	return srv, &mock, scaleIO

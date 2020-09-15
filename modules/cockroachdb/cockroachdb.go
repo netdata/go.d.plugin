@@ -29,9 +29,11 @@ func New() *CockroachDB {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: "http://127.0.0.1:8080/_status/vars",
+				URL: "http://127.0.0.1:8080/_status/vars",
 			},
-			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second},
+			},
 		},
 	}
 
@@ -57,7 +59,7 @@ type (
 )
 
 func (c *CockroachDB) validateConfig() error {
-	if c.UserURL == "" {
+	if c.URL == "" {
 		return errors.New("URL is not set")
 	}
 	return nil

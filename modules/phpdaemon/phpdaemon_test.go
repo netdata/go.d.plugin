@@ -25,7 +25,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
@@ -45,14 +45,14 @@ func TestPHPDaemon_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 }
 
 func TestPHPDaemon_CheckNG(t *testing.T) {
 	job := New()
-	job.UserURL = testURL
+	job.URL = testURL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -70,7 +70,7 @@ func TestPHPDaemon_Charts(t *testing.T) {
 			}))
 	defer ts.Close()
 
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 	assert.True(t, job.charts.Has(uptimeChart.ID))
@@ -89,7 +89,7 @@ func TestPHPDaemon_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 
@@ -118,7 +118,7 @@ func TestPHPDaemon_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -132,7 +132,7 @@ func TestPHPDaemon_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }

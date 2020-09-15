@@ -1,6 +1,7 @@
 package lighttpd
 
 import (
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -25,8 +26,12 @@ const (
 func New() *Lighttpd {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				URL: defaultURL,
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 	}
 	return &Lighttpd{Config: config}
@@ -49,28 +54,21 @@ func (Lighttpd) Cleanup() {}
 
 // Init makes initialization.
 func (l *Lighttpd) Init() bool {
-	if err := l.ParseUserURL(); err != nil {
-		l.Errorf("error on parsing url '%s' : %v", l.Request.UserURL, err)
+	if l.URL == "" {
+		l.Error("URL not set")
 		return false
 	}
 
-	if l.URL.Host == "" {
-		l.Error("URL is not set")
-		return false
-	}
-
-	if l.URL.RawQuery != "auto" {
-		l.Errorf("bad URL, should ends in '?auto'")
+	if !strings.HasSuffix(l.URL, "?auto") {
+		l.Errorf("bad URL '%s', should ends in '?auto'", l.URL)
 		return false
 	}
 
 	client, err := web.NewHTTPClient(l.Client)
-
 	if err != nil {
 		l.Errorf("error on creating http client : %v", err)
 		return false
 	}
-
 	l.apiClient = newAPIClient(client, l.Request)
 
 	l.Debugf("using URL %s", l.URL)

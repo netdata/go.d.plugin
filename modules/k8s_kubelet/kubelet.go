@@ -27,10 +27,12 @@ func New() *Kubelet {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: "http://127.0.0.1:10255/metrics",
+				URL:     "http://127.0.0.1:10255/metrics",
 				Headers: make(map[string]string),
 			},
-			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second},
+			},
 		},
 		TokenPath: "/var/run/secrets/kubernetes.io/serviceaccount/token",
 	}

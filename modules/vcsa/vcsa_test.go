@@ -10,7 +10,7 @@ import (
 
 func testNewVCSA() *VCSA {
 	vc := New()
-	vc.UserURL = "https://127.0.0.1:38001"
+	vc.URL = "https://127.0.0.1:38001"
 	vc.Username = "user"
 	vc.Password = "pass"
 	return vc

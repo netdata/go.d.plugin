@@ -2,7 +2,6 @@ package logstash
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -22,8 +21,12 @@ func init() {
 func New() *Logstash {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: "http://localhost:9600"},
-			Client:  web.Client{Timeout: web.Duration{Duration: time.Second}},
+			Request: web.Request{
+				URL: "http://localhost:9600",
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second},
+			},
 		},
 	}
 	return &Logstash{
@@ -49,11 +52,8 @@ type (
 )
 
 func (l *Logstash) validateConfig() error {
-	if err := l.ParseUserURL(); err != nil {
-		return fmt.Errorf("parse url: %w", err)
-	}
-	if l.URL.Host == "" {
-		return errors.New("URL is not set")
+	if l.URL == "" {
+		return errors.New("URL not set")
 	}
 	return nil
 }

@@ -67,7 +67,7 @@ func TestRabbitMQ_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	assert.True(t, job.Check())
@@ -80,7 +80,7 @@ func TestHDFS_CheckError404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	assert.False(t, job.Check())
@@ -88,7 +88,7 @@ func TestHDFS_CheckError404(t *testing.T) {
 
 func TestRabbitMQ_CheckNoResponse(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001/jmx"
+	job.URL = "http://127.0.0.1:38001"
 	require.True(t, job.Init())
 
 	assert.False(t, job.Check())
@@ -102,7 +102,7 @@ func TestRabbitMQ_Collect(t *testing.T) {
 	ts := newTestRabbitMQHTTPServer()
 	defer ts.Close()
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -165,7 +165,7 @@ func TestRabbitMQ_AddVhostsChartsAfterCollect(t *testing.T) {
 	ts := newTestRabbitMQHTTPServer()
 	defer ts.Close()
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 	require.NotNil(t, job.Collect())
@@ -176,7 +176,7 @@ func TestRabbitMQ_AddVhostsChartsAfterCollect(t *testing.T) {
 
 func TestRabbitMQ_CollectReceiveNoResponse(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001/jmx"
+	job.URL = "http://127.0.0.1:38001/jmx"
 	require.True(t, job.Init())
 
 	assert.Nil(t, job.Collect())
@@ -191,7 +191,7 @@ func TestRabbitMQ_CollectReceiveUnexpectedJSONResponse(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	assert.True(t, job.Init())
 
 	assert.Nil(t, job.Collect())
@@ -206,7 +206,7 @@ func TestRabbitMQ_CollectReceiveNotJSONResponse(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	assert.True(t, job.Init())
 
 	assert.Nil(t, job.Collect())
@@ -219,7 +219,7 @@ func TestRabbitMQ_CollectReceive404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	assert.Nil(t, job.Collect())

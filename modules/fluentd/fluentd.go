@@ -27,8 +27,12 @@ const (
 func New() *Fluentd {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				URL: defaultURL,
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		}}
 
 	return &Fluentd{
@@ -59,13 +63,8 @@ func (Fluentd) Cleanup() {}
 
 // Init makes initialization.
 func (f *Fluentd) Init() bool {
-	if err := f.ParseUserURL(); err != nil {
-		f.Errorf("error on parsing url '%s' : %v", f.UserURL, err)
-		return false
-	}
-
-	if f.URL.Host == "" {
-		f.Error("URL is not set")
+	if f.URL == "" {
+		f.Error("URL not set")
 		return false
 	}
 
@@ -79,7 +78,6 @@ func (f *Fluentd) Init() bool {
 	}
 
 	client, err := web.NewHTTPClient(f.Client)
-
 	if err != nil {
 		f.Errorf("error on creating client : %v", err)
 		return false

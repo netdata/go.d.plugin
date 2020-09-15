@@ -32,7 +32,7 @@ func TestVerneMQ_Init(t *testing.T) {
 
 func TestVerneMQ_Init_ReturnsFalseIfURLIsNotSet(t *testing.T) {
 	verneMQ := prepareVerneMQ()
-	verneMQ.UserURL = ""
+	verneMQ.URL = ""
 
 	assert.False(t, verneMQ.Init())
 }
@@ -130,7 +130,7 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, verneMQ *VerneMQ, coll
 
 func prepareVerneMQ() *VerneMQ {
 	verneMQ := New()
-	verneMQ.UserURL = "http://127.0.0.1:38001/metrics"
+	verneMQ.URL = "http://127.0.0.1:38001/metrics"
 	return verneMQ
 }
 
@@ -142,7 +142,7 @@ func prepareClientServerV1101(t *testing.T) (*VerneMQ, *httptest.Server) {
 		}))
 
 	verneMQ := New()
-	verneMQ.UserURL = ts.URL
+	verneMQ.URL = ts.URL
 	require.True(t, verneMQ.Init())
 
 	return verneMQ, ts
@@ -156,7 +156,7 @@ func prepareClientServerNotVerneMQ(t *testing.T) (*VerneMQ, *httptest.Server) {
 		}))
 
 	verneMQ := New()
-	verneMQ.UserURL = ts.URL
+	verneMQ.URL = ts.URL
 	require.True(t, verneMQ.Init())
 
 	return verneMQ, ts
@@ -170,7 +170,7 @@ func prepareClientServerInvalid(t *testing.T) (*VerneMQ, *httptest.Server) {
 		}))
 
 	verneMQ := New()
-	verneMQ.UserURL = ts.URL
+	verneMQ.URL = ts.URL
 	require.True(t, verneMQ.Init())
 
 	return verneMQ, ts
@@ -184,7 +184,7 @@ func prepareClientServerResponse404(t *testing.T) (*VerneMQ, *httptest.Server) {
 		}))
 
 	verneMQ := New()
-	verneMQ.UserURL = ts.URL
+	verneMQ.URL = ts.URL
 	require.True(t, verneMQ.Init())
 	return verneMQ, ts
 }

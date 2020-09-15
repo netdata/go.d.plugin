@@ -33,7 +33,7 @@ func TestCockroachDB_Init(t *testing.T) {
 
 func TestCockroachDB_Init_ReturnsFalseIfConfigURLIsNotSet(t *testing.T) {
 	cdb := prepareCockroachDB()
-	cdb.UserURL = ""
+	cdb.URL = ""
 
 	assert.False(t, cdb.Init())
 }
@@ -54,7 +54,7 @@ func TestCockroachDB_Check(t *testing.T) {
 
 func TestCockroachDB_Check_ReturnsFalseIfConnectionRefused(t *testing.T) {
 	cdb := New()
-	cdb.UserURL = "http://127.0.0.1:38001/metrics"
+	cdb.URL = "http://127.0.0.1:38001/metrics"
 	require.True(t, cdb.Init())
 
 	assert.False(t, cdb.Check())
@@ -257,7 +257,7 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, c *CockroachDB, collec
 
 func prepareCockroachDB() *CockroachDB {
 	cdb := New()
-	cdb.UserURL = "http://127.0.0.1:38001/metrics"
+	cdb.URL = "http://127.0.0.1:38001/metrics"
 	return cdb
 }
 
@@ -269,7 +269,7 @@ func prepareClientServer(t *testing.T) (*CockroachDB, *httptest.Server) {
 		}))
 
 	cdb := New()
-	cdb.UserURL = ts.URL
+	cdb.URL = ts.URL
 	require.True(t, cdb.Init())
 
 	return cdb, ts
@@ -283,7 +283,7 @@ func prepareClientServerNotCockroachDBMetricResponse(t *testing.T) (*CockroachDB
 		}))
 
 	cdb := New()
-	cdb.UserURL = ts.URL
+	cdb.URL = ts.URL
 	require.True(t, cdb.Init())
 
 	return cdb, ts
@@ -297,7 +297,7 @@ func prepareClientServerInvalidDataResponse(t *testing.T) (*CockroachDB, *httpte
 		}))
 
 	cdb := New()
-	cdb.UserURL = ts.URL
+	cdb.URL = ts.URL
 	require.True(t, cdb.Init())
 
 	return cdb, ts
@@ -311,7 +311,7 @@ func prepareClientServerResponse404(t *testing.T) (*CockroachDB, *httptest.Serve
 		}))
 
 	cdb := New()
-	cdb.UserURL = ts.URL
+	cdb.URL = ts.URL
 	require.True(t, cdb.Init())
 	return cdb, ts
 }

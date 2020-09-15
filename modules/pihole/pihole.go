@@ -32,7 +32,7 @@ func New() *Pihole {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: defaultURL,
+				URL: defaultURL,
 			},
 			Client: web.Client{
 				Timeout: web.Duration{Duration: defaultHTTPTimeout}},
@@ -94,7 +94,7 @@ func (p *Pihole) Init() bool {
 
 	config := client.Configuration{
 		Client:      httpClient,
-		URL:         p.UserURL,
+		URL:         p.URL,
 		WebPassword: p.Password,
 	}
 	p.client = client.New(config)
@@ -116,6 +116,7 @@ func (p Pihole) Check() bool {
 	}
 
 	if p.Password != "" {
+		// TODO: remove panic
 		panicIf(p.charts.Add(*authCharts.Copy()...))
 	}
 
@@ -128,7 +129,6 @@ func (p Pihole) Charts() *module.Charts { return p.charts }
 // Collect collects metrics.
 func (p *Pihole) Collect() map[string]int64 {
 	mx, err := p.collect()
-
 	if err != nil {
 		p.Error(err)
 	}

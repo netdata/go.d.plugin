@@ -25,8 +25,12 @@ const (
 func New() *Tengine {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				URL: defaultURL,
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 	}
 	return &Tengine{Config: config}
@@ -50,18 +54,12 @@ func (Tengine) Cleanup() {}
 
 // Init makes initialization.
 func (t *Tengine) Init() bool {
-	if err := t.ParseUserURL(); err != nil {
-		t.Errorf("error on parsing url '%s' : %v", t.UserURL, err)
-		return false
-	}
-
-	if t.URL.Host == "" {
-		t.Error("URL is not set")
+	if t.URL == "" {
+		t.Error("URL not set")
 		return false
 	}
 
 	client, err := web.NewHTTPClient(t.Client)
-
 	if err != nil {
 		t.Errorf("error on creating http client : %v", err)
 		return false
@@ -71,15 +69,18 @@ func (t *Tengine) Init() bool {
 
 	t.Debugf("using URL: %s", t.URL)
 	t.Debugf("using timeout: %s", t.Timeout.Duration)
-
 	return true
 }
 
 // Check makes check
-func (t *Tengine) Check() bool { return len(t.Collect()) > 0 }
+func (t *Tengine) Check() bool {
+	return len(t.Collect()) > 0
+}
 
 // Charts returns Charts.
-func (t Tengine) Charts() *module.Charts { return charts.Copy() }
+func (t Tengine) Charts() *module.Charts {
+	return charts.Copy()
+}
 
 // Collect collects metrics.
 func (t *Tengine) Collect() map[string]int64 {

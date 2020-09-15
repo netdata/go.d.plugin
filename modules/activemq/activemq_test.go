@@ -133,7 +133,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Client.Timeout.Duration)
 	assert.Equal(t, defaultMaxQueues, job.MaxQueues)
 	assert.Equal(t, defaultMaxTopics, job.MaxTopics)
@@ -165,7 +165,7 @@ func TestActiveMQ_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.HTTP.Request = web.Request{UserURL: ts.URL}
+	job.HTTP.Request = web.Request{URL: ts.URL}
 	job.Webadmin = "webadmin"
 
 	require.True(t, job.Init())
@@ -198,7 +198,7 @@ func TestActiveMQ_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.HTTP.Request = web.Request{UserURL: ts.URL}
+	job.HTTP.Request = web.Request{URL: ts.URL}
 	job.Webadmin = "webadmin"
 
 	require.True(t, job.Init())
@@ -306,7 +306,7 @@ func TestActiveMQ_404(t *testing.T) {
 
 	job := New()
 	job.Webadmin = "webadmin"
-	job.HTTP.Request = web.Request{UserURL: ts.URL}
+	job.HTTP.Request = web.Request{URL: ts.URL}
 
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
@@ -320,7 +320,7 @@ func TestActiveMQ_InvalidData(t *testing.T) {
 
 	mod := New()
 	mod.Webadmin = "webadmin"
-	mod.HTTP.Request = web.Request{UserURL: ts.URL}
+	mod.HTTP.Request = web.Request{URL: ts.URL}
 
 	require.True(t, mod.Init())
 	assert.False(t, mod.Check())

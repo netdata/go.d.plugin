@@ -30,7 +30,9 @@ var (
 func New() *HTTPCheck {
 	config := Config{
 		HTTP: web.HTTP{
-			Client: web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 		AcceptedStatuses: defaultAcceptedStatuses,
 	}
@@ -54,8 +56,9 @@ type client interface {
 // HTTPCheck HTTPCheck module.
 type HTTPCheck struct {
 	module.Base
-	Config           `yaml:",inline"`
-	UpdateEvery      int `yaml:"update_every"`
+	Config      `yaml:",inline"`
+	UpdateEvery int `yaml:"update_every"`
+
 	acceptedStatuses map[int]bool
 	reResponse       *regexp.Regexp
 	client           client
@@ -67,13 +70,8 @@ func (HTTPCheck) Cleanup() {}
 
 // Init makes initialization
 func (hc *HTTPCheck) Init() bool {
-	if err := hc.ParseUserURL(); err != nil {
-		hc.Errorf("error on parsing url '%s' : %v", hc.UserURL, err)
-		return false
-	}
-
-	if hc.URL.Host == "" {
-		hc.Error("URL is not set")
+	if hc.URL == "" {
+		hc.Error("URL not set")
 		return false
 	}
 
@@ -97,10 +95,8 @@ func (hc *HTTPCheck) Init() bool {
 		hc.acceptedStatuses[v] = true
 	}
 
-	// post Init debug info
 	hc.Debugf("using URL %s", hc.URL)
 	hc.Debugf("using HTTP timeout %s", hc.Timeout.Duration)
-
 	hc.Debugf("using accepted HTTP statuses %v", hc.AcceptedStatuses)
 	if hc.reResponse != nil {
 		hc.Debugf("using response match regexp %s", hc.reResponse)
@@ -118,7 +114,6 @@ func (hc HTTPCheck) Charts() *Charts { return charts.Copy() }
 // Collect collects metrics
 func (hc *HTTPCheck) Collect() map[string]int64 {
 	mx, err := hc.collect()
-
 	if err != nil {
 		hc.Error(err)
 	}
@@ -126,6 +121,5 @@ func (hc *HTTPCheck) Collect() map[string]int64 {
 	if len(mx) == 0 {
 		return nil
 	}
-
 	return mx
 }

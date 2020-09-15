@@ -9,7 +9,7 @@ import (
 )
 
 func (p Phpfpm) initClient() (client, error) {
-	if p.UserURL != "" {
+	if p.URL != "" {
 		return p.initHTTPClient()
 	}
 	if p.Socket != "" {
@@ -19,16 +19,13 @@ func (p Phpfpm) initClient() (client, error) {
 }
 
 func (p Phpfpm) initHTTPClient() (*httpClient, error) {
-	if err := p.Request.ParseUserURL(); err != nil {
-		return nil, fmt.Errorf("parse URL: %v", err)
-	}
 	c, err := web.NewHTTPClient(p.Client)
 	if err != nil {
 		return nil, fmt.Errorf("create HTTP client: %v", err)
 	}
 	p.Debugf("using HTTP client, URL: %s", p.URL)
 	p.Debugf("using timeout: %s", p.Timeout.Duration)
-	return newHTTPClient(c, p.Request), nil
+	return newHTTPClient(c, p.Request)
 }
 
 func (p Phpfpm) initSocketClient() (*socketClient, error) {

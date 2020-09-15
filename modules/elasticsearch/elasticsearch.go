@@ -23,7 +23,7 @@ func New() *Elasticsearch {
 		Config: Config{
 			HTTP: web.HTTP{
 				Request: web.Request{
-					UserURL: "http://127.0.0.1:9200",
+					URL: "http://127.0.0.1:9200",
 				},
 				Client: web.Client{
 					Timeout: web.Duration{Duration: time.Second * 5},
@@ -64,7 +64,7 @@ func (es *Elasticsearch) Cleanup() {
 }
 
 func (es *Elasticsearch) Init() bool {
-	err := es.checkConfig()
+	err := es.validateConfig()
 	if err != nil {
 		es.Errorf("check configuration: %v", err)
 		return false

@@ -22,7 +22,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
@@ -42,7 +42,7 @@ func TestNginx_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 }
@@ -50,7 +50,7 @@ func TestNginx_Check(t *testing.T) {
 func TestNginx_CheckNG(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1:38001/us"
+	job.URL = "http://127.0.0.1:38001/us"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -66,7 +66,7 @@ func TestNginx_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -92,7 +92,7 @@ func TestNginx_CollectTengine(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -119,7 +119,7 @@ func TestNginx_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -133,7 +133,7 @@ func TestNginx_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }

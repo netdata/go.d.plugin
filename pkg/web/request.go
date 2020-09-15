@@ -4,14 +4,12 @@ import (
 	"encoding/base64"
 	"io"
 	"net/http"
-	"net/url"
 	"strings"
 )
 
 // Request is a struct that contains the fields that are needed to newHTTPClient *http.Request.
 type Request struct {
-	URL           *url.URL          `yaml:"-"`
-	UserURL       string            `yaml:"url"`
+	URL           string            `yaml:"url"`
 	Body          string            `yaml:"body"`
 	Method        string            `yaml:"method"`
 	Headers       map[string]string `yaml:"headers"`
@@ -23,26 +21,14 @@ type Request struct {
 
 // Copy makes full copy of Request.
 func (r Request) Copy() Request {
-	h := make(map[string]string)
-	for k, v := range r.Headers {
-		h[k] = v
+	if r.Headers != nil {
+		headers := make(map[string]string, len(r.Headers))
+		for k, v := range r.Headers {
+			headers[k] = v
+		}
+		r.Headers = headers
 	}
-
-	var u *url.URL
-	if r.URL != nil {
-		u, _ = url.Parse(r.URL.String())
-	}
-
-	r.URL = u
-	r.Headers = h
-
 	return r
-}
-
-// ParseUserURL parses UserURL into *url.URL and sets URL.
-func (r *Request) ParseUserURL() (err error) {
-	r.URL, err = url.Parse(r.UserURL)
-	return err
 }
 
 // NewHTTPRequest creates a new *http.Requests based on Request fields
@@ -53,12 +39,7 @@ func NewHTTPRequest(req Request) (*http.Request, error) {
 		body = strings.NewReader(req.Body)
 	}
 
-	var u = req.UserURL
-	if req.URL != nil {
-		u = req.URL.String()
-	}
-
-	httpReq, err := http.NewRequest(req.Method, u, body)
+	httpReq, err := http.NewRequest(req.Method, req.URL, body)
 	if err != nil {
 		return nil, err
 	}
@@ -73,12 +54,12 @@ func NewHTTPRequest(req Request) (*http.Request, error) {
 	}
 
 	for k, v := range req.Headers {
-		if k == "host" || k == "Host" {
+		switch k {
+		case "host", "Host":
 			httpReq.Host = v
-			continue
+		default:
+			httpReq.Header.Set(k, v)
 		}
-		httpReq.Header.Set(k, v)
 	}
-
 	return httpReq, nil
 }

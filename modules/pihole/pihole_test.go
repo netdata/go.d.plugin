@@ -27,7 +27,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.IsType(t, (*Pihole)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 	assert.Equal(t, defaultSetupVarsPath, job.SetupVarsPath)
 	assert.Equal(t, defaultTopClients, job.TopClientsEntries)
@@ -261,14 +261,14 @@ func (t testPiholeAPIClient) ForwardDestinations() (*[]client.ForwardDestination
 	return t.forwardDest()
 }
 
-func (t testPiholeAPIClient) TopClients(top int) (*[]client.TopClient, error) {
+func (t testPiholeAPIClient) TopClients(_ int) (*[]client.TopClient, error) {
 	if t.topClients == nil {
 		return nil, errors.New("topClients is <nil>")
 	}
 	return t.topClients()
 }
 
-func (t testPiholeAPIClient) TopItems(top int) (*client.TopItems, error) {
+func (t testPiholeAPIClient) TopItems(_ int) (*client.TopItems, error) {
 	if t.topItems == nil {
 		return nil, errors.New("topItems is <nil>")
 	}

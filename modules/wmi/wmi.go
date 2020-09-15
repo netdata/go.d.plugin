@@ -25,7 +25,9 @@ func init() {
 func New() *WMI {
 	config := Config{
 		HTTP: web.HTTP{
-			Client: web.Client{Timeout: web.Duration{Duration: time.Second * 5}},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second * 5},
+			},
 		},
 	}
 	return &WMI{
@@ -66,7 +68,7 @@ type (
 )
 
 func (w *WMI) validateConfig() error {
-	if w.UserURL == "" {
+	if w.URL == "" {
 		return errors.New("URL is not set")
 	}
 	return nil

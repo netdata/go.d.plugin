@@ -25,7 +25,7 @@ func TestSpringboot2_Collect(t *testing.T) {
 	}))
 	defer ts.Close()
 	job1 := New()
-	job1.HTTP.Request.UserURL = ts.URL + "/actuator/prometheus"
+	job1.HTTP.Request.URL = ts.URL + "/actuator/prometheus"
 	assert.True(t, job1.Init())
 	assert.True(t, job1.Check())
 	assert.EqualValues(
@@ -51,7 +51,7 @@ func TestSpringboot2_Collect(t *testing.T) {
 	)
 
 	job2 := New()
-	job2.HTTP.Request.UserURL = ts.URL + "/actuator/prometheus2"
+	job2.HTTP.Request.URL = ts.URL + "/actuator/prometheus2"
 	assert.True(t, job2.Init())
 	assert.True(t, job2.Check())
 	assert.EqualValues(
@@ -83,7 +83,7 @@ func TestSpringboot2_404(t *testing.T) {
 	}))
 	defer ts.Close()
 	job := New()
-	job.HTTP.Request.UserURL = ts.URL + "/actuator/prometheus"
+	job.HTTP.Request.URL = ts.URL + "/actuator/prometheus"
 
 	job.Init()
 

@@ -21,7 +21,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.IsType(t, (*DockerHub)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 	assert.Len(t, job.Repositories, 0)
 	assert.Nil(t, job.client)
@@ -56,7 +56,7 @@ func TestDockerHub_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	job.Repositories = []string{"name1/repo1", "name2/repo2", "name3/repo3"}
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
@@ -64,7 +64,7 @@ func TestDockerHub_Check(t *testing.T) {
 
 func TestDockerHub_CheckNG(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001/metrics"
+	job.URL = "http://127.0.0.1:38001/metrics"
 	job.Repositories = []string{"name1/repo1", "name2/repo2", "name3/repo3"}
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
@@ -86,7 +86,7 @@ func TestDockerHub_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	job.Repositories = []string{"name1/repo1", "name2/repo2", "name3/repo3"}
 	require.True(t, job.Init())
 	require.True(t, job.Check())
@@ -123,7 +123,7 @@ func TestDockerHub_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	job.Repositories = []string{"name1/repo1", "name2/repo2", "name3/repo3"}
 	require.True(t, job.Init())
 	assert.False(t, job.Check())

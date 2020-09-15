@@ -28,8 +28,12 @@ const (
 func New() *Bind {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				URL: defaultURL,
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 	}
 
@@ -53,6 +57,7 @@ type Config struct {
 type Bind struct {
 	module.Base
 	Config `yaml:",inline"`
+
 	bindAPIClient
 	permitView matcher.Matcher
 	charts     *Charts
@@ -63,33 +68,25 @@ func (Bind) Cleanup() {}
 
 // Init makes initialization.
 func (b *Bind) Init() bool {
-	if err := b.ParseUserURL(); err != nil {
-		b.Errorf("error on parsing url '%s' : %v", b.UserURL, err)
-		return false
-	}
-
-	if b.URL.Host == "" {
-		b.Error("URL is not set")
+	if b.URL == "" {
+		b.Error("URL not set")
 		return false
 	}
 
 	client, err := web.NewHTTPClient(b.Client)
-
 	if err != nil {
 		b.Errorf("error on creating http client : %v", err)
 		return false
 	}
 
-	switch b.URL.Path {
+	switch {
+	case strings.HasSuffix(b.URL, "/xml/v3"): // BIND 9.9+
+		b.bindAPIClient = newXML3Client(client, b.Request)
+	case strings.HasSuffix(b.URL, "/json/v1"): // BIND 9.10+
+		b.bindAPIClient = newJSONClient(client, b.Request)
 	default:
 		b.Errorf("URL %s is wrong, supported endpoints: `/xml/v3`, `/json/v1`", b.URL)
 		return false
-	case "/xml/v3":
-		// BIND 9.9+
-		b.bindAPIClient = newXML3Client(client, b.Request)
-	case "/json/v1":
-		// BIND 9.10+
-		b.bindAPIClient = newJSONClient(client, b.Request)
 	}
 
 	if b.PermitView != "" {
