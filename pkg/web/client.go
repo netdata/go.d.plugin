@@ -6,6 +6,8 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 )
 
 // ErrRedirectAttempted indicates that a redirect occurred.
@@ -13,16 +15,15 @@ var ErrRedirectAttempted = errors.New("redirect")
 
 // Client is a struct that contains the fields that are needed fore creating HTTPClient.
 type Client struct {
-	Timeout           Duration `yaml:"timeout"`              // default is zero (no timeout) must be tuned by modules
-	NotFollowRedirect bool     `yaml:"not_follow_redirects"` // default is follow
+	Timeout           Duration `yaml:"timeout"`
+	NotFollowRedirect bool     `yaml:"not_follow_redirects"`
 	ProxyURL          string   `yaml:"proxy_url"`
-	ClientTLSConfig   `yaml:",inline"`
+	tlscfg.TLSConfig  `yaml:",inline"`
 }
 
 // NewHTTPClient creates new HTTPClient.
 func NewHTTPClient(client Client) (*http.Client, error) {
-	tlsConfig, err := NewTLSConfig(client.ClientTLSConfig)
-
+	tlsConfig, err := tlscfg.NewTLSConfig(client.TLSConfig)
 	if err != nil {
 		return nil, fmt.Errorf("error on creating TLS config : %v", err)
 	}
@@ -48,15 +49,14 @@ func redirectFunc(notFollowRedirect bool) func(req *http.Request, via []*http.Re
 	return nil
 }
 
-func proxyFunc(proxyurl string) func(r *http.Request) (*url.URL, error) {
-	if proxyurl == "" {
+func proxyFunc(rawProxyURL string) func(r *http.Request) (*url.URL, error) {
+	if rawProxyURL == "" {
 		return http.ProxyFromEnvironment
 	}
 
-	proxyURL, err := url.Parse(proxyurl)
+	proxyURL, err := url.Parse(rawProxyURL)
 	if err != nil {
 		return func(_ *http.Request) (*url.URL, error) { return nil, fmt.Errorf("invalid proxy: %v", err) }
 	}
-
 	return func(r *http.Request) (*url.URL, error) { return proxyURL, nil }
 }

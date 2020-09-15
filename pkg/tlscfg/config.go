@@ -1,4 +1,4 @@
-package web
+package tlscfg
 
 import (
 	"crypto/tls"
@@ -7,36 +7,35 @@ import (
 	"io/ioutil"
 )
 
-// ClientTLSConfig represents the standard client TLS config.
-type ClientTLSConfig struct {
+// TLSConfig represents the standard client TLS configuration.
+type TLSConfig struct {
 	TLSCA              string `yaml:"tls_ca"`
 	TLSCert            string `yaml:"tls_cert"`
 	TLSKey             string `yaml:"tls_key"`
 	InsecureSkipVerify bool   `yaml:"tls_skip_verify"`
 }
 
-// NewTLSConfig returns a tls.Config, may be nil without error if TLS is not
-// configured.
-func NewTLSConfig(config ClientTLSConfig) (*tls.Config, error) {
-	if config.TLSCA == "" && config.TLSKey == "" && config.TLSCert == "" && !config.InsecureSkipVerify {
+// NewTLSConfig creates a tls.Config, may be nil without an error if TLS is not configured.
+func NewTLSConfig(cfg TLSConfig) (*tls.Config, error) {
+	if cfg.TLSCA == "" && cfg.TLSKey == "" && cfg.TLSCert == "" && !cfg.InsecureSkipVerify {
 		return nil, nil
 	}
 
 	tlsConfig := &tls.Config{
-		InsecureSkipVerify: config.InsecureSkipVerify,
+		InsecureSkipVerify: cfg.InsecureSkipVerify,
 		Renegotiation:      tls.RenegotiateNever,
 	}
 
-	if config.TLSCA != "" {
-		pool, err := makeCertPool([]string{config.TLSCA})
+	if cfg.TLSCA != "" {
+		pool, err := makeCertPool([]string{cfg.TLSCA})
 		if err != nil {
 			return nil, err
 		}
 		tlsConfig.RootCAs = pool
 	}
 
-	if config.TLSCert != "" && config.TLSKey != "" {
-		if err := loadCertificate(tlsConfig, config.TLSCert, config.TLSKey); err != nil {
+	if cfg.TLSCert != "" && cfg.TLSKey != "" {
+		if err := loadCertificate(tlsConfig, cfg.TLSCert, cfg.TLSKey); err != nil {
 			return nil, err
 		}
 	}

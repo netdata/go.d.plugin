@@ -62,7 +62,7 @@ func TestVSphere_Init_ReturnsFalseIfPasswordNotSet(t *testing.T) {
 func TestVSphere_Init_ReturnsFalseIfClientWrongTLSCA(t *testing.T) {
 	vSphere, _, teardown := prepareVSphereSim(t)
 	defer teardown()
-	vSphere.ClientTLSConfig.TLSCA = "testdata/tls"
+	vSphere.Client.TLSConfig.TLSCA = "testdata/tls"
 
 	assert.False(t, vSphere.Init())
 }
@@ -444,7 +444,7 @@ func prepareVSphereSim(t *testing.T) (vSphere *VSphere, model *simulator.Model, 
 	vSphere.Username = "administrator"
 	vSphere.Password = "password"
 	vSphere.URL = srv.URL.String()
-	vSphere.InsecureSkipVerify = true
+	vSphere.TLSConfig.InsecureSkipVerify = true
 
 	return vSphere, model, teardown
 }

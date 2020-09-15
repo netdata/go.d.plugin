@@ -3,6 +3,7 @@ package unbound
 import (
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -23,7 +24,7 @@ func New() *Unbound {
 		Timeout:    web.Duration{Duration: time.Second},
 		Cumulative: false,
 		UseTLS:     true,
-		ClientTLSConfig: web.ClientTLSConfig{
+		TLSConfig: tlscfg.TLSConfig{
 			TLSCert:            "/etc/unbound/unbound_control.pem",
 			TLSKey:             "/etc/unbound/unbound_control.key",
 			InsecureSkipVerify: true,
@@ -43,12 +44,12 @@ type unboundClient interface {
 
 type (
 	Config struct {
-		Address             string       `yaml:"address"`
-		ConfPath            string       `yaml:"conf_path"`
-		Timeout             web.Duration `yaml:"timeout"`
-		Cumulative          bool         `yaml:"cumulative_stats"`
-		UseTLS              bool         `yaml:"use_tls"`
-		web.ClientTLSConfig `yaml:",inline"`
+		Address          string       `yaml:"address"`
+		ConfPath         string       `yaml:"conf_path"`
+		Timeout          web.Duration `yaml:"timeout"`
+		Cumulative       bool         `yaml:"cumulative_stats"`
+		UseTLS           bool         `yaml:"use_tls"`
+		tlscfg.TLSConfig `yaml:",inline"`
 	}
 	Unbound struct {
 		module.Base

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	cfssllog "github.com/cloudflare/cfssl/log"
@@ -25,20 +26,20 @@ func init() {
 func New() *X509Check {
 	return &X509Check{
 		Config: Config{
-			Timeout:       web.Duration{Duration: time.Second * 2},
-			DaysUntilWarn: 14,
-			DaysUntilCrit: 7,
+			Timeout:           web.Duration{Duration: time.Second * 2},
+			DaysUntilWarn:     14,
+			DaysUntilCritical: 7,
 		},
 	}
 }
 
 type Config struct {
-	web.ClientTLSConfig `yaml:",inline"`
-	Timeout             web.Duration
-	Source              string
-	DaysUntilWarn       int64 `yaml:"days_until_expiration_warning"`
-	DaysUntilCrit       int64 `yaml:"days_until_expiration_critical"`
-	CheckRevocation     bool  `yaml:"check_revocation_status"`
+	Source            string
+	Timeout           web.Duration
+	tlscfg.TLSConfig  `yaml:",inline"`
+	DaysUntilWarn     int64 `yaml:"days_until_expiration_warning"`
+	DaysUntilCritical int64 `yaml:"days_until_expiration_critical"`
+	CheckRevocation   bool  `yaml:"check_revocation_status"`
 }
 
 type X509Check struct {

@@ -9,7 +9,7 @@ import (
 	"github.com/netdata/go.d.plugin/modules/vsphere/client"
 	"github.com/netdata/go.d.plugin/modules/vsphere/discover"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
-	"github.com/netdata/go.d.plugin/pkg/web"
+	tlscfg "github.com/netdata/go.d.plugin/pkg/tlscfg"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -49,11 +49,11 @@ func prepareScraper(t *testing.T) (s *Scraper, res *rs.Resources, teardown func(
 
 func newClient(t *testing.T, vCenterURL *url.URL) *client.Client {
 	c, err := client.New(client.Config{
-		URL:             vCenterURL.String(),
-		User:            "admin",
-		Password:        "password",
-		Timeout:         time.Second * 3,
-		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
+		URL:       vCenterURL.String(),
+		User:      "admin",
+		Password:  "password",
+		Timeout:   time.Second * 3,
+		TLSConfig: tlscfg.TLSConfig{InsecureSkipVerify: true},
 	})
 	require.NoError(t, err)
 	return c

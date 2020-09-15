@@ -37,7 +37,7 @@ func TestVCenter_InitErrorOnValidatingInitParameters(t *testing.T) {
 
 func TestVCenter_InitErrorOnCreatingClient(t *testing.T) {
 	job := testNewVCSA()
-	job.ClientTLSConfig.TLSCA = "testdata/tls"
+	job.Client.TLSConfig.TLSCA = "testdata/tls"
 
 	assert.False(t, job.Init())
 }

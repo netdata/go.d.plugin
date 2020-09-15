@@ -37,7 +37,7 @@ func TestZookeeper_Init(t *testing.T) {
 func TestZookeeper_InitErrorOnCreatingTLSConfig(t *testing.T) {
 	job := New()
 	job.UseTLS = true
-	job.ClientTLSConfig.TLSCA = "testdata/tls"
+	job.TLSConfig.TLSCA = "testdata/tls"
 
 	assert.False(t, job.Init())
 }

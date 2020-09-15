@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -63,7 +63,7 @@ func TestX509Check_Init(t *testing.T) {
 			err:    true,
 		},
 		"nonexistent TLSCA": {
-			config: Config{Source: "https://example.org", ClientTLSConfig: web.ClientTLSConfig{TLSCA: "testdata/tls"}},
+			config: Config{Source: "https://example.org", TLSConfig: tlscfg.TLSConfig{TLSCA: "testdata/tls"}},
 			err:    true,
 		},
 	}
