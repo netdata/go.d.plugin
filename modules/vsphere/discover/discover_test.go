@@ -8,7 +8,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/modules/vsphere/client"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
-	"github.com/netdata/go.d.plugin/pkg/web"
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -117,11 +117,11 @@ func prepareDiscovererSim(t *testing.T) (d *Discoverer, model *simulator.Model, 
 
 func newClient(t *testing.T, vCenterURL *url.URL) *client.Client {
 	c, err := client.New(client.Config{
-		URL:             vCenterURL.String(),
-		User:            "admin",
-		Password:        "password",
-		Timeout:         time.Second * 3,
-		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
+		URL:       vCenterURL.String(),
+		User:      "admin",
+		Password:  "password",
+		Timeout:   time.Second * 3,
+		TLSConfig: tlscfg.TLSConfig{InsecureSkipVerify: true},
 	})
 	require.NoError(t, err)
 	return c

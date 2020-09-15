@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -20,10 +21,10 @@ func init() {
 
 // Config is the Zookeeper module configuration.
 type Config struct {
-	Address             string
-	Timeout             web.Duration `yaml:"timeout"`
-	UseTLS              bool         `yaml:"use_tls"`
-	web.ClientTLSConfig `yaml:",inline"`
+	Address          string
+	Timeout          web.Duration `yaml:"timeout"`
+	UseTLS           bool         `yaml:"use_tls"`
+	tlscfg.TLSConfig `yaml:",inline"`
 }
 
 // New creates Zookeeper with default values.
@@ -53,7 +54,7 @@ func (Zookeeper) Cleanup() {}
 func (z *Zookeeper) createZookeeperFetcher() (err error) {
 	var tlsConf *tls.Config
 	if z.UseTLS {
-		tlsConf, err = web.NewTLSConfig(z.ClientTLSConfig)
+		tlsConf, err = tlscfg.NewTLSConfig(z.TLSConfig)
 		if err != nil {
 			return fmt.Errorf("error on creating tls config : %v", err)
 		}

@@ -39,7 +39,7 @@ func TestVerneMQ_Init_ReturnsFalseIfURLIsNotSet(t *testing.T) {
 
 func TestVerneMQ_Init_ReturnsFalseIfClientWrongTLSCA(t *testing.T) {
 	verneMQ := prepareVerneMQ()
-	verneMQ.ClientTLSConfig.TLSCA = "testdata/tls"
+	verneMQ.Client.TLSConfig.TLSCA = "testdata/tls"
 
 	assert.False(t, verneMQ.Init())
 }

@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -68,7 +69,7 @@ func TestPrometheus_Init(t *testing.T) {
 		"nonexistent TLS CA": {
 			config: Config{HTTP: web.HTTP{
 				Request: web.Request{URL: "http://127.0.0.1:9090/metric"},
-				Client:  web.Client{ClientTLSConfig: web.ClientTLSConfig{TLSCA: "testdata/tls"}}}},
+				Client:  web.Client{TLSConfig: tlscfg.TLSConfig{TLSCA: "testdata/tls"}}}},
 			wantFail: true,
 		},
 	}

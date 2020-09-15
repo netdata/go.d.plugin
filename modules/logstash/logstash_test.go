@@ -44,7 +44,7 @@ func TestLogstash_Init_ErrorOnValidatingConfigURLNotSet(t *testing.T) {
 
 func TestWMI_Init_ErrorOnCreatingClientWrongTLSCA(t *testing.T) {
 	logstash := New()
-	logstash.ClientTLSConfig.TLSCA = "testdata/tls"
+	logstash.Client.TLSConfig.TLSCA = "testdata/tls"
 
 	assert.False(t, logstash.Init())
 }

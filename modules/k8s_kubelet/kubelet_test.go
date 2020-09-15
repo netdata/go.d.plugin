@@ -48,7 +48,7 @@ func TestKubelet_Init_ReadServiceAccountToken(t *testing.T) {
 
 func TestKubelet_InitErrorOnCreatingClientWrongTLSCA(t *testing.T) {
 	job := New()
-	job.ClientTLSConfig.TLSCA = "testdata/tls"
+	job.Client.TLSConfig.TLSCA = "testdata/tls"
 
 	assert.False(t, job.Init())
 }

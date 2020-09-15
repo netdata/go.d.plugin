@@ -42,7 +42,7 @@ func TestWMI_Init_ErrorOnValidatingConfigURLIsNotSet(t *testing.T) {
 func TestWMI_Init_ErrorOnCreatingClientWrongTLSCA(t *testing.T) {
 	wmi := New()
 	wmi.URL = "http://127.0.0.1:38001/metrics"
-	wmi.ClientTLSConfig.TLSCA = "testdata/tls"
+	wmi.Client.TLSConfig.TLSCA = "testdata/tls"
 
 	assert.False(t, wmi.Init())
 }

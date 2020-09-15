@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
@@ -64,10 +64,10 @@ func TestUnbound_Init_SetEverythingFromUnboundConf(t *testing.T) {
 		Timeout:    unbound.Timeout,
 		Cumulative: true,
 		UseTLS:     false,
-		ClientTLSConfig: web.ClientTLSConfig{
+		TLSConfig: tlscfg.TLSConfig{
 			TLSCert:            "/etc/unbound/unbound_control_other.pem",
 			TLSKey:             "/etc/unbound/unbound_control_other.key",
-			InsecureSkipVerify: unbound.InsecureSkipVerify,
+			InsecureSkipVerify: unbound.TLSConfig.InsecureSkipVerify,
 		},
 	}
 
@@ -237,7 +237,7 @@ type mockUnboundClient struct {
 	err  bool
 }
 
-func (m mockUnboundClient) send(command string) ([]string, error) {
+func (m mockUnboundClient) send(_ string) ([]string, error) {
 	if m.err {
 		return nil, errors.New("mock send error")
 	}

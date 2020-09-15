@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/netdata/go.d.plugin/modules/unbound/config"
-	"github.com/netdata/go.d.plugin/pkg/web"
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 )
 
 func (u *Unbound) initConfig() (enabled bool) {
@@ -73,12 +73,12 @@ func (u *Unbound) initClient() (err error) {
 	var tlsCfg *tls.Config
 	useTLS := !isUnixSocket(u.Address) && u.UseTLS
 
-	if useTLS && (u.TLSCert == "" || u.TLSKey == "") {
+	if useTLS && (u.TLSConfig.TLSCert == "" || u.TLSConfig.TLSKey == "") {
 		return errors.New("'tls_cert' or 'tls_key' is missing")
 	}
 
 	if useTLS {
-		if tlsCfg, err = web.NewTLSConfig(u.ClientTLSConfig); err != nil {
+		if tlsCfg, err = tlscfg.NewTLSConfig(u.TLSConfig); err != nil {
 			return err
 		}
 	}

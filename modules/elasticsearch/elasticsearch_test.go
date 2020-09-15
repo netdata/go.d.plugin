@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -127,7 +128,9 @@ func TestElasticsearch_Init(t *testing.T) {
 			wantFail: true,
 			config: Config{
 				HTTP: web.HTTP{
-					Client: web.Client{ClientTLSConfig: web.ClientTLSConfig{TLSCA: "testdata/tls"}},
+					Client: web.Client{
+						TLSConfig: tlscfg.TLSConfig{TLSCA: "testdata/tls"},
+					},
 				}},
 		},
 		"all API calls are disabled": {

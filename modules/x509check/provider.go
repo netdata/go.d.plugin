@@ -11,7 +11,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
+	tlscfg "github.com/netdata/go.d.plugin/pkg/tlscfg"
 )
 
 type provider interface {
@@ -40,7 +40,7 @@ func newProvider(config Config) (provider, error) {
 		return nil, fmt.Errorf("source parse: %v", err)
 	}
 
-	tlsCfg, err := web.NewTLSConfig(config.ClientTLSConfig)
+	tlsCfg, err := tlscfg.NewTLSConfig(config.TLSConfig)
 	if err != nil {
 		return nil, fmt.Errorf("create tls config: %v", err)
 	}

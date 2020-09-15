@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/performance"
@@ -32,7 +32,7 @@ type Config struct {
 	URL      string
 	User     string
 	Password string
-	web.ClientTLSConfig
+	tlscfg.TLSConfig
 	Timeout time.Duration
 }
 
@@ -48,17 +48,17 @@ func newSoapClient(config Config) (*soap.Client, error) {
 		return nil, err
 	}
 	soapURL.User = url.UserPassword(config.User, config.Password)
-	soapClient := soap.NewClient(soapURL, config.InsecureSkipVerify)
+	soapClient := soap.NewClient(soapURL, config.TLSConfig.InsecureSkipVerify)
 
-	tlsConfig, err := web.NewTLSConfig(config.ClientTLSConfig)
+	tlsConfig, err := tlscfg.NewTLSConfig(config.TLSConfig)
 	if err != nil {
 		return nil, err
 	}
 	if tlsConfig != nil && len(tlsConfig.Certificates) > 0 {
 		soapClient.SetCertificate(tlsConfig.Certificates[0])
 	}
-	if config.TLSCA != "" {
-		if err := soapClient.SetRootCAs(config.TLSCA); err != nil {
+	if config.TLSConfig.TLSCA != "" {
+		if err := soapClient.SetRootCAs(config.TLSConfig.TLSCA); err != nil {
 			return nil, err
 		}
 	}

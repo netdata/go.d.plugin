@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -139,11 +139,11 @@ func prepareClient(t *testing.T) (client *Client, teardown func()) {
 
 func newClient(t *testing.T, vCenterURL *url.URL) *Client {
 	client, err := New(Config{
-		URL:             vCenterURL.String(),
-		User:            "admin",
-		Password:        "password",
-		Timeout:         time.Second * 3,
-		ClientTLSConfig: web.ClientTLSConfig{InsecureSkipVerify: true},
+		URL:       vCenterURL.String(),
+		User:      "admin",
+		Password:  "password",
+		Timeout:   time.Second * 3,
+		TLSConfig: tlscfg.TLSConfig{InsecureSkipVerify: true},
 	})
 	require.NoError(t, err)
 	return client
