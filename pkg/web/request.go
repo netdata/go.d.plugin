@@ -21,13 +21,11 @@ type Request struct {
 
 // Copy makes full copy of Request.
 func (r Request) Copy() Request {
-	if r.Headers != nil {
-		headers := make(map[string]string, len(r.Headers))
-		for k, v := range r.Headers {
-			headers[k] = v
-		}
-		r.Headers = headers
+	headers := make(map[string]string, len(r.Headers))
+	for k, v := range r.Headers {
+		headers[k] = v
 	}
+	r.Headers = headers
 	return r
 }
 
