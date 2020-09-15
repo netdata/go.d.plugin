@@ -39,7 +39,7 @@ func (c *client) queryFullStatus() (*FullStatus, error) {
 func (c *client) doWithDecode(dst interface{}, decode decodeFunc, request web.Request) error {
 	req, err := web.NewHTTPRequest(request)
 	if err != nil {
-		return fmt.Errorf("error on creating http request to %s : %v", request.UserURL, err)
+		return fmt.Errorf("error on creating http request to %s : %v", request.URL, err)
 	}
 
 	resp, err := c.doOK(req)

@@ -19,10 +19,10 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 
 	switch {
 	case len(pms) == 0:
-		p.Warningf("endpoint '%s' returned 0 time series", p.UserURL)
+		p.Warningf("endpoint '%s' returned 0 time series", p.URL)
 		return nil, nil
 	case len(pms) > p.MaxTS:
-		p.Warningf("endpoint '%s' returned %d time series, limit is %d", p.UserURL, len(pms), p.MaxTS)
+		p.Warningf("endpoint '%s' returned %d time series, limit is %d", p.URL, len(pms), p.MaxTS)
 		return nil, nil
 	}
 

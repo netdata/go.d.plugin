@@ -35,8 +35,12 @@ const (
 func New() *Consul {
 	return &Consul{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				URL: defaultURL,
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 		MaxChecks:    defaultMaxChecks,
 		activeChecks: make(map[string]bool),
@@ -65,18 +69,12 @@ func (Consul) Cleanup() {}
 
 // Init makes initialization.
 func (c *Consul) Init() bool {
-	if err := c.Request.ParseUserURL(); err != nil {
-		c.Errorf("error on parsing url '%s' : %v", c.UserURL, err)
-		return false
-	}
-
-	if c.URL.Host == "" {
-		c.Error("URL is not set")
+	if c.URL == "" {
+		c.Error("URL not set")
 		return false
 	}
 
 	client, err := web.NewHTTPClient(c.Client)
-
 	if err != nil {
 		c.Error(err)
 		return false
@@ -121,13 +119,11 @@ func (c *Consul) Collect() map[string]int64 {
 
 func (c *Consul) collectLocalChecks(metrics map[string]int64) error {
 	checks, err := c.apiClient.localChecks()
-
 	if err != nil {
 		return err
 	}
 
 	c.processLocalChecks(checks, metrics)
-
 	return nil
 }
 

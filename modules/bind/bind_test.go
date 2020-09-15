@@ -19,7 +19,7 @@ func TestNew(t *testing.T) {
 	job := New()
 	assert.IsType(t, (*Bind)(nil), job)
 	assert.NotNil(t, job.charts)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
@@ -33,9 +33,9 @@ func TestBind_Init(t *testing.T) {
 
 	//NG
 	job = New()
-	job.UserURL = ""
+	job.URL = ""
 	assert.False(t, job.Init())
-	job.UserURL = defaultURL[:len(defaultURL)-1]
+	job.URL = defaultURL[:len(defaultURL)-1]
 	assert.False(t, job.Init())
 }
 
@@ -50,7 +50,7 @@ func TestBind_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/json/v1"
+	job.URL = ts.URL + "/json/v1"
 
 	require.True(t, job.Init())
 	require.True(t, job.Check())
@@ -59,7 +59,7 @@ func TestBind_Check(t *testing.T) {
 func TestBind_CheckNG(t *testing.T) {
 	job := New()
 
-	job.UserURL = "http://127.0.0.1:38001/xml/v3"
+	job.URL = "http://127.0.0.1:38001/xml/v3"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -77,7 +77,7 @@ func TestBind_CollectJSON(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/json/v1"
+	job.URL = ts.URL + "/json/v1"
 	job.PermitView = "*"
 
 	require.True(t, job.Init())
@@ -255,7 +255,7 @@ func TestBind_CollectXML3(t *testing.T) {
 
 	job := New()
 	job.PermitView = "*"
-	job.UserURL = ts.URL + "/xml/v3"
+	job.URL = ts.URL + "/xml/v3"
 
 	require.True(t, job.Init())
 	require.True(t, job.Check())
@@ -501,7 +501,7 @@ func TestBind_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/json/v1"
+	job.URL = ts.URL + "/json/v1"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -511,7 +511,7 @@ func TestBind_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/json/v1"
+	job.URL = ts.URL + "/json/v1"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }

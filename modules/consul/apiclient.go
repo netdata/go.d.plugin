@@ -6,6 +6,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"path"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
@@ -41,15 +43,12 @@ func (a *apiClient) localChecks() (map[string]*agentCheck, error) {
 	}
 
 	resp, err := a.doRequestOK(req)
-
 	defer closeBody(resp)
-
 	if err != nil {
 		return nil, err
 	}
 
 	var checks map[string]*agentCheck
-
 	if err = json.NewDecoder(resp.Body).Decode(&checks); err != nil {
 		return nil, fmt.Errorf("error on decoding resp from %s : %v", req.URL, err)
 	}
@@ -72,12 +71,16 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 
 func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
 	req := a.request.Copy()
-	req.URL.Path = urlPath
+	u, err := url.Parse(req.URL)
+	if err != nil {
+		return nil, err
+	}
 
+	u.Path = path.Join(u.Path, urlPath)
+	req.URL = u.String()
 	if a.aclToken != "" {
 		req.Headers["X-Consul-Token"] = a.aclToken
 	}
-
 	return web.NewHTTPRequest(req)
 }
 

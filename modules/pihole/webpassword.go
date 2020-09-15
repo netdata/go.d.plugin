@@ -12,7 +12,7 @@ func (p *Pihole) webPassword() string {
 	if p.Password != "" {
 		return p.Password
 	}
-	if !isLocalHost(p.UserURL) {
+	if !isLocalHost(p.URL) {
 		p.Info("abort web password auto detection, host is not localhost")
 		return ""
 	}

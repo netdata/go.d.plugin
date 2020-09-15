@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 	assert.IsType(t, (*Fluentd)(nil), job)
 	assert.NotNil(t, job.charts)
 	assert.NotNil(t, job.activePlugins)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
@@ -29,24 +29,26 @@ func TestFluentd_Init(t *testing.T) {
 
 	//NG
 	job = New()
-	job.UserURL = ""
+	job.URL = ""
 	assert.False(t, job.Init())
 }
 
 func TestFluentd_Check(t *testing.T) {
-	ts := httptest.NewServer(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write(testDataPlugins) }))
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write(testDataPlugins)
+		}))
 	defer ts.Close()
 
 	// OK
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
 	// NG
 	job = New()
-	job.UserURL = "http://127.0.0.1:38001/api/plugins.json"
+	job.URL = "http://127.0.0.1:38001/api/plugins.json"
 	require.True(t, job.Init())
 	require.False(t, job.Check())
 }
@@ -60,12 +62,14 @@ func TestFluentd_Cleanup(t *testing.T) {
 }
 
 func TestFluentd_Collect(t *testing.T) {
-	ts := httptest.NewServer(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write(testDataPlugins) }))
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write(testDataPlugins)
+		}))
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 
 	require.True(t, job.Init())
 	require.True(t, job.Check())
@@ -83,21 +87,27 @@ func TestFluentd_Collect(t *testing.T) {
 }
 
 func TestFluentd_InvalidData(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write([]byte("hello and goodbye")) }))
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte("hello and goodbye"))
+		}))
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
 
 func TestFluentd_404(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(404) }))
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(404)
+		}))
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }

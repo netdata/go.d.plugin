@@ -22,11 +22,13 @@ func New() *RabbitMQ {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL:  "http://localhost:15672",
+				URL:      "http://localhost:15672",
 				Username: "guest",
 				Password: "guest",
 			},
-			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second},
+			},
 		},
 	}
 
@@ -56,17 +58,12 @@ type RabbitMQ struct {
 func (RabbitMQ) Cleanup() {}
 
 func (r RabbitMQ) createClient() (*client, error) {
-	if err := r.ParseUserURL(); err != nil {
-		return nil, fmt.Errorf("error on parsing url '%s' : %v", r.UserURL, err)
-	}
-
 	httpClient, err := web.NewHTTPClient(r.Client)
 	if err != nil {
 		return nil, fmt.Errorf("error on creating http client : %v", err)
 	}
 
-	client := newClient(httpClient, r.Request)
-	return client, nil
+	return newClient(httpClient, r.Request), nil
 }
 
 // Init makes initialization.

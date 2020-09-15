@@ -62,14 +62,14 @@ func TestKubelet_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 }
 
 func TestKubelet_Check_ConnectionRefused(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001/metrics"
+	job.URL = "http://127.0.0.1:38001/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -83,7 +83,7 @@ func TestKubelet_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -182,7 +182,7 @@ func TestKubelet_Collect_ReceiveInvalidResponse(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -196,7 +196,7 @@ func TestKubelet_Collect_Receive404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }

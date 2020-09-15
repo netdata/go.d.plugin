@@ -3,11 +3,12 @@ package activemq
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/netdata/go.d.plugin/pkg/web"
 	"io"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/netdata/go.d.plugin/pkg/web"
+	"net/url"
+	"path"
 )
 
 type topics struct {
@@ -117,8 +118,12 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 
 func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
 	req := a.request.Copy()
-	req.URL.Path = urlPath
-
+	u, err := url.Parse(req.URL)
+	if err != nil {
+		return nil, err
+	}
+	u.Path = path.Join(u.Path, urlPath)
+	req.URL = u.String()
 	return web.NewHTTPRequest(req)
 }
 

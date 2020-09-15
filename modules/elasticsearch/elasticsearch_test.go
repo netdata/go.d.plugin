@@ -60,7 +60,7 @@ func TestElasticsearch_Init(t *testing.T) {
 			),
 			config: Config{
 				HTTP: web.HTTP{
-					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+					Request: web.Request{URL: "http://127.0.0.1:38001"},
 				},
 				DoNodeStats:     true,
 				DoClusterHealth: true,
@@ -72,7 +72,7 @@ func TestElasticsearch_Init(t *testing.T) {
 			wantNumOfCharts: len(nodeCharts),
 			config: Config{
 				HTTP: web.HTTP{
-					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+					Request: web.Request{URL: "http://127.0.0.1:38001"},
 				},
 				DoNodeStats:     true,
 				DoClusterHealth: false,
@@ -84,7 +84,7 @@ func TestElasticsearch_Init(t *testing.T) {
 			wantNumOfCharts: len(clusterHealthCharts),
 			config: Config{
 				HTTP: web.HTTP{
-					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+					Request: web.Request{URL: "http://127.0.0.1:38001"},
 				},
 				DoNodeStats:     false,
 				DoClusterHealth: true,
@@ -96,7 +96,7 @@ func TestElasticsearch_Init(t *testing.T) {
 			wantNumOfCharts: len(clusterStatsCharts),
 			config: Config{
 				HTTP: web.HTTP{
-					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+					Request: web.Request{URL: "http://127.0.0.1:38001"},
 				},
 				DoNodeStats:     false,
 				DoClusterHealth: false,
@@ -108,7 +108,7 @@ func TestElasticsearch_Init(t *testing.T) {
 			wantNumOfCharts: len(nodeIndicesStatsCharts),
 			config: Config{
 				HTTP: web.HTTP{
-					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+					Request: web.Request{URL: "http://127.0.0.1:38001"},
 				},
 				DoNodeStats:     false,
 				DoClusterHealth: false,
@@ -120,7 +120,7 @@ func TestElasticsearch_Init(t *testing.T) {
 			wantFail: true,
 			config: Config{
 				HTTP: web.HTTP{
-					Request: web.Request{UserURL: ""},
+					Request: web.Request{URL: ""},
 				}},
 		},
 		"invalid TLSCA": {
@@ -134,7 +134,7 @@ func TestElasticsearch_Init(t *testing.T) {
 			wantFail: true,
 			config: Config{
 				HTTP: web.HTTP{
-					Request: web.Request{UserURL: "http://127.0.0.1:38001"},
+					Request: web.Request{URL: "http://127.0.0.1:38001"},
 				},
 				DoNodeStats:     false,
 				DoClusterHealth: false,
@@ -550,7 +550,7 @@ func prepareElasticsearch(t *testing.T, createES func() *Elasticsearch) (es *Ela
 	srv := prepareElasticsearchEndpoint()
 
 	es = createES()
-	es.UserURL = srv.URL
+	es.URL = srv.URL
 	require.True(t, es.Init())
 
 	return es, srv.Close
@@ -567,7 +567,7 @@ func prepareElasticsearchInvalidData(t *testing.T) (*Elasticsearch, func()) {
 			_, _ = w.Write([]byte("hello and\n goodbye"))
 		}))
 	es := New()
-	es.UserURL = srv.URL
+	es.URL = srv.URL
 	require.True(t, es.Init())
 
 	return es, srv.Close
@@ -580,7 +580,7 @@ func prepareElasticsearch404(t *testing.T) (*Elasticsearch, func()) {
 			w.WriteHeader(http.StatusNotFound)
 		}))
 	es := New()
-	es.UserURL = srv.URL
+	es.URL = srv.URL
 	require.True(t, es.Init())
 
 	return es, srv.Close
@@ -589,7 +589,7 @@ func prepareElasticsearch404(t *testing.T) (*Elasticsearch, func()) {
 func prepareElasticsearchConnectionRefused(t *testing.T) (*Elasticsearch, func()) {
 	t.Helper()
 	es := New()
-	es.UserURL = "http://127.0.0.1:38001"
+	es.URL = "http://127.0.0.1:38001"
 	require.True(t, es.Init())
 
 	return es, func() {}

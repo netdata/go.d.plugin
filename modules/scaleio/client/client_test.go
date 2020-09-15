@@ -109,7 +109,7 @@ func prepareSrvClient(t *testing.T) (*httptest.Server, *Client) {
 		Statistics: testStatistics,
 	})
 	client, err := New(web.Client{}, web.Request{
-		UserURL:  srv.URL,
+		URL:      srv.URL,
 		Username: testUser,
 		Password: testPassword,
 	})

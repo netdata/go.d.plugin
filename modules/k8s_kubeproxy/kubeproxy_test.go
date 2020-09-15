@@ -16,7 +16,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.IsType(t, (*KubeProxy)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
@@ -28,7 +28,7 @@ func TestKubeProxy_Init(t *testing.T) { assert.True(t, New().Init()) }
 
 func TestKubeProxy_InitNG(t *testing.T) {
 	job := New()
-	job.UserURL = ""
+	job.URL = ""
 	assert.False(t, job.Init())
 }
 
@@ -41,14 +41,14 @@ func TestKubeProxy_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 }
 
 func TestKubeProxy_CheckNG(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001/metrics"
+	job.URL = "http://127.0.0.1:38001/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -62,7 +62,7 @@ func TestKubeProxy_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -105,7 +105,7 @@ func TestKubeProxy_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -119,7 +119,7 @@ func TestKubeProxy_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }

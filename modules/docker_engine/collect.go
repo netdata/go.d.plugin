@@ -18,7 +18,7 @@ func (de *DockerEngine) collect() (map[string]int64, error) {
 	}
 
 	if !isDockerEngineMetrics(pms) {
-		return nil, fmt.Errorf("'%s' returned non docker engine metrics", de.UserURL)
+		return nil, fmt.Errorf("'%s' returned non docker engine metrics", de.URL)
 	}
 
 	mx := de.collectMetrics(pms)

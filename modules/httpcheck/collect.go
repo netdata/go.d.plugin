@@ -25,7 +25,7 @@ const (
 func (hc *HTTPCheck) collect() (map[string]int64, error) {
 	req, err := web.NewHTTPRequest(hc.Request)
 	if err != nil {
-		return nil, fmt.Errorf("error on creating HTTP requests to %s : %v", hc.Request.UserURL, err)
+		return nil, fmt.Errorf("error on creating HTTP requests to %s : %v", hc.Request.URL, err)
 	}
 
 	var mx metrics

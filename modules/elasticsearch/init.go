@@ -9,8 +9,8 @@ import (
 	"github.com/netdata/go-orchestrator/module"
 )
 
-func (es Elasticsearch) checkConfig() error {
-	if es.UserURL == "" {
+func (es Elasticsearch) validateConfig() error {
+	if es.URL == "" {
 		return errors.New("URL not set")
 	}
 	if !(es.DoNodeStats || es.DoClusterHealth || es.DoClusterStats || es.DoIndicesStats) {

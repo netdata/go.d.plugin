@@ -29,7 +29,7 @@ func TestHTTPCheck_Cleanup(t *testing.T) { New().Cleanup() }
 func TestHTTPCheck_Init(t *testing.T) {
 	job := New()
 
-	job.UserURL = testURL
+	job.URL = testURL
 	assert.True(t, job.Init())
 	assert.NotNil(t, job.client)
 }
@@ -38,14 +38,14 @@ func TestHTTPCheck_InitNG(t *testing.T) {
 	job := New()
 
 	assert.False(t, job.Init())
-	job.UserURL = testURL
+	job.URL = testURL
 	job.ResponseMatch = "(?:qwe))"
 	assert.False(t, job.Init())
 }
 
 func TestHTTPCheck_Check(t *testing.T) {
 	job := New()
-	job.UserURL = testURL
+	job.URL = testURL
 
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
@@ -59,7 +59,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 	job := New()
 	body := "hello"
 
-	job.UserURL = testURL
+	job.URL = testURL
 	job.ResponseMatch = body
 	job.UpdateEvery = 15
 	require.True(t, job.Init())
@@ -85,7 +85,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 func TestHTTPCheck_Collect_TimeoutError(t *testing.T) {
 	job := New()
 
-	job.UserURL = testURL
+	job.URL = testURL
 	require.True(t, job.Init())
 
 	job.client = newClientFunc(nil, timeoutError{})
@@ -147,7 +147,7 @@ func TestHTTPCheck_Collect_BadContentError(t *testing.T) {
 	job := New()
 	body := "hello"
 
-	job.UserURL = testURL
+	job.URL = testURL
 	job.ResponseMatch = "not match"
 	require.True(t, job.Init())
 
@@ -169,7 +169,7 @@ func TestHTTPCheck_Collect_BadContentError(t *testing.T) {
 func TestHTTPCheck_Collect_BadStatusError(t *testing.T) {
 	job := New()
 
-	job.UserURL = testURL
+	job.URL = testURL
 	require.True(t, job.Init())
 
 	resp := &http.Response{StatusCode: http.StatusBadGateway}
@@ -186,7 +186,7 @@ func TestHTTPCheck_Collect_InState(t *testing.T) {
 	goodBody := "hello"
 	badBody := "goodbye"
 
-	job.UserURL = testURL
+	job.URL = testURL
 	job.ResponseMatch = goodBody
 	job.UpdateEvery = 15
 	require.True(t, job.Init())

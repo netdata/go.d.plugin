@@ -25,8 +25,12 @@ const (
 func New() *PHPDaemon {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				URL: defaultURL,
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 	}
 
@@ -63,13 +67,13 @@ func (p *PHPDaemon) Init() bool {
 
 	_, err = web.NewHTTPRequest(p.Request)
 	if err != nil {
-		p.Errorf("error on creating http request to %s : %v", p.UserURL, err)
+		p.Errorf("error on creating http request to %s : %v", p.URL, err)
 		return false
 	}
 
 	p.client = newAPIClient(httpClient, p.Request)
 
-	p.Debugf("using URL %s", p.UserURL)
+	p.Debugf("using URL %s", p.URL)
 	p.Debugf("using timeout: %s", p.Timeout.Duration)
 
 	return true
@@ -83,6 +87,7 @@ func (p *PHPDaemon) Check() bool {
 		return false
 	}
 	if _, ok := mx["uptime"]; ok {
+		// TODO: remove panic
 		panicIf(p.charts.Add(uptimeChart.Copy()))
 	}
 

@@ -6,6 +6,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"path"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
@@ -117,7 +119,13 @@ func (a client) doRequestOK(req *http.Request) (resp *http.Response, err error) 
 
 func (a client) createRequest(urlPath string) (*http.Request, error) {
 	req := a.request.Copy()
-	req.URL.Path = urlPath
+	u, err := url.Parse(req.URL)
+	if err != nil {
+		return nil, err
+	}
+
+	u.Path = path.Join(u.Path, urlPath)
+	req.URL = u.String()
 	return web.NewHTTPRequest(req)
 }
 

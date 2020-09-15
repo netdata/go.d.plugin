@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -46,8 +47,12 @@ type infoSystem struct {
 func New() *Solr {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				URL: defaultURL,
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 	}
 	return &Solr{
@@ -81,25 +86,18 @@ func (Solr) Cleanup() {}
 
 // Init makes initialization
 func (s *Solr) Init() bool {
-	if err := s.ParseUserURL(); err != nil {
-		s.Errorf("error on parsing url '%s' : %v", s.UserURL, err)
-		return false
-	}
-
-	if s.URL.Host == "" {
-		s.Error("URL is not set")
+	if s.URL == "" {
+		s.Error("URL not set")
 		return false
 	}
 
 	client, err := web.NewHTTPClient(s.Client)
-
 	if err != nil {
 		s.Error(err)
 		return false
 	}
 
 	s.client = client
-
 	return true
 }
 
@@ -191,8 +189,14 @@ func (s *Solr) getVersion() error {
 
 func createRequest(req web.Request, urlPath, urlQuery string) (*http.Request, error) {
 	r := req.Copy()
-	r.URL.Path = urlPath
-	r.URL.RawQuery = urlQuery
+	u, err := url.Parse(r.URL)
+	if err != nil {
+		return nil, err
+	}
+
+	u.Path = urlPath
+	u.RawQuery = urlQuery
+	r.URL = u.String()
 	return web.NewHTTPRequest(r)
 }
 

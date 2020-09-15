@@ -30,8 +30,12 @@ func init() {
 func New() *KubeProxy {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				URL: defaultURL,
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 	}
 	return &KubeProxy{
@@ -59,13 +63,8 @@ func (KubeProxy) Cleanup() {}
 
 // Init makes initialization.
 func (kp *KubeProxy) Init() bool {
-	if err := kp.ParseUserURL(); err != nil {
-		kp.Errorf("error on parsing url '%s' : %v", kp.UserURL, err)
-		return false
-	}
-
-	if kp.URL.Host == "" {
-		kp.Error("URL is not set")
+	if kp.URL == "" {
+		kp.Error("URL not set")
 		return false
 	}
 

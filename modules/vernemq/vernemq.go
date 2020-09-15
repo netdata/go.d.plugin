@@ -22,9 +22,11 @@ func New() *VerneMQ {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: "http://127.0.0.1:8888/metrics",
+				URL: "http://127.0.0.1:8888/metrics",
 			},
-			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second},
+			},
 		},
 	}
 
@@ -55,7 +57,7 @@ type (
 func (c cache) hasP(v string) bool { ok := c[v]; c[v] = true; return ok }
 
 func (v VerneMQ) validateConfig() error {
-	if v.UserURL == "" {
+	if v.URL == "" {
 		return errors.New("URL is not set")
 	}
 	return nil

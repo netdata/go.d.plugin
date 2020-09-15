@@ -87,15 +87,12 @@ type apiClient struct {
 
 func (a apiClient) getStatus() (*tengineStatus, error) {
 	req, err := web.NewHTTPRequest(a.request)
-
 	if err != nil {
 		return nil, fmt.Errorf("error on creating request : %v", err)
 	}
 
 	resp, err := a.doRequestOK(req)
-
 	defer closeBody(resp)
-
 	if err != nil {
 		return nil, err
 	}

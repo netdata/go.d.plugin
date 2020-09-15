@@ -49,7 +49,7 @@ func TestHDFS_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	assert.True(t, job.Check())
@@ -65,7 +65,7 @@ func TestHDFS_CheckDataNode(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	assert.True(t, job.Check())
@@ -81,7 +81,7 @@ func TestHDFS_CheckNameNode(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	assert.True(t, job.Check())
@@ -97,7 +97,7 @@ func TestHDFS_CheckErrorOnNodeTypeDetermination(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	assert.False(t, job.Check())
@@ -105,7 +105,7 @@ func TestHDFS_CheckErrorOnNodeTypeDetermination(t *testing.T) {
 
 func TestHDFS_CheckNoResponse(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001/jmx"
+	job.URL = "http://127.0.0.1:38001/jmx"
 	require.True(t, job.Init())
 
 	assert.False(t, job.Check())
@@ -148,7 +148,7 @@ func TestHDFS_CollectDataNode(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -200,7 +200,7 @@ func TestHDFS_CollectNameNode(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	require.True(t, job.Check())
 
@@ -259,7 +259,7 @@ func TestHDFS_CollectUnknownNode(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	assert.Panics(t, func() { _ = job.Collect() })
@@ -267,7 +267,7 @@ func TestHDFS_CollectUnknownNode(t *testing.T) {
 
 func TestHDFS_CollectNoResponse(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001/jmx"
+	job.URL = "http://127.0.0.1:38001/jmx"
 	require.True(t, job.Init())
 
 	assert.Nil(t, job.Collect())
@@ -282,7 +282,7 @@ func TestHDFS_CollectReceiveInvalidResponse(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	assert.Nil(t, job.Collect())
@@ -297,7 +297,7 @@ func TestHDFS_CollectReceive404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	assert.Nil(t, job.Collect())

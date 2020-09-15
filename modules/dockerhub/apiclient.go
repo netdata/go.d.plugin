@@ -6,6 +6,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"path"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
@@ -35,15 +37,12 @@ func (a apiClient) getRepository(repoName string) (*repository, error) {
 	}
 
 	resp, err := a.doRequestOK(req)
-
 	defer closeBody(resp)
-
 	if err != nil {
 		return nil, err
 	}
 
 	var repo repository
-
 	if err := json.NewDecoder(resp.Body).Decode(&repo); err != nil {
 		return nil, fmt.Errorf("error on parsing response from %s : %v", req.URL, err)
 	}
@@ -65,7 +64,13 @@ func (a apiClient) doRequestOK(req *http.Request) (*http.Response, error) {
 
 func (a apiClient) createRequest(urlPath string) (*http.Request, error) {
 	req := a.request.Copy()
-	req.URL.Path = urlPath
+	u, err := url.Parse(req.URL)
+	if err != nil {
+		return nil, err
+	}
+
+	u.Path = path.Join(u.Path, urlPath)
+	req.URL = u.String()
 	return web.NewHTTPRequest(req)
 }
 

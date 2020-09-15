@@ -28,7 +28,7 @@ func TestNew(t *testing.T) {
 
 func TestWMI_Init(t *testing.T) {
 	wmi := New()
-	wmi.UserURL = "http://127.0.0.1:38001/metrics"
+	wmi.URL = "http://127.0.0.1:38001/metrics"
 
 	assert.True(t, wmi.Init())
 }
@@ -41,7 +41,7 @@ func TestWMI_Init_ErrorOnValidatingConfigURLIsNotSet(t *testing.T) {
 
 func TestWMI_Init_ErrorOnCreatingClientWrongTLSCA(t *testing.T) {
 	wmi := New()
-	wmi.UserURL = "http://127.0.0.1:38001/metrics"
+	wmi.URL = "http://127.0.0.1:38001/metrics"
 	wmi.ClientTLSConfig.TLSCA = "testdata/tls"
 
 	assert.False(t, wmi.Init())
@@ -56,7 +56,7 @@ func TestWMI_Check(t *testing.T) {
 
 func TestWMI_Check_ErrorOnCollectConnectionRefused(t *testing.T) {
 	wmi := New()
-	wmi.UserURL = "http://127.0.0.1:38001/metrics"
+	wmi.URL = "http://127.0.0.1:38001/metrics"
 	require.True(t, wmi.Init())
 
 	assert.False(t, wmi.Check())
@@ -374,7 +374,7 @@ func TestWMI_Collect_Partial(t *testing.T) {
 
 func TestWMI_CollectNoResponse(t *testing.T) {
 	wmi := New()
-	wmi.UserURL = "http://127.0.0.1:38001/jmx"
+	wmi.URL = "http://127.0.0.1:38001/jmx"
 	require.True(t, wmi.Init())
 
 	assert.Nil(t, wmi.Collect())
@@ -513,7 +513,7 @@ func prepareClientServerFullData(t *testing.T) (*WMI, *httptest.Server) {
 		}))
 
 	wmi := New()
-	wmi.UserURL = ts.URL
+	wmi.URL = ts.URL
 	require.True(t, wmi.Init())
 	return wmi, ts
 }
@@ -526,7 +526,7 @@ func prepareClientServerPartialData(t *testing.T) (*WMI, *httptest.Server) {
 		}))
 
 	wmi := New()
-	wmi.UserURL = ts.URL
+	wmi.URL = ts.URL
 	require.True(t, wmi.Init())
 	return wmi, ts
 }
@@ -539,7 +539,7 @@ func prepareClientServerInvalidResponse(t *testing.T) (*WMI, *httptest.Server) {
 		}))
 
 	wmi := New()
-	wmi.UserURL = ts.URL
+	wmi.URL = ts.URL
 	require.True(t, wmi.Init())
 	return wmi, ts
 }
@@ -552,7 +552,7 @@ func prepareClientServerResponse404(t *testing.T) (*WMI, *httptest.Server) {
 		}))
 
 	wmi := New()
-	wmi.UserURL = ts.URL
+	wmi.URL = ts.URL
 	require.True(t, wmi.Init())
 	return wmi, ts
 }

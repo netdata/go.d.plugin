@@ -6,6 +6,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"path"
 	"strconv"
 	"strings"
 	"sync"
@@ -74,9 +76,6 @@ Relationships:
 func New(client web.Client, request web.Request) (*Client, error) {
 	httpClient, err := web.NewHTTPClient(client)
 	if err != nil {
-		return nil, err
-	}
-	if err = request.ParseUserURL(); err != nil {
 		return nil, err
 	}
 	return &Client{
@@ -162,37 +161,49 @@ func (c *Client) Instances() (Instances, error) {
 
 func (c Client) createLoginRequest() web.Request {
 	req := c.Request.Copy()
-	req.URL.Path = "/api/login"
+	u, _ := url.Parse(req.URL)
+	u.Path = path.Join(u.Path, "/api/login")
+	req.URL = u.String()
 	return req
 }
 
 func (c Client) createLogoutRequest() web.Request {
 	req := c.Request.Copy()
-	req.URL.Path = "/api/logout"
+	u, _ := url.Parse(req.URL)
+	u.Path = path.Join(u.Path, "/api/logout")
+	req.URL = u.String()
 	req.Password = c.token.get()
 	return req
 }
 
 func (c Client) createAPIVersionRequest() web.Request {
 	req := c.Request.Copy()
-	req.URL.Path = "/api/version"
+	u, _ := url.Parse(req.URL)
+	u.Path = path.Join(u.Path, "/api/version")
+	req.URL = u.String()
 	req.Password = c.token.get()
 	return req
 }
 
 func (c Client) createSelectedStatisticsRequest(query []byte) web.Request {
 	req := c.Request.Copy()
-	req.URL.Path = "/api/instances/querySelectedStatistics"
+	u, _ := url.Parse(req.URL)
+	u.Path = path.Join(u.Path, "/api/instances/querySelectedStatistics")
+	req.URL = u.String()
 	req.Password = c.token.get()
 	req.Method = http.MethodPost
-	req.Headers["Content-Type"] = "application/json"
+	req.Headers = map[string]string{
+		"Content-Type": "application/json",
+	}
 	req.Body = string(query)
 	return req
 }
 
 func (c Client) createInstancesRequest() web.Request {
 	req := c.Request.Copy()
-	req.URL.Path = "/api/instances"
+	u, _ := url.Parse(req.URL)
+	u.Path = path.Join(u.Path, "/api/instances")
+	req.URL = u.String()
 	req.Password = c.token.get()
 	return req
 }

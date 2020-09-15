@@ -51,7 +51,7 @@ func TestPhpfpm_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	job.Init()
 	require.True(t, job.Init())
 
@@ -62,7 +62,7 @@ func TestPhpfpm_Check(t *testing.T) {
 
 func TestPhpfpm_CheckReturnsFalseOnFailure(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001/us"
+	job.URL = "http://127.0.0.1:38001/us"
 	require.True(t, job.Init())
 
 	got := job.Check()
@@ -87,7 +87,7 @@ func TestPhpfpm_CollectJSON(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/?json"
+	job.URL = ts.URL + "/?json"
 	require.True(t, job.Init())
 
 	got := job.Collect()
@@ -112,7 +112,7 @@ func TestPhpfpm_CollectJSONFull(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/?json"
+	job.URL = ts.URL + "/?json"
 	require.True(t, job.Init())
 
 	got := job.Collect()
@@ -146,7 +146,7 @@ func TestPhpfpm_CollectNoIdleProcessesJSONFull(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/?json"
+	job.URL = ts.URL + "/?json"
 	require.True(t, job.Init())
 
 	got := job.Collect()
@@ -171,7 +171,7 @@ func TestPhpfpm_CollectText(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	got := job.Collect()
@@ -196,7 +196,7 @@ func TestPhpfpm_CollectTextFull(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	got := job.Collect()
@@ -230,7 +230,7 @@ func TestPhpfpm_CollectReturnsNothingWhenInvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	got := job.Collect()
@@ -247,7 +247,7 @@ func TestPhpfpm_CollectReturnsNothingWhenEmptyData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	got := job.Collect()
@@ -264,7 +264,7 @@ func TestPhpfpm_CollectReturnsNothingWhenBadStatusCode(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 
 	got := job.Collect()

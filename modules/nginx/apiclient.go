@@ -59,21 +59,17 @@ type apiClient struct {
 
 func (a apiClient) getStubStatus() (*stubStatus, error) {
 	req, err := web.NewHTTPRequest(a.request)
-
 	if err != nil {
 		return nil, fmt.Errorf("error on creating request : %v", err)
 	}
 
 	resp, err := a.doRequestOK(req)
-
 	defer closeBody(resp)
-
 	if err != nil {
 		return nil, err
 	}
 
 	status, err := parseStubStatus(resp.Body)
-
 	if err != nil {
 		return nil, fmt.Errorf("error on parsing response : %v", err)
 	}

@@ -19,7 +19,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.IsType(t, (*CoreDNS)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 }
 
@@ -31,7 +31,7 @@ func TestCoreDNS_Init(t *testing.T) { assert.True(t, New().Init()) }
 
 func TestCoreDNS_InitNG(t *testing.T) {
 	job := New()
-	job.UserURL = ""
+	job.URL = ""
 	assert.False(t, job.Init())
 }
 
@@ -44,14 +44,14 @@ func TestCoreDNS_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 }
 
 func TestCoreDNS_CheckNG(t *testing.T) {
 	job := New()
-	job.UserURL = "http://127.0.0.1:38001/metrics"
+	job.URL = "http://127.0.0.1:38001/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -65,7 +65,7 @@ func TestCoreDNS_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	job.PerServerStats.Includes = []string{"glob:*"}
 	job.PerZoneStats.Includes = []string{"glob:*"}
 	require.True(t, job.Init())
@@ -413,7 +413,7 @@ func TestCoreDNS_CollectNoLoad(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	job.PerServerStats.Includes = []string{"glob:*"}
 	job.PerZoneStats.Includes = []string{"glob:*"}
 	require.True(t, job.Init())
@@ -481,7 +481,7 @@ func TestCoreDNS_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }
@@ -495,7 +495,7 @@ func TestCoreDNS_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL + "/metrics"
+	job.URL = ts.URL + "/metrics"
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
 }

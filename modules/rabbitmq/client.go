@@ -7,6 +7,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"path"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
@@ -94,15 +96,16 @@ func (c *client) findNodeName() error {
 }
 
 func (c *client) scrapeOverview() (*overviewStats, error) {
-	var stats overviewStats
-
-	req := c.request.Copy()
-	req.URL.Path = overviewURLPath
-
-	err := c.doOKWithDecode(req, &stats)
+	req, err := c.createRequest(overviewURLPath)
 	if err != nil {
 		return nil, err
 	}
+
+	var stats overviewStats
+	if err := c.doOKWithDecode(req, &stats); err != nil {
+		return nil, err
+	}
+
 	return &stats, nil
 }
 
@@ -110,41 +113,34 @@ func (c *client) scrapeNodeStats() (*nodeStats, error) {
 	if c.nodeName == "" {
 		return nil, errors.New("node name not set")
 	}
-	var stats nodeStats
 
-	req := c.request.Copy()
-	req.URL.Path = nodeURLPath + c.nodeName
-
-	err := c.doOKWithDecode(req, &stats)
+	req, err := c.createRequest(nodeURLPath + c.nodeName)
 	if err != nil {
+		return nil, err
+	}
+
+	var stats nodeStats
+	if err := c.doOKWithDecode(req, &stats); err != nil {
 		return nil, err
 	}
 	return &stats, nil
 }
 
 func (c *client) scrapeVhostsStats() (vhostsStats, error) {
-	var stats vhostsStats
-
-	req := c.request.Copy()
-	req.URL.Path = vhostsURLPath
-
-	err := c.doOKWithDecode(req, &stats)
+	req, err := c.createRequest(vhostsURLPath)
 	if err != nil {
+		return nil, err
+	}
+
+	var stats vhostsStats
+	if err := c.doOKWithDecode(req, &stats); err != nil {
 		return nil, err
 	}
 	return stats, nil
 }
 
-func (c *client) do(req web.Request) (*http.Response, error) {
-	httpReq, err := web.NewHTTPRequest(req)
-	if err != nil {
-		return nil, fmt.Errorf("error on creating http request to %s : %v", req.URL, err)
-	}
-	return c.httpClient.Do(httpReq)
-}
-
-func (c *client) doOK(req web.Request) (*http.Response, error) {
-	resp, err := c.do(req)
+func (c *client) doOK(req *http.Request) (*http.Response, error) {
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +151,7 @@ func (c *client) doOK(req web.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func (c *client) doOKWithDecode(req web.Request, dst interface{}) error {
+func (c *client) doOKWithDecode(req *http.Request, dst interface{}) error {
 	resp, err := c.doOK(req)
 	defer closeBody(resp)
 	if err != nil {
@@ -167,6 +163,17 @@ func (c *client) doOKWithDecode(req web.Request, dst interface{}) error {
 		return fmt.Errorf("error on decoding response from %s : %v", req.URL, err)
 	}
 	return nil
+}
+
+func (c client) createRequest(urlPath string) (*http.Request, error) {
+	req := c.request.Copy()
+	u, err := url.Parse(req.URL)
+	if err != nil {
+		return nil, err
+	}
+	u.Path = path.Join(u.Path, urlPath)
+	req.URL = u.String()
+	return web.NewHTTPRequest(req)
 }
 
 func closeBody(resp *http.Response) {

@@ -72,7 +72,7 @@ type Client struct {
 // for a session identifier that is to be used for authenticating subsequent calls.
 func (c *Client) Login() error {
 	req := web.Request{
-		UserURL:  fmt.Sprintf("%s%s", c.url, pathCISSession),
+		URL:      fmt.Sprintf("%s%s", c.url, pathCISSession),
 		Username: c.username,
 		Password: c.password,
 		Method:   http.MethodPost,
@@ -89,7 +89,7 @@ func (c *Client) Login() error {
 // Logout terminates the validity of a session token.
 func (c *Client) Logout() error {
 	req := web.Request{
-		UserURL: fmt.Sprintf("%s%s", c.url, pathCISSession),
+		URL:     fmt.Sprintf("%s%s", c.url, pathCISSession),
 		Method:  http.MethodDelete,
 		Headers: map[string]string{apiSessIDKey: c.token.get()},
 	}
@@ -104,7 +104,7 @@ func (c *Client) Logout() error {
 // In case of 401 error Ping tries to re authenticate.
 func (c *Client) Ping() error {
 	req := web.Request{
-		UserURL: fmt.Sprintf("%s%s?~action=get", c.url, pathCISSession),
+		URL:     fmt.Sprintf("%s%s?~action=get", c.url, pathCISSession),
 		Method:  http.MethodPost,
 		Headers: map[string]string{apiSessIDKey: c.token.get()},
 	}
@@ -118,7 +118,7 @@ func (c *Client) Ping() error {
 
 func (c *Client) health(urlPath string) (string, error) {
 	req := web.Request{
-		UserURL: fmt.Sprintf("%s%s", c.url, urlPath),
+		URL:     fmt.Sprintf("%s%s", c.url, urlPath),
 		Headers: map[string]string{apiSessIDKey: c.token.get()},
 	}
 	s := struct{ Value string }{}
@@ -173,7 +173,7 @@ func (c *Client) System() (string, error) {
 func (c *Client) do(req web.Request) (*http.Response, error) {
 	httpReq, err := web.NewHTTPRequest(req)
 	if err != nil {
-		return nil, fmt.Errorf("error on creating http request to %s : %v", req.UserURL, err)
+		return nil, fmt.Errorf("error on creating http request to %s : %v", req.URL, err)
 	}
 	return c.httpClient.Do(httpReq)
 }
@@ -185,7 +185,7 @@ func (c *Client) doOK(req web.Request) (*http.Response, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("%s returned %d", req.UserURL, resp.StatusCode)
+		return resp, fmt.Errorf("%s returned %d", req.URL, resp.StatusCode)
 	}
 	return resp, nil
 }
@@ -199,7 +199,7 @@ func (c *Client) doOKWithDecode(req web.Request, dst interface{}) error {
 
 	err = json.NewDecoder(resp.Body).Decode(dst)
 	if err != nil {
-		return fmt.Errorf("error on decoding response from %s : %v", req.UserURL, err)
+		return fmt.Errorf("error on decoding response from %s : %v", req.URL, err)
 	}
 	return nil
 }

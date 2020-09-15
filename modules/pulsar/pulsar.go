@@ -26,9 +26,11 @@ func New() *Pulsar {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				UserURL: "http://127.0.0.1:8080/metrics",
+				URL: "http://127.0.0.1:8080/metrics",
 			},
-			Client: web.Client{Timeout: web.Duration{Duration: time.Second}},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second},
+			},
 		},
 		TopicFiler: matcher.SimpleExpr{
 			Includes: nil,
@@ -82,7 +84,7 @@ func newCache() *cache {
 }
 
 func (p Pulsar) validateConfig() error {
-	if p.UserURL == "" {
+	if p.URL == "" {
 		return errors.New("URL is not set")
 	}
 	return nil

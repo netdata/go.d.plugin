@@ -28,7 +28,9 @@ const (
 func New() *SpringBoot2 {
 	return &SpringBoot2{
 		HTTP: web.HTTP{
-			Client: web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 	}
 }

@@ -18,8 +18,12 @@ func New() *Phpfpm {
 	return &Phpfpm{
 		Config: Config{
 			HTTP: web.HTTP{
-				Request: web.Request{UserURL: "http://127.0.0.1/status?full&json"},
-				Client:  web.Client{Timeout: web.Duration{Duration: time.Second}},
+				Request: web.Request{
+					URL: "http://127.0.0.1/status?full&json",
+				},
+				Client: web.Client{
+					Timeout: web.Duration{Duration: time.Second},
+				},
 			},
 		},
 	}

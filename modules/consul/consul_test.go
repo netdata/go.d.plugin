@@ -23,7 +23,7 @@ func TestNew(t *testing.T) {
 	assert.Implements(t, (*module.Module)(nil), New())
 	assert.NotNil(t, job.charts)
 	assert.NotNil(t, job.activeChecks)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
 	assert.Equal(t, defaultMaxChecks, job.MaxChecks)
 }
@@ -47,7 +47,7 @@ func TestConsul_Check(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.HTTP.Request = web.Request{UserURL: ts.URL}
+	job.HTTP.Request = web.Request{URL: ts.URL}
 
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
@@ -56,7 +56,7 @@ func TestConsul_Check(t *testing.T) {
 func TestConsul_CheckNG(t *testing.T) {
 	job := New()
 
-	job.HTTP.Request = web.Request{UserURL: "http://127.0.0.1:38001"}
+	job.HTTP.Request = web.Request{URL: "http://127.0.0.1:38001"}
 
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
@@ -82,7 +82,7 @@ func TestConsul_Collect(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.HTTP.Request = web.Request{UserURL: ts.URL}
+	job.HTTP.Request = web.Request{URL: ts.URL}
 
 	assert.True(t, job.Init())
 
@@ -113,7 +113,7 @@ func TestConsul_InvalidData(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.HTTP.Request = web.Request{UserURL: ts.URL}
+	job.HTTP.Request = web.Request{URL: ts.URL}
 
 	require.True(t, job.Init())
 	assert.False(t, job.Check())
@@ -126,7 +126,7 @@ func TestConsul_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.HTTP.Request = web.Request{UserURL: ts.URL}
+	job.HTTP.Request = web.Request{URL: ts.URL}
 
 	require.True(t, job.Init())
 	assert.False(t, job.Check())

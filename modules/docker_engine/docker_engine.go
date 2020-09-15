@@ -21,8 +21,12 @@ func init() {
 func New() *DockerEngine {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: "http://127.0.0.1:9323/metrics"},
-			Client:  web.Client{Timeout: web.Duration{Duration: time.Second}},
+			Request: web.Request{
+				URL: "http://127.0.0.1:9323/metrics",
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: time.Second},
+			},
 		},
 	}
 	return &DockerEngine{
@@ -36,7 +40,8 @@ type (
 	}
 	DockerEngine struct {
 		module.Base
-		Config             `yaml:",inline"`
+		Config `yaml:",inline"`
+
 		prom               prometheus.Prometheus
 		isSwarmManager     bool
 		hasContainerStates bool
@@ -44,7 +49,7 @@ type (
 )
 
 func (de DockerEngine) validateConfig() error {
-	if de.Config.UserURL == "" {
+	if de.URL == "" {
 		return errors.New("URL is not set")
 	}
 	return nil

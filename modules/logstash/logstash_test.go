@@ -37,7 +37,7 @@ func TestLogstash_Init(t *testing.T) {
 
 func TestLogstash_Init_ErrorOnValidatingConfigURLNotSet(t *testing.T) {
 	logstash := New()
-	logstash.UserURL = ""
+	logstash.URL = ""
 
 	assert.False(t, logstash.Init())
 }
@@ -58,7 +58,7 @@ func TestLogstash_Check(t *testing.T) {
 
 func TestWMI_Check_ErrorOnCollectConnectionRefused(t *testing.T) {
 	logstash := New()
-	logstash.UserURL = "http://127.0.0.1:38001/metrics"
+	logstash.URL = "http://127.0.0.1:38001/metrics"
 	require.True(t, logstash.Init())
 
 	assert.False(t, logstash.Check())
@@ -154,7 +154,7 @@ func prepareClientServerValidResponse(t *testing.T) (*Logstash, *httptest.Server
 		}))
 
 	logstash := New()
-	logstash.UserURL = ts.URL
+	logstash.URL = ts.URL
 	require.True(t, logstash.Init())
 	return logstash, ts
 }
@@ -167,7 +167,7 @@ func prepareClientServerBadData(t *testing.T) (*Logstash, *httptest.Server) {
 		}))
 
 	logstash := New()
-	logstash.UserURL = ts.URL
+	logstash.URL = ts.URL
 	require.True(t, logstash.Init())
 	return logstash, ts
 }
@@ -180,7 +180,7 @@ func prepareClientServerResponse404(t *testing.T) (*Logstash, *httptest.Server) 
 		}))
 
 	logstash := New()
-	logstash.UserURL = ts.URL
+	logstash.URL = ts.URL
 	require.True(t, logstash.Init())
 	return logstash, ts
 }

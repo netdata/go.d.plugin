@@ -25,7 +25,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultURL, job.UserURL)
+	assert.Equal(t, defaultURL, job.URL)
 	assert.Equal(t, defaultHTTPTimeout, job.Client.Timeout.Duration)
 }
 
@@ -48,7 +48,7 @@ func TestSolr_Check(t *testing.T) {
 				}
 			}))
 
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 	require.True(t, job.Init())
 	assert.True(t, job.Check())
 }
@@ -65,7 +65,7 @@ func TestSolr_Check_UnsupportedVersion(t *testing.T) {
 				}
 			}))
 
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 
 	require.True(t, job.Init())
 
@@ -96,7 +96,7 @@ func TestSolr_CollectV6(t *testing.T) {
 				}
 			}))
 
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 
 	require.True(t, job.Init())
 	require.True(t, job.Check())
@@ -185,7 +185,7 @@ func TestSolr_CollectV7(t *testing.T) {
 				}
 			}))
 
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 
 	require.True(t, job.Init())
 	require.True(t, job.Check())
@@ -265,7 +265,7 @@ func TestSolr_Collect_404(t *testing.T) {
 	defer ts.Close()
 
 	job := New()
-	job.UserURL = ts.URL
+	job.URL = ts.URL
 
 	require.True(t, job.Init())
 	assert.False(t, job.Check())

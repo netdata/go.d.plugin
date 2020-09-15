@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -54,16 +55,21 @@ type httpClient struct {
 	dec    decoder
 }
 
-func newHTTPClient(c *http.Client, r web.Request) *httpClient {
+func newHTTPClient(c *http.Client, r web.Request) (*httpClient, error) {
+	u, err := url.Parse(r.URL)
+	if err != nil {
+		return nil, err
+	}
+
 	dec := decodeText
-	if _, ok := r.URL.Query()["json"]; ok {
+	if _, ok := u.Query()["json"]; ok {
 		dec = decodeJSON
 	}
 	return &httpClient{
 		client: c,
 		req:    r,
 		dec:    dec,
-	}
+	}, nil
 }
 
 func (c *httpClient) getStatus() (*status, error) {

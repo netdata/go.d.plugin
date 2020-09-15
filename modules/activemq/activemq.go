@@ -38,8 +38,12 @@ const (
 func New() *ActiveMQ {
 	config := Config{
 		HTTP: web.HTTP{
-			Request: web.Request{UserURL: defaultURL},
-			Client:  web.Client{Timeout: web.Duration{Duration: defaultHTTPTimeout}},
+			Request: web.Request{
+				URL: defaultURL,
+			},
+			Client: web.Client{
+				Timeout: web.Duration{Duration: defaultHTTPTimeout},
+			},
 		},
 
 		MaxQueues: defaultMaxQueues,
@@ -82,13 +86,8 @@ func (ActiveMQ) Cleanup() {}
 
 // Init makes initialization.
 func (a *ActiveMQ) Init() bool {
-	if err := a.ParseUserURL(); err != nil {
-		a.Errorf("error on parsing url '%s' : %v", a.UserURL, err)
-		return false
-	}
-
-	if a.URL.Host == "" {
-		a.Error("URL is not set")
+	if a.URL == "" {
+		a.Error("URL not set")
 		return false
 	}
 
@@ -116,7 +115,6 @@ func (a *ActiveMQ) Init() bool {
 	}
 
 	client, err := web.NewHTTPClient(a.Client)
-
 	if err != nil {
 		a.Error(err)
 		return false

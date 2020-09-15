@@ -25,7 +25,7 @@ type client struct {
 func (c *client) do() (*http.Response, error) {
 	req, err := web.NewHTTPRequest(c.request)
 	if err != nil {
-		return nil, fmt.Errorf("error on creating http request to %s : %v", c.request.UserURL, err)
+		return nil, fmt.Errorf("error on creating http request to %s : %v", c.request.URL, err)
 	}
 
 	// req.Header.Add("Accept-Encoding", "gzip")
@@ -41,7 +41,7 @@ func (c *client) doOK() (*http.Response, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("%s returned %d", c.request.UserURL, resp.StatusCode)
+		return resp, fmt.Errorf("%s returned %d", c.request.URL, resp.StatusCode)
 	}
 	return resp, nil
 }
@@ -55,7 +55,7 @@ func (c *client) doOKWithDecodeJSON(dst interface{}) error {
 
 	err = json.NewDecoder(resp.Body).Decode(dst)
 	if err != nil {
-		return fmt.Errorf("error on decoding response from %s : %v", c.request.UserURL, err)
+		return fmt.Errorf("error on decoding response from %s : %v", c.request.URL, err)
 	}
 	return nil
 }
