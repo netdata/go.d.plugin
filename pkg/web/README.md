@@ -49,20 +49,20 @@ type Example struct {
 }
 
 func (e *Example) Init() bool {
-    httpReq, err := web.NewHTTPRequest(e.Request)
-    if err != nil {
-        // ...
-        return false
-    }
+	httpReq, err := web.NewHTTPRequest(e.Request)
+	if err != nil {
+		// ...
+		return false
+	}
 
-    httpClient, err := web.NewHTTPClient(e.Client)
-    if err != nil {
-        // ...
-        return false
-    }
-    
-    // ...
-    return true
+	httpClient, err := web.NewHTTPClient(e.Client)
+	if err != nil {
+		// ...
+		return false
+	}
+
+	// ...
+	return true
 }
 ```
 
