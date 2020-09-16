@@ -48,7 +48,7 @@ func (r Request) Copy() Request {
 	return r
 }
 
-// NewHTTPRequest returns a new *http.Requests given a Request configuration and en error if any.
+// NewHTTPRequest returns a new *http.Requests given a Request configuration and an error if any.
 func NewHTTPRequest(cfg Request) (*http.Request, error) {
 	var body io.Reader
 	if cfg.Body != "" {
