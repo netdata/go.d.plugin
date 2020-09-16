@@ -49,7 +49,7 @@ type Example struct {
 }
 ```
 
-Having `HTTP` embedded your configuration inherits all those options and that is how it looks:
+Having `HTTP` embedded your configuration inherits all [those options](#configuration-options) and that is how it looks:
 
 ```yaml
 jobs:
