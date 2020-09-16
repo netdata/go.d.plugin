@@ -14,7 +14,7 @@ It allows to have same set of user configurable options across all modules.
 
 ## Usage
 
-Just make `HTTP` part of your module configuration.
+Just make `TLSConfig` part of your module configuration.
 
 ```go
 package example
