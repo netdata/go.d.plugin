@@ -33,7 +33,7 @@ type Client struct {
 	tlscfg.TLSConfig `yaml:",inline"`
 }
 
-// NewHTTPClient returns a new *http.Client given a Client configuration and en error if any.
+// NewHTTPClient returns a new *http.Client given a Client configuration and an error if any.
 func NewHTTPClient(cfg Client) (*http.Client, error) {
 	tlsConfig, err := tlscfg.NewTLSConfig(cfg.TLSConfig)
 	if err != nil {
