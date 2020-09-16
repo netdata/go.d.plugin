@@ -47,6 +47,23 @@ type Config struct {
 type Example struct {
 	Config `yaml:",inline"`
 }
+
+func (e *Example) Init() bool {
+    httpReq, err := web.NewHTTPRequest(e.Request)
+    if err != nil {
+        // ...
+        return false
+    }
+
+    httpClient, err := web.NewHTTPClient(e.Client)
+    if err != nil {
+        // ...
+        return false
+    }
+    
+    // ...
+    return true
+}
 ```
 
 Having `HTTP` embedded your configuration inherits all [those options](#configuration-options) and that is how it looks:
