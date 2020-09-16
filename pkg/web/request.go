@@ -7,19 +7,38 @@ import (
 	"strings"
 )
 
-// Request is a struct that contains the fields that are needed to newHTTPClient *http.Request.
+// Request is the configuration of the HTTP request.
+// This structure is not intended to be used directly as part of a module's configuration.
+// Supported configuration file formats: YAML.
 type Request struct {
-	URL           string            `yaml:"url"`
-	Body          string            `yaml:"body"`
-	Method        string            `yaml:"method"`
-	Headers       map[string]string `yaml:"headers"`
-	Username      string            `yaml:"username"`
-	Password      string            `yaml:"password"`
-	ProxyUsername string            `yaml:"proxy_username"`
-	ProxyPassword string            `yaml:"proxy_password"`
+	// URL specifies the URL to access.
+	URL string `yaml:"url"`
+
+	// Body specifies the HTTP request body to be sent by the client.
+	Body string `yaml:"body"`
+
+	// Method specifies the HTTP method (GET, POST, PUT, etc.). An empty string means GET.
+	Method string `yaml:"method"`
+
+	// Headers specifies the HTTP request header fields to be sent by the client.
+	Headers map[string]string `yaml:"headers"`
+
+	// Username specifies the username for basic HTTP authentication.
+	Username string `yaml:"username"`
+
+	// Password specifies the password for basic HTTP authentication.
+	Password string `yaml:"password"`
+
+	// ProxyUsername specifies the username for basic HTTP authentication.
+	// It is used to authenticate a user agent to a proxy server.
+	ProxyUsername string `yaml:"proxy_username"`
+
+	// ProxyPassword specifies the password for basic HTTP authentication.
+	// It is used to authenticate a user agent to a proxy server.
+	ProxyPassword string `yaml:"proxy_password"`
 }
 
-// Copy makes full copy of Request.
+// Copy makes a full copy of the Request.
 func (r Request) Copy() Request {
 	headers := make(map[string]string, len(r.Headers))
 	for k, v := range r.Headers {
@@ -29,35 +48,34 @@ func (r Request) Copy() Request {
 	return r
 }
 
-// NewHTTPRequest creates a new *http.Requests based on Request fields
-// and returns *http.Requests and error if any encountered.
-func NewHTTPRequest(req Request) (*http.Request, error) {
+// NewHTTPRequest returns a new *http.Requests given a Request configuration and en error if any.
+func NewHTTPRequest(cfg Request) (*http.Request, error) {
 	var body io.Reader
-	if req.Body != "" {
-		body = strings.NewReader(req.Body)
+	if cfg.Body != "" {
+		body = strings.NewReader(cfg.Body)
 	}
 
-	httpReq, err := http.NewRequest(req.Method, req.URL, body)
+	req, err := http.NewRequest(cfg.Method, cfg.URL, body)
 	if err != nil {
 		return nil, err
 	}
 
-	if req.Username != "" || req.Password != "" {
-		httpReq.SetBasicAuth(req.Username, req.Password)
+	if cfg.Username != "" || cfg.Password != "" {
+		req.SetBasicAuth(cfg.Username, cfg.Password)
 	}
 
-	if req.ProxyUsername != "" && req.ProxyPassword != "" {
-		basicAuth := base64.StdEncoding.EncodeToString([]byte(req.ProxyUsername + ":" + req.ProxyPassword))
-		httpReq.Header.Set("Proxy-Authorization", "Basic "+basicAuth)
+	if cfg.ProxyUsername != "" && cfg.ProxyPassword != "" {
+		basicAuth := base64.StdEncoding.EncodeToString([]byte(cfg.ProxyUsername + ":" + cfg.ProxyPassword))
+		req.Header.Set("Proxy-Authorization", "Basic "+basicAuth)
 	}
 
-	for k, v := range req.Headers {
+	for k, v := range cfg.Headers {
 		switch k {
 		case "host", "Host":
-			httpReq.Host = v
+			req.Host = v
 		default:
-			httpReq.Header.Set(k, v)
+			req.Header.Set(k, v)
 		}
 	}
-	return httpReq, nil
+	return req, nil
 }
