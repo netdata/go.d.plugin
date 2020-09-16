@@ -1,6 +1,6 @@
 /*
 Package web contains HTTP request and client configurations.
-HTTP structure aggregates both of them and it's the only structure that intended to be used as part of a module's configuration.
+HTTP structure embeds both of them and it's the only structure that intended to be used as part of a module's configuration.
 Every module that uses HTTP requests to gather metrics should use it.
 It allows to have same set of user configurable features across all modules.
 */

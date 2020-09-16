@@ -37,7 +37,7 @@ type Client struct {
 func NewHTTPClient(cfg Client) (*http.Client, error) {
 	tlsConfig, err := tlscfg.NewTLSConfig(cfg.TLSConfig)
 	if err != nil {
-		return nil, fmt.Errorf("error on creating TLS config : %v", err)
+		return nil, fmt.Errorf("error on creating TLS config: %v", err)
 	}
 
 	if cfg.ProxyURL != "" {
