@@ -9,10 +9,17 @@ import (
 
 // TLSConfig represents the standard client TLS configuration.
 type TLSConfig struct {
-	TLSCA              string `yaml:"tls_ca"`
-	TLSCert            string `yaml:"tls_cert"`
-	TLSKey             string `yaml:"tls_key"`
-	InsecureSkipVerify bool   `yaml:"tls_skip_verify"`
+	// TLSCA specifies the certificate authority to use when verifying server certificates.
+	TLSCA string `yaml:"tls_ca"`
+
+	// TLSCert specifies tls certificate file.
+	TLSCert string `yaml:"tls_cert"`
+
+	// TLSKey specifies tls key file.
+	TLSKey string `yaml:"tls_key"`
+
+	// InsecureSkipVerify controls whether a client verifies the server's certificate chain and host name.
+	InsecureSkipVerify bool `yaml:"tls_skip_verify"`
 }
 
 // NewTLSConfig creates a tls.Config, may be nil without an error if TLS is not configured.
@@ -27,7 +34,7 @@ func NewTLSConfig(cfg TLSConfig) (*tls.Config, error) {
 	}
 
 	if cfg.TLSCA != "" {
-		pool, err := makeCertPool([]string{cfg.TLSCA})
+		pool, err := loadCertPool([]string{cfg.TLSCA})
 		if err != nil {
 			return nil, err
 		}
@@ -35,15 +42,17 @@ func NewTLSConfig(cfg TLSConfig) (*tls.Config, error) {
 	}
 
 	if cfg.TLSCert != "" && cfg.TLSKey != "" {
-		if err := loadCertificate(tlsConfig, cfg.TLSCert, cfg.TLSKey); err != nil {
+		cert, err := loadCertificate(cfg.TLSCert, cfg.TLSKey)
+		if err != nil {
 			return nil, err
 		}
+		tlsConfig.Certificates = []tls.Certificate{cert}
 	}
 
 	return tlsConfig, nil
 }
 
-func makeCertPool(certFiles []string) (*x509.CertPool, error) {
+func loadCertPool(certFiles []string) (*x509.CertPool, error) {
 	pool := x509.NewCertPool()
 	for _, certFile := range certFiles {
 		pem, err := ioutil.ReadFile(certFile)
@@ -57,12 +66,10 @@ func makeCertPool(certFiles []string) (*x509.CertPool, error) {
 	return pool, nil
 }
 
-func loadCertificate(config *tls.Config, certFile, keyFile string) error {
+func loadCertificate(certFile, keyFile string) (tls.Certificate, error) {
 	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
 	if err != nil {
-		return fmt.Errorf("could not load keypair %s:%s: %v", certFile, keyFile, err)
+		return tls.Certificate{}, fmt.Errorf("could not load keypair %s:%s: %v", certFile, keyFile, err)
 	}
-
-	config.Certificates = []tls.Certificate{cert}
-	return nil
+	return cert, nil
 }
