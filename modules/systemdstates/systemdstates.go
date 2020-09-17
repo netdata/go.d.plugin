@@ -1,23 +1,18 @@
 package systemdstates
 
 import (
-
-
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
-
 )
 
-
 type Config struct {
-	Selector   matcher.SimpleExpr `yaml:"selector"`
+	Selector matcher.SimpleExpr `yaml:"selector"`
 }
-
 
 func init() {
 	creator := module.Creator{
 		Defaults: module.Defaults{
-			Disabled: false,
+			Disabled:    false,
 			UpdateEvery: 1,
 		},
 		Create: func() module.Module { return New() },
@@ -35,12 +30,10 @@ func New() *SystemdStates {
 
 // SystemdStates SystemdStates module
 type SystemdStates struct {
-	module.Base // should be embedded by every module
-	Config           `yaml:",inline"`
-	metrics map[string]int64
-	unitType string
+	module.Base  // should be embedded by every module
+	Config       `yaml:",inline"`
+	metrics      map[string]int64
 	unitsMatcher matcher.Matcher
-
 }
 
 // Cleanup makes cleanup
