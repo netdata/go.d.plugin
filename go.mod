@@ -12,7 +12,7 @@ require (
 	github.com/likexian/whois-go v1.7.1
 	github.com/likexian/whois-parser-go v1.14.5
 	github.com/miekg/dns v1.1.29
-	github.com/netdata/go-orchestrator v0.0.0-20200903222311-25eff6ec645e
+	github.com/netdata/go-orchestrator v0.0.0-20200917191103-724cb40df90f
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/prometheus/common v0.10.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
