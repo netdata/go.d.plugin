@@ -77,19 +77,17 @@ func TestSystemdStates_FilterUnits(t *testing.T) {
 	}
 }
 
-func TestSystemdStates_unitType(t *testing.T) {
+func TestSystemdStates_extractUnitType(t *testing.T) {
 
-	job := New()
-
-	rightUnit, err := job.unitType("nginx.service")
+	rightUnit, err := extractUnitType("nginx.service")
 	assert.Nil(t, err)
 	assert.NotNil(t, rightUnit)
 
-	nginxUnit, err := job.unitType("nginx.service")
+	nginxUnit, err := extractUnitType("nginx.service")
 	assert.Nil(t, err)
 	assert.Equal(t, nginxUnit, "service")
 
-	wrongUnit, err := job.unitType("nginx.wrong")
+	wrongUnit, err := extractUnitType("nginx.wrong")
 	assert.NotNil(t, err)
 	assert.Equal(t, wrongUnit, "")
 
