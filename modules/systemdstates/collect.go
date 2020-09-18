@@ -13,6 +13,21 @@ const (
 	failed   = 2
 )
 
+func convertUnitState(state string) int64 {
+
+	switch state {
+	case "active":
+		return 1
+	case "inactive":
+		return 0
+	case "failed":
+		return 2
+	default:
+		return -1
+	}
+
+}
+
 func (s *SystemdStates) collect() (map[string]int64, error) {
 
 	var err error
@@ -32,7 +47,7 @@ func (s *SystemdStates) collect() (map[string]int64, error) {
 	units := s.filterUnits(allUnits)
 	for _, unit := range units {
 
-		ut, err := s.unitType(unit.Name)
+		ut, err := extractUnitType(unit.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -43,17 +58,7 @@ func (s *SystemdStates) collect() (map[string]int64, error) {
 			_ = chart.AddDim(&Dim{ID: unit.Name})
 		}
 
-		state := -1
-		if unit.ActiveState == "active" {
-			state = active
-		}
-		if unit.ActiveState == "inactive" {
-			state = inactive
-		}
-		if unit.ActiveState == "failed" {
-			state = failed
-		}
-		mx[unit.Name] = int64(state)
+		mx[unit.Name] = convertUnitState(unit.ActiveState)
 	}
 
 	return mx, nil
@@ -61,18 +66,20 @@ func (s *SystemdStates) collect() (map[string]int64, error) {
 
 func (s SystemdStates) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
 
-	filtered := make([]dbus.UnitStatus, 0, len(units))
+	var i int
 	for _, unit := range units {
 
-		if s.unitsMatcher.MatchString(unit.Name) && unit.LoadState == "loaded" {
-			filtered = append(filtered, unit)
+		if unit.LoadState == "loaded" && s.unitsMatcher.MatchString(unit.Name) {
+			units[i] = unit
+			i++
 		}
 	}
 
-	return filtered
+	return units[:i]
+
 }
 
-func (s SystemdStates) unitType(unit string) (string, error) {
+func extractUnitType(unit string) (string, error) {
 	validTypes := []string{"service", "socket", "device", "mount", "automount", "swap", "target", "path", "timer", "scope"}
 	ut := ""
 	for _, t := range validTypes {
