@@ -32,7 +32,12 @@ func (s *SystemdStates) collect() (map[string]int64, error) {
 	units := s.filterUnits(allUnits)
 	for _, unit := range units {
 
-		chartID := fmt.Sprintf("systemd_%s_active_state", s.unitType(unit.Name))
+		ut, err := s.unitType(unit.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		chartID := fmt.Sprintf("systemd_%s_active_state", ut)
 		chart := s.charts.Get(chartID)
 		if !chart.HasDim(unit.Name) {
 			_ = chart.AddDim(&Dim{ID: unit.Name})
@@ -67,15 +72,18 @@ func (s SystemdStates) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
 	return filtered
 }
 
-func (s SystemdStates) unitType(unit string) string {
+func (s SystemdStates) unitType(unit string) (string, error) {
 	validTypes := []string{"service", "socket", "device", "mount", "automount", "swap", "target", "path", "timer", "scope"}
-	var ut string
+	ut := ""
 	for _, t := range validTypes {
 		if strings.HasSuffix(unit, fmt.Sprintf(".%s", t)) {
 			ut = t
 			break
 		}
 	}
-	return ut
 
+	if ut == "" {
+		return "", fmt.Errorf("Could not find a type for : %v", unit)
+	}
+	return ut, nil
 }
