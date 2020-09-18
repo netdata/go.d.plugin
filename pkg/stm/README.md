@@ -54,3 +54,20 @@ Use `ToMap` function. Keep in mind:
 -   this function is variadic (can be called with any number of trailing arguments).
 -   it doesn't allow to have duplicate in result map.
 -   if there is a duplicate key it panics.
+
+
+```
+	ms := struct {
+		MetricA   int64            `stm:"metric_a"`
+		MetricB   float64          `stm:"metric_b,1000"`
+		MetricSet map[string]int64 `stm:"metric_set"`
+	}{
+		MetricA: 10,
+		MetricB: 5.5,
+		MetricSet: map[string]int64{
+			"a": 10,
+			"b": 10,
+		},
+	}
+	fmt.Println(stm.ToMap(ms)) // => map[metric_a:10 metric_b:5500 metric_set_a:10 metric_set_b:10]
+```
