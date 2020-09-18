@@ -7,12 +7,6 @@ import (
 	"github.com/coreos/go-systemd/v22/dbus"
 )
 
-const (
-	inactive = 0
-	active   = 1
-	failed   = 2
-)
-
 func convertUnitState(state string) int64 {
 
 	switch state {
