@@ -14,7 +14,6 @@ import (
 
 	_ "github.com/netdata/go.d.plugin/modules/activemq"
 	_ "github.com/netdata/go.d.plugin/modules/apache"
-	_ "github.com/netdata/go.d.plugin/modules/systemdstates"
 	_ "github.com/netdata/go.d.plugin/modules/bind"
 	_ "github.com/netdata/go.d.plugin/modules/cockroachdb"
 	_ "github.com/netdata/go.d.plugin/modules/consul"
@@ -49,6 +48,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/solr"
 	_ "github.com/netdata/go.d.plugin/modules/springboot2"
 	_ "github.com/netdata/go.d.plugin/modules/squidlog"
+	_ "github.com/netdata/go.d.plugin/modules/systemdstates"
 	_ "github.com/netdata/go.d.plugin/modules/tengine"
 	_ "github.com/netdata/go.d.plugin/modules/unbound"
 	_ "github.com/netdata/go.d.plugin/modules/vcsa"

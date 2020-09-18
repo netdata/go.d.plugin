@@ -35,7 +35,7 @@ func (s *SystemdStates) collect() (map[string]int64, error) {
 		chartID := fmt.Sprintf("systemd_%s_active_state", s.unitType(unit.Name))
 		chart := s.charts.Get(chartID)
 		if !chart.HasDim(unit.Name) {
-			chart.AddDim(&Dim{ID: unit.Name})
+			_ = chart.AddDim(&Dim{ID: unit.Name})
 		}
 
 		state := -1
