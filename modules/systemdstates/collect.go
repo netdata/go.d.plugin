@@ -1,12 +1,11 @@
 package systemdstates
 
 import (
-	"github.com/coreos/go-systemd/dbus"
-)
+	"fmt"
+	"strings"
 
-type unit struct {
-	dbus.UnitStatus
-}
+	"github.com/coreos/go-systemd/v22/dbus"
+)
 
 const (
 	inactive = 0
@@ -23,15 +22,22 @@ func (s *SystemdStates) collect() (map[string]int64, error) {
 	}
 	defer conn.Close()
 
-	result, err := getUnits(conn)
+	allUnits, err := conn.ListUnits()
 	if err != nil {
 		return nil, err
 	}
 
 	mx := make(map[string]int64)
 
-	filtered := s.filterUnits(result)
-	for _, unit := range filtered {
+	units := s.filterUnits(allUnits)
+	for _, unit := range units {
+
+		chartID := fmt.Sprintf("systemd_%s_active_state", s.unitType(unit.Name))
+		chart := s.charts.Get(chartID)
+		if !chart.HasDim(unit.Name) {
+			chart.AddDim(&Dim{ID: unit.Name})
+		}
+
 		state := -1
 		if unit.ActiveState == "active" {
 			state = active
@@ -48,25 +54,9 @@ func (s *SystemdStates) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func (s SystemdStates) chartDims() ([]unit, error) {
-	conn, err := dbus.New()
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
+func (s SystemdStates) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
 
-	result, err := getUnits(conn)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.filterUnits(result), nil
-
-}
-
-func (s SystemdStates) filterUnits(units []unit) []unit {
-
-	filtered := make([]unit, 0, len(units))
+	filtered := make([]dbus.UnitStatus, 0, len(units))
 	for _, unit := range units {
 
 		if s.unitsMatcher.MatchString(unit.Name) && unit.LoadState == "loaded" {
@@ -77,21 +67,15 @@ func (s SystemdStates) filterUnits(units []unit) []unit {
 	return filtered
 }
 
-func getUnits(conn *dbus.Conn) ([]unit, error) {
-	allUnits, err := conn.ListUnits()
-
-	if err != nil {
-		return nil, err
-	}
-
-	result := make([]unit, 0, len(allUnits))
-	for _, status := range allUnits {
-
-		unit := unit{
-			UnitStatus: status,
+func (s SystemdStates) unitType(unit string) string {
+	validTypes := []string{"service", "socket", "device", "mount", "automount", "swap", "target", "path", "timer", "scope"}
+	var ut string
+	for _, t := range validTypes {
+		if strings.HasSuffix(unit, fmt.Sprintf(".%s", t)) {
+			ut = t
+			break
 		}
-		result = append(result, unit)
 	}
+	return ut
 
-	return result, nil
 }

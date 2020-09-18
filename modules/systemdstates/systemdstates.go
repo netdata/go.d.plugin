@@ -24,6 +24,7 @@ func init() {
 // New creates SystemdStates with default values
 func New() *SystemdStates {
 	return &SystemdStates{
+		charts:  charts.Copy(),
 		metrics: make(map[string]int64),
 	}
 }
@@ -33,6 +34,7 @@ type SystemdStates struct {
 	module.Base  // should be embedded by every module
 	Config       `yaml:",inline"`
 	metrics      map[string]int64
+	charts       *module.Charts
 	unitsMatcher matcher.Matcher
 }
 
@@ -49,6 +51,7 @@ func (s *SystemdStates) Init() bool {
 		}
 		s.unitsMatcher = matcher.WithCache(m)
 	}
+
 	return true
 }
 
@@ -59,7 +62,7 @@ func (SystemdStates) Check() bool {
 
 // Charts creates Charts
 func (s *SystemdStates) Charts() *Charts {
-	return s.charts()
+	return s.charts
 }
 
 // Collect collects metrics

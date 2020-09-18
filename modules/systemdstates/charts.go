@@ -1,16 +1,12 @@
 package systemdstates
 
 import (
-	"strings"
-
 	"github.com/netdata/go-orchestrator/module"
 )
 
 type (
 	// Charts is an alias for module.Charts
 	Charts = module.Charts
-	// Dims is an alias for module.Dims
-	Dims = module.Dims
 
 	// Dim is an alias for module.Dim
 	Dim = module.Dim
@@ -20,52 +16,71 @@ var charts = Charts{
 	{
 		ID:    "systemd_service_active_state",
 		Title: "Systemd Service Active units",
-		Units: "bool",
+		Units: "state",
 		Fam:   "service",
 		Ctx:   "systemd.systemd_service_active_state",
-		Dims:  Dims{},
 	},
 	{
 		ID:    "systemd_socket_active_state",
 		Title: "Systemd Socket Active units",
-		Units: "bool",
+		Units: "state",
 		Fam:   "socket",
 		Ctx:   "systemd.systemd_socket_active_state",
-		Dims:  Dims{},
 	},
 	{
 		ID:    "systemd_target_active_state",
 		Title: "Systemd Target Active units",
-		Units: "bool",
+		Units: "state",
 		Fam:   "target",
 		Ctx:   "systemd.systemd_target_active_state",
-		Dims:  Dims{},
 	},
 	{
 		ID:    "systemd_path_active_state",
 		Title: "Systemd path Active units",
-		Units: "bool",
+		Units: "state",
 		Fam:   "path",
 		Ctx:   "systemd.systemd_path_active_state",
-		Dims:  Dims{},
 	},
-}
-
-func (s SystemdStates) charts() *Charts {
-	charts := charts.Copy()
-
-	for _, chart := range *charts {
-
-		dims, err := s.chartDims()
-		if err != nil {
-			s.Error(err)
-		}
-		for _, unit := range dims {
-			if strings.Contains(unit.Name, "."+chart.Fam) {
-				chart.Dims = append(chart.Dims, &Dim{ID: unit.Name})
-			}
-
-		}
-	}
-	return charts
+	{
+		ID:    "systemd_device_active_state",
+		Title: "Systemd device Active units",
+		Units: "state",
+		Fam:   "device",
+		Ctx:   "systemd.systemd_device_active_state",
+	},
+	{
+		ID:    "systemd_mount_active_state",
+		Title: "Systemd mount Active units",
+		Units: "state",
+		Fam:   "mount",
+		Ctx:   "systemd.systemd_mount_active_state",
+	},
+	{
+		ID:    "systemd_automount_active_state",
+		Title: "Systemd automount Active units",
+		Units: "state",
+		Fam:   "automount",
+		Ctx:   "systemd.systemd_automount_active_state",
+	},
+	{
+		ID:    "systemd_swap_active_state",
+		Title: "Systemd swap Active units",
+		Units: "state",
+		Fam:   "swap",
+		Ctx:   "systemd.systemd_swap_active_state",
+	},
+	{
+		ID:    "systemd_timer_active_state",
+		Title: "Systemd timer Active units",
+		Units: "state",
+		Fam:   "timer",
+		Ctx:   "systemd.systemd_timer_active_state",
+	},
+	{
+		ID:    "systemd_scope_active_state",
+		Title: "Systemd scope Active units",
+		Units: "state",
+		Fam:   "scope",
+		Ctx:   "systemd.systemd_scope_active_state",
+	},
 }
