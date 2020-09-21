@@ -12,10 +12,14 @@ func convertUnitState(state string) int64 {
 	switch state {
 	case "active":
 		return 1
-	case "inactive":
-		return 0
-	case "failed":
+	case "activating":
 		return 2
+	case "failed":
+		return 3
+	case "inactive":
+		return 4
+	case "deactivating":
+		return 5
 	default:
 		return -1
 	}
@@ -74,16 +78,33 @@ func (s SystemdStates) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
 }
 
 func extractUnitType(unit string) (string, error) {
-	validTypes := []string{"service", "socket", "device", "mount", "automount", "swap", "target", "path", "timer", "scope"}
 	ut := ""
-	for _, t := range validTypes {
-		if strings.HasSuffix(unit, fmt.Sprintf(".%s", t)) {
-			ut = t
-			break
-		}
+	idx := strings.LastIndexByte(unit, '.')
+
+	switch suffix := unit[idx:]; suffix {
+	case ".service":
+		ut = "service"
+	case ".socket":
+		ut = "socket"
+	case ".device":
+		ut = "device"
+	case ".mount":
+		ut = "mount"
+	case ".automount":
+		ut = "automount"
+	case ".swap":
+		ut = "swap"
+	case ".target":
+		ut = "target"
+	case ".path":
+		ut = "path"
+	case ".timer":
+		ut = "timer"
+	case ".scope":
+		ut = "scope"
 	}
 
-	if ut == "" {
+	if ut == "" || idx == -1 {
 		return "", fmt.Errorf("Could not find a type for : %v", unit)
 	}
 	return ut, nil
