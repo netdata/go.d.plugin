@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp/ip"
+	"github.com/netdata/go.d.plugin/pkg/ip"
 )
 
 func (d *DnsmasqDHCP) autodetection() error {

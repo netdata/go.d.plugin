@@ -3,7 +3,7 @@ package dnsmasq_dhcp
 import (
 	"fmt"
 
-	"github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp/ip"
+	"github.com/netdata/go.d.plugin/pkg/ip"
 
 	"github.com/netdata/go-orchestrator/module"
 )
