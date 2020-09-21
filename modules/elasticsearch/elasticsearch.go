@@ -99,7 +99,7 @@ func (es *Elasticsearch) Charts() *Charts {
 	return es.charts
 }
 
-func (es Elasticsearch) Collect() map[string]int64 {
+func (es *Elasticsearch) Collect() map[string]int64 {
 	mx, err := es.collect()
 	if err != nil {
 		es.Error(err)
