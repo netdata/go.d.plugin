@@ -1,4 +1,4 @@
-package systemdstates
+package systemdunits
 
 import (
 	"fmt"
@@ -8,7 +8,6 @@ import (
 )
 
 func convertUnitState(state string) int64 {
-
 	switch state {
 	case "active":
 		return 1
@@ -26,9 +25,7 @@ func convertUnitState(state string) int64 {
 
 }
 
-func (s *SystemdStates) collect() (map[string]int64, error) {
-
-	var err error
+func (s *SystemdUnits) collect() (map[string]int64, error) {
 	conn, err := dbus.New()
 	if err != nil {
 		return nil, err
@@ -44,7 +41,6 @@ func (s *SystemdStates) collect() (map[string]int64, error) {
 
 	units := s.filterUnits(allUnits)
 	for _, unit := range units {
-
 		ut, err := extractUnitType(unit.Name)
 		if err != nil {
 			return nil, err
@@ -62,8 +58,7 @@ func (s *SystemdStates) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func (s SystemdStates) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
-
+func (s SystemdUnits) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
 	var i int
 	for _, unit := range units {
 
@@ -74,19 +69,17 @@ func (s SystemdStates) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
 	}
 
 	return units[:i]
-
 }
 
 func extractUnitType(unit string) (string, error) {
-
 	idx := strings.LastIndexByte(unit, '.')
 
 	if idx <= 0 {
-		return "", fmt.Errorf("Could not find a type for : %v", unit)
+		return "", fmt.Errorf("could not find a type for : %v", unit)
 	}
 	ut := unit[idx+1:]
 	if !isUnitTypeValid(ut) {
-		return "", fmt.Errorf("Could not find a valid type for : %v", unit)
+		return "", fmt.Errorf("could not find a valid type for : %v", unit)
 	}
 
 	return ut, nil

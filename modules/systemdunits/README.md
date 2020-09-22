@@ -1,7 +1,7 @@
 <!--
-title: "Systemd states monitoring with Netdata"
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/systemdstates/README.md
-sidebar_label: "Systemdstates"
+title: "Systemd units monitoring with Netdata"
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/systemdunits/README.md
+sidebar_label: "systemdunits"
 -->
 
 # Systemd states monitoring with Netdata
@@ -29,12 +29,12 @@ It produces the following charts:
 
 ## Configuration
 
-Edit the `go.d/systemdstates.conf` configuration file using `edit-config` from the your agent's [config
+Edit the `go.d/systemdunits.conf` configuration file using `edit-config` from the your agent's [config
 directory](/docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
-sudo ./edit-config go.d/systemdstates.conf
+sudo ./edit-config go.d/systemdunits.conf
 ```
 
 
@@ -51,10 +51,10 @@ jobs:
          - '* *.socket'
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/systemdstates.conf).
+For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/systemdunits.conf).
 
 ## Troubleshooting
 
 Check the module debug output. Run the following command as `netdata` user:
 
-> ./go.d.plugin -d -m systemdstate
+> ./go.d.plugin -d -m systemdunits

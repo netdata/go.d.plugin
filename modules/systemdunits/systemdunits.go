@@ -1,4 +1,4 @@
-package systemdstates
+package systemdunits
 
 import (
 	"github.com/netdata/go-orchestrator/module"
@@ -12,24 +12,24 @@ type Config struct {
 func init() {
 	creator := module.Creator{
 		Defaults: module.Defaults{
-			Disabled:    false,
+			Disabled:    true,
 			UpdateEvery: 1,
 		},
 		Create: func() module.Module { return New() },
 	}
 
-	module.Register("systemdstates", creator)
+	module.Register("systemdunits", creator)
 }
 
-// New creates SystemdStates with default values
-func New() *SystemdStates {
-	return &SystemdStates{
+// New creates SystemdUnits with default values
+func New() *SystemdUnits {
+	return &SystemdUnits{
 		charts: charts.Copy(),
 	}
 }
 
-// SystemdStates SystemdStates module
-type SystemdStates struct {
+// SystemdUnits systemdunits module
+type SystemdUnits struct {
 	module.Base // should be embedded by every module
 	Config      `yaml:",inline"`
 	charts      *module.Charts
@@ -37,11 +37,10 @@ type SystemdStates struct {
 }
 
 // Cleanup makes cleanup
-func (SystemdStates) Cleanup() {}
+func (SystemdUnits) Cleanup() {}
 
 // Init makes initialization
-func (s *SystemdStates) Init() bool {
-
+func (s *SystemdUnits) Init() bool {
 	if !s.Selector.Empty() {
 		m, err := s.Selector.Parse()
 		if err != nil {
@@ -54,17 +53,17 @@ func (s *SystemdStates) Init() bool {
 }
 
 // Check makes check
-func (s SystemdStates) Check() bool {
+func (s SystemdUnits) Check() bool {
 	return len(s.Collect()) > 0
 }
 
 // Charts creates Charts
-func (s *SystemdStates) Charts() *Charts {
+func (s *SystemdUnits) Charts() *Charts {
 	return s.charts
 }
 
 // Collect collects metrics
-func (s *SystemdStates) Collect() map[string]int64 {
+func (s *SystemdUnits) Collect() map[string]int64 {
 	mx, err := s.collect()
 	if err != nil {
 		s.Error(err)
