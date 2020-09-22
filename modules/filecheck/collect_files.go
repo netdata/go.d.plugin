@@ -65,5 +65,5 @@ func (fc *Filecheck) addFileToCharts(filepath string) {
 }
 
 func fileDimID(filepath, metric string) string {
-	return fmt.Sprintf("file_%s_%s", metric, filepath)
+	return fmt.Sprintf("file_%s_%s", filepath, metric)
 }

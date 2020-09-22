@@ -37,7 +37,7 @@ func (fc *Filecheck) collectDir(mx map[string]int64, dirpath string, curTime tim
 
 	mx[dirDimID(dirpath, "exists")] = 1
 	mx[dirDimID(dirpath, "mtime_ago")] = int64(curTime.Sub(info.ModTime()).Seconds())
-	if num, err := dirCalcNumOfFiles(dirpath); err == nil {
+	if num, err := calcDirNumOfFiles(dirpath); err == nil {
 		mx[dirDimID(dirpath, "num_of_files")] = int64(num)
 	}
 }
@@ -67,10 +67,10 @@ func (fc *Filecheck) addDirToCharts(dirpath string) {
 }
 
 func dirDimID(dirpath, metric string) string {
-	return fmt.Sprintf("dir_%s_%s", metric, dirpath)
+	return fmt.Sprintf("dir_%s_%s", dirpath, metric)
 }
 
-func dirCalcNumOfFiles(dirpath string) (int, error) {
+func calcDirNumOfFiles(dirpath string) (int, error) {
 	f, err := os.Open(dirpath)
 	if err != nil {
 		return 0, err
