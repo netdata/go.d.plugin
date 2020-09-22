@@ -47,7 +47,7 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Len(t, job.metrics, len(job.metrics))
+
 }
 
 func TestSystemdStates_Init(t *testing.T) {
@@ -63,11 +63,11 @@ func TestSystemdStates_FilterUnits(t *testing.T) {
 	job := New()
 
 	fixtures := getMockUnit()
-	job.unitsMatcher = regexp.MustCompile("^foo$")
+	job.selector = regexp.MustCompile("^foo$")
 
 	filtered := job.filterUnits(fixtures[0])
 	for _, unit := range filtered {
-		if !job.unitsMatcher.MatchString(unit.Name) {
+		if !job.selector.MatchString(unit.Name) {
 			t.Error(unit.Name, "should not be in the filtered list")
 		}
 	}
@@ -90,5 +90,35 @@ func TestSystemdStates_extractUnitType(t *testing.T) {
 	wrongUnit, err := extractUnitType("nginx.wrong")
 	assert.NotNil(t, err)
 	assert.Equal(t, wrongUnit, "")
+
+}
+
+func TestSystemdStates_isUnitTypeValid(t *testing.T) {
+
+	serviceUnit := isUnitTypeValid("service")
+	assert.Equal(t, serviceUnit, true)
+
+	mountUnit := isUnitTypeValid("mount")
+	assert.Equal(t, mountUnit, true)
+
+	wrongUnit := isUnitTypeValid("wrong")
+	assert.Equal(t, wrongUnit, false)
+
+}
+
+func TestSystemdStates_convertUnitState(t *testing.T) {
+
+	var state int64
+	state = convertUnitState("active")
+	assert.Equal(t, state, int64(1))
+
+	state = convertUnitState("failed")
+	assert.Equal(t, state, int64(3))
+
+	state = convertUnitState("inactive")
+	assert.Equal(t, state, int64(4))
+
+	state = convertUnitState("wrong")
+	assert.Equal(t, state, int64(-1))
 
 }

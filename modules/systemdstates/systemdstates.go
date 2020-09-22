@@ -24,18 +24,16 @@ func init() {
 // New creates SystemdStates with default values
 func New() *SystemdStates {
 	return &SystemdStates{
-		charts:  charts.Copy(),
-		metrics: make(map[string]int64),
+		charts: charts.Copy(),
 	}
 }
 
 // SystemdStates SystemdStates module
 type SystemdStates struct {
-	module.Base  // should be embedded by every module
-	Config       `yaml:",inline"`
-	metrics      map[string]int64
-	charts       *module.Charts
-	unitsMatcher matcher.Matcher
+	module.Base // should be embedded by every module
+	Config      `yaml:",inline"`
+	charts      *module.Charts
+	selector    matcher.Matcher
 }
 
 // Cleanup makes cleanup
@@ -49,15 +47,15 @@ func (s *SystemdStates) Init() bool {
 		if err != nil {
 			s.Errorf("error on creating per user stats matcher : %v", err)
 		}
-		s.unitsMatcher = matcher.WithCache(m)
+		s.selector = matcher.WithCache(m)
 	}
 
 	return true
 }
 
 // Check makes check
-func (SystemdStates) Check() bool {
-	return true
+func (s SystemdStates) Check() bool {
+	return len(s.Collect()) > 0
 }
 
 // Charts creates Charts

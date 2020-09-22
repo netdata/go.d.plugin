@@ -67,7 +67,7 @@ func (s SystemdStates) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
 	var i int
 	for _, unit := range units {
 
-		if unit.LoadState == "loaded" && s.unitsMatcher.MatchString(unit.Name) {
+		if unit.LoadState == "loaded" && s.selector.MatchString(unit.Name) {
 			units[i] = unit
 			i++
 		}
@@ -78,34 +78,24 @@ func (s SystemdStates) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
 }
 
 func extractUnitType(unit string) (string, error) {
-	ut := ""
+
 	idx := strings.LastIndexByte(unit, '.')
 
-	switch suffix := unit[idx:]; suffix {
-	case ".service":
-		ut = "service"
-	case ".socket":
-		ut = "socket"
-	case ".device":
-		ut = "device"
-	case ".mount":
-		ut = "mount"
-	case ".automount":
-		ut = "automount"
-	case ".swap":
-		ut = "swap"
-	case ".target":
-		ut = "target"
-	case ".path":
-		ut = "path"
-	case ".timer":
-		ut = "timer"
-	case ".scope":
-		ut = "scope"
-	}
-
-	if ut == "" || idx == -1 {
+	if idx <= 0 {
 		return "", fmt.Errorf("Could not find a type for : %v", unit)
 	}
+	ut := unit[idx+1:]
+	if !isUnitTypeValid(ut) {
+		return "", fmt.Errorf("Could not find a valid type for : %v", unit)
+	}
+
 	return ut, nil
+}
+
+func isUnitTypeValid(unit string) bool {
+	switch unit {
+	case "service", "socket", "device", "mount", "automount", "swap", "target", "path", "timer", "scope", "slice":
+		return true
+	}
+	return false
 }
