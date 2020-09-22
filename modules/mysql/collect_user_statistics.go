@@ -21,6 +21,7 @@ var userStatisticsMetrics = []string{
 
 func (m *MySQL) collectUserStatistics(collected map[string]int64) error {
 	// https://mariadb.com/kb/en/user-statistics/
+	// https://mariadb.com/kb/en/information-schema-user_statistics-table/
 	m.Debugf("executing query: '%s'", queryUserStatistics)
 
 	rows, err := m.db.Query(queryUserStatistics)
@@ -54,7 +55,7 @@ func (m *MySQL) collectUserStatistics(collected map[string]int64) error {
 			if !ok {
 				continue
 			}
-			value, err := parseUserStatisticsValue(strValue)
+			value, err := parseUserStatisticsValue(name, strValue)
 			if err != nil {
 				continue
 			}
@@ -64,6 +65,10 @@ func (m *MySQL) collectUserStatistics(collected map[string]int64) error {
 	return rows.Err()
 }
 
-func parseUserStatisticsValue(value string) (int64, error) {
+func parseUserStatisticsValue(name, value string) (int64, error) {
+	if name == "Cpu_time" {
+		v, err := strconv.ParseFloat(value, 64)
+		return int64(v * 1000), err
+	}
 	return strconv.ParseInt(value, 10, 64)
 }
