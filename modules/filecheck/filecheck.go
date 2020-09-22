@@ -65,6 +65,8 @@ func (fc *Filecheck) Init() bool {
 	}
 	fc.charts = charts
 
+	fc.Debugf("monitored files: %v", fc.Files.Include)
+	fc.Debugf("monitored dirs: %v", fc.Dirs.Include)
 	return true
 }
 
