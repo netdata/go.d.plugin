@@ -138,12 +138,9 @@ func TestFilecheck_Collect(t *testing.T) {
 			prepare: prepareFilecheckDirs,
 			wantCollected: map[string]int64{
 				"dir_exists_testdata/dir":              1,
-				"dir_exists_testdata/empty_dir":        1,
 				"dir_exists_testdata/non_existent_dir": 0,
 				"dir_mtime_ago_testdata/dir":           657,
-				"dir_mtime_ago_testdata/empty_dir":     662,
 				"dir_num_of_files_testdata/dir":        3,
-				"dir_num_of_files_testdata/empty_dir":  0,
 			},
 		},
 		"collect only non existent dirs": {
@@ -156,12 +153,9 @@ func TestFilecheck_Collect(t *testing.T) {
 			prepare: prepareFilecheckFilesDirs,
 			wantCollected: map[string]int64{
 				"dir_exists_testdata/dir":                    1,
-				"dir_exists_testdata/empty_dir":              1,
 				"dir_exists_testdata/non_existent_dir":       0,
 				"dir_mtime_ago_testdata/dir":                 657,
-				"dir_mtime_ago_testdata/empty_dir":           662,
 				"dir_num_of_files_testdata/dir":              3,
-				"dir_num_of_files_testdata/empty_dir":        0,
 				"file_exists_testdata/empty_file.log":        1,
 				"file_exists_testdata/file.log":              1,
 				"file_exists_testdata/non_existent_file.log": 0,
@@ -228,7 +222,6 @@ func prepareFilecheckNonExistentFiles() *Filecheck {
 func prepareFilecheckDirs() *Filecheck {
 	fc := New()
 	fc.Config.Dirs.Include = []string{
-		"testdata/empty_dir",
 		"testdata/dir",
 		"testdata/non_existent_dir",
 	}
@@ -251,7 +244,6 @@ func prepareFilecheckFilesDirs() *Filecheck {
 		"testdata/non_existent_file.log",
 	}
 	fc.Config.Dirs.Include = []string{
-		"testdata/empty_dir",
 		"testdata/dir",
 		"testdata/non_existent_dir",
 	}
