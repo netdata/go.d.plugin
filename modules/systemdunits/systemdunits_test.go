@@ -1,42 +1,40 @@
 package systemdunits
 
 import (
-	"testing"
 	"regexp"
-
+	"testing"
 
 	"github.com/coreos/go-systemd/v22/dbus"
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
 )
 
-
 // Creates mock UnitLists
 func getMockUnit() [][]dbus.UnitStatus {
 	units := []dbus.UnitStatus{
 		{
-				Name:        "foo",
-				Description: "foo desc",
-				LoadState:   "loaded",
-				ActiveState: "active",
-				SubState:    "running",
-				Followed:    "",
-				Path:        "/org/freedesktop/systemd1/unit/foo",
-				JobId:       0,
-				JobType:     "",
-				JobPath:     "/",
+			Name:        "foo",
+			Description: "foo desc",
+			LoadState:   "loaded",
+			ActiveState: "active",
+			SubState:    "running",
+			Followed:    "",
+			Path:        "/org/freedesktop/systemd1/unit/foo",
+			JobId:       0,
+			JobType:     "",
+			JobPath:     "/",
 		},
 		{
-				Name:        "bar",
-				Description: "bar desc",
-				LoadState:   "not-found",
-				ActiveState: "inactive",
-				SubState:    "dead",
-				Followed:    "",
-				Path:        "/org/freedesktop/systemd1/unit/bar",
-				JobId:       0,
-				JobType:     "",
-				JobPath:     "/",
+			Name:        "bar",
+			Description: "bar desc",
+			LoadState:   "not-found",
+			ActiveState: "inactive",
+			SubState:    "dead",
+			Followed:    "",
+			Path:        "/org/freedesktop/systemd1/unit/bar",
+			JobId:       0,
+			JobType:     "",
+			JobPath:     "/",
 		},
 	}
 
@@ -47,7 +45,6 @@ func TestNew(t *testing.T) {
 	job := New()
 	assert.Implements(t, (*module.Module)(nil), job)
 }
-
 
 func TestSystemdUnits_Init(t *testing.T) {
 	job := New()
@@ -80,12 +77,11 @@ func TestSystemdUnits_extractUnitType(t *testing.T) {
 
 	nginxUnit, err := extractUnitType("nginx.service")
 	assert.Nil(t, err)
-	assert.Equal(t, nginxUnit,"service")
-
+	assert.Equal(t, nginxUnit, "service")
 
 	wrongUnit, err := extractUnitType("nginx.wrong")
 	assert.NotNil(t, err)
-	assert.Equal(t, wrongUnit,"")
+	assert.Equal(t, wrongUnit, "")
 }
 
 func TestSystemdUnits_isUnitTypeValid(t *testing.T) {
@@ -96,7 +92,7 @@ func TestSystemdUnits_isUnitTypeValid(t *testing.T) {
 	assert.Equal(t, mountUnit, true)
 
 	wrongUnit := isUnitTypeValid("wrong")
-	assert.Equal(t, wrongUnit,false)
+	assert.Equal(t, wrongUnit, false)
 
 }
 
