@@ -11,7 +11,7 @@ var (
 
 	fileExistenceChart = module.Chart{
 		ID:    "file_existence",
-		Title: "File Existence (0: doesnt exist, 1: exists)",
+		Title: "File Existence (0: not exists, 1: exists)",
 		Units: "boolean",
 		Fam:   "files",
 		Ctx:   "filecheck.file_existence",
@@ -41,7 +41,7 @@ var (
 
 	dirExistenceChart = module.Chart{
 		ID:    "dir_existence",
-		Title: "Dir Existence (0: doesnt exist, 1: exists)",
+		Title: "Dir Existence (0: not exists, 1: exists)",
 		Units: "boolean",
 		Fam:   "dirs",
 		Ctx:   "filecheck.dir_existence",
