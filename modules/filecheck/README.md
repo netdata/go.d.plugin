@@ -80,7 +80,7 @@ file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/filecheck.c
 
 ## Limitations
 
--   fil/dir path pattern doesn't support any wildcards
+-   file/dir path pattern doesn't support any wildcards
 -   filecheck uses `stat` call to collect metrics, which is not very efficient.
 
 ## Troubleshooting
