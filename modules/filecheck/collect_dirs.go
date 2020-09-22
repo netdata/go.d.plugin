@@ -67,7 +67,7 @@ func (fc *Filecheck) addDirToCharts(dirpath string) {
 
 		if err := chart.AddDim(dim); err != nil {
 			fc.Warning(err)
-			return
+			continue
 		}
 		chart.MarkNotCreated()
 	}
