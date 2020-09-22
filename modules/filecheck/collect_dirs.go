@@ -46,6 +46,7 @@ func (fc *Filecheck) addDirToCharts(dirpath string) {
 	for _, c := range dirCharts {
 		chart := fc.Charts().Get(c.ID)
 		if chart == nil {
+			fc.Warningf("add dimension: couldn't find '%s' chart (dir '%s')", c.ID, dirpath)
 			continue
 		}
 
@@ -58,10 +59,16 @@ func (fc *Filecheck) addDirToCharts(dirpath string) {
 		case dirNumOfFilesChart.ID:
 			id = dirDimID(dirpath, "num_of_files")
 		default:
+			fc.Warningf("add dimension: couldn't dim id for '%s' chart (dir '%s')", c.ID, dirpath)
 			continue
 		}
 
-		_ = chart.AddDim(&module.Dim{ID: id, Name: dirpath})
+		dim := &module.Dim{ID: id, Name: dirpath}
+
+		if err := chart.AddDim(dim); err != nil {
+			fc.Warning(err)
+			return
+		}
 		chart.MarkNotCreated()
 	}
 }

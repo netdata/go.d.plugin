@@ -8,7 +8,7 @@ import (
 
 func (fc Filecheck) validateConfig() error {
 	if len(fc.Files.Include) == 0 && len(fc.Dirs.Include) == 0 {
-		return errors.New("")
+		return errors.New("both 'files->include' and 'dirs->include' are empty")
 	}
 	return nil
 }

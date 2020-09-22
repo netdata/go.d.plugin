@@ -77,14 +77,14 @@ func TestFilecheck_Init(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			es := New()
-			es.Config = test.config
+			fc := New()
+			fc.Config = test.config
 
 			if test.wantFail {
-				assert.False(t, es.Init())
+				assert.False(t, fc.Init())
 			} else {
-				require.True(t, es.Init())
-				assert.Equal(t, test.wantNumOfCharts, len(*es.Charts()))
+				require.True(t, fc.Init())
+				assert.Equal(t, test.wantNumOfCharts, len(*fc.Charts()))
 			}
 		})
 	}

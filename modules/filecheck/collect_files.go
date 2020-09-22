@@ -44,6 +44,7 @@ func (fc *Filecheck) addFileToCharts(filepath string) {
 	for _, c := range fileCharts {
 		chart := fc.Charts().Get(c.ID)
 		if chart == nil {
+			fc.Warningf("add dimension: couldn't find '%s' chart (file '%s')", c.ID, filepath)
 			continue
 		}
 
@@ -56,10 +57,16 @@ func (fc *Filecheck) addFileToCharts(filepath string) {
 		case fileSizeChart.ID:
 			id = fileDimID(filepath, "size_bytes")
 		default:
+			fc.Warningf("add dimension: couldn't dim id for '%s' chart (file '%s')", c.ID, filepath)
 			continue
 		}
 
-		_ = chart.AddDim(&module.Dim{ID: id, Name: filepath})
+		dim := &module.Dim{ID: id, Name: filepath}
+
+		if err := chart.AddDim(dim); err != nil {
+			fc.Warning(err)
+			return
+		}
 		chart.MarkNotCreated()
 	}
 }
