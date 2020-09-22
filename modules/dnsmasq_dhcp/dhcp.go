@@ -5,9 +5,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/pkg/ip"
 
-	"github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp/ip"
+	"github.com/netdata/go-orchestrator/module"
 )
 
 func init() {
