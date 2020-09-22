@@ -53,7 +53,7 @@ func (fc *Filecheck) addDirToCharts(dirpath string) {
 		switch chart.ID {
 		case dirExistenceChart.ID:
 			id = dirDimID(dirpath, "exists")
-		case dirModificationTimeChart.ID:
+		case dirModTimeChart.ID:
 			id = dirDimID(dirpath, "mtime_ago")
 		case dirNumOfFilesChart.ID:
 			id = dirDimID(dirpath, "num_of_files")

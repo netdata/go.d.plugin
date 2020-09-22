@@ -5,18 +5,18 @@ import "github.com/netdata/go-orchestrator/module"
 var (
 	fileCharts = module.Charts{
 		fileExistenceChart.Copy(),
-		fileModificationTimeAgoChart.Copy(),
+		fileModTimeAgoChart.Copy(),
 		fileSizeChart.Copy(),
 	}
 
 	fileExistenceChart = module.Chart{
 		ID:    "file_existence",
-		Title: "File Existence",
+		Title: "File Existence (0: doesnt exist, 1: exists)",
 		Units: "boolean",
 		Fam:   "files",
 		Ctx:   "filecheck.file_existence",
 	}
-	fileModificationTimeAgoChart = module.Chart{
+	fileModTimeAgoChart = module.Chart{
 		ID:    "file_mtime_ago",
 		Title: "File Time Since the Last Modification",
 		Units: "seconds",
@@ -35,18 +35,18 @@ var (
 var (
 	dirCharts = module.Charts{
 		dirExistenceChart.Copy(),
-		dirModificationTimeChart.Copy(),
+		dirModTimeChart.Copy(),
 		dirNumOfFilesChart.Copy(),
 	}
 
 	dirExistenceChart = module.Chart{
 		ID:    "dir_existence",
-		Title: "Dir Existence",
+		Title: "Dir Existence (0: doesnt exist, 1: exists)",
 		Units: "boolean",
 		Fam:   "dirs",
 		Ctx:   "filecheck.dir_existence",
 	}
-	dirModificationTimeChart = module.Chart{
+	dirModTimeChart = module.Chart{
 		ID:    "dir_mtime_ago",
 		Title: "Dir Time Since the Last Modification",
 		Units: "seconds",

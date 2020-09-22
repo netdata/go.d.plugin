@@ -51,7 +51,7 @@ func (fc *Filecheck) addFileToCharts(filepath string) {
 		switch chart.ID {
 		case fileExistenceChart.ID:
 			id = fileDimID(filepath, "exists")
-		case fileModificationTimeAgoChart.ID:
+		case fileModTimeAgoChart.ID:
 			id = fileDimID(filepath, "mtime_ago")
 		case fileSizeChart.ID:
 			id = fileDimID(filepath, "size_bytes")
