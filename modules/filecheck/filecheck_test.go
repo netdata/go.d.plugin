@@ -98,7 +98,7 @@ func TestFilecheck_Check(t *testing.T) {
 		"collect only non existent files": {prepare: prepareFilecheckNonExistentFiles},
 		"collect dirs":                    {prepare: prepareFilecheckDirs},
 		"collect only non existent dirs":  {prepare: prepareFilecheckNonExistentDirs},
-		"collect files and dirs":          {prepare: prepareFilecheckDirs},
+		"collect files and dirs":          {prepare: prepareFilecheckFilesDirs},
 	}
 
 	for name, test := range tests {
