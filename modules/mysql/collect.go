@@ -27,6 +27,7 @@ func (m *MySQL) collect() (map[string]int64, error) {
 	}
 
 	if m.doSlaveStatus {
+		// TODO: shouldn't disable on any error
 		if err := m.collectSlaveStatus(collected); err != nil {
 			m.Errorf("error on collecting slave status: %v", err)
 			m.doSlaveStatus = false
@@ -34,6 +35,7 @@ func (m *MySQL) collect() (map[string]int64, error) {
 	}
 
 	if m.doUserStatistics {
+		// TODO: shouldn't disable on any error
 		if err := m.collectUserStatistics(collected); err != nil {
 			m.Errorf("error on collecting user statistics: %v", err)
 			m.doUserStatistics = false

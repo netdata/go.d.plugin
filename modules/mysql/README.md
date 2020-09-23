@@ -111,6 +111,7 @@ If [Slave Status](https://dev.mysql.com/doc/refman/8.0/en/show-slave-status.html
 
 If [User Statistics](https://mariadb.com/kb/en/user-statistics/) metrics are available:
 
+-  User CPU Time in `percentage`
 -  Rows Operations in `operations/s`
 -  Commands in `commands/s`
 

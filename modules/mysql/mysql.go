@@ -11,16 +11,16 @@ import (
 )
 
 func init() {
-	creator := module.Creator{
+	module.Register("mysql", module.Creator{
 		Create: func() module.Module { return New() },
-	}
-	module.Register("mysql", creator)
+	})
 }
 
 type (
 	Config struct {
-		DSN   string `yaml:"dsn"`
-		MyCNF string `yaml:"my.cnf"`
+		DSN         string `yaml:"dsn"`
+		MyCNF       string `yaml:"my.cnf"`
+		UpdateEvery int    `yaml:"update_every"`
 	}
 	MySQL struct {
 		module.Base
@@ -32,6 +32,7 @@ type (
 		addInnodbDeadlocksOnce *sync.Once
 		addGaleraOnce          *sync.Once
 		addQCacheOnce          *sync.Once
+		addUserStatsCPUOnce    *sync.Once
 
 		doSlaveStatus      bool
 		collectedReplConns map[string]bool
@@ -43,15 +44,16 @@ type (
 )
 
 func New() *MySQL {
-	config := Config{
-		DSN: "root@tcp(localhost:3306)/",
-	}
 	return &MySQL{
-		Config:                 config,
+		Config: Config{
+			DSN: "root@tcp(localhost:3306)/",
+		},
+
 		charts:                 charts.Copy(),
 		addInnodbDeadlocksOnce: &sync.Once{},
 		addGaleraOnce:          &sync.Once{},
 		addQCacheOnce:          &sync.Once{},
+		addUserStatsCPUOnce:    &sync.Once{},
 		doSlaveStatus:          true,
 		doUserStatistics:       true,
 		collectedReplConns:     make(map[string]bool),

@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/netdata/go-orchestrator/module"
@@ -703,6 +704,15 @@ func newSlaveReplConnCharts(conn string) module.Charts {
 	return cs
 }
 
+var userStatsCPUChart = module.Chart{
+	ID:    "userstats_cpu",
+	Title: "User CPU Time",
+	Units: "percentage",
+	Fam:   "userstats",
+	Ctx:   "mysql.userstats_cpu",
+	Type:  module.Stacked,
+}
+
 func newUserStatisticsCharts(user string) module.Charts {
 	user = strings.ToLower(user)
 	return module.Charts{
@@ -750,6 +760,23 @@ func (m *MySQL) addSlaveReplicationConnCharts(conn string) {
 }
 
 func (m *MySQL) addUserStatisticsCharts(user string) {
+	m.addUserStatsCPUOnce.Do(func() {
+		if err := m.Charts().Add(userStatsCPUChart.Copy()); err != nil {
+			m.Warning(err)
+		}
+	})
+	if chart := m.Charts().Get(userStatsCPUChart.ID); chart != nil {
+		dim := &module.Dim{
+			ID:   fmt.Sprintf("userstats_%s_cpu_time", strings.ToLower(user)),
+			Name: user,
+			Algo: module.Incremental,
+			Mul:  100,
+			Div:  1000 * m.UpdateEvery,
+		}
+		if err := chart.AddDim(dim); err != nil {
+			m.Warning(err)
+		}
+	}
 	if err := m.Charts().Add(newUserStatisticsCharts(user)...); err != nil {
 		m.Warning(err)
 	}
