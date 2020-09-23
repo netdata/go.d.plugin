@@ -46,9 +46,9 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/filecheck.conf
 ```
 
-Needs only path to a file or a directory. **The path doesn't support any wildcards**.
+Needs only a path to a file or a directory. **The path doesn't support any wildcards**.
 
-Here is an example with the three jobs:
+Here is an example:
 
 ```yaml
 jobs:
