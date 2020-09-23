@@ -28,6 +28,7 @@ func (fc *Filecheck) collectFile(mx map[string]int64, filepath string, curTime t
 		} else {
 			mx[fileDimID(filepath, "exists")] = 1
 		}
+		fc.Debug(err)
 		return
 	}
 
