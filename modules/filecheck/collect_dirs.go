@@ -28,6 +28,7 @@ func (fc *Filecheck) collectDir(mx map[string]int64, dirpath string, curTime tim
 		} else {
 			mx[dirDimID(dirpath, "exists")] = 1
 		}
+		fc.Debug(err)
 		return
 	}
 
