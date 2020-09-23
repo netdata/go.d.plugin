@@ -770,7 +770,8 @@ func (m *MySQL) addUserStatisticsCharts(user string) {
 			ID:   fmt.Sprintf("userstats_%s_cpu_time", strings.ToLower(user)),
 			Name: user,
 			Algo: module.Incremental,
-			Div:  1000,
+			Mul:  100,
+			Div:  1000 * m.UpdateEvery,
 		}
 		if err := chart.AddDim(dim); err != nil {
 			m.Warning(err)

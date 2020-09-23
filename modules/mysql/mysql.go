@@ -18,8 +18,9 @@ func init() {
 
 type (
 	Config struct {
-		DSN   string `yaml:"dsn"`
-		MyCNF string `yaml:"my.cnf"`
+		DSN         string `yaml:"dsn"`
+		MyCNF       string `yaml:"my.cnf"`
+		UpdateEvery int    `yaml:"update_every"`
 	}
 	MySQL struct {
 		module.Base
