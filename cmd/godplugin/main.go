@@ -29,6 +29,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/freeradius"
 	_ "github.com/netdata/go.d.plugin/modules/hdfs"
 	_ "github.com/netdata/go.d.plugin/modules/httpcheck"
+	_ "github.com/netdata/go.d.plugin/modules/isc_dhcpd"
 	_ "github.com/netdata/go.d.plugin/modules/k8s_kubelet"
 	_ "github.com/netdata/go.d.plugin/modules/k8s_kubeproxy"
 	_ "github.com/netdata/go.d.plugin/modules/lighttpd"
