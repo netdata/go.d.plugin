@@ -1,112 +1,156 @@
 package systemdunits
 
 import (
-	"regexp"
 	"testing"
+	"fmt"
+	"strings"
 
 	"github.com/coreos/go-systemd/v22/dbus"
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
-
-// Creates mock UnitLists
-func getMockUnit() [][]dbus.UnitStatus {
-	units := []dbus.UnitStatus{
-		{
-			Name:        "foo",
-			Description: "foo desc",
-			LoadState:   "loaded",
-			ActiveState: "active",
-			SubState:    "running",
-			Followed:    "",
-			Path:        "/org/freedesktop/systemd1/unit/foo",
-			JobId:       0,
-			JobType:     "",
-			JobPath:     "/",
-		},
-		{
-			Name:        "bar",
-			Description: "bar desc",
-			LoadState:   "not-found",
-			ActiveState: "inactive",
-			SubState:    "dead",
-			Followed:    "",
-			Path:        "/org/freedesktop/systemd1/unit/bar",
-			JobId:       0,
-			JobType:     "",
-			JobPath:     "/",
-		},
-	}
-
-	return [][]dbus.UnitStatus{units}
-}
 
 func TestNew(t *testing.T) {
 	job := New()
 	assert.Implements(t, (*module.Module)(nil), job)
 }
 
+
 func TestSystemdUnits_Init(t *testing.T) {
 	job := New()
+	job.Selector.Includes = []string{"* *.service"}
 	assert.True(t, job.Init())
-	job.Init()
-
 }
 
-func TestSystemdUnits_FilterUnits(t *testing.T) {
+func TestSystemdUnits_Charts(t *testing.T) {
 	job := New()
-	fixtures := getMockUnit()
-	job.selector = regexp.MustCompile("^foo$")
-
-	filtered := job.filterUnits(fixtures[0])
-	for _, unit := range filtered {
-		if !job.selector.MatchString(unit.Name) {
-			t.Error(unit.Name, "should not be in the filtered list")
-		}
-	}
-
-	if len(filtered) != len(fixtures[0])-1 {
-		t.Error("Default filters removed units")
+	for _, chart := range *job.Charts() {
+		idx := strings.IndexByte(chart.ID, '_')
+		unit := chart.ID[:idx]
+		chartID := fmt.Sprintf("%s_states", unit)
+		assert.Equal(t, chart.ID, chartID)
+		assert.Equal(t, chart.Fam, unit)
 	}
 }
 
-func TestSystemdUnits_extractUnitType(t *testing.T) {
-	rightUnit, err := extractUnitType("nginx.service")
-	assert.Nil(t, err)
-	assert.NotNil(t, rightUnit)
+func TestSystemdUnits_Collect(t *testing.T) {
+	tests := map[string]struct {
+		name        string
+		state		int64
+		units       []dbus.UnitStatus
+	}{
+		"service1": {
+			"service1.service",
+			1, // 1: active
+			[]dbus.UnitStatus{
+				{
+						Name:        "service1.service",
+						Description: "service1 desc",
+						LoadState:   "loaded",
+						ActiveState: "active",
+						SubState:    "running",
+						Followed:    "",
+						Path:        "/org/freedesktop/systemd1/unit/service1",
+						JobId:       0,
+						JobType:     "",
+						JobPath:     "/",
+				},
+			},
+		},
+		"service2": {
+			"service2.service",
+			2, // 2: activating
+			[]dbus.UnitStatus{
+				{
+						Name:        "service2.service",
+						Description: "service2 desc",
+						LoadState:   "loaded",
+						ActiveState: "activating",
+						SubState:    "running",
+						Followed:    "",
+						Path:        "/org/freedesktop/systemd1/unit/service1",
+						JobId:       0,
+						JobType:     "",
+						JobPath:     "/",
+				},
+			},
+		},
+		"service3": {
+			"service3.service",
+			3, // 3: failed
+			[]dbus.UnitStatus{
+				{
+						Name:        "service3.service",
+						Description: "service3 desc",
+						LoadState:   "loaded",
+						ActiveState: "failed",
+						SubState:    "running",
+						Followed:    "",
+						Path:        "/org/freedesktop/systemd1/unit/service1",
+						JobId:       0,
+						JobType:     "",
+						JobPath:     "/",
+				},
+			},
+		},
+		"service4": {
+			"service4.service",
+			4, // 4: inactive
+			[]dbus.UnitStatus{
+				{
+						Name:        "service4.service",
+						Description: "service4 desc",
+						LoadState:   "loaded",
+						ActiveState: "inactive",
+						SubState:    "running",
+						Followed:    "",
+						Path:        "/org/freedesktop/systemd1/unit/service1",
+						JobId:       0,
+						JobType:     "",
+						JobPath:     "/",
+				},
+			},
+		},
+		"service5": {
+			"service5.service",
+			5, // 5: deactivating
+			[]dbus.UnitStatus{
+				{
+						Name:        "service5.service",
+						Description: "service5 desc",
+						LoadState:   "loaded",
+						ActiveState: "deactivating",
+						SubState:    "running",
+						Followed:    "",
+						Path:        "/org/freedesktop/systemd1/unit/service1",
+						JobId:       0,
+						JobType:     "",
+						JobPath:     "/",
+				},
+			},
+		},
+	}
+	job := New()
+	job.Selector.Includes = []string{"* *.service"}
+	require.True(t, job.Init())
+	require.True(t, job.Check())
 
-	nginxUnit, err := extractUnitType("nginx.service")
-	assert.Nil(t, err)
-	assert.Equal(t, nginxUnit, "service")
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
 
-	wrongUnit, err := extractUnitType("nginx.wrong")
-	assert.NotNil(t, err)
-	assert.Equal(t, wrongUnit, "")
-}
+			require.True(t, job.Init())
+			job.units = test.units
+			collected := job.Collect()
+			assert.Equal(t, collected[test.name], test.state)
+		})
+	}
 
-func TestSystemdUnits_isUnitTypeValid(t *testing.T) {
-	serviceUnit := isUnitTypeValid("service")
-	assert.Equal(t, serviceUnit, true)
-
-	mountUnit := isUnitTypeValid("mount")
-	assert.Equal(t, mountUnit, true)
-
-	wrongUnit := isUnitTypeValid("wrong")
-	assert.Equal(t, wrongUnit, false)
-
-}
-
-func TestSystemdUnits_convertUnitState(t *testing.T) {
-	var state int64
-	state = convertUnitState("active")
-	assert.Equal(t, state, int64(1))
-
-	state = convertUnitState("failed")
-	assert.Equal(t, state, int64(3))
-
-	state = convertUnitState("inactive")
-	assert.Equal(t, state, int64(4))
-
-	state = convertUnitState("wrong")
-	assert.Equal(t, state, int64(-1))
+	job2 := New()
+	job2.Selector.Includes = []string{"* *.target"}
+	require.True(t, job2.Init())
+	require.True(t, job2.Check())
+	require.True(t, job2.Init())
+	job2.units = tests["service1"].units
+	assert.Nil(t, job2.Collect())
 }

@@ -1,6 +1,7 @@
 package systemdunits
 
 import (
+	"github.com/coreos/go-systemd/v22/dbus"
 	"github.com/netdata/go-orchestrator/module"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
@@ -12,7 +13,7 @@ type Config struct {
 func init() {
 	creator := module.Creator{
 		Defaults: module.Defaults{
-			Disabled:    true,
+			Disabled:    false,
 			UpdateEvery: 1,
 		},
 		Create: func() module.Module { return New() },
@@ -24,16 +25,19 @@ func init() {
 // New creates SystemdUnits with default values
 func New() *SystemdUnits {
 	return &SystemdUnits{
-		charts: charts.Copy(),
+		collectedUnits: make(map[string]bool),
+		charts:         charts.Copy(),
 	}
 }
 
 // SystemdUnits systemdunits module
 type SystemdUnits struct {
-	module.Base // should be embedded by every module
-	Config      `yaml:",inline"`
-	charts      *module.Charts
-	selector    matcher.Matcher
+	module.Base    // should be embedded by every module
+	Config         `yaml:",inline"`
+	charts         *module.Charts
+	collectedUnits map[string]bool
+	units          []dbus.UnitStatus
+	selector       matcher.Matcher
 }
 
 // Cleanup makes cleanup
@@ -48,6 +52,12 @@ func (s *SystemdUnits) Init() bool {
 		}
 		s.selector = matcher.WithCache(m)
 	}
+
+	allUnits, err := s.getUnits()
+	if err != nil {
+		s.Errorf("error on creating per user stats matcher : %v", err)
+	}
+	s.units = allUnits
 
 	return true
 }

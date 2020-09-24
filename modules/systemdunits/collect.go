@@ -22,10 +22,9 @@ func convertUnitState(state string) int64 {
 	default:
 		return -1
 	}
-
 }
 
-func (s *SystemdUnits) collect() (map[string]int64, error) {
+func (s *SystemdUnits) getUnits() ([]dbus.UnitStatus, error) {
 	conn, err := dbus.New()
 	if err != nil {
 		return nil, err
@@ -36,25 +35,28 @@ func (s *SystemdUnits) collect() (map[string]int64, error) {
 	if err != nil {
 		return nil, err
 	}
+	return allUnits, nil
+}
 
+func (s *SystemdUnits) collect() (map[string]int64, error) {
 	mx := make(map[string]int64)
 
-	units := s.filterUnits(allUnits)
+	units := s.filterUnits(s.units)
 	for _, unit := range units {
 		ut, err := extractUnitType(unit.Name)
 		if err != nil {
 			return nil, err
 		}
 
-		chartID := fmt.Sprintf("%s_states", ut)
-		chart := s.charts.Get(chartID)
-		if !chart.HasDim(unit.Name) {
+		if !s.collectedUnits[unit.Name] {
+			s.collectedUnits[unit.Name] = true
+			chartID := fmt.Sprintf("%s_states", ut)
+			chart := s.charts.Get(chartID)
 			_ = chart.AddDim(&Dim{ID: unit.Name})
 		}
 
 		mx[unit.Name] = convertUnitState(unit.ActiveState)
 	}
-
 	return mx, nil
 }
 
@@ -67,7 +69,6 @@ func (s SystemdUnits) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
 			i++
 		}
 	}
-
 	return units[:i]
 }
 
@@ -81,7 +82,6 @@ func extractUnitType(unit string) (string, error) {
 	if !isUnitTypeValid(ut) {
 		return "", fmt.Errorf("could not find a valid type for : %v", unit)
 	}
-
 	return ut, nil
 }
 
