@@ -1,12 +1,13 @@
 package file
 
 import (
-	"github.com/netdata/go-orchestrator/module"
-	"github.com/stretchr/testify/require"
 	"testing"
 
-	"github.com/netdata/go-orchestrator/job/confgroup"
+	"github.com/netdata/go.d.plugin/plugin/job/confgroup"
+	"github.com/netdata/go.d.plugin/plugin/module"
+
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParse(t *testing.T) {

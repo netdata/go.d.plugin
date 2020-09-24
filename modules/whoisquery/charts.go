@@ -1,6 +1,6 @@
 package whoisquery
 
-import "github.com/netdata/go-orchestrator/module"
+import "github.com/netdata/go.d.plugin/plugin/module"
 
 type (
 	Charts = module.Charts

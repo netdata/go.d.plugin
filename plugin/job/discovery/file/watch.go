@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netdata/go-orchestrator/job/confgroup"
-	"github.com/netdata/go-orchestrator/pkg/logger"
+	"github.com/netdata/go.d.plugin/pkg/logger"
+	"github.com/netdata/go.d.plugin/plugin/job/confgroup"
 
 	"github.com/fsnotify/fsnotify"
 )

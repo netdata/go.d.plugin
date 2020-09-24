@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/plugin/module"
 )
 
 func (fc *Filecheck) collectFiles(mx map[string]int64) {

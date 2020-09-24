@@ -7,13 +7,16 @@ require (
 	github.com/Wing924/ltsv v0.3.1
 	github.com/axiomhq/hyperloglog v0.0.0-20191112132149-a4c4c47bc57f
 	github.com/cloudflare/cfssl v1.4.1
+	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/gofrs/flock v0.8.0
+	github.com/ilyam8/hashstructure v1.1.0
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/likexian/whois-go v1.7.1
 	github.com/likexian/whois-parser-go v1.14.5
+	github.com/mattn/go-isatty v0.0.12
 	github.com/miekg/dns v1.1.29
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/netdata/go-orchestrator v0.0.0-20200917191103-724cb40df90f
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/prometheus/common v0.10.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible

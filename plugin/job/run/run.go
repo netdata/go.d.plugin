@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	jobpkg "github.com/netdata/go-orchestrator/job"
-	"github.com/netdata/go-orchestrator/pkg/logger"
-	"github.com/netdata/go-orchestrator/pkg/ticker"
+	"github.com/netdata/go.d.plugin/pkg/logger"
+	"github.com/netdata/go.d.plugin/pkg/ticker"
+	jobpkg "github.com/netdata/go.d.plugin/plugin/job"
 )
 
 type (

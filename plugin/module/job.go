@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/netdata/go-orchestrator/pkg/logger"
-	"github.com/netdata/go-orchestrator/pkg/netdataapi"
+	"github.com/netdata/go.d.plugin/pkg/logger"
+	"github.com/netdata/go.d.plugin/pkg/netdataapi"
 )
 
 var writeLock = &sync.Mutex{}

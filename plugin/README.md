@@ -1,7 +1,5 @@
 # go-orchestrator
 
-[![CircleCI](https://circleci.com/gh/netdata/go-orchestrator.svg?style=svg)](https://circleci.com/gh/netdata/go-orchestrator)
-
 This library is a tool for writing [netdata](https://github.com/netdata/netdata) plugins.
 
 We strongly believe that custom plugins are very important and they must be easy to write.

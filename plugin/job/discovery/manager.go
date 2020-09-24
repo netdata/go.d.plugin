@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/netdata/go-orchestrator/job/confgroup"
-	"github.com/netdata/go-orchestrator/job/discovery/dummy"
-	"github.com/netdata/go-orchestrator/job/discovery/file"
-	"github.com/netdata/go-orchestrator/pkg/logger"
+	"github.com/netdata/go.d.plugin/pkg/logger"
+	"github.com/netdata/go.d.plugin/plugin/job/confgroup"
+	"github.com/netdata/go.d.plugin/plugin/job/discovery/dummy"
+	"github.com/netdata/go.d.plugin/plugin/job/discovery/file"
 )
 
 type Config struct {

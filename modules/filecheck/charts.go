@@ -1,6 +1,6 @@
 package filecheck
 
-import "github.com/netdata/go-orchestrator/module"
+import "github.com/netdata/go.d.plugin/plugin/module"
 
 var (
 	fileCharts = module.Charts{

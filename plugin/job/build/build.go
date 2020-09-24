@@ -10,10 +10,10 @@ import (
 	"sync"
 	"time"
 
-	jobpkg "github.com/netdata/go-orchestrator/job"
-	"github.com/netdata/go-orchestrator/job/confgroup"
-	"github.com/netdata/go-orchestrator/module"
-	"github.com/netdata/go-orchestrator/pkg/logger"
+	"github.com/netdata/go.d.plugin/pkg/logger"
+	jobpkg "github.com/netdata/go.d.plugin/plugin/job"
+	"github.com/netdata/go.d.plugin/plugin/job/confgroup"
+	"github.com/netdata/go.d.plugin/plugin/module"
 
 	"gopkg.in/yaml.v2"
 )

@@ -5,11 +5,11 @@ import (
 	"io"
 	"os"
 
-	"github.com/netdata/go-orchestrator/job/confgroup"
-	"github.com/netdata/go-orchestrator/job/discovery"
-	"github.com/netdata/go-orchestrator/job/discovery/dummy"
-	"github.com/netdata/go-orchestrator/job/discovery/file"
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/plugin/job/confgroup"
+	"github.com/netdata/go.d.plugin/plugin/job/discovery"
+	"github.com/netdata/go.d.plugin/plugin/job/discovery/dummy"
+	"github.com/netdata/go.d.plugin/plugin/job/discovery/file"
+	"github.com/netdata/go.d.plugin/plugin/module"
 
 	"gopkg.in/yaml.v2"
 )

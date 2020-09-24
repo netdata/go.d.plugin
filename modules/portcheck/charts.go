@@ -3,7 +3,7 @@ package portcheck
 import (
 	"fmt"
 
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/plugin/module"
 )
 
 type (

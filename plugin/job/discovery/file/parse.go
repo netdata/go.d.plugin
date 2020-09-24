@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/netdata/go-orchestrator/job/confgroup"
+	"github.com/netdata/go.d.plugin/plugin/job/confgroup"
 
 	"gopkg.in/yaml.v2"
 )

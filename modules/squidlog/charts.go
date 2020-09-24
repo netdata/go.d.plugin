@@ -3,7 +3,7 @@ package squidlog
 import (
 	"errors"
 
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/plugin/module"
 )
 
 type (

@@ -1,6 +1,6 @@
 package lighttpd2
 
-import "github.com/netdata/go-orchestrator/module"
+import "github.com/netdata/go.d.plugin/plugin/module"
 
 type (
 	// Charts is an alias for module.Charts

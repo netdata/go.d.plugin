@@ -6,7 +6,7 @@ import (
 	"github.com/netdata/go.d.plugin/modules/openvpn/client"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/plugin/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

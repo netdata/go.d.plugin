@@ -6,11 +6,11 @@ import (
 	"os"
 	"path"
 
-	"github.com/netdata/go-orchestrator/cli"
-	"github.com/netdata/go-orchestrator/module"
-	"github.com/netdata/go-orchestrator/pkg/logger"
-	"github.com/netdata/go-orchestrator/pkg/multipath"
-	"github.com/netdata/go-orchestrator/plugin"
+	"github.com/netdata/go.d.plugin/cli"
+	"github.com/netdata/go.d.plugin/pkg/logger"
+	"github.com/netdata/go.d.plugin/pkg/multipath"
+	"github.com/netdata/go.d.plugin/plugin"
+	"github.com/netdata/go.d.plugin/plugin/module"
 
 	"github.com/jessevdk/go-flags"
 )

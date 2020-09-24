@@ -1,7 +1,7 @@
 package module
 
 import (
-	"github.com/netdata/go-orchestrator/pkg/logger"
+	"github.com/netdata/go.d.plugin/pkg/logger"
 )
 
 // Module is an interface that represents a module.

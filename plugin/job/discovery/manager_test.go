@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/netdata/go-orchestrator/job/confgroup"
-	"github.com/netdata/go-orchestrator/job/discovery/file"
+	"github.com/netdata/go.d.plugin/plugin/job/confgroup"
+	"github.com/netdata/go.d.plugin/plugin/job/discovery/file"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

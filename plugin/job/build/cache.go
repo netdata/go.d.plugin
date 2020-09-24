@@ -3,7 +3,7 @@ package build
 import (
 	"context"
 
-	"github.com/netdata/go-orchestrator/job/confgroup"
+	"github.com/netdata/go.d.plugin/plugin/job/confgroup"
 )
 
 type (
