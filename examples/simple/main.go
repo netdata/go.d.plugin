@@ -1,0 +1,123 @@
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"os"
+	"path"
+
+	"github.com/netdata/go.d.plugin/cli"
+	"github.com/netdata/go.d.plugin/pkg/logger"
+	"github.com/netdata/go.d.plugin/pkg/multipath"
+	"github.com/netdata/go.d.plugin/plugin"
+	"github.com/netdata/go.d.plugin/plugin/module"
+
+	"github.com/jessevdk/go-flags"
+)
+
+var version = "v0.0.1-example"
+
+type example struct{ module.Base }
+
+func (example) Cleanup() {}
+
+func (example) Init() bool { return true }
+
+func (example) Check() bool { return true }
+
+func (example) Charts() *module.Charts {
+	return &module.Charts{
+		{
+			ID:    "random",
+			Title: "A Random Number", Units: "random", Fam: "random",
+			Dims: module.Dims{
+				{ID: "random0", Name: "random 0"},
+				{ID: "random1", Name: "random 1"},
+			},
+		},
+	}
+}
+
+func (e *example) Collect() map[string]int64 {
+	return map[string]int64{
+		"random0": rand.Int63n(100),
+		"random1": rand.Int63n(100),
+	}
+}
+
+var (
+	cd, _    = os.Getwd()
+	name     = "goplugin"
+	userDir  = os.Getenv("NETDATA_USER_CONFIG_DIR")
+	stockDir = os.Getenv("NETDATA_STOCK_CONFIG_DIR")
+)
+
+func confDir(dirs []string) (mpath multipath.MultiPath) {
+	if len(dirs) > 0 {
+		return dirs
+	}
+	if userDir != "" && stockDir != "" {
+		return multipath.New(
+			userDir,
+			stockDir,
+		)
+	}
+	return multipath.New(
+		path.Join(cd, "/../../../../etc/netdata"),
+		path.Join(cd, "/../../../../usr/lib/netdata/conf.d"),
+	)
+}
+
+func modulesConfDir(dirs []string) multipath.MultiPath {
+	if len(dirs) > 0 {
+		return dirs
+	}
+	if userDir != "" && stockDir != "" {
+		return multipath.New(
+			path.Join(userDir, name),
+			path.Join(stockDir, name),
+		)
+	}
+	return multipath.New(
+		path.Join(cd, "/../../../../etc/netdata", name),
+		path.Join(cd, "/../../../../usr/lib/netdata/conf.d", name),
+	)
+}
+
+func main() {
+	opt := parseCLI()
+
+	if opt.Debug {
+		logger.SetSeverity(logger.DEBUG)
+	}
+	if opt.Version {
+		fmt.Println(version)
+		os.Exit(0)
+	}
+
+	module.Register("example", module.Creator{
+		Create: func() module.Module { return &example{} }},
+	)
+
+	p := plugin.New(plugin.Config{
+		Name:              name,
+		ConfDir:           confDir(opt.ConfDir),
+		ModulesConfDir:    modulesConfDir(opt.ConfDir),
+		ModulesSDConfPath: opt.WatchPath,
+		RunModule:         opt.Module,
+		MinUpdateEvery:    opt.UpdateEvery,
+	})
+
+	p.Run()
+}
+
+func parseCLI() *cli.Option {
+	opt, err := cli.Parse(os.Args)
+	if err != nil {
+		if flagsErr, ok := err.(*flags.Error); ok && flagsErr.Type == flags.ErrHelp {
+			os.Exit(0)
+		}
+		os.Exit(1)
+	}
+	return opt
+}

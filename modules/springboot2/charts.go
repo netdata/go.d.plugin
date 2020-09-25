@@ -1,7 +1,7 @@
 package springboot2
 
 import (
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/plugin/module"
 )
 
 type (

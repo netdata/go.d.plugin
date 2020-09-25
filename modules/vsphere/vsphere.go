@@ -12,7 +12,7 @@ import (
 	"github.com/netdata/go.d.plugin/modules/vsphere/scrape"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/plugin/module"
 	"github.com/vmware/govmomi/performance"
 )
 

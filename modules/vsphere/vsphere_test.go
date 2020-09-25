@@ -10,7 +10,7 @@ import (
 	"github.com/netdata/go.d.plugin/modules/vsphere/match"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/plugin/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/vmware/govmomi/performance"

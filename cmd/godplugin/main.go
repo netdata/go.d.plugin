@@ -5,11 +5,12 @@ import (
 	"os"
 	"path"
 
+	"github.com/netdata/go.d.plugin/cli"
+	"github.com/netdata/go.d.plugin/pkg/logger"
+	"github.com/netdata/go.d.plugin/pkg/multipath"
+	"github.com/netdata/go.d.plugin/plugin"
+
 	"github.com/jessevdk/go-flags"
-	"github.com/netdata/go-orchestrator/cli"
-	"github.com/netdata/go-orchestrator/pkg/logger"
-	"github.com/netdata/go-orchestrator/pkg/multipath"
-	"github.com/netdata/go-orchestrator/plugin"
 
 	_ "github.com/netdata/go.d.plugin/modules/activemq"
 	_ "github.com/netdata/go.d.plugin/modules/apache"
