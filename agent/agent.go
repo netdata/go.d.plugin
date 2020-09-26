@@ -16,9 +16,9 @@ import (
 	"github.com/netdata/go.d.plugin/agent/job/run"
 	"github.com/netdata/go.d.plugin/agent/job/state"
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/agent/netdataapi"
 	"github.com/netdata/go.d.plugin/pkg/logger"
 	"github.com/netdata/go.d.plugin/pkg/multipath"
-	"github.com/netdata/go.d.plugin/pkg/netdataapi"
 
 	"github.com/mattn/go-isatty"
 )

@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/netdata/go.d.plugin/agent/netdataapi"
 	"github.com/netdata/go.d.plugin/pkg/logger"
-	"github.com/netdata/go.d.plugin/pkg/netdataapi"
 )
 
 var writeLock = &sync.Mutex{}
