@@ -1,6 +1,6 @@
 package docker_engine
 
-import "github.com/netdata/go.d.plugin/plugin/module"
+import "github.com/netdata/go.d.plugin/agent/module"
 
 type (
 	Charts = module.Charts

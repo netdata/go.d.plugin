@@ -1,6 +1,6 @@
 package dnsquery
 
-import "github.com/netdata/go.d.plugin/plugin/module"
+import "github.com/netdata/go.d.plugin/agent/module"
 
 type (
 	// Charts is an alias for module.Charts

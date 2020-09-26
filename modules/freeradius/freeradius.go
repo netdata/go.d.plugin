@@ -7,7 +7,7 @@ import (
 	"github.com/netdata/go.d.plugin/modules/freeradius/api"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func init() {

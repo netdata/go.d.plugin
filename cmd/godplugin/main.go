@@ -5,10 +5,10 @@ import (
 	"os"
 	"path"
 
+	"github.com/netdata/go.d.plugin/agent"
 	"github.com/netdata/go.d.plugin/cli"
 	"github.com/netdata/go.d.plugin/pkg/logger"
 	"github.com/netdata/go.d.plugin/pkg/multipath"
-	"github.com/netdata/go.d.plugin/plugin"
 
 	"github.com/jessevdk/go-flags"
 
@@ -133,7 +133,7 @@ func main() {
 		logger.SetSeverity(logger.DEBUG)
 	}
 
-	p := plugin.New(plugin.Config{
+	a := agent.New(agent.Config{
 		Name:              name,
 		ConfDir:           confDir(opts),
 		ModulesConfDir:    modulesConfDir(opts),
@@ -144,7 +144,7 @@ func main() {
 		MinUpdateEvery:    opts.UpdateEvery,
 	})
 
-	p.Run()
+	a.Run()
 }
 
 func parseCLI() *cli.Option {

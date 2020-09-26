@@ -6,7 +6,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/modules/freeradius/api"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/stretchr/testify/assert"
 )
 

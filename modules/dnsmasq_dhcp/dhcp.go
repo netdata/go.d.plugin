@@ -7,7 +7,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/pkg/ip"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func init() {
