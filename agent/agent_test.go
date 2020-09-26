@@ -16,8 +16,8 @@ func TestNew(t *testing.T) {
 
 }
 
-func TestPlugin_Run(t *testing.T) {
-	p := New(Config{
+func TestAgent_Run(t *testing.T) {
+	a := New(Config{
 		Name:              "",
 		ConfDir:           nil,
 		ModulesConfDir:    nil,
@@ -29,17 +29,17 @@ func TestPlugin_Run(t *testing.T) {
 	})
 
 	var buf bytes.Buffer
-	p.Out = &buf
+	a.Out = &buf
 
 	var mux sync.Mutex
 	stats := make(map[string]int)
-	p.ModuleRegistry = prepareRegistry(&mux, stats, "module1", "module2")
+	a.ModuleRegistry = prepareRegistry(&mux, stats, "module1", "module2")
 
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go func() { defer wg.Done(); p.run(ctx) }()
+	go func() { defer wg.Done(); a.run(ctx) }()
 
 	time.Sleep(time.Second * 2)
 	cancel()

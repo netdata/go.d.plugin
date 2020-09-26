@@ -1,4 +1,4 @@
-# go-plugin
+# agent
 
 This library is a tool for writing [netdata](https://github.com/netdata/netdata) plugins.
 

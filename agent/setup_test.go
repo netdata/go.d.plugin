@@ -49,14 +49,14 @@ func TestConfig_UnmarshalYAML(t *testing.T) {
 	}
 }
 
-func TestPlugin_loadConfig(t *testing.T) {
+func TestAgent_loadConfig(t *testing.T) {
 	tests := map[string]struct {
-		plugin  Agent
+		agent   Agent
 		wantCfg config
 	}{
 		"valid config file": {
-			plugin: Agent{
-				Name:    "plugin-valid",
+			agent: Agent{
+				Name:    "agent-valid",
 				ConfDir: []string{"testdata"},
 			},
 			wantCfg: config{
@@ -70,26 +70,26 @@ func TestPlugin_loadConfig(t *testing.T) {
 			},
 		},
 		"no config path provided": {
-			plugin:  Agent{},
+			agent:   Agent{},
 			wantCfg: defaultConfig(),
 		},
 		"config file not found": {
-			plugin: Agent{
-				Name:    "plugin",
+			agent: Agent{
+				Name:    "agent",
 				ConfDir: []string{"testdata/not-exist"},
 			},
 			wantCfg: defaultConfig(),
 		},
 		"empty config file": {
-			plugin: Agent{
-				Name:    "plugin-empty",
+			agent: Agent{
+				Name:    "agent-empty",
 				ConfDir: []string{"testdata"},
 			},
 			wantCfg: defaultConfig(),
 		},
 		"invalid syntax config file": {
-			plugin: Agent{
-				Name:    "plugin-invalid-syntax",
+			agent: Agent{
+				Name:    "agent-invalid-syntax",
 				ConfDir: []string{"testdata"},
 			},
 			wantCfg: defaultConfig(),
@@ -98,19 +98,19 @@ func TestPlugin_loadConfig(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, test.wantCfg, test.plugin.loadPluginConfig())
+			assert.Equal(t, test.wantCfg, test.agent.loadPluginConfig())
 		})
 	}
 }
 
-func TestPlugin_loadEnabledModules(t *testing.T) {
+func TestAgent_loadEnabledModules(t *testing.T) {
 	tests := map[string]struct {
-		plugin      Agent
+		agent       Agent
 		cfg         config
 		wantModules module.Registry
 	}{
 		"load all, module disabled by default but explicitly enabled": {
-			plugin: Agent{
+			agent: Agent{
 				ModuleRegistry: module.Registry{
 					"module1": module.Creator{Defaults: module.Defaults{Disabled: true}},
 				},
@@ -123,7 +123,7 @@ func TestPlugin_loadEnabledModules(t *testing.T) {
 			},
 		},
 		"load all, module disabled by default and not explicitly enabled": {
-			plugin: Agent{
+			agent: Agent{
 				ModuleRegistry: module.Registry{
 					"module1": module.Creator{Defaults: module.Defaults{Disabled: true}},
 				},
@@ -131,7 +131,7 @@ func TestPlugin_loadEnabledModules(t *testing.T) {
 			wantModules: module.Registry{},
 		},
 		"load all, module in config modules (default_run=true)": {
-			plugin: Agent{
+			agent: Agent{
 				ModuleRegistry: module.Registry{
 					"module1": module.Creator{},
 				},
@@ -145,7 +145,7 @@ func TestPlugin_loadEnabledModules(t *testing.T) {
 			},
 		},
 		"load all, module not in config modules (default_run=true)": {
-			plugin: Agent{
+			agent: Agent{
 				ModuleRegistry: module.Registry{"module1": module.Creator{}},
 			},
 			cfg: config{
@@ -154,7 +154,7 @@ func TestPlugin_loadEnabledModules(t *testing.T) {
 			wantModules: module.Registry{"module1": module.Creator{}},
 		},
 		"load all, module in config modules (default_run=false)": {
-			plugin: Agent{
+			agent: Agent{
 				ModuleRegistry: module.Registry{
 					"module1": module.Creator{},
 				},
@@ -167,7 +167,7 @@ func TestPlugin_loadEnabledModules(t *testing.T) {
 			},
 		},
 		"load all, module not in config modules (default_run=false)": {
-			plugin: Agent{
+			agent: Agent{
 				ModuleRegistry: module.Registry{
 					"module1": module.Creator{},
 				},
@@ -175,7 +175,7 @@ func TestPlugin_loadEnabledModules(t *testing.T) {
 			wantModules: module.Registry{},
 		},
 		"load specific, module exist in registry": {
-			plugin: Agent{
+			agent: Agent{
 				RunModule: "module1",
 				ModuleRegistry: module.Registry{
 					"module1": module.Creator{},
@@ -186,7 +186,7 @@ func TestPlugin_loadEnabledModules(t *testing.T) {
 			},
 		},
 		"load specific, module doesnt exist in registry": {
-			plugin: Agent{
+			agent: Agent{
 				RunModule:      "module3",
 				ModuleRegistry: module.Registry{},
 			},
@@ -196,12 +196,12 @@ func TestPlugin_loadEnabledModules(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, test.wantModules, test.plugin.loadEnabledModules(test.cfg))
+			assert.Equal(t, test.wantModules, test.agent.loadEnabledModules(test.cfg))
 		})
 	}
 }
 
 // TODO: tech debt
-func TestPlugin_buildDiscoveryConf(t *testing.T) {
+func TestAgent_buildDiscoveryConf(t *testing.T) {
 
 }
