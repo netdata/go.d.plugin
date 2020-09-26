@@ -9,7 +9,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func (s SquidLog) logPanicStackIfAny() {

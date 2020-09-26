@@ -6,11 +6,11 @@ import (
 	"os"
 	"path"
 
+	"github.com/netdata/go.d.plugin/agent"
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/cli"
 	"github.com/netdata/go.d.plugin/pkg/logger"
 	"github.com/netdata/go.d.plugin/pkg/multipath"
-	"github.com/netdata/go.d.plugin/plugin"
-	"github.com/netdata/go.d.plugin/plugin/module"
 
 	"github.com/jessevdk/go-flags"
 )
@@ -99,7 +99,7 @@ func main() {
 		Create: func() module.Module { return &example{} }},
 	)
 
-	p := plugin.New(plugin.Config{
+	p := agent.New(agent.Config{
 		Name:              name,
 		ConfDir:           confDir(opt.ConfDir),
 		ModulesConfDir:    modulesConfDir(opt.ConfDir),

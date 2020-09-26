@@ -8,7 +8,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	cfssllog "github.com/cloudflare/cfssl/log"
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func init() {

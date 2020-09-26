@@ -9,7 +9,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func init() {

@@ -4,7 +4,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/prometheus/prometheus/pkg/labels"
 )
 

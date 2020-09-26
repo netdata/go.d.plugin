@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func (fc *Filecheck) collectDirs(mx map[string]int64) {

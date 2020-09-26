@@ -6,7 +6,7 @@ import (
 
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 type (

@@ -3,7 +3,7 @@ package filecheck
 import (
 	"errors"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func (fc Filecheck) validateConfig() error {

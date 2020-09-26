@@ -8,7 +8,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/metrics"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

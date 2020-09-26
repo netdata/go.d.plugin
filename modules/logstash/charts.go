@@ -3,7 +3,7 @@ package logstash
 import (
 	"fmt"
 
-	"github.com/netdata/go.d.plugin/plugin/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 type (
