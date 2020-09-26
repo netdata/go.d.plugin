@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/netdata/go.d.plugin/agent/job/confgroup"
-	"github.com/netdata/go.d.plugin/pkg/logger"
+	"github.com/netdata/go.d.plugin/logger"
 )
 
 type (

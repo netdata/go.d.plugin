@@ -6,8 +6,8 @@ import (
 	"time"
 
 	jobpkg "github.com/netdata/go.d.plugin/agent/job"
-	"github.com/netdata/go.d.plugin/pkg/logger"
-	"github.com/netdata/go.d.plugin/pkg/ticker"
+	"github.com/netdata/go.d.plugin/agent/ticker"
+	"github.com/netdata/go.d.plugin/logger"
 )
 
 type (
