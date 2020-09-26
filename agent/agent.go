@@ -189,13 +189,7 @@ func (a *Agent) signalHandling() {
 
 	sig := <-ch
 	a.Infof("received %s signal (%d). Terminating...", sig, sig)
-
-	switch sig {
-	case syscall.SIGPIPE:
-		os.Exit(1)
-	default:
-		os.Exit(0)
-	}
+	os.Exit(0)
 }
 
 func (a *Agent) keepAlive() {
