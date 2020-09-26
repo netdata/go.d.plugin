@@ -7,7 +7,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/agent"
 	"github.com/netdata/go.d.plugin/cli"
-	"github.com/netdata/go.d.plugin/pkg/logger"
+	"github.com/netdata/go.d.plugin/logger"
 	"github.com/netdata/go.d.plugin/pkg/multipath"
 
 	"github.com/jessevdk/go-flags"
