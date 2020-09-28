@@ -24,14 +24,9 @@ func (s *SystemdUnits) collect() (map[string]int64, error) {
 	for _, unit := range units {
 		name := cleanUnitName(unit.Name)
 
-		typ, err := extractUnitType(name)
-		if err != nil {
-			continue
-		}
-
 		if !s.collectedUnits[name] {
 			s.collectedUnits[name] = true
-			s.addUnitToCharts(name, typ)
+			s.addUnitToCharts(name)
 		}
 		mx[name] = convertUnitState(unit.ActiveState)
 	}
@@ -67,7 +62,12 @@ func (s *SystemdUnits) getLoadedUnits() ([]dbus.UnitStatus, error) {
 	return loaded, nil
 }
 
-func (s *SystemdUnits) addUnitToCharts(name, typ string) {
+func (s *SystemdUnits) addUnitToCharts(name string) {
+	typ := extractUnitType(name)
+	if typ == "" {
+		s.Warningf("add dimension (unit '%s'): can't extract unit type", name)
+		return
+	}
 	id := fmt.Sprintf("%s_unit_state", typ)
 	chart := s.Charts().Get(id)
 	if chart == nil {
@@ -85,18 +85,17 @@ func (s *SystemdUnits) addUnitToCharts(name, typ string) {
 	chart.MarkNotCreated()
 }
 
-func extractUnitType(name string) (string, error) {
+func extractUnitType(name string) string {
 	// name.type => type
 	idx := strings.LastIndexByte(name, '.')
 	if idx <= 0 {
-		return "", fmt.Errorf("could not find a type for: %s", name)
+		return ""
 	}
-
 	typ := name[idx+1:]
 	if !isUnitTypeValid(typ) {
-		return "", fmt.Errorf("could not find a valid type for: %s", name)
+		return ""
 	}
-	return typ, nil
+	return typ
 }
 
 func isUnitTypeValid(typ string) bool {
