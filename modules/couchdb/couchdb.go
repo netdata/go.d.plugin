@@ -81,7 +81,11 @@ func (cdb *CouchDB) Init() bool {
 }
 
 func (cdb *CouchDB) Check() bool {
-	return false
+	if err := cdb.pingCouchDB(); err != nil {
+		cdb.Error(err)
+		return false
+	}
+	return true //TODO: len(cdb.Collect()) > 0
 }
 
 func (cdb *CouchDB) Charts() *Charts {

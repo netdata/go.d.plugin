@@ -2,6 +2,8 @@ package couchdb
 
 import (
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -33,14 +35,14 @@ func TestNew(t *testing.T) {
 	assert.Implements(t, (*module.Module)(nil), New())
 }
 
-func TestElasticsearch_Init(t *testing.T) {
+func TestCouchDB_Init(t *testing.T) {
 	tests := map[string]struct {
-		config              Config
-		expectedNumOfCharts int
-		shouldFail          bool
+		config          Config
+		wantNumOfCharts int
+		wantFail        bool
 	}{
 		"default": {
-			expectedNumOfCharts: numOfCharts(
+			wantNumOfCharts: numOfCharts(
 				dbActivityCharts,
 				httpTrafficBreakdownCharts,
 				serverOperationsCharts,
@@ -49,14 +51,14 @@ func TestElasticsearch_Init(t *testing.T) {
 			config: New().Config,
 		},
 		"URL not set": {
-			shouldFail: true,
+			wantFail: true,
 			config: Config{
 				HTTP: web.HTTP{
 					Request: web.Request{URL: ""},
 				}},
 		},
 		"invalid TLSCA": {
-			shouldFail: true,
+			wantFail: true,
 			config: Config{
 				HTTP: web.HTTP{
 					Client: web.Client{
@@ -71,14 +73,118 @@ func TestElasticsearch_Init(t *testing.T) {
 			es := New()
 			es.Config = test.config
 
-			if test.shouldFail {
+			if test.wantFail {
 				assert.False(t, es.Init())
 			} else {
 				assert.True(t, es.Init())
-				assert.Equal(t, test.expectedNumOfCharts, len(*es.Charts()))
+				assert.Equal(t, test.wantNumOfCharts, len(*es.Charts()))
 			}
 		})
 	}
+}
+
+func TestCouchDB_Check(t *testing.T) {
+	tests := map[string]struct {
+		prepare  func(*testing.T) (cdb *CouchDB, cleanup func())
+		wantFail bool
+	}{
+		"valid data":         {prepare: prepareCouchDBValidData},
+		"invalid data":       {prepare: prepareCouchDBInvalidData, wantFail: true},
+		"404":                {prepare: prepareCouchDB404, wantFail: true},
+		"connection refused": {prepare: prepareCouchDBConnectionRefused, wantFail: true},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			cdb, cleanup := test.prepare(t)
+			defer cleanup()
+
+			if test.wantFail {
+				assert.False(t, cdb.Check())
+			} else {
+				assert.True(t, cdb.Check())
+			}
+		})
+	}
+}
+
+func numOfCharts(charts ...Charts) (num int) {
+	for _, v := range charts {
+		num += len(v)
+	}
+	return num
+}
+
+func TestCouchDB_Cleanup(t *testing.T) {
+	assert.NotPanics(t, New().Cleanup)
+}
+
+func prepareCouchDB(t *testing.T, createCDB func() *CouchDB) (cdb *CouchDB, cleanup func()) {
+	t.Helper()
+	srv := prepareCouchDBEndpoint()
+
+	cdb = createCDB()
+	cdb.URL = srv.URL
+	require.True(t, cdb.Init())
+
+	return cdb, srv.Close
+}
+
+func prepareCouchDBValidData(t *testing.T) (cdb *CouchDB, cleanup func()) {
+	return prepareCouchDB(t, New)
+}
+
+func prepareCouchDBInvalidData(t *testing.T) (*CouchDB, func()) {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte("hello and\n goodbye"))
+		}))
+	cdb := New()
+	cdb.URL = srv.URL
+	require.True(t, cdb.Init())
+
+	return cdb, srv.Close
+}
+
+func prepareCouchDB404(t *testing.T) (*CouchDB, func()) {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+	cdb := New()
+	cdb.URL = srv.URL
+	require.True(t, cdb.Init())
+
+	return cdb, srv.Close
+}
+
+func prepareCouchDBConnectionRefused(t *testing.T) (*CouchDB, func()) {
+	t.Helper()
+	cdb := New()
+	cdb.URL = "http://127.0.0.1:38001"
+	require.True(t, cdb.Init())
+
+	return cdb, func() {}
+}
+
+func prepareCouchDBEndpoint() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			switch r.URL.Path {
+			case urlPathOverviewStats:
+				_, _ = w.Write(responseNodeStats)
+			case urlPathSystemStats:
+				_, _ = w.Write(responseNodeSystem)
+			case urlPathActiveTasks:
+				_, _ = w.Write(responseActiveTasks)
+			case "/":
+				_, _ = w.Write(responseRoot)
+			default:
+				w.WriteHeader(http.StatusNotFound)
+			}
+		}))
 }
 
 func numOfCharts(charts ...Charts) (num int) {
