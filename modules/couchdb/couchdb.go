@@ -29,9 +29,6 @@ func New() *CouchDB {
 					Timeout: web.Duration{Duration: time.Second * 5},
 				},
 			},
-			DoOverviewStats: true,
-			DoSystemStats:   true,
-			DoDBStats:       true,
 		},
 		collectedIndices: make(map[string]bool),
 	}
@@ -39,10 +36,7 @@ func New() *CouchDB {
 
 type (
 	Config struct {
-		web.HTTP        `yaml:",inline"`
-		DoOverviewStats bool `yaml:"collect_overview_stats"`
-		DoSystemStats   bool `yaml:"collect_system_stats"`
-		DoDBStats       bool `yaml:"collect_db_stats"`
+		web.HTTP `yaml:",inline"`
 	}
 
 	CouchDB struct {
