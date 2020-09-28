@@ -21,7 +21,7 @@ func (s *SystemdUnits) collect() (map[string]int64, error) {
 
 	mx := make(map[string]int64)
 	for _, unit := range units {
-		name := decodeUnitName(unit.Name)
+		name := cleanUnitName(unit.Name)
 
 		typ, err := extractUnitType(name)
 		if err != nil {
@@ -66,7 +66,7 @@ func (s *SystemdUnits) getLoadedUnits() ([]dbus.UnitStatus, error) {
 }
 
 func (s *SystemdUnits) addUnitToCharts(name, typ string) {
-	id := fmt.Sprintf("%s_states", typ)
+	id := fmt.Sprintf("%s_unit_state", typ)
 	chart := s.Charts().Get(id)
 	if chart == nil {
 		s.Warningf("add dimension (unit '%s'): can't find '%s' chart", name, id)
@@ -131,7 +131,7 @@ func convertUnitState(state string) int64 {
 	}
 }
 
-func decodeUnitName(name string) string {
+func cleanUnitName(name string) string {
 	// dev-disk-by\x2duuid-DE44\x2dCEE0.device => dev-disk-by-uuid-DE44-CEE0.device
 	if strings.IndexByte(name, '\\') == -1 {
 		return name
