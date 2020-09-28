@@ -63,7 +63,7 @@ func (s *SystemdUnits) getLoadedUnits() ([]dbus.UnitStatus, error) {
 			loaded = append(loaded, unit)
 		}
 	}
-	s.Debugf("got total/loaded %d/%d units", len(units), loaded)
+	s.Debugf("got total/loaded %d/%d units", len(units), len(loaded))
 	return loaded, nil
 }
 
