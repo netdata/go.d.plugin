@@ -82,6 +82,7 @@ func (s *SystemdUnits) addUnitToCharts(name, typ string) {
 	if err := chart.AddDim(dim); err != nil {
 		s.Warningf("add dimension (unit '%s'): %v", name, err)
 	}
+	chart.MarkNotCreated()
 }
 
 func extractUnitType(name string) (string, error) {
