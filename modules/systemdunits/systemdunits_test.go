@@ -111,7 +111,19 @@ func TestSystemdUnits_Charts(t *testing.T) {
 }
 
 func TestSystemdUnits_Cleanup(t *testing.T) {
+	systemd := New()
+	systemd.UnitsPatterns = []string{"*"}
+	client := prepareOKClient()
+	systemd.client = client
 
+	require.True(t, systemd.Init())
+	require.NotNil(t, systemd.Collect())
+	conn := systemd.conn
+	systemd.Cleanup()
+
+	assert.Nil(t, systemd.conn)
+	v, _ := conn.(*mockConnection)
+	assert.True(t, v.closeCalled)
 }
 
 func TestSystemdUnits_Collect(t *testing.T) {
@@ -262,7 +274,7 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, sd *SystemdUnits, coll
 
 func prepareOKClient() *mockClient {
 	return &mockClient{
-		conn: mockConnection{
+		conn: &mockConnection{
 			units: mockSystemdUnits,
 		},
 	}
@@ -276,16 +288,16 @@ func prepareErrOnConnectClient() *mockClient {
 
 func prepareErrOnListUnitsClient() *mockClient {
 	return &mockClient{
-		conn: mockConnection{
+		conn: &mockConnection{
 			errOnListUnits: true,
 		},
 	}
 }
 
 type mockClient struct {
-	errOnConnect bool
 	conn         systemdConnection
 	connectCalls int
+	errOnConnect bool
 }
 
 func (m *mockClient) connect() (systemdConnection, error) {
@@ -297,11 +309,14 @@ func (m *mockClient) connect() (systemdConnection, error) {
 }
 
 type mockConnection struct {
-	errOnListUnits bool
 	units          []dbus.UnitStatus
+	errOnListUnits bool
+	closeCalled    bool
 }
 
-func (m mockConnection) Close() {}
+func (m *mockConnection) Close() {
+	m.closeCalled = true
+}
 
 func (m mockConnection) ListUnitsByPatterns(_ []string, patterns []string) ([]dbus.UnitStatus, error) {
 	if m.errOnListUnits {
