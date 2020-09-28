@@ -24,15 +24,15 @@ func TestSystemdUnits_Init(t *testing.T) {
 		"default": {
 			config: New().Config,
 		},
-		"'units_patterns' set": {
+		"'include' option set": {
 			config: Config{
-				UnitsPatterns: []string{"*"},
+				Include: []string{"*"},
 			},
 		},
-		"'units_patterns' not set": {
+		"'include' option not set": {
 			wantFail: true,
 			config: Config{
-				UnitsPatterns: []string{},
+				Include: []string{},
 			},
 		},
 	}
@@ -59,7 +59,7 @@ func TestSystemdUnits_Check(t *testing.T) {
 		"successful collection": {
 			prepare: func() *SystemdUnits {
 				systemd := New()
-				systemd.UnitsPatterns = []string{"*"}
+				systemd.Include = []string{"*"}
 				systemd.client = prepareOKClient()
 				return systemd
 			},
@@ -68,7 +68,7 @@ func TestSystemdUnits_Check(t *testing.T) {
 			wantFail: true,
 			prepare: func() *SystemdUnits {
 				systemd := New()
-				systemd.UnitsPatterns = []string{"*.not_exists"}
+				systemd.Include = []string{"*.not_exists"}
 				systemd.client = prepareOKClient()
 				return systemd
 			},
@@ -112,7 +112,7 @@ func TestSystemdUnits_Charts(t *testing.T) {
 
 func TestSystemdUnits_Cleanup(t *testing.T) {
 	systemd := New()
-	systemd.UnitsPatterns = []string{"*"}
+	systemd.Include = []string{"*"}
 	client := prepareOKClient()
 	systemd.client = client
 
@@ -134,7 +134,7 @@ func TestSystemdUnits_Collect(t *testing.T) {
 		"collect all unit types": {
 			prepare: func() *SystemdUnits {
 				systemd := New()
-				systemd.UnitsPatterns = []string{"*"}
+				systemd.Include = []string{"*"}
 				systemd.client = prepareOKClient()
 				return systemd
 			},
@@ -143,7 +143,7 @@ func TestSystemdUnits_Collect(t *testing.T) {
 				"dev-disk-by-uuid-DE44-CEE0.device":        1,
 				"dev-nvme0n1.device":                       1,
 				"docker.socket":                            1,
-				"getty-pre.target":                         4,
+				"getty-pre.target":                         2,
 				"init.scope":                               1,
 				"logrotate.timer":                          1,
 				"lvm2-lvmetad.socket":                      1,
@@ -153,8 +153,8 @@ func TestSystemdUnits_Collect(t *testing.T) {
 				"pamac-cleancache.timer":                   1,
 				"pamac-mirrorlist.timer":                   1,
 				"proc-sys-fs-binfmt_misc.automount":        1,
-				"remote-fs-pre.target":                     4,
-				"rpc_pipefs.target":                        4,
+				"remote-fs-pre.target":                     2,
+				"rpc_pipefs.target":                        2,
 				"run-user-1000-gvfs.mount":                 1,
 				"run-user-1000.mount":                      1,
 				"session-1.scope":                          1,
@@ -172,26 +172,26 @@ func TestSystemdUnits_Collect(t *testing.T) {
 				"system.slice":                             1,
 				"systemd-ask-password-console.path":        1,
 				"systemd-ask-password-wall.path":           1,
-				"systemd-ask-password-wall.service":        4,
-				"systemd-fsck-root.service":                4,
+				"systemd-ask-password-wall.service":        2,
+				"systemd-fsck-root.service":                2,
 				"systemd-udevd-kernel.socket":              1,
 				"tmp.mount":                                1,
 				"user-runtime-dir@1000.service":            1,
 				"user.slice":                               1,
 				"user@1000.service":                        1,
-				"var-lib-nfs-rpc_pipefs.mount":             4,
+				"var-lib-nfs-rpc_pipefs.mount":             2,
 			},
 		},
 		"collect only 'service' unit type": {
 			prepare: func() *SystemdUnits {
 				systemd := New()
-				systemd.UnitsPatterns = []string{"*.service"}
+				systemd.Include = []string{"*.service"}
 				systemd.client = prepareOKClient()
 				return systemd
 			},
 			wantCollected: map[string]int64{
-				"systemd-ask-password-wall.service": 4,
-				"systemd-fsck-root.service":         4,
+				"systemd-ask-password-wall.service": 2,
+				"systemd-fsck-root.service":         2,
 				"user-runtime-dir@1000.service":     1,
 				"user@1000.service":                 1,
 			},
@@ -199,7 +199,7 @@ func TestSystemdUnits_Collect(t *testing.T) {
 		"filter all units": {
 			prepare: func() *SystemdUnits {
 				systemd := New()
-				systemd.UnitsPatterns = []string{"*.not_exists"}
+				systemd.Include = []string{"*.not_exists"}
 				systemd.client = prepareOKClient()
 				return systemd
 			},
@@ -242,7 +242,7 @@ func TestSystemdUnits_Collect(t *testing.T) {
 
 func TestSystemdUnits_connectionReuse(t *testing.T) {
 	systemd := New()
-	systemd.UnitsPatterns = []string{"*"}
+	systemd.Include = []string{"*"}
 	client := prepareOKClient()
 	systemd.client = client
 	require.True(t, systemd.Init())

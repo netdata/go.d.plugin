@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/netdata/go.d.plugin/agent/module"
+
 	"github.com/coreos/go-systemd/v22/dbus"
 )
 
@@ -13,7 +15,6 @@ func (s *SystemdUnits) collect() (map[string]int64, error) {
 	if err != nil {
 		return nil, err
 	}
-	s.Debugf("got %d loaded units", len(units))
 
 	if len(units) == 0 {
 		return nil, nil
@@ -48,7 +49,7 @@ func (s *SystemdUnits) getLoadedUnits() ([]dbus.UnitStatus, error) {
 
 	units, err := s.conn.ListUnitsByPatterns(
 		[]string{"active", "activating", "failed", "inactive", "deactivating"},
-		s.UnitsPatterns,
+		s.Include,
 	)
 	if err != nil {
 		s.conn.Close()
@@ -62,6 +63,7 @@ func (s *SystemdUnits) getLoadedUnits() ([]dbus.UnitStatus, error) {
 			loaded = append(loaded, unit)
 		}
 	}
+	s.Debugf("got total/loaded %d/%d units", len(units), loaded)
 	return loaded, nil
 }
 
@@ -73,7 +75,7 @@ func (s *SystemdUnits) addUnitToCharts(name, typ string) {
 		return
 	}
 
-	dim := &Dim{
+	dim := &module.Dim{
 		ID:   name,
 		Name: name[:len(name)-len(typ)-1], // name.type => name
 	}
@@ -97,6 +99,7 @@ func extractUnitType(name string) (string, error) {
 }
 
 func isUnitTypeValid(typ string) bool {
+	// https://www.freedesktop.org/software/systemd/man/systemd.html
 	switch typ {
 	case "service",
 		"socket",
@@ -115,16 +118,17 @@ func isUnitTypeValid(typ string) bool {
 }
 
 func convertUnitState(state string) int64 {
+	// https://www.freedesktop.org/software/systemd/man/systemd.html
 	switch state {
 	case "active":
 		return 1
-	case "activating":
-		return 2
-	case "failed":
-		return 3
 	case "inactive":
-		return 4
+		return 2
+	case "activating":
+		return 3
 	case "deactivating":
+		return 4
+	case "failed":
 		return 5
 	default:
 		return -1

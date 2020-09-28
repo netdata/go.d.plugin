@@ -19,7 +19,7 @@ func init() {
 func New() *SystemdUnits {
 	return &SystemdUnits{
 		Config: Config{
-			UnitsPatterns: []string{
+			Include: []string{
 				"*.service",
 			},
 		},
@@ -31,7 +31,7 @@ func New() *SystemdUnits {
 }
 
 type Config struct {
-	UnitsPatterns []string `yaml:"units_patterns"`
+	Include []string `yaml:"include"`
 }
 
 type (
@@ -55,8 +55,8 @@ type (
 )
 
 func (s *SystemdUnits) Init() bool {
-	if len(s.UnitsPatterns) == 0 {
-		s.Error("'unit_patterns' not set")
+	if len(s.Include) == 0 {
+		s.Error("'include' option not set")
 		return false
 	}
 	return true
@@ -66,7 +66,7 @@ func (s *SystemdUnits) Check() bool {
 	return len(s.Collect()) > 0
 }
 
-func (s *SystemdUnits) Charts() *Charts {
+func (s *SystemdUnits) Charts() *module.Charts {
 	return s.charts
 }
 
