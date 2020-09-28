@@ -59,6 +59,7 @@ func (s *SystemdUnits) Init() bool {
 		s.Error("'include' option not set")
 		return false
 	}
+	s.Debugf("used unit names patterns: %v", s.Include)
 	return true
 }
 
