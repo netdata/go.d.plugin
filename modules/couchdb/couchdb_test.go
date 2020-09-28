@@ -3,7 +3,7 @@ package couchdb
 import (
 	"testing"
 
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/stretchr/testify/assert"
 )
 

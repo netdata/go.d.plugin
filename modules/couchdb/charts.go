@@ -1,7 +1,7 @@
 package couchdb
 
 import (
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 type (
