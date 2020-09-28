@@ -2,10 +2,117 @@ package systemdunits
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/coreos/go-systemd/v22/dbus"
 )
+
+func (s *SystemdUnits) collect() (map[string]int64, error) {
+	units, err := s.getLoadedUnits()
+	if err != nil {
+		return nil, err
+	}
+	s.Debugf("got %d loaded units", len(units))
+
+	if len(units) == 0 {
+		return nil, nil
+	}
+
+	mx := make(map[string]int64)
+	for _, unit := range units {
+		name := decodeUnitName(unit.Name)
+
+		typ, err := extractUnitType(name)
+		if err != nil {
+			continue
+		}
+
+		if !s.collectedUnits[name] {
+			s.collectedUnits[name] = true
+			s.addUnitToCharts(name, typ)
+		}
+		mx[name] = convertUnitState(unit.ActiveState)
+	}
+	return mx, nil
+}
+
+func (s *SystemdUnits) getLoadedUnits() ([]dbus.UnitStatus, error) {
+	if s.conn == nil {
+		conn, err := s.client.connect()
+		if err != nil {
+			return nil, err
+		}
+		s.conn = conn
+	}
+
+	units, err := s.conn.ListUnitsByPatterns(
+		[]string{"active", "activating", "failed", "inactive", "deactivating"},
+		s.UnitsPatterns,
+	)
+	if err != nil {
+		s.conn.Close()
+		s.conn = nil
+		return nil, err
+	}
+
+	loaded := units[:0]
+	for _, unit := range units {
+		if unit.LoadState == "loaded" {
+			loaded = append(loaded, unit)
+		}
+	}
+	return loaded, nil
+}
+
+func (s *SystemdUnits) addUnitToCharts(name, typ string) {
+	id := fmt.Sprintf("%s_states", typ)
+	chart := s.Charts().Get(id)
+	if chart == nil {
+		s.Warningf("add dimension (unit '%s'): can't find '%s' chart", name, id)
+		return
+	}
+
+	dim := &Dim{
+		ID:   name,
+		Name: name[:len(name)-len(typ)-1], // name.type => name
+	}
+	if err := chart.AddDim(dim); err != nil {
+		s.Warningf("add dimension (unit '%s'): %v", name, err)
+	}
+}
+
+func extractUnitType(name string) (string, error) {
+	// name.type => type
+	idx := strings.LastIndexByte(name, '.')
+	if idx <= 0 {
+		return "", fmt.Errorf("could not find a type for: %s", name)
+	}
+
+	typ := name[idx+1:]
+	if !isUnitTypeValid(typ) {
+		return "", fmt.Errorf("could not find a valid type for: %s", name)
+	}
+	return typ, nil
+}
+
+func isUnitTypeValid(typ string) bool {
+	switch typ {
+	case "service",
+		"socket",
+		"device",
+		"mount",
+		"automount",
+		"swap",
+		"target",
+		"path",
+		"timer",
+		"scope",
+		"slice":
+		return true
+	}
+	return false
+}
 
 func convertUnitState(state string) int64 {
 	switch state {
@@ -24,71 +131,13 @@ func convertUnitState(state string) int64 {
 	}
 }
 
-func (s *SystemdUnits) getUnits() ([]dbus.UnitStatus, error) {
-	conn, err := dbus.New()
+func decodeUnitName(name string) string {
+	if strings.IndexByte(name, '\\') == -1 {
+		return name
+	}
+	v, err := strconv.Unquote("\"" + name + "\"")
 	if err != nil {
-		return nil, err
+		return name
 	}
-	defer conn.Close()
-
-	allUnits, err := conn.ListUnits()
-	if err != nil {
-		return nil, err
-	}
-	return allUnits, nil
-}
-
-func (s *SystemdUnits) collect() (map[string]int64, error) {
-	mx := make(map[string]int64)
-
-	units := s.filterUnits(s.units)
-	for _, unit := range units {
-		ut, err := extractUnitType(unit.Name)
-		if err != nil {
-			return nil, err
-		}
-
-		if !s.collectedUnits[unit.Name] {
-			s.collectedUnits[unit.Name] = true
-			chartID := fmt.Sprintf("%s_states", ut)
-			chart := s.charts.Get(chartID)
-			_ = chart.AddDim(&Dim{ID: unit.Name})
-		}
-
-		mx[unit.Name] = convertUnitState(unit.ActiveState)
-	}
-	return mx, nil
-}
-
-func (s SystemdUnits) filterUnits(units []dbus.UnitStatus) []dbus.UnitStatus {
-	var i int
-	for _, unit := range units {
-
-		if unit.LoadState == "loaded" && s.selector.MatchString(unit.Name) {
-			units[i] = unit
-			i++
-		}
-	}
-	return units[:i]
-}
-
-func extractUnitType(unit string) (string, error) {
-	idx := strings.LastIndexByte(unit, '.')
-
-	if idx <= 0 {
-		return "", fmt.Errorf("could not find a type for : %v", unit)
-	}
-	ut := unit[idx+1:]
-	if !isUnitTypeValid(ut) {
-		return "", fmt.Errorf("could not find a valid type for : %v", unit)
-	}
-	return ut, nil
-}
-
-func isUnitTypeValid(unit string) bool {
-	switch unit {
-	case "service", "socket", "device", "mount", "automount", "swap", "target", "path", "timer", "scope", "slice":
-		return true
-	}
-	return false
+	return v
 }

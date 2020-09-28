@@ -2,78 +2,74 @@ package systemdunits
 
 import (
 	"github.com/netdata/go.d.plugin/agent/module"
-	"github.com/netdata/go.d.plugin/pkg/matcher"
 
 	"github.com/coreos/go-systemd/v22/dbus"
 )
 
-type Config struct {
-	Selector matcher.SimpleExpr `yaml:"selector"`
-}
-
 func init() {
-	creator := module.Creator{
+	module.Register("systemdunits", module.Creator{
 		Defaults: module.Defaults{
 			Disabled:    false,
 			UpdateEvery: 1,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("systemdunits", creator)
+	})
 }
 
-// New creates SystemdUnits with default values
 func New() *SystemdUnits {
 	return &SystemdUnits{
+		Config: Config{
+			UnitsPatterns: []string{
+				"*.service",
+			},
+		},
+
+		client:         newSystemdDBusClient(),
 		collectedUnits: make(map[string]bool),
 		charts:         charts.Copy(),
 	}
 }
 
-// SystemdUnits systemdunits module
-type SystemdUnits struct {
-	module.Base    // should be embedded by every module
-	Config         `yaml:",inline"`
-	charts         *module.Charts
-	collectedUnits map[string]bool
-	units          []dbus.UnitStatus
-	selector       matcher.Matcher
+type Config struct {
+	UnitsPatterns []string `yaml:"units_patterns"`
 }
 
-// Cleanup makes cleanup
-func (SystemdUnits) Cleanup() {}
+type (
+	SystemdUnits struct {
+		module.Base
+		Config `yaml:",inline"`
 
-// Init makes initialization
+		client systemdClient
+		conn   systemdConnection
+
+		collectedUnits map[string]bool
+		charts         *module.Charts
+	}
+	systemdClient interface {
+		connect() (systemdConnection, error)
+	}
+	systemdConnection interface {
+		Close()
+		ListUnitsByPatterns(states []string, patterns []string) ([]dbus.UnitStatus, error)
+	}
+)
+
 func (s *SystemdUnits) Init() bool {
-	if !s.Selector.Empty() {
-		m, err := s.Selector.Parse()
-		if err != nil {
-			s.Errorf("error on creating per user stats matcher : %v", err)
-		}
-		s.selector = matcher.WithCache(m)
+	if len(s.UnitsPatterns) == 0 {
+		s.Error("'unit_patterns' not set")
+		return false
 	}
-
-	allUnits, err := s.getUnits()
-	if err != nil {
-		s.Errorf("error on creating per user stats matcher : %v", err)
-	}
-	s.units = allUnits
-
 	return true
 }
 
-// Check makes check
-func (s SystemdUnits) Check() bool {
+func (s *SystemdUnits) Check() bool {
 	return len(s.Collect()) > 0
 }
 
-// Charts creates Charts
 func (s *SystemdUnits) Charts() *Charts {
 	return s.charts
 }
 
-// Collect collects metrics
 func (s *SystemdUnits) Collect() map[string]int64 {
 	mx, err := s.collect()
 	if err != nil {
@@ -84,4 +80,11 @@ func (s *SystemdUnits) Collect() map[string]int64 {
 		return nil
 	}
 	return mx
+}
+
+func (s *SystemdUnits) Cleanup() {
+	if s.conn != nil {
+		s.conn.Close()
+		s.conn = nil
+	}
 }
