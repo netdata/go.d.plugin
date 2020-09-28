@@ -46,12 +46,12 @@ It produces the following charts:
 
 ## Configuration
 
-Edit the `go.d/systemd.conf` configuration file using `edit-config` from the Agent's [config
+Edit the `go.d/systemdunits.conf` configuration file using `edit-config` from the Agent's [config
 directory](/docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
-sudo ./edit-config go.d/systemd.conf
+sudo ./edit-config go.d/systemdunits.conf
 ```
 
 Needs only `include` option. Syntax is [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
