@@ -4,6 +4,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+// systemd unit types: https://www.freedesktop.org/software/systemd/man/systemd.html
 var charts = module.Charts{
 	{
 		ID:    "service_unit_state",

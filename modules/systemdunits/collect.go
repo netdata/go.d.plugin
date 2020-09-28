@@ -91,30 +91,7 @@ func extractUnitType(name string) string {
 	if idx <= 0 {
 		return ""
 	}
-	typ := name[idx+1:]
-	if !isUnitTypeValid(typ) {
-		return ""
-	}
-	return typ
-}
-
-func isUnitTypeValid(typ string) bool {
-	// https://www.freedesktop.org/software/systemd/man/systemd.html
-	switch typ {
-	case "service",
-		"socket",
-		"device",
-		"mount",
-		"automount",
-		"swap",
-		"target",
-		"path",
-		"timer",
-		"scope",
-		"slice":
-		return true
-	}
-	return false
+	return name[idx+1:]
 }
 
 func convertUnitState(state string) int64 {
