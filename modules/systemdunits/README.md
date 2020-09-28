@@ -10,6 +10,14 @@ sidebar_label: "Systemd units"
 
 This module monitors `Systemd` units state.
 
+**It is disabled by default**. Should be explicitly enabled in the `go.d.conf`:
+
+```yaml
+# go.d.conf
+modules:
+  systemdunits: yes
+```
+
 ## Charts
 
 It produces the following charts:
