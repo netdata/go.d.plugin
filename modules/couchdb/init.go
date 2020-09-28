@@ -24,13 +24,16 @@ func (cdb CouchDB) initHTTPClient() (*http.Client, error) {
 
 func (cdb CouchDB) initCharts() (*Charts, error) {
 	charts := module.Charts{}
-	if err := charts.Add(*overviewCharts.Copy()...); err != nil {
+	if err := charts.Add(*dbActivityCharts.Copy()...); err != nil {
 		return nil, err
 	}
-	if err := charts.Add(*systemCharts.Copy()...); err != nil {
+	if err := charts.Add(*httpTrafficBreakdownCharts.Copy()...); err != nil {
 		return nil, err
 	}
-	if err := charts.Add(*dbCharts.Copy()...); err != nil {
+	if err := charts.Add(*serverOperationsCharts.Copy()...); err != nil {
+		return nil, err
+	}
+	if err := charts.Add(*erlangStatisticsCharts.Copy()...); err != nil {
 		return nil, err
 	}
 	if len(charts) == 0 {
