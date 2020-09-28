@@ -9,7 +9,7 @@ import (
 func init() {
 	module.Register("systemdunits", module.Creator{
 		Defaults: module.Defaults{
-			Disabled:    false,
+			Disabled:    true,
 			UpdateEvery: 10, // gathering systemd units is CPU-intensive op
 		},
 		Create: func() module.Module { return New() },
