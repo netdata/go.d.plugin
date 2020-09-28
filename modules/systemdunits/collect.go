@@ -132,6 +132,7 @@ func convertUnitState(state string) int64 {
 }
 
 func decodeUnitName(name string) string {
+	// dev-disk-by\x2duuid-DE44\x2dCEE0.device => dev-disk-by-uuid-DE44-CEE0.device
 	if strings.IndexByte(name, '\\') == -1 {
 		return name
 	}
