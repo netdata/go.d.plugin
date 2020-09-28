@@ -10,7 +10,7 @@ func init() {
 	module.Register("systemdunits", module.Creator{
 		Defaults: module.Defaults{
 			Disabled:    false,
-			UpdateEvery: 1,
+			UpdateEvery: 10, // gathering systemd units is CPU-intensive op
 		},
 		Create: func() module.Module { return New() },
 	})
