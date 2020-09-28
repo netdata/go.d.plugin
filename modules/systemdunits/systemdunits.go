@@ -1,9 +1,10 @@
 package systemdunits
 
 import (
-	"github.com/coreos/go-systemd/v22/dbus"
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
+
+	"github.com/coreos/go-systemd/v22/dbus"
 )
 
 type Config struct {

@@ -7,6 +7,7 @@ require (
 	github.com/Wing924/ltsv v0.3.1
 	github.com/axiomhq/hyperloglog v0.0.0-20191112132149-a4c4c47bc57f
 	github.com/cloudflare/cfssl v1.4.1
+	github.com/coreos/go-systemd/v22 v22.1.0
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gofrs/flock v0.8.0
