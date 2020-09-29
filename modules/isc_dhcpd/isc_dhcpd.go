@@ -9,6 +9,7 @@ import (
 type (
 	Config struct {
 		LeaseFile string            `yaml:"leases_path"`
+		LastModification int64
 		Pools     map[string]string `yaml:"pools"`
 		Dim       map[string]Dimensions
 		data  	  []LeaseFile

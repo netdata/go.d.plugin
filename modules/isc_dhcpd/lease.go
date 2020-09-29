@@ -21,6 +21,17 @@ func (d *DHCPd) parseDHCPLease() (error) {
 
 	var list []LeaseFile
 
+	info, err := os.Stat(d.Config.LeaseFile)
+	if err != nil {
+		return errors.New("Cannot get file information")
+	}
+
+	if info.ModTime().Unix() == d.Config.LastModification {
+		return nil
+	}
+
+	d.Config.LastModification = info.ModTime().Unix()
+
 	f, err := os.Open(d.LeaseFile)
 	if err != nil {
 		d.Config.data = nil
