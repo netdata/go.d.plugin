@@ -34,7 +34,7 @@ func ParseRanges(value string) ([]Range, error) {
 var (
 	reRange = regexp.MustCompile("^[0-9a-f.:-]+$")            // addr | addr-addr
 	reCIDR  = regexp.MustCompile("^[0-9a-f.:-]+/[0-9]{1,3}$") // addr/prefix_length
-	reV4Net = regexp.MustCompile("^[0-9.-]+/[0-9.]{8,}$")     // v4_addr/mask
+	reV4Net = regexp.MustCompile("^[0-9.-]+/[0-9.]{7,}$")     // v4_addr/mask
 )
 
 func ParseRange(s string) (Range, error) {
@@ -68,9 +68,9 @@ func parseRange(s string) Range {
 	}
 
 	switch {
-	case start.To4() != nil && end.To4() != nil && bytes.Compare(end, start) >= 0:
+	case isV4IP(start) && isV4IP(end) && bytes.Compare(end, start) >= 0:
 		return v4Range{start: start, end: end}
-	case start.To16() != nil && end.To16() != nil && bytes.Compare(end, start) >= 0:
+	case isV6IP(start) && isV6IP(end) && bytes.Compare(end, start) >= 0:
 		return v6Range{start: start, end: end}
 	default:
 		return nil
@@ -86,7 +86,7 @@ func parseCIDR(s string) Range {
 	start, end := cidr.AddressRange(network)
 	prefixLen, _ := network.Mask.Size()
 
-	if isV4 := ip.To4() != nil; isV4 && prefixLen < 31 || prefixLen < 127 {
+	if isV4 := ip.To4() != nil; isV4 && prefixLen < 31 || !isV4 && prefixLen < 127 {
 		start = cidr.Inc(start)
 		end = cidr.Dec(end)
 	}
@@ -101,16 +101,25 @@ func parseV4Network(s string) Range {
 	}
 
 	address, mask := s[:idx], s[idx+1:]
+	fmt.Println(address, mask, 333)
 
 	ip := net.ParseIP(mask).To4()
 	if ip == nil {
 		return nil
 	}
 
-	prefixLen, _ := net.IPv4Mask(ip[0], ip[1], ip[2], ip[3]).Size()
-	if prefixLen == 0 {
+	prefixLen, bits := net.IPv4Mask(ip[0], ip[1], ip[2], ip[3]).Size()
+	if prefixLen+bits == 0 {
 		return nil
 	}
 
 	return parseCIDR(fmt.Sprintf("%s/%s", address, strconv.Itoa(prefixLen)))
+}
+
+func isV4IP(ip net.IP) bool {
+	return ip.To4() != nil
+}
+
+func isV6IP(ip net.IP) bool {
+	return !isV4IP(ip) && ip.To16() != nil
 }
