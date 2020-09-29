@@ -19,7 +19,7 @@ type (
 	}
 )
 
-type DHCPD struct {
+type DHCPd struct {
 	module.Base
 	Config `yaml:",inline"`
 
@@ -36,8 +36,8 @@ func init() {
 	})
 }
 
-func New() *DHCPD {
-	return &DHCPD{
+func New() *DHCPd {
+	return &DHCPd{
 		Config: Config{
 			LeaseFile: "",
 			Pools: nil,
@@ -46,10 +46,10 @@ func New() *DHCPD {
 	}
 }
 
-func (DHCPD) Cleanup() {
+func (DHCPd) Cleanup() {
 }
 
-func (d *DHCPD) Init() bool {
+func (d *DHCPd) Init() bool {
 	err := d.validateConfig()
 	if err != nil {
 		d.Errorf("Error on validate config: %v", err)
@@ -75,15 +75,15 @@ func (d *DHCPD) Init() bool {
 	return true
 }
 
-func (d *DHCPD) Check() bool {
+func (d *DHCPd) Check() bool {
 	return len(d.Collect()) > 0
 }
 
-func (d *DHCPD) Charts() *module.Charts {
+func (d *DHCPd) Charts() *module.Charts {
 	return d.charts
 }
 
-func (d *DHCPD) Collect() map[string]int64 {
+func (d *DHCPd) Collect() map[string]int64 {
 	mx, err := d.collect()
 	if err != nil {
 		d.Error(err)

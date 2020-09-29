@@ -42,7 +42,7 @@ func parseDHCPLease(filename string) ([]LeaseFile, error) {
 	return list, nil
 }
 
-func (d *DHCPD) parseLease(c map[string]int64) {
+func (d *DHCPd) parseLease(c map[string]int64) {
 	if !d.collectedLeases {
 		d.collectedLeases = true
 		d.addPoolsToCharts()
@@ -92,7 +92,7 @@ func markActive(prev int64, curr time.Time, old time.Time, state string) int64 {
 	return prev
 }
 
-func (d *DHCPD) getDimensionPrefix(ip net.IP) string {
+func (d *DHCPd) getDimensionPrefix(ip net.IP) string {
 	for idx, v := range d.Config.Dim {
 		if (v.Values.Contains(ip)) {
 			return idx
@@ -101,13 +101,13 @@ func (d *DHCPD) getDimensionPrefix(ip net.IP) string {
 	return ""
 }
 
-func (d *DHCPD) addPoolsToCharts() {
+func (d *DHCPd) addPoolsToCharts() {
 	for idx, _ := range d.Config.Dim {
 		d.addPoolToCharts(idx)
 	}
 }
 
-func (d *DHCPD) addPoolToCharts(str string) {
+func (d *DHCPd) addPoolToCharts(str string) {
 	for _, val := range dhcpdCharts {
 		chart := d.Charts().Get(val.ID)
 		if chart == nil {

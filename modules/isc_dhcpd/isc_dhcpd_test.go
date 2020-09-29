@@ -15,11 +15,11 @@ func TestNew(t *testing.T) {
 	assert.Implements(t, (*module.Module)(nil), New())
 }
 
-func TestDHCPD_Cleanup(t *testing.T) {
+func TestDHCPd_Cleanup(t *testing.T) {
 	assert.NotPanics(t, New().Cleanup)
 }
 
-func TestDHCPD_Init(t *testing.T) {
+func TestDHCPd_Init(t *testing.T) {
 	tests := map[string]struct {
 		config Config
 		wantNumOfCharts int
@@ -78,9 +78,9 @@ func TestDHCPD_Init(t *testing.T) {
 }
 
 
-func TestDHCPD_Check(t *testing.T) {
+func TestDHCPd_Check(t *testing.T) {
 	tests := map[string]struct {
-		lease func() *DHCPD
+		lease func() *DHCPd
 	} {
 		"lease file 1" : {lease : leaseOne},
 		"lease file 4" : {lease : leaseFour},
@@ -96,9 +96,9 @@ func TestDHCPD_Check(t *testing.T) {
 	}
 }
 
-func TestDHCPD_Collect(t *testing.T) {
+func TestDHCPd_Collect(t *testing.T) {
 	tests := map[string]struct {
-		lease func() *DHCPD
+		lease func() *DHCPd
 		wantCollected map[string]int64
 	} {
 		"lease file 1" : {
@@ -132,7 +132,7 @@ func TestDHCPD_Collect(t *testing.T) {
 	}
 }
 
-func leaseOne() *DHCPD {
+func leaseOne() *DHCPd {
 	d := New()
 
 	d.Config.LeaseFile = "testdata/dhcpd1.leases"
@@ -140,7 +140,7 @@ func leaseOne() *DHCPD {
 	return d
 }
 
-func leaseFour() *DHCPD {
+func leaseFour() *DHCPd {
 	d := New()
 
 	d.Config.LeaseFile = "testdata/dhcpd4.leases"

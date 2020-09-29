@@ -6,7 +6,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-func (d *DHCPD) validateConfig() error {
+func (d *DHCPd) validateConfig() error {
 	if d.Config.LeaseFile == "" || len(d.Config.Pools) == 0 {
 		return errors.New("neither pools nor 'lease file' is defined")
 	}
@@ -14,7 +14,7 @@ func (d *DHCPD) validateConfig() error {
 	return nil
 }
 
-func (d *DHCPD) initCharts() (*module.Charts, error) {
+func (d *DHCPd) initCharts() (*module.Charts, error) {
 	charts := &module.Charts{}
 
 	if len(d.Config.LeaseFile) > 0 {
