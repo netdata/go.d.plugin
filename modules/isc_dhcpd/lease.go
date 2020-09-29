@@ -16,13 +16,15 @@ type LeaseFile struct {
 	State string
 }
 
-func parseDHCPLease(filename string) ([]LeaseFile, error) {
+func (d *DHCPd) parseDHCPLease() (error) {
 	set := make(map[string]int)
+
 	var list []LeaseFile
 
-	f, err := os.Open(filename)
+	f, err := os.Open(d.LeaseFile)
 	if err != nil {
-		return nil, errors.New("Cannot open file")
+		d.Config.data = nil
+		return errors.New("Cannot open file")
 	}
 	defer f.Close()
 
@@ -39,7 +41,9 @@ func parseDHCPLease(filename string) ([]LeaseFile, error) {
 		}
 	}
 
-	return list, nil
+	d.Config.data = list
+
+	return nil
 }
 
 func (d *DHCPd) parseLease(c map[string]int64) {
@@ -48,10 +52,12 @@ func (d *DHCPd) parseLease(c map[string]int64) {
 		d.addPoolsToCharts()
 	}
 
-	l, err := parseDHCPLease(d.LeaseFile)
+	err := d.parseDHCPLease()
 	if err != nil {
 		return
 	}
+
+	l := d.Config.data
 
 	// The test has a problem when we compare the timeto set it as active.
 	currTime := time.Now()

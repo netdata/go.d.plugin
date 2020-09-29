@@ -11,6 +11,7 @@ type (
 		LeaseFile string            `yaml:"leases_path"`
 		Pools     map[string]string `yaml:"pools"`
 		Dim       map[string]Dimensions
+		data  	  []LeaseFile
 	}
 
 	Dimensions struct {
@@ -30,7 +31,7 @@ type DHCPd struct {
 func init() {
 	module.Register("isc_dhcpd", module.Creator{
 		Defaults: module.Defaults{
-			UpdateEvery: 10,
+			UpdateEvery: 1,
 		},
 		Create: func() module.Module { return New() },
 	})
