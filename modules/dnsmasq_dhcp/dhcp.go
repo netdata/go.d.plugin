@@ -5,9 +5,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/ip"
-
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/iprange"
 )
 
 func init() {
@@ -54,7 +53,7 @@ type DnsmasqDHCP struct {
 	Config `yaml:",inline"`
 
 	leasesModTime time.Time
-	ranges        []ip.IRange
+	ranges        []iprange.Range
 	staticIPs     []net.IP
 	mx            map[string]int64
 }
