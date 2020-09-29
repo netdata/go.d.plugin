@@ -1,27 +1,28 @@
 package isc_dhcpd
 
 import (
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/pkg/ip"
+
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 type (
 	Config struct {
 		LeaseFile string            `yaml:"leases_path"`
 		Pools     map[string]string `yaml:"pools"`
+		Dim       map[string]Dimensions
 	}
 
-	/*
-		poolsConfig struct {
-			pools []string
-		}
-	*/
+	Dimensions struct {
+		Values ip.IRange
+		Name  string
+	}
 )
 
 type DHCPD struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	//collectedLeases map[string]bool
 	collectedLeases bool
 	charts          *module.Charts
 }
@@ -39,7 +40,8 @@ func New() *DHCPD {
 	return &DHCPD{
 		Config: Config{
 			LeaseFile: "",
-			//			Pools:     poolsConfig{},
+			Pools: nil,
+			Dim: make(map[string]Dimensions),
 		},
 	}
 }
@@ -52,6 +54,13 @@ func (d *DHCPD) Init() bool {
 	if err != nil {
 		d.Errorf("Error on validate config: %v", err)
 		return false
+	}
+
+	for i, v := range d.Config.Pools {
+		r := ip.ParseRange(v)
+		if r != nil {
+			d.Config.Dim[i] = Dimensions{Values: r, Name: v}
+		}
 	}
 
 	charts, err := d.initCharts()

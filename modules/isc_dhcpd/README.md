@@ -54,15 +54,12 @@ jobs:
  - name: ipv4_leases_example
    leases_path: '/path/to/ipv4_lease_file'
    pools:
-      - office:          '192.168.2.0/24'
-      - wifi:            '192.168.3.10-192.168.3.20'
-      - 192.168.4.0/24:  '192.168.4.0/24'                            
-      - wifi-guest:      '192.168.5.0/24 192.168.6.10-192.168.6.20'  
+      - office:          '192.168.0.0-192.168.0.255'
 
  - name: ipv6_leases_example
    leases_path: '/path/to/ipv6_lease_file'
    pools:
-      - office:          '192.168.2.0/24'
+      - office:          '192.168.2.0-192.168.2.255'
 ```
 
 For all available options, see the ISC dhcpd collector's [configuration

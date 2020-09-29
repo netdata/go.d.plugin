@@ -1,0 +1,17 @@
+# The format of this file is documented in the dhcpd.leases(5) manual page.
+# This lease file was written by isc-dhcp-4.4.2
+
+# authoring-byte-order entry is generated, DO NOT DELETE
+authoring-byte-order little-endian;
+
+lease 192.168.0.100 {
+  starts 4 2020/09/24 00:55:12;
+  ends 4 2020/09/24 00:57:26;
+  tstp 4 2020/09/24 00:57:26;
+  cltt 4 2020/09/24 00:55:12;
+  binding state free;
+  hardware ethernet 00:00:00:00:00:00;
+  uid "\333'\333\333v\333\333!\333\333\333L\333\3333\333T\333\333g\333j\333";
+}
+server-duid "\000\000\000\000'\000$\000\000(\000\000\000\000";
+

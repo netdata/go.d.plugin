@@ -1,6 +1,6 @@
 package isc_dhcpd
 
-import "github.com/netdata/go-orchestrator/module"
+import "github.com/netdata/go.d.plugin/agent/module"
 
 var (
 	dhcpdCharts = module.Charts{

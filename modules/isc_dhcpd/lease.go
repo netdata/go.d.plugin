@@ -2,12 +2,11 @@ package isc_dhcpd
 
 import (
 	"errors"
-	"fmt"
 	"net"
 	"os"
 	"time"
 
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 	leases "github.com/npotts/go-dhcpd-leases"
 )
 
@@ -49,24 +48,62 @@ func (d *DHCPD) parseLease(c map[string]int64) {
 		d.addPoolsToCharts()
 	}
 
-	// In order to process both DHCPv4 and DHCPv6 messages you will need to run two separate instances of the dhcpd process.
-	// Each of these instances will need it's own lease file.
 	l, err := parseDHCPLease(d.LeaseFile)
 	if err != nil {
 		return
 	}
 
+	// The test has a problem when we compare the timeto set it as active.
+	currTime := time.Now()
 	if len(l) > 0 {
 		for _, v := range l {
-			fmt.Println(v.IP.String())
-			c["Total"] = 1
+			prefix := d.getDimensionPrefix(v.IP)
+			if prefix != "" {
+				if _, ok := c[prefix + "_active"] ; ok {
+					c[prefix + "_active"] = markActive(c[prefix + "_active"], currTime, v.Ends, v.State)
+					c[prefix + "_total"] = incrementValues(c[prefix + "_total"])
+				} else {
+					c[prefix + "_active"] = markActive(0, currTime, v.Ends, v.State)
+					c[prefix + "_total"] = 1
+				}
+			}
 		}
+	}
+
+	for idx, v := range d.Config.Dim {
+		i := *v.Values.Hosts()
+		f := (float64(c[idx + "_total"])/float64(i.Uint64()))*1000
+		c[idx + "_utilization"] = int64(f)
 	}
 }
 
+func incrementValues(prev int64)  int64{
+	prev++
+	return prev
+}
+
+func markActive(prev int64, curr time.Time, old time.Time, state string) int64 {
+	if state == "active" {
+		test := curr.Unix() - old.Unix()
+		if test >= 0 {
+			prev++
+		}
+	}
+	return prev
+}
+
+func (d *DHCPD) getDimensionPrefix(ip net.IP) string {
+	for idx, v := range d.Config.Dim {
+		if (v.Values.Contains(ip)) {
+			return idx
+		}
+	}
+	return ""
+}
+
 func (d *DHCPD) addPoolsToCharts() {
-	for _, v := range d.Config.Pools {
-		d.addPoolToCharts(v)
+	for idx, _ := range d.Config.Dim {
+		d.addPoolToCharts(idx)
 	}
 }
 
@@ -81,11 +118,11 @@ func (d *DHCPD) addPoolToCharts(str string) {
 		var id string
 		switch chart.ID {
 		case dhcpPollsUtilization.ID:
-			id = str + " utilization"
+			id = str + "_utilization"
 		case dhcpPollsActiveLeases.ID:
-			id = str + " active"
+			id = str + "_active"
 		case dhcpPollsTotalLeases.ID:
-			id = str + " total"
+			id = str + "_total"
 		}
 
 		dim := &module.Dim{ID: id, Name: str}

@@ -3,7 +3,7 @@ package isc_dhcpd
 import (
 	"errors"
 
-	"github.com/netdata/go-orchestrator/module"
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func (d *DHCPD) validateConfig() error {

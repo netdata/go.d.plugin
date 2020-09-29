@@ -1,0 +1,36 @@
+lease 10.220.252.2 {
+  starts 3 2020/09/15 07:32:16;
+  ends 3 2020/09/15 09:12:16;
+  tstp 3 2020/09/15 09:12:16;
+  cltt 3 2020/09/15 07:32:16;
+  binding state active;
+  hardware ethernet ff:ff:ff:ff:ff:ff;
+  uid "\001\000\000\000\000$\000";
+}
+lease 10.220.252.3 {
+  starts 5 2020/09/15 05:49:01;
+  ends 5 2020/09/15 07:29:01;
+  tstp 5 2020/09/15 07:29:01;
+  cltt 5 2020/09/15 05:49:01;
+  binding state free;
+  hardware ethernet ee:ee:ee:ee:ee:ee;
+  uid "\000\000J\000\000\000\000";
+}
+lease 10.220.252.4 {
+  starts 5 2020/09/15 01:03:59;
+  ends 5 2020/09/15 02:33:20;
+  tstp 5 2020/09/15 02:33:20;
+  cltt 5 2020/09/15 01:12:33;
+  binding state active;
+  hardware ethernet aa:aa:aa:aa:aa:aa;
+  uid "\000\000\000\300z8?";
+}
+lease 10.220.252.5 {
+  starts 1 2020/09/15 23:53:19;
+  ends 2 2020/09/15 01:33:19;
+  tstp 2 2020/09/15 01:33:19;
+  cltt 1 2020/09/15 23:53:19;
+  binding state free;
+  hardware ethernet bb:bb:bb:bb:bb:bb;
+  uid "\001((]e0\300";
+}
