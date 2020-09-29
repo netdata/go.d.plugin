@@ -18,106 +18,106 @@ func TestParseRange(t *testing.T) {
 		wantRange Range
 		wantErr   bool
 	}{
-		"v4 single address": {
+		"v4 IP": {
 			input:     "1.2.3.0",
 			wantRange: prepareV4Range("1.2.3.0", "1.2.3.0"),
 		},
-		"v4 single invalid address": {
+		"v4 IP: invalid address": {
 			input:   "1.2.3.",
 			wantErr: true,
 		},
 
-		"v4 range": {
+		"v4 Range": {
 			input:     "1.2.3.0-1.2.3.10",
 			wantRange: prepareV4Range("1.2.3.0", "1.2.3.10"),
 		},
-		"v4 range: start == end": {
+		"v4 Range: start == end": {
 			input:     "1.2.3.0-1.2.3.0",
 			wantRange: prepareV4Range("1.2.3.0", "1.2.3.0"),
 		},
-		"v4 range: start > end": {
+		"v4 Range: start > end": {
 			input:   "1.2.3.10-1.2.3.0",
 			wantErr: true,
 		},
-		"v4 range: invalid start": {
+		"v4 Range: invalid start": {
 			input:   "1.2.3.-1.2.3.10",
 			wantErr: true,
 		},
-		"v4 range: invalid end": {
+		"v4 Range: invalid end": {
 			input:   "1.2.3.0-1.2.3.",
 			wantErr: true,
 		},
-		"v4 range: v6 start": {
+		"v4 Range: v6 start": {
 			input:   "::1-1.2.3.10",
 			wantErr: true,
 		},
-		"v4 range: v6 end": {
+		"v4 Range: v6 end": {
 			input:   "1.2.3.10-::1",
 			wantErr: true,
 		},
 
-		"v4 cidr /0": {
+		"v4 CIDR: /0": {
 			input:     "1.2.3.0/0",
 			wantRange: prepareV4Range("0.0.0.1", "255.255.255.254"),
 		},
-		"v4 cidr /24": {
+		"v4 CIDR: /24": {
 			input:     "1.2.3.0/24",
 			wantRange: prepareV4Range("1.2.3.1", "1.2.3.254"),
 		},
-		"v4 cidr /30": {
+		"v4 CIDR: /30": {
 			input:     "1.2.3.0/30",
 			wantRange: prepareV4Range("1.2.3.1", "1.2.3.2"),
 		},
-		"v4 cidr /31": {
+		"v4 CIDR: /31": {
 			input:     "1.2.3.0/31",
 			wantRange: prepareV4Range("1.2.3.0", "1.2.3.1"),
 		},
-		"v4 cidr /32": {
+		"v4 CIDR: /32": {
 			input:     "1.2.3.0/32",
 			wantRange: prepareV4Range("1.2.3.0", "1.2.3.0"),
 		},
-		"v4 cidr missing prefix length": {
+		"v4 CIDR: missing prefix length": {
 			input:   "1.2.3.0/",
 			wantErr: true,
 		},
-		"v4 cidr invalid prefix length": {
+		"v4 CIDR: invalid prefix length": {
 			input:   "1.2.3.0/99",
 			wantErr: true,
 		},
 
-		"v4 net /0": {
+		"v4 Net: /0": {
 			input:     "1.2.3.0/0.0.0.0",
 			wantRange: prepareV4Range("0.0.0.1", "255.255.255.254"),
 		},
-		"v4 net /24": {
+		"v4 Net: /24": {
 			input:     "1.2.3.0/255.255.255.0",
 			wantRange: prepareV4Range("1.2.3.1", "1.2.3.254"),
 		},
-		"v4 net /30": {
+		"v4 Net: /30": {
 			input:     "1.2.3.0/255.255.255.252",
 			wantRange: prepareV4Range("1.2.3.1", "1.2.3.2"),
 		},
-		"v4 net /31": {
+		"v4 Net: /31": {
 			input:     "1.2.3.0/255.255.255.254",
 			wantRange: prepareV4Range("1.2.3.0", "1.2.3.1"),
 		},
-		"v4 net /32": {
+		"v4 Net: /32": {
 			input:     "1.2.3.0/255.255.255.255",
 			wantRange: prepareV4Range("1.2.3.0", "1.2.3.0"),
 		},
-		"v4 net missing prefix mask": {
+		"v4 Net: missing prefix mask": {
 			input:   "1.2.3.0/",
 			wantErr: true,
 		},
-		"v4 net invalid mask": {
+		"v4 Net: invalid mask": {
 			input:   "1.2.3.0/mask",
 			wantErr: true,
 		},
-		"v4 net not canonical form mask": {
+		"v4 Net: not canonical form mask": {
 			input:   "1.2.3.0/255.255.0.254",
 			wantErr: true,
 		},
-		"v4 net v6 address": {
+		"v4 Net: v6 address": {
 			input:   "::1/255.255.255.0",
 			wantErr: true,
 		},
