@@ -68,9 +68,9 @@ func parseRange(s string) Range {
 	}
 
 	switch {
-	case isV4IP(start) && isV4IP(end) && bytes.Compare(end, start) >= 0:
+	case isV4RangeValid(start, end):
 		return v4Range{start: start, end: end}
-	case isV6IP(start) && isV6IP(end) && bytes.Compare(end, start) >= 0:
+	case isV6RangeValid(start, end):
 		return v6Range{start: start, end: end}
 	default:
 		return nil
@@ -113,6 +113,14 @@ func parseV4Network(s string) Range {
 	}
 
 	return parseCIDR(fmt.Sprintf("%s/%s", address, strconv.Itoa(prefixLen)))
+}
+
+func isV4RangeValid(start, end net.IP) bool {
+	return isV4IP(start) && isV4IP(end) && bytes.Compare(end, start) >= 0
+}
+
+func isV6RangeValid(start, end net.IP) bool {
+	return isV6IP(start) && isV6IP(end) && bytes.Compare(end, start) >= 0
 }
 
 func isV4IP(ip net.IP) bool {
