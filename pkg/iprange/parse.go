@@ -32,12 +32,13 @@ func ParseRanges(value string) ([]Range, error) {
 }
 
 var (
-	reRange = regexp.MustCompile("^[0-9a-fA-F.:-]+$")            // addr | addr-addr
-	reCIDR  = regexp.MustCompile("^[0-9a-fA-F.:-]+/[0-9]{1,3}$") // addr/prefix_length
-	reV4Net = regexp.MustCompile("^[0-9.-]+/[0-9.-]{8,}$")       // v4_addr/mask
+	reRange = regexp.MustCompile("^[0-9a-f.:-]+$")            // addr | addr-addr
+	reCIDR  = regexp.MustCompile("^[0-9a-f.:-]+/[0-9]{1,3}$") // addr/prefix_length
+	reV4Net = regexp.MustCompile("^[0-9.-]+/[0-9.]{8,}$")     // v4_addr/mask
 )
 
 func ParseRange(s string) (Range, error) {
+	s = strings.ToLower(s)
 	if s == "" {
 		return nil, nil
 	}
@@ -51,6 +52,7 @@ func ParseRange(s string) (Range, error) {
 	case reV4Net.MatchString(s):
 		r = parseV4Network(s)
 	}
+
 	if r == nil {
 		return nil, fmt.Errorf("ip range (%s) invalid syntax", s)
 	}
@@ -59,13 +61,10 @@ func ParseRange(s string) (Range, error) {
 
 func parseRange(s string) Range {
 	var start, end net.IP
-	switch parts := strings.Split(s, "-"); len(parts) {
-	case 1:
-		start, end = net.ParseIP(parts[0]), net.ParseIP(parts[0])
-	case 2:
-		start, end = net.ParseIP(parts[0]), net.ParseIP(parts[1])
-	default:
-		return nil
+	if idx := strings.IndexByte(s, '-'); idx != -1 {
+		start, end = net.ParseIP(s[:idx]), net.ParseIP(s[idx+1:])
+	} else {
+		start, end = net.ParseIP(s), net.ParseIP(s)
 	}
 
 	switch {
@@ -85,9 +84,9 @@ func parseCIDR(s string) Range {
 	}
 
 	start, end := cidr.AddressRange(network)
-	ones, _ := network.Mask.Size()
+	prefixLen, _ := network.Mask.Size()
 
-	if isV4 := ip.To4() != nil; isV4 && ones < 31 || ones < 127 {
+	if isV4 := ip.To4() != nil; isV4 && prefixLen < 31 || prefixLen < 127 {
 		start = cidr.Inc(start)
 		end = cidr.Dec(end)
 	}
@@ -108,10 +107,10 @@ func parseV4Network(s string) Range {
 		return nil
 	}
 
-	ones, _ := net.IPv4Mask(ip[0], ip[1], ip[2], ip[3]).Size()
-	if ones == 0 {
+	prefixLen, _ := net.IPv4Mask(ip[0], ip[1], ip[2], ip[3]).Size()
+	if prefixLen == 0 {
 		return nil
 	}
 
-	return parseCIDR(fmt.Sprintf("%s/%s", address, strconv.Itoa(ones)))
+	return parseCIDR(fmt.Sprintf("%s/%s", address, strconv.Itoa(prefixLen)))
 }
