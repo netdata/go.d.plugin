@@ -86,7 +86,7 @@ func parseCIDR(s string) Range {
 	start, end := cidr.AddressRange(network)
 	prefixLen, _ := network.Mask.Size()
 
-	if isV4 := ip.To4() != nil; isV4 && prefixLen < 31 || !isV4 && prefixLen < 127 {
+	if isV4IP(ip) && prefixLen < 31 || isV6IP(ip) && prefixLen < 127 {
 		start = cidr.Inc(start)
 		end = cidr.Dec(end)
 	}
