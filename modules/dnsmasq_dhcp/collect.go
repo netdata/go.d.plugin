@@ -64,7 +64,7 @@ func (d *DnsmasqDHCP) collectRangesStats(ips []net.IP) map[string]int64 {
 		if !ok {
 			mx[name] = 0
 		}
-		mx[name+"_percentage"] = int64(math.Round(calcPercent(numOfIps, r.Hosts())))
+		mx[name+"_percentage"] = int64(math.Round(calcPercent(numOfIps, r.Size())))
 	}
 
 	return mx

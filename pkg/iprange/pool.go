@@ -16,12 +16,12 @@ func (p Pool) String() string {
 	return strings.TrimSuffix(b.String(), ",")
 }
 
-func (p Pool) Hosts() *big.Int {
-	hosts := big.NewInt(0)
+func (p Pool) Size() *big.Int {
+	size := big.NewInt(0)
 	for _, r := range p {
-		hosts.Add(hosts, r.Hosts())
+		size.Add(size, r.Size())
 	}
-	return hosts
+	return size
 }
 
 func (p Pool) Contains(ip net.IP) bool {
