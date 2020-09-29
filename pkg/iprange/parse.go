@@ -101,7 +101,6 @@ func parseV4Network(s string) Range {
 	}
 
 	address, mask := s[:idx], s[idx+1:]
-	fmt.Println(address, mask, 333)
 
 	ip := net.ParseIP(mask).To4()
 	if ip == nil {
