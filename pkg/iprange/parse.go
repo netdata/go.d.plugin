@@ -11,6 +11,12 @@ import (
 	"github.com/apparentlymart/go-cidr/cidr"
 )
 
+// ParseRange parses s as a space separated list of IP Ranges, returning the result and an error if any.
+// IP Range can be in IPv4 address ("192.0.2.1"), IPv4 range ("192.0.2.0-192.0.2.10")
+// IPv4 CIDR ("192.0.2.0/24"), IPv4 subnet mask ("192.0.2.0/255.255.255.0"),
+// IPv6 address ("2001:db8::1"), IPv6 range ("2001:db8::-2001:db8::10"),
+// or IPv6 CIDR ("2001:db8::/64") form.
+// IPv4 CIDR, IPv4 subnet mask and IPv6 CIDR ranges doesn't include host and network IPs
 func ParseRanges(s string) ([]Range, error) {
 	parts := strings.Fields(s)
 	if len(parts) == 0 {
@@ -37,6 +43,12 @@ var (
 	reSubnetMask = regexp.MustCompile("^[0-9.-]+/[0-9.]{7,}$")     // v4_addr/mask
 )
 
+// ParseRange parses s as an IP Range, returning the result and an error if any.
+// The string s can be in IPv4 address ("192.0.2.1"), IPv4 range ("192.0.2.0-192.0.2.10")
+// IPv4 CIDR ("192.0.2.0/24"), IPv4 subnet mask ("192.0.2.0/255.255.255.0"),
+// IPv6 address ("2001:db8::1"), IPv6 range ("2001:db8::-2001:db8::10"),
+// or IPv6 CIDR ("2001:db8::/64") form.
+// IPv4 CIDR, IPv4 subnet mask and IPv6 CIDR ranges doesn't include host and network IPs
 func ParseRange(s string) (Range, error) {
 	s = strings.ToLower(s)
 	if s == "" {
