@@ -19,7 +19,6 @@ func (d *DHCPd) collect() (map[string]int64, error) {
 func (d *DHCPd) fillDimension(c map[string]int64) {
 	l := d.Config.data
 
-	// The test has a problem when we compare the timeto set it as active.
 	currTime := time.Now()
 	if len(l) > 0 {
 		for _, v := range l {

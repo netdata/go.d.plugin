@@ -40,7 +40,7 @@ func TestDHCPd_Init(t *testing.T) {
 		},
 		"With lease file" : {
 			config : Config {
-				LeaseFile : "testdata/dhcpd1.leases",
+				LeaseFile : "testdata/ipv4_dhcpd1.leases",
 				LastModification : 0,
 				Pools : nil,
 				Dim : nil,
@@ -50,7 +50,7 @@ func TestDHCPd_Init(t *testing.T) {
 		},
 		"only one host" : {
 			config : Config {
-				LeaseFile : "testdata/dhcpd1.leases",
+				LeaseFile : "testdata/ipv4_dhcpd1.leases",
 				Pools : map[string]string{
 					"office" : "192.168.0.0-192.168.0.254",
 				},
@@ -67,7 +67,7 @@ func TestDHCPd_Init(t *testing.T) {
 		},
 		"four hosts" : {
 			config : Config {
-				LeaseFile : "testdata/dhcpd4.leases",
+				LeaseFile : "testdata/ipv4_dhcpd4.leases",
 				Pools : map[string]string{
 					"office" : "10.220.252.0-10.220.252.254",
 				},
@@ -103,8 +103,8 @@ func TestDHCPd_Check(t *testing.T) {
 	tests := map[string]struct {
 		lease func() *DHCPd
 	} {
-		"lease file 1" : {lease : leaseOne},
-		"lease file 4" : {lease : leaseFour},
+		"lease file 1" : {lease : ipv4_leaseOne},
+		"lease file 4" : {lease : ipv4_leaseFour},
 	}
 
 	for name, test := range tests {
@@ -123,7 +123,7 @@ func TestDHCPd_Collect(t *testing.T) {
 		wantCollected map[string]int64
 	} {
 		"lease file 1" : {
-			lease : leaseOne,
+			lease : ipv4_leaseOne,
 			wantCollected : map[string]int64{
 				"office_active" : 0,
 				"office_total" : 1,
@@ -131,11 +131,11 @@ func TestDHCPd_Collect(t *testing.T) {
 			},
 		},
 		"lease file 4" : {
-			lease : leaseOne,
+			lease : ipv4_leaseFour,
 			wantCollected : map[string]int64{
-				"office_active" : 0,
-				"office_total" : 1,
-				"office_utilization" : 3,
+				"office_active" : 2,
+				"office_total" : 4,
+				"office_utilization" : 15,
 			},
 		},
 	}
@@ -153,10 +153,10 @@ func TestDHCPd_Collect(t *testing.T) {
 	}
 }
 
-func leaseOne() *DHCPd {
+func ipv4_leaseOne() *DHCPd {
 	d := New()
 
-	d.Config.LeaseFile = "testdata/dhcpd1.leases"
+	d.Config.LeaseFile = "testdata/ipv4_dhcpd1.leases"
 	d.Config.Pools = map[string]string{
 					"office" : "192.168.0.0-192.168.0.254",
 				}
@@ -171,10 +171,10 @@ func leaseOne() *DHCPd {
 	return d
 }
 
-func leaseFour() *DHCPd {
+func ipv4_leaseFour() *DHCPd {
 	d := New()
 
-	d.Config.LeaseFile = "testdata/dhcpd1.leases"
+	d.Config.LeaseFile = "testdata/ipv4_dhcpd4.leases"
 	d.Config.Pools = map[string]string{
 					"office" : "10.220.252.0-10.220.252.254",
 				}
