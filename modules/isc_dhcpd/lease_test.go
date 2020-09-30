@@ -30,6 +30,11 @@ func Test_parseFile(t *testing.T) {
 			numberOfHosts : 4,
 			waitFail : false,
 		},
+		"ipv6 lease" : {
+			File : "testdata/ipv6_dhcpd.leases",
+			numberOfHosts : 6,
+			waitFail : false,
+		},
 	}
 
 	for name, test := range tests {

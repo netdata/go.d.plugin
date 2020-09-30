@@ -82,6 +82,23 @@ func TestDHCPd_Init(t *testing.T) {
 			wantFail: false,
 			wantNumOfCharts: 3,
 		},
+		"ipv6" : {
+			config : Config {
+				LeaseFile : "testdata/ipv6_dhcpd.leases",
+				Pools : map[string]string{
+					"office" : "1985:470:1f0b:c9a::000-1985:470:1f0b:c9a::255",
+				},
+				Dim : map[string]Dimensions{
+						"office" : Dimensions{ Values : ip.Range {
+							Start : net.ParseIP("1985:470:1f0b:c9a::000"),
+							End :  net.ParseIP("1985:470:1f0b:c9a::255"),
+						},
+					},
+				},
+			},
+			wantFail: false,
+			wantNumOfCharts: 3,
+		},
 	}
 
 	for name, test := range tests {
@@ -105,6 +122,7 @@ func TestDHCPd_Check(t *testing.T) {
 	} {
 		"lease file 1" : {lease : ipv4_leaseOne},
 		"lease file 4" : {lease : ipv4_leaseFour},
+		"lease ipv6 file" : {lease : ipv6_leaseSix},
 	}
 
 	for name, test := range tests {
@@ -136,6 +154,14 @@ func TestDHCPd_Collect(t *testing.T) {
 				"office_active" : 2,
 				"office_total" : 4,
 				"office_utilization" : 15,
+			},
+		},
+		"ipv6" : {
+			lease : ipv6_leaseSix,
+			wantCollected : map[string]int64{
+				"office_active" : 4,
+				"office_total" : 6,
+				"office_utilization" : 10,
 			},
 		},
 	}
@@ -182,6 +208,25 @@ func ipv4_leaseFour() *DHCPd {
 						"office" : Dimensions{ Values : ip.Range {
 							Start : net.ParseIP("10.220.252.0"),
 							End :  net.ParseIP("10.220.252.254"),
+						},
+					},
+				}
+
+
+	return d
+}
+
+func ipv6_leaseSix() *DHCPd {
+	d := New()
+
+	d.Config.LeaseFile = "testdata/ipv6_dhcpd.leases"
+	d.Config.Pools = map[string]string{
+					"office" : "1985:470:1f0b:c9a::000-1985:470:1f0b:c9a::255",
+				}
+	d.Config.Dim = map[string]Dimensions{
+						"office" : Dimensions{ Values : ip.Range {
+							Start : net.ParseIP("1985:470:1f0b:c9a::000"),
+							End :  net.ParseIP("1985:470:1f0b:c9a::255"),
 						},
 					},
 				}

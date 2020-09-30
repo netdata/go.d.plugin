@@ -47,13 +47,16 @@ func ParseDHCPd(r io.Reader) ([]LeaseFile) {
 			line := string(cmp[:len(cmp)-1])
 			l.State = line[14:]
 		case bytes.HasPrefix(cmp, []byte("}")):
-			if idx, ok := set[l.IP.String()]; ok {
-				list[idx] = l
-			} else {
-				set[l.IP.String()] = len(list)
-				list = append(list, l)
+			//This test was added to parse IPV6 lease correctly
+			if l.IP != nil {
+				if idx, ok := set[l.IP.String()]; ok {
+					list[idx] = l
+				} else {
+					set[l.IP.String()] = len(list)
+					list = append(list, l)
+				}
+				l = LeaseFile{}
 			}
-			l = LeaseFile{}
 		}
 	}
 
