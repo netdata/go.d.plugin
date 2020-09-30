@@ -35,6 +35,11 @@ func Test_parseFile(t *testing.T) {
 			numberOfHosts : 6,
 			waitFail : false,
 		},
+		"backup" : {
+			File : "testdata/backup.leases",
+			numberOfHosts : 1,
+			waitFail : false,
+		},
 	}
 
 	for name, test := range tests {
