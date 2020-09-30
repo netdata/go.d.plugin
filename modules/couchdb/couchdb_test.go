@@ -108,15 +108,60 @@ func TestCouchDB_Check(t *testing.T) {
 	}
 }
 
-func numOfCharts(charts ...Charts) (num int) {
-	for _, v := range charts {
-		num += len(v)
-	}
-	return num
+func TestCouchDB_Charts(t *testing.T) {
+	assert.Nil(t, New().Charts())
 }
 
 func TestCouchDB_Cleanup(t *testing.T) {
 	assert.NotPanics(t, New().Cleanup)
+}
+
+func TestCouchDB_Collect(t *testing.T) {
+	tests := map[string]struct {
+		prepare       func() *CouchDB
+		wantCollected map[string]int64
+	}{
+		"all stats": {
+			prepare: func() *CouchDB {
+				cdb := New()
+				return cdb
+			},
+			wantCollected: map[string]int64{
+				"test": 1,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			cdb, cleanup := prepareCouchDB(t, test.prepare)
+			defer cleanup()
+
+			var collected map[string]int64
+			for i := 0; i < 10; i++ {
+				collected = cdb.Collect()
+			}
+
+			assert.Equal(t, test.wantCollected, collected)
+			ensureCollectedHasAllChartsDimsVarsIDs(t, cdb, collected)
+		})
+	}
+}
+
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, cdb *CouchDB, collected map[string]int64) {
+	for _, chart := range *cdb.Charts() {
+		if chart.Obsolete {
+			continue
+		}
+		for _, dim := range chart.Dims {
+			_, ok := collected[dim.ID]
+			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+		for _, v := range chart.Vars {
+			_, ok := collected[v.ID]
+			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
+		}
+	}
 }
 
 func prepareCouchDB(t *testing.T, createCDB func() *CouchDB) (cdb *CouchDB, cleanup func()) {
