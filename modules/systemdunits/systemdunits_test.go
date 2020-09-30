@@ -1,6 +1,7 @@
 package systemdunits
 
 import (
+	"context"
 	"errors"
 	"path/filepath"
 	"testing"
@@ -122,7 +123,7 @@ func TestSystemdUnits_Cleanup(t *testing.T) {
 	systemd.Cleanup()
 
 	assert.Nil(t, systemd.conn)
-	v, _ := conn.(*mockConnection)
+	v, _ := conn.(*mockConn)
 	assert.True(t, v.closeCalled)
 }
 
@@ -274,7 +275,7 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, sd *SystemdUnits, coll
 
 func prepareOKClient() *mockClient {
 	return &mockClient{
-		conn: &mockConnection{
+		conn: &mockConn{
 			units: mockSystemdUnits,
 		},
 	}
@@ -288,7 +289,7 @@ func prepareErrOnConnectClient() *mockClient {
 
 func prepareErrOnListUnitsClient() *mockClient {
 	return &mockClient{
-		conn: &mockConnection{
+		conn: &mockConn{
 			errOnListUnits: true,
 		},
 	}
@@ -308,23 +309,23 @@ func (m *mockClient) connect() (systemdConnection, error) {
 	return m.conn, nil
 }
 
-type mockConnection struct {
+type mockConn struct {
 	units          []dbus.UnitStatus
 	errOnListUnits bool
 	closeCalled    bool
 }
 
-func (m *mockConnection) Close() {
+func (m *mockConn) Close() {
 	m.closeCalled = true
 }
 
-func (m mockConnection) ListUnitsByPatterns(_ []string, patterns []string) ([]dbus.UnitStatus, error) {
+func (m mockConn) ListUnitsByPatternsContext(_ context.Context, _ []string, ps []string) ([]dbus.UnitStatus, error) {
 	if m.errOnListUnits {
 		return nil, errors.New("mock 'ListUnitsByPatterns' error")
 	}
 
 	matches := func(name string) bool {
-		for _, p := range patterns {
+		for _, p := range ps {
 			if ok, _ := filepath.Match(p, name); ok {
 				return true
 			}

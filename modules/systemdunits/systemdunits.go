@@ -1,9 +1,10 @@
 package systemdunits
 
 import (
-	"github.com/netdata/go.d.plugin/agent/module"
+	"time"
 
-	"github.com/coreos/go-systemd/v22/dbus"
+	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -22,6 +23,7 @@ func New() *SystemdUnits {
 			Include: []string{
 				"*.service",
 			},
+			Timeout: web.Duration{Duration: time.Second * 2},
 		},
 
 		client:         newSystemdDBusClient(),
@@ -31,7 +33,8 @@ func New() *SystemdUnits {
 }
 
 type Config struct {
-	Include []string `yaml:"include"`
+	Include []string     `yaml:"include"`
+	Timeout web.Duration `yaml:"timeout"`
 }
 
 type (
@@ -45,13 +48,6 @@ type (
 		collectedUnits map[string]bool
 		charts         *module.Charts
 	}
-	systemdClient interface {
-		connect() (systemdConnection, error)
-	}
-	systemdConnection interface {
-		Close()
-		ListUnitsByPatterns(states []string, patterns []string) ([]dbus.UnitStatus, error)
-	}
 )
 
 func (s *SystemdUnits) Init() bool {
@@ -59,7 +55,8 @@ func (s *SystemdUnits) Init() bool {
 		s.Error("'include' option not set")
 		return false
 	}
-	s.Debugf("used unit names patterns: %v", s.Include)
+	s.Debugf("unit names patterns: %v", s.Include)
+	s.Debugf("timeout: %s", s.Timeout)
 	return true
 }
 

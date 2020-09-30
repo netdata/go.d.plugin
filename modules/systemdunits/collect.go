@@ -1,6 +1,7 @@
 package systemdunits
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -37,19 +38,23 @@ func (s *SystemdUnits) getLoadedUnits() ([]dbus.UnitStatus, error) {
 	if s.conn == nil {
 		conn, err := s.client.connect()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error on creating a connection: %v", err)
 		}
 		s.conn = conn
 	}
 
-	units, err := s.conn.ListUnitsByPatterns(
+	ctx, cancel := context.WithTimeout(context.Background(), s.Timeout.Duration)
+	defer cancel()
+
+	units, err := s.conn.ListUnitsByPatternsContext(
+		ctx,
 		[]string{"active", "activating", "failed", "inactive", "deactivating"},
 		s.Include,
 	)
 	if err != nil {
 		s.conn.Close()
 		s.conn = nil
-		return nil, err
+		return nil, fmt.Errorf("error on listing units: %v", err)
 	}
 
 	loaded := units[:0]
