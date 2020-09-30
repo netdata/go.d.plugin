@@ -14,18 +14,20 @@ import (
 )
 
 var (
-	responseRoot, _        = ioutil.ReadFile("testdata/root.json")
-	responseNodeStats, _   = ioutil.ReadFile("testdata/node_stats.json")
-	responseActiveTasks, _ = ioutil.ReadFile("testdata/active_tasks.json")
-	responseNodeSystem, _  = ioutil.ReadFile("testdata/node_system.json")
+	responseRoot, _        = ioutil.ReadFile("testdata/v311_single_root.json")
+	responseActiveTasks, _ = ioutil.ReadFile("testdata/v311_single_active_tasks.json")
+	responseNodeStats, _   = ioutil.ReadFile("testdata/v311_node_stats.json")
+	responseNodeSystem, _  = ioutil.ReadFile("testdata/v311_node_system.json")
+	responseDatabase, _    = ioutil.ReadFile("testdata/v311_database.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
 		"responseRoot":        responseRoot,
-		"responseNodeStats":   responseNodeStats,
 		"responseActiveTasks": responseActiveTasks,
+		"responseNodeStats":   responseNodeStats,
 		"responseNodeSystem":  responseNodeSystem,
+		"responseDatabase":    responseDatabase,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -127,7 +129,43 @@ func TestCouchDB_Collect(t *testing.T) {
 				return cdb
 			},
 			wantCollected: map[string]int64{
-				"test": 1,
+				"node_couch_replicator_jobs_crashed_value":         1,
+				"node_couch_replicator_jobs_penging_value":         1,
+				"node_couch_replicator_jobs_running_value":         1,
+				"node_couchdb_database_reads_value":                1,
+				"node_couchdb_database_writes_value":               14,
+				"node_couchdb_httpd_request_methods_COPY_value":    1,
+				"node_couchdb_httpd_request_methods_DELETE_value":  1,
+				"node_couchdb_httpd_request_methods_GET_value":     75544,
+				"node_couchdb_httpd_request_methods_HEAD_value":    1,
+				"node_couchdb_httpd_request_methods_OPTIONS_value": 1,
+				"node_couchdb_httpd_request_methods_POST_value":    15,
+				"node_couchdb_httpd_request_methods_PUT_value":     3,
+				"node_couchdb_httpd_status_codes_200_value":        75294,
+				"node_couchdb_httpd_status_codes_201_value":        15,
+				"node_couchdb_httpd_status_codes_202_value":        1,
+				"node_couchdb_httpd_status_codes_204_value":        1,
+				"node_couchdb_httpd_status_codes_206_value":        1,
+				"node_couchdb_httpd_status_codes_301_value":        1,
+				"node_couchdb_httpd_status_codes_302_value":        1,
+				"node_couchdb_httpd_status_codes_304_value":        1,
+				"node_couchdb_httpd_status_codes_400_value":        1,
+				"node_couchdb_httpd_status_codes_401_value":        20,
+				"node_couchdb_httpd_status_codes_403_value":        1,
+				"node_couchdb_httpd_status_codes_404_value":        225,
+				"node_couchdb_httpd_status_codes_405_value":        1,
+				"node_couchdb_httpd_status_codes_406_value":        1,
+				"node_couchdb_httpd_status_codes_409_value":        1,
+				"node_couchdb_httpd_status_codes_412_value":        3,
+				"node_couchdb_httpd_status_codes_413_value":        1,
+				"node_couchdb_httpd_status_codes_414_value":        1,
+				"node_couchdb_httpd_status_codes_415_value":        1,
+				"node_couchdb_httpd_status_codes_416_value":        1,
+				"node_couchdb_httpd_status_codes_417_value":        1,
+				"node_couchdb_httpd_status_codes_500_value":        1,
+				"node_couchdb_httpd_status_codes_501_value":        1,
+				"node_couchdb_httpd_view_reads_value":              1,
+				"node_couchdb_open_os_files_value":                 1,
 			},
 		},
 	}

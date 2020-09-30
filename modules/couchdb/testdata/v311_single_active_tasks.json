@@ -45,7 +45,7 @@
         "checkpointed_source_seq": 68585,
         "continuous": false,
         "doc_id": null,
-        "doc_write_failures": 0,
+        "doc_write_failures": 1,
         "docs_read": 4524,
         "docs_written": 4524,
         "missing_revisions_found": 4524,

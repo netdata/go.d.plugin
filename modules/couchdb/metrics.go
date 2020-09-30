@@ -147,13 +147,13 @@ type cdbNodeStats struct {
 				Value float64 `stm:"value" json:"value"`
 			} `stm:"running" json:"running"`
 			Pending struct {
-				Value float64
+				Value float64 `stm:"value" json:"value"`
 			} `stm:"penging" json:"pending"`
 			Crashed struct {
-				Value float64
+				Value float64 `stm:"value" json:"value"`
 			} `stm:"crashed" json:"crashed"`
 		} `stm:"jobs" json:"jobs"`
-	} `stm:"indices" json:"couch_replicator"`
+	} `stm:"couch_replicator" json:"couch_replicator"`
 }
 
 type cdbNodeSystem struct {

@@ -1,27 +1,27 @@
 {
     "global_changes": {
         "db_writes": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of db writes performed by global changes"
         },
         "event_doc_conflict": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of conflicted event docs encountered by global changes"
         },
         "listener_pending_updates": {
-            "value": 0,
+            "value": 1,
             "type": "gauge",
             "desc": "number of global changes updates pending writes in global_changes_listener"
         },
         "rpcs": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of rpc operations performed by global_changes"
         },
         "server_pending_updates": {
-            "value": 0,
+            "value": 1,
             "type": "gauge",
             "desc": "number of global changes updates pending writes in global_changes_server"
         }
@@ -29,7 +29,7 @@
     "couchdb": {
         "httpd": {
             "aborted_requests": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of aborted requests"
             },
@@ -83,7 +83,7 @@
                 "desc": "distribution of the number of docs in _bulk_docs requests"
             },
             "bulk_requests": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of bulk requests"
             },
@@ -93,82 +93,82 @@
                 "desc": "number of HTTP requests"
             },
             "view_timeouts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP view timeouts"
             },
             "find_timeouts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP find timeouts"
             },
             "explain_timeouts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP _explain timeouts"
             },
             "all_docs_timeouts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP all_docs timeouts"
             },
             "partition_view_requests": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of partition HTTP view requests"
             },
             "partition_find_requests": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of partition HTTP _find requests"
             },
             "partition_explain_requests": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of partition HTTP _explain requests"
             },
             "partition_all_docs_requests": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of partition HTTP _all_docs requests"
             },
             "partition_view_timeouts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of partition HTTP view timeouts"
             },
             "partition_find_timeouts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of partition HTTP find timeouts"
             },
             "partition_explain_timeouts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of partition HTTP _explain timeouts"
             },
             "partition_all_docs_timeouts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of partition HTTP all_docs timeouts"
             },
             "temporary_view_reads": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of temporary view reads"
             },
             "view_reads": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of view reads"
             },
             "clients_requesting_changes": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of clients for continuous _changes"
             },
             "purge_requests": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of purge requests"
             }
@@ -224,7 +224,7 @@
         },
         "io_queue": {
             "search": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "Search IO directly triggered by client requests"
             }
@@ -232,14 +232,14 @@
         "io_queue2": {
             "search": {
                 "count": {
-                    "value": 0,
+                    "value": 1,
                     "type": "counter",
                     "desc": "Search IO directly triggered by client requests"
                 }
             }
         },
         "auth_cache_hits": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of authentication cache hits"
         },
@@ -303,12 +303,12 @@
             "desc": "number of times a database was changed"
         },
         "database_reads": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of times a document was read from a database"
         },
         "database_purges": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of times a database was purged"
         },
@@ -373,34 +373,34 @@
         },
         "document_purges": {
             "total": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of total document purge operations"
             },
             "success": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of successful document purge operations"
             },
             "failure": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of failed document purge operations"
             }
         },
         "local_document_writes": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of _local document write operations"
         },
         "httpd_request_methods": {
             "COPY": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP COPY requests"
             },
             "DELETE": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP DELETE requests"
             },
@@ -410,12 +410,12 @@
                 "desc": "number of HTTP GET requests"
             },
             "HEAD": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP HEAD requests"
             },
             "OPTIONS": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP OPTIONS requests"
             },
@@ -442,32 +442,32 @@
                 "desc": "number of HTTP 201 Created responses"
             },
             "202": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 202 Accepted responses"
             },
             "204": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 204 No Content responses"
             },
             "206": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 206 Partial Content"
             },
             "301": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 301 Moved Permanently responses"
             },
             "302": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 302 Found responses"
             },
             "304": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 304 Not Modified responses"
             },
@@ -482,7 +482,7 @@
                 "desc": "number of HTTP 401 Unauthorized responses"
             },
             "403": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 403 Forbidden responses"
             },
@@ -492,17 +492,17 @@
                 "desc": "number of HTTP 404 Not Found responses"
             },
             "405": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 405 Method Not Allowed responses"
             },
             "406": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 406 Not Acceptable responses"
             },
             "409": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 409 Conflict responses"
             },
@@ -512,53 +512,53 @@
                 "desc": "number of HTTP 412 Precondition Failed responses"
             },
             "413": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 413 Request Entity Too Long responses"
             },
             "414": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 414 Request URI Too Long responses"
             },
             "415": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 415 Unsupported Media Type responses"
             },
             "416": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 416 Requested Range Not Satisfiable responses"
             },
             "417": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 417 Expectation Failed responses"
             },
             "500": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 500 Internal Server Error responses"
             },
             "501": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 501 Not Implemented responses"
             },
             "503": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of HTTP 503 Service unavailable responses"
             }
         },
         "open_databases": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of open databases"
         },
         "open_os_files": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of file descriptors CouchDB has open"
         },
@@ -613,14 +613,14 @@
         },
         "couch_server": {
             "lru_skip": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of couch_server LRU operations skipped"
             }
         },
         "query_server": {
             "vdu_rejects": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of rejections by validate_doc_update function"
             },
@@ -676,12 +676,12 @@
         },
         "mrview": {
             "map_doc": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of documents mapped in the view server"
             },
             "emits": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of invocations of `emit' in map functions in the view server"
             }
@@ -690,7 +690,7 @@
     "mem3": {
         "shard_cache": {
             "eviction": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of shard cache evictions"
             },
@@ -718,7 +718,7 @@
             "desc": "number of design doc cache misses"
         },
         "recovery": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of design doc cache recoveries"
         }
@@ -726,22 +726,22 @@
     "couch_log": {
         "level": {
             "alert": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of logged alert messages"
             },
             "critical": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of logged critical messages"
             },
             "debug": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of logged debug messages"
             },
             "emergency": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of logged emergency messages"
             },
@@ -1268,43 +1268,43 @@
     "fabric": {
         "worker": {
             "timeouts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of worker timeouts"
             }
         },
         "open_shard": {
             "timeouts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of open shard timeouts"
             }
         },
         "read_repairs": {
             "success": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of successful read repair operations"
             },
             "failure": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of failed read repair operations"
             }
         },
         "doc_update": {
             "errors": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of document update errors"
             },
             "mismatched_errors": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of document update errors with multiple error types"
             },
             "write_quorum_errors": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of write quorum errors"
             }
@@ -1312,34 +1312,34 @@
     },
     "rexi": {
         "buffered": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of rexi messages buffered"
         },
         "down": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of rexi_DOWN messages handled"
         },
         "dropped": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of rexi messages dropped from buffers"
         },
         "streams": {
             "timeout": {
                 "init_stream": {
-                    "value": 0,
+                    "value": 1,
                     "type": "counter",
                     "desc": "number of rexi stream initialization timeouts"
                 },
                 "stream": {
-                    "value": 0,
+                    "value": 1,
                     "type": "counter",
                     "desc": "number of rexi stream timeouts"
                 },
                 "wait_for_ack": {
-                    "value": 0,
+                    "value": 1,
                     "type": "counter",
                     "desc": "number of rexi stream timeouts while waiting for acks"
                 }
@@ -1348,78 +1348,78 @@
     },
     "couch_replicator": {
         "changes_read_failures": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of failed replicator changes read failures"
         },
         "changes_reader_deaths": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of failed replicator changes readers"
         },
         "changes_manager_deaths": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of failed replicator changes managers"
         },
         "changes_queue_deaths": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of failed replicator changes work queues"
         },
         "checkpoints": {
             "success": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of checkpoints successfully saves"
             },
             "failure": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of failed checkpoint saves"
             }
         },
         "failed_starts": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of replications that have failed to start"
         },
         "requests": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of HTTP requests made by the replicator"
         },
         "responses": {
             "failure": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of failed HTTP responses received by the replicator"
             },
             "success": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of successful HTTP responses received by the replicator"
             }
         },
         "stream_responses": {
             "failure": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of failed streaming HTTP responses received by the replicator"
             },
             "success": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of successful streaming HTTP responses received by the replicator"
             }
         },
         "worker_deaths": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of failed replicator workers"
         },
         "workers_started": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of replicator workers started"
         },
@@ -1435,116 +1435,116 @@
         },
         "docs": {
             "dbs_created": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of db shard creations seen by replicator doc processor"
             },
             "dbs_deleted": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of db shard deletions seen by replicator doc processor"
             },
             "dbs_found": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of db shard found by replicator doc processor"
             },
             "db_changes": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of db changes processed by replicator doc processor"
             },
             "failed_state_updates": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of 'failed' state document updates"
             },
             "completed_state_updates": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of 'completed' state document updates"
             }
         },
         "jobs": {
             "adds": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of jobs added to replicator scheduler"
             },
             "duplicate_adds": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of duplicate jobs added to replicator scheduler"
             },
             "removes": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of jobs removed from replicator scheduler"
             },
             "starts": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of jobs started by replicator scheduler"
             },
             "stops": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of jobs stopped by replicator scheduler"
             },
             "crashes": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of job crashed noticed by replicator scheduler"
             },
             "running": {
-                "value": 0,
+                "value": 1,
                 "type": "gauge",
                 "desc": "replicator scheduler running jobs"
             },
             "pending": {
-                "value": 0,
+                "value": 1,
                 "type": "gauge",
                 "desc": "replicator scheduler pending jobs"
             },
             "crashed": {
-                "value": 0,
+                "value": 1,
                 "type": "gauge",
                 "desc": "replicator scheduler crashed jobs"
             },
             "total": {
-                "value": 0,
+                "value": 1,
                 "type": "gauge",
                 "desc": "total number of replicator scheduler jobs"
             }
         },
         "connection": {
             "acquires": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of times connections are shared"
             },
             "creates": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of connections created"
             },
             "releases": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of times ownership of a connection is released"
             },
             "owner_crashes": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of times a connection owner crashes while owning at least one connection"
             },
             "worker_crashes": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of times a worker unexpectedly terminates"
             },
             "closes": {
-                "value": 0,
+                "value": 1,
                 "type": "counter",
                 "desc": "number of times a worker is gracefully shut down"
             }
@@ -1552,44 +1552,44 @@
     },
     "pread": {
         "exceed_eof": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of the attempts to read beyond end of db file"
         },
         "exceed_limit": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of the attempts to read beyond set limit"
         }
     },
     "mango": {
         "unindexed_queries": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of mango queries that could not use an index"
         },
         "query_invalid_index": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of mango queries that generated an invalid index warning"
         },
         "too_many_docs_scanned": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of mango queries that generated an index scan warning"
         },
         "docs_examined": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of documents examined by mango queries coordinated by this node"
         },
         "quorum_docs_examined": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of documents examined by mango queries, using cluster quorum"
         },
         "results_returned": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of rows returned by mango queries"
         },
@@ -1643,7 +1643,7 @@
             "desc": "length of time processing a mango query"
         },
         "evaluate_selector": {
-            "value": 0,
+            "value": 1,
             "type": "counter",
             "desc": "number of mango selector evaluations"
         }
