@@ -11,9 +11,9 @@ type Pool []Range
 func (p Pool) String() string {
 	var b strings.Builder
 	for _, r := range p {
-		b.WriteString(r.String() + ",")
+		b.WriteString(r.String() + " ")
 	}
-	return strings.TrimSuffix(b.String(), ",")
+	return strings.TrimSpace(b.String())
 }
 
 func (p Pool) Size() *big.Int {
