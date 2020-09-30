@@ -11,8 +11,8 @@ import (
 	"github.com/apparentlymart/go-cidr/cidr"
 )
 
-func ParseRanges(value string) ([]Range, error) {
-	parts := strings.Fields(value)
+func ParseRanges(s string) ([]Range, error) {
+	parts := strings.Fields(s)
 	if len(parts) == 0 {
 		return nil, nil
 	}

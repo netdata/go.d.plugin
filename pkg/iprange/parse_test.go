@@ -9,7 +9,49 @@ import (
 )
 
 func TestParseRanges(t *testing.T) {
+	tests := map[string]struct {
+		input      string
+		wantRanges []Range
+		wantErr    bool
+	}{
+		"single range": {
+			input: "192.0.2.0-192.0.2.10",
+			wantRanges: []Range{
+				prepareV4Range("192.0.2.0", "192.0.2.10"),
+			},
+		},
+		"multiple ranges": {
+			input: "2001:db8::0 192.0.2.0-192.0.2.10 2001:db8::0/126 192.0.2.0/255.255.255.0",
+			wantRanges: []Range{
+				prepareV6Range("2001:db8::0", "2001:db8::0"),
+				prepareV4Range("192.0.2.0", "192.0.2.10"),
+				prepareV6Range("2001:db8::1", "2001:db8::2"),
+				prepareV4Range("192.0.2.1", "192.0.2.254"),
+			},
+		},
+		"single invalid syntax": {
+			input:   "192.0.2.0-192.0.2.",
+			wantErr: true,
+		},
+		"multiple invalid syntax": {
+			input:   "2001:db8::0 192.0.2.0-192.0.2.10 2001:db8::0/999 192.0.2.0/255.255.255.0",
+			wantErr: true,
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			rs, err := ParseRanges(test.input)
+
+			if test.wantErr {
+				assert.Error(t, err)
+				assert.Nilf(t, rs, "want: nil, got: %s", rs)
+			} else {
+				assert.NoError(t, err)
+				assert.Equalf(t, test.wantRanges, rs, "want: %s, got: %s", test.wantRanges, rs)
+			}
+		})
+	}
 }
 
 func TestParseRange(t *testing.T) {
