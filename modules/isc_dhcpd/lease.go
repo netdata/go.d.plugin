@@ -5,22 +5,62 @@ import (
 	"net"
 	"os"
 	"time"
-
-	"github.com/netdata/go.d.plugin/agent/module"
-	leases "github.com/npotts/go-dhcpd-leases"
+	"io"
+	"bufio"
+	"bytes"
+	"strconv"
 )
 
 type LeaseFile struct {
 	IP    net.IP
 	Ends  time.Time
+	EndString string
 	State string
 }
 
-func (d *DHCPd) parseDHCPLease() (error) {
+func ParseDHCPd(r io.Reader) ([]LeaseFile) {
+	var list []LeaseFile
 	set := make(map[string]int)
 
-	var list []LeaseFile
+	scanner := bufio.NewScanner(r)
+	l := LeaseFile{}
+	for scanner.Scan() {
+		cmp := bytes.TrimSpace(scanner.Bytes())
+		switch {
+		case l.IP == nil && bytes.HasPrefix(cmp, []byte("lease")):
+			line := string(cmp[:len(cmp)-1])
+			l.IP = net.ParseIP(line[6:len(line)-1])
+		case l.IP == nil && bytes.HasPrefix(cmp, []byte("iaaddr")):
+			line := string(cmp[:len(cmp)-1])
+			l.IP = net.ParseIP(line[7:len(line)-1])
+		case l.EndString == "" && bytes.HasPrefix(cmp, []byte("ends")):	
+			line := string(cmp[:len(cmp)-1])
+			if bytes.HasPrefix(cmp, []byte("ends epoch")) {
+				l.EndString = line[11:]
+				val, _ := strconv.ParseInt(l.EndString, 10, 64)
+				l.Ends = time.Unix(val, 0 )
+			} else {
+				l.EndString = line[5:]
+				l.Ends, _ = time.Parse("2006/01/02 15:04:05", line[7:])
+			}
+		case l.State == "" && bytes.HasPrefix(cmp, []byte("binding state")):
+			line := string(cmp[:len(cmp)-1])
+			l.State = line[14:]
+		case bytes.HasPrefix(cmp, []byte("}")):
+			if idx, ok := set[l.IP.String()]; ok {
+				list[idx] = l
+			} else {
+				set[l.IP.String()] = len(list)
+				list = append(list, l)
+			}
+			l = LeaseFile{}
+		}
+	}
 
+	return list
+}
+
+func (d *DHCPd) parseDHCPLease() error {
 	info, err := os.Stat(d.Config.LeaseFile)
 	if err != nil {
 		return errors.New("Cannot get file information")
@@ -39,25 +79,18 @@ func (d *DHCPd) parseDHCPLease() (error) {
 	}
 	defer f.Close()
 
-	l := leases.Parse(f)
-	if len(l) > 0 {
-		for _, v := range l {
-			index := v.IP.String() + v.BindingState
-			if idx, ok := set[index]; ok {
-				list[idx] = LeaseFile{IP: v.IP, Ends: v.Ends, State: v.BindingState}
-			} else {
-				set[index] = len(list)
-				list = append(list, LeaseFile{IP: v.IP, Ends: v.Ends, State: v.BindingState})
-			}
-		}
-	}
+	buf := bufio.NewReader(f)
 
-	d.Config.data = list
+	l := ParseDHCPd(buf)
+
+	if len(l) > 0 {
+		d.Config.data = l
+	}
 
 	return nil
 }
 
-func (d *DHCPd) parseLease(c map[string]int64) {
+func (d *DHCPd) parseLease() {
 	if !d.collectedLeases {
 		d.collectedLeases = true
 		d.addPoolsToCharts()
@@ -66,89 +99,5 @@ func (d *DHCPd) parseLease(c map[string]int64) {
 	err := d.parseDHCPLease()
 	if err != nil {
 		return
-	}
-
-	l := d.Config.data
-
-	// The test has a problem when we compare the timeto set it as active.
-	currTime := time.Now()
-	if len(l) > 0 {
-		for _, v := range l {
-			prefix := d.getDimensionPrefix(v.IP)
-			if prefix != "" {
-				if _, ok := c[prefix + "_active"] ; ok {
-					c[prefix + "_active"] = markActive(c[prefix + "_active"], currTime, v.Ends, v.State)
-					c[prefix + "_total"] = incrementValues(c[prefix + "_total"])
-				} else {
-					c[prefix + "_active"] = markActive(0, currTime, v.Ends, v.State)
-					c[prefix + "_total"] = 1
-				}
-			}
-		}
-	}
-
-	for idx, v := range d.Config.Dim {
-		i := *v.Values.Hosts()
-		f := (float64(c[idx + "_total"])/float64(i.Uint64()))*1000
-		c[idx + "_utilization"] = int64(f)
-	}
-}
-
-func incrementValues(prev int64)  int64{
-	prev++
-	return prev
-}
-
-func markActive(prev int64, curr time.Time, old time.Time, state string) int64 {
-	if state == "active" {
-		test := curr.Unix() - old.Unix()
-		if test >= 0 {
-			prev++
-		}
-	}
-	return prev
-}
-
-func (d *DHCPd) getDimensionPrefix(ip net.IP) string {
-	for idx, v := range d.Config.Dim {
-		if (v.Values.Contains(ip)) {
-			return idx
-		}
-	}
-	return ""
-}
-
-func (d *DHCPd) addPoolsToCharts() {
-	for idx, _ := range d.Config.Dim {
-		d.addPoolToCharts(idx)
-	}
-}
-
-func (d *DHCPd) addPoolToCharts(str string) {
-	for _, val := range dhcpdCharts {
-		chart := d.Charts().Get(val.ID)
-		if chart == nil {
-			d.Warningf("add dimension: couldn't find '%s' chart", val.ID)
-			continue
-		}
-
-		var id string
-		switch chart.ID {
-		case dhcpPollsUtilization.ID:
-			id = str + "_utilization"
-		case dhcpPollsActiveLeases.ID:
-			id = str + "_active"
-		case dhcpPollsTotalLeases.ID:
-			id = str + "_total"
-		}
-
-		dim := &module.Dim{ID: id, Name: str}
-
-		if err := chart.AddDim(dim); err != nil {
-			d.Warning(err)
-			continue
-		}
-
-		chart.MarkNotCreated()
 	}
 }

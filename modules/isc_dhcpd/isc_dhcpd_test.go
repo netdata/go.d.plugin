@@ -1,14 +1,13 @@
 package isc_dhcpd
 
-/*
 import (
 	"testing"
-	"net"
+//	"net"
 
-	"github.com/netdata/go.d.plugin/pkg/ip"
-	"github.com/netdata/go.d.plugin/module"
+//	"github.com/netdata/go.d.plugin/pkg/ip"
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+//	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
@@ -19,6 +18,7 @@ func TestDHCPd_Cleanup(t *testing.T) {
 	assert.NotPanics(t, New().Cleanup)
 }
 
+/*
 func TestDHCPd_Init(t *testing.T) {
 	tests := map[string]struct {
 		config Config
