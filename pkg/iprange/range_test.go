@@ -1,17 +1,77 @@
 package iprange
 
-import "testing"
+import (
+	"math/big"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
 
 func TestV4Range_String(t *testing.T) {
+	tests := map[string]struct {
+		input      string
+		wantString string
+	}{
+		"IP":    {input: "192.0.2.0", wantString: "192.0.2.0-192.0.2.0"},
+		"Range": {input: "192.0.2.0-192.0.2.10", wantString: "192.0.2.0-192.0.2.10"},
+		"CIDR":  {input: "192.0.2.0/24", wantString: "192.0.2.1-192.0.2.254"},
+		"Mask":  {input: "192.0.2.0/255.255.255.0", wantString: "192.0.2.1-192.0.2.254"},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			r, err := ParseRange(test.input)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.wantString, r.String())
+		})
+	}
 }
 
 func TestV4Range_Family(t *testing.T) {
+	tests := map[string]struct {
+		input string
+	}{
+		"IP":    {input: "192.0.2.0"},
+		"Range": {input: "192.0.2.0-192.0.2.10"},
+		"CIDR":  {input: "192.0.2.0/24"},
+		"Mask":  {input: "192.0.2.0/255.255.255.0"},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			r, err := ParseRange(test.input)
+			require.NoError(t, err)
+
+			assert.Equal(t, V4Family, r.String())
+		})
+	}
 }
 
-func TestV4Range_Hosts(t *testing.T) {
+func TestV4Range_Size(t *testing.T) {
+	tests := map[string]struct {
+		input    string
+		wantSize *big.Int
+	}{
+		"IP":      {input: "192.0.2.0", wantSize: big.NewInt(1)},
+		"Range":   {input: "192.0.2.0-192.0.2.10", wantSize: big.NewInt(11)},
+		"CIDR":    {input: "192.0.2.0/24", wantSize: big.NewInt(254)},
+		"CIDR 31": {input: "192.0.2.0/31", wantSize: big.NewInt(2)},
+		"CIDR 32": {input: "192.0.2.0/32", wantSize: big.NewInt(1)},
+		"Mask":    {input: "192.0.2.0/255.255.255.0", wantSize: big.NewInt(254)},
+		"Mask 31": {input: "192.0.2.0/255.255.255.254", wantSize: big.NewInt(2)},
+		"Mask 32": {input: "192.0.2.0/255.255.255.255", wantSize: big.NewInt(1)},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			r, err := ParseRange(test.input)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.wantSize, r.Size())
+		})
+	}
 }
 
 func TestV4Range_Contains(t *testing.T) {
@@ -26,7 +86,7 @@ func TestV6Range_Family(t *testing.T) {
 
 }
 
-func TestV6Range_Hosts(t *testing.T) {
+func TestV6Range_Size(t *testing.T) {
 
 }
 
