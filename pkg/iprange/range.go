@@ -7,13 +7,13 @@ import (
 	"net"
 )
 
-// Family represents IP Range family.
+// Family represents IP Range address family.
 type Family uint8
 
 const (
-	// V4Family is IPv4 addresses family
+	// V4Family is IPv4 address family.
 	V4Family Family = iota
-	// V6Family is IPv6 addresses family
+	// V6Family is IPv6 address family.
 	V6Family
 )
 
