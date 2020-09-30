@@ -44,7 +44,7 @@ func TestV4Range_Family(t *testing.T) {
 			r, err := ParseRange(test.input)
 			require.NoError(t, err)
 
-			assert.Equal(t, V4Family, r.String())
+			assert.Equal(t, V4Family, r.Family())
 		})
 	}
 }
@@ -79,15 +79,64 @@ func TestV4Range_Contains(t *testing.T) {
 }
 
 func TestV6Range_String(t *testing.T) {
+	tests := map[string]struct {
+		input      string
+		wantString string
+	}{
+		"IP":    {input: "2001:db8::", wantString: "2001:db8::-2001:db8::"},
+		"Range": {input: "2001:db8::-2001:db8::10", wantString: "2001:db8::-2001:db8::10"},
+		"CIDR":  {input: "2001:db8::/126", wantString: "2001:db8::1-2001:db8::2"},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			r, err := ParseRange(test.input)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.wantString, r.String())
+		})
+	}
 }
 
 func TestV6Range_Family(t *testing.T) {
+	tests := map[string]struct {
+		input string
+	}{
+		"IP":    {input: "2001:db8::"},
+		"Range": {input: "2001:db8::-2001:db8::10"},
+		"CIDR":  {input: "2001:db8::/126"},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			r, err := ParseRange(test.input)
+			require.NoError(t, err)
+
+			assert.Equal(t, V6Family, r.Family())
+		})
+	}
 }
 
 func TestV6Range_Size(t *testing.T) {
+	tests := map[string]struct {
+		input    string
+		wantSize *big.Int
+	}{
+		"IP":       {input: "2001:db8::", wantSize: big.NewInt(1)},
+		"Range":    {input: "2001:db8::-2001:db8::10", wantSize: big.NewInt(17)},
+		"CIDR":     {input: "2001:db8::/120", wantSize: big.NewInt(254)},
+		"CIDR 127": {input: "2001:db8::/127", wantSize: big.NewInt(2)},
+		"CIDR 128": {input: "2001:db8::/128", wantSize: big.NewInt(1)},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			r, err := ParseRange(test.input)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.wantSize, r.Size())
+		})
+	}
 }
 
 func TestV6Range_Contains(t *testing.T) {
