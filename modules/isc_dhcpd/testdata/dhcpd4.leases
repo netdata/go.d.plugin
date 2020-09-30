@@ -17,10 +17,10 @@ lease 10.220.252.3 {
   uid "\000\000J\000\000\000\000";
 }
 lease 10.220.252.4 {
-  starts 5 2020/09/15 01:03:59;
-  ends 5 2020/09/15 02:33:20;
-  tstp 5 2020/09/15 02:33:20;
-  cltt 5 2020/09/15 01:12:33;
+  starts epoch 1600137140;
+  ends epoch 1600137200;
+  tstp epoch 1600137200;
+  cltt epoch 1600137140;
   binding state active;
   hardware ethernet aa:aa:aa:aa:aa:aa;
   uid "\000\000\000\300z8?";

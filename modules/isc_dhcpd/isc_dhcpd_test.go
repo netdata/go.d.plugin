@@ -2,12 +2,12 @@ package isc_dhcpd
 
 import (
 	"testing"
-//	"net"
+	"net"
 
-//	"github.com/netdata/go.d.plugin/pkg/ip"
+	"github.com/netdata/go.d.plugin/pkg/ip"
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/stretchr/testify/assert"
-//	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
@@ -18,7 +18,6 @@ func TestDHCPd_Cleanup(t *testing.T) {
 	assert.NotPanics(t, New().Cleanup)
 }
 
-/*
 func TestDHCPd_Init(t *testing.T) {
 	tests := map[string]struct {
 		config Config
@@ -32,18 +31,24 @@ func TestDHCPd_Init(t *testing.T) {
 		"empty Lease file and pools" : {
 			config: Config {
 				LeaseFile : "",
+				LastModification : 0,
 				Pools : nil,
+				Dim : nil,
+				data : nil,
 			},
 			wantFail: true,
 		},
 		"With lease file" : {
 			config : Config {
 				LeaseFile : "testdata/dhcpd1.leases",
+				LastModification : 0,
 				Pools : nil,
+				Dim : nil,
+				data : nil,
 			},
 			wantFail: true,
 		},
-		"only one" : {
+		"only one host" : {
 			config : Config {
 				LeaseFile : "testdata/dhcpd1.leases",
 				Pools : map[string]string{
@@ -53,6 +58,23 @@ func TestDHCPd_Init(t *testing.T) {
 						"office" : Dimensions{ Values : ip.Range {
 							Start : net.ParseIP("192.168.0.0"),
 							End :  net.ParseIP("192.168.0.254"),
+						},
+					},
+				},
+			},
+			wantFail: false,
+			wantNumOfCharts: 3,
+		},
+		"four hosts" : {
+			config : Config {
+				LeaseFile : "testdata/dhcpd4.leases",
+				Pools : map[string]string{
+					"office" : "10.220.252.0-10.220.252.254",
+				},
+				Dim : map[string]Dimensions{
+						"office" : Dimensions{ Values : ip.Range {
+							Start : net.ParseIP("10.220.252.0"),
+							End :  net.ParseIP("10.220.252.254"),
 						},
 					},
 				},
@@ -76,7 +98,6 @@ func TestDHCPd_Init(t *testing.T) {
 		})
 	}
 }
-
 
 func TestDHCPd_Check(t *testing.T) {
 	tests := map[string]struct {
@@ -104,7 +125,7 @@ func TestDHCPd_Collect(t *testing.T) {
 		"lease file 1" : {
 			lease : leaseOne,
 			wantCollected : map[string]int64{
-				"office_active" : 1,
+				"office_active" : 0,
 				"office_total" : 1,
 				"office_utilization" : 3,
 			},
@@ -112,9 +133,9 @@ func TestDHCPd_Collect(t *testing.T) {
 		"lease file 4" : {
 			lease : leaseOne,
 			wantCollected : map[string]int64{
-				"office_active" : 1,
+				"office_active" : 0,
 				"office_total" : 1,
-				"office_utilization" : 11,
+				"office_utilization" : 3,
 			},
 		},
 	}
@@ -136,6 +157,16 @@ func leaseOne() *DHCPd {
 	d := New()
 
 	d.Config.LeaseFile = "testdata/dhcpd1.leases"
+	d.Config.Pools = map[string]string{
+					"office" : "192.168.0.0-192.168.0.254",
+				}
+	d.Config.Dim = map[string]Dimensions{
+						"office" : Dimensions{ Values : ip.Range {
+							Start : net.ParseIP("192.168.0.0"),
+							End :  net.ParseIP("192.168.0.254"),
+						},
+					},
+				}
 
 	return d
 }
@@ -143,8 +174,18 @@ func leaseOne() *DHCPd {
 func leaseFour() *DHCPd {
 	d := New()
 
-	d.Config.LeaseFile = "testdata/dhcpd4.leases"
+	d.Config.LeaseFile = "testdata/dhcpd1.leases"
+	d.Config.Pools = map[string]string{
+					"office" : "10.220.252.0-10.220.252.254",
+				}
+	d.Config.Dim = map[string]Dimensions{
+						"office" : Dimensions{ Values : ip.Range {
+							Start : net.ParseIP("10.220.252.0"),
+							End :  net.ParseIP("10.220.252.254"),
+						},
+					},
+				}
+
 
 	return d
 }
-*/
