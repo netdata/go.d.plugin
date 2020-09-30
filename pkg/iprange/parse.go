@@ -32,9 +32,9 @@ func ParseRanges(value string) ([]Range, error) {
 }
 
 var (
-	reRange = regexp.MustCompile("^[0-9a-f.:-]+$")            // addr | addr-addr
-	reCIDR  = regexp.MustCompile("^[0-9a-f.:-]+/[0-9]{1,3}$") // addr/prefix_length
-	reV4Net = regexp.MustCompile("^[0-9.-]+/[0-9.]{7,}$")     // v4_addr/mask
+	reRange      = regexp.MustCompile("^[0-9a-f.:-]+$")            // addr | addr-addr
+	reCIDR       = regexp.MustCompile("^[0-9a-f.:-]+/[0-9]{1,3}$") // addr/prefix_length
+	reSubnetMask = regexp.MustCompile("^[0-9.-]+/[0-9.]{7,}$")     // v4_addr/mask
 )
 
 func ParseRange(s string) (Range, error) {
@@ -49,8 +49,8 @@ func ParseRange(s string) (Range, error) {
 		r = parseRange(s)
 	case reCIDR.MatchString(s):
 		r = parseCIDR(s)
-	case reV4Net.MatchString(s):
-		r = parseV4Network(s)
+	case reSubnetMask.MatchString(s):
+		r = parseSubnetMask(s)
 	}
 
 	if r == nil {
@@ -94,7 +94,7 @@ func parseCIDR(s string) Range {
 	return parseRange(fmt.Sprintf("%s-%s", start, end))
 }
 
-func parseV4Network(s string) Range {
+func parseSubnetMask(s string) Range {
 	idx := strings.LastIndexByte(s, '/')
 	if idx == -1 {
 		return nil

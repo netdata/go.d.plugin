@@ -19,106 +19,168 @@ func TestParseRange(t *testing.T) {
 		wantErr   bool
 	}{
 		"v4 IP": {
-			input:     "1.2.3.0",
-			wantRange: prepareV4Range("1.2.3.0", "1.2.3.0"),
+			input:     "192.0.2.0",
+			wantRange: prepareV4Range("192.0.2.0", "192.0.2.0"),
 		},
 		"v4 IP: invalid address": {
-			input:   "1.2.3.",
+			input:   "192.0.2.",
 			wantErr: true,
 		},
-
 		"v4 Range": {
-			input:     "1.2.3.0-1.2.3.10",
-			wantRange: prepareV4Range("1.2.3.0", "1.2.3.10"),
+			input:     "192.0.2.0-192.0.2.10",
+			wantRange: prepareV4Range("192.0.2.0", "192.0.2.10"),
 		},
 		"v4 Range: start == end": {
-			input:     "1.2.3.0-1.2.3.0",
-			wantRange: prepareV4Range("1.2.3.0", "1.2.3.0"),
+			input:     "192.0.2.0-192.0.2.0",
+			wantRange: prepareV4Range("192.0.2.0", "192.0.2.0"),
 		},
 		"v4 Range: start > end": {
-			input:   "1.2.3.10-1.2.3.0",
+			input:   "192.0.2.10-192.0.2.0",
 			wantErr: true,
 		},
 		"v4 Range: invalid start": {
-			input:   "1.2.3.-1.2.3.10",
+			input:   "192.0.2.-192.0.2.10",
 			wantErr: true,
 		},
 		"v4 Range: invalid end": {
-			input:   "1.2.3.0-1.2.3.",
+			input:   "192.0.2.0-192.0.2.",
 			wantErr: true,
 		},
 		"v4 Range: v6 start": {
-			input:   "::1-1.2.3.10",
+			input:   "2001:db8::0-192.0.2.10",
 			wantErr: true,
 		},
 		"v4 Range: v6 end": {
-			input:   "1.2.3.10-::1",
+			input:   "192.0.2.0-2001:db8::0",
 			wantErr: true,
 		},
-
 		"v4 CIDR: /0": {
-			input:     "1.2.3.0/0",
+			input:     "192.0.2.0/0",
 			wantRange: prepareV4Range("0.0.0.1", "255.255.255.254"),
 		},
 		"v4 CIDR: /24": {
-			input:     "1.2.3.0/24",
-			wantRange: prepareV4Range("1.2.3.1", "1.2.3.254"),
+			input:     "192.0.2.0/24",
+			wantRange: prepareV4Range("192.0.2.1", "192.0.2.254"),
 		},
 		"v4 CIDR: /30": {
-			input:     "1.2.3.0/30",
-			wantRange: prepareV4Range("1.2.3.1", "1.2.3.2"),
+			input:     "192.0.2.0/30",
+			wantRange: prepareV4Range("192.0.2.1", "192.0.2.2"),
 		},
 		"v4 CIDR: /31": {
-			input:     "1.2.3.0/31",
-			wantRange: prepareV4Range("1.2.3.0", "1.2.3.1"),
+			input:     "192.0.2.0/31",
+			wantRange: prepareV4Range("192.0.2.0", "192.0.2.1"),
 		},
 		"v4 CIDR: /32": {
-			input:     "1.2.3.0/32",
-			wantRange: prepareV4Range("1.2.3.0", "1.2.3.0"),
+			input:     "192.0.2.0/32",
+			wantRange: prepareV4Range("192.0.2.0", "192.0.2.0"),
 		},
 		"v4 CIDR: missing prefix length": {
-			input:   "1.2.3.0/",
+			input:   "192.0.2.0/",
 			wantErr: true,
 		},
 		"v4 CIDR: invalid prefix length": {
-			input:   "1.2.3.0/99",
+			input:   "192.0.2.0/99",
+			wantErr: true,
+		},
+		"v4 Mask: /0": {
+			input:     "192.0.2.0/0.0.0.0",
+			wantRange: prepareV4Range("0.0.0.1", "255.255.255.254"),
+		},
+		"v4 Mask: /24": {
+			input:     "192.0.2.0/255.255.255.0",
+			wantRange: prepareV4Range("192.0.2.1", "192.0.2.254"),
+		},
+		"v4 Mask: /30": {
+			input:     "192.0.2.0/255.255.255.252",
+			wantRange: prepareV4Range("192.0.2.1", "192.0.2.2"),
+		},
+		"v4 Mask: /31": {
+			input:     "192.0.2.0/255.255.255.254",
+			wantRange: prepareV4Range("192.0.2.0", "192.0.2.1"),
+		},
+		"v4 Mask: /32": {
+			input:     "192.0.2.0/255.255.255.255",
+			wantRange: prepareV4Range("192.0.2.0", "192.0.2.0"),
+		},
+		"v4 Mask: missing prefix mask": {
+			input:   "192.0.2.0/",
+			wantErr: true,
+		},
+		"v4 Mask: invalid mask": {
+			input:   "192.0.2.0/mask",
+			wantErr: true,
+		},
+		"v4 Mask: not canonical form mask": {
+			input:   "192.0.2.0/255.255.0.254",
+			wantErr: true,
+		},
+		"v4 Mask: v6 address": {
+			input:   "2001:db8::/255.255.255.0",
 			wantErr: true,
 		},
 
-		"v4 Net: /0": {
-			input:     "1.2.3.0/0.0.0.0",
-			wantRange: prepareV4Range("0.0.0.1", "255.255.255.254"),
+		"v6 IP": {
+			input:     "2001:db8::0",
+			wantRange: prepareV6Range("2001:db8::0", "2001:db8::0"),
 		},
-		"v4 Net: /24": {
-			input:     "1.2.3.0/255.255.255.0",
-			wantRange: prepareV4Range("1.2.3.1", "1.2.3.254"),
-		},
-		"v4 Net: /30": {
-			input:     "1.2.3.0/255.255.255.252",
-			wantRange: prepareV4Range("1.2.3.1", "1.2.3.2"),
-		},
-		"v4 Net: /31": {
-			input:     "1.2.3.0/255.255.255.254",
-			wantRange: prepareV4Range("1.2.3.0", "1.2.3.1"),
-		},
-		"v4 Net: /32": {
-			input:     "1.2.3.0/255.255.255.255",
-			wantRange: prepareV4Range("1.2.3.0", "1.2.3.0"),
-		},
-		"v4 Net: missing prefix mask": {
-			input:   "1.2.3.0/",
+		"v6 IP: invalid address": {
+			input:   "2001:db8",
 			wantErr: true,
 		},
-		"v4 Net: invalid mask": {
-			input:   "1.2.3.0/mask",
+		"v6 Range": {
+			input:     "2001:db8::-2001:db8::10",
+			wantRange: prepareV6Range("2001:db8::", "2001:db8::10"),
+		},
+		"v6 Range: start == end": {
+			input:     "2001:db8::-2001:db8::",
+			wantRange: prepareV6Range("2001:db8::", "2001:db8::"),
+		},
+		"v6 Range: start > end": {
+			input:   "2001:db8::10-2001:db8::",
 			wantErr: true,
 		},
-		"v4 Net: not canonical form mask": {
-			input:   "1.2.3.0/255.255.0.254",
+		"v6 Range: invalid start": {
+			input:   "2001:db8-2001:db8::10",
 			wantErr: true,
 		},
-		"v4 Net: v6 address": {
-			input:   "::1/255.255.255.0",
+		"v6 Range: invalid end": {
+			input:   "2001:db8::-2001:db8",
+			wantErr: true,
+		},
+		"v6 Range: v4 start": {
+			input:   "192.0.2.0-2001:db8::10",
+			wantErr: true,
+		},
+		"v6 Range: v4 end": {
+			input:   "2001:db8::-192.0.2.10",
+			wantErr: true,
+		},
+		"v6 CIDR: /0": {
+			input:     "2001:db8::/0",
+			wantRange: prepareV6Range("::1", "ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffe"),
+		},
+		"v6 CIDR: /64": {
+			input:     "2001:db8::/64",
+			wantRange: prepareV6Range("2001:db8::1", "2001:db8::ffff:ffff:ffff:fffe"),
+		},
+		"v6 CIDR: /126": {
+			input:     "2001:db8::/126",
+			wantRange: prepareV6Range("2001:db8::1", "2001:db8::2"),
+		},
+		"v6 CIDR: /127": {
+			input:     "2001:db8::/127",
+			wantRange: prepareV6Range("2001:db8::", "2001:db8::1"),
+		},
+		"v6 CIDR: /128": {
+			input:     "2001:db8::/128",
+			wantRange: prepareV6Range("2001:db8::", "2001:db8::"),
+		},
+		"v6 CIDR: missing prefix length": {
+			input:   "2001:db8::/",
+			wantErr: true,
+		},
+		"v6 CIDR: invalid prefix length": {
+			input:   "2001:db8::/999",
 			wantErr: true,
 		},
 	}
