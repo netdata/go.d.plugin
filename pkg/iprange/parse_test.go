@@ -116,6 +116,10 @@ func TestParseRange(t *testing.T) {
 			input:     "192.0.2.0/32",
 			wantRange: prepareV4Range("192.0.2.0", "192.0.2.0"),
 		},
+		"v4 CIDR: ip instead of host address": {
+			input:     "192.0.2.10/24",
+			wantRange: prepareV4Range("192.0.2.1", "192.0.2.254"),
+		},
 		"v4 CIDR: missing prefix length": {
 			input:   "192.0.2.0/",
 			wantErr: true,
@@ -216,6 +220,10 @@ func TestParseRange(t *testing.T) {
 		"v6 CIDR: /128": {
 			input:     "2001:db8::/128",
 			wantRange: prepareV6Range("2001:db8::", "2001:db8::"),
+		},
+		"v6 CIDR: ip instead of host address": {
+			input:     "2001:db8::10/64",
+			wantRange: prepareV6Range("2001:db8::1", "2001:db8::ffff:ffff:ffff:fffe"),
 		},
 		"v6 CIDR: missing prefix length": {
 			input:   "2001:db8::/",
