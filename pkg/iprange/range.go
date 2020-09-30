@@ -11,10 +11,13 @@ import (
 type Family uint8
 
 const (
+	// V4Family is IPv4 addresses family
 	V4Family Family = iota
+	// V6Family is IPv6 addresses family
 	V6Family
 )
 
+// Range represents an IP range.
 type Range interface {
 	Family() Family
 	Contains(ip net.IP) bool
