@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/apparentlymart/go-cidr/cidr"
@@ -124,7 +123,7 @@ func parseSubnetMask(s string) Range {
 		return nil
 	}
 
-	return parseCIDR(fmt.Sprintf("%s/%s", address, strconv.Itoa(prefixLen)))
+	return parseCIDR(fmt.Sprintf("%s/%d", address, prefixLen))
 }
 
 func isV4RangeValid(start, end net.IP) bool {
