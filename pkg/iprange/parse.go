@@ -37,9 +37,9 @@ func ParseRanges(s string) ([]Range, error) {
 }
 
 var (
-	reRange      = regexp.MustCompile("^[0-9a-f.:-]+$")            // addr | addr-addr
-	reCIDR       = regexp.MustCompile("^[0-9a-f.:-]+/[0-9]{1,3}$") // addr/prefix_length
-	reSubnetMask = regexp.MustCompile("^[0-9.-]+/[0-9.]{7,}$")     // v4_addr/mask
+	reRange      = regexp.MustCompile("^[0-9a-f.:-]+$")           // addr | addr-addr
+	reCIDR       = regexp.MustCompile("^[0-9a-f.:]+/[0-9]{1,3}$") // addr/prefix_length
+	reSubnetMask = regexp.MustCompile("^[0-9.]+/[0-9.]{7,}$")     // v4_addr/mask
 )
 
 // ParseRange parses s as an IP Range, returning the result and an error if any.
