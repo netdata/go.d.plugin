@@ -25,6 +25,17 @@ type Range interface {
 	fmt.Stringer
 }
 
+// New returns new IP Range.
+func New(start, end net.IP) Range {
+	if isV4RangeValid(start, end) {
+		return v4Range{start: start, end: end}
+	}
+	if isV6RangeValid(start, end) {
+		return v6Range{start: start, end: end}
+	}
+	return nil
+}
+
 type v4Range struct {
 	start net.IP
 	end   net.IP

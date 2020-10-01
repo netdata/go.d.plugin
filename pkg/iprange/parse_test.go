@@ -17,16 +17,16 @@ func TestParseRanges(t *testing.T) {
 		"single range": {
 			input: "192.0.2.0-192.0.2.10",
 			wantRanges: []Range{
-				prepareV4Range("192.0.2.0", "192.0.2.10"),
+				prepareRange("192.0.2.0", "192.0.2.10"),
 			},
 		},
 		"multiple ranges": {
 			input: "2001:db8::0 192.0.2.0-192.0.2.10 2001:db8::0/126 192.0.2.0/255.255.255.0",
 			wantRanges: []Range{
-				prepareV6Range("2001:db8::0", "2001:db8::0"),
-				prepareV4Range("192.0.2.0", "192.0.2.10"),
-				prepareV6Range("2001:db8::1", "2001:db8::2"),
-				prepareV4Range("192.0.2.1", "192.0.2.254"),
+				prepareRange("2001:db8::0", "2001:db8::0"),
+				prepareRange("192.0.2.0", "192.0.2.10"),
+				prepareRange("2001:db8::1", "2001:db8::2"),
+				prepareRange("192.0.2.1", "192.0.2.254"),
 			},
 		},
 		"single invalid syntax": {
@@ -62,7 +62,7 @@ func TestParseRange(t *testing.T) {
 	}{
 		"v4 IP": {
 			input:     "192.0.2.0",
-			wantRange: prepareV4Range("192.0.2.0", "192.0.2.0"),
+			wantRange: prepareRange("192.0.2.0", "192.0.2.0"),
 		},
 		"v4 IP: invalid address": {
 			input:   "192.0.2.",
@@ -70,11 +70,11 @@ func TestParseRange(t *testing.T) {
 		},
 		"v4 Range": {
 			input:     "192.0.2.0-192.0.2.10",
-			wantRange: prepareV4Range("192.0.2.0", "192.0.2.10"),
+			wantRange: prepareRange("192.0.2.0", "192.0.2.10"),
 		},
 		"v4 Range: start == end": {
 			input:     "192.0.2.0-192.0.2.0",
-			wantRange: prepareV4Range("192.0.2.0", "192.0.2.0"),
+			wantRange: prepareRange("192.0.2.0", "192.0.2.0"),
 		},
 		"v4 Range: start > end": {
 			input:   "192.0.2.10-192.0.2.0",
@@ -98,27 +98,27 @@ func TestParseRange(t *testing.T) {
 		},
 		"v4 CIDR: /0": {
 			input:     "192.0.2.0/0",
-			wantRange: prepareV4Range("0.0.0.1", "255.255.255.254"),
+			wantRange: prepareRange("0.0.0.1", "255.255.255.254"),
 		},
 		"v4 CIDR: /24": {
 			input:     "192.0.2.0/24",
-			wantRange: prepareV4Range("192.0.2.1", "192.0.2.254"),
+			wantRange: prepareRange("192.0.2.1", "192.0.2.254"),
 		},
 		"v4 CIDR: /30": {
 			input:     "192.0.2.0/30",
-			wantRange: prepareV4Range("192.0.2.1", "192.0.2.2"),
+			wantRange: prepareRange("192.0.2.1", "192.0.2.2"),
 		},
 		"v4 CIDR: /31": {
 			input:     "192.0.2.0/31",
-			wantRange: prepareV4Range("192.0.2.0", "192.0.2.1"),
+			wantRange: prepareRange("192.0.2.0", "192.0.2.1"),
 		},
 		"v4 CIDR: /32": {
 			input:     "192.0.2.0/32",
-			wantRange: prepareV4Range("192.0.2.0", "192.0.2.0"),
+			wantRange: prepareRange("192.0.2.0", "192.0.2.0"),
 		},
 		"v4 CIDR: ip instead of host address": {
 			input:     "192.0.2.10/24",
-			wantRange: prepareV4Range("192.0.2.1", "192.0.2.254"),
+			wantRange: prepareRange("192.0.2.1", "192.0.2.254"),
 		},
 		"v4 CIDR: missing prefix length": {
 			input:   "192.0.2.0/",
@@ -130,23 +130,23 @@ func TestParseRange(t *testing.T) {
 		},
 		"v4 Mask: /0": {
 			input:     "192.0.2.0/0.0.0.0",
-			wantRange: prepareV4Range("0.0.0.1", "255.255.255.254"),
+			wantRange: prepareRange("0.0.0.1", "255.255.255.254"),
 		},
 		"v4 Mask: /24": {
 			input:     "192.0.2.0/255.255.255.0",
-			wantRange: prepareV4Range("192.0.2.1", "192.0.2.254"),
+			wantRange: prepareRange("192.0.2.1", "192.0.2.254"),
 		},
 		"v4 Mask: /30": {
 			input:     "192.0.2.0/255.255.255.252",
-			wantRange: prepareV4Range("192.0.2.1", "192.0.2.2"),
+			wantRange: prepareRange("192.0.2.1", "192.0.2.2"),
 		},
 		"v4 Mask: /31": {
 			input:     "192.0.2.0/255.255.255.254",
-			wantRange: prepareV4Range("192.0.2.0", "192.0.2.1"),
+			wantRange: prepareRange("192.0.2.0", "192.0.2.1"),
 		},
 		"v4 Mask: /32": {
 			input:     "192.0.2.0/255.255.255.255",
-			wantRange: prepareV4Range("192.0.2.0", "192.0.2.0"),
+			wantRange: prepareRange("192.0.2.0", "192.0.2.0"),
 		},
 		"v4 Mask: missing prefix mask": {
 			input:   "192.0.2.0/",
@@ -167,7 +167,7 @@ func TestParseRange(t *testing.T) {
 
 		"v6 IP": {
 			input:     "2001:db8::0",
-			wantRange: prepareV6Range("2001:db8::0", "2001:db8::0"),
+			wantRange: prepareRange("2001:db8::0", "2001:db8::0"),
 		},
 		"v6 IP: invalid address": {
 			input:   "2001:db8",
@@ -175,11 +175,11 @@ func TestParseRange(t *testing.T) {
 		},
 		"v6 Range": {
 			input:     "2001:db8::-2001:db8::10",
-			wantRange: prepareV6Range("2001:db8::", "2001:db8::10"),
+			wantRange: prepareRange("2001:db8::", "2001:db8::10"),
 		},
 		"v6 Range: start == end": {
 			input:     "2001:db8::-2001:db8::",
-			wantRange: prepareV6Range("2001:db8::", "2001:db8::"),
+			wantRange: prepareRange("2001:db8::", "2001:db8::"),
 		},
 		"v6 Range: start > end": {
 			input:   "2001:db8::10-2001:db8::",
@@ -203,27 +203,27 @@ func TestParseRange(t *testing.T) {
 		},
 		"v6 CIDR: /0": {
 			input:     "2001:db8::/0",
-			wantRange: prepareV6Range("::1", "ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffe"),
+			wantRange: prepareRange("::1", "ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffe"),
 		},
 		"v6 CIDR: /64": {
 			input:     "2001:db8::/64",
-			wantRange: prepareV6Range("2001:db8::1", "2001:db8::ffff:ffff:ffff:fffe"),
+			wantRange: prepareRange("2001:db8::1", "2001:db8::ffff:ffff:ffff:fffe"),
 		},
 		"v6 CIDR: /126": {
 			input:     "2001:db8::/126",
-			wantRange: prepareV6Range("2001:db8::1", "2001:db8::2"),
+			wantRange: prepareRange("2001:db8::1", "2001:db8::2"),
 		},
 		"v6 CIDR: /127": {
 			input:     "2001:db8::/127",
-			wantRange: prepareV6Range("2001:db8::", "2001:db8::1"),
+			wantRange: prepareRange("2001:db8::", "2001:db8::1"),
 		},
 		"v6 CIDR: /128": {
 			input:     "2001:db8::/128",
-			wantRange: prepareV6Range("2001:db8::", "2001:db8::"),
+			wantRange: prepareRange("2001:db8::", "2001:db8::"),
 		},
 		"v6 CIDR: ip instead of host address": {
 			input:     "2001:db8::10/64",
-			wantRange: prepareV6Range("2001:db8::1", "2001:db8::ffff:ffff:ffff:fffe"),
+			wantRange: prepareRange("2001:db8::1", "2001:db8::ffff:ffff:ffff:fffe"),
 		},
 		"v6 CIDR: missing prefix length": {
 			input:   "2001:db8::/",
@@ -251,16 +251,6 @@ func TestParseRange(t *testing.T) {
 	}
 }
 
-func prepareV4Range(start, end string) Range {
-	return v4Range{
-		start: net.ParseIP(start),
-		end:   net.ParseIP(end),
-	}
-}
-
-func prepareV6Range(start, end string) Range {
-	return v6Range{
-		start: net.ParseIP(start),
-		end:   net.ParseIP(end),
-	}
+func prepareRange(start, end string) Range {
+	return New(net.ParseIP(start), net.ParseIP(end))
 }

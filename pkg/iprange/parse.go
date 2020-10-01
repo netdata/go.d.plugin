@@ -78,14 +78,7 @@ func parseRange(s string) Range {
 		start, end = net.ParseIP(s), net.ParseIP(s)
 	}
 
-	switch {
-	case isV4RangeValid(start, end):
-		return v4Range{start: start, end: end}
-	case isV6RangeValid(start, end):
-		return v6Range{start: start, end: end}
-	default:
-		return nil
-	}
+	return New(start, end)
 }
 
 func parseCIDR(s string) Range {
