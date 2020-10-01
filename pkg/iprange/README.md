@@ -25,5 +25,5 @@ type Range interface {
 -   `IPv6 range` (2001:db8::-2001:db8::10)
 -   `IPv6 CIDR` (2001:db8::/64)
 
-IP range doesn't contain host and network IP addresses 
+IP range doesn't contain network and broadcast IP addresses 
 if the format is `IPv4 CIDR`, `IPv4 subnet mask` or `IPv6 CIDR`.  

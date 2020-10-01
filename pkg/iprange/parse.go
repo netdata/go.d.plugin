@@ -15,7 +15,7 @@ import (
 // IPv4 CIDR ("192.0.2.0/24"), IPv4 subnet mask ("192.0.2.0/255.255.255.0"),
 // IPv6 address ("2001:db8::1"), IPv6 range ("2001:db8::-2001:db8::10"),
 // or IPv6 CIDR ("2001:db8::/64") form.
-// IPv4 CIDR, IPv4 subnet mask and IPv6 CIDR ranges don't include host and network IPs.
+// IPv4 CIDR, IPv4 subnet mask and IPv6 CIDR ranges don't include network and broadcast addresses.
 func ParseRanges(s string) ([]Range, error) {
 	parts := strings.Fields(s)
 	if len(parts) == 0 {
@@ -47,7 +47,7 @@ var (
 // IPv4 CIDR ("192.0.2.0/24"), IPv4 subnet mask ("192.0.2.0/255.255.255.0"),
 // IPv6 address ("2001:db8::1"), IPv6 range ("2001:db8::-2001:db8::10"),
 // or IPv6 CIDR ("2001:db8::/64") form.
-// IPv4 CIDR, IPv4 subnet mask and IPv6 CIDR ranges don't include host and network IPs.
+// IPv4 CIDR, IPv4 subnet mask and IPv6 CIDR ranges don't include network and broadcast addresses.
 func ParseRange(s string) (Range, error) {
 	s = strings.ToLower(s)
 	if s == "" {
