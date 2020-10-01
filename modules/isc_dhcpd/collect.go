@@ -36,7 +36,7 @@ func (d *DHCPd) fillDimension(c map[string]int64) {
 	}
 
 	for idx, v := range d.Config.Dim {
-		i := *v.Values.Hosts()
+		i := *v.Values.Size()
 		f := (float64(c[idx + "_total"])/float64(i.Uint64()))*1000
 		c[idx + "_utilization"] = int64(f)
 	}

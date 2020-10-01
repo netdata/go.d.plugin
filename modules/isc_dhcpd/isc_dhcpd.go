@@ -1,7 +1,7 @@
 package isc_dhcpd
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/ip"
+	"github.com/netdata/go.d.plugin/pkg/iprange"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 )
@@ -16,7 +16,7 @@ type (
 	}
 
 	Dimensions struct {
-		Values ip.IRange
+		Values iprange.Range
 		Name  string
 	}
 )
@@ -59,10 +59,11 @@ func (d *DHCPd) Init() bool {
 	}
 
 	for i, v := range d.Config.Pools {
-		r := ip.ParseRange(v)
-		if r != nil {
-			d.Config.Dim[i] = Dimensions{Values: r, Name: v}
+		r, err := iprange.ParseRange(v)
+		if err != nil {
+			continue
 		}
+		d.Config.Dim[i] = Dimensions{Values: r, Name: v}
 	}
 
 	charts, err := d.initCharts()
@@ -73,7 +74,7 @@ func (d *DHCPd) Init() bool {
 	d.charts = charts
 
 	d.Debugf("Monitoring lease file %v", d.Config.LeaseFile)
-	//	d.Debugf("Monitoring pools %v", d.Config.Pools.pools)
+	d.Debugf("Monitoring pools %v", d.Config.Pools)
 	return true
 }
 

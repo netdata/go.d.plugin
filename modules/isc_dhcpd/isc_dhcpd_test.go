@@ -4,7 +4,7 @@ import (
 	"testing"
 	"net"
 
-	"github.com/netdata/go.d.plugin/pkg/ip"
+	"github.com/netdata/go.d.plugin/pkg/iprange"
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -55,10 +55,9 @@ func TestDHCPd_Init(t *testing.T) {
 					"office" : "192.168.0.0-192.168.0.254",
 				},
 				Dim : map[string]Dimensions{
-						"office" : Dimensions{ Values : ip.Range {
-							Start : net.ParseIP("192.168.0.0"),
-							End :  net.ParseIP("192.168.0.254"),
-						},
+						"office" : Dimensions{ Values : 
+							iprange.New(net.ParseIP("192.168.0.0"),
+							net.ParseIP("192.168.0.254")),
 					},
 				},
 			},
@@ -72,10 +71,9 @@ func TestDHCPd_Init(t *testing.T) {
 					"office" : "10.220.252.0-10.220.252.254",
 				},
 				Dim : map[string]Dimensions{
-						"office" : Dimensions{ Values : ip.Range {
-							Start : net.ParseIP("10.220.252.0"),
-							End :  net.ParseIP("10.220.252.254"),
-						},
+						"office" : Dimensions{ Values : 
+							iprange.New(net.ParseIP("10.220.252.0"),
+							net.ParseIP("10.220.252.254")),
 					},
 				},
 			},
@@ -89,10 +87,9 @@ func TestDHCPd_Init(t *testing.T) {
 					"office" : "1985:470:1f0b:c9a::000-1985:470:1f0b:c9a::255",
 				},
 				Dim : map[string]Dimensions{
-						"office" : Dimensions{ Values : ip.Range {
-							Start : net.ParseIP("1985:470:1f0b:c9a::000"),
-							End :  net.ParseIP("1985:470:1f0b:c9a::255"),
-						},
+						"office" : Dimensions{ Values : 
+							iprange.New(net.ParseIP("1985:470:1f0b:c9a::000"),
+							net.ParseIP("1985:470:1f0b:c9a::255")),
 					},
 				},
 			},
@@ -106,10 +103,9 @@ func TestDHCPd_Init(t *testing.T) {
 					"office" : "192.168.0.0-192.168.0.254",
 				},
 				Dim : map[string]Dimensions{
-						"office" : Dimensions{ Values : ip.Range {
-							Start : net.ParseIP("192.168.0.0"),
-							End :  net.ParseIP("192.168.0.254"),
-						},
+						"office" : Dimensions{ Values : 
+							iprange.New(net.ParseIP("192.168.0.0"),
+							net.ParseIP("192.168.0.254")),
 					},
 				},
 			},
@@ -177,7 +173,7 @@ func TestDHCPd_Collect(t *testing.T) {
 		"ipv6" : {
 			lease : ipv6_leaseSix,
 			wantCollected : map[string]int64{
-				"office_active" : 4,
+				"office_active" : 6,
 				"office_total" : 6,
 				"office_utilization" : 10,
 			},
@@ -213,10 +209,9 @@ func ipv4_leaseOne() *DHCPd {
 					"office" : "192.168.0.0-192.168.0.254",
 				}
 	d.Config.Dim = map[string]Dimensions{
-						"office" : Dimensions{ Values : ip.Range {
-							Start : net.ParseIP("192.168.0.0"),
-							End :  net.ParseIP("192.168.0.254"),
-						},
+						"office" : Dimensions{ Values : 
+							iprange.New(net.ParseIP("192.168.0.0"),
+							net.ParseIP("192.168.0.254")),
 					},
 				}
 
@@ -231,10 +226,9 @@ func ipv4_leaseFour() *DHCPd {
 					"office" : "10.220.252.0-10.220.252.254",
 				}
 	d.Config.Dim = map[string]Dimensions{
-						"office" : Dimensions{ Values : ip.Range {
-							Start : net.ParseIP("10.220.252.0"),
-							End :  net.ParseIP("10.220.252.254"),
-						},
+						"office" : Dimensions{ Values : 
+							iprange.New(net.ParseIP("10.220.252.0"),
+							net.ParseIP("10.220.252.254")),
 					},
 				}
 
@@ -250,10 +244,9 @@ func ipv6_leaseSix() *DHCPd {
 					"office" : "1985:470:1f0b:c9a::000-1985:470:1f0b:c9a::255",
 				}
 	d.Config.Dim = map[string]Dimensions{
-						"office" : Dimensions{ Values : ip.Range {
-							Start : net.ParseIP("1985:470:1f0b:c9a::000"),
-							End :  net.ParseIP("1985:470:1f0b:c9a::255"),
-						},
+						"office" : Dimensions{ Values : 
+							iprange.New(net.ParseIP("1985:470:1f0b:c9a::000"),
+							net.ParseIP("1985:470:1f0b:c9a::255")),
 					},
 				}
 
@@ -269,10 +262,9 @@ func ipv4_leaseBkp() *DHCPd {
 					"office" : "192.168.0.0-192.168.0.254",
 				}
 	d.Config.Dim = map[string]Dimensions{
-						"office" : Dimensions{ Values : ip.Range {
-							Start : net.ParseIP("192.168.0.0"),
-							End :  net.ParseIP("192.168.0.254"),
-						},
+						"office" : Dimensions{ Values : 
+							iprange.New(net.ParseIP("192.168.0.0"),
+							net.ParseIP("192.168.0.254")),
 					},
 				}
 
