@@ -25,28 +25,28 @@ func ParseDHCPd(r io.Reader) ([]LeaseFile) {
 	scanner := bufio.NewScanner(r)
 	l := LeaseFile{}
 	for scanner.Scan() {
-		cmp := bytes.TrimSpace(scanner.Bytes())
+		line := bytes.TrimSpace(scanner.Bytes())
 		switch {
-		case l.IP == nil && bytes.HasPrefix(cmp, []byte("lease")):
-			line := string(cmp[:len(cmp)-1])
-			l.IP = net.ParseIP(line[6:len(line)-1])
-		case l.IP == nil && bytes.HasPrefix(cmp, []byte("iaaddr")):
-			line := string(cmp[:len(cmp)-1])
-			l.IP = net.ParseIP(line[7:len(line)-1])
-		case l.EndString == "" && bytes.HasPrefix(cmp, []byte("ends")):	
-			line := string(cmp[:len(cmp)-1])
-			if bytes.HasPrefix(cmp, []byte("ends epoch")) {
-				l.EndString = line[11:]
+		case l.IP == nil && bytes.HasPrefix(line, []byte("lease")):
+			str := string(line[:len(line)-1])
+			l.IP = net.ParseIP(str[6:len(str)-1])
+		case l.IP == nil && bytes.HasPrefix(line, []byte("iaaddr")):
+			str := string(line[:len(line)-1])
+			l.IP = net.ParseIP(str[7:len(str)-1])
+		case l.EndString == "" && bytes.HasPrefix(line, []byte("ends")):	
+			str := string(line[:len(line)-1])
+			if bytes.HasPrefix(line, []byte("ends epoch")) {
+				l.EndString = str[11:]
 				val, _ := strconv.ParseInt(l.EndString, 10, 64)
 				l.Ends = time.Unix(val, 0 )
 			} else {
-				l.EndString = line[5:]
-				l.Ends, _ = time.Parse("2006/01/02 15:04:05", line[7:])
+				l.EndString = str[5:]
+				l.Ends, _ = time.Parse("2006/01/02 15:04:05", str[7:])
 			}
-		case l.State == "" && bytes.HasPrefix(cmp, []byte("binding state")):
-			line := string(cmp[:len(cmp)-1])
-			l.State = line[14:]
-		case bytes.HasPrefix(cmp, []byte("}")):
+		case l.State == "" && bytes.HasPrefix(line, []byte("binding state")):
+			str := string(line[:len(line)-1])
+			l.State = str[14:]
+		case bytes.HasPrefix(line, []byte("}")):
 			//This test was added to parse IPV6 lease correctly
 			if l.IP != nil {
 				if idx, ok := set[l.IP.String()]; ok {
