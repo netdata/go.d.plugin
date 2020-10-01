@@ -8,11 +8,8 @@ import (
 
 type (
 	Config struct {
-		LeaseFile string            `yaml:"leases_path"`
-		LastModification int64
+		LeaseFile  string            `yaml:"leases_path"`
 		Pools     map[string]string `yaml:"pools"`
-		Dim       map[string]Dimensions
-		data  	  []LeaseEntry
 	}
 
 	Dimensions struct {
@@ -26,7 +23,10 @@ type DHCPd struct {
 	Config `yaml:",inline"`
 
 	collectedLeases bool
-	charts          *module.Charts
+	charts           *module.Charts
+	leases 	  		 []leaseEntry
+	LastModification int64
+	Dim      		 map[string]Dimensions
 }
 
 func init() {
@@ -43,8 +43,9 @@ func New() *DHCPd {
 		Config: Config{
 			LeaseFile: "",
 			Pools: nil,
-			Dim: make(map[string]Dimensions),
 		},
+		charts: nil,
+		Dim: make(map[string]Dimensions),
 	}
 }
 
@@ -60,10 +61,9 @@ func (d *DHCPd) Init() bool {
 
 	for i, v := range d.Config.Pools {
 		r, err := iprange.ParseRange(v)
-		if err != nil {
-			continue
+		if err == nil {
+			d.Dim[i] = Dimensions{Values: r, Name: v}
 		}
-		d.Config.Dim[i] = Dimensions{Values: r, Name: v}
 	}
 
 	charts, err := d.initCharts()

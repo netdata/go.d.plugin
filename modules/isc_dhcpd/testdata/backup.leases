@@ -16,6 +16,12 @@ lease 192.168.0.100 {
   set vendor-class-identifier = "dhcpcd-8.1.9:Linux-5.8.12:x86_64:GenuineIntel";
   client-hostname "zeus";
 }
+lease 199.187.219.63 {
+  starts 6 2018/02/17 01:13:21;
+  tsfp 6 2018/02/17 01:13:21;
+  atsfp 6 2018/02/17 01:13:21;
+  binding state backup;
+}
 lease 192.168.0.100 {
   starts 1 2020/09/28 19:56:01;
   ends 1 2020/09/28 19:58:01;

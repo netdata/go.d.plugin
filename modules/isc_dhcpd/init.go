@@ -8,7 +8,7 @@ import (
 
 func (d *DHCPd) validateConfig() error {
 	if d.Config.LeaseFile == "" || len(d.Config.Pools) == 0 {
-		return errors.New("neither pools nor 'lease file' is defined")
+		return errors.New("neither pools nor lease_path is defined")
 	}
 
 	return nil
