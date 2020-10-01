@@ -22,13 +22,13 @@ func (d *DHCPd) fillDimension(c map[string]int64) {
 	currTime := time.Now()
 	if len(l) > 0 {
 		for _, v := range l {
-			prefix := d.getDimensionPrefix(v.IP)
+			prefix := d.getDimensionPrefix(v.ip)
 			if prefix != "" {
 				if _, ok := c[prefix + "_active"] ; ok {
-					c[prefix + "_active"] = markActive(c[prefix + "_active"], currTime, v.Ends, v.State)
+					c[prefix + "_active"] = markActive(c[prefix + "_active"], currTime, v.ends, v.state)
 					c[prefix + "_total"] = incrementValues(c[prefix + "_total"])
 				} else {
-					c[prefix + "_active"] = markActive(0, currTime, v.Ends, v.State)
+					c[prefix + "_active"] = markActive(0, currTime, v.ends, v.state)
 					c[prefix + "_total"] = 1
 				}
 			}

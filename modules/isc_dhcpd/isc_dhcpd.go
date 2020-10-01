@@ -12,7 +12,7 @@ type (
 		LastModification int64
 		Pools     map[string]string `yaml:"pools"`
 		Dim       map[string]Dimensions
-		data  	  []LeaseFile
+		data  	  []LeaseEntry
 	}
 
 	Dimensions struct {
