@@ -50,7 +50,6 @@ func TestDHCPd_Init(t *testing.T) {
 			wantFail: false,
 			wantNumOfCharts: 3,
 		},
-		/*
 		"ipv6" : {
 			config : Config {
 				LeaseFile : "testdata/ipv6_dhcpd.leases",
@@ -71,7 +70,6 @@ func TestDHCPd_Init(t *testing.T) {
 			wantFail: false,
 			wantNumOfCharts: 3,
 		},
-		*/
 	}
 
 	for name, test := range tests {
