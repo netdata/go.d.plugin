@@ -26,6 +26,8 @@ type Range interface {
 }
 
 // New returns new IP Range.
+// If it is not a valid range (start and end IPs have different address-families, or start > end),
+// New returns nil.
 func New(start, end net.IP) Range {
 	if isV4RangeValid(start, end) {
 		return v4Range{start: start, end: end}
