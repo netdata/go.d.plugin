@@ -55,11 +55,13 @@ jobs:
    leases_path: '/path/to/ipv4_lease_file'
    pools:
       - office:          '192.168.0.0-192.168.0.255'
+      - wifi:            '192.168.1.0/24'
+      - DMZ:             '192.168.2.0/255.255.255.0'
 
  - name: ipv6_leases_example
    leases_path: '/path/to/ipv6_lease_file'
    pools:
-      - office:          '192.168.2.0-192.168.2.255'
+      - office:          '2001:db8::-2001:db8::10'
 ```
 
 For all available options, see the ISC dhcpd collector's [configuration
