@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/netdata/go.d.plugin/pkg/ip"
+	"github.com/netdata/go.d.plugin/pkg/iprange"
 )
 
 func (d *DnsmasqDHCP) autodetection() error {
@@ -24,7 +24,7 @@ func (d *DnsmasqDHCP) autodetection() error {
 }
 
 func (d *DnsmasqDHCP) autodetectDHCPRanges(configs []*configFile) error {
-	var ipranges []ip.IRange
+	var ipranges []iprange.Range
 	var parsed string
 	seen := make(map[string]bool)
 
@@ -38,8 +38,8 @@ func (d *DnsmasqDHCP) autodetectDHCPRanges(configs []*configFile) error {
 			}
 			seen[parsed] = true
 
-			r := ip.ParseRange(parsed)
-			if r == nil {
+			r, err := iprange.ParseRange(parsed)
+			if r == nil || err != nil {
 				d.Warningf("error on parsing dhcp-range '%s', skipping it", parsed)
 				continue
 			}

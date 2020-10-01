@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/Wing924/ltsv v0.3.1
+	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/axiomhq/hyperloglog v0.0.0-20191112132149-a4c4c47bc57f
 	github.com/cloudflare/cfssl v1.4.1
 	github.com/coreos/go-systemd/v22 v22.1.1-0.20200917134135-408310d1ce37

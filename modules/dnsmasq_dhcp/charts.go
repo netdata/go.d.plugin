@@ -3,9 +3,8 @@ package dnsmasq_dhcp
 import (
 	"fmt"
 
-	"github.com/netdata/go.d.plugin/pkg/ip"
-
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/iprange"
 )
 
 type (
@@ -40,7 +39,7 @@ func (d DnsmasqDHCP) charts() *Charts {
 	return cs
 }
 
-func addRangeCharts(r ip.IRange) *Charts {
+func addRangeCharts(r iprange.Range) *Charts {
 	cs := charts.Copy()
 
 	name := r.String()
