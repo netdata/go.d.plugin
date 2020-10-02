@@ -129,6 +129,8 @@ func TestCouchDB_Collect(t *testing.T) {
 				return cdb
 			},
 			wantCollected: map[string]int64{
+
+				// node stats
 				"couch_replicator_jobs_crashed":         1,
 				"couch_replicator_jobs_penging":         1,
 				"couch_replicator_jobs_running":         1,
@@ -166,6 +168,24 @@ func TestCouchDB_Collect(t *testing.T) {
 				"couchdb_httpd_status_codes_501":        1,
 				"couchdb_httpd_view_reads":              1,
 				"couchdb_open_os_files":                 1,
+
+				// node system
+				"context_switches":          22614499,
+				"ets_table_count":           116,
+				"internal_replication_jobs": 1,
+				"io_input":                  49674812,
+				"io_output":                 686400800,
+				"memory_atom_used":          488328,
+				"memory_atom":               504433,
+				"memory_binary":             297696,
+				"memory_code":               11252688,
+				"memory_ets":                1579120,
+				"memory_other":              20427855,
+				"memory_processes":          9161448,
+				"os_proc_count":             1,
+				"process_count":             296,
+				"reductions":                43211228312,
+				"run_queue":                 1,
 			},
 		},
 	}

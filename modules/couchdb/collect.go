@@ -26,6 +26,7 @@ func (cdb *CouchDB) collect() (map[string]int64, error) {
 
 	collected := make(map[string]int64)
 	cdb.collectNodeStats(collected, ms)
+	cdb.collectSystemStats(collected, ms)
 
 	return collected, nil
 }
@@ -35,6 +36,15 @@ func (CouchDB) collectNodeStats(collected map[string]int64, ms *cdbMetrics) {
 		return
 	}
 	for metric, value := range stm.ToMap(ms.NodeStats) {
+		collected[metric] = value
+	}
+}
+
+func (CouchDB) collectSystemStats(collected map[string]int64, ms *cdbMetrics) {
+	if !ms.hasNodeSystem() {
+		return
+	}
+	for metric, value := range stm.ToMap(ms.NodeSystem) {
 		collected[metric] = value
 	}
 }
