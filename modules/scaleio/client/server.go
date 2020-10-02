@@ -21,7 +21,7 @@ func (s MockScaleIOAPIServer) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	switch r.URL.Path {
 	default:
 		w.WriteHeader(http.StatusNotFound)
-		msg := fmt.Sprintf("unkown URL path: %s", r.URL.Path)
+		msg := fmt.Sprintf("unknown URL path: %s", r.URL.Path)
 		writeAPIError(w, msg)
 	case "/api/login":
 		s.handleLogin(w, r)

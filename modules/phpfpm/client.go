@@ -134,7 +134,7 @@ func (c *socketClient) getStatus() (*status, error) {
 
 	content, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("error on reading respone from socket '%s': %v", c.socket, err)
+		return nil, fmt.Errorf("error on reading response from socket '%s': %v", c.socket, err)
 	}
 
 	st := &status{}

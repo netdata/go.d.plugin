@@ -78,7 +78,7 @@ func TestWebLog_guessParser(t *testing.T) {
 					require.NoError(t, err)
 					switch tc.wantParserType {
 					default:
-						t.Errorf("unkown parser type: %s", tc.wantParserType)
+						t.Errorf("unknown parser type: %s", tc.wantParserType)
 					case logs.TypeLTSV:
 						assert.IsType(t, (*logs.LTSVParser)(nil), p)
 					case logs.TypeCSV:
