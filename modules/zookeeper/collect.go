@@ -52,7 +52,7 @@ func (z *Zookeeper) collectMntr() (map[string]int64, error) {
 	}
 
 	if len(mx) == 0 {
-		return nil, fmt.Errorf("'%s' command: failed to parse reponse", command)
+		return nil, fmt.Errorf("'%s' command: failed to parse response", command)
 	}
 	return mx, nil
 }

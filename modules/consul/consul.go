@@ -159,7 +159,7 @@ func (c *Consul) processLocalChecks(checks map[string]*agentCheck, metrics map[s
 		case healthCritical:
 			status = 2
 		default:
-			panic(fmt.Sprintf("check %s unkown status %s", check.CheckID, check.Status))
+			panic(fmt.Sprintf("check %s unknown status %s", check.CheckID, check.Status))
 		}
 		metrics[id] = status
 	}
