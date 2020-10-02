@@ -34,7 +34,9 @@ func (CouchDB) collectNodeStats(collected map[string]int64, ms *cdbMetrics) {
 	if !ms.hasNodeStats() {
 		return
 	}
-	merge(collected, stm.ToMap(ms.NodeStats), "node")
+	for metric, value := range stm.ToMap(ms.NodeStats) {
+		collected[metric] = value
+	}
 }
 
 func (cdb CouchDB) scrapeCouchDB() *cdbMetrics {

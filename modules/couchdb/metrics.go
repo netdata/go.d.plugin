@@ -33,124 +33,124 @@ type cdbActiveTasks struct {
 type cdbNodeStats struct {
 	CouchDB struct {
 		DatabaseReads struct {
-			Value float64 `stm:"value" json:"value"`
+			Value float64 `stm:"" json:"value"`
 		} `stm:"database_reads" json:"database_reads"`
 		DatabaseWrites struct {
-			Value float64 `stm:"value" json:"value"`
+			Value float64 `stm:"" json:"value"`
 		} `stm:"database_writes" json:"database_writes"`
 		HTTPd struct {
 			ViewReads struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"view_reads" json:"view_reads"`
 		} `stm:"httpd" json:"httpd"`
 		HTTPdRequestMethods struct {
 			Copy struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"COPY" json:"COPY"`
 			Delete struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"DELETE" json:"DELETE"`
 			Get struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"GET" json:"GET"`
 			Head struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"HEAD" json:"HEAD"`
 			Options struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"OPTIONS" json:"OPTIONS"`
 			Post struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"POST" json:"POST"`
 			Put struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"PUT" json:"PUT"`
 		} `stm:"httpd_request_methods" json:"httpd_request_methods"`
 		HTTPdStatusCodes struct {
 			Code200 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"200" json:"200"`
 			Code201 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"201" json:"201"`
 			Code202 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"202" json:"202"`
 			Code204 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"204" json:"204"`
 			Code206 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"206" json:"206"`
 			Code301 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"301" json:"301"`
 			Code302 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"302" json:"302"`
 			Code304 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"304" json:"304"`
 			Code400 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"400" json:"400"`
 			Code401 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"401" json:"401"`
 			Code403 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"403" json:"403"`
 			Code404 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"404" json:"404"`
 			Code405 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"405" json:"405"`
 			Code406 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"406" json:"406"`
 			Code409 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"409" json:"409"`
 			Code412 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"412" json:"412"`
 			Code413 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"413" json:"413"`
 			Code414 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"414" json:"414"`
 			Code415 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"415" json:"415"`
 			Code416 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"416" json:"416"`
 			Code417 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"417" json:"417"`
 			Code500 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"500" json:"500"`
 			Code501 struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"501" json:"501"`
 		} `stm:"httpd_status_codes" json:"httpd_status_codes"`
 		OpenOSFiles struct {
-			Value float64 `stm:"value" json:"value" json:"value"`
+			Value float64 `stm:"" json:"value" json:"value"`
 		} `stm:"open_os_files" json:"open_os_files"`
 	} `stm:"couchdb"  json:"couchdb"`
 	CouchReplicator struct {
 		Jobs struct {
 			Running struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"running" json:"running"`
 			Pending struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"penging" json:"pending"`
 			Crashed struct {
-				Value float64 `stm:"value" json:"value"`
+				Value float64 `stm:"" json:"value"`
 			} `stm:"crashed" json:"crashed"`
 		} `stm:"jobs" json:"jobs"`
 	} `stm:"couch_replicator" json:"couch_replicator"`
