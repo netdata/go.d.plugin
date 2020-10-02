@@ -27,6 +27,7 @@ func (cdb *CouchDB) collect() (map[string]int64, error) {
 	collected := make(map[string]int64)
 	cdb.collectNodeStats(collected, ms)
 	cdb.collectSystemStats(collected, ms)
+	cdb.collectActiveTasks(collected, ms)
 
 	return collected, nil
 }
@@ -49,6 +50,15 @@ func (CouchDB) collectSystemStats(collected map[string]int64, ms *cdbMetrics) {
 	}
 }
 
+func (CouchDB) collectActiveTasks(collected map[string]int64, ms *cdbMetrics) {
+	if !ms.hasActiveTasks() {
+		return
+	}
+	for taskIndex := range ms.ActiveTasks {
+		collected["active_tasks_"+ms.ActiveTasks[taskIndex].Type]++
+	}
+}
+
 func (cdb CouchDB) scrapeCouchDB() *cdbMetrics {
 	ms := &cdbMetrics{}
 	wg := &sync.WaitGroup{}
@@ -58,6 +68,9 @@ func (cdb CouchDB) scrapeCouchDB() *cdbMetrics {
 
 	wg.Add(1)
 	go func() { defer wg.Done(); cdb.scrapeSystemStats(ms) }()
+
+	wg.Add(1)
+	go func() { defer wg.Done(); cdb.scrapeActiveTasks(ms) }()
 
 	wg.Wait()
 	return ms
@@ -85,6 +98,18 @@ func (cdb *CouchDB) scrapeSystemStats(ms *cdbMetrics) {
 		return
 	}
 	ms.NodeSystem = &stats
+}
+
+func (cdb *CouchDB) scrapeActiveTasks(ms *cdbMetrics) {
+	req, _ := web.NewHTTPRequest(cdb.Request)
+	req.URL.Path = urlPathActiveTasks
+
+	var stats []cdbActiveTask
+	if err := cdb.doOKDecode(req, &stats); err != nil {
+		cdb.Warning(err)
+		return
+	}
+	ms.ActiveTasks = stats
 }
 
 func (cdb CouchDB) pingCouchDB() error {

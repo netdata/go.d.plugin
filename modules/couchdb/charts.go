@@ -72,10 +72,10 @@ var serverOperationsCharts = Charts{
 		Ctx:   "couchdb.active_tasks",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: "activetasks_indexer", Name: "Indexer"},
-			{ID: "activetasks_database_compaction", Name: "DB Compaction"},
-			{ID: "activetasks_replication", Name: "Replication"},
-			{ID: "activetasks_view_compaction", Name: "View Compaction"},
+			{ID: "active_tasks_indexer", Name: "Indexer"},
+			{ID: "active_tasks_database_compaction", Name: "DB Compaction"},
+			{ID: "active_tasks_replication", Name: "Replication"},
+			{ID: "active_tasks_view_compaction", Name: "View Compaction"},
 		},
 	},
 	{

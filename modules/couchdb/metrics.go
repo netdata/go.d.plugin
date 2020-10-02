@@ -4,7 +4,7 @@ package couchdb
 
 type cdbMetrics struct {
 	// https://docs.couchdb.org/en/stable/api/server/common.html#active-tasks
-	ActiveTasks []cdbActiveTasks
+	ActiveTasks []cdbActiveTask
 	// https://docs.couchdb.org/en/stable/api/server/common.html#node-node-name-stats
 	NodeStats *cdbNodeStats
 	// https://docs.couchdb.org/en/stable/api/server/common.html#node-node-name-system
@@ -26,8 +26,8 @@ func (m cdbMetrics) hasNodeStats() bool   { return m.NodeStats != nil }
 func (m cdbMetrics) hasNodeSystem() bool  { return m.NodeSystem != nil }
 func (m cdbMetrics) hasDBStats() bool     { return m.DBStats != nil }
 
-type cdbActiveTasks struct {
-	Type string `stm:"type" json:"type"`
+type cdbActiveTask struct {
+	Type string `json:"type"`
 }
 
 type cdbNodeStats struct {

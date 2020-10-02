@@ -186,6 +186,12 @@ func TestCouchDB_Collect(t *testing.T) {
 				"process_count":             296,
 				"reductions":                43211228312,
 				"run_queue":                 1,
+
+				// active tasks
+				"active_tasks_database_compaction": 1,
+				"active_tasks_indexer":             2,
+				"active_tasks_replication":         1,
+				"active_tasks_view_compaction":     1,
 			},
 		},
 	}
