@@ -1,34 +1,25 @@
 <!--
-title: "Monitoring ISC dhcp lease files with Netdata"
+title: "ISC DHCPd monitoring with Netdata"
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/isc_dhcpd/README.md
-sidebar_label: "ISC dhcp lease files"
+sidebar_label: "ISC DHCPd"
 -->
 
-# ISC dhcpd lease
+# ISC DHCPd monitoring with Netdata
 
-This module monitors lease files.
+[`ISC DHCP`](https://www.isc.org/dhcp/) is a DHCP server that supports both IPv4 and IPv6, and is suitable for use in high-volume and high-reliability applications. 
 
-Pool utilization:
+This module monitors active leases and IP pools utilization collecting data from
+the DHCP client lease database (`dhcpd.leases`).
 
--   Pool Utilization
--   Total leases
--   Active leases
+## Requirements
+
+`dhcpd.leases` must be readable by `netdata` user.
 
 ## Charts
 
-This plugin shows three charts
-
-### Pools utilization
-
--   Aggregate chart for all pools. Utilization in `percentage`
-
-### Total Leases
-
--   leases(Overall number of leases for all pools)
-
-### Leases total
-
--   leases(number of leases for all pools).  
+-   Active Leases Total in `leases`
+-   Pool Active Leases in `leases`
+-   Pool Utilization in `percentage`  
 
 ## Configuration
 
@@ -40,28 +31,31 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/isc_dhcpd.conf
 ```
 
-### Requirement
-
--   Dhcpd leases file MUST BE readable by Netdata.
--   pools MUST BE in CIDR format
-
 ### Example
 
 Here is an example:
 
 ```yaml
 jobs:
- - name: ipv4_leases_example
-   leases_path: '/path/to/ipv4_lease_file'
+ - name: ipv4_example
+   leases_path: '/path/to/ipv4_leases_file'
    pools:
-      - office:          '192.168.0.0-192.168.0.255'
-      - wifi:            '192.168.1.0/24'
-      - DMZ:             '192.168.2.0/255.255.255.0'
+      - name: office
+        networks: '192.0.2.1-192.0.2.254'
+      - name: wifi 
+        networks: '198.51.100.0/24'
+      - name: dmz 
+        networks: '203.0.113.0/255.255.255.0'
 
- - name: ipv6_leases_example
-   leases_path: '/path/to/ipv6_lease_file'
+ - name: ipv6_example
+   leases_path: '/path/to/ipv6_leases_file'
    pools:
-      - office:          '2001:db8::-2001:db8::10'
+      - name: office
+        networks: '2001:0DB8::/64'
+      - name: wifi 
+        networks: '2001:0DB8:0:1::/64'
+      - name: dmz 
+        networks: '2001:0DB8:0:2::/64'
 ```
 
 For all available options, see the ISC dhcpd collector's [configuration

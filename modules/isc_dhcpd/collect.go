@@ -1,116 +1,83 @@
 package isc_dhcpd
 
 import (
-	"bytes"
-	"fmt"
-	"net"
-	"strconv"
-	"time"
-
-	"github.com/netdata/go.d.plugin/agent/module"
+	"math/big"
+	"os"
 )
 
+/*
+dhcpd.leases db (file), see details: https://kb.isc.org/docs/en/isc-dhcp-44-manual-pages-dhcpdleases#dhcpdleases
+
+Every time a prepare is acquired, renewed or released, its new value is recorded at the end of the prepare file.
+So if more than one declaration appears for a given prepare, the last one in the file is the current one.
+
+In order to prevent the prepare database from growing without bound, the file is rewritten from time to time.
+First, a temporary lease database is created and all known leases are dumped to it.
+Then, the old lease database is renamed DBDIR/dhcpd.leases~.
+Finally, the newly written lease database is moved into place.
+
+In order to process both DHCPv4 and DHCPv6 messages you will need to run two separate instances of the dhcpd process.
+Each of these instances will need it’s own prepare file.
+*/
+
 func (d *DHCPd) collect() (map[string]int64, error) {
-	cm := make(map[string]int64)
-
-	d.parseLease()
-	d.fillDimension(cm)
-
-	return cm, nil
-}
-
-func (d *DHCPd) fillDimension(c map[string]int64) {
-	l := d.leases
-
-	currTime := time.Now()
-	if len(l) > 0 {
-		for _, v := range l {
-			prefix := d.getDimensionPrefix(net.ParseIP(v.ip))
-			if prefix != "" {
-				if _, ok := c[prefix + "_active"] ; ok {
-					c[prefix + "_active"] = markActive(c[prefix + "_active"], currTime, v.ends, v.bindingState)
-					c[prefix + "_total"] = incrementValues(c[prefix + "_total"])
-				} else {
-					c[prefix + "_active"] = markActive(0, currTime, v.ends, v.bindingState)
-					c[prefix + "_total"] = 1
-				}
-			}
-		}
+	fi, err := os.Stat(d.LeasesPath)
+	if err != nil {
+		return nil, err
 	}
 
-	for idx, v := range d.Dim {
-		i := *v.Values.Size()
-		f := (float64(c[idx + "_total"])/float64(i.Uint64()))*1000
-		c[idx + "_utilization"] = int64(f)
+	if d.leasesModTime.Equal(fi.ModTime()) {
+		d.Debugf("leases file is not modified, returning cached metrics ('%s')", d.LeasesPath)
+		return d.collected, nil
 	}
+
+	d.leasesModTime = fi.ModTime()
+
+	leases, err := parseDHCPdLeasesFile(d.LeasesPath)
+	if err != nil {
+		return nil, err
+	}
+
+	activeLeases := removeInactiveLeases(leases)
+	d.Debugf("found total/active %d/%d leases ('%s')", len(leases), len(activeLeases), d.LeasesPath)
+
+	for _, pool := range d.pools {
+		collectPool(d.collected, pool, activeLeases)
+	}
+	d.collected["active_leases_total"] = int64(len(activeLeases))
+
+	return d.collected, nil
 }
 
-func incrementValues(prev int64)  int64{
-	prev++
-	return prev
-}
-
-func markActive(prev int64, curr time.Time, oldTime string, state string) int64 {
-	if state == "active" {
-		b := []byte(oldTime)
-		var old time.Time
-		if bytes.HasPrefix(b, []byte("epoch")) {
-			val, _ := strconv.ParseInt(oldTime[6:], 10, 64)
-			old = time.Unix(val, 0 )
-		} else {
-			old, _ = time.Parse("2006/01/02 15:04:05", oldTime[2:])
-		}
-		fmt.Println(old)
-
-		test := curr.Unix() - old.Unix()
-		if test >= 0 {
-			prev++
+func collectPool(collected map[string]int64, pool ipPool, leases []leaseEntry) {
+	var n int64
+	for _, l := range leases {
+		if pool.addresses.Contains(l.ip) {
+			n++
 		}
 	}
-	return prev
+	collected["pool_"+pool.name+"_active_leases"] = n
+	collected["pool_"+pool.name+"_utilization"] = calcPoolUtilizationPercentage(pool.addresses.Size(), n)
 }
 
-func (d *DHCPd) getDimensionPrefix(ip net.IP) string {
-	for idx, v := range d.Dim {
-		if (v.Values.Contains(ip)) {
-			return idx
-		}
+const precision = 100
+
+func calcPoolUtilizationPercentage(size *big.Int, leases int64) int64 {
+	if leases == 0 || !size.IsInt64() {
+		return 0
 	}
-	return ""
+	if size.Int64() == 0 {
+		return 100 * precision
+	}
+	return int64(float64(leases) / float64(size.Int64()) * 100 * precision)
 }
 
-
-func (d *DHCPd) addPoolsToCharts() {
-	for idx := range d.Dim {
-		d.addPoolToCharts(idx)
+func removeInactiveLeases(leases []leaseEntry) (active []leaseEntry) {
+	active = leases[:0]
+	for _, l := range leases {
+		if l.bindingState == "active" {
+			active = append(active, l)
+		}
 	}
-}
-
-func (d *DHCPd) addPoolToCharts(str string) {
-	for _, val := range dhcpdCharts {
-		chart := d.Charts().Get(val.ID)
-		if chart == nil {
-			d.Warningf("add dimension: couldn't find '%s' chart", val.ID)
-			continue
-		}
-
-		var id string
-		switch chart.ID {
-		case dhcpPollsUtilization.ID:
-			id = str + "_utilization"
-		case dhcpPollsActiveLeases.ID:
-			id = str + "_active"
-		case dhcpPollsTotalLeases.ID:
-			id = str + "_total"
-		}
-
-		dim := &module.Dim{ID: id, Name: str}
-
-		if err := chart.AddDim(dim); err != nil {
-			d.Warning(err)
-			continue
-		}
-
-		chart.MarkNotCreated()
-	}
+	return active
 }

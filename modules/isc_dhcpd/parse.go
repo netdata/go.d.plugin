@@ -3,100 +3,88 @@ package isc_dhcpd
 import (
 	"bufio"
 	"bytes"
-	"errors"
-	"io"
+	"net"
 	"os"
 )
 
+/*
+Documentation (v4.4): https://kb.isc.org/docs/en/isc-dhcp-44-manual-pages-dhcpdleases
+
+DHCPv4 prepare declaration:
+  prepare ip-address {
+    statements...
+  }
+
+DHCPv6 prepare declaration:
+  ia_ta IAID_DUID {
+    cltt date;
+    iaaddr ipv6-address {
+      statements...
+    }
+  }
+  ia_na IAID_DUID {
+    cltt date;
+    iaaddr ipv6-address {
+      statements...
+    }
+  }
+  ia_pd IAID_DUID {
+    cltt date;
+    iaprefix ipv6-address/prefix-length {
+      statements...
+    }
+  }
+*/
+
 type leaseEntry struct {
-	ip    string
-	ends string
+	ip           net.IP
 	bindingState string
 }
 
-func parseDHCPdLeases(leases []leaseEntry, r io.Reader) ([]leaseEntry) {
-	set := make(map[string]int)
+func (l leaseEntry) hasIP() bool           { return l.ip != nil }
+func (l leaseEntry) hasBindingState() bool { return l.bindingState != "" }
 
-	scanner := bufio.NewScanner(r)
+func parseDHCPdLeasesFile(filepath string) ([]leaseEntry, error) {
+	f, err := os.Open(filepath)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	leasesSet := make(map[string]leaseEntry)
 	l := leaseEntry{}
-	for scanner.Scan() {
-		line := bytes.TrimSpace(scanner.Bytes())
+	sc := bufio.NewScanner(f)
+
+	for sc.Scan() {
+		bs := bytes.TrimSpace(sc.Bytes())
 		switch {
-		case l.ip == "" && bytes.HasPrefix(line, []byte("lease")):
-			text := string(line)
-			// "lease 192.168.0.1 {" => "192.168.0.1"
-			l.ip = text[6:len(text)-2]
-		case l.ip == "" && bytes.HasPrefix(line, []byte("iaaddr")):
-			text := string(line)
+		case !l.hasIP() && bytes.HasPrefix(bs, []byte("lease")):
+			// "prepare 192.168.0.1 {" => "192.168.0.1"
+			s := string(bs)
+			l.ip = net.ParseIP(s[6 : len(s)-2])
+		case !l.hasIP() && bytes.HasPrefix(bs, []byte("iaaddr")):
 			// "iaaddr 1985:470:1f0b:c9a::001 {" =>  "1985:470:1f0b:c9a::001"
-			l.ip = text[7:len(text)-2]
-		case l.ends == "" && bytes.HasPrefix(line, []byte("ends")):	
-			text := string(line)
-			if bytes.HasPrefix(line, []byte("ends epoch")) {
-				// "ends epoch 1600137140;" => "epoch 1600137140"
-				l.ends = text[5:len(text)-1]
-			} else if bytes.HasPrefix(line, []byte("ends never")) {
-				// "ends never;" => "never"
-				l.ends = text[5:len(text)-1]
-			} else {
-				// "ends 5 2020/09/15 05:49:01;" => "2020/09/15 05:49:01"
-				l.ends = text[5:len(text) - 1]
-			}
-		case l.bindingState == "" && bytes.HasPrefix(line, []byte("binding state")):
+			s := string(bs)
+			l.ip = net.ParseIP(s[7 : len(s)-2])
+		case l.hasIP() && !l.hasBindingState() && bytes.HasPrefix(bs, []byte("binding state")):
 			// "binding state active;" => "active"
-			text := string(line)
-			l.bindingState = text[14:len(text) - 1]
-		case bytes.HasPrefix(line, []byte("}")):
-			//This test was added to parse IPV6 lease correctly
-			if l.ip != "" && l.bindingState != "" && l.ends != "" {
-				if idx, ok := set[l.ip]; ok {
-					leases[idx] = l
-				} else {
-					set[l.ip] = len(leases)
-					leases = append(leases, l)
-				}
+			s := string(bs)
+			l.bindingState = s[14 : len(s)-1]
+		case bytes.HasPrefix(bs, []byte("}")):
+			if l.hasIP() && l.hasBindingState() {
+				leasesSet[l.ip.String()] = l
 			}
 			l = leaseEntry{}
 		}
 	}
 
-	return leases
-}
-
-func (d *DHCPd) parseDHCPLease() error {
-	info, err := os.Stat(d.Config.LeaseFile)
-	if err != nil {
-		return errors.New("Cannot get file information")
+	if len(leasesSet) == 0 {
+		return nil, nil
 	}
 
-	if info.ModTime().Unix() == d.LastModification {
-		return nil
+	leases := make([]leaseEntry, 0, len(leasesSet))
+	for _, l := range leasesSet {
+		leases = append(leases, l)
 	}
-
-	d.LastModification = info.ModTime().Unix()
-
-	f, err := os.Open(d.Config.LeaseFile)
-	if err != nil {
-		d.leases = nil
-		return errors.New("Cannot open file")
-	}
-	defer f.Close()
-
-	buf := bufio.NewReader(f)
-
-	d.leases = parseDHCPdLeases(d.leases, buf)
-
-	return nil
-}
-
-func (d *DHCPd) parseLease() {
-	if !d.collectedLeases {
-		d.collectedLeases = true
-		d.addPoolsToCharts()
-	}
-
-	err := d.parseDHCPLease()
-	if err != nil {
-		return
-	}
+	return leases, nil
 }

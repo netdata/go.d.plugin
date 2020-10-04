@@ -1,33 +1,10 @@
 package isc_dhcpd
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/iprange"
+	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 )
-
-type (
-	Config struct {
-		LeaseFile  string            `yaml:"leases_path"`
-		Pools     map[string]string `yaml:"pools"`
-	}
-
-	Dimensions struct {
-		Values iprange.Range
-		Name  string
-	}
-)
-
-type DHCPd struct {
-	module.Base
-	Config `yaml:",inline"`
-
-	collectedLeases bool
-	charts           *module.Charts
-	leases 	  		 []leaseEntry
-	LastModification int64
-	Dim      		 map[string]Dimensions
-}
 
 func init() {
 	module.Register("isc_dhcpd", module.Creator{
@@ -38,43 +15,62 @@ func init() {
 	})
 }
 
+type (
+	Config struct {
+		LeasesPath string       `yaml:"leases_path"`
+		Pools      []PoolConfig `yaml:"pools"`
+	}
+	PoolConfig struct {
+		Name     string `yaml:"name"`
+		Networks string `yaml:"networks"`
+	}
+)
+
+type DHCPd struct {
+	module.Base
+	Config `yaml:",inline"`
+
+	charts        *module.Charts
+	pools         []ipPool
+	leasesModTime time.Time
+	collected     map[string]int64
+}
+
 func New() *DHCPd {
 	return &DHCPd{
 		Config: Config{
-			LeaseFile: "",
-			Pools: nil,
+			LeasesPath: "/var/lib/dhcp/dhcpd.leases",
 		},
-		charts: nil,
-		Dim: make(map[string]Dimensions),
+
+		collected: make(map[string]int64),
 	}
 }
 
-func (DHCPd) Cleanup() {
-}
+func (DHCPd) Cleanup() {}
 
 func (d *DHCPd) Init() bool {
 	err := d.validateConfig()
 	if err != nil {
-		d.Errorf("Error on validate config: %v", err)
+		d.Errorf("config validation: %v", err)
 		return false
 	}
 
-	for i, v := range d.Config.Pools {
-		r, err := iprange.ParseRange(v)
-		if err == nil {
-			d.Dim[i] = Dimensions{Values: r, Name: v}
-		}
-	}
-
-	charts, err := d.initCharts()
+	pools, err := d.initPools()
 	if err != nil {
-		d.Errorf("Error on chart initialization: %v", err)
+		d.Errorf("initialization ip pools: %v", err)
+		return false
+	}
+	d.pools = pools
+
+	charts, err := d.initCharts(pools)
+	if err != nil {
+		d.Errorf("initialization charts: %v", err)
 		return false
 	}
 	d.charts = charts
 
-	d.Debugf("Monitoring lease file %v", d.Config.LeaseFile)
-	d.Debugf("Monitoring pools %v", d.Config.Pools)
+	d.Debugf("monitoring leases file: %v", d.Config.LeasesPath)
+	d.Debugf("monitoring ip pools: %v", d.Config.Pools)
 	return true
 }
 
