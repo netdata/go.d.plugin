@@ -9,7 +9,6 @@ import (
 )
 
 type ipPool struct {
-	id        string
 	name      string
 	addresses iprange.Pool
 }
