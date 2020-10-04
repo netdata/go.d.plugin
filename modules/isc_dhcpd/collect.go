@@ -8,16 +8,16 @@ import (
 /*
 dhcpd.leases db (file), see details: https://kb.isc.org/docs/en/isc-dhcp-44-manual-pages-dhcpdleases#dhcpdleases
 
-Every time a prepare is acquired, renewed or released, its new value is recorded at the end of the prepare file.
-So if more than one declaration appears for a given prepare, the last one in the file is the current one.
+Every time a lease is acquired, renewed or released, its new value is recorded at the end of the lease file.
+So if more than one declaration appears for a given lease, the last one in the file is the current one.
 
-In order to prevent the prepare database from growing without bound, the file is rewritten from time to time.
+In order to prevent the lease database from growing without bound, the file is rewritten from time to time.
 First, a temporary lease database is created and all known leases are dumped to it.
 Then, the old lease database is renamed DBDIR/dhcpd.leases~.
 Finally, the newly written lease database is moved into place.
 
 In order to process both DHCPv4 and DHCPv6 messages you will need to run two separate instances of the dhcpd process.
-Each of these instances will need it’s own prepare file.
+Each of these instances will need it’s own lease file.
 */
 
 func (d *DHCPd) collect() (map[string]int64, error) {
