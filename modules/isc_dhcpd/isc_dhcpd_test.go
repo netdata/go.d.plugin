@@ -204,7 +204,7 @@ func prepareDHCPdLeaseWithoutFile() *DHCPd {
 func prepareDHCPdCleanLease() *DHCPd {
 	dhcpd := New()
 	dhcpd.Config = Config{
-		LeasesPath: "testdata/clean.lease",
+		LeasesPath: "testdata/empty.lease",
 		Pools: []PoolConfig{
 			{
 				Name:     "name",
