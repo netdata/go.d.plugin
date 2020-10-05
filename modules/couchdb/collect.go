@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
@@ -16,6 +17,9 @@ const (
 	urlPathOverviewStats = "/_node/nonode@nohost/_stats"
 	urlPathSystemStats   = "/_node/nonode@nohost/_system"
 	urlPathActiveTasks   = "/_active_tasks"
+
+	httpStatusCodePrefix    = "couchdb_httpd_status_codes_"
+	httpStatusCodePrefixLen = len(httpStatusCodePrefix)
 )
 
 func (cdb *CouchDB) collect() (map[string]int64, error) {
@@ -37,7 +41,11 @@ func (CouchDB) collectNodeStats(collected map[string]int64, ms *cdbMetrics) {
 		return
 	}
 	for metric, value := range stm.ToMap(ms.NodeStats) {
-		collected[metric] = value
+		if strings.HasPrefix(metric, httpStatusCodePrefix) {
+			aggregateHTTPStatusCodes(metric, collected, value)
+		} else {
+			collected[metric] = value
+		}
 	}
 }
 
@@ -110,6 +118,25 @@ func (cdb *CouchDB) scrapeActiveTasks(ms *cdbMetrics) {
 		return
 	}
 	ms.ActiveTasks = stats
+}
+
+func aggregateHTTPStatusCodes(metric string, collected map[string]int64, value int64) {
+	code := metric[httpStatusCodePrefixLen:]
+
+	switch {
+	case code == "200" || code == "201" || code == "202":
+		collected[metric] = value
+	case strings.HasPrefix(code, "2"):
+		collected["couchdb_httpd_status_codes_2xx"] += value
+	case strings.HasPrefix(code, "3"):
+		collected["couchdb_httpd_status_codes_3xx"] += value
+	case strings.HasPrefix(code, "4"):
+		collected["couchdb_httpd_status_codes_4xx"] += value
+	case strings.HasPrefix(code, "5"):
+		collected["couchdb_httpd_status_codes_5xx"] += value
+	default:
+		collected[metric] = value
+	}
 }
 
 func (cdb CouchDB) pingCouchDB() error {
