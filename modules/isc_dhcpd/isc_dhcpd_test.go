@@ -85,7 +85,7 @@ func TestDHCPd_Check(t *testing.T) {
 	}{
 		"leases file doesn't exist": {
 			prepare: prepareDHCPdLeaseWithoutFile,
-			wantFail: true,
+			wantFail: false,
 		},
 		"empty leases file": {
 			prepare: prepareDHCPdCleanLease,
@@ -104,7 +104,7 @@ func TestDHCPd_Check(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			dhcpd := test.prepare()
-			dhcpd.Init()
+			require.True(t, dhcpd.Init())
 
 			if test.wantFail {
 				assert.False(t, dhcpd.Init())
@@ -190,7 +190,12 @@ func prepareDHCPdLeaseWithoutFile() *DHCPd {
 	dhdcpd := New()
 	dhdcpd.Config = Config{
 		LeasesPath: "testdata/no_file.lease",
-		Pools: nil,
+		Pools: []PoolConfig {
+			{
+				Name: "name", 
+				Networks: "10.220.252.0/24",
+			},
+		},
 	}
 	
 	return dhdcpd
