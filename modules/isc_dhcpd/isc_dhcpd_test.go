@@ -152,7 +152,7 @@ func TestDHCPd_Collect(t *testing.T) {
 			wantCollected: map[string]int64{
 				"active_leases_total":     6,
 				"pool_name_active_leases": 6,
-				"pool_name_utilization":   3529,
+				"pool_name_utilization":   5454,
 			},
 		},
 	}
@@ -253,7 +253,7 @@ func prepareDHCPdIPV6Lease() *DHCPd {
 		Pools: []PoolConfig{
 			{
 				Name:     "name",
-				Networks: "1985:470:1f0b:c9a::000-1985:470:1f0b:c9a::010",
+				Networks: "2001:DB8:0::000-2001:DB8:0::00a",
 			},
 		},
 	}
