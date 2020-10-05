@@ -40,7 +40,7 @@ func TestDHCPd_Init(t *testing.T) {
 		},
 		"'pools' not set":       {
 			config: Config{
-				LeasesPath: "testdata/dhcpd4.leases",
+				LeasesPath: "testdata/dhcpd.leases_ipv4",
 				Pools: []PoolConfig{
 					{
 						Name: "test",
@@ -52,7 +52,7 @@ func TestDHCPd_Init(t *testing.T) {
 		},
 		"ok config ('leases_path' and 'pools' are set)": {
 			config: Config{
-				LeasesPath: "testdata/dhcpd4.leases",
+				LeasesPath: "testdata/dhcpd.leases_ipv4",
 				Pools: []PoolConfig{
 					{
 						Name: "test",
@@ -84,19 +84,19 @@ func TestDHCPd_Check(t *testing.T) {
 		wantFail bool
 	}{
 		"leases file doesn't exist": {
-			prepare: leaseDoesNotExist,
+			prepare: prepareDHCPdLeaseWithoutFile,
 			wantFail: true,
 		},
 		"empty leases file": {
-			prepare: cleanLease,
+			prepare: prepareDHCPdCleanLease,
 			wantFail: false,
 		},
 		"leases file with active leases": {
-			prepare: ipv4Lease,
+			prepare: prepareDHCPdIPV4Lease,
 			wantFail: false,
 		},
 		"leases file without active leases": {
-			prepare: ipv4BkpLease,
+			prepare: prepareDHCPdIPV4BkpLease,
 			wantFail: false,
 		},
 	}
@@ -132,7 +132,7 @@ func TestDHCPd_Collect(t *testing.T) {
 		wantCollected map[string]int64
 	}{
 		"dhcp_v4": {
-			prepare: ipv4Lease,
+			prepare: prepareDHCPdIPV4Lease,
 			wantCollected: map[string]int64{
 				"active_leases_total" : 2,
 				"pool_name_active_leases" : 2,
@@ -140,7 +140,7 @@ func TestDHCPd_Collect(t *testing.T) {
 			},
 		},
 		"dhcp_v4_backup": {
-			prepare: ipv4BkpLease,
+			prepare: prepareDHCPdIPV4BkpLease,
 			wantCollected: map[string]int64{
 				"active_leases_total" : 0,
 				"pool_name_active_leases" : 0,
@@ -148,7 +148,7 @@ func TestDHCPd_Collect(t *testing.T) {
 			},
 		},
 		"dhcp_v6": {
-			prepare: ipv6Lease,
+			prepare: prepareDHCPdIPV6Lease,
 			wantCollected: map[string]int64{
 				"active_leases_total" : 6,
 				"pool_name_active_leases" : 6,
@@ -186,7 +186,7 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, dhcpd *DHCPd, collecte
 	}
 }
 
-func leaseDoesNotExist() *DHCPd {
+func prepareDHCPdLeaseWithoutFile() *DHCPd {
 	dhdcpd := New()
 	dhdcpd.Config = Config{
 		LeasesPath: "testdata/no_file.lease",
@@ -196,7 +196,7 @@ func leaseDoesNotExist() *DHCPd {
 	return dhdcpd
 }
 
-func cleanLease() *DHCPd {
+func prepareDHCPdCleanLease() *DHCPd {
 	dhdcpd := New()
 	dhdcpd.Config = Config{
 		LeasesPath: "testdata/clean.lease",
@@ -211,10 +211,10 @@ func cleanLease() *DHCPd {
 	return dhdcpd
 }
 
-func ipv4Lease() *DHCPd {
+func prepareDHCPdIPV4Lease() *DHCPd {
 	dhdcpd := New()
 	dhdcpd.Config = Config{
-		LeasesPath: "testdata/ipv4.leases",
+		LeasesPath: "testdata/dhcpd.leases_ipv4",
 		Pools: []PoolConfig {
 			{
 				Name: "name", 
@@ -226,10 +226,10 @@ func ipv4Lease() *DHCPd {
 	return dhdcpd
 }
 
-func ipv4BkpLease() *DHCPd {
+func prepareDHCPdIPV4BkpLease() *DHCPd {
 	dhdcpd := New()
 	dhdcpd.Config = Config{
-		LeasesPath: "testdata/ipv4_backup.leases",
+		LeasesPath: "testdata/dhcpd.leases_ipv4_backup",
 		Pools: []PoolConfig {
 			{
 				Name: "name", 
@@ -241,10 +241,10 @@ func ipv4BkpLease() *DHCPd {
 	return dhdcpd
 }
 
-func ipv6Lease() *DHCPd {
+func prepareDHCPdIPV6Lease() *DHCPd {
 	dhdcpd := New()
 	dhdcpd.Config = Config{
-		LeasesPath: "testdata/ipv6.leases",
+		LeasesPath: "testdata/dhcpd.leases_ipv6",
 		Pools: []PoolConfig {
 			{
 				Name: "name", 
