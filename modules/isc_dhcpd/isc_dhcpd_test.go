@@ -85,7 +85,7 @@ func TestDHCPd_Check(t *testing.T) {
 	}{
 		"leases file doesn't exist": {
 			prepare:  prepareDHCPdLeaseWithoutFile,
-			wantFail: false,
+			wantFail: true,
 		},
 		"empty leases file": {
 			prepare:  prepareDHCPdCleanLease,
@@ -107,9 +107,9 @@ func TestDHCPd_Check(t *testing.T) {
 			require.True(t, dhcpd.Init())
 
 			if test.wantFail {
-				assert.False(t, dhcpd.Init())
+				assert.False(t, dhcpd.Check())
 			} else {
-				assert.True(t, dhcpd.Init())
+				assert.True(t, dhcpd.Check())
 			}
 		})
 	}
