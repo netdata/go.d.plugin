@@ -2,8 +2,6 @@ package example
 
 import (
 	"errors"
-	"fmt"
-
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
@@ -24,9 +22,7 @@ func (e Example) initCharts() (*module.Charts, error) {
 	charts := &module.Charts{}
 
 	for i := 0; i < e.Config.Charts.Num; i++ {
-		chart := chartTemplate.Copy()
-		chart.ID = fmt.Sprintf(chart.ID, i)
-		chart.Type = module.ChartType(e.Config.Charts.Type)
+		chart := newChart(i, module.ChartType(e.Config.Charts.Type))
 
 		if err := charts.Add(chart); err != nil {
 			return nil, err
@@ -34,9 +30,7 @@ func (e Example) initCharts() (*module.Charts, error) {
 	}
 
 	for i := 0; i < e.Config.HiddenCharts.Num; i++ {
-		chart := hiddenChartTemplate.Copy()
-		chart.ID = fmt.Sprintf(chart.ID, i)
-		chart.Type = module.ChartType(e.Config.HiddenCharts.Type)
+		chart := newHiddenChart(i, module.ChartType(e.Config.HiddenCharts.Type))
 
 		if err := charts.Add(chart); err != nil {
 			return nil, err
