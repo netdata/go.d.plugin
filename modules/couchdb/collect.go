@@ -40,6 +40,7 @@ func (CouchDB) collectNodeStats(collected map[string]int64, ms *cdbMetrics) {
 	if !ms.hasNodeStats() {
 		return
 	}
+
 	for metric, value := range stm.ToMap(ms.NodeStats) {
 		if strings.HasPrefix(metric, httpStatusCodePrefix) {
 			aggregateHTTPStatusCodes(collected, metric, value)
@@ -53,6 +54,7 @@ func (CouchDB) collectSystemStats(collected map[string]int64, ms *cdbMetrics) {
 	if !ms.hasNodeSystem() {
 		return
 	}
+
 	for metric, value := range stm.ToMap(ms.NodeSystem) {
 		collected[metric] = value
 	}
@@ -62,8 +64,9 @@ func (CouchDB) collectActiveTasks(collected map[string]int64, ms *cdbMetrics) {
 	if !ms.hasActiveTasks() {
 		return
 	}
-	for _, activeTask := range ms.ActiveTasks {
-		collected["active_tasks_"+activeTask.Type]++
+
+	for _, task := range ms.ActiveTasks {
+		collected["active_tasks_"+task.Type]++
 	}
 }
 
