@@ -1,7 +1,6 @@
 package isc_dhcpd
 
 import (
-	"math/big"
 	"os"
 )
 
@@ -49,27 +48,32 @@ func (d *DHCPd) collect() (map[string]int64, error) {
 	return d.collected, nil
 }
 
-func collectPool(collected map[string]int64, pool ipPool, leases []leaseEntry) {
-	var n int64
-	for _, l := range leases {
-		if pool.addresses.Contains(l.ip) {
-			n++
-		}
-	}
-	collected["pool_"+pool.name+"_active_leases"] = n
-	collected["pool_"+pool.name+"_utilization"] = calcPoolUtilizationPercentage(pool.addresses.Size(), n)
-}
-
 const precision = 100
 
-func calcPoolUtilizationPercentage(size *big.Int, leases int64) int64 {
+func collectPool(collected map[string]int64, pool ipPool, leases []leaseEntry) {
+	n := calcPoolActiveLeases(pool, leases)
+	collected["pool_"+pool.name+"_active_leases"] = n
+	collected["pool_"+pool.name+"_utilization"] = int64(calcPoolUtilizationPercentage(pool, n) * precision)
+}
+
+func calcPoolActiveLeases(pool ipPool, leases []leaseEntry) (num int64) {
+	for _, l := range leases {
+		if pool.addresses.Contains(l.ip) {
+			num++
+		}
+	}
+	return num
+}
+
+func calcPoolUtilizationPercentage(pool ipPool, leases int64) float64 {
+	size := pool.addresses.Size()
 	if leases == 0 || !size.IsInt64() {
 		return 0
 	}
 	if size.Int64() == 0 {
-		return 100 * precision
+		return 100
 	}
-	return int64(float64(leases) / float64(size.Int64()) * 100 * precision)
+	return float64(leases) / float64(size.Int64()) * 100
 }
 
 func removeInactiveLeases(leases []leaseEntry) (active []leaseEntry) {
