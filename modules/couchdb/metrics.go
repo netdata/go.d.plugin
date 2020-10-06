@@ -166,6 +166,7 @@ type cdbNodeSystem struct {
 		Code      float64 `stm:"code" json:"code"`
 		Ets       float64 `stm:"ets" json:"ets"`
 	} `stm:"memory" json:"memory"`
+
 	RunQueue                float64 `stm:"run_queue" json:"run_queue"`
 	EtsTableCount           float64 `stm:"ets_table_count" json:"ets_table_count"`
 	ContextSwitches         float64 `stm:"context_switches" json:"context_switches"`
@@ -175,6 +176,8 @@ type cdbNodeSystem struct {
 	OSProcCount             float64 `stm:"os_proc_count" json:"os_proc_count"`
 	ProcessCount            float64 `stm:"process_count" json:"process_count"`
 	InternalReplicationJobs float64 `stm:"internal_replication_jobs" json:"internal_replication_jobs"`
+
+	MessageQueues map[string]interface{} `json:"message_queues"`
 }
 
 type cdbDBStats struct {

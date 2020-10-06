@@ -167,6 +167,7 @@ func TestCouchDB_Collect(t *testing.T) {
 				"memory_other":              20427855,
 				"memory_processes":          9161448,
 				"os_proc_count":             1,
+				"peak_msg_queue":            2,
 				"process_count":             296,
 				"reductions":                43211228312,
 				"run_queue":                 1,

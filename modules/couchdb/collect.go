@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"strings"
 	"sync"
@@ -58,6 +59,8 @@ func (CouchDB) collectSystemStats(collected map[string]int64, ms *cdbMetrics) {
 	for metric, value := range stm.ToMap(ms.NodeSystem) {
 		collected[metric] = value
 	}
+
+	collected["peak_msg_queue"] = findMaxMQSize(ms.NodeSystem.MessageQueues)
 }
 
 func (CouchDB) collectActiveTasks(collected map[string]int64, ms *cdbMetrics) {
@@ -140,6 +143,19 @@ func aggregateHTTPStatusCodes(collected map[string]int64, metric string, value i
 	default:
 		collected[metric] = value
 	}
+}
+
+func findMaxMQSize(MessageQueues map[string]interface{}) int64 {
+	var max float64
+	for _, mq := range MessageQueues {
+		switch mqSize := mq.(type) {
+		case float64:
+			max = math.Max(max, mqSize)
+		case map[string]interface{}:
+			max = math.Max(max, mqSize["count"].(float64))
+		}
+	}
+	return int64(max)
 }
 
 func (cdb CouchDB) pingCouchDB() error {
