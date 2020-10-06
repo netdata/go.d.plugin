@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
-
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
