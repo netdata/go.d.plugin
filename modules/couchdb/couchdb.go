@@ -11,7 +11,7 @@ import (
 func init() {
 	module.Register("couchdb", module.Creator{
 		Defaults: module.Defaults{
-			UpdateEvery: 1,
+			UpdateEvery: 10,
 		},
 		Create: func() module.Module { return New() },
 	})
@@ -28,6 +28,7 @@ func New() *CouchDB {
 					Timeout: web.Duration{Duration: time.Second * 5},
 				},
 			},
+			Node: "nonode@nohost",
 		},
 		collectedIndices: make(map[string]bool),
 	}
@@ -35,7 +36,9 @@ func New() *CouchDB {
 
 type (
 	Config struct {
-		web.HTTP `yaml:",inline"`
+		web.HTTP  `yaml:",inline"`
+		Node      string `yaml:"node"`
+		Databases string `yaml:"databases"`
 	}
 
 	CouchDB struct {
