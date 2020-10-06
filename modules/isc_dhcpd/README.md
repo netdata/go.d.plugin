@@ -31,9 +31,10 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/isc_dhcpd.conf
 ```
 
-### Example
+Needs `leases_path` (path to the DHCP client lease database) and list of ip pools to monitor.
+IP pool `networks` is a space separated list of [ip ranges](https://github.com/netdata/go.d.plugin/tree/master/pkg/iprange#supported-formats).
 
-Here is an example:
+Here is a configuration example:
 
 ```yaml
 jobs:
