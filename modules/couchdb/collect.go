@@ -42,7 +42,7 @@ func (CouchDB) collectNodeStats(collected map[string]int64, ms *cdbMetrics) {
 	}
 	for metric, value := range stm.ToMap(ms.NodeStats) {
 		if strings.HasPrefix(metric, httpStatusCodePrefix) {
-			aggregateHTTPStatusCodes(metric, collected, value)
+			aggregateHTTPStatusCodes(collected, metric, value)
 		} else {
 			collected[metric] = value
 		}
@@ -120,7 +120,7 @@ func (cdb *CouchDB) scrapeActiveTasks(ms *cdbMetrics) {
 	ms.ActiveTasks = stats
 }
 
-func aggregateHTTPStatusCodes(metric string, collected map[string]int64, value int64) {
+func aggregateHTTPStatusCodes(collected map[string]int64, metric string, value int64) {
 	code := metric[httpStatusCodePrefixLen:]
 
 	switch {
