@@ -132,7 +132,7 @@ func TestCouchDB_Collect(t *testing.T) {
 
 				// node stats
 				"couch_replicator_jobs_crashed":         1,
-				"couch_replicator_jobs_penging":         1,
+				"couch_replicator_jobs_pending":         1,
 				"couch_replicator_jobs_running":         1,
 				"couchdb_database_reads":                1,
 				"couchdb_database_writes":               14,

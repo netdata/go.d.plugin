@@ -148,7 +148,7 @@ type cdbNodeStats struct {
 			} `stm:"running" json:"running"`
 			Pending struct {
 				Value float64 `stm:"" json:"value"`
-			} `stm:"penging" json:"pending"`
+			} `stm:"pending" json:"pending"`
 			Crashed struct {
 				Value float64 `stm:"" json:"value"`
 			} `stm:"crashed" json:"crashed"`
