@@ -62,8 +62,8 @@ func (CouchDB) collectActiveTasks(collected map[string]int64, ms *cdbMetrics) {
 	if !ms.hasActiveTasks() {
 		return
 	}
-	for taskIndex := range ms.ActiveTasks {
-		collected["active_tasks_"+ms.ActiveTasks[taskIndex].Type]++
+	for _, activeTask := range ms.ActiveTasks {
+		collected["active_tasks_"+activeTask.Type]++
 	}
 }
 
