@@ -33,10 +33,10 @@ func (d DHCPd) validateConfig() error {
 
 func (d DHCPd) initPools() ([]ipPool, error) {
 	var pools []ipPool
-	for _, cfg := range d.Pools {
+	for i, cfg := range d.Pools {
 		rs, err := iprange.ParseRanges(cfg.Networks)
 		if err != nil {
-			return nil, fmt.Errorf("parse addresses '%s' ('%s'): %v", cfg.Name, cfg.Networks, err)
+			return nil, fmt.Errorf("parse pools[%d]->pool.networks '%s' ('%s'): %v", i+1, cfg.Name, cfg.Networks, err)
 		}
 		if len(rs) != 0 {
 			pools = append(pools, ipPool{
