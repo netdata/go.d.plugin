@@ -88,7 +88,7 @@ lease 192.168.3.11 {
   starts 6 2020/10/03 07:52:36;
   ends 6 2020/10/03 09:32:36;
   cltt 6 2020/10/03 07:52:36;
-  binding state active;
+  binding state free;
   next binding state free;
   rewind binding state free;
   hardware ethernet 60:a4:4c:3f:6e:78;
@@ -98,7 +98,7 @@ lease 192.168.3.10 {
   starts 6 2020/10/03 08:18:50;
   ends 6 2020/10/03 09:58:50;
   cltt 6 2020/10/03 08:18:50;
-  binding state active;
+  binding state free;
   next binding state free;
   rewind binding state free;
   hardware ethernet 70:62:b8:bf:b5:b3;
@@ -145,7 +145,7 @@ lease 10.254.251.100 {
   starts 6 2020/10/03 07:58:45;
   ends 6 2020/10/03 09:38:45;
   cltt 6 2020/10/03 07:58:45;
-  binding state active;
+  binding state free;
   next binding state free;
   rewind binding state free;
   hardware ethernet 74:ea:3a:a6:a9:c7;
@@ -204,7 +204,7 @@ lease 10.254.255.101 {
   starts 6 2020/10/03 07:29:24;
   ends 6 2020/10/03 09:09:24;
   cltt 6 2020/10/03 07:29:24;
-  binding state active;
+  binding state free;
   next binding state free;
   rewind binding state free;
   hardware ethernet 28:3b:82:58:f4:58;
@@ -263,7 +263,7 @@ lease 10.254.253.103 {
   starts 6 2020/10/03 08:07:02;
   ends 6 2020/10/03 09:47:02;
   cltt 6 2020/10/03 08:07:02;
-  binding state active;
+  binding state free;
   next binding state free;
   rewind binding state free;
   hardware ethernet 34:ce:00:03:08:57;
@@ -328,7 +328,7 @@ lease 10.254.255.101 {
   starts 6 2020/10/03 08:19:24;
   ends 6 2020/10/03 09:59:24;
   cltt 6 2020/10/03 08:19:24;
-  binding state active;
+  binding state free;
   next binding state free;
   rewind binding state free;
   hardware ethernet 28:3b:82:58:f4:58;
@@ -339,7 +339,7 @@ lease 10.254.251.100 {
   starts 6 2020/10/03 08:48:45;
   ends 6 2020/10/03 10:28:45;
   cltt 6 2020/10/03 08:48:45;
-  binding state active;
+  binding state free;
   next binding state free;
   rewind binding state free;
   hardware ethernet 74:ea:3a:a6:a9:c7;
@@ -351,7 +351,7 @@ lease 10.254.253.103 {
   starts 6 2020/10/03 08:57:02;
   ends 6 2020/10/03 10:37:02;
   cltt 6 2020/10/03 08:57:02;
-  binding state active;
+  binding state free;
   next binding state free;
   rewind binding state free;
   hardware ethernet 34:ce:00:03:08:57;
@@ -362,7 +362,7 @@ lease 192.168.3.11 {
   starts 6 2020/10/03 09:01:22;
   ends 6 2020/10/03 10:41:22;
   cltt 6 2020/10/03 09:01:22;
-  binding state active;
+  binding state free;
   next binding state free;
   rewind binding state free;
   hardware ethernet 60:a4:4c:3f:6e:78;
