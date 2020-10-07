@@ -57,14 +57,14 @@ func (d *DHCPd) Init() bool {
 
 	pools, err := d.initPools()
 	if err != nil {
-		d.Errorf("initialization ip pools: %v", err)
+		d.Errorf("ip pools init: %v", err)
 		return false
 	}
 	d.pools = pools
 
 	charts, err := d.initCharts(pools)
 	if err != nil {
-		d.Errorf("initialization charts: %v", err)
+		d.Errorf("charts init: %v", err)
 		return false
 	}
 	d.charts = charts
