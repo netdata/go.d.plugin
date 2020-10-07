@@ -59,7 +59,7 @@ func parseDHCPdLeasesFile(filepath string) ([]leaseEntry, error) {
 		bs := bytes.TrimSpace(sc.Bytes())
 		switch {
 		case !l.hasIP() && bytes.HasPrefix(bs, []byte("lease")):
-			// "prepare 192.168.0.1 {" => "192.168.0.1"
+			// "lease 192.168.0.1 {" => "192.168.0.1"
 			s := string(bs)
 			l.ip = net.ParseIP(s[6 : len(s)-2])
 		case !l.hasIP() && bytes.HasPrefix(bs, []byte("iaaddr")):
