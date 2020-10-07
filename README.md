@@ -43,6 +43,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius)       | `FreeRADIUS`               |
 | [hdfs](https://github.com/netdata/go.d.plugin/tree/master/modules/hdfs)                   | `HDFS`                     |
 | [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck)         | `Any HTTP Endpoint`        |
+| [isc_dhcpd](https://github.com/netdata/go.d.plugin/tree/master/modules/isc_dhcpd)         | `ISC dhcpd`                |
 | [k8s_kubelet](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubelet)     | `Kubelet`                  |
 | [k8s_kubeproxy](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubeproxy) | `Kube-proxy`               |
 | [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd)           | `Lighttpd`                 |
