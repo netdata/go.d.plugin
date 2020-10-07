@@ -23,33 +23,32 @@ func TestDHCPd_Init(t *testing.T) {
 		wantFail bool
 	}{
 		"default": {
-			config:   New().Config,
 			wantFail: true,
+			config:   New().Config,
 		},
 		"'leases_path' not set": {
+			wantFail: true,
 			config: Config{
 				LeasesPath: "",
 				Pools: []PoolConfig{
 					{Name: "test", Networks: "10.220.252.0/24"},
 				},
 			},
-			wantFail: true,
 		},
 		"'pools' not set": {
+			wantFail: true,
 			config: Config{
 				LeasesPath: "testdata/dhcpd.leases_ipv4",
 			},
-			wantFail: true,
 		},
 		"'pools->pool.networks' invalid syntax": {
+			wantFail: true,
 			config: Config{
 				LeasesPath: "testdata/dhcpd.leases_ipv4",
 				Pools: []PoolConfig{
 					{Name: "test", Networks: "10.220.252./24"},
 				},
-			},
-			wantFail: true,
-		},
+			}},
 		"ok config ('leases_path' and 'pools' are set)": {
 			config: Config{
 				LeasesPath: "testdata/dhcpd.leases_ipv4",
@@ -79,30 +78,12 @@ func TestDHCPd_Check(t *testing.T) {
 		prepare  func() *DHCPd
 		wantFail bool
 	}{
-		"lease db not exists": {
-			prepare:  prepareDHCPdLeasesNotExists,
-			wantFail: true,
-		},
-		"lease db is an empty file": {
-			prepare:  prepareDHCPdLeasesEmpty,
-			wantFail: false,
-		},
-		"lease db ipv4": {
-			prepare:  prepareDHCPdLeasesIPv4,
-			wantFail: false,
-		},
-		"lease db ipv4 with only inactive leases": {
-			prepare:  prepareDHCPdLeasesIPv4Inactive,
-			wantFail: false,
-		},
-		"lease db ipv4 with backup leases": {
-			prepare:  prepareDHCPdLeasesIPv4Backup,
-			wantFail: false,
-		},
-		"lease db ipv6": {
-			prepare:  prepareDHCPdLeasesIPv6,
-			wantFail: false,
-		},
+		"lease db not exists":                     {prepare: prepareDHCPdLeasesNotExists, wantFail: true},
+		"lease db is an empty file":               {prepare: prepareDHCPdLeasesEmpty},
+		"lease db ipv4":                           {prepare: prepareDHCPdLeasesIPv4},
+		"lease db ipv4 with only inactive leases": {prepare: prepareDHCPdLeasesIPv4Inactive},
+		"lease db ipv4 with backup leases":        {prepare: prepareDHCPdLeasesIPv4Backup},
+		"lease db ipv6":                           {prepare: prepareDHCPdLeasesIPv6},
 	}
 
 	for name, test := range tests {
