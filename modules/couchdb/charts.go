@@ -154,3 +154,43 @@ var erlangStatisticsCharts = Charts{
 		},
 	},
 }
+
+var (
+	dbSpecificCharts = Charts{
+		{
+			ID:    "db_sizes_file",
+			Title: "Database sizes (file)",
+			Units: "KiB",
+			Fam:   "perdbstats",
+			Ctx:   "couchdb.db_sizes_file",
+		},
+		{
+			ID:    "db_sizes_external",
+			Title: "Database sizes (external)",
+			Units: "KiB",
+			Fam:   "perdbstats",
+			Ctx:   "couchdb.db_sizes_external",
+		},
+		{
+			ID:    "db_sizes_active",
+			Title: "Database sizes (active)",
+			Units: "KiB",
+			Fam:   "perdbstats",
+			Ctx:   "couchdb.db_sizes_active",
+		},
+		{
+			ID:    "db_doc_counts",
+			Title: "Database # of docs",
+			Units: "docs",
+			Fam:   "perdbstats",
+			Ctx:   "couchdb_db_doc_count",
+		},
+		{
+			ID:    "db_doc_del_counts",
+			Title: "Database # of deleted docs",
+			Units: "docs",
+			Fam:   "perdbstats",
+			Ctx:   "couchdb_db_doc_del_count",
+		},
+	}
+)
