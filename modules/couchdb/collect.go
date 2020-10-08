@@ -152,7 +152,9 @@ func findMaxMQSize(MessageQueues map[string]interface{}) int64 {
 		case float64:
 			max = math.Max(max, mqSize)
 		case map[string]interface{}:
-			max = math.Max(max, mqSize["count"].(float64))
+			if v, ok := mqSize["count"].(float64); ok {
+				max = math.Max(max, v)
+			}
 		}
 	}
 	return int64(max)
