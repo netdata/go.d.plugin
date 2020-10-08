@@ -15,12 +15,15 @@ import (
 )
 
 const (
-	urlPathOverviewStats = "/_node/nonode@nohost/_stats"
-	urlPathSystemStats   = "/_node/nonode@nohost/_system"
-	urlPathActiveTasks   = "/_active_tasks"
+	urlPathActiveTasks = "/_active_tasks"
 
 	httpStatusCodePrefix    = "couchdb_httpd_status_codes_"
 	httpStatusCodePrefixLen = len(httpStatusCodePrefix)
+)
+
+var (
+	urlPathOverviewStats = "/_node/%s/_stats"
+	urlPathSystemStats   = "/_node/%s/_system"
 )
 
 func (cdb *CouchDB) collect() (map[string]int64, error) {

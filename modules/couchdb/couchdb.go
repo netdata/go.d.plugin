@@ -1,6 +1,7 @@
 package couchdb
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -64,6 +65,9 @@ func (cdb *CouchDB) Init() bool {
 		cdb.Errorf("check configuration: %v", err)
 		return false
 	}
+
+	urlPathOverviewStats = fmt.Sprintf(urlPathOverviewStats, cdb.Config.Node)
+	urlPathSystemStats = fmt.Sprintf(urlPathSystemStats, cdb.Config.Node)
 
 	httpClient, err := cdb.initHTTPClient()
 	if err != nil {
