@@ -67,6 +67,11 @@ func (CouchDB) collectSystemStats(collected map[string]int64, ms *cdbMetrics) {
 }
 
 func (CouchDB) collectActiveTasks(collected map[string]int64, ms *cdbMetrics) {
+	collected["active_tasks_indexer"] = 0
+	collected["active_tasks_database_compaction"] = 0
+	collected["active_tasks_replication"] = 0
+	collected["active_tasks_view_compaction"] = 0
+
 	if !ms.hasActiveTasks() {
 		return
 	}
