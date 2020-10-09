@@ -31,7 +31,9 @@ func New() *CouchDB {
 			},
 			Node: "nonode@nohost",
 		},
-		collectedIndices: make(map[string]bool),
+
+		urlPathOverviewStats: "/_node/%s/_stats",
+		urlPathSystemStats:   "/_node/%s/_system",
 	}
 }
 
@@ -46,9 +48,11 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
-		httpClient       *http.Client
-		charts           *module.Charts
-		collectedIndices map[string]bool
+		httpClient *http.Client
+		charts     *module.Charts
+
+		urlPathOverviewStats string
+		urlPathSystemStats   string
 	}
 )
 
@@ -66,8 +70,8 @@ func (cdb *CouchDB) Init() bool {
 		return false
 	}
 
-	urlPathOverviewStats = fmt.Sprintf(urlPathOverviewStats, cdb.Config.Node)
-	urlPathSystemStats = fmt.Sprintf(urlPathSystemStats, cdb.Config.Node)
+	cdb.urlPathOverviewStats = fmt.Sprintf(cdb.urlPathOverviewStats, cdb.Config.Node)
+	cdb.urlPathSystemStats = fmt.Sprintf(cdb.urlPathSystemStats, cdb.Config.Node)
 
 	httpClient, err := cdb.initHTTPClient()
 	if err != nil {

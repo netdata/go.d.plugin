@@ -21,11 +21,6 @@ const (
 	httpStatusCodePrefixLen = len(httpStatusCodePrefix)
 )
 
-var (
-	urlPathOverviewStats = "/_node/%s/_stats"
-	urlPathSystemStats   = "/_node/%s/_system"
-)
-
 func (cdb *CouchDB) collect() (map[string]int64, error) {
 	ms := cdb.scrapeCouchDB()
 	if ms.empty() {
@@ -100,7 +95,7 @@ func (cdb CouchDB) scrapeCouchDB() *cdbMetrics {
 
 func (cdb CouchDB) scrapeNodeStats(ms *cdbMetrics) {
 	req, _ := web.NewHTTPRequest(cdb.Request)
-	req.URL.Path = urlPathOverviewStats
+	req.URL.Path = cdb.urlPathOverviewStats
 
 	var stats cdbNodeStats
 	if err := cdb.doOKDecode(req, &stats); err != nil {
@@ -112,7 +107,7 @@ func (cdb CouchDB) scrapeNodeStats(ms *cdbMetrics) {
 
 func (cdb *CouchDB) scrapeSystemStats(ms *cdbMetrics) {
 	req, _ := web.NewHTTPRequest(cdb.Request)
-	req.URL.Path = urlPathSystemStats
+	req.URL.Path = cdb.urlPathSystemStats
 
 	var stats cdbNodeSystem
 	if err := cdb.doOKDecode(req, &stats); err != nil {

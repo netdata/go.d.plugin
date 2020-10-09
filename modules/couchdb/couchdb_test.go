@@ -216,10 +216,10 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, cdb *CouchDB, collecte
 
 func prepareCouchDB(t *testing.T, createCDB func() *CouchDB) (cdb *CouchDB, cleanup func()) {
 	t.Helper()
-	srv := prepareCouchDBEndpoint()
-
 	cdb = createCDB()
+	srv := prepareCouchDBEndpoint(cdb)
 	cdb.URL = srv.URL
+
 	require.True(t, cdb.Init())
 
 	return cdb, srv.Close
@@ -264,13 +264,13 @@ func prepareCouchDBConnectionRefused(t *testing.T) (*CouchDB, func()) {
 	return cdb, func() {}
 }
 
-func prepareCouchDBEndpoint() *httptest.Server {
+func prepareCouchDBEndpoint(cdb *CouchDB) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
-			case urlPathOverviewStats:
+			case cdb.urlPathOverviewStats:
 				_, _ = w.Write(responseNodeStats)
-			case urlPathSystemStats:
+			case cdb.urlPathSystemStats:
 				_, _ = w.Write(responseNodeSystem)
 			case urlPathActiveTasks:
 				_, _ = w.Write(responseActiveTasks)
