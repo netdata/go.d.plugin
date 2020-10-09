@@ -12,6 +12,9 @@ func (cdb CouchDB) validateConfig() error {
 	if cdb.URL == "" {
 		return errors.New("URL not set")
 	}
+	if cdb.Node == "" {
+		return errors.New("Node not set")
+	}
 	if _, err := web.NewHTTPRequest(cdb.Request); err != nil {
 		return err
 	}
@@ -24,6 +27,7 @@ func (cdb CouchDB) initHTTPClient() (*http.Client, error) {
 
 func (cdb CouchDB) initCharts() (*Charts, error) {
 	charts := module.Charts{}
+
 	if err := charts.Add(*dbActivityCharts.Copy()...); err != nil {
 		return nil, err
 	}
@@ -36,6 +40,23 @@ func (cdb CouchDB) initCharts() (*Charts, error) {
 	if err := charts.Add(*erlangStatisticsCharts.Copy()...); err != nil {
 		return nil, err
 	}
+	if len(cdb.databases) != 0 {
+		dbCharts := dbSpecificCharts.Copy()
+
+		if err := charts.Add(*dbCharts...); err != nil {
+			return nil, err
+		}
+
+		for _, chart := range *dbCharts {
+			for _, db := range cdb.databases {
+				if err := chart.AddDim(&module.Dim{ID: "db_" + db + "_" + chart.ID, Name: db}); err != nil {
+					return nil, err
+				}
+			}
+		}
+
+	}
+
 	if len(charts) == 0 {
 		return nil, errors.New("zero charts")
 	}

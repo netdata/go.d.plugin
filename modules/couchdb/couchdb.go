@@ -3,6 +3,7 @@ package couchdb
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -53,6 +54,8 @@ type (
 
 		urlPathOverviewStats string
 		urlPathSystemStats   string
+
+		databases []string
 	}
 )
 
@@ -72,6 +75,8 @@ func (cdb *CouchDB) Init() bool {
 
 	cdb.urlPathOverviewStats = fmt.Sprintf(cdb.urlPathOverviewStats, cdb.Config.Node)
 	cdb.urlPathSystemStats = fmt.Sprintf(cdb.urlPathSystemStats, cdb.Config.Node)
+
+	cdb.databases = strings.Fields(cdb.Config.Databases)
 
 	httpClient, err := cdb.initHTTPClient()
 	if err != nil {

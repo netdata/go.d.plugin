@@ -31,6 +31,7 @@ func (cdb *CouchDB) collect() (map[string]int64, error) {
 	cdb.collectNodeStats(collected, ms)
 	cdb.collectSystemStats(collected, ms)
 	cdb.collectActiveTasks(collected, ms)
+	cdb.collectDBStats(collected, ms)
 
 	return collected, nil
 }
@@ -76,6 +77,16 @@ func (CouchDB) collectActiveTasks(collected map[string]int64, ms *cdbMetrics) {
 	}
 }
 
+func (CouchDB) collectDBStats(collected map[string]int64, ms *cdbMetrics) {
+	if !ms.hasDBStats() {
+		return
+	}
+
+	for metric, value := range stm.ToMap(ms.DBStats) {
+		collected[metric] = value
+	}
+}
+
 func (cdb CouchDB) scrapeCouchDB() *cdbMetrics {
 	ms := &cdbMetrics{}
 	wg := &sync.WaitGroup{}
@@ -88,6 +99,9 @@ func (cdb CouchDB) scrapeCouchDB() *cdbMetrics {
 
 	wg.Add(1)
 	go func() { defer wg.Done(); cdb.scrapeActiveTasks(ms) }()
+
+	wg.Add(1)
+	go func() { defer wg.Done(); cdb.scrapeDBStats(ms) }()
 
 	wg.Wait()
 	return ms
@@ -127,6 +141,31 @@ func (cdb *CouchDB) scrapeActiveTasks(ms *cdbMetrics) {
 		return
 	}
 	ms.ActiveTasks = stats
+}
+
+func (cdb *CouchDB) scrapeDBStats(ms *cdbMetrics) {
+	wg := &sync.WaitGroup{}
+
+	ms.DBStats = make(map[string]*cdbDBStats)
+
+	for _, db := range cdb.databases {
+		req, _ := web.NewHTTPRequest(cdb.Request)
+		req.URL.Path = "/" + db
+
+		wg.Add(1)
+		go func(db string) {
+			defer wg.Done()
+
+			var stats cdbDBStats
+			if err := cdb.doOKDecode(req, &stats); err != nil {
+				cdb.Warning(err)
+				return
+			}
+			ms.DBStats["db_"+db] = &stats
+		}(db)
+	}
+
+	wg.Wait()
 }
 
 func aggregateHTTPStatusCodes(collected map[string]int64, metric string, value int64) {

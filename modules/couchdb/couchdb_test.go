@@ -178,6 +178,13 @@ func TestCouchDB_Collect(t *testing.T) {
 				"active_tasks_indexer":             2,
 				"active_tasks_replication":         1,
 				"active_tasks_view_compaction":     1,
+
+				// database
+				"db_netdata_db_doc_counts":     14,
+				"db_netdata_db_doc_del_counts": 1,
+				"db_netdata_db_sizes_active":   2818,
+				"db_netdata_db_sizes_external": 588,
+				"db_netdata_db_sizes_file":     74115,
 			},
 		},
 	}
@@ -219,6 +226,7 @@ func prepareCouchDB(t *testing.T, createCDB func() *CouchDB) (cdb *CouchDB, clea
 	cdb = createCDB()
 	srv := prepareCouchDBEndpoint(cdb)
 	cdb.URL = srv.URL
+	cdb.Config.Databases = "netdata"
 
 	require.True(t, cdb.Init())
 
@@ -274,6 +282,8 @@ func prepareCouchDBEndpoint(cdb *CouchDB) *httptest.Server {
 				_, _ = w.Write(responseNodeSystem)
 			case urlPathActiveTasks:
 				_, _ = w.Write(responseActiveTasks)
+			case "/" + cdb.databases[0]:
+				_, _ = w.Write(responseDatabase)
 			case "/":
 				_, _ = w.Write(responseRoot)
 			default:
