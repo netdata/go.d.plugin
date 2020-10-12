@@ -176,8 +176,9 @@ func aggregateHTTPStatusCodes(collected map[string]int64, metric string, value i
 	code := metric[httpStatusCodePrefixLen:]
 
 	switch {
-	case code == "200" || code == "201" || code == "202":
+	case code == "200" || code == "201" || code == "202" || code == "204" || code == "206":
 		collected[metric] = value
+		collected["couchdb_httpd_status_codes_2xx"] += value
 	case strings.HasPrefix(code, "2"):
 		collected["couchdb_httpd_status_codes_2xx"] += value
 	case strings.HasPrefix(code, "3"):
