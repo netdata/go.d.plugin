@@ -37,9 +37,6 @@ func (cdb CouchDB) initCharts() (*Charts, error) {
 	if err := charts.Add(*serverOperationsCharts.Copy()...); err != nil {
 		return nil, err
 	}
-	if err := charts.Add(*erlangStatisticsCharts.Copy()...); err != nil {
-		return nil, err
-	}
 	if len(cdb.databases) != 0 {
 		dbCharts := dbSpecificCharts.Copy()
 
@@ -55,6 +52,9 @@ func (cdb CouchDB) initCharts() (*Charts, error) {
 			}
 		}
 
+	}
+	if err := charts.Add(*erlangStatisticsCharts.Copy()...); err != nil {
+		return nil, err
 	}
 
 	if len(charts) == 0 {

@@ -122,17 +122,6 @@ var erlangStatisticsCharts = Charts{
 		},
 	},
 	{
-		ID:    "erlang_reductions",
-		Title: "Erlang reductions",
-		Units: "count",
-		Fam:   "erlang",
-		Ctx:   "couchdb.reductions",
-		Type:  module.Stacked,
-		Dims: Dims{
-			{ID: "reductions", Name: "reductions", Algo: module.Incremental},
-		},
-	},
-	{
 		ID:    "erlang_proc_counts",
 		Title: "Process counts",
 		Units: "count",
@@ -151,6 +140,17 @@ var erlangStatisticsCharts = Charts{
 		Ctx:   "couchdb.peakmsgqueue",
 		Dims: Dims{
 			{ID: "peak_msg_queue", Name: "peak size"},
+		},
+	},
+	{
+		ID:    "erlang_reductions",
+		Title: "Erlang reductions",
+		Units: "count",
+		Fam:   "erlang",
+		Ctx:   "couchdb.reductions",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "reductions", Name: "reductions", Algo: module.Incremental},
 		},
 	},
 }
