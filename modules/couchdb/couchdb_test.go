@@ -19,7 +19,8 @@ var (
 	responseActiveTasks, _ = ioutil.ReadFile("testdata/v311_single_active_tasks.json")
 	responseNodeStats, _   = ioutil.ReadFile("testdata/v311_node_stats.json")
 	responseNodeSystem, _  = ioutil.ReadFile("testdata/v311_node_system.json")
-	responseDatabase, _    = ioutil.ReadFile("testdata/v311_database.json")
+	responseDatabase1, _   = ioutil.ReadFile("testdata/v311_database1.json")
+	responseDatabase2, _   = ioutil.ReadFile("testdata/v311_database2.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
@@ -28,7 +29,8 @@ func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 		"responseActiveTasks": responseActiveTasks,
 		"responseNodeStats":   responseNodeStats,
 		"responseNodeSystem":  responseNodeSystem,
-		"responseDatabase":    responseDatabase,
+		"responseDatabase1":   responseDatabase1,
+		"responseDatabase2":   responseDatabase2,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -179,12 +181,18 @@ func TestCouchDB_Collect(t *testing.T) {
 				"active_tasks_replication":         1,
 				"active_tasks_view_compaction":     1,
 
-				// database
-				"db_netdata_db_doc_counts":     14,
-				"db_netdata_db_doc_del_counts": 1,
-				"db_netdata_db_sizes_active":   2818,
-				"db_netdata_db_sizes_external": 588,
-				"db_netdata_db_sizes_file":     74115,
+				// databass
+				"db_db1_db_doc_counts":     14,
+				"db_db1_db_doc_del_counts": 1,
+				"db_db1_db_sizes_active":   2818,
+				"db_db1_db_sizes_external": 588,
+				"db_db1_db_sizes_file":     74115,
+
+				"db_db2_db_doc_counts":     14,
+				"db_db2_db_doc_del_counts": 1,
+				"db_db2_db_sizes_active":   1818,
+				"db_db2_db_sizes_external": 288,
+				"db_db2_db_sizes_file":     7415,
 			},
 		},
 	}
@@ -226,7 +234,7 @@ func prepareCouchDB(t *testing.T, createCDB func() *CouchDB) (cdb *CouchDB, clea
 	cdb = createCDB()
 	srv := prepareCouchDBEndpoint(cdb)
 	cdb.URL = srv.URL
-	cdb.Config.Databases = "netdata"
+	cdb.Config.Databases = "db1 db2"
 
 	require.True(t, cdb.Init())
 
@@ -276,14 +284,16 @@ func prepareCouchDBEndpoint(cdb *CouchDB) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
-			case cdb.urlPathOverviewStats:
+			case "/_node/_local/_stats":
 				_, _ = w.Write(responseNodeStats)
-			case cdb.urlPathSystemStats:
+			case "/_node/_local/_system":
 				_, _ = w.Write(responseNodeSystem)
 			case urlPathActiveTasks:
 				_, _ = w.Write(responseActiveTasks)
-			case "/" + cdb.databases[0]:
-				_, _ = w.Write(responseDatabase)
+			case "/db1":
+				_, _ = w.Write(responseDatabase1)
+			case "/db2":
+				_, _ = w.Write(responseDatabase2)
 			case "/":
 				_, _ = w.Write(responseRoot)
 			default:

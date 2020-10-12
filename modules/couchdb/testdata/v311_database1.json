@@ -1,5 +1,5 @@
 {
-    "db_name": "netdata",
+    "db_name": "db1",
     "purge_seq": "0-g1AAAABPeJzLYWBgYMpgTmHgzcvPy09JdcjLz8gvLskBCeexAEmGBiD1HwiyEhlwqEtkSKqHKMgCAIT2GV4",
     "update_seq": "14-g1AAAABPeJzLYWBgYMpgTmHgzcvPy09JdcjLz8gvLskBCeexAEmGBiD1HwiyEjlxqEtkSKoHK2DNAgCGOxls",
     "sizes": {

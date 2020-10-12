@@ -162,7 +162,9 @@ func (cdb *CouchDB) scrapeDBStats(ms *cdbMetrics) {
 				cdb.Warning(err)
 				return
 			}
+			ms.DBStatsMutex.Lock()
 			ms.DBStats["db_"+db] = &stats
+			ms.DBStatsMutex.Unlock()
 		}(db)
 	}
 
