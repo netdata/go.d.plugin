@@ -244,9 +244,3 @@ func closeBody(resp *http.Response) {
 		_ = resp.Body.Close()
 	}
 }
-
-func merge(dst, src map[string]int64, prefix string) {
-	for k, v := range src {
-		dst[prefix+"_"+k] = v
-	}
-}
