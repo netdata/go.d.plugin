@@ -2,6 +2,7 @@ package couchdb
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -205,8 +206,16 @@ func findMaxMQSize(MessageQueues map[string]interface{}) int64 {
 func (cdb CouchDB) pingCouchDB() error {
 	req, _ := web.NewHTTPRequest(cdb.Request)
 
-	var info struct{ Name string }
-	return cdb.doOKDecode(req, &info)
+	var info struct{ Couchdb string }
+	if err := cdb.doOKDecode(req, &info); err != nil {
+		return err
+	}
+
+	if info.Couchdb != "Welcome" {
+		return errors.New("not a CouchDB endpoint")
+	}
+
+	return nil
 }
 
 func (cdb CouchDB) doOKDecode(req *http.Request, in interface{}) error {
