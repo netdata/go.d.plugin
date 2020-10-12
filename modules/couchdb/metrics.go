@@ -1,7 +1,5 @@
 package couchdb
 
-import "sync"
-
 // https://docs.couchdb.org/en/stable/api/index.html
 
 type cdbMetrics struct {
@@ -12,8 +10,7 @@ type cdbMetrics struct {
 	// https://docs.couchdb.org/en/stable/api/server/common.html#node-node-name-system
 	NodeSystem *cdbNodeSystem
 	// https://docs.couchdb.org/en/stable/api/database/common.html
-	DBStats      map[string]*cdbDBStats
-	DBStatsMutex sync.Mutex
+	DBStats map[string]*cdbDBStats
 }
 
 func (m cdbMetrics) empty() bool {
