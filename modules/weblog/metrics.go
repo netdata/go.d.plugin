@@ -65,6 +65,7 @@ type (
 	}
 	patternMetrics struct {
 		RespCode      metrics.CounterVec `stm:"resp_code"`
+		ReqMethod     metrics.CounterVec `stm:"req_method"`
 		BytesSent     metrics.Counter    `stm:"bytes_sent"`
 		BytesReceived metrics.Counter    `stm:"bytes_received"`
 		ReqProcTime   metrics.Summary    `stm:"req_proc_time"`
@@ -115,6 +116,7 @@ func newURLPatternStats(patterns []userPattern) map[string]*patternMetrics {
 	for _, p := range patterns {
 		stats[p.Name] = &patternMetrics{
 			RespCode:    metrics.NewCounterVec(),
+			ReqMethod:   metrics.NewCounterVec(),
 			ReqProcTime: newWebLogSummary(),
 		}
 	}
