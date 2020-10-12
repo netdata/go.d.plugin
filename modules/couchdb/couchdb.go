@@ -30,7 +30,7 @@ func New() *CouchDB {
 					Timeout: web.Duration{Duration: time.Second * 5},
 				},
 			},
-			Node: "nonode@nohost",
+			Node: "_local",
 		},
 
 		urlPathOverviewStats: "/_node/%s/_stats",
