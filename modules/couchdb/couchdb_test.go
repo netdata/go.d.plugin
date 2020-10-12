@@ -125,10 +125,12 @@ func TestCouchDB_Collect(t *testing.T) {
 	tests := map[string]struct {
 		prepare       func() *CouchDB
 		wantCollected map[string]int64
+		checkCharts   bool
 	}{
 		"all stats": {
 			prepare: func() *CouchDB {
 				cdb := New()
+				cdb.Config.Databases = "db1 db2"
 				return cdb
 			},
 			wantCollected: map[string]int64{
@@ -181,7 +183,7 @@ func TestCouchDB_Collect(t *testing.T) {
 				"active_tasks_replication":         1,
 				"active_tasks_view_compaction":     1,
 
-				// databass
+				// databases
 				"db_db1_db_doc_counts":     14,
 				"db_db1_db_doc_del_counts": 1,
 				"db_db1_db_sizes_active":   2818,
@@ -194,6 +196,106 @@ func TestCouchDB_Collect(t *testing.T) {
 				"db_db2_db_sizes_external": 288,
 				"db_db2_db_sizes_file":     7415,
 			},
+			checkCharts: true,
+		},
+		"wrong node": {
+			prepare: func() *CouchDB {
+				cdb := New()
+				cdb.Config.Node = "bad_node@bad_host"
+				cdb.Config.Databases = "db1 db2"
+				return cdb
+			},
+			wantCollected: map[string]int64{
+
+				// node stats
+
+				// node system
+
+				// active tasks
+				"active_tasks_database_compaction": 1,
+				"active_tasks_indexer":             2,
+				"active_tasks_replication":         1,
+				"active_tasks_view_compaction":     1,
+
+				// databases
+				"db_db1_db_doc_counts":     14,
+				"db_db1_db_doc_del_counts": 1,
+				"db_db1_db_sizes_active":   2818,
+				"db_db1_db_sizes_external": 588,
+				"db_db1_db_sizes_file":     74115,
+
+				"db_db2_db_doc_counts":     14,
+				"db_db2_db_doc_del_counts": 1,
+				"db_db2_db_sizes_active":   1818,
+				"db_db2_db_sizes_external": 288,
+				"db_db2_db_sizes_file":     7415,
+			},
+			checkCharts: false,
+		},
+		"wrong database": {
+			prepare: func() *CouchDB {
+				cdb := New()
+				cdb.Config.Databases = "bad_db db2"
+				return cdb
+			},
+			wantCollected: map[string]int64{
+
+				// node stats
+				"couch_replicator_jobs_crashed":         1,
+				"couch_replicator_jobs_pending":         1,
+				"couch_replicator_jobs_running":         1,
+				"couchdb_database_reads":                1,
+				"couchdb_database_writes":               14,
+				"couchdb_httpd_request_methods_COPY":    1,
+				"couchdb_httpd_request_methods_DELETE":  1,
+				"couchdb_httpd_request_methods_GET":     75544,
+				"couchdb_httpd_request_methods_HEAD":    1,
+				"couchdb_httpd_request_methods_OPTIONS": 1,
+				"couchdb_httpd_request_methods_POST":    15,
+				"couchdb_httpd_request_methods_PUT":     3,
+				"couchdb_httpd_status_codes_200":        75294,
+				"couchdb_httpd_status_codes_201":        15,
+				"couchdb_httpd_status_codes_202":        1,
+				"couchdb_httpd_status_codes_2xx":        2,
+				"couchdb_httpd_status_codes_3xx":        3,
+				"couchdb_httpd_status_codes_4xx":        258,
+				"couchdb_httpd_status_codes_5xx":        2,
+				"couchdb_httpd_view_reads":              1,
+				"couchdb_open_os_files":                 1,
+
+				// node system
+				"context_switches":          22614499,
+				"ets_table_count":           116,
+				"internal_replication_jobs": 1,
+				"io_input":                  49674812,
+				"io_output":                 686400800,
+				"memory_atom_used":          488328,
+				"memory_atom":               504433,
+				"memory_binary":             297696,
+				"memory_code":               11252688,
+				"memory_ets":                1579120,
+				"memory_other":              20427855,
+				"memory_processes":          9161448,
+				"os_proc_count":             1,
+				"peak_msg_queue":            2,
+				"process_count":             296,
+				"reductions":                43211228312,
+				"run_queue":                 1,
+
+				// active tasks
+				"active_tasks_database_compaction": 1,
+				"active_tasks_indexer":             2,
+				"active_tasks_replication":         1,
+				"active_tasks_view_compaction":     1,
+
+				// databases
+				"db_db2_db_doc_counts":     14,
+				"db_db2_db_doc_del_counts": 1,
+				"db_db2_db_sizes_active":   1818,
+				"db_db2_db_sizes_external": 288,
+				"db_db2_db_sizes_file":     7415,
+			},
+			checkCharts: false,
 		},
 	}
 
@@ -208,7 +310,9 @@ func TestCouchDB_Collect(t *testing.T) {
 			}
 
 			assert.Equal(t, test.wantCollected, collected)
-			ensureCollectedHasAllChartsDimsVarsIDs(t, cdb, collected)
+			if test.checkCharts {
+				ensureCollectedHasAllChartsDimsVarsIDs(t, cdb, collected)
+			}
 		})
 	}
 }
@@ -234,7 +338,6 @@ func prepareCouchDB(t *testing.T, createCDB func() *CouchDB) (cdb *CouchDB, clea
 	cdb = createCDB()
 	srv := prepareCouchDBEndpoint(cdb)
 	cdb.URL = srv.URL
-	cdb.Config.Databases = "db1 db2"
 
 	require.True(t, cdb.Init())
 
