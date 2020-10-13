@@ -148,7 +148,7 @@ func (cdb *CouchDB) scrapeDBStats(ms *cdbMetrics) {
 	wg := &sync.WaitGroup{}
 
 	ms.DBStats = make(map[string]*cdbDBStats)
-	var DBStatsMutex sync.Mutex
+	var dbStatsMutex sync.Mutex
 
 	for _, db := range cdb.databases {
 		req, _ := web.NewHTTPRequest(cdb.Request)
@@ -163,9 +163,9 @@ func (cdb *CouchDB) scrapeDBStats(ms *cdbMetrics) {
 				cdb.Warning(err)
 				return
 			}
-			DBStatsMutex.Lock()
+			dbStatsMutex.Lock()
 			ms.DBStats["db_"+db] = &stats
-			DBStatsMutex.Unlock()
+			dbStatsMutex.Unlock()
 		}(db)
 	}
 
