@@ -113,8 +113,10 @@ func (cdb *CouchDB) scrapeCouchDB() *cdbMetrics {
 	wg.Add(1)
 	go func() { defer wg.Done(); cdb.scrapeActiveTasks(ms) }()
 
-	wg.Add(1)
-	go func() { defer wg.Done(); cdb.scrapeDBStats(ms) }()
+	if len(cdb.databases) > 0 {
+		wg.Add(1)
+		go func() { defer wg.Done(); cdb.scrapeDBStats(ms) }()
+	}
 
 	wg.Wait()
 	return ms
