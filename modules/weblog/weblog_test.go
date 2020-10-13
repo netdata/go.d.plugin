@@ -729,6 +729,30 @@ func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
 	}
 
 	for _, p := range w.URLPatterns {
+		id := fmt.Sprintf(urlPatternReqMethods.ID, p.Name)
+		if isEmptyCounterVec(w.mx.ReqMethod) {
+			assert.Falsef(t, w.Charts().Has(id), "chart '%s' is created", id)
+			continue
+		}
+
+		chart := w.Charts().Get(id)
+		assert.NotNilf(t, chart, "chart '%s' is not created", id)
+		if chart == nil {
+			continue
+		}
+
+		stats, ok := w.mx.URLPatternStats[p.Name]
+		assert.Truef(t, ok, "url pattern '%s' has no metric in w.mx.URLPatternStats", p.Name)
+		if !ok {
+			continue
+		}
+		for v := range stats.ReqMethod {
+			dimID := fmt.Sprintf("url_ptn_%s_req_method_%s", p.Name, v)
+			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has no dim for '%s' code, expected '%s'", id, v, dimID)
+		}
+	}
+
+	for _, p := range w.URLPatterns {
 		id := fmt.Sprintf(urlPatternBandwidth.ID, p.Name)
 		if w.mx.BytesSent.Value() == 0 && w.mx.BytesReceived.Value() == 0 {
 			assert.Falsef(t, w.Charts().Has(id), "chart '%s' is created", id)
