@@ -1,6 +1,7 @@
 package couchdb
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,6 +20,7 @@ const (
 	urlPathActiveTasks   = "/_active_tasks"
 	urlPathOverviewStats = "/_node/%s/_stats"
 	urlPathSystemStats   = "/_node/%s/_system"
+	urlPathDatabases     = "/_dbs_info"
 
 	httpStatusCodePrefix    = "couchdb_httpd_status_codes_"
 	httpStatusCodePrefixLen = len(httpStatusCodePrefix)
@@ -80,9 +82,21 @@ func (CouchDB) collectActiveTasks(collected map[string]int64, ms *cdbMetrics) {
 	}
 }
 
-func (CouchDB) collectDBStats(collected map[string]int64, ms *cdbMetrics) {
+func (cdb *CouchDB) collectDBStats(collected map[string]int64, ms *cdbMetrics) {
 	if !ms.hasDBStats() {
 		return
+	}
+
+	for _, dbStats := range ms.DBStats {
+		if dbStats.Error != "" {
+			cdb.Error("database '", dbStats.Key, "' doesn't exist")
+			continue
+		}
+		metrics := make(map[string]int64)
+		renameKeys(metrics, stm.ToMap(dbStats.Info), "db_"+dbStats.Key)
+		for metric, value := range metrics {
+			collected[metric] = value
+		}
 	}
 
 	for metric, value := range stm.ToMap(ms.DBStats) {
@@ -147,31 +161,29 @@ func (cdb *CouchDB) scrapeActiveTasks(ms *cdbMetrics) {
 }
 
 func (cdb *CouchDB) scrapeDBStats(ms *cdbMetrics) {
-	wg := &sync.WaitGroup{}
+	req, _ := web.NewHTTPRequest(cdb.Request)
+	req.URL.Path = urlPathDatabases
+	req.Method = http.MethodPost
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
 
-	ms.DBStats = make(map[string]*cdbDBStats)
-	var dbStatsMutex sync.Mutex
-
-	for _, db := range cdb.databases {
-		req, _ := web.NewHTTPRequest(cdb.Request)
-		req.URL.Path = "/" + db
-
-		wg.Add(1)
-		go func(db string) {
-			defer wg.Done()
-
-			var stats cdbDBStats
-			if err := cdb.doOKDecode(req, &stats); err != nil {
-				cdb.Warning(err)
-				return
-			}
-			dbStatsMutex.Lock()
-			ms.DBStats["db_"+db] = &stats
-			dbStatsMutex.Unlock()
-		}(db)
+	var q struct {
+		Keys []string `json:"keys"`
 	}
+	q.Keys = cdb.databases
+	queryDatabases, err := json.Marshal(q)
+	if err != nil {
+		cdb.Error(err)
+		return
+	}
+	req.Body = ioutil.NopCloser(bytes.NewReader(queryDatabases))
 
-	wg.Wait()
+	var stats []cdbDBStats
+	if err := cdb.doOKDecode(req, &stats); err != nil {
+		cdb.Warning(err)
+		return
+	}
+	ms.DBStats = stats
 }
 
 func findMaxMQSize(MessageQueues map[string]interface{}) int64 {
@@ -225,5 +237,11 @@ func closeBody(resp *http.Response) {
 	if resp != nil && resp.Body != nil {
 		_, _ = io.Copy(ioutil.Discard, resp.Body)
 		_ = resp.Body.Close()
+	}
+}
+
+func renameKeys(dst, src map[string]int64, prefix string) {
+	for k, v := range src {
+		dst[prefix+"_"+k] = v
 	}
 }

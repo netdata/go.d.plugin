@@ -19,8 +19,7 @@ var (
 	responseActiveTasks, _ = ioutil.ReadFile("testdata/v311_single_active_tasks.json")
 	responseNodeStats, _   = ioutil.ReadFile("testdata/v311_node_stats.json")
 	responseNodeSystem, _  = ioutil.ReadFile("testdata/v311_node_system.json")
-	responseDatabase1, _   = ioutil.ReadFile("testdata/v311_database1.json")
-	responseDatabase2, _   = ioutil.ReadFile("testdata/v311_database2.json")
+	responseDatabases, _   = ioutil.ReadFile("testdata/v311_databases.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
@@ -29,8 +28,7 @@ func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 		"responseActiveTasks": responseActiveTasks,
 		"responseNodeStats":   responseNodeStats,
 		"responseNodeSystem":  responseNodeSystem,
-		"responseDatabase1":   responseDatabase1,
-		"responseDatabase2":   responseDatabase2,
+		"responseDatabases":   responseDatabases,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -211,7 +209,7 @@ func TestCouchDB_Collect(t *testing.T) {
 				"db_db1_db_sizes_external": 588,
 				"db_db1_db_sizes_file":     74115,
 
-				"db_db2_db_doc_counts":     14,
+				"db_db2_db_doc_counts":     15,
 				"db_db2_db_doc_del_counts": 1,
 				"db_db2_db_sizes_active":   1818,
 				"db_db2_db_sizes_external": 288,
@@ -245,7 +243,7 @@ func TestCouchDB_Collect(t *testing.T) {
 				"db_db1_db_sizes_external": 588,
 				"db_db1_db_sizes_file":     74115,
 
-				"db_db2_db_doc_counts":     14,
+				"db_db2_db_doc_counts":     15,
 				"db_db2_db_doc_del_counts": 1,
 				"db_db2_db_sizes_active":   1818,
 				"db_db2_db_sizes_external": 288,
@@ -256,7 +254,7 @@ func TestCouchDB_Collect(t *testing.T) {
 		"wrong database": {
 			prepare: func() *CouchDB {
 				cdb := New()
-				cdb.Config.Databases = "bad_db db2"
+				cdb.Config.Databases = "bad_db db1 db2"
 				return cdb
 			},
 			wantCollected: map[string]int64{
@@ -331,7 +329,13 @@ func TestCouchDB_Collect(t *testing.T) {
 				"active_tasks_view_compaction":     1,
 
 				// databases
-				"db_db2_db_doc_counts":     14,
+				"db_db1_db_doc_counts":     14,
+				"db_db1_db_doc_del_counts": 1,
+				"db_db1_db_sizes_active":   2818,
+				"db_db1_db_sizes_external": 588,
+				"db_db1_db_sizes_file":     74115,
+
+				"db_db2_db_doc_counts":     15,
 				"db_db2_db_doc_del_counts": 1,
 				"db_db2_db_sizes_active":   1818,
 				"db_db2_db_sizes_external": 288,
@@ -435,10 +439,8 @@ func prepareCouchDBEndpoint(cdb *CouchDB) *httptest.Server {
 				_, _ = w.Write(responseNodeSystem)
 			case urlPathActiveTasks:
 				_, _ = w.Write(responseActiveTasks)
-			case "/db1":
-				_, _ = w.Write(responseDatabase1)
-			case "/db2":
-				_, _ = w.Write(responseDatabase2)
+			case "/_dbs_info":
+				_, _ = w.Write(responseDatabases)
 			case "/":
 				_, _ = w.Write(responseRoot)
 			default:

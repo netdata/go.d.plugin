@@ -10,7 +10,7 @@ type cdbMetrics struct {
 	// https://docs.couchdb.org/en/stable/api/server/common.html#node-node-name-system
 	NodeSystem *cdbNodeSystem
 	// https://docs.couchdb.org/en/stable/api/database/common.html
-	DBStats map[string]*cdbDBStats
+	DBStats []cdbDBStats
 }
 
 func (m cdbMetrics) empty() bool {
@@ -184,11 +184,15 @@ type cdbNodeSystem struct {
 }
 
 type cdbDBStats struct {
-	Sizes struct {
-		File     float64 `stm:"file" json:"file"`
-		External float64 `stm:"external" json:"external"`
-		Active   float64 `stm:"active" json:"active"`
-	} `stm:"db_sizes" json:"sizes"`
-	DocDelCount float64 `stm:"db_doc_del_counts" json:"doc_del_count"`
-	DocCount    float64 `stm:"db_doc_counts" json:"doc_count"`
+	Key   string
+	Error string
+	Info  struct {
+		Sizes struct {
+			File     float64 `stm:"file" json:"file"`
+			External float64 `stm:"external" json:"external"`
+			Active   float64 `stm:"active" json:"active"`
+		} `stm:"db_sizes" json:"sizes"`
+		DocDelCount float64 `stm:"db_doc_del_counts" json:"doc_del_count"`
+		DocCount    float64 `stm:"db_doc_counts" json:"doc_count"`
+	}
 }
