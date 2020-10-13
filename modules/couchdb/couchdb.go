@@ -1,7 +1,6 @@
 package couchdb
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -32,9 +31,6 @@ func New() *CouchDB {
 			},
 			Node: "_local",
 		},
-
-		urlPathOverviewStats: "/_node/%s/_stats",
-		urlPathSystemStats:   "/_node/%s/_system",
 	}
 }
 
@@ -51,9 +47,6 @@ type (
 
 		httpClient *http.Client
 		charts     *module.Charts
-
-		urlPathOverviewStats string
-		urlPathSystemStats   string
 
 		databases []string
 	}
@@ -72,9 +65,6 @@ func (cdb *CouchDB) Init() bool {
 		cdb.Errorf("check configuration: %v", err)
 		return false
 	}
-
-	cdb.urlPathOverviewStats = fmt.Sprintf(cdb.urlPathOverviewStats, cdb.Config.Node)
-	cdb.urlPathSystemStats = fmt.Sprintf(cdb.urlPathSystemStats, cdb.Config.Node)
 
 	cdb.databases = strings.Fields(cdb.Config.Databases)
 

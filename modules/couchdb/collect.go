@@ -16,7 +16,9 @@ import (
 )
 
 const (
-	urlPathActiveTasks = "/_active_tasks"
+	urlPathActiveTasks   = "/_active_tasks"
+	urlPathOverviewStats = "/_node/%s/_stats"
+	urlPathSystemStats   = "/_node/%s/_system"
 
 	httpStatusCodePrefix    = "couchdb_httpd_status_codes_"
 	httpStatusCodePrefixLen = len(httpStatusCodePrefix)
@@ -110,7 +112,7 @@ func (cdb CouchDB) scrapeCouchDB() *cdbMetrics {
 
 func (cdb CouchDB) scrapeNodeStats(ms *cdbMetrics) {
 	req, _ := web.NewHTTPRequest(cdb.Request)
-	req.URL.Path = cdb.urlPathOverviewStats
+	req.URL.Path = fmt.Sprintf(urlPathOverviewStats, cdb.Config.Node)
 
 	var stats cdbNodeStats
 	if err := cdb.doOKDecode(req, &stats); err != nil {
@@ -122,7 +124,7 @@ func (cdb CouchDB) scrapeNodeStats(ms *cdbMetrics) {
 
 func (cdb *CouchDB) scrapeSystemStats(ms *cdbMetrics) {
 	req, _ := web.NewHTTPRequest(cdb.Request)
-	req.URL.Path = cdb.urlPathSystemStats
+	req.URL.Path = fmt.Sprintf(urlPathSystemStats, cdb.Config.Node)
 
 	var stats cdbNodeSystem
 	if err := cdb.doOKDecode(req, &stats); err != nil {
