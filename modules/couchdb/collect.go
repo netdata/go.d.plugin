@@ -100,7 +100,7 @@ func (cdb *CouchDB) collectDBStats(collected map[string]int64, ms *cdbMetrics) {
 	}
 }
 
-func (cdb CouchDB) scrapeCouchDB() *cdbMetrics {
+func (cdb *CouchDB) scrapeCouchDB() *cdbMetrics {
 	ms := &cdbMetrics{}
 	wg := &sync.WaitGroup{}
 
@@ -120,7 +120,7 @@ func (cdb CouchDB) scrapeCouchDB() *cdbMetrics {
 	return ms
 }
 
-func (cdb CouchDB) scrapeNodeStats(ms *cdbMetrics) {
+func (cdb *CouchDB) scrapeNodeStats(ms *cdbMetrics) {
 	req, _ := web.NewHTTPRequest(cdb.Request)
 	req.URL.Path = fmt.Sprintf(urlPathOverviewStats, cdb.Config.Node)
 
@@ -197,7 +197,7 @@ func findMaxMQSize(MessageQueues map[string]interface{}) int64 {
 	return int64(max)
 }
 
-func (cdb CouchDB) pingCouchDB() error {
+func (cdb *CouchDB) pingCouchDB() error {
 	req, _ := web.NewHTTPRequest(cdb.Request)
 
 	var info struct{ Couchdb string }
@@ -212,7 +212,7 @@ func (cdb CouchDB) pingCouchDB() error {
 	return nil
 }
 
-func (cdb CouchDB) doOKDecode(req *http.Request, in interface{}) error {
+func (cdb *CouchDB) doOKDecode(req *http.Request, in interface{}) error {
 	resp, err := cdb.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error on HTTP request '%s': %v", req.URL, err)

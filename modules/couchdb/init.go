@@ -8,7 +8,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-func (cdb CouchDB) validateConfig() error {
+func (cdb *CouchDB) validateConfig() error {
 	if cdb.URL == "" {
 		return errors.New("URL not set")
 	}
@@ -21,11 +21,11 @@ func (cdb CouchDB) validateConfig() error {
 	return nil
 }
 
-func (cdb CouchDB) initHTTPClient() (*http.Client, error) {
+func (cdb *CouchDB) initHTTPClient() (*http.Client, error) {
 	return web.NewHTTPClient(cdb.Client)
 }
 
-func (cdb CouchDB) initCharts() (*Charts, error) {
+func (cdb *CouchDB) initCharts() (*Charts, error) {
 	charts := module.Charts{}
 
 	if err := charts.Add(*dbActivityCharts.Copy()...); err != nil {
