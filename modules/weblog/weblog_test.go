@@ -748,7 +748,7 @@ func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
 		}
 		for v := range stats.ReqMethod {
 			dimID := fmt.Sprintf("url_ptn_%s_req_method_%s", p.Name, v)
-			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has no dim for '%s' code, expected '%s'", id, v, dimID)
+			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has no dim for '%s' method, expected '%s'", id, v, dimID)
 		}
 	}
 
