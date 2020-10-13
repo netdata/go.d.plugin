@@ -89,14 +89,10 @@ func (cdb *CouchDB) collectDBStats(collected map[string]int64, ms *cdbMetrics) {
 
 	for _, dbStats := range ms.DBStats {
 		if dbStats.Error != "" {
-			cdb.Error("database '", dbStats.Key, "' doesn't exist")
+			cdb.Warning("database '", dbStats.Key, "' doesn't exist")
 			continue
 		}
-		metrics := make(map[string]int64)
-		renameKeys(metrics, stm.ToMap(dbStats.Info), "db_"+dbStats.Key)
-		for metric, value := range metrics {
-			collected[metric] = value
-		}
+		merge(collected, stm.ToMap(dbStats.Info), "db_"+dbStats.Key)
 	}
 
 	for metric, value := range stm.ToMap(ms.DBStats) {
@@ -240,7 +236,7 @@ func closeBody(resp *http.Response) {
 	}
 }
 
-func renameKeys(dst, src map[string]int64, prefix string) {
+func merge(dst, src map[string]int64, prefix string) {
 	for k, v := range src {
 		dst[prefix+"_"+k] = v
 	}
