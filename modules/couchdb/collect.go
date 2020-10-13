@@ -43,10 +43,10 @@ func (CouchDB) collectNodeStats(collected map[string]int64, ms *cdbMetrics) {
 	}
 
 	for metric, value := range stm.ToMap(ms.NodeStats) {
+		collected[metric] = value
 		if strings.HasPrefix(metric, httpStatusCodePrefix) {
-			aggregateHTTPStatusCodes(collected, metric, value)
-		} else {
-			collected[metric] = value
+			code := metric[httpStatusCodePrefixLen:]
+			collected["couchdb_httpd_status_codes_"+string(code[0])+"xx"] += value
 		}
 	}
 }
@@ -170,26 +170,6 @@ func (cdb *CouchDB) scrapeDBStats(ms *cdbMetrics) {
 	}
 
 	wg.Wait()
-}
-
-func aggregateHTTPStatusCodes(collected map[string]int64, metric string, value int64) {
-	code := metric[httpStatusCodePrefixLen:]
-
-	switch {
-	case code == "200" || code == "201" || code == "202" || code == "204" || code == "206":
-		collected[metric] = value
-		collected["couchdb_httpd_status_codes_2xx"] += value
-	case strings.HasPrefix(code, "2"):
-		collected["couchdb_httpd_status_codes_2xx"] += value
-	case strings.HasPrefix(code, "3"):
-		collected["couchdb_httpd_status_codes_3xx"] += value
-	case strings.HasPrefix(code, "4"):
-		collected["couchdb_httpd_status_codes_4xx"] += value
-	case strings.HasPrefix(code, "5"):
-		collected["couchdb_httpd_status_codes_5xx"] += value
-	default:
-		collected[metric] = value
-	}
 }
 
 func findMaxMQSize(MessageQueues map[string]interface{}) int64 {

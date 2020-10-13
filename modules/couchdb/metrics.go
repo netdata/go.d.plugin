@@ -136,6 +136,9 @@ type cdbNodeStats struct {
 			Code501 struct {
 				Value float64 `stm:"" json:"value"`
 			} `stm:"501" json:"501"`
+			Code503 struct {
+				Value float64 `stm:"" json:"value"`
+			} `stm:"503" json:"503"`
 		} `stm:"httpd_status_codes" json:"httpd_status_codes"`
 		OpenOSFiles struct {
 			Value float64 `stm:"" json:"value" json:"value"`
