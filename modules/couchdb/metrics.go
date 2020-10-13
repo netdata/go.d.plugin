@@ -141,7 +141,7 @@ type cdbNodeStats struct {
 			} `stm:"503" json:"503"`
 		} `stm:"httpd_status_codes" json:"httpd_status_codes"`
 		OpenOSFiles struct {
-			Value float64 `stm:"" json:"value" json:"value"`
+			Value float64 `stm:"" json:"value"`
 		} `stm:"open_os_files" json:"open_os_files"`
 	} `stm:"couchdb"  json:"couchdb"`
 	CouchReplicator struct {

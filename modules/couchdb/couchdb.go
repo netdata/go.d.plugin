@@ -90,7 +90,7 @@ func (cdb *CouchDB) Check() bool {
 		cdb.Error(err)
 		return false
 	}
-	return true //TODO: len(cdb.Collect()) > 0
+	return len(cdb.Collect()) > 0
 }
 
 func (cdb *CouchDB) Charts() *Charts {
