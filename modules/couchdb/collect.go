@@ -217,6 +217,8 @@ func (cdb *CouchDB) doOKDecode(req *http.Request, in interface{}) error {
 	}
 	defer closeBody(resp)
 
+	// TODO: read resp body, it contains reason
+	// ex.: {"error":"bad_request","reason":"`keys` member must exist."} (400)
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("'%s' returned HTTP status code: %d", req.URL, resp.StatusCode)
 	}
