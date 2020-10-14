@@ -165,12 +165,12 @@ func (cdb *CouchDB) scrapeDBStats(ms *cdbMetrics) {
 		Keys []string `json:"keys"`
 	}
 	q.Keys = cdb.databases
-	queryDatabases, err := json.Marshal(q)
+	body, err := json.Marshal(q)
 	if err != nil {
 		cdb.Error(err)
 		return
 	}
-	req.Body = ioutil.NopCloser(bytes.NewReader(queryDatabases))
+	req.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 	var stats []cdbDBStats
 	if err := cdb.doOKDecode(req, &stats); err != nil {
