@@ -32,6 +32,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [cockroachdb](https://github.com/netdata/go.d.plugin/tree/master/modules/cockroachdb)     | `CockroachDB`              | 
 | [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)               | `Consul`                   |
 | [coredns](https://github.com/netdata/go.d.plugin/tree/master/modules/coredns)             | `CoreDNS`                  |
+| [couchdb](https://github.com/netdata/go.d.plugin/tree/master/modules/couchdb)             | `CouchDB`                  |
 | [dnsmasq_dhcp](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq_dhcp)   | `Dnsmasq`                  |
 | [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery)          | `DNS Query RTT`            |
 | [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine) | `Docker Engine`            |
