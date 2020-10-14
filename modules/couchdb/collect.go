@@ -94,10 +94,6 @@ func (cdb *CouchDB) collectDBStats(collected map[string]int64, ms *cdbMetrics) {
 		}
 		merge(collected, stm.ToMap(dbStats.Info), "db_"+dbStats.Key)
 	}
-
-	for metric, value := range stm.ToMap(ms.DBStats) {
-		collected[metric] = value
-	}
 }
 
 func (cdb *CouchDB) scrapeCouchDB() *cdbMetrics {
