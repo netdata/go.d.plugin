@@ -126,6 +126,7 @@ func stateFile() string {
 }
 
 func init() {
+	// https://github.com/netdata/netdata/issues/8949#issuecomment-638294959
 	if v := os.Getenv("TZ"); strings.HasPrefix(v, ":") {
 		_ = os.Unsetenv("TZ")
 	}
