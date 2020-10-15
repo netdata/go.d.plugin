@@ -371,6 +371,15 @@ var (
 		Type:     module.Stacked,
 		Priority: prioURLPatternStats,
 	}
+	urlPatternReqMethods = Chart{
+		ID:       "url_pattern_%s_requests_by_http_method",
+		Title:    "Requests By HTTP Method",
+		Units:    "requests/s",
+		Fam:      "url ptn %s",
+		Ctx:      "web_log.url_pattern_%s_http_method_requests",
+		Type:     module.Stacked,
+		Priority: prioURLPatternStats + 1,
+	}
 	urlPatternBandwidth = Chart{
 		ID:       "url_pattern_%s_bandwidth",
 		Title:    "Bandwidth",
@@ -378,7 +387,7 @@ var (
 		Fam:      "url ptn %s",
 		Ctx:      "web_log.url_pattern_%s_bandwidth",
 		Type:     module.Area,
-		Priority: prioURLPatternStats + 1,
+		Priority: prioURLPatternStats + 2,
 		Dims: Dims{
 			{ID: "url_ptn_%s_bytes_received", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
 			{ID: "url_ptn_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -8, Div: 1000},
@@ -390,7 +399,7 @@ var (
 		Units:    "milliseconds",
 		Fam:      "url ptn %s",
 		Ctx:      "web_log.url_pattern_%s_request_processing_time",
-		Priority: prioURLPatternStats + 2,
+		Priority: prioURLPatternStats + 3,
 		Dims: Dims{
 			{ID: "url_ptn_%s_req_proc_time_min", Name: "min", Div: 1000},
 			{ID: "url_ptn_%s_req_proc_time_max", Name: "max", Div: 1000},
@@ -460,6 +469,14 @@ func newURLPatternChart(patterns []userPattern) (*Chart, error) {
 
 func newURLPatternRespCodesChart(name string) *Chart {
 	chart := urlPatternRespCodes.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, name)
+	chart.Fam = fmt.Sprintf(chart.Fam, name)
+	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
+	return chart
+}
+
+func newURLPatternReqMethodsChart(name string) *Chart {
+	chart := urlPatternReqMethods.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
@@ -552,7 +569,7 @@ func (w *WebLog) createCharts(line *logLine) error {
 		}
 	}
 	if line.hasReqMethod() {
-		if err := addMethodCharts(charts); err != nil {
+		if err := addMethodCharts(charts, w.URLPatterns); err != nil {
 			return err
 		}
 	}
@@ -614,8 +631,18 @@ func addClientCharts(charts *Charts) error {
 	return charts.Add(uniqIPsCurPoll.Copy())
 }
 
-func addMethodCharts(charts *Charts) error {
-	return charts.Add(reqByMethod.Copy())
+func addMethodCharts(charts *Charts, patterns []userPattern) error {
+	if err := charts.Add(reqByMethod.Copy()); err != nil {
+		return err
+	}
+
+	for _, p := range patterns {
+		chart := newURLPatternReqMethodsChart(p.Name)
+		if err := charts.Add(chart); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func addURLCharts(charts *Charts, patterns []userPattern) error {
@@ -629,6 +656,7 @@ func addURLCharts(charts *Charts, patterns []userPattern) error {
 	if err := charts.Add(chart); err != nil {
 		return err
 	}
+
 	for _, p := range patterns {
 		chart := newURLPatternRespCodesChart(p.Name)
 		if err := charts.Add(chart); err != nil {

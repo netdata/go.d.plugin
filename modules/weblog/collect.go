@@ -287,6 +287,14 @@ func (w *WebLog) collectURLPatternStats(name string) {
 		c.Inc()
 	}
 
+	if w.line.hasReqMethod() {
+		c, ok := v.ReqMethod.GetP(w.line.reqMethod)
+		if !ok {
+			w.addDimToURLPatternReqMethodsChart(name, w.line.reqMethod)
+		}
+		c.Inc()
+	}
+
 	if w.line.hasReqSize() {
 		v.BytesReceived.Add(float64(w.line.reqSize))
 	}
@@ -462,6 +470,26 @@ func (w *WebLog) addDimToURLPatternRespCodesChart(name, code string) {
 	dim := &Dim{
 		ID:   fmt.Sprintf("url_ptn_%s_resp_code_%s", name, code),
 		Name: code,
+		Algo: module.Incremental,
+	}
+
+	if err := chart.AddDim(dim); err != nil {
+		w.Warning(err)
+		return
+	}
+	chart.MarkNotCreated()
+}
+
+func (w *WebLog) addDimToURLPatternReqMethodsChart(name, method string) {
+	id := fmt.Sprintf(urlPatternReqMethods.ID, name)
+	chart := w.Charts().Get(id)
+	if chart == nil {
+		w.Warningf("add dimension: no '%s' chart", id)
+		return
+	}
+	dim := &Dim{
+		ID:   fmt.Sprintf("url_ptn_%s_req_method_%s", name, method),
+		Name: method,
 		Algo: module.Incremental,
 	}
 

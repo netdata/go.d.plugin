@@ -218,6 +218,9 @@ func TestWebLog_Collect(t *testing.T) {
 		"upstream_resp_time_sum":                    115615,
 		"url_ptn_com_bytes_received":                379864,
 		"url_ptn_com_bytes_sent":                    372669,
+		"url_ptn_com_req_method_GET":                38,
+		"url_ptn_com_req_method_HEAD":               39,
+		"url_ptn_com_req_method_POST":               43,
 		"url_ptn_com_req_proc_time_avg":             212,
 		"url_ptn_com_req_proc_time_count":           120,
 		"url_ptn_com_req_proc_time_max":             495,
@@ -233,6 +236,9 @@ func TestWebLog_Collect(t *testing.T) {
 		"url_ptn_com_resp_code_401":                 13,
 		"url_ptn_net_bytes_received":                349988,
 		"url_ptn_net_bytes_sent":                    339867,
+		"url_ptn_net_req_method_GET":                51,
+		"url_ptn_net_req_method_HEAD":               33,
+		"url_ptn_net_req_method_POST":               32,
 		"url_ptn_net_req_proc_time_avg":             260,
 		"url_ptn_net_req_proc_time_count":           116,
 		"url_ptn_net_req_proc_time_max":             499,
@@ -255,6 +261,9 @@ func TestWebLog_Collect(t *testing.T) {
 		"url_ptn_not_match_req_proc_time_sum":       0,
 		"url_ptn_org_bytes_received":                331836,
 		"url_ptn_org_bytes_sent":                    340095,
+		"url_ptn_org_req_method_GET":                29,
+		"url_ptn_org_req_method_HEAD":               46,
+		"url_ptn_org_req_method_POST":               38,
 		"url_ptn_org_req_proc_time_avg":             263,
 		"url_ptn_org_req_proc_time_count":           113,
 		"url_ptn_org_req_proc_time_max":             497,
@@ -716,6 +725,30 @@ func testURLPatternStatsCharts(t *testing.T, w *WebLog) {
 		for v := range stats.RespCode {
 			id := fmt.Sprintf("url_ptn_%s_resp_code_%s", p.Name, v)
 			assert.Truef(t, chart.HasDim(id), "chart '%s' has no dim for '%s' code, expected '%s'", chartID, v, id)
+		}
+	}
+
+	for _, p := range w.URLPatterns {
+		id := fmt.Sprintf(urlPatternReqMethods.ID, p.Name)
+		if isEmptyCounterVec(w.mx.ReqMethod) {
+			assert.Falsef(t, w.Charts().Has(id), "chart '%s' is created", id)
+			continue
+		}
+
+		chart := w.Charts().Get(id)
+		assert.NotNilf(t, chart, "chart '%s' is not created", id)
+		if chart == nil {
+			continue
+		}
+
+		stats, ok := w.mx.URLPatternStats[p.Name]
+		assert.Truef(t, ok, "url pattern '%s' has no metric in w.mx.URLPatternStats", p.Name)
+		if !ok {
+			continue
+		}
+		for v := range stats.ReqMethod {
+			dimID := fmt.Sprintf("url_ptn_%s_req_method_%s", p.Name, v)
+			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has no dim for '%s' method, expected '%s'", id, v, dimID)
 		}
 	}
 

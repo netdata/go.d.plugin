@@ -45,6 +45,7 @@ For every Custom field:
 For every URL pattern:
 
 -   Responses By Status Code in `responses/s`
+-   Requests By HTTP Method in `requests/s`
 -   Bandwidth in `kilobits/s`
 -   Request Processing Time in `milliseconds`
 
