@@ -94,10 +94,6 @@ func (cdb *CouchDB) collectDBStats(collected map[string]int64, ms *cdbMetrics) {
 		}
 		merge(collected, stm.ToMap(dbStats.Info), "db_"+dbStats.Key)
 	}
-
-	for metric, value := range stm.ToMap(ms.DBStats) {
-		collected[metric] = value
-	}
 }
 
 func (cdb *CouchDB) scrapeCouchDB() *cdbMetrics {
@@ -169,12 +165,12 @@ func (cdb *CouchDB) scrapeDBStats(ms *cdbMetrics) {
 		Keys []string `json:"keys"`
 	}
 	q.Keys = cdb.databases
-	queryDatabases, err := json.Marshal(q)
+	body, err := json.Marshal(q)
 	if err != nil {
 		cdb.Error(err)
 		return
 	}
-	req.Body = ioutil.NopCloser(bytes.NewReader(queryDatabases))
+	req.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 	var stats []cdbDBStats
 	if err := cdb.doOKDecode(req, &stats); err != nil {
@@ -221,6 +217,8 @@ func (cdb *CouchDB) doOKDecode(req *http.Request, in interface{}) error {
 	}
 	defer closeBody(resp)
 
+	// TODO: read resp body, it contains reason
+	// ex.: {"error":"bad_request","reason":"`keys` member must exist."} (400)
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("'%s' returned HTTP status code: %d", req.URL, resp.StatusCode)
 	}
