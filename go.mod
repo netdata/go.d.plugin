@@ -27,7 +27,7 @@ require (
 	github.com/tomasen/fcgi_client v0.0.0-20180423082037-2bb3d819fd19
 	github.com/valyala/fastjson v1.5.4
 	github.com/vmware/govmomi v0.22.2
-	golang.org/x/net v0.0.0-20191027093000-83d349e8ac1a // indirect; needed for freebsd/arm64
+	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20200609130330-bd2cb7843e1b
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/ini.v1 v1.57.0
 	gopkg.in/yaml.v2 v2.3.0
