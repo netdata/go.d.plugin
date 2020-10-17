@@ -3,39 +3,64 @@ package wireguard
 import (
 	"testing"
 
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/stretchr/testify/assert"
+
+	"golang.zx2c4.com/wireguard/wgctrl"
 )
 
-func TestNew(t *testing.T) {
-	assert.IsType(t, (*Wireguard)(nil), New())
+func isPermittedOperation() bool {
+	connection, err := wgctrl.New()
+	_, err = connection.Devices()
+	return err == nil
 }
 
-func TestExample_Init(t *testing.T) {
+func TestNew(t *testing.T) {
+	assert.Implements(t, (*module.Module)(nil), New())
+}
+
+func TestWireguard_Init(t *testing.T) {
 	mod := New()
 
-	assert.True(t, mod.Init())
+	if isPermittedOperation() {
+		assert.True(t, mod.Init())
+	} else {
+		assert.False(t, mod.Init())
+	}
 }
 
-func TestExample_Check(t *testing.T) {
+func TestWireguard_Check(t *testing.T) {
 	mod := New()
 
 	assert.True(t, mod.Check())
 }
 
-func TestExample_Charts(t *testing.T) {
+func TestWireguard_Charts(t *testing.T) {
 	mod := New()
-
-	assert.NotNil(t, mod.Charts())
+	if isPermittedOperation() {
+		assert.NotNil(t, mod.Charts())
+	} else {
+		assert.False(t, mod.Init())
+	}
 }
 
-func TestExample_Cleanup(t *testing.T) {
+func TestWireguard_Cleanup(t *testing.T) {
 	mod := New()
 
-	mod.Cleanup()
+	if isPermittedOperation() {
+		mod.Cleanup()
+		assert.Nil(t, mod.connection)
+	} else {
+		assert.False(t, mod.Init())
+	}
 }
 
-func TestExample_Collect(t *testing.T) {
+func TestWireguard_Collect(t *testing.T) {
 	mod := New()
 
-	assert.NotNil(t, mod.Collect())
+	if isPermittedOperation() {
+		assert.NotNil(t, mod.Collect())
+	} else {
+		assert.False(t, mod.Init())
+	}
 }

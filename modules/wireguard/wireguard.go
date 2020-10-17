@@ -42,8 +42,10 @@ type Wireguard struct {
 
 // Cleanup makes cleanup
 func (w *Wireguard) Cleanup() {
-	if err := w.connection.Close(); err != nil {
-		w.Errorf("Error when try to close wg connection: %v", err)
+	if w.connection != nil {
+		if err := w.connection.Close(); err != nil {
+			w.Errorf("Error when try to close wg connection: %v", err)
+		}
 	}
 }
 
