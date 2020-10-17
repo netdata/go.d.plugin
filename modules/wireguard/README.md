@@ -7,11 +7,11 @@ This module will monitor one or more vpn network interface and wireguard peers, 
 ## Requirements
 
 - `Wireguard` enabled
-- Set network capability to golang collector
+- Set network capability to golang collector (default file is: `/usr/libexec/netdata/plugins.d/go.d.plugin`)
 
 E.g:
 ```bash
-$ sudo setcap CAP_NET_ADMIN+ep bin/godplugin 
+$ sudo setcap CAP_NET_ADMIN+ep /usr/libexec/netdata/plugins.d/go.d.plugin
 ```
 
 ## Charts
