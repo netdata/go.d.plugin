@@ -21,8 +21,7 @@ func init() {
 // New creates Wireguard with default values
 func New() *Wireguard {
 	return &Wireguard{
-		metrics:    make(map[string]int64),
-		lastValues: make(map[string]int64),
+		metrics: make(map[string]int64),
 	}
 }
 
@@ -38,7 +37,6 @@ type Wireguard struct {
 	Config      `yaml:",inline"`
 	UpdateEvery int64 `yaml:"update_every"`
 	connection  *wgctrl.Client
-	lastValues  map[string]int64
 	metrics     map[string]int64
 }
 
@@ -115,14 +113,10 @@ func (w *Wireguard) Collect() map[string]int64 {
 		receivedKey := fmt.Sprintf("received_%v", id)
 		sentKey := fmt.Sprintf("sent_%v", id)
 
-		w.metrics[receivedKey] = (peer.ReceiveBytes - w.lastValues[receivedKey]) * 8 / w.UpdateEvery
-		w.metrics[sentKey] = (peer.TransmitBytes - w.lastValues[sentKey]) * 8 / w.UpdateEvery
-
+		w.metrics[receivedKey] = peer.ReceiveBytes * 8 / w.UpdateEvery
+		w.metrics[sentKey] = peer.TransmitBytes * 8 / w.UpdateEvery
 		w.metrics["received_total"] += peer.ReceiveBytes
 		w.metrics["sent_total"] += peer.TransmitBytes
-
-		w.lastValues[receivedKey] = peer.ReceiveBytes
-		w.lastValues[sentKey] = peer.TransmitBytes
 	}
 	return w.metrics
 }

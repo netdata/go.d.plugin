@@ -31,8 +31,8 @@ var bandwitchChart = Charts{
 		Fam:   "network %d",
 		Ctx:   "wireguard.bandwidth",
 		Dims: Dims{
-			{ID: "received_%v", Name: "received", Div: 1000},
-			{ID: "sent_%v", Name: "sent", Div: 1000},
+			{ID: "received_%v", Name: "received", Algo: module.Incremental, Div: 1000},
+			{ID: "sent_%v", Name: "sent", Algo: module.Incremental, Div: 1000},
 		},
 	},
 }
