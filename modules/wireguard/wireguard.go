@@ -99,7 +99,7 @@ func (w *Wireguard) Charts() *Charts {
 				dim.ID = fmt.Sprintf(dim.ID, id)
 			}
 		}
-		wc.Add(*wbc...)
+		_ = wc.Add(*wbc...)
 	}
 	return wc
 }
