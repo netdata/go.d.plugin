@@ -1,8 +1,6 @@
 package weblog
 
 import (
-	"time"
-
 	"github.com/netdata/go.d.plugin/pkg/metrics"
 )
 
@@ -137,7 +135,7 @@ func newReqCustomField(fields []customField) map[string]metrics.CounterVec {
 func convHistOptionsToMicroseconds(histogram []float64) []float64 {
 	var buckets []float64
 	for _, value := range histogram {
-		buckets = append(buckets, value * 1000)
+		buckets = append(buckets, value*1000)
 	}
 	return buckets
 }
