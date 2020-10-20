@@ -131,11 +131,11 @@ func newReqCustomField(fields []customField) map[string]metrics.CounterVec {
 	return cf
 }
 
-// convert histogram options to microseconds (ms => us)
+// convert histogram options to microseconds (second => us)
 func convHistOptionsToMicroseconds(histogram []float64) []float64 {
 	var buckets []float64
 	for _, value := range histogram {
-		buckets = append(buckets, value*1000)
+		buckets = append(buckets, value*1e6)
 	}
 	return buckets
 }

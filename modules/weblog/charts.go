@@ -230,7 +230,7 @@ var (
 	upsRespTimeHist = Chart{
 		ID:       "upstream_responses_time_histogram",
 		Title:    "Upstream Responses Time Histogram",
-		Units:    "responses/s",
+		Units:    "responses",
 		Fam:      "timings",
 		Ctx:      "web_log.upstream_responses_time_histogram",
 		Priority: prioUpsRespTimeHist,
