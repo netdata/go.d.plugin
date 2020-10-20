@@ -205,7 +205,7 @@ var (
 	reqProcTimeHist = Chart{
 		ID:       "requests_processing_time_histogram",
 		Title:    "Requests Processing Time Histogram",
-		Units:    "requests/s",
+		Units:    "requests",
 		Fam:      "timings",
 		Ctx:      "web_log.requests_processing_time_histogram",
 		Priority: prioRespTimeHist,
