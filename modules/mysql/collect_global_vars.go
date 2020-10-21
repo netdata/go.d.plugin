@@ -3,6 +3,8 @@ package mysql
 import (
 	"strconv"
 	"strings"
+
+	"github.com/blang/semver/v4"
 )
 
 const (
@@ -35,9 +37,15 @@ func (m *MySQL) collectGlobalVariables(collected map[string]int64) error {
 		return err
 	}
 
-	if version := set["version"]; m.version == "" {
+	if version := set["version"]; m.versionStr == "" {
 		m.Debugf("application version: '%s'", version)
-		m.version = version
+		m.versionStr = version
+		ver, err := semver.New(version)
+		if err != nil {
+			m.Warningf("error on parsing version (%s): %v", version, err)
+		} else {
+			m.version = ver
+		}
 	}
 
 	for _, name := range globalVariablesMetrics {

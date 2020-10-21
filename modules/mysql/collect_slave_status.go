@@ -3,6 +3,8 @@ package mysql
 import (
 	"strconv"
 	"strings"
+
+	"github.com/blang/semver/v4"
 )
 
 const (
@@ -17,8 +19,10 @@ var slaveStatusMetrics = []string{
 }
 
 func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
+	// https://mariadb.com/docs/reference/es/sql-statements/SHOW_ALL_SLAVES_STATUS/
+	mariaDBMinVer := semver.Version{Major: 10, Minor: 2, Patch: 0}
 	var query string
-	if m.isMariaDB() {
+	if m.isMariaDB() && m.version != nil && m.version.GTE(mariaDBMinVer) {
 		query = queryAllSlavesStatus
 	} else {
 		query = querySlaveStatus
@@ -72,6 +76,10 @@ func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
 		}
 	}
 	return rows.Err()
+}
+
+func (m MySQL) isMariaDB() bool {
+	return strings.Contains(strings.ToLower(m.versionStr), "mariadb")
 }
 
 func parseSlaveStatusValue(name, value string) (int64, error) {

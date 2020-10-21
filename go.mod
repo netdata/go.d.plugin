@@ -7,6 +7,7 @@ require (
 	github.com/Wing924/ltsv v0.3.1
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/axiomhq/hyperloglog v0.0.0-20191112132149-a4c4c47bc57f
+	github.com/blang/semver/v4 v4.0.0
 	github.com/cloudflare/cfssl v1.4.1
 	github.com/coreos/go-systemd/v22 v22.1.1-0.20200917134135-408310d1ce37
 	github.com/fsnotify/fsnotify v1.4.9

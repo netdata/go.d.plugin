@@ -6,8 +6,10 @@ import (
 	"sync"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/netdata/go.d.plugin/agent/module"
+
+	"github.com/blang/semver/v4"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func init() {
@@ -26,8 +28,9 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
-		db      *sql.DB
-		version string
+		db         *sql.DB
+		versionStr string
+		version    *semver.Version
 
 		addInnodbDeadlocksOnce *sync.Once
 		addGaleraOnce          *sync.Once
