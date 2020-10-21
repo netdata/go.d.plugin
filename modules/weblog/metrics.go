@@ -82,9 +82,9 @@ func newMetricsData(config Config) *metricsData {
 		ReqSSLProto:       metrics.NewCounterVec(),
 		ReqSSLCipherSuite: metrics.NewCounterVec(),
 		ReqProcTime:       newWebLogSummary(),
-		ReqProcTimeHist:   metrics.NewHistogram(config.Histogram),
+		ReqProcTimeHist:   metrics.NewHistogram(convHistOptionsToMicroseconds(config.Histogram)),
 		UpsRespTime:       newWebLogSummary(),
-		UpsRespTimeHist:   metrics.NewHistogram(config.Histogram),
+		UpsRespTimeHist:   metrics.NewHistogram(convHistOptionsToMicroseconds(config.Histogram)),
 		UniqueIPv4:        metrics.NewUniqueCounter(true),
 		UniqueIPv6:        metrics.NewUniqueCounter(true),
 		ReqURLPattern:     newCounterVecFromPatterns(config.URLPatterns),
@@ -129,4 +129,13 @@ func newReqCustomField(fields []customField) map[string]metrics.CounterVec {
 		cf[f.Name] = newCounterVecFromPatterns(f.Patterns)
 	}
 	return cf
+}
+
+// convert histogram options to microseconds (second => us)
+func convHistOptionsToMicroseconds(histogram []float64) []float64 {
+	var buckets []float64
+	for _, value := range histogram {
+		buckets = append(buckets, value*1e6)
+	}
+	return buckets
 }
