@@ -69,9 +69,31 @@ func (w *WebLog) createCustomFields() error {
 	return nil
 }
 
+func (w *WebLog) createCustomTimeFields() error {
+	if len(w.CustomTimeFields) == 0 {
+		w.Debug("skipping custom time fields creating, no custom fields provided")
+		return nil
+	}
+
+	w.Debug("starting custom time fields creating")
+	w.customTimeFields = make(map[string][]float64)
+	for i, ctf := range w.CustomTimeFields {
+		if ctf.Name == "" {
+			return fmt.Errorf("create custom field: name not set (field %d)", i+1)
+		}
+		w.customTimeFields[ctf.Name] = ctf.Histogram
+		w.Debugf("created time field '%s', histogram '%s'", ctf.Name, ctf.Histogram)
+	}
+	w.Debugf("created %d custom time field(s)", len(w.CustomTimeFields))
+	return nil
+}
+
 func (w *WebLog) createLogLine() {
 	w.line = newEmptyLogLine()
 	for v := range w.customFields {
+		w.line.custom.fields[v] = struct{}{}
+	}
+	for v := range w.customTimeFields {
 		w.line.custom.fields[v] = struct{}{}
 	}
 }

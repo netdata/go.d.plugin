@@ -48,26 +48,32 @@ type (
 		Name     string        `yaml:"name"`
 		Patterns []userPattern `yaml:"patterns"`
 	}
+	customTimeField struct {
+		Name      string    `yaml:"name"`
+		Histogram []float64 `yaml:"histogram"`
+	}
 
 	Config struct {
-		Parser         logs.ParserConfig `yaml:",inline"`
-		Path           string            `yaml:"path"`
-		ExcludePath    string            `yaml:"exclude_path"`
-		URLPatterns    []userPattern     `yaml:"url_patterns"`
-		CustomFields   []customField     `yaml:"custom_fields"`
-		Histogram      []float64         `yaml:"histogram"`
-		GroupRespCodes bool              `yaml:"group_response_codes"`
+		Parser           logs.ParserConfig `yaml:",inline"`
+		Path             string            `yaml:"path"`
+		ExcludePath      string            `yaml:"exclude_path"`
+		URLPatterns      []userPattern     `yaml:"url_patterns"`
+		CustomFields     []customField     `yaml:"custom_fields"`
+		CustomTimeFields []customTimeField `yaml:"custom_time_fields"`
+		Histogram        []float64         `yaml:"histogram"`
+		GroupRespCodes   bool              `yaml:"group_response_codes"`
 	}
 
 	WebLog struct {
 		module.Base
 		Config `yaml:",inline"`
 
-		file         *logs.Reader
-		parser       logs.Parser
-		line         *logLine
-		urlPatterns  []*pattern
-		customFields map[string][]*pattern
+		file             *logs.Reader
+		parser           logs.Parser
+		line             *logLine
+		urlPatterns      []*pattern
+		customFields     map[string][]*pattern
+		customTimeFields map[string][]float64
 
 		mx     *metricsData
 		charts *module.Charts
@@ -81,6 +87,11 @@ func (w *WebLog) Init() bool {
 	}
 
 	if err := w.createCustomFields(); err != nil {
+		w.Error("init failed: ", err)
+		return false
+	}
+
+	if err := w.createCustomTimeFields(); err != nil {
 		w.Error("init failed: ", err)
 		return false
 	}

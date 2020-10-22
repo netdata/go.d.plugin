@@ -312,18 +312,25 @@ func (w *WebLog) collectCustomFields() {
 	if !w.line.hasCustomFields() {
 		return
 	}
+
 	for _, cv := range w.line.custom.values {
-		for _, pattern := range w.customFields[cv.name] {
-			if !pattern.MatchString(cv.value) {
-				continue
-			}
-			v, ok := w.mx.ReqCustomField[cv.name]
-			if !ok {
+		if patterns, ok := w.customFields[cv.name]; ok {
+			for _, pattern := range patterns {
+				if !pattern.MatchString(cv.value) {
+					continue
+				}
+				v, ok := w.mx.ReqCustomField[cv.name]
+				if !ok {
+					break
+				}
+				c, _ := v.GetP(pattern.name)
+				c.Inc()
 				break
 			}
-			c, _ := v.GetP(pattern.name)
-			c.Inc()
-			break
+		} else if _, ok := w.customTimeFields[cv.name]; ok {
+
+			w.Debug("in else if of collection: no '%s' ", cv.value)
+
 		}
 	}
 }
