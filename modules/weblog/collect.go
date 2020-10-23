@@ -328,9 +328,17 @@ func (w *WebLog) collectCustomFields() {
 				break
 			}
 		} else if _, ok := w.customTimeFields[cv.name]; ok {
-
-			w.Debug("in else if of collection: no '%s' ", cv.value)
-
+			v, ok := w.mx.ReqCustomTimeField[cv.name]
+			if !ok {
+				break
+			}
+			ctf, err := strconv.ParseFloat(cv.value, 64)
+			if err != nil || !isTimeValid(ctf) {
+				break
+			}
+			v.Time.Observe(ctf)
+			v.TimeHist.Observe(ctf)
+			w.Debug("collection customTimeFields : ctf ", ctf)
 		}
 	}
 }

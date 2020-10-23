@@ -46,6 +46,8 @@ const (
 	prioReqSSLCipherSuite
 
 	prioReqCustomFieldPattern // chart per custom field, alphabetical order
+	prioReqCustomTimeField // chart per custom time field, alphabetical order
+	prioReqCustomTimeFieldHist // histogram chart per custom time field
 	prioReqURLPattern
 	prioURLPatternStats // 3 charts per url pattern, alphabetical order
 )
@@ -358,6 +360,27 @@ var (
 		Type:     module.Stacked,
 		Priority: prioReqCustomFieldPattern,
 	}
+	reqByCustomTimeField = Chart{
+		ID:       "custom_time_field_%s_requests",
+		Title:    "Custom Time Field %s Requests",
+		Units:    "requests/s",
+		Fam:      "custom time field",
+		Ctx:      "web_log.custom_time_field_%s",
+		Priority: prioReqCustomTimeField,
+		Dims: Dims{
+			{ID: "custom_time_field_%s_time_min", Name: "min", Div: 1000},
+			{ID: "custom_time_field_%s_time_max", Name: "max", Div: 1000},
+			{ID: "custom_time_field_%s_time_avg", Name: "avg", Div: 1000},
+		},
+	}
+	reqByCustomTimeFieldHist = Chart{
+		ID:       "custom_time_field_hist_%s_requests",
+		Title:    "Custom Time Field %s Requests",
+		Units:    "requests/s",
+		Fam:      "custom time field hist",
+		Ctx:      "web_log.custom_time_hist_field_%s",
+		Priority: prioReqCustomTimeFieldHist,
+	}
 )
 
 // URL pattern stats
@@ -537,6 +560,72 @@ func newCustomFieldChart(f customField) (*Chart, error) {
 	return chart, nil
 }
 
+func newCustomTimeFieldCharts(fields []customTimeField) (Charts, error) {
+	charts := Charts{}
+	for _,f := range fields {
+		chart, err := newCustomTimeFieldChart(f)
+		if err != nil {
+			return nil, err
+		}
+		if err := charts.Add(chart); err != nil {
+			return nil, err
+		}
+	}
+	return charts, nil
+}
+
+func newCustomTimeFieldChart(f customTimeField) (*Chart, error) {
+	chart := reqByCustomTimeField.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, f.Name)
+	chart.Title = fmt.Sprintf(chart.Title, f.Name)
+	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
+
+	for _, d := range chart.Dims {
+		d.ID = fmt.Sprintf(d.ID, f.Name)
+	}
+
+	return chart, nil
+}
+
+func newCustomTimeFieldHistChart(f customTimeField) (*Chart, error) {
+	chart := reqByCustomTimeFieldHist.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, f.Name)
+	chart.Title = fmt.Sprintf(chart.Title, f.Name)
+	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
+	for i, v := range f.Histogram {
+		dim := &Dim{
+			ID:   fmt.Sprintf("custom_time_field_%s_time_hist_bucket_%d",f.Name ,i+1),
+			Name: fmt.Sprintf("%.3f", v),
+			Algo: module.Incremental,
+		}
+		if err := chart.AddDim(dim); err != nil {
+			return nil, err
+		}
+	}
+	if err := chart.AddDim(&Dim{
+		ID:    fmt.Sprintf("custom_time_field_%s_time_hist_count",f.Name),
+		Name: "+Inf",
+		Algo: module.Incremental,
+	}); err != nil {
+		return nil, err
+	}
+	return chart, nil
+}
+
+func newCustomTimeFieldHistCharts(fields []customTimeField) (Charts, error) {
+	charts := Charts{}
+	for _,f := range fields {
+		chart, err := newCustomTimeFieldHistChart(f)
+		if err != nil {
+			return nil, err
+		}
+		if err := charts.Add(chart); err != nil {
+			return nil, err
+		}
+	}
+	return charts, nil
+}
+
 func (w *WebLog) createCharts(line *logLine) error {
 	if line.empty() {
 		return errors.New("empty line")
@@ -604,9 +693,23 @@ func (w *WebLog) createCharts(line *logLine) error {
 		}
 	}
 	if line.hasCustomFields() {
-		if err := addCustomFieldsCharts(charts, w.CustomFields); err != nil {
-			return err
+
+		if len(w.CustomFields) > 0 {
+			if err := addCustomFieldsCharts(charts, w.CustomFields); err != nil {
+				return err
+			}
 		}
+
+		if len(w.CustomTimeFields) > 0 {
+			if err := addCustomTimeFieldsCharts(charts, w.CustomTimeFields); err != nil {
+				return err
+			}
+			if err := addCustomTimeFieldsHistCharts(charts, w.CustomTimeFields); err != nil {
+				return err
+			}
+
+		}
+
 	}
 	w.charts = charts
 	return nil
@@ -737,10 +840,23 @@ func addUpstreamRespTimeCharts(charts *Charts, histogram []float64) error {
 }
 
 func addCustomFieldsCharts(charts *Charts, fields []customField) error {
-	if len(fields) == 0 {
-		return nil
-	}
 	cs, err := newCustomFieldCharts(fields)
+	if err != nil {
+		return err
+	}
+	return charts.Add(cs...)
+}
+
+func addCustomTimeFieldsCharts(charts *Charts, fields []customTimeField) error {
+	cs, err := newCustomTimeFieldCharts(fields)
+	if err != nil {
+		return err
+	}
+	return charts.Add(cs...)
+}
+
+func addCustomTimeFieldsHistCharts(charts *Charts, fields []customTimeField) error {
+	cs, err := newCustomTimeFieldHistCharts(fields)
 	if err != nil {
 		return err
 	}

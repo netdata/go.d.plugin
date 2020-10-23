@@ -63,8 +63,12 @@ type (
 		ReqCustomField  map[string]metrics.CounterVec `stm:"custom_field"`
 		URLPatternStats map[string]*patternMetrics    `stm:"url_ptn"`
 
-		ReqCustomTimeField map[string]metrics.Summary `stm:"custom_time_field"`
+		ReqCustomTimeField map[string]*customTimeFieldMetrics `stm:"custom_time_field"`
 		//ReqCustomTimeFieldHist  metrics.Histogram `stm:"custom_time_field_hist"`
+	}
+	customTimeFieldMetrics struct {
+		Time     metrics.Summary   `stm:"time"`
+		TimeHist metrics.Histogram `stm:"time_hist"`
 	}
 	patternMetrics struct {
 		RespCode      metrics.CounterVec `stm:"resp_code"`
@@ -87,14 +91,13 @@ func newMetricsData(config Config) *metricsData {
 		ReqProcTime:        newWebLogSummary(),
 		ReqProcTimeHist:    metrics.NewHistogram(convHistOptionsToMicroseconds(config.Histogram)),
 		UpsRespTime:        newWebLogSummary(),
-		ReqCustomTimeField: newReqCustomTimeField(config.CustomTimeFields),
 		UpsRespTimeHist:    metrics.NewHistogram(convHistOptionsToMicroseconds(config.Histogram)),
-		//ReqCustomTimeFieldHist: metrics.NewHistogram(convHistOptionsToMicroseconds(config.CustomTimeFields.Histogram)),
 		UniqueIPv4:      metrics.NewUniqueCounter(true),
 		UniqueIPv6:      metrics.NewUniqueCounter(true),
 		ReqURLPattern:   newCounterVecFromPatterns(config.URLPatterns),
 		ReqCustomField:  newReqCustomField(config.CustomFields),
 		URLPatternStats: newURLPatternStats(config.URLPatterns),
+		ReqCustomTimeField: newReqCustomTimeField(config.CustomTimeFields),
 	}
 }
 
@@ -105,6 +108,9 @@ func (m *metricsData) reset() {
 	m.UpsRespTime.Reset()
 	for _, v := range m.URLPatternStats {
 		v.ReqProcTime.Reset()
+	}
+	for _, v := range m.ReqCustomTimeField {
+		v.Time.Reset()
 	}
 }
 
@@ -136,10 +142,17 @@ func newReqCustomField(fields []customField) map[string]metrics.CounterVec {
 	return cf
 }
 
-func newReqCustomTimeField(fields []customTimeField) map[string]metrics.Summary {
-	cf := make(map[string]metrics.Summary)
+func newReqCustomTimeField(fields []customTimeField) map[string]*customTimeFieldMetrics {
+	cf := make(map[string]*customTimeFieldMetrics)
 	for _, f := range fields {
-		cf[f.Name] = newWebLogSummary()
+		var buckets []float64
+		for _, value := range f.Histogram {
+			buckets = append(buckets, value*1e6)
+		}
+		cf[f.Name] = &customTimeFieldMetrics{
+			Time:       newWebLogSummary(),
+			TimeHist:   metrics.NewHistogram(buckets),
+		}
 	}
 	return cf
 }
