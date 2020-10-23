@@ -579,11 +579,9 @@ func newCustomTimeFieldChart(f customTimeField) (*Chart, error) {
 	chart.ID = fmt.Sprintf(chart.ID, f.Name)
 	chart.Title = fmt.Sprintf(chart.Title, f.Name)
 	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
-
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, f.Name)
 	}
-
 	return chart, nil
 }
 
@@ -615,13 +613,16 @@ func newCustomTimeFieldHistChart(f customTimeField) (*Chart, error) {
 func newCustomTimeFieldHistCharts(fields []customTimeField) (Charts, error) {
 	charts := Charts{}
 	for _, f := range fields {
-		chart, err := newCustomTimeFieldHistChart(f)
-		if err != nil {
-			return nil, err
+		if len(f.Histogram) > 0 {
+			chart, err := newCustomTimeFieldHistChart(f)
+			if err != nil {
+				return nil, err
+			}
+			if err := charts.Add(chart); err != nil {
+				return nil, err
+			}
 		}
-		if err := charts.Add(chart); err != nil {
-			return nil, err
-		}
+
 	}
 	return charts, nil
 }

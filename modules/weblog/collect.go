@@ -338,7 +338,6 @@ func (w *WebLog) collectCustomFields() {
 			}
 			v.Time.Observe(ctf)
 			v.TimeHist.Observe(ctf)
-			w.Debug("collection customTimeFields : ctf ", ctf)
 		}
 	}
 }

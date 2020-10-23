@@ -71,7 +71,7 @@ func (w *WebLog) createCustomFields() error {
 
 func (w *WebLog) createCustomTimeFields() error {
 	if len(w.CustomTimeFields) == 0 {
-		w.Debug("skipping custom time fields creating, no custom fields provided")
+		w.Debug("skipping custom time fields creating, no custom time fields provided")
 		return nil
 	}
 
@@ -82,7 +82,7 @@ func (w *WebLog) createCustomTimeFields() error {
 			return fmt.Errorf("create custom field: name not set (field %d)", i+1)
 		}
 		w.customTimeFields[ctf.Name] = ctf.Histogram
-		w.Debugf("created time field '%s', histogram '%s'", ctf.Name, ctf.Histogram)
+		w.Debugf("created time field '%s', histogram '%T'", ctf.Name, ctf.Histogram)
 	}
 	w.Debugf("created %d custom time field(s)", len(w.CustomTimeFields))
 	return nil

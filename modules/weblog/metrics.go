@@ -64,7 +64,6 @@ type (
 		URLPatternStats map[string]*patternMetrics    `stm:"url_ptn"`
 
 		ReqCustomTimeField map[string]*customTimeFieldMetrics `stm:"custom_time_field"`
-		//ReqCustomTimeFieldHist  metrics.Histogram `stm:"custom_time_field_hist"`
 	}
 	customTimeFieldMetrics struct {
 		Time     metrics.Summary   `stm:"time"`
