@@ -16,6 +16,7 @@ var charts = Charts{
 		Units: "KB",
 		Fam:   "total %v",
 		Ctx:   "wireguard.total",
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: "received_total", Name: "received", Div: 1024},
 			{ID: "sent_total", Name: "sent", Div: 1024},
@@ -30,6 +31,7 @@ var bandwitchChart = Charts{
 		Units: "Kb/s",
 		Fam:   "network %d",
 		Ctx:   "wireguard.bandwidth",
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: "received_%v", Name: "received", Algo: module.Incremental, Div: 1000},
 			{ID: "sent_%v", Name: "sent", Algo: module.Incremental, Div: 1000},

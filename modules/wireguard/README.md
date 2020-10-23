@@ -11,7 +11,7 @@ This module will monitor one or more vpn network interface and wireguard peers, 
 
 E.g:
 ```bash
-$ sudo setcap CAP_NET_ADMIN+ep /usr/libexec/netdata/plugins.d/go.d.plugin
+$ sudo setcap CAP_NET_ADMIN+epi /usr/libexec/netdata/plugins.d/go.d.plugin
 ```
 
 ## Charts

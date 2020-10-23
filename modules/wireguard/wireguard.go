@@ -51,6 +51,7 @@ func (w *Wireguard) Cleanup() {
 
 // Init makes initialization
 func (w *Wireguard) Init() bool {
+	w.Infof("Creating a connection")
 	connection, err := wgctrl.New()
 	if err != nil {
 		w.Errorf("Failed to open wgctl(wireguad): %v", err)
@@ -63,7 +64,7 @@ func (w *Wireguard) Init() bool {
 		w.Interface = "wg0"
 	}
 
-	_, err = connection.Device(w.Interface)
+	_, err = w.connection.Device(w.Interface)
 	if err != nil {
 		w.Errorf("failed to get device: %v", err)
 		return false
