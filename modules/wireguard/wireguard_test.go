@@ -11,8 +11,14 @@ import (
 
 func isPermittedOperation() bool {
 	connection, err := wgctrl.New()
+	if err != nil {
+		return false
+	}
 	_, err = connection.Devices()
-	return err == nil
+	if err != nil {
+		return false
+	}
+	return true
 }
 
 func TestNew(t *testing.T) {
@@ -21,7 +27,6 @@ func TestNew(t *testing.T) {
 
 func TestWireguard_Init(t *testing.T) {
 	mod := New()
-
 	if isPermittedOperation() {
 		assert.True(t, mod.Init())
 	} else {
