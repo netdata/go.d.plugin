@@ -92,11 +92,11 @@ func newMetricsData(config Config) *metricsData {
 		ReqProcTimeHist:    metrics.NewHistogram(convHistOptionsToMicroseconds(config.Histogram)),
 		UpsRespTime:        newWebLogSummary(),
 		UpsRespTimeHist:    metrics.NewHistogram(convHistOptionsToMicroseconds(config.Histogram)),
-		UniqueIPv4:      metrics.NewUniqueCounter(true),
-		UniqueIPv6:      metrics.NewUniqueCounter(true),
-		ReqURLPattern:   newCounterVecFromPatterns(config.URLPatterns),
-		ReqCustomField:  newReqCustomField(config.CustomFields),
-		URLPatternStats: newURLPatternStats(config.URLPatterns),
+		UniqueIPv4:         metrics.NewUniqueCounter(true),
+		UniqueIPv6:         metrics.NewUniqueCounter(true),
+		ReqURLPattern:      newCounterVecFromPatterns(config.URLPatterns),
+		ReqCustomField:     newReqCustomField(config.CustomFields),
+		URLPatternStats:    newURLPatternStats(config.URLPatterns),
 		ReqCustomTimeField: newReqCustomTimeField(config.CustomTimeFields),
 	}
 }
@@ -150,8 +150,8 @@ func newReqCustomTimeField(fields []customTimeField) map[string]*customTimeField
 			buckets = append(buckets, value*1e6)
 		}
 		cf[f.Name] = &customTimeFieldMetrics{
-			Time:       newWebLogSummary(),
-			TimeHist:   metrics.NewHistogram(buckets),
+			Time:     newWebLogSummary(),
+			TimeHist: metrics.NewHistogram(buckets),
 		}
 	}
 	return cf

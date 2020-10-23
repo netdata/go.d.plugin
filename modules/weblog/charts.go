@@ -45,8 +45,8 @@ const (
 	prioReqSSLProto
 	prioReqSSLCipherSuite
 
-	prioReqCustomFieldPattern // chart per custom field, alphabetical order
-	prioReqCustomTimeField // chart per custom time field, alphabetical order
+	prioReqCustomFieldPattern  // chart per custom field, alphabetical order
+	prioReqCustomTimeField     // chart per custom time field, alphabetical order
 	prioReqCustomTimeFieldHist // histogram chart per custom time field
 	prioReqURLPattern
 	prioURLPatternStats // 3 charts per url pattern, alphabetical order
@@ -562,7 +562,7 @@ func newCustomFieldChart(f customField) (*Chart, error) {
 
 func newCustomTimeFieldCharts(fields []customTimeField) (Charts, error) {
 	charts := Charts{}
-	for _,f := range fields {
+	for _, f := range fields {
 		chart, err := newCustomTimeFieldChart(f)
 		if err != nil {
 			return nil, err
@@ -594,7 +594,7 @@ func newCustomTimeFieldHistChart(f customTimeField) (*Chart, error) {
 	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
 	for i, v := range f.Histogram {
 		dim := &Dim{
-			ID:   fmt.Sprintf("custom_time_field_%s_time_hist_bucket_%d",f.Name ,i+1),
+			ID:   fmt.Sprintf("custom_time_field_%s_time_hist_bucket_%d", f.Name, i+1),
 			Name: fmt.Sprintf("%.3f", v),
 			Algo: module.Incremental,
 		}
@@ -603,7 +603,7 @@ func newCustomTimeFieldHistChart(f customTimeField) (*Chart, error) {
 		}
 	}
 	if err := chart.AddDim(&Dim{
-		ID:    fmt.Sprintf("custom_time_field_%s_time_hist_count",f.Name),
+		ID:   fmt.Sprintf("custom_time_field_%s_time_hist_count", f.Name),
 		Name: "+Inf",
 		Algo: module.Incremental,
 	}); err != nil {
@@ -614,7 +614,7 @@ func newCustomTimeFieldHistChart(f customTimeField) (*Chart, error) {
 
 func newCustomTimeFieldHistCharts(fields []customTimeField) (Charts, error) {
 	charts := Charts{}
-	for _,f := range fields {
+	for _, f := range fields {
 		chart, err := newCustomTimeFieldHistChart(f)
 		if err != nil {
 			return nil, err
