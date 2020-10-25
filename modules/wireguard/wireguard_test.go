@@ -9,12 +9,12 @@ import (
 	"golang.zx2c4.com/wireguard/wgctrl"
 )
 
-func isPermittedOperation() bool {
+func isPermittedOperation(iface string) bool {
 	connection, err := wgctrl.New()
 	if err != nil {
 		return false
 	}
-	_, err = connection.Devices()
+	_, err = connection.Device(iface)
 	if err != nil {
 		return false
 	}
@@ -27,7 +27,11 @@ func TestNew(t *testing.T) {
 
 func TestWireguard_Init(t *testing.T) {
 	mod := New()
-	if isPermittedOperation() {
+
+	iface := "wg0"
+	mod.Interface = iface
+
+	if isPermittedOperation(iface) {
 		assert.True(t, mod.Init())
 	} else {
 		assert.False(t, mod.Init())
@@ -42,7 +46,11 @@ func TestWireguard_Check(t *testing.T) {
 
 func TestWireguard_Charts(t *testing.T) {
 	mod := New()
-	if isPermittedOperation() {
+
+	iface := "wg0"
+	mod.Interface = iface
+
+	if isPermittedOperation(iface) {
 		assert.NotNil(t, mod.Charts())
 	} else {
 		assert.False(t, mod.Init())
@@ -52,7 +60,10 @@ func TestWireguard_Charts(t *testing.T) {
 func TestWireguard_Cleanup(t *testing.T) {
 	mod := New()
 
-	if isPermittedOperation() {
+	iface := "wg0"
+	mod.Interface = iface
+
+	if isPermittedOperation(iface) {
 		mod.Cleanup()
 		assert.Nil(t, mod.connection)
 	} else {
@@ -63,7 +74,10 @@ func TestWireguard_Cleanup(t *testing.T) {
 func TestWireguard_Collect(t *testing.T) {
 	mod := New()
 
-	if isPermittedOperation() {
+	iface := "wg0"
+	mod.Interface = iface
+
+	if isPermittedOperation(iface) {
 		assert.NotNil(t, mod.Collect())
 	} else {
 		assert.False(t, mod.Init())
