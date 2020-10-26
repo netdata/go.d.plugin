@@ -360,6 +360,10 @@ var (
 		Type:     module.Stacked,
 		Priority: prioReqCustomFieldPattern,
 	}
+)
+
+// custom time field
+var (
 	reqByCustomTimeField = Chart{
 		ID:       "custom_time_field_%s_requests",
 		Title:    "Custom Time Field %s Requests",
@@ -375,7 +379,7 @@ var (
 	}
 	reqByCustomTimeFieldHist = Chart{
 		ID:       "custom_time_field_hist_%s_requests",
-		Title:    "Custom Time Field %s Requests",
+		Title:    "Custom Time Field Histogram %s",
 		Units:    "requests/s",
 		Fam:      "custom time field hist",
 		Ctx:      "web_log.custom_time_hist_field_%s",
