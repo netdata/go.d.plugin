@@ -3,9 +3,23 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"strings"
+
+	"github.com/blang/semver/v4"
 )
 
 func (m *MySQL) collect() (map[string]int64, error) {
+	if m.version == nil {
+		ver, err := m.getVersion()
+		if err != nil {
+			return nil, err
+		}
+		m.version = ver
+		m.isMariaDB = strings.Contains(ver.String(), "MariaDB")
+		minVer := semver.Version{Major: 10, Minor: 1, Patch: 1}
+		m.doUserStatistics = m.isMariaDB && m.version.GTE(minVer)
+	}
+
 	collected := make(map[string]int64)
 
 	if err := m.collectGlobalStatus(collected); err != nil {
@@ -43,6 +57,10 @@ func (m *MySQL) collect() (map[string]int64, error) {
 
 	calcThreadCacheMisses(collected)
 	return collected, nil
+}
+
+func (m *MySQL) getVersion() (*semver.Version, error) {
+	return nil, nil
 }
 
 func calcThreadCacheMisses(collected map[string]int64) {

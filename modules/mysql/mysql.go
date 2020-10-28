@@ -28,9 +28,9 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
-		db         *sql.DB
-		versionStr string
-		version    *semver.Version
+		db        *sql.DB
+		isMariaDB bool
+		version   *semver.Version
 
 		addInnodbDeadlocksOnce *sync.Once
 		addGaleraOnce          *sync.Once

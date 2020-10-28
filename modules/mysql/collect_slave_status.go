@@ -22,7 +22,7 @@ func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
 	// https://mariadb.com/docs/reference/es/sql-statements/SHOW_ALL_SLAVES_STATUS/
 	mariaDBMinVer := semver.Version{Major: 10, Minor: 2, Patch: 0}
 	var query string
-	if m.isMariaDB() && m.version != nil && m.version.GTE(mariaDBMinVer) {
+	if m.isMariaDB && m.version.GTE(mariaDBMinVer) {
 		query = queryAllSlavesStatus
 	} else {
 		query = querySlaveStatus
@@ -50,7 +50,7 @@ func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
 		set := rowAsMap(columns, values)
 
 		var conn string
-		if m.isMariaDB() {
+		if m.isMariaDB {
 			conn = set["Connection_name"]
 		} else {
 			conn = set["Channel_Name"]
@@ -76,10 +76,6 @@ func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
 		}
 	}
 	return rows.Err()
-}
-
-func (m MySQL) isMariaDB() bool {
-	return strings.Contains(strings.ToLower(m.versionStr), "mariadb")
 }
 
 func parseSlaveStatusValue(name, value string) (int64, error) {
