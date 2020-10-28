@@ -596,7 +596,6 @@ func newCustomTimeFieldChart(f customTimeField) (*Chart, error) {
 	chart := reqByCustomTimeField.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, f.Name)
 	chart.Title = fmt.Sprintf(chart.Title, f.Name)
-	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, f.Name)
 	}
@@ -607,7 +606,6 @@ func newCustomTimeFieldHistChart(f customTimeField) (*Chart, error) {
 	chart := reqByCustomTimeFieldHist.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, f.Name)
 	chart.Title = fmt.Sprintf(chart.Title, f.Name)
-	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
 	for i, v := range f.Histogram {
 		dim := &Dim{
 			ID:   fmt.Sprintf("custom_time_field_%s_time_hist_bucket_%d", f.Name, i+1),
