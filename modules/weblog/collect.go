@@ -327,17 +327,17 @@ func (w *WebLog) collectCustomFields() {
 				c.Inc()
 				break
 			}
-		} else if _, ok := w.customTimeFields[cv.name]; ok {
+		} else if histogram, ok := w.customTimeFields[cv.name]; ok {
 			v, ok := w.mx.ReqCustomTimeField[cv.name]
 			if !ok {
 				continue
 			}
 			ctf, err := strconv.ParseFloat(cv.value, 64)
 			if err != nil || !isTimeValid(ctf) {
-				break
+				continue
 			}
 			v.Time.Observe(ctf)
-			if v.TimeHist != nil {
+			if histogram != nil {
 				v.TimeHist.Observe(ctf * timeMultiplier(cv.value))
 			}
 
