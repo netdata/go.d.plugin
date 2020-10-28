@@ -366,7 +366,7 @@ var (
 var (
 	reqByCustomTimeField = Chart{
 		ID:       "custom_time_field_%s_summary",
-		Title:    "Custom Time Field %s Summary",
+		Title:    `Custom Time Field "%s" Summary`,
 		Units:    "milliseconds",
 		Fam:      "custom time field",
 		Ctx:      "web_log.custom_time_field_summary",
@@ -379,7 +379,7 @@ var (
 	}
 	reqByCustomTimeFieldHist = Chart{
 		ID:       "custom_time_field_%s_histogram",
-		Title:    "Custom Time Field Histogram %s",
+		Title:    `Custom Time Field "%s" Histogram`,
 		Units:    "observations",
 		Fam:      "custom time field",
 		Ctx:      "web_log.custom_time_field_histogram",
