@@ -381,7 +381,7 @@ var (
 		ID:       "custom_time_field_%s_histogram",
 		Title:    "Custom Time Field Histogram %s",
 		Units:    "observations",
-		Fam:      "custom time field hist",
+		Fam:      "custom time field",
 		Ctx:      "web_log.custom_time_field_histogram",
 		Priority: prioReqCustomTimeFieldHist,
 	}
