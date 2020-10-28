@@ -566,12 +566,26 @@ func newCustomFieldChart(f customField) (*Chart, error) {
 
 func newCustomTimeFieldCharts(fields []customTimeField) (Charts, error) {
 	charts := Charts{}
-	for _, f := range fields {
-		chart, err := newCustomTimeFieldChart(f)
+	for i, f := range fields {
+		chartTime, err := newCustomTimeFieldChart(f)
 		if err != nil {
 			return nil, err
 		}
-		if err := charts.Add(chart); err != nil {
+		chartTime.Priority += i
+		if err := charts.Add(chartTime); err != nil {
+			return nil, err
+		}
+		if len(f.Histogram) < 1 {
+			continue
+		}
+
+		chartHist, err := newCustomTimeFieldHistChart(f)
+		if err != nil {
+			return nil, err
+		}
+		chartHist.Priority += i
+
+		if err := charts.Add(chartHist); err != nil {
 			return nil, err
 		}
 	}
@@ -612,23 +626,6 @@ func newCustomTimeFieldHistChart(f customTimeField) (*Chart, error) {
 		return nil, err
 	}
 	return chart, nil
-}
-
-func newCustomTimeFieldHistCharts(fields []customTimeField) (Charts, error) {
-	charts := Charts{}
-	for _, f := range fields {
-		if len(f.Histogram) > 0 {
-			chart, err := newCustomTimeFieldHistChart(f)
-			if err != nil {
-				return nil, err
-			}
-			if err := charts.Add(chart); err != nil {
-				return nil, err
-			}
-		}
-
-	}
-	return charts, nil
 }
 
 func (w *WebLog) createCharts(line *logLine) error {
@@ -709,10 +706,6 @@ func (w *WebLog) createCharts(line *logLine) error {
 			if err := addCustomTimeFieldsCharts(charts, w.CustomTimeFields); err != nil {
 				return err
 			}
-			if err := addCustomTimeFieldsHistCharts(charts, w.CustomTimeFields); err != nil {
-				return err
-			}
-
 		}
 
 	}
@@ -854,14 +847,6 @@ func addCustomFieldsCharts(charts *Charts, fields []customField) error {
 
 func addCustomTimeFieldsCharts(charts *Charts, fields []customTimeField) error {
 	cs, err := newCustomTimeFieldCharts(fields)
-	if err != nil {
-		return err
-	}
-	return charts.Add(cs...)
-}
-
-func addCustomTimeFieldsHistCharts(charts *Charts, fields []customTimeField) error {
-	cs, err := newCustomTimeFieldHistCharts(fields)
 	if err != nil {
 		return err
 	}
