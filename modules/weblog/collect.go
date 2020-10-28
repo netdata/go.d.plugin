@@ -330,14 +330,17 @@ func (w *WebLog) collectCustomFields() {
 		} else if _, ok := w.customTimeFields[cv.name]; ok {
 			v, ok := w.mx.ReqCustomTimeField[cv.name]
 			if !ok {
-				break
+				continue
 			}
 			ctf, err := strconv.ParseFloat(cv.value, 64)
 			if err != nil || !isTimeValid(ctf) {
 				break
 			}
 			v.Time.Observe(ctf)
-			v.TimeHist.Observe(ctf)
+			if v.TimeHist != nil {
+				v.TimeHist.Observe(ctf * timeMultiplier(cv.value))
+			}
+
 		}
 	}
 }

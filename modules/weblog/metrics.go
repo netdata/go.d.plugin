@@ -144,13 +144,9 @@ func newReqCustomField(fields []customField) map[string]metrics.CounterVec {
 func newReqCustomTimeField(fields []customTimeField) map[string]*customTimeFieldMetrics {
 	cf := make(map[string]*customTimeFieldMetrics)
 	for _, f := range fields {
-		var buckets []float64
-		for _, value := range f.Histogram {
-			buckets = append(buckets, value*1e6)
-		}
 		cf[f.Name] = &customTimeFieldMetrics{
 			Time:     newWebLogSummary(),
-			TimeHist: metrics.NewHistogram(buckets),
+			TimeHist: metrics.NewHistogram(convHistOptionsToMicroseconds(f.Histogram)),
 		}
 	}
 	return cf

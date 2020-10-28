@@ -365,11 +365,11 @@ var (
 // custom time field
 var (
 	reqByCustomTimeField = Chart{
-		ID:       "custom_time_field_%s_requests",
-		Title:    "Custom Time Field %s Requests",
-		Units:    "requests/s",
+		ID:       "custom_time_field_%s_summary",
+		Title:    "Custom Time Field %s Summary",
+		Units:    "milliseconds",
 		Fam:      "custom time field",
-		Ctx:      "web_log.custom_time_field_%s",
+		Ctx:      "web_log.custom_time_field_summary",
 		Priority: prioReqCustomTimeField,
 		Dims: Dims{
 			{ID: "custom_time_field_%s_time_min", Name: "min", Div: 1000},
@@ -378,11 +378,11 @@ var (
 		},
 	}
 	reqByCustomTimeFieldHist = Chart{
-		ID:       "custom_time_field_hist_%s_requests",
+		ID:       "custom_time_field_%s_histogram",
 		Title:    "Custom Time Field Histogram %s",
-		Units:    "requests/s",
+		Units:    "observations",
 		Fam:      "custom time field hist",
-		Ctx:      "web_log.custom_time_hist_field_%s",
+		Ctx:      "web_log.custom_time_field_histogram",
 		Priority: prioReqCustomTimeFieldHist,
 	}
 )
