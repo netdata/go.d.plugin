@@ -154,14 +154,14 @@ In addition to that weblog understands [user defined fields](#custom-fields-feat
 Notes:
 
 -   Apache `%h` logs the IP address if [HostnameLookups](https://httpd.apache.org/docs/2.4/mod/core.html#hostnamelookups) is Off.
-    Weblog counts hostname as IPv4 address. We recommend either to disable HostnameLookups or use `%a` instead of `%h`. 
+    Weblog counts hostname as IPv4 address. We recommend either to disable HostnameLookups or use `%a` instead of `%h`.
 -   Since httpd 2.0, unlike 1.3, the `%b` and `%B` format strings do not represent the number of bytes sent to the client,
     but simply the size in bytes of the HTTP response. It will will differ, for instance, if the connection is aborted,
     or if SSL is used. The `%O` format provided by [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html)
     will log the actual number of bytes sent over the network.
 -   To get `%I` and `%O` working you need to enable `mod_logio` on Apache.
 -   NGINX logs URI with query parameters, Apache doesnt.
--   `$request` is parsed into `$request_method`, `$request_uri` and `$server_protocol`. If you have `$request` in your log format, 
+-   `$request` is parsed into `$request_method`, `$request_uri` and `$server_protocol`. If you have `$request` in your log format,
     there is no sense to have others.
 -   Don't use both `$bytes_sent` and `$body_bytes_sent` (`%O` and `%B` or `%b`). The module does not distinguish between these parameters.
 
@@ -234,7 +234,7 @@ This feature needs:
 -   list of patterns to match against appropriate fields
 
 Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
- 
+
 There is an example with 2 custom fields - `$http_referer` and `$http_user_agent`. Weblog is unaware of these fields, but
 we still can get some info from them.
 
@@ -261,6 +261,31 @@ we still can get some info from them.
             match: '* *'
 ```
 
+## Custom Time Fields Feature
+
+Weblog is also able to extract user defined time fields and could count min/avg/max + histogram against these fields.
+
+Cumulative histogram of response time in seconds
+
+This feature needs:
+-   custom log format with user defined time fields
+-   histogram to show response time in seconds which is optional.
+
+There is an example with 1 custom time fields - `^FB` which shows delay in microseconds between when the request arrived and the first byte of the response headers are written. Weblog is unaware of these fields, but
+we still can get some info from them.
+
+```yaml
+  - name: apache_csv_custom_fields_example
+    path: /path/to/file.log
+    log_type: csv
+    csv_config:
+      format: '%v %a %p %m %H \"%U\" %t %>s %O %I %D %^FB \"%{Referer}i\" \"%{User-Agent}i\" \"%r\"'
+    custom_time_fields:
+    - name: '^FB'
+      histogram: [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10] # optional field
+```
+
+
 ## Configuration
 
 Edit the `go.d/web_log.conf` configuration file using `edit-config` from the your agent's [config
@@ -271,7 +296,7 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/web_log.conf
 ```
 
-This module needs only `path` to log file. If it fails to auto-detect your log format you need [to set it manually](#custom-log-format). 
+This module needs only `path` to log file. If it fails to auto-detect your log format you need [to set it manually](#custom-log-format).
 
 ```yaml
 jobs:
@@ -284,7 +309,7 @@ jobs:
     csv_config:
       format: '- - %h - - %t \"%r\" %>s %b'
 ```
- 
+
 For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/web_log.conf).
 
 ## Troubleshooting
