@@ -271,8 +271,7 @@ This feature needs:
 
 As an example, apache [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html) adds `^FB` logging directive. This value shows a delay in microseconds between when the request arrived, and the first byte of the response headers are written.
 
-Like Custom Fields feature Weblog is unaware of these fields, but
-we can still get some info from them.
+As with the custom fields feature, Netdata's web log collector is unaware of these fields, but we can still get some info from them.
 
 ```yaml
   - name: apache_csv_custom_fields_example
