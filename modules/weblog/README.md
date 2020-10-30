@@ -269,7 +269,7 @@ This feature needs:
 -   custom log format with user defined time fields
 -   histogram to show response time in seconds, which is optional.
 
-As an example, apache has a custom log format that could be enabled by adding - `^FB` to the log format. This field shows a delay in microseconds between when the request arrived, and the first byte of the response headers are written.
+As an example, apache [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html) adds `^FB` logging directive. This value shows a delay in microseconds between when the request arrived, and the first byte of the response headers are written.
 
 Like Custom Fields feature Weblog is unaware of these fields, but
 we can still get some info from them.
