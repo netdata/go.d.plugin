@@ -261,7 +261,7 @@ we still can get some info from them.
             match: '* *'
 ```
 
-## Custom Time Fields Feature
+## Custom time fields feature
 
 The web log collector is also able to extract user defined time fields and could count min/avg/max + histogram against these fields.
 
