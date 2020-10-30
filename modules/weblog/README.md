@@ -269,7 +269,7 @@ This feature needs:
 -   A custom log format with user-defined time fields.
 -   A histogram to show response time in seconds, which is optional.
 
-As an example, apache [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html) adds `^FB` logging directive. This value shows a delay in microseconds between when the request arrived, and the first byte of the response headers are written.
+As an example, Apache [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html) adds a `^FB` logging directive. This value shows a delay in microseconds between when the request arrived, and the first byte of the response headers are written.
 
 As with the custom fields feature, Netdata's web log collector is unaware of these fields, but we can still get some info from them.
 
