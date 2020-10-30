@@ -267,10 +267,12 @@ Weblog is also able to extract user defined time fields and could count min/avg/
 
 This feature needs:
 -   custom log format with user defined time fields
--   histogram to show response time in seconds which is optional.
+-   histogram to show response time in seconds, which is optional.
 
-There is an example in apache custom log forma with 1 custom time fields - `^FB` which shows delay in microseconds between when the request arrived and the first byte of the response headers are written. Like Custom Fields feature Weblog is unaware of these fields, but
-we still can get some info from them.
+As an example, apache has a custom log format that could be enabled by adding - `^FB` to the log format. This field shows a delay in microseconds between when the request arrived, and the first byte of the response headers are written.
+
+Like Custom Fields feature Weblog is unaware of these fields, but
+we can still get some info from them.
 
 ```yaml
   - name: apache_csv_custom_fields_example
