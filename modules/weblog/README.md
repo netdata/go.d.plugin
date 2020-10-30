@@ -266,7 +266,7 @@ we still can get some info from them.
 The web log collector is also able to extract user defined time fields and could count min/avg/max + histogram against these fields.
 
 This feature needs:
--   custom log format with user defined time fields
+-   A custom log format with user-defined time fields.
 -   histogram to show response time in seconds, which is optional.
 
 As an example, apache [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html) adds `^FB` logging directive. This value shows a delay in microseconds between when the request arrived, and the first byte of the response headers are written.
