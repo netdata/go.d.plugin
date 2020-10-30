@@ -263,7 +263,7 @@ we still can get some info from them.
 
 ## Custom Time Fields Feature
 
-Weblog is also able to extract user defined time fields and could count min/avg/max + histogram against these fields.
+The web log collector is also able to extract user defined time fields and could count min/avg/max + histogram against these fields.
 
 This feature needs:
 -   custom log format with user defined time fields
