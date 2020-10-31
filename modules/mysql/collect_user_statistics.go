@@ -51,11 +51,11 @@ func (m *MySQL) collectUserStatistics(collected map[string]int64) error {
 		}
 
 		for _, name := range userStatisticsMetrics {
-			strValue, ok := set[name]
+			v, ok := set[name]
 			if !ok {
 				continue
 			}
-			value, err := parseUserStatisticsValue(name, strValue)
+			value, err := parseUserStatisticsValue(name, v)
 			if err != nil {
 				continue
 			}

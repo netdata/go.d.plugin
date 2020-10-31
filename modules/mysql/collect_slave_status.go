@@ -64,11 +64,11 @@ func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
 		}
 
 		for _, name := range slaveStatusMetrics {
-			strValue, ok := set[name]
+			v, ok := set[name]
 			if !ok {
 				continue
 			}
-			value, err := parseSlaveStatusValue(name, strValue)
+			value, err := parseSlaveStatusValue(name, v)
 			if err != nil {
 				continue
 			}

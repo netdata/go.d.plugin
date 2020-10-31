@@ -8,6 +8,17 @@ import (
 	"github.com/blang/semver/v4"
 )
 
+const queryVersion = "SELECT VERSION()"
+
+func (m *MySQL) getVersion() (*semver.Version, error) {
+	m.Debugf("executing query: '%s'", queryVersion)
+	var ver string
+	if err := m.db.QueryRow(queryVersion).Scan(&ver); err != nil {
+		return nil, err
+	}
+	return semver.New(ver)
+}
+
 func (m *MySQL) collect() (map[string]int64, error) {
 	if m.version == nil {
 		ver, err := m.getVersion()
@@ -22,9 +33,11 @@ func (m *MySQL) collect() (map[string]int64, error) {
 
 	collected := make(map[string]int64)
 
+	// TODO: do we really need to collect global vars on every iteration?
 	if err := m.collectGlobalStatus(collected); err != nil {
 		return nil, fmt.Errorf("error on collecting global status: %v", err)
 	}
+
 	if hasInnodbDeadlocks(collected) {
 		m.addInnodbDeadlocksOnce.Do(m.addInnodbDeadlocksChart)
 	}
@@ -40,27 +53,23 @@ func (m *MySQL) collect() (map[string]int64, error) {
 	}
 
 	if m.doSlaveStatus {
-		// TODO: shouldn't disable on any error
 		if err := m.collectSlaveStatus(collected); err != nil {
 			m.Errorf("error on collecting slave status: %v", err)
+			// TODO: shouldn't disable on any error
 			m.doSlaveStatus = false
 		}
 	}
 
 	if m.doUserStatistics {
-		// TODO: shouldn't disable on any error
 		if err := m.collectUserStatistics(collected); err != nil {
 			m.Errorf("error on collecting user statistics: %v", err)
+			// TODO: shouldn't disable on any error
 			m.doUserStatistics = false
 		}
 	}
 
 	calcThreadCacheMisses(collected)
 	return collected, nil
-}
-
-func (m *MySQL) getVersion() (*semver.Version, error) {
-	return nil, nil
 }
 
 func calcThreadCacheMisses(collected map[string]int64) {
