@@ -11,6 +11,7 @@ import (
 const queryVersion = "SELECT VERSION()"
 
 func (m *MySQL) getVersion() (*semver.Version, error) {
+	// https://mariadb.com/kb/en/version/
 	m.Debugf("executing query: '%s'", queryVersion)
 	var ver string
 	if err := m.db.QueryRow(queryVersion).Scan(&ver); err != nil {
@@ -27,6 +28,7 @@ func (m *MySQL) collect() (map[string]int64, error) {
 		}
 		m.version = ver
 		m.isMariaDB = strings.Contains(ver.String(), "MariaDB")
+		// https://mariadb.com/kb/en/user-statistics/
 		minVer := semver.Version{Major: 10, Minor: 1, Patch: 1}
 		m.doUserStatistics = m.isMariaDB && m.version.GTE(minVer)
 	}

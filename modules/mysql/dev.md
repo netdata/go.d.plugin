@@ -1,4 +1,4 @@
-`MariaDB` Galera cluster setup:
+`MariaDB` Galera cluster setup (In MariaDB 10.1 and later, the MySQL-wsrep patch has been merged into MariaDB Server.):
 
 -   https://github.com/bitnami/bitnami-docker-mariadb-galera
 -   https://hub.docker.com/r/bitnami/mariadb-galera
