@@ -26,6 +26,7 @@ func (m *MySQL) collect() (map[string]int64, error) {
 		if err != nil {
 			return nil, err
 		}
+		m.Debugf("application version: %s", ver)
 		m.version = ver
 		m.isMariaDB = strings.Contains(ver.String(), "MariaDB")
 		// https://mariadb.com/kb/en/user-statistics/
