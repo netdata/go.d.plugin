@@ -14,6 +14,7 @@ This module monitors one or more `MySQL` servers, depending on your configuratio
 
 Executed queries:
 
+-   `SELECT VERSION();`
 -   `SHOW GLOBAL STATUS;`
 -   `SHOW GLOBAL VARIABLES;`
 -   `SHOW SLAVE STATUS;` or `SHOW ALL SLAVES STATUS;` (MariaDBv10.2+) 
