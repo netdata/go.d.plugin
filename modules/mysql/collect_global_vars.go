@@ -7,8 +7,6 @@ import (
 
 const (
 	queryGlobalVariables = "SHOW GLOBAL VARIABLES WHERE " +
-		"Variable_name LIKE 'version' " +
-		"OR " +
 		"Variable_name LIKE 'max_connections' " +
 		"OR " +
 		"Variable_name LIKE 'table_open_cache'"
@@ -35,17 +33,12 @@ func (m *MySQL) collectGlobalVariables(collected map[string]int64) error {
 		return err
 	}
 
-	if version := set["version"]; m.version == "" {
-		m.Debugf("application version: '%s'", version)
-		m.version = version
-	}
-
 	for _, name := range globalVariablesMetrics {
-		strValue, ok := set[name]
+		v, ok := set[name]
 		if !ok {
 			continue
 		}
-		value, err := parseGlobalVariable(strValue)
+		value, err := parseGlobalVariable(v)
 		if err != nil {
 			continue
 		}
