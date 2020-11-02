@@ -18,15 +18,17 @@ import (
 )
 
 var (
-	testCommonLog, _ = ioutil.ReadFile("testdata/common.log")
-	testFullLog, _   = ioutil.ReadFile("testdata/full.log")
-	testCustomLog, _ = ioutil.ReadFile("testdata/custom.log")
+	testCommonLog, _          = ioutil.ReadFile("testdata/common.log")
+	testFullLog, _            = ioutil.ReadFile("testdata/full.log")
+	testCustomLog, _          = ioutil.ReadFile("testdata/custom.log")
+	testCustomTimeFieldLog, _ = ioutil.ReadFile("testdata/custom_time_fields.log")
 )
 
 func Test_readTestData(t *testing.T) {
 	assert.NotNil(t, testFullLog)
 	assert.NotNil(t, testCommonLog)
 	assert.NotNil(t, testCustomLog)
+	assert.NotNil(t, testCustomTimeFieldLog)
 }
 
 func TestNew(t *testing.T) {
@@ -119,164 +121,182 @@ func TestWebLog_Collect(t *testing.T) {
 	//}
 
 	expected := map[string]int64{
-		"bytes_received":                            1374096,
-		"bytes_sent":                                1373185,
-		"custom_field_drink_beer":                   221,
-		"custom_field_drink_wine":                   231,
-		"custom_field_side_dark":                    231,
-		"custom_field_side_light":                   221,
-		"req_http_scheme":                           218,
-		"req_https_scheme":                          234,
-		"req_ipv4":                                  275,
-		"req_ipv6":                                  177,
-		"req_method_GET":                            156,
-		"req_method_HEAD":                           150,
-		"req_method_POST":                           146,
-		"req_port_80":                               96,
-		"req_port_81":                               100,
-		"req_port_82":                               84,
-		"req_port_83":                               85,
-		"req_port_84":                               87,
-		"req_proc_time_avg":                         247,
-		"req_proc_time_count":                       452,
-		"req_proc_time_hist_bucket_1":               452,
-		"req_proc_time_hist_bucket_10":              452,
-		"req_proc_time_hist_bucket_11":              452,
-		"req_proc_time_hist_bucket_2":               452,
-		"req_proc_time_hist_bucket_3":               452,
-		"req_proc_time_hist_bucket_4":               452,
-		"req_proc_time_hist_bucket_5":               452,
-		"req_proc_time_hist_bucket_6":               452,
-		"req_proc_time_hist_bucket_7":               452,
-		"req_proc_time_hist_bucket_8":               452,
-		"req_proc_time_hist_bucket_9":               452,
-		"req_proc_time_hist_count":                  452,
-		"req_proc_time_hist_sum":                    111927,
-		"req_proc_time_max":                         499,
-		"req_proc_time_min":                         2,
-		"req_proc_time_sum":                         111927,
-		"req_ssl_cipher_suite_AES256-SHA":           101,
-		"req_ssl_cipher_suite_DHE-RSA-AES256-SHA":   111,
-		"req_ssl_cipher_suite_ECDHE-RSA-AES256-SHA": 127,
-		"req_ssl_cipher_suite_PSK-RC4-SHA":          113,
-		"req_ssl_proto_SSLv2":                       74,
-		"req_ssl_proto_SSLv3":                       57,
-		"req_ssl_proto_TLSv1":                       76,
-		"req_ssl_proto_TLSv1.1":                     87,
-		"req_ssl_proto_TLSv1.2":                     73,
-		"req_ssl_proto_TLSv1.3":                     85,
-		"req_type_bad":                              49,
-		"req_type_error":                            0,
-		"req_type_redirect":                         119,
-		"req_type_success":                          284,
-		"req_unmatched":                             48,
-		"req_url_ptn_com":                           120,
-		"req_url_ptn_net":                           116,
-		"req_url_ptn_not_match":                     0,
-		"req_url_ptn_org":                           113,
-		"req_version_1.1":                           168,
-		"req_version_2":                             143,
-		"req_version_2.0":                           141,
-		"req_vhost_198.51.100.1":                    81,
-		"req_vhost_2001:db8:1ce::1":                 100,
-		"req_vhost_localhost":                       102,
-		"req_vhost_test.example.com":                87,
-		"req_vhost_test.example.org":                82,
-		"requests":                                  500,
-		"resp_1xx":                                  110,
-		"resp_2xx":                                  128,
-		"resp_3xx":                                  119,
-		"resp_4xx":                                  95,
-		"resp_5xx":                                  0,
-		"resp_code_100":                             60,
-		"resp_code_101":                             50,
-		"resp_code_200":                             58,
-		"resp_code_201":                             70,
-		"resp_code_300":                             58,
-		"resp_code_301":                             61,
-		"resp_code_400":                             49,
-		"resp_code_401":                             46,
-		"uniq_ipv4":                                 3,
-		"uniq_ipv6":                                 2,
-		"upstream_resp_time_avg":                    255,
-		"upstream_resp_time_count":                  452,
-		"upstream_resp_time_hist_bucket_1":          452,
-		"upstream_resp_time_hist_bucket_10":         452,
-		"upstream_resp_time_hist_bucket_11":         452,
-		"upstream_resp_time_hist_bucket_2":          452,
-		"upstream_resp_time_hist_bucket_3":          452,
-		"upstream_resp_time_hist_bucket_4":          452,
-		"upstream_resp_time_hist_bucket_5":          452,
-		"upstream_resp_time_hist_bucket_6":          452,
-		"upstream_resp_time_hist_bucket_7":          452,
-		"upstream_resp_time_hist_bucket_8":          452,
-		"upstream_resp_time_hist_bucket_9":          452,
-		"upstream_resp_time_hist_count":             452,
-		"upstream_resp_time_hist_sum":               115615,
-		"upstream_resp_time_max":                    497,
-		"upstream_resp_time_min":                    7,
-		"upstream_resp_time_sum":                    115615,
-		"url_ptn_com_bytes_received":                379864,
-		"url_ptn_com_bytes_sent":                    372669,
-		"url_ptn_com_req_method_GET":                38,
-		"url_ptn_com_req_method_HEAD":               39,
-		"url_ptn_com_req_method_POST":               43,
-		"url_ptn_com_req_proc_time_avg":             212,
-		"url_ptn_com_req_proc_time_count":           120,
-		"url_ptn_com_req_proc_time_max":             495,
-		"url_ptn_com_req_proc_time_min":             5,
-		"url_ptn_com_req_proc_time_sum":             25544,
-		"url_ptn_com_resp_code_100":                 12,
-		"url_ptn_com_resp_code_101":                 15,
-		"url_ptn_com_resp_code_200":                 13,
-		"url_ptn_com_resp_code_201":                 26,
-		"url_ptn_com_resp_code_300":                 16,
-		"url_ptn_com_resp_code_301":                 12,
-		"url_ptn_com_resp_code_400":                 13,
-		"url_ptn_com_resp_code_401":                 13,
-		"url_ptn_net_bytes_received":                349988,
-		"url_ptn_net_bytes_sent":                    339867,
-		"url_ptn_net_req_method_GET":                51,
-		"url_ptn_net_req_method_HEAD":               33,
-		"url_ptn_net_req_method_POST":               32,
-		"url_ptn_net_req_proc_time_avg":             260,
-		"url_ptn_net_req_proc_time_count":           116,
-		"url_ptn_net_req_proc_time_max":             499,
-		"url_ptn_net_req_proc_time_min":             10,
-		"url_ptn_net_req_proc_time_sum":             30221,
-		"url_ptn_net_resp_code_100":                 16,
-		"url_ptn_net_resp_code_101":                 12,
-		"url_ptn_net_resp_code_200":                 16,
-		"url_ptn_net_resp_code_201":                 14,
-		"url_ptn_net_resp_code_300":                 14,
-		"url_ptn_net_resp_code_301":                 17,
-		"url_ptn_net_resp_code_400":                 14,
-		"url_ptn_net_resp_code_401":                 13,
-		"url_ptn_not_match_bytes_received":          0,
-		"url_ptn_not_match_bytes_sent":              0,
-		"url_ptn_not_match_req_proc_time_avg":       0,
-		"url_ptn_not_match_req_proc_time_count":     0,
-		"url_ptn_not_match_req_proc_time_max":       0,
-		"url_ptn_not_match_req_proc_time_min":       0,
-		"url_ptn_not_match_req_proc_time_sum":       0,
-		"url_ptn_org_bytes_received":                331836,
-		"url_ptn_org_bytes_sent":                    340095,
-		"url_ptn_org_req_method_GET":                29,
-		"url_ptn_org_req_method_HEAD":               46,
-		"url_ptn_org_req_method_POST":               38,
-		"url_ptn_org_req_proc_time_avg":             263,
-		"url_ptn_org_req_proc_time_count":           113,
-		"url_ptn_org_req_proc_time_max":             497,
-		"url_ptn_org_req_proc_time_min":             2,
-		"url_ptn_org_req_proc_time_sum":             29796,
-		"url_ptn_org_resp_code_100":                 15,
-		"url_ptn_org_resp_code_101":                 11,
-		"url_ptn_org_resp_code_200":                 20,
-		"url_ptn_org_resp_code_201":                 16,
-		"url_ptn_org_resp_code_300":                 10,
-		"url_ptn_org_resp_code_301":                 19,
-		"url_ptn_org_resp_code_400":                 13,
-		"url_ptn_org_resp_code_401":                 9,
+		"bytes_received":                                          1374096,
+		"bytes_sent":                                              1373185,
+		"custom_field_drink_beer":                                 221,
+		"custom_field_drink_wine":                                 231,
+		"custom_field_side_dark":                                  231,
+		"custom_field_side_light":                                 221,
+		"req_http_scheme":                                         218,
+		"req_https_scheme":                                        234,
+		"req_ipv4":                                                275,
+		"req_ipv6":                                                177,
+		"req_method_GET":                                          156,
+		"req_method_HEAD":                                         150,
+		"req_method_POST":                                         146,
+		"req_port_80":                                             96,
+		"req_port_81":                                             100,
+		"req_port_82":                                             84,
+		"req_port_83":                                             85,
+		"req_port_84":                                             87,
+		"req_proc_time_avg":                                       247,
+		"req_proc_time_count":                                     452,
+		"req_proc_time_hist_bucket_1":                             452,
+		"req_proc_time_hist_bucket_10":                            452,
+		"req_proc_time_hist_bucket_11":                            452,
+		"req_proc_time_hist_bucket_2":                             452,
+		"req_proc_time_hist_bucket_3":                             452,
+		"req_proc_time_hist_bucket_4":                             452,
+		"req_proc_time_hist_bucket_5":                             452,
+		"req_proc_time_hist_bucket_6":                             452,
+		"req_proc_time_hist_bucket_7":                             452,
+		"req_proc_time_hist_bucket_8":                             452,
+		"req_proc_time_hist_bucket_9":                             452,
+		"req_proc_time_hist_count":                                452,
+		"req_proc_time_hist_sum":                                  111927,
+		"req_proc_time_max":                                       499,
+		"req_proc_time_min":                                       2,
+		"req_proc_time_sum":                                       111927,
+		"req_ssl_cipher_suite_AES256-SHA":                         101,
+		"req_ssl_cipher_suite_DHE-RSA-AES256-SHA":                 111,
+		"req_ssl_cipher_suite_ECDHE-RSA-AES256-SHA":               127,
+		"req_ssl_cipher_suite_PSK-RC4-SHA":                        113,
+		"req_ssl_proto_SSLv2":                                     74,
+		"req_ssl_proto_SSLv3":                                     57,
+		"req_ssl_proto_TLSv1":                                     76,
+		"req_ssl_proto_TLSv1.1":                                   87,
+		"req_ssl_proto_TLSv1.2":                                   73,
+		"req_ssl_proto_TLSv1.3":                                   85,
+		"req_type_bad":                                            49,
+		"req_type_error":                                          0,
+		"req_type_redirect":                                       119,
+		"req_type_success":                                        284,
+		"req_unmatched":                                           48,
+		"req_url_ptn_com":                                         120,
+		"req_url_ptn_net":                                         116,
+		"req_url_ptn_not_match":                                   0,
+		"req_url_ptn_org":                                         113,
+		"req_version_1.1":                                         168,
+		"req_version_2":                                           143,
+		"req_version_2.0":                                         141,
+		"req_vhost_198.51.100.1":                                  81,
+		"req_vhost_2001:db8:1ce::1":                               100,
+		"req_vhost_localhost":                                     102,
+		"req_vhost_test.example.com":                              87,
+		"req_vhost_test.example.org":                              82,
+		"requests":                                                500,
+		"resp_1xx":                                                110,
+		"resp_2xx":                                                128,
+		"resp_3xx":                                                119,
+		"resp_4xx":                                                95,
+		"resp_5xx":                                                0,
+		"resp_code_100":                                           60,
+		"resp_code_101":                                           50,
+		"resp_code_200":                                           58,
+		"resp_code_201":                                           70,
+		"resp_code_300":                                           58,
+		"resp_code_301":                                           61,
+		"resp_code_400":                                           49,
+		"resp_code_401":                                           46,
+		"uniq_ipv4":                                               3,
+		"uniq_ipv6":                                               2,
+		"upstream_resp_time_avg":                                  255,
+		"upstream_resp_time_count":                                452,
+		"upstream_resp_time_hist_bucket_1":                        452,
+		"upstream_resp_time_hist_bucket_10":                       452,
+		"upstream_resp_time_hist_bucket_11":                       452,
+		"upstream_resp_time_hist_bucket_2":                        452,
+		"upstream_resp_time_hist_bucket_3":                        452,
+		"upstream_resp_time_hist_bucket_4":                        452,
+		"upstream_resp_time_hist_bucket_5":                        452,
+		"upstream_resp_time_hist_bucket_6":                        452,
+		"upstream_resp_time_hist_bucket_7":                        452,
+		"upstream_resp_time_hist_bucket_8":                        452,
+		"upstream_resp_time_hist_bucket_9":                        452,
+		"upstream_resp_time_hist_count":                           452,
+		"upstream_resp_time_hist_sum":                             115615,
+		"upstream_resp_time_max":                                  497,
+		"upstream_resp_time_min":                                  7,
+		"upstream_resp_time_sum":                                  115615,
+		"url_ptn_com_bytes_received":                              379864,
+		"url_ptn_com_bytes_sent":                                  372669,
+		"url_ptn_com_req_method_GET":                              38,
+		"url_ptn_com_req_method_HEAD":                             39,
+		"url_ptn_com_req_method_POST":                             43,
+		"url_ptn_com_req_proc_time_avg":                           212,
+		"url_ptn_com_req_proc_time_count":                         120,
+		"url_ptn_com_req_proc_time_max":                           495,
+		"url_ptn_com_req_proc_time_min":                           5,
+		"url_ptn_com_req_proc_time_sum":                           25544,
+		"url_ptn_com_resp_code_100":                               12,
+		"url_ptn_com_resp_code_101":                               15,
+		"url_ptn_com_resp_code_200":                               13,
+		"url_ptn_com_resp_code_201":                               26,
+		"url_ptn_com_resp_code_300":                               16,
+		"url_ptn_com_resp_code_301":                               12,
+		"url_ptn_com_resp_code_400":                               13,
+		"url_ptn_com_resp_code_401":                               13,
+		"url_ptn_net_bytes_received":                              349988,
+		"url_ptn_net_bytes_sent":                                  339867,
+		"url_ptn_net_req_method_GET":                              51,
+		"url_ptn_net_req_method_HEAD":                             33,
+		"url_ptn_net_req_method_POST":                             32,
+		"url_ptn_net_req_proc_time_avg":                           260,
+		"url_ptn_net_req_proc_time_count":                         116,
+		"url_ptn_net_req_proc_time_max":                           499,
+		"url_ptn_net_req_proc_time_min":                           10,
+		"url_ptn_net_req_proc_time_sum":                           30221,
+		"url_ptn_net_resp_code_100":                               16,
+		"url_ptn_net_resp_code_101":                               12,
+		"url_ptn_net_resp_code_200":                               16,
+		"url_ptn_net_resp_code_201":                               14,
+		"url_ptn_net_resp_code_300":                               14,
+		"url_ptn_net_resp_code_301":                               17,
+		"url_ptn_net_resp_code_400":                               14,
+		"url_ptn_net_resp_code_401":                               13,
+		"url_ptn_not_match_bytes_received":                        0,
+		"url_ptn_not_match_bytes_sent":                            0,
+		"url_ptn_not_match_req_proc_time_avg":                     0,
+		"url_ptn_not_match_req_proc_time_count":                   0,
+		"url_ptn_not_match_req_proc_time_max":                     0,
+		"url_ptn_not_match_req_proc_time_min":                     0,
+		"url_ptn_not_match_req_proc_time_sum":                     0,
+		"url_ptn_org_bytes_received":                              331836,
+		"url_ptn_org_bytes_sent":                                  340095,
+		"url_ptn_org_req_method_GET":                              29,
+		"url_ptn_org_req_method_HEAD":                             46,
+		"url_ptn_org_req_method_POST":                             38,
+		"url_ptn_org_req_proc_time_avg":                           263,
+		"url_ptn_org_req_proc_time_count":                         113,
+		"url_ptn_org_req_proc_time_max":                           497,
+		"url_ptn_org_req_proc_time_min":                           2,
+		"url_ptn_org_req_proc_time_sum":                           29796,
+		"url_ptn_org_resp_code_100":                               15,
+		"url_ptn_org_resp_code_101":                               11,
+		"url_ptn_org_resp_code_200":                               20,
+		"url_ptn_org_resp_code_201":                               16,
+		"url_ptn_org_resp_code_300":                               10,
+		"url_ptn_org_resp_code_301":                               19,
+		"url_ptn_org_resp_code_400":                               13,
+		"url_ptn_org_resp_code_401":                               9,
+		"custom_time_field_random_time_field_time_avg":            230,
+		"custom_time_field_random_time_field_time_count":          452,
+		"custom_time_field_random_time_field_time_hist_bucket_1":  452,
+		"custom_time_field_random_time_field_time_hist_bucket_10": 452,
+		"custom_time_field_random_time_field_time_hist_bucket_11": 452,
+		"custom_time_field_random_time_field_time_hist_bucket_2":  452,
+		"custom_time_field_random_time_field_time_hist_bucket_3":  452,
+		"custom_time_field_random_time_field_time_hist_bucket_4":  452,
+		"custom_time_field_random_time_field_time_hist_bucket_5":  452,
+		"custom_time_field_random_time_field_time_hist_bucket_6":  452,
+		"custom_time_field_random_time_field_time_hist_bucket_7":  452,
+		"custom_time_field_random_time_field_time_hist_bucket_8":  452,
+		"custom_time_field_random_time_field_time_hist_bucket_9":  452,
+		"custom_time_field_random_time_field_time_hist_count":     452,
+		"custom_time_field_random_time_field_time_hist_sum":       103960,
+		"custom_time_field_random_time_field_time_max":            230,
+		"custom_time_field_random_time_field_time_min":            230,
+		"custom_time_field_random_time_field_time_sum":            103960,
 	}
 
 	mx := weblog.Collect()
@@ -434,6 +454,108 @@ func TestWebLog_Collect_CustomLogs(t *testing.T) {
 	testCharts(t, weblog, mx)
 }
 
+func TestWebLog_Collect_CustomTimeFieldsLogs(t *testing.T) {
+	weblog := prepareWebLogCollectCustomTimeFields(t)
+
+	expected := map[string]int64{
+		"bytes_received":                              0,
+		"bytes_sent":                                  0,
+		"custom_time_field_time1_time_avg":            224,
+		"custom_time_field_time1_time_count":          72,
+		"custom_time_field_time1_time_hist_bucket_1":  72,
+		"custom_time_field_time1_time_hist_bucket_10": 72,
+		"custom_time_field_time1_time_hist_bucket_11": 72,
+		"custom_time_field_time1_time_hist_bucket_2":  72,
+		"custom_time_field_time1_time_hist_bucket_3":  72,
+		"custom_time_field_time1_time_hist_bucket_4":  72,
+		"custom_time_field_time1_time_hist_bucket_5":  72,
+		"custom_time_field_time1_time_hist_bucket_6":  72,
+		"custom_time_field_time1_time_hist_bucket_7":  72,
+		"custom_time_field_time1_time_hist_bucket_8":  72,
+		"custom_time_field_time1_time_hist_bucket_9":  72,
+		"custom_time_field_time1_time_hist_count":     72,
+		"custom_time_field_time1_time_hist_sum":       16152,
+		"custom_time_field_time1_time_max":            431,
+		"custom_time_field_time1_time_min":            121,
+		"custom_time_field_time1_time_sum":            16152,
+		"custom_time_field_time2_time_avg":            255,
+		"custom_time_field_time2_time_count":          72,
+		"custom_time_field_time2_time_hist_bucket_1":  72,
+		"custom_time_field_time2_time_hist_bucket_10": 72,
+		"custom_time_field_time2_time_hist_bucket_11": 72,
+		"custom_time_field_time2_time_hist_bucket_2":  72,
+		"custom_time_field_time2_time_hist_bucket_3":  72,
+		"custom_time_field_time2_time_hist_bucket_4":  72,
+		"custom_time_field_time2_time_hist_bucket_5":  72,
+		"custom_time_field_time2_time_hist_bucket_6":  72,
+		"custom_time_field_time2_time_hist_bucket_7":  72,
+		"custom_time_field_time2_time_hist_bucket_8":  72,
+		"custom_time_field_time2_time_hist_bucket_9":  72,
+		"custom_time_field_time2_time_hist_count":     72,
+		"custom_time_field_time2_time_hist_sum":       18360,
+		"custom_time_field_time2_time_max":            321,
+		"custom_time_field_time2_time_min":            123,
+		"custom_time_field_time2_time_sum":            18360,
+		"req_http_scheme":                             0,
+		"req_https_scheme":                            0,
+		"req_ipv4":                                    0,
+		"req_ipv6":                                    0,
+		"req_proc_time_avg":                           0,
+		"req_proc_time_count":                         0,
+		"req_proc_time_hist_bucket_1":                 0,
+		"req_proc_time_hist_bucket_10":                0,
+		"req_proc_time_hist_bucket_11":                0,
+		"req_proc_time_hist_bucket_2":                 0,
+		"req_proc_time_hist_bucket_3":                 0,
+		"req_proc_time_hist_bucket_4":                 0,
+		"req_proc_time_hist_bucket_5":                 0,
+		"req_proc_time_hist_bucket_6":                 0,
+		"req_proc_time_hist_bucket_7":                 0,
+		"req_proc_time_hist_bucket_8":                 0,
+		"req_proc_time_hist_bucket_9":                 0,
+		"req_proc_time_hist_count":                    0,
+		"req_proc_time_hist_sum":                      0,
+		"req_proc_time_max":                           0,
+		"req_proc_time_min":                           0,
+		"req_proc_time_sum":                           0,
+		"req_type_bad":                                0,
+		"req_type_error":                              0,
+		"req_type_redirect":                           0,
+		"req_type_success":                            0,
+		"req_unmatched":                               0,
+		"requests":                                    72,
+		"resp_1xx":                                    0,
+		"resp_2xx":                                    0,
+		"resp_3xx":                                    0,
+		"resp_4xx":                                    0,
+		"resp_5xx":                                    0,
+		"uniq_ipv4":                                   0,
+		"uniq_ipv6":                                   0,
+		"upstream_resp_time_avg":                      0,
+		"upstream_resp_time_count":                    0,
+		"upstream_resp_time_hist_bucket_1":            0,
+		"upstream_resp_time_hist_bucket_10":           0,
+		"upstream_resp_time_hist_bucket_11":           0,
+		"upstream_resp_time_hist_bucket_2":            0,
+		"upstream_resp_time_hist_bucket_3":            0,
+		"upstream_resp_time_hist_bucket_4":            0,
+		"upstream_resp_time_hist_bucket_5":            0,
+		"upstream_resp_time_hist_bucket_6":            0,
+		"upstream_resp_time_hist_bucket_7":            0,
+		"upstream_resp_time_hist_bucket_8":            0,
+		"upstream_resp_time_hist_bucket_9":            0,
+		"upstream_resp_time_hist_count":               0,
+		"upstream_resp_time_hist_sum":                 0,
+		"upstream_resp_time_max":                      0,
+		"upstream_resp_time_min":                      0,
+		"upstream_resp_time_sum":                      0,
+	}
+
+	mx := weblog.Collect()
+	assert.Equal(t, expected, mx)
+	testCharts(t, weblog, mx)
+}
+
 func testCharts(t *testing.T, w *WebLog, mx map[string]int64) {
 	testVhostChart(t, w)
 	testPortChart(t, w)
@@ -450,6 +572,7 @@ func testCharts(t *testing.T, w *WebLog, mx map[string]int64) {
 	testSSLCipherSuiteChart(t, w)
 	testURLPatternStatsCharts(t, w)
 	testCustomFieldCharts(t, w)
+	testCustomTimeFieldCharts(t, w)
 
 	testChartsDimIDs(t, w, mx)
 }
@@ -787,6 +910,25 @@ func testCustomFieldCharts(t *testing.T, w *WebLog) {
 	}
 }
 
+func testCustomTimeFieldCharts(t *testing.T, w *WebLog) {
+	for _, cf := range w.CustomTimeFields {
+		id := fmt.Sprintf(reqByCustomTimeField.ID, cf.Name)
+		chart := w.Charts().Get(id)
+		assert.NotNilf(t, chart, "chart '%s' is not created", id)
+		if chart == nil {
+			continue
+		}
+		dimMinID := fmt.Sprintf("custom_time_field_%s_time_min", cf.Name)
+		assert.True(t, chart.HasDim(dimMinID), "chart '%s' has no dim for '%s' name, expected '%s'", chart.ID, cf.Name, dimMinID)
+
+		dimMaxID := fmt.Sprintf("custom_time_field_%s_time_min", cf.Name)
+		assert.True(t, chart.HasDim(dimMaxID), "chart '%s' has no dim for '%s' name, expected '%s'", chart.ID, cf.Name, dimMaxID)
+
+		dimAveID := fmt.Sprintf("custom_time_field_%s_time_min", cf.Name)
+		assert.True(t, chart.HasDim(dimAveID), "chart '%s' has no dim for '%s' name, expected '%s'", chart.ID, cf.Name, dimAveID)
+	}
+}
+
 var (
 	emptySummary   = newWebLogSummary()
 	emptyHistogram = metrics.NewHistogram(metrics.DefBuckets)
@@ -823,6 +965,7 @@ func prepareWebLogCollectFull(t *testing.T) *WebLog {
 		"$ssl_cipher",
 		"$side",
 		"$drink",
+		"$random_time_field",
 	}, " ")
 
 	cfg := Config{
@@ -858,6 +1001,12 @@ func prepareWebLogCollectFull(t *testing.T) *WebLog {
 					{Name: "beer", Match: "= beer"},
 					{Name: "wine", Match: "= wine"},
 				},
+			},
+		},
+		CustomTimeFields: []customTimeField{
+			{
+				Name:      "random_time_field",
+				Histogram: metrics.DefBuckets,
 			},
 		},
 		Histogram:      metrics.DefBuckets,
@@ -965,6 +1114,52 @@ func prepareWebLogCollectCustom(t *testing.T) *WebLog {
 	defer weblog.Cleanup()
 
 	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testCustomLog))
+	require.NoError(t, err)
+	weblog.parser = p
+	return weblog
+}
+
+func prepareWebLogCollectCustomTimeFields(t *testing.T) *WebLog {
+	t.Helper()
+	format := strings.Join([]string{
+		"$time1",
+		"$time2",
+	}, " ")
+
+	cfg := Config{
+		Parser: logs.ParserConfig{
+			LogType: logs.TypeCSV,
+			CSV: logs.CSVConfig{
+				FieldsPerRecord:  2,
+				Delimiter:        ' ',
+				TrimLeadingSpace: false,
+				Format:           format,
+				CheckField:       checkCSVFormatField,
+			},
+		},
+		CustomTimeFields: []customTimeField{
+			{
+				Name:      "time1",
+				Histogram: metrics.DefBuckets,
+			},
+			{
+				Name:      "time2",
+				Histogram: metrics.DefBuckets,
+			},
+		},
+		Path:           "testdata/custom_time_fields.log",
+		ExcludePath:    "",
+		URLPatterns:    nil,
+		Histogram:      nil,
+		GroupRespCodes: false,
+	}
+	weblog := New()
+	weblog.Config = cfg
+	require.True(t, weblog.Init())
+	require.True(t, weblog.Check())
+	defer weblog.Cleanup()
+
+	p, err := logs.NewCSVParser(weblog.Parser.CSV, bytes.NewReader(testCustomTimeFieldLog))
 	require.NoError(t, err)
 	weblog.parser = p
 	return weblog

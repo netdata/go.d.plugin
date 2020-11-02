@@ -312,18 +312,35 @@ func (w *WebLog) collectCustomFields() {
 	if !w.line.hasCustomFields() {
 		return
 	}
+
 	for _, cv := range w.line.custom.values {
-		for _, pattern := range w.customFields[cv.name] {
-			if !pattern.MatchString(cv.value) {
-				continue
-			}
-			v, ok := w.mx.ReqCustomField[cv.name]
-			if !ok {
+		if patterns, ok := w.customFields[cv.name]; ok {
+			for _, pattern := range patterns {
+				if !pattern.MatchString(cv.value) {
+					continue
+				}
+				v, ok := w.mx.ReqCustomField[cv.name]
+				if !ok {
+					break
+				}
+				c, _ := v.GetP(pattern.name)
+				c.Inc()
 				break
 			}
-			c, _ := v.GetP(pattern.name)
-			c.Inc()
-			break
+		} else if histogram, ok := w.customTimeFields[cv.name]; ok {
+			v, ok := w.mx.ReqCustomTimeField[cv.name]
+			if !ok {
+				continue
+			}
+			ctf, err := strconv.ParseFloat(cv.value, 64)
+			if err != nil || !isTimeValid(ctf) {
+				continue
+			}
+			v.Time.Observe(ctf)
+			if histogram != nil {
+				v.TimeHist.Observe(ctf * timeMultiplier(cv.value))
+			}
+
 		}
 	}
 }
