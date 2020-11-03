@@ -6,9 +6,22 @@ sidebar_label: "Example collector"
 
 # Example collector
 
+An example data collection module. You can use this example to help you write a new module.
+
 ## Charts
 
+This module produces example charts with random values.
+Number of charts, dimensions and chart type is configurable.
+
 ## Configuration
+
+Disabled by default. Should be explicitly enabled in [go.d.conf](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
+
+```yaml
+# go.d.conf
+modules:
+  example: yes
+```
 
 Edit the `go.d/example.conf` configuration file using `edit-config` from the Agent's [config
 directory](/docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
@@ -18,20 +31,19 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/example.conf
 ```
 
-To add a new endpoint to collect metrics from, or change the URL that Netdata looks for, add or configure the `name` and
-`url` values. Endpoints can be both local or remote as long as they expose their metrics on the provided URL.
-
 Here is an example configuration with several jobs:
 
 ```yaml
 jobs:
-  - name: example_1
-    num_of_charts: 1
-    num_of_dimensions: 3
+  - name: example
+    charts:
+      num: 3
+      dimensions: 5
 
-  - name: example_2
-    num_of_charts: 2
-    num_of_dimensions: 6
+  - name: hidden_example
+    hidden_charts:
+      num: 3
+      dimensions: 5
 ```
 
 ---
