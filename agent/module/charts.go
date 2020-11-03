@@ -90,6 +90,9 @@ type (
 		created bool
 		// updated flag is used to indicate whether the chart was updated on last data collection interval.
 		updated bool
+
+		// ignore flag is used to indicate that the chart shouldn't be send to the netdata plugins.d
+		ignore bool
 	}
 
 	// DimOpts represents dimension options.
