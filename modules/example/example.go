@@ -7,52 +7,79 @@ import (
 )
 
 func init() {
-	creator := module.Creator{
+	module.Register("example", module.Creator{
 		Defaults: module.Defaults{
-			Disabled: true,
+			UpdateEvery:        module.UpdateEvery,
+			AutoDetectionRetry: module.AutoDetectionRetry,
+			Priority:           module.Priority,
+			Disabled:           true,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("example", creator)
+	})
 }
 
-// New creates Example with default values
 func New() *Example {
 	return &Example{
-		metrics: make(map[string]int64),
+		Config: Config{
+			NumCharts: 1,
+			NumDims:   3,
+		},
+
+		randInt: func() func() int64 {
+			return func() int64 { return rand.Int63n(100) }
+		}(),
+		collectedDims: make(map[string]bool),
 	}
 }
 
-// Example example module
+type Config struct {
+	NumCharts int `yaml:"num_of_charts"`
+	NumDims   int `yaml:"num_of_dimensions"`
+}
+
 type Example struct {
 	module.Base // should be embedded by every module
+	Config      `yaml:",inline"`
 
-	metrics map[string]int64
+	randInt       func() int64
+	charts        *module.Charts
+	collectedDims map[string]bool
 }
 
-// Cleanup makes cleanup
-func (Example) Cleanup() {}
+func (e *Example) Init() bool {
+	err := e.validateConfig()
+	if err != nil {
+		e.Errorf("config validation: %v", err)
+		return false
+	}
 
-// Init makes initialization
-func (Example) Init() bool {
+	charts, err := e.initCharts()
+	if err != nil {
+		e.Errorf("charts init: %v", err)
+		return false
+	}
+	e.charts = charts
 	return true
 }
 
-// Check makes check
-func (Example) Check() bool {
-	return true
+func (e *Example) Check() bool {
+	return len(e.Collect()) > 0
 }
 
-// Charts creates Charts
-func (Example) Charts() *Charts {
-	return charts.Copy()
+func (e *Example) Charts() *module.Charts {
+	return e.charts
 }
 
-// Collect collects metrics
 func (e *Example) Collect() map[string]int64 {
-	e.metrics["random0"] = rand.Int63n(100)
-	e.metrics["random1"] = rand.Int63n(100)
+	mx, err := e.collect()
+	if err != nil {
+		e.Error(err)
+	}
 
-	return e.metrics
+	if len(mx) == 0 {
+		return nil
+	}
+	return mx
 }
+
+func (Example) Cleanup() {}
