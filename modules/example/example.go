@@ -25,6 +25,10 @@ func New() *Example {
 				Num:  1,
 				Dims: 4,
 			},
+			HiddenCharts: ConfigCharts{
+				Num:  0,
+				Dims: 4,
+			},
 		},
 
 		randInt: func() func() int64 {
