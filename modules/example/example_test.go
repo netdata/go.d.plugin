@@ -20,7 +20,7 @@ func TestExample_Check(t *testing.T) {
 		prepare  func() *Example
 		wantFail bool
 	}{
-		"default":                  {prepare: New},
+		"default":                  {prepare: prepareExampleDefault},
 		"only charts":              {prepare: prepareExampleOnlyCharts},
 		"only hidden charts":       {prepare: prepareExampleOnlyHiddenCharts},
 		"charts and hidden charts": {prepare: prepareExampleChartsAndHiddenCharts},
@@ -53,25 +53,26 @@ func TestExample_Collect(t *testing.T) {
 		wantCollected map[string]int64
 	}{
 		"default": {
-			prepare: New,
+			prepare: prepareExampleDefault,
 			wantCollected: map[string]int64{
 				"random_0_random0": 1,
-				"random_0_random1": 1,
+				"random_0_random1": -1,
 				"random_0_random2": 1,
+				"random_0_random3": -1,
 			},
 		},
 		"only charts": {
 			prepare: prepareExampleOnlyCharts,
 			wantCollected: map[string]int64{
 				"random_0_random0": 1,
-				"random_0_random1": 1,
+				"random_0_random1": -1,
 				"random_0_random2": 1,
-				"random_0_random3": 1,
+				"random_0_random3": -1,
 				"random_0_random4": 1,
 				"random_1_random0": 1,
-				"random_1_random1": 1,
+				"random_1_random1": -1,
 				"random_1_random2": 1,
-				"random_1_random3": 1,
+				"random_1_random3": -1,
 				"random_1_random4": 1,
 			},
 		},
@@ -79,14 +80,14 @@ func TestExample_Collect(t *testing.T) {
 			prepare: prepareExampleOnlyHiddenCharts,
 			wantCollected: map[string]int64{
 				"hidden_random_0_random0": 1,
-				"hidden_random_0_random1": 1,
+				"hidden_random_0_random1": -1,
 				"hidden_random_0_random2": 1,
-				"hidden_random_0_random3": 1,
+				"hidden_random_0_random3": -1,
 				"hidden_random_0_random4": 1,
 				"hidden_random_1_random0": 1,
-				"hidden_random_1_random1": 1,
+				"hidden_random_1_random1": -1,
 				"hidden_random_1_random2": 1,
-				"hidden_random_1_random3": 1,
+				"hidden_random_1_random3": -1,
 				"hidden_random_1_random4": 1,
 			},
 		},
@@ -94,24 +95,24 @@ func TestExample_Collect(t *testing.T) {
 			prepare: prepareExampleChartsAndHiddenCharts,
 			wantCollected: map[string]int64{
 				"hidden_random_0_random0": 1,
-				"hidden_random_0_random1": 1,
+				"hidden_random_0_random1": -1,
 				"hidden_random_0_random2": 1,
-				"hidden_random_0_random3": 1,
+				"hidden_random_0_random3": -1,
 				"hidden_random_0_random4": 1,
 				"hidden_random_1_random0": 1,
-				"hidden_random_1_random1": 1,
+				"hidden_random_1_random1": -1,
 				"hidden_random_1_random2": 1,
-				"hidden_random_1_random3": 1,
+				"hidden_random_1_random3": -1,
 				"hidden_random_1_random4": 1,
 				"random_0_random0":        1,
-				"random_0_random1":        1,
+				"random_0_random1":        -1,
 				"random_0_random2":        1,
-				"random_0_random3":        1,
+				"random_0_random3":        -1,
 				"random_0_random4":        1,
 				"random_1_random0":        1,
-				"random_1_random1":        1,
+				"random_1_random1":        -1,
 				"random_1_random2":        1,
-				"random_1_random3":        1,
+				"random_1_random3":        -1,
 				"random_1_random4":        1,
 			},
 		},
@@ -146,6 +147,10 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, e *Example, collected 
 				"collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
 		}
 	}
+}
+
+func prepareExampleDefault() *Example {
+	return prepareExample(New().Config)
 }
 
 func prepareExampleOnlyCharts() *Example {

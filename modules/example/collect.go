@@ -30,8 +30,11 @@ func (e *Example) collect() (map[string]int64, error) {
 				}
 				chart.MarkNotCreated()
 			}
-
-			collected[id] = e.randInt()
+			if i%2 == 0 {
+				collected[id] = e.randInt()
+			} else {
+				collected[id] = -e.randInt()
+			}
 		}
 	}
 	return collected, nil

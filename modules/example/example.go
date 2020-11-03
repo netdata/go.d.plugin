@@ -23,7 +23,7 @@ func New() *Example {
 		Config: Config{
 			Charts: ConfigCharts{
 				Num:  1,
-				Dims: 3,
+				Dims: 4,
 			},
 		},
 
