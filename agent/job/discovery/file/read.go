@@ -58,13 +58,17 @@ func (r Reader) groups() (groups []*confgroup.Group) {
 				continue
 			}
 
-			if group, err := parse(r.reg, path); err != nil {
+			group, err := parse(r.reg, path)
+			if err != nil {
 				r.Warningf("parse '%s': %v", path, err)
-			} else if group == nil {
-				groups = append(groups, &confgroup.Group{Source: path})
-			} else {
-				groups = append(groups, group)
+				continue
 			}
+			if group == nil {
+				group = &confgroup.Group{Source: path}
+			}
+
+			r.Debugf("file '%s' contains %d job(s)", path, len(group.Configs))
+			groups = append(groups, group)
 		}
 	}
 	for _, group := range groups {
