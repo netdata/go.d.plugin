@@ -1,12 +1,12 @@
 <!--
-title: "Example collector"
+title: "Example module"
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/example/README.md
-sidebar_label: "Example collector"
+sidebar_label: "Example module"
 -->
 
-# Example collector
+# Example module
 
-An example data collection module. You can use this example to help you write a new module.
+An example data collection module. Use it as an example writing a new module.
 
 ## Charts
 
