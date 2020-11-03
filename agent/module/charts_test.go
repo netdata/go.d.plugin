@@ -50,7 +50,7 @@ func TestChartType_String(t *testing.T) {
 		{"incremental", Incremental},
 		{"percentage-of-absolute-row", PercentOfAbsolute},
 		{"percentage-of-incremental-row", PercentOfIncremental},
-		{"", chartType("wrong")},
+		{"", ChartType("wrong")},
 	}
 
 	for _, v := range cases {

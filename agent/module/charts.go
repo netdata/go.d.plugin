@@ -8,17 +8,17 @@ import (
 )
 
 type (
-	chartType string
+	ChartType string
 	dimAlgo   string
 )
 
 const (
 	// Line chart type.
-	Line chartType = "line"
+	Line ChartType = "line"
 	// Area chart type.
-	Area chartType = "area"
+	Area ChartType = "area"
 	// Stacked chart type.
-	Stacked chartType = "stacked"
+	Stacked ChartType = "stacked"
 
 	// Absolute dimension algorithm.
 	// The value is to drawn as-is (interpolated to second boundary).
@@ -43,7 +43,7 @@ func (d dimAlgo) String() string {
 	return ""
 }
 
-func (c chartType) String() string {
+func (c ChartType) String() string {
 	switch c {
 	case Line, Area, Stacked:
 		return string(c)
@@ -76,7 +76,7 @@ type (
 		Units    string
 		Fam      string
 		Ctx      string
-		Type     chartType
+		Type     ChartType
 		Priority int
 		Opts
 

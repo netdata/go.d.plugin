@@ -2,23 +2,21 @@ package example
 
 import "github.com/netdata/go.d.plugin/agent/module"
 
-type (
-	// Charts is an alias for module.Charts
-	Charts = module.Charts
-	// Dims is an alias for module.Dims
-	Dims = module.Dims
-)
+var chartTemplate = module.Chart{
+	ID:    "random_%d",
+	Title: "A Random Number",
+	Units: "random",
+	Fam:   "random",
+	Ctx:   "example.random",
+}
 
-var charts = Charts{
-	{
-		ID:    "random",
-		Title: "A Random Number",
-		Units: "random",
-		Fam:   "random",
-		Ctx:   "example.random",
-		Dims: Dims{
-			{ID: "random0", Name: "random0"},
-			{ID: "random1", Name: "random1"},
-		},
+var hiddenChartTemplate = module.Chart{
+	ID:    "hidden_random_%d",
+	Title: "A Random Number",
+	Units: "random",
+	Fam:   "random",
+	Ctx:   "example.random",
+	Opts: module.Opts{
+		Hidden: true,
 	},
 }
