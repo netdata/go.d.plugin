@@ -96,6 +96,10 @@ type Job struct {
 	stop chan struct{}
 }
 
+// https://github.com/netdata/netdata/blob/ab0ffcebf802803d1e88f6a5e47a314c292b45e3/database/rrd.h#L59
+// Chart type.id (job.FullName() + '.' + chart.ID)
+const RRD_ID_LENGTH_MAX = 200
+
 // FullName returns job full name.
 func (j Job) FullName() string {
 	return j.fullName
@@ -301,6 +305,12 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 	var i, updated int
 	for _, chart := range *j.charts {
 		if !chart.created {
+			typeID := fmt.Sprintf("%s.%s", j.FullName(), chart.ID)
+			if len(typeID) >= RRD_ID_LENGTH_MAX {
+				j.Warningf("chart 'type.id' length (%d) >= max allowed (%d), the chart is ignored (%s)",
+					len(typeID), RRD_ID_LENGTH_MAX, typeID)
+				chart.ignore = true
+			}
 			j.createChart(chart)
 		}
 		if chart.remove {
@@ -326,6 +336,9 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 
 func (j *Job) createChart(chart *Chart) {
 	defer func() { chart.created = true }()
+	if chart.ignore {
+		return
+	}
 
 	if chart.Priority == 0 {
 		chart.Priority = j.priority
@@ -366,6 +379,17 @@ func (j *Job) createChart(chart *Chart) {
 }
 
 func (j *Job) updateChart(chart *Chart, collected map[string]int64, sinceLastRun int) bool {
+	if chart.ignore {
+		dims := chart.Dims[:0]
+		for _, dim := range chart.Dims {
+			if !dim.remove {
+				dims = append(dims, dim)
+			}
+		}
+		chart.Dims = dims
+		return false
+	}
+
 	if !chart.updated {
 		sinceLastRun = 0
 	}
