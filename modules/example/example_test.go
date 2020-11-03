@@ -12,7 +12,86 @@ func TestNew(t *testing.T) {
 }
 
 func TestExample_Init(t *testing.T) {
+	tests := map[string]struct {
+		config   Config
+		wantFail bool
+	}{
+		"default": {
+			config: New().Config,
+		},
+		"only charts": {
+			config: Config{
+				Charts: ConfigCharts{
+					Num:  1,
+					Dims: 2,
+				},
+			},
+		},
+		"only hidden charts": {
+			config: Config{
+				HiddenCharts: ConfigCharts{
+					Num:  1,
+					Dims: 2,
+				},
+			},
+		},
+		"charts and hidden charts": {
+			config: Config{
+				Charts: ConfigCharts{
+					Num:  1,
+					Dims: 2,
+				},
+				HiddenCharts: ConfigCharts{
+					Num:  1,
+					Dims: 2,
+				},
+			},
+		},
+		"charts->num and hidden_charts->num == 0": {
+			wantFail: true,
+			config: Config{
+				Charts: ConfigCharts{
+					Num:  0,
+					Dims: 2,
+				},
+				HiddenCharts: ConfigCharts{
+					Num:  0,
+					Dims: 2,
+				},
+			},
+		},
+		"charts->num > 0 and charts->dimensions == 0": {
+			wantFail: true,
+			config: Config{
+				Charts: ConfigCharts{
+					Num:  1,
+					Dims: 0,
+				},
+			},
+		},
+		"hidden_charts->num > 0 and hidden_charts->dimensions == 0": {
+			wantFail: true,
+			config: Config{
+				HiddenCharts: ConfigCharts{
+					Num:  1,
+					Dims: 0,
+				},
+			},
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			example := New()
+			example.Config = test.config
+
+			if test.wantFail {
+				assert.False(t, example.Init())
+			} else {
+				assert.True(t, example.Init())
+			}
+		})
+	}
 }
 
 func TestExample_Check(t *testing.T) {
@@ -41,6 +120,36 @@ func TestExample_Check(t *testing.T) {
 }
 
 func TestExample_Charts(t *testing.T) {
+	tests := map[string]struct {
+		prepare func(t *testing.T) *Example
+		wantNil bool
+	}{
+		"not initialized collector": {
+			wantNil: true,
+			prepare: func(t *testing.T) *Example {
+				return New()
+			},
+		},
+		"initialized collector": {
+			prepare: func(t *testing.T) *Example {
+				example := New()
+				require.True(t, example.Init())
+				return example
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			example := test.prepare(t)
+
+			if test.wantNil {
+				assert.Nil(t, example.Charts())
+			} else {
+				assert.NotNil(t, example.Charts())
+			}
+		})
+	}
 }
 
 func TestExample_Cleanup(t *testing.T) {
