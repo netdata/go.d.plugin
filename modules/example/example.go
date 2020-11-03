@@ -40,8 +40,9 @@ type (
 		HiddenCharts ConfigCharts `yaml:"hidden_charts"`
 	}
 	ConfigCharts struct {
-		Num  int `yaml:"num"`
-		Dims int `yaml:"dimensions"`
+		Type string `yaml:"type"`
+		Num  int    `yaml:"num"`
+		Dims int    `yaml:"dimensions"`
 	}
 )
 

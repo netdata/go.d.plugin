@@ -26,6 +26,7 @@ func (e Example) initCharts() (*module.Charts, error) {
 	for i := 0; i < e.Config.Charts.Num; i++ {
 		chart := chartTemplate.Copy()
 		chart.ID = fmt.Sprintf(chart.ID, i)
+		chart.Type = module.ChartType(e.Config.Charts.Type)
 
 		if err := charts.Add(chart); err != nil {
 			return nil, err
@@ -35,6 +36,7 @@ func (e Example) initCharts() (*module.Charts, error) {
 	for i := 0; i < e.Config.HiddenCharts.Num; i++ {
 		chart := hiddenChartTemplate.Copy()
 		chart.ID = fmt.Sprintf(chart.ID, i)
+		chart.Type = module.ChartType(e.Config.HiddenCharts.Type)
 
 		if err := charts.Add(chart); err != nil {
 			return nil, err
