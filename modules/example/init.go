@@ -1,16 +1,21 @@
 package example
 
 import (
+	"errors"
 	"fmt"
+
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func (e Example) validateConfig() error {
-	if e.NumCharts <= 0 {
-		return fmt.Errorf("'num_of_charts' must be > 0 (current: %d)", e.NumCharts)
+	if e.Config.Charts.Num <= 0 {
+		return errors.New("'charts->num' must be > 0")
 	}
-	if e.NumDims <= 0 {
-		return fmt.Errorf("'num_of_dimensions' must be > 0 (current: %d)", e.NumDims)
+	if e.Config.Charts.Dims <= 0 {
+		return errors.New("'charts->dimensions' must be > 0")
+	}
+	if e.Config.HiddenCharts.Num > 0 && e.Config.HiddenCharts.Dims <= 0 {
+		return errors.New("'hidden_charts->dimensions' must be > 0")
 	}
 	return nil
 }
@@ -18,8 +23,17 @@ func (e Example) validateConfig() error {
 func (e Example) initCharts() (*module.Charts, error) {
 	charts := &module.Charts{}
 
-	for i := 0; i < e.NumCharts; i++ {
+	for i := 0; i < e.Config.Charts.Num; i++ {
 		chart := chartTemplate.Copy()
+		chart.ID = fmt.Sprintf(chart.ID, i)
+
+		if err := charts.Add(chart); err != nil {
+			return nil, err
+		}
+	}
+
+	for i := 0; i < e.Config.HiddenCharts.Num; i++ {
+		chart := hiddenChartTemplate.Copy()
 		chart.ID = fmt.Sprintf(chart.ID, i)
 
 		if err := charts.Add(chart); err != nil {

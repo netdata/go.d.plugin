@@ -21,8 +21,10 @@ func init() {
 func New() *Example {
 	return &Example{
 		Config: Config{
-			NumCharts: 1,
-			NumDims:   3,
+			Charts: ConfigCharts{
+				Num:  1,
+				Dims: 3,
+			},
 		},
 
 		randInt: func() func() int64 {
@@ -32,10 +34,16 @@ func New() *Example {
 	}
 }
 
-type Config struct {
-	NumCharts int `yaml:"num_of_charts"`
-	NumDims   int `yaml:"num_of_dimensions"`
-}
+type (
+	Config struct {
+		Charts       ConfigCharts `yaml:"charts"`
+		HiddenCharts ConfigCharts `yaml:"hidden_charts"`
+	}
+	ConfigCharts struct {
+		Num  int `yaml:"num"`
+		Dims int `yaml:"dimensions"`
+	}
+)
 
 type Example struct {
 	module.Base // should be embedded by every module
