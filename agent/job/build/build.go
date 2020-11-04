@@ -150,6 +150,8 @@ func (m *Manager) processGroup(ctx context.Context, group *confgroup.Group) {
 		return
 	}
 	added, removed := m.grpCache.put(group)
+	m.Debugf("received config group ('%s'): %d jobs (added: %d, removed: %d)",
+		group.Source, len(group.Configs), len(added), len(removed))
 
 	select {
 	case <-ctx.Done():
