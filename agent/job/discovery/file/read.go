@@ -66,8 +66,6 @@ func (r Reader) groups() (groups []*confgroup.Group) {
 			if group == nil {
 				group = &confgroup.Group{Source: path}
 			}
-
-			r.Debugf("file '%s' contains %d job(s)", path, len(group.Configs))
 			groups = append(groups, group)
 		}
 	}
