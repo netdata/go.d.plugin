@@ -95,7 +95,7 @@ Otherwise you need to set path to the `control-key-file` and `control-cert-file`
 
 The module tries to auto-detect following parameters reading `unbound.conf`:
 -   address
--   cumulative
+-   cumulative_stats
 -   use_tls
 -   tls_cert
 -   tls_key
@@ -122,7 +122,7 @@ jobs:
   - name: remote_cumulative
     address: 203.0.113.11:8953
     use_tls: no
-    cumulative: yes
+    cumulative_stats: yes
       
   - name: socket
     address: /var/run/unbound.sock
