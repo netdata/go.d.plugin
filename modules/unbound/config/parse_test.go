@@ -8,14 +8,12 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	tests := []struct {
-		name    string
+	tests := map[string]struct {
 		path    string
 		wantCfg UnboundConfig
 		wantErr bool
 	}{
-		{
-			name: "valid include",
+		"valid include": {
 			path: "testdata/valid_include.conf",
 			wantCfg: UnboundConfig{
 				cumulative: "yes",
@@ -27,8 +25,19 @@ func TestParse(t *testing.T) {
 				certFile:   "/etc/unbound/unbound_control_2.pem",
 			},
 		},
-		{
-			name: "valid glob include",
+		"valid include-toplevel": {
+			path: "testdata/valid_include_toplevel.conf",
+			wantCfg: UnboundConfig{
+				cumulative: "yes",
+				enable:     "yes",
+				iface:      "10.0.0.1",
+				port:       "8955",
+				useCert:    "yes",
+				keyFile:    "/etc/unbound/unbound_control_2.key",
+				certFile:   "/etc/unbound/unbound_control_2.pem",
+			},
+		},
+		"valid glob include": {
 			path: "testdata/valid_glob.conf",
 			wantCfg: UnboundConfig{
 				cumulative: "yes",
@@ -40,8 +49,7 @@ func TestParse(t *testing.T) {
 				certFile:   "/etc/unbound/unbound_control_2.pem",
 			},
 		},
-		{
-			name: "non existent glob include",
+		"non existent glob include": {
 			path: "testdata/non_existent_glob_include.conf",
 			wantCfg: UnboundConfig{
 				cumulative: "yes",
@@ -53,25 +61,22 @@ func TestParse(t *testing.T) {
 				certFile:   "/etc/unbound/unbound_control.pem",
 			},
 		},
-		{
-			name:    "infinite recursion include",
+		"infinite recursion include": {
 			path:    "testdata/infinite_rec.conf",
 			wantErr: true,
 		},
-		{
-			name:    "non existent include",
+		"non existent include": {
 			path:    "testdata/non_existent_include.conf",
 			wantErr: true,
 		},
-		{
-			name:    "non existent path",
+		"non existent path": {
 			path:    "testdata/non_existent_path.conf",
 			wantErr: true,
 		},
 	}
 
-	for _, test := range tests {
-		name := fmt.Sprintf("%s (%s)", test.name, test.path)
+	for name, test := range tests {
+		name = fmt.Sprintf("%s (%s)", name, test.path)
 		t.Run(name, func(t *testing.T) {
 			cfg, err := Parse(test.path)
 

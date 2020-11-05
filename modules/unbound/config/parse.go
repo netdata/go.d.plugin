@@ -13,19 +13,28 @@ import (
 type option struct{ name, value string }
 
 const (
-	optInclude    = "include"
-	optCumulative = "statistics-cumulative"
-	optEnable     = "control-enable"
-	optInterface  = "control-interface"
-	optPort       = "control-port"
-	optUseCert    = "control-use-cert"
-	optKeyFile    = "control-key-file"
-	optCertFile   = "control-cert-file"
+	optInclude         = "include"
+	optIncludeToplevel = "include-toplevel"
+	optCumulative      = "statistics-cumulative"
+	optEnable          = "control-enable"
+	optInterface       = "control-interface"
+	optPort            = "control-port"
+	optUseCert         = "control-use-cert"
+	optKeyFile         = "control-key-file"
+	optCertFile        = "control-cert-file"
 )
 
 func isOptionUsed(opt option) bool {
 	switch opt.name {
-	case optInclude, optCumulative, optEnable, optInterface, optPort, optUseCert, optKeyFile, optCertFile:
+	case optInclude,
+		optIncludeToplevel,
+		optCumulative,
+		optEnable,
+		optInterface,
+		optPort,
+		optUseCert,
+		optKeyFile,
+		optCertFile:
 		return true
 	}
 	return false
@@ -83,7 +92,7 @@ func parse(filename string, visited map[string]bool) ([]option, error) {
 			continue
 		}
 
-		if opt.name != optInclude {
+		if opt.name != optInclude && opt.name != optIncludeToplevel {
 			options = append(options, opt)
 			continue
 		}
