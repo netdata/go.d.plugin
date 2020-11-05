@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var allowedDelta = 50 * time.Millisecond
+var allowedDelta = 100 * time.Millisecond
 
 func TestTickerParallel(t *testing.T) {
 	for i := 0; i < 100; i++ {
