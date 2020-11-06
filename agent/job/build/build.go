@@ -285,6 +285,7 @@ func (m *Manager) buildJob(cfg confgroup.Config) (*module.Job, error) {
 		return nil, fmt.Errorf("couldn't find '%s' module, job '%s'", cfg.Module(), cfg.Name())
 	}
 
+	m.Debugf("building %s[%s] job, config: %v", cfg.Module(), cfg.Name(), cfg)
 	mod := creator.Create()
 	if err := unmarshal(cfg, mod); err != nil {
 		return nil, err
