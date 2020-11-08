@@ -27,7 +27,7 @@ Directory metrics:
 -   files monitoring: `execute`.
 -   directories monitoring: `read` and `execute`.
 
-If you need to modify the permissions we suggest to use file access control lists:
+If you need to modify the permissions we suggest [to use file access control lists](https://linux.die.net/man/1/setfacl):
 
 ```cmd
 setfacl -m u:netdata:rx file ...
