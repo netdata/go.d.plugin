@@ -20,6 +20,19 @@ Directory metrics:
 -   time since the last modification
 -   number of files
 
+## Permissions
+
+`netdata` user needs the following permissions on all the directories in pathname that lead to the file/dir:
+
+-   files monitoring: `execute`.
+-   directories monitoring: `read` and `execute`.
+
+If you need to modify the permissions we suggest to use file access control lists:
+
+```cmd
+setfacl -m u:netdata:rx file ...
+``` 
+
 ## Charts
 
 Files and directories have their own set of charts.
