@@ -33,6 +33,9 @@ If you need to modify the permissions we suggest to use file access control list
 setfacl -m u:netdata:rx file ...
 ``` 
 
+> :warning: For security reasons, this should not be applied recursively,
+but only to the exact set of directories that lead to the file/dir you want to monitor.
+
 ## Charts
 
 Files and directories have their own set of charts.
