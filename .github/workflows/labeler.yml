@@ -8,7 +8,7 @@ jobs:
   labeler:
     runs-on: ubuntu-latest
     steps:
-      - uses: docker://docker.io/ilyam8/periodic-pr-labeler:v0.1.0
+      - uses: docker://docker.io/ilyam8/periodic-pr-labeler:v0.1.1
         if: github.repository == 'netdata/go.d.plugin'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
