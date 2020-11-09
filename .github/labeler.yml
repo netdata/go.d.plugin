@@ -1,0 +1,44 @@
+# This configures label matching for PR's.
+#
+# The keys are labels, and the values are lists of minimatch patterns
+# to which those labels apply.
+#
+# NOTE: This can only add labels, not remove them.
+# NOTE: Due to YAML syntax limitations, patterns or labels which start
+# with a character that is part of the standard YAML syntax must be
+# quoted.
+#
+# Please keep the labels sorted and deduplicated.
+
+area/agent:
+  - agent/**
+  - cli/**
+  - logger/**
+
+area/build:
+  - hack/**
+  - Makefile
+
+area/ci:
+  - .circleci/**
+  - .github/**
+  - .travis/**
+  - .codecov.yml
+  - .travis.yml
+  - .yamllint.yml
+
+area/configuration:
+  - config/**
+
+area/documentation:
+  - **/*.md
+
+area/modules:
+  - modules/**
+
+area/pkg:
+  - pkg/**
+
+area/tests:
+  - **/testdata/**
+  - **/*_test.go
