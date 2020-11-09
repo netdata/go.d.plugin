@@ -81,6 +81,10 @@ func (e *Example) Check() bool {
 
 ### Charts method
 
+Netdata module produces [`charts`](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#chart), not raw metrics.
+
+Use [`agent/module`](https://github.com/netdata/go.d.plugin/blob/master/agent/module/charts.go) package to create them.
+
 -   `Charts` returns the charts' definition.
 -   Called after `Check` and only if `Check` returned `true`.
 -   If it returns `nil`, the job will be disabled
