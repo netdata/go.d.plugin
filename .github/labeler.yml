@@ -14,6 +14,7 @@ area/agent:
   - agent/**
   - cli/**
   - logger/**
+  - config/go.d.conf
 
 area/build:
   - hack/**
@@ -35,6 +36,7 @@ area/documentation:
 
 area/modules:
   - modules/**
+  - config/go.d/*.conf
 
 area/pkg:
   - pkg/**
