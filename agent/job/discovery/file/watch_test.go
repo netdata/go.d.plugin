@@ -269,6 +269,7 @@ func TestWatcher_Run(t *testing.T) {
 				},
 				afterRun: func() {
 					tmp.writeYAML(filename, cfgChanged)
+					time.Sleep(time.Millisecond * 500)
 				},
 				expectedGroups: expected,
 			}
