@@ -454,7 +454,7 @@ var clusterHealthCharts = Charts{
 		Title: "Cluster Status (0: green, 1: yellow, 2: red)",
 		Units: "status",
 		Fam:   "cluster health",
-		Ctx:   "elasticsearch.cluster_status",
+		Ctx:   "elasticsearch.cluster_health_status",
 		Dims: Dims{
 			{ID: "cluster_status", Name: "status"},
 		},
