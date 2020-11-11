@@ -31,9 +31,7 @@ func New() *Example {
 			},
 		},
 
-		randInt: func() func() int64 {
-			return func() int64 { return rand.Int63n(100) }
-		}(),
+		randInt:       func() int64 { return rand.Int63n(100) },
 		collectedDims: make(map[string]bool),
 	}
 }
