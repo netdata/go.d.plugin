@@ -63,8 +63,6 @@ func (fc *Filecheck) addDirToCharts(dirpath string) {
 			id = dirDimID(dirpath, "mtime_ago")
 		case dirNumOfFilesChart.ID:
 			id = dirDimID(dirpath, "num_of_files")
-		case dirNumOfFilesChart.ID:
-			id = dirDimID(dirpath, "num_of_files")
 		case dirSizeChart.ID:
 			id = dirDimID(dirpath, "size_bytes")
 		default:
