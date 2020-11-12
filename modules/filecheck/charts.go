@@ -37,6 +37,7 @@ var (
 		dirExistenceChart.Copy(),
 		dirModTimeChart.Copy(),
 		dirNumOfFilesChart.Copy(),
+		dirSizeChart.Copy(),
 	}
 
 	dirExistenceChart = module.Chart{
@@ -59,5 +60,12 @@ var (
 		Units: "files",
 		Fam:   "dirs",
 		Ctx:   "filecheck.dir_num_of_files",
+	}
+	dirSizeChart = module.Chart{
+		ID:    "dir_size",
+		Title: "Dir Size",
+		Units: "bytes",
+		Fam:   "dirs",
+		Ctx:   "filecheck.dir_size",
 	}
 )

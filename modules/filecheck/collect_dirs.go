@@ -3,6 +3,7 @@ package filecheck
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -41,6 +42,9 @@ func (fc *Filecheck) collectDir(mx map[string]int64, dirpath string, curTime tim
 	if num, err := calcDirNumOfFiles(dirpath); err == nil {
 		mx[dirDimID(dirpath, "num_of_files")] = int64(num)
 	}
+	if size, err := calcDirSize(dirpath); err == nil {
+		mx[dirDimID(dirpath, "size_bytes")] = size
+	}
 }
 
 func (fc *Filecheck) addDirToCharts(dirpath string) {
@@ -59,6 +63,8 @@ func (fc *Filecheck) addDirToCharts(dirpath string) {
 			id = dirDimID(dirpath, "mtime_ago")
 		case dirNumOfFilesChart.ID:
 			id = dirDimID(dirpath, "num_of_files")
+		case dirSizeChart.ID:
+			id = dirDimID(dirpath, "size_bytes")
 		default:
 			fc.Warningf("add dimension: couldn't dim id for '%s' chart (dir '%s')", c.ID, dirpath)
 			continue
@@ -87,4 +93,18 @@ func calcDirNumOfFiles(dirpath string) (int, error) {
 	// TODO: include dirs?
 	names, err := f.Readdirnames(-1)
 	return len(names), err
+}
+
+func calcDirSize(dirpath string) (int64, error) {
+	var size int64
+	err := filepath.Walk(dirpath, func(_ string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	return size, err
 }

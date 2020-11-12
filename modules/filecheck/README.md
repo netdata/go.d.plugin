@@ -19,6 +19,7 @@ Directory metrics:
 -   existence
 -   time since the last modification
 -   number of files
+-   size
 
 ## Permissions
 
@@ -51,6 +52,7 @@ Files and directories have their own set of charts.
 -   Dir Existence in `boolean`
 -   Dir Time Since the Last Modification in `seconds`
 -   Dir Number of Files in `files`
+-   Dir Size in `bytes`
 
 ## Configuration
 
