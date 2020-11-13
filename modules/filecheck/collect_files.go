@@ -3,6 +3,7 @@ package filecheck
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -42,10 +43,8 @@ func (fc *Filecheck) collectFile(mx map[string]int64, filepath string, curTime t
 }
 
 func (fc *Filecheck) addFileToCharts(filepath string) {
-	for _, c := range fileCharts {
-		chart := fc.Charts().Get(c.ID)
-		if chart == nil {
-			fc.Warningf("add dimension: couldn't find '%s' chart (file '%s')", c.ID, filepath)
+	for _, chart := range *fc.Charts() {
+		if !strings.HasPrefix(chart.ID, "file_") {
 			continue
 		}
 
@@ -58,7 +57,7 @@ func (fc *Filecheck) addFileToCharts(filepath string) {
 		case fileSizeChart.ID:
 			id = fileDimID(filepath, "size_bytes")
 		default:
-			fc.Warningf("add dimension: couldn't dim id for '%s' chart (file '%s')", c.ID, filepath)
+			fc.Warningf("add dimension: couldn't dim id for '%s' chart (file '%s')", chart.ID, filepath)
 			continue
 		}
 
