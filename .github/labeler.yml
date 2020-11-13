@@ -28,11 +28,12 @@ area/ci:
   - .travis.yml
   - .yamllint.yml
 
-area/configuration: 
+area/conf: 
   - config/**
 
-area/documentation: 
+area/docs: 
   - "**/*.md"
+  - "*.md"
 
 area/modules: 
   - modules/**
