@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -47,6 +48,7 @@ func TestFilecheck_Init(t *testing.T) {
 						"/path/to/dir1",
 						"/path/to/dir2",
 					},
+					CollectDirSize: true,
 				},
 			},
 			wantNumOfCharts: len(fileCharts) + len(dirCharts),
@@ -69,6 +71,7 @@ func TestFilecheck_Init(t *testing.T) {
 						"/path/to/dir1",
 						"/path/to/dir2",
 					},
+					CollectDirSize: true,
 				},
 			},
 			wantNumOfCharts: len(dirCharts),
@@ -141,6 +144,15 @@ func TestFilecheck_Collect(t *testing.T) {
 				"dir_testdata/dir_mtime_ago":           4087,
 				"dir_testdata/dir_num_of_files":        3,
 				"dir_testdata/dir_size_bytes":          8160,
+				"dir_testdata/non_existent_dir_exists": 0,
+			},
+		},
+		"collect dirs w/o size": {
+			prepare: prepareFilecheckDirsWithoutSize,
+			wantCollected: map[string]int64{
+				"dir_testdata/dir_exists":              1,
+				"dir_testdata/dir_mtime_ago":           4087,
+				"dir_testdata/dir_num_of_files":        3,
 				"dir_testdata/non_existent_dir_exists": 0,
 			},
 		},
@@ -227,6 +239,16 @@ func prepareFilecheckDirs() *Filecheck {
 		"testdata/dir",
 		"testdata/non_existent_dir",
 	}
+	return fc
+}
+
+func prepareFilecheckDirsWithoutSize() *Filecheck {
+	fc := New()
+	fc.Config.Dirs.Include = []string{
+		"testdata/dir",
+		"testdata/non_existent_dir",
+	}
+	fc.Config.Dirs.CollectDirSize = false
 	return fc
 }
 

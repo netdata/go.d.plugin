@@ -76,6 +76,7 @@ jobs:
        - '/path/to/file1'
        - '/path/to/file2'
    dirs:
+     collect_dir_size: no 
      include:
        - '/path/to/dir1'
        - '/path/to/dir2'
@@ -88,6 +89,7 @@ jobs:
 
  - name: dirs_example
    dirs:
+     collect_dir_size: yes
      include:
        - '/path/to/dir1'
        - '/path/to/dir2'

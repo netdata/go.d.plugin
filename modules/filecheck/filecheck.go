@@ -17,7 +17,9 @@ func New() *Filecheck {
 	return &Filecheck{
 		Config: Config{
 			Files: filesConfig{},
-			Dirs:  dirsConfig{},
+			Dirs: dirsConfig{
+				CollectDirSize: true,
+			},
 		},
 		collectedFiles: make(map[string]bool),
 		collectedDirs:  make(map[string]bool),
@@ -34,8 +36,9 @@ type (
 		Exclude []string `yaml:"exclude"`
 	}
 	dirsConfig struct {
-		Include []string `yaml:"include"`
-		Exclude []string `yaml:"exclude"`
+		Include        []string `yaml:"include"`
+		Exclude        []string `yaml:"exclude"`
+		CollectDirSize bool     `yaml:"collect_dir_size"`
 	}
 )
 

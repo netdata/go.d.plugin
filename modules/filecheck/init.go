@@ -26,6 +26,11 @@ func (fc Filecheck) initCharts() (*module.Charts, error) {
 		if err := charts.Add(*dirCharts.Copy()...); err != nil {
 			return nil, err
 		}
+		if !fc.Dirs.CollectDirSize {
+			if err := charts.Remove(dirSizeChart.ID); err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	if len(*charts) == 0 {

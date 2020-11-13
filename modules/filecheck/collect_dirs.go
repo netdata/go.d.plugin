@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -42,16 +43,16 @@ func (fc *Filecheck) collectDir(mx map[string]int64, dirpath string, curTime tim
 	if num, err := calcDirNumOfFiles(dirpath); err == nil {
 		mx[dirDimID(dirpath, "num_of_files")] = int64(num)
 	}
-	if size, err := calcDirSize(dirpath); err == nil {
-		mx[dirDimID(dirpath, "size_bytes")] = size
+	if fc.Dirs.CollectDirSize {
+		if size, err := calcDirSize(dirpath); err == nil {
+			mx[dirDimID(dirpath, "size_bytes")] = size
+		}
 	}
 }
 
 func (fc *Filecheck) addDirToCharts(dirpath string) {
-	for _, c := range dirCharts {
-		chart := fc.Charts().Get(c.ID)
-		if chart == nil {
-			fc.Warningf("add dimension: couldn't find '%s' chart (dir '%s')", c.ID, dirpath)
+	for _, chart := range *fc.Charts() {
+		if !strings.HasPrefix(chart.ID, "dir_") {
 			continue
 		}
 
@@ -66,7 +67,7 @@ func (fc *Filecheck) addDirToCharts(dirpath string) {
 		case dirSizeChart.ID:
 			id = dirDimID(dirpath, "size_bytes")
 		default:
-			fc.Warningf("add dimension: couldn't dim id for '%s' chart (dir '%s')", c.ID, dirpath)
+			fc.Warningf("add dimension: couldn't dim id for '%s' chart (dir '%s')", chart.ID, dirpath)
 			continue
 		}
 
@@ -104,7 +105,7 @@ func calcDirSize(dirpath string) (int64, error) {
 		if !info.IsDir() {
 			size += info.Size()
 		}
-		return err
+		return nil
 	})
 	return size, err
 }
