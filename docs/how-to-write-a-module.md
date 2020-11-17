@@ -81,12 +81,12 @@ func (e *Example) Check() bool {
 
 ### Charts method
 
-Netdata module produces [`charts`](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#chart), not raw metrics.
+:exclamation: Netdata module produces [`charts`](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#chart), not raw metrics.
 
 Use [`agent/module`](https://github.com/netdata/go.d.plugin/blob/master/agent/module/charts.go) package to create them,
 it contains charts and dimensions structs.
 
--   `Charts` returns the charts' definition (`*module.Charts`).
+-   `Charts` returns the [charts](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#chart1) (`*module.Charts`).
 -   Called after `Check` and only if `Check` returned `true`.
 -   If it returns `nil`, the job will be disabled
 -   :warning: Make sure not to share returned value between module instances (jobs).
@@ -150,14 +150,14 @@ We recommend using a file per a logical area. This approach makes it easier to m
 
 Suggested minimal layout:
 
-| Filename                                          | Contains                                               |
-| ------------------------------------------------- |------------------------------------------------------- |
-| [`module_name.go`](#file-module_namego)           | Module configuration, implementation and registration. |
-| [`charts.go`](#file-chartsgo)                     | Charts, charts templates and constructor functions.    |
-| [`init.go`](#file-initgo)                         | Initialization methods.                                |
-| [`collect.go`](#file-collectgo)                   | Metrics collection implementation.                     |
-| [`module_name_test.go`](#file-module_name_testgo) | Public methods/functions tests.                        |
-| [`testdata/`](#file-module_name_testgo)           | Tests fixtures.                                        |
+| Filename                                          | Contains                                                |
+| ------------------------------------------------- |-------------------------------------------------------- |
+| [`module_name.go`](#file-module_namego)           | Module configuration, implementation and registration.  |
+| [`charts.go`](#file-chartsgo)                     | Charts, charts templates and constructor functions.     |
+| [`init.go`](#file-initgo)                         | Initialization methods.                                 |
+| [`collect.go`](#file-collectgo)                   | Metrics collection implementation.                      |
+| [`module_name_test.go`](#file-module_name_testgo) | Public methods/functions tests.                         |
+| [`testdata/`](#file-module_name_testgo)           | Files containing sample data.                           |
 
 ### File `module_name.go`
 
@@ -229,6 +229,11 @@ func (e *Example) collect() (map[string]int64, error) {
 
 > :exclamation: See the example: [`example_test.go`](https://github.com/netdata/go.d.plugin/blob/master/modules/example/example_test.go).
 
+> if you have no experience in testing we recommend starting with [testing package documentation](https://golang.org/pkg/testing/).
+
+> we use `assert` and `require` packages from [github.com/stretchr/testify](https://github.com/stretchr/testify) library,
+> check [their documentation](https://pkg.go.dev/github.com/stretchr/testify).
+
 Testing is mandatory.
 
 -   test only public functions and methods (`New`, `Init`, `Check`, `Charts`, `Cleanup`, `Collect`).
@@ -238,7 +243,7 @@ Prefer `map[string]struct{ ... }` over `[]struct{ ... }`.
 
 ### Directory `testdata/`
 
-The directory contains tests fixtures.
+Put files with sample data in this directory if you need any.
 Its name should be [`testdata`](https://golang.org/cmd/go/#hdr-Package_lists_and_patterns).
 
 > Directory and file names that begin with "." or "_" are ignored by the go tool, as are directories named "testdata".
@@ -246,12 +251,3 @@ Its name should be [`testdata`](https://golang.org/cmd/go/#hdr-Package_lists_and
 ## Helper packages
 
 There are [some helper packages](https://github.com/netdata/go.d.plugin/tree/master/pkg) for writing a module.
-
--   if you need IP ranges consider to use [`iprange`](https://github.com/netdata/go.d.plugin/tree/master/pkg/iprange#iprange).
--   if you parse an application log files, then [`log`](https://github.com/netdata/go.d.plugin/tree/master/pkg/logs) is handy.
--   if you need filtering check [`matcher`](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
--   if you collect metrics from an HTTP endpoint use [`web`](https://github.com/netdata/go.d.plugin/tree/master/pkg/web).
--   if you collect metrics from a prometheus endpoint, then [`prometheus`](https://github.com/netdata/go.d.plugin/tree/master/pkg/prometheus)
-and [`web`](https://github.com/netdata/go.d.plugin/tree/master/pkg/web) is what you need.
--   [`tlscfg`](https://github.com/netdata/go.d.plugin/tree/master/pkg/tlscfg) provides TLS support.
--   [`stm`](https://github.com/netdata/go.d.plugin/tree/master/pkg/stm) helps you to convert any struct to a `map[string]int64`.
