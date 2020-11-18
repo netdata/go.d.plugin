@@ -33,7 +33,44 @@ func TestRecursor_Init(t *testing.T) {
 }
 
 func TestRecursor_Check(t *testing.T) {
+	tests := map[string]struct {
+		prepare  func() (r *Recursor, cleanup func())
+		wantFail bool
+	}{
+		"success on valid response v4.3.1": {
+			prepare: preparePowerDNSRecursorV431,
+		},
+		"fails on response from PowerDNS Authoritative Server": {
+			wantFail: true,
+			prepare:  preparePowerDNSRecursorAuthoritativeData,
+		},
+		"fails on 404 response": {
+			wantFail: true,
+			prepare:  preparePowerDNSRecursor404,
+		},
+		"fails on connection refused": {
+			wantFail: true,
+			prepare:  preparePowerDNSRecursorConnectionRefused,
+		},
+		"fails on response with invalid data": {
+			wantFail: true,
+			prepare:  preparePowerDNSRecursorInvalidData,
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			recursor, cleanup := test.prepare()
+			defer cleanup()
+			require.True(t, recursor.Init())
+
+			if test.wantFail {
+				assert.False(t, recursor.Check())
+			} else {
+				assert.True(t, recursor.Check())
+			}
+		})
+	}
 }
 
 func TestRecursor_Charts(t *testing.T) {
@@ -41,15 +78,15 @@ func TestRecursor_Charts(t *testing.T) {
 }
 
 func TestRecursor_Cleanup(t *testing.T) {
-
+	assert.NotPanics(t, New().Cleanup)
 }
 
 func TestRecursor_Collect(t *testing.T) {
 	tests := map[string]struct {
-		prepare       func(t *testing.T) (r *Recursor, cleanup func())
+		prepare       func() (r *Recursor, cleanup func())
 		wantCollected map[string]int64
 	}{
-		"success when valid response v4.3.1": {
+		"success on valid response v4.3.1": {
 			prepare: preparePowerDNSRecursorV431,
 			wantCollected: map[string]int64{
 				"all-outqueries":                41,
@@ -168,21 +205,25 @@ func TestRecursor_Collect(t *testing.T) {
 				"x-ourtime8-16":                 1,
 			},
 		},
-		"fails when received 404 response": {
+		"fails on response from PowerDNS Authoritative Server": {
+			prepare: preparePowerDNSRecursorAuthoritativeData,
+		},
+		"fails on 404 response": {
 			prepare: preparePowerDNSRecursor404,
 		},
-		"fails when connection refused": {
+		"fails on connection refused": {
 			prepare: preparePowerDNSRecursorConnectionRefused,
 		},
-		"fails when received invalid data": {
+		"fails on response with invalid data": {
 			prepare: preparePowerDNSRecursorInvalidData,
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			recursor, cleanup := test.prepare(t)
+			recursor, cleanup := test.prepare()
 			defer cleanup()
+			require.True(t, recursor.Init())
 
 			collected := recursor.Collect()
 
@@ -210,47 +251,47 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, rec *Recursor, collect
 	}
 }
 
-func preparePowerDNSRecursorV431(t *testing.T) (*Recursor, func()) {
+func preparePowerDNSRecursorV431() (*Recursor, func()) {
 	srv := preparePowerDNSRecursorEndpoint()
-
 	recursor := New()
 	recursor.URL = srv.URL
-	require.True(t, recursor.Init())
 
 	return recursor, srv.Close
 }
 
-func preparePowerDNSRecursorInvalidData(t *testing.T) (*Recursor, func()) {
-	t.Helper()
+func preparePowerDNSRecursorAuthoritativeData() (*Recursor, func()) {
+	srv := preparePowerDNSAuthoritativeEndpoint()
+	recursor := New()
+	recursor.URL = srv.URL
+
+	return recursor, srv.Close
+}
+
+func preparePowerDNSRecursorInvalidData() (*Recursor, func()) {
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte("hello and\n goodbye"))
 		}))
 	recursor := New()
 	recursor.URL = srv.URL
-	require.True(t, recursor.Init())
 
 	return recursor, srv.Close
 }
 
-func preparePowerDNSRecursor404(t *testing.T) (*Recursor, func()) {
-	t.Helper()
+func preparePowerDNSRecursor404() (*Recursor, func()) {
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		}))
 	recursor := New()
 	recursor.URL = srv.URL
-	require.True(t, recursor.Init())
 
 	return recursor, srv.Close
 }
 
-func preparePowerDNSRecursorConnectionRefused(t *testing.T) (*Recursor, func()) {
-	t.Helper()
+func preparePowerDNSRecursorConnectionRefused() (*Recursor, func()) {
 	recursor := New()
 	recursor.URL = "http://127.0.0.1:38001"
-	require.True(t, recursor.Init())
 
 	return recursor, func() {}
 }
@@ -261,6 +302,18 @@ func preparePowerDNSRecursorEndpoint() *httptest.Server {
 			switch r.URL.Path {
 			case urlPathLocalStatistics:
 				_, _ = w.Write(v431statistics)
+			default:
+				w.WriteHeader(http.StatusNotFound)
+			}
+		}))
+}
+
+func preparePowerDNSAuthoritativeEndpoint() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			switch r.URL.Path {
+			case urlPathLocalStatistics:
+				_, _ = w.Write(authoritativeStatistics)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
