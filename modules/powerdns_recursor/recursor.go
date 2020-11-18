@@ -55,12 +55,12 @@ func (r *Recursor) Init() bool {
 	}
 	r.httpClient = client
 
-	charts, err := r.initCharts()
+	cs, err := r.initCharts()
 	if err != nil {
 		r.Errorf("init charts: %v", err)
 		return false
 	}
-	r.charts = charts
+	r.charts = cs
 
 	return true
 }
@@ -74,15 +74,15 @@ func (r *Recursor) Charts() *module.Charts {
 }
 
 func (r *Recursor) Collect() map[string]int64 {
-	mx, err := r.collect()
+	ms, err := r.collect()
 	if err != nil {
 		r.Error(err)
 	}
 
-	if len(mx) == 0 {
+	if len(ms) == 0 {
 		return nil
 	}
-	return mx
+	return ms
 }
 
 func (r *Recursor) Cleanup() {
