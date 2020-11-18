@@ -13,8 +13,8 @@ This collector produces the following chart:
 -   Time until domain expiry in `seconds`
 
 ## Configuration
-Edit the `go.d/whoisquery.conf` configuration file using `edit-config` from the your agent's [config
-directory](/docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
+Edit the `go.d/whoisquery.conf` configuration file using `edit-config` from the Netdata [config
+directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
