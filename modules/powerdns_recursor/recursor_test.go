@@ -11,12 +11,14 @@ import (
 )
 
 var (
-	v431statistics, _ = ioutil.ReadFile("testdata/v4.3.1/statistics.json")
+	v431statistics, _          = ioutil.ReadFile("testdata/v4.3.1/statistics.json")
+	authoritativeStatistics, _ = ioutil.ReadFile("testdata/authoritative/statistics.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"v431statistics": v431statistics,
+		"v431statistics":          v431statistics,
+		"authoritativeStatistics": authoritativeStatistics,
 	} {
 		require.NotNilf(t, data, name)
 	}
