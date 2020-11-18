@@ -32,6 +32,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/phpfpm"
 	_ "github.com/netdata/go.d.plugin/modules/pihole"
 	_ "github.com/netdata/go.d.plugin/modules/portcheck"
+	_ "github.com/netdata/go.d.plugin/modules/powerdns_recursor"
 	_ "github.com/netdata/go.d.plugin/modules/prometheus"
 	_ "github.com/netdata/go.d.plugin/modules/pulsar"
 	_ "github.com/netdata/go.d.plugin/modules/rabbitmq"
