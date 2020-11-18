@@ -49,7 +49,7 @@ func (r *Recursor) collectStatistics(collected map[string]int64, statistics stat
 
 		value, ok := s.Value.(string)
 		if !ok {
-			r.Debugf("%s value (%v) unexpected type: want=string, got=%t.", s.Name, s.Value, s.Value)
+			r.Debugf("%s value (%v) unexpected type: want=string, got=%T.", s.Name, s.Value, s.Value)
 			continue
 		}
 
