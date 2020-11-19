@@ -68,6 +68,7 @@ func (ns *AuthoritativeNS) scrapeStatistics() ([]statisticMetric, error) {
 	req.URL.Path = urlPathLocalStatistics
 	// https://doc.powerdns.com/authoritative/http-api/index.html#authentication
 	if ns.APIKey != "" {
+		// TODO: move 'api_key' to web.Request
 		req.Header.Set("X-API-Key", ns.APIKey)
 	}
 
