@@ -27,14 +27,14 @@ func (ns *AuthoritativeNS) collect() (map[string]int64, error) {
 	ns.collectStatistics(collected, statistics)
 
 	if !isPowerDNSAuthoritativeNSMetrics(collected) {
-		return nil, errors.New("returned metrics aren't AuthoritativeNS Authoritative Server metrics")
+		return nil, errors.New("returned metrics aren't PowerDNS Authoritative Server metrics")
 	}
 
 	return collected, nil
 }
 
 func isPowerDNSAuthoritativeNSMetrics(collected map[string]int64) bool {
-	// AuthoritativeNS Recursor has same endpoint and returns data in the same format.
+	// PowerDNS Recursor has same endpoint and returns data in the same format.
 	_, ok1 := collected["over-capacity-drops"]
 	_, ok2 := collected["tcp-questions"]
 	return !ok1 && !ok2
