@@ -6,6 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
+	"github.com/netdata/go.d.plugin/pkg/web"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -29,7 +32,48 @@ func TestNew(t *testing.T) {
 }
 
 func TestRecursor_Init(t *testing.T) {
+	tests := map[string]struct {
+		config   Config
+		wantFail bool
+	}{
+		"success on default config": {
+			config: New().Config,
+		},
+		"fails on unset URL": {
+			wantFail: true,
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{URL: ""},
+				},
+			},
+		},
+		"fails on invalid TLSCA": {
+			wantFail: true,
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{
+						URL: "http://127.0.0.1:38001",
+					},
+					Client: web.Client{
+						TLSConfig: tlscfg.TLSConfig{TLSCA: "testdata/tls"},
+					},
+				},
+			},
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			recursor := New()
+			recursor.Config = test.config
+
+			if test.wantFail {
+				assert.False(t, recursor.Init())
+			} else {
+				assert.True(t, recursor.Init())
+			}
+		})
+	}
 }
 
 func TestRecursor_Check(t *testing.T) {
@@ -74,7 +118,9 @@ func TestRecursor_Check(t *testing.T) {
 }
 
 func TestRecursor_Charts(t *testing.T) {
-
+	recursor := New()
+	require.True(t, recursor.Init())
+	assert.NotNil(t, recursor.Charts())
 }
 
 func TestRecursor_Cleanup(t *testing.T) {
@@ -242,11 +288,11 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, rec *Recursor, collect
 		}
 		for _, dim := range chart.Dims {
 			_, ok := collected[dim.ID]
-			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+			assert.Truef(t, ok, "chart '%s' dim '%s': no dim in collected", dim.ID, chart.ID)
 		}
 		for _, v := range chart.Vars {
 			_, ok := collected[v.ID]
-			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
+			assert.Truef(t, ok, "chart '%s' dim '%s': no dim in collected", v.ID, chart.ID)
 		}
 	}
 }
