@@ -19,7 +19,7 @@ func New() *Recursor {
 		Config: Config{
 			HTTP: web.HTTP{
 				Request: web.Request{
-					URL: "http://127.0.0.1:8081/api/v1/servers/localhost/statistics",
+					URL: "http://127.0.0.1:8081",
 				},
 				Client: web.Client{
 					Timeout: web.Duration{Duration: time.Second},
