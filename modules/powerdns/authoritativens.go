@@ -31,6 +31,7 @@ func New() *AuthoritativeNS {
 
 type Config struct {
 	web.HTTP `yaml:",inline"`
+	APIKey   string `yaml:"api_key"`
 }
 
 type AuthoritativeNS struct {
