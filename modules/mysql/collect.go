@@ -3,32 +3,18 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"strings"
-
 	"github.com/blang/semver/v4"
 )
 
-const queryVersion = "SELECT VERSION()"
-
-func (m *MySQL) getVersion() (*semver.Version, error) {
-	// https://mariadb.com/kb/en/version/
-	m.Debugf("executing query: '%s'", queryVersion)
-	var ver string
-	if err := m.db.QueryRow(queryVersion).Scan(&ver); err != nil {
-		return nil, err
-	}
-	return semver.New(ver)
-}
-
 func (m *MySQL) collect() (map[string]int64, error) {
 	if m.version == nil {
-		ver, err := m.getVersion()
+		ver, isMariaDB, err := m.collectVersion()
 		if err != nil {
 			return nil, err
 		}
-		m.Debugf("application version: %s", ver)
+
 		m.version = ver
-		m.isMariaDB = strings.Contains(ver.String(), "MariaDB")
+		m.isMariaDB = isMariaDB
 		// https://mariadb.com/kb/en/user-statistics/
 		minVer := semver.Version{Major: 10, Minor: 1, Patch: 1}
 		m.doUserStatistics = m.isMariaDB && m.version.GTE(minVer)
