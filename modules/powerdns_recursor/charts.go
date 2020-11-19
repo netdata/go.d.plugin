@@ -2,14 +2,11 @@ package powerdns_recursor
 
 import "github.com/netdata/go.d.plugin/agent/module"
 
-// https://doc.powerdns.com/recursor/metrics.html
-// https://docs.powerdns.com/recursor/performance.html#recursor-caches
-
 var charts = module.Charts{
 	{
 		ID:    "questions_in",
-		Title: "Questions In",
-		Units: "questions",
+		Title: "Incoming questions",
+		Units: "questions/s",
 		Fam:   "questions",
 		Ctx:   "powerdns_recursor.questions_in",
 		Dims: module.Dims{
@@ -20,8 +17,8 @@ var charts = module.Charts{
 	},
 	{
 		ID:    "questions_out",
-		Title: "Questions Out",
-		Units: "questions",
+		Title: "Outgoing questions",
+		Units: "questions/s",
 		Fam:   "questions",
 		Ctx:   "powerdns_recursor.questions_out",
 		Dims: module.Dims{
@@ -34,7 +31,7 @@ var charts = module.Charts{
 	{
 		ID:    "answer_time",
 		Title: "Queries answered within a time range",
-		Units: "queries",
+		Units: "queries/s",
 		Fam:   "performance",
 		Ctx:   "powerdns_recursor.answer_time",
 		Dims: module.Dims{
@@ -47,8 +44,8 @@ var charts = module.Charts{
 	},
 	{
 		ID:    "timeouts",
-		Title: "Timeouts on outgoing UDP queries since starting",
-		Units: "timeouts",
+		Title: "Timeouts on outgoing UDP queries",
+		Units: "timeouts/s",
 		Fam:   "performance",
 		Ctx:   "powerdns_recursor.timeouts",
 		Dims: module.Dims{
@@ -58,11 +55,11 @@ var charts = module.Charts{
 		},
 	},
 	{
-		ID:    "question_drops",
-		Title: "Dropped questions",
-		Units: "questions",
+		ID:    "drops",
+		Title: "Drops",
+		Units: "drops/s",
 		Fam:   "performance",
-		Ctx:   "powerdns_recursor.question_drops",
+		Ctx:   "powerdns_recursor.drops",
 		Dims: module.Dims{
 			{ID: "over-capacity-drops", Algo: module.Incremental},
 			{ID: "query-pipe-full-drops", Algo: module.Incremental},
