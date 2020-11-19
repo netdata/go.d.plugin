@@ -37,7 +37,7 @@ func isPowerDNSAuthoritativeNSMetrics(collected map[string]int64) bool {
 	// AuthoritativeNS Recursor has same endpoint and returns data in the same format.
 	_, ok1 := collected["over-capacity-drops"]
 	_, ok2 := collected["tcp-questions"]
-	return ok1 && ok2
+	return !ok1 && !ok2
 }
 
 func (ns *AuthoritativeNS) collectStatistics(collected map[string]int64, statistics statisticMetrics) {
