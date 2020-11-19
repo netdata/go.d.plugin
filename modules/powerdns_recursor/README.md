@@ -6,7 +6,7 @@ sidebar_label: "PowerDNS Recursor"
 
 # PowerDNS Recursor monitoring with Netdata
 
-[`PowerDNS Recursor`](https://doc.powerdns.com/recursor/)  is a high-performance DNS recursor
+[`PowerDNS Recursor`](https://doc.powerdns.com/recursor/) is a high-performance DNS recursor
 with built-in scripting capabilities.
 
 This module monitors one or more `PowerDNS Recursor` instances, depending on your configuration.
