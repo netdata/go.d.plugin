@@ -45,8 +45,9 @@ jobs:
    url: 'http://127.0.0.1:5053/jsonstat?command=stats'
    user: 'netdata'
    pass: 'netdata'
-   header:
-      - X-API-key: 'dnsdist-api-key'
+   headers:
+      - name: 'X-API-key'
+        value: 'dnsdist-api-key'
 ```
 
 For all available options, see the DNS dist collector's [configuration
