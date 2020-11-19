@@ -1,11 +1,9 @@
 package powerdns
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"sort"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -239,15 +237,6 @@ func TestRecursor_Collect(t *testing.T) {
 			require.True(t, ns.Init())
 
 			collected := ns.Collect()
-
-			l := make([]string, 0)
-			for k := range collected {
-				l = append(l, k)
-			}
-			sort.Strings(l)
-			for _, value := range l {
-				fmt.Println(fmt.Sprintf("\"%s\": %d,", value, collected[value]))
-			}
 
 			assert.Equal(t, test.wantCollected, collected)
 			if len(test.wantCollected) > 0 {
