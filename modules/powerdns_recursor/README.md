@@ -42,7 +42,7 @@ directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
-sudo ./edit-config go.d/powerdns_recursor.conf.conf
+sudo ./edit-config go.d/powerdns_recursor.conf
 ```
 
 To add a new endpoint to collect metrics from, or change the URL that Netdata looks for, add or configure the `name` and
