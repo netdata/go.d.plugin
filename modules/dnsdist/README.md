@@ -8,12 +8,16 @@ sidebar_label: "DNSdist"
 
 [`DNS dist`](https://dnsdist.org/) is a highly DNS-, DoS- and abuse-aware loadbalancer. 
 
-This module monitors load-balancer performance and health metrics
+This module monitors load-balancer performance and health metrics.
+
+It collects metrics from [the internal webserver](https://dnsdist.org/guides/webserver.html).
+
+Used endpoints:
+- [/jsonstat?command=stats](https://dnsdist.org/guides/webserver.html).
 
 ## Requirements
 
-It is necessary to have at least `user` and `password` to access `DNS dist` webserver, if 
-the web server also had an `API-Key`, you will need to insert into `go.d/dnsdist.conf`.
+For collecting metrics via HTTP, we need [enabled webserver](https://dnsdist.org/guides/webserver.html).
 
 ## Charts
 
@@ -43,11 +47,10 @@ Here is a configuration example:
 jobs:
  - name: local
    url: 'http://127.0.0.1:5053/jsonstat?command=stats'
-   user: 'netdata'
-   pass: 'netdata'
+   username: 'netdata'
+   password: 'netdata'
    headers:
-      - name: 'X-API-key'
-        value: 'dnsdist-api-key'
+     X-API-Key: key
 ```
 
 For all available options, see the DNS dist collector's [configuration
