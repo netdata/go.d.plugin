@@ -11,9 +11,29 @@ with built-in scripting capabilities.
 
 This module monitors one or more `PowerDNS Recursor` instances, depending on your configuration.
 
+It collects metrics from [the internal webserver](https://doc.powerdns.com/recursor/http-api/index.html#built-in-webserver-and-http-api).
+
+Used endpoints:
+
+-   [`/api/v1/servers/localhost/statistics`](https://doc.powerdns.com/recursor/common/api/endpoint-statistics.html)
+
+## Requirements
+
+For collecting metrics via HTTP, we need:
+
+-   [enabled webserver](https://doc.powerdns.com/recursor/http-api/index.html#webserver).
+-   [enabled HTTP API](https://doc.powerdns.com/recursor/http-api/index.html#enabling-the-api).
+
 
 ## Charts
 
+-   Incoming questions in `questions/s`
+-   Outgoing questions in `questions/s`
+-   Queries answered within a time range in `queries/s`
+-   Timeouts on outgoing UDP queries in `timeouts/s`
+-   Drops in `drops/s`
+-   Cache Usage in `events/s`
+-   Cache Size in `entries`
 
 ## Configuration
 
@@ -33,10 +53,10 @@ Here is an example with two endpoints:
 ```yaml
 jobs:
   - name: local
-    url: http://127.0.0.1:8081/api/v1/servers/localhost/statistics
+    url: http://127.0.0.1:8081
 
   - name: remote
-    url: http://203.0.113.0:8081/api/v1/servers/localhost/statistics
+    url: http://203.0.113.0:8081
 ```
 
 For all available options, see the PowerDNS Recursor collector's [configuration
