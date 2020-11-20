@@ -199,7 +199,7 @@ func TestSystemdUnits_Collect(t *testing.T) {
 				"var-lib-nfs-rpc_pipefs.mount":             2,
 			},
 		},
-		"success on systemd version 230- on collecting all unit types": {
+		"success on systemd v230- on collecting all unit types": {
 			prepare: func() *SystemdUnits {
 				systemd := New()
 				systemd.Include = []string{"*"}
@@ -442,7 +442,7 @@ func (m mockConn) ListUnitsContext(_ context.Context) ([]dbus.UnitStatus, error)
 	if m.version >= 230 {
 		return nil, errors.New("'ListUnits' unsupported function error")
 	}
-	return m.units, nil
+	return append([]dbus.UnitStatus{}, m.units...), nil
 }
 
 func (m mockConn) ListUnitsByPatternsContext(_ context.Context, _ []string, ps []string) ([]dbus.UnitStatus, error) {
