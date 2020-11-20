@@ -1,3 +1,5 @@
+// +build linux
+
 package systemdunits
 
 import (
@@ -29,6 +31,7 @@ func (s *SystemdUnits) collect() (map[string]int64, error) {
 
 	var units []dbus.UnitStatus
 	if s.systemdVersion >= 230 {
+		// https://github.com/systemd/systemd/pull/3142
 		units, err = s.getLoadedUnitsByPatterns(conn)
 	} else {
 		units, err = s.getLoadedUnits(conn)
@@ -81,6 +84,7 @@ var reVersion = regexp.MustCompile(`[0-9][0-9][0-9]`)
 const versionProperty = "Version"
 
 func (s *SystemdUnits) getSystemdVersion(conn systemdConnection) (int, error) {
+	s.Debugf("calling function 'GetManagerProperty'")
 	version, err := conn.GetManagerProperty(versionProperty)
 	if err != nil {
 		return 0, fmt.Errorf("error on getting '%s' manager property: %v", versionProperty, err)
@@ -105,6 +109,7 @@ func (s *SystemdUnits) getLoadedUnits(conn systemdConnection) ([]dbus.UnitStatus
 	ctx, cancel := context.WithTimeout(context.Background(), s.Timeout.Duration)
 	defer cancel()
 
+	s.Debugf("calling function 'ListUnits'")
 	units, err := conn.ListUnitsContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error on ListUnits: %v", err)
@@ -125,6 +130,7 @@ func (s *SystemdUnits) getLoadedUnitsByPatterns(conn systemdConnection) ([]dbus.
 	ctx, cancel := context.WithTimeout(context.Background(), s.Timeout.Duration)
 	defer cancel()
 
+	s.Debugf("calling function 'ListUnitsByPatterns'")
 	units, err := conn.ListUnitsByPatternsContext(
 		ctx,
 		[]string{"active", "activating", "failed", "inactive", "deactivating"},
