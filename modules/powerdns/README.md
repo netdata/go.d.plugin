@@ -52,9 +52,13 @@ Here is an example with two endpoints:
 jobs:
   - name: local
     url: http://127.0.0.1:8081
+    headers:
+      X-API-KEY: secret  # static pre-shared authentication key for access to the REST API (api-key).
 
   - name: remote
     url: http://203.0.113.0:8081
+    headers:
+      X-API-KEY: secret  # static pre-shared authentication key for access to the REST API (api-key).
 ```
 
 For all available options, see the PowerDNS Authoritative Server collector's [configuration
