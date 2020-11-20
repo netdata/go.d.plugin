@@ -1,6 +1,7 @@
 package systemdunits
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -8,6 +9,9 @@ import (
 )
 
 func (s SystemdUnits) validateConfig() error {
+	if len(s.Include) == 0 {
+		return errors.New("'include' option not set")
+	}
 	return nil
 }
 

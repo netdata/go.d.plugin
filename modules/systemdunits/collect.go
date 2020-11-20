@@ -78,21 +78,22 @@ func (s *SystemdUnits) closeConnection() {
 
 var reVersion = regexp.MustCompile(`[0-9][0-9][0-9]`)
 
+const versionProperty = "Version"
+
 func (s *SystemdUnits) getSystemdVersion(conn systemdConnection) (int, error) {
-	const prop = "Version"
-	versionProperty, err := conn.GetManagerProperty(prop)
+	version, err := conn.GetManagerProperty(versionProperty)
 	if err != nil {
-		return 0, fmt.Errorf("error on getting '%s' manager property: %v", prop, err)
+		return 0, fmt.Errorf("error on getting '%s' manager property: %v", versionProperty, err)
 	}
 
-	s.Debugf("systemd version: %s", versionProperty)
+	s.Debugf("systemd version: %s", version)
 
-	version := reVersion.FindString(versionProperty)
-	if version == "" {
-		return 0, fmt.Errorf("couldn't parse systemd version string '%s'", versionProperty)
+	major := reVersion.FindString(version)
+	if major == "" {
+		return 0, fmt.Errorf("couldn't parse systemd version string '%s'", version)
 	}
 
-	ver, err := strconv.Atoi(version)
+	ver, err := strconv.Atoi(major)
 	if err != nil {
 		return 0, fmt.Errorf("couldn't parse systemd version string '%s': %v", versionProperty, err)
 	}
