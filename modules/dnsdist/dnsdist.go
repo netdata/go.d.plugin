@@ -2,8 +2,10 @@ package dnsdist
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -16,18 +18,15 @@ func init() {
 }
 
 type (
-	Config struct {
-		Url string   `yaml:"url"`
-		User string  `yaml:"user"`
-		Pass string  `yaml:"pass"`
-		Headers []HeaderValues `yaml:"headers"`
-	}
-
 	HeaderValues struct {
 		Name string   `yaml:"name"`
 		Value string  `yaml:"value"`
 	}
 )
+
+type Config struct {
+	web.HTTP `yaml:",inline"`
+} 
 
 type DNSdist struct {
 	module.Base
@@ -35,28 +34,20 @@ type DNSdist struct {
 
 	httpClient    *http.Client
 	charts        *module.Charts
-	collected     map[string]int64
 }
 
 func New() *DNSdist {
 	return &DNSdist{
 		Config: Config {
-			Url: "http://127.0.0.1:5053/jsonstat?command=stats",
-			User: "netdata",
-			Pass: "netdata",
-			Headers: nil,
-			/*
 			HTTP: web.HTTP{
 				Request: web.Request{
-					URL: "http://127.0.0.1:5053/jsonstat?command=stats",
+					URL: "http://127.0.0.1:5053/",
 				},
 				Client: web.Client{
 					Timeout: web.Duration{Duration: time.Second},
 				},
 			},
-			*/
 		},
-		collected: make(map[string]int64),
 	}
 }
 
@@ -67,14 +58,12 @@ func (d *DNSdist) Init() bool {
 		return false
 	}
 
-	/*
 	client, err := d.initHTTPClient()
 	if err != nil {
 		d.Errorf("init HTTP client: %v", err)
 		return false
 	}
 	d.httpClient = client
-	*/
 
 	c, err := d.initCharts()
 	if err != nil {
@@ -95,7 +84,16 @@ func (d *DNSdist) Charts() *module.Charts {
 }
 
 func (d *DNSdist) Collect() map[string]int64 {
-	return nil
+	ms, err := d.collect()
+	if err != nil {
+		d.Error(err)
+	}
+
+	if len(ms) == 0 {
+		return nil
+	}
+
+	return ms
 }
 
 func (d *DNSdist) Cleanup() {

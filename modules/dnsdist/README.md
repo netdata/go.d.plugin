@@ -46,11 +46,10 @@ Here is a configuration example:
 ```yaml
 jobs:
  - name: local
-   url: 'http://127.0.0.1:5053/jsonstat?command=stats'
+   url: 'http://127.0.0.1:5053'
    username: 'netdata'
    password: 'netdata'
-   headers:
-     X-API-Key: key
+   api_key: 'key'
 ```
 
 For all available options, see the DNS dist collector's [configuration

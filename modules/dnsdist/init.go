@@ -2,42 +2,27 @@ package dnsdist
 
 import (
 	"errors"
-	"fmt"
+	"net/http"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func (d DNSdist) validateConfig() error {
-	if d.Config.Url == "" {
-		return errors.New("'url' parameter is not set.")
+	if d.URL == "" {
+		return errors.New("URL not set")
 	}
 
-	if d.Config.User == "" {
-		return errors.New("'user' parameter is not set.")
-	}
-
-	if d.Config.Pass == "" {
-		return errors.New("'pass' parameter is not set.")
-	}
-
-	for i,cfg := range d.Config.Headers {
-		if cfg.Name == "" {
-			return fmt.Errorf("'headers[%d]->name' parameter not set", i+1)
-		}
-
-		if cfg.Value == "" {
-			return fmt.Errorf("'headers[%d]->value' parameter not set", i+1)
-		}
+	if _, err := web.NewHTTPRequest(d.Request); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-/*
 func (d DNSdist) initHTTPClient() (*http.Client, error) {
 	return web.NewHTTPClient(d.Client)
 }
-*/
 
 func (d DNSdist) initCharts() (*module.Charts, error) {
 	return charts.Copy(), nil
