@@ -5,6 +5,7 @@ package systemdunits
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -14,8 +15,29 @@ import (
 )
 
 func (s *SystemdUnits) collect() (map[string]int64, error) {
-	units, err := s.getLoadedUnits()
+	conn, err := s.getConnection()
 	if err != nil {
+		return nil, err
+	}
+
+	if s.systemdVersion == 0 {
+		ver, err := s.getSystemdVersion(conn)
+		if err != nil {
+			s.closeConnection()
+			return nil, err
+		}
+		s.systemdVersion = ver
+	}
+
+	var units []dbus.UnitStatus
+	if s.systemdVersion >= 230 {
+		// https://github.com/systemd/systemd/pull/3142
+		units, err = s.getLoadedUnitsByPatterns(conn)
+	} else {
+		units, err = s.getLoadedUnits(conn)
+	}
+	if err != nil {
+		s.closeConnection()
 		return nil, err
 	}
 
@@ -23,20 +45,23 @@ func (s *SystemdUnits) collect() (map[string]int64, error) {
 		return nil, nil
 	}
 
-	mx := make(map[string]int64)
+	collected := make(map[string]int64)
+	s.collectUnitsStates(collected, units)
+	return collected, nil
+}
+
+func (s *SystemdUnits) collectUnitsStates(collected map[string]int64, units []dbus.UnitStatus) {
 	for _, unit := range units {
 		name := cleanUnitName(unit.Name)
-
 		if !s.collectedUnits[name] {
 			s.collectedUnits[name] = true
 			s.addUnitToCharts(name)
 		}
-		mx[name] = convertUnitState(unit.ActiveState)
+		collected[name] = convertUnitState(unit.ActiveState)
 	}
-	return mx, nil
 }
 
-func (s *SystemdUnits) getLoadedUnits() ([]dbus.UnitStatus, error) {
+func (s *SystemdUnits) getConnection() (systemdConnection, error) {
 	if s.conn == nil {
 		conn, err := s.client.connect()
 		if err != nil {
@@ -44,19 +69,75 @@ func (s *SystemdUnits) getLoadedUnits() ([]dbus.UnitStatus, error) {
 		}
 		s.conn = conn
 	}
+	return s.conn, nil
+}
 
+func (s *SystemdUnits) closeConnection() {
+	if s.conn != nil {
+		s.conn.Close()
+		s.conn = nil
+	}
+}
+
+var reVersion = regexp.MustCompile(`[0-9][0-9][0-9]`)
+
+const versionProperty = "Version"
+
+func (s *SystemdUnits) getSystemdVersion(conn systemdConnection) (int, error) {
+	s.Debugf("calling function 'GetManagerProperty'")
+	version, err := conn.GetManagerProperty(versionProperty)
+	if err != nil {
+		return 0, fmt.Errorf("error on getting '%s' manager property: %v", versionProperty, err)
+	}
+
+	s.Debugf("systemd version: %s", version)
+
+	major := reVersion.FindString(version)
+	if major == "" {
+		return 0, fmt.Errorf("couldn't parse systemd version string '%s'", version)
+	}
+
+	ver, err := strconv.Atoi(major)
+	if err != nil {
+		return 0, fmt.Errorf("couldn't parse systemd version string '%s': %v", versionProperty, err)
+	}
+
+	return ver, nil
+}
+
+func (s *SystemdUnits) getLoadedUnits(conn systemdConnection) ([]dbus.UnitStatus, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.Timeout.Duration)
 	defer cancel()
 
-	units, err := s.conn.ListUnitsByPatternsContext(
+	s.Debugf("calling function 'ListUnits'")
+	units, err := conn.ListUnitsContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error on ListUnits: %v", err)
+	}
+
+	loaded := units[:0]
+	for _, unit := range units {
+		if unit.LoadState == "loaded" && s.sr.MatchString(unit.Name) {
+			loaded = append(loaded, unit)
+		}
+	}
+
+	s.Debugf("got total/loaded %d/%d units", len(units), len(loaded))
+	return loaded, nil
+}
+
+func (s *SystemdUnits) getLoadedUnitsByPatterns(conn systemdConnection) ([]dbus.UnitStatus, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.Timeout.Duration)
+	defer cancel()
+
+	s.Debugf("calling function 'ListUnitsByPatterns'")
+	units, err := conn.ListUnitsByPatternsContext(
 		ctx,
 		[]string{"active", "activating", "failed", "inactive", "deactivating"},
 		s.Include,
 	)
 	if err != nil {
-		s.conn.Close()
-		s.conn = nil
-		return nil, fmt.Errorf("error on listing units: %v", err)
+		return nil, fmt.Errorf("error on ListUnitsByPatterns: %v", err)
 	}
 
 	loaded := units[:0]
@@ -65,6 +146,7 @@ func (s *SystemdUnits) getLoadedUnits() ([]dbus.UnitStatus, error) {
 			loaded = append(loaded, unit)
 		}
 	}
+
 	s.Debugf("got total/loaded %d/%d units", len(units), len(loaded))
 	return loaded, nil
 }
@@ -75,6 +157,7 @@ func (s *SystemdUnits) addUnitToCharts(name string) {
 		s.Warningf("add dimension (unit '%s'): can't extract unit type", name)
 		return
 	}
+
 	id := fmt.Sprintf("%s_unit_state", typ)
 	chart := s.Charts().Get(id)
 	if chart == nil {
