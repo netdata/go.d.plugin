@@ -1,5 +1,3 @@
-// +build linux
-
 package systemdunits
 
 import (
@@ -13,6 +11,8 @@ type systemdClient interface {
 }
 type systemdConnection interface {
 	Close()
+	GetManagerProperty(string) (string, error)
+	ListUnitsContext(ctx context.Context) ([]dbus.UnitStatus, error)
 	ListUnitsByPatternsContext(ctx context.Context, states []string, patterns []string) ([]dbus.UnitStatus, error)
 }
 
