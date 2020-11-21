@@ -17,13 +17,6 @@ func init() {
 	})
 }
 
-type (
-	HeaderValues struct {
-		Name string   `yaml:"name"`
-		Value string  `yaml:"value"`
-	}
-)
-
 type Config struct {
 	web.HTTP `yaml:",inline"`
 } 
