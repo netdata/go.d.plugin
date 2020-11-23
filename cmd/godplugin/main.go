@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/user"
 	"path"
 	"strings"
 
@@ -106,6 +107,11 @@ func main() {
 		RunModule:         opts.Module,
 		MinUpdateEvery:    opts.UpdateEvery,
 	})
+
+	a.Debugf("plugin: name=%s, version=%s", a.Name, version)
+	if u, err := user.Current(); err == nil {
+		a.Debugf("current user: name=%s, uid=%s", u.Username, u.Uid)
+	}
 
 	a.Run()
 }
