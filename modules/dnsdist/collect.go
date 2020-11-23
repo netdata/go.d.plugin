@@ -74,3 +74,4 @@ func closeBody(resp *http.Response) {
 		_ = resp.Body.Close()
 	}
 }
+

@@ -96,3 +96,4 @@ func (d *DNSdist) Cleanup() {
 
 	d.httpClient.CloseIdleConnections()
 }
+

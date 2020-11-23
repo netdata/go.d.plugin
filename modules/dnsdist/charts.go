@@ -156,3 +156,4 @@ var charts = module.Charts {
 		},
 	},
 }
+

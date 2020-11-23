@@ -33,3 +33,4 @@ type statisticMetrics struct {
 	ServFailResponses int64 `stm:"servfail-responses" json:"servfail-responses"` 
 	TruncFailures int64 `stm:"trunc-failures" json:"trunc-failures"` 
 }
+
