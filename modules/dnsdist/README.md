@@ -81,9 +81,8 @@ Here is a configuration example:
 jobs:
  - name: local
    url: 'http://127.0.0.1:8083'
-   username: 'netdata'
-   password: 'netdata'
-   api_key: 'key'
+   headers:
+      X-API-Key: 'your-api-key' # static pre-shared authentication key for access to the REST API (api-key).
 ```
 
 For all available options, see the DNS dist collector's [configuration

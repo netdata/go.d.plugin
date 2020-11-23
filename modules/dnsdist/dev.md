@@ -22,8 +22,14 @@ Start the server running:
 dnsdist -C dnsdist.conf --local=0.0.0.0:5300
 ```
 
-Finally, do requests for the server:
+Do requests for the server:
 
 ```cmd
 for a in {0..1000}; do dig netdata.cloud @127.0.0.1 -p 5300 +noall +nocookie > /dev/null; done
+```
+
+Finally verify the statistics:
+
+```cmd
+curl -H"X-API-Key: netdata" "http://127.0.0.1:8083/jsonstat?command=stats"
 ```
