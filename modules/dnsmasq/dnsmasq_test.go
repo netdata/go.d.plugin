@@ -72,6 +72,10 @@ func TestDnsmasq_Check(t *testing.T) {
 			wantFail: true,
 			prepare:  prepareErrorOnExchangeDnsmasq,
 		},
+		"fails on response rcode is not success": {
+			wantFail: true,
+			prepare:  prepareRcodeServerFailureOnExchangeDnsmasq,
+		},
 	}
 
 	for name, test := range tests {
@@ -119,6 +123,9 @@ func TestDnsmasq_Collect(t *testing.T) {
 		},
 		"fails on error on cache stats query": {
 			prepare: prepareErrorOnExchangeDnsmasq,
+		},
+		"fails on response rcode is not success": {
+			prepare: prepareRcodeServerFailureOnExchangeDnsmasq,
 		},
 	}
 
@@ -171,13 +178,28 @@ func prepareErrorOnExchangeDnsmasq() *Dnsmasq {
 	return dnsmasq
 }
 
+func prepareRcodeServerFailureOnExchangeDnsmasq() *Dnsmasq {
+	dnsmasq := New()
+	dnsmasq.newDNSClient = func(network string, timeout time.Duration) dnsClient {
+		return &mockDNSClient{
+			rcodeServerFailureOnExchange: true,
+		}
+	}
+	return dnsmasq
+}
+
 type mockDNSClient struct {
-	errOnExchange bool
+	errOnExchange                bool
+	rcodeServerFailureOnExchange bool
 }
 
 func (m mockDNSClient) Exchange(msg *dns.Msg, address string) (*dns.Msg, time.Duration, error) {
 	if m.errOnExchange {
 		return nil, 0, errors.New("'Exchange' error")
+	}
+	if m.rcodeServerFailureOnExchange {
+		resp := &dns.Msg{MsgHdr: dns.MsgHdr{Rcode: dns.RcodeServerFailure}}
+		return resp, 0, nil
 	}
 
 	var answers []dns.RR
