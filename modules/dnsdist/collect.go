@@ -39,7 +39,8 @@ func (d *DNSdist) scrapeStatistics() (*statisticMetrics, error) {
 		return nil, err
 	}
 	
-	req.URL.Opaque = d.Config.HTTP.Request.URL + urlPathLocalStatistics
+	URL :=  []rune(d.Config.HTTP.Request.URL)
+	req.URL.Opaque = string(URL[5:]) + urlPathLocalStatistics
 
 	var statistics statisticMetrics
 	if err := d.doOKDecode(req, &statistics); err != nil {
