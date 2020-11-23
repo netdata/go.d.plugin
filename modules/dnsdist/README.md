@@ -6,7 +6,7 @@ sidebar_label: "DNSdist"
 
 # DNSdist monitoring with Netdata
 
-[`DNS dist`](https://dnsdist.org/) is a highly DNS-, DoS- and abuse-aware loadbalancer. 
+[`DNSdist`](https://dnsdist.org/) is a highly DNS-, DoS- and abuse-aware loadbalancer. 
 
 This module monitors load-balancer performance and health metrics.
 
@@ -83,14 +83,19 @@ jobs:
    url: 'http://127.0.0.1:8083'
    headers:
       X-API-Key: 'your-api-key' # static pre-shared authentication key for access to the REST API (api-key).
+
+ - name: remote
+   url: 'http://http://203.0.113.0:8083'
+   headers:
+      X-API-Key: 'your-api-key' # static pre-shared authentication key for access to the REST API (api-key).
 ```
 
-For all available options, see the DNS dist collector's [configuration
+For all available options, see the `DNSdist` collector's [configuration
 file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/dnsdist.conf).
 
 ## Troubleshooting
 
-To troubleshoot issues with the ISC dhcpd collector, run the `go.d.plugin` with the debug option enabled.
+To troubleshoot issues with the `DNSdist` collector, run the `go.d.plugin` with the debug option enabled.
 The output should give you clues as to why the collector isn't working.
 
 First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
