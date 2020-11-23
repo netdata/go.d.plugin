@@ -11,7 +11,7 @@ designed to provide DNS (and optionally DHCP and TFTP) services to a small-scale
 
 This module monitors one or more `Dnsmasq DNS Forwarder` instances, depending on your configuration.
 
-It collects DNS cache statistics by [reading the response for the following query](https://manpages.debian.org/stretch/dnsmasq-base/dnsmasq.8.en.html#NOTES):
+It collects DNS cache statistics by [reading the response on the following query](https://manpages.debian.org/stretch/dnsmasq-base/dnsmasq.8.en.html#NOTES):
 
 ```cmd
 ;; opcode: QUERY, status: NOERROR, id: 37862
