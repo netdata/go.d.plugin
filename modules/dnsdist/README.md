@@ -80,7 +80,7 @@ Here is a configuration example:
 ```yaml
 jobs:
  - name: local
-   url: 'http://127.0.0.1:5053'
+   url: 'http://127.0.0.1:8083'
    username: 'netdata'
    password: 'netdata'
    api_key: 'key'

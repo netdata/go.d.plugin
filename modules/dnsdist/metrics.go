@@ -50,7 +50,6 @@ type statisticMetrics struct {
 	RuleServFail int64 `stm:"rule-servfail" json:"rule-servfail"` 
 	SecurityStatus int64 `stm:"security-status" json:"security-status"` 
 	SelfAnswered int64 `stm:"self-answered" json:"self-answered"` 
-	SereverPolicy int64 `stm:"server-policy" json:"server-policy"` 
 	FirstAvailable int64 `stm:"firstAvailable" json:"firstAvailable"` 
 	ServFailResponses int64 `stm:"servfail-responses" json:"servfail-responses"` 
 	TooOldDrops int64 `stm:"too-old-drops" json:"too-old-drops"` 

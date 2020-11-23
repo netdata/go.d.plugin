@@ -29,7 +29,7 @@ func (d *DNSdist) collect() (map[string]int64, error) {
 
 func (d *DNSdist) collectStatistic(collected map[string]int64, statistics *statisticMetrics) {
 	for metric, value := range stm.ToMap(statistics) {
-		collected[metric] = value
+		collected[metric] = int64(value)
 	}
 }
 
@@ -38,7 +38,8 @@ func (d *DNSdist) scrapeStatistics() (*statisticMetrics, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.URL.Path = urlPathLocalStatistics
+	
+	req.URL.Opaque = d.Config.HTTP.Request.URL + urlPathLocalStatistics
 
 	var statistics statisticMetrics
 	if err := d.doOKDecode(req, &statistics); err != nil {

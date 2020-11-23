@@ -34,7 +34,7 @@ func New() *DNSdist {
 		Config: Config {
 			HTTP: web.HTTP{
 				Request: web.Request{
-					URL: "http://127.0.0.1:5053/",
+					URL: "http://127.0.0.1:8083",
 				},
 				Client: web.Client{
 					Timeout: web.Duration{Duration: time.Second},
