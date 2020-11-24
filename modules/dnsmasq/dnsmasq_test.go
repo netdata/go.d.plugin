@@ -26,22 +26,22 @@ func TestDnsmasq_Init(t *testing.T) {
 		"fails on unset 'address'": {
 			wantFail: true,
 			config: Config{
-				Network: "udp",
-				Address: "",
+				Protocol: "udp",
+				Address:  "",
 			},
 		},
-		"fails on unset 'network'": {
+		"fails on unset 'protocol'": {
 			wantFail: true,
 			config: Config{
-				Network: "",
-				Address: "127.0.0.1:53",
+				Protocol: "",
+				Address:  "127.0.0.1:53",
 			},
 		},
-		"fails on invalid 'network'": {
+		"fails on invalid 'protocol'": {
 			wantFail: true,
 			config: Config{
-				Network: "http",
-				Address: "127.0.0.1:53",
+				Protocol: "http",
+				Address:  "127.0.0.1:53",
 			},
 		},
 	}

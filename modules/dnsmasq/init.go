@@ -11,30 +11,30 @@ func (d Dnsmasq) validateConfig() error {
 	if d.Address == "" {
 		return errors.New("'address' parameter not set")
 	}
-	if !isNetworkValid(d.Network) {
-		return fmt.Errorf("'network' (%s) is not valid, expected one of %v", d.Network, validNetworks)
+	if !isProtocolValid(d.Protocol) {
+		return fmt.Errorf("'protocol' (%s) is not valid, expected one of %v", d.Protocol, validProtocols)
 	}
 	return nil
 }
 
 func (d Dnsmasq) initDNSClient() (dnsClient, error) {
-	return d.newDNSClient(d.Network, d.Timeout.Duration), nil
+	return d.newDNSClient(d.Protocol, d.Timeout.Duration), nil
 }
 
 func (d Dnsmasq) initCharts() (*module.Charts, error) {
 	return cacheCharts.Copy(), nil
 }
 
-func isNetworkValid(network string) bool {
-	for _, v := range validNetworks {
-		if network == v {
+func isProtocolValid(protocol string) bool {
+	for _, v := range validProtocols {
+		if protocol == v {
 			return true
 		}
 	}
 	return false
 }
 
-var validNetworks = []string{
+var validProtocols = []string{
 	"udp",
 	"tcp",
 	"tcp-tls",

@@ -18,9 +18,9 @@ func init() {
 func New() *Dnsmasq {
 	return &Dnsmasq{
 		Config: Config{
-			Network: "udp",
-			Address: "127.0.0.1:53",
-			Timeout: web.Duration{Duration: time.Second},
+			Protocol: "udp",
+			Address:  "127.0.0.1:53",
+			Timeout:  web.Duration{Duration: time.Second},
 		},
 
 		newDNSClient: func(network string, timeout time.Duration) dnsClient {
@@ -33,9 +33,9 @@ func New() *Dnsmasq {
 }
 
 type Config struct {
-	Network string       `yaml:"network"`
-	Address string       `yaml:"address"`
-	Timeout web.Duration `yaml:"timeout"`
+	Protocol string       `yaml:"protocol"`
+	Address  string       `yaml:"address"`
+	Timeout  web.Duration `yaml:"timeout"`
 }
 
 type (
