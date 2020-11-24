@@ -18,7 +18,7 @@ const (
 func (d *DNSdist) collect() (map[string]int64, error) {
 	statistics, err := d.scrapeStatistics()
 	if err != nil {
-		return nil, err;
+		return nil, err
 	}
 
 	collected := make(map[string]int64)
@@ -82,4 +82,3 @@ func closeBody(resp *http.Response) {
 		_ = resp.Body.Close()
 	}
 }
-

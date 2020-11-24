@@ -86,23 +86,23 @@ func Test_Cleanup(t *testing.T) {
 
 func Test_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare func() (p *DNSdist, cleanup func())
+		prepare  func() (p *DNSdist, cleanup func())
 		wantFail bool
 	}{
-		"success" : {
-			prepare: preparePowerDNSdistV151,
+		"success": {
+			prepare:  preparePowerDNSdistV151,
 			wantFail: false,
 		},
-		"fail on 404 response" : {
-			prepare: preparePowerDNSdist404,
+		"fail on 404 response": {
+			prepare:  preparePowerDNSdist404,
 			wantFail: true,
 		},
-		"fail on connection refused" : {
-			prepare: preparePowerDNSdistConnectionRefused,
+		"fail on connection refused": {
+			prepare:  preparePowerDNSdistConnectionRefused,
 			wantFail: true,
 		},
-		"fail with invalid data" : {
-			prepare: preparePowerDNSdistInvalidData,
+		"fail with invalid data": {
+			prepare:  preparePowerDNSdistInvalidData,
 			wantFail: true,
 		},
 	}
@@ -124,10 +124,10 @@ func Test_Check(t *testing.T) {
 
 func Test_Collect(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func()  (p *DNSdist, cleanup func())
+		prepare       func() (p *DNSdist, cleanup func())
 		wantCollected map[string]int64
 	}{
-	/*	"success" : {
+		/*	"success" : {
 			prepare: preparePowerDNSdistV151,
 			wantCollected: map[string]int64 {
 				"acl-drops": 0,
@@ -186,13 +186,13 @@ func Test_Collect(t *testing.T) {
 				"uptime": 394,
 			},
 		}, */
-		"fail on 404 response" : {
+		"fail on 404 response": {
 			prepare: preparePowerDNSdist404,
 		},
-		"fail on connection refused" : {
+		"fail on connection refused": {
 			prepare: preparePowerDNSdistConnectionRefused,
 		},
-		"fail with invalid data" : {
+		"fail with invalid data": {
 			prepare: preparePowerDNSdistInvalidData,
 		},
 	}
@@ -208,9 +208,9 @@ func Test_Collect(t *testing.T) {
 
 			assert.Equal(t, test.wantCollected, collected)
 			/*
-			if len(test.wantCollected) > 0 {
-				ensureCollectedHasAllChartsDimsVarsIDs(t, dist, collected)
-			}
+				if len(test.wantCollected) > 0 {
+					ensureCollectedHasAllChartsDimsVarsIDs(t, dist, collected)
+				}
 			*/
 
 			dist.Cleanup()

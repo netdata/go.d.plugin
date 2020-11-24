@@ -19,19 +19,19 @@ func init() {
 
 type Config struct {
 	web.HTTP `yaml:",inline"`
-} 
+}
 
 type DNSdist struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	httpClient    *http.Client
-	charts        *module.Charts
+	httpClient *http.Client
+	charts     *module.Charts
 }
 
 func New() *DNSdist {
 	return &DNSdist{
-		Config: Config {
+		Config: Config{
 			HTTP: web.HTTP{
 				Request: web.Request{
 					URL: "http://127.0.0.1:8083",
@@ -91,9 +91,8 @@ func (d *DNSdist) Collect() map[string]int64 {
 
 func (d *DNSdist) Cleanup() {
 	if d.httpClient == nil {
-		return 
+		return
 	}
 
 	d.httpClient.CloseIdleConnections()
 }
-

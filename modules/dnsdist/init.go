@@ -27,4 +27,3 @@ func (d DNSdist) initHTTPClient() (*http.Client, error) {
 func (d DNSdist) initCharts() (*module.Charts, error) {
 	return charts.Copy(), nil
 }
-
