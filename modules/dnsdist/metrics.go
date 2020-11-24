@@ -13,10 +13,10 @@ type statisticMetrics struct {
 	DownStreamTimeout int64 `stm:"downstream-timeouts" json:"downstream-timeouts"` 
 	DynBlocked int64 `stm:"dyn-blocked" json:"dyn-blocked"` 
 	EmptyQueries int64 `stm:"empty-queries" json:"empty-queries"` 
-	LatencyAvg100 int64  `stm:"empty-queries" json:"latency-avg100"`
-	LatencyAvg1000 int64  `stm:"empty-queries" json:"latency-avg1000"`
-	LatencyAvg10000 int64  `stm:"empty-queries" json:"latency-avg10000"`
-	LatencyAvg1000000 int64  `stm:"empty-queries" json:"latency-avg1000000"`
+	LatencyAvg100 int64  `stm:"latency-avg100" json:"latency-avg100"`
+	LatencyAvg1000 int64  `stm:"latency-avg1000" json:"latency-avg1000"`
+	LatencyAvg10000 int64  `stm:"latency-avg10000" json:"latency-avg10000"`
+	LatencyAvg1000000 int64  `stm:"latency-avg1000000" json:"latency-avg1000000"`
 	LatencySlow int64 `stm:"latency-slow" json:"latency-slow"` 
 	Latency0 int64 `stm:"latency0-1" json:"latency0-1"` 
 	Latency1 int64 `stm:"latency1-10" json:"latency1-10"` 

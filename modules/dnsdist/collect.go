@@ -6,9 +6,9 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
-	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 const (
@@ -34,16 +34,24 @@ func (d *DNSdist) collectStatistic(collected map[string]int64, statistics *stati
 }
 
 func (d *DNSdist) scrapeStatistics() (*statisticMetrics, error) {
-	req, err := web.NewHTTPRequest(d.Request)
+	req, _ := http.NewRequest("GET", d.Config.HTTP.Request.URL, nil)
+
+	req.URL.Path = urlPathLocalStatistics
+	req.URL.RawQuery = url.Values{"command": []string{"stats"}}.Encode()
+
+	for name, value := range d.Config.HTTP.Headers {
+		req.Header.Set(name, value)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		fmt.Println(resp.Body)
 		return nil, err
 	}
-	
-	URL :=  []rune(d.Config.HTTP.Request.URL)
-	req.URL.Opaque = string(URL[5:]) + urlPathLocalStatistics
+	defer resp.Body.Close()
 
 	var statistics statisticMetrics
-	if err := d.doOKDecode(req, &statistics); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&statistics); err != nil {
 		return nil, err
 	}
 
