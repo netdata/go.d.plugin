@@ -24,7 +24,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 
 ## Available modules
 
-| Name                                                                                      | Monitors                   |
+| Name                                                                                              | Monitors                        |
 | :------------------------------------------------------------------------------------------------ | :------------------------------ |
 | [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)                   | `ActiveMQ`                      |
 | [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache)                       | `Apache`                        |
@@ -33,7 +33,8 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)                       | `Consul`                        |
 | [coredns](https://github.com/netdata/go.d.plugin/tree/master/modules/coredns)                     | `CoreDNS`                       |
 | [couchdb](https://github.com/netdata/go.d.plugin/tree/master/modules/couchdb)                     | `CouchDB`                       |
-| [dnsmasq_dhcp](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq_dhcp)           | `Dnsmasq`                       |
+| [dnsmasq](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq)                     | `Dnsmasq DNS Forwarder`         |
+| [dnsmasq_dhcp](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq_dhcp)           | `Dnsmasq DHCP`                  |
 | [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery)                  | `DNS Query RTT`                 |
 | [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine)         | `Docker Engine`                 |
 | [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)                 | `Docker Hub`                    |

@@ -8,6 +8,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/consul"
 	_ "github.com/netdata/go.d.plugin/modules/coredns"
 	_ "github.com/netdata/go.d.plugin/modules/couchdb"
+	_ "github.com/netdata/go.d.plugin/modules/dnsmasq"
 	_ "github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp"
 	_ "github.com/netdata/go.d.plugin/modules/dnsquery"
 	_ "github.com/netdata/go.d.plugin/modules/docker_engine"
