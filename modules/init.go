@@ -7,6 +7,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/cockroachdb"
 	_ "github.com/netdata/go.d.plugin/modules/consul"
 	_ "github.com/netdata/go.d.plugin/modules/coredns"
+	_ "github.com/netdata/go.d.plugin/modules/couchbase"
 	_ "github.com/netdata/go.d.plugin/modules/couchdb"
 	_ "github.com/netdata/go.d.plugin/modules/dnsmasq"
 	_ "github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp"
