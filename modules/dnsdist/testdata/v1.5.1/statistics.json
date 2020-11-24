@@ -45,7 +45,6 @@
     "rule-servfail": 0,
     "security-status": 0,
     "self-answered": 0,
-    "server-policy": "firstAvailable",
     "servfail-responses": 0,
     "too-old-drops": 0,
     "trunc-failures": 0,

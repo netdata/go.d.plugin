@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	urlPathLocalStatistics = "/jsonstat?command=stats"
+	urlPathLocalStatistics = "/jsonstat"
 )
 
 func (d *DNSdist) collect() (map[string]int64, error) {
