@@ -7,7 +7,7 @@ on your chosen `ALPINE_VERSION`.
 
 -   Clone the repository
 
-```
+```cmd
 git clone https://github.com/HSRNetwork/docker-dnsdist
 cd docker-dnsdist
 ```
@@ -25,7 +25,7 @@ webserver("0.0.0.0:8083", "pass", "key", {}, "0.0.0.0/0")
 
 -   Build the docker image
 
-```
+```cmd
 ALPINE_VER="edge"
 DNSDIST_VER="1.5.1-r2"
 
@@ -37,13 +37,13 @@ docker build \
 
 -   Start `DNSdist` docker container
 
-```
+```cmd
 docker run -d -p 8083:8083 "$(whoami)/dnsdist:$DNSDIST_VER"
 ```
 
 -   Verify the statistics
 
-```
+```cmd
 # using `apikey`
 curl -H 'X-Api-Key: key' http://127.0.0.1:8083/jsonstat?command=stats
 
