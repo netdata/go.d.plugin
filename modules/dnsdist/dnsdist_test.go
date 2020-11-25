@@ -1,7 +1,6 @@
 package dnsdist
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -9,17 +8,18 @@ import (
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	dnsdistStatisicsV151, _ = ioutil.ReadFile("testdata/v1.5.1/statistics.json")
+	v151JSONStat, _ = ioutil.ReadFile("testdata/v1.5.1/jsonstat.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"dnsdistStatistics": dnsdistStatisicsV151,
+		"v151JSONStat": v151JSONStat,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -86,22 +86,22 @@ func Test_Cleanup(t *testing.T) {
 
 func Test_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func() (p *DNSdist, cleanup func())
+		prepare  func() (dist *DNSdist, cleanup func())
 		wantFail bool
 	}{
-		"success": {
+		"success on valid response v1.5.1": {
 			prepare:  preparePowerDNSdistV151,
 			wantFail: false,
 		},
-		"fail on 404 response": {
+		"fails on 404 response": {
 			prepare:  preparePowerDNSdist404,
 			wantFail: true,
 		},
-		"fail on connection refused": {
+		"fails on connection refused": {
 			prepare:  preparePowerDNSdistConnectionRefused,
 			wantFail: true,
 		},
-		"fail with invalid data": {
+		"fails with invalid data": {
 			prepare:  preparePowerDNSdistInvalidData,
 			wantFail: true,
 		},
@@ -111,8 +111,8 @@ func Test_Check(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			dist, cleanup := test.prepare()
 			defer cleanup()
-
 			require.True(t, dist.Init())
+
 			if test.wantFail {
 				assert.False(t, dist.Check())
 			} else {
@@ -124,53 +124,53 @@ func Test_Check(t *testing.T) {
 
 func Test_Collect(t *testing.T) {
 	tests := map[string]struct {
-		prepare       func() (p *DNSdist, cleanup func())
+		prepare       func() (dist *DNSdist, cleanup func())
 		wantCollected map[string]int64
 	}{
-		"success": {
+		"success on valid response v1.5.1": {
 			prepare: preparePowerDNSdistV151,
 			wantCollected: map[string]int64{
-				"acl-drops":              0,
-				"cache-hits":             0,
-				"cache-misses":           0,
+				"acl-drops":              1,
+				"cache-hits":             1,
+				"cache-misses":           1,
 				"cpu-sys-msec":           411,
 				"cpu-user-msec":          939,
-				"downstream-send-errors": 0,
-				"downstream-timeouts":    0,
-				"dyn-blocked":            0,
-				"empty-queries":          0,
+				"downstream-send-errors": 1,
+				"downstream-timeouts":    1,
+				"dyn-blocked":            1,
+				"empty-queries":          1,
 				"latency-avg100":         14237,
 				"latency-avg1000":        9728,
 				"latency-avg10000":       1514,
 				"latency-avg1000000":     15,
-				"latency-slow":           0,
-				"latency0-1":             0,
+				"latency-slow":           1,
+				"latency0-1":             1,
 				"latency1-10":            3,
 				"latency10-50":           996,
 				"latency100-1000":        4,
-				"latency50-100":          0,
-				"no-policy":              0,
-				"noncompliant-queries":   0,
-				"noncompliant-responses": 0,
+				"latency50-100":          1,
+				"no-policy":              1,
+				"noncompliant-queries":   1,
+				"noncompliant-responses": 1,
 				"queries":                1003,
 				"rdqueries":              1003,
 				"real-memory-usage":      202125312,
 				"responses":              1003,
-				"rule-drop":              0,
-				"rule-nxdomain":          0,
-				"rule-refused":           0,
-				"self-answered":          0,
-				"servfail-responses":     0,
-				"trunc-failures":         0,
+				"rule-drop":              1,
+				"rule-nxdomain":          1,
+				"rule-refused":           1,
+				"self-answered":          1,
+				"servfail-responses":     1,
+				"trunc-failures":         1,
 			},
 		},
-		"fail on 404 response": {
+		"fails on 404 response": {
 			prepare: preparePowerDNSdist404,
 		},
-		"fail on connection refused": {
+		"fails on connection refused": {
 			prepare: preparePowerDNSdistConnectionRefused,
 		},
-		"fail with invalid data": {
+		"fails with invalid data": {
 			prepare: preparePowerDNSdistInvalidData,
 		},
 	}
@@ -179,26 +179,20 @@ func Test_Collect(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			dist, cleanup := test.prepare()
 			defer cleanup()
-
 			require.True(t, dist.Init())
 
 			collected := dist.Collect()
 
 			assert.Equal(t, test.wantCollected, collected)
-			/*
-				if len(test.wantCollected) > 0 {
-					ensureCollectedHasAllChartsDimsVarsIDs(t, dist, collected)
-				}
-			*/
-
-			dist.Cleanup()
+			if len(test.wantCollected) > 0 {
+				ensureCollectedHasAllChartsDimsVarsIDs(t, dist, collected)
+			}
 		})
 	}
 }
 
-/*
-func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, ns *DNSdist, collected map[string]int64) {
-	for _, chart := range *ns.Charts() {
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, dist *DNSdist, collected map[string]int64) {
+	for _, chart := range *dist.Charts() {
 		if chart.Obsolete {
 			continue
 		}
@@ -212,7 +206,6 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, ns *DNSdist, collected
 		}
 	}
 }
-*/
 
 func preparePowerDNSdistV151() (*DNSdist, func()) {
 	srv := preparePowerDNSDistEndpoint()
@@ -220,20 +213,6 @@ func preparePowerDNSdistV151() (*DNSdist, func()) {
 	ns.URL = srv.URL
 
 	return ns, srv.Close
-}
-
-func preparePowerDNSDistEndpoint() *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(
-		// take a look on decoded and clean request
-		func(w http.ResponseWriter, r *http.Request) {
-			fmt.Println(r.URL.Path)
-			switch r.URL.Path {
-			case urlPathJSONStat:
-				_, _ = w.Write(dnsdistStatisicsV151)
-			default:
-				w.WriteHeader(http.StatusNotFound)
-			}
-		}))
 }
 
 func preparePowerDNSdist404() (*DNSdist, func()) {
@@ -263,4 +242,16 @@ func preparePowerDNSdistInvalidData() (*DNSdist, func()) {
 	ns.URL = srv.URL
 
 	return ns, srv.Close
+}
+
+func preparePowerDNSDistEndpoint() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			switch r.URL.String() {
+			case "/jsonstat?command=stats":
+				_, _ = w.Write(v151JSONStat)
+			default:
+				w.WriteHeader(http.StatusNotFound)
+			}
+		}))
 }
