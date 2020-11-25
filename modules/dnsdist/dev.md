@@ -2,9 +2,6 @@
 
 This setup uses https://github.com/HSRNetwork/docker-dnsdist.
 
-Ensure that the specified `DNSDIST_VERSION` [version is available](https://pkgs.alpinelinux.org/packages)
-on your chosen `ALPINE_VERSION`.
-
 -   Clone the repository
 
 ```cmd
@@ -24,6 +21,9 @@ webserver("0.0.0.0:8083", "pass", "key", {}, "0.0.0.0/0")
 ```
 
 -   Build the docker image
+
+:exclamation: Ensure that the specified `DNSDIST_VERSION` [version is available](https://pkgs.alpinelinux.org/packages)
+on your chosen `ALPINE_VERSION`.
 
 ```cmd
 ALPINE_VER="edge"
