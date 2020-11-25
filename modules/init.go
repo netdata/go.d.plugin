@@ -15,6 +15,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/docker_engine"
 	_ "github.com/netdata/go.d.plugin/modules/dockerhub"
 	_ "github.com/netdata/go.d.plugin/modules/elasticsearch"
+	_ "github.com/netdata/go.d.plugin/modules/energid"
 	_ "github.com/netdata/go.d.plugin/modules/example"
 	_ "github.com/netdata/go.d.plugin/modules/filecheck"
 	_ "github.com/netdata/go.d.plugin/modules/fluentd"
