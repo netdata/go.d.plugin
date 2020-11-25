@@ -440,8 +440,8 @@ var (
 		Ctx:   "vernemq.netsplits",
 		Type:  module.Stacked,
 		Dims: Dims{
-			{ID: metricNetSplitResolved, Name: "resolved"},
-			{ID: metricNetSplitDetected, Name: "detected"},
+			{ID: metricNetSplitResolved, Name: "resolved", Algo: module.Incremental},
+			{ID: metricNetSplitDetected, Name: "detected", Algo: module.Incremental},
 		},
 	}
 )
