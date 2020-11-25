@@ -99,7 +99,7 @@ func (s *SystemdUnits) getSystemdVersion(conn systemdConnection) (int, error) {
 
 	ver, err := strconv.Atoi(major)
 	if err != nil {
-		return 0, fmt.Errorf("couldn't parse systemd version string '%s': %v", versionProperty, err)
+		return 0, fmt.Errorf("couldn't parse systemd version string '%s': %v", version, err)
 	}
 
 	return ver, nil
