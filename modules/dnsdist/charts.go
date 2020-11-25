@@ -63,7 +63,7 @@ var charts = module.Charts{
 	},
 	{
 		ID:    "backend_commerrors",
-		Title: "Backend Communication Errors",
+		Title: "Backend communication errors",
 		Units: "errors/s",
 		Fam:   "backends",
 		Ctx:   "dnsdist.backend_commerrors",
@@ -96,7 +96,7 @@ var charts = module.Charts{
 	},
 	{
 		ID:    "servercpu",
-		Title: "DNSDIST server CPU utilization",
+		Title: "DNSdist server CPU utilization",
 		Units: "ms/s",
 		Fam:   "server",
 		Ctx:   "dnsdist.servercpu",
@@ -108,7 +108,7 @@ var charts = module.Charts{
 	},
 	{
 		ID:    "servermem",
-		Title: "DNSDIST server memory utilization",
+		Title: "DNSdist server memory utilization",
 		Units: "MiB",
 		Fam:   "server",
 		Ctx:   "dnsdist.servermem",
