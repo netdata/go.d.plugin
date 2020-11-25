@@ -9,7 +9,6 @@ var charts = module.Charts{
 		Units: "queries/s",
 		Fam:   "queries",
 		Ctx:   "dnsdist.queries",
-		Type:  module.Line,
 		Dims: module.Dims{
 			{ID: "queries", Name: "all", Algo: module.Incremental},
 			{ID: "rdqueries", Name: "recursive", Algo: module.Incremental},
@@ -22,7 +21,6 @@ var charts = module.Charts{
 		Units: "queries/s",
 		Fam:   "queries",
 		Ctx:   "dnsdist.queries_dropped",
-		Type:  module.Line,
 		Dims: module.Dims{
 			{ID: "rule-drop", Name: "rule drop", Algo: module.Incremental},
 			{ID: "dyn-blocked", Name: "dynamic blocked", Algo: module.Incremental},
@@ -36,7 +34,6 @@ var charts = module.Charts{
 		Units: "packets/s",
 		Fam:   "packets",
 		Ctx:   "dnsdist.packets_dropped",
-		Type:  module.Line,
 		Dims: module.Dims{
 			{ID: "acl-drops", Name: "acl", Algo: module.Incremental},
 		},
@@ -47,7 +44,6 @@ var charts = module.Charts{
 		Units: "answers/s",
 		Fam:   "answers",
 		Ctx:   "dnsdist.answers",
-		Type:  module.Line,
 		Dims: module.Dims{
 			{ID: "self-answered", Name: "self answered", Algo: module.Incremental},
 			{ID: "rule-nxdomain", Name: "nxdomain", Algo: module.Incremental, Mul: -1},
@@ -61,7 +57,6 @@ var charts = module.Charts{
 		Units: "responses/s",
 		Fam:   "backends",
 		Ctx:   "dnsdist.backend_responses",
-		Type:  module.Line,
 		Dims: module.Dims{
 			{ID: "responses", Name: "responses", Algo: module.Incremental},
 		},
@@ -72,7 +67,6 @@ var charts = module.Charts{
 		Units: "errors/s",
 		Fam:   "backends",
 		Ctx:   "dnsdist.backend_commerrors",
-		Type:  module.Line,
 		Dims: module.Dims{
 			{ID: "downstream-send-errors", Name: "send errors", Algo: module.Incremental},
 		},
@@ -83,7 +77,6 @@ var charts = module.Charts{
 		Units: "responses/s",
 		Fam:   "backends",
 		Ctx:   "dnsdist.backend_errors",
-		Type:  module.Line,
 		Dims: module.Dims{
 			{ID: "downstream-timeouts", Name: "timeouts", Algo: module.Incremental},
 			{ID: "servfail-responses", Name: "servfail", Algo: module.Incremental},
@@ -96,7 +89,6 @@ var charts = module.Charts{
 		Units: "answers/s",
 		Fam:   "cache",
 		Ctx:   "dnsdist.cache",
-		Type:  module.Area,
 		Dims: module.Dims{
 			{ID: "cache-hits", Name: "hits", Algo: module.Incremental},
 			{ID: "cache-misses", Name: "misses", Algo: module.Incremental, Mul: -1},
@@ -122,7 +114,7 @@ var charts = module.Charts{
 		Ctx:   "dnsdist.servermem",
 		Type:  module.Area,
 		Dims: module.Dims{
-			{ID: "real-memory-usage", Name: "memory usage", Algo: module.Absolute, Mul: 1, Div: 1 << 20},
+			{ID: "real-memory-usage", Name: "memory usage", Div: 1 << 20},
 		},
 	},
 	{
@@ -147,12 +139,11 @@ var charts = module.Charts{
 		Units: "microseconds",
 		Fam:   "latency",
 		Ctx:   "dnsdist.query_latency_avg",
-		Type:  module.Line,
 		Dims: module.Dims{
-			{ID: "latency-avg100", Name: "100", Algo: module.Absolute},
-			{ID: "latency-avg1000", Name: "1k", Algo: module.Absolute},
-			{ID: "latency-avg10000", Name: "10k", Algo: module.Absolute},
-			{ID: "latency-avg1000000", Name: "1000k", Algo: module.Absolute},
+			{ID: "latency-avg100", Name: "100"},
+			{ID: "latency-avg1000", Name: "1k"},
+			{ID: "latency-avg10000", Name: "10k"},
+			{ID: "latency-avg1000000", Name: "1000k"},
 		},
 	},
 }
