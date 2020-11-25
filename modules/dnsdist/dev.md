@@ -26,6 +26,9 @@ webserver("0.0.0.0:8083", "pass", "key", {}, "0.0.0.0/0")
 -   Build the docker image
 
 ```
+ALPINE_VER="edge"
+DNSDIST_VER="1.5.1-r2"
+
 docker build \
   --build-arg DNSDIST_VERSION=$DNSDIST_VER \
   --build-arg ALPINE_VERSION=$ALPINE_VER \
