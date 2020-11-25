@@ -23,8 +23,8 @@ func (d *DNSdist) collect() (map[string]int64, error) {
 	}
 
 	collected := make(map[string]int64)
-
 	d.collectStatistic(collected, statistics)
+
 	return collected, nil
 }
 

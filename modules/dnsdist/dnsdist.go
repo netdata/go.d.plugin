@@ -47,7 +47,7 @@ func New() *DNSdist {
 func (d *DNSdist) Init() bool {
 	err := d.validateConfig()
 	if err != nil {
-		d.Errorf("Config validation: %v", err)
+		d.Errorf("config validation: %v", err)
 		return false
 	}
 
@@ -58,12 +58,12 @@ func (d *DNSdist) Init() bool {
 	}
 	d.httpClient = client
 
-	c, err := d.initCharts()
+	cs, err := d.initCharts()
 	if err != nil {
 		d.Errorf("init charts: %v", err)
 		return false
 	}
-	d.charts = c
+	d.charts = cs
 
 	return true
 }
