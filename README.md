@@ -33,6 +33,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)                       | `Consul`                        |
 | [coredns](https://github.com/netdata/go.d.plugin/tree/master/modules/coredns)                     | `CoreDNS`                       |
 | [couchdb](https://github.com/netdata/go.d.plugin/tree/master/modules/couchdb)                     | `CouchDB`                       |
+| [dnsdist](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsdist)                     | `Dnsdist`                       |
 | [dnsmasq](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq)                     | `Dnsmasq DNS Forwarder`         |
 | [dnsmasq_dhcp](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq_dhcp)           | `Dnsmasq DHCP`                  |
 | [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery)                  | `DNS Query RTT`                 |
