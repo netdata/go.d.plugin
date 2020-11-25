@@ -53,13 +53,7 @@ curl -u#:pass http://127.0.0.1:8083/jsonstat?command=stats
 
 ### Installing from Packages/Source 
 
-[Install DNSdist](https://dnsdist.org/install.html) on your environment, if you 
-decide to compile the source code, it will be necessary to install the following
-packages before:
-
-- [colm](https://www.colm.net/open-source/colm/) programming language.
-- [kelbt](http://freshmeat.sourceforge.net/projects/kelbt) parser.
-- [ragel](https://www.colm.net/open-source/ragel/) state machine  compiler.
+Follow [the official guide](https://dnsdist.org/install.html).
 
 Create the configuration file, it is necessary to enable the webserver inside it:
 
