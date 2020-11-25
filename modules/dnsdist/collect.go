@@ -45,7 +45,6 @@ func (d *DNSdist) scrapeStatistics() (*statisticMetrics, error) {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Println(resp.Body)
 		return nil, err
 	}
 	defer resp.Body.Close()
