@@ -127,41 +127,41 @@ func Test_Collect(t *testing.T) {
 		prepare       func() (p *DNSdist, cleanup func())
 		wantCollected map[string]int64
 	}{
-		"success" : {
+		"success": {
 			prepare: preparePowerDNSdistV151,
-			wantCollected: map[string]int64 {
-				"acl-drops": 0,
-				"cache-hits": 0,
-				"cache-misses": 0,
-				"cpu-sys-msec": 411,
-				"cpu-user-msec": 939,
+			wantCollected: map[string]int64{
+				"acl-drops":              0,
+				"cache-hits":             0,
+				"cache-misses":           0,
+				"cpu-sys-msec":           411,
+				"cpu-user-msec":          939,
 				"downstream-send-errors": 0,
-				"downstream-timeouts": 0,
-				"dyn-blocked": 0,
-				"empty-queries": 0,
-				"latency-avg100": 14237,
-				"latency-avg1000": 9728,
-				"latency-avg10000": 1514,
-				"latency-avg1000000": 15,
-				"latency-slow": 0,
-				"latency0-1": 0,
-				"latency1-10": 3,
-				"latency10-50": 996,
-				"latency100-1000": 4,
-				"latency50-100": 0,
-				"no-policy": 0,
-				"noncompliant-queries": 0,
+				"downstream-timeouts":    0,
+				"dyn-blocked":            0,
+				"empty-queries":          0,
+				"latency-avg100":         14237,
+				"latency-avg1000":        9728,
+				"latency-avg10000":       1514,
+				"latency-avg1000000":     15,
+				"latency-slow":           0,
+				"latency0-1":             0,
+				"latency1-10":            3,
+				"latency10-50":           996,
+				"latency100-1000":        4,
+				"latency50-100":          0,
+				"no-policy":              0,
+				"noncompliant-queries":   0,
 				"noncompliant-responses": 0,
-				"queries": 1003,
-				"rdqueries": 1003,
-				"real-memory-usage": 202125312,
-				"responses": 1003,
-				"rule-drop": 0,
-				"rule-nxdomain": 0,
-				"rule-refused": 0,
-				"self-answered": 0,
-				"servfail-responses": 0,
-				"trunc-failures": 0,
+				"queries":                1003,
+				"rdqueries":              1003,
+				"real-memory-usage":      202125312,
+				"responses":              1003,
+				"rule-drop":              0,
+				"rule-nxdomain":          0,
+				"rule-refused":           0,
+				"self-answered":          0,
+				"servfail-responses":     0,
+				"trunc-failures":         0,
 			},
 		},
 		"fail on 404 response": {
@@ -228,7 +228,7 @@ func preparePowerDNSDistEndpoint() *httptest.Server {
 		func(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(r.URL.Path)
 			switch r.URL.Path {
-			case urlPathLocalStatistics:
+			case urlPathJSONStat:
 				_, _ = w.Write(dnsdistStatisicsV151)
 			default:
 				w.WriteHeader(http.StatusNotFound)

@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	urlPathLocalStatistics = "/jsonstat"
+	urlPathJSONStat = "/jsonstat"
 )
 
 func (d *DNSdist) collect() (map[string]int64, error) {
@@ -36,7 +36,7 @@ func (d *DNSdist) collectStatistic(collected map[string]int64, statistics *stati
 func (d *DNSdist) scrapeStatistics() (*statisticMetrics, error) {
 	req, _ := http.NewRequest("GET", d.Config.HTTP.Request.URL, nil)
 
-	req.URL.Path = urlPathLocalStatistics
+	req.URL.Path = urlPathJSONStat
 	req.URL.RawQuery = url.Values{"command": []string{"stats"}}.Encode()
 
 	for name, value := range d.Config.HTTP.Headers {
