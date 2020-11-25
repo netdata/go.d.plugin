@@ -13,7 +13,8 @@ This module monitors load-balancer performance and health metrics.
 It collects metrics from [the internal webserver](https://dnsdist.org/guides/webserver.html).
 
 Used endpoints:
-- [/jsonstat?command=stats](https://dnsdist.org/guides/webserver.html).
+
+-   [/jsonstat?command=stats](https://dnsdist.org/guides/webserver.html#get--jsonstat).
 
 ## Requirements
 
@@ -21,59 +22,30 @@ For collecting metrics via HTTP, we need [enabled webserver](https://dnsdist.org
 
 ## Charts
 
-1.  **Response latency**
-
-    -   latency-slow
-    -   latency100-1000
-    -   latency50-100
-    -   latency10-50
-    -   latency1-10
-    -   latency0-1
-
-2.  **Cache performance**
-
-    -   cache-hits
-    -   cache-misses
-
-3.  **ACL events**
-
-    -   acl-drops
-    -   rule-drop
-    -   rule-nxdomain
-    -   rule-refused
-
-4.  **Noncompliant data**
-
-    -   empty-queries
-    -   no-policy
-    -   noncompliant-queries
-    -   noncompliant-responses
-
-5.  **Queries**
-
-    -   queries
-    -   rdqueries
-    -   rdqueries
-
-6.  **Health**
-
-    -   downstream-send-errors
-    -   downstream-timeouts
-    -   servfail-responses
-    -   trunc-failures
+-   Client queries received in `queries/s`
+-   Client queries dropped in `queries/s`
+-   Packets dropped in `packets/s`
+-   Answers statistics in `answers/s`
+-   Backend responses in `responses/s`
+-   Backend communication errors in `errors/s`
+-   Backend error responses in `responses/s`
+-   Cache performance in `answers/s`
+-   DNSdist server CPU utilization in `ms/s`
+-   DNSdist server memory utilization in `MiB`
+-   Query latency in `queries/s`
+-   Average latency for the last N queries in `microseconds` 
 
 ## Configuration
 
 Edit the `go.d/dnsdist.conf` configuration file using `edit-config` from the Agent's [config
-directory](/docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
+directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/dnsdist.conf
 ```
 
-Needs `URL` (Complete address to access `DNSdist` stats.), the pair `user` and `password` to authenticate, and if
-your `DNSdist` has API key, you will also need to write this parameter.
+Needs `url` and `password` or _apikey_ to access the webserver.
 
 Here is a configuration example:
 
@@ -85,17 +57,17 @@ jobs:
       X-API-Key: 'your-api-key' # static pre-shared authentication key for access to the REST API (api-key).
 
  - name: remote
-   url: 'http://http://203.0.113.0:8083'
+   url: 'http://203.0.113.0:8083'
    headers:
       X-API-Key: 'your-api-key' # static pre-shared authentication key for access to the REST API (api-key).
 ```
 
-For all available options, see the `DNSdist` collector's [configuration
+For all available options, see the `dnsdist` collector's [configuration
 file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/dnsdist.conf).
 
 ## Troubleshooting
 
-To troubleshoot issues with the `DNSdist` collector, run the `go.d.plugin` with the debug option enabled.
+To troubleshoot issues with the `dnsdist` collector, run the `go.d.plugin` with the debug option enabled.
 The output should give you clues as to why the collector isn't working.
 
 First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
