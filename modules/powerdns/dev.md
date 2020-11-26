@@ -30,7 +30,7 @@ docker run -d -p 8081:8081 --name pdns-master \
 Gather metrics (seems doesn't support unauthenticated requests to the API):
 
 ```cmd
-curl -H 'X-Api-Key: secret' http://127.0.0.1:8082/api/v1/servers/localhost/statistics
+curl -H 'X-Api-Key: secret' http://127.0.0.1:8081/api/v1/servers/localhost/statistics
 ```
 
 Useful links:
