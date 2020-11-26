@@ -104,9 +104,9 @@ jobs:
 If `log_type` parameter set to `auto` (which is default), weblog will try to auto-detect appropriate log parser and log format
 using the last line of the log file.
 
-To auto-detect parser type the module checks if the line is in `LTSV` format first. If it is not the case it assumes that the format is `CSV`.
-
-To auto-detect `CSV` format weblog uses list of predefined csv formats. It tries to parse the line using each of them in the following order:
+-   checks if format is `CSV` (using regexp).
+-   checks if format is `JSON` (using regexp).
+-   assumes format is `CSV` and tries to find appropriate `CSV` log format using predefind list of formats. It tries to parse the line using each of them in the following order:
 
 ```sh
 $host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time $upstream_response_time
