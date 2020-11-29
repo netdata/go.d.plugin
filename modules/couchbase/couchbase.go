@@ -10,7 +10,7 @@ import (
 func init() {
 	module.Register("couchbase", module.Creator{
 		Defaults: module.Defaults{
-			UpdateEvery: 3,
+			UpdateEvery: 10,
 		},
 		Create: func() module.Module { return New() },
 	})
