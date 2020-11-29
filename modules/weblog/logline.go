@@ -144,6 +144,9 @@ func (l *logLine) Assign(field string, value string) (err error) {
 	default:
 		err = l.assignCustom(field, value)
 	}
+	if err != nil {
+		err = fmt.Errorf("assign '%s': %w", field, err)
+	}
 	return err
 }
 
