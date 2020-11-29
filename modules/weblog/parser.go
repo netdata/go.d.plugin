@@ -2,6 +2,7 @@ package weblog
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -72,6 +73,9 @@ var (
 func (w *WebLog) newParser(record []byte) (logs.Parser, error) {
 	if w.Parser.LogType == typeAuto {
 		w.Debugf("log_type is %s, will try format auto-detection", typeAuto)
+		if len(record) == 0 {
+			return nil, fmt.Errorf("empty line, can't auto-detect format (%s)", w.file.CurrentFilename())
+		}
 		return w.guessParser(record)
 	}
 
