@@ -26,7 +26,7 @@ func (cb Couchbase) collectBasicStats(collected map[string]int64) error {
 
 	p, err := cb.conn.GetPool("default")
 	if err != nil {
-		fmt.Printf("Node: %#v\n\n", err)
+		return fmt.Errorf("Node: %#v\n\n", err)
 	}
 
 	for _, b := range p.BucketMap {
