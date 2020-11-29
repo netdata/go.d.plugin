@@ -44,7 +44,7 @@ func (w *WebLog) collect() (map[string]int64, error) {
 }
 
 func (w *WebLog) collectLogLines() (int, error) {
-	logParseErr := true
+	logOnce := true
 	var n int
 	for {
 		w.line.reset()
@@ -57,10 +57,10 @@ func (w *WebLog) collectLogLines() (int, error) {
 				return n, err
 			}
 			n++
-			if logParseErr {
+			if logOnce {
 				w.Infof("unmatched line: %v (parser: %s)", err, w.parser.Info())
 			}
-			logParseErr = false
+			logOnce = false
 			w.collectUnmatched()
 			continue
 		}
