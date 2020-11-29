@@ -59,8 +59,8 @@ func (w *WebLog) collectLogLines() (int, error) {
 			n++
 			if logOnce {
 				w.Infof("unmatched line: %v (parser: %s)", err, w.parser.Info())
+				logOnce = false
 			}
-			logOnce = false
 			w.collectUnmatched()
 			continue
 		}
