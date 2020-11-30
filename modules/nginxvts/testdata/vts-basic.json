@@ -1,0 +1,21 @@
+{
+  "hostName":"Web",
+  "nginxVersion":"1.18.0",
+  "loadMsec":1606489796895,
+  "nowMsec":1606490116734,
+  "connections":{
+    "active":2,
+    "reading":0,
+    "writing":1,
+    "waiting":1,
+    "accepted":12,
+    "handled":12,
+    "requests":17
+  },
+  "sharedZones":{
+    "name":"ngx_http_vhost_traffic_status",
+    "maxSize":1048575,
+    "usedSize":45799,
+    "usedNode":13
+  }
+}
