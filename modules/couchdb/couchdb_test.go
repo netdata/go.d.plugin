@@ -15,20 +15,20 @@ import (
 )
 
 var (
-	responseRoot, _        = ioutil.ReadFile("testdata/v311_single_root.json")
-	responseActiveTasks, _ = ioutil.ReadFile("testdata/v311_single_active_tasks.json")
-	responseNodeStats, _   = ioutil.ReadFile("testdata/v311_node_stats.json")
-	responseNodeSystem, _  = ioutil.ReadFile("testdata/v311_node_system.json")
-	responseDatabases, _   = ioutil.ReadFile("testdata/v311_databases.json")
+	v311Root, _        = ioutil.ReadFile("testdata/v3.1.1/root.json")
+	v311ActiveTasks, _ = ioutil.ReadFile("testdata/v3.1.1/active_tasks.json")
+	v311NodeStats, _   = ioutil.ReadFile("testdata/v3.1.1/node_stats.json")
+	v311NodeSystem, _  = ioutil.ReadFile("testdata/v3.1.1/node_system.json")
+	v311DbsInfo, _     = ioutil.ReadFile("testdata/v3.1.1/dbs_info.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"responseRoot":        responseRoot,
-		"responseActiveTasks": responseActiveTasks,
-		"responseNodeStats":   responseNodeStats,
-		"responseNodeSystem":  responseNodeSystem,
-		"responseDatabases":   responseDatabases,
+		"v311Root":        v311Root,
+		"v311ActiveTasks": v311ActiveTasks,
+		"v311NodeStats":   v311NodeStats,
+		"v311NodeSystem":  v311NodeSystem,
+		"v311DbsInfo":     v311DbsInfo,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -434,15 +434,15 @@ func prepareCouchDBEndpoint() *httptest.Server {
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
 			case "/_node/_local/_stats":
-				_, _ = w.Write(responseNodeStats)
+				_, _ = w.Write(v311NodeStats)
 			case "/_node/_local/_system":
-				_, _ = w.Write(responseNodeSystem)
+				_, _ = w.Write(v311NodeSystem)
 			case urlPathActiveTasks:
-				_, _ = w.Write(responseActiveTasks)
+				_, _ = w.Write(v311ActiveTasks)
 			case "/_dbs_info":
-				_, _ = w.Write(responseDatabases)
+				_, _ = w.Write(v311DbsInfo)
 			case "/":
-				_, _ = w.Write(responseRoot)
+				_, _ = w.Write(v311Root)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}

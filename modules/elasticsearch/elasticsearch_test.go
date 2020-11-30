@@ -15,20 +15,20 @@ import (
 )
 
 var (
-	v790SingleNodesLocalStats, _ = ioutil.ReadFile("testdata/v790_single_nodes_local_stats.json")
-	v790SingleClusterHealth, _   = ioutil.ReadFile("testdata/v790_single_cluster_health.json")
-	v790SingleClusterStats, _    = ioutil.ReadFile("testdata/v790_single_cluster_stats.json")
-	v790SingleCatIndicesStats, _ = ioutil.ReadFile("testdata/v790_single_cat_indices_stats.json")
-	v790SingleInfo, _            = ioutil.ReadFile("testdata/v790_single_info.json")
+	v790NodesLocalStats, _ = ioutil.ReadFile("testdata/v7.9.0/nodes_local_stats.json")
+	v790ClusterHealth, _   = ioutil.ReadFile("testdata/v7.9.0/cluster_health.json")
+	v790ClusterStats, _    = ioutil.ReadFile("testdata/v7.9.0/cluster_stats.json")
+	v790CatIndicesStats, _ = ioutil.ReadFile("testdata/v7.9.0/cat_indices_stats.json")
+	v790Info, _            = ioutil.ReadFile("testdata/v7.9.0/info.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"v790SingleNodesLocalStats": v790SingleNodesLocalStats,
-		"v790SingleClusterHealth":   v790SingleClusterHealth,
-		"v790SingleClusterStats":    v790SingleClusterStats,
-		"v790SingleCatIndicesStats": v790SingleCatIndicesStats,
-		"v790SingleInfo":            v790SingleInfo,
+		"v790NodesLocalStats": v790NodesLocalStats,
+		"v790ClusterHealth":   v790ClusterHealth,
+		"v790ClusterStats":    v790ClusterStats,
+		"v790CatIndicesStats": v790CatIndicesStats,
+		"v790Info":            v790Info,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -603,15 +603,15 @@ func prepareElasticsearchEndpoint() *httptest.Server {
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
 			case urlPathLocalNodeStats:
-				_, _ = w.Write(v790SingleNodesLocalStats)
+				_, _ = w.Write(v790NodesLocalStats)
 			case urlPathClusterHealth:
-				_, _ = w.Write(v790SingleClusterHealth)
+				_, _ = w.Write(v790ClusterHealth)
 			case urlPathClusterStats:
-				_, _ = w.Write(v790SingleClusterStats)
+				_, _ = w.Write(v790ClusterStats)
 			case urlPathIndicesStats:
-				_, _ = w.Write(v790SingleCatIndicesStats)
+				_, _ = w.Write(v790CatIndicesStats)
 			case "/":
-				_, _ = w.Write(v790SingleInfo)
+				_, _ = w.Write(v790Info)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
