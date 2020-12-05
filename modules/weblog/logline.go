@@ -495,13 +495,46 @@ func isEmptyNumber(n int) bool {
 }
 
 func isReqMethodValid(method string) bool {
-	if method == "GET" {
-		return true
-	}
+	// https://www.iana.org/assignments/http-methods/http-methods.xhtml
 	switch method {
-	case "HEAD", "POST", "PUT", "PATCH", "DELETE", "CONNECT", "OPTIONS", "TRACE":
-		return true
-	case "MKCOL", "PROPFIND", "MOVE", "SEARCH":
+	case "GET",
+		"ACL",
+		"BASELINE-CONTROL",
+		"BIND",
+		"CHECKIN",
+		"CHECKOUT",
+		"CONNECT",
+		"COPY",
+		"DELETE",
+		"HEAD",
+		"LABEL",
+		"LINK",
+		"LOCK",
+		"MERGE",
+		"MKACTIVITY",
+		"MKCALENDAR",
+		"MKCOL",
+		"MKREDIRECTREF",
+		"MKWORKSPACE",
+		"MOVE",
+		"OPTIONS",
+		"ORDERPATCH",
+		"PATCH",
+		"POST",
+		"PRI",
+		"PROPFIND",
+		"PROPPATCH",
+		"PUT",
+		"REBIND",
+		"REPORT",
+		"SEARCH",
+		"TRACE",
+		"UNBIND",
+		"UNCHECKOUT",
+		"UNLINK",
+		"UNLOCK",
+		"UPDATE",
+		"UPDATEREDIRECTREF":
 		return true
 	}
 	return false
