@@ -13,14 +13,14 @@ import (
 
 type Manager struct {
 	path    string
-	state   *State
+	store   *Store
 	flushCh chan struct{}
 	*logger.Logger
 }
 
 func NewManager(path string) *Manager {
 	return &Manager{
-		state:   &State{mux: new(sync.Mutex)},
+		store:   &Store{mux: new(sync.Mutex)},
 		path:    path,
 		flushCh: make(chan struct{}, 1),
 		Logger:  logger.New("state save", "manager"),
@@ -50,15 +50,15 @@ func (m *Manager) Run(ctx context.Context) {
 }
 
 func (m *Manager) Save(cfg confgroup.Config, state string) {
-	if st, ok := m.state.lookup(cfg); !ok || state != st {
-		m.state.add(cfg, state)
+	if st, ok := m.store.lookup(cfg); !ok || state != st {
+		m.store.add(cfg, state)
 		m.triggerFlush()
 	}
 }
 
 func (m *Manager) Remove(cfg confgroup.Config) {
-	if _, ok := m.state.lookup(cfg); ok {
-		m.state.remove(cfg)
+	if _, ok := m.store.lookup(cfg); ok {
+		m.store.remove(cfg)
 		m.triggerFlush()
 	}
 }
@@ -71,7 +71,7 @@ func (m *Manager) triggerFlush() {
 }
 
 func (m *Manager) flush() {
-	bs, err := m.state.bytes()
+	bs, err := m.store.bytes()
 	if err != nil {
 		return
 	}
@@ -83,13 +83,13 @@ func (m *Manager) flush() {
 	_, _ = f.Write(bs)
 }
 
-type State struct {
+type Store struct {
 	mux *sync.Mutex
-	// TODO: we need [module][hash][name]state
-	items map[string]map[string]string // [module][name]state
+	// TODO: we need [module][hash][name]store
+	items map[string]map[string]string // [module][name]store
 }
 
-func (s State) Contains(cfg confgroup.Config, states ...string) bool {
+func (s Store) Contains(cfg confgroup.Config, states ...string) bool {
 	state, ok := s.lookup(cfg)
 	if !ok {
 		return false
@@ -102,7 +102,7 @@ func (s State) Contains(cfg confgroup.Config, states ...string) bool {
 	return false
 }
 
-func (s *State) lookup(cfg confgroup.Config) (string, bool) {
+func (s *Store) lookup(cfg confgroup.Config) (string, bool) {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
@@ -114,7 +114,7 @@ func (s *State) lookup(cfg confgroup.Config) (string, bool) {
 	return state, ok
 }
 
-func (s *State) add(cfg confgroup.Config, state string) {
+func (s *Store) add(cfg confgroup.Config, state string) {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
@@ -127,7 +127,7 @@ func (s *State) add(cfg confgroup.Config, state string) {
 	s.items[cfg.Module()][cfg.Name()] = state
 }
 
-func (s *State) remove(cfg confgroup.Config) {
+func (s *Store) remove(cfg confgroup.Config) {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
@@ -137,15 +137,15 @@ func (s *State) remove(cfg confgroup.Config) {
 	}
 }
 
-func (s *State) bytes() ([]byte, error) {
+func (s *Store) bytes() ([]byte, error) {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
 	return json.MarshalIndent(s.items, "", " ")
 }
 
-func Load(path string) (*State, error) {
-	state := &State{mux: new(sync.Mutex)}
+func Load(path string) (*Store, error) {
+	state := &Store{mux: new(sync.Mutex)}
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
