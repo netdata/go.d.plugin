@@ -1,0 +1,103 @@
+package energid
+
+import "github.com/netdata/go.d.plugin/agent/module"
+
+var charts = module.Charts{
+	{
+		ID:    "blockindex",
+		Title: "Blockchain Index",
+		Units: "count",
+		Fam:   "blockchain",
+		Ctx:   "energid.blockindex",
+		Type:  module.Area,
+		Dims: module.Dims{
+			{ID: "blockchain_blocks", Name: "Blocks", Algo: module.Absolute},
+			{ID: "blockchain_headers", Name: "Headers", Algo: module.Absolute},
+		},
+	},
+	{
+		ID:    "difficulty",
+		Title: "Blockchain Difficulty",
+		Units: "difficulty",
+		Fam:   "blockchain",
+		Ctx:   "energid.difficulty",
+		Type:  module.Line,
+		Dims: module.Dims{
+			{ID: "blockchain_difficulty", Name: "Diff", Algo: module.Absolute},
+		},
+	},
+	{
+		ID:    "mempool",
+		Title: "MemPool",
+		Units: "MiB",
+		Fam:   "memory",
+		Ctx:   "energid.mempool",
+		Type:  module.Area,
+		Dims: module.Dims{
+			{ID: "mempool_max", Name: "Max", Algo: module.Absolute, Div: 1024 * 1024},
+			{ID: "mempool_current", Name: "Usage", Algo: module.Absolute, Div: 1024 * 1024},
+			{ID: "mempool_txsize", Name: "TX Size", Algo: module.Absolute, Div: 1024 * 1024},
+		},
+	},
+	/*
+	We had this chart on Python version, but it is not documented at 
+	https://github.com/energicryptocurrency/core-api-documentation
+	{
+		ID:    "secmem",
+		Title: "Secure Memory",
+		Units: "KiB",
+		Fam:   "memory",
+		Ctx:   "energid.secmem",
+		Type:  module.Area,
+		Dims: module.Dims{
+			{ID: "secmem_total", Name: "Total", Algo: module.Absolute},
+			{ID: "secmem_locked", Name: "Locked", Algo: module.Absolute},
+			{ID: "secmem_used", Name: "Used", Algo: module.Absolute},
+		},
+	},
+	*/
+	{
+		ID:    "network",
+		Title: "Network",
+		Units: "count",
+		Fam:   "network",
+		Ctx:   "energid.network",
+		Type:  module.Line,
+		Dims: module.Dims{
+			{ID: "network_connections", Name: "Connections", Algo: module.Absolute},
+		},
+	},
+	{
+		ID:    "timeoffset",
+		Title: "Network",
+		Units: "seconds",
+		Fam:   "network",
+		Ctx:   "energid.timeoffset",
+		Type:  module.Line,
+		Dims: module.Dims{
+			{ID: "network_timeoffset", Name: "Offseet", Algo: module.Absolute},
+		},
+	},
+	{
+		ID:    "utxo",
+		Title: "UTXO",
+		Units: "count",
+		Fam:   "UTXO",
+		Ctx:   "energid.utxo",
+		Type:  module.Line,
+		Dims: module.Dims{
+			{ID: "utxo_count", Name: "UTXO", Algo: module.Absolute},
+		},
+	},
+	{
+		ID:    "xfers",
+		Title: "UTXO",
+		Units: "count",
+		Fam:   "UTXO",
+		Ctx:   "energid.xfers",
+		Type:  module.Line,
+		Dims: module.Dims{
+			{ID: "utxo_xfers", Name: "Xfers", Algo: module.Absolute},
+		},
+	},
+}
