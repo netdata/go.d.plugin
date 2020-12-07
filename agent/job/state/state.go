@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"sync"
 	"time"
@@ -20,7 +21,7 @@ type Manager struct {
 
 func NewManager(path string) *Manager {
 	return &Manager{
-		store:   &Store{mux: new(sync.Mutex)},
+		store:   &Store{},
 		path:    path,
 		flushCh: make(chan struct{}, 1),
 		Logger:  logger.New("state save", "manager"),
@@ -84,12 +85,11 @@ func (m *Manager) flush() {
 }
 
 type Store struct {
-	mux *sync.Mutex
-	// TODO: we need [module][hash][name]store
-	items map[string]map[string]string // [module][name]store
+	mux   sync.Mutex
+	items map[string]map[string]string // [module][name:hash]state
 }
 
-func (s Store) Contains(cfg confgroup.Config, states ...string) bool {
+func (s *Store) Contains(cfg confgroup.Config, states ...string) bool {
 	state, ok := s.lookup(cfg)
 	if !ok {
 		return false
@@ -110,7 +110,7 @@ func (s *Store) lookup(cfg confgroup.Config) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	state, ok := v[cfg.Name()]
+	state, ok := v[storeKey(cfg)]
 	return state, ok
 }
 
@@ -124,14 +124,14 @@ func (s *Store) add(cfg confgroup.Config, state string) {
 	if s.items[cfg.Module()] == nil {
 		s.items[cfg.Module()] = make(map[string]string)
 	}
-	s.items[cfg.Module()][cfg.Name()] = state
+	s.items[cfg.Module()][storeKey(cfg)] = state
 }
 
 func (s *Store) remove(cfg confgroup.Config) {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
-	delete(s.items[cfg.Module()], cfg.Name())
+	delete(s.items[cfg.Module()], storeKey(cfg))
 	if len(s.items[cfg.Module()]) == 0 {
 		delete(s.items, cfg.Module())
 	}
@@ -145,11 +145,15 @@ func (s *Store) bytes() ([]byte, error) {
 }
 
 func Load(path string) (*Store, error) {
-	state := &Store{mux: new(sync.Mutex)}
+	var s Store
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
-	return state, json.NewDecoder(f).Decode(&state.items)
+	return &s, json.NewDecoder(f).Decode(&s.items)
+}
+
+func storeKey(cfg confgroup.Config) string {
+	return fmt.Sprintf("%s:%d", cfg.Name(), cfg.Hash())
 }
