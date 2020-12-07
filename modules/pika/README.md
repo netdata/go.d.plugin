@@ -4,7 +4,7 @@ custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/redi
 sidebar_label: "Pika"
 -->
 
-# Redis
+# Pika monitoring with Netdata
 
 [`Pika`](https://github.com/Qihoo360/pika#introduction%E4%B8%AD%E6%96%87) is a persistent huge storage service,
 compatible with the vast majority of redis interfaces (details), including string, hash, list, zset, set and management

@@ -4,7 +4,7 @@ custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/redi
 sidebar_label: "Redis"
 -->
 
-# Redis
+# Redis monitoring with Netdata
 
 [`Redis`](https://redis.io/) is an open source (BSD licensed), in-memory data structure store, used as a database, cache
 and message broker.
