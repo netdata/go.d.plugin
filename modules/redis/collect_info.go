@@ -78,7 +78,7 @@ func (r *Redis) collectInfo(ms map[string]int64, info string) {
 	}
 
 	if has(ms, "keyspace_hits", "keyspace_misses") {
-		ms["keyspace_hit_rate"] = int64(calcKeyspaceHitRate(ms))
+		ms["keyspace_hit_rate"] = int64(calcKeyspaceHitRate(ms) * precision)
 	}
 }
 

@@ -191,7 +191,7 @@ func TestRedis_Collect(t *testing.T) {
 				"io_threaded_reads_processed":     0,
 				"io_threaded_writes_processed":    0,
 				"io_threads_active":               0,
-				"keyspace_hit_rate":               100,
+				"keyspace_hit_rate":               100000,
 				"keyspace_hits":                   2,
 				"keyspace_misses":                 0,
 				"latest_fork_usec":                810,

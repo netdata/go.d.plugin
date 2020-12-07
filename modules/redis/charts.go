@@ -180,7 +180,7 @@ var (
 		Fam:   "keyspace",
 		Ctx:   "redis.keyspace_lookup_hit_rate",
 		Dims: module.Dims{
-			{ID: "keyspace_hit_rate", Name: "lookup_hit_rate"},
+			{ID: "keyspace_hit_rate", Name: "lookup_hit_rate", Div: precision},
 		},
 	}
 	chartKeyEviction = module.Chart{
