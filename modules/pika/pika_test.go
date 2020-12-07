@@ -184,6 +184,8 @@ func TestPika_Collect(t *testing.T) {
 			assert.Equal(t, test.wantCollected, ms)
 			if len(test.wantCollected) > 0 {
 				ensureCollectedHasAllChartsDimsVarsIDs(t, pika, ms)
+				ensureCollectedCommandsAddedToCharts(t, pika)
+				ensureCollectedDbsAddedToCharts(t, pika)
 			}
 		})
 	}
@@ -229,6 +231,42 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, pika *Pika, ms map[str
 			_, ok := ms[v.ID]
 			assert.Truef(t, ok, "chart '%s' dim '%s': no dim in collected", v.ID, chart.ID)
 		}
+	}
+}
+
+func ensureCollectedCommandsAddedToCharts(t *testing.T, pika *Pika) {
+	for _, id := range []string{
+		chartCommandsCalls.ID,
+	} {
+		chart := pika.Charts().Get(id)
+		require.NotNilf(t, chart, "'%s' chart is not in charts", id)
+		assert.Lenf(t, chart.Dims, len(pika.collectedCommands),
+			"'%s' chart unexpected number of dimensions", id)
+	}
+}
+
+func ensureCollectedDbsAddedToCharts(t *testing.T, pika *Pika) {
+	for _, id := range []string{
+		chartDbStringsKeys.ID,
+		chartDbStringsExpiresKeys.ID,
+		chartDbStringsInvalidKeys.ID,
+		chartDbHashesKeys.ID,
+		chartDbHashesExpiresKeys.ID,
+		chartDbHashesInvalidKeys.ID,
+		chartDbListsKeys.ID,
+		chartDbListsExpiresKeys.ID,
+		chartDbListsInvalidKeys.ID,
+		chartDbZsetsKeys.ID,
+		chartDbZsetsExpiresKeys.ID,
+		chartDbZsetsInvalidKeys.ID,
+		chartDbSetsKeys.ID,
+		chartDbSetsExpiresKeys.ID,
+		chartDbSetsInvalidKeys.ID,
+	} {
+		chart := pika.Charts().Get(id)
+		require.NotNilf(t, chart, "'%s' chart is not in charts", id)
+		assert.Lenf(t, chart.Dims, len(pika.collectedDbs),
+			"'%s' chart unexpected number of dimensions", id)
 	}
 }
 

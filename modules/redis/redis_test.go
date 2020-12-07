@@ -282,6 +282,8 @@ func TestRedis_Collect(t *testing.T) {
 			assert.Equal(t, test.wantCollected, ms)
 			if len(test.wantCollected) > 0 {
 				ensureCollectedHasAllChartsDimsVarsIDs(t, rdb, ms)
+				ensureCollectedCommandsAddedToCharts(t, rdb)
+				ensureCollectedDbsAddedToCharts(t, rdb)
 			}
 		})
 	}
@@ -327,6 +329,31 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, rdb *Redis, ms map[str
 			_, ok := ms[v.ID]
 			assert.Truef(t, ok, "chart '%s' dim '%s': no dim in collected", v.ID, chart.ID)
 		}
+	}
+}
+
+func ensureCollectedCommandsAddedToCharts(t *testing.T, rdb *Redis) {
+	for _, id := range []string{
+		chartCommandsCalls.ID,
+		chartCommandsUsec.ID,
+		chartCommandsUsecPerSec.ID,
+	} {
+		chart := rdb.Charts().Get(id)
+		require.NotNilf(t, chart, "'%s' chart is not in charts", id)
+		assert.Lenf(t, chart.Dims, len(rdb.collectedCommands),
+			"'%s' chart unexpected number of dimensions", id)
+	}
+}
+
+func ensureCollectedDbsAddedToCharts(t *testing.T, rdb *Redis) {
+	for _, id := range []string{
+		chartKeys.ID,
+		chartExpiresKeys.ID,
+	} {
+		chart := rdb.Charts().Get(id)
+		require.NotNilf(t, chart, "'%s' chart is not in charts", id)
+		assert.Lenf(t, chart.Dims, len(rdb.collectedDbs),
+			"'%s' chart unexpected number of dimensions", id)
 	}
 }
 
