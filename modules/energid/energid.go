@@ -8,6 +8,15 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+func init() {
+	module.Register("energid", module.Creator{
+		Defaults: module.Defaults{
+			UpdateEvery: 1,
+		},
+		Create: func() module.Module { return New() },
+	})
+}
+
 type Config struct {
 	web.HTTP `yaml:",inline"`
 }
@@ -35,42 +44,42 @@ func New() *Energid {
 	}
 }
 
-func (d *Energid) Init() bool {
-	err := d.validateConfig()
+func (e *Energid) Init() bool {
+	err := e.validateConfig()
 	if err != nil {
-		d.Errorf("config validation: %v", err)
+		e.Errorf("config validation: %v", err)
 		return false
 	}
 
-	client, err := d.initHTTPClient()
+	client, err := e.initHTTPClient()
 	if err != nil {
-		d.Errorf("init HTTP client: %v", err)
+		e.Errorf("init HTTP client: %v", err)
 		return false
 	}
-	d.httpClient = client
+	e.httpClient = client
 
-	cs, err := d.initCharts()
+	cs, err := e.initCharts()
 	if err != nil {
-		d.Errorf("init charts: %v", err)
+		e.Errorf("init charts: %v", err)
 		return false
 	}
-	d.charts = cs
+	e.charts = cs
 
 	return true
 }
 
-func (d *Energid) Check() bool {
-	return len(d.Collect()) > 0
+func (e *Energid) Check() bool {
+	return len(e.Collect()) > 0
 }
 
-func (d *Energid) Charts() *module.Charts {
-	return d.charts
+func (e *Energid) Charts() *module.Charts {
+	return e.charts
 }
 
-func (d *Energid) Collect() map[string]int64 {
-	ms, err := d.collect()
+func (e *Energid) Collect() map[string]int64 {
+	ms, err := e.collect()
 	if err != nil {
-			d.Error(err)
+			e.Error(err)
 	}
 
 	if len(ms) == 0 {
@@ -80,10 +89,10 @@ func (d *Energid) Collect() map[string]int64 {
 	return ms
 }
 
-func (d *Energid) Cleanup() {
-	if d.httpClient == nil {
+func (e *Energid) Cleanup() {
+	if e.httpClient == nil {
 			return
 	}
 
-	d.httpClient.CloseIdleConnections()
+	e.httpClient.CloseIdleConnections()
 }

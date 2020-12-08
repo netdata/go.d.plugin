@@ -2,7 +2,12 @@ package energid
 
 import "github.com/netdata/go.d.plugin/agent/module"
 
-var charts = module.Charts{
+type (
+	Charts = module.Charts
+	Dims   = module.Dims
+)
+
+var charts = Charts{
 	{
 		ID:    "blockindex",
 		Title: "Blockchain Index",
@@ -10,7 +15,7 @@ var charts = module.Charts{
 		Fam:   "blockchain",
 		Ctx:   "energid.blockindex",
 		Type:  module.Area,
-		Dims: module.Dims{
+		Dims: Dims{
 			{ID: "blockchain_blocks", Name: "Blocks", Algo: module.Absolute},
 			{ID: "blockchain_headers", Name: "Headers", Algo: module.Absolute},
 		},
@@ -22,7 +27,7 @@ var charts = module.Charts{
 		Fam:   "blockchain",
 		Ctx:   "energid.difficulty",
 		Type:  module.Line,
-		Dims: module.Dims{
+		Dims: Dims{
 			{ID: "blockchain_difficulty", Name: "Diff", Algo: module.Absolute},
 		},
 	},
@@ -33,7 +38,7 @@ var charts = module.Charts{
 		Fam:   "memory",
 		Ctx:   "energid.mempool",
 		Type:  module.Area,
-		Dims: module.Dims{
+		Dims: Dims{
 			{ID: "mempool_max", Name: "Max", Algo: module.Absolute, Div: 1024 * 1024},
 			{ID: "mempool_current", Name: "Usage", Algo: module.Absolute, Div: 1024 * 1024},
 			{ID: "mempool_txsize", Name: "TX Size", Algo: module.Absolute, Div: 1024 * 1024},
@@ -63,7 +68,7 @@ var charts = module.Charts{
 		Fam:   "network",
 		Ctx:   "energid.network",
 		Type:  module.Line,
-		Dims: module.Dims{
+		Dims: Dims{
 			{ID: "network_connections", Name: "Connections", Algo: module.Absolute},
 		},
 	},
@@ -74,7 +79,7 @@ var charts = module.Charts{
 		Fam:   "network",
 		Ctx:   "energid.timeoffset",
 		Type:  module.Line,
-		Dims: module.Dims{
+		Dims: Dims{
 			{ID: "network_timeoffset", Name: "Offseet", Algo: module.Absolute},
 		},
 	},
@@ -85,7 +90,7 @@ var charts = module.Charts{
 		Fam:   "UTXO",
 		Ctx:   "energid.utxo",
 		Type:  module.Line,
-		Dims: module.Dims{
+		Dims: Dims{
 			{ID: "utxo_count", Name: "UTXO", Algo: module.Absolute},
 		},
 	},
@@ -96,7 +101,7 @@ var charts = module.Charts{
 		Fam:   "UTXO",
 		Ctx:   "energid.xfers",
 		Type:  module.Line,
-		Dims: module.Dims{
+		Dims: Dims{
 			{ID: "utxo_xfers", Name: "Xfers", Algo: module.Absolute},
 		},
 	},

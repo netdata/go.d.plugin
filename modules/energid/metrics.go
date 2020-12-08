@@ -13,12 +13,12 @@ type energidStats struct {
 	Network *networkStatistic
 
 	// https://github.com/energicryptocurrency/core-api-documentation#gettxoutsetinfo
-	TxOUT *txoutStatistic
+	TXout *txoutStatistic
 }
 
 func (e energidStats) empty() bool {
 	switch {
-	case e.hasBlockChain(), e.hasMemPool(), e.hasNetwork(), e.hasTxOUT():
+	case e.hasBlockChain(), e.hasMemPool(), e.hasNetwork(), e.hasTXout():
 			return false
 	}
 	return true
@@ -27,7 +27,7 @@ func (e energidStats) empty() bool {
 func (e energidStats) hasBlockChain() bool { return e.BlockChain != nil }
 func (e energidStats) hasMemPool() bool   { return e.MemPool != nil }
 func (e energidStats) hasNetwork() bool  { return e.Network != nil }
-func (e energidStats) hasTxOUT() bool     { return e.TxOUT != nil }
+func (e energidStats) hasTXout() bool     { return e.TXout != nil }
 
 type blockchainStatistic struct {
 	Blocks float64 `stm:"blocks" json:"blocks"`

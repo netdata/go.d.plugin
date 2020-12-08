@@ -91,43 +91,41 @@ func Test_Cleanup(t *testing.T) {
 
 func Test_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func(*testing.T) (e *Energid, cleanup func())
+		prepare  func() (e *Energid,  cleanup func())
 		wantFail bool
 	}{
-		"valid" : {prepare : prepareEnergiddValidData, wantFail: false},
+		"valid" : {prepare : prepareEnergidValidData, wantFail: false},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-				cdb, cleanup := test.prepare(t)
-				defer cleanup()
+			e, cleanup := test.prepare()
+			defer cleanup()
 
-				if test.wantFail {
-						assert.False(t, cdb.Check())
-				} else {
-						assert.True(t, cdb.Check())
-				}
+			require.True(t, e.Init())
+
+			if test.wantFail {
+				assert.False(t, e.Check())
+			} else {
+				assert.True(t, e.Check())
+			}
 		})
 	}
 }
 
-func prepareEnergiddValidData(t *testing.T) (cdb *Energid, cleanup func()) {
-	return prepareEnergid12() 
+func prepareEnergidValidData() (*Energid, func()) {
+	srv := prepareEnergidEndPoint()
+	e := New()
+	e.URL = srv.URL
+
+	return e, srv.Close
 }
 
-func prepareEnergid12() (*Energid, func()) {
-	srv := preparePowerDNSDistEndpoint()
-	ns := New()
-	ns.URL = srv.URL
-
-	return ns, srv.Close
-}
-
-func preparePowerDNSDistEndpoint() *httptest.Server {
+func prepareEnergidEndPoint() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 					switch r.URL.String() {
-					case "/blockchain":
+					case "/blockchain", "/":
 							_, _ = w.Write(v12JSONblockchaininfo)
 					case "/mempool":
 							_, _ = w.Write(v12JSONmempoolinfo)
