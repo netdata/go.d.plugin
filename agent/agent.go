@@ -154,10 +154,10 @@ func (a *Agent) run(ctx context.Context) {
 	if !isTerminal && a.StateFile != "" {
 		saver = state.NewManager(a.StateFile)
 		builder.CurState = saver
-		if st, err := state.Load(a.StateFile); err != nil {
+		if store, err := state.Load(a.StateFile); err != nil {
 			a.Warningf("couldn't load state file: %v", err)
 		} else {
-			builder.PrevState = st
+			builder.PrevState = store
 		}
 	}
 
