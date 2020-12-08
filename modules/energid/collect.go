@@ -17,13 +17,6 @@ const (
 	urlPathStat = "/"
 )
 
-type energyBody struct {
-	JSONRPCversion string `json:"jsonrpc"`
-	ID string `json:"id"`
-	Method string `json:"method"`
-	Params []string `json:"params"`
-}
-
 func (e *Energid) collect() (map[string]int64, error) {
 	ms := e.scrapeEnergid()
 	if ms.empty() {
@@ -35,6 +28,7 @@ func (e *Energid) collect() (map[string]int64, error) {
 	e.collectMemPool(collected, ms)
 	e.collectNetwork(collected, ms)
 	e.collectTXout(collected, ms)
+
 
 	return collected, nil
 }
@@ -81,7 +75,7 @@ func (Energid) collectTXout(collected map[string]int64, ms *energidStats) {
 		return
 	}
 
-	for metric, value := range stm.ToMap(ms.Network) {
+	for metric, value := range stm.ToMap(ms.TXout) {
 		switch metric {
 			case "transactions":
 				collected["utxo_xfers"] = int64(value)
@@ -208,6 +202,7 @@ func (e *Energid) energidMakeBody(id string, method string) (*energyBody) {
 		JSONRPCversion: "1.0",
 		ID: id,
 		Method: method,
+		Params: make([]string, 0),
 	}
 }
 

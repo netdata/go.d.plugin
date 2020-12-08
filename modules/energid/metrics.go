@@ -16,6 +16,13 @@ type energidStats struct {
 	TXout *txoutStatistic
 }
 
+type energyBody struct {
+	JSONRPCversion string `json:"jsonrpc"`
+	ID string `json:"id"`
+	Method string `json:"method"`
+	Params []string `json:"params"`
+}
+
 func (e energidStats) empty() bool {
 	switch {
 	case e.hasBlockChain(), e.hasMemPool(), e.hasNetwork(), e.hasTXout():
