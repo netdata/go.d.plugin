@@ -95,6 +95,9 @@ func Test_Check(t *testing.T) {
 		wantFail bool
 	}{
 		"valid" : {prepare : prepareEnergidValidData, wantFail: false},
+		"invalid data" : {prepare : prepareEnergidInvalidData, wantFail: true},
+		"404" : {prepare : prepareEnergid404, wantFail: true},
+		"Connection refused" : {prepare : prepareEnergidConnectionRefused, wantFail: true},
 	}
 
 	for name, test := range tests {
@@ -111,6 +114,35 @@ func Test_Check(t *testing.T) {
 			}
 		})
 	}
+}
+
+func prepareEnergidInvalidData() (*Energid, func()) {
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte("Hello world!"))
+		}))
+	e := New()
+	e.URL = srv.URL
+
+	return e, srv.Close
+}
+
+func prepareEnergid404() (*Energid, func()) {
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+	cdb := New()
+	cdb.URL = srv.URL
+
+	return cdb, srv.Close
+}
+
+func prepareEnergidConnectionRefused() (*Energid, func()) {
+	e := New()
+	e.URL = "http://127.0.0.1:38001"
+
+	return e, func() {}
 }
 
 func prepareEnergidValidData() (*Energid, func()) {
