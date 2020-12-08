@@ -1,7 +1,6 @@
 package state
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/job/confgroup"
@@ -41,11 +40,11 @@ func TestLoad(t *testing.T) {
 
 func TestStore_add(t *testing.T) {
 	tests := map[string]struct {
-		prepare   func() *Store
-		input     confgroup.Config
-		wantItems map[string]map[string]string
+		prepare      func() *Store
+		input        confgroup.Config
+		wantItemsNum int
 	}{
-		"add an item to the empty store": {
+		"add a cfg to the empty store": {
 			prepare: func() *Store {
 				return &Store{}
 			},
@@ -53,19 +52,27 @@ func TestStore_add(t *testing.T) {
 				"module", "modName",
 				"name", "jobName",
 			),
-			wantItems: map[string]map[string]string{
-				"modName": {
-					"jobName:18299273693089411682": "state",
-				},
-			},
+			wantItemsNum: 1,
 		},
-		"add an item with same module, same name, but specific options": {
+		"add a cfg that already in the store": {
 			prepare: func() *Store {
 				return &Store{
 					items: map[string]map[string]string{
-						"modName": {
-							"jobName:18299273693089411682": "state",
-						},
+						"modName": {"jobName:18299273693089411682": "state"},
+					},
+				}
+			},
+			input: prepareConfig(
+				"module", "modName",
+				"name", "jobName",
+			),
+			wantItemsNum: 1,
+		},
+		"add a cfg with same module, same name, but specific options": {
+			prepare: func() *Store {
+				return &Store{
+					items: map[string]map[string]string{
+						"modName": {"jobName:18299273693089411682": "state"},
 					},
 				}
 			},
@@ -74,12 +81,7 @@ func TestStore_add(t *testing.T) {
 				"name", "jobName",
 				"opt", "val",
 			),
-			wantItems: map[string]map[string]string{
-				"modName": {
-					"jobName:18299273693089411682": "state",
-					"jobName:6762067169527372123":  "state",
-				},
-			},
+			wantItemsNum: 2,
 		},
 	}
 
@@ -87,10 +89,62 @@ func TestStore_add(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			s := test.prepare()
 			s.add(test.input, "state")
-			fmt.Println(s.items)
-			assert.Equal(t, test.wantItems, s.items)
+			assert.Equal(t, test.wantItemsNum, calcItemsNum(s))
 		})
 	}
+}
+
+func TestStore_remove(t *testing.T) {
+	tests := map[string]struct {
+		prepare      func() *Store
+		input        confgroup.Config
+		wantItemsNum int
+	}{
+		"remove a cfg from the empty store": {
+			prepare: func() *Store {
+				return &Store{}
+			},
+			input: prepareConfig(
+				"module", "modName",
+				"name", "jobName",
+			),
+			wantItemsNum: 0,
+		},
+		"remove a cfg from the store": {
+			prepare: func() *Store {
+				return &Store{
+					items: map[string]map[string]string{
+						"modName": {
+							"jobName:18299273693089411682": "state",
+							"jobName:18299273693089411683": "state",
+						},
+					},
+				}
+			},
+			input: prepareConfig(
+				"module", "modName",
+				"name", "jobName",
+			),
+			wantItemsNum: 1,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			s := test.prepare()
+			s.remove(test.input)
+			assert.Equal(t, test.wantItemsNum, calcItemsNum(s))
+		})
+	}
+}
+
+func calcItemsNum(s *Store) (num int) {
+	for _, v := range s.items {
+		for range v {
+			num += 1
+		}
+	}
+	return num
 }
 
 func prepareConfig(values ...string) confgroup.Config {
