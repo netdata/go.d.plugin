@@ -16,19 +16,19 @@ import (
 
 var (
 	v12JSONblockchaininfo, _ = ioutil.ReadFile("testdata/v12/getblockchaininfo.json")
-	v12JSONmempoolinfo, _ = ioutil.ReadFile("testdata/v12/getmempoolinfo.json")
-	v12JSONnetworkinfo, _ = ioutil.ReadFile("testdata/v12/getnetworkinfo.json")
-	v12JSONtxoutsetinfo, _ = ioutil.ReadFile("testdata/v12/gettxoutsetinfo.json")
+	v12JSONmempoolinfo, _    = ioutil.ReadFile("testdata/v12/getmempoolinfo.json")
+	v12JSONnetworkinfo, _    = ioutil.ReadFile("testdata/v12/getnetworkinfo.json")
+	v12JSONtxoutsetinfo, _   = ioutil.ReadFile("testdata/v12/gettxoutsetinfo.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-			"v12JSONblockchaininfo": v12JSONblockchaininfo,
-			"v12JSONmempoolinfo": v12JSONmempoolinfo,
-			"v12JSONnetworkinfo": v12JSONnetworkinfo,
-			"v12JSONtxoutsetinfo": v12JSONtxoutsetinfo,
+		"v12JSONblockchaininfo": v12JSONblockchaininfo,
+		"v12JSONmempoolinfo":    v12JSONmempoolinfo,
+		"v12JSONnetworkinfo":    v12JSONnetworkinfo,
+		"v12JSONtxoutsetinfo":   v12JSONtxoutsetinfo,
 	} {
-			require.NotNilf(t, data, name)
+		require.NotNilf(t, data, name)
 	}
 }
 
@@ -93,13 +93,13 @@ func Test_Cleanup(t *testing.T) {
 
 func Test_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func() (e *Energid,  cleanup func())
+		prepare  func() (e *Energid, cleanup func())
 		wantFail bool
 	}{
-		"valid" : {prepare : prepareEnergidValidData, wantFail: false},
-		"invalid data" : {prepare : prepareEnergidInvalidData, wantFail: true},
-		"404" : {prepare : prepareEnergid404, wantFail: true},
-		"Connection refused" : {prepare : prepareEnergidConnectionRefused, wantFail: true},
+		"valid":              {prepare: prepareEnergidValidData, wantFail: false},
+		"invalid data":       {prepare: prepareEnergidInvalidData, wantFail: true},
+		"404":                {prepare: prepareEnergid404, wantFail: true},
+		"Connection refused": {prepare: prepareEnergidConnectionRefused, wantFail: true},
 	}
 
 	for name, test := range tests {
@@ -123,28 +123,28 @@ func Test_Collect(t *testing.T) {
 		prepare       func() (dist *Energid, cleanup func())
 		wantCollected map[string]int64
 	}{
-		"success" :{
+		"success": {
 			prepare: prepareEnergidValidData,
 			wantCollected: map[string]int64{
-				// Block Chaing statistic 
-				"blockchain_blocks" : 0,
+				// Block Chaing statistic
+				"blockchain_blocks":     0,
 				"blockchain_difficulty": 0,
-				"blockchain_headers": 0,
+				"blockchain_headers":    0,
 
 				// Memory Pool
-				"mempool_max": 300000000,
+				"mempool_max":     300000000,
 				"mempool_current": 0,
-				"mempool_txsize": 0,
+				"mempool_txsize":  0,
 
-				// Network 
+				// Network
 				"network_connections": 0,
-				"network_timeoffset": 0,
+				"network_timeoffset":  0,
 
 				// TX
 				"utxo_xfers": 0,
 				"utxo_count": 0,
 			},
-		}, 
+		},
 		"fails on 404 response": {
 			prepare: prepareEnergid404,
 		},
@@ -227,28 +227,28 @@ func prepareEnergidValidData() (*Energid, func()) {
 
 func prepareEnergidEndPoint() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				body, _ := ioutil.ReadAll(r.Body)
+		func(w http.ResponseWriter, r *http.Request) {
+			body, _ := ioutil.ReadAll(r.Body)
 
-				if body != nil {
-					var data energyBody
-					err := json.Unmarshal(body, &data)
-					if err != nil {
-						log.Error(err)
-					} else {
-						switch data.Method {
-							case "getblockchaininfo":
-								_, _ = w.Write(v12JSONblockchaininfo)
-							case "getmempoolinfo":
-								_, _ = w.Write(v12JSONmempoolinfo)
-							case "getnetworkinfo":
-								_, _ = w.Write(v12JSONnetworkinfo)
-							case "gettxoutsetinfo":
-								_, _ = w.Write(v12JSONtxoutsetinfo)
-							default:
-								w.WriteHeader(http.StatusNotFound)
-							}
+			if body != nil {
+				var data energyBody
+				err := json.Unmarshal(body, &data)
+				if err != nil {
+					log.Error(err)
+				} else {
+					switch data.Method {
+					case "getblockchaininfo":
+						_, _ = w.Write(v12JSONblockchaininfo)
+					case "getmempoolinfo":
+						_, _ = w.Write(v12JSONmempoolinfo)
+					case "getnetworkinfo":
+						_, _ = w.Write(v12JSONnetworkinfo)
+					case "gettxoutsetinfo":
+						_, _ = w.Write(v12JSONtxoutsetinfo)
+					default:
+						w.WriteHeader(http.StatusNotFound)
 					}
-				} 
-			}))
+				}
+			}
+		}))
 }

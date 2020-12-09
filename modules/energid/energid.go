@@ -79,11 +79,11 @@ func (e *Energid) Charts() *module.Charts {
 func (e *Energid) Collect() map[string]int64 {
 	ms, err := e.collect()
 	if err != nil {
-			e.Error(err)
+		e.Error(err)
 	}
 
 	if len(ms) == 0 {
-			return nil
+		return nil
 	}
 
 	return ms
@@ -91,7 +91,7 @@ func (e *Energid) Collect() map[string]int64 {
 
 func (e *Energid) Cleanup() {
 	if e.httpClient == nil {
-			return
+		return
 	}
 
 	e.httpClient.CloseIdleConnections()

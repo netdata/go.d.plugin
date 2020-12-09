@@ -45,21 +45,21 @@ var charts = Charts{
 		},
 	},
 	/*
-	We had this chart on Python version, but it is not documented at 
-	https://github.com/energicryptocurrency/core-api-documentation
-	{
-		ID:    "secmem",
-		Title: "Secure Memory",
-		Units: "KiB",
-		Fam:   "memory",
-		Ctx:   "energid.secmem",
-		Type:  module.Area,
-		Dims: module.Dims{
-			{ID: "secmem_total", Name: "Total", Algo: module.Absolute},
-			{ID: "secmem_locked", Name: "Locked", Algo: module.Absolute},
-			{ID: "secmem_used", Name: "Used", Algo: module.Absolute},
+		We had this chart on Python version, but it is not documented at
+		https://github.com/energicryptocurrency/core-api-documentation
+		{
+			ID:    "secmem",
+			Title: "Secure Memory",
+			Units: "KiB",
+			Fam:   "memory",
+			Ctx:   "energid.secmem",
+			Type:  module.Area,
+			Dims: module.Dims{
+				{ID: "secmem_total", Name: "Total", Algo: module.Absolute},
+				{ID: "secmem_locked", Name: "Locked", Algo: module.Absolute},
+				{ID: "secmem_used", Name: "Used", Algo: module.Absolute},
+			},
 		},
-	},
 	*/
 	{
 		ID:    "network",
