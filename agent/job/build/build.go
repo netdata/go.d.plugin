@@ -119,8 +119,8 @@ func (m *Manager) Run(ctx context.Context, in chan []*confgroup.Group) {
 }
 
 func (m *Manager) cleanup() {
-	for _, cancel := range *m.retryCache {
-		cancel()
+	for _, task := range *m.retryCache {
+		task.cancel()
 	}
 	for name := range *m.startCache {
 		_ = m.Registry.Unregister(name)
@@ -205,33 +205,35 @@ func (m *Manager) handleRemove(ctx context.Context, cfgs []confgroup.Config) {
 
 func (m *Manager) handleAddCfg(ctx context.Context, cfg confgroup.Config) {
 	if m.startCache.has(cfg) {
-		m.Infof("module '%s' job '%s' is being served by another job, skipping it", cfg.Module(), cfg.Name())
+		m.Infof("%s[%s] job is being served by another job, skipping it", cfg.Module(), cfg.Name())
 		m.CurState.Save(cfg, duplicateLocal)
 		return
 	}
 
-	cancel, isRetry := m.retryCache.lookup(cfg)
+	task, isRetry := m.retryCache.lookup(cfg)
 	if isRetry {
-		cancel()
+		task.cancel()
 		m.retryCache.remove(cfg)
 	}
 
 	job, err := m.buildJob(cfg)
 	if err != nil {
-		m.Warningf("couldn't build module '%s' job '%s': %v", cfg.Module(), cfg.Name(), err)
+		m.Warningf("couldn't build %s[%s]: %v", cfg.Module(), cfg.Name(), err)
 		m.CurState.Save(cfg, buildError)
 		return
 	}
 
-	if !isRetry && cfg.AutoDetectionRetry() == 0 {
+	if isRetry {
+		job.AutoDetectEvery = task.timeout
+		job.AutoDetectTries = task.retries
+	} else if job.AutoDetectionEvery() == 0 {
 		switch {
 		case m.PrevState.Contains(cfg, success, retry):
-			// TODO: method?
-			// 5 minutes
+			m.Infof("%s[%s] job last state is active/retry, applying recovering settings", cfg.Module(), cfg.Name())
 			job.AutoDetectEvery = 30
 			job.AutoDetectTries = 11
 		case isInsideK8sCluster() && cfg.Provider() == "file watcher":
-			// TODO: not sure this logic should belong to builder
+			m.Infof("%s[%s] is k8s job, applying recovering settings", cfg.Module(), cfg.Name())
 			job.AutoDetectEvery = 10
 			job.AutoDetectTries = 7
 		}
@@ -247,20 +249,25 @@ func (m *Manager) handleAddCfg(ctx context.Context, cfg confgroup.Config) {
 			m.Error(err)
 			m.CurState.Save(cfg, registrationError)
 		} else {
-			m.Infof("module '%s' job '%s'  is being served by another plugin, skipping it", cfg.Module(), cfg.Name())
+			m.Infof("%s[%s] job is being served by another plugin, skipping it", cfg.Module(), cfg.Name())
 			m.CurState.Save(cfg, duplicateGlobal)
 		}
 	case retry:
-		m.Infof("module '%s' job '%s' detection failed, will retry in %d seconds", cfg.Module(), cfg.Name(),
-			cfg.AutoDetectionRetry())
+		m.Infof("%s[%s] job detection failed, will retry in %d seconds",
+			cfg.Module(), cfg.Name(), job.AutoDetectionEvery())
 		m.CurState.Save(cfg, retry)
 		ctx, cancel := context.WithCancel(ctx)
-		m.retryCache.put(cfg, cancel)
-		go retryTask(ctx, m.retryCh, cfg)
+		m.retryCache.put(cfg, retryTask{
+			cancel:  cancel,
+			timeout: job.AutoDetectionEvery(),
+			retries: job.AutoDetectTries,
+		})
+		timeout := time.Second * time.Duration(job.AutoDetectionEvery())
+		go runRetryTask(ctx, m.retryCh, cfg, timeout)
 	case failed:
 		m.CurState.Save(cfg, failed)
 	default:
-		m.Warningf("module '%s' job '%s' detection: unknown state", cfg.Module(), cfg.Name())
+		m.Warningf("%s[%s] job detection: unknown state", cfg.Module(), cfg.Name())
 	}
 }
 
@@ -273,8 +280,8 @@ func (m *Manager) handleRemoveCfg(cfg confgroup.Config) {
 		m.startCache.remove(cfg)
 	}
 
-	if cancel, ok := m.retryCache.lookup(cfg); ok {
-		cancel()
+	if task, ok := m.retryCache.lookup(cfg); ok {
+		task.cancel()
 		m.retryCache.remove(cfg)
 	}
 }
@@ -282,7 +289,7 @@ func (m *Manager) handleRemoveCfg(cfg confgroup.Config) {
 func (m *Manager) buildJob(cfg confgroup.Config) (*module.Job, error) {
 	creator, ok := m.Modules[cfg.Module()]
 	if !ok {
-		return nil, fmt.Errorf("couldn't find '%s' module, job '%s'", cfg.Module(), cfg.Name())
+		return nil, fmt.Errorf("can not find %s module", cfg.Module())
 	}
 
 	m.Debugf("building %s[%s] job, config: %v", cfg.Module(), cfg.Name(), cfg)
@@ -316,8 +323,7 @@ func detection(job jobpkg.Job) state {
 	return success
 }
 
-func retryTask(ctx context.Context, in chan<- confgroup.Config, cfg confgroup.Config) {
-	timeout := time.Second * time.Duration(cfg.AutoDetectionRetry())
+func runRetryTask(ctx context.Context, in chan<- confgroup.Config, cfg confgroup.Config, timeout time.Duration) {
 	t := time.NewTimer(timeout)
 	defer t.Stop()
 

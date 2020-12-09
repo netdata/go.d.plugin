@@ -13,10 +13,15 @@ type (
 	cfgCount  = uint
 
 	startedCache map[fullName]struct{}
-	retryCache   map[cfgHash]context.CancelFunc
+	retryCache   map[cfgHash]retryTask
 	groupCache   struct {
 		global map[cfgHash]cfgCount
 		source map[grpSource]map[cfgHash]confgroup.Config
+	}
+	retryTask struct {
+		cancel  context.CancelFunc
+		timeout int
+		retries int
 	}
 )
 
@@ -35,13 +40,27 @@ func newGroupCache() *groupCache {
 	}
 }
 
-func (c startedCache) put(cfg confgroup.Config)      { c[cfg.FullName()] = struct{}{} }
-func (c startedCache) remove(cfg confgroup.Config)   { delete(c, cfg.FullName()) }
-func (c startedCache) has(cfg confgroup.Config) bool { _, ok := c[cfg.FullName()]; return ok }
+func (c startedCache) put(cfg confgroup.Config) {
+	c[cfg.FullName()] = struct{}{}
+}
+func (c startedCache) remove(cfg confgroup.Config) {
+	delete(c, cfg.FullName())
+}
+func (c startedCache) has(cfg confgroup.Config) bool {
+	_, ok := c[cfg.FullName()]
+	return ok
+}
 
-func (c retryCache) put(cfg confgroup.Config, stop func())      { c[cfg.Hash()] = stop }
-func (c retryCache) remove(cfg confgroup.Config)                { delete(c, cfg.Hash()) }
-func (c retryCache) lookup(cfg confgroup.Config) (func(), bool) { v, ok := c[cfg.Hash()]; return v, ok }
+func (c retryCache) put(cfg confgroup.Config, retry retryTask) {
+	c[cfg.Hash()] = retry
+}
+func (c retryCache) remove(cfg confgroup.Config) {
+	delete(c, cfg.Hash())
+}
+func (c retryCache) lookup(cfg confgroup.Config) (retryTask, bool) {
+	v, ok := c[cfg.Hash()]
+	return v, ok
+}
 
 func (c *groupCache) put(group *confgroup.Group) (added, removed []confgroup.Config) {
 	if group == nil {
