@@ -253,8 +253,8 @@ func (m *Manager) handleAddCfg(ctx context.Context, cfg confgroup.Config) {
 			m.CurState.Save(cfg, duplicateGlobal)
 		}
 	case retry:
-		m.Infof("%s[%s] job detection failed, will retry in %d seconds (%d attempts left)",
-			cfg.Module(), cfg.Name(), job.AutoDetectionEvery(), job.AutoDetectTries)
+		m.Infof("%s[%s] job detection failed, will retry in %d seconds",
+			cfg.Module(), cfg.Name(), job.AutoDetectionEvery())
 		m.CurState.Save(cfg, retry)
 		ctx, cancel := context.WithCancel(ctx)
 		m.retryCache.put(cfg, retryTask{
