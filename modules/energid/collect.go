@@ -84,7 +84,7 @@ func (e *Energid) scrapeEnergid() *energidStats {
 	}
 	req.Body = ioutil.NopCloser(bytes.NewReader(body))
 
-	stats := energyResponses {
+	stats := energyResponses{
 		{
 			Result: &ms.BlockChain,
 		},
@@ -107,7 +107,7 @@ func (e *Energid) scrapeEnergid() *energidStats {
 }
 
 func (e *Energid) energidMakeRequest() *energyRequests {
-	return &energyRequests{ 
+	return &energyRequests{
 		{
 			JSONRPCversion: "1.0",
 			ID:             "1",

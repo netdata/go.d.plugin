@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	v12JSONAllMethods, _   = ioutil.ReadFile("testdata/v12/allmethods.json")
+	v12JSONAllMethods, _ = ioutil.ReadFile("testdata/v12/allmethods.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {

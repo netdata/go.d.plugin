@@ -18,8 +18,8 @@ type energidStats struct {
 
 type energidResponse struct {
 	Result interface{} `json:"result,omitempty"`
-	Error string `error:"method"`
-	Id string `id:"method"`
+	Error  string      `error:"method"`
+	Id     string      `id:"method"`
 }
 
 type energyResponses []energidResponse
