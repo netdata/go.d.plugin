@@ -4,17 +4,25 @@ package energid
 
 type energidStats struct {
 	// https://github.com/energicryptocurrency/core-api-documentation#getblockchaininfo
-	BlockChain *blockchainStatistic
+	BlockChain blockchainStatistic
 
 	// https://github.com/energicryptocurrency/core-api-documentation#getmempoolinfo
-	MemPool *mempoolStatistic
+	MemPool mempoolStatistic
 
 	// https://github.com/energicryptocurrency/core-api-documentation#getnetworkinfo
-	Network *networkStatistic
+	Network networkStatistic
 
 	// https://github.com/energicryptocurrency/core-api-documentation#gettxoutsetinfo
-	TXout *txoutStatistic
+	TXout txoutStatistic
 }
+
+type energidResponse struct {
+	Result interface{} `json:"result,omitempty"`
+	Error string `error:"method"`
+	Id string `id:"method"`
+}
+
+type energyResponses []energidResponse
 
 type energyBody struct {
 	JSONRPCversion string   `json:"jsonrpc"`
@@ -23,18 +31,7 @@ type energyBody struct {
 	Params         []string `json:"params"`
 }
 
-func (e energidStats) empty() bool {
-	switch {
-	case e.hasBlockChain(), e.hasMemPool(), e.hasNetwork(), e.hasTXout():
-		return false
-	}
-	return true
-}
-
-func (e energidStats) hasBlockChain() bool { return e.BlockChain != nil }
-func (e energidStats) hasMemPool() bool    { return e.MemPool != nil }
-func (e energidStats) hasNetwork() bool    { return e.Network != nil }
-func (e energidStats) hasTXout() bool      { return e.TXout != nil }
+type energyBodies []energyBody
 
 type blockchainStatistic struct {
 	Blocks     float64 `stm:"blocks" json:"blocks"`

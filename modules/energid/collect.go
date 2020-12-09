@@ -7,7 +7,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"sync"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -19,9 +18,6 @@ const (
 
 func (e *Energid) collect() (map[string]int64, error) {
 	ms := e.scrapeEnergid()
-	if ms.empty() {
-		return nil, nil
-	}
 
 	collected := make(map[string]int64)
 	e.collectBlockChain(collected, ms)
@@ -33,20 +29,12 @@ func (e *Energid) collect() (map[string]int64, error) {
 }
 
 func (Energid) collectBlockChain(collected map[string]int64, ms *energidStats) {
-	if !ms.hasBlockChain() {
-		return
-	}
-
 	for metric, value := range stm.ToMap(ms.BlockChain) {
 		collected["blockchain_"+metric] = int64(value)
 	}
 }
 
 func (Energid) collectMemPool(collected map[string]int64, ms *energidStats) {
-	if !ms.hasMemPool() {
-		return
-	}
-
 	for metric, value := range stm.ToMap(ms.MemPool) {
 		switch metric {
 		case "maxmempool":
@@ -60,20 +48,12 @@ func (Energid) collectMemPool(collected map[string]int64, ms *energidStats) {
 }
 
 func (Energid) collectNetwork(collected map[string]int64, ms *energidStats) {
-	if !ms.hasNetwork() {
-		return
-	}
-
 	for metric, value := range stm.ToMap(ms.Network) {
 		collected["network_"+metric] = int64(value)
 	}
 }
 
 func (Energid) collectTXout(collected map[string]int64, ms *energidStats) {
-	if !ms.hasTXout() {
-		return
-	}
-
 	for metric, value := range stm.ToMap(ms.TXout) {
 		switch metric {
 		case "transactions":
@@ -86,122 +66,68 @@ func (Energid) collectTXout(collected map[string]int64, ms *energidStats) {
 
 func (e *Energid) scrapeEnergid() *energidStats {
 	ms := &energidStats{}
-	wg := &sync.WaitGroup{}
 
-	wg.Add(1)
-	go func() { defer wg.Done(); e.scrapeBlockChain(ms) }()
+	req, _ := web.NewHTTPRequest(e.Request)
+	req.URL.Path = urlPathStat
+	req.Method = http.MethodPost
+	req.Header.Add("content-type", "application/json")
+	eb := e.energidMakeBody()
 
-	wg.Add(1)
-	go func() { defer wg.Done(); e.scrapeMemPool(ms) }()
+	body, err := json.Marshal(eb)
+	if err != nil {
+		e.Error(err)
+		return nil
+	}
+	req.Body = ioutil.NopCloser(bytes.NewReader(body))
 
-	wg.Add(1)
-	go func() { defer wg.Done(); e.scrapeNetwork(ms) }()
+	stats := energyResponses {
+		{
+			Result: &ms.BlockChain,
+		},
+		{
+			Result: &ms.MemPool,
+		},
+		{
+			Result: &ms.Network,
+		},
+		{
+			Result: &ms.TXout,
+		},
+	}
+	if err := e.doOKDecode(req, &stats); err != nil {
+		e.Warning(err)
+		return nil
+	}
 
-	wg.Add(1)
-	go func() { defer wg.Done(); e.scrapeTXout(ms) }()
-
-	wg.Wait()
 	return ms
 }
 
-func (e *Energid) scrapeBlockChain(ms *energidStats) {
-	req, _ := web.NewHTTPRequest(e.Request)
-	req.URL.Path = urlPathStat
-	req.Method = http.MethodPost
-	req.Header.Add("content-type", "application/json")
-	eb := e.energidMakeBody("1", "getblockchaininfo")
-
-	body, err := json.Marshal(eb)
-	if err != nil {
-		e.Error(err)
-		return
-	}
-	req.Body = ioutil.NopCloser(bytes.NewReader(body))
-
-	var bc blockchainStatistic
-	if err := e.doOKDecode(req, &bc); err != nil {
-		e.Warning(err)
-		return
-	}
-
-	ms.BlockChain = &bc
-}
-
-func (e *Energid) scrapeMemPool(ms *energidStats) {
-	req, _ := web.NewHTTPRequest(e.Request)
-	req.URL.Path = urlPathStat
-	req.Method = http.MethodPost
-	req.Header.Add("content-type", "application/json")
-	eb := e.energidMakeBody("2", "getmempoolinfo")
-
-	body, err := json.Marshal(eb)
-	if err != nil {
-		e.Error(err)
-		return
-	}
-	req.Body = ioutil.NopCloser(bytes.NewReader(body))
-
-	var mem mempoolStatistic
-	if err := e.doOKDecode(req, &mem); err != nil {
-		e.Warning(err)
-		return
-	}
-
-	ms.MemPool = &mem
-}
-
-func (e *Energid) scrapeNetwork(ms *energidStats) {
-	req, _ := web.NewHTTPRequest(e.Request)
-	req.URL.Path = urlPathStat
-	req.Method = http.MethodPost
-	req.Header.Add("content-type", "application/json")
-	eb := e.energidMakeBody("3", "getnetworkinfo")
-
-	body, err := json.Marshal(eb)
-	if err != nil {
-		e.Error(err)
-		return
-	}
-	req.Body = ioutil.NopCloser(bytes.NewReader(body))
-
-	var ns networkStatistic
-	if err := e.doOKDecode(req, &ns); err != nil {
-		e.Warning(err)
-		return
-	}
-
-	ms.Network = &ns
-}
-
-func (e *Energid) scrapeTXout(ms *energidStats) {
-	req, _ := web.NewHTTPRequest(e.Request)
-	req.URL.Path = urlPathStat
-	req.Method = http.MethodPost
-	req.Header.Add("content-type", "application/json")
-	eb := e.energidMakeBody("4", "gettxoutsetinfo")
-
-	body, err := json.Marshal(eb)
-	if err != nil {
-		e.Error(err)
-		return
-	}
-	req.Body = ioutil.NopCloser(bytes.NewReader(body))
-
-	var txs txoutStatistic
-	if err := e.doOKDecode(req, &txs); err != nil {
-		e.Warning(err)
-		return
-	}
-
-	ms.TXout = &txs
-}
-
-func (e *Energid) energidMakeBody(id string, method string) *energyBody {
-	return &energyBody{
-		JSONRPCversion: "1.0",
-		ID:             id,
-		Method:         method,
-		Params:         make([]string, 0),
+func (e *Energid) energidMakeBody() *energyBodies {
+	return &energyBodies{ 
+		{
+			JSONRPCversion: "1.0",
+			ID:             "1",
+			Method:         "getblockchaininfo",
+			Params:         make([]string, 0),
+		},
+		{
+			JSONRPCversion: "1.0",
+			ID:             "2",
+			Method:         "getmempoolinfo",
+			Params:         make([]string, 0),
+		},
+		{
+			JSONRPCversion: "1.0",
+			ID:             "3",
+			Method:         "getnetworkinfo",
+			Params:         make([]string, 0),
+		},
+		{
+			JSONRPCversion: "1.0",
+			ID:             "4",
+			Method:         "gettxoutsetinfo",
+			Params:         make([]string, 0),
+		},
 	}
 }
 

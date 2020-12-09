@@ -30,8 +30,5 @@ $ ./energid -testnet -rest -rpcallowip=192.168.0.0/24 -rpcport=9796 -server -rpc
 Requests using `curl`:
 
 ```
-$ curl --user netdata --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getblockchaininfo", "params": [] }' -H 'content-type: application/json;' http://127.0.0.1:9796/
-$ curl --user netdata --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getmempoolinfo", "params": [] }' -H 'content-type: application/json;' http://127.0.0.1:9796/
-$ curl --user netdata --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getnetworkinfo", "params": [] }' -H 'content-type: application/json;' http://127.0.0.1:9796/
-$ curl --user netdata --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "gettxoutsetinfo", "params": [] }' -H 'content-type: application/json;' http://127.0.0.1:9796/
+curl -v  --user netdata --data-binary '[{"jsonrpc": "1.0", "id":"1", "method": "getblockchaininfo", "params": [] }, {"jsonrpc": "1.0", "id":"2", "method": "getmempoolinfo", "params": [] }, {"jsonrpc": "1.0", "id":"3", "method": "getnetworkinfo", "params": [] }, {"jsonrpc": "1.0", "id":"4", "method": "gettxoutsetinfo", "params": [] }]' -H 'content-type: application/json;' http://127.0.0.1:9796/
 ```
