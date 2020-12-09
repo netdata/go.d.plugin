@@ -21,4 +21,4 @@ The domain names are `cachesize.bind`, `insertions.bind`, `evictions.bind`,
 `misses.bind`, `hits.bind`, `auth.bind` and `servers.bind`. An example command to query this,
 using the dig utility would be:
 
-> dig +short chaos txt cachesize.bind
+> dig +short chaos txt cachesize.bind @127.0.0.1
