@@ -76,6 +76,18 @@ func TestFilecheck_Init(t *testing.T) {
 			},
 			wantNumOfCharts: len(dirCharts),
 		},
+		"only wildcard dirs->include": {
+			config: Config{
+				Dirs: dirsConfig{
+					Include: []string{
+						"/path/to/dir1",
+						"/path/to/dir2",
+					},
+					CollectDirSize: true,
+				},
+			},
+			wantNumOfCharts: len(dirCharts),
+		},
 	}
 
 	for name, test := range tests {
@@ -101,6 +113,7 @@ func TestFilecheck_Check(t *testing.T) {
 		"collect only non existent files": {prepare: prepareFilecheckNonExistentFiles},
 		"collect dirs":                    {prepare: prepareFilecheckDirs},
 		"collect only non existent dirs":  {prepare: prepareFilecheckNonExistentDirs},
+		"collect wildcard dirs":           {prepare: prepareFilecheckWildcardDirs},
 		"collect files and dirs":          {prepare: prepareFilecheckFilesDirs},
 	}
 
@@ -145,6 +158,20 @@ func TestFilecheck_Collect(t *testing.T) {
 				"dir_testdata/dir_num_of_files":        3,
 				"dir_testdata/dir_size_bytes":          8160,
 				"dir_testdata/non_existent_dir_exists": 0,
+			},
+		},
+		"collect wildcard dirs": {
+			prepare: prepareFilecheckWildcardDirs,
+			wantCollected: map[string]int64{
+				"dir_testdata/dir/subdir_exists":            1,
+				"dir_testdata/dir/subdir_mtime_ago":         144864,
+				"dir_testdata/dir/subdir_num_of_files":      1,
+				"dir_testdata/dir/subdir_size_bytes":        0,
+				"dir_testdata/dir_exists":                   1,
+				"dir_testdata/dir_mtime_ago":                4087,
+				"dir_testdata/dir_num_of_files":             3,
+				"dir_testdata/dir_size_bytes":               8160,
+				"dir_testdata/non_existent_dir/*dir_exists": 0,
 			},
 		},
 		"collect dirs w/o size": {
@@ -256,6 +283,16 @@ func prepareFilecheckNonExistentDirs() *Filecheck {
 	fc := New()
 	fc.Config.Dirs.Include = []string{
 		"testdata/non_existent_dir",
+	}
+	return fc
+}
+
+func prepareFilecheckWildcardDirs() *Filecheck {
+	fc := New()
+	fc.Config.Dirs.Include = []string{
+		"testdata/dir/*dir",
+		"testdata/d*r",
+		"testdata/non_existent_dir/*dir",
 	}
 	return fc
 }

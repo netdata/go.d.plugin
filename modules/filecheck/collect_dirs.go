@@ -13,7 +13,14 @@ import (
 func (fc *Filecheck) collectDirs(mx map[string]int64) {
 	curTime := time.Now()
 	for _, dirpath := range fc.Dirs.Include {
-		fc.collectDir(mx, dirpath, curTime)
+        subdirpaths , _ := filepath.Glob(dirpath)
+        if len(subdirpaths) == 0 {
+			fc.collectDir(mx, dirpath, curTime)
+        } else {
+		    for _, subdirpath := range subdirpaths {
+		        fc.collectDir(mx, subdirpath, curTime)
+		    }
+        }
 	}
 }
 
