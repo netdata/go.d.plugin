@@ -24,14 +24,14 @@ type energidResponse struct {
 
 type energyResponses []energidResponse
 
-type energyBody struct {
+type energyRequest struct {
 	JSONRPCversion string   `json:"jsonrpc"`
 	ID             string   `json:"id"`
 	Method         string   `json:"method"`
 	Params         []string `json:"params"`
 }
 
-type energyBodies []energyBody
+type energyRequests []energyRequest
 
 type blockchainStatistic struct {
 	Blocks     float64 `stm:"blocks" json:"blocks"`

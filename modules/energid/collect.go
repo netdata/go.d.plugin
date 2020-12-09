@@ -19,6 +19,10 @@ const (
 func (e *Energid) collect() (map[string]int64, error) {
 	ms := e.scrapeEnergid()
 
+	if ms == nil {
+		return nil, fmt.Errorf("Invalid request")
+	}
+
 	collected := make(map[string]int64)
 	e.collectBlockChain(collected, ms)
 	e.collectMemPool(collected, ms)
@@ -71,7 +75,7 @@ func (e *Energid) scrapeEnergid() *energidStats {
 	req.URL.Path = urlPathStat
 	req.Method = http.MethodPost
 	req.Header.Add("content-type", "application/json")
-	eb := e.energidMakeBody()
+	eb := e.energidMakeRequest()
 
 	body, err := json.Marshal(eb)
 	if err != nil {
@@ -102,8 +106,8 @@ func (e *Energid) scrapeEnergid() *energidStats {
 	return ms
 }
 
-func (e *Energid) energidMakeBody() *energyBodies {
-	return &energyBodies{ 
+func (e *Energid) energidMakeRequest() *energyRequests {
+	return &energyRequests{ 
 		{
 			JSONRPCversion: "1.0",
 			ID:             "1",

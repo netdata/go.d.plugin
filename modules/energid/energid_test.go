@@ -7,26 +7,20 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cloudflare/cfssl/log"
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
+	"github.com/prometheus/common/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	v12JSONblockchaininfo, _ = ioutil.ReadFile("testdata/v12/getblockchaininfo.json")
-	v12JSONmempoolinfo, _    = ioutil.ReadFile("testdata/v12/getmempoolinfo.json")
-	v12JSONnetworkinfo, _    = ioutil.ReadFile("testdata/v12/getnetworkinfo.json")
-	v12JSONtxoutsetinfo, _   = ioutil.ReadFile("testdata/v12/gettxoutsetinfo.json")
+	v12JSONAllMethods, _   = ioutil.ReadFile("testdata/v12/allmethods.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"v12JSONblockchaininfo": v12JSONblockchaininfo,
-		"v12JSONmempoolinfo":    v12JSONmempoolinfo,
-		"v12JSONnetworkinfo":    v12JSONnetworkinfo,
-		"v12JSONtxoutsetinfo":   v12JSONtxoutsetinfo,
+		"v12JSONblockchaininfo": v12JSONAllMethods,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -231,24 +225,19 @@ func prepareEnergidEndPoint() *httptest.Server {
 			body, _ := ioutil.ReadAll(r.Body)
 
 			if body != nil {
-				var data energyBody
+				var data energyRequests
 				err := json.Unmarshal(body, &data)
 				if err != nil {
 					log.Error(err)
 				} else {
-					switch data.Method {
-					case "getblockchaininfo":
-						_, _ = w.Write(v12JSONblockchaininfo)
-					case "getmempoolinfo":
-						_, _ = w.Write(v12JSONmempoolinfo)
-					case "getnetworkinfo":
-						_, _ = w.Write(v12JSONnetworkinfo)
-					case "gettxoutsetinfo":
-						_, _ = w.Write(v12JSONtxoutsetinfo)
-					default:
+					if len(data) == 4 {
+						_, _ = w.Write(v12JSONAllMethods)
+					} else {
 						w.WriteHeader(http.StatusNotFound)
 					}
 				}
+			} else {
+				w.WriteHeader(http.StatusNotFound)
 			}
 		}))
 }
