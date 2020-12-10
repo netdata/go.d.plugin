@@ -58,12 +58,14 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [phpdaemon](https://github.com/netdata/go.d.plugin/tree/master/modules/phpdaemon)                 | `phpDaemon`                     |
 | [phpfpm](https://github.com/netdata/go.d.plugin/tree/master/modules/phpfpm)                       | `PHP-FPM`                       |
 | [pihole](https://github.com/netdata/go.d.plugin/tree/master/modules/pihole)                       | `Pi-hole`                       |
+| [pika](https://github.com/netdata/go.d.plugin/tree/master/modules/pika)                           | `Pika`                          |
 | [prometheus](https://github.com/netdata/go.d.plugin/tree/master/modules/prometheus)               | `Any Prometheus Endpoint`       |
 | [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)                 | `Any TCP Endpoint`              |
 | [powerdns](https://github.com/netdata/go.d.plugin/tree/master/modules/powerdns)                   | `PowerDNS Authoritative Server` |
 | [powerdns_recursor](https://github.com/netdata/go.d.plugin/tree/master/modules/powerdns_recursor) | `PowerDNS Recursor`             |
 | [pulsar](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)                    | `Apache Pulsar`                 |
 | [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq)                   | `RabbitMQ`                      |
+| [redis](https://github.com/netdata/go.d.plugin/tree/master/modules/redis)                         | `Redis`                         |
 | [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)                     | `Dell EMC ScaleIO`              |
 | [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)                           | `Solr`                          |
 | [squidlog](https://github.com/netdata/go.d.plugin/tree/master/modules/squidlog)                   | `Squid`                         |
