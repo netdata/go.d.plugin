@@ -7,7 +7,7 @@ docker run \
   --name redis \
   -d \
   -p 6379:6379/tcp \
-  redis:v6.0.9
+  redis:6.0.9
 ```
 
 #### Gather metrics
