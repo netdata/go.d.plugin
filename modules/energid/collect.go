@@ -62,58 +62,15 @@ type energyRequests []energyRequest
 
 func (e *Energid) collect() (map[string]int64, error) {
 	ms, err := e.scrapeEnergid()
-
 	if err != nil {
 		return nil, err
 	}
 
-	collected := make(map[string]int64)
-	e.collectBlockChain(collected, ms)
-	e.collectMemPool(collected, ms)
-	e.collectNetwork(collected, ms)
-	e.collectTXout(collected, ms)
-
-	return collected, nil
+	return stm.ToMap(ms), nil
 }
 
-func (Energid) collectBlockChain(collected map[string]int64, ms *energidStats) {
-	for metric, value := range stm.ToMap(ms.BlockChain) {
-		collected["blockchain_"+metric] = int64(value)
-	}
-}
-
-func (Energid) collectMemPool(collected map[string]int64, ms *energidStats) {
-	for metric, value := range stm.ToMap(ms.MemPool) {
-		switch metric {
-		case "maxmempool":
-			collected["mempool_max"] = int64(value)
-		case "usage":
-			collected["mempool_current"] = int64(value)
-		case "bytes":
-			collected["mempool_txsize"] = int64(value)
-		}
-	}
-}
-
-func (Energid) collectNetwork(collected map[string]int64, ms *energidStats) {
-	for metric, value := range stm.ToMap(ms.Network) {
-		collected["network_"+metric] = int64(value)
-	}
-}
-
-func (Energid) collectTXout(collected map[string]int64, ms *energidStats) {
-	for metric, value := range stm.ToMap(ms.TXout) {
-		switch metric {
-		case "transactions":
-			collected["utxo_xfers"] = int64(value)
-		case "txouts":
-			collected["utxo_count"] = int64(value)
-		}
-	}
-}
-
-func (e *Energid) scrapeEnergid() (*energidStats, error) {
-	ms := &energidStats{}
+func (e *Energid) scrapeEnergid() (*energidInfo, error) {
+	ms := &energidInfo{}
 
 	req, _ := web.NewHTTPRequest(e.Request)
 	req.URL.Path = urlPathStat
@@ -130,7 +87,7 @@ func (e *Energid) scrapeEnergid() (*energidStats, error) {
 
 	stats := energyResponses{
 		{
-			Result: &ms.BlockChain,
+			Result: &ms.Blockchain,
 		},
 		{
 			Result: &ms.MemPool,
@@ -139,7 +96,7 @@ func (e *Energid) scrapeEnergid() (*energidStats, error) {
 			Result: &ms.Network,
 		},
 		{
-			Result: &ms.TXout,
+			Result: &ms.TxOutSet,
 		},
 	}
 	if err := e.doOKDecode(req, &stats); err != nil {
