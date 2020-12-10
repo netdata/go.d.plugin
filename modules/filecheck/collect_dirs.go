@@ -14,7 +14,7 @@ func (fc *Filecheck) collectDirs(mx map[string]int64) {
 	curTime := time.Now()
 	for _, dirpath := range fc.Dirs.Include {
 		subdirpaths, _ := filepath.Glob(dirpath)
-		if len(subdirpaths) == 0 {
+		if subdirpaths == nil {
 			fc.collectDir(mx, dirpath, curTime)
 		} else {
 			for _, subdirpath := range subdirpaths {

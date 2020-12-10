@@ -14,7 +14,7 @@ func (fc *Filecheck) collectFiles(mx map[string]int64) {
 	curTime := time.Now()
 	for _, filespath := range fc.Files.Include {
 		filepaths, _ := filepath.Glob(filespath)
-		if len(filepaths) == 0 {
+		if filepaths == nil {
 			fc.collectFile(mx, filespath, curTime)
 		} else {
 			for _, filepathpart := range filepaths {
