@@ -3,6 +3,7 @@ package filecheck
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -11,8 +12,15 @@ import (
 
 func (fc *Filecheck) collectFiles(mx map[string]int64) {
 	curTime := time.Now()
-	for _, filepath := range fc.Files.Include {
-		fc.collectFile(mx, filepath, curTime)
+	for _, filespath := range fc.Files.Include {
+		filepaths, _ := filepath.Glob(filespath)
+		if len(filepaths) == 0 {
+			fc.collectFile(mx, filespath, curTime)
+		} else {
+			for _, filepathpart := range filepaths {
+				fc.collectFile(mx, filepathpart, curTime)
+			}
+		}
 	}
 }
 

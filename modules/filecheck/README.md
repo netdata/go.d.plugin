@@ -64,7 +64,7 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/filecheck.conf
 ```
 
-Needs only a path to a file or a directory. **The path doesn't support any wildcards**.
+Needs only a path to a file or a directory. Wildcards are supported.
 
 Here is an example:
 
@@ -100,7 +100,6 @@ file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/filecheck.c
 
 ## Limitations
 
--   file/dir path pattern doesn't support any wildcards
 -   filecheck uses `stat` call to collect metrics, which is not very efficient.
 
 ## Troubleshooting

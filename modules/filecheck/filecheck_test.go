@@ -76,18 +76,6 @@ func TestFilecheck_Init(t *testing.T) {
 			},
 			wantNumOfCharts: len(dirCharts),
 		},
-		"only wildcard dirs->include": {
-			config: Config{
-				Dirs: dirsConfig{
-					Include: []string{
-						"/path/to/dir1",
-						"/path/to/dir2",
-					},
-					CollectDirSize: true,
-				},
-			},
-			wantNumOfCharts: len(dirCharts),
-		},
 	}
 
 	for name, test := range tests {
@@ -111,6 +99,7 @@ func TestFilecheck_Check(t *testing.T) {
 	}{
 		"collect files":                   {prepare: prepareFilecheckFiles},
 		"collect only non existent files": {prepare: prepareFilecheckNonExistentFiles},
+		"collect wildcard files":          {prepare: prepareFilecheckWildcardFiles},
 		"collect dirs":                    {prepare: prepareFilecheckDirs},
 		"collect only non existent dirs":  {prepare: prepareFilecheckNonExistentDirs},
 		"collect wildcard dirs":           {prepare: prepareFilecheckWildcardDirs},
@@ -147,6 +136,18 @@ func TestFilecheck_Collect(t *testing.T) {
 		"collect only non existent files": {
 			prepare: prepareFilecheckNonExistentFiles,
 			wantCollected: map[string]int64{
+				"file_testdata/non_existent_file.log_exists": 0,
+			},
+		},
+		"collect wildcard files": {
+			prepare: prepareFilecheckFiles,
+			wantCollected: map[string]int64{
+				"file_testdata/empty_file.log_exists":        1,
+				"file_testdata/empty_file.log_mtime_ago":     5081,
+				"file_testdata/empty_file.log_size_bytes":    0,
+				"file_testdata/file.log_exists":              1,
+				"file_testdata/file.log_mtime_ago":           4161,
+				"file_testdata/file.log_size_bytes":          5707,
 				"file_testdata/non_existent_file.log_exists": 0,
 			},
 		},
@@ -260,6 +261,14 @@ func prepareFilecheckNonExistentFiles() *Filecheck {
 	return fc
 }
 
+func prepareFilecheckWildcardFiles() *Filecheck {
+	fc := New()
+	fc.Config.Files.Include = []string{
+		"testdata/*.log",
+		"testdata/non_existent_file.log",
+	}
+	return fc
+}
 func prepareFilecheckDirs() *Filecheck {
 	fc := New()
 	fc.Config.Dirs.Include = []string{
