@@ -62,10 +62,10 @@ type energyRequest struct {
 type energyRequests []energyRequest
 
 func (e *Energid) collect() (map[string]int64, error) {
-	ms := e.scrapeEnergid()
+	ms, err := e.scrapeEnergid()
 
-	if ms == nil {
-		return nil, fmt.Errorf("Invalid request")
+	if err != nil {
+		return nil, err
 	}
 
 	collected := make(map[string]int64)
@@ -113,7 +113,7 @@ func (Energid) collectTXout(collected map[string]int64, ms *energidStats) {
 	}
 }
 
-func (e *Energid) scrapeEnergid() *energidStats {
+func (e *Energid) scrapeEnergid() (*energidStats, error) {
 	ms := &energidStats{}
 
 	req, _ := web.NewHTTPRequest(e.Request)
@@ -125,7 +125,7 @@ func (e *Energid) scrapeEnergid() *energidStats {
 	body, err := json.Marshal(eb)
 	if err != nil {
 		e.Error(err)
-		return nil
+		return nil, fmt.Errorf("Cannot marshal JSON %s", err)
 	}
 	req.Body = ioutil.NopCloser(bytes.NewReader(body))
 
@@ -145,10 +145,10 @@ func (e *Energid) scrapeEnergid() *energidStats {
 	}
 	if err := e.doOKDecode(req, &stats); err != nil {
 		e.Warning(err)
-		return nil
+		return nil, fmt.Errorf("Cannot get response: %s", err)
 	}
 
-	return ms
+	return ms, nil
 }
 
 func (d *Energid) doOKDecode(req *http.Request, in interface{}) error {
