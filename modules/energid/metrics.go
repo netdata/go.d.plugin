@@ -7,6 +7,7 @@ type energidInfo struct {
 	MemPool    memPoolInfo    `stm:"mempool"`
 	Network    networkInfo    `stm:"network"`
 	TxOutSet   txOutSetInfo   `stm:"utxo"`
+	Memory     memoryInfo     `stm:"secmem"`
 }
 
 // https://github.com/energicryptocurrency/core-api-documentation#getblockchaininfo
@@ -34,4 +35,14 @@ type networkInfo struct {
 type txOutSetInfo struct {
 	Transactions float64 `stm:"xfers" json:"transactions"`
 	TxOuts       float64 `stm:"count" json:"txouts"`
+}
+
+// undocumented
+type memoryInfo struct {
+	Locked struct {
+		Used   float64 `stm:"used" json:"used"`
+		Free   float64 `stm:"free" json:"free"`
+		Total  float64 `stm:"total" json:"total"`
+		Locked float64 `stm:"locked" json:"locked"`
+	} `stm:"" json:"locked"`
 }

@@ -45,6 +45,20 @@ var charts = Charts{
 		},
 	},
 	{
+		ID:    "secmem",
+		Title: "Secure Memory",
+		Units: "bytes",
+		Fam:   "memory",
+		Ctx:   "energid.secmem",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "secmem_total", Name: "total"},
+			{ID: "secmem_used", Name: "used"},
+			{ID: "secmem_free", Name: "free"},
+			{ID: "secmem_locked", Name: "locked"},
+		},
+	},
+	{
 		ID:    "network",
 		Title: "Network",
 		Units: "count",

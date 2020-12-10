@@ -41,6 +41,12 @@ var energidRequest = energyRequests{
 		Method:         "gettxoutsetinfo",
 		Params:         make([]string, 0),
 	},
+	{
+		JSONRPCversion: "1.0",
+		ID:             "5",
+		Method:         "getmemoryinfo",
+		Params:         make([]string, 0),
+	},
 }
 
 type energidResponse struct {
