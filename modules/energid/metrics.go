@@ -3,11 +3,11 @@ package energid
 // API docs https://github.com/energicryptocurrency/core-api-documentation
 
 type energidInfo struct {
-	Blockchain blockchainInfo `stm:"blockchain"`
-	MemPool    memPoolInfo    `stm:"mempool"`
-	Network    networkInfo    `stm:"network"`
-	TxOutSet   txOutSetInfo   `stm:"utxo"`
-	Memory     memoryInfo     `stm:"secmem"`
+	Blockchain *blockchainInfo `stm:"blockchain"`
+	MemPool    *memPoolInfo    `stm:"mempool"`
+	Network    *networkInfo    `stm:"network"`
+	TxOutSet   *txOutSetInfo   `stm:"utxo"`
+	Memory     *memoryInfo     `stm:"secmem"`
 }
 
 // https://github.com/energicryptocurrency/core-api-documentation#getblockchaininfo

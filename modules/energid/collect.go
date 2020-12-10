@@ -12,105 +12,55 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-const (
-	urlPathStat = "/"
-)
-
-var energidRequest = energyRequests{
-	{
-		JSONRPCversion: "1.0",
-		ID:             "1",
-		Method:         "getblockchaininfo",
-		Params:         make([]string, 0),
-	},
-	{
-		JSONRPCversion: "1.0",
-		ID:             "2",
-		Method:         "getmempoolinfo",
-		Params:         make([]string, 0),
-	},
-	{
-		JSONRPCversion: "1.0",
-		ID:             "3",
-		Method:         "getnetworkinfo",
-		Params:         make([]string, 0),
-	},
-	{
-		JSONRPCversion: "1.0",
-		ID:             "4",
-		Method:         "gettxoutsetinfo",
-		Params:         make([]string, 0),
-	},
-	{
-		JSONRPCversion: "1.0",
-		ID:             "5",
-		Method:         "getmemoryinfo",
-		Params:         make([]string, 0),
-	},
-}
-
-type energidResponse struct {
-	Result interface{} `json:"result,omitempty"`
-	Error  string      `error:"method"`
-	Id     string      `id:"method"`
-}
-
-type energyResponses []energidResponse
-
-type energyRequest struct {
-	JSONRPCversion string   `json:"jsonrpc"`
-	ID             string   `json:"id"`
-	Method         string   `json:"method"`
-	Params         []string `json:"params"`
-}
-
-type energyRequests []energyRequest
-
 func (e *Energid) collect() (map[string]int64, error) {
-	ms, err := e.scrapeEnergid()
+	info, err := e.scrapeEnergidInfo()
 	if err != nil {
 		return nil, err
 	}
 
-	return stm.ToMap(ms), nil
+	return stm.ToMap(info), nil
 }
 
-func (e *Energid) scrapeEnergid() (*energidInfo, error) {
-	ms := &energidInfo{}
-
+func (e *Energid) scrapeEnergidInfo() (*energidInfo, error) {
 	req, _ := web.NewHTTPRequest(e.Request)
-	req.URL.Path = urlPathStat
 	req.Method = http.MethodPost
-	req.Header.Add("content-type", "application/json")
-	eb := energidRequest
-
-	body, err := json.Marshal(eb)
-	if err != nil {
-		e.Error(err)
-		return nil, fmt.Errorf("Cannot marshal JSON %s", err)
+	req.Header.Set("Content-Type", "application/json")
+	request := []rpcRequest{
+		{JSONRPC: "1.0", ID: 1, Method: "getblockchaininfo"},
+		{JSONRPC: "1.0", ID: 2, Method: "getmempoolinfo"},
+		{JSONRPC: "1.0", ID: 3, Method: "getnetworkinfo"},
+		{JSONRPC: "1.0", ID: 4, Method: "gettxoutsetinfo"},
+		{JSONRPC: "1.0", ID: 5, Method: "getmemoryinfo"},
 	}
+	body, _ := json.Marshal(request)
 	req.Body = ioutil.NopCloser(bytes.NewReader(body))
 
-	stats := energyResponses{
-		{
-			Result: &ms.Blockchain,
-		},
-		{
-			Result: &ms.MemPool,
-		},
-		{
-			Result: &ms.Network,
-		},
-		{
-			Result: &ms.TxOutSet,
-		},
+	info := energidInfo{
+		Blockchain: &blockchainInfo{},
+		MemPool:    &memPoolInfo{},
+		Network:    &networkInfo{},
+		TxOutSet:   &txOutSetInfo{},
+		Memory:     &memoryInfo{},
 	}
-	if err := e.doOKDecode(req, &stats); err != nil {
-		e.Warning(err)
-		return nil, fmt.Errorf("Cannot get response: %s", err)
+	response := []rpcResponse{
+		{Result: &info.Blockchain},
+		{Result: &info.MemPool},
+		{Result: &info.Network},
+		{Result: &info.TxOutSet},
+		{Result: &info.Memory},
 	}
 
-	return ms, nil
+	if err := e.doOKDecode(req, &response); err != nil {
+		return nil, err
+	}
+
+	for i, r := range response {
+		if r.Error != nil && i < len(request) {
+			e.Warningf("error on '%s' method: %v", request[i].Method, r.Error)
+		}
+	}
+
+	return &info, nil
 }
 
 func (e *Energid) doOKDecode(req *http.Request, in interface{}) error {
