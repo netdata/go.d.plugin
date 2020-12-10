@@ -14,7 +14,52 @@ import (
 
 const (
 	urlPathStat = "/"
+
 )
+
+var energidRequest = energyRequests{
+		{
+			JSONRPCversion: "1.0",
+			ID:             "1",
+			Method:         "getblockchaininfo",
+			Params:         make([]string, 0),
+		},
+		{
+			JSONRPCversion: "1.0",
+			ID:             "2",
+			Method:         "getmempoolinfo",
+			Params:         make([]string, 0),
+		},
+		{
+			JSONRPCversion: "1.0",
+			ID:             "3",
+			Method:         "getnetworkinfo",
+			Params:         make([]string, 0),
+		},
+		{
+			JSONRPCversion: "1.0",
+			ID:             "4",
+			Method:         "gettxoutsetinfo",
+			Params:         make([]string, 0),
+		},
+	}
+
+type energidResponse struct {
+	Result interface{} `json:"result,omitempty"`
+	Error  string      `error:"method"`
+	Id     string      `id:"method"`
+}
+
+type energyResponses []energidResponse
+
+type energyRequest struct {
+	JSONRPCversion string   `json:"jsonrpc"`
+	ID             string   `json:"id"`
+	Method         string   `json:"method"`
+	Params         []string `json:"params"`
+}
+
+type energyRequests []energyRequest
 
 func (e *Energid) collect() (map[string]int64, error) {
 	ms := e.scrapeEnergid()
@@ -75,7 +120,7 @@ func (e *Energid) scrapeEnergid() *energidStats {
 	req.URL.Path = urlPathStat
 	req.Method = http.MethodPost
 	req.Header.Add("content-type", "application/json")
-	eb := e.energidMakeRequest()
+	eb := energidRequest
 
 	body, err := json.Marshal(eb)
 	if err != nil {
@@ -104,35 +149,6 @@ func (e *Energid) scrapeEnergid() *energidStats {
 	}
 
 	return ms
-}
-
-func (e *Energid) energidMakeRequest() *energyRequests {
-	return &energyRequests{
-		{
-			JSONRPCversion: "1.0",
-			ID:             "1",
-			Method:         "getblockchaininfo",
-			Params:         make([]string, 0),
-		},
-		{
-			JSONRPCversion: "1.0",
-			ID:             "2",
-			Method:         "getmempoolinfo",
-			Params:         make([]string, 0),
-		},
-		{
-			JSONRPCversion: "1.0",
-			ID:             "3",
-			Method:         "getnetworkinfo",
-			Params:         make([]string, 0),
-		},
-		{
-			JSONRPCversion: "1.0",
-			ID:             "4",
-			Method:         "gettxoutsetinfo",
-			Params:         make([]string, 0),
-		},
-	}
 }
 
 func (d *Energid) doOKDecode(req *http.Request, in interface{}) error {

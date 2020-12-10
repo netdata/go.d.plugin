@@ -16,23 +16,6 @@ type energidStats struct {
 	TXout txoutStatistic
 }
 
-type energidResponse struct {
-	Result interface{} `json:"result,omitempty"`
-	Error  string      `error:"method"`
-	Id     string      `id:"method"`
-}
-
-type energyResponses []energidResponse
-
-type energyRequest struct {
-	JSONRPCversion string   `json:"jsonrpc"`
-	ID             string   `json:"id"`
-	Method         string   `json:"method"`
-	Params         []string `json:"params"`
-}
-
-type energyRequests []energyRequest
-
 type blockchainStatistic struct {
 	Blocks     float64 `stm:"blocks" json:"blocks"`
 	Headers    float64 `stm:"headers" json:"headers"`

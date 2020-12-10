@@ -228,7 +228,7 @@ func prepareEnergidEndPoint() *httptest.Server {
 				var data energyRequests
 				err := json.Unmarshal(body, &data)
 				if err != nil {
-					log.Error(err)
+					log.Println(err)
 				} else {
 					if len(data) == 4 {
 						_, _ = w.Write(v12JSONAllMethods)
