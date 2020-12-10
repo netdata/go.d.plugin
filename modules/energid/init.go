@@ -8,22 +8,22 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-func (d Energid) validateConfig() error {
-	if d.URL == "" {
+func (e Energid) validateConfig() error {
+	if e.URL == "" {
 		return errors.New("URL not set")
 	}
 
-	if _, err := web.NewHTTPRequest(d.Request); err != nil {
+	if _, err := web.NewHTTPRequest(e.Request); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (d Energid) initHTTPClient() (*http.Client, error) {
-	return web.NewHTTPClient(d.Client)
+func (e Energid) initHTTPClient() (*http.Client, error) {
+	return web.NewHTTPClient(e.Client)
 }
 
-func (d Energid) initCharts() (*module.Charts, error) {
+func (e Energid) initCharts() (*module.Charts, error) {
 	return charts.Copy(), nil
 }

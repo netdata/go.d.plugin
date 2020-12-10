@@ -14,35 +14,34 @@ import (
 
 const (
 	urlPathStat = "/"
-
 )
 
 var energidRequest = energyRequests{
-		{
-			JSONRPCversion: "1.0",
-			ID:             "1",
-			Method:         "getblockchaininfo",
-			Params:         make([]string, 0),
-		},
-		{
-			JSONRPCversion: "1.0",
-			ID:             "2",
-			Method:         "getmempoolinfo",
-			Params:         make([]string, 0),
-		},
-		{
-			JSONRPCversion: "1.0",
-			ID:             "3",
-			Method:         "getnetworkinfo",
-			Params:         make([]string, 0),
-		},
-		{
-			JSONRPCversion: "1.0",
-			ID:             "4",
-			Method:         "gettxoutsetinfo",
-			Params:         make([]string, 0),
-		},
-	}
+	{
+		JSONRPCversion: "1.0",
+		ID:             "1",
+		Method:         "getblockchaininfo",
+		Params:         make([]string, 0),
+	},
+	{
+		JSONRPCversion: "1.0",
+		ID:             "2",
+		Method:         "getmempoolinfo",
+		Params:         make([]string, 0),
+	},
+	{
+		JSONRPCversion: "1.0",
+		ID:             "3",
+		Method:         "getnetworkinfo",
+		Params:         make([]string, 0),
+	},
+	{
+		JSONRPCversion: "1.0",
+		ID:             "4",
+		Method:         "gettxoutsetinfo",
+		Params:         make([]string, 0),
+	},
+}
 
 type energidResponse struct {
 	Result interface{} `json:"result,omitempty"`
@@ -151,8 +150,8 @@ func (e *Energid) scrapeEnergid() (*energidStats, error) {
 	return ms, nil
 }
 
-func (d *Energid) doOKDecode(req *http.Request, in interface{}) error {
-	resp, err := d.httpClient.Do(req)
+func (e *Energid) doOKDecode(req *http.Request, in interface{}) error {
+	resp, err := e.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error on HTTP request '%s': %v", req.URL, err)
 	}
