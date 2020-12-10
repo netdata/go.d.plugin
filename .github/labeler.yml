@@ -40,7 +40,3 @@ area/modules:
 
 area/pkg: 
   - pkg/**
-
-area/tests: 
-  - "**/testdata/**"
-  - "**/*_test.go"
