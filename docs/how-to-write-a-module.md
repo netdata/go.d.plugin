@@ -161,7 +161,7 @@ Suggested minimal layout:
 
 ### File `module_name.go`
 
-> :exclamation: See the example [`examlpe.go`](https://github.com/netdata/go.d.plugin/blob/master/modules/example/example.go).
+> :exclamation: See the example [`example.go`](https://github.com/netdata/go.d.plugin/blob/master/modules/example/example.go).
 
 Don't overload this file with the implementation details.
 
