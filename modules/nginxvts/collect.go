@@ -14,8 +14,8 @@ import (
 const vtsURLPath = "/status/format/json"
 
 func (vts *NginxVTS) collect() (map[string]int64, error) {
-	ms := vts.scapeTotalMetrics()
-	if ms == nil {
+	ms, err := vts.scapeTotalMetrics()
+	if err != nil {
 		return nil, nil
 	}
 
@@ -46,7 +46,7 @@ func (vts *NginxVTS) collectServerZonesMetrics(collected map[string]interface{},
 	collected["total"] = ms.ServerZones["*"]
 }
 
-func (vts *NginxVTS) scapeTotalMetrics() *vtsMetrics {
+func (vts *NginxVTS) scapeTotalMetrics() (*vtsMetrics, error) {
 	req, _ := web.NewHTTPRequest(vts.Request)
 	req.URL.Path = vtsURLPath
 
@@ -54,9 +54,9 @@ func (vts *NginxVTS) scapeTotalMetrics() *vtsMetrics {
 
 	if err := vts.doOKDecode(req, &total); err != nil {
 		vts.Warning(err)
-		return nil
+		return nil, nil
 	}
-	return &total
+	return &total, nil
 }
 
 func (vts *NginxVTS) doOKDecode(req *http.Request, in interface{}) error {
