@@ -1,6 +1,6 @@
 # How to write a Netdata collector in Go
 
-Let's assume you want to write `example` module.
+Let's assume you want to write a collector named `example`.
 
 Steps are:
 
