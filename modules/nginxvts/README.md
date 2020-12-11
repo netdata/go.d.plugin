@@ -49,9 +49,9 @@ Needs only `url` to server's `stub_status`. Here is an example for local and rem
 ```yaml
 jobs:
   - name: local
-    url: http://192.168.66.6/status/format/json
+    url: http://127.0.0.1/status/format/json
   - name: remote
-    url: http://8.8.8.8/status/format/json
+    url: http://203.0.113.0/status/format/json
 ```
 
 For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/nginxvts.conf).
@@ -59,6 +59,20 @@ For all available options please see module [configuration file](https://github.
 
 ## Troubleshooting
 
-Check the module debug output. Run the following command as `netdata` user:
+To troubleshoot issues with the `nginxvts` collector, run the `go.d.plugin` with the debug option enabled.
+The output should give you clues as to why the collector isn't working.
 
-> ./go.d.plugin -d -m nginxvts
+First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
+to the `netdata` user.
+
+```bash
+cd /usr/libexec/netdata/plugins.d/
+sudo -u netdata -s
+```
+
+You can now run the `go.d.plugin` orchestrator to debug the collector:
+
+```bash
+./go.d.plugin -d -m nginxvts
+```
