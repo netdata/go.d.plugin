@@ -30,13 +30,10 @@ Executed queries:
 
 To create the `netdata` user with these permissions, execute the following in the `MySQL` shell:
 
-```sql
-CREATE
-USER 'netdata'@'localhost';
-GRANT USAGE, REPLICATION
-CLIENT, PROCESS ON *.* TO 'netdata'@'localhost';
-FLUSH
-PRIVILEGES;
+```mysql
+CREATE USER 'netdata'@'localhost';
+GRANT USAGE, REPLICATION CLIENT, PROCESS ON *.* TO 'netdata'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
 The `netdata` user will have the ability to connect to the `MySQL` server on localhost without a password. It will only
@@ -133,7 +130,7 @@ sudo ./edit-config go.d/mysql.conf
 ```yaml
 jobs:
   - name: local
-    dsn: [ username[ :password ]@ ][ protocol[ (address) ] ]/dbname[?param1=value1&...&paramN=valueN]
+    dsn: '[username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]'
     # username:password@protocol(address)/dbname?param=value
     # user:password@/dbname
     # Examples:
