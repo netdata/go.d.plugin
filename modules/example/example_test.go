@@ -8,18 +8,26 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	// We want to ensure that module is a reference type, nothing more.
+
 	assert.IsType(t, (*Example)(nil), New())
 }
 
 func TestExample_Init(t *testing.T) {
+	// 'Init() bool' initializes the module with an appropriate config, so to test it we need:
+	// - provide the config.
+	// - set module.Config field with the config.
+	// - call Init() and compare its return value with the expected value.
+
+	// 'test' map contains different test cases.
 	tests := map[string]struct {
 		config   Config
 		wantFail bool
 	}{
-		"default": {
+		"success on default config": {
 			config: New().Config,
 		},
-		"only charts": {
+		"success when only 'charts' set": {
 			config: Config{
 				Charts: ConfigCharts{
 					Num:  1,
@@ -27,7 +35,7 @@ func TestExample_Init(t *testing.T) {
 				},
 			},
 		},
-		"only hidden charts": {
+		"success when only 'hidden_charts' set": {
 			config: Config{
 				HiddenCharts: ConfigCharts{
 					Num:  1,
@@ -35,7 +43,7 @@ func TestExample_Init(t *testing.T) {
 				},
 			},
 		},
-		"charts and hidden charts": {
+		"success when 'charts' and 'hidden_charts' set": {
 			config: Config{
 				Charts: ConfigCharts{
 					Num:  1,
@@ -47,7 +55,7 @@ func TestExample_Init(t *testing.T) {
 				},
 			},
 		},
-		"charts->num and hidden_charts->num == 0": {
+		"fails when 'charts' and 'hidden_charts' set, but 'num' == 0": {
 			wantFail: true,
 			config: Config{
 				Charts: ConfigCharts{
@@ -60,7 +68,7 @@ func TestExample_Init(t *testing.T) {
 				},
 			},
 		},
-		"charts->num > 0 and charts->dimensions == 0": {
+		"fails when only 'charts' set, 'num' > 0, but 'dimensions' == 0": {
 			wantFail: true,
 			config: Config{
 				Charts: ConfigCharts{
@@ -69,7 +77,7 @@ func TestExample_Init(t *testing.T) {
 				},
 			},
 		},
-		"hidden_charts->num > 0 and hidden_charts->dimensions == 0": {
+		"fails when only 'hidden_charts' set, 'num' > 0, but 'dimensions' == 0": {
 			wantFail: true,
 			config: Config{
 				HiddenCharts: ConfigCharts{
@@ -95,14 +103,20 @@ func TestExample_Init(t *testing.T) {
 }
 
 func TestExample_Check(t *testing.T) {
+	// 'Check() bool' reports whether the module is able to collect any data, so to test it we need:
+	// - provide the module with a specific config.
+	// - initialize the module (call Init()).
+	// - call Check() and compare its return value with the expected value.
+
+	// 'test' map contains different test cases.
 	tests := map[string]struct {
 		prepare  func() *Example
 		wantFail bool
 	}{
-		"default":                  {prepare: prepareExampleDefault},
-		"only charts":              {prepare: prepareExampleOnlyCharts},
-		"only hidden charts":       {prepare: prepareExampleOnlyHiddenCharts},
-		"charts and hidden charts": {prepare: prepareExampleChartsAndHiddenCharts},
+		"success on default":                            {prepare: prepareExampleDefault},
+		"success when only 'charts' set":                {prepare: prepareExampleOnlyCharts},
+		"success when only 'hidden_charts' set":         {prepare: prepareExampleOnlyHiddenCharts},
+		"success when 'charts' and 'hidden_charts' set": {prepare: prepareExampleChartsAndHiddenCharts},
 	}
 
 	for name, test := range tests {
@@ -120,6 +134,10 @@ func TestExample_Check(t *testing.T) {
 }
 
 func TestExample_Charts(t *testing.T) {
+	// We want to ensure that initialized module does not return 'nil'.
+	// If it is not 'nil' we are ok.
+
+	// 'test' map contains different test cases.
 	tests := map[string]struct {
 		prepare func(t *testing.T) *Example
 		wantNil bool
@@ -153,15 +171,24 @@ func TestExample_Charts(t *testing.T) {
 }
 
 func TestExample_Cleanup(t *testing.T) {
+	// Since this module has nothing to clean up,
+	// we want just to ensure that Cleanup() not panics.
+
 	assert.NotPanics(t, New().Cleanup)
 }
 
 func TestExample_Collect(t *testing.T) {
+	// 'Collect() map[string]int64' returns collected data, so to test it we need:
+	// - provide the module with a specific config.
+	// - initialize the module (call Init()).
+	// - call Collect() and compare its return value with the expected value.
+
+	// 'test' map contains different test cases.
 	tests := map[string]struct {
 		prepare       func() *Example
 		wantCollected map[string]int64
 	}{
-		"default": {
+		"default config": {
 			prepare: prepareExampleDefault,
 			wantCollected: map[string]int64{
 				"random_0_random0": 1,
@@ -170,7 +197,7 @@ func TestExample_Collect(t *testing.T) {
 				"random_0_random3": -1,
 			},
 		},
-		"only charts": {
+		"only 'charts' set": {
 			prepare: prepareExampleOnlyCharts,
 			wantCollected: map[string]int64{
 				"random_0_random0": 1,
@@ -185,7 +212,7 @@ func TestExample_Collect(t *testing.T) {
 				"random_1_random4": 1,
 			},
 		},
-		"only hidden charts": {
+		"only 'hidden_charts' set": {
 			prepare: prepareExampleOnlyHiddenCharts,
 			wantCollected: map[string]int64{
 				"hidden_random_0_random0": 1,
@@ -200,7 +227,7 @@ func TestExample_Collect(t *testing.T) {
 				"hidden_random_1_random4": 1,
 			},
 		},
-		"chart and hidden charts": {
+		"'charts' and 'hidden_charts' set": {
 			prepare: prepareExampleChartsAndHiddenCharts,
 			wantCollected: map[string]int64{
 				"hidden_random_0_random0": 1,
