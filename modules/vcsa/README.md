@@ -6,22 +6,25 @@ sidebar_label: "vCenter Server Appliance"
 
 # vCenter Server Appliance monitoring with Netdata
 
-The [`vCenter Server Appliance`](https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html) using [`Health API`](https://code.vmware.com/apis/60/vcenter-server-appliance-management) is a preconfigured Linux virtual machine, which is optimized for running VMware vCenter Server® and the associated services on Linux.
+The [`vCenter Server Appliance`](https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html)
+using [`Health API`](https://code.vmware.com/apis/60/vcenter-server-appliance-management) is a preconfigured Linux
+virtual machine, which is optimized for running VMware vCenter Server® and the associated services on Linux.
 
-This module collects health statistics from one or more `vCenter Server Appliance` servers, depending on your configuration.
+This module collects health statistics from one or more `vCenter Server Appliance` servers, depending on your
+configuration.
 
 ## Requirements
 
--  `vSphere` 6.5+
+- `vSphere` 6.5+
 
 ## Charts
 
--   Overall System Health in `status`
--   Components Health in `status`
--   Software Updates Health in `status`
+- Overall System Health in `status`
+- Components Health in `status`
+- Software Updates Health in `status`
 
 ## Health statuses
-    
+
 Overall System Health:
 
 | Numeric | Text | Description |
@@ -54,11 +57,10 @@ Software Updates Health:
 | `3`   | `red`  | Security patches might be available.|
 | `4`   | `gray`  | An error retrieving information on software updates.|
 
-
 ## Configuration
 
-Edit the `go.d/vsca.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/vsca.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -80,7 +82,8 @@ jobs:
     password: somepassword
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/vcenter.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/vcenter.conf).
 
 ## Troubleshooting
 

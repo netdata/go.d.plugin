@@ -8,24 +8,25 @@ sidebar_label: "Fluentd"
 
 [`Fluentd`](https://www.fluentd.org/) is an open source data collector for unified logging layer.
 
-This module will monitor one or more `Fluentd` servers, depending on your configuration. It gathers metrics from plugin endpoint provided by [in_monitor plugin](https://docs.fluentd.org/v1.0/articles/monitoring-rest-api).
+This module will monitor one or more `Fluentd` servers, depending on your configuration. It gathers metrics from plugin
+endpoint provided by [in_monitor plugin](https://docs.fluentd.org/v1.0/articles/monitoring-rest-api).
 
 ## Requirements
 
--   `fluentd` with enabled monitoring agent
+- `fluentd` with enabled monitoring agent
 
 ## Charts
 
 It produces the following charts:
 
--   Plugin Retry Count in `count`
--   Plugin Buffer Queue Length in `queue length`
--   Plugin Buffer Total Size in `buffer`
+- Plugin Retry Count in `count`
+- Plugin Buffer Queue Length in `queue length`
+- Plugin Buffer Total Size in `buffer`
 
 ## Configuration
 
-Edit the `go.d/fluentd.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/fluentd.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -47,9 +48,11 @@ jobs:
     url: http://203.0.113.10:24220
 ```
 
-By default this module collects statistics for all plugins. Filter plugins syntax: [simple patterns](https://docs.netdata.cloud/libnetdata/simple_pattern/).
+By default this module collects statistics for all plugins. Filter plugins
+syntax: [simple patterns](https://docs.netdata.cloud/libnetdata/simple_pattern/).
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/fluentd.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/fluentd.conf).
 
 ## Troubleshooting
 

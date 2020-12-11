@@ -6,19 +6,19 @@ sidebar_label: "Bind9"
 
 # Bind9 monitoring with Netdata
 
-[`Bind9`](https://www.isc.org/bind/) (or named) is a very flexible, full-featured DNS system. 
+[`Bind9`](https://www.isc.org/bind/) (or named) is a very flexible, full-featured DNS system.
 
 This module will monitor one or more `Bind9` servers, depending on your configuration.
 
 ## Requirements
 
--   `bind` version 9.9+ with configured `statistics-channels`
+- `bind` version 9.9+ with configured `statistics-channels`
 
 For detail information on how to get your bind installation ready, please refer to the following articles:
 
--   [bind statistics channel developer comments](http://jpmens.net/2013/03/18/json-in-bind-9-s-statistics-server/)
--   [bind documentation](https://ftp.isc.org/isc/bind/9.10.3/doc/arm/Bv9ARM.ch06.html#statistics)
--   [bind Knowledge Base article AA-01123](https://kb.isc.org/article/AA-01123/0).
+- [bind statistics channel developer comments](http://jpmens.net/2013/03/18/json-in-bind-9-s-statistics-server/)
+- [bind documentation](https://ftp.isc.org/isc/bind/9.10.3/doc/arm/Bv9ARM.ch06.html#statistics)
+- [bind Knowledge Base article AA-01123](https://kb.isc.org/article/AA-01123/0).
 
 Normally, you will need something like this in your `named.conf.options`:
 
@@ -29,34 +29,34 @@ statistics-channels {
 };
 ```
 
-## Charts 
+## Charts
 
 It produces the following charts:
 
--   Global Received Requests by IP version (IPv4, IPv6) in `requests/s`
--   Global Successful Queries in `queries/s`
--   Global Recursive Clients in `clients`
--   Global Queries by IP Protocol (TCP, UDP) in `queries/s`
--   Global Queries Analysis in `queries/s`
--   Global Received Updates in `updates/s`
--   Global Query Failures in `failures/s`
--   Global Query Failures Analysis in `failures/s`
--   Global Server Statistics in `operations/s`
--   Global Incoming Requests by OpCode in `requests/s`
--   Global Incoming Requests by Query Type in `requests/s`
+- Global Received Requests by IP version (IPv4, IPv6) in `requests/s`
+- Global Successful Queries in `queries/s`
+- Global Recursive Clients in `clients`
+- Global Queries by IP Protocol (TCP, UDP) in `queries/s`
+- Global Queries Analysis in `queries/s`
+- Global Received Updates in `updates/s`
+- Global Query Failures in `failures/s`
+- Global Query Failures Analysis in `failures/s`
+- Global Server Statistics in `operations/s`
+- Global Incoming Requests by OpCode in `requests/s`
+- Global Incoming Requests by Query Type in `requests/s`
 
 Per View Statistics (the following set will be added for each bind view):
 
--   Resolver Active Queries in `queries`
--   Resolver Statistics in `operations/s`
--   Resolver Round Trip Time in `queries/s`
--   Resolver Requests by Query Type in `requests/s`
--   Resolver Cache Hits in `operations/s`
+- Resolver Active Queries in `queries`
+- Resolver Statistics in `operations/s`
+- Resolver Round Trip Time in `queries/s`
+- Resolver Requests by Query Type in `requests/s`
+- Resolver Cache Hits in `operations/s`
 
 ## Configuration
 
-Edit the `go.d/bind.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/bind.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -83,12 +83,12 @@ jobs:
 
 View filter syntax: [simple patterns](https://docs.netdata.cloud/libnetdata/simple_pattern/).
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/bind.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/bind.conf).
 
 ## Troubleshooting
 
-Ensure that the `statistics-channels` feature is configured correctly.
-Run following command:
+Ensure that the `statistics-channels` feature is configured correctly. Run following command:
 
 > curl "http://localhost:8653/json/v1/server"
 

@@ -6,7 +6,8 @@ sidebar_label: "vCenter Servers"
 
 # vCenter Server monitoring with Netdata
 
-[`VMware vCenter Server`](https://www.vmware.com/products/vcenter-server.html) is advanced server management software that provides a centralized platform for controlling your VMware vSphere environments.
+[`VMware vCenter Server`](https://www.vmware.com/products/vcenter-server.html) is advanced server management software
+that provides a centralized platform for controlling your VMware vSphere environments.
 
 This module collects hosts and vms performance statistics from one or more `vCenter` servers depending on configuration.
 
@@ -16,39 +17,39 @@ It produces the following charts:
 
 #### Virtual Machine
 
--   Cpu Usage Total in `%`
--   Memory Usage Percentage in `%`
--   Memory Usage in `KiB`
--   VMKernel Memory Swap Rate in `KiB/s`
--   VMKernel Memory Swap in `KiB`
--   Network Bandwidth Total in `KiB/s`
--   Network Packets Total in `packets`
--   Network Drops Total in `packets`
--   Disk Usage Total in `KiB/s`
--   Disk Max Latency in `ms`
--   Overall Alarm Status in `status`
--   System Uptime in `seconds`
+- Cpu Usage Total in `%`
+- Memory Usage Percentage in `%`
+- Memory Usage in `KiB`
+- VMKernel Memory Swap Rate in `KiB/s`
+- VMKernel Memory Swap in `KiB`
+- Network Bandwidth Total in `KiB/s`
+- Network Packets Total in `packets`
+- Network Drops Total in `packets`
+- Disk Usage Total in `KiB/s`
+- Disk Max Latency in `ms`
+- Overall Alarm Status in `status`
+- System Uptime in `seconds`
 
 #### Host
 
--   Cpu Usage Total in `%`
--   Memory Usage Percentage in `%`
--   Memory Usage in `KiB`
--   VMKernel Memory Swap Rate in `KiB/s`
--   VMKernel Memory Swap in `KiB`
--   Network Bandwidth Total in `KiB/s`
--   Network Packets Total in `packets`
--   Network Drops Total in `packets`
--   Network Errors Total in `errors`
--   Disk Usage Total in `KiB/s`
--   Disk Max Latency in `ms`
--   Overall Alarm Status in `status`
--   System Uptime in `seconds`
+- Cpu Usage Total in `%`
+- Memory Usage Percentage in `%`
+- Memory Usage in `KiB`
+- VMKernel Memory Swap Rate in `KiB/s`
+- VMKernel Memory Swap in `KiB`
+- Network Bandwidth Total in `KiB/s`
+- Network Packets Total in `packets`
+- Network Drops Total in `packets`
+- Network Errors Total in `errors`
+- Disk Usage Total in `KiB/s`
+- Disk Max Latency in `ms`
+- Overall Alarm Status in `status`
+- System Uptime in `seconds`
 
 ## Configuration
 
-Edit the `go.d/vsphere.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/vsphere.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -63,52 +64,57 @@ jobs:
     url: https://203.0.113.0
     username: admin@vsphere.local
     password: somepassword
-    host_include: ['/*']
-    vm_include: ['/*'] 
+    host_include: [ '/*' ]
+    vm_include: [ '/*' ]
 
   - name: vcenter2
     url: https://203.0.113.10
     username: admin@vsphere.local
     password: somepassword
-    host_include: ['/*']
-    vm_include: ['/*']
+    host_include: [ '/*' ]
+    vm_include: [ '/*' ]
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/vsphere.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/vsphere.conf).
 
 ## Hosts/vms filtering
 
 Module supports filtering hosts and vms. Filtering options are `host_include` and `vm_include`.
 
--   `host_include` is a list of match patterns: `/Dc pattern[/Cluster pattern/Host pattern]`. 
--   `vm_include` is a list of match patterns: `/Dc pattern[/Cluster pattern/Host pattern/VM name]`.
+- `host_include` is a list of match patterns: `/Dc pattern[/Cluster pattern/Host pattern]`.
+- `vm_include` is a list of match patterns: `/Dc pattern[/Cluster pattern/Host pattern/VM name]`.
 
-Pattern should start with `/`. It matches name, syntax: [simple patterns](https://docs.netdata.cloud/libnetdata/simple_pattern/).
+Pattern should start with `/`. It matches name,
+syntax: [simple patterns](https://docs.netdata.cloud/libnetdata/simple_pattern/).
 
 Examples:
 
 ```yaml
-    host_include:  # filter all hosts
+    host_include: # filter all hosts
       - '/!*'
-    vm_include:  # allow all vms
+    vm_include: # allow all vms
       - '/*'
 ```
+
 ```yaml
-    
-    host_include:  # allow all DC1 datacenter hosts and DC2 datacenter hosts except HOST2
-      - '/DC1/*'
-      - '/DC2/*/!HOST2 *'
-    vm_include:  # allow all vms from datacenters whose names starts with DC1 and from all hosts except HOST1 and HOST2
-      - '/DC1*/*/!HOST1 !HOST2 */*'
+
+host_include: # allow all DC1 datacenter hosts and DC2 datacenter hosts except HOST2
+  - '/DC1/*'
+  - '/DC2/*/!HOST2 *'
+vm_include: # allow all vms from datacenters whose names starts with DC1 and from all hosts except HOST1 and HOST2
+  - '/DC1*/*/!HOST1 !HOST2 */*'
 ```  
- 
+
 ## Update every
 
-Default `update_every` is 20 seconds and it doesnt make sense to decrease the value. **VMware real-time statistics are generated at the 20-seconds specificity**.
+Default `update_every` is 20 seconds and it doesnt make sense to decrease the value. **VMware real-time statistics are
+generated at the 20-seconds specificity**.
 
 It is likely that 20 seconds is not enough for big installations and the value should be tuned.
 
-To get better view we recommend to run the collector in debug mode and see how much time it will take to collect metrics.
+To get better view we recommend to run the collector in debug mode and see how much time it will take to collect
+metrics.
 
 Example (all not related debug lines were removed):
 
@@ -140,11 +146,10 @@ Example (all not related debug lines were removed):
 
 ```
 
-There you can see that discovering took `525.614041ms`, collecting metrics took `154.77997ms`.
-Discovering is a separate thread, it doesnt affect collecting. 
+There you can see that discovering took `525.614041ms`, collecting metrics took `154.77997ms`. Discovering is a separate
+thread, it doesnt affect collecting.
 
 `update_every` and `timeout` parameters should be adjusted based on these numbers.
-
 
 ## Troubleshooting
 

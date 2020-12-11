@@ -1,6 +1,6 @@
 `PowerDNS Authoritative Server` docker setup:
 
--   https://github.com/pschiffe/docker-pdns#pdns-mysql
+- https://github.com/pschiffe/docker-pdns#pdns-mysql
 
 Run `MariaDB` backend:
 
@@ -34,6 +34,7 @@ curl -H 'X-Api-Key: secret' http://127.0.0.1:8081/api/v1/servers/localhost/stati
 ```
 
 Useful links:
--   [Authoritative Server documentation](https://doc.powerdns.com/authoritative/).
--   [Webserver/API/URL Endpoints docs](https://doc.powerdns.com/authoritative/http-api/index.html).
--   [Statistics endpoint metric description](https://doc.powerdns.com/authoritative/http-api/statistics.html).
+
+- [Authoritative Server documentation](https://doc.powerdns.com/authoritative/).
+- [Webserver/API/URL Endpoints docs](https://doc.powerdns.com/authoritative/http-api/index.html).
+- [Statistics endpoint metric description](https://doc.powerdns.com/authoritative/http-api/statistics.html).

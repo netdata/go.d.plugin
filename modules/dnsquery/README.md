@@ -12,12 +12,12 @@ This module provides DNS query RTT in milliseconds.
 
 It produces only one chart:
 
--   Query Time in `milliseconds`
+- Query Time in `milliseconds`
 
 ## Configuration
 
-Edit the `go.d/dns_query.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/dns_query.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -38,7 +38,8 @@ jobs:
       - 8.8.4.4
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/dns_query.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/dns_query.conf).
 
 ## Troubleshooting
 

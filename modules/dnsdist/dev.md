@@ -2,14 +2,14 @@
 
 This setup uses https://github.com/HSRNetwork/docker-dnsdist.
 
--   Clone the repository
+- Clone the repository
 
 ```cmd
 git clone https://github.com/HSRNetwork/docker-dnsdist
 cd docker-dnsdist
 ```
 
--   Put the following config to the `dnsdist.conf.tmpl`
+- Put the following config to the `dnsdist.conf.tmpl`
 
 ```
 setACL({'0.0.0.0/0'})
@@ -20,7 +20,7 @@ newServer({address="8.8.8.8", qps=1000})
 webserver("0.0.0.0:8083", "pass", "key", {}, "0.0.0.0/0")
 ```
 
--   Build the docker image
+- Build the docker image
 
 :exclamation: Ensure that the specified `DNSDIST_VERSION` [version is available](https://pkgs.alpinelinux.org/packages)
 on your chosen `ALPINE_VERSION`.
@@ -35,13 +35,13 @@ docker build \
   -t $(whoami)/dnsdist:$DNSDIST_VER .
 ```
 
--   Start `DNSdist` docker container
+- Start `DNSdist` docker container
 
 ```cmd
 docker run -d -p 8083:8083 "$(whoami)/dnsdist:$DNSDIST_VER"
 ```
 
--   Verify the statistics
+- Verify the statistics
 
 ```cmd
 # using `apikey`
@@ -51,7 +51,7 @@ curl -H 'X-Api-Key: key' http://127.0.0.1:8083/jsonstat?command=stats
 curl -u#:pass http://127.0.0.1:8083/jsonstat?command=stats
 ```
 
-### Installing from Packages/Source 
+### Installing from Packages/Source
 
 Follow [the official guide](https://dnsdist.org/install.html).
 

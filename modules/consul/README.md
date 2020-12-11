@@ -6,7 +6,8 @@ sidebar_label: "Consul"
 
 # Consul monitoring with Netdata
 
-[`Consul`](https://www.consul.io/) is a service networking solution to connect and secure services across any runtime platform and public or private cloud.
+[`Consul`](https://www.consul.io/) is a service networking solution to connect and secure services across any runtime
+platform and public or private cloud.
 
 This module monitors `Consul` health checks.
 
@@ -14,13 +15,13 @@ This module monitors `Consul` health checks.
 
 It produces the following charts:
 
--   Service Checks in `status`
--   Unbound Checks in `status`
+- Service Checks in `status`
+- Unbound Checks in `status`
 
 ## Configuration
 
-Edit the `go.d/consul.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/consul.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -32,13 +33,14 @@ Here is an example for 2 servers:
 ```yaml
 jobs:
   - name: local
-    url : http://127.0.0.1:8500
-      
+    url: http://127.0.0.1:8500
+
   - name: remote
-    url : http://203.0.113.10:8500
+    url: http://203.0.113.10:8500
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/consul.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/consul.conf).
 
 ## Troubleshooting
 

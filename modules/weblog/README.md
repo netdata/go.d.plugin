@@ -12,54 +12,53 @@ This module parses [`Apache`](https://httpd.apache.org/) and [`NGINX`](https://n
 
 Module produces following charts:
 
--   Total Requests in `requests/s`
--   Excluded Requests in `requests/s`
--   Requests By Type in `requests/s`
--   Responses By Status Code Class in `responses/s`
--   Responses By Status Code in `responses/s`
--   Informational Responses By Status Code in `responses/s`
--   Successful Responses By Status Code in `responses/s`
--   Redirects Responses By Status Code in `responses/s`
--   Client Errors Responses By Status Code in `responses/s`
--   Server Errors Responses By Status Code in `responses/s`
--   Bandwidth in `kilobits/s`
--   Request Processing Time in `milliseconds`
--   Requests Processing Time Histogram in `requests/s`
--   Upstream Response Time in `requests/s`
--   Upstream Responses Time Histogram in `responses/s`
--   Current Poll Unique Clients in `clients`
--   Requests By Vhost in `requests/s`
--   Requests By Port in `requests/s`
--   Requests By Scheme in `requests/s`
--   Requests By HTTP Method in `requests/s`
--   Requests By HTTP Version in `requests/s`
--   Requests By IP Protocol in `requests/s`
--   Requests By SSL Connection Protocol in `requests/s`
--   Requests By SSL Connection Cipher Suite in `requests/s`
--   URL Field Requests By Pattern `requests/s`
+- Total Requests in `requests/s`
+- Excluded Requests in `requests/s`
+- Requests By Type in `requests/s`
+- Responses By Status Code Class in `responses/s`
+- Responses By Status Code in `responses/s`
+- Informational Responses By Status Code in `responses/s`
+- Successful Responses By Status Code in `responses/s`
+- Redirects Responses By Status Code in `responses/s`
+- Client Errors Responses By Status Code in `responses/s`
+- Server Errors Responses By Status Code in `responses/s`
+- Bandwidth in `kilobits/s`
+- Request Processing Time in `milliseconds`
+- Requests Processing Time Histogram in `requests/s`
+- Upstream Response Time in `requests/s`
+- Upstream Responses Time Histogram in `responses/s`
+- Current Poll Unique Clients in `clients`
+- Requests By Vhost in `requests/s`
+- Requests By Port in `requests/s`
+- Requests By Scheme in `requests/s`
+- Requests By HTTP Method in `requests/s`
+- Requests By HTTP Version in `requests/s`
+- Requests By IP Protocol in `requests/s`
+- Requests By SSL Connection Protocol in `requests/s`
+- Requests By SSL Connection Cipher Suite in `requests/s`
+- URL Field Requests By Pattern `requests/s`
 
 For every Custom field:
 
--   Requests By Pattern in `requests/s`
+- Requests By Pattern in `requests/s`
 
 For every URL pattern:
 
--   Responses By Status Code in `responses/s`
--   Requests By HTTP Method in `requests/s`
--   Bandwidth in `kilobits/s`
--   Request Processing Time in `milliseconds`
+- Responses By Status Code in `responses/s`
+- Requests By HTTP Method in `requests/s`
+- Bandwidth in `kilobits/s`
+- Request Processing Time in `milliseconds`
 
 ## Log Parsers
 
 Weblog supports 4 different log parsers:
 
--   `CSV`
--   [`JSON`](https://www.json.org/json-en.html)
--   [`LTSV`](http://ltsv.org/)
--   `RegExp`
+- `CSV`
+- [`JSON`](https://www.json.org/json-en.html)
+- [`LTSV`](http://ltsv.org/)
+- `RegExp`
 
-Try to avoid using `RegExp` because it's much slower than the other parsers.
-Prefer to use `LTSV` or `CSV` parser.
+Try to avoid using `RegExp` because it's much slower than the other parsers. Prefer to use `LTSV` or `CSV` parser.
 
 There is an example job for every log parser.
 
@@ -101,12 +100,13 @@ jobs:
 
 ## Log Parser Auto-Detection
 
-If `log_type` parameter set to `auto` (which is default), weblog will try to auto-detect appropriate log parser and log format
-using the last line of the log file.
+If `log_type` parameter set to `auto` (which is default), weblog will try to auto-detect appropriate log parser and log
+format using the last line of the log file.
 
--   checks if format is `CSV` (using regexp).
--   checks if format is `JSON` (using regexp).
--   assumes format is `CSV` and tries to find appropriate `CSV` log format using predefind list of formats. It tries to parse the line using each of them in the following order:
+- checks if format is `CSV` (using regexp).
+- checks if format is `JSON` (using regexp).
+- assumes format is `CSV` and tries to find appropriate `CSV` log format using predefind list of formats. It tries to
+  parse the line using each of them in the following order:
 
 ```sh
 $host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes_sent - - $request_length $request_time $upstream_response_time
@@ -121,12 +121,13 @@ $host:$server_port $remote_addr - - [$time_local] "$request" $status $body_bytes
                    $remote_addr - - [$time_local] "$request" $status $body_bytes_sent
 ```
 
-The first one matches is used later. If you use default Apache/NGINX log format auto-detect will do for you.
-If it doesn't work you need [to set format manually](#custom-log-format).
+The first one matches is used later. If you use default Apache/NGINX log format auto-detect will do for you. If it
+doesn't work you need [to set format manually](#custom-log-format).
 
 ## Known Fields
 
-These are [NGINX](http://nginx.org/en/docs/varindex.html) and [Apache](http://httpd.apache.org/docs/current/mod/mod_log_config.html) log format variables.
+These are [NGINX](http://nginx.org/en/docs/varindex.html)
+and [Apache](http://httpd.apache.org/docs/current/mod/mod_log_config.html) log format variables.
 
 Weblog is aware how to parse and interpret the fields:
 
@@ -153,28 +154,29 @@ In addition to that weblog understands [user defined fields](#custom-fields-feat
 
 Notes:
 
--   Apache `%h` logs the IP address if [HostnameLookups](https://httpd.apache.org/docs/2.4/mod/core.html#hostnamelookups) is Off.
-    The web log collector counts hostnames as IPv4 addresses. We recommend either to disable HostnameLookups or use `%a` instead of `%h`.
--   Since httpd 2.0, unlike 1.3, the `%b` and `%B` format strings do not represent the number of bytes sent to the client,
-    but simply the size in bytes of the HTTP response. It will will differ, for instance, if the connection is aborted,
-    or if SSL is used. The `%O` format provided by [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html)
-    will log the actual number of bytes sent over the network.
--   To get `%I` and `%O` working you need to enable `mod_logio` on Apache.
--   NGINX logs URI with query parameters, Apache doesnt.
--   `$request` is parsed into `$request_method`, `$request_uri` and `$server_protocol`. If you have `$request` in your log format,
-    there is no sense to have others.
--   Don't use both `$bytes_sent` and `$body_bytes_sent` (`%O` and `%B` or `%b`). The module does not distinguish between these parameters.
-
+- Apache `%h` logs the IP address if [HostnameLookups](https://httpd.apache.org/docs/2.4/mod/core.html#hostnamelookups)
+  is Off. The web log collector counts hostnames as IPv4 addresses. We recommend either to disable HostnameLookups or
+  use `%a` instead of `%h`.
+- Since httpd 2.0, unlike 1.3, the `%b` and `%B` format strings do not represent the number of bytes sent to the client,
+  but simply the size in bytes of the HTTP response. It will will differ, for instance, if the connection is aborted, or
+  if SSL is used. The `%O` format provided by [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html)
+  will log the actual number of bytes sent over the network.
+- To get `%I` and `%O` working you need to enable `mod_logio` on Apache.
+- NGINX logs URI with query parameters, Apache doesnt.
+- `$request` is parsed into `$request_method`, `$request_uri` and `$server_protocol`. If you have `$request` in your log
+  format, there is no sense to have others.
+- Don't use both `$bytes_sent` and `$body_bytes_sent` (`%O` and `%B` or `%b`). The module does not distinguish between
+  these parameters.
 
 ## Custom Log Format
 
 Custom log format is easy. Use [known fields](#known-fields) to construct your log format.
 
--   If using `CSV` parser
+- If using `CSV` parser
 
 Since weblog understands NGINX and Apache variables all you need is to copy your log format and... that is it!
-If there is a field that is not known by the weblog it's not a problem. It will skip it during parsing.
-We suggest replace all unknown fields with `-` for optimization purposes.
+If there is a field that is not known by the weblog it's not a problem. It will skip it during parsing. We suggest
+replace all unknown fields with `-` for optimization purposes.
 
 Let's take as an example some non default format.
 
@@ -188,14 +190,15 @@ log_format custom '"$http_referer" "$http_user_agent" '
                   '"$request" $status $body_bytes_sent'
 ```
 
-To get it working we need to copy the format without any changes (make it a line for nginx). Replacing unknown fields
-is optional but recommended.
+To get it working we need to copy the format without any changes (make it a line for nginx). Replacing unknown fields is
+optional but recommended.
 
 Special case:
 
-Both `%t` and `$time_local` fields represent time in [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format).
-It is a special case because it's in fact 2 fields after csv parse (ex.: `[22/Mar/2009:09:30:31 +0100]`).
-Weblog understands it and you don't need to replace it with `-` (if we want to do it we need to make it `- -`).
+Both `%t` and `$time_local` fields represent time
+in [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format). It is a special case
+because it's in fact 2 fields after csv parse (ex.: `[22/Mar/2009:09:30:31 +0100]`). Weblog understands it and you don't
+need to replace it with `-` (if we want to do it we need to make it `- -`).
 
 ```yaml
 jobs:
@@ -212,31 +215,33 @@ jobs:
       format: '- - $remote_addr - - [$time_local] "$request" $status $body_bytes_sent'
 ```
 
--   If using `JSON` parser
+- If using `JSON` parser
 
-Provide fields [mapping](#known-fields) if needed. Don't use `$` and `%` prefixes for mapped field names. They are only needed in `CSV` format.
+Provide fields [mapping](#known-fields) if needed. Don't use `$` and `%` prefixes for mapped field names. They are only
+needed in `CSV` format.
 
--   If using `LTSV` parser
+- If using `LTSV` parser
 
-Provide fields [mapping](#known-fields) if needed. Don't use `$` and `%` prefixes for mapped field names. They are only needed in `CSV` format.
+Provide fields [mapping](#known-fields) if needed. Don't use `$` and `%` prefixes for mapped field names. They are only
+needed in `CSV` format.
 
--   If using `RegExp` parser
+- If using `RegExp` parser
 
 Use pattern with subexpressions names. These names should be known by weblog.
-
 
 ## Custom Fields Feature
 
 Weblog is able to extract user defined fields and count patterns matches against these fields.
 
 This feature needs:
--   custom log format with user defined fields
--   list of patterns to match against appropriate fields
+
+- custom log format with user defined fields
+- list of patterns to match against appropriate fields
 
 Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
 
-There is an example with 2 custom fields - `$http_referer` and `$http_user_agent`. Weblog is unaware of these fields, but
-we still can get some info from them.
+There is an example with 2 custom fields - `$http_referer` and `$http_user_agent`. Weblog is unaware of these fields,
+but we still can get some info from them.
 
 ```yaml
   - name: nginx_csv_custom_fields_example
@@ -245,33 +250,38 @@ we still can get some info from them.
     csv_config:
       format: '- - $remote_addr - - [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"'
     custom_fields:
-      - name:  http_referer     # same name as in 'format' without $
+      - name: http_referer     # same name as in 'format' without $
         patterns:
-          - name:  cacti
+          - name: cacti
             match: '~ cacti'
-          - name:  observium
+          - name: observium
             match: '~ observium'
-      - name:  http_user_agent  # same name as in 'format' without $
+      - name: http_user_agent  # same name as in 'format' without $
         patterns:
-          - name:  android
+          - name: android
             match: '~ Android'
-          - name:  iphone
+          - name: iphone
             match: '~ iPhone'
-          - name:  other
+          - name: other
             match: '* *'
 ```
 
 ## Custom time fields feature
 
-The web log collector is also able to extract user defined time fields and could count min/avg/max + histogram against these fields.
+The web log collector is also able to extract user defined time fields and could count min/avg/max + histogram against
+these fields.
 
 This feature needs:
--   A custom log format with user-defined time fields.
--   A histogram to show response time in seconds, which is optional.
 
-As an example, Apache [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html) adds a `^FB` logging directive. This value shows a delay in microseconds between when the request arrived, and the first byte of the response headers are written.
+- A custom log format with user-defined time fields.
+- A histogram to show response time in seconds, which is optional.
 
-As with the custom fields feature, Netdata's web log collector is unaware of these fields, but we can still get some info from them.
+As an example, Apache [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html) adds a `^FB` logging
+directive. This value shows a delay in microseconds between when the request arrived, and the first byte of the response
+headers are written.
+
+As with the custom fields feature, Netdata's web log collector is unaware of these fields, but we can still get some
+info from them.
 
 ```yaml
   - name: apache_csv_custom_fields_example
@@ -280,22 +290,22 @@ As with the custom fields feature, Netdata's web log collector is unaware of the
     csv_config:
       format: '%v %a %p %m %H \"%U\" %t %>s %O %I %D %^FB \"%{Referer}i\" \"%{User-Agent}i\" \"%r\"'
     custom_time_fields:
-    - name: '^FB'
-      histogram: [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10] # optional field
+      - name: '^FB'
+        histogram: [ .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10 ] # optional field
 ```
-
 
 ## Configuration
 
-Edit the `go.d/web_log.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/web_log.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/web_log.conf
 ```
 
-This module needs only `path` to log file. If it fails to auto-detect your log format you need [to set it manually](#custom-log-format).
+This module needs only `path` to log file. If it fails to auto-detect your log format you
+need [to set it manually](#custom-log-format).
 
 ```yaml
 jobs:
@@ -309,7 +319,8 @@ jobs:
       format: '- - %h - - %t \"%r\" %>s %b'
 ```
 
-For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/web_log.conf).
+For all available options, please see the
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/web_log.conf).
 
 ## Troubleshooting
 

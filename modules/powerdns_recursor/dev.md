@@ -1,6 +1,6 @@
 `PowerDNS Recursor` docker setup:
 
--   https://github.com/pschiffe/docker-pdns#pdns-recursor
+- https://github.com/pschiffe/docker-pdns#pdns-recursor
 
 Run `PowerDNS Recursor` with enabled webserver and api:
 
@@ -22,6 +22,7 @@ curl http://127.0.0.1:8081/api/v1/servers/localhost/statistics
 ```
 
 Useful links:
--   [Recursor documentation](https://doc.powerdns.com/recursor/).
--   [Webserver/API/URL Endpoints docs](https://doc.powerdns.com/recursor/http-api/index.html).
--   [Statistics endpoint metric description](https://doc.powerdns.com/recursor/metrics.html#metricnames).
+
+- [Recursor documentation](https://doc.powerdns.com/recursor/).
+- [Webserver/API/URL Endpoints docs](https://doc.powerdns.com/recursor/http-api/index.html).
+- [Statistics endpoint metric description](https://doc.powerdns.com/recursor/metrics.html#metricnames).

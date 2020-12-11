@@ -4,12 +4,12 @@ This package helps you to convert a struct to `map[string]int64`.
 
 ## Tags
 
-The encoding of each struct field can be customized by the format string stored under the `stm` key in the struct field's tag.
-The format string gives the name of the field, possibly followed by a comma-separated list of options.
+The encoding of each struct field can be customized by the format string stored under the `stm` key in the struct
+field's tag. The format string gives the name of the field, possibly followed by a comma-separated list of options.
 
 **Lack of tag means no conversion performed.**
 If you don't want a field to be added to the `map[string]int64` just don't add a tag to it.
- 
+
 Tag syntax:
 
 ```
@@ -35,15 +35,15 @@ Field int `stm:"name,10,5"`
 
 The list is:
 
--   `int`
--   `float`
--   `bool`
--   `map`
--   `array`
--   `slice`
--   `pointer`
--   `struct`
--   `interface { WriteTo(rv map[string]int64, key string, mul, div int) }`
+- `int`
+- `float`
+- `bool`
+- `map`
+- `array`
+- `slice`
+- `pointer`
+- `struct`
+- `interface { WriteTo(rv map[string]int64, key string, mul, div int) }`
 
 It is ok to have nested structures.
 
@@ -51,10 +51,9 @@ It is ok to have nested structures.
 
 Use `ToMap` function. Keep in mind:
 
--   this function is variadic (can be called with any number of trailing arguments).
--   it doesn't allow to have duplicate in result map.
--   if there is a duplicate key it panics.
-
+- this function is variadic (can be called with any number of trailing arguments).
+- it doesn't allow to have duplicate in result map.
+- if there is a duplicate key it panics.
 
 ```
 	ms := struct {

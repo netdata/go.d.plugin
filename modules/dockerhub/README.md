@@ -6,25 +6,26 @@ sidebar_label: "Docker Hub repositories"
 
 # Docker Hub repository monitoring with Netdata
 
-[`Docker Hub`](https://docs.docker.com/docker-hub/) is a service provided by Docker for finding and sharing container images with your team.
- 
+[`Docker Hub`](https://docs.docker.com/docker-hub/) is a service provided by Docker for finding and sharing container
+images with your team.
+
 This module will collect `Docker Hub` repositories statistics.
 
 ## Charts
 
 It produces the following charts:
 
--   Pulls Summary in `pulls`
--   Pulls in `pulls`
--   Pulls Rate in `pulls/s`
--   Stars in `stars/s`
--   Current Status in `status`
--   Time Since Last Update in `seconds`
+- Pulls Summary in `pulls`
+- Pulls in `pulls`
+- Pulls Rate in `pulls/s`
+- Stars in `stars/s`
+- Current Status in `status`
+- Time Since Last Update in `seconds`
 
 ## Configuration
 
-Edit the `go.d/dockerhub.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/dockerhub.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -42,7 +43,8 @@ jobs:
       - 'me/repo3' 
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/dockerhub.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/dockerhub.conf).
 
 ## Troubleshooting
 

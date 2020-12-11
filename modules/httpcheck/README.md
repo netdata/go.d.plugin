@@ -12,10 +12,10 @@ This module monitors one or more http servers availability and response time.
 
 It produces the following charts:
 
--   HTTP Response Time in `ms`
--   HTTP Check Status in `boolean`
--   HTTP Current State Duration in `seconds`
--   HTTP Response Body Length in `characters`
+- HTTP Response Time in `ms`
+- HTTP Check Status in `boolean`
+- HTTP Current State Duration in `seconds`
+- HTTP Response Body Length in `characters`
 
 ## Check statuses
 
@@ -27,11 +27,10 @@ It produces the following charts:
 | bad status |Response status code not in `status_accepted`|
 | no connection |Any other network error not specifically handled by the module|
 
-
 ## Configuration
 
-Edit the `go.d/httpcheck.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/httpcheck.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -44,7 +43,7 @@ Here is an example for 2 servers:
 jobs:
   - name: cool_website1
     url: http://cool.website1:8080/home
-      
+
   - name: cool_website2
     url: http://cool.website2:8080/home
     status_accepted:
@@ -54,7 +53,8 @@ jobs:
     response_match: <title>My cool website!<\/title>
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/httpcheck.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/httpcheck.conf).
 
 ## Troubleshooting
 

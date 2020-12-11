@@ -12,13 +12,13 @@ This module checks the time until a x509 certificate expiration and its revocati
 
 It produces the following charts:
 
--   Time Until Certificate Expiration in `seconds`
--   Revocation Status in `status`
- 
+- Time Until Certificate Expiration in `seconds`
+- Revocation Status in `status`
+
 ## Configuration
 
-Edit the `go.d/x509check.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/x509check.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -27,25 +27,27 @@ sudo ./edit-config go.d/x509check.conf
 
 Needs only `source`.
 
-Use `smtp` scheme for smtp servers, `file` for files and `https` or `tcp` for others. Port is mandatory for all non-file schemes.
+Use `smtp` scheme for smtp servers, `file` for files and `https` or `tcp` for others. Port is mandatory for all non-file
+schemes.
 
 Here is an example for 3 sources:
 
 ```yaml
-update_every : 60
+update_every: 60
 
 jobs:
-  - name   : my_site_cert
-    source : https://my_site.org:443
-    
-  - name   : my_file_cert
-    source : file:///home/me/cert.pem
+  - name: my_site_cert
+    source: https://my_site.org:443
 
-  - name   : my_smtp_cert
-    source : smtp://smtp.my_mail.org:587
+  - name: my_file_cert
+    source: file:///home/me/cert.pem
+
+  - name: my_smtp_cert
+    source: smtp://smtp.my_mail.org:587
 ```
 
-For all available options and defaults please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/x509check.conf).
+For all available options and defaults please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/x509check.conf).
 
 ## Revocation status
 

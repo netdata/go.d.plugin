@@ -6,27 +6,29 @@ sidebar_label: "NGINX"
 
 # NGINX monitoring with Netdata
 
-[`NGINX`](https://www.nginx.com/) is a web server which can also be used as a reverse proxy, load balancer, mail proxy and HTTP cache. 
+[`NGINX`](https://www.nginx.com/) is a web server which can also be used as a reverse proxy, load balancer, mail proxy
+and HTTP cache.
 
 This module will monitor one or more `NGINX` servers, depending on your configuration.
 
 ## Requirements
 
- -   `NGINX` with configured [`ngx_http_stub_status_module`](http://nginx.org/en/docs/http/ngx_http_stub_status_module.html).
+- `NGINX` with
+  configured [`ngx_http_stub_status_module`](http://nginx.org/en/docs/http/ngx_http_stub_status_module.html).
 
 ## Charts
 
 It produces following charts:
 
--   Active Client Connections Including Waiting Connections in `connections`
--   Active Connections Per Status in `connections`
--   Accepted And Handled Connections in `connections/s`
--   Requests in `requests/s`
+- Active Client Connections Including Waiting Connections in `connections`
+- Active Connections Per Status in `connections`
+- Accepted And Handled Connections in `connections/s`
+- Requests in `requests/s`
 
 ## Configuration
 
-Edit the `go.d/nginx.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/nginx.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -38,14 +40,14 @@ Needs only `url` to server's `stub_status`. Here is an example for local and rem
 ```yaml
 jobs:
   - name: local
-    url : http://127.0.0.1/stub_status
-      
+    url: http://127.0.0.1/stub_status
+
   - name: remote
-    url : http://203.0.113.10/stub_status
+    url: http://203.0.113.10/stub_status
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/nginx.conf).
-
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/nginx.conf).
 
 ## Troubleshooting
 

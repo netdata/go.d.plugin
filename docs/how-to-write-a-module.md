@@ -5,23 +5,23 @@ Let's assume you want to write a collector named `example`.
 Steps are:
 
 - Add the source code to [`modules/example/`](https://github.com/netdata/go.d.plugin/tree/master/modules).
-  - [module interface](#module-interface).
-  - [suggested module layout](#module-layout).
-  - [helper packages](#helper-packages).
+    - [module interface](#module-interface).
+    - [suggested module layout](#module-layout).
+    - [helper packages](#helper-packages).
 - Add the configuration to [`config/go.d/example.conf`](https://github.com/netdata/go.d.plugin/tree/master/config/go.d).
 - Add the module to [`config/go.d.conf`](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
 - Import the module in [`modules/init.go`](https://github.com/netdata/go.d.plugin/blob/master/modules/init.go).
 - Update the [`available modules list`](https://github.com/netdata/go.d.plugin#available-modules).
- 
-> :exclamation: If you prefer reading the source code, then check 
+
+> :exclamation: If you prefer reading the source code, then check
 > [the implementation](https://github.com/netdata/go.d.plugin/tree/master/modules/example) of the `example` module,
-> it should give you an idea of  how things work. 
+> it should give you an idea of  how things work.
 
 ## Module Interface
 
 Every module should implement the following interface:
 
-```go
+```
 type Module interface {
     Init() bool
     Check() bool
@@ -33,12 +33,12 @@ type Module interface {
 
 ### Init method
 
--   `Init` does module initialization.
--   If it returns `false`, the job will be disabled.
+- `Init` does module initialization.
+- If it returns `false`, the job will be disabled.
 
 We propose to use the following template:
 
-```go
+```
 // example.go
 
 func (e *Example) Init() bool {
@@ -64,14 +64,14 @@ Move specific initialization methods into the `init.go` file. See [suggested mod
 
 ### Check method
 
--   `Check` returns whether the job is able to collect metrics.
--   Called after `Init` and only if `Init` returned `true`.
--   If it returns `false`, the job will be disabled.
+- `Check` returns whether the job is able to collect metrics.
+- Called after `Init` and only if `Init` returned `true`.
+- If it returns `false`, the job will be disabled.
 
-The simplest way to implement `Check` is to see if we are getting any metrics from `Collect`.
-A lot of modules use such approach.
+The simplest way to implement `Check` is to see if we are getting any metrics from `Collect`. A lot of modules use such
+approach.
 
-```go
+```
 // example.go
 
 func (e *Example) Check() bool {
@@ -81,19 +81,20 @@ func (e *Example) Check() bool {
 
 ### Charts method
 
-:exclamation: Netdata module produces [`charts`](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#chart), not raw metrics.
+:exclamation: Netdata module produces [`charts`](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#chart), not
+raw metrics.
 
 Use [`agent/module`](https://github.com/netdata/go.d.plugin/blob/master/agent/module/charts.go) package to create them,
 it contains charts and dimensions structs.
 
--   `Charts` returns the [charts](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#chart1) (`*module.Charts`).
--   Called after `Check` and only if `Check` returned `true`.
--   If it returns `nil`, the job will be disabled
--   :warning: Make sure not to share returned value between module instances (jobs).
+- `Charts` returns the [charts](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#chart1) (`*module.Charts`).
+- Called after `Check` and only if `Check` returned `true`.
+- If it returns `nil`, the job will be disabled
+- :warning: Make sure not to share returned value between module instances (jobs).
 
 Usually charts initialized in `Init` and `Chart` method just returns the charts instance:
 
-```go
+```
 // example.go
 
 func (e *Example) Charts() *Charts {
@@ -103,14 +104,14 @@ func (e *Example) Charts() *Charts {
 
 ### Collect method
 
--   `Collect` collects metrics.
--    Called only if `Check` returned `true`.
--    Called every `update_every` seconds.
--    `map[string]int64` keys are charts dimensions ids'.
+- `Collect` collects metrics.
+- Called only if `Check` returned `true`.
+- Called every `update_every` seconds.
+- `map[string]int64` keys are charts dimensions ids'.
 
 We propose to use the following template:
- 
-```go
+
+```
 // example.go
 
 func (e *Example) Collect() map[string]int64 {
@@ -130,13 +131,12 @@ Move metrics collection logic into the `collect.go` file. See [suggested module 
 
 ### Cleanup method
 
--   `Cleanup` performs the job cleanup/teardown.
--    Called if `Init` or `Check` fails, or we want to stop the job after `Collect`.
-
+- `Cleanup` performs the job cleanup/teardown.
+- Called if `Init` or `Check` fails, or we want to stop the job after `Collect`.
 
 If you have nothing to clean up:
 
-```go
+```
 // example.go
 
 func (Example) Cleanup() {}
@@ -166,16 +166,16 @@ Suggested minimal layout:
 Don't overload this file with the implementation details.
 
 Usually it contains only:
- 
--   module registration.
--   module configuration.
--   [module interface implementation](#module-interface).
+
+- module registration.
+- module configuration.
+- [module interface implementation](#module-interface).
 
 ### File `charts.go`
 
 > :exclamation: See the example: [`charts.go`](https://github.com/netdata/go.d.plugin/blob/master/modules/example/charts.go).
 
-Put charts, charts templates and charts constructor functions in this file. 
+Put charts, charts templates and charts constructor functions in this file.
 
 ### File `init.go`
 
@@ -183,10 +183,10 @@ Put charts, charts templates and charts constructor functions in this file.
 
 All the module initialization details should go in this file.
 
--   make a function for each value that needs to be initialized.
--   a function should return a value(s), not implicitly set/change any values in the main struct.
+- make a function for each value that needs to be initialized.
+- a function should return a value(s), not implicitly set/change any values in the main struct.
 
-```go
+```
 // init.go
 
 // Prefer this approach.
@@ -213,7 +213,7 @@ Feel free to split it into several files if you think it makes the code more rea
 
 Use `collect_` prefix for the filenames: `collect_this.go`, `collect_that.go`, etc.
 
-```go
+```
 // collect.go
 
 func (e *Example) collect() (map[string]int64, error) {
@@ -236,15 +236,15 @@ func (e *Example) collect() (map[string]int64, error) {
 
 Testing is mandatory.
 
--   test only public functions and methods (`New`, `Init`, `Check`, `Charts`, `Cleanup`, `Collect`).
--   do not create a test function per a case, use [table driven tests](https://github.com/golang/go/wiki/TableDrivenTests).
-Prefer `map[string]struct{ ... }` over `[]struct{ ... }`.
--   use helper functions _to prepare_ test cases to keep them clean and readable.  
+- test only public functions and methods (`New`, `Init`, `Check`, `Charts`, `Cleanup`, `Collect`).
+- do not create a test function per a case, use [table driven tests](https://github.com/golang/go/wiki/TableDrivenTests)
+  . Prefer `map[string]struct{ ... }` over `[]struct{ ... }`.
+- use helper functions _to prepare_ test cases to keep them clean and readable.
 
 ### Directory `testdata/`
 
-Put files with sample data in this directory if you need any.
-Its name should be [`testdata`](https://golang.org/cmd/go/#hdr-Package_lists_and_patterns).
+Put files with sample data in this directory if you need any. Its name should
+be [`testdata`](https://golang.org/cmd/go/#hdr-Package_lists_and_patterns).
 
 > Directory and file names that begin with "." or "_" are ignored by the go tool, as are directories named "testdata".
 
