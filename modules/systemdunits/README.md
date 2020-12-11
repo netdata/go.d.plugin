@@ -10,8 +10,8 @@ sidebar_label: "Systemd units"
 
 This module monitors `Systemd` units state.
 
--   Works only on linux systems.
--   Disabled by default. Should be explicitly enabled in the `go.d.conf`:
+- Works only on linux systems.
+- Disabled by default. Should be explicitly enabled in the `go.d.conf`:
 
 ```yaml
 # go.d.conf
@@ -23,17 +23,17 @@ modules:
 
 It produces the following charts:
 
--   Service Unit State in `state`
--   Socket Unit State in `state`
--   Target Unit State in `state`
--   Path Unit State in `state`
--   Device Unit State in `state`
--   Mount Unit State in `state`
--   Automount Unit State in `state`
--   Swap Unit State in `state`
--   Timer Unit State in `state`
--   Scope Unit State in `state`
--   Slice Unit State in `state`
+- Service Unit State in `state`
+- Socket Unit State in `state`
+- Target Unit State in `state`
+- Path Unit State in `state`
+- Device Unit State in `state`
+- Mount Unit State in `state`
+- Automount Unit State in `state`
+- Swap Unit State in `state`
+- Timer Unit State in `state`
+- Scope Unit State in `state`
+- Slice Unit State in `state`
 
 ## Unit states
 
@@ -47,8 +47,8 @@ It produces the following charts:
 
 ## Configuration
 
-Edit the `go.d/systemdunits.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/systemdunits.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -74,14 +74,13 @@ jobs:
       - '*.socket'
 ```
 
-
-For all available options, see the Systemdunits collector's [configuration
-file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/systemdunits.conf).
+For all available options, see the Systemdunits
+collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/systemdunits.conf).
 
 ## Troubleshooting
 
-To troubleshoot issues with the Systemdunits collector, run the `go.d.plugin` with the debug option enabled.
-The output should give you clues as to why the collector isn't working.
+To troubleshoot issues with the Systemdunits collector, run the `go.d.plugin` with the debug option enabled. The output
+should give you clues as to why the collector isn't working.
 
 First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
 system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch

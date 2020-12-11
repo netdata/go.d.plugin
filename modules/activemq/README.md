@@ -6,7 +6,8 @@ sidebar_label: "ActiveMQ"
 
 # ActiveMQ monitoring with Netdata
 
-[`ActiveMQ`](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java Message Service client.
+[`ActiveMQ`](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java
+Message Service client.
 
 This plugin collects queues and topics metrics using ActiveMQ Console API.
 
@@ -14,14 +15,14 @@ This plugin collects queues and topics metrics using ActiveMQ Console API.
 
 It produces following charts per queue and per topic:
 
--   Messages in `messages/s`
--   Unprocessed Messages in `messages`
--   Consumers in `consumers`
+- Messages in `messages/s`
+- Unprocessed Messages in `messages`
+- Consumers in `consumers`
 
 ## Configuration
 
-Edit the `go.d/activemq.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/activemq.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -39,13 +40,14 @@ jobs:
     max_topics: 100
     queues_filter: '!sandr* *'
     topics_filter: '!sandr* *'
-    
+
   - name: remote
     url: http://203.0.113.10:8161
     webadmin: admin
 ```
 
-For all available options, please see the module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/activemq.conf).
+For all available options, please see the
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/activemq.conf).
 
 ## Troubleshooting
 

@@ -6,28 +6,29 @@ sidebar_label: "phpDaemon"
 
 # phpDaemon monitoring with Netdata
 
-[`phpDaemon`](https://github.com/kakserpom/phpdaemon) is an asynchronous server-side framework for Web and network applications implemented in PHP using libevent.
+[`phpDaemon`](https://github.com/kakserpom/phpdaemon) is an asynchronous server-side framework for Web and network
+applications implemented in PHP using libevent.
 
 This module collects `phpdaemon` workers statistics via http.
 
 ## Requirements
 
--   `phpdaemon` with enabled `http` server.
--   statistics should be reported in `json` format.
+- `phpdaemon` with enabled `http` server.
+- statistics should be reported in `json` format.
 
 ## Charts
 
 It produces the following charts:
 
--   Workers in `workers`
--   Alive Workers State in `workers`
--   Idle Workers State in `workers`
--   Uptime in `seconds`
+- Workers in `workers`
+- Alive Workers State in `workers`
+- Idle Workers State in `workers`
+- Uptime in `seconds`
 
 ## Configuration
 
-Edit the `go.d/phpdaemon.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/phpdaemon.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -39,13 +40,14 @@ Here is an example for 2 instances:
 ```yaml
 jobs:
   - name: local
-    url : http://127.0.0.1:8509/FullStatus
-      
+    url: http://127.0.0.1:8509/FullStatus
+
   - name: remote
-    url : http://10.0.0.1:8509/FullStatus
+    url: http://10.0.0.1:8509/FullStatus
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/phpdaemon.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/phpdaemon.conf).
 
 ## phpdaemon configuration
 
@@ -53,7 +55,9 @@ Instruction from [@METAJIJI](https://github.com/METAJIJI)
 
 For enable `phpd` statistics on http, you must enable the http server and write an application.
 
-Application is important, because standalone application [ServerStatus.php](https://github.com/kakserpom/phpdaemon/blob/master/PHPDaemon/Applications/ServerStatus.php) provides statistics in html format and unusable for `netdata`. 
+Application is important, because standalone
+application [ServerStatus.php](https://github.com/kakserpom/phpdaemon/blob/master/PHPDaemon/Applications/ServerStatus.php)
+provides statistics in html format and unusable for `netdata`.
 
 > /opt/phpdaemon/conf/phpd.conf
 

@@ -19,25 +19,25 @@ It collects information and statistics about the server executing the following 
 
 ## Charts
 
--   Accepted and rejected (maxclients limit) connections in `connections/s`
--   Clients in `clients`
--   Memory usage in `bytes`
--   Ratio between used_memory_rss and used_memory in `ratio`
--   Bandwidth in `kilobits/s`
--   Connected replicas in `replicas`
--   Operations that produced changes since the last SAVE or BGSAVE in `operations`
--   Duration of the on-going RDB save operation if any in `seconds`
--   Status of the last RDB save operation in `status`
--   Processed commands in `queries/s`
--   Calls per command in `calls/s`
--   Total CPU time consumed by the commands in `usec`
--   Average CPU consumed per command execution in `usec/s`
--   Keys lookup hit rate in `percentage`
--   Evicted keys due to maxmemory limit in `keys/s`
--   Expired keys in `keys/s`
--   Keys per database in `keys`
--   Keys with an expiration per database in `keys`
--   Uptime in `seconds`
+- Accepted and rejected (maxclients limit) connections in `connections/s`
+- Clients in `clients`
+- Memory usage in `bytes`
+- Ratio between used_memory_rss and used_memory in `ratio`
+- Bandwidth in `kilobits/s`
+- Connected replicas in `replicas`
+- Operations that produced changes since the last SAVE or BGSAVE in `operations`
+- Duration of the on-going RDB save operation if any in `seconds`
+- Status of the last RDB save operation in `status`
+- Processed commands in `queries/s`
+- Calls per command in `calls/s`
+- Total CPU time consumed by the commands in `usec`
+- Average CPU consumed per command execution in `usec/s`
+- Keys lookup hit rate in `percentage`
+- Evicted keys due to maxmemory limit in `keys/s`
+- Expired keys in `keys/s`
+- Keys per database in `keys`
+- Keys with an expiration per database in `keys`
+- Uptime in `seconds`
 
 ## Configuration
 

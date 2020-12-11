@@ -12,10 +12,10 @@ the [OpenMetrics exposition format](https://prometheus.io/docs/instrumenting/exp
 
 As of v1.24, Netdata can autodetect more than 600 Prometheus endpoints, including support for Windows 10 via
 `windows_exporter`, and instantly generate new charts with the same high-granularity, per-second frequency as you expect
-from other collectors. 
+from other collectors.
 
-The full list of endpoints is available in the collector's [configuration
-file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
+The full list of endpoints is available in the
+collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
 
 ## Charts
 
@@ -26,8 +26,8 @@ For example, scraping [`node_exporter`](https://github.com/prometheus/node_expor
 
 ## Configuration
 
-Edit the `go.d/prometheus.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/prometheus.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -53,6 +53,7 @@ jobs:
 To filter unwanted time series (metrics) use `selector` configuration option.
 
 Here is an example:
+
 ```yaml
 jobs:
   - name: node_exporter_local
@@ -67,19 +68,20 @@ jobs:
         - <PATTERN>
 ```
 
-To find `PATTERN` syntax description and more examples see [selectors readme](https://github.com/netdata/go.d.plugin/tree/master/pkg/prometheus/selector#time-series-selector).
+To find `PATTERN` syntax description and more examples
+see [selectors readme](https://github.com/netdata/go.d.plugin/tree/master/pkg/prometheus/selector#time-series-selector).
 
 ### Time Series Grouping
 
-This module groups time series into charts. It has built-in grouping logic (based on metric type).
-It is possible to extend it via `group` configuration option. 
+This module groups time series into charts. It has built-in grouping logic (based on metric type). It is possible to
+extend it via `group` configuration option.
 
 #### Gauge and Counter
 
--   A chart per every metric.
--   Dimensions are labels sets.
--   Dimensions per chart limit is `50`. If there is more dimensions the chart split into several charts.
--   Values as is.
+- A chart per every metric.
+- Dimensions are labels sets.
+- Dimensions per chart limit is `50`. If there is more dimensions the chart split into several charts.
+- Values as is.
 
 For instance, the following time series produce 1 chart.
 
@@ -115,7 +117,8 @@ jobs:
         by_label: <a space separated list of labels names> 
 ```
 
-To find `PATTERN` syntax description and more examples see [selectors readme](https://github.com/netdata/go.d.plugin/tree/master/pkg/prometheus/selector#time-series-selector).
+To find `PATTERN` syntax description and more examples
+see [selectors readme](https://github.com/netdata/go.d.plugin/tree/master/pkg/prometheus/selector#time-series-selector).
 
 This example configuration groups all time series with metric names equal to `example_device_cur_state`
 into multiple charts by `type` label. Number of charts is equal to number of `type` label values.
@@ -129,12 +132,11 @@ jobs:
         by_label: type 
 ```
 
-
 #### Summary
 
--   A chart per time series (label set).
--   Dimensions are quantiles.
--   Values as is.  
+- A chart per time series (label set).
+- Dimensions are quantiles.
+- Values as is.
 
 For instance, the following time series produce 2 charts.
 
@@ -154,10 +156,10 @@ example_duration_seconds{interval="30s",quantile="1"} 0.005386229
 
 #### Histogram
 
--   A chart per time series (label set).
--   Dimensions are `le` buckets.
--   Values are not as is because histogram buckets are cumulative (`le="0.3"` contains `le="1.2"`).
-    We calculate exact values for all buckets.  
+- A chart per time series (label set).
+- Dimensions are `le` buckets.
+- Values are not as is because histogram buckets are cumulative (`le="0.3"` contains `le="1.2"`). We calculate exact
+  values for all buckets.
 
 For instance, the following time series produce 2 charts.
 
@@ -181,9 +183,8 @@ example_seconds_bucket{interval="30s",le="+Inf"} 0
 
 ---
 
-For all available options, see the Prometheus collector's [configuration
-file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
-
+For all available options, see the Prometheus
+collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
 
 ## Troubleshooting
 

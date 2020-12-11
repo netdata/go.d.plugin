@@ -1,16 +1,16 @@
 # tlscfg
 
 This package contains client TLS configuration and function to create `tls.Config` from it.
- 
-Every module that needs `tls.Config` for data collection should use it.
-It allows to have same set of user configurable options across all modules.
+
+Every module that needs `tls.Config` for data collection should use it. It allows to have same set of user configurable
+options across all modules.
 
 ## Configuration options
 
--   `tls_skip_verify`: controls whether a client verifies the server's certificate chain and host name.
--   `tls_ca`: certificate authority to use when verifying server certificates.
--   `tls_cert`: tls certificate to use.
--   `tls_key`: tls key to use.
+- `tls_skip_verify`: controls whether a client verifies the server's certificate chain and host name.
+- `tls_ca`: certificate authority to use when verifying server certificates.
+- `tls_cert`: tls certificate to use.
+- `tls_key`: tls key to use.
 
 ## Usage
 

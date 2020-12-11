@@ -6,7 +6,8 @@ sidebar_label: "kube-proxy"
 
 # kube-proxy monitoring with Netdata
 
-[`Kube-proxy`](https://kubernetes.io/docs/concepts/overview/components/#kube-proxy) is a network proxy that runs on each each node in your cluster, implementing part of the Kubernetes Service.
+[`Kube-proxy`](https://kubernetes.io/docs/concepts/overview/components/#kube-proxy) is a network proxy that runs on each
+node in your cluster, implementing part of the Kubernetes Service.
 
 This module will monitor one or more `kube-proxy` instances, depending on your configuration.
 
@@ -14,17 +15,17 @@ This module will monitor one or more `kube-proxy` instances, depending on your c
 
 It produces the following charts:
 
--   Sync Proxy Rules in `events/s`
--   Sync Proxy Rules Latency in `observes/s`
--   Sync Proxy Rules Latency Percentage in `%`
--   REST Client HTTP Requests By Status Code in `requests/s`
--   REST Client HTTP Requests By Method in `requests/s`
--   HTTP Requests Duration in `microseconds`
+- Sync Proxy Rules in `events/s`
+- Sync Proxy Rules Latency in `observes/s`
+- Sync Proxy Rules Latency Percentage in `%`
+- REST Client HTTP Requests By Status Code in `requests/s`
+- REST Client HTTP Requests By Method in `requests/s`
+- HTTP Requests Duration in `microseconds`
 
 ## Configuration
 
-Edit the `go.d/k8s_kubeproxy.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/k8s_kubeproxy.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -36,13 +37,14 @@ Needs only `url` to `kube-proxy` metric-address. Here is an example for several 
 ```yaml
 jobs:
   - name: local
-    url : http://127.0.0.1:10249/metrics
-      
+    url: http://127.0.0.1:10249/metrics
+
   - name: remote
-    url : http://203.0.113.1:10249/metrics
+    url: http://203.0.113.1:10249/metrics
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/k8s_kubeproxy.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/k8s_kubeproxy.conf).
 
 ## Troubleshooting
 

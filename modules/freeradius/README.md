@@ -12,37 +12,36 @@ This module will monitor one or more `FreeRADIUS` servers, depending on your con
 
 ## Requirements
 
--   `FreeRADIUS` with enabled status feature.
+- `FreeRADIUS` with enabled status feature.
 
-The configuration for the status server is automatically created in the sites-available directory.
-By default, server is enabled and can be queried from every client.
+The configuration for the status server is automatically created in the sites-available directory. By default, server is
+enabled and can be queried from every client.
 
 To enable status feature do the following:
 
--   `cd sites-enabled`
--   `ln -s ../sites-available/status status`
--   restart FreeRADIUS server
-
+- `cd sites-enabled`
+- `ln -s ../sites-available/status status`
+- restart FreeRADIUS server
 
 ## Charts
 
 It produces following charts:
 
--   Authentication in `pps`
--   Authentication Responses in `pps`
--   Bad Authentication Requests in `pps`
--   Proxy Authentication in `pps`
--   Proxy Authentication Responses in `pps`
--   Proxy Bad Authentication Requests in `pps`
--   Accounting in `pps`
--   Bad Accounting Requests in `pps` 
--   Proxy Accounting in `pps`
--   Proxy Bad Accounting Requests in `pps` 
+- Authentication in `pps`
+- Authentication Responses in `pps`
+- Bad Authentication Requests in `pps`
+- Proxy Authentication in `pps`
+- Proxy Authentication Responses in `pps`
+- Proxy Bad Authentication Requests in `pps`
+- Accounting in `pps`
+- Bad Accounting Requests in `pps`
+- Proxy Accounting in `pps`
+- Proxy Bad Accounting Requests in `pps`
 
 ## Configuration
- 
-Edit the `go.d/freeradius.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+
+Edit the `go.d/freeradius.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -61,7 +60,8 @@ jobs:
     secret: secret 
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/freeradius.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/freeradius.conf).
 
 ## Troubleshooting
 

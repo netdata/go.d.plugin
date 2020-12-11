@@ -12,24 +12,24 @@ This module will monitor one or more `Lighttpd2` servers, depending on your conf
 
 ## Requirements
 
--   `lighttpd2` with enabled [`mod_status`](https://doc.lighttpd.net/lighttpd2/mod_status.html)
+- `lighttpd2` with enabled [`mod_status`](https://doc.lighttpd.net/lighttpd2/mod_status.html)
 
 ## Charts
 
 It produces the following charts:
 
--   Requests in `requests/s`
--   Status Codes in `requests/s`
--   Traffic in `kilobits/s`
--   Connections in `connections`
--   Connection States in  `connection`
--   Memory Usage in `KiB`
--   Uptime in `seconds`
+- Requests in `requests/s`
+- Status Codes in `requests/s`
+- Traffic in `kilobits/s`
+- Connections in `connections`
+- Connection States in  `connection`
+- Memory Usage in `KiB`
+- Uptime in `seconds`
 
 ## Configuration
 
-Edit the `go.d/lighttpd2.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d/lighttpd2.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -41,13 +41,14 @@ Needs only `url` to server's `server-status?format=plain`. Here is an example fo
 ```yaml
 jobs:
   - name: local
-    url : http://127.0.0.1/server-status?format=plain
-      
+    url: http://127.0.0.1/server-status?format=plain
+
   - name: remote
-    url : http://203.0.113.10/server-status?format=plain
+    url: http://203.0.113.10/server-status?format=plain
 ```
 
-For all available options please see module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/lighttpd2.conf).
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/lighttpd2.conf).
 
 ## Troubleshooting
 

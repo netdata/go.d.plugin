@@ -20,28 +20,28 @@ It collects information and statistics about the server executing the following 
 
 ## Charts
 
--   Connections in `connections/s`
--   Clients in `clients`
--   Memory usage in `bytes`
--   Connected replicas in `replicas`
--   Processed commands in `queries/s`
--   Calls per command in `calls/s`
--   Strings type keys per database in `keys`
--   Strings type expires keys per database in `keys`
--   Strings type invalid keys per database in `keys`
--   Hashes type keys per database in `keys`
--   Hashes type expires keys per database in `keys`
--   Hashes type invalid keys per database in `keys`
--   Lists type keys per database in `keys`
--   Lists type expires keys per database in `keys`
--   Lists type invalid keys per database in `keys`
--   Zsets type keys per database in `keys`
--   Zsets type expires keys per database in `keys`
--   Zsets type invalid keys per database in `keys`
--   Sets type keys per database in `keys`
--   Sets type expires keys per database in `keys`
--   Sets type invalid keys per database in `keys`
--   Uptime in `seconds`
+- Connections in `connections/s`
+- Clients in `clients`
+- Memory usage in `bytes`
+- Connected replicas in `replicas`
+- Processed commands in `queries/s`
+- Calls per command in `calls/s`
+- Strings type keys per database in `keys`
+- Strings type expires keys per database in `keys`
+- Strings type invalid keys per database in `keys`
+- Hashes type keys per database in `keys`
+- Hashes type expires keys per database in `keys`
+- Hashes type invalid keys per database in `keys`
+- Lists type keys per database in `keys`
+- Lists type expires keys per database in `keys`
+- Lists type invalid keys per database in `keys`
+- Zsets type keys per database in `keys`
+- Zsets type expires keys per database in `keys`
+- Zsets type invalid keys per database in `keys`
+- Sets type keys per database in `keys`
+- Sets type expires keys per database in `keys`
+- Sets type invalid keys per database in `keys`
+- Uptime in `seconds`
 
 ## Configuration
 
