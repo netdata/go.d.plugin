@@ -1,3 +1,9 @@
+<!--
+title: How to write a Netdata collector in Go
+description: "This guide will walk you through the technical implementation of writing a new Netdata collector in Golang, with tips on interfaces, structure, configuration files, and more."
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/docs/how-to-write-a-module.md
+-->
+
 # How to write a Netdata collector in Go
 
 Let's assume you want to write a collector named `example`.
