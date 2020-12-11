@@ -164,8 +164,7 @@ func TestNginxVTS_Collect(t *testing.T) {
 			vts, cleanup := test.prepare(t)
 			defer cleanup()
 
-			var collected map[string]int64
-			collected = vts.Collect()
+			collected := vts.Collect()
 
 			assert.Equal(t, test.wantCollected, collected)
 			if test.checkCharts {
