@@ -1,6 +1,7 @@
 package couchbase
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -28,7 +29,7 @@ func New() *Couchbase {
 				},
 			},
 		},
-		client: newCouchbaseClient(),
+		collectedBuckets: make(map[string]bool),
 	}
 }
 
@@ -36,31 +37,36 @@ type (
 	Config struct {
 		web.HTTP `yaml:",inline"`
 	}
-
 	Couchbase struct {
 		module.Base
 		Config `yaml:",inline"`
 
-		client      cbClient
-		conn        cbConnection
-		charts      *module.Charts
-		bucketNames []string
+		httpClient       *http.Client
+		charts           *module.Charts
+		collectedBuckets map[string]bool
 	}
 )
 
 func (cb *Couchbase) Cleanup() {
-	if cb.conn != nil {
-		cb.conn = nil
+	if cb.httpClient == nil {
+		return
 	}
+	cb.httpClient.CloseIdleConnections()
 }
 
 func (cb *Couchbase) Init() bool {
-	bucketNames, err := cb.collectBucketNames()
+	err := cb.validateConfig()
 	if err != nil {
-		cb.Errorf("init bucketNames: %v", err)
+		cb.Errorf("check configuration: %v", err)
 		return false
 	}
-	cb.bucketNames = bucketNames
+
+	httpClient, err := cb.initHTTPClient()
+	if err != nil {
+		cb.Errorf("init HTTP client: %v", err)
+		return false
+	}
+	cb.httpClient = httpClient
 
 	charts, err := cb.initCharts()
 	if err != nil {
@@ -73,6 +79,10 @@ func (cb *Couchbase) Init() bool {
 }
 
 func (cb *Couchbase) Check() bool {
+	if err := cb.pingCouchbase(); err != nil {
+		cb.Error(err)
+		return false
+	}
 	return len(cb.Collect()) > 0
 }
 

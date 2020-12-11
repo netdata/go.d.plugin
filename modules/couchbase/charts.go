@@ -7,7 +7,6 @@ import (
 type (
 	Charts = module.Charts
 	Chart  = module.Chart
-	Dims   = module.Dims
 	Dim    = module.Dim
 )
 
@@ -19,7 +18,7 @@ var dbPercentCharts = Chart{
 	Ctx:   "couchbase.couchbase_quota_percent_used_stats",
 }
 
-var opPerSecCharts = Chart{
+var opsPerSecCharts = Chart{
 	ID:    "couchbase_ops_per_sec_stats",
 	Title: "Operations Per Second",
 	Units: "num",

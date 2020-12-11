@@ -10,9 +10,6 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/cloudflare/cfssl v1.4.1
 	github.com/coreos/go-systemd/v22 v22.1.1-0.20200917134135-408310d1ce37
-	github.com/couchbase/go-couchbase v0.0.0-20201109140405-22417a46565f
-	github.com/couchbase/gomemcached v0.1.0 // indirect
-	github.com/couchbase/goutils v0.0.0-20201030094643-5e82bb967e67 // indirect
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gofrs/flock v0.8.0
