@@ -1,10 +1,10 @@
 <!--
-title: "kube-proxy monitoring with Netdata"
+title: "Kube-proxy monitoring with Netdata"
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/k8s_kubeproxy/README.md
-sidebar_label: "kube-proxy"
+sidebar_label: "Kube-proxy"
 -->
 
-# kube-proxy monitoring with Netdata
+# Kube-proxy monitoring with Netdata
 
 [`Kube-proxy`](https://kubernetes.io/docs/concepts/overview/components/#kube-proxy) is a network proxy that runs on each
 node in your cluster, implementing part of the Kubernetes Service.
