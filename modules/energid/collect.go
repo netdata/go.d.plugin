@@ -112,7 +112,6 @@ func parseTXOutSetInfo(result []byte) (*txOutSetInfo, error) {
 }
 
 func parseMemoryInfo(result []byte) (*memoryInfo, error) {
-	fmt.Println(111, string(result))
 	var m memoryInfo
 	if err := json.Unmarshal(result, &m); err != nil {
 		return nil, err
