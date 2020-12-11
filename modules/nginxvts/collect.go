@@ -54,7 +54,7 @@ func (vts *NginxVTS) scapeTotalMetrics() (*vtsMetrics, error) {
 
 	if err := vts.doOKDecode(req, &total); err != nil {
 		vts.Warning(err)
-		return nil, nil
+		return nil, err
 	}
 	return &total, nil
 }
