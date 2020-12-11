@@ -8,20 +8,18 @@ sidebar_label: "Energi Core Wallet"
 
 This module monitors one or more `Energi Core Wallet` instances, depending on your configuration.
 
-
 ## Requirements
 
 Works only with [Generation 2 wallets](https://docs.energi.software/en/downloads/gen2-core-wallet).
 
-
 ## Charts
 
-- Blockchain index in `count`
-- Blockchain difficulty in `difficulty`
-- Memory pool in `bytes`
-- Network in `connections`
-- Network time offset in `seconds`
-- Transactions in `transactions`
+-   Blockchain index in `count`
+-   Blockchain difficulty in `difficulty`
+-   Memory pool in `bytes`
+-   Network in `connections`
+-   Network time offset in `seconds`
+-   Transactions in `transactions`
 
 ## Configuration
 
