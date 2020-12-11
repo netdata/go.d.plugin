@@ -11,7 +11,7 @@ import (
 func init() {
 	module.Register("energid", module.Creator{
 		Defaults: module.Defaults{
-			UpdateEvery: 1,
+			UpdateEvery: 5,
 		},
 		Create: func() module.Module { return New() },
 	})
@@ -34,7 +34,10 @@ func New() *Energid {
 		Config: Config{
 			HTTP: web.HTTP{
 				Request: web.Request{
-					URL: "http://127.0.0.1:9796",
+					//URL: "http://127.0.0.1:9796",
+					URL:      "http://192.168.50.130:9796",
+					Username: "netdata",
+					Password: "netdata",
 				},
 				Client: web.Client{
 					Timeout: web.Duration{Duration: time.Second},
@@ -93,6 +96,5 @@ func (e *Energid) Cleanup() {
 	if e.httpClient == nil {
 		return
 	}
-
 	e.httpClient.CloseIdleConnections()
 }

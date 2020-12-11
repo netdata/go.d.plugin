@@ -3,24 +3,32 @@ package energid
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	v12JSONAllMethods, _ = ioutil.ReadFile("testdata/v12/allmethods.json")
+	v241GetBlockchainInfo, _ = ioutil.ReadFile("testdata/v2.4.1/getblockchaininfo.json")
+	v241GetMemPoolInfo, _    = ioutil.ReadFile("testdata/v2.4.1/getmempoolinfo.json")
+	v241GetNetworkInfo, _    = ioutil.ReadFile("testdata/v2.4.1/getnetworkinfo.json")
+	v241GetTXOutSetInfo, _   = ioutil.ReadFile("testdata/v2.4.1/gettxoutsetinfo.json")
+	v241GetMemoryInfo, _     = ioutil.ReadFile("testdata/v2.4.1/getmemoryinfo.json")
 )
 
-func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
+func Test_Testdata(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"v12JSONblockchaininfo": v12JSONAllMethods,
+		"v241GetBlockchainInfo": v241GetBlockchainInfo,
+		"v241GetMemPoolInfo":    v241GetMemPoolInfo,
+		"v241GetNetworkInfo":    v241GetNetworkInfo,
+		"v241GetTXOutSetInfo":   v241GetTXOutSetInfo,
+		"v241GetMemoryInfo":     v241GetMemoryInfo,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -63,22 +71,22 @@ func Test_Init(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			ns := New()
-			ns.Config = test.config
+			energid := New()
+			energid.Config = test.config
 
 			if test.wantFail {
-				assert.False(t, ns.Init())
+				assert.False(t, energid.Init())
 			} else {
-				assert.True(t, ns.Init())
+				assert.True(t, energid.Init())
 			}
 		})
 	}
 }
 
 func Test_Charts(t *testing.T) {
-	dist := New()
-	require.True(t, dist.Init())
-	assert.NotNil(t, dist.Charts())
+	energid := New()
+	require.True(t, energid.Init())
+	assert.NotNil(t, energid.Charts())
 }
 
 func Test_Cleanup(t *testing.T) {
@@ -87,26 +95,37 @@ func Test_Cleanup(t *testing.T) {
 
 func Test_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func() (e *Energid, cleanup func())
+		prepare  func() (energid *Energid, cleanup func())
 		wantFail bool
 	}{
-		"valid":              {prepare: prepareEnergidValidData, wantFail: false},
-		"invalid data":       {prepare: prepareEnergidInvalidData, wantFail: true},
-		"404":                {prepare: prepareEnergid404, wantFail: true},
-		"Connection refused": {prepare: prepareEnergidConnectionRefused, wantFail: true},
+		"success on valid v2.4.1 response": {
+			prepare: prepareEnergidV241,
+		},
+		"fails on 404 response": {
+			wantFail: true,
+			prepare:  prepareEnergid404,
+		},
+		"fails on connection refused": {
+			wantFail: true,
+			prepare:  prepareEnergidConnectionRefused,
+		},
+		"fails on response with invalid data": {
+			wantFail: true,
+			prepare:  prepareEnergidInvalidData,
+		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			e, cleanup := test.prepare()
+			energid, cleanup := test.prepare()
 			defer cleanup()
 
-			require.True(t, e.Init())
+			require.True(t, energid.Init())
 
 			if test.wantFail {
-				assert.False(t, e.Check())
+				assert.False(t, energid.Check())
 			} else {
-				assert.True(t, e.Check())
+				assert.True(t, energid.Check())
 			}
 		})
 	}
@@ -114,29 +133,26 @@ func Test_Check(t *testing.T) {
 
 func Test_Collect(t *testing.T) {
 	tests := map[string]struct {
-		prepare       func() (dist *Energid, cleanup func())
+		prepare       func() (energid *Energid, cleanup func())
 		wantCollected map[string]int64
 	}{
-		"success": {
-			prepare: prepareEnergidValidData,
+		"success on valid v2.4.1 response": {
+			prepare: prepareEnergidV241,
 			wantCollected: map[string]int64{
-				// Block Chaing statistic
-				"blockchain_blocks":     0,
-				"blockchain_difficulty": 0,
-				"blockchain_headers":    0,
-
-				// Memory Pool
-				"mempool_max":     300000000,
-				"mempool_current": 0,
-				"mempool_txsize":  0,
-
-				// Network
-				"network_connections": 0,
-				"network_timeoffset":  0,
-
-				// TX
-				"utxo_xfers": 0,
-				"utxo_count": 0,
+				"blockchain_blocks":        1,
+				"blockchain_difficulty":    0,
+				"blockchain_headers":       1,
+				"mempool_current":          1,
+				"mempool_max":              300000000,
+				"mempool_txsize":           1,
+				"network_connections":      1,
+				"network_timeoffset":       1,
+				"secmem_free":              65248,
+				"secmem_locked":            65536,
+				"secmem_total":             65536,
+				"secmem_used":              288,
+				"utxo_output_transactions": 1,
+				"utxo_transactions":        1,
 			},
 		},
 		"fails on 404 response": {
@@ -145,41 +161,58 @@ func Test_Collect(t *testing.T) {
 		"fails on connection refused": {
 			prepare: prepareEnergidConnectionRefused,
 		},
-		"fails with invalid data": {
+		"fails on response with invalid data": {
 			prepare: prepareEnergidInvalidData,
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			e, cleanup := test.prepare()
+			energid, cleanup := test.prepare()
 			defer cleanup()
-			require.True(t, e.Init())
+			require.True(t, energid.Init())
 
-			collected := e.Collect()
+			collected := energid.Collect()
+
+			//l := make([]string, 0)
+			//for k := range collected {
+			//	l = append(l, k)
+			//}
+			//sort.Strings(l)
+			//for _, value := range l {
+			//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, collected[value]))
+			//}
 
 			assert.Equal(t, test.wantCollected, collected)
 			if len(test.wantCollected) > 0 {
-				ensureCollectedHasAllChartsDimsVarsIDs(t, e, collected)
+				ensureCollectedHasAllChartsDimsVarsIDs(t, energid, collected)
 			}
 		})
 	}
 }
 
-func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, e *Energid, collected map[string]int64) {
-	for _, chart := range *e.Charts() {
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, energid *Energid, ms map[string]int64) {
+	for _, chart := range *energid.Charts() {
 		if chart.Obsolete {
 			continue
 		}
 		for _, dim := range chart.Dims {
-			_, ok := collected[dim.ID]
+			_, ok := ms[dim.ID]
 			assert.Truef(t, ok, "chart '%s' dim '%s': no dim in collected", dim.ID, chart.ID)
 		}
 		for _, v := range chart.Vars {
-			_, ok := collected[v.ID]
+			_, ok := ms[v.ID]
 			assert.Truef(t, ok, "chart '%s' dim '%s': no dim in collected", v.ID, chart.ID)
 		}
 	}
+}
+
+func prepareEnergidV241() (*Energid, func()) {
+	srv := prepareEnergidEndPoint()
+	energid := New()
+	energid.URL = srv.URL
+
+	return energid, srv.Close
 }
 
 func prepareEnergidInvalidData() (*Energid, func()) {
@@ -187,10 +220,10 @@ func prepareEnergidInvalidData() (*Energid, func()) {
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte("Hello world!"))
 		}))
-	e := New()
-	e.URL = srv.URL
+	energid := New()
+	energid.URL = srv.URL
 
-	return e, srv.Close
+	return energid, srv.Close
 }
 
 func prepareEnergid404() (*Energid, func()) {
@@ -198,46 +231,61 @@ func prepareEnergid404() (*Energid, func()) {
 		func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		}))
-	cdb := New()
-	cdb.URL = srv.URL
+	energid := New()
+	energid.URL = srv.URL
 
-	return cdb, srv.Close
+	return energid, srv.Close
 }
 
 func prepareEnergidConnectionRefused() (*Energid, func()) {
-	e := New()
-	e.URL = "http://127.0.0.1:38001"
+	energid := New()
+	energid.URL = "http://127.0.0.1:38001"
 
-	return e, func() {}
-}
-
-func prepareEnergidValidData() (*Energid, func()) {
-	srv := prepareEnergidEndPoint()
-	e := New()
-	e.URL = srv.URL
-
-	return e, srv.Close
+	return energid, func() {}
 }
 
 func prepareEnergidEndPoint() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			body, _ := ioutil.ReadAll(r.Body)
-
-			if body != nil {
-				var data energyRequests
-				err := json.Unmarshal(body, &data)
-				if err != nil {
-					log.Println(err)
-				} else {
-					if len(data) == 4 {
-						_, _ = w.Write(v12JSONAllMethods)
-					} else {
-						w.WriteHeader(http.StatusNotFound)
-					}
-				}
-			} else {
-				w.WriteHeader(http.StatusNotFound)
+			if r.Method != http.MethodPost {
+				w.WriteHeader(http.StatusMethodNotAllowed)
+				return
 			}
+
+			body, _ := ioutil.ReadAll(r.Body)
+			var requests rpcRequests
+			if err := json.Unmarshal(body, &requests); err != nil || len(requests) == 0 {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			var responses rpcResponses
+			for _, req := range requests {
+				resp := rpcResponse{JSONRPC: jsonRPCVersion, ID: req.ID}
+				switch req.Method {
+				case methodGetBlockchainInfo:
+					resp.Result = prepareResult(v241GetBlockchainInfo)
+				case methodGetMemPoolInfo:
+					resp.Result = prepareResult(v241GetMemPoolInfo)
+				case methodGetNetworkInfo:
+					resp.Result = prepareResult(v241GetNetworkInfo)
+				case methodGetTXOutSetInfo:
+					resp.Result = prepareResult(v241GetTXOutSetInfo)
+				case methodGetMemoryInfo:
+					resp.Result = prepareResult(v241GetMemoryInfo)
+				default:
+					resp.Error = &rpcError{Code: -32601, Message: "Method not found"}
+				}
+				responses = append(responses, resp)
+			}
+
+			bs, _ := json.Marshal(responses)
+			_, _ = w.Write(bs)
 		}))
+}
+
+func prepareResult(resp []byte) json.RawMessage {
+	var r rpcResponse
+	_ = json.Unmarshal(resp, &r)
+	return r.Result
 }
