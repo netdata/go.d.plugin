@@ -4,14 +4,14 @@ Let's assume you want to write a collector named `example`.
 
 Steps are:
 
-- add the source code to the [`modules/example/`](https://github.com/netdata/go.d.plugin/tree/master/modules).
+- Add the source code to [`modules/example/`](https://github.com/netdata/go.d.plugin/tree/master/modules).
   - [module interface](#module-interface).
   - [suggested module layout](#module-layout).
   - [helper packages](#helper-packages).
-- add the configuration to the [`config/go.d/exmaple.conf`](https://github.com/netdata/go.d.plugin/tree/master/config/go.d).
-- add the module to the [`config/go.d.conf`](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
-- import the module in [`modules/init.go`](https://github.com/netdata/go.d.plugin/blob/master/modules/init.go).
-- update the [`available modules list`](https://github.com/netdata/go.d.plugin#available-modules).
+- Add the configuration to [`config/go.d/example.conf`](https://github.com/netdata/go.d.plugin/tree/master/config/go.d).
+- Add the module to [`config/go.d.conf`](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
+- Import the module in [`modules/init.go`](https://github.com/netdata/go.d.plugin/blob/master/modules/init.go).
+- Update the [`available modules list`](https://github.com/netdata/go.d.plugin#available-modules).
  
 > :exclamation: If you prefer reading the source code, then check 
 > [the implementation](https://github.com/netdata/go.d.plugin/tree/master/modules/example) of the `example` module,
