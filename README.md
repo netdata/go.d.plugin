@@ -40,6 +40,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine)         | `Docker Engine`                 |
 | [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)                 | `Docker Hub`                    |
 | [elasticsearch](https://github.com/netdata/go.d.plugin/tree/master/modules/elasticsearch)         | `Elasticsearch`                 |
+| [energid](https://github.com/netdata/go.d.plugin/tree/master/modules/energid)                     | `Energi Core`                   |
 | [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example)                     | -                               |
 | [filecheck](https://github.com/netdata/go.d.plugin/tree/master/modules/filecheck)                 | `Files and Directories`         |
 | [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)                     | `Fluentd`                       |
