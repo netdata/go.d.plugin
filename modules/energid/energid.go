@@ -34,10 +34,7 @@ func New() *Energid {
 		Config: Config{
 			HTTP: web.HTTP{
 				Request: web.Request{
-					//URL: "http://127.0.0.1:9796",
-					URL:      "http://192.168.50.130:9796",
-					Username: "netdata",
-					Password: "netdata",
+					URL: "http://127.0.0.1:9796",
 				},
 				Client: web.Client{
 					Timeout: web.Duration{Duration: time.Second},

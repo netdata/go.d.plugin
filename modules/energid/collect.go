@@ -45,10 +45,6 @@ func (e *Energid) collect() (map[string]int64, error) {
 }
 
 func (e *Energid) collectInfoResponse(requests rpcRequests, responses rpcResponses) (*energidInfo, error) {
-	if want, got := len(requests), len(responses); want != got {
-		return nil, fmt.Errorf("")
-	}
-
 	var info energidInfo
 	for _, req := range requests {
 		resp := responses.getByID(req.ID)
