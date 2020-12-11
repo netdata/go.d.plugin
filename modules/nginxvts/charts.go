@@ -17,8 +17,8 @@ var nginxVtsMainCharts = Charts{
 		Fam:   "main",
 		Ctx:   "nginxvts.times",
 		Dims: Dims{
-			{ID: "loadmsec", Name: "load msec"},
-			{ID: "nowmsec", Name: "up msec"},
+			{ID: "loadmsec", Name: "load"},
+			{ID: "nowmsec", Name: "up"},
 		},
 	},
 	{
@@ -44,7 +44,7 @@ var nginxVtsSharedZonesChart = Charts{
 		Title: "Shared memory size",
 		Units: "bytes",
 		Fam:   "sharedzones",
-		Ctx:   "nginxvts.sharedzones.size",
+		Ctx:   "nginxvts.sharedzones_size",
 		Dims: Dims{
 			{ID: "sharedzones_maxsize", Name: "max size"},
 			{ID: "sharedzones_usedsize", Name: "used size"},
@@ -55,7 +55,7 @@ var nginxVtsSharedZonesChart = Charts{
 		Title: "Number of node using shared memory",
 		Units: "count",
 		Fam:   "sharedzones",
-		Ctx:   "nginxvts.sharedzones.node",
+		Ctx:   "nginxvts.sharedzones_node",
 		Dims: Dims{
 			{ID: "sharedzones_usednode", Name: "used node"},
 		},
@@ -68,7 +68,7 @@ var nginxVtsServerZonesCharts = Charts{
 		Title: "Number of client requests",
 		Units: "requests/s",
 		Fam:   "serverzones",
-		Ctx:   "nginxvts.serverzones.requests",
+		Ctx:   "nginxvts.serverzones_requests",
 		Dims: Dims{
 			{ID: "total_requestcounter", Name: "requests", Algo: module.Incremental},
 		},
@@ -78,7 +78,7 @@ var nginxVtsServerZonesCharts = Charts{
 		Title: "Total Response code",
 		Units: "count",
 		Fam:   "serverzones",
-		Ctx:   "nginxvts.serverzones.responses",
+		Ctx:   "nginxvts.serverzones_responses",
 		Dims: Dims{
 			{ID: "total_responses_1xx", Name: "1xx"},
 			{ID: "total_responses_2xx", Name: "2xx"},
@@ -92,7 +92,7 @@ var nginxVtsServerZonesCharts = Charts{
 		Title: "Total server traffic",
 		Units: "bytes/s",
 		Fam:   "serverzones",
-		Ctx:   "nginxvts.serverzones.traffic",
+		Ctx:   "nginxvts.serverzones_traffic",
 		Dims: Dims{
 			{ID: "total_inbytes", Name: "inbytes", Algo: module.Incremental},
 			{ID: "total_outbytes", Name: "outbytes", Algo: module.Incremental},
@@ -103,7 +103,7 @@ var nginxVtsServerZonesCharts = Charts{
 		Title: "Total server cache",
 		Units: "count",
 		Fam:   "serverzones",
-		Ctx:   "nginxvts.serverzones.cache",
+		Ctx:   "nginxvts.serverzones_cache",
 		Dims: Dims{
 			{ID: "total_cache_miss", Name: "miss"},
 			{ID: "total_cache_bypass", Name: "bypass"},
