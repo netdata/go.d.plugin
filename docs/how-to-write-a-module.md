@@ -1,4 +1,4 @@
-# How to write a module
+# How to write a Netdata collector in Go
 
 Let's assume you want to write `example` module.
 
