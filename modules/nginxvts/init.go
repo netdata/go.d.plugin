@@ -30,7 +30,7 @@ func (vts *NginxVTS) initCharts() (*Charts, error) {
 		return nil, err
 	}
 
-	if err := charts.Add(*&nginxVtsSharedZonesChart...); err != nil {
+	if err := charts.Add(*nginxVtsSharedZonesChart.Copy()...); err != nil {
 		return nil, err
 	}
 
