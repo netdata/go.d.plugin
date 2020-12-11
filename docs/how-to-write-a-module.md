@@ -146,7 +146,7 @@ func (Example) Cleanup() {}
 
 The general idea - do not put everything in a file.
 
-We recommend using a file per a logical area. This approach makes it easier to maintain the module.
+We recommend using one file per logical area. This approach makes it easier to maintain the module.
 
 Suggested minimal layout:
 
