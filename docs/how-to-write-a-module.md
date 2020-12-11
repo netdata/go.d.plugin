@@ -144,7 +144,7 @@ func (Example) Cleanup() {}
 
 ## Module Layout
 
-The general idea - do not put everything in a file.
+The general idea is to not put everything in a single file.
 
 We recommend using one file per logical area. This approach makes it easier to maintain the module.
 
