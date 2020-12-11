@@ -174,15 +174,6 @@ func Test_Collect(t *testing.T) {
 
 			collected := energid.Collect()
 
-			//l := make([]string, 0)
-			//for k := range collected {
-			//	l = append(l, k)
-			//}
-			//sort.Strings(l)
-			//for _, value := range l {
-			//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, collected[value]))
-			//}
-
 			assert.Equal(t, test.wantCollected, collected)
 			if len(test.wantCollected) > 0 {
 				ensureCollectedHasAllChartsDimsVarsIDs(t, energid, collected)
