@@ -65,7 +65,7 @@ cd /usr/libexec/netdata/plugins.d/
 sudo -u netdata -s
 ```
 
-You can now run the `go.d.plugin` orchestrator to debug the collector:
+You can now run the `go.d.plugin` to debug the collector:
 
 ```bash
 ./go.d.plugin -d -m example
