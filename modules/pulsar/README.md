@@ -149,6 +149,20 @@ Module `update_every` should be equal to `statsUpdateFrequencyInSecs`.
 
 ## Troubleshooting
 
-Check the module debug output. Run the following command as `netdata` user:
+To troubleshoot issues with the `pulsar` collector, run the `go.d.plugin` with the debug option enabled. The output
+should give you clues as to why the collector isn't working.
 
-> ./go.d.plugin -d -m pulsar
+First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
+to the `netdata` user.
+
+```bash
+cd /usr/libexec/netdata/plugins.d/
+sudo -u netdata -s
+```
+
+You can now run the `go.d.plugin` to debug the collector:
+
+```bash
+./go.d.plugin -d -m pulsar
+```

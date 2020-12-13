@@ -88,12 +88,21 @@ module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/c
 
 ## Troubleshooting
 
-Ensure that the `statistics-channels` feature is configured correctly. Run following command:
+To troubleshoot issues with the `bind` collector, run the `go.d.plugin` with the debug option enabled. The output should
+give you clues as to why the collector isn't working.
 
-> curl "http://localhost:8653/json/v1/server"
+First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
+to the `netdata` user.
 
-It should print out a bunch of info about the statistics of the server.
+```bash
+cd /usr/libexec/netdata/plugins.d/
+sudo -u netdata -s
+```
 
-Check the module debug output. Run the following command as `netdata` user:
+You can now run the `go.d.plugin` to debug the collector:
 
-> ./go.d.plugin -d -m bind
+```bash
+./go.d.plugin -d -m bind
+```
+

@@ -14,12 +14,12 @@ Works only with [Generation 2 wallets](https://docs.energi.software/en/downloads
 
 ## Charts
 
--   Blockchain index in `count`
--   Blockchain difficulty in `difficulty`
--   Memory pool in `bytes`
--   Network in `connections`
--   Network time offset in `seconds`
--   Transactions in `transactions`
+- Blockchain index in `count`
+- Blockchain difficulty in `difficulty`
+- Memory pool in `bytes`
+- Network in `connections`
+- Network time offset in `seconds`
+- Transactions in `transactions`
 
 ## Configuration
 
@@ -63,7 +63,7 @@ cd /usr/libexec/netdata/plugins.d/
 sudo -u netdata -s
 ```
 
-You can now run the `go.d.plugin` orchestrator to debug the collector:
+You can now run the `go.d.plugin` to debug the collector:
 
 ```bash
 ./go.d.plugin -d -m energid

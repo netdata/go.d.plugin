@@ -65,7 +65,7 @@ collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/mas
 
 ## Troubleshooting
 
-To troubleshoot issues with the ISC dhcpd collector, run the `go.d.plugin` with the debug option enabled. The output
+To troubleshoot issues with the `isc_dhcpd` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
 
 First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
@@ -77,7 +77,7 @@ cd /usr/libexec/netdata/plugins.d/
 sudo -u netdata -s
 ```
 
-You can now run the `go.d.plugin` orchestrator to debug the collector:
+You can now run the `go.d.plugin` to debug the collector:
 
 ```bash
 ./go.d.plugin -d -m isc_dhcpd
