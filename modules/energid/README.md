@@ -14,12 +14,12 @@ Works only with [Generation 2 wallets](https://docs.energi.software/en/downloads
 
 ## Charts
 
--   Blockchain index in `count`
--   Blockchain difficulty in `difficulty`
--   Memory pool in `bytes`
--   Network in `connections`
--   Network time offset in `seconds`
--   Transactions in `transactions`
+- Blockchain index in `count`
+- Blockchain difficulty in `difficulty`
+- Memory pool in `bytes`
+- Network in `connections`
+- Network time offset in `seconds`
+- Transactions in `transactions`
 
 ## Configuration
 
