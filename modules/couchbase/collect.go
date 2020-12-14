@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -33,9 +34,9 @@ func (cb *Couchbase) collect() (map[string]int64, error) {
 func (cb Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics) error {
 	for _, b := range ms.BucketsStats {
 
-		if !cb.collectedBuckets[b.Name] && ms.hasBucketsStats() {
+		if !cb.collectedBuckets[b.Name] {
 			cb.collectedBuckets[b.Name] = true
-			cb.addDimsToCharts(b.Name)
+			cb.addBucketToCharts(b.Name)
 		}
 
 		bs := b.BasicStats
@@ -52,73 +53,57 @@ func (cb Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics)
 	return nil
 }
 
-func (cb *Couchbase) addDimsToCharts(bucket string) error {
-	for _, chart := range *cb.Charts() {
-		switch chart.ID {
-		case "couchbase_quota_percent_used_stats":
-			dim := &Dim{
-				ID: indexDimID(bucket, "quota_used"),
-			}
-			if err := chart.AddDim(dim); err != nil {
-				return err
-			}
-		case "couchbase_ops_per_sec_stats":
-			dim := &Dim{
-				ID: indexDimID(bucket, "ops"),
-			}
-			if err := chart.AddDim(dim); err != nil {
-				return err
-			}
-		case "couchbase_disk_fetches_stats":
-			dim := &Dim{
-				ID: indexDimID(bucket, "fetches"),
-			}
-			if err := chart.AddDim(dim); err != nil {
-				return err
-			}
-		case "couchbase_item_count_stats":
-			dim := &Dim{
-				ID: indexDimID(bucket, "item_count"),
-			}
-			if err := chart.AddDim(dim); err != nil {
-				return err
-			}
-		case "couchbase_disk_used_stats":
-			dim := &Dim{
-				ID:  indexDimID(bucket, "disk"),
-				Div: 1024,
-			}
-			if err := chart.AddDim(dim); err != nil {
-				return err
-			}
-		case "couchbase_data_used_stats":
-			dim := &Dim{
-				ID:  indexDimID(bucket, "data"),
-				Div: 1024,
-			}
-			if err := chart.AddDim(dim); err != nil {
-				return err
-			}
-		case "couchbase_mem_used_stats":
-			dim := &Dim{
-				ID:  indexDimID(bucket, "mem"),
-				Div: 1024,
-			}
-			if err := chart.AddDim(dim); err != nil {
-				return err
-			}
-		case "couchbase_vb_active_num_non_resident_stats":
-			dim := &Dim{
-				ID: indexDimID(bucket, "num_non_resident"),
-			}
-			if err := chart.AddDim(dim); err != nil {
-				return err
-			}
-		default:
-			continue
-		}
-	}
+func (cb *Couchbase) addBucketToCharts(bucket string) error {
+
+	cb.addDimToChart(dbPercentCharts.ID, &module.Dim{
+		ID: indexDimID(bucket, "quota_used"),
+	})
+
+	cb.addDimToChart(opsPerSecCharts.ID, &module.Dim{
+		ID: indexDimID(bucket, "ops"),
+	})
+
+	cb.addDimToChart(diskFetchesCharts.ID, &module.Dim{
+		ID: indexDimID(bucket, "fetches"),
+	})
+
+	cb.addDimToChart(itemCountCharts.ID, &module.Dim{
+		ID: indexDimID(bucket, "item_count"),
+	})
+
+	cb.addDimToChart(diskUsedCharts.ID, &module.Dim{
+		ID:  indexDimID(bucket, "disk"),
+		Div: 1024,
+	})
+
+	cb.addDimToChart(dataUsedCharts.ID, &module.Dim{
+		ID:  indexDimID(bucket, "data"),
+		Div: 1024,
+	})
+
+	cb.addDimToChart(memUsedCharts.ID, &module.Dim{
+		ID:  indexDimID(bucket, "mem"),
+		Div: 1024,
+	})
+
+	cb.addDimToChart(vbActiveNumNonResidentCharts.ID, &module.Dim{
+		ID: indexDimID(bucket, "num_non_resident"),
+	})
+
 	return nil
+}
+
+func (cb *Couchbase) addDimToChart(chartID string, dim *module.Dim) {
+	chart := cb.Charts().Get(chartID)
+	if chart == nil {
+		cb.Warningf("error on adding '%s' dimension: can not find '%s' chart", dim.ID, chartID)
+		return
+	}
+	if err := chart.AddDim(dim); err != nil {
+		cb.Warning(err)
+		return
+	}
+	chart.MarkNotCreated()
 }
 
 func (cb Couchbase) scrapeCouchbase() *cbMetrics {
@@ -136,13 +121,9 @@ func (cb Couchbase) scrapeBucketsStats(ms *cbMetrics) {
 	req, _ := web.NewHTTPRequest(cb.Request)
 	req.URL.Path = urlPathBucketsStats
 
-	var stats []bucketsStats
-	if err := cb.doOKDecode(req, &stats); err != nil {
+	if err := cb.doOKDecode(req, &ms.BucketsStats); err != nil {
 		cb.Warning(err)
 		return
-	}
-	for _, bucket := range stats {
-		ms.BucketsStats = append(ms.BucketsStats, bucket)
 	}
 }
 

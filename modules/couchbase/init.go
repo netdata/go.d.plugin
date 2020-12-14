@@ -9,40 +9,16 @@ import (
 )
 
 func (cb *Couchbase) initCharts() (*Charts, error) {
-	charts := module.Charts{}
-	if err := charts.Add(dbPercentCharts.Copy()); err != nil {
-		return nil, err
+	var bucketCharts = module.Charts{
+		dbPercentCharts.Copy(),
+		opsPerSecCharts.Copy(),
+		diskFetchesCharts.Copy(),
+		diskUsedCharts.Copy(),
+		dataUsedCharts.Copy(),
+		memUsedCharts.Copy(),
+		vbActiveNumNonResidentCharts.Copy(),
 	}
-
-	if err := charts.Add(opsPerSecCharts.Copy()); err != nil {
-		return nil, err
-	}
-
-	if err := charts.Add(diskFetchesCharts.Copy()); err != nil {
-		return nil, err
-	}
-
-	if err := charts.Add(itemCountCharts.Copy()); err != nil {
-		return nil, err
-	}
-
-	if err := charts.Add(diskUsedCharts.Copy()); err != nil {
-		return nil, err
-	}
-
-	if err := charts.Add(dataUsedCharts.Copy()); err != nil {
-		return nil, err
-	}
-
-	if err := charts.Add(memUsedCharts.Copy()); err != nil {
-		return nil, err
-	}
-
-	if err := charts.Add(vbActiveNumNonResidentCharts.Copy()); err != nil {
-		return nil, err
-	}
-	return &charts, nil
-
+	return bucketCharts.Copy(), nil
 }
 
 func (cb Couchbase) initHTTPClient() (*http.Client, error) {

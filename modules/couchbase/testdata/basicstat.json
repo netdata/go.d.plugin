@@ -1,0 +1,54 @@
+[
+    {
+        "name": "beer-sample",
+        "basicStats": {
+            "quotaPercentUsed": 40.67760467529297,
+            "opsPerSec": 0,
+            "diskFetches": 0,
+            "itemCount": 107303,
+            "diskUsed": 90936691,
+            "dataUsed": 13660906,
+            "memUsed": 42653560,
+            "vbActiveNumNonResident": 0
+        }
+    },
+    {
+        "name": "gamesim-sample",
+        "basicStats": {
+            "quotaPercentUsed": 18.66085052490234,
+            "opsPerSec": 0,
+            "diskFetches": 0,
+            "itemCount": 586,
+            "diskUsed": 17091065,
+            "dataUsed": 18177,
+            "memUsed": 19567320,
+            "vbActiveNumNonResident": 0
+        }
+    },
+    {
+        "name": "netdata",
+        "basicStats": {
+            "quotaPercentUsed": 0.9453154122957619,
+            "opsPerSec": 0,
+            "diskFetches": 0,
+            "itemCount": 100000,
+            "diskUsed": 40896724,
+            "dataUsed": 0,
+            "memUsed": 36873944,
+            "vbActiveNumNonResident": 0
+        }
+    },
+    {
+        "name": "travel-sample",
+        "basicStats": {
+            "quotaPercentUsed": 42.22437286376953,
+            "opsPerSec": 0,
+            "diskFetches": 0,
+            "itemCount": 31591,
+            "diskUsed": 49636018,
+            "dataUsed": 0,
+            "memUsed": 44275464,
+            "vbActiveNumNonResident": 0
+        }
+    }
+]
