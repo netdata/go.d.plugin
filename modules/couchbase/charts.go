@@ -10,67 +10,67 @@ type (
 	Dim    = module.Dim
 )
 
-var dbPercentChart = Chart{
-	ID:    "quota_percent_used_stats",
+var bucketQuotaPercentUsedChart = Chart{
+	ID:    "bucket_quota_percent_used",
 	Title: "Quota Percent Used Per Bucket",
 	Units: "%",
-	Fam:   "quota percent used",
-	Ctx:   "couchbase.quota_percent_used_stats",
+	Fam:   "buckets basic stats",
+	Ctx:   "couchbase.bucket_quota_percent_used",
 }
 
-var opsPerSecChart = Chart{
-	ID:    "ops_per_sec_stats",
-	Title: "Operations Per Second",
-	Units: "num",
-	Fam:   "ops per sec",
-	Ctx:   "couchbase.ops_per_sec_stats",
+var bucketOpsPerSecChart = Chart{
+	ID:    "bucket_ops_per_sec",
+	Title: "Operations Per Second Per Bucket",
+	Units: "ops/s",
+	Fam:   "buckets basic stats",
+	Ctx:   "couchbase.bucket_ops_per_sec",
 }
 
-var diskFetchesChart = Chart{
-	ID:    "disk_fetches_stats",
-	Title: "Disk Fetches",
-	Units: "num/s",
-	Fam:   "disk fetches",
-	Ctx:   "couchbase.disk_fetches_stats",
+var bucketDiskFetchesChart = Chart{
+	ID:    "bucket_disk_fetches",
+	Title: "Disk Fetches Per Bucket",
+	Units: "fetches",
+	Fam:   "buckets basic stats",
+	Ctx:   "couchbase.bucket_disk_fetches",
 }
 
-var itemCountChart = Chart{
-	ID:    "item_count_stats",
-	Title: "Item Count",
+var bucketItemCountChart = Chart{
+	ID:    "bucket_item_count",
+	Title: "Item Count Per Bucket",
 	Units: "items",
-	Fam:   "item count",
-	Ctx:   "couchbase.item_count_stats",
+	Fam:   "buckets basic stats",
+	Ctx:   "couchbase.bucket_item_count",
 	Type:  module.Stacked,
 }
 
-var diskUsedChart = Chart{
-	ID:    "disk_used_stats",
+var bucketDiskUsedChart = Chart{
+	ID:    "bucket_disk_used_stats",
 	Title: "Disk Used Per Bucket",
-	Units: "KiB/s",
-	Fam:   "disk used",
-	Ctx:   "couchbase.disk_used_stats",
+	Units: "bytes",
+	Fam:   "buckets basic stats",
+	Ctx:   "couchbase.bucket_disk_used_stats",
 }
 
-var dataUsedChart = Chart{
-	ID:    "data_used_stats",
+var bucketDataUsedChart = Chart{
+	ID:    "bucket_data_used",
 	Title: "Data Used Per Bucket",
-	Units: "KiB/s",
-	Fam:   "data used",
-	Ctx:   "couchbase.data_used_stats",
+	Units: "bytes",
+	Fam:   "buckets basic stats",
+	Ctx:   "couchbase.bucket_data_used",
 }
 
-var memUsedChart = Chart{
-	ID:    "mem_used_stats",
+var bucketMemUsedChart = Chart{
+	ID:    "bucket_mem_used",
 	Title: "Memory Used Per Bucket",
-	Units: "KiB/s",
-	Fam:   "memory used",
-	Ctx:   "couchbase.mem_used_stats",
+	Units: "bytes",
+	Fam:   "uckets basic stats",
+	Ctx:   "couchbase.bucket_mem_used",
 }
 
-var vbActiveNumNonResidentChart = Chart{
-	ID:    "vb_active_num_non_resident_stats",
-	Title: "Number Of Non-Resident Items",
-	Units: "num/s",
-	Fam:   "vb active num non resident",
-	Ctx:   "couchbase.vb_active_num_non_resident_stats",
+var bucketVBActiveNumNonResidentChart = Chart{
+	ID:    "bucket_vb_active_num_non_resident_stats",
+	Title: "Number Of Non-Resident Items Per Bucket",
+	Units: "items",
+	Fam:   "buckets basic stats",
+	Ctx:   "couchbase.bucket_vb_active_num_non_resident",
 }

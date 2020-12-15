@@ -16,7 +16,6 @@ const (
 )
 
 func (cb *Couchbase) collect() (map[string]int64, error) {
-
 	ms, err := cb.scrapeCouchbase()
 	if err != nil {
 		return nil, fmt.Errorf("error on scraping couchbase: %v", err)
@@ -52,37 +51,44 @@ func (cb Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics)
 }
 
 func (cb *Couchbase) addBucketToCharts(bucket string) {
-
-	cb.addDimToChart(dbPercentChart.ID, &module.Dim{
-		ID: indexDimID(bucket, "quota_percent_used"),
+	cb.addDimToChart(bucketQuotaPercentUsedChart.ID, &module.Dim{
+		ID:   indexDimID(bucket, "quota_percent_used"),
+		Name: bucket,
 	})
 
-	cb.addDimToChart(opsPerSecChart.ID, &module.Dim{
-		ID: indexDimID(bucket, "ops_per_sec"),
+	cb.addDimToChart(bucketOpsPerSecChart.ID, &module.Dim{
+		ID:   indexDimID(bucket, "ops_per_sec"),
+		Name: bucket,
 	})
 
-	cb.addDimToChart(diskFetchesChart.ID, &module.Dim{
-		ID: indexDimID(bucket, "disk_fetches"),
+	cb.addDimToChart(bucketDiskFetchesChart.ID, &module.Dim{
+		ID:   indexDimID(bucket, "disk_fetches"),
+		Name: bucket,
 	})
 
-	cb.addDimToChart(itemCountChart.ID, &module.Dim{
-		ID: indexDimID(bucket, "item_count"),
+	cb.addDimToChart(bucketItemCountChart.ID, &module.Dim{
+		ID:   indexDimID(bucket, "item_count"),
+		Name: bucket,
 	})
 
-	cb.addDimToChart(diskUsedChart.ID, &module.Dim{
-		ID: indexDimID(bucket, "disk_used"),
+	cb.addDimToChart(bucketDiskUsedChart.ID, &module.Dim{
+		ID:   indexDimID(bucket, "disk_used"),
+		Name: bucket,
 	})
 
-	cb.addDimToChart(dataUsedChart.ID, &module.Dim{
-		ID: indexDimID(bucket, "data_used"),
+	cb.addDimToChart(bucketDataUsedChart.ID, &module.Dim{
+		ID:   indexDimID(bucket, "data_used"),
+		Name: bucket,
 	})
 
-	cb.addDimToChart(memUsedChart.ID, &module.Dim{
-		ID: indexDimID(bucket, "mem_used"),
+	cb.addDimToChart(bucketMemUsedChart.ID, &module.Dim{
+		ID:   indexDimID(bucket, "mem_used"),
+		Name: bucket,
 	})
 
-	cb.addDimToChart(vbActiveNumNonResidentChart.ID, &module.Dim{
-		ID: indexDimID(bucket, "vb_active_num_non_resident"),
+	cb.addDimToChart(bucketVBActiveNumNonResidentChart.ID, &module.Dim{
+		ID:   indexDimID(bucket, "vb_active_num_non_resident"),
+		Name: bucket,
 	})
 }
 

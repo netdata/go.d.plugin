@@ -10,16 +10,6 @@ Couchbase Server is an open source, distributed, JSON document database. It expo
 
 ## Configuration
 
-Edit the `go.d/couchbase.conf` configuration file using `edit-config` from the your agent's [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
-
-```bash
-cd /etc/netdata   # Replace this path with your Netdata config directory, if different
-sudo ./edit-config go.d/couchbase.conf
-```
-
-## Configuration
-
 Edit the `go.d/couchbase.conf` configuration file using `edit-config` from the
 Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 

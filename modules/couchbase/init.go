@@ -10,13 +10,14 @@ import (
 
 func (cb *Couchbase) initCharts() (*Charts, error) {
 	var bucketCharts = module.Charts{
-		dbPercentChart.Copy(),
-		opsPerSecChart.Copy(),
-		diskFetchesChart.Copy(),
-		diskUsedChart.Copy(),
-		dataUsedChart.Copy(),
-		memUsedChart.Copy(),
-		vbActiveNumNonResidentChart.Copy(),
+		bucketQuotaPercentUsedChart.Copy(),
+		bucketOpsPerSecChart.Copy(),
+		bucketDiskFetchesChart.Copy(),
+		bucketItemCountChart.Copy(),
+		bucketDiskUsedChart.Copy(),
+		bucketDataUsedChart.Copy(),
+		bucketMemUsedChart.Copy(),
+		bucketVBActiveNumNonResidentChart.Copy(),
 	}
 	return bucketCharts.Copy(), nil
 }

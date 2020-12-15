@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	basicstat, _ = ioutil.ReadFile("testdata/6.5.1/basicstat.json")
+	v651BucketsBasicStats, _ = ioutil.ReadFile("testdata/6.5.1/basicstat.json")
 )
 
 func TestNew(t *testing.T) {
@@ -22,7 +22,7 @@ func TestNew(t *testing.T) {
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"basicstat": basicstat,
+		"basicstat": v651BucketsBasicStats,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -164,7 +164,7 @@ func prepareCouchbase(t *testing.T, createCB func() *Couchbase) (cb *Couchbase, 
 	t.Helper()
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write(basicstat)
+			_, _ = w.Write(v651BucketsBasicStats)
 		}))
 
 	cb = createCB()
