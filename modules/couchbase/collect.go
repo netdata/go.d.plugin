@@ -6,7 +6,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"sync"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -18,20 +17,21 @@ const (
 
 func (cb *Couchbase) collect() (map[string]int64, error) {
 
-	ms := cb.scrapeCouchbase()
+	ms, err := cb.scrapeCouchbase()
+	if err != nil {
+		return nil, fmt.Errorf("error on scraping couchbase: %v", err)
+	}
+
 	if ms.empty() {
 		return nil, nil
 	}
 	collected := make(map[string]int64)
-	err := cb.collectBasicStats(collected, ms)
-	if err != nil {
-		return nil, fmt.Errorf("error on creating a connection: %v", err)
-	}
+	cb.collectBasicStats(collected, ms)
 
 	return collected, nil
 }
 
-func (cb Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics) error {
+func (cb Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics) {
 	for _, b := range ms.BucketsStats {
 
 		if !cb.collectedBuckets[b.Name] {
@@ -49,8 +49,6 @@ func (cb Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics)
 		collected[indexDimID(b.Name, "mem_used")] = int64(bs.MemUsed)
 		collected[indexDimID(b.Name, "vb_active_num_non_resident")] = int64(bs.VbActiveNumNonResident)
 	}
-
-	return nil
 }
 
 func (cb *Couchbase) addBucketToCharts(bucket string) {
@@ -101,25 +99,15 @@ func (cb *Couchbase) addDimToChart(chartID string, dim *module.Dim) {
 	chart.MarkNotCreated()
 }
 
-func (cb Couchbase) scrapeCouchbase() *cbMetrics {
+func (cb Couchbase) scrapeCouchbase() (*cbMetrics, error) {
 	ms := &cbMetrics{}
-	wg := &sync.WaitGroup{}
-
-	wg.Add(1)
-	go func() { defer wg.Done(); cb.scrapeBucketsStats(ms) }()
-
-	wg.Wait()
-	return ms
-}
-
-func (cb Couchbase) scrapeBucketsStats(ms *cbMetrics) {
 	req, _ := web.NewHTTPRequest(cb.Request)
 	req.URL.Path = urlPathBucketsStats
 
 	if err := cb.doOKDecode(req, &ms.BucketsStats); err != nil {
-		cb.Warning(err)
-		return
+		return nil, fmt.Errorf("error on decoding the response: %v", err)
 	}
+	return ms, nil
 }
 
 func (cb Couchbase) pingCouchbase() error {

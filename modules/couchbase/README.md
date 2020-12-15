@@ -11,12 +11,40 @@ Couchbase Server is an open source, distributed, JSON document database. It expo
 ## Configuration
 
 Edit the `go.d/couchbase.conf` configuration file using `edit-config` from the your agent's [config
-directory](/docs/step-by-step/step-04.md#find-your-netdataconf-file), which is typically at `/etc/netdata`.
+directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata   # Replace this path with your Netdata config directory, if different
 sudo ./edit-config go.d/couchbase.conf
 ```
+
+## Configuration
+
+Edit the `go.d/couchbase.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+
+```bash
+cd /etc/netdata # Replace this path with your Netdata config directory
+sudo ./edit-config go.d/couchbase.conf
+```
+
+To add a new endpoint to collect metrics from, or change the URL that Netdata looks for, add or configure the `name` and
+`url` values. Endpoints can be both local or remote as long as they expose their metrics on the provided URL.
+
+Here is an example with one endpoints:
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:8091
+    username: admin
+    password: admin-password
+
+```
+
+For all available options, see the Couchbase
+collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/couchbase.conf).
+
 
 
 ## Troubleshooting
