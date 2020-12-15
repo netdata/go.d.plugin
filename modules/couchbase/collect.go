@@ -53,35 +53,35 @@ func (cb Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics)
 
 func (cb *Couchbase) addBucketToCharts(bucket string) {
 
-	cb.addDimToChart(dbPercentCharts.ID, &module.Dim{
+	cb.addDimToChart(dbPercentChart.ID, &module.Dim{
 		ID: indexDimID(bucket, "quota_percent_used"),
 	})
 
-	cb.addDimToChart(opsPerSecCharts.ID, &module.Dim{
+	cb.addDimToChart(opsPerSecChart.ID, &module.Dim{
 		ID: indexDimID(bucket, "ops_per_sec"),
 	})
 
-	cb.addDimToChart(diskFetchesCharts.ID, &module.Dim{
+	cb.addDimToChart(diskFetchesChart.ID, &module.Dim{
 		ID: indexDimID(bucket, "disk_fetches"),
 	})
 
-	cb.addDimToChart(itemCountCharts.ID, &module.Dim{
+	cb.addDimToChart(itemCountChart.ID, &module.Dim{
 		ID: indexDimID(bucket, "item_count"),
 	})
 
-	cb.addDimToChart(diskUsedCharts.ID, &module.Dim{
+	cb.addDimToChart(diskUsedChart.ID, &module.Dim{
 		ID: indexDimID(bucket, "disk_used"),
 	})
 
-	cb.addDimToChart(dataUsedCharts.ID, &module.Dim{
+	cb.addDimToChart(dataUsedChart.ID, &module.Dim{
 		ID: indexDimID(bucket, "data_used"),
 	})
 
-	cb.addDimToChart(memUsedCharts.ID, &module.Dim{
+	cb.addDimToChart(memUsedChart.ID, &module.Dim{
 		ID: indexDimID(bucket, "mem_used"),
 	})
 
-	cb.addDimToChart(vbActiveNumNonResidentCharts.ID, &module.Dim{
+	cb.addDimToChart(vbActiveNumNonResidentChart.ID, &module.Dim{
 		ID: indexDimID(bucket, "vb_active_num_non_resident"),
 	})
 }
@@ -105,7 +105,7 @@ func (cb Couchbase) scrapeCouchbase() (*cbMetrics, error) {
 	req.URL.Path = urlPathBucketsStats
 
 	if err := cb.doOKDecode(req, &ms.BucketsStats); err != nil {
-		return nil, fmt.Errorf("error on decoding the response: %v", err)
+		return nil, err
 	}
 	return ms, nil
 }

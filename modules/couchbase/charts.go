@@ -10,7 +10,7 @@ type (
 	Dim    = module.Dim
 )
 
-var dbPercentCharts = Chart{
+var dbPercentChart = Chart{
 	ID:    "quota_percent_used_stats",
 	Title: "Quota Percent Used Per Bucket",
 	Units: "%",
@@ -18,7 +18,7 @@ var dbPercentCharts = Chart{
 	Ctx:   "couchbase.quota_percent_used_stats",
 }
 
-var opsPerSecCharts = Chart{
+var opsPerSecChart = Chart{
 	ID:    "ops_per_sec_stats",
 	Title: "Operations Per Second",
 	Units: "num",
@@ -26,7 +26,7 @@ var opsPerSecCharts = Chart{
 	Ctx:   "couchbase.ops_per_sec_stats",
 }
 
-var diskFetchesCharts = Chart{
+var diskFetchesChart = Chart{
 	ID:    "disk_fetches_stats",
 	Title: "Disk Fetches",
 	Units: "num/s",
@@ -34,7 +34,7 @@ var diskFetchesCharts = Chart{
 	Ctx:   "couchbase.disk_fetches_stats",
 }
 
-var itemCountCharts = Chart{
+var itemCountChart = Chart{
 	ID:    "item_count_stats",
 	Title: "Item Count",
 	Units: "items",
@@ -43,7 +43,7 @@ var itemCountCharts = Chart{
 	Type:  module.Stacked,
 }
 
-var diskUsedCharts = Chart{
+var diskUsedChart = Chart{
 	ID:    "disk_used_stats",
 	Title: "Disk Used Per Bucket",
 	Units: "KiB/s",
@@ -51,7 +51,7 @@ var diskUsedCharts = Chart{
 	Ctx:   "couchbase.disk_used_stats",
 }
 
-var dataUsedCharts = Chart{
+var dataUsedChart = Chart{
 	ID:    "data_used_stats",
 	Title: "Data Used Per Bucket",
 	Units: "KiB/s",
@@ -59,7 +59,7 @@ var dataUsedCharts = Chart{
 	Ctx:   "couchbase.data_used_stats",
 }
 
-var memUsedCharts = Chart{
+var memUsedChart = Chart{
 	ID:    "mem_used_stats",
 	Title: "Memory Used Per Bucket",
 	Units: "KiB/s",
@@ -67,7 +67,7 @@ var memUsedCharts = Chart{
 	Ctx:   "couchbase.mem_used_stats",
 }
 
-var vbActiveNumNonResidentCharts = Chart{
+var vbActiveNumNonResidentChart = Chart{
 	ID:    "vb_active_num_non_resident_stats",
 	Title: "Number Of Non-Resident Items",
 	Units: "num/s",
