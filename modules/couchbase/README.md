@@ -8,6 +8,23 @@ sidebar_label: "couchbase"
 
 Couchbase Server is an open source, distributed, JSON document database. It exposes a scale-out, key-value store with managed cache for sub-millisecond data operations, purpose-built indexers for efficient queries and a powerful query engine for executing SQL-like queries.
 
+## Charts
+In this module 8 charts are supported because we collect basic stats from couchbase.
+
+
+### Basic Stats
+
+Collected from `/pools/default/buckets ` endpoint.
+
+- Quota Percent Used Per Bucket in `%`
+- Operations Per Second Per Bucket in `ops/s`
+- Disk Fetches Per Bucketin `fetches`
+- Item Count Per Bucket in `items`
+- Disk Used Per Bucket in `bytes`
+- Data Used Per Bucket in `bytes`
+- Memory Used Per Bucket in `bytes`
+- Number Of Non-Resident Items Per Bucket in `items`
+
 ## Configuration
 
 Edit the `go.d/couchbase.conf` configuration file using `edit-config` from the
