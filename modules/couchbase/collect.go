@@ -40,31 +40,31 @@ func (cb Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics)
 		}
 
 		bs := b.BasicStats
-		collected[indexDimID(b.Name, "quota_used")] = int64(bs.QuotaPercentUsed)
-		collected[indexDimID(b.Name, "ops")] = int64(bs.OpsPerSec)
-		collected[indexDimID(b.Name, "fetches")] = int64(bs.DiskFetches)
+		collected[indexDimID(b.Name, "quota_percent_used")] = int64(bs.QuotaPercentUsed)
+		collected[indexDimID(b.Name, "ops_per_sec")] = int64(bs.OpsPerSec)
+		collected[indexDimID(b.Name, "disk_fetches")] = int64(bs.DiskFetches)
 		collected[indexDimID(b.Name, "item_count")] = int64(bs.ItemCount)
-		collected[indexDimID(b.Name, "disk")] = int64(bs.DiskUsed)
-		collected[indexDimID(b.Name, "data")] = int64(bs.DataUsed)
-		collected[indexDimID(b.Name, "mem")] = int64(bs.MemUsed)
-		collected[indexDimID(b.Name, "num_non_resident")] = int64(bs.VbActiveNumNonResident)
+		collected[indexDimID(b.Name, "disk_used")] = int64(bs.DiskUsed)
+		collected[indexDimID(b.Name, "data_used")] = int64(bs.DataUsed)
+		collected[indexDimID(b.Name, "mem_used")] = int64(bs.MemUsed)
+		collected[indexDimID(b.Name, "vb_active_num_non_resident")] = int64(bs.VbActiveNumNonResident)
 	}
 
 	return nil
 }
 
-func (cb *Couchbase) addBucketToCharts(bucket string) error {
+func (cb *Couchbase) addBucketToCharts(bucket string) {
 
 	cb.addDimToChart(dbPercentCharts.ID, &module.Dim{
-		ID: indexDimID(bucket, "quota_used"),
+		ID: indexDimID(bucket, "quota_percent_used"),
 	})
 
 	cb.addDimToChart(opsPerSecCharts.ID, &module.Dim{
-		ID: indexDimID(bucket, "ops"),
+		ID: indexDimID(bucket, "ops_per_sec"),
 	})
 
 	cb.addDimToChart(diskFetchesCharts.ID, &module.Dim{
-		ID: indexDimID(bucket, "fetches"),
+		ID: indexDimID(bucket, "disk_fetches"),
 	})
 
 	cb.addDimToChart(itemCountCharts.ID, &module.Dim{
@@ -72,25 +72,23 @@ func (cb *Couchbase) addBucketToCharts(bucket string) error {
 	})
 
 	cb.addDimToChart(diskUsedCharts.ID, &module.Dim{
-		ID:  indexDimID(bucket, "disk"),
+		ID:  indexDimID(bucket, "disk_used"),
 		Div: 1024,
 	})
 
 	cb.addDimToChart(dataUsedCharts.ID, &module.Dim{
-		ID:  indexDimID(bucket, "data"),
+		ID:  indexDimID(bucket, "data_used"),
 		Div: 1024,
 	})
 
 	cb.addDimToChart(memUsedCharts.ID, &module.Dim{
-		ID:  indexDimID(bucket, "mem"),
+		ID:  indexDimID(bucket, "mem_used"),
 		Div: 1024,
 	})
 
 	cb.addDimToChart(vbActiveNumNonResidentCharts.ID, &module.Dim{
-		ID: indexDimID(bucket, "num_non_resident"),
+		ID: indexDimID(bucket, "vb_active_num_non_resident"),
 	})
-
-	return nil
 }
 
 func (cb *Couchbase) addDimToChart(chartID string, dim *module.Dim) {
@@ -160,5 +158,5 @@ func closeBody(resp *http.Response) {
 }
 
 func indexDimID(name, metric string) string {
-	return fmt.Sprintf("basic_stats_%s_%s", name, metric)
+	return fmt.Sprintf("bucket_%s_%s", name, metric)
 }
