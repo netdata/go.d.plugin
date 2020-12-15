@@ -63,7 +63,7 @@ var bucketMemUsedChart = Chart{
 	ID:    "bucket_mem_used",
 	Title: "Memory Used Per Bucket",
 	Units: "bytes",
-	Fam:   "uckets basic stats",
+	Fam:   "buckets basic stats",
 	Ctx:   "couchbase.bucket_mem_used",
 }
 
