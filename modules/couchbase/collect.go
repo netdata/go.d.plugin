@@ -72,15 +72,15 @@ func (cb *Couchbase) addBucketToCharts(bucket string) {
 	})
 
 	cb.addDimToChart(diskUsedCharts.ID, &module.Dim{
-		ID:  indexDimID(bucket, "disk_used"),
+		ID: indexDimID(bucket, "disk_used"),
 	})
 
 	cb.addDimToChart(dataUsedCharts.ID, &module.Dim{
-		ID:  indexDimID(bucket, "data_used"),
+		ID: indexDimID(bucket, "data_used"),
 	})
 
 	cb.addDimToChart(memUsedCharts.ID, &module.Dim{
-		ID:  indexDimID(bucket, "mem_used"),
+		ID: indexDimID(bucket, "mem_used"),
 	})
 
 	cb.addDimToChart(vbActiveNumNonResidentCharts.ID, &module.Dim{
