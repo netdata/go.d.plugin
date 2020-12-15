@@ -18,7 +18,7 @@ Collected from `/pools/default/buckets ` endpoint.
 
 - Quota Percent Used Per Bucket in `%`
 - Operations Per Second Per Bucket in `ops/s`
-- Disk Fetches Per Bucketin `fetches`
+- Disk Fetches Per Bucket in `fetches`
 - Item Count Per Bucket in `items`
 - Disk Used Per Bucket in `bytes`
 - Data Used Per Bucket in `bytes`
