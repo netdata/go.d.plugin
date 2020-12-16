@@ -24,6 +24,7 @@ var bucketOpsPerSecChart = Chart{
 	Units: "ops/s",
 	Fam:   "buckets basic stats",
 	Ctx:   "couchbase.bucket_ops_per_sec",
+	Type:  module.Stacked,
 }
 
 var bucketDiskFetchesChart = Chart{
@@ -32,6 +33,7 @@ var bucketDiskFetchesChart = Chart{
 	Units: "fetches",
 	Fam:   "buckets basic stats",
 	Ctx:   "couchbase.bucket_disk_fetches",
+	Type:  module.Stacked,
 }
 
 var bucketItemCountChart = Chart{
@@ -49,6 +51,7 @@ var bucketDiskUsedChart = Chart{
 	Units: "bytes",
 	Fam:   "buckets basic stats",
 	Ctx:   "couchbase.bucket_disk_used_stats",
+	Type:  module.Stacked,
 }
 
 var bucketDataUsedChart = Chart{
@@ -57,6 +60,7 @@ var bucketDataUsedChart = Chart{
 	Units: "bytes",
 	Fam:   "buckets basic stats",
 	Ctx:   "couchbase.bucket_data_used",
+	Type:  module.Stacked,
 }
 
 var bucketMemUsedChart = Chart{
@@ -65,6 +69,7 @@ var bucketMemUsedChart = Chart{
 	Units: "bytes",
 	Fam:   "buckets basic stats",
 	Ctx:   "couchbase.bucket_mem_used",
+	Type:  module.Stacked,
 }
 
 var bucketVBActiveNumNonResidentChart = Chart{
@@ -73,4 +78,5 @@ var bucketVBActiveNumNonResidentChart = Chart{
 	Units: "items",
 	Fam:   "buckets basic stats",
 	Ctx:   "couchbase.bucket_vb_active_num_non_resident",
+	Type:  module.Stacked,
 }
