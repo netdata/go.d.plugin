@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -13,6 +14,8 @@ import (
 
 const (
 	urlPathBucketsStats = "/pools/default/buckets"
+
+	precision = 1000
 )
 
 func (cb *Couchbase) collect() (map[string]int64, error) {
@@ -20,18 +23,18 @@ func (cb *Couchbase) collect() (map[string]int64, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error on scraping couchbase: %v", err)
 	}
-
 	if ms.empty() {
 		return nil, nil
 	}
+
 	collected := make(map[string]int64)
 	cb.collectBasicStats(collected, ms)
 
 	return collected, nil
 }
 
-func (cb Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics) {
-	for _, b := range ms.BucketsStats {
+func (cb *Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics) {
+	for _, b := range ms.BucketsBasicStats {
 
 		if !cb.collectedBuckets[b.Name] {
 			cb.collectedBuckets[b.Name] = true
@@ -39,8 +42,8 @@ func (cb Couchbase) collectBasicStats(collected map[string]int64, ms *cbMetrics)
 		}
 
 		bs := b.BasicStats
-		collected[indexDimID(b.Name, "quota_percent_used")] = int64(bs.QuotaPercentUsed)
-		collected[indexDimID(b.Name, "ops_per_sec")] = int64(bs.OpsPerSec)
+		collected[indexDimID(b.Name, "quota_percent_used")] = int64(bs.QuotaPercentUsed * precision)
+		collected[indexDimID(b.Name, "ops_per_sec")] = int64(bs.OpsPerSec * precision)
 		collected[indexDimID(b.Name, "disk_fetches")] = int64(bs.DiskFetches)
 		collected[indexDimID(b.Name, "item_count")] = int64(bs.ItemCount)
 		collected[indexDimID(b.Name, "disk_used")] = int64(bs.DiskUsed)
@@ -54,11 +57,13 @@ func (cb *Couchbase) addBucketToCharts(bucket string) {
 	cb.addDimToChart(bucketQuotaPercentUsedChart.ID, &module.Dim{
 		ID:   indexDimID(bucket, "quota_percent_used"),
 		Name: bucket,
+		Div:  precision,
 	})
 
 	cb.addDimToChart(bucketOpsPerSecChart.ID, &module.Dim{
 		ID:   indexDimID(bucket, "ops_per_sec"),
 		Name: bucket,
+		Div:  precision,
 	})
 
 	cb.addDimToChart(bucketDiskFetchesChart.ID, &module.Dim{
@@ -105,26 +110,19 @@ func (cb *Couchbase) addDimToChart(chartID string, dim *module.Dim) {
 	chart.MarkNotCreated()
 }
 
-func (cb Couchbase) scrapeCouchbase() (*cbMetrics, error) {
+func (cb *Couchbase) scrapeCouchbase() (*cbMetrics, error) {
 	ms := &cbMetrics{}
 	req, _ := web.NewHTTPRequest(cb.Request)
 	req.URL.Path = urlPathBucketsStats
+	req.URL.RawQuery = url.Values{"skipMap": []string{"true"}}.Encode()
 
-	if err := cb.doOKDecode(req, &ms.BucketsStats); err != nil {
+	if err := cb.doOKDecode(req, &ms.BucketsBasicStats); err != nil {
 		return nil, err
 	}
 	return ms, nil
 }
 
-func (cb Couchbase) pingCouchbase() error {
-	req, _ := web.NewHTTPRequest(cb.Request)
-	req.URL.Path = urlPathBucketsStats
-
-	var stats []bucketsStats
-	return cb.doOKDecode(req, &stats)
-}
-
-func (cb Couchbase) doOKDecode(req *http.Request, in interface{}) error {
+func (cb *Couchbase) doOKDecode(req *http.Request, in interface{}) error {
 	resp, err := cb.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error on HTTP request '%s': %v", req.URL, err)

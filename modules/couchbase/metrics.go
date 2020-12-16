@@ -2,7 +2,7 @@ package couchbase
 
 type cbMetrics struct {
 	// https://developer.couchbase.com/resources/best-practice-guides/monitoring-guide.pdf
-	BucketsStats []bucketsStats
+	BucketsBasicStats []bucketsBasicStats
 }
 
 func (m cbMetrics) empty() bool {
@@ -12,19 +12,20 @@ func (m cbMetrics) empty() bool {
 	}
 	return true
 }
-func (m cbMetrics) hasBucketsStats() bool { return len(m.BucketsStats) > 0 }
 
-type bucketsStats struct {
-	Name string `stm:"name" json:"name"`
+func (m cbMetrics) hasBucketsStats() bool { return len(m.BucketsBasicStats) > 0 }
+
+type bucketsBasicStats struct {
+	Name string `json:"name"`
 
 	BasicStats struct {
-		DataUsed               float64 `stm:"dataUsed" json:"dataUsed"`
-		DiskFetches            float64 `stm:"diskFetches" json:"diskFetches"`
-		ItemCount              float64 `stm:"itemCount" json:"itemCount"`
-		DiskUsed               float64 `stm:"diskUsed" json:"diskUsed"`
-		MemUsed                float64 `stm:"memUsed" json:"memUsed"`
-		OpsPerSec              float64 `stm:"opsPerSec" json:"opsPerSec"`
-		QuotaPercentUsed       float64 `stm:"quotaPercentUsed" json:"quotaPercentUsed"`
-		VbActiveNumNonResident float64 `stm:"vbActiveNumNonResident" json:"vbActiveNumNonResident"`
-	} `stm:"basicStats"`
+		DataUsed               float64 `json:"dataUsed"`
+		DiskFetches            float64 `json:"diskFetches"`
+		ItemCount              float64 `json:"itemCount"`
+		DiskUsed               float64 `json:"diskUsed"`
+		MemUsed                float64 `json:"memUsed"`
+		OpsPerSec              float64 `json:"opsPerSec"`
+		QuotaPercentUsed       float64 `json:"quotaPercentUsed"`
+		VbActiveNumNonResident float64 `json:"vbActiveNumNonResident"`
+	} `json:"basicStats"`
 }

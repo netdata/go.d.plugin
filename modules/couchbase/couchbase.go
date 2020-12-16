@@ -79,10 +79,6 @@ func (cb *Couchbase) Init() bool {
 }
 
 func (cb *Couchbase) Check() bool {
-	if err := cb.pingCouchbase(); err != nil {
-		cb.Error(err)
-		return false
-	}
 	return len(cb.Collect()) > 0
 }
 
