@@ -168,5 +168,5 @@ sudo -u netdata -s
 You can now run the `go.d.plugin` to debug the collector:
 
 ```bash
-./go.d.plugin -d -m vshpere
+./go.d.plugin -d -m vsphere
 ```
