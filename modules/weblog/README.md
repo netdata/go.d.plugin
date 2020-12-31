@@ -1,5 +1,6 @@
 <!--
 title: "Web server log (Apache, NGINX) monitoring with Netdata"
+description: "Monitor the health and performance of Apache or Nginx logs with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/weblog/README.md
 sidebar_label: "Web server logs (Apache, NGINX)"
 -->

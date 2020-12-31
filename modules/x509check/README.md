@@ -1,5 +1,6 @@
 <!--
 title: "x509 certificate monitoring with Netdata"
+description: "Monitor the health and performance of x509 certificates with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/x509check/README.md
 sidebar_label: "x509 certificates"
 -->

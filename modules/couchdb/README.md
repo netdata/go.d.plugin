@@ -1,5 +1,6 @@
 <!--
 title: "Apache CouchDB monitoring with Netdata"
+description: "Monitor the health and performance of CouchDB databases with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/couchdb/README.md
 sidebar_label: "CouchDB"
 -->
