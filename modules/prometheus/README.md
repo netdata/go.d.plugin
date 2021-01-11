@@ -1,6 +1,6 @@
 <!--
 title: "Prometheus endpoint monitoring with Netdata"
-description: "Monitor 600+ services that support the Prometheus/OpenMetrics exposition format with Netdata's per-second frequency and zero configuration."
+description: "Monitor the health and performance of 600+ services that support the Prometheus metrics with Netdata's per-second frequency and zero configuration."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/prometheus/README.md
 sidebar_label: "Prometheus endpoints"
 -->

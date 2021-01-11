@@ -1,5 +1,6 @@
 <!--
 title: "Docker Engine monitoring with Netdata"
+description: "Monitor the health and performance of the Docker Engine runtime with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/docker_engine/README.md
 sidebar_label: "Docker Engine"
 -->

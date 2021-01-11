@@ -1,5 +1,6 @@
 <!--
 title: "TCP endpoint monitoring with Netdata"
+description: "Monitor the health and performance of any TCP endpoint with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/portcheck/README.md
 sidebar_label: "TCP endpoints"
 -->

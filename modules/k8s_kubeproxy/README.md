@@ -1,5 +1,6 @@
 <!--
 title: "Kube-proxy monitoring with Netdata"
+description: "Monitor the health and performance of Kube-proxy instances with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/k8s_kubeproxy/README.md
 sidebar_label: "Kube-proxy"
 -->

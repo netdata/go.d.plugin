@@ -1,5 +1,6 @@
 <!--
 title: "HTTP endpoint monitoring with Netdata"
+description: "Monitor the health and performance of any HTTP endpoint with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/httpcheck/README.md
 sidebar_label: "HTTP endpoints"
 -->
