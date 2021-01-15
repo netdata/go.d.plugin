@@ -7,11 +7,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
-	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -390,6 +390,20 @@ func TestPrometheus_Collect(t *testing.T) {
 			},
 			wantCollected: map[string]int64{
 				"http_time_to_write_seconds|code=200,route=^/([^/]+/){1,}[^/]+/uploads_z": 0,
+
+				"series":  1,
+				"metrics": 1,
+				"charts":  int64(1 + len(statsCharts)),
+			},
+		},
+		`label value contains ' '`: {
+			input: [][]string{
+				{
+					`jvm_memory_max_bytes{area="heap",id="Eden Space"} 0`,
+				},
+			},
+			wantCollected: map[string]int64{
+				"jvm_memory_max_bytes|area=heap,id=Eden_Space": 0,
 
 				"series":  1,
 				"metrics": 1,

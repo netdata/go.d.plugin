@@ -120,15 +120,17 @@ loop:
 		comma = true
 		id.WriteString(label.Name)
 		id.WriteString("=")
-		if strings.IndexByte(label.Value, '\\') != -1 {
-			if v := decodeLabelValue(label.Value); strings.IndexByte(v, '\\') != -1 {
-				id.WriteString(labelValueReplacer.Replace(v))
-			} else {
-				id.WriteString(v)
-			}
-		} else {
-			id.WriteString(label.Value)
+
+		lval := label.Value
+		if strings.IndexByte(lval, ' ') != -1 {
+			lval = spaceReplacer.Replace(lval)
 		}
+		if strings.IndexByte(lval, '\\') != -1 {
+			if lval = decodeLabelValue(lval); strings.IndexByte(lval, '\\') != -1 {
+				lval = backslashReplacer.Replace(lval)
+			}
+		}
+		id.WriteString(lval)
 	}
 	return id.String()
 }
@@ -153,6 +155,7 @@ func contains(in []string, value string) bool {
 }
 
 // TODO: fix
-var labelValueReplacer = strings.NewReplacer(
-	`\`, "_",
+var (
+	spaceReplacer     = strings.NewReplacer(" ", "_")
+	backslashReplacer = strings.NewReplacer(`\`, "_")
 )
