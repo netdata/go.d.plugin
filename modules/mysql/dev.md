@@ -14,17 +14,12 @@
 
 Create `netdata` user with needed permissions:
 
-```sql
-CREATE
-USER 'netdata'@'%' IDENTIFIED BY 'password';
-GRANT USAGE ON *.* TO
-'netdata';
-GRANT REPLICATION
-CLIENT ON *.* TO 'netdata';
-GRANT PROCESS
-on *.* to 'netdata';
-FLUSH
-PRIVILEGES;
+```mysql
+CREATE USER 'netdata'@'%' IDENTIFIED BY 'password';
+GRANT USAGE ON *.* TO 'netdata';
+GRANT REPLICATION CLIENT ON *.* TO 'netdata';
+GRANT PROCESS on *.* to 'netdata';
+FLUSH PRIVILEGES;
 ```
 
 Enables User Statistics metrics collection in `MariaDB`:
