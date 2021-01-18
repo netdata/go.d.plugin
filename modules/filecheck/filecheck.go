@@ -1,7 +1,10 @@
 package filecheck
 
 import (
+	"time"
+
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -16,7 +19,8 @@ func init() {
 func New() *Filecheck {
 	return &Filecheck{
 		Config: Config{
-			Files: filesConfig{},
+			DiscoveryEvery: web.Duration{Duration: time.Second * 30},
+			Files:          filesConfig{},
 			Dirs: dirsConfig{
 				CollectDirSize: true,
 			},
@@ -28,8 +32,9 @@ func New() *Filecheck {
 
 type (
 	Config struct {
-		Files filesConfig `yaml:"files"`
-		Dirs  dirsConfig  `yaml:"dirs"`
+		DiscoveryEvery web.Duration `yaml:"discovery_every"`
+		Files          filesConfig  `yaml:"files"`
+		Dirs           dirsConfig   `yaml:"dirs"`
 	}
 	filesConfig struct {
 		Include []string `yaml:"include"`
@@ -46,9 +51,15 @@ type Filecheck struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	collectedFiles map[string]bool
-	collectedDirs  map[string]bool
-	charts         *module.Charts
+	lastDiscoveryFiles time.Time
+	curFiles           []string
+	collectedFiles     map[string]bool
+
+	lastDiscoveryDirs time.Time
+	curDirs           []string
+	collectedDirs     map[string]bool
+
+	charts *module.Charts
 }
 
 func (Filecheck) Cleanup() {
@@ -73,8 +84,8 @@ func (fc *Filecheck) Init() bool {
 	return true
 }
 
-func (fc *Filecheck) Check() bool {
-	return len(fc.Collect()) > 0
+func (fc Filecheck) Check() bool {
+	return true
 }
 
 func (fc *Filecheck) Charts() *module.Charts {
@@ -82,13 +93,13 @@ func (fc *Filecheck) Charts() *module.Charts {
 }
 
 func (fc *Filecheck) Collect() map[string]int64 {
-	mx, err := fc.collect()
+	ms, err := fc.collect()
 	if err != nil {
 		fc.Error(err)
 	}
 
-	if len(mx) == 0 {
+	if len(ms) == 0 {
 		return nil
 	}
-	return mx
+	return ms
 }

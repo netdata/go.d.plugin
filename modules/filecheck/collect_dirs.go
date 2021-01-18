@@ -10,25 +10,27 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-func (fc *Filecheck) collectDirs(mx map[string]int64) {
+func (fc *Filecheck) collectDirs(ms map[string]int64) {
 	curTime := time.Now()
-	for _, dirpath := range fc.Dirs.Include {
-		fc.collectDir(mx, dirpath, curTime)
+	if time.Since(fc.lastDiscoveryDirs) >= fc.DiscoveryEvery.Duration {
+		fc.lastDiscoveryDirs = curTime
+		fc.curDirs = fc.discoveryDirs()
+		fc.updateDirsCharts(fc.curDirs)
 	}
+
+	for _, path := range fc.curDirs {
+		fc.collectDir(ms, path, curTime)
+	}
+	ms["num_of_dirs"] = int64(len(fc.curDirs))
 }
 
-func (fc *Filecheck) collectDir(mx map[string]int64, dirpath string, curTime time.Time) {
-	if !fc.collectedDirs[dirpath] {
-		fc.collectedDirs[dirpath] = true
-		fc.addDirToCharts(dirpath)
-	}
-
-	info, err := os.Stat(dirpath)
+func (fc *Filecheck) collectDir(ms map[string]int64, path string, curTime time.Time) {
+	info, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			mx[dirDimID(dirpath, "exists")] = 0
+			ms[dirDimID(path, "exists")] = 0
 		} else {
-			mx[dirDimID(dirpath, "exists")] = 1
+			ms[dirDimID(path, "exists")] = 1
 		}
 		fc.Debug(err)
 		return
@@ -38,19 +40,59 @@ func (fc *Filecheck) collectDir(mx map[string]int64, dirpath string, curTime tim
 		return
 	}
 
-	mx[dirDimID(dirpath, "exists")] = 1
-	mx[dirDimID(dirpath, "mtime_ago")] = int64(curTime.Sub(info.ModTime()).Seconds())
-	if num, err := calcDirNumOfFiles(dirpath); err == nil {
-		mx[dirDimID(dirpath, "num_of_files")] = int64(num)
+	ms[dirDimID(path, "exists")] = 1
+	ms[dirDimID(path, "mtime_ago")] = int64(curTime.Sub(info.ModTime()).Seconds())
+	if num, err := calcDirNumOfFiles(path); err == nil {
+		ms[dirDimID(path, "num_of_files")] = int64(num)
 	}
 	if fc.Dirs.CollectDirSize {
-		if size, err := calcDirSize(dirpath); err == nil {
-			mx[dirDimID(dirpath, "size_bytes")] = size
+		if size, err := calcDirSize(path); err == nil {
+			ms[dirDimID(path, "size_bytes")] = size
 		}
 	}
 }
 
-func (fc *Filecheck) addDirToCharts(dirpath string) {
+func (fc Filecheck) discoveryDirs() (dirs []string) {
+	for _, path := range fc.Dirs.Include {
+		if hasMeta(path) {
+			continue
+		}
+		dirs = append(dirs, path)
+	}
+
+	for _, path := range fc.Dirs.Include {
+		if !hasMeta(path) {
+			continue
+		}
+		matches, _ := filepath.Glob(path)
+		for _, v := range matches {
+			fi, err := os.Lstat(v)
+			if err == nil && fi.IsDir() {
+				dirs = append(dirs, v)
+			}
+		}
+	}
+	return removeDuplicates(dirs)
+}
+
+func (fc *Filecheck) updateDirsCharts(dirs []string) {
+	set := make(map[string]bool, len(dirs))
+	for _, path := range dirs {
+		set[path] = true
+		if !fc.collectedDirs[path] {
+			fc.collectedDirs[path] = true
+			fc.addDirToCharts(path)
+		}
+	}
+	for path := range fc.collectedDirs {
+		if !set[path] {
+			delete(fc.collectedDirs, path)
+			fc.removeDirFromCharts(path)
+		}
+	}
+}
+
+func (fc *Filecheck) addDirToCharts(path string) {
 	for _, chart := range *fc.Charts() {
 		if !strings.HasPrefix(chart.ID, "dir_") {
 			continue
@@ -59,19 +101,19 @@ func (fc *Filecheck) addDirToCharts(dirpath string) {
 		var id string
 		switch chart.ID {
 		case dirExistenceChart.ID:
-			id = dirDimID(dirpath, "exists")
+			id = dirDimID(path, "exists")
 		case dirModTimeChart.ID:
-			id = dirDimID(dirpath, "mtime_ago")
+			id = dirDimID(path, "mtime_ago")
 		case dirNumOfFilesChart.ID:
-			id = dirDimID(dirpath, "num_of_files")
+			id = dirDimID(path, "num_of_files")
 		case dirSizeChart.ID:
-			id = dirDimID(dirpath, "size_bytes")
+			id = dirDimID(path, "size_bytes")
 		default:
-			fc.Warningf("add dimension: couldn't dim id for '%s' chart (dir '%s')", chart.ID, dirpath)
+			fc.Warningf("add dimension: couldn't dim id for '%s' chart (dir '%s')", chart.ID, path)
 			continue
 		}
 
-		dim := &module.Dim{ID: id, Name: dirpath}
+		dim := &module.Dim{ID: id, Name: path}
 
 		if err := chart.AddDim(dim); err != nil {
 			fc.Warning(err)
@@ -81,8 +123,37 @@ func (fc *Filecheck) addDirToCharts(dirpath string) {
 	}
 }
 
-func dirDimID(dirpath, metric string) string {
-	return fmt.Sprintf("dir_%s_%s", dirpath, metric)
+func (fc *Filecheck) removeDirFromCharts(path string) {
+	for _, chart := range *fc.Charts() {
+		if !strings.HasPrefix(chart.ID, "dir_") {
+			continue
+		}
+
+		var id string
+		switch chart.ID {
+		case dirExistenceChart.ID:
+			id = dirDimID(path, "exists")
+		case dirModTimeChart.ID:
+			id = dirDimID(path, "mtime_ago")
+		case dirNumOfFilesChart.ID:
+			id = dirDimID(path, "num_of_files")
+		case dirSizeChart.ID:
+			id = dirDimID(path, "size_bytes")
+		default:
+			fc.Warningf("remove dimension: couldn't dim id for '%s' chart (dir '%s')", chart.ID, path)
+			continue
+		}
+
+		if err := chart.MarkDimRemove(id, true); err != nil {
+			fc.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func dirDimID(path, metric string) string {
+	return fmt.Sprintf("dir_%s_%s", path, metric)
 }
 
 func calcDirNumOfFiles(dirpath string) (int, error) {
