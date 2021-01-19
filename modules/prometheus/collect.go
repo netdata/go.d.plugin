@@ -1,6 +1,9 @@
 package prometheus
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 
 	"github.com/prometheus/prometheus/pkg/textparse"
@@ -24,6 +27,14 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 	case len(pms) > p.MaxTS:
 		p.Warningf("endpoint '%s' returned %d time series, limit is %d", p.URL, len(pms), p.MaxTS)
 		return nil, nil
+	}
+
+	if p.ExpectedPrefix != "" {
+		if !hasMetricWithPrefix(pms, p.ExpectedPrefix) {
+			return nil, fmt.Errorf("endpoint '%s' returned metrics without expected prefix (%s)",
+				p.URL, p.ExpectedPrefix)
+		}
+		p.ExpectedPrefix = ""
 	}
 
 	names, metricSet := p.buildMetricSet(pms)
@@ -76,4 +87,13 @@ func (p *Prometheus) buildMetricSet(pms prometheus.Metrics) (names []string, met
 		}
 	}
 	return names[:i], metrics
+}
+
+func hasMetricWithPrefix(pms prometheus.Metrics, prefix string) bool {
+	for _, pm := range pms {
+		if strings.HasPrefix(pm.Name(), prefix) {
+			return true
+		}
+	}
+	return false
 }

@@ -47,6 +47,7 @@ type (
 		MaxTSPerMetric  int           `yaml:"max_time_series_per_metric"`
 		Selector        selector.Expr `yaml:"selector"`
 		Grouping        []GroupOption `yaml:"group"`
+		ExpectedPrefix  string        `yaml:"expected_prefix"`
 	}
 	GroupOption struct {
 		Selector string `yaml:"selector"`
