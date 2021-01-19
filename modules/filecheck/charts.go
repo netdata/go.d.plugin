@@ -15,6 +15,9 @@ var (
 		Units: "boolean",
 		Fam:   "files",
 		Ctx:   "filecheck.file_existence",
+		Vars: module.Vars{
+			{ID: "num_of_files"},
+		},
 	}
 	fileModTimeAgoChart = module.Chart{
 		ID:    "file_mtime_ago",
@@ -46,6 +49,9 @@ var (
 		Units: "boolean",
 		Fam:   "dirs",
 		Ctx:   "filecheck.dir_existence",
+		Vars: module.Vars{
+			{ID: "num_of_dirs"},
+		},
 	}
 	dirModTimeChart = module.Chart{
 		ID:    "dir_mtime_ago",

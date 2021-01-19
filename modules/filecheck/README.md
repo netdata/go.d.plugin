@@ -65,35 +65,42 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/filecheck.conf
 ```
 
-Needs only a path to a file or a directory. **The path doesn't support any wildcards**.
+Needs only a path to a file or a directory. The path supports `*` wildcard.
 
 Here is an example:
 
 ```yaml
 jobs:
   - name: files_dirs_example
+    discovery_every: 30s
     files:
       include:
         - '/path/to/file1'
         - '/path/to/file2'
+        - '/path/to/*.log'
     dirs:
       collect_dir_size: no
       include:
         - '/path/to/dir1'
         - '/path/to/dir2'
+        - '/path/to/dir3*'
 
   - name: files_example
+    discovery_every: 30s
     files:
       include:
         - '/path/to/file1'
         - '/path/to/file2'
+        - '/path/to/*.log'
 
   - name: dirs_example
+    discovery_every: 30s
     dirs:
       collect_dir_size: yes
       include:
         - '/path/to/dir1'
         - '/path/to/dir2'
+        - '/path/to/dir3*'
 ```
 
 For all available options, see the Filecheck
@@ -101,7 +108,6 @@ collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/mas
 
 ## Limitations
 
-- file/dir path pattern doesn't support any wildcards
 - filecheck uses `stat` call to collect metrics, which is not very efficient.
 
 ## Troubleshooting
