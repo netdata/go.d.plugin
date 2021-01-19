@@ -137,6 +137,43 @@ func TestPrometheus_Collect_ReturnsNilOnError(t *testing.T) {
 	}
 }
 
+func TestPrometheus_Collect_WithExpectedPrefix(t *testing.T) {
+	tests := map[string]struct {
+		prepare       func(t *testing.T) (prom *Prometheus, cleanup func())
+		wantCollected bool
+	}{
+		"fails on metrics without expected prefix": {
+			wantCollected: false,
+			prepare: func(t *testing.T) (prom *Prometheus, cleanup func()) {
+				prom, cleanup = preparePrometheusValidData(t)
+				prom.ExpectedPrefix = "prefix_"
+				return prom, cleanup
+			},
+		},
+		"success on metrics with expected prefix": {
+			wantCollected: true,
+			prepare: func(t *testing.T) (prom *Prometheus, cleanup func()) {
+				prom, cleanup = preparePrometheusValidData(t)
+				prom.ExpectedPrefix = "some_metric_"
+				return prom, cleanup
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			prom, cleanup := test.prepare(t)
+			defer cleanup()
+
+			if test.wantCollected {
+				assert.NotNil(t, prom.Collect())
+			} else {
+				assert.Nil(t, prom.Collect())
+			}
+		})
+	}
+}
+
 func TestPrometheus_Collect(t *testing.T) {
 	type testGroup map[string]struct {
 		input         [][]string
