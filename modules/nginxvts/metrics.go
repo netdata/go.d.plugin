@@ -7,6 +7,7 @@ type vtsMetrics struct {
 	// NginxVersion string
 	LoadMsec    int64
 	NowMsec     int64
+	Uptime      int64
 	Connections struct {
 		Active   int64 `stm:"active"`
 		Reading  int64 `stm:"reading"`
@@ -14,7 +15,7 @@ type vtsMetrics struct {
 		Waiting  int64 `stm:"waiting"`
 		Accepted int64 `stm:"accepted"`
 		Handled  int64 `stm:"handled"`
-		Requests int64 `stm:"total"`
+		Requests int64 `stm:"requests"`
 	} `stm:"connections"`
 	SharedZones struct {
 		// Name     string

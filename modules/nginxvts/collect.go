@@ -30,6 +30,7 @@ func (vts *NginxVTS) collect() (map[string]int64, error) {
 func (vts *NginxVTS) collectMainMetrics(collected map[string]interface{}, ms *vtsMetrics) {
 	collected["loadmsec"] = ms.LoadMsec
 	collected["nowmsec"] = ms.NowMsec
+	collected["uptime"] = ms.NowMsec - ms.LoadMsec
 	collected["connections"] = ms.Connections
 }
 
