@@ -1,0 +1,104 @@
+package nginxvts
+
+import (
+	"net/http"
+	"time"
+
+	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
+)
+
+func init() {
+	module.Register("nginxvts", module.Creator{
+		Defaults: module.Defaults{
+			UpdateEvery: 5,
+		},
+		Create: func() module.Module { return New() },
+	})
+}
+
+// New creates NginxVts with default values.
+func New() *NginxVTS {
+	return &NginxVTS{
+		Config: Config{
+			HTTP: web.HTTP{
+				Request: web.Request{
+					URL: "http://localhost",
+				},
+				Client: web.Client{
+					Timeout: web.Duration{Duration: time.Second * 5},
+				},
+			},
+		},
+	}
+}
+
+type (
+	// Config is the NginxVts module configuration.
+	Config struct {
+		web.HTTP `yaml:",inline"`
+	}
+	// NginxVTS module.
+	NginxVTS struct {
+		module.Base
+		Config `yaml:",inline"`
+
+		httpClient *http.Client
+		charts     *module.Charts
+	}
+)
+
+// Cleanup makes cleanup.
+func (vts *NginxVTS) Cleanup() {
+	if vts.httpClient == nil {
+		return
+	}
+	vts.httpClient.CloseIdleConnections()
+}
+
+// Init NginxVTS.
+func (vts *NginxVTS) Init() bool {
+	err := vts.validateConfig()
+	if err != nil {
+		vts.Errorf("check configuration: %v", err)
+		return false
+	}
+
+	httpClient, err := vts.initHTTPClient()
+	if err != nil {
+		vts.Errorf("init HTTP client: %v", err)
+	}
+	vts.httpClient = httpClient
+
+	charts, err := vts.initCharts()
+	if err != nil {
+		vts.Errorf("init charts: %v", err)
+		return false
+	}
+	vts.charts = charts
+
+	return true
+}
+
+// Check NginxVTS metrics.
+func (vts *NginxVTS) Check() bool {
+	return len(vts.Collect()) > 0
+}
+
+// Charts for NginxVTS.
+func (vts *NginxVTS) Charts() *Charts {
+	return vts.charts
+}
+
+// Collect NginxVTS metrics.
+func (vts *NginxVTS) Collect() map[string]int64 {
+	mx, err := vts.collect()
+	if err != nil {
+		vts.Error(err)
+		return nil
+	}
+	if len(mx) == 0 {
+		return nil
+	}
+	return mx
+}

@@ -56,6 +56,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)                   | `Logstash`                      |
 | [mysql](https://github.com/netdata/go.d.plugin/tree/master/modules/mysql)                         | `MySQL`                         |
 | [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx)                         | `NGINX`                         |
+| [nginxvts](https://github.com/netdata/go.d.plugin/tree/master/modules/nginxvts)                   | `NGINX VTS`                     |
 | [openvpn](https://github.com/netdata/go.d.plugin/tree/master/modules/openvpn)                     | `OpenVPN`                       |
 | [phpdaemon](https://github.com/netdata/go.d.plugin/tree/master/modules/phpdaemon)                 | `phpDaemon`                     |
 | [phpfpm](https://github.com/netdata/go.d.plugin/tree/master/modules/phpfpm)                       | `PHP-FPM`                       |
