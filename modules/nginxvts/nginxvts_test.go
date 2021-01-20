@@ -121,9 +121,7 @@ func TestNginxVTS_Collect(t *testing.T) {
 			prepare: prepareNginxVTSValidData,
 			wantCollected: map[string]int64{
 				// Nginx running time
-				"loadmsec": 1606489796895,
-				"nowmsec":  1606490116734,
-				"uptime":   319839,
+				"uptime": 319,
 				// Nginx connections
 				"connections_active":   2,
 				"connections_reading":  0,
@@ -245,7 +243,7 @@ func prepareNginxVTSEndpoint() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
-			case "/status/format/json":
+			case "/":
 				_, _ = w.Write(responseMetrics)
 			default:
 				w.WriteHeader(http.StatusNotFound)

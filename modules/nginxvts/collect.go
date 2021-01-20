@@ -11,8 +11,6 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-const vtsURLPath = "/status/format/json"
-
 func (vts *NginxVTS) collect() (map[string]int64, error) {
 	ms, err := vts.scapeTotalMetrics()
 	if err != nil {
@@ -28,9 +26,7 @@ func (vts *NginxVTS) collect() (map[string]int64, error) {
 }
 
 func (vts *NginxVTS) collectMainMetrics(collected map[string]interface{}, ms *vtsMetrics) {
-	collected["loadmsec"] = ms.LoadMsec
-	collected["nowmsec"] = ms.NowMsec
-	collected["uptime"] = ms.NowMsec - ms.LoadMsec
+	collected["uptime"] = (ms.NowMsec - ms.LoadMsec) / 1000
 	collected["connections"] = ms.Connections
 }
 
@@ -49,7 +45,6 @@ func (vts *NginxVTS) collectServerZonesMetrics(collected map[string]interface{},
 
 func (vts *NginxVTS) scapeTotalMetrics() (*vtsMetrics, error) {
 	req, _ := web.NewHTTPRequest(vts.Request)
-	req.URL.Path = vtsURLPath
 
 	var total vtsMetrics
 

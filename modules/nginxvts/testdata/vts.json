@@ -1,8 +1,8 @@
 {
   "hostName":"Web",
   "nginxVersion":"1.18.0",
-  "loadMsec":1606489796895,
-  "nowMsec":1606490116734,
+	"loadmsec":1606489796895,
+	"nowmsec":1606490116734,
   "connections":{
     "active":2,
     "reading":0,

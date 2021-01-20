@@ -10,24 +10,23 @@ sidebar_label: "NGINX VTS"
 
 
 
-- Nginx running time (`milliseconds`): 
-  - Starting time
-  - Up time
-- Nginx connections (`connections`):
+- Nginx uptime (`seconds`): 
+  - Uptime
+- Nginx connections (`requests/s`):
   - active,	reading, writing, waiting, accepted, handled, total	
 
 - Shared memory size (`bytes`)
   - Maximum size of shared memory
   - Current size of shared memory
-- Number of node using in shared memory (`count`)
+- Number of node using in shared memory (`nodes`)
 
 - Total number of client requests (`requests/s`)
-- Total Response code (`count`)
+- Total Response code (`responses/s`)
   - 1xx, 2xx, 3xx, 4xx, 5xx
 - Total server traffic (`bytes/s`)
   - The total number of bytes received from clients
   - The total number of bytes sent to clients
-- Total serer cache (`count`)
+- Total serer cache (`responses/s`)
   - miss, bypass, expired, stale, updating, revalidated, hit, scarce
 
 Refer [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts#json) for more information.

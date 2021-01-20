@@ -11,16 +11,6 @@ type (
 
 var nginxVtsMainCharts = Charts{
 	{
-		ID:    "uptime",
-		Title: "Nginx Uptime",
-		Units: "milliseconds",
-		Fam:   "main",
-		Ctx:   "nginxvts.uptime",
-		Dims: Dims{
-			{ID: "uptime", Name: "uptime"},
-		},
-	},
-	{
 		ID:    "total_requests",
 		Title: "Nginx Total Requests",
 		Units: "requests/s",
@@ -52,6 +42,16 @@ var nginxVtsMainCharts = Charts{
 			{ID: "connections_waiting", Name: "waiting", Algo: module.Incremental},
 			{ID: "connections_accepted", Name: "accepted", Algo: module.Incremental},
 			{ID: "connections_handled", Name: "handled", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "uptime",
+		Title: "Nginx Uptime",
+		Units: "seconds",
+		Fam:   "uptime",
+		Ctx:   "nginxvts.uptime",
+		Dims: Dims{
+			{ID: "uptime", Name: "uptime"},
 		},
 	},
 }
