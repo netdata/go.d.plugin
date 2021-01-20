@@ -123,6 +123,7 @@ func TestNginxVTS_Collect(t *testing.T) {
 				// Nginx running time
 				"loadmsec": 1606489796895,
 				"nowmsec":  1606490116734,
+				"uptime":   319839,
 				// Nginx connections
 				"connections_active":   2,
 				"connections_reading":  0,
@@ -130,7 +131,7 @@ func TestNginxVTS_Collect(t *testing.T) {
 				"connections_waiting":  1,
 				"connections_accepted": 12,
 				"connections_handled":  12,
-				"connections_total":    17,
+				"connections_requests": 17,
 				// Nginx shared memory
 				"sharedzones_maxsize":  1048575,
 				"sharedzones_usedsize": 45799,
