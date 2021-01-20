@@ -11,36 +11,53 @@ type (
 
 var nginxVtsMainCharts = Charts{
 	{
-		ID:    "times",
-		Title: "Nginx running time( Uptime=(nowMsec-loadMsec)/1000 )",
+		ID:    "uptime",
+		Title: "Nginx Uptime",
 		Units: "milliseconds",
 		Fam:   "main",
-		Ctx:   "nginxvts.times",
+		Ctx:   "nginxvts.uptime",
 		Dims: Dims{
-			{ID: "loadmsec", Name: "load"},
-			{ID: "nowmsec", Name: "up"},
+			{ID: "uptime", Name: "uptime"},
 		},
 	},
 	{
-		ID:    "connections",
-		Title: "Nginx Connections",
+		ID:    "total_requests",
+		Title: "Nginx Total Requests",
+		Units: "requests/s",
+		Fam:   "main",
+		Ctx:   "nginxvts.connections",
+		Dims: Dims{
+			{ID: "connections_requests", Name: "total requests", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "active_connections",
+		Title: "Nginx Active Connections",
 		Units: "connections",
 		Fam:   "main",
 		Ctx:   "nginxvts.connections",
 		Dims: Dims{
 			{ID: "connections_active", Name: "active"},
-			{ID: "connections_reading", Name: "reading"},
-			{ID: "connections_writing", Name: "writing"},
-			{ID: "connections_waiting", Name: "waiting"},
-			{ID: "connections_accepted", Name: "accepted"},
-			{ID: "connections_handled", Name: "handled"},
-			{ID: "connections_total", Name: "total"},
+		},
+	},
+	{
+		ID:    "connections",
+		Title: "Nginx Connections",
+		Units: "requests/s",
+		Fam:   "main",
+		Ctx:   "nginxvts.connections",
+		Dims: Dims{
+			{ID: "connections_reading", Name: "reading", Algo: module.Incremental},
+			{ID: "connections_writing", Name: "writing", Algo: module.Incremental},
+			{ID: "connections_waiting", Name: "waiting", Algo: module.Incremental},
+			{ID: "connections_accepted", Name: "accepted", Algo: module.Incremental},
+			{ID: "connections_handled", Name: "handled", Algo: module.Incremental},
 		},
 	},
 }
 var nginxVtsSharedZonesChart = Charts{
 	{
-		ID:    "size",
+		ID:    "shared_memory_size",
 		Title: "Shared memory size",
 		Units: "bytes",
 		Fam:   "sharedzones",
@@ -51,9 +68,9 @@ var nginxVtsSharedZonesChart = Charts{
 		},
 	},
 	{
-		ID:    "node",
+		ID:    "shared_memory_used_nodes",
 		Title: "Number of node using shared memory",
-		Units: "count",
+		Units: "nodes",
 		Fam:   "sharedzones",
 		Ctx:   "nginxvts.sharedzones_node",
 		Dims: Dims{
@@ -64,11 +81,11 @@ var nginxVtsSharedZonesChart = Charts{
 
 var nginxVtsServerZonesCharts = Charts{
 	{
-		ID:    "requests",
+		ID:    "server_zones_requests_total",
 		Title: "Number of client requests",
 		Units: "requests/s",
 		Fam:   "serverzones",
-		Ctx:   "nginxvts.serverzones_requests",
+		Ctx:   "nginxvts.serverzones_requests_total",
 		Dims: Dims{
 			{ID: "total_requestcounter", Name: "requests", Algo: module.Incremental},
 		},
@@ -76,15 +93,15 @@ var nginxVtsServerZonesCharts = Charts{
 	{
 		ID:    "responses",
 		Title: "Total Response code",
-		Units: "count",
+		Units: "responses/s",
 		Fam:   "serverzones",
 		Ctx:   "nginxvts.serverzones_responses",
 		Dims: Dims{
-			{ID: "total_responses_1xx", Name: "1xx"},
-			{ID: "total_responses_2xx", Name: "2xx"},
-			{ID: "total_responses_3xx", Name: "3xx"},
-			{ID: "total_responses_4xx", Name: "4xx"},
-			{ID: "total_responses_5xx", Name: "5xx"},
+			{ID: "total_responses_1xx", Name: "1xx", Algo: module.Incremental},
+			{ID: "total_responses_2xx", Name: "2xx", Algo: module.Incremental},
+			{ID: "total_responses_3xx", Name: "3xx", Algo: module.Incremental},
+			{ID: "total_responses_4xx", Name: "4xx", Algo: module.Incremental},
+			{ID: "total_responses_5xx", Name: "5xx", Algo: module.Incremental},
 		},
 	},
 	{
@@ -101,18 +118,18 @@ var nginxVtsServerZonesCharts = Charts{
 	{
 		ID:    "cache",
 		Title: "Total server cache",
-		Units: "count",
+		Units: "responses/s",
 		Fam:   "serverzones",
 		Ctx:   "nginxvts.serverzones_cache",
 		Dims: Dims{
-			{ID: "total_cache_miss", Name: "miss"},
-			{ID: "total_cache_bypass", Name: "bypass"},
-			{ID: "total_cache_expired", Name: "expired"},
-			{ID: "total_cache_stale", Name: "stale"},
-			{ID: "total_cache_updating", Name: "updating"},
-			{ID: "total_cache_revalidated", Name: "revalidated"},
-			{ID: "total_cache_hit", Name: "hit"},
-			{ID: "total_cache_scarce", Name: "scarce"},
+			{ID: "total_cache_miss", Name: "miss", Algo: module.Incremental},
+			{ID: "total_cache_bypass", Name: "bypass", Algo: module.Incremental},
+			{ID: "total_cache_expired", Name: "expired", Algo: module.Incremental},
+			{ID: "total_cache_stale", Name: "stale", Algo: module.Incremental},
+			{ID: "total_cache_updating", Name: "updating", Algo: module.Incremental},
+			{ID: "total_cache_revalidated", Name: "revalidated", Algo: module.Incremental},
+			{ID: "total_cache_hit", Name: "hit", Algo: module.Incremental},
+			{ID: "total_cache_scarce", Name: "scarce", Algo: module.Incremental},
 		},
 	},
 }
