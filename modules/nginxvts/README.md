@@ -1,12 +1,12 @@
 <!--
-title: "NGINX Vts monitoring"
+title: "NGINX VTS monitoring"
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/nginxvts/README.md
 sidebar_label: "NGINX VTS"
 -->
 
 # NGINX VTS monitoring with Netdata
 
-`Nginx VTS` can monitor statistics of Nginx which configured
+`nginxvts` can monitor statistics of NGINX which configured
 with [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts), including:
 
 - Nginx uptime (`seconds`):
@@ -25,7 +25,7 @@ with [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts), including:
 - Total server traffic (`bytes/s`)
     - The total number of bytes received from clients
     - The total number of bytes sent to clients
-- Total serer cache (`responses/s`)
+- Total server cache (`responses/s`)
     - miss, bypass, expired, stale, updating, revalidated, hit, scarce
 
 Refer [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts#json) for more information.
