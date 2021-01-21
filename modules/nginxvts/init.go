@@ -8,7 +8,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-func (vts *NginxVTS) validateConfig() error {
+func (vts NginxVTS) validateConfig() error {
 	if vts.URL == "" {
 		return errors.New("URL not set")
 	}
@@ -19,22 +19,22 @@ func (vts *NginxVTS) validateConfig() error {
 	return nil
 }
 
-func (vts *NginxVTS) initHTTPClient() (*http.Client, error) {
+func (vts NginxVTS) initHTTPClient() (*http.Client, error) {
 	return web.NewHTTPClient(vts.Client)
 }
 
-func (vts *NginxVTS) initCharts() (*Charts, error) {
+func (vts NginxVTS) initCharts() (*module.Charts, error) {
 	charts := module.Charts{}
 
-	if err := charts.Add(*nginxVtsMainCharts.Copy()...); err != nil {
+	if err := charts.Add(*mainCharts.Copy()...); err != nil {
 		return nil, err
 	}
 
-	if err := charts.Add(*nginxVtsSharedZonesChart.Copy()...); err != nil {
+	if err := charts.Add(*sharedZonesCharts.Copy()...); err != nil {
 		return nil, err
 	}
 
-	if err := charts.Add(*nginxVtsServerZonesCharts.Copy()...); err != nil {
+	if err := charts.Add(*serverZonesCharts.Copy()...); err != nil {
 		return nil, err
 	}
 

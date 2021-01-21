@@ -12,29 +12,29 @@ import (
 )
 
 func (vts *NginxVTS) collect() (map[string]int64, error) {
-	ms, err := vts.scapeTotalMetrics()
+	ms, err := vts.scapeVTS()
 	if err != nil {
 		return nil, nil
 	}
 
 	collected := make(map[string]interface{})
-	vts.collectMainMetrics(collected, ms)
-	vts.collectSharedZonesMetrics(collected, ms)
-	vts.collectServerZonesMetrics(collected, ms)
+	vts.collectMain(collected, ms)
+	vts.collectSharedZones(collected, ms)
+	vts.collectServerZones(collected, ms)
 
 	return stm.ToMap(collected), nil
 }
 
-func (vts *NginxVTS) collectMainMetrics(collected map[string]interface{}, ms *vtsMetrics) {
+func (vts *NginxVTS) collectMain(collected map[string]interface{}, ms *vtsMetrics) {
 	collected["uptime"] = (ms.NowMsec - ms.LoadMsec) / 1000
 	collected["connections"] = ms.Connections
 }
 
-func (vts *NginxVTS) collectSharedZonesMetrics(collected map[string]interface{}, ms *vtsMetrics) {
+func (vts *NginxVTS) collectSharedZones(collected map[string]interface{}, ms *vtsMetrics) {
 	collected["sharedzones"] = ms.SharedZones
 }
 
-func (vts *NginxVTS) collectServerZonesMetrics(collected map[string]interface{}, ms *vtsMetrics) {
+func (vts *NginxVTS) collectServerZones(collected map[string]interface{}, ms *vtsMetrics) {
 	if !ms.hasServerZones() {
 		return
 	}
@@ -43,7 +43,7 @@ func (vts *NginxVTS) collectServerZonesMetrics(collected map[string]interface{},
 	collected["total"] = ms.ServerZones["*"]
 }
 
-func (vts *NginxVTS) scapeTotalMetrics() (*vtsMetrics, error) {
+func (vts *NginxVTS) scapeVTS() (*vtsMetrics, error) {
 	req, _ := web.NewHTTPRequest(vts.Request)
 
 	var total vtsMetrics

@@ -34,11 +34,11 @@ type Server struct {
 	InBytes        int64 `stm:"inbytes"`
 	OutBytes       int64 `stm:"outbytes"`
 	Responses      struct {
-		Onexx       int64 `stm:"responses_1xx" json:"1xx"`
-		Twoxx       int64 `stm:"responses_2xx" json:"2xx"`
-		Threexx     int64 `stm:"responses_3xx" json:"3xx"`
-		Fourxx      int64 `stm:"responses_4xx" json:"4xx"`
-		Fivexx      int64 `stm:"responses_5xx" json:"5xx"`
+		Resp1xx     int64 `stm:"responses_1xx" json:"1xx"`
+		Resp2xx     int64 `stm:"responses_2xx" json:"2xx"`
+		Resp3xx     int64 `stm:"responses_3xx" json:"3xx"`
+		Resp4xx     int64 `stm:"responses_4xx" json:"4xx"`
+		Resp5xx     int64 `stm:"responses_5xx" json:"5xx"`
 		Miss        int64 `stm:"cache_miss"`
 		Bypass      int64 `stm:"cache_bypass"`
 		Expired     int64 `stm:"cache_expired"`

@@ -11,44 +11,39 @@ import (
 func init() {
 	module.Register("nginxvts", module.Creator{
 		Defaults: module.Defaults{
-			UpdateEvery: 5,
+			UpdateEvery: 1,
 		},
 		Create: func() module.Module { return New() },
 	})
 }
 
-// New creates NginxVts with default values.
 func New() *NginxVTS {
 	return &NginxVTS{
 		Config: Config{
 			HTTP: web.HTTP{
 				Request: web.Request{
-					URL: "http://localhost",
+					URL: "http://localhost/status/format/json",
 				},
 				Client: web.Client{
-					Timeout: web.Duration{Duration: time.Second * 5},
+					Timeout: web.Duration{Duration: time.Second},
 				},
 			},
 		},
 	}
 }
 
-type (
-	// Config is the NginxVts module configuration.
-	Config struct {
-		web.HTTP `yaml:",inline"`
-	}
-	// NginxVTS module.
-	NginxVTS struct {
-		module.Base
-		Config `yaml:",inline"`
+type Config struct {
+	web.HTTP `yaml:",inline"`
+}
 
-		httpClient *http.Client
-		charts     *module.Charts
-	}
-)
+type NginxVTS struct {
+	module.Base
+	Config `yaml:",inline"`
 
-// Cleanup makes cleanup.
+	httpClient *http.Client
+	charts     *module.Charts
+}
+
 func (vts *NginxVTS) Cleanup() {
 	if vts.httpClient == nil {
 		return
@@ -56,7 +51,6 @@ func (vts *NginxVTS) Cleanup() {
 	vts.httpClient.CloseIdleConnections()
 }
 
-// Init NginxVTS.
 func (vts *NginxVTS) Init() bool {
 	err := vts.validateConfig()
 	if err != nil {
@@ -80,17 +74,14 @@ func (vts *NginxVTS) Init() bool {
 	return true
 }
 
-// Check NginxVTS metrics.
 func (vts *NginxVTS) Check() bool {
 	return len(vts.Collect()) > 0
 }
 
-// Charts for NginxVTS.
-func (vts *NginxVTS) Charts() *Charts {
+func (vts *NginxVTS) Charts() *module.Charts {
 	return vts.charts
 }
 
-// Collect NginxVTS metrics.
 func (vts *NginxVTS) Collect() map[string]int64 {
 	mx, err := vts.collect()
 	if err != nil {
