@@ -15,12 +15,12 @@ import (
 )
 
 var (
-	responseMetrics, _ = ioutil.ReadFile("testdata/vts.json")
+	v0118Response, _ = ioutil.ReadFile("testdata/vts-v0.1.18.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"responseMetrics": responseMetrics,
+		"v0118Response": v0118Response,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -38,9 +38,9 @@ func TestNginxVTS_Init(t *testing.T) {
 	}{
 		"default": {
 			wantNumOfCharts: numOfCharts(
-				nginxVtsMainCharts,
-				nginxVtsSharedZonesChart,
-				nginxVtsServerZonesCharts,
+				mainCharts,
+				sharedZonesCharts,
+				serverZonesCharts,
 			),
 			config: New().Config,
 		},
@@ -244,14 +244,14 @@ func prepareNginxVTSEndpoint() *httptest.Server {
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
 			case "/":
-				_, _ = w.Write(responseMetrics)
+				_, _ = w.Write(v0118Response)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
 		}))
 }
 
-func numOfCharts(charts ...Charts) (num int) {
+func numOfCharts(charts ...module.Charts) (num int) {
 	for _, v := range charts {
 		num += len(v)
 	}
