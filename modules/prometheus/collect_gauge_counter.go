@@ -1,6 +1,7 @@
 package prometheus
 
 import (
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
@@ -37,6 +38,9 @@ func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, met
 			cache.putDim(dimID)
 			chart := cache.getChart(chartID)
 			dim := anyChartDimension(dimID, dimName, pm, meta)
+			if dim.Algo == module.Incremental && p.forceAbsoluteAlgorithm.MatchString(pm.Name()) {
+				dim.Algo = module.Absolute
+			}
 			if err := chart.AddDim(dim); err != nil {
 				p.Warning(err)
 			}

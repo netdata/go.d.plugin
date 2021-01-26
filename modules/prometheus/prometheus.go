@@ -3,11 +3,11 @@ package prometheus
 import (
 	"time"
 
+	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
-
-	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func init() {
@@ -41,13 +41,14 @@ func New() *Prometheus {
 
 type (
 	Config struct {
-		web.HTTP        `yaml:",inline"`
-		BearerTokenFile string        `yaml:"bearer_token_file"` // TODO: part of web.Request?
-		MaxTS           int           `yaml:"max_time_series"`
-		MaxTSPerMetric  int           `yaml:"max_time_series_per_metric"`
-		Selector        selector.Expr `yaml:"selector"`
-		Grouping        []GroupOption `yaml:"group"`
-		ExpectedPrefix  string        `yaml:"expected_prefix"`
+		web.HTTP               `yaml:",inline"`
+		BearerTokenFile        string        `yaml:"bearer_token_file"` // TODO: part of web.Request?
+		MaxTS                  int           `yaml:"max_time_series"`
+		MaxTSPerMetric         int           `yaml:"max_time_series_per_metric"`
+		Selector               selector.Expr `yaml:"selector"`
+		Grouping               []GroupOption `yaml:"group"`
+		ExpectedPrefix         string        `yaml:"expected_prefix"`
+		ForceAbsoluteAlgorithm []string      `yaml:"force_absolute_algorithm"`
 	}
 	GroupOption struct {
 		Selector string `yaml:"selector"`
@@ -61,9 +62,10 @@ type (
 		prom   prometheus.Prometheus
 		charts *module.Charts
 
-		optGroupings []optionalGrouping
-		cache        collectCache
-		skipMetrics  map[string]bool
+		forceAbsoluteAlgorithm matcher.Matcher
+		optGroupings           []optionalGrouping
+		cache                  collectCache
+		skipMetrics            map[string]bool
 	}
 	optionalGrouping struct {
 		sr  selector.Selector
@@ -92,6 +94,13 @@ func (p *Prometheus) Init() bool {
 		return false
 	}
 	p.optGroupings = optGrps
+
+	mr, err := p.initForceAbsoluteAlgorithm()
+	if err != nil {
+		p.Errorf("init force_absolute_algorithm (%v): %v", p.ForceAbsoluteAlgorithm, err)
+		return false
+	}
+	p.forceAbsoluteAlgorithm = mr
 
 	return true
 }
