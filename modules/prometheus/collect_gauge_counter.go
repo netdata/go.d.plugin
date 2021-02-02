@@ -1,6 +1,8 @@
 package prometheus
 
 import (
+	"strings"
+
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
@@ -30,6 +32,9 @@ func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, met
 		if !cache.hasChart(chartID) {
 			chart := anyChart(chartID, pm, meta)
 			cache.putChart(chartID, chart)
+			if strings.HasSuffix(chart.Units, "/s") && p.forceAbsoluteAlgorithm.MatchString(pm.Name()) {
+				chart.Units = chart.Units[:len(chart.Units)-2]
+			}
 			if err := p.Charts().Add(chart); err != nil {
 				p.Warning(err)
 			}
