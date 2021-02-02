@@ -32,7 +32,7 @@ by [reading the response on the following query](https://manpages.debian.org/str
 ## Charts
 
 - Queries forwarded to the upstream servers in `queries/s`
-- Cache entries in `entries`
+- Cache size in `entries`
 - Cache operations in `operations/s`
 - Cache performance in `events/s`
 
