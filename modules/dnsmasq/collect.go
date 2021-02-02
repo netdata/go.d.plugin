@@ -15,20 +15,11 @@ func (d *Dnsmasq) collect() (map[string]int64, error) {
 	}
 
 	ms := make(map[string]int64)
-	err = d.collectResponse(ms, r)
-	if err != nil {
+	if err = d.collectResponse(ms, r); err != nil {
 		return nil, err
 	}
 
-	calcCacheEntries(ms)
 	return ms, nil
-}
-
-func calcCacheEntries(ms map[string]int64) {
-	if !has(ms, "insertions", "evictions") {
-		return
-	}
-	ms["cache_entries"] = ms["insertions"] - ms["evictions"]
 }
 
 func (d *Dnsmasq) collectResponse(ms map[string]int64, resp *dns.Msg) error {
@@ -127,13 +118,4 @@ func (d *Dnsmasq) queryCacheStatistics() (*dns.Msg, error) {
 		return nil, fmt.Errorf("'%s' returned '%s' (%d) response code", d.Address, s, r.Rcode)
 	}
 	return r, nil
-}
-
-func has(m map[string]int64, key string, keys ...string) bool {
-	switch _, ok := m[key]; len(keys) {
-	case 0:
-		return ok
-	default:
-		return ok && has(m, keys[0], keys[1:]...)
-	}
 }
