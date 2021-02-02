@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -501,6 +502,35 @@ func TestPrometheus_Collect(t *testing.T) {
 					ensureCollectedHasAllChartsDimsVarsIDs(t, prom, collected)
 				}
 			})
+		}
+	}
+}
+
+func TestPrometheus_ForceAbsoluteAlgorithm(t *testing.T) {
+	input := [][]string{
+		{
+			`# HELP prometheus_sd_kubernetes_events_total The number of Kubernetes events handled.`,
+			`# TYPE prometheus_sd_kubernetes_events_total counter`,
+			`prometheus_sd_kubernetes_events_total{event="add",role="endpoints"} 1`,
+			`prometheus_sd_kubernetes_events_total{event="add",role="ingress"} 2`,
+			`prometheus_sd_kubernetes_events_total{event="add",role="node"} 3`,
+			`prometheus_sd_kubernetes_events_total{event="add",role="pod"} 4`,
+			`prometheus_sd_kubernetes_events_total{event="add",role="service"} 5`,
+		},
+	}
+
+	prom, cleanup := preparePrometheus(t, input)
+	defer cleanup()
+	prom.forceAbsoluteAlgorithm = matcher.TRUE()
+
+	assert.NotEmpty(t, prom.Collect())
+
+	for _, c := range *prom.Charts() {
+		if c.ID != "prometheus_sd_kubernetes_events_total" {
+			continue
+		}
+		for _, d := range c.Dims {
+			assert.Equal(t, module.Absolute, d.Algo)
 		}
 	}
 }

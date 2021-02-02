@@ -48,6 +48,26 @@ jobs:
     url: http://203.0.113.0:9182/metrics
 ```
 
+### Dimension algorithm
+
+`incremental` algorithm (values displayed as rate) used when:
+
+- the metric type is `Counter`, `Histogram` or `Summary`.
+- the metrics suffix is `_total`, `_sum` or `_count`.
+
+`absoulte` algorithm (values displayed as is) is used in all other cases.
+
+Use `force_absolute_algorithm` configuration option to overwrite the logic.
+
+```yaml
+jobs:
+  - name: node_exporter_local
+    url: http://127.0.0.1:9100/metrics
+    force_absolute_algorithm:
+      - '*_sum'
+      - '*_count'
+```
+
 ### Time Series Selector (filtering)
 
 To filter unwanted time series (metrics) use `selector` configuration option.

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -75,6 +76,18 @@ func (p Prometheus) initOptionalGrouping() ([]optionalGrouping, error) {
 		})
 	}
 	return optGrps, nil
+}
+
+func (p Prometheus) initForceAbsoluteAlgorithm() (matcher.Matcher, error) {
+	mr := matcher.FALSE()
+	for _, v := range p.ForceAbsoluteAlgorithm {
+		m, err := matcher.NewGlobMatcher(v)
+		if err != nil {
+			return nil, err
+		}
+		mr = matcher.Or(mr, m)
+	}
+	return mr, nil
 }
 
 func labelsContainsAll(lbs labels.Labels, names ...string) bool {
