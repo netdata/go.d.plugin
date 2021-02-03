@@ -188,7 +188,7 @@ LOOP:
 		}
 	}
 	j.module.Cleanup()
-	j.cleanup()
+	j.Cleanup()
 	j.stop <- struct{}{}
 }
 
@@ -203,7 +203,7 @@ func (j *Job) disableAutoDetection() {
 	j.AutoDetectEvery = 0
 }
 
-func (j *Job) cleanup() {
+func (j *Job) Cleanup() {
 	if j.Logger != nil {
 		logger.GlobalMsgCountWatcher.Unregister(j.Logger)
 	}
@@ -221,9 +221,11 @@ func (j *Job) cleanup() {
 			}
 		}
 	}
-	writeLock.Lock()
-	_, _ = io.Copy(j.out, j.buf)
-	writeLock.Unlock()
+	if j.buf.Len() > 0 {
+		writeLock.Lock()
+		_, _ = io.Copy(j.out, j.buf)
+		writeLock.Unlock()
+	}
 }
 
 func (j *Job) init() bool {

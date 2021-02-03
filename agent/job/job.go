@@ -10,4 +10,5 @@ type Job interface {
 	Tick(clock int)
 	Start()
 	Stop()
+	Cleanup()
 }
