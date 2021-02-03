@@ -222,6 +222,12 @@ func (m *Manager) handleAddCfg(ctx context.Context, cfg confgroup.Config) {
 		m.CurState.Save(cfg, buildError)
 		return
 	}
+	cleanupJob := true
+	defer func() {
+		if cleanupJob {
+			job.Cleanup()
+		}
+	}()
 
 	if isRetry {
 		job.AutoDetectEvery = task.timeout
@@ -245,6 +251,7 @@ func (m *Manager) handleAddCfg(ctx context.Context, cfg confgroup.Config) {
 			m.CurState.Save(cfg, success)
 			m.Runner.Start(job)
 			m.startCache.put(cfg)
+			cleanupJob = false
 		} else if isTooManyOpenFiles(err) {
 			m.Error(err)
 			m.CurState.Save(cfg, registrationError)
