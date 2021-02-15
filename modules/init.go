@@ -48,6 +48,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/solr"
 	_ "github.com/netdata/go.d.plugin/modules/springboot2"
 	_ "github.com/netdata/go.d.plugin/modules/squidlog"
+	_ "github.com/netdata/go.d.plugin/modules/supervisord"
 	_ "github.com/netdata/go.d.plugin/modules/systemdunits"
 	_ "github.com/netdata/go.d.plugin/modules/tengine"
 	_ "github.com/netdata/go.d.plugin/modules/unbound"
