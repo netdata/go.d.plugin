@@ -106,27 +106,27 @@ func TestSupervisord_Collect(t *testing.T) {
 				"group_proc1_non_running_processes":  1,
 				"group_proc1_process_00_downtime":    16276,
 				"group_proc1_process_00_exit_status": 0,
-				"group_proc1_process_00_state":       200,
+				"group_proc1_process_00_state_code":  200,
 				"group_proc1_process_00_uptime":      0,
 				"group_proc1_running_processes":      0,
 				"group_proc2_non_running_processes":  0,
 				"group_proc2_process_00_downtime":    0,
 				"group_proc2_process_00_exit_status": 0,
-				"group_proc2_process_00_state":       20,
+				"group_proc2_process_00_state_code":  20,
 				"group_proc2_process_00_uptime":      2,
 				"group_proc2_process_01_downtime":    0,
 				"group_proc2_process_01_exit_status": 0,
-				"group_proc2_process_01_state":       20,
+				"group_proc2_process_01_state_code":  20,
 				"group_proc2_process_01_uptime":      2,
 				"group_proc2_process_02_downtime":    0,
 				"group_proc2_process_02_exit_status": 0,
-				"group_proc2_process_02_state":       20,
+				"group_proc2_process_02_state_code":  20,
 				"group_proc2_process_02_uptime":      8,
 				"group_proc2_running_processes":      3,
 				"group_proc3_non_running_processes":  0,
 				"group_proc3_process_00_downtime":    0,
 				"group_proc3_process_00_exit_status": 0,
-				"group_proc3_process_00_state":       20,
+				"group_proc3_process_00_state_code":  20,
 				"group_proc3_process_00_uptime":      16291,
 				"group_proc3_running_processes":      1,
 				"non_running_processes":              1,
@@ -154,6 +154,7 @@ func TestSupervisord_Collect(t *testing.T) {
 			assert.Equal(t, test.wantCollected, ms)
 			if len(test.wantCollected) > 0 {
 				ensureCollectedHasAllChartsDimsVarsIDs(t, supvr, ms)
+				ensureCollectedProcessesAddedToCharts(t, supvr)
 			}
 		})
 	}
@@ -171,6 +172,14 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, supvr *Supervisord, ms
 		for _, v := range chart.Vars {
 			_, ok := ms[v.ID]
 			assert.Truef(t, ok, "chart '%s' dim '%s': no dim in collected", v.ID, chart.ID)
+		}
+	}
+}
+
+func ensureCollectedProcessesAddedToCharts(t *testing.T, supvr *Supervisord) {
+	for group := range supvr.cache {
+		for _, c := range *newProcGroupCharts(group) {
+			assert.NotNilf(t, supvr.Charts().Get(c.ID), "'%s' chart is not in charts", c.ID)
 		}
 	}
 }

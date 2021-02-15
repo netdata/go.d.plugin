@@ -99,7 +99,9 @@ func parseGetAllProcessInfo(resp interface{}) ([]processStatus, error) {
 				p.exitStatus, _ = v.(int)
 			}
 		}
-		info = append(info, p)
+		if p.name != "" && p.group != "" && p.stateName != "" {
+			info = append(info, p)
+		}
 	}
 	return info, nil
 }

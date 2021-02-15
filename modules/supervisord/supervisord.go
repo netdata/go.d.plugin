@@ -16,16 +16,15 @@ func init() {
 func New() *Supervisord {
 	return &Supervisord{
 		Config: Config{
-			//URL:     "http://127.0.0.1:9001/RPC2",
-			URL: "http://pc:9001/RPC2",
+			URL: "http://127.0.0.1:9001/RPC2",
+			//URL: "http://pc:9001/RPC2",
 			Client: web.Client{
 				Timeout: web.Duration{Duration: time.Second},
 			},
 		},
 
-		charts:             summaryCharts.Copy(),
-		collectedGroups:    make(map[string]bool),
-		collectedProcesses: make(map[string]bool),
+		charts: summaryCharts.Copy(),
+		cache:  make(map[string]map[string]bool),
 	}
 }
 
@@ -42,8 +41,7 @@ type (
 		client supervisorClient
 		charts *module.Charts
 
-		collectedGroups    map[string]bool
-		collectedProcesses map[string]bool
+		cache map[string]map[string]bool // map[group][procName]collected
 	}
 	supervisorClient interface {
 		getAllProcessInfo() ([]processStatus, error)

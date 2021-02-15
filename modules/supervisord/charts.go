@@ -6,14 +6,20 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+const (
+	summaryChartsPriority = module.Priority
+	groupChartsPriority   = summaryChartsPriority + 20
+)
+
 var summaryCharts = module.Charts{
 	{
-		ID:    "processes",
-		Title: "Processes",
-		Units: "processes",
-		Fam:   "summary",
-		Ctx:   "supervisord.summary_processes",
-		Type:  module.Stacked,
+		ID:       "processes",
+		Title:    "Processes",
+		Units:    "processes",
+		Fam:      "summary",
+		Ctx:      "supervisord.summary_processes",
+		Type:     module.Stacked,
+		Priority: summaryChartsPriority,
 		Dims: module.Dims{
 			{ID: "running_processes", Name: "running"},
 			{ID: "non_running_processes", Name: "non-running"},
@@ -74,9 +80,10 @@ var (
 
 func newProcGroupCharts(group string) *module.Charts {
 	charts := groupChartsTmpl.Copy()
-	for _, c := range *charts {
+	for i, c := range *charts {
 		c.ID = fmt.Sprintf(c.ID, group)
 		c.Fam = fmt.Sprintf(c.Fam, group)
+		c.Priority = groupChartsPriority + i
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, group)
 		}
