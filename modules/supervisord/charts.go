@@ -44,28 +44,28 @@ var (
 	}
 	groupProcessesStateCodeChartTmpl = module.Chart{
 		ID:    "group_%s_processes_state_code",
-		Title: "Processes state code",
-		Units: "state",
+		Title: "State code",
+		Units: "code",
 		Fam:   "group %s",
 		Ctx:   "supervisord.process_state_code",
 	}
 	groupProcessesExitStatusChartTmpl = module.Chart{
 		ID:    "group_%s_processes_exit_status",
-		Title: "Processes exit status",
+		Title: "Exit status",
 		Units: "status",
 		Fam:   "group %s",
 		Ctx:   "supervisord.process_exit_status",
 	}
 	groupProcessesUptimeChartTmpl = module.Chart{
 		ID:    "group_%s_processes_uptime",
-		Title: "Processes uptime",
+		Title: "Uptime",
 		Units: "seconds",
 		Fam:   "group %s",
 		Ctx:   "supervisord.process_uptime",
 	}
 	groupProcessesDowntimeChartTmpl = module.Chart{
 		ID:    "group_%s_processes_downtime",
-		Title: "Processes downtime",
+		Title: "Downtime",
 		Units: "seconds",
 		Fam:   "group %s",
 		Ctx:   "supervisord.process_downtime",

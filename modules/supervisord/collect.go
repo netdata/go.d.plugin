@@ -46,16 +46,16 @@ func (s *Supervisord) collectAllProcessInfo(ms map[string]int64, info []processS
 			s.addProcessToCharts(p)
 		}
 
-		ms[fmt.Sprintf("group_%s_running_processes", p.group)] += 0
-		ms[fmt.Sprintf("group_%s_non_running_processes", p.group)] += 0
+		ms["group_"+p.group+"_running_processes"] += 0
+		ms["group_"+p.group+"_non_running_processes"] += 0
 		if p.state == stateRunning {
 			ms["running_processes"] += 1
-			ms[fmt.Sprintf("group_%s_running_processes", p.group)] += 1
+			ms["group_"+p.group+"_running_processes"] += 1
 		} else {
 			ms["non_running_processes"] += 1
-			ms[fmt.Sprintf("group_%s_non_running_processes", p.group)] += 1
+			ms["group_"+p.group+"_non_running_processes"] += 1
 		}
-		ms[id+"_state"] = int64(p.state)
+		ms[id+"_state_code"] = int64(p.state)
 		ms[id+"_exit_status"] = int64(p.exitStatus)
 		ms[id+"_uptime"] = calcProcessUptime(p)
 		ms[id+"_downtime"] = calcProcessDowntime(p)
@@ -89,7 +89,7 @@ func (s *Supervisord) addProcessToCharts(p processStatus) {
 		var dimID string
 		switch c.ID {
 		case fmt.Sprintf(groupProcessesStateCodeChartTmpl.ID, p.group):
-			dimID = id + "_state"
+			dimID = id + "_state_code"
 		case fmt.Sprintf(groupProcessesExitStatusChartTmpl.ID, p.group):
 			dimID = id + "_exit_status"
 		case fmt.Sprintf(groupProcessesUptimeChartTmpl.ID, p.group):
@@ -114,7 +114,7 @@ func (s *Supervisord) removeProcessFromCharts(p processStatus) {
 		var dimID string
 		switch c.ID {
 		case fmt.Sprintf(groupProcessesStateCodeChartTmpl.ID, p.group):
-			dimID = id + "_state"
+			dimID = id + "_state_code"
 		case fmt.Sprintf(groupProcessesExitStatusChartTmpl.ID, p.group):
 			dimID = id + "_exit_status"
 		case fmt.Sprintf(groupProcessesUptimeChartTmpl.ID, p.group):

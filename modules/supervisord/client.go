@@ -82,21 +82,21 @@ func parseGetAllProcessInfo(resp interface{}) ([]processStatus, error) {
 		for k, v := range s {
 			switch strings.ToLower(k) {
 			case "name":
-				p.name, ok = v.(string)
+				p.name, _ = v.(string)
 			case "group":
-				p.group, ok = v.(string)
+				p.group, _ = v.(string)
 			case "start":
-				p.start, ok = v.(int)
+				p.start, _ = v.(int)
 			case "stop":
-				p.stop, ok = v.(int)
+				p.stop, _ = v.(int)
 			case "now":
-				p.now, ok = v.(int)
+				p.now, _ = v.(int)
 			case "state":
-				p.state, ok = v.(int)
+				p.state, _ = v.(int)
 			case "statename":
-				p.stateName, ok = v.(string)
+				p.stateName, _ = v.(string)
 			case "exitstatus":
-				p.exitStatus, ok = v.(int)
+				p.exitStatus, _ = v.(int)
 			}
 		}
 		info = append(info, p)
