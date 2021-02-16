@@ -144,7 +144,7 @@ jobs:
 ```
 
 For all available options, please see the
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/squid_log.conf).
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/squidlog.conf).
 
 ## Troubleshooting
 
