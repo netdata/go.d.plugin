@@ -17,7 +17,6 @@ func New() *Supervisord {
 	return &Supervisord{
 		Config: Config{
 			URL: "http://127.0.0.1:9001/RPC2",
-			//URL: "http://pc:9001/RPC2",
 			Client: web.Client{
 				Timeout: web.Duration{Duration: time.Second},
 			},
