@@ -73,6 +73,7 @@ If you have time and willing to help, there are a lof of ways to contribute:
 | [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)                           | `Solr`                          |
 | [squidlog](https://github.com/netdata/go.d.plugin/tree/master/modules/squidlog)                   | `Squid`                         |
 | [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)             | `Spring Boot2`                  |
+| [supervisord](https://github.com/netdata/go.d.plugin/tree/master/modules/supervisord)             | `Supervisor`                    |
 | [systemdunits](https://github.com/netdata/go.d.plugin/tree/master/modules/systemdunits)           | `Systemd unit state`            |
 | [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)                     | `Tengine`                       |
 | [unbound](https://github.com/netdata/go.d.plugin/tree/master/modules/unbound)                     | `Unbound`                       |
