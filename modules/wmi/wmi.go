@@ -1,37 +1,31 @@
 package wmi
 
 import (
-	"errors"
 	"time"
 
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
-
-	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func init() {
-	creator := module.Creator{
+	module.Register("wmi", module.Creator{
 		Defaults: module.Defaults{
 			UpdateEvery: 5,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("wmi", creator)
+	})
 }
 
-// New creates WMI with default values.
 func New() *WMI {
-	config := Config{
-		HTTP: web.HTTP{
-			Client: web.Client{
-				Timeout: web.Duration{Duration: time.Second * 5},
+	return &WMI{
+		Config: Config{
+			HTTP: web.HTTP{
+				Client: web.Client{
+					Timeout: web.Duration{Duration: time.Second * 5},
+				},
 			},
 		},
-	}
-	return &WMI{
-		Config: config,
 		cache: cache{
 			collection: make(map[string]bool),
 			collectors: make(map[string]bool),
@@ -44,12 +38,9 @@ func New() *WMI {
 }
 
 type (
-	// Config is the WMI module configuration.
 	Config struct {
 		web.HTTP `yaml:",inline"`
 	}
-
-	// WMI WMI module.
 	WMI struct {
 		module.Base
 		Config `yaml:",inline"`
@@ -57,7 +48,6 @@ type (
 		cache  cache
 		charts *Charts
 	}
-
 	cache struct {
 		collectors map[string]bool
 		collection map[string]bool
@@ -67,53 +57,40 @@ type (
 	}
 )
 
-func (w *WMI) validateConfig() error {
-	if w.URL == "" {
-		return errors.New("URL is not set")
-	}
-	return nil
-}
-
-func (w *WMI) initClient() error {
-	client, err := web.NewHTTPClient(w.Client)
-	if err != nil {
-		return err
-	}
-	w.prom = prometheus.New(client, w.Request)
-	return nil
-}
-
 func (w *WMI) Init() bool {
 	if err := w.validateConfig(); err != nil {
 		w.Errorf("error on validating config: %v", err)
 		return false
 	}
 
-	if err := w.initClient(); err != nil {
-		w.Errorf("error on creating prometheus client: %v", err)
+	prom, err := w.initPrometheusClient()
+	if err != nil {
+		w.Errorf("error on init prometheus client: %v", err)
 		return false
 	}
+	w.prom = prom
+
 	return true
 }
 
-func (w WMI) Check() bool {
+func (w *WMI) Check() bool {
 	return len(w.Collect()) > 0
 }
 
-func (w WMI) Charts() *Charts {
+func (w *WMI) Charts() *Charts {
 	return w.charts
 }
 
 func (w *WMI) Collect() map[string]int64 {
-	mx, err := w.collect()
+	ms, err := w.collect()
 	if err != nil {
 		w.Error(err)
 	}
 
-	if len(mx) == 0 {
+	if len(ms) == 0 {
 		return nil
 	}
-	return mx
+	return ms
 }
 
 func (WMI) Cleanup() {}
