@@ -9,33 +9,53 @@ import (
 const (
 	collectorNet = "net"
 
-	metricNetBytesReceivedTotal       = "windows_net_bytes_received_total"
-	metricNetBytesSentTotal           = "windows_net_bytes_sent_total"
-	metricNetBytesTotal               = "windows_net_bytes_total"
-	metricNetPacketsOutboundDiscarded = "windows_net_packets_outbound_discarded"
-	metricNetPacketsOutboundErrors    = "windows_net_packets_outbound_errors"
+	metricNetCurrentBandwidth = "windows_net_current_bandwidth"
+
+	metricNetBytesTotal         = "windows_net_bytes_total"
+	metricNetBytesReceivedTotal = "windows_net_bytes_received_total"
+	metricNetBytesSentTotal     = "windows_net_bytes_sent_total"
+
+	metricNetPacketsTotal         = "windows_net_packets_total"
+	metricNetPacketsReceivedTotal = "windows_net_packets_received_total"
+	metricNetPacketsSentTotal     = "windows_net_packets_sent_total"
+
+	// up to v0.15.0 (TODO: should be removed)
 	metricNetPacketsReceivedDiscarded = "windows_net_packets_received_discarded"
+	metricNetPacketsOutboundDiscarded = "windows_net_packets_outbound_discarded"
 	metricNetPacketsReceivedErrors    = "windows_net_packets_received_errors"
-	metricNetPacketsReceivedTotal     = "windows_net_packets_received_total"
+	metricNetPacketsOutboundErrors    = "windows_net_packets_outbound_errors"
 	metricNetPacketsReceivedUnknown   = "windows_net_packets_received_unknown"
-	metricNetPacketsTotal             = "windows_net_packets_total"
-	metricNetPacketsSentTotal         = "windows_net_packets_sent_total"
-	metricNetCurrentBandwidth         = "windows_net_current_bandwidth"
+
+	// v0.16.0+
+	metricNetPacketsReceivedDiscardedTotal = "windows_net_packets_received_discarded_total"
+	metricNetPacketsOutboundDiscardedTotal = "windows_net_packets_outbound_discarded_total"
+	metricNetPacketsReceivedErrorsTotal    = "windows_net_packets_received_errors_total"
+	metricNetPacketsOutboundErrorsTotal    = "windows_net_packets_outbound_errors_total"
+	metricNetPacketsReceivedUnknownTotal   = "windows_net_packets_received_unknown_total"
 )
 
 var netMetricNames = []string{
+	metricNetCurrentBandwidth,
+
+	metricNetBytesTotal,
 	metricNetBytesReceivedTotal,
 	metricNetBytesSentTotal,
-	metricNetBytesTotal,
-	metricNetPacketsOutboundDiscarded,
-	metricNetPacketsOutboundErrors,
-	metricNetPacketsReceivedDiscarded,
-	metricNetPacketsReceivedErrors,
-	metricNetPacketsReceivedTotal,
-	metricNetPacketsReceivedUnknown,
+
 	metricNetPacketsTotal,
+	metricNetPacketsReceivedTotal,
 	metricNetPacketsSentTotal,
-	metricNetCurrentBandwidth,
+
+	metricNetPacketsReceivedDiscarded,
+	metricNetPacketsOutboundDiscarded,
+	metricNetPacketsReceivedErrors,
+	metricNetPacketsOutboundErrors,
+	metricNetPacketsReceivedUnknown,
+
+	metricNetPacketsReceivedDiscardedTotal,
+	metricNetPacketsOutboundDiscardedTotal,
+	metricNetPacketsReceivedErrorsTotal,
+	metricNetPacketsOutboundErrorsTotal,
+	metricNetPacketsReceivedUnknownTotal,
 }
 
 func doCollectNet(pms prometheus.Metrics) bool {
@@ -81,17 +101,17 @@ func assignNICMetric(nic *netNIC, name string, value float64) {
 		nic.BytesSentTotal = value
 	case metricNetBytesTotal:
 		nic.BytesTotal = value
-	case metricNetPacketsOutboundDiscarded:
+	case metricNetPacketsOutboundDiscarded, metricNetPacketsOutboundDiscardedTotal:
 		nic.PacketsOutboundDiscarded = value
-	case metricNetPacketsOutboundErrors:
+	case metricNetPacketsOutboundErrors, metricNetPacketsOutboundErrorsTotal:
 		nic.PacketsOutboundErrors = value
-	case metricNetPacketsReceivedDiscarded:
+	case metricNetPacketsReceivedDiscarded, metricNetPacketsReceivedDiscardedTotal:
 		nic.PacketsReceivedDiscarded = value
-	case metricNetPacketsReceivedErrors:
+	case metricNetPacketsReceivedErrors, metricNetPacketsReceivedErrorsTotal:
 		nic.PacketsReceivedErrors = value
 	case metricNetPacketsReceivedTotal:
 		nic.PacketsReceivedTotal = value
-	case metricNetPacketsReceivedUnknown:
+	case metricNetPacketsReceivedUnknown, metricNetPacketsReceivedUnknownTotal:
 		nic.PacketsReceivedUnknown = value
 	case metricNetPacketsTotal:
 		nic.PacketsTotal = value
