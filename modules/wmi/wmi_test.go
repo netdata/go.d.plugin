@@ -7,59 +7,102 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	fullData, _    = ioutil.ReadFile("testdata/full.txt")
-	partialData, _ = ioutil.ReadFile("testdata/partial.txt")
+	v0150Metrics, _ = ioutil.ReadFile("testdata/v0.15.0/metrics.txt")
+	v0160Metrics, _ = ioutil.ReadFile("testdata/v0.16.0/metrics.txt")
 )
 
-func Test_readTestData(t *testing.T) {
-	assert.NotNil(t, fullData)
-	assert.NotNil(t, partialData)
+func Test_TestData(t *testing.T) {
+	for name, data := range map[string][]byte{
+		"v0150Metrics": v0150Metrics,
+		"v0160Metrics": v0160Metrics,
+	} {
+		assert.NotNilf(t, data, name)
+	}
 }
 
 func TestNew(t *testing.T) {
-	assert.Implements(t, (*module.Module)(nil), New())
+	assert.IsType(t, (*WMI)(nil), New())
 }
 
 func TestWMI_Init(t *testing.T) {
-	wmi := New()
-	wmi.URL = "http://127.0.0.1:38001/metrics"
+	tests := map[string]struct {
+		config   Config
+		wantFail bool
+	}{
+		"success if 'url' is set": {
+			config: Config{
+				HTTP: web.HTTP{Request: web.Request{URL: "http://127.0.0.1:9182/metrics"}}},
+		},
+		"fails on default config": {
+			wantFail: true,
+			config:   New().Config,
+		},
+		"fails if 'url' is unset": {
+			wantFail: true,
+			config:   Config{HTTP: web.HTTP{Request: web.Request{URL: ""}}},
+		},
+	}
 
-	assert.True(t, wmi.Init())
-}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			wmi := New()
+			wmi.Config = test.config
 
-func TestWMI_Init_ErrorOnValidatingConfigURLIsNotSet(t *testing.T) {
-	wmi := New()
-
-	assert.False(t, wmi.Init())
-}
-
-func TestWMI_Init_ErrorOnCreatingClientWrongTLSCA(t *testing.T) {
-	wmi := New()
-	wmi.URL = "http://127.0.0.1:38001/metrics"
-	wmi.Client.TLSConfig.TLSCA = "testdata/tls"
-
-	assert.False(t, wmi.Init())
+			if test.wantFail {
+				assert.False(t, wmi.Init())
+			} else {
+				assert.True(t, wmi.Init())
+			}
+		})
+	}
 }
 
 func TestWMI_Check(t *testing.T) {
-	wmi, ts := prepareClientServerFullData(t)
-	defer ts.Close()
+	tests := map[string]struct {
+		prepare  func() (wmi *WMI, cleanup func())
+		wantFail bool
+	}{
+		"success on valid response v0.15.0": {
+			prepare: prepareWMIv0150,
+		},
+		"success on valid response v0.16.0": {
+			prepare: prepareWMIv0160,
+		},
+		"fails if endpoint returns invalid data": {
+			wantFail: true,
+			prepare:  prepareWMIReturnsInvalidData,
+		},
+		"fails on connection refused": {
+			wantFail: true,
+			prepare:  prepareWMIConnectionRefused,
+		},
+		"fails on 404 response": {
+			wantFail: true,
+			prepare:  prepareWMIResponse404,
+		},
+	}
 
-	assert.True(t, wmi.Check())
-}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			wmi, cleanup := test.prepare()
+			defer cleanup()
 
-func TestWMI_Check_ErrorOnCollectConnectionRefused(t *testing.T) {
-	wmi := New()
-	wmi.URL = "http://127.0.0.1:38001/metrics"
-	require.True(t, wmi.Init())
+			require.True(t, wmi.Init())
 
-	assert.False(t, wmi.Check())
+			if test.wantFail {
+				assert.False(t, wmi.Check())
+			} else {
+				assert.True(t, wmi.Check())
+			}
+		})
+	}
 }
 
 func TestWMI_Charts(t *testing.T) {
@@ -71,329 +114,319 @@ func TestWMI_Cleanup(t *testing.T) {
 }
 
 func TestWMI_Collect(t *testing.T) {
-	wmi, ts := prepareClientServerFullData(t)
-	defer ts.Close()
-
-	expected := map[string]int64{
-		"cpu_collection_duration":                                     0,
-		"cpu_collection_success":                                      1,
-		"cpu_core_0,0_c1":                                             28905096,
-		"cpu_core_0,0_c2":                                             0,
-		"cpu_core_0,0_c3":                                             0,
-		"cpu_core_0,0_dpc":                                            3828,
-		"cpu_core_0,0_dpcs":                                           305034000,
-		"cpu_core_0,0_idle":                                           28535546,
-		"cpu_core_0,0_interrupt":                                      22734,
-		"cpu_core_0,0_interrupts":                                     59163056000,
-		"cpu_core_0,0_privileged":                                     2113093,
-		"cpu_core_0,0_user":                                           860296,
-		"cpu_core_0,1_c1":                                             29243332,
-		"cpu_core_0,1_c2":                                             0,
-		"cpu_core_0,1_c3":                                             0,
-		"cpu_core_0,1_dpc":                                            1562,
-		"cpu_core_0,1_dpcs":                                           170434000,
-		"cpu_core_0,1_idle":                                           29413609,
-		"cpu_core_0,1_interrupt":                                      12171,
-		"cpu_core_0,1_interrupts":                                     10966489000,
-		"cpu_core_0,1_privileged":                                     943984,
-		"cpu_core_0,1_user":                                           1151109,
-		"cpu_core_0,2_c1":                                             29914283,
-		"cpu_core_0,2_c2":                                             0,
-		"cpu_core_0,2_c3":                                             0,
-		"cpu_core_0,2_dpc":                                            3328,
-		"cpu_core_0,2_dpcs":                                           162396000,
-		"cpu_core_0,2_idle":                                           29943328,
-		"cpu_core_0,2_interrupt":                                      16843,
-		"cpu_core_0,2_interrupts":                                     11142989000,
-		"cpu_core_0,2_privileged":                                     634875,
-		"cpu_core_0,2_user":                                           930500,
-		"cpu_core_0,3_c1":                                             29465377,
-		"cpu_core_0,3_c2":                                             0,
-		"cpu_core_0,3_c3":                                             0,
-		"cpu_core_0,3_dpc":                                            49390,
-		"cpu_core_0,3_dpcs":                                           213509000,
-		"cpu_core_0,3_idle":                                           29285500,
-		"cpu_core_0,3_interrupt":                                      31078,
-		"cpu_core_0,3_interrupts":                                     10967361000,
-		"cpu_core_0,3_privileged":                                     1082906,
-		"cpu_core_0,3_user":                                           1140296,
-		"cpu_dpc":                                                     58109,
-		"cpu_idle":                                                    117177984,
-		"cpu_interrupt":                                               82828,
-		"cpu_privileged":                                              4774859,
-		"cpu_user":                                                    4082203,
-		"logical_disk_C:_free_space":                                  31390171136000,
-		"logical_disk_C:_idle_seconds_total":                          0,
-		"logical_disk_C:_read_bytes_total":                            1531812864000,
-		"logical_disk_C:_read_latency":                                37023,
-		"logical_disk_C:_read_seconds_total":                          0,
-		"logical_disk_C:_reads_total":                                 38137,
-		"logical_disk_C:_requests_queued":                             0,
-		"logical_disk_C:_split_ios_total":                             0,
-		"logical_disk_C:_total_space":                                 53076819968000,
-		"logical_disk_C:_used_space":                                  21686648832000,
-		"logical_disk_C:_write_bytes_total":                           961305600000,
-		"logical_disk_C:_write_latency":                               18309,
-		"logical_disk_C:_write_seconds_total":                         0,
-		"logical_disk_C:_writes_total":                                38039,
-		"logical_disk_E:_free_space":                                  10694426624000,
-		"logical_disk_E:_idle_seconds_total":                          0,
-		"logical_disk_E:_read_bytes_total":                            904704000,
-		"logical_disk_E:_read_latency":                                40,
-		"logical_disk_E:_read_seconds_total":                          0,
-		"logical_disk_E:_reads_total":                                 176,
-		"logical_disk_E:_requests_queued":                             0,
-		"logical_disk_E:_split_ios_total":                             0,
-		"logical_disk_E:_total_space":                                 10733223936000,
-		"logical_disk_E:_used_space":                                  38797312000,
-		"logical_disk_E:_write_bytes_total":                           32892416000,
-		"logical_disk_E:_write_latency":                               84,
-		"logical_disk_E:_write_seconds_total":                         0,
-		"logical_disk_E:_writes_total":                                294,
-		"logical_disk_collection_duration":                            0,
-		"logical_disk_collection_success":                             1,
-		"logon_collection_duration":                                   115,
-		"logon_collection_success":                                    1,
-		"logon_type_batch":                                            0,
-		"logon_type_cached_interactive":                               0,
-		"logon_type_cached_remote_interactive":                        0,
-		"logon_type_cached_unlock":                                    0,
-		"logon_type_interactive":                                      2,
-		"logon_type_network":                                          0,
-		"logon_type_network_clear_text":                               0,
-		"logon_type_new_credentials":                                  0,
-		"logon_type_proxy":                                            0,
-		"logon_type_remote_interactive":                               0,
-		"logon_type_service":                                          0,
-		"logon_type_system":                                           0,
-		"logon_type_unlock":                                           0,
-		"memory_available_bytes":                                      2621665280000,
-		"memory_cache_bytes":                                          55283712000,
-		"memory_cache_bytes_peak":                                     81985536000,
-		"memory_cache_faults_total":                                   291802000,
-		"memory_cache_total":                                          1866829824000,
-		"memory_collection_duration":                                  0,
-		"memory_collection_success":                                   1,
-		"memory_commit_limit":                                         5770891264000,
-		"memory_committed_bytes":                                      1653608448000,
-		"memory_demand_zero_faults_total":                             26234351000,
-		"memory_free_and_zero_page_list_bytes":                        816140288000,
-		"memory_free_system_page_table_entries":                       12558385000,
-		"memory_modified_page_list_bytes":                             61304832000,
-		"memory_not_committed_bytes":                                  4117282816000,
-		"memory_page_faults_total":                                    38420407000,
-		"memory_pool_nonpaged_allocs_total":                           0,
-		"memory_pool_nonpaged_bytes_total":                            74821632000,
-		"memory_pool_paged_allocs_total":                              0,
-		"memory_pool_paged_bytes":                                     118706176000,
-		"memory_pool_paged_resident_bytes":                            99954688000,
-		"memory_standby_cache_core_bytes":                             158302208000,
-		"memory_standby_cache_normal_priority_bytes":                  310276096000,
-		"memory_standby_cache_reserve_bytes":                          1336946688000,
-		"memory_standby_cache_total":                                  1805524992000,
-		"memory_swap_page_operations_total":                           524900000,
-		"memory_swap_page_reads_total":                                73613000,
-		"memory_swap_page_writes_total":                               61000,
-		"memory_swap_pages_read_total":                                521808000,
-		"memory_swap_pages_written_total":                             3092000,
-		"memory_system_cache_resident_bytes":                          55283712000,
-		"memory_system_code_resident_bytes":                           0,
-		"memory_system_code_total_bytes":                              0,
-		"memory_system_driver_resident_bytes":                         9621504000,
-		"memory_system_driver_total_bytes":                            16408576000,
-		"memory_transition_faults_total":                              12759543000,
-		"memory_transition_pages_repurposed_total":                    0,
-		"memory_used_bytes":                                           1672830976000,
-		"memory_write_copies_total":                                   271024000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_received":    10661733000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_sent":        186479806000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_total":       197141539000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_current_bandwidth": 1000000000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_outbound_discarded": 0,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_outbound_errors":    0,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_discarded": 0,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_errors":    0,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_total":     93134000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_unknown":   0,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_sent_total":         94947000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_total":              188081000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_received":               4541800000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_sent":                   1780848000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_total":                  6322648000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_current_bandwidth":            1000000000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_outbound_discarded":   0,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_outbound_errors":      0,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_discarded":   0,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_errors":      0,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_total":       10575000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_unknown":     0,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_sent_total":           9605000,
-		"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_total":                20180000,
-		"net_collection_duration":           0,
-		"net_collection_success":            1,
-		"os_collection_duration":            74,
-		"os_collection_success":             1,
-		"os_paging_free_bytes":              1468342272000,
-		"os_paging_limit_bytes":             1476395008000,
-		"os_physical_memory_free_bytes":     2621657088000,
-		"os_process_memory_limit_bytes":     0,
-		"os_processes":                      121,
-		"os_processes_limit":                4294967295,
-		"os_time":                           1577997682,
-		"os_users":                          2,
-		"os_virtual_memory_bytes":           5770891264000,
-		"os_virtual_memory_free_bytes":      4116611072000,
-		"os_visible_memory_bytes":           4294496256000,
-		"system_boot_time":                  1577966173,
-		"system_calls_total":                430573960000,
-		"system_collection_duration":        0,
-		"system_collection_success":         1,
-		"system_context_switches_total":     49284345000,
-		"system_exception_dispatches_total": 59337000,
-		"system_processor_queue_length":     0,
-		"system_threads":                    994,
-		"system_up_time":                    77504,
+	tests := map[string]struct {
+		prepare       func() (wmi *WMI, cleanup func())
+		wantCollected map[string]int64
+	}{
+		"success on valid response v0.15.0": {
+			prepare: prepareWMIv0150,
+			wantCollected: map[string]int64{
+				"cpu_collection_duration":                                     1000,
+				"cpu_collection_success":                                      1,
+				"cpu_core_0,0_c1":                                             666516,
+				"cpu_core_0,0_c2":                                             1000,
+				"cpu_core_0,0_c3":                                             1000,
+				"cpu_core_0,0_dpc":                                            6234,
+				"cpu_core_0,0_dpcs":                                           352862000,
+				"cpu_core_0,0_idle":                                           696218,
+				"cpu_core_0,0_interrupt":                                      21359,
+				"cpu_core_0,0_interrupts":                                     3799540000,
+				"cpu_core_0,0_privileged":                                     517031,
+				"cpu_core_0,0_user":                                           402703,
+				"cpu_dpc":                                                     6234,
+				"cpu_idle":                                                    696218,
+				"cpu_interrupt":                                               21359,
+				"cpu_privileged":                                              517031,
+				"cpu_user":                                                    402703,
+				"logical_disk_C:_free_space":                                  8434745344000,
+				"logical_disk_C:_idle_seconds_total":                          0,
+				"logical_disk_C:_read_bytes_total":                            8458891776000,
+				"logical_disk_C:_read_latency":                                143835,
+				"logical_disk_C:_read_seconds_total":                          0,
+				"logical_disk_C:_reads_total":                                 101079,
+				"logical_disk_C:_requests_queued":                             0,
+				"logical_disk_C:_split_ios_total":                             0,
+				"logical_disk_C:_total_space":                                 21371027456000,
+				"logical_disk_C:_used_space":                                  12936282112000,
+				"logical_disk_C:_write_bytes_total":                           7427673600000,
+				"logical_disk_C:_write_latency":                               39666,
+				"logical_disk_C:_write_seconds_total":                         0,
+				"logical_disk_C:_writes_total":                                56260,
+				"logical_disk_collection_duration":                            1000,
+				"logical_disk_collection_success":                             1,
+				"logon_collection_duration":                                   1256,
+				"logon_collection_success":                                    1,
+				"logon_type_batch":                                            1,
+				"logon_type_cached_interactive":                               1,
+				"logon_type_cached_remote_interactive":                        1,
+				"logon_type_cached_unlock":                                    1,
+				"logon_type_interactive":                                      2,
+				"logon_type_network":                                          1,
+				"logon_type_network_clear_text":                               1,
+				"logon_type_new_credentials":                                  1,
+				"logon_type_proxy":                                            1,
+				"logon_type_remote_interactive":                               1,
+				"logon_type_service":                                          1,
+				"logon_type_system":                                           1,
+				"logon_type_unlock":                                           1,
+				"memory_available_bytes":                                      788783104000,
+				"memory_cache_bytes":                                          68575232000,
+				"memory_cache_bytes_peak":                                     102326272000,
+				"memory_cache_faults_total":                                   915557000,
+				"memory_cache_total":                                          842539008000,
+				"memory_collection_duration":                                  1000,
+				"memory_collection_success":                                   1,
+				"memory_commit_limit":                                         3547709440000,
+				"memory_committed_bytes":                                      2657218560000,
+				"memory_demand_zero_faults_total":                             6242530000,
+				"memory_free_and_zero_page_list_bytes":                        2531328000,
+				"memory_free_system_page_table_entries":                       12529874000,
+				"memory_modified_page_list_bytes":                             56287232000,
+				"memory_not_committed_bytes":                                  890490880000,
+				"memory_page_faults_total":                                    17047959000,
+				"memory_pool_nonpaged_allocs_total":                           1000,
+				"memory_pool_nonpaged_bytes_total":                            97243136000,
+				"memory_pool_paged_allocs_total":                              1000,
+				"memory_pool_paged_bytes":                                     172675072000,
+				"memory_pool_paged_resident_bytes":                            153165824000,
+				"memory_standby_cache_core_bytes":                             124506112000,
+				"memory_standby_cache_normal_priority_bytes":                  441131008000,
+				"memory_standby_cache_reserve_bytes":                          220614656000,
+				"memory_standby_cache_total":                                  786251776000,
+				"memory_swap_page_operations_total":                           1466380000,
+				"memory_swap_page_reads_total":                                127979000,
+				"memory_swap_page_writes_total":                               3618000,
+				"memory_swap_pages_read_total":                                1240157000,
+				"memory_swap_pages_written_total":                             226223000,
+				"memory_system_cache_resident_bytes":                          68575232000,
+				"memory_system_code_resident_bytes":                           4321280000,
+				"memory_system_code_total_bytes":                              4636672000,
+				"memory_system_driver_resident_bytes":                         3244032000,
+				"memory_system_driver_total_bytes":                            17526784000,
+				"memory_transition_faults_total":                              10153909000,
+				"memory_transition_pages_repurposed_total":                    1375981000,
+				"memory_used_bytes":                                           1358229504000,
+				"memory_write_copies_total":                                   105886000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_received":    76499000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_sent":        88865000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_total":       165364000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_current_bandwidth": 1000000000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_outbound_discarded": 1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_outbound_errors":    1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_discarded": 1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_errors":    1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_total":     676000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_unknown":   1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_sent_total":         686000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_total":              1362000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_received":               383489027000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_sent":                   6755954000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_total":                  390244981000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_current_bandwidth":            1000000000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_outbound_discarded":   1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_outbound_errors":      1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_discarded":   1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_errors":      1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_total":       262638000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_unknown":     1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_sent_total":           84041000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_total":                346679000,
+				"net_collection_duration":           1000,
+				"net_collection_success":            1,
+				"os_collection_duration":            1127,
+				"os_collection_success":             1,
+				"os_paging_free_bytes":              1056043008000,
+				"os_paging_limit_bytes":             1400696832000,
+				"os_physical_memory_free_bytes":     798547968000,
+				"os_process_memory_limit_bytes":     0,
+				"os_processes":                      79,
+				"os_processes_limit":                4294967295,
+				"os_time":                           1615228118,
+				"os_users":                          2,
+				"os_virtual_memory_bytes":           3547709440000,
+				"os_virtual_memory_free_bytes":      905457664000,
+				"os_visible_memory_bytes":           2147012608000,
+				"system_boot_time":                  1615226502,
+				"system_calls_total":                41784660000,
+				"system_collection_duration":        1000,
+				"system_collection_success":         1,
+				"system_context_switches_total":     4616757000,
+				"system_exception_dispatches_total": 3695000,
+				"system_processor_queue_length":     10,
+				"system_threads":                    967,
+				"system_up_time":                    53083,
+			},
+		},
+		"success on valid response v0.16.0": {
+			prepare: prepareWMIv0160,
+			wantCollected: map[string]int64{
+				"cpu_collection_duration":                                     1000,
+				"cpu_collection_success":                                      1,
+				"cpu_core_0,0_c1":                                             684265,
+				"cpu_core_0,0_c2":                                             1000,
+				"cpu_core_0,0_c3":                                             1000,
+				"cpu_core_0,0_dpc":                                            6890,
+				"cpu_core_0,0_dpcs":                                           367230000,
+				"cpu_core_0,0_idle":                                           715406,
+				"cpu_core_0,0_interrupt":                                      21828,
+				"cpu_core_0,0_interrupts":                                     3928344000,
+				"cpu_core_0,0_privileged":                                     530593,
+				"cpu_core_0,0_user":                                           424578,
+				"cpu_dpc":                                                     6890,
+				"cpu_idle":                                                    715406,
+				"cpu_interrupt":                                               21828,
+				"cpu_privileged":                                              530593,
+				"cpu_user":                                                    424578,
+				"logical_disk_C:_free_space":                                  8392802304000,
+				"logical_disk_C:_idle_seconds_total":                          0,
+				"logical_disk_C:_read_bytes_total":                            8469489664000,
+				"logical_disk_C:_read_latency":                                144007,
+				"logical_disk_C:_read_seconds_total":                          0,
+				"logical_disk_C:_reads_total":                                 101190,
+				"logical_disk_C:_requests_queued":                             0,
+				"logical_disk_C:_split_ios_total":                             0,
+				"logical_disk_C:_total_space":                                 21371027456000,
+				"logical_disk_C:_used_space":                                  12978225152000,
+				"logical_disk_C:_write_bytes_total":                           7485627392000,
+				"logical_disk_C:_write_latency":                               39909,
+				"logical_disk_C:_write_seconds_total":                         0,
+				"logical_disk_C:_writes_total":                                56687,
+				"logical_disk_collection_duration":                            1000,
+				"logical_disk_collection_success":                             1,
+				"logon_collection_duration":                                   1044,
+				"logon_collection_success":                                    1,
+				"logon_type_batch":                                            1,
+				"logon_type_cached_interactive":                               1,
+				"logon_type_cached_remote_interactive":                        1,
+				"logon_type_cached_unlock":                                    1,
+				"logon_type_interactive":                                      2,
+				"logon_type_network":                                          1,
+				"logon_type_network_clear_text":                               1,
+				"logon_type_new_credentials":                                  1,
+				"logon_type_proxy":                                            1,
+				"logon_type_remote_interactive":                               1,
+				"logon_type_service":                                          1,
+				"logon_type_system":                                           1,
+				"logon_type_unlock":                                           1,
+				"memory_available_bytes":                                      809349120000,
+				"memory_cache_bytes":                                          68198400000,
+				"memory_cache_bytes_peak":                                     102326272000,
+				"memory_cache_faults_total":                                   915945000,
+				"memory_cache_total":                                          838234112000,
+				"memory_collection_duration":                                  1000,
+				"memory_collection_success":                                   1,
+				"memory_commit_limit":                                         3547709440000,
+				"memory_committed_bytes":                                      2642300928000,
+				"memory_demand_zero_faults_total":                             6452835000,
+				"memory_free_and_zero_page_list_bytes":                        3993600000,
+				"memory_free_system_page_table_entries":                       12530059000,
+				"memory_modified_page_list_bytes":                             32878592000,
+				"memory_not_committed_bytes":                                  905408512000,
+				"memory_page_faults_total":                                    19064737000,
+				"memory_pool_nonpaged_allocs_total":                           1000,
+				"memory_pool_nonpaged_bytes_total":                            97280000000,
+				"memory_pool_paged_allocs_total":                              1000,
+				"memory_pool_paged_bytes":                                     172818432000,
+				"memory_pool_paged_resident_bytes":                            153276416000,
+				"memory_standby_cache_core_bytes":                             124502016000,
+				"memory_standby_cache_normal_priority_bytes":                  485228544000,
+				"memory_standby_cache_reserve_bytes":                          195624960000,
+				"memory_standby_cache_total":                                  805355520000,
+				"memory_swap_page_operations_total":                           1472952000,
+				"memory_swap_page_reads_total":                                128201000,
+				"memory_swap_page_writes_total":                               3752000,
+				"memory_swap_pages_read_total":                                1242858000,
+				"memory_swap_pages_written_total":                             230094000,
+				"memory_system_cache_resident_bytes":                          68198400000,
+				"memory_system_code_resident_bytes":                           4321280000,
+				"memory_system_code_total_bytes":                              4636672000,
+				"memory_system_driver_resident_bytes":                         3309568000,
+				"memory_system_driver_total_bytes":                            17526784000,
+				"memory_transition_faults_total":                              11958820000,
+				"memory_transition_pages_repurposed_total":                    1381522000,
+				"memory_used_bytes":                                           1337663488000,
+				"memory_write_copies_total":                                   106130000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_received":    83866000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_sent":        110493000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_total":       194359000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_current_bandwidth": 1000000000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_outbound_discarded": 1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_outbound_errors":    1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_discarded": 1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_errors":    1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_total":     736000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_unknown":   1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_sent_total":         730000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_total":              1466000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_received":               424915241000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_sent":                   7656073000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_total":                  432571314000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_current_bandwidth":            1000000000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_outbound_discarded":   1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_outbound_errors":      1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_discarded":   1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_errors":      1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_total":       290889000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_unknown":     1000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_sent_total":           96184000,
+				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_total":                387073000,
+				"net_collection_duration":           1000,
+				"net_collection_success":            1,
+				"os_collection_duration":            1046,
+				"os_collection_success":             1,
+				"os_paging_free_bytes":              1042104320000,
+				"os_paging_limit_bytes":             1400696832000,
+				"os_physical_memory_free_bytes":     810295296000,
+				"os_process_memory_limit_bytes":     0,
+				"os_processes":                      78,
+				"os_processes_limit":                4294967295,
+				"os_time":                           1615228173,
+				"os_users":                          2,
+				"os_virtual_memory_bytes":           3547709440000,
+				"os_virtual_memory_free_bytes":      904642560000,
+				"os_visible_memory_bytes":           2147012608000,
+				"system_boot_time":                  1615226502,
+				"system_calls_total":                44265421000,
+				"system_collection_duration":        1000,
+				"system_collection_success":         1,
+				"system_context_switches_total":     4685379000,
+				"system_exception_dispatches_total": 3704000,
+				"system_processor_queue_length":     1,
+				"system_threads":                    943,
+				"system_up_time":                    53284,
+			},
+		},
+		"fails if endpoint returns invalid data": {
+			prepare: prepareWMIReturnsInvalidData,
+		},
+		"fails on connection refused": {
+			prepare: prepareWMIConnectionRefused,
+		},
+		"fails on 404 response": {
+			prepare: prepareWMIResponse404,
+		},
 	}
 
-	collected := wmi.Collect()
-	collected["system_up_time"] = expected["system_up_time"]
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			wmi, cleanup := test.prepare()
+			defer cleanup()
 
-	assert.Equal(t, expected, collected)
-	testCharts(t, wmi, collected)
-}
+			require.True(t, wmi.Init())
 
-func TestWMI_Collect_Partial(t *testing.T) {
-	wmi, ts := prepareClientServerPartialData(t)
-	defer ts.Close()
+			collected := wmi.Collect()
 
-	expected := map[string]int64{
-		"cpu_collection_duration":                    0,
-		"cpu_collection_success":                     1,
-		"cpu_core_0,0_c1":                            9996822,
-		"cpu_core_0,0_c2":                            0,
-		"cpu_core_0,0_c3":                            0,
-		"cpu_core_0,0_dpc":                           2375,
-		"cpu_core_0,0_dpcs":                          119284000,
-		"cpu_core_0,0_idle":                          10181359,
-		"cpu_core_0,0_interrupt":                     1843,
-		"cpu_core_0,0_interrupts":                    17693361000,
-		"cpu_core_0,0_privileged":                    185484,
-		"cpu_core_0,0_user":                          269031,
-		"cpu_core_0,1_c1":                            8774705,
-		"cpu_core_0,1_c2":                            0,
-		"cpu_core_0,1_c3":                            0,
-		"cpu_core_0,1_dpc":                           20062,
-		"cpu_core_0,1_dpcs":                          306334000,
-		"cpu_core_0,1_idle":                          8831375,
-		"cpu_core_0,1_interrupt":                     6109,
-		"cpu_core_0,1_interrupts":                    2346399000,
-		"cpu_core_0,1_privileged":                    861703,
-		"cpu_core_0,1_user":                          942796,
-		"cpu_core_0,2_c1":                            9941251,
-		"cpu_core_0,2_c2":                            0,
-		"cpu_core_0,2_c3":                            0,
-		"cpu_core_0,2_dpc":                           12625,
-		"cpu_core_0,2_dpcs":                          185430000,
-		"cpu_core_0,2_idle":                          9998625,
-		"cpu_core_0,2_interrupt":                     11062,
-		"cpu_core_0,2_interrupts":                    2212620000,
-		"cpu_core_0,2_privileged":                    297359,
-		"cpu_core_0,2_user":                          339890,
-		"cpu_core_0,3_c1":                            9453105,
-		"cpu_core_0,3_c2":                            0,
-		"cpu_core_0,3_c3":                            0,
-		"cpu_core_0,3_dpc":                           13781,
-		"cpu_core_0,3_dpcs":                          211020000,
-		"cpu_core_0,3_idle":                          9463031,
-		"cpu_core_0,3_interrupt":                     105625,
-		"cpu_core_0,3_interrupts":                    2611467000,
-		"cpu_core_0,3_privileged":                    411406,
-		"cpu_core_0,3_user":                          761437,
-		"cpu_dpc":                                    48843,
-		"cpu_idle":                                   38474390,
-		"cpu_interrupt":                              124640,
-		"cpu_privileged":                             1755953,
-		"cpu_user":                                   2313156,
-		"memory_available_bytes":                     2337222656000,
-		"memory_cache_bytes":                         128589824000,
-		"memory_cache_bytes_peak":                    195198976000,
-		"memory_cache_faults_total":                  7675068000,
-		"memory_cache_total":                         2052911104000,
-		"memory_collection_duration":                 0,
-		"memory_collection_success":                  1,
-		"memory_commit_limit":                        5770891264000,
-		"memory_committed_bytes":                     2006388736000,
-		"memory_demand_zero_faults_total":            6882552000,
-		"memory_free_and_zero_page_list_bytes":       304807936000,
-		"memory_free_system_page_table_entries":      12558411000,
-		"memory_modified_page_list_bytes":            20496384000,
-		"memory_not_committed_bytes":                 3764502528000,
-		"memory_page_faults_total":                   18061429000,
-		"memory_pool_nonpaged_allocs_total":          0,
-		"memory_pool_nonpaged_bytes_total":           164827136000,
-		"memory_pool_paged_allocs_total":             0,
-		"memory_pool_paged_bytes":                    372215808000,
-		"memory_pool_paged_resident_bytes":           359211008000,
-		"memory_standby_cache_core_bytes":            165449728000,
-		"memory_standby_cache_normal_priority_bytes": 600199168000,
-		"memory_standby_cache_reserve_bytes":         1266765824000,
-		"memory_standby_cache_total":                 2032414720000,
-		"memory_swap_page_operations_total":          5396970000,
-		"memory_swap_page_reads_total":               676801000,
-		"memory_swap_page_writes_total":              804000,
-		"memory_swap_pages_read_total":               5368093000,
-		"memory_swap_pages_written_total":            28877000,
-		"memory_system_cache_resident_bytes":         128589824000,
-		"memory_system_code_resident_bytes":          0,
-		"memory_system_code_total_bytes":             0,
-		"memory_system_driver_resident_bytes":        9486336000,
-		"memory_system_driver_total_bytes":           16224256000,
-		"memory_transition_faults_total":             5279307000,
-		"memory_transition_pages_repurposed_total":   2163369000,
-		"memory_used_bytes":                          1957273600000,
-		"memory_write_copies_total":                  166632000,
-		"os_collection_duration":                     44,
-		"os_collection_success":                      1,
-		"os_paging_free_bytes":                       1445355520000,
-		"os_paging_limit_bytes":                      1476395008000,
-		"os_physical_memory_free_bytes":              2335821824000,
-		"os_process_memory_limit_bytes":              0,
-		"os_processes":                               124,
-		"os_processes_limit":                         4294967295,
-		"os_time":                                    1578049740,
-		"os_users":                                   2,
-		"os_virtual_memory_bytes":                    5770891264000,
-		"os_virtual_memory_free_bytes":               3764899840000,
-		"os_visible_memory_bytes":                    4294496256000,
+			if collected != nil && test.wantCollected != nil {
+				collected["system_up_time"] = test.wantCollected["system_up_time"]
+			}
+
+			assert.Equal(t, test.wantCollected, collected)
+			if len(test.wantCollected) > 0 {
+				testCharts(t, wmi, collected)
+			}
+		})
 	}
-
-	collected := wmi.Collect()
-	assert.Equal(t, expected, collected)
-	testCharts(t, wmi, collected)
 }
-
-func TestWMI_CollectNoResponse(t *testing.T) {
-	wmi := New()
-	wmi.URL = "http://127.0.0.1:38001/jmx"
-	require.True(t, wmi.Init())
-
-	assert.Nil(t, wmi.Collect())
-}
-
-func TestWMI_Collect_ReceiveInvalidResponse(t *testing.T) {
-	wmi, ts := prepareClientServerInvalidResponse(t)
-	defer ts.Close()
-
-	assert.Nil(t, wmi.Collect())
-}
-
-func TestWMI_Collect_Receive404(t *testing.T) {
-	wmi, ts := prepareClientServerResponse404(t)
-	defer ts.Close()
-
-	assert.Nil(t, wmi.Collect())
-}
-
 func testCharts(t *testing.T, wmi *WMI, collected map[string]int64) {
 	ensureChartsCreated(t, wmi)
 	ensureChartsDynamicDimsCreated(t, wmi)
@@ -505,54 +538,52 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WMI, collected map[
 	}
 }
 
-func prepareClientServerFullData(t *testing.T) (*WMI, *httptest.Server) {
-	t.Helper()
+func prepareWMIv0150() (wmi *WMI, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write(fullData)
+			_, _ = w.Write(v0150Metrics)
 		}))
 
-	wmi := New()
+	wmi = New()
 	wmi.URL = ts.URL
-	require.True(t, wmi.Init())
-	return wmi, ts
+	return wmi, ts.Close
 }
 
-func prepareClientServerPartialData(t *testing.T) (*WMI, *httptest.Server) {
-	t.Helper()
+func prepareWMIv0160() (wmi *WMI, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write(partialData)
+			_, _ = w.Write(v0160Metrics)
 		}))
 
-	wmi := New()
+	wmi = New()
 	wmi.URL = ts.URL
-	require.True(t, wmi.Init())
-	return wmi, ts
+	return wmi, ts.Close
 }
 
-func prepareClientServerInvalidResponse(t *testing.T) (*WMI, *httptest.Server) {
-	t.Helper()
+func prepareWMIReturnsInvalidData() (wmi *WMI, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte("hello and\n goodbye"))
 		}))
 
-	wmi := New()
+	wmi = New()
 	wmi.URL = ts.URL
-	require.True(t, wmi.Init())
-	return wmi, ts
+	return wmi, ts.Close
 }
 
-func prepareClientServerResponse404(t *testing.T) (*WMI, *httptest.Server) {
-	t.Helper()
+func prepareWMIConnectionRefused() (wmi *WMI, cleanup func()) {
+	wmi = New()
+	wmi.URL = "http://127.0.0.1:38001"
+	return wmi, func() {}
+}
+
+func prepareWMIResponse404() (wmi *WMI, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		}))
 
-	wmi := New()
+	wmi = New()
 	wmi.URL = ts.URL
-	require.True(t, wmi.Init())
-	return wmi, ts
+	return wmi, ts.Close
 }
