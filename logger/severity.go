@@ -56,3 +56,7 @@ func (s Severity) ShortString() string {
 func SetSeverity(severity Severity) {
 	globalSeverity = severity
 }
+
+func IsDebug() bool {
+	return globalSeverity == DEBUG
+}
