@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -135,9 +136,12 @@ func (j *Job) AutoDetection() (ok bool) {
 	defer func() {
 		if r := recover(); r != nil {
 			ok = false
-			j.Errorf("PANIC %v", r)
 			j.panicked = true
 			j.disableAutoDetection()
+			j.Errorf("PANIC %v", r)
+			if logger.IsDebug() {
+				j.Errorf("STACK: %s", debug.Stack())
+			}
 		}
 		if !ok {
 			j.module.Cleanup()
@@ -288,8 +292,11 @@ func (j *Job) collect() (result map[string]int64) {
 	j.panicked = false
 	defer func() {
 		if r := recover(); r != nil {
-			j.Errorf("PANIC: %v", r)
 			j.panicked = true
+			j.Errorf("PANIC: %v", r)
+			if logger.IsDebug() {
+				j.Errorf("STACK: %s", debug.Stack())
+			}
 		}
 	}()
 	return j.module.Collect()
