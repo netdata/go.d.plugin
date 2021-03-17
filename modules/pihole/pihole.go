@@ -11,6 +11,9 @@ import (
 
 func init() {
 	creator := module.Creator{
+		Defaults: module.Defaults{
+			UpdateEvery: 5,
+		},
 		Create: func() module.Module { return New() },
 	}
 
@@ -21,7 +24,7 @@ const supportedAPIVersion = 3
 
 const (
 	defaultURL           = "http://127.0.0.1"
-	defaultHTTPTimeout   = time.Second
+	defaultHTTPTimeout   = time.Second * 5
 	defaultTopClients    = 5
 	defaultTopItems      = 5
 	defaultSetupVarsPath = "/etc/pihole/setupVars.conf"
