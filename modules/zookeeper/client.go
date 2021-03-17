@@ -63,10 +63,6 @@ func (c *client) disconnect() error {
 	return err
 }
 
-func (c *client) isConnected() bool {
-	return c.conn != nil
-}
-
 func (c *client) send(command string) error {
 	err := c.conn.SetWriteDeadline(time.Now().Add(c.timeout))
 	if err != nil {
@@ -92,23 +88,14 @@ func (c *client) read() (record []string, err error) {
 }
 
 func (c *client) fetch(command string) (rows []string, err error) {
-	if c.isConnected() {
-		_ = c.disconnect()
-	}
-
-	err = c.connect()
-	if err != nil {
+	if err = c.connect(); err != nil {
 		return nil, err
 	}
-	defer func() {
-		_ = c.disconnect()
-	}()
+	defer func() { _ = c.disconnect() }()
 
-	err = c.send(command)
-	if err != nil {
+	if err = c.send(command); err != nil {
 		return nil, err
 	}
-
 	return c.read()
 }
 
