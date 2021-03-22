@@ -1,6 +1,6 @@
 module github.com/netdata/go.d.plugin
 
-go 1.15
+go 1.16
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1
