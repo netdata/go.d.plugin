@@ -107,7 +107,7 @@ If you want to contribute to this project, we are humbled. Please take a look at
 ### How to develop a collector
 
 -   Take a look at our [contributing guidelines](https://learn.netdata.cloud/contribute/handbook).
--   Read the [How to develop a collector in Go](/docs/how-to-write-a-module.md) guide.
+-   Read the [How to develop a collector in Go](https://github.com/netdata/go.d.plugin/tree/master/docs/how-to-write-a-module.md) guide.
 -   [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) this repository to your personal GitHub account.
 -   [Clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository#:~:text=to%20GitHub%20Desktop-,On%20GitHub%2C%20navigate%20to%20the%20main%20page%20of%20the%20repository,Desktop%20to%20complete%20the%20clone.) locally the **forked** repository (e.g `git clone https://github.com/odyslam/go.d.plugin`).
 -   Using a terminal, `cd` into the directory (e.g `cd go.d.plugin`)
