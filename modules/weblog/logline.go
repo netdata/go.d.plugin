@@ -30,7 +30,7 @@ import (
 | $server_port            | %p        | Port of the server which accepted a request.
 | $scheme                 | -         | Request scheme. "http" or "https".
 | $remote_addr            | %a (%h)   | Client address.
-| $request                | %r        | Full original request line. The line is "$request_method $request_uri $request_uri".
+| $request                | %r        | Full original request line. The line is "$request_method $request_uri $server_protocol".
 | $request_method         | %m        | Request method. Usually "GET" or "POST".
 | $request_uri            | %U        | Full original request URI.
 | $server_protocol        | %H        | Request protocol. Usually "HTTP/1.0", "HTTP/1.1", or "HTTP/2.0".
