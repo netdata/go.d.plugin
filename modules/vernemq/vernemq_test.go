@@ -529,7 +529,7 @@ var v1101ExpectedMetrics = map[string]int64{
 	"queue_message_in":                                        525722,
 	"queue_message_out":                                       525721,
 	"queue_message_unhandled":                                 1,
-	"queue_messages_current":                                  0,
+	"queue_messages_current":                                  1,
 	"queue_processes":                                         0,
 	"queue_setup":                                             338948,
 	"queue_teardown":                                          338948,

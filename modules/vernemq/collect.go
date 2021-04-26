@@ -159,10 +159,10 @@ func collectQueues(mx map[string]float64, pms prometheus.Metrics) {
 }
 
 func calcQueueMessagesCurrent(mx map[string]float64) float64 {
-	undelivered := mx[metricQueueMessageDrop] + mx[metricQueueMessageExpired] + mx[metricQueueMessageUnhandled]
+	expired := mx[metricQueueMessageExpired]
 	out := mx[metricQueueMessageOut]
 	in := mx[metricQueueMessageIn]
-	return in - (out + undelivered)
+	return in - (out + expired)
 }
 
 func collectSubscriptions(mx map[string]float64, pms prometheus.Metrics) {
