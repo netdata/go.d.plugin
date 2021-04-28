@@ -83,6 +83,7 @@ Go.d.plugin is shipped with [`Netdata`](https://github.com/netdata/netdata).
 | [wmi](https://github.com/netdata/go.d.plugin/tree/master/modules/wmi)                             | `Windows Machines`              |
 | [x509check](https://github.com/netdata/go.d.plugin/tree/master/modules/x509check)                 | `Digital Certificates`          |
 | [zookeeper](https://github.com/netdata/go.d.plugin/tree/master/modules/zookeeper)                 | `ZooKeeper`                     |
+| [unity](https://github.com/netdata/go.d.plugin/tree/master/modules/unity)                         | `Unity`			      |
 
 ## Configuration
 
