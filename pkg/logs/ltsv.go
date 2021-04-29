@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"strconv"
 	"unsafe"
 
 	"github.com/Wing924/ltsv"
@@ -30,10 +31,10 @@ func NewLTSVParser(config LTSVConfig, in io.Reader) (*LTSVParser, error) {
 		StrictMode:     false,
 	}
 	if config.FieldDelimiter != "" {
-		p.FieldDelimiter = parseDelimiter(config.FieldDelimiter)
+		p.FieldDelimiter = parseLTSVDelimiter(config.FieldDelimiter)
 	}
 	if config.ValueDelimiter != "" {
-		p.ValueDelimiter = parseDelimiter(config.ValueDelimiter)
+		p.ValueDelimiter = parseLTSVDelimiter(config.ValueDelimiter)
 	}
 	parser := &LTSVParser{
 		r:       bufio.NewReader(in),
@@ -67,4 +68,14 @@ func (p *LTSVParser) Parse(row []byte, line LogLine) error {
 
 func (p LTSVParser) Info() string {
 	return fmt.Sprintf("ltsv: %q", p.mapping)
+}
+
+func parseLTSVDelimiter(d string) byte {
+	if len(d) != 1 {
+		return 0
+	}
+	if v, err := strconv.ParseUint(d, 10, 8); err == nil {
+		return byte(v)
+	}
+	return d[0]
 }

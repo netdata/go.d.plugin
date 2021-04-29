@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -91,7 +92,7 @@ func (f *csvFormat) parse(record []string, line LogLine) error {
 func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 	r := csv.NewReader(in)
 	if config.Delimiter != "" {
-		r.Comma = rune(parseDelimiter(config.Delimiter))
+		r.Comma = parseCSVDelimiter(config.Delimiter)
 	}
 	r.TrimLeadingSpace = config.TrimLeadingSpace
 	r.FieldsPerRecord = config.FieldsPerRecord
@@ -102,7 +103,7 @@ func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 func newCSVFormat(config CSVConfig) (*csvFormat, error) {
 	r := csv.NewReader(strings.NewReader(config.Format))
 	if config.Delimiter != "" {
-		r.Comma = rune(parseDelimiter(config.Delimiter))
+		r.Comma = parseCSVDelimiter(config.Delimiter)
 	}
 	r.TrimLeadingSpace = config.TrimLeadingSpace
 
@@ -171,4 +172,14 @@ func checkCSVFormatField(name string) (newName string, offset int, valid bool) {
 		return "", 0, false
 	}
 	return name, 0, true
+}
+
+func parseCSVDelimiter(d string) rune {
+	if len(d) != 1 {
+		return 0
+	}
+	if v, err := strconv.ParseInt(d, 10, 32); err == nil {
+		return rune(v)
+	}
+	return rune(d[0])
 }
