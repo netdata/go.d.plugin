@@ -11,8 +11,8 @@ import (
 
 type (
 	LTSVConfig struct {
-		FieldDelimiter byte              `yaml:"field_delimiter"`
-		ValueDelimiter byte              `yaml:"value_delimiter"`
+		FieldDelimiter string            `yaml:"field_delimiter"`
+		ValueDelimiter string            `yaml:"value_delimiter"`
 		Mapping        map[string]string `yaml:"mapping"`
 	}
 
@@ -24,16 +24,23 @@ type (
 )
 
 func NewLTSVParser(config LTSVConfig, in io.Reader) (*LTSVParser, error) {
-	p := &LTSVParser{
-		r: bufio.NewReader(in),
-		parser: ltsv.Parser{
-			FieldDelimiter: config.FieldDelimiter,
-			ValueDelimiter: config.ValueDelimiter,
-			StrictMode:     false,
-		},
+	p := ltsv.Parser{
+		FieldDelimiter: ltsv.DefaultParser.FieldDelimiter,
+		ValueDelimiter: ltsv.DefaultParser.ValueDelimiter,
+		StrictMode:     false,
+	}
+	if config.FieldDelimiter != "" {
+		p.FieldDelimiter = parseDelimiter(config.FieldDelimiter)
+	}
+	if config.ValueDelimiter != "" {
+		p.ValueDelimiter = parseDelimiter(config.ValueDelimiter)
+	}
+	parser := &LTSVParser{
+		r:       bufio.NewReader(in),
+		parser:  p,
 		mapping: config.Mapping,
 	}
-	return p, nil
+	return parser, nil
 }
 
 func (p *LTSVParser) ReadLine(line LogLine) error {

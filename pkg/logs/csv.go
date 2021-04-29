@@ -12,7 +12,7 @@ import (
 type (
 	CSVConfig struct {
 		FieldsPerRecord  int                              `yaml:"fields_per_record"`
-		Delimiter        rune                             `yaml:"delimiter"`
+		Delimiter        string                           `yaml:"delimiter"`
 		TrimLeadingSpace bool                             `yaml:"trim_leading_space"`
 		Format           string                           `yaml:"format"`
 		CheckField       func(string) (string, int, bool) `yaml:"-"`
@@ -90,7 +90,9 @@ func (f *csvFormat) parse(record []string, line LogLine) error {
 
 func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 	r := csv.NewReader(in)
-	r.Comma = config.Delimiter
+	if config.Delimiter != "" {
+		r.Comma = rune(parseDelimiter(config.Delimiter))
+	}
 	r.TrimLeadingSpace = config.TrimLeadingSpace
 	r.FieldsPerRecord = config.FieldsPerRecord
 	r.ReuseRecord = true
@@ -99,7 +101,9 @@ func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 
 func newCSVFormat(config CSVConfig) (*csvFormat, error) {
 	r := csv.NewReader(strings.NewReader(config.Format))
-	r.Comma = config.Delimiter
+	if config.Delimiter != "" {
+		r.Comma = rune(parseDelimiter(config.Delimiter))
+	}
 	r.TrimLeadingSpace = config.TrimLeadingSpace
 
 	record, err := r.Read()

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 )
 
 type ParseError struct {
@@ -57,4 +58,14 @@ func NewParser(config ParserConfig, in io.Reader) (Parser, error) {
 	default:
 		return nil, fmt.Errorf("invalid type: %q", config.LogType)
 	}
+}
+
+func parseDelimiter(d string) byte {
+	if d == "" {
+		return 0
+	}
+	if v, err := strconv.Atoi(d); err == nil {
+		return byte(v)
+	}
+	return d[0]
 }

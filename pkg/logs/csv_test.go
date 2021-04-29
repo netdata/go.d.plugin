@@ -9,7 +9,7 @@ import (
 )
 
 var testCSVConfig = CSVConfig{
-	Delimiter: ' ',
+	Delimiter: " ",
 	Format:    "$A %B",
 }
 
