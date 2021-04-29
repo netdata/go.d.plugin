@@ -19,7 +19,7 @@ func New() *SquidLog {
 		LogType: logs.TypeCSV,
 		CSV: logs.CSVConfig{
 			FieldsPerRecord:  -1,
-			Delimiter:        ' ',
+			Delimiter:        " ",
 			TrimLeadingSpace: true,
 			Format:           "- $resp_time $client_address $result_code $resp_size $req_method - - $hierarchy $mime_type",
 			CheckField:       checkCSVFormatField,
