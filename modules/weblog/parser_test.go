@@ -204,12 +204,12 @@ func prepareWebLog() *WebLog {
 	cfg := logs.ParserConfig{
 		LogType: typeAuto,
 		CSV: logs.CSVConfig{
-			Delimiter:  ' ',
+			Delimiter:  " ",
 			CheckField: checkCSVFormatField,
 		},
 		LTSV: logs.LTSVConfig{
-			FieldDelimiter: '\t',
-			ValueDelimiter: ':',
+			FieldDelimiter: "\t",
+			ValueDelimiter: ":",
 		},
 	}
 

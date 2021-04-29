@@ -19,13 +19,13 @@ func New() *WebLog {
 		LogType: typeAuto,
 		CSV: logs.CSVConfig{
 			FieldsPerRecord:  -1,
-			Delimiter:        ' ',
+			Delimiter:        " ",
 			TrimLeadingSpace: false,
 			CheckField:       checkCSVFormatField,
 		},
 		LTSV: logs.LTSVConfig{
-			FieldDelimiter: '\t',
-			ValueDelimiter: ':',
+			FieldDelimiter: "\t",
+			ValueDelimiter: ":",
 		},
 		RegExp: logs.RegExpConfig{},
 		JSON:   logs.JSONConfig{},
