@@ -1,10 +1,10 @@
 package logs
 
 import (
-	"github.com/Wing924/ltsv"
 	"strings"
 	"testing"
 
+	"github.com/Wing924/ltsv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

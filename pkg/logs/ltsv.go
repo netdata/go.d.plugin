@@ -2,6 +2,7 @@ package logs
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -31,10 +32,14 @@ func NewLTSVParser(config LTSVConfig, in io.Reader) (*LTSVParser, error) {
 		StrictMode:     false,
 	}
 	if config.FieldDelimiter != "" {
-		p.FieldDelimiter = parseLTSVDelimiter(config.FieldDelimiter)
+		if d, err := parseLTSVDelimiter(config.FieldDelimiter); err == nil {
+			p.FieldDelimiter = d
+		}
 	}
 	if config.ValueDelimiter != "" {
-		p.ValueDelimiter = parseLTSVDelimiter(config.ValueDelimiter)
+		if d, err := parseLTSVDelimiter(config.ValueDelimiter); err == nil {
+			p.ValueDelimiter = d
+		}
 	}
 	parser := &LTSVParser{
 		r:       bufio.NewReader(in),
@@ -70,12 +75,16 @@ func (p LTSVParser) Info() string {
 	return fmt.Sprintf("ltsv: %q", p.mapping)
 }
 
-func parseLTSVDelimiter(d string) byte {
-	if len(d) != 1 {
-		return 0
+func parseLTSVDelimiter(s string) (byte, error) {
+	if isNumber(s) {
+		d, err := strconv.ParseUint(s, 10, 8)
+		if err != nil {
+			return 0, fmt.Errorf("invalid LTSV delimiter: %v", err)
+		}
+		return byte(d), nil
 	}
-	if v, err := strconv.ParseUint(d, 10, 8); err == nil {
-		return byte(v)
+	if len(s) != 1 {
+		return 0, errors.New("invalid CSV delimiter: must be a single character")
 	}
-	return d[0]
+	return s[0], nil
 }

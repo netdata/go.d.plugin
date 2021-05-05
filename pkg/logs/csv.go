@@ -92,7 +92,9 @@ func (f *csvFormat) parse(record []string, line LogLine) error {
 func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 	r := csv.NewReader(in)
 	if config.Delimiter != "" {
-		r.Comma = parseCSVDelimiter(config.Delimiter)
+		if d, err := parseCSVDelimiter(config.Delimiter); err == nil {
+			r.Comma = d
+		}
 	}
 	r.TrimLeadingSpace = config.TrimLeadingSpace
 	r.FieldsPerRecord = config.FieldsPerRecord
@@ -103,7 +105,9 @@ func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 func newCSVFormat(config CSVConfig) (*csvFormat, error) {
 	r := csv.NewReader(strings.NewReader(config.Format))
 	if config.Delimiter != "" {
-		r.Comma = parseCSVDelimiter(config.Delimiter)
+		if d, err := parseCSVDelimiter(config.Delimiter); err == nil {
+			r.Comma = d
+		}
 	}
 	r.TrimLeadingSpace = config.TrimLeadingSpace
 
@@ -174,12 +178,16 @@ func checkCSVFormatField(name string) (newName string, offset int, valid bool) {
 	return name, 0, true
 }
 
-func parseCSVDelimiter(d string) rune {
-	if len(d) != 1 {
-		return 0
+func parseCSVDelimiter(s string) (rune, error) {
+	if isNumber(s) {
+		d, err := strconv.ParseInt(s, 10, 32)
+		if err != nil {
+			return 0, fmt.Errorf("invalid CSV delimiter: %v", err)
+		}
+		return rune(d), nil
 	}
-	if v, err := strconv.ParseInt(d, 10, 32); err == nil {
-		return rune(v)
+	if len(s) != 1 {
+		return 0, errors.New("invalid CSV delimiter: must be a single character")
 	}
-	return rune(d[0])
+	return rune(s[0]), nil
 }
