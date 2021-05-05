@@ -4,13 +4,14 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Wing924/ltsv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 var testLTSVConfig = LTSVConfig{
-	FieldDelimiter: ' ',
-	ValueDelimiter: '=',
+	FieldDelimiter: " ",
+	ValueDelimiter: "=",
 	Mapping:        map[string]string{"KEY": "key"},
 }
 
@@ -27,14 +28,23 @@ func TestNewLTSVParser(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p, err := NewLTSVParser(tt.config, nil)
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				assert.Nil(t, p)
 			} else {
 				assert.NoError(t, err)
 				assert.NotNil(t, p)
-				assert.Equal(t, tt.config.FieldDelimiter, p.parser.FieldDelimiter)
-				assert.Equal(t, tt.config.ValueDelimiter, p.parser.ValueDelimiter)
+				if tt.config.FieldDelimiter == "" {
+					assert.Equal(t, ltsv.DefaultParser.FieldDelimiter, p.parser.FieldDelimiter)
+				} else {
+					assert.Equal(t, tt.config.FieldDelimiter, string(p.parser.FieldDelimiter))
+				}
+				if tt.config.ValueDelimiter == "" {
+					assert.Equal(t, ltsv.DefaultParser.ValueDelimiter, p.parser.ValueDelimiter)
+				} else {
+					assert.Equal(t, tt.config.ValueDelimiter, string(p.parser.ValueDelimiter))
+				}
 				assert.Equal(t, tt.config.Mapping, p.mapping)
 			}
 		})

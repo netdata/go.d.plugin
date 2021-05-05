@@ -6,13 +6,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
 type (
 	CSVConfig struct {
 		FieldsPerRecord  int                              `yaml:"fields_per_record"`
-		Delimiter        rune                             `yaml:"delimiter"`
+		Delimiter        string                           `yaml:"delimiter"`
 		TrimLeadingSpace bool                             `yaml:"trim_leading_space"`
 		Format           string                           `yaml:"format"`
 		CheckField       func(string) (string, int, bool) `yaml:"-"`
@@ -90,7 +91,11 @@ func (f *csvFormat) parse(record []string, line LogLine) error {
 
 func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 	r := csv.NewReader(in)
-	r.Comma = config.Delimiter
+	if config.Delimiter != "" {
+		if d, err := parseCSVDelimiter(config.Delimiter); err == nil {
+			r.Comma = d
+		}
+	}
 	r.TrimLeadingSpace = config.TrimLeadingSpace
 	r.FieldsPerRecord = config.FieldsPerRecord
 	r.ReuseRecord = true
@@ -99,7 +104,11 @@ func newCSVReader(in io.Reader, config CSVConfig) *csv.Reader {
 
 func newCSVFormat(config CSVConfig) (*csvFormat, error) {
 	r := csv.NewReader(strings.NewReader(config.Format))
-	r.Comma = config.Delimiter
+	if config.Delimiter != "" {
+		if d, err := parseCSVDelimiter(config.Delimiter); err == nil {
+			r.Comma = d
+		}
+	}
 	r.TrimLeadingSpace = config.TrimLeadingSpace
 
 	record, err := r.Read()
@@ -167,4 +176,18 @@ func checkCSVFormatField(name string) (newName string, offset int, valid bool) {
 		return "", 0, false
 	}
 	return name, 0, true
+}
+
+func parseCSVDelimiter(s string) (rune, error) {
+	if isNumber(s) {
+		d, err := strconv.ParseInt(s, 10, 32)
+		if err != nil {
+			return 0, fmt.Errorf("invalid CSV delimiter: %v", err)
+		}
+		return rune(d), nil
+	}
+	if len(s) != 1 {
+		return 0, errors.New("invalid CSV delimiter: must be a single character")
+	}
+	return rune(s[0]), nil
 }

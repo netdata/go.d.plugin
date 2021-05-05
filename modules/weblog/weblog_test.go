@@ -973,7 +973,7 @@ func prepareWebLogCollectFull(t *testing.T) *WebLog {
 			LogType: logs.TypeCSV,
 			CSV: logs.CSVConfig{
 				FieldsPerRecord:  -1,
-				Delimiter:        ' ',
+				Delimiter:        " ",
 				TrimLeadingSpace: false,
 				Format:           format,
 				CheckField:       checkCSVFormatField,
@@ -1041,7 +1041,7 @@ func prepareWebLogCollectCommon(t *testing.T) *WebLog {
 			LogType: logs.TypeCSV,
 			CSV: logs.CSVConfig{
 				FieldsPerRecord:  -1,
-				Delimiter:        ' ',
+				Delimiter:        " ",
 				TrimLeadingSpace: false,
 				Format:           format,
 				CheckField:       checkCSVFormatField,
@@ -1079,7 +1079,7 @@ func prepareWebLogCollectCustom(t *testing.T) *WebLog {
 			LogType: logs.TypeCSV,
 			CSV: logs.CSVConfig{
 				FieldsPerRecord:  2,
-				Delimiter:        ' ',
+				Delimiter:        " ",
 				TrimLeadingSpace: false,
 				Format:           format,
 				CheckField:       checkCSVFormatField,
@@ -1131,7 +1131,7 @@ func prepareWebLogCollectCustomTimeFields(t *testing.T) *WebLog {
 			LogType: logs.TypeCSV,
 			CSV: logs.CSVConfig{
 				FieldsPerRecord:  2,
-				Delimiter:        ' ',
+				Delimiter:        " ",
 				TrimLeadingSpace: false,
 				Format:           format,
 				CheckField:       checkCSVFormatField,
