@@ -84,7 +84,7 @@ func parseLTSVDelimiter(s string) (byte, error) {
 		return byte(d), nil
 	}
 	if len(s) != 1 {
-		return 0, errors.New("invalid CSV delimiter: must be a single character")
+		return 0, errors.New("invalid LTSV delimiter: must be a single character")
 	}
 	return s[0], nil
 }
