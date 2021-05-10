@@ -55,7 +55,7 @@ jobs:
 - the metric type is `Counter`, `Histogram` or `Summary`.
 - the metrics suffix is `_total`, `_sum` or `_count`.
 
-`absoulte` algorithm (values displayed as is) is used in all other cases.
+`absolute` algorithm (values displayed as is) is used in all other cases.
 
 Use `force_absolute_algorithm` configuration option to overwrite the logic.
 
