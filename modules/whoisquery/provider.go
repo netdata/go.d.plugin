@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/araddon/dateparse"
-	"github.com/likexian/whois-go"
-	whoisparser "github.com/likexian/whois-parser-go"
+	"github.com/likexian/whois"
+	whoisparser "github.com/likexian/whois-parser"
 )
 
 type provider interface {
@@ -16,19 +16,28 @@ type provider interface {
 
 type fromNet struct {
 	domainAddress string
+	client        *whois.Client
 }
+
+var reValidDomain = regexp.MustCompile(`^[a-zA-Z0-9\-]+\.[a-zA-Z0-9]+$`)
 
 func newProvider(config Config) (provider, error) {
-	sourceDomain := config.Source
-	validDomain, _ := regexp.MatchString(`^[a-zA-Z0-9\-]+\.[a-zA-Z0-9]+$`, sourceDomain)
-	if !validDomain {
-		return nil, fmt.Errorf("incorrect domain pattern: %v", sourceDomain)
+	domain := config.Source
+	if valid := reValidDomain.MatchString(domain); !valid {
+		return nil, fmt.Errorf("incorrect domain: %s, expected pattern: %s", domain, reValidDomain)
 	}
-	return &fromNet{domainAddress: sourceDomain}, nil
+
+	client := whois.NewClient()
+	client.SetTimeout(config.Timeout.Duration)
+
+	return &fromNet{
+		domainAddress: domain,
+		client:        client,
+	}, nil
 }
 
-func (f fromNet) remainingTime() (float64, error) {
-	raw, err := whois.Whois(f.domainAddress)
+func (f *fromNet) remainingTime() (float64, error) {
+	raw, err := f.client.Whois(f.domainAddress)
 	if err != nil {
 		return 0, err
 	}

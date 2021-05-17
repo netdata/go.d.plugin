@@ -2,8 +2,10 @@ package whoisquery
 
 import (
 	"errors"
+	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -19,6 +21,7 @@ func init() {
 func New() *WhoisQuery {
 	return &WhoisQuery{
 		Config: Config{
+			Timeout:       web.Duration{Duration: time.Second * 5},
 			DaysUntilWarn: 90,
 			DaysUntilCrit: 30,
 		},
@@ -27,8 +30,9 @@ func New() *WhoisQuery {
 
 type Config struct {
 	Source        string
-	DaysUntilWarn int64 `yaml:"days_until_expiration_warning"`
-	DaysUntilCrit int64 `yaml:"days_until_expiration_critical"`
+	Timeout       web.Duration `yaml:"timeout"`
+	DaysUntilWarn int64        `yaml:"days_until_expiration_warning"`
+	DaysUntilCrit int64        `yaml:"days_until_expiration_critical"`
 }
 
 type WhoisQuery struct {
