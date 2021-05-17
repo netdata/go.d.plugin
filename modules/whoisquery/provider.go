@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/araddon/dateparse"
 	"github.com/likexian/whois-go"
 	whoisparser "github.com/likexian/whois-parser-go"
 )
@@ -37,13 +38,10 @@ func (f fromNet) remainingTime() (float64, error) {
 		return 0, err
 	}
 
-	expiryRaw := result.Domain.ExpirationDate
-	// The result only has year-month-day
-	isExpiryDateOnly, _ := regexp.MatchString(`^\d{4}-\d{1,2}-\d{1,2}$`, expiryRaw)
-	if isExpiryDateOnly {
-		expiryRaw += "T0:00:00Z"
+	expire, err := dateparse.ParseAny(result.Domain.ExpirationDate)
+	if err != nil {
+		return 0, err
 	}
-	expiry, _ := time.Parse(time.RFC3339, expiryRaw)
-	remainingToExpireSeconds := time.Until(expiry).Seconds()
-	return remainingToExpireSeconds, nil
+
+	return time.Until(expire).Seconds(), nil
 }
