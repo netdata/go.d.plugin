@@ -3,10 +3,17 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"time"
+
 	"github.com/blang/semver/v4"
 )
 
 func (m *MySQL) collect() (map[string]int64, error) {
+	if m.db == nil {
+		if err := m.openConnection(); err != nil {
+			return nil, err
+		}
+	}
 	if m.version == nil {
 		ver, isMariaDB, err := m.collectVersion()
 		if err != nil {
@@ -59,6 +66,23 @@ func (m *MySQL) collect() (map[string]int64, error) {
 
 	calcThreadCacheMisses(collected)
 	return collected, nil
+}
+
+func (m *MySQL) openConnection() error {
+	db, err := sql.Open("mysql", m.DSN)
+	if err != nil {
+		return fmt.Errorf("error on opening a connection with the mysql database [%s]: %v", m.DSN, err)
+	}
+
+	db.SetConnMaxLifetime(1 * time.Minute)
+
+	if err := db.Ping(); err != nil {
+		_ = db.Close()
+		return fmt.Errorf("error on pinging the mysql database [%s]: %v", m.DSN, err)
+	}
+
+	m.db = db
+	return nil
 }
 
 func calcThreadCacheMisses(collected map[string]int64) {
