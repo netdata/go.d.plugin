@@ -17,8 +17,8 @@ require (
 	github.com/gofrs/flock v0.8.0
 	github.com/ilyam8/hashstructure v1.1.0
 	github.com/jessevdk/go-flags v1.4.0
-	github.com/likexian/whois-go v1.7.1
-	github.com/likexian/whois-parser-go v1.14.5
+	github.com/likexian/whois v1.12.0
+	github.com/likexian/whois-parser v1.20.3
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.29
