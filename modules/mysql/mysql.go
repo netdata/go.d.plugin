@@ -2,14 +2,12 @@ package mysql
 
 import (
 	"database/sql"
-	"fmt"
 	"sync"
-	"time"
-
-	"github.com/netdata/go.d.plugin/agent/module"
 
 	"github.com/blang/semver/v4"
 	_ "github.com/go-sql-driver/mysql"
+
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func init() {
@@ -89,30 +87,8 @@ func (m *MySQL) Init() bool {
 		return false
 	}
 
-	if err := m.openConnection(); err != nil {
-		m.Error(err)
-		return false
-	}
-
-	m.Debugf("connected using DSN [%s]", m.DSN)
+	m.Debugf("using DSN [%s]", m.DSN)
 	return true
-}
-
-func (m *MySQL) openConnection() error {
-	db, err := sql.Open("mysql", m.DSN)
-	if err != nil {
-		return fmt.Errorf("error on opening a connection with the mysql database [%s]: %v", m.DSN, err)
-	}
-
-	db.SetConnMaxLifetime(1 * time.Minute)
-
-	if err := db.Ping(); err != nil {
-		_ = db.Close()
-		return fmt.Errorf("error on pinging the mysql database [%s]: %v", m.DSN, err)
-	}
-
-	m.db = db
-	return nil
 }
 
 func (m *MySQL) Check() bool {
