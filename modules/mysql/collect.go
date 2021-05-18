@@ -74,7 +74,7 @@ func (m *MySQL) openConnection() error {
 		return fmt.Errorf("error on opening a connection with the mysql database [%s]: %v", m.DSN, err)
 	}
 
-	db.SetConnMaxLifetime(1 * time.Minute)
+	db.SetConnMaxLifetime(10 * time.Minute)
 
 	if err := db.Ping(); err != nil {
 		_ = db.Close()
