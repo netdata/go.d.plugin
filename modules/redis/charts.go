@@ -16,6 +16,7 @@ const (
 	prioPersistenceRDBChanges
 	prioPersistenceRDBBgSaveNow
 	prioPersistenceRDBBgSaveHealth
+	prioPersistenceAOFSize
 
 	prioCommands
 	prioCommandsCalls
@@ -169,6 +170,18 @@ var (
 		Priority: prioPersistenceRDBBgSaveHealth,
 		Dims: module.Dims{
 			{ID: "rdb_last_bgsave_status", Name: "last_bgsave"},
+		},
+	}
+
+	chartPersistenceAOFSize = module.Chart{
+		ID:       "persistence_aof_size",
+		Title:    "AOF current file size",
+		Units:    "bytes",
+		Fam:      "persistence aof",
+		Ctx:      "redis.aof_current_size",
+		Priority: prioPersistenceAOFSize,
+		Dims: module.Dims{
+			{ID: "aof_current_size", Name: "size"},
 		},
 	}
 )
