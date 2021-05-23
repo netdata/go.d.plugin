@@ -175,13 +175,14 @@ var (
 
 	chartPersistenceAOFSize = module.Chart{
 		ID:       "persistence_aof_size",
-		Title:    "AOF current file size",
+		Title:    "AOF file size",
 		Units:    "bytes",
 		Fam:      "persistence aof",
-		Ctx:      "redis.aof_current_size",
+		Ctx:      "redis.aof_file_size",
 		Priority: prioPersistenceAOFSize,
 		Dims: module.Dims{
-			{ID: "aof_current_size", Name: "size"},
+			{ID: "aof_current_size", Name: "current"},
+			{ID: "aof_base_size", Name: "base"},
 		},
 	}
 )
