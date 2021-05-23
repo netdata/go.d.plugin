@@ -46,7 +46,7 @@ It collects information and statistics about the server executing the following 
 
 ### Persistence AOF
 
-- AOF current file size in `bytes`
+- AOF file size in `bytes`
 
 ### Commands
 
