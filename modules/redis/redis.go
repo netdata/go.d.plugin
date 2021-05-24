@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -25,6 +26,7 @@ func New() *Redis {
 			Timeout: web.Duration{Duration: time.Second},
 		},
 
+		addAOFChartsOnce:  &sync.Once{},
 		collectedCommands: make(map[string]bool),
 		collectedDbs:      make(map[string]bool),
 	}
@@ -48,6 +50,8 @@ type (
 
 		collectedCommands map[string]bool
 		collectedDbs      map[string]bool
+
+		addAOFChartsOnce *sync.Once
 
 		charts *module.Charts
 	}

@@ -72,6 +72,8 @@ func (r *Redis) collectInfo(ms map[string]int64, info string) {
 			// looks like it doesn't respect negative values and does abs().
 			// "-1" => "00:00:01".
 			collectNumericValue(ms, field, "0")
+		case field == "aof_enabled" && value == "1":
+			r.addAOFChartsOnce.Do(r.addAOFCharts)
 		default:
 			collectNumericValue(ms, field, value)
 		}
@@ -203,6 +205,13 @@ func (r *Redis) addDimToChart(chartID string, dim *module.Dim) {
 		return
 	}
 	chart.MarkNotCreated()
+}
+
+func (r *Redis) addAOFCharts() {
+	err := r.Charts().Add(chartPersistenceAOFSize.Copy())
+	if err != nil {
+		r.Warningf("error on adding '%s' chart", chartPersistenceAOFSize.ID)
+	}
 }
 
 func has(m map[string]int64, key string, keys ...string) bool {

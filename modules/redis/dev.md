@@ -10,6 +10,16 @@ docker run \
   redis:6.0.9
 ```
 
+Start with persistent storage
+
+```cmd
+docker run \
+  --name redis \
+  -d \
+  -p 6379:6379/tcp \
+  redis:6.0.9 redis-server --appendonly yes
+```
+
 #### Gather metrics
 
 ```cmd

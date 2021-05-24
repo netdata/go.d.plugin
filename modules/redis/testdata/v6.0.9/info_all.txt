@@ -91,6 +91,13 @@ aof_last_write_status:ok
 aof_last_cow_size:0
 module_fork_in_progress:0
 module_fork_last_cow_size:0
+aof_current_size:294
+aof_base_size:116
+aof_pending_rewrite:0
+aof_buffer_length:0
+aof_rewrite_buffer_length:0
+aof_pending_bio_fsync:0
+aof_delayed_fsync:0
 
 # Stats
 total_connections_received:87
