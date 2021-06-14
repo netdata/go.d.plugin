@@ -30,7 +30,7 @@ func (d Discoverer) matchDatastore(datastore *rs.Datastore) bool {
 func (d Discoverer) removeUnmatched(res *rs.Resources) (removed int) {
 	d.Debug("discovering : filtering : starting filtering resources process")
 	t := time.Now()
-	numH, numV := len(res.Hosts), len(res.VMs)
+	numH, numV, numS := len(res.Hosts), len(res.VMs), len(res.Datastores)
 	removed += d.removeUnmatchedHosts(res.Hosts)
 	removed += d.removeUnmatchedVMs(res.VMs)
 	removed += d.removeUnmatchedDatastores(res.Datastores)
