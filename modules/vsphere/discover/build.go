@@ -31,6 +31,8 @@ func (d Discoverer) build(raw *resources) *rs.Resources {
 		len(raw.hosts),
 		len(res.VMs),
 		len(raw.vms),
+		len(res.Datastores),
+		len(raw.datastores),
 		time.Since(t),
 	)
 	return &res
@@ -173,6 +175,37 @@ func newVM(raw mo.VirtualMachine) *rs.VM {
 		ID:            raw.Reference().Value,
 		ParentID:      raw.Runtime.Host.Value,
 		OverallStatus: string(raw.Summary.OverallStatus),
+		Ref:           raw.Reference(),
+	}
+}
+
+func (d Discoverer) buildDatastores(raw []mo.Datastore) rs.Datastores {
+	var num int
+
+	datastores := make(rs.Datastores)
+	for _, da := range raw {
+		//	true | false
+		if da.Summary.Accessible != true {
+			num++
+			continue
+		}
+		// enteringMaintenance | inMaintenance | normal
+		//if da.Summary.MaintenanceModeState != "normal" {
+		//
+		//}
+		datastores.Put(newDatastore(da))
+	}
+	if num > 0 {
+		d.Infof("discovering : building : removed %d datastores (not accessible)", num)
+	}
+	return datastores
+}
+
+func newDatastore(raw mo.Datastore) *rs.Datastore {
+	return &rs.Datastore{
+		Name:          raw.Name,
+		ID:            raw.Reference().Value,
+		Accessible:	raw.Summary.Accessible,
 		Ref:           raw.Reference(),
 	}
 }

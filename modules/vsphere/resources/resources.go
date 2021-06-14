@@ -47,6 +47,7 @@ type Resources struct {
 	Clusters    Clusters
 	Hosts       Hosts
 	VMs         VMs
+	Datastores	Datastores
 }
 
 type (
@@ -104,6 +105,18 @@ type (
 		MetricList    performance.MetricList
 		Ref           types.ManagedObjectReference
 	}
+	DatastoreHierarchy struct {
+		DC      HierarchyValue
+	}
+	Datastore struct {
+		Name          string
+		ID            string
+		ParentID      string
+		Hier          DatastoreHierarchy
+		Accessible    bool
+		MetricList    performance.MetricList
+		Ref           types.ManagedObjectReference
+	}
 )
 
 func (v HierarchyValue) IsSet() bool          { return v.ID != "" && v.Name != "" }
@@ -112,6 +125,7 @@ func (v *HierarchyValue) Set(id, name string) { v.ID = id; v.Name = name }
 func (h ClusterHierarchy) IsSet() bool { return h.DC.IsSet() }
 func (h HostHierarchy) IsSet() bool    { return h.DC.IsSet() && h.Cluster.IsSet() }
 func (h VMHierarchy) IsSet() bool      { return h.DC.IsSet() && h.Cluster.IsSet() && h.Host.IsSet() }
+func (h DatastoreHierarchy) IsSet() bool {return h.DC.IsSet() }
 
 type (
 	DataCenters map[string]*Datacenter
@@ -119,6 +133,7 @@ type (
 	Clusters    map[string]*Cluster
 	Hosts       map[string]*Host
 	VMs         map[string]*VM
+	Datastores  map[string]*Datastore
 )
 
 func (dcs DataCenters) Put(dc *Datacenter)        { dcs[dc.ID] = dc }
@@ -133,3 +148,6 @@ func (hs Hosts) Get(id string) *Host              { return hs[id] }
 func (vs VMs) Put(vm *VM)                         { vs[vm.ID] = vm }
 func (vs VMs) Remove(id string)                   { delete(vs, id) }
 func (vs VMs) Get(id string) *VM                  { return vs[id] }
+func (ds Datastores) Put(datastore *Datastore)    { ds[datastore.ID] = datastore }
+func (ds Datastores) Remove(id string)            { delete(ds, id) }
+func (ds Datastores) Get(id string) *Datastore    { return ds[id] }
