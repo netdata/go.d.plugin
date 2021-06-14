@@ -19,15 +19,23 @@ func (vs *VSphere) collect() (map[string]int64, error) {
 	vs.Debug("starting collection process")
 	t := time.Now()
 	mx := make(map[string]int64)
+	var errs []error
 
-	err := vs.collectHosts(mx)
-	if err != nil {
-		return mx, err
+	errs = append(errs, vs.collectHosts(mx))
+	errs = append(errs, vs.collectVMs(mx))
+	errs = append(errs, vs.collectDatastores(mx))
+
+	var strErr = ""
+	for _, err := range errs {
+		if(err!=nil){
+			strErr=strErr+err.Error()+", "
+		}
 	}
-
-	err = vs.collectVMs(mx)
-	if err != nil {
-		return mx, err
+	if(strErr!=""){
+		if last := len(strErr) - 1; last >= 0 && (strErr[last] == ' ' || strErr[last] == ',' ){
+			strErr = strErr[:last]
+		}
+		return mx, errors.New(strErr)
 	}
 
 	vs.Debugf("metrics collected, process took %s", time.Since(t))
@@ -163,6 +171,62 @@ func (vs VSphere) vmID(vm *rs.VM) (id string) {
 	return cleanID(id)
 }
 
+func (vs *VSphere) collectDatastores(mx map[string]int64) error {
+	// NOTE: returns unsorted if at least one types.PerfMetricId Instance is not ""
+	metrics := vs.ScrapeDatastores(vs.resources.Datastores)
+	if len(metrics) == 0 {
+		return errors.New("failed to scrape datastores metrics")
+	}
+	datastores := vs.collectDatastoresMetrics(mx, metrics)
+	vs.updateDiscoveredDatastores(datastores)
+	vs.updateDatastoresCharts(datastores)
+	return nil
+}
+
+func (vs *VSphere) collectDatastoresMetrics(mx map[string]int64, metrics []performance.EntityMetric) map[string]string {
+	datastores := make(map[string]string)
+	for _, m := range metrics {
+		datastore := vs.resources.Datastores.Get(m.Entity.Value)
+		if datastore == nil {
+			continue
+		}
+		writeDatastoreMetrics(mx, datastore, m.Value)
+		datastores[datastore.ID] = vs.datastoreID(datastore)
+	}
+	return datastores
+}
+
+func writeDatastoreMetrics(mx map[string]int64, datastore *rs.Datastore, metrics []performance.MetricSeries) {
+	for _, m := range metrics {
+		if len(m.Value) == 0 || m.Value[0] == -1 {
+			continue
+		}
+		key := fmt.Sprintf("%s_%s", datastore.ID, m.Name)
+		mx[key] = m.Value[0]
+	}
+	key := fmt.Sprintf("%s_accessible", datastore.ID)
+	mx[key] = accessibleToInt(datastore.Accessible)
+}
+
+func (vs *VSphere) updateDiscoveredDatastores(collected map[string]string) {
+	for _, h := range vs.resources.Datastores {
+		id := vs.datastoreID(h)
+		if v, ok := collected[h.ID]; !ok || id != v {
+			vs.discoveredDatastores[id] += 1
+		} else {
+			vs.discoveredDatastores[id] = 0
+		}
+	}
+}
+
+func (vs VSphere) datastoreID(datastore *rs.Datastore) (id string) {
+	id = datastore.ID
+	if vs.DatastoreMetrics.Name {
+		id = join(id, "name", datastore.Name)
+	}
+	return cleanID(id)
+}
+
 const failedUpdatesLimit = 10
 
 func (vs *VSphere) removeStale() {
@@ -182,6 +246,14 @@ func (vs *VSphere) removeStale() {
 		delete(vs.charted, userVMID)
 		delete(vs.discoveredVMs, userVMID)
 	}
+	for userDatastoreID, fails := range vs.discoveredDatastores {
+	if fails < failedUpdatesLimit {
+		continue
+	}
+	vs.removeFromCharts(userDatastoreID)
+	delete(vs.charted, userDatastoreID)
+	delete(vs.discoveredDatastores, userDatastoreID)
+}
 }
 
 func join(a, prefix, value string) string {
@@ -209,6 +281,14 @@ func overallStatusToInt(status string) int64 {
 	case "yellow":
 		return 2
 	case "red":
+		return 3
+	}
+}
+
+func accessibleToInt(accessible bool) int64 {
+	if accessible == true {
+		return 1
+	}else{
 		return 3
 	}
 }

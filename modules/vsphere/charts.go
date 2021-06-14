@@ -24,6 +24,28 @@ const (
 )
 
 var (
+	datastoreCharts = func() Charts{
+		cs := Charts{}
+		panicIf(cs.Add(datastoreStorageCharts...))
+		return cs
+	}()
+	// Ref : https://www.vmware.com/support/developer/converter-sdk/conv51_apireference/disk_storutil_counters.html
+	datastoreStorageCharts = Charts{
+		{
+			ID:      "%s_disk_metrics",
+			Title:   "Disk Metrics",
+			Units:   "KiB",
+			Fam:     "datastore %s",
+			Ctx:     "vsphere.disk_metrics",
+			Dims: Dims{
+				{ID: "%s_disk.used.latest", Name:"used"},
+				{ID: "%s_disk.provisioned.latest", Name:"provisioned"},
+				{ID: "%s_disk.capacity.latest", Name:"capacity"},
+				{ID: "%s_disk.capacity.provisioned.average", Name:"provisioned average"},
+			},
+		},
+	}
+
 	vmCharts = func() Charts {
 		cs := Charts{}
 		panicIf(cs.Add(vmCPUCharts...))
