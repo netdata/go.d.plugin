@@ -34,7 +34,7 @@ func (d Discoverer) removeUnmatched(res *rs.Resources) (removed int) {
 	removed += d.removeUnmatchedHosts(res.Hosts)
 	removed += d.removeUnmatchedVMs(res.VMs)
 	removed += d.removeUnmatchedDatastores(res.Datastores)
-	d.Infof("discovering : filtering : filtered %d/%d hosts, %d/%d vms, process took %s",
+	d.Infof("discovering : filtering : filtered %d/%d hosts, %d/%d vms, %d/%d datastores, process took %s",
 		numH-len(res.Hosts),
 		numH,
 		numV-len(res.VMs),
