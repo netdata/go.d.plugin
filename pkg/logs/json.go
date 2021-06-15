@@ -33,6 +33,9 @@ func (p *JSONParser) ReadLine(line LogLine) error {
 	if err != nil && len(row) == 0 {
 		return err
 	}
+	if len(row) > 0 && row[len(row)-1] == '\n' {
+		row = row[:len(row)-1]
+	}
 	return p.Parse(row, line)
 }
 
