@@ -44,7 +44,7 @@ func (v *Geth) collectChainData(mx map[string]float64, pms prometheus.Metrics) {
 		ethDbChainDataAncientWrite,
 		ethDbChaindataDiskRead,
 		ethDbChainDataDiskWrite,
-		blockProcessing
+		blockProcessing,
 	)
 	v.collectEth(mx, pms)
 }
@@ -53,7 +53,7 @@ func (v *Geth) collectRpc(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		rpcRequests, 
 		rpcSuccess, 
-		rpcFailure
+		rpcFailure,
 	)
 	v.collectEth(mx, pms)
 }
@@ -70,7 +70,7 @@ func (v *Geth) collectTxPool(mx map[string]float64, pms prometheus.Metrics) {
 		txPoolQueuedDiscard,
 		txPoolQueuedEviction,
 		txPoolQueuedEviction,
-		txPoolQueuedRatelimit
+		txPoolQueuedRatelimit,
 	)
 	v.collectEth(mx, pms)
 }
@@ -123,7 +123,7 @@ func (v *Geth) collectP2P(mx map[string]float64, pms prometheus.Metrics) {
 		p2pIngressEth660x08,
 		p2pIngressEth660x08Packets,
 		p2pTrackedEth660x03,
-		p2pTrackedEth660x05	
+		p2pTrackedEth660x05,
 	)
 	v.collectEth(mx, pms)
 }
