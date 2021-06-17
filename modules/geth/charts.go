@@ -83,7 +83,7 @@ var (
 			{ID: txPoolQueuedDiscard, Name: "Transaction pool queued for discard"},
 			{ID: txPoolQueuedEviction, Name: "Transaction pool queued for eviction"},
 			{ID:txPoolQueuedNofunds, Name: "Transaction pool queued with no funds" },
-			{ID: txPoolQueuedRatelimit, Name: "Transaction pool queued rate limit"}
+			{ID: txPoolQueuedRatelimit, Name: "Transaction pool queued rate limit"},
 		},
 	}
 	chartP2PNetwork = Chart{
@@ -94,7 +94,7 @@ var (
 		Ctx: "geth.p2p_bandwidth",
 		Dims: Dims{
 			{ID: p2pEgress, Name: "P2P Ingress network"},
-			{ID: p2pEgress, Name: "P2P Egress network", Mul: -1}
+			{ID: p2pEgress, Name: "P2P Egress network", Mul: -1},
 		},
 	}
 	chartP2PNetworkDetails = Chart{
@@ -138,7 +138,6 @@ var (
 		CTX: "geth.rpc_metrics",
 		Dims: Dims{
 			{ID: rpcFailure, Title: "Failed RPC requests", Algo: "percentage-of-absolute-row"},
-			{ID: rpcSuccess, Title: "Successful RPC requests", Algo: "percentage-of-absolute-row" }
+			{ID: rpcSuccess, Title: "Successful RPC requests", Algo: "percentage-of-absolute-row"},
 		},
 	}
-
