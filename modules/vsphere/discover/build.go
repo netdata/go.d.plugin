@@ -19,6 +19,7 @@ func (d Discoverer) build(raw *resources) *rs.Resources {
 	fixClustersParentID(&res)
 	res.Hosts = d.buildHosts(raw.hosts)
 	res.VMs = d.buildVMs(raw.vms)
+	res.Datastores = d.buildDatastores(raw.datastores)
 
 	d.Infof("discovering : building : built %d/%d dcs, %d/%d folders, %d/%d clusters, %d/%d hosts, %d/%d vms, %d/%d datastores, process took %s",
 		len(res.DataCenters),

@@ -86,6 +86,9 @@ func TestVSphere_Init_ReturnsFalseIfInvalidHostVMIncludeFormat(t *testing.T) {
 
 	vSphere.VMsInclude = match.VMIncludes{"invalid"}
 	assert.False(t, vSphere.Init())
+
+	vSphere.DatastoresInclude = match.DatastoreIncludes{"invalid"}
+	assert.False(t, vSphere.Init())
 }
 
 func TestVSphere_Check(t *testing.T) {
@@ -297,8 +300,9 @@ func TestVSphere_Collect(t *testing.T) {
 	count := model.Count()
 	assert.Len(t, vSphere.discoveredHosts, count.Host)
 	assert.Len(t, vSphere.discoveredVMs, count.Machine)
-	assert.Len(t, vSphere.charted, count.Host+count.Machine)
-	assert.Len(t, *vSphere.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts))
+	assert.Len(t, vSphere.discoveredDatastores, count.Datastore)
+	assert.Len(t, vSphere.charted, count.Host+count.Machine+count.Datastore)
+	assert.Len(t, *vSphere.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts)+count.Datastore*len(datastoreCharts))
 	ensureCollectedHasAllChartsDimsVarsIDs(t, vSphere, collected)
 }
 
@@ -311,8 +315,10 @@ func TestVSphere_Collect_RemoveHostsVMsInRuntime(t *testing.T) {
 
 	okHostID := "host-46"
 	okVMID := "vm-62"
+	okDatastoreID := "/tmp/govcsim-DC0-LocalDS_0-253845463@folder-5"
 	vSphere.discoverer.(*discover.Discoverer).HostMatcher = mockHostMatcher{okHostID}
 	vSphere.discoverer.(*discover.Discoverer).VMMatcher = mockVMMatcher{okVMID}
+	vSphere.discoverer.(*discover.Discoverer).DatastoreMatcher = mockDatastoreMatcher{okDatastoreID}
 
 	require.NoError(t, vSphere.discoverOnce())
 
@@ -340,16 +346,27 @@ func TestVSphere_Collect_RemoveHostsVMsInRuntime(t *testing.T) {
 
 	}
 
+	datastore := vSphere.resources.Datastores.Get(okDatastoreID)
+	for id, fails := range vSphere.discoveredDatastores {
+		if id == vSphere.datastoreID(datastore) {
+			assert.Equal(t, 0, fails)
+		} else {
+			assert.Equal(t, numOfRuns, fails)
+		}
+
+	}
+
 	for i := numOfRuns; i < failedUpdatesLimit; i++ {
 		vSphere.Collect()
 	}
 
 	assert.Len(t, vSphere.discoveredHosts, 1)
 	assert.Len(t, vSphere.discoveredVMs, 1)
+	assert.Len(t, vSphere.discoveredDatastores, 0)
 	assert.Len(t, vSphere.charted, 2)
 
 	for _, c := range *vSphere.Charts() {
-		if strings.HasPrefix(c.ID, okHostID) || strings.HasPrefix(c.ID, okVMID) {
+		if strings.HasPrefix(c.ID, okHostID) || strings.HasPrefix(c.ID, okVMID) || strings.HasPrefix(c.ID, okDatastoreID) {
 			assert.False(t, c.Obsolete)
 		} else {
 			assert.True(t, c.Obsolete)
@@ -376,8 +393,9 @@ func TestVSphere_Collect_Run(t *testing.T) {
 	count := model.Count()
 	assert.Len(t, vSphere.discoveredHosts, count.Host)
 	assert.Len(t, vSphere.discoveredVMs, count.Machine)
-	assert.Len(t, vSphere.charted, count.Host+count.Machine)
-	assert.Len(t, *vSphere.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts))
+	assert.Len(t, vSphere.discoveredDatastores, count.Datastore)
+	assert.Len(t, vSphere.charted, count.Host+count.Machine+count.Datastore)
+	assert.Len(t, *vSphere.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts)+count.Datastore*len(datastoreCharts))
 }
 
 func TestVSphere_chartIDsHasAllHierarchyData(t *testing.T) {
@@ -469,6 +487,11 @@ func (s mockScraper) ScrapeVMs(vms rs.VMs) []performance.EntityMetric {
 	ms := s.scraper.ScrapeVMs(vms)
 	return populateMetrics(ms, 200)
 }
+func (s mockScraper) ScrapeDatastores(datastores rs.Datastores) []performance.EntityMetric {
+	ms := s.scraper.ScrapeDatastores(datastores)
+	return populateMetrics(ms, 300)
+}
+
 
 func populateMetrics(ms []performance.EntityMetric, value int64) []performance.EntityMetric {
 	for i := range ms {
@@ -486,6 +509,8 @@ func populateMetrics(ms []performance.EntityMetric, value int64) []performance.E
 
 type mockHostMatcher struct{ name string }
 type mockVMMatcher struct{ name string }
+type mockDatastoreMatcher struct{ name string }
 
 func (m mockHostMatcher) Match(host *rs.Host) bool { return m.name == host.ID }
 func (m mockVMMatcher) Match(vm *rs.VM) bool       { return m.name == vm.ID }
+func (m mockDatastoreMatcher) Match(datastore *rs.Datastore) bool { return m.name == datastore.ID }

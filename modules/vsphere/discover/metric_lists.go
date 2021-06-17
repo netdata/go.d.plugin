@@ -143,8 +143,8 @@ var (
 
 	datastoreMetrics = []string{
 		"disk.used.latest",
-				"disk.provisioned.latest",
+		"disk.provisioned.latest",
 		"disk.capacity.latest",
-			"disk.capacity.provisioned.average",
+		"disk.capacity.provisioned.average",
 	}
 )
