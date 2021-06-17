@@ -20,7 +20,7 @@ func (d Discoverer) build(raw *resources) *rs.Resources {
 	res.Hosts = d.buildHosts(raw.hosts)
 	res.VMs = d.buildVMs(raw.vms)
 
-	d.Infof("discovering : building : built %d/%d dcs, %d/%d folders, %d/%d clusters, %d/%d hosts, %d/%d vms, process took %s",
+	d.Infof("discovering : building : built %d/%d dcs, %d/%d folders, %d/%d clusters, %d/%d hosts, %d/%d vms, %d/%d datastores, process took %s",
 		len(res.DataCenters),
 		len(raw.dcs),
 		len(res.Folders),

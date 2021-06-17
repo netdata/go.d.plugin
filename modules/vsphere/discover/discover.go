@@ -75,7 +75,7 @@ func (d Discoverer) Discover() (*rs.Resources, error) {
 		return nil, fmt.Errorf("collecting metric lists : %v", err)
 	}
 
-	d.Infof("discovering : discovered %d/%d hosts, %d/%d vms, the whole process took %s",
+	d.Infof("discovering : discovered %d/%d hosts, %d/%d vms, %d/%d datastores, the whole process took %s",
 		len(res.Hosts),
 		len(raw.hosts),
 		len(res.VMs),
@@ -152,7 +152,7 @@ func (d Discoverer) discover() (*resources, error) {
 		datastores: datastores,
 	}
 
-	d.Infof("discovering : found %d dcs, %d folders, %d clusters (%d dummy), %d hosts, %d vms, process took %s",
+	d.Infof("discovering : found %d dcs, %d folders, %d clusters (%d dummy), %d hosts, %d vms, %d datastores, process took %s",
 		len(raw.dcs),
 		len(raw.folders),
 		len(clusters),

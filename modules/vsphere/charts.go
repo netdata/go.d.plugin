@@ -21,6 +21,7 @@ type (
 const (
 	hostPrio = module.Priority
 	vmPrio   = hostPrio + 200
+	datastorePrio = vmPrio + 200
 )
 
 var (
@@ -428,6 +429,41 @@ func setVMChart(chart *Chart, vm *rs.VM, userID string, prio int) {
 	chart.Fam = fmt.Sprintf(chart.Fam, vm.Name, vm.Hier.Host.Name)
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, vm.ID)
+	}
+}
+
+func (vs *VSphere) updateDatastoresCharts(collected map[string]string) {
+	for id, userID := range collected {
+		if vs.charted[userID] {
+			continue
+		}
+		d := vs.resources.Datastores.Get(id)
+		if d == nil {
+			continue
+		}
+		vs.charted[userID] = true
+
+		cs := newDatastoreCharts(d, userID)
+		if err := vs.charts.Add(*cs...); err != nil {
+			vs.Error(err)
+		}
+	}
+}
+
+func newDatastoreCharts(datastore *rs.Datastore, userID string) *Charts {
+	cs := datastoreCharts.Copy()
+	for i, c := range *cs {
+		setDatastoreChart(c, datastore, userID, datastorePrio+i)
+	}
+	return cs
+}
+
+func setDatastoreChart(chart *Chart, datastore *rs.Datastore, userID string, prio int) {
+	chart.Priority = prio
+	chart.ID = fmt.Sprintf(chart.ID, userID)
+	chart.Fam = fmt.Sprintf(chart.Fam, datastore.Name)
+	for _, d := range chart.Dims {
+		d.ID = fmt.Sprintf(d.ID, datastore.ID)
 	}
 }
 

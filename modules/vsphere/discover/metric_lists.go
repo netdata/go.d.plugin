@@ -31,7 +31,7 @@ func (d Discoverer) collectMetricLists(res *rs.Resources) error {
 		d.MetricList = datastoreML
 	}
 
-	d.Infof("discovering : metric lists : collected metric lists for %d/%d hosts, %d/%d vms, process took %s",
+	d.Infof("discovering : metric lists : collected metric lists for %d/%d hosts, %d/%d vms, %d/%d datastores process took %s",
 		len(res.Hosts),
 		len(res.Hosts),
 		len(res.VMs),
