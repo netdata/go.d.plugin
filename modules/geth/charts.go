@@ -141,3 +141,4 @@ var (
 			{ID: rpcSuccess, Title: "Successful RPC requests", Algo: "percentage-of-absolute-row"},
 		},
 	}
+)
