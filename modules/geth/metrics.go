@@ -43,8 +43,6 @@ const (
 	// Sockets
 	chainValidation = "chain_validation"
 	chainWrite = "chain_write"
-
-
 )
 
 // + rate
@@ -69,6 +67,8 @@ const (
 
 
 )
+
+const (
 // gauge
 p2pDials="p2p_dials"
 p2pEgress="p2p_egress"
@@ -124,4 +124,4 @@ p2pTrackedEth660x05="p2p_tracked_eth_66_0x05"
 rpcRequests = "rpc_requests"
 rpcSuccess = "rpc_success"
 rpcFailure = "rpcFailure"
-
+)
