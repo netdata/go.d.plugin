@@ -15,14 +15,14 @@ func init() {
 		Create: func() module.Module { return New() },
 	}
 
-	module.Register("vernemq", creator)
+	module.Register("geth", creator)
 }
 
 func New() *Geth {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				URL: "http://127.0.0.1:606/metrics/debug/prometheus",
+				URL: "http://127.0.0.1:6060/metrics/debug/prometheus",
 			},
 			Client: web.Client{
 				Timeout: web.Duration{Duration: time.Second},
