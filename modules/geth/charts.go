@@ -116,7 +116,7 @@ var (
 			{ID: p2pEgressEth650x04, Name: "Eth/65 block header response egress", Mul: -1},
 			{ID: p2pEgressEth650x05, Name: "Eth/65 block body request egress", Mul: -1},
 			{ID: p2pEgressEth650x06, Name: "Eth/65 block body response egress", Mul: -1},
-			{ID: p2pEgressEth650x08, Title: "Eth/65 transactions announcement egress", Mul: -1},
+			{ID: p2pEgressEth650x08, Name: "Eth/65 transactions announcement egress", Mul: -1},
 		},
 	}
 	chartNumberOfPeers = Chart{
@@ -124,7 +124,7 @@ var (
 		Title: "Number of Peers",
 		Units: "peers",
 		Fam: "p2p_peers",
-		CTX: "geth.p2p_peers",
+		Ctx: "geth.p2p_peers",
 		Dims: Dims{
 			{ID: p2pPeers, Name: "Node Peers"},
 		},
@@ -134,7 +134,7 @@ var (
 		Title: "RPC information", 
 		Units: "rpc calls",
 		Fam: "rpc_metrics",
-		CTX: "geth.rpc_metrics",
+		Ctx: "geth.rpc_metrics",
 		Dims: Dims{
 			{ID: rpcFailure, Name: "Failed RPC requests", Algo: "percentage-of-absolute-row"},
 			{ID: rpcSuccess, Name: "Successful RPC requests", Algo: "percentage-of-absolute-row"},
