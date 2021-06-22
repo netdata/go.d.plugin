@@ -13,47 +13,73 @@ var charts = Charts{
 	chartAncientChainData.Copy(),
 	chartChaidataDisk.Copy(),
 	chartTxPoolPending.Copy(),
-	chartBlockProcessingTime.Copy(),
+	chartNewBlocksCreation.Copy(),
 	chartTxPoolQueued.Copy(),
 	chartP2PNetwork.Copy(),
 	chartP2PNetworkDetails.Copy(),
 	chartNumberOfPeers.Copy(),
 	chartRpcInformation.Copy(),
+	chartAncientChainDataRate.Copy(),
+	chartChaidataDiskRate.Copy()
 }
 
 var (
+
+	chartAncientChainDataRate = Chart{
+		ID:    "chaindata_ancient_rate",
+		Title: "Ancient Chaindata rate",
+		Units: "bytes",
+		Fam:   "chaindata",
+		Ctx:   "geth.eth_db_chaindata_ancient_io_rate",
+		Dims: Dims{
+			{ID:ethDbChainDataAncientRread , Name: "reads", Algo: "incremental"},
+			{ID: ethDbChainDataAncientWrite, Name: "writes", Mul: -1, Algo: "incremental",},
+		},
+		
+	}
 
 	chartAncientChainData = Chart{
 		ID:    "chaindata_ancient",
 		Title: "Ancient Chaindata",
 		Units: "bytes",
 		Fam:   "chaindata",
-		Ctx:   "geth.chaindata",
+		Ctx:   "geth.eth_db_chaindata_ancient_io",
 		Dims: Dims{
-			{ID:ethDbChainDataAncientRread , Name: "Ancient chaindata reads"},
-			{ID: ethDbChainDataAncientWrite, Name: "Ancient chaindata writes", Mul: -1},
+			{ID:ethDbChainDataAncientRread , Name: "reads"},
+			{ID: ethDbChainDataAncientWrite, Name: "writes", Mul: -1},
 		},
 		
+	}
+	chartChaidataDiskRate = Chart{
+		ID:    "chaindata_disk_date",
+		Title: "On disk Chaindata rate",
+		Units: "bytes",
+		Fam:   "chaindata",
+		Ctx:   "geth.eth_db_chaindata_disk_io_rate",
+		Dims: Dims{
+			{ID:ethDbChaindataDiskRead , Name: "reads", Algo: "incremental"},
+			{ID: ethDbChainDataDiskWrite, Name: "writes", Mul: -1, Algo: "incremental"},
+		},
 	}
 	chartChaidataDisk = Chart{
 		ID:    "chaindata_disk",
 		Title: "Chaindata on disk",
 		Units: "bytes",
 		Fam:   "chaindata",
-		Ctx:   "geth.chaindata_disk",
+		Ctx:   "geth.eth_db_chaindata_disk_io",
 		Dims: Dims{
-			{ID:ethDbChaindataDiskRead , Name: "Disk Chaindata reads"},
-			{ID: ethDbChainDataDiskWrite, Name: "Disk Chaindata writes", Mul: -1},
+			{ID:ethDbChaindataDiskRead , Name: "reads"},
+			{ID: ethDbChainDataDiskWrite, Name: "writes", Mul: -1},
 		},
 	}
-	chartBlockProcessingTime = Chart{
-		ID: "blockProcessing_time", 
-		Title: "Block processing time",
-		Units: "seconds",
+	chartNewBlocksCreation = Chart{
+		ID: "chaindata_block_rate", 
+		Title: "Block creation rate",
+		Units: "blocks",
 		Fam: "block_processing", 
 		Ctx: "geth.block_processing",
 		Dims: Dims{
-			{ID: blockProcessing, Name: "Block processing Time"},
+			{ID: chain_head_block, Name: "new blocks", Algo: "incremental"},
 		},
 	}
 	chartTxPoolPending = Chart{
@@ -92,10 +118,10 @@ var (
 		Fam: "tx_pool",
 		Ctx: "geth.tx_pool_queued", 
 		Dims: Dims{
-			{ID: txPoolQueuedDiscard, Name: "Transaction pool queued for discard"},
-			{ID: txPoolQueuedEviction, Name: "Transaction pool queued for eviction"},
-			{ID:txPoolQueuedNofunds, Name: "Transaction pool queued with no funds" },
-			{ID: txPoolQueuedRatelimit, Name: "Transaction pool queued rate limit"},
+			{ID: txPoolQueuedDiscard, Name: "discard"},
+			{ID: txPoolQueuedEviction, Name: "eviction"},
+			{ID:txPoolQueuedNofunds, Name: "no_funds" },
+			{ID: txPoolQueuedRatelimit, Name: "ratelimit"},
 		},
 	}
 	chartP2PNetwork = Chart{
@@ -105,8 +131,8 @@ var (
 		Fam: "p2p_bandwidth", 
 		Ctx: "geth.p2p_bandwidth",
 		Dims: Dims{
-			{ID: p2pEgress, Name: "P2P Ingress network"},
-			{ID: p2pEgress, Name: "P2P Egress network", Mul: -1},
+			{ID: p2pIngress, Name: "ingress"},
+			{ID: p2pEgress, Name: "egress", Mul: -1},
 		},
 	}
 	chartP2PNetworkDetails = Chart{
@@ -139,7 +165,7 @@ var (
 		Fam: "p2p_peers",
 		Ctx: "geth.p2p_peers",
 		Dims: Dims{
-			{ID: p2pPeers, Name: "Node Peers"},
+			{ID: p2pPeers, Name: "Peers"},
 		},
 	}
 	chartRpcInformation = Chart{
