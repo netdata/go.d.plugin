@@ -28,7 +28,6 @@ func (v *Geth) collect() (map[string]int64, error) {
 // must change
 func (v *Geth) collectGeth(pms prometheus.Metrics) map[string]float64 {
 	mx := make(map[string]float64)
-
 	collectChainData(mx, pms)
 	collectP2P(mx, pms)
 	collectTxPool(mx, pms)
@@ -44,9 +43,10 @@ func (v *Geth) collectChainData(mx map[string]float64, pms prometheus.Metrics) {
 		ethDbChainDataAncientWrite,
 		ethDbChaindataDiskRead,
 		ethDbChainDataDiskWrite,
-		blockProcessing,
+		chainHeadBlock,
 	)
 	v.collectEth(mx, pms)
+
 }
 
 func (v *Geth) collectRpc(mx map[string]float64, pms prometheus.Metrics) {

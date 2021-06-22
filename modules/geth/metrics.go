@@ -43,6 +43,7 @@ const (
 	// Sockets
 	chainValidation = "chain_validation"
 	chainWrite = "chain_write"
+	chainHeadBlock = "chain_head_block"
 )
 
 // + rate
@@ -51,7 +52,6 @@ const (
 	ethDbChainDataAncientWrite = "eth_db_chaindata_ancient_write"
 	ethDbChaindataDiskRead = "eth_db_chaindata_disk_read"
 	ethDbChainDataDiskWrite = "eth_db_chaindata_disk_write"
-	blockProcessing= "les_server_blockProcessingTime"
 	txPoolInvalid = "txpool_invalid"
 	txPoolPending="txpool_pending"
 	txPoolLocal="txpool_local"
