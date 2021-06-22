@@ -72,6 +72,19 @@ var (
 			{ID: txPoolPendingReplace, Name: "Pending transaction pool to replace"},
 		},
 	}
+	chartTxPoolCurrent = Chart{
+		ID: "txpoolcurrent",
+		Title: "Transaction Pool",
+		Units: "transactions", 
+		Fam: "tx_pool",
+		Ctx: "geth.tx_pool_current", 
+		Dims: Dims{
+			{ID: txPoolInvalid, Name: "Invalid transaction pool"},
+			{ID: txPoolPending, Name: "Pending transaction pool"},
+			{ID: txPoolLocal, Name: "Local transaction pool"},
+			{ID: txPoolNofunds, Name: "Pool of transactions with no funds" },
+		},
+	}
 	chartTxPoolQueued = Chart{
 		ID: "txpoolqueued",
 		Title: "Queued Transaction Pool",
