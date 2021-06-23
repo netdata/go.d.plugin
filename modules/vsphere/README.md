@@ -120,7 +120,7 @@ metrics.
 Example (all not related debug lines were removed):
 
 ```
-[ilyam@pc]$ ./godplugin -d -m vsphere
+[ilyam@pc]$ ./go.d.plugin -d -m vsphere
 [ DEBUG ] vsphere[vsphere] discover.go:94 discovering : starting resource discovering process
 [ DEBUG ] vsphere[vsphere] discover.go:102 discovering : found 3 dcs, process took 49.329656ms
 [ DEBUG ] vsphere[vsphere] discover.go:109 discovering : found 12 folders, process took 49.538688ms
