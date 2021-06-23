@@ -35,6 +35,9 @@ func (vs *VSphere) collect() (map[string]int64, error) {
 }
 
 func (vs *VSphere) collectHosts(mx map[string]int64) error {
+	if len(vs.resources.Hosts) == 0 {
+		return nil
+	}
 	// NOTE: returns unsorted if at least one types.PerfMetricId Instance is not ""
 	metrics := vs.ScrapeHosts(vs.resources.Hosts)
 	if len(metrics) == 0 {
@@ -98,6 +101,9 @@ func (vs VSphere) hostID(host *rs.Host) (id string) {
 }
 
 func (vs *VSphere) collectVMs(mx map[string]int64) error {
+	if len(vs.resources.VMs) == 0 {
+		return nil
+	}
 	// NOTE: returns unsorted if at least one types.PerfMetricId Instance is not ""
 	ems := vs.ScrapeVMs(vs.resources.VMs)
 	if len(ems) == 0 {
