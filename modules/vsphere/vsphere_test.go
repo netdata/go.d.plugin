@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"regexp"
 
 	"github.com/netdata/go.d.plugin/modules/vsphere/discover"
 	"github.com/netdata/go.d.plugin/modules/vsphere/match"
@@ -296,6 +297,15 @@ func TestVSphere_Collect(t *testing.T) {
 	}
 
 	collected := vSphere.Collect()
+
+	//working around ioutil.TempDir naming convention
+	for key, value := range collected {
+		match,_ := regexp.MatchString("*LocalDS_*",key)
+		if(match){
+			expected[key]=value
+		}
+	}
+
 	assert.Equal(t, expected, collected)
 	count := model.Count()
 	assert.Len(t, vSphere.discoveredHosts, count.Host)
@@ -315,7 +325,7 @@ func TestVSphere_Collect_RemoveHostsVMsInRuntime(t *testing.T) {
 
 	okHostID := "host-46"
 	okVMID := "vm-62"
-	okDatastoreID := "/tmp/govcsim-DC0-LocalDS_0-253845463@folder-5"
+	okDatastoreID := "///"
 	vSphere.discoverer.(*discover.Discoverer).HostMatcher = mockHostMatcher{okHostID}
 	vSphere.discoverer.(*discover.Discoverer).VMMatcher = mockVMMatcher{okVMID}
 	vSphere.discoverer.(*discover.Discoverer).DatastoreMatcher = mockDatastoreMatcher{okDatastoreID}
@@ -409,6 +419,8 @@ func TestVSphere_chartIDsHasAllHierarchyData(t *testing.T) {
 	vSphere.HostMetrics.Name = true
 	vSphere.HostMetrics.Cluster = true
 	vSphere.HostMetrics.DataCenter = true
+	vSphere.DatastoreMetrics.Name = true
+	vSphere.DatastoreMetrics.DataCenter = true
 
 	require.True(t, vSphere.Init())
 	require.True(t, vSphere.Check())
@@ -438,6 +450,17 @@ func ensureChartsHasCorrectIDs(t *testing.T, vSphere *VSphere) {
 			}
 		}
 		assert.Truef(t, i > 0, "zero charts for host id: %s", id)
+	}
+
+	for _, datastore := range vSphere.resources.Datastores {
+		id := vSphere.datastoreID(datastore)
+		var i int
+		for _, chart := range *vSphere.Charts() {
+			if strings.HasPrefix(chart.ID, id) {
+				i++
+			}
+		}
+		assert.Truef(t, i > 0, "zero charts for datastore id: %s", id)
 	}
 }
 
