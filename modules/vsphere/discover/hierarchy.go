@@ -15,7 +15,7 @@ func (d Discoverer) setHierarchy(res *rs.Resources) error {
 	v := d.setVMsHierarchy(res)
 	s := d.setDatastoresHierarchy(res)
 
-	// notSet := len(res.Clusters) + len(res.Hosts) + len(res.VMs) - (c + h + v)
+	// notSet := len(res.Clusters) + len(res.Hosts) + len(res.VMs) + len(res.Datastores) - (c + h + v + d)
 	d.Infof("discovering : hierarchy : set %d/%d clusters, %d/%d hosts, %d/%d vms, %d/%d datastores, process took %s",
 		c, len(res.Clusters),
 		h, len(res.Hosts),
@@ -109,7 +109,13 @@ func setVMHierarchy(vm *rs.VM, res *rs.Resources) bool {
 }
 
 func setDatastoreHierarchy(datastore *rs.Datastore, res *rs.Resources) bool {
-	dc := res.DataCenters.Get(datastore.ParentID)
+	cr := res.Clusters.Get(datastore.ParentID)
+	if cr == nil {
+		return false
+	}
+	datastore.Hier.Cluster.Set(cr.ID, cr.Name)
+
+	dc := res.DataCenters.Get(cr.ParentID)
 	if dc == nil {
 		return false
 	}

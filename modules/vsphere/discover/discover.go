@@ -64,10 +64,10 @@ func (d Discoverer) Discover() (*rs.Resources, error) {
 
 	numH := len(res.Hosts)
 	numV := len(res.VMs)
-	removed := d.removeUnmatched(res)
 	numS := len(res.Datastores)
+	removed := d.removeUnmatched(res)
 	if removed == (numH + numV + numS) {
-		return nil, fmt.Errorf("all resoursces were filtered (%d hosts, %d vms, %d numS)", numH, numV, numS)
+		return nil, fmt.Errorf("all resources were filtered (%d hosts, %d vms, %d numS)", numH, numV, numS)
 	}
 
 	err = d.collectMetricLists(res)
