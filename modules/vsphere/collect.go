@@ -19,23 +19,20 @@ func (vs *VSphere) collect() (map[string]int64, error) {
 	vs.Debug("starting collection process")
 	t := time.Now()
 	mx := make(map[string]int64)
-	var errs []error
-
-	errs = append(errs, vs.collectHosts(mx))
-	errs = append(errs, vs.collectVMs(mx))
-	errs = append(errs, vs.collectDatastores(mx))
-
-	var strErr = ""
-	for _, err := range errs {
-		if(err!=nil){
-			strErr=strErr+err.Error()+", "
-		}
+	
+	err := vs.collectHosts(mx)
+	if err != nil {
+		return mx, err
 	}
-	if(strErr!=""){
-		if last := len(strErr) - 1; last >= 0 && (strErr[last] == ' ' || strErr[last] == ',' ){
-			strErr = strErr[:last]
-		}
-		return mx, errors.New(strErr)
+
+	err = vs.collectVMs(mx)
+	if err != nil {
+		return mx, err
+	}
+
+	err = vs.collectDatastores(mx)
+	if err != nil {
+		return mx, err
 	}
 
 	vs.Debugf("metrics collected, process took %s", time.Since(t))
@@ -43,6 +40,9 @@ func (vs *VSphere) collect() (map[string]int64, error) {
 }
 
 func (vs *VSphere) collectHosts(mx map[string]int64) error {
+	if len(vs.resources.Hosts) == 0 {
+		return nil
+	}
 	// NOTE: returns unsorted if at least one types.PerfMetricId Instance is not ""
 	metrics := vs.ScrapeHosts(vs.resources.Hosts)
 	if len(metrics) == 0 {
@@ -106,6 +106,9 @@ func (vs VSphere) hostID(host *rs.Host) (id string) {
 }
 
 func (vs *VSphere) collectVMs(mx map[string]int64) error {
+	if len(vs.resources.VMs) == 0 {
+		return nil
+	}
 	// NOTE: returns unsorted if at least one types.PerfMetricId Instance is not ""
 	ems := vs.ScrapeVMs(vs.resources.VMs)
 	if len(ems) == 0 {
@@ -172,6 +175,9 @@ func (vs VSphere) vmID(vm *rs.VM) (id string) {
 }
 
 func (vs *VSphere) collectDatastores(mx map[string]int64) error {
+	if len(vs.resources.Datastores) == 0 {
+		return nil
+	}
 	// NOTE: returns unsorted if at least one types.PerfMetricId Instance is not ""
 	metrics := vs.ScrapeDatastores(vs.resources.Datastores)
 	if len(metrics) == 0 {
