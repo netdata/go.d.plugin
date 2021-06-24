@@ -5,7 +5,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-	"regexp"
 
 	"github.com/netdata/go.d.plugin/modules/vsphere/discover"
 	"github.com/netdata/go.d.plugin/modules/vsphere/match"
@@ -300,8 +299,7 @@ func TestVSphere_Collect(t *testing.T) {
 
 	//working around ioutil.TempDir naming convention
 	for key, value := range collected {
-		match,_ := regexp.MatchString(".*LocalDS_.*",key)
-		if(match){
+		if(strings.Contains(key,"LocalDS_")){
 			expected[key]=value
 		}
 	}
