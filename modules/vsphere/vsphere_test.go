@@ -300,7 +300,7 @@ func TestVSphere_Collect(t *testing.T) {
 
 	//working around ioutil.TempDir naming convention
 	for key, value := range collected {
-		match,_ := regexp.MatchString("*LocalDS_*",key)
+		match,_ := regexp.MatchString(".*LocalDS_.*",key)
 		if(match){
 			expected[key]=value
 		}
