@@ -36,6 +36,7 @@ func collect(pms prometheus.Metrics) *metrics {
 		Net:         collectNet(pms),
 		LogicalDisk: collectLogicalDisk(pms),
 		OS:          collectOS(pms),
+		CS:          collectCS(pms),
 		System:      collectSystem(pms),
 		Logon:       collectLogon(pms),
 		Collectors:  collectCollection(pms),

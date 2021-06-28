@@ -9,6 +9,7 @@ type metrics struct {
 	Net         *networkMetrics     `stm:"net"`
 	LogicalDisk *logicalDiskMetrics `stm:"logical_disk"`
 	OS          *osMetrics          `stm:"os"`
+	CS          *csMetrics          `stm:"cs"`
 	System      *systemMetrics      `stm:"system"`
 	Logon       *logonMetrics       `stm:"logon"`
 	Collectors  *collectors         `stm:""`
@@ -19,6 +20,7 @@ func (m metrics) hasMemory() bool      { return m.Memory != nil }
 func (m metrics) hasNet() bool         { return m.Net != nil }
 func (m metrics) hasLogicalDisk() bool { return m.LogicalDisk != nil }
 func (m metrics) hasOS() bool          { return m.OS != nil }
+func (m metrics) hasCS() bool          { return m.CS != nil }
 func (m metrics) hasSystem() bool      { return m.System != nil }
 func (m metrics) hasLogon() bool       { return m.Logon != nil }
 func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
@@ -191,6 +193,13 @@ type osMetrics struct {
 	VisibleMemoryBytes      float64 `stm:"visible_memory_bytes,1000,1"`       // TotalVisibleMemorySize
 	Time                    float64 `stm:"time"`                              // LocalDateTime
 	// Timezone                float64 `stm:"timezone"`                          // LocalDateTime
+}
+
+// Win32_ComputerSystem
+// https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-computersystem
+type csMetrics struct {
+	LogicalProcessors   float64 `stm:"logical_processors"`
+	PhysicalMemoryBytes float64 `stm:"physical_memory_bytes"`
 }
 
 // Win32_LogonSession
