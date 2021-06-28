@@ -2,7 +2,6 @@ package discover
 
 import (
 	"time"
-
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 )
 
@@ -13,14 +12,12 @@ func (d Discoverer) setHierarchy(res *rs.Resources) error {
 	c := d.setClustersHierarchy(res)
 	h := d.setHostsHierarchy(res)
 	v := d.setVMsHierarchy(res)
-	s := d.setDatastoresHierarchy(res)
 
 	// notSet := len(res.Clusters) + len(res.Hosts) + len(res.VMs) + len(res.Datastores) - (c + h + v + d)
-	d.Infof("discovering : hierarchy : set %d/%d clusters, %d/%d hosts, %d/%d vms, %d/%d datastores, process took %s",
+	d.Infof("discovering : hierarchy : set %d/%d clusters, %d/%d hosts, %d/%d vms, process took %s",
 		c, len(res.Clusters),
 		h, len(res.Hosts),
 		v, len(res.VMs),
-		s, len(res.Datastores),
 		time.Since(t),
 	)
 
@@ -48,15 +45,6 @@ func (d Discoverer) setHostsHierarchy(res *rs.Resources) (set int) {
 func (d Discoverer) setVMsHierarchy(res *rs.Resources) (set int) {
 	for _, vm := range res.VMs {
 		if setVMHierarchy(vm, res) {
-			set++
-		}
-	}
-	return set
-}
-
-func (d Discoverer) setDatastoresHierarchy(res *rs.Resources) (set int) {
-	for _, datastore := range res.Datastores {
-		if setDatastoreHierarchy(datastore, res) {
 			set++
 		}
 	}
@@ -106,19 +94,4 @@ func setVMHierarchy(vm *rs.VM, res *rs.Resources) bool {
 	}
 	vm.Hier.DC.Set(dc.ID, dc.Name)
 	return vm.Hier.IsSet()
-}
-
-func setDatastoreHierarchy(datastore *rs.Datastore, res *rs.Resources) bool {
-	cr := res.Clusters.Get(datastore.ParentID)
-	if cr == nil {
-		return false
-	}
-	datastore.Hier.Cluster.Set(cr.ID, cr.Name)
-
-	dc := res.DataCenters.Get(cr.ParentID)
-	if dc == nil {
-		return false
-	}
-	datastore.Hier.DC.Set(dc.ID,dc.Name)
-	return datastore.Hier.IsSet()
 }

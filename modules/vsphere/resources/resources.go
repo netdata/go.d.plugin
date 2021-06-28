@@ -105,15 +105,9 @@ type (
 		MetricList    performance.MetricList
 		Ref           types.ManagedObjectReference
 	}
-	DatastoreHierarchy struct {
-		DC      HierarchyValue
-		Cluster HierarchyValue
-	}
 	Datastore struct {
 		Name          string
 		ID            string
-		ParentID      string
-		Hier          DatastoreHierarchy
 		Accessible    bool
 		MetricList    performance.MetricList
 		Ref           types.ManagedObjectReference
@@ -126,7 +120,6 @@ func (v *HierarchyValue) Set(id, name string) { v.ID = id; v.Name = name }
 func (h ClusterHierarchy) IsSet() bool { return h.DC.IsSet() }
 func (h HostHierarchy) IsSet() bool    { return h.DC.IsSet() && h.Cluster.IsSet() }
 func (h VMHierarchy) IsSet() bool      { return h.DC.IsSet() && h.Cluster.IsSet() && h.Host.IsSet() }
-func (h DatastoreHierarchy) IsSet() bool {return h.DC.IsSet() && h.Cluster.IsSet() }
 
 type (
 	DataCenters map[string]*Datacenter

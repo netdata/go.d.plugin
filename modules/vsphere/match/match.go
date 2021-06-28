@@ -29,7 +29,7 @@ type (
 	vmHostMatcher      struct{ m matcher.Matcher }
 	vmVMMatcher        struct{ m matcher.Matcher }
 	datastoreDCMatcher struct{ m matcher.Matcher }
-  datastoreDatastoreMatcher struct{ m matcher.Matcher }
+    datastoreDatastoreMatcher struct{ m matcher.Matcher }
 	orHostMatcher      struct{ lhs, rhs HostMatcher }
 	orVMMatcher        struct{ lhs, rhs VMMatcher }
 	orDatastoreMatcher			struct{ lhs, rhs DatastoreMatcher}
@@ -45,7 +45,6 @@ func (m vmDCMatcher) Match(vm *rs.VM) bool            { return m.m.MatchString(v
 func (m vmClusterMatcher) Match(vm *rs.VM) bool       { return m.m.MatchString(vm.Hier.Cluster.Name) }
 func (m vmHostMatcher) Match(vm *rs.VM) bool          { return m.m.MatchString(vm.Hier.Host.Name) }
 func (m vmVMMatcher) Match(vm *rs.VM) bool            { return m.m.MatchString(vm.Name) }
-func (m datastoreDCMatcher) Match(datastore *rs.Datastore) bool { return m.m.MatchString(datastore.Hier.DC.Name) }
 func (m datastoreDatastoreMatcher) Match(datastore *rs.Datastore) bool { return m.m.MatchString(datastore.Name) }
 func (m orHostMatcher) Match(host *rs.Host) bool      { return m.lhs.Match(host) || m.rhs.Match(host) }
 func (m orVMMatcher) Match(vm *rs.VM) bool            { return m.lhs.Match(vm) || m.rhs.Match(vm) }
@@ -277,7 +276,7 @@ func parseDatastoreInclude(include string) (DatastoreMatcher, error) {
 	}
 
 	include = cleanInclude(include)
-	parts := strings.Split(include, "/") // /dc/clusterIdx/hostIdx
+	parts := strings.Split(include, "/")
 	var ms []DatastoreMatcher
 
 	for i, v := range parts {
@@ -288,8 +287,6 @@ func parseDatastoreInclude(include string) (DatastoreMatcher, error) {
 		switch i {
 		case datastoreIdx:
 			ms = append(ms, datastoreDatastoreMatcher{m})
-		case datacenterIdx:
-			ms = append(ms, datastoreDCMatcher{m})
 		}
 	}
 

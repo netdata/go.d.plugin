@@ -206,7 +206,7 @@ func newDatastore(raw mo.Datastore) *rs.Datastore {
 	return &rs.Datastore{
 		Name:          raw.Name,
 		ID:            raw.Reference().Value,
-		Accessible:	raw.Summary.Accessible,
+		Accessible:	   raw.Summary.Accessible,
 		Ref:           raw.Reference(),
 	}
 }

@@ -156,11 +156,6 @@ func isHierarchySet(res *rs.Resources) bool {
 			return false
 		}
 	}
-	for _, s := range res.Datastores {
-		if !s.Hier.IsSet() {
-			return false
-		}
-	}
 	return true
 }
 

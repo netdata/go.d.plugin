@@ -253,13 +253,13 @@ func (vs *VSphere) removeStale() {
 		delete(vs.discoveredVMs, userVMID)
 	}
 	for userDatastoreID, fails := range vs.discoveredDatastores {
-	if fails < failedUpdatesLimit {
-		continue
+		if fails < failedUpdatesLimit {
+			continue
+		}
+		vs.removeFromCharts(userDatastoreID)
+		delete(vs.charted, userDatastoreID)
+		delete(vs.discoveredDatastores, userDatastoreID)
 	}
-	vs.removeFromCharts(userDatastoreID)
-	delete(vs.charted, userDatastoreID)
-	delete(vs.discoveredDatastores, userDatastoreID)
-}
 }
 
 func join(a, prefix, value string) string {
