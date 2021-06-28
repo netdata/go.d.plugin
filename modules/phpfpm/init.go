@@ -9,11 +9,11 @@ import (
 )
 
 func (p Phpfpm) initClient() (client, error) {
-	if p.URL != "" {
-		return p.initHTTPClient()
-	}
 	if p.Socket != "" {
 		return p.initSocketClient()
+	}
+	if p.URL != "" {
+		return p.initHTTPClient()
 	}
 	return nil, errors.New("neither 'socket' nor 'url' set")
 }
