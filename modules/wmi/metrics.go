@@ -179,17 +179,18 @@ type systemMetrics struct {
 // Win32_OperatingSystem
 // https://docs.microsoft.com/en-us/windows/desktop/CIMWin32Prov/win32-operatingsystem
 type osMetrics struct {
-	PhysicalMemoryFreeBytes float64 `stm:"physical_memory_free_bytes,1000,1"` // FreePhysicalMemory
-	PagingFreeBytes         float64 `stm:"paging_free_bytes,1000,1"`          // FreeSpaceInPagingFiles
-	VirtualMemoryFreeBytes  float64 `stm:"virtual_memory_free_bytes,1000,1"`  // FreeVirtualMemory
-	ProcessesLimit          float64 `stm:"processes_limit"`                   // MaxNumberOfProcesses
-	ProcessMemoryLimitBytes float64 `stm:"process_memory_limit_bytes,1000,1"` // MaxProcessMemorySize
-	Processes               float64 `stm:"processes"`                         // NumberOfProcesses
-	Users                   float64 `stm:"users"`                             // NumberOfUsers
-	PagingLimitBytes        float64 `stm:"paging_limit_bytes,1000,1"`         // SizeStoredInPagingFiles
-	VirtualMemoryBytes      float64 `stm:"virtual_memory_bytes,1000,1"`       // TotalVirtualMemorySize
-	VisibleMemoryBytes      float64 `stm:"visible_memory_bytes,1000,1"`       // TotalVisibleMemorySize
-	Time                    float64 `stm:"time"`                              // LocalDateTime
+	PagingUsedBytes         *float64 `stm:"paging_used_bytes,1000,1"`          // os.PagingLimitBytes - PagingFreeBytes
+	PhysicalMemoryFreeBytes float64  `stm:"physical_memory_free_bytes,1000,1"` // FreePhysicalMemory
+	PagingFreeBytes         float64  `stm:"paging_free_bytes,1000,1"`          // FreeSpaceInPagingFiles
+	VirtualMemoryFreeBytes  float64  `stm:"virtual_memory_free_bytes,1000,1"`  // FreeVirtualMemory
+	ProcessesLimit          float64  `stm:"processes_limit"`                   // MaxNumberOfProcesses
+	ProcessMemoryLimitBytes float64  `stm:"process_memory_limit_bytes,1000,1"` // MaxProcessMemorySize
+	Processes               float64  `stm:"processes"`                         // NumberOfProcesses
+	Users                   float64  `stm:"users"`                             // NumberOfUsers
+	PagingLimitBytes        float64  `stm:"paging_limit_bytes,1000,1"`         // SizeStoredInPagingFiles
+	VirtualMemoryBytes      float64  `stm:"virtual_memory_bytes,1000,1"`       // TotalVirtualMemorySize
+	VisibleMemoryBytes      float64  `stm:"visible_memory_bytes,1000,1"`       // TotalVisibleMemorySize
+	Time                    float64  `stm:"time"`                              // LocalDateTime
 	// Timezone                float64 `stm:"timezone"`                          // LocalDateTime
 }
 
