@@ -49,6 +49,8 @@ const (
 	prioDiskAvgLatency
 
 	prioOSProcesses
+	prioOSUsers
+
 	prioSystemThreads
 	prioSystemUptime
 
@@ -396,6 +398,7 @@ var (
 func osCharts() Charts {
 	return Charts{
 		osProcessesChart.Copy(),
+		osUsersChart.Copy(),
 	}
 }
 
@@ -412,6 +415,17 @@ var (
 		},
 		Vars: Vars{
 			{ID: "os_processes_limit"},
+		},
+	}
+	osUsersChart = Chart{
+		ID:       "os_users",
+		Title:    "Number of Users",
+		Units:    "users",
+		Fam:      "system",
+		Ctx:      "wmi.os_users",
+		Priority: prioOSUsers,
+		Dims: Dims{
+			{ID: "os_users", Name: "users"},
 		},
 	}
 )
