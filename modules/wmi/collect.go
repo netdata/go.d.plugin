@@ -46,8 +46,7 @@ func collect(pms prometheus.Metrics) *metrics {
 		mx.Memory.UsedBytes = &v
 	}
 	if mx.hasOS() {
-		v := mx.OS.PagingLimitBytes - mx.OS.PagingFreeBytes
-		mx.OS.PagingUsedBytes = &v
+		mx.OS.PagingUsedBytes = mx.OS.PagingLimitBytes - mx.OS.PagingFreeBytes
 	}
 	return &mx
 }
