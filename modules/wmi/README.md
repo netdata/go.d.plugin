@@ -70,6 +70,7 @@ Installation: please follow the [official guide](https://github.com/prometheus-c
 
 - Processes in `number`
 - Users in `users`
+- Visible Memory Usage in `bytes`
 - Paging Files Usage in `bytes`
 
 ### system
