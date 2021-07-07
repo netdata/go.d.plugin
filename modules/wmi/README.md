@@ -66,9 +66,14 @@ Installation: please follow the [official guide](https://github.com/prometheus-c
 - Operations Per Disk in `operations/s`
 - Average Read/Write Latency Disk in `milliseconds`
 
-### system
+### os
 
 - Processes in `number`
+- Users in `users`
+- Paging Files Usage in `bytes`
+
+### system
+
 - Threads in `number`
 - Uptime in `seconds`
 
