@@ -53,7 +53,7 @@ var (
 	chartChaidataDiskRate = Chart{
 		ID:    "chaindata_disk_date",
 		Title: "On disk Chaindata rate",
-		Units: "bytes",
+		Units: "bytes/s",
 		Fam:   "chaindata",
 		Ctx:   "geth.eth_db_chaindata_disk_io_rate",
 		Dims: Dims{
