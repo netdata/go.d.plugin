@@ -75,7 +75,7 @@ var (
 	chartNewBlocksCreation = Chart{
 		ID: "chaindata_block_rate", 
 		Title: "Block creation rate",
-		Units: "blocks",
+		Units: "blocks/s",
 		Fam: "block_processing", 
 		Ctx: "geth.block_processing",
 		Dims: Dims{
