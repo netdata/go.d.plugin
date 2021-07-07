@@ -1,46 +1,7 @@
 package geth
 
-// Source Code Metrics:
-//  - https://github.com/vernemq/vernemq/blob/master/apps/vmq_server/src/vmq_metrics.erl
-//  - https://github.com/vernemq/vernemq/blob/master/apps/vmq_server/src/vmq_metrics.hrl
-
-// Source Code FSM:
-//  - https://github.com/vernemq/vernemq/blob/master/apps/vmq_server/src/vmq_mqtt_fsm.erl
-//  - https://github.com/vernemq/vernemq/blob/master/apps/vmq_server/src/vmq_mqtt5_fsm.erl
-
-// MQTT Packet Types:
-//  - v4: http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180834
-//  - v5: https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901019
-
-// Erlang VM:
-//  - http://erlang.org/documentation/doc-5.7.1/erts-5.7.1/doc/html/erlang.html
-
-// Not used metrics (https://docs.vernemq.com/monitoring/introduction):
-// - "mqtt_connack_accepted_sent"              // v4, not populated,  "mqtt_connack_sent" used instead
-// - "mqtt_connack_unacceptable_protocol_sent" // v4, not populated,  "mqtt_connack_sent" used instead
-// - "mqtt_connack_identifier_rejected_sent"   // v4, not populated,  "mqtt_connack_sent" used instead
-// - "mqtt_connack_server_unavailable_sent"    // v4, not populated,  "mqtt_connack_sent" used instead
-// - "mqtt_connack_bad_credentials_sent"       // v4, not populated,  "mqtt_connack_sent" used instead
-// - "mqtt_connack_not_authorized_sent"        // v4, not populated,  "mqtt_connack_sent" used instead
-// - "system_exact_reductions"
-// - "system_runtime"
-// - "vm_memory_atom"
-// - "vm_memory_atom_used"
-// - "vm_memory_binary"
-// - "vm_memory_code"
-// - "vm_memory_ets"
-// - "vm_memory_processes_used"
-// - "vm_memory_total"
-
-// -----------------------------------------------MQTT------------------------------------------------------------------
-const (
-	// AUTH
-	
-)
-
 // summary
 const (
-	// Sockets
 	chainValidation = "chain_validation"
 	chainWrite = "chain_write"
 	chainHeadBlock = "chain_head_block"
