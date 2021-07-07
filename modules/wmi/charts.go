@@ -406,11 +406,11 @@ func osCharts() Charts {
 
 var (
 	osProcessesChart = Chart{
-		ID:       "system_processes",
+		ID:       "os_processes",
 		Title:    "Processes",
 		Units:    "number",
-		Fam:      "system",
-		Ctx:      "wmi.system_processes",
+		Fam:      "os",
+		Ctx:      "wmi.os_processes",
 		Priority: prioOSProcesses,
 		Dims: Dims{
 			{ID: "os_processes", Name: "processes"},
@@ -423,7 +423,7 @@ var (
 		ID:       "os_users",
 		Title:    "Number of Users",
 		Units:    "users",
-		Fam:      "system",
+		Fam:      "os",
 		Ctx:      "wmi.os_users",
 		Priority: prioOSUsers,
 		Dims: Dims{
