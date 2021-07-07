@@ -28,7 +28,7 @@ var (
 	chartAncientChainDataRate = Chart{
 		ID:    "chaindata_ancient_rate",
 		Title: "Ancient Chaindata rate",
-		Units: "bytes",
+		Units: "bytes/s",
 		Fam:   "chaindata",
 		Ctx:   "geth.eth_db_chaindata_ancient_io_rate",
 		Dims: Dims{
