@@ -50,6 +50,7 @@ const (
 
 	prioOSProcesses
 	prioOSUsers
+	prioOSVisibleMemoryUsage
 	prioOSPagingUsage
 
 	prioSystemThreads
@@ -400,6 +401,7 @@ func osCharts() Charts {
 	return Charts{
 		osProcessesChart.Copy(),
 		osUsersChart.Copy(),
+		osMemoryUsage.Copy(),
 		osPagingFilesUsageChart.Copy(),
 	}
 }
@@ -428,6 +430,22 @@ var (
 		Priority: prioOSUsers,
 		Dims: Dims{
 			{ID: "os_users", Name: "users"},
+		},
+	}
+	osMemoryUsage = Chart{
+		ID:       "os_visible_memory_usage",
+		Title:    "Visible Memory Usage",
+		Units:    "bytes",
+		Fam:      "os",
+		Ctx:      "wmi.os_visible_memory_usage",
+		Type:     module.Stacked,
+		Priority: prioOSVisibleMemoryUsage,
+		Dims: Dims{
+			{ID: "os_physical_memory_free_bytes", Name: "free", Div: 1000},
+			{ID: "os_visible_memory_used_bytes", Name: "used", Div: 1000},
+		},
+		Vars: Vars{
+			{ID: "os_visible_memory_bytes"},
 		},
 	}
 	osPagingFilesUsageChart = Chart{

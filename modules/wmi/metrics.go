@@ -185,6 +185,7 @@ type osMetrics struct {
 
 	VisibleMemoryBytes      float64 `stm:"visible_memory_bytes,1000,1"`       // TotalVisibleMemorySize
 	PhysicalMemoryFreeBytes float64 `stm:"physical_memory_free_bytes,1000,1"` // FreePhysicalMemory
+	VisibleMemoryUsedBytes  float64 `stm:"visible_memory_used_bytes,1000,1"`  // VisibleMemoryBytes - PhysicalMemoryFreeBytes
 
 	VirtualMemoryBytes     float64 `stm:"virtual_memory_bytes,1000,1"`      // TotalVirtualMemorySize
 	VirtualMemoryFreeBytes float64 `stm:"virtual_memory_free_bytes,1000,1"` // FreeVirtualMemory
