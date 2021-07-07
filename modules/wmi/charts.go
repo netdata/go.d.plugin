@@ -50,6 +50,7 @@ const (
 
 	prioOSProcesses
 	prioOSUsers
+	prioOSPagingUsage
 
 	prioSystemThreads
 	prioSystemUptime
@@ -399,6 +400,7 @@ func osCharts() Charts {
 	return Charts{
 		osProcessesChart.Copy(),
 		osUsersChart.Copy(),
+		osPagingFilesUsageChart.Copy(),
 	}
 }
 
@@ -426,6 +428,22 @@ var (
 		Priority: prioOSUsers,
 		Dims: Dims{
 			{ID: "os_users", Name: "users"},
+		},
+	}
+	osPagingFilesUsageChart = Chart{
+		ID:       "os_paging_files_usage",
+		Title:    "Paging Files Usage",
+		Units:    "bytes",
+		Fam:      "os",
+		Ctx:      "wmi.os_paging_files_usage",
+		Type:     module.Stacked,
+		Priority: prioOSPagingUsage,
+		Dims: Dims{
+			{ID: "os_paging_free_bytes", Name: "free", Div: 1000},
+			{ID: "os_paging_used_bytes", Name: "used", Div: 1000},
+		},
+		Vars: Vars{
+			{ID: "os_paging_limit_bytes"},
 		},
 	}
 )
