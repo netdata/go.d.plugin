@@ -237,6 +237,7 @@ func TestWMI_Collect(t *testing.T) {
 				"os_collection_success":             1,
 				"os_paging_free_bytes":              1056043008000,
 				"os_paging_limit_bytes":             1400696832000,
+				"os_paging_used_bytes":              344653824000,
 				"os_physical_memory_free_bytes":     798547968000,
 				"os_process_memory_limit_bytes":     0,
 				"os_processes":                      79,
@@ -254,7 +255,7 @@ func TestWMI_Collect(t *testing.T) {
 				"system_exception_dispatches_total": 3695000,
 				"system_processor_queue_length":     10,
 				"system_threads":                    967,
-				"system_up_time":                    53083,
+				"system_up_time":                    10420738,
 			},
 		},
 		"success on valid response v0.16.0": {
@@ -376,6 +377,7 @@ func TestWMI_Collect(t *testing.T) {
 				"os_collection_success":             1,
 				"os_paging_free_bytes":              1042104320000,
 				"os_paging_limit_bytes":             1400696832000,
+				"os_paging_used_bytes":              358592512000,
 				"os_physical_memory_free_bytes":     810295296000,
 				"os_process_memory_limit_bytes":     0,
 				"os_processes":                      78,
@@ -393,7 +395,7 @@ func TestWMI_Collect(t *testing.T) {
 				"system_exception_dispatches_total": 3704000,
 				"system_processor_queue_length":     1,
 				"system_threads":                    943,
-				"system_up_time":                    53284,
+				"system_up_time":                    10420800,
 			},
 		},
 		"fails if endpoint returns invalid data": {
