@@ -49,6 +49,10 @@ const (
 	prioDiskAvgLatency
 
 	prioOSProcesses
+	prioOSUsers
+	prioOSVisibleMemoryUsage
+	prioOSPagingUsage
+
 	prioSystemThreads
 	prioSystemUptime
 
@@ -396,22 +400,68 @@ var (
 func osCharts() Charts {
 	return Charts{
 		osProcessesChart.Copy(),
+		osUsersChart.Copy(),
+		osMemoryUsage.Copy(),
+		osPagingFilesUsageChart.Copy(),
 	}
 }
 
 var (
 	osProcessesChart = Chart{
-		ID:       "system_processes",
+		ID:       "os_processes",
 		Title:    "Processes",
 		Units:    "number",
-		Fam:      "system",
-		Ctx:      "wmi.system_processes",
+		Fam:      "os",
+		Ctx:      "wmi.os_processes",
 		Priority: prioOSProcesses,
 		Dims: Dims{
 			{ID: "os_processes", Name: "processes"},
 		},
 		Vars: Vars{
 			{ID: "os_processes_limit"},
+		},
+	}
+	osUsersChart = Chart{
+		ID:       "os_users",
+		Title:    "Number of Users",
+		Units:    "users",
+		Fam:      "os",
+		Ctx:      "wmi.os_users",
+		Priority: prioOSUsers,
+		Dims: Dims{
+			{ID: "os_users", Name: "users"},
+		},
+	}
+	osMemoryUsage = Chart{
+		ID:       "os_visible_memory_usage",
+		Title:    "Visible Memory Usage",
+		Units:    "bytes",
+		Fam:      "os",
+		Ctx:      "wmi.os_visible_memory_usage",
+		Type:     module.Stacked,
+		Priority: prioOSVisibleMemoryUsage,
+		Dims: Dims{
+			{ID: "os_physical_memory_free_bytes", Name: "free", Div: 1000},
+			{ID: "os_visible_memory_used_bytes", Name: "used", Div: 1000},
+		},
+		Vars: Vars{
+			{ID: "os_visible_memory_bytes"},
+		},
+	}
+	osPagingFilesUsageChart = Chart{
+		ID:       "os_paging_files_usage",
+		Title:    "Paging Files Usage",
+		Units:    "bytes",
+		Fam:      "os",
+		Ctx:      "wmi.os_paging_files_usage",
+		Type:     module.Stacked,
+		Priority: prioOSPagingUsage,
+		Dims: Dims{
+			{ID: "os_paging_free_bytes", Name: "free", Div: 1000},
+			{ID: "os_paging_used_bytes", Name: "used", Div: 1000},
+		},
+		Vars: Vars{
+			{ID: "os_paging_limit_bytes"},
 		},
 	}
 )
