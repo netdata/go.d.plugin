@@ -20,11 +20,10 @@ var charts = Charts{
 	chartNumberOfPeers.Copy(),
 	chartRpcInformation.Copy(),
 	chartAncientChainDataRate.Copy(),
-	chartChaidataDiskRate.Copy()
+	chartChaidataDiskRate.Copy(),
 }
 
 var (
-
 	chartAncientChainDataRate = Chart{
 		ID:    "chaindata_ancient_rate",
 		Title: "Ancient Chaindata rate",
@@ -32,10 +31,9 @@ var (
 		Fam:   "chaindata",
 		Ctx:   "geth.eth_db_chaindata_ancient_io_rate",
 		Dims: Dims{
-			{ID:ethDbChainDataAncientRread , Name: "reads", Algo: "incremental"},
-			{ID: ethDbChainDataAncientWrite, Name: "writes", Mul: -1, Algo: "incremental",},
+			{ID: ethDbChainDataAncientRread, Name: "reads", Algo: "incremental"},
+			{ID: ethDbChainDataAncientWrite, Name: "writes", Mul: -1, Algo: "incremental"},
 		},
-		
 	}
 
 	chartAncientChainData = Chart{
@@ -45,10 +43,9 @@ var (
 		Fam:   "chaindata",
 		Ctx:   "geth.eth_db_chaindata_ancient_io",
 		Dims: Dims{
-			{ID:ethDbChainDataAncientRread , Name: "reads"},
+			{ID: ethDbChainDataAncientRread, Name: "reads"},
 			{ID: ethDbChainDataAncientWrite, Name: "writes", Mul: -1},
 		},
-		
 	}
 	chartChaidataDiskRate = Chart{
 		ID:    "chaindata_disk_date",
@@ -57,7 +54,7 @@ var (
 		Fam:   "chaindata",
 		Ctx:   "geth.eth_db_chaindata_disk_io_rate",
 		Dims: Dims{
-			{ID:ethDbChaindataDiskRead , Name: "reads", Algo: "incremental"},
+			{ID: ethDbChaindataDiskRead, Name: "reads", Algo: "incremental"},
 			{ID: ethDbChainDataDiskWrite, Name: "writes", Mul: -1, Algo: "incremental"},
 		},
 	}
@@ -68,79 +65,79 @@ var (
 		Fam:   "chaindata",
 		Ctx:   "geth.eth_db_chaindata_disk_io",
 		Dims: Dims{
-			{ID:ethDbChaindataDiskRead , Name: "reads"},
+			{ID: ethDbChaindataDiskRead, Name: "reads"},
 			{ID: ethDbChainDataDiskWrite, Name: "writes", Mul: -1},
 		},
 	}
 	chartNewBlocksCreation = Chart{
-		ID: "chaindata_block_rate", 
+		ID:    "chaindata_block_rate",
 		Title: "Block creation rate",
 		Units: "blocks/s",
-		Fam: "block_creation", 
-		Ctx: "geth.block_creation",
+		Fam:   "block_creation",
+		Ctx:   "geth.block_creation",
 		Dims: Dims{
-			{ID: chain_head_block, Name: "new blocks", Algo: "incremental"},
+			{ID: chainHeadBlock, Name: "new blocks", Algo: "incremental"},
 		},
 	}
 	chartTxPoolPending = Chart{
-		ID: "txpoolpending",
+		ID:    "txpoolpending",
 		Title: "Pending Transaction Pool",
-		Units: "transactions", 
-		Fam: "tx_pool",
-		Ctx: "geth.tx_pool_pending", 
+		Units: "transactions",
+		Fam:   "tx_pool",
+		Ctx:   "geth.tx_pool_pending",
 		Dims: Dims{
 			{ID: txPoolInvalid, Name: "invalid"},
 			{ID: txPoolPending, Name: "pending"},
 			{ID: txPoolLocal, Name: "local"},
 			{ID: txPoolPendingDiscard, Name: "pending discard"},
-			{ID: txPoolNofunds, Name: "no funds" },
+			{ID: txPoolNofunds, Name: "no funds"},
 			{ID: txPoolPendingRatelimit, Name: "ratelimit"},
 			{ID: txPoolPendingReplace, Name: "replace"},
 		},
 	}
 	chartTxPoolCurrent = Chart{
-		ID: "txpoolcurrent",
+		ID:    "txpoolcurrent",
 		Title: "Transaction Pool",
-		Units: "transactions", 
-		Fam: "tx_pool",
-		Ctx: "geth.tx_pool_current", 
+		Units: "transactions",
+		Fam:   "tx_pool",
+		Ctx:   "geth.tx_pool_current",
 		Dims: Dims{
 			{ID: txPoolInvalid, Name: "invalid"},
 			{ID: txPoolPending, Name: "pending"},
 			{ID: txPoolLocal, Name: "local"},
-			{ID: txPoolNofunds, Name: "pool" },
+			{ID: txPoolNofunds, Name: "pool"},
 		},
 	}
 	chartTxPoolQueued = Chart{
-		ID: "txpoolqueued",
+		ID:    "txpoolqueued",
 		Title: "Queued Transaction Pool",
-		Units: "transactions", 
-		Fam: "tx_pool",
-		Ctx: "geth.tx_pool_queued", 
+		Units: "transactions",
+		Fam:   "tx_pool",
+		Ctx:   "geth.tx_pool_queued",
 		Dims: Dims{
 			{ID: txPoolQueuedDiscard, Name: "discard"},
 			{ID: txPoolQueuedEviction, Name: "eviction"},
-			{ID:txPoolQueuedNofunds, Name: "no_funds" },
+			{ID: txPoolQueuedNofunds, Name: "no_funds"},
 			{ID: txPoolQueuedRatelimit, Name: "ratelimit"},
 		},
 	}
 	chartP2PNetwork = Chart{
-		ID: "p2p_network", 
+		ID:    "p2p_network",
 		Title: "P2P bandwidth",
-		Units: "bytes", 
-		Fam: "p2p_bandwidth", 
-		Ctx: "geth.p2p_bandwidth",
+		Units: "bytes",
+		Fam:   "p2p_bandwidth",
+		Ctx:   "geth.p2p_bandwidth",
 		Dims: Dims{
 			{ID: p2pIngress, Name: "ingress"},
 			{ID: p2pEgress, Name: "egress", Mul: -1},
 		},
 	}
 	chartP2PNetworkDetails = Chart{
-		ID: "p2p_eth_65", 
+		ID:    "p2p_eth_65",
 		Title: "Eth/65 Network utilization",
-		Units: "bytes", 
-		Fam: "p2p_eth_65",
-		Ctx: "geth.p2p_eth_65",
+		Units: "bytes",
+		Fam:   "p2p_eth_65",
+		Ctx:   "geth.p2p_eth_65",
 		Dims: Dims{
 			{ID: p2pIngressEth650x00, Name: "Eth/65 handshake ingress"},
 			{ID: p2pIngressEth650x01, Name: "Eth/65 new block hash ingress"},
@@ -159,21 +156,21 @@ var (
 		},
 	}
 	chartNumberOfPeers = Chart{
-		ID: "p2p_general_info",
+		ID:    "p2p_general_info",
 		Title: "Number of Peers",
 		Units: "peers",
-		Fam: "p2p_peers",
-		Ctx: "geth.p2p_peers",
+		Fam:   "p2p_peers",
+		Ctx:   "geth.p2p_peers",
 		Dims: Dims{
 			{ID: p2pPeers, Name: "Peers"},
 		},
 	}
 	chartRpcInformation = Chart{
-		ID: "rpc_metrics", 
-		Title: "RPC information", 
+		ID:    "rpc_metrics",
+		Title: "RPC information",
 		Units: "rpc calls",
-		Fam: "rpc_metrics",
-		Ctx: "geth.rpc_metrics",
+		Fam:   "rpc_metrics",
+		Ctx:   "geth.rpc_metrics",
 		Dims: Dims{
 			{ID: rpcFailure, Name: "Failed RPC requests", Algo: "percentage-of-absolute-row"},
 			{ID: rpcSuccess, Name: "Successful RPC requests", Algo: "percentage-of-absolute-row"},
