@@ -89,13 +89,13 @@ var (
 		Fam: "tx_pool",
 		Ctx: "geth.tx_pool_pending", 
 		Dims: Dims{
-			{ID: txPoolInvalid, Name: "Invalid transaction pool"},
-			{ID: txPoolPending, Name: "Pending transaction pool"},
-			{ID: txPoolLocal, Name: "Local transaction pool"},
-			{ID: txPoolPendingDiscard, Name: "Pending discard transaction pool"},
-			{ID: txPoolNofunds, Name: "Pool of transactions with no funds" },
-			{ID: txPoolPendingRatelimit, Name: "Pending transaction pool ratelimit"},
-			{ID: txPoolPendingReplace, Name: "Pending transaction pool to replace"},
+			{ID: txPoolInvalid, Name: "invalid"},
+			{ID: txPoolPending, Name: "pending"},
+			{ID: txPoolLocal, Name: "local"},
+			{ID: txPoolPendingDiscard, Name: "pending discard"},
+			{ID: txPoolNofunds, Name: "no funds" },
+			{ID: txPoolPendingRatelimit, Name: "ratelimit"},
+			{ID: txPoolPendingReplace, Name: "replace"},
 		},
 	}
 	chartTxPoolCurrent = Chart{
@@ -105,10 +105,10 @@ var (
 		Fam: "tx_pool",
 		Ctx: "geth.tx_pool_current", 
 		Dims: Dims{
-			{ID: txPoolInvalid, Name: "Invalid transaction pool"},
-			{ID: txPoolPending, Name: "Pending transaction pool"},
-			{ID: txPoolLocal, Name: "Local transaction pool"},
-			{ID: txPoolNofunds, Name: "Pool of transactions with no funds" },
+			{ID: txPoolInvalid, Name: "invalid"},
+			{ID: txPoolPending, Name: "pending"},
+			{ID: txPoolLocal, Name: "local"},
+			{ID: txPoolNofunds, Name: "pool" },
 		},
 	}
 	chartTxPoolQueued = Chart{
