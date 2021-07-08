@@ -31,7 +31,7 @@ var (
 		Fam:   "chaindata",
 		Ctx:   "geth.eth_db_chaindata_ancient_io_rate",
 		Dims: Dims{
-			{ID: ethDbChainDataAncientRread, Name: "reads", Algo: "incremental"},
+			{ID: ethDbChainDataAncientRead, Name: "reads", Algo: "incremental"},
 			{ID: ethDbChainDataAncientWrite, Name: "writes", Mul: -1, Algo: "incremental"},
 		},
 	}
@@ -43,7 +43,7 @@ var (
 		Fam:   "chaindata",
 		Ctx:   "geth.eth_db_chaindata_ancient_io",
 		Dims: Dims{
-			{ID: ethDbChainDataAncientRread, Name: "reads"},
+			{ID: ethDbChainDataAncientRead, Name: "reads"},
 			{ID: ethDbChainDataAncientWrite, Name: "writes", Mul: -1},
 		},
 	}

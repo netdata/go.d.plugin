@@ -28,7 +28,7 @@ func (v *Geth) collectChainData(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		chainValidation,
 		chainWrite,
-		ethDbChainDataAncientRread,
+		ethDbChainDataAncientRead,
 		ethDbChainDataAncientWrite,
 		ethDbChaindataDiskRead,
 		ethDbChainDataDiskWrite,
