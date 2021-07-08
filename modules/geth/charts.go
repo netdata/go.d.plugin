@@ -76,8 +76,8 @@ var (
 		ID: "chaindata_block_rate", 
 		Title: "Block creation rate",
 		Units: "blocks/s",
-		Fam: "block_processing", 
-		Ctx: "geth.block_processing",
+		Fam: "block_creation", 
+		Ctx: "geth.block_creation",
 		Dims: Dims{
 			{ID: chain_head_block, Name: "new blocks", Algo: "incremental"},
 		},
