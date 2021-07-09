@@ -172,8 +172,8 @@ var (
 		Fam:   "rpc_metrics",
 		Ctx:   "geth.rpc_metrics",
 		Dims: Dims{
-			{ID: rpcFailure, Name: "Failed RPC requests", Algo: "percentage-of-absolute-row"},
-			{ID: rpcSuccess, Name: "Successful RPC requests", Algo: "percentage-of-absolute-row"},
+			{ID: rpcFailure, Name: "Failed RPC requests", Algo: "incremental"},
+			{ID: rpcSuccess, Name: "Successful RPC requests", Algo: "incremental"},
 		},
 	}
 )
