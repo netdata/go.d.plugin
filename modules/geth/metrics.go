@@ -81,5 +81,5 @@ const (
 
 	rpcRequests = "rpc_requests"
 	rpcSuccess  = "rpc_success"
-	rpcFailure  = "rpcFailure"
+	rpcFailure  = "rpc_failure"
 )
