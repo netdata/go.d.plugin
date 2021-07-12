@@ -66,7 +66,7 @@ var (
 		ID:    "chaindata_disk_date",
 		Title: "On disk Chaindata rate",
 		Units: "bytes/s",
-		Fam:   "chaindata",
+		Fam:   "geth.chaindata",
 		Ctx:   "geth.eth_db_chaindata_disk_io_rate",
 		Dims: Dims{
 			{ID: ethDbChaindataDiskRead, Name: "reads", Algo: "incremental"},
@@ -77,7 +77,7 @@ var (
 		ID:    "chaindata_db_size",
 		Title: "Chaindata Size",
 		Units: "bytes",
-		Fam:   "chainata_db",
+		Fam:   "geth.chaindata",
 		Ctx:   "geth.chaindata_db_size",
 		Dims: Dims{
 			{ID: ethDbChainDataDiskSize, Name: "levelDB"},
@@ -152,22 +152,22 @@ var (
 	chartReorgs = Chart{
 		ID:    "reorgs_executed",
 		Title: "Executed Reorgs",
-		Units: "reorgs/s",
+		Units: "reorgs",
 		Fam:   "reorgs",
 		Ctx:   "geth.reorgs",
 		Dims: Dims{
-			{ID: reorgsExecuted, Name: "executed", Algo: "incremental"},
+			{ID: reorgsExecuted, Name: "executed"},
 		},
 	}
 	chartReorgsBlocks = Chart{
 		ID:    "reorgs_blocks",
 		Title: "Blocks Added/Removed from Reorg",
-		Units: "blocs/s",
+		Units: "blocks",
 		Fam:   "reorgs",
 		Ctx:   "geth.reorgs_blocks",
 		Dims: Dims{
-			{ID: reorgsAdd, Name: "added", Algo: "incremental"},
-			{ID: reorgsDropped, Name: "dropped", Algo: "incremental"},
+			{ID: reorgsAdd, Name: "added"},
+			{ID: reorgsDropped, Name: "dropped"},
 		},
 	}
 	// chartP2PNetworkDetails = Chart{

@@ -33,6 +33,13 @@ func (v *Geth) collectChainData(mx map[string]float64, pms prometheus.Metrics) {
 		ethDbChaindataDiskRead,
 		ethDbChainDataDiskWrite,
 		chainHeadBlock,
+		chainHeadHeader,
+		chainHeadReceipt,
+		ethDbChainDataAncientSize,
+		ethDbChainDataDiskSize,
+		reorgsAdd,
+		reorgsDropped,
+		reorgsExecuted,
 	)
 	v.collectEth(mx, pms)
 
