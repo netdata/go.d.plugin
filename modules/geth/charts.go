@@ -24,6 +24,7 @@ var charts = Charts{
 	chartReorgs.Copy(),
 	chartReorgsBlocks.Copy(),
 	chartChainDataSize.Copy(),
+	chartGoRoutines.Copy(),
 }
 
 var (
@@ -61,7 +62,16 @@ var (
 			{ID: ethDbChainDataDiskWrite, Name: "writes", Mul: -1},
 		},
 	}
-
+	chartGoRoutines = Chart{
+		ID:    "goroutines",
+		Title: "Number of goroutines",
+		Units: "goroutines",
+		Fam:   "goroutines",
+		Ctx:   "geth.goroutines",
+		Dims: Dims{
+			{ID: goRoutines, Name: "goroutines"},
+		},
+	}
 	chartChaidataDiskRate = Chart{
 		ID:    "chaindata_disk_date",
 		Title: "On disk Chaindata rate",

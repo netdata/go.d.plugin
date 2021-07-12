@@ -40,6 +40,7 @@ func (v *Geth) collectChainData(mx map[string]float64, pms prometheus.Metrics) {
 		reorgsAdd,
 		reorgsDropped,
 		reorgsExecuted,
+		goRoutines,
 	)
 	v.collectEth(mx, pms)
 

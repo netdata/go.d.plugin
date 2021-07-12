@@ -91,4 +91,6 @@ const (
 	reorgsAdd      = "chain_reorg_add"
 	reorgsExecuted = "chain_reorg_executes"
 	reorgsDropped  = "chain_reorg_drop"
+
+	goRoutines = "system_cpu_goroutines"
 )
