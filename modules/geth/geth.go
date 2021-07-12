@@ -22,7 +22,7 @@ func New() *Geth {
 	config := Config{
 		HTTP: web.HTTP{
 			Request: web.Request{
-				URL: "http://127.0.0.1:6060/metrics/debug/prometheus",
+				URL: "http://127.0.0.1:6060/debug/metrics/prometheus",
 			},
 			Client: web.Client{
 				Timeout: web.Duration{Duration: time.Second},
