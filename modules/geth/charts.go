@@ -13,14 +13,17 @@ var charts = Charts{
 	chartAncientChainData.Copy(),
 	chartChaidataDisk.Copy(),
 	chartTxPoolPending.Copy(),
-	chartNewBlocksCreation.Copy(),
+	chartChaidataDisk.Copy(),
 	chartTxPoolQueued.Copy(),
 	chartP2PNetwork.Copy(),
-	chartP2PNetworkDetails.Copy(),
 	chartNumberOfPeers.Copy(),
 	chartRpcInformation.Copy(),
 	chartAncientChainDataRate.Copy(),
 	chartChaidataDiskRate.Copy(),
+	chartp2pDialsServes.Copy(),
+	chartReorgs.Copy(),
+	chartReorgsBlocks.Copy(),
+	chartChainDataSize.Copy(),
 }
 
 var (
@@ -38,7 +41,7 @@ var (
 
 	chartAncientChainData = Chart{
 		ID:    "chaindata_ancient",
-		Title: "Ancient Chaindata",
+		Title: "Session ancient Chaindata",
 		Units: "bytes",
 		Fam:   "chaindata",
 		Ctx:   "geth.eth_db_chaindata_ancient_io",
@@ -47,6 +50,18 @@ var (
 			{ID: ethDbChainDataAncientWrite, Name: "writes", Mul: -1},
 		},
 	}
+	chartChaidataDisk = Chart{
+		ID:    "chaindata_disk",
+		Title: "Session chaindata on disk",
+		Units: "bytes",
+		Fam:   "chaindata",
+		Ctx:   "geth.eth_db_chaindata_disk_io",
+		Dims: Dims{
+			{ID: ethDbChaindataDiskRead, Name: "reads"},
+			{ID: ethDbChainDataDiskWrite, Name: "writes", Mul: -1},
+		},
+	}
+
 	chartChaidataDiskRate = Chart{
 		ID:    "chaindata_disk_date",
 		Title: "On disk Chaindata rate",
@@ -58,25 +73,27 @@ var (
 			{ID: ethDbChainDataDiskWrite, Name: "writes", Mul: -1, Algo: "incremental"},
 		},
 	}
-	chartChaidataDisk = Chart{
-		ID:    "chaindata_disk",
-		Title: "Chaindata on disk",
+	chartChainDataSize = Chart{
+		ID:    "chaindata_db_size",
+		Title: "Chaindata Size",
 		Units: "bytes",
-		Fam:   "chaindata",
-		Ctx:   "geth.eth_db_chaindata_disk_io",
+		Fam:   "chainata_db",
+		Ctx:   "geth.chaindata_db_size",
 		Dims: Dims{
-			{ID: ethDbChaindataDiskRead, Name: "reads"},
-			{ID: ethDbChainDataDiskWrite, Name: "writes", Mul: -1},
+			{ID: ethDbChainDataDiskSize, Name: "levelDB"},
+			{ID: ethDbChainDataAncientSize, Name: "ancientDB"},
 		},
 	}
-	chartNewBlocksCreation = Chart{
-		ID:    "chaindata_block_rate",
-		Title: "Block creation rate",
-		Units: "blocks/s",
-		Fam:   "block_creation",
-		Ctx:   "geth.block_creation",
+	chainHead = Chart{
+		ID:    "chainhead_overall",
+		Title: "Chainhead",
+		Units: "block",
+		Fam:   "chainhead",
+		Ctx:   "geth.chainhead",
 		Dims: Dims{
-			{ID: chainHeadBlock, Name: "new blocks", Algo: "incremental"},
+			{ID: chainHeadBlock, Name: "block"},
+			{ID: chainHeadReceipt, Name: "receipt"},
+			{ID: chainHeadHeader, Name: "header"},
 		},
 	}
 	chartTxPoolPending = Chart{
@@ -89,7 +106,7 @@ var (
 			{ID: txPoolInvalid, Name: "invalid"},
 			{ID: txPoolPending, Name: "pending"},
 			{ID: txPoolLocal, Name: "local"},
-			{ID: txPoolPendingDiscard, Name: "pending discard"},
+			{ID: txPoolPendingDiscard, Name: " discard"},
 			{ID: txPoolNofunds, Name: "no funds"},
 			{ID: txPoolPendingRatelimit, Name: "ratelimit"},
 			{ID: txPoolPendingReplace, Name: "replace"},
@@ -124,45 +141,78 @@ var (
 	chartP2PNetwork = Chart{
 		ID:    "p2p_network",
 		Title: "P2P bandwidth",
-		Units: "bytes",
+		Units: "bytes/s",
 		Fam:   "p2p_bandwidth",
 		Ctx:   "geth.p2p_bandwidth",
 		Dims: Dims{
-			{ID: p2pIngress, Name: "ingress"},
-			{ID: p2pEgress, Name: "egress", Mul: -1},
+			{ID: p2pIngress, Name: "ingress", Algo: "incremental"},
+			{ID: p2pEgress, Name: "egress", Mul: -1, Algo: "incremental"},
 		},
 	}
-	chartP2PNetworkDetails = Chart{
-		ID:    "p2p_eth_65",
-		Title: "Eth/65 Network utilization",
-		Units: "bytes",
-		Fam:   "p2p_eth_65",
-		Ctx:   "geth.p2p_eth_65",
+	chartReorgs = Chart{
+		ID:    "reorgs_executed",
+		Title: "Executed Reorgs",
+		Units: "reorgs/s",
+		Fam:   "reorgs",
+		Ctx:   "geth.reorgs",
 		Dims: Dims{
-			{ID: p2pIngressEth650x00, Name: "Eth/65 handshake ingress"},
-			{ID: p2pIngressEth650x01, Name: "Eth/65 new block hash ingress"},
-			{ID: p2pIngressEth650x03, Name: "Eth/65 block header request ingress"},
-			{ID: p2pIngressEth650x04, Name: "Eth/65 block header response ingress"},
-			{ID: p2pIngressEth650x05, Name: "Eth/65 block body request ingress"},
-			{ID: p2pIngressEth650x06, Name: "Eth/65 block body response ingress"},
-			{ID: p2pIngressEth650x08, Name: "Eth/65 transactions announcement ingress"},
-			{ID: p2pEgressEth650x00, Name: "Eth/65 handshake egress", Mul: -1},
-			{ID: p2pEgressEth650x01, Name: "Eth/65 new block hash egress", Mul: -1},
-			{ID: p2pEgressEth650x03, Name: "Eth/65 block header request egress", Mul: -1},
-			{ID: p2pEgressEth650x04, Name: "Eth/65 block header response egress", Mul: -1},
-			{ID: p2pEgressEth650x05, Name: "Eth/65 block body request egress", Mul: -1},
-			{ID: p2pEgressEth650x06, Name: "Eth/65 block body response egress", Mul: -1},
-			{ID: p2pEgressEth650x08, Name: "Eth/65 transactions announcement egress", Mul: -1},
+			{ID: reorgsExecuted, Name: "executed", Algo: "incremental"},
 		},
 	}
+	chartReorgsBlocks = Chart{
+		ID:    "reorgs_blocks",
+		Title: "Blocks Added/Removed from Reorg",
+		Units: "blocs/s",
+		Fam:   "reorgs",
+		Ctx:   "geth.reorgs_blocks",
+		Dims: Dims{
+			{ID: reorgsAdd, Name: "added", Algo: "incremental"},
+			{ID: reorgsDropped, Name: "dropped", Algo: "incremental"},
+		},
+	}
+	// chartP2PNetworkDetails = Chart{
+	// 	ID:    "p2p_eth_65",
+	// 	Title: "Eth/65 Network utilization",
+	// 	Units: "bytes",
+	// 	Fam:   "p2p_eth_65",
+	// 	Ctx:   "geth.p2p_eth_65",
+	// 	Dims: Dims{
+	// 		{ID: p2pIngressEth650x00, Name: "Eth/65 handshake ingress"},
+	// 		{ID: p2pIngressEth650x01, Name: "Eth/65 new block hash ingress"},
+	// 		{ID: p2pIngressEth650x03, Name: "Eth/65 block header request ingress"},
+	// 		{ID: p2pIngressEth650x04, Name: "Eth/65 block header response ingress"},
+	// 		{ID: p2pIngressEth650x05, Name: "Eth/65 block body request ingress"},
+	// 		{ID: p2pIngressEth650x06, Name: "Eth/65 block body response ingress"},
+	// 		{ID: p2pIngressEth650x08, Name: "Eth/65 transactions announcement ingress"},
+	// 		{ID: p2pEgressEth650x00, Name: "Eth/65 handshake egress", Mul: -1},
+	// 		{ID: p2pEgressEth650x01, Name: "Eth/65 new block hash egress", Mul: -1},
+	// 		{ID: p2pEgressEth650x03, Name: "Eth/65 block header request egress", Mul: -1},
+	// 		{ID: p2pEgressEth650x04, Name: "Eth/65 block header response egress", Mul: -1},
+	// 		{ID: p2pEgressEth650x05, Name: "Eth/65 block body request egress", Mul: -1},
+	// 		{ID: p2pEgressEth650x06, Name: "Eth/65 block body response egress", Mul: -1},
+	// 		{ID: p2pEgressEth650x08, Name: "Eth/65 transactions announcement egress", Mul: -1},
+	// 	},
+	// }
 	chartNumberOfPeers = Chart{
-		ID:    "p2p_general_info",
+		ID:    "p2p_peers_number",
 		Title: "Number of Peers",
 		Units: "peers",
 		Fam:   "p2p_peers",
 		Ctx:   "geth.p2p_peers",
 		Dims: Dims{
 			{ID: p2pPeers, Name: "Peers"},
+		},
+	}
+
+	chartp2pDialsServes = Chart{
+		ID:    "p2p_dials_serves",
+		Title: "P2P Serves and Dials",
+		Units: "calls/s",
+		Fam:   "p2p_peers",
+		Ctx:   "geth.p2p_peers",
+		Dims: Dims{
+			{ID: p2pDials, Name: "dials", Algo: "incremental"},
+			{ID: p2pServes, Name: "serves", Algo: "incremental"},
 		},
 	}
 	chartRpcInformation = Chart{
@@ -172,8 +222,8 @@ var (
 		Fam:   "rpc_metrics",
 		Ctx:   "geth.rpc_metrics",
 		Dims: Dims{
-			{ID: rpcFailure, Name: "Failed RPC requests", Algo: "incremental"},
-			{ID: rpcSuccess, Name: "Successful RPC requests", Algo: "incremental"},
+			{ID: rpcFailure, Name: "failed", Algo: "incremental"},
+			{ID: rpcSuccess, Name: "successful", Algo: "incremental"},
 		},
 	}
 )
