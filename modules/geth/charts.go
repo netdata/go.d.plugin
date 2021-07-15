@@ -25,6 +25,7 @@ var charts = Charts{
 	chartReorgsBlocks.Copy(),
 	chartChainDataSize.Copy(),
 	chartGoRoutines.Copy(),
+	chartChainHead.Copy(),
 }
 
 var (
@@ -76,7 +77,7 @@ var (
 		ID:    "chaindata_disk_date",
 		Title: "On disk Chaindata rate",
 		Units: "bytes/s",
-		Fam:   "geth.chaindata",
+		Fam:   "chaindata",
 		Ctx:   "geth.eth_db_chaindata_disk_io_rate",
 		Dims: Dims{
 			{ID: ethDbChaindataDiskRead, Name: "reads", Algo: "incremental"},
@@ -87,14 +88,14 @@ var (
 		ID:    "chaindata_db_size",
 		Title: "Chaindata Size",
 		Units: "bytes",
-		Fam:   "geth.chaindata",
+		Fam:   "chaindata",
 		Ctx:   "geth.chaindata_db_size",
 		Dims: Dims{
 			{ID: ethDbChainDataDiskSize, Name: "levelDB"},
 			{ID: ethDbChainDataAncientSize, Name: "ancientDB"},
 		},
 	}
-	chainHead = Chart{
+	chartChainHead = Chart{
 		ID:    "chainhead_overall",
 		Title: "Chainhead",
 		Units: "block",
