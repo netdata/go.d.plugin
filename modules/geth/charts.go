@@ -227,11 +227,11 @@ var (
 		},
 	}
 	chartRpcInformation = Chart{
-		ID:    "rpc_metrics",
-		Title: "RPC information",
-		Units: "rpc calls",
-		Fam:   "rpc_metrics",
-		Ctx:   "geth.rpc_metrics",
+		ID:    "rpc_calls",
+		Title: "rpc calls",
+		Units: "calls/s",
+		Fam:   "rpc",
+		Ctx:   "geth.rpc_calls",
 		Dims: Dims{
 			{ID: rpcFailure, Name: "failed", Algo: "incremental"},
 			{ID: rpcSuccess, Name: "successful", Algo: "incremental"},
