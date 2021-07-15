@@ -33,7 +33,6 @@ func New() *Geth {
 	return &Geth{
 		Config: config,
 		charts: charts.Copy(),
-		cache:  make(cache),
 	}
 }
 
@@ -48,13 +47,8 @@ type (
 
 		prom   prometheus.Prometheus
 		charts *Charts
-		cache  cache
 	}
-
-	cache map[string]bool
 )
-
-func (c cache) hasP(v string) bool { ok := c[v]; c[v] = true; return ok }
 
 func (v Geth) validateConfig() error {
 	if v.URL == "" {
