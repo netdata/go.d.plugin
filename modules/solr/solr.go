@@ -180,7 +180,7 @@ func (s *Solr) getVersion() error {
 		return fmt.Errorf("error on parsing version '%s': bad format", info.Lucene.Version)
 	}
 
-	if s.version, err = strconv.ParseFloat(info.Lucene.Version[:idx], 10); err != nil {
+	if s.version, err = strconv.ParseFloat(info.Lucene.Version[:idx], 64); err != nil {
 		return fmt.Errorf("error on parsing version '%s' :  %s", info.Lucene.Version, err)
 	}
 

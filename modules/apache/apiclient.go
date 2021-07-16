@@ -171,7 +171,7 @@ func mustParseInt(value string) *int64 {
 }
 
 func mustParseFloat(value string) *float64 {
-	v, err := strconv.ParseFloat(value, 10)
+	v, err := strconv.ParseFloat(value, 64)
 	if err != nil {
 		panic(err)
 	}

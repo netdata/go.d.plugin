@@ -169,7 +169,7 @@ func parseStatsLine(line string) (entry, error) {
 	if len(parts) != 2 {
 		return entry{}, fmt.Errorf("bad line syntax: %s", line)
 	}
-	f, err := strconv.ParseFloat(parts[1], 10)
+	f, err := strconv.ParseFloat(parts[1], 64)
 	return entry{key: parts[0], value: f}, err
 }
 
