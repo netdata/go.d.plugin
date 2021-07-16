@@ -11,21 +11,21 @@ type (
 
 var charts = Charts{
 	chartAncientChainData.Copy(),
-	chartChaidataDisk.Copy(),
-	chartTxPoolPending.Copy(),
-	chartChaidataDisk.Copy(),
-	chartTxPoolQueued.Copy(),
+	chartChaindataDisk.Copy(),
+	chartAncientChainDataRate.Copy(),
+	chartChaindataDiskRate.Copy(),
+	chartChainDataSize.Copy(),
+	chartChainHead.Copy(),
 	chartP2PNetwork.Copy(),
 	chartNumberOfPeers.Copy(),
-	chartRpcInformation.Copy(),
-	chartAncientChainDataRate.Copy(),
-	chartChaidataDiskRate.Copy(),
 	chartp2pDialsServes.Copy(),
 	chartReorgs.Copy(),
 	chartReorgsBlocks.Copy(),
-	chartChainDataSize.Copy(),
 	chartGoRoutines.Copy(),
-	chartChainHead.Copy(),
+	chartTxPoolCurrent.Copy(),
+	chartTxPoolQueued.Copy(),
+	chartTxPoolPending.Copy(),
+	chartRpcInformation.Copy(),
 }
 
 var (
@@ -52,7 +52,7 @@ var (
 			{ID: ethDbChainDataAncientWrite, Name: "writes", Mul: -1},
 		},
 	}
-	chartChaidataDisk = Chart{
+	chartChaindataDisk = Chart{
 		ID:    "chaindata_disk",
 		Title: "Session chaindata on disk",
 		Units: "bytes",
@@ -73,7 +73,7 @@ var (
 			{ID: goRoutines, Name: "goroutines"},
 		},
 	}
-	chartChaidataDiskRate = Chart{
+	chartChaindataDiskRate = Chart{
 		ID:    "chaindata_disk_date",
 		Title: "On disk Chaindata rate",
 		Units: "bytes/s",
