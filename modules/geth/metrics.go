@@ -36,11 +36,9 @@ const (
 	p2pEgress  = "p2p_egress"
 	p2pIngress = "p2p_ingress"
 
-	p2pPeers            = "p2p_peers"
-	p2pServes           = "p2p_serves"
-	p2pDials            = "p2p_dials"
-	p2pTrackedEth660x03 = "p2p_tracked_eth_66_0x03"
-	p2pTrackedEth660x05 = "p2p_tracked_eth_66_0x05"
+	p2pPeers  = "p2p_peers"
+	p2pServes = "p2p_serves"
+	p2pDials  = "p2p_dials"
 
 	rpcRequests = "rpc_requests"
 	rpcSuccess  = "rpc_success"
@@ -52,27 +50,3 @@ const (
 
 	goRoutines = "system_cpu_goroutines"
 )
-
-// chartP2PNetworkDetails = Chart{
-// 	ID:    "p2p_eth_65",
-// 	Title: "Eth/65 Network utilization",
-// 	Units: "bytes",
-// 	Fam:   "p2p_eth_65",
-// 	Ctx:   "geth.p2p_eth_65",
-// 	Dims: Dims{
-// 		{ID: p2pIngressEth650x00, Name: "Eth/65 handshake ingress"},
-// 		{ID: p2pIngressEth650x01, Name: "Eth/65 new block hash ingress"},
-// 		{ID: p2pIngressEth650x03, Name: "Eth/65 block header request ingress"},
-// 		{ID: p2pIngressEth650x04, Name: "Eth/65 block header response ingress"},
-// 		{ID: p2pIngressEth650x05, Name: "Eth/65 block body request ingress"},
-// 		{ID: p2pIngressEth650x06, Name: "Eth/65 block body response ingress"},
-// 		{ID: p2pIngressEth650x08, Name: "Eth/65 transactions announcement ingress"},
-// 		{ID: p2pEgressEth650x00, Name: "Eth/65 handshake egress", Mul: -1},
-// 		{ID: p2pEgressEth650x01, Name: "Eth/65 new block hash egress", Mul: -1},
-// 		{ID: p2pEgressEth650x03, Name: "Eth/65 block header request egress", Mul: -1},
-// 		{ID: p2pEgressEth650x04, Name: "Eth/65 block header response egress", Mul: -1},
-// 		{ID: p2pEgressEth650x05, Name: "Eth/65 block body request egress", Mul: -1},
-// 		{ID: p2pEgressEth650x06, Name: "Eth/65 block body response egress", Mul: -1},
-// 		{ID: p2pEgressEth650x08, Name: "Eth/65 transactions announcement egress", Mul: -1},
-// 	},
-// }
