@@ -54,3 +54,46 @@ The second best contribution you can make is to tell us what alerts we should be
 
 If you are proficient in Golang, visit the topic and make a PR yourself to the collector. We will happily help you to merge it and have your code being shipped with **every** Netdata agent.
 
+## Configuration
+
+Edit the `go.d/geth.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+
+```bash
+cd /etc/netdata # Replace this path with your Netdata config directory
+sudo ./edit-config go.d/geth.conf
+```
+
+Needs only `url` to `geth` metrics endpoint. Here is an example for 2 instances:
+
+```yaml
+jobs:
+  - name: geth_node_1
+    url: http://203.0.113.10:6060/debug/metrics/prometheus
+
+  - name: geth_node_2
+    url: http://203.0.113.11:6060/debug/metrics/prometheus
+```
+
+For all available options please see
+module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/geth.conf).
+
+## Troubleshooting
+
+To troubleshoot issues with the `geth` collector, run the `go.d.plugin` with the debug option enabled. The output should
+give you clues as to why the collector isn't working.
+
+First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
+to the `netdata` user.
+
+```bash
+cd /usr/libexec/netdata/plugins.d/
+sudo -u netdata -s
+```
+
+You can now run the `go.d.plugin` to debug the collector:
+
+```bash
+./go.d.plugin -d -m geth
+```
