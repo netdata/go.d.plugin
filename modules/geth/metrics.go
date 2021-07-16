@@ -33,22 +33,8 @@ const (
 
 const (
 	// gauge
-	p2pEgress                  = "p2p_egress"
-	p2pIngress                 = "p2p_ingress"
-	p2pIngressEth650x00        = "p2p_ingress_eth_65_0x00"
-	p2pIngressEth650x00Packets = "p2p_ingress_eth_65_0x00_packets"
-	p2pIngressEth650x01        = "p2p_ingress_eth_65_0x01"
-	p2pIngressEth650x01Packets = "p2p_ingress_eth_65_0x01_packets"
-	p2pIngressEth650x03        = "p2p_ingress_eth_65_0x03"
-	p2pIngressEth650x03Packets = "p2p_ingress_eth_65_0x03_packets"
-	p2pIngressEth650x04        = "p2p_ingress_eth_65_0x04"
-	p2pIngressEth650x04Packets = "p2p_ingress_eth_65_0x04_packets"
-	p2pIngressEth650x05        = "p2p_ingress_eth_65_0x05"
-	p2pIngressEth650x05Packets = "p2p_ingress_eth_65_0x05_packets"
-	p2pIngressEth650x06        = "p2p_ingress_eth_65_0x06"
-	p2pIngressEth650x06Packets = "p2p_ingress_eth_65_0x06_packets"
-	p2pIngressEth650x08        = "p2p_ingress_eth_65_0x08"
-	p2pIngressEth650x08Packets = "p2p_ingress_eth_65_0x08_packets"
+	p2pEgress  = "p2p_egress"
+	p2pIngress = "p2p_ingress"
 
 	p2pPeers            = "p2p_peers"
 	p2pServes           = "p2p_serves"
