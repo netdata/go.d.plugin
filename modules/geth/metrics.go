@@ -50,34 +50,6 @@ const (
 	p2pIngressEth650x08        = "p2p_ingress_eth_65_0x08"
 	p2pIngressEth650x08Packets = "p2p_ingress_eth_65_0x08_packets"
 
-	// p2pEgressEth650x00        = "p2p_egress_eth_65_0x00"
-	// p2pEgressEth650x00Packets = "p2p_egress_eth_65_0x00_packets"
-	// p2pEgressEth650x01        = "p2p_egress_eth_65_0x01"
-	// p2pEgressEth650x01Packets = "p2p_egress_eth_65_0x01_packets"
-	// p2pEgressEth650x03        = "p2p_egress_eth_65_0x03"
-	// p2pEgressEth650x03Packets = "p2p_egress_eth_65_0x03_packets"
-	// p2pEgressEth650x04        = "p2p_egress_eth_65_0x04"
-	// p2pEgressEth650x04Packets = "p2p_egress_eth_65_0x04_packets"
-	// p2pEgressEth650x05        = "p2p_egress_eth_65_0x05"
-	// p2pEgressEth650x05Packets = "p2p_egress_eth_65_0x05_packets"
-	// p2pEgressEth650x06        = "p2p_egress_eth_65_0x06"
-	// p2pEgressEth650x06Packets = "p2p_egress_eth_65_0x06_packets"
-	// p2pEgressEth650x08        = "p2p_egress_eth_65_0x08"
-	// p2pEgressEth650x08Packets = "p2p_egress_eth_65_0x08_packets"
-
-	// p2pIngressEth660x00        = "p2p_ingress_eth_66_0x00"
-	// p2pIngressEth660x00Packets = "p2p_ingress_eth_66_0x00_packets"
-	// p2pIngressEth660x03        = "p2p_ingress_eth_66_0x03"
-	// p2pIngressEth660x03Packets = "p2p_ingress_eth_66_0x03_packets"
-	// p2pIngressEth660x04        = "p2p_ingress_eth_66_0x04"
-	// p2pIngressEth660x04Packets = "p2p_ingress_eth_66_0x04_packets"
-	// p2pIngressEth660x06        = "p2p_ingress_eth_66_0x06"
-	// p2pIngressEth660x06Packets = "p2p_ingress_eth_66_0x06_packets"
-	// p2pIngressEth660x08        = "p2p_ingress_eth_66_0x08"
-	// p2pIngressEth660x08Packets = "p2p_ingress_eth_66_0x08_packets"
-	// p2pIngressEth660x01        = "p2p_ingress_snap_1_0x01"
-	// p2pIngressEth660x01Packets = "p2p_ingress_snap_1_0x01_packets"
-
 	p2pPeers            = "p2p_peers"
 	p2pServes           = "p2p_serves"
 	p2pDials            = "p2p_dials"
@@ -94,3 +66,27 @@ const (
 
 	goRoutines = "system_cpu_goroutines"
 )
+
+// chartP2PNetworkDetails = Chart{
+// 	ID:    "p2p_eth_65",
+// 	Title: "Eth/65 Network utilization",
+// 	Units: "bytes",
+// 	Fam:   "p2p_eth_65",
+// 	Ctx:   "geth.p2p_eth_65",
+// 	Dims: Dims{
+// 		{ID: p2pIngressEth650x00, Name: "Eth/65 handshake ingress"},
+// 		{ID: p2pIngressEth650x01, Name: "Eth/65 new block hash ingress"},
+// 		{ID: p2pIngressEth650x03, Name: "Eth/65 block header request ingress"},
+// 		{ID: p2pIngressEth650x04, Name: "Eth/65 block header response ingress"},
+// 		{ID: p2pIngressEth650x05, Name: "Eth/65 block body request ingress"},
+// 		{ID: p2pIngressEth650x06, Name: "Eth/65 block body response ingress"},
+// 		{ID: p2pIngressEth650x08, Name: "Eth/65 transactions announcement ingress"},
+// 		{ID: p2pEgressEth650x00, Name: "Eth/65 handshake egress", Mul: -1},
+// 		{ID: p2pEgressEth650x01, Name: "Eth/65 new block hash egress", Mul: -1},
+// 		{ID: p2pEgressEth650x03, Name: "Eth/65 block header request egress", Mul: -1},
+// 		{ID: p2pEgressEth650x04, Name: "Eth/65 block header response egress", Mul: -1},
+// 		{ID: p2pEgressEth650x05, Name: "Eth/65 block body request egress", Mul: -1},
+// 		{ID: p2pEgressEth650x06, Name: "Eth/65 block body response egress", Mul: -1},
+// 		{ID: p2pEgressEth650x08, Name: "Eth/65 transactions announcement egress", Mul: -1},
+// 	},
+// }
