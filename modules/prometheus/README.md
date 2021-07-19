@@ -10,12 +10,15 @@ sidebar_label: "Prometheus endpoints"
 The generic Prometheus endpoint collector gathers metrics from [`Prometheus`](https://prometheus.io/) endpoints that use
 the [OpenMetrics exposition format](https://prometheus.io/docs/instrumenting/exposition_formats/).
 
-As of v1.24, Netdata can autodetect more than 600 Prometheus endpoints, including support for Windows 10 via
-`windows_exporter`, and instantly generate new charts with the same high-granularity, per-second frequency as you expect
-from other collectors.
+- As of v1.24, Netdata can autodetect more than 600 Prometheus endpoints, including support for Windows 10 via
+  `windows_exporter`, and instantly generate new charts with the same high-granularity, per-second frequency as you
+  expect from other collectors.
 
-The full list of endpoints is available in the
-collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
+- The full list of endpoints is available in the
+  collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
+
+- Collecting metrics
+  from [Prometheus endpoints in Kubernetes](https://github.com/netdata/helmchart#prometheus-endpoints).
 
 ## Charts
 
