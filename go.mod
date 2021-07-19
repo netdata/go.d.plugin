@@ -17,8 +17,9 @@ require (
 	github.com/gofrs/flock v0.8.0
 	github.com/ilyam8/hashstructure v1.1.0
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/likexian/whois v1.12.0
-	github.com/likexian/whois-parser v1.20.3
+	github.com/likexian/gokit v0.25.2 // indirect
+	github.com/likexian/whois v1.12.1
+	github.com/likexian/whois-parser v1.20.4
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.29
@@ -31,6 +32,7 @@ require (
 	github.com/tomasen/fcgi_client v0.0.0-20180423082037-2bb3d819fd19
 	github.com/valyala/fastjson v1.5.4
 	github.com/vmware/govmomi v0.22.2
+	golang.org/x/net v0.0.0-20210716203947-853a461950ff // indirect
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/ini.v1 v1.57.0
