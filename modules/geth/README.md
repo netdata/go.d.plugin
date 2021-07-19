@@ -7,52 +7,62 @@ sidebar_label: "Go-ethereum"
 
 # Geth Monitoring with Netdata
 
+Go Ethereum, written in Google’s Go language, is one of the three original implementations of the Ethereum protocol,
+alongside C++ and Python.
 
-Go Ethereum, written in Google’s Go language, is one of the three original implementations of the Ethereum protocol, alongside C++ and Python.
+Go-Ethereum, and subsequently Geth, are built and maintained by the Ethereum community. It’s open source which means
+anyone can contribute to Geth through its [Github](https://github.com/ethereum/go-ethereum).
 
-Go-Ethereum, and subsequently Geth, are built and maintained by the Ethereum community. It’s open source which means anyone can contribute to Geth through its [Github](https://github.com/ethereum/go-ethereum).
-
-With Netdata,  you can effortlessly monitor your Geth node
-
+With Netdata, you can effortlessly monitor your Geth node
 
 ## Requirements
 
-Run `geth` with the flag `--metrics`. That will enable the metric server, with default port `6060` and path `/debug/metrics/prometheus`. 
+Run `geth` with the flag `--metrics`. That will enable the metric server, with default port `6060` and
+path `/debug/metrics/prometheus`.
 
 ## Charts
 
-This is an initial number of metrics that we chose to collect and organize. It is **very easy** to add more charts based on the available metrics in the prometheus endpoint. Head over to [Contribute](#contribute) to learn how you can help to expand this collector. 
+This is an initial number of metrics that we chose to collect and organize. It is **very easy** to add more charts based
+on the available metrics in the prometheus endpoint. Head over to [Contribute](#contribute) to learn how you can help to
+expand this collector.
 
-- Chaindata: 
-  - total read/write for the session
-  - read/write per second
+- Chaindata:
+    - total read/write for the session
+    - read/write per second
 - Transaction Pool
-  - Pending
-  - Queued
+    - Pending
+    - Queued
 - Peer-to-Peer
-  - bandwidth per second (ingress/egress)
-  - number of peers
-  - serves/dials calls per second
+    - bandwidth per second (ingress/egress)
+    - number of peers
+    - serves/dials calls per second
 - rpc calls
-  - successful/failed per second
+    - successful/failed per second
 - reorgs
-  - Total number of executed reorgs
-  - Total number of added/removed blocks due to reorg
+    - Total number of executed reorgs
+    - Total number of added/removed blocks due to reorg
 - number of active goroutines
 - chainhead
-  - block, receipt and header. If block = header, then Geth node is fully synced. 
+    - block, receipt and header. If block = header, then Geth node is fully synced.
 
 ## Contribute
 
-We have started a [topic](https://community.netdata.cloud/t/lets-build-a-golang-collector-for-monitoring-ethereum-full-nodes/1426) on our community forums about this collector.  
+We have started
+a [topic](https://community.netdata.cloud/t/lets-build-a-golang-collector-for-monitoring-ethereum-full-nodes/1426) on
+our community forums about this collector.
 
-**The best contribution you can make is to tell us what metrics you want to see and how they should be organized (e.g what charts to make).**
+**The best contribution you can make is to tell us what metrics you want to see and how they should be organized (e.g
+what charts to make).**
 
-As you can read in the topic, it's trivial to add more metrics from the prometheus endpoint and create the relevant charts. The hard part is the domain expertise that we don't have, but you, as a user, have.
+As you can read in the topic, it's trivial to add more metrics from the prometheus endpoint and create the relevant
+charts. The hard part is the domain expertise that we don't have, but you, as a user, have.
 
-The second best contribution you can make is to tell us what alerts we should be shipping as defaults for this collector. For example, we are shipping an alert about the node being in sync (or not). We simply compare the chainhead `block` and `header` values.
+The second best contribution you can make is to tell us what alerts we should be shipping as defaults for this
+collector. For example, we are shipping an alert about the node being in sync (or not). We simply compare the
+chainhead `block` and `header` values.
 
-If you are proficient in Golang, visit the topic and make a PR yourself to the collector. We will happily help you to merge it and have your code being shipped with **every** Netdata agent.
+If you are proficient in Golang, visit the topic and make a PR yourself to the collector. We will happily help you to
+merge it and have your code being shipped with **every** Netdata agent.
 
 ## Configuration
 
