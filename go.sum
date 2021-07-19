@@ -113,8 +113,8 @@ github.com/likexian/whois v1.12.1/go.mod h1:x2D4hARtz/E39xOgwDlJ/1k02+kxp87NeCHF
 github.com/likexian/whois-parser v1.20.3/go.mod h1:+WnlYZfcIqRs4eyf2kkk3QugBL25dKRx7N8/RrRe8jg=
 github.com/likexian/whois-parser v1.20.4 h1:QBi8gzYH6wWfjaxVq3AcfteSsmvTc6Dseq8joB6nvZ8=
 github.com/likexian/whois-parser v1.20.4/go.mod h1:+WnlYZfcIqRs4eyf2kkk3QugBL25dKRx7N8/RrRe8jg=
-github.com/mattn/go-isatty v0.0.12 h1:wuysRhFDzyxgEmMf5xjvJ2M9dZoWAXNNr5LSBS7uHXY=
-github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
+github.com/mattn/go-isatty v0.0.13 h1:qdl+GuBjcsKKDco5BsxPJlId98mSWNKqYA+Co0SC1yA=
+github.com/mattn/go-isatty v0.0.13/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
 github.com/mattn/go-runewidth v0.0.10/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
 github.com/mattn/go-sqlite3 v1.10.0/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/mattn/go-xmlrpc v0.0.3 h1:Y6WEMLEsqs3RviBrAa1/7qmbGB7DVD3brZIbqMbQdGY=

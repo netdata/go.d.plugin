@@ -20,7 +20,7 @@ require (
 	github.com/likexian/gokit v0.25.2 // indirect
 	github.com/likexian/whois v1.12.1
 	github.com/likexian/whois-parser v1.20.4
-	github.com/mattn/go-isatty v0.0.12
+	github.com/mattn/go-isatty v0.0.13
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.29
 	github.com/mitchellh/go-homedir v1.1.0
