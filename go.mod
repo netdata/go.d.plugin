@@ -10,7 +10,7 @@ require (
 	github.com/axiomhq/hyperloglog v0.0.0-20191112132149-a4c4c47bc57f
 	github.com/blang/semver/v4 v4.0.0
 	github.com/cloudflare/cfssl v1.4.1
-	github.com/coreos/go-systemd/v22 v22.1.1-0.20200917134135-408310d1ce37
+	github.com/coreos/go-systemd/v22 v22.3.2
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-redis/redis/v8 v8.4.0
 	github.com/go-sql-driver/mysql v1.5.0
