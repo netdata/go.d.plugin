@@ -22,7 +22,7 @@ require (
 	github.com/likexian/whois-parser v1.20.4
 	github.com/mattn/go-isatty v0.0.13
 	github.com/mattn/go-xmlrpc v0.0.3
-	github.com/miekg/dns v1.1.29
+	github.com/miekg/dns v1.1.43
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/prometheus/common v0.10.0 // indirect
