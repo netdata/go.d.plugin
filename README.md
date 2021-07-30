@@ -14,7 +14,8 @@ custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/README.md
 2. It is started and stopped automatically by `Netdata`.
 3. It communicates with `Netdata` via a unidirectional pipe (sending data to the `Netdata` daemon).
 4. Supports any number of data collection [modules](https://github.com/netdata/go.d.plugin/tree/master/modules).
-5. Allows each [module](https://github.com/netdata/go.d.plugin/tree/master/modules) to have any number of data collection **jobs**.
+5. Allows each [module](https://github.com/netdata/go.d.plugin/tree/master/modules) to have any number of data
+   collection **jobs**.
 
 ## Install
 
@@ -87,8 +88,8 @@ Go.d.plugin is shipped with [`Netdata`](https://github.com/netdata/netdata).
 
 ## Configuration
 
-Edit the `go.d.conf` configuration file using `edit-config` from the Netdata [config
-directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Edit the `go.d.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -97,27 +98,39 @@ sudo ./edit-config go.d.conf
 
 Configurations are written in [YAML](http://yaml.org/).
 
--   [plugin configuration](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf)
--   [specific module configuration](https://github.com/netdata/go.d.plugin/tree/master/config/go.d)
+- [plugin configuration](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf)
+- [specific module configuration](https://github.com/netdata/go.d.plugin/tree/master/config/go.d)
 
 ## Contributing
 
-If you want to contribute to this project, we are humbled. Please take a look at our [contributing guidelines](https://learn.netdata.cloud/contribute/handbook) and don't hesitate to contact us in our forums. We have a whole [category](https://community.netdata.cloud/c/agent-development/9) just for this purpose!
-
+If you want to contribute to this project, we are humbled. Please take a look at
+our [contributing guidelines](https://learn.netdata.cloud/contribute/handbook) and don't hesitate to contact us in our
+forums. We have a whole [category](https://community.netdata.cloud/c/agent-development/9) just for this purpose!
 
 ### How to develop a collector
 
--   Take a look at our [contributing guidelines](https://learn.netdata.cloud/contribute/handbook).
--   Read the [How to develop a collector in Go](https://github.com/netdata/go.d.plugin/tree/master/docs/how-to-write-a-module.md) guide.
--   [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) this repository to your personal GitHub account.
--   [Clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository#:~:text=to%20GitHub%20Desktop-,On%20GitHub%2C%20navigate%20to%20the%20main%20page%20of%20the%20repository,Desktop%20to%20complete%20the%20clone.) locally the **forked** repository (e.g `git clone https://github.com/odyslam/go.d.plugin`).
--   Using a terminal, `cd` into the directory (e.g `cd go.d.plugin`)
--   Add your module to the [modules](https://github.com/netdata/go.d.plugin/tree/master/modules) directory.
--   Import the module in the [main.go](https://github.com/netdata/go.d.plugin/blob/master/cmd/godplugin/main.go).
--   To build it, run `make` from the plugin root dir. This will create a new `go.d.plugin` binary that includes your newly developed collector. It will be placed into the `bin` directory (e.g `go.d.plugin/bin`)
--   Run it in the debug mode `bin/godplugin -d -m <MODULE_NAME>`. This will output the `STDOUT` of the collector, the same output that is sent to the Netdata Agent and is transformed into charts. You can read more about this collector API in our [documentation](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#external-plugins-api).
--   If you want to test the collector with the actual Netdata Agent, you need to replace the `go.d.plugin` binary that exists in the Netdata Agent installation directory with the one you just compiled. Once you [restart](https://learn.netdata.cloud/docs/configure/start-stop-restart) the Netdata Agent, it will detect and run it, creating all the charts. It is advised not to remove the default `go.d.plugin` binary, but simply rename it to `go.d.plugin.old` so that the Agent doesn't run it, but you can easily rename it back once you are done.
--   Run `make clean` when you are done with testing.
+- Take a look at our [contributing guidelines](https://learn.netdata.cloud/contribute/handbook).
+- Read
+  the [How to develop a collector in Go](https://github.com/netdata/go.d.plugin/tree/master/docs/how-to-write-a-module.md)
+  guide.
+- [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) this repository to your personal
+  GitHub account.
+- [Clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository#:~:text=to%20GitHub%20Desktop-,On%20GitHub%2C%20navigate%20to%20the%20main%20page%20of%20the%20repository,Desktop%20to%20complete%20the%20clone.)
+  locally the **forked** repository (e.g `git clone https://github.com/odyslam/go.d.plugin`).
+- Using a terminal, `cd` into the directory (e.g `cd go.d.plugin`)
+- Add your module to the [modules](https://github.com/netdata/go.d.plugin/tree/master/modules) directory.
+- Import the module in the [main.go](https://github.com/netdata/go.d.plugin/blob/master/cmd/godplugin/main.go).
+- To build it, run `make` from the plugin root dir. This will create a new `go.d.plugin` binary that includes your newly
+  developed collector. It will be placed into the `bin` directory (e.g `go.d.plugin/bin`)
+- Run it in the debug mode `bin/godplugin -d -m <MODULE_NAME>`. This will output the `STDOUT` of the collector, the same
+  output that is sent to the Netdata Agent and is transformed into charts. You can read more about this collector API in
+  our [documentation](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#external-plugins-api).
+- If you want to test the collector with the actual Netdata Agent, you need to replace the `go.d.plugin` binary that
+  exists in the Netdata Agent installation directory with the one you just compiled. Once
+  you [restart](https://learn.netdata.cloud/docs/configure/start-stop-restart) the Netdata Agent, it will detect and run
+  it, creating all the charts. It is advised not to remove the default `go.d.plugin` binary, but simply rename it
+  to `go.d.plugin.old` so that the Agent doesn't run it, but you can easily rename it back once you are done.
+- Run `make clean` when you are done with testing.
 
 ## Troubleshooting
 
@@ -148,8 +161,8 @@ sudo su -s /bin/bash netdata
 ./go.d.plugin -d -m <module name>
 ```
 
-Change `<module name>` to the module name you want to debug.
-See the [whole list](#available-modules) of available modules.
+Change `<module name>` to the module name you want to debug. See the [whole list](#available-modules) of available
+modules.
 
 ## Netdata Community
 
