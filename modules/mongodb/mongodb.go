@@ -55,9 +55,10 @@ func (m *Mongo) Init() bool {
 	validLocalConfig := m.Local.valid()
 	validAuthConfig := m.Auth.valid()
 	if !validLocalConfig && !validAuthConfig && m.ConnectionStr == "" {
-		m.Warningf("config validation: all local and auth "+
+		m.Errorf("config validation: all local and auth "+
 			"and connection string config values are empty."+
 			"Attempting to connect to %s:%d", defaultHost, defaultPort)
+		return false
 	}
 
 	var err error

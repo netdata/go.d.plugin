@@ -1,0 +1,68 @@
+package mongo
+
+import (
+	"testing"
+	"time"
+
+	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestNew(t *testing.T) {
+	job := New()
+
+	assert.Implements(t, (*module.Module)(nil), job)
+	assert.Equal(t, defaultHost, job.Local.host, "wrong host")
+	assert.Equal(t, time.Duration(defaultTimeout), job.Timeout, "wrong timeout")
+	assert.Equal(t, defaultAuthDb, job.authdb, "wrong auth db")
+}
+
+func TestMongo_Init(t *testing.T) {
+	tests := map[string]struct {
+		config  Config
+		success bool
+	}{
+		"success on default config": {
+			success: true,
+			config:  New().Config,
+		},
+		"fails on unset 'address'": {
+			success: false,
+			config: Config{
+				Local: Local{host: "", port: 0},
+				Auth:  Auth{host: "", port: 0},
+			},
+		},
+		"fails on invalid port": {
+			success: false,
+			config: Config{
+				Local: Local{host: "", port: 999999},
+				Auth:  Auth{host: "", port: 999999},
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mongo := New()
+			mongo.Config = test.config
+			assert.Equal(t, test.success, mongo.Init())
+		})
+	}
+}
+
+func TestMongo_Charts(t *testing.T) {
+	m := New()
+	require.True(t, m.Init())
+	assert.NotNil(t, m.Charts())
+}
+
+func TestMongo_Cleanup(t *testing.T) {
+	mongo := New()
+	assert.NotPanics(t, mongo.Cleanup)
+
+	require.True(t, mongo.Init())
+	mongo.Cleanup()
+	assert.Nil(t, mongo.client)
+}

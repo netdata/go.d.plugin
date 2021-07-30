@@ -13,6 +13,7 @@ func (m *Mongo) collect() (map[string]int64, error) {
 	m.serverStatusCollect(ms)
 	return ms, nil
 }
+
 func addIfExists(serverStatus map[string]interface{}, key string, ms map[string]int64) {
 	mMap := serverStatus
 	keys := strings.Split(key, ".")
@@ -33,7 +34,7 @@ func addIfExists(serverStatus map[string]interface{}, key string, ms map[string]
 				ms[key] = int64(t)
 			}
 		default:
-			panic("skata")
+			return
 		}
 	}
 }

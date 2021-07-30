@@ -195,7 +195,7 @@ var (
 		Ctx:   "mongodb.flowControl",
 		Type:  module.Line,
 		Dims: module.Dims{
-			{ID: "flowControl.timeAcquiringMicros", Name: "timeAcquiringMicros", Algo: module.Absolute},
+			{ID: "flowControl.timeAcquiringMicros", Name: "timeAcquiringMicros", Algo: module.Incremental},
 			{ID: "flowControl.isLaggedTimeMicros", Name: "isLaggedTimeMicros", Algo: module.Absolute},
 		},
 	}
@@ -226,7 +226,7 @@ var (
 			{ID: "metrics.commands.eval.total", Name: "", Algo: module.Incremental},
 			{ID: "metrics.commands.delete.total", Name: "", Algo: module.Incremental},
 			{ID: "metrics.commands.count.failed", Name: "", Algo: module.Incremental},
-			{ID: "metrics.commands.createIndexes.", Name: "", Algo: module.Incremental},
+			{ID: "metrics.commands.createIndexes", Name: "", Algo: module.Incremental},
 			{ID: "metrics.commands.delete.failed", Name: "", Algo: module.Incremental},
 			{ID: "metrics.commands.eval.failed", Name: "", Algo: module.Incremental},
 			{ID: "metrics.commands.findAndModify", Name: "", Algo: module.Incremental},
