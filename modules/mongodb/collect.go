@@ -8,12 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (m *Mongo) collect() (map[string]int64, error) {
-	ms := make(map[string]int64)
-	m.serverStatusCollect(ms)
-	return ms, nil
-}
-
 func addIfExists(serverStatus map[string]interface{}, key string, ms map[string]int64) {
 	mMap := serverStatus
 	keys := strings.Split(key, ".")

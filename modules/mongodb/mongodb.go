@@ -62,13 +62,6 @@ func (m *Mongo) Init() bool {
 	}
 
 	var err error
-	// init client but do not attempt any IO
-	m.client, err = m.initMongoClient()
-	if err != nil {
-		m.Errorf("init mongo client: %v", err)
-		return false
-	}
-
 	m.charts, err = m.initCharts()
 	if err != nil {
 		m.Errorf("init charts: %v", err)
@@ -86,6 +79,15 @@ func (m *Mongo) Charts() *module.Charts {
 }
 
 func (m *Mongo) Collect() map[string]int64 {
+	if m.client == nil {
+		var err error
+		m.client, err = m.initMongoClient()
+		if err != nil {
+			m.Errorf("init mongo client: %v", err)
+			return nil
+		}
+	}
+
 	ms := make(map[string]int64)
 	m.serverStatusCollect(ms)
 	if len(ms) == 0 {
@@ -134,13 +136,5 @@ func (m *Mongo) initMongoClient() (*mongo.Client, error) {
 }
 
 func (m *Mongo) initCharts() (*module.Charts, error) {
-	//charts := module.Charts{}
-	//serverStatusCharts := serverStatusCharts()
-	//m.Info("get serverStatusCharts")
-	//err := charts.Add(serverStatusCharts...)
-	//if err != nil {
-	//	m.Error(err)
-	//	return nil, err
-	//}
 	return &serverStatusCharts, nil
 }

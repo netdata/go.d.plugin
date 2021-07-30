@@ -30,10 +30,6 @@ func TestMongo_serverStatusCollect(t *testing.T) {
 			} else {
 				assert.True(t, ok, fmt.Sprintf("value for dim.ID:%s not found", toID(dim.ID)))
 			}
-
-			if !ok {
-				fmt.Println(toID(dim.ID))
-			}
 		}
 	}
 }
