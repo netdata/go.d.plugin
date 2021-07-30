@@ -44,6 +44,7 @@ Go.d.plugin is shipped with [`Netdata`](https://github.com/netdata/netdata).
 | [filecheck](https://github.com/netdata/go.d.plugin/tree/master/modules/filecheck)                 | `Files and Directories`         |
 | [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)                     | `Fluentd`                       |
 | [freeradius](https://github.com/netdata/go.d.plugin/tree/master/modules/freeradius)               | `FreeRADIUS`                    |
+| [haproxy](https://github.com/netdata/go.d.plugin/tree/master/modules/haproxy)                     | `HAProxy`                       |
 | [hdfs](https://github.com/netdata/go.d.plugin/tree/master/modules/hdfs)                           | `HDFS`                          |
 | [httpcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/httpcheck)                 | `Any HTTP Endpoint`             |
 | [isc_dhcpd](https://github.com/netdata/go.d.plugin/tree/master/modules/isc_dhcpd)                 | `ISC dhcpd`                     |
