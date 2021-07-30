@@ -45,9 +45,9 @@ func TestMongo_Init(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mongo := New()
-			mongo.Config = test.config
-			assert.Equal(t, test.success, mongo.Init())
+			m := New()
+			m.Config = test.config
+			assert.Equal(t, test.success, m.Init())
 		})
 	}
 }
@@ -59,10 +59,16 @@ func TestMongo_Charts(t *testing.T) {
 }
 
 func TestMongo_Cleanup(t *testing.T) {
-	mongo := New()
-	assert.NotPanics(t, mongo.Cleanup)
+	m := New()
+	assert.NotPanics(t, m.Cleanup)
 
-	require.True(t, mongo.Init())
-	mongo.Cleanup()
-	assert.Nil(t, mongo.client)
+	require.True(t, m.Init())
+	m.Cleanup()
+	assert.Nil(t, m.client)
+}
+
+func TestMongo_initMongoClient(t *testing.T) {
+	m := New()
+	_, err := m.initMongoClient()
+	assert.Nil(t, err)
 }

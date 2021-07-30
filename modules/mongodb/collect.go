@@ -33,6 +33,14 @@ func addIfExists(serverStatus map[string]interface{}, key string, ms map[string]
 	}
 }
 
+func iterateServerStatus(ms map[string]int64, status map[string]interface{}) {
+	for _, chart := range serverStatusCharts {
+		for _, dim := range chart.Dims {
+			addIfExists(status, dim.ID, ms)
+		}
+	}
+}
+
 func (m *Mongo) serverStatusCollect(ms map[string]int64) {
 	var status map[string]interface{}
 	command := bson.D{{Key: "serverStatus", Value: 1}}
@@ -43,9 +51,5 @@ func (m *Mongo) serverStatusCollect(ms map[string]int64) {
 		m.Errorf("error get server status from mongo: %s", err)
 		return
 	}
-	for _, chart := range serverStatusCharts {
-		for _, dim := range chart.Dims {
-			addIfExists(status, dim.ID, ms)
-		}
-	}
+	iterateServerStatus(ms, status)
 }

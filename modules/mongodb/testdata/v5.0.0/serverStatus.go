@@ -11,7 +11,7 @@ var V500ServerStatus = `
     "uptimeEstimate": 67,
     "localTime": {},
     "asserts": {
-        "regular": 0,
+        "regular": 1234567890123456789,
         "warning": 0,
         "msg": 0,
         "user": 22,

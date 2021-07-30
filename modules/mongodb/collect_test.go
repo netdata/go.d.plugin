@@ -16,12 +16,7 @@ func TestMongo_serverStatusCollect(t *testing.T) {
 	require.NoError(t, err)
 
 	ms := map[string]int64{}
-	for _, chart := range serverStatusCharts {
-		for _, dim := range chart.Dims {
-			addIfExists(status, dim.ID, ms)
-		}
-	}
-
+	iterateServerStatus(ms, status)
 	for _, chart := range serverStatusCharts {
 		for _, dim := range chart.Dims {
 			_, ok := ms[toID(dim.ID)]
