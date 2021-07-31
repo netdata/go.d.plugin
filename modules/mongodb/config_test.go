@@ -26,7 +26,7 @@ func TestAuth_connectionString(t *testing.T) {
 	connectionString := auth.connectionString()
 	assert.Equal(
 		t,
-		"mongodb://user:pass@localhost:27019/authSource=admin&ssl=true&tlsCAFile=certs.file&tlsCertificateKeyFile=certs.file&tlsCertificateKeyFilePassword=pass",
+		"mongodb://user:pass@localhost:27017/authSource=admin&ssl=true&tlsCAFile=certs.file&tlsCertificateKeyFile=certs.file&tlsCertificateKeyFilePassword=pass",
 		connectionString,
 	)
 }

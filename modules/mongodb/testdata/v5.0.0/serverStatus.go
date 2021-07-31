@@ -2252,4 +2252,7 @@ var V500ServerStatusMissingValues = []string{
 	"metrics.commands.createIndexes",
 	"metrics.commands.eval.failed",
 	"metrics.commands.findAndModify",
+	"opLatencies.read",
+	"opLatencies.writes",
+	"opLatencies.commands",
 }
