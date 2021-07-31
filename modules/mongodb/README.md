@@ -1,163 +1,277 @@
 <!--
 title: "MongoDB monitoring with Netdata"
-custom_edit_url: https://github.com/netdata/netdata/edit/master/collectors/python.d.plugin/mongodb/README.md
+description: "Monitor the health and performance of MongoDB with zero configuration, per-second metric granularity, and interactive visualizations."
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/mongodb/README.md
 sidebar_label: "MongoDB"
 -->
 
 # MongoDB monitoring with Netdata
 
-Monitors performance and health metrics of MongoDB.
+[`MongoDB`](https://www.mongodb.com/) MongoDB is a source-available cross-platform document-oriented database program.
+Classified as a NoSQL database program, MongoDB uses JSON-like documents with optional schemas. MongoDB is developed by
+MongoDB Inc. and licensed under the Server Side Public License (SSPL).
 
-Number of charts depends on mongodb version, storage engine and other features (replication):
+source: [`Wikipedia`](https://en.wikipedia.org/wiki/MongoDB)
 
-1.  **Read requests**:
+---
 
-    -   query
-    -   getmore (operation the cursor executes to get additional data from query)
+This module monitors one or more `MongoDB` instances, depending on your configuration.
 
-2.  **Write requests**:
+It collects information and statistics about the server executing the following commands:
 
-    -   insert
-    -   delete
-    -   update
+- [`serverStatus`](https://docs.mongodb.com/manual/reference/command/serverStatus/#mongodb-dbcommand-dbcmd.serverStatus)
 
-3.  **Active clients**:
+## Charts
 
-    -   readers (number of clients with read operations in progress or queued)
-    -   writers (number of clients with write operations in progress or queued)
+### Commands rate
 
-4.  **Journal transactions**:
+- insert in `commands/s`
+- query in `commands/s`
+- update in `commands/s`
+- delete in `commands/s`
+- getmore in `commands/s`
+- command in `commands/s`
 
-    -   commits (count of transactions that have been written to the journal)
+### Active Clients
 
-5.  **Data written to the journal**:
+- readers in `clients`
+- writers in `clients`
 
-    -   volume (volume of data)
+### Connections
 
-6.  **Background flush** (MMAPv1):
+- available in `connections/s`
+- current in `connections/s`
+- active in `connections/s`
+- threaded in `connections/s`
+- exhaustIsMaster in `connections/s`
+- exhaustHello in `connections/s`
+- awaiting topology changes in `connections/s`
 
-    -   average ms (average time taken by flushes to execute)
-    -   last ms (time taken by the last flush)
+### Memory
 
-7.  **Read tickets** (WiredTiger):
+- resident in `MiB`
+- virtual in `MiB`
+- mapped in `MiB`
+- mapped with journal in `MiB`
 
-    -   in use (number of read tickets in use)
-    -   available (number of available read tickets remaining)
+### Page faults
 
-8.  **Write tickets** (WiredTiger):
+- Page Faults in `page faults/s`
 
-    -   in use (number of write tickets in use)
-    -   available (number of available write tickets remaining)
+### Asserts
 
-9.  **Cursors**:
+- regular
+- warning
+- msg
+- user
+- tripwire
+- rollovers
 
--   opened (number of cursors currently opened by MongoDB for clients)
--   timedOut (number of cursors that have timed)
--   noTimeout (number of open cursors with timeout disabled)
+### Collections
 
-10. **Connections**:
+- collections
+- capped
+- timeseries
+- views
+- internalCollections
+- internalViews
 
-    -   connected (number of clients currently connected to the database server)
-    -   unused (number of unused connections available for new clients)
+### Tcmalloc generic metrics
 
-11. **Memory usage metrics**:
+- current_allocated_bytes in `MiB`
+- heap_size in `MiB`
 
-    -   virtual
-    -   resident (amount of memory used by the database process)
-    -   mapped
-    -   non mapped
+### Tcmalloc metrics
 
-12. **Page faults**:
+- Pageheap free in `KiB`
+- Pageheap unmapped in `KiB`
+- Total threaded cache in `KiB`
+- Free in `KiB`
+- Pageheap committed in `KiB`
+- Pageheap total commit in `KiB`
+- Pageheap decommit in `KiB`
+- Pageheap reserve in `KiB`
 
-    -   page faults (number of times MongoDB had to request from disk)
+### Network IO
 
-13. **Cache metrics** (WiredTiger):
+- Bytes In in `bytes/s`
+- Bytes Out in `bytes/s`
 
-    -   percentage of bytes currently in the cache (amount of space taken by cached data)
-    -   percentage of tracked dirty bytes in the cache (amount of space taken by dirty data)
+### Network Requests
 
-14. **Pages evicted from cache** (WiredTiger):
+- Requests in `requests/s`
 
-    -   modified
-    -   unmodified
+### Current Queue Clients
 
-15. **Queued requests**:
+- readers in `clients`
+- writers in `clients`
 
-    -   readers (number of read request currently queued)
-    -   writers (number of write request currently queued)
+### Command Metrics
 
-16. **Errors**:
+- Eval in `commands`
+- Eval Failed in `commands`
+- Delete in `commands`
+- Delete Failed in `commands`
+- Count Failed in `commands`
+- Create Indexes in `commands`
+- Find And Modify in `commands`
+- Insert Fail in `commands`
 
-    -   msg (number of message assertions raised)
-    -   warning (number of warning assertions raised)
-    -   regular (number of regular assertions raised)
-    -   user (number of assertions corresponding to errors generated by users)
+### Operations Latency
 
-17. **Storage metrics** (one chart for every database)
+- Ops reads in `msec`
+- Ops writes in `msec`
+- disc in `msec`
 
-    -   dataSize (size of all documents + padding in the database)
-    -   indexSize (size of all indexes in the database)
-    -   storageSize (size of all extents in the database)
+### Current Transactions
 
-18. **Documents in the database** (one chart for all databases)
+- current active in `transactions`
+- current inactive in `transactions`
+- current open in `transactions`
+- current prepared in `transactions`
 
--   documents (number of objects in the database among all the collections)
+### Global Locks
 
-19. **tcmalloc metrics**
+- Global Read Locks in `locks`
+- Global Write Locks in `locks`
+- Database Read Locks in `locks`
+- Database Write Locks in `locks`
+- Collection Read Locks in `locks`
+- Collection Write Locks in `locks`
 
-    -   central cache free
-    -   current total thread cache
-    -   pageheap free
-    -   pageheap unmapped
-    -   thread cache free
-    -   transfer cache free
-    -   heap size
+### Flow Control Stats
 
-20. **Commands total/failed rate**
+- timeAcquiringMicros in `number`
+- isLaggedTimeMicros in `number`
 
-    -   count
-    -   createIndex
-    -   delete
-    -   eval
-    -   findAndModify
-    -   insert
+### Wired Tiger Block Manager
 
-21. **Locks metrics** (acquireCount metrics - number of times the lock was acquired in the specified mode)
+- bytes read in `KiB`
+- bytes read via memory map API in `KiB`
+- bytes read via system call API in `KiB`
+- bytes written in `KiB`
+- bytes written for checkpoint in `KiB`
+- bytes written via memory map API in `KiB`
 
-    -   Global lock
-    -   Database lock
-    -   Collection lock
-    -   Metadata lock
-    -   oplog lock
+- bytes allocated for updates in `KiB`
+- bytes read into cache in `KiB`
+- bytes written from cache in `KiB`
 
-22. **Replica set members state**
+### Wired Tiger Capacity
 
-    -   state
+- time waiting due to total capacity (usecs) in `usec`
+- time waiting during checkpoint (usecs) in `usec`
+- time waiting during eviction (usecs) in `usec`
+- time waiting during logging (usecs) in `usec`
+- time waiting during read (usecs) in `usec`
 
-23. **Oplog window**
+### Wired Tiger Connections
 
-    -   window (interval of time between the oldest and the latest entries in the oplog)
+- memory allocations in `ops`
+- memory frees in `ops`
+- memory re-allocations in `ops`
 
-24. **Replication lag**
+### Wired Tiger Cursor
 
-    -   member (time when last entry from the oplog was applied for every member)
+- open cursor count in `calls`
+- cached cursor count in `calls`
+- cursor bulk loaded cursor insert calls in `calls`
+- cursor close calls that result in cache in `calls`
+- cursor create calls in `calls`
+- cursor insert calls in `calls`
+- cursor modify calls in `calls`
+- cursor next calls in `calls`
+- cursor operation restarted in `calls`
+- cursor prev calls in `calls`
+- cursor remove calls in `calls`
+- cursor remove key bytes removed in `calls`
+- cursor reserve calls in `calls`
+- cursor reset calls in `calls`
+- cursor search calls in `calls`
+- cursor search history store calls in `calls`
+- cursor search near calls in `calls`
+- cursor sweep buckets in `calls`
+- cursor sweep cursors closed in `calls`
+- cursor sweep cursors examined in `calls`
+- cursor sweeps in `calls`
+- cursor truncate calls in `calls`
+- cursor update calls in `calls`
+- cursor update value size change in `calls`
 
-25. **Replication set member heartbeat latency**
+### Wired Tiger Lock
 
-    -   member (time when last heartbeat was received from replica set member)
+- checkpoint lock acquisitions in `ops`
+- dhandle read lock acquisitions in `ops`
+- dhandle write lock acquisitions in `ops`
+- durable timestamp queue read lock acquisitions in `ops`
+- durable timestamp queue write lock acquisitions in `ops`
+- metadata lock acquisitions in `ops`
+- read timestamp queue read lock acquisitions in `ops`
+- read timestamp queue write lock acquisitions in `ops`
+- schema lock acquisitions in `ops`
+- table read lock acquisitions in `ops`
+- table write lock acquisitions in `ops`
+- txn global read lock acquisitions in `ops`
 
-## prerequisite
+### Wired Tiger Lock Duration
+
+- checkpoint lock application thread wait time (usecs) in `usec`
+- checkpoint lock internal thread wait time (usecs) in `usec`
+- dhandle lock application thread time waiting (usecs) in `usec`
+- dhandle lock internal thread time waiting (usecs) in `usec`
+- durable timestamp queue lock application thread time waiting (usecs) in `usec`
+- durable timestamp queue lock internal thread time waiting (usecs) in `usec`
+- metadata lock application thread wait time (usecs) in `usec`
+- metadata lock internal thread wait time (usecs) in `usec`
+- read timestamp queue lock application thread time waiting (usecs) in `usec`
+- read timestamp queue lock internal thread time waiting (usecs) in `usec`
+- schema lock application thread wait time (usecs) in `usec`
+- schema lock internal thread wait time (usecs) in `usec`
+- table lock application thread time waiting for the table lock (usecs) in `usec`
+- table lock internal thread time waiting for the table lock (usecs) in `usec`
+- txn global lock application thread time waiting (usecs) in `usec`
+- txn global lock internal thread time waiting (usecs) in `usec`
+
+### Wired Tiger Log Operations
+
+- log flush operations in `ops`
+- log force write operations in `ops`
+- log force write operations skipped in `ops`
+- log scan operations in `ops`
+- log sync operations in `ops`
+- log sync_dir operations in `ops`
+- log write operations in `ops`
+
+### Wired Tiger Log Operations
+
+- log bytes of payload data in `bytes`
+- log bytes written in `bytes`
+- logging bytes consolidated in `bytes`
+- total log buffer size in `bytes`
+
+### Wired Tiger Log Transactions
+
+- prepared transactions in `transactions`
+- query timestamp calls in `transactions`
+- rollback to stable calls in `transactions`
+- set timestamp calls in `transactions`
+- transaction begins in `transactions`
+- transaction sync calls in `transactions`
+- transactions committed in `transactions`
+- transactions rolled back in `transactions`
+
+## Prerequisites
 
 Create a read-only user for Netdata in the admin database.
 
-1.  Authenticate as the admin user.
+1. Authenticate as the admin user.
 
 ```
 use admin
 db.auth("admin", "<MONGODB_ADMIN_PASSWORD>")
 ```
 
-2.  Create a user.
+2. Create a user.
 
 ```
 # MongoDB 2.x.
@@ -177,25 +291,65 @@ db.createUser({
 
 ## Configuration
 
-Edit the `go.d/mongodb.conf` configuration file using `edit-config` from the Netdata [config
-directory](/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Edit the `go.d/mongodb.conf` configuration file using `edit-config` from the
+Netdata [config directory](/docs/configure/nodes.md), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata   # Replace this path with your Netdata config directory, if different
 sudo ./edit-config go.d/mongodb.conf
 ```
 
-Sample:
+Sample using connection string:
+
+**This is the preferred way**
+
+```yaml
+connectionStr: 'mongodb://mongodb0.example.com:27017'
+```
+
+Sample using local database without authentication:
 
 ```yaml
 local:
-    name : 'local'
-    authdb: 'admin'
-    host : '127.0.0.1'
-    port : 27017
-    user : 'netdata'
-    pass : 'netdata'
+  name: 'admin'
+  host: '127.0.0.1'
+  port: 27017
+```
+
+Sample using authentication:
+
+```yaml
+local:
+  name: 'admin'
+  authdb: 'admin'
+  host: '127.0.0.1'
+  port: 27017
+  user: 'netdata'
+  pass: '<password>'
 ```
 
 If no configuration is given, module will attempt to connect to mongodb daemon on `127.0.0.1:27017` address
+
+For all available options, see the `mongodb`
+collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/mongodb.conf).
+
+## Troubleshooting
+
+To troubleshoot issues with the `mongodb` collector, run the `go.d.plugin` with the debug option enabled. The output
+should give you clues as to why the collector isn't working.
+
+First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
+to the `netdata` user.
+
+```bash
+cd /usr/libexec/netdata/plugins.d/
+sudo -u netdata -s
+```
+
+You can now run the `go.d.plugin` to debug the collector:
+
+```bash
+./go.d.plugin -d -m mongodb
+```
 

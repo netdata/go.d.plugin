@@ -25,7 +25,6 @@ func init() {
 func New() *Mongo {
 	return &Mongo{
 		Config: Config{
-			name: defaultName,
 			Local: Local{
 				host: defaultHost,
 				port: defaultPort,

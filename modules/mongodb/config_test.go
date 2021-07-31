@@ -18,7 +18,7 @@ func TestAuth_connectionString(t *testing.T) {
 			SslPemPassphrase: "pass",
 		},
 		host:   "localhost",
-		port:   27019,
+		port:   27017,
 		authdb: "admin",
 		user:   "user",
 		pass:   "pass",

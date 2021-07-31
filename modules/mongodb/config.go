@@ -10,7 +10,6 @@ import (
 )
 
 const (
-	defaultName          = "admin"
 	defaultHost          = "localhost"
 	defaultPort          = 27017
 	defaultTimeout       = 20
@@ -100,7 +99,6 @@ func (a *Auth) connectionString() string {
 type Config struct {
 	Local
 	Auth
-	name          string        `yaml:"name"`
 	ConnectionStr string        `yaml:"connectionStr"`
 	Timeout       time.Duration `yaml:"timeout"`
 }

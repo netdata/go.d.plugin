@@ -44,7 +44,7 @@ var (
 	// default metrics
 	chartOpcounter = module.Chart{
 		ID:    "opcounters",
-		Title: "Commands total rate",
+		Title: "Commands rate",
 		Units: "commands/s",
 		Fam:   "operations",
 		Ctx:   "mongodb.command_total_rate",
@@ -138,7 +138,7 @@ var (
 		Type:  module.Line,
 		Dims: module.Dims{
 			{ID: "network.bytesIn", Name: "Bytes In", Algo: module.Incremental},
-			{ID: "network.bytesOut", Name: "Bytes Out", Algo: module.Incremental},
+			{ID: "network.bytesOut", Name: "Bytes Out", Algo: module.Incremental, Mul: -1},
 		},
 	}
 	chartNetworkRequests = module.Chart{
@@ -176,14 +176,14 @@ var (
 		Ctx:   "mongodb.metricsCommand",
 		Type:  module.Line,
 		Dims: module.Dims{
-			{ID: "metrics.commands.eval.total", Name: "", Algo: module.Incremental},
-			{ID: "metrics.commands.delete.total", Name: "", Algo: module.Incremental},
-			{ID: "metrics.commands.count.failed", Name: "", Algo: module.Incremental},
-			{ID: "metrics.commands.createIndexes", Name: "", Algo: module.Incremental},
-			{ID: "metrics.commands.delete.failed", Name: "", Algo: module.Incremental},
-			{ID: "metrics.commands.eval.failed", Name: "", Algo: module.Incremental},
-			{ID: "metrics.commands.findAndModify", Name: "", Algo: module.Incremental},
-			{ID: "metrics.commands.insert.failed", Name: "", Algo: module.Incremental},
+			{ID: "metrics.commands.eval.total", Name: "Eval", Algo: module.Incremental},
+			{ID: "metrics.commands.eval.failed", Name: "Eval Failed", Algo: module.Incremental},
+			{ID: "metrics.commands.delete.total", Name: "Delete", Algo: module.Incremental},
+			{ID: "metrics.commands.delete.failed", Name: "Delete Failed", Algo: module.Incremental},
+			{ID: "metrics.commands.count.failed", Name: "Count Failed", Algo: module.Incremental},
+			{ID: "metrics.commands.createIndexes", Name: "Create Indexes", Algo: module.Incremental},
+			{ID: "metrics.commands.findAndModify", Name: "Find And Modify", Algo: module.Incremental},
+			{ID: "metrics.commands.insert.failed", Name: "Insert Fail", Algo: module.Incremental},
 		},
 	}
 
@@ -222,7 +222,7 @@ var (
 	// locks.Global.acquireCount
 	chartGlobalLocks = module.Chart{
 		ID:    "locks",
-		Title: "Global Locks",
+		Title: "Locks",
 		Units: "locks",
 		Fam:   "locks",
 		Ctx:   "mongodb.locks",
@@ -256,19 +256,14 @@ var (
 		Ctx:   "mongodb.tcmalloc",
 		Type:  module.Line,
 		Dims: module.Dims{
-			{ID: "tcmalloc.tcmalloc.pageheap_free_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.pageheap_unmapped_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.max_total_thread_cache_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.current_total_thread_cache_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.total_free_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.central_cache_free_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.transfer_cache_free_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.thread_cache_free_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.aggressive_memory_decommit", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.pageheap_committed_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.pageheap_total_commit_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.pageheap_total_decommit_bytes", Name: "", Algo: module.Absolute, Div: 1024},
-			{ID: "tcmalloc.tcmalloc.pageheap_total_reserve_bytes", Name: "", Algo: module.Absolute, Div: 1024},
+			{ID: "tcmalloc.tcmalloc.pageheap_free_bytes", Name: "Pageheap free", Algo: module.Absolute, Div: 1024},
+			{ID: "tcmalloc.tcmalloc.pageheap_unmapped_bytes", Name: "Pageheap unmapped ", Algo: module.Absolute, Div: 1024},
+			{ID: "tcmalloc.tcmalloc.current_total_thread_cache_bytes", Name: "Total threaded cache", Algo: module.Absolute, Div: 1024},
+			{ID: "tcmalloc.tcmalloc.total_free_bytes", Name: "Free", Algo: module.Absolute, Div: 1024},
+			{ID: "tcmalloc.tcmalloc.pageheap_committed_bytes", Name: "Pageheap committed", Algo: module.Absolute, Div: 1024},
+			{ID: "tcmalloc.tcmalloc.pageheap_total_commit_bytes", Name: "Pageheap total commit", Algo: module.Absolute, Div: 1024},
+			{ID: "tcmalloc.tcmalloc.pageheap_total_decommit_bytes", Name: "Pageheap decommit", Algo: module.Absolute, Div: 1024},
+			{ID: "tcmalloc.tcmalloc.pageheap_total_reserve_bytes", Name: "Pageheap reserve", Algo: module.Absolute, Div: 1024},
 		},
 	}
 	// GlobalLock
