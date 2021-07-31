@@ -311,7 +311,6 @@ Sample using local database without authentication:
 
 ```yaml
 local:
-  name: 'admin'
   host: '127.0.0.1'
   port: 27017
 ```
@@ -319,8 +318,7 @@ local:
 Sample using authentication:
 
 ```yaml
-local:
-  name: 'admin'
+auth:
   authdb: 'admin'
   host: '127.0.0.1'
   port: 27017

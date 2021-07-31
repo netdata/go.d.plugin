@@ -26,15 +26,15 @@ func New() *Mongo {
 	return &Mongo{
 		Config: Config{
 			Local: Local{
-				host: defaultHost,
-				port: defaultPort,
+				Host: defaultHost,
+				Port: defaultPort,
 			},
 			Auth: Auth{
-				host:   defaultHost,
-				port:   defaultPort,
-				authdb: defaultAuthDb,
-				user:   defaultUser,
-				pass:   defaultPass,
+				Host:   defaultHost,
+				Port:   defaultPort,
+				Authdb: defaultAuthDb,
+				User:   defaultUser,
+				Pass:   defaultPass,
 			},
 			Timeout:       defaultTimeout,
 			ConnectionStr: defaultConnectionStr,

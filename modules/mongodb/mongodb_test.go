@@ -13,9 +13,9 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultHost, job.Local.host, "wrong host")
+	assert.Equal(t, defaultHost, job.Local.Host, "wrong host")
 	assert.Equal(t, time.Duration(defaultTimeout), job.Timeout, "wrong timeout")
-	assert.Equal(t, defaultAuthDb, job.authdb, "wrong auth db")
+	assert.Equal(t, defaultAuthDb, job.Authdb, "wrong auth db")
 }
 
 func TestMongo_Init(t *testing.T) {
@@ -30,15 +30,15 @@ func TestMongo_Init(t *testing.T) {
 		"fails on unset 'address'": {
 			success: false,
 			config: Config{
-				Local: Local{host: "", port: 0},
-				Auth:  Auth{host: "", port: 0},
+				Local: Local{Host: "", Port: 0},
+				Auth:  Auth{Host: "", Port: 0},
 			},
 		},
 		"fails on invalid port": {
 			success: false,
 			config: Config{
-				Local: Local{host: "", port: 999999},
-				Auth:  Auth{host: "", port: 999999},
+				Local: Local{Host: "", Port: 999999},
+				Auth:  Auth{Host: "", Port: 999999},
 			},
 		},
 	}

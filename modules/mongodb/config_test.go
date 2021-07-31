@@ -17,11 +17,11 @@ func TestAuth_connectionString(t *testing.T) {
 			SslKeyfile:       "certs.file",
 			SslPemPassphrase: "pass",
 		},
-		host:   "localhost",
-		port:   27017,
-		authdb: "admin",
-		user:   "user",
-		pass:   "pass",
+		Host:   "localhost",
+		Port:   27017,
+		Authdb: "admin",
+		User:   "user",
+		Pass:   "pass",
 	}
 	connectionString := auth.connectionString()
 	assert.Equal(

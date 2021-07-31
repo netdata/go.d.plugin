@@ -25,8 +25,8 @@ type Validator interface {
 }
 
 type Local struct {
-	host string `yaml:"host"`
-	port uint   `yaml:"port"`
+	Host string `yaml:"host"`
+	Port uint   `yaml:"port"`
 }
 
 func (l *Local) valid() bool {
@@ -36,7 +36,7 @@ func (l *Local) valid() bool {
 func (l *Local) connectionString() string {
 	mongoURL := url.URL{
 		Scheme: "mongodb",
-		Host:   fmt.Sprintf("%s:%d", l.host, l.port),
+		Host:   fmt.Sprintf("%s:%d", l.Host, l.Port),
 	}
 	return mongoURL.String()
 }
@@ -53,11 +53,11 @@ type SSL struct {
 
 type Auth struct {
 	SSL
-	host   string `yaml:"host"`
-	port   int    `yaml:"port"`
-	authdb string `yaml:"authdb"`
-	user   string `yaml:"user"`
-	pass   string `yaml:"pass"`
+	Host   string `yaml:"host"`
+	Port   int    `yaml:"port"`
+	Authdb string `yaml:"authdb"`
+	User   string `yaml:"user"`
+	Pass   string `yaml:"pass"`
 }
 
 func (a *Auth) valid() bool {
@@ -67,13 +67,13 @@ func (a *Auth) valid() bool {
 func (a *Auth) connectionString() string {
 	mongoURL := url.URL{
 		Scheme: "mongodb",
-		User:   url.UserPassword(a.user, a.pass),
-		Host:   fmt.Sprintf("%s:%d", a.host, a.port),
+		User:   url.UserPassword(a.User, a.Pass),
+		Host:   fmt.Sprintf("%s:%d", a.Host, a.Port),
 	}
 	query := mongoURL.Query()
 
-	if a.authdb != "" {
-		query.Set("authSource", a.authdb)
+	if a.Authdb != "" {
+		query.Set("authSource", a.Authdb)
 	}
 	if a.SSL.Ssl {
 		query.Set("ssl", "true")
@@ -97,8 +97,8 @@ func (a *Auth) connectionString() string {
 }
 
 type Config struct {
-	Local
-	Auth
+	Local         `yaml:"local"`
+	Auth          `yaml:"auth"`
 	ConnectionStr string        `yaml:"connectionStr"`
 	Timeout       time.Duration `yaml:"timeout"`
 }
