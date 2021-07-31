@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/agent/module"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -41,6 +42,29 @@ func iterateServerStatus(ms map[string]int64, status map[string]interface{}) {
 	}
 }
 
+func (m *Mongo) metricExists(serverStatus map[string]interface{}, key string, chart *module.Chart) {
+	keys := strings.Split(key, ".")
+	for _, k := range keys {
+		val, ok := serverStatus[k]
+		if !ok {
+			return
+		}
+		switch val.(type) {
+		case map[string]interface{}:
+			serverStatus = val.(map[string]interface{})
+		default:
+			return
+		}
+	}
+	if !m.charts.Has(chart.ID) {
+		if err := m.charts.Add(chart.Copy()); err != nil {
+			m.Warning(err)
+		}
+		return
+	}
+
+}
+
 func (m *Mongo) serverStatusCollect(ms map[string]int64) {
 	var status map[string]interface{}
 	command := bson.D{{Key: "serverStatus", Value: 1}}
@@ -51,5 +75,25 @@ func (m *Mongo) serverStatusCollect(ms map[string]int64) {
 		m.Errorf("error get server status from mongo: %s", err)
 		return
 	}
+
+	m.metricExists(status, "catalogStats", &chartCollections)
+	m.metricExists(status, "flowControl", &chartFlowControl)
+	m.metricExists(status, "locks.Global.acquireCount", &chartGlobalLocks)
+	m.metricExists(status, "metrics.commands", &chartMetricsCommands)
+	m.metricExists(status, "tcmalloc.tcmalloc", &chartTcmallocGeneric)
+	m.metricExists(status, "tcmalloc.tcmalloc", &chartTcmalloc)
+	m.metricExists(status, "globalLock.currentQueue", &chartGlobalLockCurrentQueue)
+	m.metricExists(status, "globalLock.activeClients", &chartGlobalLockActiveClients)
+	m.metricExists(status, "wiredTiger.block-manager", &chartWiredTigerBlockManager)
+	m.metricExists(status, "wiredTiger.cache", &chartWiredTigerCache)
+	m.metricExists(status, "wiredTiger.capacity", &chartWiredTigerCapacity)
+	m.metricExists(status, "wiredTiger.connection", &chartWiredTigerConnection)
+	m.metricExists(status, "wiredTiger.cursor", &chartWiredTigerCursor)
+	m.metricExists(status, "wiredTiger.lock", &chartWiredTigerLock)
+	m.metricExists(status, "wiredTiger.lock", &chartWiredTigerLockDuration)
+	m.metricExists(status, "wiredTiger.log", &chartWiredTigerLogOps)
+	m.metricExists(status, "wiredTiger.log", &chartWiredTigerLogBytes)
+	m.metricExists(status, "wiredTiger.transaction", &chartWiredTigerTransactions)
+
 	iterateServerStatus(ms, status)
 }
