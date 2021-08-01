@@ -54,6 +54,7 @@ Go.d.plugin is shipped with [`Netdata`](https://github.com/netdata/netdata).
 | [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd)                   | `Lighttpd`                      |
 | [lighttpd2](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd2)                 | `Lighttpd2`                     |
 | [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)                   | `Logstash`                      |
+| [mongoDB](https://github.com/netdata/go.d.plugin/tree/master/modules/mongodb)                     | `MongoDB`                       |
 | [mysql](https://github.com/netdata/go.d.plugin/tree/master/modules/mysql)                         | `MySQL`                         |
 | [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx)                         | `NGINX`                         |
 | [nginxvts](https://github.com/netdata/go.d.plugin/tree/master/modules/nginxvts)                   | `NGINX VTS`                     |
