@@ -65,17 +65,7 @@ func (m *Mongo) metricExists(serverStatus map[string]interface{}, key string, ch
 
 }
 
-func (m *Mongo) serverStatusCollect(ms map[string]int64) {
-	var status map[string]interface{}
-	command := bson.D{{Key: "serverStatus", Value: 1}}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
-	defer cancel()
-	err := m.client.Database("admin").RunCommand(ctx, command).Decode(&status)
-	if err != nil {
-		m.Errorf("error get server status from mongo: %s", err)
-		return
-	}
-
+func (m *Mongo) addOptionalCharts(status map[string]interface{}) {
 	m.metricExists(status, "globalLock.activeClients", &chartGlobalLockActiveClients)
 	m.metricExists(status, "catalogStats", &chartCollections)
 	m.metricExists(status, "tcmalloc.tcmalloc", &chartTcmallocGeneric)
@@ -95,6 +85,18 @@ func (m *Mongo) serverStatusCollect(ms map[string]int64) {
 	m.metricExists(status, "wiredTiger.log", &chartWiredTigerLogOps)
 	m.metricExists(status, "wiredTiger.log", &chartWiredTigerLogBytes)
 	m.metricExists(status, "wiredTiger.transaction", &chartWiredTigerTransactions)
+}
 
+func (m *Mongo) serverStatusCollect(ms map[string]int64) {
+	var status map[string]interface{}
+	command := bson.D{{Key: "serverStatus", Value: 1}}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
+	defer cancel()
+	err := m.client.Database("admin").RunCommand(ctx, command).Decode(&status)
+	if err != nil {
+		m.Errorf("error get server status from mongo: %s", err)
+		return
+	}
+	m.addOptionalCharts(status)
 	iterateServerStatus(ms, status)
 }

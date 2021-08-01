@@ -65,10 +65,41 @@ func TestMongo_Cleanup(t *testing.T) {
 	require.True(t, m.Init())
 	m.Cleanup()
 	assert.Nil(t, m.client)
+
+	require.NoError(t, m.initMongoClient())
+	m.Cleanup()
+	assert.Nil(t, m.client)
 }
 
-func TestMongo_initMongoClient(t *testing.T) {
+func TestMongo_initMongoClient_default(t *testing.T) {
 	m := New()
-	_, err := m.initMongoClient()
-	assert.Nil(t, err)
+	require.NoError(t, m.initMongoClient())
+}
+func TestMongo_initMongoClient_local(t *testing.T) {
+
+	m := New()
+	m.Local.Host = "localhost"
+	m.Local.Port = 27017
+	require.NoError(t, m.initMongoClient())
+}
+func TestMongo_initMongoClient_auth(t *testing.T) {
+	m := New()
+	m.Auth.Host = "localhost"
+	m.Auth.Port = 27017
+	m.Auth.User = "user"
+	m.Auth.Pass = "pass"
+	require.NoError(t, m.initMongoClient())
+}
+
+func TestMongo_initMongoClient_connectionStr(t *testing.T) {
+	m := New()
+	m.Config.ConnectionStr = "mongodb://user:pass@localhost:27017"
+	require.NoError(t, m.initMongoClient())
+}
+
+func TestMongo_Check(t *testing.T) {
+	m := New()
+	m.Config.Local.Host = "not_resolvable_host"
+	m.Config.Timeout = 0
+	assert.False(t, m.Check())
 }

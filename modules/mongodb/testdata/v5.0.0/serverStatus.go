@@ -2256,3 +2256,19 @@ var V500ServerStatusMissingValues = []string{
 	"opLatencies.writes",
 	"opLatencies.commands",
 }
+
+var V500ServerStatusInvalidData = `
+{
+    "asserts": {
+        "regular": 1234567890123456789,
+        "warning": "string",
+        "msg": 0,
+        "user": 22,
+        "tripwire": 0,
+        "rollovers": 0
+    }
+}`
+var V500ServerStatusInvalidBsonData = `
+{
+    "asserts": ""
+}`

@@ -39,6 +39,7 @@ func New() *Mongo {
 			Timeout:       defaultTimeout,
 			ConnectionStr: defaultConnectionStr,
 		},
+		charts: &module.Charts{},
 	}
 }
 
@@ -80,7 +81,7 @@ func (m *Mongo) Charts() *module.Charts {
 func (m *Mongo) Collect() map[string]int64 {
 	if m.client == nil {
 		var err error
-		m.client, err = m.initMongoClient()
+		err = m.initMongoClient()
 		if err != nil {
 			m.Errorf("init mongo client: %v", err)
 			return nil
@@ -109,7 +110,7 @@ func (m *Mongo) Cleanup() {
 	m.client = nil
 }
 
-func (m *Mongo) initMongoClient() (*mongo.Client, error) {
+func (m *Mongo) initMongoClient() error {
 	var connectionString string
 	switch {
 	case m.ConnectionStr != "":
@@ -123,15 +124,16 @@ func (m *Mongo) initMongoClient() (*mongo.Client, error) {
 	}
 	client, err := mongo.NewClient(options.Client().ApplyURI(connectionString))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout*time.Second)
 	defer cancel()
 	err = client.Connect(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return client, nil
+	m.client = client
+	return nil
 }
 
 func (m *Mongo) initCharts() (*module.Charts, error) {
