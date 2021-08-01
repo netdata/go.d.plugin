@@ -23,7 +23,10 @@ It collects information and statistics about the server executing the following 
 
 ## Charts
 
-### Commands rate
+### Default chart 
+Works with local and Atlas database servers
+
+#### Commands rate
 
 - insert in `commands/s`
 - query in `commands/s`
@@ -32,12 +35,13 @@ It collects information and statistics about the server executing the following 
 - getmore in `commands/s`
 - command in `commands/s`
 
-### Active Clients
+#### Operations Latency
 
-- readers in `clients`
-- writers in `clients`
+- Ops reads in `msec`
+- Ops writes in `msec`
+- disc in `msec`
 
-### Connections
+#### Connections
 
 - available in `connections/s`
 - current in `connections/s`
@@ -47,18 +51,27 @@ It collects information and statistics about the server executing the following 
 - exhaustHello in `connections/s`
 - awaiting topology changes in `connections/s`
 
-### Memory
+#### Network IO
+
+- Bytes In in `bytes/s`
+- Bytes Out in `bytes/s`
+
+#### Network Requests
+
+- Requests in `requests/s`
+
+#### Memory
 
 - resident in `MiB`
 - virtual in `MiB`
 - mapped in `MiB`
 - mapped with journal in `MiB`
 
-### Page faults
+#### Page faults
 
 - Page Faults in `page faults/s`
 
-### Asserts
+#### Asserts
 
 - regular
 - warning
@@ -67,7 +80,21 @@ It collects information and statistics about the server executing the following 
 - tripwire
 - rollovers
 
-### Collections
+#### Current Transactions
+
+- current active in `transactions`
+- current inactive in `transactions`
+- current open in `transactions`
+- current prepared in `transactions`
+
+### Optional charts:
+
+#### Active Clients
+
+- readers in `clients`
+- writers in `clients`
+
+#### Collections
 
 - collections
 - capped
@@ -76,12 +103,12 @@ It collects information and statistics about the server executing the following 
 - internalCollections
 - internalViews
 
-### Tcmalloc generic metrics
+#### Tcmalloc generic metrics
 
 - current_allocated_bytes in `MiB`
 - heap_size in `MiB`
 
-### Tcmalloc metrics
+#### Tcmalloc metrics
 
 - Pageheap free in `KiB`
 - Pageheap unmapped in `KiB`
@@ -92,21 +119,12 @@ It collects information and statistics about the server executing the following 
 - Pageheap decommit in `KiB`
 - Pageheap reserve in `KiB`
 
-### Network IO
-
-- Bytes In in `bytes/s`
-- Bytes Out in `bytes/s`
-
-### Network Requests
-
-- Requests in `requests/s`
-
-### Current Queue Clients
+#### Current Queue Clients
 
 - readers in `clients`
 - writers in `clients`
 
-### Command Metrics
+#### Command Metrics
 
 - Eval in `commands`
 - Eval Failed in `commands`
@@ -117,20 +135,7 @@ It collects information and statistics about the server executing the following 
 - Find And Modify in `commands`
 - Insert Fail in `commands`
 
-### Operations Latency
-
-- Ops reads in `msec`
-- Ops writes in `msec`
-- disc in `msec`
-
-### Current Transactions
-
-- current active in `transactions`
-- current inactive in `transactions`
-- current open in `transactions`
-- current prepared in `transactions`
-
-### Global Locks
+#### Global Locks
 
 - Global Read Locks in `locks`
 - Global Write Locks in `locks`
@@ -139,12 +144,12 @@ It collects information and statistics about the server executing the following 
 - Collection Read Locks in `locks`
 - Collection Write Locks in `locks`
 
-### Flow Control Stats
+#### Flow Control Stats
 
 - timeAcquiringMicros in `number`
 - isLaggedTimeMicros in `number`
 
-### Wired Tiger Block Manager
+#### Wired Tiger Block Manager
 
 - bytes read in `KiB`
 - bytes read via memory map API in `KiB`
@@ -153,11 +158,12 @@ It collects information and statistics about the server executing the following 
 - bytes written for checkpoint in `KiB`
 - bytes written via memory map API in `KiB`
 
+#### Wired Tiger Cache
 - bytes allocated for updates in `KiB`
 - bytes read into cache in `KiB`
 - bytes written from cache in `KiB`
 
-### Wired Tiger Capacity
+#### Wired Tiger Capacity
 
 - time waiting due to total capacity (usecs) in `usec`
 - time waiting during checkpoint (usecs) in `usec`
@@ -165,13 +171,13 @@ It collects information and statistics about the server executing the following 
 - time waiting during logging (usecs) in `usec`
 - time waiting during read (usecs) in `usec`
 
-### Wired Tiger Connections
+#### Wired Tiger Connections
 
 - memory allocations in `ops`
 - memory frees in `ops`
 - memory re-allocations in `ops`
 
-### Wired Tiger Cursor
+#### Wired Tiger Cursor
 
 - open cursor count in `calls`
 - cached cursor count in `calls`
@@ -198,7 +204,7 @@ It collects information and statistics about the server executing the following 
 - cursor update calls in `calls`
 - cursor update value size change in `calls`
 
-### Wired Tiger Lock
+#### Wired Tiger Lock
 
 - checkpoint lock acquisitions in `ops`
 - dhandle read lock acquisitions in `ops`
@@ -213,7 +219,7 @@ It collects information and statistics about the server executing the following 
 - table write lock acquisitions in `ops`
 - txn global read lock acquisitions in `ops`
 
-### Wired Tiger Lock Duration
+#### Wired Tiger Lock Duration
 
 - checkpoint lock application thread wait time (usecs) in `usec`
 - checkpoint lock internal thread wait time (usecs) in `usec`
@@ -232,7 +238,7 @@ It collects information and statistics about the server executing the following 
 - txn global lock application thread time waiting (usecs) in `usec`
 - txn global lock internal thread time waiting (usecs) in `usec`
 
-### Wired Tiger Log Operations
+#### Wired Tiger Log Operations
 
 - log flush operations in `ops`
 - log force write operations in `ops`
@@ -242,14 +248,14 @@ It collects information and statistics about the server executing the following 
 - log sync_dir operations in `ops`
 - log write operations in `ops`
 
-### Wired Tiger Log Operations
+#### Wired Tiger Log Operations IO
 
 - log bytes of payload data in `bytes`
 - log bytes written in `bytes`
 - logging bytes consolidated in `bytes`
 - total log buffer size in `bytes`
 
-### Wired Tiger Log Transactions
+#### Wired Tiger Log Transactions
 
 - prepared transactions in `transactions`
 - query timestamp calls in `transactions`

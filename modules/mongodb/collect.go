@@ -76,14 +76,15 @@ func (m *Mongo) serverStatusCollect(ms map[string]int64) {
 		return
 	}
 
+	m.metricExists(status, "globalLock.activeClients", &chartGlobalLockActiveClients)
 	m.metricExists(status, "catalogStats", &chartCollections)
-	m.metricExists(status, "flowControl", &chartFlowControl)
-	m.metricExists(status, "locks.Global.acquireCount", &chartGlobalLocks)
-	m.metricExists(status, "metrics.commands", &chartMetricsCommands)
 	m.metricExists(status, "tcmalloc.tcmalloc", &chartTcmallocGeneric)
 	m.metricExists(status, "tcmalloc.tcmalloc", &chartTcmalloc)
 	m.metricExists(status, "globalLock.currentQueue", &chartGlobalLockCurrentQueue)
-	m.metricExists(status, "globalLock.activeClients", &chartGlobalLockActiveClients)
+	m.metricExists(status, "metrics.commands", &chartMetricsCommands)
+	m.metricExists(status, "locks.Global.acquireCount", &chartGlobalLocks)
+	m.metricExists(status, "flowControl", &chartFlowControl)
+	// WiredTiger charts
 	m.metricExists(status, "wiredTiger.block-manager", &chartWiredTigerBlockManager)
 	m.metricExists(status, "wiredTiger.cache", &chartWiredTigerCache)
 	m.metricExists(status, "wiredTiger.capacity", &chartWiredTigerCapacity)

@@ -11,22 +11,22 @@ var serverStatusCharts = module.Charts{
 	chartOpcounter.Copy(),
 	chartOpLatencies.Copy(),
 	chartConnections.Copy(),
-	chartMemory.Copy(),
-	chartAsserts.Copy(),
-	chartPageFaults.Copy(),
 	chartNetwork.Copy(),
 	chartNetworkRequests.Copy(),
+	chartMemory.Copy(),
+	chartPageFaults.Copy(),
+	chartAsserts.Copy(),
 	chartTransactionsCurrent.Copy(),
 
-	// optional charts
+	//Optional charts
+	//chartGlobalLockActiveClients.Copy(),
 	//chartCollections.Copy(),
-	//chartFlowControl.Copy(),
-	//chartGlobalLocks.Copy(),
-	//chartMetricsCommands.Copy(),
 	//chartTcmallocGeneric.Copy(),
 	//chartTcmalloc.Copy(),
 	//chartGlobalLockCurrentQueue.Copy(),
-	//chartGlobalLockActiveClients.Copy(),
+	//chartMetricsCommands.Copy(),
+	//chartGlobalLocks.Copy(),
+	//chartFlowControl.Copy(),
 	//chartWiredTigerBlockManager.Copy(),
 	//chartWiredTigerCache.Copy(),
 	//chartWiredTigerCapacity.Copy(),
@@ -37,11 +37,10 @@ var serverStatusCharts = module.Charts{
 	//chartWiredTigerLogOps.Copy(),
 	//chartWiredTigerLogBytes.Copy(),
 	//chartWiredTigerTransactions.Copy(),
-
 }
 
 var (
-	// default metrics
+	// default charts
 	chartOpcounter = module.Chart{
 		ID:    "opcounters",
 		Title: "Commands rate",
@@ -88,47 +87,6 @@ var (
 			{ID: "connections.awaitingTopologyChanges", Name: "awaiting topology changes", Algo: module.Absolute},
 		},
 	}
-	chartMemory = module.Chart{
-		ID:    "mem",
-		Title: "Memory",
-		Units: "MiB",
-		Fam:   "memory",
-		Ctx:   "mongodb.memory",
-		Type:  module.Line,
-		Dims: module.Dims{
-			{ID: "mem.resident", Name: "resident", Algo: module.Absolute},
-			{ID: "mem.virtual", Name: "virtual", Algo: module.Absolute},
-			{ID: "mem.mapped", Name: "mapped", Algo: module.Absolute},
-			{ID: "mem.mappedWithJournal", Name: "mapped with journal", Algo: module.Absolute},
-		},
-	}
-	chartAsserts = module.Chart{
-		ID:    "asserts",
-		Title: "Asserts",
-		Units: "number",
-		Fam:   "asserts",
-		Ctx:   "mongodb.asserts",
-		Type:  module.Stacked,
-		Dims: module.Dims{
-			{ID: "asserts.regular", Name: "regular", Algo: module.Incremental},
-			{ID: "asserts.warning", Name: "warning", Algo: module.Incremental},
-			{ID: "asserts.msg", Name: "msg", Algo: module.Incremental},
-			{ID: "asserts.user", Name: "user", Algo: module.Incremental},
-			{ID: "asserts.tripwire", Name: "tripwire", Algo: module.Incremental},
-			{ID: "asserts.rollovers", Name: "rollovers", Algo: module.Incremental},
-		},
-	}
-	chartPageFaults = module.Chart{
-		ID:    "page_faults",
-		Title: "Page faults",
-		Units: "page faults/s",
-		Fam:   "page_faults",
-		Ctx:   "mongodb.page_faults",
-		Type:  module.Line,
-		Dims: module.Dims{
-			{ID: "extra_info.page_faults", Name: "Page Faults", Algo: module.Incremental},
-		},
-	}
 	chartNetwork = module.Chart{
 		ID:    "network",
 		Title: "Network IO",
@@ -152,6 +110,47 @@ var (
 			{ID: "network.numRequests", Name: "Requests", Algo: module.Incremental},
 		},
 	}
+	chartMemory = module.Chart{
+		ID:    "mem",
+		Title: "Memory",
+		Units: "MiB",
+		Fam:   "memory",
+		Ctx:   "mongodb.memory",
+		Type:  module.Line,
+		Dims: module.Dims{
+			{ID: "mem.resident", Name: "resident", Algo: module.Absolute},
+			{ID: "mem.virtual", Name: "virtual", Algo: module.Absolute},
+			{ID: "mem.mapped", Name: "mapped", Algo: module.Absolute},
+			{ID: "mem.mappedWithJournal", Name: "mapped with journal", Algo: module.Absolute},
+		},
+	}
+	chartPageFaults = module.Chart{
+		ID:    "page_faults",
+		Title: "Page faults",
+		Units: "page faults/s",
+		Fam:   "page_faults",
+		Ctx:   "mongodb.page_faults",
+		Type:  module.Line,
+		Dims: module.Dims{
+			{ID: "extra_info.page_faults", Name: "Page Faults", Algo: module.Incremental},
+		},
+	}
+	chartAsserts = module.Chart{
+		ID:    "asserts",
+		Title: "Asserts",
+		Units: "number",
+		Fam:   "asserts",
+		Ctx:   "mongodb.asserts",
+		Type:  module.Stacked,
+		Dims: module.Dims{
+			{ID: "asserts.regular", Name: "regular", Algo: module.Incremental},
+			{ID: "asserts.warning", Name: "warning", Algo: module.Incremental},
+			{ID: "asserts.msg", Name: "msg", Algo: module.Incremental},
+			{ID: "asserts.user", Name: "user", Algo: module.Incremental},
+			{ID: "asserts.tripwire", Name: "tripwire", Algo: module.Incremental},
+			{ID: "asserts.rollovers", Name: "rollovers", Algo: module.Incremental},
+		},
+	}
 	chartTransactionsCurrent = module.Chart{
 		ID:    "transactionsCurrent",
 		Title: "Current Transactions",
@@ -167,27 +166,19 @@ var (
 		},
 	}
 
-	// metrics.commands
-	chartMetricsCommands = module.Chart{
-		ID:    "metricsCommand",
-		Title: "Command Metrics",
-		Units: "commands",
-		Fam:   "commands",
-		Ctx:   "mongodb.metricsCommand",
-		Type:  module.Line,
+	// option charts
+	chartGlobalLockActiveClients = module.Chart{
+		ID:    "globalLockActiveClients",
+		Title: "Active Clients",
+		Units: "clients",
+		Fam:   "clients",
+		Ctx:   "mongodb.currentQueue",
+		Type:  module.Stacked,
 		Dims: module.Dims{
-			{ID: "metrics.commands.eval.total", Name: "Eval", Algo: module.Incremental},
-			{ID: "metrics.commands.eval.failed", Name: "Eval Failed", Algo: module.Incremental},
-			{ID: "metrics.commands.delete.total", Name: "Delete", Algo: module.Incremental},
-			{ID: "metrics.commands.delete.failed", Name: "Delete Failed", Algo: module.Incremental},
-			{ID: "metrics.commands.count.failed", Name: "Count Failed", Algo: module.Incremental},
-			{ID: "metrics.commands.createIndexes", Name: "Create Indexes", Algo: module.Incremental},
-			{ID: "metrics.commands.findAndModify", Name: "Find And Modify", Algo: module.Incremental},
-			{ID: "metrics.commands.insert.failed", Name: "Insert Fail", Algo: module.Incremental},
+			{ID: "globalLock.activeClients.readers", Name: "readers", Algo: module.Absolute},
+			{ID: "globalLock.activeClients.writers", Name: "writers", Algo: module.Absolute},
 		},
 	}
-
-	// catalogStats
 	chartCollections = module.Chart{
 		ID:    "catalogStats",
 		Title: "Catalog Stats",
@@ -202,38 +193,6 @@ var (
 			{ID: "catalogStats.views", Name: "views", Algo: module.Incremental},
 			{ID: "catalogStats.internalCollections", Name: "internalCollections", Algo: module.Incremental},
 			{ID: "catalogStats.internalViews", Name: "internalViews", Algo: module.Incremental},
-		},
-	}
-
-	//flowControl
-	chartFlowControl = module.Chart{
-		ID:    "flowControl",
-		Title: "Flow Control Stats",
-		Units: "number",
-		Fam:   "flowControl",
-		Ctx:   "mongodb.flowControl",
-		Type:  module.Line,
-		Dims: module.Dims{
-			{ID: "flowControl.timeAcquiringMicros", Name: "timeAcquiring", Algo: module.Incremental, Div: 1000},
-			{ID: "flowControl.isLaggedTimeMicros", Name: "isLaggedTime", Algo: module.Absolute, Div: 1000},
-		},
-	}
-
-	// locks.Global.acquireCount
-	chartGlobalLocks = module.Chart{
-		ID:    "locks",
-		Title: "Locks",
-		Units: "locks",
-		Fam:   "locks",
-		Ctx:   "mongodb.locks",
-		Type:  module.Line,
-		Dims: module.Dims{
-			{ID: "locks.Global.acquireCount.r", Name: "Global Read Locks", Algo: module.Incremental},
-			{ID: "locks.Global.acquireCount.w", Name: "Global Write Locks", Algo: module.Incremental},
-			{ID: "locks.Database.acquireCount.r", Name: "Database Read Locks", Algo: module.Incremental},
-			{ID: "locks.Database.acquireCount.w", Name: "Database Write Locks", Algo: module.Incremental},
-			{ID: "locks.Collection.acquireCount.r", Name: "Collection Read Locks", Algo: module.Incremental},
-			{ID: "locks.Collection.acquireCount.w", Name: "Collection Write Locks", Algo: module.Incremental},
 		},
 	}
 	chartTcmallocGeneric = module.Chart{
@@ -266,19 +225,6 @@ var (
 			{ID: "tcmalloc.tcmalloc.pageheap_total_reserve_bytes", Name: "Pageheap reserve", Algo: module.Absolute, Div: 1024},
 		},
 	}
-	// GlobalLock
-	chartGlobalLockActiveClients = module.Chart{
-		ID:    "globalLockActiveClients",
-		Title: "Active Clients",
-		Units: "clients",
-		Fam:   "clients",
-		Ctx:   "mongodb.currentQueue",
-		Type:  module.Stacked,
-		Dims: module.Dims{
-			{ID: "globalLock.activeClients.readers", Name: "readers", Algo: module.Absolute},
-			{ID: "globalLock.activeClients.writers", Name: "writers", Algo: module.Absolute},
-		},
-	}
 	chartGlobalLockCurrentQueue = module.Chart{
 		ID:    "globalLockCurrentQueue",
 		Title: "Current Queue Clients",
@@ -291,7 +237,54 @@ var (
 			{ID: "globalLock.currentQueue.writers", Name: "writers", Algo: module.Absolute},
 		},
 	}
-	// WiredTiger
+	chartMetricsCommands = module.Chart{
+		ID:    "metricsCommand",
+		Title: "Command Metrics",
+		Units: "commands",
+		Fam:   "commands",
+		Ctx:   "mongodb.metricsCommand",
+		Type:  module.Line,
+		Dims: module.Dims{
+			{ID: "metrics.commands.eval.total", Name: "Eval", Algo: module.Incremental},
+			{ID: "metrics.commands.eval.failed", Name: "Eval Failed", Algo: module.Incremental},
+			{ID: "metrics.commands.delete.total", Name: "Delete", Algo: module.Incremental},
+			{ID: "metrics.commands.delete.failed", Name: "Delete Failed", Algo: module.Incremental},
+			{ID: "metrics.commands.count.failed", Name: "Count Failed", Algo: module.Incremental},
+			{ID: "metrics.commands.createIndexes", Name: "Create Indexes", Algo: module.Incremental},
+			{ID: "metrics.commands.findAndModify", Name: "Find And Modify", Algo: module.Incremental},
+			{ID: "metrics.commands.insert.failed", Name: "Insert Fail", Algo: module.Incremental},
+		},
+	}
+	chartGlobalLocks = module.Chart{
+		ID:    "locks",
+		Title: "Locks",
+		Units: "locks",
+		Fam:   "locks",
+		Ctx:   "mongodb.locks",
+		Type:  module.Line,
+		Dims: module.Dims{
+			{ID: "locks.Global.acquireCount.r", Name: "Global Read Locks", Algo: module.Incremental},
+			{ID: "locks.Global.acquireCount.w", Name: "Global Write Locks", Algo: module.Incremental},
+			{ID: "locks.Database.acquireCount.r", Name: "Database Read Locks", Algo: module.Incremental},
+			{ID: "locks.Database.acquireCount.w", Name: "Database Write Locks", Algo: module.Incremental},
+			{ID: "locks.Collection.acquireCount.r", Name: "Collection Read Locks", Algo: module.Incremental},
+			{ID: "locks.Collection.acquireCount.w", Name: "Collection Write Locks", Algo: module.Incremental},
+		},
+	}
+	chartFlowControl = module.Chart{
+		ID:    "flowControl",
+		Title: "Flow Control Stats",
+		Units: "number",
+		Fam:   "flowControl",
+		Ctx:   "mongodb.flowControl",
+		Type:  module.Line,
+		Dims: module.Dims{
+			{ID: "flowControl.timeAcquiringMicros", Name: "timeAcquiring", Algo: module.Incremental, Div: 1000},
+			{ID: "flowControl.isLaggedTimeMicros", Name: "isLaggedTime", Algo: module.Absolute, Div: 1000},
+		},
+	}
+
+	// WiredTiger (optional)
 	chartWiredTigerBlockManager = module.Chart{
 		ID:    "wiredtigerBlockManager",
 		Title: "Wired Tiger Block Manager",
