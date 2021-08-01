@@ -9,7 +9,7 @@ import (
 )
 
 func Test_makeChart(t *testing.T) {
-	assert.Len(t, serverStatusCharts, 9)
+	assert.Len(t, serverStatusCharts, 8)
 }
 
 func validId(id string) bool {

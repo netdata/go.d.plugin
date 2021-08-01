@@ -9,10 +9,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func addIfExists(serverStatus map[string]interface{}, key string, ms map[string]int64) {
+func addIfExists(serverStatus map[string]interface{}, id string, ms map[string]int64) {
 	mMap := serverStatus
-	keys := strings.Split(key, ".")
-	for _, k := range keys {
+	keys := strings.Split(id, ".")
+	for _, key := range keys {
+		k := fromID(key)
 		val, ok := mMap[k]
 		if !ok {
 			return
@@ -21,12 +22,12 @@ func addIfExists(serverStatus map[string]interface{}, key string, ms map[string]
 		case map[string]interface{}:
 			mMap = val.(map[string]interface{})
 		case int64:
-			if _, ok := mMap[toID(k)]; ok {
-				ms[key] = t
+			if _, ok := mMap[fromID(key)]; ok {
+				ms[id] = t
 			}
 		case int32:
-			if _, ok := mMap[toID(k)]; ok {
-				ms[key] = int64(t)
+			if _, ok := mMap[fromID(key)]; ok {
+				ms[id] = int64(t)
 			}
 		default:
 			return
@@ -66,6 +67,7 @@ func (m *Mongo) metricExists(serverStatus map[string]interface{}, key string, ch
 }
 
 func (m *Mongo) addOptionalCharts(status map[string]interface{}) {
+	m.metricExists(status, "transactions", &chartTransactionsCurrent)
 	m.metricExists(status, "globalLock.activeClients", &chartGlobalLockActiveClients)
 	m.metricExists(status, "catalogStats", &chartCollections)
 	m.metricExists(status, "tcmalloc.tcmalloc", &chartTcmallocGeneric)

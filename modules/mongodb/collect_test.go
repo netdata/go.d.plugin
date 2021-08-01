@@ -17,6 +17,10 @@ func TestMongo_serverStatusCollect(t *testing.T) {
 	require.NoError(t, err)
 
 	ms := map[string]int64{}
+	m := New()
+	m.charts, err = m.initCharts()
+	assert.NoError(t, err)
+	m.addOptionalCharts(status)
 	iterateServerStatus(ms, status)
 	for _, chart := range serverStatusCharts {
 		for _, dim := range chart.Dims {
@@ -38,7 +42,7 @@ func TestMongo_serverStatusCollectOptionalCharts(t *testing.T) {
 	m := New()
 	m.charts = &module.Charts{}
 	m.addOptionalCharts(status)
-
+	assert.True(t, m.charts.Has(chartTransactionsCurrent.ID))
 	assert.True(t, m.charts.Has(chartGlobalLockActiveClients.ID))
 	assert.True(t, m.charts.Has(chartCollections.ID))
 	assert.True(t, m.charts.Has(chartTcmallocGeneric.ID))
