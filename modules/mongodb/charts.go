@@ -135,10 +135,10 @@ var (
 		Units: "bytes/s",
 		Fam:   "network",
 		Ctx:   "mongodb.network",
-		Type:  module.Line,
+		Type:  module.Area,
 		Dims: module.Dims{
-			{ID: "network.bytesIn", Name: "Bytes In", Algo: module.Incremental},
-			{ID: "network.bytesOut", Name: "Bytes Out", Algo: module.Incremental, Mul: -1},
+			{ID: "network.bytesIn", Name: "Bytes In", Algo: module.Incremental, Mul: -1},
+			{ID: "network.bytesOut", Name: "Bytes Out", Algo: module.Incremental},
 		},
 	}
 	chartNetworkRequests = module.Chart{
@@ -189,11 +189,11 @@ var (
 
 	// catalogStats
 	chartCollections = module.Chart{
-		ID:    "collections",
-		Title: "Collections",
-		Units: "collections",
-		Fam:   "collections",
-		Ctx:   "mongodb.collections",
+		ID:    "catalogStats",
+		Title: "Catalog Stats",
+		Units: "number",
+		Fam:   "catalogStats",
+		Ctx:   "mongodb.catalogStats",
 		Type:  module.Line,
 		Dims: module.Dims{
 			{ID: "catalogStats.collections", Name: "collections", Algo: module.Incremental},
@@ -214,8 +214,8 @@ var (
 		Ctx:   "mongodb.flowControl",
 		Type:  module.Line,
 		Dims: module.Dims{
-			{ID: "flowControl.timeAcquiringMicros", Name: "timeAcquiringMicros", Algo: module.Incremental},
-			{ID: "flowControl.isLaggedTimeMicros", Name: "isLaggedTimeMicros", Algo: module.Absolute},
+			{ID: "flowControl.timeAcquiringMicros", Name: "timeAcquiring", Algo: module.Incremental, Div: 1000},
+			{ID: "flowControl.isLaggedTimeMicros", Name: "isLaggedTime", Algo: module.Absolute, Div: 1000},
 		},
 	}
 
