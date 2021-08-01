@@ -23,7 +23,8 @@ It collects information and statistics about the server executing the following 
 
 ## Charts
 
-### Default chart 
+### Default chart
+
 Works with local and Atlas database servers
 
 #### Commands rate
@@ -159,6 +160,7 @@ Works with local and Atlas database servers
 - bytes written via memory map API in `KiB`
 
 #### Wired Tiger Cache
+
 - bytes allocated for updates in `KiB`
 - bytes read into cache in `KiB`
 - bytes written from cache in `KiB`

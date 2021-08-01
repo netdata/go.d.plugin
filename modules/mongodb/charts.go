@@ -152,7 +152,6 @@ var (
 		},
 	}
 
-
 	// option charts
 	chartTransactionsCurrent = module.Chart{
 		ID:    "transactionsCurrent",
