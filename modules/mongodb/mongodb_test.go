@@ -11,11 +11,9 @@ import (
 
 func TestNew(t *testing.T) {
 	job := New()
-
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultHost, job.Local.Host, "wrong host")
 	assert.Equal(t, time.Duration(defaultTimeout), job.Timeout, "wrong timeout")
-	assert.Equal(t, defaultAuthDb, job.Authdb, "wrong auth db")
+	assert.Equal(t, defaultUri, job.Uri, "wrong timeout")
 }
 
 func TestMongo_Init(t *testing.T) {
@@ -28,17 +26,17 @@ func TestMongo_Init(t *testing.T) {
 			config:  New().Config,
 		},
 		"fails on unset 'address'": {
-			success: false,
+			success: true,
 			config: Config{
-				Local: Local{Host: "", Port: 0},
-				Auth:  Auth{Host: "", Port: 0},
+				Uri:     "mongodb://localhost:27017",
+				Timeout: 10,
 			},
 		},
 		"fails on invalid port": {
 			success: false,
 			config: Config{
-				Local: Local{Host: "", Port: 999999},
-				Auth:  Auth{Host: "", Port: 999999},
+				Uri:     "",
+				Timeout: 0,
 			},
 		},
 	}
@@ -75,31 +73,15 @@ func TestMongo_initMongoClient_default(t *testing.T) {
 	m := New()
 	require.NoError(t, m.initMongoClient())
 }
-func TestMongo_initMongoClient_local(t *testing.T) {
 
+func TestMongo_initMongoClient_uri(t *testing.T) {
 	m := New()
-	m.Local.Host = "localhost"
-	m.Local.Port = 27017
-	require.NoError(t, m.initMongoClient())
-}
-func TestMongo_initMongoClient_auth(t *testing.T) {
-	m := New()
-	m.Auth.Host = "localhost"
-	m.Auth.Port = 27017
-	m.Auth.User = "user"
-	m.Auth.Pass = "pass"
-	require.NoError(t, m.initMongoClient())
-}
-
-func TestMongo_initMongoClient_connectionStr(t *testing.T) {
-	m := New()
-	m.Config.ConnectionStr = "mongodb://user:pass@localhost:27017"
+	m.Config.Uri = "mongodb://user:pass@localhost:27017"
 	require.NoError(t, m.initMongoClient())
 }
 
 func TestMongo_Check(t *testing.T) {
 	m := New()
-	m.Config.Local.Host = "not_resolvable_host"
 	m.Config.Timeout = 0
 	assert.False(t, m.Check())
 }

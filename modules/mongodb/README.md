@@ -312,26 +312,7 @@ Sample using connection string:
 **This is the preferred way**
 
 ```yaml
-connectionStr: 'mongodb://mongodb0.example.com:27017'
-```
-
-Sample using local database without authentication:
-
-```yaml
-local:
-  host: '127.0.0.1'
-  port: 27017
-```
-
-Sample using authentication:
-
-```yaml
-auth:
-  authdb: 'admin'
-  host: '127.0.0.1'
-  port: 27017
-  user: 'netdata'
-  pass: '<password>'
+uri: 'mongodb://localhost:27017'
 ```
 
 If no configuration is given, module will attempt to connect to mongodb daemon on `127.0.0.1:27017` address

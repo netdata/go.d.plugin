@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -25,19 +24,8 @@ func init() {
 func New() *Mongo {
 	return &Mongo{
 		Config: Config{
-			Local: Local{
-				Host: defaultHost,
-				Port: defaultPort,
-			},
-			Auth: Auth{
-				Host:   defaultHost,
-				Port:   defaultPort,
-				Authdb: defaultAuthDb,
-				User:   defaultUser,
-				Pass:   defaultPass,
-			},
-			Timeout:       defaultTimeout,
-			ConnectionStr: defaultConnectionStr,
+			Timeout: defaultTimeout,
+			Uri:     defaultUri,
 		},
 		charts: &module.Charts{},
 	}
@@ -52,12 +40,8 @@ type Mongo struct {
 
 func (m *Mongo) Init() bool {
 	m.Infof("initializing mongodb")
-	validLocalConfig := m.Local.valid()
-	validAuthConfig := m.Auth.valid()
-	if !validLocalConfig && !validAuthConfig && m.ConnectionStr == "" {
-		m.Errorf("config validation: all local and auth "+
-			"and connection string config values are empty."+
-			"Attempting to connect to %s:%d", defaultHost, defaultPort)
+	if m.Uri == "" {
+		m.Errorf("connection URI is empty")
 		return false
 	}
 
@@ -111,18 +95,7 @@ func (m *Mongo) Cleanup() {
 }
 
 func (m *Mongo) initMongoClient() error {
-	var connectionString string
-	switch {
-	case m.ConnectionStr != "":
-		connectionString = m.ConnectionStr
-	case m.Auth.valid():
-		connectionString = m.Auth.connectionString()
-	case m.Local.valid():
-		connectionString = m.Local.connectionString()
-	default:
-		connectionString = fmt.Sprintf("mongodb://%s:%d", defaultHost, defaultPort)
-	}
-	client, err := mongo.NewClient(options.Client().ApplyURI(connectionString))
+	client, err := mongo.NewClient(options.Client().ApplyURI(m.Uri))
 	if err != nil {
 		return err
 	}
