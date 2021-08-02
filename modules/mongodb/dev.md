@@ -14,5 +14,5 @@ docker run \
 
 ```shell
 go build -o go.d.plugin github.com/netdata/go.d.plugin/cmd/godplugin
-go.d.plugin -m=mongodb
+go.d.plugin -d -m=mongodb
 ```

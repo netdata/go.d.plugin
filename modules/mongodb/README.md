@@ -44,13 +44,13 @@ Works with local and Atlas database servers
 
 #### Connections
 
-- available in `connections/s`
-- current in `connections/s`
-- active in `connections/s`
-- threaded in `connections/s`
-- exhaustIsMaster in `connections/s`
-- exhaustHello in `connections/s`
-- awaiting topology changes in `connections/s`
+- available in `connections`
+- current in `connections`
+- active in `connections`
+- threaded in `connections`
+- exhaustIsMaster in `connections`
+- exhaustHello in `connections`
+- awaiting topology changes in `connections`
 
 #### Network IO
 
@@ -74,12 +74,12 @@ Works with local and Atlas database servers
 
 #### Asserts
 
-- regular
-- warning
-- msg
-- user
-- tripwire
-- rollovers
+- regular in `asserts/s`
+- warning in `asserts/s`
+- msg in `asserts/s`
+- user in `asserts/s`
+- tripwire in `asserts/s`
+- rollovers in `asserts/s`
 
 #### Current Transactions
 
@@ -138,17 +138,17 @@ Works with local and Atlas database servers
 
 #### Global Locks
 
-- Global Read Locks in `locks`
-- Global Write Locks in `locks`
-- Database Read Locks in `locks`
-- Database Write Locks in `locks`
-- Collection Read Locks in `locks`
-- Collection Write Locks in `locks`
+- Global Read Locks in `locks/s`
+- Global Write Locks in `locks/s`
+- Database Read Locks in `locks/s`
+- Database Write Locks in `locks/s`
+- Collection Read Locks in `locks/s`
+- Collection Write Locks in `locks/s`
 
 #### Flow Control Stats
 
-- timeAcquiringMicros in `number`
-- isLaggedTimeMicros in `number`
+- timeAcquiringMicros in `milliseconds`
+- isLaggedTimeMicros in `milliseconds`
 
 #### Wired Tiger Block Manager
 
@@ -175,51 +175,51 @@ Works with local and Atlas database servers
 
 #### Wired Tiger Connections
 
-- memory allocations in `ops`
-- memory frees in `ops`
-- memory re-allocations in `ops`
+- memory allocations in `ops/s`
+- memory frees in `ops/s`
+- memory re-allocations in `ops/s`
 
 #### Wired Tiger Cursor
 
-- open cursor count in `calls`
-- cached cursor count in `calls`
-- cursor bulk loaded cursor insert calls in `calls`
-- cursor close calls that result in cache in `calls`
-- cursor create calls in `calls`
-- cursor insert calls in `calls`
-- cursor modify calls in `calls`
-- cursor next calls in `calls`
-- cursor operation restarted in `calls`
-- cursor prev calls in `calls`
-- cursor remove calls in `calls`
-- cursor remove key bytes removed in `calls`
-- cursor reserve calls in `calls`
-- cursor reset calls in `calls`
-- cursor search calls in `calls`
-- cursor search history store calls in `calls`
-- cursor search near calls in `calls`
-- cursor sweep buckets in `calls`
-- cursor sweep cursors closed in `calls`
-- cursor sweep cursors examined in `calls`
-- cursor sweeps in `calls`
-- cursor truncate calls in `calls`
-- cursor update calls in `calls`
-- cursor update value size change in `calls`
+- open cursor count in `calls/s`
+- cached cursor count in `calls/s`
+- cursor bulk loaded cursor insert calls in `calls/s`
+- cursor close calls that result in cache in `calls/s`
+- cursor create calls in `calls/s`
+- cursor insert calls in `calls/s`
+- cursor modify calls in `calls/s`
+- cursor next calls in `calls/s`
+- cursor operation restarted in `calls/s`
+- cursor prev calls in `calls/s`
+- cursor remove calls in `calls/s`
+- cursor remove key bytes removed in `calls/s`
+- cursor reserve calls in `calls/s`
+- cursor reset calls in `calls/s`
+- cursor search calls in `calls/s`
+- cursor search history store calls in `calls/s`
+- cursor search near calls in `calls/s`
+- cursor sweep buckets in `calls/s`
+- cursor sweep cursors closed in `calls/s`
+- cursor sweep cursors examined in `calls/s`
+- cursor sweeps in `calls/s`
+- cursor truncate calls in `calls/s`
+- cursor update calls in `calls/s`
+- cursor update value size change in `calls/s`
 
 #### Wired Tiger Lock
 
-- checkpoint lock acquisitions in `ops`
-- dhandle read lock acquisitions in `ops`
-- dhandle write lock acquisitions in `ops`
-- durable timestamp queue read lock acquisitions in `ops`
-- durable timestamp queue write lock acquisitions in `ops`
-- metadata lock acquisitions in `ops`
-- read timestamp queue read lock acquisitions in `ops`
-- read timestamp queue write lock acquisitions in `ops`
-- schema lock acquisitions in `ops`
-- table read lock acquisitions in `ops`
-- table write lock acquisitions in `ops`
-- txn global read lock acquisitions in `ops`
+- checkpoint lock acquisitions in `ops/s`
+- dhandle read lock acquisitions in `ops/s`
+- dhandle write lock acquisitions in `ops/s`
+- durable timestamp queue read lock acquisitions in `ops/s`
+- durable timestamp queue write lock acquisitions in `ops/s`
+- metadata lock acquisitions in `ops/s`
+- read timestamp queue read lock acquisitions in `ops/s`
+- read timestamp queue write lock acquisitions in `ops/s`
+- schema lock acquisitions in `ops/s`
+- table read lock acquisitions in `ops/s`
+- table write lock acquisitions in `ops/s`
+- txn global read lock acquisitions in `ops/s`
 
 #### Wired Tiger Lock Duration
 
@@ -242,31 +242,31 @@ Works with local and Atlas database servers
 
 #### Wired Tiger Log Operations
 
-- log flush operations in `ops`
-- log force write operations in `ops`
-- log force write operations skipped in `ops`
-- log scan operations in `ops`
-- log sync operations in `ops`
-- log sync_dir operations in `ops`
-- log write operations in `ops`
+- log flush operations in `ops/s`
+- log force write operations in `ops/s`
+- log force write operations skipped in `ops/s`
+- log scan operations in `ops/s`
+- log sync operations in `ops/s`
+- log sync_dir operations in `ops/s`
+- log write operations in `ops/s`
 
 #### Wired Tiger Log Operations IO
 
-- log bytes of payload data in `bytes`
-- log bytes written in `bytes`
-- logging bytes consolidated in `bytes`
-- total log buffer size in `bytes`
+- log bytes of payload data in `bytes/s`
+- log bytes written in `bytes/s`
+- logging bytes consolidated in `bytes/s`
+- total log buffer size in `bytes/s`
 
 #### Wired Tiger Log Transactions
 
-- prepared transactions in `transactions`
-- query timestamp calls in `transactions`
-- rollback to stable calls in `transactions`
-- set timestamp calls in `transactions`
-- transaction begins in `transactions`
-- transaction sync calls in `transactions`
-- transactions committed in `transactions`
-- transactions rolled back in `transactions`
+- prepared transactions in `transactions/s`
+- query timestamp calls in `transactions/s`
+- rollback to stable calls in `transactions/s`
+- set timestamp calls in `transactions/s`
+- transaction begins in `transactions/s`
+- transaction sync calls in `transactions/s`
+- transactions committed in `transactions/s`
+- transactions rolled back in `transactions/s`
 
 ## Prerequisites
 

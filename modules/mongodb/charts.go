@@ -73,7 +73,7 @@ var (
 	chartConnections = module.Chart{
 		ID:    "connections",
 		Title: "Connections",
-		Units: "connections/s",
+		Units: "connections",
 		Fam:   "connections",
 		Ctx:   "mongodb.connections",
 		Type:  module.Line,
@@ -138,7 +138,7 @@ var (
 	chartAsserts = module.Chart{
 		ID:    "asserts",
 		Title: "Asserts",
-		Units: "number",
+		Units: "asserts/s",
 		Fam:   "asserts",
 		Ctx:   "mongodb.asserts",
 		Type:  module.Stacked,
@@ -182,17 +182,17 @@ var (
 	chartCollections = module.Chart{
 		ID:    "catalogStats",
 		Title: "Catalog Stats",
-		Units: "number",
+		Units: "objects",
 		Fam:   "catalogStats",
 		Ctx:   "mongodb.catalogStats",
-		Type:  module.Line,
+		Type:  module.Stacked,
 		Dims: module.Dims{
-			{ID: "catalogStats.collections", Name: "collections", Algo: module.Incremental},
-			{ID: "catalogStats.capped", Name: "capped", Algo: module.Incremental},
-			{ID: "catalogStats.timeseries", Name: "timeseries", Algo: module.Incremental},
-			{ID: "catalogStats.views", Name: "views", Algo: module.Incremental},
-			{ID: "catalogStats.internalCollections", Name: "internalCollections", Algo: module.Incremental},
-			{ID: "catalogStats.internalViews", Name: "internalViews", Algo: module.Incremental},
+			{ID: "catalogStats.collections", Name: "collections", Algo: module.Absolute},
+			{ID: "catalogStats.capped", Name: "capped", Algo: module.Absolute},
+			{ID: "catalogStats.timeseries", Name: "timeseries", Algo: module.Absolute},
+			{ID: "catalogStats.views", Name: "views", Algo: module.Absolute},
+			{ID: "catalogStats.internalCollections", Name: "internalCollections", Algo: module.Absolute},
+			{ID: "catalogStats.internalViews", Name: "internalViews", Algo: module.Absolute},
 		},
 	}
 	chartTcmallocGeneric = module.Chart{
@@ -240,7 +240,7 @@ var (
 	chartMetricsCommands = module.Chart{
 		ID:    "metricsCommand",
 		Title: "Command Metrics",
-		Units: "commands",
+		Units: "commands/s",
 		Fam:   "commands",
 		Ctx:   "mongodb.metricsCommand",
 		Type:  module.Line,
@@ -258,7 +258,7 @@ var (
 	chartGlobalLocks = module.Chart{
 		ID:    "locks",
 		Title: "Locks",
-		Units: "locks",
+		Units: "locks/s",
 		Fam:   "locks",
 		Ctx:   "mongodb.locks",
 		Type:  module.Line,
@@ -274,13 +274,13 @@ var (
 	chartFlowControl = module.Chart{
 		ID:    "flowControl",
 		Title: "Flow Control Stats",
-		Units: "number",
+		Units: "msec",
 		Fam:   "flowControl",
 		Ctx:   "mongodb.flowControl",
 		Type:  module.Line,
 		Dims: module.Dims{
 			{ID: "flowControl.timeAcquiringMicros", Name: "timeAcquiring", Algo: module.Incremental, Div: 1000},
-			{ID: "flowControl.isLaggedTimeMicros", Name: "isLaggedTime", Algo: module.Absolute, Div: 1000},
+			{ID: "flowControl.isLaggedTimeMicros", Name: "isLaggedTime", Algo: module.Incremental, Div: 1000},
 		},
 	}
 
@@ -332,7 +332,7 @@ var (
 	chartWiredTigerConnection = module.Chart{
 		ID:    "wiredtigerConnection",
 		Title: "Wired Tiger Connections",
-		Units: "ops",
+		Units: "ops/s",
 		Fam:   "wiredtiger",
 		Ctx:   "mongodb.wiredTigerConnection",
 		Type:  module.Line,
@@ -345,7 +345,7 @@ var (
 	chartWiredTigerCursor = module.Chart{
 		ID:    "wiredtigerCursor",
 		Title: "Wired Tiger Cursor",
-		Units: "calls",
+		Units: "calls/s",
 		Fam:   "wiredtiger",
 		Ctx:   "mongodb.wiredTigerCursor",
 		Type:  module.Line,
@@ -379,7 +379,7 @@ var (
 	chartWiredTigerLock = module.Chart{
 		ID:    "wiredtigerLock",
 		Title: "Wired Tiger Lock",
-		Units: "ops",
+		Units: "ops/s",
 		Fam:   "wiredtiger",
 		Ctx:   "mongodb.wiredTigerLock",
 		Type:  module.Line,
@@ -427,7 +427,7 @@ var (
 	chartWiredTigerLogOps = module.Chart{
 		ID:    "wiredtigerLogOps",
 		Title: "Wired Tiger Log Operations",
-		Units: "ops",
+		Units: "ops/s",
 		Fam:   "wiredtiger",
 		Ctx:   "mongodb.wiredTigerLogOps",
 		Type:  module.Line,
@@ -444,7 +444,7 @@ var (
 	chartWiredTigerLogBytes = module.Chart{
 		ID:    "wiredtigerLogOps",
 		Title: "Wired Tiger Log Operations",
-		Units: "bytes",
+		Units: "bytes/s",
 		Fam:   "wiredtiger",
 		Ctx:   "mongodb.wiredTigerLogOps",
 		Type:  module.Line,
@@ -458,7 +458,7 @@ var (
 	chartWiredTigerTransactions = module.Chart{
 		ID:    "wiredtigerTransactions",
 		Title: "Wired Tiger Log Transactions",
-		Units: "transactions",
+		Units: "transactions/s",
 		Fam:   "wiredtiger",
 		Ctx:   "mongodb.wiredTigerTransactions",
 		Type:  module.Line,
