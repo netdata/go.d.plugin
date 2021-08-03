@@ -25,7 +25,7 @@ It collects information and statistics about the server executing the following 
 
 ### Default chart
 
-Works with local and Atlas database servers
+Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas) database servers
 
 #### Commands rate
 
