@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+
 	"go.mongodb.org/mongo-driver/bson"
 )
 

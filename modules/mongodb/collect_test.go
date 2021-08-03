@@ -6,6 +6,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/agent/module"
 	v5_0_0 "github.com/netdata/go.d.plugin/modules/mongodb/testdata/v5.0.0"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"

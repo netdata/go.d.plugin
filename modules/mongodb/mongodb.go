@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
