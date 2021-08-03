@@ -90,10 +90,17 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 
 ### Optional charts:
 
+Depending on the database server version and configuration Mongo reports slightly different statistics. We use
+the [`serverStatus`](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#serverstatus)
+command to monitor the database. Based on the command output the following may be included:
+
 #### Active Clients
 
 - readers in `clients`
 - writers in `clients`
+
+if serverStatus
+reports [global locks active clients](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#globallock)
 
 #### Collections
 
@@ -104,10 +111,14 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 - internalCollections
 - internalViews
 
+if serverStatus reports catalog stats
+
 #### Tcmalloc generic metrics
 
 - current_allocated_bytes in `MiB`
 - heap_size in `MiB`
+
+if serverStatus reports tcmalloc stats
 
 #### Tcmalloc metrics
 
@@ -120,10 +131,15 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 - Pageheap decommit in `KiB`
 - Pageheap reserve in `KiB`
 
+if serverStatus reports tcmalloc stats
+
 #### Current Queue Clients
 
 - readers in `clients`
 - writers in `clients`
+
+if serverStatus
+reports [global locks current queue clients](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#globallock)
 
 #### Command Metrics
 
@@ -135,6 +151,9 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 - Create Indexes in `commands`
 - Find And Modify in `commands`
 - Insert Fail in `commands`
+
+if serverStatus
+reports [metrics](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.metrics)
 
 #### Global Locks
 
@@ -150,7 +169,14 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 - timeAcquiringMicros in `milliseconds`
 - isLaggedTimeMicros in `milliseconds`
 
-#### Wired Tiger Block Manager
+if serverStatus reports [flow control](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#flowcontrol)
+
+### Wired Tiger Charts
+
+Available only if [WiredTiger](https://docs.mongodb.com/v5.0/core/wiredtiger/)
+is used as the storage engine.
+
+#### [Wired Tiger Block Manager](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.block-manager)
 
 - bytes read in `KiB`
 - bytes read via memory map API in `KiB`
@@ -159,7 +185,7 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 - bytes written for checkpoint in `KiB`
 - bytes written via memory map API in `KiB`
 
-#### Wired Tiger Cache
+#### [Wired Tiger Cache](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.cache)
 
 - bytes allocated for updates in `KiB`
 - bytes read into cache in `KiB`
@@ -173,13 +199,13 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 - time waiting during logging (usecs) in `usec`
 - time waiting during read (usecs) in `usec`
 
-#### Wired Tiger Connections
+#### [Wired Tiger Connections](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.connection)
 
 - memory allocations in `ops/s`
 - memory frees in `ops/s`
 - memory re-allocations in `ops/s`
 
-#### Wired Tiger Cursor
+#### [Wired Tiger Cursor](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.cursor)
 
 - open cursor count in `calls/s`
 - cached cursor count in `calls/s`
@@ -240,7 +266,7 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 - txn global lock application thread time waiting (usecs) in `usec`
 - txn global lock internal thread time waiting (usecs) in `usec`
 
-#### Wired Tiger Log Operations
+#### [Wired Tiger Log Operations](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.log)
 
 - log flush operations in `ops/s`
 - log force write operations in `ops/s`
@@ -250,14 +276,14 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 - log sync_dir operations in `ops/s`
 - log write operations in `ops/s`
 
-#### Wired Tiger Log Operations IO
+#### [Wired Tiger Log Operations IO](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.log)
 
 - log bytes of payload data in `bytes/s`
 - log bytes written in `bytes/s`
 - logging bytes consolidated in `bytes/s`
 - total log buffer size in `bytes/s`
 
-#### Wired Tiger Log Transactions
+#### [Wired Tiger Log Transactions](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.log)
 
 - prepared transactions in `transactions/s`
 - query timestamp calls in `transactions/s`
