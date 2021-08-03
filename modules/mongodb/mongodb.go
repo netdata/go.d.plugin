@@ -27,15 +27,17 @@ func New() *Mongo {
 			Timeout: 20,
 			Uri:     "mongodb://localhost:27017",
 		},
-		charts: &module.Charts{},
+		charts:                &module.Charts{},
+		optionalChartsEnabled: make(map[string]bool),
 	}
 }
 
 type Mongo struct {
 	module.Base
-	Config `yaml:",inline"`
-	client *mongo.Client
-	charts *module.Charts
+	Config                `yaml:",inline"`
+	client                *mongo.Client
+	charts                *module.Charts
+	optionalChartsEnabled map[string]bool
 }
 
 func (m *Mongo) Init() bool {

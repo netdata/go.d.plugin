@@ -10,8 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-var optionalChartsEnabled = make(map[string]bool)
-
 func (m *Mongo) serverStatusCollect(ms map[string]int64) {
 	var status map[string]interface{}
 	command := bson.D{{Key: "serverStatus", Value: 1}}
@@ -63,12 +61,12 @@ func (m *Mongo) metricExists(serverStatus map[string]interface{}, key string, ch
 			return
 		}
 	}
-	if enabled, ok := optionalChartsEnabled[chart.ID]; !ok || !enabled {
+	if enabled, ok := m.optionalChartsEnabled[chart.ID]; !ok || !enabled {
 		err := m.charts.Add(chart.Copy())
 		if err != nil {
 			m.Warning(err)
 		}
-		optionalChartsEnabled[chart.ID] = true
+		m.optionalChartsEnabled[chart.ID] = true
 		return
 	}
 
