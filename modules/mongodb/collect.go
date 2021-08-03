@@ -10,6 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+var optionalChartsEnabled = make(map[string]bool)
+
 func (m *Mongo) serverStatusCollect(ms map[string]int64) {
 	var status map[string]interface{}
 	command := bson.D{{Key: "serverStatus", Value: 1}}
@@ -28,7 +30,7 @@ func (m *Mongo) addOptionalCharts(status map[string]interface{}) {
 	m.metricExists(status, "transactions", &chartTransactionsCurrent)
 	m.metricExists(status, "globalLock.activeClients", &chartGlobalLockActiveClients)
 	m.metricExists(status, "catalogStats", &chartCollections)
-	m.metricExists(status, "tcmalloc.tcmalloc", &chartTcmallocGeneric)
+	m.metricExists(status, "tcmalloc.generic", &chartTcmallocGeneric)
 	m.metricExists(status, "tcmalloc.tcmalloc", &chartTcmalloc)
 	m.metricExists(status, "globalLock.currentQueue", &chartGlobalLockCurrentQueue)
 	m.metricExists(status, "metrics.commands", &chartMetricsCommands)
@@ -61,10 +63,12 @@ func (m *Mongo) metricExists(serverStatus map[string]interface{}, key string, ch
 			return
 		}
 	}
-	if !m.charts.Has(chart.ID) {
-		if err := m.charts.Add(chart.Copy()); err != nil {
+	if enabled, ok := optionalChartsEnabled[chart.ID]; !ok || !enabled {
+		err := m.charts.Add(chart.Copy())
+		if err != nil {
 			m.Warning(err)
 		}
+		optionalChartsEnabled[chart.ID] = true
 		return
 	}
 
