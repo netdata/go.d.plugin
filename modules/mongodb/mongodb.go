@@ -69,9 +69,7 @@ func (m *Mongo) Charts() *module.Charts {
 
 func (m *Mongo) Collect() map[string]int64 {
 	if m.client == nil {
-		var err error
-		err = m.initMongoClient()
-		if err != nil {
+		if err := m.initMongoClient(); err != nil {
 			m.Errorf("init mongo client: %v", err)
 			return nil
 		}
