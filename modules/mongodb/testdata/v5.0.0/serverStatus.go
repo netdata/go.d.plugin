@@ -1,6 +1,6 @@
 package v5_0_0
 
-var V500ServerStatus = `
+var ServerStatus = `
 {
     "host": "578b738612b0",
     "version": "5.0.0",

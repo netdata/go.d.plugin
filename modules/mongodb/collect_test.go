@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
-	v5_0_0 "github.com/netdata/go.d.plugin/modules/mongodb/testdata/v5.0.0"
+	"github.com/netdata/go.d.plugin/modules/mongodb/testdata/v5.0.0"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,7 +14,7 @@ import (
 
 func TestMongo_serverStatusCollect(t *testing.T) {
 	var status map[string]interface{}
-	err := bson.UnmarshalExtJSON([]byte(v5_0_0.V500ServerStatus), true, &status)
+	err := bson.UnmarshalExtJSON([]byte(v5_0_0.ServerStatus), true, &status)
 	require.NoError(t, err)
 
 	ms := map[string]int64{}
@@ -37,7 +37,7 @@ func TestMongo_serverStatusCollect(t *testing.T) {
 
 func TestMongo_serverStatusCollectOptionalCharts(t *testing.T) {
 	var status map[string]interface{}
-	err := bson.UnmarshalExtJSON([]byte(v5_0_0.V500ServerStatus), true, &status)
+	err := bson.UnmarshalExtJSON([]byte(v5_0_0.ServerStatus), true, &status)
 	require.NoError(t, err)
 
 	m := New()
@@ -88,7 +88,7 @@ func TestMongo_wrongBsonData(t *testing.T) {
 
 func TestMongo_addChartTwice(t *testing.T) {
 	var status map[string]interface{}
-	err := bson.UnmarshalExtJSON([]byte(v5_0_0.V500ServerStatus), true, &status)
+	err := bson.UnmarshalExtJSON([]byte(v5_0_0.ServerStatus), true, &status)
 	require.NoError(t, err)
 
 	m := New()
