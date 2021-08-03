@@ -119,7 +119,7 @@ forums. We have a whole [category](https://community.netdata.cloud/c/agent-devel
   locally the **forked** repository (e.g `git clone https://github.com/odyslam/go.d.plugin`).
 - Using a terminal, `cd` into the directory (e.g `cd go.d.plugin`)
 - Add your module to the [modules](https://github.com/netdata/go.d.plugin/tree/master/modules) directory.
-- Import the module in the [main.go](https://github.com/netdata/go.d.plugin/blob/master/cmd/godplugin/main.go).
+- Import the module in the [init.go](https://github.com/netdata/go.d.plugin/blob/master/cmd/godplugin/init.go).
 - To build it, run `make` from the plugin root dir. This will create a new `go.d.plugin` binary that includes your newly
   developed collector. It will be placed into the `bin` directory (e.g `go.d.plugin/bin`)
 - Run it in the debug mode `bin/godplugin -d -m <MODULE_NAME>`. This will output the `STDOUT` of the collector, the same
