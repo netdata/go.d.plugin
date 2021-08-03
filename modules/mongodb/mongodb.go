@@ -10,11 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const (
-	defaultTimeout = 20
-	defaultUri     = "mongodb://localhost:27017"
-)
-
 type Config struct {
 	Uri     string        `yaml:"uri"`
 	Timeout time.Duration `yaml:"timeout"`
@@ -29,8 +24,8 @@ func init() {
 func New() *Mongo {
 	return &Mongo{
 		Config: Config{
-			Timeout: defaultTimeout,
-			Uri:     defaultUri,
+			Timeout: 20,
+			Uri:     "mongodb://localhost:27017",
 		},
 		charts: &module.Charts{},
 	}

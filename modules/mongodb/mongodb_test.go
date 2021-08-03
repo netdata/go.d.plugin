@@ -2,20 +2,10 @@ package mongo
 
 import (
 	"testing"
-	"time"
-
-	"github.com/netdata/go.d.plugin/agent/module"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func TestNew(t *testing.T) {
-	job := New()
-	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, time.Duration(defaultTimeout), job.Timeout, "wrong timeout")
-	assert.Equal(t, defaultUri, job.Uri, "wrong timeout")
-}
 
 func TestMongo_Init(t *testing.T) {
 	tests := map[string]struct {
