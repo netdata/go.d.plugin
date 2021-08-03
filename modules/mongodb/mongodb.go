@@ -22,12 +22,6 @@ type Config struct {
 
 func init() {
 	module.Register("mongodb", module.Creator{
-		Defaults: module.Defaults{
-			UpdateEvery:        module.UpdateEvery,
-			AutoDetectionRetry: module.AutoDetectionRetry,
-			Priority:           module.Priority,
-			Disabled:           false,
-		},
 		Create: func() module.Module { return New() },
 	})
 }
