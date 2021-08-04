@@ -54,9 +54,9 @@ func (m *Mongo) metricExists(serverStatus map[string]interface{}, key string, ch
 		if !ok {
 			return
 		}
-		switch val.(type) {
+		switch typeVal := val.(type) {
 		case map[string]interface{}:
-			serverStatus = val.(map[string]interface{})
+			serverStatus = typeVal
 		default:
 			return
 		}
