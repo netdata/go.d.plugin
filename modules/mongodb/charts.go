@@ -16,27 +16,6 @@ var serverStatusCharts = module.Charts{
 	chartMemory.Copy(),
 	chartPageFaults.Copy(),
 	chartAsserts.Copy(),
-
-	//Optional charts
-	//chartTransactionsCurrent.Copy(),
-	//chartGlobalLockActiveClients.Copy(),
-	//chartCollections.Copy(),
-	//chartTcmallocGeneric.Copy(),
-	//chartTcmalloc.Copy(),
-	//chartGlobalLockCurrentQueue.Copy(),
-	//chartMetricsCommands.Copy(),
-	//chartGlobalLocks.Copy(),
-	//chartFlowControl.Copy(),
-	//chartWiredTigerBlockManager.Copy(),
-	//chartWiredTigerCache.Copy(),
-	//chartWiredTigerCapacity.Copy(),
-	//chartWiredTigerConnection.Copy(),
-	//chartWiredTigerCursor.Copy(),
-	//chartWiredTigerLock.Copy(),
-	//chartWiredTigerLockDuration.Copy(),
-	//chartWiredTigerLogOps.Copy(),
-	//chartWiredTigerLogBytes.Copy(),
-	//chartWiredTigerTransactions.Copy(),
 }
 
 // default charts
