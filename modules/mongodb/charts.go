@@ -114,10 +114,10 @@ var (
 
 var chartMemory = module.Chart{
 	ID:    "mem",
-	Title: "Memory",
+	Title: "Memory usage",
 	Units: "MiB",
 	Fam:   "memory",
-	Ctx:   "mongodb.memory",
+	Ctx:   "mongodb.memory_usage",
 	Dims: module.Dims{
 		{ID: "mem.resident", Name: "resident"},
 		{ID: "mem.virtual", Name: "virtual"},
