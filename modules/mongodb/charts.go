@@ -105,7 +105,7 @@ var (
 		Title: "Network Requests",
 		Units: "requests/s",
 		Fam:   "network",
-		Ctx:   "mongodb.networkRequests",
+		Ctx:   "mongodb.network_requests",
 		Dims: module.Dims{
 			{ID: "network.numRequests", Name: "Requests", Algo: module.Incremental},
 		},
