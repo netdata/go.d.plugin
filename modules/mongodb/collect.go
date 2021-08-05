@@ -61,7 +61,7 @@ func (m *Mongo) metricExists(serverStatus map[string]interface{}, key string, ch
 			return
 		}
 	}
-	if enabled, ok := m.optionalChartsEnabled[chart.ID]; !ok || !enabled {
+	if !m.optionalChartsEnabled[chart.ID] {
 		err := m.charts.Add(chart.Copy())
 		if err != nil {
 			m.Warning(err)
