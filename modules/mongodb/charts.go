@@ -139,7 +139,7 @@ var chartPageFaults = module.Chart{
 
 var chartAsserts = module.Chart{
 	ID:    "asserts",
-	Title: "Asserts",
+	Title: "Raised assertions",
 	Units: "asserts/s",
 	Fam:   "asserts",
 	Ctx:   "mongodb.asserts",
