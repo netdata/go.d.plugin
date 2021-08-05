@@ -43,10 +43,10 @@ var serverStatusCharts = module.Charts{
 var (
 	chartOpcounter = module.Chart{
 		ID:    "opcounters",
-		Title: "Commands rate",
-		Units: "commands/s",
+		Title: "Operations by type",
+		Units: "ops/s",
 		Fam:   "operations",
-		Ctx:   "mongodb.command_total_rate",
+		Ctx:   "mongodb.operations",
 		Dims: module.Dims{
 			{ID: "opcounters.insert", Name: "insert", Algo: module.Incremental},
 			{ID: "opcounters.query", Name: "query", Algo: module.Incremental},
