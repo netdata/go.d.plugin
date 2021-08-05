@@ -160,12 +160,12 @@ var chartTransactionsCurrent = module.Chart{
 	Title: "Current Transactions",
 	Units: "transactions",
 	Fam:   "transactionsCurrent",
-	Ctx:   "mongodb.transactionsCurrent",
+	Ctx:   "mongodb.current_transactions",
 	Dims: module.Dims{
-		{ID: "transactions.currentActive", Name: "current active"},
-		{ID: "transactions.currentInactive", Name: "current inactive"},
-		{ID: "transactions.currentOpen", Name: "current open"},
-		{ID: "transactions.currentPrepared", Name: "current prepared"},
+		{ID: "transactions.currentActive", Name: "active"},
+		{ID: "transactions.currentInactive", Name: "inactive"},
+		{ID: "transactions.currentOpen", Name: "open"},
+		{ID: "transactions.currentPrepared", Name: "prepared"},
 	},
 }
 
