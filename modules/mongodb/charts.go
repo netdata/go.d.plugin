@@ -213,18 +213,18 @@ var (
 	chartTcmalloc = module.Chart{
 		ID:    "tcmalloc",
 		Title: "Tcmalloc",
-		Units: "KiB",
-		Fam:   "tcmalloc",
+		Units: "bytes",
+		Fam:   "memory",
 		Ctx:   "mongodb.tcmalloc",
 		Dims: module.Dims{
-			{ID: "tcmalloc.tcmalloc.pageheap_free_bytes", Name: "Pageheap free", Div: 1024},
-			{ID: "tcmalloc.tcmalloc.pageheap_unmapped_bytes", Name: "Pageheap unmapped ", Div: 1024},
-			{ID: "tcmalloc.tcmalloc.current_total_thread_cache_bytes", Name: "Total threaded cache", Div: 1024},
-			{ID: "tcmalloc.tcmalloc.total_free_bytes", Name: "Free", Div: 1024},
-			{ID: "tcmalloc.tcmalloc.pageheap_committed_bytes", Name: "Pageheap committed", Div: 1024},
-			{ID: "tcmalloc.tcmalloc.pageheap_total_commit_bytes", Name: "Pageheap total commit", Div: 1024},
-			{ID: "tcmalloc.tcmalloc.pageheap_total_decommit_bytes", Name: "Pageheap decommit", Div: 1024},
-			{ID: "tcmalloc.tcmalloc.pageheap_total_reserve_bytes", Name: "Pageheap reserve", Div: 1024},
+			{ID: "tcmalloc.tcmalloc.pageheap_free_bytes", Name: "Pageheap free"},
+			{ID: "tcmalloc.tcmalloc.pageheap_unmapped_bytes", Name: "Pageheap unmapped "},
+			{ID: "tcmalloc.tcmalloc.current_total_thread_cache_bytes", Name: "Total threaded cache"},
+			{ID: "tcmalloc.tcmalloc.total_free_bytes", Name: "Free"},
+			{ID: "tcmalloc.tcmalloc.pageheap_committed_bytes", Name: "Pageheap committed"},
+			{ID: "tcmalloc.tcmalloc.pageheap_total_commit_bytes", Name: "Pageheap total commit"},
+			{ID: "tcmalloc.tcmalloc.pageheap_total_decommit_bytes", Name: "Pageheap decommit"},
+			{ID: "tcmalloc.tcmalloc.pageheap_total_reserve_bytes", Name: "Pageheap reserve"},
 		},
 	}
 )
