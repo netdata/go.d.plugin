@@ -130,7 +130,7 @@ var chartPageFaults = module.Chart{
 	ID:    "page_faults",
 	Title: "Page faults",
 	Units: "page faults/s",
-	Fam:   "page_faults",
+	Fam:   "memory",
 	Ctx:   "mongodb.page_faults",
 	Dims: module.Dims{
 		{ID: "extra_info.page_faults", Name: "Page Faults", Algo: module.Incremental},
