@@ -59,13 +59,13 @@ var (
 	chartOpLatencies = module.Chart{
 		ID:    "opLatencies",
 		Title: "Operations Latency",
-		Units: "msec",
+		Units: "milliseconds",
 		Fam:   "operations",
-		Ctx:   "mongodb.opLatencies",
+		Ctx:   "mongodb.operations_latency",
 		Dims: module.Dims{
-			{ID: "opLatencies.reads.latency", Name: "Reads", Algo: module.Incremental},
-			{ID: "opLatencies.writes.latency", Name: "Writes", Algo: module.Incremental},
-			{ID: "opLatencies.commands.latency", Name: "Commands", Algo: module.Incremental},
+			{ID: "opLatencies.reads.latency", Name: "Reads", Algo: module.Incremental, Div: 1000},
+			{ID: "opLatencies.writes.latency", Name: "Writes", Algo: module.Incremental, Div: 1000},
+			{ID: "opLatencies.commands.latency", Name: "Commands", Algo: module.Incremental, Div: 1000},
 		},
 	}
 )
