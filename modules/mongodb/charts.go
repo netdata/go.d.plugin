@@ -262,17 +262,17 @@ var chartMetricsCommands = module.Chart{
 
 var chartGlobalLocks = module.Chart{
 	ID:    "locks",
-	Title: "Locks",
+	Title: "Acquired locks",
 	Units: "locks/s",
 	Fam:   "locks",
 	Ctx:   "mongodb.locks",
 	Dims: module.Dims{
-		{ID: "locks.Global.acquireCount.r", Name: "Global Read Locks", Algo: module.Incremental},
-		{ID: "locks.Global.acquireCount.w", Name: "Global Write Locks", Algo: module.Incremental},
-		{ID: "locks.Database.acquireCount.r", Name: "Database Read Locks", Algo: module.Incremental},
-		{ID: "locks.Database.acquireCount.w", Name: "Database Write Locks", Algo: module.Incremental},
-		{ID: "locks.Collection.acquireCount.r", Name: "Collection Read Locks", Algo: module.Incremental},
-		{ID: "locks.Collection.acquireCount.w", Name: "Collection Write Locks", Algo: module.Incremental},
+		{ID: "locks.Global.acquireCount.r", Name: "global read", Algo: module.Incremental},
+		{ID: "locks.Global.acquireCount.w", Name: "global write", Algo: module.Incremental},
+		{ID: "locks.Database.acquireCount.r", Name: "database read", Algo: module.Incremental},
+		{ID: "locks.Database.acquireCount.w", Name: "database write", Algo: module.Incremental},
+		{ID: "locks.Collection.acquireCount.r", Name: "collection read", Algo: module.Incremental},
+		{ID: "locks.Collection.acquireCount.w", Name: "collection write", Algo: module.Incremental},
 	},
 }
 
