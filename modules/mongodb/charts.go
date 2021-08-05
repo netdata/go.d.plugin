@@ -205,12 +205,12 @@ var (
 	chartTcmallocGeneric = module.Chart{
 		ID:    "tcmallocGeneric",
 		Title: "Tcmalloc generic metrics",
-		Units: "MiB",
-		Fam:   "tcmalloc",
-		Ctx:   "mongodb.tcmallocGeneric",
+		Units: "bytes",
+		Fam:   "memory",
+		Ctx:   "mongodb.tcmalloc_generic",
 		Dims: module.Dims{
-			{ID: "tcmalloc.generic.current_allocated_bytes", Name: "current_allocated_bytes", Div: 1 << 20},
-			{ID: "tcmalloc.generic.heap_size", Name: "heap_size", Div: 1 << 20},
+			{ID: "tcmalloc.generic.current_allocated_bytes", Name: "current_allocated_bytes"},
+			{ID: "tcmalloc.generic.heap_size", Name: "heap_size"},
 		},
 	}
 	chartTcmalloc = module.Chart{
