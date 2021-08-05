@@ -279,9 +279,9 @@ var chartGlobalLocks = module.Chart{
 var chartFlowControl = module.Chart{
 	ID:    "flowControl",
 	Title: "Flow Control Stats",
-	Units: "msec",
+	Units: "milliseconds",
 	Fam:   "flowControl",
-	Ctx:   "mongodb.flowControl",
+	Ctx:   "mongodb.flow_control_timings",
 	Dims: module.Dims{
 		{ID: "flowControl.timeAcquiringMicros", Name: "timeAcquiring", Algo: module.Incremental, Div: 1000},
 		{ID: "flowControl.isLaggedTimeMicros", Name: "isLaggedTime", Algo: module.Incremental, Div: 1000},
