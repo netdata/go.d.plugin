@@ -231,10 +231,10 @@ var (
 
 var chartGlobalLockCurrentQueue = module.Chart{
 	ID:    "globalLockCurrentQueue",
-	Title: "Current Queue Clients",
-	Units: "clients",
+	Title: "Queued operations because of a lock",
+	Units: "operations",
 	Fam:   "clients",
-	Ctx:   "mongodb.currentQueue",
+	Ctx:   "mongodb.queued_operations",
 	Type:  module.Stacked,
 	Dims: module.Dims{
 		{ID: "globalLock.currentQueue.readers", Name: "readers"},
