@@ -93,11 +93,11 @@ var (
 		Title: "Network IO",
 		Units: "bytes/s",
 		Fam:   "network",
-		Ctx:   "mongodb.network",
+		Ctx:   "mongodb.network_io",
 		Type:  module.Area,
 		Dims: module.Dims{
-			{ID: "network.bytesIn", Name: "Bytes In", Algo: module.Incremental, Mul: -1},
-			{ID: "network.bytesOut", Name: "Bytes Out", Algo: module.Incremental},
+			{ID: "network.bytesIn", Name: "in", Algo: module.Incremental},
+			{ID: "network.bytesOut", Name: "out", Algo: module.Incremental, Mul: -1},
 		},
 	}
 	chartNetworkRequests = module.Chart{
