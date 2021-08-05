@@ -33,7 +33,6 @@ It produces the following charts:
 - Living Queues in an Online or an Offline State in `queue processes`
 - Queue Processes Setup and Teardown Events in `events/s`
 - Queue Processes Initialized from Offline Storage in `queue processes/s`
-- PUBLISH Messages that Currently in the Queues in `messages`
 - Received and Sent PUBLISH Messages in `messages/s`
 - Undelivered PUBLISH Messages in `messages`
 

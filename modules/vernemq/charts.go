@@ -19,7 +19,6 @@ var charts = Charts{
 	chartQueueProcesses.Copy(),
 	chartQueueProcessesEvents.Copy(),
 	chartQueueProcessesOfflineStorage.Copy(),
-	chartQueueMessagesInQueues.Copy(),
 	chartQueueMessages.Copy(),
 	chartQueueUndeliveredMessages.Copy(),
 
@@ -178,16 +177,6 @@ var (
 		Ctx:   "vernemq.queue_process_init_from_storage",
 		Dims: Dims{
 			{ID: metricQueueInitializedFromStorage, Name: "queue processes", Algo: module.Incremental},
-		},
-	}
-	chartQueueMessagesInQueues = Chart{
-		ID:    "queue_messages_in_queues",
-		Title: "PUBLISH Messages that Currently in the Queues",
-		Units: "messages",
-		Fam:   "queues",
-		Ctx:   "vernemq.queue_messages_in_queues",
-		Dims: Dims{
-			{ID: "queue_messages_current", Name: "messages"},
 		},
 	}
 	chartQueueMessages = Chart{
