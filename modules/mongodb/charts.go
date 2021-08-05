@@ -10,7 +10,9 @@ var serverStatusCharts = module.Charts{
 	// default charts
 	chartOpcounter.Copy(),
 	chartOpLatencies.Copy(),
-	chartConnections.Copy(),
+	chartConnectionsUsage.Copy(),
+	chartConnectionsRate.Copy(),
+	chartConnectionsByState.Copy(),
 	chartNetwork.Copy(),
 	chartNetworkRequests.Copy(),
 	chartMemory.Copy(),
@@ -49,22 +51,44 @@ var (
 	}
 )
 
-var chartConnections = module.Chart{
-	ID:    "connections",
-	Title: "Connections",
-	Units: "connections",
-	Fam:   "connections",
-	Ctx:   "mongodb.connections",
-	Dims: module.Dims{
-		{ID: "connections.current", Name: "current"},
-		{ID: "connections.active", Name: "active"},
-		{ID: "connections.threaded", Name: "threaded"},
-		{ID: "connections.exhaustIsMaster", Name: "exhaustIsMaster"},
-		{ID: "connections.exhaustHello", Name: "exhaustHello"},
-		{ID: "connections.awaitingTopologyChanges", Name: "awaiting topology changes"},
-		{ID: "connections.available", Name: "available"},
-	},
-}
+var (
+	chartConnectionsUsage = module.Chart{
+		ID:    "connections",
+		Title: "Connections",
+		Units: "connections",
+		Fam:   "connections",
+		Ctx:   "mongodb.connections",
+		Type:  module.Stacked,
+		Dims: module.Dims{
+			{ID: "connections.current", Name: "current"},
+			{ID: "connections.available", Name: "available"},
+		},
+	}
+	chartConnectionsRate = module.Chart{
+		ID:    "connections",
+		Title: "Connections",
+		Units: "connections",
+		Fam:   "connections",
+		Ctx:   "mongodb.connections",
+		Dims: module.Dims{
+			{ID: "connections.totalCreated", Name: "totalCreated", Algo: module.Incremental},
+		},
+	}
+	chartConnectionsByState = module.Chart{
+		ID:    "connections",
+		Title: "Connections",
+		Units: "connections",
+		Fam:   "connections",
+		Ctx:   "mongodb.connections",
+		Dims: module.Dims{
+			{ID: "connections.active", Name: "active"},
+			{ID: "connections.threaded", Name: "threaded"},
+			{ID: "connections.exhaustIsMaster", Name: "exhaustIsMaster"},
+			{ID: "connections.exhaustHello", Name: "exhaustHello"},
+			{ID: "connections.awaitingTopologyChanges", Name: "awaiting topology changes"},
+		},
+	}
+)
 
 var (
 	chartNetwork = module.Chart{
