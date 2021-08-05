@@ -174,7 +174,7 @@ var chartGlobalLockActiveClients = module.Chart{
 	Title: "Active Clients",
 	Units: "clients",
 	Fam:   "clients",
-	Ctx:   "mongodb.currentQueue",
+	Ctx:   "mongodb.active_clinents",
 	Dims: module.Dims{
 		{ID: "globalLock.activeClients.readers", Name: "readers"},
 		{ID: "globalLock.activeClients.writers", Name: "writers"},
