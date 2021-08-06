@@ -15,11 +15,14 @@ type connector interface {
 	close() error
 }
 
+// mongoCollector interface that helps abstracting and mocking the database layer.
 type mongoCollector struct {
 	Client  *mongo.Client
 	Timeout time.Duration
 }
 
+// serverStatus connects to the database and return the output of the
+// `serverStatus` command.
 func (m *mongoCollector) serverStatus() (*serverStatus, error) {
 	var status *serverStatus
 	command := bson.D{{Key: "serverStatus", Value: 1}, {Key: "metrics", Value: 0}, {Key: "repl", Value: 0}}
@@ -32,6 +35,7 @@ func (m *mongoCollector) serverStatus() (*serverStatus, error) {
 	return status, err
 }
 
+// initClient initialises the database client if is not initialised.
 func (m *mongoCollector) initClient(uri string, timeout time.Duration) error {
 	if m.Client != nil {
 		return nil
@@ -51,6 +55,7 @@ func (m *mongoCollector) initClient(uri string, timeout time.Duration) error {
 	return nil
 }
 
+// close the database client and all its background goroutines.
 func (m *mongoCollector) close() error {
 	if m.Client == nil {
 		return nil

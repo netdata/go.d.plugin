@@ -7,6 +7,12 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
+// serverStatusCollect creates the map[string]int64 for the available dims.
+// nil values will be ignored and not added to the map and thus metrics
+// should not appear on the dashboard.
+// Because mongo reports a metric only after it first appears, some dims might
+// take a while to appear. For example, in order to report number of create
+// commands, a document must be created first.
 func (m *Mongo) serverStatusCollect() map[string]int64 {
 	status, err := m.mongoCollector.serverStatus()
 	if err != nil {
@@ -16,6 +22,10 @@ func (m *Mongo) serverStatusCollect() map[string]int64 {
 
 	m.addOptionalCharts(status)
 
+	// values for the field below are expected to be present
+	// in wide range of mongo versions and builds
+	// please refer to https://docs.mongodb.com/manual/reference/command/serverStatus/
+	// for version specific availability and changes
 	var args = []interface{}{
 		status.Opcounters,
 		status.Connections,
@@ -24,12 +34,15 @@ func (m *Mongo) serverStatusCollect() map[string]int64 {
 		status.Asserts,
 	}
 
+	// Available on mongod in 3.6.3+
 	if status.Transactions != nil {
 		args = append(args, status.Transactions)
 	}
+	// New in mongo version 4.2
 	if status.FlowControl != nil {
 		args = append(args, status.FlowControl)
 	}
+	// Only for `mongod` instances
 	if status.OpLatencies != nil {
 		args = append(args, status.OpLatencies.Reads)
 		args = append(args, status.OpLatencies.Writes)
@@ -48,6 +61,8 @@ func (m *Mongo) serverStatusCollect() map[string]int64 {
 		args = append(args, status.Locks.Database)
 		args = append(args, status.Locks.Collection)
 	}
+	// available when WiredTiger is used as the storage engine
+	// https://docs.mongodb.com/manual/reference/command/serverStatus/#wiredtiger
 	if status.WiredTiger != nil {
 		args = append(args, status.WiredTiger.BlockManager)
 		args = append(args, status.WiredTiger.Cache)
@@ -63,6 +78,10 @@ func (m *Mongo) serverStatusCollect() map[string]int64 {
 	return ms
 }
 
+// addOptionalCharts tries to add charts based on the availability of
+// metrics coming back from the `serverStatus` command.
+// Nil pointer structs will be skipped and we won't produce metrics for
+// unavailable metrics.
 func (m *Mongo) addOptionalCharts(status *serverStatus) {
 	m.metricExists(status.Transactions, &chartTransactionsCurrent)
 	m.metricExists(status.FlowControl, &chartFlowControl)
@@ -94,6 +113,8 @@ func (m *Mongo) addOptionalCharts(status *serverStatus) {
 	}
 }
 
+// metricExists checks if the paces interface(iface) is not nil
+// and if so add the passed chart to the index.
 func (m *Mongo) metricExists(iface interface{}, chart *module.Chart) {
 	if reflect.ValueOf(iface).IsNil() {
 		return

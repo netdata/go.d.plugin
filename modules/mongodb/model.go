@@ -1,7 +1,7 @@
 package mongo
 
 type serverStatus struct {
-	//default charts
+	// available in many versions and builds of mongo
 	Opcounters  Opcounters   `bson:"opcounters,omitempty"`
 	OpLatencies *OpLatencies `bson:"opLatencies,omitempty"`
 	Connections Connections  `bson:"connections,omitempty"`
@@ -9,7 +9,9 @@ type serverStatus struct {
 	ExtraInfo   ExtraInfo    `bson:"extra_info,omitempty"`
 	Asserts     Asserts      `bson:"asserts,omitempty"`
 
-	// optional charts
+	// available in newer or specific builds of mongo
+	// for example, in he hosted version of mongoDB(atlas)
+	// these are not available
 	Transactions *Transactions         `bson:"transactions,omitempty"`
 	GlobalLock   *GlobalLock           `bson:"globalLock,omitempty"`
 	Tcmalloc     *ServerStatusTcmalloc `bson:"tcmalloc,omitempty"`
