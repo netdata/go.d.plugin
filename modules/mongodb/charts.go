@@ -120,7 +120,7 @@ var (
 		Fam:   "memory",
 		Ctx:   "mongodb.page_faults",
 		Dims: module.Dims{
-			{ID: "page_faults", Name: "page Faults", Algo: module.Incremental},
+			{ID: "extra_info_page_faults", Name: "page Faults", Algo: module.Incremental},
 		},
 	}
 
@@ -131,8 +131,8 @@ var (
 		Fam:   "memory",
 		Ctx:   "mongodb.tcmalloc_generic",
 		Dims: module.Dims{
-			{ID: "tcmalloc_current_allocated", Name: "current_allocated"},
-			{ID: "tcmalloc_heap_size", Name: "heap_size"},
+			{ID: "tcmalloc_generic_current_allocated", Name: "current_allocated"},
+			{ID: "tcmalloc_generic_heap_size", Name: "heap_size"},
 		},
 	}
 
@@ -143,14 +143,14 @@ var (
 		Fam:   "memory",
 		Ctx:   "mongodb.tcmalloc",
 		Dims: module.Dims{
-			{ID: "tcmalloc_pageheap_free", Name: "pageheap free"},
-			{ID: "tcmalloc_pageheap_unmapped", Name: "pageheap unmapped "},
-			{ID: "tcmalloc_max_total_thread_cache", Name: "total threaded cache"},
-			{ID: "tcmalloc_total_free", Name: "free"},
-			{ID: "tcmalloc_pageheap_committed", Name: "pageheap committed"},
-			{ID: "tcmalloc_pageheap_total_commit", Name: "pageheap total commit"},
-			{ID: "tcmalloc_pageheap_total_decommit", Name: "pageheap decommit"},
-			{ID: "tcmalloc_pageheap_total_reserve", Name: "pageheap reserve"},
+			{ID: "tcmalloc_tcmalloc_pageheap_free", Name: "pageheap free"},
+			{ID: "tcmalloc_tcmalloc_pageheap_unmapped", Name: "pageheap unmapped "},
+			{ID: "tcmalloc_tcmalloc_max_total_thread_cache", Name: "total threaded cache"},
+			{ID: "tcmalloc_tcmalloc_total_free", Name: "free"},
+			{ID: "tcmalloc_tcmalloc_pageheap_committed", Name: "pageheap committed"},
+			{ID: "tcmalloc_tcmalloc_pageheap_total_commit", Name: "pageheap total commit"},
+			{ID: "tcmalloc_tcmalloc_pageheap_total_decommit", Name: "pageheap decommit"},
+			{ID: "tcmalloc_tcmalloc_pageheap_total_reserve", Name: "pageheap reserve"},
 		},
 	}
 )
@@ -194,8 +194,8 @@ var (
 		Fam:   "clients",
 		Ctx:   "mongodb.active_clients",
 		Dims: module.Dims{
-			{ID: "active_clients_readers", Name: "readers"},
-			{ID: "active_clients_writers", Name: "writers"},
+			{ID: "glock_active_clients_readers", Name: "readers"},
+			{ID: "glock_active_clients_writers", Name: "writers"},
 		},
 	}
 	chartGlobalLockCurrentQueue = module.Chart{
@@ -206,8 +206,8 @@ var (
 		Ctx:   "mongodb.queued_operations",
 		Type:  module.Stacked,
 		Dims: module.Dims{
-			{ID: "current_queue_readers", Name: "readers"},
-			{ID: "current_queue_writers", Name: "writers"},
+			{ID: "glock_current_queue_readers", Name: "readers"},
+			{ID: "glock_current_queue_writers", Name: "writers"},
 		},
 	}
 )
@@ -235,13 +235,12 @@ var chartFlowControl = module.Chart{
 	Fam:   "flow_control",
 	Ctx:   "mongodb.flow_control_timings",
 	Dims: module.Dims{
-		{ID: "target_rate_limit", Name: "acquiring", Algo: module.Incremental, Div: 1000},
-		{ID: "time_acquiring_micros", Name: "lagged", Algo: module.Incremental, Div: 1000},
+		{ID: "flow_target_rate_limit", Name: "acquiring", Algo: module.Incremental, Div: 1000},
+		{ID: "flow_time_acquiring_micros", Name: "lagged", Algo: module.Incremental, Div: 1000},
 	},
 }
 
 var (
-	// WiredTiger (optional)
 	chartWiredTigerBlockManager = module.Chart{
 		ID:    "wiredtiger_blocks",
 		Title: "Wired Tiger Block Manager",
@@ -280,11 +279,11 @@ var (
 		Ctx:   "mongodb.wiredtiger_capacity",
 
 		Dims: module.Dims{
-			{ID: "wiredtiger_cache_wait_capacity", Name: "due to total capacity"},
-			{ID: "wiredtiger_cache_wait_checkpoint", Name: "during checkpoint"},
-			{ID: "wiredtiger_cache_wait_eviction", Name: "during eviction"},
-			{ID: "wiredtiger_cache_wait_logging", Name: "during logging"},
-			{ID: "wiredtiger_cache_wait_read", Name: "during read"},
+			{ID: "wiredtiger_capacity_wait_capacity", Name: "due to total capacity"},
+			{ID: "wiredtiger_capacity_wait_checkpoint", Name: "during checkpoint"},
+			{ID: "wiredtiger_capacity_wait_eviction", Name: "during eviction"},
+			{ID: "wiredtiger_capacity_wait_logging", Name: "during logging"},
+			{ID: "wiredtiger_capacity_wait_read", Name: "during read"},
 		},
 	}
 

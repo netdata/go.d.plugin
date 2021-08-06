@@ -21,60 +21,7 @@ func (m *Mongo) serverStatusCollect() map[string]int64 {
 	}
 
 	m.addOptionalCharts(status)
-
-	// values for the field below are expected to be present
-	// in wide range of mongo versions and builds
-	// please refer to https://docs.mongodb.com/manual/reference/command/serverStatus/
-	// for version specific availability and changes
-	var args = []interface{}{
-		status.Opcounters,
-		status.Connections,
-		status.Network,
-		status.ExtraInfo,
-		status.Asserts,
-	}
-
-	// Available on mongod in 3.6.3+
-	if status.Transactions != nil {
-		args = append(args, status.Transactions)
-	}
-	// New in mongo version 4.2
-	if status.FlowControl != nil {
-		args = append(args, status.FlowControl)
-	}
-	// Only for `mongod` instances
-	if status.OpLatencies != nil {
-		args = append(args, status.OpLatencies.Reads)
-		args = append(args, status.OpLatencies.Writes)
-		args = append(args, status.OpLatencies.Commands)
-	}
-	if status.GlobalLock != nil {
-		args = append(args, status.GlobalLock.ActiveClients)
-		args = append(args, status.GlobalLock.CurrentQueue)
-	}
-	if status.Tcmalloc != nil {
-		args = append(args, status.Tcmalloc.Generic)
-		args = append(args, status.Tcmalloc.Tcmalloc)
-	}
-	if status.Locks != nil {
-		args = append(args, status.Locks.Global)
-		args = append(args, status.Locks.Database)
-		args = append(args, status.Locks.Collection)
-	}
-	// available when WiredTiger is used as the storage engine
-	// https://docs.mongodb.com/manual/reference/command/serverStatus/#wiredtiger
-	if status.WiredTiger != nil {
-		args = append(args, status.WiredTiger.BlockManager)
-		args = append(args, status.WiredTiger.Cache)
-		args = append(args, status.WiredTiger.Capacity)
-		args = append(args, status.WiredTiger.Connection)
-		args = append(args, status.WiredTiger.Cursor)
-		args = append(args, status.WiredTiger.Lock)
-		args = append(args, status.WiredTiger.Log)
-		args = append(args, status.WiredTiger.Transaction)
-	}
-
-	ms := stm.ToMap(args...)
+	ms := stm.ToMap(status)
 	return ms
 }
 
