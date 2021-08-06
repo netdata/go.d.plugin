@@ -12,7 +12,6 @@ var serverStatusCharts = module.Charts{
 	chartConnectionsByState.Copy(),
 	chartNetwork.Copy(),
 	chartNetworkRequests.Copy(),
-	chartMemory.Copy(),
 	chartPageFaults.Copy(),
 	chartAsserts.Copy(),
 }
@@ -112,20 +111,6 @@ var (
 )
 
 var (
-	chartMemory = module.Chart{
-		ID:    "memory",
-		Title: "Memory usage",
-		Units: "bytes",
-		Fam:   "memory",
-		Ctx:   "mongodb.memory_usage",
-		Dims: module.Dims{
-			{ID: "memory_resident", Name: "resident"},
-			{ID: "memory_virtual", Name: "virtual"},
-			{ID: "memory_mapped", Name: "mapped"},
-			{ID: "memory_mapped_with_journal", Name: "mapped with journal"},
-		},
-	}
-
 	chartPageFaults = module.Chart{
 		ID:    "page_faults",
 		Title: "Page faults",
