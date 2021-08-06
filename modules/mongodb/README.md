@@ -23,29 +23,36 @@ It collects information and statistics about the server executing the following 
 
 ## Charts
 
-### Default chart
+### Default charts
 
 Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas) database servers
 
-#### Commands rate
+#### Operations by type
 
-- insert in `commands/s`
-- query in `commands/s`
-- update in `commands/s`
-- delete in `commands/s`
-- getmore in `commands/s`
-- command in `commands/s`
+- insert in `ops/s`
+- query in `ops/s`
+- update in `ops/s`
+- delete in `ops/s`
+- getmore in `ops/s`
+- command in `ops/s`
 
 #### Operations Latency
 
-- Ops reads in `msec`
-- Ops writes in `msec`
-- disc in `msec`
+- ops reads in `milliseconds`
+- ops writes in `milliseconds`
+- commands in `milliseconds`
 
 #### Connections
 
 - available in `connections`
 - current in `connections`
+
+#### Connections Rate
+
+- created in `connections/s`
+
+#### Connections By State
+
 - active in `connections`
 - threaded in `connections`
 - exhaustIsMaster in `connections`
@@ -54,8 +61,8 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 
 #### Network IO
 
-- Bytes In in `bytes/s`
-- Bytes Out in `bytes/s`
+- bytes in in `bytes/s`
+- bytes out in `bytes/s`
 
 #### Network Requests
 
@@ -72,7 +79,7 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 
 - Page Faults in `page faults/s`
 
-#### Asserts
+#### Raised assertions
 
 - regular in `asserts/s`
 - warning in `asserts/s`
@@ -102,38 +109,7 @@ command to monitor the database. Based on the command output the following may b
 if serverStatus
 reports [global locks active clients](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#globallock)
 
-#### Collections
-
-- collections
-- capped
-- timeseries
-- views
-- internalCollections
-- internalViews
-
-if serverStatus reports catalog stats
-
-#### Tcmalloc generic metrics
-
-- current_allocated_bytes in `MiB`
-- heap_size in `MiB`
-
-if serverStatus reports tcmalloc stats
-
-#### Tcmalloc metrics
-
-- Pageheap free in `KiB`
-- Pageheap unmapped in `KiB`
-- Total threaded cache in `KiB`
-- Free in `KiB`
-- Pageheap committed in `KiB`
-- Pageheap total commit in `KiB`
-- Pageheap decommit in `KiB`
-- Pageheap reserve in `KiB`
-
-if serverStatus reports tcmalloc stats
-
-#### Current Queue Clients
+#### Queued operations because of a lock
 
 - readers in `clients`
 - writers in `clients`
@@ -141,33 +117,40 @@ if serverStatus reports tcmalloc stats
 if serverStatus
 reports [global locks current queue clients](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#globallock)
 
-#### Command Metrics
+#### Tcmalloc generic metrics
 
-- Eval in `commands`
-- Eval Failed in `commands`
-- Delete in `commands`
-- Delete Failed in `commands`
-- Count Failed in `commands`
-- Create Indexes in `commands`
-- Find And Modify in `commands`
-- Insert Fail in `commands`
+- current_allocated_bytes in `bytes`
+- heap_size in `bytes`
 
-if serverStatus
-reports [metrics](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.metrics)
+if serverStatus reports tcmalloc stats
 
-#### Global Locks
+#### Tcmalloc metrics
 
-- Global Read Locks in `locks/s`
-- Global Write Locks in `locks/s`
-- Database Read Locks in `locks/s`
-- Database Write Locks in `locks/s`
-- Collection Read Locks in `locks/s`
-- Collection Write Locks in `locks/s`
+- pageheap free in `bytes`
+- pageheap unmapped in `bytes`
+- total threaded cache in `bytes`
+- free in `bytes`
+- pageheap committed in `bytes`
+- pageheap total commit in `bytes`
+- pageheap decommit in `bytes`
+- pageheap reserve in `bytes`
+
+if serverStatus reports tcmalloc stats
+
+
+#### Acquired locks
+
+- global read locks in `locks/s`
+- global write locks in `locks/s`
+- database read locks in `locks/s`
+- database write locks in `locks/s`
+- collection read locks in `locks/s`
+- collection write locks in `locks/s`
 
 #### Flow Control Stats
 
-- timeAcquiringMicros in `milliseconds`
-- isLaggedTimeMicros in `milliseconds`
+- acquiring time in `milliseconds`
+- lagged time in `milliseconds`
 
 if serverStatus reports [flow control](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#flowcontrol)
 
@@ -178,28 +161,28 @@ is used as the storage engine.
 
 #### [Wired Tiger Block Manager](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.block-manager)
 
-- bytes read in `KiB`
-- bytes read via memory map API in `KiB`
-- bytes read via system call API in `KiB`
-- bytes written in `KiB`
-- bytes written for checkpoint in `KiB`
-- bytes written via memory map API in `KiB`
+- bytes read in `bytes`
+- bytes read via memory map API in `bytes`
+- bytes read via system call API in `bytes`
+- bytes written in `bytes`
+- bytes written for checkpoint in `bytes`
+- bytes written via memory map API in `bytes`
 
 #### [Wired Tiger Cache](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.cache)
 
-- bytes allocated for updates in `KiB`
-- bytes read into cache in `KiB`
-- bytes written from cache in `KiB`
+- bytes allocated for updates in `bytes`
+- bytes read into cache in `bytes`
+- bytes written from cache in `bytes`
 
 #### Wired Tiger Capacity
+    
+- time waiting due to total capacity in `usec`
+- time waiting during checkpoint in `usec`
+- time waiting during eviction in `usec`
+- time waiting during logging in `usec`
+- time waiting during read in `usec`
 
-- time waiting due to total capacity (usecs) in `usec`
-- time waiting during checkpoint (usecs) in `usec`
-- time waiting during eviction (usecs) in `usec`
-- time waiting during logging (usecs) in `usec`
-- time waiting during read (usecs) in `usec`
-
-#### [Wired Tiger Connections](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.connection)
+#### [Wired Tiger Connection](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.connection)
 
 - memory allocations in `ops/s`
 - memory frees in `ops/s`
@@ -249,22 +232,22 @@ is used as the storage engine.
 
 #### Wired Tiger Lock Duration
 
-- checkpoint lock application thread wait time (usecs) in `usec`
-- checkpoint lock internal thread wait time (usecs) in `usec`
-- dhandle lock application thread time waiting (usecs) in `usec`
-- dhandle lock internal thread time waiting (usecs) in `usec`
-- durable timestamp queue lock application thread time waiting (usecs) in `usec`
-- durable timestamp queue lock internal thread time waiting (usecs) in `usec`
-- metadata lock application thread wait time (usecs) in `usec`
-- metadata lock internal thread wait time (usecs) in `usec`
-- read timestamp queue lock application thread time waiting (usecs) in `usec`
-- read timestamp queue lock internal thread time waiting (usecs) in `usec`
-- schema lock application thread wait time (usecs) in `usec`
-- schema lock internal thread wait time (usecs) in `usec`
-- table lock application thread time waiting for the table lock (usecs) in `usec`
-- table lock internal thread time waiting for the table lock (usecs) in `usec`
-- txn global lock application thread time waiting (usecs) in `usec`
-- txn global lock internal thread time waiting (usecs) in `usec`
+- checkpoint lock application thread wait time in `usec`
+- checkpoint lock internal thread wait time in `usec`
+- dhandle lock application thread time waiting in `usec`
+- dhandle lock internal thread time waiting in `usec`
+- durable timestamp queue lock application thread time waiting in `usec`
+- durable timestamp queue lock internal thread time waiting in `usec`
+- metadata lock application thread wait time in `usec`
+- metadata lock internal thread wait time in `usec`
+- read timestamp queue lock application thread time waiting in `usec`
+- read timestamp queue lock internal thread time waiting in `usec`
+- schema lock application thread wait time in `usec`
+- schema lock internal thread wait time in `usec`
+- table lock application thread time waiting for the table lock in `usec`
+- table lock internal thread time waiting for the table lock in `usec`
+- txn global lock application thread time waiting in `usec`
+- txn global lock internal thread time waiting in `usec`
 
 #### [Wired Tiger Log Operations](https://docs.mongodb.com/v5.0/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.wiredTiger.log)
 
@@ -365,4 +348,3 @@ You can now run the `go.d.plugin` to debug the collector:
 ```bash
 ./go.d.plugin -d -m mongodb
 ```
-

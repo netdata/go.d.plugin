@@ -1,13 +1,10 @@
 package mongo
 
 import (
-	"strings"
-
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 var serverStatusCharts = module.Charts{
-	// default charts
 	chartOpcounter.Copy(),
 	chartOpLatencies.Copy(),
 	chartConnectionsUsage.Copy(),
@@ -20,33 +17,32 @@ var serverStatusCharts = module.Charts{
 	chartAsserts.Copy(),
 }
 
-// default charts
 var (
 	chartOpcounter = module.Chart{
-		ID:    "opcounters",
+		ID:    "operations",
 		Title: "Operations by type",
 		Units: "ops/s",
 		Fam:   "operations",
 		Ctx:   "mongodb.operations",
 		Dims: module.Dims{
-			{ID: "opcounters.insert", Name: "insert", Algo: module.Incremental},
-			{ID: "opcounters.query", Name: "query", Algo: module.Incremental},
-			{ID: "opcounters.update", Name: "update", Algo: module.Incremental},
-			{ID: "opcounters.delete", Name: "delete", Algo: module.Incremental},
-			{ID: "opcounters.getmore", Name: "getmore", Algo: module.Incremental},
-			{ID: "opcounters.command", Name: "command", Algo: module.Incremental},
+			{ID: "operations_insert", Name: "insert", Algo: module.Incremental},
+			{ID: "operations_query", Name: "query", Algo: module.Incremental},
+			{ID: "operations_update", Name: "update", Algo: module.Incremental},
+			{ID: "operations_delete", Name: "delete", Algo: module.Incremental},
+			{ID: "operations_getmore", Name: "getmore", Algo: module.Incremental},
+			{ID: "operations_command", Name: "command", Algo: module.Incremental},
 		},
 	}
 	chartOpLatencies = module.Chart{
-		ID:    "opLatencies",
+		ID:    "operations_latency",
 		Title: "Operations Latency",
 		Units: "milliseconds",
 		Fam:   "operations",
 		Ctx:   "mongodb.operations_latency",
 		Dims: module.Dims{
-			{ID: "opLatencies.reads.latency", Name: "Reads", Algo: module.Incremental, Div: 1000},
-			{ID: "opLatencies.writes.latency", Name: "Writes", Algo: module.Incremental, Div: 1000},
-			{ID: "opLatencies.commands.latency", Name: "Commands", Algo: module.Incremental, Div: 1000},
+			{ID: "operations_latency_read", Name: "reads", Algo: module.Incremental, Div: 1000},
+			{ID: "operations_latency_write", Name: "writes", Algo: module.Incremental, Div: 1000},
+			{ID: "operations_latency_command", Name: "commands", Algo: module.Incremental, Div: 1000},
 		},
 	}
 )
@@ -60,32 +56,32 @@ var (
 		Ctx:   "mongodb.connections",
 		Type:  module.Stacked,
 		Dims: module.Dims{
-			{ID: "connections.current", Name: "current"},
-			{ID: "connections.available", Name: "available"},
+			{ID: "connections_current", Name: "current"},
+			{ID: "connections_available", Name: "available"},
 		},
 	}
 	chartConnectionsRate = module.Chart{
-		ID:    "connections",
-		Title: "Connections",
-		Units: "connections",
+		ID:    "connections_rate",
+		Title: "Connections Rate",
+		Units: "connections/s",
 		Fam:   "connections",
-		Ctx:   "mongodb.connections",
+		Ctx:   "mongb.connections_rate",
 		Dims: module.Dims{
-			{ID: "connections.totalCreated", Name: "totalCreated", Algo: module.Incremental},
+			{ID: "connections_total_created", Name: "created", Algo: module.Incremental},
 		},
 	}
 	chartConnectionsByState = module.Chart{
-		ID:    "connections",
-		Title: "Connections",
+		ID:    "connections_state",
+		Title: "Connections By State",
 		Units: "connections",
 		Fam:   "connections",
-		Ctx:   "mongodb.connections",
+		Ctx:   "mongodb.connections_state",
 		Dims: module.Dims{
-			{ID: "connections.active", Name: "active"},
-			{ID: "connections.threaded", Name: "threaded"},
-			{ID: "connections.exhaustIsMaster", Name: "exhaustIsMaster"},
-			{ID: "connections.exhaustHello", Name: "exhaustHello"},
-			{ID: "connections.awaitingTopologyChanges", Name: "awaiting topology changes"},
+			{ID: "connections_active", Name: "active"},
+			{ID: "connections_threaded", Name: "threaded"},
+			{ID: "connections_exhaustIsMaster", Name: "exhaustIsMaster"},
+			{ID: "connections_exhaustHello", Name: "exhaustHello"},
+			{ID: "connections_awaitingTopologyChanges", Name: "awaiting topology changes"},
 		},
 	}
 )
@@ -99,46 +95,78 @@ var (
 		Ctx:   "mongodb.network_io",
 		Type:  module.Area,
 		Dims: module.Dims{
-			{ID: "network.bytesIn", Name: "in", Algo: module.Incremental},
-			{ID: "network.bytesOut", Name: "out", Algo: module.Incremental, Mul: -1},
+			{ID: "network_bytes_in", Name: "in", Algo: module.Incremental, Mul: -1},
+			{ID: "network_bytes_out", Name: "out", Algo: module.Incremental},
 		},
 	}
 	chartNetworkRequests = module.Chart{
-		ID:    "networkRequests",
+		ID:    "network_requests",
 		Title: "Network Requests",
 		Units: "requests/s",
 		Fam:   "network",
 		Ctx:   "mongodb.network_requests",
 		Dims: module.Dims{
-			{ID: "network.numRequests", Name: "Requests", Algo: module.Incremental},
+			{ID: "network_requests", Name: "requests", Algo: module.Incremental},
 		},
 	}
 )
 
-var chartMemory = module.Chart{
-	ID:    "mem",
-	Title: "Memory usage",
-	Units: "MiB",
-	Fam:   "memory",
-	Ctx:   "mongodb.memory_usage",
-	Dims: module.Dims{
-		{ID: "mem.resident", Name: "resident"},
-		{ID: "mem.virtual", Name: "virtual"},
-		{ID: "mem.mapped", Name: "mapped"},
-		{ID: "mem.mappedWithJournal", Name: "mapped with journal"},
-	},
-}
+var (
+	chartMemory = module.Chart{
+		ID:    "memory",
+		Title: "Memory usage",
+		Units: "bytes",
+		Fam:   "memory",
+		Ctx:   "mongodb.memory_usage",
+		Dims: module.Dims{
+			{ID: "memory_resident", Name: "resident"},
+			{ID: "memory_virtual", Name: "virtual"},
+			{ID: "memory_mapped", Name: "mapped"},
+			{ID: "memory_mapped_with_journal", Name: "mapped with journal"},
+		},
+	}
 
-var chartPageFaults = module.Chart{
-	ID:    "page_faults",
-	Title: "Page faults",
-	Units: "page faults/s",
-	Fam:   "memory",
-	Ctx:   "mongodb.page_faults",
-	Dims: module.Dims{
-		{ID: "extra_info.page_faults", Name: "Page Faults", Algo: module.Incremental},
-	},
-}
+	chartPageFaults = module.Chart{
+		ID:    "page_faults",
+		Title: "Page faults",
+		Units: "page faults/s",
+		Fam:   "memory",
+		Ctx:   "mongodb.page_faults",
+		Dims: module.Dims{
+			{ID: "page_faults", Name: "page Faults", Algo: module.Incremental},
+		},
+	}
+
+	chartTcmallocGeneric = module.Chart{
+		ID:    "tcmalloc_generic",
+		Title: "Tcmalloc generic metrics",
+		Units: "bytes",
+		Fam:   "memory",
+		Ctx:   "mongodb.tcmalloc_generic",
+		Dims: module.Dims{
+			{ID: "tcmalloc_current_allocated", Name: "current_allocated"},
+			{ID: "tcmalloc_heap_size", Name: "heap_size"},
+		},
+	}
+
+	chartTcmalloc = module.Chart{
+		ID:    "tcmalloc",
+		Title: "Tcmalloc",
+		Units: "bytes",
+		Fam:   "memory",
+		Ctx:   "mongodb.tcmalloc",
+		Dims: module.Dims{
+			{ID: "tcmalloc_pageheap_free", Name: "pageheap free"},
+			{ID: "tcmalloc_pageheap_unmapped", Name: "pageheap unmapped "},
+			{ID: "tcmalloc_max_total_thread_cache", Name: "total threaded cache"},
+			{ID: "tcmalloc_total_free", Name: "free"},
+			{ID: "tcmalloc_pageheap_committed", Name: "pageheap committed"},
+			{ID: "tcmalloc_pageheap_total_commit", Name: "pageheap total commit"},
+			{ID: "tcmalloc_pageheap_total_decommit", Name: "pageheap decommit"},
+			{ID: "tcmalloc_pageheap_total_reserve", Name: "pageheap reserve"},
+		},
+	}
+)
 
 var chartAsserts = module.Chart{
 	ID:    "asserts",
@@ -148,346 +176,273 @@ var chartAsserts = module.Chart{
 	Ctx:   "mongodb.asserts",
 	Type:  module.Stacked,
 	Dims: module.Dims{
-		{ID: "asserts.regular", Name: "regular", Algo: module.Incremental},
-		{ID: "asserts.warning", Name: "warning", Algo: module.Incremental},
-		{ID: "asserts.msg", Name: "msg", Algo: module.Incremental},
-		{ID: "asserts.user", Name: "user", Algo: module.Incremental},
-		{ID: "asserts.tripwire", Name: "tripwire", Algo: module.Incremental},
-		{ID: "asserts.rollovers", Name: "rollovers", Algo: module.Incremental},
+		{ID: "asserts_regular", Name: "regular", Algo: module.Incremental},
+		{ID: "asserts_warning", Name: "warning", Algo: module.Incremental},
+		{ID: "asserts_msg", Name: "msg", Algo: module.Incremental},
+		{ID: "asserts_user", Name: "user", Algo: module.Incremental},
+		{ID: "asserts_tripwire", Name: "tripwire", Algo: module.Incremental},
+		{ID: "asserts_rollovers", Name: "rollovers", Algo: module.Incremental},
 	},
 }
 
-// option charts
 var chartTransactionsCurrent = module.Chart{
-	ID:    "transactionsCurrent",
+	ID:    "current_transactions",
 	Title: "Current Transactions",
 	Units: "transactions",
-	Fam:   "transactionsCurrent",
+	Fam:   "transactions",
 	Ctx:   "mongodb.current_transactions",
 	Dims: module.Dims{
-		{ID: "transactions.currentActive", Name: "active"},
-		{ID: "transactions.currentInactive", Name: "inactive"},
-		{ID: "transactions.currentOpen", Name: "open"},
-		{ID: "transactions.currentPrepared", Name: "prepared"},
-	},
-}
-
-var chartGlobalLockActiveClients = module.Chart{
-	ID:    "globalLockActiveClients",
-	Title: "Active Clients",
-	Units: "clients",
-	Fam:   "clients",
-	Ctx:   "mongodb.active_clinents",
-	Dims: module.Dims{
-		{ID: "globalLock.activeClients.readers", Name: "readers"},
-		{ID: "globalLock.activeClients.writers", Name: "writers"},
-	},
-}
-
-var chartCollections = module.Chart{
-	ID:    "catalogStats",
-	Title: "Catalog Stats",
-	Units: "objects",
-	Fam:   "catalogStats",
-	Ctx:   "mongodb.catalogStats",
-	Type:  module.Stacked,
-	Dims: module.Dims{
-		{ID: "catalogStats.collections", Name: "collections"},
-		{ID: "catalogStats.capped", Name: "capped"},
-		{ID: "catalogStats.timeseries", Name: "timeseries"},
-		{ID: "catalogStats.views", Name: "views"},
-		{ID: "catalogStats.internalCollections", Name: "internalCollections"},
-		{ID: "catalogStats.internalViews", Name: "internalViews"},
+		{ID: "transactions_active", Name: "active"},
+		{ID: "transactions_inactive", Name: "inactive"},
+		{ID: "transactions_open", Name: "open"},
+		{ID: "transactions_prepared", Name: "prepared"},
 	},
 }
 
 var (
-	chartTcmallocGeneric = module.Chart{
-		ID:    "tcmallocGeneric",
-		Title: "Tcmalloc generic metrics",
-		Units: "bytes",
-		Fam:   "memory",
-		Ctx:   "mongodb.tcmalloc_generic",
+	chartGlobalLockActiveClients = module.Chart{
+		ID:    "active_clients",
+		Title: "Active Clients",
+		Units: "clients",
+		Fam:   "clients",
+		Ctx:   "mongodb.active_clients",
 		Dims: module.Dims{
-			{ID: "tcmalloc.generic.current_allocated_bytes", Name: "current_allocated_bytes"},
-			{ID: "tcmalloc.generic.heap_size", Name: "heap_size"},
+			{ID: "active_clients_readers", Name: "readers"},
+			{ID: "active_clients_writers", Name: "writers"},
 		},
 	}
-	chartTcmalloc = module.Chart{
-		ID:    "tcmalloc",
-		Title: "Tcmalloc",
-		Units: "bytes",
-		Fam:   "memory",
-		Ctx:   "mongodb.tcmalloc",
+	chartGlobalLockCurrentQueue = module.Chart{
+		ID:    "queued_operations",
+		Title: "Queued operations because of a lock",
+		Units: "operations",
+		Fam:   "clients",
+		Ctx:   "mongodb.queued_operations",
+		Type:  module.Stacked,
 		Dims: module.Dims{
-			{ID: "tcmalloc.tcmalloc.pageheap_free_bytes", Name: "Pageheap free"},
-			{ID: "tcmalloc.tcmalloc.pageheap_unmapped_bytes", Name: "Pageheap unmapped "},
-			{ID: "tcmalloc.tcmalloc.current_total_thread_cache_bytes", Name: "Total threaded cache"},
-			{ID: "tcmalloc.tcmalloc.total_free_bytes", Name: "Free"},
-			{ID: "tcmalloc.tcmalloc.pageheap_committed_bytes", Name: "Pageheap committed"},
-			{ID: "tcmalloc.tcmalloc.pageheap_total_commit_bytes", Name: "Pageheap total commit"},
-			{ID: "tcmalloc.tcmalloc.pageheap_total_decommit_bytes", Name: "Pageheap decommit"},
-			{ID: "tcmalloc.tcmalloc.pageheap_total_reserve_bytes", Name: "Pageheap reserve"},
+			{ID: "current_queue_readers", Name: "readers"},
+			{ID: "current_queue_writers", Name: "writers"},
 		},
 	}
 )
 
-var chartGlobalLockCurrentQueue = module.Chart{
-	ID:    "globalLockCurrentQueue",
-	Title: "Queued operations because of a lock",
-	Units: "operations",
-	Fam:   "clients",
-	Ctx:   "mongodb.queued_operations",
-	Type:  module.Stacked,
-	Dims: module.Dims{
-		{ID: "globalLock.currentQueue.readers", Name: "readers"},
-		{ID: "globalLock.currentQueue.writers", Name: "writers"},
-	},
-}
-
-var chartMetricsCommands = module.Chart{
-	ID:    "metricsCommand",
-	Title: "Command Metrics",
-	Units: "commands/s",
-	Fam:   "commands",
-	Ctx:   "mongodb.metricsCommand",
-	Dims: module.Dims{
-		{ID: "metrics.commands.eval.total", Name: "Eval", Algo: module.Incremental},
-		{ID: "metrics.commands.eval.failed", Name: "Eval Failed", Algo: module.Incremental},
-		{ID: "metrics.commands.delete.total", Name: "Delete", Algo: module.Incremental},
-		{ID: "metrics.commands.delete.failed", Name: "Delete Failed", Algo: module.Incremental},
-		{ID: "metrics.commands.count.failed", Name: "Count Failed", Algo: module.Incremental},
-		{ID: "metrics.commands.createIndexes", Name: "Create Indexes", Algo: module.Incremental},
-		{ID: "metrics.commands.findAndModify", Name: "Find And Modify", Algo: module.Incremental},
-		{ID: "metrics.commands.insert.failed", Name: "Insert Fail", Algo: module.Incremental},
-	},
-}
-
-var chartGlobalLocks = module.Chart{
+var chartLocks = module.Chart{
 	ID:    "locks",
 	Title: "Acquired locks",
 	Units: "locks/s",
 	Fam:   "locks",
 	Ctx:   "mongodb.locks",
 	Dims: module.Dims{
-		{ID: "locks.Global.acquireCount.r", Name: "global read", Algo: module.Incremental},
-		{ID: "locks.Global.acquireCount.w", Name: "global write", Algo: module.Incremental},
-		{ID: "locks.Database.acquireCount.r", Name: "database read", Algo: module.Incremental},
-		{ID: "locks.Database.acquireCount.w", Name: "database write", Algo: module.Incremental},
-		{ID: "locks.Collection.acquireCount.r", Name: "collection read", Algo: module.Incremental},
-		{ID: "locks.Collection.acquireCount.w", Name: "collection write", Algo: module.Incremental},
+		{ID: "locks_global_read", Name: "global read", Algo: module.Incremental},
+		{ID: "locks_global_write", Name: "global write", Algo: module.Incremental},
+		{ID: "locks_database_read", Name: "database read", Algo: module.Incremental},
+		{ID: "locks_database_write", Name: "database write", Algo: module.Incremental},
+		{ID: "locks_collection_read", Name: "collection read", Algo: module.Incremental},
+		{ID: "locks_collection_write", Name: "collection write", Algo: module.Incremental},
 	},
 }
 
 var chartFlowControl = module.Chart{
-	ID:    "flowControl",
+	ID:    "flow_control_timings",
 	Title: "Flow Control Stats",
 	Units: "milliseconds",
-	Fam:   "flowControl",
+	Fam:   "flow_control",
 	Ctx:   "mongodb.flow_control_timings",
 	Dims: module.Dims{
-		{ID: "flowControl.timeAcquiringMicros", Name: "timeAcquiring", Algo: module.Incremental, Div: 1000},
-		{ID: "flowControl.isLaggedTimeMicros", Name: "isLaggedTime", Algo: module.Incremental, Div: 1000},
+		{ID: "target_rate_limit", Name: "acquiring", Algo: module.Incremental, Div: 1000},
+		{ID: "time_acquiring_micros", Name: "lagged", Algo: module.Incremental, Div: 1000},
 	},
 }
 
 var (
 	// WiredTiger (optional)
 	chartWiredTigerBlockManager = module.Chart{
-		ID:    "wiredtigerBlockManager",
+		ID:    "wiredtiger_blocks",
 		Title: "Wired Tiger Block Manager",
-		Units: "KiB",
+		Units: "bytes",
 		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredTigerBlocks",
+		Ctx:   "mongodb.wiredtiger_blocks",
 		Type:  module.Stacked,
 		Dims: module.Dims{
-			{ID: toID("wiredTiger.block-manager.bytes read"), Name: "bytes read", Div: 1024},
-			{ID: toID("wiredTiger.block-manager.bytes read via memory map API"), Name: "bytes read via memory map API", Div: 1024},
-			{ID: toID("wiredTiger.block-manager.bytes read via system call API"), Name: "bytes read via system call API", Div: 1024},
-			{ID: toID("wiredTiger.block-manager.bytes written"), Name: "bytes written", Div: 1024},
-			{ID: toID("wiredTiger.block-manager.bytes written for checkpoint"), Name: "bytes written for checkpoint", Div: 1024},
-			{ID: toID("wiredTiger.block-manager.bytes written via memory map API"), Name: "bytes written via memory map API", Div: 1024},
+			{ID: "wiredtiger_block_manager_read", Name: "read"},
+			{ID: "wiredtiger_block_manager_read_via_memory", Name: "read via memory map API"},
+			{ID: "wiredtiger_block_manager_read_via_system_api", Name: "read via system call API"},
+			{ID: "wiredtiger_block_manager_written", Name: "written"},
+			{ID: "wiredtiger_block_manager_written_for_checkpoint", Name: "written for checkpoint"},
+			{ID: "wiredtiger_block_manager_written_via_memory", Name: "written via memory map API"},
 		},
 	}
+
 	chartWiredTigerCache = module.Chart{
-		ID:    "wiredtigerCache",
+		ID:    "wiredtiger_cache",
 		Title: "Wired Tiger Cache",
-		Units: "KiB",
+		Units: "bytes",
 		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredTigerCache",
+		Ctx:   "mongodb.wiredtiger_cache",
 		Dims: module.Dims{
-			{ID: toID("wiredTiger.cache.bytes allocated for updates"), Name: "bytes allocated for updates", Div: 1024},
-			{ID: toID("wiredTiger.cache.bytes read into cache"), Name: "bytes read into cache", Div: 1024},
-			{ID: toID("wiredTiger.cache.bytes written from cache"), Name: "bytes written from cache", Div: 1024},
+			{ID: "wiredtiger_cache_alloccated", Name: "allocated for updates"},
+			{ID: "wiredtiger_cache_read", Name: "read into cache"},
+			{ID: "wiredtiger_cache_write", Name: "written from cache"},
 		},
 	}
+
 	chartWiredTigerCapacity = module.Chart{
-		ID:    "wiredtigerCapacity",
-		Title: "Wired Tiger Capacity",
+		ID:    "wiredtiger_capacity",
+		Title: "Wired Tiger Capacity Waiting",
 		Units: "usec",
 		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredTigerCapacity",
+		Ctx:   "mongodb.wiredtiger_capacity",
 
 		Dims: module.Dims{
-			{ID: toID("wiredTiger.capacity.time waiting due to total capacity (usecs)"), Name: "time waiting due to total capacity (usecs)"},
-			{ID: toID("wiredTiger.capacity.time waiting during checkpoint (usecs)"), Name: "time waiting during checkpoint (usecs)"},
-			{ID: toID("wiredTiger.capacity.time waiting during eviction (usecs)"), Name: "time waiting during eviction (usecs)"},
-			{ID: toID("wiredTiger.capacity.time waiting during logging (usecs)"), Name: "time waiting during logging (usecs)"},
-			{ID: toID("wiredTiger.capacity.time waiting during read (usecs)"), Name: "time waiting during read (usecs)"},
+			{ID: "wiredtiger_cache_wait_capacity", Name: "due to total capacity"},
+			{ID: "wiredtiger_cache_wait_checkpoint", Name: "during checkpoint"},
+			{ID: "wiredtiger_cache_wait_eviction", Name: "during eviction"},
+			{ID: "wiredtiger_cache_wait_logging", Name: "during logging"},
+			{ID: "wiredtiger_cache_wait_read", Name: "during read"},
 		},
 	}
+
 	chartWiredTigerConnection = module.Chart{
-		ID:    "wiredtigerConnection",
-		Title: "Wired Tiger Connections",
+		ID:    "wiredtiger_connection",
+		Title: "Wired Tiger Connection",
 		Units: "ops/s",
 		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredTigerConnection",
+		Ctx:   "mongodb.wiredtiger_connection",
 
 		Dims: module.Dims{
-			{ID: toID("wiredTiger.connection.memory allocations"), Name: "memory allocations", Algo: module.Incremental},
-			{ID: toID("wiredTiger.connection.memory frees"), Name: "memory frees", Algo: module.Incremental},
-			{ID: toID("wiredTiger.connection.memory re-allocations"), Name: "memory re-allocations", Algo: module.Incremental},
+			{ID: "wiredtiger_connection_allocations", Name: "memory allocations", Algo: module.Incremental},
+			{ID: "wiredtiger_connection_frees", Name: "memory frees", Algo: module.Incremental},
+			{ID: "wiredtiger_connection_reallocations", Name: "memory re-allocations", Algo: module.Incremental},
 		},
 	}
+
 	chartWiredTigerCursor = module.Chart{
-		ID:    "wiredtigerCursor",
+		ID:    "wiredtiger_cursor",
 		Title: "Wired Tiger Cursor",
 		Units: "calls/s",
 		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredTigerCursor",
+		Ctx:   "mongodb.wiredtiger_cursor",
 
 		Dims: module.Dims{
-			{ID: toID("wiredTiger.cursor.open cursor count"), Name: "open cursor count", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cached cursor count"), Name: "cached cursor count", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor bulk loaded cursor insert calls"), Name: "cursor bulk loaded cursor insert calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor close calls that result in cache"), Name: "cursor close calls that result in cache", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor create calls"), Name: "cursor create calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor insert calls"), Name: "cursor insert calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor modify calls"), Name: "cursor modify calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor next calls"), Name: "cursor next calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor operation restarted"), Name: "cursor operation restarted", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor prev calls"), Name: "cursor prev calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor remove calls"), Name: "cursor remove calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor remove key bytes removed"), Name: "cursor remove key bytes removed", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor reserve calls"), Name: "cursor reserve calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor reset calls"), Name: "cursor reset calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor search calls"), Name: "cursor search calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor search history store calls"), Name: "cursor search history store calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor search near calls"), Name: "cursor search near calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor sweep buckets"), Name: "cursor sweep buckets", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor sweep cursors closed"), Name: "cursor sweep cursors closed", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor sweep cursors examined"), Name: "cursor sweep cursors examined", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor sweeps"), Name: "cursor sweeps", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor truncate calls"), Name: "cursor truncate calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor update calls"), Name: "cursor update calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.cursor.cursor update value size change"), Name: "cursor update value size change", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_count", Name: "open count", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_bulk", Name: "cached count", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_close", Name: "bulk loaded insert calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_create", Name: "close calls that result in cache", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_insert", Name: "create calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_modify", Name: "insert calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_next", Name: "modify calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_restarted", Name: "next calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_prev", Name: "operation restarted", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_remove", Name: "prev calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_reserve", Name: "remove calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_reset", Name: "reserve calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_search", Name: "cursor eset calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_search_history", Name: "search calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_search_near", Name: "search history store calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_sweep_buckets", Name: "search near calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_sweep_cursors", Name: "sweep buckets", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_sweep_examined", Name: "sweep cursors closed", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_sweeps", Name: "sweep cursors examined", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_truncate", Name: "sweeps", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_update", Name: "truncate calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_update_value", Name: "update calls", Algo: module.Incremental},
 		},
 	}
+
 	chartWiredTigerLock = module.Chart{
-		ID:    "wiredtigerLock",
+		ID:    "wiredtiger_lock",
 		Title: "Wired Tiger Lock",
 		Units: "ops/s",
 		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredTigerLock",
+		Ctx:   "mongodb.wiredtiger_lock",
 
 		Dims: module.Dims{
-			{ID: toID("wiredTiger.lock.checkpoint lock acquisitions"), Name: "checkpoint lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.dhandle read lock acquisitions"), Name: "dhandle read lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.dhandle write lock acquisitions"), Name: "dhandle write lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.durable timestamp queue read lock acquisitions"), Name: "durable timestamp queue read lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.durable timestamp queue write lock acquisitions"), Name: "durable timestamp queue write lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.metadata lock acquisitions"), Name: "metadata lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.read timestamp queue read lock acquisitions"), Name: "read timestamp queue read lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.read timestamp queue write lock acquisitions"), Name: "read timestamp queue write lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.schema lock acquisitions"), Name: "schema lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.table read lock acquisitions"), Name: "table read lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.table write lock acquisitions"), Name: "table write lock acquisitions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.lock.txn global read lock acquisitions"), Name: "txn global read lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_checkpoint_acquisitions", Name: "checkpoint lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_read_acquisitions", Name: "dhandle read lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_write_acquisitions", Name: "dhandle write lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_durable_timestamp_queue_read_acquisitions", Name: "durable timestamp queue read lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_durable", Name: "durable timestamp queue write lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_metadata_acquisitions", Name: "metadata lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_read_timestamp_queue_read_acquisitions", Name: "read timestamp queue read lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_read", Name: "read timestamp queue write lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_schema_acquisitions", Name: "schema lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_table_read_acquisitions", Name: "table read lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_table_write_acquisitions", Name: "table write lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_txn_global_read_acquisitions", Name: "txn global read lock acquisitions", Algo: module.Incremental},
 		},
 	}
+
 	chartWiredTigerLockDuration = module.Chart{
-		ID:    "wiredtigerLockDuration",
+		ID:    "wiredtiger_lock_duration",
 		Title: "Wired Tiger Lock Duration",
 		Units: "usec",
 		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredTigerLockDuration",
+		Ctx:   "mongodb.wiredtiger_lock_duration",
 
 		Dims: module.Dims{
-			{ID: toID("wiredTiger.lock.checkpoint lock application thread wait time (usecs)"), Name: "checkpoint lock application thread wait time (usecs)"},
-			{ID: toID("wiredTiger.lock.checkpoint lock internal thread wait time (usecs)"), Name: "checkpoint lock internal thread wait time (usecs)"},
-			{ID: toID("wiredTiger.lock.dhandle lock application thread time waiting (usecs)"), Name: "dhandle lock application thread time waiting (usecs)"},
-			{ID: toID("wiredTiger.lock.dhandle lock internal thread time waiting (usecs)"), Name: "dhandle lock internal thread time waiting (usecs)"},
-			{ID: toID("wiredTiger.lock.durable timestamp queue lock application thread time waiting (usecs)"), Name: "durable timestamp queue lock application thread time waiting (usecs)"},
-			{ID: toID("wiredTiger.lock.durable timestamp queue lock internal thread time waiting (usecs)"), Name: "durable timestamp queue lock internal thread time waiting (usecs)"},
-			{ID: toID("wiredTiger.lock.metadata lock application thread wait time (usecs)"), Name: "metadata lock application thread wait time (usecs)"},
-			{ID: toID("wiredTiger.lock.metadata lock internal thread wait time (usecs)"), Name: "metadata lock internal thread wait time (usecs)"},
-			{ID: toID("wiredTiger.lock.read timestamp queue lock application thread time waiting (usecs)"), Name: "read timestamp queue lock application thread time waiting (usecs)"},
-			{ID: toID("wiredTiger.lock.read timestamp queue lock internal thread time waiting (usecs)"), Name: "read timestamp queue lock internal thread time waiting (usecs)"},
-			{ID: toID("wiredTiger.lock.schema lock application thread wait time (usecs)"), Name: "schema lock application thread wait time (usecs)"},
-			{ID: toID("wiredTiger.lock.schema lock internal thread wait time (usecs)"), Name: "schema lock internal thread wait time (usecs)"},
-			{ID: toID("wiredTiger.lock.table lock application thread time waiting for the table lock (usecs)"), Name: "table lock application thread time waiting for the table lock (usecs)"},
-			{ID: toID("wiredTiger.lock.table lock internal thread time waiting for the table lock (usecs)"), Name: "table lock internal thread time waiting for the table lock (usecs)"},
-			{ID: toID("wiredTiger.lock.txn global lock application thread time waiting (usecs)"), Name: "txn global lock application thread time waiting (usecs)"},
-			{ID: toID("wiredTiger.lock.txn global lock internal thread time waiting (usecs)"), Name: "txn global lock internal thread time waiting (usecs)"},
+			{ID: "wiredtiger_lock_checkpoint_wait_time", Name: "checkpoint lock application thread wait time"},
+			{ID: "wiredtiger_lock_checkpoint_internal_thread_wait_time", Name: "checkpoint lock internal thread wait time"},
+			{ID: "wiredtiger_lock_application_thread_time_waiting", Name: "dhandle lock application thread time waiting"},
+			{ID: "wiredtiger_lock_internal_thread_time_waiting", Name: "dhandle lock internal thread time waiting"},
+			{ID: "wiredtiger_lock_durable_timestamp_queue_application_thread_time_waiting", Name: "durable timestamp queue lock application thread time waiting"},
+			{ID: "wiredtiger_lock_durable_timestamp_queue_internal_thread_time_waiting", Name: "durable timestamp queue lock internal thread time waiting"},
+			{ID: "wiredtiger_lock_metadata_application_thread_wait_time", Name: "metadata lock application thread wait time"},
+			{ID: "wiredtiger_lock_metadata_internal_thread_wait_time", Name: "metadata lock internal thread wait time"},
+			{ID: "wiredtiger_lock_read_timestamp_queue_application_thread_time_waiting", Name: "read timestamp queue lock application thread time waiting"},
+			{ID: "wiredtiger_lock_read_timestamp_queue_internal_thread_time_waiting", Name: "read timestamp queue lock internal thread time waiting"},
+			{ID: "wiredtiger_lock_schema_application_thread_wait_time", Name: "schema lock application thread wait time"},
+			{ID: "wiredtiger_lock_schema_internal_thread_wait_time", Name: "schema lock internal thread wait time"},
 		},
 	}
+
 	chartWiredTigerLogOps = module.Chart{
-		ID:    "wiredtigerLogOps",
+		ID:    "wiredtiger_log_ops",
 		Title: "Wired Tiger Log Operations",
 		Units: "ops/s",
 		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredTigerLogOps",
+		Ctx:   "mongodb.wiredtiger_log_ops",
 
 		Dims: module.Dims{
-			{ID: toID("wiredTiger.log.log flush operations"), Name: "log flush operations", Algo: module.Incremental},
-			{ID: toID("wiredTiger.log.log force write operations"), Name: "log force write operations", Algo: module.Incremental},
-			{ID: toID("wiredTiger.log.log force write operations skipped"), Name: "log force write operations skipped", Algo: module.Incremental},
-			{ID: toID("wiredTiger.log.log scan operations"), Name: "log scan operations", Algo: module.Incremental},
-			{ID: toID("wiredTiger.log.log sync operations"), Name: "log sync operations", Algo: module.Incremental},
-			{ID: toID("wiredTiger.log.log sync_dir operations"), Name: "log sync_dir operations", Algo: module.Incremental},
-			{ID: toID("wiredTiger.log.log write operations"), Name: "log write operations", Algo: module.Incremental},
+			{ID: "wiredtiger_log_flush", Name: "flush", Algo: module.Incremental},
+			{ID: "wiredtiger_log_force_write", Name: "force write", Algo: module.Incremental},
+			{ID: "wiredtiger_log_write_skip", Name: "force write skipped", Algo: module.Incremental},
+			{ID: "wiredtiger_log_scan", Name: "scan", Algo: module.Incremental},
+			{ID: "wiredtiger_log_sync", Name: "sync", Algo: module.Incremental},
+			{ID: "wiredtiger_log_sync_dir", Name: "sync_dir", Algo: module.Incremental},
+			{ID: "wiredtiger_log_write", Name: "write", Algo: module.Incremental},
 		},
 	}
+
 	chartWiredTigerLogBytes = module.Chart{
-		ID:    "wiredtigerLogOps",
+		ID:    "wiredtiger_log_ops_size",
 		Title: "Wired Tiger Log Operations",
 		Units: "bytes/s",
 		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredTigerLogOps",
+		Ctx:   "mongodb.wiredtiger_log_ops_size",
 
 		Dims: module.Dims{
-			{ID: toID("wiredTiger.log.log bytes of payload data"), Name: "log bytes of payload data", Algo: module.Incremental},
-			{ID: toID("wiredTiger.log.log bytes written"), Name: "log bytes written", Algo: module.Incremental},
-			{ID: toID("wiredTiger.log.logging bytes consolidated"), Name: "logging bytes consolidated", Algo: module.Incremental},
-			{ID: toID("wiredTiger.log.total log buffer size"), Name: "total log buffer size", Algo: module.Incremental},
+			{ID: "wiredtiger_log_payload", Name: "payload data", Algo: module.Incremental},
+			{ID: "wiredtiger_log_written", Name: "written", Algo: module.Incremental},
+			{ID: "wiredtiger_log_consolidated", Name: "consolidated", Algo: module.Incremental},
+			{ID: "wiredtiger_log_buffer_size", Name: "total buffer size", Algo: module.Incremental},
 		},
 	}
+
 	chartWiredTigerTransactions = module.Chart{
-		ID:    "wiredtigerTransactions",
-		Title: "Wired Tiger Log Transactions",
+		ID:    "wiredtiger_transactions",
+		Title: "Wired Tiger Transactions",
 		Units: "transactions/s",
 		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredTigerTransactions",
+		Ctx:   "mongodb.wiredtiger_transactions",
 
 		Dims: module.Dims{
-			{ID: toID("wiredTiger.transaction.prepared transactions"), Name: "prepared transactions", Algo: module.Incremental},
-			{ID: toID("wiredTiger.transaction.query timestamp calls"), Name: "query timestamp calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.transaction.rollback to stable calls"), Name: "rollback to stable calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.transaction.set timestamp calls"), Name: "set timestamp calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.transaction.transaction begins"), Name: "transaction begins", Algo: module.Incremental},
-			{ID: toID("wiredTiger.transaction.transaction sync calls"), Name: "transaction sync calls", Algo: module.Incremental},
-			{ID: toID("wiredTiger.transaction.transactions committed"), Name: "transactions committed", Algo: module.Incremental},
-			{ID: toID("wiredTiger.transaction.transactions rolled back"), Name: "transactions rolled back", Algo: module.Incremental},
+			{ID: "wiredtiger_transaction_prepare", Name: "prepared", Algo: module.Incremental},
+			{ID: "wiredtiger_transaction_query", Name: "query timestamp", Algo: module.Incremental},
+			{ID: "wiredtiger_transaction_rollback", Name: "rollback to stable", Algo: module.Incremental},
+			{ID: "wiredtiger_transaction_set_timestamp", Name: "set timestamp", Algo: module.Incremental},
+			{ID: "wiredtiger_transaction_begin", Name: "begins", Algo: module.Incremental},
+			{ID: "wiredtiger_transaction_sync", Name: "sync", Algo: module.Incremental},
+			{ID: "wiredtiger_transaction_committed", Name: "committed", Algo: module.Incremental},
+			{ID: "wiredtiger_transaction_rolled_back", Name: "rolled back", Algo: module.Incremental},
 		},
 	}
 )
-
-func toID(in string) string {
-	id := strings.ReplaceAll(in, " ", "%20")
-	return id
-}
-
-func fromID(in string) string {
-	id := strings.ReplaceAll(in, "%20", " ")
-	return id
-}

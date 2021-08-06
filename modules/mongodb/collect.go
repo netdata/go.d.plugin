@@ -1,65 +1,102 @@
 package mongo
 
 import (
-	"context"
-	"strings"
-	"time"
+	"reflect"
 
 	"github.com/netdata/go.d.plugin/agent/module"
-
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
-func (m *Mongo) serverStatusCollect(ms map[string]int64) {
-	var status map[string]interface{}
-	command := bson.D{{Key: "serverStatus", Value: 1}}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
-	defer cancel()
-	err := m.client.Database("admin").RunCommand(ctx, command).Decode(&status)
+func (m *Mongo) serverStatusCollect() map[string]int64 {
+	status, err := m.mongoCollector.serverStatus()
 	if err != nil {
 		m.Errorf("error get server status from mongo: %s", err)
-		return
+		return nil
 	}
+
 	m.addOptionalCharts(status)
-	iterateServerStatus(ms, status)
+
+	var args = []interface{}{
+		status.Opcounters,
+		status.Connections,
+		status.Network,
+		status.ExtraInfo,
+		status.Asserts,
+	}
+
+	if status.Transactions != nil {
+		args = append(args, status.Transactions)
+	}
+	if status.FlowControl != nil {
+		args = append(args, status.FlowControl)
+	}
+	if status.OpLatencies != nil {
+		args = append(args, status.OpLatencies.Reads)
+		args = append(args, status.OpLatencies.Writes)
+		args = append(args, status.OpLatencies.Commands)
+	}
+	if status.GlobalLock != nil {
+		args = append(args, status.GlobalLock.ActiveClients)
+		args = append(args, status.GlobalLock.CurrentQueue)
+	}
+	if status.Tcmalloc != nil {
+		args = append(args, status.Tcmalloc.Generic)
+		args = append(args, status.Tcmalloc.Tcmalloc)
+	}
+	if status.Locks != nil {
+		args = append(args, status.Locks.Global)
+		args = append(args, status.Locks.Database)
+		args = append(args, status.Locks.Collection)
+	}
+	if status.WiredTiger != nil {
+		args = append(args, status.WiredTiger.BlockManager)
+		args = append(args, status.WiredTiger.Cache)
+		args = append(args, status.WiredTiger.Capacity)
+		args = append(args, status.WiredTiger.Connection)
+		args = append(args, status.WiredTiger.Cursor)
+		args = append(args, status.WiredTiger.Lock)
+		args = append(args, status.WiredTiger.Log)
+		args = append(args, status.WiredTiger.Transaction)
+	}
+
+	ms := stm.ToMap(args...)
+	return ms
 }
 
-func (m *Mongo) addOptionalCharts(status map[string]interface{}) {
-	m.metricExists(status, "transactions", &chartTransactionsCurrent)
-	m.metricExists(status, "globalLock.activeClients", &chartGlobalLockActiveClients)
-	m.metricExists(status, "catalogStats", &chartCollections)
-	m.metricExists(status, "tcmalloc.generic", &chartTcmallocGeneric)
-	m.metricExists(status, "tcmalloc.tcmalloc", &chartTcmalloc)
-	m.metricExists(status, "globalLock.currentQueue", &chartGlobalLockCurrentQueue)
-	m.metricExists(status, "metrics.commands", &chartMetricsCommands)
-	m.metricExists(status, "locks.Global.acquireCount", &chartGlobalLocks)
-	m.metricExists(status, "flowControl", &chartFlowControl)
-	// WiredTiger charts
-	m.metricExists(status, "wiredTiger.block-manager", &chartWiredTigerBlockManager)
-	m.metricExists(status, "wiredTiger.cache", &chartWiredTigerCache)
-	m.metricExists(status, "wiredTiger.capacity", &chartWiredTigerCapacity)
-	m.metricExists(status, "wiredTiger.connection", &chartWiredTigerConnection)
-	m.metricExists(status, "wiredTiger.cursor", &chartWiredTigerCursor)
-	m.metricExists(status, "wiredTiger.lock", &chartWiredTigerLock)
-	m.metricExists(status, "wiredTiger.lock", &chartWiredTigerLockDuration)
-	m.metricExists(status, "wiredTiger.log", &chartWiredTigerLogOps)
-	m.metricExists(status, "wiredTiger.log", &chartWiredTigerLogBytes)
-	m.metricExists(status, "wiredTiger.transaction", &chartWiredTigerTransactions)
+func (m *Mongo) addOptionalCharts(status *serverStatus) {
+	m.metricExists(status.Transactions, &chartTransactionsCurrent)
+	m.metricExists(status.FlowControl, &chartFlowControl)
+
+	if status.GlobalLock != nil {
+		m.metricExists(status.GlobalLock.ActiveClients, &chartGlobalLockActiveClients)
+		m.metricExists(status.GlobalLock.CurrentQueue, &chartGlobalLockCurrentQueue)
+	}
+	if status.Tcmalloc != nil {
+		m.metricExists(status.Tcmalloc.Generic, &chartTcmallocGeneric)
+		m.metricExists(status.Tcmalloc.Tcmalloc, &chartTcmalloc)
+	}
+	if status.Locks != nil {
+		m.metricExists(status.Locks.Global, &chartLocks)
+		m.metricExists(status.Locks.Database, &chartLocks)
+		m.metricExists(status.Locks.Collection, &chartLocks)
+	}
+	if status.WiredTiger != nil {
+		m.metricExists(status.WiredTiger.BlockManager, &chartWiredTigerBlockManager)
+		m.metricExists(status.WiredTiger.Cache, &chartWiredTigerCache)
+		m.metricExists(status.WiredTiger.Capacity, &chartWiredTigerCapacity)
+		m.metricExists(status.WiredTiger.Connection, &chartWiredTigerConnection)
+		m.metricExists(status.WiredTiger.Cursor, &chartWiredTigerCursor)
+		m.metricExists(status.WiredTiger.Lock, &chartWiredTigerLock)
+		m.metricExists(status.WiredTiger.Lock, &chartWiredTigerLockDuration)
+		m.metricExists(status.WiredTiger.Log, &chartWiredTigerLogOps)
+		m.metricExists(status.WiredTiger.Log, &chartWiredTigerLogBytes)
+		m.metricExists(status.WiredTiger.Transaction, &chartWiredTigerTransactions)
+	}
 }
 
-func (m *Mongo) metricExists(serverStatus map[string]interface{}, key string, chart *module.Chart) {
-	keys := strings.Split(key, ".")
-	for _, k := range keys {
-		val, ok := serverStatus[k]
-		if !ok {
-			return
-		}
-		switch typeVal := val.(type) {
-		case map[string]interface{}:
-			serverStatus = typeVal
-		default:
-			return
-		}
+func (m *Mongo) metricExists(iface interface{}, chart *module.Chart) {
+	if reflect.ValueOf(iface).IsNil() {
+		return
 	}
 	if !m.optionalChartsEnabled[chart.ID] {
 		err := m.charts.Add(chart.Copy())
@@ -68,40 +105,5 @@ func (m *Mongo) metricExists(serverStatus map[string]interface{}, key string, ch
 		}
 		m.optionalChartsEnabled[chart.ID] = true
 		return
-	}
-
-}
-
-func iterateServerStatus(ms map[string]int64, status map[string]interface{}) {
-	for _, chart := range serverStatusCharts {
-		for _, dim := range chart.Dims {
-			addIfExists(status, dim.ID, ms)
-		}
-	}
-}
-
-func addIfExists(serverStatus map[string]interface{}, id string, ms map[string]int64) {
-	mMap := serverStatus
-	keys := strings.Split(id, ".")
-	for _, key := range keys {
-		k := fromID(key)
-		val, ok := mMap[k]
-		if !ok {
-			return
-		}
-		switch t := val.(type) {
-		case map[string]interface{}:
-			mMap = val.(map[string]interface{})
-		case int64:
-			if _, ok := mMap[fromID(key)]; ok {
-				ms[id] = t
-			}
-		case int32:
-			if _, ok := mMap[fromID(key)]; ok {
-				ms[id] = int64(t)
-			}
-		default:
-			return
-		}
 	}
 }

@@ -1,13 +1,9 @@
 package mongo
 
 import (
-	"context"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
-
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Config struct {
@@ -29,13 +25,14 @@ func New() *Mongo {
 		},
 		charts:                &module.Charts{},
 		optionalChartsEnabled: make(map[string]bool),
+		mongoCollector:        &mongoCollector{},
 	}
 }
 
 type Mongo struct {
 	module.Base
 	Config                `yaml:",inline"`
-	client                *mongo.Client
+	mongoCollector        connector
 	charts                *module.Charts
 	optionalChartsEnabled map[string]bool
 }
@@ -65,15 +62,12 @@ func (m *Mongo) Charts() *module.Charts {
 }
 
 func (m *Mongo) Collect() map[string]int64 {
-	if m.client == nil {
-		if err := m.initMongoClient(); err != nil {
-			m.Errorf("init mongo client: %v", err)
-			return nil
-		}
+	if err := m.mongoCollector.initClient(m.Uri, m.Timeout); err != nil {
+		m.Errorf("init mongo client: %v", err)
+		return nil
 	}
 
-	ms := make(map[string]int64)
-	m.serverStatusCollect(ms)
+	ms := m.serverStatusCollect()
 	if len(ms) == 0 {
 		m.Warning("zero collected values")
 		return nil
@@ -82,31 +76,10 @@ func (m *Mongo) Collect() map[string]int64 {
 }
 
 func (m *Mongo) Cleanup() {
-	if m.client == nil {
-		return
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout*time.Second)
-	defer cancel()
-	err := m.client.Disconnect(ctx)
+	err := m.mongoCollector.close()
 	if err != nil {
 		m.Warningf("cleanup: error on closing mongo client: %v", err)
 	}
-	m.client = nil
-}
-
-func (m *Mongo) initMongoClient() error {
-	client, err := mongo.NewClient(options.Client().ApplyURI(m.Uri))
-	if err != nil {
-		return err
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout*time.Second)
-	defer cancel()
-	err = client.Connect(ctx)
-	if err != nil {
-		return err
-	}
-	m.client = client
-	return nil
 }
 
 func (m *Mongo) initCharts() (*module.Charts, error) {
