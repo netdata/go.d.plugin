@@ -4,11 +4,13 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
 
 type Config struct {
-	Uri     string        `yaml:"uri"`
-	Timeout time.Duration `yaml:"timeout"`
+	Uri       string             `yaml:"uri"`
+	Timeout   time.Duration      `yaml:"timeout"`
+	Databases matcher.SimpleExpr `yaml:"databases"`
 }
 
 func init() {
@@ -22,6 +24,10 @@ func New() *Mongo {
 		Config: Config{
 			Timeout: 20,
 			Uri:     "mongodb://localhost:27017",
+			Databases: matcher.SimpleExpr{
+				Includes: []string{},
+				Excludes: []string{},
+			},
 		},
 		charts:                &module.Charts{},
 		optionalChartsEnabled: make(map[string]bool),
@@ -35,6 +41,7 @@ type Mongo struct {
 	Config                `yaml:",inline"`
 	mongoCollector        connector
 	charts                *module.Charts
+	databasesMatcher      matcher.Matcher
 	optionalChartsEnabled map[string]bool
 	dimsEnabled           map[string]bool
 }
@@ -44,6 +51,15 @@ func (m *Mongo) Init() bool {
 	if m.Uri == "" {
 		m.Errorf("connection URI is empty")
 		return false
+	}
+
+	if !m.Databases.Empty() {
+		mMatcher, err := m.Databases.Parse()
+		if err != nil {
+			m.Errorf("error on creating 'databases' matcher : %v", err)
+			return false
+		}
+		m.databasesMatcher = matcher.WithCache(mMatcher)
 	}
 
 	var err error

@@ -122,3 +122,7 @@ func (m *mockMongo) close() error {
 	m.closeCalled = true
 	return nil
 }
+
+func (m *mockMongo) listDatabaseNames() ([]string, error) {
+	return []string{}, nil
+}

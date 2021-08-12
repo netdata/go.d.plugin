@@ -490,9 +490,15 @@ func (m *Mongo) dimsForDbStats(databases []string) {
 	if len(databases) == 0 {
 		return
 	}
+	if m.databasesMatcher == nil {
+		return
+	}
 
 	for _, chart := range dbStatsCharts {
 		for _, name := range databases {
+			if !m.databasesMatcher.MatchString(name) {
+				continue
+			}
 			if !m.dimsEnabled[chart.ID+"_"+name] {
 				id := chart.ID + "_" + name
 				err := chart.AddDim(&module.Dim{ID: id, Name: name, Algo: module.Absolute})
