@@ -25,6 +25,7 @@ func New() *Mongo {
 		},
 		charts:                &module.Charts{},
 		optionalChartsEnabled: make(map[string]bool),
+		dimsEnabled:           make(map[string]bool),
 		mongoCollector:        &mongoCollector{},
 	}
 }
@@ -35,6 +36,7 @@ type Mongo struct {
 	mongoCollector        connector
 	charts                *module.Charts
 	optionalChartsEnabled map[string]bool
+	dimsEnabled           map[string]bool
 }
 
 func (m *Mongo) Init() bool {
@@ -67,7 +69,16 @@ func (m *Mongo) Collect() map[string]int64 {
 		return nil
 	}
 
-	ms := m.serverStatusCollect()
+	ms := map[string]int64{}
+	for _, result := range []map[string]int64{
+		m.serverStatusCollect(),
+		m.dbStatsCollect(),
+	} {
+		for k, v := range result {
+			ms[k] = v
+		}
+	}
+
 	if len(ms) == 0 {
 		m.Warning("zero collected values")
 		return nil
@@ -83,5 +94,14 @@ func (m *Mongo) Cleanup() {
 }
 
 func (m *Mongo) initCharts() (*module.Charts, error) {
-	return &serverStatusCharts, nil
+	charts := module.Charts{}
+	err := charts.Add(serverStatusCharts...)
+	if err != nil {
+		return nil, err
+	}
+	err = charts.Add(dbStatsCharts...)
+	if err != nil {
+		return &charts, err
+	}
+	return &charts, nil
 }

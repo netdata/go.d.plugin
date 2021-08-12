@@ -75,3 +75,25 @@ func (m *Mongo) metricExists(iface interface{}, chart *module.Chart) {
 		return
 	}
 }
+
+// dbStatsCollect creates the map[string]int64 for the available dims
+// it calls listDatabase and then dbstats for each database internally
+func (m *Mongo) dbStatsCollect() map[string]int64 {
+	databases, err := m.mongoCollector.listDatabaseNames()
+	if err != nil {
+		return map[string]int64{}
+	}
+
+	// add dims for each database
+	m.dimsForDbStats(databases)
+
+	ms := map[string]int64{}
+	for _, database := range databases {
+		stats, err := m.mongoCollector.dbStats(database)
+		if err != nil {
+			return map[string]int64{}
+		}
+		stats.toMap(database, ms)
+	}
+	return ms
+}

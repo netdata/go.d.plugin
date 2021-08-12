@@ -18,6 +18,14 @@ var serverStatusCharts = module.Charts{
 	chartAsserts.Copy(),
 }
 
+var dbStatsCharts = []*module.Chart{
+	dbStatsCollectionsChart,
+	dbStatsIndexesChart,
+	dbStatsViewsChart,
+	dbStatsDocumentsChart,
+	dbStatsSizeChart,
+}
+
 var (
 	chartOpcounter = module.Chart{
 		ID:    "operations",
@@ -432,3 +440,68 @@ var (
 		},
 	}
 )
+
+var (
+	dbStatsCollectionsChart = &module.Chart{
+		ID:    "collections",
+		Title: "Collections",
+		Units: "collections",
+		Fam:   "database_statistics",
+		Ctx:   "mongodb.collections",
+		Type:  module.Stacked,
+	}
+	dbStatsIndexesChart = &module.Chart{
+		ID:    "indexes",
+		Title: "Indexes",
+		Units: "indexes",
+		Fam:   "database_statistics",
+		Ctx:   "mongodb.indexes",
+		Type:  module.Stacked,
+	}
+	dbStatsViewsChart = &module.Chart{
+		ID:    "views",
+		Title: "Views",
+		Units: "views",
+		Fam:   "database_statistics",
+		Ctx:   "mongodb.views",
+		Type:  module.Stacked,
+	}
+
+	dbStatsDocumentsChart = &module.Chart{
+		ID:    "documents",
+		Title: "Documents",
+		Units: "documents",
+		Fam:   "database_statistics",
+		Ctx:   "mongodb.documents",
+		Type:  module.Stacked,
+	}
+
+	dbStatsSizeChart = &module.Chart{
+		ID:    "storage_size",
+		Title: "Disk Size",
+		Units: "bytes",
+		Fam:   "database_statistics",
+		Ctx:   "mongodb.storage_size",
+		Type:  module.Stacked,
+	}
+)
+
+func (m *Mongo) dimsForDbStats(databases []string) {
+	if len(databases) == 0 {
+		return
+	}
+
+	for _, chart := range dbStatsCharts {
+		for _, name := range databases {
+			if !m.dimsEnabled[chart.ID+"_"+name] {
+				id := chart.ID + "_" + name
+				err := chart.AddDim(&module.Dim{ID: id, Name: name, Algo: module.Absolute})
+				if err != nil {
+					m.Errorf("failed to add dim: %s, %s", id, err)
+					continue
+				}
+				m.dimsEnabled[chart.ID+"_"+name] = true
+			}
+		}
+	}
+}
