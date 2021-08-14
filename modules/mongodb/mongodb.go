@@ -32,6 +32,7 @@ func New() *Mongo {
 		charts:                &module.Charts{},
 		optionalChartsEnabled: make(map[string]bool),
 		dimsEnabled:           make(map[string]bool),
+		databases:             make([]string, 0),
 		mongoCollector:        &mongoCollector{},
 	}
 }
@@ -43,6 +44,7 @@ type Mongo struct {
 	charts                *module.Charts
 	databasesMatcher      matcher.Matcher
 	optionalChartsEnabled map[string]bool
+	databases             []string
 	dimsEnabled           map[string]bool
 }
 

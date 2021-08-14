@@ -89,6 +89,7 @@ func (m *Mongo) dbStatsCollect() map[string]int64 {
 
 	// add dims for each database
 	m.dimsForDbStats(databases)
+	m.databases = databases
 
 	ms := map[string]int64{}
 	for _, database := range databases {

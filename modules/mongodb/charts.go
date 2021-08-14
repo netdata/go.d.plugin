@@ -486,16 +486,31 @@ var (
 	}
 )
 
-func (m *Mongo) dimsForDbStats(databases []string) {
-	if len(databases) == 0 {
+func (m *Mongo) dimsForDbStats(newDatabases []string) {
+	if len(newDatabases) == 0 {
 		return
 	}
 	if m.databasesMatcher == nil {
 		return
 	}
 
+	// remove dims for not existing databases
+	diff := sliceDiff(m.databases, newDatabases)
+	for _, name := range diff {
+		for _, chart := range dbStatsCharts {
+			id := chart.ID + "_" + name
+			err := chart.MarkDimRemove(id, true)
+			if err != nil {
+				m.Warningf("failed to remove dimension %s with error: %s", id, err.Error())
+				continue
+			}
+			chart.MarkNotCreated()
+		}
+	}
+
+	// add dimensions for new databases
 	for _, chart := range dbStatsCharts {
-		for _, name := range databases {
+		for _, name := range newDatabases {
 			if !m.databasesMatcher.MatchString(name) {
 				continue
 			}
@@ -511,4 +526,18 @@ func (m *Mongo) dimsForDbStats(databases []string) {
 			}
 		}
 	}
+}
+
+func sliceDiff(slice1, slice2 []string) []string {
+	mb := make(map[string]struct{}, len(slice2))
+	for _, x := range slice2 {
+		mb[x] = struct{}{}
+	}
+	var diff []string
+	for _, x := range slice1 {
+		if _, found := mb[x]; !found {
+			diff = append(diff, x)
+		}
+	}
+	return diff
 }
