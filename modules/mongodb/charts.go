@@ -18,6 +18,7 @@ var serverStatusCharts = module.Charts{
 	chartAsserts.Copy(),
 }
 
+// dbStatsCharts are used to collect per database metrics
 var dbStatsCharts = []*module.Chart{
 	dbStatsCollectionsChart,
 	dbStatsIndexesChart,
@@ -486,6 +487,8 @@ var (
 	}
 )
 
+// dimsForDbStats adds dimensions for new databases and
+// removes for dropped
 func (m *Mongo) dimsForDbStats(newDatabases []string) {
 	if len(newDatabases) == 0 {
 		return
@@ -495,18 +498,7 @@ func (m *Mongo) dimsForDbStats(newDatabases []string) {
 	}
 
 	// remove dims for not existing databases
-	diff := sliceDiff(m.databases, newDatabases)
-	for _, name := range diff {
-		for _, chart := range dbStatsCharts {
-			id := chart.ID + "_" + name
-			err := chart.MarkDimRemove(id, true)
-			if err != nil {
-				m.Warningf("failed to remove dimension %s with error: %s", id, err.Error())
-				continue
-			}
-			chart.MarkNotCreated()
-		}
-	}
+	m.removeObsoleteDims(newDatabases)
 
 	// add dimensions for new databases
 	for _, chart := range dbStatsCharts {
@@ -528,6 +520,24 @@ func (m *Mongo) dimsForDbStats(newDatabases []string) {
 	}
 }
 
+// removeObsoleteDims removes dimensions from dbstats
+// charts for dropped databases
+func (m *Mongo) removeObsoleteDims(newDatabases []string) {
+	diff := sliceDiff(m.databases, newDatabases)
+	for _, name := range diff {
+		for _, chart := range dbStatsCharts {
+			id := chart.ID + "_" + name
+			err := chart.MarkDimRemove(id, true)
+			if err != nil {
+				m.Warningf("failed to remove dimension %s with error: %s", id, err.Error())
+				continue
+			}
+			chart.MarkNotCreated()
+		}
+	}
+}
+
+// sliceDiff calculates the diff between to slices
 func sliceDiff(slice1, slice2 []string) []string {
 	mb := make(map[string]struct{}, len(slice2))
 	for _, x := range slice2 {

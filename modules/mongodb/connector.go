@@ -37,12 +37,14 @@ func (m *mongoCollector) serverStatus() (*serverStatus, error) {
 	return status, err
 }
 
+// listDatabaseNames returns a string slice with the available databases on the server.
 func (m *mongoCollector) listDatabaseNames() ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
 	defer cancel()
 	return m.Client.ListDatabaseNames(ctx, bson.M{})
 }
 
+// dbStats gets the `dbstats` metrics for a specific database.
 func (m *mongoCollector) dbStats(databaseName string) (*dbStats, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
 	defer cancel()

@@ -132,6 +132,8 @@ func TestMongo_Cleanup(t *testing.T) {
 	assert.True(t, connector.closeCalled)
 }
 
+// mock for unit testing the mongo database as the driver
+// doesn't use interfaces.
 type mockMongo struct {
 	connector
 	serverStatusResponse string
