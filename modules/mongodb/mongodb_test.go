@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"encoding/json"
+	"reflect"
 	"testing"
 	"time"
 
@@ -72,14 +73,46 @@ func TestMongo_Success(t *testing.T) {
 	m := New()
 	m.Config.Timeout = 1
 	m.Config.Uri = ""
-	obj := &mockMongo{response: v5_0_0.ServerStatus}
+	obj := &mockMongo{serverStatusResponse: v5_0_0.ServerStatus}
 	m.mongoCollector = obj
 	assert.True(t, m.Check())
 }
 
-func TestMongo_Collect(t *testing.T) {
+func TestMongo_Collect_DbStats(t *testing.T) {
 	m := New()
-	m.Uri = ""
+	m.mongoCollector = &mockMongo{
+		serverStatusResponse: "{}",
+		dbStatsResponse:      "{}",
+	}
+	m.Config.Databases.Includes = []string{"* *"}
+	m.Uri = "mongodb://localhost"
+	m.Init()
+	ms := m.Collect()
+	assert.Len(t, ms, reflect.ValueOf(dbStats{}).NumField())
+}
+
+func TestMongo_Collect_DbStats_Fail(t *testing.T) {
+	m := New()
+	m.mongoCollector = &mockMongo{
+		serverStatusResponse: "{}",
+		dbStatsResponse:      "",
+	}
+	m.Config.Databases.Includes = []string{"* *"}
+	m.Uri = "mongodb://localhost"
+	m.Init()
+	ms := m.Collect()
+	assert.Len(t, ms, 0)
+}
+
+func TestMongo_Collect_DbStats_EmptyMatcher(t *testing.T) {
+	m := New()
+	m.mongoCollector = &mockMongo{
+		serverStatusResponse: "{}",
+		dbStatsResponse:      "{}",
+	}
+	m.Config.Databases.Includes = []string{"* not_matching"}
+	m.Uri = "mongodb://localhost"
+	m.Init()
 	ms := m.Collect()
 	assert.Len(t, ms, 0)
 }
@@ -101,8 +134,9 @@ func TestMongo_Cleanup(t *testing.T) {
 
 type mockMongo struct {
 	connector
-	response    string
-	closeCalled bool
+	serverStatusResponse string
+	dbStatsResponse      string
+	closeCalled          bool
 }
 
 func (m *mockMongo) initClient(_ string, _ time.Duration) error {
@@ -111,7 +145,7 @@ func (m *mockMongo) initClient(_ string, _ time.Duration) error {
 
 func (m *mockMongo) serverStatus() (*serverStatus, error) {
 	var status serverStatus
-	err := json.Unmarshal([]byte(m.response), &status)
+	err := json.Unmarshal([]byte(m.serverStatusResponse), &status)
 	if err != nil {
 		return nil, err
 	}
@@ -124,5 +158,14 @@ func (m *mockMongo) close() error {
 }
 
 func (m *mockMongo) listDatabaseNames() ([]string, error) {
-	return []string{}, nil
+	return []string{"db"}, nil
+}
+
+func (m *mockMongo) dbStats(_ string) (*dbStats, error) {
+	stats := &dbStats{}
+	err := json.Unmarshal([]byte(m.dbStatsResponse), stats)
+	if err != nil {
+		return nil, err
+	}
+	return stats, nil
 }
