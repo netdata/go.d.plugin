@@ -506,6 +506,7 @@ func (m *Mongo) dimsForDbStats(databases []string) {
 					m.Errorf("failed to add dim: %s, %s", id, err)
 					continue
 				}
+				chart.MarkNotCreated()
 				m.dimsEnabled[chart.ID+"_"+name] = true
 			}
 		}
