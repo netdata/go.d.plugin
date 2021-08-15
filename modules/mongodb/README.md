@@ -316,6 +316,22 @@ Number of documents per database in `documents`
 
 Total space allocated to all collections in the database for document storage(including free space) in `bytes`
 
+### Replication
+
+Charts are available on replicate sets only.
+
+#### Replication lag
+
+Time when last entry from the oplog was applied for every member in `milliseconds`
+
+#### Replication set member heartbeat latency
+
+Time when last heartbeat was received from replica set member `milliseconds`
+
+#### Ping
+
+Round trip time between members and local instance in `milliseconds`
+
 ## Prerequisites
 
 Create a read-only user for Netdata in the admin database.

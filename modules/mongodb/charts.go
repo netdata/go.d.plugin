@@ -27,6 +27,12 @@ var dbStatsCharts = module.Charts{
 	chartDBStatsSize,
 }
 
+var replCharts = module.Charts{
+	chartReplLag,
+	chartReplHeartbeatLatency,
+	chartReplPing,
+}
+
 var (
 	chartOpcounter = module.Chart{
 		ID:    "operations",
@@ -543,3 +549,27 @@ func sliceDiff(slice1, slice2 []string) []string {
 	}
 	return diff
 }
+
+var (
+	chartReplLag = &module.Chart{
+		ID:    "repl_lag",
+		Title: "Replica Operational Lag",
+		Units: "milliseconds",
+		Fam:   "repl",
+		Ctx:   "mongodb.repl_oplog_window",
+	}
+	chartReplHeartbeatLatency = &module.Chart{
+		ID:    "repl_heartbeat_latency",
+		Title: "Replica Heartbeat Latency",
+		Units: "milliseconds",
+		Fam:   "repl",
+		Ctx:   "mongodb.repl_heartbeat_latency",
+	}
+	chartReplPing = &module.Chart{
+		ID:    "repl_ping",
+		Title: "Replica Ping",
+		Units: "milliseconds",
+		Fam:   "repl",
+		Ctx:   "mongodb.repl_ping",
+	}
+)

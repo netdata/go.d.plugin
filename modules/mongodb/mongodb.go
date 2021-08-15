@@ -45,6 +45,7 @@ type Mongo struct {
 	optionalChartsEnabled map[string]bool
 	discoveredDBs         []string
 	chartsDbStats         *module.Charts
+	dimsEnabled           map[string]bool
 }
 
 func (m *Mongo) Init() bool {
@@ -96,6 +97,10 @@ func (m *Mongo) Collect() map[string]int64 {
 		m.Errorf("couldn't collecting dbstats metrics: %s", err)
 	}
 
+	if err := m.collectReplSetStatus(ms); err != nil {
+		m.Errorf("couldn't collecting dbstats metrics: %s", err)
+	}
+
 	if len(ms) == 0 {
 		m.Warning("zero collected values")
 		return nil
@@ -119,6 +124,14 @@ func (m *Mongo) initCharts() (*module.Charts, error) {
 
 	m.chartsDbStats = dbStatsCharts.Copy()
 	for _, chart := range *m.chartsDbStats {
+		err = charts.Add(chart)
+		if err != nil {
+			return &charts, err
+		}
+	}
+
+	replCharts := replCharts.Copy()
+	for _, chart := range *replCharts {
 		err = charts.Add(chart)
 		if err != nil {
 			return &charts, err

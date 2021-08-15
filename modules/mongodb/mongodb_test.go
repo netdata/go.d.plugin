@@ -139,6 +139,7 @@ type mockMongo struct {
 	serverStatusResponse string
 	dbStatsResponse      string
 	closeCalled          bool
+	replicaSet           bool
 }
 
 func (m *mockMongo) initClient(_ string, _ time.Duration) error {
@@ -170,4 +171,8 @@ func (m *mockMongo) dbStats(_ string) (*dbStats, error) {
 		return nil, err
 	}
 	return stats, nil
+}
+
+func (m *mockMongo) isReplicaSet() bool {
+	return m.replicaSet
 }
