@@ -500,26 +500,26 @@ func (m *Mongo) updateDBStatsCharts(databases []string) {
 	m.removeObsoleteDims(databases)
 
 	// add dimensions for new databases
-	for _, chart := range dbStatsCharts {
-		for _, name := range databases {
-			if !m.dimsEnabled[chart.ID+"_"+name] {
-				id := chart.ID + "_" + name
-				err := chart.AddDim(&module.Dim{ID: id, Name: name, Algo: module.Absolute})
-				if err != nil {
-					m.Errorf("failed to add dim: %s, %s", id, err)
-					continue
-				}
-				chart.MarkNotCreated()
-				m.dimsEnabled[chart.ID+"_"+name] = true
+	for _, database := range sliceDiff(databases, m.discoveredDBs) {
+		for _, chart := range dbStatsCharts {
+			id := chart.ID + "_" + database
+			err := chart.AddDim(&module.Dim{ID: id, Name: database, Algo: module.Absolute})
+			if err != nil {
+				m.Errorf("failed to add dim: %s, %s", id, err)
+				continue
 			}
+			chart.MarkNotCreated()
 		}
 	}
+
+	// update the cache
+	m.discoveredDBs = databases
 }
 
 // removeObsoleteDims removes dimensions from dbstats
 // charts for dropped databases
 func (m *Mongo) removeObsoleteDims(newDatabases []string) {
-	diff := sliceDiff(m.databases, newDatabases)
+	diff := sliceDiff(m.discoveredDBs, newDatabases)
 	for _, name := range diff {
 		for _, chart := range dbStatsCharts {
 			id := chart.ID + "_" + name

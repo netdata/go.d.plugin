@@ -10,7 +10,7 @@ import (
 type Config struct {
 	Uri       string             `yaml:"uri"`
 	Timeout   time.Duration      `yaml:"timeout"`
-	Databases matcher.SimpleExpr `yaml:"databases"`
+	Databases matcher.SimpleExpr `yaml:"discoveredDBs"`
 }
 
 func init() {
@@ -31,8 +31,7 @@ func New() *Mongo {
 		},
 		charts:                &module.Charts{},
 		optionalChartsEnabled: make(map[string]bool),
-		dimsEnabled:           make(map[string]bool),
-		databases:             make([]string, 0),
+		discoveredDBs:         make([]string, 0),
 		mongoCollector:        &mongoCollector{},
 	}
 }
@@ -44,8 +43,7 @@ type Mongo struct {
 	charts                *module.Charts
 	databasesMatcher      matcher.Matcher
 	optionalChartsEnabled map[string]bool
-	databases             []string
-	dimsEnabled           map[string]bool
+	discoveredDBs         []string
 }
 
 func (m *Mongo) Init() bool {

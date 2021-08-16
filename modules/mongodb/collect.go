@@ -99,7 +99,6 @@ func (m *Mongo) collectDbStats(ms map[string]int64) error {
 
 	// add dims for each database
 	m.updateDBStatsCharts(databases)
-	m.databases = databases
 
 	for _, database := range databases {
 		stats, err := m.mongoCollector.dbStats(database)
