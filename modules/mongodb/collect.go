@@ -82,10 +82,18 @@ func (m *Mongo) dbStatsCollect() map[string]int64 {
 	if m.databasesMatcher == nil {
 		return nil
 	}
-	databases, err := m.mongoCollector.listDatabaseNames()
+	allDatabases, err := m.mongoCollector.listDatabaseNames()
 	if err != nil {
 		m.Errorf("failed to get database names: %s", err)
 		return nil
+	}
+
+	// filter matching databases and exclude non-matching
+	var databases []string
+	for _, database := range allDatabases {
+		if m.databasesMatcher.MatchString(database) {
+			databases = append(databases, database)
+		}
 	}
 
 	// add dims for each database
@@ -94,9 +102,6 @@ func (m *Mongo) dbStatsCollect() map[string]int64 {
 
 	ms := map[string]int64{}
 	for _, database := range databases {
-		if !m.databasesMatcher.MatchString(database) {
-			continue
-		}
 		stats, err := m.mongoCollector.dbStats(database)
 		if err != nil {
 			m.Errorf("failed to get database stats for %s: %s", database, err)

@@ -495,9 +495,6 @@ func (m *Mongo) updateDBStatsCharts(databases []string) {
 	if len(databases) == 0 {
 		return
 	}
-	if m.databasesMatcher == nil {
-		return
-	}
 
 	// remove dims for not existing databases
 	m.removeObsoleteDims(databases)
@@ -505,9 +502,6 @@ func (m *Mongo) updateDBStatsCharts(databases []string) {
 	// add dimensions for new databases
 	for _, chart := range dbStatsCharts {
 		for _, name := range databases {
-			if !m.databasesMatcher.MatchString(name) {
-				continue
-			}
 			if !m.dimsEnabled[chart.ID+"_"+name] {
 				id := chart.ID + "_" + name
 				err := chart.AddDim(&module.Dim{ID: id, Name: name, Algo: module.Absolute})
