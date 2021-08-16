@@ -88,13 +88,13 @@ func (m *Mongo) Collect() map[string]int64 {
 	}
 
 	ms := map[string]int64{}
-	for _, result := range []map[string]int64{
-		m.serverStatusCollect(),
-		m.dbStatsCollect(),
-	} {
-		for k, v := range result {
-			ms[k] = v
-		}
+	if err := m.collectServerStatus(ms); err != nil {
+		m.Errorf("couldn't collecting server status metrics: %s", err)
+		return nil
+	}
+
+	if err := m.collectDbStats(ms); err != nil {
+		m.Errorf("couldn't collecting dbstats metrics: %s", err)
 	}
 
 	if len(ms) == 0 {

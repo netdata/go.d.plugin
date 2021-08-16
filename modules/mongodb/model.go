@@ -245,11 +245,11 @@ type dbStats struct {
 }
 
 func (d *dbStats) toMap(dbName string, m map[string]int64) {
-	m["collections_"+dbName] = d.Collections
-	m["views_"+dbName] = d.Views
-	m["indexes_"+dbName] = d.Indexes
-	m["documents_"+dbName] = d.Objects
-	m["data_size_"+dbName] = d.DataSize
-	m["index_size_"+dbName] = d.IndexSize
-	m["storage_size_"+dbName] = d.StorageSize
+	m["database_collections_"+dbName] = d.Collections
+	m["database_views_"+dbName] = d.Views
+	m["database_indexes_"+dbName] = d.Indexes
+	m["database_documents_"+dbName] = d.Objects
+	m["database_data_size_"+dbName] = d.DataSize
+	m["database_index_size_"+dbName] = d.IndexSize
+	m["database_storage_size_"+dbName] = d.StorageSize
 }
