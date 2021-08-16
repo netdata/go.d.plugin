@@ -61,7 +61,7 @@ func (m *Mongo) Init() bool {
 			m.Errorf("error on creating 'databases' matcher : %v", err)
 			return false
 		}
-		m.databasesMatcher = matcher.WithCache(mMatcher)
+		m.databasesMatcher = mMatcher
 	}
 
 	var err error
@@ -111,8 +111,8 @@ func (m *Mongo) Cleanup() {
 	}
 }
 
-func (m *Mongo) initCharts() (*module.Charts, error) {
-	charts := module.Charts{}
+func (m Mongo) initCharts() (*module.Charts, error) {
+	var charts module.Charts
 	err := charts.Add(serverStatusCharts...)
 	if err != nil {
 		return nil, err

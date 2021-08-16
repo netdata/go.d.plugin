@@ -20,11 +20,11 @@ var serverStatusCharts = module.Charts{
 
 // dbStatsCharts are used to collect per database metrics
 var dbStatsCharts = []*module.Chart{
-	dbStatsCollectionsChart,
-	dbStatsIndexesChart,
-	dbStatsViewsChart,
-	dbStatsDocumentsChart,
-	dbStatsSizeChart,
+	chartDBStatsCollections,
+	chartDBStatsIndexes,
+	chartDBStatsViews,
+	chartDBStatsDocuments,
+	chartDBStatsSize,
 }
 
 var (
@@ -443,54 +443,56 @@ var (
 )
 
 var (
-	dbStatsCollectionsChart = &module.Chart{
-		ID:    "collections",
+	chartDBStatsCollections = &module.Chart{
+		ID:    "database_collections",
 		Title: "Collections",
 		Units: "collections",
 		Fam:   "database_statistics",
-		Ctx:   "mongodb.collections",
+		Ctx:   "mongodb.database_collections",
 		Type:  module.Stacked,
 	}
-	dbStatsIndexesChart = &module.Chart{
-		ID:    "indexes",
+
+	chartDBStatsIndexes = &module.Chart{
+		ID:    "database_indexes",
 		Title: "Indexes",
 		Units: "indexes",
 		Fam:   "database_statistics",
-		Ctx:   "mongodb.indexes",
+		Ctx:   "mongodb.database_indexes",
 		Type:  module.Stacked,
 	}
-	dbStatsViewsChart = &module.Chart{
-		ID:    "views",
+
+	chartDBStatsViews = &module.Chart{
+		ID:    "database_views",
 		Title: "Views",
 		Units: "views",
 		Fam:   "database_statistics",
-		Ctx:   "mongodb.views",
+		Ctx:   "mongodb.database_views",
 		Type:  module.Stacked,
 	}
 
-	dbStatsDocumentsChart = &module.Chart{
-		ID:    "documents",
+	chartDBStatsDocuments = &module.Chart{
+		ID:    "database_documents",
 		Title: "Documents",
 		Units: "documents",
 		Fam:   "database_statistics",
-		Ctx:   "mongodb.documents",
+		Ctx:   "mongodb.database_documents",
 		Type:  module.Stacked,
 	}
 
-	dbStatsSizeChart = &module.Chart{
-		ID:    "storage_size",
+	chartDBStatsSize = &module.Chart{
+		ID:    "database_storage_size",
 		Title: "Disk Size",
 		Units: "bytes",
 		Fam:   "database_statistics",
-		Ctx:   "mongodb.storage_size",
+		Ctx:   "mongodb.database_storage_size",
 		Type:  module.Stacked,
 	}
 )
 
-// dimsForDbStats adds dimensions for new databases and
+// updateDBStatsCharts adds dimensions for new databases and
 // removes for dropped
-func (m *Mongo) dimsForDbStats(newDatabases []string) {
-	if len(newDatabases) == 0 {
+func (m *Mongo) updateDBStatsCharts(databases []string) {
+	if len(databases) == 0 {
 		return
 	}
 	if m.databasesMatcher == nil {
@@ -498,11 +500,11 @@ func (m *Mongo) dimsForDbStats(newDatabases []string) {
 	}
 
 	// remove dims for not existing databases
-	m.removeObsoleteDims(newDatabases)
+	m.removeObsoleteDims(databases)
 
 	// add dimensions for new databases
 	for _, chart := range dbStatsCharts {
-		for _, name := range newDatabases {
+		for _, name := range databases {
 			if !m.databasesMatcher.MatchString(name) {
 				continue
 			}
