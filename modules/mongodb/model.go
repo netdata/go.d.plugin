@@ -235,13 +235,13 @@ type WiredTiger struct {
 }
 
 type dbStats struct {
-	Collections int64 `bson:"collections" stm:"collections"`
-	Views       int64 `bson:"views" stm:"views"`
-	Indexes     int64 `bson:"indexes" stm:"indexes"`
-	Objects     int64 `bson:"objects" stm:"documents"`
-	DataSize    int64 `bson:"dataSize" stm:"data_size"`
-	IndexSize   int64 `bson:"indexSize" stm:"index_size"`
-	StorageSize int64 `bson:"storageSize" stm:"storage_size"`
+	Collections int64 `bson:"collections"`
+	Views       int64 `bson:"views"`
+	Indexes     int64 `bson:"indexes"`
+	Objects     int64 `bson:"objects"`
+	DataSize    int64 `bson:"dataSize"`
+	IndexSize   int64 `bson:"indexSize"`
+	StorageSize int64 `bson:"storageSize"`
 }
 
 func (d *dbStats) toMap(dbName string, m map[string]int64) {

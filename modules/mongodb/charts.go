@@ -492,10 +492,6 @@ var (
 // updateDBStatsCharts adds dimensions for new databases and
 // removes for dropped
 func (m *Mongo) updateDBStatsCharts(databases []string) {
-	if len(databases) == 0 {
-		return
-	}
-
 	// remove dims for not existing databases
 	m.removeObsoleteDims(databases)
 
