@@ -192,10 +192,10 @@ type WiredTiger struct {
 		DhandleReadLockAcquisitions                int `bson:"dhandle read lock acquisitions" stm:"read_acquisitions"`
 		DhandleWriteLockAcquisitions               int `bson:"dhandle write lock acquisitions" stm:"write_acquisitions"`
 		DurableTimestampQueueReadLockAcquisitions  int `bson:"durable timestamp queue read lock acquisitions" stm:"durable_timestamp_queue_read_acquisitions"`
-		DurableTimestampQueueWriteLockAcquisitions int `bson:"durable timestamp queue write lock acquisitions" stm:"durable timestamp_queue_write_acquisitions"`
+		DurableTimestampQueueWriteLockAcquisitions int `bson:"durable timestamp queue write lock acquisitions" stm:"durable_timestamp_queue_write_acquisitions"`
 		MetadataLockAcquisitions                   int `bson:"metadata lock acquisitions" stm:"metadata_acquisitions"`
 		ReadTimestampQueueReadLockAcquisitions     int `bson:"read timestamp queue read lock acquisitions" stm:"read_timestamp_queue_read_acquisitions"`
-		ReadTimestampQueueWriteLockAcquisitions    int `bson:"read timestamp queue write lock acquisitions" stm:"read timestamp_queue_write_acquisitions"`
+		ReadTimestampQueueWriteLockAcquisitions    int `bson:"read timestamp queue write lock acquisitions" stm:"read_timestamp_queue_write_acquisitions"`
 		SchemaLockAcquisitions                     int `bson:"schema lock acquisitions" stm:"schema_acquisitions"`
 		TableReadLockAcquisitions                  int `bson:"table read lock acquisitions" stm:"table_read_acquisitions"`
 		TableWriteLockAcquisitions                 int `bson:"table write lock acquisitions" stm:"table_write_acquisitions"`
