@@ -112,16 +112,22 @@ type TcmallocTcmalloc struct {
 
 type Locks struct {
 	Global *struct {
-		R *int64 `bson:"r" stm:"read"`
-		W *int64 `bson:"W" stm:"write"`
+		AcquireCount struct {
+			R *int64 `bson:"r" stm:"read"`
+			W *int64 `bson:"W" stm:"write"`
+		} `bson:"acquireCount" stm:""`
 	} `bson:"Global" stm:"global"`
 	Database *struct {
-		R *int64 `bson:"r" stm:"read"`
-		W *int64 `bson:"W" stm:"write"`
+		AcquireCount struct {
+			R *int64 `bson:"r" stm:"read"`
+			W *int64 `bson:"W" stm:"write"`
+		} `bson:"acquireCount" stm:""`
 	} `bson:"Database" stm:"database"`
 	Collection *struct {
-		R *int64 `bson:"r" stm:"read"`
-		W *int64 `bson:"W" stm:"write"`
+		AcquireCount struct {
+			R *int64 `bson:"r" stm:"read"`
+			W *int64 `bson:"W" stm:"write"`
+		} `bson:"acquireCount" stm:""`
 	} `bson:"Collection" stm:"collection"`
 }
 
@@ -186,10 +192,10 @@ type WiredTiger struct {
 		DhandleReadLockAcquisitions                int `bson:"dhandle read lock acquisitions" stm:"read_acquisitions"`
 		DhandleWriteLockAcquisitions               int `bson:"dhandle write lock acquisitions" stm:"write_acquisitions"`
 		DurableTimestampQueueReadLockAcquisitions  int `bson:"durable timestamp queue read lock acquisitions" stm:"durable_timestamp_queue_read_acquisitions"`
-		DurableTimestampQueueWriteLockAcquisitions int `bson:"durable timestamp queue write lock acquisitions" stm:"durable timestamp_queue_write_acquisitions"`
+		DurableTimestampQueueWriteLockAcquisitions int `bson:"durable timestamp queue write lock acquisitions" stm:"durable_timestamp_queue_write_acquisitions"`
 		MetadataLockAcquisitions                   int `bson:"metadata lock acquisitions" stm:"metadata_acquisitions"`
 		ReadTimestampQueueReadLockAcquisitions     int `bson:"read timestamp queue read lock acquisitions" stm:"read_timestamp_queue_read_acquisitions"`
-		ReadTimestampQueueWriteLockAcquisitions    int `bson:"read timestamp queue write lock acquisitions" stm:"read timestamp_queue_write_acquisitions"`
+		ReadTimestampQueueWriteLockAcquisitions    int `bson:"read timestamp queue write lock acquisitions" stm:"read_timestamp_queue_write_acquisitions"`
 		SchemaLockAcquisitions                     int `bson:"schema lock acquisitions" stm:"schema_acquisitions"`
 		TableReadLockAcquisitions                  int `bson:"table read lock acquisitions" stm:"table_read_acquisitions"`
 		TableWriteLockAcquisitions                 int `bson:"table write lock acquisitions" stm:"table_write_acquisitions"`
@@ -209,7 +215,7 @@ type WiredTiger struct {
 		SchemaLockInternalThreadWaitTimeUsecs                      int `bson:"schema lock internal thread wait time (usecs)" stm:"schema_internal_thread_wait_time"`
 	} `bson:"lock" stm:"lock"`
 	Log *struct {
-		LogFlushOperations             int `bson:"log flush operations" stm:"fluh"`
+		LogFlushOperations             int `bson:"log flush operations" stm:"flush"`
 		LogForceWriteOperations        int `bson:"log force write operations" stm:"force_write"`
 		LogForceWriteOperationsSkipped int `bson:"log force write operations skipped" stm:"write_skip"`
 		LogScanOperations              int `bson:"log scan operations" stm:"scan"`
