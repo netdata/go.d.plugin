@@ -215,7 +215,7 @@ type WiredTiger struct {
 		SchemaLockInternalThreadWaitTimeUsecs                      int `bson:"schema lock internal thread wait time (usecs)" stm:"schema_internal_thread_wait_time"`
 	} `bson:"lock" stm:"lock"`
 	Log *struct {
-		LogFlushOperations             int `bson:"log flush operations" stm:"fluh"`
+		LogFlushOperations             int `bson:"log flush operations" stm:"flush"`
 		LogForceWriteOperations        int `bson:"log force write operations" stm:"force_write"`
 		LogForceWriteOperationsSkipped int `bson:"log force write operations skipped" stm:"write_skip"`
 		LogScanOperations              int `bson:"log scan operations" stm:"scan"`
