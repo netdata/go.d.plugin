@@ -112,16 +112,22 @@ type TcmallocTcmalloc struct {
 
 type Locks struct {
 	Global *struct {
-		R *int64 `bson:"r" stm:"read"`
-		W *int64 `bson:"W" stm:"write"`
+		AcquireCount struct {
+			R *int64 `bson:"r" stm:"read"`
+			W *int64 `bson:"W" stm:"write"`
+		} `bson:"acquireCount" stm:""`
 	} `bson:"Global" stm:"global"`
 	Database *struct {
-		R *int64 `bson:"r" stm:"read"`
-		W *int64 `bson:"W" stm:"write"`
+		AcquireCount struct {
+			R *int64 `bson:"r" stm:"read"`
+			W *int64 `bson:"W" stm:"write"`
+		} `bson:"acquireCount" stm:""`
 	} `bson:"Database" stm:"database"`
 	Collection *struct {
-		R *int64 `bson:"r" stm:"read"`
-		W *int64 `bson:"W" stm:"write"`
+		AcquireCount struct {
+			R *int64 `bson:"r" stm:"read"`
+			W *int64 `bson:"W" stm:"write"`
+		} `bson:"acquireCount" stm:""`
 	} `bson:"Collection" stm:"collection"`
 }
 
