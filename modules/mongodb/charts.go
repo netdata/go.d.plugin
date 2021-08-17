@@ -19,7 +19,7 @@ var serverStatusCharts = module.Charts{
 }
 
 // dbStatsCharts are used to collect per database metrics
-var dbStatsCharts = []*module.Chart{
+var dbStatsCharts = module.Charts{
 	chartDBStatsCollections,
 	chartDBStatsIndexes,
 	chartDBStatsViews,
@@ -497,7 +497,7 @@ func (m *Mongo) updateDBStatsCharts(databases []string) {
 
 	// add dimensions for new databases
 	for _, database := range sliceDiff(databases, m.discoveredDBs) {
-		for _, chart := range dbStatsCharts {
+		for _, chart := range *m.chartsDbStats {
 			id := chart.ID + "_" + database
 			err := chart.AddDim(&module.Dim{ID: id, Name: database, Algo: module.Absolute})
 			if err != nil {
@@ -517,7 +517,7 @@ func (m *Mongo) updateDBStatsCharts(databases []string) {
 func (m *Mongo) removeObsoleteDims(newDatabases []string) {
 	diff := sliceDiff(m.discoveredDBs, newDatabases)
 	for _, name := range diff {
-		for _, chart := range dbStatsCharts {
+		for _, chart := range *m.chartsDbStats {
 			id := chart.ID + "_" + name
 			err := chart.MarkDimRemove(id, true)
 			if err != nil {

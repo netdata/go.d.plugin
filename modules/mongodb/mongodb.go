@@ -44,6 +44,7 @@ type Mongo struct {
 	databasesMatcher      matcher.Matcher
 	optionalChartsEnabled map[string]bool
 	discoveredDBs         []string
+	chartsDbStats         *module.Charts
 }
 
 func (m *Mongo) Init() bool {
@@ -109,15 +110,20 @@ func (m *Mongo) Cleanup() {
 	}
 }
 
-func (m Mongo) initCharts() (*module.Charts, error) {
+func (m *Mongo) initCharts() (*module.Charts, error) {
 	var charts module.Charts
 	err := charts.Add(serverStatusCharts...)
 	if err != nil {
 		return nil, err
 	}
-	err = charts.Add(dbStatsCharts...)
-	if err != nil {
-		return &charts, err
+
+	m.chartsDbStats = dbStatsCharts.Copy()
+	for _, chart := range *m.chartsDbStats {
+		err = charts.Add(chart)
+		if err != nil {
+			return &charts, err
+		}
 	}
+
 	return &charts, nil
 }
