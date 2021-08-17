@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	Uri       string             `yaml:"uri"`
+	URI       string             `yaml:"uri"`
 	Timeout   time.Duration      `yaml:"timeout"`
 	Databases matcher.SimpleExpr `yaml:"databases"`
 }
@@ -23,7 +23,7 @@ func New() *Mongo {
 	return &Mongo{
 		Config: Config{
 			Timeout: 20,
-			Uri:     "mongodb://localhost:27017",
+			URI:     "mongodb://localhost:27017",
 			Databases: matcher.SimpleExpr{
 				Includes: []string{},
 				Excludes: []string{},
@@ -49,7 +49,7 @@ type Mongo struct {
 
 func (m *Mongo) Init() bool {
 	m.Infof("initializing mongodb")
-	if m.Uri == "" {
+	if m.URI == "" {
 		m.Errorf("connection URI is empty")
 		return false
 	}
@@ -81,7 +81,7 @@ func (m *Mongo) Charts() *module.Charts {
 }
 
 func (m *Mongo) Collect() map[string]int64 {
-	if err := m.mongoCollector.initClient(m.Uri, m.Timeout); err != nil {
+	if err := m.mongoCollector.initClient(m.URI, m.Timeout); err != nil {
 		m.Errorf("init mongo client: %v", err)
 		return nil
 	}

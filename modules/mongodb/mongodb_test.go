@@ -23,14 +23,14 @@ func TestMongo_Init(t *testing.T) {
 		"fails on unset 'address'": {
 			success: true,
 			config: Config{
-				Uri:     "mongodb://localhost:27017",
+				URI:     "mongodb://localhost:27017",
 				Timeout: 10,
 			},
 		},
 		"fails on invalid port": {
 			success: false,
 			config: Config{
-				Uri:     "",
+				URI:     "",
 				Timeout: 0,
 			},
 		},
@@ -59,7 +59,7 @@ func TestMongo_ChartsOptional(t *testing.T) {
 
 func TestMongo_initMongoClient_uri(t *testing.T) {
 	m := New()
-	m.Config.Uri = "mongodb://user:pass@localhost:27017"
+	m.Config.URI = "mongodb://user:pass@localhost:27017"
 	assert.True(t, m.Init())
 }
 
@@ -72,7 +72,7 @@ func TestMongo_CheckFail(t *testing.T) {
 func TestMongo_Success(t *testing.T) {
 	m := New()
 	m.Config.Timeout = 1
-	m.Config.Uri = ""
+	m.Config.URI = ""
 	obj := &mockMongo{serverStatusResponse: v5_0_0.ServerStatus}
 	m.mongoCollector = obj
 	assert.True(t, m.Check())
@@ -85,7 +85,7 @@ func TestMongo_Collect_DbStats(t *testing.T) {
 		dbStatsResponse:      "{}",
 	}
 	m.Config.Databases.Includes = []string{"* *"}
-	m.Uri = "mongodb://localhost"
+	m.URI = "mongodb://localhost"
 	m.Init()
 	ms := m.Collect()
 	assert.Len(t, ms, reflect.ValueOf(dbStats{}).NumField())
@@ -98,7 +98,7 @@ func TestMongo_Collect_DbStats_Fail(t *testing.T) {
 		dbStatsResponse:      "",
 	}
 	m.Config.Databases.Includes = []string{"* *"}
-	m.Uri = "mongodb://localhost"
+	m.URI = "mongodb://localhost"
 	m.Init()
 	ms := m.Collect()
 	assert.Len(t, ms, 0)
@@ -111,7 +111,7 @@ func TestMongo_Collect_DbStats_EmptyMatcher(t *testing.T) {
 		dbStatsResponse:      "{}",
 	}
 	m.Config.Databases.Includes = []string{"* not_matching"}
-	m.Uri = "mongodb://localhost"
+	m.URI = "mongodb://localhost"
 	m.Init()
 	ms := m.Collect()
 	assert.Len(t, ms, 0)
