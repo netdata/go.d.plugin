@@ -10,7 +10,7 @@ import (
 type Config struct {
 	Uri       string             `yaml:"uri"`
 	Timeout   time.Duration      `yaml:"timeout"`
-	Databases matcher.SimpleExpr `yaml:"databasesupdateDBStatsCharts"`
+	Databases matcher.SimpleExpr `yaml:"databases"`
 }
 
 func init() {
