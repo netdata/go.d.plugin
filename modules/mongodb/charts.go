@@ -493,7 +493,7 @@ var (
 // removes for dropped
 func (m *Mongo) updateDBStatsCharts(databases []string) {
 	// remove dims for not existing databases
-	m.removeObsoleteDims(databases)
+	m.removeDatabasesFromDBStatsCharts(databases)
 
 	// add dimensions for new databases
 	for _, database := range sliceDiff(databases, m.discoveredDBs) {
@@ -501,7 +501,7 @@ func (m *Mongo) updateDBStatsCharts(databases []string) {
 			id := chart.ID + "_" + database
 			err := chart.AddDim(&module.Dim{ID: id, Name: database, Algo: module.Absolute})
 			if err != nil {
-				m.Errorf("failed to add dim: %s, %s", id, err)
+				m.Warningf("failed to add dim: %s, %v", id, err)
 				continue
 			}
 			chart.MarkNotCreated()
@@ -512,16 +512,16 @@ func (m *Mongo) updateDBStatsCharts(databases []string) {
 	m.discoveredDBs = databases
 }
 
-// removeObsoleteDims removes dimensions from dbstats
+// removeDatabasesFromDBStatsCharts removes dimensions from dbstats
 // charts for dropped databases
-func (m *Mongo) removeObsoleteDims(newDatabases []string) {
+func (m *Mongo) removeDatabasesFromDBStatsCharts(newDatabases []string) {
 	diff := sliceDiff(m.discoveredDBs, newDatabases)
 	for _, name := range diff {
 		for _, chart := range *m.chartsDbStats {
 			id := chart.ID + "_" + name
 			err := chart.MarkDimRemove(id, true)
 			if err != nil {
-				m.Warningf("failed to remove dimension %s with error: %s", id, err.Error())
+				m.Warningf("failed to remove dimension %s with error: %v", id, err)
 				continue
 			}
 			chart.MarkNotCreated()
