@@ -239,3 +239,23 @@ type WiredTiger struct {
 		TransactionsRolledBack int `bson:"transactions rolled back" stm:"rolled_back"`
 	} `bson:"transaction" stm:"transaction"`
 }
+
+type dbStats struct {
+	Collections int64 `bson:"collections"`
+	Views       int64 `bson:"views"`
+	Indexes     int64 `bson:"indexes"`
+	Objects     int64 `bson:"objects"`
+	DataSize    int64 `bson:"dataSize"`
+	IndexSize   int64 `bson:"indexSize"`
+	StorageSize int64 `bson:"storageSize"`
+}
+
+func (d *dbStats) toMap(dbName string, m map[string]int64) {
+	m["database_collections_"+dbName] = d.Collections
+	m["database_views_"+dbName] = d.Views
+	m["database_indexes_"+dbName] = d.Indexes
+	m["database_documents_"+dbName] = d.Objects
+	m["database_data_size_"+dbName] = d.DataSize
+	m["database_index_size_"+dbName] = d.IndexSize
+	m["database_storage_size_"+dbName] = d.StorageSize
+}

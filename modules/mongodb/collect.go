@@ -1,28 +1,30 @@
 package mongo
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
-// serverStatusCollect creates the map[string]int64 for the available dims.
+// collectServerStatus creates the map[string]int64 for the available dims.
 // nil values will be ignored and not added to the map and thus metrics
 // should not appear on the dashboard.
 // Because mongo reports a metric only after it first appears, some dims might
 // take a while to appear. For example, in order to report number of create
 // commands, a document must be created first.
-func (m *Mongo) serverStatusCollect() map[string]int64 {
+func (m *Mongo) collectServerStatus(ms map[string]int64) error {
 	status, err := m.mongoCollector.serverStatus()
 	if err != nil {
-		m.Errorf("error get server status from mongo: %s", err)
-		return nil
+		return fmt.Errorf("serverStatus command failed: %s", err)
 	}
 
 	m.addOptionalCharts(status)
-	ms := stm.ToMap(status)
-	return ms
+	for k, v := range stm.ToMap(status) {
+		ms[k] = v
+	}
+	return nil
 }
 
 // addOptionalCharts tries to add charts based on the availability of
@@ -74,4 +76,36 @@ func (m *Mongo) metricExists(iface interface{}, chart *module.Chart) {
 		m.optionalChartsEnabled[chart.ID] = true
 		return
 	}
+}
+
+// collectDbStats creates the map[string]int64 for the available dims
+// it calls listDatabase and then dbstats for each database internally
+func (m *Mongo) collectDbStats(ms map[string]int64) error {
+	if m.databasesMatcher == nil {
+		return nil
+	}
+	allDatabases, err := m.mongoCollector.listDatabaseNames()
+	if err != nil {
+		return fmt.Errorf("cannot get database names: %s", err)
+	}
+
+	// filter matching databases and exclude non-matching
+	var databases []string
+	for _, database := range allDatabases {
+		if m.databasesMatcher.MatchString(database) {
+			databases = append(databases, database)
+		}
+	}
+
+	// add dims for each database
+	m.updateDBStatsCharts(databases)
+
+	for _, database := range databases {
+		stats, err := m.mongoCollector.dbStats(database)
+		if err != nil {
+			return fmt.Errorf("dbStats command failed: %s", err)
+		}
+		stats.toMap(database, ms)
+	}
+	return nil
 }

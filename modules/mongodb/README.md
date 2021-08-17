@@ -137,7 +137,6 @@ if serverStatus reports tcmalloc stats
 
 if serverStatus reports tcmalloc stats
 
-
 #### Acquired locks
 
 - global read locks in `locks/s`
@@ -175,7 +174,7 @@ is used as the storage engine.
 - bytes written from cache in `bytes`
 
 #### Wired Tiger Capacity
-    
+
 - time waiting due to total capacity in `usec`
 - time waiting during checkpoint in `usec`
 - time waiting during eviction in `usec`
@@ -276,6 +275,46 @@ is used as the storage engine.
 - transaction sync calls in `transactions/s`
 - transactions committed in `transactions/s`
 - transactions rolled back in `transactions/s`
+
+### [Database Statistics](https://docs.mongodb.com/manual/reference/command/dbStats/#dbstats)
+
+Stack chart that include per database metrics for collections, indexes,
+views, documents and disk size. Because internally the module has to run the
+`dbstats` commands once per database and each server may have a large number of
+databases, these charts are disabled by default. To enabled them please use
+a [matcher](https://learn.netdata.cloud/docs/agent/collectors/go.d.plugin/pkg/matcher) 
+in the configuration file to enable the collection for specific or all databases.
+
+For example, to exclude the admin and config databases use:
+```yaml
+ databases:
+   includes:
+     - "* *"
+   excludes:
+     - "= config"
+     - "= admin"
+```
+
+
+#### [Collections](https://docs.mongodb.com/manual/reference/command/dbStats/#mongodb-data-dbStats.collections)
+
+Number of collections per database in `collections`
+
+#### [Indexes](https://docs.mongodb.com/manual/reference/command/dbStats/#mongodb-data-dbStats.indexes)
+
+Number of indexes per database in `indexes`
+
+#### [Views](https://docs.mongodb.com/manual/reference/command/dbStats/#mongodb-data-dbStats.views)
+
+Number of views per database in `views`
+
+#### [Documents](https://docs.mongodb.com/manual/reference/command/dbStats/#mongodb-data-dbStats.objects)
+
+Number of documents per database in `documents`
+
+#### [Disk Size](https://docs.mongodb.com/manual/reference/command/dbStats/#mongodb-data-dbStats.dataSize)
+
+Total space allocated to all collections in the database for document storage(including free space) in `bytes`
 
 ## Prerequisites
 

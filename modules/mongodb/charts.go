@@ -18,6 +18,15 @@ var serverStatusCharts = module.Charts{
 	chartAsserts.Copy(),
 }
 
+// dbStatsCharts are used to collect per database metrics
+var dbStatsCharts = module.Charts{
+	chartDBStatsCollections,
+	chartDBStatsIndexes,
+	chartDBStatsViews,
+	chartDBStatsDocuments,
+	chartDBStatsSize,
+}
+
 var (
 	chartOpcounter = module.Chart{
 		ID:    "operations",
@@ -432,3 +441,105 @@ var (
 		},
 	}
 )
+
+var (
+	chartDBStatsCollections = &module.Chart{
+		ID:    "database_collections",
+		Title: "Collections",
+		Units: "collections",
+		Fam:   "database_statistics",
+		Ctx:   "mongodb.database_collections",
+		Type:  module.Stacked,
+	}
+
+	chartDBStatsIndexes = &module.Chart{
+		ID:    "database_indexes",
+		Title: "Indexes",
+		Units: "indexes",
+		Fam:   "database_statistics",
+		Ctx:   "mongodb.database_indexes",
+		Type:  module.Stacked,
+	}
+
+	chartDBStatsViews = &module.Chart{
+		ID:    "database_views",
+		Title: "Views",
+		Units: "views",
+		Fam:   "database_statistics",
+		Ctx:   "mongodb.database_views",
+		Type:  module.Stacked,
+	}
+
+	chartDBStatsDocuments = &module.Chart{
+		ID:    "database_documents",
+		Title: "Documents",
+		Units: "documents",
+		Fam:   "database_statistics",
+		Ctx:   "mongodb.database_documents",
+		Type:  module.Stacked,
+	}
+
+	chartDBStatsSize = &module.Chart{
+		ID:    "database_storage_size",
+		Title: "Disk Size",
+		Units: "bytes",
+		Fam:   "database_statistics",
+		Ctx:   "mongodb.database_storage_size",
+		Type:  module.Stacked,
+	}
+)
+
+// updateDBStatsCharts adds dimensions for new databases and
+// removes for dropped
+func (m *Mongo) updateDBStatsCharts(databases []string) {
+	// remove dims for not existing databases
+	m.removeDatabasesFromDBStatsCharts(databases)
+
+	// add dimensions for new databases
+	for _, database := range sliceDiff(databases, m.discoveredDBs) {
+		for _, chart := range *m.chartsDbStats {
+			id := chart.ID + "_" + database
+			err := chart.AddDim(&module.Dim{ID: id, Name: database, Algo: module.Absolute})
+			if err != nil {
+				m.Warningf("failed to add dim: %s, %v", id, err)
+				continue
+			}
+			chart.MarkNotCreated()
+		}
+	}
+
+	// update the cache
+	m.discoveredDBs = databases
+}
+
+// removeDatabasesFromDBStatsCharts removes dimensions from dbstats
+// charts for dropped databases
+func (m *Mongo) removeDatabasesFromDBStatsCharts(newDatabases []string) {
+	diff := sliceDiff(m.discoveredDBs, newDatabases)
+	for _, name := range diff {
+		for _, chart := range *m.chartsDbStats {
+			id := chart.ID + "_" + name
+			err := chart.MarkDimRemove(id, true)
+			if err != nil {
+				m.Warningf("failed to remove dimension %s with error: %v", id, err)
+				continue
+			}
+			chart.MarkNotCreated()
+		}
+	}
+}
+
+// sliceDiff calculates the diff between to slices
+func sliceDiff(slice1, slice2 []string) []string {
+	mb := make(map[string]struct{}, len(slice2))
+	for _, x := range slice2 {
+		mb[x] = struct{}{}
+	}
+	var diff []string
+	for _, x := range slice1 {
+		if _, found := mb[x]; !found {
+			diff = append(diff, x)
+		}
+	}
+	return diff
+}

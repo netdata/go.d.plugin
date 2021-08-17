@@ -4,11 +4,13 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
 
 type Config struct {
-	Uri     string        `yaml:"uri"`
-	Timeout time.Duration `yaml:"timeout"`
+	URI       string             `yaml:"uri"`
+	Timeout   time.Duration      `yaml:"timeout"`
+	Databases matcher.SimpleExpr `yaml:"databases"`
 }
 
 func init() {
@@ -21,10 +23,15 @@ func New() *Mongo {
 	return &Mongo{
 		Config: Config{
 			Timeout: 20,
-			Uri:     "mongodb://localhost:27017",
+			URI:     "mongodb://localhost:27017",
+			Databases: matcher.SimpleExpr{
+				Includes: []string{},
+				Excludes: []string{},
+			},
 		},
 		charts:                &module.Charts{},
 		optionalChartsEnabled: make(map[string]bool),
+		discoveredDBs:         make([]string, 0),
 		mongoCollector:        &mongoCollector{},
 	}
 }
@@ -34,14 +41,26 @@ type Mongo struct {
 	Config                `yaml:",inline"`
 	mongoCollector        connector
 	charts                *module.Charts
+	databasesMatcher      matcher.Matcher
 	optionalChartsEnabled map[string]bool
+	discoveredDBs         []string
+	chartsDbStats         *module.Charts
 }
 
 func (m *Mongo) Init() bool {
 	m.Infof("initializing mongodb")
-	if m.Uri == "" {
+	if m.URI == "" {
 		m.Errorf("connection URI is empty")
 		return false
+	}
+
+	if !m.Databases.Empty() {
+		mMatcher, err := m.Databases.Parse()
+		if err != nil {
+			m.Errorf("error on creating 'databases' matcher : %v", err)
+			return false
+		}
+		m.databasesMatcher = mMatcher
 	}
 
 	var err error
@@ -62,12 +81,21 @@ func (m *Mongo) Charts() *module.Charts {
 }
 
 func (m *Mongo) Collect() map[string]int64 {
-	if err := m.mongoCollector.initClient(m.Uri, m.Timeout); err != nil {
+	if err := m.mongoCollector.initClient(m.URI, m.Timeout); err != nil {
 		m.Errorf("init mongo client: %v", err)
 		return nil
 	}
 
-	ms := m.serverStatusCollect()
+	ms := map[string]int64{}
+	if err := m.collectServerStatus(ms); err != nil {
+		m.Errorf("couldn't collecting server status metrics: %s", err)
+		return nil
+	}
+
+	if err := m.collectDbStats(ms); err != nil {
+		m.Errorf("couldn't collecting dbstats metrics: %s", err)
+	}
+
 	if len(ms) == 0 {
 		m.Warning("zero collected values")
 		return nil
@@ -83,5 +111,19 @@ func (m *Mongo) Cleanup() {
 }
 
 func (m *Mongo) initCharts() (*module.Charts, error) {
-	return &serverStatusCharts, nil
+	var charts module.Charts
+	err := charts.Add(serverStatusCharts...)
+	if err != nil {
+		return nil, err
+	}
+
+	m.chartsDbStats = dbStatsCharts.Copy()
+	for _, chart := range *m.chartsDbStats {
+		err = charts.Add(chart)
+		if err != nil {
+			return &charts, err
+		}
+	}
+
+	return &charts, nil
 }

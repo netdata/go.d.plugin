@@ -11,6 +11,8 @@ import (
 
 type connector interface {
 	serverStatus() (*serverStatus, error)
+	listDatabaseNames() ([]string, error)
+	dbStats(databaseName string) (*dbStats, error)
 	initClient(uri string, timeout time.Duration) error
 	close() error
 }
@@ -33,6 +35,25 @@ func (m *mongoCollector) serverStatus() (*serverStatus, error) {
 		return nil, err
 	}
 	return status, err
+}
+
+// listDatabaseNames returns a string slice with the available databases on the server.
+func (m *mongoCollector) listDatabaseNames() ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
+	defer cancel()
+	return m.Client.ListDatabaseNames(ctx, bson.M{})
+}
+
+// dbStats gets the `dbstats` metrics for a specific database.
+func (m *mongoCollector) dbStats(databaseName string) (*dbStats, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
+	defer cancel()
+	var dbStats dbStats
+	db := m.Client.Database(databaseName)
+	if err := db.RunCommand(ctx, bson.M{"dbStats": 1}).Decode(&dbStats); err != nil {
+		return nil, err
+	}
+	return &dbStats, nil
 }
 
 // initClient initialises the database client if is not initialised.
