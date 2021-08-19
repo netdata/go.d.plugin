@@ -65,7 +65,7 @@ func (t *Traefik) collectEntrypointRequestsTotal(mx map[string]int64, pms promet
 			continue
 		}
 
-		key := prefixEntrypointRequests + codeClass + "_" + ep + "_" + proto
+		key := prefixEntrypointRequests + ep + "_" + proto + "_" + codeClass
 		mx[key] += int64(pm.Value)
 
 		id := ep + "_" + proto
@@ -98,7 +98,7 @@ func (t *Traefik) collectEntrypointRequestDuration(mx map[string]int64, pms prom
 			continue
 		}
 
-		key := codeClass + "_" + ep + "_" + proto
+		key := ep + "_" + proto + "_" + codeClass
 		if pm.Name() == metricEntrypointRequestDurationSecondsCount {
 			reqCount[key] += pm.Value
 		} else {
@@ -137,7 +137,7 @@ func (t *Traefik) collectEntrypointOpenConnections(mx map[string]int64, pms prom
 			continue
 		}
 
-		key := prefixEntrypointOpenConn + method + "_" + ep + "_" + proto
+		key := prefixEntrypointOpenConn + ep + "_" + proto + "_" + method
 		mx[key] += int64(pm.Value)
 
 		id := ep + "_" + proto
@@ -166,13 +166,13 @@ func (t Traefik) updateCodeClassMetrics(mx map[string]int64) {
 	for k, v := range t.cache.entrypoints {
 		if v.requests != nil {
 			for _, c := range httpRespCodeClasses {
-				key := prefixEntrypointRequests + c + "_" + k
+				key := prefixEntrypointRequests + k + "_" + c
 				mx[key] += 0
 			}
 		}
 		if v.reqDur != nil {
 			for _, c := range httpRespCodeClasses {
-				key := prefixEntrypointReqDurAvg + c + "_" + k
+				key := prefixEntrypointReqDurAvg + k + "_" + c
 				mx[key] += 0
 			}
 		}

@@ -14,11 +14,11 @@ var chartTmplEntrypointRequests = module.Chart{
 	Ctx:   "traefik.entrypoint_requests",
 	Type:  module.Stacked,
 	Dims: module.Dims{
-		{ID: prefixEntrypointRequests + "1xx_%s_%s", Name: "1xx", Algo: module.Incremental},
-		{ID: prefixEntrypointRequests + "2xx_%s_%s", Name: "2xx", Algo: module.Incremental},
-		{ID: prefixEntrypointRequests + "3xx_%s_%s", Name: "3xx", Algo: module.Incremental},
-		{ID: prefixEntrypointRequests + "4xx_%s_%s", Name: "4xx", Algo: module.Incremental},
-		{ID: prefixEntrypointRequests + "5xx_%s_%s", Name: "5xx", Algo: module.Incremental},
+		{ID: prefixEntrypointRequests + "%s_%s_1xx", Name: "1xx", Algo: module.Incremental},
+		{ID: prefixEntrypointRequests + "%s_%s_2xx", Name: "2xx", Algo: module.Incremental},
+		{ID: prefixEntrypointRequests + "%s_%s_3xx", Name: "3xx", Algo: module.Incremental},
+		{ID: prefixEntrypointRequests + "%s_%s_4xx", Name: "4xx", Algo: module.Incremental},
+		{ID: prefixEntrypointRequests + "%s_%s_5xx", Name: "5xx", Algo: module.Incremental},
 	},
 }
 
@@ -30,11 +30,11 @@ var chartTmplEntrypointRequestDuration = module.Chart{
 	Ctx:   "traefik.entrypoint_request_duration_average",
 	Type:  module.Stacked,
 	Dims: module.Dims{
-		{ID: prefixEntrypointReqDurAvg + "1xx_%s_%s", Name: "1xx"},
-		{ID: prefixEntrypointReqDurAvg + "2xx_%s_%s", Name: "2xx"},
-		{ID: prefixEntrypointReqDurAvg + "3xx_%s_%s", Name: "3xx"},
-		{ID: prefixEntrypointReqDurAvg + "4xx_%s_%s", Name: "4xx"},
-		{ID: prefixEntrypointReqDurAvg + "5xx_%s_%s", Name: "5xx"},
+		{ID: prefixEntrypointReqDurAvg + "%s_%s_1xx", Name: "1xx"},
+		{ID: prefixEntrypointReqDurAvg + "%s_%s_2xx", Name: "2xx"},
+		{ID: prefixEntrypointReqDurAvg + "%s_%s_3xx", Name: "3xx"},
+		{ID: prefixEntrypointReqDurAvg + "%s_%s_4xx", Name: "4xx"},
+		{ID: prefixEntrypointReqDurAvg + "%s_%s_5xx", Name: "5xx"},
 	},
 }
 
