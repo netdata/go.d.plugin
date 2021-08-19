@@ -8,9 +8,9 @@ import (
 
 var chartTmplEntrypointRequests = module.Chart{
 	ID:    "entrypoint_requests_%s_%s",
-	Title: "Processed HTTP requests for entrypoint <code>%s</code> protocol <code>%s</code>",
+	Title: "Processed HTTP requests on <code>%s</code> entrypoint (protocol <code>%s</code>)",
 	Units: "requests/s",
-	Fam:   "entrypoint requests",
+	Fam:   "entrypoint %s %s",
 	Ctx:   "traefik.entrypoint_requests",
 	Type:  module.Stacked,
 	Dims: module.Dims{
@@ -24,9 +24,9 @@ var chartTmplEntrypointRequests = module.Chart{
 
 var chartTmplEntrypointRequestDuration = module.Chart{
 	ID:    "entrypoint_request_duration_%s_%s",
-	Title: "Processed HTTP Request average duration for entrypoint <code>%s</code> protocol <code>%s</code>",
+	Title: "Average HTTP request processing time on <code>%s</code> entrypoint (protocol <code>%s</code>)",
 	Units: "milliseconds",
-	Fam:   "entrypoint request duration",
+	Fam:   "entrypoint %s %s",
 	Ctx:   "traefik.entrypoint_request_duration_average",
 	Type:  module.Stacked,
 	Dims: module.Dims{
@@ -40,9 +40,9 @@ var chartTmplEntrypointRequestDuration = module.Chart{
 
 var chartTmplEntrypointOpenConnections = module.Chart{
 	ID:    "entrypoint_open_connections_%s_%s",
-	Title: "Open connections for entrypoint <code>%s</code> protocol <code>%s</code>",
+	Title: "Open connections on <code>%s</code> entrypoint (protocol <code>%s</code>)",
 	Units: "connections",
-	Fam:   "entrypoint connections",
+	Fam:   "entrypoint %s %s",
 	Ctx:   "traefik.entrypoint_open_connections",
 	Type:  module.Stacked,
 }
@@ -63,6 +63,7 @@ func newEntrypointChart(tmpl module.Chart, entrypoint, proto string) *module.Cha
 	chart := tmpl.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, entrypoint, proto)
 	chart.Title = fmt.Sprintf(chart.Title, entrypoint, proto)
+	chart.Fam = fmt.Sprintf(chart.Fam, entrypoint, proto)
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, entrypoint, proto)
 	}
