@@ -152,7 +152,7 @@ func (t *Traefik) collectEntrypointOpenConnections(mx map[string]int64, pms prom
 
 		if !ce.openConnMethods[method] {
 			ce.openConnMethods[method] = true
-			dim := &module.Dim{ID: key, Name: method, Algo: module.Incremental}
+			dim := &module.Dim{ID: key, Name: method}
 			if err := ce.openConn.AddDim(dim); err != nil {
 				t.Warning(err)
 			}
