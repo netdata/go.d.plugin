@@ -22,9 +22,9 @@ Current implementation collects only [entrypoint](https://doc.traefik.io/traefik
 
 ### Entrypoint
 
-- Processed HTTP requests, partitioned by code class
-- Average HTTP request processing time, partitioned by code class
-- Open connections, partitioned by method
+- Processed HTTP requests, partitioned by code class in `requests/s`
+- Average HTTP request processing time, partitioned by code class in `milliseconds`
+- Open connections, partitioned by method in `connections`
 
 ## Configuration
 
