@@ -53,10 +53,16 @@ type (
 		entrypoints map[string]*cacheEntrypoint
 	}
 	cacheEntrypoint struct {
+		name, proto     string
 		requests        *module.Chart
 		reqDur          *module.Chart
+		reqDurData      map[string]cacheEntrypointReqDur
 		openConn        *module.Chart
 		openConnMethods map[string]bool
+	}
+	cacheEntrypointReqDur struct {
+		prev, cur struct{ reqs, secs float64 }
+		seen      bool
 	}
 )
 

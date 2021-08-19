@@ -88,7 +88,6 @@ func (t *Traefik) collectEntrypointRequestDuration(mx map[string]int64, pms prom
 		return
 	}
 
-	reqCount, durSum := make(map[string]float64), make(map[string]float64)
 	for _, pm := range pms {
 		code := pm.Labels.Get("code")
 		ep := pm.Labels.Get("entrypoint")
@@ -98,28 +97,36 @@ func (t *Traefik) collectEntrypointRequestDuration(mx map[string]int64, pms prom
 			continue
 		}
 
-		key := ep + "_" + proto + "_" + codeClass
-		if pm.Name() == metricEntrypointRequestDurationSecondsCount {
-			reqCount[key] += pm.Value
-		} else {
-			durSum[key] += pm.Value
-		}
-
 		id := ep + "_" + proto
 		ce := t.cacheGetOrPutEntrypoint(id)
+		v := ce.reqDurData[codeClass]
+		if pm.Name() == metricEntrypointRequestDurationSecondsCount {
+			v.cur.secs += pm.Value
+		} else {
+			v.cur.reqs += pm.Value
+		}
+		ce.reqDurData[codeClass] = v
+	}
+
+	for id, ce := range t.cache.entrypoints {
 		if ce.reqDur == nil {
-			chart := newChartEntrypointRequestDuration(ep, proto)
+			chart := newChartEntrypointRequestDuration(ce.name, ce.proto)
 			ce.reqDur = chart
 			if err := t.Charts().Add(chart); err != nil {
 				t.Warning(err)
 			}
 		}
-	}
-	for k, count := range reqCount {
-		if sum, ok := durSum[k]; ok && count > 0 {
-			mx[prefixEntrypointReqDurAvg+k] = int64(sum * 1000 / count)
-		} else {
-			mx[prefixEntrypointReqDurAvg+k] = 0
+		for codeClass, v := range ce.reqDurData {
+			secs, reqs, seen := v.cur.secs-v.prev.secs, v.cur.reqs-v.prev.reqs, v.seen
+			v.prev.secs, v.prev.reqs, v.seen = v.cur.secs, v.cur.reqs, true
+			ce.reqDurData[codeClass] = v
+
+			key := prefixEntrypointReqDurAvg + id + "_" + codeClass
+			if secs <= 0 || reqs <= 0 || !seen {
+				mx[key] = 0
+			} else {
+				mx[key] = int64(secs * 1000 / reqs)
+			}
 		}
 	}
 }
@@ -163,16 +170,16 @@ func (t *Traefik) collectEntrypointOpenConnections(mx map[string]int64, pms prom
 var httpRespCodeClasses = []string{"1xx", "2xx", "3xx", "4xx", "5xx"}
 
 func (t Traefik) updateCodeClassMetrics(mx map[string]int64) {
-	for k, v := range t.cache.entrypoints {
-		if v.requests != nil {
+	for id, ce := range t.cache.entrypoints {
+		if ce.requests != nil {
 			for _, c := range httpRespCodeClasses {
-				key := prefixEntrypointRequests + k + "_" + c
+				key := prefixEntrypointRequests + id + "_" + c
 				mx[key] += 0
 			}
 		}
-		if v.reqDur != nil {
+		if ce.reqDur != nil {
 			for _, c := range httpRespCodeClasses {
-				key := prefixEntrypointReqDurAvg + k + "_" + c
+				key := prefixEntrypointReqDurAvg + id + "_" + c
 				mx[key] += 0
 			}
 		}
@@ -187,8 +194,15 @@ func getCodeClass(code string) string {
 }
 
 func (t *Traefik) cacheGetOrPutEntrypoint(id string) *cacheEntrypoint {
+	name, proto := id, id
+	if idx := strings.LastIndexByte(id, '_'); idx != -1 {
+		name, proto = id[:idx], id[idx+1:]
+	}
 	if _, ok := t.cache.entrypoints[id]; !ok {
 		t.cache.entrypoints[id] = &cacheEntrypoint{
+			name:            name,
+			proto:           proto,
+			reqDurData:      make(map[string]cacheEntrypointReqDur),
 			openConnMethods: make(map[string]bool),
 		}
 	}
