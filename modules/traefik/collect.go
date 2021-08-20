@@ -100,7 +100,7 @@ func (t *Traefik) collectEntrypointRequestDuration(mx map[string]int64, pms prom
 		id := ep + "_" + proto
 		ce := t.cacheGetOrPutEntrypoint(id)
 		v := ce.reqDurData[codeClass]
-		if pm.Name() == metricEntrypointRequestDurationSecondsCount {
+		if pm.Name() == metricEntrypointRequestDurationSecondsSum {
 			v.cur.secs += pm.Value
 		} else {
 			v.cur.reqs += pm.Value
@@ -119,6 +119,7 @@ func (t *Traefik) collectEntrypointRequestDuration(mx map[string]int64, pms prom
 		for codeClass, v := range ce.reqDurData {
 			secs, reqs, seen := v.cur.secs-v.prev.secs, v.cur.reqs-v.prev.reqs, v.seen
 			v.prev.secs, v.prev.reqs, v.seen = v.cur.secs, v.cur.reqs, true
+			v.cur.secs, v.cur.reqs = 0, 0
 			ce.reqDurData[codeClass] = v
 
 			key := prefixEntrypointReqDurAvg + id + "_" + codeClass
