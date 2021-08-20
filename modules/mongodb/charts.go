@@ -27,6 +27,7 @@ var dbStatsCharts = module.Charts{
 	chartDBStatsSize,
 }
 
+// replCharts on used on replicate sets
 var replCharts = module.Charts{
 	chartReplLag,
 	chartReplHeartbeatLatency,
@@ -495,29 +496,38 @@ var (
 	}
 )
 
+const (
+	replicationLag                       = "replication_lag"
+	replicationHeartbeatLatency          = "replication_heartbeat_latency"
+	replicationNodePing                  = "replication_node_ping"
+	replicationLagDimPrefix              = "operational_lag_"
+	replicationHeartbeatLatencyDimPrefix = "heartbeat_latency_"
+	replicationNodePingDimPrefix         = "ping_"
+)
+
 var (
 	chartReplLag = &module.Chart{
-		ID:    "replication_lag",
+		ID:    replicationLag,
 		Title: "Replica Operational Lag",
 		Units: "milliseconds",
-		Fam:   "repl",
-		Ctx:   "mongodb.replication_lag",
+		Fam:   "replica set",
+		Ctx:   "mongodb." + replicationLag,
 	}
 
 	chartReplHeartbeatLatency = &module.Chart{
-		ID:    "replication_heartbeat_latency",
+		ID:    replicationHeartbeatLatency,
 		Title: "Replica Heartbeat Latency",
 		Units: "milliseconds",
-		Fam:   "repl",
-		Ctx:   "mongodb.replication_heartbeat_latency",
+		Fam:   "replica set",
+		Ctx:   "mongodb." + replicationHeartbeatLatency,
 	}
 
 	chartReplPing = &module.Chart{
-		ID:    "replication_node_ping",
+		ID:    replicationNodePing,
 		Title: "Replica Ping",
 		Units: "milliseconds",
-		Fam:   "repl",
-		Ctx:   "mongodb.replication_node_ping",
+		Fam:   "replica set",
+		Ctx:   "mongodb." + replicationNodePing,
 	}
 )
 
@@ -557,6 +567,31 @@ func (m *Mongo) removeDatabasesFromDBStatsCharts(newDatabases []string) {
 				continue
 			}
 			chart.MarkNotCreated()
+		}
+	}
+}
+
+// removeReplicaSetMember removes dimensions for not existing
+// replicate set members
+func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
+	diff := sliceDiff(m.replSetMembers, newMembers)
+	for _, name := range diff {
+		dimID := replicationHeartbeatLatencyDimPrefix + name
+		err := m.charts.Get(replicationHeartbeatLatency).MarkDimRemove(dimID, true)
+		if err != nil {
+			m.Warningf("failed to remove dimension %s from replication_heartbeat_latency chart: %v", dimID, err)
+		}
+
+		dimID = replicationLagDimPrefix + name
+		err = m.charts.Get(replicationLag).MarkDimRemove(dimID, true)
+		if err != nil {
+			m.Warningf("failed to remove dimension %s from replication_lag chart: %v", dimID, err)
+		}
+
+		dimID = replicationNodePingDimPrefix + name
+		err = m.charts.Get(replicationNodePing).MarkDimRemove(dimID, true)
+		if err != nil {
+			m.Warningf("failed to remove dimension %s from replication_node_ping chart: %v", dimID, err)
 		}
 	}
 }

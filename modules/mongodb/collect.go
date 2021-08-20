@@ -114,20 +114,28 @@ func (m *Mongo) collectDbStats(ms map[string]int64) error {
 // nil values will be ignored and not added to the map and thus metrics
 // should not appear on the dashboard.
 // if the querying node does not belong to a replica set
-//
 func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 	status, err := m.mongoCollector.replSetGetStatus()
 	if err != nil {
 		return fmt.Errorf("error get server status from mongo: %s", err)
 	}
+	var currentMembers []string
+	for _, member := range status.Members {
+		currentMembers = append(currentMembers, member.Name)
+	}
+
+	// replica nodes may be removed
+	// we should collect metrics for these anymore
+	m.removeReplicaSetMembers(currentMembers)
+	m.replSetMembers = currentMembers
 
 	for _, member := range status.Members {
 		// Heartbeat lag calculation
 		if member.LastHeartbeatReceived != nil {
-			id := "heartbeat_latency_" + member.Name
+			id := replicationHeartbeatLatencyDimPrefix + member.Name
 			// add dimension if not exists yet
 			if !m.replSetDimsEnabled[id] {
-				err := chartReplHeartbeatLatency.AddDim(&module.Dim{ID: id, Name: member.Name})
+				err := m.charts.Get(replicationHeartbeatLatency).AddDim(&module.Dim{ID: id, Name: member.Name})
 				if err != nil {
 					m.Warningf("failed to add dim with id: %s, err: %v", id, err)
 					continue
@@ -138,10 +146,10 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 		}
 
 		// Replica set time diff between current time and time when last entry from the oplog was applied
-		id := "member_optimedate" + member.Name
+		id := replicationLagDimPrefix + member.Name
 		// add dimension if not exists yet
 		if !m.replSetDimsEnabled[id] {
-			err := chartReplLag.AddDim(&module.Dim{ID: id, Name: member.Name})
+			err := m.charts.Get(replicationLag).AddDim(&module.Dim{ID: id, Name: member.Name})
 			if err != nil {
 				m.Warningf("failed to add dim with id: %s, err: %v", id, err)
 				continue
@@ -152,10 +160,10 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 
 		// Ping time
 		if member.PingMs != nil {
-			id := "ping_" + member.Name
+			id := replicationNodePingDimPrefix + member.Name
 			// add dimension if not exists yet
 			if !m.replSetDimsEnabled[id] {
-				err := chartReplPing.AddDim(&module.Dim{ID: id, Name: member.Name})
+				err := m.charts.Get(replicationNodePing).AddDim(&module.Dim{ID: id, Name: member.Name})
 				if err != nil {
 					m.Warningf("failed to add dim with id: %s, err: %v", id, err)
 				}

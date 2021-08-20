@@ -35,6 +35,7 @@ func New() *Mongo {
 		discoveredDBs:         make([]string, 0),
 		mongoCollector:        &mongoCollector{},
 		addReplChartsOnce:     sync.Once{},
+		replSetMembers:        make([]string, 0),
 		replSetDimsEnabled:    make(map[string]bool),
 	}
 }
@@ -48,6 +49,7 @@ type Mongo struct {
 	optionalChartsEnabled map[string]bool
 	discoveredDBs         []string
 	chartsDbStats         *module.Charts
+	replSetMembers        []string
 	replSetDimsEnabled    map[string]bool
 	addReplChartsOnce     sync.Once
 }
