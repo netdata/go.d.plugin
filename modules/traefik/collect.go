@@ -194,11 +194,11 @@ func getCodeClass(code string) string {
 }
 
 func (t *Traefik) cacheGetOrPutEntrypoint(id string) *cacheEntrypoint {
-	name, proto := id, id
-	if idx := strings.LastIndexByte(id, '_'); idx != -1 {
-		name, proto = id[:idx], id[idx+1:]
-	}
 	if _, ok := t.cache.entrypoints[id]; !ok {
+		name, proto := id, id
+		if idx := strings.LastIndexByte(id, '_'); idx != -1 {
+			name, proto = id[:idx], id[idx+1:]
+		}
 		t.cache.entrypoints[id] = &cacheEntrypoint{
 			name:            name,
 			proto:           proto,
