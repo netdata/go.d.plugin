@@ -77,6 +77,7 @@ Go.d.plugin is shipped with [`Netdata`](https://github.com/netdata/netdata).
 | [supervisord](https://github.com/netdata/go.d.plugin/tree/master/modules/supervisord)             | `Supervisor`                    |
 | [systemdunits](https://github.com/netdata/go.d.plugin/tree/master/modules/systemdunits)           | `Systemd unit state`            |
 | [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)                     | `Tengine`                       |
+| [traefik](https://github.com/netdata/go.d.plugin/tree/master/modules/traefik)                     | `Traefik`                       |
 | [unbound](https://github.com/netdata/go.d.plugin/tree/master/modules/unbound)                     | `Unbound`                       |
 | [vcsa](https://github.com/netdata/go.d.plugin/tree/master/modules/vcsa)                           | `vCenter Server Appliance`      |
 | [vernemq](https://github.com/netdata/go.d.plugin/tree/master/modules/vernemq)                     | `VerneMQ`                       |
