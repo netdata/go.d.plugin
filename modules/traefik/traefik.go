@@ -19,7 +19,7 @@ func New() *Traefik {
 		Config: Config{
 			HTTP: web.HTTP{
 				Request: web.Request{
-					URL: "http://127.0.0.1:9999/traefik",
+					URL: "http://127.0.0.1:8082/metrics",
 				},
 				Client: web.Client{
 					Timeout: web.Duration{Duration: time.Second},
