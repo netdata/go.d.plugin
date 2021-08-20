@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"sync"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -33,6 +34,8 @@ func New() *Mongo {
 		optionalChartsEnabled: make(map[string]bool),
 		discoveredDBs:         make([]string, 0),
 		mongoCollector:        &mongoCollector{},
+		addReplChartsOnce:     sync.Once{},
+		replSetDimsEnabled:    make(map[string]bool),
 	}
 }
 
@@ -45,7 +48,8 @@ type Mongo struct {
 	optionalChartsEnabled map[string]bool
 	discoveredDBs         []string
 	chartsDbStats         *module.Charts
-	dimsEnabled           map[string]bool
+	replSetDimsEnabled    map[string]bool
+	addReplChartsOnce     sync.Once
 }
 
 func (m *Mongo) Init() bool {
@@ -97,8 +101,22 @@ func (m *Mongo) Collect() map[string]int64 {
 		m.Errorf("couldn't collecting dbstats metrics: %s", err)
 	}
 
-	if err := m.collectReplSetStatus(ms); err != nil {
-		m.Errorf("couldn't collecting dbstats metrics: %s", err)
+	if m.mongoCollector.isReplicaSet() {
+		// if we have replicate set based on the serverStatus response
+		// we add once the charts during runtime
+		m.addReplChartsOnce.Do(func() {
+			replCharts := replCharts.Copy()
+			for _, chart := range *replCharts {
+				err := m.charts.Add(chart)
+				if err != nil {
+					m.Errorf("failed to add replica set chart: %s", chart.ID)
+				}
+			}
+		})
+
+		if err := m.collectReplSetStatus(ms); err != nil {
+			m.Errorf("couldn't collecting replSetStatus metrics: %s", err)
+		}
 	}
 
 	if len(ms) == 0 {
@@ -129,14 +147,5 @@ func (m *Mongo) initCharts() (*module.Charts, error) {
 			return &charts, err
 		}
 	}
-
-	replCharts := replCharts.Copy()
-	for _, chart := range *replCharts {
-		err = charts.Add(chart)
-		if err != nil {
-			return &charts, err
-		}
-	}
-
 	return &charts, nil
 }

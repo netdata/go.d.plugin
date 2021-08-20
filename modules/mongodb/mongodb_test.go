@@ -117,6 +117,22 @@ func TestMongo_Collect_DbStats_EmptyMatcher(t *testing.T) {
 	assert.Len(t, ms, 0)
 }
 
+func TestMongo_Collect_ReplSetStatus(t *testing.T) {
+	m := New()
+	m.mongoCollector = &mockMongo{
+		serverStatusResponse: "{}",
+		dbStatsResponse:      "{}",
+		replicaSet:           true,
+	}
+	m.Config.Databases.Includes = []string{"* *"}
+	m.URI = "mongodb://localhost"
+	m.Init()
+	_ = m.Collect()
+	assert.True(t, m.charts.Has("replication_lag"))
+	assert.True(t, m.charts.Has("replication_heartbeat_latency"))
+	assert.True(t, m.charts.Has("replication_node_ping"))
+}
+
 func TestMongo_Incomplete(t *testing.T) {
 	m := New()
 	m.mongoCollector = &mockMongo{}
@@ -175,4 +191,30 @@ func (m *mockMongo) dbStats(_ string) (*dbStats, error) {
 
 func (m *mockMongo) isReplicaSet() bool {
 	return m.replicaSet
+}
+
+func (m *mockMongo) replSetGetStatus() (*replSetStatus, error) {
+	var ping int64 = 10
+	var now = time.Now()
+	return &replSetStatus{
+		Date: time.Now(),
+		Members: []struct {
+			Name                  string     `bson:"name"`
+			State                 int        `bson:"state"`
+			OptimeDate            time.Time  `bson:"optimeDate"`
+			LastHeartbeat         *time.Time `bson:"lastHeartbeat"`
+			LastHeartbeatReceived *time.Time `bson:"lastHeartbeatRecv"`
+			PingMs                *int64     `bson:"pingMs"`
+		}{
+			{
+				Name:                  "1",
+				State:                 0,
+				OptimeDate:            now,
+				LastHeartbeat:         &now,
+				LastHeartbeatReceived: &now,
+				PingMs:                &ping,
+			},
+			{Name: "2"},
+		},
+	}, nil
 }

@@ -113,13 +113,9 @@ func (m *Mongo) collectDbStats(ms map[string]int64) error {
 // replSetCollect creates the map[string]int64 for the available dims.
 // nil values will be ignored and not added to the map and thus metrics
 // should not appear on the dashboard.
-// Because mongo reports a metric only after it first appears, some dims might
-// take a while to appear. For example, in order to report number of create
-// commands, a document must be created first.
+// if the querying node does not belong to a replica set
+//
 func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
-	if !m.mongoCollector.isReplicaSet() {
-		return nil
-	}
 	status, err := m.mongoCollector.replSetGetStatus()
 	if err != nil {
 		return fmt.Errorf("error get server status from mongo: %s", err)
@@ -130,13 +126,13 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 		if member.LastHeartbeatReceived != nil {
 			id := "heartbeat_latency_" + member.Name
 			// add dimension if not exists yet
-			if !m.dimsEnabled[id] {
+			if !m.replSetDimsEnabled[id] {
 				err := chartReplHeartbeatLatency.AddDim(&module.Dim{ID: id, Name: member.Name})
 				if err != nil {
 					m.Warningf("failed to add dim with id: %s, err: %v", id, err)
 					continue
 				}
-				m.dimsEnabled[id] = true
+				m.replSetDimsEnabled[id] = true
 			}
 			ms[id] = status.Date.Sub(*member.LastHeartbeatReceived).Milliseconds()
 		}
@@ -144,13 +140,13 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 		// Replica set time diff between current time and time when last entry from the oplog was applied
 		id := "member_optimedate" + member.Name
 		// add dimension if not exists yet
-		if !m.dimsEnabled[id] {
+		if !m.replSetDimsEnabled[id] {
 			err := chartReplLag.AddDim(&module.Dim{ID: id, Name: member.Name})
 			if err != nil {
 				m.Warningf("failed to add dim with id: %s, err: %v", id, err)
 				continue
 			}
-			m.dimsEnabled[id] = true
+			m.replSetDimsEnabled[id] = true
 		}
 		ms[id] = status.Date.Sub(member.OptimeDate).Milliseconds()
 
@@ -158,12 +154,12 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 		if member.PingMs != nil {
 			id := "ping_" + member.Name
 			// add dimension if not exists yet
-			if !m.dimsEnabled[id] {
+			if !m.replSetDimsEnabled[id] {
 				err := chartReplPing.AddDim(&module.Dim{ID: id, Name: member.Name})
 				if err != nil {
 					m.Warningf("failed to add dim with id: %s, err: %v", id, err)
 				}
-				m.dimsEnabled[id] = true
+				m.replSetDimsEnabled[id] = true
 			}
 			ms[id] = *member.PingMs
 		}
