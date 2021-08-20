@@ -116,50 +116,105 @@ func TestTraefik_Check(t *testing.T) {
 func TestTraefik_Collect(t *testing.T) {
 	tests := map[string]struct {
 		prepare       func(t *testing.T) (tk *Traefik, cleanup func())
-		wantCollected map[string]int64
+		wantCollected []map[string]int64
 	}{
 		"success on valid response v2.2.1": {
 			prepare: prepareCaseTraefikV221Metrics,
-			wantCollected: map[string]int64{
-				"entrypoint_open_connections_traefik_http_GET":          1,
-				"entrypoint_open_connections_web_http_DELETE":           0,
-				"entrypoint_open_connections_web_http_GET":              0,
-				"entrypoint_open_connections_web_http_HEAD":             0,
-				"entrypoint_open_connections_web_http_OPTIONS":          0,
-				"entrypoint_open_connections_web_http_PATCH":            0,
-				"entrypoint_open_connections_web_http_POST":             4,
-				"entrypoint_open_connections_web_http_PUT":              0,
-				"entrypoint_open_connections_web_websocket_GET":         0,
-				"entrypoint_request_duration_average_traefik_http_1xx":  0,
-				"entrypoint_request_duration_average_traefik_http_2xx":  0,
-				"entrypoint_request_duration_average_traefik_http_3xx":  0,
-				"entrypoint_request_duration_average_traefik_http_4xx":  0,
-				"entrypoint_request_duration_average_traefik_http_5xx":  0,
-				"entrypoint_request_duration_average_web_http_1xx":      0,
-				"entrypoint_request_duration_average_web_http_2xx":      0,
-				"entrypoint_request_duration_average_web_http_3xx":      0,
-				"entrypoint_request_duration_average_web_http_4xx":      0,
-				"entrypoint_request_duration_average_web_http_5xx":      0,
-				"entrypoint_request_duration_average_web_websocket_1xx": 0,
-				"entrypoint_request_duration_average_web_websocket_2xx": 0,
-				"entrypoint_request_duration_average_web_websocket_3xx": 0,
-				"entrypoint_request_duration_average_web_websocket_4xx": 0,
-				"entrypoint_request_duration_average_web_websocket_5xx": 0,
-				"entrypoint_requests_traefik_http_1xx":                  0,
-				"entrypoint_requests_traefik_http_2xx":                  2840814,
-				"entrypoint_requests_traefik_http_3xx":                  0,
-				"entrypoint_requests_traefik_http_4xx":                  8,
-				"entrypoint_requests_traefik_http_5xx":                  0,
-				"entrypoint_requests_web_http_1xx":                      0,
-				"entrypoint_requests_web_http_2xx":                      1036208982,
-				"entrypoint_requests_web_http_3xx":                      416262,
-				"entrypoint_requests_web_http_4xx":                      267591379,
-				"entrypoint_requests_web_http_5xx":                      223136,
-				"entrypoint_requests_web_websocket_1xx":                 0,
-				"entrypoint_requests_web_websocket_2xx":                 0,
-				"entrypoint_requests_web_websocket_3xx":                 0,
-				"entrypoint_requests_web_websocket_4xx":                 79137,
-				"entrypoint_requests_web_websocket_5xx":                 0,
+			wantCollected: []map[string]int64{
+				{
+					"entrypoint_open_connections_traefik_http_GET":          1,
+					"entrypoint_open_connections_web_http_DELETE":           0,
+					"entrypoint_open_connections_web_http_GET":              0,
+					"entrypoint_open_connections_web_http_HEAD":             0,
+					"entrypoint_open_connections_web_http_OPTIONS":          0,
+					"entrypoint_open_connections_web_http_PATCH":            0,
+					"entrypoint_open_connections_web_http_POST":             4,
+					"entrypoint_open_connections_web_http_PUT":              0,
+					"entrypoint_open_connections_web_websocket_GET":         0,
+					"entrypoint_request_duration_average_traefik_http_1xx":  0,
+					"entrypoint_request_duration_average_traefik_http_2xx":  0,
+					"entrypoint_request_duration_average_traefik_http_3xx":  0,
+					"entrypoint_request_duration_average_traefik_http_4xx":  0,
+					"entrypoint_request_duration_average_traefik_http_5xx":  0,
+					"entrypoint_request_duration_average_web_http_1xx":      0,
+					"entrypoint_request_duration_average_web_http_2xx":      0,
+					"entrypoint_request_duration_average_web_http_3xx":      0,
+					"entrypoint_request_duration_average_web_http_4xx":      0,
+					"entrypoint_request_duration_average_web_http_5xx":      0,
+					"entrypoint_request_duration_average_web_websocket_1xx": 0,
+					"entrypoint_request_duration_average_web_websocket_2xx": 0,
+					"entrypoint_request_duration_average_web_websocket_3xx": 0,
+					"entrypoint_request_duration_average_web_websocket_4xx": 0,
+					"entrypoint_request_duration_average_web_websocket_5xx": 0,
+					"entrypoint_requests_traefik_http_1xx":                  0,
+					"entrypoint_requests_traefik_http_2xx":                  2840814,
+					"entrypoint_requests_traefik_http_3xx":                  0,
+					"entrypoint_requests_traefik_http_4xx":                  8,
+					"entrypoint_requests_traefik_http_5xx":                  0,
+					"entrypoint_requests_web_http_1xx":                      0,
+					"entrypoint_requests_web_http_2xx":                      1036208982,
+					"entrypoint_requests_web_http_3xx":                      416262,
+					"entrypoint_requests_web_http_4xx":                      267591379,
+					"entrypoint_requests_web_http_5xx":                      223136,
+					"entrypoint_requests_web_websocket_1xx":                 0,
+					"entrypoint_requests_web_websocket_2xx":                 0,
+					"entrypoint_requests_web_websocket_3xx":                 0,
+					"entrypoint_requests_web_websocket_4xx":                 79137,
+					"entrypoint_requests_web_websocket_5xx":                 0,
+				},
+			},
+		},
+		"properly calculating entrypoint request duration delta": {
+			prepare: prepareCaseTraefikEntrypointRequestDuration,
+			wantCollected: []map[string]int64{
+				{
+					"entrypoint_request_duration_average_traefik_http_1xx":  0,
+					"entrypoint_request_duration_average_traefik_http_2xx":  0,
+					"entrypoint_request_duration_average_traefik_http_3xx":  0,
+					"entrypoint_request_duration_average_traefik_http_4xx":  0,
+					"entrypoint_request_duration_average_traefik_http_5xx":  0,
+					"entrypoint_request_duration_average_web_websocket_1xx": 0,
+					"entrypoint_request_duration_average_web_websocket_2xx": 0,
+					"entrypoint_request_duration_average_web_websocket_3xx": 0,
+					"entrypoint_request_duration_average_web_websocket_4xx": 0,
+					"entrypoint_request_duration_average_web_websocket_5xx": 0,
+				},
+				{
+					"entrypoint_request_duration_average_traefik_http_1xx":  0,
+					"entrypoint_request_duration_average_traefik_http_2xx":  500,
+					"entrypoint_request_duration_average_traefik_http_3xx":  0,
+					"entrypoint_request_duration_average_traefik_http_4xx":  0,
+					"entrypoint_request_duration_average_traefik_http_5xx":  0,
+					"entrypoint_request_duration_average_web_websocket_1xx": 0,
+					"entrypoint_request_duration_average_web_websocket_2xx": 0,
+					"entrypoint_request_duration_average_web_websocket_3xx": 250,
+					"entrypoint_request_duration_average_web_websocket_4xx": 0,
+					"entrypoint_request_duration_average_web_websocket_5xx": 0,
+				},
+				{
+					"entrypoint_request_duration_average_traefik_http_1xx":  0,
+					"entrypoint_request_duration_average_traefik_http_2xx":  1000,
+					"entrypoint_request_duration_average_traefik_http_3xx":  0,
+					"entrypoint_request_duration_average_traefik_http_4xx":  0,
+					"entrypoint_request_duration_average_traefik_http_5xx":  0,
+					"entrypoint_request_duration_average_web_websocket_1xx": 0,
+					"entrypoint_request_duration_average_web_websocket_2xx": 0,
+					"entrypoint_request_duration_average_web_websocket_3xx": 500,
+					"entrypoint_request_duration_average_web_websocket_4xx": 0,
+					"entrypoint_request_duration_average_web_websocket_5xx": 0,
+				},
+				{
+					"entrypoint_request_duration_average_traefik_http_1xx":  0,
+					"entrypoint_request_duration_average_traefik_http_2xx":  0,
+					"entrypoint_request_duration_average_traefik_http_3xx":  0,
+					"entrypoint_request_duration_average_traefik_http_4xx":  0,
+					"entrypoint_request_duration_average_traefik_http_5xx":  0,
+					"entrypoint_request_duration_average_web_websocket_1xx": 0,
+					"entrypoint_request_duration_average_web_websocket_2xx": 0,
+					"entrypoint_request_duration_average_web_websocket_3xx": 0,
+					"entrypoint_request_duration_average_web_websocket_4xx": 0,
+					"entrypoint_request_duration_average_web_websocket_5xx": 0,
+				},
 			},
 		},
 		"fails on response with unexpected metrics (not Traefik)": {
@@ -178,9 +233,11 @@ func TestTraefik_Collect(t *testing.T) {
 			tk, cleanup := test.prepare(t)
 			defer cleanup()
 
-			ms := tk.Collect()
-
-			assert.Equal(t, test.wantCollected, ms)
+			var ms map[string]int64
+			for _, want := range test.wantCollected {
+				ms = tk.Collect()
+				assert.Equal(t, want, ms)
+			}
 			if len(test.wantCollected) > 0 {
 				ensureCollectedHasAllChartsDimsVarsIDs(t, tk, ms)
 			}
@@ -193,6 +250,43 @@ func prepareCaseTraefikV221Metrics(t *testing.T) (*Traefik, func()) {
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write(v221Metrics)
+		}))
+	h := New()
+	h.URL = srv.URL
+	require.True(t, h.Init())
+
+	return h, srv.Close
+}
+
+func prepareCaseTraefikEntrypointRequestDuration(t *testing.T) (*Traefik, func()) {
+	t.Helper()
+	var num int
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			num++
+			switch num {
+			case 1:
+				_, _ = w.Write([]byte(`
+traefik_entrypoint_request_duration_seconds_sum{code="200",entrypoint="traefik",method="GET",protocol="http"} 10.1
+traefik_entrypoint_request_duration_seconds_sum{code="300",entrypoint="web",method="GET",protocol="websocket"} 20.1
+traefik_entrypoint_request_duration_seconds_count{code="200",entrypoint="traefik",method="PUT",protocol="http"} 30
+traefik_entrypoint_request_duration_seconds_count{code="300",entrypoint="web",method="PUT",protocol="websocket"} 40
+`))
+			case 2:
+				_, _ = w.Write([]byte(`
+traefik_entrypoint_request_duration_seconds_sum{code="200",entrypoint="traefik",method="GET",protocol="http"} 15.1
+traefik_entrypoint_request_duration_seconds_sum{code="300",entrypoint="web",method="GET",protocol="websocket"} 25.1
+traefik_entrypoint_request_duration_seconds_count{code="200",entrypoint="traefik",method="PUT",protocol="http"} 40
+traefik_entrypoint_request_duration_seconds_count{code="300",entrypoint="web",method="PUT",protocol="websocket"} 60
+`))
+			default:
+				_, _ = w.Write([]byte(`
+traefik_entrypoint_request_duration_seconds_sum{code="200",entrypoint="traefik",method="GET",protocol="http"} 25.1
+traefik_entrypoint_request_duration_seconds_sum{code="300",entrypoint="web",method="GET",protocol="websocket"} 35.1
+traefik_entrypoint_request_duration_seconds_count{code="200",entrypoint="traefik",method="PUT",protocol="http"} 50
+traefik_entrypoint_request_duration_seconds_count{code="300",entrypoint="web",method="PUT",protocol="websocket"} 80
+`))
+			}
 		}))
 	h := New()
 	h.URL = srv.URL
