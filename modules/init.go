@@ -54,6 +54,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/supervisord"
 	_ "github.com/netdata/go.d.plugin/modules/systemdunits"
 	_ "github.com/netdata/go.d.plugin/modules/tengine"
+	_ "github.com/netdata/go.d.plugin/modules/traefik"
 	_ "github.com/netdata/go.d.plugin/modules/unbound"
 	_ "github.com/netdata/go.d.plugin/modules/vcsa"
 	_ "github.com/netdata/go.d.plugin/modules/vernemq"
