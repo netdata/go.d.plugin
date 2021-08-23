@@ -135,12 +135,13 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 			id := replicationHeartbeatLatencyDimPrefix + member.Name
 			// add dimension if not exists yet
 			if !m.replSetDimsEnabled[id] {
-				err := m.charts.Get(replicationHeartbeatLatency).AddDim(&module.Dim{ID: id, Name: member.Name})
-				if err != nil {
-					m.Warningf("failed to add dim with id: %s, err: %v", id, err)
-					continue
-				}
 				m.replSetDimsEnabled[id] = true
+				chart := m.charts.Get(replicationHeartbeatLatency)
+				if chart != nil {
+					if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
+						m.Warningf("failed to add dim with id: %s, err: %v", id, err)
+					}
+				}
 			}
 			ms[id] = status.Date.Sub(*member.LastHeartbeatReceived).Milliseconds()
 		}
@@ -149,12 +150,13 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 		id := replicationLagDimPrefix + member.Name
 		// add dimension if not exists yet
 		if !m.replSetDimsEnabled[id] {
-			err := m.charts.Get(replicationLag).AddDim(&module.Dim{ID: id, Name: member.Name})
-			if err != nil {
-				m.Warningf("failed to add dim with id: %s, err: %v", id, err)
-				continue
-			}
 			m.replSetDimsEnabled[id] = true
+			chart := m.charts.Get(replicationLag)
+			if chart != nil {
+				if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
+					m.Warningf("failed to add dim with id: %s, err: %v", id, err)
+				}
+			}
 		}
 		ms[id] = status.Date.Sub(member.OptimeDate).Milliseconds()
 
@@ -163,11 +165,13 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 			id := replicationNodePingDimPrefix + member.Name
 			// add dimension if not exists yet
 			if !m.replSetDimsEnabled[id] {
-				err := m.charts.Get(replicationNodePing).AddDim(&module.Dim{ID: id, Name: member.Name})
-				if err != nil {
-					m.Warningf("failed to add dim with id: %s, err: %v", id, err)
-				}
 				m.replSetDimsEnabled[id] = true
+				chart := m.charts.Get(replicationNodePing)
+				if chart != nil {
+					if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
+						m.Warningf("failed to add dim with id: %s, err: %v", id, err)
+					}
+				}
 			}
 			ms[id] = *member.PingMs
 		}
