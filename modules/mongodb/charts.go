@@ -582,6 +582,7 @@ func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
 			if err := chart.MarkDimRemove(dimID, true); err != nil {
 				m.Warningf("failed to remove dimension: %v", err)
 			}
+			delete(m.replSetDimsEnabled, dimID)
 		} else {
 			m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", dimID, replicationHeartbeatLatency)
 		}
@@ -592,6 +593,7 @@ func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
 			if err := chart.MarkDimRemove(dimID, true); err != nil {
 				m.Warningf("failed to remove dimension: %v", err)
 			}
+			delete(m.replSetDimsEnabled, dimID)
 		} else {
 			m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", dimID, replicationLag)
 		}
@@ -602,6 +604,7 @@ func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
 			if err := chart.MarkDimRemove(dimID, true); err != nil {
 				m.Warningf("failed to remove dimension: %v", err)
 			}
+			delete(m.replSetDimsEnabled, dimID)
 		} else {
 			m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", dimID, replicationNodePing)
 		}
