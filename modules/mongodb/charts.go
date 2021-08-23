@@ -579,19 +579,19 @@ func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
 		dimID := replicationHeartbeatLatencyDimPrefix + name
 		err := m.charts.Get(replicationHeartbeatLatency).MarkDimRemove(dimID, true)
 		if err != nil {
-			m.Warningf("failed to remove dimension %s from replication_heartbeat_latency chart: %v", dimID, err)
+			m.Warningf("failed to remove dimension: %v", err)
 		}
 
 		dimID = replicationLagDimPrefix + name
 		err = m.charts.Get(replicationLag).MarkDimRemove(dimID, true)
 		if err != nil {
-			m.Warningf("failed to remove dimension %s from replication_lag chart: %v", dimID, err)
+			m.Warningf("failed to remove dimension: %v", err)
 		}
 
 		dimID = replicationNodePingDimPrefix + name
 		err = m.charts.Get(replicationNodePing).MarkDimRemove(dimID, true)
 		if err != nil {
-			m.Warningf("failed to remove dimension %s from replication_node_ping chart: %v", dimID, err)
+			m.Warningf("failed to remove dimension: %v", err)
 		}
 	}
 }

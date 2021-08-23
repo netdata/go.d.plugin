@@ -75,7 +75,6 @@ func (m *mongoCollector) isReplicaSet() bool {
 // replSetGetStatus gets the `replSetGetStatus` from the server
 func (m *mongoCollector) replSetGetStatus() (*replSetStatus, error) {
 	var status *replSetStatus
-	//command := bson.D{{Key: "replSetGetStatus", Value: 1}}
 	command := bson.M{"replSetGetStatus": 1}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
 	defer cancel()

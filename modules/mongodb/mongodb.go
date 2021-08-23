@@ -107,12 +107,8 @@ func (m *Mongo) Collect() map[string]int64 {
 		// if we have replicate set based on the serverStatus response
 		// we add once the charts during runtime
 		m.addReplChartsOnce.Do(func() {
-			replCharts := replCharts.Copy()
-			for _, chart := range *replCharts {
-				err := m.charts.Add(chart)
-				if err != nil {
-					m.Errorf("failed to add replica set chart: %s", chart.ID)
-				}
+			if err := m.charts.Add(*replCharts.Copy()...); err != nil {
+				m.Errorf("failed to add replica set chart: %v", err)
 			}
 		})
 
