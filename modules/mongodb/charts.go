@@ -577,21 +577,33 @@ func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
 	diff := sliceDiff(m.replSetMembers, newMembers)
 	for _, name := range diff {
 		dimID := replicationHeartbeatLatencyDimPrefix + name
-		err := m.charts.Get(replicationHeartbeatLatency).MarkDimRemove(dimID, true)
-		if err != nil {
-			m.Warningf("failed to remove dimension: %v", err)
+		chart := m.charts.Get(replicationHeartbeatLatency)
+		if chart != nil {
+			if err := chart.MarkDimRemove(dimID, true); err != nil {
+				m.Warningf("failed to remove dimension: %v", err)
+			}
+		} else {
+			m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", dimID, replicationHeartbeatLatency)
 		}
 
 		dimID = replicationLagDimPrefix + name
-		err = m.charts.Get(replicationLag).MarkDimRemove(dimID, true)
-		if err != nil {
-			m.Warningf("failed to remove dimension: %v", err)
+		chart = m.charts.Get(replicationLag)
+		if chart != nil {
+			if err := chart.MarkDimRemove(dimID, true); err != nil {
+				m.Warningf("failed to remove dimension: %v", err)
+			}
+		} else {
+			m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", dimID, replicationLag)
 		}
 
 		dimID = replicationNodePingDimPrefix + name
-		err = m.charts.Get(replicationNodePing).MarkDimRemove(dimID, true)
-		if err != nil {
-			m.Warningf("failed to remove dimension: %v", err)
+		chart = m.charts.Get(replicationNodePing)
+		if chart != nil {
+			if err := chart.MarkDimRemove(dimID, true); err != nil {
+				m.Warningf("failed to remove dimension: %v", err)
+			}
+		} else {
+			m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", dimID, replicationNodePing)
 		}
 	}
 }
