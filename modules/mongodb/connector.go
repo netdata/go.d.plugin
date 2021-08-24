@@ -13,14 +13,17 @@ type connector interface {
 	serverStatus() (*serverStatus, error)
 	listDatabaseNames() ([]string, error)
 	dbStats(databaseName string) (*dbStats, error)
+	isReplicaSet() bool
+	replSetGetStatus() (*replSetStatus, error)
 	initClient(uri string, timeout time.Duration) error
 	close() error
 }
 
 // mongoCollector interface that helps abstracting and mocking the database layer.
 type mongoCollector struct {
-	Client  *mongo.Client
-	Timeout time.Duration
+	Client           *mongo.Client
+	Timeout          time.Duration
+	isReplicaSetFlag *bool
 }
 
 // serverStatus connects to the database and return the output of the
@@ -34,6 +37,8 @@ func (m *mongoCollector) serverStatus() (*serverStatus, error) {
 	if err != nil {
 		return nil, err
 	}
+	isReplSet := status.Repl != nil
+	m.isReplicaSetFlag = &isReplSet
 	return status, err
 }
 
@@ -54,6 +59,30 @@ func (m *mongoCollector) dbStats(databaseName string) (*dbStats, error) {
 		return nil, err
 	}
 	return &dbStats, nil
+}
+
+func (m *mongoCollector) isReplicaSet() bool {
+	if m.isReplicaSetFlag != nil {
+		return *m.isReplicaSetFlag
+	}
+	status, err := m.serverStatus()
+	if err != nil {
+		return false
+	}
+	return status.Repl != nil
+}
+
+// replSetGetStatus gets the `replSetGetStatus` from the server
+func (m *mongoCollector) replSetGetStatus() (*replSetStatus, error) {
+	var status *replSetStatus
+	command := bson.M{"replSetGetStatus": 1}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
+	defer cancel()
+	err := m.Client.Database("admin").RunCommand(ctx, command).Decode(&status)
+	if err != nil {
+		return nil, err
+	}
+	return status, err
 }
 
 // initClient initialises the database client if is not initialised.

@@ -1,5 +1,7 @@
 package mongo
 
+import "time"
+
 type serverStatus struct {
 	// available in many versions and builds of mongo
 	Opcounters  Opcounters   `bson:"opcounters" stm:"operations"`
@@ -18,6 +20,7 @@ type serverStatus struct {
 	Locks        *Locks                `bson:"locks" stm:"locks"`
 	FlowControl  *FlowControl          `bson:"flowControl" stm:"flow"`
 	WiredTiger   *WiredTiger           `bson:"wiredTiger" stm:"wiredtiger"`
+	Repl         interface{}           `bson:"repl"`
 }
 
 type Opcounters struct {
@@ -258,4 +261,16 @@ func (d *dbStats) toMap(dbName string, m map[string]int64) {
 	m["database_data_size_"+dbName] = d.DataSize
 	m["database_index_size_"+dbName] = d.IndexSize
 	m["database_storage_size_"+dbName] = d.StorageSize
+}
+
+type replSetStatus struct {
+	Date    time.Time `bson:"date"`
+	Members []struct {
+		Name                  string     `bson:"name"`
+		State                 int        `bson:"state"`
+		OptimeDate            time.Time  `bson:"optimeDate"`
+		LastHeartbeat         *time.Time `bson:"lastHeartbeat"`
+		LastHeartbeatReceived *time.Time `bson:"lastHeartbeatRecv"`
+		PingMs                *int64     `bson:"pingMs"`
+	} `bson:"members"`
 }

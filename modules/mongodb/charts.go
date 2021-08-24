@@ -27,6 +27,13 @@ var dbStatsCharts = module.Charts{
 	chartDBStatsSize,
 }
 
+// replCharts on used on replica sets
+var replCharts = module.Charts{
+	chartReplLag,
+	chartReplHeartbeatLatency,
+	chartReplPing,
+}
+
 var (
 	chartOpcounter = module.Chart{
 		ID:    "operations",
@@ -489,6 +496,41 @@ var (
 	}
 )
 
+const (
+	replicationLag                       = "replication_lag"
+	replicationHeartbeatLatency          = "replication_heartbeat_latency"
+	replicationNodePing                  = "replication_node_ping"
+	replicationLagDimPrefix              = "operational_lag_"
+	replicationHeartbeatLatencyDimPrefix = "heartbeat_latency_"
+	replicationNodePingDimPrefix         = "ping_"
+)
+
+var (
+	chartReplLag = &module.Chart{
+		ID:    replicationLag,
+		Title: "Replica Operational Lag",
+		Units: "milliseconds",
+		Fam:   "replica set",
+		Ctx:   "mongodb." + replicationLag,
+	}
+
+	chartReplHeartbeatLatency = &module.Chart{
+		ID:    replicationHeartbeatLatency,
+		Title: "Replica Heartbeat Latency",
+		Units: "milliseconds",
+		Fam:   "replica set",
+		Ctx:   "mongodb." + replicationHeartbeatLatency,
+	}
+
+	chartReplPing = &module.Chart{
+		ID:    replicationNodePing,
+		Title: "Replica Ping",
+		Units: "milliseconds",
+		Fam:   "replica set",
+		Ctx:   "mongodb." + replicationNodePing,
+	}
+)
+
 // updateDBStatsCharts adds dimensions for new databases and
 // removes for dropped
 func (m *Mongo) updateDBStatsCharts(databases []string) {
@@ -525,6 +567,34 @@ func (m *Mongo) removeDatabasesFromDBStatsCharts(newDatabases []string) {
 				continue
 			}
 			chart.MarkNotCreated()
+		}
+	}
+}
+
+// removeReplicaSetMember removes dimensions for not existing
+// replica set members
+func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
+	diff := sliceDiff(m.replSetMembers, newMembers)
+	for _, name := range diff {
+		for _, v := range []struct{ chartID, dimPrefix string }{
+			{replicationLag, replicationLagDimPrefix},
+			{replicationHeartbeatLatency, replicationHeartbeatLatencyDimPrefix},
+			{replicationNodePing, replicationNodePingDimPrefix},
+		} {
+			id := v.dimPrefix + name
+			if !m.replSetDimsEnabled[id] {
+				continue
+			}
+			delete(m.replSetDimsEnabled, id)
+
+			chart := m.charts.Get(v.chartID)
+			if chart != nil {
+				if err := chart.MarkDimRemove(id, true); err != nil {
+					m.Warningf("failed to remove dimension: %v", err)
+				}
+			} else {
+				m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", id, v.chartID)
+			}
 		}
 	}
 }

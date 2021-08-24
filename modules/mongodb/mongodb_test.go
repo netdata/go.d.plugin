@@ -83,12 +83,47 @@ func TestMongo_Collect_DbStats(t *testing.T) {
 	m.mongoCollector = &mockMongo{
 		serverStatusResponse: "{}",
 		dbStatsResponse:      "{}",
+		databaseNames:        []string{"db"},
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
 	m.Init()
 	ms := m.Collect()
 	assert.Len(t, ms, reflect.ValueOf(dbStats{}).NumField())
+}
+
+func TestMongo_Collect_DbStatsRemoveDropped(t *testing.T) {
+	m := New()
+	m.mongoCollector = &mockMongo{
+		serverStatusResponse: "{}",
+		dbStatsResponse:      "{}",
+		databaseNames:        []string{"db1", "db2"},
+	}
+	m.Config.Databases.Includes = []string{"* *"}
+	m.URI = "mongodb://localhost"
+	m.Init()
+	ms := m.Collect()
+	assert.Len(t, ms, 14)
+
+	// remove a database
+	m.mongoCollector = &mockMongo{
+		serverStatusResponse: "{}",
+		dbStatsResponse:      "{}",
+		databaseNames:        []string{"db1"},
+	}
+	ms = m.Collect()
+	assert.True(t, m.charts.Get("database_collections").Dims[1].Obsolete)
+	assert.Len(t, ms, 7)
+
+	// add two databases
+	m.mongoCollector = &mockMongo{
+		serverStatusResponse: "{}",
+		dbStatsResponse:      "{}",
+		databaseNames:        []string{"db1", "db2", "db3"},
+	}
+	ms = m.Collect()
+	assert.Len(t, m.charts.Get("database_collections").Dims, 3)
+	assert.Len(t, ms, 21)
 }
 
 func TestMongo_Collect_DbStats_Fail(t *testing.T) {
@@ -117,6 +152,56 @@ func TestMongo_Collect_DbStats_EmptyMatcher(t *testing.T) {
 	assert.Len(t, ms, 0)
 }
 
+func TestMongo_Collect_ReplSetStatus(t *testing.T) {
+	m := New()
+	m.mongoCollector = &mockMongo{
+		serverStatusResponse: "{}",
+		dbStatsResponse:      "{}",
+		replicaSet:           true,
+	}
+	m.Config.Databases.Includes = []string{"* *"}
+	m.URI = "mongodb://localhost"
+	m.Init()
+	_ = m.Collect()
+	assert.True(t, m.charts.Has(replicationLag))
+	assert.True(t, m.charts.Has(replicationHeartbeatLatency))
+	assert.True(t, m.charts.Has(replicationNodePing))
+}
+
+func TestMongo_Collect_ReplSetStatusAddRemove(t *testing.T) {
+	m := New()
+	m.mongoCollector = &mockMongo{
+		serverStatusResponse: "{}",
+		dbStatsResponse:      "{}",
+		replicaSet:           true,
+		replicaNodes:         []string{"node1"},
+	}
+	m.Config.Databases.Includes = []string{"* *"}
+	m.URI = "mongodb://localhost"
+	m.Init()
+	_ = m.Collect()
+	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node1"))
+	assert.True(t, m.charts.Get(replicationHeartbeatLatency).HasDim(replicationHeartbeatLatencyDimPrefix+"node1"))
+	assert.True(t, m.charts.Get(replicationNodePing).HasDim(replicationNodePingDimPrefix+"node1"))
+
+	m.mongoCollector = &mockMongo{
+		serverStatusResponse: "{}",
+		dbStatsResponse:      "{}",
+		replicaSet:           true,
+		replicaNodes:         []string{"node2"},
+	}
+	_ = m.Collect()
+	// node2 dimensions added
+	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node2"))
+	assert.True(t, m.charts.Get(replicationHeartbeatLatency).HasDim(replicationHeartbeatLatencyDimPrefix+"node2"))
+	assert.True(t, m.charts.Get(replicationNodePing).HasDim(replicationNodePingDimPrefix+"node2"))
+
+	// node1 dimensions removed
+	assert.True(t, m.charts.Get(replicationLag).GetDim(replicationLagDimPrefix+"node1").Obsolete)
+	assert.True(t, m.charts.Get(replicationHeartbeatLatency).GetDim(replicationHeartbeatLatencyDimPrefix+"node1").Obsolete)
+	assert.True(t, m.charts.Get(replicationNodePing).GetDim(replicationNodePingDimPrefix+"node1").Obsolete)
+}
+
 func TestMongo_Incomplete(t *testing.T) {
 	m := New()
 	m.mongoCollector = &mockMongo{}
@@ -139,6 +224,9 @@ type mockMongo struct {
 	serverStatusResponse string
 	dbStatsResponse      string
 	closeCalled          bool
+	replicaSet           bool
+	databaseNames        []string
+	replicaNodes         []string
 }
 
 func (m *mockMongo) initClient(_ string, _ time.Duration) error {
@@ -160,7 +248,7 @@ func (m *mockMongo) close() error {
 }
 
 func (m *mockMongo) listDatabaseNames() ([]string, error) {
-	return []string{"db"}, nil
+	return m.databaseNames, nil
 }
 
 func (m *mockMongo) dbStats(_ string) (*dbStats, error) {
@@ -170,4 +258,37 @@ func (m *mockMongo) dbStats(_ string) (*dbStats, error) {
 		return nil, err
 	}
 	return stats, nil
+}
+
+func (m *mockMongo) isReplicaSet() bool {
+	return m.replicaSet
+}
+
+func (m *mockMongo) replSetGetStatus() (*replSetStatus, error) {
+	var ping int64 = 10
+	var now = time.Now()
+	status := replSetStatus{
+		Date:    now,
+		Members: nil,
+	}
+	for _, node := range m.replicaNodes {
+		status.Members = append(status.Members,
+			struct {
+				Name                  string     `bson:"name"`
+				State                 int        `bson:"state"`
+				OptimeDate            time.Time  `bson:"optimeDate"`
+				LastHeartbeat         *time.Time `bson:"lastHeartbeat"`
+				LastHeartbeatReceived *time.Time `bson:"lastHeartbeatRecv"`
+				PingMs                *int64     `bson:"pingMs"`
+			}{
+				Name:                  node,
+				State:                 0,
+				OptimeDate:            now,
+				LastHeartbeat:         &now,
+				LastHeartbeatReceived: &now,
+				PingMs:                &ping,
+			},
+		)
+	}
+	return &status, nil
 }
