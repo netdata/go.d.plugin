@@ -576,37 +576,25 @@ func (m *Mongo) removeDatabasesFromDBStatsCharts(newDatabases []string) {
 func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
 	diff := sliceDiff(m.replSetMembers, newMembers)
 	for _, name := range diff {
-		dimID := replicationHeartbeatLatencyDimPrefix + name
-		chart := m.charts.Get(replicationHeartbeatLatency)
-		if chart != nil {
-			if err := chart.MarkDimRemove(dimID, true); err != nil {
-				m.Warningf("failed to remove dimension: %v", err)
+		for _, v := range []struct{ chartID, dimPrefix string }{
+			{replicationLag, replicationLagDimPrefix},
+			{replicationHeartbeatLatency, replicationHeartbeatLatencyDimPrefix},
+			{replicationNodePing, replicationNodePingDimPrefix},
+		} {
+			id := v.dimPrefix + name
+			if !m.replSetDimsEnabled[id] {
+				continue
 			}
-			delete(m.replSetDimsEnabled, dimID)
-		} else {
-			m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", dimID, replicationHeartbeatLatency)
-		}
+			delete(m.replSetDimsEnabled, id)
 
-		dimID = replicationLagDimPrefix + name
-		chart = m.charts.Get(replicationLag)
-		if chart != nil {
-			if err := chart.MarkDimRemove(dimID, true); err != nil {
-				m.Warningf("failed to remove dimension: %v", err)
+			chart := m.charts.Get(v.chartID)
+			if chart != nil {
+				if err := chart.MarkDimRemove(id, true); err != nil {
+					m.Warningf("failed to remove dimension: %v", err)
+				}
+			} else {
+				m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", id, v.chartID)
 			}
-			delete(m.replSetDimsEnabled, dimID)
-		} else {
-			m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", dimID, replicationLag)
-		}
-
-		dimID = replicationNodePingDimPrefix + name
-		chart = m.charts.Get(replicationNodePing)
-		if chart != nil {
-			if err := chart.MarkDimRemove(dimID, true); err != nil {
-				m.Warningf("failed to remove dimension: %v", err)
-			}
-			delete(m.replSetDimsEnabled, dimID)
-		} else {
-			m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", dimID, replicationNodePing)
 		}
 	}
 }
