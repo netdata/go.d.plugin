@@ -88,37 +88,13 @@ func (m *Mongo) Charts() *module.Charts {
 }
 
 func (m *Mongo) Collect() map[string]int64 {
-	if err := m.mongoCollector.initClient(m.URI, m.Timeout); err != nil {
-		m.Errorf("init mongo client: %v", err)
+	ms, err := m.collect()
+	if err != nil {
+		m.Error(err)
 		return nil
 	}
-
-	ms := map[string]int64{}
-	if err := m.collectServerStatus(ms); err != nil {
-		m.Errorf("couldn't collecting server status metrics: %s", err)
-		return nil
-	}
-
-	if err := m.collectDbStats(ms); err != nil {
-		m.Errorf("couldn't collecting dbstats metrics: %s", err)
-	}
-
-	if m.mongoCollector.isReplicaSet() {
-		// if we have replica set based on the serverStatus response
-		// we add once the charts during runtime
-		m.addReplChartsOnce.Do(func() {
-			if err := m.charts.Add(*replCharts.Copy()...); err != nil {
-				m.Errorf("failed to add replica set chart: %v", err)
-			}
-		})
-
-		if err := m.collectReplSetStatus(ms); err != nil {
-			m.Errorf("couldn't collecting replSetStatus metrics: %s", err)
-		}
-	}
-
 	if len(ms) == 0 {
-		m.Warning("zero collected values")
+		m.Warning("no values collected")
 		return nil
 	}
 	return ms

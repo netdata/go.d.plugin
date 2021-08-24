@@ -278,14 +278,15 @@ is used as the storage engine.
 
 ### [Database Statistics](https://docs.mongodb.com/manual/reference/command/dbStats/#dbstats)
 
-Stack chart that include per database metrics for collections, indexes,
-views, documents and disk size. Because internally the module has to run the
-`dbstats` commands once per database and each server may have a large number of
-databases, these charts are disabled by default. To enabled them please use
-a [matcher](https://learn.netdata.cloud/docs/agent/collectors/go.d.plugin/pkg/matcher) 
+Stack chart that include per database metrics for collections, indexes, views, documents and disk size. Because
+internally the module has to run the
+`dbstats` commands once per database and each server may have a large number of databases, these charts are disabled by
+default. To enabled them please use
+a [matcher](https://learn.netdata.cloud/docs/agent/collectors/go.d.plugin/pkg/matcher)
 in the configuration file to enable the collection for specific or all databases.
 
 For example, to exclude the admin and config databases use:
+
 ```yaml
  databases:
    includes:
@@ -294,7 +295,6 @@ For example, to exclude the admin and config databases use:
      - "= config"
      - "= admin"
 ```
-
 
 #### [Collections](https://docs.mongodb.com/manual/reference/command/dbStats/#mongodb-data-dbStats.collections)
 
