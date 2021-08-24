@@ -139,7 +139,7 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 				chart := m.charts.Get(replicationHeartbeatLatency)
 				if chart != nil {
 					if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
-						m.Warningf("failed to add dim with id: %s, err: %v", id, err)
+						m.Warningf("failed to add dim: %v", err)
 					}
 				}
 			}
@@ -154,7 +154,7 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 			chart := m.charts.Get(replicationLag)
 			if chart != nil {
 				if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
-					m.Warningf("failed to add dim with id: %s, err: %v", id, err)
+					m.Warningf("failed to add dim: %v", err)
 				}
 			}
 		}
@@ -169,7 +169,7 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 				chart := m.charts.Get(replicationNodePing)
 				if chart != nil {
 					if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
-						m.Warningf("failed to add dim with id: %s, err: %v", id, err)
+						m.Warningf("failed to add dim: %v", err)
 					}
 				}
 			}
