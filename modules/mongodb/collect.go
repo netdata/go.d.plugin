@@ -117,7 +117,7 @@ func (m *Mongo) collectDbStats(ms map[string]int64) error {
 func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 	status, err := m.mongoCollector.replSetGetStatus()
 	if err != nil {
-		return fmt.Errorf("error get server status from mongo: %s", err)
+		return fmt.Errorf("error get status of the replica set from mongo: %s", err)
 	}
 	var currentMembers []string
 	for _, member := range status.Members {
