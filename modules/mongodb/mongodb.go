@@ -104,7 +104,7 @@ func (m *Mongo) Collect() map[string]int64 {
 	}
 
 	if m.mongoCollector.isReplicaSet() {
-		// if we have replicate set based on the serverStatus response
+		// if we have replica set based on the serverStatus response
 		// we add once the charts during runtime
 		m.addReplChartsOnce.Do(func() {
 			if err := m.charts.Add(*replCharts.Copy()...); err != nil {

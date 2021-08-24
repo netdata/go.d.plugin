@@ -318,7 +318,7 @@ Total space allocated to all collections in the database for document storage(in
 
 ### Replication
 
-Charts are available on replicate sets only.
+Charts are available on replica sets only.
 
 #### Replication lag
 

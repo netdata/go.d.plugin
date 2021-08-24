@@ -27,7 +27,7 @@ var dbStatsCharts = module.Charts{
 	chartDBStatsSize,
 }
 
-// replCharts on used on replicate sets
+// replCharts on used on replica sets
 var replCharts = module.Charts{
 	chartReplLag,
 	chartReplHeartbeatLatency,
@@ -572,7 +572,7 @@ func (m *Mongo) removeDatabasesFromDBStatsCharts(newDatabases []string) {
 }
 
 // removeReplicaSetMember removes dimensions for not existing
-// replicate set members
+// replica set members
 func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
 	diff := sliceDiff(m.replSetMembers, newMembers)
 	for _, name := range diff {
