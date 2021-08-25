@@ -108,7 +108,7 @@ func (m *Mongo) Cleanup() {
 
 func (m *Mongo) initCharts() (*module.Charts, error) {
 	var charts module.Charts
-	err := charts.Add(*(serverStatusCharts.Copy())...)
+	err := charts.Add(*serverStatusCharts.Copy()...)
 	if err != nil {
 		return nil, err
 	}
