@@ -91,7 +91,6 @@ func (m *Mongo) Collect() map[string]int64 {
 	ms, err := m.collect()
 	if err != nil {
 		m.Error(err)
-		return nil
 	}
 	if len(ms) == 0 {
 		m.Warning("no values collected")

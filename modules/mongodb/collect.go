@@ -13,7 +13,7 @@ func (m *Mongo) collect() (map[string]int64, error) {
 	}
 
 	if err := m.collectDbStats(ms); err != nil {
-		m.Errorf("couldn't collecting dbstats metrics: %s", err)
+		return ms, fmt.Errorf("couldn't collecting dbstats metrics: %s", err)
 	}
 
 	if m.mongoCollector.isReplicaSet() {
@@ -26,7 +26,7 @@ func (m *Mongo) collect() (map[string]int64, error) {
 		})
 
 		if err := m.collectReplSetStatus(ms); err != nil {
-			m.Errorf("couldn't collecting replSetStatus metrics: %s", err)
+			return ms, fmt.Errorf("couldn't collecting replSetStatus metrics: %s", err)
 		}
 	}
 
