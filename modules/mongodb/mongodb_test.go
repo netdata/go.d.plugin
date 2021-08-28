@@ -1,12 +1,14 @@
 package mongo
 
 import (
-	"encoding/json"
+	"fmt"
 	"reflect"
+	"strings"
 	"testing"
-	"time"
 
+	"github.com/netdata/go.d.plugin/agent/module"
 	v5_0_0 "github.com/netdata/go.d.plugin/modules/mongodb/testdata/v5.0.0"
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -36,25 +38,86 @@ func TestMongo_Init(t *testing.T) {
 		},
 	}
 
+	msg := "Init() result does not match Init()"
+
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			m := New()
 			m.Config = test.config
-			assert.Equal(t, test.success, m.Init())
+			assert.Equal(t, test.success, m.Init(), msg)
 		})
 	}
 }
 
+func TestMongo_Init_AddServerChartsTwiceFails(t *testing.T) {
+	msg := "adding duplicate server status charts is expected to fail Init()"
+	m := New()
+	// duplicate charts
+	temp := serverStatusCharts
+	defer func() { serverStatusCharts = temp }()
+	serverStatusCharts = append(serverStatusCharts, serverStatusCharts...)
+	assert.Equal(t, false, m.Init(), msg)
+}
+
+func TestMongo_Init_AddDbChartsTwiceFails(t *testing.T) {
+	msg := "adding duplicate db stats charts is expected to fail Init()"
+	m := New()
+	// duplicate charts
+	temp := dbStatsCharts
+	defer func() { dbStatsCharts = temp }()
+	dbStatsCharts = append(dbStatsCharts, dbStatsCharts...)
+	assert.Equal(t, false, m.Init(), msg)
+}
+
+func TestMongo_Init_BadMatcher(t *testing.T) {
+	msg := "bad database matcher value is expected to fail Init()"
+	m := New()
+	m.Databases = matcher.SimpleExpr{
+		Includes: []string{"bad value"},
+		Excludes: nil,
+	}
+	assert.Equal(t, false, m.Init(), msg)
+}
+
 func TestMongo_Charts(t *testing.T) {
+	msg := "after Init() we expect to have server status and db stats charts"
 	m := New()
 	require.True(t, m.Init())
-	assert.NotNil(t, m.Charts())
+	assert.Len(t, *m.Charts(), 14, msg)
 }
 
 func TestMongo_ChartsOptional(t *testing.T) {
+	// optional charts are the serer status charts
+	// depending on the supported metrics by
+	// the database version and configuration
+	msg := "optional charts should be added after the first Collect()"
 	m := New()
 	require.True(t, m.Init())
-	assert.NotNil(t, m.Charts())
+	charts := *m.Charts()
+	var IDs []string
+	for _, chart := range charts {
+		IDs = append(IDs, chart.ID)
+	}
+	require.NotNil(t, m.Charts())
+	for _, id := range []string{
+		"current_transactions",
+		"flow_control_timings",
+		"active_clients",
+		"queued_operations",
+		"tcmalloc",
+		"tcmalloc_generic",
+		"wiredtiger_cache",
+		"wiredtiger_capacity",
+		"wiredtiger_connection",
+		"wiredtiger_cursor",
+		"wiredtiger_lock",
+		"wiredtiger_lock_duration",
+		"wiredtiger_log_ops",
+		"wiredtiger_log_ops_size",
+		"wiredtiger_transactions",
+	} {
+		assert.NotContainsf(t, IDs, id, msg)
+	}
 }
 
 func TestMongo_initMongoClient_uri(t *testing.T) {
@@ -66,7 +129,7 @@ func TestMongo_initMongoClient_uri(t *testing.T) {
 func TestMongo_CheckFail(t *testing.T) {
 	m := New()
 	m.Config.Timeout = 0
-	assert.False(t, m.Check())
+	assert.False(t, m.Check(), "Check() should fail with context deadline exceeded")
 }
 
 func TestMongo_Success(t *testing.T) {
@@ -75,29 +138,49 @@ func TestMongo_Success(t *testing.T) {
 	m.Config.URI = ""
 	obj := &mockMongo{serverStatusResponse: v5_0_0.ServerStatus}
 	m.mongoCollector = obj
-	assert.True(t, m.Check())
+	assert.True(t, m.Check(), "check should success with the mocker serverStatus response")
 }
 
 func TestMongo_Collect_DbStats(t *testing.T) {
 	m := New()
 	m.mongoCollector = &mockMongo{
-		serverStatusResponse: "{}",
-		dbStatsResponse:      "{}",
-		databaseNames:        []string{"db"},
+		serverStatusResponse:      "{}",
+		listDatabaseNamesResponse: v5_0_0.ListDatabaseNames,
+		dbStatsResponse:           v5_0_0.DbStats,
+		replicaSetResponse:        "{}",
+		closeCalled:               false,
+		replicaSet:                false,
 	}
-	m.Config.Databases.Includes = []string{"* *"}
+	m.Config.Databases.Includes = []string{"* *"} // matcher
 	m.URI = "mongodb://localhost"
 	m.Init()
 	ms := m.Collect()
-	assert.Len(t, ms, reflect.ValueOf(dbStats{}).NumField())
+	msg := "collected values should be equal to the number of the dbStats field * number of databases"
+	assert.Len(t, ms, reflect.ValueOf(dbStats{}).NumField()*len(v5_0_0.ListDatabaseNames), msg)
+
+	charts := []*module.Chart{
+		chartDBStatsCollections.Copy(),
+		chartDBStatsIndexes.Copy(),
+		chartDBStatsViews.Copy(),
+		chartDBStatsDocuments.Copy(),
+		chartDBStatsSize.Copy(),
+	}
+	for _, chart := range charts {
+		require.True(t, m.charts.Has(chart.ID))
+		for _, dbName := range v5_0_0.ListDatabaseNames {
+			dimID := fmt.Sprintf("%s_%s", chart.ID, dbName)
+			assert.True(t, m.charts.Get(chart.ID).HasDim(dimID), "dimension is expected")
+			assert.EqualValues(t, 1, ms[dimID], "all values are hardcode to 1 in the test data")
+		}
+	}
 }
 
 func TestMongo_Collect_DbStatsRemoveDropped(t *testing.T) {
 	m := New()
 	m.mongoCollector = &mockMongo{
-		serverStatusResponse: "{}",
-		dbStatsResponse:      "{}",
-		databaseNames:        []string{"db1", "db2"},
+		serverStatusResponse:      "{}",
+		dbStatsResponse:           "{}",
+		listDatabaseNamesResponse: []string{"db1", "db2"},
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
@@ -107,30 +190,35 @@ func TestMongo_Collect_DbStatsRemoveDropped(t *testing.T) {
 
 	// remove a database
 	m.mongoCollector = &mockMongo{
-		serverStatusResponse: "{}",
-		dbStatsResponse:      "{}",
-		databaseNames:        []string{"db1"},
+		serverStatusResponse:      "{}",
+		dbStatsResponse:           "{}",
+		listDatabaseNamesResponse: []string{"db1"},
 	}
 	ms = m.Collect()
-	assert.True(t, m.charts.Get("database_collections").Dims[1].Obsolete)
-	assert.Len(t, ms, 7)
+	msg := "dimension was removed but is still active"
+	assert.True(t, m.charts.Get("database_collections").Dims[1].Obsolete, msg)
+	assert.Len(t, ms, 7, "we should have collected exactly 7 metrics")
 
 	// add two databases
 	m.mongoCollector = &mockMongo{
-		serverStatusResponse: "{}",
-		dbStatsResponse:      "{}",
-		databaseNames:        []string{"db1", "db2", "db3"},
+		serverStatusResponse:      "{}",
+		dbStatsResponse:           "{}",
+		listDatabaseNamesResponse: []string{"db1", "db2", "db3"},
 	}
 	ms = m.Collect()
-	assert.Len(t, m.charts.Get("database_collections").Dims, 3)
-	assert.Len(t, ms, 21)
+	msg = "after adding two databases we should still have 3 charts"
+	assert.Len(t, m.charts.Get("database_collections").Dims, 3, msg)
+	msg = "after adding two databases we should still have 3 charts with 7 dimensions each"
+	assert.Len(t, ms, 21, msg)
 }
 
 func TestMongo_Collect_DbStats_Fail(t *testing.T) {
 	m := New()
 	m.mongoCollector = &mockMongo{
-		serverStatusResponse: "{}",
-		dbStatsResponse:      "",
+		serverStatusResponse:      "{}",
+		dbStatsResponse:           "",
+		listDatabaseNamesResponse: []string{},
+		replicaSetResponse:        "{}",
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
@@ -142,71 +230,83 @@ func TestMongo_Collect_DbStats_Fail(t *testing.T) {
 func TestMongo_Collect_DbStats_EmptyMatcher(t *testing.T) {
 	m := New()
 	m.mongoCollector = &mockMongo{
-		serverStatusResponse: "{}",
-		dbStatsResponse:      "{}",
+		serverStatusResponse:      "{}",
+		dbStatsResponse:           "{}",
+		listDatabaseNamesResponse: []string{},
+		replicaSetResponse:        "{}",
 	}
 	m.Config.Databases.Includes = []string{"* not_matching"}
 	m.URI = "mongodb://localhost"
 	m.Init()
 	ms := m.Collect()
-	assert.Len(t, ms, 0)
+	msg := "we shouldn't have any metrics with a bad matcher"
+	assert.Len(t, ms, 0, msg)
 }
 
 func TestMongo_Collect_ReplSetStatus(t *testing.T) {
 	m := New()
 	m.mongoCollector = &mockMongo{
-		serverStatusResponse: "{}",
-		dbStatsResponse:      "{}",
-		replicaSet:           true,
+		serverStatusResponse:      "{}",
+		dbStatsResponse:           "{}",
+		listDatabaseNamesResponse: []string{},
+		replicaSet:                true,
+		replicaSetResponse:        v5_0_0.ReplSetGetStatus,
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
 	m.Init()
 	_ = m.Collect()
-	assert.True(t, m.charts.Has(replicationLag))
-	assert.True(t, m.charts.Has(replicationHeartbeatLatency))
-	assert.True(t, m.charts.Has(replicationNodePing))
+	msg := "%s chart should have been added"
+	assert.True(t, m.charts.Has(replicationLag), msg, replicationLag)
+	assert.True(t, m.charts.Has(replicationHeartbeatLatency), msg, replicationHeartbeatLatency)
+	assert.True(t, m.charts.Has(replicationNodePing), msg, replicationNodePing)
 }
 
 func TestMongo_Collect_ReplSetStatusAddRemove(t *testing.T) {
 	m := New()
 	m.mongoCollector = &mockMongo{
-		serverStatusResponse: "{}",
-		dbStatsResponse:      "{}",
-		replicaSet:           true,
-		replicaNodes:         []string{"node1"},
+		serverStatusResponse:      "{}",
+		dbStatsResponse:           "{}",
+		listDatabaseNamesResponse: []string{},
+		replicaSet:                true,
+		replicaSetResponse:        v5_0_0.ReplSetGetStatusNode1,
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
 	m.Init()
 	_ = m.Collect()
-	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node1"))
-	assert.True(t, m.charts.Get(replicationHeartbeatLatency).HasDim(replicationHeartbeatLatencyDimPrefix+"node1"))
-	assert.True(t, m.charts.Get(replicationNodePing).HasDim(replicationNodePingDimPrefix+"node1"))
+	msg := "node1 dimension is missing"
+	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node1"), msg)
+	assert.True(t, m.charts.Get(replicationHeartbeatLatency).HasDim(replicationHeartbeatLatencyDimPrefix+"node1"), msg)
+	assert.True(t, m.charts.Get(replicationNodePing).HasDim(replicationNodePingDimPrefix+"node1"), msg)
 
 	m.mongoCollector = &mockMongo{
-		serverStatusResponse: "{}",
-		dbStatsResponse:      "{}",
-		replicaSet:           true,
-		replicaNodes:         []string{"node2"},
+		serverStatusResponse:      "{}",
+		dbStatsResponse:           "{}",
+		listDatabaseNamesResponse: []string{},
+		replicaSet:                true,
+		replicaSetResponse:        v5_0_0.ReplSetGetStatusNode2,
 	}
 	_ = m.Collect()
 	// node2 dimensions added
-	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node2"))
-	assert.True(t, m.charts.Get(replicationHeartbeatLatency).HasDim(replicationHeartbeatLatencyDimPrefix+"node2"))
-	assert.True(t, m.charts.Get(replicationNodePing).HasDim(replicationNodePingDimPrefix+"node2"))
+	msg = "node2 dimension is missing"
+	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node2"), msg)
+	assert.True(t, m.charts.Get(replicationHeartbeatLatency).HasDim(replicationHeartbeatLatencyDimPrefix+"node2"), msg)
+	assert.True(t, m.charts.Get(replicationNodePing).HasDim(replicationNodePingDimPrefix+"node2"), msg)
 
 	// node1 dimensions removed
-	assert.True(t, m.charts.Get(replicationLag).GetDim(replicationLagDimPrefix+"node1").Obsolete)
-	assert.True(t, m.charts.Get(replicationHeartbeatLatency).GetDim(replicationHeartbeatLatencyDimPrefix+"node1").Obsolete)
-	assert.True(t, m.charts.Get(replicationNodePing).GetDim(replicationNodePingDimPrefix+"node1").Obsolete)
+	msg = "node1 was remove but dimension is still active"
+	assert.True(t, m.charts.Get(replicationLag).GetDim(replicationLagDimPrefix+"node1").Obsolete, msg)
+	assert.True(t, m.charts.Get(replicationHeartbeatLatency).GetDim(replicationHeartbeatLatencyDimPrefix+"node1").Obsolete, msg)
+	assert.True(t, m.charts.Get(replicationNodePing).GetDim(replicationNodePingDimPrefix+"node1").Obsolete, msg)
 }
 
 func TestMongo_Incomplete(t *testing.T) {
 	m := New()
 	m.mongoCollector = &mockMongo{}
 	ms := m.Collect()
-	assert.Len(t, ms, 0)
+	msg := "uninitialized client should collect any data"
+	assert.Len(t, ms, 0, msg)
 }
 
 func TestMongo_Cleanup(t *testing.T) {
@@ -214,81 +314,65 @@ func TestMongo_Cleanup(t *testing.T) {
 	connector := &mockMongo{}
 	m.mongoCollector = connector
 	m.Cleanup()
-	assert.True(t, connector.closeCalled)
+	msg := "Cleanup() should have closed the mongo client"
+	assert.True(t, connector.closeCalled, msg)
 }
 
-// mock for unit testing the mongo database as the driver
-// doesn't use interfaces.
-type mockMongo struct {
-	connector
-	serverStatusResponse string
-	dbStatsResponse      string
-	closeCalled          bool
-	replicaSet           bool
-	databaseNames        []string
-	replicaNodes         []string
-}
-
-func (m *mockMongo) initClient(_ string, _ time.Duration) error {
-	return nil
-}
-
-func (m *mockMongo) serverStatus() (*serverStatus, error) {
-	var status serverStatus
-	err := json.Unmarshal([]byte(m.serverStatusResponse), &status)
-	if err != nil {
-		return nil, err
+func TestCollectUpToServerStatus(t *testing.T) {
+	m := New()
+	m.Timeout = 0
+	m.mongoCollector = &mockMongoServerStatusOnly{
+		serverStatusResponse: v5_0_0.ServerStatus,
 	}
-	return &status, nil
-}
 
-func (m *mockMongo) close() error {
-	m.closeCalled = true
-	return nil
-}
-
-func (m *mockMongo) listDatabaseNames() ([]string, error) {
-	return m.databaseNames, nil
-}
-
-func (m *mockMongo) dbStats(_ string) (*dbStats, error) {
-	stats := &dbStats{}
-	err := json.Unmarshal([]byte(m.dbStatsResponse), stats)
-	if err != nil {
-		return nil, err
+	m.Config.Databases.Includes = []string{"* *"}
+	m.URI = "mongodb://localhost"
+	m.Init()
+	ms := m.Collect()
+	msg := "dim should not have been added: %s"
+	for dim := range ms {
+		assert.False(t, strings.HasPrefix(dim, "database"), msg, dim)
+		assert.False(t, strings.HasPrefix(dim, "replication"), msg, dim)
 	}
-	return stats, nil
 }
 
-func (m *mockMongo) isReplicaSet() bool {
-	return m.replicaSet
+func TestCollectUpToServerStatusListDbNamesFails(t *testing.T) {
+	m := New()
+	m.Timeout = 0
+	m.mongoCollector = &mockMongoServerStatusOnly{
+		serverStatusResponse:  v5_0_0.ServerStatus,
+		mockListDatabaseNames: true,
+	}
+	m.Config.Databases.Includes = []string{"* *"}
+	m.URI = "mongodb://localhost"
+	m.Init()
+	ms := m.Collect()
+	msg := "dim should not have been added: %s"
+	for dim := range ms {
+		assert.False(t, strings.HasPrefix(dim, "database"), msg, dim)
+		assert.False(t, strings.HasPrefix(dim, "replication"), msg, dim)
+	}
 }
 
-func (m *mockMongo) replSetGetStatus() (*replSetStatus, error) {
-	var ping int64 = 10
-	var now = time.Now()
-	status := replSetStatus{
-		Date:    now,
-		Members: nil,
+func TestCollectUpToDbStats(t *testing.T) {
+	m := New()
+	m.Timeout = 0
+	m.mongoCollector = &mockMongoServerStatusOnly{
+		serverStatusResponse:  v5_0_0.ServerStatus,
+		mockListDatabaseNames: true,
+		mockDbStats:           true,
 	}
-	for _, node := range m.replicaNodes {
-		status.Members = append(status.Members,
-			struct {
-				Name                  string     `bson:"name"`
-				State                 int        `bson:"state"`
-				OptimeDate            time.Time  `bson:"optimeDate"`
-				LastHeartbeat         *time.Time `bson:"lastHeartbeat"`
-				LastHeartbeatReceived *time.Time `bson:"lastHeartbeatRecv"`
-				PingMs                *int64     `bson:"pingMs"`
-			}{
-				Name:                  node,
-				State:                 0,
-				OptimeDate:            now,
-				LastHeartbeat:         &now,
-				LastHeartbeatReceived: &now,
-				PingMs:                &ping,
-			},
-		)
+	m.Config.Databases.Includes = []string{"* *"}
+	m.URI = "mongodb://localhost"
+	m.Init()
+	ms := m.Collect()
+
+	foundDbStatsDims := false
+	for dim := range ms {
+		if strings.HasPrefix(dim, "database") {
+			foundDbStatsDims = true
+			break
+		}
 	}
-	return &status, nil
+	assert.True(t, foundDbStatsDims, "some dims 'database_*' were not found")
 }

@@ -2150,5 +2150,6 @@ var ServerStatus = `
             "passes": 1
         }
     },
+	"repl": "",
     "ok": 1
 }`
