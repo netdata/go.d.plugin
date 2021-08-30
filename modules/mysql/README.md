@@ -81,7 +81,7 @@ It produces the following charts:
 - Connection Errors in `errors/s`
 - Opened Tables in `tables/s`
 - Open Tables in `tables`
-- Process List Fetch Duration in `seconds`
+- Process List Fetch Duration in `milliseconds`
 - Process List Queries Count in `queries`
 - Process List Longest Query Duration in `seconds`
 
