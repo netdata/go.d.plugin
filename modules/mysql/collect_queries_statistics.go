@@ -24,14 +24,14 @@ func (m *MySQL) collectProcessListStatistics(collected map[string]int64) error {
 
 	start := time.Now()
 	rows, err := m.db.Query(queryInfoSchemaProcessList)
-	queryDuration = int64(time.Since(start).Seconds())
+	queryDuration = time.Since(start).Milliseconds()
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 
-	collected["process_list_query_count_system"] = 0
-	collected["process_list_query_user"] = 0
+	collected["process_list_queries_count_system"] = 0
+	collected["process_list_queries_count_user"] = 0
 
 	for rows.Next() {
 		if err := rows.Scan(&longestRunningQuerySeconds, &user); err != nil {
@@ -39,13 +39,13 @@ func (m *MySQL) collectProcessListStatistics(collected map[string]int64) error {
 		}
 		switch user {
 		case "system user", "event_scheduler":
-			collected["process_list_query_count_system"] += 1
+			collected["process_list_queries_count_system"] += 1
 		default:
-			collected["process_list_query_user"] += 1
+			collected["process_list_queries_count_user"] += 1
 		}
 	}
 
-	collected["process_fetch_query_duration"] = queryDuration
+	collected["process_list_fetch_query_duration"] = queryDuration
 	collected["process_list_longest_query_duration"] = longestRunningQuerySeconds
 
 	return nil
