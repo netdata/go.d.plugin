@@ -890,13 +890,23 @@ func TestMySQL_Collect(t *testing.T) {
 		},
 	}
 
+	// workaround because we measure execution time and that can vary
+	// a few milliseconds depending on the available processing power
+	copyProcessListFetchQueryDuration := func(dst map[string]int64, val int64) {
+		for k := range dst {
+			if strings.HasSuffix(k, "process_list_fetch_query_duration") {
+				dst[k] = val
+			}
+		}
+	}
+
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mySQL, mock, cleanup := test.prepare(t)
 			defer cleanup()
 
 			collected := mySQL.Collect()
-
+			copyProcessListFetchQueryDuration(collected, test.expected["process_list_fetch_query_duration"])
 			assert.Equal(t, test.expected, collected)
 			assert.NoError(t, mock.ExpectationsWereMet())
 			ensureCollectedHasAllChartsDimsVarsIDs(t, mySQL, collected)
