@@ -37,9 +37,16 @@ func (m *MySQL) collectProcessListStatistics(collected map[string]int64) error {
 		if err := rows.Scan(&longestRunningQuerySeconds, &user); err != nil {
 			return err
 		}
+		// system user refers to non-client threads
+		// event_scheduler is the thread used to monitor scheduled events
+		// system user and event_scheduler threads are grouped as system/database threads
+		// authenticated and unauthenticated user are grouped as users
+		// please see USER section in
+		// https://dev.mysql.com/doc/refman/8.0/en/information-schema-processlist-table.html
 		switch user {
 		case "system user", "event_scheduler":
 			collected["process_list_queries_count_system"] += 1
+
 		default:
 			collected["process_list_queries_count_user"] += 1
 		}
