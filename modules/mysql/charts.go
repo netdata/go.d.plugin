@@ -462,6 +462,34 @@ var charts = Charts{
 			{ID: "open_tables", Name: "tables"},
 		},
 	},
+	{
+		ID:    "process_list_fetch_duration",
+		Title: "Process List Fetch Duration",
+		Units: "milliseconds",
+		Fam:   "process list",
+		Ctx:   "mysql.process_list_fetch_query_duration",
+		Dims:  Dims{{ID: "process_list_fetch_query_duration", Name: "duration"}},
+	},
+	{
+		ID:    "process_list_queries_count",
+		Title: "Queries Count",
+		Units: "queries",
+		Fam:   "process list",
+		Ctx:   "mysql.process_list_queries_count",
+		Type:  module.Stacked,
+		Dims: Dims{
+			{ID: "process_list_queries_count_system", Name: "system"},
+			{ID: "process_list_queries_count_user", Name: "user"},
+		},
+	},
+	{
+		ID:    "process_list_longest_query_duration",
+		Title: "Longest Query Duration",
+		Units: "seconds",
+		Fam:   "process list",
+		Ctx:   "mysql.process_list_longest_query_duration",
+		Dims:  Dims{{ID: "process_list_longest_query_duration", Name: "duration"}},
+	},
 }
 
 var innodbDeadlocksChart = Chart{

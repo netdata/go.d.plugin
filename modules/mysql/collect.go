@@ -64,6 +64,10 @@ func (m *MySQL) collect() (map[string]int64, error) {
 		}
 	}
 
+	if err := m.collectProcessListStatistics(collected); err != nil {
+		m.Errorf("error on collecting process list statistics: %v", err)
+	}
+
 	calcThreadCacheMisses(collected)
 	return collected, nil
 }

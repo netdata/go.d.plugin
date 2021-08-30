@@ -20,6 +20,7 @@ Executed queries:
 - `SHOW GLOBAL VARIABLES;`
 - `SHOW SLAVE STATUS;` or `SHOW ALL SLAVES STATUS;` (MariaDBv10.2+)
 - `SHOW USER_STATISTICS;` (MariaDBv10.1.1+)
+- `SELECT TIME,USER FROM INFORMATION_SCHEMA.PROCESSLIST;`
 
 [User Statistics](https://mariadb.com/kb/en/user-statistics/) query is [`MariaDB`](https://mariadb.com/) specific.
 
@@ -80,6 +81,9 @@ It produces the following charts:
 - Connection Errors in `errors/s`
 - Opened Tables in `tables/s`
 - Open Tables in `tables`
+- Process List Fetch Duration in `milliseconds`
+- Process List Queries Count in `queries`
+- Process List Longest Query Duration in `seconds`
 
 If [Query Cache](https://dev.mysql.com/doc/refman/5.7/en/query-cache.html) metrics are available (`MariaDB`
 and [old versions of `MySQL`](https://mysqlserverteam.com/mysql-8-0-retiring-support-for-the-query-cache/)):

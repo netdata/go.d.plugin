@@ -23,17 +23,20 @@ var (
 	mariaV5546GlobalStatus, _    = ioutil.ReadFile("testdata/mariadb/v5.5.46/global_status.txt")
 	mariaV5546GlobalVariables, _ = ioutil.ReadFile("testdata/mariadb/v5.5.46/global_variables.txt")
 	mariaV5546SlaveStatus, _     = ioutil.ReadFile("testdata/mariadb/v5.5.46/slave_status.txt")
+	mariaV5546ProcessList, _     = ioutil.ReadFile("testdata/mariadb/v5.5.46/process_list.txt")
 
 	mariaV1054Version, _         = ioutil.ReadFile("testdata/mariadb/v10.5.4/version.txt")
 	mariaV1054GlobalStatus, _    = ioutil.ReadFile("testdata/mariadb/v10.5.4/global_status.txt")
 	mariaV1054GlobalVariables, _ = ioutil.ReadFile("testdata/mariadb/v10.5.4/global_variables.txt")
 	mariaV1054UserStatistics, _  = ioutil.ReadFile("testdata/mariadb/v10.5.4/user_statistics.txt")
 	mariaV1054AllSlavesStatus, _ = ioutil.ReadFile("testdata/mariadb/v10.5.4/all_slaves_status.txt")
+	mariaV1054ProcessList, _     = ioutil.ReadFile("testdata/mariadb/v10.5.4/process_list.txt")
 
 	mysqlV8021Version, _         = ioutil.ReadFile("testdata/mysql/v8.0.21/version.txt")
 	mysqlV8021GlobalStatus, _    = ioutil.ReadFile("testdata/mysql/v8.0.21/global_status.txt")
 	mysqlV8021GlobalVariables, _ = ioutil.ReadFile("testdata/mysql/v8.0.21/global_variables.txt")
 	mysqlV8021SlaveStatus, _     = ioutil.ReadFile("testdata/mysql/v8.0.21/slave_status.txt")
+	mysqlV8021ProcessList, _     = ioutil.ReadFile("testdata/mysql/v8.0.21/process_list.txt")
 )
 
 var (
@@ -286,7 +289,8 @@ func TestMySQL_Collect(t *testing.T) {
 					WillReturnRows(mustMockRows(t, mariaV5546GlobalVariables))
 				mock.ExpectQuery(querySlaveStatus).
 					WillReturnRows(mustMockRows(t, mariaV5546SlaveStatus))
-
+				mock.ExpectQuery(queryInfoSchemaProcessList).
+					WillReturnRows(mustMockRows(t, mariaV5546ProcessList))
 				return mySQL, mock, cleanup
 			},
 			expected: map[string]int64{
@@ -399,6 +403,10 @@ func TestMySQL_Collect(t *testing.T) {
 				"threads_connected":                     1,
 				"threads_created":                       3,
 				"threads_running":                       1,
+				"process_list_fetch_query_duration":     0,
+				"process_list_queries_count_system":     1,
+				"process_list_queries_count_user":       1,
+				"process_list_longest_query_duration":   10,
 			},
 		},
 		"MariaDBv10.5.4: all queries (single source replication)": {
@@ -419,6 +427,8 @@ func TestMySQL_Collect(t *testing.T) {
 					WillReturnRows(mustMockRows(t, mariaV1054AllSlavesStatus))
 				mock.ExpectQuery(queryUserStatistics).
 					WillReturnRows(mustMockRows(t, mariaV1054UserStatistics))
+				mock.ExpectQuery(queryInfoSchemaProcessList).
+					WillReturnRows(mustMockRows(t, mariaV1054ProcessList))
 
 				return mySQL, mock, cleanup
 			},
@@ -576,6 +586,10 @@ func TestMySQL_Collect(t *testing.T) {
 				"wsrep_replicated":                      5,
 				"wsrep_replicated_bytes":                2392,
 				"wsrep_thread_count":                    5,
+				"process_list_fetch_query_duration":     0,
+				"process_list_queries_count_system":     1,
+				"process_list_queries_count_user":       1,
+				"process_list_longest_query_duration":   10,
 			},
 		},
 		"MariaDBv10.5.4: minimal: global status and variables": {
@@ -596,6 +610,8 @@ func TestMySQL_Collect(t *testing.T) {
 					WillReturnError(errSQLSyntax)
 				mock.ExpectQuery(queryUserStatistics).
 					WillReturnError(errSQLSyntax)
+				mock.ExpectQuery(queryInfoSchemaProcessList).
+					WillReturnRows(mustMockRows(t, mariaV1054ProcessList))
 
 				return mySQL, mock, cleanup
 			},
@@ -729,6 +745,10 @@ func TestMySQL_Collect(t *testing.T) {
 				"wsrep_replicated":                      5,
 				"wsrep_replicated_bytes":                2392,
 				"wsrep_thread_count":                    5,
+				"process_list_fetch_query_duration":     0,
+				"process_list_queries_count_system":     1,
+				"process_list_queries_count_user":       1,
+				"process_list_longest_query_duration":   10,
 			},
 		},
 		"MySQLv8.0.21: all queries (multi source replication)": {
@@ -747,6 +767,8 @@ func TestMySQL_Collect(t *testing.T) {
 					WillReturnRows(mustMockRows(t, mysqlV8021GlobalVariables))
 				mock.ExpectQuery(querySlaveStatus).
 					WillReturnRows(mustMockRows(t, mysqlV8021SlaveStatus))
+				mock.ExpectQuery(queryInfoSchemaProcessList).
+					WillReturnRows(mustMockRows(t, mysqlV8021ProcessList))
 
 				return mySQL, mock, cleanup
 			},
@@ -860,8 +882,22 @@ func TestMySQL_Collect(t *testing.T) {
 				"threads_connected":                     1,
 				"threads_created":                       1,
 				"threads_running":                       2,
+				"process_list_fetch_query_duration":     0,
+				"process_list_queries_count_system":     1,
+				"process_list_queries_count_user":       1,
+				"process_list_longest_query_duration":   10,
 			},
 		},
+	}
+
+	// workaround because we measure execution time and that can vary
+	// a few milliseconds depending on the available processing power
+	copyProcessListFetchQueryDuration := func(dst map[string]int64, val int64) {
+		for k := range dst {
+			if strings.HasSuffix(k, "process_list_fetch_query_duration") {
+				dst[k] = val
+			}
+		}
 	}
 
 	for name, test := range tests {
@@ -870,7 +906,7 @@ func TestMySQL_Collect(t *testing.T) {
 			defer cleanup()
 
 			collected := mySQL.Collect()
-
+			copyProcessListFetchQueryDuration(collected, test.expected["process_list_fetch_query_duration"])
 			assert.Equal(t, test.expected, collected)
 			assert.NoError(t, mock.ExpectationsWereMet())
 			ensureCollectedHasAllChartsDimsVarsIDs(t, mySQL, collected)
