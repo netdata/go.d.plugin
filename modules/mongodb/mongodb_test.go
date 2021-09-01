@@ -153,7 +153,7 @@ func TestMongo_Collect_DbStats(t *testing.T) {
 	}
 	m.Config.Databases.Includes = []string{"* *"} // matcher
 	m.URI = "mongodb://localhost"
-	m.Init()
+	require.True(t, m.Init())
 	ms := m.Collect()
 	msg := "collected values should be equal to the number of the dbStats field * number of databases"
 	assert.Len(t, ms, reflect.ValueOf(dbStats{}).NumField()*len(v5_0_0.ListDatabaseNames), msg)
@@ -184,7 +184,7 @@ func TestMongo_Collect_DbStatsRemoveDropped(t *testing.T) {
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
-	m.Init()
+	require.True(t, m.Init())
 	ms := m.Collect()
 	assert.Len(t, ms, 14)
 
@@ -222,7 +222,7 @@ func TestMongo_Collect_DbStats_Fail(t *testing.T) {
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
-	m.Init()
+	require.True(t, m.Init())
 	ms := m.Collect()
 	assert.Len(t, ms, 0)
 }
@@ -237,7 +237,7 @@ func TestMongo_Collect_DbStats_EmptyMatcher(t *testing.T) {
 	}
 	m.Config.Databases.Includes = []string{"* not_matching"}
 	m.URI = "mongodb://localhost"
-	m.Init()
+	require.True(t, m.Init())
 	ms := m.Collect()
 	msg := "we shouldn't have any metrics with a bad matcher"
 	assert.Len(t, ms, 0, msg)
@@ -254,7 +254,7 @@ func TestMongo_Collect_ReplSetStatus(t *testing.T) {
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
-	m.Init()
+	require.True(t, m.Init())
 	_ = m.Collect()
 	msg := "%s chart should have been added"
 	assert.True(t, m.charts.Has(replicationLag), msg, replicationLag)
@@ -273,7 +273,7 @@ func TestMongo_Collect_ReplSetStatusAddRemove(t *testing.T) {
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
-	m.Init()
+	require.True(t, m.Init())
 	_ = m.Collect()
 	msg := "node1 dimension is missing"
 	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node1"), msg)
@@ -327,7 +327,7 @@ func TestCollectUpToServerStatus(t *testing.T) {
 
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
-	m.Init()
+	require.True(t, m.Init())
 	ms := m.Collect()
 	msg := "dim should not have been added: %s"
 	for dim := range ms {
@@ -345,7 +345,7 @@ func TestCollectUpToServerStatusListDbNamesFails(t *testing.T) {
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
-	m.Init()
+	require.True(t, m.Init())
 	ms := m.Collect()
 	msg := "dim should not have been added: %s"
 	for dim := range ms {
@@ -364,7 +364,7 @@ func TestCollectUpToDbStats(t *testing.T) {
 	}
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
-	m.Init()
+	require.True(t, m.Init())
 	ms := m.Collect()
 
 	foundDbStatsDims := false
