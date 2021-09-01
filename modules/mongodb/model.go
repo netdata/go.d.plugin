@@ -266,11 +266,11 @@ func (d *dbStats) toMap(dbName string, m map[string]int64) {
 type replSetStatus struct {
 	Date    time.Time `bson:"date"`
 	Members []struct {
-		Name                  string     `bson:"name"`
-		State                 int        `bson:"state"`
-		OptimeDate            time.Time  `bson:"optimeDate"`
-		LastHeartbeat         *time.Time `bson:"lastHeartbeat"`
-		LastHeartbeatReceived *time.Time `bson:"lastHeartbeatRecv"`
-		PingMs                *int64     `bson:"pingMs"`
+		Name              string     `bson:"name"`
+		State             int        `bson:"state"`
+		OptimeDate        time.Time  `bson:"optimeDate"`
+		LastHeartbeat     *time.Time `bson:"lastHeartbeat"`
+		LastHeartbeatRecv *time.Time `bson:"lastHeartbeatRecv"`
+		PingMs            *int64     `bson:"pingMs"`
 	} `bson:"members"`
 }

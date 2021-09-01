@@ -27,7 +27,7 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 
 	for _, member := range status.Members {
 		// Heartbeat lag calculation
-		if member.LastHeartbeatReceived != nil {
+		if member.LastHeartbeatRecv != nil {
 			id := replicationHeartbeatLatencyDimPrefix + member.Name
 			// add dimension if not exists yet
 			if !m.replSetDimsEnabled[id] {
@@ -39,7 +39,7 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 					}
 				}
 			}
-			ms[id] = status.Date.Sub(*member.LastHeartbeatReceived).Milliseconds()
+			ms[id] = status.Date.Sub(*member.LastHeartbeatRecv).Milliseconds()
 		}
 
 		// Replica set time diff between current time and time when last entry from the oplog was applied
