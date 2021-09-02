@@ -9,11 +9,11 @@ func (m *Mongo) collect() (map[string]int64, error) {
 
 	ms := map[string]int64{}
 	if err := m.collectServerStatus(ms); err != nil {
-		return nil, fmt.Errorf("couldn't collecting server status metrics: %s", err)
+		return nil, fmt.Errorf("couldn't collecting server status metrics: %v", err)
 	}
 
 	if err := m.collectDbStats(ms); err != nil {
-		return ms, fmt.Errorf("couldn't collecting dbstats metrics: %s", err)
+		return ms, fmt.Errorf("couldn't collecting dbstats metrics: %v", err)
 	}
 
 	if m.mongoCollector.isReplicaSet() {
@@ -26,7 +26,21 @@ func (m *Mongo) collect() (map[string]int64, error) {
 		})
 
 		if err := m.collectReplSetStatus(ms); err != nil {
-			return ms, fmt.Errorf("couldn't collecting replSetStatus metrics: %s", err)
+			return ms, fmt.Errorf("couldn't collecting replSetStatus metrics: %v", err)
+		}
+	}
+
+	if m.mongoCollector.isMongos() {
+		// if we are on a shard based on the serverStatus response
+		// we add once the charts during runtime
+		m.addShardChartsOnce.Do(func() {
+			if err := m.charts.Add(*shardCharts.Copy()...); err != nil {
+				m.Errorf("failed to add shard chart: %v", err)
+			}
+		})
+
+		if err := m.collectShard(ms); err != nil {
+			return ms, fmt.Errorf("couldn't collecting shard metrics: %v", err)
 		}
 	}
 

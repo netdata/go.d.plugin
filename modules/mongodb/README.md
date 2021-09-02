@@ -332,6 +332,30 @@ Time when last heartbeat was received from replica set member `milliseconds`
 
 Round trip time between members and local instance in `milliseconds`
 
+### Sharding
+
+Charts are available on shards only for [mongos](https://docs.mongodb.com/manual/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.process)
+
+#### Transaction Commit Types
+
+Number of initiated and successful `no shard`, `single shard`, `shard write` ,`two phase`commits in `commits`
+
+#### Shard Nodes
+
+Number of shard aware vs shard unaware nodes in `nodes`
+
+#### Databases Sharding Status
+
+Partitioned vs UnPartitioned databases in `databases`
+
+#### Collections Sharding Status
+
+Partitioned vs UnPartitioned collections in `databases`
+
+#### Chucks Per Node
+
+Number of chucks per node in `chunks`
+
 ## Prerequisites
 
 Create a read-only user for Netdata in the admin database.

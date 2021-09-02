@@ -11,6 +11,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func TestMongo_Init(t *testing.T) {
@@ -299,6 +300,105 @@ func TestMongo_Collect_ReplSetStatusAddRemove(t *testing.T) {
 	assert.True(t, m.charts.Get(replicationLag).GetDim(replicationLagDimPrefix+"node1").Obsolete, msg)
 	assert.True(t, m.charts.Get(replicationHeartbeatLatency).GetDim(replicationHeartbeatLatencyDimPrefix+"node1").Obsolete, msg)
 	assert.True(t, m.charts.Get(replicationNodePing).GetDim(replicationNodePingDimPrefix+"node1").Obsolete, msg)
+}
+
+func TestMongo_Collect_Shard(t *testing.T) {
+	m := New()
+	mockClient := &mockMongo{
+		serverStatusResponse:      "{}",
+		listDatabaseNamesResponse: []string{},
+		dbStatsResponse:           "{}",
+		replicaSetResponse:        "{}",
+		mongos:                    true,
+		shardNodesResponse:        v5_0_0.ShardNodes,
+		shardDbPartitionResponse:  v5_0_0.ShardDatabases,
+		shardColPartitionResponse: v5_0_0.ShardCollections,
+		chunksShardNum:            2,
+	}
+	mockClient.connector = &mongoCollector{aggregationFunc: mockClient.dbAggregate}
+	m.mongoCollector = mockClient
+	m.Config.Databases.Includes = []string{"* *"}
+	m.URI = "mongodb://localhost"
+	require.True(t, m.Init())
+	ms := m.Collect()
+	msg := "%s chart should have been added"
+	for _, chart := range shardCharts {
+		assert.True(t, m.charts.Has(chart.ID), msg, chart.ID)
+		assert.Len(t, m.charts.Get(chart.ID).Dims, 2)
+	}
+	assert.Len(t, ms, 8)
+}
+
+func TestMongo_Collect_Shard_Fail(t *testing.T) {
+	m := New()
+	mockClient := &mockMongoErrors{
+		mockMongo: mockMongo{
+			serverStatusResponse:      "{}",
+			listDatabaseNamesResponse: []string{},
+			dbStatsResponse:           "{}",
+			replicaSetResponse:        "{}",
+			mongos:                    true,
+			shardNodesResponse:        v5_0_0.ShardNodes,
+			shardDbPartitionResponse:  v5_0_0.ShardDatabases,
+			shardColPartitionResponse: v5_0_0.ShardCollections,
+			chunksShardNum:            2,
+		},
+	}
+	mockClient.connector = &mongoCollector{
+		Client:          &mongo.Client{},
+		aggregationFunc: mockClient.dbAggregate,
+	}
+	m.mongoCollector = mockClient
+	m.Config.Databases.Includes = []string{"* *"}
+	m.URI = "mongodb://localhost"
+	require.True(t, m.Init())
+
+	ms := m.Collect()
+	assert.Len(t, ms, 8)
+
+	mockClient.shardChunksError = true
+	ms = m.Collect()
+	assert.Len(t, ms, 6)
+
+	mockClient.shardCollectionsPartitioningError = true
+	ms = m.Collect()
+	assert.Len(t, ms, 4)
+
+	mockClient.shardDatabasesPartitioningError = true
+	ms = m.Collect()
+	assert.Len(t, ms, 2)
+
+	mockClient.shardNodesError = true
+	ms = m.Collect()
+	assert.Len(t, ms, 0)
+
+}
+
+func TestMongo_ShardUpdateNodeChart(t *testing.T) {
+	m := New()
+	mockClient := &mockMongo{
+		serverStatusResponse:      "{}",
+		listDatabaseNamesResponse: []string{},
+		dbStatsResponse:           "{}",
+		replicaSetResponse:        "{}",
+		mongos:                    true,
+		shardNodesResponse:        v5_0_0.ShardNodes,
+		shardDbPartitionResponse:  v5_0_0.ShardDatabases,
+		shardColPartitionResponse: v5_0_0.ShardCollections,
+		chunksShardNum:            2,
+	}
+	mockClient.connector = &mongoCollector{aggregationFunc: mockClient.dbAggregate}
+	m.mongoCollector = mockClient
+	m.Config.Databases.Includes = []string{"* *"}
+	m.URI = "mongodb://localhost"
+	require.True(t, m.Init())
+	_ = m.Collect()
+	assert.Len(t, m.charts.Get("shard_chucks_per_node").Dims, 2)
+
+	mockClient.chunksShardNum = 1
+	_ = m.Collect()
+	chart := m.charts.Get("shard_chucks_per_node")
+	assert.True(t, chart.GetDim("shard_chucks_per_node_shard2").Obsolete)
 }
 
 func TestMongo_Incomplete(t *testing.T) {

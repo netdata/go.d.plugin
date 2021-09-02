@@ -32,8 +32,14 @@ func (m *Mongo) collectServerStatus(ms map[string]int64) error {
 // Nil pointer structs will be skipped and we won't produce metrics for
 // unavailable metrics.
 func (m *Mongo) addOptionalCharts(status *serverStatus) {
-	m.metricExists(status.Transactions, &chartTransactionsCurrent)
 	m.metricExists(status.FlowControl, &chartFlowControl)
+
+	if status.Transactions != nil {
+		m.metricExists(status.Transactions, &chartTransactionsCurrent)
+		if m.mongoCollector.isMongos() {
+			m.metricExists(status.Transactions.CommitTypes, &chartTransactionsCommitTypes)
+		}
+	}
 
 	if status.GlobalLock != nil {
 		m.metricExists(status.GlobalLock.ActiveClients, &chartGlobalLockActiveClients)
