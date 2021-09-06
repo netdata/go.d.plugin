@@ -100,7 +100,7 @@ func (m *mockMongo) shardChunks() (map[string]int64, error) {
 	return res, nil
 }
 
-func (m *mockMongo) dbAggregate(_ *mongo.Client, _ context.Context, collection string, _ []bson.D) ([]aggrResults, error) {
+func (m *mockMongo) dbAggregate(_ context.Context, _ *mongo.Client, collection string, _ []bson.D) ([]aggrResults, error) {
 	var res []aggrResults
 	var response string
 	switch collection {

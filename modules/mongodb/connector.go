@@ -32,8 +32,8 @@ type mongoCollector struct {
 	isReplicaSetFlag *bool
 	isMongosFlag     *bool
 	aggregationFunc  func(
-		client *mongo.Client,
 		ctx context.Context,
+		client *mongo.Client,
 		collection string,
 		aggregation []bson.D,
 	) ([]aggrResults, error)
@@ -148,7 +148,7 @@ func (m *mongoCollector) shardCollectAggregation(collection string, aggregation 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
 	defer cancel()
 
-	rows, err := m.aggregationFunc(m.Client, ctx, collection, aggregation)
+	rows, err := m.aggregationFunc(ctx, m.Client, collection, aggregation)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func (m *mongoCollector) shardCollectAggregation(collection string, aggregation 
 }
 
 // dbAggregate is not a method in order to mock it out in the tests
-func dbAggregate(client *mongo.Client, ctx context.Context, collection string, aggregation []bson.D) ([]aggrResults, error) {
+func dbAggregate(ctx context.Context, client *mongo.Client, collection string, aggregation []bson.D) ([]aggrResults, error) {
 	col := client.Database("config").Collection(collection)
 	cursor, err := col.Aggregate(ctx, aggregation)
 	if err != nil {

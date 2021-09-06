@@ -1,7 +1,6 @@
 package mongo
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -38,7 +37,7 @@ func (m *Mongo) collectShard(ms map[string]int64) error {
 	if err != nil {
 		return err
 	}
-	m.updateShartChuckChartDims(chunksPerShard)
+	m.updateShardChunkChartDims(chunksPerShard)
 	for shard, count := range chunksPerShard {
 		ms["shard_chucks_per_node_"+shard] = count
 	}
@@ -46,7 +45,7 @@ func (m *Mongo) collectShard(ms map[string]int64) error {
 	return nil
 }
 
-func (m *Mongo) updateShartChuckChartDims(chunksPerShard map[string]int64) {
+func (m *Mongo) updateShardChunkChartDims(chunksPerShard map[string]int64) {
 	chart := m.charts.Get("shard_chucks_per_node")
 	if chart == nil {
 		return
@@ -56,17 +55,17 @@ func (m *Mongo) updateShartChuckChartDims(chunksPerShard map[string]int64) {
 			err := chart.MarkDimRemove(dim.ID, true)
 			delete(m.shardNodesDims, dim.ID)
 			if err != nil {
-				m.Error(fmt.Sprintf("updateShartChuckChartDims failed to remove dim %v", err))
+				m.Errorf("updateShardChunkChartDims failed to remove dim %v", err)
 			}
 		}
 	}
 	for shard := range chunksPerShard {
 		id := chart.ID + "_" + shard
 		if !m.shardNodesDims[id] {
-			err := chart.AddDim(&module.Dim{ID: id, Name: shard, Algo: module.Absolute})
 			m.shardNodesDims[id] = true
+			err := chart.AddDim(&module.Dim{ID: id, Name: shard, Algo: module.Absolute})
 			if err != nil {
-				m.Warningf(fmt.Sprintf("updateShartChuckChartDims failed to add dim %v", err))
+				m.Warningf("updateShardChunkChartDims failed to add dim %v", err)
 				continue
 			}
 			chart.MarkNotCreated()
