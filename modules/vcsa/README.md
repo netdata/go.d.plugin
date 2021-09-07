@@ -60,12 +60,12 @@ Software Updates Health:
 
 ## Configuration
 
-Edit the `go.d/vsca.conf` configuration file using `edit-config` from the
+Edit the `go.d/vcsa.conf` configuration file using `edit-config` from the
 Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
-sudo ./edit-config go.d/vsca.conf
+sudo ./edit-config go.d/vcsa.conf
 ```
 
 Needs only `url`, `username` and `password`. Here is an example for 2 servers:
