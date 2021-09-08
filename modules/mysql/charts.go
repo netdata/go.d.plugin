@@ -316,7 +316,7 @@ var charts = Charts{
 		Title: "InnoDB Buffer Pool Flush Pages Requests",
 		Units: "requests/s",
 		Fam:   "innodb",
-		Ctx:   "mysql.innodb_buffer_pool_pages",
+		Ctx:   "mysql.innodb_buffer_pool_pages_flushed",
 		Dims: Dims{
 			{ID: "innodb_buffer_pool_pages_flushed", Name: "flush pages", Algo: module.Incremental},
 		},
