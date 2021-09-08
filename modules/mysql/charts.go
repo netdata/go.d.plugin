@@ -335,15 +335,24 @@ var charts = Charts{
 	},
 	{
 		ID:    "innodb_buffer_pool_read_ahead",
-		Title: "InnoDB Buffer Pool Bytes",
-		Units: "operations/s",
+		Title: "InnoDB Buffer Pool Read Pages",
+		Units: "pages/s",
 		Fam:   "innodb",
 		Ctx:   "mysql.innodb_buffer_pool_read_ahead",
 		Type:  module.Area,
 		Dims: Dims{
 			{ID: "innodb_buffer_pool_read_ahead", Name: "all", Algo: module.Incremental},
 			{ID: "innodb_buffer_pool_read_ahead_evicted", Name: "evicted", Algo: module.Incremental, Mul: -1},
-			{ID: "innodb_buffer_pool_read_ahead_rnd", Name: "random", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "innodb_buffer_pool_read_ahead_rnd",
+		Title: "InnoDB Buffer Pool Random Read-Aheads",
+		Units: "operations/s",
+		Fam:   "innodb",
+		Ctx:   "mysql.innodb_buffer_pool_read_ahead_rnd",
+		Dims: Dims{
+			{ID: "innodb_buffer_pool_read_ahead_rnd", Name: "read-ahead", Algo: module.Incremental},
 		},
 	},
 	{
