@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-var allowedDelta = 200 * time.Millisecond
+// TODO: often fails Circle CI (~200-240)
+var allowedDelta = 500 * time.Millisecond
 
 func TestTickerParallel(t *testing.T) {
 	for i := 0; i < 100; i++ {
