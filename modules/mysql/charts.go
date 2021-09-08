@@ -176,7 +176,7 @@ var charts = Charts{
 		Title: "Threads Creation Rate",
 		Units: "threads/s",
 		Fam:   "threads",
-		Ctx:   "mysql.threads",
+		Ctx:   "mysql.threads_created",
 		Dims: Dims{
 			{ID: "threads_created", Name: "created", Algo: module.Incremental},
 		},
@@ -256,7 +256,7 @@ var charts = Charts{
 		Title: "InnoDB OS Log Operations",
 		Units: "operations/s",
 		Fam:   "innodb",
-		Ctx:   "mysql.innodb_os_log",
+		Ctx:   "mysql.innodb_os_log_fsync_writes",
 		Dims: Dims{
 			{ID: "innodb_os_log_fsyncs", Name: "fsyncs", Algo: module.Incremental},
 		},
@@ -316,7 +316,7 @@ var charts = Charts{
 		Title: "InnoDB Buffer Pool Flush Pages Requests",
 		Units: "requests/s",
 		Fam:   "innodb",
-		Ctx:   "mysql.innodb_buffer_pool_pages",
+		Ctx:   "mysql.innodb_buffer_pool_pages_flushed",
 		Dims: Dims{
 			{ID: "innodb_buffer_pool_pages_flushed", Name: "flush pages", Algo: module.Incremental},
 		},
