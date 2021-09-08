@@ -26,7 +26,7 @@ var charts = Charts{
 		Title: "Authentication Responses",
 		Units: "packets/s",
 		Fam:   "authentication",
-		Ctx:   "freeradius.authentication",
+		Ctx:   "freeradius.authentication_access_responses",
 		Dims: Dims{
 			{ID: "access-accepts", Name: "accepts", Algo: module.Incremental},
 			{ID: "access-rejects", Name: "rejects", Algo: module.Incremental},
@@ -52,7 +52,7 @@ var charts = Charts{
 		Title: "Authentication",
 		Units: "packets/s",
 		Fam:   "proxy authentication",
-		Ctx:   "freeradius.authentication",
+		Ctx:   "freeradius.proxy_authentication",
 		Dims: Dims{
 			{ID: "proxy-access-requests", Name: "requests", Algo: module.Incremental},
 			{ID: "proxy-auth-responses", Name: "responses", Algo: module.Incremental},
@@ -63,7 +63,7 @@ var charts = Charts{
 		Title: "Authentication Responses",
 		Units: "packets/s",
 		Fam:   "proxy authentication",
-		Ctx:   "freeradius.authentication",
+		Ctx:   "freeradius.proxy_authentication_access_responses",
 		Dims: Dims{
 			{ID: "proxy-access-accepts", Name: "accepts", Algo: module.Incremental},
 			{ID: "proxy-access-rejects", Name: "rejects", Algo: module.Incremental},
@@ -75,7 +75,7 @@ var charts = Charts{
 		Title: "Bad Authentication Requests",
 		Units: "packets/s",
 		Fam:   "proxy authentication",
-		Ctx:   "freeradius.bad_authentication",
+		Ctx:   "freeradius.proxy_bad_authentication",
 		Dims: Dims{
 			{ID: "proxy-auth-dropped-requests", Name: "dropped", Algo: module.Incremental},
 			{ID: "proxy-auth-duplicate-requests", Name: "duplicate", Algo: module.Incremental},
@@ -114,7 +114,7 @@ var charts = Charts{
 		Title: "Accounting",
 		Units: "packets/s",
 		Fam:   "proxy accounting",
-		Ctx:   "freeradius.accounting",
+		Ctx:   "freeradius.proxy_accounting",
 		Dims: Dims{
 			{ID: "proxy-accounting-requests", Name: "requests", Algo: module.Incremental},
 			{ID: "proxy-accounting-responses", Name: "responses", Algo: module.Incremental},
@@ -125,7 +125,7 @@ var charts = Charts{
 		Title: "Bad Accounting Requests",
 		Units: "packets/s",
 		Fam:   "proxy accounting",
-		Ctx:   "freeradius.bad_accounting",
+		Ctx:   "freeradius.proxy_bad_accounting",
 		Dims: Dims{
 			{ID: "proxy-acct-dropped-requests", Name: "dropped", Algo: module.Incremental},
 			{ID: "proxy-acct-duplicate-requests", Name: "duplicate", Algo: module.Incremental},
