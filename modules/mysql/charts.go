@@ -256,7 +256,7 @@ var charts = Charts{
 		Title: "InnoDB OS Log Operations",
 		Units: "operations/s",
 		Fam:   "innodb",
-		Ctx:   "mysql.innodb_os_log",
+		Ctx:   "mysql.innodb_os_log_fsync_writes",
 		Dims: Dims{
 			{ID: "innodb_os_log_fsyncs", Name: "fsyncs", Algo: module.Incremental},
 		},
