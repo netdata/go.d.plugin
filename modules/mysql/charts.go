@@ -176,7 +176,7 @@ var charts = Charts{
 		Title: "Threads Creation Rate",
 		Units: "threads/s",
 		Fam:   "threads",
-		Ctx:   "mysql.threads",
+		Ctx:   "mysql.threads_created",
 		Dims: Dims{
 			{ID: "threads_created", Name: "created", Algo: module.Incremental},
 		},
