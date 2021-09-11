@@ -15,6 +15,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofrs/flock v0.8.1
+	github.com/hashicorp/go-version v1.3.0 // indirect
 	github.com/ilyam8/hashstructure v1.1.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/likexian/gokit v0.25.2 // indirect

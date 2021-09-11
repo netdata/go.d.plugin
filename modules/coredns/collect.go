@@ -3,8 +3,21 @@ package coredns
 import (
 	"fmt"
 
+	"github.com/hashicorp/go-version"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
+)
+
+const (
+	metricPanicCountTotal169orOlder         = "coredns_panic_count_total"
+	metricRequestCountTotal169orOlder       = "coredns_dns_request_count_total"
+	metricRequestTypeCountTotal169orOlder   = "coredns_dns_request_type_count_total"
+	metricResponseRcodeCountTotal169orOlder = "coredns_dns_response_rcode_count_total"
+
+	metricPanicCountTotal170orNewer         = "coredns_panics_total"
+	metricRequestCountTotal170orNewer       = "coredns_dns_requests_total"
+	metricRequestTypeCountTotal170orNewer   = "coredns_dns_requests_total"
+	metricResponseRcodeCountTotal170orNewer = "coredns_dns_responses_total"
 )
 
 var (
@@ -12,21 +25,22 @@ var (
 	dropped                = "dropped"
 	emptyServerReplaceName = "empty"
 	rootZoneReplaceName    = "root"
+	version169             = version.Must(version.NewVersion("1.6.9"))
 )
 
 var (
-	metricPanicCountTotal = "coredns_panic_count_total"
+	metricPanicCountTotal string
 	// true for all metrics below:
 	// - if none of server block matches 'server' tag is "", empty server has only one zone - dropped.
 	//   example:
-	//   coredns_dns_request_count_total{family="1",proto="udp",server="",zone="dropped"} 1
+	//   coredns_dns_requests_total{family="1",proto="udp",server="",zone="dropped"} 1 for
 	// - dropped requests are added to both dropped and corresponding zone
 	//   example:
-	//   coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="dropped"} 2
-	//   coredns_dns_request_count_total{family="1",proto="udp",server="dns://:53",zone="ya.ru."} 2
-	metricRequestCountTotal       = "coredns_dns_request_count_total"
-	metricRequestTypeCountTotal   = "coredns_dns_request_type_count_total"
-	metricResponseRcodeCountTotal = "coredns_dns_response_rcode_count_total"
+	//   coredns_dns_requests_total{family="1",proto="udp",server="dns://:53",zone="dropped"} 2
+	//   coredns_dns_requests_total{family="1",proto="udp",server="dns://:53",zone="ya.ru."} 2
+	metricRequestCountTotal       string
+	metricRequestTypeCountTotal   string
+	metricResponseRcodeCountTotal string
 )
 
 func (cd *CoreDNS) collect() (map[string]int64, error) {
@@ -37,6 +51,20 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	}
 
 	mx := newMetrics()
+	if cd.version == nil {
+		cd.version = cd.Version(raw)
+		if cd.version.LessThanOrEqual(version169) {
+			metricPanicCountTotal = metricPanicCountTotal169orOlder
+			metricRequestCountTotal = metricRequestCountTotal169orOlder
+			metricRequestTypeCountTotal = metricRequestTypeCountTotal169orOlder
+			metricResponseRcodeCountTotal = metricResponseRcodeCountTotal169orOlder
+		} else {
+			metricPanicCountTotal = metricPanicCountTotal170orNewer
+			metricRequestCountTotal = metricRequestCountTotal170orNewer
+			metricRequestTypeCountTotal = metricRequestTypeCountTotal170orNewer
+			metricResponseRcodeCountTotal = metricResponseRcodeCountTotal170orNewer
+		}
+	}
 
 	cd.collectPanic(mx, raw)
 	cd.collectSummaryRequests(mx, raw)
@@ -62,6 +90,20 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 }
 
 // Summary
+
+func (cd CoreDNS) Version(raw prometheus.Metrics) *version.Version {
+	var versionStr string
+	for _, metric := range raw.FindByName("coredns_build_info") {
+		versionStr = metric.Labels.Get("version")
+	}
+
+	versionPtr, err := version.NewVersion(versionStr)
+	if err != nil {
+		cd.Errorf("failed to find server version: %v, will use format for 1.7.0 or newer", err)
+		return nil
+	}
+	return versionPtr
+}
 
 func (cd CoreDNS) collectPanic(mx *metrics, raw prometheus.Metrics) {
 	mx.Panic.Set(raw.FindByName(metricPanicCountTotal).Max())

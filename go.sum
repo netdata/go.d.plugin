@@ -112,6 +112,8 @@ github.com/google/uuid v0.0.0-20170306145142-6a5e28554805 h1:skl44gU1qEIcRpwKjb9
 github.com/google/uuid v0.0.0-20170306145142-6a5e28554805/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 h1:EGx4pi6eqNxGaHF6qqu48+N2wcFQ5qg5FXgOdqsJ5d8=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
+github.com/hashicorp/go-version v1.3.0 h1:McDWVJIU/y+u1BRV06dPaLfLCaT7fUTJLp5r04x7iNw=
+github.com/hashicorp/go-version v1.3.0/go.mod h1:fltr4n8CU8Ke44wwGCBoEymUuxUHl09ZGVZPK5anwXA=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
 github.com/ilyam8/hashstructure v1.1.0 h1:N8t8hzzKLf2Da87XgC/DBYqXUmSbclgx+2cZxS5/klU=
 github.com/ilyam8/hashstructure v1.1.0/go.mod h1:LoLuwBSNpZOi3eTMfAqe2i4oW9QkI08e6g1Pci9h7hs=
