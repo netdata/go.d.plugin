@@ -62,6 +62,7 @@ type CoreDNS struct {
 	collectedServers map[string]bool
 	collectedZones   map[string]bool
 	version          *semver.Version
+	metricNames      requestMetricsNames
 }
 
 // Cleanup makes cleanup.
