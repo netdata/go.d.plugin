@@ -360,15 +360,26 @@ func isRespSizeValid(size int) bool {
 
 func isReqMethodValid(method string) bool {
 	// https://wiki.squid-cache.org/SquidFaq/SquidLogs#Request_methods
-	if method == "GET" {
-		return true
-	}
 	switch method {
-	case "HEAD", "POST", "PUT", "PATCH", "DELETE", "CONNECT", "OPTIONS", "TRACE":
-		return true
-	case "ICP_QUERY", "PURGE":
-		return true
-	case "PROPFIND", "PROPATCH", "MKCOL", "COPY", "MOVE", "LOCK", "UNLOCK": // rfc2518
+	case "GET",
+		"HEAD",
+		"POST",
+		"PUT",
+		"PATCH",
+		"DELETE",
+		"CONNECT",
+		"OPTIONS",
+		"TRACE",
+		"ICP_QUERY",
+		"PURGE",
+		"PROPFIND",
+		"PROPATCH",
+		"MKCOL",
+		"COPY",
+		"MOVE",
+		"LOCK",
+		"UNLOCK",
+		"NONE":
 		return true
 	}
 	return false
