@@ -3,7 +3,7 @@ package coredns
 import (
 	"time"
 
-	"github.com/hashicorp/go-version"
+	"github.com/blang/semver/v4"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -61,7 +61,7 @@ type CoreDNS struct {
 	perZoneMatcher   matcher.Matcher
 	collectedServers map[string]bool
 	collectedZones   map[string]bool
-	version          *version.Version
+	version          *semver.Version
 }
 
 // Cleanup makes cleanup.

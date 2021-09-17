@@ -3,7 +3,7 @@ package coredns
 import (
 	"fmt"
 
-	"github.com/hashicorp/go-version"
+	"github.com/blang/semver/v4"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
@@ -25,7 +25,7 @@ var (
 	dropped                = "dropped"
 	emptyServerReplaceName = "empty"
 	rootZoneReplaceName    = "root"
-	version169             = version.Must(version.NewVersion("1.6.9"))
+	version169             = semver.MustParse("1.6.9")
 )
 
 var (
@@ -53,7 +53,7 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	mx := newMetrics()
 	if cd.version == nil {
 		cd.version = cd.Version(raw)
-		if cd.version.LessThanOrEqual(version169) {
+		if cd.version.LTE(version169) {
 			metricPanicCountTotal = metricPanicCountTotal169orOlder
 			metricRequestCountTotal = metricRequestCountTotal169orOlder
 			metricRequestTypeCountTotal = metricRequestTypeCountTotal169orOlder
@@ -91,18 +91,18 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 
 // Summary
 
-func (cd CoreDNS) Version(raw prometheus.Metrics) *version.Version {
+func (cd CoreDNS) Version(raw prometheus.Metrics) *semver.Version {
 	var versionStr string
 	for _, metric := range raw.FindByName("coredns_build_info") {
 		versionStr = metric.Labels.Get("version")
 	}
 
-	versionPtr, err := version.NewVersion(versionStr)
+	version, err := semver.Make(versionStr)
 	if err != nil {
 		cd.Errorf("failed to find server version: %v, will use format for 1.7.0 or newer", err)
 		return nil
 	}
-	return versionPtr
+	return &version
 }
 
 func (cd CoreDNS) collectPanic(mx *metrics, raw prometheus.Metrics) {
