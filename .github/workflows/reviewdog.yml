@@ -3,8 +3,6 @@
 name: Review
 on:
   pull_request:
-env:
-  DO_NOT_TRACK: 1
 jobs:
   prep-review:
     name: Prepare Review Jobs
@@ -18,9 +16,6 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
-        with:
-          submodules: recursive
-          fetch-depth: 0
       - name: Check files for actionlint
         id: actionlint
         run: |
