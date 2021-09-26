@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/socket"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,11 +23,11 @@ func Test_clientFetch(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	c := newClient(clientConfig{
-		network: "tcp",
-		address: testServerAddress,
-		timeout: time.Second,
-	})
+	c := &zookeeperClient{Socket: socket.NewSocket(socket.Config{
+		Network: "tcp",
+		Address: testServerAddress,
+		Timeout: time.Second,
+	})}
 
 	rows, err := c.fetch("whatever\n")
 	assert.NoError(t, err)
@@ -44,11 +45,11 @@ func Test_clientFetchReadLineLimitExceeded(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	c := newClient(clientConfig{
-		network: "tcp",
-		address: testServerAddress,
-		timeout: time.Second,
-	})
+	c := &zookeeperClient{Socket: socket.NewSocket(socket.Config{
+		Network: "tcp",
+		Address: testServerAddress,
+		Timeout: time.Second,
+	})}
 
 	rows, err := c.fetch("whatever\n")
 	assert.Error(t, err)

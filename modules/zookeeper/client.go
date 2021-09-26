@@ -1,120 +1,43 @@
 package zookeeper
 
 import (
-	"bufio"
 	"bytes"
-	"crypto/tls"
 	"fmt"
-	"io"
-	"net"
-	"time"
 	"unsafe"
+
+	"github.com/netdata/go.d.plugin/pkg/socket"
 )
-
-type clientConfig struct {
-	network string
-	address string
-	timeout time.Duration
-	useTLS  bool
-	tlsConf *tls.Config
-}
-
-func newClient(config clientConfig) *client {
-	return &client{
-		network:     config.network,
-		address:     config.address,
-		timeout:     config.timeout,
-		useTLS:      config.useTLS,
-		tlsConf:     config.tlsConf,
-		reuseRecord: false,
-		record:      nil,
-		conn:        nil,
-	}
-}
-
-type client struct {
-	network     string
-	address     string
-	timeout     time.Duration
-	useTLS      bool
-	tlsConf     *tls.Config
-	reuseRecord bool
-	record      []string
-	conn        net.Conn
-}
-
-func (c client) dial() (net.Conn, error) {
-	if !c.useTLS {
-		return net.DialTimeout(c.network, c.address, c.timeout)
-	}
-	var d net.Dialer
-	d.Timeout = c.timeout
-	return tls.DialWithDialer(&d, c.network, c.address, c.tlsConf)
-}
-
-func (c *client) connect() (err error) {
-	c.conn, err = c.dial()
-	return err
-}
-
-func (c *client) disconnect() error {
-	err := c.conn.Close()
-	c.conn = nil
-	return err
-}
-
-func (c *client) send(command string) error {
-	err := c.conn.SetWriteDeadline(time.Now().Add(c.timeout))
-	if err != nil {
-		return err
-	}
-	_, err = c.conn.Write([]byte(command))
-	return err
-}
-
-func (c *client) read() (record []string, err error) {
-	if err = c.conn.SetReadDeadline(time.Now().Add(c.timeout)); err != nil {
-		return nil, err
-	}
-
-	if c.reuseRecord {
-		record, err = read(c.record, c.conn)
-		c.record = record
-	} else {
-		record, err = read(nil, c.conn)
-	}
-
-	return record, err
-}
-
-func (c *client) fetch(command string) (rows []string, err error) {
-	if err = c.connect(); err != nil {
-		return nil, err
-	}
-	defer func() { _ = c.disconnect() }()
-
-	if err = c.send(command); err != nil {
-		return nil, err
-	}
-	return c.read()
-}
 
 const limitReadLines = 2000
 
-func read(dst []string, reader io.Reader) ([]string, error) {
-	dst = dst[:0]
-	var num int
-	s := bufio.NewScanner(reader)
+type zookeeperClient struct {
+	socket.Socket
+}
 
-	for s.Scan() {
-		if !isZKLine(s.Bytes()) || isMntrLineOK(s.Bytes()) {
-			dst = append(dst, s.Text())
+func (c *zookeeperClient) fetch(command string) (rows []string, err error) {
+	if err = c.Connect(); err != nil {
+		return nil, err
+	}
+	defer func() { _ = c.Disconnect() }()
+
+	var num int
+	clientErr := c.Command(command, func(b []byte) bool {
+		if !isZKLine(b) || isMntrLineOK(b) {
+			rows = append(rows, string(b))
 		}
 		if num += 1; num >= limitReadLines {
-			return nil, fmt.Errorf("read line limit exceeded (%d)", limitReadLines)
+			err = fmt.Errorf("read line limit exceeded (%d)", limitReadLines)
+			return false
 		}
+		return true
+	})
+	if clientErr != nil {
+		return nil, clientErr
 	}
-	return dst, s.Err()
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
 }
 
 func isZKLine(line []byte) bool {
