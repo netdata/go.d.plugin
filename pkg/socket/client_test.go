@@ -1,13 +1,7 @@
 package socket
 
 import (
-	"bufio"
-	"errors"
-	"fmt"
-	"io/ioutil"
-	"net"
-	"os"
-	"strings"
+	"crypto/tls"
 	"testing"
 	"time"
 
@@ -23,7 +17,7 @@ const (
 var tcpConfig = Config{
 	Network: "tcp",
 	Address: testServerAddress,
-	Timeout: 5 * time.Millisecond,
+	Timeout: 10 * time.Millisecond,
 	TlsConf: nil,
 }
 
@@ -41,11 +35,18 @@ var unixConfig = Config{
 	TlsConf: nil,
 }
 
+var tcpTlsConfig = Config{
+	Network: "tcp",
+	Address: testServerAddress,
+	Timeout: 10 * time.Millisecond,
+	TlsConf: &tls.Config{},
+}
+
 func Test_clientCommand(t *testing.T) {
 	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 1}
-	go func() { _ = srv.Run() }()
-	defer func() { _ = srv.Close() }()
-	time.Sleep(time.Millisecond * 300)
+	go func() { _ = srv.Run(); defer srv.Close() }()
+
+	time.Sleep(time.Millisecond * 100)
 	sock := NewSocket(tcpConfig)
 	require.NoError(t, sock.Connect())
 	err := sock.Command("ping\n", func(bytes []byte) bool {
@@ -56,11 +57,36 @@ func Test_clientCommand(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func Test_clientTimeout(t *testing.T) {
+	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 1}
+	go func() { _ = srv.Run() }()
+
+	time.Sleep(time.Millisecond * 100)
+	sock := NewSocket(tcpConfig)
+	require.NoError(t, sock.Connect())
+	sock.Timeout = 0
+	err := sock.Command("ping\n", func(bytes []byte) bool {
+		assert.Equal(t, "pong", string(bytes))
+		return true
+	})
+	require.Error(t, err)
+}
+
+func Test_clientIncompleteSSL(t *testing.T) {
+	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 1}
+	go func() { _ = srv.Run() }()
+
+	time.Sleep(time.Millisecond * 100)
+	sock := NewSocket(tcpTlsConfig)
+	err := sock.Connect()
+	require.Error(t, err)
+}
+
 func Test_clientCommandStopProcessing(t *testing.T) {
 	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 2}
 	go func() { _ = srv.Run() }()
-	defer func() { _ = srv.Close() }()
-	time.Sleep(time.Millisecond * 300)
+
+	time.Sleep(time.Millisecond * 100)
 	sock := NewSocket(tcpConfig)
 	require.NoError(t, sock.Connect())
 	err := sock.Command("ping\n", func(bytes []byte) bool {
@@ -73,9 +99,9 @@ func Test_clientCommandStopProcessing(t *testing.T) {
 
 func Test_clientUDPCommand(t *testing.T) {
 	srv := &udpServer{addr: testServerAddress, rowsNumResp: 1}
-	go func() { _ = srv.Run() }()
-	defer func() { _ = srv.Close() }()
-	time.Sleep(time.Millisecond * 500)
+	go func() { _ = srv.Run(); defer srv.Close() }()
+
+	time.Sleep(time.Millisecond * 100)
 	sock := NewSocket(udpConfig)
 	require.NoError(t, sock.Connect())
 	err := sock.Command("ping\n", func(bytes []byte) bool {
@@ -88,141 +114,17 @@ func Test_clientUDPCommand(t *testing.T) {
 
 func Test_clientUnixCommand(t *testing.T) {
 	srv := &unixServer{addr: testUnixServerAddress, rowsNumResp: 1}
+	// cleanup previous file descriptors
+	_ = srv.Close()
 	go func() { _ = srv.Run() }()
-	defer func() { _ = srv.Close() }()
-	time.Sleep(time.Millisecond * 1000)
+
+	time.Sleep(time.Millisecond * 200)
 	sock := NewSocket(unixConfig)
 	require.NoError(t, sock.Connect())
 	err := sock.Command("ping\n", func(bytes []byte) bool {
 		assert.Equal(t, "pong", string(bytes))
 		return false
 	})
-	require.NoError(t, sock.Disconnect())
 	require.NoError(t, err)
-}
-
-type tcpServer struct {
-	addr        string
-	server      net.Listener
-	rowsNumResp int
-}
-
-func (t *tcpServer) Run() (err error) {
-	t.server, err = net.Listen("tcp", t.addr)
-	if err != nil {
-		return
-	}
-	return t.handleConnections()
-}
-
-func (t *tcpServer) Close() (err error) {
-	return t.server.Close()
-}
-
-func (t *tcpServer) handleConnections() (err error) {
-	for {
-		conn, err := t.server.Accept()
-		if err != nil || conn == nil {
-			return errors.New("could not accept connection")
-		}
-		go t.handleConnection(conn)
-	}
-}
-
-func (t *tcpServer) handleConnection(conn net.Conn) {
-	defer func() { _ = conn.Close() }()
-	_ = conn.SetDeadline(time.Now().Add(time.Second))
-
-	rw := bufio.NewReadWriter(bufio.NewReader(conn), bufio.NewWriter(conn))
-	_, err := rw.ReadString('\n')
-	if err != nil {
-		_, _ = rw.WriteString("failed to read input")
-		_ = rw.Flush()
-	} else {
-		resp := strings.Repeat("pong\n", t.rowsNumResp)
-		_, _ = rw.WriteString(resp)
-		_ = rw.Flush()
-	}
-}
-
-type udpServer struct {
-	addr        string
-	conn        *net.UDPConn
-	rowsNumResp int
-}
-
-func (u *udpServer) Run() (err error) {
-	addr, err := net.ResolveUDPAddr("udp", u.addr)
-	if err != nil {
-		return err
-	}
-	u.conn, err = net.ListenUDP("udp", addr)
-	if err != nil {
-		return
-	}
-	go u.handleConnections()
-	return nil
-}
-
-func (u *udpServer) Close() (err error) {
-	return u.conn.Close()
-}
-
-func (u *udpServer) handleConnections() {
-	for {
-		var buf [2048]byte
-		_, addr, _ := u.conn.ReadFromUDP(buf[0:])
-		resp := strings.Repeat("pong\n", u.rowsNumResp)
-		_, _ = u.conn.WriteToUDP([]byte(resp), addr)
-	}
-}
-
-type unixServer struct {
-	addr        string
-	conn        *net.UnixListener
-	rowsNumResp int
-}
-
-func (u *unixServer) Run() (err error) {
-	_, _ = ioutil.TempFile("/tmp", "testSocketFD")
-	addr, err := net.ResolveUnixAddr("unix", u.addr)
-	if err != nil {
-		return err
-	}
-	u.conn, err = net.ListenUnix("unix", addr)
-	if err != nil {
-		return
-	}
-	go u.handleConnections()
-	return nil
-}
-
-func (u *unixServer) Close() (err error) {
-	_ = os.Remove(testUnixServerAddress)
-	return u.conn.Close()
-}
-
-func (u *unixServer) handleConnections() {
-	var conn net.Conn
-	var err error
-	conn, err = u.conn.AcceptUnix()
-	if err != nil || conn == nil {
-		panic(fmt.Errorf("could not accept connection: %v", err))
-	}
-	u.handleConnection(conn)
-}
-
-func (u *unixServer) handleConnection(conn net.Conn) {
-	_ = conn.SetDeadline(time.Now().Add(time.Second))
-
-	rw := bufio.NewReadWriter(bufio.NewReader(conn), bufio.NewWriter(conn))
-	_, err := rw.ReadString('\n')
-	if err != nil {
-		_, _ = rw.WriteString("failed to read input")
-		_ = rw.Flush()
-	} else {
-		resp := strings.Repeat("pong\n", u.rowsNumResp)
-		_, _ = rw.WriteString(resp)
-		_ = rw.Flush()
-	}
+	require.NoError(t, sock.Disconnect())
 }

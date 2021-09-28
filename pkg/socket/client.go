@@ -44,21 +44,19 @@ func (s *socket) Command(command string, process Processor) error {
 }
 
 func (s *socket) send(command string, writer net.Conn, timeout time.Duration) error {
-	err := writer.SetWriteDeadline(time.Now().Add(timeout))
-	if err != nil {
+	if err := writer.SetWriteDeadline(time.Now().Add(timeout)); err != nil {
 		return err
 	}
-	_, err = writer.Write([]byte(command))
+	_, err := writer.Write([]byte(command))
 	return err
 }
 
 func read(reader net.Conn, process Processor, timeout time.Duration) error {
-	err := reader.SetReadDeadline(time.Now().Add(timeout))
-	if err != nil {
+	if err := reader.SetReadDeadline(time.Now().Add(timeout)); err != nil {
 		return err
 	}
-	s := bufio.NewScanner(reader)
-	for s.Scan() && process(s.Bytes()) {
+	scanner := bufio.NewScanner(reader)
+	for scanner.Scan() && process(scanner.Bytes()) {
 	}
-	return s.Err()
+	return scanner.Err()
 }
