@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/netdata/go.d.plugin/modules/unbound/config"
+	"github.com/netdata/go.d.plugin/pkg/socket"
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 )
 
@@ -83,11 +84,15 @@ func (u *Unbound) initClient() (err error) {
 		}
 	}
 
-	u.client = newClient(clientConfig{
-		address: u.Address,
-		timeout: u.Timeout.Duration,
-		useTLS:  useTLS,
-		tlsConf: tlsCfg,
+	network := socket.NetworkTCP
+	if isUnixSocket(u.Address) {
+		network = socket.NetworkUnix
+	}
+	u.client = socket.NewSocket(socket.Config{
+		Network: network,
+		Address: u.Address,
+		Timeout: u.Timeout.Duration,
+		TlsConf: tlsCfg,
 	})
 	return nil
 }

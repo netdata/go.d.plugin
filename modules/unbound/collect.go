@@ -6,6 +6,9 @@ import (
 	"strings"
 )
 
+// just a high value, number of lines depends on number of threads, every thread adds 20 lines
+const maxLinesToRead = 2000
+
 // https://github.com/NLnetLabs/unbound/blob/master/daemon/remote.c (do_stats: print_stats, print_thread_stats, print_mem, print_uptime, print_ext)
 // https://github.com/NLnetLabs/unbound/blob/master/libunbound/unbound.h (structs: ub_server_stats, ub_shm_stat_info)
 // https://docs.datadoghq.com/integrations/unbound/#metrics (stats description)
@@ -27,10 +30,27 @@ func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
 	if u.Cumulative {
 		command = "UBCT1 stats_noreset"
 	}
-	output, err := u.client.send(command + "\n")
+	var num int
+	var readErr error
+	var output []string
+
+	err := u.client.Command(command+"\n", func(bytes []byte) bool {
+		num++
+		if num > maxLinesToRead {
+			readErr = fmt.Errorf("read line limit exceeded (%d)", maxLinesToRead)
+			return false
+		}
+		output = append(output, string(bytes))
+		return true
+	})
+
 	if err != nil {
 		return nil, fmt.Errorf("send command '%s': %w", command, err)
 	}
+	if readErr != nil {
+		return nil, readErr
+	}
+
 	switch len(output) {
 	case 0:
 		return nil, fmt.Errorf("command '%s': empty resopnse", command)
@@ -38,6 +58,7 @@ func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
 		// 	in case of error the first line of the response is: error <descriptive text possible> \n
 		return nil, fmt.Errorf("command '%s': '%s'", command, output[0])
 	}
+
 	return parseStatsOutput(output)
 }
 

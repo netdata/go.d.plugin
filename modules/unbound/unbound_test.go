@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/pkg/socket"
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -237,16 +238,23 @@ type mockUnboundClient struct {
 	err  bool
 }
 
-func (m mockUnboundClient) send(_ string) ([]string, error) {
+func (m mockUnboundClient) Connect() error {
+	return nil
+}
+
+func (m mockUnboundClient) Disconnect() error {
+	return nil
+}
+
+func (m mockUnboundClient) Command(command string, process socket.Processor) error {
 	if m.err {
-		return nil, errors.New("mock send error")
+		return errors.New("mock send error")
 	}
-	rv := make([]string, 0, 160)
 	s := bufio.NewScanner(bytes.NewReader(m.data))
 	for s.Scan() {
-		rv = append(rv, s.Text())
+		process(s.Bytes())
 	}
-	return rv, nil
+	return nil
 }
 
 func testCharts(t *testing.T, unbound *Unbound, collected map[string]int64) {
