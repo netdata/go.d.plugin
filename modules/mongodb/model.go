@@ -2,6 +2,10 @@ package mongo
 
 import "time"
 
+const (
+	mongos = "mongos"
+)
+
 type serverStatus struct {
 	// available in many versions and builds of mongo
 	Opcounters  Opcounters   `bson:"opcounters" stm:"operations"`
@@ -21,6 +25,7 @@ type serverStatus struct {
 	FlowControl  *FlowControl          `bson:"flowControl" stm:"flow"`
 	WiredTiger   *WiredTiger           `bson:"wiredTiger" stm:"wiredtiger"`
 	Repl         interface{}           `bson:"repl"`
+	Process      string                `bson:"process"` // mongod|mongos
 }
 
 type Opcounters struct {
@@ -75,10 +80,23 @@ type Asserts struct {
 }
 
 type Transactions struct {
-	CurrentActive   *int64 `bson:"currentActive" stm:"active"`
-	CurrentInactive *int64 `bson:"currentInactive" stm:"inactive"`
-	CurrentOpen     *int64 `bson:"currentOpen" stm:"open"`
-	CurrentPrepared *int64 `bson:"currentPrepared" stm:"prepared"`
+	CurrentActive   *int64       `bson:"currentActive" stm:"active"`
+	CurrentInactive *int64       `bson:"currentInactive" stm:"inactive"`
+	CurrentOpen     *int64       `bson:"currentOpen" stm:"open"`
+	CurrentPrepared *int64       `bson:"currentPrepared" stm:"prepared"`
+	CommitTypes     *CommitTypes `bson:"commitTypes" stm:"commit_types"`
+}
+
+type CommitTypes struct {
+	NoShards         CommitType `bson:"noShards" stm:"no_shards"`
+	SingleShard      CommitType `bson:"singleShard" stm:"single_shard"`
+	SingleWriteShard CommitType `bson:"singleWriteShard" stm:"single_write_shard"`
+	TwoPhaseCommit   CommitType `bson:"twoPhaseCommit" stm:"two_phase"`
+}
+
+type CommitType struct {
+	Initiated  int64 `json:"initiated" stm:"initiated"`
+	Successful int64 `json:"successful" stm:"successful"`
 }
 
 type GlobalLock struct {
@@ -273,4 +291,24 @@ type replSetStatus struct {
 		LastHeartbeatRecv *time.Time `bson:"lastHeartbeatRecv"`
 		PingMs            *int64     `bson:"pingMs"`
 	} `bson:"members"`
+}
+
+type aggrResults struct {
+	Bool  bool  `bson:"_id"`
+	Count int64 `bson:"count"`
+}
+
+type aggrResult struct {
+	True  int64
+	False int64
+}
+
+type partitionedResult struct {
+	Partitioned   int64
+	UnPartitioned int64
+}
+
+type shardNodesResult struct {
+	ShardAware   int64
+	ShardUnaware int64
 }

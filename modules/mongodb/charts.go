@@ -34,6 +34,13 @@ var replCharts = module.Charts{
 	chartReplPing,
 }
 
+var shardCharts = module.Charts{
+	chartShardNodes,
+	chartShardDatabases,
+	chartShardCollections,
+	chartShardChunks,
+}
+
 var (
 	chartOpcounter = module.Chart{
 		ID:    "operations",
@@ -199,6 +206,24 @@ var chartTransactionsCurrent = module.Chart{
 		{ID: "transactions_inactive", Name: "inactive"},
 		{ID: "transactions_open", Name: "open"},
 		{ID: "transactions_prepared", Name: "prepared"},
+	},
+}
+
+var chartTransactionsCommitTypes = module.Chart{
+	ID:    "shard_commit_types",
+	Title: "Shard Commit Types",
+	Units: "commits",
+	Fam:   "shard stats",
+	Ctx:   "mongodb.shard_commit_types",
+	Dims: module.Dims{
+		{ID: "transactions_commit_types_no_shards_initiated", Name: "no shard (init)"},
+		{ID: "transactions_commit_types_no_shards_successful", Name: "no shard (successful)"},
+		{ID: "transactions_commit_types_no_single_shard_initiated", Name: "single shard (init)"},
+		{ID: "transactions_commit_types_no_single_shard_successful", Name: "single shard (successful)"},
+		{ID: "transactions_commit_types_single_write_shard_initiated", Name: "shard write (init)"},
+		{ID: "transactions_commit_types_single_write_shard_successful", Name: "shard write (successful)"},
+		{ID: "transactions_commit_types_single_two_phase_initiated", Name: "two phase (init)"},
+		{ID: "transactions_commit_types_single_two_phase_successful", Name: "two phase (successful)"},
 	},
 }
 
@@ -528,5 +553,55 @@ var (
 		Units: "milliseconds",
 		Fam:   "replica set",
 		Ctx:   "mongodb." + replicationNodePing,
+	}
+)
+
+var (
+	chartShardNodes = &module.Chart{
+		ID:    "shard_nodes_count",
+		Title: "Shard Nodes",
+		Units: "nodes",
+		Fam:   "shard stats",
+		Ctx:   "mongodb.shard_nodes_count",
+		Type:  module.Stacked,
+		Dims: module.Dims{
+			{ID: "shard_nodes_count_aware", Name: "shard aware"},
+			{ID: "shard_nodes_count_unaware", Name: "shard unaware"},
+		},
+	}
+
+	chartShardDatabases = &module.Chart{
+		ID:    "shard_databases_status",
+		Title: "Databases Sharding Status",
+		Units: "databases",
+		Fam:   "shard stats",
+		Ctx:   "mongodb.shard_databases_status",
+		Type:  module.Stacked,
+		Dims: module.Dims{
+			{ID: "shard_databases_partitioned", Name: "partitioned"},
+			{ID: "shard_databases_unpartitioned", Name: "un-partitioned"},
+		},
+	}
+
+	chartShardCollections = &module.Chart{
+		ID:    "shard_collections_status",
+		Title: "Collections Sharding Status",
+		Units: "collections",
+		Fam:   "shard stats",
+		Ctx:   "mongodb.shard_collections_status",
+		Type:  module.Stacked,
+		Dims: module.Dims{
+			{ID: "shard_collections_partitioned", Name: "partitioned"},
+			{ID: "shard_collections_unpartitioned", Name: "un-partitioned"},
+		},
+	}
+
+	chartShardChunks = &module.Chart{
+		ID:    "shard_chucks_per_node",
+		Title: "Chucks Per Node",
+		Units: "chunks",
+		Fam:   "shard stats",
+		Ctx:   "mongodb.shard_chucks_per_node",
+		Type:  module.Stacked,
 	}
 )
