@@ -51,26 +51,18 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	}
 
 	mx := newMetrics()
-	if cd.version == nil {
-		cd.version = cd.Version(raw)
-		if cd.version.LTE(version169) {
-			cd.metricNames.panicCountTotal = metricPanicCountTotal169orOlder
-			cd.metricNames.requestCountTotal = metricRequestCountTotal169orOlder
-			cd.metricNames.requestTypeCountTotal = metricRequestTypeCountTotal169orOlder
-			cd.metricNames.responseRcodeCountTotal = metricResponseRcodeCountTotal169orOlder
-		} else {
-			cd.metricNames.panicCountTotal = metricPanicCountTotal170orNewer
-			cd.metricNames.requestCountTotal = metricRequestCountTotal170orNewer
-			cd.metricNames.requestTypeCountTotal = metricRequestTypeCountTotal170orNewer
-			cd.metricNames.responseRcodeCountTotal = metricResponseRcodeCountTotal170orNewer
-		}
-	}
 
-	cd.collectPanic(mx, raw)
-	cd.collectSummaryRequests(mx, raw)
-	//cd.collectSummaryRequestsDuration(mx, raw)
-	cd.collectSummaryRequestsPerType(mx, raw)
-	cd.collectSummaryResponsesPerRcode(mx, raw)
+	// some metric names are different depending on the version
+	// update them once
+	cd.updateVersionDependentMetrics(raw)
+
+	// we can only get these metrics if we know the server version
+	if cd.version != nil {
+		cd.collectPanic(mx, raw)
+		cd.collectSummaryRequests(mx, raw)
+		cd.collectSummaryRequestsPerType(mx, raw)
+		cd.collectSummaryResponsesPerRcode(mx, raw)
+	}
 
 	if cd.perServerMatcher != nil {
 		cd.collectPerServerRequests(mx, raw)
@@ -89,12 +81,33 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	return stm.ToMap(mx), nil
 }
 
-// Summary
+func (cd *CoreDNS) updateVersionDependentMetrics(raw prometheus.Metrics) {
+	if cd.version == nil {
+		if version := cd.Version(raw); version != nil {
+			cd.version = version
+			if cd.version.LTE(version169) {
+				cd.metricNames.panicCountTotal = metricPanicCountTotal169orOlder
+				cd.metricNames.requestCountTotal = metricRequestCountTotal169orOlder
+				cd.metricNames.requestTypeCountTotal = metricRequestTypeCountTotal169orOlder
+				cd.metricNames.responseRcodeCountTotal = metricResponseRcodeCountTotal169orOlder
+			} else {
+				cd.metricNames.panicCountTotal = metricPanicCountTotal170orNewer
+				cd.metricNames.requestCountTotal = metricRequestCountTotal170orNewer
+				cd.metricNames.requestTypeCountTotal = metricRequestTypeCountTotal170orNewer
+				cd.metricNames.responseRcodeCountTotal = metricResponseRcodeCountTotal170orNewer
+			}
+		}
+	}
+}
 
 func (cd CoreDNS) Version(raw prometheus.Metrics) *semver.Version {
 	var versionStr string
 	for _, metric := range raw.FindByName("coredns_build_info") {
 		versionStr = metric.Labels.Get("version")
+	}
+	if versionStr == "" {
+		cd.Error("cannot find version string in metrics")
+		return nil
 	}
 
 	version, err := semver.Make(versionStr)
