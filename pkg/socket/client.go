@@ -8,19 +8,28 @@ import (
 	"time"
 )
 
-func NewSocket(config Config) *socket {
-	return &socket{
+// NewSocket returns a new pointer to a socket client given the socket
+// type (IP, TCP, UDP, UNIX), a network address (IP/domain:port),
+// a timeout and a TLS config. It supports both IPv4 and IPv6 address
+// and reuses connection where possible.
+func NewSocket(config Config) *Socket {
+	return &Socket{
 		Config: config,
 		conn:   nil,
 	}
 }
 
-type socket struct {
+// Socket is the implementation of a socket client.
+type Socket struct {
 	Config
 	conn net.Conn
 }
 
-func (s *socket) Connect() (err error) {
+// Connect connects to the Socket address on the named network.
+// If the address is a domain name it will also perform the DNS resolution.
+// Address like :80 will attempt to connect to the localhost.
+// The config timeout and TLS config will be used.
+func (s *Socket) Connect() (err error) {
 	if s.TLSConf == nil {
 		s.conn, err = net.DialTimeout(string(s.Network), s.Address, s.Timeout)
 	} else {
@@ -31,7 +40,9 @@ func (s *socket) Connect() (err error) {
 	return err
 }
 
-func (s *socket) Disconnect() (err error) {
+// Disconnect closes the connection.
+// Any in-flight commands will be cancelled and return errors.
+func (s *Socket) Disconnect() (err error) {
 	if s.conn != nil {
 		err = s.conn.Close()
 		s.conn = nil
@@ -39,7 +50,13 @@ func (s *socket) Disconnect() (err error) {
 	return err
 }
 
-func (s *socket) Command(command string, process Processor) error {
+// Command writes the command string to the connection and passed the
+// response bytes line by line to the process function. It uses the
+// timeout value from the Socket config and returns read, write and
+// timeout errors if any. If a timeout occurs during the processing
+// of the responses this function will stop processing and return a
+// timeout error.
+func (s *Socket) Command(command string, process Processor) error {
 	if err := write(command, s.conn, s.Timeout); err != nil {
 		return err
 	}
