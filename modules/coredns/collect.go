@@ -54,7 +54,9 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 
 	// some metric names are different depending on the version
 	// update them once
-	cd.updateVersionDependentMetrics(raw)
+	if !cd.skipVersionCheck {
+		cd.updateVersionDependentMetrics(raw)
+	}
 
 	// we can only get these metrics if we know the server version
 	if cd.version != nil {
@@ -98,9 +100,10 @@ func (cd *CoreDNS) updateVersionDependentMetrics(raw prometheus.Metrics) {
 			}
 		}
 	}
+	cd.skipVersionCheck = true
 }
 
-func (cd CoreDNS) parseVersion(raw prometheus.Metrics) *semver.Version {
+func (cd *CoreDNS) parseVersion(raw prometheus.Metrics) *semver.Version {
 	var versionStr string
 	for _, metric := range raw.FindByName("coredns_build_info") {
 		versionStr = metric.Labels.Get("version")
@@ -112,7 +115,7 @@ func (cd CoreDNS) parseVersion(raw prometheus.Metrics) *semver.Version {
 
 	version, err := semver.Make(versionStr)
 	if err != nil {
-		cd.Errorf("failed to find server version: %v, will use format for 1.7.0 or newer", err)
+		cd.Errorf("failed to find server version: %v", err)
 		return nil
 	}
 	return &version

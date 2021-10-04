@@ -61,6 +61,7 @@ type CoreDNS struct {
 	perZoneMatcher   matcher.Matcher
 	collectedServers map[string]bool
 	collectedZones   map[string]bool
+	skipVersionCheck bool
 	version          *semver.Version
 	metricNames      requestMetricsNames
 }
