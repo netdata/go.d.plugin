@@ -17,13 +17,13 @@ type Config struct {
 	Network Network
 	Address string
 	Timeout time.Duration
-	TlsConf *tls.Config
+	TLSConf *tls.Config
 }
 
 type Network string
 
 const (
-	NetworkIP   Network = "tcp"
+	NetworkIP   Network = "ip"
 	NetworkTCP  Network = "tcp"
 	NetworkUDP  Network = "udp"
 	NetworkUnix Network = "unix"

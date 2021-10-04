@@ -15,31 +15,31 @@ const (
 )
 
 var tcpConfig = Config{
-	Network: "tcp",
+	Network: NetworkTCP,
 	Address: testServerAddress,
 	Timeout: 10 * time.Millisecond,
-	TlsConf: nil,
+	TLSConf: nil,
 }
 
 var udpConfig = Config{
-	Network: "udp",
+	Network: NetworkUDP,
 	Address: testServerAddress,
 	Timeout: 200 * time.Millisecond,
-	TlsConf: nil,
+	TLSConf: nil,
 }
 
 var unixConfig = Config{
-	Network: "unix",
+	Network: NetworkUnix,
 	Address: testUnixServerAddress,
 	Timeout: 2000 * time.Millisecond,
-	TlsConf: nil,
+	TLSConf: nil,
 }
 
 var tcpTlsConfig = Config{
-	Network: "tcp",
+	Network: NetworkTCP,
 	Address: testServerAddress,
 	Timeout: 10 * time.Millisecond,
-	TlsConf: &tls.Config{},
+	TLSConf: &tls.Config{},
 }
 
 func Test_clientCommand(t *testing.T) {
