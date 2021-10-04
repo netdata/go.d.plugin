@@ -106,12 +106,12 @@ func (cd *CoreDNS) Init() bool {
 }
 
 // Check makes check.
-func (cd CoreDNS) Check() bool {
+func (cd *CoreDNS) Check() bool {
 	return len(cd.Collect()) > 0
 }
 
 // Charts creates Charts.
-func (cd CoreDNS) Charts() *Charts {
+func (cd *CoreDNS) Charts() *Charts {
 	return cd.charts
 }
 

@@ -121,7 +121,7 @@ func (cd *CoreDNS) parseVersion(raw prometheus.Metrics) *semver.Version {
 	return &version
 }
 
-func (cd CoreDNS) collectPanic(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPanic(mx *metrics, raw prometheus.Metrics) {
 	mx.Panic.Set(raw.FindByName(cd.metricNames.panicCountTotal).Max())
 }
 
