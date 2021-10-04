@@ -83,7 +83,7 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 
 func (cd *CoreDNS) updateVersionDependentMetrics(raw prometheus.Metrics) {
 	if cd.version == nil {
-		if version := cd.Version(raw); version != nil {
+		if version := cd.parseVersion(raw); version != nil {
 			cd.version = version
 			if cd.version.LTE(version169) {
 				cd.metricNames.panicCountTotal = metricPanicCountTotal169orOlder
@@ -100,7 +100,7 @@ func (cd *CoreDNS) updateVersionDependentMetrics(raw prometheus.Metrics) {
 	}
 }
 
-func (cd CoreDNS) Version(raw prometheus.Metrics) *semver.Version {
+func (cd CoreDNS) parseVersion(raw prometheus.Metrics) *semver.Version {
 	var versionStr string
 	for _, metric := range raw.FindByName("coredns_build_info") {
 		versionStr = metric.Labels.Get("version")
