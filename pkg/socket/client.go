@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-// NewSocket returns a new pointer to a socket client given the socket
+// New returns a new pointer to a socket client given the socket
 // type (IP, TCP, UDP, UNIX), a network address (IP/domain:port),
 // a timeout and a TLS config. It supports both IPv4 and IPv6 address
 // and reuses connection where possible.
-func NewSocket(config Config) *Socket {
+func New(config Config) *Socket {
 	return &Socket{
 		Config: config,
 		conn:   nil,

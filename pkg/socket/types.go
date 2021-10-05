@@ -10,6 +10,23 @@ import (
 // line by line.
 type Processor func([]byte) bool
 
+// Client is the interface that wraps the basic socket client operations
+// and hides the implementation details from the users.
+//
+// Connect should prepare the connection.
+//
+// Disconnect should stop any in-flight connections.
+//
+// Command should send the actual data to the wire and pass
+// any results to the processor function.
+//
+// Implementations should return TCP, UDP or Unix ready sockets.
+type Client interface {
+	Connect() error
+	Disconnect() error
+	Command(command string, process Processor) error
+}
+
 // Config holds the network ip v4 or v6 address, port,
 // Socket type(ip, tcp, udp, unix), timeout and TLS configuration
 // for a Socket

@@ -47,7 +47,7 @@ func Test_clientCommand(t *testing.T) {
 	go func() { _ = srv.Run(); defer srv.Close() }()
 
 	time.Sleep(time.Millisecond * 100)
-	sock := NewSocket(tcpConfig)
+	sock := New(tcpConfig)
 	require.NoError(t, sock.Connect())
 	err := sock.Command("ping\n", func(bytes []byte) bool {
 		assert.Equal(t, "pong", string(bytes))
@@ -62,7 +62,7 @@ func Test_clientTimeout(t *testing.T) {
 	go func() { _ = srv.Run() }()
 
 	time.Sleep(time.Millisecond * 100)
-	sock := NewSocket(tcpConfig)
+	sock := New(tcpConfig)
 	require.NoError(t, sock.Connect())
 	sock.Timeout = 0
 	err := sock.Command("ping\n", func(bytes []byte) bool {
@@ -77,7 +77,7 @@ func Test_clientIncompleteSSL(t *testing.T) {
 	go func() { _ = srv.Run() }()
 
 	time.Sleep(time.Millisecond * 100)
-	sock := NewSocket(tcpTlsConfig)
+	sock := New(tcpTlsConfig)
 	err := sock.Connect()
 	require.Error(t, err)
 }
@@ -87,7 +87,7 @@ func Test_clientCommandStopProcessing(t *testing.T) {
 	go func() { _ = srv.Run() }()
 
 	time.Sleep(time.Millisecond * 100)
-	sock := NewSocket(tcpConfig)
+	sock := New(tcpConfig)
 	require.NoError(t, sock.Connect())
 	err := sock.Command("ping\n", func(bytes []byte) bool {
 		assert.Equal(t, "pong", string(bytes))
@@ -102,7 +102,7 @@ func Test_clientUDPCommand(t *testing.T) {
 	go func() { _ = srv.Run(); defer srv.Close() }()
 
 	time.Sleep(time.Millisecond * 100)
-	sock := NewSocket(udpConfig)
+	sock := New(udpConfig)
 	require.NoError(t, sock.Connect())
 	err := sock.Command("ping\n", func(bytes []byte) bool {
 		assert.Equal(t, "pong", string(bytes))
@@ -119,7 +119,7 @@ func Test_clientUnixCommand(t *testing.T) {
 	go func() { _ = srv.Run() }()
 
 	time.Sleep(time.Millisecond * 200)
-	sock := NewSocket(unixConfig)
+	sock := New(unixConfig)
 	require.NoError(t, sock.Connect())
 	err := sock.Command("ping\n", func(bytes []byte) bool {
 		assert.Equal(t, "pong", string(bytes))
@@ -134,7 +134,7 @@ func Test_clientEmptyProcessFunc(t *testing.T) {
 	go func() { _ = srv.Run() }()
 
 	time.Sleep(time.Millisecond * 100)
-	sock := NewSocket(tcpConfig)
+	sock := New(tcpConfig)
 	require.NoError(t, sock.Connect())
 	err := sock.Command("ping\n", nil)
 	require.Error(t, err, "nil process func should return an error")
