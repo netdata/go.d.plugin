@@ -128,3 +128,14 @@ func Test_clientUnixCommand(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, sock.Disconnect())
 }
+
+func Test_clientEmptyProcessFunc(t *testing.T) {
+	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 1}
+	go func() { _ = srv.Run() }()
+
+	time.Sleep(time.Millisecond * 100)
+	sock := NewSocket(tcpConfig)
+	require.NoError(t, sock.Connect())
+	err := sock.Command("ping\n", nil)
+	require.Error(t, err, "nil process func should return an error")
+}

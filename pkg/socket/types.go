@@ -24,8 +24,6 @@ type Config struct {
 type Network string
 
 const (
-	// NetworkIP is used for IP sockets
-	NetworkIP Network = "ip"
 	// NetworkTCP is used for TCP sockets
 	NetworkTCP Network = "tcp"
 	// NetworkUDP is used for UDP sockets
