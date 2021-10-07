@@ -56,6 +56,7 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	// update them once
 	if !cd.skipVersionCheck {
 		cd.updateVersionDependentMetrics(raw)
+		cd.skipVersionCheck = true
 	}
 
 	// we can only get these metrics if we know the server version
@@ -84,23 +85,22 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 }
 
 func (cd *CoreDNS) updateVersionDependentMetrics(raw prometheus.Metrics) {
-	if cd.version == nil {
-		if version := cd.parseVersion(raw); version != nil {
-			cd.version = version
-			if cd.version.LTE(version169) {
-				cd.metricNames.panicCountTotal = metricPanicCountTotal169orOlder
-				cd.metricNames.requestCountTotal = metricRequestCountTotal169orOlder
-				cd.metricNames.requestTypeCountTotal = metricRequestTypeCountTotal169orOlder
-				cd.metricNames.responseRcodeCountTotal = metricResponseRcodeCountTotal169orOlder
-			} else {
-				cd.metricNames.panicCountTotal = metricPanicCountTotal170orNewer
-				cd.metricNames.requestCountTotal = metricRequestCountTotal170orNewer
-				cd.metricNames.requestTypeCountTotal = metricRequestTypeCountTotal170orNewer
-				cd.metricNames.responseRcodeCountTotal = metricResponseRcodeCountTotal170orNewer
-			}
-		}
+	version := cd.parseVersion(raw)
+	if version == nil {
+		return
 	}
-	cd.skipVersionCheck = true
+	cd.version = version
+	if cd.version.LTE(version169) {
+		cd.metricNames.panicCountTotal = metricPanicCountTotal169orOlder
+		cd.metricNames.requestCountTotal = metricRequestCountTotal169orOlder
+		cd.metricNames.requestTypeCountTotal = metricRequestTypeCountTotal169orOlder
+		cd.metricNames.responseRcodeCountTotal = metricResponseRcodeCountTotal169orOlder
+	} else {
+		cd.metricNames.panicCountTotal = metricPanicCountTotal170orNewer
+		cd.metricNames.requestCountTotal = metricRequestCountTotal170orNewer
+		cd.metricNames.requestTypeCountTotal = metricRequestTypeCountTotal170orNewer
+		cd.metricNames.responseRcodeCountTotal = metricResponseRcodeCountTotal170orNewer
+	}
 }
 
 func (cd *CoreDNS) parseVersion(raw prometheus.Metrics) *semver.Version {
