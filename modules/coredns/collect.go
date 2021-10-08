@@ -1,6 +1,7 @@
 package coredns
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/blang/semver/v4"
@@ -59,13 +60,15 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 		cd.skipVersionCheck = true
 	}
 
-	// we can only get these metrics if we know the server version
-	if cd.version != nil {
-		cd.collectPanic(mx, raw)
-		cd.collectSummaryRequests(mx, raw)
-		cd.collectSummaryRequestsPerType(mx, raw)
-		cd.collectSummaryResponsesPerRcode(mx, raw)
+	//we can only get these metrics if we know the server version
+	if cd.version == nil {
+		return nil, errors.New("unable to determine server version")
 	}
+
+	cd.collectPanic(mx, raw)
+	cd.collectSummaryRequests(mx, raw)
+	cd.collectSummaryRequestsPerType(mx, raw)
+	cd.collectSummaryResponsesPerRcode(mx, raw)
 
 	if cd.perServerMatcher != nil {
 		cd.collectPerServerRequests(mx, raw)

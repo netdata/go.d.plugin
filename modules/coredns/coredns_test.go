@@ -542,57 +542,7 @@ func TestCoreDNS_CollectNoVersion(t *testing.T) {
 	job.PerServerStats.Includes = []string{"glob:*"}
 	job.PerZoneStats.Includes = []string{"glob:*"}
 	require.True(t, job.Init())
-	require.True(t, job.Check())
+	require.False(t, job.Check())
 
-	expected := map[string]int64{
-		"no_matching_zone_dropped_total": 0,
-		"panic_total":                    0,
-		"request_per_ip_family_v4":       0,
-		"request_per_ip_family_v6":       0,
-		"request_per_proto_tcp":          0,
-		"request_per_proto_udp":          0,
-		"request_per_status_dropped":     0,
-		"request_per_status_processed":   0,
-		"request_per_type_A":             0,
-		"request_per_type_AAAA":          0,
-		"request_per_type_ANY":           0,
-		"request_per_type_CNAME":         0,
-		"request_per_type_DNSKEY":        0,
-		"request_per_type_DS":            0,
-		"request_per_type_IXFR":          0,
-		"request_per_type_MX":            0,
-		"request_per_type_NS":            0,
-		"request_per_type_NSEC":          0,
-		"request_per_type_NSEC3":         0,
-		"request_per_type_PTR":           0,
-		"request_per_type_RRSIG":         0,
-		"request_per_type_SOA":           0,
-		"request_per_type_SRV":           0,
-		"request_per_type_TXT":           0,
-		"request_per_type_other":         0,
-		"request_total":                  0,
-		"response_per_rcode_BADALG":      0,
-		"response_per_rcode_BADCOOKIE":   0,
-		"response_per_rcode_BADKEY":      0,
-		"response_per_rcode_BADMODE":     0,
-		"response_per_rcode_BADNAME":     0,
-		"response_per_rcode_BADSIG":      0,
-		"response_per_rcode_BADTIME":     0,
-		"response_per_rcode_BADTRUNC":    0,
-		"response_per_rcode_FORMERR":     0,
-		"response_per_rcode_NOERROR":     0,
-		"response_per_rcode_NOTAUTH":     0,
-		"response_per_rcode_NOTIMP":      0,
-		"response_per_rcode_NOTZONE":     0,
-		"response_per_rcode_NXDOMAIN":    0,
-		"response_per_rcode_NXRRSET":     0,
-		"response_per_rcode_REFUSED":     0,
-		"response_per_rcode_SERVFAIL":    0,
-		"response_per_rcode_YXDOMAIN":    0,
-		"response_per_rcode_YXRRSET":     0,
-		"response_per_rcode_other":       0,
-		"response_total":                 0,
-	}
-
-	assert.Equal(t, expected, job.Collect())
+	assert.Nil(t, job.Collect())
 }
