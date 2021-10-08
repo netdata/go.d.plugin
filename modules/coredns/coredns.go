@@ -3,6 +3,7 @@ package coredns
 import (
 	"time"
 
+	"github.com/blang/semver/v4"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -60,6 +61,9 @@ type CoreDNS struct {
 	perZoneMatcher   matcher.Matcher
 	collectedServers map[string]bool
 	collectedZones   map[string]bool
+	skipVersionCheck bool
+	version          *semver.Version
+	metricNames      requestMetricsNames
 }
 
 // Cleanup makes cleanup.
@@ -102,12 +106,12 @@ func (cd *CoreDNS) Init() bool {
 }
 
 // Check makes check.
-func (cd CoreDNS) Check() bool {
+func (cd *CoreDNS) Check() bool {
 	return len(cd.Collect()) > 0
 }
 
 // Charts creates Charts.
-func (cd CoreDNS) Charts() *Charts {
+func (cd *CoreDNS) Charts() *Charts {
 	return cd.charts
 }
 
