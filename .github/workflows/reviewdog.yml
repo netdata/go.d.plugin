@@ -3,6 +3,9 @@
 name: Review
 on:
   pull_request:
+concurrency:
+  group: review-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   prep-review:
     name: Prepare Review Jobs
