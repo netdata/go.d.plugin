@@ -4,6 +4,9 @@ name: Pull Request Labeler
 on:
   schedule:
     - cron: '*/10 * * * *'
+concurrency:
+  group: labeller
+  cancel-in-progress: true
 jobs:
   labeler:
     runs-on: ubuntu-latest
