@@ -40,14 +40,6 @@ func TestWhoisQuery_Init(t *testing.T) {
 			config: Config{Source: ""},
 			err:    true,
 		},
-		"with http": {
-			config: Config{Source: "http://example.org"},
-			err:    true,
-		},
-		"with https": {
-			config: Config{Source: "https://example.org"},
-			err:    true,
-		},
 	}
 
 	for name, test := range tests {

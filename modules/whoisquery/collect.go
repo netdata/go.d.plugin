@@ -1,9 +1,11 @@
 package whoisquery
 
+import "fmt"
+
 func (wq *WhoisQuery) collect() (map[string]int64, error) {
 	remainingTime, err := wq.prov.remainingTime()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%v (source: %s)", err, wq.Source)
 	}
 
 	mx := make(map[string]int64)
