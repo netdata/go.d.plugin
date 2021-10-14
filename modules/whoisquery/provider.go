@@ -19,9 +19,8 @@ type fromNet struct {
 	client        *whois.Client
 }
 
-// https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch08s15.html
 // TODO: do we need this validation at all?
-var reValidDomain = regexp.MustCompile(`([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}`)
+var reValidDomain = regexp.MustCompile(`^(?i)[a-z0-9-]+(\.[a-z0-9-]+)+\.?$`)
 
 func newProvider(config Config) (provider, error) {
 	domain := config.Source
