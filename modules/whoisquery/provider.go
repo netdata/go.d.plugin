@@ -1,8 +1,6 @@
 package whoisquery
 
 import (
-	"fmt"
-	"regexp"
 	"time"
 
 	"github.com/araddon/dateparse"
@@ -19,14 +17,8 @@ type fromNet struct {
 	client        *whois.Client
 }
 
-var reValidDomain = regexp.MustCompile(`^[a-zA-Z0-9\-]+\.[a-zA-Z0-9]+$`)
-
 func newProvider(config Config) (provider, error) {
 	domain := config.Source
-	if valid := reValidDomain.MatchString(domain); !valid {
-		return nil, fmt.Errorf("incorrect domain: %s, expected pattern: %s", domain, reValidDomain)
-	}
-
 	client := whois.NewClient()
 	client.SetTimeout(config.Timeout.Duration)
 
