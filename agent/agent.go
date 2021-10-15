@@ -185,7 +185,7 @@ func (a *Agent) run(ctx context.Context) {
 
 func (a *Agent) signalHandling() {
 	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, syscall.SIGPIPE)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 
 	sig := <-ch
 	a.Infof("received %s signal (%d). Terminating...", sig, sig)
@@ -200,7 +200,17 @@ func (a *Agent) keepAlive() {
 	tk := time.NewTicker(time.Second)
 	defer tk.Stop()
 
+	var n int
 	for range tk.C {
-		_ = a.api.EMPTYLINE()
+		if err := a.api.EMPTYLINE(); err != nil {
+			a.Infof("keepAlive: %v", err)
+			n++
+		} else {
+			n = 0
+		}
+		if n == 3 {
+			a.Info("too many keepAlive errors. Terminating...")
+			os.Exit(0)
+		}
 	}
 }
