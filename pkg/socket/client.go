@@ -57,6 +57,9 @@ func (s *Socket) Disconnect() (err error) {
 // of the responses this function will stop processing and return a
 // timeout error.
 func (s *Socket) Command(command string, process Processor) error {
+	if s.conn == nil {
+		return errors.New("cannot send command on nil connection")
+	}
 	if err := write(command, s.conn, s.Timeout); err != nil {
 		return err
 	}
@@ -64,6 +67,9 @@ func (s *Socket) Command(command string, process Processor) error {
 }
 
 func write(command string, writer net.Conn, timeout time.Duration) error {
+	if writer == nil {
+		return errors.New("attempt to write on nil connection")
+	}
 	if err := writer.SetWriteDeadline(time.Now().Add(timeout)); err != nil {
 		return err
 	}
@@ -74,6 +80,9 @@ func write(command string, writer net.Conn, timeout time.Duration) error {
 func read(reader net.Conn, process Processor, timeout time.Duration) error {
 	if process == nil {
 		return errors.New("process func is nil")
+	}
+	if reader == nil {
+		return errors.New("attempt to read on nil connection")
 	}
 	if err := reader.SetReadDeadline(time.Now().Add(timeout)); err != nil {
 		return err
