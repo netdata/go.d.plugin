@@ -31,7 +31,7 @@ func TestZookeeper_Init(t *testing.T) {
 	job := New()
 
 	assert.True(t, job.Init())
-	assert.NotNil(t, job.zookeeperFetcher)
+	assert.NotNil(t, job.fetcher)
 }
 
 func TestZookeeper_InitErrorOnCreatingTLSConfig(t *testing.T) {
@@ -45,7 +45,7 @@ func TestZookeeper_InitErrorOnCreatingTLSConfig(t *testing.T) {
 func TestZookeeper_Check(t *testing.T) {
 	job := New()
 	require.True(t, job.Init())
-	job.zookeeperFetcher = &mockZookeeperFetcher{data: testMntrData}
+	job.fetcher = &mockZookeeperFetcher{data: testMntrData}
 
 	assert.True(t, job.Check())
 }
@@ -53,7 +53,7 @@ func TestZookeeper_Check(t *testing.T) {
 func TestZookeeper_CheckErrorOnFetch(t *testing.T) {
 	job := New()
 	require.True(t, job.Init())
-	job.zookeeperFetcher = &mockZookeeperFetcher{err: true}
+	job.fetcher = &mockZookeeperFetcher{err: true}
 
 	assert.False(t, job.Check())
 }
@@ -69,7 +69,7 @@ func TestZookeeper_Cleanup(t *testing.T) {
 func TestZookeeper_Collect(t *testing.T) {
 	job := New()
 	require.True(t, job.Init())
-	job.zookeeperFetcher = &mockZookeeperFetcher{data: testMntrData}
+	job.fetcher = &mockZookeeperFetcher{data: testMntrData}
 
 	expected := map[string]int64{
 		"approximate_data_size":      44,
@@ -97,7 +97,7 @@ func TestZookeeper_Collect(t *testing.T) {
 func TestZookeeper_CollectMntrNotInWhiteList(t *testing.T) {
 	job := New()
 	require.True(t, job.Init())
-	job.zookeeperFetcher = &mockZookeeperFetcher{data: testMntrNotInWhiteListData}
+	job.fetcher = &mockZookeeperFetcher{data: testMntrNotInWhiteListData}
 
 	assert.Nil(t, job.Collect())
 }
@@ -105,7 +105,7 @@ func TestZookeeper_CollectMntrNotInWhiteList(t *testing.T) {
 func TestZookeeper_CollectMntrEmptyResponse(t *testing.T) {
 	job := New()
 	require.True(t, job.Init())
-	job.zookeeperFetcher = &mockZookeeperFetcher{}
+	job.fetcher = &mockZookeeperFetcher{}
 
 	assert.Nil(t, job.Collect())
 }
@@ -113,7 +113,7 @@ func TestZookeeper_CollectMntrEmptyResponse(t *testing.T) {
 func TestZookeeper_CollectMntrInvalidData(t *testing.T) {
 	job := New()
 	require.True(t, job.Init())
-	job.zookeeperFetcher = &mockZookeeperFetcher{data: []byte("hello \nand good buy\n")}
+	job.fetcher = &mockZookeeperFetcher{data: []byte("hello \nand good buy\n")}
 
 	assert.Nil(t, job.Collect())
 }
@@ -121,7 +121,7 @@ func TestZookeeper_CollectMntrInvalidData(t *testing.T) {
 func TestZookeeper_CollectMntrReceiveError(t *testing.T) {
 	job := New()
 	require.True(t, job.Init())
-	job.zookeeperFetcher = &mockZookeeperFetcher{err: true}
+	job.fetcher = &mockZookeeperFetcher{err: true}
 
 	assert.Nil(t, job.Collect())
 }

@@ -10,11 +10,11 @@ import (
 
 const limitReadLines = 2000
 
-type zookeeperClient struct {
-	socket.Socket
+type zookeeperFetcher struct {
+	socket.Client
 }
 
-func (c *zookeeperClient) fetch(command string) (rows []string, err error) {
+func (c *zookeeperFetcher) fetch(command string) (rows []string, err error) {
 	if err = c.Connect(); err != nil {
 		return nil, err
 	}

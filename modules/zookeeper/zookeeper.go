@@ -38,14 +38,14 @@ func New() *Zookeeper {
 	return &Zookeeper{Config: config}
 }
 
-type zookeeperFetcher interface {
+type fetcher interface {
 	fetch(command string) ([]string, error)
 }
 
 // Zookeeper Zookeeper module.
 type Zookeeper struct {
 	module.Base
-	zookeeperFetcher
+	fetcher
 	Config `yaml:",inline"`
 }
 
@@ -61,13 +61,13 @@ func (z *Zookeeper) createZookeeperFetcher() (err error) {
 		}
 	}
 
-	sock := socket.NewSocket(socket.Config{
+	sock := socket.New(socket.Config{
 		Network: socket.NetworkTCP,
 		Address: z.Address,
 		Timeout: z.Timeout.Duration,
-		TlsConf: tlsConf,
+		TLSConf: tlsConf,
 	})
-	z.zookeeperFetcher = &zookeeperClient{Socket: sock}
+	z.fetcher = &zookeeperFetcher{Client: sock}
 	return nil
 }
 
