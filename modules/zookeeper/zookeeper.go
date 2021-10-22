@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/socket"
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
@@ -37,14 +38,14 @@ func New() *Zookeeper {
 	return &Zookeeper{Config: config}
 }
 
-type zookeeperFetcher interface {
+type fetcher interface {
 	fetch(command string) ([]string, error)
 }
 
 // Zookeeper Zookeeper module.
 type Zookeeper struct {
 	module.Base
-	zookeeperFetcher
+	fetcher
 	Config `yaml:",inline"`
 }
 
@@ -60,14 +61,13 @@ func (z *Zookeeper) createZookeeperFetcher() (err error) {
 		}
 	}
 
-	conf := clientConfig{
-		network: "tcp",
-		address: z.Address,
-		timeout: z.Timeout.Duration,
-		useTLS:  z.UseTLS,
-		tlsConf: tlsConf,
-	}
-	z.zookeeperFetcher = newClient(conf)
+	sock := socket.New(socket.Config{
+		Network: socket.NetworkTCP,
+		Address: z.Address,
+		Timeout: z.Timeout.Duration,
+		TLSConf: tlsConf,
+	})
+	z.fetcher = &zookeeperFetcher{Client: sock}
 	return nil
 }
 
