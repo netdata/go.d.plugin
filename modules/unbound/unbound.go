@@ -52,7 +52,7 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
-		client   socket.Socket
+		client   socket.Client
 		cache    collectCache
 		curCache collectCache
 

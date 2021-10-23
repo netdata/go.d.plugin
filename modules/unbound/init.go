@@ -88,11 +88,12 @@ func (u *Unbound) initClient() (err error) {
 	if isUnixSocket(u.Address) {
 		network = socket.NetworkUnix
 	}
-	u.client = socket.NewSocket(socket.Config{
+
+	u.client = socket.New(socket.Config{
 		Network: network,
 		Address: u.Address,
 		Timeout: u.Timeout.Duration,
-		TlsConf: tlsCfg,
+		TLSConf: tlsCfg,
 	})
 	return nil
 }
