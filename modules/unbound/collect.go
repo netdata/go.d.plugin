@@ -29,6 +29,11 @@ func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
 		command = "UBCT1 stats_noreset"
 	}
 
+	if err := u.client.Connect(); err != nil {
+		return nil, fmt.Errorf("failed to connect: %v", err)
+	}
+	defer func() { _ = u.client.Disconnect() }()
+
 	err := u.client.Command(command+"\n", func(bytes []byte) bool {
 		output = append(output, string(bytes))
 		return true
