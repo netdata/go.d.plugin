@@ -23,14 +23,25 @@ func (u *Unbound) collect() (map[string]int64, error) {
 }
 
 func (u *Unbound) scrapeUnboundStats() ([]entry, error) {
+	var output []string
 	var command = "UBCT1 stats"
 	if u.Cumulative {
 		command = "UBCT1 stats_noreset"
 	}
-	output, err := u.client.send(command + "\n")
+
+	if err := u.client.Connect(); err != nil {
+		return nil, fmt.Errorf("failed to connect: %v", err)
+	}
+	defer func() { _ = u.client.Disconnect() }()
+
+	err := u.client.Command(command+"\n", func(bytes []byte) bool {
+		output = append(output, string(bytes))
+		return true
+	})
 	if err != nil {
 		return nil, fmt.Errorf("send command '%s': %w", command, err)
 	}
+
 	switch len(output) {
 	case 0:
 		return nil, fmt.Errorf("command '%s': empty resopnse", command)
