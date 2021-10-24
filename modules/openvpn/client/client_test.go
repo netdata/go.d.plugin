@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	testLoadStatsData, _ = ioutil.ReadFile("testdata/load-stats.txt")
-	testVersionData, _   = ioutil.ReadFile("testdata/version.txt")
-	testStatus3Data, _   = ioutil.ReadFile("testdata/status3.txt")
+	testLoadStatsData, _        = ioutil.ReadFile("testdata/load-stats.txt")
+	testMaxLinesExceededData, _ = ioutil.ReadFile("testdata/max-lines-exceeded.txt")
+	testVersionData, _          = ioutil.ReadFile("testdata/version.txt")
+	testStatus3Data, _          = ioutil.ReadFile("testdata/status3.txt")
 )
 
 func TestNew(t *testing.T) { assert.IsType(t, (*Client)(nil), New(socket.Config{})) }
@@ -53,7 +54,17 @@ func TestClient_GetUsers(t *testing.T) {
 	assert.Equal(t, expected, users)
 }
 
-type mockSocketClient struct{}
+func TestClient_MaxLineExceeded(t *testing.T) {
+	client := Client{
+		Client: &mockSocketClient{maxLineExceeded: true},
+	}
+	_, err := client.Users()
+	assert.Error(t, err)
+}
+
+type mockSocketClient struct {
+	maxLineExceeded bool
+}
 
 func (m *mockSocketClient) Connect() error { return nil }
 
@@ -68,10 +79,15 @@ func (m *mockSocketClient) Command(command string, process socket.Processor) err
 	case commandVersion:
 		s = bufio.NewScanner(bytes.NewReader(testVersionData))
 	case commandStatus3:
+		if m.maxLineExceeded {
+			s = bufio.NewScanner(bytes.NewReader(testMaxLinesExceededData))
+			break
+		}
 		s = bufio.NewScanner(bytes.NewReader(testStatus3Data))
 	case commandLoadStats:
 		s = bufio.NewScanner(bytes.NewReader(testLoadStatsData))
 	}
+
 	for s.Scan() {
 		process(s.Bytes())
 	}

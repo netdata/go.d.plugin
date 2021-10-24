@@ -66,15 +66,17 @@ func (c *Client) get(command string, stopRead stopReadFunc) (output []string, er
 	var maxLinesErr error
 	err = c.Command(command, func(bytes []byte) bool {
 		line := string(bytes)
-		// skip real-time messages
-		if strings.HasPrefix(line, ">") {
-			return true
-		}
 		num++
 		if num > maxLinesToRead {
 			maxLinesErr = fmt.Errorf("read line limit exceeded (%d)", maxLinesToRead)
 			return false
 		}
+
+		// skip real-time messages
+		if strings.HasPrefix(line, ">") {
+			return true
+		}
+
 		line = strings.Trim(line, "\r\n ")
 		output = append(output, line)
 		if stopRead != nil && stopRead(line) {
