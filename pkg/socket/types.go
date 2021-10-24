@@ -31,10 +31,12 @@ type Client interface {
 // Socket type(ip, tcp, udp, unix), timeout and TLS configuration
 // for a Socket
 type Config struct {
-	Network Network
-	Address string
-	Timeout time.Duration
-	TLSConf *tls.Config
+	Network        Network
+	Address        string
+	ConnectTimeout time.Duration
+	ReadTimeout    time.Duration
+	WriteTimeout   time.Duration
+	TLSConf        *tls.Config
 }
 
 // Network is a string alias for the available Socket types.

@@ -31,10 +31,10 @@ type Socket struct {
 // The config timeout and TLS config will be used.
 func (s *Socket) Connect() (err error) {
 	if s.TLSConf == nil {
-		s.conn, err = net.DialTimeout(string(s.Network), s.Address, s.Timeout)
+		s.conn, err = net.DialTimeout(string(s.Network), s.Address, s.ConnectTimeout)
 	} else {
 		var d net.Dialer
-		d.Timeout = s.Timeout
+		d.Timeout = s.ConnectTimeout
 		s.conn, err = tls.DialWithDialer(&d, string(s.Network), s.Address, s.TLSConf)
 	}
 	return err
@@ -60,10 +60,10 @@ func (s *Socket) Command(command string, process Processor) error {
 	if s.conn == nil {
 		return errors.New("cannot send command on nil connection")
 	}
-	if err := write(command, s.conn, s.Timeout); err != nil {
+	if err := write(command, s.conn, s.WriteTimeout); err != nil {
 		return err
 	}
-	return read(s.conn, process, s.Timeout)
+	return read(s.conn, process, s.ReadTimeout)
 }
 
 func write(command string, writer net.Conn, timeout time.Duration) error {
