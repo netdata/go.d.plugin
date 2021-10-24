@@ -59,9 +59,6 @@ func (c *Client) Version() (*Version, error) {
 }
 
 func (c *Client) get(command string, stopRead stopReadFunc) (output []string, err error) {
-	if err = c.Connect(); err != nil {
-		return nil, err
-	}
 	var num int
 	var maxLinesErr error
 	err = c.Command(command, func(bytes []byte) bool {

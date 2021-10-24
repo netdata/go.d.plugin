@@ -114,6 +114,7 @@ func (o *OpenVPN) Check() bool {
 		o.Error(err)
 		return false
 	}
+	defer func() { _ = o.client.Disconnect() }()
 
 	ver, err := o.client.Version()
 	if err != nil {
