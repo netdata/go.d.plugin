@@ -5,6 +5,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/modules/openvpn/client"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
+	"github.com/netdata/go.d.plugin/pkg/socket"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -53,9 +54,7 @@ type Config struct {
 }
 
 type openVPNClient interface {
-	Connect() error
-	Disconnect() error
-	IsConnected() bool
+	socket.Client
 	Version() (*client.Version, error)
 	LoadStats() (*client.LoadStats, error)
 	Users() (client.Users, error)
@@ -89,14 +88,19 @@ func (o *OpenVPN) Init() bool {
 		}
 		o.perUserMatcher = matcher.WithCache(m)
 	}
-	config := client.Config{
+
+	network := socket.NetworkTCP
+	if socket.IsUnixSocket(o.Address) {
+		network = socket.NetworkUnix
+	}
+	config := socket.Config{
+		Network:        network,
 		Address:        o.Address,
 		ConnectTimeout: o.ConnectTimeout.Duration,
 		ReadTimeout:    o.ReadTimeout.Duration,
 		WriteTimeout:   o.WriteTimeout.Duration,
-		ReuseRecord:    true,
 	}
-	o.client = client.New(config)
+	o.client = &client.Client{Client: socket.New(config)}
 
 	o.Infof("using address: %s, connect timeout: %s, read timeout: %s, write timeout: %s",
 		o.Address, o.ConnectTimeout.Duration, o.ReadTimeout.Duration, o.WriteTimeout.Duration)

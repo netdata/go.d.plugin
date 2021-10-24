@@ -3,10 +3,10 @@ package openvpn
 import (
 	"testing"
 
+	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/modules/openvpn/client"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
-
-	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/socket"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -70,7 +70,6 @@ func TestOpenVPN_Cleanup(t *testing.T) {
 	job.client = prepareMockOpenVPNClient()
 	require.True(t, job.Check())
 	job.Cleanup()
-	assert.False(t, job.client.IsConnected())
 }
 
 func TestOpenVPN_Collect(t *testing.T) {
@@ -121,7 +120,6 @@ func TestOpenVPN_Collect_UNDEFUsername(t *testing.T) {
 
 func prepareMockOpenVPNClient() *mockOpenVPNClient {
 	return &mockOpenVPNClient{
-		connected: false,
 		version:   testVersion,
 		loadStats: testLoadStats,
 		users:     testUsers,
@@ -129,15 +127,17 @@ func prepareMockOpenVPNClient() *mockOpenVPNClient {
 }
 
 type mockOpenVPNClient struct {
-	connected bool
 	version   client.Version
 	loadStats client.LoadStats
 	users     client.Users
 }
 
-func (m *mockOpenVPNClient) Connect() error                       { m.connected = true; return nil }
-func (m *mockOpenVPNClient) Disconnect() error                    { m.connected = false; return nil }
-func (m mockOpenVPNClient) IsConnected() bool                     { return m.connected }
+func (m *mockOpenVPNClient) Connect() error                       { return nil }
+func (m *mockOpenVPNClient) Disconnect() error                    { return nil }
 func (m mockOpenVPNClient) Version() (*client.Version, error)     { return &m.version, nil }
 func (m mockOpenVPNClient) LoadStats() (*client.LoadStats, error) { return &m.loadStats, nil }
 func (m mockOpenVPNClient) Users() (client.Users, error)          { return m.users, nil }
+func (m *mockOpenVPNClient) Command(_ string, _ socket.Processor) error {
+	// mocks are done on the individual commands. e.g. in Version() below
+	panic("should be called in the mock")
+}
