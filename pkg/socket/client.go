@@ -14,7 +14,7 @@ import (
 // and reuses connection where possible.
 func New(config Config) *Socket {
 	return &Socket{
-		network: networkType(config.Address).String(),
+		network: networkType(config.Address),
 		Config:  config,
 		conn:    nil,
 	}

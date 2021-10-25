@@ -37,19 +37,3 @@ type Config struct {
 	WriteTimeout   time.Duration
 	TLSConf        *tls.Config
 }
-
-// Network is a string alias for the available Socket types.
-type Network string
-
-func (n Network) String() string {
-	return string(n)
-}
-
-const (
-	// NetworkTCP is used for TCP sockets
-	NetworkTCP Network = "tcp"
-	// NetworkUDP is used for UDP sockets
-	NetworkUDP Network = "udp"
-	// NetworkUnix is used for UNIX sockets
-	NetworkUnix Network = "unix"
-)
