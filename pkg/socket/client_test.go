@@ -16,7 +16,6 @@ const (
 )
 
 var tcpConfig = Config{
-	Network:        NetworkTCP,
 	Address:        testServerAddress,
 	ConnectTimeout: defaultTimeout,
 	ReadTimeout:    defaultTimeout,
@@ -25,7 +24,6 @@ var tcpConfig = Config{
 }
 
 var udpConfig = Config{
-	Network:        NetworkUDP,
 	Address:        testServerAddress,
 	ConnectTimeout: defaultTimeout,
 	ReadTimeout:    defaultTimeout,
@@ -34,7 +32,6 @@ var udpConfig = Config{
 }
 
 var unixConfig = Config{
-	Network:        NetworkUnix,
 	Address:        testUnixServerAddress,
 	ConnectTimeout: defaultTimeout,
 	ReadTimeout:    defaultTimeout,
@@ -43,7 +40,6 @@ var unixConfig = Config{
 }
 
 var tcpTlsConfig = Config{
-	Network:        NetworkTCP,
 	Address:        testServerAddress,
 	ConnectTimeout: defaultTimeout,
 	ReadTimeout:    defaultTimeout,

@@ -14,15 +14,17 @@ import (
 // and reuses connection where possible.
 func New(config Config) *Socket {
 	return &Socket{
-		Config: config,
-		conn:   nil,
+		network: networkType(config.Address).String(),
+		Config:  config,
+		conn:    nil,
 	}
 }
 
 // Socket is the implementation of a socket client.
 type Socket struct {
 	Config
-	conn net.Conn
+	network string
+	conn    net.Conn
 }
 
 // Connect connects to the Socket address on the named network.
@@ -31,11 +33,11 @@ type Socket struct {
 // The config timeout and TLS config will be used.
 func (s *Socket) Connect() (err error) {
 	if s.TLSConf == nil {
-		s.conn, err = net.DialTimeout(string(s.Network), s.Address, s.ConnectTimeout)
+		s.conn, err = net.DialTimeout(s.network, s.Address, s.ConnectTimeout)
 	} else {
 		var d net.Dialer
 		d.Timeout = s.ConnectTimeout
-		s.conn, err = tls.DialWithDialer(&d, string(s.Network), s.Address, s.TLSConf)
+		s.conn, err = tls.DialWithDialer(&d, s.network, s.Address, s.TLSConf)
 	}
 	return err
 }

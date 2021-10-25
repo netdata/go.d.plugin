@@ -83,13 +83,7 @@ func (u *Unbound) initClient() (err error) {
 		}
 	}
 
-	network := socket.NetworkTCP
-	if socket.IsUnixSocket(u.Address) {
-		network = socket.NetworkUnix
-	}
-
 	u.client = socket.New(socket.Config{
-		Network:        network,
 		Address:        u.Address,
 		ConnectTimeout: u.Timeout.Duration,
 		ReadTimeout:    u.Timeout.Duration,

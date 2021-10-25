@@ -31,7 +31,6 @@ type Client interface {
 // Socket type(ip, tcp, udp, unix), timeout and TLS configuration
 // for a Socket
 type Config struct {
-	Network        Network
 	Address        string
 	ConnectTimeout time.Duration
 	ReadTimeout    time.Duration
@@ -41,6 +40,10 @@ type Config struct {
 
 // Network is a string alias for the available Socket types.
 type Network string
+
+func (n Network) String() string {
+	return string(n)
+}
 
 const (
 	// NetworkTCP is used for TCP sockets

@@ -89,12 +89,7 @@ func (o *OpenVPN) Init() bool {
 		o.perUserMatcher = matcher.WithCache(m)
 	}
 
-	network := socket.NetworkTCP
-	if socket.IsUnixSocket(o.Address) {
-		network = socket.NetworkUnix
-	}
 	config := socket.Config{
-		Network:        network,
 		Address:        o.Address,
 		ConnectTimeout: o.ConnectTimeout.Duration,
 		ReadTimeout:    o.ReadTimeout.Duration,

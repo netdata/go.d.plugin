@@ -18,11 +18,6 @@ const maxLinesToRead = 500
 
 // New creates new OpenVPN client.
 func New(config socket.Config) *Client {
-	if socket.IsUnixSocket(config.Address) {
-		config.Network = socket.NetworkUnix
-	} else {
-		config.Network = socket.NetworkTCP
-	}
 	return &Client{Client: socket.New(config)}
 }
 
