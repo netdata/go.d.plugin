@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"strings"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/socket"
@@ -12,10 +13,10 @@ import (
 )
 
 var (
-	testLoadStatsData, _        = ioutil.ReadFile("testdata/load-stats.txt")
-	testMaxLinesExceededData, _ = ioutil.ReadFile("testdata/max-lines-exceeded.txt")
-	testVersionData, _          = ioutil.ReadFile("testdata/version.txt")
-	testStatus3Data, _          = ioutil.ReadFile("testdata/status3.txt")
+	testLoadStatsData, _     = ioutil.ReadFile("testdata/load-stats.txt")
+	testVersionData, _       = ioutil.ReadFile("testdata/version.txt")
+	testStatus3Data, _       = ioutil.ReadFile("testdata/status3.txt")
+	testMaxLinesExceededData = strings.Repeat(">CLIENT:ESTABLISHED,0\n", 501)
 )
 
 func TestNew(t *testing.T) { assert.IsType(t, (*Client)(nil), New(socket.Config{})) }
@@ -80,7 +81,7 @@ func (m *mockSocketClient) Command(command string, process socket.Processor) err
 		s = bufio.NewScanner(bytes.NewReader(testVersionData))
 	case commandStatus3:
 		if m.maxLineExceeded {
-			s = bufio.NewScanner(bytes.NewReader(testMaxLinesExceededData))
+			s = bufio.NewScanner(strings.NewReader(testMaxLinesExceededData))
 			break
 		}
 		s = bufio.NewScanner(bytes.NewReader(testStatus3Data))
