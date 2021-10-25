@@ -10,13 +10,14 @@ func IsUdpSocket(address string) bool {
 	return strings.HasPrefix(address, "udp://")
 }
 
-func networkType(address string) string {
+func networkType(address string) (string, string) {
 	switch {
 	case IsUnixSocket(address):
-		return "unix"
+		address = strings.TrimPrefix(address, "unix://")
+		return "unix", address
 	case IsUdpSocket(address):
-		return "udp"
+		return "udp", strings.TrimPrefix(address, "udp://")
 	default:
-		return "tcp"
+		return "tcp", strings.TrimPrefix(address, "tcp://")
 	}
 }

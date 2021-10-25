@@ -11,6 +11,7 @@ import (
 
 const (
 	testServerAddress     = "127.0.0.1:9999"
+	testUdpServerAddress  = "udp://127.0.0.1:9999"
 	testUnixServerAddress = "/tmp/testSocketFD"
 	defaultTimeout        = 100 * time.Millisecond
 )
@@ -24,7 +25,7 @@ var tcpConfig = Config{
 }
 
 var udpConfig = Config{
-	Address:        testServerAddress,
+	Address:        testUdpServerAddress,
 	ConnectTimeout: defaultTimeout,
 	ReadTimeout:    defaultTimeout,
 	WriteTimeout:   defaultTimeout,
@@ -116,6 +117,19 @@ func Test_clientUDPCommand(t *testing.T) {
 	})
 	require.NoError(t, sock.Disconnect())
 	require.NoError(t, err)
+}
+
+func Test_clientTCPAddress(t *testing.T) {
+	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 1}
+	go func() { _ = srv.Run() }()
+	time.Sleep(time.Millisecond * 100)
+
+	sock := New(tcpConfig)
+	require.NoError(t, sock.Connect())
+
+	tcpConfig.Address = "tcp://" + tcpConfig.Address
+	sock = New(tcpConfig)
+	require.NoError(t, sock.Connect())
 }
 
 func Test_clientUnixCommand(t *testing.T) {

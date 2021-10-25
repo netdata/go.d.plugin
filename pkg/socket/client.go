@@ -14,17 +14,15 @@ import (
 // and reuses connection where possible.
 func New(config Config) *Socket {
 	return &Socket{
-		network: networkType(config.Address),
-		Config:  config,
-		conn:    nil,
+		Config: config,
+		conn:   nil,
 	}
 }
 
 // Socket is the implementation of a socket client.
 type Socket struct {
 	Config
-	network string
-	conn    net.Conn
+	conn net.Conn
 }
 
 // Connect connects to the Socket address on the named network.
@@ -32,12 +30,13 @@ type Socket struct {
 // Address like :80 will attempt to connect to the localhost.
 // The config timeout and TLS config will be used.
 func (s *Socket) Connect() (err error) {
+	network, address := networkType(s.Address)
 	if s.TLSConf == nil {
-		s.conn, err = net.DialTimeout(s.network, s.Address, s.ConnectTimeout)
+		s.conn, err = net.DialTimeout(network, address, s.ConnectTimeout)
 	} else {
 		var d net.Dialer
 		d.Timeout = s.ConnectTimeout
-		s.conn, err = tls.DialWithDialer(&d, s.network, s.Address, s.TLSConf)
+		s.conn, err = tls.DialWithDialer(&d, network, address, s.TLSConf)
 	}
 	return err
 }
