@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"net"
-	"strings"
 
 	"github.com/netdata/go.d.plugin/modules/unbound/config"
 	"github.com/netdata/go.d.plugin/pkg/socket"
@@ -61,7 +60,7 @@ func (u *Unbound) applyConfig(cfg *config.UnboundConfig) {
 		u.Debugf("changing 'address': '%s' => '%s'", u.Address, address)
 		u.Address = address
 	}
-	if port, ok := cfg.ControlPort(); ok && !isUnixSocket(u.Address) {
+	if port, ok := cfg.ControlPort(); ok && !socket.IsUnixSocket(u.Address) {
 		if host, curPort, err := net.SplitHostPort(u.Address); err == nil && curPort != port {
 			address := net.JoinHostPort(host, port)
 			u.Debugf("changing 'address': '%s' => '%s'", u.Address, address)
@@ -72,7 +71,7 @@ func (u *Unbound) applyConfig(cfg *config.UnboundConfig) {
 
 func (u *Unbound) initClient() (err error) {
 	var tlsCfg *tls.Config
-	useTLS := !isUnixSocket(u.Address) && u.UseTLS
+	useTLS := !socket.IsUnixSocket(u.Address) && u.UseTLS
 
 	if useTLS && (u.TLSConfig.TLSCert == "" || u.TLSConfig.TLSKey == "") {
 		return errors.New("'tls_cert' or 'tls_key' is missing")
@@ -84,30 +83,22 @@ func (u *Unbound) initClient() (err error) {
 		}
 	}
 
-	network := socket.NetworkTCP
-	if isUnixSocket(u.Address) {
-		network = socket.NetworkUnix
-	}
-
 	u.client = socket.New(socket.Config{
-		Network: network,
-		Address: u.Address,
-		Timeout: u.Timeout.Duration,
-		TLSConf: tlsCfg,
+		Address:        u.Address,
+		ConnectTimeout: u.Timeout.Duration,
+		ReadTimeout:    u.Timeout.Duration,
+		WriteTimeout:   u.Timeout.Duration,
+		TLSConf:        tlsCfg,
 	})
 	return nil
 }
 
 func adjustControlInterface(value string) string {
-	if isUnixSocket(value) {
+	if socket.IsUnixSocket(value) {
 		return value
 	}
 	if value == "0.0.0.0" {
 		value = "127.0.0.1"
 	}
 	return net.JoinHostPort(value, "8953")
-}
-
-func isUnixSocket(address string) bool {
-	return strings.HasPrefix(address, "/")
 }

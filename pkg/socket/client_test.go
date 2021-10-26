@@ -11,35 +11,41 @@ import (
 
 const (
 	testServerAddress     = "127.0.0.1:9999"
+	testUdpServerAddress  = "udp://127.0.0.1:9999"
 	testUnixServerAddress = "/tmp/testSocketFD"
+	defaultTimeout        = 100 * time.Millisecond
 )
 
 var tcpConfig = Config{
-	Network: NetworkTCP,
-	Address: testServerAddress,
-	Timeout: 10 * time.Millisecond,
-	TLSConf: nil,
+	Address:        testServerAddress,
+	ConnectTimeout: defaultTimeout,
+	ReadTimeout:    defaultTimeout,
+	WriteTimeout:   defaultTimeout,
+	TLSConf:        nil,
 }
 
 var udpConfig = Config{
-	Network: NetworkUDP,
-	Address: testServerAddress,
-	Timeout: 200 * time.Millisecond,
-	TLSConf: nil,
+	Address:        testUdpServerAddress,
+	ConnectTimeout: defaultTimeout,
+	ReadTimeout:    defaultTimeout,
+	WriteTimeout:   defaultTimeout,
+	TLSConf:        nil,
 }
 
 var unixConfig = Config{
-	Network: NetworkUnix,
-	Address: testUnixServerAddress,
-	Timeout: 2000 * time.Millisecond,
-	TLSConf: nil,
+	Address:        testUnixServerAddress,
+	ConnectTimeout: defaultTimeout,
+	ReadTimeout:    defaultTimeout,
+	WriteTimeout:   defaultTimeout,
+	TLSConf:        nil,
 }
 
 var tcpTlsConfig = Config{
-	Network: NetworkTCP,
-	Address: testServerAddress,
-	Timeout: 10 * time.Millisecond,
-	TLSConf: &tls.Config{},
+	Address:        testServerAddress,
+	ConnectTimeout: defaultTimeout,
+	ReadTimeout:    defaultTimeout,
+	WriteTimeout:   defaultTimeout,
+	TLSConf:        &tls.Config{},
 }
 
 func Test_clientCommand(t *testing.T) {
@@ -64,7 +70,8 @@ func Test_clientTimeout(t *testing.T) {
 	time.Sleep(time.Millisecond * 100)
 	sock := New(tcpConfig)
 	require.NoError(t, sock.Connect())
-	sock.Timeout = 0
+	sock.ReadTimeout = 0
+	sock.ReadTimeout = 0
 	err := sock.Command("ping\n", func(bytes []byte) bool {
 		assert.Equal(t, "pong", string(bytes))
 		return true
@@ -110,6 +117,19 @@ func Test_clientUDPCommand(t *testing.T) {
 	})
 	require.NoError(t, sock.Disconnect())
 	require.NoError(t, err)
+}
+
+func Test_clientTCPAddress(t *testing.T) {
+	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 1}
+	go func() { _ = srv.Run() }()
+	time.Sleep(time.Millisecond * 100)
+
+	sock := New(tcpConfig)
+	require.NoError(t, sock.Connect())
+
+	tcpConfig.Address = "tcp://" + tcpConfig.Address
+	sock = New(tcpConfig)
+	require.NoError(t, sock.Connect())
 }
 
 func Test_clientUnixCommand(t *testing.T) {

@@ -1,15 +1,12 @@
 package client
 
 import (
-	"bufio"
-	"errors"
 	"fmt"
-	"io"
-	"net"
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
+
+	"github.com/netdata/go.d.plugin/pkg/socket"
 )
 
 var (
@@ -20,54 +17,13 @@ var (
 const maxLinesToRead = 500
 
 // New creates new OpenVPN client.
-func New(config Config) *Client {
-	network := "tcp"
-	if strings.HasPrefix(config.Address, "/") {
-		network = "unix"
-	}
-	return &Client{network: network, Config: config, dial: net.DialTimeout}
+func New(config socket.Config) *Client {
+	return &Client{Client: socket.New(config)}
 }
-
-// Config represents OpenVPN client config.
-type Config struct {
-	Address        string
-	ReuseRecord    bool
-	ConnectTimeout time.Duration
-	ReadTimeout    time.Duration
-	WriteTimeout   time.Duration
-}
-
-type dialFunc func(network, address string, timeout time.Duration) (net.Conn, error)
 
 // Client represents OpenVPN client.
 type Client struct {
-	Config
-	dial    dialFunc
-	network string
-	record  []string
-	conn    net.Conn
-}
-
-// IsConnected IsConnected.
-func (c *Client) IsConnected() bool { return c.conn != nil }
-
-// Connect connects.
-func (c *Client) Connect() (err error) {
-	if c.IsConnected() {
-		_ = c.Disconnect()
-	}
-	c.conn, err = c.dial(c.network, c.Address, c.ConnectTimeout)
-	return err
-}
-
-// Disconnect closes connection, if there is no connection it does nothing.
-func (c *Client) Disconnect() error {
-	if !c.IsConnected() {
-		return nil
-	}
-	err := c.conn.Close()
-	c.conn = nil
-	return err
+	socket.Client
 }
 
 // Users Users.
@@ -97,76 +53,33 @@ func (c *Client) Version() (*Version, error) {
 	return decodeVersion(lines)
 }
 
-func (c *Client) get(command string, stopRead stopReadFunc) ([]string, error) {
-	if err := c.send(command); err != nil {
-		return nil, err
-	}
-	return c.read(stopRead)
-}
-
-func (c *Client) send(command string) error {
-	if !c.IsConnected() {
-		return errors.New("not connected")
-	}
-	err := c.conn.SetWriteDeadline(time.Now().Add(c.WriteTimeout))
-	if err != nil {
-		return err
-	}
-	_, err = c.conn.Write([]byte(command))
-	return err
-}
-
-func (c *Client) read(stopRead stopReadFunc) (record []string, err error) {
-	if !c.IsConnected() {
-		return nil, errors.New("not connected")
-	}
-
-	if err = c.conn.SetReadDeadline(time.Now().Add(c.ReadTimeout)); err != nil {
-		return nil, err
-	}
-
-	if c.ReuseRecord {
-		record, err = read(c.record, c.conn, stopRead)
-		c.record = record
-	} else {
-		record, err = read(nil, c.conn, stopRead)
-	}
-
-	return record, err
-}
-
-func read(dst []string, reader io.Reader, stopRead stopReadFunc) ([]string, error) {
-	dst = dst[:0]
-	var (
-		r    = bufio.NewReader(reader)
-		err  error
-		num  int
-		line string
-	)
-	for {
-		line, err = r.ReadString('\n')
-		// never EOF
-		if err != nil {
-			break
+func (c *Client) get(command string, stopRead stopReadFunc) (output []string, err error) {
+	var num int
+	var maxLinesErr error
+	err = c.Command(command, func(bytes []byte) bool {
+		line := string(bytes)
+		num++
+		if num > maxLinesToRead {
+			maxLinesErr = fmt.Errorf("read line limit exceeded (%d)", maxLinesToRead)
+			return false
 		}
+
 		// skip real-time messages
 		if strings.HasPrefix(line, ">") {
-			continue
+			return true
 		}
 
 		line = strings.Trim(line, "\r\n ")
-		dst = append(dst, line)
+		output = append(output, line)
 		if stopRead != nil && stopRead(line) {
-			break
+			return false
 		}
-
-		num++
-		if num > maxLinesToRead {
-			err = fmt.Errorf("read line limit exceeded (%d)", maxLinesToRead)
-			break
-		}
+		return true
+	})
+	if maxLinesErr != nil {
+		return nil, maxLinesErr
 	}
-	return dst, err
+	return output, err
 }
 
 type stopReadFunc func(string) bool

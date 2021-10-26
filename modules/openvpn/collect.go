@@ -7,18 +7,11 @@ import (
 
 func (o *OpenVPN) collect() (map[string]int64, error) {
 	var err error
-	if !o.client.IsConnected() {
-		if err = o.client.Connect(); err != nil {
-			return nil, err
-		}
-	}
 
-	defer func() {
-		// TODO: disconnect not on every error?
-		if err != nil {
-			_ = o.client.Disconnect()
-		}
-	}()
+	if err := o.client.Connect(); err != nil {
+		return nil, err
+	}
+	defer func() { _ = o.client.Disconnect() }()
 
 	mx := make(map[string]int64)
 

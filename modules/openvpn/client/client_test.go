@@ -2,79 +2,27 @@ package client
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io/ioutil"
-	"net"
+	"strings"
 	"testing"
-	"time"
 
+	"github.com/netdata/go.d.plugin/pkg/socket"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testLoadStatsData, _ = ioutil.ReadFile("testdata/load-stats.txt")
-	testVersionData, _   = ioutil.ReadFile("testdata/version.txt")
-	testStatus3Data, _   = ioutil.ReadFile("testdata/status3.txt")
-
-	testDefaultTimeout = time.Second
+	testLoadStatsData, _     = ioutil.ReadFile("testdata/load-stats.txt")
+	testVersionData, _       = ioutil.ReadFile("testdata/version.txt")
+	testStatus3Data, _       = ioutil.ReadFile("testdata/status3.txt")
+	testMaxLinesExceededData = strings.Repeat(">CLIENT:ESTABLISHED,0\n", 501)
 )
 
-func testDial(conn net.Conn) dialFunc {
-	return func(_, _ string, _ time.Duration) (net.Conn, error) { return conn, nil }
-}
-
-func TestNew(t *testing.T) { assert.IsType(t, (*Client)(nil), New(Config{})) }
-
-func TestClient_Connect(t *testing.T) {
-	serverConn, clientConn := net.Pipe()
-	defer func() {
-		_ = serverConn.Close()
-		_ = clientConn.Close()
-	}()
-
-	client := &Client{dial: testDial(clientConn)}
-	assert.NoError(t, client.Connect())
-	assert.True(t, client.IsConnected())
-}
-
-func TestClient_Disconnect(t *testing.T) {
-	serverConn, clientConn := net.Pipe()
-	defer func() {
-		_ = serverConn.Close()
-		_ = clientConn.Close()
-	}()
-
-	client := &Client{dial: testDial(clientConn)}
-	assert.False(t, client.IsConnected())
-	assert.NoError(t, client.Connect())
-	assert.True(t, client.IsConnected())
-	assert.NoError(t, client.Disconnect())
-	assert.False(t, client.IsConnected())
-}
-
-func TestClient_IsConnected(t *testing.T) {
-	serverConn, clientConn := net.Pipe()
-	defer func() {
-		_ = serverConn.Close()
-		_ = clientConn.Close()
-	}()
-
-	client := &Client{dial: testDial(clientConn)}
-	assert.False(t, client.IsConnected())
-	assert.NoError(t, client.Connect())
-	assert.True(t, client.IsConnected())
-}
+func TestNew(t *testing.T) { assert.IsType(t, (*Client)(nil), New(socket.Config{})) }
 
 func TestClient_GetVersion(t *testing.T) {
-	serverConn, clientConn := net.Pipe()
-	defer func() {
-		_ = serverConn.Close()
-		_ = clientConn.Close()
-	}()
-	client := newTestTCPClient(clientConn)
-	srv := newTestTCPServer(serverConn)
-	go srv.serve()
-
+	client := Client{Client: &mockSocketClient{}}
 	ver, err := client.Version()
 	assert.NoError(t, err)
 	expected := &Version{Major: 2, Minor: 3, Patch: 4, Management: 1}
@@ -82,15 +30,7 @@ func TestClient_GetVersion(t *testing.T) {
 }
 
 func TestClient_GetLoadStats(t *testing.T) {
-	serverConn, clientConn := net.Pipe()
-	defer func() {
-		_ = serverConn.Close()
-		_ = clientConn.Close()
-	}()
-	client := newTestTCPClient(clientConn)
-	srv := newTestTCPServer(serverConn)
-	go srv.serve()
-
+	client := Client{Client: &mockSocketClient{}}
 	stats, err := client.LoadStats()
 	assert.NoError(t, err)
 	expected := &LoadStats{NumOfClients: 1, BytesIn: 7811, BytesOut: 7667}
@@ -98,15 +38,9 @@ func TestClient_GetLoadStats(t *testing.T) {
 }
 
 func TestClient_GetUsers(t *testing.T) {
-	serverConn, clientConn := net.Pipe()
-	defer func() {
-		_ = serverConn.Close()
-		_ = clientConn.Close()
-	}()
-	client := newTestTCPClient(clientConn)
-	srv := newTestTCPServer(serverConn)
-	go srv.serve()
-
+	client := Client{
+		Client: &mockSocketClient{},
+	}
 	users, err := client.Users()
 	assert.NoError(t, err)
 	expected := Users{{
@@ -121,50 +55,42 @@ func TestClient_GetUsers(t *testing.T) {
 	assert.Equal(t, expected, users)
 }
 
-func newTestTCPClient(conn net.Conn) *Client {
-	return &Client{
-		conn: conn,
-		Config: Config{
-			ConnectTimeout: testDefaultTimeout,
-			ReadTimeout:    testDefaultTimeout,
-			WriteTimeout:   testDefaultTimeout,
-		},
+func TestClient_MaxLineExceeded(t *testing.T) {
+	client := Client{
+		Client: &mockSocketClient{maxLineExceeded: true},
 	}
+	_, err := client.Users()
+	assert.Error(t, err)
 }
 
-func newTestTCPServer(conn net.Conn) *testTCPServer { return &testTCPServer{conn: conn} }
-
-type testTCPServer struct{ conn net.Conn }
-
-func (t *testTCPServer) serve() {
-	for t.serveOnce() == nil {
-	}
+type mockSocketClient struct {
+	maxLineExceeded bool
 }
 
-func (t *testTCPServer) serveOnce() error {
-	if err := t.conn.SetReadDeadline(time.Now().Add(testDefaultTimeout)); err != nil {
-		return err
-	}
+func (m *mockSocketClient) Connect() error { return nil }
 
-	command, err := bufio.NewReader(t.conn).ReadString('\n')
-	if err != nil {
-		return err
-	}
+func (m *mockSocketClient) Disconnect() error { return nil }
 
-	if err = t.conn.SetWriteDeadline(time.Now().Add(testDefaultTimeout)); err != nil {
-		return err
-	}
-
+func (m *mockSocketClient) Command(command string, process socket.Processor) error {
+	var s *bufio.Scanner
 	switch command {
 	default:
 		return fmt.Errorf("unknown command : %s", command)
 	case commandExit:
 	case commandVersion:
-		_, _ = t.conn.Write(testVersionData)
+		s = bufio.NewScanner(bytes.NewReader(testVersionData))
 	case commandStatus3:
-		_, _ = t.conn.Write(testStatus3Data)
+		if m.maxLineExceeded {
+			s = bufio.NewScanner(strings.NewReader(testMaxLinesExceededData))
+			break
+		}
+		s = bufio.NewScanner(bytes.NewReader(testStatus3Data))
 	case commandLoadStats:
-		_, _ = t.conn.Write(testLoadStatsData)
+		s = bufio.NewScanner(bytes.NewReader(testLoadStatsData))
+	}
+
+	for s.Scan() {
+		process(s.Bytes())
 	}
 	return nil
 }
