@@ -20,7 +20,7 @@ Module collects metrics from the following collectors:
 - system
 - logon
 
-Run `windowns_exporter` with these collectors:
+Run `windows_exporter` with these collectors:
 
 > windows_exporter-0.13.0-amd64.exe --collectors.enabled="cpu,memory,net,logical_disk,os,system,logon"
 
