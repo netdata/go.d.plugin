@@ -81,10 +81,10 @@ func chartTitle(pm prometheus.Metric, meta prometheus.Metadata) string {
 }
 
 func chartFamily(pm prometheus.Metric) (fam string) {
-	if strings.HasPrefix("go_", pm.Name()) {
+	if strings.HasPrefix(pm.Name(), "go_") {
 		return "go"
 	}
-	if strings.HasPrefix("process_", pm.Name()) {
+	if strings.HasPrefix(pm.Name(), "process_") {
 		return "process"
 	}
 	if parts := strings.SplitN(pm.Name(), "_", 3); len(parts) < 3 {
