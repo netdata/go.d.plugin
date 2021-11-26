@@ -12,6 +12,7 @@ require (
 	github.com/cloudflare/cfssl v1.4.1
 	github.com/coreos/go-systemd/v22 v22.3.2
 	github.com/fsnotify/fsnotify v1.4.9
+	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-redis/redis/v8 v8.11.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofrs/flock v0.8.1
@@ -27,7 +28,6 @@ require (
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/prometheus/common v0.10.0 // indirect
 	github.com/prometheus/prometheus v2.5.0+incompatible
-	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/tomasen/fcgi_client v0.0.0-20180423082037-2bb3d819fd19
 	github.com/valyala/fastjson v1.6.3
