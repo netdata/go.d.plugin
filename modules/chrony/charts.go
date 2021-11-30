@@ -13,7 +13,7 @@ var charts = Charts{
 	{
 		ID:    "running",
 		Title: "chrony is functional and can be monitored",
-		Units: "Hop",
+		Units: "hop",
 		Type:  module.Area,
 		Ctx:   "chrony.running",
 		Dims: Dims{
@@ -23,7 +23,7 @@ var charts = Charts{
 	{
 		ID:    "stratum",
 		Title: "distance from reference clock",
-		Units: "Hop",
+		Units: "level",
 		Type:  module.Area,
 		Ctx:   "chrony.stratum",
 		Dims: Dims{
@@ -31,8 +31,13 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "leap_status",
+		ID: "leap_status",
+		//  LEAP_Normal = 0,
+		//  LEAP_InsertSecond = 1,
+		//  LEAP_DeleteSecond = 2,
+		//  LEAP_Unsynchronised = 3
 		Title: "Leap status can be Normal, Insert second, Delete second or Not synchronised.",
+		Units: "htop",
 		Ctx:   "chrony.leap_status",
 		Dims: Dims{
 			{ID: "leap_status", Name: "leap_status", Algo: module.Absolute, Div: 1, Mul: 1},
@@ -122,7 +127,7 @@ var charts = Charts{
 	{
 		ID:    "activity",
 		Title: "activity status",
-		Units: "Hop",
+		Units: "count",
 		Ctx:   "chrony.activity",
 		Type:  module.Area,
 		Dims: Dims{
