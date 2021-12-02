@@ -89,7 +89,7 @@ var (
 		Title: "Connections Rate",
 		Units: "connections/s",
 		Fam:   "connections",
-		Ctx:   "mongb.connections_rate",
+		Ctx:   "mongodb.connections_rate",
 		Dims: module.Dims{
 			{ID: "connections_total_created", Name: "created", Algo: module.Incremental},
 		},
