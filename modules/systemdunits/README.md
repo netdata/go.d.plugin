@@ -38,13 +38,13 @@ It produces the following charts:
 
 ## Unit states
 
-| Code  | Name         | Meaning |
-| ----- | ------------ | ------- |
-| 1     | `active`       | started, bound, plugged in, ..., depending on the unit type |
-| 2     | `inactive`     | stopped, unbound, unplugged, ..., depending on the unit type |
-| 3     | `activating`   | in the process of being activated |
-| 4     | `deactivating` | in the process of being deactivated |
-| 5     | `failed`       | the service failed in some way (process returned error code on exit, or crashed, an operation timed out, or after too many restarts) |
+| Code | Name           | Meaning                                                                                                                              |
+|------|----------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| 1    | `active`       | started, bound, plugged in, ..., depending on the unit type                                                                          |
+| 2    | `inactive`     | stopped, unbound, unplugged, ..., depending on the unit type                                                                         |
+| 3    | `activating`   | in the process of being activated                                                                                                    |
+| 4    | `deactivating` | in the process of being deactivated                                                                                                  |
+| 5    | `failed`       | the service failed in some way (process returned error code on exit, or crashed, an operation timed out, or after too many restarts) |
 
 ## Configuration
 

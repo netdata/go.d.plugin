@@ -28,35 +28,35 @@ configuration.
 
 Overall System Health:
 
-| Numeric | Text | Description |
-| :---: | :---: | :--- |
-| `-1`  | `unknown`  | Module failed to decode status.|
-| `0`   | `green`  | All components in the appliance are healthy.|
-| `1`   | `yellow`  | One or more components in the appliance might become overloaded soon.|
-| `2`   | `orange`  | One or more components in the appliance might be degraded.|
-| `3`   | `red`  | One or more components in the appliance might be in an unusable status and the appliance might become unresponsive soon.|
-| `4`   | `gray`  | No health data is available.|
+| Numeric |   Text    | Description                                                                                                              |
+|:-------:|:---------:|:-------------------------------------------------------------------------------------------------------------------------|
+|  `-1`   | `unknown` | Module failed to decode status.                                                                                          |
+|   `0`   |  `green`  | All components in the appliance are healthy.                                                                             |
+|   `1`   | `yellow`  | One or more components in the appliance might become overloaded soon.                                                    |
+|   `2`   | `orange`  | One or more components in the appliance might be degraded.                                                               |
+|   `3`   |   `red`   | One or more components in the appliance might be in an unusable status and the appliance might become unresponsive soon. |
+|   `4`   |  `gray`   | No health data is available.                                                                                             |
 
 Components Health:
 
-| Numeric | Text | Description |
-| :---: | :---: | :--- |
-| `-1`  | `unknown`  | Module failed to decode status.|
-| `0`   | `green`  | The component is healthy.|
-| `1`   | `yellow`  | The component is healthy, but may have some problems.|
-| `2`   | `orange`  | The component is degraded, and may have serious problems.|
-| `3`   | `red`  | The component is unavailable, or will stop functioning soon.|
-| `4`   | `gray`  | No health data is available.|
+| Numeric |   Text    | Description                                                  |
+|:-------:|:---------:|:-------------------------------------------------------------|
+|  `-1`   | `unknown` | Module failed to decode status.                              |
+|   `0`   |  `green`  | The component is healthy.                                    |
+|   `1`   | `yellow`  | The component is healthy, but may have some problems.        |
+|   `2`   | `orange`  | The component is degraded, and may have serious problems.    |
+|   `3`   |   `red`   | The component is unavailable, or will stop functioning soon. |
+|   `4`   |  `gray`   | No health data is available.                                 |
 
 Software Updates Health:
 
-| Numeric | Text | Description |
-| :---: | :---: | :--- |
-| `-1`  | `unknown`  | Module failed to decode status.|
-| `0`   | `green`  | No updates available.|
-| `2`   | `orange`  | Non-security patches might be available.|
-| `3`   | `red`  | Security patches might be available.|
-| `4`   | `gray`  | An error retrieving information on software updates.|
+| Numeric |   Text    | Description                                          |
+|:-------:|:---------:|:-----------------------------------------------------|
+|  `-1`   | `unknown` | Module failed to decode status.                      |
+|   `0`   |  `green`  | No updates available.                                |
+|   `2`   | `orange`  | Non-security patches might be available.             |
+|   `3`   |   `red`   | Security patches might be available.                 |
+|   `4`   |  `gray`   | An error retrieving information on software updates. |
 
 ## Configuration
 

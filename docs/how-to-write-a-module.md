@@ -156,14 +156,14 @@ We recommend using one file per logical area. This approach makes it easier to m
 
 Suggested minimal layout:
 
-| Filename                                          | Contains                                                |
-| ------------------------------------------------- |-------------------------------------------------------- |
-| [`module_name.go`](#file-module_namego)           | Module configuration, implementation and registration.  |
-| [`charts.go`](#file-chartsgo)                     | Charts, charts templates and constructor functions.     |
-| [`init.go`](#file-initgo)                         | Initialization methods.                                 |
-| [`collect.go`](#file-collectgo)                   | Metrics collection implementation.                      |
-| [`module_name_test.go`](#file-module_name_testgo) | Public methods/functions tests.                         |
-| [`testdata/`](#file-module_name_testgo)           | Files containing sample data.                           |
+| Filename                                          | Contains                                               |
+|---------------------------------------------------|--------------------------------------------------------|
+| [`module_name.go`](#file-module_namego)           | Module configuration, implementation and registration. |
+| [`charts.go`](#file-chartsgo)                     | Charts, charts templates and constructor functions.    |
+| [`init.go`](#file-initgo)                         | Initialization methods.                                |
+| [`collect.go`](#file-collectgo)                   | Metrics collection implementation.                     |
+| [`module_name_test.go`](#file-module_name_testgo) | Public methods/functions tests.                        |
+| [`testdata/`](#file-module_name_testgo)           | Files containing sample data.                          |
 
 ### File `module_name.go`
 

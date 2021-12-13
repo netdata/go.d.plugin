@@ -7,12 +7,12 @@
 
 Depending on the symbol at the start of the string, the `matcher` will use one of the supported formats.
 
-matcher | short format | long format
- ------ | ------------ | ----------
-string | ` =` | `string`
-glob | `*` | `glob`
-regexp | `~` | `regexp`
-simple patterns | | `simple_patterns`
+| matcher         | short format | long format       |
+|-----------------|--------------|-------------------|
+| string          | ` =`         | `string`          |
+| glob            | `*`          | `glob`            |
+| regexp          | `~`          | `regexp`          |
+| simple patterns |              | `simple_patterns` |
 
 Example:
 

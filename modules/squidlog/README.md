@@ -50,28 +50,28 @@ These are `Squid` [log format codes](http://www.squid-cache.org/Doc/config/logfo
 
 Squidlog is aware how to parse and interpret following codes:
 
-| field                   | squid format code | description                                                            |
-|-------------------------|-------------------|------------------------------------------------------------------------|
-| resp_time               | %tr               | Response time (milliseconds).
-| client_address          | %>a               | Client source IP address.
-| client_address          | %>A               | Client FQDN.
-| cache_code              | %Ss               | Squid request status (TCP_MISS etc).
-| http_code               | %>Hs              | The HTTP response status code from Content Gateway to client.
-| resp_size               | %<st              | Total size of reply sent to client (after adaptation).
-| req_method              | %rm               | Request method (GET/POST etc).
-| hier_code               | %Sh               | Squid hierarchy status (DEFAULT_PARENT etc).
-| server_address          | %<a               | Server IP address of the last server or peer connection.
-| server_address          | %<A               | Server FQDN or peer name.
-| mime_type               | %mt               | MIME content type.
+| field          | squid format code | description                                                   |
+|----------------|-------------------|---------------------------------------------------------------|
+| resp_time      | %tr               | Response time (milliseconds).                                 |
+| client_address | %>a               | Client source IP address.                                     |
+| client_address | %>A               | Client FQDN.                                                  |
+| cache_code     | %Ss               | Squid request status (TCP_MISS etc).                          |
+| http_code      | %>Hs              | The HTTP response status code from Content Gateway to client. |
+| resp_size      | %<st              | Total size of reply sent to client (after adaptation).        |
+| req_method     | %rm               | Request method (GET/POST etc).                                |
+| hier_code      | %Sh               | Squid hierarchy status (DEFAULT_PARENT etc).                  |
+| server_address | %<a               | Server IP address of the last server or peer connection.      |
+| server_address | %<A               | Server FQDN or peer name.                                     |
+| mime_type      | %mt               | MIME content type.                                            |
 
 In addition, to
 make `Squid` [native log format](https://wiki.squid-cache.org/Features/LogFormat#Squid_native_access.log_format_in_detail)
 csv parsable, squidlog understands these groups of codes:
 
-| field                   | squid format code | description                                                            |
-|-------------------------|-------------------|------------------------------------------------------------------------|
-| result_code             | %Ss/%>Hs          | Cache code and http code.
-| hierarchy               | %Sh/%<a           | Hierarchy code and server address.
+| field       | squid format code | description                        |
+|-------------|-------------------|------------------------------------|
+| result_code | %Ss/%>Hs          | Cache code and http code.          |
+| hierarchy   | %Sh/%<a           | Hierarchy code and server address. |
 
 ## Custom Log Format
 
