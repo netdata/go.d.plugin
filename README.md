@@ -24,7 +24,7 @@ Go.d.plugin is shipped with [`Netdata`](https://github.com/netdata/netdata).
 ## Available modules
 
 | Name                                                                                              | Monitors                        |
-| :------------------------------------------------------------------------------------------------ | :------------------------------ |
+|:--------------------------------------------------------------------------------------------------|:--------------------------------|
 | [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)                   | `ActiveMQ`                      |
 | [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache)                       | `Apache`                        |
 | [bind](https://github.com/netdata/go.d.plugin/tree/master/modules/bind)                           | `ISC Bind`                      |

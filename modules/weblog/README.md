@@ -132,24 +132,24 @@ and [Apache](http://httpd.apache.org/docs/current/mod/mod_log_config.html) log f
 
 Weblog is aware how to parse and interpret the fields:
 
-| nginx                   | apache    | description                                   |
-|-------------------------|-----------|-----------------------------------------------|
-| $host ($http_host)      | %v        | Name of the server which accepted a request.
-| $server_port            | %p        | Port of the server which accepted a request.
-| $scheme                 | -         | Request scheme. "http" or "https".
-| $remote_addr            | %a (%h)   | Client address.
-| $request                | %r        | Full original request line. The line is "$request_method $request_uri $server_protocol".
-| $request_method         | %m        | Request method. Usually "GET" or "POST".
-| $request_uri            | %U        | Full original request URI.
-| $server_protocol        | %H        | Request protocol. Usually "HTTP/1.0", "HTTP/1.1", or "HTTP/2.0".
-| $status                 | %s (%>s)  | Response status code.
-| $request_length         | %I        | Bytes received from a client, including request and headers.
-| $bytes_sent             | %O        | Bytes sent to a client, including request and headers.
-| $body_bytes_sent        | %B (%b)   | Bytes sent to a client, not counting the response header.
-| $request_time           | %D        | Request processing time.
-| $upstream_response_time | -         | Time spent on receiving the response from the upstream server.
-| $ssl_protocol           | -         | Protocol of an established SSL connection.
-| $ssl_cipher             | -         | String of ciphers used for an established SSL connection.
+| nginx                   | apache   | description                                                                              |
+|-------------------------|----------|------------------------------------------------------------------------------------------|
+| $host ($http_host)      | %v       | Name of the server which accepted a request.                                             |
+| $server_port            | %p       | Port of the server which accepted a request.                                             |
+| $scheme                 | -        | Request scheme. "http" or "https".                                                       |
+| $remote_addr            | %a (%h)  | Client address.                                                                          |
+| $request                | %r       | Full original request line. The line is "$request_method $request_uri $server_protocol". |
+| $request_method         | %m       | Request method. Usually "GET" or "POST".                                                 |
+| $request_uri            | %U       | Full original request URI.                                                               |
+| $server_protocol        | %H       | Request protocol. Usually "HTTP/1.0", "HTTP/1.1", or "HTTP/2.0".                         |
+| $status                 | %s (%>s) | Response status code.                                                                    |
+| $request_length         | %I       | Bytes received from a client, including request and headers.                             |
+| $bytes_sent             | %O       | Bytes sent to a client, including request and headers.                                   |
+| $body_bytes_sent        | %B (%b)  | Bytes sent to a client, not counting the response header.                                |
+| $request_time           | %D       | Request processing time.                                                                 |
+| $upstream_response_time | -        | Time spent on receiving the response from the upstream server.                           |
+| $ssl_protocol           | -        | Protocol of an established SSL connection.                                               |
+| $ssl_cipher             | -        | String of ciphers used for an established SSL connection.                                |
 
 In addition to that weblog understands [user defined fields](#custom-fields-feature).
 
