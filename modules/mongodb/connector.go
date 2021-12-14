@@ -43,7 +43,7 @@ type mongoCollector struct {
 // `serverStatus` command.
 func (m *mongoCollector) serverStatus() (*serverStatus, error) {
 	var status *serverStatus
-	command := bson.D{{Key: "serverStatus", Value: 1}, {Key: "metrics", Value: 0}, {Key: "repl", Value: 0}}
+	command := bson.D{{Key: "serverStatus", Value: 1}, {Key: "metrics", Value: 0}, {Key: "repl", Value: 1}}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*m.Timeout)
 	defer cancel()
 	err := m.Client.Database("admin").RunCommand(ctx, command).Decode(&status)
