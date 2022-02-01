@@ -48,6 +48,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/rabbitmq"
 	_ "github.com/netdata/go.d.plugin/modules/redis"
 	_ "github.com/netdata/go.d.plugin/modules/scaleio"
+	_ "github.com/netdata/go.d.plugin/modules/snmp"
 	_ "github.com/netdata/go.d.plugin/modules/solr"
 	_ "github.com/netdata/go.d.plugin/modules/springboot2"
 	_ "github.com/netdata/go.d.plugin/modules/squidlog"
