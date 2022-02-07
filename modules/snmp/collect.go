@@ -19,7 +19,7 @@ func (s *SNMP) collect() (map[string]int64, error) {
 
 func (s *SNMP) collectChart(collected map[string]int64, chart *module.Chart) {
 	params := s.Config.SNMPClient
-	//defer params.Conn.Close()
+
 	for _, d := range chart.Dims {
 		oid := []string{d.ID}
 		result, err := params.Get(oid)
