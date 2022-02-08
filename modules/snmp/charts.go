@@ -38,16 +38,16 @@ func newChart(settings []ChartsConfig) *module.Charts {
 		c := snmp_chart_template.Copy()
 		c.ID = fmt.Sprintf(c.ID, i)
 		c.Title = fmt.Sprintf(c.Title, s.Title)
-		if s.Family != "" {
-			c.Fam = s.Family
+		if s.Family != nil {
+			c.Fam = *s.Family
 		}
 
-		if s.Units != "" {
-			c.Units = s.Units
+		if s.Units != nil {
+			c.Units = *s.Units
 		}
 
-		if s.Type != "" {
-			c.Type = module.ChartType(s.Type)
+		if s.Type != nil {
+			c.Type = module.ChartType(*s.Type)
 		}
 
 		c.Priority = s.Priority
@@ -70,9 +70,4 @@ func newChart(settings []ChartsConfig) *module.Charts {
 		charts.Add(c)
 	}
 	return charts
-}
-
-func (s SNMP) validateConfig() error {
-	//TODO:
-	return nil
 }

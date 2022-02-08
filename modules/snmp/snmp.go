@@ -26,10 +26,10 @@ type (
 		SNMPClient  gosnmp.GoSNMP
 		Name        string         `default:"127.0.0.1" yaml:"hostname"`
 		UpdateEvery int            `default:3 yaml:"update_every"`
-		Community   string         `yaml:"community,omitempty"`
-		User        User           `yaml:",inline"`
-		Options     Options        `yaml:"options"`
-		Settings    []ChartsConfig `yaml:"charts"`
+		Community   *string        `yaml:"community,omitempty"`
+		User        *User          `yaml:"user,omitempty"`
+		Options     *Options       `yaml:"options,omitempty"`
+		Settings    []ChartsConfig `yaml:"charts,omitempty"`
 	}
 	User struct {
 		Name      string `yaml:"name"`
@@ -43,19 +43,19 @@ type (
 		Port    int `default:161 yaml:"port"`
 		Retries int `default:1 yaml:"retries"`
 		Timeout int `default:2 yaml:"timeout"`
-		Version int `default:2 yaml:"version"`
+		Version int `default:1 yaml:"version"`
 	}
 	ChartsConfig struct {
 		Title         string      `yaml:"title"`
 		Priority      int         `default:7000 yaml:"priority"`
-		Units         string      `yaml:"units,omitempty"`
-		Type          string      `yaml:"type,omitempty"`
-		Family        string      `yaml:"family,omitempty"`
+		Units         *string     `yaml:"units,omitempty"`
+		Type          *string     `yaml:"type,omitempty"`
+		Family        *string     `yaml:"family,omitempty"`
 		MultiplyRange [2]int      `yaml:"multiply_range,omitempty"`
 		Dimensions    []Dimension `yaml:"dimensions,omitempty"`
 	}
 	Dimension struct {
-		Name       string `yaml:"d_name"`
+		Name       string `yaml:"name"`
 		OID        string `yaml:"oid"`
 		Algorithm  string `yaml:"algorithm"`
 		Multiplier int    `yaml:"multiplier"`
@@ -80,7 +80,7 @@ func (s *SNMP) Init() bool {
 	params := &gosnmp.GoSNMP{
 		Target:    s.Name,
 		Port:      uint16(s.Options.Port),
-		Community: s.Community,
+		Community: *s.Community,
 		Version:   gosnmp.Version2c,
 		Timeout:   time.Duration(2) * time.Second,
 		Logger:    gosnmp.NewLogger(s.Logger),
