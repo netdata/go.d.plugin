@@ -15,6 +15,7 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 	if err != nil {
 		return fmt.Errorf("error get status of the replica set from mongo: %s", err)
 	}
+
 	var currentMembers []string
 	for _, member := range status.Members {
 		currentMembers = append(currentMembers, member.Name)
@@ -26,50 +27,54 @@ func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
 	m.replSetMembers = currentMembers
 
 	for _, member := range status.Members {
-		// Heartbeat lag calculation
 		if member.LastHeartbeatRecv != nil {
 			id := replicationHeartbeatLatencyDimPrefix + member.Name
-			// add dimension if not exists yet
+			ms[id] = status.Date.Sub(*member.LastHeartbeatRecv).Milliseconds()
+
 			if !m.replSetDimsEnabled[id] {
 				m.replSetDimsEnabled[id] = true
-				chart := m.charts.Get(replicationHeartbeatLatency)
-				if chart != nil {
+
+				if chart := m.charts.Get(replicationHeartbeatLatency); chart != nil {
 					if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
 						m.Warningf("failed to add dim: %v", err)
+					} else {
+						chart.MarkNotCreated()
 					}
 				}
 			}
-			ms[id] = status.Date.Sub(*member.LastHeartbeatRecv).Milliseconds()
 		}
 
-		// Replica set time diff between current time and time when last entry from the oplog was applied
 		id := replicationLagDimPrefix + member.Name
-		// add dimension if not exists yet
-		if !m.replSetDimsEnabled[id] {
-			m.replSetDimsEnabled[id] = true
-			chart := m.charts.Get(replicationLag)
-			if chart != nil {
-				if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
-					m.Warningf("failed to add dim: %v", err)
-				}
-			}
-		}
+		// Replica set time diff between current time and time when last entry from the oplog was applied
 		ms[id] = status.Date.Sub(member.OptimeDate).Milliseconds()
 
-		// Ping time
+		if !m.replSetDimsEnabled[id] {
+			m.replSetDimsEnabled[id] = true
+
+			if chart := m.charts.Get(replicationLag); chart != nil {
+				if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
+					m.Warningf("failed to add dim: %v", err)
+				} else {
+					chart.MarkNotCreated()
+				}
+			}
+		}
+
 		if member.PingMs != nil {
 			id := replicationNodePingDimPrefix + member.Name
-			// add dimension if not exists yet
+			ms[id] = *member.PingMs
+
 			if !m.replSetDimsEnabled[id] {
 				m.replSetDimsEnabled[id] = true
-				chart := m.charts.Get(replicationNodePing)
-				if chart != nil {
+
+				if chart := m.charts.Get(replicationNodePing); chart != nil {
 					if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
 						m.Warningf("failed to add dim: %v", err)
+					} else {
+						chart.MarkNotCreated()
 					}
 				}
 			}
-			ms[id] = *member.PingMs
 		}
 	}
 
@@ -93,13 +98,17 @@ func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
 			delete(m.replSetDimsEnabled, id)
 
 			chart := m.charts.Get(v.chartID)
-			if chart != nil {
-				if err := chart.MarkDimRemove(id, true); err != nil {
-					m.Warningf("failed to remove dimension: %v", err)
-				}
-			} else {
-				m.Warningf("failed to remove dimension:%s. job doesn't have chart: %s", id, v.chartID)
+			if chart == nil {
+				m.Warningf("failed to remove dimension: %s. job doesn't have chart: %s", id, v.chartID)
+				continue
 			}
+
+			err := chart.MarkDimRemove(id, true)
+			if err != nil {
+				m.Warningf("failed to remove dimension: %v", err)
+				continue
+			}
+			chart.MarkNotCreated()
 		}
 	}
 }

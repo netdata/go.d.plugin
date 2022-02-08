@@ -52,10 +52,11 @@ func (m *Mongo) updateShardChunkChartDims(chunksPerShard map[string]int64) {
 	}
 	for _, dim := range chart.Dims {
 		if _, ok := chunksPerShard[strings.TrimPrefix(dim.ID, chart.ID+"_")]; !ok {
-			err := chart.MarkDimRemove(dim.ID, true)
 			delete(m.shardNodesDims, dim.ID)
-			if err != nil {
-				m.Errorf("updateShardChunkChartDims failed to remove dim %v", err)
+			if err := chart.MarkDimRemove(dim.ID, true); err != nil {
+				m.Warningf("updateShardChunkChartDims failed to remove dim %v", err)
+			} else {
+				chart.MarkNotCreated()
 			}
 		}
 	}
