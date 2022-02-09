@@ -23,7 +23,7 @@ func New() *SNMP {
 
 type (
 	Config struct {
-		SNMPClient  gosnmp.GoSNMP
+		SNMPClient  *gosnmp.GoSNMP
 		Name        string         `default:"127.0.0.1" yaml:"hostname"`
 		UpdateEvery int            `default:3 yaml:"update_every"`
 		Community   *string        `yaml:"community,omitempty"`
@@ -65,14 +65,16 @@ type (
 
 type SNMP struct {
 	module.Base
-	Config `yaml:",inline"`
-	charts *module.Charts
+	Config    `yaml:",inline"`
+	charts    *module.Charts
+	Connected bool
 }
 
 func (s *SNMP) Init() bool {
 	err := s.validateConfig()
 	if err != nil {
 		s.Errorf("config validation: %v", err)
+		s.Connected = false
 		return false
 	}
 
@@ -119,8 +121,7 @@ func (s *SNMP) Init() bool {
 		s.Errorf("SNMP Connect fail: %v", err)
 		return false
 	}
-	s.Config.SNMPClient = *params
-
+	s.Config.SNMPClient = params
 	if len(s.Settings) > 0 {
 		s.charts = newChart(s.Settings)
 	} else {
@@ -155,6 +156,8 @@ func (s *SNMP) Collect() map[string]int64 {
 }
 
 func (s SNMP) Cleanup() {
-	params := s.Config.SNMPClient
-	params.Conn.Close()
+	if s.Config.SNMPClient != nil {
+		params := s.Config.SNMPClient
+		params.Conn.Close()
+	}
 }
