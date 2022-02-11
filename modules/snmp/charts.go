@@ -11,7 +11,7 @@ var snmp_chart_template = module.Chart{
 	Title:    "%s",
 	Units:    "kilobits/s",
 	Type:     "area",
-	Priority: 1,
+	Priority: 5000,
 	Fam:      "ports",
 }
 
@@ -32,9 +32,9 @@ var default_dims = module.Dims{
 	},
 }
 
-func newChart(settings []ChartsConfig) *module.Charts {
+func newChart(chart_in []ChartsConfig) *module.Charts {
 	charts := &module.Charts{}
-	for i, s := range settings {
+	for i, s := range chart_in {
 		c := snmp_chart_template.Copy()
 		c.ID = fmt.Sprintf(c.ID, i)
 		c.Title = fmt.Sprintf(c.Title, s.Title)

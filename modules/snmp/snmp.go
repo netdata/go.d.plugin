@@ -18,36 +18,51 @@ func init() {
 
 //Everything is initialized at Init()
 func New() *SNMP {
-	return &SNMP{}
+	comm := "public"
+	return &SNMP{
+		Config: Config{
+			Name:        "127.0.0.1",
+			MaxOIDs:     60,
+			Community:   &comm,
+			UpdateEvery: 3,
+			Options: &Options{
+				Port:    161,
+				Retries: 1,
+				Timeout: 2,
+				Version: 2,
+			},
+		},
+	}
 }
 
 type (
 	Config struct {
 		SNMPClient  *gosnmp.GoSNMP
-		Name        string         `default:"127.0.0.1" yaml:"hostname"`
-		UpdateEvery int            `default:3 yaml:"update_every"`
+		Name        string         `yaml:"hostname"`
+		MaxOIDs     int            `yaml:"max_request_size"`
+		UpdateEvery int            `yaml:"update_every"`
 		Community   *string        `yaml:"community,omitempty"`
 		User        *User          `yaml:"user,omitempty"`
 		Options     *Options       `yaml:"options,omitempty"`
-		Settings    []ChartsConfig `yaml:"charts,omitempty"`
+		ChartInput  []ChartsConfig `yaml:"charts,omitempty"`
 	}
 	User struct {
 		Name      string `yaml:"name"`
-		Level     int    `default:1 yaml:"level"`
-		AuthProto int    `default:1 yaml:"auth_proto"`
+		Level     int    `yaml:"level"`
+		AuthProto int    `yaml:"auth_proto"`
 		AuthKey   string `yaml:"auth_key"`
-		PrivProto int    `default:1 yaml:"priv_proto"`
+		PrivProto int    `yaml:"priv_proto"`
 		PrivKey   string `yaml:"priv_key"`
 	}
 	Options struct {
-		Port    int `default:161 yaml:"port"`
-		Retries int `default:1 yaml:"retries"`
-		Timeout int `default:2 yaml:"timeout"`
-		Version int `default:1 yaml:"version"`
+		Port    int `yaml:"port"`
+		Retries int `yaml:"retries"`
+		Timeout int `yaml:"timeout"`
+		Version int `yaml:"version"`
 	}
 	ChartsConfig struct {
 		Title         string      `yaml:"title"`
-		Priority      int         `default:7000 yaml:"priority"`
+		Priority      int         `yaml:"priority"`
 		Units         *string     `yaml:"units,omitempty"`
 		Type          *string     `yaml:"type,omitempty"`
 		Family        *string     `yaml:"family,omitempty"`
@@ -65,16 +80,14 @@ type (
 
 type SNMP struct {
 	module.Base
-	Config    `yaml:",inline"`
-	charts    *module.Charts
-	Connected bool
+	Config `yaml:",inline"`
+	charts *module.Charts
 }
 
 func (s *SNMP) Init() bool {
 	err := s.validateConfig()
 	if err != nil {
 		s.Errorf("config validation: %v", err)
-		s.Connected = false
 		return false
 	}
 
@@ -83,6 +96,7 @@ func (s *SNMP) Init() bool {
 		Target:    s.Name,
 		Port:      uint16(s.Options.Port),
 		Community: *s.Community,
+		MaxOids:   s.MaxOIDs,
 		Version:   gosnmp.Version2c,
 		Timeout:   time.Duration(2) * time.Second,
 		Logger:    gosnmp.NewLogger(s.Logger),
@@ -122,8 +136,8 @@ func (s *SNMP) Init() bool {
 		return false
 	}
 	s.Config.SNMPClient = params
-	if len(s.Settings) > 0 {
-		s.charts = newChart(s.Settings)
+	if len(s.ChartInput) > 0 {
+		s.charts = newChart(s.ChartInput)
 	} else {
 		c := snmp_chart_template.Copy()
 		c.ID = fmt.Sprintf(c.ID, 1)
