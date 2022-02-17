@@ -32,17 +32,23 @@ func (d Dimension) validateConfig(index_chart, index int) error {
 	if d.OID == "" {
 		err = appendError(err, fmt.Sprintf("missing value: charts[%d].dimension[%d].oid;", index_chart, index))
 	}
-	if d.Algorithm == "" ||
-		(d.Algorithm != string(module.Incremental) &&
-			d.Algorithm != string(module.PercentOfIncremental) &&
-			d.Algorithm != string(module.PercentOfAbsolute)) {
-		err = appendError(err, fmt.Sprintf("invalid or missing value: charts[%d].dimension[%d].algorithm;", index_chart, index))
+	if d.Algorithm != nil {
+		if *d.Algorithm == "" ||
+			(*d.Algorithm != string(module.Incremental) &&
+				*d.Algorithm != string(module.PercentOfIncremental) &&
+				*d.Algorithm != string(module.PercentOfAbsolute)) {
+			err = appendError(err, fmt.Sprintf("invalid or missing value: charts[%d].dimension[%d].algorithm;", index_chart, index))
+		}
 	}
-	if d.Multiplier == 0 {
-		err = appendError(err, fmt.Sprintf("integer set to 0: charts[%d].dimension[%d].multiplier;", index_chart, index))
+	if d.Multiplier != nil {
+		if *d.Multiplier == 0 {
+			err = appendError(err, fmt.Sprintf("integer set to 0: charts[%d].dimension[%d].multiplier;", index_chart, index))
+		}
 	}
-	if d.Divisor == 0 {
-		err = appendError(err, fmt.Sprintf("integer set to 0: charts[%d].dimension[%d].divisor;", index_chart, index))
+	if d.Divisor != nil {
+		if *d.Divisor == 0 {
+			err = appendError(err, fmt.Sprintf("integer set to 0: charts[%d].dimension[%d].divisor;", index_chart, index))
+		}
 	}
 	return err
 }
@@ -97,6 +103,9 @@ func (o Options) validateConfig() error {
 	if o.Timeout < 1 {
 		err = appendError(err, fmt.Sprintf("invalid value(%d): options.timeout;", o.Timeout))
 	}
+	if o.MaxOIDs <= 0 {
+		err = appendError(err, fmt.Sprintf("invalid value(%d): max_request_size;", o.MaxOIDs))
+	}
 
 	return err
 }
@@ -129,9 +138,6 @@ func (s SNMP) validateConfig() error {
 				err = appendError(err, e.Error())
 			}
 		}
-	}
-	if s.Config.MaxOIDs <= 0 {
-		err = appendError(err, fmt.Sprintf("invalid value(%d): max_request_size;", s.Config.MaxOIDs))
 	}
 	if s.Config.UpdateEvery <= 0 {
 		err = appendError(err, fmt.Sprintf("invalid value(%d): update_every;", s.Config.UpdateEvery))

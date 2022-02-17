@@ -22,22 +22,22 @@ func (s *SNMP) collect() (map[string]int64, error) {
 	return collected, nil
 }
 
-func (s *SNMP) collectChart(collected map[string]int64, oid_s []string) error {
+func (s *SNMP) collectChart(collected map[string]int64, OIDs []string) error {
 	params := s.Config.SNMPClient
-	if len(oid_s) > s.Config.MaxOIDs {
-		if err := s.collectChart(collected, oid_s[s.Config.MaxOIDs:]); err != nil {
+	if len(OIDs) > s.Options.MaxOIDs {
+		if err := s.collectChart(collected, OIDs[s.Options.MaxOIDs:]); err != nil {
 			return err
 		}
-		oid_s = oid_s[:s.Config.MaxOIDs]
+		OIDs = OIDs[:s.Options.MaxOIDs]
 	}
 
-	result, err := params.Get(oid_s)
+	result, err := params.Get(OIDs)
 
 	if err != nil {
 		s.Errorf("Cannot get SNMP data: %v", err)
 		return err
 	}
-	for i, oid := range oid_s {
+	for i, oid := range OIDs {
 		collected[oid] = gosnmp.ToBigInt(result.Variables[i].Value).Int64()
 	}
 	return nil

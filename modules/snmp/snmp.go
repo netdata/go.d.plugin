@@ -22,7 +22,6 @@ func New() *SNMP {
 	return &SNMP{
 		Config: Config{
 			Name:        "127.0.0.1",
-			MaxOIDs:     60,
 			Community:   &comm,
 			UpdateEvery: 3,
 			Options: &Options{
@@ -30,6 +29,7 @@ func New() *SNMP {
 				Retries: 1,
 				Timeout: 2,
 				Version: 2,
+				MaxOIDs: 60,
 			},
 		},
 	}
@@ -39,7 +39,6 @@ type (
 	Config struct {
 		SNMPClient  *gosnmp.GoSNMP
 		Name        string         `yaml:"hostname"`
-		MaxOIDs     int            `yaml:"max_request_size"`
 		UpdateEvery int            `yaml:"update_every"`
 		Community   *string        `yaml:"community,omitempty"`
 		User        *User          `yaml:"user,omitempty"`
@@ -59,6 +58,7 @@ type (
 		Retries int `yaml:"retries"`
 		Timeout int `yaml:"timeout"`
 		Version int `yaml:"version"`
+		MaxOIDs int `yaml:"max_request_size"`
 	}
 	ChartsConfig struct {
 		Title         string      `yaml:"title"`
@@ -70,11 +70,11 @@ type (
 		Dimensions    []Dimension `yaml:"dimensions,omitempty"`
 	}
 	Dimension struct {
-		Name       string `yaml:"name"`
-		OID        string `yaml:"oid"`
-		Algorithm  string `yaml:"algorithm"`
-		Multiplier int    `yaml:"multiplier"`
-		Divisor    int    `yaml:"divisor"`
+		Name       string  `yaml:"name"`
+		OID        string  `yaml:"oid"`
+		Algorithm  *string `yaml:"algorithm"`
+		Multiplier *int    `yaml:"multiplier"`
+		Divisor    *int    `yaml:"divisor"`
 	}
 )
 
@@ -96,11 +96,12 @@ func (s *SNMP) Init() bool {
 		Target:    s.Name,
 		Port:      uint16(s.Options.Port),
 		Community: *s.Community,
-		MaxOids:   s.MaxOIDs,
+		MaxOids:   s.Options.MaxOIDs,
 		Version:   gosnmp.Version2c,
 		Timeout:   time.Duration(2) * time.Second,
 		Logger:    gosnmp.NewLogger(s.Logger),
 	}
+
 	switch s.Options.Version {
 	case 1:
 		version := gosnmp.Version1
@@ -117,8 +118,9 @@ func (s *SNMP) Init() bool {
 		params.Version = version
 		params.Timeout = time.Duration(s.Options.Timeout) * time.Second
 		params.SecurityModel = gosnmp.SnmpV3SecurityModel(s.User.Level)
-		params.MsgFlags = gosnmp.SnmpV3MsgFlags(s.User.AuthProto)
+		params.MsgFlags = gosnmp.SnmpV3MsgFlags(gosnmp.AuthPriv) //TODO:
 		params.SecurityParameters = &gosnmp.UsmSecurityParameters{
+			UserName:                 s.User.Name,
 			AuthenticationProtocol:   gosnmp.SnmpV3AuthProtocol(s.User.AuthProto),
 			AuthenticationPassphrase: s.User.AuthKey,
 			PrivacyProtocol:          gosnmp.SnmpV3PrivProtocol(s.User.PrivProto),
@@ -139,11 +141,11 @@ func (s *SNMP) Init() bool {
 	if len(s.ChartInput) > 0 {
 		s.charts = newChart(s.ChartInput)
 	} else {
-		c := snmp_chart_template.Copy()
+		c := defaultSNMPchart.Copy()
 		c.ID = fmt.Sprintf(c.ID, 1)
 		c.Title = fmt.Sprint(c.Title, "default")
-		c.AddDim(default_dims[0])
-		c.AddDim(default_dims[1])
+		c.AddDim(defaultDims[0])
+		c.AddDim(defaultDims[1])
 		s.charts = &module.Charts{c}
 	}
 	return true
