@@ -129,8 +129,8 @@ func (s *SNMP) Init() bool {
 		c := defaultSNMPchart.Copy()
 		c.ID = fmt.Sprintf(c.ID, 1)
 		c.Title = fmt.Sprint(c.Title, "default")
-		c.AddDim(defaultDims[0])
-		c.AddDim(defaultDims[1])
+		_ = c.AddDim(defaultDims[0])
+		_ = c.AddDim(defaultDims[1])
 		s.charts = &module.Charts{c}
 	}
 	return true
