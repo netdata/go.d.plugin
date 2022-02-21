@@ -16,11 +16,11 @@ func init() {
 	module.Register("snmp", creator)
 }
 
-//Everything is initialized at Init()
 func New() *SNMP {
 	comm := "public"
 	return &SNMP{
 		Config: Config{
+			SNMPClient:  gosnmp.NewHandler(),
 			Name:        "127.0.0.1",
 			Community:   &comm,
 			UpdateEvery: 3,
@@ -37,7 +37,7 @@ func New() *SNMP {
 
 type (
 	Config struct {
-		SNMPClient  *gosnmp.GoSNMP
+		SNMPClient  gosnmp.Handler
 		Name        string         `yaml:"hostname"`
 		UpdateEvery int            `yaml:"update_every"`
 		Community   *string        `yaml:"community,omitempty"`
@@ -90,54 +90,39 @@ func (s *SNMP) Init() bool {
 		s.Errorf("config validation: %v", err)
 		return false
 	}
-
 	//Default SNMP connection params
-	params := &gosnmp.GoSNMP{
-		Target:    s.Name,
-		Port:      uint16(s.Options.Port),
-		Community: *s.Community,
-		MaxOids:   s.Options.MaxOIDs,
-		Version:   gosnmp.Version2c,
-		Timeout:   time.Duration(2) * time.Second,
-		Logger:    gosnmp.NewLogger(s.Logger),
-	}
+	s.SNMPClient.SetTarget(s.Name)
+	s.SNMPClient.SetPort(uint16(s.Options.Port))
+	s.SNMPClient.SetMaxOids(s.Options.MaxOIDs)
+	s.SNMPClient.SetLogger(gosnmp.NewLogger(s.Logger))
+	s.SNMPClient.SetTimeout(time.Duration(s.Options.Timeout) * time.Second)
 
 	switch s.Options.Version {
 	case 1:
-		version := gosnmp.Version1
-		params.Version = version
-		params.Timeout = time.Duration(s.Options.Timeout) * time.Second
+		s.SNMPClient.SetCommunity(*s.Community)
+		s.SNMPClient.SetVersion(gosnmp.Version1)
 
 	case 2:
-		version := gosnmp.Version2c
-		params.Version = version
-		params.Timeout = time.Duration(s.Options.Timeout) * time.Second
+		s.SNMPClient.SetCommunity(*s.Community)
+		s.SNMPClient.SetVersion(gosnmp.Version2c)
 
 	case 3:
-		version := gosnmp.Version3
-		params.Version = version
-		params.Timeout = time.Duration(s.Options.Timeout) * time.Second
-		params.SecurityModel = gosnmp.SnmpV3SecurityModel(s.User.Level)
-		params.MsgFlags = gosnmp.SnmpV3MsgFlags(gosnmp.AuthPriv) //TODO:
-		params.SecurityParameters = &gosnmp.UsmSecurityParameters{
+		s.SNMPClient.SetVersion(gosnmp.Version3)
+		s.SNMPClient.SetSecurityModel(gosnmp.SnmpV3SecurityModel(s.User.Level))
+		s.SNMPClient.SetMsgFlags(gosnmp.SnmpV3MsgFlags(gosnmp.AuthPriv)) //TODO:
+		s.SNMPClient.SetSecurityParameters(&gosnmp.UsmSecurityParameters{
 			UserName:                 s.User.Name,
 			AuthenticationProtocol:   gosnmp.SnmpV3AuthProtocol(s.User.AuthProto),
 			AuthenticationPassphrase: s.User.AuthKey,
 			PrivacyProtocol:          gosnmp.SnmpV3PrivProtocol(s.User.PrivProto),
 			PrivacyPassphrase:        s.User.PrivKey,
-		}
+		})
 
 	default:
 		s.Errorf("invalid SNMP version: %d", s.Options.Version)
 		return false
 	}
 
-	err = params.Connect()
-	if err != nil {
-		s.Errorf("SNMP Connect fail: %v", err)
-		return false
-	}
-	s.Config.SNMPClient = params
 	if len(s.ChartInput) > 0 {
 		s.charts = newChart(s.ChartInput)
 	} else {
@@ -172,8 +157,5 @@ func (s *SNMP) Collect() map[string]int64 {
 }
 
 func (s SNMP) Cleanup() {
-	if s.Config.SNMPClient != nil {
-		params := s.Config.SNMPClient
-		params.Conn.Close()
-	}
+	s.SNMPClient.Close()
 }
