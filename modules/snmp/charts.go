@@ -65,15 +65,15 @@ func newChart(chartIn []ChartsConfig) *module.Charts {
 			if d.Divisor != nil {
 				dim.Div = *d.Divisor
 			}
-			c.AddDim(dim)
+			_ = c.AddDim(dim)
 		}
 
 		//Add default ones if no dimensions defined
 		if len(c.Dims) == 0 {
-			c.AddDim(defaultDims[0])
-			c.AddDim(defaultDims[1])
+			_ = c.AddDim(defaultDims[0])
+			_ = c.AddDim(defaultDims[1])
 		}
-		charts.Add(c)
+		_ = charts.Add(c)
 	}
 	return charts
 }
