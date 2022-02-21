@@ -33,7 +33,7 @@ func TestDimAlgo_String(t *testing.T) {
 		{"line", Line},
 		{"area", Area},
 		{"stacked", Stacked},
-		{"", dimAlgo("wrong")},
+		{"", DimAlgo("wrong")},
 	}
 
 	for _, v := range cases {

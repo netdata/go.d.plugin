@@ -9,7 +9,7 @@ import (
 
 type (
 	ChartType string
-	dimAlgo   string
+	DimAlgo   string
 )
 
 const (
@@ -22,20 +22,20 @@ const (
 
 	// Absolute dimension algorithm.
 	// The value is to drawn as-is (interpolated to second boundary).
-	Absolute dimAlgo = "absolute"
+	Absolute DimAlgo = "absolute"
 	// Incremental dimension algorithm.
 	// The value increases over time, the difference from the last value is presented in the chart,
 	// the server interpolates the value and calculates a per second figure.
-	Incremental dimAlgo = "incremental"
+	Incremental DimAlgo = "incremental"
 	// PercentOfAbsolute dimension algorithm.
 	// The percent of this value compared to the total of all dimensions.
-	PercentOfAbsolute dimAlgo = "percentage-of-absolute-row"
+	PercentOfAbsolute DimAlgo = "percentage-of-absolute-row"
 	// PercentOfIncremental dimension algorithm.
 	// The percent of this value compared to the incremental total of all dimensions
-	PercentOfIncremental dimAlgo = "percentage-of-incremental-row"
+	PercentOfIncremental DimAlgo = "percentage-of-incremental-row"
 )
 
-func (d dimAlgo) String() string {
+func (d DimAlgo) String() string {
 	switch d {
 	case Absolute, Incremental, PercentOfAbsolute, PercentOfIncremental:
 		return string(d)
@@ -108,7 +108,7 @@ type (
 	Dim struct {
 		ID   string
 		Name string
-		Algo dimAlgo
+		Algo DimAlgo
 		Mul  int
 		Div  int
 		DimOpts
