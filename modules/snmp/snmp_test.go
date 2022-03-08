@@ -20,110 +20,6 @@ var (
 	cAlgorithm  = module.Incremental
 	cMultiplier = 8
 	cDivisor    = 1024
-
-	options = Options{
-		Port:    161,
-		Retries: 1,
-		Timeout: 2,
-		Version: 3,
-		MaxOIDs: 4,
-	}
-
-	user = User{
-		Name:      "test",
-		Level:     3,
-		AuthProto: 2,
-		AuthKey:   "test_auth_key",
-		PrivProto: 2,
-		PrivKey:   "test_priv_key",
-	}
-
-	configWithoutUser = Config{
-		Name:        "test",
-		UpdateEvery: 2,
-
-		Options: &options,
-	}
-
-	configWithCommunity = Config{
-		Name:        "test",
-		UpdateEvery: 2,
-
-		Options: &Options{
-			Port:    161,
-			Retries: 1,
-			Timeout: 2,
-			Version: 2, //Version 2
-			MaxOIDs: 4,
-		},
-		Community: &community,
-	}
-
-	configWithoutCommunity = Config{
-		Name:        "test",
-		UpdateEvery: 2,
-
-		Options: &Options{
-			Port:    161,
-			Retries: 1,
-			Timeout: 2,
-			Version: 2, //Version 2
-			MaxOIDs: 4,
-		},
-	}
-
-	configWithoutChart = Config{
-		Name:        "test",
-		UpdateEvery: 2,
-
-		Options: &options,
-		User:    &user,
-	}
-
-	configWithDims = Config{
-		Name:        "test",
-		UpdateEvery: 2,
-
-		Options: &options,
-		User:    &user,
-		ChartInput: []ChartsConfig{
-			{
-				Title:    "Test chart",
-				Priority: 1,
-				Type:     &cType,
-				Family:   &cFamily,
-				Dimensions: []Dimension{
-					{
-						Name:       "in",
-						OID:        "1.3.6.1.2.1.2.2.1.10.2",
-						Algorithm:  (*string)(&cAlgorithm),
-						Multiplier: &cMultiplier,
-						Divisor:    &cDivisor,
-					},
-					{
-						Name:       "out",
-						OID:        "1.3.6.1.2.1.2.2.1.16.2",
-						Algorithm:  (*string)(&cAlgorithm),
-						Multiplier: &cMultiplier,
-						Divisor:    &cDivisor,
-					},
-				},
-			},
-		},
-	}
-
-	configWithoutDims = Config{
-		Name:        "test",
-		UpdateEvery: 2,
-		Options:     &options,
-		User:        &user,
-		ChartInput: []ChartsConfig{
-			{
-				Title:    "Test chart",
-				Priority: 1,
-			},
-		},
-	}
 )
 
 func TestNew(t *testing.T) {
@@ -163,23 +59,23 @@ func TestSNMP_Init(t *testing.T) {
 			config: New().Config,
 		},
 		"success without 'charts' set": {
-			config: configWithoutChart,
+			config: prepareConfigWithoutChart(),
 		},
 		"success with 'charts' and 'dimensions' set": {
-			config: configWithDims,
+			config: prepareConfigWithDimensions(),
 		},
 		"success with 'charts' but no 'dimensions' set": {
-			config: configWithoutDims,
+			config: prepareConfigWithoutDimensions(),
 		},
 		"success with 'community' set for 'options.version=2' set": {
-			config: configWithCommunity,
+			config: prepareConfigWithCommunity(),
 		},
 		"fail when 'user' unset for 'options.version=3' set": {
-			config:   configWithoutUser,
+			config:   prepareConfigWithoutUser(),
 			wantFail: true,
 		},
 		"fail when 'community' unset for 'options.version=2' set": {
-			config:   configWithoutCommunity,
+			config:   prepareConfigWithoutCommunity(),
 			wantFail: true,
 		},
 	}
@@ -230,7 +126,7 @@ func TestSNMP_Check(t *testing.T) {
 		"success when 'dimensions' set": {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
-				snmp.Config = configWithDims
+				snmp.Config = prepareConfigWithDimensions()
 				snmp.SNMPClient = m
 				m.EXPECT().Get(gomock.Any()).Return(&returnSNMPpacket, nil).Times(1)
 				m.EXPECT().Close().Times(1)
@@ -240,7 +136,7 @@ func TestSNMP_Check(t *testing.T) {
 		"success when 'max_request_size' set": {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
-				snmp.Config = configWithDims
+				snmp.Config = prepareConfigWithDimensions()
 				snmp.SNMPClient = m
 				snmp.Options.MaxOIDs = 1
 
@@ -253,7 +149,7 @@ func TestSNMP_Check(t *testing.T) {
 		"fail when chart collection fails": {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
-				snmp.Config = configWithDims
+				snmp.Config = prepareConfigWithDimensions()
 				snmp.SNMPClient = m
 
 				//Get() must be called twice if MaxOIDs = 1
@@ -314,4 +210,144 @@ func defaultMockExpects(m *snmpmock.MockHandler) {
 	m.EXPECT().SetMsgFlags(gomock.Any()).AnyTimes()
 	m.EXPECT().SetSecurityParameters(gomock.Any()).AnyTimes()
 	m.EXPECT().Connect().Return(nil).Times(1)
+}
+
+func prepareConfigWithoutUser() Config {
+	return Config{
+		Name:        "test",
+		UpdateEvery: 2,
+
+		Options: &Options{
+			Port:    161,
+			Retries: 1,
+			Timeout: 2,
+			Version: 3,
+			MaxOIDs: 4,
+		},
+	}
+}
+
+func prepareConfigWithCommunity() Config {
+	return Config{
+		Name:        "test",
+		UpdateEvery: 2,
+		Options: &Options{
+			Port:    161,
+			Retries: 1,
+			Timeout: 2,
+			Version: 2, //Version 2
+			MaxOIDs: 4,
+		},
+		Community: &community,
+	}
+}
+
+func prepareConfigWithoutCommunity() Config {
+	return Config{
+		Name:        "test",
+		UpdateEvery: 2,
+		Options: &Options{
+			Port:    161,
+			Retries: 1,
+			Timeout: 2,
+			Version: 2, //Version 2
+			MaxOIDs: 4,
+		},
+	}
+}
+
+func prepareConfigWithoutChart() Config {
+	return Config{
+		Name:        "test",
+		UpdateEvery: 2,
+		Options: &Options{
+			Port:    161,
+			Retries: 1,
+			Timeout: 2,
+			Version: 3,
+			MaxOIDs: 4,
+		},
+		User: &User{
+			Name:      "test",
+			Level:     3,
+			AuthProto: 2,
+			AuthKey:   "test_auth_key",
+			PrivProto: 2,
+			PrivKey:   "test_priv_key",
+		},
+	}
+}
+
+func prepareConfigWithDimensions() Config {
+	return Config{
+		Name:        "test",
+		UpdateEvery: 2,
+		Options: &Options{
+			Port:    161,
+			Retries: 1,
+			Timeout: 2,
+			Version: 3,
+			MaxOIDs: 4,
+		},
+		User: &User{
+			Name:      "test",
+			Level:     3,
+			AuthProto: 2,
+			AuthKey:   "test_auth_key",
+			PrivProto: 2,
+			PrivKey:   "test_priv_key",
+		},
+		ChartInput: []ChartsConfig{
+			{
+				Title:    "Test chart",
+				Priority: 1,
+				Type:     &cType,
+				Family:   &cFamily,
+				Dimensions: []Dimension{
+					{
+						Name:       "in",
+						OID:        "1.3.6.1.2.1.2.2.1.10.2",
+						Algorithm:  (*string)(&cAlgorithm),
+						Multiplier: &cMultiplier,
+						Divisor:    &cDivisor,
+					},
+					{
+						Name:       "out",
+						OID:        "1.3.6.1.2.1.2.2.1.16.2",
+						Algorithm:  (*string)(&cAlgorithm),
+						Multiplier: &cMultiplier,
+						Divisor:    &cDivisor,
+					},
+				},
+			},
+		},
+	}
+}
+
+func prepareConfigWithoutDimensions() Config {
+	return Config{
+		Name:        "test",
+		UpdateEvery: 2,
+		Options: &Options{
+			Port:    161,
+			Retries: 1,
+			Timeout: 2,
+			Version: 3,
+			MaxOIDs: 4,
+		},
+		User: &User{
+			Name:      "test",
+			Level:     3,
+			AuthProto: 2,
+			AuthKey:   "test_auth_key",
+			PrivProto: 2,
+			PrivKey:   "test_priv_key",
+		},
+		ChartInput: []ChartsConfig{
+			{
+				Title:    "Test chart",
+				Priority: 1,
+			},
+		},
+	}
 }
