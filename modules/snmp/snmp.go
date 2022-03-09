@@ -157,5 +157,8 @@ func (s *SNMP) Collect() map[string]int64 {
 }
 
 func (s SNMP) Cleanup() {
-	s.SNMPClient.Close()
+	//avoid segfault while closing
+	if s.SNMPClient.Target() == s.Name {
+		s.SNMPClient.Close()
+	}
 }

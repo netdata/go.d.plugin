@@ -181,12 +181,7 @@ func TestSNMP_Check(t *testing.T) {
 }
 
 func TestSNMP_Cleanup(t *testing.T) {
-	mockSNMP, cleanup := mockInit(t)
-	defer cleanup()
-
 	snmpC := New()
-	snmpC.SNMPClient = mockSNMP
-	mockSNMP.EXPECT().Close().Times(1)
 	assert.NotPanics(t, snmpC.Cleanup)
 }
 
