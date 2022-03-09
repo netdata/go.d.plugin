@@ -112,8 +112,8 @@ func (s *SNMP) Init() bool {
 
 	case 3:
 		snmpClient.SetVersion(gosnmp.Version3)
-		snmpClient.SetSecurityModel(gosnmp.SnmpV3SecurityModel(s.User.Level))
-		snmpClient.SetMsgFlags(gosnmp.SnmpV3MsgFlags(gosnmp.AuthPriv)) //TODO:
+		snmpClient.SetSecurityModel(gosnmp.UserSecurityModel)
+		snmpClient.SetMsgFlags(gosnmp.SnmpV3MsgFlags(s.User.Level))
 		snmpClient.SetSecurityParameters(&gosnmp.UsmSecurityParameters{
 			UserName:                 s.User.Name,
 			AuthenticationProtocol:   gosnmp.SnmpV3AuthProtocol(s.User.AuthProto),
@@ -135,7 +135,7 @@ func (s *SNMP) Init() bool {
 	s.SNMPClient = snmpClient
 
 	if len(s.ChartInput) > 0 {
-		s.charts = newChart(s.ChartInput)
+		s.charts = allCharts(s.ChartInput)
 	} else {
 		c := defaultSNMPchart.Copy()
 		c.ID = fmt.Sprintf(c.ID, 1)

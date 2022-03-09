@@ -54,7 +54,8 @@ func TestSNMP_Init(t *testing.T) {
 			config: prepareConfigWithDimensions(),
 		},
 		"success with 'charts' but no 'dimensions' set": {
-			config: prepareConfigWithoutDimensions(),
+			config:   prepareConfigWithoutDimensions(),
+			wantFail: true,
 		},
 		"success with 'community' set for 'options.version=2' set": {
 			config: prepareConfigWithCommunity(),

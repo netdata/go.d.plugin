@@ -32,48 +32,65 @@ var defaultDims = module.Dims{
 	},
 }
 
-func newChart(chartIn []ChartsConfig) *module.Charts {
+func newChart(id, multiplier int, s ChartsConfig) *module.Chart {
+	c := defaultSNMPchart.Copy()
+	c.ID = fmt.Sprintf(c.ID, id)
+	c.Title = fmt.Sprintf(c.Title, s.Title)
+
+	if multiplier != 0 {
+		c.ID = fmt.Sprintf("%s_%d", c.ID, multiplier)
+		c.Title = fmt.Sprintf("%s %d", c.Title, multiplier)
+	}
+
+	if s.Family != nil {
+		c.Fam = *s.Family
+	}
+
+	if s.Units != nil {
+		c.Units = *s.Units
+	}
+
+	if s.Type != nil {
+		c.Type = module.ChartType(*s.Type)
+	}
+
+	c.Priority = s.Priority
+	for _, d := range s.Dimensions {
+		oid := d.OID
+		if multiplier != 0 {
+			oid = fmt.Sprintf("%s.%d", oid, multiplier)
+		}
+		dim := &module.Dim{
+			Name: d.Name,
+			ID:   oid,
+		}
+		if d.Algorithm != nil {
+			dim.Algo = module.DimAlgo(*d.Algorithm)
+		}
+		if d.Multiplier != nil {
+			dim.Mul = *d.Multiplier
+		}
+		if d.Divisor != nil {
+			dim.Div = *d.Divisor
+		}
+		_ = c.AddDim(dim)
+	}
+
+	return c
+}
+
+func allCharts(chartIn []ChartsConfig) *module.Charts {
 	charts := &module.Charts{}
 	for i, s := range chartIn {
-		c := defaultSNMPchart.Copy()
-		c.ID = fmt.Sprintf(c.ID, i)
-		c.Title = fmt.Sprintf(c.Title, s.Title)
-		if s.Family != nil {
-			c.Fam = *s.Family
-		}
-
-		if s.Units != nil {
-			c.Units = *s.Units
-		}
-
-		if s.Type != nil {
-			c.Type = module.ChartType(*s.Type)
-		}
-
-		c.Priority = s.Priority
-		for _, d := range s.Dimensions {
-			dim := &module.Dim{
-				Name: d.Name,
-				ID:   d.OID,
+		if s.MultiplyRange != nil {
+			for j := s.MultiplyRange[0]; j <= s.MultiplyRange[1]; j++ {
+				chart := newChart(i, j, s)
+				_ = charts.Add(chart)
 			}
-			if d.Algorithm != nil {
-				dim.Algo = module.DimAlgo(*d.Algorithm)
-			}
-			if d.Multiplier != nil {
-				dim.Mul = *d.Multiplier
-			}
-			if d.Divisor != nil {
-				dim.Div = *d.Divisor
-			}
-			_ = c.AddDim(dim)
+		} else {
+			chart := newChart(i, 0, s)
+			_ = charts.Add(chart)
 		}
-
-		//Add default ones if no dimensions defined
-		if len(c.Dims) == 0 {
-			_ = c.AddDim(defaultDims[0])
-			_ = c.AddDim(defaultDims[1])
-		}
-		_ = charts.Add(c)
 	}
 	return charts
 }
