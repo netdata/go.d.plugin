@@ -118,7 +118,6 @@ func TestSNMP_Check(t *testing.T) {
 				snmp := New()
 				snmp.SNMPClient = m
 				m.EXPECT().Get(gomock.Any()).Return(&returnSNMPpacket, nil).Times(1)
-				m.EXPECT().Close().Times(1)
 				return snmp
 			},
 		},
@@ -129,7 +128,6 @@ func TestSNMP_Check(t *testing.T) {
 				snmp.Config = prepareConfigWithDimensions()
 				snmp.SNMPClient = m
 				m.EXPECT().Get(gomock.Any()).Return(&returnSNMPpacket, nil).Times(1)
-				m.EXPECT().Close().Times(1)
 				return snmp
 			},
 		},
@@ -142,7 +140,6 @@ func TestSNMP_Check(t *testing.T) {
 
 				//Get() must be called twice if MaxOIDs = 1
 				m.EXPECT().Get(gomock.Any()).Return(&returnSNMPpacket, nil).Times(2)
-				m.EXPECT().Close().Times(1)
 				return snmp
 			},
 		},
@@ -154,7 +151,6 @@ func TestSNMP_Check(t *testing.T) {
 
 				//Get() must be called twice if MaxOIDs = 1
 				m.EXPECT().Get(gomock.Any()).Return(nil, fmt.Errorf("error from mock function")).Times(1)
-				m.EXPECT().Close().Times(1)
 				return snmp
 			},
 			wantFail: true,
@@ -182,6 +178,7 @@ func TestSNMP_Check(t *testing.T) {
 
 func TestSNMP_Cleanup(t *testing.T) {
 	snmpC := New()
+	snmpC.SNMPClient = nil
 	assert.NotPanics(t, snmpC.Cleanup)
 }
 
