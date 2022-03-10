@@ -38,18 +38,7 @@ func TestSNMP_Init(t *testing.T) {
 	mockSNMP, cleanup := mockInit(t)
 	defer cleanup()
 
-	//Ignoring the GoSNMP operations
-	mockSNMP.EXPECT().SetTarget(gomock.Any()).AnyTimes()
-	mockSNMP.EXPECT().SetPort(gomock.Any()).AnyTimes()
-	mockSNMP.EXPECT().SetMaxOids(gomock.Any()).AnyTimes()
-	mockSNMP.EXPECT().SetLogger(gomock.Any()).AnyTimes()
-	mockSNMP.EXPECT().SetTimeout(gomock.Any()).AnyTimes()
-	mockSNMP.EXPECT().SetCommunity(gomock.Any()).AnyTimes()
-	mockSNMP.EXPECT().SetVersion(gomock.Any()).AnyTimes()
-	mockSNMP.EXPECT().SetSecurityModel(gomock.Any()).AnyTimes()
-	mockSNMP.EXPECT().SetMsgFlags(gomock.Any()).AnyTimes()
-	mockSNMP.EXPECT().SetSecurityParameters(gomock.Any()).AnyTimes()
-	mockSNMP.EXPECT().Connect().Return(nil).AnyTimes()
+	defaultMockExpects(mockSNMP)
 
 	tests := map[string]struct {
 		config   Config
@@ -84,7 +73,9 @@ func TestSNMP_Init(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			SNMP := New()
 			SNMP.Config = test.config
-			SNMP.SNMPClient = mockSNMP
+			SNMPHandler = func() gosnmp.Handler {
+				return mockSNMP
+			}
 			if test.wantFail {
 				assert.False(t, SNMP.Init())
 			} else {
@@ -116,7 +107,9 @@ func TestSNMP_Check(t *testing.T) {
 		"success on default": {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
-				snmp.SNMPClient = m
+				SNMPHandler = func() gosnmp.Handler {
+					return m
+				}
 				m.EXPECT().Get(gomock.Any()).Return(&returnSNMPpacket, nil).Times(1)
 				return snmp
 			},
@@ -126,7 +119,9 @@ func TestSNMP_Check(t *testing.T) {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
 				snmp.Config = prepareConfigWithDimensions()
-				snmp.SNMPClient = m
+				SNMPHandler = func() gosnmp.Handler {
+					return m
+				}
 				m.EXPECT().Get(gomock.Any()).Return(&returnSNMPpacket, nil).Times(1)
 				return snmp
 			},
@@ -135,7 +130,9 @@ func TestSNMP_Check(t *testing.T) {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
 				snmp.Config = prepareConfigWithDimensions()
-				snmp.SNMPClient = m
+				SNMPHandler = func() gosnmp.Handler {
+					return m
+				}
 				snmp.Options.MaxOIDs = 1
 
 				//Get() must be called twice if MaxOIDs = 1
@@ -147,10 +144,13 @@ func TestSNMP_Check(t *testing.T) {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
 				snmp.Config = prepareConfigWithDimensions()
-				snmp.SNMPClient = m
+				SNMPHandler = func() gosnmp.Handler {
+					return m
+				}
 
 				//Get() must be called twice if MaxOIDs = 1
-				m.EXPECT().Get(gomock.Any()).Return(nil, fmt.Errorf("error from mock function")).Times(1)
+				m.EXPECT().Get(gomock.Any()).Return(nil,
+					fmt.Errorf("error from mock function")).Times(1)
 				return snmp
 			},
 			wantFail: true,
@@ -191,17 +191,17 @@ func mockInit(t *testing.T) (*snmpmock.MockHandler, func()) {
 }
 
 func defaultMockExpects(m *snmpmock.MockHandler) {
-	m.EXPECT().SetTarget(gomock.Any()).Times(1)
-	m.EXPECT().SetPort(gomock.Any()).Times(1)
-	m.EXPECT().SetMaxOids(gomock.Any()).Times(1)
-	m.EXPECT().SetLogger(gomock.Any()).Times(1)
-	m.EXPECT().SetTimeout(gomock.Any()).Times(1)
+	m.EXPECT().SetTarget(gomock.Any()).AnyTimes()
+	m.EXPECT().SetPort(gomock.Any()).AnyTimes()
+	m.EXPECT().SetMaxOids(gomock.Any()).AnyTimes()
+	m.EXPECT().SetLogger(gomock.Any()).AnyTimes()
+	m.EXPECT().SetTimeout(gomock.Any()).AnyTimes()
 	m.EXPECT().SetCommunity(gomock.Any()).AnyTimes()
-	m.EXPECT().SetVersion(gomock.Any()).Times(1)
+	m.EXPECT().SetVersion(gomock.Any()).AnyTimes()
 	m.EXPECT().SetSecurityModel(gomock.Any()).AnyTimes()
 	m.EXPECT().SetMsgFlags(gomock.Any()).AnyTimes()
 	m.EXPECT().SetSecurityParameters(gomock.Any()).AnyTimes()
-	m.EXPECT().Connect().Return(nil).Times(1)
+	m.EXPECT().Connect().Return(nil).AnyTimes()
 }
 
 func prepareConfigWithoutUser() Config {

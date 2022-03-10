@@ -8,6 +8,8 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+var SNMPHandler = gosnmp.NewHandler
+
 func init() {
 	creator := module.Creator{
 		Create: func() module.Module { return New() },
@@ -20,7 +22,6 @@ func New() *SNMP {
 	comm := "public"
 	return &SNMP{
 		Config: Config{
-			SNMPClient:  gosnmp.NewHandler(),
 			Name:        "127.0.0.1",
 			Community:   &comm,
 			UpdateEvery: 3,
@@ -66,7 +67,7 @@ type (
 		Units         *string     `yaml:"units,omitempty"`
 		Type          *string     `yaml:"type,omitempty"`
 		Family        *string     `yaml:"family,omitempty"`
-		MultiplyRange [2]int      `yaml:"multiply_range,omitempty"`
+		MultiplyRange []int       `yaml:"multiply_range,omitempty"`
 		Dimensions    []Dimension `yaml:"dimensions,omitempty"`
 	}
 	Dimension struct {
@@ -88,31 +89,32 @@ func (s *SNMP) Init() bool {
 	err := s.validateConfig()
 	if err != nil {
 		s.Errorf("config validation: %v", err)
-		s.SNMPClient = nil //reset this handler to avoid segfaults during close
 		return false
 	}
 
+	snmpClient := SNMPHandler()
+
 	//Default SNMP connection params
-	s.SNMPClient.SetTarget(s.Name)
-	s.SNMPClient.SetPort(uint16(s.Options.Port))
-	s.SNMPClient.SetMaxOids(s.Options.MaxOIDs)
-	s.SNMPClient.SetLogger(gosnmp.NewLogger(s.Logger))
-	s.SNMPClient.SetTimeout(time.Duration(s.Options.Timeout) * time.Second)
+	snmpClient.SetTarget(s.Name)
+	snmpClient.SetPort(uint16(s.Options.Port))
+	snmpClient.SetMaxOids(s.Options.MaxOIDs)
+	snmpClient.SetLogger(gosnmp.NewLogger(s.Logger))
+	snmpClient.SetTimeout(time.Duration(s.Options.Timeout) * time.Second)
 
 	switch s.Options.Version {
 	case 1:
-		s.SNMPClient.SetCommunity(*s.Community)
-		s.SNMPClient.SetVersion(gosnmp.Version1)
+		snmpClient.SetCommunity(*s.Community)
+		snmpClient.SetVersion(gosnmp.Version1)
 
 	case 2:
-		s.SNMPClient.SetCommunity(*s.Community)
-		s.SNMPClient.SetVersion(gosnmp.Version2c)
+		snmpClient.SetCommunity(*s.Community)
+		snmpClient.SetVersion(gosnmp.Version2c)
 
 	case 3:
-		s.SNMPClient.SetVersion(gosnmp.Version3)
-		s.SNMPClient.SetSecurityModel(gosnmp.SnmpV3SecurityModel(s.User.Level))
-		s.SNMPClient.SetMsgFlags(gosnmp.SnmpV3MsgFlags(gosnmp.AuthPriv)) //TODO:
-		s.SNMPClient.SetSecurityParameters(&gosnmp.UsmSecurityParameters{
+		snmpClient.SetVersion(gosnmp.Version3)
+		snmpClient.SetSecurityModel(gosnmp.SnmpV3SecurityModel(s.User.Level))
+		snmpClient.SetMsgFlags(gosnmp.SnmpV3MsgFlags(gosnmp.AuthPriv)) //TODO:
+		snmpClient.SetSecurityParameters(&gosnmp.UsmSecurityParameters{
 			UserName:                 s.User.Name,
 			AuthenticationProtocol:   gosnmp.SnmpV3AuthProtocol(s.User.AuthProto),
 			AuthenticationPassphrase: s.User.AuthKey,
@@ -125,6 +127,13 @@ func (s *SNMP) Init() bool {
 		return false
 	}
 
+	err = snmpClient.Connect()
+	if err != nil {
+		s.Errorf("SNMP Connect fail: %v", err)
+		return false
+	}
+	s.SNMPClient = snmpClient
+
 	if len(s.ChartInput) > 0 {
 		s.charts = newChart(s.ChartInput)
 	} else {
@@ -134,13 +143,6 @@ func (s *SNMP) Init() bool {
 		_ = c.AddDim(defaultDims[0])
 		_ = c.AddDim(defaultDims[1])
 		s.charts = &module.Charts{c}
-	}
-
-	err = s.SNMPClient.Connect()
-	if err != nil {
-		s.Errorf("SNMP Connect fail: %v", err)
-		s.SNMPClient = nil
-		return false
 	}
 
 	return true
