@@ -88,8 +88,10 @@ func (s *SNMP) Init() bool {
 	err := s.validateConfig()
 	if err != nil {
 		s.Errorf("config validation: %v", err)
+		s.SNMPClient = nil //reset this handler to avoid segfaults during close
 		return false
 	}
+
 	//Default SNMP connection params
 	s.SNMPClient.SetTarget(s.Name)
 	s.SNMPClient.SetPort(uint16(s.Options.Port))
@@ -133,6 +135,14 @@ func (s *SNMP) Init() bool {
 		_ = c.AddDim(defaultDims[1])
 		s.charts = &module.Charts{c}
 	}
+
+	err = s.SNMPClient.Connect()
+	if err != nil {
+		s.Errorf("SNMP Connect fail: %v", err)
+		s.SNMPClient = nil
+		return false
+	}
+
 	return true
 }
 
@@ -156,6 +166,8 @@ func (s *SNMP) Collect() map[string]int64 {
 	return mx
 }
 
-func (s SNMP) Cleanup() {
-	s.SNMPClient.Close()
+func (s *SNMP) Cleanup() {
+	if s.SNMPClient != nil {
+		s.SNMPClient.Close()
+	}
 }

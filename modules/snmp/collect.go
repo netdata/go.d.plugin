@@ -8,13 +8,6 @@ func (s *SNMP) collect() (map[string]int64, error) {
 	collected := make(map[string]int64)
 	var all_oid []string
 
-	err := s.SNMPClient.Connect()
-	if err != nil {
-		s.Errorf("SNMP Connect fail: %v", err)
-		return nil, err
-	}
-	defer s.SNMPClient.Close()
-
 	//build oid chart
 	for _, chart := range *s.Charts() {
 		for _, d := range chart.Dims {
@@ -45,7 +38,6 @@ func (s *SNMP) collectChart(collected map[string]int64, OIDs []string) error {
 	}
 
 	for i, oid := range OIDs {
-		//TODO: map oid to result.Variables[i].Name necessary??
 		collected[oid] = gosnmp.ToBigInt(result.Variables[i].Value).Int64()
 	}
 	return nil
