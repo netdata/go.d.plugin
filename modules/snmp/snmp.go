@@ -166,7 +166,7 @@ func (s *SNMP) Collect() map[string]int64 {
 	return mx
 }
 
-func (s SNMP) Cleanup() {
+func (s *SNMP) Cleanup() {
 	if s.SNMPClient != nil {
 		s.SNMPClient.Close()
 	}
