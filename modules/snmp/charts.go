@@ -32,14 +32,17 @@ var defaultDims = module.Dims{
 	},
 }
 
-func newChart(id, multiplier int, s ChartsConfig) *module.Chart {
+// newChart populates news chart based on 'ChartsConfig', 'id' and 'oidIndex'
+// parameters. oidIndex is optional param, which decided whether to add an
+// index to OID value or not.
+func newChart(id int, oidIndex *int, s ChartsConfig) (*module.Chart, error) {
 	c := defaultSNMPchart.Copy()
 	c.ID = fmt.Sprintf(c.ID, id)
 	c.Title = fmt.Sprintf(c.Title, s.Title)
 
-	if multiplier != 0 {
-		c.ID = fmt.Sprintf("%s_%d", c.ID, multiplier)
-		c.Title = fmt.Sprintf("%s %d", c.Title, multiplier)
+	if oidIndex != nil {
+		c.ID = fmt.Sprintf("%s_%d", c.ID, *oidIndex)
+		c.Title = fmt.Sprintf("%s %d", c.Title, *oidIndex)
 	}
 
 	if s.Family != nil {
@@ -57,8 +60,8 @@ func newChart(id, multiplier int, s ChartsConfig) *module.Chart {
 	c.Priority = s.Priority
 	for _, d := range s.Dimensions {
 		oid := d.OID
-		if multiplier != 0 {
-			oid = fmt.Sprintf("%s.%d", oid, multiplier)
+		if oidIndex != nil {
+			oid = fmt.Sprintf("%s.%d", oid, *oidIndex)
 		}
 		dim := &module.Dim{
 			Name: d.Name,
@@ -73,24 +76,37 @@ func newChart(id, multiplier int, s ChartsConfig) *module.Chart {
 		if d.Divisor != nil {
 			dim.Div = *d.Divisor
 		}
-		_ = c.AddDim(dim)
-	}
 
-	return c
-}
-
-func allCharts(chartIn []ChartsConfig) *module.Charts {
-	charts := &module.Charts{}
-	for i, s := range chartIn {
-		if s.MultiplyRange != nil {
-			for j := s.MultiplyRange[0]; j <= s.MultiplyRange[1]; j++ {
-				chart := newChart(i, j, s)
-				_ = charts.Add(chart)
-			}
-		} else {
-			chart := newChart(i, 0, s)
-			_ = charts.Add(chart)
+		if err := c.AddDim(dim); err != nil {
+			return nil, err
 		}
 	}
-	return charts
+
+	return c, nil
+}
+
+func allCharts(configs []ChartsConfig) (*module.Charts, error) {
+	charts := &module.Charts{}
+	for i, cfg := range configs {
+		if cfg.MultiplyRange != nil {
+			for j := cfg.MultiplyRange[0]; j <= cfg.MultiplyRange[1]; j++ {
+				chart, err := newChart(i, &j, cfg)
+				if err != nil {
+					return nil, err
+				}
+				if err = charts.Add(chart); err != nil {
+					return nil, err
+				}
+			}
+		} else {
+			chart, err := newChart(i, nil, cfg)
+			if err != nil {
+				return nil, err
+			}
+			if err = charts.Add(chart); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return charts, nil
 }

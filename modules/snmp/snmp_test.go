@@ -57,6 +57,9 @@ func TestSNMP_Init(t *testing.T) {
 			config:   prepareConfigWithoutDimensions(),
 			wantFail: true,
 		},
+		"success with 'charts' but invalid 'multiply_range' set": {
+			config: prepareConfigWithMultiplyRange(),
+		},
 		"success with 'community' set for 'options.version=2' set": {
 			config: prepareConfigWithCommunity(),
 		},
@@ -74,7 +77,7 @@ func TestSNMP_Init(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			SNMP := New()
 			SNMP.Config = test.config
-			SNMPHandler = func() gosnmp.Handler {
+			snmpHandler = func() gosnmp.Handler {
 				return mockSNMP
 			}
 			if test.wantFail {
@@ -108,7 +111,7 @@ func TestSNMP_Check(t *testing.T) {
 		"success on default": {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
-				SNMPHandler = func() gosnmp.Handler {
+				snmpHandler = func() gosnmp.Handler {
 					return m
 				}
 				m.EXPECT().Get(gomock.Any()).Return(&returnSNMPpacket, nil).Times(1)
@@ -120,7 +123,7 @@ func TestSNMP_Check(t *testing.T) {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
 				snmp.Config = prepareConfigWithDimensions()
-				SNMPHandler = func() gosnmp.Handler {
+				snmpHandler = func() gosnmp.Handler {
 					return m
 				}
 				m.EXPECT().Get(gomock.Any()).Return(&returnSNMPpacket, nil).Times(1)
@@ -131,7 +134,7 @@ func TestSNMP_Check(t *testing.T) {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
 				snmp.Config = prepareConfigWithDimensions()
-				SNMPHandler = func() gosnmp.Handler {
+				snmpHandler = func() gosnmp.Handler {
 					return m
 				}
 				snmp.Options.MaxOIDs = 1
@@ -141,15 +144,35 @@ func TestSNMP_Check(t *testing.T) {
 				return snmp
 			},
 		},
+		"success when 'multiply_range' set": {
+			prepare: func(m *snmpmock.MockHandler) *SNMP {
+				snmp := New()
+				snmpPacket := gosnmp.SnmpPacket{
+					Variables: []gosnmp.SnmpPDU{
+						{Value: 10},
+						{Value: 20},
+						{Value: 30},
+						{Value: 40},
+						{Value: 50},
+					},
+				}
+
+				snmp.Config = prepareConfigWithMultiplyRange()
+				snmpHandler = func() gosnmp.Handler {
+					return m
+				}
+				m.EXPECT().Get(gomock.Any()).Return(&snmpPacket, nil).Times(1)
+				return snmp
+			},
+		},
 		"fail when chart collection fails": {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
 				snmp.Config = prepareConfigWithDimensions()
-				SNMPHandler = func() gosnmp.Handler {
+				snmpHandler = func() gosnmp.Handler {
 					return m
 				}
 
-				//Get() must be called twice if MaxOIDs = 1
 				m.EXPECT().Get(gomock.Any()).Return(nil,
 					fmt.Errorf("error from mock function")).Times(1)
 				return snmp
@@ -167,11 +190,15 @@ func TestSNMP_Check(t *testing.T) {
 			defaultMockExpects(mS)
 			require.True(t, SNMP.Init())
 
+			collectCount := 0
+			for _, c := range *SNMP.charts {
+				collectCount += len(c.Dims)
+			}
+
 			if test.wantFail {
 				assert.False(t, SNMP.Check())
 			} else {
-				//assert.True(t, SNMP.Check())
-				assert.Equal(t, 2, len(SNMP.Collect()))
+				assert.Equal(t, collectCount, len(SNMP.Collect()))
 			}
 		})
 	}
@@ -340,6 +367,46 @@ func prepareConfigWithoutDimensions() Config {
 			{
 				Title:    "Test chart",
 				Priority: 1,
+			},
+		},
+	}
+}
+
+func prepareConfigWithMultiplyRange() Config {
+	return Config{
+		Name:        "test",
+		UpdateEvery: 2,
+		Options: &Options{
+			Port:    161,
+			Retries: 1,
+			Timeout: 2,
+			Version: 3,
+			MaxOIDs: 5,
+		},
+		User: &User{
+			Name:      "test",
+			Level:     3,
+			AuthProto: 2,
+			AuthKey:   "test_auth_key",
+			PrivProto: 2,
+			PrivKey:   "test_priv_key",
+		},
+		ChartInput: []ChartsConfig{
+			{
+				Title:         "Test chart",
+				Priority:      1,
+				Type:          &cType,
+				Family:        &cFamily,
+				MultiplyRange: []int{1, 5},
+				Dimensions: []Dimension{
+					{
+						Name:       "in",
+						OID:        "1.3.6.1.2.1.2.2.1.10",
+						Algorithm:  (*string)(&cAlgorithm),
+						Multiplier: &cMultiplier,
+						Divisor:    &cDivisor,
+					},
+				},
 			},
 		},
 	}

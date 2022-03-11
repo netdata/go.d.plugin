@@ -91,7 +91,7 @@ func (c ChartsConfig) validateConfig(index_chart int) error {
 		if len(c.MultiplyRange) != 2 {
 			err = appendError(err, fmt.Sprintf("invalid range: charts[%d].multiply_range;", index_chart))
 		} else {
-			if c.MultiplyRange[0] >= c.MultiplyRange[1] {
+			if c.MultiplyRange[0] >= c.MultiplyRange[1] || c.MultiplyRange[0] < 0 {
 				err = appendError(err, fmt.Sprintf("invalid range: charts[%d].multiply_range;", index_chart))
 			}
 		}
