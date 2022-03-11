@@ -41,10 +41,10 @@ type (
 		SNMPClient  gosnmp.Handler
 		Name        string         `yaml:"hostname"`
 		UpdateEvery int            `yaml:"update_every"`
-		Community   *string        `yaml:"community,omitempty"`
-		User        *User          `yaml:"user,omitempty"`
-		Options     *Options       `yaml:"options,omitempty"`
-		ChartInput  []ChartsConfig `yaml:"charts,omitempty"`
+		Community   *string        `yaml:"community"`
+		User        *User          `yaml:"user"`
+		Options     *Options       `yaml:"options"`
+		ChartInput  []ChartsConfig `yaml:"charts"`
 	}
 	User struct {
 		Name      string `yaml:"name"`
@@ -64,11 +64,11 @@ type (
 	ChartsConfig struct {
 		Title         string      `yaml:"title"`
 		Priority      int         `yaml:"priority"`
-		Units         *string     `yaml:"units,omitempty"`
-		Type          *string     `yaml:"type,omitempty"`
-		Family        *string     `yaml:"family,omitempty"`
-		MultiplyRange []int       `yaml:"multiply_range,omitempty"`
-		Dimensions    []Dimension `yaml:"dimensions,omitempty"`
+		Units         *string     `yaml:"units"`
+		Type          *string     `yaml:"type"`
+		Family        *string     `yaml:"family"`
+		MultiplyRange []int       `yaml:"multiply_range"`
+		Dimensions    []Dimension `yaml:"dimensions"`
 	}
 	Dimension struct {
 		Name       string  `yaml:"name"`
