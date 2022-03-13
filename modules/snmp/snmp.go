@@ -8,7 +8,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-var SNMPHandler = gosnmp.NewHandler
+var snmpHandler = gosnmp.NewHandler
 
 func init() {
 	creator := module.Creator{
@@ -92,7 +92,7 @@ func (s *SNMP) Init() bool {
 		return false
 	}
 
-	snmpClient := SNMPHandler()
+	snmpClient := snmpHandler()
 
 	//Default SNMP connection params
 	snmpClient.SetTarget(s.Name)
@@ -112,8 +112,8 @@ func (s *SNMP) Init() bool {
 
 	case 3:
 		snmpClient.SetVersion(gosnmp.Version3)
-		snmpClient.SetSecurityModel(gosnmp.SnmpV3SecurityModel(s.User.Level))
-		snmpClient.SetMsgFlags(gosnmp.SnmpV3MsgFlags(gosnmp.AuthPriv)) //TODO:
+		snmpClient.SetSecurityModel(gosnmp.UserSecurityModel)
+		snmpClient.SetMsgFlags(gosnmp.SnmpV3MsgFlags(s.User.Level))
 		snmpClient.SetSecurityParameters(&gosnmp.UsmSecurityParameters{
 			UserName:                 s.User.Name,
 			AuthenticationProtocol:   gosnmp.SnmpV3AuthProtocol(s.User.AuthProto),
@@ -135,13 +135,21 @@ func (s *SNMP) Init() bool {
 	s.SNMPClient = snmpClient
 
 	if len(s.ChartInput) > 0 {
-		s.charts = newChart(s.ChartInput)
+		s.charts, err = allCharts(s.ChartInput)
+		if err != nil {
+			s.Errorf("Population of charts failed: %v", err)
+			return false
+		}
 	} else {
 		c := defaultSNMPchart.Copy()
 		c.ID = fmt.Sprintf(c.ID, 1)
 		c.Title = fmt.Sprint(c.Title, "default")
-		_ = c.AddDim(defaultDims[0])
-		_ = c.AddDim(defaultDims[1])
+		for _, d := range defaultDims {
+			if err = c.AddDim(d); err != nil {
+				s.Errorf("Population of charts failed: %v", err)
+				return false
+			}
+		}
 		s.charts = &module.Charts{c}
 	}
 

@@ -77,7 +77,9 @@ func (c ChartsConfig) validateConfig(index_chart int) error {
 	if c.Title == "" {
 		err = appendError(err, fmt.Sprintf("missing value: charts[%d].title;", index_chart))
 	}
-	if c.Dimensions != nil {
+	if c.Dimensions == nil {
+		err = appendError(err, fmt.Sprintf("missing value: charts[%d].dimensions;", index_chart))
+	} else {
 		for i, d := range c.Dimensions {
 			if e := d.validateConfig(index_chart, i); e != nil {
 				err = appendError(err, e.Error())
@@ -85,6 +87,15 @@ func (c ChartsConfig) validateConfig(index_chart int) error {
 		}
 	}
 
+	if c.MultiplyRange != nil {
+		if len(c.MultiplyRange) != 2 {
+			err = appendError(err, fmt.Sprintf("invalid range: charts[%d].multiply_range;", index_chart))
+		} else {
+			if c.MultiplyRange[0] >= c.MultiplyRange[1] || c.MultiplyRange[0] < 0 {
+				err = appendError(err, fmt.Sprintf("invalid range: charts[%d].multiply_range;", index_chart))
+			}
+		}
+	}
 	return err
 }
 
