@@ -124,6 +124,16 @@ func (o Options) validateConfig() error {
 func (s SNMP) validateConfig() error {
 	var err error
 	err = nil
+	if s.ChartInput == nil {
+		err = appendError(err, "charts missing from config")
+	} else {
+		for i, chartIn := range s.ChartInput {
+			if e := chartIn.validateConfig(i); e != nil {
+				err = appendError(err, e.Error())
+			}
+		}
+	}
+
 	if s.Options != nil {
 		if e := s.Options.validateConfig(); e != nil {
 			err = appendError(err, e.Error())
@@ -138,21 +148,17 @@ func (s SNMP) validateConfig() error {
 			}
 		}
 	}
+
 	if s.User != nil {
 		if e := s.User.validateConfig(); e != nil {
 			err = appendError(err, e.Error())
 		}
 	}
-	if s.ChartInput != nil {
-		for i, chart_in := range s.ChartInput {
-			if e := chart_in.validateConfig(i); e != nil {
-				err = appendError(err, e.Error())
-			}
-		}
-	}
+
 	if s.Config.UpdateEvery <= 0 {
 		err = appendError(err, fmt.Sprintf("invalid value(%d): update_every;", s.Config.UpdateEvery))
 	}
+
 	if s.Config.Name == "" {
 		err = appendError(err, "missing value: name;")
 	}
