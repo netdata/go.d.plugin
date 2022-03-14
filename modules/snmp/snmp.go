@@ -93,7 +93,7 @@ func (s *SNMP) Init() bool {
 		return false
 	}
 
-	s.charts, err = allCharts(s.ChartInput)
+	s.charts, err = newCharts(s.ChartInput)
 	if err != nil {
 		s.Errorf("Population of charts failed: %v", err)
 		return false

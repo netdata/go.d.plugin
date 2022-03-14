@@ -127,8 +127,8 @@ func (s SNMP) validateConfig() error {
 	if s.ChartInput == nil {
 		err = appendError(err, "charts missing from config")
 	} else {
-		for i, chart_in := range s.ChartInput {
-			if e := chart_in.validateConfig(i); e != nil {
+		for i, chartIn := range s.ChartInput {
+			if e := chartIn.validateConfig(i); e != nil {
 				err = appendError(err, e.Error())
 			}
 		}

@@ -69,7 +69,7 @@ func newChart(id int, oidIndex *int, s ChartsConfig) (*module.Chart, error) {
 	return c, nil
 }
 
-func allCharts(configs []ChartsConfig) (*module.Charts, error) {
+func newCharts(configs []ChartsConfig) (*module.Charts, error) {
 	charts := &module.Charts{}
 	for i, cfg := range configs {
 		if cfg.MultiplyRange != nil {
