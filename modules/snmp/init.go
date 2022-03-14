@@ -1,6 +1,7 @@
 package snmp
 
 import (
+	"fmt"
 	"time"
 
 	gosnmp "github.com/gosnmp/gosnmp"
@@ -8,7 +9,7 @@ import (
 
 var snmpHandler = gosnmp.NewHandler
 
-func (s *SNMP) initSNMPClient() bool {
+func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 	snmpClient := snmpHandler()
 
 	//Default SNMP connection params
@@ -40,16 +41,14 @@ func (s *SNMP) initSNMPClient() bool {
 		})
 
 	default:
-		s.Errorf("invalid SNMP version: %d", s.Options.Version)
-		return false
+		return nil, fmt.Errorf("invalid SNMP version: %d", s.Options.Version)
+
 	}
 
 	err := snmpClient.Connect()
 	if err != nil {
-		s.Errorf("SNMP Connect fail: %v", err)
-		return false
+		return nil, err
 	}
-	s.SNMPClient = snmpClient
 
-	return true
+	return snmpClient, nil
 }

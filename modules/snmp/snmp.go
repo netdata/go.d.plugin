@@ -89,7 +89,8 @@ func (s *SNMP) Init() bool {
 		return false
 	}
 
-	if !s.initSNMPClient() {
+	s.SNMPClient, err = s.initSNMPClient()
+	if err != nil {
 		s.Errorf("SNMP Connect fail: %v", err)
 		return false
 	}
