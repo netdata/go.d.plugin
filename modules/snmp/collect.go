@@ -30,7 +30,7 @@ func (s *SNMP) collectChart(collected map[string]int64, OIDs []string) error {
 		OIDs = OIDs[:s.Options.MaxOIDs]
 	}
 
-	result, err := s.SNMPClient.Get(OIDs)
+	result, err := s.snmpHandler.Get(OIDs)
 
 	if err != nil {
 		s.Errorf("Cannot get SNMP data: %v", err)

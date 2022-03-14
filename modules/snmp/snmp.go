@@ -2,13 +2,10 @@ package snmp
 
 import (
 	"fmt"
-	"time"
 
 	gosnmp "github.com/gosnmp/gosnmp"
 	"github.com/netdata/go.d.plugin/agent/module"
 )
-
-var snmpHandler = gosnmp.NewHandler
 
 func init() {
 	creator := module.Creator{
@@ -38,7 +35,6 @@ func New() *SNMP {
 
 type (
 	Config struct {
-		SNMPClient  gosnmp.Handler
 		Name        string         `yaml:"hostname"`
 		UpdateEvery int            `yaml:"update_every"`
 		Community   *string        `yaml:"community"`
@@ -81,8 +77,9 @@ type (
 
 type SNMP struct {
 	module.Base
-	Config `yaml:",inline"`
-	charts *module.Charts
+	snmpHandler gosnmp.Handler
+	Config      `yaml:",inline"`
+	charts      *module.Charts
 }
 
 func (s *SNMP) Init() bool {
@@ -92,47 +89,11 @@ func (s *SNMP) Init() bool {
 		return false
 	}
 
-	snmpClient := snmpHandler()
-
-	//Default SNMP connection params
-	snmpClient.SetTarget(s.Name)
-	snmpClient.SetPort(uint16(s.Options.Port))
-	snmpClient.SetMaxOids(s.Options.MaxOIDs)
-	snmpClient.SetLogger(gosnmp.NewLogger(s.Logger))
-	snmpClient.SetTimeout(time.Duration(s.Options.Timeout) * time.Second)
-
-	switch s.Options.Version {
-	case 1:
-		snmpClient.SetCommunity(*s.Community)
-		snmpClient.SetVersion(gosnmp.Version1)
-
-	case 2:
-		snmpClient.SetCommunity(*s.Community)
-		snmpClient.SetVersion(gosnmp.Version2c)
-
-	case 3:
-		snmpClient.SetVersion(gosnmp.Version3)
-		snmpClient.SetSecurityModel(gosnmp.UserSecurityModel)
-		snmpClient.SetMsgFlags(gosnmp.SnmpV3MsgFlags(s.User.Level))
-		snmpClient.SetSecurityParameters(&gosnmp.UsmSecurityParameters{
-			UserName:                 s.User.Name,
-			AuthenticationProtocol:   gosnmp.SnmpV3AuthProtocol(s.User.AuthProto),
-			AuthenticationPassphrase: s.User.AuthKey,
-			PrivacyProtocol:          gosnmp.SnmpV3PrivProtocol(s.User.PrivProto),
-			PrivacyPassphrase:        s.User.PrivKey,
-		})
-
-	default:
-		s.Errorf("invalid SNMP version: %d", s.Options.Version)
-		return false
-	}
-
-	err = snmpClient.Connect()
+	s.snmpHandler, err = s.initSNMPClient()
 	if err != nil {
 		s.Errorf("SNMP Connect fail: %v", err)
 		return false
 	}
-	s.SNMPClient = snmpClient
 
 	if len(s.ChartInput) > 0 {
 		s.charts, err = allCharts(s.ChartInput)
@@ -177,7 +138,7 @@ func (s *SNMP) Collect() map[string]int64 {
 }
 
 func (s *SNMP) Cleanup() {
-	if s.SNMPClient != nil {
-		s.SNMPClient.Close()
+	if s.snmpHandler != nil {
+		s.snmpHandler.Close()
 	}
 }
