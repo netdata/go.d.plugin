@@ -44,16 +44,14 @@ func TestSNMP_Init(t *testing.T) {
 		config   Config
 		wantFail bool
 	}{
-		"success on default config": {
-			config: New().Config,
-		},
-		"success without 'charts' set": {
-			config: prepareConfigWithoutChart(),
+		"fail without 'charts' set": {
+			config:   prepareConfigWithoutChart(),
+			wantFail: true,
 		},
 		"success with 'charts' and 'dimensions' set": {
 			config: prepareConfigWithDimensions(),
 		},
-		"success with 'charts' but no 'dimensions' set": {
+		"fail with 'charts' but no 'dimensions' set": {
 			config:   prepareConfigWithoutDimensions(),
 			wantFail: true,
 		},
@@ -108,17 +106,6 @@ func TestSNMP_Check(t *testing.T) {
 		prepare  func(m *snmpmock.MockHandler) (s *SNMP)
 		wantFail bool
 	}{
-		"success on default": {
-			prepare: func(m *snmpmock.MockHandler) *SNMP {
-				snmp := New()
-				snmpHandler = func() gosnmp.Handler {
-					return m
-				}
-				m.EXPECT().Get(gomock.Any()).Return(&returnSNMPpacket, nil).Times(1)
-				return snmp
-			},
-		},
-
 		"success when 'dimensions' set": {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
@@ -232,6 +219,33 @@ func defaultMockExpects(m *snmpmock.MockHandler) {
 	m.EXPECT().Connect().Return(nil).AnyTimes()
 }
 
+func createCharts() []ChartsConfig {
+	return []ChartsConfig{
+		{
+			Title:    "Test chart",
+			Priority: 1,
+			Type:     &cType,
+			Family:   &cFamily,
+			Dimensions: []Dimension{
+				{
+					Name:       "in",
+					OID:        "1.3.6.1.2.1.2.2.1.10.2",
+					Algorithm:  (*string)(&cAlgorithm),
+					Multiplier: &cMultiplier,
+					Divisor:    &cDivisor,
+				},
+				{
+					Name:       "out",
+					OID:        "1.3.6.1.2.1.2.2.1.16.2",
+					Algorithm:  (*string)(&cAlgorithm),
+					Multiplier: &cMultiplier,
+					Divisor:    &cDivisor,
+				},
+			},
+		},
+	}
+}
+
 func prepareConfigWithoutUser() Config {
 	return Config{
 		Name:        "test",
@@ -244,6 +258,7 @@ func prepareConfigWithoutUser() Config {
 			Version: 3,
 			MaxOIDs: 4,
 		},
+		ChartInput: createCharts(),
 	}
 }
 
@@ -258,7 +273,8 @@ func prepareConfigWithCommunity() Config {
 			Version: 2, //Version 2
 			MaxOIDs: 4,
 		},
-		Community: &community,
+		Community:  &community,
+		ChartInput: createCharts(),
 	}
 }
 
@@ -273,6 +289,7 @@ func prepareConfigWithoutCommunity() Config {
 			Version: 2, //Version 2
 			MaxOIDs: 4,
 		},
+		ChartInput: createCharts(),
 	}
 }
 
@@ -317,30 +334,7 @@ func prepareConfigWithDimensions() Config {
 			PrivProto: 2,
 			PrivKey:   "test_priv_key",
 		},
-		ChartInput: []ChartsConfig{
-			{
-				Title:    "Test chart",
-				Priority: 1,
-				Type:     &cType,
-				Family:   &cFamily,
-				Dimensions: []Dimension{
-					{
-						Name:       "in",
-						OID:        "1.3.6.1.2.1.2.2.1.10.2",
-						Algorithm:  (*string)(&cAlgorithm),
-						Multiplier: &cMultiplier,
-						Divisor:    &cDivisor,
-					},
-					{
-						Name:       "out",
-						OID:        "1.3.6.1.2.1.2.2.1.16.2",
-						Algorithm:  (*string)(&cAlgorithm),
-						Multiplier: &cMultiplier,
-						Divisor:    &cDivisor,
-					},
-				},
-			},
-		},
+		ChartInput: createCharts(),
 	}
 }
 

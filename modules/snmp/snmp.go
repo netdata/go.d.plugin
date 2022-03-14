@@ -1,8 +1,6 @@
 package snmp
 
 import (
-	"fmt"
-
 	gosnmp "github.com/gosnmp/gosnmp"
 	"github.com/netdata/go.d.plugin/agent/module"
 )
@@ -95,23 +93,10 @@ func (s *SNMP) Init() bool {
 		return false
 	}
 
-	if len(s.ChartInput) > 0 {
-		s.charts, err = allCharts(s.ChartInput)
-		if err != nil {
-			s.Errorf("Population of charts failed: %v", err)
-			return false
-		}
-	} else {
-		c := defaultSNMPchart.Copy()
-		c.ID = fmt.Sprintf(c.ID, 1)
-		c.Title = fmt.Sprint(c.Title, "default")
-		for _, d := range defaultDims {
-			if err = c.AddDim(d); err != nil {
-				s.Errorf("Population of charts failed: %v", err)
-				return false
-			}
-		}
-		s.charts = &module.Charts{c}
+	s.charts, err = allCharts(s.ChartInput)
+	if err != nil {
+		s.Errorf("Population of charts failed: %v", err)
+		return false
 	}
 
 	return true

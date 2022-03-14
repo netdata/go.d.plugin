@@ -6,6 +6,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+//TODO: probably not needed
 var defaultSNMPchart = module.Chart{
 	ID:       "snmp_%d",
 	Title:    "%s",
@@ -15,24 +16,7 @@ var defaultSNMPchart = module.Chart{
 	Fam:      "ports",
 }
 
-var defaultDims = module.Dims{
-	{
-		Name: "in",
-		ID:   "1.3.6.1.2.1.2.2.1.10.2",
-		Algo: module.Incremental,
-		Mul:  8,
-		Div:  1024,
-	},
-	{
-		Name: "out",
-		ID:   "1.3.6.1.2.1.2.2.1.16.2",
-		Algo: module.Incremental,
-		Mul:  -8,
-		Div:  1024,
-	},
-}
-
-// newChart populates news chart based on 'ChartsConfig', 'id' and 'oidIndex'
+// newChart creates news chart based on 'ChartsConfig', 'id' and 'oidIndex'
 // parameters. oidIndex is optional param, which decided whether to add an
 // index to OID value or not.
 func newChart(id int, oidIndex *int, s ChartsConfig) (*module.Chart, error) {
