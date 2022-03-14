@@ -206,7 +206,7 @@ func TestSNMP_Check(t *testing.T) {
 
 func TestSNMP_Cleanup(t *testing.T) {
 	snmpC := New()
-	snmpC.SNMPClient = nil
+	snmpC.snmpHandler = nil
 	assert.NotPanics(t, snmpC.Cleanup)
 }
 
