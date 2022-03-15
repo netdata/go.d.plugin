@@ -16,7 +16,6 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 	snmpClient.SetTarget(s.Name)
 	snmpClient.SetPort(uint16(s.Options.Port))
 	snmpClient.SetMaxOids(s.Options.MaxOIDs)
-	snmpClient.SetLogger(gosnmp.NewLogger(s.Logger))
 	snmpClient.SetTimeout(time.Duration(s.Options.Timeout) * time.Second)
 
 	switch s.Options.Version {
