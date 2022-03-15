@@ -38,7 +38,13 @@ func (s *SNMP) collectChart(collected map[string]int64, OIDs []string) error {
 	}
 
 	for i, oid := range OIDs {
-		collected[oid] = gosnmp.ToBigInt(result.Variables[i].Value).Int64()
+		switch result.Variables[i].Type {
+		case gosnmp.NoSuchInstance:
+		case gosnmp.NoSuchObject:
+			continue
+		default:
+			collected[oid] = gosnmp.ToBigInt(result.Variables[i].Value).Int64()
+		}
 	}
 	return nil
 }
