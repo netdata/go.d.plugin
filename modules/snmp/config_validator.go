@@ -62,10 +62,10 @@ func (u User) validateConfig() error {
 	if u.Level < 1 || u.Level > 3 {
 		err = appendError(err, fmt.Sprintf("invalid range of value(%d): user.level;", u.Level))
 	}
-	if u.PrivProto < 1 || u.PrivProto > 2 {
+	if u.PrivProto < 1 || u.PrivProto > 5 {
 		err = appendError(err, fmt.Sprintf("invalid range of value(%d): user.priv_proto;", u.PrivProto))
 	}
-	if u.AuthProto < 1 || u.AuthProto > 3 {
+	if u.AuthProto < 1 || u.AuthProto > 7 {
 		err = appendError(err, fmt.Sprintf("invalid range of value(%d): user.auth_proto;", u.AuthProto))
 	}
 	return err

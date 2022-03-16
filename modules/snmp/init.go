@@ -9,6 +9,19 @@ import (
 
 var snmpHandler = gosnmp.NewHandler
 
+func generateSNMPv3MsgFlags(level int) gosnmp.SnmpV3MsgFlags {
+	flag := gosnmp.NoAuthNoPriv
+	switch level {
+	case 1:
+		flag = gosnmp.NoAuthNoPriv
+	case 2:
+		flag = gosnmp.AuthNoPriv
+	case 3:
+		flag = gosnmp.AuthPriv
+	}
+	return flag
+}
+
 func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 	snmpClient := snmpHandler()
 
@@ -28,9 +41,10 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 		snmpClient.SetVersion(gosnmp.Version2c)
 
 	case 3:
+
 		snmpClient.SetVersion(gosnmp.Version3)
 		snmpClient.SetSecurityModel(gosnmp.UserSecurityModel)
-		snmpClient.SetMsgFlags(gosnmp.SnmpV3MsgFlags(s.User.Level))
+		snmpClient.SetMsgFlags(generateSNMPv3MsgFlags(s.User.Level))
 		snmpClient.SetSecurityParameters(&gosnmp.UsmSecurityParameters{
 			UserName:                 s.User.Name,
 			AuthenticationProtocol:   gosnmp.SnmpV3AuthProtocol(s.User.AuthProto),
