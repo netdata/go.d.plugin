@@ -19,7 +19,7 @@ func generateSNMPv3MsgFlags(level int) gosnmp.SnmpV3MsgFlags {
 	case 3:
 		flag = gosnmp.AuthPriv
 	}
-	return gosnmp.SnmpV3MsgFlags(flag)
+	return flag
 }
 
 func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
