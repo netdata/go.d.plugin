@@ -10,7 +10,7 @@ import (
 var snmpHandler = gosnmp.NewHandler
 
 func generateSNMPv3MsgFlags(level int) gosnmp.SnmpV3MsgFlags {
-	var flag gosnmp.SnmpV3MsgFlags
+	flag := gosnmp.NoAuthNoPriv
 	switch level {
 	case 1:
 		flag = gosnmp.NoAuthNoPriv
