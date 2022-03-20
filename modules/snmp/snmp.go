@@ -87,11 +87,18 @@ func (s *SNMP) Init() bool {
 		return false
 	}
 
-	s.snmpClient, err = s.initSNMPClient()
+	snmpClient, err := s.initSNMPClient()
 	if err != nil {
 		s.Errorf("SNMP client initialization: %v", err)
 		return false
 	}
+
+	err = snmpClient.Connect()
+	if err != nil {
+		s.Errorf("SNMP client connect: %v", err)
+		return false
+	}
+	s.snmpClient = snmpClient
 
 	s.charts, err = newCharts(s.ChartInput)
 	if err != nil {

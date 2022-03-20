@@ -40,11 +40,6 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 
 	}
 
-	err := snmpClient.Connect()
-	if err != nil {
-		return nil, err
-	}
-
 	return snmpClient, nil
 }
 
