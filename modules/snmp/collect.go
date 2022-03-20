@@ -6,16 +6,15 @@ import (
 
 func (s *SNMP) collect() (map[string]int64, error) {
 	collected := make(map[string]int64)
-	var all_oid []string
+	var oids []string
 
-	//build oid chart
 	for _, chart := range *s.Charts() {
 		for _, d := range chart.Dims {
-			all_oid = append(all_oid, d.ID)
+			oids = append(oids, d.ID)
 		}
 	}
 
-	if err := s.collectChart(collected, all_oid); err != nil {
+	if err := s.collectChart(collected, oids); err != nil {
 		return nil, err
 	}
 
