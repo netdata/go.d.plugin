@@ -75,7 +75,7 @@ func TestSNMP_Init(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			SNMP := New()
 			SNMP.Config = test.config
-			snmpHandler = func() gosnmp.Handler {
+			newSNMPClient = func() gosnmp.Handler {
 				return mockSNMP
 			}
 			if test.wantFail {
@@ -110,7 +110,7 @@ func TestSNMP_Check(t *testing.T) {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
 				snmp.Config = prepareConfigWithDimensions()
-				snmpHandler = func() gosnmp.Handler {
+				newSNMPClient = func() gosnmp.Handler {
 					return m
 				}
 				m.EXPECT().Get(gomock.Any()).Return(&returnSNMPpacket, nil).Times(1)
@@ -121,7 +121,7 @@ func TestSNMP_Check(t *testing.T) {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
 				snmp.Config = prepareConfigWithDimensions()
-				snmpHandler = func() gosnmp.Handler {
+				newSNMPClient = func() gosnmp.Handler {
 					return m
 				}
 				snmp.Options.MaxOIDs = 1
@@ -145,7 +145,7 @@ func TestSNMP_Check(t *testing.T) {
 				}
 
 				snmp.Config = prepareConfigWithMultiplyRange()
-				snmpHandler = func() gosnmp.Handler {
+				newSNMPClient = func() gosnmp.Handler {
 					return m
 				}
 				m.EXPECT().Get(gomock.Any()).Return(&snmpPacket, nil).Times(1)
@@ -156,7 +156,7 @@ func TestSNMP_Check(t *testing.T) {
 			prepare: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
 				snmp.Config = prepareConfigWithDimensions()
-				snmpHandler = func() gosnmp.Handler {
+				newSNMPClient = func() gosnmp.Handler {
 					return m
 				}
 
@@ -193,7 +193,7 @@ func TestSNMP_Check(t *testing.T) {
 
 func TestSNMP_Cleanup(t *testing.T) {
 	snmpC := New()
-	snmpC.snmpHandler = nil
+	snmpC.snmpClient = nil
 	assert.NotPanics(t, snmpC.Cleanup)
 }
 

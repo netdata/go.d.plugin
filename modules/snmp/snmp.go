@@ -75,9 +75,9 @@ type (
 
 type SNMP struct {
 	module.Base
-	snmpHandler gosnmp.Handler
-	Config      `yaml:",inline"`
-	charts      *module.Charts
+	snmpClient gosnmp.Handler
+	Config     `yaml:",inline"`
+	charts     *module.Charts
 }
 
 func (s *SNMP) Init() bool {
@@ -87,9 +87,9 @@ func (s *SNMP) Init() bool {
 		return false
 	}
 
-	s.snmpHandler, err = s.initSNMPClient()
+	s.snmpClient, err = s.initSNMPClient()
 	if err != nil {
-		s.Errorf("SNMP Connect fail: %v", err)
+		s.Errorf("SNMP client initialization: %v", err)
 		return false
 	}
 
@@ -123,7 +123,7 @@ func (s *SNMP) Collect() map[string]int64 {
 }
 
 func (s *SNMP) Cleanup() {
-	if s.snmpHandler != nil {
-		s.snmpHandler.Close()
+	if s.snmpClient != nil {
+		s.snmpClient.Close()
 	}
 }

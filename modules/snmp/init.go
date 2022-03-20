@@ -7,25 +7,11 @@ import (
 	"github.com/gosnmp/gosnmp"
 )
 
-var snmpHandler = gosnmp.NewHandler
-
-func generateSNMPv3MsgFlags(level int) gosnmp.SnmpV3MsgFlags {
-	flag := gosnmp.NoAuthNoPriv
-	switch level {
-	case 1:
-		flag = gosnmp.NoAuthNoPriv
-	case 2:
-		flag = gosnmp.AuthNoPriv
-	case 3:
-		flag = gosnmp.AuthPriv
-	}
-	return flag
-}
+var newSNMPClient = gosnmp.NewHandler
 
 func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
-	snmpClient := snmpHandler()
+	snmpClient := newSNMPClient()
 
-	//Default SNMP connection params
 	snmpClient.SetTarget(s.Hostname)
 	snmpClient.SetPort(uint16(s.Options.Port))
 	snmpClient.SetMaxOids(s.Options.MaxOIDs)
@@ -60,4 +46,17 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 	}
 
 	return snmpClient, nil
+}
+
+func generateSNMPv3MsgFlags(level int) gosnmp.SnmpV3MsgFlags {
+	flag := gosnmp.NoAuthNoPriv
+	switch level {
+	case 1:
+		flag = gosnmp.NoAuthNoPriv
+	case 2:
+		flag = gosnmp.AuthNoPriv
+	case 3:
+		flag = gosnmp.AuthPriv
+	}
+	return flag
 }

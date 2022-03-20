@@ -27,7 +27,7 @@ func (s *SNMP) collect() (map[string]int64, error) {
 }
 
 func (s *SNMP) collectOIDs(collected map[string]int64, oids []string) error {
-	result, err := s.snmpHandler.Get(oids)
+	result, err := s.snmpClient.Get(oids)
 	if err != nil {
 		s.Errorf("Cannot get SNMP data: %v", err)
 		return err
