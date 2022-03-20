@@ -14,9 +14,8 @@ func (s *SNMP) collect() (map[string]int64, error) {
 		}
 	}
 
-	for i := 0; i < len(oids); i += s.Options.MaxOIDs {
-		end := i + s.Options.MaxOIDs
-		if end > len(oids) {
+	for i, end := 0, 0; i < len(oids); i += s.Options.MaxOIDs {
+		if end = i + s.Options.MaxOIDs; end > len(oids) {
 			end = len(oids)
 		}
 		if err := s.collectOIDs(collected, oids[i:end]); err != nil {
