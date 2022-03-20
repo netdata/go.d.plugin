@@ -26,7 +26,7 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 	snmpClient := snmpHandler()
 
 	//Default SNMP connection params
-	snmpClient.SetTarget(s.Name)
+	snmpClient.SetTarget(s.Hostname)
 	snmpClient.SetPort(uint16(s.Options.Port))
 	snmpClient.SetMaxOids(s.Options.MaxOIDs)
 	snmpClient.SetTimeout(time.Duration(s.Options.Timeout) * time.Second)

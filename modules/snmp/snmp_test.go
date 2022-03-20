@@ -248,7 +248,7 @@ func createCharts() []ChartsConfig {
 
 func prepareConfigWithoutUser() Config {
 	return Config{
-		Name:        "test",
+		Hostname:    "test",
 		UpdateEvery: 2,
 
 		Options: &Options{
@@ -264,7 +264,7 @@ func prepareConfigWithoutUser() Config {
 
 func prepareConfigWithCommunity() Config {
 	return Config{
-		Name:        "test",
+		Hostname:    "test",
 		UpdateEvery: 2,
 		Options: &Options{
 			Port:    161,
@@ -280,7 +280,7 @@ func prepareConfigWithCommunity() Config {
 
 func prepareConfigWithoutCommunity() Config {
 	return Config{
-		Name:        "test",
+		Hostname:    "test",
 		UpdateEvery: 2,
 		Options: &Options{
 			Port:    161,
@@ -295,7 +295,7 @@ func prepareConfigWithoutCommunity() Config {
 
 func prepareConfigWithoutChart() Config {
 	return Config{
-		Name:        "test",
+		Hostname:    "test",
 		UpdateEvery: 2,
 		Options: &Options{
 			Port:    161,
@@ -317,7 +317,7 @@ func prepareConfigWithoutChart() Config {
 
 func prepareConfigWithDimensions() Config {
 	return Config{
-		Name:        "test",
+		Hostname:    "test",
 		UpdateEvery: 2,
 		Options: &Options{
 			Port:    161,
@@ -340,7 +340,7 @@ func prepareConfigWithDimensions() Config {
 
 func prepareConfigWithoutDimensions() Config {
 	return Config{
-		Name:        "test",
+		Hostname:    "test",
 		UpdateEvery: 2,
 		Options: &Options{
 			Port:    161,
@@ -368,7 +368,7 @@ func prepareConfigWithoutDimensions() Config {
 
 func prepareConfigWithMultiplyRange() Config {
 	return Config{
-		Name:        "test",
+		Hostname:    "test",
 		UpdateEvery: 2,
 		Options: &Options{
 			Port:    161,

@@ -17,7 +17,7 @@ func New() *SNMP {
 	comm := "public"
 	return &SNMP{
 		Config: Config{
-			Name:        "127.0.0.1",
+			Hostname:    "127.0.0.1",
 			Community:   &comm,
 			UpdateEvery: 3,
 			Options: &Options{
@@ -33,7 +33,7 @@ func New() *SNMP {
 
 type (
 	Config struct {
-		Name        string         `yaml:"hostname"`
+		Hostname    string         `yaml:"hostname"`
 		UpdateEvery int            `yaml:"update_every"`
 		Community   *string        `yaml:"community"`
 		User        *User          `yaml:"user"`

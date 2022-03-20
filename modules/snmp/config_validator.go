@@ -159,7 +159,7 @@ func (s SNMP) validateConfig() error {
 		err = appendError(err, fmt.Sprintf("invalid value(%d): update_every;", s.Config.UpdateEvery))
 	}
 
-	if s.Config.Name == "" {
+	if s.Config.Hostname == "" {
 		err = appendError(err, "missing value: name;")
 	}
 
