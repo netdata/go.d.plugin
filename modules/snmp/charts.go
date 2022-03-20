@@ -67,7 +67,10 @@ func newChart(id int, oidIndex *int, s ChartsConfig) (*module.Chart, error) {
 		c.Type = module.ChartType(*s.Type)
 	}
 
-	c.Priority = s.Priority
+	if c.Priority = s.Priority; c.Priority < module.Priority {
+		c.Priority += module.Priority
+	}
+
 	for _, d := range s.Dimensions {
 		oid := d.OID
 		if oidIndex != nil {
