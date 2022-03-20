@@ -23,31 +23,31 @@ func appendError(err error, msg string) error {
 	return e
 }
 
-func (d Dimension) validateConfig(index_chart, index int) error {
+func (d Dimension) validateConfig(chartIdx, dimIdx int) error {
 	var err error
 	err = nil
 	if d.Name == "" {
-		err = appendError(err, fmt.Sprintf("invalid or missing value: charts[%d].dimension[%d].name;", index_chart, index))
+		err = appendError(err, fmt.Sprintf("invalid or missing value: charts[%d].dimension[%d].name;", chartIdx, dimIdx))
 	}
 	if d.OID == "" {
-		err = appendError(err, fmt.Sprintf("missing value: charts[%d].dimension[%d].oid;", index_chart, index))
+		err = appendError(err, fmt.Sprintf("missing value: charts[%d].dimension[%d].oid;", chartIdx, dimIdx))
 	}
 	if d.Algorithm != nil {
 		if *d.Algorithm == "" ||
 			(*d.Algorithm != string(module.Incremental) &&
 				*d.Algorithm != string(module.PercentOfIncremental) &&
 				*d.Algorithm != string(module.PercentOfAbsolute)) {
-			err = appendError(err, fmt.Sprintf("invalid or missing value: charts[%d].dimension[%d].algorithm;", index_chart, index))
+			err = appendError(err, fmt.Sprintf("invalid or missing value: charts[%d].dimension[%d].algorithm;", chartIdx, dimIdx))
 		}
 	}
 	if d.Multiplier != nil {
 		if *d.Multiplier == 0 {
-			err = appendError(err, fmt.Sprintf("integer set to 0: charts[%d].dimension[%d].multiplier;", index_chart, index))
+			err = appendError(err, fmt.Sprintf("integer set to 0: charts[%d].dimension[%d].multiplier;", chartIdx, dimIdx))
 		}
 	}
 	if d.Divisor != nil {
 		if *d.Divisor == 0 {
-			err = appendError(err, fmt.Sprintf("integer set to 0: charts[%d].dimension[%d].divisor;", index_chart, index))
+			err = appendError(err, fmt.Sprintf("integer set to 0: charts[%d].dimension[%d].divisor;", chartIdx, dimIdx))
 		}
 	}
 	return err
@@ -71,17 +71,17 @@ func (u User) validateConfig() error {
 	return err
 }
 
-func (c ChartsConfig) validateConfig(index_chart int) error {
+func (c ChartsConfig) validateConfig(chartIdx int) error {
 	var err error
 	err = nil
 	if c.Title == "" {
-		err = appendError(err, fmt.Sprintf("missing value: charts[%d].title;", index_chart))
+		err = appendError(err, fmt.Sprintf("missing value: charts[%d].title;", chartIdx))
 	}
 	if c.Dimensions == nil {
-		err = appendError(err, fmt.Sprintf("missing value: charts[%d].dimensions;", index_chart))
+		err = appendError(err, fmt.Sprintf("missing value: charts[%d].dimensions;", chartIdx))
 	} else {
 		for i, d := range c.Dimensions {
-			if e := d.validateConfig(index_chart, i); e != nil {
+			if e := d.validateConfig(chartIdx, i); e != nil {
 				err = appendError(err, e.Error())
 			}
 		}
@@ -89,10 +89,10 @@ func (c ChartsConfig) validateConfig(index_chart int) error {
 
 	if c.MultiplyRange != nil {
 		if len(c.MultiplyRange) != 2 {
-			err = appendError(err, fmt.Sprintf("invalid range: charts[%d].multiply_range;", index_chart))
+			err = appendError(err, fmt.Sprintf("invalid range: charts[%d].multiply_range;", chartIdx))
 		} else {
 			if c.MultiplyRange[0] >= c.MultiplyRange[1] || c.MultiplyRange[0] < 0 {
-				err = appendError(err, fmt.Sprintf("invalid range: charts[%d].multiply_range;", index_chart))
+				err = appendError(err, fmt.Sprintf("invalid range: charts[%d].multiply_range;", chartIdx))
 			}
 		}
 	}
