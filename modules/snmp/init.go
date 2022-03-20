@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	gosnmp "github.com/gosnmp/gosnmp"
+	"github.com/gosnmp/gosnmp"
 )
 
 var snmpHandler = gosnmp.NewHandler

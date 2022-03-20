@@ -1,7 +1,7 @@
 package snmp
 
 import (
-	gosnmp "github.com/gosnmp/gosnmp"
+	"github.com/gosnmp/gosnmp"
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 

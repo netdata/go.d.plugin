@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 	"github.com/gosnmp/gosnmp"
 	snmpmock "github.com/gosnmp/gosnmp/mocks"
 	"github.com/netdata/go.d.plugin/agent/module"
