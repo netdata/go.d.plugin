@@ -56,17 +56,18 @@ type (
 		MaxOIDs int `yaml:"max_request_size"`
 	}
 	ChartsConfig struct {
+		ID            string      `yaml:"id"`
 		Title         string      `yaml:"title"`
-		Priority      int         `yaml:"priority"`
 		Units         *string     `yaml:"units"`
 		Type          *string     `yaml:"type"`
 		Family        *string     `yaml:"family"`
+		Priority      int         `yaml:"priority"`
 		MultiplyRange []int       `yaml:"multiply_range"`
 		Dimensions    []Dimension `yaml:"dimensions"`
 	}
 	Dimension struct {
-		Name       string  `yaml:"name"`
 		OID        string  `yaml:"oid"`
+		Name       string  `yaml:"name"`
 		Algorithm  *string `yaml:"algorithm"`
 		Multiplier *int    `yaml:"multiplier"`
 		Divisor    *int    `yaml:"divisor"`

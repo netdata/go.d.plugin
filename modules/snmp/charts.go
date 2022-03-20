@@ -8,7 +8,6 @@ import (
 
 //TODO: probably not needed
 var defaultSNMPchart = module.Chart{
-	ID:       "snmp_%d",
 	Title:    "%s",
 	Units:    "kilobits/s",
 	Type:     "area",
@@ -18,10 +17,10 @@ var defaultSNMPchart = module.Chart{
 
 func newCharts(configs []ChartsConfig) (*module.Charts, error) {
 	charts := &module.Charts{}
-	for i, cfg := range configs {
+	for _, cfg := range configs {
 		if cfg.MultiplyRange != nil {
 			for j := cfg.MultiplyRange[0]; j <= cfg.MultiplyRange[1]; j++ {
-				chart, err := newChart(i, &j, cfg)
+				chart, err := newChart(&j, cfg)
 				if err != nil {
 					return nil, err
 				}
@@ -30,7 +29,7 @@ func newCharts(configs []ChartsConfig) (*module.Charts, error) {
 				}
 			}
 		} else {
-			chart, err := newChart(i, nil, cfg)
+			chart, err := newChart(nil, cfg)
 			if err != nil {
 				return nil, err
 			}
@@ -45,10 +44,10 @@ func newCharts(configs []ChartsConfig) (*module.Charts, error) {
 // newChart creates news chart based on 'ChartsConfig', 'id' and 'oidIndex'
 // parameters. oidIndex is optional param, which decided whether to add an
 // index to OID value or not.
-func newChart(id int, oidIndex *int, s ChartsConfig) (*module.Chart, error) {
+func newChart(oidIndex *int, s ChartsConfig) (*module.Chart, error) {
 	c := defaultSNMPchart.Copy()
-	c.ID = fmt.Sprintf(c.ID, id)
-	c.Title = fmt.Sprintf(c.Title, s.Title)
+	c.ID = s.ID
+	c.Title = s.Title
 
 	if oidIndex != nil {
 		c.ID = fmt.Sprintf("%s_%d", c.ID, *oidIndex)
