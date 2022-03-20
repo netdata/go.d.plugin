@@ -35,13 +35,10 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 	case 1:
 		snmpClient.SetCommunity(*s.Community)
 		snmpClient.SetVersion(gosnmp.Version1)
-
 	case 2:
 		snmpClient.SetCommunity(*s.Community)
 		snmpClient.SetVersion(gosnmp.Version2c)
-
 	case 3:
-
 		snmpClient.SetVersion(gosnmp.Version3)
 		snmpClient.SetSecurityModel(gosnmp.UserSecurityModel)
 		snmpClient.SetMsgFlags(generateSNMPv3MsgFlags(s.User.Level))
@@ -52,7 +49,6 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 			PrivacyProtocol:          gosnmp.SnmpV3PrivProtocol(s.User.PrivProto),
 			PrivacyPassphrase:        s.User.PrivKey,
 		})
-
 	default:
 		return nil, fmt.Errorf("invalid SNMP version: %d", s.Options.Version)
 
