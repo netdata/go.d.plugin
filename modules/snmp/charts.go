@@ -16,6 +16,32 @@ var defaultSNMPchart = module.Chart{
 	Fam:      "ports",
 }
 
+func newCharts(configs []ChartsConfig) (*module.Charts, error) {
+	charts := &module.Charts{}
+	for i, cfg := range configs {
+		if cfg.MultiplyRange != nil {
+			for j := cfg.MultiplyRange[0]; j <= cfg.MultiplyRange[1]; j++ {
+				chart, err := newChart(i, &j, cfg)
+				if err != nil {
+					return nil, err
+				}
+				if err = charts.Add(chart); err != nil {
+					return nil, err
+				}
+			}
+		} else {
+			chart, err := newChart(i, nil, cfg)
+			if err != nil {
+				return nil, err
+			}
+			if err = charts.Add(chart); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return charts, nil
+}
+
 // newChart creates news chart based on 'ChartsConfig', 'id' and 'oidIndex'
 // parameters. oidIndex is optional param, which decided whether to add an
 // index to OID value or not.
@@ -67,30 +93,4 @@ func newChart(id int, oidIndex *int, s ChartsConfig) (*module.Chart, error) {
 	}
 
 	return c, nil
-}
-
-func newCharts(configs []ChartsConfig) (*module.Charts, error) {
-	charts := &module.Charts{}
-	for i, cfg := range configs {
-		if cfg.MultiplyRange != nil {
-			for j := cfg.MultiplyRange[0]; j <= cfg.MultiplyRange[1]; j++ {
-				chart, err := newChart(i, &j, cfg)
-				if err != nil {
-					return nil, err
-				}
-				if err = charts.Add(chart); err != nil {
-					return nil, err
-				}
-			}
-		} else {
-			chart, err := newChart(i, nil, cfg)
-			if err != nil {
-				return nil, err
-			}
-			if err = charts.Add(chart); err != nil {
-				return nil, err
-			}
-		}
-	}
-	return charts, nil
 }
