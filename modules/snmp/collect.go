@@ -21,22 +21,22 @@ func (s *SNMP) collect() (map[string]int64, error) {
 	return collected, nil
 }
 
-func (s *SNMP) collectChart(collected map[string]int64, OIDs []string) error {
-	if len(OIDs) > s.Options.MaxOIDs {
-		if err := s.collectChart(collected, OIDs[s.Options.MaxOIDs:]); err != nil {
+func (s *SNMP) collectChart(collected map[string]int64, oids []string) error {
+	if len(oids) > s.Options.MaxOIDs {
+		if err := s.collectChart(collected, oids[s.Options.MaxOIDs:]); err != nil {
 			return err
 		}
-		OIDs = OIDs[:s.Options.MaxOIDs]
+		oids = oids[:s.Options.MaxOIDs]
 	}
 
-	result, err := s.snmpHandler.Get(OIDs)
+	result, err := s.snmpHandler.Get(oids)
 
 	if err != nil {
 		s.Errorf("Cannot get SNMP data: %v", err)
 		return err
 	}
 
-	for i, oid := range OIDs {
+	for i, oid := range oids {
 		switch result.Variables[i].Type {
 		case gosnmp.NoSuchInstance, gosnmp.NoSuchObject:
 			s.Debugf("Skipping OID %s, no such object", oid)
