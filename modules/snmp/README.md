@@ -177,7 +177,7 @@ The security of an SNMPv3 message as per RFC 3414 (`user.level`):
 
 | String value | Int value | Description                              |
 |:------------:|:---------:|------------------------------------------|
-| noAuthNoPriv |     1     | no message authentication or encryption  |
+|     none     |     1     | no message authentication or encryption  |
 |  authNoPriv  |     2     | message authentication and no encryption |
 |   authPriv   |     3     | message authentication and encryption    |
 

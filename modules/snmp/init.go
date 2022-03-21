@@ -50,7 +50,7 @@ func safeConvertSNMPv3UserLevel(level string) gosnmp.SnmpV3MsgFlags {
 
 func convertSNMPv3UserLevel(level string) (gosnmp.SnmpV3MsgFlags, error) {
 	switch level {
-	case "1", "noAuthNoPriv":
+	case "1", "none":
 		return gosnmp.NoAuthNoPriv, nil
 	case "2", "authNoPriv":
 		return gosnmp.AuthNoPriv, nil
