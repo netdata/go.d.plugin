@@ -94,7 +94,7 @@ func safeConvertSNMPV3UserPrivProtocol(protocol string) gosnmp.SnmpV3PrivProtoco
 
 func convertSNMPV3UserPrivProtocol(protocol string) (gosnmp.SnmpV3PrivProtocol, error) {
 	switch protocol {
-	case "1", "noPriv":
+	case "1", "none":
 		return gosnmp.NoPriv, nil
 	case "2", "des":
 		return gosnmp.DES, nil

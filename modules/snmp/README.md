@@ -173,29 +173,37 @@ To use SNMPv3:
 
 Example: refer to the first example in this README.
 
-Security levels (`user.level`):
+The security of an SNMPv3 message as per RFC 3414 (`user.level`):
 
-- 1 is `noAuthNoPriv`
-- 2 is `authNoPriv`
-- 3 is `authPriv`
+| String value | Int value | Description                              |
+|:------------:|:---------:|------------------------------------------|
+| noAuthNoPriv |     1     | no message authentication or encryption  |
+|  authNoPriv  |     2     | message authentication and no encryption |
+|   authPriv   |     3     | message authentication and encryption    |
 
-Authentication protocols (`user.auth_proto`):
+The digest algorithm for SNMPv3 messages that require authentication (`user.auth_proto`):
 
-- "1" is `none`
-- "2" is `md5`
-- "3" is `sha`
-- "4" is `sha224`
-- "5" is `sha256`
-- "6" is `sha384`
-- "7" is `sha512`
+| String value | Int value | Description                               |
+|:------------:|:---------:|-------------------------------------------|
+|     none     |     1     | no message authentication                 |
+|     md5      |     2     | MD5 message authentication (HMAC-MD5-96)  |
+|     sha      |     3     | SHA message authentication (HMAC-SHA-96)  |
+|    sha224    |     4     | SHA message authentication (HMAC-SHA-224) |
+|    sha256    |     5     | SHA message authentication (HMAC-SHA-256) |
+|    sha384    |     6     | SHA message authentication (HMAC-SHA-384) |
+|    sha512    |     7     | SHA message authentication (HMAC-SHA-512) |
 
-Privacy protocols (`user.priv_proto`):
+The encryption algorithm for SNMPv3 messages that require privacy (`user.priv_proto`):
 
-- "1" is `none`
-- "2" is `des`
-- "3" is `aes`
-- "4" is `aes192`
-- "5" is `aes256`
+| String value | Int value | Description                                                             |
+|:------------:|:---------:|-------------------------------------------------------------------------|
+|     none     |     1     | no message encryption                                                   |
+|     des      |     2     | ES encryption (CBC-DES)                                                 |
+|     aes      |     3     | 128-bit AES encryption (CFB-AES-128)                                    |
+|    aes192    |     4     | 192-bit AES encryption (CFB-AES-192) with "Blumenthal" key localization |
+|    aes256    |     5     | 256-bit AES encryption (CFB-AES-256) with "Blumenthal" key localization |
+|   aes192c    |     6     | 192-bit AES encryption (CFB-AES-192) with "Reeder" key localization     |
+|   aes256c    |     7     | 256-bit AES encryption (CFB-AES-256) with "Reeder" key localization     |
 
 ## Testing the configuration
 
