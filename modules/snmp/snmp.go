@@ -42,10 +42,10 @@ type (
 	}
 	User struct {
 		Name      string `yaml:"name"`
-		Level     int    `yaml:"level"`
-		AuthProto int    `yaml:"auth_proto"`
+		Level     string `yaml:"level"`
+		AuthProto string `yaml:"auth_proto"`
 		AuthKey   string `yaml:"auth_key"`
-		PrivProto int    `yaml:"priv_proto"`
+		PrivProto string `yaml:"priv_proto"`
 		PrivKey   string `yaml:"priv_key"`
 	}
 	Options struct {

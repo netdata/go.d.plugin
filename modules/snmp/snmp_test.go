@@ -222,6 +222,7 @@ func defaultMockExpects(m *snmpmock.MockHandler) {
 func createCharts() []ChartsConfig {
 	return []ChartsConfig{
 		{
+			ID:       "test_chart",
 			Title:    "Test chart",
 			Priority: 1,
 			Type:     &cType,
@@ -306,10 +307,10 @@ func prepareConfigWithoutChart() Config {
 		},
 		User: &User{
 			Name:      "test",
-			Level:     3,
-			AuthProto: 2,
+			Level:     "3",
+			AuthProto: "2",
 			AuthKey:   "test_auth_key",
-			PrivProto: 2,
+			PrivProto: "2",
 			PrivKey:   "test_priv_key",
 		},
 	}
@@ -328,10 +329,10 @@ func prepareConfigWithDimensions() Config {
 		},
 		User: &User{
 			Name:      "test",
-			Level:     3,
-			AuthProto: 2,
+			Level:     "3",
+			AuthProto: "2",
 			AuthKey:   "test_auth_key",
-			PrivProto: 2,
+			PrivProto: "2",
 			PrivKey:   "test_priv_key",
 		},
 		ChartInput: createCharts(),
@@ -351,14 +352,15 @@ func prepareConfigWithoutDimensions() Config {
 		},
 		User: &User{
 			Name:      "test",
-			Level:     3,
-			AuthProto: 2,
+			Level:     "3",
+			AuthProto: "2",
 			AuthKey:   "test_auth_key",
-			PrivProto: 2,
+			PrivProto: "2",
 			PrivKey:   "test_priv_key",
 		},
 		ChartInput: []ChartsConfig{
 			{
+				ID:       "test_chart",
 				Title:    "Test chart",
 				Priority: 1,
 			},
@@ -379,14 +381,15 @@ func prepareConfigWithMultiplyRange() Config {
 		},
 		User: &User{
 			Name:      "test",
-			Level:     3,
-			AuthProto: 2,
+			Level:     "3",
+			AuthProto: "2",
 			AuthKey:   "test_auth_key",
-			PrivProto: 2,
+			PrivProto: "2",
 			PrivKey:   "test_priv_key",
 		},
 		ChartInput: []ChartsConfig{
 			{
+				ID:            "test_chart",
 				Title:         "Test chart",
 				Priority:      1,
 				Type:          &cType,
