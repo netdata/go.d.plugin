@@ -27,12 +27,12 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 	case 3:
 		snmpClient.SetVersion(gosnmp.Version3)
 		snmpClient.SetSecurityModel(gosnmp.UserSecurityModel)
-		snmpClient.SetMsgFlags(safeConvertSNMPv3UserLevel(s.User.Level))
+		snmpClient.SetMsgFlags(safeConvertSNMPv3SecurityLevel(s.User.SecurityLevel))
 		snmpClient.SetSecurityParameters(&gosnmp.UsmSecurityParameters{
 			UserName:                 s.User.Name,
-			AuthenticationProtocol:   safeConvertSNMPv3UserAuthProtocol(s.User.AuthProto),
+			AuthenticationProtocol:   safeConvertSNMPv3AuthProtocol(s.User.AuthProto),
 			AuthenticationPassphrase: s.User.AuthKey,
-			PrivacyProtocol:          safeConvertSNMPV3UserPrivProtocol(s.User.PrivProto),
+			PrivacyProtocol:          safeConvertSNMPv3PrivProtocol(s.User.PrivProto),
 			PrivacyPassphrase:        s.User.PrivKey,
 		})
 	default:
@@ -43,12 +43,12 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 	return snmpClient, nil
 }
 
-func safeConvertSNMPv3UserLevel(level string) gosnmp.SnmpV3MsgFlags {
-	v, _ := convertSNMPv3UserLevel(level)
+func safeConvertSNMPv3SecurityLevel(level string) gosnmp.SnmpV3MsgFlags {
+	v, _ := convertSNMPv3SecurityLevel(level)
 	return v
 }
 
-func convertSNMPv3UserLevel(level string) (gosnmp.SnmpV3MsgFlags, error) {
+func convertSNMPv3SecurityLevel(level string) (gosnmp.SnmpV3MsgFlags, error) {
 	switch level {
 	case "1", "none":
 		return gosnmp.NoAuthNoPriv, nil
@@ -61,12 +61,12 @@ func convertSNMPv3UserLevel(level string) (gosnmp.SnmpV3MsgFlags, error) {
 	}
 }
 
-func safeConvertSNMPv3UserAuthProtocol(protocol string) gosnmp.SnmpV3AuthProtocol {
-	v, _ := convertSNMPv3UserAuthProtocol(protocol)
+func safeConvertSNMPv3AuthProtocol(protocol string) gosnmp.SnmpV3AuthProtocol {
+	v, _ := convertSNMPv3AuthProtocol(protocol)
 	return v
 }
 
-func convertSNMPv3UserAuthProtocol(protocol string) (gosnmp.SnmpV3AuthProtocol, error) {
+func convertSNMPv3AuthProtocol(protocol string) (gosnmp.SnmpV3AuthProtocol, error) {
 	switch protocol {
 	case "1", "none":
 		return gosnmp.NoAuth, nil
@@ -87,12 +87,12 @@ func convertSNMPv3UserAuthProtocol(protocol string) (gosnmp.SnmpV3AuthProtocol, 
 	}
 }
 
-func safeConvertSNMPV3UserPrivProtocol(protocol string) gosnmp.SnmpV3PrivProtocol {
-	v, _ := convertSNMPV3UserPrivProtocol(protocol)
+func safeConvertSNMPv3PrivProtocol(protocol string) gosnmp.SnmpV3PrivProtocol {
+	v, _ := convertSNMPv3PrivProtocol(protocol)
 	return v
 }
 
-func convertSNMPV3UserPrivProtocol(protocol string) (gosnmp.SnmpV3PrivProtocol, error) {
+func convertSNMPv3PrivProtocol(protocol string) (gosnmp.SnmpV3PrivProtocol, error) {
 	switch protocol {
 	case "1", "none":
 		return gosnmp.NoPriv, nil

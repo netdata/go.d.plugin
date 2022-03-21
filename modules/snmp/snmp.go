@@ -41,12 +41,12 @@ type (
 		ChartInput  []ChartsConfig `yaml:"charts"`
 	}
 	User struct {
-		Name      string `yaml:"name"`
-		Level     string `yaml:"level"`
-		AuthProto string `yaml:"auth_proto"`
-		AuthKey   string `yaml:"auth_key"`
-		PrivProto string `yaml:"priv_proto"`
-		PrivKey   string `yaml:"priv_key"`
+		Name          string `yaml:"name"`
+		SecurityLevel string `yaml:"level"`
+		AuthProto     string `yaml:"auth_proto"`
+		AuthKey       string `yaml:"auth_key"`
+		PrivProto     string `yaml:"priv_proto"`
+		PrivKey       string `yaml:"priv_key"`
 	}
 	Options struct {
 		Port    int `yaml:"port"`

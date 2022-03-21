@@ -76,13 +76,13 @@ func (u User) validateConfig() error {
 	if u.Name == "" {
 		err = appendError(err, "missing value: user.name;")
 	}
-	if _, err := convertSNMPv3UserLevel(u.Level); err != nil {
-		err = appendError(err, fmt.Sprintf("invalid range of value(%s): user.level;", u.Level))
+	if _, err := convertSNMPv3SecurityLevel(u.SecurityLevel); err != nil {
+		err = appendError(err, fmt.Sprintf("invalid range of value(%s): user.level;", u.SecurityLevel))
 	}
-	if _, err := convertSNMPv3UserAuthProtocol(u.AuthProto); err != nil {
+	if _, err := convertSNMPv3AuthProtocol(u.AuthProto); err != nil {
 		err = appendError(err, fmt.Sprintf("invalid range of value(%s): user.auth_proto;", u.AuthProto))
 	}
-	if _, err := convertSNMPV3UserPrivProtocol(u.PrivProto); err != nil {
+	if _, err := convertSNMPv3PrivProtocol(u.PrivProto); err != nil {
 		err = appendError(err, fmt.Sprintf("invalid range of value(%s): user.priv_proto;", u.PrivProto))
 	}
 	return err

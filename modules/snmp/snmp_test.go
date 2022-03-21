@@ -306,12 +306,12 @@ func prepareConfigWithoutChart() Config {
 			MaxOIDs: 4,
 		},
 		User: &User{
-			Name:      "test",
-			Level:     "3",
-			AuthProto: "2",
-			AuthKey:   "test_auth_key",
-			PrivProto: "2",
-			PrivKey:   "test_priv_key",
+			Name:          "test",
+			SecurityLevel: "3",
+			AuthProto:     "2",
+			AuthKey:       "test_auth_key",
+			PrivProto:     "2",
+			PrivKey:       "test_priv_key",
 		},
 	}
 }
@@ -328,12 +328,12 @@ func prepareConfigWithDimensions() Config {
 			MaxOIDs: 4,
 		},
 		User: &User{
-			Name:      "test",
-			Level:     "3",
-			AuthProto: "2",
-			AuthKey:   "test_auth_key",
-			PrivProto: "2",
-			PrivKey:   "test_priv_key",
+			Name:          "test",
+			SecurityLevel: "3",
+			AuthProto:     "2",
+			AuthKey:       "test_auth_key",
+			PrivProto:     "2",
+			PrivKey:       "test_priv_key",
 		},
 		ChartInput: createCharts(),
 	}
@@ -351,12 +351,12 @@ func prepareConfigWithoutDimensions() Config {
 			MaxOIDs: 4,
 		},
 		User: &User{
-			Name:      "test",
-			Level:     "3",
-			AuthProto: "2",
-			AuthKey:   "test_auth_key",
-			PrivProto: "2",
-			PrivKey:   "test_priv_key",
+			Name:          "test",
+			SecurityLevel: "3",
+			AuthProto:     "2",
+			AuthKey:       "test_auth_key",
+			PrivProto:     "2",
+			PrivKey:       "test_priv_key",
 		},
 		ChartInput: []ChartsConfig{
 			{
@@ -380,12 +380,12 @@ func prepareConfigWithMultiplyRange() Config {
 			MaxOIDs: 5,
 		},
 		User: &User{
-			Name:      "test",
-			Level:     "3",
-			AuthProto: "2",
-			AuthKey:   "test_auth_key",
-			PrivProto: "2",
-			PrivKey:   "test_priv_key",
+			Name:          "test",
+			SecurityLevel: "3",
+			AuthProto:     "2",
+			AuthKey:       "test_auth_key",
+			PrivProto:     "2",
+			PrivKey:       "test_priv_key",
 		},
 		ChartInput: []ChartsConfig{
 			{
