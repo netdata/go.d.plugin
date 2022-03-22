@@ -1,12 +1,30 @@
 package snmp
 
 import (
-	"github.com/gosnmp/gosnmp"
+	"fmt"
+	"strings"
+
 	"github.com/netdata/go.d.plugin/agent/module"
+
+	"github.com/gosnmp/gosnmp"
+)
+
+const (
+	defaultUpdateEvery = 5
+	defaultHostname    = "127.0.0.1"
+	defaultCommunity   = "public"
+	defaultVersion     = int(gosnmp.Version2c)
+	defaultPort        = 161
+	defaultRetries     = 1
+	defaultTimeout     = defaultUpdateEvery
+	defaultMaxOIDs     = 60
 )
 
 func init() {
 	creator := module.Creator{
+		Defaults: module.Defaults{
+			UpdateEvery: defaultUpdateEvery,
+		},
 		Create: func() module.Module { return New() },
 	}
 
@@ -14,18 +32,16 @@ func init() {
 }
 
 func New() *SNMP {
-	comm := "public"
 	return &SNMP{
 		Config: Config{
-			Hostname:    "127.0.0.1",
-			Community:   &comm,
-			UpdateEvery: 3,
-			Options: &Options{
-				Port:    161,
-				Retries: 1,
-				Timeout: 2,
-				Version: 2,
-				MaxOIDs: 60,
+			Hostname:  defaultHostname,
+			Community: defaultCommunity,
+			Options: Options{
+				Port:    defaultPort,
+				Retries: defaultRetries,
+				Timeout: defaultUpdateEvery,
+				Version: defaultVersion,
+				MaxOIDs: defaultMaxOIDs,
 			},
 		},
 	}
@@ -33,12 +49,12 @@ func New() *SNMP {
 
 type (
 	Config struct {
-		Hostname    string         `yaml:"hostname"`
-		UpdateEvery int            `yaml:"update_every"`
-		Community   *string        `yaml:"community"`
-		User        *User          `yaml:"user"`
-		Options     *Options       `yaml:"options"`
-		ChartInput  []ChartsConfig `yaml:"charts"`
+		UpdateEvery int           `yaml:"update_every"`
+		Hostname    string        `yaml:"hostname"`
+		Community   string        `yaml:"community"`
+		User        User          `yaml:"user"`
+		Options     Options       `yaml:"options"`
+		ChartsInput []ChartConfig `yaml:"charts"`
 	}
 	User struct {
 		Name          string `yaml:"name"`
@@ -55,22 +71,23 @@ type (
 		Version int `yaml:"version"`
 		MaxOIDs int `yaml:"max_request_size"`
 	}
-	ChartsConfig struct {
-		ID            string      `yaml:"id"`
-		Title         string      `yaml:"title"`
-		Units         *string     `yaml:"units"`
-		Type          *string     `yaml:"type"`
-		Family        *string     `yaml:"family"`
-		Priority      int         `yaml:"priority"`
-		MultiplyRange []int       `yaml:"multiply_range"`
-		Dimensions    []Dimension `yaml:"dimensions"`
+	ChartConfig struct {
+		ID         string            `yaml:"id"`
+		Title      string            `yaml:"title"`
+		Units      string            `yaml:"units"`
+		Family     string            `yaml:"family"`
+		Context    string            `yaml:"context"`
+		Type       string            `yaml:"type"`
+		Priority   int               `yaml:"priority"`
+		IndexRange []int             `yaml:"multiply_range"`
+		Dimensions []DimensionConfig `yaml:"dimensions"`
 	}
-	Dimension struct {
-		OID        string  `yaml:"oid"`
-		Name       string  `yaml:"name"`
-		Algorithm  *string `yaml:"algorithm"`
-		Multiplier *int    `yaml:"multiplier"`
-		Divisor    *int    `yaml:"divisor"`
+	DimensionConfig struct {
+		OID        string `yaml:"oid"`
+		Name       string `yaml:"name"`
+		Algorithm  string `yaml:"algorithm"`
+		Multiplier int    `yaml:"multiplier"`
+		Divisor    int    `yaml:"divisor"`
 	}
 )
 
@@ -78,7 +95,10 @@ type SNMP struct {
 	module.Base
 	snmpClient gosnmp.Handler
 	Config     `yaml:",inline"`
-	charts     *module.Charts
+
+	charts *module.Charts
+
+	oids []string
 }
 
 func (s *SNMP) Init() bool {
@@ -94,6 +114,8 @@ func (s *SNMP) Init() bool {
 		return false
 	}
 
+	s.Info(snmpClientConnInfo(snmpClient))
+
 	err = snmpClient.Connect()
 	if err != nil {
 		s.Errorf("SNMP client connect: %v", err)
@@ -101,11 +123,14 @@ func (s *SNMP) Init() bool {
 	}
 	s.snmpClient = snmpClient
 
-	s.charts, err = newCharts(s.ChartInput)
+	charts, err := newCharts(s.ChartsInput)
 	if err != nil {
 		s.Errorf("Population of charts failed: %v", err)
 		return false
 	}
+	s.charts = charts
+
+	s.oids = s.initOIDs()
 
 	return true
 }
@@ -134,4 +159,16 @@ func (s *SNMP) Cleanup() {
 	if s.snmpClient != nil {
 		s.snmpClient.Close()
 	}
+}
+
+func snmpClientConnInfo(c gosnmp.Handler) string {
+	var info strings.Builder
+	info.WriteString(fmt.Sprintf("hostname=%s,port=%d,snmp_version=%s", c.Target(), c.Port(), c.Version()))
+	switch c.Version() {
+	case gosnmp.Version1, gosnmp.Version2c:
+		info.WriteString(fmt.Sprintf(",community=%s", c.Community()))
+	case gosnmp.Version3:
+		info.WriteString(fmt.Sprintf(",security_level=%d,%s", c.MsgFlags(), c.SecurityParameters().Description()))
+	}
+	return info.String()
 }

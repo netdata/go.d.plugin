@@ -23,18 +23,10 @@ var (
 )
 
 func TestNew(t *testing.T) {
-	// We want to ensure that module is a reference type, nothing more.
-
 	assert.IsType(t, (*SNMP)(nil), New())
 }
 
 func TestSNMP_Init(t *testing.T) {
-	// 'Init() bool' initializes the module with an appropriate config, so to test it we need:
-	// - provide the config.
-	// - set module.Config field with the config.
-	// - call Init() and compare its return value with the expected value.
-
-	// 'test' map contains different test cases.
 	mockSNMP, cleanup := mockInit(t)
 	defer cleanup()
 
@@ -219,15 +211,15 @@ func defaultMockExpects(m *snmpmock.MockHandler) {
 	m.EXPECT().Connect().Return(nil).AnyTimes()
 }
 
-func createCharts() []ChartsConfig {
-	return []ChartsConfig{
+func createCharts() []ChartConfig {
+	return []ChartConfig{
 		{
 			ID:       "test_chart",
 			Title:    "Test chart",
 			Priority: 1,
 			Type:     &cType,
 			Family:   &cFamily,
-			Dimensions: []Dimension{
+			Dimensions: []DimensionConfig{
 				{
 					Name:       "in",
 					OID:        "1.3.6.1.2.1.2.2.1.10.2",
@@ -259,7 +251,7 @@ func prepareConfigWithoutUser() Config {
 			Version: 3,
 			MaxOIDs: 4,
 		},
-		ChartInput: createCharts(),
+		ChartsInput: createCharts(),
 	}
 }
 
@@ -274,8 +266,8 @@ func prepareConfigWithCommunity() Config {
 			Version: 2, //Version 2
 			MaxOIDs: 4,
 		},
-		Community:  &community,
-		ChartInput: createCharts(),
+		Community:   &community,
+		ChartsInput: createCharts(),
 	}
 }
 
@@ -290,7 +282,7 @@ func prepareConfigWithoutCommunity() Config {
 			Version: 2, //Version 2
 			MaxOIDs: 4,
 		},
-		ChartInput: createCharts(),
+		ChartsInput: createCharts(),
 	}
 }
 
@@ -335,7 +327,7 @@ func prepareConfigWithDimensions() Config {
 			PrivProto:     "2",
 			PrivKey:       "test_priv_key",
 		},
-		ChartInput: createCharts(),
+		ChartsInput: createCharts(),
 	}
 }
 
@@ -358,7 +350,7 @@ func prepareConfigWithoutDimensions() Config {
 			PrivProto:     "2",
 			PrivKey:       "test_priv_key",
 		},
-		ChartInput: []ChartsConfig{
+		ChartsInput: []ChartConfig{
 			{
 				ID:       "test_chart",
 				Title:    "Test chart",
@@ -387,15 +379,15 @@ func prepareConfigWithMultiplyRange() Config {
 			PrivProto:     "2",
 			PrivKey:       "test_priv_key",
 		},
-		ChartInput: []ChartsConfig{
+		ChartsInput: []ChartConfig{
 			{
-				ID:            "test_chart",
-				Title:         "Test chart",
-				Priority:      1,
-				Type:          &cType,
-				Family:        &cFamily,
-				MultiplyRange: []int{1, 5},
-				Dimensions: []Dimension{
+				ID:         "test_chart",
+				Title:      "Test chart",
+				Priority:   1,
+				Type:       &cType,
+				Family:     &cFamily,
+				IndexRange: []int{1, 5},
+				Dimensions: []DimensionConfig{
 					{
 						Name:       "in",
 						OID:        "1.3.6.1.2.1.2.2.1.10",
