@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -95,6 +96,9 @@ func (p *prometheus) parse(prometheusText []byte, metrics *Metrics, meta Metadat
 		if err != nil {
 			if err == io.EOF {
 				break
+			}
+			if entry == textparse.EntryInvalid && strings.HasPrefix(err.Error(), "invalid metric type") {
+				continue
 			}
 			return err
 		}
