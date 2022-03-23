@@ -28,11 +28,21 @@ func (s *SNMP) collectOIDs(collected map[string]int64) error {
 		}
 
 		for i, oid := range oids {
-			switch resp.Variables[i].Type {
-			case gosnmp.NoSuchInstance, gosnmp.NoSuchObject:
-				s.Debugf("skipping OID %s, no such object", oid)
-			default:
+			if i >= len(resp.Variables) {
+				continue
+			}
+			switch typ := resp.Variables[i].Type; typ {
+			case gosnmp.Boolean,
+				gosnmp.Counter32,
+				gosnmp.Counter64,
+				gosnmp.Gauge32,
+				gosnmp.TimeTicks,
+				gosnmp.Uinteger32,
+				gosnmp.OpaqueFloat,
+				gosnmp.OpaqueDouble:
 				collected[oid] = gosnmp.ToBigInt(resp.Variables[i].Value).Int64()
+			default:
+				s.Debugf("skipping OID '%s' (unsupported type '%s')", oid, typ)
 			}
 		}
 	}

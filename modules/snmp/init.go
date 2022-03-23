@@ -12,10 +12,10 @@ var newSNMPClient = gosnmp.NewHandler
 
 func (s SNMP) validateConfig() error {
 	if len(s.ChartsInput) == 0 {
-		return errors.New("'user.name' is required when using SNMPv3 but not set")
+		return errors.New("'charts' are required but not set")
 	}
 
-	if s.Options.Version == int(gosnmp.Version3) {
+	if s.Options.Version == gosnmp.Version3.String() {
 		if s.User.Name == "" {
 			return errors.New("'user.name' is required when using SNMPv3 but not set")
 		}
@@ -67,26 +67,26 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 		snmpClient.SetMaxOids(s.Options.MaxOIDs)
 	}
 
-	snmpVersion := s.Options.Version
-	if snmpVersion < int(gosnmp.Version1) || snmpVersion > int(gosnmp.Version3) {
-		s.Warningf("'options.version' is invalid, changing to the default value: '%d' => '%d'",
+	snmpVersion, err := parseSNMPVersion(s.Options.Version)
+	if err != nil {
+		s.Warningf("'options.version' is invalid, changing to the default value: '%s' => '%s'",
 			s.Options.Version, defaultVersion)
 		snmpVersion = defaultVersion
 	}
 	community := s.Community
-	if community == "" && (snmpVersion == int(gosnmp.Version1) || snmpVersion == int(gosnmp.Version2c)) {
+	if community == "" && (snmpVersion <= gosnmp.Version2c) {
 		s.Warningf("'community' not set, using the default value: '%s'", defaultCommunity)
 		community = defaultCommunity
 	}
 
 	switch snmpVersion {
-	case 1:
+	case gosnmp.Version1:
 		snmpClient.SetCommunity(community)
 		snmpClient.SetVersion(gosnmp.Version1)
-	case 2:
+	case gosnmp.Version2c:
 		snmpClient.SetCommunity(community)
 		snmpClient.SetVersion(gosnmp.Version2c)
-	case 3:
+	case gosnmp.Version3:
 		snmpClient.SetVersion(gosnmp.Version3)
 		snmpClient.SetSecurityModel(gosnmp.UserSecurityModel)
 		snmpClient.SetMsgFlags(safeParseSNMPv3SecurityLevel(s.User.SecurityLevel))
@@ -98,7 +98,7 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 			PrivacyPassphrase:        s.User.PrivKey,
 		})
 	default:
-		return nil, fmt.Errorf("invalid SNMP version: %d", s.Options.Version)
+		return nil, fmt.Errorf("invalid SNMP version: %s", s.Options.Version)
 	}
 
 	return snmpClient, nil
@@ -111,6 +111,19 @@ func (s SNMP) initOIDs() (oids []string) {
 		}
 	}
 	return oids
+}
+
+func parseSNMPVersion(version string) (gosnmp.SnmpVersion, error) {
+	switch version {
+	case "0", "1":
+		return gosnmp.Version1, nil
+	case "2", "2c", "":
+		return gosnmp.Version2c, nil
+	case "3":
+		return gosnmp.Version3, nil
+	default:
+		return gosnmp.Version2c, fmt.Errorf("invalid snmp version value (%s)", version)
+	}
 }
 
 func safeParseSNMPv3SecurityLevel(level string) gosnmp.SnmpV3MsgFlags {

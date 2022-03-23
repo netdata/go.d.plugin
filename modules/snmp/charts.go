@@ -65,7 +65,7 @@ func newChart(cfg ChartConfig) (*module.Chart, error) {
 		Title:    cfg.Title,
 		Units:    cfg.Family,
 		Fam:      cfg.Family,
-		Ctx:      cfg.Context,
+		Ctx:      fmt.Sprintf("snmp.%s", cfg.ID),
 		Type:     module.ChartType(cfg.Type),
 		Priority: cfg.Priority,
 	}
@@ -75,9 +75,6 @@ func newChart(cfg ChartConfig) (*module.Chart, error) {
 	}
 	if chart.Units == "" {
 		chart.Units = "num"
-	}
-	if chart.Ctx == "" {
-		chart.Ctx = fmt.Sprintf("snmp.%s", chart.ID)
 	}
 	if chart.Priority < module.Priority {
 		chart.Priority += module.Priority

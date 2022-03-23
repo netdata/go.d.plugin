@@ -13,7 +13,7 @@ const (
 	defaultUpdateEvery = 5
 	defaultHostname    = "127.0.0.1"
 	defaultCommunity   = "public"
-	defaultVersion     = int(gosnmp.Version2c)
+	defaultVersion     = gosnmp.Version2c
 	defaultPort        = 161
 	defaultRetries     = 1
 	defaultTimeout     = defaultUpdateEvery
@@ -40,7 +40,7 @@ func New() *SNMP {
 				Port:    defaultPort,
 				Retries: defaultRetries,
 				Timeout: defaultUpdateEvery,
-				Version: defaultVersion,
+				Version: defaultVersion.String(),
 				MaxOIDs: defaultMaxOIDs,
 			},
 		},
@@ -65,18 +65,17 @@ type (
 		PrivKey       string `yaml:"priv_key"`
 	}
 	Options struct {
-		Port    int `yaml:"port"`
-		Retries int `yaml:"retries"`
-		Timeout int `yaml:"timeout"`
-		Version int `yaml:"version"`
-		MaxOIDs int `yaml:"max_request_size"`
+		Port    int    `yaml:"port"`
+		Retries int    `yaml:"retries"`
+		Timeout int    `yaml:"timeout"`
+		Version string `yaml:"version"`
+		MaxOIDs int    `yaml:"max_request_size"`
 	}
 	ChartConfig struct {
 		ID         string            `yaml:"id"`
 		Title      string            `yaml:"title"`
 		Units      string            `yaml:"units"`
 		Family     string            `yaml:"family"`
-		Context    string            `yaml:"context"`
 		Type       string            `yaml:"type"`
 		Priority   int               `yaml:"priority"`
 		IndexRange []int             `yaml:"multiply_range"`
@@ -93,12 +92,11 @@ type (
 
 type SNMP struct {
 	module.Base
+	Config `yaml:",inline"`
+
+	charts     *module.Charts
 	snmpClient gosnmp.Handler
-	Config     `yaml:",inline"`
-
-	charts *module.Charts
-
-	oids []string
+	oids       []string
 }
 
 func (s *SNMP) Init() bool {
