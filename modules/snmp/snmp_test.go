@@ -169,18 +169,7 @@ func TestSNMP_Check(t *testing.T) {
 				return snmp
 			},
 		},
-		"fail snmp client Get fails": {
-			wantFail: true,
-			prepareSNMP: func(m *snmpmock.MockHandler) *SNMP {
-				snmp := New()
-				snmp.Config = prepareV2Config()
-
-				m.EXPECT().Get(gomock.Any()).Return(nil, errors.New("mock Get() error")).Times(1)
-
-				return snmp
-			},
-		},
-		"success snmp client Get fails": {
+		"fail when snmp client Get fails": {
 			wantFail: true,
 			prepareSNMP: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
