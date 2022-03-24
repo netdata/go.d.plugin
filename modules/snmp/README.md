@@ -29,37 +29,37 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/snmp.conf
 ```
 
-| Parameter                    | Default value  | Description                                                                        |
-|------------------------------|:--------------:|------------------------------------------------------------------------------------|
-| name                         |       -        | the data collection job name                                                       |
-| update_every                 |       10       | the update frequency for each target, in seconds                                   |
-| hostname                     |   127.0.0.1    | the target ipv4 address                                                            |
-| community                    |     public     | SNMPv1/2 community string                                                          |
-| options.version              |       2        | SNMP version                                                                       |
-| options.port                 |      161       | the target port                                                                    |
-| options.retries              |       1        | the number of retries to attempt                                                   |
-| options.timeout              |       10       | the timeout for one SNMP request/response                                          |
-| options.max_request_size     |       60       | the maximum number of oids allowed in one one SNMP request                         |
-| user.name                    |       -        | the SNMPv3 user name                                                               |
-| user.level                   |       -        | the security level of SNMPv3 messages                                              |
-| user.auth_proto              |       -        | the authentication protocol for SNMPv3 messages                                    |
-| user.auth_key                |       -        | the authentication protocol pass phrase                                            |
-| user.priv_proto              |       -        | the privacy protocol for SNMPv3 messages                                           |
-| user.priv_key                |       -        | the privacy protocol pass phrase                                                   |
-| charts                       |       []       | the list of charts                                                                 |
-| charts.id                    |       -        | is used to uniquely identify the chart                                             |
-| charts.title                 | Untilted chart | the text above the chart                                                           |
-| charts.units                 |      num       | the label of the vertical axis of the chart                                        |
-| charts.family                |   charts.id    | the name of the dashboard submenu under which each chart will be displayed         |
-| charts.type                  |      line      | the chart type (one of line, area or stacked)                                      |
-| charts.priority              |     70000      | the priority of the chart as rendered on the web page                              |
-| charts.multiply_range        |       -        | the update frequency for each target, in seconds                                   |
-| charts.dimensions            |       []       | the list of chart dimensions                                                       |
-| charts.dimensions.oid        |       -        | the OID path to the metric you [want to collect](#Finding-OIDs)                    |
-| charts.dimensions.name       |       -        | the name of the dimension as it will appear at the legend of the chart             |
-| charts.dimensions.algorithm  |    absolute    | the dimension algorithm (one of absolute, incremental)                             |
-| charts.dimensions.multiplier |       1        | the value to multiply the collected value, applied to convert it properly to units |
-| charts.dimensions.divisor    |       1        | the value to divide the collected value, applied to convert it properly to units   |
+| Parameter                    | Default value  | Description                                                                                                          |
+|------------------------------|:--------------:|----------------------------------------------------------------------------------------------------------------------|
+| name                         |       -        | the data collection job name                                                                                         |
+| update_every                 |       10       | the update frequency for each target, in seconds                                                                     |
+| hostname                     |   127.0.0.1    | the target ipv4 address                                                                                              |
+| community                    |     public     | SNMPv1/2 community string                                                                                            |
+| options.version              |       2        | SNMP version                                                                                                         |
+| options.port                 |      161       | the target port                                                                                                      |
+| options.retries              |       1        | the number of retries to attempt                                                                                     |
+| options.timeout              |       10       | the timeout for one SNMP request/response                                                                            |
+| options.max_request_size     |       60       | the maximum number of oids allowed in one one SNMP request                                                           |
+| user.name                    |       -        | the SNMPv3 user name                                                                                                 |
+| user.level                   |       -        | the security level of SNMPv3 messages                                                                                |
+| user.auth_proto              |       -        | the authentication protocol for SNMPv3 messages                                                                      |
+| user.auth_key                |       -        | the authentication protocol pass phrase                                                                              |
+| user.priv_proto              |       -        | the privacy protocol for SNMPv3 messages                                                                             |
+| user.priv_key                |       -        | the privacy protocol pass phrase                                                                                     |
+| charts                       |       []       | the list of charts                                                                                                   |
+| charts.id                    |       -        | is used to uniquely identify the chart                                                                               |
+| charts.title                 | Untilted chart | the text above the chart                                                                                             |
+| charts.units                 |      num       | the label of the vertical axis of the chart                                                                          |
+| charts.family                |   charts.id    | the name of the dashboard submenu under which each chart will be displayed                                           |
+| charts.type                  |      line      | the chart type (one of line, area or stacked)                                                                        |
+| charts.priority              |     70000      | the priority of the chart as rendered on the web page                                                                |
+| charts.multiply_range        |       []       | is used when you need to define many charts [using incremental OIDs](#Example:-using-'charts.multiply_range'-option) |
+| charts.dimensions            |       []       | the list of chart dimensions                                                                                         |
+| charts.dimensions.oid        |       -        | the OID path to the metric you [want to collect](#Finding-OIDs)                                                      |
+| charts.dimensions.name       |       -        | the name of the dimension as it will appear at the legend of the chart                                               |
+| charts.dimensions.algorithm  |    absolute    | the dimension algorithm (one of absolute, incremental)                                                               |
+| charts.dimensions.multiplier |       1        | the value to multiply the collected value, applied to convert it properly to units                                   |
+| charts.dimensions.divisor    |       1        | the value to divide the collected value, applied to convert it properly to units                                     |
 
 ### Example: using SNMPv1/2
 
