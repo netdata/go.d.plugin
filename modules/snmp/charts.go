@@ -86,13 +86,12 @@ func newChart(cfg ChartConfig) (*module.Chart, error) {
 
 	for _, cfg := range cfg.Dimensions {
 		dim := &module.Dim{
-			ID:   cfg.OID,
+			ID:   strings.TrimPrefix(cfg.OID, "."),
 			Name: cfg.Name,
 			Algo: module.DimAlgo(cfg.Algorithm),
 			Mul:  cfg.Multiplier,
 			Div:  cfg.Divisor,
 		}
-		dim.ID = strings.TrimPrefix(dim.ID, ".")
 		if err := chart.AddDim(dim); err != nil {
 			return nil, err
 		}
