@@ -92,9 +92,7 @@ func newChart(cfg ChartConfig) (*module.Chart, error) {
 			Mul:  cfg.Multiplier,
 			Div:  cfg.Divisor,
 		}
-		if strings.HasPrefix(dim.ID, ".") {
-			dim.ID = dim.ID[1:]
-		}
+		dim.ID = strings.TrimPrefix(dim.ID, ".")
 		if err := chart.AddDim(dim); err != nil {
 			return nil, err
 		}
