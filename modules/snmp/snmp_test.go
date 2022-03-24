@@ -370,7 +370,7 @@ func TestSNMP_Charts(t *testing.T) {
 				return snmp
 			},
 		},
-		"wit 'multiply_range': got expected number of charts": {
+		"with 'multiply_range': got expected number of charts": {
 			wantNumCharts: 10,
 			prepareSNMP: func(t *testing.T, m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
