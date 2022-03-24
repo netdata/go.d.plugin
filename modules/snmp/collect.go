@@ -31,7 +31,8 @@ func (s *SNMP) collectOIDs(collected map[string]int64) error {
 			if i >= len(resp.Variables) {
 				continue
 			}
-			switch typ := resp.Variables[i].Type; typ {
+
+			switch v := resp.Variables[i]; v.Type {
 			case gosnmp.Boolean,
 				gosnmp.Counter32,
 				gosnmp.Counter64,
@@ -40,9 +41,9 @@ func (s *SNMP) collectOIDs(collected map[string]int64) error {
 				gosnmp.Uinteger32,
 				gosnmp.OpaqueFloat,
 				gosnmp.OpaqueDouble:
-				collected[oid] = gosnmp.ToBigInt(resp.Variables[i].Value).Int64()
+				collected[oid] = gosnmp.ToBigInt(v.Value).Int64()
 			default:
-				s.Debugf("skipping OID '%s' (unsupported type '%s')", oid, typ)
+				s.Debugf("skipping OID '%s' (unsupported type '%s')", oid, v.Type)
 			}
 		}
 	}

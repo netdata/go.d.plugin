@@ -418,6 +418,9 @@ func mockInit(t *testing.T) (*snmpmock.MockHandler, func()) {
 func defaultMockExpects(m *snmpmock.MockHandler) {
 	m.EXPECT().Target().AnyTimes()
 	m.EXPECT().Port().AnyTimes()
+	m.EXPECT().Retries().AnyTimes()
+	m.EXPECT().Timeout().AnyTimes()
+	m.EXPECT().MaxOids().AnyTimes()
 	m.EXPECT().Version().AnyTimes()
 	m.EXPECT().Community().AnyTimes()
 	m.EXPECT().SetTarget(gomock.Any()).AnyTimes()

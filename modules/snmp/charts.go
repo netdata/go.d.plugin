@@ -2,6 +2,7 @@ package snmp
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 )
@@ -31,12 +32,15 @@ func newCharts(configs []ChartConfig) (*module.Charts, error) {
 }
 
 func newChartsFromIndexRange(cfg ChartConfig) (*module.Charts, error) {
+	var addPrio int
 	charts := &module.Charts{}
 	for i := cfg.IndexRange[0]; i <= cfg.IndexRange[1]; i++ {
 		chart, err := newChartWithOIDIndex(i, cfg)
 		if err != nil {
 			return nil, err
 		}
+		chart.Priority += addPrio
+		addPrio += 1
 		if err = charts.Add(chart); err != nil {
 			return nil, err
 		}
@@ -87,6 +91,9 @@ func newChart(cfg ChartConfig) (*module.Chart, error) {
 			Algo: module.DimAlgo(cfg.Algorithm),
 			Mul:  cfg.Multiplier,
 			Div:  cfg.Divisor,
+		}
+		if strings.HasPrefix(dim.ID, ".") {
+			dim.ID = dim.ID[1:]
 		}
 		if err := chart.AddDim(dim); err != nil {
 			return nil, err

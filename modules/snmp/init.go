@@ -34,63 +34,53 @@ func (s SNMP) validateConfig() error {
 }
 
 func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
-	snmpClient := newSNMPClient()
+	client := newSNMPClient()
 
-	if s.Hostname == "" {
+	if client.SetTarget(s.Hostname); client.Target() == "" {
 		s.Warningf("'hostname' not set, using the default value: '%s'", defaultHostname)
-		snmpClient.SetTarget(defaultHostname)
-	} else {
-		snmpClient.SetTarget(s.Hostname)
+		client.SetTarget(defaultHostname)
 	}
-	if s.Options.Port <= 0 || s.Options.Port > 65535 {
+	if client.SetPort(uint16(s.Options.Port)); client.Port() <= 0 || client.Port() > 65535 {
 		s.Warningf("'options.port' is invalid, changing to the default value: '%d' => '%d'", s.Options.Port, defaultPort)
-		snmpClient.SetPort(defaultPort)
-	} else {
-		snmpClient.SetPort(uint16(s.Options.Port))
+		client.SetPort(defaultPort)
 	}
-	if s.Options.Retries < 1 || s.Options.Retries > 10 {
+	if client.SetRetries(s.Options.Retries); client.Retries() < 1 || client.Retries() > 10 {
 		s.Warningf("'options.retries' is invalid, changing to the default value: '%d' => '%d'", s.Options.Retries, defaultRetries)
-		snmpClient.SetRetries(defaultRetries)
-	} else {
-		snmpClient.SetRetries(s.Options.Retries)
+		client.SetRetries(defaultRetries)
 	}
-	if s.Options.Timeout < 1 {
+	if client.SetTimeout(time.Duration(s.Options.Timeout) * time.Second); client.Timeout().Seconds() < 1 {
 		s.Warningf("'options.timeout' is invalid, changing to the default value: '%d' => '%d'", s.Options.Timeout, defaultTimeout)
-		snmpClient.SetTimeout(defaultTimeout * time.Second)
-	} else {
-		snmpClient.SetTimeout(time.Duration(s.Options.Timeout) * time.Second)
+		client.SetTimeout(defaultTimeout * time.Second)
 	}
-	if s.Options.MaxOIDs < 1 {
+	if client.SetMaxOids(s.Options.MaxOIDs); client.MaxOids() < 1 {
 		s.Warningf("'options.max_request_size' is invalid, changing to the default value: '%d' => '%d'", s.Options.MaxOIDs, defaultMaxOIDs)
-		snmpClient.SetMaxOids(defaultMaxOIDs)
-	} else {
-		snmpClient.SetMaxOids(s.Options.MaxOIDs)
+		client.SetMaxOids(defaultMaxOIDs)
 	}
 
-	snmpVersion, err := parseSNMPVersion(s.Options.Version)
+	ver, err := parseSNMPVersion(s.Options.Version)
 	if err != nil {
 		s.Warningf("'options.version' is invalid, changing to the default value: '%s' => '%s'",
 			s.Options.Version, defaultVersion)
-		snmpVersion = defaultVersion
+		ver = defaultVersion
 	}
-	community := s.Community
-	if community == "" && (snmpVersion <= gosnmp.Version2c) {
+	comm := s.Community
+	if comm == "" && (ver <= gosnmp.Version2c) {
 		s.Warningf("'community' not set, using the default value: '%s'", defaultCommunity)
-		community = defaultCommunity
+		comm = defaultCommunity
 	}
 
-	switch snmpVersion {
+	switch ver {
 	case gosnmp.Version1:
-		snmpClient.SetCommunity(community)
-		snmpClient.SetVersion(gosnmp.Version1)
+		client.SetCommunity(comm)
+		client.SetVersion(gosnmp.Version1)
 	case gosnmp.Version2c:
-		snmpClient.SetCommunity(community)
-		snmpClient.SetVersion(gosnmp.Version2c)
+		client.SetCommunity(comm)
+		client.SetVersion(gosnmp.Version2c)
 	case gosnmp.Version3:
-		snmpClient.SetVersion(gosnmp.Version3)
-		snmpClient.SetSecurityModel(gosnmp.UserSecurityModel)
-		snmpClient.SetMsgFlags(safeParseSNMPv3SecurityLevel(s.User.SecurityLevel))
-		snmpClient.SetSecurityParameters(&gosnmp.UsmSecurityParameters{
+		client.SetVersion(gosnmp.Version3)
+		client.SetSecurityModel(gosnmp.UserSecurityModel)
+		client.SetMsgFlags(safeParseSNMPv3SecurityLevel(s.User.SecurityLevel))
+		client.SetSecurityParameters(&gosnmp.UsmSecurityParameters{
 			UserName:                 s.User.Name,
 			AuthenticationProtocol:   safeParseSNMPv3AuthProtocol(s.User.AuthProto),
 			AuthenticationPassphrase: s.User.AuthKey,
@@ -101,7 +91,7 @@ func (s SNMP) initSNMPClient() (gosnmp.Handler, error) {
 		return nil, fmt.Errorf("invalid SNMP version: %s", s.Options.Version)
 	}
 
-	return snmpClient, nil
+	return client, nil
 }
 
 func (s SNMP) initOIDs() (oids []string) {

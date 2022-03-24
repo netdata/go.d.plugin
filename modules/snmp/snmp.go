@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	defaultUpdateEvery = 5
+	defaultUpdateEvery = 10
 	defaultHostname    = "127.0.0.1"
 	defaultCommunity   = "public"
 	defaultVersion     = gosnmp.Version2c
