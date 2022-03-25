@@ -173,7 +173,7 @@ The encryption algorithm for SNMPv3 messages that require privacy (`user.priv_pr
 |   aes192c    |     6     | 192-bit AES encryption (CFB-AES-192) with "Reeder" key localization     |
 |   aes256c    |     7     | 256-bit AES encryption (CFB-AES-256) with "Reeder" key localization     |
 
-### Example: using `charts.multiply_range` option
+### Example: Using `charts.multiply_range` option
 
 If you need to define many charts using incremental OIDs, you can use the `charts.multiply_range` option.
 
