@@ -579,6 +579,7 @@ func (w *WMI) updateCharts(mx *metrics) {
 	w.updateSystemCharts(mx)
 	w.updateOSCharts(mx)
 	w.updateLogonCharts(mx)
+	w.updateThermalzoneCharts(mx)
 }
 
 func (w *WMI) updateCollectionCharts(mx *metrics) {
@@ -717,6 +718,23 @@ func (w *WMI) updateLogonCharts(mx *metrics) {
 	}
 }
 
+func (w *WMI) updateThermalzoneCharts(mx *metrics) {
+	if !mx.hasThermalZone() {
+		return
+	}
+
+	for _, zone := range mx.ThermalZone.Zones {
+		if w.cache.thermalZones[zone.ID] {
+			continue
+		}
+		w.cache.thermalZones[zone.ID] = true
+		if err := addDimToThermalzoneTemperatureChart(w.Charts(), zone.ID); err != nil {
+			w.Warning(err)
+		}
+	}
+
+}
+
 func addCPUCoreCharts(charts *Charts, coreID string) error {
 	for _, chart := range cpuCoreCharts() {
 		chart = newChartFromTemplate(*chart, coreID)
@@ -822,5 +840,9 @@ func addDimToCollectionStatusChart(charts *Charts, colName string) error {
 		return err
 	}
 	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToThermalzoneTemperatureChart(charts *Charts, zoneName string) error {
 	return nil
 }
