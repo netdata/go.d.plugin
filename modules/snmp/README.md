@@ -138,7 +138,7 @@ To use SNMPv3:
 - use `user` instead of `community`.
 - set `options.version` to 3.
 
-The rest as in the SNMPv1/2 [example](#example-using-snmpv12).
+The rest of the configuration is the same as in the SNMPv1/2 [example](#example-using-snmpv12).
 
 ```yaml
 jobs:
