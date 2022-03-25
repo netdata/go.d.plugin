@@ -61,7 +61,7 @@ sudo ./edit-config go.d/snmp.conf
 | charts.dimensions.multiplier |       1        | the value to multiply the collected value, applied to convert it properly to units                               |
 | charts.dimensions.divisor    |       1        | the value to divide the collected value, applied to convert it properly to units                                 |
 
-### Example: using SNMPv1/2
+### Example: Using SNMPv1/2
 
 In this example:
 
@@ -114,7 +114,7 @@ jobs:
             divisor: 1000
 ```
 
-### Example: using SNMPv3
+### Example: Using SNMPv3
 
 To use SNMPv3:
 
