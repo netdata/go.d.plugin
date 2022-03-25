@@ -29,6 +29,23 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/snmp.conf
 ```
 
+The configuration file is a list of data collection jobs. Jobs allow you to collect values from multiple sources, each
+source will have its own set of charts.
+
+Generally the format is:
+
+```yaml
+jobs:
+  - name: name1
+    ...  # other configuration parameters
+  - name: name2
+    ...  # other configuration parameters
+  - name: name3
+    ...  # other configuration parameters
+```
+
+### Job configuration parameters
+
 | Parameter                    | Default value  | Description                                                                                                      |
 |------------------------------|:--------------:|------------------------------------------------------------------------------------------------------------------|
 | name                         |       -        | the data collection job name                                                                                     |
