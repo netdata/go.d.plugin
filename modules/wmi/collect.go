@@ -38,6 +38,7 @@ func collect(pms prometheus.Metrics) *metrics {
 		OS:          collectOS(pms),
 		System:      collectSystem(pms),
 		Logon:       collectLogon(pms),
+		ThermalZone: collectThermalzone(pms),
 		Collectors:  collectCollection(pms),
 	}
 

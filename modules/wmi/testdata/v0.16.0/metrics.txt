@@ -151,6 +151,7 @@ windows_exporter_collector_duration_seconds{collector="memory"} 1
 windows_exporter_collector_duration_seconds{collector="net"} 1
 windows_exporter_collector_duration_seconds{collector="os"} 1.0468622
 windows_exporter_collector_duration_seconds{collector="system"} 1
+windows_exporter_collector_duration_seconds{collector="thermalzone"} 1
 # HELP windows_exporter_collector_success windows_exporter: Whether the collector was successful.
 # TYPE windows_exporter_collector_success gauge
 windows_exporter_collector_success{collector="cpu"} 1
@@ -160,6 +161,7 @@ windows_exporter_collector_success{collector="memory"} 1
 windows_exporter_collector_success{collector="net"} 1
 windows_exporter_collector_success{collector="os"} 1
 windows_exporter_collector_success{collector="system"} 1
+windows_exporter_collector_success{collector="thermalzone"} 1
 # HELP windows_exporter_collector_timeout windows_exporter: Whether the collector timed out.
 # TYPE windows_exporter_collector_timeout gauge
 windows_exporter_collector_timeout{collector="cpu"} 1
@@ -169,6 +171,7 @@ windows_exporter_collector_timeout{collector="memory"} 1
 windows_exporter_collector_timeout{collector="net"} 1
 windows_exporter_collector_timeout{collector="os"} 1
 windows_exporter_collector_timeout{collector="system"} 1
+windows_exporter_collector_timeout{collector="thermalzone"} 1
 # HELP windows_exporter_perflib_snapshot_duration_seconds Duration of perflib snapshot capture
 # TYPE windows_exporter_perflib_snapshot_duration_seconds gauge
 windows_exporter_perflib_snapshot_duration_seconds 1.0164763
@@ -458,3 +461,8 @@ windows_system_system_up_time 1.6152265027552567e+09
 # HELP windows_system_threads Current number of threads (WMI source: PerfOS_System.Threads)
 # TYPE windows_system_threads gauge
 windows_system_threads 943
+# HELP windows_thermalzone_temperature_celsius (Temperature)
+# TYPE windows_thermalzone_temperature_celsius gauge
+windows_thermalzone_temperature_celsius{name="\\_TZ.THRM"} 30.05000000000001
+windows_thermalzone_temperature_celsius{name="\\_TZ.TZ00"} 27.850000000000023
+windows_thermalzone_temperature_celsius{name="\\_TZ.TZ01"} 29.850000000000023

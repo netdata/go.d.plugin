@@ -12,17 +12,18 @@ the [windows_exporter](https://github.com/prometheus-community/windows_exporter)
 
 Module collects metrics from the following collectors:
 
-- cpu
-- memory
-- net
-- logical_disk
-- os
-- system
-- logon
+- [cpu](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.cpu.md)
+- [memory](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.memory.md)
+- [net](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.net.md)
+- [logical_disk](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.logical_disk.md)
+- [os](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.os.md)
+- [system](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.system.md)
+- [logon](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.logon.md)
+- [thermalzone](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.thermalzone.md)
 
 Run `windows_exporter` with these collectors:
 
-> windows_exporter-0.13.0-amd64.exe --collectors.enabled="cpu,memory,net,logical_disk,os,system,logon"
+> windows_exporter-0.16.0-amd64.exe --collectors.enabled="cpu,memory,net,logical_disk,os,system,logon,thermalzone"
 
 
 Installation: please follow the [official guide](https://github.com/prometheus-community/windows_exporter#installation).
@@ -81,6 +82,10 @@ Installation: please follow the [official guide](https://github.com/prometheus-c
 ### logon
 
 - Active User Logon Sessions By Type in `sessions`
+
+### thermalzone
+
+- Thermal zone temperature in `celsius`
 
 ## Configuration
 

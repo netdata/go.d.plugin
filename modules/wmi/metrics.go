@@ -11,6 +11,7 @@ type metrics struct {
 	OS          *osMetrics          `stm:"os"`
 	System      *systemMetrics      `stm:"system"`
 	Logon       *logonMetrics       `stm:"logon"`
+	ThermalZone *thermalZoneMetrics `stm:"thermalzone"`
 	Collectors  *collectors         `stm:""`
 }
 
@@ -21,6 +22,7 @@ func (m metrics) hasLogicalDisk() bool { return m.LogicalDisk != nil }
 func (m metrics) hasOS() bool          { return m.OS != nil }
 func (m metrics) hasSystem() bool      { return m.System != nil }
 func (m metrics) hasLogon() bool       { return m.Logon != nil }
+func (m metrics) hasThermalZone() bool { return m.ThermalZone != nil }
 func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
 
 // cpu
@@ -163,6 +165,23 @@ type (
 	}
 )
 
+// Win32_perfrawdata_counters_thermalzoneinformation
+// https://wutils.com/wmi/root/cimv2/win32_perfrawdata_counters_thermalzoneinformation/#temperature_properties
+type (
+	thermalZoneMetrics struct {
+		Zones thermalZones `stm:""`
+	}
+
+	thermalZones []*thermalZone
+
+	thermalZone struct {
+		STMKey string
+		ID     string
+
+		Temperature float64 `stm:"temperature,1000,1"`
+	}
+)
+
 // Win32_PerfRawData_PerfOS_System
 // https://docs.microsoft.com/en-us/previous-versions/aa394272(v%3Dvs.85)
 type systemMetrics struct {
@@ -230,10 +249,11 @@ type (
 	}
 )
 
-func newCollector(id string) *collector { return &collector{STMKey: id, ID: id} }
-func newCPUCore(id string) *cpuCore     { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
-func newNIC(id string) *netNIC          { return &netNIC{STMKey: id, ID: id} }
-func newVolume(id string) *volume       { return &volume{STMKey: id, ID: id} }
+func newCollector(id string) *collector     { return &collector{STMKey: id, ID: id} }
+func newCPUCore(id string) *cpuCore         { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
+func newNIC(id string) *netNIC              { return &netNIC{STMKey: id, ID: id} }
+func newVolume(id string) *volume           { return &volume{STMKey: id, ID: id} }
+func newThermalZone(id string) *thermalZone { return &thermalZone{STMKey: id, ID: id} }
 
 func getCPUIntID(id string) int {
 	if id == "" {
@@ -288,4 +308,15 @@ func (vs *volumes) get(id string) *volume {
 	vol := newVolume(id)
 	*vs = append(*vs, vol)
 	return vol
+}
+
+func (tz *thermalZones) get(id string) *thermalZone {
+	for _, v := range *tz {
+		if v.ID == id {
+			return v
+		}
+	}
+	v := newThermalZone(id)
+	*tz = append(*tz, v)
+	return v
 }

@@ -398,6 +398,11 @@ func TestWMI_Collect(t *testing.T) {
 				"system_processor_queue_length":     1,
 				"system_threads":                    943,
 				"system_up_time":                    10424271,
+				"thermalzone_THRM_temperature":      30050,
+				"thermalzone_TZ00_temperature":      27850,
+				"thermalzone_TZ01_temperature":      29850,
+				"thermalzone_collection_duration":   1000,
+				"thermalzone_collection_success":    1,
 			},
 		},
 		"fails if endpoint returns invalid data": {
@@ -438,61 +443,68 @@ func testCharts(t *testing.T, wmi *WMI, collected map[string]int64) {
 }
 
 func ensureChartsCreated(t *testing.T, w *WMI) {
-	for _, chart := range cpuCharts() {
+	for _, chart := range newCPUCharts() {
 		if w.cache.collectors[collectorCPU] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range memCharts() {
+	for _, chart := range newMemCharts() {
 		if w.cache.collectors[collectorMemory] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range osCharts() {
+	for _, chart := range newOSCharts() {
 		if w.cache.collectors[collectorOS] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range systemCharts() {
+	for _, chart := range newSystemCharts() {
 		if w.cache.collectors[collectorSystem] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range logonCharts() {
+	for _, chart := range newLogonCharts() {
 		if w.cache.collectors[collectorLogon] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range *collectionCharts() {
+	for _, chart := range newThermalzoneCharts() {
+		if w.cache.collectors[collectorThermalzone] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
+		}
+	}
+	for _, chart := range *newCollectionCharts() {
 		assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 	}
 
 	for coreID := range w.cache.cores {
-		for _, chart := range cpuCoreCharts() {
+		for _, chart := range newCPUCoreCharts() {
 			id := fmt.Sprintf(chart.ID, coreID)
 			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' core", id, coreID)
 		}
 	}
 
 	for nicID := range w.cache.nics {
-		for _, chart := range nicCharts() {
+		for _, chart := range newNICCharts() {
 			id := fmt.Sprintf(chart.ID, nicID)
 			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' nic", id, nicID)
 		}
 	}
 
 	for diskID := range w.cache.volumes {
-		for _, chart := range diskCharts() {
+		for _, chart := range newDiskCharts() {
 			id := fmt.Sprintf(chart.ID, diskID)
 			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' disk", id, diskID)
 		}
@@ -511,6 +523,14 @@ func ensureChartsDynamicDimsCreated(t *testing.T, w *WMI) {
 		if chart != nil {
 			dimID := fmt.Sprintf("cpu_core_%s_interrupts", coreID)
 			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has not dim '%s' for core '%s'", chart.ID, dimID, coreID)
+		}
+	}
+
+	for zone := range w.cache.thermalZones {
+		chart := w.Charts().Get(thermalzoneTemperatureChart.ID)
+		if chart != nil {
+			dimID := fmt.Sprintf("thermalzone_%s_temperature", zone)
+			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has not dim '%s' for core '%s'", chart.ID, dimID, zone)
 		}
 	}
 
