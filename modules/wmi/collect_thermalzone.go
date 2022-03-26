@@ -2,6 +2,7 @@ package wmi
 
 import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
+	"strings"
 )
 
 const (
@@ -23,12 +24,12 @@ func collectThermalzone(pms prometheus.Metrics) *thermalZoneMetrics {
 	tzm := &thermalZoneMetrics{}
 	var tzone *thermalZone
 	for _, pm := range pms.FindByName(metricThermalzoneTemperatureCelsius) {
-		zoneName := pm.Labels.Get("name")
+		zoneName := cleanZoneName(pm.Labels.Get("name"))
 		if zoneName == "" {
 			continue
 		}
 
-		if zoneName = cleanZoneName(zoneName); tzone == nil || tzone.ID != zoneName {
+		if tzone == nil || tzone.ID != zoneName {
 			tzone = tzm.Zones.get(zoneName)
 		}
 
@@ -38,5 +39,10 @@ func collectThermalzone(pms prometheus.Metrics) *thermalZoneMetrics {
 }
 
 func cleanZoneName(name string) string {
-	return name
+	// "\\_TZ.TZ10", "\\_TZ.X570" => TZ10, X570
+	i := strings.Index(name, ".")
+	if i == -1 || len(name) == i+1 {
+		return ""
+	}
+	return name[i+1:]
 }

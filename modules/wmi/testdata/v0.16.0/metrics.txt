@@ -151,6 +151,7 @@ windows_exporter_collector_duration_seconds{collector="memory"} 1
 windows_exporter_collector_duration_seconds{collector="net"} 1
 windows_exporter_collector_duration_seconds{collector="os"} 1.0468622
 windows_exporter_collector_duration_seconds{collector="system"} 1
+windows_exporter_collector_duration_seconds{collector="thermalzone"} 1
 # HELP windows_exporter_collector_success windows_exporter: Whether the collector was successful.
 # TYPE windows_exporter_collector_success gauge
 windows_exporter_collector_success{collector="cpu"} 1

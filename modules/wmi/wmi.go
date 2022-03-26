@@ -34,7 +34,7 @@ func New() *WMI {
 			volumes:      make(map[string]bool),
 			thermalZones: make(map[string]bool),
 		},
-		charts: collectionCharts(),
+		charts: newCollectionCharts(),
 	}
 }
 
