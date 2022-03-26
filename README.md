@@ -71,6 +71,7 @@ Go.d.plugin is shipped with [`Netdata`](https://github.com/netdata/netdata).
 | [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq)                   | `RabbitMQ`                      |
 | [redis](https://github.com/netdata/go.d.plugin/tree/master/modules/redis)                         | `Redis`                         |
 | [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)                     | `Dell EMC ScaleIO`              |
+| [SNMP](https://github.com/netdata/go.d.plugin/blob/master/modules/snmp)                           | `SNMP`                          |
 | [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)                           | `Solr`                          |
 | [squidlog](https://github.com/netdata/go.d.plugin/tree/master/modules/squidlog)                   | `Squid`                         |
 | [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)             | `Spring Boot2`                  |
