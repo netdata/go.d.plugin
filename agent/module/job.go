@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"regexp"
 	"runtime/debug"
 	"sync"
 	"time"
@@ -14,12 +15,21 @@ import (
 
 var writeLock = &sync.Mutex{}
 
+var reSpace = regexp.MustCompile(`\s+`)
+
 func newRuntimeChart(pluginName string) *Chart {
+	// this is needed to keep the same name as we had before https://github.com/netdata/go.d.plugin/issues/650
+	ctxName := pluginName
+	if ctxName == "go.d" {
+		ctxName = "go"
+	}
+	ctxName = reSpace.ReplaceAllString(ctxName, "_")
 	return &Chart{
-		typeID: "netdata",
-		Units:  "ms",
-		Fam:    pluginName,
-		Ctx:    "netdata.go_plugin_execution_time", Priority: 145000,
+		typeID:   "netdata",
+		Units:    "ms",
+		Fam:      pluginName,
+		Ctx:      fmt.Sprintf("netdata.%s_plugin_execution_time", ctxName),
+		Priority: 145000,
 		Dims: Dims{
 			{ID: "time"},
 		},
