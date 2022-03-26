@@ -2,88 +2,24 @@ package snmp
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-//TODO: probably not needed
-var defaultSNMPchart = module.Chart{
-	ID:       "snmp_%d",
-	Title:    "%s",
-	Units:    "kilobits/s",
-	Type:     "area",
-	Priority: 1,
-	Fam:      "ports",
-}
-
-// newChart creates news chart based on 'ChartsConfig', 'id' and 'oidIndex'
-// parameters. oidIndex is optional param, which decided whether to add an
-// index to OID value or not.
-func newChart(id int, oidIndex *int, s ChartsConfig) (*module.Chart, error) {
-	c := defaultSNMPchart.Copy()
-	c.ID = fmt.Sprintf(c.ID, id)
-	c.Title = fmt.Sprintf(c.Title, s.Title)
-
-	if oidIndex != nil {
-		c.ID = fmt.Sprintf("%s_%d", c.ID, *oidIndex)
-		c.Title = fmt.Sprintf("%s %d", c.Title, *oidIndex)
-	}
-
-	if s.Family != nil {
-		c.Fam = *s.Family
-	}
-
-	if s.Units != nil {
-		c.Units = *s.Units
-	}
-
-	if s.Type != nil {
-		c.Type = module.ChartType(*s.Type)
-	}
-
-	c.Priority = s.Priority
-	for _, d := range s.Dimensions {
-		oid := d.OID
-		if oidIndex != nil {
-			oid = fmt.Sprintf("%s.%d", oid, *oidIndex)
-		}
-		dim := &module.Dim{
-			Name: d.Name,
-			ID:   oid,
-		}
-		if d.Algorithm != nil {
-			dim.Algo = module.DimAlgo(*d.Algorithm)
-		}
-		if d.Multiplier != nil {
-			dim.Mul = *d.Multiplier
-		}
-		if d.Divisor != nil {
-			dim.Div = *d.Divisor
-		}
-
-		if err := c.AddDim(dim); err != nil {
-			return nil, err
-		}
-	}
-
-	return c, nil
-}
-
-func newCharts(configs []ChartsConfig) (*module.Charts, error) {
+func newCharts(configs []ChartConfig) (*module.Charts, error) {
 	charts := &module.Charts{}
-	for i, cfg := range configs {
-		if cfg.MultiplyRange != nil {
-			for j := cfg.MultiplyRange[0]; j <= cfg.MultiplyRange[1]; j++ {
-				chart, err := newChart(i, &j, cfg)
-				if err != nil {
-					return nil, err
-				}
-				if err = charts.Add(chart); err != nil {
-					return nil, err
-				}
+	for _, cfg := range configs {
+		if len(cfg.IndexRange) == 2 {
+			cs, err := newChartsFromIndexRange(cfg)
+			if err != nil {
+				return nil, err
+			}
+			if err := charts.Add(*cs...); err != nil {
+				return nil, err
 			}
 		} else {
-			chart, err := newChart(i, nil, cfg)
+			chart, err := newChart(cfg)
 			if err != nil {
 				return nil, err
 			}
@@ -93,4 +29,73 @@ func newCharts(configs []ChartsConfig) (*module.Charts, error) {
 		}
 	}
 	return charts, nil
+}
+
+func newChartsFromIndexRange(cfg ChartConfig) (*module.Charts, error) {
+	var addPrio int
+	charts := &module.Charts{}
+	for i := cfg.IndexRange[0]; i <= cfg.IndexRange[1]; i++ {
+		chart, err := newChartWithOIDIndex(i, cfg)
+		if err != nil {
+			return nil, err
+		}
+		chart.Priority += addPrio
+		addPrio += 1
+		if err = charts.Add(chart); err != nil {
+			return nil, err
+		}
+	}
+	return charts, nil
+}
+
+func newChartWithOIDIndex(oidIndex int, cfg ChartConfig) (*module.Chart, error) {
+	chart, err := newChart(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	chart.ID = fmt.Sprintf("%s_%d", chart.ID, oidIndex)
+	chart.Title = fmt.Sprintf("%s %d", chart.Title, oidIndex)
+	for _, dim := range chart.Dims {
+		dim.ID = fmt.Sprintf("%s.%d", dim.ID, oidIndex)
+	}
+
+	return chart, nil
+}
+
+func newChart(cfg ChartConfig) (*module.Chart, error) {
+	chart := &module.Chart{
+		ID:       cfg.ID,
+		Title:    cfg.Title,
+		Units:    cfg.Family,
+		Fam:      cfg.Family,
+		Ctx:      fmt.Sprintf("snmp.%s", cfg.ID),
+		Type:     module.ChartType(cfg.Type),
+		Priority: cfg.Priority,
+	}
+
+	if chart.Title == "" {
+		chart.Title = "Untilted chart"
+	}
+	if chart.Units == "" {
+		chart.Units = "num"
+	}
+	if chart.Priority < module.Priority {
+		chart.Priority += module.Priority
+	}
+
+	for _, cfg := range cfg.Dimensions {
+		dim := &module.Dim{
+			ID:   strings.TrimPrefix(cfg.OID, "."),
+			Name: cfg.Name,
+			Algo: module.DimAlgo(cfg.Algorithm),
+			Mul:  cfg.Multiplier,
+			Div:  cfg.Divisor,
+		}
+		if err := chart.AddDim(dim); err != nil {
+			return nil, err
+		}
+	}
+
+	return chart, nil
 }

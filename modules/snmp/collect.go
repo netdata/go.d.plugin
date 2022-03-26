@@ -6,45 +6,47 @@ import (
 
 func (s *SNMP) collect() (map[string]int64, error) {
 	collected := make(map[string]int64)
-	var all_oid []string
 
-	//build oid chart
-	for _, chart := range *s.Charts() {
-		for _, d := range chart.Dims {
-			all_oid = append(all_oid, d.ID)
-		}
-	}
-
-	if err := s.collectChart(collected, all_oid); err != nil {
+	if err := s.collectOIDs(collected); err != nil {
 		return nil, err
 	}
 
 	return collected, nil
 }
 
-func (s *SNMP) collectChart(collected map[string]int64, OIDs []string) error {
-	if len(OIDs) > s.Options.MaxOIDs {
-		if err := s.collectChart(collected, OIDs[s.Options.MaxOIDs:]); err != nil {
+func (s *SNMP) collectOIDs(collected map[string]int64) error {
+	for i, end := 0, 0; i < len(s.oids); i += s.Options.MaxOIDs {
+		if end = i + s.Options.MaxOIDs; end > len(s.oids) {
+			end = len(s.oids)
+		}
+
+		oids := s.oids[i:end]
+		resp, err := s.snmpClient.Get(oids)
+		if err != nil {
+			s.Errorf("cannot get SNMP data: %v", err)
 			return err
 		}
-		OIDs = OIDs[:s.Options.MaxOIDs]
-	}
 
-	result, err := s.snmpHandler.Get(OIDs)
+		for i, oid := range oids {
+			if i >= len(resp.Variables) {
+				continue
+			}
 
-	if err != nil {
-		s.Errorf("Cannot get SNMP data: %v", err)
-		return err
-	}
-
-	for i, oid := range OIDs {
-		switch result.Variables[i].Type {
-		case gosnmp.NoSuchInstance, gosnmp.NoSuchObject:
-			s.Debugf("Skipping OID %s, no such object", oid)
-			continue
-		default:
-			collected[oid] = gosnmp.ToBigInt(result.Variables[i].Value).Int64()
+			switch v := resp.Variables[i]; v.Type {
+			case gosnmp.Boolean,
+				gosnmp.Counter32,
+				gosnmp.Counter64,
+				gosnmp.Gauge32,
+				gosnmp.TimeTicks,
+				gosnmp.Uinteger32,
+				gosnmp.OpaqueFloat,
+				gosnmp.OpaqueDouble:
+				collected[oid] = gosnmp.ToBigInt(v.Value).Int64()
+			default:
+				s.Debugf("skipping OID '%s' (unsupported type '%s')", oid, v.Type)
+			}
 		}
 	}
+
 	return nil
 }

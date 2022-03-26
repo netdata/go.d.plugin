@@ -6,219 +6,271 @@ sidebar_label: "SNMP"
 
 # SNMP device monitoring with Netdata
 
-Collects data from any SNMP device and uses the [gosnmp](https://github.com/gosnmp/gosnmp)package.
+Collects data from any SNMP device and uses the [gosnmp](https://github.com/gosnmp/gosnmp) package.
 
 It supports:
 
--   all SNMP versions: SNMPv1, SNMPv2c and SNMPv3
--   any number of SNMP devices
--   each SNMP device can be used to collect data for any number of charts
--   each chart may have any number of dimensions
--   each SNMP device may have a different update frequency
--   each SNMP device will accept one or more batches to report values (you can set `max_request_size` per SNMP server, to control the size of batches).
+- all SNMP versions: SNMPv1, SNMPv2c and SNMPv3.
+- any number of SNMP devices.
+- each SNMP device can be used to collect data for any number of charts.
+- each chart may have any number of dimensions.
+- each SNMP device may have a different update frequency.
+- each SNMP device will accept one or more batches to report values (you can set `max_request_size` per SNMP server, to
+  control the size of batches).
 
 ## Configuration
-Create a config file `/etc/netdata/go.d/snmp.conf`. Following is an example of SNMPv3 config.
+
+Edit the `go.d/snmp.conf` configuration file using `edit-config` from the
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes#the-netdata-config-directory), which is
+typically at `/etc/netdata`.
+
+```bash
+cd /etc/netdata # Replace this path with your Netdata config directory
+sudo ./edit-config go.d/snmp.conf
+```
+
+The configuration file is a list of data collection jobs. Jobs allow you to collect values from multiple sources, each
+source will have its own set of charts.
+
+Generally the format is:
+
+```yaml
+jobs:
+  - name: name1
+    ...  # other configuration parameters
+  - name: name2
+    ...  # other configuration parameters
+  - name: name3
+    ...  # other configuration parameters
+```
+
+### Job configuration parameters
+
+| Parameter                    | Default value  | Description                                                                                                      |
+|------------------------------|:--------------:|------------------------------------------------------------------------------------------------------------------|
+| name                         |       -        | the data collection job name                                                                                     |
+| update_every                 |       10       | the update frequency for each target, in seconds                                                                 |
+| hostname                     |   127.0.0.1    | the target ipv4 address                                                                                          |
+| community                    |     public     | SNMPv1/2 community string                                                                                        |
+| options.version              |       2        | SNMP version                                                                                                     |
+| options.port                 |      161       | the target port                                                                                                  |
+| options.retries              |       1        | the number of retries to attempt                                                                                 |
+| options.timeout              |       10       | the timeout for one SNMP request/response                                                                        |
+| options.max_request_size     |       60       | the maximum number of oids allowed in one one SNMP request                                                       |
+| user.name                    |       -        | the SNMPv3 user name                                                                                             |
+| user.level                   |       -        | the security level of SNMPv3 messages                                                                            |
+| user.auth_proto              |       -        | the authentication protocol for SNMPv3 messages                                                                  |
+| user.auth_key                |       -        | the authentication protocol pass phrase                                                                          |
+| user.priv_proto              |       -        | the privacy protocol for SNMPv3 messages                                                                         |
+| user.priv_key                |       -        | the privacy protocol pass phrase                                                                                 |
+| charts                       |       []       | the list of charts                                                                                               |
+| charts.id                    |       -        | is used to uniquely identify the chart                                                                           |
+| charts.title                 | Untilted chart | the text above the chart                                                                                         |
+| charts.units                 |      num       | the label of the vertical axis of the chart                                                                      |
+| charts.family                |   charts.id    | the name of the dashboard submenu under which each chart will be displayed                                       |
+| charts.type                  |      line      | the chart type (one of line, area or stacked)                                                                    |
+| charts.priority              |     70000      | the priority of the chart as rendered on the web page                                                            |
+| charts.multiply_range        |       []       | is used when you need to define many charts [using incremental OIDs](#example-using-chartsmultiply_range-option) |
+| charts.dimensions            |       []       | the list of chart dimensions                                                                                     |
+| charts.dimensions.oid        |       -        | the OID path to the metric you [want to collect](#finding-oids)                                                  |
+| charts.dimensions.name       |       -        | the name of the dimension as it will appear at the legend of the chart                                           |
+| charts.dimensions.algorithm  |    absolute    | the dimension algorithm (one of absolute, incremental)                                                           |
+| charts.dimensions.multiplier |       1        | the value to multiply the collected value, applied to convert it properly to units                               |
+| charts.dimensions.divisor    |       1        | the value to divide the collected value, applied to convert it properly to units                                 |
+
+### Example: Using SNMPv1/2
 
 In this example:
 
--   the SNMP device is `10.11.12.8`.
--   the SNMP version is `3` (defined under `options.version`)
--   we will update the values every 3 seconds (`update_every: 3` for the server `10.11.12.8`).
--   since we are using SNMPv3, we need to define authentication mechanisms under `user`
--   we define 1 chart `example` having 2 dimensions: `in` and `out`.
+- the SNMP device is `192.0.2.1`.
+- the SNMP version is `2`.
+- the SNMP community is `public`.
+- we will update the values every 10 seconds.
+- we define 2 charts `bandwidth_port1` and `bandwidth_port2`, each having 2 dimensions: `in` and `out`.
+
+> **SNMPv1**: just set `options.version` to 1.
 
 ```yaml
 jobs:
-  - name: local
-    update_every: 3
-    hostname: "10.11.12.8"
+  - name: switch
+    update_every: 10
+    hostname: "192.0.2.1"
+    community: public
     options:
-      port: 1161
-      version: 3
-      max_request_size: 60
-    user:
-      name: "username"
-      level: 3
-      auth_proto: 2
-      auth_key: "auth_key"
-      priv_proto: 2
-      priv_key: "priv_key"
-    charts:
-      - title: "example"
-        priority: 1
-        units: "kilobits/s"
-        type: "area"
-        family: "lan"
-        dimensions:
-          - name: "in"
-            oid: ".1.3.6.1.2.1.2.2.1.10.2"
-            algorithm: "incremental"
-            multiplier: 8
-            divisor: 1000
-          - name: "out"
-            oid: ".1.3.6.1.2.1.2.2.1.16.2"
-            multiplier: -8
-            divisor: 1000
-```
-
-`update_every` is the update frequency for each server, in seconds.
-
-`family` sets the name of the submenu of the dashboard each chart will appear under.
-
-`multiplier` and `divisor` are passed by the plugin to the Netdata daemon and are applied to the metric to convert it properly to `units`. 
-
-
-If many charts need to be defined using incremental OIDs, `multiply_range` can be used as in following example:
-
-```yaml
-jobs:
-  - name: local
-    update_every: 3
-    hostname: "10.11.12.8"
-    options:
-      port: 1161
-      version: 3
-      max_request_size: 60
-    user:
-      name: "username"
-      level: 3
-      auth_proto: 2
-      auth_key: "auth_key"
-      priv_proto: 2
-      priv_key: "priv_key"
-    charts:
-      - title: "example"
-        priority: 1
-        units: "kilobits/s"
-        type: "area"
-        family: "lan"
-        multiply_range: [1,5]
-        dimensions:
-          - name: "in"
-            oid: ".1.3.6.1.2.1.2.2.1.10"
-            algorithm: "incremental"
-            multiplier: 8
-            divisor: 1000
-          - name: "out"
-            oid: ".1.3.6.1.2.1.2.2.1.16"
-            multiplier: -8
-            divisor: 1000
-```
-This is like the previous, but with config parameter `charts.multiply_range` given. This will generate charts OID index appended from `1` to `5` producing 5 charts in total for the 5 ports of the switch `10.11.12.8`.
-
-Each of the 5 new charts will have its id (1-5) appended at:
-
-1.  its `charts.title`, i.e. `example_1` to `example_5`
-2.  its `charts.dimensions.oid` (for all dimensions), i.e. dimension `in` will be `1.3.6.1.2.1.2.2.1.10.1` to `1.3.6.1.2.1.2.2.1.10.5`
-3.  its priority (which will be incremented for each chart so that the charts will appear on the dashboard in this order)
-
-The `options` given for each server, are:
-
--   `port` - UDP port to send requests too. Defaults to `161`.
--   `retries` - number of times to re-send a request. Defaults to `1`.
--   `timeout` - number of milliseconds to wait for a response before re-trying or failing. Defaults to `5000`.
--   `version` - either `1` (v1) or  `2` (v2) or `3` (v3). Defaults to `2`.
--   `max_request_size` limits the maximum number of OIDs that will be requested in a single call. The default is 60.
-
-
-## SNMPv1/2
-
-To use SNMPv1 or 2:
--  use `community` instead of `user`
--  set `options.version` to 1 or 2
-
-Example:
-```yaml
-jobs:
-  - name: local
-    update_every: 3
-    hostname: "10.11.12.8"
-    options:
-      port: 1161
       version: 2
-      max_request_size: 60
-    community: "public"
     charts:
-      - title: "example"
-        priority: 1
+      - id: "bandwidth_port1"
+        title: "Switch Bandwidth for port 1"
         units: "kilobits/s"
         type: "area"
-        family: "lan"
-        multiply_range: [1,5]
+        family: "ports"
         dimensions:
           - name: "in"
-            oid: ".1.3.6.1.2.1.2.2.1.10"
+            oid: "1.3.6.1.2.1.2.2.1.10.1"
             algorithm: "incremental"
             multiplier: 8
             divisor: 1000
           - name: "out"
-            oid: ".1.3.6.1.2.1.2.2.1.16"
+            oid: "1.3.6.1.2.1.2.2.1.16.1"
+            multiplier: -8
+            divisor: 1000
+      - id: "bandwidth_port2"
+        title: "Switch Bandwidth for port 2"
+        units: "kilobits/s"
+        type: "area"
+        family: "ports"
+        dimensions:
+          - name: "in"
+            oid: "1.3.6.1.2.1.2.2.1.10.2"
+            algorithm: "incremental"
+            multiplier: 8
+            divisor: 1000
+          - name: "out"
+            oid: "1.3.6.1.2.1.2.2.1.16.2"
             multiplier: -8
             divisor: 1000
 ```
 
-## SNMPv3
+### Example: Using SNMPv3
+
 To use SNMPv3:
 
--   use `user` instead of `community`
--   set `options.version` to 3
+- use `user` instead of `community`.
+- set `options.version` to 3.
 
-Example: refer to the first example in this README.
+The rest of the configuration is the same as in the SNMPv1/2 [example](#example-using-snmpv12).
 
-Security levels (`user.level`):
-
--   1 is `noAuthNoPriv`
--   2 is `authNoPriv`
--   3 is `authPriv`
-
-Authentication protocols (`user.auth_proto`):
-
--   "1" is `none`
--   "2" is `md5`
--   "3" is `sha`
--   "4" is `sha224`
--   "5" is `sha256`
--   "6" is `sha384`
--   "7" is `sha512`
-
-Privacy protocols (`user.priv_proto`):
-
--   "1" is `none`
--   "2" is `des`
--   "3" is `aes`
--   "4" is `aes192`
--   "5" is `aes256`
-
-## Testing the configuration
-
-To test it, you can run:
-
-```sh
-/usr/libexec/netdata/plugins.d/go.d.plugin -d 1 -m snmp
+```yaml
+jobs:
+  - name: switch
+    update_every: 10
+    hostname: "192.0.2.1"
+    options:
+      version: 3
+    user:
+      name: "username"
+      level: "authPriv"
+      auth_proto: "sha256"
+      auth_key: "auth_protocol_passphrase"
+      priv_proto: "aes256"
+      priv_key: "priv_protocol_passphrase"
 ```
 
-The above will run it on your console and you will be able to see what Netdata sees, but also errors.
-If it works, restart Netdata to activate the snmp collector and refresh the dashboard (if your SNMP device responds with a delay, you may need to refresh the dashboard in a few seconds).
+#### SNMPv3 message authentication and privacy configuration options
+
+The security of an SNMPv3 message as per RFC 3414 (`user.level`):
+
+| String value | Int value | Description                              |
+|:------------:|:---------:|------------------------------------------|
+|     none     |     1     | no message authentication or encryption  |
+|  authNoPriv  |     2     | message authentication and no encryption |
+|   authPriv   |     3     | message authentication and encryption    |
+
+The digest algorithm for SNMPv3 messages that require authentication (`user.auth_proto`):
+
+| String value | Int value | Description                               |
+|:------------:|:---------:|-------------------------------------------|
+|     none     |     1     | no message authentication                 |
+|     md5      |     2     | MD5 message authentication (HMAC-MD5-96)  |
+|     sha      |     3     | SHA message authentication (HMAC-SHA-96)  |
+|    sha224    |     4     | SHA message authentication (HMAC-SHA-224) |
+|    sha256    |     5     | SHA message authentication (HMAC-SHA-256) |
+|    sha384    |     6     | SHA message authentication (HMAC-SHA-384) |
+|    sha512    |     7     | SHA message authentication (HMAC-SHA-512) |
+
+The encryption algorithm for SNMPv3 messages that require privacy (`user.priv_proto`):
+
+| String value | Int value | Description                                                             |
+|:------------:|:---------:|-------------------------------------------------------------------------|
+|     none     |     1     | no message encryption                                                   |
+|     des      |     2     | ES encryption (CBC-DES)                                                 |
+|     aes      |     3     | 128-bit AES encryption (CFB-AES-128)                                    |
+|    aes192    |     4     | 192-bit AES encryption (CFB-AES-192) with "Blumenthal" key localization |
+|    aes256    |     5     | 256-bit AES encryption (CFB-AES-256) with "Blumenthal" key localization |
+|   aes192c    |     6     | 192-bit AES encryption (CFB-AES-192) with "Reeder" key localization     |
+|   aes256c    |     7     | 256-bit AES encryption (CFB-AES-256) with "Reeder" key localization     |
+
+### Example: Using `charts.multiply_range` option
+
+If you need to define many charts using incremental OIDs, you can use the `charts.multiply_range` option.
+
+This is like the SNMPv1/2 [example](#example-using-snmpv12), but the option will multiply the current chart from 1 to 24
+inclusive, producing 24 charts in total for the 24 ports of the switch `192.0.2.1`.
+
+Each of the 24 new charts will have its id (1-24) appended at:
+
+- its chart unique `id`, i.e. `bandwidth_port_1` to `bandwidth_port_24`.
+- its title, i.e. `Switch Bandwidth for port 1` to `Switch Bandwidth for port 24`.
+- its `oid` (for all dimensions), i.e. dimension in will be `1.3.6.1.2.1.2.2.1.10.1` to `1.3.6.1.2.1.2.2.1.10.24`.
+- its `priority` will be incremented for each chart so that the charts will appear on the dashboard in this order.
+
+```yaml
+jobs:
+  - name: switch
+    update_every: 10
+    hostname: "192.0.2.1"
+    community: public
+    options:
+      version: 2
+    charts:
+      - id: "bandwidth_port"
+        title: "Switch Bandwidth for port"
+        units: "kilobits/s"
+        type: "area"
+        family: "ports"
+        multiply_range: [1, 24]
+        dimensions:
+          - name: "in"
+            oid: "1.3.6.1.2.1.2.2.1.10"
+            algorithm: "incremental"
+            multiplier: 8
+            divisor: 1000
+          - name: "out"
+            oid: "1.3.6.1.2.1.2.2.1.16"
+            multiplier: -8
+            divisor: 1000
+```
 
 ## Data collection speed
 
-Keep in mind that many SNMP switches and routers are very slow. They may not be able to report values per second. If `go.d.plugin` is executed in `debug` mode, it will report the time it took for the SNMP device to respond.
+Keep in mind that many SNMP switches and routers are very slow. They may not be able to report values per second.
+`go.d.plugin` reports the time it took for the SNMP device to respond when executed in the [debug](#troubleshooting)
+mode.
 
-Also, if many SNMP clients are used on the same SNMP device at the same time, values may be skipped. This is a problem of the SNMP device, not this collector.
+Also, if many SNMP clients are used on the same SNMP device at the same time, values may be skipped. This is a problem
+of the SNMP device, not this collector. In this case, consider reducing the frequency of data collection (
+increasing `update_every`).
 
 ## Finding OIDs
 
 Use `snmpwalk`, like this:
 
 ```sh
-snmpwalk -t 20 -v 1 -O fn -c public 10.11.12.8
+snmpwalk -t 20 -O fn -v 2c -c public 192.0.2.1
 ```
 
--   `-t 20` is the timeout in seconds
--   `-v 1` is the SNMP version
--   `-O fn` will display full OIDs in numeric format
--   `-c public` is the SNMP community
--   `10.11.12.8` is the SNMP device
+- `-t 20` is the timeout in seconds.
+- `-O fn` will display full OIDs in numeric format.
+- `-v 2c` is the SNMP version.
+- `-c public` is the SNMP community.
+- `192.0.2.1` is the SNMP device.
 
-Note that `snmpwalk` outputs the OIDs with a dot in front them. Remove this dot when adding OIDs to the configuration file of this collector.
+## Troubleshooting
+
+To troubleshoot issues with the `snmp` collector, run the `go.d.plugin` with the debug option enabled. The output should
+give you clues as to why the collector isn't working.
+
+First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
+to the `netdata` user.
+
+```bash
+cd /usr/libexec/netdata/plugins.d/
+sudo -u netdata -s
+```
+
+You can now run the `go.d.plugin` to debug the collector:
+
+```bash
+./go.d.plugin -d -m snmp
+```
