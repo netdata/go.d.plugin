@@ -121,6 +121,7 @@ func (a *Agent) buildDiscoveryConf(enabled module.Registry) discovery.Config {
 		a.Infof("looking for '%s' in %v", cfgName, a.ModulesConfDir)
 
 		path, err := a.ModulesConfDir.Find(cfgName)
+		a.Infof("HOST '%s' PORT '%s' (%v) (%s:%s)", envKubeHost, envKubePort, isInsideK8sCluster(), path, envNDStockConfigDir)
 		if isInsideK8sCluster() {
 			if err != nil {
 				a.Infof("not found '%s', won't use default (reading stock configs is disabled in k8s)", cfgName)
@@ -220,11 +221,11 @@ var (
 	envNDStockConfigDir = os.Getenv("NETDATA_STOCK_CONFIG_DIR")
 )
 
-func isInsideK8sCluster() bool { return envKubePort != "" && envKubePort != "" }
+func isInsideK8sCluster() bool { return envKubeHost != "" && envKubePort != "" }
 
 func isStockConfig(path string) bool {
 	if envNDStockConfigDir == "" {
 		return false
 	}
-	return strings.Contains(path, envNDStockConfigDir)
+	return strings.HasPrefix(path, envNDStockConfigDir)
 }
