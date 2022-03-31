@@ -89,6 +89,13 @@ func (p *Prometheus) buildMetricSet(pms prometheus.Metrics) (names []string, met
 	return names[:i], metrics
 }
 
+func (p Prometheus) application() string {
+	if p.Application != "" {
+		return p.Application
+	}
+	return p.Name
+}
+
 func hasMetricWithPrefix(pms prometheus.Metrics, prefix string) bool {
 	for _, pm := range pms {
 		if strings.HasPrefix(pm.Name(), prefix) {

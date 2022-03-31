@@ -42,6 +42,8 @@ func New() *Prometheus {
 type (
 	Config struct {
 		web.HTTP               `yaml:",inline"`
+		Name                   string        `yaml:"name"`
+		Application            string        `yaml:"app"`
 		BearerTokenFile        string        `yaml:"bearer_token_file"` // TODO: part of web.Request?
 		MaxTS                  int           `yaml:"max_time_series"`
 		MaxTSPerMetric         int           `yaml:"max_time_series_per_metric"`

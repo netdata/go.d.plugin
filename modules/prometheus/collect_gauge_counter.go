@@ -30,7 +30,7 @@ func (p *Prometheus) collectAny(mx map[string]int64, pms prometheus.Metrics, met
 		mx[dimID] = int64(pm.Value * precision)
 
 		if !cache.hasChart(chartID) {
-			chart := anyChart(chartID, pm, meta)
+			chart := anyChart(chartID, p.application(), pm, meta)
 			cache.putChart(chartID, chart)
 			if strings.HasSuffix(chart.Units, "/s") && p.forceAbsoluteAlgorithm.MatchString(pm.Name()) {
 				chart.Units = chart.Units[:len(chart.Units)-2]
