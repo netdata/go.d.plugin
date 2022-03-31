@@ -35,7 +35,7 @@ func (p *Prometheus) collectSummary(mx map[string]int64, pms prometheus.Metrics,
 		mx[dimID] = int64(pm.Value * precision)
 
 		if !cache.hasChart(chartID) {
-			chart := summaryChart(chartID, pm, meta)
+			chart := summaryChart(chartID, p.application(), pm, meta)
 			cache.putChart(chartID, chart)
 			if err := p.Charts().Add(chart); err != nil {
 				p.Warning(err)
