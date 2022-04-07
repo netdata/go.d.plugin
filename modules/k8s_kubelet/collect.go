@@ -93,10 +93,33 @@ func (k *Kubelet) collectKubelet(raw prometheus.Metrics, mx *metrics) {
 	value := raw.FindByName("kubelet_node_config_error").Max()
 	mx.Kubelet.NodeConfigError.Set(value)
 
-	value = raw.FindByName("kubelet_running_container_count").Max()
+	/*
+		# HELP kubelet_running_containers [ALPHA] Number of containers currently running
+		# TYPE kubelet_running_containers gauge
+		kubelet_running_containers{container_state="created"} 1
+		kubelet_running_containers{container_state="exited"} 13
+		kubelet_running_containers{container_state="running"} 42
+		kubelet_running_containers{container_state="unknown"} 1
+	*/
+
+	ms := raw.FindByName("kubelet_running_container_count")
+	value = ms.Max()
+	if ms.Len() == 0 {
+		for _, m := range raw.FindByName("kubelet_running_containers") {
+			if m.Labels.Get("container_state") == "running" {
+				value = m.Value
+				break
+			}
+		}
+	}
 	mx.Kubelet.RunningContainerCount.Set(value)
 
-	value = raw.FindByName("kubelet_running_pod_count").Max()
+	/*
+		# HELP kubelet_running_pods [ALPHA] Number of pods currently running
+		# TYPE kubelet_running_pods gauge
+		kubelet_running_pods 37
+	*/
+	value = raw.FindByNames("kubelet_running_pod_count", "kubelet_running_pods").Max()
 	mx.Kubelet.RunningPodCount.Set(value)
 
 	k.collectRuntimeOperations(raw, mx)
@@ -253,7 +276,8 @@ func (k *Kubelet) collectRESTClientHTTPRequests(raw prometheus.Metrics, mx *metr
 func (k *Kubelet) collectRuntimeOperations(raw prometheus.Metrics, mx *metrics) {
 	chart := k.charts.Get("kubelet_runtime_operations")
 
-	for _, metric := range raw.FindByName("kubelet_runtime_operations") {
+	// kubelet_runtime_operations_total
+	for _, metric := range raw.FindByNames("kubelet_runtime_operations", "kubelet_runtime_operations_total") {
 		opType := metric.Labels.Get("operation_type")
 		if opType == "" {
 			continue
@@ -270,7 +294,8 @@ func (k *Kubelet) collectRuntimeOperations(raw prometheus.Metrics, mx *metrics) 
 func (k *Kubelet) collectRuntimeOperationsErrors(raw prometheus.Metrics, mx *metrics) {
 	chart := k.charts.Get("kubelet_runtime_operations_errors")
 
-	for _, metric := range raw.FindByName("kubelet_runtime_operations_errors") {
+	// kubelet_runtime_operations_errors_total
+	for _, metric := range raw.FindByNames("kubelet_runtime_operations_errors", "kubelet_runtime_operations_errors_total") {
 		opType := metric.Labels.Get("operation_type")
 		if opType == "" {
 			continue
@@ -287,7 +312,8 @@ func (k *Kubelet) collectRuntimeOperationsErrors(raw prometheus.Metrics, mx *met
 func (k *Kubelet) collectDockerOperations(raw prometheus.Metrics, mx *metrics) {
 	chart := k.charts.Get("kubelet_docker_operations")
 
-	for _, metric := range raw.FindByName("kubelet_docker_operations") {
+	// kubelet_docker_operations_total
+	for _, metric := range raw.FindByNames("kubelet_docker_operations", "kubelet_docker_operations_total") {
 		opType := metric.Labels.Get("operation_type")
 		if opType == "" {
 			continue
@@ -304,7 +330,8 @@ func (k *Kubelet) collectDockerOperations(raw prometheus.Metrics, mx *metrics) {
 func (k *Kubelet) collectDockerOperationsErrors(raw prometheus.Metrics, mx *metrics) {
 	chart := k.charts.Get("kubelet_docker_operations_errors")
 
-	for _, metric := range raw.FindByName("kubelet_docker_operations_errors") {
+	// kubelet_docker_operations_errors_total
+	for _, metric := range raw.FindByNames("kubelet_docker_operations_errors", "kubelet_docker_operations_errors_total") {
 		opType := metric.Labels.Get("operation_type")
 		if opType == "" {
 			continue
