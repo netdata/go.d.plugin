@@ -26,6 +26,7 @@ func newRuntimeChart(pluginName string) *Chart {
 	ctxName = reSpace.ReplaceAllString(ctxName, "_")
 	return &Chart{
 		typeID:   "netdata",
+		Title:    "Execution time",
 		Units:    "ms",
 		Fam:      pluginName,
 		Ctx:      fmt.Sprintf("netdata.%s_plugin_execution_time", ctxName),
@@ -315,7 +316,6 @@ func (j *Job) collect() (result map[string]int64) {
 func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinceLastRun int) bool {
 	if !j.runChart.created {
 		j.runChart.ID = fmt.Sprintf("execution_time_of_%s", j.FullName())
-		j.runChart.Title = fmt.Sprintf("Execution Time for %s", j.FullName())
 		j.createChart(j.runChart)
 	}
 
