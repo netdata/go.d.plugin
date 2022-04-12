@@ -36,11 +36,12 @@ func (o *OpenVPNStatus) collect() (map[string]int64, error) {
 
 func parseStatusLog(filePath string) ([]clientInfo, error) {
 	conn, err := os.Open(filePath)
-	defer conn.Close()
 
 	if err != nil {
 		return nil, err
 	}
+	defer conn.Close()
+
 	reader := bufio.NewReader(conn)
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(bufio.ScanLines)
