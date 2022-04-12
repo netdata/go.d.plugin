@@ -10,19 +10,33 @@ var charts = module.Charts{
 		Fam:   "active_clients",
 		Ctx:   "openvpn.active_clients",
 		Dims: module.Dims{
-			{ID: "clients"},
+			{
+				ID: "clients",
+			},
 		},
 	},
 	{
 		ID:    "total_traffic",
 		Title: "Total Traffic",
 		Units: "kilobits/s",
-		Fam:   "total_traffic",
+		Fam:   "traffic",
 		Ctx:   "openvpn.total_traffic",
 		Type:  module.Area,
 		Dims: module.Dims{
-			{ID: "bytes_in", Name: "in", Algo: module.Incremental, Mul: 8, Div: 1000},
-			{ID: "bytes_out", Name: "out", Algo: module.Incremental, Mul: 8, Div: -1000},
+			{
+				ID:   "bytes_in",
+				Name: "in",
+				Algo: module.Incremental,
+				Mul:  8,
+				Div:  1024,
+			},
+			{
+				ID:   "bytes_out",
+				Name: "out",
+				Algo: module.Incremental,
+				Mul:  8,
+				Div:  -1024,
+			},
 		},
 	},
 }
@@ -36,8 +50,20 @@ var userCharts = module.Charts{
 		Ctx:   "openvpn.user_traffic",
 		Type:  module.Area,
 		Dims: module.Dims{
-			{ID: "%s_bytes_received", Name: "received", Algo: module.Incremental, Mul: 8, Div: 1000},
-			{ID: "%s_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: 8, Div: -1000},
+			{
+				ID:   "%s_bytes_in",
+				Name: "in",
+				Algo: module.Incremental,
+				Mul:  8,
+				Div:  1024,
+			},
+			{
+				ID:   "%s_bytes_out",
+				Name: "out",
+				Algo: module.Incremental,
+				Mul:  8,
+				Div:  -1024,
+			},
 		},
 	},
 	{
@@ -47,7 +73,10 @@ var userCharts = module.Charts{
 		Fam:   "user %s",
 		Ctx:   "openvpn.user_connection_time",
 		Dims: module.Dims{
-			{ID: "%s_connection_time", Name: "time"},
+			{
+				ID:   "%s_connection_time",
+				Name: "time",
+			},
 		},
 	},
 }

@@ -6,25 +6,14 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	//"time"
+	"time"
 )
 
 type clientInfo struct {
-	CommonName    string
-	BytesReceived int
-	BytesSent     int
-}
-
-func collectTotalStats(mx map[string]int64, clients []clientInfo) {
-	bytesIn := 0
-	bytesOut := 0
-	for _, c := range clients {
-		bytesIn += c.BytesReceived
-		bytesOut += c.BytesSent
-	}
-	mx["clients"] = int64(len(clients))
-	mx["bytes_in"] = int64(bytesIn)
-	mx["bytes_out"] = int64(bytesOut)
+	CommonName     string
+	BytesReceived  int
+	BytesSent      int
+	ConnectedSince int64
 }
 
 func (o *OpenVPNStatus) collect() (map[string]int64, error) {
@@ -38,6 +27,9 @@ func (o *OpenVPNStatus) collect() (map[string]int64, error) {
 		return nil, err
 	}
 	collectTotalStats(mx, clients)
+	if o.perUserMatcher != nil {
+		o.collectUsers(mx, clients)
+	}
 
 	return mx, nil
 }
@@ -93,6 +85,7 @@ func parseStatusLogV1(scanner *bufio.Scanner) []clientInfo {
 	for scanner.Scan() {
 		line := scanner.Text()
 		parts := strings.Split(line, ",")
+		const dateLayout = "Mon Jan 2 15:04:05 2006"
 		if checkClientListHeader(parts) {
 			clientListHeader = true
 			continue
@@ -100,10 +93,13 @@ func parseStatusLogV1(scanner *bufio.Scanner) []clientInfo {
 		if clientListHeader && len(parts) == 5 {
 			in, _ := strconv.Atoi(parts[2])
 			out, _ := strconv.Atoi(parts[3])
+			connectedSince, _ := time.Parse(dateLayout, parts[4])
+
 			c := clientInfo{
-				CommonName:    parts[0],
-				BytesReceived: in,
-				BytesSent:     out,
+				CommonName:     parts[0],
+				BytesReceived:  in,
+				BytesSent:      out,
+				ConnectedSince: connectedSince.Unix(),
 			}
 			clients = append(clients, c)
 		} else {
@@ -127,10 +123,13 @@ func parseStatusLogV2(scanner *bufio.Scanner) []clientInfo {
 			case "CLIENT_LIST":
 				in, _ := strconv.Atoi(parts[5])
 				out, _ := strconv.Atoi(parts[6])
+				connectedSinceUnix, _ := strconv.Atoi(parts[8])
+
 				c := clientInfo{
-					CommonName:    parts[1],
-					BytesReceived: in,
-					BytesSent:     out,
+					CommonName:     parts[1],
+					BytesReceived:  in,
+					BytesSent:      out,
+					ConnectedSince: int64(connectedSinceUnix),
 				}
 				clients = append(clients, c)
 			}
@@ -139,25 +138,36 @@ func parseStatusLogV2(scanner *bufio.Scanner) []clientInfo {
 	return clients
 }
 
-func (o *OpenVPNStatus) collectUsers(mx map[string]int64, clients []clientInfo) error {
-	//now := time.Now().Unix()
-	var name string
+func collectTotalStats(mx map[string]int64, clients []clientInfo) {
+	bytesIn := 0
+	bytesOut := 0
+	for _, c := range clients {
+		bytesIn += c.BytesReceived
+		bytesOut += c.BytesSent
+	}
+	mx["clients"] = int64(len(clients))
+	mx["bytes_in"] = int64(bytesIn)
+	mx["bytes_out"] = int64(bytesOut)
+}
+
+func (o *OpenVPNStatus) collectUsers(mx map[string]int64, clients []clientInfo) {
+	now := time.Now().Unix()
 
 	for _, user := range clients {
-		if !o.perUserMatcher.MatchString(user.CommonName) {
+		name := user.CommonName
+		if !o.perUserMatcher.MatchString(name) {
 			continue
 		}
-		if !o.collectedUsers[user.CommonName] {
-			o.collectedUsers[user.CommonName] = true
-			if err := o.addUserCharts(user.CommonName); err != nil {
+		if !o.collectedUsers[name] {
+			o.collectedUsers[name] = true
+			if err := o.addUserCharts(name); err != nil {
 				o.Warning(err)
 			}
 		}
-		mx[name+"_bytes_received"] = int64(user.BytesReceived)
-		mx[name+"_bytes_sent"] = int64(user.BytesSent)
-		//mx[name+"_connection_time"] = now - user.ConnectedSince
+		mx[name+"_bytes_in"] = int64(user.BytesReceived)
+		mx[name+"_bytes_out"] = int64(user.BytesSent)
+		mx[name+"_connection_time"] = now - user.ConnectedSince
 	}
-	return nil
 }
 
 func (o *OpenVPNStatus) addUserCharts(userName string) error {

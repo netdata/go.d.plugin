@@ -28,9 +28,9 @@ func New() *OpenVPNStatus {
 		StatusPath: defaultFilePath,
 	}
 	return &OpenVPNStatus{
-		Config: config,
-		charts: charts.Copy(),
-		//collectedUsers: make(map[string]bool),
+		Config:         config,
+		charts:         charts.Copy(),
+		collectedUsers: make(map[string]bool),
 	}
 }
 
@@ -43,9 +43,8 @@ type Config struct {
 // OpenVPNStatus OpenVPNStatus module.
 type OpenVPNStatus struct {
 	module.Base
-	Config `yaml:",inline"`
-	charts *module.Charts
-	//fileHandle     *os.File
+	Config         `yaml:",inline"`
+	charts         *module.Charts
 	collectedUsers map[string]bool
 	perUserMatcher matcher.Matcher
 }
