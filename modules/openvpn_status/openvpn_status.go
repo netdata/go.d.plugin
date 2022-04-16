@@ -51,11 +51,6 @@ type OpenVPNStatus struct {
 
 // Init makes initialization.
 func (o *OpenVPNStatus) Init() bool {
-	if _, err := os.Stat(o.StatusPath); err != nil {
-		o.Errorf("status file read error: %v", err)
-		return false
-	}
-
 	if !o.PerUserStats.Empty() {
 		m, err := o.PerUserStats.Parse()
 		if err != nil {
@@ -70,6 +65,11 @@ func (o *OpenVPNStatus) Init() bool {
 
 // Check makes check.
 func (o *OpenVPNStatus) Check() bool {
+	if _, err := os.Stat(o.StatusPath); err != nil {
+		o.Errorf("file read error: %v", err)
+		return false
+	}
+
 	return true
 }
 
