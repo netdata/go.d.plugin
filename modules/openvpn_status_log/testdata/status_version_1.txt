@@ -1,0 +1,12 @@
+OpenVPN CLIENT LIST
+Updated,2022-04-17 00:33:28
+Common Name,Real Address,Bytes Received,Bytes Sent,Connected Since
+gofle,192.168.122.135:58999,19265,261631,2022-04-17 00:33:19
+client_bsd2,192.168.122.136:11445,2752,3545,2022-04-17 00:33:04
+ROUTING TABLE
+Virtual Address,Common Name,Real Address,Last Ref
+10.8.0.2,gofle,192.168.122.135:58999,2022-04-17 00:33:27
+10.8.0.3,client_bsd2,192.168.122.136:11445,2022-04-17 00:33:04
+GLOBAL STATS
+Max bcast/mcast queue length,2
+END
