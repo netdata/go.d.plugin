@@ -1,4 +1,4 @@
-package openvpn_status
+package openvpn_status_log
 
 import (
 	"os"
@@ -19,29 +19,29 @@ func init() {
 		Create: func() module.Module { return New() },
 	}
 
-	module.Register("openvpn_status", creator)
+	module.Register("openvpn_status_log", creator)
 }
 
-// New creates OpenVPNStatus with default values.
-func New() *OpenVPNStatus {
+// New creates OpenVPNStatusLog with default values.
+func New() *OpenVPNStatusLog {
 	config := Config{
 		StatusPath: defaultFilePath,
 	}
-	return &OpenVPNStatus{
+	return &OpenVPNStatusLog{
 		Config:         config,
 		charts:         charts.Copy(),
 		collectedUsers: make(map[string]bool),
 	}
 }
 
-// Config is the OpenVPNStatus module configuration.
+// Config is the OpenVPNStatusLog module configuration.
 type Config struct {
 	StatusPath   string             `yaml:"log_path"`
 	PerUserStats matcher.SimpleExpr `yaml:"per_user_stats"`
 }
 
-// OpenVPNStatus OpenVPNStatus module.
-type OpenVPNStatus struct {
+// OpenVPNStatusLog OpenVPNStatusLog module.
+type OpenVPNStatusLog struct {
 	module.Base
 	Config         `yaml:",inline"`
 	charts         *module.Charts
@@ -50,7 +50,7 @@ type OpenVPNStatus struct {
 }
 
 // Init makes initialization.
-func (o *OpenVPNStatus) Init() bool {
+func (o *OpenVPNStatusLog) Init() bool {
 	if !o.PerUserStats.Empty() {
 		m, err := o.PerUserStats.Parse()
 		if err != nil {
@@ -64,7 +64,7 @@ func (o *OpenVPNStatus) Init() bool {
 }
 
 // Check makes check.
-func (o *OpenVPNStatus) Check() bool {
+func (o *OpenVPNStatusLog) Check() bool {
 	if _, err := os.Stat(o.StatusPath); err != nil {
 		o.Errorf("file read error: %v", err)
 		return false
@@ -74,12 +74,12 @@ func (o *OpenVPNStatus) Check() bool {
 }
 
 // Charts creates Charts.
-func (o OpenVPNStatus) Charts() *module.Charts {
+func (o OpenVPNStatusLog) Charts() *module.Charts {
 	return o.charts
 }
 
 // Collect collects metrics.
-func (o *OpenVPNStatus) Collect() map[string]int64 {
+func (o *OpenVPNStatusLog) Collect() map[string]int64 {
 	mx, err := o.collect()
 	if err != nil {
 		o.Error(err)
@@ -92,5 +92,5 @@ func (o *OpenVPNStatus) Collect() map[string]int64 {
 }
 
 // Cleanup makes cleanup.
-func (o *OpenVPNStatus) Cleanup() {
+func (o *OpenVPNStatusLog) Cleanup() {
 }

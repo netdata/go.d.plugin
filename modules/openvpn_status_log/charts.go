@@ -1,4 +1,4 @@
-package openvpn_status
+package openvpn_status_log
 
 import "github.com/netdata/go.d.plugin/agent/module"
 

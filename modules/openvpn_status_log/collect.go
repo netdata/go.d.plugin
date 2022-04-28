@@ -12,7 +12,7 @@ type clientInfo struct {
 	ConnectedSince int64
 }
 
-func (o *OpenVPNStatus) collect() (map[string]int64, error) {
+func (o *OpenVPNStatusLog) collect() (map[string]int64, error) {
 	var err error
 
 	mx := make(map[string]int64)
@@ -42,7 +42,7 @@ func collectTotalStats(mx map[string]int64, clients []clientInfo) {
 	mx["bytes_out"] = int64(bytesOut)
 }
 
-func (o *OpenVPNStatus) collectUsers(mx map[string]int64, clients []clientInfo) {
+func (o *OpenVPNStatusLog) collectUsers(mx map[string]int64, clients []clientInfo) {
 	now := time.Now().Unix()
 
 	for _, user := range clients {
@@ -62,7 +62,7 @@ func (o *OpenVPNStatus) collectUsers(mx map[string]int64, clients []clientInfo) 
 	}
 }
 
-func (o *OpenVPNStatus) addUserCharts(userName string) error {
+func (o *OpenVPNStatusLog) addUserCharts(userName string) error {
 	cs := userCharts.Copy()
 
 	for _, chart := range *cs {
