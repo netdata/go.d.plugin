@@ -40,7 +40,8 @@ func (s *SNMP) collectOIDs(collected map[string]int64) error {
 				gosnmp.TimeTicks,
 				gosnmp.Uinteger32,
 				gosnmp.OpaqueFloat,
-				gosnmp.OpaqueDouble:
+				gosnmp.OpaqueDouble,
+				gosnmp.Integer:
 				collected[oid] = gosnmp.ToBigInt(v.Value).Int64()
 			default:
 				s.Debugf("skipping OID '%s' (unsupported type '%s')", oid, v.Type)

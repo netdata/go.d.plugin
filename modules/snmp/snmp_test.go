@@ -226,16 +226,18 @@ func TestSNMP_Collect(t *testing.T) {
 		"success when collecting supported type": {
 			prepareSNMP: func(m *snmpmock.MockHandler) *SNMP {
 				snmp := New()
-				snmp.Config = prepareConfigWithIndexRange(prepareV2Config, 0, 2)
+				snmp.Config = prepareConfigWithIndexRange(prepareV2Config, 0, 3)
 
 				m.EXPECT().Get(gomock.Any()).Return(&gosnmp.SnmpPacket{
 					Variables: []gosnmp.SnmpPDU{
 						{Value: 10, Type: gosnmp.Counter32},
 						{Value: 20, Type: gosnmp.Counter64},
 						{Value: 30, Type: gosnmp.Gauge32},
-						{Value: 1, Type: gosnmp.Boolean},
-						{Value: 40, Type: gosnmp.TimeTicks},
-						{Value: 50, Type: gosnmp.Uinteger32},
+						{Value: 1,  Type: gosnmp.Boolean},
+						{Value: 40, Type: gosnmp.Gauge32},
+						{Value: 50, Type: gosnmp.TimeTicks},
+						{Value: 60, Type: gosnmp.Uinteger32},
+						{Value: 70, Type: gosnmp.Integer},
 					},
 				}, nil).Times(1)
 
@@ -248,6 +250,8 @@ func TestSNMP_Collect(t *testing.T) {
 				"1.3.6.1.2.1.2.2.1.16.1": 1,
 				"1.3.6.1.2.1.2.2.1.10.2": 40,
 				"1.3.6.1.2.1.2.2.1.16.2": 50,
+				"1.3.6.1.2.1.2.2.1.10.3": 60,
+				"1.3.6.1.2.1.2.2.1.16.3": 70,
 			},
 		},
 		"success when collecting supported and unsupported type": {
