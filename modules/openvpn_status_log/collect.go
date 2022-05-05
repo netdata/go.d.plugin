@@ -23,7 +23,8 @@ func (o *OpenVPNStatusLog) collect() (map[string]int64, error) {
 		return nil, err
 	}
 	collectTotalStats(mx, clients)
-	if o.perUserMatcher != nil {
+
+	if o.perUserMatcher != nil && len(clients) != 1 {
 		o.collectUsers(mx, clients)
 	}
 

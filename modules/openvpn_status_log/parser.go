@@ -31,6 +31,8 @@ func parseStatusLog(filePath string) ([]clientInfo, error) {
 			return parseStatusLogV2(scanner), nil
 		} else if words[0] == "TITLE" && words[1] == "OpenVPN" {
 			return parseStatusLogV3(scanner), nil
+		} else if words[0] == "OpenVPN" && words[1] == "STATISTICS" {
+			return parseStatusLogStaticKey(scanner), nil
 		} else {
 			return nil,
 				fmt.Errorf("the status log file is invalid")
@@ -161,4 +163,31 @@ func parseStatusLogV3(scanner *bufio.Scanner) []clientInfo {
 		}
 	}
 	return clients
+}
+
+//Status log for static key based setup is different
+func parseStatusLogStaticKey(scanner *bufio.Scanner) []clientInfo {
+	var client clientInfo
+	scanner.Scan() //skips a line that has update time info
+	for scanner.Scan() {
+		client.CommonName = "static_client"
+		line := scanner.Text()
+		parts := strings.Fields(line)
+		switch parts[0] {
+		case "END":
+			break
+		case "TCP/UDP":
+			if parts[1] == "read" {
+				i := strings.Split(parts[2], ",")
+				in, _ := strconv.Atoi(i[1])
+				client.BytesReceived = in
+			}
+			if parts[1] == "write" {
+				i := strings.Split(parts[2], ",")
+				out, _ := strconv.Atoi(i[1])
+				client.BytesSent = out
+			}
+		}
+	}
+	return []clientInfo{client}
 }
