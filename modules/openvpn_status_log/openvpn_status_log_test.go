@@ -82,3 +82,43 @@ func TestOpenVPN_Status_WithoutClients_Collect(t *testing.T) {
 		assert.Equal(t, expectedWithoutClients, mx)
 	}
 }
+
+func TestOpenVPN_Status_WithStaticKey(t *testing.T) {
+	logFile := "testdata/status_with_static_key.txt"
+	var expectedClientValues = map[string]int64{
+		"bytes_in":  19265,
+		"bytes_out": 261631,
+		"clients":   1,
+	}
+
+	job := New()
+	job.StatusPath = logFile
+
+	require.True(t, job.Init())
+	job.perUserMatcher = matcher.TRUE()
+	require.True(t, job.Check())
+
+	mx := job.Collect()
+	require.NotNil(t, mx)
+	assert.Equal(t, expectedClientValues, mx)
+}
+
+func TestOpenVPN_Status_WithStaticKey_NoClients(t *testing.T) {
+	logFile := "testdata/status_with_static_key_not_connected.txt"
+	var expectedClientValues = map[string]int64{
+		"bytes_in":  0,
+		"bytes_out": 0,
+		"clients":   1,
+	}
+
+	job := New()
+	job.StatusPath = logFile
+
+	require.True(t, job.Init())
+	job.perUserMatcher = matcher.TRUE()
+	require.True(t, job.Check())
+
+	mx := job.Collect()
+	require.NotNil(t, mx)
+	assert.Equal(t, expectedClientValues, mx)
+}
