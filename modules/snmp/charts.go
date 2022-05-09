@@ -67,7 +67,7 @@ func newChart(cfg ChartConfig) (*module.Chart, error) {
 	chart := &module.Chart{
 		ID:       cfg.ID,
 		Title:    cfg.Title,
-		Units:    cfg.Family,
+		Units:    cfg.Units,
 		Fam:      cfg.Family,
 		Ctx:      fmt.Sprintf("snmp.%s", cfg.ID),
 		Type:     module.ChartType(cfg.Type),
