@@ -119,3 +119,26 @@ func TestOpenVPN_Status_WithStaticKey_NoClients(t *testing.T) {
 	require.NotNil(t, mx)
 	assert.Equal(t, expectedClientValues, mx)
 }
+
+func TestOpenVPN_Status_WithEmptyFile(t *testing.T) {
+	logFile := "testdata/status_empty_file.txt"
+
+	job := New()
+	job.StatusPath = logFile
+	require.True(t, job.Init())
+	require.True(t, job.Check())
+
+	mx := job.Collect()
+	assert.Equal(t, 0, len(mx))
+}
+
+func TestOpenVPN_Status_WithInvalidFile(t *testing.T) {
+	logFile := "testdata/invalid_file.txt"
+
+	job := New()
+	job.StatusPath = logFile
+	require.True(t, job.Init())
+
+	c := job.Check()
+	assert.Equal(t, false, c)
+}
