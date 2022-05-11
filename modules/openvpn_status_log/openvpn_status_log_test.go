@@ -1,9 +1,6 @@
 package openvpn_status_log
 
 import (
-	// "fmt"
-	// "io/ioutil"
-	// "os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
