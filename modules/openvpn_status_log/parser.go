@@ -111,7 +111,7 @@ func parseStatusLogV2(scanner *bufio.Scanner) []clientInfo {
 		default:
 			switch statusType := parts[0]; statusType {
 			case "CLIENT_LIST":
-				if len(parts) < 8 {
+				if len(parts) < 9 {
 					return nil
 				}
 				in, _ := strconv.Atoi(parts[5])
