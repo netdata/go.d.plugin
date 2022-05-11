@@ -133,7 +133,7 @@ func TestOpenVPN_Status_WithEmptyFile(t *testing.T) {
 }
 
 func TestOpenVPN_Status_WithInvalidFile(t *testing.T) {
-	logFile := "testdata/invalid_file.txt"
+	logFile := "testdata/non_existent_file_path.txt"
 
 	job := New()
 	job.StatusPath = logFile
