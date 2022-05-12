@@ -132,7 +132,7 @@ func TestOpenVPN_Status_WithEmptyFile(t *testing.T) {
 	assert.Equal(t, 0, len(mx))
 }
 
-func TestOpenVPN_Status_WithInvalidFile(t *testing.T) {
+func TestOpenVPN_Status_WithNonExistentFile(t *testing.T) {
 	logFile := "testdata/non_existent_file_path.txt"
 
 	job := New()
