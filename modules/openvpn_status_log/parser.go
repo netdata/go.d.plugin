@@ -25,7 +25,10 @@ func parseStatusLog(filePath string) ([]clientInfo, error) {
 	if scanner.Scan() {
 		line := scanner.Text()
 		words := strings.Fields(line)
-		if words[0] == "OpenVPN" && words[1] == "CLIENT" && words[2] == "LIST" {
+		if len(words) < 2 {
+			return nil, fmt.Errorf("the status log file is invalid")
+		}
+		if words[0] == "OpenVPN" && words[1] == "CLIENT" {
 			return parseStatusLogV1(scanner), nil
 		} else if words[0] == "TITLE,OpenVPN" {
 			return parseStatusLogV2(scanner), nil
@@ -98,6 +101,9 @@ func parseStatusLogV2(scanner *bufio.Scanner) []clientInfo {
 	for scanner.Scan() {
 		line := scanner.Text()
 		parts := strings.Split(line, ",")
+		if len(parts) == 0 {
+			return nil
+		}
 		switch parts[0] {
 		case "HEADER":
 		case "END":
@@ -105,6 +111,9 @@ func parseStatusLogV2(scanner *bufio.Scanner) []clientInfo {
 		default:
 			switch statusType := parts[0]; statusType {
 			case "CLIENT_LIST":
+				if len(parts) < 9 {
+					return nil
+				}
 				in, _ := strconv.Atoi(parts[5])
 				out, _ := strconv.Atoi(parts[6])
 				connectedSinceUnix, _ := strconv.Atoi(parts[8])
@@ -128,6 +137,9 @@ func parseStatusLogV3(scanner *bufio.Scanner) []clientInfo {
 	for scanner.Scan() {
 		line := scanner.Text()
 		parts := strings.Fields(line)
+		if len(parts) == 0 {
+			return nil
+		}
 		switch parts[0] {
 		case "HEADER":
 		case "END":
@@ -135,6 +147,9 @@ func parseStatusLogV3(scanner *bufio.Scanner) []clientInfo {
 		default:
 			switch statusType := parts[0]; statusType {
 			case "CLIENT_LIST":
+				if len(parts) < 9 {
+					return nil
+				}
 
 				// v3 use only space for missing field of ipv6.
 				// This makes it error-prone to parse status v3.
@@ -173,10 +188,16 @@ func parseStatusLogStaticKey(scanner *bufio.Scanner) []clientInfo {
 		client.CommonName = "static_client"
 		line := scanner.Text()
 		parts := strings.Fields(line)
+		if len(parts) == 0 {
+			return nil
+		}
 		switch parts[0] {
 		case "END":
 			break
 		case "TCP/UDP":
+			if len(parts) < 2 {
+				return nil
+			}
 			if parts[1] == "read" {
 				i := strings.Split(parts[2], ",")
 				in, _ := strconv.Atoi(i[1])
