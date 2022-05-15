@@ -8,8 +8,8 @@ import (
 )
 
 // We can't fake a reply based on the current request,
-// otherwise we don't know if chrony's reply can really be processed.
-// so all of these test need chrony running, and lister at default port.
+// otherwise we don't know if chrony's reply can really be processed,
+// so all of these test need chrony running, and listen at default port.
 
 func TestNew(t *testing.T) {
 	assert.IsType(t, (*Chrony)(nil), New())
