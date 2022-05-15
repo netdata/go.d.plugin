@@ -160,34 +160,13 @@ func (c *Chrony) collectTracking() (res map[string]int64) {
 		// you should let go.d.plugin know that something has been changed, and print dimension again.
 		chart.MarkNotCreated()
 
-		c.Debugf("source change from %s to %s")
+		c.Debugf("source change from %s to %s", c.latestSource, sourceIp)
 		c.latestSource = sourceIp
 	}
 	res[c.latestSource.String()] = 1
 
 	if sourceIp.Equal(net.IPv4zero) || sourceIp.Equal(net.IPv6zero) {
-		c.Debugf("sending sentry error for NoSourceOnlineError")
-	}
-
-	// report root dispersion error to sentry when error > 100ms
-	rd := tracking.RootDispersion.Float64()
-	if rd > 0.1 {
-		c.Debugf("sending sentry error for RootDispersionTooLargeError: %g", rd)
-	}
-
-	// report frequency change to sentry when step > 500ppm
-	fp := tracking.FreqPpm.Float64()
-	if fp > 500 {
-		c.Debugf("sending sentry error for FreqChangeTooFastError: %g", fp)
-	}
-
-	if tracking.LeapStatus != 0 {
-		c.Debugf("sending sentry error for LeapStatusError: %g", tracking.LeapStatus)
-	}
-
-	rt := tracking.RefTime.Time()
-	if time.Now().Sub(rt).Hours() >= 6 {
-		c.Debugf("sending sentry error for TooLongNotSync: %s", rt.Format(time.RFC3339))
+		c.Warningf("chrony not select valid upstream")
 	}
 
 	return
@@ -209,7 +188,7 @@ func (c *Chrony) collectActivity() (res map[string]int64) {
 	res["unresolved_sources"] = int64(activity.Unresolved)
 
 	if activity.Online == 0 {
-		c.Debugf("sending sentry error for NoSourceOnlineError: %g", activity.Online)
+		c.Warningf("chrony have no available upstream")
 	}
 	return res
 }
