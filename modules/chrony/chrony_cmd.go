@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (c *Chrony) SubmitRequest(req *RequestPacket) (*ReplyPacket, *bytes.Reader, error) {
+func (c *Chrony) submitRequest(req *requestPacket) (*replyPacket, *bytes.Reader, error) {
 	conn := c.conn
 	var err error
 
@@ -34,7 +34,7 @@ func (c *Chrony) SubmitRequest(req *RequestPacket) (*ReplyPacket, *bytes.Reader,
 	c.Debugf("read %d byte from response", rspLen)
 
 	rd := bytes.NewReader(dgram)
-	var reply ReplyPacket
+	var reply replyPacket
 	if err := binary.Read(rd, binary.BigEndian, &reply); err != nil {
 		return nil, nil, fmt.Errorf("failed to get relay from conn: %s", err)
 	}
@@ -52,7 +52,7 @@ func (c *Chrony) SubmitRequest(req *RequestPacket) (*ReplyPacket, *bytes.Reader,
 	return &reply, rd, nil
 }
 
-func (c *Chrony) ParseChronyReply(reply *ReplyPacket, rd *bytes.Reader, err error) (*ReplyPacket, interface{}, error) {
+func (c *Chrony) parseChronyReply(reply *replyPacket, rd *bytes.Reader, err error) (*replyPacket, interface{}, error) {
 	switch reply.PktType {
 	case pktTypeCMDReply:
 	default:
@@ -63,9 +63,9 @@ func (c *Chrony) ParseChronyReply(reply *ReplyPacket, rd *bytes.Reader, err erro
 	var payload interface{}
 	switch reply.Command {
 	case reqActivity:
-		payload = &ActivityPayload{}
+		payload = &activityPayload{}
 	case reqTracking:
-		payload = &TrackingPayload{}
+		payload = &trackingPayload{}
 	default:
 		payload = make([]byte, rd.Len())
 		err = fmt.Errorf("unexpected reply command: %d", reply.Command)
@@ -79,57 +79,57 @@ func (c *Chrony) ParseChronyReply(reply *ReplyPacket, rd *bytes.Reader, err erro
 	return reply, payload, err
 }
 
-func (c *Chrony) FetchTracking() (*TrackingPayload, error) {
-	req := c.EmptyRequest()
+func (c *Chrony) fetchTracking() (*trackingPayload, error) {
+	req := c.emptyRequest()
 	req.Command = reqTracking
 
-	_, trackingPtr, err := c.ParseChronyReply(c.SubmitRequest(req))
+	_, trackingPtr, err := c.parseChronyReply(c.submitRequest(req))
 	if err != nil {
 		return nil, err
 	}
 
-	return trackingPtr.(*TrackingPayload), nil
+	return trackingPtr.(*trackingPayload), nil
 }
 
-func (c *Chrony) FetchActivity() (*ActivityPayload, error) {
-	req := c.EmptyRequest()
+func (c *Chrony) fetchActivity() (*activityPayload, error) {
+	req := c.emptyRequest()
 	req.Command = reqActivity
 
-	_, activityPtr, err := c.ParseChronyReply(c.SubmitRequest(req))
+	_, activityPtr, err := c.parseChronyReply(c.submitRequest(req))
 	if err != nil {
 		return nil, err
 	}
 
-	return activityPtr.(*ActivityPayload), nil
+	return activityPtr.(*activityPayload), nil
 }
 
-func (c *Chrony) EmptyRequest() *RequestPacket {
+func (c *Chrony) emptyRequest() *requestPacket {
 	// Check() func would init the value.
 	if c.chronyVersion == 0 {
-		err := c.ApplyChronyVersion()
+		err := c.applyChronyVersion()
 		if err != nil {
 			panic(err) // unexpected chrony protocol version, we can't collect data correct.
 		}
 	}
-	return &RequestPacket{
+	return &requestPacket{
 		Version: c.chronyVersion,
 		PktType: pktTypeCMDRequest,
 	}
 }
 
-func (c *Chrony) SubmitEmptyRequest() error {
-	_, _, err := c.SubmitRequest(c.EmptyRequest())
+func (c *Chrony) submitEmptyRequest() error {
+	_, _, err := c.submitRequest(c.emptyRequest())
 	return err
 }
 
-func (c *Chrony) ApplyChronyVersion() error {
+func (c *Chrony) applyChronyVersion() error {
 
 	tryProtocolVersion := []uint8{
 		protoVersionNumber6,
 		protoVersionNumber5,
 	}
 	for _, version := range tryProtocolVersion {
-		rpy, _, err := c.SubmitRequest(&RequestPacket{
+		rpy, _, err := c.submitRequest(&requestPacket{
 			Version: version,
 			PktType: pktTypeCMDRequest,
 			Command: 0,

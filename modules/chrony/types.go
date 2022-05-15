@@ -47,7 +47,7 @@ const (
 )
 
 // RequestPacket holds a chrony request
-type RequestPacket struct {
+type requestPacket struct {
 	Version   uint8 /* Protocol version */
 	PktType   uint8 /* What sort of packet this is */
 	Res1      uint8
@@ -59,9 +59,9 @@ type RequestPacket struct {
 }
 
 // TrackingPayload is the payload for tracking replies (`RPY_Tracking`)
-type TrackingPayload struct {
+type trackingPayload struct {
 	RefID              uint32
-	Ip                 IpAddr
+	Ip                 ipAddr
 	Stratum            uint16
 	LeapStatus         uint16
 	RefTime            chronyTimespec
@@ -82,14 +82,14 @@ const (
 	IpaddrInet6  = uint16(2)
 )
 
-type IpAddr struct {
+type ipAddr struct {
 	IPAddrHigh uint64
 	IPAddrLow  uint64
 	Family     uint16
 	Pad        uint16
 }
 
-func (tracking *TrackingPayload) String() string {
+func (tracking *trackingPayload) String() string {
 	return fmt.Sprintf(
 		"RefID: %d, ActivictServer: %s, Stratum: %d, RefTime: %s, CurrentCorrection: %f, "+
 			"FreqPpm: %f, SkewPpm: %f, RootDelay: %f, "+
@@ -102,7 +102,7 @@ func (tracking *TrackingPayload) String() string {
 	)
 }
 
-func (ia IpAddr) Ip() net.IP {
+func (ia ipAddr) Ip() net.IP {
 	if ia.Family == IpaddrInet4 {
 		m := uint32(ia.IPAddrHigh >> (32))
 		var ip [4]uint8
@@ -132,12 +132,12 @@ func (ia IpAddr) Ip() net.IP {
 	return net.IPv4zero
 }
 
-func (ia IpAddr) String() string {
+func (ia ipAddr) String() string {
 	return ia.Ip().String()
 }
 
 // ActivityPayload is the payload for activity replies (`RPY_Activity`)
-type ActivityPayload struct {
+type activityPayload struct {
 	Online       int32
 	Offline      int32
 	BurstOnline  int32
@@ -145,15 +145,15 @@ type ActivityPayload struct {
 	Unresolved   int32
 }
 
-func (activity *ActivityPayload) String() string {
+func (activity *activityPayload) String() string {
 	return fmt.Sprintf("Online: %d, Offline: %d, BurstOnline: %d, BurstOffline: %d, Unresolved: %d",
 		activity.Online, activity.Offline, activity.BurstOnline, activity.BurstOffline, activity.Unresolved,
 	)
 }
 
-// ReplyPacket is the common header for all replies
+// replyPacket is the common header for all replies
 // chrony version 4.1
-type ReplyPacket struct {
+type replyPacket struct {
 	Version uint8
 	PktType uint8
 	Res1    uint8

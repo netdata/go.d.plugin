@@ -5,21 +5,14 @@ import (
 	"net"
 )
 
-type (
-	// Charts is an alias for module.Charts
-	Charts = module.Charts
-	// Dims is an alias for module.Dims
-	Dims = module.Dims
-)
-
-var charts = Charts{
+var charts = module.Charts{
 	{
 		ID:    "running",
 		Title: "chrony is functional and can be monitored",
 		Units: "hop",
 		Type:  module.Area,
 		Ctx:   "chrony.running",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "running", Name: "running", Algo: module.Absolute, Div: 1, Mul: 1},
 		},
 	},
@@ -29,7 +22,7 @@ var charts = Charts{
 		Units: "level",
 		Type:  module.Area,
 		Ctx:   "chrony.stratum",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "stratum", Name: "stratum", Algo: module.Absolute, Div: 1, Mul: 1},
 		},
 	},
@@ -42,7 +35,7 @@ var charts = Charts{
 		Title: "Leap status can be Normal, Insert second, Delete second or Not synchronised.",
 		Units: "hop",
 		Ctx:   "chrony.leap_status",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "leap_status", Name: "leap_status", Algo: module.Absolute, Div: 1, Mul: 1},
 		},
 	},
@@ -52,7 +45,7 @@ var charts = Charts{
 		Units: "seconds",
 		Type:  module.Area,
 		Ctx:   "chrony.root_delay",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "root_delay", Name: "root_delay", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
 		},
 	},
@@ -62,7 +55,7 @@ var charts = Charts{
 		Units: "seconds",
 		Type:  module.Area,
 		Ctx:   "chrony.root_dispersion",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "root_dispersion", Name: "root_dispersion", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
 		},
 	},
@@ -72,7 +65,7 @@ var charts = Charts{
 		Units: "ppm",
 		Type:  module.Area,
 		Ctx:   "chrony.skew",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "skew", Name: "skew", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
 		},
 	},
@@ -82,7 +75,7 @@ var charts = Charts{
 		Units: "ppm",
 		Type:  module.Area,
 		Ctx:   "chrony.frequency",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "frequency", Name: "frequency", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
 		},
 	},
@@ -92,7 +85,7 @@ var charts = Charts{
 		Units: "seconds",
 		Type:  module.Area,
 		Ctx:   "chrony.offset",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "last_offset", Name: "last", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
 			{ID: "rms_offset", Name: "rms", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
 		},
@@ -103,7 +96,7 @@ var charts = Charts{
 		Units: "seconds",
 		Type:  module.Area,
 		Ctx:   "chrony.update_interval",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "update_interval", Name: "update_interval", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
 		},
 	},
@@ -113,7 +106,7 @@ var charts = Charts{
 		Units: "seconds",
 		Type:  module.Area,
 		Ctx:   "chrony.current_correction",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "current_correction", Name: "current_correction", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
 		},
 	},
@@ -123,7 +116,7 @@ var charts = Charts{
 		Units: "seconds",
 		Type:  module.Line,
 		Ctx:   "chrony.ref_timestamp",
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "ref_timestamp", Name: "ref_timestamp", Algo: module.Absolute, Div: 1, Mul: 1},
 		},
 	},
@@ -133,7 +126,7 @@ var charts = Charts{
 		Units: "count",
 		Ctx:   "chrony.activity",
 		Type:  module.Area,
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: "online_sources", Name: "online_sources", Algo: module.Absolute, Div: 1, Mul: 1},
 			{ID: "offline_sources", Name: "offline_sources", Algo: module.Absolute, Div: 1, Mul: 1},
 			{ID: "burst_online_sources", Name: "burst_online_sources", Algo: module.Absolute, Div: 1, Mul: 1},
@@ -147,7 +140,7 @@ var charts = Charts{
 		Units: "hop",
 		Ctx:   "chrony.source",
 		Type:  module.Area,
-		Dims: Dims{
+		Dims: module.Dims{
 			{ID: net.IPv4zero.String(), Name: net.IPv4zero.String(), Algo: module.Absolute, Div: 1, Mul: 1},
 		},
 	},

@@ -79,7 +79,7 @@ func (c *Chrony) Init() bool {
 
 // Check makes check
 func (c *Chrony) Check() bool {
-	err := c.ApplyChronyVersion()
+	err := c.applyChronyVersion()
 	if err != nil {
 		c.Errorf("get chrony version failed with err: %s", err)
 		return false
@@ -89,7 +89,7 @@ func (c *Chrony) Check() bool {
 }
 
 // Charts creates Charts dynamically
-func (c *Chrony) Charts() *Charts {
+func (c *Chrony) Charts() *module.Charts {
 	return c.charts
 }
 
@@ -98,7 +98,7 @@ func (c *Chrony) Collect() map[string]int64 {
 	// collect all we need and sent Exception to sentry
 	res := map[string]int64{"running": 0}
 
-	if !c.Running() {
+	if !c.running() {
 		return res
 	}
 	res["running"] = 1
@@ -116,8 +116,8 @@ func (c *Chrony) Collect() map[string]int64 {
 	return res
 }
 
-func (c *Chrony) Running() bool {
-	err := c.SubmitEmptyRequest()
+func (c *Chrony) running() bool {
+	err := c.submitEmptyRequest()
 	if err != nil {
 		c.Errorf("contract chrony failed with err: %s", err)
 		return false
@@ -127,7 +127,7 @@ func (c *Chrony) Running() bool {
 
 func (c *Chrony) collectTracking() (res map[string]int64) {
 	res = make(map[string]int64)
-	tracking, err := c.FetchTracking()
+	tracking, err := c.fetchTracking()
 	if err != nil {
 		c.Errorf("fetch tracking status failed: %s", err)
 		res["running"] = 0
@@ -174,7 +174,7 @@ func (c *Chrony) collectTracking() (res map[string]int64) {
 
 func (c *Chrony) collectActivity() (res map[string]int64) {
 	res = make(map[string]int64)
-	activity, err := c.FetchActivity()
+	activity, err := c.fetchActivity()
 	if err != nil {
 		c.Errorf("fetch activity status failed: %s", err)
 		return
