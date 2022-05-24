@@ -22,21 +22,6 @@ const (
 	reqTracking = uint16(33)
 	// reqActivity identifies an activity check request
 	reqActivity = uint16(44)
-	// reqNSources identifies a n_sources request
-	reqNSources = uint16(14)
-	// reqSourceStats identifies a sourcestats request
-	reqSourceStats = uint16(34)
-	// reqSourceData identifies a source data request
-	reqSourceData = uint16(15)
-
-	// rpyTracking identifies a tracking reply
-	rpyTypeTracking = uint16(5)
-	// rpyActivity identifies an activity check reply
-	rpyTypeActivity = uint16(12)
-	// reqNSources identifies a n_sources request
-	rpyNSources = uint16(2)
-	// reqSourcesStats identifies a sourcestats request
-	rpySourcesStats = uint16(6)
 
 	// floatExpBits represent 32-bit floating-point format consisting of 7-bit signed exponent
 	floatExpBits = 7
@@ -77,9 +62,8 @@ type trackingPayload struct {
 }
 
 const (
-	IpaddrUnspec = uint16(0)
-	IpaddrInet4  = uint16(1)
-	IpaddrInet6  = uint16(2)
+	IpaddrInet4 = uint16(1)
+	IpaddrInet6 = uint16(2)
 )
 
 type ipAddr struct {
