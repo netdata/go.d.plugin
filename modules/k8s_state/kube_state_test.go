@@ -2,6 +2,7 @@ package k8s_state
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -14,6 +15,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apiresource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/version"
+	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
 )
@@ -23,7 +26,77 @@ func TestNew(t *testing.T) {
 }
 
 func TestKubeState_Init(t *testing.T) {
+	tests := map[string]struct {
+		wantFail bool
+		prepare  func() *KubeState
+	}{
+		"success when no error in initializing K8s client": {
+			wantFail: false,
+			prepare: func() *KubeState {
+				ks := New()
+				ks.newKubeClient = func() (kubernetes.Interface, error) { return fake.NewSimpleClientset(), nil }
+				return ks
+			},
+		},
+		"fail when get an error in initializing K8s client": {
+			wantFail: true,
+			prepare: func() *KubeState {
+				ks := New()
+				ks.newKubeClient = func() (kubernetes.Interface, error) { return nil, errors.New("newKubeClient() error") }
+				return ks
+			},
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			ks := test.prepare()
+
+			if test.wantFail {
+				assert.False(t, ks.Init())
+			} else {
+				assert.True(t, ks.Init())
+			}
+		})
+	}
+}
+
+func TestKubeState_Check(t *testing.T) {
+	tests := map[string]struct {
+		wantFail bool
+		prepare  func() *KubeState
+	}{
+		"success when connected to the K8s API": {
+			wantFail: false,
+			prepare: func() *KubeState {
+				ks := New()
+				ks.newKubeClient = func() (kubernetes.Interface, error) { return fake.NewSimpleClientset(), nil }
+				return ks
+			},
+		},
+		"fail when not connected to the K8s API": {
+			wantFail: true,
+			prepare: func() *KubeState {
+				ks := New()
+				client := &brokenInfoKubeClient{fake.NewSimpleClientset()}
+				ks.newKubeClient = func() (kubernetes.Interface, error) { return client, nil }
+				return ks
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			ks := test.prepare()
+			require.True(t, ks.Init())
+
+			if test.wantFail {
+				assert.False(t, ks.Check())
+			} else {
+				assert.True(t, ks.Check())
+			}
+		})
+	}
 }
 
 func TestKubeState_Charts(t *testing.T) {
@@ -631,6 +704,22 @@ func newPod(nodeName, name string) *corev1.Pod {
 			},
 		},
 	}
+}
+
+type brokenInfoKubeClient struct {
+	kubernetes.Interface
+}
+
+func (kc *brokenInfoKubeClient) Discovery() discovery.DiscoveryInterface {
+	return &brokenInfoDiscovery{kc.Interface.Discovery()}
+}
+
+type brokenInfoDiscovery struct {
+	discovery.DiscoveryInterface
+}
+
+func (d *brokenInfoDiscovery) ServerVersion() (*version.Info, error) {
+	return nil, errors.New("brokenInfoDiscovery.ServerVersion() error")
 }
 
 func calcObsoleteCharts(charts module.Charts) (num int) {
