@@ -35,6 +35,12 @@ const (
 	PercentOfIncremental DimAlgo = "percentage-of-incremental-row"
 )
 
+const (
+	// Not documented, the source https://github.com/netdata/netdata/blob/7772d35db617fc268a5f8e79d85fc093bef43a8d/database/rrd.h#L180-L186
+
+	LabelSourceK8s = 4
+)
+
 func (d DimAlgo) String() string {
 	switch d {
 	case Absolute, Incremental, PercentOfAbsolute, PercentOfIncremental:
@@ -81,8 +87,9 @@ type (
 		Priority int
 		Opts
 
-		Dims Dims
-		Vars Vars
+		Labels []Label
+		Dims   Dims
+		Vars   Vars
 
 		Retries int
 
@@ -94,6 +101,12 @@ type (
 
 		// ignore flag is used to indicate that the chart shouldn't be send to the netdata plugins.d
 		ignore bool
+	}
+
+	Label struct {
+		Key    string
+		Value  string
+		Source int
 	}
 
 	// DimOpts represents dimension options.

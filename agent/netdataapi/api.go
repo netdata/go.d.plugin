@@ -48,6 +48,18 @@ func (a *API) DIMENSION(
 	return err
 }
 
+// CLABEL add or update a label to the chart.
+func (a *API) CLABEL(key, value string, source int) error {
+	_, err := fmt.Fprintf(a, "CLABEL '%s' '%s' '%d'\n", key, value, source)
+	return err
+}
+
+// CLABELCOMMIT adds labels to the chart. Should be called after one or more CLABEL.
+func (a *API) CLABELCOMMIT() error {
+	_, err := fmt.Fprint(a, "CLABEL_COMMIT\n")
+	return err
+}
+
 // BEGIN initialize data collection for a chart.
 func (a *API) BEGIN(typeID string, ID string, msSince int) (err error) {
 	if msSince > 0 {

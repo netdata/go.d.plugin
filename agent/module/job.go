@@ -379,6 +379,19 @@ func (j *Job) createChart(chart *Chart) {
 		j.pluginName,
 		j.moduleName,
 	)
+
+	var doCommit bool
+	for _, l := range chart.Labels {
+		if l.Key == "" || l.Value == "" {
+			continue
+		}
+		_ = j.api.CLABEL(l.Key, l.Value, l.Source)
+		doCommit = true
+	}
+	if doCommit {
+		_ = j.api.CLABELCOMMIT()
+	}
+
 	for _, dim := range chart.Dims {
 		_ = j.api.DIMENSION(
 			firstNotEmpty(dim.Name, dim.ID),

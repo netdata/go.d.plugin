@@ -503,6 +503,12 @@ var (
 func newPodCharts(ps *podState) *module.Charts {
 	charts := podChartsTmpl.Copy()
 	for _, c := range *charts {
+		c.Labels = []module.Label{
+			{Key: "k8s_namespace", Value: ps.namespace, Source: module.LabelSourceK8s},
+			{Key: "k8s_pod_name", Value: ps.name, Source: module.LabelSourceK8s},
+			{Key: "k8s_node_name", Value: ps.nodeName, Source: module.LabelSourceK8s},
+			{Key: "k8s_kind", Value: "pod", Source: module.LabelSourceK8s},
+		}
 		c.ID = fmt.Sprintf(c.ID, ps.id())
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ps.id())
