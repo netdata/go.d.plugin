@@ -100,11 +100,65 @@ func TestKubeState_Check(t *testing.T) {
 }
 
 func TestKubeState_Charts(t *testing.T) {
+	ks := New()
 
+	assert.NotEmpty(t, *ks.Charts())
 }
 
 func TestKubeState_Cleanup(t *testing.T) {
+	tests := map[string]struct {
+		prepare   func() *KubeState
+		doInit    bool
+		doCollect bool
+	}{
+		"before init": {
+			doInit:    false,
+			doCollect: false,
+			prepare: func() *KubeState {
+				ks := New()
+				ks.newKubeClient = func() (kubernetes.Interface, error) { return fake.NewSimpleClientset(), nil }
+				return ks
+			},
+		},
+		"after init": {
+			doInit:    true,
+			doCollect: false,
+			prepare: func() *KubeState {
+				ks := New()
+				ks.newKubeClient = func() (kubernetes.Interface, error) { return fake.NewSimpleClientset(), nil }
+				return ks
+			},
+		},
+		"after collect": {
+			doInit:    true,
+			doCollect: true,
+			prepare: func() *KubeState {
+				ks := New()
+				ks.newKubeClient = func() (kubernetes.Interface, error) { return fake.NewSimpleClientset(), nil }
+				return ks
+			},
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			ks := test.prepare()
+
+			if test.doInit {
+				_ = ks.Init()
+			}
+			if test.doCollect {
+				_ = ks.Collect()
+				time.Sleep(ks.initDelay)
+			}
+
+			assert.NotPanics(t, ks.Cleanup)
+			time.Sleep(time.Second)
+			if test.doCollect {
+				assert.True(t, ks.discoverer.stopped())
+			}
+		})
+	}
 }
 
 func TestKubeState_Collect(t *testing.T) {

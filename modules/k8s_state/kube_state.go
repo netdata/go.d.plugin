@@ -34,6 +34,7 @@ type (
 	discoverer interface {
 		run(ctx context.Context, in chan<- resource)
 		ready() bool
+		stopped() bool
 	}
 
 	KubeState struct {

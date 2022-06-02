@@ -22,7 +22,8 @@ func newKubeDiscovery(client kubernetes.Interface, l *logger.Logger) *kubeDiscov
 	return &kubeDiscovery{
 		client:  client,
 		Logger:  l,
-		started: make(chan struct{}),
+		readyCh: make(chan struct{}),
+		stopCh:  make(chan struct{}),
 	}
 }
 
@@ -30,12 +31,13 @@ type kubeDiscovery struct {
 	*logger.Logger
 	client      kubernetes.Interface
 	discoverers []discoverer
-	started     chan struct{}
+	readyCh     chan struct{}
+	stopCh      chan struct{}
 }
 
 func (d *kubeDiscovery) run(ctx context.Context, in chan<- resource) {
 	d.Info("kube_discoverer is started")
-	defer func() { d.Info("kube_discoverer is stopped") }()
+	defer func() { close(d.stopCh); d.Info("kube_discoverer is stopped") }()
 
 	d.discoverers = d.setupDiscoverers(ctx)
 
@@ -50,23 +52,33 @@ func (d *kubeDiscovery) run(ctx context.Context, in chan<- resource) {
 	wg.Add(1)
 	go func() { defer wg.Done(); d.runDiscover(ctx, updates, in) }()
 
-	close(d.started)
+	close(d.readyCh)
 	wg.Wait()
 	<-ctx.Done()
 }
 
 func (d *kubeDiscovery) ready() bool {
-	select {
-	case <-d.started:
-		for _, dd := range d.discoverers {
-			if !dd.ready() {
-				return false
-			}
-		}
-		return true
-	default:
+	if !isChanClosed(d.readyCh) {
 		return false
 	}
+	for _, dd := range d.discoverers {
+		if !dd.ready() {
+			return false
+		}
+	}
+	return true
+}
+
+func (d *kubeDiscovery) stopped() bool {
+	if !isChanClosed(d.stopCh) {
+		return false
+	}
+	for _, dd := range d.discoverers {
+		if !dd.stopped() {
+			return false
+		}
+	}
+	return true
 }
 
 func (d *kubeDiscovery) runDiscover(ctx context.Context, updates chan resource, in chan<- resource) {
@@ -141,4 +153,13 @@ var reDots = regexp.MustCompile(`\.`)
 
 func replaceDots(v string) string {
 	return reDots.ReplaceAllString(v, "-")
+}
+
+func isChanClosed(ch chan struct{}) bool {
+	select {
+	case <-ch:
+		return true
+	default:
+		return false
+	}
 }

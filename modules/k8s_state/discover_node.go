@@ -25,7 +25,8 @@ func newNodeDiscoverer(si cache.SharedInformer, l *logger.Logger) *nodeDiscovere
 		Logger:   l,
 		informer: si,
 		queue:    queue,
-		started:  make(chan struct{}),
+		readyCh:  make(chan struct{}),
+		stopCh:   make(chan struct{}),
 	}
 }
 
@@ -42,12 +43,13 @@ type nodeDiscoverer struct {
 	*logger.Logger
 	informer cache.SharedInformer
 	queue    *workqueue.Type
-	started  chan struct{}
+	readyCh  chan struct{}
+	stopCh   chan struct{}
 }
 
 func (d *nodeDiscoverer) run(ctx context.Context, in chan<- resource) {
 	d.Info("node_discoverer is started")
-	defer func() { d.Info("node_discoverer is stopped") }()
+	defer func() { close(d.stopCh); d.Info("node_discoverer is stopped") }()
 
 	defer d.queue.ShutDown()
 
@@ -58,19 +60,13 @@ func (d *nodeDiscoverer) run(ctx context.Context, in chan<- resource) {
 	}
 
 	go d.runDiscover(ctx, in)
-	close(d.started)
+	close(d.readyCh)
 
 	<-ctx.Done()
 }
 
-func (d *nodeDiscoverer) ready() bool {
-	select {
-	case <-d.started:
-		return true
-	default:
-		return false
-	}
-}
+func (d *nodeDiscoverer) ready() bool   { return isChanClosed(d.readyCh) }
+func (d *nodeDiscoverer) stopped() bool { return isChanClosed(d.stopCh) }
 
 func (d *nodeDiscoverer) runDiscover(ctx context.Context, in chan<- resource) {
 	for {
