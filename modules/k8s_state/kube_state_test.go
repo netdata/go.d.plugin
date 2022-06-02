@@ -1,6 +1,7 @@
 package k8s_state
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -157,6 +158,7 @@ func TestKubeState_Collect(t *testing.T) {
 						"pod_default_pod01_readiness_ready":                       1,
 					}
 					copyAge(expected, mx)
+
 					assert.Equal(t, expected, mx)
 					assert.Equal(t,
 						len(podChartsTmpl)+len(containerChartsTmpl)*len(pod.Spec.Containers)+len(baseCharts),
@@ -258,6 +260,7 @@ func TestKubeState_Collect(t *testing.T) {
 						"pod_default_pod01_readiness_ready":                       1,
 					}
 					copyAge(expected, mx)
+
 					assert.Equal(t, expected, mx)
 					assert.Equal(t,
 						len(nodeChartsTmpl)+len(podChartsTmpl)+len(containerChartsTmpl)*len(pod.Spec.Containers)+len(baseCharts),
@@ -268,6 +271,229 @@ func TestKubeState_Collect(t *testing.T) {
 				return testCase{
 					client: client,
 					steps:  []testCaseStep{step1},
+				}
+			},
+		},
+		"delete a Pod in runtime": {
+			create: func(t *testing.T) testCase {
+				ctx := context.Background()
+				node := newNode("node01")
+				pod := newPod(node.Name, "pod01")
+				client := fake.NewSimpleClientset(
+					node,
+					pod,
+				)
+				step1 := func(t *testing.T, ks *KubeState) {
+					_ = ks.Collect()
+					_ = client.CoreV1().Pods(pod.Namespace).Delete(ctx, pod.Name, metav1.DeleteOptions{})
+				}
+
+				step2 := func(t *testing.T, ks *KubeState) {
+					mx := ks.Collect()
+					expected := map[string]int64{
+						"discovery_node_discoverer_state":              1,
+						"discovery_pod_discoverer_state":               1,
+						"node_node01_age":                              4,
+						"node_node01_alloc_cpu_limits_used":            0,
+						"node_node01_alloc_cpu_limits_util":            0,
+						"node_node01_alloc_cpu_requests_used":          0,
+						"node_node01_alloc_cpu_requests_util":          0,
+						"node_node01_alloc_mem_limits_used":            0,
+						"node_node01_alloc_mem_limits_util":            0,
+						"node_node01_alloc_mem_requests_used":          0,
+						"node_node01_alloc_mem_requests_util":          0,
+						"node_node01_alloc_pods_allocated":             0,
+						"node_node01_alloc_pods_available":             110,
+						"node_node01_alloc_pods_used":                  0,
+						"node_node01_cond_diskpressure":                0,
+						"node_node01_cond_memorypressure":              0,
+						"node_node01_cond_networkunavailable":          0,
+						"node_node01_cond_pidpressure":                 0,
+						"node_node01_cond_ready":                       1,
+						"node_node01_containers":                       0,
+						"node_node01_containers_state_running":         0,
+						"node_node01_containers_state_terminated":      0,
+						"node_node01_containers_state_waiting":         0,
+						"node_node01_init_containers":                  0,
+						"node_node01_init_containers_state_running":    0,
+						"node_node01_init_containers_state_terminated": 0,
+						"node_node01_init_containers_state_waiting":    0,
+						"node_node01_pods_cond_containersready":        0,
+						"node_node01_pods_cond_podinitialized":         0,
+						"node_node01_pods_cond_podready":               0,
+						"node_node01_pods_cond_podscheduled":           0,
+						"node_node01_pods_phase_failed":                0,
+						"node_node01_pods_phase_pending":               0,
+						"node_node01_pods_phase_running":               0,
+						"node_node01_pods_phase_succeeded":             0,
+						"node_node01_pods_readiness":                   0,
+						"node_node01_pods_readiness_ready":             0,
+						"node_node01_pods_readiness_unready":           0,
+					}
+					copyAge(expected, mx)
+
+					assert.Equal(t, expected, mx)
+					assert.Equal(t,
+						len(nodeChartsTmpl)+len(podChartsTmpl)+len(containerChartsTmpl)*len(pod.Spec.Containers)+len(baseCharts),
+						len(*ks.Charts()),
+					)
+					assert.Equal(t,
+						len(podChartsTmpl)+len(containerChartsTmpl)*len(pod.Spec.Containers),
+						calcObsoleteCharts(*ks.Charts()),
+					)
+				}
+
+				return testCase{
+					client: client,
+					steps:  []testCaseStep{step1, step2},
+				}
+			},
+		},
+		"add a Pod in runtime": {
+			create: func(t *testing.T) testCase {
+				ctx := context.Background()
+				node := newNode("node01")
+				pod1 := newPod(node.Name, "pod01")
+				pod2 := newPod(node.Name, "pod02")
+				client := fake.NewSimpleClientset(
+					node,
+					pod1,
+				)
+				step1 := func(t *testing.T, ks *KubeState) {
+					_ = ks.Collect()
+					_, _ = client.CoreV1().Pods(pod1.Namespace).Create(ctx, pod2, metav1.CreateOptions{})
+				}
+
+				step2 := func(t *testing.T, ks *KubeState) {
+					mx := ks.Collect()
+					expected := map[string]int64{
+						"discovery_node_discoverer_state":                         1,
+						"discovery_pod_discoverer_state":                          1,
+						"node_node01_age":                                         4,
+						"node_node01_alloc_cpu_limits_used":                       800,
+						"node_node01_alloc_cpu_limits_util":                       22857,
+						"node_node01_alloc_cpu_requests_used":                     400,
+						"node_node01_alloc_cpu_requests_util":                     11428,
+						"node_node01_alloc_mem_limits_used":                       838860800,
+						"node_node01_alloc_mem_limits_util":                       22857,
+						"node_node01_alloc_mem_requests_used":                     419430400,
+						"node_node01_alloc_mem_requests_util":                     11428,
+						"node_node01_alloc_pods_allocated":                        2,
+						"node_node01_alloc_pods_available":                        108,
+						"node_node01_alloc_pods_used":                             1818,
+						"node_node01_cond_diskpressure":                           0,
+						"node_node01_cond_memorypressure":                         0,
+						"node_node01_cond_networkunavailable":                     0,
+						"node_node01_cond_pidpressure":                            0,
+						"node_node01_cond_ready":                                  1,
+						"node_node01_containers":                                  4,
+						"node_node01_containers_state_running":                    4,
+						"node_node01_containers_state_terminated":                 0,
+						"node_node01_containers_state_waiting":                    0,
+						"node_node01_init_containers":                             2,
+						"node_node01_init_containers_state_running":               0,
+						"node_node01_init_containers_state_terminated":            2,
+						"node_node01_init_containers_state_waiting":               0,
+						"node_node01_pods_cond_containersready":                   2,
+						"node_node01_pods_cond_podinitialized":                    2,
+						"node_node01_pods_cond_podready":                          2,
+						"node_node01_pods_cond_podscheduled":                      2,
+						"node_node01_pods_phase_failed":                           0,
+						"node_node01_pods_phase_pending":                          0,
+						"node_node01_pods_phase_running":                          2,
+						"node_node01_pods_phase_succeeded":                        0,
+						"node_node01_pods_readiness":                              100000,
+						"node_node01_pods_readiness_ready":                        2,
+						"node_node01_pods_readiness_unready":                      0,
+						"pod_default_pod01_age":                                   4,
+						"pod_default_pod01_alloc_cpu_limits":                      11428,
+						"pod_default_pod01_alloc_cpu_limits_used":                 400,
+						"pod_default_pod01_alloc_cpu_requests":                    5714,
+						"pod_default_pod01_alloc_cpu_requests_used":               200,
+						"pod_default_pod01_alloc_mem_limits":                      11428,
+						"pod_default_pod01_alloc_mem_limits_used":                 419430400,
+						"pod_default_pod01_alloc_mem_requests":                    5714,
+						"pod_default_pod01_alloc_mem_requests_used":               209715200,
+						"pod_default_pod01_cond_containersready":                  1,
+						"pod_default_pod01_cond_podinitialized":                   1,
+						"pod_default_pod01_cond_podready":                         1,
+						"pod_default_pod01_cond_podscheduled":                     1,
+						"pod_default_pod01_container_container1_readiness":        1,
+						"pod_default_pod01_container_container1_restarts":         0,
+						"pod_default_pod01_container_container1_state_running":    1,
+						"pod_default_pod01_container_container1_state_terminated": 0,
+						"pod_default_pod01_container_container1_state_waiting":    0,
+						"pod_default_pod01_container_container2_readiness":        1,
+						"pod_default_pod01_container_container2_restarts":         0,
+						"pod_default_pod01_container_container2_state_running":    1,
+						"pod_default_pod01_container_container2_state_terminated": 0,
+						"pod_default_pod01_container_container2_state_waiting":    0,
+						"pod_default_pod01_containers":                            2,
+						"pod_default_pod01_containers_state_running":              2,
+						"pod_default_pod01_containers_state_terminated":           0,
+						"pod_default_pod01_containers_state_waiting":              0,
+						"pod_default_pod01_init_containers":                       1,
+						"pod_default_pod01_init_containers_state_running":         0,
+						"pod_default_pod01_init_containers_state_terminated":      1,
+						"pod_default_pod01_init_containers_state_waiting":         0,
+						"pod_default_pod01_phase_failed":                          0,
+						"pod_default_pod01_phase_pending":                         0,
+						"pod_default_pod01_phase_running":                         1,
+						"pod_default_pod01_phase_succeeded":                       0,
+						"pod_default_pod01_readiness_ready":                       1,
+						"pod_default_pod02_age":                                   4,
+						"pod_default_pod02_alloc_cpu_limits":                      11428,
+						"pod_default_pod02_alloc_cpu_limits_used":                 400,
+						"pod_default_pod02_alloc_cpu_requests":                    5714,
+						"pod_default_pod02_alloc_cpu_requests_used":               200,
+						"pod_default_pod02_alloc_mem_limits":                      11428,
+						"pod_default_pod02_alloc_mem_limits_used":                 419430400,
+						"pod_default_pod02_alloc_mem_requests":                    5714,
+						"pod_default_pod02_alloc_mem_requests_used":               209715200,
+						"pod_default_pod02_cond_containersready":                  1,
+						"pod_default_pod02_cond_podinitialized":                   1,
+						"pod_default_pod02_cond_podready":                         1,
+						"pod_default_pod02_cond_podscheduled":                     1,
+						"pod_default_pod02_container_container1_readiness":        1,
+						"pod_default_pod02_container_container1_restarts":         0,
+						"pod_default_pod02_container_container1_state_running":    1,
+						"pod_default_pod02_container_container1_state_terminated": 0,
+						"pod_default_pod02_container_container1_state_waiting":    0,
+						"pod_default_pod02_container_container2_readiness":        1,
+						"pod_default_pod02_container_container2_restarts":         0,
+						"pod_default_pod02_container_container2_state_running":    1,
+						"pod_default_pod02_container_container2_state_terminated": 0,
+						"pod_default_pod02_container_container2_state_waiting":    0,
+						"pod_default_pod02_containers":                            2,
+						"pod_default_pod02_containers_state_running":              2,
+						"pod_default_pod02_containers_state_terminated":           0,
+						"pod_default_pod02_containers_state_waiting":              0,
+						"pod_default_pod02_init_containers":                       1,
+						"pod_default_pod02_init_containers_state_running":         0,
+						"pod_default_pod02_init_containers_state_terminated":      1,
+						"pod_default_pod02_init_containers_state_waiting":         0,
+						"pod_default_pod02_phase_failed":                          0,
+						"pod_default_pod02_phase_pending":                         0,
+						"pod_default_pod02_phase_running":                         1,
+						"pod_default_pod02_phase_succeeded":                       0,
+						"pod_default_pod02_readiness_ready":                       1,
+					}
+					copyAge(expected, mx)
+
+					assert.Equal(t, expected, mx)
+					assert.Equal(t,
+						len(nodeChartsTmpl)+
+							len(podChartsTmpl)*2+
+							len(containerChartsTmpl)*len(pod1.Spec.Containers)+
+							len(containerChartsTmpl)*len(pod2.Spec.Containers)+
+							len(baseCharts),
+						len(*ks.Charts()),
+					)
+				}
+
+				return testCase{
+					client: client,
+					steps:  []testCaseStep{step1, step2},
 				}
 			},
 		},
@@ -288,6 +514,8 @@ func TestKubeState_Collect(t *testing.T) {
 				if i == 0 {
 					_ = ks.Collect()
 					time.Sleep(ks.initDelay)
+				} else {
+					time.Sleep(time.Second)
 				}
 				executeStep(t, ks)
 			}
@@ -403,6 +631,15 @@ func newPod(nodeName, name string) *corev1.Pod {
 			},
 		},
 	}
+}
+
+func calcObsoleteCharts(charts module.Charts) (num int) {
+	for _, c := range charts {
+		if c.Obsolete {
+			num++
+		}
+	}
+	return num
 }
 
 func mustQuantity(s string) apiresource.Quantity {
