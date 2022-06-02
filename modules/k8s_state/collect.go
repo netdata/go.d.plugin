@@ -32,7 +32,7 @@ func (ks *KubeState) collect() (map[string]int64, error) {
 		"discovery_pod_discoverer_state":  1,
 	}
 
-	if !ks.discoverer.hasSynced() || time.Now().Sub(ks.startTime) < ks.initDelay {
+	if !ks.discoverer.ready() || time.Now().Sub(ks.startTime) < ks.initDelay {
 		return mx, nil
 	}
 

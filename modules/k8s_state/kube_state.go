@@ -33,7 +33,7 @@ func New() *KubeState {
 type (
 	discoverer interface {
 		run(ctx context.Context, in chan<- resource)
-		hasSynced() bool
+		ready() bool
 	}
 
 	KubeState struct {

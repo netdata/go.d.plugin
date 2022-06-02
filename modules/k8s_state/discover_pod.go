@@ -25,6 +25,7 @@ func newPodDiscoverer(si cache.SharedInformer, l *logger.Logger) *podDiscoverer 
 		Logger:   l,
 		informer: si,
 		queue:    queue,
+		started:  make(chan struct{}),
 	}
 }
 
@@ -41,6 +42,7 @@ type podDiscoverer struct {
 	*logger.Logger
 	informer cache.SharedInformer
 	queue    *workqueue.Type
+	started  chan struct{}
 }
 
 func (d *podDiscoverer) run(ctx context.Context, in chan<- resource) {
@@ -56,11 +58,19 @@ func (d *podDiscoverer) run(ctx context.Context, in chan<- resource) {
 	}
 
 	go d.runDiscover(ctx, in)
+	close(d.started)
 
 	<-ctx.Done()
 }
 
-func (d *podDiscoverer) hasSynced() bool { return d.informer.HasSynced() }
+func (d *podDiscoverer) ready() bool {
+	select {
+	case <-d.started:
+		return true
+	default:
+		return false
+	}
+}
 
 func (d *podDiscoverer) runDiscover(ctx context.Context, in chan<- resource) {
 	for {

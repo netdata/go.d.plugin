@@ -25,6 +25,7 @@ func newNodeDiscoverer(si cache.SharedInformer, l *logger.Logger) *nodeDiscovere
 		Logger:   l,
 		informer: si,
 		queue:    queue,
+		started:  make(chan struct{}),
 	}
 }
 
@@ -41,6 +42,7 @@ type nodeDiscoverer struct {
 	*logger.Logger
 	informer cache.SharedInformer
 	queue    *workqueue.Type
+	started  chan struct{}
 }
 
 func (d *nodeDiscoverer) run(ctx context.Context, in chan<- resource) {
@@ -56,11 +58,19 @@ func (d *nodeDiscoverer) run(ctx context.Context, in chan<- resource) {
 	}
 
 	go d.runDiscover(ctx, in)
+	close(d.started)
 
 	<-ctx.Done()
 }
 
-func (d *nodeDiscoverer) hasSynced() bool { return d.informer.HasSynced() }
+func (d *nodeDiscoverer) ready() bool {
+	select {
+	case <-d.started:
+		return true
+	default:
+		return false
+	}
+}
 
 func (d *nodeDiscoverer) runDiscover(ctx context.Context, in chan<- resource) {
 	for {

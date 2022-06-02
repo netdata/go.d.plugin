@@ -20,8 +20,9 @@ import (
 
 func newKubeDiscovery(client kubernetes.Interface, l *logger.Logger) *kubeDiscovery {
 	return &kubeDiscovery{
-		client: client,
-		Logger: l,
+		client:  client,
+		Logger:  l,
+		started: make(chan struct{}),
 	}
 }
 
@@ -29,6 +30,7 @@ type kubeDiscovery struct {
 	*logger.Logger
 	client      kubernetes.Interface
 	discoverers []discoverer
+	started     chan struct{}
 }
 
 func (d *kubeDiscovery) run(ctx context.Context, in chan<- resource) {
@@ -48,17 +50,23 @@ func (d *kubeDiscovery) run(ctx context.Context, in chan<- resource) {
 	wg.Add(1)
 	go func() { defer wg.Done(); d.runDiscover(ctx, updates, in) }()
 
+	close(d.started)
 	wg.Wait()
 	<-ctx.Done()
 }
 
-func (d *kubeDiscovery) hasSynced() bool {
-	for _, dd := range d.discoverers {
-		if !dd.hasSynced() {
-			return false
+func (d *kubeDiscovery) ready() bool {
+	select {
+	case <-d.started:
+		for _, dd := range d.discoverers {
+			if !dd.ready() {
+				return false
+			}
 		}
+		return true
+	default:
+		return false
 	}
-	return true
 }
 
 func (d *kubeDiscovery) runDiscover(ctx context.Context, updates chan resource, in chan<- resource) {
