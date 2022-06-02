@@ -6,6 +6,7 @@ import (
 	"io"
 	"regexp"
 	"runtime/debug"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,7 +26,7 @@ func newRuntimeChart(pluginName string) *Chart {
 	}
 	ctxName = reSpace.ReplaceAllString(ctxName, "_")
 	return &Chart{
-		typeID:   "netdata",
+		typ:      "netdata",
 		Title:    "Execution time",
 		Units:    "ms",
 		Fam:      pluginName,
@@ -364,8 +365,8 @@ func (j *Job) createChart(chart *Chart) {
 		j.priority++
 	}
 	_ = j.api.CHART(
-		firstNotEmpty(chart.typeID, j.FullName()),
-		chart.ID,
+		getChartType(chart, j.FullName()),
+		getChartID(chart),
 		chart.OverID,
 		chart.Title,
 		chart.Units,
@@ -380,7 +381,7 @@ func (j *Job) createChart(chart *Chart) {
 	)
 	for _, dim := range chart.Dims {
 		_ = j.api.DIMENSION(
-			dim.ID,
+			firstNotEmpty(dim.Name, dim.ID),
 			dim.Name,
 			dim.Algo.String(),
 			handleZero(dim.Mul),
@@ -414,8 +415,8 @@ func (j *Job) updateChart(chart *Chart, collected map[string]int64, sinceLastRun
 	}
 
 	_ = j.api.BEGIN(
-		firstNotEmpty(chart.typeID, j.FullName()),
-		chart.ID,
+		getChartType(chart, j.FullName()),
+		getChartID(chart),
 		sinceLastRun,
 	)
 	var i, updated int
@@ -426,9 +427,9 @@ func (j *Job) updateChart(chart *Chart, collected map[string]int64, sinceLastRun
 		chart.Dims[i] = dim
 		i++
 		if v, ok := collected[dim.ID]; !ok {
-			_ = j.api.SETEMPTY(dim.ID)
+			_ = j.api.SETEMPTY(firstNotEmpty(dim.Name, dim.ID))
 		} else {
-			_ = j.api.SET(dim.ID, v)
+			_ = j.api.SET(firstNotEmpty(dim.Name, dim.ID), v)
 			updated++
 		}
 	}
@@ -458,6 +459,30 @@ func (j Job) penalty() int {
 	return v
 }
 
+func getChartType(chart *Chart, jobFullName string) string {
+	if chart.typ != "" {
+		return chart.typ
+	}
+	if i := strings.IndexByte(chart.ID, '.'); i != -1 {
+		chart.typ = jobFullName + "_" + chart.ID[:i]
+	} else {
+		chart.typ = jobFullName
+	}
+	return chart.typ
+}
+
+func getChartID(chart *Chart) string {
+	if chart.id != "" {
+		return chart.id
+	}
+	if i := strings.IndexByte(chart.ID, '.'); i != -1 {
+		chart.id = chart.ID[i+1:]
+	} else {
+		chart.id = chart.ID
+	}
+	return chart.id
+}
+
 func calcSinceLastRun(curTime, prevRun time.Time) int {
 	if prevRun.IsZero() {
 		return 0
@@ -469,13 +494,11 @@ func durationTo(duration time.Duration, to time.Duration) int {
 	return int(int64(duration) / (int64(to) / int64(time.Nanosecond)))
 }
 
-func firstNotEmpty(values ...string) string {
-	for _, v := range values {
-		if v != "" {
-			return v
-		}
+func firstNotEmpty(val1, val2 string) string {
+	if val1 != "" {
+		return val1
 	}
-	return ""
+	return val2
 }
 
 func handleZero(v int) int {

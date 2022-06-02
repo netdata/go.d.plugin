@@ -68,7 +68,8 @@ type (
 	Chart struct {
 		// typeID is the unique identification of the chart, if not specified,
 		// the orchestrator will use job full name + chart ID as typeID (default behaviour).
-		typeID string
+		typ string
+		id  string
 
 		ID       string
 		OverID   string
