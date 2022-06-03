@@ -514,22 +514,10 @@ func (ks *KubeState) newPodChartLabels(ps *podState) []module.Label {
 		{Key: labelKeyKind, Value: "pod", Source: module.LabelSourceK8s},
 		{Key: labelKeyPodUID, Value: ps.uid, Source: module.LabelSourceK8s},
 		{Key: labelKeyQoSClass, Value: ps.qosClass, Source: module.LabelSourceK8s},
-	}
-	if ps.controllerKind != "" {
-		labels = append(labels, module.Label{
-			Key: labelKeyControllerKind, Value: ps.controllerKind, Source: module.LabelSourceK8s})
-	}
-	if ps.controllerName != "" {
-		labels = append(labels, module.Label{
-			Key: labelKeyControllerName, Value: ps.controllerName, Source: module.LabelSourceK8s})
-	}
-	if ks.kubeClusterID != "" {
-		labels = append(labels, module.Label{
-			Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s})
-	}
-	if ks.kubeClusterName != "" {
-		labels = append(labels, module.Label{
-			Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s})
+		{Key: labelKeyControllerKind, Value: ps.controllerKind, Source: module.LabelSourceK8s},
+		{Key: labelKeyControllerName, Value: ps.controllerName, Source: module.LabelSourceK8s},
+		{Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s},
+		{Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s},
 	}
 	return labels
 }
