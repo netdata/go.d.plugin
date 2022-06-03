@@ -2,6 +2,7 @@ package k8s_state
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -311,26 +312,26 @@ var (
 	}
 )
 
-func newNodeCharts(name string) *module.Charts {
+func newNodeCharts(ns *nodeState) *module.Charts {
 	cs := nodeChartsTmpl.Copy()
 	for _, c := range *cs {
-		c.ID = fmt.Sprintf(c.ID, name)
+		c.ID = fmt.Sprintf(c.ID, replaceDots(ns.id()))
 		for _, d := range c.Dims {
-			d.ID = fmt.Sprintf(d.ID, name)
+			d.ID = fmt.Sprintf(d.ID, ns.id())
 		}
 	}
 	return cs
 }
 
 func (ks *KubeState) addNodeCharts(ns *nodeState) {
-	cs := newNodeCharts(ns.id())
+	cs := newNodeCharts(ns)
 	if err := ks.Charts().Add(*cs...); err != nil {
 		ks.Warning(err)
 	}
 }
 
 func (ks *KubeState) removeNodeCharts(ns *nodeState) {
-	prefix := fmt.Sprintf("node_%s", ns.id())
+	prefix := fmt.Sprintf("node_%s", replaceDots(ns.id()))
 	for _, c := range *ks.Charts() {
 		if strings.HasPrefix(c.ID, prefix) {
 			c.MarkRemove()
@@ -340,14 +341,14 @@ func (ks *KubeState) removeNodeCharts(ns *nodeState) {
 }
 
 func (ks *KubeState) addNodeConditionToCharts(ns *nodeState, cond string) {
-	id := fmt.Sprintf(nodeConditionsChartTmpl.ID, ns.name)
+	id := fmt.Sprintf(nodeConditionsChartTmpl.ID, replaceDots(ns.id()))
 	c := ks.Charts().Get(id)
 	if c == nil {
 		ks.Warningf("chart '%s' does not exist", id)
 		return
 	}
 	dim := &module.Dim{
-		ID:   fmt.Sprintf("node_%s_cond_%s", ns.name, strings.ToLower(cond)),
+		ID:   fmt.Sprintf("node_%s_cond_%s", ns.id(), strings.ToLower(cond)),
 		Name: cond,
 	}
 	if err := c.AddDim(dim); err != nil {
@@ -509,7 +510,7 @@ func newPodCharts(ps *podState) *module.Charts {
 			{Key: "k8s_node_name", Value: ps.nodeName, Source: module.LabelSourceK8s},
 			{Key: "k8s_kind", Value: "pod", Source: module.LabelSourceK8s},
 		}
-		c.ID = fmt.Sprintf(c.ID, ps.id())
+		c.ID = fmt.Sprintf(c.ID, replaceDots(ps.id()))
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ps.id())
 		}
@@ -525,7 +526,7 @@ func (ks *KubeState) addPodCharts(ps *podState) {
 }
 
 func (ks *KubeState) removePodCharts(ps *podState) {
-	prefix := fmt.Sprintf("pod_%s", ps.id())
+	prefix := fmt.Sprintf("pod_%s", replaceDots(ps.id()))
 	for _, c := range *ks.Charts() {
 		if strings.HasPrefix(c.ID, prefix) {
 			c.MarkRemove()
@@ -591,7 +592,7 @@ var (
 func newContainerCharts(ps *podState, cs *containerState) *module.Charts {
 	charts := containerChartsTmpl.Copy()
 	for _, c := range *charts {
-		c.ID = fmt.Sprintf(c.ID, ps.id(), cs.name)
+		c.ID = fmt.Sprintf(c.ID, replaceDots(ps.id()), cs.name)
 		c.Fam = fmt.Sprintf(c.Fam, cs.name)
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ps.id(), cs.name)
@@ -608,7 +609,7 @@ func (ks *KubeState) addContainerCharts(ps *podState, cs *containerState) {
 }
 
 func (ks *KubeState) addContainerWaitingStateReasonToChart(ps *podState, cs *containerState, reason string) {
-	id := fmt.Sprintf(containersStateWaitingChartTmpl.ID, ps.id(), cs.name)
+	id := fmt.Sprintf(containersStateWaitingChartTmpl.ID, replaceDots(ps.id()), cs.name)
 	c := ks.Charts().Get(id)
 	if c == nil {
 		ks.Warningf("chart '%s' does not exist", id)
@@ -626,7 +627,7 @@ func (ks *KubeState) addContainerWaitingStateReasonToChart(ps *podState, cs *con
 }
 
 func (ks *KubeState) addContainerTerminatedStateReasonToChart(ps *podState, cs *containerState, reason string) {
-	id := fmt.Sprintf(containersStateTerminatedChartTmpl.ID, ps.id(), cs.name)
+	id := fmt.Sprintf(containersStateTerminatedChartTmpl.ID, replaceDots(ps.id()), cs.name)
 	c := ks.Charts().Get(id)
 	if c == nil {
 		ks.Warningf("chart '%s' does not exist", id)
@@ -655,4 +656,10 @@ var discoveryStatusChart = module.Chart{
 		{ID: "discovery_node_discoverer_state", Name: "node"},
 		{ID: "discovery_pod_discoverer_state", Name: "pod"},
 	},
+}
+
+var reDots = regexp.MustCompile(`\.`)
+
+func replaceDots(v string) string {
+	return reDots.ReplaceAllString(v, "-")
 }

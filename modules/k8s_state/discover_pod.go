@@ -91,10 +91,6 @@ func (d *podDiscoverer) runDiscover(ctx context.Context, in chan<- resource) {
 
 			r := &podResource{src: podSource(ns, replaceDots(name))}
 			if exists {
-				if p, err := toPod(item); err == nil {
-					p.Name = replaceDots(p.Name)
-					p.Spec.NodeName = replaceDots(p.Spec.NodeName)
-				}
 				r.val = item
 			}
 			send(ctx, in, r)

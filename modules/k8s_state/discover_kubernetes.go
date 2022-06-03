@@ -3,7 +3,6 @@ package k8s_state
 import (
 	"context"
 	"os"
-	"regexp"
 	"sync"
 	"time"
 
@@ -147,12 +146,6 @@ func send(ctx context.Context, in chan<- resource, r resource) {
 	case <-ctx.Done():
 	case in <- r:
 	}
-}
-
-var reDots = regexp.MustCompile(`\.`)
-
-func replaceDots(v string) string {
-	return reDots.ReplaceAllString(v, "-")
 }
 
 func isChanClosed(ch chan struct{}) bool {
