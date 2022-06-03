@@ -190,7 +190,7 @@ var (
 		Title:    "Condition status",
 		Units:    "status",
 		Fam:      "condition",
-		Ctx:      "k8s_state.node_condition_status",
+		Ctx:      "k8s_state.node_condition",
 		Priority: prioNodeConditions,
 	}
 	// pods readiness
@@ -361,7 +361,7 @@ var (
 		Title:    "Allocated CPU",
 		Units:    "%",
 		Fam:      "allocated cpu",
-		Ctx:      "k8s_state.allocated_cpu",
+		Ctx:      "k8s_state.pod_allocated_cpu",
 		Priority: prioPodAllocatedCPU,
 		Dims: module.Dims{
 			{ID: "pod_%s_alloc_cpu_requests", Name: "requests", Div: precision},
@@ -373,7 +373,7 @@ var (
 		Title:    "Allocated CPU used",
 		Units:    "millicpu",
 		Fam:      "allocated cpu",
-		Ctx:      "k8s_state.allocated_cpu_used",
+		Ctx:      "k8s_state.pod_allocated_cpu_used",
 		Priority: prioPodAllocatedCPUUsed,
 		Dims: module.Dims{
 			{ID: "pod_%s_alloc_cpu_requests_used", Name: "requests"},
@@ -386,7 +386,7 @@ var (
 		Title:    "Allocated memory",
 		Units:    "%",
 		Fam:      "allocated mem",
-		Ctx:      "k8s_state.allocated_mem",
+		Ctx:      "k8s_state.pod_allocated_mem",
 		Priority: prioPodAllocatedMem,
 		Dims: module.Dims{
 			{ID: "pod_%s_alloc_mem_requests", Name: "requests", Div: precision},
@@ -398,7 +398,7 @@ var (
 		Title:    "Allocated memory used",
 		Units:    "bytes",
 		Fam:      "allocated mem",
-		Ctx:      "k8s_state.allocated_mem_used",
+		Ctx:      "k8s_state.pod_allocated_mem_used",
 		Priority: prioPodAllocatedMemUsed,
 		Dims: module.Dims{
 			{ID: "pod_%s_alloc_mem_requests_used", Name: "requests"},
@@ -584,7 +584,7 @@ var (
 		Title:    "Container waiting state reason",
 		Units:    "state",
 		Fam:      "%s",
-		Ctx:      "k8s_state.pod_container_state_waiting_reason",
+		Ctx:      "k8s_state.pod_container_waiting_state_reason",
 		Priority: prioPodContainerWaitingStateReason,
 	}
 	containersStateTerminatedChartTmpl = module.Chart{
@@ -592,7 +592,7 @@ var (
 		Title:    "Container terminated state reason",
 		Units:    "state",
 		Fam:      "%s",
-		Ctx:      "k8s_state.pod_container_state_terminated_reason",
+		Ctx:      "k8s_state.pod_container_terminated_state_reason",
 		Priority: prioPodContainerTerminatedStateReason,
 	}
 )
