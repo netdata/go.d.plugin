@@ -304,11 +304,15 @@ var (
 	}
 )
 
-func newNodeCharts(ns *nodeState) *module.Charts {
+func (ks *KubeState) newNodeCharts(ns *nodeState) *module.Charts {
 	cs := nodeChartsTmpl.Copy()
 	for _, c := range *cs {
 		c.ID = fmt.Sprintf(c.ID, replaceDots(ns.id()))
-		c.Labels = []module.Label{{Key: labelKeyKind, Value: "node", Source: module.LabelSourceK8s}}
+		c.Labels = []module.Label{
+			{Key: labelKeyKind, Value: "node", Source: module.LabelSourceK8s},
+			{Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s},
+			{Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s},
+		}
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ns.id())
 		}
@@ -317,7 +321,7 @@ func newNodeCharts(ns *nodeState) *module.Charts {
 }
 
 func (ks *KubeState) addNodeCharts(ns *nodeState) {
-	cs := newNodeCharts(ns)
+	cs := ks.newNodeCharts(ns)
 	if err := ks.Charts().Add(*cs...); err != nil {
 		ks.Warning(err)
 	}
@@ -614,16 +618,10 @@ func (ks *KubeState) newContainerChartLabels(ps *podState, cs *containerState) [
 			break
 		}
 	}
-	labels = append(labels, module.Label{
-		Key:    labelKeyContainerName,
-		Value:  cs.name,
-		Source: module.LabelSourceK8s,
-	})
-	labels = append(labels, module.Label{
-		Key:    labelKeyContainerID,
-		Value:  cs.uid,
-		Source: module.LabelSourceK8s,
-	})
+	labels = append(labels, []module.Label{
+		{Key: labelKeyContainerName, Value: cs.name, Source: module.LabelSourceK8s},
+		{Key: labelKeyContainerID, Value: cs.uid, Source: module.LabelSourceK8s},
+	}...)
 	return labels
 }
 
