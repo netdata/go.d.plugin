@@ -54,6 +54,9 @@ type (
 		ctx        context.Context
 		ctxCancel  context.CancelFunc
 		state      *kubeState
+
+		kubeClusterID   string
+		kubeClusterName string
 	}
 )
 

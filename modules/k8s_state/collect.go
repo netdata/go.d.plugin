@@ -25,6 +25,9 @@ func (ks *KubeState) collect() (map[string]int64, error) {
 
 		ks.wg.Add(1)
 		go func() { defer ks.wg.Done(); ks.discoverer.run(ks.ctx, in) }()
+
+		ks.kubeClusterID = ks.getKubeClusterID()
+		ks.kubeClusterName = ks.getKubeClusterName()
 	})
 
 	mx := map[string]int64{

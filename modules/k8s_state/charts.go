@@ -50,6 +50,8 @@ const (
 
 const (
 	labelKeyPrefix         = "k8s_"
+	labelKeyClusterID      = labelKeyPrefix + "cluster_id"
+	labelKeyClusterName    = labelKeyPrefix + "cluster_name"
 	labelKeyNamespace      = labelKeyPrefix + "namespace"
 	labelKeyKind           = labelKeyPrefix + "kind"
 	labelKeyPodName        = labelKeyPrefix + "pod_name"
@@ -492,11 +494,11 @@ var (
 	}
 )
 
-func newPodCharts(ps *podState) *module.Charts {
+func (ks *KubeState) newPodCharts(ps *podState) *module.Charts {
 	charts := podChartsTmpl.Copy()
 	for _, c := range *charts {
 		c.ID = fmt.Sprintf(c.ID, replaceDots(ps.id()))
-		c.Labels = newPodChartLabels(ps)
+		c.Labels = ks.newPodChartLabels(ps)
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ps.id())
 		}
@@ -504,7 +506,7 @@ func newPodCharts(ps *podState) *module.Charts {
 	return charts
 }
 
-func newPodChartLabels(ps *podState) []module.Label {
+func (ks *KubeState) newPodChartLabels(ps *podState) []module.Label {
 	labels := []module.Label{
 		{Key: labelKeyNamespace, Value: ps.namespace, Source: module.LabelSourceK8s},
 		{Key: labelKeyPodName, Value: ps.name, Source: module.LabelSourceK8s},
@@ -515,23 +517,25 @@ func newPodChartLabels(ps *podState) []module.Label {
 	}
 	if ps.controllerKind != "" {
 		labels = append(labels, module.Label{
-			Key:    labelKeyControllerKind,
-			Value:  ps.controllerKind,
-			Source: module.LabelSourceK8s,
-		})
+			Key: labelKeyControllerKind, Value: ps.controllerKind, Source: module.LabelSourceK8s})
 	}
 	if ps.controllerName != "" {
 		labels = append(labels, module.Label{
-			Key:    labelKeyControllerName,
-			Value:  ps.controllerName,
-			Source: module.LabelSourceK8s,
-		})
+			Key: labelKeyControllerName, Value: ps.controllerName, Source: module.LabelSourceK8s})
+	}
+	if ks.kubeClusterID != "" {
+		labels = append(labels, module.Label{
+			Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s})
+	}
+	if ks.kubeClusterName != "" {
+		labels = append(labels, module.Label{
+			Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s})
 	}
 	return labels
 }
 
 func (ks *KubeState) addPodCharts(ps *podState) {
-	charts := newPodCharts(ps)
+	charts := ks.newPodCharts(ps)
 	if err := ks.Charts().Add(*charts...); err != nil {
 		ks.Warning(err)
 	}
@@ -601,12 +605,12 @@ var (
 	}
 )
 
-func newContainerCharts(ps *podState, cs *containerState) *module.Charts {
+func (ks *KubeState) newContainerCharts(ps *podState, cs *containerState) *module.Charts {
 	charts := containerChartsTmpl.Copy()
 	for _, c := range *charts {
 		c.ID = fmt.Sprintf(c.ID, replaceDots(ps.id()), cs.name)
 		c.Fam = fmt.Sprintf(c.Fam, cs.name)
-		c.Labels = newContainerChartLabels(ps, cs)
+		c.Labels = ks.newContainerChartLabels(ps, cs)
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ps.id(), cs.name)
 		}
@@ -614,8 +618,8 @@ func newContainerCharts(ps *podState, cs *containerState) *module.Charts {
 	return charts
 }
 
-func newContainerChartLabels(ps *podState, cs *containerState) []module.Label {
-	labels := newPodChartLabels(ps)
+func (ks *KubeState) newContainerChartLabels(ps *podState, cs *containerState) []module.Label {
+	labels := ks.newPodChartLabels(ps)
 	for i, v := range labels {
 		if v.Key == labelKeyKind {
 			labels[i].Value = "container"
@@ -636,7 +640,7 @@ func newContainerChartLabels(ps *podState, cs *containerState) []module.Label {
 }
 
 func (ks *KubeState) addContainerCharts(ps *podState, cs *containerState) {
-	charts := newContainerCharts(ps, cs)
+	charts := ks.newContainerCharts(ps, cs)
 	if err := ks.Charts().Add(*charts...); err != nil {
 		ks.Warning(err)
 	}
