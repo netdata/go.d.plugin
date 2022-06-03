@@ -104,9 +104,13 @@ type (
 		new     bool
 		deleted bool
 
-		name      string
-		nodeName  string
-		namespace string
+		name           string
+		nodeName       string
+		namespace      string
+		uid            string
+		controllerKind string
+		controllerName string
+		qosClass       string
 
 		creationTime time.Time
 		reqCPU       int64
@@ -132,7 +136,9 @@ type (
 	containerState struct {
 		new bool
 
-		name      string
+		name string
+		uid  string
+
 		podName   string
 		nodeName  string
 		namespace string

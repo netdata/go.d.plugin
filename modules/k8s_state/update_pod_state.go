@@ -1,6 +1,10 @@
 package k8s_state
 
-import corev1 "k8s.io/api/core/v1"
+import (
+	"strings"
+
+	corev1 "k8s.io/api/core/v1"
+)
 
 func (ks *KubeState) updatePodState(r resource) {
 	if r.value() == nil {
@@ -27,7 +31,14 @@ func (ks *KubeState) updatePodState(r resource) {
 		ps.nodeName = pod.Spec.NodeName
 		ps.namespace = pod.Namespace
 		ps.creationTime = pod.CreationTimestamp.Time
-
+		ps.uid = string(pod.UID)
+		ps.qosClass = strings.ToLower(string(pod.Status.QOSClass))
+		for _, ref := range pod.OwnerReferences {
+			if ref.Controller != nil && *ref.Controller {
+				ps.controllerKind = ref.Kind
+				ps.controllerName = ref.Name
+			}
+		}
 		var res struct{ rCPU, lCPU, rMem, lMem, irCPU, ilCPU, irMem, ilMem int64 }
 		for _, cntr := range pod.Spec.Containers {
 			res.rCPU += int64(cntr.Resources.Requests.Cpu().AsApproximateFloat64() * 1000)
@@ -82,6 +93,7 @@ func (ks *KubeState) updatePodState(r resource) {
 			cs.podName = pod.Name
 			cs.namespace = pod.Namespace
 			cs.nodeName = pod.Spec.NodeName
+			cs.uid = extractContainerID(cntr.ContainerID)
 		}
 		cs.ready = cntr.Ready
 		cs.restarts = int64(cntr.RestartCount)
@@ -121,6 +133,7 @@ func (ks *KubeState) updatePodState(r resource) {
 			cs.podName = pod.Name
 			cs.namespace = pod.Namespace
 			cs.nodeName = pod.Spec.NodeName
+			cs.uid = extractContainerID(cntr.ContainerID)
 		}
 		cs.ready = cntr.Ready
 		cs.restarts = int64(cntr.RestartCount)
@@ -135,4 +148,12 @@ func max(a, b int64) int64 {
 		return b
 	}
 	return a
+}
+
+func extractContainerID(id string) string {
+	// docker://d98...
+	if i := strings.LastIndexByte(id, '/'); i != -1 {
+		id = id[i+1:]
+	}
+	return id
 }

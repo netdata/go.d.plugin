@@ -48,6 +48,20 @@ const (
 	prioPodContainerTerminatedStateReason
 )
 
+const (
+	labelKeyPrefix         = "k8s_"
+	labelKeyNamespace      = labelKeyPrefix + "namespace"
+	labelKeyKind           = labelKeyPrefix + "kind"
+	labelKeyPodName        = labelKeyPrefix + "pod_name"
+	labelKeyNodeName       = labelKeyPrefix + "node_name"
+	labelKeyPodUID         = labelKeyPrefix + "pod_uid"
+	labelKeyControllerKind = labelKeyPrefix + "controller_kind"
+	labelKeyControllerName = labelKeyPrefix + "controller_name"
+	labelKeyContainerName  = labelKeyPrefix + "container_name"
+	labelKeyContainerID    = labelKeyPrefix + "container_id"
+	labelKeyQoSClass       = labelKeyPrefix + "qos_class"
+)
+
 var baseCharts = module.Charts{
 	discoveryStatusChart.Copy(),
 }
@@ -92,8 +106,8 @@ var containerChartsTmpl = module.Charts{
 	containersStateTerminatedChartTmpl.Copy(),
 }
 
-// Node CPU resource
 var (
+	// CPU resource
 	nodeAllocatableCPUUtilizationChartTmpl = module.Chart{
 		ID:       "node_%s.allocatable_cpu_utilization",
 		Title:    "CPU resource utilization",
@@ -118,10 +132,7 @@ var (
 			{ID: "node_%s_alloc_cpu_limits_used", Name: "limits"},
 		},
 	}
-)
-
-// Node memory resource
-var (
+	// memory resource
 	nodeAllocatableMemUtilizationChartTmpl = module.Chart{
 		ID:       "node_%s.allocatable_mem_utilization",
 		Title:    "Memory resource utilization",
@@ -146,10 +157,7 @@ var (
 			{ID: "node_%s_alloc_mem_limits_used", Name: "limits"},
 		},
 	}
-)
-
-// Node pods resource
-var (
+	// pods resource
 	nodeAllocatablePodsUtilizationChartTmpl = module.Chart{
 		ID:       "node_%s.allocatable_pods_utilization",
 		Title:    "Pods resource utilization",
@@ -174,10 +182,7 @@ var (
 			{ID: "node_%s_alloc_pods_allocated", Name: "allocated"},
 		},
 	}
-)
-
-// Node condition
-var (
+	// condition
 	nodeConditionsChartTmpl = module.Chart{
 		ID:       "node_%s.condition_status",
 		Title:    "Condition status",
@@ -186,10 +191,7 @@ var (
 		Ctx:      "k8s_state.node_condition_status",
 		Priority: prioNodeConditions,
 	}
-)
-
-// Node pods readiness
-var (
+	// pods readiness
 	nodePodsReadinessChartTmpl = module.Chart{
 		ID:       "node_%s.pods_readiness",
 		Title:    "Pods readiness",
@@ -214,10 +216,7 @@ var (
 			{ID: "node_%s_pods_readiness_unready", Name: "unready"},
 		},
 	}
-)
-
-// Node pods condition
-var (
+	// pods condition
 	nodePodsConditionChartTmpl = module.Chart{
 		ID:       "node_%s.pods_condition",
 		Title:    "Pods condition",
@@ -232,10 +231,7 @@ var (
 			{ID: "node_%s_pods_cond_containersready", Name: "ContainersReady"},
 		},
 	}
-)
-
-// Node pods phase
-var (
+	// pods phase
 	nodePodsPhaseChartTmpl = module.Chart{
 		ID:       "node_%s.pods_phase",
 		Title:    "Pods phase",
@@ -251,10 +247,7 @@ var (
 			{ID: "node_%s_pods_phase_pending", Name: "Pending"},
 		},
 	}
-)
-
-// Node containers
-var (
+	// containers
 	nodeContainersChartTmpl = module.Chart{
 		ID:       "node_%s.containers",
 		Title:    "Containers",
@@ -295,10 +288,7 @@ var (
 			{ID: "node_%s_init_containers_state_terminated", Name: "Terminated"},
 		},
 	}
-)
-
-// Node age
-var (
+	// age
 	nodeAgeChartTmpl = module.Chart{
 		ID:       "node_%s.age",
 		Title:    "Age",
@@ -316,6 +306,7 @@ func newNodeCharts(ns *nodeState) *module.Charts {
 	cs := nodeChartsTmpl.Copy()
 	for _, c := range *cs {
 		c.ID = fmt.Sprintf(c.ID, replaceDots(ns.id()))
+		c.Labels = []module.Label{{Key: labelKeyKind, Value: "node", Source: module.LabelSourceK8s}}
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ns.id())
 		}
@@ -504,18 +495,39 @@ var (
 func newPodCharts(ps *podState) *module.Charts {
 	charts := podChartsTmpl.Copy()
 	for _, c := range *charts {
-		c.Labels = []module.Label{
-			{Key: "k8s_namespace", Value: ps.namespace, Source: module.LabelSourceK8s},
-			{Key: "k8s_pod_name", Value: ps.name, Source: module.LabelSourceK8s},
-			{Key: "k8s_node_name", Value: ps.nodeName, Source: module.LabelSourceK8s},
-			{Key: "k8s_kind", Value: "pod", Source: module.LabelSourceK8s},
-		}
 		c.ID = fmt.Sprintf(c.ID, replaceDots(ps.id()))
+		c.Labels = newPodChartLabels(ps)
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ps.id())
 		}
 	}
 	return charts
+}
+
+func newPodChartLabels(ps *podState) []module.Label {
+	labels := []module.Label{
+		{Key: labelKeyNamespace, Value: ps.namespace, Source: module.LabelSourceK8s},
+		{Key: labelKeyPodName, Value: ps.name, Source: module.LabelSourceK8s},
+		{Key: labelKeyNodeName, Value: ps.nodeName, Source: module.LabelSourceK8s},
+		{Key: labelKeyKind, Value: "pod", Source: module.LabelSourceK8s},
+		{Key: labelKeyPodUID, Value: ps.uid, Source: module.LabelSourceK8s},
+		{Key: labelKeyQoSClass, Value: ps.qosClass, Source: module.LabelSourceK8s},
+	}
+	if ps.controllerKind != "" {
+		labels = append(labels, module.Label{
+			Key:    labelKeyControllerKind,
+			Value:  ps.controllerKind,
+			Source: module.LabelSourceK8s,
+		})
+	}
+	if ps.controllerName != "" {
+		labels = append(labels, module.Label{
+			Key:    labelKeyControllerName,
+			Value:  ps.controllerName,
+			Source: module.LabelSourceK8s,
+		})
+	}
+	return labels
 }
 
 func (ks *KubeState) addPodCharts(ps *podState) {
@@ -594,11 +606,33 @@ func newContainerCharts(ps *podState, cs *containerState) *module.Charts {
 	for _, c := range *charts {
 		c.ID = fmt.Sprintf(c.ID, replaceDots(ps.id()), cs.name)
 		c.Fam = fmt.Sprintf(c.Fam, cs.name)
+		c.Labels = newContainerChartLabels(ps, cs)
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ps.id(), cs.name)
 		}
 	}
 	return charts
+}
+
+func newContainerChartLabels(ps *podState, cs *containerState) []module.Label {
+	labels := newPodChartLabels(ps)
+	for i, v := range labels {
+		if v.Key == labelKeyKind {
+			labels[i].Value = "container"
+			break
+		}
+	}
+	labels = append(labels, module.Label{
+		Key:    labelKeyContainerName,
+		Value:  cs.name,
+		Source: module.LabelSourceK8s,
+	})
+	labels = append(labels, module.Label{
+		Key:    labelKeyContainerID,
+		Value:  cs.uid,
+		Source: module.LabelSourceK8s,
+	})
+	return labels
 }
 
 func (ks *KubeState) addContainerCharts(ps *podState, cs *containerState) {
