@@ -34,7 +34,6 @@ const (
 	prioPodAllocatedCPUUsed
 	prioPodAllocatedMem
 	prioPodAllocatedMemUsed
-	prioPodReadinessState
 	prioPodCondition
 	prioPodPhase
 	prioPodAge
@@ -91,7 +90,6 @@ var podChartsTmpl = module.Charts{
 	podAllocatedCPUUsedChartTmpl.Copy(),
 	podAllocatedMemChartTmpl.Copy(),
 	podAllocatedMemUsedChartTmpl.Copy(),
-	podReadinessStateChartTmpl.Copy(),
 	podConditionChartTmpl.Copy(),
 	podPhaseChartTmpl.Copy(),
 	podAgeChartTmpl.Copy(),
@@ -403,18 +401,6 @@ var (
 		Dims: module.Dims{
 			{ID: "pod_%s_alloc_mem_requests_used", Name: "requests"},
 			{ID: "pod_%s_alloc_mem_limits_used", Name: "limits"},
-		},
-	}
-
-	podReadinessStateChartTmpl = module.Chart{
-		ID:       "pod_%s.readiness_state",
-		Title:    "Readiness state",
-		Units:    "state",
-		Fam:      "readiness",
-		Ctx:      "k8s_state.pod_readiness_state",
-		Priority: prioPodReadinessState,
-		Dims: module.Dims{
-			{ID: "pod_%s_readiness_ready", Name: "ready"},
 		},
 	}
 	podConditionChartTmpl = module.Chart{

@@ -104,7 +104,6 @@ func (ks *KubeState) collectPodsState(mx map[string]int64) {
 
 		px := fmt.Sprintf("pod_%s_", ps.id())
 
-		mx[px+"readiness_ready"] = boolToInt(ps.condPodReady == corev1.ConditionTrue)
 		mx[px+"cond_podready"] = condStatusToInt(ps.condPodReady)
 		mx[px+"cond_podscheduled"] = condStatusToInt(ps.condPodScheduled)
 		mx[px+"cond_podinitialized"] = condStatusToInt(ps.condPodInitialized)
