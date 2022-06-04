@@ -282,7 +282,6 @@ func TestKubeState_Collect(t *testing.T) {
 						"pod_default_pod01_phase_pending":                         0,
 						"pod_default_pod01_phase_running":                         1,
 						"pod_default_pod01_phase_succeeded":                       0,
-						"pod_default_pod01_readiness_ready":                       1,
 					}
 					copyAge(expected, mx)
 
@@ -384,7 +383,6 @@ func TestKubeState_Collect(t *testing.T) {
 						"pod_default_pod01_phase_pending":                         0,
 						"pod_default_pod01_phase_running":                         1,
 						"pod_default_pod01_phase_succeeded":                       0,
-						"pod_default_pod01_readiness_ready":                       1,
 					}
 					copyAge(expected, mx)
 
@@ -567,7 +565,6 @@ func TestKubeState_Collect(t *testing.T) {
 						"pod_default_pod01_phase_pending":                         0,
 						"pod_default_pod01_phase_running":                         1,
 						"pod_default_pod01_phase_succeeded":                       0,
-						"pod_default_pod01_readiness_ready":                       1,
 						"pod_default_pod02_age":                                   4,
 						"pod_default_pod02_alloc_cpu_limits":                      11428,
 						"pod_default_pod02_alloc_cpu_limits_used":                 400,
@@ -603,7 +600,6 @@ func TestKubeState_Collect(t *testing.T) {
 						"pod_default_pod02_phase_pending":                         0,
 						"pod_default_pod02_phase_running":                         1,
 						"pod_default_pod02_phase_succeeded":                       0,
-						"pod_default_pod02_readiness_ready":                       1,
 					}
 					copyAge(expected, mx)
 
