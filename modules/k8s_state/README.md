@@ -56,19 +56,18 @@ This module collects health metrics for the following Kubernetes resources:
 
 - Pod
 
-| Metric                    |   Units    | Description |
-|---------------------------|:----------:|-------------|
-| pod_allocated_cpu         |     %      | desc        |
-| pod_allocated_cpu_used    |  millicpu  | desc        |
-| pod_allocated_mem         |     %      | desc        |
-| pod_allocated_mem_used    |   bytes    | desc        |
-| pod_readiness_state       |   state    | desc        |
-| pod_condition             |   state    | desc        |
-| pod_phase                 |   state    | desc        |
-| pod_age                   |  seconds   | desc        |
-| pod_containers            |  seconds   | desc        |
-| pod_containers_state      | containers | desc        |
-| pod_init_containers_state | containers | desc        |
+| Metric                    |   Units    | Source                         |
+|---------------------------|:----------:|--------------------------------|
+| pod_allocated_cpu         |     %      | pod.spec.containers.resources  |
+| pod_allocated_cpu_used    |  millicpu  | pod.spec.containers.resources  |
+| pod_allocated_mem         |     %      | pod.spec.containers.resources  |
+| pod_allocated_mem_used    |   bytes    | pod.spec.containers.resources  |
+| pod_condition             |   state    | pod.status.conditions          |
+| pod_phase                 |   state    | pod.status.phase               |
+| pod_age                   |  seconds   | pod.metadata.creationTimestamp |
+| pod_containers            |  seconds   | desc                           |
+| pod_containers_state      | containers | desc                           |
+| pod_init_containers_state | containers | desc                           |
 
 - Pod Containers
 
