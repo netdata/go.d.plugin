@@ -531,33 +531,33 @@ func (ks *KubeState) removePodCharts(ps *podState) {
 
 var (
 	containerReadinessStateChartTmpl = module.Chart{
-		ID:       "pod_%s.container_%s_readiness_state",
+		ID:       "pod_%s_container_%s.readiness_state",
 		Title:    "Readiness state",
 		Units:    "state",
-		Fam:      "%s",
-		Ctx:      "k8s_state.pod_container_readiness_state",
+		Fam:      "cntr readiness",
+		Ctx:      "k8s_state.container_readiness_state",
 		Priority: prioPodContainerReadinessState,
 		Dims: module.Dims{
 			{ID: "pod_%s_container_%s_readiness", Name: "ready"},
 		},
 	}
 	containerRestartsChartTmpl = module.Chart{
-		ID:       "pod_%s.container_%s_restarts",
+		ID:       "pod_%s_container_%s.restarts",
 		Title:    "Restarts",
 		Units:    "restarts",
-		Fam:      "%s",
-		Ctx:      "k8s_state.pod_container_restarts",
+		Fam:      "cntr restarts",
+		Ctx:      "k8s_state.container_restarts",
 		Priority: prioPodContainerRestarts,
 		Dims: module.Dims{
 			{ID: "pod_%s_container_%s_restarts", Name: "restarts"},
 		},
 	}
 	containersStateChartTmpl = module.Chart{
-		ID:       "pod_%s.container_%s_state",
+		ID:       "pod_%s_container_%s.state",
 		Title:    "Container state",
 		Units:    "state",
-		Fam:      "%s",
-		Ctx:      "k8s_state.pod_container_state",
+		Fam:      "cntr state",
+		Ctx:      "k8s_state.container_state",
 		Priority: prioPodContainerState,
 		Dims: module.Dims{
 			{ID: "pod_%s_container_%s_state_running", Name: "Running"},
@@ -566,19 +566,19 @@ var (
 		},
 	}
 	containersStateWaitingChartTmpl = module.Chart{
-		ID:       "pod_%s.container_%s_state_waiting_reason",
+		ID:       "pod_%s_container_%s.state_waiting_reason",
 		Title:    "Container waiting state reason",
 		Units:    "state",
-		Fam:      "%s",
-		Ctx:      "k8s_state.pod_container_waiting_state_reason",
+		Fam:      "cntr waiting reason",
+		Ctx:      "k8s_state.container_waiting_state_reason",
 		Priority: prioPodContainerWaitingStateReason,
 	}
 	containersStateTerminatedChartTmpl = module.Chart{
-		ID:       "pod_%s.container_%s_state_terminated_reason",
+		ID:       "pod_%s_container_%s.state_terminated_reason",
 		Title:    "Container terminated state reason",
 		Units:    "state",
-		Fam:      "%s",
-		Ctx:      "k8s_state.pod_container_terminated_state_reason",
+		Fam:      "cntr terminated",
+		Ctx:      "k8s_state.container_terminated_state_reason",
 		Priority: prioPodContainerTerminatedStateReason,
 	}
 )
@@ -587,7 +587,6 @@ func (ks *KubeState) newContainerCharts(ps *podState, cs *containerState) *modul
 	charts := containerChartsTmpl.Copy()
 	for _, c := range *charts {
 		c.ID = fmt.Sprintf(c.ID, replaceDots(ps.id()), cs.name)
-		c.Fam = fmt.Sprintf(c.Fam, cs.name)
 		c.Labels = ks.newContainerChartLabels(ps, cs)
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ps.id(), cs.name)
