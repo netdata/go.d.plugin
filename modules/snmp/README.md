@@ -90,6 +90,8 @@ In this example:
 
 > **SNMPv1**: just set `options.version` to 1.
 
+> If you have multiple devices see how to [simplify the configuration](#multiple-devices-with-a-common-configuration).
+
 ```yaml
 jobs:
   - name: switch
@@ -139,6 +141,8 @@ To use SNMPv3:
 - set `options.version` to 3.
 
 The rest of the configuration is the same as in the SNMPv1/2 [example](#example-using-snmpv12).
+
+> If you have multiple devices see how to [simplify the configuration](#multiple-devices-with-a-common-configuration).
 
 ```yaml
 jobs:
@@ -204,6 +208,8 @@ Each of the 24 new charts will have its id (1-24) appended at:
 - its `oid` (for all dimensions), i.e. dimension in will be `1.3.6.1.2.1.2.2.1.10.1` to `1.3.6.1.2.1.2.2.1.10.24`.
 - its `priority` will be incremented for each chart so that the charts will appear on the dashboard in this order.
 
+> If you have multiple devices see how to [simplify the configuration](#multiple-devices-with-a-common-configuration).
+
 ```yaml
 jobs:
   - name: switch
@@ -229,6 +235,51 @@ jobs:
             oid: "1.3.6.1.2.1.2.2.1.16"
             multiplier: -8
             divisor: 1000
+```
+
+## Multiple devices with a common configuration
+
+YAML supports [anchors](https://yaml.org/spec/1.2.2/#3222-anchors-and-aliases). The `&` defines and names an anchor, and
+the `*` uses it. `<<: *anchor` means, inject the anchor, then extend. We can use anchors to share the common
+configuration for multiple devices.
+
+The following example:
+
+- adds an `anchor` to the first job.
+- injects (copies) the first job configuration to the second and updates `name` and `hostname` parameters.
+- injects (copies) the first job configuration to the third and updates `name` and `hostname` parameters.
+
+```yaml
+jobs:
+  - &anchor
+    name: switch
+    update_every: 10
+    hostname: "192.0.2.1"
+    community: public
+    options:
+      version: 2
+    charts:
+      - id: "bandwidth_port1"
+        title: "Switch Bandwidth for port 1"
+        units: "kilobits/s"
+        type: "area"
+        family: "ports"
+        dimensions:
+          - name: "in"
+            oid: "1.3.6.1.2.1.2.2.1.10.1"
+            algorithm: "incremental"
+            multiplier: 8
+            divisor: 1000
+          - name: "out"
+            oid: "1.3.6.1.2.1.2.2.1.16.1"
+            multiplier: -8
+            divisor: 1000
+  - <<: *anchor
+    name: switch2
+    hostname: "192.0.2.2"
+  - <<: *anchor
+    name: switch3
+    hostname: "192.0.2.3"
 ```
 
 ## Data collection speed
