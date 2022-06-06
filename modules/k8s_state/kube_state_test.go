@@ -173,7 +173,7 @@ func TestKubeState_Collect(t *testing.T) {
 	tests := map[string]struct {
 		create func(t *testing.T) testCase
 	}{
-		"only Node": {
+		"Node only ": {
 			create: func(t *testing.T) testCase {
 				client := fake.NewSimpleClientset(
 					newNode("node01"),
@@ -235,7 +235,7 @@ func TestKubeState_Collect(t *testing.T) {
 				}
 			},
 		},
-		"only Pod": {
+		"Pod only": {
 			create: func(t *testing.T) testCase {
 				pod := newPod("node01", "pod01")
 				client := fake.NewSimpleClientset(
@@ -248,13 +248,9 @@ func TestKubeState_Collect(t *testing.T) {
 						"discovery_node_discoverer_state":                         1,
 						"discovery_pod_discoverer_state":                          1,
 						"pod_default_pod01_age":                                   3,
-						"pod_default_pod01_alloc_cpu_limits":                      0,
 						"pod_default_pod01_alloc_cpu_limits_used":                 400,
-						"pod_default_pod01_alloc_cpu_requests":                    0,
 						"pod_default_pod01_alloc_cpu_requests_used":               200,
-						"pod_default_pod01_alloc_mem_limits":                      0,
 						"pod_default_pod01_alloc_mem_limits_used":                 419430400,
-						"pod_default_pod01_alloc_mem_requests":                    0,
 						"pod_default_pod01_alloc_mem_requests_used":               209715200,
 						"pod_default_pod01_cond_containersready":                  1,
 						"pod_default_pod01_cond_podinitialized":                   1,
@@ -349,13 +345,9 @@ func TestKubeState_Collect(t *testing.T) {
 						"node_node01_pods_readiness_ready":                        1,
 						"node_node01_pods_readiness_unready":                      0,
 						"pod_default_pod01_age":                                   3,
-						"pod_default_pod01_alloc_cpu_limits":                      11428,
 						"pod_default_pod01_alloc_cpu_limits_used":                 400,
-						"pod_default_pod01_alloc_cpu_requests":                    5714,
 						"pod_default_pod01_alloc_cpu_requests_used":               200,
-						"pod_default_pod01_alloc_mem_limits":                      11428,
 						"pod_default_pod01_alloc_mem_limits_used":                 419430400,
-						"pod_default_pod01_alloc_mem_requests":                    5714,
 						"pod_default_pod01_alloc_mem_requests_used":               209715200,
 						"pod_default_pod01_cond_containersready":                  1,
 						"pod_default_pod01_cond_podinitialized":                   1,
@@ -531,13 +523,9 @@ func TestKubeState_Collect(t *testing.T) {
 						"node_node01_pods_readiness_ready":                        2,
 						"node_node01_pods_readiness_unready":                      0,
 						"pod_default_pod01_age":                                   4,
-						"pod_default_pod01_alloc_cpu_limits":                      11428,
 						"pod_default_pod01_alloc_cpu_limits_used":                 400,
-						"pod_default_pod01_alloc_cpu_requests":                    5714,
 						"pod_default_pod01_alloc_cpu_requests_used":               200,
-						"pod_default_pod01_alloc_mem_limits":                      11428,
 						"pod_default_pod01_alloc_mem_limits_used":                 419430400,
-						"pod_default_pod01_alloc_mem_requests":                    5714,
 						"pod_default_pod01_alloc_mem_requests_used":               209715200,
 						"pod_default_pod01_cond_containersready":                  1,
 						"pod_default_pod01_cond_podinitialized":                   1,
@@ -566,13 +554,9 @@ func TestKubeState_Collect(t *testing.T) {
 						"pod_default_pod01_phase_running":                         1,
 						"pod_default_pod01_phase_succeeded":                       0,
 						"pod_default_pod02_age":                                   4,
-						"pod_default_pod02_alloc_cpu_limits":                      11428,
 						"pod_default_pod02_alloc_cpu_limits_used":                 400,
-						"pod_default_pod02_alloc_cpu_requests":                    5714,
 						"pod_default_pod02_alloc_cpu_requests_used":               200,
-						"pod_default_pod02_alloc_mem_limits":                      11428,
 						"pod_default_pod02_alloc_mem_limits_used":                 419430400,
-						"pod_default_pod02_alloc_mem_requests":                    5714,
 						"pod_default_pod02_alloc_mem_requests_used":               209715200,
 						"pod_default_pod02_cond_containersready":                  1,
 						"pod_default_pod02_cond_podinitialized":                   1,

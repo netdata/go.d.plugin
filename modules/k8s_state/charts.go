@@ -30,9 +30,7 @@ const (
 )
 
 const (
-	prioPodAllocatedCPU = 38200 + iota
-	prioPodAllocatedCPUUsed
-	prioPodAllocatedMem
+	prioPodAllocatedCPUUsed = 38200 + iota
 	prioPodAllocatedMemUsed
 	prioPodCondition
 	prioPodPhase
@@ -86,9 +84,7 @@ var nodeChartsTmpl = module.Charts{
 }
 
 var podChartsTmpl = module.Charts{
-	podAllocatedCPUChartTmpl.Copy(),
 	podAllocatedCPUUsedChartTmpl.Copy(),
-	podAllocatedMemChartTmpl.Copy(),
 	podAllocatedMemUsedChartTmpl.Copy(),
 	podConditionChartTmpl.Copy(),
 	podPhaseChartTmpl.Copy(),
@@ -354,18 +350,6 @@ func (ks *KubeState) addNodeConditionToCharts(ns *nodeState, cond string) {
 }
 
 var (
-	podAllocatedCPUChartTmpl = module.Chart{
-		ID:       "pod_%s.allocated_cpu",
-		Title:    "Allocated CPU",
-		Units:    "%",
-		Fam:      "pod allocated cpu",
-		Ctx:      "k8s_state.pod_allocated_cpu",
-		Priority: prioPodAllocatedCPU,
-		Dims: module.Dims{
-			{ID: "pod_%s_alloc_cpu_requests", Name: "requests", Div: precision},
-			{ID: "pod_%s_alloc_cpu_limits", Name: "limits", Div: precision},
-		},
-	}
 	podAllocatedCPUUsedChartTmpl = module.Chart{
 		ID:       "pod_%s.allocated_cpu_used",
 		Title:    "Allocated CPU used",
@@ -376,19 +360,6 @@ var (
 		Dims: module.Dims{
 			{ID: "pod_%s_alloc_cpu_requests_used", Name: "requests"},
 			{ID: "pod_%s_alloc_cpu_limits_used", Name: "limits"},
-		},
-	}
-
-	podAllocatedMemChartTmpl = module.Chart{
-		ID:       "pod_%s.allocated_mem",
-		Title:    "Allocated memory",
-		Units:    "%",
-		Fam:      "pod allocated mem",
-		Ctx:      "k8s_state.pod_allocated_mem",
-		Priority: prioPodAllocatedMem,
-		Dims: module.Dims{
-			{ID: "pod_%s_alloc_mem_requests", Name: "requests", Div: precision},
-			{ID: "pod_%s_alloc_mem_limits", Name: "limits", Div: precision},
 		},
 	}
 	podAllocatedMemUsedChartTmpl = module.Chart{

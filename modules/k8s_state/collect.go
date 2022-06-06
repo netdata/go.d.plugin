@@ -68,11 +68,8 @@ func (ks *KubeState) collectPodsState(mx map[string]int64) {
 			ks.addPodCharts(ps)
 		}
 
-		var allocCPU, allocMem int64
 		ns := ks.state.nodes[nodeSource(ps.nodeName)]
 		if ns != nil {
-			allocCPU = ns.allocatableCPU
-			allocMem = ns.allocatableMem
 			ns.stats.pods++
 			ns.stats.reqCPU += ps.reqCPU
 			ns.stats.limitCPU += ps.limitCPU
@@ -113,10 +110,6 @@ func (ks *KubeState) collectPodsState(mx map[string]int64) {
 		mx[px+"phase_succeeded"] = boolToInt(ps.phase == corev1.PodSucceeded)
 		mx[px+"phase_pending"] = boolToInt(ps.phase == corev1.PodPending)
 		mx[px+"age"] = int64(now.Sub(ps.creationTime).Seconds())
-		mx[px+"alloc_cpu_requests"] = calcPercentage(ps.reqCPU, allocCPU)
-		mx[px+"alloc_cpu_limits"] = calcPercentage(ps.limitCPU, allocCPU)
-		mx[px+"alloc_mem_requests"] = calcPercentage(ps.reqMem, allocMem)
-		mx[px+"alloc_mem_limits"] = calcPercentage(ps.limitMem, allocMem)
 		mx[px+"alloc_cpu_requests_used"] = ps.reqCPU
 		mx[px+"alloc_cpu_limits_used"] = ps.limitCPU
 		mx[px+"alloc_mem_requests_used"] = ps.reqMem
