@@ -812,6 +812,8 @@ func (m *MySQL) addUserStatisticsCharts(user string) {
 		}
 		if err := chart.AddDim(dim); err != nil {
 			m.Warning(err)
+		} else {
+			chart.MarkNotCreated()
 		}
 	}
 	if err := m.Charts().Add(newUserStatisticsCharts(user)...); err != nil {
