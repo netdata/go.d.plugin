@@ -33,6 +33,7 @@ func (ks *KubeState) updatePodState(r resource) {
 		ps.creationTime = pod.CreationTimestamp.Time
 		ps.uid = string(pod.UID)
 		ps.qosClass = strings.ToLower(string(pod.Status.QOSClass))
+		copyLabels(ps.labels, pod.Labels)
 		for _, ref := range pod.OwnerReferences {
 			if ref.Controller != nil && *ref.Controller {
 				ps.controllerKind = ref.Kind

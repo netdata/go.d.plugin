@@ -30,6 +30,7 @@ func (ks *KubeState) updateNodeState(r resource) {
 		ns.allocatableCPU = int64(node.Status.Allocatable.Cpu().AsApproximateFloat64() * 1000)
 		ns.allocatableMem = node.Status.Allocatable.Memory().Value()
 		ns.allocatablePods = node.Status.Allocatable.Pods().Value()
+		copyLabels(ns.labels, node.Labels)
 	}
 
 	for _, c := range node.Status.Conditions {

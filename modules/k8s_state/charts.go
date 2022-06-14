@@ -46,19 +46,21 @@ const (
 )
 
 const (
-	labelKeyPrefix         = "k8s_"
-	labelKeyClusterID      = labelKeyPrefix + "cluster_id"
-	labelKeyClusterName    = labelKeyPrefix + "cluster_name"
-	labelKeyNamespace      = labelKeyPrefix + "namespace"
-	labelKeyKind           = labelKeyPrefix + "kind"
-	labelKeyPodName        = labelKeyPrefix + "pod_name"
-	labelKeyNodeName       = labelKeyPrefix + "node_name"
-	labelKeyPodUID         = labelKeyPrefix + "pod_uid"
-	labelKeyControllerKind = labelKeyPrefix + "controller_kind"
-	labelKeyControllerName = labelKeyPrefix + "controller_name"
-	labelKeyContainerName  = labelKeyPrefix + "container_name"
-	labelKeyContainerID    = labelKeyPrefix + "container_id"
-	labelKeyQoSClass       = labelKeyPrefix + "qos_class"
+	labelKeyPrefix           = "k8s_"
+	labelKeyLabelPrefix      = labelKeyPrefix + "label_"
+	labelKeyAnnotationPrefix = labelKeyPrefix + "annotation_"
+	labelKeyClusterID        = labelKeyPrefix + "cluster_id"
+	labelKeyClusterName      = labelKeyPrefix + "cluster_name"
+	labelKeyNamespace        = labelKeyPrefix + "namespace"
+	labelKeyKind             = labelKeyPrefix + "kind"
+	labelKeyPodName          = labelKeyPrefix + "pod_name"
+	labelKeyNodeName         = labelKeyPrefix + "node_name"
+	labelKeyPodUID           = labelKeyPrefix + "pod_uid"
+	labelKeyControllerKind   = labelKeyPrefix + "controller_kind"
+	labelKeyControllerName   = labelKeyPrefix + "controller_name"
+	labelKeyContainerName    = labelKeyPrefix + "container_name"
+	labelKeyContainerID      = labelKeyPrefix + "container_id"
+	labelKeyQoSClass         = labelKeyPrefix + "qos_class"
 )
 
 var baseCharts = module.Charts{
@@ -302,16 +304,26 @@ func (ks *KubeState) newNodeCharts(ns *nodeState) *module.Charts {
 	cs := nodeChartsTmpl.Copy()
 	for _, c := range *cs {
 		c.ID = fmt.Sprintf(c.ID, replaceDots(ns.id()))
-		c.Labels = []module.Label{
-			{Key: labelKeyKind, Value: "node", Source: module.LabelSourceK8s},
-			{Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s},
-			{Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s},
-		}
+		c.Labels = ks.newNodeChartLabels(ns)
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, ns.id())
 		}
 	}
 	return cs
+}
+
+func (ks *KubeState) newNodeChartLabels(ns *nodeState) []module.Label {
+	labels := []module.Label{
+		{Key: labelKeyKind, Value: "node", Source: module.LabelSourceK8s},
+		{Key: labelKeyNodeName, Value: ns.name, Source: module.LabelSourceK8s},
+		{Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s},
+		{Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s},
+	}
+	//for k, v := range ns.labels {
+	//	labels = append(labels,
+	//		module.Label{Key: labelKeyLabelPrefix + k, Value: v, Source: module.LabelSourceK8s})
+	//}
+	return labels
 }
 
 func (ks *KubeState) addNodeCharts(ns *nodeState) {
@@ -480,6 +492,10 @@ func (ks *KubeState) newPodChartLabels(ps *podState) []module.Label {
 		{Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s},
 		{Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s},
 	}
+	//for k, v := range ps.labels {
+	//	labels = append(labels,
+	//		module.Label{Key: labelKeyLabelPrefix + k, Value: v, Source: module.LabelSourceK8s})
+	//}
 	return labels
 }
 

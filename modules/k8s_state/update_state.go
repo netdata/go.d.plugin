@@ -17,3 +17,9 @@ func (ks *KubeState) runUpdateState(in <-chan resource) {
 		}
 	}
 }
+
+func copyLabels(dst, src map[string]string) {
+	for k, v := range src {
+		dst[k] = v
+	}
+}

@@ -18,6 +18,7 @@ func newKubeState() *kubeState {
 func newNodeState() *nodeState {
 	return &nodeState{
 		new:        true,
+		labels:     make(map[string]string),
 		conditions: make(map[string]*nodeStateCondition),
 	}
 }
@@ -25,6 +26,7 @@ func newNodeState() *nodeState {
 func newPodState() *podState {
 	return &podState{
 		new:            true,
+		labels:         make(map[string]string),
 		initContainers: make(map[string]*containerState),
 		containers:     make(map[string]*containerState),
 	}
@@ -49,8 +51,8 @@ type (
 		new     bool
 		deleted bool
 
-		name string
-
+		name            string
+		labels          map[string]string
 		creationTime    time.Time
 		allocatableCPU  int64
 		allocatableMem  int64
@@ -108,15 +110,15 @@ type (
 		nodeName       string
 		namespace      string
 		uid            string
+		labels         map[string]string
 		controllerKind string
 		controllerName string
 		qosClass       string
-
-		creationTime time.Time
-		reqCPU       int64
-		reqMem       int64
-		limitCPU     int64
-		limitMem     int64
+		creationTime   time.Time
+		reqCPU         int64
+		reqMem         int64
+		limitCPU       int64
+		limitMem       int64
 		// https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-conditions
 		condPodScheduled    corev1.ConditionStatus
 		condContainersReady corev1.ConditionStatus
