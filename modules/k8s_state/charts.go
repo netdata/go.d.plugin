@@ -12,10 +12,14 @@ import (
 const prioDiscoveryDiscovererState = 39999
 
 const (
-	prioNodeAllocatableCPUUtil = 38100 + iota
-	prioNodeAllocatableCPUUsed
-	prioNodeAllocatableMemUtil
-	prioNodeAllocatableMemUsed
+	prioNodeAllocatableCPURequestsUtil = 38100 + iota
+	prioNodeAllocatableCPURequestsUsed
+	prioNodeAllocatableCPULimitsUtil
+	prioNodeAllocatableCPULimitsUsed
+	prioNodeAllocatableMemRequestsUtil
+	prioNodeAllocatableMemRequestsUsed
+	prioNodeAllocatableMemLimitsUtil
+	prioNodeAllocatableMemLimitsUsed
 	prioNodeAllocatablePodsUtil
 	prioNodeAllocatablePodsUsage
 	prioNodeConditions
@@ -30,8 +34,10 @@ const (
 )
 
 const (
-	prioPodAllocatedCPUUsed = 38200 + iota
-	prioPodAllocatedMemUsed
+	prioPodAllocatedCPURequestsUsed = 38200 + iota
+	prioPodAllocatedCPULimitsUsed
+	prioPodAllocatedMemRequestsUsed
+	prioPodAllocatedMemLimitsUsed
 	prioPodCondition
 	prioPodPhase
 	prioPodAge
@@ -46,7 +52,7 @@ const (
 )
 
 const (
-	labelKeyPrefix           = "k8s_"
+	labelKeyPrefix           = "k8ss_"
 	labelKeyLabelPrefix      = labelKeyPrefix + "label_"
 	labelKeyAnnotationPrefix = labelKeyPrefix + "annotation_"
 	labelKeyClusterID        = labelKeyPrefix + "cluster_id"
@@ -68,10 +74,14 @@ var baseCharts = module.Charts{
 }
 
 var nodeChartsTmpl = module.Charts{
-	nodeAllocatableCPUUtilizationChartTmpl.Copy(),
-	nodeAllocatableCPUUsedChartTmpl.Copy(),
-	nodeAllocatableMemUtilizationChartTmpl.Copy(),
-	nodeAllocMemUsedChartTmpl.Copy(),
+	nodeAllocatableCPURequestsUtilChartTmpl.Copy(),
+	nodeAllocatableCPURequestsUsedChartTmpl.Copy(),
+	nodeAllocatableCPULimitsUtilChartTmpl.Copy(),
+	nodeAllocatableCPULimitsUsedChartTmpl.Copy(),
+	nodeAllocatableMemRequestsUtilChartTmpl.Copy(),
+	nodeAllocatableMemRequestsUsedChartTmpl.Copy(),
+	nodeAllocatableMemLimitsUtilChartTmpl.Copy(),
+	nodeAllocatableMemLimitsUsedChartTmpl.Copy(),
 	nodeAllocatablePodsUtilizationChartTmpl.Copy(),
 	nodeAllocatablePodsUsageChartTmpl.Copy(),
 	nodeConditionsChartTmpl.Copy(),
@@ -86,8 +96,10 @@ var nodeChartsTmpl = module.Charts{
 }
 
 var podChartsTmpl = module.Charts{
-	podAllocatedCPUUsedChartTmpl.Copy(),
-	podAllocatedMemUsedChartTmpl.Copy(),
+	podAllocatedCPURequestsUsedChartTmpl.Copy(),
+	podAllocatedCPULimitsUsedChartTmpl.Copy(),
+	podAllocatedMemRequestsUsedChartTmpl.Copy(),
+	podAllocatedMemLimitsUsedChartTmpl.Copy(),
 	podConditionChartTmpl.Copy(),
 	podPhaseChartTmpl.Copy(),
 	podAgeChartTmpl.Copy(),
@@ -105,53 +117,95 @@ var containerChartsTmpl = module.Charts{
 }
 
 var (
-	// CPU resource
-	nodeAllocatableCPUUtilizationChartTmpl = module.Chart{
-		ID:       "node_%s.allocatable_cpu_utilization",
-		Title:    "CPU resource utilization",
+	// CPU requests
+	nodeAllocatableCPURequestsUtilChartTmpl = module.Chart{
+		ID:       "node_%s.allocatable_cpu_requests_utilization",
+		Title:    "CPU requests utilization",
 		Units:    "%",
 		Fam:      "node cpu resource",
-		Ctx:      "k8s_state.node_allocatable_cpu_utilization",
-		Priority: prioNodeAllocatableCPUUtil,
+		Ctx:      "k8s_state.node_allocatable_cpu_requests_utilization",
+		Priority: prioNodeAllocatableCPURequestsUtil,
 		Dims: module.Dims{
 			{ID: "node_%s_alloc_cpu_requests_util", Name: "requests", Div: precision},
+		},
+	}
+	nodeAllocatableCPURequestsUsedChartTmpl = module.Chart{
+		ID:       "node_%s.allocatable_cpu_requests_used",
+		Title:    "CPU requests used",
+		Units:    "millicpu",
+		Fam:      "node cpu resource",
+		Ctx:      "k8s_state.node_allocatable_cpu_requests_used",
+		Priority: prioNodeAllocatableCPURequestsUsed,
+		Dims: module.Dims{
+			{ID: "node_%s_alloc_cpu_requests_used", Name: "requests"},
+		},
+	}
+	// CPU limits
+	nodeAllocatableCPULimitsUtilChartTmpl = module.Chart{
+		ID:       "node_%s.allocatable_cpu_limits_utilization",
+		Title:    "CPU limits utilization",
+		Units:    "%",
+		Fam:      "node cpu resource",
+		Ctx:      "k8s_state.node_allocatable_cpu_limits_utilization",
+		Priority: prioNodeAllocatableCPULimitsUtil,
+		Dims: module.Dims{
 			{ID: "node_%s_alloc_cpu_limits_util", Name: "limits", Div: precision},
 		},
 	}
-	nodeAllocatableCPUUsedChartTmpl = module.Chart{
-		ID:       "node_%s.allocatable_cpu_used",
-		Title:    "CPU resource used",
+	nodeAllocatableCPULimitsUsedChartTmpl = module.Chart{
+		ID:       "node_%s.allocatable_cpu_limits_used",
+		Title:    "CPU limits used",
 		Units:    "millicpu",
 		Fam:      "node cpu resource",
-		Ctx:      "k8s_state.node_allocatable_cpu_used",
-		Priority: prioNodeAllocatableCPUUsed,
+		Ctx:      "k8s_state.node_allocatable_cpu_limits_used",
+		Priority: prioNodeAllocatableCPULimitsUsed,
 		Dims: module.Dims{
-			{ID: "node_%s_alloc_cpu_requests_used", Name: "requests"},
 			{ID: "node_%s_alloc_cpu_limits_used", Name: "limits"},
 		},
 	}
-	// memory resource
-	nodeAllocatableMemUtilizationChartTmpl = module.Chart{
-		ID:       "node_%s.allocatable_mem_utilization",
-		Title:    "Memory resource utilization",
+	// memory requests
+	nodeAllocatableMemRequestsUtilChartTmpl = module.Chart{
+		ID:       "node_%s.allocatable_mem_requests_utilization",
+		Title:    "Memory requests utilization",
 		Units:    "%",
 		Fam:      "node mem resource",
-		Ctx:      "k8s_state.node_allocatable_mem_utilization",
-		Priority: prioNodeAllocatableMemUtil,
+		Ctx:      "k8s_state.node_allocatable_mem_requests_utilization",
+		Priority: prioNodeAllocatableMemRequestsUtil,
 		Dims: module.Dims{
 			{ID: "node_%s_alloc_mem_requests_util", Name: "requests", Div: precision},
+		},
+	}
+	nodeAllocatableMemRequestsUsedChartTmpl = module.Chart{
+		ID:       "node_%s.allocatable_mem_requests_used",
+		Title:    "Memory requests used",
+		Units:    "bytes",
+		Fam:      "node mem resource",
+		Ctx:      "k8s_state.node_allocatable_mem_requests_used",
+		Priority: prioNodeAllocatableMemRequestsUsed,
+		Dims: module.Dims{
+			{ID: "node_%s_alloc_mem_requests_used", Name: "requests"},
+		},
+	}
+	// memory limits
+	nodeAllocatableMemLimitsUtilChartTmpl = module.Chart{
+		ID:       "node_%s.allocatable_mem_limits_utilization",
+		Title:    "Memory limits utilization",
+		Units:    "%",
+		Fam:      "node mem resource",
+		Ctx:      "k8s_state.node_allocatable_mem_limits_utilization",
+		Priority: prioNodeAllocatableMemLimitsUtil,
+		Dims: module.Dims{
 			{ID: "node_%s_alloc_mem_limits_util", Name: "limits", Div: precision},
 		},
 	}
-	nodeAllocMemUsedChartTmpl = module.Chart{
-		ID:       "node_%s.allocatable_mem_used",
-		Title:    "Memory resource used",
+	nodeAllocatableMemLimitsUsedChartTmpl = module.Chart{
+		ID:       "node_%s.allocatable_mem_limits_used",
+		Title:    "Memory limits used",
 		Units:    "bytes",
 		Fam:      "node mem resource",
-		Ctx:      "k8s_state.node_allocatable_mem_used",
-		Priority: prioNodeAllocatableMemUsed,
+		Ctx:      "k8s_state.node_allocatable_mem_limits_used",
+		Priority: prioNodeAllocatableMemLimitsUsed,
 		Dims: module.Dims{
-			{ID: "node_%s_alloc_mem_requests_used", Name: "requests"},
 			{ID: "node_%s_alloc_mem_limits_used", Name: "limits"},
 		},
 	}
@@ -362,27 +416,47 @@ func (ks *KubeState) addNodeConditionToCharts(ns *nodeState, cond string) {
 }
 
 var (
-	podAllocatedCPUUsedChartTmpl = module.Chart{
-		ID:       "pod_%s.allocated_cpu_used",
-		Title:    "Allocated CPU used",
+	podAllocatedCPURequestsUsedChartTmpl = module.Chart{
+		ID:       "pod_%s.allocated_cpu_requests_used",
+		Title:    "Allocated CPU requests used",
 		Units:    "millicpu",
-		Fam:      "pod  allocated cpu",
-		Ctx:      "k8s_state.pod_allocated_cpu_used",
-		Priority: prioPodAllocatedCPUUsed,
+		Fam:      "pod allocated cpu",
+		Ctx:      "k8s_state.pod_allocated_cpu_requests_used",
+		Priority: prioPodAllocatedCPURequestsUsed,
 		Dims: module.Dims{
 			{ID: "pod_%s_alloc_cpu_requests_used", Name: "requests"},
+		},
+	}
+	podAllocatedCPULimitsUsedChartTmpl = module.Chart{
+		ID:       "pod_%s.allocated_cpu_limits_used",
+		Title:    "Allocated CPU limits used",
+		Units:    "millicpu",
+		Fam:      "pod allocated cpu",
+		Ctx:      "k8s_state.pod_allocated_cpu_limits_used",
+		Priority: prioPodAllocatedCPULimitsUsed,
+		Dims: module.Dims{
 			{ID: "pod_%s_alloc_cpu_limits_used", Name: "limits"},
 		},
 	}
-	podAllocatedMemUsedChartTmpl = module.Chart{
-		ID:       "pod_%s.allocated_mem_used",
-		Title:    "Allocated memory used",
+	podAllocatedMemRequestsUsedChartTmpl = module.Chart{
+		ID:       "pod_%s.allocated_mem_requests_used",
+		Title:    "Allocated memory requests used",
 		Units:    "bytes",
 		Fam:      "pod allocated mem",
-		Ctx:      "k8s_state.pod_allocated_mem_used",
-		Priority: prioPodAllocatedMemUsed,
+		Ctx:      "k8s_state.pod_allocated_mem_requests_used",
+		Priority: prioPodAllocatedMemRequestsUsed,
 		Dims: module.Dims{
 			{ID: "pod_%s_alloc_mem_requests_used", Name: "requests"},
+		},
+	}
+	podAllocatedMemLimitsUsedChartTmpl = module.Chart{
+		ID:       "pod_%s.allocated_mem_limits_used",
+		Title:    "Allocated memory limits used",
+		Units:    "bytes",
+		Fam:      "pod allocated mem",
+		Ctx:      "k8s_state.pod_allocated_mem_limits_used",
+		Priority: prioPodAllocatedMemLimitsUsed,
+		Dims: module.Dims{
 			{ID: "pod_%s_alloc_mem_limits_used", Name: "limits"},
 		},
 	}
@@ -521,7 +595,7 @@ var (
 		ID:       "pod_%s_container_%s.readiness_state",
 		Title:    "Readiness state",
 		Units:    "state",
-		Fam:      "cntr readiness",
+		Fam:      "container readiness",
 		Ctx:      "k8s_state.container_readiness_state",
 		Priority: prioPodContainerReadinessState,
 		Dims: module.Dims{
@@ -531,19 +605,19 @@ var (
 	containerRestartsChartTmpl = module.Chart{
 		ID:       "pod_%s_container_%s.restarts",
 		Title:    "Restarts",
-		Units:    "restarts",
-		Fam:      "cntr restarts",
+		Units:    "restarts/s",
+		Fam:      "container restarts",
 		Ctx:      "k8s_state.container_restarts",
 		Priority: prioPodContainerRestarts,
 		Dims: module.Dims{
-			{ID: "pod_%s_container_%s_restarts", Name: "restarts"},
+			{ID: "pod_%s_container_%s_restarts", Name: "restarts", Algo: module.Incremental},
 		},
 	}
 	containersStateChartTmpl = module.Chart{
 		ID:       "pod_%s_container_%s.state",
 		Title:    "Container state",
 		Units:    "state",
-		Fam:      "cntr state",
+		Fam:      "container state",
 		Ctx:      "k8s_state.container_state",
 		Priority: prioPodContainerState,
 		Dims: module.Dims{
@@ -556,7 +630,7 @@ var (
 		ID:       "pod_%s_container_%s.state_waiting_reason",
 		Title:    "Container waiting state reason",
 		Units:    "state",
-		Fam:      "cntr waiting reason",
+		Fam:      "container waiting reason",
 		Ctx:      "k8s_state.container_waiting_state_reason",
 		Priority: prioPodContainerWaitingStateReason,
 	}
@@ -564,7 +638,7 @@ var (
 		ID:       "pod_%s_container_%s.state_terminated_reason",
 		Title:    "Container terminated state reason",
 		Units:    "state",
-		Fam:      "cntr terminated",
+		Fam:      "container terminated reason",
 		Ctx:      "k8s_state.container_terminated_state_reason",
 		Priority: prioPodContainerTerminatedStateReason,
 	}
