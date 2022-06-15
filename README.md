@@ -51,6 +51,7 @@ Go.d.plugin is shipped with [`Netdata`](https://github.com/netdata/netdata).
 | [isc_dhcpd](https://github.com/netdata/go.d.plugin/tree/master/modules/isc_dhcpd)                 | `ISC dhcpd`                     |
 | [k8s_kubelet](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubelet)             | `Kubelet`                       |
 | [k8s_kubeproxy](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubeproxy)         | `Kube-proxy`                    |
+| [k8s_state](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_state)                 | `Kubernetes cluster state`      |
 | [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd)                   | `Lighttpd`                      |
 | [lighttpd2](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd2)                 | `Lighttpd2`                     |
 | [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)                   | `Logstash`                      |
