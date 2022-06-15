@@ -15,93 +15,90 @@ This module collects health metrics for the following Kubernetes resources:
 - [Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/).
 - [Pods](https://kubernetes.io/docs/concepts/workloads/pods/).
 
+## Requirements
+
+- Only works when Netdata is running inside a Kubernetes cluster.
+- RBAC: needs **list**, **watch** verbs for **pod** and **node** resources.
+- RBAC: needs **get** verb for **namespace** resource.
+
 ## Metrics
 
-| Label               |                Description                |
-|---------------------|:-----------------------------------------:|
-| k8s_kind            | The REST resource this object represents. |
-| k8s_cluster_id      |                     %                     |
-| k8s_cluster_name    |                     %                     |
-| k8s_node_name       |                     %                     |
-| k8s_namespace       |                     %                     |
-| k8s_controller_kind |                     %                     |
-| k8s_controller_name |                     %                     |
-| k8s_pod_uid         |                     %                     |
-| k8s_pod_name        |                     %                     |
-| k8s_qos_class       |                     %                     |
-| k8s_container_id    |                     %                     |
-| k8s_container_name  |                     %                     |
+All metrics have "k8s_state." prefix.
 
-### Nodes
+### Node
 
-| Metric                            |   Units    | Source     |
-|-----------------------------------|:----------:|------------|
-| node_allocatable_cpu_utilization  |     %      | calculated |
-| node_allocatable_cpu_used         |  millicpu  | calculated |
-| node_allocatable_mem_utilization  |     %      | calculated |
-| node_allocatable_mem_used         |   bytes    | calculated |
-| node_allocatable_pods_utilization |     %      | calculated |
-| node_allocatable_pods_usage       |    pods    | calculated |
-| node_condition                    |   status   | desc       |
-| node_pods_readiness               |     %      | desc       |
-| node_pods_readiness_state         |    pods    | desc       |
-| node_pods_condition               |    pods    | desc       |
-| node_pods_phase                   |    pods    | desc       |
-| node_containers                   | containers | desc       |
-| node_containers_state             | containers | desc       |
-| node_init_containers_state        | containers | desc       |
-| node_age                          |  seconds   | desc       |
+| Metric                                    |                              Dimensions                               |    Units    |
+|-------------------------------------------|:---------------------------------------------------------------------:|:-----------:|
+| node_allocatable_cpu_requests_utilization |                               requests                                |      %      |
+| node_allocatable_cpu_requests_used        |                               requests                                |  millicpu   |
+| node_allocatable_cpu_limits_utilization   |                                limits                                 |      %      |
+| node_allocatable_cpu_limits_used          |                                limits                                 |  millicpu   |
+| node_allocatable_mem_requests_utilization |                               requests                                |      %      |
+| node_allocatable_mem_requests_used        |                               requests                                |    bytes    |
+| node_allocatable_mem_limits_utilization   |                                limits                                 |      %      |
+| node_allocatable_mem_limits_used          |                                limits                                 |    bytes    |
+| node_allocatable_pods_utilization         |                               allocated                               |      %      |
+| node_allocatable_pods_usage               |                         available, allocated                          |    pods     |
+| node_condition                            |                       <i>added dynamically</i>                        |   status    |
+| node_pods_readiness                       |                                 ready                                 |      %      |
+| node_pods_readiness_state                 |                            ready, unready                             |    pods     |
+| node_pods_condition                       |    pod_ready, pod_scheduled,<br>pod_initialized, containers_ready     |    pods     |
+| node_pods_phase                           |                  running, failed, succeeded, pending                  |    pods     |
+| node_containers                           |                      containers, init_containers                      | containers  |
+| node_containers_state                     |                     running, waiting, terminated                      | containers  |
+| node_init_containers_state                |                     running, waiting, terminated                      | containers  |
+| node_age                                  |                                  age                                  |   seconds   |
 
-### Pods
+### Pod
 
-- Pod
+| Metric                                |                           Dimensions                           |   Units    |
+|---------------------------------------|:--------------------------------------------------------------:|:----------:|
+| pod_cpu_requests_used                 |                            requests                            |  millicpu  |
+| pod_cpu_limits_used                   |                             limits                             |  millicpu  |
+| pod_mem_requests_used                 |                            requests                            |   bytes    |
+| pod_mem_limits_used                   |                             limits                             |   bytes    |
+| pod_condition                         | pod_ready, pod_scheduled,<br>pod_initialized, containers_ready |   state    |
+| pod_phase                             |              running, failed, succeeded, pending               |   state    |
+| pod_age                               |                              age                               |  seconds   |
+| pod_containers                        |                  containers, init_containers                   | containers |
+| pod_containers_state                  |                  running, waiting, terminated                  | containers |
+| pod_init_containers_state             |                  running, waiting, terminated                  | containers |
 
-| Metric                    |   Units    | Source                         |
-|---------------------------|:----------:|--------------------------------|
-| pod_allocated_cpu         |     %      | pod.spec.containers.resources  |
-| pod_allocated_cpu_used    |  millicpu  | pod.spec.containers.resources  |
-| pod_allocated_mem         |     %      | pod.spec.containers.resources  |
-| pod_allocated_mem_used    |   bytes    | pod.spec.containers.resources  |
-| pod_condition             |   state    | pod.status.conditions          |
-| pod_phase                 |   state    | pod.status.phase               |
-| pod_age                   |  seconds   | pod.metadata.creationTimestamp |
-| pod_containers            |  seconds   | desc                           |
-| pod_containers_state      | containers | desc                           |
-| pod_init_containers_state | containers | desc                           |
+### Pod container
 
-- Pod Containers
+| Metric                                |                           Dimensions                           |   Units    |
+|---------------------------------------|:--------------------------------------------------------------:|:----------:|
+| pod_container_readiness_state         |                             ready                              |   state    |
+| pod_container_restarts                |                            restarts                            | restarts/s |
+| pod_container_state                   |                  running, waiting, terminated                  |   state    |
+| pod_container_waiting_state_reason    |                    <i>added dynamically</i>                    |   state    |
+| pod_container_terminated_state_reason |                    <i>added dynamically</i>                    |   state    |
 
-| Metric                                |  Units   | Description |
-|---------------------------------------|:--------:|-------------|
-| pod_container_readiness_state         |  state   | desc        |
-| pod_container_restarts                | restarts | desc        |
-| pod_container_state                   |  state   | desc        |
-| pod_container_waiting_state_reason    |  state   | desc        |
-| pod_container_terminated_state_reason |  state   | desc        |
+## Labels
+
+> **Note**
+> - 'k8s_cluster_id' value is 'kube-system' namespace UID.
+> - 'k8s_cluster_name' currently only appears when running on [GKE](https://cloud.google.com/kubernetes-engine).
+
+| Label               | Node | Pod | Container |
+|---------------------|:----:|:---:|:---------:|
+| k8s_kind            | yes  | yes |    yes    |
+| k8s_cluster_id      | yes  | yes |    yes    |
+| k8s_cluster_name    | yes  | yes |    yes    |
+| k8s_node_name       | yes  | yes |    yes    |
+| k8s_namespace       |      | yes |    yes    |
+| k8s_controller_kind |      | yes |    yes    |
+| k8s_controller_name |      | yes |    yes    |
+| k8s_pod_uid         |      | yes |    yes    |
+| k8s_pod_name        |      | yes |    yes    |
+| k8s_qos_class       |      | yes |    yes    |
+| k8s_container_id    |      |     |    yes    |
+| k8s_container_name  |      |     |    yes    |
 
 ## Configuration
 
-Edit the `go.d/k8s_kubeproxy.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
-
-```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
-sudo ./edit-config go.d/k8s_kubeproxy.conf
-```
-
-Needs only `url` to `kube-proxy` metric-address. Here is an example for several instances:
-
-```yaml
-jobs:
-  - name: local
-    url: http://127.0.0.1:10249/metrics
-
-  - name: remote
-    url: http://203.0.113.1:10249/metrics
-```
-
-For all available options please see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/k8s_kubeproxy.conf).
+No configuration is needed. This module is enabled when you install Netdata
+using [netdata/helmchart](https://github.com/netdata/helmchart#netdata-helm-chart-for-kubernetes-deployments).
 
 ## Troubleshooting
 
