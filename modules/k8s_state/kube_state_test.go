@@ -30,7 +30,7 @@ func TestKubeState_Init(t *testing.T) {
 		wantFail bool
 		prepare  func() *KubeState
 	}{
-		"success when no error in initializing K8s client": {
+		"success when no error on initializing K8s client": {
 			wantFail: false,
 			prepare: func() *KubeState {
 				ks := New()
@@ -38,7 +38,7 @@ func TestKubeState_Init(t *testing.T) {
 				return ks
 			},
 		},
-		"fail when get an error in initializing K8s client": {
+		"fail when get an error on initializing K8s client": {
 			wantFail: true,
 			prepare: func() *KubeState {
 				ks := New()
@@ -173,7 +173,7 @@ func TestKubeState_Collect(t *testing.T) {
 	tests := map[string]struct {
 		create func(t *testing.T) testCase
 	}{
-		"Node only ": {
+		"Node only": {
 			create: func(t *testing.T) testCase {
 				client := fake.NewSimpleClientset(
 					newNode("node01"),
@@ -195,7 +195,7 @@ func TestKubeState_Collect(t *testing.T) {
 						"node_node01_alloc_mem_requests_util":          0,
 						"node_node01_alloc_pods_allocated":             0,
 						"node_node01_alloc_pods_available":             110,
-						"node_node01_alloc_pods_used":                  0,
+						"node_node01_alloc_pods_util":                  0,
 						"node_node01_cond_diskpressure":                0,
 						"node_node01_cond_memorypressure":              0,
 						"node_node01_cond_networkunavailable":          0,
@@ -248,10 +248,10 @@ func TestKubeState_Collect(t *testing.T) {
 						"discovery_node_discoverer_state":                         1,
 						"discovery_pod_discoverer_state":                          1,
 						"pod_default_pod01_age":                                   3,
-						"pod_default_pod01_alloc_cpu_limits_used":                 400,
-						"pod_default_pod01_alloc_cpu_requests_used":               200,
-						"pod_default_pod01_alloc_mem_limits_used":                 419430400,
-						"pod_default_pod01_alloc_mem_requests_used":               209715200,
+						"pod_default_pod01_cpu_limits_used":                       400,
+						"pod_default_pod01_cpu_requests_used":                     200,
+						"pod_default_pod01_mem_limits_used":                       419430400,
+						"pod_default_pod01_mem_requests_used":                     209715200,
 						"pod_default_pod01_cond_containersready":                  1,
 						"pod_default_pod01_cond_podinitialized":                   1,
 						"pod_default_pod01_cond_podready":                         1,
@@ -319,7 +319,7 @@ func TestKubeState_Collect(t *testing.T) {
 						"node_node01_alloc_mem_requests_util":                     5714,
 						"node_node01_alloc_pods_allocated":                        1,
 						"node_node01_alloc_pods_available":                        109,
-						"node_node01_alloc_pods_used":                             909,
+						"node_node01_alloc_pods_util":                             909,
 						"node_node01_cond_diskpressure":                           0,
 						"node_node01_cond_memorypressure":                         0,
 						"node_node01_cond_networkunavailable":                     0,
@@ -345,10 +345,10 @@ func TestKubeState_Collect(t *testing.T) {
 						"node_node01_pods_readiness_ready":                        1,
 						"node_node01_pods_readiness_unready":                      0,
 						"pod_default_pod01_age":                                   3,
-						"pod_default_pod01_alloc_cpu_limits_used":                 400,
-						"pod_default_pod01_alloc_cpu_requests_used":               200,
-						"pod_default_pod01_alloc_mem_limits_used":                 419430400,
-						"pod_default_pod01_alloc_mem_requests_used":               209715200,
+						"pod_default_pod01_cpu_limits_used":                       400,
+						"pod_default_pod01_cpu_requests_used":                     200,
+						"pod_default_pod01_mem_limits_used":                       419430400,
+						"pod_default_pod01_mem_requests_used":                     209715200,
 						"pod_default_pod01_cond_containersready":                  1,
 						"pod_default_pod01_cond_podinitialized":                   1,
 						"pod_default_pod01_cond_podready":                         1,
@@ -421,7 +421,7 @@ func TestKubeState_Collect(t *testing.T) {
 						"node_node01_alloc_mem_requests_util":          0,
 						"node_node01_alloc_pods_allocated":             0,
 						"node_node01_alloc_pods_available":             110,
-						"node_node01_alloc_pods_used":                  0,
+						"node_node01_alloc_pods_util":                  0,
 						"node_node01_cond_diskpressure":                0,
 						"node_node01_cond_memorypressure":              0,
 						"node_node01_cond_networkunavailable":          0,
@@ -497,7 +497,7 @@ func TestKubeState_Collect(t *testing.T) {
 						"node_node01_alloc_mem_requests_util":                     11428,
 						"node_node01_alloc_pods_allocated":                        2,
 						"node_node01_alloc_pods_available":                        108,
-						"node_node01_alloc_pods_used":                             1818,
+						"node_node01_alloc_pods_util":                             1818,
 						"node_node01_cond_diskpressure":                           0,
 						"node_node01_cond_memorypressure":                         0,
 						"node_node01_cond_networkunavailable":                     0,
@@ -523,10 +523,10 @@ func TestKubeState_Collect(t *testing.T) {
 						"node_node01_pods_readiness_ready":                        2,
 						"node_node01_pods_readiness_unready":                      0,
 						"pod_default_pod01_age":                                   4,
-						"pod_default_pod01_alloc_cpu_limits_used":                 400,
-						"pod_default_pod01_alloc_cpu_requests_used":               200,
-						"pod_default_pod01_alloc_mem_limits_used":                 419430400,
-						"pod_default_pod01_alloc_mem_requests_used":               209715200,
+						"pod_default_pod01_cpu_limits_used":                       400,
+						"pod_default_pod01_cpu_requests_used":                     200,
+						"pod_default_pod01_mem_limits_used":                       419430400,
+						"pod_default_pod01_mem_requests_used":                     209715200,
 						"pod_default_pod01_cond_containersready":                  1,
 						"pod_default_pod01_cond_podinitialized":                   1,
 						"pod_default_pod01_cond_podready":                         1,
@@ -554,10 +554,10 @@ func TestKubeState_Collect(t *testing.T) {
 						"pod_default_pod01_phase_running":                         1,
 						"pod_default_pod01_phase_succeeded":                       0,
 						"pod_default_pod02_age":                                   4,
-						"pod_default_pod02_alloc_cpu_limits_used":                 400,
-						"pod_default_pod02_alloc_cpu_requests_used":               200,
-						"pod_default_pod02_alloc_mem_limits_used":                 419430400,
-						"pod_default_pod02_alloc_mem_requests_used":               209715200,
+						"pod_default_pod02_cpu_limits_used":                       400,
+						"pod_default_pod02_cpu_requests_used":                     200,
+						"pod_default_pod02_mem_limits_used":                       419430400,
+						"pod_default_pod02_mem_requests_used":                     209715200,
 						"pod_default_pod02_cond_containersready":                  1,
 						"pod_default_pod02_cond_podinitialized":                   1,
 						"pod_default_pod02_cond_podready":                         1,
