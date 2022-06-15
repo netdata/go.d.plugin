@@ -6,27 +6,27 @@ import (
 	"path/filepath"
 
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/kubernetes/fake"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
+
+	"github.com/mattn/go-isatty"
 )
 
 const (
-	envFakeClient      = "KUBERNETES_FAKE_CLIENT"
 	envKubeServiceHost = "KUBERNETES_SERVICE_HOST"
 	envKubeServicePort = "KUBERNETES_SERVICE_PORT"
 )
 
 func newKubeClient() (kubernetes.Interface, error) {
-	if os.Getenv(envFakeClient) != "" {
-		return fake.NewSimpleClientset(), nil
-	}
 	if os.Getenv(envKubeServiceHost) != "" && os.Getenv(envKubeServicePort) != "" {
 		return newKubeClientInCluster()
 	}
-	return newKubeClientOutOfCluster()
+	if isatty.IsTerminal(os.Stdout.Fd()) {
+		return newKubeClientOutOfCluster()
+	}
+	return nil, errors.New("can not create Kubernetes client: not inside a cluster")
 }
 
 func newKubeClientInCluster() (*kubernetes.Clientset, error) {
