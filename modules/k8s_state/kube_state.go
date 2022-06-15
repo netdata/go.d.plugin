@@ -13,7 +13,7 @@ import (
 func init() {
 	module.Register("k8s_state", module.Creator{
 		Defaults: module.Defaults{
-			//Disabled: true,
+			Disabled: true,
 		},
 		Create: func() module.Module { return New() },
 	})
