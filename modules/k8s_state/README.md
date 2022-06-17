@@ -27,42 +27,42 @@ All metrics have "k8s_state." prefix.
 
 ### Node
 
-| Metric                                    |                              Dimensions                               |    Units    |
-|-------------------------------------------|:---------------------------------------------------------------------:|:-----------:|
-| node_allocatable_cpu_requests_utilization |                               requests                                |      %      |
-| node_allocatable_cpu_requests_used        |                               requests                                |  millicpu   |
-| node_allocatable_cpu_limits_utilization   |                                limits                                 |      %      |
-| node_allocatable_cpu_limits_used          |                                limits                                 |  millicpu   |
-| node_allocatable_mem_requests_utilization |                               requests                                |      %      |
-| node_allocatable_mem_requests_used        |                               requests                                |    bytes    |
-| node_allocatable_mem_limits_utilization   |                                limits                                 |      %      |
-| node_allocatable_mem_limits_used          |                                limits                                 |    bytes    |
-| node_allocatable_pods_utilization         |                               allocated                               |      %      |
-| node_allocatable_pods_usage               |                         available, allocated                          |    pods     |
-| node_condition                            |                       <i>added dynamically</i>                        |   status    |
-| node_pods_readiness                       |                                 ready                                 |      %      |
-| node_pods_readiness_state                 |                            ready, unready                             |    pods     |
-| node_pods_condition                       |    pod_ready, pod_scheduled,<br>pod_initialized, containers_ready     |    pods     |
-| node_pods_phase                           |                  running, failed, succeeded, pending                  |    pods     |
-| node_containers                           |                      containers, init_containers                      | containers  |
-| node_containers_state                     |                     running, waiting, terminated                      | containers  |
-| node_init_containers_state                |                     running, waiting, terminated                      | containers  |
-| node_age                                  |                                  age                                  |   seconds   |
+| Metric                                    |                           Dimensions                            |    Units    |
+|-------------------------------------------|:---------------------------------------------------------------:|:-----------:|
+| node_allocatable_cpu_requests_utilization |                            requests                             |      %      |
+| node_allocatable_cpu_requests_used        |                            requests                             |  millicpu   |
+| node_allocatable_cpu_limits_utilization   |                             limits                              |      %      |
+| node_allocatable_cpu_limits_used          |                             limits                              |  millicpu   |
+| node_allocatable_mem_requests_utilization |                            requests                             |      %      |
+| node_allocatable_mem_requests_used        |                            requests                             |    bytes    |
+| node_allocatable_mem_limits_utilization   |                             limits                              |      %      |
+| node_allocatable_mem_limits_used          |                             limits                              |    bytes    |
+| node_allocatable_pods_utilization         |                            allocated                            |      %      |
+| node_allocatable_pods_usage               |                      available, allocated                       |    pods     |
+| node_condition                            |                    <i>added dynamically</i>                     |   status    |
+| node_pods_readiness                       |                              ready                              |      %      |
+| node_pods_readiness_state                 |                         ready, unready                          |    pods     |
+| node_pods_condition                       | pod_ready, pod_scheduled,<br\>pod_initialized, containers_ready |    pods     |
+| node_pods_phase                           |               running, failed, succeeded, pending               |    pods     |
+| node_containers                           |                   containers, init_containers                   | containers  |
+| node_containers_state                     |                  running, waiting, terminated                   | containers  |
+| node_init_containers_state                |                  running, waiting, terminated                   | containers  |
+| node_age                                  |                               age                               |   seconds   |
 
 ### Pod
 
-| Metric                                |                           Dimensions                           |   Units    |
-|---------------------------------------|:--------------------------------------------------------------:|:----------:|
-| pod_cpu_requests_used                 |                            requests                            |  millicpu  |
-| pod_cpu_limits_used                   |                             limits                             |  millicpu  |
-| pod_mem_requests_used                 |                            requests                            |   bytes    |
-| pod_mem_limits_used                   |                             limits                             |   bytes    |
-| pod_condition                         | pod_ready, pod_scheduled,<br>pod_initialized, containers_ready |   state    |
-| pod_phase                             |              running, failed, succeeded, pending               |   state    |
-| pod_age                               |                              age                               |  seconds   |
-| pod_containers                        |                  containers, init_containers                   | containers |
-| pod_containers_state                  |                  running, waiting, terminated                  | containers |
-| pod_init_containers_state             |                  running, waiting, terminated                  | containers |
+| Metric                                |                           Dimensions                            |   Units    |
+|---------------------------------------|:---------------------------------------------------------------:|:----------:|
+| pod_cpu_requests_used                 |                            requests                             |  millicpu  |
+| pod_cpu_limits_used                   |                             limits                              |  millicpu  |
+| pod_mem_requests_used                 |                            requests                             |   bytes    |
+| pod_mem_limits_used                   |                             limits                              |   bytes    |
+| pod_condition                         | pod_ready, pod_scheduled,<br\>pod_initialized, containers_ready |   state    |
+| pod_phase                             |               running, failed, succeeded, pending               |   state    |
+| pod_age                               |                               age                               |  seconds   |
+| pod_containers                        |                   containers, init_containers                   | containers |
+| pod_containers_state                  |                  running, waiting, terminated                   | containers |
+| pod_init_containers_state             |                  running, waiting, terminated                   | containers |
 
 ### Pod container
 
@@ -76,9 +76,8 @@ All metrics have "k8s_state." prefix.
 
 ## Labels
 
-> **Note**
-> - 'k8s_cluster_id' value is 'kube-system' namespace UID.
-> - 'k8s_cluster_name' currently only appears when running on [GKE](https://cloud.google.com/kubernetes-engine).
+- 'k8s_cluster_id' value is 'kube-system' namespace UID.
+- 'k8s_cluster_name' currently only appears when running on [GKE](https://cloud.google.com/kubernetes-engine).
 
 | Label               | Node | Pod | Container |
 |---------------------|:----:|:---:|:---------:|
