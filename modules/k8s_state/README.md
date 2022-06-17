@@ -23,12 +23,16 @@ This module collects health metrics for the following Kubernetes resources:
 
 ## Metrics
 
-All metrics have "k8s_state." prefix.
+:::info 
+
+All metrics have `k8s_state.` prefix.
+
+:::
 
 ### Node
 
 | Metric                                    |                              Dimensions                               |    Units    |
-|-------------------------------------------|:---------------------------------------------------------------------:|:-----------:|
+|:------------------------------------------|:---------------------------------------------------------------------:|:-----------:|
 | node_allocatable_cpu_requests_utilization |                               requests                                |      %      |
 | node_allocatable_cpu_requests_used        |                               requests                                |  millicpu   |
 | node_allocatable_cpu_limits_utilization   |                                limits                                 |      %      |
@@ -42,7 +46,7 @@ All metrics have "k8s_state." prefix.
 | node_condition                            |                       <i>added dynamically</i>                        |   status    |
 | node_pods_readiness                       |                                 ready                                 |      %      |
 | node_pods_readiness_state                 |                            ready, unready                             |    pods     |
-| node_pods_condition                       |    pod_ready, pod_scheduled,<br>pod_initialized, containers_ready     |    pods     |
+| node_pods_condition                       |    pod_ready, pod_scheduled, <br /> pod_initialized, containers_ready |    pods     |
 | node_pods_phase                           |                  running, failed, succeeded, pending                  |    pods     |
 | node_containers                           |                      containers, init_containers                      | containers  |
 | node_containers_state                     |                     running, waiting, terminated                      | containers  |
@@ -51,23 +55,23 @@ All metrics have "k8s_state." prefix.
 
 ### Pod
 
-| Metric                                |                           Dimensions                           |   Units    |
-|---------------------------------------|:--------------------------------------------------------------:|:----------:|
-| pod_cpu_requests_used                 |                            requests                            |  millicpu  |
-| pod_cpu_limits_used                   |                             limits                             |  millicpu  |
-| pod_mem_requests_used                 |                            requests                            |   bytes    |
-| pod_mem_limits_used                   |                             limits                             |   bytes    |
-| pod_condition                         | pod_ready, pod_scheduled,<br>pod_initialized, containers_ready |   state    |
-| pod_phase                             |              running, failed, succeeded, pending               |   state    |
-| pod_age                               |                              age                               |  seconds   |
-| pod_containers                        |                  containers, init_containers                   | containers |
-| pod_containers_state                  |                  running, waiting, terminated                  | containers |
-| pod_init_containers_state             |                  running, waiting, terminated                  | containers |
+| Metric                                |                           Dimensions                                |   Units    |
+|:--------------------------------------|:-------------------------------------------------------------------:|:----------:|
+| pod_cpu_requests_used                 |                            requests                                 |  millicpu  |
+| pod_cpu_limits_used                   |                             limits                                  |  millicpu  |
+| pod_mem_requests_used                 |                            requests                                 |   bytes    |
+| pod_mem_limits_used                   |                             limits                                  |   bytes    |
+| pod_condition                         | pod_ready, pod_scheduled, <br /> pod_initialized, containers_ready  |   state    |
+| pod_phase                             |              running, failed, succeeded, pending                    |   state    |
+| pod_age                               |                              age                                    |  seconds   |
+| pod_containers                        |                  containers, init_containers                        | containers |
+| pod_containers_state                  |                  running, waiting, terminated                       | containers |
+| pod_init_containers_state             |                  running, waiting, terminated                       | containers |
 
 ### Pod container
 
 | Metric                                |                           Dimensions                           |   Units    |
-|---------------------------------------|:--------------------------------------------------------------:|:----------:|
+|:--------------------------------------|:--------------------------------------------------------------:|:----------:|
 | pod_container_readiness_state         |                             ready                              |   state    |
 | pod_container_restarts                |                            restarts                            | restarts/s |
 | pod_container_state                   |                  running, waiting, terminated                  |   state    |
@@ -76,12 +80,15 @@ All metrics have "k8s_state." prefix.
 
 ## Labels
 
-> **Note**
-> - 'k8s_cluster_id' value is 'kube-system' namespace UID.
-> - 'k8s_cluster_name' currently only appears when running on [GKE](https://cloud.google.com/kubernetes-engine).
+:::note
+
+ - 'k8s_cluster_id' value is 'kube-system' namespace UID.
+ - 'k8s_cluster_name' currently only appears when running on [GKE](https://cloud.google.com/kubernetes-engine).
+
+:::
 
 | Label               | Node | Pod | Container |
-|---------------------|:----:|:---:|:---------:|
+|:--------------------|:----:|:---:|:---------:|
 | k8s_kind            | yes  | yes |    yes    |
 | k8s_cluster_id      | yes  | yes |    yes    |
 | k8s_cluster_name    | yes  | yes |    yes    |
