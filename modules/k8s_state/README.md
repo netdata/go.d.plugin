@@ -42,7 +42,7 @@ All metrics have "k8s_state." prefix.
 | node_condition                            |                    <i>added dynamically</i>                     |   status    |
 | node_pods_readiness                       |                              ready                              |      %      |
 | node_pods_readiness_state                 |                         ready, unready                          |    pods     |
-| node_pods_condition                       | pod_ready, pod_scheduled,<br\>pod_initialized, containers_ready |    pods     |
+| node_pods_condition                       | pod_ready, pod_scheduled,<br/>pod_initialized, containers_ready |    pods     |
 | node_pods_phase                           |               running, failed, succeeded, pending               |    pods     |
 | node_containers                           |                   containers, init_containers                   | containers  |
 | node_containers_state                     |                  running, waiting, terminated                   | containers  |
@@ -57,7 +57,7 @@ All metrics have "k8s_state." prefix.
 | pod_cpu_limits_used                   |                             limits                              |  millicpu  |
 | pod_mem_requests_used                 |                            requests                             |   bytes    |
 | pod_mem_limits_used                   |                             limits                              |   bytes    |
-| pod_condition                         | pod_ready, pod_scheduled,<br\>pod_initialized, containers_ready |   state    |
+| pod_condition                         | pod_ready, pod_scheduled,<br/>pod_initialized, containers_ready |   state    |
 | pod_phase                             |               running, failed, succeeded, pending               |   state    |
 | pod_age                               |                               age                               |  seconds   |
 | pod_containers                        |                   containers, init_containers                   | containers |
