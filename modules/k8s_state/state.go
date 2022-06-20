@@ -52,6 +52,7 @@ type (
 		deleted bool
 
 		name            string
+		unSchedulable   bool
 		labels          map[string]string
 		creationTime    time.Time
 		allocatableCPU  int64

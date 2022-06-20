@@ -23,6 +23,7 @@ const (
 	prioNodeAllocatablePodsUtil
 	prioNodeAllocatablePodsUsage
 	prioNodeConditions
+	prioNodeSchedulability
 	prioNodePodsReadiness
 	prioNodePodsReadinessState
 	prioNodePodsCondition
@@ -85,6 +86,7 @@ var nodeChartsTmpl = module.Charts{
 	nodeAllocatablePodsUtilizationChartTmpl.Copy(),
 	nodeAllocatablePodsUsageChartTmpl.Copy(),
 	nodeConditionsChartTmpl.Copy(),
+	nodeSchedulabilityChartTmpl.Copy(),
 	nodePodsReadinessChartTmpl.Copy(),
 	nodePodsReadinessStateChartTmpl.Copy(),
 	nodePodsConditionChartTmpl.Copy(),
@@ -240,6 +242,18 @@ var (
 		Fam:      "node condition",
 		Ctx:      "k8s_state.node_condition",
 		Priority: prioNodeConditions,
+	}
+	nodeSchedulabilityChartTmpl = module.Chart{
+		ID:       "node_%s.schedulability",
+		Title:    "Schedulability",
+		Units:    "state",
+		Fam:      "node schedulability",
+		Ctx:      "k8s_state.node_schedulability",
+		Priority: prioNodeSchedulability,
+		Dims: module.Dims{
+			{ID: "node_%s_schedulability_schedulable", Name: "schedulable"},
+			{ID: "node_%s_schedulability_unschedulable", Name: "unschedulable"},
+		},
 	}
 	// pods readiness
 	nodePodsReadinessChartTmpl = module.Chart{

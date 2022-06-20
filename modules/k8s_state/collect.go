@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/netdata/go.d.plugin/agent/module"
+
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -28,6 +30,12 @@ func (ks *KubeState) collect() (map[string]int64, error) {
 
 		ks.kubeClusterID = ks.getKubeClusterID()
 		ks.kubeClusterName = ks.getKubeClusterName()
+		if chart := ks.Charts().Get(discoveryStatusChart.ID); chart != nil {
+			chart.Labels = []module.Label{
+				{Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s},
+				{Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s},
+			}
+		}
 	})
 
 	mx := map[string]int64{
@@ -195,6 +203,9 @@ func (ks *KubeState) collectNodesState(mx map[string]int64) {
 		mx[px+"pods_cond_podscheduled"] = ns.stats.podsCondPodScheduled
 		mx[px+"pods_cond_podinitialized"] = ns.stats.podsCondPodInitialized
 		mx[px+"pods_cond_containersready"] = ns.stats.podsCondContainersReady
+		mx[px+"pods_cond_containersready"] = ns.stats.podsCondContainersReady
+		mx[px+"schedulability_schedulable"] = boolToInt(!ns.unSchedulable)
+		mx[px+"schedulability_unschedulable"] = boolToInt(ns.unSchedulable)
 		mx[px+"alloc_pods_available"] = ns.allocatablePods - ns.stats.pods
 		mx[px+"alloc_pods_allocated"] = ns.stats.pods
 		mx[px+"alloc_cpu_requests_util"] = calcPercentage(ns.stats.reqCPU, ns.allocatableCPU)
