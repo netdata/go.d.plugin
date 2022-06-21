@@ -233,7 +233,7 @@ func TestSNMP_Collect(t *testing.T) {
 						{Value: 10, Type: gosnmp.Counter32},
 						{Value: 20, Type: gosnmp.Counter64},
 						{Value: 30, Type: gosnmp.Gauge32},
-						{Value: 1,  Type: gosnmp.Boolean},
+						{Value: 1, Type: gosnmp.Boolean},
 						{Value: 40, Type: gosnmp.Gauge32},
 						{Value: 50, Type: gosnmp.TimeTicks},
 						{Value: 60, Type: gosnmp.Uinteger32},

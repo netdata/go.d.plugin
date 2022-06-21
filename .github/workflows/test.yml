@@ -1,0 +1,28 @@
+on: [push, pull_request]
+name: Compile and test
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.17.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Go mod download
+        run: go mod download
+      - name: Enforce formatted code
+        run: "! go fmt ./... 2>&1 | read -r "
+      - name: Compile
+        run: |
+          CGO_ENABLED=0 go build -o /tmp/godplugin github.com/netdata/go.d.plugin/cmd/godplugin/
+          /tmp/godplugin --help || true
+      - name: Go vet
+        run: go vet ./...
+      - name: Go test
+        run: go test ./... -race -count=1
