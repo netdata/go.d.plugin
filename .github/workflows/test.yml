@@ -14,12 +14,10 @@ jobs:
           go-version: ${{ matrix.go-version }}
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Check go fmt output
-        run: "go fmt ./... 2>&1"
-      - name: Enforce formatted code
-        run: "! go fmt ./... 2>&1 | read"
       - name: Go mod download
         run: go mod download
+      - name: Enforce formatted code
+        run: "! go fmt ./... 2>&1 | read"
       - name: Compile
         run: |
           CGO_ENABLED=0 go build -o /tmp/godplugin github.com/netdata/go.d.plugin/cmd/godplugin/
