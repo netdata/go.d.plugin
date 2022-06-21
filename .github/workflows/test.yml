@@ -13,7 +13,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 #      - name: Enforce formatted code
 #        run: "! go fmt ./... 2>&1 | read"
       - name: Go mod download
