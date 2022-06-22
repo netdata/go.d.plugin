@@ -53,7 +53,7 @@ const (
 )
 
 const (
-	labelKeyPrefix           = "k8ss_"
+	labelKeyPrefix           = "k8s_"
 	labelKeyLabelPrefix      = labelKeyPrefix + "label_"
 	labelKeyAnnotationPrefix = labelKeyPrefix + "annotation_"
 	labelKeyClusterID        = labelKeyPrefix + "cluster_id"
