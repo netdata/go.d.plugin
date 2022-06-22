@@ -16,12 +16,12 @@ jobs:
         uses: actions/checkout@v3
       - name: Go mod download
         run: go mod download
-      - name: Enforce formatted code
-        run: "! go fmt ./... 2>&1 | read -r "
       - name: Compile
         run: |
           CGO_ENABLED=0 go build -o /tmp/godplugin github.com/netdata/go.d.plugin/cmd/godplugin/
           /tmp/godplugin --help || true
+      - name: Enforce formatted code
+        run: "! go fmt ./... 2>&1 | read -r"
       - name: Go vet
         run: go vet ./...
       - name: Go test
