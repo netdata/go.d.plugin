@@ -20,6 +20,8 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
+	defer func() { p.firstCollect = false }()
+
 	if pms.Len() == 0 {
 		p.Warningf("endpoint '%s' returned 0 time series", p.URL)
 		return nil, nil
@@ -36,7 +38,6 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 	if pms.Len() > p.MaxTS {
 		p.Warningf("endpoint '%s' returned %d time series, limit is %d", p.URL, pms.Len(), p.MaxTS)
 		if p.firstCollect {
-			p.firstCollect = false
 			return nil, nil
 		}
 		cur, end, name := p.MaxTS-1, pms.Len()-1, pms[p.MaxTS-1].Name()
