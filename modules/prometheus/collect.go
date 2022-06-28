@@ -20,12 +20,10 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	switch {
-	case len(pms) == 0:
+	defer func() { p.firstCollect = false }()
+
+	if pms.Len() == 0 {
 		p.Warningf("endpoint '%s' returned 0 time series", p.URL)
-		return nil, nil
-	case len(pms) > p.MaxTS:
-		p.Warningf("endpoint '%s' returned %d time series, limit is %d", p.URL, len(pms), p.MaxTS)
 		return nil, nil
 	}
 
@@ -35,6 +33,17 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 				p.URL, p.ExpectedPrefix)
 		}
 		p.ExpectedPrefix = ""
+	}
+
+	if pms.Len() > p.MaxTS {
+		p.Warningf("endpoint '%s' returned %d time series, limit is %d", p.URL, pms.Len(), p.MaxTS)
+		if p.firstCollect {
+			return nil, nil
+		}
+		cur, end, name := p.MaxTS-1, pms.Len()-1, pms[p.MaxTS-1].Name()
+		for ; name == pms[cur].Name() && cur < end; cur++ {
+		}
+		pms = pms[:cur]
 	}
 
 	names, metricSet := p.buildMetricSet(pms)

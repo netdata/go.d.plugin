@@ -178,6 +178,7 @@ func TestPrometheus_Collect_WithExpectedPrefix(t *testing.T) {
 func TestPrometheus_Collect(t *testing.T) {
 	type testGroup map[string]struct {
 		input         [][]string
+		maxTS         int
 		wantCollected map[string]int64
 	}
 
@@ -451,7 +452,7 @@ func TestPrometheus_Collect(t *testing.T) {
 	}
 
 	maxTSPerMetric := New().MaxTSPerMetric
-	maxTS := New().MaxTS
+	maxTS := 4
 	testTSLimits := testGroup{
 		"len(ts) > per metric limit": {
 			input: [][]string{
@@ -464,13 +465,38 @@ func TestPrometheus_Collect(t *testing.T) {
 			},
 		},
 		"len(ts) > global limit": {
-			input: func() [][]string {
-				var input []string
-				for i := 0; len(input) <= maxTS; i++ {
-					input = append(input, genMetrics(fmt.Sprintf("generated_metric_%d", i), 0, maxTSPerMetric)...)
-				}
-				return [][]string{input}
-			}(),
+			wantCollected: map[string]int64{
+				"prometheus_sd_discovered_targets|config=config-0,name=notify":               0,
+				"prometheus_sd_discovered_targets|config=node_exporter_notebook,name=scrape": 1000,
+				"prometheus_sd_discovered_targets|config=node_exporter,name=scrape":          1000,
+				"prometheus_sd_discovered_targets|config=prometheus,name=scrape":             1000,
+				"series":  4,
+				"metrics": 1,
+				"charts":  int64(1 + len(statsCharts)),
+			},
+			maxTS: maxTS,
+			input: [][]string{
+				{
+					`prometheus_sd_discovered_targets{config="config-0",name="notify"} 0`,
+					`prometheus_sd_discovered_targets{config="node_exporter",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets{config="node_exporter_notebook",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets{config="prometheus",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets2{config="config-0",name="notify"} 0`,
+					`prometheus_sd_discovered_targets2{config="node_exporter",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets2{config="node_exporter_notebook",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets2{config="prometheus",name="scrape"} 1`,
+				},
+				{
+					`prometheus_sd_discovered_targets{config="config-0",name="notify"} 0`,
+					`prometheus_sd_discovered_targets{config="node_exporter",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets{config="node_exporter_notebook",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets{config="prometheus",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets2{config="config-0",name="notify"} 0`,
+					`prometheus_sd_discovered_targets2{config="node_exporter",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets2{config="node_exporter_notebook",name="scrape"} 1`,
+					`prometheus_sd_discovered_targets2{config="prometheus",name="scrape"} 1`,
+				},
+			},
 		},
 	}
 
@@ -490,6 +516,9 @@ func TestPrometheus_Collect(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				prom, cleanup := preparePrometheus(t, test.input)
 				defer cleanup()
+				if test.maxTS != 0 {
+					prom.MaxTS = test.maxTS
+				}
 
 				var collected map[string]int64
 
