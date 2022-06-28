@@ -4,8 +4,6 @@ import (
 	"net"
 	"time"
 
-	// "github.com/getsentry/raven-go"
-
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
@@ -36,6 +34,9 @@ var (
 
 func init() {
 	creator := module.Creator{
+		Defaults: module.Defaults{
+			Disabled: true,
+		},
 		Create: func() module.Module { return New() },
 	}
 
