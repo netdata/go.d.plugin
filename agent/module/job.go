@@ -365,8 +365,8 @@ func (j *Job) createChart(chart *Chart) {
 		j.priority++
 	}
 	_ = j.api.CHART(
-		getChartType(chart, j.FullName()),
-		getChartID(chart),
+		getChartType(chart, j),
+		getChartID(chart, j),
 		chart.OverID,
 		chart.Title,
 		chart.Units,
@@ -428,8 +428,8 @@ func (j *Job) updateChart(chart *Chart, collected map[string]int64, sinceLastRun
 	}
 
 	_ = j.api.BEGIN(
-		getChartType(chart, j.FullName()),
-		getChartID(chart),
+		getChartType(chart, j),
+		getChartID(chart, j),
 		sinceLastRun,
 	)
 	var i, updated int
@@ -472,21 +472,27 @@ func (j Job) penalty() int {
 	return v
 }
 
-func getChartType(chart *Chart, jobFullName string) string {
+func getChartType(chart *Chart, j *Job) string {
 	if chart.typ != "" {
 		return chart.typ
 	}
+	if j.ModuleName() != "k8s_state" {
+		return firstNotEmpty(chart.typ, j.FullName())
+	}
 	if i := strings.IndexByte(chart.ID, '.'); i != -1 {
-		chart.typ = jobFullName + "_" + chart.ID[:i]
+		chart.typ = j.FullName() + "_" + chart.ID[:i]
 	} else {
-		chart.typ = jobFullName
+		chart.typ = j.FullName()
 	}
 	return chart.typ
 }
 
-func getChartID(chart *Chart) string {
+func getChartID(chart *Chart, j *Job) string {
 	if chart.id != "" {
 		return chart.id
+	}
+	if j.ModuleName() != "k8s_state" {
+		return chart.ID
 	}
 	if i := strings.IndexByte(chart.ID, '.'); i != -1 {
 		chart.id = chart.ID[i+1:]
