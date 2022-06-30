@@ -477,7 +477,7 @@ func getChartType(chart *Chart, j *Job) string {
 		return chart.typ
 	}
 	if j.ModuleName() != "k8s_state" {
-		return firstNotEmpty(chart.typ, j.FullName())
+		return j.FullName()
 	}
 	if i := strings.IndexByte(chart.ID, '.'); i != -1 {
 		chart.typ = j.FullName() + "_" + chart.ID[:i]
