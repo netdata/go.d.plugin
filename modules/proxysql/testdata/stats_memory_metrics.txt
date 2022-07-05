@@ -1,0 +1,51 @@
+*************************** 1. row ***************************
+ Variable_Name: SQLite3_memory_bytes
+Variable_Value: 5836096
+*************************** 2. row ***************************
+ Variable_Name: jemalloc_resident
+Variable_Value: 319516672
+*************************** 3. row ***************************
+ Variable_Name: jemalloc_active
+Variable_Value: 302989312
+*************************** 4. row ***************************
+ Variable_Name: jemalloc_allocated
+Variable_Value: 298369808
+*************************** 5. row ***************************
+ Variable_Name: jemalloc_mapped
+Variable_Value: 345391104
+*************************** 6. row ***************************
+ Variable_Name: jemalloc_metadata
+Variable_Value: 14584680
+*************************** 7. row ***************************
+ Variable_Name: jemalloc_retained
+Variable_Value: 142721024
+*************************** 8. row ***************************
+ Variable_Name: Auth_memory
+Variable_Value: 1044
+*************************** 9. row ***************************
+ Variable_Name: query_digest_memory
+Variable_Value: 13688
+*************************** 10. row ***************************
+ Variable_Name: mysql_query_rules_memory
+Variable_Value: 22825
+*************************** 11. row ***************************
+ Variable_Name: mysql_firewall_users_table
+Variable_Value: 0
+*************************** 12. row ***************************
+ Variable_Name: mysql_firewall_users_config
+Variable_Value: 0
+*************************** 13. row ***************************
+ Variable_Name: mysql_firewall_rules_table
+Variable_Value: 0
+*************************** 14. row ***************************
+ Variable_Name: mysql_firewall_rules_config
+Variable_Value: 329
+*************************** 15. row ***************************
+ Variable_Name: stack_memory_mysql_threads
+Variable_Value: 33554432
+*************************** 16. row ***************************
+ Variable_Name: stack_memory_admin_threads
+Variable_Value: 16777216
+*************************** 17. row ***************************
+ Variable_Name: stack_memory_cluster_threads
+Variable_Value: 0

@@ -1,0 +1,160 @@
+*************************** 1. row ***************************
+      Command: SELECT
+Total_Time_us: 3622260492133
+    Total_cnt: 54428746
+    cnt_100us: 25592399
+    cnt_500us: 33278
+      cnt_1ms: 401012
+      cnt_5ms: 3842295
+     cnt_10ms: 2393488
+     cnt_50ms: 8468400
+    cnt_100ms: 3760121
+    cnt_500ms: 8601795
+       cnt_1s: 1011985
+       cnt_5s: 321887
+      cnt_10s: 394
+     cnt_INFs: 1692
+*************************** 2. row ***************************
+      Command: SHOW
+Total_Time_us: 2158
+    Total_cnt: 1
+    cnt_100us: 0
+    cnt_500us: 0
+      cnt_1ms: 0
+      cnt_5ms: 1
+     cnt_10ms: 0
+     cnt_50ms: 0
+    cnt_100ms: 0
+    cnt_500ms: 0
+       cnt_1s: 0
+       cnt_5s: 0
+      cnt_10s: 0
+     cnt_INFs: 0
+*************************** 3. row ***************************
+      Command: ALTER_TABLE
+Total_Time_us: 0
+    Total_cnt: 0
+    cnt_100us: 0
+    cnt_500us: 0
+      cnt_1ms: 0
+      cnt_5ms: 0
+     cnt_10ms: 0
+     cnt_50ms: 0
+    cnt_100ms: 0
+    cnt_500ms: 0
+       cnt_1s: 0
+       cnt_5s: 0
+      cnt_10s: 0
+     cnt_INFs: 0
+*************************** 4. row ***************************
+      Command: ALTER_VIEW
+Total_Time_us: 0
+    Total_cnt: 0
+    cnt_100us: 0
+    cnt_500us: 0
+      cnt_1ms: 0
+      cnt_5ms: 0
+     cnt_10ms: 0
+     cnt_50ms: 0
+    cnt_100ms: 0
+    cnt_500ms: 0
+       cnt_1s: 0
+       cnt_5s: 0
+      cnt_10s: 0
+     cnt_INFs: 0
+*************************** 5. row ***************************
+      Command: ANALYZE_TABLE
+Total_Time_us: 0
+    Total_cnt: 0
+    cnt_100us: 0
+    cnt_500us: 0
+      cnt_1ms: 0
+      cnt_5ms: 0
+     cnt_10ms: 0
+     cnt_50ms: 0
+    cnt_100ms: 0
+    cnt_500ms: 0
+       cnt_1s: 0
+       cnt_5s: 0
+      cnt_10s: 0
+     cnt_INFs: 0
+*************************** 6. row ***************************
+      Command: BEGIN
+Total_Time_us: 0
+    Total_cnt: 0
+    cnt_100us: 0
+    cnt_500us: 0
+      cnt_1ms: 0
+      cnt_5ms: 0
+     cnt_10ms: 0
+     cnt_50ms: 0
+    cnt_100ms: 0
+    cnt_500ms: 0
+       cnt_1s: 0
+       cnt_5s: 0
+      cnt_10s: 0
+     cnt_INFs: 0
+*************************** 7. row ***************************
+      Command: CALL
+Total_Time_us: 0
+    Total_cnt: 0
+    cnt_100us: 0
+    cnt_500us: 0
+      cnt_1ms: 0
+      cnt_5ms: 0
+     cnt_10ms: 0
+     cnt_50ms: 0
+    cnt_100ms: 0
+    cnt_500ms: 0
+       cnt_1s: 0
+       cnt_5s: 0
+      cnt_10s: 0
+     cnt_INFs: 0
+*************************** 8. row ***************************
+      Command: CHANGE_MASTER
+Total_Time_us: 0
+    Total_cnt: 0
+    cnt_100us: 0
+    cnt_500us: 0
+      cnt_1ms: 0
+      cnt_5ms: 0
+     cnt_10ms: 0
+     cnt_50ms: 0
+    cnt_100ms: 0
+    cnt_500ms: 0
+       cnt_1s: 0
+       cnt_5s: 0
+      cnt_10s: 0
+     cnt_INFs: 0
+*************************** 9. row ***************************
+      Command: COMMIT
+Total_Time_us: 0
+    Total_cnt: 0
+    cnt_100us: 0
+    cnt_500us: 0
+      cnt_1ms: 0
+      cnt_5ms: 0
+     cnt_10ms: 0
+     cnt_50ms: 0
+    cnt_100ms: 0
+    cnt_500ms: 0
+       cnt_1s: 0
+       cnt_5s: 0
+      cnt_10s: 0
+     cnt_INFs: 0
+*************************** 10. row ***************************
+      Command: CREATE_DATABASE
+Total_Time_us: 0
+    Total_cnt: 0
+    cnt_100us: 0
+    cnt_500us: 0
+      cnt_1ms: 0
+      cnt_5ms: 0
+     cnt_10ms: 0
+     cnt_50ms: 0
+    cnt_100ms: 0
+    cnt_500ms: 0
+       cnt_1s: 0
+       cnt_5s: 0
+      cnt_10s: 0
+     cnt_INFs: 0
