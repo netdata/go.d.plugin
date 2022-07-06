@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package client
 
 // https://github.com/dell/goscaleio/blob/master/types/v1/types.go

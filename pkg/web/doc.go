@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /*
 Package web contains HTTP request and client configurations.
 HTTP structure embeds both of them and it's the only structure that intended to be used as part of a module's configuration.

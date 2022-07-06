@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package matcher_test
 
 import "github.com/netdata/go.d.plugin/pkg/matcher"

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package phpdaemon
 
 // https://github.com/kakserpom/phpdaemon/blob/master/PHPDaemon/Core/Daemon.php

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package nginxvts
 
 // NginxVTS metrics: https://github.com/vozlt/nginx-module-vts#json
