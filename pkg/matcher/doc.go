@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /*
 Package matcher implements vary formats of string matcher.
 

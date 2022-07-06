@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package v5_0_0
 
 var ListDatabaseNames = []string{"admin", "config", "db1"}

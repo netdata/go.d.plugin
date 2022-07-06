@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package metrics
 
 import "github.com/netdata/go.d.plugin/pkg/stm"

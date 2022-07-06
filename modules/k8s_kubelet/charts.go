@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package k8s_kubelet
 
 import "github.com/netdata/go.d.plugin/agent/module"

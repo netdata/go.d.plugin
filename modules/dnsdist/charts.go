@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package dnsdist
 
 import "github.com/netdata/go.d.plugin/agent/module"
