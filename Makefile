@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 DEV_MODULES := all
 
 all: download vet test build
