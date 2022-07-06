@@ -8,7 +8,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 
-	"github.com/prometheus/prometheus/pkg/textparse"
+	"github.com/prometheus/prometheus/model/textparse"
 )
 
 const (

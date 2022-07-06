@@ -15,8 +15,8 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
-	"github.com/prometheus/prometheus/pkg/labels"
-	"github.com/prometheus/prometheus/pkg/textparse"
+	"github.com/prometheus/prometheus/model/labels"
+	"github.com/prometheus/prometheus/model/textparse"
 )
 
 type (

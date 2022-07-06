@@ -8,7 +8,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
 
-	"github.com/prometheus/prometheus/pkg/labels"
+	"github.com/prometheus/prometheus/model/labels"
 )
 
 func isValidWindowsExporterMetrics(pms prometheus.Metrics) bool {
