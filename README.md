@@ -6,8 +6,6 @@ custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/README.md
 
 # go.d.plugin
 
-[![CircleCI](https://circleci.com/gh/netdata/go.d.plugin.svg?style=svg)](https://circleci.com/gh/netdata/go.d.plugin)
-
 `go.d.plugin` is a `Netdata` external plugin. It is an **orchestrator** for data collection modules written in `go`.
 
 1. It runs as an independent process `ps fax` shows it.
@@ -16,6 +14,14 @@ custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/README.md
 4. Supports any number of data collection [modules](https://github.com/netdata/go.d.plugin/tree/master/modules).
 5. Allows each [module](https://github.com/netdata/go.d.plugin/tree/master/modules) to have any number of data
    collection **jobs**.
+
+## Bug reports, feature requests, and questions
+
+Are welcome! We are using [netdata/netdata](https://github.com/netdata/netdata/) repository for bugs, feature requests,
+and questions.
+
+- [GitHub Issues](https://github.com/netdata/netdata/issues/new/choose): report bugs or open a new feature request.
+- [GitHub Discussions](https://github.com/netdata/netdata/discussions): ask a question or suggest a new idea.
 
 ## Install
 
