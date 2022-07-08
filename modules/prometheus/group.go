@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
-	"github.com/prometheus/prometheus/pkg/labels"
+	"github.com/prometheus/prometheus/model/labels"
 )
 
 type grouper interface {

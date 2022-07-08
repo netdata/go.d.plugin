@@ -11,7 +11,7 @@ import (
 	"github.com/netdata/go.d.plugin/modules/vsphere/client"
 	"github.com/netdata/go.d.plugin/modules/vsphere/discover"
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
-	tlscfg "github.com/netdata/go.d.plugin/pkg/tlscfg"
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

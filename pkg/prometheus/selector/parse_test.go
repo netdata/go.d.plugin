@@ -8,7 +8,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 
-	"github.com/prometheus/prometheus/pkg/labels"
+	"github.com/prometheus/prometheus/model/labels"
 	"github.com/stretchr/testify/assert"
 )
 
