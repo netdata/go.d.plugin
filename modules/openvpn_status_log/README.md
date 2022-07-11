@@ -20,8 +20,8 @@ that requires Management Interface enabled.
 
 It produces the following charts:
 
-- Total Number Of Active Clients in `clients`
-- Total Traffic in `kilobits/s`
+- Active Clients in `clients`
+- Traffic in `kilobits/s`
 
 Per user charts (disabled by default, see `per_user_stats` in the module config file):
 

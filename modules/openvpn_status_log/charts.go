@@ -11,7 +11,7 @@ import (
 var charts = module.Charts{
 	{
 		ID:    "active_clients",
-		Title: "Total Number Of Active Clients",
+		Title: "Active Clients",
 		Units: "active clients",
 		Fam:   "active_clients",
 		Ctx:   "openvpn.active_clients",
@@ -21,14 +21,14 @@ var charts = module.Charts{
 	},
 	{
 		ID:    "traffic",
-		Title: "Total Traffic",
+		Title: "Traffic",
 		Units: "kilobits/s",
 		Fam:   "traffic",
-		Ctx:   "openvpn.traffic",
+		Ctx:   "openvpn.total_traffic",
 		Type:  module.Area,
 		Dims: module.Dims{
-			{ID: "bytes_in", Name: "in", Algo: module.Incremental, Mul: 8, Div: 1024},
-			{ID: "bytes_out", Name: "out", Algo: module.Incremental, Mul: 8, Div: -1024},
+			{ID: "bytes_in", Name: "in", Algo: module.Incremental, Mul: 8, Div: 1000},
+			{ID: "bytes_out", Name: "out", Algo: module.Incremental, Mul: -8, Div: 1000},
 		},
 	},
 }
@@ -42,8 +42,8 @@ var userCharts = module.Charts{
 		Ctx:   "openvpn.user_traffic",
 		Type:  module.Area,
 		Dims: module.Dims{
-			{ID: "%s_bytes_in", Name: "in", Algo: module.Incremental, Mul: 8, Div: 1024},
-			{ID: "%s_bytes_out", Name: "out", Algo: module.Incremental, Mul: 8, Div: -1024},
+			{ID: "%s_bytes_in", Name: "in", Algo: module.Incremental, Mul: 8, Div: 1000},
+			{ID: "%s_bytes_out", Name: "out", Algo: module.Incremental, Mul: -8, Div: 1000},
 		},
 	},
 	{
