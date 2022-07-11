@@ -3,30 +3,20 @@
 package openvpn_status_log
 
 import (
-	"fmt"
 	"time"
 )
 
-type clientInfo struct {
-	CommonName     string
-	BytesReceived  int
-	BytesSent      int
-	ConnectedSince int64
-}
-
 func (o *OpenVPNStatusLog) collect() (map[string]int64, error) {
-	var err error
+	clients, err := parse(o.LogPath)
+	if err != nil {
+		return nil, err
+	}
 
 	mx := make(map[string]int64)
 
-	clients, err := parseStatusLog(o.StatusPath)
-	if err != nil {
-		o.Errorf("%v", err)
-		return nil, err
-	}
 	collectTotalStats(mx, clients)
 
-	if o.perUserMatcher != nil && len(clients) != 1 {
+	if o.perUserMatcher != nil && numOfClients(clients) > 0 {
 		o.collectUsers(mx, clients)
 	}
 
@@ -34,22 +24,21 @@ func (o *OpenVPNStatusLog) collect() (map[string]int64, error) {
 }
 
 func collectTotalStats(mx map[string]int64, clients []clientInfo) {
-	bytesIn := 0
-	bytesOut := 0
+	var in, out int64
 	for _, c := range clients {
-		bytesIn += c.BytesReceived
-		bytesOut += c.BytesSent
+		in += c.bytesReceived
+		out += c.bytesSent
 	}
-	mx["clients"] = int64(len(clients))
-	mx["bytes_in"] = int64(bytesIn)
-	mx["bytes_out"] = int64(bytesOut)
+	mx["clients"] = numOfClients(clients)
+	mx["bytes_in"] = in
+	mx["bytes_out"] = out
 }
 
 func (o *OpenVPNStatusLog) collectUsers(mx map[string]int64, clients []clientInfo) {
 	now := time.Now().Unix()
 
 	for _, user := range clients {
-		name := user.CommonName
+		name := user.commonName
 		if !o.perUserMatcher.MatchString(name) {
 			continue
 		}
@@ -59,23 +48,18 @@ func (o *OpenVPNStatusLog) collectUsers(mx map[string]int64, clients []clientInf
 				o.Warning(err)
 			}
 		}
-		mx[name+"_bytes_in"] = int64(user.BytesReceived)
-		mx[name+"_bytes_out"] = int64(user.BytesSent)
-		mx[name+"_connection_time"] = now - user.ConnectedSince
+		mx[name+"_bytes_in"] = user.bytesReceived
+		mx[name+"_bytes_out"] = user.bytesSent
+		mx[name+"_connection_time"] = now - user.connectedSince
 	}
 }
 
-func (o *OpenVPNStatusLog) addUserCharts(userName string) error {
-	cs := userCharts.Copy()
-
-	for _, chart := range *cs {
-		chart.ID = fmt.Sprintf(chart.ID, userName)
-		chart.Fam = fmt.Sprintf(chart.Fam, userName)
-
-		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, userName)
+func numOfClients(clients []clientInfo) int64 {
+	var num int64
+	for _, v := range clients {
+		if v.commonName != "" {
+			num++
 		}
-		chart.MarkNotCreated()
 	}
-	return o.charts.Add(*cs...)
+	return num
 }
