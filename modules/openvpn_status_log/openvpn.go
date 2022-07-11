@@ -3,31 +3,22 @@
 package openvpn_status_log
 
 import (
-	"os"
-
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
 
-const (
-	defaultFilePath = "/var/log/openvpn/status.log"
-)
-
 func init() {
-	creator := module.Creator{
+	module.Register("openvpn_status_log", module.Creator{
 		Defaults: module.Defaults{
 			Disabled: true,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("openvpn_status_log", creator)
+	})
 }
 
-// New creates OpenVPNStatusLog with default values.
 func New() *OpenVPNStatusLog {
 	config := Config{
-		StatusPath: defaultFilePath,
+		LogPath: "/var/log/openvpn/status.log",
 	}
 	return &OpenVPNStatusLog{
 		Config:         config,
@@ -36,51 +27,49 @@ func New() *OpenVPNStatusLog {
 	}
 }
 
-// Config is the OpenVPNStatusLog module configuration.
 type Config struct {
-	StatusPath   string             `yaml:"log_path"`
+	LogPath      string             `yaml:"log_path"`
 	PerUserStats matcher.SimpleExpr `yaml:"per_user_stats"`
 }
 
-// OpenVPNStatusLog OpenVPNStatusLog module.
 type OpenVPNStatusLog struct {
 	module.Base
-	Config         `yaml:",inline"`
-	charts         *module.Charts
+
+	Config `yaml:",inline"`
+
+	charts *module.Charts
+
 	collectedUsers map[string]bool
 	perUserMatcher matcher.Matcher
 }
 
-// Init makes initialization.
 func (o *OpenVPNStatusLog) Init() bool {
-	if !o.PerUserStats.Empty() {
-		m, err := o.PerUserStats.Parse()
-		if err != nil {
-			o.Errorf("error on creating per user stats matcher : %v", err)
-			return false
-		}
-		o.perUserMatcher = matcher.WithCache(m)
-	}
-
-	return true
-}
-
-// Check makes check.
-func (o *OpenVPNStatusLog) Check() bool {
-	if _, err := os.Stat(o.StatusPath); err != nil {
-		o.Errorf("file read error: %v", err)
+	if err := o.validateConfig(); err != nil {
+		o.Errorf("error on validating config: %v", err)
 		return false
 	}
 
+	m, err := o.initPerUserStatsMatcher()
+	if err != nil {
+		o.Errorf("error on creating 'per_user_stats' matcher: %v", err)
+		return false
+	}
+
+	if m != nil {
+		o.perUserMatcher = m
+	}
+
 	return true
 }
 
-// Charts creates Charts.
+func (o *OpenVPNStatusLog) Check() bool {
+	return len(o.Collect()) > 0
+}
+
 func (o OpenVPNStatusLog) Charts() *module.Charts {
 	return o.charts
 }
 
-// Collect collects metrics.
 func (o *OpenVPNStatusLog) Collect() map[string]int64 {
 	mx, err := o.collect()
 	if err != nil {
@@ -93,6 +82,4 @@ func (o *OpenVPNStatusLog) Collect() map[string]int64 {
 	return mx
 }
 
-// Cleanup makes cleanup.
-func (o *OpenVPNStatusLog) Cleanup() {
-}
+func (o *OpenVPNStatusLog) Cleanup() {}
