@@ -14,13 +14,19 @@ This module monitors the system's clock performance and peers activity status us
 
 It produces the following charts:
 
-- Active Clients in `clients`
-- Traffic in `kilobits/s`
-
-Per user charts (disabled by default, see `per_user_stats` in the module config file):
-
-- User Traffic in `kilobits/s`
-- User Connection Time in `seconds`
+- Distance to the reference clock
+- Current correction
+- Network path delay to stratum-1
+- Dispersion accumulated back to stratum-1
+- Offset on the last clock update
+- Long-term average of the offset value
+- Frequency
+- Residual frequency
+- Skew
+- Interval between the last two clock updates
+- Time since the last measurement
+- Leap status
+- Peers activity
 
 ## Configuration
 
