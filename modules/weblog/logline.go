@@ -325,19 +325,30 @@ func (l *logLine) assignReqProcTime(time string) error {
 	return nil
 }
 
+func isUpstreamTimeSeparator(r rune) bool { return r == ',' || r == ':' }
+
 func (l *logLine) assignUpsRespTime(time string) error {
 	if time == hyphen {
 		return nil
 	}
-	// times of several responses are separated by commas and colons.
-	if idx := strings.IndexByte(time, ','); idx >= 0 {
-		time = time[0:idx]
+
+	// the upstream response time string can contain multiple values, separated
+	// by commas (in case the request was handled by multiple servers), or colons
+	// (in case the request passed between multiple server groups via an internal redirect)
+	// the individual values should be summed up to obtain the correct amount of time
+	// the request spent in upstream
+	var sum float64
+	for _, val := range strings.FieldsFunc(time, isUpstreamTimeSeparator) {
+		val = strings.TrimSpace(val)
+		v, err := strconv.ParseFloat(val, 64)
+		if err != nil || !isTimeValid(v) {
+			return fmt.Errorf("assign '%s': %w", time, errBadUpsRespTime)
+		}
+
+		sum += v
 	}
-	v, err := strconv.ParseFloat(time, 64)
-	if err != nil || !isTimeValid(v) {
-		return fmt.Errorf("assign '%s': %w", time, errBadUpsRespTime)
-	}
-	l.upsRespTime = v * timeMultiplier(time)
+
+	l.upsRespTime = sum * timeMultiplier(time)
 	return nil
 }
 
