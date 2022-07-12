@@ -94,7 +94,7 @@ func TestChrony_Cleanup(t *testing.T) {
 	}{
 		"after New": {
 			wantClose: false,
-			prepare:   func(c *Chrony) { return },
+			prepare:   func(c *Chrony) {},
 		},
 		"after Init": {
 			wantClose: false,
