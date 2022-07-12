@@ -138,7 +138,7 @@ func TestChrony_Collect(t *testing.T) {
 				"burst_offline_sources":      3,
 				"burst_online_sources":       4,
 				"current_correction":         111249,
-				"frequency":                  -51036781311,
+				"frequency":                  51036781311,
 				"last_offset":                -88888,
 				"leap_status_delete_second":  0,
 				"leap_status_insert_second":  1,
@@ -160,7 +160,7 @@ func TestChrony_Collect(t *testing.T) {
 			prepare: func() *Chrony { return prepareChronyWithMock(&mockClient{errOnActivity: true}) },
 			expected: map[string]int64{
 				"current_correction":         111249,
-				"frequency":                  -51036781311,
+				"frequency":                  51036781311,
 				"last_offset":                -88888,
 				"leap_status_delete_second":  0,
 				"leap_status_insert_second":  1,

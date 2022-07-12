@@ -12,7 +12,7 @@ const scaleFactor = client.ScaleFactor
 var charts = module.Charts{
 	{
 		ID:    "stratum",
-		Title: "The distance from the reference clock",
+		Title: "Distance to the reference clock",
 		Units: "level",
 		Fam:   "stratum",
 		Ctx:   "chrony.stratum",
@@ -21,39 +21,58 @@ var charts = module.Charts{
 		},
 	},
 	{
-		ID:    "ref_timestamp",
-		Title: "last clock update interval",
-		Units: "seconds",
-		Fam:   "ref timestamp",
-		Ctx:   "chrony.ref_timestamp",
-		Dims: module.Dims{
-			{ID: "ref_timestamp"},
-		},
-	},
-	{
 		ID:    "current_correction",
 		Title: "Current correction",
 		Units: "seconds",
-		Fam:   "current correction",
+		Fam:   "correction",
 		Ctx:   "chrony.current_correction",
 		Dims: module.Dims{
 			{ID: "current_correction", Div: scaleFactor},
 		},
 	},
 	{
-		ID:    "offset",
-		Title: "The offset between clock update",
+		ID:    "root_delay",
+		Title: "Network path delay to stratum-1",
+		Units: "seconds",
+		Fam:   "root",
+		Ctx:   "chrony.root_delay",
+		Dims: module.Dims{
+			{ID: "root_delay", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "root_dispersion",
+		Title: "Dispersion accumulated back to stratum-1",
+		Units: "seconds",
+		Fam:   "root",
+		Ctx:   "chrony.root_dispersion",
+		Dims: module.Dims{
+			{ID: "root_dispersion", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "last_offset",
+		Title: "Offset on the last clock update",
 		Units: "seconds",
 		Fam:   "offset",
-		Ctx:   "chrony.offset",
+		Ctx:   "chrony.last_offset",
 		Dims: module.Dims{
-			{ID: "last_offset", Name: "last", Div: scaleFactor},
-			{ID: "rms_offset", Name: "rms", Div: scaleFactor},
+			{ID: "last_offset", Name: "offset", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "rms_offset",
+		Title: "Long-term average of the offset value",
+		Units: "seconds",
+		Fam:   "offset",
+		Ctx:   "chrony.rms_offset",
+		Dims: module.Dims{
+			{ID: "rms_offset", Name: "offset", Div: scaleFactor},
 		},
 	},
 	{
 		ID:    "frequency",
-		Title: "The rate at which the system clock would be wrong if the chronyd did not correct them",
+		Title: "Frequency",
 		Units: "ppm",
 		Fam:   "frequency",
 		Ctx:   "chrony.frequency",
@@ -62,43 +81,43 @@ var charts = module.Charts{
 		},
 	},
 	{
-		ID:    "skew",
-		Title: "The estimated error bound on the frequency",
+		ID:    "residual_frequency",
+		Title: "Residual frequency",
 		Units: "ppm",
-		Fam:   "skew",
+		Fam:   "frequency",
+		Ctx:   "chrony.residual_frequency",
+		Dims: module.Dims{
+			{ID: "residual_frequency", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "skew",
+		Title: "Skew",
+		Units: "ppm",
+		Fam:   "frequency",
 		Ctx:   "chrony.skew",
 		Dims: module.Dims{
 			{ID: "skew", Div: scaleFactor},
 		},
 	},
 	{
-		ID:    "root_delay",
-		Title: "The network path delay to the stratum-1 computer",
-		Units: "seconds",
-		Fam:   "root delay",
-		Ctx:   "chrony.root_delay",
-		Dims: module.Dims{
-			{ID: "root_delay", Div: scaleFactor},
-		},
-	},
-	{
-		ID:    "root_dispersion",
-		Title: "The dispersion accumulated through all the computers back to the stratum-1 computer",
-		Units: "seconds",
-		Fam:   "root dispersion",
-		Ctx:   "chrony.root_dispersion",
-		Dims: module.Dims{
-			{ID: "root_dispersion", Div: scaleFactor},
-		},
-	},
-	{
 		ID:    "update_interval",
-		Title: "The interval between the last two clock updates",
+		Title: "Interval between the last two clock updates",
 		Units: "seconds",
-		Fam:   "update interval",
+		Fam:   "updates",
 		Ctx:   "chrony.update_interval",
 		Dims: module.Dims{
 			{ID: "update_interval", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "ref_measurement_time",
+		Title: "Time since the last measurement",
+		Units: "seconds",
+		Fam:   "updates",
+		Ctx:   "chrony.ref_measurement_time",
+		Dims: module.Dims{
+			{ID: "ref_measurement_time"},
 		},
 	},
 	{

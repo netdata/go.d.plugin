@@ -49,13 +49,14 @@ func (c *Chrony) collectTracking(mx map[string]int64) error {
 	mx["root_delay"] = tp.RootDelay.Int64()
 	mx["root_dispersion"] = tp.RootDispersion.Int64()
 	mx["skew"] = tp.SkewPpm.Int64()
-	mx["frequency"] = tp.FreqPpm.Int64()
 	mx["last_offset"] = tp.LastOffset.Int64()
 	mx["rms_offset"] = tp.RmsOffset.Int64()
 	mx["update_interval"] = tp.LastUpdateInterval.Int64()
+	mx["ref_measurement_time"] = time.Now().Unix() - tp.RefTime.Time().Unix()
+	mx["residual_frequency"] = tp.ResidFreqPpm.Int64()
 	// https://github.com/mlichvar/chrony/blob/5b04f3ca902e5d10aa5948fb7587d30b43941049/client.c#L1706
 	mx["current_correction"] = abs(tp.CurrentCorrection.Int64())
-	mx["ref_timestamp"] = time.Now().Unix() - tp.RefTime.Time().Unix()
+	mx["frequency"] = abs(tp.FreqPpm.Int64())
 
 	return nil
 }
