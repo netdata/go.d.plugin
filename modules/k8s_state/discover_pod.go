@@ -91,7 +91,7 @@ func (d *podDiscoverer) runDiscover(ctx context.Context, in chan<- resource) {
 				return
 			}
 
-			r := &podResource{src: podSource(ns, replaceDots(name))}
+			r := &podResource{src: podSource(ns, name)}
 			if exists {
 				r.val = item
 			}
