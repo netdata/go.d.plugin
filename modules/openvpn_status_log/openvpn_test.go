@@ -247,16 +247,6 @@ func TestOpenVPNStatusLog_Collect(t *testing.T) {
 
 			copyConnTime(collected, test.expected)
 			assert.Equal(t, test.expected, collected)
-
-			//m := ovpn.Collect()
-			//l := make([]string, 0)
-			//for k := range m {
-			//	l = append(l, k)
-			//}
-			//sort.Strings(l)
-			//for _, value := range l {
-			//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
-			//}
 		})
 	}
 }

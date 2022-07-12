@@ -9,9 +9,6 @@ import (
 
 func init() {
 	module.Register("openvpn_status_log", module.Creator{
-		Defaults: module.Defaults{
-			Disabled: true,
-		},
 		Create: func() module.Module { return New() },
 	})
 }
