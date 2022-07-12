@@ -146,7 +146,8 @@ func TestChrony_Collect(t *testing.T) {
 				"leap_status_unsynchronised": 0,
 				"offline_sources":            2,
 				"online_sources":             8,
-				"ref_timestamp":              1667,
+				"ref_measurement_time":       1667,
+				"residual_frequency":         -3401879,
 				"rms_offset":                 359872,
 				"root_delay":                 51769230,
 				"root_dispersion":            1243559,
@@ -166,7 +167,8 @@ func TestChrony_Collect(t *testing.T) {
 				"leap_status_insert_second":  1,
 				"leap_status_normal":         0,
 				"leap_status_unsynchronised": 0,
-				"ref_timestamp":              1667,
+				"ref_measurement_time":       1667,
+				"residual_frequency":         -3401879,
 				"rms_offset":                 359872,
 				"root_delay":                 51769230,
 				"root_dispersion":            1243559,
@@ -197,7 +199,7 @@ func TestChrony_Collect(t *testing.T) {
 			_ = chrony.Check()
 
 			collected := chrony.Collect()
-			copyRefTimestamp(collected, test.expected)
+			copyRefMeasurementTime(collected, test.expected)
 
 			assert.Equal(t, test.expected, collected)
 		})
@@ -270,12 +272,12 @@ func (m *mockClient) Close() {
 	m.closeCalled = true
 }
 
-func copyRefTimestamp(dst, src map[string]int64) {
-	if _, ok := dst["ref_timestamp"]; !ok {
+func copyRefMeasurementTime(dst, src map[string]int64) {
+	if _, ok := dst["ref_measurement_time"]; !ok {
 		return
 	}
-	if _, ok := src["ref_timestamp"]; !ok {
+	if _, ok := src["ref_measurement_time"]; !ok {
 		return
 	}
-	dst["ref_timestamp"] = src["ref_timestamp"]
+	dst["ref_measurement_time"] = src["ref_measurement_time"]
 }
