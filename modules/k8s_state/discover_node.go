@@ -91,7 +91,7 @@ func (d *nodeDiscoverer) runDiscover(ctx context.Context, in chan<- resource) {
 				return
 			}
 
-			r := &nodeResource{src: nodeSource(replaceDots(name))}
+			r := &nodeResource{src: nodeSource(name)}
 			if exists {
 				r.val = item
 			}
