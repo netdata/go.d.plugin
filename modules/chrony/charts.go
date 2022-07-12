@@ -4,146 +4,148 @@ package chrony
 
 import (
 	"github.com/netdata/go.d.plugin/agent/module"
-	"net"
+	"github.com/netdata/go.d.plugin/modules/chrony/client"
 )
+
+const scaleFactor = client.ScaleFactor
 
 var charts = module.Charts{
 	{
-		ID:    "running",
-		Title: "chrony is functional and can be monitored",
-		Units: "hop",
-		Type:  module.Area,
-		Ctx:   "chrony.running",
-		Dims: module.Dims{
-			{ID: "running", Name: "running", Algo: module.Absolute, Div: 1, Mul: 1},
-		},
-	},
-	{
 		ID:    "stratum",
-		Title: "distance from reference clock",
+		Title: "Distance to the reference clock",
 		Units: "level",
-		Type:  module.Area,
+		Fam:   "stratum",
 		Ctx:   "chrony.stratum",
 		Dims: module.Dims{
-			{ID: "stratum", Name: "stratum", Algo: module.Absolute, Div: 1, Mul: 1},
-		},
-	},
-	{
-		ID: "leap_status",
-		//  LEAP_Normal = 0,
-		//  LEAP_InsertSecond = 1,
-		//  LEAP_DeleteSecond = 2,
-		//  LEAP_Unsynchronised = 3
-		Title: "Leap status can be Normal, Insert second, Delete second or Not synchronised.",
-		Units: "hop",
-		Ctx:   "chrony.leap_status",
-		Dims: module.Dims{
-			{ID: "leap_status", Name: "leap_status", Algo: module.Absolute, Div: 1, Mul: 1},
-		},
-	},
-	{
-		ID:    "root_delay",
-		Title: "the total of the network path delays to the stratum-1 computer",
-		Units: "seconds",
-		Type:  module.Area,
-		Ctx:   "chrony.root_delay",
-		Dims: module.Dims{
-			{ID: "root_delay", Name: "root_delay", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
-		},
-	},
-	{
-		ID:    "root_dispersion",
-		Title: "total dispersion accumulated through all the computers back to the stratum-1 computer",
-		Units: "seconds",
-		Type:  module.Area,
-		Ctx:   "chrony.root_dispersion",
-		Dims: module.Dims{
-			{ID: "root_dispersion", Name: "root_dispersion", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
-		},
-	},
-	{
-		ID:    "skew",
-		Title: "estimated error bound on the frequency",
-		Units: "ppm",
-		Type:  module.Area,
-		Ctx:   "chrony.skew",
-		Dims: module.Dims{
-			{ID: "skew", Name: "skew", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
-		},
-	},
-	{
-		ID:    "frequency",
-		Title: "the rate by which the system’s clock would be would be wrong",
-		Units: "ppm",
-		Type:  module.Area,
-		Ctx:   "chrony.frequency",
-		Dims: module.Dims{
-			{ID: "frequency", Name: "frequency", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
-		},
-	},
-	{
-		ID:    "offset",
-		Title: "the offset between clock update",
-		Units: "seconds",
-		Type:  module.Area,
-		Ctx:   "chrony.offset",
-		Dims: module.Dims{
-			{ID: "last_offset", Name: "last", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
-			{ID: "rms_offset", Name: "rms", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
-		},
-	},
-	{
-		ID:    "update_interval",
-		Title: "last clock update interval",
-		Units: "seconds",
-		Type:  module.Area,
-		Ctx:   "chrony.update_interval",
-		Dims: module.Dims{
-			{ID: "update_interval", Name: "update_interval", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
+			{ID: "stratum", Name: "stratum"},
 		},
 	},
 	{
 		ID:    "current_correction",
-		Title: "last clock update interval",
+		Title: "Current correction",
 		Units: "seconds",
-		Type:  module.Area,
+		Fam:   "correction",
 		Ctx:   "chrony.current_correction",
 		Dims: module.Dims{
-			{ID: "current_correction", Name: "current_correction", Algo: module.Absolute, Div: scaleFactor, Mul: 1},
+			{ID: "current_correction", Div: scaleFactor},
 		},
 	},
 	{
-		ID:    "ref_timestamp",
-		Title: "last clock update interval",
+		ID:    "root_delay",
+		Title: "Network path delay to stratum-1",
 		Units: "seconds",
-		Type:  module.Line,
-		Ctx:   "chrony.ref_timestamp",
+		Fam:   "root",
+		Ctx:   "chrony.root_delay",
 		Dims: module.Dims{
-			{ID: "ref_timestamp", Name: "ref_timestamp", Algo: module.Absolute, Div: 1, Mul: 1},
+			{ID: "root_delay", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "root_dispersion",
+		Title: "Dispersion accumulated back to stratum-1",
+		Units: "seconds",
+		Fam:   "root",
+		Ctx:   "chrony.root_dispersion",
+		Dims: module.Dims{
+			{ID: "root_dispersion", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "last_offset",
+		Title: "Offset on the last clock update",
+		Units: "seconds",
+		Fam:   "offset",
+		Ctx:   "chrony.last_offset",
+		Dims: module.Dims{
+			{ID: "last_offset", Name: "offset", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "rms_offset",
+		Title: "Long-term average of the offset value",
+		Units: "seconds",
+		Fam:   "offset",
+		Ctx:   "chrony.rms_offset",
+		Dims: module.Dims{
+			{ID: "rms_offset", Name: "offset", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "frequency",
+		Title: "Frequency",
+		Units: "ppm",
+		Fam:   "frequency",
+		Ctx:   "chrony.frequency",
+		Dims: module.Dims{
+			{ID: "frequency", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "residual_frequency",
+		Title: "Residual frequency",
+		Units: "ppm",
+		Fam:   "frequency",
+		Ctx:   "chrony.residual_frequency",
+		Dims: module.Dims{
+			{ID: "residual_frequency", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "skew",
+		Title: "Skew",
+		Units: "ppm",
+		Fam:   "frequency",
+		Ctx:   "chrony.skew",
+		Dims: module.Dims{
+			{ID: "skew", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "update_interval",
+		Title: "Interval between the last two clock updates",
+		Units: "seconds",
+		Fam:   "updates",
+		Ctx:   "chrony.update_interval",
+		Dims: module.Dims{
+			{ID: "update_interval", Div: scaleFactor},
+		},
+	},
+	{
+		ID:    "ref_measurement_time",
+		Title: "Time since the last measurement",
+		Units: "seconds",
+		Fam:   "updates",
+		Ctx:   "chrony.ref_measurement_time",
+		Dims: module.Dims{
+			{ID: "ref_measurement_time"},
+		},
+	},
+	{
+		ID:    "leap_status",
+		Title: "Leap status",
+		Units: "status",
+		Fam:   "leap status",
+		Ctx:   "chrony.leap_status",
+		Dims: module.Dims{
+			{ID: "leap_status_normal", Name: "normal"},
+			{ID: "leap_status_insert_second", Name: "insert_second"},
+			{ID: "leap_status_delete_second", Name: "delete_second"},
+			{ID: "leap_status_unsynchronised", Name: "unsynchronised"},
 		},
 	},
 	{
 		ID:    "activity",
-		Title: "activity status",
-		Units: "count",
+		Title: "Peers activity",
+		Units: "sources",
+		Fam:   "activity",
 		Ctx:   "chrony.activity",
-		Type:  module.Area,
+		Type:  module.Stacked,
 		Dims: module.Dims{
-			{ID: "online_sources", Name: "online_sources", Algo: module.Absolute, Div: 1, Mul: 1},
-			{ID: "offline_sources", Name: "offline_sources", Algo: module.Absolute, Div: 1, Mul: 1},
-			{ID: "burst_online_sources", Name: "burst_online_sources", Algo: module.Absolute, Div: 1, Mul: 1},
-			{ID: "burst_offline_sources", Name: "burst_offline_sources", Algo: module.Absolute, Div: 1, Mul: 1},
-			{ID: "unresolved_sources", Name: "unresolved_sources", Algo: module.Absolute, Div: 1, Mul: 1},
-		},
-	},
-	{
-		ID:    "source",
-		Title: "Activity Source Server",
-		Units: "hop",
-		Ctx:   "chrony.source",
-		Type:  module.Area,
-		Dims: module.Dims{
-			{ID: net.IPv4zero.String(), Name: net.IPv4zero.String(), Algo: module.Absolute, Div: 1, Mul: 1},
+			{ID: "online_sources", Name: "online"},
+			{ID: "offline_sources", Name: "offline"},
+			{ID: "burst_online_sources", Name: "burst_online"},
+			{ID: "burst_offline_sources", Name: "burst_offline"},
+			{ID: "unresolved_sources", Name: "unresolved"},
 		},
 	},
 }
