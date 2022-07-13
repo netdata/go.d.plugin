@@ -39,7 +39,6 @@ const (
 )
 
 func (c *Chrony) collectTracking(mx map[string]int64) error {
-	// https://github.com/mlichvar/chrony/blob/5b04f3ca902e5d10aa5948fb7587d30b43941049/client.c#L2129
 	reply, err := c.client.Tracking()
 	if err != nil {
 		return fmt.Errorf("error on collecting tracking: %v", err)
@@ -69,7 +68,6 @@ func (c *Chrony) collectTracking(mx map[string]int64) error {
 }
 
 func (c *Chrony) collectActivity(mx map[string]int64) error {
-	// https://github.com/mlichvar/chrony/blob/5b04f3ca902e5d10aa5948fb7587d30b43941049/client.c#L2791
 	reply, err := c.client.Activity()
 	if err != nil {
 		return fmt.Errorf("error on collecting activity: %v", err)
