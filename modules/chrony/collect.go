@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package chrony
 
 import (
@@ -5,9 +7,11 @@ import (
 	"time"
 )
 
+const scaleFactor = 1000000000
+
 func (c *Chrony) collect() (map[string]int64, error) {
 	if c.client == nil {
-		client, err := c.newClient(c)
+		client, err := c.newClient(c.Config)
 		if err != nil {
 			return nil, err
 		}
@@ -36,30 +40,30 @@ const (
 
 func (c *Chrony) collectTracking(mx map[string]int64) error {
 	// https://github.com/mlichvar/chrony/blob/5b04f3ca902e5d10aa5948fb7587d30b43941049/client.c#L2129
-	tp, err := c.client.Tracking()
+	reply, err := c.client.Tracking()
 	if err != nil {
 		return fmt.Errorf("error on collecting tracking: %v", err)
 	}
 
-	mx["stratum"] = int64(tp.Stratum)
-	mx["leap_status_normal"] = boolToInt(tp.LeapStatus == leapStatusNormal)
-	mx["leap_status_insert_second"] = boolToInt(tp.LeapStatus == leapStatusInsertSecond)
-	mx["leap_status_delete_second"] = boolToInt(tp.LeapStatus == leapStatusDeleteSecond)
-	mx["leap_status_unsynchronised"] = boolToInt(tp.LeapStatus == leapStatusUnsynchronised)
-	mx["root_delay"] = tp.RootDelay.Int64()
-	mx["root_dispersion"] = tp.RootDispersion.Int64()
-	mx["skew"] = tp.SkewPpm.Int64()
-	mx["last_offset"] = tp.LastOffset.Int64()
-	mx["rms_offset"] = tp.RmsOffset.Int64()
-	mx["update_interval"] = tp.LastUpdateInterval.Int64()
+	mx["stratum"] = int64(reply.Stratum)
+	mx["leap_status_normal"] = boolToInt(reply.LeapStatus == leapStatusNormal)
+	mx["leap_status_insert_second"] = boolToInt(reply.LeapStatus == leapStatusInsertSecond)
+	mx["leap_status_delete_second"] = boolToInt(reply.LeapStatus == leapStatusDeleteSecond)
+	mx["leap_status_unsynchronised"] = boolToInt(reply.LeapStatus == leapStatusUnsynchronised)
+	mx["root_delay"] = int64(reply.RootDelay * scaleFactor)
+	mx["root_dispersion"] = int64(reply.RootDispersion * scaleFactor)
+	mx["skew"] = int64(reply.SkewPPM * scaleFactor)
+	mx["last_offset"] = int64(reply.LastOffset * scaleFactor)
+	mx["rms_offset"] = int64(reply.RMSOffset * scaleFactor)
+	mx["update_interval"] = int64(reply.LastUpdateInterval * scaleFactor)
 	// handle chrony restarts
-	if tp.RefTime.Time().Year() != 1970 {
-		mx["ref_measurement_time"] = time.Now().Unix() - tp.RefTime.Time().Unix()
+	if reply.RefTime.Year() != 1970 {
+		mx["ref_measurement_time"] = time.Now().Unix() - reply.RefTime.Unix()
 	}
-	mx["residual_frequency"] = tp.ResidFreqPpm.Int64()
+	mx["residual_frequency"] = int64(reply.ResidFreqPPM * scaleFactor)
 	// https://github.com/mlichvar/chrony/blob/5b04f3ca902e5d10aa5948fb7587d30b43941049/client.c#L1706
-	mx["current_correction"] = abs(tp.CurrentCorrection.Int64())
-	mx["frequency"] = abs(tp.FreqPpm.Int64())
+	mx["current_correction"] = abs(int64(reply.CurrentCorrection * scaleFactor))
+	mx["frequency"] = abs(int64(reply.FreqPPM * scaleFactor))
 
 	return nil
 }
