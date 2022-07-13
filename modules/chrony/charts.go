@@ -4,10 +4,7 @@ package chrony
 
 import (
 	"github.com/netdata/go.d.plugin/agent/module"
-	"github.com/netdata/go.d.plugin/modules/chrony/client"
 )
-
-const scaleFactor = client.ScaleFactor
 
 var charts = module.Charts{
 	{

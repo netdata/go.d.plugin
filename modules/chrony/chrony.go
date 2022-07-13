@@ -5,8 +5,8 @@ package chrony
 import (
 	"time"
 
+	"github.com/facebook/time/ntp/chrony"
 	"github.com/netdata/go.d.plugin/agent/module"
-	"github.com/netdata/go.d.plugin/modules/chrony/client"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -22,13 +22,8 @@ func New() *Chrony {
 			Address: "127.0.0.1:323",
 			Timeout: web.Duration{Duration: time.Second},
 		},
-		charts: charts.Copy(),
-		newClient: func(c *Chrony) (chronyClient, error) {
-			return client.New(c.Logger, client.Config{
-				Address: c.Config.Address,
-				Timeout: c.Config.Timeout.Duration,
-			})
-		},
+		charts:    charts.Copy(),
+		newClient: newChronyClient,
 	}
 }
 
@@ -44,12 +39,12 @@ type (
 
 		charts *module.Charts
 
-		newClient func(c *Chrony) (chronyClient, error)
+		newClient func(c Config) (chronyClient, error)
 		client    chronyClient
 	}
 	chronyClient interface {
-		Tracking() (*client.TrackingPayload, error)
-		Activity() (*client.ActivityPayload, error)
+		Tracking() (*chrony.ReplyTracking, error)
+		Activity() (*chrony.ReplyActivity, error)
 		Close()
 	}
 )

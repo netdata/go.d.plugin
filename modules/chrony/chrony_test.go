@@ -4,9 +4,11 @@ package chrony
 
 import (
 	"errors"
+	"net"
 	"testing"
+	"time"
 
-	"github.com/netdata/go.d.plugin/modules/chrony/client"
+	"github.com/facebook/time/ntp/chrony"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -29,13 +31,13 @@ func TestChrony_Init(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			chrony := New()
-			chrony.Config = test.config
+			c := New()
+			c.Config = test.config
 
 			if test.wantFail {
-				assert.False(t, chrony.Init())
+				assert.False(t, c.Init())
 			} else {
-				assert.True(t, chrony.Init())
+				assert.True(t, c.Init())
 			}
 		})
 	}
@@ -70,14 +72,14 @@ func TestChrony_Check(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			chrony := test.prepare()
+			c := test.prepare()
 
-			require.True(t, chrony.Init())
+			require.True(t, c.Init())
 
 			if test.wantFail {
-				assert.False(t, chrony.Check())
+				assert.False(t, c.Check())
 			} else {
-				assert.True(t, chrony.Check())
+				assert.True(t, c.Check())
 			}
 		})
 	}
@@ -113,10 +115,10 @@ func TestChrony_Cleanup(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			m := &mockClient{}
-			chrony := prepareChronyWithMock(m)
-			test.prepare(chrony)
+			c := prepareChronyWithMock(m)
+			test.prepare(c)
 
-			require.NotPanics(t, chrony.Cleanup)
+			require.NotPanics(t, c.Cleanup)
 
 			if test.wantClose {
 				assert.True(t, m.closeCalled)
@@ -137,44 +139,44 @@ func TestChrony_Collect(t *testing.T) {
 			expected: map[string]int64{
 				"burst_offline_sources":      3,
 				"burst_online_sources":       4,
-				"current_correction":         111249,
-				"frequency":                  51036781311,
-				"last_offset":                -88888,
+				"current_correction":         154872,
+				"frequency":                  51051185607,
+				"last_offset":                3095,
 				"leap_status_delete_second":  0,
 				"leap_status_insert_second":  1,
 				"leap_status_normal":         0,
 				"leap_status_unsynchronised": 0,
 				"offline_sources":            2,
 				"online_sources":             8,
-				"ref_measurement_time":       1667,
-				"residual_frequency":         -3401879,
-				"rms_offset":                 359872,
-				"root_delay":                 51769230,
-				"root_dispersion":            1243559,
-				"skew":                       67318372,
-				"stratum":                    3,
+				"ref_measurement_time":       63793323616,
+				"residual_frequency":         -571789,
+				"rms_offset":                 130089,
+				"root_delay":                 59576179,
+				"root_dispersion":            1089275,
+				"skew":                       41821926,
+				"stratum":                    4,
 				"unresolved_sources":         1,
-				"update_interval":            1038400390625,
+				"update_interval":            1044219238281,
 			},
 		},
 		"tracking: success, activity: fail": {
 			prepare: func() *Chrony { return prepareChronyWithMock(&mockClient{errOnActivity: true}) },
 			expected: map[string]int64{
-				"current_correction":         111249,
-				"frequency":                  51036781311,
-				"last_offset":                -88888,
+				"current_correction":         154872,
+				"frequency":                  51051185607,
+				"last_offset":                3095,
 				"leap_status_delete_second":  0,
 				"leap_status_insert_second":  1,
 				"leap_status_normal":         0,
 				"leap_status_unsynchronised": 0,
-				"ref_measurement_time":       1667,
-				"residual_frequency":         -3401879,
-				"rms_offset":                 359872,
-				"root_delay":                 51769230,
-				"root_dispersion":            1243559,
-				"skew":                       67318372,
-				"stratum":                    3,
-				"update_interval":            1038400390625,
+				"ref_measurement_time":       63793323586,
+				"residual_frequency":         -571789,
+				"rms_offset":                 130089,
+				"root_delay":                 59576179,
+				"root_dispersion":            1089275,
+				"skew":                       41821926,
+				"stratum":                    4,
+				"update_interval":            1044219238281,
 			},
 		},
 		"tracking: fail, activity: success": {
@@ -193,12 +195,12 @@ func TestChrony_Collect(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			chrony := test.prepare()
+			c := test.prepare()
 
-			require.True(t, chrony.Init())
-			_ = chrony.Check()
+			require.True(t, c.Init())
+			_ = c.Check()
 
-			collected := chrony.Collect()
+			collected := c.Collect()
 			copyRefMeasurementTime(collected, test.expected)
 
 			assert.Equal(t, test.expected, collected)
@@ -209,9 +211,9 @@ func TestChrony_Collect(t *testing.T) {
 func prepareChronyWithMock(m *mockClient) *Chrony {
 	c := New()
 	if m == nil {
-		c.newClient = func(c *Chrony) (chronyClient, error) { return nil, errors.New("mock.newClient error") }
+		c.newClient = func(_ Config) (chronyClient, error) { return nil, errors.New("mock.newClient error") }
 	} else {
-		c.newClient = func(c *Chrony) (chronyClient, error) { return m, nil }
+		c.newClient = func(_ Config) (chronyClient, error) { return m, nil }
 	}
 	return c
 }
@@ -222,50 +224,45 @@ type mockClient struct {
 	closeCalled   bool
 }
 
-func (m mockClient) Tracking() (*client.TrackingPayload, error) {
+func (m mockClient) Tracking() (*chrony.ReplyTracking, error) {
 	if m.errOnTracking {
 		return nil, errors.New("mockClient.Tracking call error")
 	}
-	tp := client.TrackingPayload{
-		RefID: 1540987708,
-		Ip: client.IPAddr{
-			IPAddrHigh: 6618491809397997568,
-			IPAddrLow:  0,
-			Family:     1,
-			Pad:        0,
+	reply := chrony.ReplyTracking{
+		Tracking: chrony.Tracking{
+			RefID:              2728380539,
+			IPAddr:             net.IP("192.0.2.0"),
+			Stratum:            4,
+			LeapStatus:         1,
+			RefTime:            time.Time{},
+			CurrentCorrection:  0.00015487267228309065,
+			LastOffset:         3.0953951863921247e-06,
+			RMSOffset:          0.00013008920359425247,
+			FreqPPM:            -51.051185607910156,
+			ResidFreqPPM:       -0.0005717896274290979,
+			SkewPPM:            0.0418219268321991,
+			RootDelay:          0.05957617983222008,
+			RootDispersion:     0.0010892755817621946,
+			LastUpdateInterval: 1044.21923828125,
 		},
-		Stratum:    3,
-		LeapStatus: 1,
-		RefTime: client.ChronyTimespec{
-			TvSecHigh: 0,
-			TvSecLow:  1657633575,
-			TvNSec:    895532067,
-		},
-		CurrentCorrection:  -387363189,
-		LastOffset:         -381315542,
-		RmsOffset:          -323179191,
-		FreqPpm:            255056470,
-		ResidFreqPpm:       -215937554,
-		SkewPpm:            -58073545,
-		RootDelay:          -86766599,
-		RootDispersion:     -257753360,
-		LastUpdateInterval: 411159760,
 	}
-	return &tp, nil
+	return &reply, nil
 }
 
-func (m mockClient) Activity() (*client.ActivityPayload, error) {
+func (m mockClient) Activity() (*chrony.ReplyActivity, error) {
 	if m.errOnActivity {
 		return nil, errors.New("mockClient.Activity call error")
 	}
-	ap := client.ActivityPayload{
-		Online:       8,
-		Offline:      2,
-		BurstOnline:  4,
-		BurstOffline: 3,
-		Unresolved:   1,
+	reply := chrony.ReplyActivity{
+		Activity: chrony.Activity{
+			Online:       8,
+			Offline:      2,
+			BurstOnline:  4,
+			BurstOffline: 3,
+			Unresolved:   1,
+		},
 	}
-	return &ap, nil
+	return &reply, nil
 }
 
 func (m *mockClient) Close() {
