@@ -4,6 +4,7 @@ package chrony
 
 import (
 	"errors"
+	"net"
 	"testing"
 	"time"
 
@@ -138,44 +139,44 @@ func TestChrony_Collect(t *testing.T) {
 			expected: map[string]int64{
 				"burst_offline_sources":      3,
 				"burst_online_sources":       4,
-				"current_correction":         111249,
-				"frequency":                  51036781311,
-				"last_offset":                -88888,
+				"current_correction":         154872,
+				"frequency":                  51051185607,
+				"last_offset":                3095,
 				"leap_status_delete_second":  0,
 				"leap_status_insert_second":  1,
 				"leap_status_normal":         0,
 				"leap_status_unsynchronised": 0,
 				"offline_sources":            2,
 				"online_sources":             8,
-				"ref_measurement_time":       1667,
-				"residual_frequency":         -3401879,
-				"rms_offset":                 359872,
-				"root_delay":                 51769230,
-				"root_dispersion":            1243559,
-				"skew":                       67318372,
-				"stratum":                    3,
+				"ref_measurement_time":       63793323616,
+				"residual_frequency":         -571789,
+				"rms_offset":                 130089,
+				"root_delay":                 59576179,
+				"root_dispersion":            1089275,
+				"skew":                       41821926,
+				"stratum":                    4,
 				"unresolved_sources":         1,
-				"update_interval":            1038400390625,
+				"update_interval":            1044219238281,
 			},
 		},
 		"tracking: success, activity: fail": {
 			prepare: func() *Chrony { return prepareChronyWithMock(&mockClient{errOnActivity: true}) },
 			expected: map[string]int64{
-				"current_correction":         111249,
-				"frequency":                  51036781311,
-				"last_offset":                -88888,
+				"current_correction":         154872,
+				"frequency":                  51051185607,
+				"last_offset":                3095,
 				"leap_status_delete_second":  0,
 				"leap_status_insert_second":  1,
 				"leap_status_normal":         0,
 				"leap_status_unsynchronised": 0,
-				"ref_measurement_time":       1667,
-				"residual_frequency":         -3401879,
-				"rms_offset":                 359872,
-				"root_delay":                 51769230,
-				"root_dispersion":            1243559,
-				"skew":                       67318372,
-				"stratum":                    3,
-				"update_interval":            1038400390625,
+				"ref_measurement_time":       63793323586,
+				"residual_frequency":         -571789,
+				"rms_offset":                 130089,
+				"root_delay":                 59576179,
+				"root_dispersion":            1089275,
+				"skew":                       41821926,
+				"stratum":                    4,
+				"update_interval":            1044219238281,
 			},
 		},
 		"tracking: fail, activity: success": {
@@ -227,32 +228,32 @@ func (m mockClient) Tracking() (*chrony.ReplyTracking, error) {
 	if m.errOnTracking {
 		return nil, errors.New("mockClient.Tracking call error")
 	}
-	tp := chrony.ReplyTracking{
+	reply := chrony.ReplyTracking{
 		Tracking: chrony.Tracking{
-			RefID:              1540987708,
-			IPAddr:             nil,
-			Stratum:            3,
+			RefID:              2728380539,
+			IPAddr:             net.IP("192.0.2.0"),
+			Stratum:            4,
 			LeapStatus:         1,
 			RefTime:            time.Time{},
-			CurrentCorrection:  0,
-			LastOffset:         0,
-			RMSOffset:          0,
-			FreqPPM:            0,
-			ResidFreqPPM:       0,
-			SkewPPM:            0,
-			RootDelay:          0,
-			RootDispersion:     0,
-			LastUpdateInterval: 0,
+			CurrentCorrection:  0.00015487267228309065,
+			LastOffset:         3.0953951863921247e-06,
+			RMSOffset:          0.00013008920359425247,
+			FreqPPM:            -51.051185607910156,
+			ResidFreqPPM:       -0.0005717896274290979,
+			SkewPPM:            0.0418219268321991,
+			RootDelay:          0.05957617983222008,
+			RootDispersion:     0.0010892755817621946,
+			LastUpdateInterval: 1044.21923828125,
 		},
 	}
-	return &tp, nil
+	return &reply, nil
 }
 
 func (m mockClient) Activity() (*chrony.ReplyActivity, error) {
 	if m.errOnActivity {
 		return nil, errors.New("mockClient.Activity call error")
 	}
-	ap := chrony.ReplyActivity{
+	reply := chrony.ReplyActivity{
 		Activity: chrony.Activity{
 			Online:       8,
 			Offline:      2,
@@ -261,7 +262,7 @@ func (m mockClient) Activity() (*chrony.ReplyActivity, error) {
 			Unresolved:   1,
 		},
 	}
-	return &ap, nil
+	return &reply, nil
 }
 
 func (m *mockClient) Close() {
