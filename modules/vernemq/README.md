@@ -48,15 +48,15 @@ It produces the following charts:
 - Erlang Processes in `processes`
 - Reductions in `ops/s`
 - Context Switches in `ops/s`
-- Received and Sent Traffic through Ports in `KiB/s`
-- Processes that are Ready to Run on All Run-Queues in `KiB/s`
+- Received and Sent Traffic through Ports in `kilobits/s`
+- Processes that are Ready to Run on All Run-Queues in `processes`
 - GC Count in `KiB/s`
 - GC Words Reclaimed in `KiB/s`
 - Memory Allocated by the Erlang Processes and by the Emulator in `KiB`
 
 #### Bandwidth
 
-- Bandwidth in `KiB/s`
+- Bandwidth in `kilobits/s`
 
 #### Retain
 
@@ -65,8 +65,8 @@ It produces the following charts:
 
 #### Cluster
 
-- Communication with Other Cluster Nodes in `KiB/s`
-- Traffic Dropped During Communication with Other Cluster Nodes in `KiB/s`
+- Communication with Other Cluster Nodes in `kilobits/s`
+- Traffic Dropped During Communication with Other Cluster Nodes in `kilobits/s`
 - Unresolved Netsplits in `netsplits`
 - Netsplits in `netsplits/s`
 

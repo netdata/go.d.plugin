@@ -109,10 +109,9 @@ var (
 		Units: "events/s",
 		Fam:   "sockets",
 		Ctx:   "vernemq.socket_operations",
-		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: metricSocketOpen, Name: "open", Algo: module.Incremental},
-			{ID: metricSocketClose, Name: "close", Algo: module.Incremental},
+			{ID: metricSocketClose, Name: "close", Algo: module.Incremental, Mul: -1},
 		},
 	}
 	chartClientKeepaliveExpired = Chart{
@@ -165,10 +164,9 @@ var (
 		Units: "events/s",
 		Fam:   "queues",
 		Ctx:   "vernemq.queue_processes_operations",
-		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: metricQueueSetup, Name: "setup", Algo: module.Incremental},
-			{ID: metricQueueTeardown, Name: "teardown", Algo: module.Incremental},
+			{ID: metricQueueTeardown, Name: "teardown", Algo: module.Incremental, Mul: -1},
 		},
 	}
 	chartQueueProcessesOfflineStorage = Chart{
@@ -226,7 +224,6 @@ var (
 		Units: "subscriptions/s",
 		Fam:   "subscriptions",
 		Ctx:   "vernemq.router_matched_subscriptions",
-		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: metricRouterMatchesLocal, Name: "local", Algo: module.Incremental},
 			{ID: metricRouterMatchesRemote, Name: "remote", Algo: module.Incremental},
@@ -238,6 +235,7 @@ var (
 		Units: "KiB",
 		Fam:   "subscriptions",
 		Ctx:   "vernemq.router_memory",
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: metricRouterMemory, Name: "used", Div: 1024},
 		},
@@ -252,6 +250,7 @@ var (
 		Units: "percentage",
 		Fam:   "erlang vm",
 		Ctx:   "vernemq.average_scheduler_utilization",
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: metricSystemUtilization, Name: "utilization"},
 		},
@@ -297,13 +296,13 @@ var (
 	chartSystemIO = Chart{
 		ID:    "system_io",
 		Title: "Received and Sent Traffic through Ports",
-		Units: "KiB/s",
+		Units: "kilobits/s",
 		Fam:   "erlang vm",
 		Ctx:   "vernemq.system_io",
 		Type:  module.Area,
 		Dims: Dims{
-			{ID: metricSystemIOIn, Name: "received", Algo: module.Incremental, Div: 1024},
-			{ID: metricSystemIOOut, Name: "sent", Algo: module.Incremental, Div: -1024},
+			{ID: metricSystemIOIn, Name: "received", Algo: module.Incremental, Mul: 8, Div: 1024},
+			{ID: metricSystemIOOut, Name: "sent", Algo: module.Incremental, Mul: 8, Div: -1024},
 		},
 	}
 	chartSystemRunQueue = Chart{
@@ -355,13 +354,13 @@ var (
 	chartBandwidth = Chart{
 		ID:    "bandwidth",
 		Title: "Bandwidth",
-		Units: "KiB/s",
+		Units: "kilobits/s",
 		Fam:   "bandwidth",
 		Ctx:   "vernemq.bandwidth",
 		Type:  module.Area,
 		Dims: Dims{
-			{ID: metricBytesReceived, Name: "received", Algo: module.Incremental, Div: 1024},
-			{ID: metricBytesSent, Name: "sent", Algo: module.Incremental, Div: -1024},
+			{ID: metricBytesReceived, Name: "received", Algo: module.Incremental, Mul: 8, Div: 1024},
+			{ID: metricBytesSent, Name: "sent", Algo: module.Incremental, Mul: 8, Div: -1024},
 		},
 	}
 )
@@ -384,6 +383,7 @@ var (
 		Units: "KiB",
 		Fam:   "retain",
 		Ctx:   "vernemq.retain_memory",
+		Type:  module.Area,
 		Dims: Dims{
 			{ID: metricRetainMemory, Name: "used", Div: 1024},
 		},
@@ -395,22 +395,24 @@ var (
 	chartClusterCommunicationBandwidth = Chart{
 		ID:    "cluster_bandwidth",
 		Title: "Communication with Other Cluster Nodes",
-		Units: "KiB/s",
+		Units: "kilobits/s",
 		Fam:   "cluster",
 		Ctx:   "vernemq.cluster_bandwidth",
+		Type:  module.Area,
 		Dims: Dims{
-			{ID: metricClusterBytesReceived, Name: "received", Algo: module.Incremental, Div: 1024},
-			{ID: metricClusterBytesSent, Name: "sent", Algo: module.Incremental, Div: -1024},
+			{ID: metricClusterBytesReceived, Name: "received", Algo: module.Incremental, Mul: 8, Div: 1024},
+			{ID: metricClusterBytesSent, Name: "sent", Algo: module.Incremental, Mul: 8, Div: -1024},
 		},
 	}
 	chartClusterCommunicationDropped = Chart{
 		ID:    "cluster_dropped",
 		Title: "Traffic Dropped During Communication with Other Cluster Nodes",
-		Units: "KiB/s",
+		Units: "kilobits/s",
 		Fam:   "cluster",
+		Type:  module.Area,
 		Ctx:   "vernemq.cluster_dropped",
 		Dims: Dims{
-			{ID: metricClusterBytesDropped, Name: "dropped", Algo: module.Incremental, Div: 1024},
+			{ID: metricClusterBytesDropped, Name: "dropped", Algo: module.Incremental, Mul: 8, Div: 1024},
 		},
 	}
 	chartNetSplitUnresolved = Chart{
