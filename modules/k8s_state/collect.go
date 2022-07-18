@@ -62,7 +62,7 @@ func (ks *KubeState) collectKubeState(mx map[string]int64) {
 		ns.resetStats()
 	}
 	ks.collectPodsState(mx)
-	//ks.collectNodesState(mx)
+	ks.collectNodesState(mx)
 }
 
 func (ks *KubeState) collectPodsState(mx map[string]int64) {
