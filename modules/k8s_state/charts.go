@@ -604,7 +604,7 @@ func updateNodeLabel(c *module.Chart, nodeName string) {
 			break
 		}
 	}
-	if idx == -1 {
+	if idx != -1 {
 		c.Labels[idx].Value = nodeName
 	} else {
 		c.Labels = append(c.Labels, module.Label{Key: labelKeyNodeName, Value: nodeName, Source: module.LabelSourceK8s})
