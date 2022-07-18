@@ -76,9 +76,9 @@ func (ks *KubeState) collectPodsState(mx map[string]int64) {
 		if ps.new {
 			ps.new = false
 			ks.addPodCharts(ps)
-			ps.unSchedulable = ps.nodeName == ""
-		} else if ps.unSchedulable && ps.nodeName != "" {
-			ps.unSchedulable = false
+			ps.unscheduled = ps.nodeName == ""
+		} else if ps.unscheduled && ps.nodeName != "" {
+			ps.unscheduled = false
 			ks.updatePodChartsNodeLabel(ps)
 		}
 

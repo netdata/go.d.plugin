@@ -106,9 +106,9 @@ func (ns *nodeState) resetStats() { ns.stats = nodeStateStats{} }
 
 type (
 	podState struct {
-		new           bool
-		deleted       bool
-		unSchedulable bool
+		new         bool
+		deleted     bool
+		unscheduled bool
 
 		name           string
 		nodeName       string
