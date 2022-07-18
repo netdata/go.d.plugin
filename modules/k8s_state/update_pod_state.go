@@ -60,6 +60,9 @@ func (ks *KubeState) updatePodState(r resource) {
 		ps.reqMem = max(res.rMem, res.irMem)
 		ps.limitMem = max(res.lMem, res.ilMem)
 	}
+	if ps.nodeName == "" {
+		ps.nodeName = pod.Spec.NodeName
+	}
 
 	for _, c := range pod.Status.Conditions {
 		switch c.Type {
