@@ -76,6 +76,10 @@ func (ks *KubeState) collectPodsState(mx map[string]int64) {
 		if ps.new {
 			ps.new = false
 			ks.addPodCharts(ps)
+			ps.unscheduled = ps.nodeName == ""
+		} else if ps.unscheduled && ps.nodeName != "" {
+			ps.unscheduled = false
+			ks.updatePodChartsNodeLabel(ps)
 		}
 
 		ns := ks.state.nodes[nodeSource(ps.nodeName)]
@@ -136,6 +140,9 @@ func (ks *KubeState) collectPodsState(mx map[string]int64) {
 			mx[px+"init_containers_state_waiting"] += boolToInt(cs.stateWaiting)
 			mx[px+"init_containers_state_terminated"] += boolToInt(cs.stateTerminated)
 		}
+		mx[px+"containers_state_running"] = 0
+		mx[px+"containers_state_waiting"] = 0
+		mx[px+"containers_state_terminated"] = 0
 		for _, cs := range ps.containers {
 			if cs.new {
 				cs.new = false

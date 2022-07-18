@@ -474,6 +474,46 @@ func TestKubeState_Collect(t *testing.T) {
 				}
 			},
 		},
+		"slow spec.NodeName set": {
+			create: func(t *testing.T) testCase {
+				ctx := context.Background()
+				node := newNode("node01")
+				podOrig := newPod(node.Name, "pod01")
+				podOrig.Spec.NodeName = ""
+				client := fake.NewSimpleClientset(
+					node,
+					podOrig,
+				)
+				podUpdated := newPod(node.Name, "pod01") // with set Spec.NodeName
+
+				step1 := func(t *testing.T, ks *KubeState) {
+					_ = ks.Collect()
+					for _, c := range *ks.Charts() {
+						if strings.HasPrefix(c.ID, "pod_") {
+							ok := isLabelValueSet(c, labelKeyNodeName)
+							assert.Falsef(t, ok, "chart '%s' has not empty %s label", c.ID, labelKeyNodeName)
+						}
+					}
+				}
+				step2 := func(t *testing.T, ks *KubeState) {
+					_, _ = client.CoreV1().Pods(podOrig.Namespace).Update(ctx, podUpdated, metav1.UpdateOptions{})
+					time.Sleep(time.Millisecond * 50)
+					_ = ks.Collect()
+
+					for _, c := range *ks.Charts() {
+						if strings.HasPrefix(c.ID, "pod_") {
+							ok := isLabelValueSet(c, labelKeyNodeName)
+							assert.Truef(t, ok, "chart '%s' has empty %s label", c.ID, labelKeyNodeName)
+						}
+					}
+				}
+
+				return testCase{
+					client: client,
+					steps:  []testCaseStep{step1, step2},
+				}
+			},
+		},
 		"add a Pod in runtime": {
 			create: func(t *testing.T) testCase {
 				ctx := context.Background()
@@ -794,14 +834,11 @@ func copyAge(dst, src map[string]int64) {
 	}
 }
 
-/*
-	m := ks.Collect()
-	l := make([]string, 0)
-	for k := range m {
-		l = append(l, k)
+func isLabelValueSet(c *module.Chart, name string) bool {
+	for _, l := range c.Labels {
+		if l.Key == name {
+			return l.Value != ""
+		}
 	}
-	sort.Strings(l)
-	for _, value := range l {
-		fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
-	}
-*/
+	return false
+}
