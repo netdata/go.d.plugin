@@ -62,7 +62,7 @@ func (ks *KubeState) collectKubeState(mx map[string]int64) {
 		ns.resetStats()
 	}
 	ks.collectPodsState(mx)
-	ks.collectNodesState(mx)
+	//ks.collectNodesState(mx)
 }
 
 func (ks *KubeState) collectPodsState(mx map[string]int64) {
@@ -76,6 +76,10 @@ func (ks *KubeState) collectPodsState(mx map[string]int64) {
 		if ps.new {
 			ps.new = false
 			ks.addPodCharts(ps)
+			ps.unSchedulable = ps.nodeName == ""
+		} else if ps.unSchedulable && ps.nodeName != "" {
+			ps.unSchedulable = false
+			ks.updatePodChartsNodeLabel(ps)
 		}
 
 		ns := ks.state.nodes[nodeSource(ps.nodeName)]
@@ -136,6 +140,9 @@ func (ks *KubeState) collectPodsState(mx map[string]int64) {
 			mx[px+"init_containers_state_waiting"] += boolToInt(cs.stateWaiting)
 			mx[px+"init_containers_state_terminated"] += boolToInt(cs.stateTerminated)
 		}
+		mx[px+"containers_state_running"] = 0
+		mx[px+"containers_state_waiting"] = 0
+		mx[px+"containers_state_terminated"] = 0
 		for _, cs := range ps.containers {
 			if cs.new {
 				cs.new = false
