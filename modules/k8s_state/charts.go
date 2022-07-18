@@ -597,19 +597,12 @@ func (ks *KubeState) updatePodChartsNodeLabel(ps *podState) {
 }
 
 func updateNodeLabel(c *module.Chart, nodeName string) {
-	idx := -1
 	for i, l := range c.Labels {
 		if l.Key == labelKeyNodeName {
-			idx = i
+			c.Labels[i].Value = nodeName
 			break
 		}
 	}
-	if idx != -1 {
-		c.Labels[idx].Value = nodeName
-	} else {
-		c.Labels = append(c.Labels, module.Label{Key: labelKeyNodeName, Value: nodeName, Source: module.LabelSourceK8s})
-	}
-
 }
 
 func (ks *KubeState) removePodCharts(ps *podState) {
