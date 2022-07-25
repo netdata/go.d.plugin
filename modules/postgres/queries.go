@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package postgres
 
 import (
@@ -31,6 +33,7 @@ func queryDatabasesList() string {
 }
 
 func queryDatabasesStats(dbs []string) string {
+	// definition by version: https://pgpedia.info/p/pg_stat_database.html
 	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-DATABASE-VIEW
 	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1018
 	q := `
@@ -70,6 +73,7 @@ func queryDatabasesStats(dbs []string) string {
 }
 
 func queryDatabasesConflicts(dbs []string) string {
+	// definition by version: https://pgpedia.info/p/pg_stat_database_conflicts.html
 	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-DATABASE-CONFLICTS-VIEW
 	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1058
 	q := `
@@ -96,4 +100,26 @@ func queryDatabasesConflicts(dbs []string) string {
 	q += ";"
 
 	return q
+}
+
+func queryCheckpoints() string {
+	// definition by version: https://pgpedia.info/p/pg_stat_bgwriter.html
+	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-BGWRITER-VIEW
+	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1104
+
+	return `
+    SELECT
+        checkpoints_timed,
+        checkpoints_req,
+        checkpoint_write_time,
+        checkpoint_sync_time,
+        buffers_checkpoint * current_setting('block_size')::numeric buffers_checkpoint,
+        buffers_clean * current_setting('block_size')::numeric buffers_clean,
+        maxwritten_clean,
+        buffers_backend * current_setting('block_size')::numeric buffers_backend,
+        buffers_backend_fsync,
+        buffers_alloc * current_setting('block_size')::numeric buffers_alloc 
+    FROM
+        pg_stat_bgwriter;
+`
 }

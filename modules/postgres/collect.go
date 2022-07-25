@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package postgres
 
 import (
@@ -41,6 +43,10 @@ func (p *Postgres) collect() (map[string]int64, error) {
 	// TODO: This view will only contain information on standby servers, since conflicts do not occur on primary servers.
 	// see if possible to identify primary/standby and disable on primary if yes.
 	if err := p.collectDatabaseConflicts(mx); err != nil {
+		return mx, fmt.Errorf("querying database conflicts error: %v", err)
+	}
+
+	if err := p.collectCheckpoints(mx); err != nil {
 		return mx, fmt.Errorf("querying database conflicts error: %v", err)
 	}
 

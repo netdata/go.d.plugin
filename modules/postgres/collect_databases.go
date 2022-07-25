@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package postgres
 
 import (
@@ -89,16 +91,16 @@ func collectDatabaseRows(mx map[string]int64, rows *sql.Rows) error {
 		return err
 	}
 
-	vs := makeNullStrings(len(columns))
+	values := makeNullStrings(len(columns))
 
 	for rows.Next() {
-		if err := rows.Scan(vs...); err != nil {
+		if err := rows.Scan(values...); err != nil {
 			return err
 		}
 
 		var db string
 		for i, name := range columns {
-			s := valueToString(vs[i])
+			s := valueToString(values[i])
 			switch name {
 			case "datname":
 				db = s
