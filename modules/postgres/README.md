@@ -1,7 +1,7 @@
 <!--
 title: "PostgreSQL monitoring with Netdata"
 description: "Monitor connections, slow queries, InnoDB memory and disk utilization, locks, and more with zero configuration and per-second metric granularity."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/mysql/README.md
+custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/postgres/README.md
 sidebar_label: "PostgresSQL"
 -->
 
@@ -12,50 +12,30 @@ management system emphasizing extensibility and SQL compliance.
 
 This module monitors one or more Postgres servers, depending on your configuration.
 
-## Requirements
-
-Executed queries:
-
-- `SELECT VERSION();`
-- `SHOW GLOBAL STATUS;`
-- `SHOW GLOBAL VARIABLES;`
-- `SHOW SLAVE STATUS;` or `SHOW ALL SLAVES STATUS;` (MariaDBv10.2+)
-- `SHOW USER_STATISTICS;` (MariaDBv10.1.1+)
-- `SELECT TIME,USER FROM INFORMATION_SCHEMA.PROCESSLIST;`
-
-[User Statistics](https://mariadb.com/kb/en/user-statistics/) query is [`MariaDB`](https://mariadb.com/) specific.
-
-`MySQL` user should have the following [permissions](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html):
-
-- [`USAGE`](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html#priv_usage)
-- [`REPLICATION CLIENT`](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html#priv_replication-client)
-- [`PROCESS`](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html#priv_process)
-
-To create the `netdata` user with these permissions, execute the following in the `MySQL` shell:
-
-```mysql
-CREATE USER 'netdata'@'localhost';
-GRANT USAGE, REPLICATION CLIENT, PROCESS ON *.* TO 'netdata'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-The `netdata` user will have the ability to connect to the `MySQL` server on localhost without a password. It will only
-be able to gather statistics without being able to alter or affect operations in any way.
-
 ## Metrics
 
-It produces the following charts:
+All metrics have "postgres." prefix.
 
-- Bandwidth in `kilobits/s`
+| Metric              |         Dimensions         |     Units      |
+|---------------------|:--------------------------:|:--------------:|
+| db_transactions     |    committed, rollback     | transactions/s |
+| db_connections      |        connections         |  connections   |
+| db_buffer_cache     |         hit, miss          |    blocks/s    |
+| db_read_operations  |     returned, fetched      |     rows/s     |
+| db_write_operations | inserted, deleted, updated |     rows/s     |
+| db_conflicts        |         conflicts          |   queries/s    |
+| db_temp_files       |          written           |    files/s     |
+| db_temp_files_data  |          written           |      B/s       |
+| db_size             |            size            |       B        |
 
 ## Configuration
 
-Edit the `go.d/mysql.conf` configuration file using `edit-config` from the
+Edit the `go.d/postgres.conf` configuration file using `edit-config` from the
 Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
-sudo ./edit-config go.d/mysql.conf
+sudo ./edit-config go.d/postgres.conf
 ```
 
 [DSN syntax in details](https://github.com/go-sql-driver/mysql#dsn-data-source-name).
@@ -63,14 +43,11 @@ sudo ./edit-config go.d/mysql.conf
 ```yaml
 jobs:
   - name: local
-    dsn: '[username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]'
-    # username:password@protocol(address)/dbname?param=value
-    # user:password@/dbname
-    # Examples:
-    # - name: local
-    #   dsn: user:pass@unix(/usr/local/var/mysql/mysql.sock)/
-    # - name: remote
-    #   dsn: user:pass5@localhost/mydb?charset=utf8
+    # the format is: postgres://[username[:password]]@host:port[/dbname]?sslmode=[disable|verify-ca|verify-full]
+    dsn: 'postgres://postgres:postgres@127.0.0.1:5432/postgres'
+  - name: remote
+    # the format is: postgres://[username[:password]]@host:port[/dbname]?sslmode=[disable|verify-ca|verify-full]
+    dsn: 'postgres://postgres:postgres@203.0.113.10:5432/postgres'
 ```
 
 For all available options see
