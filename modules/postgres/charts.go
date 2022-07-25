@@ -8,7 +8,13 @@ import (
 )
 
 const (
-	prioDBTransactions = module.Priority + iota
+	prioCheckpoints = module.Priority + iota
+	prioCheckpointTime
+	prioBGWriterBuffersAllocated
+	prioBGWriterBuffersWritten
+	prioBGWriterMaxWrittenClean
+	prioBGWriterBackedFsync
+	prioDBTransactions
 	prioDBConnections
 	prioDBBufferCache
 	prioDBReadOperations
@@ -19,6 +25,92 @@ const (
 	prioDBTempFiles
 	prioDBTempFilesData
 	prioDBSize
+)
+
+var baseCharts = module.Charts{
+	checkpointsChart.Copy(),
+	checkpointWriteChart.Copy(),
+	bgWriterBuffersWrittenChart.Copy(),
+	bgWriterBuffersAllocChart.Copy(),
+	bgWriterMaxWrittenCleanChart.Copy(),
+	bgWriterBuffersBackendFsyncChart.Copy(),
+}
+
+var (
+	checkpointsChart = module.Chart{
+		ID:       "checkpoints",
+		Title:    "Checkpoints",
+		Units:    "checkpoints/s",
+		Fam:      "checkpointer",
+		Ctx:      "postgres.checkpoints",
+		Priority: prioCheckpoints,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "checkpoints_timed", Name: "scheduled", Algo: module.Incremental},
+			{ID: "checkpoints_req", Name: "requested", Algo: module.Incremental},
+		},
+	}
+	// TODO: should be seconds, also it is units/s when using incremental...
+	checkpointWriteChart = module.Chart{
+		ID:       "checkpoint_time",
+		Title:    "Checkpoint time",
+		Units:    "milliseconds",
+		Fam:      "checkpointer",
+		Ctx:      "postgres.checkpoint_time",
+		Priority: prioCheckpointTime,
+		Dims: module.Dims{
+			{ID: "checkpoint_write_time", Name: "write", Algo: module.Incremental},
+			{ID: "checkpoint_sync_time", Name: "sync", Algo: module.Incremental},
+		},
+	}
+
+	bgWriterBuffersAllocChart = module.Chart{
+		ID:       "bgwriter_buffers_alloc",
+		Title:    "Background writer buffers allocated",
+		Units:    "B/s",
+		Fam:      "background writer",
+		Ctx:      "postgres.bgwriter_buffers_alloc",
+		Priority: prioBGWriterBuffersAllocated,
+		Dims: module.Dims{
+			{ID: "buffers_alloc", Name: "allocated", Algo: module.Incremental},
+		},
+	}
+	bgWriterBuffersWrittenChart = module.Chart{
+		ID:       "bgwriter_buffers_written",
+		Title:    "Background writer buffers written",
+		Units:    "B/s",
+		Fam:      "background writer",
+		Ctx:      "postgres.bgwriter_buffers_written",
+		Priority: prioBGWriterBuffersWritten,
+		Type:     module.Area,
+		Dims: module.Dims{
+			{ID: "buffers_checkpoint", Name: "checkpoint", Algo: module.Incremental},
+			{ID: "buffers_backend", Name: "backend", Algo: module.Incremental},
+			{ID: "buffers_clean", Name: "clean", Algo: module.Incremental},
+		},
+	}
+	bgWriterMaxWrittenCleanChart = module.Chart{
+		ID:       "bgwriter_maxwritten_clean",
+		Title:    "Background writer cleaning scan stops",
+		Units:    "events/s",
+		Fam:      "background writer",
+		Ctx:      "postgres.bgwriter_maxwritten_clean",
+		Priority: prioBGWriterMaxWrittenClean,
+		Dims: module.Dims{
+			{ID: "maxwritten_clean", Name: "maxwritten", Algo: module.Incremental},
+		},
+	}
+	bgWriterBuffersBackendFsyncChart = module.Chart{
+		ID:       "bgwriter_buffers_backend_fsync",
+		Title:    "Backend fsync",
+		Units:    "operations/s",
+		Fam:      "background writer",
+		Ctx:      "postgres.bgwriter_buffers_backend_fsync",
+		Priority: prioBGWriterBackedFsync,
+		Dims: module.Dims{
+			{ID: "buffers_backend_fsync", Name: "fsync", Algo: module.Incremental},
+		},
+	}
 )
 
 var (

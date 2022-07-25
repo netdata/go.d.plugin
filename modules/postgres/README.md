@@ -16,19 +16,25 @@ This module monitors one or more Postgres servers, depending on your configurati
 
 All metrics have "postgres." prefix.
 
-| Metric              |                   Dimensions                    |     Units      |
-|---------------------|:-----------------------------------------------:|:--------------:|
-| db_transactions     |               committed, rollback               | transactions/s |
-| db_connections      |                   connections                   |  connections   |
-| db_buffer_cache     |                    hit, miss                    |    blocks/s    |
-| db_read_operations  |                returned, fetched                |     rows/s     |
-| db_write_operations |           inserted, deleted, updated            |     rows/s     |
-| db_conflicts        |                    conflicts                    |   queries/s    |
-| db_conflicts_stat   | tablespace, lock, snapshot, bufferpin, deadlock |   queries/s    |
-| db_deadlocks        |                    deadlocks                    |  deadlocks/s   |
-| db_temp_files       |                     written                     |    files/s     |
-| db_temp_files_data  |                     written                     |      B/s       |
-| db_size             |                      size                       |       B        |
+| Metric                         |  Scope   |                   Dimensions                    |     Units      |
+|--------------------------------|:--------:|:-----------------------------------------------:|:--------------:|
+| checkpoints                    |  global  |              scheduled, requested               | checkpoints/s  |
+| checkpoint_time                |  global  |                   write, sync                   |  milliseconds  |
+| bgwriter_buffers_alloc         |  global  |                    allocated                    |      B/s       |
+| bgwriter_buffers_written       |  global  |           checkpoint, backend, clean            |      B/s       |
+| bgwriter_maxwritten_clean      |  global  |                   maxwritten                    |    events/s    |
+| bgwriter_buffers_backend_fsync |  global  |                      fsync                      |  operations/s  |
+| db_transactions                | database |               committed, rollback               | transactions/s |
+| db_connections                 | database |                   connections                   |  connections   |
+| db_buffer_cache                | database |                    hit, miss                    |    blocks/s    |
+| db_read_operations             | database |                returned, fetched                |     rows/s     |
+| db_write_operations            | database |           inserted, deleted, updated            |     rows/s     |
+| db_conflicts                   | database |                    conflicts                    |   queries/s    |
+| db_conflicts_stat              | database | tablespace, lock, snapshot, bufferpin, deadlock |   queries/s    |
+| db_deadlocks                   | database |                    deadlocks                    |  deadlocks/s   |
+| db_temp_files                  | database |                     written                     |    files/s     |
+| db_temp_files_data             | database |                     written                     |      B/s       |
+| db_size                        | database |                      size                       |       B        |
 
 ## Configuration
 

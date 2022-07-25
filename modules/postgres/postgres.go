@@ -25,7 +25,7 @@ func New() *Postgres {
 			Timeout: web.Duration{Duration: time.Second},
 			DSN:     "postgres://postgres:postgres@127.0.0.1:5432/postgres",
 		},
-		charts:               &module.Charts{},
+		charts:               baseCharts.Copy(),
 		relistDatabasesEvery: time.Minute,
 	}
 }

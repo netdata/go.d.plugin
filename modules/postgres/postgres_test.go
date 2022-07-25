@@ -25,6 +25,7 @@ var (
 	dataV140004DatabasesList3DB, _   = ioutil.ReadFile("testdata/v14.4/databases_list-3db.txt")
 	dataV140004DatabasesStats, _     = ioutil.ReadFile("testdata/v14.4/databases_stats.txt")
 	dataV140004DatabasesConflicts, _ = ioutil.ReadFile("testdata/v14.4/databases_conflicts.txt")
+	dataV140004Checkpoints, _        = ioutil.ReadFile("testdata/v14.4/checkpoints.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {
@@ -37,6 +38,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004DatabasesList3DB":   dataV140004DatabasesList3DB,
 		"dataV140004DatabasesStats":     dataV140004DatabasesStats,
 		"dataV140004DatabasesConflicts": dataV140004DatabasesConflicts,
+		"dataV140004Checkpoints":        dataV140004Checkpoints,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -96,6 +98,8 @@ func TestPostgres_Check(t *testing.T) {
 					WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
 				mock.ExpectQuery(queryDatabasesConflicts(dbs)).
 					WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+				mock.ExpectQuery(queryCheckpoints()).
+					WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 			},
 		},
 		"Success when the first query is successful (v14.4)": {
@@ -185,11 +189,22 @@ func TestPostgres_Collect(t *testing.T) {
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabasesConflicts(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryCheckpoints()).
+						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
 
 					expected := map[string]int64{
+						"buffers_alloc":                  27295744,
+						"buffers_backend":                0,
+						"buffers_backend_fsync":          0,
+						"buffers_checkpoint":             32768,
+						"buffers_clean":                  0,
+						"checkpoint_sync_time":           47,
+						"checkpoint_write_time":          167,
+						"checkpoints_req":                16,
+						"checkpoints_timed":              1814,
 						"db_postgres_blks_hit":           9245,
 						"db_postgres_blks_read":          246,
 						"db_postgres_confl_bufferpin":    0,
@@ -230,6 +245,7 @@ func TestPostgres_Collect(t *testing.T) {
 						"db_production_tup_updated":      0,
 						"db_production_xact_commit":      0,
 						"db_production_xact_rollback":    0,
+						"maxwritten_clean":               0,
 					}
 					assert.Equal(t, expected, mx)
 				},
@@ -246,6 +262,8 @@ func TestPostgres_Collect(t *testing.T) {
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabasesConflicts(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryCheckpoints()).
+						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
 				check: func(t *testing.T, pg *Postgres) { _ = pg.Collect() },
 			},
@@ -257,6 +275,8 @@ func TestPostgres_Collect(t *testing.T) {
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabasesConflicts(dbs1)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryCheckpoints()).
+						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					pg.relistDatabasesEvery = time.Second
@@ -273,6 +293,8 @@ func TestPostgres_Collect(t *testing.T) {
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabasesConflicts(dbs3)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryCheckpoints()).
+						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					pg.relistDatabasesEvery = time.Second

@@ -44,6 +44,10 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying database conflicts error: %v", err)
 	}
 
+	if err := p.collectCheckpoints(mx); err != nil {
+		return mx, fmt.Errorf("querying database conflicts error: %v", err)
+	}
+
 	return mx, nil
 }
 
