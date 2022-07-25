@@ -11,9 +11,9 @@ func queryServerVersion() string {
 	return "SHOW server_version_num.txt;"
 }
 
-func queryIsSuperUser() string {
-	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
-}
+//func queryIsSuperUser() string {
+//	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
+//}
 
 func queryDatabasesList() string {
 	return `

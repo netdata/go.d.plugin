@@ -74,17 +74,17 @@ func (p *Postgres) queryServerVersion() (int, error) {
 	return strconv.Atoi(v)
 }
 
-func (p *Postgres) queryIsSuperUser() (bool, error) {
-	q := queryIsSuperUser()
-
-	var v bool
-	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
-	defer cancel()
-	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
-		return false, err
-	}
-	return v, nil
-}
+//func (p *Postgres) queryIsSuperUser() (bool, error) {
+//	q := queryIsSuperUser()
+//
+//	var v bool
+//	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+//	defer cancel()
+//	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
+//		return false, err
+//	}
+//	return v, nil
+//}
 
 func valueToString(value interface{}) string {
 	v, ok := value.(*sql.NullString)

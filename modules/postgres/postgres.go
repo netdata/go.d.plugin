@@ -43,7 +43,7 @@ type Postgres struct {
 
 	db *sql.DB
 
-	isSuperUser   bool
+	//isSuperUser   bool
 	serverVersion int
 
 	databasesListTS      time.Time
