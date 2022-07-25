@@ -24,6 +24,7 @@ All metrics have "postgres." prefix.
 | db_read_operations  |     returned, fetched      |     rows/s     |
 | db_write_operations | inserted, deleted, updated |     rows/s     |
 | db_conflicts        |         conflicts          |   queries/s    |
+| db_deadlocks        |         deadlocks          |  deadlocks/s   |
 | db_temp_files       |          written           |    files/s     |
 | db_temp_files_data  |          written           |      B/s       |
 | db_size             |            size            |       B        |

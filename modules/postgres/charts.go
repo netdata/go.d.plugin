@@ -14,6 +14,7 @@ const (
 	prioDBReadOperations
 	prioDBWriteOperations
 	prioDBConflicts
+	prioDBDeadlocks
 	prioDBTempFiles
 	prioDBTempFilesData
 	prioDBSize
@@ -27,6 +28,7 @@ var (
 		dbReadOpsChartTmpl.Copy(),
 		dbWriteOpsChartTmpl.Copy(),
 		dbConflictsChartTmpl.Copy(),
+		dbDeadlocksChartTmpl.Copy(),
 		dbTempFilesChartTmpl.Copy(),
 		dbTempFilesDataChartTmpl.Copy(),
 		dbSizeChartTmpl.Copy(),
@@ -101,6 +103,17 @@ var (
 		Priority: prioDBConflicts,
 		Dims: module.Dims{
 			{ID: "db_%s_conflicts", Name: "conflicts", Algo: module.Incremental},
+		},
+	}
+	dbDeadlocksChartTmpl = module.Chart{
+		ID:       "db_%s_deadlocks",
+		Title:    "Database deadlocks",
+		Units:    "deadlocks/s",
+		Fam:      "db deadlocks",
+		Ctx:      "postgres.db_deadlocks",
+		Priority: prioDBDeadlocks,
+		Dims: module.Dims{
+			{ID: "db_%s_deadlocks", Name: "deadlocks", Algo: module.Incremental},
 		},
 	}
 	dbTempFilesChartTmpl = module.Chart{

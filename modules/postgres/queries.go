@@ -47,7 +47,8 @@ func queryDatabasesStats(dbs []string) string {
         conflicts,
         pg_database_size(datname) AS size,
         temp_files,
-        temp_bytes     
+        temp_bytes,
+        deadlocks     
     FROM
         pg_stat_database
 `
