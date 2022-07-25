@@ -8,7 +8,7 @@ import (
 // http://sqllint.com/
 
 func queryServerVersion() string {
-	return "SHOW server_version_num.txt;"
+	return "SHOW server_version_num;"
 }
 
 //func queryIsSuperUser() string {
