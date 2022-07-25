@@ -46,7 +46,7 @@ type Postgres struct {
 	//isSuperUser   bool
 	serverVersion int
 
-	databasesListTS      time.Time
+	relistDatabaseTime   time.Time
 	relistDatabasesEvery time.Duration
 	databases            []string
 }

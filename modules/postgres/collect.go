@@ -23,8 +23,8 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		p.serverVersion = ver
 	}
 
-	if now := time.Now(); now.Sub(p.databasesListTS) > p.relistDatabasesEvery {
-		p.databasesListTS = now
+	if now := time.Now(); now.Sub(p.relistDatabaseTime) > p.relistDatabasesEvery {
+		p.relistDatabaseTime = now
 		dbs, err := p.queryDatabaseList()
 		if err != nil {
 			return nil, fmt.Errorf("querying database list error: %v", err)
