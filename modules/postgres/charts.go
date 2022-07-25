@@ -8,8 +8,7 @@ import (
 )
 
 const (
-	prioDBTransactionsCommitted = module.Priority + iota
-	prioDBTransactionsRollback
+	prioDBTransactions = module.Priority + iota
 	prioDBConnections
 	prioDBBufferCache
 	prioDBReadOperations
@@ -22,8 +21,7 @@ const (
 
 var (
 	dbChartsTmpl = module.Charts{
-		dbTransactionsCommittedChartTmpl.Copy(),
-		dbTransactionsRollbackChartTmpl.Copy(),
+		dbTransactionsChartTmpl.Copy(),
 		dbConnectionsChartTmpl.Copy(),
 		dbBufferCacheChartTmpl.Copy(),
 		dbReadOpsChartTmpl.Copy(),
@@ -33,25 +31,15 @@ var (
 		dbTempFilesDataChartTmpl.Copy(),
 		dbSizeChartTmpl.Copy(),
 	}
-	dbTransactionsCommittedChartTmpl = module.Chart{
-		ID:       "db_%s_transactions_committed",
-		Title:    "Database committed transactions",
+	dbTransactionsChartTmpl = module.Chart{
+		ID:       "db_%s_transactions",
+		Title:    "Database transactions",
 		Units:    "transactions/s",
 		Fam:      "db transactions",
-		Ctx:      "postgres.db_transactions_committed",
-		Priority: prioDBTransactionsCommitted,
+		Ctx:      "postgres.db_transactions",
+		Priority: prioDBTransactions,
 		Dims: module.Dims{
 			{ID: "db_%s_xact_commit", Name: "committed", Algo: module.Incremental},
-		},
-	}
-	dbTransactionsRollbackChartTmpl = module.Chart{
-		ID:       "db_%s_transactions_rollback",
-		Title:    "Database rollback transactions",
-		Units:    "transactions/s",
-		Fam:      "db transactions",
-		Ctx:      "postgres.db_transactions_rollback",
-		Priority: prioDBTransactionsRollback,
-		Dims: module.Dims{
 			{ID: "db_%s_xact_rollback", Name: "rollback", Algo: module.Incremental},
 		},
 	}
