@@ -14,6 +14,7 @@ const (
 	prioDBReadOperations
 	prioDBWriteOperations
 	prioDBConflicts
+	prioDBConflictsStat
 	prioDBDeadlocks
 	prioDBTempFiles
 	prioDBTempFilesData
@@ -28,6 +29,7 @@ var (
 		dbReadOpsChartTmpl.Copy(),
 		dbWriteOpsChartTmpl.Copy(),
 		dbConflictsChartTmpl.Copy(),
+		dbConflictsStatChartTmpl.Copy(),
 		dbDeadlocksChartTmpl.Copy(),
 		dbTempFilesChartTmpl.Copy(),
 		dbTempFilesDataChartTmpl.Copy(),
@@ -103,6 +105,21 @@ var (
 		Priority: prioDBConflicts,
 		Dims: module.Dims{
 			{ID: "db_%s_conflicts", Name: "conflicts", Algo: module.Incremental},
+		},
+	}
+	dbConflictsStatChartTmpl = module.Chart{
+		ID:       "db_%s_conflicts_stat",
+		Title:    "Database canceled queries by reason",
+		Units:    "queries/s",
+		Fam:      "db operations",
+		Ctx:      "postgres.db_conflicts_stat",
+		Priority: prioDBConflictsStat,
+		Dims: module.Dims{
+			{ID: "db_%s_confl_tablespace", Name: "tablespace", Algo: module.Incremental},
+			{ID: "db_%s_confl_lock", Name: "lock", Algo: module.Incremental},
+			{ID: "db_%s_confl_snapshot", Name: "snapshot", Algo: module.Incremental},
+			{ID: "db_%s_confl_bufferpin", Name: "bufferpin", Algo: module.Incremental},
+			{ID: "db_%s_confl_deadlock", Name: "deadlock", Algo: module.Incremental},
 		},
 	}
 	dbDeadlocksChartTmpl = module.Chart{

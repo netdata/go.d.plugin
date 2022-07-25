@@ -17,24 +17,26 @@ import (
 )
 
 var (
-	dataV140004ServerVersionNum, _ = ioutil.ReadFile("testdata/v14.4/server_version_num.txt")
-	dataV140004IsSuperUserFalse, _ = ioutil.ReadFile("testdata/v14.4/is_super_user-false.txt")
-	dataV140004IsSuperUserTrue, _  = ioutil.ReadFile("testdata/v14.4/is_super_user-true.txt")
-	dataV140004DatabasesList1DB, _ = ioutil.ReadFile("testdata/v14.4/databases_list-1db.txt")
-	dataV140004DatabasesList2DB, _ = ioutil.ReadFile("testdata/v14.4/databases_list-2db.txt")
-	dataV140004DatabasesList3DB, _ = ioutil.ReadFile("testdata/v14.4/databases_list-3db.txt")
-	dataV140004DatabasesStats, _   = ioutil.ReadFile("testdata/v14.4/databases_stats.txt")
+	dataV140004ServerVersionNum, _   = ioutil.ReadFile("testdata/v14.4/server_version_num.txt")
+	dataV140004IsSuperUserFalse, _   = ioutil.ReadFile("testdata/v14.4/is_super_user-false.txt")
+	dataV140004IsSuperUserTrue, _    = ioutil.ReadFile("testdata/v14.4/is_super_user-true.txt")
+	dataV140004DatabasesList1DB, _   = ioutil.ReadFile("testdata/v14.4/databases_list-1db.txt")
+	dataV140004DatabasesList2DB, _   = ioutil.ReadFile("testdata/v14.4/databases_list-2db.txt")
+	dataV140004DatabasesList3DB, _   = ioutil.ReadFile("testdata/v14.4/databases_list-3db.txt")
+	dataV140004DatabasesStats, _     = ioutil.ReadFile("testdata/v14.4/databases_stats.txt")
+	dataV140004DatabasesConflicts, _ = ioutil.ReadFile("testdata/v14.4/databases_conflicts.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"dataV140004ServerVersionNum": dataV140004ServerVersionNum,
-		"dataV140004IsSuperUserFalse": dataV140004IsSuperUserFalse,
-		"dataV140004IsSuperUserTrue":  dataV140004IsSuperUserTrue,
-		"dataV140004DatabasesList1DB": dataV140004DatabasesList1DB,
-		"dataV140004DatabasesList2DB": dataV140004DatabasesList2DB,
-		"dataV140004DatabasesList3DB": dataV140004DatabasesList3DB,
-		"dataV140004DatabasesStats":   dataV140004DatabasesStats,
+		"dataV140004ServerVersionNum":   dataV140004ServerVersionNum,
+		"dataV140004IsSuperUserFalse":   dataV140004IsSuperUserFalse,
+		"dataV140004IsSuperUserTrue":    dataV140004IsSuperUserTrue,
+		"dataV140004DatabasesList1DB":   dataV140004DatabasesList1DB,
+		"dataV140004DatabasesList2DB":   dataV140004DatabasesList2DB,
+		"dataV140004DatabasesList3DB":   dataV140004DatabasesList3DB,
+		"dataV140004DatabasesStats":     dataV140004DatabasesStats,
+		"dataV140004DatabasesConflicts": dataV140004DatabasesConflicts,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -92,6 +94,21 @@ func TestPostgres_Check(t *testing.T) {
 					WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
 				mock.ExpectQuery(queryDatabasesStats(dbs)).
 					WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabasesConflicts(dbs)).
+					WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+			},
+		},
+		"Success when the first query is successful (v14.4)": {
+			wantFail: false,
+			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
+				mock.ExpectQuery(queryServerVersion()).
+					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabasesList()).
+					WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabasesStats(dbs)).
+					WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabasesConflicts(dbs)).
+					WillReturnError(errors.New("mock queryDatabasesConflicts() error"))
 			},
 		},
 		"Fail when querying the database version returns an error": {
@@ -107,7 +124,7 @@ func TestPostgres_Check(t *testing.T) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
 				mock.ExpectQuery(queryDatabasesList()).
-					WillReturnError(errors.New("mock queryDatabasesList() error"))
+					WillReturnError(errors.New("mock queryDatabaseList() error"))
 			},
 		},
 		"Fail when querying the databases stats returns an error": {
@@ -131,7 +148,7 @@ func TestPostgres_Check(t *testing.T) {
 			require.NoError(t, err)
 			pg := New()
 			pg.db = db
-			defer db.Close()
+			defer func() { _ = db.Close() }()
 
 			require.True(t, pg.Init())
 
@@ -166,41 +183,53 @@ func TestPostgres_Collect(t *testing.T) {
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabasesStats(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabasesConflicts(dbs2)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
 
 					expected := map[string]int64{
-						"db_postgres_blks_hit":        9245,
-						"db_postgres_blks_read":       246,
-						"db_postgres_conflicts":       0,
-						"db_postgres_deadlocks":       0,
-						"db_postgres_numbackends":     2,
-						"db_postgres_size":            8758051,
-						"db_postgres_temp_bytes":      0,
-						"db_postgres_temp_files":      0,
-						"db_postgres_tup_deleted":     0,
-						"db_postgres_tup_fetched":     3577,
-						"db_postgres_tup_inserted":    0,
-						"db_postgres_tup_returned":    65095,
-						"db_postgres_tup_updated":     0,
-						"db_postgres_xact_commit":     1636,
-						"db_postgres_xact_rollback":   2,
-						"db_production_blks_hit":      0,
-						"db_production_blks_read":     0,
-						"db_production_conflicts":     0,
-						"db_production_deadlocks":     0,
-						"db_production_numbackends":   0,
-						"db_production_size":          8602115,
-						"db_production_temp_bytes":    0,
-						"db_production_temp_files":    0,
-						"db_production_tup_deleted":   0,
-						"db_production_tup_fetched":   0,
-						"db_production_tup_inserted":  0,
-						"db_production_tup_returned":  0,
-						"db_production_tup_updated":   0,
-						"db_production_xact_commit":   0,
-						"db_production_xact_rollback": 0,
+						"db_postgres_blks_hit":           9245,
+						"db_postgres_blks_read":          246,
+						"db_postgres_confl_bufferpin":    0,
+						"db_postgres_confl_deadlock":     0,
+						"db_postgres_confl_lock":         0,
+						"db_postgres_confl_snapshot":     0,
+						"db_postgres_confl_tablespace":   0,
+						"db_postgres_conflicts":          0,
+						"db_postgres_deadlocks":          0,
+						"db_postgres_numbackends":        2,
+						"db_postgres_size":               8758051,
+						"db_postgres_temp_bytes":         0,
+						"db_postgres_temp_files":         0,
+						"db_postgres_tup_deleted":        0,
+						"db_postgres_tup_fetched":        3577,
+						"db_postgres_tup_inserted":       0,
+						"db_postgres_tup_returned":       65095,
+						"db_postgres_tup_updated":        0,
+						"db_postgres_xact_commit":        1636,
+						"db_postgres_xact_rollback":      2,
+						"db_production_blks_hit":         0,
+						"db_production_blks_read":        0,
+						"db_production_confl_bufferpin":  0,
+						"db_production_confl_deadlock":   0,
+						"db_production_confl_lock":       0,
+						"db_production_confl_snapshot":   0,
+						"db_production_confl_tablespace": 0,
+						"db_production_conflicts":        0,
+						"db_production_deadlocks":        0,
+						"db_production_numbackends":      0,
+						"db_production_size":             8602115,
+						"db_production_temp_bytes":       0,
+						"db_production_temp_files":       0,
+						"db_production_tup_deleted":      0,
+						"db_production_tup_fetched":      0,
+						"db_production_tup_inserted":     0,
+						"db_production_tup_returned":     0,
+						"db_production_tup_updated":      0,
+						"db_production_xact_commit":      0,
+						"db_production_xact_rollback":    0,
 					}
 					assert.Equal(t, expected, mx)
 				},
@@ -215,6 +244,8 @@ func TestPostgres_Collect(t *testing.T) {
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabasesStats(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabasesConflicts(dbs2)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
 				},
 				check: func(t *testing.T, pg *Postgres) { _ = pg.Collect() },
 			},
@@ -224,6 +255,8 @@ func TestPostgres_Collect(t *testing.T) {
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesList1DB)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabasesStats(dbs1)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabasesConflicts(dbs1)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					pg.relistDatabasesEvery = time.Second
@@ -238,6 +271,8 @@ func TestPostgres_Collect(t *testing.T) {
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesList3DB)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabasesStats(dbs3)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabasesConflicts(dbs3)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					pg.relistDatabasesEvery = time.Second
@@ -266,7 +301,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mock.ExpectQuery(queryServerVersion()).
 						WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabasesList()).
-						WillReturnError(errors.New("mock queryDatabasesList() error"))
+						WillReturnError(errors.New("mock queryDatabaseList() error"))
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
@@ -302,7 +337,7 @@ func TestPostgres_Collect(t *testing.T) {
 			require.NoError(t, err)
 			pg := New()
 			pg.db = db
-			defer db.Close()
+			defer func() { _ = db.Close() }()
 
 			require.True(t, pg.Init())
 
