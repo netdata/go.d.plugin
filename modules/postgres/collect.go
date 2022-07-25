@@ -11,7 +11,7 @@ import (
 func (p *Postgres) collect() (map[string]int64, error) {
 	if p.db == nil {
 		if err := p.openConnection(); err != nil {
-			return nil, fmt.Errorf("connection opening error: %v", err)
+			return nil, err
 		}
 	}
 
@@ -23,19 +23,25 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		p.serverVersion = ver
 	}
 
-	if now := time.Now(); now.Sub(p.databasesListTS) > p.relistDatabasesEvery {
-		p.databasesListTS = now
-		dbs, err := p.queryDatabasesList()
+	if now := time.Now(); now.Sub(p.relistDatabaseTime) > p.relistDatabasesEvery {
+		p.relistDatabaseTime = now
+		dbs, err := p.queryDatabaseList()
 		if err != nil {
-			return nil, fmt.Errorf("querying databases list error: %v", err)
+			return nil, fmt.Errorf("querying database list error: %v", err)
 		}
-		p.collectDatabasesList(dbs)
+		p.collectDatabaseList(dbs)
 	}
 
 	mx := make(map[string]int64)
 
-	if err := p.collectDatabasesStats(mx); err != nil {
-		return mx, fmt.Errorf("querying databases stats error: %v", err)
+	if err := p.collectDatabaseStats(mx); err != nil {
+		return mx, fmt.Errorf("querying database stats error: %v", err)
+	}
+
+	// TODO: This view will only contain information on standby servers, since conflicts do not occur on primary servers.
+	// see if possible to identify primary/standby and disable on primary if yes.
+	if err := p.collectDatabaseConflicts(mx); err != nil {
+		return mx, fmt.Errorf("querying database conflicts error: %v", err)
 	}
 
 	return mx, nil

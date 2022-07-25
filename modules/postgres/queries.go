@@ -31,6 +31,8 @@ func queryDatabasesList() string {
 }
 
 func queryDatabasesStats(dbs []string) string {
+	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-DATABASE-VIEW
+	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1018
 	q := `
     SELECT
         datname,
@@ -51,6 +53,35 @@ func queryDatabasesStats(dbs []string) string {
         deadlocks     
     FROM
         pg_stat_database
+`
+
+	if len(dbs) > 0 {
+		q += fmt.Sprintf(`
+    WHERE
+        datname IN (
+            '%s'                 
+        ) 
+`, strings.Join(dbs, "','"))
+	}
+
+	q += ";"
+
+	return q
+}
+
+func queryDatabasesConflicts(dbs []string) string {
+	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-DATABASE-CONFLICTS-VIEW
+	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1058
+	q := `
+    SELECT
+        datname,
+        confl_tablespace,
+        confl_lock,
+        confl_snapshot,
+        confl_bufferpin,
+        confl_deadlock     
+    FROM
+        pg_stat_database_conflicts
 `
 
 	if len(dbs) > 0 {

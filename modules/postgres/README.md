@@ -16,18 +16,19 @@ This module monitors one or more Postgres servers, depending on your configurati
 
 All metrics have "postgres." prefix.
 
-| Metric              |         Dimensions         |     Units      |
-|---------------------|:--------------------------:|:--------------:|
-| db_transactions     |    committed, rollback     | transactions/s |
-| db_connections      |        connections         |  connections   |
-| db_buffer_cache     |         hit, miss          |    blocks/s    |
-| db_read_operations  |     returned, fetched      |     rows/s     |
-| db_write_operations | inserted, deleted, updated |     rows/s     |
-| db_conflicts        |         conflicts          |   queries/s    |
-| db_deadlocks        |         deadlocks          |  deadlocks/s   |
-| db_temp_files       |          written           |    files/s     |
-| db_temp_files_data  |          written           |      B/s       |
-| db_size             |            size            |       B        |
+| Metric              |                   Dimensions                    |     Units      |
+|---------------------|:-----------------------------------------------:|:--------------:|
+| db_transactions     |               committed, rollback               | transactions/s |
+| db_connections      |                   connections                   |  connections   |
+| db_buffer_cache     |                    hit, miss                    |    blocks/s    |
+| db_read_operations  |                returned, fetched                |     rows/s     |
+| db_write_operations |           inserted, deleted, updated            |     rows/s     |
+| db_conflicts        |                    conflicts                    |   queries/s    |
+| db_conflicts_stat   | tablespace, lock, snapshot, bufferpin, deadlock |   queries/s    |
+| db_deadlocks        |                    deadlocks                    |  deadlocks/s   |
+| db_temp_files       |                     written                     |    files/s     |
+| db_temp_files_data  |                     written                     |      B/s       |
+| db_size             |                      size                       |       B        |
 
 ## Configuration
 
