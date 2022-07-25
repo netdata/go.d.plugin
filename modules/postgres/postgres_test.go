@@ -18,6 +18,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestNew(t *testing.T) {
+	fmt.Println(queryDatabaseLocks([]string{"postgres"}))
+}
+
 var (
 	dataV140004ServerVersionNum, _   = ioutil.ReadFile("testdata/v14.4/server_version_num.txt")
 	dataV140004IsSuperUserFalse, _   = ioutil.ReadFile("testdata/v14.4/is_super_user-false.txt")
@@ -94,11 +98,11 @@ func TestPostgres_Check(t *testing.T) {
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesList()).
+				mock.ExpectQuery(queryDatabaseList()).
 					WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesStats(dbs)).
+				mock.ExpectQuery(queryDatabaseStats(dbs)).
 					WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesConflicts(dbs)).
+				mock.ExpectQuery(queryDatabaseConflicts(dbs)).
 					WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
 				mock.ExpectQuery(queryCheckpoints()).
 					WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
@@ -109,12 +113,12 @@ func TestPostgres_Check(t *testing.T) {
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesList()).
+				mock.ExpectQuery(queryDatabaseList()).
 					WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesStats(dbs)).
+				mock.ExpectQuery(queryDatabaseStats(dbs)).
 					WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesConflicts(dbs)).
-					WillReturnError(errors.New("mock queryDatabasesConflicts() error"))
+				mock.ExpectQuery(queryDatabaseConflicts(dbs)).
+					WillReturnError(errors.New("mock queryDatabaseConflicts() error"))
 			},
 		},
 		"Fail when querying the database version returns an error": {
@@ -129,7 +133,7 @@ func TestPostgres_Check(t *testing.T) {
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesList()).
+				mock.ExpectQuery(queryDatabaseList()).
 					WillReturnError(errors.New("mock queryDatabaseList() error"))
 			},
 		},
@@ -138,10 +142,10 @@ func TestPostgres_Check(t *testing.T) {
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesList()).
+				mock.ExpectQuery(queryDatabaseList()).
 					WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesStats(dbs)).
-					WillReturnError(errors.New("mock queryDatabasesStats() error"))
+				mock.ExpectQuery(queryDatabaseStats(dbs)).
+					WillReturnError(errors.New("mock queryDatabaseStats() error"))
 			},
 		},
 	}
@@ -185,11 +189,11 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 					mock.ExpectQuery(queryServerVersion()).
 						WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesList()).
+					mock.ExpectQuery(queryDatabaseList()).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesStats(dbs2)).
+					mock.ExpectQuery(queryDatabaseStats(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesConflicts(dbs2)).
+					mock.ExpectQuery(queryDatabaseConflicts(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
 					mock.ExpectQuery(queryCheckpoints()).
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
@@ -258,11 +262,11 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 					mock.ExpectQuery(queryServerVersion()).
 						WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesList()).
+					mock.ExpectQuery(queryDatabaseList()).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesStats(dbs2)).
+					mock.ExpectQuery(queryDatabaseStats(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesConflicts(dbs2)).
+					mock.ExpectQuery(queryDatabaseConflicts(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
 					mock.ExpectQuery(queryCheckpoints()).
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
@@ -271,11 +275,11 @@ func TestPostgres_Collect(t *testing.T) {
 			},
 			{
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
-					mock.ExpectQuery(queryDatabasesList()).
+					mock.ExpectQuery(queryDatabaseList()).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesList1DB)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesStats(dbs1)).
+					mock.ExpectQuery(queryDatabaseStats(dbs1)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesConflicts(dbs1)).
+					mock.ExpectQuery(queryDatabaseConflicts(dbs1)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
 					mock.ExpectQuery(queryCheckpoints()).
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
@@ -289,11 +293,11 @@ func TestPostgres_Collect(t *testing.T) {
 			},
 			{
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
-					mock.ExpectQuery(queryDatabasesList()).
+					mock.ExpectQuery(queryDatabaseList()).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesList3DB)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesStats(dbs3)).
+					mock.ExpectQuery(queryDatabaseStats(dbs3)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesConflicts(dbs3)).
+					mock.ExpectQuery(queryDatabaseConflicts(dbs3)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
 					mock.ExpectQuery(queryCheckpoints()).
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
@@ -324,7 +328,7 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 					mock.ExpectQuery(queryServerVersion()).
 						WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesList()).
+					mock.ExpectQuery(queryDatabaseList()).
 						WillReturnError(errors.New("mock queryDatabaseList() error"))
 				},
 				check: func(t *testing.T, pg *Postgres) {
@@ -339,10 +343,10 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 					mock.ExpectQuery(queryServerVersion()).
 						WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesList()).
+					mock.ExpectQuery(queryDatabaseList()).
 						WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesStats(dbs2)).
-						WillReturnError(errors.New("mock queryDatabasesStats() error"))
+					mock.ExpectQuery(queryDatabaseStats(dbs2)).
+						WillReturnError(errors.New("mock queryDatabaseStats() error"))
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()

@@ -9,7 +9,7 @@ import (
 )
 
 func (p *Postgres) queryDatabaseList() ([]string, error) {
-	q := queryDatabasesList()
+	q := queryDatabaseList()
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
@@ -58,7 +58,7 @@ func (p *Postgres) collectDatabaseList(dbs []string) {
 }
 
 func (p *Postgres) collectDatabaseStats(mx map[string]int64) error {
-	q := queryDatabasesStats(p.databases)
+	q := queryDatabaseStats(p.databases)
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
@@ -72,7 +72,7 @@ func (p *Postgres) collectDatabaseStats(mx map[string]int64) error {
 }
 
 func (p *Postgres) collectDatabaseConflicts(mx map[string]int64) error {
-	q := queryDatabasesConflicts(p.databases)
+	q := queryDatabaseConflicts(p.databases)
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
@@ -83,6 +83,67 @@ func (p *Postgres) collectDatabaseConflicts(mx map[string]int64) error {
 	defer func() { _ = rows.Close() }()
 
 	return collectDatabaseRows(mx, rows)
+}
+
+var lockModes = []string{
+	"AccessShareLock",
+	"RowShareLock",
+	"RowExclusiveLock",
+	"ShareUpdateExclusiveLock",
+	"ShareLock",
+	"ShareRowExclusiveLock",
+	"ExclusiveLock",
+	"AccessExclusiveLock",
+}
+
+func (p *Postgres) collectDatabaseLocks(mx map[string]int64) error {
+	// https://github.com/postgres/postgres/blob/7c34555f8c39eeefcc45b3c3f027d7a063d738fc/src/include/storage/lockdefs.h#L36-L45
+	// https://www.postgresql.org/docs/7.2/locking-tables.html
+
+	q := queryDatabaseLocks(p.databases)
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	for _, db := range p.databases {
+		for _, mode := range lockModes {
+			mx["db_"+db+"_lock_mode_"+mode] = 0
+		}
+	}
+
+	columns, err := rows.Columns()
+	if err != nil {
+		return err
+	}
+
+	values := makeNullStrings(len(columns))
+
+	for rows.Next() {
+		if err := rows.Scan(values...); err != nil {
+			return err
+		}
+
+		var db, mode string
+		for i, name := range columns {
+			s := valueToString(values[i])
+			switch name {
+			case "datname":
+				db = s
+			case "mode":
+				mode = s
+			case "lock_type":
+				if v, err := strconv.ParseInt(s, 10, 64); err == nil {
+					mx["db_"+db+"_lock_mode_"+mode] = v
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func collectDatabaseRows(mx map[string]int64, rows *sql.Rows) error {
