@@ -13,7 +13,7 @@ import (
 func init() {
 	module.Register("postgres", module.Creator{
 		Defaults: module.Defaults{
-			Disabled: false,
+			Disabled: true,
 		},
 		Create: func() module.Module { return New() },
 	})
@@ -22,9 +22,8 @@ func init() {
 func New() *Postgres {
 	return &Postgres{
 		Config: Config{
-			DSN:     "postgres://postgres:postgres@10.10.10.20:5432/postgres",
 			Timeout: web.Duration{Duration: time.Second},
-			//DSN: "postgres://postgres:postgres@127.0.0.1:5432/postgres",
+			DSN:     "postgres://postgres:postgres@127.0.0.1:5432/postgres",
 		},
 		charts:               &module.Charts{},
 		relistDatabasesEvery: time.Minute,
