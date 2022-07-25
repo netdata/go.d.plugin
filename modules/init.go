@@ -46,6 +46,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/pihole"
 	_ "github.com/netdata/go.d.plugin/modules/pika"
 	_ "github.com/netdata/go.d.plugin/modules/portcheck"
+	_ "github.com/netdata/go.d.plugin/modules/postgres"
 	_ "github.com/netdata/go.d.plugin/modules/powerdns"
 	_ "github.com/netdata/go.d.plugin/modules/powerdns_recursor"
 	_ "github.com/netdata/go.d.plugin/modules/prometheus"
