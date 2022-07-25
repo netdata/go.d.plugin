@@ -103,7 +103,7 @@ func queryDatabasesConflicts(dbs []string) string {
 func queryCheckpoints() string {
 	// definition by version: https://pgpedia.info/p/pg_stat_bgwriter.html
 	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-BGWRITER-VIEW
-	// code:https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1104
+	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1104
 
 	return `
     SELECT
