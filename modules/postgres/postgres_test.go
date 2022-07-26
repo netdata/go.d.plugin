@@ -19,30 +19,34 @@ import (
 )
 
 var (
-	dataV140004ServerVersionNum, _  = ioutil.ReadFile("testdata/v14.4/server_version_num.txt")
-	dataV140004IsSuperUserFalse, _  = ioutil.ReadFile("testdata/v14.4/is_super_user-false.txt")
-	dataV140004IsSuperUserTrue, _   = ioutil.ReadFile("testdata/v14.4/is_super_user-true.txt")
-	dataV140004DatabaseList1DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-1db.txt")
-	dataV140004DatabaseList2DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-2db.txt")
-	dataV140004DatabaseList3DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-3db.txt")
-	dataV140004DatabaseStats, _     = ioutil.ReadFile("testdata/v14.4/database_stats.txt")
-	dataV140004DatabaseConflicts, _ = ioutil.ReadFile("testdata/v14.4/database_conflicts.txt")
-	dataV140004DatabaseLocks, _     = ioutil.ReadFile("testdata/v14.4/database_locks.txt")
-	dataV140004Checkpoints, _       = ioutil.ReadFile("testdata/v14.4/checkpoints.txt")
+	dataV140004ServerVersionNum, _         = ioutil.ReadFile("testdata/v14.4/server_version_num.txt")
+	dataV140004IsSuperUserFalse, _         = ioutil.ReadFile("testdata/v14.4/is_super_user-false.txt")
+	dataV140004SettingsMaxConnections, _   = ioutil.ReadFile("testdata/v14.4/settings_max_connections.txt")
+	dataV140004ServerCurrentConnections, _ = ioutil.ReadFile("testdata/v14.4/server_current_connections.txt")
+	dataV140004IsSuperUserTrue, _          = ioutil.ReadFile("testdata/v14.4/is_super_user-true.txt")
+	dataV140004DatabaseList1DB, _          = ioutil.ReadFile("testdata/v14.4/database_list-1db.txt")
+	dataV140004DatabaseList2DB, _          = ioutil.ReadFile("testdata/v14.4/database_list-2db.txt")
+	dataV140004DatabaseList3DB, _          = ioutil.ReadFile("testdata/v14.4/database_list-3db.txt")
+	dataV140004DatabaseStats, _            = ioutil.ReadFile("testdata/v14.4/database_stats.txt")
+	dataV140004DatabaseConflicts, _        = ioutil.ReadFile("testdata/v14.4/database_conflicts.txt")
+	dataV140004DatabaseLocks, _            = ioutil.ReadFile("testdata/v14.4/database_locks.txt")
+	dataV140004Checkpoints, _              = ioutil.ReadFile("testdata/v14.4/checkpoints.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"dataV140004ServerVersionNum":  dataV140004ServerVersionNum,
-		"dataV140004IsSuperUserFalse":  dataV140004IsSuperUserFalse,
-		"dataV140004IsSuperUserTrue":   dataV140004IsSuperUserTrue,
-		"dataV140004DatabaseList1DB":   dataV140004DatabaseList1DB,
-		"dataV140004DatabaseList2DB":   dataV140004DatabaseList2DB,
-		"dataV140004DatabaseList3DB":   dataV140004DatabaseList3DB,
-		"dataV140004DatabaseStats":     dataV140004DatabaseStats,
-		"dataV140004DatabaseConflicts": dataV140004DatabaseConflicts,
-		"dataV140004DatabaseLocks":     dataV140004DatabaseLocks,
-		"dataV140004Checkpoints":       dataV140004Checkpoints,
+		"dataV140004ServerVersionNum":         dataV140004ServerVersionNum,
+		"dataV140004IsSuperUserFalse":         dataV140004IsSuperUserFalse,
+		"dataV140004SettingsMaxConnections":   dataV140004SettingsMaxConnections,
+		"dataV140004ServerCurrentConnections": dataV140004ServerCurrentConnections,
+		"dataV140004IsSuperUserTrue":          dataV140004IsSuperUserTrue,
+		"dataV140004DatabaseList1DB":          dataV140004DatabaseList1DB,
+		"dataV140004DatabaseList2DB":          dataV140004DatabaseList2DB,
+		"dataV140004DatabaseList3DB":          dataV140004DatabaseList3DB,
+		"dataV140004DatabaseStats":            dataV140004DatabaseStats,
+		"dataV140004DatabaseConflicts":        dataV140004DatabaseConflicts,
+		"dataV140004DatabaseLocks":            dataV140004DatabaseLocks,
+		"dataV140004Checkpoints":              dataV140004Checkpoints,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -96,8 +100,15 @@ func TestPostgres_Check(t *testing.T) {
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
+
+				mock.ExpectQuery(querySettingsMaxConnections()).
+					WillReturnRows(mustMockRows(t, dataV140004SettingsMaxConnections)).RowsWillBeClosed()
 				mock.ExpectQuery(queryDatabaseList()).
 					WillReturnRows(mustMockRows(t, dataV140004DatabaseList2DB)).RowsWillBeClosed()
+
+				mock.ExpectQuery(queryServerCurrentConnectionsNum()).
+					WillReturnRows(mustMockRows(t, dataV140004ServerCurrentConnections)).RowsWillBeClosed()
+
 				mock.ExpectQuery(queryDatabaseStats(dbs)).
 					WillReturnRows(mustMockRows(t, dataV140004DatabaseStats)).RowsWillBeClosed()
 				mock.ExpectQuery(queryDatabaseConflicts(dbs)).
@@ -113,12 +124,17 @@ func TestPostgres_Check(t *testing.T) {
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
+
+				mock.ExpectQuery(querySettingsMaxConnections()).
+					WillReturnRows(mustMockRows(t, dataV140004SettingsMaxConnections)).RowsWillBeClosed()
 				mock.ExpectQuery(queryDatabaseList()).
 					WillReturnRows(mustMockRows(t, dataV140004DatabaseList2DB)).RowsWillBeClosed()
+
+				mock.ExpectQuery(queryServerCurrentConnectionsNum()).
+					WillReturnRows(mustMockRows(t, dataV140004ServerCurrentConnections)).RowsWillBeClosed()
+
 				mock.ExpectQuery(queryDatabaseStats(dbs)).
-					WillReturnRows(mustMockRows(t, dataV140004DatabaseStats)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabaseConflicts(dbs)).
-					WillReturnError(errors.New("mock queryDatabaseConflicts() error"))
+					WillReturnError(errors.New("mock queryDatabaseStats() error"))
 			},
 		},
 		"Fail when querying the database version returns an error": {
@@ -128,24 +144,25 @@ func TestPostgres_Check(t *testing.T) {
 					WillReturnError(errors.New("mock queryServerVersion() error"))
 			},
 		},
+		"Fail when querying settings max connection returns an error": {
+			wantFail: true,
+			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
+				mock.ExpectQuery(queryServerVersion()).
+					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
+				mock.ExpectQuery(querySettingsMaxConnections()).
+					WillReturnError(errors.New("mock querySettingsMaxConnections() error"))
+			},
+		},
 		"Fail when querying the databases list returns an error": {
 			wantFail: true,
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
+
+				mock.ExpectQuery(querySettingsMaxConnections()).
+					WillReturnRows(mustMockRows(t, dataV140004SettingsMaxConnections)).RowsWillBeClosed()
 				mock.ExpectQuery(queryDatabaseList()).
 					WillReturnError(errors.New("mock queryDatabaseList() error"))
-			},
-		},
-		"Fail when querying the databases stats returns an error": {
-			wantFail: true,
-			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
-				mock.ExpectQuery(queryServerVersion()).
-					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabaseList()).
-					WillReturnRows(mustMockRows(t, dataV140004DatabaseList2DB)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabaseStats(dbs)).
-					WillReturnError(errors.New("mock queryDatabaseStats() error"))
 			},
 		},
 	}
@@ -189,14 +206,17 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 					mock.ExpectQuery(queryServerVersion()).
 						WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
+
 					mock.ExpectQuery(queryDatabaseList()).
 						WillReturnRows(mustMockRows(t, dataV140004DatabaseList2DB)).RowsWillBeClosed()
+
 					mock.ExpectQuery(queryDatabaseStats(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabaseStats)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabaseConflicts(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabaseConflicts)).RowsWillBeClosed()
 					mock.ExpectQuery(queryDatabaseLocks(dbs2)).
 						WillReturnRows(mustMockRows(t, dataV140004DatabaseLocks)).RowsWillBeClosed()
+
 					mock.ExpectQuery(queryCheckpoints()).
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
@@ -323,7 +343,7 @@ func TestPostgres_Collect(t *testing.T) {
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
 				check: func(t *testing.T, pg *Postgres) {
-					pg.relistDatabasesEvery = time.Second
+					pg.relistDatabaseEvery = time.Second
 					time.Sleep(time.Second)
 					_ = pg.Collect()
 					assert.Len(t, pg.databases, 1)
@@ -343,7 +363,7 @@ func TestPostgres_Collect(t *testing.T) {
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
 				check: func(t *testing.T, pg *Postgres) {
-					pg.relistDatabasesEvery = time.Second
+					pg.relistDatabaseEvery = time.Second
 					time.Sleep(time.Second)
 					_ = pg.Collect()
 					assert.Len(t, pg.databases, 3)

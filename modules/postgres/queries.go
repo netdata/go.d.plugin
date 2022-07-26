@@ -17,6 +17,14 @@ func queryServerVersion() string {
 //	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
 //}
 
+func queryServerCurrentConnectionsNum() string {
+	return "SELECT sum(numbackends) FROM pg_stat_database;"
+}
+
+func querySettingsMaxConnections() string {
+	return "SHOW max_connections;"
+}
+
 func queryDatabaseList() string {
 	return `
     SELECT

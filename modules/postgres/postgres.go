@@ -28,7 +28,8 @@ func New() *Postgres {
 			DSN:     "postgres://postgres:postgres@127.0.0.1:5432/postgres",
 		},
 		charts:               baseCharts.Copy(),
-		relistDatabasesEvery: time.Minute,
+		relistDatabaseEvery:  time.Minute,
+		recheckSettingsEvery: time.Minute * 10,
 	}
 }
 
@@ -46,11 +47,15 @@ type Postgres struct {
 	db *sql.DB
 
 	//isSuperUser   bool
-	serverVersion int
+	serverVersion  int
+	maxConnections int
 
 	relistDatabaseTime   time.Time
-	relistDatabasesEvery time.Duration
-	databases            []string
+	relistDatabaseEvery  time.Duration
+	recheckSettingsTime  time.Time
+	recheckSettingsEvery time.Duration
+
+	databases []string
 }
 
 func (p *Postgres) Init() bool {

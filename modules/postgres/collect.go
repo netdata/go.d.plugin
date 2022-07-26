@@ -25,7 +25,18 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		p.serverVersion = ver
 	}
 
-	if now := time.Now(); now.Sub(p.relistDatabaseTime) > p.relistDatabasesEvery {
+	now := time.Now()
+
+	if now.Sub(p.recheckSettingsTime) > p.recheckSettingsEvery {
+		p.recheckSettingsTime = now
+		maxConn, err := p.querySettingsMaxConnections()
+		if err != nil {
+			return nil, fmt.Errorf("querying settings max connections error: %v", err)
+		}
+		p.maxConnections = maxConn
+	}
+
+	if now.Sub(p.relistDatabaseTime) > p.relistDatabaseEvery {
 		p.relistDatabaseTime = now
 		dbs, err := p.queryDatabaseList()
 		if err != nil {
@@ -35,6 +46,14 @@ func (p *Postgres) collect() (map[string]int64, error) {
 	}
 
 	mx := make(map[string]int64)
+
+	if err := p.collectConnection(mx); err != nil {
+		return mx, fmt.Errorf("querying server connections error: %v", err)
+	}
+
+	if err := p.collectCheckpoints(mx); err != nil {
+		return mx, fmt.Errorf("querying database conflicts error: %v", err)
+	}
 
 	if err := p.collectDatabaseStats(mx); err != nil {
 		return mx, fmt.Errorf("querying database stats error: %v", err)
@@ -48,10 +67,6 @@ func (p *Postgres) collect() (map[string]int64, error) {
 
 	if err := p.collectDatabaseLocks(mx); err != nil {
 		return mx, fmt.Errorf("querying database locks error: %v", err)
-	}
-
-	if err := p.collectCheckpoints(mx); err != nil {
-		return mx, fmt.Errorf("querying database conflicts error: %v", err)
 	}
 
 	return mx, nil
@@ -76,6 +91,18 @@ func (p *Postgres) openConnection() error {
 	p.db = db
 
 	return nil
+}
+
+func (p *Postgres) querySettingsMaxConnections() (int, error) {
+	q := querySettingsMaxConnections()
+
+	var v string
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
+		return 0, err
+	}
+	return strconv.Atoi(v)
 }
 
 func (p *Postgres) queryServerVersion() (int, error) {
