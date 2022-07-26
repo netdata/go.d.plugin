@@ -48,7 +48,7 @@ type Postgres struct {
 
 	//isSuperUser   bool
 	serverVersion  int
-	maxConnections int
+	maxConnections int64
 
 	relistDatabaseTime   time.Time
 	relistDatabaseEvery  time.Duration

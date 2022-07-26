@@ -27,6 +27,7 @@ All metrics have "postgres." prefix.
 | bgwriter_maxwritten_clean      |  global  |                                                  maxwritten                                                   |    events/s    |
 | bgwriter_buffers_backend_fsync |  global  |                                                     fsync                                                     |  operations/s  |
 | db_transactions                | database |                                              committed, rollback                                              | transactions/s |
+| db_connections_utilization     | database |                                                     used                                                      |   percentage   |
 | db_connections                 | database |                                                  connections                                                  |  connections   |
 | db_buffer_cache                | database |                                                   hit, miss                                                   |    blocks/s    |
 | db_read_operations             | database |                                               returned, fetched                                               |     rows/s     |

@@ -19,6 +19,7 @@ const (
 	prioBGWriterMaxWrittenClean
 	prioBGWriterBackedFsync
 	prioDBTransactions
+	prioDBConnectionsUtilization
 	prioDBConnections
 	prioDBBufferCache
 	prioDBReadOperations
@@ -149,6 +150,7 @@ var (
 var (
 	dbChartsTmpl = module.Charts{
 		dbTransactionsChartTmpl.Copy(),
+		dbConnectionsUtilizationChartTmpl.Copy(),
 		dbConnectionsChartTmpl.Copy(),
 		dbBufferCacheChartTmpl.Copy(),
 		dbReadOpsChartTmpl.Copy(),
@@ -172,6 +174,17 @@ var (
 		Dims: module.Dims{
 			{ID: "db_%s_xact_commit", Name: "committed", Algo: module.Incremental},
 			{ID: "db_%s_xact_rollback", Name: "rollback", Algo: module.Incremental},
+		},
+	}
+	dbConnectionsUtilizationChartTmpl = module.Chart{
+		ID:       "db_%s_connections_utilization",
+		Title:    "Database connections utilization withing limits",
+		Units:    "percentage",
+		Fam:      "db connections",
+		Ctx:      "postgres.db_connections_utilization",
+		Priority: prioDBConnectionsUtilization,
+		Dims: module.Dims{
+			{ID: "db_%s_numbackends_utilization", Name: "used"},
 		},
 	}
 	dbConnectionsChartTmpl = module.Chart{

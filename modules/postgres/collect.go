@@ -93,7 +93,7 @@ func (p *Postgres) openConnection() error {
 	return nil
 }
 
-func (p *Postgres) querySettingsMaxConnections() (int, error) {
+func (p *Postgres) querySettingsMaxConnections() (int64, error) {
 	q := querySettingsMaxConnections()
 
 	var v string
@@ -102,7 +102,7 @@ func (p *Postgres) querySettingsMaxConnections() (int, error) {
 	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
 		return 0, err
 	}
-	return strconv.Atoi(v)
+	return strconv.ParseInt(v, 10, 64)
 }
 
 func (p *Postgres) queryServerVersion() (int, error) {
@@ -129,7 +129,10 @@ func (p *Postgres) queryServerVersion() (int, error) {
 //	return v, nil
 //}
 
-func collectRows(rows *sql.Rows, assign func(column, value string) error) error {
+func collectRows(rows *sql.Rows, assign func(column, value string)) error {
+	if assign == nil {
+		return nil
+	}
 	columns, err := rows.Columns()
 	if err != nil {
 		return err
@@ -142,9 +145,7 @@ func collectRows(rows *sql.Rows, assign func(column, value string) error) error 
 			return err
 		}
 		for i, v := range values {
-			if err := assign(columns[i], valueToString(v)); err != nil {
-				return err
-			}
+			assign(columns[i], valueToString(v))
 		}
 	}
 	return nil
@@ -164,4 +165,16 @@ func makeNullStrings(size int) []interface{} {
 		vs[i] = &sql.NullString{}
 	}
 	return vs
+}
+
+func safeParseInt(s string) int64 {
+	v, _ := strconv.ParseInt(s, 10, 64)
+	return v
+}
+
+func calcPercentage(value, total int64) int64 {
+	if total == 0 {
+		return 0
+	}
+	return value * 100 / total
 }

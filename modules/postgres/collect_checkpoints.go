@@ -4,7 +4,6 @@ package postgres
 
 import (
 	"context"
-	"strconv"
 )
 
 func (p *Postgres) collectCheckpoints(mx map[string]int64) error {
@@ -18,10 +17,5 @@ func (p *Postgres) collectCheckpoints(mx map[string]int64) error {
 	}
 	defer func() { _ = rows.Close() }()
 
-	return collectRows(rows, func(column, value string) error {
-		if v, err := strconv.ParseInt(value, 10, 64); err == nil {
-			mx[column] = v
-		}
-		return nil
-	})
+	return collectRows(rows, func(column, value string) { mx[column] = safeParseInt(value) })
 }
