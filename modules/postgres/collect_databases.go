@@ -4,7 +4,6 @@ package postgres
 
 import (
 	"context"
-	"strconv"
 )
 
 func (p *Postgres) collectDatabaseStats(mx map[string]int64) error {
@@ -19,16 +18,23 @@ func (p *Postgres) collectDatabaseStats(mx map[string]int64) error {
 	defer func() { _ = rows.Close() }()
 
 	var db string
-	return collectRows(rows, func(column, value string) error {
+	var currConn int64
+	return collectRows(rows, func(column, value string) {
 		switch column {
 		case "datname":
 			db = value
-		default:
-			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
-				mx["db_"+db+"_"+column] = v
+		case "numbackends":
+			currConn = safeParseInt(value)
+			mx["db_"+db+"_"+column] = currConn
+		case "datconnlimit":
+			limit := safeParseInt(value)
+			if limit <= 0 {
+				limit = p.maxConnections
 			}
+			mx["db_"+db+"_numbackends_utilization"] = calcPercentage(currConn, limit)
+		default:
+			mx["db_"+db+"_"+column] = safeParseInt(value)
 		}
-		return nil
 	})
 }
 
@@ -44,16 +50,13 @@ func (p *Postgres) collectDatabaseConflicts(mx map[string]int64) error {
 	defer func() { _ = rows.Close() }()
 
 	var db string
-	return collectRows(rows, func(column, value string) error {
+	return collectRows(rows, func(column, value string) {
 		switch column {
 		case "datname":
 			db = value
 		default:
-			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
-				mx["db_"+db+"_"+column] = v
-			}
+			mx["db_"+db+"_"+column] = safeParseInt(value)
 		}
-		return nil
 	})
 }
 
@@ -90,7 +93,7 @@ func (p *Postgres) collectDatabaseLocks(mx map[string]int64) error {
 
 	var db, mode string
 	var granted bool
-	return collectRows(rows, func(column, value string) error {
+	return collectRows(rows, func(column, value string) {
 		switch column {
 		case "datname":
 			db = value
@@ -99,15 +102,12 @@ func (p *Postgres) collectDatabaseLocks(mx map[string]int64) error {
 		case "granted":
 			granted = value == "true" || value == "t"
 		case "locks_count":
-			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
-				if granted {
-					mx["db_"+db+"_lock_mode_"+mode+"_held"] = v
-				} else {
-					mx["db_"+db+"_lock_mode_"+mode+"_awaited"] = v
-				}
+			if granted {
+				mx["db_"+db+"_lock_mode_"+mode+"_held"] = safeParseInt(value)
+			} else {
+				mx["db_"+db+"_lock_mode_"+mode+"_awaited"] = safeParseInt(value)
 			}
 		}
-		return nil
 	})
 }
 

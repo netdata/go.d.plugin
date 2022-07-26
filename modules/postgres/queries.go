@@ -28,13 +28,13 @@ func querySettingsMaxConnections() string {
 func queryDatabaseList() string {
 	return `
     SELECT
-        datname          
+        datname 
     FROM
-        pg_stat_database          
+        pg_database 
     WHERE
         has_database_privilege((SELECT
-            CURRENT_USER), datname, 'connect')                  
-        AND NOT datname ~* '^template\d'          
+            CURRENT_USER), datname, 'connect')     
+        AND NOT datname ~* '^template\d' 
     ORDER BY
         datname;
 `
@@ -47,8 +47,9 @@ func queryDatabaseStats(dbs []string) string {
 
 	q := `
     SELECT
-        datname,
+        stat.datname,
         numbackends,
+        pg_database.datconnlimit,
         xact_commit,
         xact_rollback,
         blks_read,
@@ -59,14 +60,17 @@ func queryDatabaseStats(dbs []string) string {
         tup_updated,
         tup_deleted,
         conflicts,
-        pg_database_size(datname) AS size,
+        pg_database_size(stat.datname) AS size,
         temp_files,
         temp_bytes,
-        deadlocks               
+        deadlocks     
     FROM
-        pg_stat_database          
+        pg_stat_database stat     
+    INNER JOIN
+        pg_database                                                                                   
+            ON pg_database.datname = stat.datname     
     WHERE
-        datname SIMILAR TO '%s';
+        stat.datname SIMILAR TO '%s';
 `
 	if len(dbs) == 0 {
 		q = fmt.Sprintf(q, "%")
