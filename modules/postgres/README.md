@@ -18,6 +18,8 @@ All metrics have "postgres." prefix.
 
 | Metric                         |  Scope   |                                                  Dimensions                                                   |     Units      |
 |--------------------------------|:--------:|:-------------------------------------------------------------------------------------------------------------:|:--------------:|
+| connections_utilization        |  global  |                                                     used                                                      |   percentage   |
+| connections_usage              |  global  |                                                available, used                                                |  connections   |
 | checkpoints                    |  global  |                                             scheduled, requested                                              | checkpoints/s  |
 | checkpoint_time                |  global  |                                                  write, sync                                                  |  milliseconds  |
 | bgwriter_buffers_alloc         |  global  |                                                   allocated                                                   |      B/s       |

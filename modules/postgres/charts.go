@@ -10,7 +10,9 @@ import (
 )
 
 const (
-	prioCheckpoints = module.Priority + iota
+	prioConnectionsUtilization = module.Priority + iota
+	prioConnectionsUsage
+	prioCheckpoints
 	prioCheckpointTime
 	prioBGWriterBuffersAllocated
 	prioBGWriterBuffersWritten
@@ -32,6 +34,8 @@ const (
 )
 
 var baseCharts = module.Charts{
+	serverConnectionsUtilizationChart.Copy(),
+	serverConnectionsUsageChart.Copy(),
 	checkpointsChart.Copy(),
 	checkpointWriteChart.Copy(),
 	bgWriterBuffersWrittenChart.Copy(),
@@ -41,6 +45,31 @@ var baseCharts = module.Charts{
 }
 
 var (
+	serverConnectionsUtilizationChart = module.Chart{
+		ID:       "connections_utilization",
+		Title:    "Connections utilization",
+		Units:    "percentage",
+		Fam:      "connections",
+		Ctx:      "postgres.connections_utilization",
+		Priority: prioConnectionsUtilization,
+		Dims: module.Dims{
+			{ID: "server_connections_utilization", Name: "used"},
+		},
+	}
+	serverConnectionsUsageChart = module.Chart{
+		ID:       "connections_usage",
+		Title:    "Connections usage",
+		Units:    "connections",
+		Fam:      "connections",
+		Ctx:      "postgres.connections_usage",
+		Priority: prioConnectionsUsage,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "server_connections_available", Name: "available"},
+			{ID: "server_connections_used", Name: "used"},
+		},
+	}
+
 	checkpointsChart = module.Chart{
 		ID:       "checkpoints",
 		Title:    "Checkpoints",
