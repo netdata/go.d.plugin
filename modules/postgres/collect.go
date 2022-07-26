@@ -46,6 +46,10 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying database conflicts error: %v", err)
 	}
 
+	if err := p.collectDatabaseLocks(mx); err != nil {
+		return mx, fmt.Errorf("querying database locks error: %v", err)
+	}
+
 	if err := p.collectCheckpoints(mx); err != nil {
 		return mx, fmt.Errorf("querying database conflicts error: %v", err)
 	}
@@ -110,9 +114,8 @@ func collectRows(rows *sql.Rows, assign func(column, value string) error) error 
 		if err := rows.Scan(values...); err != nil {
 			return err
 		}
-		for i, name := range columns {
-			v := valueToString(values[i])
-			if err := assign(name, v); err != nil {
+		for i, v := range values {
+			if err := assign(columns[i], valueToString(v)); err != nil {
 				return err
 			}
 		}

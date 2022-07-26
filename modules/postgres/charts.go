@@ -24,6 +24,8 @@ const (
 	prioDBConflicts
 	prioDBConflictsStat
 	prioDBDeadlocks
+	prioDBLocksHeld
+	prioDBLocksAwaited
 	prioDBTempFiles
 	prioDBTempFilesData
 	prioDBSize
@@ -125,6 +127,8 @@ var (
 		dbConflictsChartTmpl.Copy(),
 		dbConflictsStatChartTmpl.Copy(),
 		dbDeadlocksChartTmpl.Copy(),
+		dbLocksHeldChartTmpl.Copy(),
+		dbLocksAwaitedChartTmpl.Copy(),
 		dbTempFilesChartTmpl.Copy(),
 		dbTempFilesDataChartTmpl.Copy(),
 		dbSizeChartTmpl.Copy(),
@@ -225,6 +229,44 @@ var (
 		Priority: prioDBDeadlocks,
 		Dims: module.Dims{
 			{ID: "db_%s_deadlocks", Name: "deadlocks", Algo: module.Incremental},
+		},
+	}
+	dbLocksHeldChartTmpl = module.Chart{
+		ID:       "db_%s_locks_held",
+		Title:    "Database locks held",
+		Units:    "locks",
+		Fam:      "db locks",
+		Ctx:      "postgres.db_locks_held",
+		Priority: prioDBLocksHeld,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "db_%s_lock_mode_AccessShareLock_held", Name: "access_share"},
+			{ID: "db_%s_lock_mode_RowShareLock_held", Name: "row_share"},
+			{ID: "db_%s_lock_mode_RowExclusiveLock_held", Name: "row_exclusive"},
+			{ID: "db_%s_lock_mode_ShareUpdateExclusiveLock_held", Name: "share_update"},
+			{ID: "db_%s_lock_mode_ShareLock_held", Name: "share"},
+			{ID: "db_%s_lock_mode_ShareRowExclusiveLock_held", Name: "share_row_exclusive"},
+			{ID: "db_%s_lock_mode_ExclusiveLock_held", Name: "exclusive"},
+			{ID: "db_%s_lock_mode_AccessExclusiveLock_held", Name: "access_exclusive"},
+		},
+	}
+	dbLocksAwaitedChartTmpl = module.Chart{
+		ID:       "db_%s_locks_awaited",
+		Title:    "Database locks awaited",
+		Units:    "locks",
+		Fam:      "db locks",
+		Ctx:      "postgres.db_locks_awaited",
+		Priority: prioDBLocksAwaited,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "db_%s_lock_mode_AccessShareLock_awaited", Name: "access_share"},
+			{ID: "db_%s_lock_mode_RowShareLock_awaited", Name: "row_share"},
+			{ID: "db_%s_lock_mode_RowExclusiveLock_awaited", Name: "row_exclusive"},
+			{ID: "db_%s_lock_mode_ShareUpdateExclusiveLock_awaited", Name: "share_update"},
+			{ID: "db_%s_lock_mode_ShareLock_awaited", Name: "share"},
+			{ID: "db_%s_lock_mode_ShareRowExclusiveLock_awaited", Name: "share_row_exclusive"},
+			{ID: "db_%s_lock_mode_ExclusiveLock_awaited", Name: "exclusive"},
+			{ID: "db_%s_lock_mode_AccessExclusiveLock_awaited", Name: "access_exclusive"},
 		},
 	}
 	dbTempFilesChartTmpl = module.Chart{
