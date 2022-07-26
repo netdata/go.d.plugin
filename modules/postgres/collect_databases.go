@@ -4,7 +4,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"strconv"
 )
 
@@ -68,7 +67,18 @@ func (p *Postgres) collectDatabaseStats(mx map[string]int64) error {
 	}
 	defer func() { _ = rows.Close() }()
 
-	return collectDatabaseRows(mx, rows)
+	var db string
+	return collectRows(rows, func(column, value string) error {
+		switch column {
+		case "datname":
+			db = value
+		default:
+			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
+				mx["db_"+db+"_"+column] = v
+			}
+		}
+		return nil
+	})
 }
 
 func (p *Postgres) collectDatabaseConflicts(mx map[string]int64) error {
@@ -82,7 +92,18 @@ func (p *Postgres) collectDatabaseConflicts(mx map[string]int64) error {
 	}
 	defer func() { _ = rows.Close() }()
 
-	return collectDatabaseRows(mx, rows)
+	var db string
+	return collectRows(rows, func(column, value string) error {
+		switch column {
+		case "datname":
+			db = value
+		default:
+			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
+				mx["db_"+db+"_"+column] = v
+			}
+		}
+		return nil
+	})
 }
 
 var lockModes = []string{
@@ -116,61 +137,19 @@ func (p *Postgres) collectDatabaseLocks(mx map[string]int64) error {
 		}
 	}
 
-	columns, err := rows.Columns()
-	if err != nil {
-		return err
-	}
-
-	values := makeNullStrings(len(columns))
-
-	for rows.Next() {
-		if err := rows.Scan(values...); err != nil {
-			return err
-		}
-
-		var db, mode string
-		for i, name := range columns {
-			s := valueToString(values[i])
-			switch name {
-			case "datname":
-				db = s
-			case "mode":
-				mode = s
-			case "lock_type":
-				if v, err := strconv.ParseInt(s, 10, 64); err == nil {
-					mx["db_"+db+"_lock_mode_"+mode] = v
-				}
+	var db, mode string
+	return collectRows(rows, func(column, value string) error {
+		switch column {
+		case "datname":
+			db = value
+		case "mode":
+			mode = value
+		case "lock_type":
+			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
+				mx["db_"+db+"_lock_mode_"+mode] = v
 			}
 		}
-	}
-	return nil
-}
 
-func collectDatabaseRows(mx map[string]int64, rows *sql.Rows) error {
-	columns, err := rows.Columns()
-	if err != nil {
-		return err
-	}
-
-	values := makeNullStrings(len(columns))
-
-	for rows.Next() {
-		if err := rows.Scan(values...); err != nil {
-			return err
-		}
-
-		var db string
-		for i, name := range columns {
-			s := valueToString(values[i])
-			switch name {
-			case "datname":
-				db = s
-			default:
-				if v, err := strconv.ParseInt(s, 10, 64); err == nil {
-					mx["db_"+db+"_"+name] = v
-				}
-			}
-		}
-	}
-	return nil
+		return nil
+	})
 }

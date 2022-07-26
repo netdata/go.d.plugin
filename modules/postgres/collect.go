@@ -98,6 +98,28 @@ func (p *Postgres) queryServerVersion() (int, error) {
 //	return v, nil
 //}
 
+func collectRows(rows *sql.Rows, assign func(column, value string) error) error {
+	columns, err := rows.Columns()
+	if err != nil {
+		return err
+	}
+
+	values := makeNullStrings(len(columns))
+
+	for rows.Next() {
+		if err := rows.Scan(values...); err != nil {
+			return err
+		}
+		for i, name := range columns {
+			v := valueToString(values[i])
+			if err := assign(name, v); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func valueToString(value interface{}) string {
 	v, ok := value.(*sql.NullString)
 	if !ok || !v.Valid {
