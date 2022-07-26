@@ -17,7 +17,7 @@ func queryServerVersion() string {
 //	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
 //}
 
-func queryDatabasesList() string {
+func queryDatabaseList() string {
 	return `
     SELECT
         datname          
@@ -32,10 +32,11 @@ func queryDatabasesList() string {
 `
 }
 
-func queryDatabasesStats(dbs []string) string {
+func queryDatabaseStats(dbs []string) string {
 	// definition by version: https://pgpedia.info/p/pg_stat_database.html
 	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-DATABASE-VIEW
 	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1018
+
 	q := `
     SELECT
         datname,
@@ -53,29 +54,26 @@ func queryDatabasesStats(dbs []string) string {
         pg_database_size(datname) AS size,
         temp_files,
         temp_bytes,
-        deadlocks     
+        deadlocks               
     FROM
-        pg_stat_database
-`
-
-	if len(dbs) > 0 {
-		q += fmt.Sprintf(`
+        pg_stat_database          
     WHERE
-        datname IN (
-            '%s'                 
-        ) 
-`, strings.Join(dbs, "','"))
+        datname SIMILAR TO '%s';
+`
+	if len(dbs) == 0 {
+		q = fmt.Sprintf(q, "%")
+	} else {
+		q = fmt.Sprintf(q, strings.Join(dbs, "|"))
 	}
-
-	q += ";"
 
 	return q
 }
 
-func queryDatabasesConflicts(dbs []string) string {
+func queryDatabaseConflicts(dbs []string) string {
 	// definition by version: https://pgpedia.info/p/pg_stat_database_conflicts.html
 	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-DATABASE-CONFLICTS-VIEW
 	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1058
+
 	q := `
     SELECT
         datname,
@@ -86,18 +84,14 @@ func queryDatabasesConflicts(dbs []string) string {
         confl_deadlock     
     FROM
         pg_stat_database_conflicts
-`
-
-	if len(dbs) > 0 {
-		q += fmt.Sprintf(`
     WHERE
-        datname IN (
-            '%s'                 
-        ) 
-`, strings.Join(dbs, "','"))
+        datname SIMILAR TO '%s';
+`
+	if len(dbs) == 0 {
+		q = fmt.Sprintf(q, "%")
+	} else {
+		q = fmt.Sprintf(q, strings.Join(dbs, "|"))
 	}
-
-	q += ";"
 
 	return q
 }
@@ -122,4 +116,38 @@ func queryCheckpoints() string {
     FROM
         pg_stat_bgwriter;
 `
+}
+
+func queryDatabaseLocks(dbs []string) string {
+	// definition by version: https://pgpedia.info/p/pg_locks.html
+	// docs: https://www.postgresql.org/docs/current/view-pg-locks.html
+
+	q := `
+    SELECT
+        pg_database.datname,
+        mode,
+        granted,
+        count(mode) AS locks_count                          
+    FROM
+        pg_locks                          
+    INNER JOIN
+        pg_database                                                                      
+            ON pg_database.oid = pg_locks.database               
+    WHERE
+        datname SIMILAR TO '%s'          
+    GROUP BY
+        datname,
+        mode,
+        granted                          
+    ORDER BY
+        datname,
+        mode;
+`
+	if len(dbs) == 0 {
+		q = fmt.Sprintf(q, "%")
+	} else {
+		q = fmt.Sprintf(q, strings.Join(dbs, "|"))
+	}
+
+	return q
 }

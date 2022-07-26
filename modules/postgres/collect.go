@@ -46,6 +46,10 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying database conflicts error: %v", err)
 	}
 
+	if err := p.collectDatabaseLocks(mx); err != nil {
+		return mx, fmt.Errorf("querying database locks error: %v", err)
+	}
+
 	if err := p.collectCheckpoints(mx); err != nil {
 		return mx, fmt.Errorf("querying database conflicts error: %v", err)
 	}
@@ -97,6 +101,27 @@ func (p *Postgres) queryServerVersion() (int, error) {
 //	}
 //	return v, nil
 //}
+
+func collectRows(rows *sql.Rows, assign func(column, value string) error) error {
+	columns, err := rows.Columns()
+	if err != nil {
+		return err
+	}
+
+	values := makeNullStrings(len(columns))
+
+	for rows.Next() {
+		if err := rows.Scan(values...); err != nil {
+			return err
+		}
+		for i, v := range values {
+			if err := assign(columns[i], valueToString(v)); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
 
 func valueToString(value interface{}) string {
 	v, ok := value.(*sql.NullString)

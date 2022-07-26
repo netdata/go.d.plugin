@@ -19,28 +19,30 @@ import (
 )
 
 var (
-	dataV140004ServerVersionNum, _   = ioutil.ReadFile("testdata/v14.4/server_version_num.txt")
-	dataV140004IsSuperUserFalse, _   = ioutil.ReadFile("testdata/v14.4/is_super_user-false.txt")
-	dataV140004IsSuperUserTrue, _    = ioutil.ReadFile("testdata/v14.4/is_super_user-true.txt")
-	dataV140004DatabasesList1DB, _   = ioutil.ReadFile("testdata/v14.4/databases_list-1db.txt")
-	dataV140004DatabasesList2DB, _   = ioutil.ReadFile("testdata/v14.4/databases_list-2db.txt")
-	dataV140004DatabasesList3DB, _   = ioutil.ReadFile("testdata/v14.4/databases_list-3db.txt")
-	dataV140004DatabasesStats, _     = ioutil.ReadFile("testdata/v14.4/databases_stats.txt")
-	dataV140004DatabasesConflicts, _ = ioutil.ReadFile("testdata/v14.4/databases_conflicts.txt")
-	dataV140004Checkpoints, _        = ioutil.ReadFile("testdata/v14.4/checkpoints.txt")
+	dataV140004ServerVersionNum, _  = ioutil.ReadFile("testdata/v14.4/server_version_num.txt")
+	dataV140004IsSuperUserFalse, _  = ioutil.ReadFile("testdata/v14.4/is_super_user-false.txt")
+	dataV140004IsSuperUserTrue, _   = ioutil.ReadFile("testdata/v14.4/is_super_user-true.txt")
+	dataV140004DatabaseList1DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-1db.txt")
+	dataV140004DatabaseList2DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-2db.txt")
+	dataV140004DatabaseList3DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-3db.txt")
+	dataV140004DatabaseStats, _     = ioutil.ReadFile("testdata/v14.4/database_stats.txt")
+	dataV140004DatabaseConflicts, _ = ioutil.ReadFile("testdata/v14.4/database_conflicts.txt")
+	dataV140004DatabaseLocks, _     = ioutil.ReadFile("testdata/v14.4/database_locks.txt")
+	dataV140004Checkpoints, _       = ioutil.ReadFile("testdata/v14.4/checkpoints.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"dataV140004ServerVersionNum":   dataV140004ServerVersionNum,
-		"dataV140004IsSuperUserFalse":   dataV140004IsSuperUserFalse,
-		"dataV140004IsSuperUserTrue":    dataV140004IsSuperUserTrue,
-		"dataV140004DatabasesList1DB":   dataV140004DatabasesList1DB,
-		"dataV140004DatabasesList2DB":   dataV140004DatabasesList2DB,
-		"dataV140004DatabasesList3DB":   dataV140004DatabasesList3DB,
-		"dataV140004DatabasesStats":     dataV140004DatabasesStats,
-		"dataV140004DatabasesConflicts": dataV140004DatabasesConflicts,
-		"dataV140004Checkpoints":        dataV140004Checkpoints,
+		"dataV140004ServerVersionNum":  dataV140004ServerVersionNum,
+		"dataV140004IsSuperUserFalse":  dataV140004IsSuperUserFalse,
+		"dataV140004IsSuperUserTrue":   dataV140004IsSuperUserTrue,
+		"dataV140004DatabaseList1DB":   dataV140004DatabaseList1DB,
+		"dataV140004DatabaseList2DB":   dataV140004DatabaseList2DB,
+		"dataV140004DatabaseList3DB":   dataV140004DatabaseList3DB,
+		"dataV140004DatabaseStats":     dataV140004DatabaseStats,
+		"dataV140004DatabaseConflicts": dataV140004DatabaseConflicts,
+		"dataV140004DatabaseLocks":     dataV140004DatabaseLocks,
+		"dataV140004Checkpoints":       dataV140004Checkpoints,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -94,12 +96,14 @@ func TestPostgres_Check(t *testing.T) {
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesList()).
-					WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesStats(dbs)).
-					WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesConflicts(dbs)).
-					WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabaseList()).
+					WillReturnRows(mustMockRows(t, dataV140004DatabaseList2DB)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabaseStats(dbs)).
+					WillReturnRows(mustMockRows(t, dataV140004DatabaseStats)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabaseConflicts(dbs)).
+					WillReturnRows(mustMockRows(t, dataV140004DatabaseConflicts)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabaseLocks(dbs)).
+					WillReturnRows(mustMockRows(t, dataV140004DatabaseLocks)).RowsWillBeClosed()
 				mock.ExpectQuery(queryCheckpoints()).
 					WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 			},
@@ -109,12 +113,12 @@ func TestPostgres_Check(t *testing.T) {
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesList()).
-					WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesStats(dbs)).
-					WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesConflicts(dbs)).
-					WillReturnError(errors.New("mock queryDatabasesConflicts() error"))
+				mock.ExpectQuery(queryDatabaseList()).
+					WillReturnRows(mustMockRows(t, dataV140004DatabaseList2DB)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabaseStats(dbs)).
+					WillReturnRows(mustMockRows(t, dataV140004DatabaseStats)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabaseConflicts(dbs)).
+					WillReturnError(errors.New("mock queryDatabaseConflicts() error"))
 			},
 		},
 		"Fail when querying the database version returns an error": {
@@ -129,7 +133,7 @@ func TestPostgres_Check(t *testing.T) {
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesList()).
+				mock.ExpectQuery(queryDatabaseList()).
 					WillReturnError(errors.New("mock queryDatabaseList() error"))
 			},
 		},
@@ -138,10 +142,10 @@ func TestPostgres_Check(t *testing.T) {
 			prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(queryServerVersion()).
 					WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesList()).
-					WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-				mock.ExpectQuery(queryDatabasesStats(dbs)).
-					WillReturnError(errors.New("mock queryDatabasesStats() error"))
+				mock.ExpectQuery(queryDatabaseList()).
+					WillReturnRows(mustMockRows(t, dataV140004DatabaseList2DB)).RowsWillBeClosed()
+				mock.ExpectQuery(queryDatabaseStats(dbs)).
+					WillReturnError(errors.New("mock queryDatabaseStats() error"))
 			},
 		},
 	}
@@ -185,12 +189,14 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 					mock.ExpectQuery(queryServerVersion()).
 						WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesList()).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesStats(dbs2)).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesConflicts(dbs2)).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseList()).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseList2DB)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseStats(dbs2)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseStats)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseConflicts(dbs2)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseLocks(dbs2)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseLocks)).RowsWillBeClosed()
 					mock.ExpectQuery(queryCheckpoints()).
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
@@ -198,56 +204,88 @@ func TestPostgres_Collect(t *testing.T) {
 					mx := pg.Collect()
 
 					expected := map[string]int64{
-						"buffers_alloc":                  27295744,
-						"buffers_backend":                0,
-						"buffers_backend_fsync":          0,
-						"buffers_checkpoint":             32768,
-						"buffers_clean":                  0,
-						"checkpoint_sync_time":           47,
-						"checkpoint_write_time":          167,
-						"checkpoints_req":                16,
-						"checkpoints_timed":              1814,
-						"db_postgres_blks_hit":           9245,
-						"db_postgres_blks_read":          246,
-						"db_postgres_confl_bufferpin":    0,
-						"db_postgres_confl_deadlock":     0,
-						"db_postgres_confl_lock":         0,
-						"db_postgres_confl_snapshot":     0,
-						"db_postgres_confl_tablespace":   0,
-						"db_postgres_conflicts":          0,
-						"db_postgres_deadlocks":          0,
-						"db_postgres_numbackends":        2,
-						"db_postgres_size":               8758051,
-						"db_postgres_temp_bytes":         0,
-						"db_postgres_temp_files":         0,
-						"db_postgres_tup_deleted":        0,
-						"db_postgres_tup_fetched":        3577,
-						"db_postgres_tup_inserted":       0,
-						"db_postgres_tup_returned":       65095,
-						"db_postgres_tup_updated":        0,
-						"db_postgres_xact_commit":        1636,
-						"db_postgres_xact_rollback":      2,
-						"db_production_blks_hit":         0,
-						"db_production_blks_read":        0,
-						"db_production_confl_bufferpin":  0,
-						"db_production_confl_deadlock":   0,
-						"db_production_confl_lock":       0,
-						"db_production_confl_snapshot":   0,
-						"db_production_confl_tablespace": 0,
-						"db_production_conflicts":        0,
-						"db_production_deadlocks":        0,
-						"db_production_numbackends":      0,
-						"db_production_size":             8602115,
-						"db_production_temp_bytes":       0,
-						"db_production_temp_files":       0,
-						"db_production_tup_deleted":      0,
-						"db_production_tup_fetched":      0,
-						"db_production_tup_inserted":     0,
-						"db_production_tup_returned":     0,
-						"db_production_tup_updated":      0,
-						"db_production_xact_commit":      0,
-						"db_production_xact_rollback":    0,
-						"maxwritten_clean":               0,
+						"buffers_alloc":                                            27295744,
+						"buffers_backend":                                          0,
+						"buffers_backend_fsync":                                    0,
+						"buffers_checkpoint":                                       32768,
+						"buffers_clean":                                            0,
+						"checkpoint_sync_time":                                     47,
+						"checkpoint_write_time":                                    167,
+						"checkpoints_req":                                          16,
+						"checkpoints_timed":                                        1814,
+						"db_postgres_blks_hit":                                     9245,
+						"db_postgres_blks_read":                                    246,
+						"db_postgres_confl_bufferpin":                              0,
+						"db_postgres_confl_deadlock":                               0,
+						"db_postgres_confl_lock":                                   0,
+						"db_postgres_confl_snapshot":                               0,
+						"db_postgres_confl_tablespace":                             0,
+						"db_postgres_conflicts":                                    0,
+						"db_postgres_deadlocks":                                    0,
+						"db_postgres_lock_mode_AccessExclusiveLock_awaited":        0,
+						"db_postgres_lock_mode_AccessExclusiveLock_held":           0,
+						"db_postgres_lock_mode_AccessShareLock_awaited":            0,
+						"db_postgres_lock_mode_AccessShareLock_held":               1,
+						"db_postgres_lock_mode_ExclusiveLock_awaited":              0,
+						"db_postgres_lock_mode_ExclusiveLock_held":                 0,
+						"db_postgres_lock_mode_RowExclusiveLock_awaited":           0,
+						"db_postgres_lock_mode_RowExclusiveLock_held":              1,
+						"db_postgres_lock_mode_RowShareLock_awaited":               0,
+						"db_postgres_lock_mode_RowShareLock_held":                  1,
+						"db_postgres_lock_mode_ShareLock_awaited":                  0,
+						"db_postgres_lock_mode_ShareLock_held":                     0,
+						"db_postgres_lock_mode_ShareRowExclusiveLock_awaited":      0,
+						"db_postgres_lock_mode_ShareRowExclusiveLock_held":         0,
+						"db_postgres_lock_mode_ShareUpdateExclusiveLock_awaited":   0,
+						"db_postgres_lock_mode_ShareUpdateExclusiveLock_held":      0,
+						"db_postgres_numbackends":                                  2,
+						"db_postgres_size":                                         8758051,
+						"db_postgres_temp_bytes":                                   0,
+						"db_postgres_temp_files":                                   0,
+						"db_postgres_tup_deleted":                                  0,
+						"db_postgres_tup_fetched":                                  3577,
+						"db_postgres_tup_inserted":                                 0,
+						"db_postgres_tup_returned":                                 65095,
+						"db_postgres_tup_updated":                                  0,
+						"db_postgres_xact_commit":                                  1636,
+						"db_postgres_xact_rollback":                                2,
+						"db_production_blks_hit":                                   0,
+						"db_production_blks_read":                                  0,
+						"db_production_confl_bufferpin":                            0,
+						"db_production_confl_deadlock":                             0,
+						"db_production_confl_lock":                                 0,
+						"db_production_confl_snapshot":                             0,
+						"db_production_confl_tablespace":                           0,
+						"db_production_conflicts":                                  0,
+						"db_production_deadlocks":                                  0,
+						"db_production_lock_mode_AccessExclusiveLock_awaited":      0,
+						"db_production_lock_mode_AccessExclusiveLock_held":         0,
+						"db_production_lock_mode_AccessShareLock_awaited":          0,
+						"db_production_lock_mode_AccessShareLock_held":             0,
+						"db_production_lock_mode_ExclusiveLock_awaited":            0,
+						"db_production_lock_mode_ExclusiveLock_held":               0,
+						"db_production_lock_mode_RowExclusiveLock_awaited":         0,
+						"db_production_lock_mode_RowExclusiveLock_held":            0,
+						"db_production_lock_mode_RowShareLock_awaited":             0,
+						"db_production_lock_mode_RowShareLock_held":                0,
+						"db_production_lock_mode_ShareLock_awaited":                0,
+						"db_production_lock_mode_ShareLock_held":                   1,
+						"db_production_lock_mode_ShareRowExclusiveLock_awaited":    0,
+						"db_production_lock_mode_ShareRowExclusiveLock_held":       0,
+						"db_production_lock_mode_ShareUpdateExclusiveLock_awaited": 0,
+						"db_production_lock_mode_ShareUpdateExclusiveLock_held":    1,
+						"db_production_numbackends":                                0,
+						"db_production_size":                                       8602115,
+						"db_production_temp_bytes":                                 0,
+						"db_production_temp_files":                                 0,
+						"db_production_tup_deleted":                                0,
+						"db_production_tup_fetched":                                0,
+						"db_production_tup_inserted":                               0,
+						"db_production_tup_returned":                               0,
+						"db_production_tup_updated":                                0,
+						"db_production_xact_commit":                                0,
+						"db_production_xact_rollback":                              0,
+						"maxwritten_clean":                                         0,
 					}
 					assert.Equal(t, expected, mx)
 				},
@@ -258,12 +296,14 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 					mock.ExpectQuery(queryServerVersion()).
 						WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesList()).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesStats(dbs2)).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesConflicts(dbs2)).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseList()).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseList2DB)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseStats(dbs2)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseStats)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseConflicts(dbs2)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseLocks(dbs2)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseLocks)).RowsWillBeClosed()
 					mock.ExpectQuery(queryCheckpoints()).
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
@@ -271,12 +311,14 @@ func TestPostgres_Collect(t *testing.T) {
 			},
 			{
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
-					mock.ExpectQuery(queryDatabasesList()).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesList1DB)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesStats(dbs1)).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesConflicts(dbs1)).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseList()).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseList1DB)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseStats(dbs1)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseStats)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseConflicts(dbs1)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseLocks(dbs1)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseLocks)).RowsWillBeClosed()
 					mock.ExpectQuery(queryCheckpoints()).
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
@@ -289,12 +331,14 @@ func TestPostgres_Collect(t *testing.T) {
 			},
 			{
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
-					mock.ExpectQuery(queryDatabasesList()).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesList3DB)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesStats(dbs3)).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesStats)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesConflicts(dbs3)).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseList()).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseList3DB)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseStats(dbs3)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseStats)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseConflicts(dbs3)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseConflicts)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseLocks(dbs3)).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseLocks)).RowsWillBeClosed()
 					mock.ExpectQuery(queryCheckpoints()).
 						WillReturnRows(mustMockRows(t, dataV140004Checkpoints)).RowsWillBeClosed()
 				},
@@ -324,7 +368,7 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 					mock.ExpectQuery(queryServerVersion()).
 						WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesList()).
+					mock.ExpectQuery(queryDatabaseList()).
 						WillReturnError(errors.New("mock queryDatabaseList() error"))
 				},
 				check: func(t *testing.T, pg *Postgres) {
@@ -339,10 +383,10 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, mock sqlmock.Sqlmock) {
 					mock.ExpectQuery(queryServerVersion()).
 						WillReturnRows(mustMockRows(t, dataV140004ServerVersionNum)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesList()).
-						WillReturnRows(mustMockRows(t, dataV140004DatabasesList2DB)).RowsWillBeClosed()
-					mock.ExpectQuery(queryDatabasesStats(dbs2)).
-						WillReturnError(errors.New("mock queryDatabasesStats() error"))
+					mock.ExpectQuery(queryDatabaseList()).
+						WillReturnRows(mustMockRows(t, dataV140004DatabaseList2DB)).RowsWillBeClosed()
+					mock.ExpectQuery(queryDatabaseStats(dbs2)).
+						WillReturnError(errors.New("mock queryDatabaseStats() error"))
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()

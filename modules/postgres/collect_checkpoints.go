@@ -4,7 +4,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"strconv"
 )
 
@@ -19,28 +18,10 @@ func (p *Postgres) collectCheckpoints(mx map[string]int64) error {
 	}
 	defer func() { _ = rows.Close() }()
 
-	return collectRows(mx, rows)
-}
-
-func collectRows(mx map[string]int64, rows *sql.Rows) error {
-	columns, err := rows.Columns()
-	if err != nil {
-		return err
-	}
-
-	values := makeNullStrings(len(columns))
-
-	for rows.Next() {
-		if err := rows.Scan(values...); err != nil {
-			return err
+	return collectRows(rows, func(column, value string) error {
+		if v, err := strconv.ParseInt(value, 10, 64); err == nil {
+			mx[column] = v
 		}
-
-		for i, name := range columns {
-			s := valueToString(values[i])
-			if v, err := strconv.ParseInt(s, 10, 64); err == nil {
-				mx[name] = v
-			}
-		}
-	}
-	return nil
+		return nil
+	})
 }
