@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -199,16 +198,6 @@ func TestPostgres_Collect(t *testing.T) {
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
-
-					m := mx
-					l := make([]string, 0)
-					for k := range m {
-						l = append(l, k)
-					}
-					sort.Strings(l)
-					for _, value := range l {
-						fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
-					}
 
 					expected := map[string]int64{
 						"buffers_alloc":                                            27295744,
