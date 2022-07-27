@@ -55,6 +55,10 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying database conflicts error: %v", err)
 	}
 
+	if err := p.collectUptime(mx); err != nil {
+		return mx, fmt.Errorf("querying server uptime error: %v", err)
+	}
+
 	if err := p.collectDatabaseStats(mx); err != nil {
 		return mx, fmt.Errorf("querying database stats error: %v", err)
 	}
@@ -96,25 +100,41 @@ func (p *Postgres) openConnection() error {
 func (p *Postgres) querySettingsMaxConnections() (int64, error) {
 	q := querySettingsMaxConnections()
 
-	var v string
+	var s string
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
-	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
+	if err := p.db.QueryRowContext(ctx, q).Scan(&s); err != nil {
 		return 0, err
 	}
-	return strconv.ParseInt(v, 10, 64)
+	return strconv.ParseInt(s, 10, 64)
 }
 
 func (p *Postgres) queryServerVersion() (int, error) {
 	q := queryServerVersion()
 
-	var v string
+	var s string
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
-	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
+	if err := p.db.QueryRowContext(ctx, q).Scan(&s); err != nil {
 		return 0, err
 	}
-	return strconv.Atoi(v)
+	return strconv.Atoi(s)
+}
+
+func (p *Postgres) collectUptime(mx map[string]int64) error {
+	q := queryServerUptime()
+
+	var s string
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	if err := p.db.QueryRowContext(ctx, q).Scan(&s); err != nil {
+		return err
+	}
+
+	v, _ := strconv.ParseFloat(s, 64)
+	mx["server_uptime"] = int64(v)
+
+	return nil
 }
 
 //func (p *Postgres) queryIsSuperUser() (bool, error) {
