@@ -19,36 +19,46 @@ import (
 )
 
 var (
-	dataV140004ServerVersionNum, _         = ioutil.ReadFile("testdata/v14.4/server_version_num.txt")
-	dataV140004IsSuperUserFalse, _         = ioutil.ReadFile("testdata/v14.4/is_super_user-false.txt")
-	dataV140004SettingsMaxConnections, _   = ioutil.ReadFile("testdata/v14.4/settings_max_connections.txt")
+	dataV140004ServerVersionNum, _ = ioutil.ReadFile("testdata/v14.4/server_version_num.txt")
+
+	dataV140004IsSuperUserFalse, _ = ioutil.ReadFile("testdata/v14.4/is_super_user-false.txt")
+	dataV140004IsSuperUserTrue, _  = ioutil.ReadFile("testdata/v14.4/is_super_user-true.txt")
+
+	dataV140004SettingsMaxConnections, _ = ioutil.ReadFile("testdata/v14.4/settings_max_connections.txt")
+
 	dataV140004ServerCurrentConnections, _ = ioutil.ReadFile("testdata/v14.4/server_current_connections.txt")
-	dataV140004ServerUptime, _             = ioutil.ReadFile("testdata/v14.4/uptime.txt")
-	dataV140004IsSuperUserTrue, _          = ioutil.ReadFile("testdata/v14.4/is_super_user-true.txt")
-	dataV140004DatabaseList1DB, _          = ioutil.ReadFile("testdata/v14.4/database_list-1db.txt")
-	dataV140004DatabaseList2DB, _          = ioutil.ReadFile("testdata/v14.4/database_list-2db.txt")
-	dataV140004DatabaseList3DB, _          = ioutil.ReadFile("testdata/v14.4/database_list-3db.txt")
-	dataV140004DatabaseStats, _            = ioutil.ReadFile("testdata/v14.4/database_stats.txt")
-	dataV140004DatabaseConflicts, _        = ioutil.ReadFile("testdata/v14.4/database_conflicts.txt")
-	dataV140004DatabaseLocks, _            = ioutil.ReadFile("testdata/v14.4/database_locks.txt")
 	dataV140004Checkpoints, _              = ioutil.ReadFile("testdata/v14.4/checkpoints.txt")
+	dataV140004ServerUptime, _             = ioutil.ReadFile("testdata/v14.4/uptime.txt")
+	dataV140004TXIDWraparound, _           = ioutil.ReadFile("testdata/v14.4/txid_wraparound.txt")
+
+	dataV140004DatabaseList1DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-1db.txt")
+	dataV140004DatabaseList2DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-2db.txt")
+	dataV140004DatabaseList3DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-3db.txt")
+	dataV140004DatabaseStats, _     = ioutil.ReadFile("testdata/v14.4/database_stats.txt")
+	dataV140004DatabaseConflicts, _ = ioutil.ReadFile("testdata/v14.4/database_conflicts.txt")
+	dataV140004DatabaseLocks, _     = ioutil.ReadFile("testdata/v14.4/database_locks.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"dataV140004ServerVersionNum":         dataV140004ServerVersionNum,
-		"dataV140004IsSuperUserFalse":         dataV140004IsSuperUserFalse,
-		"dataV140004SettingsMaxConnections":   dataV140004SettingsMaxConnections,
+		"dataV140004ServerVersionNum": dataV140004ServerVersionNum,
+
+		"dataV140004IsSuperUserFalse": dataV140004IsSuperUserFalse,
+		"dataV140004IsSuperUserTrue":  dataV140004IsSuperUserTrue,
+
+		"dataV140004SettingsMaxConnections": dataV140004SettingsMaxConnections,
+
 		"dataV140004ServerCurrentConnections": dataV140004ServerCurrentConnections,
-		"dataV140004ServerUptime":             dataV140004ServerUptime,
-		"dataV140004IsSuperUserTrue":          dataV140004IsSuperUserTrue,
-		"dataV140004DatabaseList1DB":          dataV140004DatabaseList1DB,
-		"dataV140004DatabaseList2DB":          dataV140004DatabaseList2DB,
-		"dataV140004DatabaseList3DB":          dataV140004DatabaseList3DB,
-		"dataV140004DatabaseStats":            dataV140004DatabaseStats,
-		"dataV140004DatabaseConflicts":        dataV140004DatabaseConflicts,
-		"dataV140004DatabaseLocks":            dataV140004DatabaseLocks,
 		"dataV140004Checkpoints":              dataV140004Checkpoints,
+		"dataV140004ServerUptime":             dataV140004ServerUptime,
+		"dataV140004TXIDWraparound":           dataV140004TXIDWraparound,
+
+		"dataV140004DatabaseList1DB":   dataV140004DatabaseList1DB,
+		"dataV140004DatabaseList2DB":   dataV140004DatabaseList2DB,
+		"dataV140004DatabaseList3DB":   dataV140004DatabaseList3DB,
+		"dataV140004DatabaseStats":     dataV140004DatabaseStats,
+		"dataV140004DatabaseConflicts": dataV140004DatabaseConflicts,
+		"dataV140004DatabaseLocks":     dataV140004DatabaseLocks,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -108,6 +118,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
 				mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 				mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
+				mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 
 				mockExpect(t, m, queryDatabaseStats(dbs), dataV140004DatabaseStats)
 				mockExpect(t, m, queryDatabaseConflicts(dbs), dataV140004DatabaseConflicts)
@@ -196,6 +207,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
+					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
@@ -289,6 +301,9 @@ func TestPostgres_Collect(t *testing.T) {
 						"db_production_xact_commit":                                0,
 						"db_production_xact_rollback":                              0,
 						"maxwritten_clean":                                         0,
+						"oldest_current_xid":                                       9,
+						"percent_towards_emergency_autovac":                        0,
+						"percent_towards_wraparound":                               0,
 						"server_connections_available":                             97,
 						"server_connections_used":                                  3,
 						"server_connections_utilization":                           3,
@@ -309,6 +324,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
+					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
@@ -323,6 +339,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
+					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 
 					mockExpect(t, m, queryDatabaseStats(dbs1), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs1), dataV140004DatabaseConflicts)
@@ -342,6 +359,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
+					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 
 					mockExpect(t, m, queryDatabaseStats(dbs3), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs3), dataV140004DatabaseConflicts)

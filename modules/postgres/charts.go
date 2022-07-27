@@ -18,6 +18,9 @@ const (
 	prioBGWriterBuffersWritten
 	prioBGWriterMaxWrittenClean
 	prioBGWriterBackedFsync
+	prioAutovacuumPercentTowards
+	prioTXIDWraparoundPercentTowards
+	prioTXIDWraparoundOldestTXID
 	prioUptime
 	prioDBTransactions
 	prioDBConnectionsUtilization
@@ -44,6 +47,10 @@ var baseCharts = module.Charts{
 	bgWriterBuffersAllocChart.Copy(),
 	bgWriterMaxWrittenCleanChart.Copy(),
 	bgWriterBuffersBackendFsyncChart.Copy(),
+	percentTowardsEmergencyAutovacuumChart.Copy(),
+	percentTowardTXIDWraparoundChart.Copy(),
+	oldestTXIDChart.Copy(),
+
 	serverUptimeChart.Copy(),
 }
 
@@ -147,6 +154,42 @@ var (
 			{ID: "buffers_backend_fsync", Name: "fsync", Algo: module.Incremental},
 		},
 	}
+
+	percentTowardsEmergencyAutovacuumChart = module.Chart{
+		ID:       "percent_towards_emergency_autovacuum",
+		Title:    "Percent towards emergency autovacuum",
+		Units:    "percentage",
+		Fam:      "autovacuum",
+		Ctx:      "postgres.percent_towards_emergency_autovacuum",
+		Priority: prioAutovacuumPercentTowards,
+		Dims: module.Dims{
+			{ID: "percent_towards_emergency_autovacuum", Name: "emergency_autovacuum"},
+		},
+	}
+
+	percentTowardTXIDWraparoundChart = module.Chart{
+		ID:       "percent_towards_txid_wraparound",
+		Title:    "Percent towards transaction ID wraparound",
+		Units:    "percentage",
+		Fam:      "txid wraparound",
+		Ctx:      "postgres.percent_towards_txid_wraparound",
+		Priority: prioTXIDWraparoundPercentTowards,
+		Dims: module.Dims{
+			{ID: "percent_towards_wraparound", Name: "txid_wraparound"},
+		},
+	}
+	oldestTXIDChart = module.Chart{
+		ID:       "oldest_transaction_xid",
+		Title:    "Oldest transaction XID",
+		Units:    "xid",
+		Fam:      "txid wraparound",
+		Ctx:      "postgres.oldest_transaction_xid",
+		Priority: prioTXIDWraparoundOldestTXID,
+		Dims: module.Dims{
+			{ID: "oldest_current_xid", Name: "xid"},
+		},
+	}
+
 	serverUptimeChart = module.Chart{
 		ID:       "server_uptime",
 		Title:    "Uptime",
