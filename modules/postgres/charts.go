@@ -18,6 +18,7 @@ const (
 	prioBGWriterBuffersWritten
 	prioBGWriterMaxWrittenClean
 	prioBGWriterBackedFsync
+	prioWALWrites
 	prioAutovacuumPercentTowards
 	prioTXIDWraparoundPercentTowards
 	prioTXIDWraparoundOldestTXID
@@ -47,6 +48,7 @@ var baseCharts = module.Charts{
 	bgWriterBuffersAllocChart.Copy(),
 	bgWriterMaxWrittenCleanChart.Copy(),
 	bgWriterBuffersBackendFsyncChart.Copy(),
+	walWritesChart.Copy(),
 	percentTowardsEmergencyAutovacuumChart.Copy(),
 	percentTowardTXIDWraparoundChart.Copy(),
 	oldestTXIDChart.Copy(),
@@ -152,6 +154,18 @@ var (
 		Priority: prioBGWriterBackedFsync,
 		Dims: module.Dims{
 			{ID: "buffers_backend_fsync", Name: "fsync", Algo: module.Incremental},
+		},
+	}
+
+	walWritesChart = module.Chart{
+		ID:       "wal_writes",
+		Title:    "Write-Ahead Log",
+		Units:    "B/s",
+		Fam:      "wal",
+		Ctx:      "postgres.wal_writes",
+		Priority: prioWALWrites,
+		Dims: module.Dims{
+			{ID: "wal_writes", Name: "writes", Algo: module.Incremental},
 		},
 	}
 

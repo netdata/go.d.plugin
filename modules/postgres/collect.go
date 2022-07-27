@@ -63,6 +63,10 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying txid wraparound error: %v", err)
 	}
 
+	if err := p.collectWALWrites(mx); err != nil {
+		return mx, fmt.Errorf("querying wal writes error: %v", err)
+	}
+
 	if err := p.collectDatabaseStats(mx); err != nil {
 		return mx, fmt.Errorf("querying database stats error: %v", err)
 	}
@@ -153,6 +157,20 @@ func (p *Postgres) collectTXIDWraparound(mx map[string]int64) error {
 	defer func() { _ = rows.Close() }()
 
 	return collectRows(rows, func(column, value string) { mx[column] = safeParseInt(value) })
+}
+
+func (p *Postgres) collectWALWrites(mx map[string]int64) error {
+	q := queryWALWrites(p.serverVersion)
+
+	var v int64
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
+		return err
+	}
+
+	mx["wal_writes"] = v
+	return nil
 }
 
 //func (p *Postgres) queryIsSuperUser() (bool, error) {

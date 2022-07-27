@@ -30,6 +30,7 @@ var (
 	dataV140004Checkpoints, _              = ioutil.ReadFile("testdata/v14.4/checkpoints.txt")
 	dataV140004ServerUptime, _             = ioutil.ReadFile("testdata/v14.4/uptime.txt")
 	dataV140004TXIDWraparound, _           = ioutil.ReadFile("testdata/v14.4/txid_wraparound.txt")
+	dataV140004WALWrites, _                = ioutil.ReadFile("testdata/v14.4/wal_writes.txt")
 
 	dataV140004DatabaseList1DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-1db.txt")
 	dataV140004DatabaseList2DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-2db.txt")
@@ -52,6 +53,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004Checkpoints":              dataV140004Checkpoints,
 		"dataV140004ServerUptime":             dataV140004ServerUptime,
 		"dataV140004TXIDWraparound":           dataV140004TXIDWraparound,
+		"dataV140004WALWrites":                dataV140004WALWrites,
 
 		"dataV140004DatabaseList1DB":   dataV140004DatabaseList1DB,
 		"dataV140004DatabaseList2DB":   dataV140004DatabaseList2DB,
@@ -119,6 +121,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 				mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 				mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
+				mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 
 				mockExpect(t, m, queryDatabaseStats(dbs), dataV140004DatabaseStats)
 				mockExpect(t, m, queryDatabaseConflicts(dbs), dataV140004DatabaseConflicts)
@@ -208,6 +211,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
+					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
@@ -308,6 +312,7 @@ func TestPostgres_Collect(t *testing.T) {
 						"server_connections_used":                                  3,
 						"server_connections_utilization":                           3,
 						"server_uptime":                                            499906,
+						"wal_writes":                                               24103144,
 					}
 					assert.Equal(t, expected, mx)
 				},
@@ -325,6 +330,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
+					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
@@ -340,6 +346,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
+					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 
 					mockExpect(t, m, queryDatabaseStats(dbs1), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs1), dataV140004DatabaseConflicts)
@@ -360,6 +367,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
+					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 
 					mockExpect(t, m, queryDatabaseStats(dbs3), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs3), dataV140004DatabaseConflicts)
