@@ -48,7 +48,7 @@ func (d DimAlgo) String() string {
 	case Absolute, Incremental, PercentOfAbsolute, PercentOfIncremental:
 		return string(d)
 	}
-	return ""
+	return string(Absolute)
 }
 
 func (c ChartType) String() string {
@@ -56,7 +56,7 @@ func (c ChartType) String() string {
 	case Line, Area, Stacked:
 		return string(c)
 	}
-	return ""
+	return string(Line)
 }
 
 type (
