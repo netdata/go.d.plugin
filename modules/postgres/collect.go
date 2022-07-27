@@ -67,6 +67,10 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying wal writes error: %v", err)
 	}
 
+	if err := p.collectCatalog(mx); err != nil {
+		return mx, fmt.Errorf("querying catalog relations error: %v", err)
+	}
+
 	if err := p.collectDatabaseStats(mx); err != nil {
 		return mx, fmt.Errorf("querying database stats error: %v", err)
 	}
@@ -171,6 +175,45 @@ func (p *Postgres) collectWALWrites(mx map[string]int64) error {
 
 	mx["wal_writes"] = v
 	return nil
+}
+
+func (p *Postgres) collectCatalog(mx map[string]int64) error {
+	q := queryCatalogRelations()
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	// https://www.postgresql.org/docs/current/catalog-pg-class.html
+	// r = ordinary table
+	// i = index
+	// S = sequence
+	// t = TOAST table
+	// v = view
+	// m = materialized view
+	// c = composite type
+	// f = foreign table
+	// p = partitioned table
+	// I = partitioned index
+
+	for _, v := range []string{"r", "i", "S", "t", "v", "m", "c", "f", "p", "I"} {
+		mx["catalog_relkind_"+v+"_count"] = 0
+		mx["catalog_relkind_"+v+"_size"] = 0
+	}
+
+	var kind string
+	return collectRows(rows, func(column, value string) {
+		switch column {
+		case "relkind":
+			kind = value
+		default:
+			mx["catalog_relkind_"+kind+"_"+column] = safeParseInt(value)
+		}
+	})
 }
 
 //func (p *Postgres) queryIsSuperUser() (bool, error) {
