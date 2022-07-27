@@ -100,6 +100,22 @@ SELECT
 `
 }
 
+func queryCatalogRelations() string {
+	// kind of same as
+	// https://github.com/netdata/netdata/blob/750810e1798e09cc6210e83594eb9ed4905f8f12/collectors/python.d.plugin/postgres/postgres.chart.py#L336-L354
+	// TODO: do we need that? It is optional and disabled by default in py version.
+	return `
+SELECT
+    relkind,
+    COUNT(1),
+    SUM(relpages)* current_setting('block_size')::NUMERIC AS size 
+FROM
+    pg_class 
+GROUP BY
+    relkind;
+`
+}
+
 func queryDatabaseList() string {
 	return `
     SELECT

@@ -31,6 +31,7 @@ var (
 	dataV140004ServerUptime, _             = ioutil.ReadFile("testdata/v14.4/uptime.txt")
 	dataV140004TXIDWraparound, _           = ioutil.ReadFile("testdata/v14.4/txid_wraparound.txt")
 	dataV140004WALWrites, _                = ioutil.ReadFile("testdata/v14.4/wal_writes.txt")
+	dataV140004CatalogRelations, _         = ioutil.ReadFile("testdata/v14.4/catalog_relations.txt")
 
 	dataV140004DatabaseList1DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-1db.txt")
 	dataV140004DatabaseList2DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-2db.txt")
@@ -54,6 +55,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004ServerUptime":             dataV140004ServerUptime,
 		"dataV140004TXIDWraparound":           dataV140004TXIDWraparound,
 		"dataV140004WALWrites":                dataV140004WALWrites,
+		"dataV140004CatalogRelations":         dataV140004CatalogRelations,
 
 		"dataV140004DatabaseList1DB":   dataV140004DatabaseList1DB,
 		"dataV140004DatabaseList2DB":   dataV140004DatabaseList2DB,
@@ -122,6 +124,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 				mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 				mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
+				mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 
 				mockExpect(t, m, queryDatabaseStats(dbs), dataV140004DatabaseStats)
 				mockExpect(t, m, queryDatabaseConflicts(dbs), dataV140004DatabaseConflicts)
@@ -212,6 +215,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
+					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
@@ -226,6 +230,26 @@ func TestPostgres_Collect(t *testing.T) {
 						"buffers_backend_fsync":                                    0,
 						"buffers_checkpoint":                                       32768,
 						"buffers_clean":                                            0,
+						"catalog_relkind_I_count":                                  0,
+						"catalog_relkind_I_size":                                   0,
+						"catalog_relkind_S_count":                                  0,
+						"catalog_relkind_S_size":                                   0,
+						"catalog_relkind_c_count":                                  0,
+						"catalog_relkind_c_size":                                   0,
+						"catalog_relkind_f_count":                                  0,
+						"catalog_relkind_f_size":                                   0,
+						"catalog_relkind_i_count":                                  155,
+						"catalog_relkind_i_size":                                   3678208,
+						"catalog_relkind_m_count":                                  0,
+						"catalog_relkind_m_size":                                   0,
+						"catalog_relkind_p_count":                                  0,
+						"catalog_relkind_p_size":                                   0,
+						"catalog_relkind_r_count":                                  66,
+						"catalog_relkind_r_size":                                   3424256,
+						"catalog_relkind_t_count":                                  38,
+						"catalog_relkind_t_size":                                   548864,
+						"catalog_relkind_v_count":                                  137,
+						"catalog_relkind_v_size":                                   0,
 						"checkpoint_sync_time":                                     47,
 						"checkpoint_write_time":                                    167,
 						"checkpoints_req":                                          16,
@@ -306,7 +330,7 @@ func TestPostgres_Collect(t *testing.T) {
 						"db_production_xact_rollback":                              0,
 						"maxwritten_clean":                                         0,
 						"oldest_current_xid":                                       9,
-						"percent_towards_emergency_autovac":                        0,
+						"percent_towards_emergency_autovacuum":                     0,
 						"percent_towards_wraparound":                               0,
 						"server_connections_available":                             97,
 						"server_connections_used":                                  3,
@@ -331,6 +355,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
+					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
@@ -347,6 +372,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
+					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 
 					mockExpect(t, m, queryDatabaseStats(dbs1), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs1), dataV140004DatabaseConflicts)
@@ -368,6 +394,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
+					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 
 					mockExpect(t, m, queryDatabaseStats(dbs3), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs3), dataV140004DatabaseConflicts)
