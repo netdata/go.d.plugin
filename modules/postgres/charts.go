@@ -22,6 +22,8 @@ const (
 	prioAutovacuumPercentTowards
 	prioTXIDWraparoundPercentTowards
 	prioTXIDWraparoundOldestTXID
+	prioCatalogRelationCount
+	prioCatalogRelationSize
 	prioUptime
 	prioDBTransactions
 	prioDBConnectionsUtilization
@@ -53,6 +55,8 @@ var baseCharts = module.Charts{
 	percentTowardTXIDWraparoundChart.Copy(),
 	oldestTXIDChart.Copy(),
 
+	catalogRelationCountChart.Copy(),
+	catalogRelationSizeChart.Copy(),
 	serverUptimeChart.Copy(),
 }
 
@@ -201,6 +205,49 @@ var (
 		Priority: prioTXIDWraparoundOldestTXID,
 		Dims: module.Dims{
 			{ID: "oldest_current_xid", Name: "xid"},
+		},
+	}
+
+	catalogRelationCountChart = module.Chart{
+		ID:       "catalog_relation_count",
+		Title:    "Relation count",
+		Units:    "relations",
+		Fam:      "catalog",
+		Ctx:      "postgres.catalog_relation_count",
+		Priority: prioCatalogRelationCount,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "catalog_relkind_r_count", Name: "ordinary_table"},
+			{ID: "catalog_relkind_i_count", Name: "index"},
+			{ID: "catalog_relkind_S_count", Name: "sequence"},
+			{ID: "catalog_relkind_t_count", Name: "toast_table"},
+			{ID: "catalog_relkind_v_count", Name: "view"},
+			{ID: "catalog_relkind_m_count", Name: "materialized_view"},
+			{ID: "catalog_relkind_c_count", Name: "composite_type"},
+			{ID: "catalog_relkind_f_count", Name: "foreign_table"},
+			{ID: "catalog_relkind_p_count", Name: "partitioned_table"},
+			{ID: "catalog_relkind_I_count", Name: "partitioned_index"},
+		},
+	}
+	catalogRelationSizeChart = module.Chart{
+		ID:       "catalog_relation_size",
+		Title:    "Relation size",
+		Units:    "B",
+		Fam:      "catalog",
+		Ctx:      "postgres.catalog_relation_size",
+		Priority: prioCatalogRelationSize,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "catalog_relkind_r_size", Name: "ordinary_table"},
+			{ID: "catalog_relkind_i_size", Name: "index"},
+			{ID: "catalog_relkind_S_size", Name: "sequence"},
+			{ID: "catalog_relkind_t_size", Name: "toast_table"},
+			{ID: "catalog_relkind_v_size", Name: "view"},
+			{ID: "catalog_relkind_m_size", Name: "materialized_view"},
+			{ID: "catalog_relkind_c_size", Name: "composite_type"},
+			{ID: "catalog_relkind_f_size", Name: "foreign_table"},
+			{ID: "catalog_relkind_p_size", Name: "partitioned_table"},
+			{ID: "catalog_relkind_I_size", Name: "partitioned_index"},
 		},
 	}
 
