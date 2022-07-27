@@ -32,10 +32,11 @@ func TestDimAlgo_String(t *testing.T) {
 		expected string
 		actual   fmt.Stringer
 	}{
-		{"line", Line},
-		{"area", Area},
-		{"stacked", Stacked},
-		{"", DimAlgo("wrong")},
+		{"absolute", Absolute},
+		{"incremental", Incremental},
+		{"percentage-of-absolute-row", PercentOfAbsolute},
+		{"percentage-of-incremental-row", PercentOfIncremental},
+		{"absolute", DimAlgo("wrong")},
 	}
 
 	for _, v := range cases {
@@ -48,11 +49,10 @@ func TestChartType_String(t *testing.T) {
 		expected string
 		actual   fmt.Stringer
 	}{
-		{"absolute", Absolute},
-		{"incremental", Incremental},
-		{"percentage-of-absolute-row", PercentOfAbsolute},
-		{"percentage-of-incremental-row", PercentOfIncremental},
-		{"", ChartType("wrong")},
+		{"line", Line},
+		{"area", Area},
+		{"stacked", Stacked},
+		{"line", ChartType("wrong")},
 	}
 
 	for _, v := range cases {
