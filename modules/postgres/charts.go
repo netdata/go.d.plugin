@@ -18,6 +18,7 @@ const (
 	prioBGWriterBuffersWritten
 	prioBGWriterMaxWrittenClean
 	prioBGWriterBackedFsync
+	prioUptime
 	prioDBTransactions
 	prioDBConnectionsUtilization
 	prioDBConnections
@@ -43,6 +44,7 @@ var baseCharts = module.Charts{
 	bgWriterBuffersAllocChart.Copy(),
 	bgWriterMaxWrittenCleanChart.Copy(),
 	bgWriterBuffersBackendFsyncChart.Copy(),
+	serverUptimeChart.Copy(),
 }
 
 var (
@@ -143,6 +145,17 @@ var (
 		Priority: prioBGWriterBackedFsync,
 		Dims: module.Dims{
 			{ID: "buffers_backend_fsync", Name: "fsync", Algo: module.Incremental},
+		},
+	}
+	serverUptimeChart = module.Chart{
+		ID:       "server_uptime",
+		Title:    "Uptime",
+		Units:    "seconds",
+		Fam:      "uptime",
+		Ctx:      "postgres.uptime",
+		Priority: prioUptime,
+		Dims: module.Dims{
+			{ID: "server_uptime", Name: "uptime"},
 		},
 	}
 )

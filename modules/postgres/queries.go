@@ -29,6 +29,15 @@ func querySettingsMaxConnections() string {
 	return "SELECT current_setting('max_connections')::INT - current_setting('superuser_reserved_connections')::INT;"
 }
 
+func queryServerUptime() string {
+	return `
+SELECT
+    EXTRACT(epoch 
+FROM
+    CURRENT_TIMESTAMP - pg_postmaster_start_time());
+`
+}
+
 func queryDatabaseList() string {
 	return `
     SELECT
