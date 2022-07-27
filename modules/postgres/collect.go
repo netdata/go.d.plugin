@@ -59,6 +59,10 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying server uptime error: %v", err)
 	}
 
+	if err := p.collectTXIDWraparound(mx); err != nil {
+		return mx, fmt.Errorf("querying txid wraparound error: %v", err)
+	}
+
 	if err := p.collectDatabaseStats(mx); err != nil {
 		return mx, fmt.Errorf("querying database stats error: %v", err)
 	}
@@ -135,6 +139,20 @@ func (p *Postgres) collectUptime(mx map[string]int64) error {
 	mx["server_uptime"] = int64(v)
 
 	return nil
+}
+
+func (p *Postgres) collectTXIDWraparound(mx map[string]int64) error {
+	q := queryTXIDWraparound()
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	return collectRows(rows, func(column, value string) { mx[column] = safeParseInt(value) })
 }
 
 //func (p *Postgres) queryIsSuperUser() (bool, error) {
