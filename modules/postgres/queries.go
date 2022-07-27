@@ -67,6 +67,39 @@ func queryTXIDWraparound() string {
 `
 }
 
+func queryWALWrites(version int) string {
+	if version < 100000 {
+		return `
+SELECT
+    pg_xlog_location_diff( 
+    CASE
+        pg_is_in_recovery() 
+        WHEN
+            TRUE 
+        THEN
+            pg_last_xlog_receive_location() 
+        ELSE
+            pg_current_xlog_location() 
+    END
+, '0/0') AS wal_writes ;
+`
+	}
+	return `
+SELECT
+    pg_wal_lsn_diff( 
+    CASE
+        pg_is_in_recovery() 
+        WHEN
+            TRUE 
+        THEN
+            pg_last_wal_receive_lsn() 
+        ELSE
+            pg_current_wal_lsn() 
+    END
+, '0/0') AS wal_writes ;
+`
+}
+
 func queryDatabaseList() string {
 	return `
     SELECT
