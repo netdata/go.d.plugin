@@ -17,12 +17,16 @@ func queryServerVersion() string {
 //	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
 //}
 
+// TODO: this is not correct and we should use pg_stat_activity.
+// But we need to check what connections (backend_type) count towards 'max_connections'.
+// I think python version query doesn't count it correctly.
+// https://github.com/netdata/netdata/blob/1782e2d002bc5203128e5a5d2b801010e2822d2d/collectors/python.d.plugin/postgres/postgres.chart.py#L266
 func queryServerCurrentConnectionsNum() string {
 	return "SELECT sum(numbackends) FROM pg_stat_database;"
 }
 
 func querySettingsMaxConnections() string {
-	return "SHOW max_connections;"
+	return "SELECT current_setting('max_connections')::INT - current_setting('superuser_reserved_connections')::INT;"
 }
 
 func queryDatabaseList() string {
