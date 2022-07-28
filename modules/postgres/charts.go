@@ -19,6 +19,8 @@ const (
 	prioBGWriterMaxWrittenClean
 	prioBGWriterBackedFsync
 	prioWALWrites
+	prioWALFiles
+	prioWALArchive
 	prioAutovacuumPercentTowards
 	prioTXIDWraparoundPercentTowards
 	prioTXIDWraparoundOldestTXID
@@ -51,6 +53,8 @@ var baseCharts = module.Charts{
 	bgWriterMaxWrittenCleanChart.Copy(),
 	bgWriterBuffersBackendFsyncChart.Copy(),
 	walWritesChart.Copy(),
+	walFilesChart.Copy(),
+	walArchiveFilesChart.Copy(),
 	percentTowardsEmergencyAutovacuumChart.Copy(),
 	percentTowardTXIDWraparoundChart.Copy(),
 	oldestTXIDChart.Copy(),
@@ -170,6 +174,33 @@ var (
 		Priority: prioWALWrites,
 		Dims: module.Dims{
 			{ID: "wal_writes", Name: "writes", Algo: module.Incremental},
+		},
+	}
+	walFilesChart = module.Chart{
+		ID:       "wal_files",
+		Title:    "Write-Ahead Log files",
+		Units:    "files",
+		Fam:      "wal",
+		Ctx:      "postgres.wal_files",
+		Priority: prioWALFiles,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "wal_written_files", Name: "written"},
+			{ID: "wal_recycled_files", Name: "recycled"},
+		},
+	}
+
+	walArchiveFilesChart = module.Chart{
+		ID:       "wal_archive_files",
+		Title:    "Write-Ahead Log archive files",
+		Units:    "files/s",
+		Fam:      "wal archive",
+		Ctx:      "postgres.wal_archive_files",
+		Priority: prioWALArchive,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "wal_archive_files_ready_count", Name: "ready", Algo: module.Incremental},
+			{ID: "wal_archive_files_done_count", Name: "done", Algo: module.Incremental},
 		},
 	}
 

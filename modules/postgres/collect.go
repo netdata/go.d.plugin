@@ -67,6 +67,16 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying wal writes error: %v", err)
 	}
 
+	// TODO: superuser only
+	if err := p.collectWALFiles(mx); err != nil {
+		return mx, fmt.Errorf("querying wal files error: %v", err)
+	}
+
+	// TODO: superuser only
+	if err := p.collectWALArchiveFiles(mx); err != nil {
+		return mx, fmt.Errorf("querying wal archive files error: %v", err)
+	}
+
 	if err := p.collectCatalog(mx); err != nil {
 		return mx, fmt.Errorf("querying catalog relations error: %v", err)
 	}
@@ -175,6 +185,34 @@ func (p *Postgres) collectWALWrites(mx map[string]int64) error {
 
 	mx["wal_writes"] = v
 	return nil
+}
+
+func (p *Postgres) collectWALFiles(mx map[string]int64) error {
+	q := queryWALFiles(p.serverVersion)
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	return collectRows(rows, func(column, value string) { mx[column] = safeParseInt(value) })
+}
+
+func (p *Postgres) collectWALArchiveFiles(mx map[string]int64) error {
+	q := queryWALArchiveFiles(p.serverVersion)
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	return collectRows(rows, func(column, value string) { mx[column] = safeParseInt(value) })
 }
 
 func (p *Postgres) collectCatalog(mx map[string]int64) error {

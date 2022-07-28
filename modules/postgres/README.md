@@ -27,6 +27,8 @@ All metrics have "postgres." prefix.
 | bgwriter_maxwritten_clean            |  global  |                                                                 maxwritten                                                                 |    events/s    |
 | bgwriter_buffers_backend_fsync       |  global  |                                                                   fsync                                                                    |  operations/s  |
 | wal_writes                           |  global  |                                                                   writes                                                                   |      B/s       |
+| wal_files                            |  global  |                                                             written, recycled                                                              |     files      |
+| wal_archive_files                    |  global  |                                                                ready, done                                                                 |    files/s     |
 | percent_towards_emergency_autovacuum |  global  |                                                            emergency_autovacuum                                                            |   percentage   |
 | percent_towards_txid_wraparound      |  global  |                                                              txid_wraparound                                                               |   percentage   |
 | oldest_transaction_xid               |  global  |                                                                    xid                                                                     |      xid       |
