@@ -100,6 +100,78 @@ SELECT
 `
 }
 
+func queryWALFiles(version int) string {
+	if version < 100000 {
+		return `
+SELECT count(*) FILTER (WHERE type = 'recycled') AS wal_recycled_files,
+       count(*) FILTER (WHERE type = 'written')  AS wal_written_files
+FROM (SELECT wal.name,
+             pg_xlogfile_name(
+                     CASE pg_is_in_recovery()
+                         WHEN true THEN NULL
+                         ELSE pg_current_xlog_location()
+                         END),
+             CASE
+                 WHEN wal.name > pg_xlogfile_name(
+                         CASE pg_is_in_recovery()
+                             WHEN true THEN NULL
+                             ELSE pg_current_xlog_location()
+                             END) THEN 'recycled'
+                 ELSE 'written'
+                 END AS type
+      FROM pg_catalog.pg_ls_dir('pg_xlog') AS wal(name)
+      WHERE name ~ '^[0-9A-F]{24}$'
+      ORDER BY (pg_stat_file('pg_xlog/' || name, true)).modification,
+               wal.name DESC) sub;
+`
+	}
+	return `
+SELECT count(*) FILTER (WHERE type = 'recycled') AS wal_recycled_files,
+       count(*) FILTER (WHERE type = 'written')  AS wal_written_files
+FROM (SELECT wal.name,
+             pg_walfile_name(
+                     CASE pg_is_in_recovery()
+                         WHEN true THEN NULL
+                         ELSE pg_current_wal_lsn()
+                         END),
+             CASE
+                 WHEN wal.name > pg_walfile_name(
+                         CASE pg_is_in_recovery()
+                             WHEN true THEN NULL
+                             ELSE pg_current_wal_lsn()
+                             END) THEN 'recycled'
+                 ELSE 'written'
+                 END AS type
+      FROM pg_catalog.pg_ls_dir('pg_wal') AS wal(name)
+      WHERE name ~ '^[0-9A-F]{24}$'
+      ORDER BY (pg_stat_file('pg_wal/' || name, true)).modification,
+               wal.name DESC) sub;
+`
+}
+
+func queryWALArchiveFiles(version int) string {
+	if version < 100000 {
+		return `
+    SELECT
+        CAST(COALESCE(SUM(CAST(archive_file ~ $r$\.ready$$r$ as INT)),
+        0) AS INT) AS wal_archive_files_ready_count,
+        CAST(COALESCE(SUM(CAST(archive_file ~ $r$\.done$$r$ AS INT)),
+        0) AS INT)  AS wal_archive_files_done_count 
+    FROM
+        pg_catalog.pg_ls_dir(''pg_xlog/archive_status'') AS archive_files (archive_file);
+`
+	}
+	return `
+    SELECT
+        CAST(COALESCE(SUM(CAST(archive_file ~ $r$\.ready$$r$ as INT)),
+        0) AS INT) AS wal_archive_files_ready_count,
+        CAST(COALESCE(SUM(CAST(archive_file ~ $r$\.done$$r$ AS INT)),
+        0) AS INT)  AS wal_archive_files_done_count 
+    FROM
+        pg_catalog.pg_ls_dir('pg_wal/archive_status') AS archive_files (archive_file);
+`
+}
+
 func queryCatalogRelations() string {
 	// kind of same as
 	// https://github.com/netdata/netdata/blob/750810e1798e09cc6210e83594eb9ed4905f8f12/collectors/python.d.plugin/postgres/postgres.chart.py#L336-L354
