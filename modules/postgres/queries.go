@@ -188,6 +188,37 @@ GROUP BY
 `
 }
 
+func queryAutovacuumWorkers() string {
+	// https://github.com/postgres/postgres/blob/9e4f914b5eba3f49ab99bdecdc4f96fac099571f/src/backend/postmaster/autovacuum.c#L3168-L3183
+	return `
+SELECT count(*) FILTER (
+    WHERE
+            query LIKE 'autovacuum: ANALYZE%%'
+        AND query NOT LIKE '%%to prevent wraparound%%'
+    )        AS autovacuum_analyze,
+       count(*) FILTER (
+           WHERE
+                   query LIKE 'autovacuum: VACUUM ANALYZE%%'
+               AND query NOT LIKE '%%to prevent wraparound%%'
+           ) AS autovacuum_vacuum_analyze,
+       count(*) FILTER (
+           WHERE
+                   query LIKE 'autovacuum: VACUUM %.%%'
+               AND query NOT LIKE '%%to prevent wraparound%%'
+           ) AS autovacuum_vacuum,
+       count(*) FILTER (
+           WHERE
+           query LIKE '%%to prevent wraparound%%'
+           ) AS autovacuum_vacuum_freeze,
+       count(*) FILTER (
+           WHERE
+           query LIKE 'autovacuum: BRIN summarize%%'
+           ) AS autovacuum_brin_summarize
+FROM pg_stat_activity
+WHERE query NOT LIKE '%%pg_stat_activity%%';
+`
+}
+
 func queryDatabaseList() string {
 	return `
     SELECT

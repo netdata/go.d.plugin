@@ -21,6 +21,7 @@ const (
 	prioWALWrites
 	prioWALFiles
 	prioWALArchive
+	prioAutovacuumWorkers
 	prioAutovacuumPercentTowards
 	prioTXIDWraparoundPercentTowards
 	prioTXIDWraparoundOldestTXID
@@ -55,6 +56,7 @@ var baseCharts = module.Charts{
 	walWritesChart.Copy(),
 	walFilesChart.Copy(),
 	walArchiveFilesChart.Copy(),
+	autovacuumWorkersChart.Copy(),
 	percentTowardsEmergencyAutovacuumChart.Copy(),
 	percentTowardTXIDWraparoundChart.Copy(),
 	oldestTXIDChart.Copy(),
@@ -204,6 +206,21 @@ var (
 		},
 	}
 
+	autovacuumWorkersChart = module.Chart{
+		ID:       "autovacuum_workers",
+		Title:    "Autovacuum workers",
+		Units:    "workers",
+		Fam:      "autovacuum",
+		Ctx:      "postgres.autovacuum_workers",
+		Priority: prioAutovacuumWorkers,
+		Dims: module.Dims{
+			{ID: "autovacuum_analyze", Name: "analyze"},
+			{ID: "autovacuum_vacuum_analyze", Name: "vacuum_analyze"},
+			{ID: "autovacuum_vacuum", Name: "vacuum"},
+			{ID: "autovacuum_vacuum_freeze", Name: "vacuum_freeze"},
+			{ID: "autovacuum_brin_summarize", Name: "brin_summarize"},
+		},
+	}
 	percentTowardsEmergencyAutovacuumChart = module.Chart{
 		ID:       "percent_towards_emergency_autovacuum",
 		Title:    "Percent towards emergency autovacuum",

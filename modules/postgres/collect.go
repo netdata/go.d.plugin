@@ -81,6 +81,10 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying catalog relations error: %v", err)
 	}
 
+	if err := p.collectAutovacuumWorkers(mx); err != nil {
+		return mx, fmt.Errorf("querying autovacuum workers error: %v", err)
+	}
+
 	if err := p.collectDatabaseStats(mx); err != nil {
 		return mx, fmt.Errorf("querying database stats error: %v", err)
 	}
@@ -252,6 +256,20 @@ func (p *Postgres) collectCatalog(mx map[string]int64) error {
 			mx["catalog_relkind_"+kind+"_"+column] = safeParseInt(value)
 		}
 	})
+}
+
+func (p *Postgres) collectAutovacuumWorkers(mx map[string]int64) error {
+	q := queryAutovacuumWorkers()
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	return collectRows(rows, func(column, value string) { mx[column] = safeParseInt(value) })
 }
 
 //func (p *Postgres) queryIsSuperUser() (bool, error) {

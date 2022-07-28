@@ -34,6 +34,7 @@ var (
 	dataV140004WALFiles, _                 = ioutil.ReadFile("testdata/v14.4/wal_files.txt")
 	dataV140004WALArchiveFiles, _          = ioutil.ReadFile("testdata/v14.4/wal_archive_files.txt")
 	dataV140004CatalogRelations, _         = ioutil.ReadFile("testdata/v14.4/catalog_relations.txt")
+	dataV140004AutovacuumWorkers, _        = ioutil.ReadFile("testdata/v14.4/autovacuum_workers.txt")
 
 	dataV140004DatabaseList1DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-1db.txt")
 	dataV140004DatabaseList2DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-2db.txt")
@@ -60,6 +61,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004WALFiles":                 dataV140004WALFiles,
 		"dataV140004WALArchiveFiles":          dataV140004WALArchiveFiles,
 		"dataV140004CatalogRelations":         dataV140004CatalogRelations,
+		"dataV140004AutovacuumWorkers":        dataV140004AutovacuumWorkers,
 
 		"dataV140004DatabaseList1DB":   dataV140004DatabaseList1DB,
 		"dataV140004DatabaseList2DB":   dataV140004DatabaseList2DB,
@@ -131,6 +133,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 				mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 				mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
+				mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
 
 				mockExpect(t, m, queryDatabaseStats(dbs), dataV140004DatabaseStats)
 				mockExpect(t, m, queryDatabaseConflicts(dbs), dataV140004DatabaseConflicts)
@@ -224,6 +227,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
+					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
@@ -233,6 +237,11 @@ func TestPostgres_Collect(t *testing.T) {
 					mx := pg.Collect()
 
 					expected := map[string]int64{
+						"autovacuum_analyze":                                       0,
+						"autovacuum_brin_summarize":                                0,
+						"autovacuum_vacuum":                                        0,
+						"autovacuum_vacuum_analyze":                                0,
+						"autovacuum_vacuum_freeze":                                 0,
 						"buffers_alloc":                                            27295744,
 						"buffers_backend":                                          0,
 						"buffers_backend_fsync":                                    0,
@@ -370,6 +379,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
+					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
@@ -389,6 +399,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
+					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
 
 					mockExpect(t, m, queryDatabaseStats(dbs1), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs1), dataV140004DatabaseConflicts)
@@ -413,6 +424,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
+					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
 
 					mockExpect(t, m, queryDatabaseStats(dbs3), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs3), dataV140004DatabaseConflicts)
