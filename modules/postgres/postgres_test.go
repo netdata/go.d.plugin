@@ -386,6 +386,8 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
+					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
+					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 
 					mockExpect(t, m, queryDatabaseStats(dbs1), dataV140004DatabaseStats)
