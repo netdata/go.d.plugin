@@ -35,8 +35,8 @@ require (
 	go.mongodb.org/mongo-driver v1.9.1
 	gopkg.in/ini.v1 v1.66.6
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.24.2
-	k8s.io/apimachinery v0.24.2
+	k8s.io/api v0.24.3
+	k8s.io/apimachinery v0.24.3
 	k8s.io/client-go v0.24.2
 	layeh.com/radius v0.0.0-20190322222518-890bc1058917
 )
