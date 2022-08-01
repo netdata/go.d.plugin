@@ -28,6 +28,8 @@ const (
 	prioCatalogRelationCount
 	prioCatalogRelationSize
 	prioUptime
+	prioReplicationWALDelta
+	prioReplicationWALLag
 	prioDBTransactions
 	prioDBConnectionsUtilization
 	prioDBConnections
@@ -311,6 +313,39 @@ var (
 		},
 	}
 )
+var (
+	replicationStandbyAppCharts = module.Charts{
+		replicationStandbyAppWALDelta.Copy(),
+		replicationStandbyAppWALLag.Copy(),
+	}
+	replicationStandbyAppWALDelta = module.Chart{
+		ID:       "replication_standby_app_%s_wal_delta",
+		Title:    "Standby application WAL delta",
+		Units:    "B",
+		Fam:      "replication delta",
+		Ctx:      "postgres.replication_standby_app_wal_delta",
+		Priority: prioReplicationWALDelta,
+		Dims: module.Dims{
+			{ID: "repl_standby_app_%s_wal_sent_delta", Name: "sent_delta"},
+			{ID: "repl_standby_app_%s_wal_write_delta", Name: "write_delta"},
+			{ID: "repl_standby_app_%s_wal_flush_delta", Name: "flush_delta"},
+			{ID: "repl_standby_app_%s_wal_replay_delta", Name: "replay_delta"},
+		},
+	}
+	replicationStandbyAppWALLag = module.Chart{
+		ID:       "replication_standby_app_%s_wal_lag",
+		Title:    "Standby application WAL lag",
+		Units:    "seconds",
+		Fam:      "replication lag",
+		Ctx:      "postgres.replication_standby_app_wal_lag",
+		Priority: prioReplicationWALLag,
+		Dims: module.Dims{
+			{ID: "repl_standby_app_%s_wal_write_lag", Name: "write_lag"},
+			{ID: "repl_standby_app_%s_wal_flush_lag", Name: "flush_lag"},
+			{ID: "repl_standby_app_%s_wal_replay_lag", Name: "replay_lag"},
+		},
+	}
+)
 
 var (
 	dbChartsTmpl = module.Charts{
@@ -510,6 +545,37 @@ var (
 		},
 	}
 )
+
+func newReplicationStandbyAppCharts(app string) *module.Charts {
+	charts := replicationStandbyAppCharts.Copy()
+	for _, c := range *charts {
+		c.ID = fmt.Sprintf(c.ID, app)
+		c.Labels = []module.Label{
+			{Key: "application", Value: app},
+		}
+		for _, d := range c.Dims {
+			d.ID = fmt.Sprintf(d.ID, app)
+		}
+	}
+	return charts
+}
+
+func (p *Postgres) addNewReplicationStandbyAppCharts(app string) {
+	charts := newReplicationStandbyAppCharts(app)
+	if err := p.Charts().Add(*charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) removeReplicationStandbyAppCharts(app string) {
+	prefix := fmt.Sprintf("replication_standby_app_%s_", app)
+	for _, c := range *p.Charts() {
+		if strings.HasPrefix(c.ID, prefix) {
+			c.MarkRemove()
+			c.MarkNotCreated()
+		}
+	}
+}
 
 func newDatabaseCharts(dbname string) *module.Charts {
 	charts := dbChartsTmpl.Copy()
