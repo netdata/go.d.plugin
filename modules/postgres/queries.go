@@ -158,7 +158,7 @@ func queryWALArchiveFiles(version int) string {
         CAST(COALESCE(SUM(CAST(archive_file ~ $r$\.done$$r$ AS INT)),
         0) AS INT)  AS wal_archive_files_done_count 
     FROM
-        pg_catalog.pg_ls_dir(''pg_xlog/archive_status'') AS archive_files (archive_file);
+        pg_catalog.pg_ls_dir('pg_xlog/archive_status') AS archive_files (archive_file);
 `
 	}
 	return `
@@ -216,6 +216,91 @@ SELECT count(*) FILTER (
            ) AS autovacuum_brin_summarize
 FROM pg_stat_activity
 WHERE query NOT LIKE '%%pg_stat_activity%%';
+`
+}
+
+func queryStandbyAppList() string {
+	return `
+    SELECT
+        application_name 
+    FROM
+        pg_stat_replication 
+    WHERE
+        application_name IS NOT NULL;
+`
+}
+
+func queryReplicationStandbyAppDelta(version int) string {
+	if version < 100000 {
+		return `
+SELECT application_name,
+       pg_xlog_location_diff(
+               CASE pg_is_in_recovery()
+                   WHEN true THEN pg_last_xlog_receive_location()
+                   ELSE pg_current_xlog_location()
+                   END,
+               sent_location)   AS sent_delta,
+       pg_xlog_location_diff(
+               CASE pg_is_in_recovery()
+                   WHEN true THEN pg_last_xlog_receive_location()
+                   ELSE pg_current_xlog_location()
+                   END,
+               write_location)  AS write_delta,
+       pg_xlog_location_diff(
+               CASE pg_is_in_recovery()
+                   WHEN true THEN pg_last_xlog_receive_location()
+                   ELSE pg_current_xlog_location()
+                   END,
+               flush_location)  AS flush_delta,
+       pg_xlog_location_diff(
+               CASE pg_is_in_recovery()
+                   WHEN true THEN pg_last_xlog_receive_location()
+                   ELSE pg_current_xlog_location()
+                   END,
+               replay_location) AS replay_delta
+FROM pg_stat_replication psr
+WHERE application_name IS NOT NULL;
+`
+	}
+	return `
+SELECT application_name,
+       pg_wal_lsn_diff(
+               CASE pg_is_in_recovery()
+                   WHEN true THEN pg_last_wal_receive_lsn()
+                   ELSE pg_current_wal_lsn()
+                   END,
+               sent_lsn)   AS sent_delta,
+       pg_wal_lsn_diff(
+               CASE pg_is_in_recovery()
+                   WHEN true THEN pg_last_wal_receive_lsn()
+                   ELSE pg_current_wal_lsn()
+                   END,
+               write_lsn)  AS write_delta,
+       pg_wal_lsn_diff(
+               CASE pg_is_in_recovery()
+                   WHEN true THEN pg_last_wal_receive_lsn()
+                   ELSE pg_current_wal_lsn()
+                   END,
+               flush_lsn)  AS flush_delta,
+       pg_wal_lsn_diff(
+               CASE pg_is_in_recovery()
+                   WHEN true THEN pg_last_wal_receive_lsn()
+                   ELSE pg_current_wal_lsn()
+                   END,
+               replay_lsn) AS replay_delta
+FROM pg_stat_replication
+WHERE application_name IS NOT NULL;
+`
+}
+
+func queryRepliationStandbyAppLag() string {
+	return `
+SELECT application_name,
+       COALESCE(EXTRACT(EPOCH FROM write_lag)::bigint, 0)  AS write_lag,
+       COALESCE(EXTRACT(EPOCH FROM flush_lag)::bigint, 0)  AS flush_lag,
+       COALESCE(EXTRACT(EPOCH FROM replay_lag)::bigint, 0) AS replay_lag
+FROM pg_stat_replication psr
+WHERE application_name IS NOT NULL;
 `
 }
 

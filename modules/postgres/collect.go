@@ -45,6 +45,15 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		p.collectDatabaseList(dbs)
 	}
 
+	if now.Sub(p.relistStandbyTime) > p.relistStandbyEvery {
+		p.relistStandbyTime = now
+		apps, err := p.queryStandbyAppList()
+		if err != nil {
+			return nil, fmt.Errorf("querying standby app list error: %v", err)
+		}
+		p.collectStandbyAppList(apps)
+	}
+
 	mx := make(map[string]int64)
 
 	if err := p.collectConnection(mx); err != nil {
@@ -83,6 +92,17 @@ func (p *Postgres) collect() (map[string]int64, error) {
 
 	if err := p.collectAutovacuumWorkers(mx); err != nil {
 		return mx, fmt.Errorf("querying autovacuum workers error: %v", err)
+	}
+
+	if len(p.standbyApps) > 0 {
+		if err := p.collectReplicationStandbyAppWALDelta(mx); err != nil {
+			return mx, fmt.Errorf("querying replication standby app wal delta error: %v", err)
+		}
+		if p.serverVersion >= 100000 {
+			if err := p.collectReplicationStandbyAppWALLag(mx); err != nil {
+				return mx, fmt.Errorf("querying replication standby app wal lag error: %v", err)
+			}
+		}
 	}
 
 	if err := p.collectDatabaseStats(mx); err != nil {
@@ -270,6 +290,101 @@ func (p *Postgres) collectAutovacuumWorkers(mx map[string]int64) error {
 	defer func() { _ = rows.Close() }()
 
 	return collectRows(rows, func(column, value string) { mx[column] = safeParseInt(value) })
+}
+
+func (p *Postgres) queryStandbyAppList() ([]string, error) {
+	q := queryStandbyAppList()
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var apps []string
+	seen := make(map[string]bool)
+	if err := collectRows(rows, func(column, value string) {
+		if column == "application_name" && !seen[value] {
+			seen[value] = true
+			apps = append(apps, value)
+		}
+	}); err != nil {
+		return nil, err
+	}
+
+	return apps, nil
+}
+
+func (p *Postgres) collectStandbyAppList(apps []string) {
+	if len(apps) == 0 {
+		return
+	}
+
+	collected := make(map[string]bool)
+	for _, db := range p.standbyApps {
+		collected[db] = true
+	}
+	p.standbyApps = apps
+
+	seen := make(map[string]bool)
+	for _, app := range apps {
+		seen[app] = true
+		if !collected[app] {
+			collected[app] = true
+			p.addNewReplicationStandbyAppCharts(app)
+		}
+	}
+	for app := range collected {
+		if !seen[app] {
+			p.removeReplicationStandbyAppCharts(app)
+		}
+	}
+}
+
+func (p *Postgres) collectReplicationStandbyAppWALDelta(mx map[string]int64) error {
+	q := queryReplicationStandbyAppDelta(p.serverVersion)
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var app string
+	return collectRows(rows, func(column, value string) {
+		switch column {
+		case "application_name":
+			app = value
+		default:
+			mx["repl_standby_app_"+app+"_wal_"+column] += safeParseInt(value)
+		}
+	})
+}
+
+func (p *Postgres) collectReplicationStandbyAppWALLag(mx map[string]int64) error {
+	q := queryRepliationStandbyAppLag()
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var app string
+	return collectRows(rows, func(column, value string) {
+		switch column {
+		case "application_name":
+			app = value
+		default:
+			mx["repl_standby_app_"+app+"_wal_"+column] += safeParseInt(value)
+		}
+	})
 }
 
 //func (p *Postgres) queryIsSuperUser() (bool, error) {
