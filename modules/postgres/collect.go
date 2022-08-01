@@ -10,6 +10,12 @@ import (
 	"time"
 )
 
+const (
+	pgVersion94 = 9_04_00
+	pgVersion10 = 10_00_00
+	pgVersion11 = 11_00_00
+)
+
 func (p *Postgres) collect() (map[string]int64, error) {
 	if p.db == nil {
 		if err := p.openConnection(); err != nil {
@@ -17,20 +23,20 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		}
 	}
 
-	if p.serverVersion == 0 {
+	if p.pgVersion == 0 {
 		ver, err := p.queryServerVersion()
 		if err != nil {
 			return nil, fmt.Errorf("querying server version error: %v", err)
 		}
-		p.serverVersion = ver
+		p.pgVersion = ver
 	}
 
-	if p.isSuperUser == nil {
+	if p.superUser == nil {
 		v, err := p.queryIsSuperUser()
 		if err != nil {
 			return nil, fmt.Errorf("querying is super user error: %v", err)
 		}
-		p.isSuperUser = &v
+		p.superUser = &v
 	}
 
 	now := time.Now()
@@ -62,7 +68,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		p.collectReplicationStandbyAppList(apps)
 	}
 
-	if now.Sub(p.relistReplSlotTime) > p.relistReplSlotEvery {
+	if p.pgVersion >= pgVersion10 && now.Sub(p.relistReplSlotTime) > p.relistReplSlotEvery {
 		p.relistReplSlotTime = now
 		slots, err := p.queryReplicationSlotList()
 		if err != nil {
@@ -73,72 +79,14 @@ func (p *Postgres) collect() (map[string]int64, error) {
 
 	mx := make(map[string]int64)
 
-	if err := p.collectConnection(mx); err != nil {
-		return mx, fmt.Errorf("querying server connections error: %v", err)
+	if err := p.collectGlobalMetrics(mx); err != nil {
+		return mx, err
 	}
-
-	if err := p.collectCheckpoints(mx); err != nil {
-		return mx, fmt.Errorf("querying database conflicts error: %v", err)
+	if err := p.collectReplicationMetrics(mx); err != nil {
+		return mx, err
 	}
-
-	if err := p.collectUptime(mx); err != nil {
-		return mx, fmt.Errorf("querying server uptime error: %v", err)
-	}
-
-	if err := p.collectTXIDWraparound(mx); err != nil {
-		return mx, fmt.Errorf("querying txid wraparound error: %v", err)
-	}
-
-	if err := p.collectWALWrites(mx); err != nil {
-		return mx, fmt.Errorf("querying wal writes error: %v", err)
-	}
-
-	if p.isSuperUser != nil && *p.isSuperUser {
-		if err := p.collectWALFiles(mx); err != nil {
-			return mx, fmt.Errorf("querying wal files error: %v", err)
-		}
-		if err := p.collectWALArchiveFiles(mx); err != nil {
-			return mx, fmt.Errorf("querying wal archive files error: %v", err)
-		}
-	}
-
-	if err := p.collectCatalog(mx); err != nil {
-		return mx, fmt.Errorf("querying catalog relations error: %v", err)
-	}
-
-	if err := p.collectAutovacuumWorkers(mx); err != nil {
-		return mx, fmt.Errorf("querying autovacuum workers error: %v", err)
-	}
-
-	if len(p.replStandbyApps) > 0 {
-		if err := p.collectReplicationStandbyAppWALDelta(mx); err != nil {
-			return mx, fmt.Errorf("querying replication standby app wal delta error: %v", err)
-		}
-		if p.serverVersion >= 100000 {
-			if err := p.collectReplicationStandbyAppWALLag(mx); err != nil {
-				return mx, fmt.Errorf("querying replication standby app wal lag error: %v", err)
-			}
-		}
-	}
-
-	if p.isSuperUser != nil && *p.isSuperUser && len(p.replSlots) > 0 {
-		if p.serverVersion >= 100000 {
-			if err := p.collectReplicationSlotFiles(mx); err != nil {
-				return mx, fmt.Errorf("querying replication slot files error: %v", err)
-			}
-		}
-	}
-
-	if len(p.databases) > 0 {
-		if err := p.collectDatabaseStats(mx); err != nil {
-			return mx, fmt.Errorf("querying database stats error: %v", err)
-		}
-		if err := p.collectDatabaseConflicts(mx); err != nil {
-			return mx, fmt.Errorf("querying database conflicts error: %v", err)
-		}
-		if err := p.collectDatabaseLocks(mx); err != nil {
-			return mx, fmt.Errorf("querying database locks error: %v", err)
-		}
+	if err := p.collectDatabasesMetrics(mx); err != nil {
+		return mx, err
 	}
 
 	return mx, nil
@@ -200,6 +148,8 @@ func (p *Postgres) queryIsSuperUser() (bool, error) {
 	}
 	return v, nil
 }
+
+func (p *Postgres) isSuperUser() bool { return p.superUser != nil && *p.superUser }
 
 func collectRows(rows *sql.Rows, assign func(column, value string)) error {
 	if assign == nil {

@@ -2,8 +2,54 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 )
+
+func (p *Postgres) collectGlobalMetrics(mx map[string]int64) error {
+	if err := p.collectConnection(mx); err != nil {
+		return fmt.Errorf("querying server connections error: %v", err)
+	}
+
+	if err := p.collectCheckpoints(mx); err != nil {
+		return fmt.Errorf("querying database conflicts error: %v", err)
+	}
+
+	if err := p.collectUptime(mx); err != nil {
+		return fmt.Errorf("querying server uptime error: %v", err)
+	}
+
+	if err := p.collectTXIDWraparound(mx); err != nil {
+		return fmt.Errorf("querying txid wraparound error: %v", err)
+	}
+
+	if err := p.collectWALWrites(mx); err != nil {
+		return fmt.Errorf("querying wal writes error: %v", err)
+	}
+
+	if err := p.collectCatalogRelations(mx); err != nil {
+		return fmt.Errorf("querying catalog relations error: %v", err)
+	}
+
+	if err := p.collectAutovacuumWorkers(mx); err != nil {
+		return fmt.Errorf("querying autovacuum workers error: %v", err)
+	}
+
+	if !p.isSuperUser() {
+		return nil
+	}
+
+	if p.pgVersion >= pgVersion94 {
+		if err := p.collectWALFiles(mx); err != nil {
+			return fmt.Errorf("querying wal files error: %v", err)
+		}
+	}
+	if err := p.collectWALArchiveFiles(mx); err != nil {
+		return fmt.Errorf("querying wal archive files error: %v", err)
+	}
+
+	return nil
+}
 
 func (p *Postgres) collectConnection(mx map[string]int64) error {
 	q := queryServerCurrentConnectionsNum()
@@ -73,7 +119,7 @@ func (p *Postgres) collectTXIDWraparound(mx map[string]int64) error {
 }
 
 func (p *Postgres) collectWALWrites(mx map[string]int64) error {
-	q := queryWALWrites(p.serverVersion)
+	q := queryWALWrites(p.pgVersion)
 
 	var v int64
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
@@ -87,7 +133,7 @@ func (p *Postgres) collectWALWrites(mx map[string]int64) error {
 }
 
 func (p *Postgres) collectWALFiles(mx map[string]int64) error {
-	q := queryWALFiles(p.serverVersion)
+	q := queryWALFiles(p.pgVersion)
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
@@ -101,7 +147,7 @@ func (p *Postgres) collectWALFiles(mx map[string]int64) error {
 }
 
 func (p *Postgres) collectWALArchiveFiles(mx map[string]int64) error {
-	q := queryWALArchiveFiles(p.serverVersion)
+	q := queryWALArchiveFiles(p.pgVersion)
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
@@ -114,7 +160,7 @@ func (p *Postgres) collectWALArchiveFiles(mx map[string]int64) error {
 	return collectRows(rows, func(column, value string) { mx[column] = safeParseInt(value) })
 }
 
-func (p *Postgres) collectCatalog(mx map[string]int64) error {
+func (p *Postgres) collectCatalogRelations(mx map[string]int64) error {
 	q := queryCatalogRelations()
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)

@@ -68,7 +68,7 @@ func queryTXIDWraparound() string {
 }
 
 func queryWALWrites(version int) string {
-	if version < 100000 {
+	if version < pgVersion10 {
 		return `
 SELECT
     pg_xlog_location_diff( 
@@ -101,7 +101,7 @@ SELECT
 }
 
 func queryWALFiles(version int) string {
-	if version < 100000 {
+	if version < pgVersion10 {
 		return `
 SELECT count(*) FILTER (WHERE type = 'recycled') AS wal_recycled_files,
        count(*) FILTER (WHERE type = 'written')  AS wal_written_files
@@ -150,7 +150,7 @@ FROM (SELECT wal.name,
 }
 
 func queryWALArchiveFiles(version int) string {
-	if version < 100000 {
+	if version < pgVersion10 {
 		return `
     SELECT
         CAST(COALESCE(SUM(CAST(archive_file ~ $r$\.ready$$r$ as INT)),
@@ -231,7 +231,7 @@ func queryReplicationStandbyAppList() string {
 }
 
 func queryReplicationStandbyAppDelta(version int) string {
-	if version < 100000 {
+	if version < pgVersion10 {
 		return `
 SELECT application_name,
        pg_xlog_location_diff(
@@ -312,7 +312,7 @@ FROM pg_replication_slots;
 }
 
 func queryReplicationSlotFiles(version int) string {
-	if version < 110000 {
+	if version < pgVersion11 {
 		return `
 WITH wal_size AS (
   SELECT
