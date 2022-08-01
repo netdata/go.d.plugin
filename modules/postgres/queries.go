@@ -339,7 +339,7 @@ FROM
               pg_wal_lsn_diff(pg_last_wal_receive_lsn(), slot.restart_lsn)
               -- this is needed to account for whole WAL retention and
               -- not only size retention
-              + (pg_wal_lsn_diff(restart_lsn, '0/0') %% s.val)
+              + (pg_wal_lsn_diff(restart_lsn, '0/0') % s.val)
             ) / s.val
             ELSE (
               pg_wal_lsn_diff(pg_current_wal_lsn(), slot.restart_lsn)
@@ -392,7 +392,7 @@ FROM
               pg_wal_lsn_diff(pg_last_wal_receive_lsn(), slot.restart_lsn)
               -- this is needed to account for whole WAL retention and
               -- not only size retention
-              + (pg_wal_lsn_diff(restart_lsn, '0/0') %% s.val)
+              + (pg_wal_lsn_diff(restart_lsn, '0/0') % s.val)
             ) / s.val
             ELSE (
               pg_wal_lsn_diff(pg_current_wal_lsn(), slot.restart_lsn)
