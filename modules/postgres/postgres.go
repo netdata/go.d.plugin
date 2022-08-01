@@ -48,8 +48,9 @@ type Postgres struct {
 
 	db *sql.DB
 
-	//isSuperUser    bool
-	serverVersion  int
+	superUser *bool
+	pgVersion int
+
 	maxConnections int64
 
 	recheckSettingsTime    time.Time

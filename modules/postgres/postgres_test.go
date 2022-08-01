@@ -135,6 +135,7 @@ func TestPostgres_Check(t *testing.T) {
 			wantFail: false,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 				mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
@@ -146,14 +147,14 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 				mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 				mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
-				mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
-				mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 				mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 				mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
 
+				mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
+				mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
+
 				mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
 				mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
-
 				mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 				mockExpect(t, m, queryDatabaseStats(dbs), dataV140004DatabaseStats)
@@ -165,6 +166,7 @@ func TestPostgres_Check(t *testing.T) {
 			wantFail: false,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
@@ -185,6 +187,7 @@ func TestPostgres_Check(t *testing.T) {
 			wantFail: true,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpectErr(m, querySettingsMaxConnections())
 			},
@@ -193,6 +196,7 @@ func TestPostgres_Check(t *testing.T) {
 			wantFail: true,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 				mockExpectErr(m, queryDatabaseList())
@@ -238,6 +242,7 @@ func TestPostgres_Collect(t *testing.T) {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
@@ -249,14 +254,14 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
-					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
-					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
 
+					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
+					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
+
 					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
-
 					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
@@ -413,6 +418,7 @@ func TestPostgres_Collect(t *testing.T) {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
@@ -424,14 +430,14 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
-					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
-					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
 
+					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
+					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
+
 					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
-
 					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
@@ -449,14 +455,14 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
-					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
-					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
 
+					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
+					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
+
 					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
-
 					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 					mockExpect(t, m, queryDatabaseStats(dbs1), dataV140004DatabaseStats)
@@ -479,14 +485,14 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
-					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
-					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
 
+					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
+					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
+
 					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
-
 					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 					mockExpect(t, m, queryDatabaseStats(dbs3), dataV140004DatabaseStats)
@@ -517,6 +523,7 @@ func TestPostgres_Collect(t *testing.T) {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpectErr(m, querySettingsMaxConnections())
 				},
@@ -531,6 +538,7 @@ func TestPostgres_Collect(t *testing.T) {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpectErr(m, queryDatabaseList())
@@ -546,6 +554,7 @@ func TestPostgres_Collect(t *testing.T) {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)

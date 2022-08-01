@@ -4,7 +4,24 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 )
+
+func (p *Postgres) collectDatabasesMetrics(mx map[string]int64) error {
+	if len(p.databases) == 0 {
+		return nil
+	}
+	if err := p.collectDatabaseStats(mx); err != nil {
+		return fmt.Errorf("querying database stats error: %v", err)
+	}
+	if err := p.collectDatabaseConflicts(mx); err != nil {
+		return fmt.Errorf("querying database conflicts error: %v", err)
+	}
+	if err := p.collectDatabaseLocks(mx); err != nil {
+		return fmt.Errorf("querying database locks error: %v", err)
+	}
+	return nil
+}
 
 func (p *Postgres) collectDatabaseStats(mx map[string]int64) error {
 	q := queryDatabaseStats(p.databases)
