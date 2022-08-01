@@ -27,10 +27,11 @@ func New() *Postgres {
 			Timeout: web.Duration{Duration: time.Second},
 			DSN:     "postgres://postgres:postgres@127.0.0.1:5432/postgres",
 		},
-		charts:               baseCharts.Copy(),
-		recheckSettingsEvery: time.Minute * 30,
-		relistDatabaseEvery:  time.Minute,
-		relistStandbyEvery:   time.Minute,
+		charts:                 baseCharts.Copy(),
+		recheckSettingsEvery:   time.Minute * 30,
+		relistDatabaseEvery:    time.Minute,
+		relistReplStandbyEvery: time.Minute,
+		relistReplSlotEvery:    time.Minute,
 	}
 }
 
@@ -51,17 +52,18 @@ type Postgres struct {
 	serverVersion  int
 	maxConnections int64
 
-	recheckSettingsTime  time.Time
-	recheckSettingsEvery time.Duration
+	recheckSettingsTime    time.Time
+	recheckSettingsEvery   time.Duration
+	relistDatabaseTime     time.Time
+	relistDatabaseEvery    time.Duration
+	relistReplStandbyTime  time.Time
+	relistReplStandbyEvery time.Duration
+	relistReplSlotTime     time.Time
+	relistReplSlotEvery    time.Duration
 
-	relistDatabaseTime  time.Time
-	relistDatabaseEvery time.Duration
-
-	relistStandbyTime  time.Time
-	relistStandbyEvery time.Duration
-
-	databases   []string
-	standbyApps []string
+	databases       []string
+	replStandbyApps []string
+	replSlots       []string
 }
 
 func (p *Postgres) Init() bool {
