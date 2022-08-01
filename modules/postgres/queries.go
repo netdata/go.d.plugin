@@ -219,7 +219,7 @@ WHERE query NOT LIKE '%%pg_stat_activity%%';
 `
 }
 
-func queryStandbyAppList() string {
+func queryReplicationStandbyAppList() string {
 	return `
     SELECT
         application_name 
@@ -293,7 +293,7 @@ WHERE application_name IS NOT NULL;
 `
 }
 
-func queryRepliationStandbyAppLag() string {
+func queryReplicationStandbyAppLag() string {
 	return `
 SELECT application_name,
        COALESCE(EXTRACT(EPOCH FROM write_lag)::bigint, 0)  AS write_lag,
