@@ -13,9 +13,9 @@ func queryServerVersion() string {
 	return "SHOW server_version_num;"
 }
 
-//func queryIsSuperUser() string {
-//	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
-//}
+func queryIsSuperUser() string {
+	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
+}
 
 // TODO: this is not correct and we should use pg_stat_activity.
 // But we need to check what connections (backend_type) count towards 'max_connections'.

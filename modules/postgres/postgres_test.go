@@ -135,6 +135,7 @@ func TestPostgres_Check(t *testing.T) {
 			wantFail: false,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 				mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
@@ -165,6 +166,7 @@ func TestPostgres_Check(t *testing.T) {
 			wantFail: false,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
@@ -185,6 +187,7 @@ func TestPostgres_Check(t *testing.T) {
 			wantFail: true,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpectErr(m, querySettingsMaxConnections())
 			},
@@ -193,6 +196,7 @@ func TestPostgres_Check(t *testing.T) {
 			wantFail: true,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 				mockExpectErr(m, queryDatabaseList())
@@ -238,6 +242,7 @@ func TestPostgres_Collect(t *testing.T) {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
@@ -413,6 +418,7 @@ func TestPostgres_Collect(t *testing.T) {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
@@ -517,6 +523,7 @@ func TestPostgres_Collect(t *testing.T) {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpectErr(m, querySettingsMaxConnections())
 				},
@@ -531,6 +538,7 @@ func TestPostgres_Collect(t *testing.T) {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpectErr(m, queryDatabaseList())
@@ -546,6 +554,7 @@ func TestPostgres_Collect(t *testing.T) {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)

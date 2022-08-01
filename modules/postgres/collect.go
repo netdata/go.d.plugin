@@ -25,6 +25,14 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		p.serverVersion = ver
 	}
 
+	if p.isSuperUser == nil {
+		v, err := p.queryIsSuperUser()
+		if err != nil {
+			return nil, fmt.Errorf("querying is super user error: %v", err)
+		}
+		p.isSuperUser = &v
+	}
+
 	now := time.Now()
 
 	if now.Sub(p.recheckSettingsTime) > p.recheckSettingsEvery {
@@ -85,14 +93,13 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying wal writes error: %v", err)
 	}
 
-	// TODO: superuser only
-	if err := p.collectWALFiles(mx); err != nil {
-		return mx, fmt.Errorf("querying wal files error: %v", err)
-	}
-
-	// TODO: superuser only
-	if err := p.collectWALArchiveFiles(mx); err != nil {
-		return mx, fmt.Errorf("querying wal archive files error: %v", err)
+	if p.isSuperUser != nil && *p.isSuperUser {
+		if err := p.collectWALFiles(mx); err != nil {
+			return mx, fmt.Errorf("querying wal files error: %v", err)
+		}
+		if err := p.collectWALArchiveFiles(mx); err != nil {
+			return mx, fmt.Errorf("querying wal archive files error: %v", err)
+		}
 	}
 
 	if err := p.collectCatalog(mx); err != nil {
@@ -114,8 +121,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		}
 	}
 
-	// TODO: superuser only
-	if len(p.replSlots) > 0 {
+	if p.isSuperUser != nil && *p.isSuperUser && len(p.replSlots) > 0 {
 		if p.serverVersion >= 100000 {
 			if err := p.collectReplicationSlotFiles(mx); err != nil {
 				return mx, fmt.Errorf("querying replication slot files error: %v", err)
@@ -127,11 +133,9 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		if err := p.collectDatabaseStats(mx); err != nil {
 			return mx, fmt.Errorf("querying database stats error: %v", err)
 		}
-
 		if err := p.collectDatabaseConflicts(mx); err != nil {
 			return mx, fmt.Errorf("querying database conflicts error: %v", err)
 		}
-
 		if err := p.collectDatabaseLocks(mx); err != nil {
 			return mx, fmt.Errorf("querying database locks error: %v", err)
 		}
@@ -185,17 +189,17 @@ func (p *Postgres) queryServerVersion() (int, error) {
 	return strconv.Atoi(s)
 }
 
-//func (p *Postgres) queryIsSuperUser() (bool, error) {
-//	q := queryIsSuperUser()
-//
-//	var v bool
-//	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
-//	defer cancel()
-//	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
-//		return false, err
-//	}
-//	return v, nil
-//}
+func (p *Postgres) queryIsSuperUser() (bool, error) {
+	q := queryIsSuperUser()
+
+	var v bool
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
+		return false, err
+	}
+	return v, nil
+}
 
 func collectRows(rows *sql.Rows, assign func(column, value string)) error {
 	if assign == nil {
