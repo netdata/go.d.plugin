@@ -38,6 +38,7 @@ All metrics have "postgres." prefix.
 | uptime                               |       global        |                                                                   uptime                                                                   |    seconds     |
 | replication_standby_app_wal_delta    | standby application |                                             sent_delta, write_delta, flush_delta, replay_delta                                             |       B        |
 | replication_standby_app_wal_lag      | standby application |                                                      write_lag, flush_lag, replay_lag                                                      |    seconds     |
+| replication_standby_app_wal_lag      |  replication slot   |                                                        wal_keep, pg_replslot_files                                                         |     files      |
 | db_transactions                      |      database       |                                                            committed, rollback                                                             | transactions/s |
 | db_connections_utilization           |      database       |                                                                    used                                                                    |   percentage   |
 | db_connections                       |      database       |                                                                connections                                                                 |  connections   |
@@ -68,10 +69,9 @@ sudo ./edit-config go.d/postgres.conf
 ```yaml
 jobs:
   - name: local
-    # the format is: postgres://[username[:password]]@host:port[/dbname]?sslmode=[disable|verify-ca|verify-full]
     dsn: 'postgres://postgres:postgres@127.0.0.1:5432/postgres'
+
   - name: remote
-    # the format is: postgres://[username[:password]]@host:port[/dbname]?sslmode=[disable|verify-ca|verify-full]
     dsn: 'postgres://postgres:postgres@203.0.113.10:5432/postgres'
 ```
 

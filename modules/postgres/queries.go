@@ -304,6 +304,121 @@ WHERE application_name IS NOT NULL;
 `
 }
 
+func queryReplicationSlotList() string {
+	return `
+SELECT slot_name
+FROM pg_replication_slots;
+`
+}
+
+func queryReplicationSlotFiles(version int) string {
+	if version < 110000 {
+		return `
+WITH wal_size AS (
+  SELECT
+    current_setting('wal_block_size')::INT * setting::INT AS val
+  FROM pg_settings
+  WHERE name = 'wal_segment_size'
+  )
+SELECT
+    slot_name,
+    slot_type,
+    replslot_wal_keep,
+    count(slot_file) AS replslot_files
+FROM
+    (SELECT
+        slot.slot_name,
+        CASE
+            WHEN slot_file <> 'state' THEN 1
+        END AS slot_file ,
+        slot_type,
+        COALESCE (
+          floor(
+            CASE WHEN pg_is_in_recovery()
+            THEN (
+              pg_wal_lsn_diff(pg_last_wal_receive_lsn(), slot.restart_lsn)
+              -- this is needed to account for whole WAL retention and
+              -- not only size retention
+              + (pg_wal_lsn_diff(restart_lsn, '0/0') % s.val)
+            ) / s.val
+            ELSE (
+              pg_wal_lsn_diff(pg_current_wal_lsn(), slot.restart_lsn)
+              -- this is needed to account for whole WAL retention and
+              -- not only size retention
+              + (pg_walfile_name_offset(restart_lsn)).file_offset
+            ) / s.val
+            END
+          ),0) AS replslot_wal_keep
+    FROM pg_replication_slots slot
+    LEFT JOIN (
+        SELECT
+            slot2.slot_name,
+            pg_ls_dir('pg_replslot/' || slot2.slot_name) AS slot_file
+        FROM pg_replication_slots slot2
+        ) files (slot_name, slot_file)
+        ON slot.slot_name = files.slot_name
+    CROSS JOIN wal_size s
+    ) AS d
+GROUP BY
+    slot_name,
+    slot_type,
+    replslot_wal_keep;
+`
+	}
+
+	return `
+WITH wal_size AS (
+  SELECT
+    setting::int AS val
+  FROM pg_settings
+  WHERE name = 'wal_segment_size'
+  )
+SELECT
+    slot_name,
+    slot_type,
+    replslot_wal_keep,
+    count(slot_file) AS replslot_files
+FROM
+    (SELECT
+        slot.slot_name,
+        CASE
+            WHEN slot_file <> 'state' THEN 1
+        END AS slot_file ,
+        slot_type,
+        COALESCE (
+          floor(
+            CASE WHEN pg_is_in_recovery()
+            THEN (
+              pg_wal_lsn_diff(pg_last_wal_receive_lsn(), slot.restart_lsn)
+              -- this is needed to account for whole WAL retention and
+              -- not only size retention
+              + (pg_wal_lsn_diff(restart_lsn, '0/0') % s.val)
+            ) / s.val
+            ELSE (
+              pg_wal_lsn_diff(pg_current_wal_lsn(), slot.restart_lsn)
+              -- this is needed to account for whole WAL retention and
+              -- not only size retention
+              + (pg_walfile_name_offset(restart_lsn)).file_offset
+            ) / s.val
+            END
+          ),0) AS replslot_wal_keep
+    FROM pg_replication_slots slot
+    LEFT JOIN (
+        SELECT
+            slot2.slot_name,
+            pg_ls_dir('pg_replslot/' || slot2.slot_name) AS slot_file
+        FROM pg_replication_slots slot2
+        ) files (slot_name, slot_file)
+        ON slot.slot_name = files.slot_name
+    CROSS JOIN wal_size s
+    ) AS d
+GROUP BY
+    slot_name,
+    slot_type,
+    replslot_wal_keep;
+`
+}
+
 func queryDatabaseList() string {
 	return `
     SELECT

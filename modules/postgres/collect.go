@@ -45,13 +45,22 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		p.collectDatabaseList(dbs)
 	}
 
-	if now.Sub(p.relistStandbyTime) > p.relistStandbyEvery {
-		p.relistStandbyTime = now
-		apps, err := p.queryStandbyAppList()
+	if now.Sub(p.relistReplStandbyTime) > p.relistReplStandbyEvery {
+		p.relistReplStandbyTime = now
+		apps, err := p.queryReplicationStandbyAppList()
 		if err != nil {
-			return nil, fmt.Errorf("querying standby app list error: %v", err)
+			return nil, fmt.Errorf("querying replication standby app list error: %v", err)
 		}
-		p.collectStandbyAppList(apps)
+		p.collectReplicationStandbyAppList(apps)
+	}
+
+	if now.Sub(p.relistReplSlotTime) > p.relistReplSlotEvery {
+		p.relistReplSlotTime = now
+		slots, err := p.queryReplicationSlotList()
+		if err != nil {
+			return nil, fmt.Errorf("querying replication slot list error: %v", err)
+		}
+		p.collectReplicationSlotList(slots)
 	}
 
 	mx := make(map[string]int64)
@@ -94,13 +103,22 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return mx, fmt.Errorf("querying autovacuum workers error: %v", err)
 	}
 
-	if len(p.standbyApps) > 0 {
+	if len(p.replStandbyApps) > 0 {
 		if err := p.collectReplicationStandbyAppWALDelta(mx); err != nil {
 			return mx, fmt.Errorf("querying replication standby app wal delta error: %v", err)
 		}
 		if p.serverVersion >= 100000 {
 			if err := p.collectReplicationStandbyAppWALLag(mx); err != nil {
 				return mx, fmt.Errorf("querying replication standby app wal lag error: %v", err)
+			}
+		}
+	}
+
+	// TODO: superuser only
+	if len(p.replSlots) > 0 {
+		if p.serverVersion >= 100000 {
+			if err := p.collectReplicationSlotFiles(mx); err != nil {
+				return mx, fmt.Errorf("querying replication slot files error: %v", err)
 			}
 		}
 	}
@@ -292,7 +310,7 @@ func (p *Postgres) collectAutovacuumWorkers(mx map[string]int64) error {
 	return collectRows(rows, func(column, value string) { mx[column] = safeParseInt(value) })
 }
 
-func (p *Postgres) queryStandbyAppList() ([]string, error) {
+func (p *Postgres) queryReplicationStandbyAppList() ([]string, error) {
 	q := queryReplicationStandbyAppList()
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
@@ -317,16 +335,16 @@ func (p *Postgres) queryStandbyAppList() ([]string, error) {
 	return apps, nil
 }
 
-func (p *Postgres) collectStandbyAppList(apps []string) {
+func (p *Postgres) collectReplicationStandbyAppList(apps []string) {
 	if len(apps) == 0 {
 		return
 	}
 
 	collected := make(map[string]bool)
-	for _, db := range p.standbyApps {
+	for _, db := range p.replStandbyApps {
 		collected[db] = true
 	}
-	p.standbyApps = apps
+	p.replStandbyApps = apps
 
 	seen := make(map[string]bool)
 	for _, app := range apps {
@@ -383,6 +401,80 @@ func (p *Postgres) collectReplicationStandbyAppWALLag(mx map[string]int64) error
 			app = value
 		default:
 			mx["repl_standby_app_"+app+"_wal_"+column] += safeParseInt(value)
+		}
+	})
+}
+
+func (p *Postgres) queryReplicationSlotList() ([]string, error) {
+	q := queryReplicationSlotList()
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var slots []string
+	seen := make(map[string]bool)
+	if err := collectRows(rows, func(column, value string) {
+		if column == "slot_name" && !seen[value] {
+			seen[value] = true
+			slots = append(slots, value)
+		}
+	}); err != nil {
+		return nil, err
+	}
+
+	return slots, nil
+}
+
+func (p *Postgres) collectReplicationSlotList(slots []string) {
+	if len(slots) == 0 {
+		return
+	}
+
+	collected := make(map[string]bool)
+	for _, db := range p.replSlots {
+		collected[db] = true
+	}
+	p.replSlots = slots
+
+	seen := make(map[string]bool)
+	for _, app := range slots {
+		seen[app] = true
+		if !collected[app] {
+			collected[app] = true
+			p.addNewReplicationSlotCharts(app)
+		}
+	}
+	for app := range collected {
+		if !seen[app] {
+			p.removeReplicationSlotCharts(app)
+		}
+	}
+}
+
+func (p *Postgres) collectReplicationSlotFiles(mx map[string]int64) error {
+	q := queryReplicationSlotFiles(p.serverVersion)
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var slot string
+	return collectRows(rows, func(column, value string) {
+		switch column {
+		case "slot_name":
+			slot = value
+		case "slot_type":
+		default:
+			mx["repl_slot_"+slot+"_"+column] += safeParseInt(value)
 		}
 	})
 }

@@ -30,6 +30,7 @@ const (
 	prioUptime
 	prioReplicationWALDelta
 	prioReplicationWALLag
+	prioReplicationSlotFiles
 	prioDBTransactions
 	prioDBConnectionsUtilization
 	prioDBConnections
@@ -315,10 +316,10 @@ var (
 )
 var (
 	replicationStandbyAppCharts = module.Charts{
-		replicationStandbyAppWALDelta.Copy(),
-		replicationStandbyAppWALLag.Copy(),
+		replicationStandbyAppWALDeltaChartTmpl.Copy(),
+		replicationStandbyAppWALLagChartTmpl.Copy(),
 	}
-	replicationStandbyAppWALDelta = module.Chart{
+	replicationStandbyAppWALDeltaChartTmpl = module.Chart{
 		ID:       "replication_standby_app_%s_wal_delta",
 		Title:    "Standby application WAL delta",
 		Units:    "B",
@@ -332,7 +333,7 @@ var (
 			{ID: "repl_standby_app_%s_wal_replay_delta", Name: "replay_delta"},
 		},
 	}
-	replicationStandbyAppWALLag = module.Chart{
+	replicationStandbyAppWALLagChartTmpl = module.Chart{
 		ID:       "replication_standby_app_%s_wal_lag",
 		Title:    "Standby application WAL lag",
 		Units:    "seconds",
@@ -343,6 +344,24 @@ var (
 			{ID: "repl_standby_app_%s_wal_write_lag", Name: "write_lag"},
 			{ID: "repl_standby_app_%s_wal_flush_lag", Name: "flush_lag"},
 			{ID: "repl_standby_app_%s_wal_replay_lag", Name: "replay_lag"},
+		},
+	}
+)
+
+var (
+	replicationSlotCharts = module.Charts{
+		replicationSlotFilesChartTmpl.Copy(),
+	}
+	replicationSlotFilesChartTmpl = module.Chart{
+		ID:       "replication_slot_%s_files",
+		Title:    "Replication slot files",
+		Units:    "files",
+		Fam:      "replication slot",
+		Ctx:      "postgres.replication_slot_files",
+		Priority: prioReplicationSlotFiles,
+		Dims: module.Dims{
+			{ID: "repl_slot_%s_replslot_wal_keep", Name: "wal_keep"},
+			{ID: "repl_slot_%s_replslot_files", Name: "pg_replslot_files"},
 		},
 	}
 )
@@ -569,6 +588,37 @@ func (p *Postgres) addNewReplicationStandbyAppCharts(app string) {
 
 func (p *Postgres) removeReplicationStandbyAppCharts(app string) {
 	prefix := fmt.Sprintf("replication_standby_app_%s_", app)
+	for _, c := range *p.Charts() {
+		if strings.HasPrefix(c.ID, prefix) {
+			c.MarkRemove()
+			c.MarkNotCreated()
+		}
+	}
+}
+
+func newReplicationSlotCharts(slot string) *module.Charts {
+	charts := replicationSlotCharts.Copy()
+	for _, c := range *charts {
+		c.ID = fmt.Sprintf(c.ID, slot)
+		c.Labels = []module.Label{
+			{Key: "slot", Value: slot},
+		}
+		for _, d := range c.Dims {
+			d.ID = fmt.Sprintf(d.ID, slot)
+		}
+	}
+	return charts
+}
+
+func (p *Postgres) addNewReplicationSlotCharts(slot string) {
+	charts := newReplicationSlotCharts(slot)
+	if err := p.Charts().Add(*charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) removeReplicationSlotCharts(slot string) {
+	prefix := fmt.Sprintf("replication_slot_%s_", slot)
 	for _, c := range *p.Charts() {
 		if strings.HasPrefix(c.ID, prefix) {
 			c.MarkRemove()

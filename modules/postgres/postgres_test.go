@@ -40,6 +40,9 @@ var (
 	dataV140004ReplStandbyAppDelta, _ = ioutil.ReadFile("testdata/v14.4/replication_standby_app_wal_delta.txt")
 	dataV140004ReplStandbyAppLag, _   = ioutil.ReadFile("testdata/v14.4/replication_standby_app_wal_lag.txt")
 
+	dataV140004ReplSlotList, _  = ioutil.ReadFile("testdata/v14.4/replication_slot_list.txt")
+	dataV140004ReplSlotFiles, _ = ioutil.ReadFile("testdata/v14.4/replication_slot_files.txt")
+
 	dataV140004DatabaseList1DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-1db.txt")
 	dataV140004DatabaseList2DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-2db.txt")
 	dataV140004DatabaseList3DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-3db.txt")
@@ -70,6 +73,9 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV14004ReplStandbyAppList":  dataV140004ReplStandbyAppList,
 		"dataV14004ReplStandbyAppDelta": dataV140004ReplStandbyAppDelta,
 		"dataV14004ReplStandbyAppLag":   dataV140004ReplStandbyAppLag,
+
+		"dataV140004ReplSlotList":  dataV140004ReplSlotList,
+		"dataV140004ReplSlotFiles": dataV140004ReplSlotFiles,
 
 		"dataV140004DatabaseList1DB":   dataV140004DatabaseList1DB,
 		"dataV140004DatabaseList2DB":   dataV140004DatabaseList2DB,
@@ -133,6 +139,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 				mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
 				mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
+				mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 				mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
 				mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
@@ -147,6 +154,8 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
 				mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
 
+				mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
+
 				mockExpect(t, m, queryDatabaseStats(dbs), dataV140004DatabaseStats)
 				mockExpect(t, m, queryDatabaseConflicts(dbs), dataV140004DatabaseConflicts)
 				mockExpect(t, m, queryDatabaseLocks(dbs), dataV140004DatabaseLocks)
@@ -160,6 +169,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
 				mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
+				mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 				mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
 				mockExpectErr(m, queryCheckpoints())
@@ -232,6 +242,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
 					mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
+					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
@@ -245,6 +256,8 @@ func TestPostgres_Collect(t *testing.T) {
 
 					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
+
+					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
@@ -366,6 +379,8 @@ func TestPostgres_Collect(t *testing.T) {
 						"oldest_current_xid":                                       9,
 						"percent_towards_emergency_autovacuum":                     0,
 						"percent_towards_wraparound":                               0,
+						"repl_slot_ocean_replslot_files":                           0,
+						"repl_slot_ocean_replslot_wal_keep":                        0,
 						"repl_standby_app_phys-standby2_wal_flush_delta":           0,
 						"repl_standby_app_phys-standby2_wal_flush_lag":             0,
 						"repl_standby_app_phys-standby2_wal_replay_delta":          0,
@@ -402,6 +417,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
 					mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
+					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
@@ -415,6 +431,8 @@ func TestPostgres_Collect(t *testing.T) {
 
 					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
+
+					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
@@ -438,6 +456,8 @@ func TestPostgres_Collect(t *testing.T) {
 
 					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
+
+					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 					mockExpect(t, m, queryDatabaseStats(dbs1), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs1), dataV140004DatabaseConflicts)
@@ -463,8 +483,11 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
+
 					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
+
+					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 					mockExpect(t, m, queryDatabaseStats(dbs3), dataV140004DatabaseStats)
 					mockExpect(t, m, queryDatabaseConflicts(dbs3), dataV140004DatabaseConflicts)
@@ -527,6 +550,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
 					mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
+					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 					mockExpectErr(m, queryServerCurrentConnectionsNum())
 				},
