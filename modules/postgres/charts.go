@@ -340,9 +340,9 @@ var (
 		Ctx:      "postgres.replication_standby_app_wal_lag",
 		Priority: prioReplicationWALLag,
 		Dims: module.Dims{
-			{ID: "repl_standby_app_%s_wal_sent_lag", Name: "sent_lag"},
 			{ID: "repl_standby_app_%s_wal_write_lag", Name: "write_lag"},
 			{ID: "repl_standby_app_%s_wal_flush_lag", Name: "flush_lag"},
+			{ID: "repl_standby_app_%s_wal_replay_lag", Name: "replay_lag"},
 		},
 	}
 )
