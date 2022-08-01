@@ -31,8 +31,10 @@ func (p *Postgres) collectGlobalMetrics(mx map[string]int64) error {
 		return fmt.Errorf("querying catalog relations error: %v", err)
 	}
 
-	if err := p.collectAutovacuumWorkers(mx); err != nil {
-		return fmt.Errorf("querying autovacuum workers error: %v", err)
+	if p.pgVersion >= pgVersion94 {
+		if err := p.collectAutovacuumWorkers(mx); err != nil {
+			return fmt.Errorf("querying autovacuum workers error: %v", err)
+		}
 	}
 
 	if !p.isSuperUser() {
