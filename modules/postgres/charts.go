@@ -31,12 +31,15 @@ const (
 	prioReplicationWALDelta
 	prioReplicationWALLag
 	prioReplicationSlotFiles
+	prioDBTransactionsRatio
 	prioDBTransactions
 	prioDBConnectionsUtilization
 	prioDBConnections
-	prioDBBufferCache
-	prioDBReadOperations
-	prioDBWriteOperations
+	prioDBBufferCacheRatio
+	prioDBBlockReads
+	prioDBRowsReadRatio
+	prioDBRowsRead
+	prioDBRowsWritten
 	prioDBConflicts
 	prioDBConflictsStat
 	prioDBDeadlocks
@@ -368,12 +371,15 @@ var (
 
 var (
 	dbChartsTmpl = module.Charts{
+		dbTransactionsRatioChartTmpl.Copy(),
 		dbTransactionsChartTmpl.Copy(),
 		dbConnectionsUtilizationChartTmpl.Copy(),
 		dbConnectionsChartTmpl.Copy(),
-		dbBufferCacheChartTmpl.Copy(),
-		dbReadOpsChartTmpl.Copy(),
-		dbWriteOpsChartTmpl.Copy(),
+		dbBufferCacheHitRatioChartTmpl.Copy(),
+		dbBlocksReadChartTmpl.Copy(),
+		dbRowsReadRatioChartTmpl.Copy(),
+		dbRowsReadChartTmpl.Copy(),
+		dbRowsWrittenChartTmpl.Copy(),
 		dbConflictsChartTmpl.Copy(),
 		dbConflictsStatChartTmpl.Copy(),
 		dbDeadlocksChartTmpl.Copy(),
@@ -382,6 +388,19 @@ var (
 		dbTempFilesChartTmpl.Copy(),
 		dbTempFilesDataChartTmpl.Copy(),
 		dbSizeChartTmpl.Copy(),
+	}
+	dbTransactionsRatioChartTmpl = module.Chart{
+		ID:       "db_%s_transactions_ratio",
+		Title:    "Database transactions ratio",
+		Units:    "percentage",
+		Fam:      "db transactions",
+		Ctx:      "postgres.db_transactions_ratio",
+		Priority: prioDBTransactionsRatio,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "db_%s_xact_commit", Name: "committed", Algo: module.PercentOfIncremental},
+			{ID: "db_%s_xact_rollback", Name: "rollback", Algo: module.PercentOfIncremental},
+		},
 	}
 	dbTransactionsChartTmpl = module.Chart{
 		ID:       "db_%s_transactions",
@@ -417,38 +436,64 @@ var (
 			{ID: "db_%s_numbackends", Name: "connections"},
 		},
 	}
-	dbBufferCacheChartTmpl = module.Chart{
-		ID:       "db_%s_buffer_cache",
-		Title:    "Database buffer cache",
-		Units:    "blocks/s",
+	dbBufferCacheHitRatioChartTmpl = module.Chart{
+		ID:       "db_%s_buffer_cache_hit_ratio",
+		Title:    "Database buffer cache hit ratio",
+		Units:    "percentage",
 		Fam:      "db buffer cache",
-		Ctx:      "postgres.db_buffer_cache",
-		Priority: prioDBBufferCache,
-		Type:     module.Area,
+		Ctx:      "postgres.db_buffer_cache_hit_ratio",
+		Priority: prioDBBufferCacheRatio,
+		Type:     module.Stacked,
 		Dims: module.Dims{
-			{ID: "db_%s_blks_hit", Name: "hit", Algo: module.Incremental},
-			{ID: "db_%s_blks_read", Name: "miss", Algo: module.Incremental},
+			{ID: "db_%s_blks_hit", Name: "hit", Algo: module.PercentOfIncremental},
+			{ID: "db_%s_blks_read", Name: "miss", Algo: module.PercentOfIncremental},
 		},
 	}
-	dbReadOpsChartTmpl = module.Chart{
-		ID:       "db_%s_read_operations",
-		Title:    "Database read operations",
+	dbBlocksReadChartTmpl = module.Chart{
+		ID:       "db_%s_blocks_read",
+		Title:    "Database blocks read",
+		Units:    "blocks/s",
+		Fam:      "db buffer cache",
+		Ctx:      "postgres.db_blocks_read",
+		Priority: prioDBBlockReads,
+		Type:     module.Area,
+		Dims: module.Dims{
+			{ID: "db_%s_blks_hit", Name: "memory", Algo: module.Incremental},
+			{ID: "db_%s_blks_read", Name: "disk", Algo: module.Incremental},
+		},
+	}
+	dbRowsReadRatioChartTmpl = module.Chart{
+		ID:       "db_%s_rows_read_ratio",
+		Title:    "Database rows read ratio",
+		Units:    "percentage",
+		Fam:      "db read queries",
+		Ctx:      "postgres.db_rows_read_ratio",
+		Priority: prioDBRowsReadRatio,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "db_%s_tup_returned", Name: "returned", Algo: module.PercentOfIncremental},
+			{ID: "db_%s_tup_fetched", Name: "fetched", Algo: module.PercentOfIncremental},
+		},
+	}
+	dbRowsReadChartTmpl = module.Chart{
+		ID:       "db_%s_rows_read",
+		Title:    "Database rows read",
 		Units:    "rows/s",
-		Fam:      "db operations",
-		Ctx:      "postgres.db_read_operations",
-		Priority: prioDBReadOperations,
+		Fam:      "db read queries",
+		Ctx:      "postgres.db_rows_read",
+		Priority: prioDBRowsRead,
 		Dims: module.Dims{
 			{ID: "db_%s_tup_returned", Name: "returned", Algo: module.Incremental},
 			{ID: "db_%s_tup_fetched", Name: "fetched", Algo: module.Incremental},
 		},
 	}
-	dbWriteOpsChartTmpl = module.Chart{
-		ID:       "db_%s_write_operations",
-		Title:    "Database write operations",
+	dbRowsWrittenChartTmpl = module.Chart{
+		ID:       "db_%s_rows_written",
+		Title:    "Database rows written",
 		Units:    "rows/s",
-		Fam:      "db operations",
-		Ctx:      "postgres.db_write_operations",
-		Priority: prioDBWriteOperations,
+		Fam:      "db write queries",
+		Ctx:      "postgres.db_rows_written",
+		Priority: prioDBRowsWritten,
 		Dims: module.Dims{
 			{ID: "db_%s_tup_inserted", Name: "inserted", Algo: module.Incremental},
 			{ID: "db_%s_tup_deleted", Name: "deleted", Algo: module.Incremental},
@@ -459,7 +504,7 @@ var (
 		ID:       "db_%s_conflicts",
 		Title:    "Database canceled queries",
 		Units:    "queries/s",
-		Fam:      "db operations",
+		Fam:      "db queries conflicts",
 		Ctx:      "postgres.db_conflicts",
 		Priority: prioDBConflicts,
 		Dims: module.Dims{
@@ -470,7 +515,7 @@ var (
 		ID:       "db_%s_conflicts_stat",
 		Title:    "Database canceled queries by reason",
 		Units:    "queries/s",
-		Fam:      "db operations",
+		Fam:      "db queries conflicts",
 		Ctx:      "postgres.db_conflicts_stat",
 		Priority: prioDBConflictsStat,
 		Dims: module.Dims{
