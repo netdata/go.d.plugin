@@ -14,9 +14,6 @@ import (
 
 func init() {
 	module.Register("postgres", module.Creator{
-		Defaults: module.Defaults{
-			Disabled: true,
-		},
 		Create: func() module.Module { return New() },
 	})
 }
