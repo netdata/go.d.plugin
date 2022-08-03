@@ -48,6 +48,11 @@ func (w *WireGuard) collectDevicesPeers(mx map[string]int64, devices []*wgtypes.
 		}
 
 		mx["device_"+d.Name+"_peers"] = int64(len(d.Peers))
+		if len(d.Peers) == 0 {
+			mx["device_"+d.Name+"_receive"] = 0
+			mx["device_"+d.Name+"_transmit"] = 0
+			continue
+		}
 
 		for _, p := range d.Peers {
 			pubKey := p.PublicKey.String()
