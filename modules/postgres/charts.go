@@ -466,7 +466,7 @@ var (
 		ID:       "db_%s_rows_read_ratio",
 		Title:    "Database rows read ratio",
 		Units:    "percentage",
-		Fam:      "db read queries",
+		Fam:      "db read throughput",
 		Ctx:      "postgres.db_rows_read_ratio",
 		Priority: prioDBRowsReadRatio,
 		Type:     module.Stacked,
@@ -479,7 +479,7 @@ var (
 		ID:       "db_%s_rows_read",
 		Title:    "Database rows read",
 		Units:    "rows/s",
-		Fam:      "db read queries",
+		Fam:      "db read throughput",
 		Ctx:      "postgres.db_rows_read",
 		Priority: prioDBRowsRead,
 		Dims: module.Dims{
@@ -491,7 +491,7 @@ var (
 		ID:       "db_%s_rows_written",
 		Title:    "Database rows written",
 		Units:    "rows/s",
-		Fam:      "db write queries",
+		Fam:      "db write throughput",
 		Ctx:      "postgres.db_rows_written",
 		Priority: prioDBRowsWritten,
 		Dims: module.Dims{
@@ -504,7 +504,7 @@ var (
 		ID:       "db_%s_conflicts",
 		Title:    "Database canceled queries",
 		Units:    "queries/s",
-		Fam:      "db queries conflicts",
+		Fam:      "db query cancels",
 		Ctx:      "postgres.db_conflicts",
 		Priority: prioDBConflicts,
 		Dims: module.Dims{
@@ -515,7 +515,7 @@ var (
 		ID:       "db_%s_conflicts_stat",
 		Title:    "Database canceled queries by reason",
 		Units:    "queries/s",
-		Fam:      "db queries conflicts",
+		Fam:      "db query cancels",
 		Ctx:      "postgres.db_conflicts_stat",
 		Priority: prioDBConflictsStat,
 		Dims: module.Dims{

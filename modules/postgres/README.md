@@ -12,6 +12,12 @@ management system emphasizing extensibility and SQL compliance.
 
 This module monitors one or more Postgres servers, depending on your configuration.
 
+## Requirements
+
+- PostgreSQL v9.4+
+- User with granted `pg_monitor`
+  or `pg_read_all_stat` [built-in role](https://www.postgresql.org/docs/current/predefined-roles.html).
+
 ## Metrics
 
 All metrics have "postgres." prefix.
@@ -67,12 +73,16 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/postgres.conf
 ```
 
-[DSN syntax in details](https://github.com/go-sql-driver/mysql#dsn-data-source-name).
+DSN (Data Source Name) may either be in URL format or key=word format.
+See [Connection Strings](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) for details.
 
 ```yaml
 jobs:
   - name: local
     dsn: 'postgres://postgres:postgres@127.0.0.1:5432/postgres'
+
+  - name: local
+    dsn: 'host=/var/run/postgresql dbname=postgres user=postgres'
 
   - name: remote
     dsn: 'postgres://postgres:postgres@203.0.113.10:5432/postgres'
