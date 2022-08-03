@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package wireguard
 
 import (
@@ -9,6 +11,7 @@ import (
 
 const (
 	prioDevicePeers = module.Priority + iota
+	prioDeviceTraffic
 	prioPeerTraffic
 	prioPeerLastHandShake
 )
@@ -16,6 +19,7 @@ const (
 var (
 	deviceChartsTmpl = module.Charts{
 		devicePeersChartTmpl.Copy(),
+		deviceTrafficChartTmpl.Copy(),
 	}
 
 	devicePeersChartTmpl = module.Chart{
@@ -27,6 +31,19 @@ var (
 		Priority: prioDevicePeers,
 		Dims: module.Dims{
 			{ID: "device_%s_peers", Name: "peers"},
+		},
+	}
+	deviceTrafficChartTmpl = module.Chart{
+		ID:       "device_%s_traffic",
+		Title:    "Device traffic",
+		Units:    "B/s",
+		Fam:      "device traffic",
+		Ctx:      "wireguard.device_traffic",
+		Type:     module.Area,
+		Priority: prioDeviceTraffic,
+		Dims: module.Dims{
+			{ID: "device_%s_receive", Name: "receive", Algo: module.Incremental},
+			{ID: "device_%s_transmit", Name: "transmit", Algo: module.Incremental, Mul: -1},
 		},
 	}
 )
@@ -98,15 +115,14 @@ func (w *WireGuard) removeDeviceCharts(device string) {
 	}
 }
 
-func newPeerCharts(device, peerPublicKey string) *module.Charts {
+func newPeerCharts(id, device, pubKey string) *module.Charts {
 	charts := peerChartsTmpl.Copy()
-
-	id := peerID(device, peerPublicKey)
 
 	for _, c := range *charts {
 		c.ID = fmt.Sprintf(c.ID, id)
 		c.Labels = []module.Label{
 			{Key: "device", Value: device},
+			{Key: "public_key", Value: pubKey},
 		}
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, id)
@@ -116,16 +132,15 @@ func newPeerCharts(device, peerPublicKey string) *module.Charts {
 	return charts
 }
 
-func (w *WireGuard) addNewPeerCharts(device, peerPublicKey string) {
-	charts := newPeerCharts(device, peerPublicKey)
+func (w *WireGuard) addNewPeerCharts(id, device, pubKey string) {
+	charts := newPeerCharts(id, device, pubKey)
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
 	}
 }
 
-func (w *WireGuard) removePeerCharts(device, peerPublicKey string) {
-	id := peerID(device, peerPublicKey)
+func (w *WireGuard) removePeerCharts(id string) {
 	prefix := fmt.Sprintf("peer_%s", id)
 
 	for _, c := range *w.Charts() {

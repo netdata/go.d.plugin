@@ -3,9 +3,12 @@
 package wireguard
 
 import (
+	"time"
+
 	"github.com/netdata/go.d.plugin/agent/module"
 
 	"golang.zx2c4.com/wireguard/wgctrl"
+	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
 func init() {
@@ -16,22 +19,34 @@ func init() {
 
 func New() *WireGuard {
 	return &WireGuard{
-		charts:  &module.Charts{},
-		devices: make(map[string]bool),
-		peers:   make(map[string]bool),
+		newWGClient:  func() (wgClient, error) { return wgctrl.New() },
+		charts:       &module.Charts{},
+		devices:      make(map[string]bool),
+		peers:        make(map[string]bool),
+		cleanupEvery: time.Minute,
 	}
 }
 
-type WireGuard struct {
-	module.Base
+type (
+	WireGuard struct {
+		module.Base
 
-	charts *module.Charts
+		charts *module.Charts
 
-	client *wgctrl.Client
+		client      wgClient
+		newWGClient func() (wgClient, error)
 
-	devices map[string]bool
-	peers   map[string]bool
-}
+		cleanupLastTime time.Time
+		cleanupEvery    time.Duration
+
+		devices map[string]bool
+		peers   map[string]bool
+	}
+	wgClient interface {
+		Devices() ([]*wgtypes.Device, error)
+		Close() error
+	}
+)
 
 func (w *WireGuard) Init() bool {
 	return true
@@ -57,4 +72,12 @@ func (w *WireGuard) Collect() map[string]int64 {
 	return mx
 }
 
-func (w *WireGuard) Cleanup() {}
+func (w *WireGuard) Cleanup() {
+	if w.client == nil {
+		return
+	}
+	if err := w.client.Close(); err != nil {
+		w.Warningf("cleanup: error on closing connection: %v", err)
+	}
+	w.client = nil
+}
