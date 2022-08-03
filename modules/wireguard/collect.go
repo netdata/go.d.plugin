@@ -62,7 +62,7 @@ func (w *WireGuard) collectDevicesPeers(mx map[string]int64, devices []*wgtypes.
 			mx["device_"+d.Name+"_transmit"] += p.TransmitBytes
 			mx["peer_"+id+"_receive"] = p.ReceiveBytes
 			mx["peer_"+id+"_transmit"] = p.TransmitBytes
-			mx["peer_"+id+"_last_handshake_ago"] = int64(now.Sub(p.LastHandshakeTime).Seconds())
+			mx["peer_"+id+"_latest_handshake_ago"] = int64(now.Sub(p.LastHandshakeTime).Seconds())
 		}
 	}
 }

@@ -13,7 +13,7 @@ const (
 	prioDevicePeers = module.Priority + iota
 	prioDeviceTraffic
 	prioPeerTraffic
-	prioPeerLastHandShake
+	prioPeerLatestHandShake
 )
 
 var (
@@ -51,7 +51,7 @@ var (
 var (
 	peerChartsTmpl = module.Charts{
 		peerTrafficChartTmpl.Copy(),
-		peerLastHandShakeChartTmpl.Copy(),
+		peerLatestHandShakeChartTmpl.Copy(),
 	}
 
 	peerTrafficChartTmpl = module.Chart{
@@ -67,15 +67,15 @@ var (
 			{ID: "peer_%s_transmit", Name: "transmit", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	peerLastHandShakeChartTmpl = module.Chart{
-		ID:       "peer_%s_last_handshake_ago",
+	peerLatestHandShakeChartTmpl = module.Chart{
+		ID:       "peer_%s_latest_handshake_ago",
 		Title:    "Peer time elapsed sine the latest handshake",
 		Units:    "seconds",
 		Fam:      "peer latest handshake",
-		Ctx:      "wireguard.peer_last_handshake_ago",
-		Priority: prioPeerLastHandShake,
+		Ctx:      "wireguard.peer_latest_handshake_ago",
+		Priority: prioPeerLatestHandShake,
 		Dims: module.Dims{
-			{ID: "peer_%s_last_handshake_ago", Name: "time"},
+			{ID: "peer_%s_latest_handshake_ago", Name: "time"},
 		},
 	}
 )
