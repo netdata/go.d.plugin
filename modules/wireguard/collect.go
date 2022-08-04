@@ -18,6 +18,8 @@ func (w *WireGuard) collect() (map[string]int64, error) {
 		w.client = client
 	}
 
+	// TODO: probably we need to get a list of interfaces and query interfaces using client.Device()
+	// https://github.com/WireGuard/wgctrl-go/blob/3d4a969bb56bb6931f6661af606bc9c4195b4249/internal/wglinux/client_linux.go#L79-L80
 	devices, err := w.client.Devices()
 	if err != nil {
 		return nil, fmt.Errorf("retrieving WireGuard devices: %v", err)
