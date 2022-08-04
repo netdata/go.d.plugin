@@ -13,7 +13,7 @@ func (w *WireGuard) collect() (map[string]int64, error) {
 	if w.client == nil {
 		client, err := w.newWGClient()
 		if err != nil {
-			return nil, fmt.Errorf("creating wireguard client: %v", err)
+			return nil, fmt.Errorf("creating WireGuard client: %v", err)
 		}
 		w.client = client
 	}
@@ -21,6 +21,10 @@ func (w *WireGuard) collect() (map[string]int64, error) {
 	devices, err := w.client.Devices()
 	if err != nil {
 		return nil, fmt.Errorf("retrieving WireGuard devices: %v", err)
+	}
+
+	if len(devices) == 0 {
+		w.Info("no WireGuard devices found on the host system")
 	}
 
 	now := time.Now()
