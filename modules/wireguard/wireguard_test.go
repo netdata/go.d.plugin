@@ -17,19 +17,113 @@ import (
 )
 
 func TestWireGuard_Init(t *testing.T) {
-
+	assert.True(t, New().Init())
 }
 
 func TestWireGuard_Charts(t *testing.T) {
+	assert.Len(t, *New().Charts(), 0)
 
 }
 
 func TestWireGuard_Cleanup(t *testing.T) {
+	tests := map[string]struct {
+		prepare   func(w *WireGuard)
+		wantClose bool
+	}{
+		"after New": {
+			wantClose: false,
+			prepare:   func(w *WireGuard) {},
+		},
+		"after Init": {
+			wantClose: false,
+			prepare:   func(w *WireGuard) { w.Init() },
+		},
+		"after Check": {
+			wantClose: true,
+			prepare:   func(w *WireGuard) { w.Init(); w.Check() },
+		},
+		"after Collect": {
+			wantClose: true,
+			prepare:   func(w *WireGuard) { w.Init(); w.Collect() },
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			w := New()
+			m := &mockClient{}
+			w.newWGClient = func() (wgClient, error) { return m, nil }
+
+			test.prepare(w)
+
+			require.NotPanics(t, w.Cleanup)
+
+			if test.wantClose {
+				assert.True(t, m.closeCalled)
+			} else {
+				assert.False(t, m.closeCalled)
+			}
+		})
+	}
 }
 
 func TestWireGuard_Check(t *testing.T) {
+	tests := map[string]struct {
+		wantFail bool
+		prepare  func(w *WireGuard)
+	}{
+		"success when devices and peers found": {
+			wantFail: false,
+			prepare: func(w *WireGuard) {
+				m := &mockClient{}
+				d1 := prepareDevice(1)
+				d1.Peers = append(d1.Peers, preparePeer("11"))
+				d1.Peers = append(d1.Peers, preparePeer("12"))
+				m.devices = append(m.devices, d1)
+				w.client = m
+			},
+		},
+		"success when devices and no peers found": {
+			wantFail: false,
+			prepare: func(w *WireGuard) {
+				m := &mockClient{}
+				m.devices = append(m.devices, prepareDevice(1))
+				w.client = m
+			},
+		},
+		"fail when no devices and no peers found": {
+			wantFail: true,
+			prepare: func(w *WireGuard) {
+				w.client = &mockClient{}
+			},
+		},
+		"fail when error on retrieving devices": {
+			wantFail: true,
+			prepare: func(w *WireGuard) {
+				w.client = &mockClient{errOnDevices: true}
+			},
+		},
+		"fail when error on creating client": {
+			wantFail: true,
+			prepare: func(w *WireGuard) {
+				w.newWGClient = func() (wgClient, error) { return nil, errors.New("mock.newWGClient() error") }
+			},
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			w := New()
+			require.True(t, w.Init())
+			test.prepare(w)
+
+			if test.wantFail {
+				assert.False(t, w.Check())
+			} else {
+				assert.True(t, w.Check())
+			}
+		})
+	}
 }
 
 func TestWireGuard_Collect(t *testing.T) {
@@ -210,7 +304,6 @@ func TestWireGuard_Collect(t *testing.T) {
 					copyLatestHandshake(mx, expected)
 					assert.Equal(t, expected, mx)
 					assert.Equal(t, len(deviceChartsTmpl)*1+len(peerChartsTmpl)*1, len(*w.Charts()))
-
 				},
 			},
 		},
@@ -264,6 +357,24 @@ func TestWireGuard_Collect(t *testing.T) {
 				},
 			},
 		},
+		"fails if no devices found": {
+			{
+				prepareMock: func(m *mockClient) {},
+				check: func(t *testing.T, w *WireGuard) {
+					assert.Equal(t, map[string]int64(nil), w.Collect())
+				},
+			},
+		},
+		"fails if error on getting devices list": {
+			{
+				prepareMock: func(m *mockClient) {
+					m.errOnDevices = true
+				},
+				check: func(t *testing.T, w *WireGuard) {
+					assert.Equal(t, map[string]int64(nil), w.Collect())
+				},
+			},
+		},
 	}
 
 	for name, test := range tests {
@@ -286,6 +397,7 @@ func TestWireGuard_Collect(t *testing.T) {
 type mockClient struct {
 	devices      []*wgtypes.Device
 	errOnDevices bool
+	closeCalled  bool
 }
 
 func (m *mockClient) Devices() ([]*wgtypes.Device, error) {
@@ -296,6 +408,7 @@ func (m *mockClient) Devices() ([]*wgtypes.Device, error) {
 }
 
 func (m *mockClient) Close() error {
+	m.closeCalled = true
 	return nil
 }
 
