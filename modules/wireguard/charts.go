@@ -10,18 +10,31 @@ import (
 )
 
 const (
-	prioDevicePeers = module.Priority + iota
-	prioDeviceTraffic
-	prioPeerTraffic
+	prioDeviceNetworkIO = module.Priority + iota
+	prioDevicePeers
+	prioPeerNetworkIO
 	prioPeerLatestHandShake
 )
 
 var (
 	deviceChartsTmpl = module.Charts{
+		deviceNetworkIOChartTmpl.Copy(),
 		devicePeersChartTmpl.Copy(),
-		deviceTrafficChartTmpl.Copy(),
 	}
 
+	deviceNetworkIOChartTmpl = module.Chart{
+		ID:       "device_%s_network_io",
+		Title:    "Device traffic",
+		Units:    "B/s",
+		Fam:      "device traffic",
+		Ctx:      "wireguard.device_network_io",
+		Type:     module.Area,
+		Priority: prioDeviceNetworkIO,
+		Dims: module.Dims{
+			{ID: "device_%s_receive", Name: "receive", Algo: module.Incremental},
+			{ID: "device_%s_transmit", Name: "transmit", Algo: module.Incremental, Mul: -1},
+		},
+	}
 	devicePeersChartTmpl = module.Chart{
 		ID:       "device_%s_peers",
 		Title:    "Device peers",
@@ -33,35 +46,22 @@ var (
 			{ID: "device_%s_peers", Name: "peers"},
 		},
 	}
-	deviceTrafficChartTmpl = module.Chart{
-		ID:       "device_%s_traffic",
-		Title:    "Device traffic",
-		Units:    "B/s",
-		Fam:      "device traffic",
-		Ctx:      "wireguard.device_traffic",
-		Type:     module.Area,
-		Priority: prioDeviceTraffic,
-		Dims: module.Dims{
-			{ID: "device_%s_receive", Name: "receive", Algo: module.Incremental},
-			{ID: "device_%s_transmit", Name: "transmit", Algo: module.Incremental, Mul: -1},
-		},
-	}
 )
 
 var (
 	peerChartsTmpl = module.Charts{
-		peerTrafficChartTmpl.Copy(),
+		peerNetworkIOChartTmpl.Copy(),
 		peerLatestHandShakeChartTmpl.Copy(),
 	}
 
-	peerTrafficChartTmpl = module.Chart{
-		ID:       "peer_%s_traffic",
+	peerNetworkIOChartTmpl = module.Chart{
+		ID:       "peer_%s_network_io",
 		Title:    "Peer traffic",
 		Units:    "B/s",
 		Fam:      "peer traffic",
-		Ctx:      "wireguard.peer_traffic",
+		Ctx:      "wireguard.peer_network_io",
 		Type:     module.Area,
-		Priority: prioPeerTraffic,
+		Priority: prioPeerNetworkIO,
 		Dims: module.Dims{
 			{ID: "peer_%s_receive", Name: "receive", Algo: module.Incremental},
 			{ID: "peer_%s_transmit", Name: "transmit", Algo: module.Incremental, Mul: -1},

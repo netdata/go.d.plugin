@@ -27,8 +27,8 @@ All metrics have "wireguard." prefix.
 | Metric                    | Scope  |    Dimensions     |  Units  |
 |---------------------------|:------:|:-----------------:|:-------:|
 | device_peers              | device |       peers       |  peers  |
-| device_traffic            | device | receive, transmit |   B/s   |
-| peer_traffic              |  peer  | receive, transmit |   B/s   |
+| device_network_io         | device | receive, transmit |   B/s   |
+| peer_network_io           |  peer  | receive, transmit |   B/s   |
 | peer_latest_handshake_ago |  peer  |       time        | seconds |
 
 ## Configuration
