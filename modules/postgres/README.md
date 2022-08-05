@@ -1,6 +1,6 @@
 <!--
 title: "PostgreSQL monitoring with Netdata"
-description: "Monitor connections, slow queries, InnoDB memory and disk utilization, locks, and more with zero configuration and per-second metric granularity."
+description: "Monitor connections, replication, databases, locks, and more with zero configuration and per-second metric granularity."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/postgres/README.md
 sidebar_label: "PostgresSQL"
 -->
