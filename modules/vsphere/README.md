@@ -12,6 +12,9 @@ that provides a centralized platform for controlling your VMware vSphere environ
 
 This module collects hosts and vms performance statistics from one or more `vCenter` servers depending on configuration.
 
+> **Warning**: The `vsphere` collector cannot re-login and continue collecting metrics after a vCenter reboot.
+> go.d.plugin needs to be restarted.
+
 ## Charts
 
 It produces the following charts:
@@ -65,15 +68,15 @@ jobs:
     url: https://203.0.113.0
     username: admin@vsphere.local
     password: somepassword
-    host_include: [ '/*' ]
-    vm_include: [ '/*' ]
+    host_include: ['/*']
+    vm_include: ['/*']
 
   - name: vcenter2
     url: https://203.0.113.10
     username: admin@vsphere.local
     password: somepassword
-    host_include: [ '/*' ]
-    vm_include: [ '/*' ]
+    host_include: ['/*']
+    vm_include: ['/*']
 ```
 
 For all available options please see
