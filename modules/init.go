@@ -41,6 +41,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/nginxvts"
 	_ "github.com/netdata/go.d.plugin/modules/openvpn"
 	_ "github.com/netdata/go.d.plugin/modules/openvpn_status_log"
+	_ "github.com/netdata/go.d.plugin/modules/pgbouncer"
 	_ "github.com/netdata/go.d.plugin/modules/phpdaemon"
 	_ "github.com/netdata/go.d.plugin/modules/phpfpm"
 	_ "github.com/netdata/go.d.plugin/modules/pihole"
