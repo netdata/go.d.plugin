@@ -1,0 +1,4 @@
+ database  | total_xact_count | total_query_count | total_received | total_sent | total_xact_time | total_query_time | total_wait_time | avg_xact_count | avg_query_count | avg_recv | avg_sent | avg_xact_time | avg_query_time | avg_wait_time
+-----------+------------------+-------------------+----------------+------------+-----------------+------------------+-----------------+----------------+-----------------+----------+----------+---------------+----------------+---------------
+ pgbouncer |               15 |                15 |              0 |          0 |               0 |                0 |               0 |              0 |               0 |        0 |        0 |             0 |              0 |             0
+ postgres  |                2 |                 2 |             59 |        139 |             381 |              381 |            3307 |              0 |               0 |        0 |        0 |             0 |              0 |             0

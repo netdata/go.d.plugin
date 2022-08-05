@@ -4,9 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/blang/semver/v4"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/stdlib"
 )
@@ -16,6 +19,14 @@ func (p *PgBouncer) collect() (map[string]int64, error) {
 		if err := p.openConnection(); err != nil {
 			return nil, err
 		}
+	}
+	if p.version == nil {
+		ver, err := p.queryVersion()
+		if err != nil {
+			return nil, err
+		}
+		p.version = ver
+		p.Debugf("connected to PgBouncer v%s", p.version)
 	}
 
 	mx := make(map[string]int64)
@@ -40,6 +51,7 @@ func (p *PgBouncer) collect() (map[string]int64, error) {
 
 func (p *PgBouncer) collectLists(mx map[string]int64) error {
 	q := "SHOW LISTS;"
+	p.Debugf("executing query: %v", q)
 
 	var name string
 	return p.collectQuery(q, func(column, value string) {
@@ -47,37 +59,104 @@ func (p *PgBouncer) collectLists(mx map[string]int64) error {
 		case "list":
 			name = value
 		case "items":
-			mx[name] = safeParseInt(value)
+			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
+				mx[name] = v
+			}
 		}
 	})
 }
 
 func (p *PgBouncer) collectDatabases(mx map[string]int64) error {
-	//q := "SHOW DATABASES;"
-	return nil
+	q := "SHOW DATABASES;"
+	p.Debugf("executing query: %v", q)
+
+	var db string
+	return p.collectQuery(q, func(column, value string) {
+		switch column {
+		case "database":
+			db = value
+		default:
+			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
+				mx["db_"+db+"_"+column] = v
+			}
+		}
+	})
 }
 
 func (p *PgBouncer) collectStats(mx map[string]int64) error {
-	//q := "SHOW STATS;"
-	return nil
+	q := "SHOW STATS;"
+	p.Debugf("executing query: %v", q)
+
+	var db string
+	return p.collectQuery(q, func(column, value string) {
+		switch column {
+		case "database":
+			db = value
+		default:
+			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
+				mx["db_"+db+"_"+column] = v
+			}
+		}
+	})
 }
 
 func (p *PgBouncer) collectPools(mx map[string]int64) error {
-	//q := "SHOW POOLS;"
-	return nil
+	q := "SHOW POOLS;"
+	p.Debugf("executing query: %v", q)
+
+	var db, user string
+	return p.collectQuery(q, func(column, value string) {
+		switch column {
+		case "database":
+			db = value
+		case "user":
+			user = value
+		default:
+			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
+				mx["db_"+db+"_user_"+user+"_"+column] = v
+			}
+		}
+	})
+}
+
+var reVersion = regexp.MustCompile(`\d+\.\d+\.\d+`)
+
+func (p *PgBouncer) queryVersion() (*semver.Version, error) {
+	q := "SHOW VERSION;"
+	p.Debugf("executing query: %v", q)
+
+	var resp string
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+	if err := p.db.QueryRowContext(ctx, q).Scan(&resp); err != nil {
+		return nil, err
+	}
+
+	if !strings.Contains(resp, "PgBouncer") {
+		return nil, fmt.Errorf("not PgBouncer instance: version response: %s", resp)
+	}
+
+	ver := reVersion.FindString(resp)
+	if ver == "" {
+		return nil, fmt.Errorf("couldn't parse version string '%s' (expected pattern '%s')", resp, reVersion)
+	}
+
+	v, err := semver.New(ver)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't parse version string '%s': %v", ver, err)
+	}
+
+	return v, nil
 }
 
 func (p *PgBouncer) openConnection() error {
-	if p.connString == "" {
-		cfg, err := pgx.ParseConfig(p.DSN)
-		if err != nil {
-			return err
-		}
-		cfg.PreferSimpleProtocol = true
-		p.connString = stdlib.RegisterConnConfig(cfg)
+	cfg, err := pgx.ParseConfig(p.DSN)
+	if err != nil {
+		return err
 	}
+	cfg.PreferSimpleProtocol = true
 
-	db, err := sql.Open("pgx", p.connString)
+	db, err := sql.Open("pgx", stdlib.RegisterConnConfig(cfg))
 	if err != nil {
 		return fmt.Errorf("error on opening a connection with the PgBouncer database [%s]: %v", p.DSN, err)
 	}
@@ -131,9 +210,4 @@ func makeNullStrings(size int) []interface{} {
 		vs[i] = &sql.NullString{}
 	}
 	return vs
-}
-
-func safeParseInt(s string) int64 {
-	v, _ := strconv.ParseInt(s, 10, 64)
-	return v
 }

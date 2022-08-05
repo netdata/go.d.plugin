@@ -9,6 +9,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
+	"github.com/blang/semver/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -40,8 +41,8 @@ type PgBouncer struct {
 
 	charts *module.Charts
 
-	connString string
-	db         *sql.DB
+	db      *sql.DB
+	version *semver.Version
 
 	databases map[string]bool
 }

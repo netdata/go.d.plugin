@@ -15,10 +15,10 @@ This module monitors one or more PgBouncer servers, depending on your configurat
 
 All metrics have "pgbouncer." prefix.
 
-| Metric                       | Scope  | Dimensions |    Units    |
-|------------------------------|:------:|:----------:|:-----------:|
-| pgbouncer.client_connections | global | free, used | connections |
-| pgbouncer.server_connections | global | free, used | connections |
+| Metric             | Scope  | Dimensions |    Units    |
+|--------------------|:------:|:----------:|:-----------:|
+| client_connections | global | free, used | connections |
+| server_connections | global | free, used | connections |
 
 ## Configuration
 
@@ -39,7 +39,7 @@ jobs:
     dsn: 'postgres://postgres:postgres@127.0.0.1:6432/pgbouncer'
 
   - name: local
-    dsn: 'host=/var/run/postgresql dbname=postgres user=postgres port=6432'
+    dsn: 'host=/var/run/postgresql dbname=pgbouncer user=postgres port=6432'
 
   - name: remote
     dsn: 'postgres://postgres:postgres@203.0.113.10:6432/pgbouncer'
