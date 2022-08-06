@@ -25,7 +25,7 @@ func New() *PgBouncer {
 			Timeout: web.Duration{Duration: time.Second},
 			DSN:     "postgres://postgres:postgres@127.0.0.1:6432/pgbouncer",
 		},
-		charts:               nil,
+		charts:               globalCharts.Copy(),
 		recheckSettingsEvery: time.Minute * 5,
 		metrics: &metrics{
 			dbs: make(map[string]*dbMetrics),

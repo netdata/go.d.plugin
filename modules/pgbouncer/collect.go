@@ -69,6 +69,7 @@ func (p *PgBouncer) collectMetrics(mx map[string]int64) {
 			continue
 		}
 		if !db.hasCharts {
+			db.hasCharts = true
 			p.addNewDatabaseCharts(name)
 		}
 
@@ -95,26 +96,12 @@ func (p *PgBouncer) collectMetrics(mx map[string]int64) {
 		mx["db_"+name+"_sv_login"] = db.svLogin
 
 		mx["db_"+name+"_total_received"] = db.totalReceived
-		mx["db_"+name+"_total_received"] = db.totalSent
+		mx["db_"+name+"_total_sent"] = db.totalSent
 
-		mx["db_"+name+"_sv_conns_utilization"] = calcPercentage(db.maxConnections, db.currentConnections)
+		mx["db_"+name+"_sv_conns_utilization"] = calcPercentage(db.currentConnections, db.maxConnections)
 	}
 
-	mx["cl_conns_utilization"] = calcPercentage(p.maxClientConn, clientConns)
-}
-
-func (p *PgBouncer) queryMaxClientConn() (int64, error) {
-	q := "SHOW CONFIG;"
-	p.Debugf("executing query: %v", q)
-
-	var v int64
-	err := p.collectQuery(q, func(column, value string) {
-		switch column {
-		case "max_client_conn":
-			v, _ = strconv.ParseInt(value, 10, 64)
-		}
-	})
-	return v, err
+	mx["cl_conns_utilization"] = calcPercentage(clientConns, p.maxClientConn)
 }
 
 func (p *PgBouncer) collectDatabases() error {
@@ -204,6 +191,25 @@ func (p *PgBouncer) collectPools() error {
 			p.getDBMetrics(db).maxWaitUS += parseInt(value)
 		}
 	})
+}
+
+func (p *PgBouncer) queryMaxClientConn() (int64, error) {
+	q := "SHOW CONFIG;"
+	p.Debugf("executing query: %v", q)
+
+	var v int64
+	var key string
+	err := p.collectQuery(q, func(column, value string) {
+		switch column {
+		case "key":
+			key = value
+		case "value":
+			if key == "max_client_conn" {
+				v = parseInt(value)
+			}
+		}
+	})
+	return v, err
 }
 
 var reVersion = regexp.MustCompile(`\d+\.\d+\.\d+`)
@@ -301,7 +307,7 @@ func (p *PgBouncer) resetMetrics() {
 	}
 }
 
-func valueToString(value interface{}) string {
+func valueToString(value any) string {
 	v, ok := value.(*sql.NullString)
 	if !ok || !v.Valid {
 		return ""
@@ -309,8 +315,8 @@ func valueToString(value interface{}) string {
 	return v.String
 }
 
-func makeNullStrings(size int) []interface{} {
-	vs := make([]interface{}, size)
+func makeNullStrings(size int) []any {
+	vs := make([]any, size)
 	for i := range vs {
 		vs[i] = &sql.NullString{}
 	}
