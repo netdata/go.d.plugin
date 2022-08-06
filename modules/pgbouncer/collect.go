@@ -29,44 +29,95 @@ func (p *PgBouncer) collect() (map[string]int64, error) {
 		p.Debugf("connected to PgBouncer v%s", p.version)
 	}
 
-	mx := make(map[string]int64)
+	now := time.Now()
+	if now.Sub(p.recheckSettingsTime) > p.recheckSettingsEvery {
+		v, err := p.queryMaxClientConn()
+		if err != nil {
+			return nil, err
+		}
+		p.maxClientConn = v
+	}
 
 	// http://www.pgbouncer.org/usage.html
 
-	if err := p.collectLists(mx); err != nil {
-		return mx, err
+	p.resetMetrics()
+
+	if err := p.collectDatabases(); err != nil {
+		return nil, err
 	}
-	if err := p.collectDatabases(mx); err != nil {
-		return mx, err
+	if err := p.collectStats(); err != nil {
+		return nil, err
 	}
-	if err := p.collectStats(mx); err != nil {
-		return mx, err
+	if err := p.collectPools(); err != nil {
+		return nil, err
 	}
-	if err := p.collectPools(mx); err != nil {
-		return mx, err
-	}
+
+	mx := make(map[string]int64)
+	p.collectMetrics(mx)
 
 	return mx, nil
 }
 
-func (p *PgBouncer) collectLists(mx map[string]int64) error {
-	q := "SHOW LISTS;"
-	p.Debugf("executing query: %v", q)
-
-	var name string
-	return p.collectQuery(q, func(column, value string) {
-		switch column {
-		case "list":
-			name = value
-		case "items":
-			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
-				mx[name] = v
+func (p *PgBouncer) collectMetrics(mx map[string]int64) {
+	var clientConns int64
+	for name, db := range p.metrics.dbs {
+		if !db.updated {
+			delete(p.metrics.dbs, name)
+			if db.hasCharts {
+				p.removeDatabaseCharts(name)
 			}
+			continue
 		}
-	})
+		if !db.hasCharts {
+			p.addNewDatabaseCharts(name)
+		}
+
+		mx["db_"+name+"_total_xact_count"] = db.totalXactCount
+		mx["db_"+name+"_total_xact_time"] = db.totalXactTime
+		mx["db_"+name+"_avg_xact_time"] = db.avgXactTime
+
+		mx["db_"+name+"_total_query_count"] = db.totalQueryCount
+		mx["db_"+name+"_total_query_time"] = db.totalQueryTime
+		mx["db_"+name+"_avg_query_time"] = db.avgQueryTime
+
+		mx["db_"+name+"_total_wait_time"] = db.totalWaitTime
+		mx["db_"+name+"_maxwait"] = db.maxWait*1e6 + db.maxWaitUS
+
+		mx["db_"+name+"_cl_active"] = db.clActive
+		mx["db_"+name+"_cl_waiting"] = db.clWaiting
+		mx["db_"+name+"_cl_cancel_req"] = db.clCancelReq
+		clientConns += db.clActive + db.clWaiting + db.clCancelReq
+
+		mx["db_"+name+"_sv_active"] = db.svActive
+		mx["db_"+name+"_sv_idle"] = db.svIdle
+		mx["db_"+name+"_sv_used"] = db.svUsed
+		mx["db_"+name+"_sv_tested"] = db.svTested
+		mx["db_"+name+"_sv_login"] = db.svLogin
+
+		mx["db_"+name+"_total_received"] = db.totalReceived
+		mx["db_"+name+"_total_received"] = db.totalSent
+
+		mx["db_"+name+"_sv_conns_utilization"] = calcPercentage(db.maxConnections, db.currentConnections)
+	}
+
+	mx["cl_conns_utilization"] = calcPercentage(p.maxClientConn, clientConns)
 }
 
-func (p *PgBouncer) collectDatabases(mx map[string]int64) error {
+func (p *PgBouncer) queryMaxClientConn() (int64, error) {
+	q := "SHOW CONFIG;"
+	p.Debugf("executing query: %v", q)
+
+	var v int64
+	err := p.collectQuery(q, func(column, value string) {
+		switch column {
+		case "max_client_conn":
+			v, _ = strconv.ParseInt(value, 10, 64)
+		}
+	})
+	return v, err
+}
+
+func (p *PgBouncer) collectDatabases() error {
 	q := "SHOW DATABASES;"
 	p.Debugf("executing query: %v", q)
 
@@ -75,15 +126,20 @@ func (p *PgBouncer) collectDatabases(mx map[string]int64) error {
 		switch column {
 		case "database":
 			db = value
-		default:
-			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
-				mx["db_"+db+"_"+column] = v
-			}
+			p.getDBMetrics(db).updated = true
+		case "max_connections":
+			p.getDBMetrics(db).maxConnections = parseInt(value)
+		case "current_connections":
+			p.getDBMetrics(db).currentConnections = parseInt(value)
+		case "paused":
+			p.getDBMetrics(db).paused = parseInt(value)
+		case "disabled":
+			p.getDBMetrics(db).disabled = parseInt(value)
 		}
 	})
 }
 
-func (p *PgBouncer) collectStats(mx map[string]int64) error {
+func (p *PgBouncer) collectStats() error {
 	q := "SHOW STATS;"
 	p.Debugf("executing query: %v", q)
 
@@ -92,29 +148,60 @@ func (p *PgBouncer) collectStats(mx map[string]int64) error {
 		switch column {
 		case "database":
 			db = value
-		default:
-			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
-				mx["db_"+db+"_"+column] = v
-			}
+			p.getDBMetrics(db).updated = true
+		case "total_xact_count":
+			p.getDBMetrics(db).totalXactCount = parseInt(value)
+		case "total_query_count":
+			p.getDBMetrics(db).totalQueryCount = parseInt(value)
+		case "total_received":
+			p.getDBMetrics(db).totalReceived = parseInt(value)
+		case "total_sent":
+			p.getDBMetrics(db).totalSent = parseInt(value)
+		case "total_xact_time":
+			p.getDBMetrics(db).totalXactTime = parseInt(value)
+		case "total_query_time":
+			p.getDBMetrics(db).totalQueryTime = parseInt(value)
+		case "total_wait_time":
+			p.getDBMetrics(db).totalWaitTime = parseInt(value)
+		case "avg_xact_time":
+			p.getDBMetrics(db).avgXactTime = parseInt(value)
+		case "avg_query_time":
+			p.getDBMetrics(db).avgQueryTime = parseInt(value)
 		}
 	})
 }
 
-func (p *PgBouncer) collectPools(mx map[string]int64) error {
+func (p *PgBouncer) collectPools() error {
 	q := "SHOW POOLS;"
 	p.Debugf("executing query: %v", q)
 
-	var db, user string
+	// an entry is made for each couple of (database, user).
+	var db string
 	return p.collectQuery(q, func(column, value string) {
 		switch column {
 		case "database":
 			db = value
-		case "user":
-			user = value
-		default:
-			if v, err := strconv.ParseInt(value, 10, 64); err == nil {
-				mx["db_"+db+"_user_"+user+"_"+column] = v
-			}
+			p.getDBMetrics(db).updated = true
+		case "cl_active":
+			p.getDBMetrics(db).clActive += parseInt(value)
+		case "cl_waiting":
+			p.getDBMetrics(db).clWaiting += parseInt(value)
+		case "cl_cancel_req":
+			p.getDBMetrics(db).clCancelReq += parseInt(value)
+		case "sv_active":
+			p.getDBMetrics(db).svActive += parseInt(value)
+		case "sv_idle":
+			p.getDBMetrics(db).svIdle += parseInt(value)
+		case "sv_used":
+			p.getDBMetrics(db).svUsed += parseInt(value)
+		case "sv_tested":
+			p.getDBMetrics(db).svTested += parseInt(value)
+		case "sv_login":
+			p.getDBMetrics(db).svLogin += parseInt(value)
+		case "maxwait":
+			p.getDBMetrics(db).maxWait += parseInt(value)
+		case "maxwait_us":
+			p.getDBMetrics(db).maxWaitUS += parseInt(value)
 		}
 	})
 }
@@ -193,7 +280,25 @@ func (p *PgBouncer) collectQuery(query string, assign func(column, value string)
 			assign(columns[i], valueToString(v))
 		}
 	}
-	return nil
+	return rows.Err()
+}
+
+func (p *PgBouncer) getDBMetrics(dbname string) *dbMetrics {
+	db, ok := p.metrics.dbs[dbname]
+	if !ok {
+		db = &dbMetrics{name: dbname}
+		p.metrics.dbs[dbname] = db
+	}
+	return db
+}
+
+func (p *PgBouncer) resetMetrics() {
+	for name, db := range p.metrics.dbs {
+		p.metrics.dbs[name] = &dbMetrics{
+			name:      db.name,
+			hasCharts: db.hasCharts,
+		}
+	}
 }
 
 func valueToString(value interface{}) string {
@@ -210,4 +315,16 @@ func makeNullStrings(size int) []interface{} {
 		vs[i] = &sql.NullString{}
 	}
 	return vs
+}
+
+func parseInt(s string) int64 {
+	v, _ := strconv.ParseInt(s, 10, 64)
+	return v
+}
+
+func calcPercentage(value, total int64) int64 {
+	if total == 0 {
+		return 0
+	}
+	return value * 100 / total
 }

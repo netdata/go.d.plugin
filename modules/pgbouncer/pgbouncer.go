@@ -25,8 +25,11 @@ func New() *PgBouncer {
 			Timeout: web.Duration{Duration: time.Second},
 			DSN:     "postgres://postgres:postgres@127.0.0.1:6432/pgbouncer",
 		},
-		charts:    globalCharts.Copy(),
-		databases: make(map[string]bool),
+		charts:               nil,
+		recheckSettingsEvery: time.Minute * 5,
+		metrics: &metrics{
+			dbs: make(map[string]*dbMetrics),
+		},
 	}
 }
 
@@ -44,7 +47,11 @@ type PgBouncer struct {
 	db      *sql.DB
 	version *semver.Version
 
-	databases map[string]bool
+	recheckSettingsTime  time.Time
+	recheckSettingsEvery time.Duration
+	maxClientConn        int64
+
+	metrics *metrics
 }
 
 func (p *PgBouncer) Init() bool {
