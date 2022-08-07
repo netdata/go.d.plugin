@@ -21,7 +21,7 @@ clean:
 	rm -rf bin
 
 .PHONY: check
-check: fmt vet lint ## Run static code analysis
+check: fmt vet ## Run static code analysis
 
 
 .PHONY: test

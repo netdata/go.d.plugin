@@ -4,9 +4,9 @@ package wmi
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	v0150Metrics, _ = ioutil.ReadFile("testdata/v0.15.0/metrics.txt")
-	v0160Metrics, _ = ioutil.ReadFile("testdata/v0.16.0/metrics.txt")
+	v0150Metrics, _ = os.ReadFile("testdata/v0.15.0/metrics.txt")
+	v0160Metrics, _ = os.ReadFile("testdata/v0.16.0/metrics.txt")
 )
 
 func Test_TestData(t *testing.T) {

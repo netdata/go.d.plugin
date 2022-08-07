@@ -3,9 +3,9 @@
 package vernemq
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	metricsV1101MQTTv5, _ = ioutil.ReadFile("testdata/metrics-v1.10.1-mqtt5.txt")
-	invalidMetrics, _     = ioutil.ReadFile("testdata/non_vernemq.txt")
+	metricsV1101MQTTv5, _ = os.ReadFile("testdata/metrics-v1.10.1-mqtt5.txt")
+	invalidMetrics, _     = os.ReadFile("testdata/non_vernemq.txt")
 )
 
 func Test_readTestData(t *testing.T) {

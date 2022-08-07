@@ -3,7 +3,7 @@
 package k8s_kubelet
 
 import (
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -68,7 +68,7 @@ func (Kubelet) Cleanup() {}
 
 // Init makes initialization.
 func (k *Kubelet) Init() bool {
-	b, err := ioutil.ReadFile(k.TokenPath)
+	b, err := os.ReadFile(k.TokenPath)
 	if err != nil {
 		k.Warningf("error on reading service account token from '%s': %v", k.TokenPath, err)
 	} else {

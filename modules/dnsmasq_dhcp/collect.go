@@ -17,7 +17,7 @@ func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	fi, err := f.Stat()
 	if err != nil {

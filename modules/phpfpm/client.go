@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -85,7 +84,7 @@ func (c *httpClient) getStatus() (*status, error) {
 		return nil, fmt.Errorf("error on HTTP request to '%s': %v", req.URL, err)
 	}
 	defer func() {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}()
 
@@ -134,7 +133,7 @@ func (c *socketClient) getStatus() (*status, error) {
 		return nil, fmt.Errorf("error on getting data from socket '%s': %v", c.socket, err)
 	}
 
-	content, err := ioutil.ReadAll(resp.Body)
+	content, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error on reading response from socket '%s': %v", c.socket, err)
 	}

@@ -5,7 +5,6 @@ package dnsmasq_dhcp
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -79,14 +78,18 @@ func (cd configDir) match(filename string) bool {
 }
 
 func (cd configDir) findConfigs() ([]string, error) {
-	fis, err := ioutil.ReadDir(cd.path)
+	fis, err := os.ReadDir(cd.path)
 	if err != nil {
 		return nil, err
 	}
 
 	var files []string
 	for _, fi := range fis {
-		if !fi.Mode().IsRegular() || !cd.match(fi.Name()) {
+		info, err := fi.Info()
+		if err != nil {
+			return nil, err
+		}
+		if !info.Mode().IsRegular() || !cd.match(fi.Name()) {
 			continue
 		}
 		files = append(files, filepath.Join(cd.path, fi.Name()))
@@ -144,7 +147,7 @@ func parseConfFile(filename string) (*configFile, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	cf := configFile{path: filename}
 	s := bufio.NewScanner(f)

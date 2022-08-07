@@ -12,7 +12,7 @@ import (
 type (
 	// Charts is an alias for module.Charts
 	Charts = module.Charts
-	// Charts is an alias for module.Charts
+	// Chart is an alias for module.Charts
 	Chart = module.Chart
 	// Dims is an alias for module.Dims
 	Dims = module.Dims

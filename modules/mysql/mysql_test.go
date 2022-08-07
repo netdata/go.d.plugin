@@ -8,7 +8,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -21,24 +21,24 @@ import (
 )
 
 var (
-	mariaV5546Version, _         = ioutil.ReadFile("testdata/mariadb/v5.5.46/version.txt")
-	mariaV5546GlobalStatus, _    = ioutil.ReadFile("testdata/mariadb/v5.5.46/global_status.txt")
-	mariaV5546GlobalVariables, _ = ioutil.ReadFile("testdata/mariadb/v5.5.46/global_variables.txt")
-	mariaV5546SlaveStatus, _     = ioutil.ReadFile("testdata/mariadb/v5.5.46/slave_status.txt")
-	mariaV5546ProcessList, _     = ioutil.ReadFile("testdata/mariadb/v5.5.46/process_list.txt")
+	mariaV5546Version, _         = os.ReadFile("testdata/mariadb/v5.5.46/version.txt")
+	mariaV5546GlobalStatus, _    = os.ReadFile("testdata/mariadb/v5.5.46/global_status.txt")
+	mariaV5546GlobalVariables, _ = os.ReadFile("testdata/mariadb/v5.5.46/global_variables.txt")
+	mariaV5546SlaveStatus, _     = os.ReadFile("testdata/mariadb/v5.5.46/slave_status.txt")
+	mariaV5546ProcessList, _     = os.ReadFile("testdata/mariadb/v5.5.46/process_list.txt")
 
-	mariaV1054Version, _         = ioutil.ReadFile("testdata/mariadb/v10.5.4/version.txt")
-	mariaV1054GlobalStatus, _    = ioutil.ReadFile("testdata/mariadb/v10.5.4/global_status.txt")
-	mariaV1054GlobalVariables, _ = ioutil.ReadFile("testdata/mariadb/v10.5.4/global_variables.txt")
-	mariaV1054UserStatistics, _  = ioutil.ReadFile("testdata/mariadb/v10.5.4/user_statistics.txt")
-	mariaV1054AllSlavesStatus, _ = ioutil.ReadFile("testdata/mariadb/v10.5.4/all_slaves_status.txt")
-	mariaV1054ProcessList, _     = ioutil.ReadFile("testdata/mariadb/v10.5.4/process_list.txt")
+	mariaV1054Version, _         = os.ReadFile("testdata/mariadb/v10.5.4/version.txt")
+	mariaV1054GlobalStatus, _    = os.ReadFile("testdata/mariadb/v10.5.4/global_status.txt")
+	mariaV1054GlobalVariables, _ = os.ReadFile("testdata/mariadb/v10.5.4/global_variables.txt")
+	mariaV1054UserStatistics, _  = os.ReadFile("testdata/mariadb/v10.5.4/user_statistics.txt")
+	mariaV1054AllSlavesStatus, _ = os.ReadFile("testdata/mariadb/v10.5.4/all_slaves_status.txt")
+	mariaV1054ProcessList, _     = os.ReadFile("testdata/mariadb/v10.5.4/process_list.txt")
 
-	mysqlV8021Version, _         = ioutil.ReadFile("testdata/mysql/v8.0.21/version.txt")
-	mysqlV8021GlobalStatus, _    = ioutil.ReadFile("testdata/mysql/v8.0.21/global_status.txt")
-	mysqlV8021GlobalVariables, _ = ioutil.ReadFile("testdata/mysql/v8.0.21/global_variables.txt")
-	mysqlV8021SlaveStatus, _     = ioutil.ReadFile("testdata/mysql/v8.0.21/slave_status.txt")
-	mysqlV8021ProcessList, _     = ioutil.ReadFile("testdata/mysql/v8.0.21/process_list.txt")
+	mysqlV8021Version, _         = os.ReadFile("testdata/mysql/v8.0.21/version.txt")
+	mysqlV8021GlobalStatus, _    = os.ReadFile("testdata/mysql/v8.0.21/global_status.txt")
+	mysqlV8021GlobalVariables, _ = os.ReadFile("testdata/mysql/v8.0.21/global_variables.txt")
+	mysqlV8021SlaveStatus, _     = os.ReadFile("testdata/mysql/v8.0.21/slave_status.txt")
+	mysqlV8021ProcessList, _     = os.ReadFile("testdata/mysql/v8.0.21/process_list.txt")
 )
 
 var (

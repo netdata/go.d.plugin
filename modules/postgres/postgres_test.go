@@ -8,7 +8,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -19,36 +19,36 @@ import (
 )
 
 var (
-	dataV140004ServerVersionNum, _ = ioutil.ReadFile("testdata/v14.4/server_version_num.txt")
+	dataV140004ServerVersionNum, _ = os.ReadFile("testdata/v14.4/server_version_num.txt")
 
-	dataV140004IsSuperUserFalse, _ = ioutil.ReadFile("testdata/v14.4/is_super_user-false.txt")
-	dataV140004IsSuperUserTrue, _  = ioutil.ReadFile("testdata/v14.4/is_super_user-true.txt")
+	dataV140004IsSuperUserFalse, _ = os.ReadFile("testdata/v14.4/is_super_user-false.txt")
+	dataV140004IsSuperUserTrue, _  = os.ReadFile("testdata/v14.4/is_super_user-true.txt")
 
-	dataV140004SettingsMaxConnections, _ = ioutil.ReadFile("testdata/v14.4/settings_max_connections.txt")
+	dataV140004SettingsMaxConnections, _ = os.ReadFile("testdata/v14.4/settings_max_connections.txt")
 
-	dataV140004ServerCurrentConnections, _ = ioutil.ReadFile("testdata/v14.4/server_current_connections.txt")
-	dataV140004Checkpoints, _              = ioutil.ReadFile("testdata/v14.4/checkpoints.txt")
-	dataV140004ServerUptime, _             = ioutil.ReadFile("testdata/v14.4/uptime.txt")
-	dataV140004TXIDWraparound, _           = ioutil.ReadFile("testdata/v14.4/txid_wraparound.txt")
-	dataV140004WALWrites, _                = ioutil.ReadFile("testdata/v14.4/wal_writes.txt")
-	dataV140004WALFiles, _                 = ioutil.ReadFile("testdata/v14.4/wal_files.txt")
-	dataV140004WALArchiveFiles, _          = ioutil.ReadFile("testdata/v14.4/wal_archive_files.txt")
-	dataV140004CatalogRelations, _         = ioutil.ReadFile("testdata/v14.4/catalog_relations.txt")
-	dataV140004AutovacuumWorkers, _        = ioutil.ReadFile("testdata/v14.4/autovacuum_workers.txt")
+	dataV140004ServerCurrentConnections, _ = os.ReadFile("testdata/v14.4/server_current_connections.txt")
+	dataV140004Checkpoints, _              = os.ReadFile("testdata/v14.4/checkpoints.txt")
+	dataV140004ServerUptime, _             = os.ReadFile("testdata/v14.4/uptime.txt")
+	dataV140004TXIDWraparound, _           = os.ReadFile("testdata/v14.4/txid_wraparound.txt")
+	dataV140004WALWrites, _                = os.ReadFile("testdata/v14.4/wal_writes.txt")
+	dataV140004WALFiles, _                 = os.ReadFile("testdata/v14.4/wal_files.txt")
+	dataV140004WALArchiveFiles, _          = os.ReadFile("testdata/v14.4/wal_archive_files.txt")
+	dataV140004CatalogRelations, _         = os.ReadFile("testdata/v14.4/catalog_relations.txt")
+	dataV140004AutovacuumWorkers, _        = os.ReadFile("testdata/v14.4/autovacuum_workers.txt")
 
-	dataV140004ReplStandbyAppList, _  = ioutil.ReadFile("testdata/v14.4/replication_standby_app_list.txt")
-	dataV140004ReplStandbyAppDelta, _ = ioutil.ReadFile("testdata/v14.4/replication_standby_app_wal_delta.txt")
-	dataV140004ReplStandbyAppLag, _   = ioutil.ReadFile("testdata/v14.4/replication_standby_app_wal_lag.txt")
+	dataV140004ReplStandbyAppList, _  = os.ReadFile("testdata/v14.4/replication_standby_app_list.txt")
+	dataV140004ReplStandbyAppDelta, _ = os.ReadFile("testdata/v14.4/replication_standby_app_wal_delta.txt")
+	dataV140004ReplStandbyAppLag, _   = os.ReadFile("testdata/v14.4/replication_standby_app_wal_lag.txt")
 
-	dataV140004ReplSlotList, _  = ioutil.ReadFile("testdata/v14.4/replication_slot_list.txt")
-	dataV140004ReplSlotFiles, _ = ioutil.ReadFile("testdata/v14.4/replication_slot_files.txt")
+	dataV140004ReplSlotList, _  = os.ReadFile("testdata/v14.4/replication_slot_list.txt")
+	dataV140004ReplSlotFiles, _ = os.ReadFile("testdata/v14.4/replication_slot_files.txt")
 
-	dataV140004DatabaseList1DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-1db.txt")
-	dataV140004DatabaseList2DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-2db.txt")
-	dataV140004DatabaseList3DB, _   = ioutil.ReadFile("testdata/v14.4/database_list-3db.txt")
-	dataV140004DatabaseStats, _     = ioutil.ReadFile("testdata/v14.4/database_stats.txt")
-	dataV140004DatabaseConflicts, _ = ioutil.ReadFile("testdata/v14.4/database_conflicts.txt")
-	dataV140004DatabaseLocks, _     = ioutil.ReadFile("testdata/v14.4/database_locks.txt")
+	dataV140004DatabaseList1DB, _   = os.ReadFile("testdata/v14.4/database_list-1db.txt")
+	dataV140004DatabaseList2DB, _   = os.ReadFile("testdata/v14.4/database_list-2db.txt")
+	dataV140004DatabaseList3DB, _   = os.ReadFile("testdata/v14.4/database_list-3db.txt")
+	dataV140004DatabaseStats, _     = os.ReadFile("testdata/v14.4/database_stats.txt")
+	dataV140004DatabaseConflicts, _ = os.ReadFile("testdata/v14.4/database_conflicts.txt")
+	dataV140004DatabaseLocks, _     = os.ReadFile("testdata/v14.4/database_locks.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {

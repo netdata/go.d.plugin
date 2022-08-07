@@ -38,8 +38,8 @@ Works with local and cloud hosted [`Atlas`](https://www.mongodb.com/cloud/atlas)
 
 #### Operations Latency
 
-- ops reads in `milliseconds`
-- ops writes in `milliseconds`
+- reads in `milliseconds`
+- writes in `milliseconds`
 - commands in `milliseconds`
 
 #### Connections
@@ -334,7 +334,8 @@ Round trip time between members and local instance in `milliseconds`
 
 ### Sharding
 
-Charts are available on shards only for [mongos](https://docs.mongodb.com/manual/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.process)
+Charts are available on shards only
+for [mongos](https://docs.mongodb.com/manual/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.process)
 
 #### Transaction Commit Types
 
@@ -360,14 +361,14 @@ Number of chucks per node in `chunks`
 
 Create a read-only user for Netdata in the admin database.
 
-1. Authenticate as the admin user.
+- Authenticate as the admin user.
 
-```
-use admin
-db.auth("admin", "<MONGODB_ADMIN_PASSWORD>")
-```
+  ```
+  use admin
+  db.auth("admin", "<MONGODB_ADMIN_PASSWORD>")
+  ```
 
-2. Create a user.
+- Create a user.
 
 ```
 # MongoDB 2.x.
@@ -388,7 +389,7 @@ db.createUser({
 ## Configuration
 
 Edit the `go.d/mongodb.conf` configuration file using `edit-config` from the
-Netdata [config directory](/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata   # Replace this path with your Netdata config directory, if different
@@ -413,7 +414,7 @@ collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/mas
 To troubleshoot issues with the `mongodb` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+First, navigate to your plugins' directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
 system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
 to the `netdata` user.
 

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 
@@ -32,7 +31,7 @@ func (d *DNSdist) collect() (map[string]int64, error) {
 
 func (d *DNSdist) collectStatistic(collected map[string]int64, statistics *statisticMetrics) {
 	for metric, value := range stm.ToMap(statistics) {
-		collected[metric] = int64(value)
+		collected[metric] = value
 	}
 }
 
@@ -69,7 +68,7 @@ func (d *DNSdist) doOKDecode(req *http.Request, in interface{}) error {
 
 func closeBody(resp *http.Response) {
 	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
 }

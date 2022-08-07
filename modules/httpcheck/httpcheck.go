@@ -55,7 +55,6 @@ type client interface {
 	Do(*http.Request) (*http.Response, error)
 }
 
-// HTTPCheck HTTPCheck module.
 type HTTPCheck struct {
 	module.Base
 	Config      `yaml:",inline"`

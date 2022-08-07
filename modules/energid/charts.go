@@ -5,7 +5,7 @@ package energid
 import "github.com/netdata/go.d.plugin/agent/module"
 
 var charts = module.Charts{
-	// getblockchaininfo (block chain processing)
+	// getblockchaininfo (blockchain processing)
 	{
 		ID:    "blockindex",
 		Title: "Blockchain index",

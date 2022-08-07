@@ -12,7 +12,7 @@ acts as a DNS sinkhole, intended for use on a private network.
 
 This module will monitor one or more `Pi-hole` instances using [PHP API](https://github.com/pi-hole/AdminLTE).
 
-The API exposed data time frame is `for the last 24 hr`. All collected values are for that time time frame, not for the
+The API exposed data time frame is `for the last 24 hr`. All collected values are for that time frame, not for the
 module collection interval.
 
 ## Charts
@@ -77,7 +77,7 @@ module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/c
 To troubleshoot issues with the `pihole` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+First, navigate to your plugins' directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
 system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
 to the `netdata` user.
 

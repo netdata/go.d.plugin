@@ -41,7 +41,7 @@ It collects information and statistics about the server executing the following 
 ### Persistence RDB
 
 - Operations that produced changes since the last SAVE or BGSAVE in `operations`
-- Duration of the on-going RDB save operation if any in `seconds`
+- Duration of the ongoing RDB save operation if any in `seconds`
 - Status of the last RDB save operation in `status`
 
 ### Persistence AOF
@@ -106,7 +106,7 @@ collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/mas
 To troubleshoot issues with the `redis` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+First, navigate to your plugins' directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
 system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
 to the `netdata` user.
 

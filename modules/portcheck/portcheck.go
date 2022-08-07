@@ -37,7 +37,7 @@ func New() *PortCheck {
 	}
 }
 
-/// Config is the Portcheck module configuration file.
+// Config is the Portcheck module configuration file.
 type Config struct {
 	Host    string       `yaml:"host"`
 	Ports   []int        `yaml:"ports"`
@@ -61,7 +61,6 @@ type port struct {
 	latency int
 }
 
-// PortCheck portcheck module.
 type PortCheck struct {
 	module.Base
 	Config      `yaml:",inline"`

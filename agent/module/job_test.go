@@ -4,7 +4,7 @@ package module
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 	"time"
 
@@ -25,7 +25,7 @@ func newTestJob() *Job {
 			ModuleName:      modName,
 			FullName:        modName + "_" + jobName,
 			Module:          nil,
-			Out:             ioutil.Discard,
+			Out:             io.Discard,
 			UpdateEvery:     0,
 			AutoDetectEvery: 0,
 			Priority:        0,

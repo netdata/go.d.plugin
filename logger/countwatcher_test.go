@@ -3,7 +3,7 @@
 package logger
 
 import (
-	"io/ioutil"
+	"io"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -46,7 +46,7 @@ func TestMsgCountWatcher(t *testing.T) {
 
 	logger := New("", "")
 	logger.limited = true
-	logger.formatter.SetOutput(ioutil.Discard)
+	logger.formatter.SetOutput(io.Discard)
 	cw.Register(logger)
 
 	for i := 0; i < 3; i++ {

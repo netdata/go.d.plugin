@@ -36,7 +36,7 @@ type Sdc struct {
 	MdmConnectionState string
 }
 
-// Sdc represents ScaleIO Storage Pool.
+// StoragePool represents ScaleIO Storage Pool.
 type StoragePool struct {
 	ID                             string
 	Name                           string
@@ -45,7 +45,7 @@ type StoragePool struct {
 	CapacityAlertHighThreshold     int64
 }
 
-// Sdc represents '/api/instances' response.
+// Instances represents '/api/instances' response.
 type Instances struct {
 	StoragePoolList []StoragePool
 	SdcList         []Sdc

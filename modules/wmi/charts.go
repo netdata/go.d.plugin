@@ -20,7 +20,7 @@ type (
 	Dim = module.Dim
 	// Vars is an alias for module.Vars
 	Vars = module.Vars
-	// Dim is an alias for module.Dim
+	// Opts is an alias for module.Dim
 	Opts = module.DimOpts
 )
 

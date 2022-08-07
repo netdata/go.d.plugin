@@ -3,9 +3,9 @@
 package haproxy
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	v2310Metrics, _ = ioutil.ReadFile("testdata/v2.3.10/metrics.txt")
+	v2310Metrics, _ = os.ReadFile("testdata/v2.3.10/metrics.txt")
 )
 
 func Test_Testdata(t *testing.T) {

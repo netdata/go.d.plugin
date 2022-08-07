@@ -3,9 +3,9 @@
 package pulsar
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -19,10 +19,10 @@ import (
 )
 
 var (
-	metricsNonPulsar, _         = ioutil.ReadFile("testdata/non-pulsar.txt")
-	metricsStdV250Namespaces, _ = ioutil.ReadFile("testdata/standalone-v2.5.0-namespaces.txt")
-	metricsStdV250Topics, _     = ioutil.ReadFile("testdata/standalone-v2.5.0-topics.txt")
-	metricsStdV250Topics2, _    = ioutil.ReadFile("testdata/standalone-v2.5.0-topics-2.txt")
+	metricsNonPulsar, _         = os.ReadFile("testdata/non-pulsar.txt")
+	metricsStdV250Namespaces, _ = os.ReadFile("testdata/standalone-v2.5.0-namespaces.txt")
+	metricsStdV250Topics, _     = os.ReadFile("testdata/standalone-v2.5.0-topics.txt")
+	metricsStdV250Topics2, _    = os.ReadFile("testdata/standalone-v2.5.0-topics-2.txt")
 )
 
 func Test_readTestData(t *testing.T) {

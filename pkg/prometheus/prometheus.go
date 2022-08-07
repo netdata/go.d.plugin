@@ -8,7 +8,6 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -57,7 +56,7 @@ func New(client *http.Client, request web.Request) Prometheus {
 	}
 }
 
-// New creates a Prometheus instance with the selector.
+// NewWithSelector creates a Prometheus instance with the selector.
 func NewWithSelector(client *http.Client, request web.Request, sr selector.Selector) Prometheus {
 	return &prometheus{
 		client:   client,
@@ -138,7 +137,7 @@ func (p *prometheus) fetch(w io.Writer) error {
 	}
 
 	defer func() {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}()
 

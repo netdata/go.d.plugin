@@ -5,9 +5,9 @@ package prometheus
 import (
 	"bytes"
 	"compress/gzip"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -19,8 +19,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var testdata, _ = ioutil.ReadFile("tests/testdata.txt")
-var testdataNometa, _ = ioutil.ReadFile("tests/testdata.nometa.txt")
+var testdata, _ = os.ReadFile("tests/testdata.txt")
+var testdataNometa, _ = os.ReadFile("tests/testdata.nometa.txt")
 
 func TestPrometheus404(t *testing.T) {
 	tsMux := http.NewServeMux()

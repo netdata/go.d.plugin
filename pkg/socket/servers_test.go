@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"strings"
@@ -96,7 +95,7 @@ type unixServer struct {
 }
 
 func (u *unixServer) Run() (err error) {
-	_, _ = ioutil.TempFile("/tmp", "testSocketFD")
+	_, _ = os.CreateTemp("/tmp", "testSocketFD")
 	addr, err := net.ResolveUnixAddr("unix", u.addr)
 	if err != nil {
 		return err

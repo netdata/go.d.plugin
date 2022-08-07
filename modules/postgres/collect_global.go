@@ -71,7 +71,7 @@ func (p *Postgres) collectConnection(mx map[string]int64) error {
 		mx["server_connections_available"] = p.maxConnections - num
 		mx["server_connections_utilization"] = calcPercentage(num, p.maxConnections)
 	}
-	mx["server_connections_used"] = int64(num)
+	mx["server_connections_used"] = num
 
 	return nil
 }

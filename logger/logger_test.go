@@ -4,7 +4,7 @@ package logger
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"log"
 	"testing"
 	"time"
@@ -180,7 +180,7 @@ func TestLogger_Limited(t *testing.T) {
 
 func TestLogger_Info_race(t *testing.T) {
 	logger := New("", "")
-	logger.formatter.SetOutput(ioutil.Discard)
+	logger.formatter.SetOutput(io.Discard)
 	for i := 0; i < 10; i++ {
 		go func() {
 			for j := 0; j < 10; j++ {
@@ -200,14 +200,14 @@ func (c *countWriter) Write(b []byte) (n int, err error) {
 
 func BenchmarkLogger_Infof(b *testing.B) {
 	l := New("test", "test")
-	l.formatter.SetOutput(ioutil.Discard)
+	l.formatter.SetOutput(io.Discard)
 	for i := 0; i < b.N; i++ {
 		l.Infof("hello %s", "world")
 	}
 }
 
 func BenchmarkLog_Printf(b *testing.B) {
-	logger := log.New(ioutil.Discard, "", log.Lshortfile)
+	logger := log.New(io.Discard, "", log.Lshortfile)
 	for i := 0; i < b.N; i++ {
 		logger.Printf("hello %s", "world")
 	}

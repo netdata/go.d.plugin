@@ -30,7 +30,7 @@ func (m *MySQL) collectProcessListStatistics(collected map[string]int64) error {
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	collected["process_list_queries_count_system"] = 0
 	collected["process_list_queries_count_user"] = 0

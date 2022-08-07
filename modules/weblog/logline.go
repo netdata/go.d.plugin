@@ -608,7 +608,7 @@ func isSSLProtoValid(proto string) bool {
 
 func timeMultiplier(time string) float64 {
 	// Convert to microseconds:
-	//   - nginx time is in seconds with a milliseconds resolution.
+	//   - nginx time is in seconds with a milliseconds' resolution.
 	if strings.IndexByte(time, '.') > 0 {
 		return 1e6
 	}

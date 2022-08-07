@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
@@ -126,7 +125,7 @@ func (e *Energid) scrapeEnergid(requests rpcRequests) (rpcResponses, error) {
 	req.Method = http.MethodPost
 	req.Header.Set("Content-Type", "application/json")
 	body, _ := json.Marshal(requests)
-	req.Body = ioutil.NopCloser(bytes.NewReader(body))
+	req.Body = io.NopCloser(bytes.NewReader(body))
 
 	var resp rpcResponses
 	if err := e.doOKDecode(req, &resp); err != nil {
@@ -156,7 +155,7 @@ func (e *Energid) doOKDecode(req *http.Request, in interface{}) error {
 
 func closeBody(resp *http.Response) {
 	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
 }

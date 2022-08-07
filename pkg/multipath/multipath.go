@@ -26,7 +26,7 @@ func IsNotFound(err error) bool {
 // MultiPath multi-paths
 type MultiPath []string
 
-// New New multi-paths
+// New multi-paths
 func New(paths ...string) MultiPath {
 	set := map[string]bool{}
 	mPath := make(MultiPath, 0)
@@ -47,7 +47,7 @@ func New(paths ...string) MultiPath {
 	return mPath
 }
 
-// Find find a file in given paths
+// Find finds a file in given paths
 func (p MultiPath) Find(filename string) (string, error) {
 	for _, dir := range p {
 		file := path.Join(dir, filename)

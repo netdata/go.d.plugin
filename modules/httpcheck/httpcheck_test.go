@@ -250,8 +250,7 @@ type clientFunc func(r *http.Request) (*http.Response, error)
 func (f clientFunc) Do(r *http.Request) (*http.Response, error) { return f(r) }
 
 func newClientFunc(resp *http.Response, err error) clientFunc {
-	f := func(r *http.Request) (*http.Response, error) { return resp, err }
-	return clientFunc(f)
+	return func(r *http.Request) (*http.Response, error) { return resp, err }
 }
 
 type nopCloser struct {

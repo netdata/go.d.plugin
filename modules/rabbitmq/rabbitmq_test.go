@@ -3,9 +3,9 @@
 package rabbitmq
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -14,9 +14,9 @@ import (
 )
 
 var (
-	testOverviewData, _ = ioutil.ReadFile("testdata/overview.json")
-	testNodeData, _     = ioutil.ReadFile("testdata/node.json")
-	testVhostsData, _   = ioutil.ReadFile("testdata/vhosts.json")
+	testOverviewData, _ = os.ReadFile("testdata/overview.json")
+	testNodeData, _     = os.ReadFile("testdata/node.json")
+	testVhostsData, _   = os.ReadFile("testdata/vhosts.json")
 )
 
 func newTestRabbitMQHTTPServer() *httptest.Server {

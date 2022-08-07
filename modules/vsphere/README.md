@@ -112,7 +112,7 @@ vm_include: # allow all vms from datacenters whose names starts with DC1 and fro
 
 ## Update every
 
-Default `update_every` is 20 seconds and it doesnt make sense to decrease the value. **VMware real-time statistics are
+Default `update_every` is 20 seconds, and it doesn't make sense to decrease the value. **VMware real-time statistics are
 generated at the 20-seconds specificity**.
 
 It is likely that 20 seconds is not enough for big installations and the value should be tuned.
@@ -151,7 +151,7 @@ Example (all not related debug lines were removed):
 ```
 
 There you can see that discovering took `525.614041ms`, collecting metrics took `154.77997ms`. Discovering is a separate
-thread, it doesnt affect collecting.
+thread, it doesn't affect collecting.
 
 `update_every` and `timeout` parameters should be adjusted based on these numbers.
 
@@ -160,7 +160,7 @@ thread, it doesnt affect collecting.
 To troubleshoot issues with the `vsphere` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+First, navigate to your plugins' directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
 system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
 to the `netdata` user.
 

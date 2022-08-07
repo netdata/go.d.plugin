@@ -28,7 +28,7 @@ func (m *MySQL) collectGlobalVariables(collected map[string]int64) error {
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	set, err := rowsAsMap(rows)
 	if err != nil {

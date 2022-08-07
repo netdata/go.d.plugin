@@ -3,9 +3,9 @@
 package lighttpd
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	testStatusData, _       = ioutil.ReadFile("testdata/status.txt")
-	testApacheStatusData, _ = ioutil.ReadFile("testdata/apache-status.txt")
+	testStatusData, _       = os.ReadFile("testdata/status.txt")
+	testApacheStatusData, _ = os.ReadFile("testdata/apache-status.txt")
 )
 
 func TestLighttpd_Cleanup(t *testing.T) { New().Cleanup() }

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -258,7 +257,7 @@ func (c *Client) doJSONWithRetry(dst interface{}, req web.Request) error {
 
 func closeBody(resp *http.Response) {
 	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
 }
@@ -282,7 +281,7 @@ func checkStatusCode(resp *http.Response) error {
 }
 
 func decodeVersion(reader io.Reader) (ver Version, err error) {
-	bs, err := ioutil.ReadAll(reader)
+	bs, err := io.ReadAll(reader)
 	if err != nil {
 		return ver, err
 	}
@@ -298,7 +297,7 @@ func decodeVersion(reader io.Reader) (ver Version, err error) {
 }
 
 func decodeToken(reader io.Reader) (string, error) {
-	bs, err := ioutil.ReadAll(reader)
+	bs, err := io.ReadAll(reader)
 	if err != nil {
 		return "", err
 	}
