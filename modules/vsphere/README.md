@@ -112,7 +112,7 @@ vm_include: # allow all vms from datacenters whose names starts with DC1 and fro
 
 ## Update every
 
-Default `update_every` is 20 seconds and it doesn't make sense to decrease the value. **VMware real-time statistics are
+Default `update_every` is 20 seconds, and it doesn't make sense to decrease the value. **VMware real-time statistics are
 generated at the 20-seconds specificity**.
 
 It is likely that 20 seconds is not enough for big installations and the value should be tuned.
