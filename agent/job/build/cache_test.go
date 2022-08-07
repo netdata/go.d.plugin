@@ -109,7 +109,7 @@ func TestJobCache_put(t *testing.T) {
 			sortConfigs(test.expectedRemove)
 
 			assert.Equalf(t, test.expectedAdd, added, "added configs")
-			assert.Equalf(t, test.expectedRemove, removed, "removed configs, step '%s' %d")
+			assert.Equalf(t, test.expectedRemove, removed, "removed configs")
 		})
 	}
 }

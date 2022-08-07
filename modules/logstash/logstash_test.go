@@ -130,7 +130,7 @@ func testCharts(t *testing.T, logstash *Logstash, collected map[string]int64) {
 func ensurePipelinesChartsCreated(t *testing.T, logstash *Logstash) {
 	for id := range logstash.collectedPipelines {
 		for _, chart := range *pipelineCharts(id) {
-			assert.Truef(t, logstash.Charts().Has(chart.ID), "chart '%' is not created", chart.ID)
+			assert.Truef(t, logstash.Charts().Has(chart.ID), "chart '%s' is not created", chart.ID)
 		}
 	}
 }
