@@ -7,7 +7,7 @@ import (
 )
 
 // these charts are expected to be available in many versions
-// and build in mongoDB and we are always creating them
+// and build in mongoDB, and we are always creating them
 var serverStatusCharts = module.Charts{
 	chartOpcounter.Copy(),
 	chartOpLatencies.Copy(),

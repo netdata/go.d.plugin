@@ -49,7 +49,7 @@ func isOptionUsed(opt option) bool {
 
 // Parse parses Unbound configuration files into UnboundConfig.
 // It follows logic described in the 'man unbound.conf':
-//   - Files can be included using the include: directive. It can appear anywhere, it accepts a single file name as argument.
+//   - Files can be included using the 'include:' directive. It can appear anywhere, it accepts a single file name as argument.
 //   - Processing continues as if the text  from  the included file was copied into the config file at that point.
 //   - Wildcards can be used to include multiple files.
 //

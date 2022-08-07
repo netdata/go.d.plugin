@@ -61,7 +61,6 @@ type port struct {
 	latency int
 }
 
-// PortCheck portcheck module.
 type PortCheck struct {
 	module.Base
 	Config      `yaml:",inline"`

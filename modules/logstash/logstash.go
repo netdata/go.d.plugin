@@ -43,7 +43,6 @@ type (
 	Config struct {
 		web.HTTP `yaml:",inline"`
 	}
-	// Logstash Logstash module.
 	Logstash struct {
 		module.Base
 		Config             `yaml:",inline"`

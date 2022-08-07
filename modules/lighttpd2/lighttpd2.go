@@ -44,7 +44,6 @@ type Config struct {
 	web.HTTP `yaml:",inline"`
 }
 
-// Lighttpd2 Lighttpd2 module.
 type Lighttpd2 struct {
 	module.Base
 	Config    `yaml:",inline"`

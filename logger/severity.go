@@ -20,7 +20,7 @@ const (
 	DEBUG
 )
 
-// String returns human readable string
+// String returns human-readable string
 func (s Severity) String() string {
 	switch s {
 	case CRITICAL:
@@ -37,7 +37,7 @@ func (s Severity) String() string {
 	return "UNKNOWN"
 }
 
-// ShortString returns human readable short string
+// ShortString returns human-readable short string
 func (s Severity) ShortString() string {
 	switch s {
 	case CRITICAL:

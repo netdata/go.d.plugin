@@ -121,7 +121,7 @@ module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/c
 
 ## Topic filtering
 
-By default module collects data for all topics but it supports topic filtering. Filtering doesnt exclude a topic stats
+By default, module collects data for all topics, but it supports topic filtering. Filtering doesn't exclude a topic stats
 from the [summary](#summary)/[namespace](#namespace) stats, it only removes the topic from the [topic](#topic) charts.
 
 To check matcher syntax
@@ -153,7 +153,7 @@ Module `update_every` should be equal to `statsUpdateFrequencyInSecs`.
 To troubleshoot issues with the `pulsar` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+First, navigate to your plugins' directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
 system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
 to the `netdata` user.
 

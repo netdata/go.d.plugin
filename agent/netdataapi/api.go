@@ -17,7 +17,7 @@ type (
 
 func New(w io.Writer) *API { return &API{w} }
 
-// CHART  create or update a chart.
+// CHART  creates or update a chart.
 func (a *API) CHART(
 	typeID string,
 	ID string,
@@ -37,7 +37,7 @@ func (a *API) CHART(
 	return err
 }
 
-// DIMENSION add or update a dimension to the chart just created.
+// DIMENSION adds or update a dimension to the chart just created.
 func (a *API) DIMENSION(
 	ID string,
 	name string,
@@ -50,7 +50,7 @@ func (a *API) DIMENSION(
 	return err
 }
 
-// CLABEL add or update a label to the chart.
+// CLABEL adds or update a label to the chart.
 func (a *API) CLABEL(key, value string, source int) error {
 	_, err := fmt.Fprintf(a, "CLABEL '%s' '%s' '%d'\n", key, value, source)
 	return err
@@ -62,7 +62,7 @@ func (a *API) CLABELCOMMIT() error {
 	return err
 }
 
-// BEGIN initialize data collection for a chart.
+// BEGIN initializes data collection for a chart.
 func (a *API) BEGIN(typeID string, ID string, msSince int) (err error) {
 	if msSince > 0 {
 		_, err = fmt.Fprintf(a, "BEGIN '%s.%s' %d\n", typeID, ID, msSince)
@@ -72,43 +72,43 @@ func (a *API) BEGIN(typeID string, ID string, msSince int) (err error) {
 	return err
 }
 
-// SET set the value of a dimension for the initialized chart.
+// SET sets the value of a dimension for the initialized chart.
 func (a *API) SET(ID string, value int64) error {
 	_, err := fmt.Fprintf(a, "SET '%s' = %d\n", ID, value)
 	return err
 }
 
-// SETEMPTY set the empty value of a dimension for the initialized chart.
+// SETEMPTY sets the empty value of a dimension for the initialized chart.
 func (a *API) SETEMPTY(ID string) error {
 	_, err := fmt.Fprintf(a, "SET '%s' = \n", ID)
 	return err
 }
 
-// VARIABLE set the value of a CHART scope variable for the initialized chart.
+// VARIABLE sets the value of a CHART scope variable for the initialized chart.
 func (a *API) VARIABLE(ID string, value int64) error {
 	_, err := fmt.Fprintf(a, "VARIABLE CHART '%s' = %d\n", ID, value)
 	return err
 }
 
-// END complete data collection for the initialized chart.
+// END completes data collection for the initialized chart.
 func (a *API) END() error {
 	_, err := fmt.Fprintf(a, "END\n\n")
 	return err
 }
 
-// FLUSH ignore the last collected values.
+// FLUSH ignores the last collected values.
 func (a *API) FLUSH() error {
 	_, err := fmt.Fprintf(a, "FLUSH\n")
 	return err
 }
 
-// DISABLE disable this plugin. This will prevent Netdata from restarting the plugin.
+// DISABLE disables this plugin. This will prevent Netdata from restarting the plugin.
 func (a *API) DISABLE() error {
 	_, err := fmt.Fprintf(a, "DISABLE\n")
 	return err
 }
 
-// EMPTYLINE write an empty line.
+// EMPTYLINE writes an empty line.
 func (a *API) EMPTYLINE() error {
 	_, err := fmt.Fprintf(a, "\n")
 	return err

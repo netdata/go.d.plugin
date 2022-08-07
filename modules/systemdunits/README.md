@@ -56,7 +56,7 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/systemdunits.conf
 ```
 
-Needs only `include` option. Syntax is [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
+Needs only `include` option. Syntax is the [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
 
 Here are some examples:
 
@@ -83,7 +83,7 @@ collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/mas
 To troubleshoot issues with the `systemdunits` collector, run the `go.d.plugin` with the debug option enabled. The
 output should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+First, navigate to your plugins' directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
 system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
 to the `netdata` user.
 

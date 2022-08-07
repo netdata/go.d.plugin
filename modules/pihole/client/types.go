@@ -115,7 +115,7 @@ type (
 	// TopAdvertisement represents TopAdvertisement.
 	TopAdvertisement = TopQuery
 
-	// TopItems represents top domains and top advertisements statistics.
+	// TopItems represents top domains and top advertisements' statistics.
 	TopItems struct {
 		TopQueries []TopQuery
 		TopAds     []TopAdvertisement

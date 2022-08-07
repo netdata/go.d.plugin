@@ -2,12 +2,12 @@
 
 This library is a tool for writing [netdata](https://github.com/netdata/netdata) plugins.
 
-We strongly believe that custom plugins are very important and they must be easy to write.
+We strongly believe that custom plugins are very important, and they must be easy to write.
 
 
 Definitions:
  - orchestrator
- > plugin orchestrators are external plugins that do not collect any data by themselves. Instead they support data collection modules written in the language of the orchestrator. Usually the orchestrator provides a higher level abstraction, making it ideal for writing new data collection modules with the minimum of code.
+ > plugin orchestrators are external plugins that do not collect any data by themselves. Instead, they support data collection modules written in the language of the orchestrator. Usually the orchestrator provides a higher level abstraction, making it ideal for writing new data collection modules with the minimum of code.
 
  - plugin
  > plugin is a set of data collection modules.

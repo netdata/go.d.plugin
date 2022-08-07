@@ -34,8 +34,8 @@ type Reader struct {
 }
 
 // Open a file and seek to end of the file.
-// path: shell file name pattern
-// excludePath: shell file name pattern
+// path: the shell file name pattern
+// excludePath: the shell file name pattern
 func Open(path string, excludePath string, log *logger.Logger) (*Reader, error) {
 	var err error
 	if path, err = filepath.Abs(path); err != nil {
