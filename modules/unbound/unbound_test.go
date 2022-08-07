@@ -248,7 +248,7 @@ func (m mockUnboundClient) Disconnect() error {
 	return nil
 }
 
-func (m mockUnboundClient) Command(command string, process socket.Processor) error {
+func (m mockUnboundClient) Command(_ string, process socket.Processor) error {
 	if m.err {
 		return errors.New("mock send error")
 	}

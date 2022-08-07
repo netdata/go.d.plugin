@@ -85,11 +85,11 @@ func Or(lhs, rhs Matcher, others ...Matcher) Matcher {
 	return matcher
 }
 
-func (trueMatcher) Match(b []byte) bool       { return true }
-func (trueMatcher) MatchString(s string) bool { return true }
+func (trueMatcher) Match(_ []byte) bool       { return true }
+func (trueMatcher) MatchString(_ string) bool { return true }
 
-func (falseMatcher) Match(b []byte) bool       { return false }
-func (falseMatcher) MatchString(s string) bool { return false }
+func (falseMatcher) Match(_ []byte) bool       { return false }
+func (falseMatcher) MatchString(_ string) bool { return false }
 
 func (m andMatcher) Match(b []byte) bool       { return m.lhs.Match(b) && m.rhs.Match(b) }
 func (m andMatcher) MatchString(s string) bool { return m.lhs.MatchString(s) && m.rhs.MatchString(s) }
