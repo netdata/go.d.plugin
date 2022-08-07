@@ -3,9 +3,9 @@
 package consul
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	checks, _ = ioutil.ReadFile("testdata/checks.txt")
+	checks, _ = os.ReadFile("testdata/checks.txt")
 )
 
 func TestNew(t *testing.T) {
