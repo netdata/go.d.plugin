@@ -78,7 +78,7 @@ func New(cfg Config) *Agent {
 	return p
 }
 
-// Run
+// Run starts the Agent.
 func (a *Agent) Run() {
 	go a.signalHandling()
 	go a.keepAlive()

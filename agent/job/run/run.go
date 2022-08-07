@@ -46,7 +46,7 @@ func (m *Manager) Run(ctx context.Context) {
 	}
 }
 
-// Starts starts a job and adds it to the job queue.
+// Start starts a job and adds it to the job queue.
 func (m *Manager) Start(job jobpkg.Job) {
 	m.mux.Lock()
 	defer m.mux.Unlock()

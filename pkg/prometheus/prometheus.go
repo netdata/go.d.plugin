@@ -57,7 +57,7 @@ func New(client *http.Client, request web.Request) Prometheus {
 	}
 }
 
-// New creates a Prometheus instance with the selector.
+// NewWithSelector creates a Prometheus instance with the selector.
 func NewWithSelector(client *http.Client, request web.Request, sr selector.Selector) Prometheus {
 	return &prometheus{
 		client:   client,

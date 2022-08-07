@@ -21,9 +21,9 @@ var (
 	ErrNoMatchedFile = errors.New("no matched files")
 )
 
+// Reader is a log rotate aware Reader
 // TODO: better reopen algorithm
 // TODO: handle truncate
-// Reader is a log rotate aware Reader
 type Reader struct {
 	file          *os.File
 	path          string

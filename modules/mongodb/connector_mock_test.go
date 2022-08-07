@@ -9,7 +9,8 @@ import (
 	"fmt"
 	"time"
 
-	v5_0_0 "github.com/netdata/go.d.plugin/modules/mongodb/testdata/v5.0.0"
+	"github.com/netdata/go.d.plugin/modules/mongodb/testdata/v5.0.0"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

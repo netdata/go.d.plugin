@@ -111,9 +111,8 @@ type Job struct {
 	stop chan struct{}
 }
 
-// https://github.com/netdata/netdata/blob/ab0ffcebf802803d1e88f6a5e47a314c292b45e3/database/rrd.h#L59
-// Chart type.id (job.FullName() + '.' + chart.ID)
-const RRD_ID_LENGTH_MAX = 200
+// NetdataChartIDMaxLength is the chart ID max length. See RRD_ID_LENGTH_MAX in the netdata source code.
+const NetdataChartIDMaxLength = 200
 
 // FullName returns job full name.
 func (j Job) FullName() string {
@@ -328,9 +327,9 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 	for _, chart := range *j.charts {
 		if !chart.created {
 			typeID := fmt.Sprintf("%s.%s", j.FullName(), chart.ID)
-			if len(typeID) >= RRD_ID_LENGTH_MAX {
+			if len(typeID) >= NetdataChartIDMaxLength {
 				j.Warningf("chart 'type.id' length (%d) >= max allowed (%d), the chart is ignored (%s)",
-					len(typeID), RRD_ID_LENGTH_MAX, typeID)
+					len(typeID), NetdataChartIDMaxLength, typeID)
 				chart.ignore = true
 			}
 			j.createChart(chart)

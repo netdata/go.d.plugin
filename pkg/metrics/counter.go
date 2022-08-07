@@ -81,7 +81,7 @@ func (c CounterVec) Get(name string) *Counter {
 	return item
 }
 
-// Get gets counter instance by name
+// GetP gets counter instance by name
 func (c CounterVec) GetP(name string) (counter *Counter, ok bool) {
 	counter, ok = c[name]
 	if ok {

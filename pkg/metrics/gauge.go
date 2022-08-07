@@ -91,7 +91,7 @@ func (g GaugeVec) Get(name string) *Gauge {
 	return item
 }
 
-// Get gets counter instance by name
+// GetP gets counter instance by name
 func (g GaugeVec) GetP(name string) (gauge *Gauge, ok bool) {
 	gauge, ok = g[name]
 	if ok {
