@@ -98,7 +98,7 @@ var (
 		ID:       "db_%s_server_connections_utilization",
 		Title:    "Database server connections utilization",
 		Units:    "percentage",
-		Fam:      "server connections used",
+		Fam:      "server connections limit",
 		Ctx:      "pgbouncer.db_server_connections_utilization",
 		Priority: prioDBServerConnectionsUtilization,
 		Dims: module.Dims{

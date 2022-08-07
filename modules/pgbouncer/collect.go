@@ -14,6 +14,10 @@ import (
 	"github.com/jackc/pgx/v4/stdlib"
 )
 
+// 'SHOW STATS;' response was changed significantly in v1.8.0
+// v1.8.0 was released in 2015 - no need to complicate the code to support the old version.
+var minSupportedVersion = semver.Version{Major: 1, Minor: 8, Patch: 0}
+
 func (p *PgBouncer) collect() (map[string]int64, error) {
 	if p.db == nil {
 		if err := p.openConnection(); err != nil {
@@ -25,8 +29,11 @@ func (p *PgBouncer) collect() (map[string]int64, error) {
 		if err != nil {
 			return nil, err
 		}
-		p.version = ver
 		p.Debugf("connected to PgBouncer v%s", p.version)
+		if ver.LE(minSupportedVersion) {
+			return nil, fmt.Errorf("unsupported version: v%s, required v%s+", p.version, minSupportedVersion)
+		}
+		p.version = ver
 	}
 
 	now := time.Now()
@@ -63,9 +70,7 @@ func (p *PgBouncer) collectMetrics(mx map[string]int64) {
 	for name, db := range p.metrics.dbs {
 		if !db.updated {
 			delete(p.metrics.dbs, name)
-			if db.hasCharts {
-				p.removeDatabaseCharts(name)
-			}
+			p.removeDatabaseCharts(name)
 			continue
 		}
 		if !db.hasCharts {

@@ -16,8 +16,7 @@ type dbMetrics struct {
 	disabled           int64
 
 	// command 'SHOW STATS;'
-	// v1.17.0: https://github.com/pgbouncer/pgbouncer/blob/9a346b0e451d842d7202abc3eccf0ff5a66b2dd6/src/stats.c#L76
-	// v1.7.0: https://github.com/pgbouncer/pgbouncer/blob/b8eab2128d43e895107e7cddcee74f65181d3673/src/stats.c#L58
+	// https://github.com/pgbouncer/pgbouncer/blob/9a346b0e451d842d7202abc3eccf0ff5a66b2dd6/src/stats.c#L76
 	totalXactCount  int64 // v1.8+
 	totalQueryCount int64 // v1.8+
 	totalReceived   int64
@@ -29,6 +28,7 @@ type dbMetrics struct {
 	avgQueryTime    int64
 
 	// command 'SHOW POOLS;'
+	// https://github.com/pgbouncer/pgbouncer/blob/9a346b0e451d842d7202abc3eccf0ff5a66b2dd6/src/admin.c#L804
 	clActive    int64
 	clWaiting   int64
 	clCancelReq int64
@@ -38,5 +38,5 @@ type dbMetrics struct {
 	svTested    int64
 	svLogin     int64
 	maxWait     int64
-	maxWaitUS   int64
+	maxWaitUS   int64 // v1.8+
 }
