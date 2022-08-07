@@ -163,7 +163,7 @@ func calcDirNumOfFiles(dirpath string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	// TODO: include dirs?
 	names, err := f.Readdirnames(-1)
 	return len(names), err

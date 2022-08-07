@@ -147,7 +147,7 @@ func parseConfFile(filename string) (*configFile, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	cf := configFile{path: filename}
 	s := bufio.NewScanner(f)

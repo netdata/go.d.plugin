@@ -35,7 +35,7 @@ func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	columns, err := rows.Columns()
 	if err != nil {

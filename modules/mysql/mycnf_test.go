@@ -79,14 +79,14 @@ password=password
 	pattern := "netdata-godplugin-mysql-dsnFromFile-*"
 	dir, err := os.MkdirTemp(os.TempDir(), pattern)
 	require.NoError(t, err)
-	defer os.RemoveAll(dir)
+	defer func() { _ = os.RemoveAll(dir) }()
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			f, err := os.CreateTemp(dir, name)
 			require.NoError(t, err)
 			_ = f.Close()
-			defer os.Remove(f.Name())
+			defer func() { _ = os.Remove(f.Name()) }()
 			_ = os.WriteFile(f.Name(), []byte(test.config), 0644)
 
 			if dsn, err := dsnFromFile(f.Name()); test.wantErr {

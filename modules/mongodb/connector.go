@@ -173,7 +173,7 @@ func dbAggregate(ctx context.Context, client *mongo.Client, collection string, a
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx)
+	defer func() { _ = cursor.Close(ctx) }()
 	var rows []aggrResults
 	if err = cursor.All(ctx, &rows); err != nil {
 		return nil, err
@@ -194,7 +194,7 @@ func (m *mongoCollector) shardChunks() (map[string]int64, error) {
 	if err = cursor.All(ctx, &rows); err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx)
+	defer func() { _ = cursor.Close(ctx) }()
 
 	result := map[string]int64{}
 	for _, row := range rows {

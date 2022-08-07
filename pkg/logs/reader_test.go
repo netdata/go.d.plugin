@@ -235,7 +235,7 @@ func appendLogs(t *testing.T, filename string, interval time.Duration, numOfLogs
 	file, err := os.OpenFile(filename, os.O_RDWR|os.O_APPEND, os.ModeAppend)
 	require.NoError(t, err)
 	require.NotNil(t, file)
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	for i := 0; i < numOfLogs; i++ {
 		_, err = fmt.Fprintln(file, "line", i, "filename", base)
