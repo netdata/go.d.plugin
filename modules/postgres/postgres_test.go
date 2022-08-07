@@ -105,13 +105,13 @@ func TestPostgres_Init(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			apache := New()
-			apache.Config = test.config
+			pg := New()
+			pg.Config = test.config
 
 			if test.wantFail {
-				assert.False(t, apache.Init())
+				assert.False(t, pg.Init())
 			} else {
-				assert.True(t, apache.Init())
+				assert.True(t, pg.Init())
 			}
 		})
 	}
