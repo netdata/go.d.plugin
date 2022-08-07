@@ -32,7 +32,7 @@ func (d *DNSdist) collect() (map[string]int64, error) {
 
 func (d *DNSdist) collectStatistic(collected map[string]int64, statistics *statisticMetrics) {
 	for metric, value := range stm.ToMap(statistics) {
-		collected[metric] = int64(value)
+		collected[metric] = value
 	}
 }
 
