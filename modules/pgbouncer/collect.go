@@ -83,7 +83,7 @@ func (p *PgBouncer) collectMetrics(mx map[string]int64) {
 		}
 		if !db.hasCharts {
 			db.hasCharts = true
-			p.addNewDatabaseCharts(name)
+			p.addNewDatabaseCharts(name, db.pgDBName)
 		}
 
 		mx["db_"+name+"_total_xact_count"] = db.totalXactCount
@@ -124,9 +124,11 @@ func (p *PgBouncer) collectDatabases() error {
 	var db string
 	return p.collectQuery(q, func(column, value string) {
 		switch column {
-		case "database":
+		case "name":
 			db = value
 			p.getDBMetrics(db).updated = true
+		case "database":
+			p.getDBMetrics(db).pgDBName = value
 		case "max_connections":
 			p.getDBMetrics(db).maxConnections = parseInt(value)
 		case "current_connections":

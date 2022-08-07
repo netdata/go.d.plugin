@@ -6,8 +6,11 @@ type metrics struct {
 	dbs map[string]*dbMetrics
 }
 
+// dbMetrics represents PgBouncer database (not the PostgreSQL database of the outgoing connection).
 type dbMetrics struct {
-	name      string
+	name     string
+	pgDBName string
+
 	updated   bool
 	hasCharts bool
 
