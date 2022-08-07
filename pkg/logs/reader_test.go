@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -200,7 +199,7 @@ func (r *testReader) readUntilEOFTimes(times int) (sum int, err error) {
 
 func prepareTempFile(t *testing.T, pattern string) string {
 	t.Helper()
-	f, err := ioutil.TempFile("", pattern)
+	f, err := os.CreateTemp("", pattern)
 	require.NoError(t, err)
 	return f.Name()
 }

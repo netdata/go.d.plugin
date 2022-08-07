@@ -7,10 +7,10 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/smtp"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -69,7 +69,7 @@ func newProvider(config Config) (provider, error) {
 }
 
 func (f fromFile) certificates() ([]*x509.Certificate, error) {
-	content, err := ioutil.ReadFile(f.path)
+	content, err := os.ReadFile(f.path)
 	if err != nil {
 		return nil, fmt.Errorf("error on reading '%s': %v", f.path, err)
 	}

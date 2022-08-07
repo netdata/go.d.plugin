@@ -3,9 +3,9 @@
 package logstash
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	jvmStatusData, _ = ioutil.ReadFile("testdata/stats.json")
+	jvmStatusData, _ = os.ReadFile("testdata/stats.json")
 )
 
 func Test_readTestData(t *testing.T) {

@@ -3,9 +3,9 @@
 package phpdaemon
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -17,7 +17,7 @@ const (
 	testURL = "http://127.0.0.1:38001"
 )
 
-var testFullStatusData, _ = ioutil.ReadFile("testdata/fullstatus.json")
+var testFullStatusData, _ = os.ReadFile("testdata/fullstatus.json")
 
 func Test_testData(t *testing.T) {
 	assert.NotEmpty(t, testFullStatusData)

@@ -3,7 +3,6 @@
 package logs
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -46,7 +45,7 @@ func TestReadLastLine(t *testing.T) {
 
 func prepareFile(t *testing.T, content string) string {
 	t.Helper()
-	file, err := ioutil.TempFile("", "go-test")
+	file, err := os.CreateTemp("", "go-test")
 	require.NoError(t, err)
 	defer file.Close()
 

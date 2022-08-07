@@ -3,9 +3,9 @@
 package traefik
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	v221Metrics, _ = ioutil.ReadFile("testdata/v2.2.1/metrics.txt")
+	v221Metrics, _ = os.ReadFile("testdata/v2.2.1/metrics.txt")
 )
 
 func Test_Testdata(t *testing.T) {

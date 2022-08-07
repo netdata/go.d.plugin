@@ -3,9 +3,9 @@
 package nginxvts
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	v0118Response, _ = ioutil.ReadFile("testdata/vts-v0.1.18.json")
+	v0118Response, _ = os.ReadFile("testdata/vts-v0.1.18.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {

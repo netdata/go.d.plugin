@@ -3,16 +3,16 @@
 package k8s_kubeproxy
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-var testMetrics, _ = ioutil.ReadFile("testdata/metrics.txt")
+var testMetrics, _ = os.ReadFile("testdata/metrics.txt")
 
 func TestNew(t *testing.T) {
 	job := New()

@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -92,7 +91,7 @@ func NewManager() *Manager {
 		CurState:   dummySaver{},
 		PrevState:  dummyState{},
 		Registry:   dummyRegistry{},
-		Out:        ioutil.Discard,
+		Out:        io.Discard,
 		Logger:     logger.New("build", "manager"),
 		grpCache:   newGroupCache(),
 		startCache: newStartedCache(),

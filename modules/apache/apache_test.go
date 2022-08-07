@@ -3,9 +3,9 @@
 package apache
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -15,10 +15,10 @@ import (
 )
 
 var (
-	dataSimpleStatusMPMEvent, _     = ioutil.ReadFile("testdata/simple-status-mpm-event.txt")
-	dataExtendedStatusMPMEvent, _   = ioutil.ReadFile("testdata/extended-status-mpm-event.txt")
-	dataExtendedStatusMPMPrefork, _ = ioutil.ReadFile("testdata/extended-status-mpm-prefork.txt")
-	dataLighttpdStatus, _           = ioutil.ReadFile("testdata/lighttpd-status.txt")
+	dataSimpleStatusMPMEvent, _     = os.ReadFile("testdata/simple-status-mpm-event.txt")
+	dataExtendedStatusMPMEvent, _   = os.ReadFile("testdata/extended-status-mpm-event.txt")
+	dataExtendedStatusMPMPrefork, _ = os.ReadFile("testdata/extended-status-mpm-prefork.txt")
+	dataLighttpdStatus, _           = os.ReadFile("testdata/lighttpd-status.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {

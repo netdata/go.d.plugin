@@ -6,7 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	testMntrData, _               = ioutil.ReadFile("testdata/mntr.txt")
-	testMntrNotInWhiteListData, _ = ioutil.ReadFile("testdata/mntr_notinwhitelist.txt")
+	testMntrData, _               = os.ReadFile("testdata/mntr.txt")
+	testMntrNotInWhiteListData, _ = os.ReadFile("testdata/mntr_notinwhitelist.txt")
 )
 
 func Test_testDataLoad(t *testing.T) {

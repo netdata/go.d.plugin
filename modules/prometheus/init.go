@@ -5,7 +5,7 @@ package prometheus
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/matcher"
@@ -31,7 +31,7 @@ func (p Prometheus) initPrometheusClient() (prometheus.Prometheus, error) {
 
 	req := p.Request.Copy()
 	if p.BearerTokenFile != "" {
-		token, err := ioutil.ReadFile(p.BearerTokenFile)
+		token, err := os.ReadFile(p.BearerTokenFile)
 		if err != nil {
 			return nil, fmt.Errorf("reading bearer token file: %v", err)
 		}

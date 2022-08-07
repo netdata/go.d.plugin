@@ -3,7 +3,6 @@
 package mysql
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -78,17 +77,17 @@ password=password
 		},
 	}
 	pattern := "netdata-godplugin-mysql-dsnFromFile-*"
-	dir, err := ioutil.TempDir(os.TempDir(), pattern)
+	dir, err := os.MkdirTemp(os.TempDir(), pattern)
 	require.NoError(t, err)
 	defer os.RemoveAll(dir)
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			f, err := ioutil.TempFile(dir, name)
+			f, err := os.CreateTemp(dir, name)
 			require.NoError(t, err)
 			_ = f.Close()
 			defer os.Remove(f.Name())
-			_ = ioutil.WriteFile(f.Name(), []byte(test.config), 0644)
+			_ = os.WriteFile(f.Name(), []byte(test.config), 0644)
 
 			if dsn, err := dsnFromFile(f.Name()); test.wantErr {
 				assert.Error(t, err)

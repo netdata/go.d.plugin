@@ -3,9 +3,9 @@
 package k8s_kubelet
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	testMetricsData, _ = ioutil.ReadFile("testdata/metrics.txt")
-	testTokenData, _   = ioutil.ReadFile("testdata/token.txt")
+	testMetricsData, _ = os.ReadFile("testdata/metrics.txt")
+	testTokenData, _   = os.ReadFile("testdata/token.txt")
 )
 
 func Test_readTestData(t *testing.T) {
