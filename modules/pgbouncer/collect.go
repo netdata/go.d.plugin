@@ -317,6 +317,7 @@ func (p *PgBouncer) resetMetrics() {
 	for name, db := range p.metrics.dbs {
 		p.metrics.dbs[name] = &dbMetrics{
 			name:      db.name,
+			pgDBName:  db.pgDBName,
 			hasCharts: db.hasCharts,
 		}
 	}
