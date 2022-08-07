@@ -18,6 +18,14 @@ import (
 // v1.8.0 was released in 2015 - no need to complicate the code to support the old version.
 var minSupportedVersion = semver.Version{Major: 1, Minor: 8, Patch: 0}
 
+const (
+	queryShowVersion   = "SHOW VERSION;"
+	queryShowConfig    = "SHOW CONFIG;"
+	queryShowDatabases = "SHOW DATABASES;"
+	queryShowStats     = "SHOW STATS;"
+	queryShowPools     = "SHOW POOLS;"
+)
+
 func (p *PgBouncer) collect() (map[string]int64, error) {
 	if p.db == nil {
 		if err := p.openConnection(); err != nil {
@@ -31,7 +39,7 @@ func (p *PgBouncer) collect() (map[string]int64, error) {
 		}
 		p.Debugf("connected to PgBouncer v%s", p.version)
 		if ver.LE(minSupportedVersion) {
-			return nil, fmt.Errorf("unsupported version: v%s, required v%s+", p.version, minSupportedVersion)
+			return nil, fmt.Errorf("unsupported version: v%s, required v%s+", ver, minSupportedVersion)
 		}
 		p.version = ver
 	}
@@ -110,7 +118,7 @@ func (p *PgBouncer) collectMetrics(mx map[string]int64) {
 }
 
 func (p *PgBouncer) collectDatabases() error {
-	q := "SHOW DATABASES;"
+	q := queryShowDatabases
 	p.Debugf("executing query: %v", q)
 
 	var db string
@@ -132,7 +140,7 @@ func (p *PgBouncer) collectDatabases() error {
 }
 
 func (p *PgBouncer) collectStats() error {
-	q := "SHOW STATS;"
+	q := queryShowStats
 	p.Debugf("executing query: %v", q)
 
 	var db string
@@ -164,7 +172,7 @@ func (p *PgBouncer) collectStats() error {
 }
 
 func (p *PgBouncer) collectPools() error {
-	q := "SHOW POOLS;"
+	q := queryShowPools
 	p.Debugf("executing query: %v", q)
 
 	// an entry is made for each couple of (database, user).
@@ -199,7 +207,7 @@ func (p *PgBouncer) collectPools() error {
 }
 
 func (p *PgBouncer) queryMaxClientConn() (int64, error) {
-	q := "SHOW CONFIG;"
+	q := queryShowConfig
 	p.Debugf("executing query: %v", q)
 
 	var v int64
@@ -220,7 +228,7 @@ func (p *PgBouncer) queryMaxClientConn() (int64, error) {
 var reVersion = regexp.MustCompile(`\d+\.\d+\.\d+`)
 
 func (p *PgBouncer) queryVersion() (*semver.Version, error) {
-	q := "SHOW VERSION;"
+	q := queryShowVersion
 	p.Debugf("executing query: %v", q)
 
 	var resp string
