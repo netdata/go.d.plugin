@@ -214,12 +214,13 @@ var (
 	}
 )
 
-func newDatabaseCharts(dbname string) *module.Charts {
+func newDatabaseCharts(dbname, pgDBName string) *module.Charts {
 	charts := dbChartsTmpl.Copy()
 	for _, c := range *charts {
 		c.ID = fmt.Sprintf(c.ID, dbname)
 		c.Labels = []module.Label{
 			{Key: "database", Value: dbname},
+			{Key: "postgres_database", Value: pgDBName},
 		}
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, dbname)
@@ -228,8 +229,8 @@ func newDatabaseCharts(dbname string) *module.Charts {
 	return charts
 }
 
-func (p *PgBouncer) addNewDatabaseCharts(dbname string) {
-	charts := newDatabaseCharts(dbname)
+func (p *PgBouncer) addNewDatabaseCharts(dbname, pgDBName string) {
+	charts := newDatabaseCharts(dbname, pgDBName)
 	if err := p.Charts().Add(*charts...); err != nil {
 		p.Warning(err)
 	}
