@@ -31,7 +31,7 @@ require (
 	github.com/stretchr/testify v1.8.0
 	github.com/tomasen/fcgi_client v0.0.0-20180423082037-2bb3d819fd19
 	github.com/valyala/fastjson v1.6.3
-	github.com/vmware/govmomi v0.22.2
+	github.com/vmware/govmomi v0.27.5
 	go.mongodb.org/mongo-driver v1.10.1
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20220504211119-3d4a969bb56b
 	gopkg.in/ini.v1 v1.66.6
