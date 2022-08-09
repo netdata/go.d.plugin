@@ -241,8 +241,8 @@ func TestPgBouncer_Collect(t *testing.T) {
 				},
 				check: func(t *testing.T, p *PgBouncer) {
 					mx := p.Collect()
-					var excepted map[string]int64
-					assert.Equal(t, excepted, mx)
+					var expected map[string]int64
+					assert.Equal(t, expected, mx)
 				},
 			},
 		},
@@ -253,8 +253,8 @@ func TestPgBouncer_Collect(t *testing.T) {
 				},
 				check: func(t *testing.T, p *PgBouncer) {
 					mx := p.Collect()
-					var excepted map[string]int64
-					assert.Equal(t, excepted, mx)
+					var expected map[string]int64
+					assert.Equal(t, expected, mx)
 				},
 			},
 		},
@@ -266,8 +266,8 @@ func TestPgBouncer_Collect(t *testing.T) {
 				},
 				check: func(t *testing.T, p *PgBouncer) {
 					mx := p.Collect()
-					var excepted map[string]int64
-					assert.Equal(t, excepted, mx)
+					var expected map[string]int64
+					assert.Equal(t, expected, mx)
 				},
 			},
 		},
