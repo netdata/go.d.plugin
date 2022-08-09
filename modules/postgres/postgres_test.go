@@ -514,8 +514,8 @@ func TestPostgres_Collect(t *testing.T) {
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
-					var excepted map[string]int64
-					assert.Equal(t, excepted, mx)
+					var expected map[string]int64
+					assert.Equal(t, expected, mx)
 				},
 			},
 		},
@@ -529,8 +529,8 @@ func TestPostgres_Collect(t *testing.T) {
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
-					var excepted map[string]int64
-					assert.Equal(t, excepted, mx)
+					var expected map[string]int64
+					assert.Equal(t, expected, mx)
 				},
 			},
 		},
@@ -545,8 +545,8 @@ func TestPostgres_Collect(t *testing.T) {
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
-					var excepted map[string]int64
-					assert.Equal(t, excepted, mx)
+					var expected map[string]int64
+					assert.Equal(t, expected, mx)
 				},
 			},
 		},
@@ -565,8 +565,8 @@ func TestPostgres_Collect(t *testing.T) {
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
-					var excepted map[string]int64
-					assert.Equal(t, excepted, mx)
+					var expected map[string]int64
+					assert.Equal(t, expected, mx)
 				},
 			},
 		},
