@@ -108,13 +108,14 @@ func TestParse(t *testing.T) {
 	err := prom.parse(testdata, &res, Metadata{})
 	assert.NoError(t, err)
 
+	res.Sort()
 	verifyTestData(t, res)
 }
 
 func verifyTestData(t *testing.T, ms Metrics) {
 	assert.Equal(t, 410, len(ms))
 	assert.Equal(t, "go_gc_duration_seconds", ms[0].Labels.Get("__name__"))
-	assert.Equal(t, "0", ms[0].Labels.Get("quantile"))
+	assert.Equal(t, "0.25", ms[0].Labels.Get("quantile"))
 	assert.InDelta(t, 4.9351e-05, ms[0].Value, 0.0001)
 
 	notExistYet := ms.FindByName("not_exist_yet")
