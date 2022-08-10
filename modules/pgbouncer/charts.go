@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	prioDBClientConnectionsUtilization = module.Priority + iota
+	prioClientConnectionsUtilization = module.Priority + iota
 	prioDBClientConnections
 	prioDBServerConnections
 	prioDBServerConnectionsUtilization
@@ -36,7 +36,7 @@ var (
 		Units:    "percentage",
 		Fam:      "client connections",
 		Ctx:      "pgbouncer.client_connections_utilization",
-		Priority: prioDBClientConnectionsUtilization,
+		Priority: prioClientConnectionsUtilization,
 		Dims: module.Dims{
 			{ID: "cl_conns_utilization", Name: "used"},
 		},

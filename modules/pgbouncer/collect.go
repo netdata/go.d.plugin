@@ -37,7 +37,7 @@ func (p *PgBouncer) collect() (map[string]int64, error) {
 		if err != nil {
 			return nil, err
 		}
-		p.Debugf("connected to PgBouncer v%s", p.version)
+		p.Debugf("connected to PgBouncer v%s", ver)
 		if ver.LE(minSupportedVersion) {
 			return nil, fmt.Errorf("unsupported version: v%s, required v%s+", ver, minSupportedVersion)
 		}
