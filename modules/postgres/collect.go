@@ -29,6 +29,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 			return nil, fmt.Errorf("querying server version error: %v", err)
 		}
 		p.pgVersion = ver
+		p.Debugf("connected to PostgreSQL v%s", p.pgVersion)
 	}
 
 	if p.superUser == nil {
@@ -37,6 +38,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 			return nil, fmt.Errorf("querying is super user error: %v", err)
 		}
 		p.superUser = &v
+		p.Debugf("connected as super user: %s", *p.superUser)
 	}
 
 	now := time.Now()
