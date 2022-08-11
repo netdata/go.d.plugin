@@ -87,7 +87,7 @@ func (a *Agent) Run() {
 
 func serve(p *Agent) {
 	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGHUP)
+	signal.Notify(ch, syscall.SIGHUP, syscall.SIGTERM)
 	var wg sync.WaitGroup
 
 	for {
@@ -100,6 +100,9 @@ func serve(p *Agent) {
 		p.Infof("received %s signal (%d), stopping running instance", sig, sig)
 		cancel()
 		wg.Wait()
+		if sig == syscall.SIGTERM {
+			os.Exit(0)
+		}
 		time.Sleep(time.Second)
 	}
 }
@@ -187,7 +190,7 @@ func (a *Agent) run(ctx context.Context) {
 
 func (a *Agent) signalHandling() {
 	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(ch, syscall.SIGINT)
 
 	sig := <-ch
 	a.Infof("received %s signal (%d). Terminating...", sig, sig)
