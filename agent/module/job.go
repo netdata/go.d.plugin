@@ -16,6 +16,21 @@ import (
 	"github.com/netdata/go.d.plugin/logger"
 )
 
+var obsoleteLock = &sync.Mutex{}
+var obsoleteCharts = true
+
+func DontObsoleteCharts() {
+	obsoleteLock.Lock()
+	obsoleteCharts = false
+	obsoleteLock.Unlock()
+}
+
+func shouldObsoleteCharts() bool {
+	obsoleteLock.Lock()
+	defer obsoleteLock.Unlock()
+	return obsoleteCharts
+}
+
 var writeLock = &sync.Mutex{}
 
 var reSpace = regexp.MustCompile(`\s+`)
@@ -225,6 +240,9 @@ func (j *Job) Cleanup() {
 		logger.GlobalMsgCountWatcher.Unregister(j.Logger)
 	}
 	j.buf.Reset()
+	if !shouldObsoleteCharts() {
+		return
+	}
 
 	if j.runChart.created {
 		j.runChart.MarkRemove()

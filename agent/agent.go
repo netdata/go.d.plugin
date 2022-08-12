@@ -80,15 +80,16 @@ func New(cfg Config) *Agent {
 
 // Run starts the Agent.
 func (a *Agent) Run() {
-	go a.signalHandling()
 	go a.keepAlive()
 	serve(a)
 }
 
 func serve(p *Agent) {
 	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGHUP)
+	signal.Notify(ch, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
 	var wg sync.WaitGroup
+
+	var exit bool
 
 	for {
 		ctx, cancel := context.WithCancel(context.Background())
@@ -96,10 +97,22 @@ func serve(p *Agent) {
 		wg.Add(1)
 		go func() { defer wg.Done(); p.run(ctx) }()
 
-		sig := <-ch
-		p.Infof("received %s signal (%d), stopping running instance", sig, sig)
+		switch sig := <-ch; sig {
+		case syscall.SIGHUP:
+			p.Infof("received %s signal (%d). Restarting running instance", sig, sig)
+		default:
+			p.Infof("received %s signal (%d). Terminating...", sig, sig)
+			module.DontObsoleteCharts()
+			exit = true
+		}
+
 		cancel()
 		wg.Wait()
+
+		if exit {
+			os.Exit(0)
+		}
+
 		time.Sleep(time.Second)
 	}
 }
@@ -183,15 +196,6 @@ func (a *Agent) run(ctx context.Context) {
 	wg.Wait()
 	<-ctx.Done()
 	runner.Cleanup()
-}
-
-func (a *Agent) signalHandling() {
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-
-	sig := <-ch
-	a.Infof("received %s signal (%d). Terminating...", sig, sig)
-	os.Exit(0)
 }
 
 func (a *Agent) keepAlive() {
