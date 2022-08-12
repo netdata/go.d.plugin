@@ -3,6 +3,7 @@
 package mysql
 
 import (
+	"context"
 	"time"
 )
 
@@ -25,11 +26,16 @@ func (m *MySQL) collectProcessListStatistics(collected map[string]int64) error {
 	)
 
 	start := time.Now()
-	rows, err := m.db.Query(queryInfoSchemaProcessList)
-	queryDuration = time.Since(start).Milliseconds()
+
+	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
+	defer cancel()
+
+	rows, err := m.db.QueryContext(ctx, queryInfoSchemaProcessList)
 	if err != nil {
 		return err
 	}
+
+	queryDuration = time.Since(start).Milliseconds()
 	defer func() { _ = rows.Close() }()
 
 	collected["process_list_queries_count_system"] = 0

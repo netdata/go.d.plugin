@@ -3,6 +3,7 @@
 package mysql
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"time"
@@ -82,7 +83,10 @@ func (m *MySQL) openConnection() error {
 
 	db.SetConnMaxLifetime(10 * time.Minute)
 
-	if err := db.Ping(); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
+	defer cancel()
+
+	if err := db.PingContext(ctx); err != nil {
 		_ = db.Close()
 		return fmt.Errorf("error on pinging the mysql database [%s]: %v", m.DSN, err)
 	}

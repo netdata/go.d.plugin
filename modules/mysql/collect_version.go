@@ -3,6 +3,7 @@
 package mysql
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"strings"
@@ -17,8 +18,12 @@ var reVersionCore = regexp.MustCompile(`^\d+\.\d+\.\d+`)
 func (m *MySQL) collectVersion() (ver *semver.Version, isMariaDB bool, err error) {
 	// https://mariadb.com/kb/en/version/
 	m.Debugf("executing query: '%s'", queryVersion)
+
+	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
+	defer cancel()
+
 	var fullVersion string
-	if err := m.db.QueryRow(queryVersion).Scan(&fullVersion); err != nil {
+	if err := m.db.QueryRowContext(ctx, queryVersion).Scan(&fullVersion); err != nil {
 		return nil, false, err
 	}
 

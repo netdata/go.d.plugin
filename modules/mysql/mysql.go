@@ -5,11 +5,13 @@ package mysql
 import (
 	"database/sql"
 	"sync"
+	"time"
 
 	"github.com/blang/semver/v4"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -18,38 +20,11 @@ func init() {
 	})
 }
 
-type (
-	Config struct {
-		DSN         string `yaml:"dsn"`
-		MyCNF       string `yaml:"my.cnf"`
-		UpdateEvery int    `yaml:"update_every"`
-	}
-	MySQL struct {
-		module.Base
-		Config `yaml:",inline"`
-
-		db        *sql.DB
-		isMariaDB bool
-		version   *semver.Version
-
-		addInnodbDeadlocksOnce *sync.Once
-		addGaleraOnce          *sync.Once
-		addQCacheOnce          *sync.Once
-		addUserStatsCPUOnce    *sync.Once
-
-		doSlaveStatus      bool
-		collectedReplConns map[string]bool
-		doUserStatistics   bool
-		collectedUsers     map[string]bool
-
-		charts *Charts
-	}
-)
-
 func New() *MySQL {
 	return &MySQL{
 		Config: Config{
-			DSN: "root@tcp(localhost:3306)/",
+			DSN:     "root@tcp(localhost:3306)/",
+			Timeout: web.Duration{Duration: time.Second},
 		},
 
 		charts:                 charts.Copy(),
@@ -64,14 +39,32 @@ func New() *MySQL {
 	}
 }
 
-func (m *MySQL) Cleanup() {
-	if m.db == nil {
-		return
-	}
-	if err := m.db.Close(); err != nil {
-		m.Errorf("cleanup: error on closing the mysql database [%s]: %v", m.DSN, err)
-	}
-	m.db = nil
+type Config struct {
+	DSN         string       `yaml:"dsn"`
+	MyCNF       string       `yaml:"my.cnf"`
+	UpdateEvery int          `yaml:"update_every"`
+	Timeout     web.Duration `yaml:"timeout"`
+}
+
+type MySQL struct {
+	module.Base
+	Config `yaml:",inline"`
+
+	db        *sql.DB
+	isMariaDB bool
+	version   *semver.Version
+
+	addInnodbDeadlocksOnce *sync.Once
+	addGaleraOnce          *sync.Once
+	addQCacheOnce          *sync.Once
+	addUserStatsCPUOnce    *sync.Once
+
+	doSlaveStatus      bool
+	collectedReplConns map[string]bool
+	doUserStatistics   bool
+	collectedUsers     map[string]bool
+
+	charts *Charts
 }
 
 func (m *MySQL) Init() bool {
@@ -111,4 +104,14 @@ func (m *MySQL) Collect() map[string]int64 {
 		return nil
 	}
 	return mx
+}
+
+func (m *MySQL) Cleanup() {
+	if m.db == nil {
+		return
+	}
+	if err := m.db.Close(); err != nil {
+		m.Errorf("cleanup: error on closing the mysql database [%s]: %v", m.DSN, err)
+	}
+	m.db = nil
 }
