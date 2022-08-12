@@ -3,6 +3,7 @@
 package mysql
 
 import (
+	"context"
 	"strconv"
 	"strings"
 )
@@ -26,7 +27,10 @@ func (m *MySQL) collectUserStatistics(collected map[string]int64) error {
 	// https://mariadb.com/kb/en/information-schema-user_statistics-table/
 	m.Debugf("executing query: '%s'", queryUserStatistics)
 
-	rows, err := m.db.Query(queryUserStatistics)
+	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
+	defer cancel()
+
+	rows, err := m.db.QueryContext(ctx, queryUserStatistics)
 	if err != nil {
 		return err
 	}

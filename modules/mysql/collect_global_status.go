@@ -3,6 +3,7 @@
 package mysql
 
 import (
+	"context"
 	"strconv"
 	"strings"
 )
@@ -145,7 +146,10 @@ func (m *MySQL) collectGlobalStatus(collected map[string]int64) error {
 	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-status-variable-reference.html
 	m.Debugf("executing query: '%s'", queryGlobalStatus)
 
-	rows, err := m.db.Query(queryGlobalStatus)
+	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
+	defer cancel()
+
+	rows, err := m.db.QueryContext(ctx, queryGlobalStatus)
 	if err != nil {
 		return err
 	}

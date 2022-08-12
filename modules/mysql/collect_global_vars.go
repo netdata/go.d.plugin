@@ -3,6 +3,7 @@
 package mysql
 
 import (
+	"context"
 	"strconv"
 	"strings"
 )
@@ -24,7 +25,10 @@ func (m *MySQL) collectGlobalVariables(collected map[string]int64) error {
 	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-system-variable-reference.html
 	m.Debugf("executing query: '%s'", queryGlobalVariables)
 
-	rows, err := m.db.Query(queryGlobalVariables)
+	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
+	defer cancel()
+
+	rows, err := m.db.QueryContext(ctx, queryGlobalVariables)
 	if err != nil {
 		return err
 	}

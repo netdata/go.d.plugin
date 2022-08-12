@@ -3,6 +3,7 @@
 package mysql
 
 import (
+	"context"
 	"strconv"
 	"strings"
 
@@ -31,7 +32,10 @@ func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
 	}
 	m.Debugf("executing query: '%s'", query)
 
-	rows, err := m.db.Query(query)
+	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
+	defer cancel()
+
+	rows, err := m.db.QueryContext(ctx, query)
 	if err != nil {
 		return err
 	}
