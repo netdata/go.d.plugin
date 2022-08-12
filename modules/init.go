@@ -16,6 +16,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/dnsmasq"
 	_ "github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp"
 	_ "github.com/netdata/go.d.plugin/modules/dnsquery"
+	_ "github.com/netdata/go.d.plugin/modules/docker"
 	_ "github.com/netdata/go.d.plugin/modules/docker_engine"
 	_ "github.com/netdata/go.d.plugin/modules/dockerhub"
 	_ "github.com/netdata/go.d.plugin/modules/elasticsearch"
