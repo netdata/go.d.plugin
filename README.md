@@ -6,14 +6,15 @@ custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/README.md
 
 # go.d.plugin
 
-`go.d.plugin` is a `Netdata` external plugin. It is an **orchestrator** for data collection modules written in `go`.
+`go.d.plugin` is a [Netdata](https://github.com/netdata/netdata) external plugin. It is an **orchestrator** for data
+collection modules written in `go`.
 
-1. It runs as an independent process `ps fax` shows it.
-2. It is started and stopped automatically by `Netdata`.
-3. It communicates with `Netdata` via a unidirectional pipe (sending data to the `Netdata` daemon).
+1. It runs as an independent process (`ps fax` shows it).
+2. It is started and stopped automatically by Netdata.
+3. It communicates with Netdata via a unidirectional pipe (sending data to the Netdata daemon).
 4. Supports any number of data collection [modules](https://github.com/netdata/go.d.plugin/tree/master/modules).
 5. Allows each [module](https://github.com/netdata/go.d.plugin/tree/master/modules) to have any number of data
-   collection **jobs**.
+   collection jobs.
 
 ## Bug reports, feature requests, and questions
 
@@ -25,7 +26,7 @@ and questions.
 
 ## Install
 
-Go.d.plugin is shipped with [`Netdata`](https://github.com/netdata/netdata).
+Go.d.plugin is shipped with Netdata.
 
 ## Available modules
 
