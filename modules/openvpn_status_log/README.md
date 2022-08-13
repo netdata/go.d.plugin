@@ -52,24 +52,26 @@ jobs:
 For all available options please see
 module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/openvpn_status_log.conf).
 
----
-
 ## Troubleshooting
 
 To troubleshoot issues with the `openvpn_status_log` collector, run the `go.d.plugin` with the debug option enabled. The
 output should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins' directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
-system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
-to the `netdata` user.
+- Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
+  your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
 
-```bash
-cd /usr/libexec/netdata/plugins.d/
-sudo -u netdata -s
-```
+  ```bash
+  cd /usr/libexec/netdata/plugins.d/
+  ```
 
-You can now run the `go.d.plugin` to debug the collector:
+- Switch to the `netdata` user.
 
-```bash
-./go.d.plugin -d -m openvpn_status_log
-```
+  ```bash
+  sudo -u netdata -s
+  ```
+
+- Run the `go.d.plugin` to debug the collector:
+
+  ```bash
+  ./go.d.plugin -d -m openvpn_status_log
+  ```
