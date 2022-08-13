@@ -107,7 +107,22 @@ func serve(p *Agent) {
 		}
 
 		cancel()
-		wg.Wait()
+
+		func() {
+			timeout := time.Second * 15
+			t := time.NewTimer(timeout)
+			defer t.Stop()
+			done := make(chan struct{})
+
+			go func() { wg.Wait(); close(done) }()
+
+			select {
+			case <-t.C:
+				p.Errorf("stopping all goroutines timed out after %s. Exiting...", timeout)
+				os.Exit(0)
+			case <-done:
+			}
+		}()
 
 		if exit {
 			os.Exit(0)
