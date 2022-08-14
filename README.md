@@ -45,6 +45,7 @@ Go.d.plugin is shipped with Netdata.
 | [dnsmasq](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq)                       |     Dnsmasq DNS Forwarder     |
 | [dnsmasq_dhcp](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsmasq_dhcp)             |         Dnsmasq DHCP          |
 | [dns_query](https://github.com/netdata/go.d.plugin/tree/master/modules/dnsquery)                    |         DNS Query RTT         |
+| [docker](https://github.com/netdata/go.d.plugin/tree/master/modules/docker)                         |         Docker Engine         |
 | [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine)           |         Docker Engine         |
 | [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)                   |          Docker Hub           |
 | [elasticsearch](https://github.com/netdata/go.d.plugin/tree/master/modules/elasticsearch)           |         Elasticsearch         |
