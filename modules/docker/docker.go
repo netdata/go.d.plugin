@@ -3,9 +3,14 @@
 package docker
 
 import (
-	"github.com/netdata/go.d.plugin/agent/module"
+	"context"
+	"time"
 
-	dockerClient "github.com/docker/docker/client"
+	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
+
+	"github.com/docker/docker/api/types"
+	docker "github.com/docker/docker/client"
 )
 
 func init() {
@@ -15,18 +20,39 @@ func init() {
 }
 
 func New() *Docker {
-	return &Docker{}
+	return &Docker{
+		Config: Config{
+			Address: docker.DefaultDockerHost,
+			Timeout: web.Duration{Duration: time.Second * 1},
+		},
+		charts: charts.Copy(),
+		newClient: func(cfg Config) (dockerClient, error) {
+			return docker.NewClientWithOpts(docker.WithHost(cfg.Address))
+		},
+	}
 }
 
 type Config struct {
+	Timeout web.Duration `yaml:"timeout"`
+	Address string       `yaml:"address"`
 }
 
-type Docker struct {
-	module.Base
-	Config `yaml:",inline"`
+type (
+	Docker struct {
+		module.Base
+		Config `yaml:",inline"`
 
-	client *dockerClient.Client
-}
+		charts *module.Charts
+
+		newClient func(Config) (dockerClient, error)
+		client    dockerClient
+	}
+	dockerClient interface {
+		Info(context.Context) (types.Info, error)
+		ContainerList(context.Context, types.ContainerListOptions) ([]types.Container, error)
+		Close() error
+	}
+)
 
 func (d *Docker) Init() bool {
 	return true
@@ -37,7 +63,7 @@ func (d *Docker) Check() bool {
 }
 
 func (d *Docker) Charts() *module.Charts {
-	return nil
+	return d.charts
 }
 
 func (d *Docker) Collect() map[string]int64 {

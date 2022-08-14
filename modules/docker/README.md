@@ -12,6 +12,16 @@ containerizing your applications.
 
 This module monitors one or more Docker Engine instances, depending on your configuration.
 
+## Metrics
+
+All metrics have "docker." prefix.
+
+| Metric               | Scope  |        Dimensions        |   Units    |
+|----------------------|:------:|:------------------------:|:----------:|
+| containers_state     | global | running, paused, stopped | containers |
+| healthy_containers   | global |         healthy          | containers |
+| unhealthy_containers | global |        unhealthy         | containers |
+
 ## Configuration
 
 Edit the `go.d/docker.conf` configuration file using `edit-config` from the
@@ -28,7 +38,7 @@ jobs:
     address: 'unix:///var/run/docker.sock'
 
   - name: remote
-    address: 'tcp://203.0.113.10:9323'
+    address: 'tcp://203.0.113.10:2375'
 ```
 
 For all available options see
