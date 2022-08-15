@@ -28,6 +28,8 @@ func New() *MySQL {
 		},
 
 		charts:                 charts.Copy(),
+		addBinlogOnce:          &sync.Once{},
+		addMyISAMOnce:          &sync.Once{},
 		addInnodbDeadlocksOnce: &sync.Once{},
 		addGaleraOnce:          &sync.Once{},
 		addQCacheOnce:          &sync.Once{},
@@ -54,6 +56,8 @@ type MySQL struct {
 	isMariaDB bool
 	version   *semver.Version
 
+	addBinlogOnce          *sync.Once
+	addMyISAMOnce          *sync.Once
 	addInnodbDeadlocksOnce *sync.Once
 	addGaleraOnce          *sync.Once
 	addQCacheOnce          *sync.Once

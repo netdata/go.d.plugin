@@ -51,6 +51,13 @@ func (m *MySQL) collect() (map[string]int64, error) {
 		return nil, fmt.Errorf("error on collecting global variables: %v", err)
 	}
 
+	if hasMyISAMStorageEngine(collected) || m.isMariaDB {
+		m.addMyISAMOnce.Do(m.addMyISAMCharts)
+	}
+	if hasBinlogEnabled(collected) {
+		m.addBinlogOnce.Do(m.addBinlogCharts)
+	}
+
 	if m.doSlaveStatus {
 		if err := m.collectSlaveStatus(collected); err != nil {
 			m.Errorf("error on collecting slave status: %v", err)
@@ -117,6 +124,22 @@ func hasGaleraMetrics(collected map[string]int64) bool {
 func hasQCacheMetrics(collected map[string]int64) bool {
 	_, ok := collected["qcache_hits"]
 	return ok
+}
+
+func hasMyISAMStorageEngine(collected map[string]int64) bool {
+	if collected["disabled_storage_engines"] == 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func hasBinlogEnabled(collected map[string]int64) bool {
+	if collected["log_bin"] == 1 {
+		return true
+	} else {
+		return false
+	}
 }
 
 func rowsAsMap(rows *sql.Rows) (map[string]string, error) {

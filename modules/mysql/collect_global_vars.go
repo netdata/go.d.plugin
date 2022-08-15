@@ -12,12 +12,18 @@ const (
 	queryGlobalVariables = "SHOW GLOBAL VARIABLES WHERE " +
 		"Variable_name LIKE 'max_connections' " +
 		"OR " +
-		"Variable_name LIKE 'table_open_cache'"
+		"Variable_name LIKE 'table_open_cache' " +
+		"OR " +
+		"Variable_name LIKE 'disabled_storage_engines' " +
+		"OR " +
+		"Variable_name LIKE 'log_bin'"
 )
 
 var globalVariablesMetrics = []string{
 	"max_connections",
 	"table_open_cache",
+	"disabled_storage_engines",
+	"log_bin",
 }
 
 func (m *MySQL) collectGlobalVariables(collected map[string]int64) error {
@@ -44,7 +50,7 @@ func (m *MySQL) collectGlobalVariables(collected map[string]int64) error {
 		if !ok {
 			continue
 		}
-		value, err := parseGlobalVariable(v)
+		value, err := parseGlobalVariable(name, v)
 		if err != nil {
 			continue
 		}
@@ -53,6 +59,28 @@ func (m *MySQL) collectGlobalVariables(collected map[string]int64) error {
 	return nil
 }
 
-func parseGlobalVariable(value string) (int64, error) {
+func parseGlobalVariable(name, value string) (int64, error) {
+	switch name {
+	case "disabled_storage_engines":
+		value = convertStorageEngineValue(value)
+	case "log_bin":
+		value = convertBinlogValue(value)
+	}
 	return strconv.ParseInt(value, 10, 64)
+}
+
+func convertStorageEngineValue(val string) string {
+	if strings.Contains(val, "MyISAM") {
+		return "1"
+	} else {
+		return "0"
+	}
+}
+
+func convertBinlogValue(val string) string {
+	if val == "OFF" {
+		return "0"
+	} else {
+		return "1"
+	}
 }
