@@ -127,19 +127,11 @@ func hasQCacheMetrics(collected map[string]int64) bool {
 }
 
 func hasMyISAMStorageEngine(collected map[string]int64) bool {
-	if collected["disabled_storage_engines"] == 0 {
-		return true
-	} else {
-		return false
-	}
+    return collected["disabled_storage_engines"] == 0
 }
 
 func hasBinlogEnabled(collected map[string]int64) bool {
-	if collected["log_bin"] == 1 {
-		return true
-	} else {
-		return false
-	}
+    return collected["log_bin"] == 1
 }
 
 func rowsAsMap(rows *sql.Rows) (map[string]string, error) {

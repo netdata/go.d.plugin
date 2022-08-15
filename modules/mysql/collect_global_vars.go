@@ -72,15 +72,13 @@ func parseGlobalVariable(name, value string) (int64, error) {
 func convertStorageEngineValue(val string) string {
 	if strings.Contains(val, "MyISAM") {
 		return "1"
-	} else {
-		return "0"
 	}
+	return "0"
 }
 
 func convertBinlogValue(val string) string {
 	if val == "OFF" {
 		return "0"
-	} else {
-		return "1"
 	}
+	return "1"
 }
