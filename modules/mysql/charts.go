@@ -151,17 +151,6 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "binlog_cache",
-		Title: "Binlog Cache",
-		Units: "transactions/s",
-		Fam:   "binlog",
-		Ctx:   "mysql.binlog_cache",
-		Dims: Dims{
-			{ID: "binlog_cache_disk_use", Name: "disk", Algo: module.Incremental},
-			{ID: "binlog_cache_use", Name: "all", Algo: module.Incremental},
-		},
-	},
-	{
 		ID:    "threads",
 		Title: "Threads",
 		Units: "threads",
@@ -370,42 +359,6 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "key_blocks",
-		Title: "MyISAM Key Cache Blocks",
-		Units: "blocks",
-		Fam:   "myisam",
-		Ctx:   "mysql.key_blocks",
-		Dims: Dims{
-			{ID: "key_blocks_unused", Name: "unused"},
-			{ID: "key_blocks_used", Name: "used", Mul: -1},
-			{ID: "key_blocks_not_flushed", Name: "not flushed"},
-		},
-	},
-	{
-		ID:    "key_requests",
-		Title: "MyISAM Key Cache Requests",
-		Units: "requests/s",
-		Fam:   "myisam",
-		Ctx:   "mysql.key_requests",
-		Type:  module.Area,
-		Dims: Dims{
-			{ID: "key_read_requests", Name: "reads", Algo: module.Incremental},
-			{ID: "key_write_requests", Name: "writes", Algo: module.Incremental, Mul: -1},
-		},
-	},
-	{
-		ID:    "key_disk_ops",
-		Title: "MyISAM Key Cache Disk Operations",
-		Units: "operations/s",
-		Fam:   "myisam",
-		Ctx:   "mysql.key_disk_ops",
-		Type:  module.Area,
-		Dims: Dims{
-			{ID: "key_reads", Name: "reads", Algo: module.Incremental},
-			{ID: "key_writes", Name: "writes", Algo: module.Incremental, Mul: -1},
-		},
-	},
-	{
 		ID:    "files",
 		Title: "Open Files",
 		Units: "files",
@@ -423,17 +376,6 @@ var charts = Charts{
 		Ctx:   "mysql.files_rate",
 		Dims: Dims{
 			{ID: "opened_files", Name: "files", Algo: module.Incremental},
-		},
-	},
-	{
-		ID:    "binlog_stmt_cache",
-		Title: "Binlog Statement Cache",
-		Units: "statements/s",
-		Fam:   "binlog",
-		Ctx:   "mysql.binlog_stmt_cache",
-		Dims: Dims{
-			{ID: "binlog_stmt_cache_disk_use", Name: "disk", Algo: module.Incremental},
-			{ID: "binlog_stmt_cache_use", Name: "all", Algo: module.Incremental},
 		},
 	},
 	{
@@ -703,6 +645,70 @@ var galeraCharts = Charts{
 	},
 }
 
+var myISAMCharts = Charts{
+	{
+		ID:    "key_blocks",
+		Title: "MyISAM Key Cache Blocks",
+		Units: "blocks",
+		Fam:   "myisam",
+		Ctx:   "mysql.key_blocks",
+		Dims: Dims{
+			{ID: "key_blocks_unused", Name: "unused"},
+			{ID: "key_blocks_used", Name: "used", Mul: -1},
+			{ID: "key_blocks_not_flushed", Name: "not flushed"},
+		},
+	},
+	{
+		ID:    "key_requests",
+		Title: "MyISAM Key Cache Requests",
+		Units: "requests/s",
+		Fam:   "myisam",
+		Ctx:   "mysql.key_requests",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "key_read_requests", Name: "reads", Algo: module.Incremental},
+			{ID: "key_write_requests", Name: "writes", Algo: module.Incremental, Mul: -1},
+		},
+	},
+	{
+		ID:    "key_disk_ops",
+		Title: "MyISAM Key Cache Disk Operations",
+		Units: "operations/s",
+		Fam:   "myisam",
+		Ctx:   "mysql.key_disk_ops",
+		Type:  module.Area,
+		Dims: Dims{
+			{ID: "key_reads", Name: "reads", Algo: module.Incremental},
+			{ID: "key_writes", Name: "writes", Algo: module.Incremental, Mul: -1},
+		},
+	},
+}
+
+var binlogCharts = Charts{
+	{
+		ID:    "binlog_cache",
+		Title: "Binlog Cache",
+		Units: "transactions/s",
+		Fam:   "binlog",
+		Ctx:   "mysql.binlog_cache",
+		Dims: Dims{
+			{ID: "binlog_cache_disk_use", Name: "disk", Algo: module.Incremental},
+			{ID: "binlog_cache_use", Name: "all", Algo: module.Incremental},
+		},
+	},
+	{
+		ID:    "binlog_stmt_cache",
+		Title: "Binlog Statement Cache",
+		Units: "statements/s",
+		Fam:   "binlog",
+		Ctx:   "mysql.binlog_stmt_cache",
+		Dims: Dims{
+			{ID: "binlog_stmt_cache_disk_use", Name: "disk", Algo: module.Incremental},
+			{ID: "binlog_stmt_cache_use", Name: "all", Algo: module.Incremental},
+		},
+	},
+}
+
 func newSlaveDefaultReplConnCharts() module.Charts {
 	return module.Charts{
 		{
@@ -819,6 +825,18 @@ func (m *MySQL) addUserStatisticsCharts(user string) {
 		}
 	}
 	if err := m.Charts().Add(newUserStatisticsCharts(user)...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addMyISAMCharts() {
+	if err := m.Charts().Add(*myISAMCharts.Copy()...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addBinlogCharts() {
+	if err := m.Charts().Add(*binlogCharts.Copy()...); err != nil {
 		m.Warning(err)
 	}
 }
