@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/blang/semver/v4"
@@ -134,32 +135,57 @@ func hasBinlogEnabled(collected map[string]int64) bool {
 	return collected["log_bin"] == 1
 }
 
-func rowsAsMap(rows *sql.Rows) (map[string]string, error) {
-	set := make(map[string]string)
+func (m *MySQL) collectQuery(query string, assign func(column, value string, lineEnd bool)) (duration int64, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
+	defer cancel()
+
+	s := time.Now()
+	rows, err := m.db.QueryContext(ctx, query)
+	if err != nil {
+		return 0, err
+	}
+	duration = time.Since(s).Milliseconds()
+	defer func() { _ = rows.Close() }()
+
+	columns, err := rows.Columns()
+	if err != nil {
+		return duration, err
+	}
+
+	vs := makeValues(len(columns))
 	for rows.Next() {
-		var name, value string
-		if err := rows.Scan(&name, &value); err != nil {
-			return nil, err
+		if err := rows.Scan(vs...); err != nil {
+			return duration, err
 		}
-		set[name] = value
-	}
-	return set, rows.Err()
-}
-
-func rowAsMap(columns []string, values []interface{}) map[string]string {
-	set := make(map[string]string, len(columns))
-	for i, name := range columns {
-		if v, ok := values[i].(*sql.NullString); ok && v.Valid {
-			set[name] = v.String
+		for i, l := 0, len(vs); i < l; i++ {
+			assign(columns[i], valueToString(vs[i]), i == l-1)
 		}
 	}
-	return set
+	return duration, rows.Err()
 }
 
-func nullStringsFromColumns(columns []string) []interface{} {
-	values := make([]interface{}, len(columns))
-	for i := range values {
-		values[i] = &sql.NullString{}
+func makeValues(size int) []any {
+	vs := make([]any, size)
+	for i := range vs {
+		vs[i] = &sql.NullString{}
 	}
-	return values
+	return vs
+}
+
+func valueToString(value any) string {
+	v, ok := value.(*sql.NullString)
+	if !ok || !v.Valid {
+		return ""
+	}
+	return v.String
+}
+
+func parseInt(s string) int64 {
+	v, _ := strconv.ParseInt(s, 10, 64)
+	return v
+}
+
+func parseFloat(s string) float64 {
+	v, _ := strconv.ParseFloat(s, 64)
+	return v
 }

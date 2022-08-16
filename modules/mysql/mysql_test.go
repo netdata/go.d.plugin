@@ -5,6 +5,7 @@ package mysql
 import (
 	"bufio"
 	"bytes"
+	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"fmt"
@@ -104,7 +105,7 @@ func TestMySQL_Cleanup(t *testing.T) {
 			return New(), func() {}
 		},
 		"db connection initialized": func(t *testing.T) (mySQL *MySQL, cleanup func()) {
-			db, mock, err := sqlmock.New()
+			db, mock, err := newSQLMock()
 			require.NoError(t, err)
 
 			mock.ExpectClose()
@@ -138,7 +139,7 @@ func TestMySQL_Check(t *testing.T) {
 	}{
 		"all queries success (MariaDB)": {
 			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
-				db, mock, err := sqlmock.New()
+				db, mock, err := newSQLMock()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
@@ -161,7 +162,7 @@ func TestMySQL_Check(t *testing.T) {
 		"'SELECT VERSION()' fails": {
 			wantFalse: true,
 			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
-				db, mock, err := sqlmock.New()
+				db, mock, err := newSQLMock()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
@@ -176,7 +177,7 @@ func TestMySQL_Check(t *testing.T) {
 		"'SHOW GLOBAL STATUS' fails": {
 			wantFalse: true,
 			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
-				db, mock, err := sqlmock.New()
+				db, mock, err := newSQLMock()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
@@ -193,7 +194,7 @@ func TestMySQL_Check(t *testing.T) {
 		"'SHOW GLOBAL VARIABLES' fails": {
 			wantFalse: true,
 			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
-				db, mock, err := sqlmock.New()
+				db, mock, err := newSQLMock()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
@@ -211,7 +212,7 @@ func TestMySQL_Check(t *testing.T) {
 		},
 		"'SHOW ALL SLAVES STATUS' fails (MariaDB)": {
 			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
-				db, mock, err := sqlmock.New()
+				db, mock, err := newSQLMock()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
@@ -233,7 +234,7 @@ func TestMySQL_Check(t *testing.T) {
 		},
 		"'SHOW USER_STATISTICS' fails (MariaDB)": {
 			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
-				db, mock, err := sqlmock.New()
+				db, mock, err := newSQLMock()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
@@ -277,7 +278,7 @@ func TestMySQL_Collect(t *testing.T) {
 	}{
 		"MariaDBv5.5.46: all queries": {
 			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
-				db, mock, err := sqlmock.New()
+				db, mock, err := newSQLMock()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
@@ -414,7 +415,7 @@ func TestMySQL_Collect(t *testing.T) {
 		},
 		"MariaDBv10.5.4: all queries (single source replication)": {
 			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
-				db, mock, err := sqlmock.New()
+				db, mock, err := newSQLMock()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
@@ -598,7 +599,7 @@ func TestMySQL_Collect(t *testing.T) {
 		},
 		"MariaDBv10.5.4: minimal: global status and variables": {
 			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
-				db, mock, err := sqlmock.New()
+				db, mock, err := newSQLMock()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
@@ -758,7 +759,7 @@ func TestMySQL_Collect(t *testing.T) {
 		},
 		"MySQLv8.0.21: all queries (multi source replication)": {
 			prepare: func(t *testing.T) (mySQL *MySQL, mock sqlmock.Sqlmock, cleanup func()) {
-				db, mock, err := sqlmock.New()
+				db, mock, err := newSQLMock()
 				require.NoError(t, err)
 				mySQL = New()
 				mySQL.db = db
@@ -994,4 +995,11 @@ func prepareMockRows(data []byte) (*sqlmock.Rows, error) {
 		rows.AddRow(values...)
 	}
 	return rows, nil
+}
+
+func newSQLMock() (*sql.DB, sqlmock.Sqlmock, error) {
+	db, mock, err := sqlmock.New(
+		sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual),
+	)
+	return db, mock, err
 }

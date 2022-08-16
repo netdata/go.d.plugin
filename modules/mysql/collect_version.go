@@ -11,7 +11,7 @@ import (
 	"github.com/blang/semver/v4"
 )
 
-const queryVersion = "SELECT VERSION()"
+const queryVersion = "SELECT VERSION();"
 
 var reVersionCore = regexp.MustCompile(`^\d+\.\d+\.\d+`)
 
