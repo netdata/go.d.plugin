@@ -38,6 +38,8 @@ func New() *MySQL {
 		doUserStatistics:       true,
 		collectedReplConns:     make(map[string]bool),
 		collectedUsers:         make(map[string]bool),
+
+		recheckGlobalVarsEvery: time.Minute * 10,
 	}
 }
 
@@ -56,6 +58,8 @@ type MySQL struct {
 	isMariaDB bool
 	version   *semver.Version
 
+	charts *Charts
+
 	addBinlogOnce          *sync.Once
 	addMyISAMOnce          *sync.Once
 	addInnodbDeadlocksOnce *sync.Once
@@ -68,7 +72,12 @@ type MySQL struct {
 	doUserStatistics   bool
 	collectedUsers     map[string]bool
 
-	charts *Charts
+	recheckGlobalVarsTime    time.Time
+	recheckGlobalVarsEvery   time.Duration
+	varMaxConns              int64
+	varTableOpenCache        int64
+	varDisabledStorageEngine string
+	varLogBin                string
 }
 
 func (m *MySQL) Init() bool {
