@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/blang/semver/v4"
@@ -134,18 +135,6 @@ func hasBinlogEnabled(collected map[string]int64) bool {
 	return collected["log_bin"] == 1
 }
 
-func rowsAsMap(rows *sql.Rows) (map[string]string, error) {
-	set := make(map[string]string)
-	for rows.Next() {
-		var name, value string
-		if err := rows.Scan(&name, &value); err != nil {
-			return nil, err
-		}
-		set[name] = value
-	}
-	return set, rows.Err()
-}
-
 func rowAsMap(columns []string, values []interface{}) map[string]string {
 	set := make(map[string]string, len(columns))
 	for i, name := range columns {
@@ -162,4 +151,55 @@ func nullStringsFromColumns(columns []string) []interface{} {
 		values[i] = &sql.NullString{}
 	}
 	return values
+}
+
+// ----
+
+func (m *MySQL) collectQuery(query string, assign func(column, value string)) error {
+	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
+	defer cancel()
+
+	rows, err := m.db.QueryContext(ctx, query)
+	if err != nil {
+		return err
+	}
+
+	defer func() { _ = rows.Close() }()
+
+	columns, err := rows.Columns()
+	if err != nil {
+		return err
+	}
+
+	values := makeValues(len(columns))
+	for rows.Next() {
+		if err := rows.Scan(values...); err != nil {
+			return err
+		}
+		for i, v := range values {
+			assign(columns[i], valueToString(v))
+		}
+	}
+	return rows.Err()
+}
+
+func parseInt(s string) int64 {
+	v, _ := strconv.ParseInt(s, 10, 64)
+	return v
+}
+
+func makeValues(size int) []any {
+	vs := make([]any, size)
+	for i := range vs {
+		vs[i] = &sql.NullString{}
+	}
+	return vs
+}
+
+func valueToString(value any) string {
+	v, ok := value.(*sql.NullString)
+	if !ok || !v.Valid {
+		return ""
+	}
+	return v.String
 }
