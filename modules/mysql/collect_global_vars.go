@@ -20,10 +20,11 @@ const (
 func (m *MySQL) collectGlobalVariables(mx map[string]int64) error {
 	// MariaDB: https://mariadb.com/kb/en/server-system-variables/
 	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-system-variable-reference.html
-	m.Debugf("executing query: '%s'", queryGlobalVariables)
+	q := queryGlobalVariables
+	m.Debugf("executing query: '%s'", q)
 
 	var name string
-	return m.collectQuery(queryGlobalVariables, func(column, value string) {
+	_, err := m.collectQuery(q, func(column, value string) {
 		switch column {
 		case "Variable_name":
 			name = value
@@ -38,6 +39,7 @@ func (m *MySQL) collectGlobalVariables(mx map[string]int64) error {
 			}
 		}
 	})
+	return err
 }
 
 func convertStorageEngineValue(val string) string {

@@ -155,32 +155,35 @@ func nullStringsFromColumns(columns []string) []interface{} {
 
 // ----
 
-func (m *MySQL) collectQuery(query string, assign func(column, value string)) error {
+func (m *MySQL) collectQuery(query string, assign func(column, value string)) (duration int64, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
 	defer cancel()
 
+	s := time.Now()
 	rows, err := m.db.QueryContext(ctx, query)
 	if err != nil {
-		return err
+		return 0, err
 	}
+
+	duration = time.Since(s).Milliseconds()
 
 	defer func() { _ = rows.Close() }()
 
 	columns, err := rows.Columns()
 	if err != nil {
-		return err
+		return duration, err
 	}
 
 	values := makeValues(len(columns))
 	for rows.Next() {
 		if err := rows.Scan(values...); err != nil {
-			return err
+			return duration, err
 		}
 		for i, v := range values {
 			assign(columns[i], valueToString(v))
 		}
 	}
-	return rows.Err()
+	return duration, rows.Err()
 }
 
 func parseInt(s string) int64 {
