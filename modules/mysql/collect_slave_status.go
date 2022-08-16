@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	querySlaveStatus     = "SHOW SLAVE STATUS"
-	queryAllSlavesStatus = "SHOW ALL SLAVES STATUS"
+	querySlaveStatus     = "SHOW SLAVE STATUS;"
+	queryAllSlavesStatus = "SHOW ALL SLAVES STATUS;"
 )
 
 func (m *MySQL) collectSlaveStatus(mx map[string]int64) error {

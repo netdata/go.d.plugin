@@ -7,14 +7,13 @@ import (
 )
 
 const (
-	queryGlobalVariables = "SHOW GLOBAL VARIABLES WHERE " +
-		"Variable_name LIKE 'max_connections' " +
-		"OR " +
-		"Variable_name LIKE 'table_open_cache' " +
-		"OR " +
-		"Variable_name LIKE 'disabled_storage_engines' " +
-		"OR " +
-		"Variable_name LIKE 'log_bin'"
+	queryGlobalVariables = `
+SHOW GLOBAL VARIABLES 
+WHERE 
+  Variable_name LIKE 'max_connections' 
+  OR Variable_name LIKE 'table_open_cache' 
+  OR Variable_name LIKE 'disabled_storage_engines' 
+  OR Variable_name LIKE 'log_bin';`
 )
 
 func (m *MySQL) collectGlobalVariables(mx map[string]int64) error {

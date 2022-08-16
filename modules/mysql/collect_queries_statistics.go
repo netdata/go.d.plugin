@@ -7,17 +7,16 @@ package mysql
 // (MySql) https://dev.mysql.com/doc/refman/5.7/en/information-schema-processlist-table.html
 const (
 	queryInfoSchemaProcessList = `
-SELECT
-    TIME,
-    USER 
-FROM
-    INFORMATION_SCHEMA.PROCESSLIST 
-WHERE
-    Info IS NOT NULL 
-    AND Info NOT LIKE '%PROCESSLIST%' 
-ORDER BY
-    TIME;
-`
+SELECT 
+  time, 
+  user 
+FROM 
+  information_schema.processlist 
+WHERE 
+  info IS NOT NULL 
+  AND info NOT LIKE '%PROCESSLIST%' 
+ORDER BY 
+  time;`
 )
 
 func (m *MySQL) collectProcessListStatistics(mx map[string]int64) error {
