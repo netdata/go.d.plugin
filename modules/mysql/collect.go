@@ -57,9 +57,7 @@ func (m *MySQL) collect() (map[string]int64, error) {
 	mx["max_connections"] = m.varMaxConns
 	mx["table_open_cache"] = m.varTableOpenCache
 
-	if m.isMariaDB ||
-		m.varDisabledStorageEngine == "" ||
-		!strings.Contains(m.varDisabledStorageEngine, "MyISAM") {
+	if m.isMariaDB || !strings.Contains(m.varDisabledStorageEngine, "MyISAM") {
 		m.addMyISAMOnce.Do(m.addMyISAMCharts)
 	}
 	if m.varLogBin != "OFF" {
