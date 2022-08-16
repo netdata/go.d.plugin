@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/blang/semver/v4"
@@ -31,36 +32,42 @@ func (m *MySQL) collect() (map[string]int64, error) {
 		m.doUserStatistics = m.isMariaDB && m.version.GTE(minVer)
 	}
 
-	collected := make(map[string]int64)
+	mx := make(map[string]int64)
 
-	// TODO: do we really need to collect global vars on every iteration?
-	if err := m.collectGlobalStatus(collected); err != nil {
+	if err := m.collectGlobalStatus(mx); err != nil {
 		return nil, fmt.Errorf("error on collecting global status: %v", err)
 	}
 
-	if hasInnodbDeadlocks(collected) {
+	if hasInnodbDeadlocks(mx) {
 		m.addInnodbDeadlocksOnce.Do(m.addInnodbDeadlocksChart)
 	}
-	if hasQCacheMetrics(collected) {
+	if hasQCacheMetrics(mx) {
 		m.addQCacheOnce.Do(m.addQCacheCharts)
 	}
-	if hasGaleraMetrics(collected) {
+	if hasGaleraMetrics(mx) {
 		m.addGaleraOnce.Do(m.addGaleraCharts)
 	}
 
-	if err := m.collectGlobalVariables(collected); err != nil {
-		return nil, fmt.Errorf("error on collecting global variables: %v", err)
+	now := time.Now()
+	if now.Sub(m.recheckGlobalVarsTime) > m.recheckGlobalVarsEvery {
+		if err := m.collectGlobalVariables(); err != nil {
+			return nil, fmt.Errorf("error on collecting global variables: %v", err)
+		}
 	}
+	mx["max_connections"] = m.varMaxConns
+	mx["table_open_cache"] = m.varTableOpenCache
 
-	if hasMyISAMStorageEngine(collected) || m.isMariaDB {
+	if m.isMariaDB ||
+		m.varDisabledStorageEngine == "" ||
+		!strings.Contains(m.varDisabledStorageEngine, "MyISAM") {
 		m.addMyISAMOnce.Do(m.addMyISAMCharts)
 	}
-	if hasBinlogEnabled(collected) {
+	if m.varLogBin != "OFF" {
 		m.addBinlogOnce.Do(m.addBinlogCharts)
 	}
 
 	if m.doSlaveStatus {
-		if err := m.collectSlaveStatus(collected); err != nil {
+		if err := m.collectSlaveStatus(mx); err != nil {
 			m.Errorf("error on collecting slave status: %v", err)
 			// TODO: shouldn't disable on any error
 			m.doSlaveStatus = false
@@ -68,19 +75,19 @@ func (m *MySQL) collect() (map[string]int64, error) {
 	}
 
 	if m.doUserStatistics {
-		if err := m.collectUserStatistics(collected); err != nil {
+		if err := m.collectUserStatistics(mx); err != nil {
 			m.Errorf("error on collecting user statistics: %v", err)
 			// TODO: shouldn't disable on any error
 			m.doUserStatistics = false
 		}
 	}
 
-	if err := m.collectProcessListStatistics(collected); err != nil {
+	if err := m.collectProcessListStatistics(mx); err != nil {
 		m.Errorf("error on collecting process list statistics: %v", err)
 	}
 
-	calcThreadCacheMisses(collected)
-	return collected, nil
+	calcThreadCacheMisses(mx)
+	return mx, nil
 }
 
 func (m *MySQL) openConnection() error {
@@ -127,13 +134,13 @@ func hasQCacheMetrics(collected map[string]int64) bool {
 	return ok
 }
 
-func hasMyISAMStorageEngine(collected map[string]int64) bool {
-	return collected["disabled_storage_engines"] == 0
-}
-
-func hasBinlogEnabled(collected map[string]int64) bool {
-	return collected["log_bin"] == 1
-}
+//func hasMyISAMStorageEngine(collected map[string]int64) bool {
+//	return collected["disabled_storage_engines"] == 0
+//}
+//
+//func hasBinlogEnabled(collected map[string]int64) bool {
+//	return collected["log_bin"] == 1
+//}
 
 func (m *MySQL) collectQuery(query string, assign func(column, value string, lineEnd bool)) (duration int64, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)

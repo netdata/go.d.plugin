@@ -2,10 +2,6 @@
 
 package mysql
 
-import (
-	"strings"
-)
-
 const (
 	queryGlobalVariables = `
 SHOW GLOBAL VARIABLES 
@@ -16,7 +12,7 @@ WHERE
   OR Variable_name LIKE 'log_bin';`
 )
 
-func (m *MySQL) collectGlobalVariables(mx map[string]int64) error {
+func (m *MySQL) collectGlobalVariables() error {
 	// MariaDB: https://mariadb.com/kb/en/server-system-variables/
 	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-system-variable-reference.html
 	q := queryGlobalVariables
@@ -30,27 +26,15 @@ func (m *MySQL) collectGlobalVariables(mx map[string]int64) error {
 		case "Value":
 			switch name {
 			case "disabled_storage_engines":
-				mx[name] = parseInt(convertStorageEngineValue(value))
+				m.varDisabledStorageEngine = value
 			case "log_bin":
-				mx[name] = parseInt(convertBinlogValue(value))
-			case "max_connections", "table_open_cache":
-				mx[name] = parseInt(value)
+				m.varLogBin = value
+			case "max_connections":
+				m.varMaxConns = parseInt(value)
+			case "table_open_cache":
+				m.varTableOpenCache = parseInt(value)
 			}
 		}
 	})
 	return err
-}
-
-func convertStorageEngineValue(val string) string {
-	if strings.Contains(val, "MyISAM") {
-		return "1"
-	}
-	return "0"
-}
-
-func convertBinlogValue(val string) string {
-	if val == "OFF" {
-		return "0"
-	}
-	return "1"
 }
