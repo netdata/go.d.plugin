@@ -58,7 +58,7 @@ type MySQL struct {
 	isMariaDB bool
 	version   *semver.Version
 
-	charts *Charts
+	charts *module.Charts
 
 	addBinlogOnce          *sync.Once
 	addMyISAMOnce          *sync.Once
@@ -103,7 +103,7 @@ func (m *MySQL) Check() bool {
 	return len(m.Collect()) > 0
 }
 
-func (m *MySQL) Charts() *Charts {
+func (m *MySQL) Charts() *module.Charts {
 	return m.charts
 }
 
