@@ -76,7 +76,7 @@ const (
 	prioUserStatsCommands
 )
 
-var charts = module.Charts{
+var baseCharts = module.Charts{
 	chartBandwidth.Copy(),
 	chartQueries.Copy(),
 	chartQueriesType.Copy(),
@@ -904,39 +904,42 @@ var (
 	}
 )
 
-func newSlaveDefaultReplConnCharts() module.Charts {
-	return module.Charts{
-		{
-			ID:       "slave_behind",
-			Title:    "Slave Behind Seconds",
-			Units:    "seconds",
-			Fam:      "slave",
-			Ctx:      "mysql.slave_behind",
-			Priority: prioSlaveSecondsBehindMaster,
-			Dims: module.Dims{
-				{ID: "seconds_behind_master", Name: "seconds"},
-			},
-		},
-		{
-			ID:       "slave_thread_running",
-			Title:    "I/O / SQL Thread Running State",
-			Units:    "boolean",
-			Fam:      "slave",
-			Ctx:      "mysql.slave_status",
-			Priority: prioSlaveSQLIOThreadRunningState,
-			Dims: module.Dims{
-				{ID: "slave_sql_running", Name: "sql_running"},
-				{ID: "slave_io_running", Name: "io_running"},
-			},
+var (
+	chartsSlaveReplication = module.Charts{
+		chartSlaveBehindSeconds.Copy(),
+		chartSlaveSQLIOThreadRunningState.Copy(),
+	}
+
+	chartSlaveBehindSeconds = module.Chart{
+		ID:       "slave_behind",
+		Title:    "Slave Behind Seconds",
+		Units:    "seconds",
+		Fam:      "slave",
+		Ctx:      "mysql.slave_behind",
+		Priority: prioSlaveSecondsBehindMaster,
+		Dims: module.Dims{
+			{ID: "seconds_behind_master", Name: "seconds"},
 		},
 	}
-}
+	chartSlaveSQLIOThreadRunningState = module.Chart{
+		ID:       "slave_thread_running",
+		Title:    "I/O / SQL Thread Running State",
+		Units:    "boolean",
+		Fam:      "slave",
+		Ctx:      "mysql.slave_status",
+		Priority: prioSlaveSQLIOThreadRunningState,
+		Dims: module.Dims{
+			{ID: "slave_sql_running", Name: "sql_running"},
+			{ID: "slave_io_running", Name: "io_running"},
+		},
+	}
+)
 
-func newSlaveReplConnCharts(conn string) module.Charts {
+func newSlaveReplConnCharts(conn string) *module.Charts {
 	orig := conn
 	conn = strings.ToLower(conn)
-	cs := newSlaveDefaultReplConnCharts()
-	for _, chart := range cs {
+	cs := chartsSlaveReplication.Copy()
+	for _, chart := range *cs {
 		chart.ID += "_" + conn
 		chart.Title += " Connection " + orig
 		for _, dim := range chart.Dims {
@@ -946,71 +949,85 @@ func newSlaveReplConnCharts(conn string) module.Charts {
 	return cs
 }
 
-var userStatsCPUChart = module.Chart{
-	ID:       "userstats_cpu",
-	Title:    "User CPU Time",
-	Units:    "percentage",
-	Fam:      "userstats",
-	Ctx:      "mysql.userstats_cpu",
-	Type:     module.Stacked,
-	Priority: prioUserStatsCPUTime,
+func newUserStatisticsCharts(user string) *module.Charts {
+	user = strings.ToLower(user)
+	charts := chartsTmplUserStats.Copy()
+	for _, c := range *charts {
+		c.ID = fmt.Sprintf(c.ID, user)
+		c.Fam = fmt.Sprintf(c.Fam, user)
+		for _, d := range c.Dims {
+			d.ID = fmt.Sprintf(d.ID, user)
+		}
+	}
+	return charts
 }
 
-func newUserStatisticsCharts(user string) module.Charts {
-	user = strings.ToLower(user)
-	return module.Charts{
-		{
-			ID:       "userstats_rows_" + user,
-			Title:    "Rows Operations",
-			Units:    "operations/s",
-			Fam:      "userstats " + user,
-			Ctx:      "mysql.userstats_rows",
-			Type:     module.Stacked,
-			Priority: prioUserStatsRows,
-			Dims: module.Dims{
-				{ID: "userstats_" + user + "_rows_read", Name: "read", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_rows_sent", Name: "sent", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_rows_updated", Name: "updated", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_rows_inserted", Name: "inserted", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_rows_deleted", Name: "deleted", Algo: module.Incremental},
-			},
-		},
-		{
-			ID:       "userstats_commands_" + user,
-			Title:    "Commands",
-			Units:    "commands/s",
-			Fam:      "userstats " + user,
-			Ctx:      "mysql.userstats_commands",
-			Type:     module.Stacked,
-			Priority: prioUserStatsCommands,
-			Dims: module.Dims{
-				{ID: "userstats_" + user + "_select_commands", Name: "select", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_update_commands", Name: "update", Algo: module.Incremental},
-				{ID: "userstats_" + user + "_other_commands", Name: "other", Algo: module.Incremental},
-			},
+var (
+	chartUserStatsCPU = module.Chart{
+		ID:       "userstats_cpu",
+		Title:    "User CPU Time",
+		Units:    "percentage",
+		Fam:      "userstats",
+		Ctx:      "mysql.userstats_cpu",
+		Type:     module.Stacked,
+		Priority: prioUserStatsCPUTime,
+	}
+
+	chartsTmplUserStats = module.Charts{
+		chartTmplUserStatsRowsOperations.Copy(),
+		chartTmplUserStatsCommands.Copy(),
+	}
+	chartTmplUserStatsRowsOperations = module.Chart{
+		ID:       "userstats_rows_%s",
+		Title:    "Rows Operations",
+		Units:    "operations/s",
+		Fam:      "userstats %s",
+		Ctx:      "mysql.userstats_rows",
+		Type:     module.Stacked,
+		Priority: prioUserStatsRows,
+		Dims: module.Dims{
+			{ID: "userstats_%s_rows_read", Name: "read", Algo: module.Incremental},
+			{ID: "userstats_%s_rows_sent", Name: "sent", Algo: module.Incremental},
+			{ID: "userstats_%s_rows_updated", Name: "updated", Algo: module.Incremental},
+			{ID: "userstats_%s_rows_inserted", Name: "inserted", Algo: module.Incremental},
+			{ID: "userstats_%s_rows_deleted", Name: "deleted", Algo: module.Incremental},
 		},
 	}
-}
+	chartTmplUserStatsCommands = module.Chart{
+		ID:       "userstats_commands_%s",
+		Title:    "Commands",
+		Units:    "commands/s",
+		Fam:      "userstats %s",
+		Ctx:      "mysql.userstats_commands",
+		Type:     module.Stacked,
+		Priority: prioUserStatsCommands,
+		Dims: module.Dims{
+			{ID: "userstats_%s_select_commands", Name: "select", Algo: module.Incremental},
+			{ID: "userstats_%s_update_commands", Name: "update", Algo: module.Incremental},
+			{ID: "userstats_%s_other_commands", Name: "other", Algo: module.Incremental},
+		},
+	}
+)
 
 func (m *MySQL) addSlaveReplicationConnCharts(conn string) {
-	var cs module.Charts
+	var charts *module.Charts
 	if conn == "" {
-		cs = newSlaveDefaultReplConnCharts()
+		charts = chartsSlaveReplication.Copy()
 	} else {
-		cs = newSlaveReplConnCharts(conn)
+		charts = newSlaveReplConnCharts(conn)
 	}
-	if err := m.Charts().Add(cs...); err != nil {
+	if err := m.Charts().Add(*charts...); err != nil {
 		m.Warning(err)
 	}
 }
 
 func (m *MySQL) addUserStatisticsCharts(user string) {
 	m.addUserStatsCPUOnce.Do(func() {
-		if err := m.Charts().Add(userStatsCPUChart.Copy()); err != nil {
+		if err := m.Charts().Add(chartUserStatsCPU.Copy()); err != nil {
 			m.Warning(err)
 		}
 	})
-	if chart := m.Charts().Get(userStatsCPUChart.ID); chart != nil {
+	if chart := m.Charts().Get(chartUserStatsCPU.ID); chart != nil {
 		dim := &module.Dim{
 			ID:   fmt.Sprintf("userstats_%s_cpu_time", strings.ToLower(user)),
 			Name: user,
@@ -1024,7 +1041,7 @@ func (m *MySQL) addUserStatisticsCharts(user string) {
 			chart.MarkNotCreated()
 		}
 	}
-	if err := m.Charts().Add(newUserStatisticsCharts(user)...); err != nil {
+	if err := m.Charts().Add(*newUserStatisticsCharts(user)...); err != nil {
 		m.Warning(err)
 	}
 }

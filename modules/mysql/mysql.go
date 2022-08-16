@@ -27,7 +27,7 @@ func New() *MySQL {
 			Timeout: web.Duration{Duration: time.Second},
 		},
 
-		charts:                 charts.Copy(),
+		charts:                 baseCharts.Copy(),
 		addBinlogOnce:          &sync.Once{},
 		addMyISAMOnce:          &sync.Once{},
 		addInnodbDeadlocksOnce: &sync.Once{},
