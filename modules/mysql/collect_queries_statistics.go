@@ -26,7 +26,7 @@ func (m *MySQL) collectProcessListStatistics(mx map[string]int64) error {
 
 	var maxTime int64 // slowest query milliseconds in process list
 
-	duration, err := m.collectQuery(q, func(column, value string) {
+	duration, err := m.collectQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "TIME":
 			maxTime = parseInt(value)

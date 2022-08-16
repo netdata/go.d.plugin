@@ -155,7 +155,7 @@ func nullStringsFromColumns(columns []string) []interface{} {
 
 // ----
 
-func (m *MySQL) collectQuery(query string, assign func(column, value string)) (duration int64, err error) {
+func (m *MySQL) collectQuery(query string, assign func(column, value string, lineEnd bool)) (duration int64, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
 	defer cancel()
 
@@ -164,9 +164,7 @@ func (m *MySQL) collectQuery(query string, assign func(column, value string)) (d
 	if err != nil {
 		return 0, err
 	}
-
 	duration = time.Since(s).Milliseconds()
-
 	defer func() { _ = rows.Close() }()
 
 	columns, err := rows.Columns()
@@ -174,13 +172,13 @@ func (m *MySQL) collectQuery(query string, assign func(column, value string)) (d
 		return duration, err
 	}
 
-	values := makeValues(len(columns))
+	vs := makeValues(len(columns))
 	for rows.Next() {
-		if err := rows.Scan(values...); err != nil {
+		if err := rows.Scan(vs...); err != nil {
 			return duration, err
 		}
-		for i, v := range values {
-			assign(columns[i], valueToString(v))
+		for i, l := 0, len(vs); i < l; i++ {
+			assign(columns[i], valueToString(vs[i]), i == l-1)
 		}
 	}
 	return duration, rows.Err()

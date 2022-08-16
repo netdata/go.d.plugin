@@ -24,7 +24,7 @@ func (m *MySQL) collectGlobalVariables(mx map[string]int64) error {
 	m.Debugf("executing query: '%s'", q)
 
 	var name string
-	_, err := m.collectQuery(q, func(column, value string) {
+	_, err := m.collectQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "Variable_name":
 			name = value
