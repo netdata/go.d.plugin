@@ -134,14 +134,6 @@ func hasQCacheMetrics(collected map[string]int64) bool {
 	return ok
 }
 
-//func hasMyISAMStorageEngine(collected map[string]int64) bool {
-//	return collected["disabled_storage_engines"] == 0
-//}
-//
-//func hasBinlogEnabled(collected map[string]int64) bool {
-//	return collected["log_bin"] == 1
-//}
-
 func (m *MySQL) collectQuery(query string, assign func(column, value string, lineEnd bool)) (duration int64, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
 	defer cancel()
