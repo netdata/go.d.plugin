@@ -3,8 +3,6 @@
 package mysql
 
 import (
-	"context"
-	"strconv"
 	"strings"
 )
 
@@ -19,54 +17,27 @@ const (
 		"Variable_name LIKE 'log_bin'"
 )
 
-var globalVariablesMetrics = []string{
-	"max_connections",
-	"table_open_cache",
-	"disabled_storage_engines",
-	"log_bin",
-}
-
-func (m *MySQL) collectGlobalVariables(collected map[string]int64) error {
+func (m *MySQL) collectGlobalVariables(mx map[string]int64) error {
 	// MariaDB: https://mariadb.com/kb/en/server-system-variables/
 	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-system-variable-reference.html
 	m.Debugf("executing query: '%s'", queryGlobalVariables)
 
-	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
-	defer cancel()
-
-	rows, err := m.db.QueryContext(ctx, queryGlobalVariables)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = rows.Close() }()
-
-	set, err := rowsAsMap(rows)
-	if err != nil {
-		return err
-	}
-
-	for _, name := range globalVariablesMetrics {
-		v, ok := set[name]
-		if !ok {
-			continue
+	var name string
+	return m.collectQuery(queryGlobalVariables, func(column, value string) {
+		switch column {
+		case "Variable_name":
+			name = value
+		case "Value":
+			switch name {
+			case "disabled_storage_engines":
+				mx[name] = parseInt(convertStorageEngineValue(value))
+			case "log_bin":
+				mx[name] = parseInt(convertBinlogValue(value))
+			case "max_connections", "table_open_cache":
+				mx[name] = parseInt(value)
+			}
 		}
-		value, err := parseGlobalVariable(name, v)
-		if err != nil {
-			continue
-		}
-		collected[strings.ToLower(name)] = value
-	}
-	return nil
-}
-
-func parseGlobalVariable(name, value string) (int64, error) {
-	switch name {
-	case "disabled_storage_engines":
-		value = convertStorageEngineValue(value)
-	case "log_bin":
-		value = convertBinlogValue(value)
-	}
-	return strconv.ParseInt(value, 10, 64)
+	})
 }
 
 func convertStorageEngineValue(val string) string {
