@@ -27,28 +27,17 @@ var (
 	mariaV5546SlaveStatus, _     = os.ReadFile("testdata/mariadb/v5.5.46/slave_status.txt")
 	mariaV5546ProcessList, _     = os.ReadFile("testdata/mariadb/v5.5.46/process_list.txt")
 
-	mariaV1054Version, _         = os.ReadFile("testdata/mariadb/v10.5.4/version.txt")
-	mariaV1054GlobalStatus, _    = os.ReadFile("testdata/mariadb/v10.5.4/global_status.txt")
-	mariaV1054GlobalVariables, _ = os.ReadFile("testdata/mariadb/v10.5.4/global_variables.txt")
-	mariaV1054UserStatistics, _  = os.ReadFile("testdata/mariadb/v10.5.4/user_statistics.txt")
-	mariaV1054AllSlavesStatus, _ = os.ReadFile("testdata/mariadb/v10.5.4/all_slaves_status.txt")
-	mariaV1054ProcessList, _     = os.ReadFile("testdata/mariadb/v10.5.4/process_list.txt")
+	dataMariaV1083Version, _         = os.ReadFile("testdata/mariadb/v10.8.3-standalone/version.txt")
+	dataMariaV1083GlobalStatus, _    = os.ReadFile("testdata/mariadb/v10.8.3-standalone/global_status.txt")
+	dataMariaV1083GlobalVariables, _ = os.ReadFile("testdata/mariadb/v10.8.3-standalone/global_variables.txt")
+	dataMariaV1083UserStatistics, _  = os.ReadFile("testdata/mariadb/v10.8.3-standalone/user_statistics.txt")
+	dataMariaV1083ProcessList, _     = os.ReadFile("testdata/mariadb/v10.8.3-standalone/process_list.txt")
 
-	dataMariaV1083Version, _         = os.ReadFile("testdata/mariadb/standalone/v10.8.3/version.txt")
-	dataMariaV1083GlobalStatus, _    = os.ReadFile("testdata/mariadb/standalone/v10.8.3/global_status.txt")
-	dataMariaV1083GlobalVariables, _ = os.ReadFile("testdata/mariadb/standalone/v10.8.3/global_variables.txt")
-	dataMariaV1083UserStatistics, _  = os.ReadFile("testdata/mariadb/standalone/v10.8.3/user_statistics.txt")
-	dataMariaV1083ProcessList, _     = os.ReadFile("testdata/mariadb/standalone/v10.8.3/process_list.txt")
-
-	mysqlV8021Version, _         = os.ReadFile("testdata/mysql/v8.0.21/version.txt")
-	mysqlV8021GlobalStatus, _    = os.ReadFile("testdata/mysql/v8.0.21/global_status.txt")
-	mysqlV8021GlobalVariables, _ = os.ReadFile("testdata/mysql/v8.0.21/global_variables.txt")
-	mysqlV8021SlaveStatus, _     = os.ReadFile("testdata/mysql/v8.0.21/slave_status.txt")
-	mysqlV8021ProcessList, _     = os.ReadFile("testdata/mysql/v8.0.21/process_list.txt")
-)
-
-var (
-	errSQLSyntax = errors.New("you have an error in your SQL syntax")
+	dataMariaGaleraClusterV1084Version, _         = os.ReadFile("testdata/mariadb/v10.8.4-galera-cluster/version.txt")
+	dataMariaGaleraClusterV1084GlobalStatus, _    = os.ReadFile("testdata/mariadb/v10.8.4-galera-cluster/global_status.txt")
+	dataMariaGaleraClusterV1084GlobalVariables, _ = os.ReadFile("testdata/mariadb/v10.8.4-galera-cluster/global_variables.txt")
+	dataMariaGaleraClusterV1084UserStatistics, _  = os.ReadFile("testdata/mariadb/v10.8.4-galera-cluster/user_statistics.txt")
+	dataMariaGaleraClusterV1084ProcessList, _     = os.ReadFile("testdata/mariadb/v10.8.4-galera-cluster/process_list.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {
@@ -58,22 +47,17 @@ func Test_testDataIsValid(t *testing.T) {
 		"mariaV5546GlobalVariables": mariaV5546GlobalVariables,
 		"mariaV5546SlaveStatus":     mariaV5546SlaveStatus,
 
-		"mariaV1054Version":         mariaV1054Version,
-		"mariaV1054GlobalStatus":    mariaV1054GlobalStatus,
-		"mariaV1054GlobalVariables": mariaV1054GlobalVariables,
-		"mariaV1054UserStatistics":  mariaV1054UserStatistics,
-		"mariaV1054AllSlavesStatus": mariaV1054AllSlavesStatus,
-
 		"dataMariaV1083Version":         dataMariaV1083Version,
 		"dataMariaV1083GlobalStatus":    dataMariaV1083GlobalStatus,
 		"dataMariaV1083GlobalVariables": dataMariaV1083GlobalVariables,
 		"dataMariaV1083UserStatistics":  dataMariaV1083UserStatistics,
 		"dataMariaV1083ProcessList":     dataMariaV1083ProcessList,
 
-		"mysqlV8021Version":         mysqlV8021Version,
-		"mysqlV8021GlobalStatus":    mysqlV8021GlobalStatus,
-		"mysqlV8021GlobalVariables": mysqlV8021GlobalVariables,
-		"mysqlV8021SlaveStatus":     mysqlV8021SlaveStatus,
+		"dataMariaGaleraClusterV1084Version":         dataMariaGaleraClusterV1084Version,
+		"dataMariaGaleraClusterV1084GlobalStatus":    dataMariaGaleraClusterV1084GlobalStatus,
+		"dataMariaGaleraClusterV1084GlobalVariables": dataMariaGaleraClusterV1084GlobalVariables,
+		"dataMariaGaleraClusterV1084UserStatistics":  dataMariaGaleraClusterV1084UserStatistics,
+		"dataMariaGaleraClusterV1084ProcessList":     dataMariaGaleraClusterV1084ProcessList,
 	} {
 		require.NotNilf(t, data, fmt.Sprintf("read data: %s", name))
 		_, err := prepareMockRows(data)
@@ -300,6 +284,174 @@ func TestMySQL_Collect(t *testing.T) {
 						"wsrep_local_bf_aborts":                 0,
 						"wsrep_ready":                           0,
 						"wsrep_thread_count":                    0,
+					}
+
+					assert.Equal(t, expected, mx)
+				},
+			},
+		},
+		"MariaV10.8.4[GaleraCluster]: success on all queries": {
+			{
+				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+					mockExpect(t, m, queryShowVersion, dataMariaGaleraClusterV1084Version)
+					mockExpect(t, m, queryShowGlobalStatus, dataMariaGaleraClusterV1084GlobalStatus)
+					mockExpect(t, m, queryShowGlobalVariables, dataMariaGaleraClusterV1084GlobalVariables)
+					mockExpect(t, m, queryShowAllSlavesStatus, nil)
+					mockExpect(t, m, queryShowUserStatistics, dataMariaGaleraClusterV1084UserStatistics)
+					mockExpect(t, m, queryShowProcessList, dataMariaGaleraClusterV1084UserStatistics)
+				},
+				check: func(t *testing.T, my *MySQL) {
+					mx := my.Collect()
+
+					expected := map[string]int64{
+						"aborted_connects":                      0,
+						"binlog_cache_disk_use":                 0,
+						"binlog_cache_use":                      0,
+						"binlog_stmt_cache_disk_use":            0,
+						"binlog_stmt_cache_use":                 0,
+						"bytes_received":                        3009,
+						"bytes_sent":                            228856,
+						"com_delete":                            6,
+						"com_insert":                            0,
+						"com_replace":                           0,
+						"com_select":                            12,
+						"com_update":                            0,
+						"connection_errors_accept":              0,
+						"connection_errors_internal":            0,
+						"connection_errors_max_connections":     0,
+						"connection_errors_peer_address":        0,
+						"connection_errors_select":              0,
+						"connection_errors_tcpwrap":             0,
+						"connections":                           15,
+						"created_tmp_disk_tables":               4,
+						"created_tmp_files":                     5,
+						"created_tmp_tables":                    17,
+						"handler_commit":                        37,
+						"handler_delete":                        7,
+						"handler_prepare":                       0,
+						"handler_read_first":                    3,
+						"handler_read_key":                      9,
+						"handler_read_next":                     1,
+						"handler_read_prev":                     0,
+						"handler_read_rnd":                      0,
+						"handler_read_rnd_next":                 6222,
+						"handler_rollback":                      0,
+						"handler_savepoint":                     0,
+						"handler_savepoint_rollback":            0,
+						"handler_update":                        0,
+						"handler_write":                         9,
+						"innodb_buffer_pool_bytes_data":         5193728,
+						"innodb_buffer_pool_bytes_dirty":        2260992,
+						"innodb_buffer_pool_pages_data":         317,
+						"innodb_buffer_pool_pages_dirty":        138,
+						"innodb_buffer_pool_pages_flushed":      0,
+						"innodb_buffer_pool_pages_free":         7747,
+						"innodb_buffer_pool_pages_misc":         0,
+						"innodb_buffer_pool_pages_total":        8064,
+						"innodb_buffer_pool_read_ahead":         0,
+						"innodb_buffer_pool_read_ahead_evicted": 0,
+						"innodb_buffer_pool_read_ahead_rnd":     0,
+						"innodb_buffer_pool_read_requests":      2298,
+						"innodb_buffer_pool_reads":              184,
+						"innodb_buffer_pool_wait_free":          0,
+						"innodb_buffer_pool_write_requests":     203,
+						"innodb_data_fsyncs":                    15,
+						"innodb_data_pending_fsyncs":            0,
+						"innodb_data_pending_reads":             0,
+						"innodb_data_pending_writes":            0,
+						"innodb_data_read":                      3014656,
+						"innodb_data_reads":                     201,
+						"innodb_data_writes":                    14,
+						"innodb_data_written":                   0,
+						"innodb_deadlocks":                      0,
+						"innodb_log_waits":                      0,
+						"innodb_log_write_requests":             65,
+						"innodb_log_writes":                     13,
+						"innodb_os_log_written":                 4785,
+						"innodb_row_lock_current_waits":         0,
+						"innodb_rows_deleted":                   0,
+						"innodb_rows_inserted":                  0,
+						"innodb_rows_read":                      0,
+						"innodb_rows_updated":                   0,
+						"key_blocks_not_flushed":                0,
+						"key_blocks_unused":                     107163,
+						"key_blocks_used":                       0,
+						"key_read_requests":                     0,
+						"key_reads":                             0,
+						"key_write_requests":                    0,
+						"key_writes":                            0,
+						"max_connections":                       151,
+						"max_used_connections":                  1,
+						"open_files":                            7,
+						"open_tables":                           0,
+						"opened_files":                          125,
+						"opened_tables":                         24,
+						"process_list_fetch_query_duration":     0,
+						"process_list_longest_query_duration":   0,
+						"process_list_queries_count_system":     0,
+						"process_list_queries_count_user":       0,
+						"qcache_free_blocks":                    1,
+						"qcache_free_memory":                    1031272,
+						"qcache_hits":                           0,
+						"qcache_inserts":                        0,
+						"qcache_lowmem_prunes":                  0,
+						"qcache_not_cached":                     0,
+						"qcache_queries_in_cache":               0,
+						"qcache_total_blocks":                   1,
+						"queries":                               75,
+						"questions":                             62,
+						"select_full_join":                      0,
+						"select_full_range_join":                0,
+						"select_range":                          0,
+						"select_range_check":                    0,
+						"select_scan":                           17,
+						"slow_queries":                          0,
+						"sort_merge_passes":                     0,
+						"sort_range":                            0,
+						"sort_scan":                             0,
+						"table_locks_immediate":                 17,
+						"table_locks_waited":                    0,
+						"table_open_cache":                      2000,
+						"thread_cache_misses":                   4000,
+						"threads_cached":                        0,
+						"threads_connected":                     1,
+						"threads_created":                       6,
+						"threads_running":                       1,
+						"userstats_netdata_cpu_time":            77,
+						"userstats_netdata_other_commands":      0,
+						"userstats_netdata_rows_deleted":        0,
+						"userstats_netdata_rows_inserted":       0,
+						"userstats_netdata_rows_read":           0,
+						"userstats_netdata_rows_sent":           99,
+						"userstats_netdata_rows_updated":        0,
+						"userstats_netdata_select_commands":     33,
+						"userstats_netdata_update_commands":     0,
+						"userstats_root_cpu_time":               0,
+						"userstats_root_other_commands":         0,
+						"userstats_root_rows_deleted":           0,
+						"userstats_root_rows_inserted":          0,
+						"userstats_root_rows_read":              0,
+						"userstats_root_rows_sent":              2,
+						"userstats_root_rows_updated":           0,
+						"userstats_root_select_commands":        0,
+						"userstats_root_update_commands":        0,
+						"wsrep_cluster_size":                    3,
+						"wsrep_cluster_status":                  0,
+						"wsrep_cluster_weight":                  3,
+						"wsrep_connected":                       1,
+						"wsrep_flow_control_paused_ns":          0,
+						"wsrep_local_bf_aborts":                 0,
+						"wsrep_local_cert_failures":             0,
+						"wsrep_local_recv_queue":                0,
+						"wsrep_local_send_queue":                0,
+						"wsrep_local_state":                     4,
+						"wsrep_open_transactions":               0,
+						"wsrep_ready":                           1,
+						"wsrep_received":                        11,
+						"wsrep_received_bytes":                  1410,
+						"wsrep_replicated":                      0,
+						"wsrep_replicated_bytes":                0,
+						"wsrep_thread_count":                    5,
 					}
 
 					assert.Equal(t, expected, mx)
