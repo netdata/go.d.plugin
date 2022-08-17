@@ -1,16 +1,52 @@
-`MariaDB` Galera cluster setup (In MariaDB 10.1 and later, the MySQL-wsrep patch has been merged into MariaDB Server.):
+# MySQL/MariaDB lab setup
 
-- https://github.com/bitnami/bitnami-docker-mariadb-galera
-- https://hub.docker.com/r/bitnami/mariadb-galera
+## MariaDB
 
-`MariaDB` cluster setup:
+### Standalone
 
-- https://github.com/bitnami/bitnami-docker-mariadb
-- https://hub.docker.com/r/bitnami/mariadb/
+Dockerhub: https://hub.docker.com/_/mariadb.
 
-`MySQL` multi-source replication setup:
+```bash
+docker run -d \
+--network=host \
+--name mariadb-10.8.3 \
+--env MARIADB_USER=netdata \
+--env MARIADB_PASSWORD=password \
+--env MARIADB_ROOT_PASSWORD=password  \
+mariadb:10.8.3 --port 3808
+```
 
-- https://github.com/wagnerjfr/mysql-multi-source-replication-docker
+### Galera Cluster
+
+GitHub: https://github.com/bitnami/containers/tree/main/bitnami/mariadb-galera#setting-up-a-multi-master-cluster
+Dockerhub: https://hub.docker.com/r/bitnami/mariadb-galera
+
+```bash
+docker run -d --name mariadb-galera-0 \
+  -e MARIADB_GALERA_CLUSTER_NAME=my_galera \
+  -e MARIADB_GALERA_MARIABACKUP_USER=my_mariabackup_user \
+  -e MARIADB_GALERA_MARIABACKUP_PASSWORD=my_mariabackup_password \
+  -e MARIADB_ROOT_PASSWORD=my_root_password \
+  -e MARIADB_GALERA_CLUSTER_BOOTSTRAP=yes \
+  -e MARIADB_USER=my_user \
+  -e MARIADB_PASSWORD=my_password \
+  -e MARIADB_DATABASE=my_database \
+  -e MARIADB_REPLICATION_USER=my_replication_user \
+  -e MARIADB_REPLICATION_PASSWORD=my_replication_password \
+  bitnami/mariadb-galera:10.8.4
+
+  docker run -d --name mariadb-galera-1 --link mariadb-galera-0:mariadb-galera \
+  -e MARIADB_GALERA_CLUSTER_NAME=my_galera \
+  -e MARIADB_GALERA_CLUSTER_ADDRESS=gcomm://mariadb-galera:4567,0.0.0.0:4567 \
+  -e MARIADB_GALERA_MARIABACKUP_USER=my_mariabackup_user \
+  -e MARIADB_GALERA_MARIABACKUP_PASSWORD=my_mariabackup_password \
+  -e MARIADB_ROOT_PASSWORD=my_root_password \
+  -e MARIADB_REPLICATION_USER=my_replication_user \
+  -e MARIADB_REPLICATION_PASSWORD=my_replication_password \
+  bitnami/mariadb-galera:10.8.4
+```
+
+## Create user
 
 Create `netdata` user with needed permissions:
 
