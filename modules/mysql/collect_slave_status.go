@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	querySlaveStatus     = "SHOW SLAVE STATUS;"
-	queryAllSlavesStatus = "SHOW ALL SLAVES STATUS;"
+	queryShowSlaveStatus     = "SHOW SLAVE STATUS;"
+	queryShowAllSlavesStatus = "SHOW ALL SLAVES STATUS;"
 )
 
 func (m *MySQL) collectSlaveStatus(mx map[string]int64) error {
@@ -18,9 +18,9 @@ func (m *MySQL) collectSlaveStatus(mx map[string]int64) error {
 	mariaDBMinVer := semver.Version{Major: 10, Minor: 2, Patch: 0}
 	var q string
 	if m.isMariaDB && m.version.GTE(mariaDBMinVer) {
-		q = queryAllSlavesStatus
+		q = queryShowAllSlavesStatus
 	} else {
-		q = querySlaveStatus
+		q = queryShowSlaveStatus
 	}
 	m.Debugf("executing query: '%s'", q)
 

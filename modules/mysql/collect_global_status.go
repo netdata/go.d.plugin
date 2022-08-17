@@ -6,12 +6,12 @@ import (
 	"strings"
 )
 
-const queryGlobalStatus = "SHOW GLOBAL STATUS;"
+const queryShowGlobalStatus = "SHOW GLOBAL STATUS;"
 
 func (m *MySQL) collectGlobalStatus(mx map[string]int64) error {
 	// MariaDB: https://mariadb.com/kb/en/server-status-variables/
 	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-status-variable-reference.html
-	q := queryGlobalStatus
+	q := queryShowGlobalStatus
 	m.Debugf("executing query: '%s'", q)
 
 	var name string

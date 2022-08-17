@@ -6,7 +6,7 @@ package mysql
 // (MariaDB) https://mariadb.com/kb/en/information-schema-processlist-table/
 // (MySql) https://dev.mysql.com/doc/refman/5.7/en/information-schema-processlist-table.html
 const (
-	queryInfoSchemaProcessList = `
+	queryShowProcessList = `
 SELECT 
   time, 
   user 
@@ -20,7 +20,7 @@ ORDER BY
 )
 
 func (m *MySQL) collectProcessListStatistics(mx map[string]int64) error {
-	q := queryInfoSchemaProcessList
+	q := queryShowProcessList
 	m.Debugf("executing query: '%s'", q)
 
 	var maxTime int64 // slowest query milliseconds in process list
