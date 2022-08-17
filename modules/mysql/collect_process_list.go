@@ -27,9 +27,9 @@ func (m *MySQL) collectProcessListStatistics(mx map[string]int64) error {
 
 	duration, err := m.collectQuery(q, func(column, value string, _ bool) {
 		switch column {
-		case "TIME":
+		case "time":
 			maxTime = parseInt(value)
-		case "USER":
+		case "user":
 			// system user refers to non-client threads
 			// event_scheduler is the thread used to monitor scheduled events
 			// system user and event_scheduler threads are grouped as system/database threads

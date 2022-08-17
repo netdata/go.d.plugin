@@ -7,6 +7,14 @@
 Dockerhub: https://hub.docker.com/_/mariadb.
 
 ```bash
+# old version
+docker run -d \
+--network=host \
+--name mariadb-5.5.64 \
+--env MYSQL_ROOT_PASSWORD=password  \
+mariadb:5.5.64
+
+# recent version
 docker run -d \
 --network=host \
 --name mariadb-10.8.3 \

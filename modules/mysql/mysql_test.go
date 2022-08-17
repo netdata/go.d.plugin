@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"testing"
 
@@ -21,17 +22,16 @@ import (
 )
 
 var (
-	mariaV5546Version, _         = os.ReadFile("testdata/mariadb/v5.5.46/version.txt")
-	mariaV5546GlobalStatus, _    = os.ReadFile("testdata/mariadb/v5.5.46/global_status.txt")
-	mariaV5546GlobalVariables, _ = os.ReadFile("testdata/mariadb/v5.5.46/global_variables.txt")
-	mariaV5546SlaveStatus, _     = os.ReadFile("testdata/mariadb/v5.5.46/slave_status.txt")
-	mariaV5546ProcessList, _     = os.ReadFile("testdata/mariadb/v5.5.46/process_list.txt")
+	dataMariaV5564Version, _         = os.ReadFile("testdata/mariadb/v5.5.64/version.txt")
+	dataMariaV5564GlobalStatus, _    = os.ReadFile("testdata/mariadb/v5.5.64/global_status.txt")
+	dataMariaV5564GlobalVariables, _ = os.ReadFile("testdata/mariadb/v5.5.64/global_variables.txt")
+	dataMariaV5564ProcessList, _     = os.ReadFile("testdata/mariadb/v5.5.64/process_list.txt")
 
-	dataMariaV1083Version, _         = os.ReadFile("testdata/mariadb/v10.8.3-standalone/version.txt")
-	dataMariaV1083GlobalStatus, _    = os.ReadFile("testdata/mariadb/v10.8.3-standalone/global_status.txt")
-	dataMariaV1083GlobalVariables, _ = os.ReadFile("testdata/mariadb/v10.8.3-standalone/global_variables.txt")
-	dataMariaV1083UserStatistics, _  = os.ReadFile("testdata/mariadb/v10.8.3-standalone/user_statistics.txt")
-	dataMariaV1083ProcessList, _     = os.ReadFile("testdata/mariadb/v10.8.3-standalone/process_list.txt")
+	dataMariaV1083Version, _         = os.ReadFile("testdata/mariadb/v10.8.3/version.txt")
+	dataMariaV1083GlobalStatus, _    = os.ReadFile("testdata/mariadb/v10.8.3/global_status.txt")
+	dataMariaV1083GlobalVariables, _ = os.ReadFile("testdata/mariadb/v10.8.3/global_variables.txt")
+	dataMariaV1083UserStatistics, _  = os.ReadFile("testdata/mariadb/v10.8.3/user_statistics.txt")
+	dataMariaV1083ProcessList, _     = os.ReadFile("testdata/mariadb/v10.8.3/process_list.txt")
 
 	dataMariaGaleraClusterV1084Version, _         = os.ReadFile("testdata/mariadb/v10.8.4-galera-cluster/version.txt")
 	dataMariaGaleraClusterV1084GlobalStatus, _    = os.ReadFile("testdata/mariadb/v10.8.4-galera-cluster/global_status.txt")
@@ -42,10 +42,10 @@ var (
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"mariaV5546Version":         mariaV5546Version,
-		"mariaV5546GlobalStatus":    mariaV5546GlobalStatus,
-		"mariaV5546GlobalVariables": mariaV5546GlobalVariables,
-		"mariaV5546SlaveStatus":     mariaV5546SlaveStatus,
+		"dataMariaV5564Version":         dataMariaV5564Version,
+		"dataMariaV5564GlobalStatus":    dataMariaV5564GlobalStatus,
+		"dataMariaV5564GlobalVariables": dataMariaV5564GlobalVariables,
+		"dataMariaV5564ProcessList":     dataMariaV5564ProcessList,
 
 		"dataMariaV1083Version":         dataMariaV1083Version,
 		"dataMariaV1083GlobalStatus":    dataMariaV1083GlobalStatus,
@@ -133,6 +133,146 @@ func TestMySQL_Collect(t *testing.T) {
 		check       func(t *testing.T, my *MySQL)
 	}
 	tests := map[string][]testCaseStep{
+		"MariaV5.5.46[Standalone]: success on all queries": {
+			{
+				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+					mockExpect(t, m, queryShowVersion, dataMariaV5564Version)
+					mockExpect(t, m, queryShowGlobalStatus, dataMariaV5564GlobalStatus)
+					mockExpect(t, m, queryShowGlobalVariables, dataMariaV5564GlobalVariables)
+					mockExpect(t, m, queryShowSlaveStatus, nil)
+					mockExpect(t, m, queryShowProcessList, dataMariaV5564ProcessList)
+				},
+				check: func(t *testing.T, my *MySQL) {
+					mx := my.Collect()
+
+					m := mx
+					l := make([]string, 0)
+					for k := range m {
+						l = append(l, k)
+					}
+					sort.Strings(l)
+					for _, value := range l {
+						fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
+					}
+
+					expected := map[string]int64{
+						"aborted_connects":                      0,
+						"binlog_cache_disk_use":                 0,
+						"binlog_cache_use":                      0,
+						"binlog_stmt_cache_disk_use":            0,
+						"binlog_stmt_cache_use":                 0,
+						"bytes_received":                        639,
+						"bytes_sent":                            41620,
+						"com_delete":                            0,
+						"com_insert":                            0,
+						"com_replace":                           0,
+						"com_select":                            4,
+						"com_update":                            0,
+						"connections":                           4,
+						"created_tmp_disk_tables":               0,
+						"created_tmp_files":                     6,
+						"created_tmp_tables":                    5,
+						"handler_commit":                        0,
+						"handler_delete":                        0,
+						"handler_prepare":                       0,
+						"handler_read_first":                    0,
+						"handler_read_key":                      0,
+						"handler_read_next":                     0,
+						"handler_read_prev":                     0,
+						"handler_read_rnd":                      0,
+						"handler_read_rnd_next":                 1264,
+						"handler_rollback":                      0,
+						"handler_savepoint":                     0,
+						"handler_savepoint_rollback":            0,
+						"handler_update":                        0,
+						"handler_write":                         0,
+						"innodb_buffer_pool_bytes_data":         2342912,
+						"innodb_buffer_pool_bytes_dirty":        0,
+						"innodb_buffer_pool_pages_data":         143,
+						"innodb_buffer_pool_pages_dirty":        0,
+						"innodb_buffer_pool_pages_flushed":      0,
+						"innodb_buffer_pool_pages_free":         16240,
+						"innodb_buffer_pool_pages_misc":         0,
+						"innodb_buffer_pool_pages_total":        16383,
+						"innodb_buffer_pool_read_ahead":         0,
+						"innodb_buffer_pool_read_ahead_evicted": 0,
+						"innodb_buffer_pool_read_ahead_rnd":     0,
+						"innodb_buffer_pool_read_requests":      459,
+						"innodb_buffer_pool_reads":              144,
+						"innodb_buffer_pool_wait_free":          0,
+						"innodb_buffer_pool_write_requests":     0,
+						"innodb_data_fsyncs":                    3,
+						"innodb_data_pending_fsyncs":            0,
+						"innodb_data_pending_reads":             0,
+						"innodb_data_pending_writes":            0,
+						"innodb_data_read":                      4542976,
+						"innodb_data_reads":                     155,
+						"innodb_data_writes":                    3,
+						"innodb_data_written":                   1536,
+						"innodb_deadlocks":                      0,
+						"innodb_log_waits":                      0,
+						"innodb_log_write_requests":             0,
+						"innodb_log_writes":                     1,
+						"innodb_os_log_fsyncs":                  3,
+						"innodb_os_log_pending_fsyncs":          0,
+						"innodb_os_log_pending_writes":          0,
+						"innodb_os_log_written":                 512,
+						"innodb_row_lock_current_waits":         0,
+						"innodb_rows_deleted":                   0,
+						"innodb_rows_inserted":                  0,
+						"innodb_rows_read":                      0,
+						"innodb_rows_updated":                   0,
+						"key_blocks_not_flushed":                0,
+						"key_blocks_unused":                     107171,
+						"key_blocks_used":                       0,
+						"key_read_requests":                     0,
+						"key_reads":                             0,
+						"key_write_requests":                    0,
+						"key_writes":                            0,
+						"max_connections":                       100,
+						"max_used_connections":                  1,
+						"open_files":                            21,
+						"open_tables":                           26,
+						"opened_files":                          84,
+						"opened_tables":                         0,
+						"process_list_fetch_query_duration":     0,
+						"process_list_longest_query_duration":   9,
+						"process_list_queries_count_system":     0,
+						"process_list_queries_count_user":       2,
+						"qcache_free_blocks":                    1,
+						"qcache_free_memory":                    67091120,
+						"qcache_hits":                           0,
+						"qcache_inserts":                        0,
+						"qcache_lowmem_prunes":                  0,
+						"qcache_not_cached":                     4,
+						"qcache_queries_in_cache":               0,
+						"qcache_total_blocks":                   1,
+						"queries":                               12,
+						"questions":                             11,
+						"select_full_join":                      0,
+						"select_full_range_join":                0,
+						"select_range":                          0,
+						"select_range_check":                    0,
+						"select_scan":                           5,
+						"slow_queries":                          0,
+						"sort_merge_passes":                     0,
+						"sort_range":                            0,
+						"sort_scan":                             0,
+						"table_locks_immediate":                 36,
+						"table_locks_waited":                    0,
+						"table_open_cache":                      400,
+						"thread_cache_misses":                   2500,
+						"threads_cached":                        0,
+						"threads_connected":                     1,
+						"threads_created":                       1,
+						"threads_running":                       1,
+					}
+
+					copyProcessListQueryDuration(mx, expected)
+					assert.Equal(t, expected, mx)
+				},
+			},
+		},
 		"MariaV10.8.3[Standalone]: success on all queries": {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
@@ -230,9 +370,9 @@ func TestMySQL_Collect(t *testing.T) {
 						"opened_files":                          8813,
 						"opened_tables":                         17,
 						"process_list_fetch_query_duration":     0,
-						"process_list_longest_query_duration":   0,
+						"process_list_longest_query_duration":   9,
 						"process_list_queries_count_system":     0,
-						"process_list_queries_count_user":       0,
+						"process_list_queries_count_user":       2,
 						"qcache_free_blocks":                    1,
 						"qcache_free_memory":                    1031272,
 						"qcache_hits":                           0,
@@ -286,6 +426,7 @@ func TestMySQL_Collect(t *testing.T) {
 						"wsrep_thread_count":                    0,
 					}
 
+					copyProcessListQueryDuration(mx, expected)
 					assert.Equal(t, expected, mx)
 				},
 			},
@@ -298,7 +439,7 @@ func TestMySQL_Collect(t *testing.T) {
 					mockExpect(t, m, queryShowGlobalVariables, dataMariaGaleraClusterV1084GlobalVariables)
 					mockExpect(t, m, queryShowAllSlavesStatus, nil)
 					mockExpect(t, m, queryShowUserStatistics, dataMariaGaleraClusterV1084UserStatistics)
-					mockExpect(t, m, queryShowProcessList, dataMariaGaleraClusterV1084UserStatistics)
+					mockExpect(t, m, queryShowProcessList, dataMariaGaleraClusterV1084ProcessList)
 				},
 				check: func(t *testing.T, my *MySQL) {
 					mx := my.Collect()
@@ -387,9 +528,9 @@ func TestMySQL_Collect(t *testing.T) {
 						"opened_files":                          125,
 						"opened_tables":                         24,
 						"process_list_fetch_query_duration":     0,
-						"process_list_longest_query_duration":   0,
+						"process_list_longest_query_duration":   9,
 						"process_list_queries_count_system":     0,
-						"process_list_queries_count_user":       0,
+						"process_list_queries_count_user":       2,
 						"qcache_free_blocks":                    1,
 						"qcache_free_memory":                    1031272,
 						"qcache_hits":                           0,
@@ -454,6 +595,7 @@ func TestMySQL_Collect(t *testing.T) {
 						"wsrep_thread_count":                    5,
 					}
 
+					copyProcessListQueryDuration(mx, expected)
 					assert.Equal(t, expected, mx)
 				},
 			},
@@ -500,6 +642,16 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, mySQL *MySQL, collecte
 			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
 		}
 	}
+}
+
+func copyProcessListQueryDuration(dst, src map[string]int64) {
+	if _, ok := dst["process_list_fetch_query_duration"]; !ok {
+		return
+	}
+	if _, ok := src["process_list_fetch_query_duration"]; !ok {
+		return
+	}
+	dst["process_list_fetch_query_duration"] = src["process_list_fetch_query_duration"]
 }
 
 func mustMockRows(t *testing.T, data []byte) *sqlmock.Rows {
