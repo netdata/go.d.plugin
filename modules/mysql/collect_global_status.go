@@ -21,8 +21,7 @@ func (m *MySQL) collectGlobalStatus(mx map[string]int64) error {
 			name = value
 		case "Value":
 			switch name {
-			case
-				"Bytes_received",
+			case "Bytes_received",
 				"Bytes_sent",
 				"Queries",
 				"Questions",
@@ -131,9 +130,7 @@ func (m *MySQL) collectGlobalStatus(mx map[string]int64) error {
 				"Com_update",
 				"Com_replace",
 				"Opened_tables",
-				"Open_tables":
-				mx[strings.ToLower(name)] = parseInt(value)
-			case
+				"Open_tables",
 				"wsrep_local_recv_queue",
 				"wsrep_local_send_queue",
 				"wsrep_received",
@@ -145,30 +142,20 @@ func (m *MySQL) collectGlobalStatus(mx map[string]int64) error {
 				"wsrep_flow_control_paused_ns",
 				"wsrep_cluster_weight",
 				"wsrep_cluster_size",
-				"wsrep_cluster_status",
 				"wsrep_local_state",
 				"wsrep_open_transactions",
-				"wsrep_connected",
-				"wsrep_ready",
 				"wsrep_thread_count":
-				mx[strings.ToLower(name)] = parseInt(convertWsrepValue(name, value))
+				mx[strings.ToLower(name)] = parseInt(value)
+			case "wsrep_connected":
+				mx[strings.ToLower(name)] = parseInt(convertWsrepConnected(value))
+			case "wsrep_ready":
+				mx[strings.ToLower(name)] = parseInt(convertWsrepReady(value))
+			case "wsrep_cluster_status":
+				mx[strings.ToLower(name)] = parseInt(convertWsrepClusterStatus(value))
 			}
 		}
 	})
 	return err
-}
-
-func convertWsrepValue(name, val string) string {
-	switch name {
-	case "wsrep_connected":
-		return convertWsrepConnected(val)
-	case "wsrep_ready":
-		return convertWsrepReady(val)
-	case "wsrep_cluster_status":
-		return convertWsrepClusterStatus(val)
-	default:
-		return val
-	}
 }
 
 func convertWsrepConnected(val string) string {
