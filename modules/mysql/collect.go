@@ -38,6 +38,9 @@ func (m *MySQL) collect() (map[string]int64, error) {
 		return nil, fmt.Errorf("error on collecting global status: %v", err)
 	}
 
+	if hasInnodbOSLog(mx) {
+		m.addInnoDBOSLogOnce.Do(m.addInnoDBOSLogCharts)
+	}
 	if hasInnodbDeadlocks(mx) {
 		m.addInnodbDeadlocksOnce.Do(m.addInnodbDeadlocksChart)
 	}
@@ -64,6 +67,7 @@ func (m *MySQL) collect() (map[string]int64, error) {
 		m.addBinlogOnce.Do(m.addBinlogCharts)
 	}
 
+	// TODO: perhaps make a decisions based on privileges? (SHOW GRANTS FOR CURRENT_USER();)
 	if m.doSlaveStatus {
 		if err := m.collectSlaveStatus(mx); err != nil {
 			m.Errorf("error on collecting slave status: %v", err)
@@ -115,6 +119,12 @@ func calcThreadCacheMisses(collected map[string]int64) {
 	} else {
 		collected["thread_cache_misses"] = int64(float64(threads) / float64(cons) * 10000)
 	}
+}
+
+func hasInnodbOSLog(collected map[string]int64) bool {
+	// removed in MariaDB 10.8 (https://mariadb.com/kb/en/innodb-status-variables/#innodb_os_log_fsyncs)
+	_, ok := collected["innodb_os_log_fsyncs"]
+	return ok
 }
 
 func hasInnodbDeadlocks(collected map[string]int64) bool {

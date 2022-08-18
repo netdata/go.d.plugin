@@ -6,12 +6,12 @@ import (
 	"strings"
 )
 
-const queryUserStatistics = "SHOW USER_STATISTICS;"
+const queryShowUserStatistics = "SHOW USER_STATISTICS;"
 
 func (m *MySQL) collectUserStatistics(mx map[string]int64) error {
 	// https://mariadb.com/kb/en/user-statistics/
 	// https://mariadb.com/kb/en/information-schema-user_statistics-table/
-	q := queryUserStatistics
+	q := queryShowUserStatistics
 	m.Debugf("executing query: '%s'", q)
 
 	var user, prefix string

@@ -11,19 +11,19 @@ import (
 	"github.com/blang/semver/v4"
 )
 
-const queryVersion = "SELECT VERSION();"
+const queryShowVersion = "SELECT VERSION();"
 
 var reVersionCore = regexp.MustCompile(`^\d+\.\d+\.\d+`)
 
 func (m *MySQL) collectVersion() (ver *semver.Version, isMariaDB bool, err error) {
 	// https://mariadb.com/kb/en/version/
-	m.Debugf("executing query: '%s'", queryVersion)
+	m.Debugf("executing query: '%s'", queryShowVersion)
 
 	ctx, cancel := context.WithTimeout(context.Background(), m.Timeout.Duration)
 	defer cancel()
 
 	var fullVersion string
-	if err := m.db.QueryRowContext(ctx, queryVersion).Scan(&fullVersion); err != nil {
+	if err := m.db.QueryRowContext(ctx, queryShowVersion).Scan(&fullVersion); err != nil {
 		return nil, false, err
 	}
 

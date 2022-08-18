@@ -1,0 +1,8 @@
++--------------------------+-------+
+| Variable_name            | Value |
++--------------------------+-------+
+| disabled_storage_engines |       |
+| log_bin                  | ON    |
+| max_connections          | 151   |
+| table_open_cache         | 4000  |
++--------------------------+-------+

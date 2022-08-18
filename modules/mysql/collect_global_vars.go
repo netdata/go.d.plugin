@@ -3,7 +3,7 @@
 package mysql
 
 const (
-	queryGlobalVariables = `
+	queryShowGlobalVariables = `
 SHOW GLOBAL VARIABLES 
 WHERE 
   Variable_name LIKE 'max_connections' 
@@ -15,7 +15,7 @@ WHERE
 func (m *MySQL) collectGlobalVariables() error {
 	// MariaDB: https://mariadb.com/kb/en/server-system-variables/
 	// MySQL: https://dev.mysql.com/doc/refman/8.0/en/server-system-variable-reference.html
-	q := queryGlobalVariables
+	q := queryShowGlobalVariables
 	m.Debugf("executing query: '%s'", q)
 
 	var name string
