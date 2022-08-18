@@ -416,7 +416,7 @@ var (
 	}
 	dbConnectionsUtilizationChartTmpl = module.Chart{
 		ID:       "db_%s_connections_utilization",
-		Title:    "Database connections utilization withing limits",
+		Title:    "Database connections utilization",
 		Units:    "percentage",
 		Fam:      "db connections",
 		Ctx:      "postgres.db_connections_utilization",
