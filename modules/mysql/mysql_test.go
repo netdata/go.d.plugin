@@ -21,6 +21,12 @@ import (
 )
 
 var (
+	dataMySQLV8030Version, _                = os.ReadFile("testdata/mysql/v8.0.30/version.txt")
+	dataMySQLV8030GlobalStatus, _           = os.ReadFile("testdata/mysql/v8.0.30/global_status.txt")
+	dataMySQLV8030GlobalVariables, _        = os.ReadFile("testdata/mysql/v8.0.30/global_variables.txt")
+	dataMySQLV8030SlaveStatusMultiSource, _ = os.ReadFile("testdata/mysql/v8.0.30/slave_status_multi_source.txt")
+	dataMySQLV8030ProcessList, _            = os.ReadFile("testdata/mysql/v8.0.30/process_list.txt")
+
 	dataMariaV5564Version, _         = os.ReadFile("testdata/mariadb/v5.5.64/version.txt")
 	dataMariaV5564GlobalStatus, _    = os.ReadFile("testdata/mariadb/v5.5.64/global_status.txt")
 	dataMariaV5564GlobalVariables, _ = os.ReadFile("testdata/mariadb/v5.5.64/global_variables.txt")
@@ -43,6 +49,12 @@ var (
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
+		"dataMySQLV8030Version":                dataMySQLV8030Version,
+		"dataMySQLV8030GlobalStatus":           dataMySQLV8030GlobalStatus,
+		"dataMySQLV8030GlobalVariables":        dataMySQLV8030GlobalVariables,
+		"dataMySQLV8030SlaveStatusMultiSource": dataMySQLV8030SlaveStatusMultiSource,
+		"dataMySQLV8030ProcessList":            dataMySQLV8030ProcessList,
+
 		"dataMariaV5564Version":         dataMariaV5564Version,
 		"dataMariaV5564GlobalStatus":    dataMariaV5564GlobalStatus,
 		"dataMariaV5564GlobalVariables": dataMariaV5564GlobalVariables,
@@ -136,7 +148,7 @@ func TestMySQL_Collect(t *testing.T) {
 		check       func(t *testing.T, my *MySQL)
 	}
 	tests := map[string][]testCaseStep{
-		"MariaV5.5.46[Standalone]: success on all queries": {
+		"MariaDB-Standalone[v5.5.46]: success on all queries": {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryShowVersion, dataMariaV5564Version)
@@ -266,7 +278,7 @@ func TestMySQL_Collect(t *testing.T) {
 				},
 			},
 		},
-		"MariaV10.8.4[Standalone]: success on all queries": {
+		"MariaDB-Standalone[v10.8.4]: success on all queries": {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryShowVersion, dataMariaV1084Version)
@@ -424,7 +436,7 @@ func TestMySQL_Collect(t *testing.T) {
 				},
 			},
 		},
-		"MariaV10.8.4[SingleSourceReplication]: success on all queries": {
+		"MariaDB-SingleSourceReplication[v10.8.4]: success on all queries": {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryShowVersion, dataMariaV1084Version)
@@ -585,7 +597,7 @@ func TestMySQL_Collect(t *testing.T) {
 				},
 			},
 		},
-		"MariaV10.8.4[MultiSourceReplication]: success on all queries": {
+		"MariaDB-MultiSourceReplication[v10.8.4]: success on all queries": {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryShowVersion, dataMariaV1084Version)
@@ -749,7 +761,7 @@ func TestMySQL_Collect(t *testing.T) {
 				},
 			},
 		},
-		"MariaV10.8.4[GaleraCluster]: success on all queries": {
+		"MariaDB-GaleraCluster[v10.8.4]: success on all queries": {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryShowVersion, dataMariaGaleraClusterV1084Version)
@@ -911,6 +923,139 @@ func TestMySQL_Collect(t *testing.T) {
 						"wsrep_replicated":                      0,
 						"wsrep_replicated_bytes":                0,
 						"wsrep_thread_count":                    5,
+					}
+
+					copyProcessListQueryDuration(mx, expected)
+					assert.Equal(t, expected, mx)
+				},
+			},
+		},
+		"MySQL-MultiSourceReplication[v8.0.30]: success on all queries": {
+			{
+				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+					mockExpect(t, m, queryShowVersion, dataMySQLV8030Version)
+					mockExpect(t, m, queryShowGlobalStatus, dataMySQLV8030GlobalStatus)
+					mockExpect(t, m, queryShowGlobalVariables, dataMySQLV8030GlobalVariables)
+					mockExpect(t, m, queryShowSlaveStatus, dataMySQLV8030SlaveStatusMultiSource)
+					mockExpect(t, m, queryShowProcessList, dataMySQLV8030ProcessList)
+				},
+				check: func(t *testing.T, my *MySQL) {
+					mx := my.Collect()
+
+					expected := map[string]int64{
+						"aborted_connects":                      0,
+						"binlog_cache_disk_use":                 0,
+						"binlog_cache_use":                      6,
+						"binlog_stmt_cache_disk_use":            0,
+						"binlog_stmt_cache_use":                 0,
+						"bytes_received":                        5584,
+						"bytes_sent":                            70700,
+						"com_delete":                            0,
+						"com_insert":                            0,
+						"com_replace":                           0,
+						"com_select":                            2,
+						"com_update":                            0,
+						"connection_errors_accept":              0,
+						"connection_errors_internal":            0,
+						"connection_errors_max_connections":     0,
+						"connection_errors_peer_address":        0,
+						"connection_errors_select":              0,
+						"connection_errors_tcpwrap":             0,
+						"connections":                           25,
+						"created_tmp_disk_tables":               0,
+						"created_tmp_files":                     5,
+						"created_tmp_tables":                    6,
+						"handler_commit":                        720,
+						"handler_delete":                        8,
+						"handler_prepare":                       24,
+						"handler_read_first":                    50,
+						"handler_read_key":                      1914,
+						"handler_read_next":                     4303,
+						"handler_read_prev":                     0,
+						"handler_read_rnd":                      0,
+						"handler_read_rnd_next":                 4723,
+						"handler_rollback":                      1,
+						"handler_savepoint":                     0,
+						"handler_savepoint_rollback":            0,
+						"handler_update":                        373,
+						"handler_write":                         1966,
+						"innodb_buffer_pool_bytes_data":         17121280,
+						"innodb_buffer_pool_bytes_dirty":        0,
+						"innodb_buffer_pool_pages_data":         1045,
+						"innodb_buffer_pool_pages_dirty":        0,
+						"innodb_buffer_pool_pages_flushed":      361,
+						"innodb_buffer_pool_pages_free":         7143,
+						"innodb_buffer_pool_pages_misc":         4,
+						"innodb_buffer_pool_pages_total":        8192,
+						"innodb_buffer_pool_read_ahead":         0,
+						"innodb_buffer_pool_read_ahead_evicted": 0,
+						"innodb_buffer_pool_read_ahead_rnd":     0,
+						"innodb_buffer_pool_read_requests":      16723,
+						"innodb_buffer_pool_reads":              878,
+						"innodb_buffer_pool_wait_free":          0,
+						"innodb_buffer_pool_write_requests":     2377,
+						"innodb_data_fsyncs":                    255,
+						"innodb_data_pending_fsyncs":            0,
+						"innodb_data_pending_reads":             0,
+						"innodb_data_pending_writes":            0,
+						"innodb_data_read":                      14453760,
+						"innodb_data_reads":                     899,
+						"innodb_data_writes":                    561,
+						"innodb_data_written":                   6128128,
+						"innodb_log_waits":                      0,
+						"innodb_log_write_requests":             1062,
+						"innodb_log_writes":                     116,
+						"innodb_os_log_fsyncs":                  69,
+						"innodb_os_log_pending_fsyncs":          0,
+						"innodb_os_log_pending_writes":          0,
+						"innodb_os_log_written":                 147968,
+						"innodb_row_lock_current_waits":         0,
+						"innodb_rows_deleted":                   0,
+						"innodb_rows_inserted":                  0,
+						"innodb_rows_read":                      0,
+						"innodb_rows_updated":                   0,
+						"key_blocks_not_flushed":                0,
+						"key_blocks_unused":                     6698,
+						"key_blocks_used":                       0,
+						"key_read_requests":                     0,
+						"key_reads":                             0,
+						"key_write_requests":                    0,
+						"key_writes":                            0,
+						"max_connections":                       151,
+						"max_used_connections":                  2,
+						"open_files":                            8,
+						"open_tables":                           127,
+						"opened_files":                          8,
+						"opened_tables":                         208,
+						"process_list_fetch_query_duration":     0,
+						"process_list_longest_query_duration":   9,
+						"process_list_queries_count_system":     0,
+						"process_list_queries_count_user":       2,
+						"queries":                               27,
+						"questions":                             15,
+						"seconds_behind_master_master1":         0,
+						"seconds_behind_master_master2":         0,
+						"select_full_join":                      0,
+						"select_full_range_join":                0,
+						"select_range":                          0,
+						"select_range_check":                    0,
+						"select_scan":                           12,
+						"slave_io_running_master1":              1,
+						"slave_io_running_master2":              1,
+						"slave_sql_running_master1":             1,
+						"slave_sql_running_master2":             1,
+						"slow_queries":                          0,
+						"sort_merge_passes":                     0,
+						"sort_range":                            0,
+						"sort_scan":                             0,
+						"table_locks_immediate":                 6,
+						"table_locks_waited":                    0,
+						"table_open_cache":                      4000,
+						"thread_cache_misses":                   800,
+						"threads_cached":                        1,
+						"threads_connected":                     1,
+						"threads_created":                       2,
+						"threads_running":                       2,
 					}
 
 					copyProcessListQueryDuration(mx, expected)
