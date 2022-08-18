@@ -4,7 +4,7 @@
 
 ### Standalone
 
-Dockerhub: https://hub.docker.com/_/mariadb.
+- [GitHub Link](https://github.com/bitnami/containers/tree/main/bitnami/mariadb#tldr)
 
 ```bash
 # old version
@@ -24,10 +24,14 @@ docker run -d \
 mariadb:10.8.3 --port 3808
 ```
 
-### Galera Cluster
+### Replication Cluster (Master-Slave)
 
-GitHub: https://github.com/bitnami/containers/tree/main/bitnami/mariadb-galera#setting-up-a-multi-master-cluster
-Dockerhub: https://hub.docker.com/r/bitnami/mariadb-galera
+- [GitHub Link](https://github.com/bitnami/containers/tree/main/bitnami/mariadb#setting-up-a-replication-cluster)
+
+### Replication Cluster (Galera)
+
+- [GitHub Link](https://github.com/bitnami/containers/tree/main/bitnami/mariadb-galera#setting-up-a-multi-master-cluster)
+- [DockerHub Link](https://hub.docker.com/r/bitnami/mariadb-galera)
 
 ```bash
 docker run -d --name mariadb-galera-0 \
