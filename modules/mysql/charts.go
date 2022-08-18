@@ -94,9 +94,6 @@ var baseCharts = module.Charts{
 	chartInnoDBIOOperations.Copy(),
 	chartInnoDBPendingIOOperations.Copy(),
 	chartInnoDBLogOperations.Copy(),
-	chartInnoDBOSLogPendingOperations.Copy(),
-	chartInnoDBOSLogOperations.Copy(),
-	chartInnoDBOSLogIO.Copy(),
 	chartInnoDBCurrentRowLocks.Copy(),
 	chartInnoDBRowsOperations.Copy(),
 	chartInnoDBBufferPoolPages.Copy(),
@@ -348,41 +345,6 @@ var (
 			{ID: "innodb_log_writes", Name: "writes", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	chartInnoDBOSLogPendingOperations = module.Chart{
-		ID:       "innodb_os_log",
-		Title:    "InnoDB OS Log Pending Operations",
-		Units:    "operations",
-		Fam:      "innodb",
-		Ctx:      "mysql.innodb_os_log",
-		Priority: prioInnoDBOSLog,
-		Dims: module.Dims{
-			{ID: "innodb_os_log_pending_fsyncs", Name: "fsyncs"},
-			{ID: "innodb_os_log_pending_writes", Name: "writes", Mul: -1},
-		},
-	}
-	chartInnoDBOSLogOperations = module.Chart{
-		ID:       "innodb_os_log_fsync_writes",
-		Title:    "InnoDB OS Log Operations",
-		Units:    "operations/s",
-		Fam:      "innodb",
-		Ctx:      "mysql.innodb_os_log_fsync_writes",
-		Priority: prioInnoDBOSLogFsyncWrites,
-		Dims: module.Dims{
-			{ID: "innodb_os_log_fsyncs", Name: "fsyncs", Algo: module.Incremental},
-		},
-	}
-	chartInnoDBOSLogIO = module.Chart{
-		ID:       "innodb_os_log_io",
-		Title:    "InnoDB OS Log Bandwidth",
-		Units:    "KiB/s",
-		Fam:      "innodb",
-		Ctx:      "mysql.innodb_os_log_io",
-		Type:     module.Area,
-		Priority: prioInnoDBOSLogIO,
-		Dims: module.Dims{
-			{ID: "innodb_os_log_written", Name: "write", Algo: module.Incremental, Mul: -1, Div: 1024},
-		},
-	}
 	chartInnoDBCurrentRowLocks = module.Chart{
 		ID:       "innodb_cur_row_lock",
 		Title:    "InnoDB Current Row Locks",
@@ -581,6 +543,50 @@ var (
 		Priority: prioProcessListLongestQueryDuration,
 		Dims: module.Dims{
 			{ID: "process_list_longest_query_duration", Name: "duration"},
+		},
+	}
+)
+
+var chartsInnoDBOSLog = module.Charts{
+	chartInnoDBOSLogPendingOperations.Copy(),
+	chartInnoDBOSLogOperations.Copy(),
+	chartInnoDBOSLogIO.Copy(),
+}
+
+var (
+	chartInnoDBOSLogPendingOperations = module.Chart{
+		ID:       "innodb_os_log",
+		Title:    "InnoDB OS Log Pending Operations",
+		Units:    "operations",
+		Fam:      "innodb",
+		Ctx:      "mysql.innodb_os_log",
+		Priority: prioInnoDBOSLog,
+		Dims: module.Dims{
+			{ID: "innodb_os_log_pending_fsyncs", Name: "fsyncs"},
+			{ID: "innodb_os_log_pending_writes", Name: "writes", Mul: -1},
+		},
+	}
+	chartInnoDBOSLogOperations = module.Chart{
+		ID:       "innodb_os_log_fsync_writes",
+		Title:    "InnoDB OS Log Operations",
+		Units:    "operations/s",
+		Fam:      "innodb",
+		Ctx:      "mysql.innodb_os_log_fsync_writes",
+		Priority: prioInnoDBOSLogFsyncWrites,
+		Dims: module.Dims{
+			{ID: "innodb_os_log_fsyncs", Name: "fsyncs", Algo: module.Incremental},
+		},
+	}
+	chartInnoDBOSLogIO = module.Chart{
+		ID:       "innodb_os_log_io",
+		Title:    "InnoDB OS Log Bandwidth",
+		Units:    "KiB/s",
+		Fam:      "innodb",
+		Ctx:      "mysql.innodb_os_log_io",
+		Type:     module.Area,
+		Priority: prioInnoDBOSLogIO,
+		Dims: module.Dims{
+			{ID: "innodb_os_log_written", Name: "write", Algo: module.Incremental, Mul: -1, Div: 1024},
 		},
 	}
 )
@@ -1042,6 +1048,12 @@ func (m *MySQL) addUserStatisticsCharts(user string) {
 		}
 	}
 	if err := m.Charts().Add(*newUserStatisticsCharts(user)...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addInnoDBOSLogCharts() {
+	if err := m.Charts().Add(*chartsInnoDBOSLog.Copy()...); err != nil {
 		m.Warning(err)
 	}
 }

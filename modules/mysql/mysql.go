@@ -28,6 +28,7 @@ func New() *MySQL {
 		},
 
 		charts:                 baseCharts.Copy(),
+		addInnoDBOSLogOnce:     &sync.Once{},
 		addBinlogOnce:          &sync.Once{},
 		addMyISAMOnce:          &sync.Once{},
 		addInnodbDeadlocksOnce: &sync.Once{},
@@ -60,6 +61,7 @@ type MySQL struct {
 
 	charts *module.Charts
 
+	addInnoDBOSLogOnce     *sync.Once
 	addBinlogOnce          *sync.Once
 	addMyISAMOnce          *sync.Once
 	addInnodbDeadlocksOnce *sync.Once
