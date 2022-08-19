@@ -33,7 +33,9 @@ func (m *MySQL) collectUserStatistics(mx map[string]int64) error {
 			"Rows_updated",
 			"Select_commands",
 			"Update_commands",
-			"Other_commands":
+			"Other_commands",
+			"Commit_transactions",
+			"Rollback_transactions":
 			mx[strings.ToLower(prefix+column)] = parseInt(value)
 		}
 	})
