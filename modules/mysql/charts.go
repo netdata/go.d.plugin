@@ -74,9 +74,13 @@ const (
 	prioUserStatsCPUTime
 	prioUserStatsRows
 	prioUserStatsCommands
+	prioUserStatsDeniedCommands
 	prioUserStatsTransactions
+	prioUserStatsBinlogWritten
+	prioUserStatsEmptyQueries
 	prioUserStatsConnections
 	prioUserStatsLostConnections
+	prioUserStatsDeniedConnections
 )
 
 var baseCharts = module.Charts{
@@ -978,9 +982,13 @@ var (
 		chartUserStatsCPU.Copy(),
 		chartTmplUserStatsRowsOperations.Copy(),
 		chartTmplUserStatsCommands.Copy(),
+		chartTmplUserStatsDeniedCommands.Copy(),
 		chartTmplUserStatsTransactions.Copy(),
-		chartTmplUserStatsConnections.Copy(),
+		chartTmplUserStatsBinlogWritten.Copy(),
+		chartTmplUserStatsEmptyQueries.Copy(),
+		chartTmplUserStatsCreatedConnections.Copy(),
 		chartTmplUserStatsLostConnections.Copy(),
+		chartTmplUserStatsDeniedConnections.Copy(),
 	}
 	chartUserStatsCPU = module.Chart{
 		ID:       "userstats_cpu_%s",
@@ -1023,12 +1031,23 @@ var (
 			{ID: "userstats_%s_other_commands", Name: "other", Algo: module.Incremental},
 		},
 	}
+	chartTmplUserStatsDeniedCommands = module.Chart{
+		ID:       "userstats_denied_commands_%s",
+		Title:    "User Denied Commands",
+		Units:    "commands/s",
+		Fam:      "user commands denied",
+		Ctx:      "mysql.userstats_denied_commands",
+		Priority: prioUserStatsDeniedCommands,
+		Dims: module.Dims{
+			{ID: "userstats_%s_access_denied", Name: "denied", Algo: module.Incremental},
+		},
+	}
 	chartTmplUserStatsTransactions = module.Chart{
 		ID:       "userstats_transactions_%s",
 		Title:    "User Transactions",
 		Units:    "transactions/s",
 		Fam:      "user transactions",
-		Ctx:      "mysql.userstats_transactions",
+		Ctx:      "mysql.userstats_created_transactions",
 		Type:     module.Area,
 		Priority: prioUserStatsTransactions,
 		Dims: module.Dims{
@@ -1036,11 +1055,33 @@ var (
 			{ID: "userstats_%s_rollback_transactions", Name: "rollback", Algo: module.Incremental},
 		},
 	}
-	chartTmplUserStatsConnections = module.Chart{
+	chartTmplUserStatsBinlogWritten = module.Chart{
+		ID:       "userstats_binlog_written_%s",
+		Title:    "User Binlog Written",
+		Units:    "B/s",
+		Fam:      "user binlog written",
+		Ctx:      "mysql.userstats_binlog_written",
+		Priority: prioUserStatsBinlogWritten,
+		Dims: module.Dims{
+			{ID: "userstats_%s_binlog_bytes_written", Name: "written", Algo: module.Incremental},
+		},
+	}
+	chartTmplUserStatsEmptyQueries = module.Chart{
+		ID:       "userstats_empty_queries_%s",
+		Title:    "User Empty Queries",
+		Units:    "queries/s",
+		Fam:      "user empty queries",
+		Ctx:      "mysql.userstats_empty_queries",
+		Priority: prioUserStatsEmptyQueries,
+		Dims: module.Dims{
+			{ID: "userstats_%s_empty_queries", Name: "empty", Algo: module.Incremental},
+		},
+	}
+	chartTmplUserStatsCreatedConnections = module.Chart{
 		ID:       "userstats_connections_%s",
-		Title:    "User Connections",
+		Title:    "User Created Connections",
 		Units:    "connections/s",
-		Fam:      "user connections",
+		Fam:      "user connections created ",
 		Ctx:      "mysql.userstats_connections",
 		Priority: prioUserStatsConnections,
 		Dims: module.Dims{
@@ -1051,11 +1092,22 @@ var (
 		ID:       "userstats_lost_connections_%s",
 		Title:    "User Lost Connections",
 		Units:    "connections/s",
-		Fam:      "user lost connections",
+		Fam:      "user connections lost",
 		Ctx:      "mysql.userstats_lost_connections",
 		Priority: prioUserStatsLostConnections,
 		Dims: module.Dims{
 			{ID: "userstats_%s_lost_connections", Name: "lost", Algo: module.Incremental},
+		},
+	}
+	chartTmplUserStatsDeniedConnections = module.Chart{
+		ID:       "userstats_denied_connections_%s",
+		Title:    "User Denied Connections",
+		Units:    "connections/s",
+		Fam:      "user connections denied",
+		Ctx:      "mysql.userstats_denied_connections",
+		Priority: prioUserStatsDeniedConnections,
+		Dims: module.Dims{
+			{ID: "userstats_%s_denied_connections", Name: "denied", Algo: module.Incremental},
 		},
 	}
 )

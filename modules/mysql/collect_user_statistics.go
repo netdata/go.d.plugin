@@ -29,6 +29,9 @@ func (m *MySQL) collectUserStatistics(mx map[string]int64) error {
 		case "Rows_read",
 			"Total_connections",
 			"Lost_connections",
+			"Denied_connections",
+			"Empty_queries",
+			"Binlog_bytes_written",
 			"Rows_sent",
 			"Rows_deleted",
 			"Rows_inserted",
@@ -36,6 +39,7 @@ func (m *MySQL) collectUserStatistics(mx map[string]int64) error {
 			"Select_commands",
 			"Update_commands",
 			"Other_commands",
+			"Access_denied",
 			"Commit_transactions",
 			"Rollback_transactions":
 			mx[strings.ToLower(prefix+column)] = parseInt(value)
