@@ -101,9 +101,9 @@ func TestDocker_Check(t *testing.T) {
 			wantFail: true,
 			prepare:  func() *Docker { return prepareDockerWithMock(nil) },
 		},
-		"fail when error on Info()": {
+		"fail when error on DiskUsage()": {
 			wantFail: true,
-			prepare:  func() *Docker { return prepareDockerWithMock(&mockClient{errOnInfo: true}) },
+			prepare:  func() *Docker { return prepareDockerWithMock(&mockClient{errOnDiskUsage: true}) },
 		},
 		"fail when error on ContainerList()": {
 			wantFail: true,
@@ -135,18 +135,24 @@ func TestDocker_Collect(t *testing.T) {
 			prepare: func() *Docker { return prepareDockerWithMock(&mockClient{}) },
 			expected: map[string]int64{
 				"healthy_containers":   2,
-				"paused_containers":    5,
-				"running_containers":   4,
-				"stopped_containers":   6,
+				"images_active":        1,
+				"images_dangling":      1,
+				"images_size":          300,
+				"paused_containers":    1,
+				"running_containers":   1,
+				"exited_containers":    1,
 				"unhealthy_containers": 3,
+				"volumes_active":       1,
+				"volumes_dangling":     1,
+				"volumes_size":         300,
 			},
 		},
 		"fail when error on creating docker client": {
 			prepare:  func() *Docker { return prepareDockerWithMock(nil) },
 			expected: nil,
 		},
-		"fail when error on Info()": {
-			prepare:  func() *Docker { return prepareDockerWithMock(&mockClient{errOnInfo: true}) },
+		"fail when error on DiskUsage()": {
+			prepare:  func() *Docker { return prepareDockerWithMock(&mockClient{errOnDiskUsage: true}) },
 			expected: nil,
 		},
 		"fail when error on ContainerList()": {
@@ -162,9 +168,9 @@ func TestDocker_Collect(t *testing.T) {
 			require.True(t, d.Init())
 			_ = d.Check()
 
-			collected := d.Collect()
+			mx := d.Collect()
 
-			assert.Equal(t, test.expected, collected)
+			assert.Equal(t, test.expected, mx)
 		})
 	}
 }
@@ -180,21 +186,49 @@ func prepareDockerWithMock(m *mockClient) *Docker {
 }
 
 type mockClient struct {
-	errOnInfo          bool
+	errOnDiskUsage     bool
 	errOnContainerList bool
 	closeCalled        bool
 }
 
-func (m *mockClient) Info(_ context.Context) (types.Info, error) {
-	if m.errOnInfo {
-		return types.Info{}, errors.New("mockClient.Info() error")
+func (m *mockClient) DiskUsage(_ context.Context) (types.DiskUsage, error) {
+	if m.errOnDiskUsage {
+		return types.DiskUsage{}, errors.New("mockClient.DiskUsage() error")
 	}
 
-	return types.Info{
-		ContainersRunning: 4,
-		ContainersPaused:  5,
-		ContainersStopped: 6,
-	}, nil
+	usage := types.DiskUsage{
+		Images: []*types.ImageSummary{
+			{
+				Containers: 0,
+				Size:       100,
+			},
+			{
+				Containers: 1,
+				Size:       200,
+			},
+		},
+		Containers: []*types.Container{
+			{State: "running"},
+			{State: "exited"},
+			{State: "paused"},
+		},
+		Volumes: []*types.Volume{
+			{
+				UsageData: &types.VolumeUsageData{
+					RefCount: 0,
+					Size:     100,
+				},
+			},
+			{
+				UsageData: &types.VolumeUsageData{
+					RefCount: 1,
+					Size:     200,
+				},
+			},
+		},
+	}
+
+	return usage, nil
 }
 
 func (m *mockClient) ContainerList(_ context.Context, opts types.ContainerListOptions) ([]types.Container, error) {

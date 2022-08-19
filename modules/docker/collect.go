@@ -22,7 +22,7 @@ func (d *Docker) collect() (map[string]int64, error) {
 
 	mx := make(map[string]int64)
 
-	if err := d.collectInfo(mx); err != nil {
+	if err := d.collectUsage(mx); err != nil {
 		return nil, err
 	}
 	if err := d.collectContainersHealth(mx); err != nil {
@@ -32,18 +32,68 @@ func (d *Docker) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func (d *Docker) collectInfo(mx map[string]int64) error {
+func (d *Docker) collectUsage(mx map[string]int64) error {
 	ctx, cancel := context.WithTimeout(context.Background(), d.Timeout.Duration)
 	defer cancel()
 
-	info, err := d.client.Info(ctx)
+	usage, err := d.client.DiskUsage(ctx)
 	if err != nil {
 		return err
 	}
 
-	mx["running_containers"] = int64(info.ContainersRunning)
-	mx["paused_containers"] = int64(info.ContainersPaused)
-	mx["stopped_containers"] = int64(info.ContainersStopped)
+	data := struct {
+		containersRunning int64
+		containersPaused  int64
+		containersExited  int64
+		imagesTotal       int64
+		imagesDangling    int64
+		imagesSize        int64
+		volumesTotal      int64
+		volumesDangling   int64
+		volumesSize       int64
+	}{}
+
+	for _, v := range usage.Containers {
+		switch v.State {
+		case "running":
+			data.containersRunning++
+		case "exited":
+			data.containersExited++
+		case "paused":
+			data.containersPaused++
+		}
+	}
+
+	for _, v := range usage.Images {
+		data.imagesTotal++
+		if v.Containers == 0 {
+			data.imagesDangling++
+		}
+		data.imagesSize += v.Size
+	}
+
+	for _, v := range usage.Volumes {
+		data.volumesTotal++
+		if v.UsageData == nil {
+			continue
+		}
+		if v.UsageData.RefCount == 0 {
+			data.volumesDangling++
+		}
+		if v.UsageData.Size != -1 {
+			data.volumesSize += v.UsageData.Size
+		}
+	}
+
+	mx["running_containers"] = data.containersRunning
+	mx["exited_containers"] = data.containersExited
+	mx["paused_containers"] = data.containersPaused
+	mx["images_active"] = data.imagesTotal - data.imagesDangling
+	mx["images_dangling"] = data.imagesDangling
+	mx["images_size"] = data.imagesSize
+	mx["volumes_active"] = data.volumesTotal - data.volumesDangling
+	mx["volumes_dangling"] = data.volumesDangling
+	mx["volumes_size"] = data.volumesSize
 
 	return nil
 }
