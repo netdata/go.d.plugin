@@ -956,38 +956,42 @@ func newSlaveReplConnCharts(conn string) *module.Charts {
 }
 
 func newUserStatisticsCharts(user string) *module.Charts {
-	user = strings.ToLower(user)
+	lcUser := strings.ToLower(user)
 	charts := chartsTmplUserStats.Copy()
 	for _, c := range *charts {
-		c.ID = fmt.Sprintf(c.ID, user)
-		c.Fam = fmt.Sprintf(c.Fam, user)
+		c.ID = fmt.Sprintf(c.ID, lcUser)
+		c.Labels = []module.Label{
+			{Key: "user", Value: user},
+		}
 		for _, d := range c.Dims {
-			d.ID = fmt.Sprintf(d.ID, user)
+			d.ID = fmt.Sprintf(d.ID, lcUser)
 		}
 	}
 	return charts
 }
 
 var (
-	chartUserStatsCPU = module.Chart{
-		ID:       "userstats_cpu",
-		Title:    "User CPU Time",
-		Units:    "percentage",
-		Fam:      "userstats",
-		Ctx:      "mysql.userstats_cpu",
-		Type:     module.Stacked,
-		Priority: prioUserStatsCPUTime,
-	}
-
 	chartsTmplUserStats = module.Charts{
+		chartUserStatsCPU.Copy(),
 		chartTmplUserStatsRowsOperations.Copy(),
 		chartTmplUserStatsCommands.Copy(),
 	}
+	chartUserStatsCPU = module.Chart{
+		ID:       "userstats_cpu_%s",
+		Title:    "User CPU Time",
+		Units:    "percentage",
+		Fam:      "user cpu time",
+		Ctx:      "mysql.userstats_cpu",
+		Priority: prioUserStatsCPUTime,
+		Dims: module.Dims{
+			{ID: "userstats_%s_cpu_time", Name: "used", Mul: 100, Div: 1000, Algo: module.Incremental},
+		},
+	}
 	chartTmplUserStatsRowsOperations = module.Chart{
 		ID:       "userstats_rows_%s",
-		Title:    "Rows Operations",
+		Title:    "User Rows Operations",
 		Units:    "operations/s",
-		Fam:      "userstats %s",
+		Fam:      "user operations",
 		Ctx:      "mysql.userstats_rows",
 		Type:     module.Stacked,
 		Priority: prioUserStatsRows,
@@ -1001,9 +1005,9 @@ var (
 	}
 	chartTmplUserStatsCommands = module.Chart{
 		ID:       "userstats_commands_%s",
-		Title:    "Commands",
+		Title:    "User Commands",
 		Units:    "commands/s",
-		Fam:      "userstats %s",
+		Fam:      "user commands",
 		Ctx:      "mysql.userstats_commands",
 		Type:     module.Stacked,
 		Priority: prioUserStatsCommands,
@@ -1028,25 +1032,6 @@ func (m *MySQL) addSlaveReplicationConnCharts(conn string) {
 }
 
 func (m *MySQL) addUserStatisticsCharts(user string) {
-	m.addUserStatsCPUOnce.Do(func() {
-		if err := m.Charts().Add(chartUserStatsCPU.Copy()); err != nil {
-			m.Warning(err)
-		}
-	})
-	if chart := m.Charts().Get(chartUserStatsCPU.ID); chart != nil {
-		dim := &module.Dim{
-			ID:   fmt.Sprintf("userstats_%s_cpu_time", strings.ToLower(user)),
-			Name: user,
-			Algo: module.Incremental,
-			Mul:  100,
-			Div:  1000 * m.UpdateEvery,
-		}
-		if err := chart.AddDim(dim); err != nil {
-			m.Warning(err)
-		} else {
-			chart.MarkNotCreated()
-		}
-	}
 	if err := m.Charts().Add(*newUserStatisticsCharts(user)...); err != nil {
 		m.Warning(err)
 	}
