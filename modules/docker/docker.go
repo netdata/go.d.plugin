@@ -48,7 +48,7 @@ type (
 		client    dockerClient
 	}
 	dockerClient interface {
-		Info(context.Context) (types.Info, error)
+		DiskUsage(ctx context.Context) (types.DiskUsage, error)
 		ContainerList(context.Context, types.ContainerListOptions) ([]types.Container, error)
 		Close() error
 	}
