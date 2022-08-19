@@ -962,9 +962,24 @@ func newSlaveReplConnCharts(conn string) *module.Charts {
 	return cs
 }
 
-func newUserStatisticsCharts(user string) *module.Charts {
+func newMariaDBUserStatisticsCharts(user string) *module.Charts {
 	lcUser := strings.ToLower(user)
 	charts := chartsTmplUserStats.Copy()
+	for _, c := range *charts {
+		c.ID = fmt.Sprintf(c.ID, lcUser)
+		c.Labels = []module.Label{
+			{Key: "user", Value: user},
+		}
+		for _, d := range c.Dims {
+			d.ID = fmt.Sprintf(d.ID, lcUser)
+		}
+	}
+	return charts
+}
+
+func newPerconaUserStatisticsCharts(user string) *module.Charts {
+	lcUser := strings.ToLower(user)
+	charts := chartsTmplPerconaUserStats.Copy()
 	for _, c := range *charts {
 		c.ID = fmt.Sprintf(c.ID, lcUser)
 		c.Labels = []module.Label{
@@ -990,6 +1005,19 @@ var (
 		chartTmplUserStatsLostConnections.Copy(),
 		chartTmplUserStatsDeniedConnections.Copy(),
 	}
+	chartsTmplPerconaUserStats = module.Charts{
+		chartUserStatsCPU.Copy(),
+		chartTmplPerconaUserStatsRowsOperations.Copy(),
+		chartTmplUserStatsCommands.Copy(),
+		chartTmplUserStatsDeniedCommands.Copy(),
+		chartTmplUserStatsTransactions.Copy(),
+		chartTmplUserStatsBinlogWritten.Copy(),
+		chartTmplUserStatsEmptyQueries.Copy(),
+		chartTmplUserStatsCreatedConnections.Copy(),
+		chartTmplUserStatsLostConnections.Copy(),
+		chartTmplUserStatsDeniedConnections.Copy(),
+	}
+
 	chartUserStatsCPU = module.Chart{
 		ID:       "userstats_cpu_%s",
 		Title:    "User CPU Time",
@@ -1015,6 +1043,19 @@ var (
 			{ID: "userstats_%s_rows_updated", Name: "updated", Algo: module.Incremental},
 			{ID: "userstats_%s_rows_inserted", Name: "inserted", Algo: module.Incremental},
 			{ID: "userstats_%s_rows_deleted", Name: "deleted", Algo: module.Incremental},
+		},
+	}
+	chartTmplPerconaUserStatsRowsOperations = module.Chart{
+		ID:       "userstats_rows_%s",
+		Title:    "User Rows Operations",
+		Units:    "operations/s",
+		Fam:      "user operations",
+		Ctx:      "mysql.userstats_rows",
+		Type:     module.Stacked,
+		Priority: prioUserStatsRows,
+		Dims: module.Dims{
+			{ID: "userstats_%s_rows_fetched", Name: "fetched", Algo: module.Incremental},
+			{ID: "userstats_%s_rows_updated", Name: "updated", Algo: module.Incremental},
 		},
 	}
 	chartTmplUserStatsCommands = module.Chart{
@@ -1125,8 +1166,14 @@ func (m *MySQL) addSlaveReplicationConnCharts(conn string) {
 }
 
 func (m *MySQL) addUserStatisticsCharts(user string) {
-	if err := m.Charts().Add(*newUserStatisticsCharts(user)...); err != nil {
-		m.Warning(err)
+	if m.isPercona {
+		if err := m.Charts().Add(*newPerconaUserStatisticsCharts(user)...); err != nil {
+			m.Warning(err)
+		}
+	} else {
+		if err := m.Charts().Add(*newMariaDBUserStatisticsCharts(user)...); err != nil {
+			m.Warning(err)
+		}
 	}
 }
 

@@ -27,6 +27,12 @@ var (
 	dataMySQLV8030SlaveStatusMultiSource, _ = os.ReadFile("testdata/mysql/v8.0.30/slave_status_multi_source.txt")
 	dataMySQLV8030ProcessList, _            = os.ReadFile("testdata/mysql/v8.0.30/process_list.txt")
 
+	dataPerconaV8029Version, _         = os.ReadFile("testdata/percona/v8.0.29/version.txt")
+	dataPerconaV8029GlobalStatus, _    = os.ReadFile("testdata/percona/v8.0.29/global_status.txt")
+	dataPerconaV8029GlobalVariables, _ = os.ReadFile("testdata/percona/v8.0.29/global_variables.txt")
+	dataPerconaV8029UserStatistics, _  = os.ReadFile("testdata/percona/v8.0.29/user_statistics.txt")
+	dataPerconaV8029ProcessList, _     = os.ReadFile("testdata/percona/v8.0.29/process_list.txt")
+
 	dataMariaV5564Version, _         = os.ReadFile("testdata/mariadb/v5.5.64/version.txt")
 	dataMariaV5564GlobalStatus, _    = os.ReadFile("testdata/mariadb/v5.5.64/global_status.txt")
 	dataMariaV5564GlobalVariables, _ = os.ReadFile("testdata/mariadb/v5.5.64/global_variables.txt")
@@ -54,6 +60,12 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataMySQLV8030GlobalVariables":        dataMySQLV8030GlobalVariables,
 		"dataMySQLV8030SlaveStatusMultiSource": dataMySQLV8030SlaveStatusMultiSource,
 		"dataMySQLV8030ProcessList":            dataMySQLV8030ProcessList,
+
+		"dataPerconaV8029Version":         dataPerconaV8029Version,
+		"dataPerconaV8029GlobalStatus":    dataPerconaV8029GlobalStatus,
+		"dataPerconaV8029GlobalVariables": dataPerconaV8029GlobalVariables,
+		"dataPerconaV8029UserStatistics":  dataPerconaV8029UserStatistics,
+		"dataPerconaV8029ProcessList":     dataPerconaV8029ProcessList,
 
 		"dataMariaV5564Version":         dataMariaV5564Version,
 		"dataMariaV5564GlobalStatus":    dataMariaV5564GlobalStatus,
@@ -1395,6 +1407,163 @@ func TestMySQL_Collect(t *testing.T) {
 						"threads_connected":                     1,
 						"threads_created":                       2,
 						"threads_running":                       2,
+					}
+
+					copyProcessListQueryDuration(mx, expected)
+					require.Equal(t, expected, mx)
+					ensureCollectedHasAllChartsDimsVarsIDs(t, my, mx)
+				},
+			},
+		},
+		"Percona-Standalone[v8.0.29]: success on all queries": {
+			{
+				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+					mockExpect(t, m, queryShowVersion, dataPerconaV8029Version)
+					mockExpect(t, m, queryShowGlobalStatus, dataPerconaV8029GlobalStatus)
+					mockExpect(t, m, queryShowGlobalVariables, dataPerconaV8029GlobalVariables)
+					mockExpect(t, m, queryShowSlaveStatus, nil)
+					mockExpect(t, m, queryShowUserStatistics, dataPerconaV8029UserStatistics)
+					mockExpect(t, m, queryShowProcessList, dataPerconaV8029ProcessList)
+				},
+				check: func(t *testing.T, my *MySQL) {
+					mx := my.Collect()
+
+					expected := map[string]int64{
+						"aborted_connects":                        1,
+						"binlog_cache_disk_use":                   0,
+						"binlog_cache_use":                        0,
+						"binlog_stmt_cache_disk_use":              0,
+						"binlog_stmt_cache_use":                   0,
+						"bytes_received":                          682970,
+						"bytes_sent":                              33668405,
+						"com_delete":                              0,
+						"com_insert":                              0,
+						"com_replace":                             0,
+						"com_select":                              1687,
+						"com_update":                              0,
+						"connection_errors_accept":                0,
+						"connection_errors_internal":              0,
+						"connection_errors_max_connections":       0,
+						"connection_errors_peer_address":          0,
+						"connection_errors_select":                0,
+						"connection_errors_tcpwrap":               0,
+						"connections":                             13,
+						"created_tmp_disk_tables":                 1683,
+						"created_tmp_files":                       5,
+						"created_tmp_tables":                      5054,
+						"handler_commit":                          576,
+						"handler_delete":                          0,
+						"handler_prepare":                         0,
+						"handler_read_first":                      1724,
+						"handler_read_key":                        3439,
+						"handler_read_next":                       4147,
+						"handler_read_prev":                       0,
+						"handler_read_rnd":                        0,
+						"handler_read_rnd_next":                   2983285,
+						"handler_rollback":                        0,
+						"handler_savepoint":                       0,
+						"handler_savepoint_rollback":              0,
+						"handler_update":                          317,
+						"handler_write":                           906501,
+						"innodb_buffer_pool_bytes_data":           18399232,
+						"innodb_buffer_pool_bytes_dirty":          49152,
+						"innodb_buffer_pool_pages_data":           1123,
+						"innodb_buffer_pool_pages_dirty":          3,
+						"innodb_buffer_pool_pages_flushed":        205,
+						"innodb_buffer_pool_pages_free":           7064,
+						"innodb_buffer_pool_pages_misc":           5,
+						"innodb_buffer_pool_pages_total":          8192,
+						"innodb_buffer_pool_read_ahead":           0,
+						"innodb_buffer_pool_read_ahead_evicted":   0,
+						"innodb_buffer_pool_read_ahead_rnd":       0,
+						"innodb_buffer_pool_read_requests":        109817,
+						"innodb_buffer_pool_reads":                978,
+						"innodb_buffer_pool_wait_free":            0,
+						"innodb_buffer_pool_write_requests":       77412,
+						"innodb_data_fsyncs":                      50,
+						"innodb_data_pending_fsyncs":              0,
+						"innodb_data_pending_reads":               0,
+						"innodb_data_pending_writes":              0,
+						"innodb_data_read":                        16094208,
+						"innodb_data_reads":                       1002,
+						"innodb_data_writes":                      288,
+						"innodb_data_written":                     3420160,
+						"innodb_log_waits":                        0,
+						"innodb_log_write_requests":               651,
+						"innodb_log_writes":                       47,
+						"innodb_os_log_fsyncs":                    13,
+						"innodb_os_log_pending_fsyncs":            0,
+						"innodb_os_log_pending_writes":            0,
+						"innodb_os_log_written":                   45568,
+						"innodb_row_lock_current_waits":           0,
+						"innodb_rows_deleted":                     0,
+						"innodb_rows_inserted":                    5055,
+						"innodb_rows_read":                        5055,
+						"innodb_rows_updated":                     0,
+						"key_blocks_not_flushed":                  0,
+						"key_blocks_unused":                       6698,
+						"key_blocks_used":                         0,
+						"key_read_requests":                       0,
+						"key_reads":                               0,
+						"key_write_requests":                      0,
+						"key_writes":                              0,
+						"max_connections":                         151,
+						"max_used_connections":                    3,
+						"open_files":                              2,
+						"open_tables":                             77,
+						"opened_files":                            2,
+						"opened_tables":                           158,
+						"process_list_fetch_query_duration":       0,
+						"process_list_longest_query_duration":     9,
+						"process_list_queries_count_system":       0,
+						"process_list_queries_count_user":         2,
+						"queries":                                 6748,
+						"questions":                               6746,
+						"select_full_join":                        0,
+						"select_full_range_join":                  0,
+						"select_range":                            0,
+						"select_range_check":                      0,
+						"select_scan":                             8425,
+						"slow_queries":                            0,
+						"sort_merge_passes":                       0,
+						"sort_range":                              0,
+						"sort_scan":                               1681,
+						"table_locks_immediate":                   3371,
+						"table_locks_waited":                      0,
+						"table_open_cache":                        4000,
+						"thread_cache_misses":                     2307,
+						"threads_cached":                          1,
+						"threads_connected":                       2,
+						"threads_created":                         3,
+						"threads_running":                         2,
+						"userstats_netdata_access_denied":         0,
+						"userstats_netdata_binlog_bytes_written":  0,
+						"userstats_netdata_commit_transactions":   0,
+						"userstats_netdata_cpu_time":              0,
+						"userstats_netdata_denied_connections":    0,
+						"userstats_netdata_empty_queries":         0,
+						"userstats_netdata_lost_connections":      0,
+						"userstats_netdata_other_commands":        1,
+						"userstats_netdata_rollback_transactions": 0,
+						"userstats_netdata_rows_fetched":          1,
+						"userstats_netdata_rows_updated":          0,
+						"userstats_netdata_select_commands":       1,
+						"userstats_netdata_total_connections":     1,
+						"userstats_netdata_update_commands":       0,
+						"userstats_root_access_denied":            0,
+						"userstats_root_binlog_bytes_written":     0,
+						"userstats_root_commit_transactions":      0,
+						"userstats_root_cpu_time":                 151,
+						"userstats_root_denied_connections":       1,
+						"userstats_root_empty_queries":            36,
+						"userstats_root_lost_connections":         0,
+						"userstats_root_other_commands":           110,
+						"userstats_root_rollback_transactions":    0,
+						"userstats_root_rows_fetched":             1,
+						"userstats_root_rows_updated":             0,
+						"userstats_root_select_commands":          37,
+						"userstats_root_total_connections":        2,
+						"userstats_root_update_commands":          0,
 					}
 
 					copyProcessListQueryDuration(mx, expected)

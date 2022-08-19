@@ -55,8 +55,9 @@ type MySQL struct {
 	Config `yaml:",inline"`
 
 	db        *sql.DB
-	isMariaDB bool
 	version   *semver.Version
+	isMariaDB bool
+	isPercona bool
 
 	charts *module.Charts
 
