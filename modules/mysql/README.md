@@ -117,8 +117,15 @@ If [Slave Status](https://dev.mysql.com/doc/refman/8.0/en/show-slave-status.html
 If [User Statistics](https://mariadb.com/kb/en/user-statistics/) metrics are available:
 
 - User CPU Time in `percentage`
-- Rows Operations in `operations/s`
-- Commands in `commands/s`
+- User Rows Operations in `operations/s`
+- User Commands in `commands/s`
+- User Denied Commands in `commands/s`
+- User Transactions in `transactions/s`
+- User Binlog Written in `B/s`
+- User Empty Queries in `queries/s`
+- User Created Connections in `connections/s`
+- User Lost Connections in `connections/s`
+- User Denied Connections in `connections/s`
 
 ## Configuration
 
