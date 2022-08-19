@@ -34,7 +34,6 @@ func New() *MySQL {
 		addInnodbDeadlocksOnce: &sync.Once{},
 		addGaleraOnce:          &sync.Once{},
 		addQCacheOnce:          &sync.Once{},
-		addUserStatsCPUOnce:    &sync.Once{},
 		doSlaveStatus:          true,
 		doUserStatistics:       true,
 		collectedReplConns:     make(map[string]bool),
@@ -67,7 +66,6 @@ type MySQL struct {
 	addInnodbDeadlocksOnce *sync.Once
 	addGaleraOnce          *sync.Once
 	addQCacheOnce          *sync.Once
-	addUserStatsCPUOnce    *sync.Once
 
 	doSlaveStatus      bool
 	collectedReplConns map[string]bool
