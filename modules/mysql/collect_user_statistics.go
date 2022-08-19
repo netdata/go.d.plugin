@@ -27,13 +27,21 @@ func (m *MySQL) collectUserStatistics(mx map[string]int64) error {
 		case "Cpu_time":
 			mx[strings.ToLower(prefix+column)] = int64(parseFloat(value) * 1000)
 		case "Rows_read",
+			"Total_connections",
+			"Lost_connections",
+			"Denied_connections",
+			"Empty_queries",
+			"Binlog_bytes_written",
 			"Rows_sent",
 			"Rows_deleted",
 			"Rows_inserted",
 			"Rows_updated",
 			"Select_commands",
 			"Update_commands",
-			"Other_commands":
+			"Other_commands",
+			"Access_denied",
+			"Commit_transactions",
+			"Rollback_transactions":
 			mx[strings.ToLower(prefix+column)] = parseInt(value)
 		}
 	})
