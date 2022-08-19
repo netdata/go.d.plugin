@@ -26,16 +26,18 @@ func (m *MySQL) collectUserStatistics(mx map[string]int64) error {
 			}
 		case "Cpu_time":
 			mx[strings.ToLower(prefix+column)] = int64(parseFloat(value) * 1000)
-		case "Rows_read",
+		case
 			"Total_connections",
 			"Lost_connections",
 			"Denied_connections",
 			"Empty_queries",
 			"Binlog_bytes_written",
+			"Rows_read",
 			"Rows_sent",
 			"Rows_deleted",
 			"Rows_inserted",
 			"Rows_updated",
+			"Rows_fetched", // Percona
 			"Select_commands",
 			"Update_commands",
 			"Other_commands",

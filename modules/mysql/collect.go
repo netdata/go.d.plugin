@@ -20,16 +20,11 @@ func (m *MySQL) collect() (map[string]int64, error) {
 		}
 	}
 	if m.version == nil {
-		ver, isMariaDB, err := m.collectVersion()
-		if err != nil {
-			return nil, err
+		if err := m.collectVersion(); err != nil {
+			return nil, fmt.Errorf("error on collecting version: %v", err)
 		}
-
-		m.version = ver
-		m.isMariaDB = isMariaDB
 		// https://mariadb.com/kb/en/user-statistics/
-		minVer := semver.Version{Major: 10, Minor: 1, Patch: 1}
-		m.doUserStatistics = m.isMariaDB && m.version.GTE(minVer)
+		m.doUserStatistics = m.isPercona || m.isMariaDB && m.version.GTE(semver.Version{Major: 10, Minor: 1, Patch: 1})
 	}
 
 	mx := make(map[string]int64)
