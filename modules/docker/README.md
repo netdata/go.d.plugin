@@ -1,6 +1,6 @@
 <!--
 title: "Docker monitoring with Netdata"
-description: "Monitor Docker containers health metrics."
+description: "Monitor Docker containers health metrics and data usage metrics."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/docker/README.md
 sidebar_label: "Docker"
 -->
@@ -21,6 +21,10 @@ All metrics have "docker." prefix.
 | containers_state     | global | running, paused, stopped | containers |
 | healthy_containers   | global |         healthy          | containers |
 | unhealthy_containers | global |        unhealthy         | containers |
+| images               | global |     active, dangling     |   images   |
+| images_size          | global |           size           |     B      |
+| volumes              | global |     active, dangling     |   images   |
+| volumes_size         | global |           size           |     B      |
 
 ## Configuration
 
