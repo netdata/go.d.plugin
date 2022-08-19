@@ -76,6 +76,7 @@ const (
 	prioUserStatsCommands
 	prioUserStatsTransactions
 	prioUserStatsConnections
+	prioUserStatsLostConnections
 )
 
 var baseCharts = module.Charts{
@@ -979,6 +980,7 @@ var (
 		chartTmplUserStatsCommands.Copy(),
 		chartTmplUserStatsTransactions.Copy(),
 		chartTmplUserStatsConnections.Copy(),
+		chartTmplUserStatsLostConnections.Copy(),
 	}
 	chartUserStatsCPU = module.Chart{
 		ID:       "userstats_cpu_%s",
@@ -1042,7 +1044,18 @@ var (
 		Ctx:      "mysql.userstats_connections",
 		Priority: prioUserStatsConnections,
 		Dims: module.Dims{
-			{ID: "userstats_%s_total_connections", Name: "connections", Algo: module.Incremental},
+			{ID: "userstats_%s_total_connections", Name: "created", Algo: module.Incremental},
+		},
+	}
+	chartTmplUserStatsLostConnections = module.Chart{
+		ID:       "userstats_lost_connections_%s",
+		Title:    "User Lost Connections",
+		Units:    "connections/s",
+		Fam:      "user lost connections",
+		Ctx:      "mysql.userstats_lost_connections",
+		Priority: prioUserStatsLostConnections,
+		Dims: module.Dims{
+			{ID: "userstats_%s_lost_connections", Name: "lost", Algo: module.Incremental},
 		},
 	}
 )

@@ -28,6 +28,7 @@ func (m *MySQL) collectUserStatistics(mx map[string]int64) error {
 			mx[strings.ToLower(prefix+column)] = int64(parseFloat(value) * 1000)
 		case "Rows_read",
 			"Total_connections",
+			"Lost_connections",
 			"Rows_sent",
 			"Rows_deleted",
 			"Rows_inserted",
