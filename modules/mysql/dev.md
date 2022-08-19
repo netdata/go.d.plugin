@@ -1,7 +1,7 @@
 # MySQL/MariaDB lab setup
 
 - MariaDB
-    - [Standalone]([GitHub Link](https://github.com/bitnami/containers/tree/main/bitnami/mariadb#tldr))
+    - [Standalone](https://github.com/bitnami/containers/tree/main/bitnami/mariadb#tldr)
     - [Replication Cluster (Master-Slave)](https://github.com/bitnami/containers/tree/main/bitnami/mariadb#setting-up-a-replication-cluster)
     - [Replication Cluster (Galera)](https://github.com/bitnami/containers/tree/main/bitnami/mariadb-galera#setting-up-a-multi-master-cluster)
 - MySQL
