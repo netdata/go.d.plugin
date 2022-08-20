@@ -12,12 +12,16 @@ server.
 
 This module monitors `Dnsmasq DHCP` leases database.
 
-## Charts
+## Metrics
 
-It produces the following set of charts for every dhcp-range:
+All metrics have "dnsmasq_dhcp." prefix.
 
-- DHCP Range Allocated Leases in `leases`
-- DHCP Range Utilization in `percentage`
+| Metric                      |   Scope    | Dimensions |   Units    |
+|-----------------------------|:----------:|:----------:|:----------:|
+| dhcp_ranges                 |   global   | ipv4, ipv6 |   ranges   |
+| dhcp_hosts                  |   global   | ipv4, ipv6 |   hosts    |
+| dhcp_range_utilization      | dhcp_range |    used    | percentage |
+| dhcp_range_allocated_leases | dhcp_range | allocated  |   leases   |
 
 ## Auto-detection
 
@@ -75,5 +79,3 @@ output should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m dnsmasq_dhcp
   ```
-
-
