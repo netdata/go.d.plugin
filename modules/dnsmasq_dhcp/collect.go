@@ -4,7 +4,6 @@ package dnsmasq_dhcp
 
 import (
 	"bufio"
-	"github.com/netdata/go.d.plugin/pkg/iprange"
 	"io"
 	"math"
 	"math/big"
@@ -12,6 +11,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/netdata/go.d.plugin/pkg/iprange"
 )
 
 func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
