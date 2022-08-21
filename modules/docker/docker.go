@@ -15,6 +15,9 @@ import (
 
 func init() {
 	module.Register("docker", module.Creator{
+		Defaults: module.Defaults{
+			UpdateEvery: 5,
+		},
 		Create: func() module.Module { return New() },
 	})
 }
