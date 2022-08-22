@@ -79,6 +79,9 @@ sudo ./edit-config go.d/redis.conf
 
 There are two connection types: by tcp socket and by unix socket.
 
+> **Note**: If the Redis server is password protected via the `requirepass` option, make sure you have a colon before
+> the password.
+
 ```cmd
 # by tcp socket
 redis://<user>:<password>@<host>:<port>
@@ -93,6 +96,9 @@ Needs only `address`, here is an example with two jobs:
 jobs:
   - name: local
     address: 'redis://@127.0.0.1:6379'
+
+  - name: local
+    address: 'redis://:password@127.0.0.1:6379'
 
   - name: remote
     address: 'redis://user:password@203.0.113.0:6379'
