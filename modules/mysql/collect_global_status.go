@@ -36,7 +36,7 @@ func (m *MySQL) collectGlobalStatus(mx map[string]int64) error {
 				mx[name+"_donor"] = boolToInt(value == "2")
 				mx[name+"_joined"] = boolToInt(value == "3")
 				mx[name+"_synced"] = boolToInt(value == "4")
-				mx[name+"_error"] = boolToInt(value == "5")
+				mx[name+"_error"] = boolToInt(parseInt(value) >= 5)
 			case "wsrep_cluster_status":
 				// https://www.percona.com/doc/percona-xtradb-cluster/LATEST/wsrep-status-index.html#wsrep_cluster_status
 				// https://github.com/codership/wsrep-API/blob/eab2d5d5a31672c0b7d116ef1629ff18392fd7d0/wsrep_api.h
