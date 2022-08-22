@@ -756,7 +756,9 @@ var (
 		Ctx:      "mysql.galera_cluster_status",
 		Priority: prioGaleraClusterStatus,
 		Dims: module.Dims{
-			{ID: "wsrep_cluster_status", Name: "status"},
+			{ID: "wsrep_cluster_status_primary", Name: "primary"},
+			{ID: "wsrep_cluster_status_non_primary", Name: "non_primary"},
+			{ID: "wsrep_cluster_status_disconnected", Name: "disconnected"},
 		},
 	}
 	chartGaleraClusterState = module.Chart{
@@ -767,7 +769,12 @@ var (
 		Ctx:      "mysql.galera_cluster_state",
 		Priority: prioGaleraClusterState,
 		Dims: module.Dims{
-			{ID: "wsrep_local_state", Name: "state"},
+			{ID: "wsrep_local_state_undefined", Name: "undefined"},
+			{ID: "wsrep_local_state_joiner", Name: "joining"},
+			{ID: "wsrep_local_state_donor", Name: "donor"},
+			{ID: "wsrep_local_state_joined", Name: "joined"},
+			{ID: "wsrep_local_state_synced", Name: "synced"},
+			{ID: "wsrep_local_state_error", Name: "error"},
 		},
 	}
 	chartGaleraClusterSize = module.Chart{
