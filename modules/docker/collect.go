@@ -22,79 +22,52 @@ func (d *Docker) collect() (map[string]int64, error) {
 
 	mx := make(map[string]int64)
 
-	if err := d.collectUsage(mx); err != nil {
+	if err := d.collectInfo(mx); err != nil {
 		return nil, err
 	}
 	if err := d.collectContainersHealth(mx); err != nil {
+		return nil, err
+	}
+	if err := d.collectImages(mx); err != nil {
 		return nil, err
 	}
 
 	return mx, nil
 }
 
-func (d *Docker) collectUsage(mx map[string]int64) error {
+func (d *Docker) collectInfo(mx map[string]int64) error {
 	ctx, cancel := context.WithTimeout(context.Background(), d.Timeout.Duration)
 	defer cancel()
 
-	usage, err := d.client.DiskUsage(ctx)
+	info, err := d.client.Info(ctx)
 	if err != nil {
 		return err
 	}
 
-	data := struct {
-		containersRunning int64
-		containersPaused  int64
-		containersExited  int64
-		imagesTotal       int64
-		imagesDangling    int64
-		imagesSize        int64
-		volumesTotal      int64
-		volumesDangling   int64
-		volumesSize       int64
-	}{}
+	mx["running_containers"] = int64(info.ContainersRunning)
+	mx["paused_containers"] = int64(info.ContainersPaused)
+	mx["exited_containers"] = int64(info.ContainersStopped)
 
-	for _, v := range usage.Containers {
-		switch v.State {
-		case "running":
-			data.containersRunning++
-		case "exited":
-			data.containersExited++
-		case "paused":
-			data.containersPaused++
-		}
+	return nil
+}
+
+func (d *Docker) collectImages(mx map[string]int64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), d.Timeout.Duration)
+	defer cancel()
+
+	images, err := d.client.ImageList(ctx, types.ImageListOptions{})
+	if err != nil {
+		return err
 	}
 
-	for _, v := range usage.Images {
-		data.imagesTotal++
+	for _, v := range images {
+		mx["images_size"] += v.Size
 		if v.Containers == 0 {
-			data.imagesDangling++
-		}
-		data.imagesSize += v.Size
-	}
-
-	for _, v := range usage.Volumes {
-		data.volumesTotal++
-		if v.UsageData == nil {
-			continue
-		}
-		if v.UsageData.RefCount == 0 {
-			data.volumesDangling++
-		}
-		if v.UsageData.Size != -1 {
-			data.volumesSize += v.UsageData.Size
+			mx["images_dangling"]++
+		} else {
+			mx["images_active"]++
 		}
 	}
-
-	mx["running_containers"] = data.containersRunning
-	mx["exited_containers"] = data.containersExited
-	mx["paused_containers"] = data.containersPaused
-	mx["images_active"] = data.imagesTotal - data.imagesDangling
-	mx["images_dangling"] = data.imagesDangling
-	mx["images_size"] = data.imagesSize
-	mx["volumes_active"] = data.volumesTotal - data.volumesDangling
-	mx["volumes_dangling"] = data.volumesDangling
-	mx["volumes_size"] = data.volumesSize
-
 	return nil
 }
 

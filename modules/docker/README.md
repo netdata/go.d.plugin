@@ -23,8 +23,6 @@ All metrics have "docker." prefix.
 | unhealthy_containers | global |        unhealthy         | containers |
 | images               | global |     active, dangling     |   images   |
 | images_size          | global |           size           |     B      |
-| volumes              | global |     active, dangling     |   images   |
-| volumes_size         | global |           size           |     B      |
 
 ## Configuration
 

@@ -15,9 +15,6 @@ import (
 
 func init() {
 	module.Register("docker", module.Creator{
-		Defaults: module.Defaults{
-			UpdateEvery: 5,
-		},
 		Create: func() module.Module { return New() },
 	})
 }
@@ -26,7 +23,7 @@ func New() *Docker {
 	return &Docker{
 		Config: Config{
 			Address: docker.DefaultDockerHost,
-			Timeout: web.Duration{Duration: time.Second * 1},
+			Timeout: web.Duration{Duration: time.Second * 5},
 		},
 		charts: charts.Copy(),
 		newClient: func(cfg Config) (dockerClient, error) {
@@ -51,7 +48,8 @@ type (
 		client    dockerClient
 	}
 	dockerClient interface {
-		DiskUsage(ctx context.Context) (types.DiskUsage, error)
+		Info(context.Context) (types.Info, error)
+		ImageList(context.Context, types.ImageListOptions) ([]types.ImageSummary, error)
 		ContainerList(context.Context, types.ContainerListOptions) ([]types.Container, error)
 		Close() error
 	}

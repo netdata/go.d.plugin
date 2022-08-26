@@ -10,8 +10,6 @@ const (
 	prioContainersUnhealthy
 	prioImagesCount
 	prioImagesSize
-	prioVolumesCount
-	prioVolumesSize
 )
 
 var charts = module.Charts{
@@ -21,9 +19,6 @@ var charts = module.Charts{
 
 	imagesCountChart.Copy(),
 	imagesSizeChart.Copy(),
-
-	volumesCountChart.Copy(),
-	volumesSizeChart.Copy(),
 }
 
 var (
@@ -88,33 +83,6 @@ var (
 		Priority: prioImagesSize,
 		Dims: module.Dims{
 			{ID: "images_size", Name: "size"},
-		},
-	}
-)
-
-var (
-	volumesCountChart = module.Chart{
-		ID:       "volumes_count",
-		Title:    "Number of volumes",
-		Units:    "volumes",
-		Fam:      "volumes",
-		Ctx:      "docker.volumes",
-		Priority: prioVolumesCount,
-		Type:     module.Stacked,
-		Dims: module.Dims{
-			{ID: "volumes_active", Name: "active"},
-			{ID: "volumes_dangling", Name: "dangling"},
-		},
-	}
-	volumesSizeChart = module.Chart{
-		ID:       "volumes_size",
-		Title:    "Volumes size",
-		Units:    "B",
-		Fam:      "volumes",
-		Ctx:      "docker.volumes_size",
-		Priority: prioVolumesSize,
-		Dims: module.Dims{
-			{ID: "volumes_size", Name: "size"},
 		},
 	}
 )
