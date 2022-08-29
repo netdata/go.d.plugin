@@ -20,7 +20,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/gosnmp/gosnmp v1.35.0
 	github.com/ilyam8/hashstructure v1.1.0
-	github.com/jackc/pgx/v4 v4.17.0
+	github.com/jackc/pgx/v4 v4.17.1
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/likexian/whois v1.14.2
 	github.com/likexian/whois-parser v1.24.1
