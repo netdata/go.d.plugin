@@ -48,9 +48,12 @@ type logindDBusConnection struct {
 func (c *logindDBusConnection) Close() {
 	if c.conn != nil {
 		c.conn.Close()
+		c.conn = nil
 	}
+
 	if c.dbusConn != nil {
 		_ = c.dbusConn.Close()
+		c.dbusConn = nil
 	}
 }
 
