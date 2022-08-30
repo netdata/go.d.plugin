@@ -44,8 +44,8 @@ var sessionsTypeChart = module.Chart{
 	Priority: prioSessionsType,
 	Type:     module.Stacked,
 	Dims: module.Dims{
-		{ID: "sessions_type_graphical", Name: "graphical"},
 		{ID: "sessions_type_console", Name: "console"},
+		{ID: "sessions_type_graphical", Name: "graphical"},
 		{ID: "sessions_type_other", Name: "other"},
 	},
 }
@@ -60,8 +60,8 @@ var sessionsStateChart = module.Chart{
 	Type:     module.Stacked,
 	Dims: module.Dims{
 		{ID: "sessions_state_online", Name: "online"},
-		{ID: "sessions_state_active", Name: "active"},
 		{ID: "sessions_state_closing", Name: "closing"},
+		{ID: "sessions_state_active", Name: "active"},
 	},
 }
 
@@ -75,9 +75,9 @@ var usersStateChart = module.Chart{
 	Type:     module.Stacked,
 	Dims: module.Dims{
 		{ID: "users_state_offline", Name: "offline"},
-		{ID: "users_state_lingering", Name: "lingering"},
-		{ID: "users_state_online", Name: "online"},
-		{ID: "users_state_active", Name: "active"},
 		{ID: "users_state_closing", Name: "closing"},
+		{ID: "users_state_online", Name: "online"},
+		{ID: "users_state_lingering", Name: "lingering"},
+		{ID: "users_state_active", Name: "active"},
 	},
 }

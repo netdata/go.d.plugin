@@ -23,9 +23,9 @@ All metrics have "logind." prefix.
 | Metric         | Scope  |                 Dimensions                  |  Units   |
 |----------------|:------:|:-------------------------------------------:|:--------:|
 | sessions       | global |                remote, local                | sessions |
-| sessions_type  | global |          graphical, console, other          | sessions |
-| sessions_state | global |           online, active, closing           | sessions |
-| users_state    | global | offline, lingering, online, active, closing |  users   |
+| sessions_type  | global |          console, graphical, other          | sessions |
+| sessions_state | global |           online, closing, active           | sessions |
+| users_state    | global | offline, closing, online, lingering, active |  users   |
 
 ## Configuration
 
