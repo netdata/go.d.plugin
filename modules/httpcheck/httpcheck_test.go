@@ -22,8 +22,6 @@ const (
 func TestNew(t *testing.T) {
 	job := New()
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
-	assert.Equal(t, defaultAcceptedStatuses, job.AcceptedStatuses)
 }
 
 func TestHTTPCheck_Cleanup(t *testing.T) { New().Cleanup() }
