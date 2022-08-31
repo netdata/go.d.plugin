@@ -31,7 +31,7 @@ func New() *PortCheck {
 type Config struct {
 	Host    string       `yaml:"host"`
 	Ports   []int        `yaml:"ports"`
-	Timeout web.Duration `yaml:"checkStateTimeout"`
+	Timeout web.Duration `yaml:"timeout"`
 }
 
 type dialFunc func(network, address string, timeout time.Duration) (net.Conn, error)
@@ -72,7 +72,7 @@ func (pc *PortCheck) Init() bool {
 
 	pc.Debugf("using host: %s", pc.Host)
 	pc.Debugf("using ports: %v", pc.Ports)
-	pc.Debugf("using TCP connection checkStateTimeout: %s", pc.Timeout)
+	pc.Debugf("using TCP connection timeout: %s", pc.Timeout)
 
 	return true
 }

@@ -149,5 +149,5 @@ func testDial(err error) dialFunc {
 
 type timeoutError struct{}
 
-func (timeoutError) Error() string { return "checkStateTimeout" }
+func (timeoutError) Error() string { return "timeout" }
 func (timeoutError) Timeout() bool { return true }
