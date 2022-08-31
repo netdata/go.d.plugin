@@ -21,6 +21,7 @@ var charts = module.Charts{
 }
 
 var responseTimeChart = module.Chart{
+	ID:       "response_time",
 	Title:    "HTTP Response Time",
 	Units:    "ms",
 	Fam:      "response",
