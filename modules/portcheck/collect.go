@@ -13,7 +13,7 @@ type checkState string
 const (
 	checkStateSuccess checkState = "success"
 	checkStateTimeout checkState = "timeout"
-	checkStateFailed  checkState = "filed"
+	checkStateFailed  checkState = "failed"
 )
 
 func (pc *PortCheck) collect() (map[string]int64, error) {
