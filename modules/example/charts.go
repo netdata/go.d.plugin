@@ -4,7 +4,6 @@ package example
 
 import (
 	"fmt"
-
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
@@ -27,16 +26,28 @@ var hiddenChartTemplate = module.Chart{
 	},
 }
 
-func newChart(num int, typ module.ChartType) *module.Chart {
+func newChart(num, labels int, typ module.ChartType) *module.Chart {
 	chart := chartTemplate.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, num)
 	chart.Type = typ
+	for i := 0; i < labels; i++ {
+		chart.Labels = append(chart.Labels, module.Label{
+			Key:   fmt.Sprintf("example_name_%d", i),
+			Value: fmt.Sprintf("example_value_%d_%d", num, i),
+		})
+	}
 	return chart
 }
 
-func newHiddenChart(num int, typ module.ChartType) *module.Chart {
+func newHiddenChart(num, labels int, typ module.ChartType) *module.Chart {
 	chart := hiddenChartTemplate.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, num)
 	chart.Type = typ
+	for i := 0; i < labels; i++ {
+		chart.Labels = append(chart.Labels, module.Label{
+			Key:   fmt.Sprintf("example_name_%d", i),
+			Value: fmt.Sprintf("example_value_%d_%d", num, i),
+		})
+	}
 	return chart
 }
