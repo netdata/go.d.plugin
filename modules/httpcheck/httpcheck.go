@@ -28,7 +28,6 @@ var (
 	defaultAcceptedStatuses = []int{200}
 )
 
-// New creates HTTPCheck with default values.
 func New() *HTTPCheck {
 	config := Config{
 		HTTP: web.HTTP{
@@ -44,7 +43,6 @@ func New() *HTTPCheck {
 	}
 }
 
-// Config is the HTTPCheck module configuration.
 type Config struct {
 	web.HTTP         `yaml:",inline"`
 	AcceptedStatuses []int  `yaml:"status_accepted"`
@@ -65,9 +63,6 @@ type HTTPCheck struct {
 	client           client
 	metrics          metrics
 }
-
-// Cleanup makes cleanup.
-func (HTTPCheck) Cleanup() {}
 
 // Init makes initialization
 func (hc *HTTPCheck) Init() bool {
@@ -106,13 +101,14 @@ func (hc *HTTPCheck) Init() bool {
 	return true
 }
 
-// Check makes check.
-func (hc *HTTPCheck) Check() bool { return len(hc.Collect()) > 0 }
+func (hc *HTTPCheck) Check() bool {
+	return len(hc.Collect()) > 0
+}
 
-// Charts creates Charts
-func (hc HTTPCheck) Charts() *Charts { return charts.Copy() }
+func (hc *HTTPCheck) Charts() *module.Charts {
+	return charts.Copy()
+}
 
-// Collect collects metrics
 func (hc *HTTPCheck) Collect() map[string]int64 {
 	mx, err := hc.collect()
 	if err != nil {
@@ -124,3 +120,5 @@ func (hc *HTTPCheck) Collect() map[string]int64 {
 	}
 	return mx
 }
+
+func (hc *HTTPCheck) Cleanup() {}

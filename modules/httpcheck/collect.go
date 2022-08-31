@@ -59,7 +59,7 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 	return stm.ToMap(mx), nil
 }
 
-func (hc HTTPCheck) collectErrResponse(mx *metrics, err error) {
+func (hc *HTTPCheck) collectErrResponse(mx *metrics, err error) {
 	switch code := decodeReqError(err); code {
 	default:
 		panic(fmt.Sprintf("unknown request error code : %d", code))
@@ -76,7 +76,7 @@ func (hc HTTPCheck) collectErrResponse(mx *metrics, err error) {
 	}
 }
 
-func (hc HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
+func (hc *HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
 	if !hc.acceptedStatuses[resp.StatusCode] {
 		mx.Status.BadStatusCode = true
 		return
