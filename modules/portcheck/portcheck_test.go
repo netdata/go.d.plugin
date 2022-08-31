@@ -49,6 +49,8 @@ func TestPortCheck_Cleanup(t *testing.T) {
 func TestPortCheck_Charts(t *testing.T) {
 	job := New()
 	job.Ports = []int{1, 2}
+	job.Host = "localhost"
+	require.True(t, job.Init())
 	assert.Len(t, *job.Charts(), len(chartsTmpl)*len(job.Ports))
 }
 
