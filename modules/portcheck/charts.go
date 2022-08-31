@@ -4,8 +4,15 @@ package portcheck
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+)
+
+const (
+	prioCheckStatus = module.Priority + iota
+	prioCheckInStatusDuration
+	prioCheckLatency
 )
 
 var chartsTmpl = module.Charts{
@@ -15,11 +22,12 @@ var chartsTmpl = module.Charts{
 }
 
 var checkStatusChartTmpl = module.Chart{
-	ID:    "port_%d_status",
-	Title: "TCP Check Status",
-	Units: "boolean",
-	Fam:   "port %d",
-	Ctx:   "portcheck.status",
+	ID:       "port_%d_status",
+	Title:    "TCP Check Status",
+	Units:    "boolean",
+	Fam:      "status",
+	Ctx:      "portcheck.status",
+	Priority: prioCheckStatus,
 	Dims: module.Dims{
 		{ID: "port_%d_success", Name: "success"},
 		{ID: "port_%d_failed", Name: "failed"},
@@ -28,22 +36,24 @@ var checkStatusChartTmpl = module.Chart{
 }
 
 var checkInStateDurationChartTmpl = module.Chart{
-	ID:    "port_%d_current_state_duration",
-	Title: "Current State Duration",
-	Units: "seconds",
-	Fam:   "port %d",
-	Ctx:   "portcheck.state_duration",
+	ID:       "port_%d_current_state_duration",
+	Title:    "Current State Duration",
+	Units:    "seconds",
+	Fam:      "status duration",
+	Ctx:      "portcheck.state_duration",
+	Priority: prioCheckInStatusDuration,
 	Dims: module.Dims{
 		{ID: "port_%d_current_state_duration", Name: "time"},
 	},
 }
 
 var checkConnectionLatencyChartTmpl = module.Chart{
-	ID:    "port_%d_connection_latency",
-	Title: "TCP Connection Latency",
-	Units: "ms",
-	Fam:   "port %d",
-	Ctx:   "portcheck.latency",
+	ID:       "port_%d_connection_latency",
+	Title:    "TCP Connection Latency",
+	Units:    "ms",
+	Fam:      "latency",
+	Ctx:      "portcheck.latency",
+	Priority: prioCheckLatency,
 	Dims: module.Dims{
 		{ID: "port_%d_latency", Name: "time"},
 	},
@@ -52,9 +62,11 @@ var checkConnectionLatencyChartTmpl = module.Chart{
 func newPortCharts(port int) *module.Charts {
 	charts := chartsTmpl.Copy()
 	for _, chart := range *charts {
+		chart.Labels = []module.Label{{
+			Key:   "port",
+			Value: strconv.Itoa(port),
+		}}
 		chart.ID = fmt.Sprintf(chart.ID, port)
-		chart.Fam = fmt.Sprintf(chart.Fam, port)
-
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, port)
 		}
