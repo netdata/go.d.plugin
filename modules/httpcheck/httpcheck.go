@@ -13,32 +13,24 @@ import (
 )
 
 func init() {
-	creator := module.Creator{
+	module.Register("httpcheck", module.Creator{
 		Defaults: module.Defaults{
 			UpdateEvery: 5,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("httpcheck", creator)
+	})
 }
 
-var (
-	defaultHTTPTimeout      = time.Second
-	defaultAcceptedStatuses = []int{200}
-)
-
 func New() *HTTPCheck {
-	config := Config{
-		HTTP: web.HTTP{
-			Client: web.Client{
-				Timeout: web.Duration{Duration: defaultHTTPTimeout},
-			},
-		},
-		AcceptedStatuses: defaultAcceptedStatuses,
-	}
 	return &HTTPCheck{
-		Config:           config,
+		Config: Config{
+			HTTP: web.HTTP{
+				Client: web.Client{
+					Timeout: web.Duration{Duration: time.Second},
+				},
+			},
+			AcceptedStatuses: []int{200},
+		},
 		acceptedStatuses: make(map[int]bool),
 	}
 }
@@ -49,43 +41,41 @@ type Config struct {
 	ResponseMatch    string `yaml:"response_match"`
 }
 
-type client interface {
-	Do(*http.Request) (*http.Response, error)
-}
+type (
+	HTTPCheck struct {
+		module.Base
+		Config      `yaml:",inline"`
+		UpdateEvery int `yaml:"update_every"`
 
-type HTTPCheck struct {
-	module.Base
-	Config      `yaml:",inline"`
-	UpdateEvery int `yaml:"update_every"`
+		acceptedStatuses map[int]bool
+		reResponse       *regexp.Regexp
+		client           client
+		metrics          metrics
+	}
+	client interface {
+		Do(*http.Request) (*http.Response, error)
+	}
+)
 
-	acceptedStatuses map[int]bool
-	reResponse       *regexp.Regexp
-	client           client
-	metrics          metrics
-}
-
-// Init makes initialization
 func (hc *HTTPCheck) Init() bool {
-	if hc.URL == "" {
-		hc.Error("URL not set")
+	if err := hc.validateConfig(); err != nil {
+		hc.Errorf("config validation: %v", err)
 		return false
 	}
 
-	client, err := web.NewHTTPClient(hc.Client)
+	httpClient, err := hc.initHTTPClient()
 	if err != nil {
-		hc.Errorf("error on creating HTTP client : %v", err)
+		hc.Errorf("init HTTP client: %v", err)
 		return false
 	}
-	hc.client = client
+	hc.client = httpClient
 
-	if hc.ResponseMatch != "" {
-		re, err := regexp.Compile(hc.ResponseMatch)
-		if err != nil {
-			hc.Errorf("error on creating regexp %s : %s", hc.ResponseMatch, err)
-			return false
-		}
-		hc.reResponse = re
+	re, err := hc.initResponseMatchRegexp()
+	if err != nil {
+		hc.Errorf("init response match regexp: %v", err)
+		return false
 	}
+	hc.reResponse = re
 
 	for _, v := range hc.AcceptedStatuses {
 		hc.acceptedStatuses[v] = true
