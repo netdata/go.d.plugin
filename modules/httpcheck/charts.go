@@ -53,10 +53,10 @@ var responseStatusChart = module.Chart{
 	Priority: prioResponseStatus,
 	Dims: module.Dims{
 		{ID: "success"},
-		{ID: "no_connection", Name: "no connection"},
+		{ID: "no_connection"},
 		{ID: "timeout"},
-		{ID: "bad_content", Name: "bad content"},
-		{ID: "bad_status", Name: "bad status"},
+		{ID: "bad_content"},
+		{ID: "bad_status"},
 		//{ID: "dns_lookup_error", Name: "dns lookup error"},
 		//{ID: "address_parse_error", Name: "address parse error"},
 		//{ID: "redirect_error", Name: "redirect error"},
