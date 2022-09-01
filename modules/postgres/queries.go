@@ -25,6 +25,28 @@ func queryServerCurrentConnectionsNum() string {
 	return "SELECT sum(numbackends) FROM pg_stat_database;"
 }
 
+func queryServerConnectionsState() string {
+	return `
+SELECT
+    state,
+    COUNT(*) 
+FROM
+    pg_stat_activity 
+WHERE
+    state IN 
+    (
+        'active',
+        'idle',
+        'idle in transaction',
+        'idle in transaction (aborted)',
+        'fastpath function call',
+        'disabled' 
+    )
+GROUP BY
+    state;
+`
+}
+
 func querySettingsMaxConnections() string {
 	return "SELECT current_setting('max_connections')::INT - current_setting('superuser_reserved_connections')::INT;"
 }

@@ -27,6 +27,7 @@ var (
 	dataV140004SettingsMaxConnections, _ = os.ReadFile("testdata/v14.4/settings_max_connections.txt")
 
 	dataV140004ServerCurrentConnections, _ = os.ReadFile("testdata/v14.4/server_current_connections.txt")
+	dataV140004ServerConnectionsState, _   = os.ReadFile("testdata/v14.4/server_connections_state.txt")
 	dataV140004Checkpoints, _              = os.ReadFile("testdata/v14.4/checkpoints.txt")
 	dataV140004ServerUptime, _             = os.ReadFile("testdata/v14.4/uptime.txt")
 	dataV140004TXIDWraparound, _           = os.ReadFile("testdata/v14.4/txid_wraparound.txt")
@@ -61,6 +62,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004SettingsMaxConnections": dataV140004SettingsMaxConnections,
 
 		"dataV140004ServerCurrentConnections": dataV140004ServerCurrentConnections,
+		"dataV140004ServerConnectionsState":   dataV140004ServerConnectionsState,
 		"dataV140004Checkpoints":              dataV140004Checkpoints,
 		"dataV140004ServerUptime":             dataV140004ServerUptime,
 		"dataV140004TXIDWraparound":           dataV140004TXIDWraparound,
@@ -143,6 +145,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 				mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+				mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 				mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 				mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 				mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
@@ -174,6 +177,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 				mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+				mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 				mockExpectErr(m, queryCheckpoints())
 			},
 		},
@@ -250,6 +254,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
@@ -401,6 +406,12 @@ func TestPostgres_Collect(t *testing.T) {
 						"repl_standby_app_walreceiver_wal_write_delta":             2,
 						"repl_standby_app_walreceiver_wal_write_lag":               2,
 						"server_connections_available":                             97,
+						"server_connections_state_active":                          2,
+						"server_connections_state_disabled":                        0,
+						"server_connections_state_fastpath_function_call":          0,
+						"server_connections_state_idle":                            18,
+						"server_connections_state_idle_in_transaction":             0,
+						"server_connections_state_idle_in_transaction_aborted":     0,
 						"server_connections_used":                                  3,
 						"server_connections_utilization":                           3,
 						"server_uptime":                                            499906,
@@ -410,6 +421,7 @@ func TestPostgres_Collect(t *testing.T) {
 						"wal_writes":                                               24103144,
 						"wal_written_files":                                        1,
 					}
+
 					assert.Equal(t, expected, mx)
 				},
 			},
@@ -426,6 +438,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
@@ -451,6 +464,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList1DB)
 
 					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
@@ -481,6 +495,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList3DB)
 
 					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
 					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)

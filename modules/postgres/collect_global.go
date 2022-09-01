@@ -4,11 +4,15 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func (p *Postgres) collectGlobalMetrics(mx map[string]int64) error {
-	if err := p.collectConnection(mx); err != nil {
+	if err := p.collectConnections(mx); err != nil {
 		return fmt.Errorf("querying server connections error: %v", err)
+	}
+	if err := p.collectConnectionsState(mx); err != nil {
+		return fmt.Errorf("querying server connections state error: %v", err)
 	}
 
 	if err := p.collectCheckpoints(mx); err != nil {
@@ -53,7 +57,7 @@ func (p *Postgres) collectGlobalMetrics(mx map[string]int64) error {
 	return nil
 }
 
-func (p *Postgres) collectConnection(mx map[string]int64) error {
+func (p *Postgres) collectConnections(mx map[string]int64) error {
 	q := queryServerCurrentConnectionsNum()
 
 	var v string
@@ -76,11 +80,43 @@ func (p *Postgres) collectConnection(mx map[string]int64) error {
 	return nil
 }
 
+func (p *Postgres) collectConnectionsState(mx map[string]int64) error {
+	q := queryServerConnectionsState()
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+
+	rows, err := p.db.QueryContext(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	mx["server_connections_state_active"] = 0
+	mx["server_connections_state_idle"] = 0
+	mx["server_connections_state_idle_in_transaction"] = 0
+	mx["server_connections_state_idle_in_transaction_aborted"] = 0
+	mx["server_connections_state_fastpath_function_call"] = 0
+	mx["server_connections_state_disabled"] = 0
+
+	r := strings.NewReplacer(" ", "_", "(", "", ")", "")
+	var s string
+	return collectRows(rows, func(column, value string) {
+		switch column {
+		case "state":
+			s = r.Replace(value)
+		case "count":
+			mx["server_connections_state_"+s] = safeParseInt(value)
+		}
+	})
+}
+
 func (p *Postgres) collectCheckpoints(mx map[string]int64) error {
 	q := queryCheckpoints()
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
+
 	rows, err := p.db.QueryContext(ctx, q)
 	if err != nil {
 		return err
@@ -93,9 +129,10 @@ func (p *Postgres) collectCheckpoints(mx map[string]int64) error {
 func (p *Postgres) collectUptime(mx map[string]int64) error {
 	q := queryServerUptime()
 
-	var s string
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
+
+	var s string
 	if err := p.db.QueryRowContext(ctx, q).Scan(&s); err != nil {
 		return err
 	}
@@ -111,6 +148,7 @@ func (p *Postgres) collectTXIDWraparound(mx map[string]int64) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
+
 	rows, err := p.db.QueryContext(ctx, q)
 	if err != nil {
 		return err
@@ -123,9 +161,10 @@ func (p *Postgres) collectTXIDWraparound(mx map[string]int64) error {
 func (p *Postgres) collectWALWrites(mx map[string]int64) error {
 	q := queryWALWrites(p.pgVersion)
 
-	var v int64
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
+
+	var v int64
 	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
 		return err
 	}
@@ -139,6 +178,7 @@ func (p *Postgres) collectWALFiles(mx map[string]int64) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
+
 	rows, err := p.db.QueryContext(ctx, q)
 	if err != nil {
 		return err
@@ -153,6 +193,7 @@ func (p *Postgres) collectWALArchiveFiles(mx map[string]int64) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
+
 	rows, err := p.db.QueryContext(ctx, q)
 	if err != nil {
 		return err
@@ -167,6 +208,7 @@ func (p *Postgres) collectCatalogRelations(mx map[string]int64) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
+
 	rows, err := p.db.QueryContext(ctx, q)
 	if err != nil {
 		return err
@@ -206,6 +248,7 @@ func (p *Postgres) collectAutovacuumWorkers(mx map[string]int64) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
+
 	rows, err := p.db.QueryContext(ctx, q)
 	if err != nil {
 		return err
