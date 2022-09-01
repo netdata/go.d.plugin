@@ -1,0 +1,4 @@
+ state  | count
+--------+-------
+ active |     2
+ idle   |     18

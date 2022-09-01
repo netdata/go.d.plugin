@@ -12,6 +12,7 @@ import (
 const (
 	prioConnectionsUtilization = module.Priority + iota
 	prioConnectionsUsage
+	prioConnectionsState
 	prioCheckpoints
 	prioCheckpointTime
 	prioBGWriterBuffersAllocated
@@ -53,6 +54,7 @@ const (
 var baseCharts = module.Charts{
 	serverConnectionsUtilizationChart.Copy(),
 	serverConnectionsUsageChart.Copy(),
+	serverConnectionsState.Copy(),
 	checkpointsChart.Copy(),
 	checkpointWriteChart.Copy(),
 	bgWriterBuffersWrittenChart.Copy(),
@@ -95,6 +97,23 @@ var (
 		Dims: module.Dims{
 			{ID: "server_connections_available", Name: "available"},
 			{ID: "server_connections_used", Name: "used"},
+		},
+	}
+	serverConnectionsState = module.Chart{
+		ID:       "connections_state",
+		Title:    "Connections in each state",
+		Units:    "connections",
+		Fam:      "connections",
+		Ctx:      "postgres.connections_state",
+		Priority: prioConnectionsState,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "server_connections_state_active", Name: "active"},
+			{ID: "server_connections_state_idle", Name: "idle"},
+			{ID: "server_connections_state_idle_in_transaction", Name: "idle_in_transaction"},
+			{ID: "server_connections_state_idle_in_transaction_aborted", Name: "idle_in_transaction_aborted"},
+			{ID: "server_connections_state_fastpath_function_call", Name: "fastpath_function_call"},
+			{ID: "server_connections_state_disabled", Name: "disabled"},
 		},
 	}
 
