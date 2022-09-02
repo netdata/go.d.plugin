@@ -45,7 +45,7 @@ type Postgres struct {
 	superUser *bool
 	pgVersion int
 
-	metrics *pgMetrics
+	mx *pgMetrics
 
 	recheckSettingsTime  time.Time
 	recheckSettingsEvery time.Duration

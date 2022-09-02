@@ -49,7 +49,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		if err != nil {
 			return nil, fmt.Errorf("querying settings max connections error: %v", err)
 		}
-		p.metrics.maxConnections = maxConn
+		p.mx.maxConnections = maxConn
 	}
 
 	if err := p.queryGlobalMetrics(); err != nil {
@@ -144,28 +144,28 @@ func (p *Postgres) doQueryRows(query string, assign func(column, value string, r
 }
 
 func (p *Postgres) getDBMetrics(name string) *dbMetrics {
-	db, ok := p.metrics.dbs[name]
+	db, ok := p.mx.dbs[name]
 	if !ok {
 		db = &dbMetrics{name: name}
-		p.metrics.dbs[name] = db
+		p.mx.dbs[name] = db
 	}
 	return db
 }
 
 func (p *Postgres) getReplAppMetrics(name string) *replStandbyAppMetrics {
-	app, ok := p.metrics.replApps[name]
+	app, ok := p.mx.replApps[name]
 	if !ok {
 		app = &replStandbyAppMetrics{name: name}
-		p.metrics.replApps[name] = app
+		p.mx.replApps[name] = app
 	}
 	return app
 }
 
 func (p *Postgres) getReplSlotMetrics(name string) *replSlotMetrics {
-	slot, ok := p.metrics.replSlots[name]
+	slot, ok := p.mx.replSlots[name]
 	if !ok {
 		slot = &replSlotMetrics{name: name}
-		p.metrics.replSlots[name] = slot
+		p.mx.replSlots[name] = slot
 	}
 	return slot
 }

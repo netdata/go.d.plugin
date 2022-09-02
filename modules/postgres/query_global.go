@@ -56,7 +56,7 @@ func (p *Postgres) doQueryConnectionsUsed() error {
 		return err
 	}
 
-	p.metrics.connUsed = parseInt(v)
+	p.mx.connUsed = parseInt(v)
 
 	return nil
 }
@@ -72,17 +72,17 @@ func (p *Postgres) doQueryConnectionsState() error {
 		case "count":
 			switch state {
 			case "active":
-				p.metrics.connStateActive = parseInt(value)
+				p.mx.connStateActive = parseInt(value)
 			case "idle":
-				p.metrics.connStateIdle = parseInt(value)
+				p.mx.connStateIdle = parseInt(value)
 			case "idle_in_transaction":
-				p.metrics.connStateIdleInTrans = parseInt(value)
+				p.mx.connStateIdleInTrans = parseInt(value)
 			case "idle_in_transaction (aborted)":
-				p.metrics.connStateIdleInTransAborted = parseInt(value)
+				p.mx.connStateIdleInTransAborted = parseInt(value)
 			case "fastpath function call":
-				p.metrics.connStateFastpathFunctionCall = parseInt(value)
+				p.mx.connStateFastpathFunctionCall = parseInt(value)
 			case "disabled":
-				p.metrics.connStateDisabled = parseInt(value)
+				p.mx.connStateDisabled = parseInt(value)
 			}
 		}
 	})
@@ -94,25 +94,25 @@ func (p *Postgres) doQueryCheckpoints() error {
 	return p.doQueryRows(q, func(column, value string, _ bool) {
 		switch column {
 		case "checkpoints_timed":
-			p.metrics.checkpointsTimed = parseInt(value)
+			p.mx.checkpointsTimed = parseInt(value)
 		case "checkpoints_req":
-			p.metrics.checkpointsReq = parseInt(value)
+			p.mx.checkpointsReq = parseInt(value)
 		case "checkpoint_write_time":
-			p.metrics.checkpointWriteTime = parseInt(value)
+			p.mx.checkpointWriteTime = parseInt(value)
 		case "checkpoint_sync_time":
-			p.metrics.checkpointSyncTime = parseInt(value)
+			p.mx.checkpointSyncTime = parseInt(value)
 		case "buffers_checkpoint":
-			p.metrics.buffersCheckpoint = parseInt(value)
+			p.mx.buffersCheckpoint = parseInt(value)
 		case "buffers_clean":
-			p.metrics.buffersClean = parseInt(value)
+			p.mx.buffersClean = parseInt(value)
 		case "maxwritten_clean":
-			p.metrics.maxwrittenClean = parseInt(value)
+			p.mx.maxwrittenClean = parseInt(value)
 		case "buffers_backend":
-			p.metrics.buffersBackend = parseInt(value)
+			p.mx.buffersBackend = parseInt(value)
 		case "buffers_backend_fsync":
-			p.metrics.buffersBackendFsync = parseInt(value)
+			p.mx.buffersBackendFsync = parseInt(value)
 		case "buffers_alloc":
-			p.metrics.buffersAlloc = parseInt(value)
+			p.mx.buffersAlloc = parseInt(value)
 		}
 	})
 }
@@ -125,7 +125,7 @@ func (p *Postgres) doQueryUptime() error {
 		return err
 	}
 
-	p.metrics.uptime = parseInt(s)
+	p.mx.uptime = parseInt(s)
 
 	return nil
 }
@@ -136,11 +136,11 @@ func (p *Postgres) doQueryTXIDWraparound() error {
 	return p.doQueryRows(q, func(column, value string, _ bool) {
 		switch column {
 		case "oldest_current_xid":
-			p.metrics.oldestXID = parseInt(value)
+			p.mx.oldestXID = parseInt(value)
 		case "percent_towards_wraparound":
-			p.metrics.percentTowardsWraparound = parseInt(value)
+			p.mx.percentTowardsWraparound = parseInt(value)
 		case "percent_towards_emergency_autovacuum":
-			p.metrics.percentTowardsEmergencyAutovacuum = parseInt(value)
+			p.mx.percentTowardsEmergencyAutovacuum = parseInt(value)
 		}
 	})
 }
@@ -153,7 +153,7 @@ func (p *Postgres) doQueryWALWrites() error {
 		return err
 	}
 
-	p.metrics.walWrites = v
+	p.mx.walWrites = v
 
 	return nil
 }
@@ -164,9 +164,9 @@ func (p *Postgres) doQueryWALFiles() error {
 	return p.doQueryRows(q, func(column, value string, _ bool) {
 		switch column {
 		case "wal_recycled_files":
-			p.metrics.walRecycledFiles = parseInt(value)
+			p.mx.walRecycledFiles = parseInt(value)
 		case "wal_written_files":
-			p.metrics.walWrittenFiles = parseInt(value)
+			p.mx.walWrittenFiles = parseInt(value)
 		}
 	})
 }
@@ -177,9 +177,9 @@ func (p *Postgres) doQueryWALArchiveFiles() error {
 	return p.doQueryRows(q, func(column, value string, _ bool) {
 		switch column {
 		case "wal_archive_files_ready_count":
-			p.metrics.walArchiveFilesReady = parseInt(value)
+			p.mx.walArchiveFilesReady = parseInt(value)
 		case "wal_archive_files_done_count":
-			p.metrics.walArchiveFilesDone = parseInt(value)
+			p.mx.walArchiveFilesDone = parseInt(value)
 		}
 	})
 }
@@ -204,35 +204,35 @@ func (p *Postgres) doQueryCatalogRelations() error {
 		// https://www.postgresql.org/docs/current/catalog-pg-class.html
 		switch kind {
 		case "r":
-			p.metrics.relkindOrdinaryTable = count
-			p.metrics.relkindOrdinaryTableSize = size
+			p.mx.relkindOrdinaryTable = count
+			p.mx.relkindOrdinaryTableSize = size
 		case "i":
-			p.metrics.relkindIndex = count
-			p.metrics.relkindIndexSize = size
+			p.mx.relkindIndex = count
+			p.mx.relkindIndexSize = size
 		case "S":
-			p.metrics.relkindSequence = count
-			p.metrics.relkindSequenceSize = size
+			p.mx.relkindSequence = count
+			p.mx.relkindSequenceSize = size
 		case "t":
-			p.metrics.relkindTOASTTable = count
-			p.metrics.relkindTOASTTableSize = size
+			p.mx.relkindTOASTTable = count
+			p.mx.relkindTOASTTableSize = size
 		case "v":
-			p.metrics.relkindView = count
-			p.metrics.relkindViewSize = size
+			p.mx.relkindView = count
+			p.mx.relkindViewSize = size
 		case "m":
-			p.metrics.relkindMatView = count
-			p.metrics.relkindMatViewSize = size
+			p.mx.relkindMatView = count
+			p.mx.relkindMatViewSize = size
 		case "c":
-			p.metrics.relkindCompositeType = count
-			p.metrics.relkindCompositeTypeSize = size
+			p.mx.relkindCompositeType = count
+			p.mx.relkindCompositeTypeSize = size
 		case "f":
-			p.metrics.relkindForeignTable = count
-			p.metrics.relkindForeignTableSize = size
+			p.mx.relkindForeignTable = count
+			p.mx.relkindForeignTableSize = size
 		case "p":
-			p.metrics.relkindPartitionedTable = count
-			p.metrics.relkindPartitionedTableSize = size
+			p.mx.relkindPartitionedTable = count
+			p.mx.relkindPartitionedTableSize = size
 		case "I":
-			p.metrics.relkindPartitionedIndex = count
-			p.metrics.relkindPartitionedIndexSize = size
+			p.mx.relkindPartitionedIndex = count
+			p.mx.relkindPartitionedIndexSize = size
 		}
 	})
 }
@@ -243,15 +243,15 @@ func (p *Postgres) doQueryAutovacuumWorkers() error {
 	return p.doQueryRows(q, func(column, value string, _ bool) {
 		switch column {
 		case "autovacuum_analyze":
-			p.metrics.autovacuumWorkersAnalyze = parseInt(value)
+			p.mx.autovacuumWorkersAnalyze = parseInt(value)
 		case "autovacuum_vacuum_analyze":
-			p.metrics.autovacuumWorkersVacuumAnalyze = parseInt(value)
+			p.mx.autovacuumWorkersVacuumAnalyze = parseInt(value)
 		case "autovacuum_vacuum":
-			p.metrics.autovacuumWorkersVacuum = parseInt(value)
+			p.mx.autovacuumWorkersVacuum = parseInt(value)
 		case "autovacuum_vacuum_freeze":
-			p.metrics.autovacuumWorkersVacuumFreeze = parseInt(value)
+			p.mx.autovacuumWorkersVacuumFreeze = parseInt(value)
 		case "autovacuum_brin_summarize":
-			p.metrics.autovacuumWorkersBrinSummarize = parseInt(value)
+			p.mx.autovacuumWorkersBrinSummarize = parseInt(value)
 		}
 	})
 }

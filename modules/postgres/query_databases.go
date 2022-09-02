@@ -20,7 +20,7 @@ func (p *Postgres) doQueryDatabasesMetrics() error {
 }
 
 func (p *Postgres) doQueryDatabaseStats() error {
-	q := queryDatabaseStats(p.databases)
+	q := queryDatabaseStats()
 
 	var db string
 	return p.doQueryRows(q, func(column, value string, _ bool) {
@@ -65,7 +65,7 @@ func (p *Postgres) doQueryDatabaseStats() error {
 }
 
 func (p *Postgres) doQueryDatabaseConflicts() error {
-	q := queryDatabaseConflicts(p.databases)
+	q := queryDatabaseConflicts()
 
 	var db string
 	return p.doQueryRows(q, func(column, value string, _ bool) {
@@ -88,7 +88,7 @@ func (p *Postgres) doQueryDatabaseConflicts() error {
 }
 
 func (p *Postgres) doQueryDatabaseLocks() error {
-	q := queryDatabaseLocks(p.databases)
+	q := queryDatabaseLocks()
 
 	var db, mode, granted string
 	var locks struct{ held, awaited int64 }

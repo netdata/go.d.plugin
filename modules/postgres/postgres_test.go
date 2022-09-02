@@ -128,7 +128,6 @@ func TestPostgres_Charts(t *testing.T) {
 }
 
 func TestPostgres_Check(t *testing.T) {
-	dbs := []string{"postgres", "production"}
 	tests := map[string]struct {
 		prepareMock func(t *testing.T, mock sqlmock.Sqlmock)
 		wantFail    bool
@@ -141,8 +140,6 @@ func TestPostgres_Check(t *testing.T) {
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 				mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
-				mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
-				mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 				mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 				mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
@@ -160,9 +157,9 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
 				mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
-				mockExpect(t, m, queryDatabaseStats(dbs), dataV140004DatabaseStats)
-				mockExpect(t, m, queryDatabaseConflicts(dbs), dataV140004DatabaseConflicts)
-				mockExpect(t, m, queryDatabaseLocks(dbs), dataV140004DatabaseLocks)
+				mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
+				mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
+				mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
 			},
 		},
 		"Success when the first query is successful (v14.4)": {
@@ -173,8 +170,6 @@ func TestPostgres_Check(t *testing.T) {
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
-				mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
-				mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 				mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 				mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
@@ -233,10 +228,6 @@ func TestPostgres_Check(t *testing.T) {
 }
 
 func TestPostgres_Collect(t *testing.T) {
-	dbs1 := []string{"postgres"}
-	dbs2 := []string{"postgres", "production"}
-	dbs3 := []string{"postgres", "production", "staging"}
-	_ = dbs3
 	type testCaseStep struct {
 		prepareMock func(t *testing.T, mock sqlmock.Sqlmock)
 		check       func(t *testing.T, pg *Postgres)
@@ -250,8 +241,6 @@ func TestPostgres_Collect(t *testing.T) {
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
-					mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
-					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
@@ -269,9 +258,9 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
 					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
-					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
-					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
-					mockExpect(t, m, queryDatabaseLocks(dbs2), dataV140004DatabaseLocks)
+					mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
+					mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
+					mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
@@ -434,8 +423,6 @@ func TestPostgres_Collect(t *testing.T) {
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
-					mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
-					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
@@ -453,9 +440,9 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
 					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
-					mockExpect(t, m, queryDatabaseStats(dbs2), dataV140004DatabaseStats)
-					mockExpect(t, m, queryDatabaseConflicts(dbs2), dataV140004DatabaseConflicts)
-					mockExpect(t, m, queryDatabaseLocks(dbs2), dataV140004DatabaseLocks)
+					mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
+					mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
+					mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
 				},
 				check: func(t *testing.T, pg *Postgres) { _ = pg.Collect() },
 			},
@@ -479,15 +466,13 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
 					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
-					mockExpect(t, m, queryDatabaseStats(dbs1), dataV140004DatabaseStats)
-					mockExpect(t, m, queryDatabaseConflicts(dbs1), dataV140004DatabaseConflicts)
-					mockExpect(t, m, queryDatabaseLocks(dbs1), dataV140004DatabaseLocks)
+					mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
+					mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
+					mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
 				},
 				check: func(t *testing.T, pg *Postgres) {
-					pg.relistDatabaseEvery = time.Second
 					time.Sleep(time.Second)
 					_ = pg.Collect()
-					assert.Len(t, pg.databases, 1)
 				},
 			},
 			{
@@ -510,15 +495,13 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
 					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
-					mockExpect(t, m, queryDatabaseStats(dbs3), dataV140004DatabaseStats)
-					mockExpect(t, m, queryDatabaseConflicts(dbs3), dataV140004DatabaseConflicts)
-					mockExpect(t, m, queryDatabaseLocks(dbs3), dataV140004DatabaseLocks)
+					mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
+					mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
+					mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
 				},
 				check: func(t *testing.T, pg *Postgres) {
-					pg.relistDatabaseEvery = time.Second
 					time.Sleep(time.Second)
 					_ = pg.Collect()
-					assert.Len(t, pg.databases, 3)
 				},
 			},
 		},
@@ -573,8 +556,6 @@ func TestPostgres_Collect(t *testing.T) {
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
-					mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
-					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
 					mockExpectErr(m, queryServerCurrentConnectionsUsed())
 				},
