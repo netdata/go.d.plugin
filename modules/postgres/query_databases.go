@@ -90,9 +90,9 @@ func (p *Postgres) doQueryDatabaseConflicts() error {
 func (p *Postgres) doQueryDatabaseLocks() error {
 	q := queryDatabaseLocks()
 
-	var db, mode, granted string
-	var locks struct{ held, awaited int64 }
-	return p.doQueryRows(q, func(column, value string, rowEnd bool) {
+	var db, mode string
+	var granted bool
+	return p.doQueryRows(q, func(column, value string, _ bool) {
 		switch column {
 		case "datname":
 			db = value
@@ -100,45 +100,44 @@ func (p *Postgres) doQueryDatabaseLocks() error {
 		case "mode":
 			mode = value
 		case "granted":
-			granted = value
+			granted = value == "true" || value == "t"
 		case "locks_count":
-			locks.held, locks.awaited = 0, 0
-			if granted == "true" || granted == "t" {
-				locks.held = parseInt(value)
-			} else {
-				locks.awaited = parseInt(value)
+			// https://github.com/postgres/postgres/blob/7c34555f8c39eeefcc45b3c3f027d7a063d738fc/src/include/storage/lockdefs.h#L36-L45
+			// https://www.postgresql.org/docs/7.2/locking-tables.html
+			switch {
+			case mode == "AccessShareLock" && granted:
+				p.getDBMetrics(db).accessShareLockHeld = parseInt(value)
+			case mode == "AccessShareLock":
+				p.getDBMetrics(db).accessShareLockAwaited = parseInt(value)
+			case mode == "RowShareLock" && granted:
+				p.getDBMetrics(db).rowShareLockHeld = parseInt(value)
+			case mode == "RowShareLock":
+				p.getDBMetrics(db).rowShareLockAwaited = parseInt(value)
+			case mode == "RowExclusiveLock" && granted:
+				p.getDBMetrics(db).rowExclusiveLockHeld = parseInt(value)
+			case mode == "RowExclusiveLock":
+				p.getDBMetrics(db).rowExclusiveLockAwaited = parseInt(value)
+			case mode == "ShareUpdateExclusiveLock" && granted:
+				p.getDBMetrics(db).shareUpdateExclusiveLockHeld = parseInt(value)
+			case mode == "ShareUpdateExclusiveLock":
+				p.getDBMetrics(db).shareUpdateExclusiveLockAwaited = parseInt(value)
+			case mode == "ShareLock" && granted:
+				p.getDBMetrics(db).shareLockHeld = parseInt(value)
+			case mode == "ShareLock":
+				p.getDBMetrics(db).shareLockAwaited = parseInt(value)
+			case mode == "ShareRowExclusiveLock" && granted:
+				p.getDBMetrics(db).shareRowExclusiveLockHeld = parseInt(value)
+			case mode == "ShareRowExclusiveLock":
+				p.getDBMetrics(db).shareRowExclusiveLockAwaited = parseInt(value)
+			case mode == "ExclusiveLock" && granted:
+				p.getDBMetrics(db).exclusiveLockHeld = parseInt(value)
+			case mode == "ExclusiveLock":
+				p.getDBMetrics(db).exclusiveLockAwaited = parseInt(value)
+			case mode == "AccessExclusiveLock" && granted:
+				p.getDBMetrics(db).accessExclusiveLockHeld = parseInt(value)
+			case mode == "AccessExclusiveLock":
+				p.getDBMetrics(db).accessExclusiveLockAwaited = parseInt(value)
 			}
-		}
-		if !rowEnd {
-			return
-		}
-		// https://github.com/postgres/postgres/blob/7c34555f8c39eeefcc45b3c3f027d7a063d738fc/src/include/storage/lockdefs.h#L36-L45
-		// https://www.postgresql.org/docs/7.2/locking-tables.html
-		switch mode {
-		case "AccessShareLock":
-			p.getDBMetrics(db).accessShareLockHeld = locks.held
-			p.getDBMetrics(db).accessShareLockAwaited = locks.awaited
-		case "RowShareLock":
-			p.getDBMetrics(db).rowShareLockHeld = locks.held
-			p.getDBMetrics(db).rowShareLockAwaited = locks.awaited
-		case "RowExclusiveLock":
-			p.getDBMetrics(db).rowExclusiveLockHeld = locks.held
-			p.getDBMetrics(db).rowExclusiveLockAwaited = locks.awaited
-		case "ShareUpdateExclusiveLock":
-			p.getDBMetrics(db).shareUpdateExclusiveLockHeld = locks.held
-			p.getDBMetrics(db).shareUpdateExclusiveLockAwaited = locks.awaited
-		case "ShareLock":
-			p.getDBMetrics(db).shareLockHeld = locks.held
-			p.getDBMetrics(db).shareLockAwaited = locks.awaited
-		case "ShareRowExclusiveLock":
-			p.getDBMetrics(db).shareRowExclusiveLockHeld = locks.held
-			p.getDBMetrics(db).shareRowExclusiveLockAwaited = locks.awaited
-		case "ExclusiveLock":
-			p.getDBMetrics(db).exclusiveLockHeld = locks.held
-			p.getDBMetrics(db).exclusiveLockAwaited = locks.awaited
-		case "AccessExclusiveLock":
-			p.getDBMetrics(db).accessExclusiveLockHeld = locks.held
-			p.getDBMetrics(db).accessExclusiveLockAwaited = locks.awaited
 		}
 	})
 }
