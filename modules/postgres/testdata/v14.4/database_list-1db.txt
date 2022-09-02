@@ -1,3 +1,0 @@
-  datname
-------------
- postgres

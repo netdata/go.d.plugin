@@ -196,6 +196,9 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"write_delta"] = m.walWriteDelta
 		mx[px+"flush_delta"] = m.walFlushDelta
 		mx[px+"replay_delta"] = m.walReplayDelta
+		mx[px+"write_lag"] = m.walWriteLag
+		mx[px+"flush_lag"] = m.walFlushLag
+		mx[px+"replay_lag"] = m.walReplayLag
 	}
 
 	for name, m := range p.mx.replSlots {
@@ -383,6 +386,11 @@ func makeValues(size int) []any {
 func parseInt(s string) int64 {
 	v, _ := strconv.ParseInt(s, 10, 64)
 	return v
+}
+
+func parseFloat(s string) int64 {
+	v, _ := strconv.ParseFloat(s, 64)
+	return int64(v)
 }
 
 func calcPercentage(value, total int64) int64 {

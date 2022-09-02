@@ -1,5 +1,0 @@
-  datname
-------------
- postgres
- production
- staging

@@ -36,13 +36,13 @@ func (p *Postgres) doQueryReplStandbyAppWALDelta() error {
 			app = value
 			p.getReplAppMetrics(app).updated = true
 		case "sent_delta":
-			p.getReplAppMetrics(app).walSentDelta = parseInt(value)
+			p.getReplAppMetrics(app).walSentDelta += parseInt(value)
 		case "write_delta":
-			p.getReplAppMetrics(app).walWriteDelta = parseInt(value)
+			p.getReplAppMetrics(app).walWriteDelta += parseInt(value)
 		case "flush_delta":
-			p.getReplAppMetrics(app).walFlushDelta = parseInt(value)
+			p.getReplAppMetrics(app).walFlushDelta += parseInt(value)
 		case "replay_delta":
-			p.getReplAppMetrics(app).walReplayDelta = parseInt(value)
+			p.getReplAppMetrics(app).walReplayDelta += parseInt(value)
 		}
 	})
 }
@@ -57,11 +57,11 @@ func (p *Postgres) doQueryReplStandbyAppWALLag() error {
 			app = value
 			p.getReplAppMetrics(app).updated = true
 		case "write_lag":
-			p.getReplAppMetrics(app).walWriteLag = parseInt(value)
+			p.getReplAppMetrics(app).walWriteLag += parseInt(value)
 		case "flush_lag":
-			p.getReplAppMetrics(app).walFlushLag = parseInt(value)
+			p.getReplAppMetrics(app).walFlushLag += parseInt(value)
 		case "replay_lag":
-			p.getReplAppMetrics(app).walReplayLag = parseInt(value)
+			p.getReplAppMetrics(app).walReplayLag += parseInt(value)
 		}
 	})
 }

@@ -125,7 +125,7 @@ func (p *Postgres) doQueryUptime() error {
 		return err
 	}
 
-	p.mx.uptime = parseInt(s)
+	p.mx.uptime = parseFloat(s)
 
 	return nil
 }
@@ -196,7 +196,7 @@ func (p *Postgres) doQueryCatalogRelations() error {
 		case "count":
 			count = parseInt(value)
 		case "size":
-			count = parseInt(value)
+			size = parseInt(value)
 		}
 		if !rowEnd {
 			return

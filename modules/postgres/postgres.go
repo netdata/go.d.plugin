@@ -24,7 +24,12 @@ func New() *Postgres {
 			Timeout: web.Duration{Duration: time.Second},
 			DSN:     "postgres://postgres:postgres@127.0.0.1:5432/postgres",
 		},
-		charts:               baseCharts.Copy(),
+		charts: baseCharts.Copy(),
+		mx: &pgMetrics{
+			dbs:       make(map[string]*dbMetrics),
+			replApps:  make(map[string]*replStandbyAppMetrics),
+			replSlots: make(map[string]*replSlotMetrics),
+		},
 		recheckSettingsEvery: time.Minute * 30,
 	}
 }

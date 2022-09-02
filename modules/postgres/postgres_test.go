@@ -8,14 +8,12 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"os"
-	"strings"
-	"testing"
-	"time"
-
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"os"
+	"strings"
+	"testing"
 )
 
 var (
@@ -37,16 +35,11 @@ var (
 	dataV140004CatalogRelations, _         = os.ReadFile("testdata/v14.4/catalog_relations.txt")
 	dataV140004AutovacuumWorkers, _        = os.ReadFile("testdata/v14.4/autovacuum_workers.txt")
 
-	dataV140004ReplStandbyAppList, _  = os.ReadFile("testdata/v14.4/replication_standby_app_list.txt")
 	dataV140004ReplStandbyAppDelta, _ = os.ReadFile("testdata/v14.4/replication_standby_app_wal_delta.txt")
 	dataV140004ReplStandbyAppLag, _   = os.ReadFile("testdata/v14.4/replication_standby_app_wal_lag.txt")
 
-	dataV140004ReplSlotList, _  = os.ReadFile("testdata/v14.4/replication_slot_list.txt")
 	dataV140004ReplSlotFiles, _ = os.ReadFile("testdata/v14.4/replication_slot_files.txt")
 
-	dataV140004DatabaseList1DB, _   = os.ReadFile("testdata/v14.4/database_list-1db.txt")
-	dataV140004DatabaseList2DB, _   = os.ReadFile("testdata/v14.4/database_list-2db.txt")
-	dataV140004DatabaseList3DB, _   = os.ReadFile("testdata/v14.4/database_list-3db.txt")
 	dataV140004DatabaseStats, _     = os.ReadFile("testdata/v14.4/database_stats.txt")
 	dataV140004DatabaseConflicts, _ = os.ReadFile("testdata/v14.4/database_conflicts.txt")
 	dataV140004DatabaseLocks, _     = os.ReadFile("testdata/v14.4/database_locks.txt")
@@ -72,16 +65,11 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004CatalogRelations":         dataV140004CatalogRelations,
 		"dataV140004AutovacuumWorkers":        dataV140004AutovacuumWorkers,
 
-		"dataV14004ReplStandbyAppList":  dataV140004ReplStandbyAppList,
 		"dataV14004ReplStandbyAppDelta": dataV140004ReplStandbyAppDelta,
 		"dataV14004ReplStandbyAppLag":   dataV140004ReplStandbyAppLag,
 
-		"dataV140004ReplSlotList":  dataV140004ReplSlotList,
 		"dataV140004ReplSlotFiles": dataV140004ReplSlotFiles,
 
-		"dataV140004DatabaseList1DB":   dataV140004DatabaseList1DB,
-		"dataV140004DatabaseList2DB":   dataV140004DatabaseList2DB,
-		"dataV140004DatabaseList3DB":   dataV140004DatabaseList3DB,
 		"dataV140004DatabaseStats":     dataV140004DatabaseStats,
 		"dataV140004DatabaseConflicts": dataV140004DatabaseConflicts,
 		"dataV140004DatabaseLocks":     dataV140004DatabaseLocks,
@@ -139,7 +127,6 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
-				mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
 
 				mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 				mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
@@ -162,18 +149,16 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
 			},
 		},
-		"Success when the first query is successful (v14.4)": {
-			wantFail: false,
+		"Fail when the second query unsuccessful (v14.4)": {
+			wantFail: true,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004ServerVersionNum)
-				mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
 
 				mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
-				mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
-				mockExpectErr(m, queryCheckpoints())
+				mockExpectErr(m, queryServerConnectionsState())
 			},
 		},
 		"Fail when querying the database version returns an error": {
@@ -189,16 +174,6 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 				mockExpectErr(m, querySettingsMaxConnections())
-			},
-		},
-		"Fail when querying the databases list returns an error": {
-			wantFail: true,
-			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
-				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
-
-				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
-				mockExpectErr(m, queryDatabaseList())
 			},
 		},
 	}
@@ -240,7 +215,6 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
-					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
 
 					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
@@ -415,96 +389,6 @@ func TestPostgres_Collect(t *testing.T) {
 				},
 			},
 		},
-		"DB removed/added on relisting databases": {
-			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
-					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
-
-					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
-					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
-
-					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
-					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
-					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
-					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
-					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
-					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
-					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
-					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
-
-					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
-					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
-
-					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
-					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
-					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
-
-					mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
-					mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
-					mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
-				},
-				check: func(t *testing.T, pg *Postgres) { _ = pg.Collect() },
-			},
-			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList1DB)
-
-					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
-					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
-					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
-					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
-					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
-					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
-					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
-					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
-
-					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
-					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
-
-					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
-					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
-					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
-
-					mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
-					mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
-					mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
-				},
-				check: func(t *testing.T, pg *Postgres) {
-					time.Sleep(time.Second)
-					_ = pg.Collect()
-				},
-			},
-			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList3DB)
-
-					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
-					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
-					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
-					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
-					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
-					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
-					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
-					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
-
-					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
-					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
-
-					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
-					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
-					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
-
-					mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
-					mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
-					mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
-				},
-				check: func(t *testing.T, pg *Postgres) {
-					time.Sleep(time.Second)
-					_ = pg.Collect()
-				},
-			},
-		},
 		"Fail when querying the database version returns an error": {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
@@ -532,22 +416,6 @@ func TestPostgres_Collect(t *testing.T) {
 				},
 			},
 		},
-		"Fail when querying the databases list returns an error": {
-			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
-					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
-
-					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
-					mockExpectErr(m, queryDatabaseList())
-				},
-				check: func(t *testing.T, pg *Postgres) {
-					mx := pg.Collect()
-					var expected map[string]int64
-					assert.Equal(t, expected, mx)
-				},
-			},
-		},
 		"Fail when querying the server connections returns an error": {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
@@ -555,7 +423,6 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
-					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList2DB)
 
 					mockExpectErr(m, queryServerCurrentConnectionsUsed())
 				},
