@@ -26,10 +26,13 @@ var hiddenChartTemplate = module.Chart{
 	},
 }
 
-func newChart(num, labels int, typ module.ChartType) *module.Chart {
+func newChart(num, ctx, labels int, typ module.ChartType) *module.Chart {
 	chart := chartTemplate.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, num)
 	chart.Type = typ
+	if ctx > 0 {
+		chart.Ctx += fmt.Sprintf("_%d", ctx)
+	}
 	for i := 0; i < labels; i++ {
 		chart.Labels = append(chart.Labels, module.Label{
 			Key:   fmt.Sprintf("example_name_%d", i),
@@ -39,10 +42,13 @@ func newChart(num, labels int, typ module.ChartType) *module.Chart {
 	return chart
 }
 
-func newHiddenChart(num, labels int, typ module.ChartType) *module.Chart {
+func newHiddenChart(num, ctx, labels int, typ module.ChartType) *module.Chart {
 	chart := hiddenChartTemplate.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, num)
 	chart.Type = typ
+	if ctx > 0 {
+		chart.Ctx += fmt.Sprintf("_%d", ctx)
+	}
 	for i := 0; i < labels; i++ {
 		chart.Labels = append(chart.Labels, module.Label{
 			Key:   fmt.Sprintf("example_name_%d", i),

@@ -24,12 +24,14 @@ func New() *Example {
 	return &Example{
 		Config: Config{
 			Charts: ConfigCharts{
-				Num:  1,
-				Dims: 4,
+				Num:      4,
+				Dims:     4,
+				Contexts: 4,
 			},
 			HiddenCharts: ConfigCharts{
-				Num:  0,
-				Dims: 4,
+				Num:      0,
+				Dims:     4,
+				Contexts: 0,
 			},
 		},
 
@@ -44,10 +46,11 @@ type (
 		HiddenCharts ConfigCharts `yaml:"hidden_charts"`
 	}
 	ConfigCharts struct {
-		Type   string `yaml:"type"`
-		Num    int    `yaml:"num"`
-		Dims   int    `yaml:"dimensions"`
-		Labels int    `yaml:"labels"`
+		Type     string `yaml:"type"`
+		Num      int    `yaml:"num"`
+		Contexts int    `yaml:"contexts"`
+		Dims     int    `yaml:"dimensions"`
+		Labels   int    `yaml:"labels"`
 	}
 )
 

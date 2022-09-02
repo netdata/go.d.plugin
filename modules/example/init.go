@@ -23,16 +23,24 @@ func (e *Example) validateConfig() error {
 func (e *Example) initCharts() (*module.Charts, error) {
 	charts := &module.Charts{}
 
+	var ctx int
 	for i := 0; i < e.Config.Charts.Num; i++ {
-		chart := newChart(i, e.Config.Charts.Labels, module.ChartType(e.Config.Charts.Type))
+		if i != 0 && i%e.Config.Charts.Contexts == 0 {
+			ctx++
+		}
+		chart := newChart(i, ctx, e.Config.Charts.Labels, module.ChartType(e.Config.Charts.Type))
 
 		if err := charts.Add(chart); err != nil {
 			return nil, err
 		}
 	}
 
+	ctx = 0
 	for i := 0; i < e.Config.HiddenCharts.Num; i++ {
-		chart := newHiddenChart(i, e.Config.Charts.Labels, module.ChartType(e.Config.HiddenCharts.Type))
+		if i != 0 && i%e.Config.HiddenCharts.Contexts == 0 {
+			ctx++
+		}
+		chart := newHiddenChart(i, ctx, e.Config.HiddenCharts.Labels, module.ChartType(e.Config.HiddenCharts.Type))
 
 		if err := charts.Add(chart); err != nil {
 			return nil, err
