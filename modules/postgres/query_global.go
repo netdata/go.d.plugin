@@ -52,7 +52,7 @@ func (p *Postgres) doQueryConnectionsUsed() error {
 	q := queryServerCurrentConnectionsUsed()
 
 	var v string
-	if err := p.doQueryRow(q).Scan(&v); err != nil {
+	if err := p.doQueryRow(q, &v); err != nil {
 		return err
 	}
 
@@ -121,7 +121,7 @@ func (p *Postgres) doQueryUptime() error {
 	q := queryServerUptime()
 
 	var s string
-	if err := p.doQueryRow(q).Scan(&s); err != nil {
+	if err := p.doQueryRow(q, &s); err != nil {
 		return err
 	}
 
@@ -149,7 +149,7 @@ func (p *Postgres) doQueryWALWrites() error {
 	q := queryWALWrites(p.pgVersion)
 
 	var v int64
-	if err := p.doQueryRow(q).Scan(&v); err != nil {
+	if err := p.doQueryRow(q, &v); err != nil {
 		return err
 	}
 

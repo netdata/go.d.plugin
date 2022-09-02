@@ -266,7 +266,7 @@ func (p *Postgres) querySettingsMaxConnections() (int64, error) {
 	q := querySettingsMaxConnections()
 
 	var s string
-	if err := p.doQueryRow(q).Scan(&s); err != nil {
+	if err := p.doQueryRow(q, &s); err != nil {
 		return 0, err
 	}
 
@@ -277,7 +277,7 @@ func (p *Postgres) queryServerVersion() (int, error) {
 	q := queryServerVersion()
 
 	var s string
-	if err := p.doQueryRow(q).Scan(&s); err != nil {
+	if err := p.doQueryRow(q, &s); err != nil {
 		return 0, err
 	}
 
@@ -288,7 +288,7 @@ func (p *Postgres) queryIsSuperUser() (bool, error) {
 	q := queryIsSuperUser()
 
 	var v bool
-	if err := p.doQueryRow(q).Scan(&v); err != nil {
+	if err := p.doQueryRow(q, &v); err != nil {
 		return false, err
 	}
 
@@ -297,11 +297,11 @@ func (p *Postgres) queryIsSuperUser() (bool, error) {
 
 func (p *Postgres) isSuperUser() bool { return p.superUser != nil && *p.superUser }
 
-func (p *Postgres) doQueryRow(query string) *sql.Row {
+func (p *Postgres) doQueryRow(query string, v any) error {
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
 
-	return p.db.QueryRowContext(ctx, query)
+	return p.db.QueryRowContext(ctx, query).Scan(v)
 }
 
 func (p *Postgres) doQueryRows(query string, assign func(column, value string, rowEnd bool)) error {
@@ -364,7 +364,7 @@ func readRows(rows *sql.Rows, assign func(column, value string, rowEnd bool)) er
 			assign(columns[i], valueToString(values[i]), i == l-1)
 		}
 	}
-	return nil
+	return rows.Err()
 }
 
 func valueToString(value any) string {
