@@ -21,7 +21,7 @@ func init() {
 func New() *Postgres {
 	return &Postgres{
 		Config: Config{
-			Timeout: web.Duration{Duration: time.Second},
+			Timeout: web.Duration{Duration: time.Second * 2},
 			DSN:     "postgres://postgres:postgres@127.0.0.1:5432/postgres",
 		},
 		charts: baseCharts.Copy(),
