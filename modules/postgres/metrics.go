@@ -1,11 +1,14 @@
 package postgres
 
 type pgMetrics struct {
-	maxConnections int64
-
+	srvMetrics
 	dbs       map[string]*dbMetrics
 	replApps  map[string]*replStandbyAppMetrics
 	replSlots map[string]*replSlotMetrics
+}
+
+type srvMetrics struct {
+	maxConnections int64
 
 	uptime int64
 
