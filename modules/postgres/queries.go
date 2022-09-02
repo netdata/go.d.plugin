@@ -21,7 +21,7 @@ func queryIsSuperUser() string {
 // But we need to check what connections (backend_type) count towards 'max_connections'.
 // I think python version query doesn't count it correctly.
 // https://github.com/netdata/netdata/blob/1782e2d002bc5203128e5a5d2b801010e2822d2d/collectors/python.d.plugin/postgres/postgres.chart.py#L266
-func queryServerCurrentConnectionsNum() string {
+func queryServerCurrentConnectionsUsed() string {
 	return "SELECT sum(numbackends) FROM pg_stat_database;"
 }
 

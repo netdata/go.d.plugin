@@ -49,47 +49,20 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		if err != nil {
 			return nil, fmt.Errorf("querying settings max connections error: %v", err)
 		}
-		p.maxConnections = maxConn
+		p.metrics.maxConnections = maxConn
 	}
 
-	if now.Sub(p.relistDatabaseTime) > p.relistDatabaseEvery {
-		p.relistDatabaseTime = now
-		dbs, err := p.queryDatabaseList()
-		if err != nil {
-			return nil, fmt.Errorf("querying database list error: %v", err)
-		}
-		p.collectDatabaseList(dbs)
+	if err := p.queryGlobalMetrics(); err != nil {
+		return nil, err
 	}
-
-	if now.Sub(p.relistReplStandbyTime) > p.relistReplStandbyEvery {
-		p.relistReplStandbyTime = now
-		apps, err := p.queryReplicationStandbyAppList()
-		if err != nil {
-			return nil, fmt.Errorf("querying replication standby app list error: %v", err)
-		}
-		p.collectReplicationStandbyAppList(apps)
+	if err := p.doQueryReplicationMetrics(); err != nil {
+		return nil, err
 	}
-
-	if p.pgVersion >= pgVersion10 && now.Sub(p.relistReplSlotTime) > p.relistReplSlotEvery {
-		p.relistReplSlotTime = now
-		slots, err := p.queryReplicationSlotList()
-		if err != nil {
-			return nil, fmt.Errorf("querying replication slot list error: %v", err)
-		}
-		p.collectReplicationSlotList(slots)
+	if err := p.doQueryDatabasesMetrics(); err != nil {
+		return nil, err
 	}
 
 	mx := make(map[string]int64)
-
-	if err := p.collectGlobalMetrics(mx); err != nil {
-		return mx, err
-	}
-	if err := p.collectReplicationMetrics(mx); err != nil {
-		return mx, err
-	}
-	if err := p.collectDatabasesMetrics(mx); err != nil {
-		return mx, err
-	}
 
 	return mx, nil
 }
@@ -119,11 +92,10 @@ func (p *Postgres) querySettingsMaxConnections() (int64, error) {
 	q := querySettingsMaxConnections()
 
 	var s string
-	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
-	defer cancel()
-	if err := p.db.QueryRowContext(ctx, q).Scan(&s); err != nil {
+	if err := p.doQueryRow(q).Scan(&s); err != nil {
 		return 0, err
 	}
+
 	return strconv.ParseInt(s, 10, 64)
 }
 
@@ -131,11 +103,10 @@ func (p *Postgres) queryServerVersion() (int, error) {
 	q := queryServerVersion()
 
 	var s string
-	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
-	defer cancel()
-	if err := p.db.QueryRowContext(ctx, q).Scan(&s); err != nil {
+	if err := p.doQueryRow(q).Scan(&s); err != nil {
 		return 0, err
 	}
+
 	return strconv.Atoi(s)
 }
 
@@ -143,39 +114,86 @@ func (p *Postgres) queryIsSuperUser() (bool, error) {
 	q := queryIsSuperUser()
 
 	var v bool
-	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
-	defer cancel()
-	if err := p.db.QueryRowContext(ctx, q).Scan(&v); err != nil {
+	if err := p.doQueryRow(q).Scan(&v); err != nil {
 		return false, err
 	}
+
 	return v, nil
 }
 
 func (p *Postgres) isSuperUser() bool { return p.superUser != nil && *p.superUser }
 
-func collectRows(rows *sql.Rows, assign func(column, value string)) error {
+func (p *Postgres) doQueryRow(query string) *sql.Row {
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+
+	return p.db.QueryRowContext(ctx, query)
+}
+
+func (p *Postgres) doQueryRows(query string, assign func(column, value string, rowEnd bool)) error {
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+
+	rows, err := p.db.QueryContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = rows.Close() }()
+
+	return readRows(rows, assign)
+}
+
+func (p *Postgres) getDBMetrics(name string) *dbMetrics {
+	db, ok := p.metrics.dbs[name]
+	if !ok {
+		db = &dbMetrics{name: name}
+		p.metrics.dbs[name] = db
+	}
+	return db
+}
+
+func (p *Postgres) getReplAppMetrics(name string) *replStandbyAppMetrics {
+	app, ok := p.metrics.replApps[name]
+	if !ok {
+		app = &replStandbyAppMetrics{name: name}
+		p.metrics.replApps[name] = app
+	}
+	return app
+}
+
+func (p *Postgres) getReplSlotMetrics(name string) *replSlotMetrics {
+	slot, ok := p.metrics.replSlots[name]
+	if !ok {
+		slot = &replSlotMetrics{name: name}
+		p.metrics.replSlots[name] = slot
+	}
+	return slot
+}
+
+func readRows(rows *sql.Rows, assign func(column, value string, rowEnd bool)) error {
 	if assign == nil {
 		return nil
 	}
+
 	columns, err := rows.Columns()
 	if err != nil {
 		return err
 	}
 
-	values := makeNullStrings(len(columns))
+	values := makeValues(len(columns))
 
 	for rows.Next() {
 		if err := rows.Scan(values...); err != nil {
 			return err
 		}
-		for i, v := range values {
-			assign(columns[i], valueToString(v))
+		for i, l := 0, len(values); i < l; i++ {
+			assign(columns[i], valueToString(values[i]), i == l-1)
 		}
 	}
 	return nil
 }
 
-func valueToString(value interface{}) string {
+func valueToString(value any) string {
 	v, ok := value.(*sql.NullString)
 	if !ok || !v.Valid {
 		return ""
@@ -183,15 +201,15 @@ func valueToString(value interface{}) string {
 	return v.String
 }
 
-func makeNullStrings(size int) []interface{} {
-	vs := make([]interface{}, size)
+func makeValues(size int) []any {
+	vs := make([]any, size)
 	for i := range vs {
 		vs[i] = &sql.NullString{}
 	}
 	return vs
 }
 
-func safeParseInt(s string) int64 {
+func parseInt(s string) int64 {
 	v, _ := strconv.ParseInt(s, 10, 64)
 	return v
 }

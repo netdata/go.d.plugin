@@ -144,7 +144,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
 				mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
-				mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+				mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 				mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 				mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 				mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
@@ -176,7 +176,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
 				mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
-				mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+				mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 				mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 				mockExpectErr(m, queryCheckpoints())
 			},
@@ -253,7 +253,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
 					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
-					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
@@ -437,7 +437,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
 					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
-					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
@@ -463,7 +463,7 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList1DB)
 
-					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
@@ -494,7 +494,7 @@ func TestPostgres_Collect(t *testing.T) {
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryDatabaseList(), dataV140004DatabaseList3DB)
 
-					mockExpect(t, m, queryServerCurrentConnectionsNum(), dataV140004ServerCurrentConnections)
+					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
 					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
 					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
@@ -576,7 +576,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationStandbyAppList(), dataV140004ReplStandbyAppList)
 					mockExpect(t, m, queryReplicationSlotList(), dataV140004ReplSlotList)
 
-					mockExpectErr(m, queryServerCurrentConnectionsNum())
+					mockExpectErr(m, queryServerCurrentConnectionsUsed())
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
