@@ -60,6 +60,10 @@ func (d *Docker) collectImages(mx map[string]int64) error {
 		return err
 	}
 
+	mx["images_size"] = 0
+	mx["images_dangling"] = 0
+	mx["images_active"] = 0
+
 	for _, v := range images {
 		mx["images_size"] += v.Size
 		if v.Containers == 0 {
@@ -68,6 +72,7 @@ func (d *Docker) collectImages(mx map[string]int64) error {
 			mx["images_active"]++
 		}
 	}
+
 	return nil
 }
 
