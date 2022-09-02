@@ -21,14 +21,16 @@ func init() {
 func New() *Postgres {
 	return &Postgres{
 		Config: Config{
-			Timeout: web.Duration{Duration: time.Second},
+			Timeout: web.Duration{Duration: time.Second * 2},
 			DSN:     "postgres://postgres:postgres@127.0.0.1:5432/postgres",
 		},
-		charts:                 baseCharts.Copy(),
-		recheckSettingsEvery:   time.Minute * 30,
-		relistDatabaseEvery:    time.Minute,
-		relistReplStandbyEvery: time.Minute,
-		relistReplSlotEvery:    time.Minute,
+		charts: baseCharts.Copy(),
+		mx: &pgMetrics{
+			dbs:       make(map[string]*dbMetrics),
+			replApps:  make(map[string]*replStandbyAppMetrics),
+			replSlots: make(map[string]*replSlotMetrics),
+		},
+		recheckSettingsEvery: time.Minute * 30,
 	}
 }
 
@@ -48,20 +50,10 @@ type Postgres struct {
 	superUser *bool
 	pgVersion int
 
-	maxConnections int64
+	mx *pgMetrics
 
-	recheckSettingsTime    time.Time
-	recheckSettingsEvery   time.Duration
-	relistDatabaseTime     time.Time
-	relistDatabaseEvery    time.Duration
-	relistReplStandbyTime  time.Time
-	relistReplStandbyEvery time.Duration
-	relistReplSlotTime     time.Time
-	relistReplSlotEvery    time.Duration
-
-	databases       []string
-	replStandbyApps []string
-	replSlots       []string
+	recheckSettingsTime  time.Time
+	recheckSettingsEvery time.Duration
 }
 
 func (p *Postgres) Init() bool {

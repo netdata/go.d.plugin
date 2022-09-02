@@ -1,5 +1,0 @@
- application_name
-------------------
- walreceiver
- walreceiver
- phys-standby2

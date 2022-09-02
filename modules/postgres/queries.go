@@ -2,13 +2,6 @@
 
 package postgres
 
-import (
-	"fmt"
-	"strings"
-)
-
-// http://sqllint.com/
-
 func queryServerVersion() string {
 	return "SHOW server_version_num;"
 }
@@ -21,29 +14,25 @@ func queryIsSuperUser() string {
 // But we need to check what connections (backend_type) count towards 'max_connections'.
 // I think python version query doesn't count it correctly.
 // https://github.com/netdata/netdata/blob/1782e2d002bc5203128e5a5d2b801010e2822d2d/collectors/python.d.plugin/postgres/postgres.chart.py#L266
-func queryServerCurrentConnectionsNum() string {
+func queryServerCurrentConnectionsUsed() string {
 	return "SELECT sum(numbackends) FROM pg_stat_database;"
 }
 
 func queryServerConnectionsState() string {
 	return `
-SELECT
-    state,
-    COUNT(*) 
-FROM
-    pg_stat_activity 
-WHERE
-    state IN 
-    (
-        'active',
-        'idle',
-        'idle in transaction',
-        'idle in transaction (aborted)',
-        'fastpath function call',
-        'disabled' 
-    )
-GROUP BY
-    state;
+SELECT state,
+       COUNT(*)
+FROM pg_stat_activity
+WHERE state IN
+      (
+       'active',
+       'idle',
+       'idle in transaction',
+       'idle in transaction (aborted)',
+       'fastpath function call',
+       'disabled'
+          )
+GROUP BY state;
 `
 }
 
@@ -199,14 +188,11 @@ func queryCatalogRelations() string {
 	// https://github.com/netdata/netdata/blob/750810e1798e09cc6210e83594eb9ed4905f8f12/collectors/python.d.plugin/postgres/postgres.chart.py#L336-L354
 	// TODO: do we need that? It is optional and disabled by default in py version.
 	return `
-SELECT
-    relkind,
-    COUNT(1),
-    SUM(relpages)* current_setting('block_size')::NUMERIC AS size 
-FROM
-    pg_class 
-GROUP BY
-    relkind;
+SELECT relkind,
+       COUNT(1),
+       SUM(relpages) * current_setting('block_size')::NUMERIC AS size
+FROM pg_class
+GROUP BY relkind;
 `
 }
 
@@ -238,17 +224,6 @@ SELECT count(*) FILTER (
            ) AS autovacuum_brin_summarize
 FROM pg_stat_activity
 WHERE query NOT LIKE '%%pg_stat_activity%%';
-`
-}
-
-func queryReplicationStandbyAppList() string {
-	return `
-    SELECT
-        application_name 
-    FROM
-        pg_stat_replication 
-    WHERE
-        application_name IS NOT NULL;
 `
 }
 
@@ -323,13 +298,6 @@ SELECT application_name,
        COALESCE(EXTRACT(EPOCH FROM replay_lag)::bigint, 0) AS replay_lag
 FROM pg_stat_replication psr
 WHERE application_name IS NOT NULL;
-`
-}
-
-func queryReplicationSlotList() string {
-	return `
-SELECT slot_name
-FROM pg_replication_slots;
 `
 }
 
@@ -443,85 +411,64 @@ GROUP BY
 
 func queryDatabaseList() string {
 	return `
-    SELECT
-        datname 
-    FROM
-        pg_database 
-    WHERE
-        has_database_privilege((SELECT
-            CURRENT_USER), datname, 'connect')     
-        AND NOT datname ~* '^template\d' 
-    ORDER BY
-        datname;
+SELECT datname
+FROM pg_database
+WHERE datallowconn = true
+  AND datistemplate = false
+  AND datname != current_database()
+  AND has_database_privilege((SELECT CURRENT_USER), datname, 'connect');
 `
 }
 
-func queryDatabaseStats(dbs []string) string {
+func queryDatabaseStats() string {
 	// definition by version: https://pgpedia.info/p/pg_stat_database.html
 	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-DATABASE-VIEW
 	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1018
 
-	q := `
-    SELECT
-        stat.datname,
-        numbackends,
-        pg_database.datconnlimit,
-        xact_commit,
-        xact_rollback,
-        blks_read,
-        blks_hit,
-        tup_returned,
-        tup_fetched,
-        tup_inserted,
-        tup_updated,
-        tup_deleted,
-        conflicts,
-        pg_database_size(stat.datname) AS size,
-        temp_files,
-        temp_bytes,
-        deadlocks     
-    FROM
-        pg_stat_database stat     
-    INNER JOIN
-        pg_database                                                                                   
-            ON pg_database.datname = stat.datname     
-    WHERE
-        stat.datname SIMILAR TO '%s';
+	return `
+SELECT stat.datname,
+       numbackends,
+       pg_database.datconnlimit,
+       xact_commit,
+       xact_rollback,
+       blks_read,
+       blks_hit,
+       tup_returned,
+       tup_fetched,
+       tup_inserted,
+       tup_updated,
+       tup_deleted,
+       conflicts,
+       pg_database_size(stat.datname) AS size,
+       temp_files,
+       temp_bytes,
+       deadlocks
+FROM pg_stat_database stat
+         INNER JOIN
+     pg_database
+     ON pg_database.datname = stat.datname
+WHERE pg_database.datistemplate = false;
 `
-	if len(dbs) == 0 {
-		q = fmt.Sprintf(q, "%")
-	} else {
-		q = fmt.Sprintf(q, strings.Join(dbs, "|"))
-	}
-
-	return q
 }
 
-func queryDatabaseConflicts(dbs []string) string {
+func queryDatabaseConflicts() string {
 	// definition by version: https://pgpedia.info/p/pg_stat_database_conflicts.html
 	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-DATABASE-CONFLICTS-VIEW
 	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1058
 
-	q := `
-    SELECT
-        datname,
-        confl_tablespace,
-        confl_lock,
-        confl_snapshot,
-        confl_bufferpin,
-        confl_deadlock     
-    FROM
-        pg_stat_database_conflicts
-    WHERE
-        datname SIMILAR TO '%s';
+	return `
+SELECT stat.datname,
+       confl_tablespace,
+       confl_lock,
+       confl_snapshot,
+       confl_bufferpin,
+       confl_deadlock
+FROM pg_stat_database_conflicts stat
+         INNER JOIN
+     pg_database
+     ON pg_database.datname = stat.datname
+WHERE pg_database.datistemplate = false;
 `
-	if len(dbs) == 0 {
-		q = fmt.Sprintf(q, "%")
-	} else {
-		q = fmt.Sprintf(q, strings.Join(dbs, "|"))
-	}
-
-	return q
 }
 
 func queryCheckpoints() string {
@@ -530,52 +477,38 @@ func queryCheckpoints() string {
 	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1104
 
 	return `
-    SELECT
-        checkpoints_timed,
-        checkpoints_req,
-        checkpoint_write_time,
-        checkpoint_sync_time,
-        buffers_checkpoint * current_setting('block_size')::numeric buffers_checkpoint,
-        buffers_clean * current_setting('block_size')::numeric buffers_clean,
-        maxwritten_clean,
-        buffers_backend * current_setting('block_size')::numeric buffers_backend,
-        buffers_backend_fsync,
-        buffers_alloc * current_setting('block_size')::numeric buffers_alloc 
-    FROM
-        pg_stat_bgwriter;
+SELECT checkpoints_timed,
+       checkpoints_req,
+       checkpoint_write_time,
+       checkpoint_sync_time,
+       buffers_checkpoint * current_setting('block_size')::numeric buffers_checkpoint,
+       buffers_clean * current_setting('block_size')::numeric      buffers_clean,
+       maxwritten_clean,
+       buffers_backend * current_setting('block_size')::numeric    buffers_backend,
+       buffers_backend_fsync,
+       buffers_alloc * current_setting('block_size')::numeric      buffers_alloc
+FROM pg_stat_bgwriter;
 `
 }
 
-func queryDatabaseLocks(dbs []string) string {
+func queryDatabaseLocks() string {
 	// definition by version: https://pgpedia.info/p/pg_locks.html
 	// docs: https://www.postgresql.org/docs/current/view-pg-locks.html
 
-	q := `
-    SELECT
-        pg_database.datname,
-        mode,
-        granted,
-        count(mode) AS locks_count                          
-    FROM
-        pg_locks                          
-    INNER JOIN
-        pg_database                                                                      
-            ON pg_database.oid = pg_locks.database               
-    WHERE
-        datname SIMILAR TO '%s'          
-    GROUP BY
-        datname,
-        mode,
-        granted                          
-    ORDER BY
-        datname,
-        mode;
+	return `
+SELECT pg_database.datname,
+       mode,
+       granted,
+       count(mode) AS locks_count
+FROM pg_locks
+         INNER JOIN
+     pg_database
+     ON pg_database.oid = pg_locks.database
+WHERE pg_database.datistemplate = false
+GROUP BY datname,
+         mode,
+         granted
+ORDER BY datname,
+         mode;
 `
-	if len(dbs) == 0 {
-		q = fmt.Sprintf(q, "%")
-	} else {
-		q = fmt.Sprintf(q, strings.Join(dbs, "|"))
-	}
-
-	return q
 }
