@@ -32,8 +32,9 @@ func New() *SystemdUnits {
 			Timeout: web.Duration{Duration: time.Second * 2},
 		},
 
-		client:         newSystemdDBusClient(),
-		collectedUnits: make(map[string]bool),
+		charts: &module.Charts{},
+		client: newSystemdDBusClient(),
+		units:  make(map[string]bool),
 	}
 }
 
@@ -50,7 +51,7 @@ type SystemdUnits struct {
 	conn   systemdConnection
 
 	systemdVersion int
-	collectedUnits map[string]bool
+	units          map[string]bool
 	sr             matcher.Matcher
 
 	charts *module.Charts
@@ -69,13 +70,6 @@ func (s *SystemdUnits) Init() bool {
 		return false
 	}
 	s.sr = sr
-
-	cs, err := s.initCharts()
-	if err != nil {
-		s.Errorf("init charts: %v", err)
-		return false
-	}
-	s.charts = cs
 
 	s.Debugf("unit names patterns: %v", s.Include)
 	s.Debugf("timeout: %s", s.Timeout)
