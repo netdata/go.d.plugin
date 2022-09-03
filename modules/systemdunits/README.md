@@ -7,11 +7,13 @@ sidebar_label: "Systemd units"
 
 # Systemd units state monitoring with Netdata
 
-[`Systemd`](https://www.freedesktop.org/wiki/Software/systemd/) is a suite of basic building blocks for a Linux system.
+[Systemd](https://www.freedesktop.org/wiki/Software/systemd/) is a suite of basic building blocks for a Linux system.
 
-This module monitors `Systemd` units state.
+This module monitors Systemd units state.
 
-- Works only on linux systems.
+## Requirements
+
+- Works only on Linux systems.
 - Disabled by default. Should be explicitly enabled in the `go.d.conf`:
 
 ```yaml
@@ -20,31 +22,26 @@ modules:
   systemdunits: yes
 ```
 
-## Charts
+## Metrics
 
-It produces the following charts:
+The unit types and states description can be found in
+the [official documentation](https://www.freedesktop.org/software/systemd/man/systemd.html#Concepts).
 
-- Service Unit State in `state`
-- Socket Unit State in `state`
-- Target Unit State in `state`
-- Path Unit State in `state`
-- Device Unit State in `state`
-- Mount Unit State in `state`
-- Automount Unit State in `state`
-- Swap Unit State in `state`
-- Timer Unit State in `state`
-- Scope Unit State in `state`
-- Slice Unit State in `state`
+All metrics have "systemd." prefix.
 
-## Unit states
-
-| Code | Name           | Meaning                                                                                                                              |
-|------|----------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| 1    | `active`       | started, bound, plugged in, ..., depending on the unit type                                                                          |
-| 2    | `inactive`     | stopped, unbound, unplugged, ..., depending on the unit type                                                                         |
-| 3    | `activating`   | in the process of being activated                                                                                                    |
-| 4    | `deactivating` | in the process of being deactivated                                                                                                  |
-| 5    | `failed`       | the service failed in some way (process returned error code on exit, or crashed, an operation timed out, or after too many restarts) |
+| Metric               | Scope |                     Dimensions                     | Units |
+|----------------------|:-----:|:--------------------------------------------------:|:-----:|
+| service_unit_state   | unit  | active, inactive, activating, deactivating, failed | state |
+| socket_unit_state    | unit  | active, inactive, activating, deactivating, failed | state |
+| target_unit_state    | unit  | active, inactive, activating, deactivating, failed | state |
+| path_unit_state      | unit  | active, inactive, activating, deactivating, failed | state |
+| device_unit_state    | unit  | active, inactive, activating, deactivating, failed | state |
+| mount_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
+| automount_unit_state | unit  | active, inactive, activating, deactivating, failed | state |
+| swap_unit_state      | unit  | active, inactive, activating, deactivating, failed | state |
+| timer_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
+| scope_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
+| slice_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
 
 ## Configuration
 

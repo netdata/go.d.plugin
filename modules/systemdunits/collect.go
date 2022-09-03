@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//go:build linux
-// +build linux
-
 package systemdunits
 
 import (
@@ -12,9 +9,39 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/netdata/go.d.plugin/agent/module"
-
 	"github.com/coreos/go-systemd/v22/dbus"
+)
+
+const (
+	// https://www.freedesktop.org/software/systemd/man/systemd.html
+	unitStateActive       = "active"
+	unitStateInactive     = "inactive"
+	unitStateActivating   = "activating"
+	unitStateDeactivating = "deactivating"
+	unitStateFailed       = "failed"
+
+	// https://www.freedesktop.org/software/systemd/man/systemd.html
+	unitTypeService   = "service"
+	unitTypeSocket    = "socket"
+	unitTypeTarget    = "target"
+	unitTypePath      = "path"
+	unitTypeDevice    = "device"
+	unitTypeMount     = "mount"
+	unitTypeAutomount = "automount"
+	unitTypeSwap      = "swap"
+	unitTypeTimer     = "timer"
+	unitTypeScope     = "scope"
+	unitTypeSlice     = "slice"
+)
+
+var (
+	unitStates = []string{
+		unitStateActive,
+		unitStateActivating,
+		unitStateFailed,
+		unitStateInactive,
+		unitStateDeactivating,
+	}
 )
 
 func (s *SystemdUnits) collect() (map[string]int64, error) {
@@ -48,19 +75,28 @@ func (s *SystemdUnits) collect() (map[string]int64, error) {
 		return nil, nil
 	}
 
-	collected := make(map[string]int64)
-	s.collectUnitsStates(collected, units)
-	return collected, nil
+	mx := make(map[string]int64)
+	s.collectUnitsStates(mx, units)
+
+	return mx, nil
 }
 
-func (s *SystemdUnits) collectUnitsStates(collected map[string]int64, units []dbus.UnitStatus) {
+func (s *SystemdUnits) collectUnitsStates(mx map[string]int64, units []dbus.UnitStatus) {
 	for _, unit := range units {
-		name := cleanUnitName(unit.Name)
-		if !s.collectedUnits[name] {
-			s.collectedUnits[name] = true
-			s.addUnitToCharts(name)
+		name, typ := extractUnitNameType(cleanUnitName(unit.Name))
+		if name == "" || typ == "" {
+			continue
 		}
-		collected[name] = convertUnitState(unit.ActiveState)
+
+		if !s.units[unit.Name] {
+			s.units[unit.Name] = true
+			s.addUnitToCharts(name, typ)
+		}
+
+		for _, s := range unitStates {
+			mx[fmt.Sprintf("unit_%s_%s_state_%s", name, typ, s)] = 0
+		}
+		mx[fmt.Sprintf("unit_%s_%s_state_%s", name, typ, unit.ActiveState)] = 1
 	}
 }
 
@@ -124,8 +160,8 @@ func (s *SystemdUnits) getLoadedUnits(conn systemdConnection) ([]dbus.UnitStatus
 			loaded = append(loaded, unit)
 		}
 	}
-
 	s.Debugf("got total/loaded %d/%d units", len(units), len(loaded))
+
 	return loaded, nil
 }
 
@@ -134,11 +170,8 @@ func (s *SystemdUnits) getLoadedUnitsByPatterns(conn systemdConnection) ([]dbus.
 	defer cancel()
 
 	s.Debugf("calling function 'ListUnitsByPatterns'")
-	units, err := conn.ListUnitsByPatternsContext(
-		ctx,
-		[]string{"active", "activating", "failed", "inactive", "deactivating"},
-		s.Include,
-	)
+
+	units, err := conn.ListUnitsByPatternsContext(ctx, unitStates, s.Include)
 	if err != nil {
 		return nil, fmt.Errorf("error on ListUnitsByPatterns: %v", err)
 	}
@@ -149,60 +182,17 @@ func (s *SystemdUnits) getLoadedUnitsByPatterns(conn systemdConnection) ([]dbus.
 			loaded = append(loaded, unit)
 		}
 	}
-
 	s.Debugf("got total/loaded %d/%d units", len(units), len(loaded))
+
 	return loaded, nil
 }
 
-func (s *SystemdUnits) addUnitToCharts(name string) {
-	typ := extractUnitType(name)
-	if typ == "" {
-		s.Warningf("add dimension (unit '%s'): can't extract unit type", name)
-		return
-	}
-
-	id := fmt.Sprintf("%s_unit_state", typ)
-	chart := s.Charts().Get(id)
-	if chart == nil {
-		s.Warningf("add dimension (unit '%s'): can't find '%s' chart", name, id)
-		return
-	}
-
-	dim := &module.Dim{
-		ID:   name,
-		Name: name[:len(name)-len(typ)-1], // name.type => name
-	}
-	if err := chart.AddDim(dim); err != nil {
-		s.Warningf("add dimension (unit '%s'): %v", name, err)
-	}
-	chart.MarkNotCreated()
-}
-
-func extractUnitType(name string) string {
-	// name.type => type
+func extractUnitNameType(name string) (string, string) {
 	idx := strings.LastIndexByte(name, '.')
 	if idx <= 0 {
-		return ""
+		return "", ""
 	}
-	return name[idx+1:]
-}
-
-func convertUnitState(state string) int64 {
-	// https://www.freedesktop.org/software/systemd/man/systemd.html
-	switch state {
-	case "active":
-		return 1
-	case "inactive":
-		return 2
-	case "activating":
-		return 3
-	case "deactivating":
-		return 4
-	case "failed":
-		return 5
-	default:
-		return -1
-	}
+	return name[:idx], name[idx+1:]
 }
 
 func cleanUnitName(name string) string {
