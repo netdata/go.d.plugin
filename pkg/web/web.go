@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package web
 
 // HTTP is a struct with embedded Request and Client.

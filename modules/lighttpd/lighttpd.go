@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package lighttpd
 
 import (
@@ -42,7 +44,6 @@ type Config struct {
 	web.HTTP `yaml:",inline"`
 }
 
-// Lighttpd Lighttpd module.
 type Lighttpd struct {
 	module.Base
 	Config    `yaml:",inline"`

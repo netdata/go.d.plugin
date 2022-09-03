@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package unbound
 
 import (
@@ -5,7 +7,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -18,14 +20,14 @@ import (
 )
 
 var (
-	commonStatsData, _          = ioutil.ReadFile("testdata/stats/common.txt")
-	extStatsData, _             = ioutil.ReadFile("testdata/stats/extended.txt")
-	lifeCycleCumulativeData1, _ = ioutil.ReadFile("testdata/stats/lifecycle/cumulative/extended1.txt")
-	lifeCycleCumulativeData2, _ = ioutil.ReadFile("testdata/stats/lifecycle/cumulative/extended2.txt")
-	lifeCycleCumulativeData3, _ = ioutil.ReadFile("testdata/stats/lifecycle/cumulative/extended3.txt")
-	lifeCycleResetData1, _      = ioutil.ReadFile("testdata/stats/lifecycle/reset/extended1.txt")
-	lifeCycleResetData2, _      = ioutil.ReadFile("testdata/stats/lifecycle/reset/extended2.txt")
-	lifeCycleResetData3, _      = ioutil.ReadFile("testdata/stats/lifecycle/reset/extended3.txt")
+	commonStatsData, _          = os.ReadFile("testdata/stats/common.txt")
+	extStatsData, _             = os.ReadFile("testdata/stats/extended.txt")
+	lifeCycleCumulativeData1, _ = os.ReadFile("testdata/stats/lifecycle/cumulative/extended1.txt")
+	lifeCycleCumulativeData2, _ = os.ReadFile("testdata/stats/lifecycle/cumulative/extended2.txt")
+	lifeCycleCumulativeData3, _ = os.ReadFile("testdata/stats/lifecycle/cumulative/extended3.txt")
+	lifeCycleResetData1, _      = os.ReadFile("testdata/stats/lifecycle/reset/extended1.txt")
+	lifeCycleResetData2, _      = os.ReadFile("testdata/stats/lifecycle/reset/extended2.txt")
+	lifeCycleResetData3, _      = os.ReadFile("testdata/stats/lifecycle/reset/extended3.txt")
 )
 
 func Test_readTestData(t *testing.T) {
@@ -246,7 +248,7 @@ func (m mockUnboundClient) Disconnect() error {
 	return nil
 }
 
-func (m mockUnboundClient) Command(command string, process socket.Processor) error {
+func (m mockUnboundClient) Command(_ string, process socket.Processor) error {
 	if m.err {
 		return errors.New("mock send error")
 	}

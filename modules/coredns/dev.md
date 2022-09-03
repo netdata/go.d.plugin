@@ -1,6 +1,6 @@
 ### Setup coredns
 
-Download a `coredns` release from [Github](https://github.com/coredns/coredns/releases).
+Download a `coredns` release from [GitHub](https://github.com/coredns/coredns/releases).
 
 Run `coredns`:
 ```shell

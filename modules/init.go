@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package modules
 
 import (
@@ -14,6 +16,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/dnsmasq"
 	_ "github.com/netdata/go.d.plugin/modules/dnsmasq_dhcp"
 	_ "github.com/netdata/go.d.plugin/modules/dnsquery"
+	_ "github.com/netdata/go.d.plugin/modules/docker"
 	_ "github.com/netdata/go.d.plugin/modules/docker_engine"
 	_ "github.com/netdata/go.d.plugin/modules/dockerhub"
 	_ "github.com/netdata/go.d.plugin/modules/elasticsearch"
@@ -32,6 +35,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/k8s_state"
 	_ "github.com/netdata/go.d.plugin/modules/lighttpd"
 	_ "github.com/netdata/go.d.plugin/modules/lighttpd2"
+	_ "github.com/netdata/go.d.plugin/modules/logind"
 	_ "github.com/netdata/go.d.plugin/modules/logstash"
 	_ "github.com/netdata/go.d.plugin/modules/mongodb"
 	_ "github.com/netdata/go.d.plugin/modules/mysql"
@@ -39,11 +43,13 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/nginxvts"
 	_ "github.com/netdata/go.d.plugin/modules/openvpn"
 	_ "github.com/netdata/go.d.plugin/modules/openvpn_status_log"
+	_ "github.com/netdata/go.d.plugin/modules/pgbouncer"
 	_ "github.com/netdata/go.d.plugin/modules/phpdaemon"
 	_ "github.com/netdata/go.d.plugin/modules/phpfpm"
 	_ "github.com/netdata/go.d.plugin/modules/pihole"
 	_ "github.com/netdata/go.d.plugin/modules/pika"
 	_ "github.com/netdata/go.d.plugin/modules/portcheck"
+	_ "github.com/netdata/go.d.plugin/modules/postgres"
 	_ "github.com/netdata/go.d.plugin/modules/powerdns"
 	_ "github.com/netdata/go.d.plugin/modules/powerdns_recursor"
 	_ "github.com/netdata/go.d.plugin/modules/prometheus"
@@ -66,6 +72,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/vsphere"
 	_ "github.com/netdata/go.d.plugin/modules/weblog"
 	_ "github.com/netdata/go.d.plugin/modules/whoisquery"
+	_ "github.com/netdata/go.d.plugin/modules/wireguard"
 	_ "github.com/netdata/go.d.plugin/modules/wmi"
 	_ "github.com/netdata/go.d.plugin/modules/x509check"
 	_ "github.com/netdata/go.d.plugin/modules/zookeeper"

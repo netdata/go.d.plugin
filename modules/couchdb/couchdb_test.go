@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package couchdb
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -15,11 +17,11 @@ import (
 )
 
 var (
-	v311Root, _        = ioutil.ReadFile("testdata/v3.1.1/root.json")
-	v311ActiveTasks, _ = ioutil.ReadFile("testdata/v3.1.1/active_tasks.json")
-	v311NodeStats, _   = ioutil.ReadFile("testdata/v3.1.1/node_stats.json")
-	v311NodeSystem, _  = ioutil.ReadFile("testdata/v3.1.1/node_system.json")
-	v311DbsInfo, _     = ioutil.ReadFile("testdata/v3.1.1/dbs_info.json")
+	v311Root, _        = os.ReadFile("testdata/v3.1.1/root.json")
+	v311ActiveTasks, _ = os.ReadFile("testdata/v3.1.1/active_tasks.json")
+	v311NodeStats, _   = os.ReadFile("testdata/v3.1.1/node_stats.json")
+	v311NodeSystem, _  = os.ReadFile("testdata/v3.1.1/node_system.json")
+	v311DbsInfo, _     = os.ReadFile("testdata/v3.1.1/dbs_info.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package snmp
 
 import (
@@ -155,7 +157,7 @@ func (s *SNMP) Collect() map[string]int64 {
 
 func (s *SNMP) Cleanup() {
 	if s.snmpClient != nil {
-		s.snmpClient.Close()
+		_ = s.snmpClient.Close()
 	}
 }
 

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package mysql
 
 import (
@@ -8,31 +10,53 @@ import (
 	"github.com/blang/semver/v4"
 )
 
-const queryVersion = "SELECT VERSION()"
+const queryShowVersion = `
+SHOW GLOBAL VARIABLES 
+WHERE 
+  Variable_name LIKE 'version'
+  OR Variable_name LIKE 'version_comment';`
 
 var reVersionCore = regexp.MustCompile(`^\d+\.\d+\.\d+`)
 
-func (m *MySQL) collectVersion() (ver *semver.Version, isMariaDB bool, err error) {
+func (m *MySQL) collectVersion() error {
 	// https://mariadb.com/kb/en/version/
-	m.Debugf("executing query: '%s'", queryVersion)
-	var fullVersion string
-	if err := m.db.QueryRow(queryVersion).Scan(&fullVersion); err != nil {
-		return nil, false, err
+	q := queryShowVersion
+	m.Debugf("executing query: '%s'", queryShowVersion)
+
+	var name, version, versionComment string
+	_, err := m.collectQuery(q, func(column, value string, _ bool) {
+		switch column {
+		case "Variable_name":
+			name = value
+		case "Value":
+			switch name {
+			case "version":
+				version = value
+			case "version_comment":
+				versionComment = value
+			}
+		}
+	})
+	if err != nil {
+		return err
 	}
 
-	m.Debugf("application version: %s", fullVersion)
+	m.Infof("application version: '%s', version_comment: '%s'", version, versionComment)
 
 	// version string is not always valid semver (ex.: 8.0.22-0ubuntu0.20.04.2)
-	versionCore := reVersionCore.FindString(fullVersion)
-	if versionCore == "" {
-		return nil, false, fmt.Errorf("couldn't parse version string '%s'", fullVersion)
+	s := reVersionCore.FindString(version)
+	if s == "" {
+		return fmt.Errorf("couldn't parse version string '%s'", version)
 	}
 
-	ver, err = semver.New(versionCore)
+	ver, err := semver.New(s)
 	if err != nil {
-		return nil, false, fmt.Errorf("couldn't parse version string '%s': %v", fullVersion, err)
+		return fmt.Errorf("couldn't parse version string '%s': %v", s, err)
 	}
-	isMariaDB = strings.Contains(fullVersion, "MariaDB")
 
-	return ver, isMariaDB, nil
+	m.version = ver
+	m.isMariaDB = strings.Contains(version, "MariaDB") || strings.Contains(versionComment, "mariadb")
+	m.isPercona = strings.Contains(versionComment, "Percona")
+
+	return nil
 }

@@ -1,10 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package client
 
 import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -170,7 +171,7 @@ func (c *Client) getWithDecode(dst interface{}, url string) error {
 		return err
 	}
 
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return fmt.Errorf("error on reading response from %s : %v", url, err)
@@ -219,7 +220,7 @@ func makeURL(host string, query Query, password string) (string, error) {
 
 func closeBody(resp *http.Response) {
 	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
 }

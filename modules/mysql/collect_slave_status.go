@@ -1,91 +1,59 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package mysql
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/blang/semver/v4"
 )
 
 const (
-	querySlaveStatus     = "SHOW SLAVE STATUS"
-	queryAllSlavesStatus = "SHOW ALL SLAVES STATUS"
+	queryShowSlaveStatus     = "SHOW SLAVE STATUS;"
+	queryShowAllSlavesStatus = "SHOW ALL SLAVES STATUS;"
 )
 
-var slaveStatusMetrics = []string{
-	"Seconds_Behind_Master",
-	"Slave_SQL_Running",
-	"Slave_IO_Running",
-}
-
-func (m *MySQL) collectSlaveStatus(collected map[string]int64) error {
+func (m *MySQL) collectSlaveStatus(mx map[string]int64) error {
 	// https://mariadb.com/docs/reference/es/sql-statements/SHOW_ALL_SLAVES_STATUS/
 	mariaDBMinVer := semver.Version{Major: 10, Minor: 2, Patch: 0}
-	var query string
+	var q string
 	if m.isMariaDB && m.version.GTE(mariaDBMinVer) {
-		query = queryAllSlavesStatus
+		q = queryShowAllSlavesStatus
 	} else {
-		query = querySlaveStatus
+		q = queryShowSlaveStatus
 	}
-	m.Debugf("executing query: '%s'", query)
+	m.Debugf("executing query: '%s'", q)
 
-	rows, err := m.db.Query(query)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
+	v := struct {
+		name         string
+		behindMaster int64
+		sqlRunning   int64
+		ioRunning    int64
+	}{}
 
-	columns, err := rows.Columns()
-	if err != nil {
-		return err
-	}
-
-	values := nullStringsFromColumns(columns)
-
-	for rows.Next() {
-		if err := rows.Scan(values...); err != nil {
-			return err
+	_, err := m.collectQuery(q, func(column, value string, lineEnd bool) {
+		switch column {
+		case "Connection_name", "Channel_Name":
+			v.name = value
+		case "Seconds_Behind_Master":
+			v.behindMaster = parseInt(value)
+		case "Slave_SQL_Running":
+			v.sqlRunning = parseInt(convertSlaveSQLRunning(value))
+		case "Slave_IO_Running":
+			v.ioRunning = parseInt(convertSlaveIORunning(value))
 		}
-
-		set := rowAsMap(columns, values)
-
-		var conn string
-		if m.isMariaDB {
-			conn = set["Connection_name"]
-		} else {
-			conn = set["Channel_Name"]
-		}
-
-		suffix := slaveMetricSuffix(conn)
-
-		if !m.collectedReplConns[conn] {
-			m.collectedReplConns[conn] = true
-			m.addSlaveReplicationConnCharts(conn)
-		}
-
-		for _, name := range slaveStatusMetrics {
-			v, ok := set[name]
-			if !ok {
-				continue
+		if lineEnd {
+			if !m.collectedReplConns[v.name] {
+				m.collectedReplConns[v.name] = true
+				m.addSlaveReplicationConnCharts(v.name)
 			}
-			value, err := parseSlaveStatusValue(name, v)
-			if err != nil {
-				continue
-			}
-			collected[strings.ToLower(name+suffix)] = value
+			s := strings.ToLower(slaveMetricSuffix(v.name))
+			mx["seconds_behind_master"+s] = v.behindMaster
+			mx["slave_sql_running"+s] = v.sqlRunning
+			mx["slave_io_running"+s] = v.ioRunning
 		}
-	}
-	return rows.Err()
-}
-
-func parseSlaveStatusValue(name, value string) (int64, error) {
-	switch name {
-	case "Slave_SQL_Running":
-		value = convertSlaveSQLRunning(value)
-	case "Slave_IO_Running":
-		value = convertSlaveIORunning(value)
-	}
-	return strconv.ParseInt(value, 10, 64)
+	})
+	return err
 }
 
 func convertSlaveSQLRunning(value string) string {

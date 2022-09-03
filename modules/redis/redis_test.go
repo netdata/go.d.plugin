@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package redis
 
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -14,8 +16,8 @@ import (
 )
 
 var (
-	pikaInfoAll, _ = ioutil.ReadFile("testdata/pika/info_all.txt")
-	v609InfoAll, _ = ioutil.ReadFile("testdata/v6.0.9/info_all.txt")
+	pikaInfoAll, _ = os.ReadFile("testdata/pika/info_all.txt")
+	v609InfoAll, _ = os.ReadFile("testdata/v6.0.9/info_all.txt")
 )
 
 func Test_Testdata(t *testing.T) {

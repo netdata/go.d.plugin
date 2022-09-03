@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package vcsa
 
 import (
@@ -63,6 +65,7 @@ func (vc *VCSA) scrapeHealth(mx *healthMetrics, doConcurrently bool) {
 }
 
 //	The vCenter Server Appliance API offers health status indicators for several key components of the appliance:
+//
 // - green  The component is healthy.
 // - yellow The component is healthy, but may have some problems.
 // - orange The component is degraded, and may have serious problems.

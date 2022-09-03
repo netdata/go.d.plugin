@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package metrics
 
 import (
@@ -101,14 +103,15 @@ func NewHistogram(buckets []float64) Histogram {
 	}
 }
 
-// WriteTo writes it's values into given map.
-// It add those key-value pairs:
-//   ${key}_sum        gauge, for sum of it's observed values
-//   ${key}_count      counter, for count of it's observed values (equals to +Inf bucket)
-//   ${key}_bucket_1   counter, for 1st bucket count
-//   ${key}_bucket_2   counter, for 2nd bucket count
-//   ...
-//   ${key}_bucket_N   counter, for Nth bucket count
+// WriteTo writes its values into given map.
+// It adds those key-value pairs:
+//
+//	${key}_sum        gauge, for sum of it's observed values
+//	${key}_count      counter, for count of it's observed values (equals to +Inf bucket)
+//	${key}_bucket_1   counter, for 1st bucket count
+//	${key}_bucket_2   counter, for 2nd bucket count
+//	...
+//	${key}_bucket_N   counter, for Nth bucket count
 func (h histogram) WriteTo(rv map[string]int64, key string, mul, div int) {
 	rv[key+"_sum"] = int64(h.sum * float64(mul) / float64(div))
 	rv[key+"_count"] = h.count

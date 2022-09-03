@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package docker_engine
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -15,10 +17,10 @@ import (
 )
 
 var (
-	metricsNonDockerEngine, _ = ioutil.ReadFile("testdata/non-docker-engine.txt")
-	metricsV17050CE, _        = ioutil.ReadFile("testdata/v17.05.0-ce.txt")
-	metricsV18093CE, _        = ioutil.ReadFile("testdata/v18.09.3-ce.txt")
-	metricsV18093CESwarm, _   = ioutil.ReadFile("testdata/v18.09.3-ce-swarm.txt")
+	metricsNonDockerEngine, _ = os.ReadFile("testdata/non-docker-engine.txt")
+	metricsV17050CE, _        = os.ReadFile("testdata/v17.05.0-ce.txt")
+	metricsV18093CE, _        = os.ReadFile("testdata/v18.09.3-ce.txt")
+	metricsV18093CESwarm, _   = os.ReadFile("testdata/v18.09.3-ce-swarm.txt")
 )
 
 func Test_readTestData(t *testing.T) {

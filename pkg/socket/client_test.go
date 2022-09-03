@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package socket
 
 import (
@@ -50,7 +52,7 @@ var tcpTlsConfig = Config{
 
 func Test_clientCommand(t *testing.T) {
 	srv := &tcpServer{addr: testServerAddress, rowsNumResp: 1}
-	go func() { _ = srv.Run(); defer srv.Close() }()
+	go func() { _ = srv.Run(); defer func() { _ = srv.Close() }() }()
 
 	time.Sleep(time.Millisecond * 100)
 	sock := New(tcpConfig)
@@ -106,7 +108,7 @@ func Test_clientCommandStopProcessing(t *testing.T) {
 
 func Test_clientUDPCommand(t *testing.T) {
 	srv := &udpServer{addr: testServerAddress, rowsNumResp: 1}
-	go func() { _ = srv.Run(); defer srv.Close() }()
+	go func() { _ = srv.Run(); defer func() { _ = srv.Close() }() }()
 
 	time.Sleep(time.Millisecond * 100)
 	sock := New(udpConfig)

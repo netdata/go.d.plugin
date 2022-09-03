@@ -1,65 +1,111 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package dnsmasq_dhcp
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
-	"github.com/netdata/go.d.plugin/pkg/iprange"
 )
 
-type (
-	// Charts is an alias for module.Charts
-	Charts = module.Charts
-	// Dim is an alias for module.Dim
-	Dim = module.Dim
+const (
+	prioDHCPRangeUtilization = module.Priority + iota
+	prioDHCPRangeAllocatesLeases
+	prioDHCPRanges
+	prioDHCPHosts
 )
 
-var charts = Charts{
+var charts = module.Charts{
 	{
-		ID:    "%s_utilization",
-		Title: "DHCP Range Utilization",
-		Units: "percentage",
-		Ctx:   "dnsmasq_dhcp.dhcp_range_utilization",
+		ID:       "dhcp_ranges",
+		Title:    "Number of DHCP Ranges",
+		Units:    "ranges",
+		Fam:      "dhcp ranges",
+		Ctx:      "dnsmasq_dhcp.dhcp_ranges",
+		Type:     module.Stacked,
+		Priority: prioDHCPRanges,
+		Dims: module.Dims{
+			{ID: "ipv4_dhcp_ranges", Name: "ipv4"},
+			{ID: "ipv6_dhcp_ranges", Name: "ipv6"},
+		},
 	},
 	{
-		ID:    "%s_allocated_leases",
-		Title: "DHCP Range Allocated Leases",
-		Units: "leases",
-		Ctx:   "dnsmasq_dhcp.dhcp_range_allocated_leases",
+		ID:       "dhcp_hosts",
+		Title:    "Number of DHCP Hosts",
+		Units:    "hosts",
+		Fam:      "dhcp hosts",
+		Ctx:      "dnsmasq_dhcp.dhcp_host",
+		Type:     module.Stacked,
+		Priority: prioDHCPHosts,
+		Dims: module.Dims{
+			{ID: "ipv4_dhcp_hosts", Name: "ipv4"},
+			{ID: "ipv6_dhcp_hosts", Name: "ipv6"},
+		},
 	},
 }
 
-func (d DnsmasqDHCP) charts() *Charts {
-	cs := &Charts{}
-
-	for _, r := range d.ranges {
-		panicIf(cs.Add(*addRangeCharts(r)...))
+var (
+	chartsTmpl = module.Charts{
+		chartTmplDHCPRangeUtilization.Copy(),
+		chartTmplDHCPRangeAllocatedLeases.Copy(),
 	}
+)
 
-	return cs
+var (
+	chartTmplDHCPRangeUtilization = module.Chart{
+		ID:       "dhcp_range_%s_utilization",
+		Title:    "DHCP Range utilization",
+		Units:    "percentage",
+		Fam:      "dhcp range utilization",
+		Ctx:      "dnsmasq_dhcp.dhcp_range_utilization",
+		Type:     module.Area,
+		Priority: prioDHCPRangeUtilization,
+		Dims: module.Dims{
+			{ID: "dhcp_range_%s_utilization", Name: "used"},
+		},
+	}
+	chartTmplDHCPRangeAllocatedLeases = module.Chart{
+		ID:       "dhcp_range_%s_allocated_leases",
+		Title:    "DHCP Range Allocated Leases",
+		Units:    "leases",
+		Fam:      "dhcp range leases",
+		Ctx:      "dnsmasq_dhcp.dhcp_range_allocated_leases",
+		Priority: prioDHCPRangeAllocatesLeases,
+		Dims: module.Dims{
+			{ID: "dhcp_range_%s_allocated_leases", Name: "leases"},
+		},
+	}
+)
+
+func newDHCPRangeCharts(dhcpRange string) *module.Charts {
+	charts := chartsTmpl.Copy()
+
+	for _, c := range *charts {
+		c.ID = fmt.Sprintf(c.ID, dhcpRange)
+		c.Labels = []module.Label{
+			{Key: "dhcp_range", Value: dhcpRange},
+		}
+		for _, d := range c.Dims {
+			d.ID = fmt.Sprintf(d.ID, dhcpRange)
+		}
+	}
+	return charts
 }
 
-func addRangeCharts(r iprange.Range) *Charts {
-	cs := charts.Copy()
-
-	name := r.String()
-
-	c := cs.Get("%s_utilization")
-	c.ID = fmt.Sprintf(c.ID, name)
-	c.Fam = name
-	panicIf(c.AddDim(&Dim{ID: name + "_percentage", Name: "used"}))
-
-	c = cs.Get("%s_allocated_leases")
-	c.ID = fmt.Sprintf(c.ID, name)
-	c.Fam = name
-	panicIf(c.AddDim(&Dim{ID: name, Name: "allocated"}))
-
-	return cs
+func (d *DnsmasqDHCP) addDHCPRangeCharts(dhcpRange string) {
+	charts := newDHCPRangeCharts(dhcpRange)
+	if err := d.Charts().Add(*charts...); err != nil {
+		d.Warning(err)
+	}
 }
 
-func panicIf(err error) {
-	if err == nil {
-		return
+func (d *DnsmasqDHCP) removeDHCPRangeCharts(dhcpRange string) {
+	p := "dhcp_range_" + dhcpRange
+	for _, c := range *d.Charts() {
+		if strings.HasSuffix(c.ID, p) {
+			c.MarkRemove()
+			c.MarkNotCreated()
+		}
 	}
-	panic(err)
 }

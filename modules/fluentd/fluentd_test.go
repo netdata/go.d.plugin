@@ -1,16 +1,18 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package fluentd
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-var testDataPlugins, _ = ioutil.ReadFile("testdata/plugins.json")
+var testDataPlugins, _ = os.ReadFile("testdata/plugins.json")
 
 func TestNew(t *testing.T) {
 	job := New()

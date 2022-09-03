@@ -1,8 +1,9 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package file
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -79,7 +80,7 @@ type tmpDir struct {
 
 func newTmpDir(t *testing.T, pattern string) *tmpDir {
 	pattern = "netdata-go-test-discovery-file-" + pattern
-	dir, err := ioutil.TempDir(os.TempDir(), pattern)
+	dir, err := os.MkdirTemp(os.TempDir(), pattern)
 	require.NoError(t, err)
 	return &tmpDir{dir: dir, t: t}
 }
@@ -93,7 +94,7 @@ func (d *tmpDir) join(filename string) string {
 }
 
 func (d *tmpDir) createFile(pattern string) string {
-	f, err := ioutil.TempFile(d.dir, pattern)
+	f, err := os.CreateTemp(d.dir, pattern)
 	require.NoError(d.t, err)
 	_ = f.Close()
 	return f.Name()
@@ -112,12 +113,12 @@ func (d *tmpDir) renameFile(origFilename, newFilename string) {
 func (d *tmpDir) writeYAML(filename string, in interface{}) {
 	bs, err := yaml.Marshal(in)
 	require.NoError(d.t, err)
-	err = ioutil.WriteFile(filename, bs, 0644)
+	err = os.WriteFile(filename, bs, 0644)
 	require.NoError(d.t, err)
 }
 
 func (d *tmpDir) writeString(filename, data string) {
-	err := ioutil.WriteFile(filename, []byte(data), 0644)
+	err := os.WriteFile(filename, []byte(data), 0644)
 	require.NoError(d.t, err)
 }
 

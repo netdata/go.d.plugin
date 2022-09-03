@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package module
 
 import (
@@ -7,11 +9,11 @@ import (
 // Module is an interface that represents a module.
 type Module interface {
 	// Init does initialization.
-	// If it return false, the job will be disabled.
+	// If it returns false, the job will be disabled.
 	Init() bool
 
 	// Check is called after Init.
-	// If it return false, the job will be disabled.
+	// If it returns false, the job will be disabled.
 	Check() bool
 
 	// Charts returns the chart definition.

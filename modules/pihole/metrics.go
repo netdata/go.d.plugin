@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package pihole
 
 import "github.com/netdata/go.d.plugin/modules/pihole/client"

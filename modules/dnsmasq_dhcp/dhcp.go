@@ -1,7 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package dnsmasq_dhcp
 
 import (
-	"fmt"
 	"net"
 	"time"
 
@@ -17,7 +18,6 @@ func init() {
 	module.Register("dnsmasq_dhcp", creator)
 }
 
-// New creates DnsmasqDHCP with default values.
 func New() *DnsmasqDHCP {
 	config := Config{
 		// debian defaults
@@ -27,83 +27,60 @@ func New() *DnsmasqDHCP {
 	}
 
 	return &DnsmasqDHCP{
-		Config: config,
-		mx:     make(map[string]int64),
+		Config:           config,
+		charts:           charts.Copy(),
+		parseConfigEvery: time.Minute,
+		cacheDHCPRanges:  make(map[string]bool),
+		mx:               make(map[string]int64),
 	}
 }
 
-// Config is the DnsmasqDHCP module configuration.
 type Config struct {
 	LeasesPath string `yaml:"leases_path"`
 	ConfPath   string `yaml:"conf_path"`
 	ConfDir    string `yaml:"conf_dir"`
 }
 
-func (c Config) String() string {
-	return fmt.Sprintf("leases_path: [%s], conf_path: [%s], conf_dir: [%s]",
-		c.LeasesPath,
-		c.ConfPath,
-		c.ConfDir,
-	)
-}
-
-// DnsmasqDHCP DnsmasqDHCP module.
 type DnsmasqDHCP struct {
 	module.Base
 	Config `yaml:",inline"`
 
+	charts *module.Charts
+
 	leasesModTime time.Time
-	ranges        []iprange.Range
-	staticIPs     []net.IP
-	mx            map[string]int64
+
+	parseConfigTime  time.Time
+	parseConfigEvery time.Duration
+
+	dhcpRanges []iprange.Range
+	dhcpHosts  []net.IP
+
+	cacheDHCPRanges map[string]bool
+
+	mx map[string]int64
 }
 
-// Cleanup makes cleanup.
-func (DnsmasqDHCP) Cleanup() {}
-
-func (d DnsmasqDHCP) checkLeasesPath() bool {
-	if d.LeasesPath == "" {
-		d.Error("empty 'leases_path'")
-		return false
-	}
-
-	f, err := openFile(d.LeasesPath)
-	if err != nil {
-		d.Error(err)
-		return false
-	}
-
-	_ = f.Close()
-	return true
-}
-
-// Init makes initialization.
 func (d *DnsmasqDHCP) Init() bool {
-	if !d.checkLeasesPath() {
+	if err := d.validateConfig(); err != nil {
+		d.Errorf("config validation: %v", err)
 		return false
 	}
-
-	d.Infof("start config : %s", d.Config)
-	err := d.autodetection()
-	if err != nil {
-		d.Error(err)
+	if err := d.checkLeasesPath(); err != nil {
+		d.Errorf("leases path check: %v", err)
 		return false
 	}
 
 	return true
 }
 
-// Check makes check.
 func (d *DnsmasqDHCP) Check() bool {
 	return len(d.Collect()) > 0
 }
 
-// Charts creates Charts.
-func (d DnsmasqDHCP) Charts() *Charts {
-	return d.charts()
+func (d *DnsmasqDHCP) Charts() *module.Charts {
+	return d.charts
 }
 
-// Collect collects metrics.
 func (d *DnsmasqDHCP) Collect() map[string]int64 {
 	mx, err := d.collect()
 	if err != nil {
@@ -116,3 +93,5 @@ func (d *DnsmasqDHCP) Collect() map[string]int64 {
 
 	return mx
 }
+
+func (d *DnsmasqDHCP) Cleanup() {}

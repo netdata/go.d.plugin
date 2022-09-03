@@ -1,9 +1,10 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package k8s_state
 
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -62,7 +63,7 @@ func doMetaGKEHTTPReq(client http.Client, url string) (string, error) {
 		return "", fmt.Errorf("'%s' returned HTTP status code %d", url, resp.StatusCode)
 	}
 
-	bs, err := ioutil.ReadAll(resp.Body)
+	bs, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -77,7 +78,7 @@ func doMetaGKEHTTPReq(client http.Client, url string) (string, error) {
 
 func closeHTTPRespBody(resp *http.Response) {
 	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
 }

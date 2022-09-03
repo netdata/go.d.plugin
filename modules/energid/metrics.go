@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package energid
 
 // API docs: https://github.com/energicryptocurrency/core-api-documentation

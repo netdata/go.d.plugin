@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package couchdb
 
 // https://docs.couchdb.org/en/stable/api/index.html

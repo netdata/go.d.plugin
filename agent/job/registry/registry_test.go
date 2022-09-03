@@ -1,7 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package registry
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -56,7 +57,7 @@ func TestFileLockRegistry_Register(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			dir, err := ioutil.TempDir(os.TempDir(), "netdata-go-test-file-lock-registry")
+			dir, err := os.MkdirTemp(os.TempDir(), "netdata-go-test-file-lock-registry")
 			require.NoError(t, err)
 			defer func() { require.NoError(t, os.RemoveAll(dir)) }()
 
@@ -85,7 +86,7 @@ func TestFileLockRegistry_Unregister(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			dir, err := ioutil.TempDir(os.TempDir(), "netdata-go-test-file-lock-registry")
+			dir, err := os.MkdirTemp(os.TempDir(), "netdata-go-test-file-lock-registry")
 			require.NoError(t, err)
 			defer func() { require.NoError(t, os.RemoveAll(dir)) }()
 

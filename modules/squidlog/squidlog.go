@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package squidlog
 
 import (
@@ -61,7 +63,7 @@ func (s *SquidLog) Init() bool {
 }
 
 func (s *SquidLog) Check() bool {
-	// Note: these inits are here to make auto detection retry working
+	// Note: these inits are here to make auto-detection retry working
 	if err := s.createLogReader(); err != nil {
 		s.Warning("check failed: ", err)
 		return false

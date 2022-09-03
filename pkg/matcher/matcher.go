@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package matcher
 
 import (
@@ -9,9 +11,9 @@ import (
 type (
 	// Matcher is an interface that wraps MatchString method.
 	Matcher interface {
-		// Perform match against given []byte
+		// Match performs match against given []byte
 		Match(b []byte) bool
-		// Perform match against given string
+		// MatchString performs match against given string
 		MatchString(string) bool
 	}
 
@@ -49,7 +51,8 @@ var (
 
 // Must is a helper that wraps a call to a function returning (Matcher, error) and panics if the error is non-nil.
 // It is intended for use in variable initializations such as
-//   var m = matcher.Must(matcher.New(matcher.FmtString, "hello world"))
+//
+//	var m = matcher.Must(matcher.New(matcher.FmtString, "hello world"))
 func Must(m Matcher, err error) Matcher {
 	if err != nil {
 		panic(err)
@@ -77,24 +80,24 @@ func New(format Format, expr string) (Matcher, error) {
 //
 // Short Syntax
 //
-//     <line>      ::= [ <not> ] <format> <space> <expr>
-//     <not>       ::= '!'
-//                       negative expression
-//     <format>    ::= [ '=', '~', '*' ]
-//                       '=' means string match
-//                       '~' means regexp match
-//                       '*' means glob match
-//     <space>     ::= { ' ' | '\t' | '\n' | '\n' | '\r' }
-//     <expr>      ::= any string
+//	<line>      ::= [ <not> ] <format> <space> <expr>
+//	<not>       ::= '!'
+//	                  negative expression
+//	<format>    ::= [ '=', '~', '*' ]
+//	                  '=' means string match
+//	                  '~' means regexp match
+//	                  '*' means glob match
+//	<space>     ::= { ' ' | '\t' | '\n' | '\n' | '\r' }
+//	<expr>      ::= any string
 //
 // Long Syntax
 //
-//     <line>      ::= [ <not> ] <format> <separator> <expr>
-//     <format>    ::= [ 'string' | 'glob' | 'regexp' | 'simple_patterns' ]
-//     <not>       ::= '!'
-//                       negative expression
-//     <separator> ::= ':'
-//     <expr>      ::= any string
+//	<line>      ::= [ <not> ] <format> <separator> <expr>
+//	<format>    ::= [ 'string' | 'glob' | 'regexp' | 'simple_patterns' ]
+//	<not>       ::= '!'
+//	                  negative expression
+//	<separator> ::= ':'
+//	<expr>      ::= any string
 func Parse(line string) (Matcher, error) {
 	matcher, err := parseShortFormat(line)
 	if err == nil {

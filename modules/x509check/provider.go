@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package x509check
 
 import (
@@ -5,13 +7,13 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/smtp"
 	"net/url"
+	"os"
 	"time"
 
-	tlscfg "github.com/netdata/go.d.plugin/pkg/tlscfg"
+	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 )
 
 type provider interface {
@@ -67,7 +69,7 @@ func newProvider(config Config) (provider, error) {
 }
 
 func (f fromFile) certificates() ([]*x509.Certificate, error) {
-	content, err := ioutil.ReadFile(f.path)
+	content, err := os.ReadFile(f.path)
 	if err != nil {
 		return nil, fmt.Errorf("error on reading '%s': %v", f.path, err)
 	}

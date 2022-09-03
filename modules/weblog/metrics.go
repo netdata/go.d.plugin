@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package weblog
 
 import (
@@ -12,6 +14,7 @@ type weblogSummary struct {
 	metrics.Summary
 }
 
+// WriteTo redefines metrics.Summary.WriteTo
 // TODO: temporary workaround?
 func (s weblogSummary) WriteTo(rv map[string]int64, key string, mul, div int) {
 	s.Summary.WriteTo(rv, key, mul, div)

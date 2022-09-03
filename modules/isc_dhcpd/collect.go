@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package isc_dhcpd
 
 import (
@@ -16,7 +18,7 @@ Then, the old lease database is renamed DBDIR/dhcpd.leases~.
 Finally, the newly written lease database is moved into place.
 
 In order to process both DHCPv4 and DHCPv6 messages you will need to run two separate instances of the dhcpd process.
-Each of these instances will need it’s own lease file.
+Each of these instances will need its own lease file.
 */
 
 func (d *DHCPd) collect() (map[string]int64, error) {

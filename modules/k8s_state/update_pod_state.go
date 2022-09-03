@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package k8s_state
 
 import (
@@ -57,6 +59,9 @@ func (ks *KubeState) updatePodState(r resource) {
 		ps.limitCPU = max(res.lCPU, res.ilCPU)
 		ps.reqMem = max(res.rMem, res.irMem)
 		ps.limitMem = max(res.lMem, res.ilMem)
+	}
+	if ps.nodeName == "" {
+		ps.nodeName = pod.Spec.NodeName
 	}
 
 	for _, c := range pod.Status.Conditions {

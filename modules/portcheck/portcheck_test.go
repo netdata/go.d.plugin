@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package portcheck
 
 import (
@@ -16,7 +18,6 @@ func TestNew(t *testing.T) {
 	job := New()
 
 	assert.Implements(t, (*module.Module)(nil), job)
-	assert.Equal(t, defaultConnectTimeout, job.Timeout.Duration)
 }
 
 func TestPortCheck_Init(t *testing.T) {
@@ -48,7 +49,9 @@ func TestPortCheck_Cleanup(t *testing.T) {
 func TestPortCheck_Charts(t *testing.T) {
 	job := New()
 	job.Ports = []int{1, 2}
-	assert.Len(t, *job.Charts(), len(portCharts)*len(job.Ports))
+	job.Host = "localhost"
+	require.True(t, job.Init())
+	assert.Len(t, *job.Charts(), len(chartsTmpl)*len(job.Ports))
 }
 
 func TestPortCheck_Collect(t *testing.T) {
@@ -103,7 +106,7 @@ func TestPortCheck_Collect(t *testing.T) {
 
 	assert.Equal(t, expected, collected)
 
-	job.dial = testDial(errors.New("failed"))
+	job.dial = testDial(errors.New("checkStateFailed"))
 
 	expected = map[string]int64{
 		"port_39001_current_state_duration": int64(job.UpdateEvery),

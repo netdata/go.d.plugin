@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package bind
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,8 +13,8 @@ import (
 )
 
 var (
-	jsonServerData, _ = ioutil.ReadFile("testdata/query-server.json")
-	xmlServerData, _  = ioutil.ReadFile("testdata/query-server.xml")
+	jsonServerData, _ = os.ReadFile("testdata/query-server.json")
+	xmlServerData, _  = os.ReadFile("testdata/query-server.xml")
 )
 
 func TestNew(t *testing.T) {

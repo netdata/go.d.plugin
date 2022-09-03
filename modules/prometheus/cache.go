@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package prometheus
 
 import (
@@ -5,7 +7,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 
 	"github.com/netdata/go.d.plugin/agent/module"
-	"github.com/prometheus/prometheus/pkg/labels"
+	"github.com/prometheus/prometheus/model/labels"
 )
 
 // TODO: make it easier, very error-prone interface

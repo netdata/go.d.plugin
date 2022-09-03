@@ -1,8 +1,0 @@
-OpenVPN STATISTICS
-Updated,2022-05-05 14:01:12
-TUN/TAP read bytes,0
-TUN/TAP write bytes,0
-TCP/UDP read bytes,0
-TCP/UDP write bytes,0
-Auth read bytes,0
-END

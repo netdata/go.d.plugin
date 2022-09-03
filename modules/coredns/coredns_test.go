@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package coredns
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,11 +13,11 @@ import (
 )
 
 var (
-	testNoLoad169, _       = ioutil.ReadFile("testdata/version169/no_load.txt")
-	testSomeLoad169, _     = ioutil.ReadFile("testdata/version169/some_load.txt")
-	testNoLoad170, _       = ioutil.ReadFile("testdata/version170/no_load.txt")
-	testSomeLoad170, _     = ioutil.ReadFile("testdata/version170/some_load.txt")
-	testNoLoadNoVersion, _ = ioutil.ReadFile("testdata/no_version/no_load.txt")
+	testNoLoad169, _       = os.ReadFile("testdata/version169/no_load.txt")
+	testSomeLoad169, _     = os.ReadFile("testdata/version169/some_load.txt")
+	testNoLoad170, _       = os.ReadFile("testdata/version170/no_load.txt")
+	testSomeLoad170, _     = os.ReadFile("testdata/version170/some_load.txt")
+	testNoLoadNoVersion, _ = os.ReadFile("testdata/no_version/no_load.txt")
 )
 
 func TestNew(t *testing.T) {

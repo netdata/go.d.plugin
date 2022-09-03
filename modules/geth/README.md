@@ -11,7 +11,7 @@ Go Ethereum, written in Google’s Go language, is one of the three original imp
 alongside C++ and Python.
 
 Go-Ethereum, and subsequently Geth, are built and maintained by the Ethereum community. It’s open source which means
-anyone can contribute to Geth through its [Github](https://github.com/ethereum/go-ethereum).
+anyone can contribute to Geth through its [GitHub](https://github.com/ethereum/go-ethereum).
 
 With Netdata, you can effortlessly monitor your Geth node
 
@@ -51,13 +51,13 @@ We have started
 a [topic](https://community.netdata.cloud/t/lets-build-a-golang-collector-for-monitoring-ethereum-full-nodes/1426) on
 our community forums about this collector.
 
-**The best contribution you can make is to tell us what metrics you want to see and how they should be organized (e.g
+**The best contribution you can make is to tell us what metrics you want to see and how they should be organized (e.g.
 what charts to make).**
 
 As you can read in the topic, it's trivial to add more metrics from the prometheus endpoint and create the relevant
 charts. The hard part is the domain expertise that we don't have, but you, as a user, have.
 
-The second best contribution you can make is to tell us what alerts we should be shipping as defaults for this
+The second-best contribution you can make is to tell us what alerts we should be shipping as defaults for this
 collector. For example, we are shipping an alert about the node being in sync (or not). We simply compare the
 chainhead `block` and `header` values.
 
@@ -93,17 +93,21 @@ module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/c
 To troubleshoot issues with the `geth` collector, run the `go.d.plugin` with the debug option enabled. The output should
 give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
-system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
-to the `netdata` user.
+- Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
+  your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
 
-```bash
-cd /usr/libexec/netdata/plugins.d/
-sudo -u netdata -s
-```
+  ```bash
+  cd /usr/libexec/netdata/plugins.d/
+  ```
 
-You can now run the `go.d.plugin` to debug the collector:
+- Switch to the `netdata` user.
 
-```bash
-./go.d.plugin -d -m geth
-```
+  ```bash
+  sudo -u netdata -s
+  ```
+
+- Run the `go.d.plugin` to debug the collector:
+
+  ```bash
+  ./go.d.plugin -d -m geth
+  ```

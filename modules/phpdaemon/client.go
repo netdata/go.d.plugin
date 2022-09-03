@@ -1,10 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package phpdaemon
 
 import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -70,7 +71,7 @@ func (c client) doOK(req *http.Request) (*http.Response, error) {
 
 func closeBody(resp *http.Response) {
 	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(ioutil.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
 }

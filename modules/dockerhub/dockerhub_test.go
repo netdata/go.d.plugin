@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package dockerhub
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -12,9 +14,9 @@ import (
 )
 
 var (
-	repo1Data, _ = ioutil.ReadFile("testdata/repo1.txt")
-	repo2Data, _ = ioutil.ReadFile("testdata/repo2.txt")
-	repo3Data, _ = ioutil.ReadFile("testdata/repo3.txt")
+	repo1Data, _ = os.ReadFile("testdata/repo1.txt")
+	repo2Data, _ = os.ReadFile("testdata/repo2.txt")
+	repo3Data, _ = os.ReadFile("testdata/repo3.txt")
 )
 
 func TestNew(t *testing.T) {

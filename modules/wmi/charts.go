@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package wmi
 
 import (
@@ -18,7 +20,7 @@ type (
 	Dim = module.Dim
 	// Vars is an alias for module.Vars
 	Vars = module.Vars
-	// Dim is an alias for module.Dim
+	// Opts is an alias for module.Dim
 	Opts = module.DimOpts
 )
 

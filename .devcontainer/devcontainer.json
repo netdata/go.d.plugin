@@ -8,7 +8,7 @@
 		"redhat.vscode-yaml",
 		"dbaeumer.vscode-eslint",
 		"jasonnutter.search-node-modules",
-		"mgmcdermott.vscode-language-babel",		
+		"mgmcdermott.vscode-language-babel"
 	],
     "forwardPorts": [19999]
 }

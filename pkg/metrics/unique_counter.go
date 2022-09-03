@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package metrics
 
 import (
@@ -58,7 +60,7 @@ func (c mapUniqueCounter) Reset() {
 	}
 }
 
-// WriteTo writes it's value into given map.
+// WriteTo writes its value into given map.
 func (c hyperLogLogUniqueCounter) WriteTo(rv map[string]int64, key string, mul, div int) {
 	rv[key] = int64(float64(c.Value()*mul) / float64(div))
 }
@@ -82,7 +84,7 @@ func NewUniqueCounterVec(useHyperLogLog bool) UniqueCounterVec {
 	}
 }
 
-// WriteTo writes it's value into given map.
+// WriteTo writes its value into given map.
 func (c UniqueCounterVec) WriteTo(rv map[string]int64, key string, mul, div int) {
 	for name, value := range c.Items {
 		value.WriteTo(rv, key+"_"+name, mul, div)

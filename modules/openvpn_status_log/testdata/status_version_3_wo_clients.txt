@@ -1,6 +1,0 @@
-TITLE	OpenVPN 2.5.5 x86_64-pc-linux-gnu [SSL (OpenSSL)] [LZO] [LZ4] [EPOLL] [PKCS11] [MH/PKTINFO] [AEAD] built on Mar 22 2022
-TIME	2022-03-31 11:53:29	1648716809
-HEADER	CLIENT_LIST	Common Name	Real Address	Virtual Address	Virtual IPv6 Address	Bytes Received	Bytes Sent	Connected Since	Connected Since (time_t)	UsernameClient ID	Peer ID	Data Channel Cipher
-HEADER	ROUTING_TABLE	Virtual Address	Common Name	Real Address	Last Ref	Last Ref (time_t)
-GLOBAL_STATS	Max bcast/mcast queue length	0
-END

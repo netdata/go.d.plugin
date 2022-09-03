@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package logger
 
 import (
@@ -10,7 +12,7 @@ var (
 	resetEvery = time.Second
 )
 
-// GlobalMsgCountWatcher is a initiated instance of MsgCountWatcher.
+// GlobalMsgCountWatcher is an initiated instance of MsgCountWatcher.
 // It resets message counter for every registered logger every 1 seconds.
 var GlobalMsgCountWatcher = newMsgCountWatcher(resetEvery)
 

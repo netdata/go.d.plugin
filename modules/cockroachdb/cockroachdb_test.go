@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package cockroachdb
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -12,8 +14,8 @@ import (
 )
 
 var (
-	metricsData, _      = ioutil.ReadFile("testdata/metrics.txt")
-	wrongMetricsData, _ = ioutil.ReadFile("testdata/non_cockroachdb.txt")
+	metricsData, _      = os.ReadFile("testdata/metrics.txt")
+	wrongMetricsData, _ = os.ReadFile("testdata/non_cockroachdb.txt")
 )
 
 func Test_readTestData(t *testing.T) {

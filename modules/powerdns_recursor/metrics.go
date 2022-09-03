@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package powerdns_recursor
 
 // https://doc.powerdns.com/recursor/metrics.html

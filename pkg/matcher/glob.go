@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package matcher
 
 import (
@@ -71,7 +73,7 @@ func isGlobMeta(ch rune) bool {
 	}
 }
 
-// MatchString matches.
+// Match matches.
 func (m globMatcher) Match(b []byte) bool {
 	return m.MatchString(string(b))
 }

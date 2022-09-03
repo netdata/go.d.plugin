@@ -1,17 +1,19 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package springboot2
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testdata, _  = ioutil.ReadFile("tests/testdata.txt")
-	testdata2, _ = ioutil.ReadFile("tests/testdata2.txt")
+	testdata, _  = os.ReadFile("tests/testdata.txt")
+	testdata2, _ = os.ReadFile("tests/testdata2.txt")
 )
 
 func TestSpringboot2_Collect(t *testing.T) {

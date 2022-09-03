@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package prometheus
 
 import (
@@ -5,8 +7,8 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/prometheus/prometheus/pkg/labels"
-	"github.com/prometheus/prometheus/pkg/textparse"
+	"github.com/prometheus/prometheus/model/labels"
+	"github.com/prometheus/prometheus/model/textparse"
 )
 
 type (
@@ -96,7 +98,7 @@ func (m Metrics) FindByNames(names ...string) Metrics {
 	return result
 }
 
-// Match match finds metrics where it's label matches given matcher.
+// Match matches finds metrics where it's label matches given matcher.
 // It does NOT expect the metrics is sorted.
 // Complexity: O(N)
 func (m Metrics) Match(matcher *labels.Matcher) Metrics {
@@ -111,7 +113,7 @@ func (m Metrics) Match(matcher *labels.Matcher) Metrics {
 }
 
 // Max returns the max value.
-// It do NOT expect the metrics is sorted.
+// It does NOT expect the metrics is sorted.
 // Complexity: O(N)
 func (m Metrics) Max() float64 {
 	switch len(m) {

@@ -1,10 +1,13 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package energid
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -15,11 +18,11 @@ import (
 )
 
 var (
-	v241GetBlockchainInfo, _ = ioutil.ReadFile("testdata/v2.4.1/getblockchaininfo.json")
-	v241GetMemPoolInfo, _    = ioutil.ReadFile("testdata/v2.4.1/getmempoolinfo.json")
-	v241GetNetworkInfo, _    = ioutil.ReadFile("testdata/v2.4.1/getnetworkinfo.json")
-	v241GetTXOutSetInfo, _   = ioutil.ReadFile("testdata/v2.4.1/gettxoutsetinfo.json")
-	v241GetMemoryInfo, _     = ioutil.ReadFile("testdata/v2.4.1/getmemoryinfo.json")
+	v241GetBlockchainInfo, _ = os.ReadFile("testdata/v2.4.1/getblockchaininfo.json")
+	v241GetMemPoolInfo, _    = os.ReadFile("testdata/v2.4.1/getmempoolinfo.json")
+	v241GetNetworkInfo, _    = os.ReadFile("testdata/v2.4.1/getnetworkinfo.json")
+	v241GetTXOutSetInfo, _   = os.ReadFile("testdata/v2.4.1/gettxoutsetinfo.json")
+	v241GetMemoryInfo, _     = os.ReadFile("testdata/v2.4.1/getmemoryinfo.json")
 )
 
 func Test_Testdata(t *testing.T) {
@@ -243,7 +246,7 @@ func prepareEnergidEndPoint() *httptest.Server {
 				return
 			}
 
-			body, _ := ioutil.ReadAll(r.Body)
+			body, _ := io.ReadAll(r.Body)
 			var requests rpcRequests
 			if err := json.Unmarshal(body, &requests); err != nil || len(requests) == 0 {
 				w.WriteHeader(http.StatusInternalServerError)

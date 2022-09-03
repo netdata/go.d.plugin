@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package logs
 
 import (
@@ -19,9 +21,9 @@ var (
 	ErrNoMatchedFile = errors.New("no matched files")
 )
 
+// Reader is a log rotate aware Reader
 // TODO: better reopen algorithm
 // TODO: handle truncate
-// Reader is a log rotate aware Reader
 type Reader struct {
 	file          *os.File
 	path          string
@@ -32,8 +34,8 @@ type Reader struct {
 }
 
 // Open a file and seek to end of the file.
-// path: shell file name pattern
-// excludePath: shell file name pattern
+// path: the shell file name pattern
+// excludePath: the shell file name pattern
 func Open(path string, excludePath string, log *logger.Logger) (*Reader, error) {
 	var err error
 	if path, err = filepath.Abs(path); err != nil {

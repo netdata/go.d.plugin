@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package state
 
 import (
@@ -80,7 +82,7 @@ func (m *Manager) flush() {
 	if err != nil {
 		return
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	_, _ = f.Write(bs)
 }
 
@@ -150,7 +152,7 @@ func Load(path string) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	return &s, json.NewDecoder(f).Decode(&s.items)
 }
 

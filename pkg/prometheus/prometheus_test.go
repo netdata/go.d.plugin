@@ -1,24 +1,26 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package prometheus
 
 import (
 	"bytes"
 	"compress/gzip"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
-	"github.com/prometheus/prometheus/pkg/labels"
+	"github.com/prometheus/prometheus/model/labels"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-var testdata, _ = ioutil.ReadFile("tests/testdata.txt")
-var testdataNometa, _ = ioutil.ReadFile("tests/testdata.nometa.txt")
+var testdata, _ = os.ReadFile("tests/testdata.txt")
+var testdataNometa, _ = os.ReadFile("tests/testdata.nometa.txt")
 
 func TestPrometheus404(t *testing.T) {
 	tsMux := http.NewServeMux()
@@ -106,13 +108,14 @@ func TestParse(t *testing.T) {
 	err := prom.parse(testdata, &res, Metadata{})
 	assert.NoError(t, err)
 
+	res.Sort()
 	verifyTestData(t, res)
 }
 
 func verifyTestData(t *testing.T, ms Metrics) {
 	assert.Equal(t, 410, len(ms))
 	assert.Equal(t, "go_gc_duration_seconds", ms[0].Labels.Get("__name__"))
-	assert.Equal(t, "0", ms[0].Labels.Get("quantile"))
+	assert.Equal(t, "0.25", ms[0].Labels.Get("quantile"))
 	assert.InDelta(t, 4.9351e-05, ms[0].Value, 0.0001)
 
 	notExistYet := ms.FindByName("not_exist_yet")

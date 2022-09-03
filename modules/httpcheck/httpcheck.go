@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package httpcheck
 
 import (
@@ -11,85 +13,69 @@ import (
 )
 
 func init() {
-	creator := module.Creator{
+	module.Register("httpcheck", module.Creator{
 		Defaults: module.Defaults{
 			UpdateEvery: 5,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("httpcheck", creator)
+	})
 }
 
-var (
-	defaultHTTPTimeout      = time.Second
-	defaultAcceptedStatuses = []int{200}
-)
-
-// New creates HTTPCheck with default values.
 func New() *HTTPCheck {
-	config := Config{
-		HTTP: web.HTTP{
-			Client: web.Client{
-				Timeout: web.Duration{Duration: defaultHTTPTimeout},
-			},
-		},
-		AcceptedStatuses: defaultAcceptedStatuses,
-	}
 	return &HTTPCheck{
-		Config:           config,
+		Config: Config{
+			HTTP: web.HTTP{
+				Client: web.Client{
+					Timeout: web.Duration{Duration: time.Second},
+				},
+			},
+			AcceptedStatuses: []int{200},
+		},
 		acceptedStatuses: make(map[int]bool),
 	}
 }
 
-// Config is the HTTPCheck module configuration.
 type Config struct {
 	web.HTTP         `yaml:",inline"`
 	AcceptedStatuses []int  `yaml:"status_accepted"`
 	ResponseMatch    string `yaml:"response_match"`
 }
 
-type client interface {
-	Do(*http.Request) (*http.Response, error)
-}
+type (
+	HTTPCheck struct {
+		module.Base
+		Config      `yaml:",inline"`
+		UpdateEvery int `yaml:"update_every"`
 
-// HTTPCheck HTTPCheck module.
-type HTTPCheck struct {
-	module.Base
-	Config      `yaml:",inline"`
-	UpdateEvery int `yaml:"update_every"`
+		acceptedStatuses map[int]bool
+		reResponse       *regexp.Regexp
+		client           client
+		metrics          metrics
+	}
+	client interface {
+		Do(*http.Request) (*http.Response, error)
+	}
+)
 
-	acceptedStatuses map[int]bool
-	reResponse       *regexp.Regexp
-	client           client
-	metrics          metrics
-}
-
-// Cleanup makes cleanup.
-func (HTTPCheck) Cleanup() {}
-
-// Init makes initialization
 func (hc *HTTPCheck) Init() bool {
-	if hc.URL == "" {
-		hc.Error("URL not set")
+	if err := hc.validateConfig(); err != nil {
+		hc.Errorf("config validation: %v", err)
 		return false
 	}
 
-	client, err := web.NewHTTPClient(hc.Client)
+	httpClient, err := hc.initHTTPClient()
 	if err != nil {
-		hc.Errorf("error on creating HTTP client : %v", err)
+		hc.Errorf("init HTTP client: %v", err)
 		return false
 	}
-	hc.client = client
+	hc.client = httpClient
 
-	if hc.ResponseMatch != "" {
-		re, err := regexp.Compile(hc.ResponseMatch)
-		if err != nil {
-			hc.Errorf("error on creating regexp %s : %s", hc.ResponseMatch, err)
-			return false
-		}
-		hc.reResponse = re
+	re, err := hc.initResponseMatchRegexp()
+	if err != nil {
+		hc.Errorf("init response match regexp: %v", err)
+		return false
 	}
+	hc.reResponse = re
 
 	for _, v := range hc.AcceptedStatuses {
 		hc.acceptedStatuses[v] = true
@@ -105,13 +91,14 @@ func (hc *HTTPCheck) Init() bool {
 	return true
 }
 
-// Check makes check.
-func (hc *HTTPCheck) Check() bool { return len(hc.Collect()) > 0 }
+func (hc *HTTPCheck) Check() bool {
+	return len(hc.Collect()) > 0
+}
 
-// Charts creates Charts
-func (hc HTTPCheck) Charts() *Charts { return charts.Copy() }
+func (hc *HTTPCheck) Charts() *module.Charts {
+	return charts.Copy()
+}
 
-// Collect collects metrics
 func (hc *HTTPCheck) Collect() map[string]int64 {
 	mx, err := hc.collect()
 	if err != nil {
@@ -123,3 +110,5 @@ func (hc *HTTPCheck) Collect() map[string]int64 {
 	}
 	return mx
 }
+
+func (hc *HTTPCheck) Cleanup() {}

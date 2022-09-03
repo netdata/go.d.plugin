@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package snmp
 
 import (
@@ -75,7 +77,7 @@ func newChart(cfg ChartConfig) (*module.Chart, error) {
 	}
 
 	if chart.Title == "" {
-		chart.Title = "Untilted chart"
+		chart.Title = "Untitled chart"
 	}
 	if chart.Units == "" {
 		chart.Units = "num"
@@ -84,7 +86,13 @@ func newChart(cfg ChartConfig) (*module.Chart, error) {
 		chart.Priority += module.Priority
 	}
 
+	seen := make(map[string]struct{})
+	var a string
 	for _, cfg := range cfg.Dimensions {
+		if cfg.Algorithm != "" {
+			seen[cfg.Algorithm] = struct{}{}
+			a = cfg.Algorithm
+		}
 		dim := &module.Dim{
 			ID:   strings.TrimPrefix(cfg.OID, "."),
 			Name: cfg.Name,
@@ -94,6 +102,13 @@ func newChart(cfg ChartConfig) (*module.Chart, error) {
 		}
 		if err := chart.AddDim(dim); err != nil {
 			return nil, err
+		}
+	}
+	if len(seen) == 1 && a != "" && len(chart.Dims) > 1 {
+		for _, d := range chart.Dims {
+			if d.Algo == "" {
+				d.Algo = module.DimAlgo(a)
+			}
 		}
 	}
 

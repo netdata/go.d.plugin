@@ -1,16 +1,14 @@
-`MariaDB` Galera cluster setup (In MariaDB 10.1 and later, the MySQL-wsrep patch has been merged into MariaDB Server.):
+# MySQL/MariaDB lab setup
 
-- https://github.com/bitnami/bitnami-docker-mariadb-galera
-- https://hub.docker.com/r/bitnami/mariadb-galera
+- MariaDB
+    - [Standalone](https://github.com/bitnami/containers/tree/main/bitnami/mariadb#tldr)
+    - [Replication Cluster (Master-Slave)](https://github.com/bitnami/containers/tree/main/bitnami/mariadb#setting-up-a-replication-cluster)
+    - [Replication Cluster (Galera)](https://github.com/bitnami/containers/tree/main/bitnami/mariadb-galera#setting-up-a-multi-master-cluster)
+- MySQL
+    - [Replication Cluster (Multi-Source)](https://github.com/wagnerjfr/mysql-multi-source-replication-docker)
 
-`MariaDB` cluster setup:
-
-- https://github.com/bitnami/bitnami-docker-mariadb
-- https://hub.docker.com/r/bitnami/mariadb/
-
-`MySQL` multi-source replication setup:
-
-- https://github.com/wagnerjfr/mysql-multi-source-replication-docker
+MySQL Slave instance "Authentication requires secure connection" connection fix:
+> ALTER USER 'repl1'@'%' IDENTIFIED WITH mysql_native_password BY 'slavepass';
 
 Create `netdata` user with needed permissions:
 

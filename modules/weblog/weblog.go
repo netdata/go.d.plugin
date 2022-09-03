@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package weblog
 
 import (
@@ -102,7 +104,7 @@ func (w *WebLog) Init() bool {
 }
 
 func (w *WebLog) Check() bool {
-	// Note: these inits are here to make auto detection retry working
+	// Note: these inits are here to make auto-detection retry working
 	if err := w.createLogReader(); err != nil {
 		w.Warning("check failed: ", err)
 		return false

@@ -1,7 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package logs
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -28,7 +29,7 @@ func TestReadLastLine(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			filename := prepareFile(t, test.content)
-			defer os.Remove(filename)
+			defer func() { _ = os.Remove(filename) }()
 
 			line, err := ReadLastLine(filename, 10)
 
@@ -44,9 +45,9 @@ func TestReadLastLine(t *testing.T) {
 
 func prepareFile(t *testing.T, content string) string {
 	t.Helper()
-	file, err := ioutil.TempFile("", "go-test")
+	file, err := os.CreateTemp("", "go-test")
 	require.NoError(t, err)
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	_, _ = file.WriteString(content)
 	return file.Name()

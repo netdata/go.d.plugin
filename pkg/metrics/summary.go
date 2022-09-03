@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package metrics
 
 import (
@@ -47,13 +49,14 @@ func NewSummary() Summary {
 	}
 }
 
-// WriteTo writes it's values into given map.
-// It add those key-value pairs:
-//   ${key}_sum        gauge, for sum of it's observed values from last Reset calls
-//   ${key}_count      counter, for count of it's observed values from last Reset calls
-//   ${key}_min        gauge, for min of it's observed values from last Reset calls (only exists if count > 0)
-//   ${key}_max        gauge, for max of it's observed values from last Reset calls (only exists if count > 0)
-//   ${key}_avg        gauge, for avg of it's observed values from last Reset calls (only exists if count > 0)
+// WriteTo writes its values into given map.
+// It adds those key-value pairs:
+//
+//	${key}_sum        gauge, for sum of it's observed values from last Reset calls
+//	${key}_count      counter, for count of it's observed values from last Reset calls
+//	${key}_min        gauge, for min of it's observed values from last Reset calls (only exists if count > 0)
+//	${key}_max        gauge, for max of it's observed values from last Reset calls (only exists if count > 0)
+//	${key}_avg        gauge, for avg of it's observed values from last Reset calls (only exists if count > 0)
 func (s summary) WriteTo(rv map[string]int64, key string, mul, div int) {
 	if s.count > 0 {
 		rv[key+"_min"] = int64(s.min * float64(mul) / float64(div))
@@ -96,7 +99,7 @@ func NewSummaryVec() SummaryVec {
 	return SummaryVec{}
 }
 
-// WriteTo writes it's value into given map.
+// WriteTo writes its value into given map.
 func (c SummaryVec) WriteTo(rv map[string]int64, key string, mul, div int) {
 	for name, value := range c {
 		value.WriteTo(rv, key+"_"+name, mul, div)

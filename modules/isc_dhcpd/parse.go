@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package isc_dhcpd
 
 import (
@@ -49,7 +51,7 @@ func parseDHCPdLeasesFile(filepath string) ([]leaseEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	leasesSet := make(map[string]leaseEntry)
 	l := leaseEntry{}

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package dnsmasq_dhcp
 
 import (
@@ -49,7 +51,7 @@ func TestDnsmasqDHCP_InitZeroDHCPRanges(t *testing.T) {
 	job.ConfPath = "testdata/dnsmasq3.conf"
 	job.ConfDir = ""
 
-	assert.False(t, job.Init())
+	assert.True(t, job.Init())
 }
 
 func TestDnsmasqDHCP_Check(t *testing.T) {
@@ -87,28 +89,32 @@ func TestDnsmasqDHCP_Collect(t *testing.T) {
 	require.True(t, job.Check())
 
 	expected := map[string]int64{
-		"1230::1-1230::64":                         7,
-		"1230::1-1230::64_percentage":              7,
-		"1231::1-1231::64":                         1,
-		"1231::1-1231::64_percentage":              1,
-		"1232::1-1232::64":                         1,
-		"1232::1-1232::64_percentage":              1,
-		"1233::1-1233::64":                         1,
-		"1233::1-1233::64_percentage":              1,
-		"1234::1-1234::64":                         1,
-		"1234::1-1234::64_percentage":              1,
-		"192.168.0.1-192.168.0.100":                6,
-		"192.168.0.1-192.168.0.100_percentage":     6,
-		"192.168.1.1-192.168.1.100":                5,
-		"192.168.1.1-192.168.1.100_percentage":     5,
-		"192.168.2.1-192.168.2.100":                4,
-		"192.168.2.1-192.168.2.100_percentage":     4,
-		"192.168.3.1-192.168.3.100":                1,
-		"192.168.3.1-192.168.3.100_percentage":     1,
-		"192.168.4.1-192.168.4.100":                1,
-		"192.168.4.1-192.168.4.100_percentage":     1,
-		"192.168.200.1-192.168.200.100":            1,
-		"192.168.200.1-192.168.200.100_percentage": 1,
+		"dhcp_range_1230::1-1230::64_allocated_leases":              7,
+		"dhcp_range_1230::1-1230::64_utilization":                   7,
+		"dhcp_range_1231::1-1231::64_allocated_leases":              1,
+		"dhcp_range_1231::1-1231::64_utilization":                   1,
+		"dhcp_range_1232::1-1232::64_allocated_leases":              1,
+		"dhcp_range_1232::1-1232::64_utilization":                   1,
+		"dhcp_range_1233::1-1233::64_allocated_leases":              1,
+		"dhcp_range_1233::1-1233::64_utilization":                   1,
+		"dhcp_range_1234::1-1234::64_allocated_leases":              1,
+		"dhcp_range_1234::1-1234::64_utilization":                   1,
+		"dhcp_range_192.168.0.1-192.168.0.100_allocated_leases":     6,
+		"dhcp_range_192.168.0.1-192.168.0.100_utilization":          6,
+		"dhcp_range_192.168.1.1-192.168.1.100_allocated_leases":     5,
+		"dhcp_range_192.168.1.1-192.168.1.100_utilization":          5,
+		"dhcp_range_192.168.2.1-192.168.2.100_allocated_leases":     4,
+		"dhcp_range_192.168.2.1-192.168.2.100_utilization":          4,
+		"dhcp_range_192.168.200.1-192.168.200.100_allocated_leases": 1,
+		"dhcp_range_192.168.200.1-192.168.200.100_utilization":      1,
+		"dhcp_range_192.168.3.1-192.168.3.100_allocated_leases":     1,
+		"dhcp_range_192.168.3.1-192.168.3.100_utilization":          1,
+		"dhcp_range_192.168.4.1-192.168.4.100_allocated_leases":     1,
+		"dhcp_range_192.168.4.1-192.168.4.100_utilization":          1,
+		"ipv4_dhcp_hosts":  6,
+		"ipv4_dhcp_ranges": 6,
+		"ipv6_dhcp_hosts":  5,
+		"ipv6_dhcp_ranges": 5,
 	}
 
 	assert.Equal(t, expected, job.Collect())

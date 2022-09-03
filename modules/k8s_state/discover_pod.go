@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package k8s_state
 
 import (
@@ -89,7 +91,7 @@ func (d *podDiscoverer) runDiscover(ctx context.Context, in chan<- resource) {
 				return
 			}
 
-			r := &podResource{src: podSource(ns, replaceDots(name))}
+			r := &podResource{src: podSource(ns, name)}
 			if exists {
 				r.val = item
 			}

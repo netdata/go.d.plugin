@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package prometheus
 
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/matcher"
@@ -11,7 +13,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
-	"github.com/prometheus/prometheus/pkg/labels"
+	"github.com/prometheus/prometheus/model/labels"
 )
 
 func (p Prometheus) validateConfig() error {
@@ -29,7 +31,7 @@ func (p Prometheus) initPrometheusClient() (prometheus.Prometheus, error) {
 
 	req := p.Request.Copy()
 	if p.BearerTokenFile != "" {
-		token, err := ioutil.ReadFile(p.BearerTokenFile)
+		token, err := os.ReadFile(p.BearerTokenFile)
 		if err != nil {
 			return nil, fmt.Errorf("reading bearer token file: %v", err)
 		}

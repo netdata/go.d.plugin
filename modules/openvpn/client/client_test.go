@@ -1,10 +1,12 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package client
 
 import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -13,9 +15,9 @@ import (
 )
 
 var (
-	testLoadStatsData, _     = ioutil.ReadFile("testdata/load-stats.txt")
-	testVersionData, _       = ioutil.ReadFile("testdata/version.txt")
-	testStatus3Data, _       = ioutil.ReadFile("testdata/status3.txt")
+	testLoadStatsData, _     = os.ReadFile("testdata/load-stats.txt")
+	testVersionData, _       = os.ReadFile("testdata/version.txt")
+	testStatus3Data, _       = os.ReadFile("testdata/status3.txt")
 	testMaxLinesExceededData = strings.Repeat(">CLIENT:ESTABLISHED,0\n", 501)
 )
 

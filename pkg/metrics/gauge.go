@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package metrics
 
 import (
@@ -27,7 +29,7 @@ var (
 	_ stm.Value = GaugeVec{}
 )
 
-// WriteTo writes it's value into given map.
+// WriteTo writes its value into given map.
 func (g Gauge) WriteTo(rv map[string]int64, key string, mul, div int) {
 	rv[key] = int64(float64(g) * float64(mul) / float64(div))
 }
@@ -76,7 +78,7 @@ func NewGaugeVec() GaugeVec {
 	return GaugeVec{}
 }
 
-// WriteTo writes it's value into given map.
+// WriteTo writes its value into given map.
 func (g GaugeVec) WriteTo(rv map[string]int64, key string, mul, div int) {
 	for name, value := range g {
 		rv[key+"_"+name] = int64(value.Value() * float64(mul) / float64(div))
@@ -89,7 +91,7 @@ func (g GaugeVec) Get(name string) *Gauge {
 	return item
 }
 
-// Get gets counter instance by name
+// GetP gets counter instance by name
 func (g GaugeVec) GetP(name string) (gauge *Gauge, ok bool) {
 	gauge, ok = g[name]
 	if ok {

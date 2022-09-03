@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package k8s_state
 
 import (
@@ -104,8 +106,9 @@ func (ns *nodeState) resetStats() { ns.stats = nodeStateStats{} }
 
 type (
 	podState struct {
-		new     bool
-		deleted bool
+		new         bool
+		deleted     bool
+		unscheduled bool
 
 		name           string
 		nodeName       string

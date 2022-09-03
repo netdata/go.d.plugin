@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package prometheus
 
 import (
@@ -7,7 +9,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 
 	"github.com/netdata/go.d.plugin/agent/module"
-	"github.com/prometheus/prometheus/pkg/textparse"
+	"github.com/prometheus/prometheus/model/textparse"
 )
 
 type (

@@ -1,10 +1,12 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package ticker
 
 import "time"
 
 type (
 	// Ticker holds a channel that delivers ticks of a clock at intervals.
-	// The ticks is aligned to interval boundaries.
+	// The ticks are aligned to interval boundaries.
 	Ticker struct {
 		C        <-chan int
 		done     chan struct{}

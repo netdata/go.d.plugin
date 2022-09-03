@@ -126,7 +126,7 @@ class FullStatusRequest extends Generic {
 To troubleshoot issues with the `phpdaemon` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
+First, navigate to your plugins' directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
 system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
 to the `netdata` user.
 

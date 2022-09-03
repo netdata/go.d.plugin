@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package weblog
 
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -18,10 +20,10 @@ import (
 )
 
 var (
-	testCommonLog, _          = ioutil.ReadFile("testdata/common.log")
-	testFullLog, _            = ioutil.ReadFile("testdata/full.log")
-	testCustomLog, _          = ioutil.ReadFile("testdata/custom.log")
-	testCustomTimeFieldLog, _ = ioutil.ReadFile("testdata/custom_time_fields.log")
+	testCommonLog, _          = os.ReadFile("testdata/common.log")
+	testFullLog, _            = os.ReadFile("testdata/full.log")
+	testCustomLog, _          = os.ReadFile("testdata/custom.log")
+	testCustomTimeFieldLog, _ = os.ReadFile("testdata/custom_time_fields.log")
 )
 
 func Test_readTestData(t *testing.T) {

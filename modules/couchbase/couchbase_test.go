@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package couchbase
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -14,7 +16,7 @@ import (
 )
 
 var (
-	v660BucketsBasicStats, _ = ioutil.ReadFile("testdata/6.6.0/buckets_basic_stats.json")
+	v660BucketsBasicStats, _ = os.ReadFile("testdata/6.6.0/buckets_basic_stats.json")
 )
 
 func TestNew(t *testing.T) {

@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package client
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"sort"
 	"testing"
 
@@ -16,11 +18,11 @@ const testWebPassword = "12345678"
 var (
 	testEmptyData                  = []byte("[]")
 	testVersionData                = []byte(`{"version": 3}`)
-	testSummaryRawData, _          = ioutil.ReadFile("testdata/summaryRaw.json")
-	testQueryTypesData, _          = ioutil.ReadFile("testdata/getQueryTypes.json")
-	testForwardDestinationsData, _ = ioutil.ReadFile("testdata/getForwardDestinations.json")
-	testTopClientsData, _          = ioutil.ReadFile("testdata/topClients.json")
-	testTopItemsData, _            = ioutil.ReadFile("testdata/topItems.json")
+	testSummaryRawData, _          = os.ReadFile("testdata/summaryRaw.json")
+	testQueryTypesData, _          = os.ReadFile("testdata/getQueryTypes.json")
+	testForwardDestinationsData, _ = os.ReadFile("testdata/getForwardDestinations.json")
+	testTopClientsData, _          = os.ReadFile("testdata/topClients.json")
+	testTopItemsData, _            = os.ReadFile("testdata/topItems.json")
 )
 
 func Test_data(t *testing.T) {

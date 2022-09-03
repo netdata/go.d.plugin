@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package example
 
 import (
@@ -5,7 +7,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-func (e Example) validateConfig() error {
+func (e *Example) validateConfig() error {
 	if e.Config.Charts.Num <= 0 && e.Config.HiddenCharts.Num <= 0 {
 		return errors.New("'charts->num' or `hidden_charts->num` must be > 0")
 	}
@@ -18,11 +20,11 @@ func (e Example) validateConfig() error {
 	return nil
 }
 
-func (e Example) initCharts() (*module.Charts, error) {
+func (e *Example) initCharts() (*module.Charts, error) {
 	charts := &module.Charts{}
 
 	for i := 0; i < e.Config.Charts.Num; i++ {
-		chart := newChart(i, module.ChartType(e.Config.Charts.Type))
+		chart := newChart(i, e.Config.Charts.Labels, module.ChartType(e.Config.Charts.Type))
 
 		if err := charts.Add(chart); err != nil {
 			return nil, err
@@ -30,7 +32,7 @@ func (e Example) initCharts() (*module.Charts, error) {
 	}
 
 	for i := 0; i < e.Config.HiddenCharts.Num; i++ {
-		chart := newHiddenChart(i, module.ChartType(e.Config.HiddenCharts.Type))
+		chart := newHiddenChart(i, e.Config.Charts.Labels, module.ChartType(e.Config.HiddenCharts.Type))
 
 		if err := charts.Add(chart); err != nil {
 			return nil, err

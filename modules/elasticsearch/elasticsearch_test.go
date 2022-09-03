@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package elasticsearch
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -15,11 +17,11 @@ import (
 )
 
 var (
-	v790NodesLocalStats, _ = ioutil.ReadFile("testdata/v7.9.0/nodes_local_stats.json")
-	v790ClusterHealth, _   = ioutil.ReadFile("testdata/v7.9.0/cluster_health.json")
-	v790ClusterStats, _    = ioutil.ReadFile("testdata/v7.9.0/cluster_stats.json")
-	v790CatIndicesStats, _ = ioutil.ReadFile("testdata/v7.9.0/cat_indices_stats.json")
-	v790Info, _            = ioutil.ReadFile("testdata/v7.9.0/info.json")
+	v790NodesLocalStats, _ = os.ReadFile("testdata/v7.9.0/nodes_local_stats.json")
+	v790ClusterHealth, _   = os.ReadFile("testdata/v7.9.0/cluster_health.json")
+	v790ClusterStats, _    = os.ReadFile("testdata/v7.9.0/cluster_stats.json")
+	v790CatIndicesStats, _ = os.ReadFile("testdata/v7.9.0/cat_indices_stats.json")
+	v790Info, _            = os.ReadFile("testdata/v7.9.0/info.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {

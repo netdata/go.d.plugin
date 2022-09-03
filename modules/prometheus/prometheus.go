@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package prometheus
 
 import (
@@ -32,10 +34,11 @@ func New() *Prometheus {
 		MaxTSPerMetric: 200,
 	}
 	return &Prometheus{
-		Config:      config,
-		cache:       make(collectCache),
-		skipMetrics: make(map[string]bool),
-		charts:      statsCharts.Copy(),
+		Config:       config,
+		cache:        make(collectCache),
+		skipMetrics:  make(map[string]bool),
+		charts:       statsCharts.Copy(),
+		firstCollect: true,
 	}
 }
 
@@ -64,6 +67,7 @@ type (
 		prom   prometheus.Prometheus
 		charts *module.Charts
 
+		firstCollect           bool
 		forceAbsoluteAlgorithm matcher.Matcher
 		optGroupings           []optionalGrouping
 		cache                  collectCache

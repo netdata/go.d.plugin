@@ -1,8 +1,10 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package squidlog
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/logs"
@@ -14,7 +16,7 @@ import (
 )
 
 var (
-	nativeFormatAccessLog, _ = ioutil.ReadFile("testdata/access.log")
+	nativeFormatAccessLog, _ = os.ReadFile("testdata/access.log")
 )
 
 func Test_readTestData(t *testing.T) {

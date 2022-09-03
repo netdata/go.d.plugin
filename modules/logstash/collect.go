@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package logstash
 
 import "github.com/netdata/go.d.plugin/pkg/stm"

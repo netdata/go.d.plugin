@@ -7,11 +7,13 @@ sidebar_label: "Systemd units"
 
 # Systemd units state monitoring with Netdata
 
-[`Systemd`](https://www.freedesktop.org/wiki/Software/systemd/) is a suite of basic building blocks for a Linux system.
+[Systemd](https://www.freedesktop.org/wiki/Software/systemd/) is a suite of basic building blocks for a Linux system.
 
-This module monitors `Systemd` units state.
+This module monitors Systemd units state.
 
-- Works only on linux systems.
+## Requirements
+
+- Works only on Linux systems.
 - Disabled by default. Should be explicitly enabled in the `go.d.conf`:
 
 ```yaml
@@ -20,31 +22,26 @@ modules:
   systemdunits: yes
 ```
 
-## Charts
+## Metrics
 
-It produces the following charts:
+The unit types and states description can be found in
+the [official documentation](https://www.freedesktop.org/software/systemd/man/systemd.html#Concepts).
 
-- Service Unit State in `state`
-- Socket Unit State in `state`
-- Target Unit State in `state`
-- Path Unit State in `state`
-- Device Unit State in `state`
-- Mount Unit State in `state`
-- Automount Unit State in `state`
-- Swap Unit State in `state`
-- Timer Unit State in `state`
-- Scope Unit State in `state`
-- Slice Unit State in `state`
+All metrics have "systemd." prefix.
 
-## Unit states
-
-| Code | Name           | Meaning                                                                                                                              |
-|------|----------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| 1    | `active`       | started, bound, plugged in, ..., depending on the unit type                                                                          |
-| 2    | `inactive`     | stopped, unbound, unplugged, ..., depending on the unit type                                                                         |
-| 3    | `activating`   | in the process of being activated                                                                                                    |
-| 4    | `deactivating` | in the process of being deactivated                                                                                                  |
-| 5    | `failed`       | the service failed in some way (process returned error code on exit, or crashed, an operation timed out, or after too many restarts) |
+| Metric               | Scope |                     Dimensions                     | Units |
+|----------------------|:-----:|:--------------------------------------------------:|:-----:|
+| service_unit_state   | unit  | active, inactive, activating, deactivating, failed | state |
+| socket_unit_state    | unit  | active, inactive, activating, deactivating, failed | state |
+| target_unit_state    | unit  | active, inactive, activating, deactivating, failed | state |
+| path_unit_state      | unit  | active, inactive, activating, deactivating, failed | state |
+| device_unit_state    | unit  | active, inactive, activating, deactivating, failed | state |
+| mount_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
+| automount_unit_state | unit  | active, inactive, activating, deactivating, failed | state |
+| swap_unit_state      | unit  | active, inactive, activating, deactivating, failed | state |
+| timer_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
+| scope_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
+| slice_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
 
 ## Configuration
 
@@ -56,7 +53,7 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/systemdunits.conf
 ```
 
-Needs only `include` option. Syntax is [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
+Needs only `include` option. Syntax is the [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
 
 Here are some examples:
 
@@ -83,17 +80,21 @@ collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/mas
 To troubleshoot issues with the `systemdunits` collector, run the `go.d.plugin` with the debug option enabled. The
 output should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
-system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
-to the `netdata` user.
+- Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
+  your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
 
-```bash
-cd /usr/libexec/netdata/plugins.d/
-sudo -u netdata -s
-```
+  ```bash
+  cd /usr/libexec/netdata/plugins.d/
+  ```
 
-You can now run the `go.d.plugin` to debug the collector:
+- Switch to the `netdata` user.
 
-```bash
-./go.d.plugin -d -m systemdunits
-```
+  ```bash
+  sudo -u netdata -s
+  ```
+
+- Run the `go.d.plugin` to debug the collector:
+
+  ```bash
+  ./go.d.plugin -d -m systemdunits
+  ```

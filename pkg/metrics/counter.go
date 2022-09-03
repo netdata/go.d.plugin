@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package metrics
 
 import (
@@ -32,7 +34,7 @@ var (
 	_ stm.Value = CounterVec{}
 )
 
-// WriteTo writes it's value into given map.
+// WriteTo writes its value into given map.
 func (c Counter) WriteTo(rv map[string]int64, key string, mul, div int) {
 	rv[key] = int64(c.Value() * float64(mul) / float64(div))
 }
@@ -66,7 +68,7 @@ func NewCounterVec() CounterVec {
 	return CounterVec{}
 }
 
-// WriteTo writes it's value into given map.
+// WriteTo writes its value into given map.
 func (c CounterVec) WriteTo(rv map[string]int64, key string, mul, div int) {
 	for name, value := range c {
 		rv[key+"_"+name] = int64(value.Value() * float64(mul) / float64(div))
@@ -79,7 +81,7 @@ func (c CounterVec) Get(name string) *Counter {
 	return item
 }
 
-// Get gets counter instance by name
+// GetP gets counter instance by name
 func (c CounterVec) GetP(name string) (counter *Counter, ok bool) {
 	counter, ok = c[name]
 	if ok {

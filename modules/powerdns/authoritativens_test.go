@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package powerdns
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -14,8 +16,8 @@ import (
 )
 
 var (
-	v430statistics, _     = ioutil.ReadFile("testdata/v4.3.0/statistics.json")
-	recursorStatistics, _ = ioutil.ReadFile("testdata/recursor/statistics.json")
+	v430statistics, _     = os.ReadFile("testdata/v4.3.0/statistics.json")
+	recursorStatistics, _ = os.ReadFile("testdata/recursor/statistics.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {

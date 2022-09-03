@@ -1,9 +1,10 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package httpcheck
 
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"time"
@@ -58,7 +59,7 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 	return stm.ToMap(mx), nil
 }
 
-func (hc HTTPCheck) collectErrResponse(mx *metrics, err error) {
+func (hc *HTTPCheck) collectErrResponse(mx *metrics, err error) {
 	switch code := decodeReqError(err); code {
 	default:
 		panic(fmt.Sprintf("unknown request error code : %d", code))
@@ -75,13 +76,13 @@ func (hc HTTPCheck) collectErrResponse(mx *metrics, err error) {
 	}
 }
 
-func (hc HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
+func (hc *HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
 	if !hc.acceptedStatuses[resp.StatusCode] {
 		mx.Status.BadStatusCode = true
 		return
 	}
 
-	bs, err := ioutil.ReadAll(resp.Body)
+	bs, err := io.ReadAll(resp.Body)
 	if err != nil && err != io.EOF {
 		hc.Warningf("error on reading body : %v", err)
 		mx.Status.BadContent = true
@@ -140,7 +141,7 @@ func closeBody(resp *http.Response) {
 	if resp == nil || resp.Body == nil {
 		return
 	}
-	_, _ = io.Copy(ioutil.Discard, resp.Body)
+	_, _ = io.Copy(io.Discard, resp.Body)
 	_ = resp.Body.Close()
 }
 

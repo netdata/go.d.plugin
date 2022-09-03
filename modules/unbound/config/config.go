@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package config
 
 import (
@@ -64,7 +66,7 @@ func fromOptions(options []option) *UnboundConfig {
 	return cfg
 }
 
-// Unbound doesnt allow to query stats from unix socket when control-interface is enabled on ip interface.
+// Unbound doesn't allow to query stats from unix socket when control-interface is enabled on ip interface.
 func applyControlInterface(cfg *UnboundConfig, value string) {
 	if cfg.iface == "" || !isUnixSocket(value) || isUnixSocket(cfg.iface) {
 		cfg.iface = value

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package geth
 
 import (
@@ -50,47 +52,47 @@ type (
 	}
 )
 
-func (v Geth) validateConfig() error {
-	if v.URL == "" {
+func (g Geth) validateConfig() error {
+	if g.URL == "" {
 		return errors.New("URL is not set")
 	}
 	return nil
 }
 
-func (v *Geth) initClient() error {
-	client, err := web.NewHTTPClient(v.Client)
+func (g *Geth) initClient() error {
+	client, err := web.NewHTTPClient(g.Client)
 	if err != nil {
 		return err
 	}
 
-	v.prom = prometheus.New(client, v.Request)
+	g.prom = prometheus.New(client, g.Request)
 	return nil
 }
 
-func (v *Geth) Init() bool {
-	if err := v.validateConfig(); err != nil {
-		v.Errorf("error on validating config: %v", err)
+func (g *Geth) Init() bool {
+	if err := g.validateConfig(); err != nil {
+		g.Errorf("error on validating config: %g", err)
 		return false
 	}
-	if err := v.initClient(); err != nil {
-		v.Errorf("error on initializing client: %v", err)
+	if err := g.initClient(); err != nil {
+		g.Errorf("error on initializing client: %g", err)
 		return false
 	}
 	return true
 }
 
-func (v *Geth) Check() bool {
-	return len(v.Collect()) > 0
+func (g *Geth) Check() bool {
+	return len(g.Collect()) > 0
 }
 
-func (v *Geth) Charts() *Charts {
-	return v.charts
+func (g *Geth) Charts() *Charts {
+	return g.charts
 }
 
-func (v *Geth) Collect() map[string]int64 {
-	mx, err := v.collect()
+func (g *Geth) Collect() map[string]int64 {
+	mx, err := g.collect()
 	if err != nil {
-		v.Error(err)
+		g.Error(err)
 	}
 
 	if len(mx) == 0 {

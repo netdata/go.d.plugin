@@ -30,7 +30,7 @@ If TLS is enabled, in addition:
 - `control-key-file` should be readable by `netdata` user
 - `control-cert-file` should be readable by `netdata` user
 
-For auto detection parameters from `unbound.conf`:
+For auto-detection parameters from `unbound.conf`:
 
 - `unbound.conf` should be readable by `netdata` user
 - if you have several configuration files (include feature) all of them should be readable by `netdata` user
@@ -93,7 +93,7 @@ sudo ./edit-config go.d/unbound.conf
 ```
 
 This Unbound collector only needs the `address` to a server's `remote-control` interface if TLS is disabled or `address`
-of unix socket. Otherwise you need to set path to the `control-key-file` and `control-cert-file` files.
+of unix socket. Otherwise, you need to set path to the `control-key-file` and `control-cert-file` files.
 
 The module tries to auto-detect following parameters reading `unbound.conf`:
 
@@ -104,7 +104,7 @@ The module tries to auto-detect following parameters reading `unbound.conf`:
 - tls_key
 
 Module supports both cumulative and non-cumulative modes. Default is non-cumulative. If your server has enabled
-`statistics-cumulative`, but the module fails to auto-detect it (`unbound.conf` is not readable or it is a remote
+`statistics-cumulative`, but the module fails to auto-detect it (`unbound.conf` is not readable, or it is a remote
 server), you need to set it manually in the configuration file.
 
 Here is an example for several servers:
@@ -148,17 +148,21 @@ have the control protocol set up correctly.
 To troubleshoot issues with the `unbound` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
-system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
-to the `netdata` user.
+- Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
+  your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
 
-```bash
-cd /usr/libexec/netdata/plugins.d/
-sudo -u netdata -s
-```
+  ```bash
+  cd /usr/libexec/netdata/plugins.d/
+  ```
 
-You can now run the `go.d.plugin` to debug the collector:
+- Switch to the `netdata` user.
 
-```bash
-./go.d.plugin -d -m unbound
-```
+  ```bash
+  sudo -u netdata -s
+  ```
+
+- Run the `go.d.plugin` to debug the collector:
+
+  ```bash
+  ./go.d.plugin -d -m unbound
+  ```

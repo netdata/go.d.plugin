@@ -1,10 +1,12 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package solr
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -13,8 +15,8 @@ import (
 )
 
 var (
-	coreMetricsV6, _ = ioutil.ReadFile("testdata/core-metrics-v6.txt")
-	coreMetricsV7, _ = ioutil.ReadFile("testdata/core-metrics-v7.txt")
+	coreMetricsV6, _ = os.ReadFile("testdata/core-metrics-v6.txt")
+	coreMetricsV7, _ = os.ReadFile("testdata/core-metrics-v7.txt")
 )
 
 func version(v string) string {

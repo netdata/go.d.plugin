@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package geth
 
 import (
@@ -5,12 +7,12 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
-func (v *Geth) collect() (map[string]int64, error) {
-	pms, err := v.prom.Scrape()
+func (g *Geth) collect() (map[string]int64, error) {
+	pms, err := g.prom.Scrape()
 	if err != nil {
 		return nil, err
 	}
-	mx := v.collectGeth(pms)
+	mx := g.collectGeth(pms)
 
 	return stm.ToMap(mx), nil
 }
@@ -24,7 +26,7 @@ func (g *Geth) collectGeth(pms prometheus.Metrics) map[string]float64 {
 	return mx
 }
 
-func (v *Geth) collectChainData(mx map[string]float64, pms prometheus.Metrics) {
+func (g *Geth) collectChainData(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		chainValidation,
 		chainWrite,
@@ -42,20 +44,20 @@ func (v *Geth) collectChainData(mx map[string]float64, pms prometheus.Metrics) {
 		reorgsExecuted,
 		goRoutines,
 	)
-	v.collectEth(mx, pms)
+	g.collectEth(mx, pms)
 
 }
 
-func (v *Geth) collectRpc(mx map[string]float64, pms prometheus.Metrics) {
+func (g *Geth) collectRpc(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		rpcRequests,
 		rpcSuccess,
 		rpcFailure,
 	)
-	v.collectEth(mx, pms)
+	g.collectEth(mx, pms)
 }
 
-func (v *Geth) collectTxPool(mx map[string]float64, pms prometheus.Metrics) {
+func (g *Geth) collectTxPool(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		txPoolInvalid,
 		txPoolPending,
@@ -69,10 +71,10 @@ func (v *Geth) collectTxPool(mx map[string]float64, pms prometheus.Metrics) {
 		txPoolQueuedEviction,
 		txPoolQueuedRatelimit,
 	)
-	v.collectEth(mx, pms)
+	g.collectEth(mx, pms)
 }
 
-func (v *Geth) collectP2P(mx map[string]float64, pms prometheus.Metrics) {
+func (g *Geth) collectP2P(mx map[string]float64, pms prometheus.Metrics) {
 	pms = pms.FindByNames(
 		p2pDials,
 		p2pEgress,
@@ -80,10 +82,10 @@ func (v *Geth) collectP2P(mx map[string]float64, pms prometheus.Metrics) {
 		p2pPeers,
 		p2pServes,
 	)
-	v.collectEth(mx, pms)
+	g.collectEth(mx, pms)
 }
 
-func (v *Geth) collectEth(mx map[string]float64, pms prometheus.Metrics) {
+func (g *Geth) collectEth(mx map[string]float64, pms prometheus.Metrics) {
 	for _, pm := range pms {
 		mx[pm.Name()] += pm.Value
 	}

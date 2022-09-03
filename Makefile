@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 DEV_MODULES := all
 
 all: download vet test build
@@ -19,7 +21,7 @@ clean:
 	rm -rf bin
 
 .PHONY: check
-check: fmt vet lint ## Run static code analysis
+check: fmt vet ## Run static code analysis
 
 
 .PHONY: test

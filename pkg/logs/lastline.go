@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package logs
 
 import (
@@ -10,7 +12,7 @@ const DefaultMaxLineWidth = 4 * 1024 // assume disk block size is 4K
 var ErrTooLongLine = errors.New("too long line")
 
 // ReadLastLine returns the last line of the file and any read error encountered.
-// It expect last line width <= maxLineWidth.
+// It expects last line width <= maxLineWidth.
 // If maxLineWidth <= 0, it defaults to DefaultMaxLineWidth.
 func ReadLastLine(filename string, maxLineWidth int64) ([]byte, error) {
 	if maxLineWidth <= 0 {

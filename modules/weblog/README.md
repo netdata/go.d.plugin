@@ -159,7 +159,7 @@ Notes:
   is Off. The web log collector counts hostnames as IPv4 addresses. We recommend either to disable HostnameLookups or
   use `%a` instead of `%h`.
 - Since httpd 2.0, unlike 1.3, the `%b` and `%B` format strings do not represent the number of bytes sent to the client,
-  but simply the size in bytes of the HTTP response. It will will differ, for instance, if the connection is aborted, or
+  but simply the size in bytes of the HTTP response. It will differ, for instance, if the connection is aborted, or
   if SSL is used. The `%O` format provided by [`mod_logio`](https://httpd.apache.org/docs/2.4/mod/mod_logio.html)
   will log the actual number of bytes sent over the network.
 - To get `%I` and `%O` working you need to enable `mod_logio` on Apache.
@@ -198,7 +198,7 @@ Special case:
 
 Both `%t` and `$time_local` fields represent time
 in [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format). It is a special case
-because it's in fact 2 fields after csv parse (ex.: `[22/Mar/2009:09:30:31 +0100]`). Weblog understands it and you don't
+because it's in fact 2 fields after csv parse (ex.: `[22/Mar/2009:09:30:31 +0100]`). Weblog understands it, and you don't
 need to replace it with `-` (if we want to do it we need to make it `- -`).
 
 ```yaml
@@ -328,17 +328,21 @@ module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/c
 To troubleshoot issues with the `web_log` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
 
-First, navigate to your plugins directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
-system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
-to the `netdata` user.
+- Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
+  your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
 
-```bash
-cd /usr/libexec/netdata/plugins.d/
-sudo -u netdata -s
-```
+  ```bash
+  cd /usr/libexec/netdata/plugins.d/
+  ```
 
-You can now run the `go.d.plugin` to debug the collector:
+- Switch to the `netdata` user.
 
-```bash
-./go.d.plugin -d -m web_log
-```
+  ```bash
+  sudo -u netdata -s
+  ```
+
+- Run the `go.d.plugin` to debug the collector:
+
+  ```bash
+  ./go.d.plugin -d -m web_log
+  ```

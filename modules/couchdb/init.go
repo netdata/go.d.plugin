@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package couchdb
 
 import (
@@ -13,7 +15,7 @@ func (cdb *CouchDB) validateConfig() error {
 		return errors.New("URL not set")
 	}
 	if cdb.Node == "" {
-		return errors.New("Node not set")
+		return errors.New("'node' not set")
 	}
 	if _, err := web.NewHTTPRequest(cdb.Request); err != nil {
 		return err

@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package phpfpm
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -12,11 +14,11 @@ import (
 )
 
 var (
-	testStatusJSON, _           = ioutil.ReadFile("testdata/status.json")
-	testStatusFullJSON, _       = ioutil.ReadFile("testdata/status-full.json")
-	testStatusFullNoIdleJSON, _ = ioutil.ReadFile("testdata/status-full-no-idle.json")
-	testStatusText, _           = ioutil.ReadFile("testdata/status.txt")
-	testStatusFullText, _       = ioutil.ReadFile("testdata/status-full.txt")
+	testStatusJSON, _           = os.ReadFile("testdata/status.json")
+	testStatusFullJSON, _       = os.ReadFile("testdata/status-full.json")
+	testStatusFullNoIdleJSON, _ = os.ReadFile("testdata/status-full-no-idle.json")
+	testStatusText, _           = os.ReadFile("testdata/status.txt")
+	testStatusFullText, _       = os.ReadFile("testdata/status-full.txt")
 )
 
 func Test_readTestData(t *testing.T) {

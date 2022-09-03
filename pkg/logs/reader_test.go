@@ -1,10 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package logs
 
 import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -198,7 +199,7 @@ func (r *testReader) readUntilEOFTimes(times int) (sum int, err error) {
 
 func prepareTempFile(t *testing.T, pattern string) string {
 	t.Helper()
-	f, err := ioutil.TempFile("", pattern)
+	f, err := os.CreateTemp("", pattern)
 	require.NoError(t, err)
 	return f.Name()
 }
@@ -234,7 +235,7 @@ func appendLogs(t *testing.T, filename string, interval time.Duration, numOfLogs
 	file, err := os.OpenFile(filename, os.O_RDWR|os.O_APPEND, os.ModeAppend)
 	require.NoError(t, err)
 	require.NotNil(t, file)
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	for i := 0; i < numOfLogs; i++ {
 		_, err = fmt.Fprintln(file, "line", i, "filename", base)

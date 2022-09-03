@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package k8s_state
 
 import (
@@ -53,21 +55,21 @@ const (
 )
 
 const (
-	labelKeyPrefix           = "k8s_"
-	labelKeyLabelPrefix      = labelKeyPrefix + "label_"
-	labelKeyAnnotationPrefix = labelKeyPrefix + "annotation_"
-	labelKeyClusterID        = labelKeyPrefix + "cluster_id"
-	labelKeyClusterName      = labelKeyPrefix + "cluster_name"
-	labelKeyNamespace        = labelKeyPrefix + "namespace"
-	labelKeyKind             = labelKeyPrefix + "kind"
-	labelKeyPodName          = labelKeyPrefix + "pod_name"
-	labelKeyNodeName         = labelKeyPrefix + "node_name"
-	labelKeyPodUID           = labelKeyPrefix + "pod_uid"
-	labelKeyControllerKind   = labelKeyPrefix + "controller_kind"
-	labelKeyControllerName   = labelKeyPrefix + "controller_name"
-	labelKeyContainerName    = labelKeyPrefix + "container_name"
-	labelKeyContainerID      = labelKeyPrefix + "container_id"
-	labelKeyQoSClass         = labelKeyPrefix + "qos_class"
+	labelKeyPrefix = "k8s_"
+	//labelKeyLabelPrefix      = labelKeyPrefix + "label_"
+	//labelKeyAnnotationPrefix = labelKeyPrefix + "annotation_"
+	labelKeyClusterID      = labelKeyPrefix + "cluster_id"
+	labelKeyClusterName    = labelKeyPrefix + "cluster_name"
+	labelKeyNamespace      = labelKeyPrefix + "namespace"
+	labelKeyKind           = labelKeyPrefix + "kind"
+	labelKeyPodName        = labelKeyPrefix + "pod_name"
+	labelKeyNodeName       = labelKeyPrefix + "node_name"
+	labelKeyPodUID         = labelKeyPrefix + "pod_uid"
+	labelKeyControllerKind = labelKeyPrefix + "controller_kind"
+	labelKeyControllerName = labelKeyPrefix + "controller_name"
+	labelKeyContainerName  = labelKeyPrefix + "container_name"
+	labelKeyContainerID    = labelKeyPrefix + "container_id"
+	labelKeyQoSClass       = labelKeyPrefix + "qos_class"
 )
 
 var baseCharts = module.Charts{
@@ -385,10 +387,6 @@ func (ks *KubeState) newNodeChartLabels(ns *nodeState) []module.Label {
 		{Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s},
 		{Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s},
 	}
-	//for k, v := range ns.labels {
-	//	labels = append(labels,
-	//		module.Label{Key: labelKeyLabelPrefix + k, Value: v, Source: module.LabelSourceK8s})
-	//}
 	return labels
 }
 
@@ -578,10 +576,6 @@ func (ks *KubeState) newPodChartLabels(ps *podState) []module.Label {
 		{Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s},
 		{Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s},
 	}
-	//for k, v := range ps.labels {
-	//	labels = append(labels,
-	//		module.Label{Key: labelKeyLabelPrefix + k, Value: v, Source: module.LabelSourceK8s})
-	//}
 	return labels
 }
 
@@ -589,6 +583,25 @@ func (ks *KubeState) addPodCharts(ps *podState) {
 	charts := ks.newPodCharts(ps)
 	if err := ks.Charts().Add(*charts...); err != nil {
 		ks.Warning(err)
+	}
+}
+
+func (ks *KubeState) updatePodChartsNodeLabel(ps *podState) {
+	prefix := fmt.Sprintf("pod_%s", replaceDots(ps.id()))
+	for _, c := range *ks.Charts() {
+		if strings.HasPrefix(c.ID, prefix) {
+			updateNodeLabel(c, ps.nodeName)
+			c.MarkNotCreated()
+		}
+	}
+}
+
+func updateNodeLabel(c *module.Chart, nodeName string) {
+	for i, l := range c.Labels {
+		if l.Key == labelKeyNodeName {
+			c.Labels[i].Value = nodeName
+			break
+		}
 	}
 }
 

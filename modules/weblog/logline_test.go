@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package weblog
 
 import (
@@ -285,7 +287,7 @@ func TestLogLine_Assign(t *testing.T) {
 			cases: []subTest{
 				{input: "100222", wantLine: logLine{web: web{upsRespTime: 100222}}},
 				{input: "100.222", wantLine: logLine{web: web{upsRespTime: 100222000}}},
-				{input: "0.333,0.444,0.555", wantLine: logLine{web: web{upsRespTime: 333000}}},
+				{input: "0.100 , 0.400 : 0.200 ", wantLine: logLine{web: web{upsRespTime: 700000}}},
 				{input: emptyStr, wantLine: emptyLogLine},
 				{input: hyphen, wantLine: emptyLogLine},
 				{input: "-1", wantLine: emptyLogLine, wantErr: errBadUpsRespTime},

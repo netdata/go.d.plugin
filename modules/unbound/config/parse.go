@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package config
 
 import (
@@ -47,9 +49,10 @@ func isOptionUsed(opt option) bool {
 
 // Parse parses Unbound configuration files into UnboundConfig.
 // It follows logic described in the 'man unbound.conf':
-//  - Files can be included using the include: directive. It can appear anywhere, it accepts a single file name as argument.
-//  - Processing continues as if the text  from  the included file was copied into the config file at that point.
-//  - Wildcards can be used to include multiple files.
+//   - Files can be included using the 'include:' directive. It can appear anywhere, it accepts a single file name as argument.
+//   - Processing continues as if the text  from  the included file was copied into the config file at that point.
+//   - Wildcards can be used to include multiple files.
+//
 // It stops processing on any error: syntax error, recursive include, glob matches directory etc.
 func Parse(entryPath string) (*UnboundConfig, error) {
 	options, err := parse(entryPath, nil)
@@ -72,7 +75,7 @@ func parse(filename string, visited map[string]bool) ([]option, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	var options []option
 	sc := bufio.NewScanner(f)

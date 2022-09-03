@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package hdfs
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -12,9 +14,9 @@ import (
 )
 
 var (
-	testUnknownNodeData, _ = ioutil.ReadFile("testdata/unknownnode.json")
-	testDataNodeData, _    = ioutil.ReadFile("testdata/datanode.json")
-	testNameNodeData, _    = ioutil.ReadFile("testdata/namenode.json")
+	testUnknownNodeData, _ = os.ReadFile("testdata/unknownnode.json")
+	testDataNodeData, _    = os.ReadFile("testdata/datanode.json")
+	testNameNodeData, _    = os.ReadFile("testdata/namenode.json")
 )
 
 func Test_readTestData(t *testing.T) {

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package module
 
 import (
@@ -13,6 +15,21 @@ import (
 	"github.com/netdata/go.d.plugin/agent/netdataapi"
 	"github.com/netdata/go.d.plugin/logger"
 )
+
+var obsoleteLock = &sync.Mutex{}
+var obsoleteCharts = true
+
+func DontObsoleteCharts() {
+	obsoleteLock.Lock()
+	obsoleteCharts = false
+	obsoleteLock.Unlock()
+}
+
+func shouldObsoleteCharts() bool {
+	obsoleteLock.Lock()
+	defer obsoleteLock.Unlock()
+	return obsoleteCharts
+}
 
 var writeLock = &sync.Mutex{}
 
@@ -109,9 +126,8 @@ type Job struct {
 	stop chan struct{}
 }
 
-// https://github.com/netdata/netdata/blob/ab0ffcebf802803d1e88f6a5e47a314c292b45e3/database/rrd.h#L59
-// Chart type.id (job.FullName() + '.' + chart.ID)
-const RRD_ID_LENGTH_MAX = 200
+// NetdataChartIDMaxLength is the chart ID max length. See RRD_ID_LENGTH_MAX in the netdata source code.
+const NetdataChartIDMaxLength = 200
 
 // FullName returns job full name.
 func (j Job) FullName() string {
@@ -224,6 +240,9 @@ func (j *Job) Cleanup() {
 		logger.GlobalMsgCountWatcher.Unregister(j.Logger)
 	}
 	j.buf.Reset()
+	if !shouldObsoleteCharts() {
+		return
+	}
 
 	if j.runChart.created {
 		j.runChart.MarkRemove()
@@ -326,9 +345,9 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 	for _, chart := range *j.charts {
 		if !chart.created {
 			typeID := fmt.Sprintf("%s.%s", j.FullName(), chart.ID)
-			if len(typeID) >= RRD_ID_LENGTH_MAX {
+			if len(typeID) >= NetdataChartIDMaxLength {
 				j.Warningf("chart 'type.id' length (%d) >= max allowed (%d), the chart is ignored (%s)",
-					len(typeID), RRD_ID_LENGTH_MAX, typeID)
+					len(typeID), NetdataChartIDMaxLength, typeID)
 				chart.ignore = true
 			}
 			j.createChart(chart)
@@ -365,8 +384,8 @@ func (j *Job) createChart(chart *Chart) {
 		j.priority++
 	}
 	_ = j.api.CHART(
-		getChartType(chart, j.FullName()),
-		getChartID(chart),
+		getChartType(chart, j),
+		getChartID(chart, j),
 		chart.OverID,
 		chart.Title,
 		chart.Units,
@@ -428,8 +447,8 @@ func (j *Job) updateChart(chart *Chart, collected map[string]int64, sinceLastRun
 	}
 
 	_ = j.api.BEGIN(
-		getChartType(chart, j.FullName()),
-		getChartID(chart),
+		getChartType(chart, j),
+		getChartID(chart, j),
 		sinceLastRun,
 	)
 	var i, updated int
@@ -472,21 +491,27 @@ func (j Job) penalty() int {
 	return v
 }
 
-func getChartType(chart *Chart, jobFullName string) string {
+func getChartType(chart *Chart, j *Job) string {
 	if chart.typ != "" {
 		return chart.typ
 	}
+	if j.ModuleName() != "k8s_state" {
+		return j.FullName()
+	}
 	if i := strings.IndexByte(chart.ID, '.'); i != -1 {
-		chart.typ = jobFullName + "_" + chart.ID[:i]
+		chart.typ = j.FullName() + "_" + chart.ID[:i]
 	} else {
-		chart.typ = jobFullName
+		chart.typ = j.FullName()
 	}
 	return chart.typ
 }
 
-func getChartID(chart *Chart) string {
+func getChartID(chart *Chart, j *Job) string {
 	if chart.id != "" {
 		return chart.id
+	}
+	if j.ModuleName() != "k8s_state" {
+		return chart.ID
 	}
 	if i := strings.IndexByte(chart.ID, '.'); i != -1 {
 		chart.id = chart.ID[i+1:]

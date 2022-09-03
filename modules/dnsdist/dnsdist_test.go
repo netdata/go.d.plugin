@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package dnsdist
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -14,7 +16,7 @@ import (
 )
 
 var (
-	v151JSONStat, _ = ioutil.ReadFile("testdata/v1.5.1/jsonstat.json")
+	v151JSONStat, _ = os.ReadFile("testdata/v1.5.1/jsonstat.json")
 )
 
 func Test_testDataIsCorrectlyReadAndValid(t *testing.T) {

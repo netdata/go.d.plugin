@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package mongo
 
 import (
@@ -29,7 +31,7 @@ func (m *Mongo) collectServerStatus(ms map[string]int64) error {
 
 // addOptionalCharts tries to add charts based on the availability of
 // metrics coming back from the `serverStatus` command.
-// Nil pointer structs will be skipped and we won't produce metrics for
+// Nil pointer structs will be skipped, and we won't produce metrics for
 // unavailable metrics.
 func (m *Mongo) addOptionalCharts(status *serverStatus) {
 	m.metricExists(status.FlowControl, &chartFlowControl)

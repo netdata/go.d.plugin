@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package scaleio
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/modules/scaleio/client"
@@ -14,8 +16,8 @@ import (
 )
 
 var (
-	selectedStatisticsData, _ = ioutil.ReadFile("testdata/selected_statistics.json")
-	instancesData, _          = ioutil.ReadFile("testdata/instances.json")
+	selectedStatisticsData, _ = os.ReadFile("testdata/selected_statistics.json")
+	instancesData, _          = os.ReadFile("testdata/instances.json")
 )
 
 func Test_readTestData(t *testing.T) {

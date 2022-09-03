@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package matcher
 
 import (
@@ -27,7 +29,7 @@ func (s *SimpleExpr) Empty() bool {
 	return len(s.Includes) == 0 && len(s.Excludes) == 0
 }
 
-// Parse parse the given matchers in Includes and Excludes
+// Parse parses the given matchers in Includes and Excludes
 func (s *SimpleExpr) Parse() (Matcher, error) {
 	if len(s.Includes) == 0 && len(s.Excludes) == 0 {
 		return nil, ErrEmptyExpr

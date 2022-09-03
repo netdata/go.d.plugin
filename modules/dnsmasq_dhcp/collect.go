@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package dnsmasq_dhcp
 
 import (
@@ -8,69 +10,129 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/netdata/go.d.plugin/pkg/iprange"
 )
 
 func (d *DnsmasqDHCP) collect() (map[string]int64, error) {
+	now := time.Now()
+	var updated bool
+
+	if now.Sub(d.parseConfigTime) > d.parseConfigEvery {
+		d.parseConfigTime = now
+
+		dhcpRanges, dhcpHosts := d.parseDnsmasqDHCPConfiguration()
+		d.dhcpRanges, d.dhcpHosts = dhcpRanges, dhcpHosts
+		updated = d.updateCharts()
+
+		d.collectV4V6Stats()
+	}
+
 	f, err := os.Open(d.LeasesPath)
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
-	fi, err := f.Stat()
-	if err != nil {
-		return nil, err
+	if !updated {
+		fi, err := f.Stat()
+		if err != nil {
+			return nil, err
+		}
+
+		if d.leasesModTime.Equal(fi.ModTime()) {
+			d.Debug("lease database file modification time has not changed, old data is returned")
+			return d.mx, nil
+		}
+
+		d.Debug("leases db file modification time has changed, reading it")
+		d.leasesModTime = fi.ModTime()
 	}
 
-	notChanged := d.leasesModTime.Equal(fi.ModTime())
-	if notChanged {
-		d.Debug("leases db file modification time was not changed, returning old data")
-		return d.mx, nil
-	}
-	d.Debug("leases db file modification time is changed, reading it")
-
-	d.leasesModTime = fi.ModTime()
-	d.mx = d.collectRangesStats(findIPs(f))
+	leases := findLeases(f)
+	d.collectRangesStats(leases)
 
 	return d.mx, nil
 }
 
-func (d *DnsmasqDHCP) collectRangesStats(ips []net.IP) map[string]int64 {
-	mx := make(map[string]int64)
-
-	for _, ip := range ips {
-		for _, r := range d.ranges {
-			if !r.Contains(ip) {
-				continue
-			}
-			mx[r.String()]++
-			break
+func (d *DnsmasqDHCP) collectV4V6Stats() {
+	d.mx["ipv4_dhcp_ranges"], d.mx["ipv6_dhcp_ranges"] = 0, 0
+	for _, r := range d.dhcpRanges {
+		if r.Family() == iprange.V6Family {
+			d.mx["ipv6_dhcp_ranges"]++
+		} else {
+			d.mx["ipv4_dhcp_ranges"]++
 		}
 	}
 
-	for _, ip := range d.staticIPs {
-		for _, r := range d.ranges {
-			if !r.Contains(ip) {
-				continue
-			}
-			mx[r.String()]++
-			break
+	d.mx["ipv4_dhcp_hosts"], d.mx["ipv6_dhcp_hosts"] = 0, 0
+	for _, ip := range d.dhcpHosts {
+		if ip.To4() == nil {
+			d.mx["ipv6_dhcp_hosts"]++
+		} else {
+			d.mx["ipv4_dhcp_hosts"]++
 		}
 	}
-
-	for _, r := range d.ranges {
-		name := r.String()
-		numOfIps, ok := mx[name]
-		if !ok {
-			mx[name] = 0
-		}
-		mx[name+"_percentage"] = int64(math.Round(calcPercent(numOfIps, r.Size())))
-	}
-
-	return mx
 }
 
-func findIPs(r io.Reader) []net.IP {
+func (d *DnsmasqDHCP) collectRangesStats(leases []net.IP) {
+	for _, r := range d.dhcpRanges {
+		d.mx["dhcp_range_"+r.String()+"_allocated_leases"] = 0
+		d.mx["dhcp_range_"+r.String()+"_utilization"] = 0
+	}
+
+	for _, ip := range leases {
+		for _, r := range d.dhcpRanges {
+			if r.Contains(ip) {
+				d.mx["dhcp_range_"+r.String()+"_allocated_leases"]++
+				break
+			}
+		}
+	}
+
+	for _, ip := range d.dhcpHosts {
+		for _, r := range d.dhcpRanges {
+			if r.Contains(ip) {
+				d.mx["dhcp_range_"+r.String()+"_allocated_leases"]++
+				break
+			}
+		}
+	}
+
+	for _, r := range d.dhcpRanges {
+		name := "dhcp_range_" + r.String() + "_allocated_leases"
+		numOfIps, ok := d.mx[name]
+		if !ok {
+			d.mx[name] = 0
+		}
+		d.mx["dhcp_range_"+r.String()+"_utilization"] = int64(math.Round(calcPercent(numOfIps, r.Size())))
+	}
+}
+
+func (d *DnsmasqDHCP) updateCharts() bool {
+	var updated bool
+	seen := make(map[string]bool)
+	for _, r := range d.dhcpRanges {
+		seen[r.String()] = true
+		if !d.cacheDHCPRanges[r.String()] {
+			d.cacheDHCPRanges[r.String()] = true
+			d.addDHCPRangeCharts(r.String())
+			updated = true
+		}
+	}
+
+	for v := range d.cacheDHCPRanges {
+		if !seen[v] {
+			delete(d.cacheDHCPRanges, v)
+			d.removeDHCPRangeCharts(v)
+			updated = true
+		}
+	}
+	return updated
+}
+
+func findLeases(r io.Reader) []net.IP {
 	/*
 		1560300536 08:00:27:61:3c:ee 2.2.2.3 debian8 *
 		duid 00:01:00:01:24:90:cf:5b:08:00:27:61:2e:2c

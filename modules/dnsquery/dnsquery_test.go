@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package dnsquery
 
 import (
@@ -112,12 +114,12 @@ func TestDNSQuery_Collect_Error(t *testing.T) {
 
 type okMockExchanger struct{}
 
-func (m okMockExchanger) Exchange(msg *dns.Msg, address string) (response *dns.Msg, rtt time.Duration, err error) {
+func (m okMockExchanger) Exchange(_ *dns.Msg, _ string) (response *dns.Msg, rtt time.Duration, err error) {
 	return nil, time.Second, nil
 }
 
 type errMockExchanger struct{}
 
-func (m errMockExchanger) Exchange(msg *dns.Msg, address string) (response *dns.Msg, rtt time.Duration, err error) {
+func (m errMockExchanger) Exchange(_ *dns.Msg, _ string) (response *dns.Msg, rtt time.Duration, err error) {
 	return nil, time.Second, errors.New("mock error")
 }
