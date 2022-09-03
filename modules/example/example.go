@@ -24,14 +24,12 @@ func New() *Example {
 	return &Example{
 		Config: Config{
 			Charts: ConfigCharts{
-				Num:      4,
-				Dims:     4,
-				Contexts: 4,
+				Num:  4,
+				Dims: 4,
 			},
 			HiddenCharts: ConfigCharts{
-				Num:      0,
-				Dims:     4,
-				Contexts: 0,
+				Num:  0,
+				Dims: 4,
 			},
 		},
 

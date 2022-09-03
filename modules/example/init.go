@@ -24,8 +24,9 @@ func (e *Example) initCharts() (*module.Charts, error) {
 	charts := &module.Charts{}
 
 	var ctx int
+	v := calcContextEvery(e.Config.Charts.Num, e.Config.Charts.Contexts)
 	for i := 0; i < e.Config.Charts.Num; i++ {
-		if i != 0 && i%e.Config.Charts.Contexts == 0 {
+		if i != 0 && v != 0 && ctx < (e.Config.Charts.Contexts-1) && i%v == 0 {
 			ctx++
 		}
 		chart := newChart(i, ctx, e.Config.Charts.Labels, module.ChartType(e.Config.Charts.Type))
@@ -36,8 +37,9 @@ func (e *Example) initCharts() (*module.Charts, error) {
 	}
 
 	ctx = 0
+	v = calcContextEvery(e.Config.HiddenCharts.Num, e.Config.HiddenCharts.Contexts)
 	for i := 0; i < e.Config.HiddenCharts.Num; i++ {
-		if i != 0 && i%e.Config.HiddenCharts.Contexts == 0 {
+		if i != 0 && v != 0 && ctx < (e.Config.HiddenCharts.Contexts-1) && i%v == 0 {
 			ctx++
 		}
 		chart := newHiddenChart(i, ctx, e.Config.HiddenCharts.Labels, module.ChartType(e.Config.HiddenCharts.Type))
@@ -48,4 +50,14 @@ func (e *Example) initCharts() (*module.Charts, error) {
 	}
 
 	return charts, nil
+}
+
+func calcContextEvery(charts, contexts int) int {
+	if contexts <= 1 {
+		return 0
+	}
+	if contexts > charts {
+		return 1
+	}
+	return charts / contexts
 }
