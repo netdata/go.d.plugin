@@ -80,6 +80,28 @@ var charts = Charts{
 		},
 	},
 	{
+		ID:    "generated_error_packets",
+		Title: "Generated error packets",
+		Units: "packets",
+		Fam:   "global_stats",
+		Ctx:   "proxysql.generated_error_packets",
+		Type:  module.Line,
+		Dims: Dims{
+			{ID: "generated_error_packets", Name: "packets", Algo: module.Absolute, Mul: 1, Div: 1},
+		},
+	},
+	{
+		ID:    "max_connect_timeouts",
+		Title: "Max connection timeouts",
+		Units: "connections",
+		Fam:   "global_stats",
+		Ctx:   "proxysql.max_connect_timeouts",
+		Type:  module.Line,
+		Dims: Dims{
+			{ID: "max_connect_timeouts", Name: "connections", Algo: module.Absolute, Mul: 1, Div: 1},
+		},
+	},
+	{
 		ID:    "client_connections",
 		Title: "Client connections",
 		Units: "connections",
@@ -236,6 +258,8 @@ var charts = Charts{
 			{ID: "queries_frontends_bytes_sent", Name: "query backends received", Algo: module.Absolute, Mul: -8, Div: 1000},
 			{ID: "query_cache_bytes_in", Name: "query cache in", Algo: module.Absolute, Mul: 8, Div: 1000},
 			{ID: "query_cache_bytes_out", Name: "query cache out", Algo: module.Absolute, Mul: -8, Div: 1000},
+			{ID: "mysql_backend_buffers_bytes", Name: "mysql backend buffers", Algo: module.Absolute, Mul: -8, Div: 1000},
+			{ID: "mysql_frontend_buffers_bytes", Name: "mysql frontend buffers", Algo: module.Absolute, Mul: -8, Div: 1000},
 		},
 	},
 	{
@@ -304,6 +328,7 @@ var charts = Charts{
 			{ID: "query_digest_memory", Name: "query digest", Algo: module.Absolute, Mul: 1, Div: 1},
 			{ID: "connpool_memory_bytes", Name: "connection pool", Algo: module.Absolute, Mul: 1, Div: 1},
 			{ID: "query_cache_memory_bytes", Name: "query cache", Algo: module.Absolute, Mul: 1, Div: 1},
+			{ID: "mysql_session_internal_bytes", Name: "mysql session internal", Algo: module.Absolute, Mul: 1, Div: 1},
 		},
 	},
 	{
@@ -392,8 +417,31 @@ func newMysqlCommandCountersCharts(command string) module.Charts {
 	}
 }
 
+func newMysqlUsersCharts(username string) module.Charts {
+	return module.Charts{
+		{
+			ID:    "mysql_users_" + username,
+			Title: "MySQL users",
+			Units: "connections",
+			Fam:   "mysql user " + username,
+			Ctx:   "proxysql.mysql_users",
+			Type:  module.Line,
+			Dims: Dims{
+				{ID: "mysql_user_" + username + "_frontend_connections", Name: "frontend connections", Algo: module.Absolute},
+				{ID: "mysql_user_" + username + "_frontend_max_connections", Name: "frontend max connections", Algo: module.Absolute},
+			},
+		},
+	}
+}
+
 func (p *ProxySQL) addMysqlCommandCountersCharts(command string) {
 	if err := p.Charts().Add(newMysqlCommandCountersCharts(command)...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *ProxySQL) addMysqlUsersCharts(username string) {
+	if err := p.Charts().Add(newMysqlUsersCharts(username)...); err != nil {
 		p.Warning(err)
 	}
 }

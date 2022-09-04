@@ -28,6 +28,9 @@ func (p *ProxySQL) collect() (map[string]int64, error) {
 	if err := p.collectMysqlGlobalStatus(collected); err != nil {
 		return nil, fmt.Errorf("error on collecting mysql global status: %v", err)
 	}
+	if err := p.collectMysqlUsers(collected); err != nil {
+		return nil, fmt.Errorf("error on collecting mysql users: %v", err)
+	}
 
 	return collected, nil
 }
