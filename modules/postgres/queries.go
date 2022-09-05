@@ -10,6 +10,10 @@ func queryIsSuperUser() string {
 	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
 }
 
+func querySettingsMaxConnections() string {
+	return "SELECT current_setting('max_connections')::INT - current_setting('superuser_reserved_connections')::INT;"
+}
+
 // TODO: this is not correct and we should use pg_stat_activity.
 // But we need to check what connections (backend_type) count towards 'max_connections'.
 // I think python version query doesn't count it correctly.
@@ -36,17 +40,28 @@ GROUP BY state;
 `
 }
 
-func querySettingsMaxConnections() string {
-	return "SELECT current_setting('max_connections')::INT - current_setting('superuser_reserved_connections')::INT;"
+func queryCheckpoints() string {
+	// definition by version: https://pgpedia.info/p/pg_stat_bgwriter.html
+	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-BGWRITER-VIEW
+	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1104
+
+	return `
+SELECT checkpoints_timed,
+       checkpoints_req,
+       checkpoint_write_time,
+       checkpoint_sync_time,
+       buffers_checkpoint * current_setting('block_size')::numeric buffers_checkpoint,
+       buffers_clean * current_setting('block_size')::numeric      buffers_clean,
+       maxwritten_clean,
+       buffers_backend * current_setting('block_size')::numeric    buffers_backend,
+       buffers_backend_fsync,
+       buffers_alloc * current_setting('block_size')::numeric      buffers_alloc
+FROM pg_stat_bgwriter;
+`
 }
 
 func queryServerUptime() string {
-	return `
-SELECT
-    EXTRACT(epoch 
-FROM
-    CURRENT_TIMESTAMP - pg_postmaster_start_time());
-`
+	return `SELECT EXTRACT(epoch FROM CURRENT_TIMESTAMP - pg_postmaster_start_time());`
 }
 
 func queryTXIDWraparound() string {
@@ -409,7 +424,7 @@ GROUP BY
 `
 }
 
-func queryDatabaseList() string {
+func queryQueryableDatabaseList() string {
 	return `
 SELECT datname
 FROM pg_database
@@ -471,26 +486,6 @@ WHERE pg_database.datistemplate = false;
 `
 }
 
-func queryCheckpoints() string {
-	// definition by version: https://pgpedia.info/p/pg_stat_bgwriter.html
-	// docs: https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-BGWRITER-VIEW
-	// code: https://github.com/postgres/postgres/blob/366283961ac0ed6d89014444c6090f3fd02fce0a/src/backend/catalog/system_views.sql#L1104
-
-	return `
-SELECT checkpoints_timed,
-       checkpoints_req,
-       checkpoint_write_time,
-       checkpoint_sync_time,
-       buffers_checkpoint * current_setting('block_size')::numeric buffers_checkpoint,
-       buffers_clean * current_setting('block_size')::numeric      buffers_clean,
-       maxwritten_clean,
-       buffers_backend * current_setting('block_size')::numeric    buffers_backend,
-       buffers_backend_fsync,
-       buffers_alloc * current_setting('block_size')::numeric      buffers_alloc
-FROM pg_stat_bgwriter;
-`
-}
-
 func queryDatabaseLocks() string {
 	// definition by version: https://pgpedia.info/p/pg_locks.html
 	// docs: https://www.postgresql.org/docs/current/view-pg-locks.html
@@ -510,5 +505,33 @@ GROUP BY datname,
          granted
 ORDER BY datname,
          mode;
+`
+}
+
+func queryUserTableStats() string {
+	return `
+SELECT current_database()                                   as datname,
+       schemaname,
+       relname,
+       seq_scan,
+       seq_tup_read,
+       idx_scan,
+       idx_tup_fetch,
+       n_tup_ins,
+       n_tup_upd,
+       n_tup_del,
+       n_tup_hot_upd,
+       n_live_tup,
+       n_dead_tup,
+       EXTRACT(epoch from now() - last_vacuum)              as last_vacuum,
+       EXTRACT(epoch from now() - last_autovacuum)          as last_autovacuum,
+       EXTRACT(epoch from now() - last_analyze)             as last_analyze,
+       EXTRACT(epoch from now() - last_autoanalyze)         as last_autoanalyze,
+       vacuum_count,
+       autovacuum_count,
+       analyze_count,
+       autoanalyze_count,
+       pg_total_relation_size(schemaname || '.' || relname) as total_relation_size
+FROM pg_stat_user_tables;
 `
 }

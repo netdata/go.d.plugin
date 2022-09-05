@@ -6,6 +6,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/stdlib"
 	"strconv"
 	"time"
 )
@@ -18,34 +20,36 @@ const (
 
 func (p *Postgres) collect() (map[string]int64, error) {
 	if p.db == nil {
-		if err := p.openConnection(); err != nil {
+		db, err := p.openPrimaryConnection()
+		if err != nil {
 			return nil, err
 		}
+		p.db = db
 	}
 
 	if p.pgVersion == 0 {
-		ver, err := p.queryServerVersion()
+		ver, err := p.doQueryServerVersion()
 		if err != nil {
 			return nil, fmt.Errorf("querying server version error: %v", err)
 		}
 		p.pgVersion = ver
-		p.Debugf("connected to PostgreSQL v%s", p.pgVersion)
+		p.Debugf("connected to PostgreSQL v%d", p.pgVersion)
 	}
 
 	if p.superUser == nil {
-		v, err := p.queryIsSuperUser()
+		v, err := p.doQueryIsSuperUser()
 		if err != nil {
 			return nil, fmt.Errorf("querying is super user error: %v", err)
 		}
 		p.superUser = &v
-		p.Debugf("connected as super user: %s", *p.superUser)
+		p.Debugf("connected as super user: %v", *p.superUser)
 	}
 
 	now := time.Now()
 
 	if now.Sub(p.recheckSettingsTime) > p.recheckSettingsEvery {
 		p.recheckSettingsTime = now
-		maxConn, err := p.querySettingsMaxConnections()
+		maxConn, err := p.doQuerySettingsMaxConnections()
 		if err != nil {
 			return nil, fmt.Errorf("querying settings max connections error: %v", err)
 		}
@@ -54,13 +58,16 @@ func (p *Postgres) collect() (map[string]int64, error) {
 
 	p.resetMetrics()
 
-	if err := p.queryGlobalMetrics(); err != nil {
+	if err := p.doQueryGlobalMetrics(); err != nil {
 		return nil, err
 	}
 	if err := p.doQueryReplicationMetrics(); err != nil {
 		return nil, err
 	}
 	if err := p.doQueryDatabasesMetrics(); err != nil {
+		return nil, err
+	}
+	if err := p.doQueryTablesMetrics(); err != nil {
 		return nil, err
 	}
 
@@ -181,6 +188,61 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"lock_mode_AccessExclusiveLock_awaited"] = m.accessExclusiveLockAwaited
 	}
 
+	for name, m := range p.mx.tables {
+		if !m.updated {
+			delete(p.mx.tables, name)
+			p.removeTableCharts(m.db, m.schema, m.name)
+			continue
+		}
+		if !m.hasCharts {
+			m.hasCharts = true
+			p.addNewTableCharts(m.db, m.schema, m.name)
+		}
+		if !m.hasLastAutoVacuumChart && m.lastAutoVacuumAgo != -1 {
+			m.hasLastAutoVacuumChart = true
+			p.addTableLastAutoVacuumAgoChart(m.db, m.schema, m.name)
+		}
+		if !m.hasLastVacuumChart && m.lastVacuumAgo != -1 {
+			m.hasLastVacuumChart = true
+			p.addTableLastVacuumAgoChart(m.db, m.schema, m.name)
+		}
+		if !m.hasLastAutoAnalyzeChart && m.lastAutoAnalyzeAgo != -1 {
+			m.hasLastAutoAnalyzeChart = true
+			p.addTableLastAutoAnalyzeAgoChart(m.db, m.schema, m.name)
+		}
+		if !m.hasLastAnalyzeChart && m.lastAnalyzeAgo != -1 {
+			m.hasLastAnalyzeChart = true
+			p.addTableLastAnalyzeAgoChart(m.db, m.schema, m.name)
+		}
+
+		px := fmt.Sprintf("db_%s_schema_%s_table_%s_", m.db, m.schema, m.name)
+
+		mx[px+"seq_scan"] = m.seqScan
+		mx[px+"seq_tup_read"] = m.seqTupRead
+		mx[px+"idx_scan"] = m.idxScan
+		mx[px+"idx_tup_fetch"] = m.idxTupFetch
+		mx[px+"n_live_tup"] = m.nLiveTup
+		mx[px+"n_dead_tup"] = m.nDeadTup
+		mx[px+"n_dead_tup_perc"] = calcPercentage(m.nDeadTup, m.nDeadTup+m.nLiveTup)
+		mx[px+"n_tup_ins"] = m.nTupIns
+		mx[px+"n_tup_upd"] = m.nTupUpd
+		mx[px+"n_tup_del"] = m.nTupDel
+		mx[px+"n_tup_hot_upd"] = m.nTupHotUpd
+		if m.lastAutoVacuumAgo != -1 {
+			mx[px+"last_autovacuum_ago"] = m.lastAutoVacuumAgo
+		}
+		if m.lastVacuumAgo != -1 {
+			mx[px+"last_vacuum_ago"] = m.lastVacuumAgo
+		}
+		if m.lastAutoAnalyzeAgo != -1 {
+			mx[px+"last_autoanalyze_ago"] = m.lastAutoAnalyzeAgo
+		}
+		if m.lastAnalyzeAgo != -1 {
+			mx[px+"last_analyze_ago"] = m.lastAnalyzeAgo
+		}
+		mx[px+"total_size"] = m.totalSize
+	}
+
 	for name, m := range p.mx.replApps {
 		if !m.updated {
 			delete(p.mx.replApps, name)
@@ -227,6 +289,14 @@ func (p *Postgres) resetMetrics() {
 			hasCharts: m.hasCharts,
 		}
 	}
+	for name, m := range p.mx.tables {
+		p.mx.tables[name] = &tableMetrics{
+			db:        m.db,
+			schema:    m.schema,
+			name:      m.name,
+			hasCharts: m.hasCharts,
+		}
+	}
 	for name, m := range p.mx.replApps {
 		p.mx.replApps[name] = &replStandbyAppMetrics{
 			name:      m.name,
@@ -241,10 +311,10 @@ func (p *Postgres) resetMetrics() {
 	}
 }
 
-func (p *Postgres) openConnection() error {
+func (p *Postgres) openPrimaryConnection() (*sql.DB, error) {
 	db, err := sql.Open("pgx", p.DSN)
 	if err != nil {
-		return fmt.Errorf("error on opening a connection with the Postgres database [%s]: %v", p.DSN, err)
+		return nil, fmt.Errorf("error on opening a connection with the Postgres database [%s]: %v", p.DSN, err)
 	}
 
 	db.SetMaxOpenConns(1)
@@ -253,69 +323,45 @@ func (p *Postgres) openConnection() error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
+
 	if err := db.PingContext(ctx); err != nil {
 		_ = db.Close()
-		return fmt.Errorf("error on pinging the Postgres database [%s]: %v", p.DSN, err)
+		return nil, fmt.Errorf("error on pinging the Postgres database [%s]: %v", p.DSN, err)
 	}
-	p.db = db
 
-	return nil
+	return db, nil
 }
 
-func (p *Postgres) querySettingsMaxConnections() (int64, error) {
-	q := querySettingsMaxConnections()
-
-	var s string
-	if err := p.doQueryRow(q, &s); err != nil {
-		return 0, err
+func (p *Postgres) openSecondaryConnection(dbname string) (*sql.DB, string, error) {
+	cfg, err := pgx.ParseConfig(p.DSN)
+	if err != nil {
+		return nil, "", fmt.Errorf("error on parsing DSN [%s]: %v", p.DSN, err)
 	}
 
-	return strconv.ParseInt(s, 10, 64)
-}
+	cfg.Database = dbname
+	connString := stdlib.RegisterConnConfig(cfg)
 
-func (p *Postgres) queryServerVersion() (int, error) {
-	q := queryServerVersion()
-
-	var s string
-	if err := p.doQueryRow(q, &s); err != nil {
-		return 0, err
+	db, err := sql.Open("pgx", connString)
+	if err != nil {
+		return nil, "", fmt.Errorf("error on opening a secondary connection with the Postgres database [%s]: %v", dbname, err)
 	}
 
-	return strconv.Atoi(s)
-}
+	db.SetMaxOpenConns(1)
+	db.SetMaxIdleConns(1)
+	db.SetConnMaxLifetime(10 * time.Minute)
 
-func (p *Postgres) queryIsSuperUser() (bool, error) {
-	q := queryIsSuperUser()
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
 
-	var v bool
-	if err := p.doQueryRow(q, &v); err != nil {
-		return false, err
+	if err := db.PingContext(ctx); err != nil {
+		_ = db.Close()
+		return nil, "", fmt.Errorf("error on pinging the secondary Postgres database [%s]: %v", dbname, err)
 	}
 
-	return v, nil
+	return db, connString, nil
 }
 
 func (p *Postgres) isSuperUser() bool { return p.superUser != nil && *p.superUser }
-
-func (p *Postgres) doQueryRow(query string, v any) error {
-	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
-	defer cancel()
-
-	return p.db.QueryRowContext(ctx, query).Scan(v)
-}
-
-func (p *Postgres) doQueryRows(query string, assign func(column, value string, rowEnd bool)) error {
-	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
-	defer cancel()
-
-	rows, err := p.db.QueryContext(ctx, query)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = rows.Close() }()
-
-	return readRows(rows, assign)
-}
 
 func (p *Postgres) getDBMetrics(name string) *dbMetrics {
 	db, ok := p.mx.dbs[name]
@@ -324,6 +370,16 @@ func (p *Postgres) getDBMetrics(name string) *dbMetrics {
 		p.mx.dbs[name] = db
 	}
 	return db
+}
+
+func (p *Postgres) getTableMetrics(db, schema, name string) *tableMetrics {
+	key := db + "_" + schema + "_" + name
+	m, ok := p.mx.tables[key]
+	if !ok {
+		m = &tableMetrics{db: db, schema: schema, name: name}
+		p.mx.tables[key] = m
+	}
+	return m
 }
 
 func (p *Postgres) getReplAppMetrics(name string) *replStandbyAppMetrics {
@@ -342,45 +398,6 @@ func (p *Postgres) getReplSlotMetrics(name string) *replSlotMetrics {
 		p.mx.replSlots[name] = slot
 	}
 	return slot
-}
-
-func readRows(rows *sql.Rows, assign func(column, value string, rowEnd bool)) error {
-	if assign == nil {
-		return nil
-	}
-
-	columns, err := rows.Columns()
-	if err != nil {
-		return err
-	}
-
-	values := makeValues(len(columns))
-
-	for rows.Next() {
-		if err := rows.Scan(values...); err != nil {
-			return err
-		}
-		for i, l := 0, len(values); i < l; i++ {
-			assign(columns[i], valueToString(values[i]), i == l-1)
-		}
-	}
-	return rows.Err()
-}
-
-func valueToString(value any) string {
-	v, ok := value.(*sql.NullString)
-	if !ok || !v.Valid {
-		return ""
-	}
-	return v.String
-}
-
-func makeValues(size int) []any {
-	vs := make([]any, size)
-	for i := range vs {
-		vs[i] = &sql.NullString{}
-	}
-	return vs
 }
 
 func parseInt(s string) int64 {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func (p *Postgres) queryGlobalMetrics() error {
+func (p *Postgres) doQueryGlobalMetrics() error {
 	if err := p.doQueryConnectionsUsed(); err != nil {
 		return fmt.Errorf("querying server connections used error: %v", err)
 	}
@@ -65,7 +65,7 @@ func (p *Postgres) doQueryConnectionsState() error {
 	q := queryServerConnectionsState()
 
 	var state string
-	return p.doQueryRows(q, func(column, value string, rowEnd bool) {
+	return p.doQuery(q, func(column, value string, rowEnd bool) {
 		switch column {
 		case "state":
 			state = value
@@ -91,7 +91,7 @@ func (p *Postgres) doQueryConnectionsState() error {
 func (p *Postgres) doQueryCheckpoints() error {
 	q := queryCheckpoints()
 
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "checkpoints_timed":
 			p.mx.checkpointsTimed = parseInt(value)
@@ -133,7 +133,7 @@ func (p *Postgres) doQueryUptime() error {
 func (p *Postgres) doQueryTXIDWraparound() error {
 	q := queryTXIDWraparound()
 
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "oldest_current_xid":
 			p.mx.oldestXID = parseInt(value)
@@ -161,7 +161,7 @@ func (p *Postgres) doQueryWALWrites() error {
 func (p *Postgres) doQueryWALFiles() error {
 	q := queryWALFiles(p.pgVersion)
 
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "wal_recycled_files":
 			p.mx.walRecycledFiles = parseInt(value)
@@ -174,7 +174,7 @@ func (p *Postgres) doQueryWALFiles() error {
 func (p *Postgres) doQueryWALArchiveFiles() error {
 	q := queryWALArchiveFiles(p.pgVersion)
 
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "wal_archive_files_ready_count":
 			p.mx.walArchiveFilesReady = parseInt(value)
@@ -189,7 +189,7 @@ func (p *Postgres) doQueryCatalogRelations() error {
 
 	var kind string
 	var count, size int64
-	return p.doQueryRows(q, func(column, value string, rowEnd bool) {
+	return p.doQuery(q, func(column, value string, rowEnd bool) {
 		switch column {
 		case "relkind":
 			kind = value
@@ -240,7 +240,7 @@ func (p *Postgres) doQueryCatalogRelations() error {
 func (p *Postgres) doQueryAutovacuumWorkers() error {
 	q := queryAutovacuumWorkers()
 
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "autovacuum_analyze":
 			p.mx.autovacuumWorkersAnalyze = parseInt(value)

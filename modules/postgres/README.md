@@ -63,6 +63,17 @@ All metrics have "postgres." prefix.
 | db_temp_files                        |      database       |                                                                  written                                                                   |    files/s     |
 | db_temp_files_data                   |      database       |                                                                  written                                                                   |      B/s       |
 | db_size                              |      database       |                                                                    size                                                                    |       B        |
+| table_dead_rows_perc                 |        table        |                                                                    dead                                                                    |   percentage   |
+| table_rows                           |        table        |                                                                 live, dead                                                                 |      rows      |
+| table_rows_operations                |        table        |                                                         inserted, deleted, updated                                                         |     rows/s     |
+| table_hot_updates                    |        table        |                                                                    hot                                                                     |   updates/s    |
+| table_scans                          |        table        |                                                             index, sequential                                                              |    scans/s     |
+| table_scans_rows                     |        table        |                                                             index, sequential                                                              |     rows/s     |
+| table_last_autovacuum_ago            |        table        |                                                                    time                                                                    |    seconds     |
+| table_last_vacuum_ago                |        table        |                                                                    time                                                                    |    seconds     |
+| table_last_autoanalyze_ago           |        table        |                                                                    time                                                                    |    seconds     |
+| table_last_analyze_ago               |        table        |                                                                    time                                                                    |    seconds     |
+| table_total_size                     |        table        |                                                                    size                                                                    |       B        |
 
 ## Configuration
 
