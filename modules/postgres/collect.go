@@ -223,6 +223,7 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"idx_tup_fetch"] = m.idxTupFetch
 		mx[px+"n_live_tup"] = m.nLiveTup
 		mx[px+"n_dead_tup"] = m.nDeadTup
+		mx[px+"n_dead_tup_perc"] = calcPercentage(m.nDeadTup, m.nDeadTup+m.nLiveTup)
 		mx[px+"n_tup_ins"] = m.nTupIns
 		mx[px+"n_tup_upd"] = m.nTupUpd
 		mx[px+"n_tup_del"] = m.nTupDel

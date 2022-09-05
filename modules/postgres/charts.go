@@ -49,7 +49,7 @@ const (
 	prioDBTempFiles
 	prioDBTempFilesData
 	prioDBSize
-	prioTableRowsTotalPercentage
+	prioTableDeadRowsPerc
 	prioTableRowsTotal
 	prioTableRowsOperations
 	prioTableHOTUpdates
@@ -737,7 +737,7 @@ func (p *Postgres) removeDatabaseCharts(dbname string) {
 var (
 	tableChartsTmpl = module.Charts{
 		tableRowsChartTmpl.Copy(),
-		tableRowsPercChartTmpl.Copy(),
+		tableDeadRowsPercChartTmpl.Copy(),
 		tableRowsOperationsChartTmpl.Copy(),
 		tableHOTUpdatesChartTmpl.Copy(),
 		tableScansChartTmpl.Copy(),
@@ -745,17 +745,15 @@ var (
 		tableTotalSizeChartTmpl.Copy(),
 	}
 
-	tableRowsPercChartTmpl = module.Chart{
-		ID:       "db_%s_schema_%s_table_%s_rows_perc",
-		Title:    "Table total rows",
+	tableDeadRowsPercChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_dead_rows_perc",
+		Title:    "Table dead rows",
 		Units:    "%",
 		Fam:      "table rows",
-		Ctx:      "postgres.table_rows_perc",
-		Priority: prioTableRowsTotalPercentage,
-		Type:     module.Stacked,
+		Ctx:      "postgres.table_dead_rows_perc",
+		Priority: prioTableDeadRowsPerc,
 		Dims: module.Dims{
-			{ID: "db_%s_schema_%s_table_%s_n_live_tup", Name: "live", Algo: module.PercentOfAbsolute},
-			{ID: "db_%s_schema_%s_table_%s_n_dead_tup", Name: "dead", Algo: module.PercentOfAbsolute},
+			{ID: "db_%s_schema_%s_table_%s_n_dead_tup_perc", Name: "dead"},
 		},
 	}
 	tableRowsChartTmpl = module.Chart{
