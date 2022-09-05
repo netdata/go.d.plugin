@@ -815,8 +815,8 @@ var (
 		Ctx:      "postgres.table_scans_rows",
 		Priority: prioTableScansRows,
 		Dims: module.Dims{
-			{ID: "db_%s_schema_%s_table_%s_idx_tup_fetch", Name: "sequential", Algo: module.Incremental},
-			{ID: "db_%s_schema_%s_table_%s_seq_tup_read", Name: "index", Algo: module.Incremental},
+			{ID: "db_%s_schema_%s_table_%s_idx_tup_fetch", Name: "index", Algo: module.Incremental},
+			{ID: "db_%s_schema_%s_table_%s_seq_tup_read", Name: "sequential", Algo: module.Incremental},
 		},
 	}
 	tableLastAutoVacuumAgoChartTmpl = module.Chart{
