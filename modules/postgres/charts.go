@@ -49,6 +49,17 @@ const (
 	prioDBTempFiles
 	prioDBTempFilesData
 	prioDBSize
+	prioTableRowsTotalPercentage
+	prioTableRowsTotal
+	prioTableRowsOperations
+	prioTableHOTUpdates
+	prioTableScans
+	prioTableScansRows
+	prioTableLastAutovacuumAgo
+	prioTableLastVacuumAgo
+	prioTableLastAutoAnalyzeAgo
+	prioTableLastAnalyzeAgo
+	prioTableTotalSize
 )
 
 var baseCharts = module.Charts{
@@ -336,6 +347,7 @@ var (
 		},
 	}
 )
+
 var (
 	replicationStandbyAppCharts = module.Charts{
 		replicationStandbyAppWALDeltaChartTmpl.Copy(),
@@ -370,6 +382,37 @@ var (
 	}
 )
 
+func newReplicationStandbyAppCharts(app string) *module.Charts {
+	charts := replicationStandbyAppCharts.Copy()
+	for _, c := range *charts {
+		c.ID = fmt.Sprintf(c.ID, app)
+		c.Labels = []module.Label{
+			{Key: "application", Value: app},
+		}
+		for _, d := range c.Dims {
+			d.ID = fmt.Sprintf(d.ID, app)
+		}
+	}
+	return charts
+}
+
+func (p *Postgres) addNewReplicationStandbyAppCharts(app string) {
+	charts := newReplicationStandbyAppCharts(app)
+	if err := p.Charts().Add(*charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) removeReplicationStandbyAppCharts(app string) {
+	prefix := fmt.Sprintf("replication_standby_app_%s_", app)
+	for _, c := range *p.Charts() {
+		if strings.HasPrefix(c.ID, prefix) {
+			c.MarkRemove()
+			c.MarkNotCreated()
+		}
+	}
+}
+
 var (
 	replicationSlotCharts = module.Charts{
 		replicationSlotFilesChartTmpl.Copy(),
@@ -387,6 +430,37 @@ var (
 		},
 	}
 )
+
+func newReplicationSlotCharts(slot string) *module.Charts {
+	charts := replicationSlotCharts.Copy()
+	for _, c := range *charts {
+		c.ID = fmt.Sprintf(c.ID, slot)
+		c.Labels = []module.Label{
+			{Key: "slot", Value: slot},
+		}
+		for _, d := range c.Dims {
+			d.ID = fmt.Sprintf(d.ID, slot)
+		}
+	}
+	return charts
+}
+
+func (p *Postgres) addNewReplicationSlotCharts(slot string) {
+	charts := newReplicationSlotCharts(slot)
+	if err := p.Charts().Add(*charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) removeReplicationSlotCharts(slot string) {
+	prefix := fmt.Sprintf("replication_slot_%s_", slot)
+	for _, c := range *p.Charts() {
+		if strings.HasPrefix(c.ID, prefix) {
+			c.MarkRemove()
+			c.MarkNotCreated()
+		}
+	}
+}
 
 var (
 	dbChartsTmpl = module.Charts{
@@ -629,68 +703,6 @@ var (
 	}
 )
 
-func newReplicationStandbyAppCharts(app string) *module.Charts {
-	charts := replicationStandbyAppCharts.Copy()
-	for _, c := range *charts {
-		c.ID = fmt.Sprintf(c.ID, app)
-		c.Labels = []module.Label{
-			{Key: "application", Value: app},
-		}
-		for _, d := range c.Dims {
-			d.ID = fmt.Sprintf(d.ID, app)
-		}
-	}
-	return charts
-}
-
-func (p *Postgres) addNewReplicationStandbyAppCharts(app string) {
-	charts := newReplicationStandbyAppCharts(app)
-	if err := p.Charts().Add(*charts...); err != nil {
-		p.Warning(err)
-	}
-}
-
-func (p *Postgres) removeReplicationStandbyAppCharts(app string) {
-	prefix := fmt.Sprintf("replication_standby_app_%s_", app)
-	for _, c := range *p.Charts() {
-		if strings.HasPrefix(c.ID, prefix) {
-			c.MarkRemove()
-			c.MarkNotCreated()
-		}
-	}
-}
-
-func newReplicationSlotCharts(slot string) *module.Charts {
-	charts := replicationSlotCharts.Copy()
-	for _, c := range *charts {
-		c.ID = fmt.Sprintf(c.ID, slot)
-		c.Labels = []module.Label{
-			{Key: "slot", Value: slot},
-		}
-		for _, d := range c.Dims {
-			d.ID = fmt.Sprintf(d.ID, slot)
-		}
-	}
-	return charts
-}
-
-func (p *Postgres) addNewReplicationSlotCharts(slot string) {
-	charts := newReplicationSlotCharts(slot)
-	if err := p.Charts().Add(*charts...); err != nil {
-		p.Warning(err)
-	}
-}
-
-func (p *Postgres) removeReplicationSlotCharts(slot string) {
-	prefix := fmt.Sprintf("replication_slot_%s_", slot)
-	for _, c := range *p.Charts() {
-		if strings.HasPrefix(c.ID, prefix) {
-			c.MarkRemove()
-			c.MarkNotCreated()
-		}
-	}
-}
-
 func newDatabaseCharts(dbname string) *module.Charts {
 	charts := dbChartsTmpl.Copy()
 	for _, c := range *charts {
@@ -714,6 +726,223 @@ func (p *Postgres) addNewDatabaseCharts(dbname string) {
 
 func (p *Postgres) removeDatabaseCharts(dbname string) {
 	prefix := fmt.Sprintf("db_%s_", dbname)
+	for _, c := range *p.Charts() {
+		if strings.HasPrefix(c.ID, prefix) {
+			c.MarkRemove()
+			c.MarkNotCreated()
+		}
+	}
+}
+
+var (
+	tableChartsTmpl = module.Charts{
+		tableRowsChartTmpl.Copy(),
+		tableRowsPercChartTmpl.Copy(),
+		tableRowsOperationsChartTmpl.Copy(),
+		tableHOTUpdatesChartTmpl.Copy(),
+		tableScansChartTmpl.Copy(),
+		tableScansRowsChartTmpl.Copy(),
+		tableTotalSizeChartTmpl.Copy(),
+	}
+
+	tableRowsPercChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_rows_perc",
+		Title:    "Table total rows",
+		Units:    "%",
+		Fam:      "table rows",
+		Ctx:      "postgres.table_rows_perc",
+		Priority: prioTableRowsTotalPercentage,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_n_live_tup", Name: "live", Algo: module.PercentOfAbsolute},
+			{ID: "db_%s_schema_%s_table_%s_n_dead_tup", Name: "dead", Algo: module.PercentOfAbsolute},
+		},
+	}
+	tableRowsChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_rows",
+		Title:    "Table total rows",
+		Units:    "rows",
+		Fam:      "table rows",
+		Ctx:      "postgres.table_rows",
+		Priority: prioTableRowsTotal,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_n_live_tup", Name: "live"},
+			{ID: "db_%s_schema_%s_table_%s_n_dead_tup", Name: "dead"},
+		},
+	}
+	tableRowsOperationsChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_rows_operations",
+		Title:    "Table throughput",
+		Units:    "rows/s",
+		Fam:      "table throughput",
+		Ctx:      "postgres.table_rows_operations",
+		Priority: prioTableRowsOperations,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_n_tup_ins", Name: "inserted", Algo: module.Incremental},
+			{ID: "db_%s_schema_%s_table_%s_n_tup_del", Name: "deleted", Algo: module.Incremental},
+			{ID: "db_%s_schema_%s_table_%s_n_tup_upd", Name: "updated", Algo: module.Incremental},
+		},
+	}
+	tableHOTUpdatesChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_hot_updates",
+		Title:    "Table HOT updates",
+		Units:    "updates/s",
+		Fam:      "table hot updates",
+		Ctx:      "postgres.table_hot_updates",
+		Priority: prioTableHOTUpdates,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_n_tup_hot_upd", Name: "hot", Algo: module.Incremental},
+		},
+	}
+	tableScansChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_scans",
+		Title:    "Table scans",
+		Units:    "scans/s",
+		Fam:      "table scans",
+		Ctx:      "postgres.table_scans",
+		Priority: prioTableScans,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_idx_scan", Name: "index"},
+			{ID: "db_%s_schema_%s_table_%s_seq_scan", Name: "sequential"},
+		},
+	}
+	tableScansRowsChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_scans_rows",
+		Title:    "Table live rows fetched by scans",
+		Units:    "rows/s",
+		Fam:      "table scans",
+		Ctx:      "postgres.table_scans_rows",
+		Priority: prioTableScansRows,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_idx_tup_fetch", Name: "sequential"},
+			{ID: "db_%s_schema_%s_table_%s_seq_tup_read", Name: "index"},
+		},
+	}
+	tableLastAutoVacuumAgoChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_last_autovacuum_ago",
+		Title:    "Table time since last auto VACUUM",
+		Units:    "seconds",
+		Fam:      "table autovacuum",
+		Ctx:      "postgres.table_last_autovacuum_ago",
+		Priority: prioTableLastAutovacuumAgo,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_last_autovacuum_ago", Name: "time"},
+		},
+	}
+	tableLastVacuumAgoChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_last_vacuum_ago",
+		Title:    "Table time since last manual VACUUM",
+		Units:    "seconds",
+		Fam:      "table vacuum",
+		Ctx:      "postgres.table_last_vacuum_ago",
+		Priority: prioTableLastVacuumAgo,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_last_vacuum_ago", Name: "time"},
+		},
+	}
+	tableLastAutoAnalyzeAgoChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_last_autoanalyze_ago",
+		Title:    "Table time since last auto ANALYZE",
+		Units:    "seconds",
+		Fam:      "table autoanalyze",
+		Ctx:      "postgres.table_last_autoanalyze_ago",
+		Priority: prioTableLastAutoAnalyzeAgo,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_last_autoanalyze_ago", Name: "time"},
+		},
+	}
+	tableLastAnalyzeAgoChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_last_analyze_ago",
+		Title:    "Table time since last manual ANALYZE",
+		Units:    "seconds",
+		Fam:      "table analyze",
+		Ctx:      "postgres.table_last_analyze_ago",
+		Priority: prioTableLastAnalyzeAgo,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_last_analyze_ago", Name: "time"},
+		},
+	}
+	tableTotalSizeChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_total_size",
+		Title:    "Table total size",
+		Units:    "B",
+		Fam:      "table size",
+		Ctx:      "postgres.table_total_size",
+		Priority: prioTableTotalSize,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_total_size", Name: "size"},
+		},
+	}
+)
+
+func newTableCharts(dbname, schema, name string) *module.Charts {
+	charts := tableChartsTmpl.Copy()
+
+	for i, chart := range *charts {
+		(*charts)[i] = newTableChart(chart, dbname, schema, name)
+	}
+
+	return charts
+}
+
+func newTableChart(chart *module.Chart, dbname, schema, name string) *module.Chart {
+	chart = chart.Copy()
+	chart.ID = fmt.Sprintf(chart.ID, dbname, schema, name)
+	chart.Labels = []module.Label{
+		{Key: "database", Value: dbname},
+		{Key: "schema", Value: schema},
+		{Key: "table", Value: name},
+	}
+	for _, d := range chart.Dims {
+		d.ID = fmt.Sprintf(d.ID, dbname, schema, name)
+	}
+	return chart
+}
+
+func (p *Postgres) addNewTableCharts(dbname, schema, name string) {
+	charts := newTableCharts(dbname, schema, name)
+	if err := p.Charts().Add(*charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) addTableLastAutoVacuumAgoChart(dbname, schema, name string) {
+	chart := newTableChart(tableLastAutoVacuumAgoChartTmpl.Copy(), dbname, schema, name)
+
+	if err := p.Charts().Add(chart); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) addTableLastVacuumAgoChart(dbname, schema, name string) {
+	chart := newTableChart(tableLastVacuumAgoChartTmpl.Copy(), dbname, schema, name)
+
+	if err := p.Charts().Add(chart); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) addTableLastAutoAnalyzeAgoChart(dbname, schema, name string) {
+	chart := newTableChart(tableLastAutoAnalyzeAgoChartTmpl.Copy(), dbname, schema, name)
+
+	if err := p.Charts().Add(chart); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) addTableLastAnalyzeAgoChart(dbname, schema, name string) {
+	chart := newTableChart(tableLastAnalyzeAgoChartTmpl.Copy(), dbname, schema, name)
+
+	if err := p.Charts().Add(chart); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) removeTableCharts(dbname, schema, name string) {
+	prefix := fmt.Sprintf("db_%s_schema_%s_table_%s", dbname, schema, name)
 	for _, c := range *p.Charts() {
 		if strings.HasPrefix(c.ID, prefix) {
 			c.MarkRemove()

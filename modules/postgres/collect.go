@@ -29,7 +29,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 			return nil, fmt.Errorf("querying server version error: %v", err)
 		}
 		p.pgVersion = ver
-		p.Debugf("connected to PostgreSQL v%s", p.pgVersion)
+		p.Debugf("connected to PostgreSQL v%d", p.pgVersion)
 	}
 
 	if p.superUser == nil {
@@ -38,7 +38,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 			return nil, fmt.Errorf("querying is super user error: %v", err)
 		}
 		p.superUser = &v
-		p.Debugf("connected as super user: %s", *p.superUser)
+		p.Debugf("connected as super user: %v", *p.superUser)
 	}
 
 	now := time.Now()
@@ -61,6 +61,9 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return nil, err
 	}
 	if err := p.doQueryDatabasesMetrics(); err != nil {
+		return nil, err
+	}
+	if err := p.doQueryUserTableStats(); err != nil {
 		return nil, err
 	}
 
@@ -181,6 +184,60 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"lock_mode_AccessExclusiveLock_awaited"] = m.accessExclusiveLockAwaited
 	}
 
+	for name, m := range p.mx.tables {
+		if !m.updated {
+			delete(p.mx.tables, name)
+			p.removeTableCharts(m.db, m.schema, m.name)
+			continue
+		}
+		if !m.hasCharts {
+			m.hasCharts = true
+			p.addNewTableCharts(m.db, m.schema, m.name)
+		}
+		if !m.hasLastAutoVacuumChart && m.lastAutoVacuumAgo != -1 {
+			m.hasLastAutoVacuumChart = true
+			p.addTableLastAutoVacuumAgoChart(m.db, m.schema, m.name)
+		}
+		if !m.hasLastVacuumChart && m.lastVacuumAgo != -1 {
+			m.hasLastVacuumChart = true
+			p.addTableLastVacuumAgoChart(m.db, m.schema, m.name)
+		}
+		if !m.hasLastAutoAnalyzeChart && m.lastAutoAnalyzeAgo != -1 {
+			m.hasLastAutoAnalyzeChart = true
+			p.addTableLastAutoAnalyzeAgoChart(m.db, m.schema, m.name)
+		}
+		if !m.hasLastAnalyzeChart && m.lastAnalyzeAgo != -1 {
+			m.hasLastAnalyzeChart = true
+			p.addTableLastAnalyzeAgoChart(m.db, m.schema, m.name)
+		}
+
+		px := fmt.Sprintf("db_%s_schema_%s_table_%s_", m.db, m.schema, m.name)
+
+		mx[px+"seq_scan"] = m.seqScan
+		mx[px+"seq_tup_read"] = m.seqTupRead
+		mx[px+"idx_scan"] = m.idxScan
+		mx[px+"idx_tup_fetch"] = m.idxTupFetch
+		mx[px+"n_live_tup"] = m.nLiveTup
+		mx[px+"n_dead_tup"] = m.nDeadTup
+		mx[px+"n_tup_ins"] = m.nTupIns
+		mx[px+"n_tup_upd"] = m.nTupUpd
+		mx[px+"n_tup_del"] = m.nTupDel
+		mx[px+"n_tup_hot_upd"] = m.nTupHotUpd
+		if m.lastAutoVacuumAgo != -1 {
+			mx[px+"last_autovacuum_ago"] = m.lastAutoVacuumAgo
+		}
+		if m.lastVacuumAgo != -1 {
+			mx[px+"last_vacuum_ago"] = m.lastVacuumAgo
+		}
+		if m.lastAutoAnalyzeAgo != -1 {
+			mx[px+"last_autoanalyze_ago"] = m.lastAutoAnalyzeAgo
+		}
+		if m.lastAnalyzeAgo != -1 {
+			mx[px+"last_analyze_ago"] = m.lastAnalyzeAgo
+		}
+		mx[px+"total_size"] = m.totalSize
+	}
+
 	for name, m := range p.mx.replApps {
 		if !m.updated {
 			delete(p.mx.replApps, name)
@@ -223,6 +280,14 @@ func (p *Postgres) resetMetrics() {
 	}
 	for name, m := range p.mx.dbs {
 		p.mx.dbs[name] = &dbMetrics{
+			name:      m.name,
+			hasCharts: m.hasCharts,
+		}
+	}
+	for name, m := range p.mx.tables {
+		p.mx.tables[name] = &tableMetrics{
+			db:        m.db,
+			schema:    m.schema,
 			name:      m.name,
 			hasCharts: m.hasCharts,
 		}
@@ -304,11 +369,15 @@ func (p *Postgres) doQueryRow(query string, v any) error {
 	return p.db.QueryRowContext(ctx, query).Scan(v)
 }
 
-func (p *Postgres) doQueryRows(query string, assign func(column, value string, rowEnd bool)) error {
+func (p *Postgres) doQuery(query string, assign func(column, value string, rowEnd bool)) error {
+	return p.doDBQuery(p.db, query, assign)
+}
+
+func (p *Postgres) doDBQuery(db *sql.DB, query string, assign func(column, value string, rowEnd bool)) error {
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
 
-	rows, err := p.db.QueryContext(ctx, query)
+	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		return err
 	}
@@ -324,6 +393,16 @@ func (p *Postgres) getDBMetrics(name string) *dbMetrics {
 		p.mx.dbs[name] = db
 	}
 	return db
+}
+
+func (p *Postgres) getTableMetrics(db, schema, name string) *tableMetrics {
+	key := db + "_" + schema + "_" + name
+	m, ok := p.mx.tables[key]
+	if !ok {
+		m = &tableMetrics{db: db, schema: schema, name: name}
+		p.mx.tables[key] = m
+	}
+	return m
 }
 
 func (p *Postgres) getReplAppMetrics(name string) *replStandbyAppMetrics {

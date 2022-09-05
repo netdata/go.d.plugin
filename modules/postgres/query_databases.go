@@ -23,7 +23,7 @@ func (p *Postgres) doQueryDatabaseStats() error {
 	q := queryDatabaseStats()
 
 	var db string
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "datname":
 			db = value
@@ -68,7 +68,7 @@ func (p *Postgres) doQueryDatabaseConflicts() error {
 	q := queryDatabaseConflicts()
 
 	var db string
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "datname":
 			db = value
@@ -92,7 +92,7 @@ func (p *Postgres) doQueryDatabaseLocks() error {
 
 	var db, mode string
 	var granted bool
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "datname":
 			db = value

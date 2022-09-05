@@ -30,7 +30,7 @@ func (p *Postgres) doQueryReplStandbyAppWALDelta() error {
 	q := queryReplicationStandbyAppDelta(p.pgVersion)
 
 	var app string
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "application_name":
 			app = value
@@ -51,7 +51,7 @@ func (p *Postgres) doQueryReplStandbyAppWALLag() error {
 	q := queryReplicationStandbyAppLag()
 
 	var app string
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "application_name":
 			app = value
@@ -70,7 +70,7 @@ func (p *Postgres) doQueryReplSlotFiles() error {
 	q := queryReplicationSlotFiles(p.pgVersion)
 
 	var slot string
-	return p.doQueryRows(q, func(column, value string, _ bool) {
+	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
 		case "slot_name":
 			slot = value

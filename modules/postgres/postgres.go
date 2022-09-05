@@ -24,9 +24,11 @@ func New() *Postgres {
 			Timeout: web.Duration{Duration: time.Second * 2},
 			DSN:     "postgres://postgres:postgres@127.0.0.1:5432/postgres",
 		},
-		charts: baseCharts.Copy(),
+		charts:  baseCharts.Copy(),
+		dbConns: make(map[string]*dbConn),
 		mx: &pgMetrics{
 			dbs:       make(map[string]*dbMetrics),
+			tables:    make(map[string]*tableMetrics),
 			replApps:  make(map[string]*replStandbyAppMetrics),
 			replSlots: make(map[string]*replSlotMetrics),
 		},
@@ -39,22 +41,29 @@ type Config struct {
 	Timeout web.Duration `yaml:"timeout"`
 }
 
-type Postgres struct {
-	module.Base
-	Config `yaml:",inline"`
+type (
+	Postgres struct {
+		module.Base
+		Config `yaml:",inline"`
 
-	charts *module.Charts
+		charts *module.Charts
 
-	db *sql.DB
+		db      *sql.DB
+		dbConns map[string]*dbConn
 
-	superUser *bool
-	pgVersion int
+		superUser *bool
+		pgVersion int
 
-	mx *pgMetrics
+		mx *pgMetrics
 
-	recheckSettingsTime  time.Time
-	recheckSettingsEvery time.Duration
-}
+		recheckSettingsTime  time.Time
+		recheckSettingsEvery time.Duration
+	}
+	dbConn struct {
+		connString string
+		db         *sql.DB
+	}
+)
 
 func (p *Postgres) Init() bool {
 	err := p.validateConfig()
@@ -94,4 +103,11 @@ func (p *Postgres) Cleanup() {
 		p.Warningf("cleanup: error on closing the Postgres database [%s]: %v", p.DSN, err)
 	}
 	p.db = nil
+
+	for dbname, conn := range p.dbConns {
+		if conn.db != nil {
+			_ = conn.db.Close()
+			delete(p.dbConns, dbname)
+		}
+	}
 }

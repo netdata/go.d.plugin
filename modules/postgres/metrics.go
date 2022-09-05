@@ -3,6 +3,7 @@ package postgres
 type pgMetrics struct {
 	srvMetrics
 	dbs       map[string]*dbMetrics
+	tables    map[string]*tableMetrics
 	replApps  map[string]*replStandbyAppMetrics
 	replSlots map[string]*replSlotMetrics
 }
@@ -140,4 +141,40 @@ type replSlotMetrics struct {
 
 	walKeep int64
 	files   int64
+}
+
+type tableMetrics struct {
+	name   string
+	schema string
+	db     string
+
+	updated                 bool
+	hasCharts               bool
+	hasLastAutoVacuumChart  bool
+	hasLastVacuumChart      bool
+	hasLastAutoAnalyzeChart bool
+	hasLastAnalyzeChart     bool
+
+	seqScan            int64
+	seqTupRead         int64
+	idxScan            int64
+	idxTupFetch        int64
+	nTupIns            int64
+	nTupUpd            int64
+	nTupDel            int64
+	nTupHotUpd         int64
+	nLiveTup           int64
+	nDeadTup           int64
+	nModSinceAnalyze   int64 // 9.4+
+	nInsSinceVacuum    int64 // 13+
+	lastVacuumAgo      int64
+	lastAutoVacuumAgo  int64
+	lastAnalyzeAgo     int64
+	lastAutoAnalyzeAgo int64
+	vacuumCount        int64
+	autovacuumCount    int64
+	analyzeCount       int64
+	autoAnalyzeCount   int64
+
+	totalSize int64
 }
