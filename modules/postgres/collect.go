@@ -6,6 +6,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/stdlib"
 	"strconv"
 	"time"
 )
@@ -18,13 +20,15 @@ const (
 
 func (p *Postgres) collect() (map[string]int64, error) {
 	if p.db == nil {
-		if err := p.openConnection(); err != nil {
+		db, err := p.openPrimaryConnection()
+		if err != nil {
 			return nil, err
 		}
+		p.db = db
 	}
 
 	if p.pgVersion == 0 {
-		ver, err := p.queryServerVersion()
+		ver, err := p.doQueryServerVersion()
 		if err != nil {
 			return nil, fmt.Errorf("querying server version error: %v", err)
 		}
@@ -33,7 +37,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 	}
 
 	if p.superUser == nil {
-		v, err := p.queryIsSuperUser()
+		v, err := p.doQueryIsSuperUser()
 		if err != nil {
 			return nil, fmt.Errorf("querying is super user error: %v", err)
 		}
@@ -45,7 +49,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 
 	if now.Sub(p.recheckSettingsTime) > p.recheckSettingsEvery {
 		p.recheckSettingsTime = now
-		maxConn, err := p.querySettingsMaxConnections()
+		maxConn, err := p.doQuerySettingsMaxConnections()
 		if err != nil {
 			return nil, fmt.Errorf("querying settings max connections error: %v", err)
 		}
@@ -54,7 +58,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 
 	p.resetMetrics()
 
-	if err := p.queryGlobalMetrics(); err != nil {
+	if err := p.doQueryGlobalMetrics(); err != nil {
 		return nil, err
 	}
 	if err := p.doQueryReplicationMetrics(); err != nil {
@@ -63,7 +67,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 	if err := p.doQueryDatabasesMetrics(); err != nil {
 		return nil, err
 	}
-	if err := p.doQueryUserTableStats(); err != nil {
+	if err := p.doQueryTablesMetrics(); err != nil {
 		return nil, err
 	}
 
@@ -306,10 +310,10 @@ func (p *Postgres) resetMetrics() {
 	}
 }
 
-func (p *Postgres) openConnection() error {
+func (p *Postgres) openPrimaryConnection() (*sql.DB, error) {
 	db, err := sql.Open("pgx", p.DSN)
 	if err != nil {
-		return fmt.Errorf("error on opening a connection with the Postgres database [%s]: %v", p.DSN, err)
+		return nil, fmt.Errorf("error on opening a connection with the Postgres database [%s]: %v", p.DSN, err)
 	}
 
 	db.SetMaxOpenConns(1)
@@ -318,73 +322,45 @@ func (p *Postgres) openConnection() error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
 	defer cancel()
+
 	if err := db.PingContext(ctx); err != nil {
 		_ = db.Close()
-		return fmt.Errorf("error on pinging the Postgres database [%s]: %v", p.DSN, err)
+		return nil, fmt.Errorf("error on pinging the Postgres database [%s]: %v", p.DSN, err)
 	}
-	p.db = db
 
-	return nil
+	return db, nil
 }
 
-func (p *Postgres) querySettingsMaxConnections() (int64, error) {
-	q := querySettingsMaxConnections()
-
-	var s string
-	if err := p.doQueryRow(q, &s); err != nil {
-		return 0, err
+func (p *Postgres) openSecondaryConnection(dbname string) (*sql.DB, string, error) {
+	cfg, err := pgx.ParseConfig(p.DSN)
+	if err != nil {
+		return nil, "", fmt.Errorf("error on parsing DSN [%s]: %v", p.DSN, err)
 	}
 
-	return strconv.ParseInt(s, 10, 64)
-}
+	cfg.Database = dbname
+	connString := stdlib.RegisterConnConfig(cfg)
 
-func (p *Postgres) queryServerVersion() (int, error) {
-	q := queryServerVersion()
-
-	var s string
-	if err := p.doQueryRow(q, &s); err != nil {
-		return 0, err
+	db, err := sql.Open("pgx", connString)
+	if err != nil {
+		return nil, "", fmt.Errorf("error on opening a secondary connection with the Postgres database [%s]: %v", dbname, err)
 	}
 
-	return strconv.Atoi(s)
-}
+	db.SetMaxOpenConns(1)
+	db.SetMaxIdleConns(1)
+	db.SetConnMaxLifetime(10 * time.Minute)
 
-func (p *Postgres) queryIsSuperUser() (bool, error) {
-	q := queryIsSuperUser()
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
 
-	var v bool
-	if err := p.doQueryRow(q, &v); err != nil {
-		return false, err
+	if err := db.PingContext(ctx); err != nil {
+		_ = db.Close()
+		return nil, "", fmt.Errorf("error on pinging the secondary Postgres database [%s]: %v", dbname, err)
 	}
 
-	return v, nil
+	return db, connString, nil
 }
 
 func (p *Postgres) isSuperUser() bool { return p.superUser != nil && *p.superUser }
-
-func (p *Postgres) doQueryRow(query string, v any) error {
-	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
-	defer cancel()
-
-	return p.db.QueryRowContext(ctx, query).Scan(v)
-}
-
-func (p *Postgres) doQuery(query string, assign func(column, value string, rowEnd bool)) error {
-	return p.doDBQuery(p.db, query, assign)
-}
-
-func (p *Postgres) doDBQuery(db *sql.DB, query string, assign func(column, value string, rowEnd bool)) error {
-	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
-	defer cancel()
-
-	rows, err := db.QueryContext(ctx, query)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = rows.Close() }()
-
-	return readRows(rows, assign)
-}
 
 func (p *Postgres) getDBMetrics(name string) *dbMetrics {
 	db, ok := p.mx.dbs[name]
@@ -421,45 +397,6 @@ func (p *Postgres) getReplSlotMetrics(name string) *replSlotMetrics {
 		p.mx.replSlots[name] = slot
 	}
 	return slot
-}
-
-func readRows(rows *sql.Rows, assign func(column, value string, rowEnd bool)) error {
-	if assign == nil {
-		return nil
-	}
-
-	columns, err := rows.Columns()
-	if err != nil {
-		return err
-	}
-
-	values := makeValues(len(columns))
-
-	for rows.Next() {
-		if err := rows.Scan(values...); err != nil {
-			return err
-		}
-		for i, l := 0, len(values); i < l; i++ {
-			assign(columns[i], valueToString(values[i]), i == l-1)
-		}
-	}
-	return rows.Err()
-}
-
-func valueToString(value any) string {
-	v, ok := value.(*sql.NullString)
-	if !ok || !v.Valid {
-		return ""
-	}
-	return v.String
-}
-
-func makeValues(size int) []any {
-	vs := make([]any, size)
-	for i := range vs {
-		vs[i] = &sql.NullString{}
-	}
-	return vs
 }
 
 func parseInt(s string) int64 {

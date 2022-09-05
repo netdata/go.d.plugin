@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func (p *Postgres) queryGlobalMetrics() error {
+func (p *Postgres) doQueryGlobalMetrics() error {
 	if err := p.doQueryConnectionsUsed(); err != nil {
 		return fmt.Errorf("querying server connections used error: %v", err)
 	}

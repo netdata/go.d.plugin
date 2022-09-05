@@ -424,7 +424,7 @@ GROUP BY
 `
 }
 
-func queryDatabaseList() string {
+func queryQueryableDatabaseList() string {
 	return `
 SELECT datname
 FROM pg_database
@@ -510,7 +510,8 @@ ORDER BY datname,
 
 func queryUserTableStats() string {
 	return `
-SELECT schemaname,
+SELECT current_database()                                   as datname,
+       schemaname,
        relname,
        seq_scan,
        seq_tup_read,

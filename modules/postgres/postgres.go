@@ -4,6 +4,7 @@ package postgres
 
 import (
 	"database/sql"
+	"github.com/jackc/pgx/v4/stdlib"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -60,8 +61,9 @@ type (
 		recheckSettingsEvery time.Duration
 	}
 	dbConn struct {
-		connString string
 		db         *sql.DB
+		connString string
+		connErrors int
 	}
 )
 
@@ -106,8 +108,9 @@ func (p *Postgres) Cleanup() {
 
 	for dbname, conn := range p.dbConns {
 		if conn.db != nil {
-			_ = conn.db.Close()
 			delete(p.dbConns, dbname)
+			_ = conn.db.Close()
+			stdlib.UnregisterConnConfig(conn.connString)
 		}
 	}
 }
