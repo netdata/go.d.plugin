@@ -4,12 +4,12 @@ package postgres
 
 import (
 	"database/sql"
-	"github.com/jackc/pgx/v4/stdlib"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
+	"github.com/jackc/pgx/v4/stdlib"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
