@@ -165,8 +165,6 @@ type tableMetrics struct {
 	nTupHotUpd         int64
 	nLiveTup           int64
 	nDeadTup           int64
-	nModSinceAnalyze   int64 // 9.4+
-	nInsSinceVacuum    int64 // 13+
 	lastVacuumAgo      int64
 	lastAutoVacuumAgo  int64
 	lastAnalyzeAgo     int64
