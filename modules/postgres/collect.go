@@ -198,31 +198,31 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 	for name, m := range p.mx.tables {
 		if !m.updated {
 			delete(p.mx.tables, name)
-			p.removeTableCharts(m.db, m.schema, m.name)
+			p.removeTableCharts(m.name, m.db, m.schema)
 			continue
 		}
 		if !m.hasCharts {
 			m.hasCharts = true
-			p.addNewTableCharts(m.db, m.schema, m.name)
+			p.addNewTableCharts(m.name, m.db, m.schema)
 		}
 		if !m.hasLastAutoVacuumChart && m.lastAutoVacuumAgo != -1 {
 			m.hasLastAutoVacuumChart = true
-			p.addTableLastAutoVacuumAgoChart(m.db, m.schema, m.name)
+			p.addTableLastAutoVacuumAgoChart(m.name, m.db, m.schema)
 		}
 		if !m.hasLastVacuumChart && m.lastVacuumAgo != -1 {
 			m.hasLastVacuumChart = true
-			p.addTableLastVacuumAgoChart(m.db, m.schema, m.name)
+			p.addTableLastVacuumAgoChart(m.name, m.db, m.schema)
 		}
 		if !m.hasLastAutoAnalyzeChart && m.lastAutoAnalyzeAgo != -1 {
 			m.hasLastAutoAnalyzeChart = true
-			p.addTableLastAutoAnalyzeAgoChart(m.db, m.schema, m.name)
+			p.addTableLastAutoAnalyzeAgoChart(m.name, m.db, m.schema)
 		}
 		if !m.hasLastAnalyzeChart && m.lastAnalyzeAgo != -1 {
 			m.hasLastAnalyzeChart = true
-			p.addTableLastAnalyzeAgoChart(m.db, m.schema, m.name)
+			p.addTableLastAnalyzeAgoChart(m.name, m.db, m.schema)
 		}
 
-		px := fmt.Sprintf("db_%s_schema_%s_table_%s_", m.db, m.schema, m.name)
+		px := fmt.Sprintf("table_%s_db_%s_schema_%s_", m.name, m.db, m.schema)
 
 		mx[px+"seq_scan"] = m.seqScan
 		mx[px+"seq_tup_read"] = m.seqTupRead
@@ -391,8 +391,8 @@ func (p *Postgres) getDBMetrics(name string) *dbMetrics {
 	return db
 }
 
-func (p *Postgres) getTableMetrics(db, schema, name string) *tableMetrics {
-	key := db + "_" + schema + "_" + name
+func (p *Postgres) getTableMetrics(name, db, schema string) *tableMetrics {
+	key := name + "_" + db + "_" + schema
 	m, ok := p.mx.tables[key]
 	if !ok {
 		m = &tableMetrics{db: db, schema: schema, name: name}
