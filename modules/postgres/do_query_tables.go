@@ -5,8 +5,6 @@ package postgres
 import (
 	"database/sql"
 	"strings"
-
-	"github.com/jackc/pgx/v4/stdlib"
 )
 
 func (p *Postgres) doQueryTablesMetrics() error {
@@ -39,15 +37,14 @@ func (p *Postgres) discoverQueryableDatabases() error {
 			p.dbConns[dbname] = conn
 		}
 
-		if conn.db == nil && conn.connErrors < 3 {
-			db, connString, err := p.openSecondaryConnection(dbname)
-			if err != nil {
-				p.Warning(err)
-				conn.connErrors++
-				continue
-			}
+		if conn.db != nil || conn.connErrors >= 3 {
+			continue
+		}
 
-			conn.db, conn.connString = db, connString
+		var err error
+		if conn.db, err = p.openSecondaryConnection(dbname); err != nil {
+			p.Warning(err)
+			conn.connErrors++
 		}
 	}
 
@@ -55,11 +52,9 @@ func (p *Postgres) discoverQueryableDatabases() error {
 		if seen[dbname] {
 			continue
 		}
-
 		delete(p.dbConns, dbname)
 		if conn.db != nil {
 			_ = conn.db.Close()
-			stdlib.UnregisterConnConfig(conn.connString)
 		}
 	}
 

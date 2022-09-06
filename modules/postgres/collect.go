@@ -337,19 +337,19 @@ func (p *Postgres) openPrimaryConnection() (*sql.DB, error) {
 	return db, nil
 }
 
-func (p *Postgres) openSecondaryConnection(dbname string) (*sql.DB, string, error) {
+func (p *Postgres) openSecondaryConnection(dbname string) (*sql.DB, error) {
 	cfg, err := pgx.ParseConfig(p.DSN)
 	if err != nil {
-		return nil, "", fmt.Errorf("error on parsing DSN [%s]: %v", p.DSN, err)
+		return nil, fmt.Errorf("error on parsing DSN [%s]: %v", p.DSN, err)
 	}
 
 	cfg.Database = dbname
 	connString := stdlib.RegisterConnConfig(cfg)
+	defer stdlib.UnregisterConnConfig(connString)
 
 	db, err := sql.Open("pgx", connString)
 	if err != nil {
-		stdlib.UnregisterConnConfig(connString)
-		return nil, "", fmt.Errorf("error on opening a secondary connection with the Postgres database [%s]: %v", dbname, err)
+		return nil, fmt.Errorf("error on opening a secondary connection with the Postgres database [%s]: %v", dbname, err)
 	}
 
 	db.SetMaxOpenConns(1)
@@ -361,11 +361,10 @@ func (p *Postgres) openSecondaryConnection(dbname string) (*sql.DB, string, erro
 
 	if err := db.PingContext(ctx); err != nil {
 		_ = db.Close()
-		stdlib.UnregisterConnConfig(connString)
-		return nil, "", fmt.Errorf("error on pinging the secondary Postgres database [%s]: %v", dbname, err)
+		return nil, fmt.Errorf("error on pinging the secondary Postgres database [%s]: %v", dbname, err)
 	}
 
-	return db, connString, nil
+	return db, nil
 }
 
 func (p *Postgres) isSuperUser() bool { return p.superUser != nil && *p.superUser }
