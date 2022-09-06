@@ -187,6 +187,11 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"lock_mode_ShareRowExclusiveLock_awaited"] = m.shareRowExclusiveLockAwaited
 		mx[px+"lock_mode_ExclusiveLock_awaited"] = m.exclusiveLockAwaited
 		mx[px+"lock_mode_AccessExclusiveLock_awaited"] = m.accessExclusiveLockAwaited
+
+		if m.prevTupReturned != 0 {
+			mx[px+"tup_fetched_perc"] = calcPercentage(m.tupFetched-m.prevTupFetched, m.tupReturned-m.prevTupReturned)
+		}
+		m.prevTupReturned, m.prevTupFetched = m.tupReturned, m.tupFetched
 	}
 	mx["databases_count"] = int64(len(p.mx.dbs))
 
@@ -287,8 +292,10 @@ func (p *Postgres) resetMetrics() {
 	}
 	for name, m := range p.mx.dbs {
 		p.mx.dbs[name] = &dbMetrics{
-			name:      m.name,
-			hasCharts: m.hasCharts,
+			name:            m.name,
+			hasCharts:       m.hasCharts,
+			prevTupReturned: m.prevTupReturned,
+			prevTupFetched:  m.prevTupFetched,
 		}
 	}
 	for name, m := range p.mx.tables {

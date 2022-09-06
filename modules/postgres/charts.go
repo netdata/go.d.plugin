@@ -39,7 +39,7 @@ const (
 	prioDBConnections
 	prioDBBufferCacheRatio
 	prioDBBlockReads
-	prioDBRowsReadRatio
+	prioDBRowsFetchedPerc
 	prioDBRowsRead
 	prioDBRowsWritten
 	prioDBConflicts
@@ -484,7 +484,7 @@ var (
 		dbConnectionsChartTmpl.Copy(),
 		dbBufferCacheHitRatioChartTmpl.Copy(),
 		dbBlocksReadChartTmpl.Copy(),
-		dbRowsReadRatioChartTmpl.Copy(),
+		dbRowsFetchedPercChartTmpl.Copy(),
 		dbRowsReadChartTmpl.Copy(),
 		dbRowsWrittenChartTmpl.Copy(),
 		dbConflictsChartTmpl.Copy(),
@@ -569,17 +569,15 @@ var (
 			{ID: "db_%s_blks_read", Name: "disk", Algo: module.Incremental},
 		},
 	}
-	dbRowsReadRatioChartTmpl = module.Chart{
-		ID:       "db_%s_rows_read_ratio",
-		Title:    "Database rows read ratio",
+	dbRowsFetchedPercChartTmpl = module.Chart{
+		ID:       "db_%s_rows_fetched_perc",
+		Title:    "Database rows fetched percentage",
 		Units:    "percentage",
 		Fam:      "db read throughput",
-		Ctx:      "postgres.db_rows_read_ratio",
-		Priority: prioDBRowsReadRatio,
-		Type:     module.Stacked,
+		Ctx:      "postgres.db_rows_fetched_perc",
+		Priority: prioDBRowsFetchedPerc,
 		Dims: module.Dims{
-			{ID: "db_%s_tup_returned", Name: "returned", Algo: module.PercentOfIncremental},
-			{ID: "db_%s_tup_fetched", Name: "fetched", Algo: module.PercentOfIncremental},
+			{ID: "db_%s_tup_fetched_perc", Name: "fetched"},
 		},
 	}
 	dbRowsReadChartTmpl = module.Chart{
