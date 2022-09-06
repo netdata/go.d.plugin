@@ -177,5 +177,8 @@ type tableMetrics struct {
 	analyzeCount       int64
 	autoAnalyzeCount   int64
 
+	prevNTupUpd    int64
+	prevNTupHotUpd int64
+
 	totalSize int64
 }
