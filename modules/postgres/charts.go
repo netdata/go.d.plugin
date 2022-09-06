@@ -53,6 +53,7 @@ const (
 	prioTableDeadRowsPerc
 	prioTableRowsTotal
 	prioTableRowsOperations
+	prioTableHOTUpdatesPerc
 	prioTableHOTUpdates
 	prioTableScans
 	prioTableScansRows
@@ -751,6 +752,7 @@ var (
 		tableRowsChartTmpl.Copy(),
 		tableDeadRowsPercChartTmpl.Copy(),
 		tableRowsOperationsChartTmpl.Copy(),
+		tableHOTUpdatesPercChartTmpl.Copy(),
 		tableHOTUpdatesChartTmpl.Copy(),
 		tableScansChartTmpl.Copy(),
 		tableScansRowsChartTmpl.Copy(),
@@ -795,6 +797,17 @@ var (
 			{ID: "db_%s_schema_%s_table_%s_n_tup_upd", Name: "updated", Algo: module.Incremental},
 		},
 	}
+	tableHOTUpdatesPercChartTmpl = module.Chart{
+		ID:       "db_%s_schema_%s_table_%s_hot_updates_perc",
+		Title:    "Table HOT updates percentage",
+		Units:    "percentage",
+		Fam:      "table hot updates",
+		Ctx:      "postgres.table_hot_updates_perc",
+		Priority: prioTableHOTUpdatesPerc,
+		Dims: module.Dims{
+			{ID: "db_%s_schema_%s_table_%s_n_tup_hot_upd_perc", Name: "hot"},
+		},
+	}
 	tableHOTUpdatesChartTmpl = module.Chart{
 		ID:       "db_%s_schema_%s_table_%s_hot_updates",
 		Title:    "Table HOT updates",
@@ -802,7 +815,6 @@ var (
 		Fam:      "table hot updates",
 		Ctx:      "postgres.table_hot_updates",
 		Priority: prioTableHOTUpdates,
-		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "db_%s_schema_%s_table_%s_n_tup_hot_upd", Name: "hot", Algo: module.Incremental},
 		},

@@ -248,6 +248,9 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 			mx[px+"last_analyze_ago"] = m.lastAnalyzeAgo
 		}
 		mx[px+"total_size"] = m.totalSize
+
+		mx[px+"n_tup_hot_upd_perc"] = calcPercentage(m.nTupHotUpd-m.prevNTupHotUpd, m.nTupUpd-m.prevNTupUpd)
+		m.prevNTupUpd, m.prevNTupHotUpd = m.nTupUpd, m.nTupHotUpd
 	}
 
 	for name, m := range p.mx.replApps {
@@ -308,6 +311,8 @@ func (p *Postgres) resetMetrics() {
 			hasLastVacuumChart:      m.hasLastVacuumChart,
 			hasLastAutoAnalyzeChart: m.hasLastAutoAnalyzeChart,
 			hasLastAnalyzeChart:     m.hasLastAnalyzeChart,
+			prevNTupUpd:             m.prevNTupUpd,
+			prevNTupHotUpd:          m.prevNTupHotUpd,
 		}
 	}
 	for name, m := range p.mx.replApps {
