@@ -93,6 +93,9 @@ type dbMetrics struct {
 	tempBytes    int64
 	deadlocks    int64
 
+	prevTupReturned int64
+	prevTupFetched  int64
+
 	conflTablespace int64
 	conflLock       int64
 	conflSnapshot   int64
