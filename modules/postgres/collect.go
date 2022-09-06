@@ -249,9 +249,7 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		}
 		mx[px+"total_size"] = m.totalSize
 
-		if m.prevNTupUpd != 0 {
-			mx[px+"n_tup_hot_upd_perc"] = calcPercentage(m.nTupHotUpd-m.prevNTupHotUpd, m.nTupUpd-m.prevNTupUpd)
-		}
+		mx[px+"n_tup_hot_upd_perc"] = calcPercentage(m.nTupHotUpd-m.prevNTupHotUpd, m.nTupUpd-m.prevNTupUpd)
 		m.prevNTupUpd, m.prevNTupHotUpd = m.nTupUpd, m.nTupHotUpd
 	}
 
