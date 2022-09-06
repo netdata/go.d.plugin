@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"fmt"
+	"strconv"
 )
 
 func (p *Postgres) doQueryGlobalMetrics() error {
@@ -30,6 +31,9 @@ func (p *Postgres) doQueryGlobalMetrics() error {
 		if err := p.doQueryAutovacuumWorkers(); err != nil {
 			return fmt.Errorf("querying autovacuum workers error: %v", err)
 		}
+	}
+	if err := p.doQueryActiveQueriesRunTime(); err != nil {
+		return err
 	}
 
 	if !p.isSuperUser() {
@@ -252,6 +256,21 @@ func (p *Postgres) doQueryAutovacuumWorkers() error {
 			p.mx.autovacuumWorkersVacuumFreeze = parseInt(value)
 		case "autovacuum_brin_summarize":
 			p.mx.autovacuumWorkersBrinSummarize = parseInt(value)
+		}
+	})
+}
+
+func (p *Postgres) doQueryActiveQueriesRunTime() error {
+	q := queryActiveQueriesRunTime()
+
+	return p.doQuery(q, func(column, value string, _ bool) {
+		switch column {
+		case "active_query_running_time":
+			v, _ := strconv.ParseFloat(value, 64)
+			if v < 0 {
+				v = 0
+			}
+			p.mx.queryTimeHist.Observe(v)
 		}
 	})
 }

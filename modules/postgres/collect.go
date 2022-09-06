@@ -84,6 +84,7 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx["server_connections_available"] = p.mx.maxConnections - p.mx.connUsed
 		mx["server_connections_utilization"] = calcPercentage(p.mx.connUsed, p.mx.maxConnections)
 	}
+	p.mx.queryTimeHist.WriteTo(mx, "active_query_running_time_hist", 1, 1)
 	mx["server_uptime"] = p.mx.uptime
 	mx["server_connections_state_active"] = p.mx.connStateActive
 	mx["server_connections_state_idle"] = p.mx.connStateIdle
@@ -291,6 +292,7 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 
 func (p *Postgres) resetMetrics() {
 	p.mx.srvMetrics = srvMetrics{
+		queryTimeHist:  p.mx.queryTimeHist,
 		maxConnections: p.mx.maxConnections,
 	}
 	for name, m := range p.mx.dbs {

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/metrics"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -21,8 +22,9 @@ func init() {
 func New() *Postgres {
 	return &Postgres{
 		Config: Config{
-			Timeout: web.Duration{Duration: time.Second * 2},
-			DSN:     "postgres://postgres:postgres@127.0.0.1:5432/postgres",
+			Timeout:            web.Duration{Duration: time.Second * 2},
+			DSN:                "postgres://postgres:postgres@127.0.0.1:5432/postgres",
+			QueryTimeHistogram: []float64{.1, .5, 1, 2.5, 5, 10},
 		},
 		charts:  baseCharts.Copy(),
 		dbConns: make(map[string]*dbConn),
@@ -37,8 +39,9 @@ func New() *Postgres {
 }
 
 type Config struct {
-	DSN     string       `yaml:"dsn"`
-	Timeout web.Duration `yaml:"timeout"`
+	DSN                string       `yaml:"dsn"`
+	Timeout            web.Duration `yaml:"timeout"`
+	QueryTimeHistogram []float64    `yaml:"query_time_histogram"`
 }
 
 type (
@@ -71,6 +74,9 @@ func (p *Postgres) Init() bool {
 		p.Errorf("config validation: %v", err)
 		return false
 	}
+
+	p.mx.queryTimeHist = metrics.NewHistogramWithRangeBuckets(p.QueryTimeHistogram)
+	p.addQueriesRunTimeHistogramChart()
 
 	return true
 }
