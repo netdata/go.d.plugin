@@ -9,7 +9,6 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
-	"github.com/jackc/pgx/v4/stdlib"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -62,7 +61,6 @@ type (
 	}
 	dbConn struct {
 		db         *sql.DB
-		connString string
 		connErrors int
 	}
 )
@@ -107,10 +105,9 @@ func (p *Postgres) Cleanup() {
 	p.db = nil
 
 	for dbname, conn := range p.dbConns {
+		delete(p.dbConns, dbname)
 		if conn.db != nil {
-			delete(p.dbConns, dbname)
 			_ = conn.db.Close()
-			stdlib.UnregisterConnConfig(conn.connString)
 		}
 	}
 }
