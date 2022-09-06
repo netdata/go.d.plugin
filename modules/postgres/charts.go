@@ -13,6 +13,7 @@ const (
 	prioConnectionsUtilization = module.Priority + iota
 	prioConnectionsUsage
 	prioConnectionsState
+	prioQueriesRunningTimeHistogram
 	prioCheckpoints
 	prioCheckpointTime
 	prioBGWriterBuffersAllocated
@@ -362,6 +363,51 @@ var (
 		},
 	}
 )
+
+func newQueriesRunningTimeHistogramChart(buckets []float64) (*module.Chart, error) {
+	chart := &module.Chart{
+		ID:       "queries_running_time_histogram",
+		Title:    "Active queries running time",
+		Units:    "queries/s",
+		Fam:      "queries",
+		Ctx:      "postgres.queries_running_time_histogram",
+		Priority: prioQueriesRunningTimeHistogram,
+		Type:     module.Stacked,
+	}
+
+	for i, v := range buckets {
+		dim := &module.Dim{
+			ID:   fmt.Sprintf("active_query_running_time_hist_bucket_%d", i+1),
+			Name: fmt.Sprintf("%.3f", v),
+			Algo: module.Incremental,
+		}
+		if err := chart.AddDim(dim); err != nil {
+			return nil, err
+		}
+	}
+
+	dim := &module.Dim{
+		ID:   "active_query_running_time_hist_bucket_inf",
+		Name: "+Inf",
+		Algo: module.Incremental,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return nil, err
+	}
+
+	return chart, nil
+}
+
+func (p *Postgres) addQueriesRunTimeHistogramChart() {
+	chart, err := newQueriesRunningTimeHistogramChart(p.QueryTimeHistogram)
+	if err != nil {
+		p.Warning(err)
+		return
+	}
+	if err := p.Charts().Add(chart); err != nil {
+		p.Warning(err)
+	}
+}
 
 var (
 	replicationStandbyAppCharts = module.Charts{

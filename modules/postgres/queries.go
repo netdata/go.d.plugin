@@ -242,6 +242,17 @@ WHERE query NOT LIKE '%%pg_stat_activity%%';
 `
 }
 
+func queryActiveQueriesRunTime() string {
+	return `
+SELECT datname,
+       EXTRACT(epoch from now() - query_start) as active_query_running_time
+FROM pg_stat_activity
+WHERE datname IS NOT NULL
+  AND state = 'active'
+  AND backend_type = 'client backend';
+`
+}
+
 func queryReplicationStandbyAppDelta(version int) string {
 	if version < pgVersion10 {
 		return `

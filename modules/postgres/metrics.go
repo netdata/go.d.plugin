@@ -1,5 +1,7 @@
 package postgres
 
+import "github.com/netdata/go.d.plugin/pkg/metrics"
+
 type pgMetrics struct {
 	srvMetrics
 	dbs       map[string]*dbMetrics
@@ -9,6 +11,8 @@ type pgMetrics struct {
 }
 
 type srvMetrics struct {
+	queryTimeHist metrics.Histogram
+
 	maxConnections int64
 
 	uptime int64
