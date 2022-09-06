@@ -32,6 +32,7 @@ const (
 	prioReplicationWALDelta
 	prioReplicationWALLag
 	prioReplicationSlotFiles
+	prioDatabasesCount
 	prioDBTransactionsRatio
 	prioDBTransactions
 	prioDBConnectionsUtilization
@@ -83,6 +84,7 @@ var baseCharts = module.Charts{
 	catalogRelationCountChart.Copy(),
 	catalogRelationSizeChart.Copy(),
 	serverUptimeChart.Copy(),
+	databasesCountChart.Copy(),
 }
 
 var (
@@ -344,6 +346,18 @@ var (
 		Priority: prioUptime,
 		Dims: module.Dims{
 			{ID: "server_uptime", Name: "uptime"},
+		},
+	}
+
+	databasesCountChart = module.Chart{
+		ID:       "server_databases_count",
+		Title:    "Number of databases",
+		Units:    "databases",
+		Fam:      "dbs",
+		Ctx:      "postgres.databases_count",
+		Priority: prioDatabasesCount,
+		Dims: module.Dims{
+			{ID: "databases_count", Name: "databases"},
 		},
 	}
 )

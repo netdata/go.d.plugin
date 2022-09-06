@@ -188,6 +188,7 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"lock_mode_ExclusiveLock_awaited"] = m.exclusiveLockAwaited
 		mx[px+"lock_mode_AccessExclusiveLock_awaited"] = m.accessExclusiveLockAwaited
 	}
+	mx["databases_count"] = int64(len(p.mx.dbs))
 
 	for name, m := range p.mx.tables {
 		if !m.updated {
