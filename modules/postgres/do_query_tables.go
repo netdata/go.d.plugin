@@ -91,45 +91,45 @@ func (p *Postgres) dbQueryUserTableStats(db *sql.DB) error {
 			schema = value
 		case "relname":
 			name = value
-			p.getTableMetrics(dbname, schema, name).updated = true
+			p.getTableMetrics(name, dbname, schema).updated = true
 		case "seq_scan":
-			p.getTableMetrics(dbname, schema, name).seqScan = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).seqScan = parseInt(value)
 		case "seq_tup_read":
-			p.getTableMetrics(dbname, schema, name).seqTupRead = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).seqTupRead = parseInt(value)
 		case "idx_scan":
-			p.getTableMetrics(dbname, schema, name).idxScan = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).idxScan = parseInt(value)
 		case "idx_tup_fetch":
-			p.getTableMetrics(dbname, schema, name).idxTupFetch = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).idxTupFetch = parseInt(value)
 		case "n_tup_ins":
-			p.getTableMetrics(dbname, schema, name).nTupIns = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).nTupIns = parseInt(value)
 		case "n_tup_upd":
-			p.getTableMetrics(dbname, schema, name).nTupUpd = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).nTupUpd = parseInt(value)
 		case "n_tup_del":
-			p.getTableMetrics(dbname, schema, name).nTupDel = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).nTupDel = parseInt(value)
 		case "n_tup_hot_upd":
-			p.getTableMetrics(dbname, schema, name).nTupHotUpd = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).nTupHotUpd = parseInt(value)
 		case "n_live_tup":
-			p.getTableMetrics(dbname, schema, name).nLiveTup = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).nLiveTup = parseInt(value)
 		case "n_dead_tup":
-			p.getTableMetrics(dbname, schema, name).nDeadTup = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).nDeadTup = parseInt(value)
 		case "last_vacuum":
-			p.getTableMetrics(dbname, schema, name).lastVacuumAgo = parseFloat(value)
+			p.getTableMetrics(name, dbname, schema).lastVacuumAgo = parseFloat(value)
 		case "last_autovacuum":
-			p.getTableMetrics(dbname, schema, name).lastAutoVacuumAgo = parseFloat(value)
+			p.getTableMetrics(name, dbname, schema).lastAutoVacuumAgo = parseFloat(value)
 		case "last_analyze":
-			p.getTableMetrics(dbname, schema, name).lastAnalyzeAgo = parseFloat(value)
+			p.getTableMetrics(name, dbname, schema).lastAnalyzeAgo = parseFloat(value)
 		case "last_autoanalyze":
-			p.getTableMetrics(dbname, schema, name).lastAutoAnalyzeAgo = parseFloat(value)
+			p.getTableMetrics(name, dbname, schema).lastAutoAnalyzeAgo = parseFloat(value)
 		case "vacuum_count":
-			p.getTableMetrics(dbname, schema, name).vacuumCount = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).vacuumCount = parseInt(value)
 		case "autovacuum_count":
-			p.getTableMetrics(dbname, schema, name).autovacuumCount = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).autovacuumCount = parseInt(value)
 		case "analyze_count":
-			p.getTableMetrics(dbname, schema, name).analyzeCount = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).analyzeCount = parseInt(value)
 		case "autoanalyze_count":
-			p.getTableMetrics(dbname, schema, name).autoAnalyzeCount = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).autoAnalyzeCount = parseInt(value)
 		case "total_relation_size":
-			p.getTableMetrics(dbname, schema, name).totalSize = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).totalSize = parseInt(value)
 		}
 	})
 }
