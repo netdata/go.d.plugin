@@ -117,8 +117,6 @@ func (p *Postgres) dbQueryUserTableStats(db *sql.DB) error {
 			p.getTableMetrics(dbname, schema, name).nLiveTup = parseInt(value)
 		case "n_dead_tup":
 			p.getTableMetrics(dbname, schema, name).nDeadTup = parseInt(value)
-		case "n_mod_since_analyze":
-		case "n_ins_since_vacuum":
 		case "last_vacuum":
 			p.getTableMetrics(dbname, schema, name).lastVacuumAgo = parseFloat(value)
 		case "last_autovacuum":

@@ -6,10 +6,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/stdlib"
 	"strconv"
 	"time"
+
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/stdlib"
 )
 
 const (
@@ -291,10 +292,14 @@ func (p *Postgres) resetMetrics() {
 	}
 	for name, m := range p.mx.tables {
 		p.mx.tables[name] = &tableMetrics{
-			db:        m.db,
-			schema:    m.schema,
-			name:      m.name,
-			hasCharts: m.hasCharts,
+			db:                      m.db,
+			schema:                  m.schema,
+			name:                    m.name,
+			hasCharts:               m.hasCharts,
+			hasLastAutoVacuumChart:  m.hasLastAutoVacuumChart,
+			hasLastVacuumChart:      m.hasLastVacuumChart,
+			hasLastAutoAnalyzeChart: m.hasLastAutoAnalyzeChart,
+			hasLastAnalyzeChart:     m.hasLastAnalyzeChart,
 		}
 	}
 	for name, m := range p.mx.replApps {
@@ -343,6 +348,7 @@ func (p *Postgres) openSecondaryConnection(dbname string) (*sql.DB, string, erro
 
 	db, err := sql.Open("pgx", connString)
 	if err != nil {
+		stdlib.UnregisterConnConfig(connString)
 		return nil, "", fmt.Errorf("error on opening a secondary connection with the Postgres database [%s]: %v", dbname, err)
 	}
 
@@ -355,6 +361,7 @@ func (p *Postgres) openSecondaryConnection(dbname string) (*sql.DB, string, erro
 
 	if err := db.PingContext(ctx); err != nil {
 		_ = db.Close()
+		stdlib.UnregisterConnConfig(connString)
 		return nil, "", fmt.Errorf("error on pinging the secondary Postgres database [%s]: %v", dbname, err)
 	}
 
