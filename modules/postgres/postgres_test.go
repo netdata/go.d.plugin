@@ -287,6 +287,7 @@ func TestPostgres_Collect(t *testing.T) {
 						"checkpoint_write_time":                                             167,
 						"checkpoints_req":                                                   16,
 						"checkpoints_timed":                                                 1814,
+						"databases_count":                                                   2,
 						"db_postgres_blks_hit":                                              1221125,
 						"db_postgres_blks_read":                                             3252,
 						"db_postgres_confl_bufferpin":                                       0,
