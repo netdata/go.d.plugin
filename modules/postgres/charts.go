@@ -39,7 +39,7 @@ const (
 	prioDBConnectionsUtilization
 	prioDBConnections
 	prioDBBufferCacheRatio
-	prioDBBlockReads
+	prioDBIO
 	prioDBRowsFetchedPerc
 	prioDBRowsRead
 	prioDBRowsWritten
@@ -538,7 +538,7 @@ var (
 		dbConnectionsUtilizationChartTmpl.Copy(),
 		dbConnectionsChartTmpl.Copy(),
 		dbBufferCacheHitRatioChartTmpl.Copy(),
-		dbBlocksReadChartTmpl.Copy(),
+		dbIOChartTmpl.Copy(),
 		dbRowsFetchedPercChartTmpl.Copy(),
 		dbRowsReadChartTmpl.Copy(),
 		dbRowsWrittenChartTmpl.Copy(),
@@ -611,13 +611,13 @@ var (
 			{ID: "db_%s_blks_read", Name: "miss", Algo: module.PercentOfIncremental},
 		},
 	}
-	dbBlocksReadChartTmpl = module.Chart{
-		ID:       "db_%s_blocks_read",
-		Title:    "Database blocks read",
-		Units:    "blocks/s",
+	dbIOChartTmpl = module.Chart{
+		ID:       "db_%s_reads",
+		Title:    "Database reads",
+		Units:    "B/s",
 		Fam:      "db buffer cache",
-		Ctx:      "postgres.db_blocks_read",
-		Priority: prioDBBlockReads,
+		Ctx:      "postgres.db_io",
+		Priority: prioDBIO,
 		Type:     module.Area,
 		Dims: module.Dims{
 			{ID: "db_%s_blks_hit", Name: "memory", Algo: module.Incremental},

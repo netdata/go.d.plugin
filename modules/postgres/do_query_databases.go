@@ -36,9 +36,9 @@ func (p *Postgres) doQueryDatabaseStats() error {
 			p.getDBMetrics(db).xactCommit = parseInt(value)
 		case "xact_rollback":
 			p.getDBMetrics(db).xactRollback = parseInt(value)
-		case "blks_read":
+		case "blks_read_bytes":
 			p.getDBMetrics(db).blksRead = parseInt(value)
-		case "blks_hit":
+		case "blks_hit_bytes":
 			p.getDBMetrics(db).blksHit = parseInt(value)
 		case "tup_returned":
 			p.getDBMetrics(db).tupReturned = parseInt(value)
