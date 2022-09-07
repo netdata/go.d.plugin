@@ -519,7 +519,7 @@ ORDER BY datname,
 `
 }
 
-func queryUserTableStats() string {
+func queryStatUserTables() string {
 	return `
 SELECT current_database()                                   as datname,
        schemaname,
@@ -544,5 +544,22 @@ SELECT current_database()                                   as datname,
        autoanalyze_count,
        pg_total_relation_size(schemaname || '.' || relname) as total_relation_size
 FROM pg_stat_user_tables;
+`
+}
+
+func queryStatIOUserTables() string {
+	return `
+SELECT current_database()                                       AS datname,
+       schemaname,
+       relname,
+       heap_blks_read * current_setting('block_size')::numeric  AS heap_blks_read_bytes,
+       heap_blks_hit * current_setting('block_size')::numeric   AS heap_blks_hit_bytes,
+       idx_blks_read * current_setting('block_size')::numeric   AS idx_blks_read_bytes,
+       idx_blks_hit * current_setting('block_size')::numeric    AS idx_blks_hit_bytes,
+       toast_blks_read * current_setting('block_size')::numeric AS toast_blks_read_bytes,
+       toast_blks_hit * current_setting('block_size')::numeric  AS toast_blks_hit_bytes,
+       tidx_blks_read * current_setting('block_size')::numeric  AS tidx_blks_read_bytes,
+       tidx_blks_hit * current_setting('block_size')::numeric   AS tidx_blks_hit_bytes
+FROM pg_statio_user_tables;
 `
 }

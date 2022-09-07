@@ -68,6 +68,9 @@ func (p *Postgres) collect() (map[string]int64, error) {
 	if err := p.doQueryDatabasesMetrics(); err != nil {
 		return nil, err
 	}
+	if err := p.doQueryQueryableDatabases(); err != nil {
+		return nil, err
+	}
 	if err := p.doQueryTablesMetrics(); err != nil {
 		return nil, err
 	}
@@ -222,6 +225,22 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 			m.hasLastAnalyzeChart = true
 			p.addTableLastAnalyzeAgoChart(m.name, m.db, m.schema)
 		}
+		if !m.hasTableIOCharts && m.heapBlksRead.last != -1 {
+			m.hasTableIOCharts = true
+			p.addTableIOChartsCharts(m.name, m.db, m.schema)
+		}
+		if !m.hasTableIdxIOCharts && m.idxBlksRead.last != -1 {
+			m.hasTableIdxIOCharts = true
+			p.addTableIndexIOCharts(m.name, m.db, m.schema)
+		}
+		if !m.hasTableTOASTIOCharts && m.toastBlksRead.last != -1 {
+			m.hasTableTOASTIOCharts = true
+			p.addTableTOASTIOCharts(m.name, m.db, m.schema)
+		}
+		if !m.hasTableTOASTIdxIOCharts && m.tidxBlksRead.last != -1 {
+			m.hasTableTOASTIdxIOCharts = true
+			p.addTableTOASTIndexIOCharts(m.name, m.db, m.schema)
+		}
 
 		px := fmt.Sprintf("table_%s_db_%s_schema_%s_", m.name, m.db, m.schema)
 
@@ -233,25 +252,39 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"n_dead_tup"] = m.nDeadTup
 		mx[px+"n_dead_tup_perc"] = calcPercentage(m.nDeadTup, m.nDeadTup+m.nLiveTup)
 		mx[px+"n_tup_ins"] = m.nTupIns
-		mx[px+"n_tup_upd"] = m.nTupUpd
+		mx[px+"n_tup_upd"] = m.nTupUpd.last
 		mx[px+"n_tup_del"] = m.nTupDel
-		mx[px+"n_tup_hot_upd"] = m.nTupHotUpd
-		if m.lastAutoVacuumAgo != -1 {
-			mx[px+"last_autovacuum_ago"] = m.lastAutoVacuumAgo
-		}
-		if m.lastVacuumAgo != -1 {
-			mx[px+"last_vacuum_ago"] = m.lastVacuumAgo
-		}
-		if m.lastAutoAnalyzeAgo != -1 {
-			mx[px+"last_autoanalyze_ago"] = m.lastAutoAnalyzeAgo
-		}
-		if m.lastAnalyzeAgo != -1 {
-			mx[px+"last_analyze_ago"] = m.lastAnalyzeAgo
-		}
+		mx[px+"n_tup_hot_upd"] = m.nTupHotUpd.last
+		mx[px+"last_autovacuum_ago"] = m.lastAutoVacuumAgo
+		mx[px+"last_autovacuum_ago"] = m.lastAutoVacuumAgo
+		mx[px+"last_vacuum_ago"] = m.lastVacuumAgo
+		mx[px+"last_vacuum_ago"] = m.lastVacuumAgo
+		mx[px+"last_autoanalyze_ago"] = m.lastAutoAnalyzeAgo
+		mx[px+"last_analyze_ago"] = m.lastAnalyzeAgo
 		mx[px+"total_size"] = m.totalSize
 
-		mx[px+"n_tup_hot_upd_perc"] = calcPercentage(m.nTupHotUpd-m.prevNTupHotUpd, m.nTupUpd-m.prevNTupUpd)
-		m.prevNTupUpd, m.prevNTupHotUpd = m.nTupUpd, m.nTupHotUpd
+		mx[px+"n_tup_hot_upd_perc"] = calcPercentage(m.nTupHotUpd.delta(), m.nTupUpd.delta())
+		m.nTupHotUpd.prev, m.nTupUpd.prev = m.nTupHotUpd.last, m.nTupUpd.last
+
+		mx[px+"heap_blks_read"] = m.heapBlksRead.last
+		mx[px+"heap_blks_hit"] = m.heapBlksHit.last
+		mx[px+"heap_blks_read_perc"] = calcDeltaPercentage(m.heapBlksRead, m.heapBlksHit)
+		m.heapBlksHit.prev, m.heapBlksRead.prev = m.heapBlksHit.last, m.heapBlksRead.last
+
+		mx[px+"idx_blks_read"] = m.idxBlksRead.last
+		mx[px+"idx_blks_hit"] = m.idxBlksHit.last
+		mx[px+"idx_blks_read_perc"] = calcDeltaPercentage(m.idxBlksRead, m.idxBlksHit)
+		m.idxBlksHit.prev, m.idxBlksRead.prev = m.idxBlksHit.last, m.idxBlksRead.last
+
+		mx[px+"toast_blks_read"] = m.toastBlksRead.last
+		mx[px+"toast_blks_hit"] = m.toastBlksHit.last
+		mx[px+"toast_blks_read_perc"] = calcDeltaPercentage(m.toastBlksRead, m.toastBlksHit)
+		m.toastBlksHit.prev, m.toastBlksRead.prev = m.toastBlksHit.last, m.toastBlksRead.last
+
+		mx[px+"tidx_blks_read"] = m.tidxBlksRead.last
+		mx[px+"tidx_blks_hit"] = m.tidxBlksHit.last
+		mx[px+"tidx_blks_read_perc"] = calcDeltaPercentage(m.tidxBlksRead, m.tidxBlksHit)
+		m.tidxBlksHit.prev, m.tidxBlksRead.prev = m.tidxBlksHit.last, m.tidxBlksRead.last
 	}
 
 	for name, m := range p.mx.replApps {
@@ -305,16 +338,28 @@ func (p *Postgres) resetMetrics() {
 	}
 	for name, m := range p.mx.tables {
 		p.mx.tables[name] = &tableMetrics{
-			db:                      m.db,
-			schema:                  m.schema,
-			name:                    m.name,
-			hasCharts:               m.hasCharts,
-			hasLastAutoVacuumChart:  m.hasLastAutoVacuumChart,
-			hasLastVacuumChart:      m.hasLastVacuumChart,
-			hasLastAutoAnalyzeChart: m.hasLastAutoAnalyzeChart,
-			hasLastAnalyzeChart:     m.hasLastAnalyzeChart,
-			prevNTupUpd:             m.prevNTupUpd,
-			prevNTupHotUpd:          m.prevNTupHotUpd,
+			db:                       m.db,
+			schema:                   m.schema,
+			name:                     m.name,
+			hasCharts:                m.hasCharts,
+			hasLastAutoVacuumChart:   m.hasLastAutoVacuumChart,
+			hasLastVacuumChart:       m.hasLastVacuumChart,
+			hasLastAutoAnalyzeChart:  m.hasLastAutoAnalyzeChart,
+			hasLastAnalyzeChart:      m.hasLastAnalyzeChart,
+			hasTableIOCharts:         m.hasTableIOCharts,
+			hasTableIdxIOCharts:      m.hasTableIdxIOCharts,
+			hasTableTOASTIOCharts:    m.hasTableTOASTIOCharts,
+			hasTableTOASTIdxIOCharts: m.hasTableTOASTIdxIOCharts,
+			nTupUpd:                  incDelta{prev: m.nTupUpd.prev},
+			nTupHotUpd:               incDelta{prev: m.nTupHotUpd.prev},
+			heapBlksRead:             incDelta{prev: m.heapBlksRead.prev},
+			heapBlksHit:              incDelta{prev: m.heapBlksHit.prev},
+			idxBlksRead:              incDelta{prev: m.idxBlksRead.prev},
+			idxBlksHit:               incDelta{prev: m.idxBlksHit.prev},
+			toastBlksRead:            incDelta{prev: m.toastBlksRead.prev},
+			toastBlksHit:             incDelta{prev: m.toastBlksHit.prev},
+			tidxBlksRead:             incDelta{prev: m.tidxBlksRead.prev},
+			tidxBlksHit:              incDelta{prev: m.tidxBlksHit.prev},
 		}
 	}
 	for name, m := range p.mx.replApps {
@@ -431,9 +476,16 @@ func parseFloat(s string) int64 {
 	return int64(v)
 }
 
-func calcPercentage(value, total int64) int64 {
+func calcPercentage(value, total int64) (v int64) {
 	if total == 0 {
 		return 0
 	}
-	return value * 100 / total
+	if v = value * 100 / total; v < 0 {
+		v = -v
+	}
+	return v
+}
+
+func calcDeltaPercentage(a, b incDelta) int64 {
+	return calcPercentage(a.delta(), a.delta()+b.delta())
 }

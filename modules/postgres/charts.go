@@ -56,6 +56,14 @@ const (
 	prioTableRowsOperations
 	prioTableHOTUpdatesPerc
 	prioTableHOTUpdates
+	prioTableIOCacheMiss
+	prioTableIO
+	prioTableIdxIOCacheMiss
+	prioTableIdxIO
+	prioTableToastIOCacheMiss
+	prioTableToastIO
+	prioTableToastIdxIOCacheMiss
+	prioTableToastIdxIO
 	prioTableScans
 	prioTableScansRows
 	prioTableLastAutovacuumAgo
@@ -865,6 +873,98 @@ var (
 			{ID: "table_%s_db_%s_schema_%s_n_tup_hot_upd", Name: "hot", Algo: module.Incremental},
 		},
 	}
+	tableIOCacheMissChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_io_cache_miss",
+		Title:    "Table I/O cache miss",
+		Units:    "percentage",
+		Fam:      "table io",
+		Ctx:      "postgres.table_io_cache_miss",
+		Priority: prioTableIOCacheMiss,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_heap_blks_read_perc", Name: "miss"},
+		},
+	}
+	tableIOChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_io",
+		Title:    "Table I/O",
+		Units:    "B/s",
+		Fam:      "table io",
+		Ctx:      "postgres.table_io",
+		Priority: prioTableIO,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_heap_blks_hit", Name: "memory", Algo: module.Incremental},
+			{ID: "table_%s_db_%s_schema_%s_heap_blks_read", Name: "disk", Algo: module.Incremental},
+		},
+	}
+	tableIdxIOCacheMissChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_index_io_cache_miss",
+		Title:    "Table index I/O cache miss",
+		Units:    "percentage",
+		Fam:      "table index io",
+		Ctx:      "postgres.table_index_io_cache_miss",
+		Priority: prioTableIdxIOCacheMiss,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_idx_blks_read_perc", Name: "miss", Algo: module.Incremental},
+		},
+	}
+	tableIdxIOChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_index_io",
+		Title:    "Table index I/O",
+		Units:    "B/s",
+		Fam:      "table index io",
+		Ctx:      "postgres.table_index_io",
+		Priority: prioTableIdxIO,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_idx_blks_hit", Name: "memory", Algo: module.Incremental},
+			{ID: "table_%s_db_%s_schema_%s_idx_blks_read", Name: "disk", Algo: module.Incremental},
+		},
+	}
+	tableTOASTIOCacheMissChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_toast_io_cache_miss",
+		Title:    "Table TOAST I/O cache miss",
+		Units:    "percentage",
+		Fam:      "table toast io",
+		Ctx:      "postgres.table_toast_io_cache_miss",
+		Priority: prioTableToastIOCacheMiss,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_toast_blks_read_perc", Name: "miss", Algo: module.Incremental},
+		},
+	}
+	tableTOASTIOChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_toast_io",
+		Title:    "Table TOAST I/O",
+		Units:    "B/s",
+		Fam:      "table toast io",
+		Ctx:      "postgres.table_toast_io",
+		Priority: prioTableToastIO,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_toast_blks_hit", Name: "memory", Algo: module.Incremental},
+			{ID: "table_%s_db_%s_schema_%s_toast_blks_read", Name: "disk", Algo: module.Incremental},
+		},
+	}
+	tableTOASTIdxIOCacheMissChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_toast_idx_io_cache_miss",
+		Title:    "Table TOAST index I/O cache miss",
+		Units:    "percentage",
+		Fam:      "table toast index io",
+		Ctx:      "postgres.table_toast_index_io_cache_miss",
+		Priority: prioTableToastIdxIOCacheMiss,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_tidx_blks_read_perc", Name: "miss", Algo: module.Incremental},
+		},
+	}
+	tableTOASTIdxIOChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_toast_index_io",
+		Title:    "Table TOAST index I/O",
+		Units:    "B/s",
+		Fam:      "table toast index io",
+		Ctx:      "postgres.table_toast_index_io",
+		Priority: prioTableToastIdxIO,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_tidx_blks_hit", Name: "memory", Algo: module.Incremental},
+			{ID: "table_%s_db_%s_schema_%s_tidx_blks_read", Name: "disk", Algo: module.Incremental},
+		},
+	}
 	tableScansChartTmpl = module.Chart{
 		ID:       "table_%s_db_%s_schema_%s_scans",
 		Title:    "Table scans",
@@ -1005,6 +1105,50 @@ func (p *Postgres) addTableLastAnalyzeAgoChart(name, dbname, schema string) {
 	chart := newTableChart(tableLastAnalyzeAgoChartTmpl.Copy(), name, dbname, schema)
 
 	if err := p.Charts().Add(chart); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) addTableIOChartsCharts(name, dbname, schema string) {
+	charts := module.Charts{
+		newTableChart(tableIOCacheMissChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableIOChartTmpl.Copy(), name, dbname, schema),
+	}
+
+	if err := p.Charts().Add(charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) addTableIndexIOCharts(name, dbname, schema string) {
+	charts := module.Charts{
+		newTableChart(tableIdxIOCacheMissChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableIdxIOChartTmpl.Copy(), name, dbname, schema),
+	}
+
+	if err := p.Charts().Add(charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) addTableTOASTIOCharts(name, dbname, schema string) {
+	charts := module.Charts{
+		newTableChart(tableTOASTIOCacheMissChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableTOASTIOChartTmpl.Copy(), name, dbname, schema),
+	}
+
+	if err := p.Charts().Add(charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) addTableTOASTIndexIOCharts(name, dbname, schema string) {
+	charts := module.Charts{
+		newTableChart(tableTOASTIdxIOCacheMissChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableTOASTIdxIOChartTmpl.Copy(), name, dbname, schema),
+	}
+
+	if err := p.Charts().Add(charts...); err != nil {
 		p.Warning(err)
 	}
 }
