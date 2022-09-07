@@ -189,4 +189,3 @@ func (c *tcpClient) getStatus() (*status, error) {
 	}
 	return st, nil
 }
-

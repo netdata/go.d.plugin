@@ -47,4 +47,3 @@ func (p Phpfpm) initTcpClient() (*tcpClient, error) {
 	p.Debugf("using fcgi path: %s", p.FcgiPath)
 	return newTcpClient(p.Address, p.Timeout.Duration, p.FcgiPath), nil
 }
-
