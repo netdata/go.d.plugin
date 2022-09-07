@@ -31,7 +31,10 @@ func (p *ProxySQL) collect() (map[string]int64, error) {
 	if err := p.collectMysqlUsers(collected); err != nil {
 		return nil, fmt.Errorf("error on collecting mysql users: %v", err)
 	}
+	for k, v := range collected {
+		p.Debugf(k, v)
 
+	}
 	return collected, nil
 }
 

@@ -1,8 +1,6 @@
-*************************** 1. row ***************************
-                username: first_user
-    frontend_connections: 0
-frontend_max_connections: 200
-*************************** 2. row ***************************
-                username: second_user
-    frontend_connections: 3
-frontend_max_connections: 15
++-------------------------+----------------------+--------------------------+
+| username                | frontend_connections | frontend_max_connections |
++-------------------------+----------------------+--------------------------+
+| first_user              | 0                    | 200                      |
+| second_user             | 3                    | 15                       |
++-------------------------+----------------------+--------------------------+

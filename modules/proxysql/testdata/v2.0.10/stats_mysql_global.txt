@@ -1,306 +1,106 @@
-*************************** 1. row ***************************
- Variable_Name: ProxySQL_Uptime
-Variable_Value: 21129957
-*************************** 2. row ***************************
- Variable_Name: Active_Transactions
-Variable_Value: 0
-*************************** 3. row ***************************
- Variable_Name: Client_Connections_aborted
-Variable_Value: 2
-*************************** 4. row ***************************
- Variable_Name: Client_Connections_connected
-Variable_Value: 3
-*************************** 5. row ***************************
- Variable_Name: Client_Connections_created
-Variable_Value: 4310087
-*************************** 6. row ***************************
- Variable_Name: Server_Connections_aborted
-Variable_Value: 942
-*************************** 7. row ***************************
- Variable_Name: Server_Connections_connected
-Variable_Value: 18
-*************************** 8. row ***************************
- Variable_Name: Server_Connections_created
-Variable_Value: 1603155
-*************************** 9. row ***************************
- Variable_Name: Server_Connections_delayed
-Variable_Value: 0
-*************************** 10. row ***************************
- Variable_Name: Client_Connections_non_idle
-Variable_Value: 3
-*************************** 11. row ***************************
- Variable_Name: Queries_backends_bytes_recv
-Variable_Value: 4665230399
-*************************** 12. row ***************************
- Variable_Name: Queries_backends_bytes_sent
-Variable_Value: 3447743277
-*************************** 13. row ***************************
- Variable_Name: Queries_frontends_bytes_recv
-Variable_Value: 5931711327
-*************************** 14. row ***************************
- Variable_Name: Queries_frontends_bytes_sent
-Variable_Value: 9243199891
-*************************** 15. row ***************************
- Variable_Name: Query_Processor_time_nsec
-Variable_Value: 0
-*************************** 16. row ***************************
- Variable_Name: Backend_query_time_nsec
-Variable_Value: 0
-*************************** 17. row ***************************
- Variable_Name: mysql_backend_buffers_bytes
-Variable_Value: 0
-*************************** 18. row ***************************
- Variable_Name: mysql_frontend_buffers_bytes
-Variable_Value: 196608
-*************************** 19. row ***************************
- Variable_Name: mysql_session_internal_bytes
-Variable_Value: 20232
-*************************** 20. row ***************************
- Variable_Name: Com_autocommit
-Variable_Value: 0
-*************************** 21. row ***************************
- Variable_Name: Com_autocommit_filtered
-Variable_Value: 0
-*************************** 22. row ***************************
- Variable_Name: Com_commit
-Variable_Value: 0
-*************************** 23. row ***************************
- Variable_Name: Com_commit_filtered
-Variable_Value: 0
-*************************** 24. row ***************************
- Variable_Name: Com_rollback
-Variable_Value: 0
-*************************** 25. row ***************************
- Variable_Name: Com_rollback_filtered
-Variable_Value: 0
-*************************** 26. row ***************************
- Variable_Name: Com_backend_change_user
-Variable_Value: 171258
-*************************** 27. row ***************************
- Variable_Name: Com_backend_init_db
-Variable_Value: 0
-*************************** 28. row ***************************
- Variable_Name: Com_backend_set_names
-Variable_Value: 987785
-*************************** 29. row ***************************
- Variable_Name: Com_frontend_init_db
-Variable_Value: 2
-*************************** 30. row ***************************
- Variable_Name: Com_frontend_set_names
-Variable_Value: 0
-*************************** 31. row ***************************
- Variable_Name: Com_frontend_use_db
-Variable_Value: 0
-*************************** 32. row ***************************
- Variable_Name: Com_backend_stmt_prepare
-Variable_Value: 13339553
-*************************** 33. row ***************************
- Variable_Name: Com_backend_stmt_execute
-Variable_Value: 28835135
-*************************** 34. row ***************************
- Variable_Name: Com_backend_stmt_close
-Variable_Value: 0
-*************************** 35. row ***************************
- Variable_Name: Com_frontend_stmt_prepare
-Variable_Value: 25592529
-*************************** 36. row ***************************
- Variable_Name: Com_frontend_stmt_execute
-Variable_Value: 28842457
-*************************** 37. row ***************************
- Variable_Name: Com_frontend_stmt_close
-Variable_Value: 25561362
-*************************** 38. row ***************************
- Variable_Name: Mirror_concurrency
-Variable_Value: 0
-*************************** 39. row ***************************
- Variable_Name: Mirror_queue_length
-Variable_Value: 0
-*************************** 40. row ***************************
- Variable_Name: Questions
-Variable_Value: 79996357
-*************************** 41. row ***************************
- Variable_Name: Selects_for_update__autocommit0
-Variable_Value: 0
-*************************** 42. row ***************************
- Variable_Name: Slow_queries
-Variable_Value: 323976
-*************************** 43. row ***************************
- Variable_Name: GTID_consistent_queries
-Variable_Value: 0
-*************************** 44. row ***************************
- Variable_Name: GTID_session_collected
-Variable_Value: 0
-*************************** 45. row ***************************
- Variable_Name: Servers_table_version
-Variable_Value: 23
-*************************** 46. row ***************************
- Variable_Name: MySQL_Thread_Workers
-Variable_Value: 4
-*************************** 47. row ***************************
- Variable_Name: Access_Denied_Wrong_Password
-Variable_Value: 2
-*************************** 48. row ***************************
- Variable_Name: Access_Denied_Max_Connections
-Variable_Value: 0
-*************************** 49. row ***************************
- Variable_Name: Access_Denied_Max_User_Connections
-Variable_Value: 0
-*************************** 50. row ***************************
- Variable_Name: MySQL_Monitor_Workers
-Variable_Value: 10
-*************************** 51. row ***************************
- Variable_Name: MySQL_Monitor_Workers_Aux
-Variable_Value: 0
-*************************** 52. row ***************************
- Variable_Name: MySQL_Monitor_Workers_Started
-Variable_Value: 10
-*************************** 53. row ***************************
- Variable_Name: MySQL_Monitor_connect_check_OK
-Variable_Value: 2805154
-*************************** 54. row ***************************
- Variable_Name: MySQL_Monitor_connect_check_ERR
-Variable_Value: 99
-*************************** 55. row ***************************
- Variable_Name: MySQL_Monitor_ping_check_OK
-Variable_Value: 16830934
-*************************** 56. row ***************************
- Variable_Name: MySQL_Monitor_ping_check_ERR
-Variable_Value: 72626
-*************************** 57. row ***************************
- Variable_Name: MySQL_Monitor_read_only_check_OK
-Variable_Value: 84014187
-*************************** 58. row ***************************
- Variable_Name: MySQL_Monitor_read_only_check_ERR
-Variable_Value: 16073
-*************************** 59. row ***************************
- Variable_Name: MySQL_Monitor_replication_lag_check_OK
-Variable_Value: 22558340
-*************************** 60. row ***************************
- Variable_Name: MySQL_Monitor_replication_lag_check_ERR
-Variable_Value: 301
-*************************** 61. row ***************************
- Variable_Name: ConnPool_get_conn_latency_awareness
-Variable_Value: 0
-*************************** 62. row ***************************
- Variable_Name: ConnPool_get_conn_immediate
-Variable_Value: 10762
-*************************** 63. row ***************************
- Variable_Name: ConnPool_get_conn_success
-Variable_Value: 28842950
-*************************** 64. row ***************************
- Variable_Name: ConnPool_get_conn_failure
-Variable_Value: 117108
-*************************** 65. row ***************************
- Variable_Name: generated_error_packets
-Variable_Value: 39
-*************************** 66. row ***************************
- Variable_Name: max_connect_timeouts
-Variable_Value: 36
-*************************** 67. row ***************************
- Variable_Name: backend_lagging_during_query
-Variable_Value: 5709
-*************************** 68. row ***************************
- Variable_Name: backend_offline_during_query
-Variable_Value: 1
-*************************** 69. row ***************************
- Variable_Name: queries_with_max_lag_ms
-Variable_Value: 0
-*************************** 70. row ***************************
- Variable_Name: queries_with_max_lag_ms__delayed
-Variable_Value: 0
-*************************** 71. row ***************************
- Variable_Name: queries_with_max_lag_ms__total_wait_time_us
-Variable_Value: 0
-*************************** 72. row ***************************
- Variable_Name: mysql_unexpected_frontend_com_quit
-Variable_Value: 0
-*************************** 73. row ***************************
- Variable_Name: Client_Connections_hostgroup_locked
-Variable_Value: 0
-*************************** 74. row ***************************
- Variable_Name: hostgroup_locked_set_cmds
-Variable_Value: 0
-*************************** 75. row ***************************
- Variable_Name: hostgroup_locked_queries
-Variable_Value: 0
-*************************** 76. row ***************************
- Variable_Name: mysql_unexpected_frontend_packets
-Variable_Value: 0
-*************************** 77. row ***************************
- Variable_Name: aws_aurora_replicas_skipped_during_query
-Variable_Value: 0
-*************************** 78. row ***************************
- Variable_Name: automatic_detected_sql_injection
-Variable_Value: 0
-*************************** 79. row ***************************
- Variable_Name: whitelisted_sqli_fingerprint
-Variable_Value: 0
-*************************** 80. row ***************************
- Variable_Name: mysql_killed_backend_connections
-Variable_Value: 0
-*************************** 81. row ***************************
- Variable_Name: mysql_killed_backend_queries
-Variable_Value: 0
-*************************** 82. row ***************************
- Variable_Name: MyHGM_myconnpoll_get
-Variable_Value: 28949296
-*************************** 83. row ***************************
- Variable_Name: MyHGM_myconnpoll_get_ok
-Variable_Value: 28832188
-*************************** 84. row ***************************
- Variable_Name: MyHGM_myconnpoll_push
-Variable_Value: 29648482
-*************************** 85. row ***************************
- Variable_Name: MyHGM_myconnpoll_destroy
-Variable_Value: 6605
-*************************** 86. row ***************************
- Variable_Name: MyHGM_myconnpoll_reset
-Variable_Value: 1
-*************************** 87. row ***************************
- Variable_Name: SQLite3_memory_bytes
-Variable_Value: 5840184
-*************************** 88. row ***************************
- Variable_Name: ConnPool_memory_bytes
-Variable_Value: 1290088
-*************************** 89. row ***************************
- Variable_Name: Stmt_Client_Active_Total
-Variable_Value: 19
-*************************** 90. row ***************************
- Variable_Name: Stmt_Client_Active_Unique
-Variable_Value: 19
-*************************** 91. row ***************************
- Variable_Name: Stmt_Server_Active_Total
-Variable_Value: 141
-*************************** 92. row ***************************
- Variable_Name: Stmt_Server_Active_Unique
-Variable_Value: 42
-*************************** 93. row ***************************
- Variable_Name: Stmt_Max_Stmt_id
-Variable_Value: 65
-*************************** 94. row ***************************
- Variable_Name: Stmt_Cached
-Variable_Value: 64
-*************************** 95. row ***************************
- Variable_Name: Query_Cache_Memory_bytes
-Variable_Value: 0
-*************************** 96. row ***************************
- Variable_Name: Query_Cache_count_GET
-Variable_Value: 0
-*************************** 97. row ***************************
- Variable_Name: Query_Cache_count_GET_OK
-Variable_Value: 0
-*************************** 98. row ***************************
- Variable_Name: Query_Cache_count_SET
-Variable_Value: 0
-*************************** 99. row ***************************
- Variable_Name: Query_Cache_bytes_IN
-Variable_Value: 0
-*************************** 100. row ***************************
- Variable_Name: Query_Cache_bytes_OUT
-Variable_Value: 0
-*************************** 101. row ***************************
- Variable_Name: Query_Cache_Purged
-Variable_Value: 0
-*************************** 102. row ***************************
- Variable_Name: Query_Cache_Entries
-Variable_Value: 0
++---------------------------------------------+----------------+
+| Variable_Name                               | Variable_Value |
++---------------------------------------------+----------------+
+| ProxySQL_Uptime                             | 26748286       |
+| Active_Transactions                         | 0              |
+| Client_Connections_aborted                  | 2              |
+| Client_Connections_connected                | 3              |
+| Client_Connections_created                  | 5458991        |
+| Server_Connections_aborted                  | 9979           |
+| Server_Connections_connected                | 13             |
+| Server_Connections_created                  | 2122254        |
+| Server_Connections_delayed                  | 0              |
+| Client_Connections_non_idle                 | 3              |
+| Queries_backends_bytes_recv                 | 5896210168     |
+| Queries_backends_bytes_sent                 | 4329581500     |
+| Queries_frontends_bytes_recv                | 7434816962     |
+| Queries_frontends_bytes_sent                | 11643634097    |
+| Query_Processor_time_nsec                   | 0              |
+| Backend_query_time_nsec                     | 0              |
+| mysql_backend_buffers_bytes                 | 0              |
+| mysql_frontend_buffers_bytes                | 196608         |
+| mysql_session_internal_bytes                | 20232          |
+| Com_autocommit                              | 0              |
+| Com_autocommit_filtered                     | 0              |
+| Com_commit                                  | 0              |
+| Com_commit_filtered                         | 0              |
+| Com_rollback                                | 0              |
+| Com_rollback_filtered                       | 0              |
+| Com_backend_change_user                     | 188694         |
+| Com_backend_init_db                         | 0              |
+| Com_backend_set_names                       | 1517893        |
+| Com_frontend_init_db                        | 2              |
+| Com_frontend_set_names                      | 0              |
+| Com_frontend_use_db                         | 0              |
+| Com_backend_stmt_prepare                    | 16858208       |
+| Com_backend_stmt_execute                    | 36303146       |
+| Com_backend_stmt_close                      | 0              |
+| Com_frontend_stmt_prepare                   | 32185987       |
+| Com_frontend_stmt_execute                   | 36314138       |
+| Com_frontend_stmt_close                     | 32137933       |
+| Mirror_concurrency                          | 0              |
+| Mirror_queue_length                         | 0              |
+| Questions                                   | 100638067      |
+| Selects_for_update__autocommit0             | 0              |
+| Slow_queries                                | 405818         |
+| GTID_consistent_queries                     | 0              |
+| GTID_session_collected                      | 0              |
+| Servers_table_version                       | 37             |
+| MySQL_Thread_Workers                        | 4              |
+| Access_Denied_Wrong_Password                | 2              |
+| Access_Denied_Max_Connections               | 0              |
+| Access_Denied_Max_User_Connections          | 0              |
+| MySQL_Monitor_Workers                       | 10             |
+| MySQL_Monitor_Workers_Aux                   | 0              |
+| MySQL_Monitor_Workers_Started               | 10             |
+| MySQL_Monitor_connect_check_OK              | 3548306        |
+| MySQL_Monitor_connect_check_ERR             | 130            |
+| MySQL_Monitor_ping_check_OK                 | 21289849       |
+| MySQL_Monitor_ping_check_ERR                | 108271         |
+| MySQL_Monitor_read_only_check_OK            | 106246409      |
+| MySQL_Monitor_read_only_check_ERR           | 19610          |
+| MySQL_Monitor_replication_lag_check_OK      | 28702388       |
+| MySQL_Monitor_replication_lag_check_ERR     | 482            |
+| ConnPool_get_conn_latency_awareness         | 0              |
+| ConnPool_get_conn_immediate                 | 13361          |
+| ConnPool_get_conn_success                   | 36319474       |
+| ConnPool_get_conn_failure                   | 212943         |
+| generated_error_packets                     | 231            |
+| max_connect_timeouts                        | 227            |
+| backend_lagging_during_query                | 8880           |
+| backend_offline_during_query                | 8              |
+| queries_with_max_lag_ms                     | 0              |
+| queries_with_max_lag_ms__delayed            | 0              |
+| queries_with_max_lag_ms__total_wait_time_us | 0              |
+| mysql_unexpected_frontend_com_quit          | 0              |
+| Client_Connections_hostgroup_locked         | 0              |
+| hostgroup_locked_set_cmds                   | 0              |
+| hostgroup_locked_queries                    | 0              |
+| mysql_unexpected_frontend_packets           | 0              |
+| aws_aurora_replicas_skipped_during_query    | 0              |
+| automatic_detected_sql_injection            | 0              |
+| whitelisted_sqli_fingerprint                | 0              |
+| mysql_killed_backend_connections            | 0              |
+| mysql_killed_backend_queries                | 0              |
+| MyHGM_myconnpoll_get                        | 36519056       |
+| MyHGM_myconnpoll_get_ok                     | 36306113       |
+| MyHGM_myconnpoll_push                       | 37358734       |
+| MyHGM_myconnpoll_destroy                    | 15150          |
+| MyHGM_myconnpoll_reset                      | 2              |
+| SQLite3_memory_bytes                        | 6021248        |
+| ConnPool_memory_bytes                       | 932248         |
+| Stmt_Client_Active_Total                    | 18             |
+| Stmt_Client_Active_Unique                   | 18             |
+| Stmt_Server_Active_Total                    | 101            |
+| Stmt_Server_Active_Unique                   | 39             |
+| Stmt_Max_Stmt_id                            | 66             |
+| Stmt_Cached                                 | 65             |
+| Query_Cache_Memory_bytes                    | 0              |
+| Query_Cache_count_GET                       | 0              |
+| Query_Cache_count_GET_OK                    | 0              |
+| Query_Cache_count_SET                       | 0              |
+| Query_Cache_bytes_IN                        | 0              |
+| Query_Cache_bytes_OUT                       | 0              |
+| Query_Cache_Purged                          | 0              |
+| Query_Cache_Entries                         | 0              |
++---------------------------------------------+----------------+
