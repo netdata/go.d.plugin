@@ -105,13 +105,13 @@ type socketClient struct {
 	env     map[string]string
 }
 
-func newSocketClient(socket string, timeout time.Duration) *socketClient {
+func newSocketClient(socket string, timeout time.Duration, fcgiPath string) *socketClient {
 	return &socketClient{
 		socket:  socket,
 		timeout: timeout,
 		env: map[string]string{
-			"SCRIPT_NAME":     "/status",
-			"SCRIPT_FILENAME": "/status",
+			"SCRIPT_NAME":     fcgiPath,
+			"SCRIPT_FILENAME": fcgiPath,
 			"SERVER_SOFTWARE": "go / fcgiclient ",
 			"REMOTE_ADDR":     "127.0.0.1",
 			"QUERY_STRING":    "json&full",
@@ -141,6 +141,52 @@ func (c *socketClient) getStatus() (*status, error) {
 	st := &status{}
 	if err := json.Unmarshal(content, st); err != nil {
 		return nil, fmt.Errorf("error on decoding response from socket '%s': %v", c.socket, err)
+	}
+	return st, nil
+}
+
+type tcpClient struct {
+	address string
+	timeout time.Duration
+	env     map[string]string
+}
+
+func newTcpClient(address string, timeout time.Duration, fcgiPath string) *tcpClient {
+	return &tcpClient{
+		address: address,
+		timeout: timeout,
+		env: map[string]string{
+			"SCRIPT_NAME":     fcgiPath,
+			"SCRIPT_FILENAME": fcgiPath,
+			"SERVER_SOFTWARE": "go / fcgiclient ",
+			"REMOTE_ADDR":     "127.0.0.1",
+			"QUERY_STRING":    "json&full",
+			"REQUEST_METHOD":  "GET",
+			"CONTENT_TYPE":    "application/json",
+		},
+	}
+}
+
+func (c *tcpClient) getStatus() (*status, error) {
+	client, err := fcgiclient.DialTimeout("tcp", c.address, c.timeout)
+	if err != nil {
+		return nil, fmt.Errorf("error on connecting to address '%s': %v", c.address, err)
+	}
+	defer client.Close()
+
+	resp, err := client.Get(c.env)
+	if err != nil {
+		return nil, fmt.Errorf("error on getting data from address '%s': %v", c.address, err)
+	}
+
+	content, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error on reading response from address '%s': %v", c.address, err)
+	}
+
+	st := &status{}
+	if err := json.Unmarshal(content, st); err != nil {
+		return nil, fmt.Errorf("error on decoding response from address '%s': %v", c.address, err)
 	}
 	return st, nil
 }
