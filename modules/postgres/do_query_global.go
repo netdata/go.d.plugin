@@ -79,9 +79,9 @@ func (p *Postgres) doQueryConnectionsState() error {
 				p.mx.connStateActive = parseInt(value)
 			case "idle":
 				p.mx.connStateIdle = parseInt(value)
-			case "idle_in_transaction":
+			case "idle in transaction":
 				p.mx.connStateIdleInTrans = parseInt(value)
-			case "idle_in_transaction (aborted)":
+			case "idle in transaction (aborted)":
 				p.mx.connStateIdleInTransAborted = parseInt(value)
 			case "fastpath function call":
 				p.mx.connStateFastpathFunctionCall = parseInt(value)
