@@ -87,8 +87,8 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx["server_connections_available"] = p.mx.maxConnections - p.mx.connUsed
 		mx["server_connections_utilization"] = calcPercentage(p.mx.connUsed, p.mx.maxConnections)
 	}
-	p.mx.xactTimeHist.WriteTo(mx, "active_transaction_running_time_hist", 1, 1)
-	p.mx.queryTimeHist.WriteTo(mx, "active_query_running_time_hist", 1, 1)
+	p.mx.xactTimeHist.WriteTo(mx, "transaction_running_time_hist", 1, 1)
+	p.mx.queryTimeHist.WriteTo(mx, "query_running_time_hist", 1, 1)
 	mx["server_uptime"] = p.mx.uptime
 	mx["server_connections_state_active"] = p.mx.connStateActive
 	mx["server_connections_state_idle"] = p.mx.connStateIdle

@@ -374,7 +374,7 @@ var (
 
 	transactionsRunningTimeHistogramChartTmpl = module.Chart{
 		ID:       "transactions_running_time_histogram",
-		Title:    "Active transactions running time",
+		Title:    "Observed transactions time",
 		Units:    "transactions/s",
 		Fam:      "timings",
 		Ctx:      "postgres.transactions_running_time_histogram",
@@ -383,7 +383,7 @@ var (
 	}
 	queriesRunningTimeHistogramChartTmpl = module.Chart{
 		ID:       "queries_running_time_histogram",
-		Title:    "Active queries running time",
+		Title:    "Observed active queries time",
 		Units:    "queries/s",
 		Fam:      "timings",
 		Ctx:      "postgres.queries_running_time_histogram",
@@ -397,7 +397,7 @@ func newRunningTimeHistogramChart(tmpl module.Chart, prefix string, buckets []fl
 
 	for i, v := range buckets {
 		dim := &module.Dim{
-			ID:   fmt.Sprintf("active_query_running_time_hist_bucket_%d", i+1),
+			ID:   fmt.Sprintf("%s_hist_bucket_%d", prefix, i+1),
 			Name: fmt.Sprintf("%.3f", v),
 			Algo: module.Incremental,
 		}
@@ -407,7 +407,7 @@ func newRunningTimeHistogramChart(tmpl module.Chart, prefix string, buckets []fl
 	}
 
 	dim := &module.Dim{
-		ID:   "active_query_running_time_hist_bucket_inf",
+		ID:   fmt.Sprintf("%s_hist_bucket_inf", prefix),
 		Name: "+Inf",
 		Algo: module.Incremental,
 	}
@@ -421,7 +421,7 @@ func newRunningTimeHistogramChart(tmpl module.Chart, prefix string, buckets []fl
 func (p *Postgres) addTransactionsRunTimeHistogramChart() {
 	chart, err := newRunningTimeHistogramChart(
 		transactionsRunningTimeHistogramChartTmpl,
-		"active_transactions_running_time",
+		"transaction_running_time",
 		p.XactTimeHistogram,
 	)
 	if err != nil {
@@ -436,7 +436,7 @@ func (p *Postgres) addTransactionsRunTimeHistogramChart() {
 func (p *Postgres) addQueriesRunTimeHistogramChart() {
 	chart, err := newRunningTimeHistogramChart(
 		queriesRunningTimeHistogramChartTmpl,
-		"active_query_running_time",
+		"query_running_time",
 		p.QueryTimeHistogram,
 	)
 	if err != nil {

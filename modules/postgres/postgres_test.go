@@ -147,7 +147,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 				mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 				mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
-				mockExpect(t, m, queryActiveXactAndQueryRunningTime(), dataV140004XactQueryRunningTime)
+				mockExpect(t, m, queryXactQueryRunningTime(), dataV140004XactQueryRunningTime)
 
 				mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 				mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
@@ -240,7 +240,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
-					mockExpect(t, m, queryActiveXactAndQueryRunningTime(), dataV140004XactQueryRunningTime)
+					mockExpect(t, m, queryXactQueryRunningTime(), dataV140004XactQueryRunningTime)
 
 					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
@@ -261,24 +261,6 @@ func TestPostgres_Collect(t *testing.T) {
 					mx := pg.Collect()
 
 					expected := map[string]int64{
-						"active_query_running_time_hist_bucket_1":                               3,
-						"active_query_running_time_hist_bucket_2":                               0,
-						"active_query_running_time_hist_bucket_3":                               3,
-						"active_query_running_time_hist_bucket_4":                               0,
-						"active_query_running_time_hist_bucket_5":                               0,
-						"active_query_running_time_hist_bucket_6":                               0,
-						"active_query_running_time_hist_bucket_inf":                             0,
-						"active_query_running_time_hist_count":                                  6,
-						"active_query_running_time_hist_sum":                                    2,
-						"active_transaction_running_time_hist_bucket_1":                         3,
-						"active_transaction_running_time_hist_bucket_2":                         0,
-						"active_transaction_running_time_hist_bucket_3":                         3,
-						"active_transaction_running_time_hist_bucket_4":                         0,
-						"active_transaction_running_time_hist_bucket_5":                         0,
-						"active_transaction_running_time_hist_bucket_6":                         0,
-						"active_transaction_running_time_hist_bucket_inf":                       0,
-						"active_transaction_running_time_hist_count":                            6,
-						"active_transaction_running_time_hist_sum":                              2,
 						"autovacuum_analyze":                                                    0,
 						"autovacuum_brin_summarize":                                             0,
 						"autovacuum_vacuum":                                                     0,
@@ -392,6 +374,15 @@ func TestPostgres_Collect(t *testing.T) {
 						"oldest_current_xid":                                                    9,
 						"percent_towards_emergency_autovacuum":                                  0,
 						"percent_towards_wraparound":                                            0,
+						"query_running_time_hist_bucket_1":                                      1,
+						"query_running_time_hist_bucket_2":                                      0,
+						"query_running_time_hist_bucket_3":                                      0,
+						"query_running_time_hist_bucket_4":                                      0,
+						"query_running_time_hist_bucket_5":                                      0,
+						"query_running_time_hist_bucket_6":                                      0,
+						"query_running_time_hist_bucket_inf":                                    0,
+						"query_running_time_hist_count":                                         1,
+						"query_running_time_hist_sum":                                           0,
 						"repl_slot_ocean_replslot_files":                                        0,
 						"repl_slot_ocean_replslot_wal_keep":                                     0,
 						"repl_standby_app_phys-standby2_wal_flush_delta":                        0,
@@ -534,6 +525,15 @@ func TestPostgres_Collect(t *testing.T) {
 						"table_pgbench_tellers_db_postgres_schema_public_toast_blks_read":       -1,
 						"table_pgbench_tellers_db_postgres_schema_public_toast_blks_read_perc":  50,
 						"table_pgbench_tellers_db_postgres_schema_public_total_size":            90112,
+						"transaction_running_time_hist_bucket_1":                                1,
+						"transaction_running_time_hist_bucket_2":                                0,
+						"transaction_running_time_hist_bucket_3":                                0,
+						"transaction_running_time_hist_bucket_4":                                0,
+						"transaction_running_time_hist_bucket_5":                                0,
+						"transaction_running_time_hist_bucket_6":                                0,
+						"transaction_running_time_hist_bucket_inf":                              7,
+						"transaction_running_time_hist_count":                                   8,
+						"transaction_running_time_hist_sum":                                     4022,
 						"wal_archive_files_done_count":                                          1,
 						"wal_archive_files_ready_count":                                         1,
 						"wal_recycled_files":                                                    0,
