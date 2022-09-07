@@ -155,21 +155,26 @@ type tableMetrics struct {
 	schema string
 	db     string
 
-	updated                 bool
-	hasCharts               bool
-	hasLastAutoVacuumChart  bool
-	hasLastVacuumChart      bool
-	hasLastAutoAnalyzeChart bool
-	hasLastAnalyzeChart     bool
+	updated                  bool
+	hasCharts                bool
+	hasLastAutoVacuumChart   bool
+	hasLastVacuumChart       bool
+	hasLastAutoAnalyzeChart  bool
+	hasLastAnalyzeChart      bool
+	hasTableIOCharts         bool
+	hasTableIdxIOCharts      bool
+	hasTableTOASTIOCharts    bool
+	hasTableTOASTIdxIOCharts bool
 
+	// pg_stat_user_tables
 	seqScan            int64
 	seqTupRead         int64
 	idxScan            int64
 	idxTupFetch        int64
 	nTupIns            int64
-	nTupUpd            int64
+	nTupUpd            incDelta
 	nTupDel            int64
-	nTupHotUpd         int64
+	nTupHotUpd         incDelta
 	nLiveTup           int64
 	nDeadTup           int64
 	lastVacuumAgo      int64
@@ -181,8 +186,19 @@ type tableMetrics struct {
 	analyzeCount       int64
 	autoAnalyzeCount   int64
 
-	prevNTupUpd    int64
-	prevNTupHotUpd int64
-
 	totalSize int64
+
+	// pg_statio_user_tables
+	heapBlksRead  incDelta
+	heapBlksHit   incDelta
+	idxBlksRead   incDelta
+	idxBlksHit    incDelta
+	toastBlksRead incDelta
+	toastBlksHit  incDelta
+	tidxBlksRead  incDelta
+	tidxBlksHit   incDelta
 }
+
+type incDelta struct{ prev, last int64 }
+
+func (pc *incDelta) delta() int64 { return pc.last - pc.prev }

@@ -8,76 +8,48 @@ import (
 )
 
 func (p *Postgres) doQueryTablesMetrics() error {
-	if err := p.discoverQueryableDatabases(); err != nil {
+	if err := p.doQueryStatUserTable(); err != nil {
 		return err
 	}
-	if err := p.doQueryUserTableStats(); err != nil {
+	if err := p.doQueryStatIOUserTables(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (p *Postgres) discoverQueryableDatabases() error {
-	q := queryQueryableDatabaseList()
-
-	var dbs []string
-	if err := p.doQuery(q, func(_, value string, _ bool) { dbs = append(dbs, value) }); err != nil {
-		return err
-	}
-
-	seen := make(map[string]bool, len(dbs))
-
-	for _, dbname := range dbs {
-		seen[dbname] = true
-
-		conn, ok := p.dbConns[dbname]
-		if !ok {
-			conn = &dbConn{}
-			p.dbConns[dbname] = conn
-		}
-
-		if conn.db != nil || conn.connErrors >= 3 {
-			continue
-		}
-
-		var err error
-		if conn.db, err = p.openSecondaryConnection(dbname); err != nil {
-			p.Warning(err)
-			conn.connErrors++
-		}
-	}
-
-	for dbname, conn := range p.dbConns {
-		if seen[dbname] {
-			continue
-		}
-		delete(p.dbConns, dbname)
-		if conn.db != nil {
-			_ = conn.db.Close()
-		}
-	}
-
-	return nil
-}
-
-func (p *Postgres) doQueryUserTableStats() error {
-	if err := p.dbQueryUserTableStats(p.db); err != nil {
+func (p *Postgres) doQueryStatUserTable() error {
+	if err := p.doDBQueryStatUserTables(p.db); err != nil {
 		p.Warning(err)
 	}
 	for _, conn := range p.dbConns {
 		if conn.db == nil {
 			continue
 		}
-		if err := p.dbQueryUserTableStats(conn.db); err != nil {
+		if err := p.doDBQueryStatUserTables(conn.db); err != nil {
 			p.Warning(err)
 		}
 	}
 	return nil
 }
 
-func (p *Postgres) dbQueryUserTableStats(db *sql.DB) error {
-	q := queryUserTableStats()
+func (p *Postgres) doQueryStatIOUserTables() error {
+	if err := p.doDBQueryStatIOUserTables(p.db); err != nil {
+		p.Warning(err)
+	}
+	for _, conn := range p.dbConns {
+		if conn.db == nil {
+			continue
+		}
+		if err := p.doDBQueryStatIOUserTables(conn.db); err != nil {
+			p.Warning(err)
+		}
+	}
+	return nil
+}
+
+func (p *Postgres) doDBQueryStatUserTables(db *sql.DB) error {
+	q := queryStatUserTables()
 
 	var dbname, schema, name string
 	return p.doDBQuery(db, q, func(column, value string, _ bool) {
@@ -103,11 +75,11 @@ func (p *Postgres) dbQueryUserTableStats(db *sql.DB) error {
 		case "n_tup_ins":
 			p.getTableMetrics(name, dbname, schema).nTupIns = parseInt(value)
 		case "n_tup_upd":
-			p.getTableMetrics(name, dbname, schema).nTupUpd = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).nTupUpd.last = parseInt(value)
 		case "n_tup_del":
 			p.getTableMetrics(name, dbname, schema).nTupDel = parseInt(value)
 		case "n_tup_hot_upd":
-			p.getTableMetrics(name, dbname, schema).nTupHotUpd = parseInt(value)
+			p.getTableMetrics(name, dbname, schema).nTupHotUpd.last = parseInt(value)
 		case "n_live_tup":
 			p.getTableMetrics(name, dbname, schema).nLiveTup = parseInt(value)
 		case "n_dead_tup":
@@ -130,6 +102,42 @@ func (p *Postgres) dbQueryUserTableStats(db *sql.DB) error {
 			p.getTableMetrics(name, dbname, schema).autoAnalyzeCount = parseInt(value)
 		case "total_relation_size":
 			p.getTableMetrics(name, dbname, schema).totalSize = parseInt(value)
+		}
+	})
+}
+
+func (p *Postgres) doDBQueryStatIOUserTables(db *sql.DB) error {
+	q := queryStatIOUserTables()
+
+	var dbname, schema, name string
+	return p.doDBQuery(db, q, func(column, value string, rowEnd bool) {
+		if value == "" {
+			value = "-1"
+		}
+		switch column {
+		case "datname":
+			dbname = value
+		case "schemaname":
+			schema = value
+		case "relname":
+			name = value
+			p.getTableMetrics(name, dbname, schema).updated = true
+		case "heap_blks_read_bytes":
+			p.getTableMetrics(name, dbname, schema).heapBlksRead.last = parseInt(value)
+		case "heap_blks_hit_bytes":
+			p.getTableMetrics(name, dbname, schema).heapBlksHit.last = parseInt(value)
+		case "idx_blks_read_bytes":
+			p.getTableMetrics(name, dbname, schema).idxBlksRead.last = parseInt(value)
+		case "idx_blks_hit_bytes":
+			p.getTableMetrics(name, dbname, schema).idxBlksHit.last = parseInt(value)
+		case "toast_blks_read_bytes":
+			p.getTableMetrics(name, dbname, schema).toastBlksRead.last = parseInt(value)
+		case "toast_blks_hit_bytes":
+			p.getTableMetrics(name, dbname, schema).toastBlksHit.last = parseInt(value)
+		case "tidx_blks_read_bytes":
+			p.getTableMetrics(name, dbname, schema).tidxBlksRead.last = parseInt(value)
+		case "tidx_blks_hit_bytes":
+			p.getTableMetrics(name, dbname, schema).tidxBlksHit.last = parseInt(value)
 		}
 	})
 }

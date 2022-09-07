@@ -36,3 +36,46 @@ func (p *Postgres) doQueryIsSuperUser() (bool, error) {
 
 	return v, nil
 }
+
+func (p *Postgres) doQueryQueryableDatabases() error {
+	q := queryQueryableDatabaseList()
+
+	var dbs []string
+	if err := p.doQuery(q, func(_, value string, _ bool) { dbs = append(dbs, value) }); err != nil {
+		return err
+	}
+
+	seen := make(map[string]bool, len(dbs))
+
+	for _, dbname := range dbs {
+		seen[dbname] = true
+
+		conn, ok := p.dbConns[dbname]
+		if !ok {
+			conn = &dbConn{}
+			p.dbConns[dbname] = conn
+		}
+
+		if conn.db != nil || conn.connErrors >= 3 {
+			continue
+		}
+
+		var err error
+		if conn.db, err = p.openSecondaryConnection(dbname); err != nil {
+			p.Warning(err)
+			conn.connErrors++
+		}
+	}
+
+	for dbname, conn := range p.dbConns {
+		if seen[dbname] {
+			continue
+		}
+		delete(p.dbConns, dbname)
+		if conn.db != nil {
+			_ = conn.db.Close()
+		}
+	}
+
+	return nil
+}
