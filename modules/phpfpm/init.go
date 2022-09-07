@@ -12,6 +12,9 @@ func (p Phpfpm) initClient() (client, error) {
 	if p.Socket != "" {
 		return p.initSocketClient()
 	}
+	if p.Address != "" {
+		return p.initTcpClient()
+	}
 	if p.URL != "" {
 		return p.initHTTPClient()
 	}
@@ -34,5 +37,14 @@ func (p Phpfpm) initSocketClient() (*socketClient, error) {
 	}
 	p.Debugf("using socket client: %s", p.Socket)
 	p.Debugf("using timeout: %s", p.Timeout.Duration)
-	return newSocketClient(p.Socket, p.Timeout.Duration), nil
+	p.Debugf("using fcgi path: %s", p.FcgiPath)
+	return newSocketClient(p.Socket, p.Timeout.Duration, p.FcgiPath), nil
 }
+
+func (p Phpfpm) initTcpClient() (*tcpClient, error) {
+	p.Debugf("using tcp client: %s", p.Address)
+	p.Debugf("using timeout: %s", p.Timeout.Duration)
+	p.Debugf("using fcgi path: %s", p.FcgiPath)
+	return newTcpClient(p.Address, p.Timeout.Duration, p.FcgiPath), nil
+}
+

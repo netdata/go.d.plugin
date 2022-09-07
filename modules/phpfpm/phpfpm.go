@@ -25,6 +25,7 @@ func New() *Phpfpm {
 					Timeout: web.Duration{Duration: time.Second},
 				},
 			},
+			FcgiPath: "/status",
 		},
 	}
 }
@@ -33,6 +34,8 @@ type (
 	Config struct {
 		web.HTTP `yaml:",inline"`
 		Socket   string `yaml:"socket"`
+		Address  string `yaml:"address"`
+		FcgiPath string `yaml:"fcgi_path"`
 	}
 	Phpfpm struct {
 		module.Base

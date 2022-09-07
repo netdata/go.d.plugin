@@ -17,7 +17,6 @@ This module will monitor one or more `php-fpm` instances, depending on your conf
 - `php-fpm` with enabled `status` page:
     - open the `php-fpm` configuration file.
     - inside this file, find and uncomment the variable `pm.status_path = /status`.
-- access to `status` page via web server.
 
 ## Charts
 
@@ -40,7 +39,7 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/phpfpm.conf
 ```
 
-Needs only `url` or `socket`. Here is an example for local and remote servers:
+Needs only `url`, `socket` or `address`. Here is an example for local and remote servers:
 
 ```yaml
 jobs:
@@ -55,6 +54,9 @@ jobs:
 
   - name: remote
     url: http://203.0.113.10/status?full&json
+
+  - name: remote
+    address: 203.0.113.10:9000
 ```
 
 For all available options please see
