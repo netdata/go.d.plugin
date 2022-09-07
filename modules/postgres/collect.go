@@ -159,10 +159,14 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		}
 		mx[px+"xact_commit"] = m.xactCommit
 		mx[px+"xact_rollback"] = m.xactRollback
-		mx[px+"blks_read"] = m.blksRead
-		mx[px+"blks_hit"] = m.blksHit
-		mx[px+"tup_returned"] = m.tupReturned
-		mx[px+"tup_fetched"] = m.tupFetched
+		mx[px+"blks_read"] = m.blksRead.last
+		mx[px+"blks_hit"] = m.blksHit.last
+		mx[px+"blks_read_perc"] = calcDeltaPercentage(m.blksRead, m.blksHit)
+		m.blksRead.prev, m.blksHit.prev = m.blksRead.last, m.blksHit.last
+		mx[px+"tup_returned"] = m.tupReturned.last
+		mx[px+"tup_fetched"] = m.tupFetched.last
+		mx[px+"tup_fetched_perc"] = calcPercentage(m.tupFetched.delta(), m.tupReturned.delta())
+		m.tupReturned.prev, m.tupFetched.prev = m.tupReturned.last, m.tupFetched.last
 		mx[px+"tup_inserted"] = m.tupInserted
 		mx[px+"tup_updated"] = m.tupUpdated
 		mx[px+"tup_deleted"] = m.tupDeleted
@@ -192,11 +196,6 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"lock_mode_ShareRowExclusiveLock_awaited"] = m.shareRowExclusiveLockAwaited
 		mx[px+"lock_mode_ExclusiveLock_awaited"] = m.exclusiveLockAwaited
 		mx[px+"lock_mode_AccessExclusiveLock_awaited"] = m.accessExclusiveLockAwaited
-
-		if m.prevTupReturned != 0 {
-			mx[px+"tup_fetched_perc"] = calcPercentage(m.tupFetched-m.prevTupFetched, m.tupReturned-m.prevTupReturned)
-		}
-		m.prevTupReturned, m.prevTupFetched = m.tupReturned, m.tupFetched
 	}
 	mx["databases_count"] = int64(len(p.mx.dbs))
 
@@ -256,12 +255,18 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"n_tup_upd"] = m.nTupUpd.last
 		mx[px+"n_tup_del"] = m.nTupDel
 		mx[px+"n_tup_hot_upd"] = m.nTupHotUpd.last
-		mx[px+"last_autovacuum_ago"] = m.lastAutoVacuumAgo
-		mx[px+"last_autovacuum_ago"] = m.lastAutoVacuumAgo
-		mx[px+"last_vacuum_ago"] = m.lastVacuumAgo
-		mx[px+"last_vacuum_ago"] = m.lastVacuumAgo
-		mx[px+"last_autoanalyze_ago"] = m.lastAutoAnalyzeAgo
-		mx[px+"last_analyze_ago"] = m.lastAnalyzeAgo
+		if m.lastAutoVacuumAgo != -1 {
+			mx[px+"last_autovacuum_ago"] = m.lastAutoVacuumAgo
+		}
+		if m.lastVacuumAgo != -1 {
+			mx[px+"last_vacuum_ago"] = m.lastVacuumAgo
+		}
+		if m.lastAutoAnalyzeAgo != -1 {
+			mx[px+"last_autoanalyze_ago"] = m.lastAutoAnalyzeAgo
+		}
+		if m.lastAnalyzeAgo != -1 {
+			mx[px+"last_analyze_ago"] = m.lastAnalyzeAgo
+		}
 		mx[px+"total_size"] = m.totalSize
 
 		mx[px+"n_tup_hot_upd_perc"] = calcPercentage(m.nTupHotUpd.delta(), m.nTupUpd.delta())
@@ -332,10 +337,12 @@ func (p *Postgres) resetMetrics() {
 	}
 	for name, m := range p.mx.dbs {
 		p.mx.dbs[name] = &dbMetrics{
-			name:            m.name,
-			hasCharts:       m.hasCharts,
-			prevTupReturned: m.prevTupReturned,
-			prevTupFetched:  m.prevTupFetched,
+			name:        m.name,
+			hasCharts:   m.hasCharts,
+			blksRead:    incDelta{prev: m.blksRead.prev},
+			blksHit:     incDelta{prev: m.blksHit.prev},
+			tupReturned: incDelta{prev: m.tupReturned.prev},
+			tupFetched:  incDelta{prev: m.tupFetched.prev},
 		}
 	}
 	for name, m := range p.mx.tables {

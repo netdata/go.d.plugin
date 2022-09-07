@@ -85,10 +85,10 @@ type dbMetrics struct {
 	datConnLimit int64
 	xactCommit   int64
 	xactRollback int64
-	blksRead     int64
-	blksHit      int64
-	tupReturned  int64
-	tupFetched   int64
+	blksRead     incDelta
+	blksHit      incDelta
+	tupReturned  incDelta
+	tupFetched   incDelta
 	tupInserted  int64
 	tupUpdated   int64
 	tupDeleted   int64
@@ -97,9 +97,6 @@ type dbMetrics struct {
 	tempFiles    int64
 	tempBytes    int64
 	deadlocks    int64
-
-	prevTupReturned int64
-	prevTupFetched  int64
 
 	conflTablespace int64
 	conflLock       int64
