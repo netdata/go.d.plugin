@@ -35,7 +35,7 @@ var (
 	dataV140004WALArchiveFiles, _          = os.ReadFile("testdata/v14.4/wal_archive_files.txt")
 	dataV140004CatalogRelations, _         = os.ReadFile("testdata/v14.4/catalog_relations.txt")
 	dataV140004AutovacuumWorkers, _        = os.ReadFile("testdata/v14.4/autovacuum_workers.txt")
-	dataV140004QueriesRunningTime, _       = os.ReadFile("testdata/v14.4/queries_running_time.txt")
+	dataV140004XactQueryRunningTime, _     = os.ReadFile("testdata/v14.4/xact_query_running_time.txt")
 
 	dataV140004ReplStandbyAppDelta, _ = os.ReadFile("testdata/v14.4/replication_standby_app_wal_delta.txt")
 	dataV140004ReplStandbyAppLag, _   = os.ReadFile("testdata/v14.4/replication_standby_app_wal_lag.txt")
@@ -70,7 +70,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004WALArchiveFiles":          dataV140004WALArchiveFiles,
 		"dataV140004CatalogRelations":         dataV140004CatalogRelations,
 		"dataV140004AutovacuumWorkers":        dataV140004AutovacuumWorkers,
-		"dataV140004QueriesRunningTime":       dataV140004QueriesRunningTime,
+		"dataV140004XactQueryRunningTime":     dataV140004XactQueryRunningTime,
 
 		"dataV14004ReplStandbyAppDelta": dataV140004ReplStandbyAppDelta,
 		"dataV14004ReplStandbyAppLag":   dataV140004ReplStandbyAppLag,
@@ -147,7 +147,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 				mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 				mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
-				mockExpect(t, m, queryActiveQueriesRunTime(), dataV140004QueriesRunningTime)
+				mockExpect(t, m, queryActiveXactAndQueryRunningTime(), dataV140004XactQueryRunningTime)
 
 				mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 				mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
@@ -240,7 +240,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
-					mockExpect(t, m, queryActiveQueriesRunTime(), dataV140004QueriesRunningTime)
+					mockExpect(t, m, queryActiveXactAndQueryRunningTime(), dataV140004XactQueryRunningTime)
 
 					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
@@ -261,15 +261,24 @@ func TestPostgres_Collect(t *testing.T) {
 					mx := pg.Collect()
 
 					expected := map[string]int64{
-						"active_query_running_time_hist_bucket_1":                               14,
+						"active_query_running_time_hist_bucket_1":                               3,
 						"active_query_running_time_hist_bucket_2":                               0,
-						"active_query_running_time_hist_bucket_3":                               2,
+						"active_query_running_time_hist_bucket_3":                               3,
 						"active_query_running_time_hist_bucket_4":                               0,
 						"active_query_running_time_hist_bucket_5":                               0,
 						"active_query_running_time_hist_bucket_6":                               0,
 						"active_query_running_time_hist_bucket_inf":                             0,
-						"active_query_running_time_hist_count":                                  16,
-						"active_query_running_time_hist_sum":                                    1,
+						"active_query_running_time_hist_count":                                  6,
+						"active_query_running_time_hist_sum":                                    2,
+						"active_transaction_running_time_hist_bucket_1":                         3,
+						"active_transaction_running_time_hist_bucket_2":                         0,
+						"active_transaction_running_time_hist_bucket_3":                         3,
+						"active_transaction_running_time_hist_bucket_4":                         0,
+						"active_transaction_running_time_hist_bucket_5":                         0,
+						"active_transaction_running_time_hist_bucket_6":                         0,
+						"active_transaction_running_time_hist_bucket_inf":                       0,
+						"active_transaction_running_time_hist_count":                            6,
+						"active_transaction_running_time_hist_sum":                              2,
 						"autovacuum_analyze":                                                    0,
 						"autovacuum_brin_summarize":                                             0,
 						"autovacuum_vacuum":                                                     0,

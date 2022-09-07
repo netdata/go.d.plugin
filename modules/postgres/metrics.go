@@ -11,6 +11,7 @@ type pgMetrics struct {
 }
 
 type srvMetrics struct {
+	xactTimeHist  metrics.Histogram
 	queryTimeHist metrics.Histogram
 
 	maxConnections int64
