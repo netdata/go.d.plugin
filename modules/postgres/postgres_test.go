@@ -147,7 +147,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 				mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 				mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
-				mockExpect(t, m, queryActiveQueriesRunTime(), dataV140004QueriesRunningTime)
+				mockExpect(t, m, queryActiveXactAndQueryRunningTime(), dataV140004QueriesRunningTime)
 
 				mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 				mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
@@ -240,7 +240,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
 					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
 					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
-					mockExpect(t, m, queryActiveQueriesRunTime(), dataV140004QueriesRunningTime)
+					mockExpect(t, m, queryActiveXactAndQueryRunningTime(), dataV140004QueriesRunningTime)
 
 					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
 					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)

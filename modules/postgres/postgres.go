@@ -24,6 +24,7 @@ func New() *Postgres {
 		Config: Config{
 			Timeout:            web.Duration{Duration: time.Second * 2},
 			DSN:                "postgres://postgres:postgres@127.0.0.1:5432/postgres",
+			XactTimeHistogram:  []float64{.1, .5, 1, 2.5, 5, 10},
 			QueryTimeHistogram: []float64{.1, .5, 1, 2.5, 5, 10},
 		},
 		charts:  baseCharts.Copy(),
@@ -41,6 +42,7 @@ func New() *Postgres {
 type Config struct {
 	DSN                string       `yaml:"dsn"`
 	Timeout            web.Duration `yaml:"timeout"`
+	XactTimeHistogram  []float64    `yaml:"transaction_time_histogram"`
 	QueryTimeHistogram []float64    `yaml:"query_time_histogram"`
 }
 
@@ -74,6 +76,9 @@ func (p *Postgres) Init() bool {
 		p.Errorf("config validation: %v", err)
 		return false
 	}
+
+	p.mx.xactTimeHist = metrics.NewHistogramWithRangeBuckets(p.XactTimeHistogram)
+	p.addTransactionsRunTimeHistogramChart()
 
 	p.mx.queryTimeHist = metrics.NewHistogramWithRangeBuckets(p.QueryTimeHistogram)
 	p.addQueriesRunTimeHistogramChart()

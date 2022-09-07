@@ -13,6 +13,7 @@ const (
 	prioConnectionsUtilization = module.Priority + iota
 	prioConnectionsUsage
 	prioConnectionsState
+	prioTransactionsRunningTimeHistogram
 	prioQueriesRunningTimeHistogram
 	prioCheckpoints
 	prioCheckpointTime
@@ -370,18 +371,29 @@ var (
 			{ID: "databases_count", Name: "databases"},
 		},
 	}
-)
 
-func newQueriesRunningTimeHistogramChart(buckets []float64) (*module.Chart, error) {
-	chart := &module.Chart{
+	transactionsRunningTimeHistogramChartTmpl = module.Chart{
+		ID:       "transactions_running_time_histogram",
+		Title:    "Active transactions running time",
+		Units:    "transactions/s",
+		Fam:      "timings",
+		Ctx:      "postgres.transactions_running_time_histogram",
+		Priority: prioTransactionsRunningTimeHistogram,
+		Type:     module.Stacked,
+	}
+	queriesRunningTimeHistogramChartTmpl = module.Chart{
 		ID:       "queries_running_time_histogram",
 		Title:    "Active queries running time",
 		Units:    "queries/s",
-		Fam:      "queries",
+		Fam:      "timings",
 		Ctx:      "postgres.queries_running_time_histogram",
 		Priority: prioQueriesRunningTimeHistogram,
 		Type:     module.Stacked,
 	}
+)
+
+func newRunningTimeHistogramChart(tmpl module.Chart, prefix string, buckets []float64) (*module.Chart, error) {
+	chart := tmpl.Copy()
 
 	for i, v := range buckets {
 		dim := &module.Dim{
@@ -406,8 +418,27 @@ func newQueriesRunningTimeHistogramChart(buckets []float64) (*module.Chart, erro
 	return chart, nil
 }
 
+func (p *Postgres) addTransactionsRunTimeHistogramChart() {
+	chart, err := newRunningTimeHistogramChart(
+		transactionsRunningTimeHistogramChartTmpl,
+		"active_transactions_running_time",
+		p.XactTimeHistogram,
+	)
+	if err != nil {
+		p.Warning(err)
+		return
+	}
+	if err := p.Charts().Add(chart); err != nil {
+		p.Warning(err)
+	}
+}
+
 func (p *Postgres) addQueriesRunTimeHistogramChart() {
-	chart, err := newQueriesRunningTimeHistogramChart(p.QueryTimeHistogram)
+	chart, err := newRunningTimeHistogramChart(
+		queriesRunningTimeHistogramChartTmpl,
+		"active_query_running_time",
+		p.QueryTimeHistogram,
+	)
 	if err != nil {
 		p.Warning(err)
 		return
