@@ -1,0 +1,8 @@
+    datname    | active_xact_running_time | active_query_running_time
+ --------------+--------------------------+---------------------------
+  postgres     |                 0.001053 |                  0.001053
+  postgres     |                 0.000000 |                  0.000000
+  myproduction |                 0.938277 |                  0.938277
+  shyam_db     |                 0.936797 |                  0.936797
+  postgres     |                 0.939490 |                  0.939490
+  postgres     |                 0.003226 |                  0.003226
