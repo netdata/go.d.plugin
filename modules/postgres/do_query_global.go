@@ -32,7 +32,7 @@ func (p *Postgres) doQueryGlobalMetrics() error {
 			return fmt.Errorf("querying autovacuum workers error: %v", err)
 		}
 	}
-	if err := p.doQueryActiveXactAndQueryRunningTime(); err != nil {
+	if err := p.doQueryXactQueryRunningTime(); err != nil {
 		return err
 	}
 
@@ -260,17 +260,22 @@ func (p *Postgres) doQueryAutovacuumWorkers() error {
 	})
 }
 
-func (p *Postgres) doQueryActiveXactAndQueryRunningTime() error {
-	q := queryActiveXactAndQueryRunningTime()
+func (p *Postgres) doQueryXactQueryRunningTime() error {
+	q := queryXactQueryRunningTime()
 
+	var state string
 	return p.doQuery(q, func(column, value string, _ bool) {
 		switch column {
-		case "active_xact_running_time":
+		case "state":
+			state = value
+		case "xact_running_time":
 			v, _ := strconv.ParseFloat(value, 64)
 			p.mx.xactTimeHist.Observe(v)
-		case "active_query_running_time":
-			v, _ := strconv.ParseFloat(value, 64)
-			p.mx.queryTimeHist.Observe(v)
+		case "query_running_time":
+			if state == "active" {
+				v, _ := strconv.ParseFloat(value, 64)
+				p.mx.queryTimeHist.Observe(v)
+			}
 		}
 	})
 }

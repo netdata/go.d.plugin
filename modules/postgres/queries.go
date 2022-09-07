@@ -242,14 +242,20 @@ WHERE query NOT LIKE '%%pg_stat_activity%%';
 `
 }
 
-func queryActiveXactAndQueryRunningTime() string {
+func queryXactQueryRunningTime() string {
 	return `
 SELECT datname,
-       EXTRACT(epoch from now() - xact_start)  as active_xact_running_time,
-       EXTRACT(epoch from now() - query_start) as active_query_running_time
+       state,
+       EXTRACT(epoch from now() - xact_start)  as xact_running_time,
+       EXTRACT(epoch from now() - query_start) as query_running_time
 FROM pg_stat_activity
 WHERE datname IS NOT NULL
-  AND state = 'active'
+  AND state IN
+      (
+       'active',
+       'idle in transaction',
+       'idle in transaction (aborted)'
+          )
   AND backend_type = 'client backend';
 `
 }

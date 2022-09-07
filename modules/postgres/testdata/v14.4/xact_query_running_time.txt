@@ -1,8 +1,10 @@
-    datname    | active_xact_running_time | active_query_running_time
- --------------+--------------------------+---------------------------
-  postgres     |                 0.001053 |                  0.001053
-  postgres     |                 0.000000 |                  0.000000
-  myproduction |                 0.938277 |                  0.938277
-  shyam_db     |                 0.936797 |                  0.936797
-  postgres     |                 0.939490 |                  0.939490
-  postgres     |                 0.003226 |                  0.003226
+ datname  |        state        | xact_running_time | query_running_time
+----------+---------------------+-------------------+--------------------
+ some_db  | idle in transaction |        574.530219 |         574.315061
+ some_db  | idle in transaction |        574.867167 |         574.330322
+ postgres | active              |          0.000000 |           0.000000
+ some_db  | idle in transaction |        574.807256 |         574.377105
+ some_db  | idle in transaction |        574.680244 |         574.357246
+ some_db  | idle in transaction |        574.800283 |         574.330328
+ some_db  | idle in transaction |        574.396730 |         574.290165
+ some_db  | idle in transaction |        574.665428 |         574.337164
