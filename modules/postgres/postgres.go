@@ -91,6 +91,7 @@ func (p *Postgres) Check() bool {
 }
 
 func (p *Postgres) Charts() *module.Charts {
+	// comment
 	return p.charts
 }
 
