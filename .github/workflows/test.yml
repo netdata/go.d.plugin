@@ -24,5 +24,11 @@ jobs:
         run: "! go fmt ./... 2>&1 | read -r"
       - name: Go vet
         run: go vet ./...
+      - name: Set up gotestfmt
+        uses: haveyoudebuggedit/gotestfmt-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Go test
-        run: go test ./... -race -count=1
+        run: |
+          set -euo pipefail
+          go test -json ./... -race -count=1 2>&1 | gotestfmt
