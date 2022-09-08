@@ -378,6 +378,7 @@ func (j *Job) createChart(chart *Chart) {
 	if chart.ignore {
 		return
 	}
+	j.addJobNameLabel(chart)
 
 	if chart.Priority == 0 {
 		chart.Priority = j.priority
@@ -481,6 +482,22 @@ func (j *Job) updateChart(chart *Chart, collected map[string]int64, sinceLastRun
 		chart.Retries++
 	}
 	return chart.updated
+}
+
+func (j Job) addJobNameLabel(chart *Chart) {
+	const lblKey = "_collect_job"
+	var ok bool
+	for _, lbl := range chart.Labels {
+		if ok = lbl.Key == lblKey; ok {
+			break
+		}
+	}
+	if !ok {
+		chart.Labels = append(chart.Labels, Label{
+			Key:   lblKey,
+			Value: j.Name(),
+		})
+	}
 }
 
 func (j Job) penalty() int {
