@@ -12,64 +12,64 @@ import (
 const (
 	prioConnectionsUtilization = module.Priority + iota
 	prioConnectionsUsage
-	prioConnectionsState
-	prioTransactionsRunningTimeHistogram
-	prioQueriesRunningTimeHistogram
-	prioCheckpoints
-	prioCheckpointTime
-	prioBGWriterBuffersAllocated
-	prioBGWriterBuffersWritten
-	prioBGWriterMaxWrittenClean
-	prioBGWriterBackedFsync
-	prioWALWrites
-	prioWALFiles
-	prioWALArchive
-	prioAutovacuumWorkers
-	prioAutovacuumPercentTowards
-	prioTXIDWraparoundPercentTowards
-	prioTXIDWraparoundOldestTXID
-	prioCatalogRelationCount
-	prioCatalogRelationSize
+	prioConnectionsStateCount
+	prioTransactionsDuration
+	prioQueriesDuration
+	prioCheckpointsRate
+	prioCheckpointsTime
+	prioBGWriterHaltsRate
+	prioBuffersIORate
+	prioBuffersBackendFsyncRate
+	prioBuffersAllocRate
+	prioWALIORate
+	prioWALFilesCount
+	prioWALArchivingFilesCount
+	prioAutovacuumWorkersCount
+	prioTXIDExhaustionTowardsAutovacuumPerc
+	prioTXIDExhaustionPerc
+	prioTXIDExhaustionOldestTXIDNum
+	prioCatalogRelationsCount
+	prioCatalogRelationsSize
 	prioUptime
-	prioReplicationWALDelta
-	prioReplicationWALLag
-	prioReplicationSlotFiles
+	prioReplicationAppWALLagSize
+	prioReplicationAppWALLagTime
+	prioReplicationSlotFilesCount
 	prioDatabasesCount
 	prioDBTransactionsRatio
-	prioDBTransactions
+	prioDBTransactionsRate
 	prioDBConnectionsUtilization
-	prioDBConnections
-	prioDBBufferCacheMissRatio
-	prioDBIO
-	prioDBRowsFetchedRatio
-	prioDBRowsRead
-	prioDBRowsWritten
-	prioDBConflicts
-	prioDBConflictsStat
-	prioDBDeadlocks
-	prioDBLocksHeld
-	prioDBLocksAwaited
-	prioDBTempFiles
-	prioDBTempFilesData
+	prioDBConnectionsCount
+	prioDBCacheIORatio
+	prioDBIORate
+	prioDBOpsFetchedRowsRatio
+	prioDBOpsReadRowsRate
+	prioDBOpsWriteRowsRate
+	prioDBConflictsRate
+	prioDBConflictsReasonRate
+	prioDBDeadlocksRate
+	prioDBLocksHeldCount
+	prioDBLocksAwaitedCount
+	prioDBTempFilesCreatedRate
+	prioDBTempFilesIORate
 	prioDBSize
-	prioTableDeadRowsRatio
-	prioTableRowsTotal
-	prioTableRowsOperations
-	prioTableHOTUpdatesPerc
-	prioTableHOTUpdates
-	prioTableIOCacheRatio
-	prioTableIO
-	prioTableIdxIOCacheMissRatio
-	prioTableIdxIO
-	prioTableToastIOCacheMissRatio
-	prioTableToastIO
-	prioTableToastIdxIOCacheMissRatio
-	prioTableToastIdxIO
-	prioTableScans
-	prioTableScansRows
-	prioTableLastAutovacuumAgo
-	prioTableLastVacuumAgo
-	prioTableLastAutoAnalyzeAgo
+	prioTableRowsDeadRatio
+	prioTableRowsCount
+	prioTableOpsRowsRate
+	prioTableOpsRowsHOTRatio
+	prioTableOpsRowsHOTRate
+	prioTableCacheIORatio
+	prioTableIORate
+	prioTableIndexCacheIORatio
+	prioTableIndexIORate
+	prioTableToastCacheIORatio
+	prioTableToastIORate
+	prioTableToastIndexCacheIORatio
+	prioTableToastIndexIORate
+	prioTableScansRate
+	prioTableScansRowsRate
+	prioTableAutovacuumSinceTime
+	prioTableVacuumSinceTime
+	prioTableAutoAnalyzeSinceTime
 	prioTableLastAnalyzeAgo
 	prioTableTotalSize
 )
@@ -77,23 +77,23 @@ const (
 var baseCharts = module.Charts{
 	serverConnectionsUtilizationChart.Copy(),
 	serverConnectionsUsageChart.Copy(),
-	serverConnectionsState.Copy(),
+	serverConnectionsStateCount.Copy(),
 	checkpointsChart.Copy(),
 	checkpointWriteChart.Copy(),
-	bgWriterBuffersWrittenChart.Copy(),
-	bgWriterBuffersAllocChart.Copy(),
-	bgWriterMaxWrittenCleanChart.Copy(),
-	bgWriterBuffersBackendFsyncChart.Copy(),
-	walWritesChart.Copy(),
-	walFilesChart.Copy(),
-	walArchiveFilesChart.Copy(),
-	autovacuumWorkersChart.Copy(),
-	percentTowardsEmergencyAutovacuumChart.Copy(),
-	percentTowardTXIDWraparoundChart.Copy(),
-	oldestTXIDChart.Copy(),
+	buffersIORateChart.Copy(),
+	buffersAllocRateChart.Copy(),
+	bgWriterHaltsRateChart.Copy(),
+	buffersBackendFsyncRateChart.Copy(),
+	walIORateChart.Copy(),
+	walFilesCountChart.Copy(),
+	walArchivingFilesCountChart.Copy(),
+	autovacuumWorkersCountChart.Copy(),
+	txidExhaustionTowardsAutovacuumPercChart.Copy(),
+	txidExhaustionPercChart.Copy(),
+	txidExhaustionOldestTXIDNumChart.Copy(),
 
-	catalogRelationCountChart.Copy(),
-	catalogRelationSizeChart.Copy(),
+	catalogRelationSCountChart.Copy(),
+	catalogRelationsSizeChart.Copy(),
 	serverUptimeChart.Copy(),
 	databasesCountChart.Copy(),
 }
@@ -123,13 +123,13 @@ var (
 			{ID: "server_connections_used", Name: "used"},
 		},
 	}
-	serverConnectionsState = module.Chart{
+	serverConnectionsStateCount = module.Chart{
 		ID:       "connections_state",
 		Title:    "Connections in each state",
 		Units:    "connections",
 		Fam:      "connections",
-		Ctx:      "postgres.connections_state",
-		Priority: prioConnectionsState,
+		Ctx:      "postgres.connections_state_count",
+		Priority: prioConnectionsStateCount,
 		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "server_connections_state_active", Name: "active"},
@@ -142,12 +142,12 @@ var (
 	}
 
 	checkpointsChart = module.Chart{
-		ID:       "checkpoints",
+		ID:       "checkpoints_rate",
 		Title:    "Checkpoints",
 		Units:    "checkpoints/s",
 		Fam:      "checkpointer",
-		Ctx:      "postgres.checkpoints",
-		Priority: prioCheckpoints,
+		Ctx:      "postgres.checkpoints_rate",
+		Priority: prioCheckpointsRate,
 		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "checkpoints_timed", Name: "scheduled", Algo: module.Incremental},
@@ -156,84 +156,85 @@ var (
 	}
 	// TODO: should be seconds, also it is units/s when using incremental...
 	checkpointWriteChart = module.Chart{
-		ID:       "checkpoint_time",
+		ID:       "checkpoints_time",
 		Title:    "Checkpoint time",
 		Units:    "milliseconds",
 		Fam:      "checkpointer",
-		Ctx:      "postgres.checkpoint_time",
-		Priority: prioCheckpointTime,
+		Ctx:      "postgres.checkpoints_time",
+		Priority: prioCheckpointsTime,
+		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "checkpoint_write_time", Name: "write", Algo: module.Incremental},
 			{ID: "checkpoint_sync_time", Name: "sync", Algo: module.Incremental},
 		},
 	}
-
-	bgWriterBuffersAllocChart = module.Chart{
-		ID:       "bgwriter_buffers_alloc",
-		Title:    "Background writer buffers allocated",
-		Units:    "B/s",
-		Fam:      "background writer",
-		Ctx:      "postgres.bgwriter_buffers_alloc",
-		Priority: prioBGWriterBuffersAllocated,
-		Dims: module.Dims{
-			{ID: "buffers_alloc", Name: "allocated", Algo: module.Incremental},
-		},
-	}
-	bgWriterBuffersWrittenChart = module.Chart{
-		ID:       "bgwriter_buffers_written",
-		Title:    "Background writer buffers written",
-		Units:    "B/s",
-		Fam:      "background writer",
-		Ctx:      "postgres.bgwriter_buffers_written",
-		Priority: prioBGWriterBuffersWritten,
-		Type:     module.Area,
-		Dims: module.Dims{
-			{ID: "buffers_checkpoint", Name: "checkpoint", Algo: module.Incremental},
-			{ID: "buffers_backend", Name: "backend", Algo: module.Incremental},
-			{ID: "buffers_clean", Name: "clean", Algo: module.Incremental},
-		},
-	}
-	bgWriterMaxWrittenCleanChart = module.Chart{
-		ID:       "bgwriter_maxwritten_clean",
-		Title:    "Background writer cleaning scan stops",
-		Units:    "events/s",
-		Fam:      "background writer",
-		Ctx:      "postgres.bgwriter_maxwritten_clean",
-		Priority: prioBGWriterMaxWrittenClean,
+	bgWriterHaltsRateChart = module.Chart{
+		ID:       "bgwriter_halts_rate",
+		Title:    "Background writer scan halts",
+		Units:    "halts/s",
+		Fam:      "bgwriter",
+		Ctx:      "postgres.bgwriter_halts_rate",
+		Priority: prioBGWriterHaltsRate,
 		Dims: module.Dims{
 			{ID: "maxwritten_clean", Name: "maxwritten", Algo: module.Incremental},
 		},
 	}
-	bgWriterBuffersBackendFsyncChart = module.Chart{
-		ID:       "bgwriter_buffers_backend_fsync",
-		Title:    "Backend fsync",
-		Units:    "operations/s",
-		Fam:      "background writer",
-		Ctx:      "postgres.bgwriter_buffers_backend_fsync",
-		Priority: prioBGWriterBackedFsync,
+
+	buffersIORateChart = module.Chart{
+		ID:       "buffers_io_rate",
+		Title:    "Buffers written rate",
+		Units:    "B/s",
+		Fam:      "buffers",
+		Ctx:      "postgres.buffers_io_rate",
+		Priority: prioBuffersIORate,
+		Type:     module.Area,
+		Dims: module.Dims{
+			{ID: "buffers_checkpoint", Name: "checkpoint", Algo: module.Incremental},
+			{ID: "buffers_backend", Name: "backend", Algo: module.Incremental},
+			{ID: "buffers_clean", Name: "bgwriter", Algo: module.Incremental},
+		},
+	}
+	buffersBackendFsyncRateChart = module.Chart{
+		ID:       "buffers_backend_fsync_rate",
+		Title:    "Backend fsync calls",
+		Units:    "calls/s",
+		Fam:      "buffers",
+		Ctx:      "postgres.buffers_backend_fsync_rate",
+		Priority: prioBuffersBackendFsyncRate,
 		Dims: module.Dims{
 			{ID: "buffers_backend_fsync", Name: "fsync", Algo: module.Incremental},
 		},
 	}
-
-	walWritesChart = module.Chart{
-		ID:       "wal_writes",
-		Title:    "Write-Ahead Log",
+	buffersAllocRateChart = module.Chart{
+		ID:       "buffers_alloc_rate",
+		Title:    "Buffers allocated",
 		Units:    "B/s",
-		Fam:      "wal",
-		Ctx:      "postgres.wal_writes",
-		Priority: prioWALWrites,
+		Fam:      "buffers",
+		Ctx:      "postgres.buffers_allocated_rate",
+		Priority: prioBuffersAllocRate,
 		Dims: module.Dims{
-			{ID: "wal_writes", Name: "writes", Algo: module.Incremental},
+			{ID: "buffers_alloc", Name: "allocated", Algo: module.Incremental},
 		},
 	}
-	walFilesChart = module.Chart{
-		ID:       "wal_files",
+
+	walIORateChart = module.Chart{
+		ID:       "wal_io_rate",
+		Title:    "Write-Ahead Log writes",
+		Units:    "B/s",
+		Fam:      "wal",
+		Ctx:      "postgres.wal_io_rate",
+		Priority: prioWALIORate,
+		Dims: module.Dims{
+			{ID: "wal_writes", Name: "written", Algo: module.Incremental},
+		},
+	}
+	walFilesCountChart = module.Chart{
+		ID:       "wal_files_count",
 		Title:    "Write-Ahead Log files",
 		Units:    "files",
 		Fam:      "wal",
-		Ctx:      "postgres.wal_files",
-		Priority: prioWALFiles,
+		Ctx:      "postgres.wal_files_count",
+		Priority: prioWALFilesCount,
 		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "wal_written_files", Name: "written"},
@@ -241,27 +242,27 @@ var (
 		},
 	}
 
-	walArchiveFilesChart = module.Chart{
-		ID:       "wal_archive_files",
-		Title:    "Write-Ahead Log archive files",
+	walArchivingFilesCountChart = module.Chart{
+		ID:       "wal_archiving_files_count",
+		Title:    "Write-Ahead Log archived files",
 		Units:    "files/s",
-		Fam:      "wal archive",
-		Ctx:      "postgres.wal_archive_files",
-		Priority: prioWALArchive,
+		Fam:      "wal archiving",
+		Ctx:      "postgres.wal_archiving_files_count",
+		Priority: prioWALArchivingFilesCount,
 		Type:     module.Stacked,
 		Dims: module.Dims{
-			{ID: "wal_archive_files_ready_count", Name: "ready", Algo: module.Incremental},
-			{ID: "wal_archive_files_done_count", Name: "done", Algo: module.Incremental},
+			{ID: "wal_archive_files_ready_count", Name: "ready"},
+			{ID: "wal_archive_files_done_count", Name: "done"},
 		},
 	}
 
-	autovacuumWorkersChart = module.Chart{
-		ID:       "autovacuum_workers",
+	autovacuumWorkersCountChart = module.Chart{
+		ID:       "autovacuum_workers_count",
 		Title:    "Autovacuum workers",
 		Units:    "workers",
 		Fam:      "autovacuum",
-		Ctx:      "postgres.autovacuum_workers",
-		Priority: prioAutovacuumWorkers,
+		Ctx:      "postgres.autovacuum_workers_count",
+		Priority: prioAutovacuumWorkersCount,
 		Dims: module.Dims{
 			{ID: "autovacuum_analyze", Name: "analyze"},
 			{ID: "autovacuum_vacuum_analyze", Name: "vacuum_analyze"},
@@ -270,48 +271,48 @@ var (
 			{ID: "autovacuum_brin_summarize", Name: "brin_summarize"},
 		},
 	}
-	percentTowardsEmergencyAutovacuumChart = module.Chart{
-		ID:       "percent_towards_emergency_autovacuum",
+
+	txidExhaustionTowardsAutovacuumPercChart = module.Chart{
+		ID:       "txid_exhaustion_towards_autovacuum_perc",
 		Title:    "Percent towards emergency autovacuum",
 		Units:    "percentage",
-		Fam:      "autovacuum",
-		Ctx:      "postgres.percent_towards_emergency_autovacuum",
-		Priority: prioAutovacuumPercentTowards,
+		Fam:      "txid exhaustion",
+		Ctx:      "postgres.txid_exhaustion_towards_autovacuum_perc",
+		Priority: prioTXIDExhaustionTowardsAutovacuumPerc,
 		Dims: module.Dims{
 			{ID: "percent_towards_emergency_autovacuum", Name: "emergency_autovacuum"},
 		},
 	}
-
-	percentTowardTXIDWraparoundChart = module.Chart{
-		ID:       "percent_towards_txid_wraparound",
+	txidExhaustionPercChart = module.Chart{
+		ID:       "txid_exhaustion_perc",
 		Title:    "Percent towards transaction ID wraparound",
 		Units:    "percentage",
-		Fam:      "txid wraparound",
-		Ctx:      "postgres.percent_towards_txid_wraparound",
-		Priority: prioTXIDWraparoundPercentTowards,
+		Fam:      "txid exhaustion",
+		Ctx:      "postgres.txid_exhaustion_perc",
+		Priority: prioTXIDExhaustionPerc,
 		Dims: module.Dims{
-			{ID: "percent_towards_wraparound", Name: "txid_wraparound"},
+			{ID: "percent_towards_wraparound", Name: "txid_exhaustion"},
 		},
 	}
-	oldestTXIDChart = module.Chart{
-		ID:       "oldest_transaction_xid",
+	txidExhaustionOldestTXIDNumChart = module.Chart{
+		ID:       "txid_exhaustion_oldest_txid_num",
 		Title:    "Oldest transaction XID",
 		Units:    "xid",
-		Fam:      "txid wraparound",
-		Ctx:      "postgres.oldest_transaction_xid",
-		Priority: prioTXIDWraparoundOldestTXID,
+		Fam:      "txid exhaustion",
+		Ctx:      "postgres.txid_exhaustion_oldest_txid_num",
+		Priority: prioTXIDExhaustionOldestTXIDNum,
 		Dims: module.Dims{
 			{ID: "oldest_current_xid", Name: "xid"},
 		},
 	}
 
-	catalogRelationCountChart = module.Chart{
-		ID:       "catalog_relation_count",
+	catalogRelationSCountChart = module.Chart{
+		ID:       "catalog_relations_count",
 		Title:    "Relation count",
 		Units:    "relations",
 		Fam:      "catalog",
-		Ctx:      "postgres.catalog_relation_count",
-		Priority: prioCatalogRelationCount,
+		Ctx:      "postgres.catalog_relations_count",
+		Priority: prioCatalogRelationsCount,
 		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "catalog_relkind_r_count", Name: "ordinary_table"},
@@ -326,13 +327,13 @@ var (
 			{ID: "catalog_relkind_I_count", Name: "partitioned_index"},
 		},
 	}
-	catalogRelationSizeChart = module.Chart{
-		ID:       "catalog_relation_size",
+	catalogRelationsSizeChart = module.Chart{
+		ID:       "catalog_relations_size",
 		Title:    "Relation size",
 		Units:    "B",
 		Fam:      "catalog",
-		Ctx:      "postgres.catalog_relation_size",
-		Priority: prioCatalogRelationSize,
+		Ctx:      "postgres.catalog_relations_size",
+		Priority: prioCatalogRelationsSize,
 		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "catalog_relkind_r_size", Name: "ordinary_table"},
@@ -361,7 +362,7 @@ var (
 	}
 
 	databasesCountChart = module.Chart{
-		ID:       "server_databases_count",
+		ID:       "databases_count",
 		Title:    "Number of databases",
 		Units:    "databases",
 		Fam:      "dbs",
@@ -372,22 +373,22 @@ var (
 		},
 	}
 
-	transactionsRunningTimeHistogramChartTmpl = module.Chart{
-		ID:       "transactions_running_time_histogram",
+	transactionsDurationChartTmpl = module.Chart{
+		ID:       "transactions_duration",
 		Title:    "Observed transactions time",
 		Units:    "transactions/s",
 		Fam:      "timings",
-		Ctx:      "postgres.transactions_running_time_histogram",
-		Priority: prioTransactionsRunningTimeHistogram,
+		Ctx:      "postgres.transactions_duration",
+		Priority: prioTransactionsDuration,
 		Type:     module.Stacked,
 	}
-	queriesRunningTimeHistogramChartTmpl = module.Chart{
-		ID:       "queries_running_time_histogram",
+	queriesDurationChartTmpl = module.Chart{
+		ID:       "queries_duration",
 		Title:    "Observed active queries time",
 		Units:    "queries/s",
 		Fam:      "timings",
-		Ctx:      "postgres.queries_running_time_histogram",
-		Priority: prioQueriesRunningTimeHistogram,
+		Ctx:      "postgres.queries_duration",
+		Priority: prioQueriesDuration,
 		Type:     module.Stacked,
 	}
 )
@@ -420,7 +421,7 @@ func newRunningTimeHistogramChart(tmpl module.Chart, prefix string, buckets []fl
 
 func (p *Postgres) addTransactionsRunTimeHistogramChart() {
 	chart, err := newRunningTimeHistogramChart(
-		transactionsRunningTimeHistogramChartTmpl,
+		transactionsDurationChartTmpl,
 		"transaction_running_time",
 		p.XactTimeHistogram,
 	)
@@ -435,7 +436,7 @@ func (p *Postgres) addTransactionsRunTimeHistogramChart() {
 
 func (p *Postgres) addQueriesRunTimeHistogramChart() {
 	chart, err := newRunningTimeHistogramChart(
-		queriesRunningTimeHistogramChartTmpl,
+		queriesDurationChartTmpl,
 		"query_running_time",
 		p.QueryTimeHistogram,
 	)
@@ -450,16 +451,16 @@ func (p *Postgres) addQueriesRunTimeHistogramChart() {
 
 var (
 	replicationStandbyAppCharts = module.Charts{
-		replicationStandbyAppWALDeltaChartTmpl.Copy(),
-		replicationStandbyAppWALLagChartTmpl.Copy(),
+		replicationAppWALLagSizeChartTmpl.Copy(),
+		replicationAppWALLagTimeChartTmpl.Copy(),
 	}
-	replicationStandbyAppWALDeltaChartTmpl = module.Chart{
-		ID:       "replication_standby_app_%s_wal_delta",
-		Title:    "Standby application WAL delta",
+	replicationAppWALLagSizeChartTmpl = module.Chart{
+		ID:       "replication_app_%s_wal_lag_size",
+		Title:    "Standby application WAL lag size",
 		Units:    "B",
-		Fam:      "replication delta",
-		Ctx:      "postgres.replication_standby_app_wal_delta",
-		Priority: prioReplicationWALDelta,
+		Fam:      "replication lag",
+		Ctx:      "postgres.replication_app_wal_lag_size",
+		Priority: prioReplicationAppWALLagSize,
 		Dims: module.Dims{
 			{ID: "repl_standby_app_%s_wal_sent_delta", Name: "sent_delta"},
 			{ID: "repl_standby_app_%s_wal_write_delta", Name: "write_delta"},
@@ -467,13 +468,13 @@ var (
 			{ID: "repl_standby_app_%s_wal_replay_delta", Name: "replay_delta"},
 		},
 	}
-	replicationStandbyAppWALLagChartTmpl = module.Chart{
-		ID:       "replication_standby_app_%s_wal_lag",
-		Title:    "Standby application WAL lag",
+	replicationAppWALLagTimeChartTmpl = module.Chart{
+		ID:       "replication_app_%s_wal_lag_time",
+		Title:    "Standby application WAL lag time",
 		Units:    "seconds",
 		Fam:      "replication lag",
-		Ctx:      "postgres.replication_standby_app_wal_lag",
-		Priority: prioReplicationWALLag,
+		Ctx:      "postgres.replication_app_wal_lag_time",
+		Priority: prioReplicationAppWALLagTime,
 		Dims: module.Dims{
 			{ID: "repl_standby_app_%s_wal_write_lag", Name: "write_lag"},
 			{ID: "repl_standby_app_%s_wal_flush_lag", Name: "flush_lag"},
@@ -515,15 +516,15 @@ func (p *Postgres) removeReplicationStandbyAppCharts(app string) {
 
 var (
 	replicationSlotCharts = module.Charts{
-		replicationSlotFilesChartTmpl.Copy(),
+		replicationSlotFilesCountChartTmpl.Copy(),
 	}
-	replicationSlotFilesChartTmpl = module.Chart{
-		ID:       "replication_slot_%s_files",
+	replicationSlotFilesCountChartTmpl = module.Chart{
+		ID:       "replication_slot_%s_files_count",
 		Title:    "Replication slot files",
 		Units:    "files",
 		Fam:      "replication slot",
-		Ctx:      "postgres.replication_slot_files",
-		Priority: prioReplicationSlotFiles,
+		Ctx:      "postgres.replication_slot_files_count",
+		Priority: prioReplicationSlotFilesCount,
 		Dims: module.Dims{
 			{ID: "repl_slot_%s_replslot_wal_keep", Name: "wal_keep"},
 			{ID: "repl_slot_%s_replslot_files", Name: "pg_replslot_files"},
@@ -565,21 +566,21 @@ func (p *Postgres) removeReplicationSlotCharts(slot string) {
 var (
 	dbChartsTmpl = module.Charts{
 		dbTransactionsRatioChartTmpl.Copy(),
-		dbTransactionsChartTmpl.Copy(),
+		dbTransactionsRateChartTmpl.Copy(),
 		dbConnectionsUtilizationChartTmpl.Copy(),
-		dbConnectionsChartTmpl.Copy(),
-		dbBufferCacheMissRatioChartTmpl.Copy(),
-		dbIOChartTmpl.Copy(),
-		dbRowsFetchedRatioChartTmpl.Copy(),
-		dbRowsReadChartTmpl.Copy(),
-		dbRowsWrittenChartTmpl.Copy(),
-		dbConflictsChartTmpl.Copy(),
-		dbConflictsStatChartTmpl.Copy(),
-		dbDeadlocksChartTmpl.Copy(),
-		dbLocksHeldChartTmpl.Copy(),
-		dbLocksAwaitedChartTmpl.Copy(),
-		dbTempFilesChartTmpl.Copy(),
-		dbTempFilesDataChartTmpl.Copy(),
+		dbConnectionsCountChartTmpl.Copy(),
+		dbCacheIORatioChartTmpl.Copy(),
+		dbIORateChartTmpl.Copy(),
+		dbOpsFetchedRowsRatioChartTmpl.Copy(),
+		dbOpsReadRowsRateChartTmpl.Copy(),
+		dbOpsWriteRowsRateChartTmpl.Copy(),
+		dbConflictsRateChartTmpl.Copy(),
+		dbConflictsReasonRateChartTmpl.Copy(),
+		dbDeadlocksRateChartTmpl.Copy(),
+		dbLocksHeldCountChartTmpl.Copy(),
+		dbLocksAwaitedCountChartTmpl.Copy(),
+		dbTempFilesCreatedRateChartTmpl.Copy(),
+		dbTempFilesIORateChartTmpl.Copy(),
 		dbSizeChartTmpl.Copy(),
 	}
 	dbTransactionsRatioChartTmpl = module.Chart{
@@ -595,13 +596,13 @@ var (
 			{ID: "db_%s_xact_rollback", Name: "rollback", Algo: module.PercentOfIncremental},
 		},
 	}
-	dbTransactionsChartTmpl = module.Chart{
-		ID:       "db_%s_transactions",
+	dbTransactionsRateChartTmpl = module.Chart{
+		ID:       "db_%s_transactions_rate",
 		Title:    "Database transactions",
 		Units:    "transactions/s",
 		Fam:      "db transactions",
-		Ctx:      "postgres.db_transactions",
-		Priority: prioDBTransactions,
+		Ctx:      "postgres.db_transactions_rate",
+		Priority: prioDBTransactionsRate,
 		Dims: module.Dims{
 			{ID: "db_%s_xact_commit", Name: "committed", Algo: module.Incremental},
 			{ID: "db_%s_xact_rollback", Name: "rollback", Algo: module.Incremental},
@@ -618,96 +619,95 @@ var (
 			{ID: "db_%s_numbackends_utilization", Name: "used"},
 		},
 	}
-	dbConnectionsChartTmpl = module.Chart{
+	dbConnectionsCountChartTmpl = module.Chart{
 		ID:       "db_%s_connections",
 		Title:    "Database connections",
 		Units:    "connections",
 		Fam:      "db connections",
-		Ctx:      "postgres.db_connections",
-		Priority: prioDBConnections,
+		Ctx:      "postgres.db_connections_count",
+		Priority: prioDBConnectionsCount,
 		Dims: module.Dims{
 			{ID: "db_%s_numbackends", Name: "connections"},
 		},
 	}
-	dbBufferCacheMissRatioChartTmpl = module.Chart{
-		ID:       "db_%s_buffer_cache_miss_ratio",
+	dbCacheIORatioChartTmpl = module.Chart{
+		ID:       "db_%s_cache_io_ratio",
 		Title:    "Database buffer cache miss ratio",
 		Units:    "percentage",
-		Fam:      "db buffer cache",
-		Ctx:      "postgres.db_buffer_cache_miss_ratio",
-		Type:     module.Stacked,
-		Priority: prioDBBufferCacheMissRatio,
+		Fam:      "db io",
+		Ctx:      "postgres.db_cache_io_ratio",
+		Priority: prioDBCacheIORatio,
 		Dims: module.Dims{
 			{ID: "db_%s_blks_read_perc", Name: "miss"},
 		},
 	}
-	dbIOChartTmpl = module.Chart{
-		ID:       "db_%s_reads",
+	dbIORateChartTmpl = module.Chart{
+		ID:       "db_%s_io_rate",
 		Title:    "Database reads",
 		Units:    "B/s",
-		Fam:      "db buffer cache",
-		Ctx:      "postgres.db_io",
-		Priority: prioDBIO,
+		Fam:      "db io",
+		Ctx:      "postgres.db_io_rate",
+		Priority: prioDBIORate,
 		Type:     module.Area,
 		Dims: module.Dims{
 			{ID: "db_%s_blks_hit", Name: "memory", Algo: module.Incremental},
 			{ID: "db_%s_blks_read", Name: "disk", Algo: module.Incremental},
 		},
 	}
-	dbRowsFetchedRatioChartTmpl = module.Chart{
-		ID:       "db_%s_rows_fetched_ratio",
+	dbOpsFetchedRowsRatioChartTmpl = module.Chart{
+		ID:       "db_%s_db_ops_fetched_rows_ratio",
 		Title:    "Database rows fetched ratio",
 		Units:    "percentage",
 		Fam:      "db read throughput",
-		Ctx:      "postgres.db_rows_fetched_ratio",
-		Priority: prioDBRowsFetchedRatio,
+		Ctx:      "postgres.db_ops_fetched_rows_ratio",
+		Priority: prioDBOpsFetchedRowsRatio,
 		Dims: module.Dims{
 			{ID: "db_%s_tup_fetched_perc", Name: "fetched"},
 		},
 	}
-	dbRowsReadChartTmpl = module.Chart{
-		ID:       "db_%s_rows_read",
+	dbOpsReadRowsRateChartTmpl = module.Chart{
+		ID:       "db_%s_ops_read_rows_rate",
 		Title:    "Database rows read",
 		Units:    "rows/s",
 		Fam:      "db read throughput",
-		Ctx:      "postgres.db_rows_read",
-		Priority: prioDBRowsRead,
+		Ctx:      "postgres.db_ops_read_rows_rate",
+		Priority: prioDBOpsReadRowsRate,
 		Dims: module.Dims{
 			{ID: "db_%s_tup_returned", Name: "returned", Algo: module.Incremental},
 			{ID: "db_%s_tup_fetched", Name: "fetched", Algo: module.Incremental},
 		},
 	}
-	dbRowsWrittenChartTmpl = module.Chart{
-		ID:       "db_%s_rows_written",
+	dbOpsWriteRowsRateChartTmpl = module.Chart{
+		ID:       "db_%s_ops_write_rows_rate",
 		Title:    "Database rows written",
 		Units:    "rows/s",
 		Fam:      "db write throughput",
-		Ctx:      "postgres.db_rows_written",
-		Priority: prioDBRowsWritten,
+		Ctx:      "postgres.db_ops_write_rows_rate",
+		Priority: prioDBOpsWriteRowsRate,
 		Dims: module.Dims{
 			{ID: "db_%s_tup_inserted", Name: "inserted", Algo: module.Incremental},
 			{ID: "db_%s_tup_deleted", Name: "deleted", Algo: module.Incremental},
 			{ID: "db_%s_tup_updated", Name: "updated", Algo: module.Incremental},
 		},
 	}
-	dbConflictsChartTmpl = module.Chart{
-		ID:       "db_%s_conflicts",
+	dbConflictsRateChartTmpl = module.Chart{
+		ID:       "db_%s_conflicts_rate",
 		Title:    "Database canceled queries",
 		Units:    "queries/s",
 		Fam:      "db query cancels",
-		Ctx:      "postgres.db_conflicts",
-		Priority: prioDBConflicts,
+		Ctx:      "postgres.db_conflicts_rate",
+		Priority: prioDBConflictsRate,
 		Dims: module.Dims{
 			{ID: "db_%s_conflicts", Name: "conflicts", Algo: module.Incremental},
 		},
 	}
-	dbConflictsStatChartTmpl = module.Chart{
-		ID:       "db_%s_conflicts_stat",
+	dbConflictsReasonRateChartTmpl = module.Chart{
+		ID:       "db_%s_conflicts_reason_rate",
 		Title:    "Database canceled queries by reason",
 		Units:    "queries/s",
 		Fam:      "db query cancels",
-		Ctx:      "postgres.db_conflicts_stat",
-		Priority: prioDBConflictsStat,
+		Ctx:      "postgres.db_conflicts_reason_rate",
+		Priority: prioDBConflictsReasonRate,
 		Dims: module.Dims{
 			{ID: "db_%s_confl_tablespace", Name: "tablespace", Algo: module.Incremental},
 			{ID: "db_%s_confl_lock", Name: "lock", Algo: module.Incremental},
@@ -716,24 +716,24 @@ var (
 			{ID: "db_%s_confl_deadlock", Name: "deadlock", Algo: module.Incremental},
 		},
 	}
-	dbDeadlocksChartTmpl = module.Chart{
-		ID:       "db_%s_deadlocks",
+	dbDeadlocksRateChartTmpl = module.Chart{
+		ID:       "db_%s_deadlocks_rate",
 		Title:    "Database deadlocks",
 		Units:    "deadlocks/s",
 		Fam:      "db deadlocks",
-		Ctx:      "postgres.db_deadlocks",
-		Priority: prioDBDeadlocks,
+		Ctx:      "postgres.db_deadlocks_rate",
+		Priority: prioDBDeadlocksRate,
 		Dims: module.Dims{
 			{ID: "db_%s_deadlocks", Name: "deadlocks", Algo: module.Incremental},
 		},
 	}
-	dbLocksHeldChartTmpl = module.Chart{
+	dbLocksHeldCountChartTmpl = module.Chart{
 		ID:       "db_%s_locks_held",
 		Title:    "Database locks held",
 		Units:    "locks",
 		Fam:      "db locks",
-		Ctx:      "postgres.db_locks_held",
-		Priority: prioDBLocksHeld,
+		Ctx:      "postgres.db_locks_held_count",
+		Priority: prioDBLocksHeldCount,
 		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "db_%s_lock_mode_AccessShareLock_held", Name: "access_share"},
@@ -746,13 +746,13 @@ var (
 			{ID: "db_%s_lock_mode_AccessExclusiveLock_held", Name: "access_exclusive"},
 		},
 	}
-	dbLocksAwaitedChartTmpl = module.Chart{
-		ID:       "db_%s_locks_awaited",
+	dbLocksAwaitedCountChartTmpl = module.Chart{
+		ID:       "db_%s_locks_awaited_count",
 		Title:    "Database locks awaited",
 		Units:    "locks",
 		Fam:      "db locks",
-		Ctx:      "postgres.db_locks_awaited",
-		Priority: prioDBLocksAwaited,
+		Ctx:      "postgres.db_locks_awaited_count",
+		Priority: prioDBLocksAwaitedCount,
 		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "db_%s_lock_mode_AccessShareLock_awaited", Name: "access_share"},
@@ -765,24 +765,24 @@ var (
 			{ID: "db_%s_lock_mode_AccessExclusiveLock_awaited", Name: "access_exclusive"},
 		},
 	}
-	dbTempFilesChartTmpl = module.Chart{
-		ID:       "db_%s_temp_files",
-		Title:    "Database temporary files written to disk",
+	dbTempFilesCreatedRateChartTmpl = module.Chart{
+		ID:       "db_%s_temp_files_files_created_rate",
+		Title:    "Database created temporary files",
 		Units:    "files/s",
 		Fam:      "db temp files",
-		Ctx:      "postgres.db_temp_files",
-		Priority: prioDBTempFiles,
+		Ctx:      "postgres.db_temp_files_created_rate",
+		Priority: prioDBTempFilesCreatedRate,
 		Dims: module.Dims{
-			{ID: "db_%s_temp_files", Name: "written", Algo: module.Incremental},
+			{ID: "db_%s_temp_files", Name: "created", Algo: module.Incremental},
 		},
 	}
-	dbTempFilesDataChartTmpl = module.Chart{
-		ID:       "db_%s_temp_files_data",
+	dbTempFilesIORateChartTmpl = module.Chart{
+		ID:       "db_%s_temp_files_io_rate",
 		Title:    "Database temporary files data written to disk",
 		Units:    "B/s",
 		Fam:      "db temp files",
-		Ctx:      "postgres.db_temp_files_data",
-		Priority: prioDBTempFilesData,
+		Ctx:      "postgres.db_temp_files_io_rate",
+		Priority: prioDBTempFilesIORate,
 		Dims: module.Dims{
 			{ID: "db_%s_temp_bytes", Name: "written", Algo: module.Incremental},
 		},
@@ -833,47 +833,47 @@ func (p *Postgres) removeDatabaseCharts(dbname string) {
 
 var (
 	tableChartsTmpl = module.Charts{
-		tableRowsChartTmpl.Copy(),
-		tableDeadRowsRatioChartTmpl.Copy(),
-		tableRowsOperationsChartTmpl.Copy(),
-		tableHOTUpdatesRatioChartTmpl.Copy(),
-		tableHOTUpdatesChartTmpl.Copy(),
-		tableScansChartTmpl.Copy(),
-		tableScansRowsChartTmpl.Copy(),
+		tableRowsCountChartTmpl.Copy(),
+		tableDeadRowsDeadRatioChartTmpl.Copy(),
+		tableOpsRowsRateChartTmpl.Copy(),
+		tableOpsRowsHOTRatioChartTmpl.Copy(),
+		tableOpsRowsHOTRateChartTmpl.Copy(),
+		tableScansRateChartTmpl.Copy(),
+		tableScansRowsRateChartTmpl.Copy(),
 		tableTotalSizeChartTmpl.Copy(),
 	}
 
-	tableDeadRowsRatioChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_dead_rows_ratio",
+	tableDeadRowsDeadRatioChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_rows_dead_ratio",
 		Title:    "Table dead rows",
 		Units:    "%",
 		Fam:      "table rows",
-		Ctx:      "postgres.table_dead_rows_ratio",
-		Priority: prioTableDeadRowsRatio,
+		Ctx:      "postgres.table_rows_dead_ratio",
+		Priority: prioTableRowsDeadRatio,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_n_dead_tup_perc", Name: "dead"},
 		},
 	}
-	tableRowsChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_rows",
+	tableRowsCountChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_rows_count",
 		Title:    "Table total rows",
 		Units:    "rows",
 		Fam:      "table rows",
-		Ctx:      "postgres.table_rows",
-		Priority: prioTableRowsTotal,
+		Ctx:      "postgres.table_rows_count",
+		Priority: prioTableRowsCount,
 		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_n_live_tup", Name: "live"},
 			{ID: "table_%s_db_%s_schema_%s_n_dead_tup", Name: "dead"},
 		},
 	}
-	tableRowsOperationsChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_rows_operations",
+	tableOpsRowsRateChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_ops_rows_rate",
 		Title:    "Table throughput",
 		Units:    "rows/s",
 		Fam:      "table throughput",
-		Ctx:      "postgres.table_rows_operations",
-		Priority: prioTableRowsOperations,
+		Ctx:      "postgres.table_ops_rows_rate",
+		Priority: prioTableOpsRowsRate,
 		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_n_tup_ins", Name: "inserted", Algo: module.Incremental},
@@ -881,183 +881,183 @@ var (
 			{ID: "table_%s_db_%s_schema_%s_n_tup_upd", Name: "updated", Algo: module.Incremental},
 		},
 	}
-	tableHOTUpdatesRatioChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_hot_updates_ratio",
+	tableOpsRowsHOTRatioChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_ops_rows_hot_ratio",
 		Title:    "Table HOT updates ratio",
 		Units:    "percentage",
 		Fam:      "table hot updates",
-		Ctx:      "postgres.table_hot_updates_ratio",
-		Priority: prioTableHOTUpdatesPerc,
+		Ctx:      "postgres.table_ops_rows_hot_ratio",
+		Priority: prioTableOpsRowsHOTRatio,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_n_tup_hot_upd_perc", Name: "hot"},
 		},
 	}
-	tableHOTUpdatesChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_hot_updates",
+	tableOpsRowsHOTRateChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_ops_rows_hot_rate",
 		Title:    "Table HOT updates",
-		Units:    "updates/s",
+		Units:    "rows/s",
 		Fam:      "table hot updates",
-		Ctx:      "postgres.table_hot_updates",
-		Priority: prioTableHOTUpdates,
+		Ctx:      "postgres.table_ops_rows_hot_rate",
+		Priority: prioTableOpsRowsHOTRate,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_n_tup_hot_upd", Name: "hot", Algo: module.Incremental},
 		},
 	}
-	tableIOCacheMissRatioChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_io_cache_miss_ratio",
+	tableCacheIORatioChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_cache_io_ratio",
 		Title:    "Table I/O cache miss ratio",
 		Units:    "percentage",
 		Fam:      "table io",
-		Ctx:      "postgres.table_io_cache_miss_ratio",
-		Priority: prioTableIOCacheRatio,
+		Ctx:      "postgres.table_cache_io_ratio",
+		Priority: prioTableCacheIORatio,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_heap_blks_read_perc", Name: "miss"},
 		},
 	}
-	tableIOChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_io",
+	tableIORateChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_io_rate",
 		Title:    "Table I/O",
 		Units:    "B/s",
 		Fam:      "table io",
-		Ctx:      "postgres.table_io",
-		Priority: prioTableIO,
+		Ctx:      "postgres.table_io_rate",
+		Priority: prioTableIORate,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_heap_blks_hit", Name: "memory", Algo: module.Incremental},
 			{ID: "table_%s_db_%s_schema_%s_heap_blks_read", Name: "disk", Algo: module.Incremental},
 		},
 	}
-	tableIdxIOCacheMissRatioChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_index_io_cache_miss_ratio",
+	tableIndexCacheIORatioChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_index_cache_io_ratio",
 		Title:    "Table index I/O cache miss ratio",
 		Units:    "percentage",
 		Fam:      "table index io",
-		Ctx:      "postgres.table_index_io_cache_miss_ratio",
-		Priority: prioTableIdxIOCacheMissRatio,
+		Ctx:      "postgres.table_index_cache_io_ratio",
+		Priority: prioTableIndexCacheIORatio,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_idx_blks_read_perc", Name: "miss", Algo: module.Incremental},
 		},
 	}
-	tableIdxIOChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_index_io",
+	tableIndexIORateChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_index_io_rate",
 		Title:    "Table index I/O",
 		Units:    "B/s",
 		Fam:      "table index io",
-		Ctx:      "postgres.table_index_io",
-		Priority: prioTableIdxIO,
+		Ctx:      "postgres.table_index_io_rate",
+		Priority: prioTableIndexIORate,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_idx_blks_hit", Name: "memory", Algo: module.Incremental},
 			{ID: "table_%s_db_%s_schema_%s_idx_blks_read", Name: "disk", Algo: module.Incremental},
 		},
 	}
-	tableTOASTIOCacheMissRatioChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_toast_io_cache_miss_ratio",
+	tableTOASCacheIORatioChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_toast_cache_io_ratio",
 		Title:    "Table TOAST I/O cache miss ratio",
 		Units:    "percentage",
 		Fam:      "table toast io",
-		Ctx:      "postgres.table_toast_io_cache_miss_ratio",
-		Priority: prioTableToastIOCacheMissRatio,
+		Ctx:      "postgres.table_toast_cache_io_ratio",
+		Priority: prioTableToastCacheIORatio,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_toast_blks_read_perc", Name: "miss", Algo: module.Incremental},
 		},
 	}
-	tableTOASTIOChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_toast_io",
+	tableTOASTIORateChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_toast_io_rate",
 		Title:    "Table TOAST I/O",
 		Units:    "B/s",
 		Fam:      "table toast io",
-		Ctx:      "postgres.table_toast_io",
-		Priority: prioTableToastIO,
+		Ctx:      "postgres.table_toast_io_rate",
+		Priority: prioTableToastIORate,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_toast_blks_hit", Name: "memory", Algo: module.Incremental},
 			{ID: "table_%s_db_%s_schema_%s_toast_blks_read", Name: "disk", Algo: module.Incremental},
 		},
 	}
-	tableTOASTIdxIOCacheMissRatioChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_toast_idx_io_cache_miss_ratio",
+	tableTOASTIndexCacheIORatioChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_toast_index_cache_io_ratio",
 		Title:    "Table TOAST index I/O cache miss ratio",
 		Units:    "percentage",
 		Fam:      "table toast index io",
-		Ctx:      "postgres.table_toast_index_io_cache_miss_ratio",
-		Priority: prioTableToastIdxIOCacheMissRatio,
+		Ctx:      "postgres.table_toast_index_cache_io_ratio",
+		Priority: prioTableToastIndexCacheIORatio,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_tidx_blks_read_perc", Name: "miss", Algo: module.Incremental},
 		},
 	}
-	tableTOASTIdxIOChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_toast_index_io",
+	tableTOASTIndexIORateChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_toast_index_io_rate",
 		Title:    "Table TOAST index I/O",
 		Units:    "B/s",
 		Fam:      "table toast index io",
-		Ctx:      "postgres.table_toast_index_io",
-		Priority: prioTableToastIdxIO,
+		Ctx:      "postgres.table_toast_index_io_rate",
+		Priority: prioTableToastIndexIORate,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_tidx_blks_hit", Name: "memory", Algo: module.Incremental},
 			{ID: "table_%s_db_%s_schema_%s_tidx_blks_read", Name: "disk", Algo: module.Incremental},
 		},
 	}
-	tableScansChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_scans",
+	tableScansRateChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_scans_rate",
 		Title:    "Table scans",
 		Units:    "scans/s",
 		Fam:      "table scans",
-		Ctx:      "postgres.table_scans",
-		Priority: prioTableScans,
+		Ctx:      "postgres.table_scans_rate",
+		Priority: prioTableScansRate,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_idx_scan", Name: "index", Algo: module.Incremental},
 			{ID: "table_%s_db_%s_schema_%s_seq_scan", Name: "sequential", Algo: module.Incremental},
 		},
 	}
-	tableScansRowsChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_scans_rows",
+	tableScansRowsRateChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_scans_rows_rate",
 		Title:    "Table live rows fetched by scans",
 		Units:    "rows/s",
 		Fam:      "table scans",
-		Ctx:      "postgres.table_scans_rows",
-		Priority: prioTableScansRows,
+		Ctx:      "postgres.table_scans_rows_rate",
+		Priority: prioTableScansRowsRate,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_idx_tup_fetch", Name: "index", Algo: module.Incremental},
 			{ID: "table_%s_db_%s_schema_%s_seq_tup_read", Name: "sequential", Algo: module.Incremental},
 		},
 	}
-	tableLastAutoVacuumAgoChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_last_autovacuum_ago",
+	tableAutoVacuumSinceTimeChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_autovacuum_since_time",
 		Title:    "Table time since last auto VACUUM",
 		Units:    "seconds",
 		Fam:      "table autovacuum",
-		Ctx:      "postgres.table_last_autovacuum_ago",
-		Priority: prioTableLastAutovacuumAgo,
+		Ctx:      "postgres.table_autovacuum_since_time",
+		Priority: prioTableAutovacuumSinceTime,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_last_autovacuum_ago", Name: "time"},
 		},
 	}
-	tableLastVacuumAgoChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_last_vacuum_ago",
+	tableVacuumSinceTimeChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_vacuum_since_time",
 		Title:    "Table time since last manual VACUUM",
 		Units:    "seconds",
 		Fam:      "table vacuum",
-		Ctx:      "postgres.table_last_vacuum_ago",
-		Priority: prioTableLastVacuumAgo,
+		Ctx:      "postgres.table_vacuum_since_time",
+		Priority: prioTableVacuumSinceTime,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_last_vacuum_ago", Name: "time"},
 		},
 	}
-	tableLastAutoAnalyzeAgoChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_last_autoanalyze_ago",
+	tableAutoAnalyzeSinceTimeChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_autoanalyze_since_time",
 		Title:    "Table time since last auto ANALYZE",
 		Units:    "seconds",
 		Fam:      "table autoanalyze",
-		Ctx:      "postgres.table_last_autoanalyze_ago",
-		Priority: prioTableLastAutoAnalyzeAgo,
+		Ctx:      "postgres.table_autoanalyze_since_time",
+		Priority: prioTableAutoAnalyzeSinceTime,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_last_autoanalyze_ago", Name: "time"},
 		},
 	}
-	tableLastAnalyzeAgoChartTmpl = module.Chart{
-		ID:       "table_%s_db_%s_schema_%s_last_analyze_ago",
+	tableAnalyzeSinceTimeChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_analyze_since_time",
 		Title:    "Table time since last manual ANALYZE",
 		Units:    "seconds",
 		Fam:      "table analyze",
-		Ctx:      "postgres.table_last_analyze_ago",
+		Ctx:      "postgres.table_analyze_since_time",
 		Priority: prioTableLastAnalyzeAgo,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_last_analyze_ago", Name: "time"},
@@ -1108,7 +1108,7 @@ func (p *Postgres) addNewTableCharts(name, dbname, schema string) {
 }
 
 func (p *Postgres) addTableLastAutoVacuumAgoChart(name, dbname, schema string) {
-	chart := newTableChart(tableLastAutoVacuumAgoChartTmpl.Copy(), name, dbname, schema)
+	chart := newTableChart(tableAutoVacuumSinceTimeChartTmpl.Copy(), name, dbname, schema)
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
@@ -1116,7 +1116,7 @@ func (p *Postgres) addTableLastAutoVacuumAgoChart(name, dbname, schema string) {
 }
 
 func (p *Postgres) addTableLastVacuumAgoChart(name, dbname, schema string) {
-	chart := newTableChart(tableLastVacuumAgoChartTmpl.Copy(), name, dbname, schema)
+	chart := newTableChart(tableVacuumSinceTimeChartTmpl.Copy(), name, dbname, schema)
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
@@ -1124,7 +1124,7 @@ func (p *Postgres) addTableLastVacuumAgoChart(name, dbname, schema string) {
 }
 
 func (p *Postgres) addTableLastAutoAnalyzeAgoChart(name, dbname, schema string) {
-	chart := newTableChart(tableLastAutoAnalyzeAgoChartTmpl.Copy(), name, dbname, schema)
+	chart := newTableChart(tableAutoAnalyzeSinceTimeChartTmpl.Copy(), name, dbname, schema)
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
@@ -1132,7 +1132,7 @@ func (p *Postgres) addTableLastAutoAnalyzeAgoChart(name, dbname, schema string) 
 }
 
 func (p *Postgres) addTableLastAnalyzeAgoChart(name, dbname, schema string) {
-	chart := newTableChart(tableLastAnalyzeAgoChartTmpl.Copy(), name, dbname, schema)
+	chart := newTableChart(tableAnalyzeSinceTimeChartTmpl.Copy(), name, dbname, schema)
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
@@ -1141,8 +1141,8 @@ func (p *Postgres) addTableLastAnalyzeAgoChart(name, dbname, schema string) {
 
 func (p *Postgres) addTableIOChartsCharts(name, dbname, schema string) {
 	charts := module.Charts{
-		newTableChart(tableIOCacheMissRatioChartTmpl.Copy(), name, dbname, schema),
-		newTableChart(tableIOChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableCacheIORatioChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableIORateChartTmpl.Copy(), name, dbname, schema),
 	}
 
 	if err := p.Charts().Add(charts...); err != nil {
@@ -1152,8 +1152,8 @@ func (p *Postgres) addTableIOChartsCharts(name, dbname, schema string) {
 
 func (p *Postgres) addTableIndexIOCharts(name, dbname, schema string) {
 	charts := module.Charts{
-		newTableChart(tableIdxIOCacheMissRatioChartTmpl.Copy(), name, dbname, schema),
-		newTableChart(tableIdxIOChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableIndexCacheIORatioChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableIndexIORateChartTmpl.Copy(), name, dbname, schema),
 	}
 
 	if err := p.Charts().Add(charts...); err != nil {
@@ -1163,8 +1163,8 @@ func (p *Postgres) addTableIndexIOCharts(name, dbname, schema string) {
 
 func (p *Postgres) addTableTOASTIOCharts(name, dbname, schema string) {
 	charts := module.Charts{
-		newTableChart(tableTOASTIOCacheMissRatioChartTmpl.Copy(), name, dbname, schema),
-		newTableChart(tableTOASTIOChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableTOASCacheIORatioChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableTOASTIORateChartTmpl.Copy(), name, dbname, schema),
 	}
 
 	if err := p.Charts().Add(charts...); err != nil {
@@ -1174,8 +1174,8 @@ func (p *Postgres) addTableTOASTIOCharts(name, dbname, schema string) {
 
 func (p *Postgres) addTableTOASTIndexIOCharts(name, dbname, schema string) {
 	charts := module.Charts{
-		newTableChart(tableTOASTIdxIOCacheMissRatioChartTmpl.Copy(), name, dbname, schema),
-		newTableChart(tableTOASTIdxIOChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableTOASTIndexCacheIORatioChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableTOASTIndexIORateChartTmpl.Copy(), name, dbname, schema),
 	}
 
 	if err := p.Charts().Add(charts...); err != nil {
