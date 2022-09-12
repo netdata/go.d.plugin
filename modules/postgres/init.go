@@ -2,11 +2,23 @@
 
 package postgres
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/netdata/go.d.plugin/pkg/matcher"
+)
 
 func (p *Postgres) validateConfig() error {
 	if p.DSN == "" {
 		return errors.New("DSN not set")
 	}
 	return nil
+}
+
+func (p *Postgres) initDBSelector() (matcher.Matcher, error) {
+	if p.DBSelector == "" {
+		return nil, nil
+	}
+
+	return matcher.NewSimplePatternsMatcher(p.DBSelector)
 }

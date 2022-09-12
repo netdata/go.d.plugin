@@ -37,11 +37,27 @@ func (p *Postgres) doQueryIsSuperUser() (bool, error) {
 	return v, nil
 }
 
+func (p *Postgres) doQueryCurrentDB() (string, error) {
+	q := queryCurrentDatabase()
+
+	var s string
+	if err := p.doQueryRow(q, &s); err != nil {
+		return "", err
+	}
+
+	return s, nil
+}
+
 func (p *Postgres) doQueryQueryableDatabases() error {
 	q := queryQueryableDatabaseList()
 
 	var dbs []string
-	if err := p.doQuery(q, func(_, value string, _ bool) { dbs = append(dbs, value) }); err != nil {
+	err := p.doQuery(q, func(_, value string, _ bool) {
+		if p.dbSr != nil && p.dbSr.MatchString(value) {
+			dbs = append(dbs, value)
+		}
+	})
+	if err != nil {
 		return err
 	}
 

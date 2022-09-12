@@ -46,6 +46,14 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		p.Debugf("connected as super user: %v", *p.superUser)
 	}
 
+	if p.currentDB == "" {
+		v, err := p.doQueryCurrentDB()
+		if err != nil {
+			return nil, fmt.Errorf("querying current db error: %v", err)
+		}
+		p.currentDB = v
+	}
+
 	now := time.Now()
 
 	if now.Sub(p.recheckSettingsTime) > p.recheckSettingsEvery {
@@ -68,11 +76,13 @@ func (p *Postgres) collect() (map[string]int64, error) {
 	if err := p.doQueryDatabasesMetrics(); err != nil {
 		return nil, err
 	}
-	if err := p.doQueryQueryableDatabases(); err != nil {
-		return nil, err
-	}
-	if err := p.doQueryTablesMetrics(); err != nil {
-		return nil, err
+	if p.dbSr != nil {
+		if err := p.doQueryQueryableDatabases(); err != nil {
+			return nil, err
+		}
+		if err := p.doQueryTablesMetrics(); err != nil {
+			return nil, err
+		}
 	}
 
 	mx := make(map[string]int64)

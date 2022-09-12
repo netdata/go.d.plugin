@@ -19,8 +19,10 @@ func (p *Postgres) doQueryTablesMetrics() error {
 }
 
 func (p *Postgres) doQueryStatUserTable() error {
-	if err := p.doDBQueryStatUserTables(p.db); err != nil {
-		p.Warning(err)
+	if p.dbSr != nil && p.dbSr.MatchString(p.currentDB) {
+		if err := p.doDBQueryStatUserTables(p.db); err != nil {
+			p.Warning(err)
+		}
 	}
 	for _, conn := range p.dbConns {
 		if conn.db == nil {
@@ -34,8 +36,10 @@ func (p *Postgres) doQueryStatUserTable() error {
 }
 
 func (p *Postgres) doQueryStatIOUserTables() error {
-	if err := p.doDBQueryStatIOUserTables(p.db); err != nil {
-		p.Warning(err)
+	if p.dbSr != nil && p.dbSr.MatchString(p.currentDB) {
+		if err := p.doDBQueryStatIOUserTables(p.db); err != nil {
+			p.Warning(err)
+		}
 	}
 	for _, conn := range p.dbConns {
 		if conn.db == nil {

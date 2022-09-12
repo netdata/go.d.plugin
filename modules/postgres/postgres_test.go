@@ -12,6 +12,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -20,10 +22,10 @@ import (
 var (
 	dataV140004ServerVersionNum, _ = os.ReadFile("testdata/v14.4/server_version_num.txt")
 
-	dataV140004IsSuperUserFalse, _ = os.ReadFile("testdata/v14.4/is_super_user-false.txt")
-	dataV140004IsSuperUserTrue, _  = os.ReadFile("testdata/v14.4/is_super_user-true.txt")
-
+	dataV140004IsSuperUserFalse, _       = os.ReadFile("testdata/v14.4/is_super_user-false.txt")
+	dataV140004IsSuperUserTrue, _        = os.ReadFile("testdata/v14.4/is_super_user-true.txt")
 	dataV140004SettingsMaxConnections, _ = os.ReadFile("testdata/v14.4/settings_max_connections.txt")
+	dataV140004CurrentDatabase, _        = os.ReadFile("testdata/v14.4/current_database.txt")
 
 	dataV140004ServerCurrentConnections, _ = os.ReadFile("testdata/v14.4/server_current_connections.txt")
 	dataV140004ServerConnectionsState, _   = os.ReadFile("testdata/v14.4/server_connections_state.txt")
@@ -55,10 +57,10 @@ func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
 		"dataV140004ServerVersionNum": dataV140004ServerVersionNum,
 
-		"dataV140004IsSuperUserFalse": dataV140004IsSuperUserFalse,
-		"dataV140004IsSuperUserTrue":  dataV140004IsSuperUserTrue,
-
+		"dataV140004IsSuperUserFalse":       dataV140004IsSuperUserFalse,
+		"dataV140004IsSuperUserTrue":        dataV140004IsSuperUserTrue,
 		"dataV140004SettingsMaxConnections": dataV140004SettingsMaxConnections,
+		"dataV140004CurrentDatabase":        dataV140004CurrentDatabase,
 
 		"dataV140004ServerCurrentConnections": dataV140004ServerCurrentConnections,
 		"dataV140004ServerConnectionsState":   dataV140004ServerConnectionsState,
@@ -128,14 +130,17 @@ func TestPostgres_Charts(t *testing.T) {
 
 func TestPostgres_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepareMock func(t *testing.T, mock sqlmock.Sqlmock)
+		prepareMock func(t *testing.T, pg *Postgres, mock sqlmock.Sqlmock)
 		wantFail    bool
 	}{
 		"Success when all queries are successful (v14.4)": {
 			wantFail: false,
-			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+			prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
+				pg.dbSr = matcher.TRUE()
+
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+				mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 
@@ -167,9 +172,10 @@ func TestPostgres_Check(t *testing.T) {
 		},
 		"Fail when the second query unsuccessful (v14.4)": {
 			wantFail: true,
-			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+			prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+				mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004ServerVersionNum)
 
@@ -179,15 +185,16 @@ func TestPostgres_Check(t *testing.T) {
 		},
 		"Fail when querying the database version returns an error": {
 			wantFail: true,
-			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+			prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 				mockExpectErr(m, queryServerVersion())
 			},
 		},
 		"Fail when querying settings max connection returns an error": {
 			wantFail: true,
-			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+			prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+				mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 				mockExpectErr(m, querySettingsMaxConnections())
 			},
@@ -206,7 +213,7 @@ func TestPostgres_Check(t *testing.T) {
 
 			require.True(t, pg.Init())
 
-			test.prepareMock(t, mock)
+			test.prepareMock(t, pg, mock)
 
 			if test.wantFail {
 				assert.False(t, pg.Check())
@@ -220,15 +227,17 @@ func TestPostgres_Check(t *testing.T) {
 
 func TestPostgres_Collect(t *testing.T) {
 	type testCaseStep struct {
-		prepareMock func(t *testing.T, mock sqlmock.Sqlmock)
+		prepareMock func(t *testing.T, pg *Postgres, mock sqlmock.Sqlmock)
 		check       func(t *testing.T, pg *Postgres)
 	}
 	tests := map[string][]testCaseStep{
-		"Success on all queries (v14.4)": {
+		"Success on all queries, collect all dbs (v14.4)": {
 			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+				prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
+					pg.dbSr = matcher.TRUE()
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+					mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 
@@ -541,9 +550,215 @@ func TestPostgres_Collect(t *testing.T) {
 				},
 			},
 		},
+		"Success on all queries, db selector default (v14.4)": {
+			{
+				prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
+					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
+					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+					mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
+
+					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
+
+					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
+					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
+					mockExpect(t, m, queryCheckpoints(), dataV140004Checkpoints)
+					mockExpect(t, m, queryServerUptime(), dataV140004ServerUptime)
+					mockExpect(t, m, queryTXIDWraparound(), dataV140004TXIDWraparound)
+					mockExpect(t, m, queryWALWrites(140004), dataV140004WALWrites)
+					mockExpect(t, m, queryCatalogRelations(), dataV140004CatalogRelations)
+					mockExpect(t, m, queryAutovacuumWorkers(), dataV140004AutovacuumWorkers)
+					mockExpect(t, m, queryXactQueryRunningTime(), dataV140004XactQueryRunningTime)
+
+					mockExpect(t, m, queryWALFiles(140004), dataV140004WALFiles)
+					mockExpect(t, m, queryWALArchiveFiles(140004), dataV140004WALArchiveFiles)
+
+					mockExpect(t, m, queryReplicationStandbyAppDelta(140004), dataV140004ReplStandbyAppDelta)
+					mockExpect(t, m, queryReplicationStandbyAppLag(), dataV140004ReplStandbyAppLag)
+					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
+
+					mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
+					mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
+					mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
+				},
+				check: func(t *testing.T, pg *Postgres) {
+					mx := pg.Collect()
+
+					expected := map[string]int64{
+						"autovacuum_analyze":                                       0,
+						"autovacuum_brin_summarize":                                0,
+						"autovacuum_vacuum":                                        0,
+						"autovacuum_vacuum_analyze":                                0,
+						"autovacuum_vacuum_freeze":                                 0,
+						"buffers_alloc":                                            27295744,
+						"buffers_backend":                                          0,
+						"buffers_backend_fsync":                                    0,
+						"buffers_checkpoint":                                       32768,
+						"buffers_clean":                                            0,
+						"catalog_relkind_I_count":                                  0,
+						"catalog_relkind_I_size":                                   0,
+						"catalog_relkind_S_count":                                  0,
+						"catalog_relkind_S_size":                                   0,
+						"catalog_relkind_c_count":                                  0,
+						"catalog_relkind_c_size":                                   0,
+						"catalog_relkind_f_count":                                  0,
+						"catalog_relkind_f_size":                                   0,
+						"catalog_relkind_i_count":                                  155,
+						"catalog_relkind_i_size":                                   3678208,
+						"catalog_relkind_m_count":                                  0,
+						"catalog_relkind_m_size":                                   0,
+						"catalog_relkind_p_count":                                  0,
+						"catalog_relkind_p_size":                                   0,
+						"catalog_relkind_r_count":                                  66,
+						"catalog_relkind_r_size":                                   3424256,
+						"catalog_relkind_t_count":                                  38,
+						"catalog_relkind_t_size":                                   548864,
+						"catalog_relkind_v_count":                                  137,
+						"catalog_relkind_v_size":                                   0,
+						"checkpoint_sync_time":                                     47,
+						"checkpoint_write_time":                                    167,
+						"checkpoints_req":                                          16,
+						"checkpoints_timed":                                        1814,
+						"databases_count":                                          2,
+						"db_postgres_blks_hit":                                     1221125,
+						"db_postgres_blks_read":                                    3252,
+						"db_postgres_blks_read_perc":                               0,
+						"db_postgres_confl_bufferpin":                              0,
+						"db_postgres_confl_deadlock":                               0,
+						"db_postgres_confl_lock":                                   0,
+						"db_postgres_confl_snapshot":                               0,
+						"db_postgres_confl_tablespace":                             0,
+						"db_postgres_conflicts":                                    0,
+						"db_postgres_deadlocks":                                    0,
+						"db_postgres_lock_mode_AccessExclusiveLock_awaited":        0,
+						"db_postgres_lock_mode_AccessExclusiveLock_held":           0,
+						"db_postgres_lock_mode_AccessShareLock_awaited":            0,
+						"db_postgres_lock_mode_AccessShareLock_held":               1,
+						"db_postgres_lock_mode_ExclusiveLock_awaited":              0,
+						"db_postgres_lock_mode_ExclusiveLock_held":                 0,
+						"db_postgres_lock_mode_RowExclusiveLock_awaited":           0,
+						"db_postgres_lock_mode_RowExclusiveLock_held":              1,
+						"db_postgres_lock_mode_RowShareLock_awaited":               0,
+						"db_postgres_lock_mode_RowShareLock_held":                  1,
+						"db_postgres_lock_mode_ShareLock_awaited":                  0,
+						"db_postgres_lock_mode_ShareLock_held":                     0,
+						"db_postgres_lock_mode_ShareRowExclusiveLock_awaited":      0,
+						"db_postgres_lock_mode_ShareRowExclusiveLock_held":         0,
+						"db_postgres_lock_mode_ShareUpdateExclusiveLock_awaited":   0,
+						"db_postgres_lock_mode_ShareUpdateExclusiveLock_held":      0,
+						"db_postgres_numbackends":                                  3,
+						"db_postgres_numbackends_utilization":                      10,
+						"db_postgres_size":                                         8758051,
+						"db_postgres_temp_bytes":                                   0,
+						"db_postgres_temp_files":                                   0,
+						"db_postgres_tup_deleted":                                  0,
+						"db_postgres_tup_fetched":                                  359833,
+						"db_postgres_tup_fetched_perc":                             2,
+						"db_postgres_tup_inserted":                                 0,
+						"db_postgres_tup_returned":                                 13207245,
+						"db_postgres_tup_updated":                                  0,
+						"db_postgres_xact_commit":                                  1438660,
+						"db_postgres_xact_rollback":                                70,
+						"db_production_blks_hit":                                   0,
+						"db_production_blks_read":                                  0,
+						"db_production_blks_read_perc":                             0,
+						"db_production_confl_bufferpin":                            0,
+						"db_production_confl_deadlock":                             0,
+						"db_production_confl_lock":                                 0,
+						"db_production_confl_snapshot":                             0,
+						"db_production_confl_tablespace":                           0,
+						"db_production_conflicts":                                  0,
+						"db_production_deadlocks":                                  0,
+						"db_production_lock_mode_AccessExclusiveLock_awaited":      0,
+						"db_production_lock_mode_AccessExclusiveLock_held":         0,
+						"db_production_lock_mode_AccessShareLock_awaited":          0,
+						"db_production_lock_mode_AccessShareLock_held":             0,
+						"db_production_lock_mode_ExclusiveLock_awaited":            0,
+						"db_production_lock_mode_ExclusiveLock_held":               0,
+						"db_production_lock_mode_RowExclusiveLock_awaited":         0,
+						"db_production_lock_mode_RowExclusiveLock_held":            0,
+						"db_production_lock_mode_RowShareLock_awaited":             0,
+						"db_production_lock_mode_RowShareLock_held":                0,
+						"db_production_lock_mode_ShareLock_awaited":                0,
+						"db_production_lock_mode_ShareLock_held":                   1,
+						"db_production_lock_mode_ShareRowExclusiveLock_awaited":    0,
+						"db_production_lock_mode_ShareRowExclusiveLock_held":       0,
+						"db_production_lock_mode_ShareUpdateExclusiveLock_awaited": 0,
+						"db_production_lock_mode_ShareUpdateExclusiveLock_held":    1,
+						"db_production_numbackends":                                1,
+						"db_production_numbackends_utilization":                    1,
+						"db_production_size":                                       8602115,
+						"db_production_temp_bytes":                                 0,
+						"db_production_temp_files":                                 0,
+						"db_production_tup_deleted":                                0,
+						"db_production_tup_fetched":                                0,
+						"db_production_tup_fetched_perc":                           0,
+						"db_production_tup_inserted":                               0,
+						"db_production_tup_returned":                               0,
+						"db_production_tup_updated":                                0,
+						"db_production_xact_commit":                                0,
+						"db_production_xact_rollback":                              0,
+						"maxwritten_clean":                                         0,
+						"oldest_current_xid":                                       9,
+						"percent_towards_emergency_autovacuum":                     0,
+						"percent_towards_wraparound":                               0,
+						"query_running_time_hist_bucket_1":                         1,
+						"query_running_time_hist_bucket_2":                         0,
+						"query_running_time_hist_bucket_3":                         0,
+						"query_running_time_hist_bucket_4":                         0,
+						"query_running_time_hist_bucket_5":                         0,
+						"query_running_time_hist_bucket_6":                         0,
+						"query_running_time_hist_bucket_inf":                       0,
+						"query_running_time_hist_count":                            1,
+						"query_running_time_hist_sum":                              0,
+						"repl_slot_ocean_replslot_files":                           0,
+						"repl_slot_ocean_replslot_wal_keep":                        0,
+						"repl_standby_app_phys-standby2_wal_flush_delta":           0,
+						"repl_standby_app_phys-standby2_wal_flush_lag":             0,
+						"repl_standby_app_phys-standby2_wal_replay_delta":          0,
+						"repl_standby_app_phys-standby2_wal_replay_lag":            0,
+						"repl_standby_app_phys-standby2_wal_sent_delta":            0,
+						"repl_standby_app_phys-standby2_wal_write_delta":           0,
+						"repl_standby_app_phys-standby2_wal_write_lag":             0,
+						"repl_standby_app_walreceiver_wal_flush_delta":             2,
+						"repl_standby_app_walreceiver_wal_flush_lag":               2,
+						"repl_standby_app_walreceiver_wal_replay_delta":            2,
+						"repl_standby_app_walreceiver_wal_replay_lag":              2,
+						"repl_standby_app_walreceiver_wal_sent_delta":              2,
+						"repl_standby_app_walreceiver_wal_write_delta":             2,
+						"repl_standby_app_walreceiver_wal_write_lag":               2,
+						"server_connections_available":                             97,
+						"server_connections_state_active":                          1,
+						"server_connections_state_disabled":                        1,
+						"server_connections_state_fastpath_function_call":          1,
+						"server_connections_state_idle":                            14,
+						"server_connections_state_idle_in_transaction":             7,
+						"server_connections_state_idle_in_transaction_aborted":     1,
+						"server_connections_used":                                  3,
+						"server_connections_utilization":                           3,
+						"server_uptime":                                            499906,
+						"transaction_running_time_hist_bucket_1":                   1,
+						"transaction_running_time_hist_bucket_2":                   0,
+						"transaction_running_time_hist_bucket_3":                   0,
+						"transaction_running_time_hist_bucket_4":                   0,
+						"transaction_running_time_hist_bucket_5":                   0,
+						"transaction_running_time_hist_bucket_6":                   0,
+						"transaction_running_time_hist_bucket_inf":                 7,
+						"transaction_running_time_hist_count":                      8,
+						"transaction_running_time_hist_sum":                        4022,
+						"wal_archive_files_done_count":                             1,
+						"wal_archive_files_ready_count":                            1,
+						"wal_recycled_files":                                       0,
+						"wal_writes":                                               24103144,
+						"wal_written_files":                                        1,
+					}
+
+					assert.Equal(t, expected, mx)
+				},
+			},
+		},
 		"Fail when querying the database version returns an error": {
 			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+				prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 					mockExpectErr(m, queryServerVersion())
 				},
 				check: func(t *testing.T, pg *Postgres) {
@@ -555,9 +770,10 @@ func TestPostgres_Collect(t *testing.T) {
 		},
 		"Fail when querying settings max connections returns an error": {
 			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+				prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+					mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 					mockExpectErr(m, querySettingsMaxConnections())
 				},
@@ -570,9 +786,10 @@ func TestPostgres_Collect(t *testing.T) {
 		},
 		"Fail when querying the server connections returns an error": {
 			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+				prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+					mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 
@@ -601,7 +818,7 @@ func TestPostgres_Collect(t *testing.T) {
 
 			for i, step := range test {
 				t.Run(fmt.Sprintf("step[%d]", i), func(t *testing.T) {
-					step.prepareMock(t, mock)
+					step.prepareMock(t, pg, mock)
 					step.check(t, pg)
 				})
 			}
