@@ -12,6 +12,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/pkg/matcher"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -20,10 +22,10 @@ import (
 var (
 	dataV140004ServerVersionNum, _ = os.ReadFile("testdata/v14.4/server_version_num.txt")
 
-	dataV140004IsSuperUserFalse, _ = os.ReadFile("testdata/v14.4/is_super_user-false.txt")
-	dataV140004IsSuperUserTrue, _  = os.ReadFile("testdata/v14.4/is_super_user-true.txt")
-
+	dataV140004IsSuperUserFalse, _       = os.ReadFile("testdata/v14.4/is_super_user-false.txt")
+	dataV140004IsSuperUserTrue, _        = os.ReadFile("testdata/v14.4/is_super_user-true.txt")
 	dataV140004SettingsMaxConnections, _ = os.ReadFile("testdata/v14.4/settings_max_connections.txt")
+	dataV140004CurrentDatabase, _        = os.ReadFile("testdata/v14.4/current_database.txt")
 
 	dataV140004ServerCurrentConnections, _ = os.ReadFile("testdata/v14.4/server_current_connections.txt")
 	dataV140004ServerConnectionsState, _   = os.ReadFile("testdata/v14.4/server_connections_state.txt")
@@ -55,10 +57,10 @@ func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
 		"dataV140004ServerVersionNum": dataV140004ServerVersionNum,
 
-		"dataV140004IsSuperUserFalse": dataV140004IsSuperUserFalse,
-		"dataV140004IsSuperUserTrue":  dataV140004IsSuperUserTrue,
-
+		"dataV140004IsSuperUserFalse":       dataV140004IsSuperUserFalse,
+		"dataV140004IsSuperUserTrue":        dataV140004IsSuperUserTrue,
 		"dataV140004SettingsMaxConnections": dataV140004SettingsMaxConnections,
+		"dataV140004CurrentDatabase":        dataV140004CurrentDatabase,
 
 		"dataV140004ServerCurrentConnections": dataV140004ServerCurrentConnections,
 		"dataV140004ServerConnectionsState":   dataV140004ServerConnectionsState,
@@ -128,14 +130,17 @@ func TestPostgres_Charts(t *testing.T) {
 
 func TestPostgres_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepareMock func(t *testing.T, mock sqlmock.Sqlmock)
+		prepareMock func(t *testing.T, pg *Postgres, mock sqlmock.Sqlmock)
 		wantFail    bool
 	}{
 		"Success when all queries are successful (v14.4)": {
 			wantFail: false,
-			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+			prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
+				pg.dbSr = matcher.TRUE()
+
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+				mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 
@@ -167,9 +172,10 @@ func TestPostgres_Check(t *testing.T) {
 		},
 		"Fail when the second query unsuccessful (v14.4)": {
 			wantFail: true,
-			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+			prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+				mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004ServerVersionNum)
 
@@ -179,15 +185,16 @@ func TestPostgres_Check(t *testing.T) {
 		},
 		"Fail when querying the database version returns an error": {
 			wantFail: true,
-			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+			prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 				mockExpectErr(m, queryServerVersion())
 			},
 		},
 		"Fail when querying settings max connection returns an error": {
 			wantFail: true,
-			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+			prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+				mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 				mockExpectErr(m, querySettingsMaxConnections())
 			},
@@ -206,7 +213,7 @@ func TestPostgres_Check(t *testing.T) {
 
 			require.True(t, pg.Init())
 
-			test.prepareMock(t, mock)
+			test.prepareMock(t, pg, mock)
 
 			if test.wantFail {
 				assert.False(t, pg.Check())
@@ -220,15 +227,17 @@ func TestPostgres_Check(t *testing.T) {
 
 func TestPostgres_Collect(t *testing.T) {
 	type testCaseStep struct {
-		prepareMock func(t *testing.T, mock sqlmock.Sqlmock)
+		prepareMock func(t *testing.T, pg *Postgres, mock sqlmock.Sqlmock)
 		check       func(t *testing.T, pg *Postgres)
 	}
 	tests := map[string][]testCaseStep{
-		"Success on all queries (v14.4)": {
+		"Success on all queries, collect all dbs (v14.4)": {
 			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+				prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
+					pg.dbSr = matcher.TRUE()
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+					mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 
@@ -543,7 +552,7 @@ func TestPostgres_Collect(t *testing.T) {
 		},
 		"Fail when querying the database version returns an error": {
 			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+				prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 					mockExpectErr(m, queryServerVersion())
 				},
 				check: func(t *testing.T, pg *Postgres) {
@@ -555,9 +564,10 @@ func TestPostgres_Collect(t *testing.T) {
 		},
 		"Fail when querying settings max connections returns an error": {
 			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+				prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+					mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 					mockExpectErr(m, querySettingsMaxConnections())
 				},
@@ -570,9 +580,10 @@ func TestPostgres_Collect(t *testing.T) {
 		},
 		"Fail when querying the server connections returns an error": {
 			{
-				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
+				prepareMock: func(t *testing.T, pg *Postgres, m sqlmock.Sqlmock) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
+					mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 
@@ -601,7 +612,7 @@ func TestPostgres_Collect(t *testing.T) {
 
 			for i, step := range test {
 				t.Run(fmt.Sprintf("step[%d]", i), func(t *testing.T) {
-					step.prepareMock(t, mock)
+					step.prepareMock(t, pg, mock)
 					step.check(t, pg)
 				})
 			}

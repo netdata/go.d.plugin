@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/metrics"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
@@ -42,6 +43,7 @@ func New() *Postgres {
 type Config struct {
 	DSN                string       `yaml:"dsn"`
 	Timeout            web.Duration `yaml:"timeout"`
+	DBSelector         string       `yaml:"collect_databases_matching"`
 	XactTimeHistogram  []float64    `yaml:"transaction_time_histogram"`
 	QueryTimeHistogram []float64    `yaml:"query_time_histogram"`
 }
@@ -58,6 +60,9 @@ type (
 
 		superUser *bool
 		pgVersion int
+
+		currentDB string
+		dbSr      matcher.Matcher
 
 		mx *pgMetrics
 
@@ -76,6 +81,13 @@ func (p *Postgres) Init() bool {
 		p.Errorf("config validation: %v", err)
 		return false
 	}
+
+	sr, err := p.initDBSelector()
+	if err != nil {
+		p.Errorf("config validation: %v", err)
+		return false
+	}
+	p.dbSr = sr
 
 	p.mx.xactTimeHist = metrics.NewHistogramWithRangeBuckets(p.XactTimeHistogram)
 	p.addTransactionsRunTimeHistogramChart()

@@ -22,6 +22,8 @@ This module monitors one or more Postgres servers, depending on your configurati
 
 All metrics have "postgres." prefix.
 
+> **Note**: table_* metrics require [additional configuration](#database-detailed-metrics).
+
 | Metric                                  |    Scope    |                                                                 Dimensions                                                                 |     Units      |
 |-----------------------------------------|:-----------:|:------------------------------------------------------------------------------------------------------------------------------------------:|:--------------:|
 | connections_utilization                 |   global    |                                                                    used                                                                    |   percentage   |
@@ -111,6 +113,24 @@ jobs:
   - name: remote
     dsn: 'postgres://postgres:postgres@203.0.113.10:5432/postgres'
 ```
+
+### Database detailed metrics
+
+By default, this module only collects detailed metrics for the database it is connected to. Collection from all
+databases on a database server is disabled because each database requires an additional connection.
+
+Use the `collect_databases_matching` configuration option to select the databases from which you want to collect
+detailed metrics. The value
+supports [Netdata simple patterns](https://learn.netdata.cloud/docs/agent/libnetdata/simple_pattern).
+
+```yaml
+jobs:
+  - name: local
+    dsn: 'postgres://postgres:postgres@127.0.0.1:5432/postgres'
+    collect_databases_matching: 'mydb1 mydb2 !mydb3 mydb4'
+```
+
+---
 
 For all available options see
 module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/postgres.conf).

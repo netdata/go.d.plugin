@@ -6,6 +6,10 @@ func queryServerVersion() string {
 	return "SHOW server_version_num;"
 }
 
+func queryCurrentDatabase() string {
+	return "SELECT current_database();"
+}
+
 func queryIsSuperUser() string {
 	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
 }
