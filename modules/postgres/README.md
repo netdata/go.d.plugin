@@ -87,6 +87,7 @@ All metrics have "postgres." prefix.
 | table_vacuum_since_time                 |    table    |                                                                    time                                                                    |    seconds     |
 | table_autoanalyze_since_time            |    table    |                                                                    time                                                                    |    seconds     |
 | table_analyze_since_time                |    table    |                                                                    time                                                                    |    seconds     |
+| table_null_columns                      |    table    |                                                                    null                                                                    |    columns     |
 | table_size                              |    table    |                                                                    size                                                                    |       B        |
 | table_bloat_size_perc                   |    table    |                                                                   bloat                                                                    |   percentage   |
 | table_bloat_size                        |    table    |                                                                   bloat                                                                    |       B        |

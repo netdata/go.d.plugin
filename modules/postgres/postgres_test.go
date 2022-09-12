@@ -55,7 +55,8 @@ var (
 
 	dataV140004StatUserIndexesDBPostgres, _ = os.ReadFile("testdata/v14.4/stat_user_indexes_db_postgres.txt")
 
-	dataV140004Bloat, _ = os.ReadFile("testdata/v14.4/bloat_tables.txt")
+	dataV140004Bloat, _        = os.ReadFile("testdata/v14.4/bloat_tables.txt")
+	dataV140004ColumnsStats, _ = os.ReadFile("testdata/v14.4/table_columns_stats.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {
@@ -95,7 +96,8 @@ func Test_testDataIsValid(t *testing.T) {
 
 		"dataV140004StatUserIndexesDBPostgres": dataV140004StatUserIndexesDBPostgres,
 
-		"dataV140004Bloat": dataV140004Bloat,
+		"dataV140004Bloat":        dataV140004Bloat,
+		"dataV140004ColumnsStats": dataV140004ColumnsStats,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -180,6 +182,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryStatIOUserTables(), dataV140004StatIOUserTablesDBPostgres)
 				mockExpect(t, m, queryStatUserIndexes(), dataV140004StatUserIndexesDBPostgres)
 				mockExpect(t, m, queryBloat(), dataV140004Bloat)
+				mockExpect(t, m, queryColumnsStats(), dataV140004ColumnsStats)
 			},
 		},
 		"Fail when the second query unsuccessful (v14.4)": {
@@ -279,6 +282,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryStatIOUserTables(), dataV140004StatIOUserTablesDBPostgres)
 					mockExpect(t, m, queryStatUserIndexes(), dataV140004StatUserIndexesDBPostgres)
 					mockExpect(t, m, queryBloat(), dataV140004Bloat)
+					mockExpect(t, m, queryColumnsStats(), dataV140004ColumnsStats)
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
@@ -465,6 +469,7 @@ func TestPostgres_Collect(t *testing.T) {
 						"table_pgbench_accounts_db_postgres_schema_public_n_tup_hot_upd_perc":   0,
 						"table_pgbench_accounts_db_postgres_schema_public_n_tup_ins":            5000000,
 						"table_pgbench_accounts_db_postgres_schema_public_n_tup_upd":            0,
+						"table_pgbench_accounts_db_postgres_schema_public_null_columns":         0,
 						"table_pgbench_accounts_db_postgres_schema_public_seq_scan":             2,
 						"table_pgbench_accounts_db_postgres_schema_public_seq_tup_read":         5000000,
 						"table_pgbench_accounts_db_postgres_schema_public_tidx_blks_hit":        -1,
@@ -494,6 +499,7 @@ func TestPostgres_Collect(t *testing.T) {
 						"table_pgbench_branches_db_postgres_schema_public_n_tup_hot_upd_perc":   0,
 						"table_pgbench_branches_db_postgres_schema_public_n_tup_ins":            50,
 						"table_pgbench_branches_db_postgres_schema_public_n_tup_upd":            0,
+						"table_pgbench_branches_db_postgres_schema_public_null_columns":         0,
 						"table_pgbench_branches_db_postgres_schema_public_seq_scan":             6,
 						"table_pgbench_branches_db_postgres_schema_public_seq_tup_read":         300,
 						"table_pgbench_branches_db_postgres_schema_public_tidx_blks_hit":        -1,
@@ -523,6 +529,7 @@ func TestPostgres_Collect(t *testing.T) {
 						"table_pgbench_history_db_postgres_schema_public_n_tup_hot_upd_perc":    0,
 						"table_pgbench_history_db_postgres_schema_public_n_tup_ins":             0,
 						"table_pgbench_history_db_postgres_schema_public_n_tup_upd":             0,
+						"table_pgbench_history_db_postgres_schema_public_null_columns":          0,
 						"table_pgbench_history_db_postgres_schema_public_seq_scan":              0,
 						"table_pgbench_history_db_postgres_schema_public_seq_tup_read":          0,
 						"table_pgbench_history_db_postgres_schema_public_tidx_blks_hit":         -1,
@@ -552,6 +559,7 @@ func TestPostgres_Collect(t *testing.T) {
 						"table_pgbench_tellers_db_postgres_schema_public_n_tup_hot_upd_perc":    0,
 						"table_pgbench_tellers_db_postgres_schema_public_n_tup_ins":             500,
 						"table_pgbench_tellers_db_postgres_schema_public_n_tup_upd":             0,
+						"table_pgbench_tellers_db_postgres_schema_public_null_columns":          1,
 						"table_pgbench_tellers_db_postgres_schema_public_seq_scan":              1,
 						"table_pgbench_tellers_db_postgres_schema_public_seq_tup_read":          500,
 						"table_pgbench_tellers_db_postgres_schema_public_tidx_blks_hit":         -1,

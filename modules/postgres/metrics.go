@@ -197,6 +197,8 @@ type tableMetrics struct {
 
 	totalSize int64
 	bloatSize int64
+
+	nullColumns int64
 }
 
 type indexMetrics struct {
