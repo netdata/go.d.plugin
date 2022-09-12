@@ -210,6 +210,10 @@ type indexMetrics struct {
 	updated   bool
 	hasCharts bool
 
+	idxScan     int64
+	idxTupRead  int64
+	idxTupFetch int64
+
 	size      int64
 	bloatSize int64
 }

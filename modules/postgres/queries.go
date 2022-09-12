@@ -581,6 +581,9 @@ SELECT current_database()                                as datname,
        schemaname,
        relname,
        indexrelname,
+       idx_scan,
+       idx_tup_read,
+       idx_tup_fetch,
        pg_relation_size(quote_ident(indexrelname)::text) as size
 FROM pg_stat_user_indexes;
 `

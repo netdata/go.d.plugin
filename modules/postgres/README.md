@@ -94,6 +94,7 @@ All metrics have "postgres." prefix.
 | index_size                              |    index    |                                                                    size                                                                    |       B        |
 | index_bloat_size_perc                   |    index    |                                                                   bloat                                                                    |   percentage   |
 | index_bloat_size                        |    index    |                                                                   bloat                                                                    |       B        |
+| index_usage_status                      |    index    |                                                                used, unused                                                                |     status     |
 
 ## Configuration
 
