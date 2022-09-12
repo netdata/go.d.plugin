@@ -6,6 +6,7 @@ type pgMetrics struct {
 	srvMetrics
 	dbs       map[string]*dbMetrics
 	tables    map[string]*tableMetrics
+	indexes   map[string]*indexMetrics
 	replApps  map[string]*replStandbyAppMetrics
 	replSlots map[string]*replSlotMetrics
 }
@@ -150,8 +151,8 @@ type replSlotMetrics struct {
 
 type tableMetrics struct {
 	name   string
-	schema string
 	db     string
+	schema string
 
 	updated                  bool
 	hasCharts                bool
@@ -198,6 +199,18 @@ type tableMetrics struct {
 	bloatSize int64
 }
 
+type indexMetrics struct {
+	name   string
+	db     string
+	schema string
+	table  string
+
+	updated   bool
+	hasCharts bool
+
+	size      int64
+	bloatSize int64
+}
 type incDelta struct{ prev, last int64 }
 
 func (pc *incDelta) delta() int64 { return pc.last - pc.prev }

@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"sort"
 	"strings"
 	"testing"
 
@@ -49,11 +48,14 @@ var (
 	dataV140004DatabaseConflicts, _ = os.ReadFile("testdata/v14.4/database_conflicts.txt")
 	dataV140004DatabaseLocks, _     = os.ReadFile("testdata/v14.4/database_locks.txt")
 
-	dataV140004QueryableDatabaseList, _      = os.ReadFile("testdata/v14.4/queryable_database_list.txt")
+	dataV140004QueryableDatabaseList, _ = os.ReadFile("testdata/v14.4/queryable_database_list.txt")
+
 	dataV140004StatUserTablesDBPostgres, _   = os.ReadFile("testdata/v14.4/stat_user_tables_db_postgres.txt")
 	dataV140004StatIOUserTablesDBPostgres, _ = os.ReadFile("testdata/v14.4/statio_user_tables_db_postgres.txt")
 
-	dataV140004BloatTables, _ = os.ReadFile("testdata/v14.4/bloat_tables.txt")
+	dataV140004StatUserIndexesDBPostgres, _ = os.ReadFile("testdata/v14.4/stat_user_indexes_db_postgres.txt")
+
+	dataV140004Bloat, _ = os.ReadFile("testdata/v14.4/bloat_tables.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {
@@ -86,11 +88,14 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004DatabaseConflicts": dataV140004DatabaseConflicts,
 		"dataV140004DatabaseLocks":     dataV140004DatabaseLocks,
 
-		"dataV140004QueryableDatabaseList":      dataV140004QueryableDatabaseList,
+		"dataV140004QueryableDatabaseList": dataV140004QueryableDatabaseList,
+
 		"dataV140004StatUserTablesDBPostgres":   dataV140004StatUserTablesDBPostgres,
 		"dataV140004StatIOUserTablesDBPostgres": dataV140004StatIOUserTablesDBPostgres,
 
-		"dataV140004BloatTables": dataV140004BloatTables,
+		"dataV140004StatUserIndexesDBPostgres": dataV140004StatUserIndexesDBPostgres,
+
+		"dataV140004Bloat": dataV140004Bloat,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -173,7 +178,8 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryQueryableDatabaseList(), dataV140004QueryableDatabaseList)
 				mockExpect(t, m, queryStatUserTables(), dataV140004StatUserTablesDBPostgres)
 				mockExpect(t, m, queryStatIOUserTables(), dataV140004StatIOUserTablesDBPostgres)
-				mockExpect(t, m, queryBloatTables(), dataV140004BloatTables)
+				mockExpect(t, m, queryStatUserIndexes(), dataV140004StatUserIndexesDBPostgres)
+				mockExpect(t, m, queryBloat(), dataV140004Bloat)
 			},
 		},
 		"Fail when the second query unsuccessful (v14.4)": {
@@ -271,135 +277,135 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryQueryableDatabaseList(), dataV140004QueryableDatabaseList)
 					mockExpect(t, m, queryStatUserTables(), dataV140004StatUserTablesDBPostgres)
 					mockExpect(t, m, queryStatIOUserTables(), dataV140004StatIOUserTablesDBPostgres)
-					mockExpect(t, m, queryBloatTables(), dataV140004BloatTables)
+					mockExpect(t, m, queryStatUserIndexes(), dataV140004StatUserIndexesDBPostgres)
+					mockExpect(t, m, queryBloat(), dataV140004Bloat)
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
 
-					m := mx
-					l := make([]string, 0)
-					for k := range m {
-						l = append(l, k)
-					}
-					sort.Strings(l)
-					for _, value := range l {
-						fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
-					}
-
 					expected := map[string]int64{
-						"autovacuum_analyze":                                                    0,
-						"autovacuum_brin_summarize":                                             0,
-						"autovacuum_vacuum":                                                     0,
-						"autovacuum_vacuum_analyze":                                             0,
-						"autovacuum_vacuum_freeze":                                              0,
-						"buffers_alloc":                                                         27295744,
-						"buffers_backend":                                                       0,
-						"buffers_backend_fsync":                                                 0,
-						"buffers_checkpoint":                                                    32768,
-						"buffers_clean":                                                         0,
-						"catalog_relkind_I_count":                                               0,
-						"catalog_relkind_I_size":                                                0,
-						"catalog_relkind_S_count":                                               0,
-						"catalog_relkind_S_size":                                                0,
-						"catalog_relkind_c_count":                                               0,
-						"catalog_relkind_c_size":                                                0,
-						"catalog_relkind_f_count":                                               0,
-						"catalog_relkind_f_size":                                                0,
-						"catalog_relkind_i_count":                                               155,
-						"catalog_relkind_i_size":                                                3678208,
-						"catalog_relkind_m_count":                                               0,
-						"catalog_relkind_m_size":                                                0,
-						"catalog_relkind_p_count":                                               0,
-						"catalog_relkind_p_size":                                                0,
-						"catalog_relkind_r_count":                                               66,
-						"catalog_relkind_r_size":                                                3424256,
-						"catalog_relkind_t_count":                                               38,
-						"catalog_relkind_t_size":                                                548864,
-						"catalog_relkind_v_count":                                               137,
-						"catalog_relkind_v_size":                                                0,
-						"checkpoint_sync_time":                                                  47,
-						"checkpoint_write_time":                                                 167,
-						"checkpoints_req":                                                       16,
-						"checkpoints_timed":                                                     1814,
-						"databases_count":                                                       2,
-						"db_postgres_blks_hit":                                                  1221125,
-						"db_postgres_blks_read":                                                 3252,
-						"db_postgres_blks_read_perc":                                            0,
-						"db_postgres_confl_bufferpin":                                           0,
-						"db_postgres_confl_deadlock":                                            0,
-						"db_postgres_confl_lock":                                                0,
-						"db_postgres_confl_snapshot":                                            0,
-						"db_postgres_confl_tablespace":                                          0,
-						"db_postgres_conflicts":                                                 0,
-						"db_postgres_deadlocks":                                                 0,
-						"db_postgres_lock_mode_AccessExclusiveLock_awaited":                     0,
-						"db_postgres_lock_mode_AccessExclusiveLock_held":                        0,
-						"db_postgres_lock_mode_AccessShareLock_awaited":                         0,
-						"db_postgres_lock_mode_AccessShareLock_held":                            1,
-						"db_postgres_lock_mode_ExclusiveLock_awaited":                           0,
-						"db_postgres_lock_mode_ExclusiveLock_held":                              0,
-						"db_postgres_lock_mode_RowExclusiveLock_awaited":                        0,
-						"db_postgres_lock_mode_RowExclusiveLock_held":                           1,
-						"db_postgres_lock_mode_RowShareLock_awaited":                            0,
-						"db_postgres_lock_mode_RowShareLock_held":                               1,
-						"db_postgres_lock_mode_ShareLock_awaited":                               0,
-						"db_postgres_lock_mode_ShareLock_held":                                  0,
-						"db_postgres_lock_mode_ShareRowExclusiveLock_awaited":                   0,
-						"db_postgres_lock_mode_ShareRowExclusiveLock_held":                      0,
-						"db_postgres_lock_mode_ShareUpdateExclusiveLock_awaited":                0,
-						"db_postgres_lock_mode_ShareUpdateExclusiveLock_held":                   0,
-						"db_postgres_numbackends":                                               3,
-						"db_postgres_numbackends_utilization":                                   10,
-						"db_postgres_size":                                                      8758051,
-						"db_postgres_temp_bytes":                                                0,
-						"db_postgres_temp_files":                                                0,
-						"db_postgres_tup_deleted":                                               0,
-						"db_postgres_tup_fetched":                                               359833,
-						"db_postgres_tup_fetched_perc":                                          2,
-						"db_postgres_tup_inserted":                                              0,
-						"db_postgres_tup_returned":                                              13207245,
-						"db_postgres_tup_updated":                                               0,
-						"db_postgres_xact_commit":                                               1438660,
-						"db_postgres_xact_rollback":                                             70,
-						"db_production_blks_hit":                                                0,
-						"db_production_blks_read":                                               0,
-						"db_production_blks_read_perc":                                          0,
-						"db_production_confl_bufferpin":                                         0,
-						"db_production_confl_deadlock":                                          0,
-						"db_production_confl_lock":                                              0,
-						"db_production_confl_snapshot":                                          0,
-						"db_production_confl_tablespace":                                        0,
-						"db_production_conflicts":                                               0,
-						"db_production_deadlocks":                                               0,
-						"db_production_lock_mode_AccessExclusiveLock_awaited":                   0,
-						"db_production_lock_mode_AccessExclusiveLock_held":                      0,
-						"db_production_lock_mode_AccessShareLock_awaited":                       0,
-						"db_production_lock_mode_AccessShareLock_held":                          0,
-						"db_production_lock_mode_ExclusiveLock_awaited":                         0,
-						"db_production_lock_mode_ExclusiveLock_held":                            0,
-						"db_production_lock_mode_RowExclusiveLock_awaited":                      0,
-						"db_production_lock_mode_RowExclusiveLock_held":                         0,
-						"db_production_lock_mode_RowShareLock_awaited":                          0,
-						"db_production_lock_mode_RowShareLock_held":                             0,
-						"db_production_lock_mode_ShareLock_awaited":                             0,
-						"db_production_lock_mode_ShareLock_held":                                1,
-						"db_production_lock_mode_ShareRowExclusiveLock_awaited":                 0,
-						"db_production_lock_mode_ShareRowExclusiveLock_held":                    0,
-						"db_production_lock_mode_ShareUpdateExclusiveLock_awaited":              0,
-						"db_production_lock_mode_ShareUpdateExclusiveLock_held":                 1,
-						"db_production_numbackends":                                             1,
-						"db_production_numbackends_utilization":                                 1,
-						"db_production_size":                                                    8602115,
-						"db_production_temp_bytes":                                              0,
-						"db_production_temp_files":                                              0,
-						"db_production_tup_deleted":                                             0,
-						"db_production_tup_fetched":                                             0,
-						"db_production_tup_fetched_perc":                                        0,
-						"db_production_tup_inserted":                                            0,
-						"db_production_tup_returned":                                            0,
-						"db_production_tup_updated":                                             0,
-						"db_production_xact_commit":                                             0,
-						"db_production_xact_rollback":                                           0,
+						"autovacuum_analyze":                                       0,
+						"autovacuum_brin_summarize":                                0,
+						"autovacuum_vacuum":                                        0,
+						"autovacuum_vacuum_analyze":                                0,
+						"autovacuum_vacuum_freeze":                                 0,
+						"buffers_alloc":                                            27295744,
+						"buffers_backend":                                          0,
+						"buffers_backend_fsync":                                    0,
+						"buffers_checkpoint":                                       32768,
+						"buffers_clean":                                            0,
+						"catalog_relkind_I_count":                                  0,
+						"catalog_relkind_I_size":                                   0,
+						"catalog_relkind_S_count":                                  0,
+						"catalog_relkind_S_size":                                   0,
+						"catalog_relkind_c_count":                                  0,
+						"catalog_relkind_c_size":                                   0,
+						"catalog_relkind_f_count":                                  0,
+						"catalog_relkind_f_size":                                   0,
+						"catalog_relkind_i_count":                                  155,
+						"catalog_relkind_i_size":                                   3678208,
+						"catalog_relkind_m_count":                                  0,
+						"catalog_relkind_m_size":                                   0,
+						"catalog_relkind_p_count":                                  0,
+						"catalog_relkind_p_size":                                   0,
+						"catalog_relkind_r_count":                                  66,
+						"catalog_relkind_r_size":                                   3424256,
+						"catalog_relkind_t_count":                                  38,
+						"catalog_relkind_t_size":                                   548864,
+						"catalog_relkind_v_count":                                  137,
+						"catalog_relkind_v_size":                                   0,
+						"checkpoint_sync_time":                                     47,
+						"checkpoint_write_time":                                    167,
+						"checkpoints_req":                                          16,
+						"checkpoints_timed":                                        1814,
+						"databases_count":                                          2,
+						"db_postgres_blks_hit":                                     1221125,
+						"db_postgres_blks_read":                                    3252,
+						"db_postgres_blks_read_perc":                               0,
+						"db_postgres_confl_bufferpin":                              0,
+						"db_postgres_confl_deadlock":                               0,
+						"db_postgres_confl_lock":                                   0,
+						"db_postgres_confl_snapshot":                               0,
+						"db_postgres_confl_tablespace":                             0,
+						"db_postgres_conflicts":                                    0,
+						"db_postgres_deadlocks":                                    0,
+						"db_postgres_lock_mode_AccessExclusiveLock_awaited":        0,
+						"db_postgres_lock_mode_AccessExclusiveLock_held":           0,
+						"db_postgres_lock_mode_AccessShareLock_awaited":            0,
+						"db_postgres_lock_mode_AccessShareLock_held":               1,
+						"db_postgres_lock_mode_ExclusiveLock_awaited":              0,
+						"db_postgres_lock_mode_ExclusiveLock_held":                 0,
+						"db_postgres_lock_mode_RowExclusiveLock_awaited":           0,
+						"db_postgres_lock_mode_RowExclusiveLock_held":              1,
+						"db_postgres_lock_mode_RowShareLock_awaited":               0,
+						"db_postgres_lock_mode_RowShareLock_held":                  1,
+						"db_postgres_lock_mode_ShareLock_awaited":                  0,
+						"db_postgres_lock_mode_ShareLock_held":                     0,
+						"db_postgres_lock_mode_ShareRowExclusiveLock_awaited":      0,
+						"db_postgres_lock_mode_ShareRowExclusiveLock_held":         0,
+						"db_postgres_lock_mode_ShareUpdateExclusiveLock_awaited":   0,
+						"db_postgres_lock_mode_ShareUpdateExclusiveLock_held":      0,
+						"db_postgres_numbackends":                                  3,
+						"db_postgres_numbackends_utilization":                      10,
+						"db_postgres_size":                                         8758051,
+						"db_postgres_temp_bytes":                                   0,
+						"db_postgres_temp_files":                                   0,
+						"db_postgres_tup_deleted":                                  0,
+						"db_postgres_tup_fetched":                                  359833,
+						"db_postgres_tup_fetched_perc":                             2,
+						"db_postgres_tup_inserted":                                 0,
+						"db_postgres_tup_returned":                                 13207245,
+						"db_postgres_tup_updated":                                  0,
+						"db_postgres_xact_commit":                                  1438660,
+						"db_postgres_xact_rollback":                                70,
+						"db_production_blks_hit":                                   0,
+						"db_production_blks_read":                                  0,
+						"db_production_blks_read_perc":                             0,
+						"db_production_confl_bufferpin":                            0,
+						"db_production_confl_deadlock":                             0,
+						"db_production_confl_lock":                                 0,
+						"db_production_confl_snapshot":                             0,
+						"db_production_confl_tablespace":                           0,
+						"db_production_conflicts":                                  0,
+						"db_production_deadlocks":                                  0,
+						"db_production_lock_mode_AccessExclusiveLock_awaited":      0,
+						"db_production_lock_mode_AccessExclusiveLock_held":         0,
+						"db_production_lock_mode_AccessShareLock_awaited":          0,
+						"db_production_lock_mode_AccessShareLock_held":             0,
+						"db_production_lock_mode_ExclusiveLock_awaited":            0,
+						"db_production_lock_mode_ExclusiveLock_held":               0,
+						"db_production_lock_mode_RowExclusiveLock_awaited":         0,
+						"db_production_lock_mode_RowExclusiveLock_held":            0,
+						"db_production_lock_mode_RowShareLock_awaited":             0,
+						"db_production_lock_mode_RowShareLock_held":                0,
+						"db_production_lock_mode_ShareLock_awaited":                0,
+						"db_production_lock_mode_ShareLock_held":                   1,
+						"db_production_lock_mode_ShareRowExclusiveLock_awaited":    0,
+						"db_production_lock_mode_ShareRowExclusiveLock_held":       0,
+						"db_production_lock_mode_ShareUpdateExclusiveLock_awaited": 0,
+						"db_production_lock_mode_ShareUpdateExclusiveLock_held":    1,
+						"db_production_numbackends":                                1,
+						"db_production_numbackends_utilization":                    1,
+						"db_production_size":                                       8602115,
+						"db_production_temp_bytes":                                 0,
+						"db_production_temp_files":                                 0,
+						"db_production_tup_deleted":                                0,
+						"db_production_tup_fetched":                                0,
+						"db_production_tup_fetched_perc":                           0,
+						"db_production_tup_inserted":                               0,
+						"db_production_tup_returned":                               0,
+						"db_production_tup_updated":                                0,
+						"db_production_xact_commit":                                0,
+						"db_production_xact_rollback":                              0,
+						"index_pgbench_accounts_pkey_table_postgres_db_public_schema_pgbench_accounts_bloat_size":      0,
+						"index_pgbench_accounts_pkey_table_postgres_db_public_schema_pgbench_accounts_bloat_size_perc": 0,
+						"index_pgbench_accounts_pkey_table_postgres_db_public_schema_pgbench_accounts_size":            112336896,
+						"index_pgbench_branches_pkey_table_postgres_db_public_schema_pgbench_branches_bloat_size":      0,
+						"index_pgbench_branches_pkey_table_postgres_db_public_schema_pgbench_branches_bloat_size_perc": 0,
+						"index_pgbench_branches_pkey_table_postgres_db_public_schema_pgbench_branches_size":            16384,
+						"index_pgbench_tellers_pkey_table_postgres_db_public_schema_pgbench_tellers_bloat_size":        0,
+						"index_pgbench_tellers_pkey_table_postgres_db_public_schema_pgbench_tellers_bloat_size_perc":   0,
+						"index_pgbench_tellers_pkey_table_postgres_db_public_schema_pgbench_tellers_size":              32768,
 						"maxwritten_clean":                                                      0,
 						"oldest_current_xid":                                                    9,
 						"percent_towards_emergency_autovacuum":                                  0,

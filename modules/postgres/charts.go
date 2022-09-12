@@ -74,6 +74,9 @@ const (
 	prioTableTotalSize
 	prioTableBloatSizePerc
 	prioTableBloatSize
+	prioIndexSize
+	prioIndexBloatSizePerc
+	prioIndexBloatSize
 )
 
 var baseCharts = module.Charts{
@@ -1211,6 +1214,78 @@ func (p *Postgres) addTableTOASTIndexIOCharts(name, dbname, schema string) {
 
 func (p *Postgres) removeTableCharts(name, dbname, schema string) {
 	prefix := fmt.Sprintf("table_%s_db_%s_schema_%s", name, dbname, schema)
+	for _, c := range *p.Charts() {
+		if strings.HasPrefix(c.ID, prefix) {
+			c.MarkRemove()
+			c.MarkNotCreated()
+		}
+	}
+}
+
+var (
+	indexChartsTmpl = module.Charts{
+		indexSizeChartTmpl.Copy(),
+		indexBloatSizePercChartTmpl.Copy(),
+		indexBloatSizeChartTmpl.Copy(),
+	}
+	indexSizeChartTmpl = module.Chart{
+		ID:       "index_%s_table_%s_db_%s_schema_%s_size",
+		Title:    "Index size",
+		Units:    "B",
+		Fam:      "index size",
+		Ctx:      "postgres.index_size",
+		Priority: prioIndexSize,
+		Dims: module.Dims{
+			{ID: "index_%s_table_%s_db_%s_schema_%s_size", Name: "size"},
+		},
+	}
+	indexBloatSizePercChartTmpl = module.Chart{
+		ID:       "index_%s_table_%s_db_%s_schema_%s_bloat_size_perc",
+		Title:    "Index bloat size percentage",
+		Units:    "percentage",
+		Fam:      "index bloat",
+		Ctx:      "postgres.index_bloat_size_perc",
+		Priority: prioIndexBloatSizePerc,
+		Dims: module.Dims{
+			{ID: "index_%s_table_%s_db_%s_schema_%s_bloat_size_perc", Name: "bloat"},
+		},
+	}
+	indexBloatSizeChartTmpl = module.Chart{
+		ID:       "index_%s_table_%s_db_%s_schema_%s_bloat_size",
+		Title:    "Index bloat size",
+		Units:    "B",
+		Fam:      "index bloat",
+		Ctx:      "postgres.index_bloat_size",
+		Priority: prioIndexBloatSize,
+		Dims: module.Dims{
+			{ID: "index_%s_table_%s_db_%s_schema_%s_bloat_size", Name: "bloat"},
+		},
+	}
+)
+
+func (p *Postgres) addNewIndexCharts(name, table, dbname, schema string) {
+	charts := indexChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, name, table, dbname, schema)
+		chart.Labels = []module.Label{
+			{Key: "database", Value: dbname},
+			{Key: "schema", Value: schema},
+			{Key: "table", Value: name},
+			{Key: "index", Value: name},
+		}
+		for _, d := range chart.Dims {
+			d.ID = fmt.Sprintf(d.ID, name, table, dbname, schema)
+		}
+	}
+
+	if err := p.Charts().Add(*charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func (p *Postgres) removeIndexCharts(name, table, dbname, schema string) {
+	prefix := fmt.Sprintf("index_%s_table_%s_db_%s_schema_%s", name, table, dbname, schema)
 	for _, c := range *p.Charts() {
 		if strings.HasPrefix(c.ID, prefix) {
 			c.MarkRemove()

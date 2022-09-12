@@ -84,10 +84,13 @@ func (p *Postgres) collect() (map[string]int64, error) {
 	if err := p.doQueryTablesMetrics(); err != nil {
 		return nil, err
 	}
+	if err := p.doQueryIndexesMetrics(); err != nil {
+		return nil, err
+	}
 
 	if now.Sub(p.doBloatTime) > p.doBloatEvery {
 		p.doBloatTime = now
-		if err := p.doQueryBloatTables(); err != nil {
+		if err := p.doQueryBloat(); err != nil {
 			return nil, err
 		}
 	}
@@ -312,6 +315,23 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		m.tidxBlksHit.prev, m.tidxBlksRead.prev = m.tidxBlksHit.last, m.tidxBlksRead.last
 	}
 
+	for name, m := range p.mx.indexes {
+		if !m.updated {
+			delete(p.mx.indexes, name)
+			p.removeIndexCharts(m.name, m.table, m.db, m.schema)
+			continue
+		}
+		if !m.hasCharts {
+			m.hasCharts = true
+			p.addNewIndexCharts(m.name, m.table, m.db, m.schema)
+		}
+
+		px := fmt.Sprintf("index_%s_table_%s_db_%s_schema_%s_", m.name, m.table, m.db, m.schema)
+		mx[px+"size"] = m.size
+		mx[px+"bloat_size"] = m.bloatSize
+		mx[px+"bloat_size_perc"] = calcPercentage(m.bloatSize, m.size)
+	}
+
 	for name, m := range p.mx.replApps {
 		if !m.updated {
 			delete(p.mx.replApps, name)
@@ -389,6 +409,17 @@ func (p *Postgres) resetMetrics() {
 			tidxBlksRead:             incDelta{prev: m.tidxBlksRead.prev},
 			tidxBlksHit:              incDelta{prev: m.tidxBlksHit.prev},
 			bloatSize:                m.bloatSize,
+		}
+	}
+	for name, m := range p.mx.indexes {
+		p.mx.indexes[name] = &indexMetrics{
+			name:      m.name,
+			db:        m.db,
+			schema:    m.schema,
+			table:     m.table,
+			updated:   m.updated,
+			hasCharts: m.hasCharts,
+			bloatSize: m.bloatSize,
 		}
 	}
 	for name, m := range p.mx.replApps {
@@ -480,6 +511,22 @@ func (p *Postgres) getTableMetrics(name, db, schema string) *tableMetrics {
 func (p *Postgres) hasTableMetrics(name, db, schema string) bool {
 	key := name + "_" + db + "_" + schema
 	_, ok := p.mx.tables[key]
+	return ok
+}
+
+func (p *Postgres) getIndexMetrics(name, table, db, schema string) *indexMetrics {
+	key := name + "_" + table + "_" + db + "_" + schema
+	m, ok := p.mx.indexes[key]
+	if !ok {
+		m = &indexMetrics{name: name, db: db, schema: schema, table: table}
+		p.mx.indexes[key] = m
+	}
+	return m
+}
+
+func (p *Postgres) hasIndexMetrics(name, table, db, schema string) bool {
+	key := name + "_" + table + "_" + db + "_" + schema
+	_, ok := p.mx.indexes[key]
 	return ok
 }
 
