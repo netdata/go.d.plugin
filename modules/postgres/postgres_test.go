@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"testing"
 
@@ -51,6 +52,8 @@ var (
 	dataV140004QueryableDatabaseList, _      = os.ReadFile("testdata/v14.4/queryable_database_list.txt")
 	dataV140004StatUserTablesDBPostgres, _   = os.ReadFile("testdata/v14.4/stat_user_tables_db_postgres.txt")
 	dataV140004StatIOUserTablesDBPostgres, _ = os.ReadFile("testdata/v14.4/statio_user_tables_db_postgres.txt")
+
+	dataV140004BloatTables, _ = os.ReadFile("testdata/v14.4/bloat_tables.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {
@@ -86,6 +89,8 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004QueryableDatabaseList":      dataV140004QueryableDatabaseList,
 		"dataV140004StatUserTablesDBPostgres":   dataV140004StatUserTablesDBPostgres,
 		"dataV140004StatIOUserTablesDBPostgres": dataV140004StatIOUserTablesDBPostgres,
+
+		"dataV140004BloatTables": dataV140004BloatTables,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -168,6 +173,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryQueryableDatabaseList(), dataV140004QueryableDatabaseList)
 				mockExpect(t, m, queryStatUserTables(), dataV140004StatUserTablesDBPostgres)
 				mockExpect(t, m, queryStatIOUserTables(), dataV140004StatIOUserTablesDBPostgres)
+				mockExpect(t, m, queryBloatTables(), dataV140004BloatTables)
 			},
 		},
 		"Fail when the second query unsuccessful (v14.4)": {
@@ -265,9 +271,20 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryQueryableDatabaseList(), dataV140004QueryableDatabaseList)
 					mockExpect(t, m, queryStatUserTables(), dataV140004StatUserTablesDBPostgres)
 					mockExpect(t, m, queryStatIOUserTables(), dataV140004StatIOUserTablesDBPostgres)
+					mockExpect(t, m, queryBloatTables(), dataV140004BloatTables)
 				},
 				check: func(t *testing.T, pg *Postgres) {
 					mx := pg.Collect()
+
+					m := mx
+					l := make([]string, 0)
+					for k := range m {
+						l = append(l, k)
+					}
+					sort.Strings(l)
+					for _, value := range l {
+						fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
+					}
 
 					expected := map[string]int64{
 						"autovacuum_analyze":                                                    0,
@@ -422,6 +439,8 @@ func TestPostgres_Collect(t *testing.T) {
 						"server_connections_used":                                               3,
 						"server_connections_utilization":                                        3,
 						"server_uptime":                                                         499906,
+						"table_pgbench_accounts_db_postgres_schema_public_bloat_size":           9863168,
+						"table_pgbench_accounts_db_postgres_schema_public_bloat_size_perc":      1,
 						"table_pgbench_accounts_db_postgres_schema_public_heap_blks_hit":        224484753408,
 						"table_pgbench_accounts_db_postgres_schema_public_heap_blks_read":       1803882668032,
 						"table_pgbench_accounts_db_postgres_schema_public_heap_blks_read_perc":  88,
@@ -449,6 +468,8 @@ func TestPostgres_Collect(t *testing.T) {
 						"table_pgbench_accounts_db_postgres_schema_public_toast_blks_read":      -1,
 						"table_pgbench_accounts_db_postgres_schema_public_toast_blks_read_perc": 50,
 						"table_pgbench_accounts_db_postgres_schema_public_total_size":           784031744,
+						"table_pgbench_branches_db_postgres_schema_public_bloat_size":           0,
+						"table_pgbench_branches_db_postgres_schema_public_bloat_size_perc":      0,
 						"table_pgbench_branches_db_postgres_schema_public_heap_blks_hit":        304316416,
 						"table_pgbench_branches_db_postgres_schema_public_heap_blks_read":       507150336,
 						"table_pgbench_branches_db_postgres_schema_public_heap_blks_read_perc":  62,
@@ -476,6 +497,8 @@ func TestPostgres_Collect(t *testing.T) {
 						"table_pgbench_branches_db_postgres_schema_public_toast_blks_read":      -1,
 						"table_pgbench_branches_db_postgres_schema_public_toast_blks_read_perc": 50,
 						"table_pgbench_branches_db_postgres_schema_public_total_size":           57344,
+						"table_pgbench_history_db_postgres_schema_public_bloat_size":            0,
+						"table_pgbench_history_db_postgres_schema_public_bloat_size_perc":       0,
 						"table_pgbench_history_db_postgres_schema_public_heap_blks_hit":         0,
 						"table_pgbench_history_db_postgres_schema_public_heap_blks_read":        0,
 						"table_pgbench_history_db_postgres_schema_public_heap_blks_read_perc":   0,
@@ -503,6 +526,8 @@ func TestPostgres_Collect(t *testing.T) {
 						"table_pgbench_history_db_postgres_schema_public_toast_blks_read":       -1,
 						"table_pgbench_history_db_postgres_schema_public_toast_blks_read_perc":  50,
 						"table_pgbench_history_db_postgres_schema_public_total_size":            0,
+						"table_pgbench_tellers_db_postgres_schema_public_bloat_size":            0,
+						"table_pgbench_tellers_db_postgres_schema_public_bloat_size_perc":       0,
 						"table_pgbench_tellers_db_postgres_schema_public_heap_blks_hit":         491937792,
 						"table_pgbench_tellers_db_postgres_schema_public_heap_blks_read":        623828992,
 						"table_pgbench_tellers_db_postgres_schema_public_heap_blks_read_perc":   55,

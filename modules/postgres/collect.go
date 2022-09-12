@@ -85,6 +85,13 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
+	if now.Sub(p.doBloatTime) > p.doBloatEvery {
+		p.doBloatTime = now
+		if err := p.doQueryBloatTables(); err != nil {
+			return nil, err
+		}
+	}
+
 	mx := make(map[string]int64)
 	p.collectMetrics(mx)
 
@@ -278,6 +285,8 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 			mx[px+"last_analyze_ago"] = m.lastAnalyzeAgo
 		}
 		mx[px+"total_size"] = m.totalSize
+		mx[px+"bloat_size"] = m.bloatSize
+		mx[px+"bloat_size_perc"] = calcPercentage(m.bloatSize, m.totalSize)
 
 		mx[px+"n_tup_hot_upd_perc"] = calcPercentage(m.nTupHotUpd.delta(), m.nTupUpd.delta())
 		m.nTupHotUpd.prev, m.nTupUpd.prev = m.nTupHotUpd.last, m.nTupUpd.last
@@ -379,6 +388,7 @@ func (p *Postgres) resetMetrics() {
 			toastBlksHit:             incDelta{prev: m.toastBlksHit.prev},
 			tidxBlksRead:             incDelta{prev: m.tidxBlksRead.prev},
 			tidxBlksHit:              incDelta{prev: m.tidxBlksHit.prev},
+			bloatSize:                m.bloatSize,
 		}
 	}
 	for name, m := range p.mx.replApps {
@@ -465,6 +475,12 @@ func (p *Postgres) getTableMetrics(name, db, schema string) *tableMetrics {
 		p.mx.tables[key] = m
 	}
 	return m
+}
+
+func (p *Postgres) hasTableMetrics(name, db, schema string) bool {
+	key := name + "_" + db + "_" + schema
+	_, ok := p.mx.tables[key]
+	return ok
 }
 
 func (p *Postgres) getReplAppMetrics(name string) *replStandbyAppMetrics {

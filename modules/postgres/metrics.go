@@ -184,8 +184,6 @@ type tableMetrics struct {
 	analyzeCount       int64
 	autoAnalyzeCount   int64
 
-	totalSize int64
-
 	// pg_statio_user_tables
 	heapBlksRead  incDelta
 	heapBlksHit   incDelta
@@ -195,6 +193,9 @@ type tableMetrics struct {
 	toastBlksHit  incDelta
 	tidxBlksRead  incDelta
 	tidxBlksHit   incDelta
+
+	totalSize int64
+	bloatSize int64
 }
 
 type incDelta struct{ prev, last int64 }
