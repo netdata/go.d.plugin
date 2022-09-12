@@ -1271,7 +1271,7 @@ func (p *Postgres) addNewIndexCharts(name, table, dbname, schema string) {
 		chart.Labels = []module.Label{
 			{Key: "database", Value: dbname},
 			{Key: "schema", Value: schema},
-			{Key: "table", Value: name},
+			{Key: "table", Value: table},
 			{Key: "index", Value: name},
 		}
 		for _, d := range chart.Dims {

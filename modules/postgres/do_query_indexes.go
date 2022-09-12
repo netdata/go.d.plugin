@@ -41,9 +41,9 @@ func (p *Postgres) doDBQueryStatUserIndexes(db *sql.DB) error {
 			table = value
 		case "indexrelname":
 			name = value
-			p.getIndexMetrics(name, dbname, schema, table).updated = true
+			p.getIndexMetrics(name, table, dbname, schema).updated = true
 		case "size":
-			p.getIndexMetrics(name, dbname, schema, table).size = parseInt(value)
+			p.getIndexMetrics(name, table, dbname, schema).size = parseInt(value)
 		}
 	})
 }
