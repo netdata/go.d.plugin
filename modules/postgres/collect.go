@@ -335,6 +335,11 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"size"] = m.size
 		mx[px+"bloat_size"] = m.bloatSize
 		mx[px+"bloat_size_perc"] = calcPercentage(m.bloatSize, m.size)
+		if m.idxScan+m.idxTupRead+m.idxTupFetch > 0 {
+			mx[px+"usage_status_used"], mx[px+"usage_status_unused"] = 1, 0
+		} else {
+			mx[px+"usage_status_used"], mx[px+"usage_status_unused"] = 0, 1
+		}
 	}
 
 	for name, m := range p.mx.replApps {

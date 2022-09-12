@@ -42,6 +42,12 @@ func (p *Postgres) doDBQueryStatUserIndexes(db *sql.DB) error {
 		case "indexrelname":
 			name = value
 			p.getIndexMetrics(name, table, dbname, schema).updated = true
+		case "idx_scan":
+			p.getIndexMetrics(name, table, dbname, schema).idxScan = parseInt(value)
+		case "idx_tup_read":
+			p.getIndexMetrics(name, table, dbname, schema).idxTupRead = parseInt(value)
+		case "idx_tup_fetch":
+			p.getIndexMetrics(name, table, dbname, schema).idxTupFetch = parseInt(value)
 		case "size":
 			p.getIndexMetrics(name, table, dbname, schema).size = parseInt(value)
 		}

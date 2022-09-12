@@ -78,6 +78,7 @@ const (
 	prioIndexSize
 	prioIndexBloatSizePerc
 	prioIndexBloatSize
+	prioIndexUsageStatus
 )
 
 var baseCharts = module.Charts{
@@ -1240,6 +1241,7 @@ var (
 		indexSizeChartTmpl.Copy(),
 		indexBloatSizePercChartTmpl.Copy(),
 		indexBloatSizeChartTmpl.Copy(),
+		indexUsageStatusChartTmpl.Copy(),
 	}
 	indexSizeChartTmpl = module.Chart{
 		ID:       "index_%s_table_%s_db_%s_schema_%s_size",
@@ -1272,6 +1274,18 @@ var (
 		Priority: prioIndexBloatSize,
 		Dims: module.Dims{
 			{ID: "index_%s_table_%s_db_%s_schema_%s_bloat_size", Name: "bloat"},
+		},
+	}
+	indexUsageStatusChartTmpl = module.Chart{
+		ID:       "index_%s_table_%s_db_%s_schema_%s_usage_status",
+		Title:    "Index usage status",
+		Units:    "status",
+		Fam:      "index usage status",
+		Ctx:      "postgres.index_usage_status",
+		Priority: prioIndexUsageStatus,
+		Dims: module.Dims{
+			{ID: "index_%s_table_%s_db_%s_schema_%s_usage_status_used", Name: "used"},
+			{ID: "index_%s_table_%s_db_%s_schema_%s_usage_status_unused", Name: "unused"},
 		},
 	}
 )
