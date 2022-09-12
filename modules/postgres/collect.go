@@ -80,9 +80,9 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		if err := p.doQueryQueryableDatabases(); err != nil {
 			return nil, err
 		}
-		if err := p.doQueryTablesMetrics(); err != nil {
-			return nil, err
-		}
+	}
+	if err := p.doQueryTablesMetrics(); err != nil {
+		return nil, err
 	}
 
 	mx := make(map[string]int64)

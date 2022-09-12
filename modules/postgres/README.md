@@ -116,7 +116,9 @@ jobs:
 
 ### Database detailed metrics
 
-By default, collection of detailed database metrics is disabled because each database requires an additional connection.
+By default, this module only collects detailed metrics for the database it is connected to. Collection from all
+databases on a database server is disabled because each database requires an additional connection.
+
 Use the `collect_databases_matching` configuration option to select the databases from which you want to collect
 detailed metrics. The value
 supports [Netdata simple patterns](https://learn.netdata.cloud/docs/agent/libnetdata/simple_pattern).
