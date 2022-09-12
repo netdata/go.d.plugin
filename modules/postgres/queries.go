@@ -666,3 +666,46 @@ FROM (
 WHERE sml.relpages - otta > 10 OR ipages - iotta > 10;
 `
 }
+
+func queryColumnsStats() string {
+	return `
+SELECT current_database()        AS datname,
+       nspname                   AS schemaname,
+       relname,
+       st.attname,
+       typname,
+       (st.null_frac * 100)::int AS null_percent,
+       case
+           when st.n_distinct >= 0
+               then st.n_distinct
+           else
+               abs(st.n_distinct) * reltuples
+           end                   AS distinct
+FROM pg_class c
+         JOIN
+     pg_namespace ns
+     ON
+         (ns.oid = relnamespace)
+         JOIN
+     pg_attribute at
+     ON
+         (c.oid = attrelid)
+         JOIN
+     pg_type t
+     ON
+         (t.oid = atttypid)
+         JOIN
+     pg_stats st
+     ON
+         (st.tablename = relname AND st.attname = at.attname)
+WHERE relkind = 'r'
+  AND nspname NOT LIKE E'pg\\_%'
+  AND nspname != 'information_schema'
+  AND NOT attisdropped
+  AND attstattarget != 0
+  AND reltuples >= 100
+ORDER BY nspname,
+         relname,
+         st.attname;
+`
+}

@@ -71,6 +71,7 @@ const (
 	prioTableVacuumSinceTime
 	prioTableAutoAnalyzeSinceTime
 	prioTableLastAnalyzeAgo
+	prioTableNullColumns
 	prioTableTotalSize
 	prioTableBloatSizePerc
 	prioTableBloatSize
@@ -845,6 +846,7 @@ var (
 		tableOpsRowsHOTRateChartTmpl.Copy(),
 		tableScansRateChartTmpl.Copy(),
 		tableScansRowsRateChartTmpl.Copy(),
+		tableNullColumnsCountChartTmpl.Copy(),
 		tableTotalSizeChartTmpl.Copy(),
 		tableBloatSizePercChartTmpl.Copy(),
 		tableBloatSizeChartTmpl.Copy(),
@@ -1068,6 +1070,17 @@ var (
 		Priority: prioTableLastAnalyzeAgo,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_last_analyze_ago", Name: "time"},
+		},
+	}
+	tableNullColumnsCountChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_null_columns_count",
+		Title:    "Table null columns",
+		Units:    "columns",
+		Fam:      "table columns",
+		Ctx:      "postgres.table_null_columns_count",
+		Priority: prioTableNullColumns,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_null_columns", Name: "null"},
 		},
 	}
 	tableTotalSizeChartTmpl = module.Chart{

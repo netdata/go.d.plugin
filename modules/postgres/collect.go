@@ -88,9 +88,12 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	if now.Sub(p.doBloatTime) > p.doBloatEvery {
-		p.doBloatTime = now
+	if now.Sub(p.doSlowTime) > p.doSlowEvery {
+		p.doSlowTime = now
 		if err := p.doQueryBloat(); err != nil {
+			return nil, err
+		}
+		if err := p.doQueryColumns(); err != nil {
 			return nil, err
 		}
 	}
@@ -291,6 +294,8 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"bloat_size"] = m.bloatSize
 		mx[px+"bloat_size_perc"] = calcPercentage(m.bloatSize, m.totalSize)
 
+		mx[px+"null_columns"] = m.nullColumns
+
 		mx[px+"n_tup_hot_upd_perc"] = calcPercentage(m.nTupHotUpd.delta(), m.nTupUpd.delta())
 		m.nTupHotUpd.prev, m.nTupUpd.prev = m.nTupHotUpd.last, m.nTupUpd.last
 
@@ -409,6 +414,7 @@ func (p *Postgres) resetMetrics() {
 			tidxBlksRead:             incDelta{prev: m.tidxBlksRead.prev},
 			tidxBlksHit:              incDelta{prev: m.tidxBlksHit.prev},
 			bloatSize:                m.bloatSize,
+			nullColumns:              m.nullColumns,
 		}
 	}
 	for name, m := range p.mx.indexes {

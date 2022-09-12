@@ -38,7 +38,7 @@ func New() *Postgres {
 			replSlots: make(map[string]*replSlotMetrics),
 		},
 		recheckSettingsEvery: time.Minute * 30,
-		doBloatEvery:         time.Minute * 5,
+		doSlowEvery:          time.Minute * 5,
 	}
 }
 
@@ -71,8 +71,8 @@ type (
 		recheckSettingsTime  time.Time
 		recheckSettingsEvery time.Duration
 
-		doBloatTime  time.Time
-		doBloatEvery time.Duration
+		doSlowTime  time.Time
+		doSlowEvery time.Duration
 	}
 	dbConn struct {
 		db         *sql.DB
