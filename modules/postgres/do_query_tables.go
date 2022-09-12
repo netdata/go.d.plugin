@@ -48,6 +48,21 @@ func (p *Postgres) doQueryStatIOUserTables() error {
 	return nil
 }
 
+func (p *Postgres) doQueryBloatTables() error {
+	if err := p.doDBQueryBloatTables(p.db); err != nil {
+		p.Warning(err)
+	}
+	for _, conn := range p.dbConns {
+		if conn.db == nil {
+			continue
+		}
+		if err := p.doDBQueryBloatTables(conn.db); err != nil {
+			p.Warning(err)
+		}
+	}
+	return nil
+}
+
 func (p *Postgres) doDBQueryStatUserTables(db *sql.DB) error {
 	q := queryStatUserTables()
 
@@ -139,5 +154,30 @@ func (p *Postgres) doDBQueryStatIOUserTables(db *sql.DB) error {
 		case "tidx_blks_hit_bytes":
 			p.getTableMetrics(name, dbname, schema).tidxBlksHit.last = parseInt(value)
 		}
+	})
+}
+
+func (p *Postgres) doDBQueryBloatTables(db *sql.DB) error {
+	q := queryBloatTables()
+
+	var dbname, schema, table string
+	var wastedBytes int64
+	return p.doDBQuery(db, q, func(column, value string, rowEnd bool) {
+		switch column {
+		case "db":
+			dbname = value
+		case "schemaname":
+			schema = value
+		case "tablename":
+			table = value
+		case "wastedbytes":
+			wastedBytes = parseInt(value)
+		case "iname":
+		case "wastedibytes":
+		}
+		if !rowEnd || !p.hasTableMetrics(table, dbname, schema) {
+			return
+		}
+		p.getTableMetrics(table, dbname, schema).bloatSize = wastedBytes
 	})
 }

@@ -72,6 +72,8 @@ const (
 	prioTableAutoAnalyzeSinceTime
 	prioTableLastAnalyzeAgo
 	prioTableTotalSize
+	prioTableBloatSizePerc
+	prioTableBloatSize
 )
 
 var baseCharts = module.Charts{
@@ -841,6 +843,8 @@ var (
 		tableScansRateChartTmpl.Copy(),
 		tableScansRowsRateChartTmpl.Copy(),
 		tableTotalSizeChartTmpl.Copy(),
+		tableBloatSizePercChartTmpl.Copy(),
+		tableBloatSizeChartTmpl.Copy(),
 	}
 
 	tableDeadRowsDeadRatioChartTmpl = module.Chart{
@@ -1072,6 +1076,28 @@ var (
 		Priority: prioTableTotalSize,
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_total_size", Name: "size"},
+		},
+	}
+	tableBloatSizePercChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_bloat_size_perc",
+		Title:    "Table bloat size percentage",
+		Units:    "percentage",
+		Fam:      "table bloat",
+		Ctx:      "postgres.table_bloat_size_perc",
+		Priority: prioTableBloatSizePerc,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_bloat_size_perc", Name: "bloat"},
+		},
+	}
+	tableBloatSizeChartTmpl = module.Chart{
+		ID:       "table_%s_db_%s_schema_%s_bloat_size",
+		Title:    "Table bloat size",
+		Units:    "B",
+		Fam:      "table bloat",
+		Ctx:      "postgres.table_bloat_size",
+		Priority: prioTableBloatSize,
+		Dims: module.Dims{
+			{ID: "table_%s_db_%s_schema_%s_bloat_size", Name: "bloat"},
 		},
 	}
 )
