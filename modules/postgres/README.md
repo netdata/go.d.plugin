@@ -88,8 +88,11 @@ All metrics have "postgres." prefix.
 | table_autoanalyze_since_time            |    table    |                                                                    time                                                                    |    seconds     |
 | table_analyze_since_time                |    table    |                                                                    time                                                                    |    seconds     |
 | table_size                              |    table    |                                                                    size                                                                    |       B        |
-| table_bloat_size_perc                   |    table    |                                                                    size                                                                    |   percentage   |
-| table_bloat_size                        |    table    |                                                                    size                                                                    |       B        |
+| table_bloat_size_perc                   |    table    |                                                                   bloat                                                                    |   percentage   |
+| table_bloat_size                        |    table    |                                                                   bloat                                                                    |       B        |
+| index_size                              |    index    |                                                                    size                                                                    |       B        |
+| index_bloat_size_perc                   |    index    |                                                                   bloat                                                                    |   percentage   |
+| index_bloat_size                        |    index    |                                                                   bloat                                                                    |       B        |
 
 ## Configuration
 

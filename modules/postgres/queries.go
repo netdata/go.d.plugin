@@ -575,13 +575,24 @@ FROM pg_statio_user_tables;
 `
 }
 
+func queryStatUserIndexes() string {
+	return `
+SELECT current_database()                                as datname,
+       schemaname,
+       relname,
+       indexrelname,
+       pg_relation_size(quote_ident(indexrelname)::text) as size
+FROM pg_stat_user_indexes;
+`
+}
+
 // The following query for bloat was taken from the venerable check_postgres
 // script (https://bucardo.org/check_postgres/), which is:
 //
 // Copyright (c) 2007-2017 Greg Sabino Mullane
 //------------------------------------------------------------------------------
 
-func queryBloatTables() string {
+func queryBloat() string {
 	return `
 SELECT
   current_database() AS db, schemaname, tablename, reltuples::bigint AS tups, relpages::bigint AS pages, otta,
@@ -652,6 +663,6 @@ FROM (
   LEFT JOIN pg_index i ON indrelid = cc.oid
   LEFT JOIN pg_class c2 ON c2.oid = i.indexrelid
 ) AS sml
-WHERE sml.relpages - otta > 10 OR ipages - iotta > 15;
+WHERE sml.relpages - otta > 10 OR ipages - iotta > 10;
 `
 }

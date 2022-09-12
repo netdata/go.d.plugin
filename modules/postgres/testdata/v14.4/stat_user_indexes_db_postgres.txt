@@ -1,0 +1,5 @@
+ datname  | schemaname |     relname      |     indexrelname      |   size
+----------+------------+------------------+-----------------------+-----------
+ postgres | public     | pgbench_branches | pgbench_branches_pkey |     16384
+ postgres | public     | pgbench_tellers  | pgbench_tellers_pkey  |     32768
+ postgres | public     | pgbench_accounts | pgbench_accounts_pkey | 112336896
