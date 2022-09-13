@@ -53,9 +53,9 @@ const (
 	prioIndexBloatSizePerc
 	prioIndexBloatSize
 
-	prioDBDeadlocksRate
 	prioDBLocksHeldCount
 	prioDBLocksAwaitedCount
+	prioDBDeadlocksRate
 
 	prioAutovacuumWorkersCount
 	prioTableAutovacuumSinceTime
