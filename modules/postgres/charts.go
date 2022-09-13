@@ -22,11 +22,6 @@ const (
 
 	prioQueriesDuration
 
-	prioDBDeadlocksRate
-
-	prioDBLocksHeldCount
-	prioDBLocksAwaitedCount
-
 	prioDBOpsFetchedRowsRatio
 	prioDBOpsReadRowsRate
 	prioDBOpsWriteRowsRate
@@ -37,10 +32,6 @@ const (
 	prioDBIORate
 
 	prioDBSize
-
-	prioTableRowsDeadRatio
-	prioTableRowsCount
-	prioTableNullColumns
 
 	prioTableOpsRowsRate
 	prioTableOpsRowsHOTRatio
@@ -57,20 +48,37 @@ const (
 	prioTableToastIndexCacheIORatio
 	prioTableToastIndexIORate
 
+	prioTableTotalSize
+	prioTableBloatSizePerc
+	prioTableBloatSize
+
+	prioIndexSize
+	prioIndexBloatSizePerc
+	prioIndexBloatSize
+
+	prioDBDeadlocksRate
+	prioDBLocksHeldCount
+	prioDBLocksAwaitedCount
+
+	prioAutovacuumWorkersCount
 	prioTableAutovacuumSinceTime
 	prioTableVacuumSinceTime
 	prioTableAutoAnalyzeSinceTime
 	prioTableLastAnalyzeAgo
 
-	prioTableTotalSize
-	prioTableBloatSizePerc
-	prioTableBloatSize
-
+	prioCheckpointsRate
+	prioCheckpointsTime
+	prioBGWriterHaltsRate
+	prioBuffersIORate
+	prioBuffersBackendFsyncRate
+	prioBuffersAllocRate
+	prioTXIDExhaustionTowardsAutovacuumPerc
+	prioTXIDExhaustionPerc
+	prioTXIDExhaustionOldestTXIDNum
+	prioTableRowsDeadRatio
+	prioTableRowsCount
+	prioTableNullColumns
 	prioIndexUsageStatus
-
-	prioIndexSize
-	prioIndexBloatSizePerc
-	prioIndexBloatSize
 
 	prioReplicationAppWALLagSize
 	prioReplicationAppWALLagTime
@@ -81,21 +89,6 @@ const (
 	prioWALIORate
 	prioWALFilesCount
 	prioWALArchivingFilesCount
-
-	prioCheckpointsRate
-	prioCheckpointsTime
-
-	prioBGWriterHaltsRate
-
-	prioBuffersIORate
-	prioBuffersBackendFsyncRate
-	prioBuffersAllocRate
-
-	prioAutovacuumWorkersCount
-
-	prioTXIDExhaustionTowardsAutovacuumPerc
-	prioTXIDExhaustionPerc
-	prioTXIDExhaustionOldestTXIDNum
 
 	prioDatabasesCount
 	prioCatalogRelationsCount
@@ -175,7 +168,7 @@ var (
 		ID:       "checkpoints_rate",
 		Title:    "Checkpoints",
 		Units:    "checkpoints/s",
-		Fam:      "checkpointer",
+		Fam:      "maintenance",
 		Ctx:      "postgres.checkpoints_rate",
 		Priority: prioCheckpointsRate,
 		Type:     module.Stacked,
@@ -189,7 +182,7 @@ var (
 		ID:       "checkpoints_time",
 		Title:    "Checkpoint time",
 		Units:    "milliseconds",
-		Fam:      "checkpointer",
+		Fam:      "maintenance",
 		Ctx:      "postgres.checkpoints_time",
 		Priority: prioCheckpointsTime,
 		Type:     module.Stacked,
@@ -202,7 +195,7 @@ var (
 		ID:       "bgwriter_halts_rate",
 		Title:    "Background writer scan halts",
 		Units:    "halts/s",
-		Fam:      "bgwriter",
+		Fam:      "maintenance",
 		Ctx:      "postgres.bgwriter_halts_rate",
 		Priority: prioBGWriterHaltsRate,
 		Dims: module.Dims{
@@ -214,7 +207,7 @@ var (
 		ID:       "buffers_io_rate",
 		Title:    "Buffers written rate",
 		Units:    "B/s",
-		Fam:      "buffers",
+		Fam:      "maintenance",
 		Ctx:      "postgres.buffers_io_rate",
 		Priority: prioBuffersIORate,
 		Type:     module.Area,
@@ -228,7 +221,7 @@ var (
 		ID:       "buffers_backend_fsync_rate",
 		Title:    "Backend fsync calls",
 		Units:    "calls/s",
-		Fam:      "buffers",
+		Fam:      "maintenance",
 		Ctx:      "postgres.buffers_backend_fsync_rate",
 		Priority: prioBuffersBackendFsyncRate,
 		Dims: module.Dims{
@@ -239,7 +232,7 @@ var (
 		ID:       "buffers_alloc_rate",
 		Title:    "Buffers allocated",
 		Units:    "B/s",
-		Fam:      "buffers",
+		Fam:      "maintenance",
 		Ctx:      "postgres.buffers_allocated_rate",
 		Priority: prioBuffersAllocRate,
 		Dims: module.Dims{
@@ -290,7 +283,7 @@ var (
 		ID:       "autovacuum_workers_count",
 		Title:    "Autovacuum workers",
 		Units:    "workers",
-		Fam:      "vacuum analyze",
+		Fam:      "vacuum and analyze",
 		Ctx:      "postgres.autovacuum_workers_count",
 		Priority: prioAutovacuumWorkersCount,
 		Dims: module.Dims{
@@ -306,7 +299,7 @@ var (
 		ID:       "txid_exhaustion_towards_autovacuum_perc",
 		Title:    "Percent towards emergency autovacuum",
 		Units:    "percentage",
-		Fam:      "txid exhaustion",
+		Fam:      "maintenance",
 		Ctx:      "postgres.txid_exhaustion_towards_autovacuum_perc",
 		Priority: prioTXIDExhaustionTowardsAutovacuumPerc,
 		Dims: module.Dims{
@@ -317,7 +310,7 @@ var (
 		ID:       "txid_exhaustion_perc",
 		Title:    "Percent towards transaction ID wraparound",
 		Units:    "percentage",
-		Fam:      "txid exhaustion",
+		Fam:      "maintenance",
 		Ctx:      "postgres.txid_exhaustion_perc",
 		Priority: prioTXIDExhaustionPerc,
 		Dims: module.Dims{
@@ -328,7 +321,7 @@ var (
 		ID:       "txid_exhaustion_oldest_txid_num",
 		Title:    "Oldest transaction XID",
 		Units:    "xid",
-		Fam:      "txid exhaustion",
+		Fam:      "maintenance",
 		Ctx:      "postgres.txid_exhaustion_oldest_txid_num",
 		Priority: prioTXIDExhaustionOldestTXIDNum,
 		Dims: module.Dims{
@@ -340,7 +333,7 @@ var (
 		ID:       "catalog_relations_count",
 		Title:    "Relation count",
 		Units:    "relations",
-		Fam:      "dbs relations count",
+		Fam:      "catalog",
 		Ctx:      "postgres.catalog_relations_count",
 		Priority: prioCatalogRelationsCount,
 		Type:     module.Stacked,
@@ -361,7 +354,7 @@ var (
 		ID:       "catalog_relations_size",
 		Title:    "Relation size",
 		Units:    "B",
-		Fam:      "dbs relations count",
+		Fam:      "catalog",
 		Ctx:      "postgres.catalog_relations_size",
 		Priority: prioCatalogRelationsSize,
 		Type:     module.Stacked,
@@ -395,7 +388,7 @@ var (
 		ID:       "databases_count",
 		Title:    "Number of databases",
 		Units:    "databases",
-		Fam:      "dbs relations count",
+		Fam:      "catalog",
 		Ctx:      "postgres.databases_count",
 		Priority: prioDatabasesCount,
 		Dims: module.Dims{
@@ -750,7 +743,7 @@ var (
 		ID:       "db_%s_deadlocks_rate",
 		Title:    "Database deadlocks",
 		Units:    "deadlocks/s",
-		Fam:      "db locks",
+		Fam:      "locks",
 		Ctx:      "postgres.db_deadlocks_rate",
 		Priority: prioDBDeadlocksRate,
 		Dims: module.Dims{
@@ -761,7 +754,7 @@ var (
 		ID:       "db_%s_locks_held",
 		Title:    "Database locks held",
 		Units:    "locks",
-		Fam:      "db locks",
+		Fam:      "locks",
 		Ctx:      "postgres.db_locks_held_count",
 		Priority: prioDBLocksHeldCount,
 		Type:     module.Stacked,
@@ -780,7 +773,7 @@ var (
 		ID:       "db_%s_locks_awaited_count",
 		Title:    "Database locks awaited",
 		Units:    "locks",
-		Fam:      "db locks",
+		Fam:      "locks",
 		Ctx:      "postgres.db_locks_awaited_count",
 		Priority: prioDBLocksAwaitedCount,
 		Type:     module.Stacked,
@@ -880,7 +873,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_rows_dead_ratio",
 		Title:    "Table dead rows",
 		Units:    "%",
-		Fam:      "table rows",
+		Fam:      "maintenance",
 		Ctx:      "postgres.table_rows_dead_ratio",
 		Priority: prioTableRowsDeadRatio,
 		Dims: module.Dims{
@@ -891,7 +884,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_rows_count",
 		Title:    "Table total rows",
 		Units:    "rows",
-		Fam:      "table rows",
+		Fam:      "maintenance",
 		Ctx:      "postgres.table_rows_count",
 		Priority: prioTableRowsCount,
 		Type:     module.Stacked,
@@ -1056,7 +1049,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_autovacuum_since_time",
 		Title:    "Table time since last auto VACUUM",
 		Units:    "seconds",
-		Fam:      "table vacuum analyze",
+		Fam:      "vacuum and analyze",
 		Ctx:      "postgres.table_autovacuum_since_time",
 		Priority: prioTableAutovacuumSinceTime,
 		Dims: module.Dims{
@@ -1067,7 +1060,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_vacuum_since_time",
 		Title:    "Table time since last manual VACUUM",
 		Units:    "seconds",
-		Fam:      "table vacuum analyze",
+		Fam:      "vacuum and analyze",
 		Ctx:      "postgres.table_vacuum_since_time",
 		Priority: prioTableVacuumSinceTime,
 		Dims: module.Dims{
@@ -1078,7 +1071,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_autoanalyze_since_time",
 		Title:    "Table time since last auto ANALYZE",
 		Units:    "seconds",
-		Fam:      "table vacuum analyze",
+		Fam:      "vacuum and analyze",
 		Ctx:      "postgres.table_autoanalyze_since_time",
 		Priority: prioTableAutoAnalyzeSinceTime,
 		Dims: module.Dims{
@@ -1089,7 +1082,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_analyze_since_time",
 		Title:    "Table time since last manual ANALYZE",
 		Units:    "seconds",
-		Fam:      "table vacuum analyze",
+		Fam:      "vacuum and analyze",
 		Ctx:      "postgres.table_analyze_since_time",
 		Priority: prioTableLastAnalyzeAgo,
 		Dims: module.Dims{
@@ -1100,7 +1093,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_null_columns_count",
 		Title:    "Table null columns",
 		Units:    "columns",
-		Fam:      "table rows",
+		Fam:      "maintenance",
 		Ctx:      "postgres.table_null_columns_count",
 		Priority: prioTableNullColumns,
 		Dims: module.Dims{
@@ -1303,7 +1296,7 @@ var (
 		ID:       "index_%s_table_%s_db_%s_schema_%s_usage_status",
 		Title:    "Index usage status",
 		Units:    "status",
-		Fam:      "index usage",
+		Fam:      "maintenance",
 		Ctx:      "postgres.index_usage_status",
 		Priority: prioIndexUsageStatus,
 		Dims: module.Dims{
