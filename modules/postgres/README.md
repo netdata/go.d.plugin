@@ -48,7 +48,7 @@ All metrics have "postgres." prefix.
 | catalog_relations_size                  |   global    | ordinary_table, index, sequence, toast_table, view, materialized_view, composite_type, foreign_table, partitioned_table, partitioned_index |       B        |
 | uptime                                  |   global    |                                                                   uptime                                                                   |    seconds     |
 | databases_count                         |   global    |                                                                 databases                                                                  |   databases    |
-| replication_app_wal_lag_size            | application |                                             sent_delta, write_delta, flush_delta, replay_delta                                             |       B        |
+| replication_app_wal_lag_size            | application |                                                 sent_lag, write_lag, flush_lag, replay_lag                                                 |       B        |
 | replication_app_wal_lag_time            | application |                                                      write_lag, flush_lag, replay_lag                                                      |    seconds     |
 | replication_slot_files_count            |    slot     |                                                        wal_keep, pg_replslot_files                                                         |     files      |
 | db_transactions_ratio                   |  database   |                                                            committed, rollback                                                             |   percentage   |

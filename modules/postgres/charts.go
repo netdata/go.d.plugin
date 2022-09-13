@@ -13,50 +13,41 @@ const (
 	prioConnectionsUtilization = module.Priority + iota
 	prioConnectionsUsage
 	prioConnectionsStateCount
-	prioTransactionsDuration
-	prioQueriesDuration
-	prioCheckpointsRate
-	prioCheckpointsTime
-	prioBGWriterHaltsRate
-	prioBuffersIORate
-	prioBuffersBackendFsyncRate
-	prioBuffersAllocRate
-	prioWALIORate
-	prioWALFilesCount
-	prioWALArchivingFilesCount
-	prioAutovacuumWorkersCount
-	prioTXIDExhaustionTowardsAutovacuumPerc
-	prioTXIDExhaustionPerc
-	prioTXIDExhaustionOldestTXIDNum
-	prioCatalogRelationsCount
-	prioCatalogRelationsSize
-	prioUptime
-	prioReplicationAppWALLagSize
-	prioReplicationAppWALLagTime
-	prioReplicationSlotFilesCount
-	prioDatabasesCount
-	prioDBTransactionsRatio
-	prioDBTransactionsRate
 	prioDBConnectionsUtilization
 	prioDBConnectionsCount
-	prioDBCacheIORatio
-	prioDBIORate
+
+	prioTransactionsDuration
+	prioDBTransactionsRatio
+	prioDBTransactionsRate
+
+	prioQueriesDuration
+
+	prioDBDeadlocksRate
+
+	prioDBLocksHeldCount
+	prioDBLocksAwaitedCount
+
 	prioDBOpsFetchedRowsRatio
 	prioDBOpsReadRowsRate
 	prioDBOpsWriteRowsRate
-	prioDBConflictsRate
-	prioDBConflictsReasonRate
-	prioDBDeadlocksRate
-	prioDBLocksHeldCount
-	prioDBLocksAwaitedCount
 	prioDBTempFilesCreatedRate
 	prioDBTempFilesIORate
+
+	prioDBCacheIORatio
+	prioDBIORate
+
 	prioDBSize
+
 	prioTableRowsDeadRatio
 	prioTableRowsCount
+	prioTableNullColumns
+
 	prioTableOpsRowsRate
 	prioTableOpsRowsHOTRatio
 	prioTableOpsRowsHOTRate
+	prioTableScansRate
+	prioTableScansRowsRate
+
 	prioTableCacheIORatio
 	prioTableIORate
 	prioTableIndexCacheIORatio
@@ -65,20 +56,52 @@ const (
 	prioTableToastIORate
 	prioTableToastIndexCacheIORatio
 	prioTableToastIndexIORate
-	prioTableScansRate
-	prioTableScansRowsRate
+
 	prioTableAutovacuumSinceTime
 	prioTableVacuumSinceTime
 	prioTableAutoAnalyzeSinceTime
 	prioTableLastAnalyzeAgo
-	prioTableNullColumns
+
 	prioTableTotalSize
 	prioTableBloatSizePerc
 	prioTableBloatSize
+
+	prioIndexUsageStatus
+
 	prioIndexSize
 	prioIndexBloatSizePerc
 	prioIndexBloatSize
-	prioIndexUsageStatus
+
+	prioReplicationAppWALLagSize
+	prioReplicationAppWALLagTime
+	prioReplicationSlotFilesCount
+	prioDBConflictsRate
+	prioDBConflictsReasonRate
+
+	prioWALIORate
+	prioWALFilesCount
+	prioWALArchivingFilesCount
+
+	prioCheckpointsRate
+	prioCheckpointsTime
+
+	prioBGWriterHaltsRate
+
+	prioBuffersIORate
+	prioBuffersBackendFsyncRate
+	prioBuffersAllocRate
+
+	prioAutovacuumWorkersCount
+
+	prioTXIDExhaustionTowardsAutovacuumPerc
+	prioTXIDExhaustionPerc
+	prioTXIDExhaustionOldestTXIDNum
+
+	prioDatabasesCount
+	prioCatalogRelationsCount
+	prioCatalogRelationsSize
+
+	prioUptime
 )
 
 var baseCharts = module.Charts{
@@ -253,7 +276,7 @@ var (
 		ID:       "wal_archiving_files_count",
 		Title:    "Write-Ahead Log archived files",
 		Units:    "files/s",
-		Fam:      "wal archiving",
+		Fam:      "wal",
 		Ctx:      "postgres.wal_archiving_files_count",
 		Priority: prioWALArchivingFilesCount,
 		Type:     module.Stacked,
@@ -267,7 +290,7 @@ var (
 		ID:       "autovacuum_workers_count",
 		Title:    "Autovacuum workers",
 		Units:    "workers",
-		Fam:      "autovacuum",
+		Fam:      "vacuum analyze",
 		Ctx:      "postgres.autovacuum_workers_count",
 		Priority: prioAutovacuumWorkersCount,
 		Dims: module.Dims{
@@ -317,7 +340,7 @@ var (
 		ID:       "catalog_relations_count",
 		Title:    "Relation count",
 		Units:    "relations",
-		Fam:      "catalog",
+		Fam:      "dbs relations count",
 		Ctx:      "postgres.catalog_relations_count",
 		Priority: prioCatalogRelationsCount,
 		Type:     module.Stacked,
@@ -338,7 +361,7 @@ var (
 		ID:       "catalog_relations_size",
 		Title:    "Relation size",
 		Units:    "B",
-		Fam:      "catalog",
+		Fam:      "dbs relations count",
 		Ctx:      "postgres.catalog_relations_size",
 		Priority: prioCatalogRelationsSize,
 		Type:     module.Stacked,
@@ -372,7 +395,7 @@ var (
 		ID:       "databases_count",
 		Title:    "Number of databases",
 		Units:    "databases",
-		Fam:      "dbs",
+		Fam:      "dbs relations count",
 		Ctx:      "postgres.databases_count",
 		Priority: prioDatabasesCount,
 		Dims: module.Dims{
@@ -384,7 +407,7 @@ var (
 		ID:       "transactions_duration",
 		Title:    "Observed transactions time",
 		Units:    "transactions/s",
-		Fam:      "timings",
+		Fam:      "transactions",
 		Ctx:      "postgres.transactions_duration",
 		Priority: prioTransactionsDuration,
 		Type:     module.Stacked,
@@ -393,7 +416,7 @@ var (
 		ID:       "queries_duration",
 		Title:    "Observed active queries time",
 		Units:    "queries/s",
-		Fam:      "timings",
+		Fam:      "queries",
 		Ctx:      "postgres.queries_duration",
 		Priority: prioQueriesDuration,
 		Type:     module.Stacked,
@@ -465,27 +488,27 @@ var (
 		ID:       "replication_app_%s_wal_lag_size",
 		Title:    "Standby application WAL lag size",
 		Units:    "B",
-		Fam:      "replication lag",
+		Fam:      "replication",
 		Ctx:      "postgres.replication_app_wal_lag_size",
 		Priority: prioReplicationAppWALLagSize,
 		Dims: module.Dims{
-			{ID: "repl_standby_app_%s_wal_sent_delta", Name: "sent_delta"},
-			{ID: "repl_standby_app_%s_wal_write_delta", Name: "write_delta"},
-			{ID: "repl_standby_app_%s_wal_flush_delta", Name: "flush_delta"},
-			{ID: "repl_standby_app_%s_wal_replay_delta", Name: "replay_delta"},
+			{ID: "repl_standby_app_%s_wal_sent_lag_size", Name: "sent_lag"},
+			{ID: "repl_standby_app_%s_wal_write_lag_size", Name: "write_lag"},
+			{ID: "repl_standby_app_%s_wal_flush_lag_size", Name: "flush_lag"},
+			{ID: "repl_standby_app_%s_wal_replay_lag_size", Name: "replay_lag"},
 		},
 	}
 	replicationAppWALLagTimeChartTmpl = module.Chart{
 		ID:       "replication_app_%s_wal_lag_time",
 		Title:    "Standby application WAL lag time",
 		Units:    "seconds",
-		Fam:      "replication lag",
+		Fam:      "replication",
 		Ctx:      "postgres.replication_app_wal_lag_time",
 		Priority: prioReplicationAppWALLagTime,
 		Dims: module.Dims{
-			{ID: "repl_standby_app_%s_wal_write_lag", Name: "write_lag"},
-			{ID: "repl_standby_app_%s_wal_flush_lag", Name: "flush_lag"},
-			{ID: "repl_standby_app_%s_wal_replay_lag", Name: "replay_lag"},
+			{ID: "repl_standby_app_%s_wal_write_lag_time", Name: "write_lag"},
+			{ID: "repl_standby_app_%s_wal_flush_lag_time", Name: "flush_lag"},
+			{ID: "repl_standby_app_%s_wal_replay_lag_time", Name: "replay_lag"},
 		},
 	}
 )
@@ -529,7 +552,7 @@ var (
 		ID:       "replication_slot_%s_files_count",
 		Title:    "Replication slot files",
 		Units:    "files",
-		Fam:      "replication slot",
+		Fam:      "replication",
 		Ctx:      "postgres.replication_slot_files_count",
 		Priority: prioReplicationSlotFilesCount,
 		Dims: module.Dims{
@@ -594,7 +617,7 @@ var (
 		ID:       "db_%s_transactions_ratio",
 		Title:    "Database transactions ratio",
 		Units:    "percentage",
-		Fam:      "db transactions",
+		Fam:      "transactions",
 		Ctx:      "postgres.db_transactions_ratio",
 		Priority: prioDBTransactionsRatio,
 		Type:     module.Stacked,
@@ -607,7 +630,7 @@ var (
 		ID:       "db_%s_transactions_rate",
 		Title:    "Database transactions",
 		Units:    "transactions/s",
-		Fam:      "db transactions",
+		Fam:      "transactions",
 		Ctx:      "postgres.db_transactions_rate",
 		Priority: prioDBTransactionsRate,
 		Dims: module.Dims{
@@ -619,7 +642,7 @@ var (
 		ID:       "db_%s_connections_utilization",
 		Title:    "Database connections utilization",
 		Units:    "percentage",
-		Fam:      "db connections",
+		Fam:      "connections",
 		Ctx:      "postgres.db_connections_utilization",
 		Priority: prioDBConnectionsUtilization,
 		Dims: module.Dims{
@@ -630,7 +653,7 @@ var (
 		ID:       "db_%s_connections",
 		Title:    "Database connections",
 		Units:    "connections",
-		Fam:      "db connections",
+		Fam:      "connections",
 		Ctx:      "postgres.db_connections_count",
 		Priority: prioDBConnectionsCount,
 		Dims: module.Dims{
@@ -641,7 +664,7 @@ var (
 		ID:       "db_%s_cache_io_ratio",
 		Title:    "Database buffer cache miss ratio",
 		Units:    "percentage",
-		Fam:      "db io",
+		Fam:      "db cache",
 		Ctx:      "postgres.db_cache_io_ratio",
 		Priority: prioDBCacheIORatio,
 		Dims: module.Dims{
@@ -652,7 +675,7 @@ var (
 		ID:       "db_%s_io_rate",
 		Title:    "Database reads",
 		Units:    "B/s",
-		Fam:      "db io",
+		Fam:      "db cache",
 		Ctx:      "postgres.db_io_rate",
 		Priority: prioDBIORate,
 		Type:     module.Area,
@@ -665,7 +688,7 @@ var (
 		ID:       "db_%s_db_ops_fetched_rows_ratio",
 		Title:    "Database rows fetched ratio",
 		Units:    "percentage",
-		Fam:      "db read throughput",
+		Fam:      "db throughput",
 		Ctx:      "postgres.db_ops_fetched_rows_ratio",
 		Priority: prioDBOpsFetchedRowsRatio,
 		Dims: module.Dims{
@@ -676,7 +699,7 @@ var (
 		ID:       "db_%s_ops_read_rows_rate",
 		Title:    "Database rows read",
 		Units:    "rows/s",
-		Fam:      "db read throughput",
+		Fam:      "db throughput",
 		Ctx:      "postgres.db_ops_read_rows_rate",
 		Priority: prioDBOpsReadRowsRate,
 		Dims: module.Dims{
@@ -688,7 +711,7 @@ var (
 		ID:       "db_%s_ops_write_rows_rate",
 		Title:    "Database rows written",
 		Units:    "rows/s",
-		Fam:      "db write throughput",
+		Fam:      "db throughput",
 		Ctx:      "postgres.db_ops_write_rows_rate",
 		Priority: prioDBOpsWriteRowsRate,
 		Dims: module.Dims{
@@ -701,7 +724,7 @@ var (
 		ID:       "db_%s_conflicts_rate",
 		Title:    "Database canceled queries",
 		Units:    "queries/s",
-		Fam:      "db query cancels",
+		Fam:      "replication",
 		Ctx:      "postgres.db_conflicts_rate",
 		Priority: prioDBConflictsRate,
 		Dims: module.Dims{
@@ -712,7 +735,7 @@ var (
 		ID:       "db_%s_conflicts_reason_rate",
 		Title:    "Database canceled queries by reason",
 		Units:    "queries/s",
-		Fam:      "db query cancels",
+		Fam:      "replication",
 		Ctx:      "postgres.db_conflicts_reason_rate",
 		Priority: prioDBConflictsReasonRate,
 		Dims: module.Dims{
@@ -727,7 +750,7 @@ var (
 		ID:       "db_%s_deadlocks_rate",
 		Title:    "Database deadlocks",
 		Units:    "deadlocks/s",
-		Fam:      "db deadlocks",
+		Fam:      "db locks",
 		Ctx:      "postgres.db_deadlocks_rate",
 		Priority: prioDBDeadlocksRate,
 		Dims: module.Dims{
@@ -776,7 +799,7 @@ var (
 		ID:       "db_%s_temp_files_files_created_rate",
 		Title:    "Database created temporary files",
 		Units:    "files/s",
-		Fam:      "db temp files",
+		Fam:      "db throughput",
 		Ctx:      "postgres.db_temp_files_created_rate",
 		Priority: prioDBTempFilesCreatedRate,
 		Dims: module.Dims{
@@ -787,7 +810,7 @@ var (
 		ID:       "db_%s_temp_files_io_rate",
 		Title:    "Database temporary files data written to disk",
 		Units:    "B/s",
-		Fam:      "db temp files",
+		Fam:      "db throughput",
 		Ctx:      "postgres.db_temp_files_io_rate",
 		Priority: prioDBTempFilesIORate,
 		Dims: module.Dims{
@@ -895,7 +918,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_ops_rows_hot_ratio",
 		Title:    "Table HOT updates ratio",
 		Units:    "percentage",
-		Fam:      "table hot updates",
+		Fam:      "table throughput",
 		Ctx:      "postgres.table_ops_rows_hot_ratio",
 		Priority: prioTableOpsRowsHOTRatio,
 		Dims: module.Dims{
@@ -906,7 +929,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_ops_rows_hot_rate",
 		Title:    "Table HOT updates",
 		Units:    "rows/s",
-		Fam:      "table hot updates",
+		Fam:      "table throughput",
 		Ctx:      "postgres.table_ops_rows_hot_rate",
 		Priority: prioTableOpsRowsHOTRate,
 		Dims: module.Dims{
@@ -917,7 +940,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_cache_io_ratio",
 		Title:    "Table I/O cache miss ratio",
 		Units:    "percentage",
-		Fam:      "table io",
+		Fam:      "table cache",
 		Ctx:      "postgres.table_cache_io_ratio",
 		Priority: prioTableCacheIORatio,
 		Dims: module.Dims{
@@ -928,7 +951,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_io_rate",
 		Title:    "Table I/O",
 		Units:    "B/s",
-		Fam:      "table io",
+		Fam:      "table cache",
 		Ctx:      "postgres.table_io_rate",
 		Priority: prioTableIORate,
 		Dims: module.Dims{
@@ -940,7 +963,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_index_cache_io_ratio",
 		Title:    "Table index I/O cache miss ratio",
 		Units:    "percentage",
-		Fam:      "table index io",
+		Fam:      "table cache",
 		Ctx:      "postgres.table_index_cache_io_ratio",
 		Priority: prioTableIndexCacheIORatio,
 		Dims: module.Dims{
@@ -951,7 +974,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_index_io_rate",
 		Title:    "Table index I/O",
 		Units:    "B/s",
-		Fam:      "table index io",
+		Fam:      "table cache",
 		Ctx:      "postgres.table_index_io_rate",
 		Priority: prioTableIndexIORate,
 		Dims: module.Dims{
@@ -963,7 +986,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_toast_cache_io_ratio",
 		Title:    "Table TOAST I/O cache miss ratio",
 		Units:    "percentage",
-		Fam:      "table toast io",
+		Fam:      "table cache",
 		Ctx:      "postgres.table_toast_cache_io_ratio",
 		Priority: prioTableToastCacheIORatio,
 		Dims: module.Dims{
@@ -974,7 +997,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_toast_io_rate",
 		Title:    "Table TOAST I/O",
 		Units:    "B/s",
-		Fam:      "table toast io",
+		Fam:      "table cache",
 		Ctx:      "postgres.table_toast_io_rate",
 		Priority: prioTableToastIORate,
 		Dims: module.Dims{
@@ -986,7 +1009,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_toast_index_cache_io_ratio",
 		Title:    "Table TOAST index I/O cache miss ratio",
 		Units:    "percentage",
-		Fam:      "table toast index io",
+		Fam:      "table cache",
 		Ctx:      "postgres.table_toast_index_cache_io_ratio",
 		Priority: prioTableToastIndexCacheIORatio,
 		Dims: module.Dims{
@@ -997,7 +1020,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_toast_index_io_rate",
 		Title:    "Table TOAST index I/O",
 		Units:    "B/s",
-		Fam:      "table toast index io",
+		Fam:      "table cache",
 		Ctx:      "postgres.table_toast_index_io_rate",
 		Priority: prioTableToastIndexIORate,
 		Dims: module.Dims{
@@ -1009,7 +1032,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_scans_rate",
 		Title:    "Table scans",
 		Units:    "scans/s",
-		Fam:      "table scans",
+		Fam:      "table throughput",
 		Ctx:      "postgres.table_scans_rate",
 		Priority: prioTableScansRate,
 		Dims: module.Dims{
@@ -1021,7 +1044,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_scans_rows_rate",
 		Title:    "Table live rows fetched by scans",
 		Units:    "rows/s",
-		Fam:      "table scans",
+		Fam:      "table throughput",
 		Ctx:      "postgres.table_scans_rows_rate",
 		Priority: prioTableScansRowsRate,
 		Dims: module.Dims{
@@ -1033,7 +1056,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_autovacuum_since_time",
 		Title:    "Table time since last auto VACUUM",
 		Units:    "seconds",
-		Fam:      "table autovacuum",
+		Fam:      "table vacuum analyze",
 		Ctx:      "postgres.table_autovacuum_since_time",
 		Priority: prioTableAutovacuumSinceTime,
 		Dims: module.Dims{
@@ -1044,7 +1067,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_vacuum_since_time",
 		Title:    "Table time since last manual VACUUM",
 		Units:    "seconds",
-		Fam:      "table vacuum",
+		Fam:      "table vacuum analyze",
 		Ctx:      "postgres.table_vacuum_since_time",
 		Priority: prioTableVacuumSinceTime,
 		Dims: module.Dims{
@@ -1055,7 +1078,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_autoanalyze_since_time",
 		Title:    "Table time since last auto ANALYZE",
 		Units:    "seconds",
-		Fam:      "table autoanalyze",
+		Fam:      "table vacuum analyze",
 		Ctx:      "postgres.table_autoanalyze_since_time",
 		Priority: prioTableAutoAnalyzeSinceTime,
 		Dims: module.Dims{
@@ -1066,7 +1089,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_analyze_since_time",
 		Title:    "Table time since last manual ANALYZE",
 		Units:    "seconds",
-		Fam:      "table analyze",
+		Fam:      "table vacuum analyze",
 		Ctx:      "postgres.table_analyze_since_time",
 		Priority: prioTableLastAnalyzeAgo,
 		Dims: module.Dims{
@@ -1077,7 +1100,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_null_columns_count",
 		Title:    "Table null columns",
 		Units:    "columns",
-		Fam:      "table columns",
+		Fam:      "table rows",
 		Ctx:      "postgres.table_null_columns_count",
 		Priority: prioTableNullColumns,
 		Dims: module.Dims{
@@ -1088,7 +1111,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_total_size",
 		Title:    "Table total size",
 		Units:    "B",
-		Fam:      "table size",
+		Fam:      "table size and bloat",
 		Ctx:      "postgres.table_total_size",
 		Priority: prioTableTotalSize,
 		Dims: module.Dims{
@@ -1099,7 +1122,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_bloat_size_perc",
 		Title:    "Table bloat size percentage",
 		Units:    "percentage",
-		Fam:      "table bloat",
+		Fam:      "table size and bloat",
 		Ctx:      "postgres.table_bloat_size_perc",
 		Priority: prioTableBloatSizePerc,
 		Dims: module.Dims{
@@ -1110,7 +1133,7 @@ var (
 		ID:       "table_%s_db_%s_schema_%s_bloat_size",
 		Title:    "Table bloat size",
 		Units:    "B",
-		Fam:      "table bloat",
+		Fam:      "table size and bloat",
 		Ctx:      "postgres.table_bloat_size",
 		Priority: prioTableBloatSize,
 		Dims: module.Dims{
@@ -1247,7 +1270,7 @@ var (
 		ID:       "index_%s_table_%s_db_%s_schema_%s_size",
 		Title:    "Index size",
 		Units:    "B",
-		Fam:      "index size",
+		Fam:      "index size and bloat",
 		Ctx:      "postgres.index_size",
 		Priority: prioIndexSize,
 		Dims: module.Dims{
@@ -1258,7 +1281,7 @@ var (
 		ID:       "index_%s_table_%s_db_%s_schema_%s_bloat_size_perc",
 		Title:    "Index bloat size percentage",
 		Units:    "percentage",
-		Fam:      "index bloat",
+		Fam:      "index size and bloat",
 		Ctx:      "postgres.index_bloat_size_perc",
 		Priority: prioIndexBloatSizePerc,
 		Dims: module.Dims{
@@ -1269,7 +1292,7 @@ var (
 		ID:       "index_%s_table_%s_db_%s_schema_%s_bloat_size",
 		Title:    "Index bloat size",
 		Units:    "B",
-		Fam:      "index bloat",
+		Fam:      "index size and bloat",
 		Ctx:      "postgres.index_bloat_size",
 		Priority: prioIndexBloatSize,
 		Dims: module.Dims{
@@ -1280,7 +1303,7 @@ var (
 		ID:       "index_%s_table_%s_db_%s_schema_%s_usage_status",
 		Title:    "Index usage status",
 		Units:    "status",
-		Fam:      "index usage status",
+		Fam:      "index usage",
 		Ctx:      "postgres.index_usage_status",
 		Priority: prioIndexUsageStatus,
 		Dims: module.Dims{
