@@ -353,13 +353,13 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 			p.addNewReplicationStandbyAppCharts(name)
 		}
 		px := "repl_standby_app_" + m.name + "_wal_"
-		mx[px+"sent_delta"] = m.walSentDelta
-		mx[px+"write_delta"] = m.walWriteDelta
-		mx[px+"flush_delta"] = m.walFlushDelta
-		mx[px+"replay_delta"] = m.walReplayDelta
-		mx[px+"write_lag"] = m.walWriteLag
-		mx[px+"flush_lag"] = m.walFlushLag
-		mx[px+"replay_lag"] = m.walReplayLag
+		mx[px+"sent_lag_size"] = m.walSentDelta
+		mx[px+"write_lag_size"] = m.walWriteDelta
+		mx[px+"flush_lag_size"] = m.walFlushDelta
+		mx[px+"replay_lag_size"] = m.walReplayDelta
+		mx[px+"write_time"] = m.walWriteLag
+		mx[px+"flush_lag_time"] = m.walFlushLag
+		mx[px+"replay_lag_time"] = m.walReplayLag
 	}
 
 	for name, m := range p.mx.replSlots {
