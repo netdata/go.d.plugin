@@ -37,6 +37,17 @@ func (p *Postgres) doQueryIsSuperUser() (bool, error) {
 	return v, nil
 }
 
+func (p *Postgres) doQueryPGIsInRecovery() (bool, error) {
+	q := queryPGIsInRecovery()
+
+	var v bool
+	if err := p.doQueryRow(q, &v); err != nil {
+		return false, err
+	}
+
+	return v, nil
+}
+
 func (p *Postgres) doQueryCurrentDB() (string, error) {
 	q := queryCurrentDatabase()
 

@@ -10,8 +10,10 @@ func (p *Postgres) doQueryDatabasesMetrics() error {
 	if err := p.doQueryDatabaseStats(); err != nil {
 		return fmt.Errorf("querying database stats error: %v", err)
 	}
-	if err := p.doQueryDatabaseConflicts(); err != nil {
-		return fmt.Errorf("querying database conflicts error: %v", err)
+	if p.isPGInRecovery() {
+		if err := p.doQueryDatabaseConflicts(); err != nil {
+			return fmt.Errorf("querying database conflicts error: %v", err)
+		}
 	}
 	if err := p.doQueryDatabaseLocks(); err != nil {
 		return fmt.Errorf("querying database locks error: %v", err)

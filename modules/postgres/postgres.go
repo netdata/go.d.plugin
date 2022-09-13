@@ -60,8 +60,9 @@ type (
 		db      *sql.DB
 		dbConns map[string]*dbConn
 
-		superUser *bool
-		pgVersion int
+		superUser      *bool
+		pgIsInRecovery *bool
+		pgVersion      int
 
 		currentDB string
 		dbSr      matcher.Matcher

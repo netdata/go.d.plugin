@@ -14,6 +14,10 @@ func queryIsSuperUser() string {
 	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
 }
 
+func queryPGIsInRecovery() string {
+	return "SELECT pg_is_in_recovery();"
+}
+
 func querySettingsMaxConnections() string {
 	return "SELECT current_setting('max_connections')::INT - current_setting('superuser_reserved_connections')::INT;"
 }

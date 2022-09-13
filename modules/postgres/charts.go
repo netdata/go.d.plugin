@@ -594,8 +594,6 @@ var (
 		dbOpsFetchedRowsRatioChartTmpl.Copy(),
 		dbOpsReadRowsRateChartTmpl.Copy(),
 		dbOpsWriteRowsRateChartTmpl.Copy(),
-		dbConflictsRateChartTmpl.Copy(),
-		dbConflictsReasonRateChartTmpl.Copy(),
 		dbDeadlocksRateChartTmpl.Copy(),
 		dbLocksHeldCountChartTmpl.Copy(),
 		dbLocksAwaitedCountChartTmpl.Copy(),
@@ -820,8 +818,20 @@ var (
 	}
 )
 
-func newDatabaseCharts(dbname string) *module.Charts {
-	charts := dbChartsTmpl.Copy()
+func (p *Postgres) addDBConflictsCharts(dbname string) {
+	tmpl := module.Charts{
+		dbConflictsRateChartTmpl.Copy(),
+		dbConflictsReasonRateChartTmpl.Copy(),
+	}
+	charts := newDatabaseCharts(tmpl.Copy(), dbname)
+
+	if err := p.Charts().Add(*charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func newDatabaseCharts(tmpl *module.Charts, dbname string) *module.Charts {
+	charts := tmpl.Copy()
 	for _, c := range *charts {
 		c.ID = fmt.Sprintf(c.ID, dbname)
 		c.Labels = []module.Label{
@@ -835,7 +845,7 @@ func newDatabaseCharts(dbname string) *module.Charts {
 }
 
 func (p *Postgres) addNewDatabaseCharts(dbname string) {
-	charts := newDatabaseCharts(dbname)
+	charts := newDatabaseCharts(dbChartsTmpl.Copy(), dbname)
 	if err := p.Charts().Add(*charts...); err != nil {
 		p.Warning(err)
 	}
