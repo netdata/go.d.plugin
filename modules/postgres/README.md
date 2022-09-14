@@ -133,7 +133,7 @@ jobs:
 
 ### Database detailed metrics
 
-Details metrics include table_* and index_*.
+Detailed metrics include table_* and index_*.
 
 By default, this module only collects detailed metrics for the database it is connected to. Collection from all
 databases on a database server is disabled because each database requires an additional connection.
