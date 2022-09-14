@@ -53,6 +53,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/powerdns"
 	_ "github.com/netdata/go.d.plugin/modules/powerdns_recursor"
 	_ "github.com/netdata/go.d.plugin/modules/prometheus"
+	_ "github.com/netdata/go.d.plugin/modules/proxysql"
 	_ "github.com/netdata/go.d.plugin/modules/pulsar"
 	_ "github.com/netdata/go.d.plugin/modules/rabbitmq"
 	_ "github.com/netdata/go.d.plugin/modules/redis"

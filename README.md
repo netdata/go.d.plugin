@@ -81,6 +81,7 @@ Go.d.plugin is shipped with Netdata.
 | [postgres](https://github.com/netdata/go.d.plugin/tree/master/modules/postgres)                     |          PostgreSQL           |
 | [powerdns](https://github.com/netdata/go.d.plugin/tree/master/modules/powerdns)                     | PowerDNS Authoritative Server |
 | [powerdns_recursor](https://github.com/netdata/go.d.plugin/tree/master/modules/powerdns_recursor)   |       PowerDNS Recursor       |
+| [proxysql](https://github.com/netdata/go.d.plugin/tree/master/modules/proxysql)                     |           ProxySQL            |
 | [pulsar](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)                      |         Apache Pulsar         |
 | [rabbitmq](https://github.com/netdata/go.d.plugin/tree/master/modules/rabbitmq)                     |           RabbitMQ            |
 | [redis](https://github.com/netdata/go.d.plugin/tree/master/modules/redis)                           |             Redis             |
