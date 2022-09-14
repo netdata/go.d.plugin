@@ -11,10 +11,10 @@ import (
 )
 
 // NETDATA_CHART_PRIO_CGROUPS_CONTAINERS 40000
-const prioDiscoveryDiscovererState = 39999
+const prioDiscoveryDiscovererState = 40999
 
 const (
-	prioNodeAllocatableCPURequestsUtil = 38100 + iota
+	prioNodeAllocatableCPURequestsUtil = 40100 + iota
 	prioNodeAllocatableCPURequestsUsed
 	prioNodeAllocatableCPULimitsUtil
 	prioNodeAllocatableCPULimitsUsed
