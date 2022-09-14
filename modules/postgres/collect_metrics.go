@@ -135,19 +135,19 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 			m.hasCharts = true
 			p.addNewTableCharts(m.name, m.db, m.schema)
 		}
-		if !m.hasLastAutoVacuumChart && m.lastAutoVacuumAgo != -1 {
+		if !m.hasLastAutoVacuumChart && m.lastAutoVacuumAgo > 0 {
 			m.hasLastAutoVacuumChart = true
 			p.addTableLastAutoVacuumAgoChart(m.name, m.db, m.schema)
 		}
-		if !m.hasLastVacuumChart && m.lastVacuumAgo != -1 {
+		if !m.hasLastVacuumChart && m.lastVacuumAgo > 0 {
 			m.hasLastVacuumChart = true
 			p.addTableLastVacuumAgoChart(m.name, m.db, m.schema)
 		}
-		if !m.hasLastAutoAnalyzeChart && m.lastAutoAnalyzeAgo != -1 {
+		if !m.hasLastAutoAnalyzeChart && m.lastAutoAnalyzeAgo > 0 {
 			m.hasLastAutoAnalyzeChart = true
 			p.addTableLastAutoAnalyzeAgoChart(m.name, m.db, m.schema)
 		}
-		if !m.hasLastAnalyzeChart && m.lastAnalyzeAgo != -1 {
+		if !m.hasLastAnalyzeChart && m.lastAnalyzeAgo > 0 {
 			m.hasLastAnalyzeChart = true
 			p.addTableLastAnalyzeAgoChart(m.name, m.db, m.schema)
 		}
