@@ -55,14 +55,6 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		p.Debugf("the instance is in recovery mode: %v", *p.pgIsInRecovery)
 	}
 
-	if p.currentDB == "" {
-		v, err := p.doQueryCurrentDB()
-		if err != nil {
-			return nil, fmt.Errorf("querying current db error: %v", err)
-		}
-		p.currentDB = v
-	}
-
 	now := time.Now()
 
 	if now.Sub(p.recheckSettingsTime) > p.recheckSettingsEvery {

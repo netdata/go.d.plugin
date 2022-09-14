@@ -64,8 +64,7 @@ type (
 		pgIsInRecovery *bool
 		pgVersion      int
 
-		currentDB string
-		dbSr      matcher.Matcher
+		dbSr matcher.Matcher
 
 		mx *pgMetrics
 

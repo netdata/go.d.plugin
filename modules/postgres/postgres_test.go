@@ -26,7 +26,6 @@ var (
 	dataV140004IsSuperUserTrue, _        = os.ReadFile("testdata/v14.4/is_super_user-true.txt")
 	dataV140004PGIsInRecoveryTrue, _     = os.ReadFile("testdata/v14.4/pg_is_in_recovery-true.txt")
 	dataV140004SettingsMaxConnections, _ = os.ReadFile("testdata/v14.4/settings_max_connections.txt")
-	dataV140004CurrentDatabase, _        = os.ReadFile("testdata/v14.4/current_database.txt")
 
 	dataV140004ServerCurrentConnections, _ = os.ReadFile("testdata/v14.4/server_current_connections.txt")
 	dataV140004ServerConnectionsState, _   = os.ReadFile("testdata/v14.4/server_connections_state.txt")
@@ -68,7 +67,6 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004IsSuperUserTrue":        dataV140004IsSuperUserTrue,
 		"dataV140004PGIsInRecoveryTrue":     dataV140004PGIsInRecoveryTrue,
 		"dataV140004SettingsMaxConnections": dataV140004SettingsMaxConnections,
-		"dataV140004CurrentDatabase":        dataV140004CurrentDatabase,
 
 		"dataV140004ServerCurrentConnections": dataV140004ServerCurrentConnections,
 		"dataV140004ServerConnectionsState":   dataV140004ServerConnectionsState,
@@ -155,7 +153,6 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 				mockExpect(t, m, queryPGIsInRecovery(), dataV140004PGIsInRecoveryTrue)
-				mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 
@@ -194,7 +191,6 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 				mockExpect(t, m, queryPGIsInRecovery(), dataV140004PGIsInRecoveryTrue)
-				mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004ServerVersionNum)
 
@@ -214,7 +210,6 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 				mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 				mockExpect(t, m, queryPGIsInRecovery(), dataV140004PGIsInRecoveryTrue)
-				mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 				mockExpectErr(m, querySettingsMaxConnections())
 			},
@@ -258,7 +253,6 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 					mockExpect(t, m, queryPGIsInRecovery(), dataV140004PGIsInRecoveryTrue)
-					mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 
@@ -649,7 +643,6 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 					mockExpect(t, m, queryPGIsInRecovery(), dataV140004PGIsInRecoveryTrue)
-					mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 					mockExpectErr(m, querySettingsMaxConnections())
 				},
@@ -666,7 +659,6 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryServerVersion(), dataV140004ServerVersionNum)
 					mockExpect(t, m, queryIsSuperUser(), dataV140004IsSuperUserTrue)
 					mockExpect(t, m, queryPGIsInRecovery(), dataV140004PGIsInRecoveryTrue)
-					mockExpect(t, m, queryCurrentDatabase(), dataV140004CurrentDatabase)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
 
