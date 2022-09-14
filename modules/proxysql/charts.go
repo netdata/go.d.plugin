@@ -1,6 +1,7 @@
 package proxysql
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -12,18 +13,292 @@ type (
 	Dims   = module.Dims
 )
 
-var charts = Charts{
-	{
-		ID:    "proxysql_uptime",
-		Title: "Uptime",
-		Units: "seconds",
-		Fam:   "global_stats",
-		Ctx:   "proxysql.uptime",
-		Type:  module.Line,
+const (
+	prioSmth = module.Priority + iota
+	prioClientConnectionsCount
+	prioClientConnectionsRate
+	prioServerConnectionsCount
+	prioServerConnectionsRate
+	prioQueriesRate
+	prioBackendStatementsCount
+	prioBackendStatementsRate
+	prioFrontendStatementsCount
+	prioFrontendStatementsRate
+	prioCachedStatementsCount
+	prioQueryCacheEntriesCount
+	prioQueryCacheIO
+	prioQueryCacheRequestsRate
+	prioQueryCacheMemoryUsedCount
+	prioJemallocMemoryUsed
+	prioMemoryUsed
+	prioMySQLCommandExecutionsRate
+	prioMySQLCommandExecutionTime
+	prioMySQLCommandExecutionDurationHistogram
+	prioMySQLUserConnectionsUtilization
+	prioMySQLUserConnectionsCount
+	prioUptime
+)
+
+var (
+	baseCharts = module.Charts{
+		clientConnectionsCount.Copy(),
+		clientConnectionsRate.Copy(),
+		serverConnectionsCount.Copy(),
+		serverConnectionsRate.Copy(),
+		queriesRate.Copy(),
+		backendStatementsCount.Copy(),
+		backendStatementsRate.Copy(),
+		clientStatementsCount.Copy(),
+		clientStatementsRate.Copy(),
+		cachedStatementsCount.Copy(),
+		queryCacheEntriesCount.Copy(),
+		queryCacheIO.Copy(),
+		queryCacheRequestsRate.Copy(),
+		queryCacheMemoryUsedCount.Copy(),
+		jemallocMemoryUsedChart.Copy(),
+		memoryUsedCountChart.Copy(),
+		uptimeChart.Copy(),
+	}
+
+	clientConnectionsCount = module.Chart{
+		ID:       "client_connections_count",
+		Title:    "Client connections",
+		Units:    "connections",
+		Fam:      "client connections",
+		Ctx:      "proxysql.client_connections_count",
+		Priority: prioClientConnectionsCount,
 		Dims: Dims{
-			{ID: "proxysql_uptime", Name: "uptime", Algo: module.Absolute, Mul: 1, Div: 1},
+			{ID: "Client_Connections_connected", Name: "connected"},
+			{ID: "Client_Connections_non_idle", Name: "non_idle"},
+			{ID: "Client_Connections_hostgroup_locked", Name: "hostgroup_locked"},
 		},
-	},
+	}
+	clientConnectionsRate = module.Chart{
+		ID:       "client_connections_rate",
+		Title:    "Client connections rate",
+		Units:    "connections/s",
+		Fam:      "client connections",
+		Ctx:      "proxysql.client_connections_rate",
+		Priority: prioClientConnectionsRate,
+		Dims: Dims{
+			{ID: "Client_Connections_created", Name: "created", Algo: module.Incremental},
+			{ID: "Client_Connections_aborted", Name: "aborted", Algo: module.Incremental},
+		},
+	}
+
+	serverConnectionsCount = module.Chart{
+		ID:       "server_connections_count",
+		Title:    "Server connections",
+		Units:    "connections",
+		Fam:      "server connections",
+		Ctx:      "proxysql.server_connections_count",
+		Priority: prioServerConnectionsCount,
+		Dims: Dims{
+			{ID: "Server_Connections_connected", Name: "connected"},
+		},
+	}
+	serverConnectionsRate = module.Chart{
+		ID:       "server_connections_rate",
+		Title:    "Server connections rate",
+		Units:    "connections/s",
+		Fam:      "server connections",
+		Ctx:      "proxysql.server_connections_rate",
+		Priority: prioServerConnectionsRate,
+		Dims: Dims{
+			{ID: "Server_Connections_created", Name: "created", Algo: module.Incremental},
+			{ID: "Server_Connections_aborted", Name: "aborted", Algo: module.Incremental},
+			{ID: "Server_Connections_delayed", Name: "delayed", Algo: module.Incremental},
+		},
+	}
+
+	queriesRate = module.Chart{
+		ID:       "queries_rate",
+		Title:    "Queries rate",
+		Units:    "queries/s",
+		Fam:      "queries",
+		Ctx:      "proxysql.queries_rate",
+		Priority: prioQueriesRate,
+		Type:     module.Stacked,
+		Dims: Dims{
+			{ID: "Com_autocommit", Name: "autocommit", Algo: module.Incremental},
+			{ID: "Com_autocommit_filtered", Name: "autocommit_filtered", Algo: module.Incremental},
+			{ID: "Com_commit", Name: "commit", Algo: module.Incremental},
+			{ID: "Com_commit_filtered", Name: "commit_filtered", Algo: module.Incremental},
+			{ID: "Com_rollback", Name: "rollback", Algo: module.Incremental},
+			{ID: "Com_rollback_filtered", Name: "rollback_filtered", Algo: module.Incremental},
+			{ID: "Com_backend_change_user", Name: "backend_change_user", Algo: module.Incremental},
+			{ID: "Com_backend_init_db", Name: "backend_init_db", Algo: module.Incremental},
+			{ID: "Com_backend_set_names", Name: "backend_set_names", Algo: module.Incremental},
+			{ID: "Com_frontend_init_db", Name: "frontend_init_db", Algo: module.Incremental},
+			{ID: "Com_frontend_set_names", Name: "frontend_set_names", Algo: module.Incremental},
+			{ID: "Com_frontend_use_db", Name: "frontend_use_db", Algo: module.Incremental},
+		},
+	}
+	backendStatementsCount = module.Chart{
+		ID:       "backend_statements_count",
+		Title:    "Statements available across all backend connections",
+		Units:    "statements",
+		Fam:      "statements",
+		Ctx:      "proxysql.backend_statements_count",
+		Priority: prioBackendStatementsCount,
+		Dims: Dims{
+			{ID: "Stmt_Server_Active_Total", Name: "total"},
+			{ID: "Stmt_Server_Active_Unique", Name: "unique"},
+		},
+	}
+	backendStatementsRate = module.Chart{
+		ID:       "backend_statements_rate",
+		Title:    "Statements executed against the backends",
+		Units:    "statements/s",
+		Fam:      "statements",
+		Ctx:      "proxysql.backend_statements_rate",
+		Priority: prioBackendStatementsRate,
+		Type:     module.Stacked,
+		Dims: Dims{
+			{ID: "Com_backend_stmt_prepare", Name: "prepare", Algo: module.Incremental},
+			{ID: "Com_backend_stmt_execute", Name: "execute", Algo: module.Incremental},
+			{ID: "Com_backend_stmt_close", Name: "close", Algo: module.Incremental},
+		},
+	}
+	clientStatementsCount = module.Chart{
+		ID:       "client_statements_count",
+		Title:    "Statements that are in use by clients",
+		Units:    "statements",
+		Fam:      "statements",
+		Ctx:      "proxysql.client_statements_count",
+		Priority: prioFrontendStatementsCount,
+		Dims: Dims{
+			{ID: "Stmt_Client_Active_Total", Name: "total"},
+			{ID: "Stmt_Client_Active_Unique", Name: "unique"},
+		},
+	}
+	clientStatementsRate = module.Chart{
+		ID:       "client_statements_rate",
+		Title:    "Statements executed by clients",
+		Units:    "statements/s",
+		Fam:      "statements",
+		Ctx:      "proxysql.client_statements_rate",
+		Priority: prioFrontendStatementsRate,
+		Type:     module.Stacked,
+		Dims: Dims{
+			{ID: "Com_frontend_stmt_prepare", Name: "prepare", Algo: module.Incremental},
+			{ID: "Com_frontend_stmt_execute", Name: "execute", Algo: module.Incremental},
+			{ID: "Com_frontend_stmt_close", Name: "close", Algo: module.Incremental},
+		},
+	}
+	cachedStatementsCount = module.Chart{
+		ID:       "cached_statements_count",
+		Title:    "Global prepared statements",
+		Units:    "statements",
+		Fam:      "statements",
+		Ctx:      "proxysql.cached_statements_count",
+		Priority: prioCachedStatementsCount,
+		Dims: Dims{
+			{ID: "Stmt_Cached", Name: "cached"},
+		},
+	}
+
+	queryCacheEntriesCount = module.Chart{
+		ID:       "query_cache_entries_count",
+		Title:    "Query Cache entries",
+		Units:    "entries",
+		Fam:      "query cache",
+		Ctx:      "proxysql.query_cache_entries_count",
+		Priority: prioQueryCacheEntriesCount,
+		Dims: Dims{
+			{ID: "Query_Cache_Entries", Name: "entries"},
+		},
+	}
+	queryCacheMemoryUsedCount = module.Chart{
+		ID:       "query_cache_memory_used_count",
+		Title:    "Query Cache memory used",
+		Units:    "B",
+		Fam:      "query cache",
+		Ctx:      "proxysql.query_cache_memory_used_count",
+		Priority: prioQueryCacheMemoryUsedCount,
+		Dims: Dims{
+			{ID: "Query_Cache_Memory_bytes", Name: "used"},
+		},
+	}
+	queryCacheIO = module.Chart{
+		ID:       "query_cache_io",
+		Title:    "Query Cache I/)",
+		Units:    "B/s",
+		Fam:      "query cache",
+		Ctx:      "proxysql.query_cache_io",
+		Priority: prioQueryCacheIO,
+		Dims: Dims{
+			{ID: "Query_Cache_bytes_IN", Name: "in", Algo: module.Incremental},
+			{ID: "Query_Cache_bytes_OUT", Name: "out", Algo: module.Incremental},
+		},
+	}
+	queryCacheRequestsRate = module.Chart{
+		ID:       "query_cache_requests_rate",
+		Title:    "Query Cache requests",
+		Units:    "requests/s",
+		Fam:      "query cache",
+		Ctx:      "proxysql.query_cache_requests_rate",
+		Priority: prioQueryCacheRequestsRate,
+		Dims: Dims{
+			{ID: "Query_Cache_count_GET", Name: "read", Algo: module.Incremental},
+			{ID: "Query_Cache_count_SET", Name: "write", Algo: module.Incremental},
+			{ID: "Query_Cache_count_GET_OK", Name: "read_success", Algo: module.Incremental},
+		},
+	}
+
+	jemallocMemoryUsedChart = module.Chart{
+		ID:       "jemalloc_memory_used",
+		Title:    "Jemalloc used memory",
+		Units:    "bytes",
+		Fam:      "memory",
+		Ctx:      "proxysql.jemalloc_memory_used",
+		Type:     module.Stacked,
+		Priority: prioJemallocMemoryUsed,
+		Dims: Dims{
+			{ID: "jemalloc_active", Name: "active"},
+			{ID: "jemalloc_allocated", Name: "allocated"},
+			{ID: "jemalloc_mapped", Name: "mapped"},
+			{ID: "jemalloc_metadata", Name: "metadata"},
+			{ID: "jemalloc_resident", Name: "resident"},
+			{ID: "jemalloc_retained", Name: "retained"},
+		},
+	}
+	memoryUsedCountChart = module.Chart{
+		ID:       "memory_used",
+		Title:    "Memory used",
+		Units:    "bytes",
+		Fam:      "memory",
+		Ctx:      "proxysql.memory_used",
+		Priority: prioMemoryUsed,
+		Type:     module.Stacked,
+		Dims: Dims{
+			{ID: "Auth_memory", Name: "auth"},
+			{ID: "SQLite3_memory_bytes", Name: "sqlite3"},
+			{ID: "query_digest_memory", Name: "query_digest"},
+			{ID: "mysql_query_rules_memory", Name: "query_rules"},
+			{ID: "mysql_firewall_users_table", Name: "firewall_users_table"},
+			{ID: "mysql_firewall_users_config", Name: "firewall_users_config"},
+			{ID: "mysql_firewall_rules_table", Name: "firewall_rules_table"},
+			{ID: "mysql_firewall_rules_config", Name: "firewall_rules_config"},
+			{ID: "stack_memory_mysql_threads", Name: "mysql_threads"},
+			{ID: "stack_memory_admin_threads", Name: "admin_threads"},
+			{ID: "stack_memory_cluster_threads", Name: "cluster_threads"},
+		},
+	}
+	uptimeChart = module.Chart{
+		ID:       "proxysql_uptime",
+		Title:    "Uptime",
+		Units:    "seconds",
+		Fam:      "uptime",
+		Ctx:      "proxysql.uptime",
+		Priority: prioUptime,
+		Dims: Dims{
+			{ID: "ProxySQL_Uptime", Name: "uptime"},
+		},
+	}
+)
+
+var charts = Charts{
 	{
 		ID:    "questions",
 		Title: "Questions",
@@ -102,35 +377,6 @@ var charts = Charts{
 		},
 	},
 	{
-		ID:    "client_connections",
-		Title: "Client connections",
-		Units: "connections",
-		Fam:   "global_stats",
-		Ctx:   "proxysql.client_connections",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "client_connections_aborted", Name: "aborted", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "client_connections_connected", Name: "connected", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "client_connections_created", Name: "created", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "client_connections_hostgroup_locked", Name: "hostgroup locked", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "client_connections_non_idle", Name: "non idle", Algo: module.Absolute, Mul: 1, Div: 1},
-		},
-	},
-	{
-		ID:    "server_connections",
-		Title: "Server connections",
-		Units: "connections",
-		Fam:   "global_stats",
-		Ctx:   "proxysql.server_connections",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "server_connections_aborted", Name: "aborted", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "server_connections_connected", Name: "connected", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "server_connections_created", Name: "created", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "server_connections_delayed", Name: "delayed", Algo: module.Absolute, Mul: 1, Div: 1},
-		},
-	},
-	{
 		ID:    "access_denied",
 		Title: "Access denied",
 		Units: "number",
@@ -153,34 +399,6 @@ var charts = Charts{
 		Dims: Dims{
 			{ID: "backend_query_time", Name: "backend query time", Algo: module.Absolute, Mul: 1, Div: 1},
 			{ID: "query_processor_time_nsec", Name: "query processor time", Algo: module.Absolute, Mul: 1, Div: 1},
-		},
-	},
-	{
-		ID:    "commands",
-		Title: "Commands",
-		Units: "commands",
-		Fam:   "global_stats",
-		Ctx:   "proxysql.commands",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "com_autocommit", Name: "autocommit", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_autocommit_filtered", Name: "autocommit filterred", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_backend_change_user", Name: "backend change user", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_backend_init_db", Name: "backend init db", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_backend_set_names", Name: "backend set names", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_backend_stmt_close", Name: "backend stmt close", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_backend_stmt_execute", Name: "backend stmt execute", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_backend_stmt_prepare", Name: "backend stmt prepare", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_commit", Name: "commit", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_commit_filtered", Name: "commit filtered", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_frontend_init_db", Name: "frontend init db", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_frontend_set_names", Name: "frontend set names", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_frontend_stmt_close", Name: "frontend stmt close", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_frontend_stmt_execute", Name: "frontend stmt execute", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_frontend_stmt_prepare", Name: "frontend stmt prepare", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_frontend_use_db", Name: "frontend use db", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_rollback", Name: "rollback", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "com_rollback_filtered", Name: "rollback filtered", Algo: module.Absolute, Mul: 1, Div: 1},
 		},
 	},
 	{
@@ -256,25 +474,8 @@ var charts = Charts{
 			{ID: "queries_backends_bytes_sent", Name: "query backends sent", Algo: module.Absolute, Mul: -8, Div: 1000},
 			{ID: "queries_frontends_bytes_recv", Name: "query frontends received", Algo: module.Absolute, Mul: 8, Div: 1000},
 			{ID: "queries_frontends_bytes_sent", Name: "query backends received", Algo: module.Absolute, Mul: -8, Div: 1000},
-			{ID: "query_cache_bytes_in", Name: "query cache in", Algo: module.Absolute, Mul: 8, Div: 1000},
-			{ID: "query_cache_bytes_out", Name: "query cache out", Algo: module.Absolute, Mul: -8, Div: 1000},
 			{ID: "mysql_backend_buffers_bytes", Name: "mysql backend buffers", Algo: module.Absolute, Mul: -8, Div: 1000},
 			{ID: "mysql_frontend_buffers_bytes", Name: "mysql frontend buffers", Algo: module.Absolute, Mul: -8, Div: 1000},
-		},
-	},
-	{
-		ID:    "query_cache",
-		Title: "Query cache",
-		Units: "number of entries",
-		Fam:   "global_stats",
-		Ctx:   "proxysql.query_cache",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "query_cache_entries", Name: "entries", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "query_cache_purged", Name: "purged", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "query_cache_count_get", Name: "count get", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "query_cache_count_get_ok", Name: "count get ok", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "query_cache_count_set", Name: "count set", Algo: module.Absolute, Mul: 1, Div: 1},
 		},
 	},
 	{
@@ -288,160 +489,132 @@ var charts = Charts{
 			{ID: "servers_table_version", Name: "version", Algo: module.Absolute, Mul: 1, Div: 1},
 		},
 	},
-	{
-		ID:    "prepared_statements",
-		Title: "Prepared statements",
-		Units: "prepared statements",
-		Fam:   "global_stats",
-		Ctx:   "proxysql.prepared_statements",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "stmt_cached", Name: "cached", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "stmt_client_active_total", Name: "client active total", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "stmt_client_active_unique", Name: "client active unique", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "stmt_max_stmt_id", Name: "max statement id", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "stmt_server_active_total", Name: "server active total", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "stmt_server_active_unique", Name: "server active unique", Algo: module.Absolute, Mul: 1, Div: 1},
-		},
-	},
-	{
-		ID:    "mysql_max_allowed_packet",
-		Title: "MySQL max allowed packet",
-		Units: "bytes",
-		Fam:   "global_vars",
-		Ctx:   "proxysql.mysql_max_allowed_packet",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "mysql_max_allowed_packet", Name: "mysql max allowed packets", Algo: module.Absolute, Mul: 1, Div: 1},
-		},
-	},
-	{
-		ID:    "memory",
-		Title: "Memory",
-		Units: "bytes",
-		Fam:   "memory",
-		Ctx:   "proxysql.memory",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "auth_memory", Name: "auth", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "sqlite3_memory_bytes", Name: "sqlite3", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "query_digest_memory", Name: "query digest", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "connpool_memory_bytes", Name: "connection pool", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "query_cache_memory_bytes", Name: "query cache", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "mysql_session_internal_bytes", Name: "mysql session internal", Algo: module.Absolute, Mul: 1, Div: 1},
-		},
-	},
-	{
-		ID:    "jemalloc_memory",
-		Title: "jemalloc memory",
-		Units: "bytes",
-		Fam:   "memory",
-		Ctx:   "proxysql.jemalloc_memory",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "jemalloc_active", Name: "active", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "jemalloc_allocated", Name: "allocated", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "jemalloc_mapped", Name: "mapped", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "jemalloc_metadata", Name: "metadata", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "jemalloc_resident", Name: "resident", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "jemalloc_retained", Name: "retained", Algo: module.Absolute, Mul: 1, Div: 1},
-		},
-	},
-	{
-		ID:    "mysql",
-		Title: "MySQL",
-		Units: "bytes",
-		Fam:   "memory",
-		Ctx:   "proxysql.mysql_memory",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "mysql_firewall_rules_config", Name: "firewall_rules_config", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "mysql_firewall_rules_table", Name: "firewall_rules_table", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "mysql_firewall_users_config", Name: "firewall_users_config", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "mysql_firewall_users_table", Name: "firewall_users_table", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "mysql_query_rules_memory", Name: "query_rules_memory", Algo: module.Absolute, Mul: 1, Div: 1},
-		},
-	},
-	{
-		ID:    "stack_memory",
-		Title: "Stack memory",
-		Units: "bytes",
-		Fam:   "memory",
-		Ctx:   "proxysql.stack_memory",
-		Type:  module.Line,
-		Dims: Dims{
-			{ID: "stack_memory_admin_threads", Name: "admin_threads", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "stack_memory_cluster_threads", Name: "cluster_threads", Algo: module.Absolute, Mul: 1, Div: 1},
-			{ID: "stack_memory_mysql_threads", Name: "mysql_threads", Algo: module.Absolute, Mul: 1, Div: 1},
-		},
-	},
 }
 
-func newMysqlCommandCountersCharts(command string) module.Charts {
-	command = strings.ToLower(command)
-	return module.Charts{
-		{
-			ID:    "mysql_command_counts_" + command,
-			Title: "MySQL command counts",
-			Units: "commands",
-			Fam:   "mysql command " + command,
-			Ctx:   "proxysql.mysql_command_counts",
-			Type:  module.Line,
-			Dims: Dims{
-				{ID: "mysql_command_" + command + "_total_cnt", Name: "total commands", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_100us", Name: "less than 100us", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_500us", Name: "less than 500us", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_1ms", Name: "less than 1ms", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_5ms", Name: "less than 5ms", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_10ms", Name: "less than 10ms", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_50ms", Name: "less than 50ms", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_100ms", Name: "less than 100ms", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_500ms", Name: "less than 500ms", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_1s", Name: "less than 1s", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_5s", Name: "less than 5s", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_10s", Name: "less than 10s", Algo: module.Incremental},
-				{ID: "mysql_command_" + command + "_cnt_INFs", Name: "less than infinity", Algo: module.Incremental},
-			},
-		},
-		{
-			ID:    "mysql_command_time_" + command,
-			Title: "Duration",
-			Units: "microseconds",
-			Fam:   "mysql command " + command,
-			Ctx:   "proxysql.mysql_command_time",
-			Type:  module.Stacked,
-			Dims: Dims{
-				{ID: "mysql_command_" + command + "_total_time_us", Name: "Total", Algo: module.Incremental},
-			},
+var (
+	mySQLCommandChartsTmpl = module.Charts{
+		mySQLCommandExecutionRateChartTmpl.Copy(),
+		mySQLCommandExecutionTimeChartTmpl.Copy(),
+		mySQLCommandExecutionDurationHistogramChartTmpl.Copy(),
+	}
+
+	mySQLCommandExecutionRateChartTmpl = module.Chart{
+		ID:       "mysql_command_%s_execution_rate",
+		Title:    "MySQL command execution",
+		Units:    "commands/s",
+		Fam:      "command execution",
+		Ctx:      "proxysql.mysql_command_execution_rate",
+		Priority: prioMySQLCommandExecutionsRate,
+		Dims: Dims{
+			{ID: "mysql_command_%s_total_cnt", Name: "commands", Algo: module.Incremental},
 		},
 	}
-}
-
-func newMysqlUsersCharts(username string) module.Charts {
-	return module.Charts{
-		{
-			ID:    "mysql_users_" + username,
-			Title: "MySQL users",
-			Units: "connections",
-			Fam:   "mysql user " + username,
-			Ctx:   "proxysql.mysql_users",
-			Type:  module.Line,
-			Dims: Dims{
-				{ID: "mysql_user_" + username + "_frontend_connections", Name: "frontend connections", Algo: module.Absolute},
-				{ID: "mysql_user_" + username + "_frontend_max_connections", Name: "frontend max connections", Algo: module.Absolute},
-			},
+	mySQLCommandExecutionTimeChartTmpl = module.Chart{
+		ID:       "mysql_command_%s_execution_time",
+		Title:    "MySQL command execution time",
+		Units:    "microseconds",
+		Fam:      "command execution time",
+		Ctx:      "proxysql.mysql_command_execution_time",
+		Priority: prioMySQLCommandExecutionTime,
+		Dims: Dims{
+			{ID: "mysql_command_%s_total_time_us", Name: "time", Algo: module.Incremental},
 		},
 	}
+	mySQLCommandExecutionDurationHistogramChartTmpl = module.Chart{
+		ID:       "mysql_command_%s_execution_duration",
+		Title:    "MySQL command execution duration histogram",
+		Units:    "commands/s",
+		Fam:      "command execution duration",
+		Ctx:      "proxysql.mysql_command_execution_duration",
+		Type:     module.Stacked,
+		Priority: prioMySQLCommandExecutionDurationHistogram,
+		Dims: Dims{
+			{ID: "mysql_command_%s_cnt_100us", Name: "100us", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_500us", Name: "500us", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_1ms", Name: "1ms", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_5ms", Name: "5ms", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_10ms", Name: "10ms", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_50ms", Name: "50ms", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_100ms", Name: "100ms", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_500ms", Name: "500ms", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_1s", Name: "1s", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_5s", Name: "5s", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_10s", Name: "10s", Algo: module.Incremental},
+			{ID: "mysql_command_%s_cnt_INFs", Name: "+Inf", Algo: module.Incremental},
+		},
+	}
+)
+
+func newMySQLCommandCountersCharts(command string) *module.Charts {
+	charts := mySQLCommandChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, strings.ToLower(command))
+		chart.Labels = []module.Label{{Key: "command", Value: command}}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, command)
+		}
+	}
+
+	return charts
 }
 
-func (p *ProxySQL) addMysqlCommandCountersCharts(command string) {
-	if err := p.Charts().Add(newMysqlCommandCountersCharts(command)...); err != nil {
+func (p *ProxySQL) addMySQLCommandCountersCharts(command string) {
+	charts := newMySQLCommandCountersCharts(command)
+
+	if err := p.Charts().Add(*charts...); err != nil {
 		p.Warning(err)
 	}
 }
 
+var (
+	mySQLUserChartsTmpl = module.Charts{
+		mySQLUserConnectionsUtilizationChartTmpl.Copy(),
+		mySQLUserConnectionsCountChartTmpl.Copy(),
+	}
+
+	mySQLUserConnectionsUtilizationChartTmpl = module.Chart{
+		ID:       "mysql_user_%s_connections_utilization",
+		Title:    "MySQL user connections utilization",
+		Units:    "percentage",
+		Fam:      "user conns %",
+		Ctx:      "proxysql.mysql_user_connections_utilization",
+		Priority: prioMySQLUserConnectionsUtilization,
+		Dims: Dims{
+			{ID: "mysql_user_%s_frontend_connections_utilization", Name: "used"},
+		},
+	}
+	mySQLUserConnectionsCountChartTmpl = module.Chart{
+		ID:       "mysql_user_%s_connections_count",
+		Title:    "MySQL user connections used",
+		Units:    "connections",
+		Fam:      "user conns",
+		Ctx:      "proxysql.mysql_user_connections_count",
+		Priority: prioMySQLUserConnectionsCount,
+		Dims: Dims{
+			{ID: "mysql_user_%s_frontend_connections", Name: "used"},
+		},
+	}
+)
+
+func newMySQLUserCharts(username string) *module.Charts {
+	charts := mySQLUserChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, username)
+		chart.Labels = []module.Label{{Key: "user", Value: username}}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, username)
+		}
+	}
+
+	return charts
+}
+
 func (p *ProxySQL) addMysqlUsersCharts(username string) {
-	if err := p.Charts().Add(newMysqlUsersCharts(username)...); err != nil {
+	charts := newMySQLUserCharts(username)
+
+	if err := p.Charts().Add(*charts...); err != nil {
 		p.Warning(err)
 	}
 }

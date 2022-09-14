@@ -18,21 +18,24 @@ import (
 )
 
 var (
-	dataProxySQLV2010Version, _              = os.ReadFile("testdata/v2.0.10/version.txt")
-	dataProxySQLV2010GlobalVariables, _      = os.ReadFile("testdata/v2.0.10/global_variables.txt")
-	dataProxySQLV2010StatMemorMetrics, _     = os.ReadFile("testdata/v2.0.10/stats_memory_metrics.txt")
-	dataProxySQLV2010StatCommandsCounters, _ = os.ReadFile("testdata/v2.0.10/stats_mysql_commands_counters.txt")
-	dataProxySQLV2010StatMySQLGlobal, _      = os.ReadFile("testdata/v2.0.10/stats_mysql_global.txt")
-	dataProxySQLV2010StatMySQLUsers, _       = os.ReadFile("testdata/v2.0.10/stats_mysql_users.txt")
+	dataProxySQLV2010Version, _                    = os.ReadFile("testdata/v2.0.10/version.txt")
+	dataProxySQLV2010StatsMySQLGlobal, _           = os.ReadFile("testdata/v2.0.10/stats_mysql_global.txt")
+	dataProxySQLV2010StatsMemoryMetrics, _         = os.ReadFile("testdata/v2.0.10/stats_memory_metrics.txt")
+	dataProxySQLV2010StatsMySQLCommandsCounters, _ = os.ReadFile("testdata/v2.0.10/stats_mysql_commands_counters.txt")
+	dataProxySQLV2010StatsMySQLUsers, _            = os.ReadFile("testdata/v2.0.10/stats_mysql_users.txt")
 )
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"dataProxySQLV2010Version": dataProxySQLV2010Version,
+		"dataProxySQLV2010Version":                    dataProxySQLV2010Version,
+		"dataProxySQLV2010StatsMySQLGlobal":           dataProxySQLV2010StatsMySQLGlobal,
+		"dataProxySQLV2010StatsMemoryMetrics":         dataProxySQLV2010StatsMemoryMetrics,
+		"dataProxySQLV2010StatsMySQLCommandsCounters": dataProxySQLV2010StatsMySQLCommandsCounters,
+		"dataProxySQLV2010StatsMySQLUsers":            dataProxySQLV2010StatsMySQLUsers,
 	} {
-		require.NotNilf(t, data, fmt.Sprintf("read data: %s", name))
+		require.NotNilf(t, data, name)
 		_, err := prepareMockRows(data)
-		require.NoErrorf(t, err, fmt.Sprintf("prepare mock rows: %s", name))
+		require.NoErrorf(t, err, name)
 	}
 }
 
@@ -106,51 +109,40 @@ func TestProxySQL_Check(t *testing.T) {
 		"success on all queries": {
 			wantFail: false,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-				mockExpect(t, m, queryGlobalVars, dataProxySQLV2010GlobalVariables)
-				mockExpect(t, m, queryMemoryMetrics, dataProxySQLV2010StatMemorMetrics)
-				mockExpect(t, m, queryMysqlCommandCounters, dataProxySQLV2010StatCommandsCounters)
-				mockExpect(t, m, queryMysqlGlobalStatus, dataProxySQLV2010StatMySQLGlobal)
-				mockExpect(t, m, queryMysqlusers, dataProxySQLV2010StatMySQLUsers)
-			},
-		},
-		"fails when error on querying global status": {
-			wantFail: true,
-			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-				mockExpectErr(m, queryGlobalVars)
+				mockExpect(t, m, queryStatsMySQLMemoryMetrics, dataProxySQLV2010StatsMemoryMetrics)
+				mockExpect(t, m, queryStatsMySQLCommandsCounters, dataProxySQLV2010StatsMySQLCommandsCounters)
+				mockExpect(t, m, queryStatsMySQLGlobal, dataProxySQLV2010StatsMySQLGlobal)
+				mockExpect(t, m, queryStatsMySQLUsers, dataProxySQLV2010StatsMySQLUsers)
 			},
 		},
 		"fails when error on querying global memory metrics": {
 			wantFail: true,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-				mockExpect(t, m, queryGlobalVars, dataProxySQLV2010GlobalVariables)
-				mockExpectErr(m, queryMemoryMetrics)
+				mockExpectErr(m, queryStatsMySQLMemoryMetrics)
 			},
 		},
 		"fails when error on querying command counters": {
 			wantFail: true,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-				mockExpect(t, m, queryGlobalVars, dataProxySQLV2010GlobalVariables)
-				mockExpect(t, m, queryMemoryMetrics, dataProxySQLV2010StatMemorMetrics)
-				mockExpectErr(m, queryMysqlCommandCounters)
+				mockExpect(t, m, queryStatsMySQLMemoryMetrics, dataProxySQLV2010StatsMemoryMetrics)
+				mockExpectErr(m, queryStatsMySQLCommandsCounters)
 			},
 		},
 		"fails when error on querying mysql global status": {
 			wantFail: true,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-				mockExpect(t, m, queryGlobalVars, dataProxySQLV2010GlobalVariables)
-				mockExpect(t, m, queryMemoryMetrics, dataProxySQLV2010StatMemorMetrics)
-				mockExpect(t, m, queryMysqlCommandCounters, dataProxySQLV2010StatCommandsCounters)
-				mockExpectErr(m, queryMysqlGlobalStatus)
+				mockExpect(t, m, queryStatsMySQLMemoryMetrics, dataProxySQLV2010StatsMemoryMetrics)
+				mockExpect(t, m, queryStatsMySQLCommandsCounters, dataProxySQLV2010StatsMySQLCommandsCounters)
+				mockExpectErr(m, queryStatsMySQLGlobal)
 			},
 		},
 		"fails when error on querying command counter statistics": {
 			wantFail: true,
 			prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-				mockExpect(t, m, queryGlobalVars, dataProxySQLV2010GlobalVariables)
-				mockExpect(t, m, queryMemoryMetrics, dataProxySQLV2010StatMemorMetrics)
-				mockExpect(t, m, queryMysqlCommandCounters, dataProxySQLV2010StatCommandsCounters)
-				mockExpect(t, m, queryMysqlGlobalStatus, dataProxySQLV2010StatMySQLGlobal)
-				mockExpectErr(m, queryMysqlusers)
+				mockExpect(t, m, queryStatsMySQLMemoryMetrics, dataProxySQLV2010StatsMemoryMetrics)
+				mockExpect(t, m, queryStatsMySQLCommandsCounters, dataProxySQLV2010StatsMySQLCommandsCounters)
+				mockExpect(t, m, queryStatsMySQLGlobal, dataProxySQLV2010StatsMySQLGlobal)
+				mockExpectErr(m, queryStatsMySQLUsers)
 			},
 		},
 	}
@@ -189,11 +181,10 @@ func TestProxySQL_Collect(t *testing.T) {
 		"ProxySQL[v2.0.10]: success on all queries": {
 			{
 				prepareMock: func(t *testing.T, m sqlmock.Sqlmock) {
-					mockExpect(t, m, queryGlobalVars, dataProxySQLV2010GlobalVariables)
-					mockExpect(t, m, queryMemoryMetrics, dataProxySQLV2010StatMemorMetrics)
-					mockExpect(t, m, queryMysqlCommandCounters, dataProxySQLV2010StatCommandsCounters)
-					mockExpect(t, m, queryMysqlGlobalStatus, dataProxySQLV2010StatMySQLGlobal)
-					mockExpect(t, m, queryMysqlusers, dataProxySQLV2010StatMySQLUsers)
+					mockExpect(t, m, queryStatsMySQLMemoryMetrics, dataProxySQLV2010StatsMemoryMetrics)
+					mockExpect(t, m, queryStatsMySQLCommandsCounters, dataProxySQLV2010StatsMySQLCommandsCounters)
+					mockExpect(t, m, queryStatsMySQLGlobal, dataProxySQLV2010StatsMySQLGlobal)
+					mockExpect(t, m, queryStatsMySQLUsers, dataProxySQLV2010StatsMySQLUsers)
 				},
 				check: func(t *testing.T, my *ProxySQL) {
 					mx := my.Collect()
