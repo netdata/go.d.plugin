@@ -12,9 +12,11 @@ import (
 const (
 	prioClientConnectionsCount = module.Priority + iota
 	prioClientConnectionsRate
-	prioClientConnectionsProcessingTransactionsCount
 	prioServerConnectionsCount
 	prioServerConnectionsRate
+	prioBackendsTraffic
+	prioFrontendsTraffic
+	prioActiveTransactionsCount
 	prioQuestionsRate
 	prioSlowQueriesRate
 	prioQueriesRate
@@ -53,9 +55,11 @@ var (
 	baseCharts = module.Charts{
 		clientConnectionsCountChart.Copy(),
 		clientConnectionsRateChart.Copy(),
-		clientConnectionsProcessingTransactionsCountChart.Copy(),
 		serverConnectionsCountChart.Copy(),
 		serverConnectionsRateChart.Copy(),
+		backendsTrafficChart.Copy(),
+		frontendsTrafficChart.Copy(),
+		activeTransactionsCountChart.Copy(),
 		questionsRateChart.Copy(),
 		slowQueriesRateChart.Copy(),
 		queriesRateChart.Copy(),
@@ -83,7 +87,7 @@ var (
 		ID:       "client_connections_count",
 		Title:    "Client connections",
 		Units:    "connections",
-		Fam:      "client connections",
+		Fam:      "connections",
 		Ctx:      "proxysql.client_connections_count",
 		Priority: prioClientConnectionsCount,
 		Dims: module.Dims{
@@ -96,7 +100,7 @@ var (
 		ID:       "client_connections_rate",
 		Title:    "Client connections rate",
 		Units:    "connections/s",
-		Fam:      "client connections",
+		Fam:      "connections",
 		Ctx:      "proxysql.client_connections_rate",
 		Priority: prioClientConnectionsRate,
 		Dims: module.Dims{
@@ -104,23 +108,12 @@ var (
 			{ID: "Client_Connections_aborted", Name: "aborted", Algo: module.Incremental},
 		},
 	}
-	clientConnectionsProcessingTransactionsCountChart = module.Chart{
-		ID:       "client_connections_processing_transactions_count",
-		Title:    "client connections that are currently processing a transaction",
-		Units:    "connections",
-		Fam:      "client connections",
-		Ctx:      "proxysql.client_connections_processing_transactions_count",
-		Priority: prioClientConnectionsProcessingTransactionsCount,
-		Dims: module.Dims{
-			{ID: "Active_Transactions", Name: "client"},
-		},
-	}
 
 	serverConnectionsCountChart = module.Chart{
 		ID:       "server_connections_count",
 		Title:    "Server connections",
 		Units:    "connections",
-		Fam:      "server connections",
+		Fam:      "connections",
 		Ctx:      "proxysql.server_connections_count",
 		Priority: prioServerConnectionsCount,
 		Dims: module.Dims{
@@ -131,7 +124,7 @@ var (
 		ID:       "server_connections_rate",
 		Title:    "Server connections rate",
 		Units:    "connections/s",
-		Fam:      "server connections",
+		Fam:      "connections",
 		Ctx:      "proxysql.server_connections_rate",
 		Priority: prioServerConnectionsRate,
 		Dims: module.Dims{
@@ -141,6 +134,42 @@ var (
 		},
 	}
 
+	backendsTrafficChart = module.Chart{
+		ID:       "backends_traffic",
+		Title:    "Backends traffic",
+		Units:    "B/s",
+		Fam:      "traffic",
+		Ctx:      "proxysql.backends_traffic",
+		Priority: prioBackendsTraffic,
+		Dims: module.Dims{
+			{ID: "Queries_backends_bytes_recv", Name: "recv", Algo: module.Incremental},
+			{ID: "Queries_backends_bytes_sent", Name: "sent", Algo: module.Incremental},
+		},
+	}
+	frontendsTrafficChart = module.Chart{
+		ID:       "clients_traffic",
+		Title:    "Clients traffic",
+		Units:    "B/s",
+		Fam:      "traffic",
+		Ctx:      "proxysql.clients_traffic",
+		Priority: prioFrontendsTraffic,
+		Dims: module.Dims{
+			{ID: "Queries_frontends_bytes_recv", Name: "recv", Algo: module.Incremental},
+			{ID: "Queries_frontends_bytes_sent", Name: "sent", Algo: module.Incremental},
+		},
+	}
+
+	activeTransactionsCountChart = module.Chart{
+		ID:       "active_transactions_count",
+		Title:    "Client connections that are currently processing a transaction",
+		Units:    "transactions",
+		Fam:      "transactions",
+		Ctx:      "proxysql.active_transactions_count",
+		Priority: prioActiveTransactionsCount,
+		Dims: module.Dims{
+			{ID: "Active_Transactions", Name: "active"},
+		},
+	}
 	questionsRateChart = module.Chart{
 		ID:       "questions_rate",
 		Title:    "Client requests / statements executed",
@@ -434,7 +463,7 @@ var (
 		ID:       "mysql_command_%s_execution_rate",
 		Title:    "MySQL command execution",
 		Units:    "commands/s",
-		Fam:      "command execution",
+		Fam:      "command exec",
 		Ctx:      "proxysql.mysql_command_execution_rate",
 		Priority: prioMySQLCommandExecutionsRate,
 		Dims: module.Dims{
@@ -445,7 +474,7 @@ var (
 		ID:       "mysql_command_%s_execution_time",
 		Title:    "MySQL command execution time",
 		Units:    "microseconds",
-		Fam:      "command execution time",
+		Fam:      "command exec time",
 		Ctx:      "proxysql.mysql_command_execution_time",
 		Priority: prioMySQLCommandExecutionTime,
 		Dims: module.Dims{
@@ -456,7 +485,7 @@ var (
 		ID:       "mysql_command_%s_execution_duration",
 		Title:    "MySQL command execution duration histogram",
 		Units:    "commands/s",
-		Fam:      "command execution duration",
+		Fam:      "command exec duration",
 		Ctx:      "proxysql.mysql_command_execution_duration",
 		Type:     module.Stacked,
 		Priority: prioMySQLCommandExecutionDurationHistogram,
@@ -520,7 +549,7 @@ var (
 		ID:       "mysql_user_%s_connections_utilization",
 		Title:    "MySQL user connections utilization",
 		Units:    "percentage",
-		Fam:      "user conns %",
+		Fam:      "user conns",
 		Ctx:      "proxysql.mysql_user_connections_utilization",
 		Priority: prioMySQLUserConnectionsUtilization,
 		Dims: module.Dims{

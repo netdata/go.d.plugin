@@ -5,6 +5,7 @@ package proxysql
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"sync"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -25,6 +26,7 @@ func New() *ProxySQL {
 		},
 
 		charts: baseCharts.Copy(),
+		once:   &sync.Once{},
 		cache: &cache{
 			commands: make(map[string]*commandCache),
 			users:    make(map[string]*userCache),
@@ -48,6 +50,7 @@ type (
 
 		charts *module.Charts
 
+		once  *sync.Once
 		cache *cache
 	}
 )

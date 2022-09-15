@@ -27,6 +27,15 @@ func (p *ProxySQL) collect() (map[string]int64, error) {
 		}
 	}
 
+	p.once.Do(func() {
+		v, err := p.doQueryVersion()
+		if err != nil {
+			p.Warningf("error on querying version: %v", err)
+		} else {
+			p.Debugf("connected to ProxySQL version: %s", v)
+		}
+	})
+
 	p.cache.reset()
 
 	mx := make(map[string]int64)
@@ -50,6 +59,18 @@ func (p *ProxySQL) collect() (map[string]int64, error) {
 	p.updateCharts()
 
 	return mx, nil
+}
+
+func (p *ProxySQL) doQueryVersion() (string, error) {
+	q := queryVersion
+	p.Debugf("executing query: '%s'", q)
+
+	var v string
+	if err := p.doQueryRow(q, &v); err != nil {
+		return "", err
+	}
+
+	return v, nil
 }
 
 func (p *ProxySQL) collectStatsMySQLGlobal(mx map[string]int64) error {
@@ -107,13 +128,17 @@ func (p *ProxySQL) collectStatsMySQLUsers(mx map[string]int64) error {
 	p.Debugf("executing query: '%s'", q)
 
 	var user string
+	var used int64
 	return p.doQuery(q, func(column, value string, rowEnd bool) {
 		switch column {
 		case "username":
 			user = value
 			p.cache.getUser(user).updated = true
-		default:
-			mx["mysql_user_"+user+"_"+column] = parseInt(value)
+		case "frontend_connections":
+			used = parseInt(value)
+			mx["mysql_user_"+user+"_"+column] = used
+		case "frontend_max_connections":
+			mx["mysql_user_"+user+"_frontend_connections_utilization"] = calcPercentage(used, parseInt(value))
 		}
 	})
 }
@@ -256,6 +281,16 @@ func makeValues(size int) []any {
 
 func parseInt(value string) int64 {
 	v, _ := strconv.ParseInt(value, 10, 64)
+	return v
+}
+
+func calcPercentage(value, total int64) (v int64) {
+	if total == 0 {
+		return 0
+	}
+	if v = value * 100 / total; v < 0 {
+		v = -v
+	}
 	return v
 }
 
