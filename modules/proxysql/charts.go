@@ -9,6 +9,8 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+// TODO: check https://github.com/ProxySQL/proxysql-grafana-prometheus/blob/main/grafana/provisioning/dashboards/ProxySQL-Host-Statistics.json
+
 const (
 	prioClientConnectionsCount = module.Priority + iota
 	prioClientConnectionsRate
