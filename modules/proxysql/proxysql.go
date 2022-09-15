@@ -1,11 +1,15 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package proxysql
 
 import (
 	"database/sql"
-
 	_ "github.com/go-sql-driver/mysql"
+	"sync"
+	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
@@ -14,55 +18,46 @@ func init() {
 	})
 }
 
-type (
-	Config struct {
-		DSN         string `yaml:"dsn"`
-		MyCNF       string `yaml:"my.cnf"`
-		UpdateEvery int    `yaml:"update_every"`
-	}
+func New() *ProxySQL {
+	return &ProxySQL{
+		Config: Config{
+			DSN:     "stats:stats@tcp(127.0.0.1:6032)/",
+			Timeout: web.Duration{Duration: time.Second * 2},
+		},
 
+		charts: baseCharts.Copy(),
+		once:   &sync.Once{},
+		cache: &cache{
+			commands: make(map[string]*commandCache),
+			users:    make(map[string]*userCache),
+			backends: make(map[string]*backendCache),
+		},
+	}
+}
+
+type Config struct {
+	DSN     string       `yaml:"dsn"`
+	MyCNF   string       `yaml:"my.cnf"`
+	Timeout web.Duration `yaml:"timeout"`
+}
+
+type (
 	ProxySQL struct {
 		module.Base
 		Config `yaml:",inline"`
 
 		db *sql.DB
 
-		charts *Charts
+		charts *module.Charts
+
+		once  *sync.Once
+		cache *cache
 	}
 )
 
-func New() *ProxySQL {
-	return &ProxySQL{
-		Config: Config{
-			DSN: "stats:stats@tcp(127.0.0.1:6032)/",
-		},
-
-		charts: charts.Copy(),
-	}
-}
-
-func (p *ProxySQL) Cleanup() {
-	if p.db == nil {
-		return
-	}
-	if err := p.db.Close(); err != nil {
-		p.Errorf("cleanup: error on closing the proxysql instance [%s]: %v", p.DSN, err)
-	}
-	p.db = nil
-}
-
 func (p *ProxySQL) Init() bool {
-	if p.MyCNF != "" {
-		dsn, err := dsnFromFile(p.MyCNF)
-		if err != nil {
-			p.Error(err)
-			return false
-		}
-		p.DSN = dsn
-	}
-
 	if p.DSN == "" {
-		p.Error("DSN not set")
+		p.Error("'dsn' not set")
 		return false
 	}
 
@@ -74,7 +69,7 @@ func (p *ProxySQL) Check() bool {
 	return len(p.Collect()) > 0
 }
 
-func (p *ProxySQL) Charts() *Charts {
+func (p *ProxySQL) Charts() *module.Charts {
 	return p.charts
 }
 
@@ -88,4 +83,14 @@ func (p *ProxySQL) Collect() map[string]int64 {
 		return nil
 	}
 	return mx
+}
+
+func (p *ProxySQL) Cleanup() {
+	if p.db == nil {
+		return
+	}
+	if err := p.db.Close(); err != nil {
+		p.Errorf("cleanup: error on closing the ProxySQL instance [%s]: %v", p.DSN, err)
+	}
+	p.db = nil
 }
