@@ -41,7 +41,7 @@ type ProxySQL struct {
 
 	db *sql.DB
 
-	charts *Charts
+	charts *module.Charts
 
 	commands map[string]bool
 	users    map[string]bool
@@ -70,7 +70,7 @@ func (p *ProxySQL) Check() bool {
 	return len(p.Collect()) > 0
 }
 
-func (p *ProxySQL) Charts() *Charts {
+func (p *ProxySQL) Charts() *module.Charts {
 	return p.charts
 }
 
