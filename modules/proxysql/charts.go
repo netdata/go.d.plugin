@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package proxysql
 
 import (
@@ -24,7 +26,7 @@ const (
 	prioQueryCacheEntriesCount
 	prioQueryCacheIO
 	prioQueryCacheRequestsRate
-	prioQueryCacheMemoryUsedCount
+	prioQueryCacheMemoryUsed
 	prioMySQLMonitorWorkersCount
 	prioMySQLMonitorWorkersRate
 	prioMySQLMonitorConnectChecksRate
@@ -104,7 +106,7 @@ var (
 	}
 	clientConnectionsProcessingTransactionsCountChart = module.Chart{
 		ID:       "client_connections_processing_transactions_count",
-		Title:    "client connections are currently processing a transaction",
+		Title:    "client connections that are currently processing a transaction",
 		Units:    "connections",
 		Fam:      "client connections",
 		Ctx:      "proxysql.client_connections_processing_transactions_count",
@@ -266,14 +268,14 @@ var (
 		Units:    "B",
 		Fam:      "query cache",
 		Ctx:      "proxysql.query_cache_memory_used",
-		Priority: prioQueryCacheMemoryUsedCount,
+		Priority: prioQueryCacheMemoryUsed,
 		Dims: module.Dims{
 			{ID: "Query_Cache_Memory_bytes", Name: "used"},
 		},
 	}
 	queryCacheIOChart = module.Chart{
 		ID:       "query_cache_io",
-		Title:    "Query Cache I/)",
+		Title:    "Query Cache I/O",
 		Units:    "B/s",
 		Fam:      "query cache",
 		Ctx:      "proxysql.query_cache_io",
@@ -497,6 +499,17 @@ func (p *ProxySQL) addMySQLCommandCountersCharts(command string) {
 	}
 }
 
+func (p *ProxySQL) removeMySQLCommandCountersCharts(command string) {
+	prefix := "mysql_command_" + strings.ToLower(command)
+
+	for _, chart := range *p.Charts() {
+		if strings.HasPrefix(chart.ID, prefix) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
+}
+
 var (
 	mySQLUserChartsTmpl = module.Charts{
 		mySQLUserConnectionsUtilizationChartTmpl.Copy(),
@@ -546,6 +559,17 @@ func (p *ProxySQL) addMySQLUsersCharts(username string) {
 
 	if err := p.Charts().Add(*charts...); err != nil {
 		p.Warning(err)
+	}
+}
+
+func (p *ProxySQL) removeMySQLUserCharts(user string) {
+	prefix := "mysql_user_" + user
+
+	for _, chart := range *p.Charts() {
+		if strings.HasPrefix(chart.ID, prefix) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
 	}
 }
 
@@ -659,8 +683,13 @@ func (p *ProxySQL) addBackendCharts(hg, host, port string) {
 	}
 }
 
-func backendID(hg, host, port string) string {
-	hg = strings.ReplaceAll(strings.ToLower(hg), " ", "_")
-	host = strings.ReplaceAll(host, ".", "_")
-	return hg + "_" + host + "_" + port
+func (p *ProxySQL) removeBackendCharts(hg, host, port string) {
+	prefix := "backend_" + backendID(hg, host, port)
+
+	for _, chart := range *p.Charts() {
+		if strings.HasPrefix(chart.ID, prefix) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
 }

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package proxysql
 
 import (
@@ -23,10 +25,11 @@ func New() *ProxySQL {
 		},
 
 		charts: baseCharts.Copy(),
-
-		commands: make(map[string]bool),
-		users:    make(map[string]bool),
-		backends: make(map[string]bool),
+		cache: &cache{
+			commands: make(map[string]*commandCache),
+			users:    make(map[string]*userCache),
+			backends: make(map[string]*backendCache),
+		},
 	}
 }
 
@@ -36,29 +39,20 @@ type Config struct {
 	Timeout web.Duration `yaml:"timeout"`
 }
 
-type ProxySQL struct {
-	module.Base
-	Config `yaml:",inline"`
+type (
+	ProxySQL struct {
+		module.Base
+		Config `yaml:",inline"`
 
-	db *sql.DB
+		db *sql.DB
 
-	charts *module.Charts
+		charts *module.Charts
 
-	commands map[string]bool
-	users    map[string]bool
-	backends map[string]bool
-}
+		cache *cache
+	}
+)
 
 func (p *ProxySQL) Init() bool {
-	if p.MyCNF != "" {
-		dsn, err := dsnFromFile(p.MyCNF)
-		if err != nil {
-			p.Error(err)
-			return false
-		}
-		p.DSN = dsn
-	}
-
 	if p.DSN == "" {
 		p.Error("'dsn' not set")
 		return false

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package proxysql
 
 import (
@@ -5,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -24,6 +27,8 @@ func (p *ProxySQL) collect() (map[string]int64, error) {
 		}
 	}
 
+	p.cache.reset()
+
 	mx := make(map[string]int64)
 
 	if err := p.collectStatsMySQLGlobal(mx); err != nil {
@@ -38,6 +43,11 @@ func (p *ProxySQL) collect() (map[string]int64, error) {
 	if err := p.collectStatsMySQLUsers(mx); err != nil {
 		return nil, fmt.Errorf("error on collecting mysql users: %v", err)
 	}
+	if err := p.collectStatsMySQLConnectionPool(mx); err != nil {
+		return nil, fmt.Errorf("error on collecting mysql connection pool: %v", err)
+	}
+
+	p.updateCharts()
 
 	return mx, nil
 }
@@ -84,10 +94,7 @@ func (p *ProxySQL) collectStatsMySQLCommandsCounters(mx map[string]int64) error 
 		switch column {
 		case "Command":
 			command = value
-			if !p.commands[command] {
-				p.commands[command] = true
-				p.addMySQLCommandCountersCharts(command)
-			}
+			p.cache.getCommand(command).updated = true
 		default:
 			mx["mysql_command_"+command+"_"+column] = parseInt(value)
 		}
@@ -104,10 +111,7 @@ func (p *ProxySQL) collectStatsMySQLUsers(mx map[string]int64) error {
 		switch column {
 		case "username":
 			user = value
-			if !p.users[user] {
-				p.users[user] = true
-				p.addMySQLUsersCharts(user)
-			}
+			p.cache.getUser(user).updated = true
 		default:
 			mx["mysql_user_"+user+"_"+column] = parseInt(value)
 		}
@@ -120,7 +124,7 @@ func (p *ProxySQL) collectStatsMySQLConnectionPool(mx map[string]int64) error {
 	p.Debugf("executing query: '%s'", q)
 
 	var hg, host, port string
-	var id string
+	var px string
 	return p.doQuery(q, func(column, value string, rowEnd bool) {
 		switch column {
 		case "hg":
@@ -129,20 +133,53 @@ func (p *ProxySQL) collectStatsMySQLConnectionPool(mx map[string]int64) error {
 			host = value
 		case "srv_port":
 			port = value
-			id = fmt.Sprintf("%s_%s_%s", hg, host, port)
-			if !p.backends[id] {
-				p.backends[id] = true
-				p.addBackendCharts(hg, host, port)
-			}
+			p.cache.getBackend(hg, host, port).updated = true
+			px = fmt.Sprintf("backend_%s_%s_%s_", hg, host, port)
 		case "status":
-			mx["conn_"+id+"_status_ONLINE"] = boolToInt(value == "1")
-			mx["conn_"+id+"_status_SHUNNED"] = boolToInt(value == "2")
-			mx["conn_"+id+"_status_OFFLINE_SOFT"] = boolToInt(value == "3")
-			mx["conn_"+id+"_status_OFFLINE_HARD"] = boolToInt(value == "4")
+			mx[px+"status_ONLINE"] = boolToInt(value == "1")
+			mx[px+"status_SHUNNED"] = boolToInt(value == "2")
+			mx[px+"status_OFFLINE_SOFT"] = boolToInt(value == "3")
+			mx[px+"status_OFFLINE_HARD"] = boolToInt(value == "4")
 		default:
-			mx["conn_"+id+"_"+column] = parseInt(value)
+			mx[px+column] = parseInt(value)
 		}
 	})
+}
+
+func (p *ProxySQL) updateCharts() {
+	for k, m := range p.cache.commands {
+		if !m.updated {
+			delete(p.cache.commands, k)
+			p.removeMySQLCommandCountersCharts(m.command)
+			continue
+		}
+		if !m.hasCharts {
+			m.hasCharts = true
+			p.addMySQLCommandCountersCharts(m.command)
+		}
+	}
+	for k, m := range p.cache.users {
+		if !m.updated {
+			delete(p.cache.users, k)
+			p.removeMySQLUserCharts(m.user)
+			continue
+		}
+		if !m.hasCharts {
+			m.hasCharts = true
+			p.addMySQLUsersCharts(m.user)
+		}
+	}
+	for k, m := range p.cache.backends {
+		if !m.updated {
+			delete(p.cache.backends, k)
+			p.removeBackendCharts(m.hg, m.host, m.port)
+			continue
+		}
+		if !m.hasCharts {
+			m.hasCharts = true
+			p.addBackendCharts(m.hg, m.host, m.port)
+		}
+	}
 }
 
 func (p *ProxySQL) openConnection() error {
@@ -227,4 +264,10 @@ func boolToInt(v bool) int64 {
 		return 1
 	}
 	return 0
+}
+
+func backendID(hg, host, port string) string {
+	hg = strings.ReplaceAll(strings.ToLower(hg), " ", "_")
+	host = strings.ReplaceAll(host, ".", "_")
+	return hg + "_" + host + "_" + port
 }
