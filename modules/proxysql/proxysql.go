@@ -26,6 +26,7 @@ func New() *ProxySQL {
 
 		commands: make(map[string]bool),
 		users:    make(map[string]bool),
+		backends: make(map[string]bool),
 	}
 }
 
@@ -45,6 +46,7 @@ type ProxySQL struct {
 
 	commands map[string]bool
 	users    map[string]bool
+	backends map[string]bool
 }
 
 func (p *ProxySQL) Init() bool {

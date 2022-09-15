@@ -38,6 +38,12 @@ const (
 	prioMySQLCommandExecutionDurationHistogram
 	prioMySQLUserConnectionsUtilization
 	prioMySQLUserConnectionsCount
+	prioBackendStatus
+	prioBackendConnectionsUsage
+	prioBackendConnectionsRate
+	prioBackendQueriesRateRate
+	prioBackendTraffic
+	prioBackendLatency
 	prioUptime
 )
 
@@ -535,10 +541,126 @@ func newMySQLUserCharts(username string) *module.Charts {
 	return charts
 }
 
-func (p *ProxySQL) addMysqlUsersCharts(username string) {
+func (p *ProxySQL) addMySQLUsersCharts(username string) {
 	charts := newMySQLUserCharts(username)
 
 	if err := p.Charts().Add(*charts...); err != nil {
 		p.Warning(err)
 	}
+}
+
+var (
+	backendChartsTmpl = module.Charts{
+		backendStatusChartTmpl.Copy(),
+		backendConnectionsUsageChartTmpl.Copy(),
+		backendConnectionsRateChartTmpl.Copy(),
+		backendQueriesRateRateChartTmpl.Copy(),
+		backendTrafficChartTmpl.Copy(),
+		backendLatencyChartTmpl.Copy(),
+	}
+
+	backendStatusChartTmpl = module.Chart{
+		ID:       "backend_%s_status",
+		Title:    "Backend status",
+		Units:    "status",
+		Fam:      "backend status",
+		Ctx:      "proxysql.backend_status",
+		Priority: prioBackendStatus,
+		Dims: module.Dims{
+			{ID: "backend_%s_status_ONLINE", Name: "online"},
+			{ID: "backend_%s_status_SHUNNED", Name: "shunned"},
+			{ID: "backend_%s_status_OFFLINE_SOFT", Name: "offline_soft"},
+			{ID: "backend_%s_status_OFFLINE_HARD", Name: "offline_hard"},
+		},
+	}
+	backendConnectionsUsageChartTmpl = module.Chart{
+		ID:       "backend_%s_connections_usage",
+		Title:    "Backend connections usage",
+		Units:    "connections",
+		Fam:      "backend conns usage",
+		Ctx:      "proxysql.backend_connections_usage",
+		Type:     module.Stacked,
+		Priority: prioBackendConnectionsUsage,
+		Dims: module.Dims{
+			{ID: "backend_%s_ConnFree", Name: "free"},
+			{ID: "backend_%s_ConnUsed", Name: "used"},
+		},
+	}
+	backendConnectionsRateChartTmpl = module.Chart{
+		ID:       "backend_%s_connections_rate",
+		Title:    "Backend connections established",
+		Units:    "connections/s",
+		Fam:      "backend conns established",
+		Ctx:      "proxysql.backend_connections_rate",
+		Priority: prioBackendConnectionsRate,
+		Dims: module.Dims{
+			{ID: "backend_%s_ConnOK", Name: "succeed", Algo: module.Incremental},
+			{ID: "backend_%s_ConnERR", Name: "failed", Algo: module.Incremental},
+		},
+	}
+	backendQueriesRateRateChartTmpl = module.Chart{
+		ID:       "backend_%s_queries_rate",
+		Title:    "Backend queries",
+		Units:    "queries/s",
+		Fam:      "backend queries",
+		Ctx:      "proxysql.backend_queries_rate",
+		Priority: prioBackendQueriesRateRate,
+		Dims: module.Dims{
+			{ID: "backend_%s_Queries", Name: "queries", Algo: module.Incremental},
+		},
+	}
+	backendTrafficChartTmpl = module.Chart{
+		ID:       "backend_%s_traffic",
+		Title:    "Backend traffic",
+		Units:    "B/s",
+		Fam:      "backend traffic",
+		Ctx:      "proxysql.backend_traffic",
+		Priority: prioBackendTraffic,
+		Dims: module.Dims{
+			{ID: "backend_%s_Bytes_data_recv", Name: "recv", Algo: module.Incremental},
+			{ID: "backend_%s_Bytes_data_sent", Name: "sent", Algo: module.Incremental},
+		},
+	}
+	backendLatencyChartTmpl = module.Chart{
+		ID:       "backend_%s_latency",
+		Title:    "Backend latency",
+		Units:    "microseconds",
+		Fam:      "backend latency",
+		Ctx:      "proxysql.backend_latency",
+		Priority: prioBackendLatency,
+		Dims: module.Dims{
+			{ID: "backend_%s_Latency_us", Name: "latency"},
+		},
+	}
+)
+
+func newBackendCharts(hg, host, port string) *module.Charts {
+	charts := backendChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, backendID(hg, host, port))
+		chart.Labels = []module.Label{
+			{Key: "host", Value: host},
+			{Key: "port", Value: port},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, backendID(hg, host, port))
+		}
+	}
+
+	return charts
+}
+
+func (p *ProxySQL) addBackendCharts(hg, host, port string) {
+	charts := newBackendCharts(hg, host, port)
+
+	if err := p.Charts().Add(*charts...); err != nil {
+		p.Warning(err)
+	}
+}
+
+func backendID(hg, host, port string) string {
+	hg = strings.ReplaceAll(strings.ToLower(hg), " ", "_")
+	host = strings.ReplaceAll(host, ".", "_")
+	return hg + "_" + host + "_" + port
 }

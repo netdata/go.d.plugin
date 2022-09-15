@@ -14,6 +14,7 @@ const (
 	queryStatsMySQLMemoryMetrics    = "SELECT * FROM stats_memory_metrics;"
 	queryStatsMySQLCommandsCounters = "SELECT * FROM stats_mysql_commands_counters;"
 	queryStatsMySQLUsers            = "SELECT * FROM stats_mysql_users;"
+	queryStatsMySQLConnectionPool   = "SELECT * FROM stats_mysql_connection_pool;"
 )
 
 func (p *ProxySQL) collect() (map[string]int64, error) {
@@ -31,7 +32,7 @@ func (p *ProxySQL) collect() (map[string]int64, error) {
 	if err := p.collectStatsMySQLMemoryMetrics(mx); err != nil {
 		return nil, fmt.Errorf("error on collecting memory metrics: %v", err)
 	}
-	if err := p.collectMySQLCommandsCounters(mx); err != nil {
+	if err := p.collectStatsMySQLCommandsCounters(mx); err != nil {
 		return nil, fmt.Errorf("error on collecting mysql command counters: %v", err)
 	}
 	if err := p.collectStatsMySQLUsers(mx); err != nil {
@@ -73,7 +74,7 @@ func (p *ProxySQL) collectStatsMySQLMemoryMetrics(mx map[string]int64) error {
 	})
 }
 
-func (p *ProxySQL) collectMySQLCommandsCounters(mx map[string]int64) error {
+func (p *ProxySQL) collectStatsMySQLCommandsCounters(mx map[string]int64) error {
 	// https://proxysql.com/documentation/stats-statistics/#stats_mysql_commands_counters
 	q := queryStatsMySQLCommandsCounters
 	p.Debugf("executing query: '%s'", q)
@@ -105,12 +106,42 @@ func (p *ProxySQL) collectStatsMySQLUsers(mx map[string]int64) error {
 			user = value
 			if !p.users[user] {
 				p.users[user] = true
-				p.addMysqlUsersCharts(user)
+				p.addMySQLUsersCharts(user)
 			}
 		default:
 			mx["mysql_user_"+user+"_"+column] = parseInt(value)
 		}
+	})
+}
 
+func (p *ProxySQL) collectStatsMySQLConnectionPool(mx map[string]int64) error {
+	// https://proxysql.com/documentation/stats-statistics/#stats_mysql_connection_pool
+	q := queryStatsMySQLConnectionPool
+	p.Debugf("executing query: '%s'", q)
+
+	var hg, host, port string
+	var id string
+	return p.doQuery(q, func(column, value string, rowEnd bool) {
+		switch column {
+		case "hg":
+			hg = value
+		case "srv_host":
+			host = value
+		case "srv_port":
+			port = value
+			id = fmt.Sprintf("%s_%s_%s", hg, host, port)
+			if !p.backends[id] {
+				p.backends[id] = true
+				p.addBackendCharts(hg, host, port)
+			}
+		case "status":
+			mx["conn_"+id+"_status_ONLINE"] = boolToInt(value == "1")
+			mx["conn_"+id+"_status_SHUNNED"] = boolToInt(value == "2")
+			mx["conn_"+id+"_status_OFFLINE_SOFT"] = boolToInt(value == "3")
+			mx["conn_"+id+"_status_OFFLINE_HARD"] = boolToInt(value == "4")
+		default:
+			mx["conn_"+id+"_"+column] = parseInt(value)
+		}
 	})
 }
 
@@ -189,4 +220,11 @@ func makeValues(size int) []any {
 func parseInt(value string) int64 {
 	v, _ := strconv.ParseInt(value, 10, 64)
 	return v
+}
+
+func boolToInt(v bool) int64 {
+	if v {
+		return 1
+	}
+	return 0
 }
