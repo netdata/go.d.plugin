@@ -63,6 +63,7 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 	mx["autovacuum_vacuum_freeze"] = p.mx.autovacuumWorkersVacuumFreeze
 	mx["autovacuum_brin_summarize"] = p.mx.autovacuumWorkersBrinSummarize
 
+	var locksHeld int64
 	for name, m := range p.mx.dbs {
 		if !m.updated {
 			delete(p.mx.dbs, name)
@@ -122,8 +123,13 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"lock_mode_ShareRowExclusiveLock_awaited"] = m.shareRowExclusiveLockAwaited
 		mx[px+"lock_mode_ExclusiveLock_awaited"] = m.exclusiveLockAwaited
 		mx[px+"lock_mode_AccessExclusiveLock_awaited"] = m.accessExclusiveLockAwaited
+		locksHeld += m.accessShareLockHeld + m.rowShareLockHeld +
+			m.rowExclusiveLockHeld + m.shareUpdateExclusiveLockHeld +
+			m.shareLockHeld + m.shareRowExclusiveLockHeld +
+			m.exclusiveLockHeld + m.accessExclusiveLockHeld
 	}
 	mx["databases_count"] = int64(len(p.mx.dbs))
+	mx["locks_utilization"] = calcPercentage(locksHeld, p.mx.maxLocksHeld)
 
 	for name, m := range p.mx.tables {
 		if !m.updated {
@@ -286,6 +292,7 @@ func (p *Postgres) resetMetrics() {
 		xactTimeHist:   p.mx.xactTimeHist,
 		queryTimeHist:  p.mx.queryTimeHist,
 		maxConnections: p.mx.maxConnections,
+		maxLocksHeld:   p.mx.maxLocksHeld,
 	}
 	for name, m := range p.mx.dbs {
 		p.mx.dbs[name] = &dbMetrics{

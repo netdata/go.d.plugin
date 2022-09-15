@@ -105,17 +105,17 @@ func (p *Postgres) doQueryCheckpoints() error {
 			p.mx.checkpointWriteTime = parseInt(value)
 		case "checkpoint_sync_time":
 			p.mx.checkpointSyncTime = parseInt(value)
-		case "buffers_checkpoint":
+		case "buffers_checkpoint_bytes":
 			p.mx.buffersCheckpoint = parseInt(value)
-		case "buffers_clean":
+		case "buffers_clean_bytes":
 			p.mx.buffersClean = parseInt(value)
 		case "maxwritten_clean":
 			p.mx.maxwrittenClean = parseInt(value)
-		case "buffers_backend":
+		case "buffers_backend_bytes":
 			p.mx.buffersBackend = parseInt(value)
 		case "buffers_backend_fsync":
 			p.mx.buffersBackendFsync = parseInt(value)
-		case "buffers_alloc":
+		case "buffers_alloc_bytes":
 			p.mx.buffersAlloc = parseInt(value)
 		}
 	})

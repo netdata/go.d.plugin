@@ -16,6 +16,7 @@ type srvMetrics struct {
 	queryTimeHist metrics.Histogram
 
 	maxConnections int64
+	maxLocksHeld   int64
 
 	uptime int64
 

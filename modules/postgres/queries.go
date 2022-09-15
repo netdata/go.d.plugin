@@ -6,10 +6,6 @@ func queryServerVersion() string {
 	return "SHOW server_version_num;"
 }
 
-func queryCurrentDatabase() string {
-	return "SELECT current_database();"
-}
-
 func queryIsSuperUser() string {
 	return "SELECT current_setting('is_superuser') = 'on' AS is_superuser;"
 }
@@ -20,6 +16,13 @@ func queryPGIsInRecovery() string {
 
 func querySettingsMaxConnections() string {
 	return "SELECT current_setting('max_connections')::INT - current_setting('superuser_reserved_connections')::INT;"
+}
+
+func querySettingsMaxLocksHeld() string {
+	return `
+SELECT current_setting('max_locks_per_transaction')::INT *
+       (current_setting('max_connections')::INT + current_setting('max_prepared_transactions')::INT);
+`
 }
 
 // TODO: this is not correct and we should use pg_stat_activity.
@@ -58,12 +61,12 @@ SELECT checkpoints_timed,
        checkpoints_req,
        checkpoint_write_time,
        checkpoint_sync_time,
-       buffers_checkpoint * current_setting('block_size')::numeric buffers_checkpoint,
-       buffers_clean * current_setting('block_size')::numeric      buffers_clean,
+       buffers_checkpoint * current_setting('block_size')::numeric AS buffers_checkpoint_bytes,
+       buffers_clean * current_setting('block_size')::numeric      AS buffers_clean_bytes,
        maxwritten_clean,
-       buffers_backend * current_setting('block_size')::numeric    buffers_backend,
+       buffers_backend * current_setting('block_size')::numeric    AS buffers_backend_bytes,
        buffers_backend_fsync,
-       buffers_alloc * current_setting('block_size')::numeric      buffers_alloc
+       buffers_alloc * current_setting('block_size')::numeric      AS buffers_alloc_bytes
 FROM pg_stat_bgwriter;
 `
 }
@@ -687,7 +690,7 @@ SELECT current_database()        AS datname,
                then st.n_distinct
            else
                abs(st.n_distinct) * reltuples
-           end                   AS distinct
+           end                   AS "distinct"
 FROM pg_class c
          JOIN
      pg_namespace ns

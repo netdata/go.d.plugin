@@ -4,17 +4,6 @@ package postgres
 
 import "strconv"
 
-func (p *Postgres) doQuerySettingsMaxConnections() (int64, error) {
-	q := querySettingsMaxConnections()
-
-	var s string
-	if err := p.doQueryRow(q, &s); err != nil {
-		return 0, err
-	}
-
-	return strconv.ParseInt(s, 10, 64)
-}
-
 func (p *Postgres) doQueryServerVersion() (int, error) {
 	q := queryServerVersion()
 
@@ -46,6 +35,28 @@ func (p *Postgres) doQueryPGIsInRecovery() (bool, error) {
 	}
 
 	return v, nil
+}
+
+func (p *Postgres) doQuerySettingsMaxConnections() (int64, error) {
+	q := querySettingsMaxConnections()
+
+	var s string
+	if err := p.doQueryRow(q, &s); err != nil {
+		return 0, err
+	}
+
+	return strconv.ParseInt(s, 10, 64)
+}
+
+func (p *Postgres) doQuerySettingsQueryMaxLocksHeld() (int64, error) {
+	q := querySettingsMaxLocksHeld()
+
+	var s string
+	if err := p.doQueryRow(q, &s); err != nil {
+		return 0, err
+	}
+
+	return strconv.ParseInt(s, 10, 64)
 }
 
 func (p *Postgres) doQueryQueryableDatabases() error {

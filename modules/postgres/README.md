@@ -41,6 +41,7 @@ Labels per scope:
 | connections_state_count                 |      global      |                                  active, idle, idle_in_transaction, idle_in_transaction_aborted, disabled                                  |  connections   |
 | transactions_duration                   |      global      |                                                       <i>a dimension per bucket</i>                                                        | transactions/s |
 | queries_duration                        |      global      |                                                       <i>a dimension per bucket</i>                                                        |   queries/s    |
+| locks_utilization                       |      global      |                                                                    used                                                                    |   percentage   |
 | checkpoints_rate                        |      global      |                                                            scheduled, requested                                                            | checkpoints/s  |
 | checkpoints_time                        |      global      |                                                                write, sync                                                                 |  milliseconds  |
 | bgwriter_halts_rate                     |      global      |                                                                 maxwritten                                                                 |    events/s    |

@@ -53,6 +53,7 @@ const (
 	prioIndexBloatSizePerc
 	prioIndexBloatSize
 
+	prioLocksUtilization
 	prioDBLocksHeldCount
 	prioDBLocksAwaitedCount
 	prioDBDeadlocksRate
@@ -98,6 +99,7 @@ var baseCharts = module.Charts{
 	serverConnectionsUtilizationChart.Copy(),
 	serverConnectionsUsageChart.Copy(),
 	serverConnectionsStateCount.Copy(),
+	locksUtilization.Copy(),
 	checkpointsChart.Copy(),
 	checkpointWriteChart.Copy(),
 	buffersIORateChart.Copy(),
@@ -158,6 +160,18 @@ var (
 			{ID: "server_connections_state_idle_in_transaction_aborted", Name: "idle_in_transaction_aborted"},
 			{ID: "server_connections_state_fastpath_function_call", Name: "fastpath_function_call"},
 			{ID: "server_connections_state_disabled", Name: "disabled"},
+		},
+	}
+
+	locksUtilization = module.Chart{
+		ID:       "locks_utilization",
+		Title:    "Acquired locks utilization",
+		Units:    "percentage",
+		Fam:      "locks",
+		Ctx:      "postgres.locks_utilization",
+		Priority: prioLocksUtilization,
+		Dims: module.Dims{
+			{ID: "locks_utilization", Name: "used"},
 		},
 	}
 
