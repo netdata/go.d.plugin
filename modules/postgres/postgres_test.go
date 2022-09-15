@@ -26,6 +26,7 @@ var (
 	dataV140004IsSuperUserTrue, _        = os.ReadFile("testdata/v14.4/is_super_user-true.txt")
 	dataV140004PGIsInRecoveryTrue, _     = os.ReadFile("testdata/v14.4/pg_is_in_recovery-true.txt")
 	dataV140004SettingsMaxConnections, _ = os.ReadFile("testdata/v14.4/settings_max_connections.txt")
+	dataV140004SettingsMaxLocksHeld, _   = os.ReadFile("testdata/v14.4/settings_max_locks_held.txt")
 
 	dataV140004ServerCurrentConnections, _ = os.ReadFile("testdata/v14.4/server_current_connections.txt")
 	dataV140004ServerConnectionsState, _   = os.ReadFile("testdata/v14.4/server_connections_state.txt")
@@ -67,6 +68,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004IsSuperUserTrue":        dataV140004IsSuperUserTrue,
 		"dataV140004PGIsInRecoveryTrue":     dataV140004PGIsInRecoveryTrue,
 		"dataV140004SettingsMaxConnections": dataV140004SettingsMaxConnections,
+		"dataV140004SettingsMaxLocksHeld":   dataV140004SettingsMaxLocksHeld,
 
 		"dataV140004ServerCurrentConnections": dataV140004ServerCurrentConnections,
 		"dataV140004ServerConnectionsState":   dataV140004ServerConnectionsState,
@@ -155,6 +157,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryPGIsInRecovery(), dataV140004PGIsInRecoveryTrue)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
+				mockExpect(t, m, querySettingsMaxLocksHeld(), dataV140004SettingsMaxLocksHeld)
 
 				mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 				mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
@@ -193,6 +196,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryPGIsInRecovery(), dataV140004PGIsInRecoveryTrue)
 
 				mockExpect(t, m, querySettingsMaxConnections(), dataV140004ServerVersionNum)
+				mockExpect(t, m, querySettingsMaxLocksHeld(), dataV140004SettingsMaxLocksHeld)
 
 				mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 				mockExpectErr(m, queryServerConnectionsState())
@@ -255,6 +259,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryPGIsInRecovery(), dataV140004PGIsInRecoveryTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
+					mockExpect(t, m, querySettingsMaxLocksHeld(), dataV140004SettingsMaxLocksHeld)
 
 					mockExpect(t, m, queryServerCurrentConnectionsUsed(), dataV140004ServerCurrentConnections)
 					mockExpect(t, m, queryServerConnectionsState(), dataV140004ServerConnectionsState)
@@ -336,13 +341,13 @@ func TestPostgres_Collect(t *testing.T) {
 						"db_postgres_lock_mode_AccessExclusiveLock_awaited":        0,
 						"db_postgres_lock_mode_AccessExclusiveLock_held":           0,
 						"db_postgres_lock_mode_AccessShareLock_awaited":            0,
-						"db_postgres_lock_mode_AccessShareLock_held":               1,
+						"db_postgres_lock_mode_AccessShareLock_held":               99,
 						"db_postgres_lock_mode_ExclusiveLock_awaited":              0,
 						"db_postgres_lock_mode_ExclusiveLock_held":                 0,
 						"db_postgres_lock_mode_RowExclusiveLock_awaited":           0,
-						"db_postgres_lock_mode_RowExclusiveLock_held":              1,
+						"db_postgres_lock_mode_RowExclusiveLock_held":              99,
 						"db_postgres_lock_mode_RowShareLock_awaited":               0,
-						"db_postgres_lock_mode_RowShareLock_held":                  1,
+						"db_postgres_lock_mode_RowShareLock_held":                  99,
 						"db_postgres_lock_mode_ShareLock_awaited":                  0,
 						"db_postgres_lock_mode_ShareLock_held":                     0,
 						"db_postgres_lock_mode_ShareRowExclusiveLock_awaited":      0,
@@ -382,12 +387,12 @@ func TestPostgres_Collect(t *testing.T) {
 						"db_production_lock_mode_RowExclusiveLock_held":            0,
 						"db_production_lock_mode_RowShareLock_awaited":             0,
 						"db_production_lock_mode_RowShareLock_held":                0,
-						"db_production_lock_mode_ShareLock_awaited":                0,
-						"db_production_lock_mode_ShareLock_held":                   1,
+						"db_production_lock_mode_ShareLock_awaited":                99,
+						"db_production_lock_mode_ShareLock_held":                   0,
 						"db_production_lock_mode_ShareRowExclusiveLock_awaited":    0,
 						"db_production_lock_mode_ShareRowExclusiveLock_held":       0,
 						"db_production_lock_mode_ShareUpdateExclusiveLock_awaited": 0,
-						"db_production_lock_mode_ShareUpdateExclusiveLock_held":    1,
+						"db_production_lock_mode_ShareUpdateExclusiveLock_held":    99,
 						"db_production_numbackends":                                1,
 						"db_production_numbackends_utilization":                    1,
 						"db_production_size":                                       8602115,
@@ -446,6 +451,7 @@ func TestPostgres_Collect(t *testing.T) {
 						"index_pgbench_tellers_pkey_table_pgbench_tellers_db_postgres_schema_public_size":                  32768,
 						"index_pgbench_tellers_pkey_table_pgbench_tellers_db_postgres_schema_public_usage_status_unused":   1,
 						"index_pgbench_tellers_pkey_table_pgbench_tellers_db_postgres_schema_public_usage_status_used":     0,
+						"locks_utilization":                                                     6,
 						"maxwritten_clean":                                                      0,
 						"oldest_current_xid":                                                    9,
 						"percent_towards_emergency_autovacuum":                                  0,
@@ -661,6 +667,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryPGIsInRecovery(), dataV140004PGIsInRecoveryTrue)
 
 					mockExpect(t, m, querySettingsMaxConnections(), dataV140004SettingsMaxConnections)
+					mockExpect(t, m, querySettingsMaxLocksHeld(), dataV140004SettingsMaxLocksHeld)
 
 					mockExpectErr(m, queryServerCurrentConnectionsUsed())
 				},
