@@ -5,6 +5,7 @@ package postgres
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 )
@@ -433,7 +434,7 @@ func newRunningTimeHistogramChart(tmpl module.Chart, prefix string, buckets []fl
 	for i, v := range buckets {
 		dim := &module.Dim{
 			ID:   fmt.Sprintf("%s_hist_bucket_%d", prefix, i+1),
-			Name: fmt.Sprintf("%.3f", v),
+			Name: time.Duration(v * float64(time.Second)).String(),
 			Algo: module.Incremental,
 		}
 		if err := chart.AddDim(dim); err != nil {
