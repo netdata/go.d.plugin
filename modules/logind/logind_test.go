@@ -307,9 +307,9 @@ func (m *mockConn) ListUsers() ([]login1.User, error) {
 	return m.users, nil
 }
 
-func (m *mockConn) GetUserProperty(path dbus.ObjectPath, _ string) (dbus.Variant, error) {
+func (m *mockConn) GetUserProperty(path dbus.ObjectPath, _ string) (*dbus.Variant, error) {
 	if m.errOnGetUserProperty {
-		return dbus.Variant{}, errors.New("mock.GetUserProperty() error")
+		return nil, errors.New("mock.GetUserProperty() error")
 	}
 
 	var found bool
@@ -321,8 +321,9 @@ func (m *mockConn) GetUserProperty(path dbus.ObjectPath, _ string) (dbus.Variant
 	}
 
 	if !found {
-		return dbus.Variant{}, errors.New("mock.GetUserProperty(): user is not found")
+		return nil, errors.New("mock.GetUserProperty(): user is not found")
 	}
 
-	return dbus.MakeVariant("active"), nil
+	v := dbus.MakeVariant("active")
+	return &v, nil
 }
