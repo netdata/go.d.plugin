@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//go:build linux
-// +build linux
-
 package logind
 
 import (
@@ -20,7 +17,7 @@ type logindConnection interface {
 	GetSessionProperties(dbus.ObjectPath) (map[string]dbus.Variant, error)
 
 	ListUsers() ([]login1.User, error)
-	GetUserProperty(dbus.ObjectPath, string) (dbus.Variant, error)
+	GetUserProperty(dbus.ObjectPath, string) (*dbus.Variant, error)
 }
 
 func newLogindConnection(timeout time.Duration) (logindConnection, error) {
@@ -28,21 +25,15 @@ func newLogindConnection(timeout time.Duration) (logindConnection, error) {
 	if err != nil {
 		return nil, err
 	}
-	dbusConn, err := dbus.SystemBus()
-	if err != nil {
-		return nil, err
-	}
 	return &logindDBusConnection{
-		conn:     conn,
-		dbusConn: dbusConn,
-		timeout:  timeout,
+		conn:    conn,
+		timeout: timeout,
 	}, nil
 }
 
 type logindDBusConnection struct {
-	conn     *login1.Conn
-	dbusConn *dbus.Conn
-	timeout  time.Duration
+	conn    *login1.Conn
+	timeout time.Duration
 }
 
 func (c *logindDBusConnection) Close() {
@@ -50,65 +41,32 @@ func (c *logindDBusConnection) Close() {
 		c.conn.Close()
 		c.conn = nil
 	}
-
-	if c.dbusConn != nil {
-		_ = c.dbusConn.Close()
-		c.dbusConn = nil
-	}
 }
 
 func (c *logindDBusConnection) ListSessions() ([]login1.Session, error) {
-	return c.conn.ListSessions()
-}
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
 
-func (c *logindDBusConnection) GetSessionProperties(path dbus.ObjectPath) (map[string]dbus.Variant, error) {
-	return c.getProperties(path, "org.freedesktop.login1.Session")
-}
-
-func (c *logindDBusConnection) GetSessionProperty(path dbus.ObjectPath, property string) (dbus.Variant, error) {
-	return c.getProperty(path, "org.freedesktop.login1.Session", property)
+	return c.conn.ListSessionsContext(ctx)
 }
 
 func (c *logindDBusConnection) ListUsers() ([]login1.User, error) {
-	return c.conn.ListUsers()
-}
-
-func (c *logindDBusConnection) GetUserProperties(path dbus.ObjectPath) (map[string]dbus.Variant, error) {
-	return c.getProperties(path, "org.freedesktop.login1.User")
-}
-
-func (c *logindDBusConnection) GetUserProperty(path dbus.ObjectPath, property string) (dbus.Variant, error) {
-	return c.getProperty(path, "org.freedesktop.login1.User", property)
-}
-
-func (c *logindDBusConnection) getProperties(path dbus.ObjectPath, dbusInterface string) (map[string]dbus.Variant, error) {
-	obj := c.dbusConn.Object("org.freedesktop.login1", path)
-
 	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
 	defer cancel()
 
-	var props map[string]dbus.Variant
-
-	err := obj.CallWithContext(ctx, "org.freedesktop.DBus.Properties.GetAll", 0, dbusInterface).Store(&props)
-	if err != nil {
-		return nil, err
-	}
-
-	return props, nil
+	return c.conn.ListUsersContext(ctx)
 }
 
-func (c *logindDBusConnection) getProperty(path dbus.ObjectPath, dbusInterface, property string) (dbus.Variant, error) {
-	obj := c.dbusConn.Object("org.freedesktop.login1", path)
-
+func (c *logindDBusConnection) GetSessionProperties(path dbus.ObjectPath) (map[string]dbus.Variant, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
 	defer cancel()
 
-	var prop dbus.Variant
+	return c.conn.GetSessionPropertiesContext(ctx, path)
+}
 
-	err := obj.CallWithContext(ctx, "org.freedesktop.DBus.Properties.Get", 0, dbusInterface, property).Store(&prop)
-	if err != nil {
-		return dbus.Variant{}, err
-	}
+func (c *logindDBusConnection) GetUserProperty(path dbus.ObjectPath, property string) (*dbus.Variant, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
 
-	return prop, nil
+	return c.conn.GetUserPropertyContext(ctx, path, property)
 }
