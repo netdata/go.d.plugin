@@ -4,11 +4,12 @@ package unbound
 
 import (
 	"fmt"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type (
