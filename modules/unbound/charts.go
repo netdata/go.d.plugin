@@ -4,6 +4,8 @@ package unbound
 
 import (
 	"fmt"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -101,7 +103,10 @@ func threadCharts(thread string, cumulative bool) *Charts {
 
 func convertTotalChartToThread(chart *Chart, thread string, priority int) {
 	chart.ID = fmt.Sprintf("%s_%s", thread, chart.ID)
-	chart.Title = fmt.Sprintf("%s %s", strings.Title(thread), chart.Title)
+	chart.Title = fmt.Sprintf("%s %s",
+		cases.Title(language.English, cases.Compact).String(thread),
+		chart.Title,
+	)
 	chart.Fam = thread + "_stats"
 	chart.Ctx = "thread_" + chart.Ctx
 	chart.Priority = priority

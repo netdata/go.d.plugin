@@ -67,7 +67,7 @@ type (
 	nodeStateCondition struct {
 		new bool
 		// https://kubernetes.io/docs/concepts/architecture/nodes/#condition
-		typ    corev1.NodeConditionType
+		//typ    corev1.NodeConditionType
 		status corev1.ConditionStatus
 	}
 	nodeStateStats struct {
