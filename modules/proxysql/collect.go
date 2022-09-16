@@ -159,7 +159,7 @@ func (p *ProxySQL) collectStatsMySQLConnectionPool(mx map[string]int64) error {
 		case "srv_port":
 			port = value
 			p.cache.getBackend(hg, host, port).updated = true
-			px = fmt.Sprintf("backend_%s_%s_%s_", hg, host, port)
+			px = "backend_" + backendID(hg, host, port)
 		case "status":
 			mx[px+"status_ONLINE"] = boolToInt(value == "1")
 			mx[px+"status_SHUNNED"] = boolToInt(value == "2")
