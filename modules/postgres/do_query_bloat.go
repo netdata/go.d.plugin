@@ -41,10 +41,14 @@ func (p *Postgres) doDBQueryBloat(db *sql.DB) error {
 			return
 		}
 		if p.hasTableMetrics(table, dbname, schema) {
-			p.getTableMetrics(table, dbname, schema).bloatSize = tableWasted
+			v := p.getTableMetrics(table, dbname, schema)
+			v.bloatSize = tableWasted
+			v.bloatSizePerc = calcPercentage(tableWasted, v.totalSize)
 		}
 		if iname != "?" && p.hasIndexMetrics(iname, table, dbname, schema) {
-			p.getIndexMetrics(iname, table, dbname, schema).bloatSize = idxWasted
+			v := p.getIndexMetrics(iname, table, dbname, schema)
+			v.bloatSize = idxWasted
+			v.bloatSizePerc = calcPercentage(idxWasted, v.size)
 		}
 	})
 }
