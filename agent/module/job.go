@@ -411,7 +411,7 @@ func (j *Job) createChart(chart *Chart) {
 	}
 	for k, v := range j.labels {
 		if !seen[k] {
-			_ = j.api.CLABEL(k, v, 0)
+			_ = j.api.CLABEL(k, v, LabelSourceConf)
 		}
 	}
 	_ = j.api.CLABEL("_collect_job", j.Name(), 0)

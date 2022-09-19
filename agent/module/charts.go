@@ -40,7 +40,8 @@ const (
 const (
 	// Not documented, the source https://github.com/netdata/netdata/blob/7772d35db617fc268a5f8e79d85fc093bef43a8d/database/rrd.h#L180-L186
 
-	LabelSourceK8s = 4
+	LabelSourceConf = 2
+	LabelSourceK8s  = 4
 )
 
 func (d DimAlgo) String() string {
