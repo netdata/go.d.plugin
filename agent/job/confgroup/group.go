@@ -29,7 +29,7 @@ func (c Config) FullName() string          { return fullName(c.Name(), c.Module(
 func (c Config) UpdateEvery() int          { v, _ := c.get("update_every").(int); return v }
 func (c Config) AutoDetectionRetry() int   { v, _ := c.get("autodetection_retry").(int); return v }
 func (c Config) Priority() int             { v, _ := c.get("priority").(int); return v }
-func (c Config) Labels() any               { v, _ := c.get("labels").(any); return v }
+func (c Config) Labels() map[any]any       { v, _ := c.get("labels").(map[any]any); return v }
 func (c Config) Hash() uint64              { return calcHash(c) }
 func (c Config) Source() string            { v, _ := c.get("__source__").(string); return v }
 func (c Config) Provider() string          { v, _ := c.get("__provider__").(string); return v }

@@ -307,13 +307,11 @@ func (m *Manager) buildJob(cfg confgroup.Config) (*module.Job, error) {
 	}
 
 	labels := make(map[string]string)
-	if lm, ok := cfg.Labels().(map[any]any); ok {
-		for name, value := range lm {
-			n, ok1 := name.(string)
-			v, ok2 := value.(string)
-			if ok1 && ok2 {
-				labels[n] = v
-			}
+	for name, value := range cfg.Labels() {
+		n, ok1 := name.(string)
+		v, ok2 := value.(string)
+		if ok1 && ok2 {
+			labels[n] = v
 		}
 	}
 
