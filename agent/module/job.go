@@ -61,6 +61,7 @@ type JobConfig struct {
 	ModuleName      string
 	FullName        string
 	Module          Module
+	Labels          map[string]string
 	Out             io.Writer
 	UpdateEvery     int
 	AutoDetectEvery int
@@ -84,6 +85,7 @@ func NewJob(cfg JobConfig) *Job {
 		AutoDetectEvery: cfg.AutoDetectEvery,
 		priority:        cfg.Priority,
 		module:          cfg.Module,
+		labels:          cfg.Labels,
 		out:             cfg.Out,
 		AutoDetectTries: infTries,
 		runChart:        newRuntimeChart(cfg.PluginName),
@@ -105,6 +107,7 @@ type Job struct {
 	AutoDetectEvery int
 	AutoDetectTries int
 	priority        int
+	labels          map[string]string
 
 	*logger.Logger
 
@@ -378,7 +381,6 @@ func (j *Job) createChart(chart *Chart) {
 	if chart.ignore {
 		return
 	}
-	j.addJobNameLabel(chart)
 
 	if chart.Priority == 0 {
 		chart.Priority = j.priority
@@ -400,17 +402,20 @@ func (j *Job) createChart(chart *Chart) {
 		j.moduleName,
 	)
 
-	var doCommit bool
+	seen := make(map[string]bool)
 	for _, l := range chart.Labels {
-		if l.Key == "" || l.Value == "" {
-			continue
+		if l.Key != "" && l.Value != "" {
+			seen[l.Key] = true
+			_ = j.api.CLABEL(l.Key, l.Value, l.Source)
 		}
-		_ = j.api.CLABEL(l.Key, l.Value, l.Source)
-		doCommit = true
 	}
-	if doCommit {
-		_ = j.api.CLABELCOMMIT()
+	for k, v := range j.labels {
+		if !seen[k] {
+			_ = j.api.CLABEL(k, v, 0)
+		}
 	}
+	_ = j.api.CLABEL("_collect_job", j.Name(), 0)
+	_ = j.api.CLABELCOMMIT()
 
 	for _, dim := range chart.Dims {
 		_ = j.api.DIMENSION(
@@ -482,22 +487,6 @@ func (j *Job) updateChart(chart *Chart, collected map[string]int64, sinceLastRun
 		chart.Retries++
 	}
 	return chart.updated
-}
-
-func (j Job) addJobNameLabel(chart *Chart) {
-	const lblKey = "_collect_job"
-	var ok bool
-	for _, lbl := range chart.Labels {
-		if ok = lbl.Key == lblKey; ok {
-			break
-		}
-	}
-	if !ok {
-		chart.Labels = append(chart.Labels, Label{
-			Key:   lblKey,
-			Value: j.Name(),
-		})
-	}
 }
 
 func (j Job) penalty() int {

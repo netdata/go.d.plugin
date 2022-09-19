@@ -306,6 +306,17 @@ func (m *Manager) buildJob(cfg confgroup.Config) (*module.Job, error) {
 		return nil, err
 	}
 
+	labels := make(map[string]string)
+	if lm, ok := cfg.Labels().(map[any]any); ok {
+		for name, value := range lm {
+			n, ok1 := name.(string)
+			v, ok2 := value.(string)
+			if ok1 && ok2 {
+				labels[n] = v
+			}
+		}
+	}
+
 	job := module.NewJob(module.JobConfig{
 		PluginName:      m.PluginName,
 		Name:            cfg.Name(),
@@ -314,6 +325,7 @@ func (m *Manager) buildJob(cfg confgroup.Config) (*module.Job, error) {
 		UpdateEvery:     cfg.UpdateEvery(),
 		AutoDetectEvery: cfg.AutoDetectionRetry(),
 		Priority:        cfg.Priority(),
+		Labels:          labels,
 		Module:          mod,
 		Out:             m.Out,
 	})
