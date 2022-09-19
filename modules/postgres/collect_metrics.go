@@ -201,7 +201,7 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		}
 		mx[px+"total_size"] = m.totalSize
 		mx[px+"bloat_size"] = m.bloatSize
-		mx[px+"bloat_size_perc"] = calcPercentage(m.bloatSize, m.totalSize)
+		mx[px+"bloat_size_perc"] = calcPercentage(m.bloatSize, m.cachedTotalSize)
 
 		mx[px+"null_columns"] = m.nullColumns
 
@@ -243,7 +243,7 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		px := fmt.Sprintf("index_%s_table_%s_db_%s_schema_%s_", m.name, m.table, m.db, m.schema)
 		mx[px+"size"] = m.size
 		mx[px+"bloat_size"] = m.bloatSize
-		mx[px+"bloat_size_perc"] = calcPercentage(m.bloatSize, m.size)
+		mx[px+"bloat_size_perc"] = calcPercentage(m.bloatSize, m.cachedSize)
 		if m.idxScan+m.idxTupRead+m.idxTupFetch > 0 {
 			mx[px+"usage_status_used"], mx[px+"usage_status_unused"] = 1, 0
 		} else {
@@ -329,18 +329,20 @@ func (p *Postgres) resetMetrics() {
 			tidxBlksRead:             incDelta{prev: m.tidxBlksRead.prev},
 			tidxBlksHit:              incDelta{prev: m.tidxBlksHit.prev},
 			bloatSize:                m.bloatSize,
+			cachedTotalSize:          m.totalSize,
 			nullColumns:              m.nullColumns,
 		}
 	}
 	for name, m := range p.mx.indexes {
 		p.mx.indexes[name] = &indexMetrics{
-			name:      m.name,
-			db:        m.db,
-			schema:    m.schema,
-			table:     m.table,
-			updated:   m.updated,
-			hasCharts: m.hasCharts,
-			bloatSize: m.bloatSize,
+			name:       m.name,
+			db:         m.db,
+			schema:     m.schema,
+			table:      m.table,
+			updated:    m.updated,
+			hasCharts:  m.hasCharts,
+			bloatSize:  m.bloatSize,
+			cachedSize: m.size,
 		}
 	}
 	for name, m := range p.mx.replApps {
