@@ -87,11 +87,14 @@ func (p *Postgres) doQueryQueryableDatabases() error {
 			continue
 		}
 
-		var err error
-		if conn.db, err = p.openSecondaryConnection(dbname); err != nil {
+		db, connStr, err := p.openSecondaryConnection(dbname)
+		if err != nil {
 			p.Warning(err)
 			conn.connErrors++
+			continue
 		}
+
+		conn.db, conn.connStr = db, connStr
 	}
 
 	for dbname, conn := range p.dbConns {

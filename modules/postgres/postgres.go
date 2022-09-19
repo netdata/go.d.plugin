@@ -11,6 +11,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/metrics"
 	"github.com/netdata/go.d.plugin/pkg/web"
 
+	"github.com/jackc/pgx/v4/stdlib"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -76,6 +77,7 @@ type (
 	}
 	dbConn struct {
 		db         *sql.DB
+		connStr    string
 		connErrors int
 	}
 )
@@ -134,6 +136,9 @@ func (p *Postgres) Cleanup() {
 
 	for dbname, conn := range p.dbConns {
 		delete(p.dbConns, dbname)
+		if conn.connStr != "" {
+			stdlib.UnregisterConnConfig(conn.connStr)
+		}
 		if conn.db != nil {
 			_ = conn.db.Close()
 		}
