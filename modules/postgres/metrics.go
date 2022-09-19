@@ -196,9 +196,9 @@ type tableMetrics struct {
 	tidxBlksRead  incDelta
 	tidxBlksHit   incDelta
 
-	totalSize       int64
-	cachedTotalSize int64
-	bloatSize       int64
+	totalSize     int64
+	bloatSizePerc int64
+	bloatSize     int64
 
 	nullColumns int64
 }
@@ -216,9 +216,9 @@ type indexMetrics struct {
 	idxTupRead  int64
 	idxTupFetch int64
 
-	size       int64
-	cachedSize int64
-	bloatSize  int64
+	size          int64
+	bloatSizePerc int64
+	bloatSize     int64
 }
 type incDelta struct{ prev, last int64 }
 
