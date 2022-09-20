@@ -3,8 +3,9 @@
 package postgres
 
 import (
-	"github.com/jackc/pgx/v4/stdlib"
 	"strconv"
+
+	"github.com/jackc/pgx/v4/stdlib"
 )
 
 func (p *Postgres) doQueryServerVersion() (int, error) {
