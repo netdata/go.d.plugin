@@ -65,7 +65,7 @@ func (p *Postgres) collect() (map[string]int64, error) {
 		}
 		p.mx.maxConnections = maxConn
 
-		maxLocks, err := p.doQuerySettingsQueryMaxLocksHeld()
+		maxLocks, err := p.doQuerySettingsMaxLocksHeld()
 		if err != nil {
 			return nil, fmt.Errorf("querying settings max locks held error: %v", err)
 		}
