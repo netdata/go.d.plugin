@@ -2,7 +2,10 @@
 
 package postgres
 
-import "strconv"
+import (
+	"github.com/jackc/pgx/v4/stdlib"
+	"strconv"
+)
 
 func (p *Postgres) doQueryServerVersion() (int, error) {
 	q := queryServerVersion()
@@ -48,7 +51,7 @@ func (p *Postgres) doQuerySettingsMaxConnections() (int64, error) {
 	return strconv.ParseInt(s, 10, 64)
 }
 
-func (p *Postgres) doQuerySettingsQueryMaxLocksHeld() (int64, error) {
+func (p *Postgres) doQuerySettingsMaxLocksHeld() (int64, error) {
 	q := querySettingsMaxLocksHeld()
 
 	var s string
@@ -102,6 +105,9 @@ func (p *Postgres) doQueryQueryableDatabases() error {
 			continue
 		}
 		delete(p.dbConns, dbname)
+		if conn.connStr != "" {
+			stdlib.UnregisterConnConfig(conn.connStr)
+		}
 		if conn.db != nil {
 			_ = conn.db.Close()
 		}
