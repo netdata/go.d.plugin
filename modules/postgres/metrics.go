@@ -95,10 +95,12 @@ type dbMetrics struct {
 	tupUpdated   int64
 	tupDeleted   int64
 	conflicts    int64
-	size         int64
 	tempFiles    int64
 	tempBytes    int64
 	deadlocks    int64
+
+	hasSize bool // need 'connect' privilege for pg_database_size()
+	size    int64
 
 	conflTablespace int64
 	conflLock       int64

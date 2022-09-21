@@ -10,6 +10,9 @@ func (p *Postgres) doQueryDatabasesMetrics() error {
 	if err := p.doQueryDatabaseStats(); err != nil {
 		return fmt.Errorf("querying database stats error: %v", err)
 	}
+	if err := p.doQueryDatabaseSize(); err != nil {
+		return fmt.Errorf("querying database size error: %v", err)
+	}
 	if p.isPGInRecovery() {
 		if err := p.doQueryDatabaseConflicts(); err != nil {
 			return fmt.Errorf("querying database conflicts error: %v", err)
@@ -54,14 +57,27 @@ func (p *Postgres) doQueryDatabaseStats() error {
 			p.getDBMetrics(db).tupDeleted = parseInt(value)
 		case "conflicts":
 			p.getDBMetrics(db).conflicts = parseInt(value)
-		case "size":
-			p.getDBMetrics(db).size = parseInt(value)
 		case "temp_files":
 			p.getDBMetrics(db).tempFiles = parseInt(value)
 		case "temp_bytes":
 			p.getDBMetrics(db).tempBytes = parseInt(value)
 		case "deadlocks":
 			p.getDBMetrics(db).deadlocks = parseInt(value)
+		}
+	})
+}
+
+func (p *Postgres) doQueryDatabaseSize() error {
+	q := queryDatabaseSize()
+
+	var db string
+	return p.doQuery(q, func(column, value string, _ bool) {
+		switch column {
+		case "datname":
+			db = value
+		case "size":
+			p.getDBMetrics(db).size = parseInt(value)
+			p.getDBMetrics(db).hasSize = true
 		}
 	})
 }

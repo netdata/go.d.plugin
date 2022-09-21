@@ -483,7 +483,6 @@ SELECT stat.datname,
        tup_updated,
        tup_deleted,
        conflicts,
-       pg_database_size(stat.datname)                     AS size,
        temp_files,
        temp_bytes,
        deadlocks
@@ -492,6 +491,16 @@ FROM pg_stat_database stat
      pg_database
      ON pg_database.datname = stat.datname
 WHERE pg_database.datistemplate = false;
+`
+}
+
+func queryDatabaseSize() string {
+	return `
+SELECT datname,
+       pg_database_size(datname) AS size
+FROM pg_database
+WHERE pg_database.datistemplate = false
+  AND has_database_privilege((SELECT CURRENT_USER), pg_database.datname, 'connect');
 `
 }
 
