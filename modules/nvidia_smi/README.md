@@ -28,8 +28,8 @@ Labels per scope:
 | gpu_memory_utilization        |  gpu  |          memory          |    %    |
 | gpu_decoder_utilization       |  gpu  |         decoder          |    %    |
 | gpu_encoder_utilization       |  gpu  |         encoder          |    %    |
-| gpu_frame_buffer_memory_usage |  gpu  |   free, used, reserved   |    %    |
-| gpu_bar1_memory_usage         |  gpu  |        free, used        |    %    |
+| gpu_frame_buffer_memory_usage |  gpu  |   free, used, reserved   |    B    |
+| gpu_bar1_memory_usage         |  gpu  |        free, used        |    B    |
 | gpu_temperature               |  gpu  |       temperature        | Celsius |
 | gpu_clock_freq                |  gpu  | graphics, video, sm, mem |   MHz   |
 | gpu_power_draw                |  gpu  |        power_draw        |  Watts  |
