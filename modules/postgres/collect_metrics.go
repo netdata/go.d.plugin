@@ -72,7 +72,7 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		}
 		if !m.hasCharts {
 			m.hasCharts = true
-			p.addNewDatabaseCharts(name)
+			p.addNewDatabaseCharts(name, m.hasSize)
 			if p.isPGInRecovery() {
 				p.addDBConflictsCharts(name)
 			}
@@ -98,7 +98,9 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"tup_updated"] = m.tupUpdated
 		mx[px+"tup_deleted"] = m.tupDeleted
 		mx[px+"conflicts"] = m.conflicts
-		mx[px+"size"] = m.size
+		if m.hasSize {
+			mx[px+"size"] = m.size
+		}
 		mx[px+"temp_files"] = m.tempFiles
 		mx[px+"temp_bytes"] = m.tempBytes
 		mx[px+"deadlocks"] = m.deadlocks

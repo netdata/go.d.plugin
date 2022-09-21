@@ -46,6 +46,7 @@ var (
 	dataV140004ReplSlotFiles, _ = os.ReadFile("testdata/v14.4/replication_slot_files.txt")
 
 	dataV140004DatabaseStats, _     = os.ReadFile("testdata/v14.4/database_stats.txt")
+	dataV140004DatabaseSize, _      = os.ReadFile("testdata/v14.4/database_size.txt")
 	dataV140004DatabaseConflicts, _ = os.ReadFile("testdata/v14.4/database_conflicts.txt")
 	dataV140004DatabaseLocks, _     = os.ReadFile("testdata/v14.4/database_locks.txt")
 
@@ -88,6 +89,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV140004ReplSlotFiles": dataV140004ReplSlotFiles,
 
 		"dataV140004DatabaseStats":     dataV140004DatabaseStats,
+		"dataV140004DatabaseSize":      dataV140004DatabaseSize,
 		"dataV140004DatabaseConflicts": dataV140004DatabaseConflicts,
 		"dataV140004DatabaseLocks":     dataV140004DatabaseLocks,
 
@@ -177,6 +179,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 				mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
+				mockExpect(t, m, queryDatabaseSize(), dataV140004DatabaseSize)
 				mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
 				mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
 
@@ -279,6 +282,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 					mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
+					mockExpect(t, m, queryDatabaseSize(), dataV140004DatabaseSize)
 					mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
 					mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
 

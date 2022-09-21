@@ -859,8 +859,11 @@ func newDatabaseCharts(tmpl *module.Charts, dbname string) *module.Charts {
 	return charts
 }
 
-func (p *Postgres) addNewDatabaseCharts(dbname string) {
+func (p *Postgres) addNewDatabaseCharts(dbname string, hasSize bool) {
 	charts := newDatabaseCharts(dbChartsTmpl.Copy(), dbname)
+	if !hasSize {
+		_ = charts.Remove(fmt.Sprintf(dbSizeChartTmpl.ID, dbname))
+	}
 	if err := p.Charts().Add(*charts...); err != nil {
 		p.Warning(err)
 	}
