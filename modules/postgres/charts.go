@@ -833,44 +833,46 @@ var (
 	}
 )
 
-func (p *Postgres) addDBConflictsCharts(dbname string) {
+func (p *Postgres) addDBConflictsCharts(db *dbMetrics) {
 	tmpl := module.Charts{
 		dbConflictsRateChartTmpl.Copy(),
 		dbConflictsReasonRateChartTmpl.Copy(),
 	}
-	charts := newDatabaseCharts(tmpl.Copy(), dbname)
+	charts := newDatabaseCharts(tmpl.Copy(), db)
 
 	if err := p.Charts().Add(*charts...); err != nil {
 		p.Warning(err)
 	}
 }
 
-func newDatabaseCharts(tmpl *module.Charts, dbname string) *module.Charts {
+func newDatabaseCharts(tmpl *module.Charts, db *dbMetrics) *module.Charts {
 	charts := tmpl.Copy()
 	for _, c := range *charts {
-		c.ID = fmt.Sprintf(c.ID, dbname)
+		c.ID = fmt.Sprintf(c.ID, db.name)
 		c.Labels = []module.Label{
-			{Key: "database", Value: dbname},
+			{Key: "database", Value: db.name},
 		}
 		for _, d := range c.Dims {
-			d.ID = fmt.Sprintf(d.ID, dbname)
+			d.ID = fmt.Sprintf(d.ID, db.name)
 		}
 	}
 	return charts
 }
 
-func (p *Postgres) addNewDatabaseCharts(dbname string, hasSize bool) {
-	charts := newDatabaseCharts(dbChartsTmpl.Copy(), dbname)
-	if !hasSize {
-		_ = charts.Remove(fmt.Sprintf(dbSizeChartTmpl.ID, dbname))
+func (p *Postgres) addNewDatabaseCharts(db *dbMetrics) {
+	charts := newDatabaseCharts(dbChartsTmpl.Copy(), db)
+
+	if db.size == nil {
+		_ = charts.Remove(fmt.Sprintf(dbSizeChartTmpl.ID, db.name))
 	}
+
 	if err := p.Charts().Add(*charts...); err != nil {
 		p.Warning(err)
 	}
 }
 
-func (p *Postgres) removeDatabaseCharts(dbname string) {
-	prefix := fmt.Sprintf("db_%s_", dbname)
+func (p *Postgres) removeDatabaseCharts(db *dbMetrics) {
+	prefix := fmt.Sprintf("db_%s_", db.name)
 	for _, c := range *p.Charts() {
 		if strings.HasPrefix(c.ID, prefix) {
 			c.MarkRemove()
@@ -1160,73 +1162,78 @@ var (
 	}
 )
 
-func newTableCharts(name, dbname, schema string) *module.Charts {
+func newTableCharts(tbl *tableMetrics) *module.Charts {
 	charts := tableChartsTmpl.Copy()
 
+	if tbl.bloatSize == nil {
+		_ = charts.Remove(tableBloatSizeChartTmpl.ID)
+		_ = charts.Remove(tableBloatSizePercChartTmpl.ID)
+	}
+
 	for i, chart := range *charts {
-		(*charts)[i] = newTableChart(chart, name, dbname, schema)
+		(*charts)[i] = newTableChart(chart, tbl)
 	}
 
 	return charts
 }
 
-func newTableChart(chart *module.Chart, name, dbname, schema string) *module.Chart {
+func newTableChart(chart *module.Chart, tbl *tableMetrics) *module.Chart {
 	chart = chart.Copy()
-	chart.ID = fmt.Sprintf(chart.ID, name, dbname, schema)
+	chart.ID = fmt.Sprintf(chart.ID, tbl.name, tbl.db, tbl.schema)
 	chart.Labels = []module.Label{
-		{Key: "database", Value: dbname},
-		{Key: "schema", Value: schema},
-		{Key: "table", Value: name},
+		{Key: "database", Value: tbl.db},
+		{Key: "schema", Value: tbl.schema},
+		{Key: "table", Value: tbl.name},
 	}
 	for _, d := range chart.Dims {
-		d.ID = fmt.Sprintf(d.ID, name, dbname, schema)
+		d.ID = fmt.Sprintf(d.ID, tbl.name, tbl.db, tbl.schema)
 	}
 	return chart
 }
 
-func (p *Postgres) addNewTableCharts(name, dbname, schema string) {
-	charts := newTableCharts(name, dbname, schema)
+func (p *Postgres) addNewTableCharts(tbl *tableMetrics) {
+	charts := newTableCharts(tbl)
 	if err := p.Charts().Add(*charts...); err != nil {
 		p.Warning(err)
 	}
 }
 
-func (p *Postgres) addTableLastAutoVacuumAgoChart(name, dbname, schema string) {
-	chart := newTableChart(tableAutoVacuumSinceTimeChartTmpl.Copy(), name, dbname, schema)
+func (p *Postgres) addTableLastAutoVacuumAgoChart(tbl *tableMetrics) {
+	chart := newTableChart(tableAutoVacuumSinceTimeChartTmpl.Copy(), tbl)
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
 	}
 }
 
-func (p *Postgres) addTableLastVacuumAgoChart(name, dbname, schema string) {
-	chart := newTableChart(tableVacuumSinceTimeChartTmpl.Copy(), name, dbname, schema)
+func (p *Postgres) addTableLastVacuumAgoChart(tbl *tableMetrics) {
+	chart := newTableChart(tableVacuumSinceTimeChartTmpl.Copy(), tbl)
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
 	}
 }
 
-func (p *Postgres) addTableLastAutoAnalyzeAgoChart(name, dbname, schema string) {
-	chart := newTableChart(tableAutoAnalyzeSinceTimeChartTmpl.Copy(), name, dbname, schema)
+func (p *Postgres) addTableLastAutoAnalyzeAgoChart(tbl *tableMetrics) {
+	chart := newTableChart(tableAutoAnalyzeSinceTimeChartTmpl.Copy(), tbl)
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
 	}
 }
 
-func (p *Postgres) addTableLastAnalyzeAgoChart(name, dbname, schema string) {
-	chart := newTableChart(tableAnalyzeSinceTimeChartTmpl.Copy(), name, dbname, schema)
+func (p *Postgres) addTableLastAnalyzeAgoChart(tbl *tableMetrics) {
+	chart := newTableChart(tableAnalyzeSinceTimeChartTmpl.Copy(), tbl)
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
 	}
 }
 
-func (p *Postgres) addTableIOChartsCharts(name, dbname, schema string) {
+func (p *Postgres) addTableIOChartsCharts(tbl *tableMetrics) {
 	charts := module.Charts{
-		newTableChart(tableCacheIORatioChartTmpl.Copy(), name, dbname, schema),
-		newTableChart(tableIORateChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableCacheIORatioChartTmpl.Copy(), tbl),
+		newTableChart(tableIORateChartTmpl.Copy(), tbl),
 	}
 
 	if err := p.Charts().Add(charts...); err != nil {
@@ -1234,10 +1241,10 @@ func (p *Postgres) addTableIOChartsCharts(name, dbname, schema string) {
 	}
 }
 
-func (p *Postgres) addTableIndexIOCharts(name, dbname, schema string) {
+func (p *Postgres) addTableIndexIOCharts(tbl *tableMetrics) {
 	charts := module.Charts{
-		newTableChart(tableIndexCacheIORatioChartTmpl.Copy(), name, dbname, schema),
-		newTableChart(tableIndexIORateChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableIndexCacheIORatioChartTmpl.Copy(), tbl),
+		newTableChart(tableIndexIORateChartTmpl.Copy(), tbl),
 	}
 
 	if err := p.Charts().Add(charts...); err != nil {
@@ -1245,10 +1252,10 @@ func (p *Postgres) addTableIndexIOCharts(name, dbname, schema string) {
 	}
 }
 
-func (p *Postgres) addTableTOASTIOCharts(name, dbname, schema string) {
+func (p *Postgres) addTableTOASTIOCharts(tbl *tableMetrics) {
 	charts := module.Charts{
-		newTableChart(tableTOASCacheIORatioChartTmpl.Copy(), name, dbname, schema),
-		newTableChart(tableTOASTIORateChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableTOASCacheIORatioChartTmpl.Copy(), tbl),
+		newTableChart(tableTOASTIORateChartTmpl.Copy(), tbl),
 	}
 
 	if err := p.Charts().Add(charts...); err != nil {
@@ -1256,10 +1263,10 @@ func (p *Postgres) addTableTOASTIOCharts(name, dbname, schema string) {
 	}
 }
 
-func (p *Postgres) addTableTOASTIndexIOCharts(name, dbname, schema string) {
+func (p *Postgres) addTableTOASTIndexIOCharts(tbl *tableMetrics) {
 	charts := module.Charts{
-		newTableChart(tableTOASTIndexCacheIORatioChartTmpl.Copy(), name, dbname, schema),
-		newTableChart(tableTOASTIndexIORateChartTmpl.Copy(), name, dbname, schema),
+		newTableChart(tableTOASTIndexCacheIORatioChartTmpl.Copy(), tbl),
+		newTableChart(tableTOASTIndexIORateChartTmpl.Copy(), tbl),
 	}
 
 	if err := p.Charts().Add(charts...); err != nil {
@@ -1267,8 +1274,8 @@ func (p *Postgres) addTableTOASTIndexIOCharts(name, dbname, schema string) {
 	}
 }
 
-func (p *Postgres) removeTableCharts(name, dbname, schema string) {
-	prefix := fmt.Sprintf("table_%s_db_%s_schema_%s", name, dbname, schema)
+func (p *Postgres) removeTableCharts(tbl *tableMetrics) {
+	prefix := fmt.Sprintf("table_%s_db_%s_schema_%s", tbl.name, tbl.db, tbl.schema)
 	for _, c := range *p.Charts() {
 		if strings.HasPrefix(c.ID, prefix) {
 			c.MarkRemove()
@@ -1331,19 +1338,24 @@ var (
 	}
 )
 
-func (p *Postgres) addNewIndexCharts(name, table, dbname, schema string) {
+func (p *Postgres) addNewIndexCharts(idx *indexMetrics) {
 	charts := indexChartsTmpl.Copy()
 
+	if idx.bloatSize == nil {
+		_ = charts.Remove(indexBloatSizeChartTmpl.ID)
+		_ = charts.Remove(indexBloatSizePercChartTmpl.ID)
+	}
+
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, name, table, dbname, schema)
+		chart.ID = fmt.Sprintf(chart.ID, idx.name, idx.table, idx.db, idx.schema)
 		chart.Labels = []module.Label{
-			{Key: "database", Value: dbname},
-			{Key: "schema", Value: schema},
-			{Key: "table", Value: table},
-			{Key: "index", Value: name},
+			{Key: "database", Value: idx.db},
+			{Key: "schema", Value: idx.schema},
+			{Key: "table", Value: idx.table},
+			{Key: "index", Value: idx.name},
 		}
 		for _, d := range chart.Dims {
-			d.ID = fmt.Sprintf(d.ID, name, table, dbname, schema)
+			d.ID = fmt.Sprintf(d.ID, idx.name, idx.table, idx.db, idx.schema)
 		}
 	}
 
@@ -1352,8 +1364,8 @@ func (p *Postgres) addNewIndexCharts(name, table, dbname, schema string) {
 	}
 }
 
-func (p *Postgres) removeIndexCharts(name, table, dbname, schema string) {
-	prefix := fmt.Sprintf("index_%s_table_%s_db_%s_schema_%s", name, table, dbname, schema)
+func (p *Postgres) removeIndexCharts(idx *indexMetrics) {
+	prefix := fmt.Sprintf("index_%s_table_%s_db_%s_schema_%s", idx.name, idx.table, idx.db, idx.schema)
 	for _, c := range *p.Charts() {
 		if strings.HasPrefix(c.ID, prefix) {
 			c.MarkRemove()

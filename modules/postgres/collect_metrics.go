@@ -67,14 +67,14 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 	for name, m := range p.mx.dbs {
 		if !m.updated {
 			delete(p.mx.dbs, name)
-			p.removeDatabaseCharts(name)
+			p.removeDatabaseCharts(m)
 			continue
 		}
 		if !m.hasCharts {
 			m.hasCharts = true
-			p.addNewDatabaseCharts(name, m.hasSize)
+			p.addNewDatabaseCharts(m)
 			if p.isPGInRecovery() {
-				p.addDBConflictsCharts(name)
+				p.addDBConflictsCharts(m)
 			}
 		}
 		px := "db_" + m.name + "_"
@@ -98,8 +98,8 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 		mx[px+"tup_updated"] = m.tupUpdated
 		mx[px+"tup_deleted"] = m.tupDeleted
 		mx[px+"conflicts"] = m.conflicts
-		if m.hasSize {
-			mx[px+"size"] = m.size
+		if m.size != nil {
+			mx[px+"size"] = *m.size
 		}
 		mx[px+"temp_files"] = m.tempFiles
 		mx[px+"temp_bytes"] = m.tempBytes
@@ -136,44 +136,44 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 	for name, m := range p.mx.tables {
 		if !m.updated {
 			delete(p.mx.tables, name)
-			p.removeTableCharts(m.name, m.db, m.schema)
+			p.removeTableCharts(m)
 			continue
 		}
 		if !m.hasCharts {
 			m.hasCharts = true
-			p.addNewTableCharts(m.name, m.db, m.schema)
+			p.addNewTableCharts(m)
 		}
 		if !m.hasLastAutoVacuumChart && m.lastAutoVacuumAgo > 0 {
 			m.hasLastAutoVacuumChart = true
-			p.addTableLastAutoVacuumAgoChart(m.name, m.db, m.schema)
+			p.addTableLastAutoVacuumAgoChart(m)
 		}
 		if !m.hasLastVacuumChart && m.lastVacuumAgo > 0 {
 			m.hasLastVacuumChart = true
-			p.addTableLastVacuumAgoChart(m.name, m.db, m.schema)
+			p.addTableLastVacuumAgoChart(m)
 		}
 		if !m.hasLastAutoAnalyzeChart && m.lastAutoAnalyzeAgo > 0 {
 			m.hasLastAutoAnalyzeChart = true
-			p.addTableLastAutoAnalyzeAgoChart(m.name, m.db, m.schema)
+			p.addTableLastAutoAnalyzeAgoChart(m)
 		}
 		if !m.hasLastAnalyzeChart && m.lastAnalyzeAgo > 0 {
 			m.hasLastAnalyzeChart = true
-			p.addTableLastAnalyzeAgoChart(m.name, m.db, m.schema)
+			p.addTableLastAnalyzeAgoChart(m)
 		}
 		if !m.hasTableIOCharts && m.heapBlksRead.last != -1 {
 			m.hasTableIOCharts = true
-			p.addTableIOChartsCharts(m.name, m.db, m.schema)
+			p.addTableIOChartsCharts(m)
 		}
 		if !m.hasTableIdxIOCharts && m.idxBlksRead.last != -1 {
 			m.hasTableIdxIOCharts = true
-			p.addTableIndexIOCharts(m.name, m.db, m.schema)
+			p.addTableIndexIOCharts(m)
 		}
 		if !m.hasTableTOASTIOCharts && m.toastBlksRead.last != -1 {
 			m.hasTableTOASTIOCharts = true
-			p.addTableTOASTIOCharts(m.name, m.db, m.schema)
+			p.addTableTOASTIOCharts(m)
 		}
 		if !m.hasTableTOASTIdxIOCharts && m.tidxBlksRead.last != -1 {
 			m.hasTableTOASTIdxIOCharts = true
-			p.addTableTOASTIndexIOCharts(m.name, m.db, m.schema)
+			p.addTableTOASTIndexIOCharts(m)
 		}
 
 		px := fmt.Sprintf("table_%s_db_%s_schema_%s_", m.name, m.db, m.schema)
@@ -202,10 +202,13 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 			mx[px+"last_analyze_ago"] = m.lastAnalyzeAgo
 		}
 		mx[px+"total_size"] = m.totalSize
-		mx[px+"bloat_size"] = m.bloatSize
-		mx[px+"bloat_size_perc"] = m.bloatSizePerc
-
-		mx[px+"null_columns"] = m.nullColumns
+		if m.bloatSize != nil && m.bloatSizePerc != nil {
+			mx[px+"bloat_size"] = *m.bloatSize
+			mx[px+"bloat_size_perc"] = *m.bloatSizePerc
+		}
+		if m.nullColumns != nil {
+			mx[px+"null_columns"] = *m.nullColumns
+		}
 
 		mx[px+"n_tup_hot_upd_perc"] = calcPercentage(m.nTupHotUpd.delta(), m.nTupUpd.delta())
 		m.nTupHotUpd.prev, m.nTupUpd.prev = m.nTupHotUpd.last, m.nTupUpd.last
@@ -234,18 +237,20 @@ func (p *Postgres) collectMetrics(mx map[string]int64) {
 	for name, m := range p.mx.indexes {
 		if !m.updated {
 			delete(p.mx.indexes, name)
-			p.removeIndexCharts(m.name, m.table, m.db, m.schema)
+			p.removeIndexCharts(m)
 			continue
 		}
 		if !m.hasCharts {
 			m.hasCharts = true
-			p.addNewIndexCharts(m.name, m.table, m.db, m.schema)
+			p.addNewIndexCharts(m)
 		}
 
 		px := fmt.Sprintf("index_%s_table_%s_db_%s_schema_%s_", m.name, m.table, m.db, m.schema)
 		mx[px+"size"] = m.size
-		mx[px+"bloat_size"] = m.bloatSize
-		mx[px+"bloat_size_perc"] = m.bloatSizePerc
+		if m.bloatSize != nil && m.bloatSizePerc != nil {
+			mx[px+"bloat_size"] = *m.bloatSize
+			mx[px+"bloat_size_perc"] = *m.bloatSizePerc
+		}
 		if m.idxScan+m.idxTupRead+m.idxTupFetch > 0 {
 			mx[px+"usage_status_used"], mx[px+"usage_status_unused"] = 1, 0
 		} else {

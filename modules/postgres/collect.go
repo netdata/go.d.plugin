@@ -236,6 +236,10 @@ func parseFloat(s string) int64 {
 	return int64(v)
 }
 
+func newInt(v int64) *int64 {
+	return &v
+}
+
 func calcPercentage(value, total int64) (v int64) {
 	if total == 0 {
 		return 0

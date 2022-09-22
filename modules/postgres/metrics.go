@@ -99,8 +99,7 @@ type dbMetrics struct {
 	tempBytes    int64
 	deadlocks    int64
 
-	hasSize bool // need 'connect' privilege for pg_database_size()
-	size    int64
+	size *int64 // need 'connect' privilege for pg_database_size()
 
 	conflTablespace int64
 	conflLock       int64
@@ -198,11 +197,11 @@ type tableMetrics struct {
 	tidxBlksRead  incDelta
 	tidxBlksHit   incDelta
 
-	totalSize     int64
-	bloatSizePerc int64
-	bloatSize     int64
+	totalSize int64
 
-	nullColumns int64
+	bloatSize     *int64 // need 'SELECT' access to the table
+	bloatSizePerc *int64 // need 'SELECT' access to the table
+	nullColumns   *int64 // need 'SELECT' access to the table
 }
 
 type indexMetrics struct {
@@ -218,9 +217,10 @@ type indexMetrics struct {
 	idxTupRead  int64
 	idxTupFetch int64
 
-	size          int64
-	bloatSizePerc int64
-	bloatSize     int64
+	size int64
+
+	bloatSize     *int64 // need 'SELECT' access to the table
+	bloatSizePerc *int64 // need 'SELECT' access to the table
 }
 type incDelta struct{ prev, last int64 }
 

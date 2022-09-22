@@ -21,7 +21,9 @@ func (p *Postgres) doDBQueryColumns(db *sql.DB) error {
 	q := queryColumnsStats()
 
 	for _, m := range p.mx.tables {
-		m.nullColumns = 0
+		if m.nullColumns != nil {
+			m.nullColumns = newInt(0)
+		}
 	}
 
 	var dbname, schema, table string
@@ -41,7 +43,11 @@ func (p *Postgres) doDBQueryColumns(db *sql.DB) error {
 			return
 		}
 		if nullPerc == 100 && p.hasTableMetrics(table, dbname, schema) {
-			p.getTableMetrics(table, dbname, schema).nullColumns++
+			v := p.getTableMetrics(table, dbname, schema)
+			if v.nullColumns == nil {
+				v.nullColumns = newInt(0)
+			}
+			*v.nullColumns++
 		}
 	})
 }

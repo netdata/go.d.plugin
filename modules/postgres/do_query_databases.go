@@ -76,8 +76,7 @@ func (p *Postgres) doQueryDatabaseSize() error {
 		case "datname":
 			db = value
 		case "size":
-			p.getDBMetrics(db).size = parseInt(value)
-			p.getDBMetrics(db).hasSize = true
+			p.getDBMetrics(db).size = newInt(parseInt(value))
 		}
 	})
 }
