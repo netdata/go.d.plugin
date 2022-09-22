@@ -180,3 +180,7 @@ should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m postgres
   ```
+  
+## Additional information
+  
+- Read our blog post on [PostgreSQL monitoring with Netdata](https://www.netdata.cloud/blog/postgresql-monitoring)
