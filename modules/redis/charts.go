@@ -8,8 +8,12 @@ const (
 	prioConnections = module.Priority + iota
 	prioClients
 
+	prioCommands
+	prioKeyLookupHitRate
+
 	prioMemory
 	prioMemoryFragmentationRatio
+	prioKeyEviction
 
 	prioNet
 
@@ -20,13 +24,10 @@ const (
 	prioPersistenceRDBBgSaveHealth
 	prioPersistenceAOFSize
 
-	prioCommands
 	prioCommandsCalls
 	prioCommandsUsec
 	prioCommandsUsecPerSec
 
-	prioKeyLookupHitRate
-	prioKeyEviction
 	prioKeyExpiration
 	prioKeys
 	prioExpiresKeys
@@ -38,8 +39,12 @@ var redisCharts = module.Charts{
 	chartConnections.Copy(),
 	chartClients.Copy(),
 
+	chartCommands.Copy(),
+	chartKeyLookupHitRate.Copy(),
+
 	chartMemory.Copy(),
 	chartMemoryFragmentationRatio.Copy(),
+	chartKeyEviction.Copy(),
 
 	chartNet.Copy(),
 
@@ -49,13 +54,10 @@ var redisCharts = module.Charts{
 	chartPersistenceRDBBgSaveNow.Copy(),
 	chartPersistenceRDBBgSaveHealth.Copy(),
 
-	chartCommands.Copy(),
 	chartCommandsCalls.Copy(),
 	chartCommandsUsec.Copy(),
 	chartCommandsUsecPerSec.Copy(),
 
-	chartKeyLookupHitRate.Copy(),
-	chartKeyEviction.Copy(),
 	chartKeyExpiration.Copy(),
 	chartKeys.Copy(),
 	chartExpiresKeys.Copy(),
@@ -93,6 +95,31 @@ var (
 )
 
 var (
+	chartCommands = module.Chart{
+		ID:       "commands",
+		Title:    "Processed commands",
+		Units:    "commands/s",
+		Fam:      "performance",
+		Ctx:      "redis.commands",
+		Priority: prioCommands,
+		Dims: module.Dims{
+			{ID: "total_commands_processed", Name: "processed", Algo: module.Incremental},
+		},
+	}
+	chartKeyLookupHitRate = module.Chart{
+		ID:       "key_lookup_hit_rate",
+		Title:    "Keys lookup hit rate",
+		Units:    "percentage",
+		Fam:      "performance",
+		Ctx:      "redis.keyspace_lookup_hit_rate",
+		Priority: prioKeyLookupHitRate,
+		Dims: module.Dims{
+			{ID: "keyspace_hit_rate", Name: "lookup_hit_rate", Div: precision},
+		},
+	}
+)
+
+var (
 	chartMemory = module.Chart{
 		ID:       "memory",
 		Title:    "Memory usage",
@@ -122,6 +149,17 @@ var (
 			{ID: "mem_fragmentation_ratio", Name: "mem_fragmentation", Div: precision},
 		},
 	}
+	chartKeyEviction = module.Chart{
+		ID:       "key_eviction_events",
+		Title:    "Evicted keys due to maxmemory limit",
+		Units:    "keys/s",
+		Fam:      "memory",
+		Ctx:      "redis.key_eviction_events",
+		Priority: prioKeyEviction,
+		Dims: module.Dims{
+			{ID: "evicted_keys", Name: "evicted", Algo: module.Incremental},
+		},
+	}
 )
 
 var (
@@ -145,7 +183,7 @@ var (
 		ID:       "persistence",
 		Title:    "Operations that produced changes since the last SAVE or BGSAVE",
 		Units:    "operations",
-		Fam:      "persistence rdb",
+		Fam:      "persistence",
 		Ctx:      "redis.rdb_changes",
 		Priority: prioPersistenceRDBChanges,
 		Dims: module.Dims{
@@ -156,7 +194,7 @@ var (
 		ID:       "bgsave_now",
 		Title:    "Duration of the on-going RDB save operation if any",
 		Units:    "seconds",
-		Fam:      "persistence rdb",
+		Fam:      "persistence",
 		Ctx:      "redis.bgsave_now",
 		Priority: prioPersistenceRDBBgSaveNow,
 		Dims: module.Dims{
@@ -167,7 +205,7 @@ var (
 		ID:       "bgsave_health",
 		Title:    "Status of the last RDB save operation (0: ok, 1: err)",
 		Units:    "status",
-		Fam:      "persistence rdb",
+		Fam:      "persistence",
 		Ctx:      "redis.bgsave_health",
 		Priority: prioPersistenceRDBBgSaveHealth,
 		Dims: module.Dims{
@@ -179,7 +217,7 @@ var (
 		ID:       "persistence_aof_size",
 		Title:    "AOF file size",
 		Units:    "bytes",
-		Fam:      "persistence aof",
+		Fam:      "persistence",
 		Ctx:      "redis.aof_file_size",
 		Priority: prioPersistenceAOFSize,
 		Dims: module.Dims{
@@ -190,17 +228,6 @@ var (
 )
 
 var (
-	chartCommands = module.Chart{
-		ID:       "commands",
-		Title:    "Processed commands",
-		Units:    "commands/s",
-		Fam:      "commands",
-		Ctx:      "redis.commands",
-		Priority: prioCommands,
-		Dims: module.Dims{
-			{ID: "total_commands_processed", Name: "processed", Algo: module.Incremental},
-		},
-	}
 	chartCommandsCalls = module.Chart{
 		ID:       "commands_calls",
 		Title:    "Calls per command",
@@ -230,28 +257,6 @@ var (
 )
 
 var (
-	chartKeyLookupHitRate = module.Chart{
-		ID:       "key_lookup_hit_rate",
-		Title:    "Keys lookup hit rate",
-		Units:    "percentage",
-		Fam:      "keyspace",
-		Ctx:      "redis.keyspace_lookup_hit_rate",
-		Priority: prioKeyLookupHitRate,
-		Dims: module.Dims{
-			{ID: "keyspace_hit_rate", Name: "lookup_hit_rate", Div: precision},
-		},
-	}
-	chartKeyEviction = module.Chart{
-		ID:       "key_eviction_events",
-		Title:    "Evicted keys due to maxmemory limit",
-		Units:    "keys/s",
-		Fam:      "keyspace",
-		Ctx:      "redis.key_eviction_events",
-		Priority: prioKeyEviction,
-		Dims: module.Dims{
-			{ID: "evicted_keys", Name: "evicted", Algo: module.Incremental},
-		},
-	}
 	chartKeyExpiration = module.Chart{
 		ID:       "key_expiration_events",
 		Title:    "Expired keys",
