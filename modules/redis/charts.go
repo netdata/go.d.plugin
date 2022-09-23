@@ -23,6 +23,7 @@ const (
 	prioPersistenceRDBChanges
 	prioPersistenceRDBBgSaveNow
 	prioPersistenceRDBBgSaveHealth
+	prioPersistenceRDBBgSaveLastSaveSinceTime
 	prioPersistenceAOFSize
 
 	prioCommandsCalls
@@ -55,6 +56,7 @@ var redisCharts = module.Charts{
 	chartPersistenceRDBChanges.Copy(),
 	chartPersistenceRDBBgSaveNow.Copy(),
 	chartPersistenceRDBBgSaveHealth.Copy(),
+	chartPersistenceRDBLastSaveSinceTime.Copy(),
 
 	chartCommandsCalls.Copy(),
 	chartCommandsUsec.Copy(),
@@ -226,6 +228,17 @@ var (
 		Priority: prioPersistenceRDBBgSaveHealth,
 		Dims: module.Dims{
 			{ID: "rdb_last_bgsave_status", Name: "last_bgsave"},
+		},
+	}
+	chartPersistenceRDBLastSaveSinceTime = module.Chart{
+		ID:       "bgsave_last_rdb_save_since_time",
+		Title:    "Time elapsed since the last successful RDB save",
+		Units:    "seconds",
+		Fam:      "persistence",
+		Ctx:      "redis.bgsave_last_rdb_save_since_time",
+		Priority: prioPersistenceRDBBgSaveLastSaveSinceTime,
+		Dims: module.Dims{
+			{ID: "rdb_last_save_time", Name: "last_bgsave_time"},
 		},
 	}
 

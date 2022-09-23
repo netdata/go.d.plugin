@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 )
@@ -35,7 +36,7 @@ var infoSections = map[string]struct{}{
 
 func isInfoSection(line string) bool { _, ok := infoSections[line]; return ok }
 
-func (r *Redis) collectInfo(ms map[string]int64, info string) {
+func (r *Redis) collectInfo(mx map[string]int64, info string) {
 	// https://redis.io/commands/info
 	// Lines can contain a section name (starting with a # character) or a property.
 	// All the properties are in the form of field:value terminated by \r\n.
@@ -62,27 +63,30 @@ func (r *Redis) collectInfo(ms map[string]int64, info string) {
 
 		switch {
 		case curSection == infoSectionCommandstats:
-			r.collectInfoCommandstatsProperty(ms, field, value)
+			r.collectInfoCommandstatsProperty(mx, field, value)
 		case curSection == infoSectionKeyspace:
-			r.collectInfoKeyspaceProperty(ms, field, value)
+			r.collectInfoKeyspaceProperty(mx, field, value)
 		case field == "rdb_last_bgsave_status":
-			collectNumericValue(ms, field, convertBgSaveStatus(value))
+			collectNumericValue(mx, field, convertBgSaveStatus(value))
 		case field == "rdb_current_bgsave_time_sec" && value == "-1":
 			// TODO: https://github.com/netdata/dashboard/issues/198
 			// "-1" means there is no on-going bgsave operation;
 			// netdata has 'Convert seconds to time' feature (enabled by default),
 			// looks like it doesn't respect negative values and does abs().
 			// "-1" => "00:00:01".
-			collectNumericValue(ms, field, "0")
+			collectNumericValue(mx, field, "0")
+		case field == "rdb_last_save_time":
+			v, _ := strconv.ParseInt(value, 10, 64)
+			mx[field] = int64(time.Since(time.Unix(v, 0)).Seconds())
 		case field == "aof_enabled" && value == "1":
 			r.addAOFChartsOnce.Do(r.addAOFCharts)
 		default:
-			collectNumericValue(ms, field, value)
+			collectNumericValue(mx, field, value)
 		}
 	}
 
-	if has(ms, "keyspace_hits", "keyspace_misses") {
-		ms["keyspace_hit_rate"] = int64(calcKeyspaceHitRate(ms) * precision)
+	if has(mx, "keyspace_hits", "keyspace_misses") {
+		mx["keyspace_hit_rate"] = int64(calcKeyspaceHitRate(mx) * precision)
 	}
 }
 

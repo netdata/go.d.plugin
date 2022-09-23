@@ -50,6 +50,7 @@ It collects information and statistics about the server executing the following 
 - Operations that produced changes since the last SAVE or BGSAVE in `operations`
 - Duration of the ongoing RDB save operation if any in `seconds`
 - Status of the last RDB save operation in `status`
+- Time elapsed since the last successful RDB save in `seconds`
 - AOF file size in `bytes`
 
 ### Commands
