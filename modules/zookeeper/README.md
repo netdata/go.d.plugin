@@ -7,10 +7,11 @@ sidebar_label: "ZooKeeper"
 
 # Apache ZooKeeper monitoring with Netdata
 
-[`ZooKeeper`](https://zookeeper.apache.org/) is a centralized service for maintaining configuration information, naming,
+[ZooKeeper](https://zookeeper.apache.org/) is a centralized service for maintaining configuration information, naming,
 providing distributed synchronization, and providing group services.
 
-This module monitors one or more `ZooKeeper` servers, depending on your configuration.
+This module monitors one or more ZooKeeper servers, depending on your configuration. It fetches metrics from ZooKeeper
+by using the [mntr](https://zookeeper.apache.org/doc/r3.4.8/zookeeperAdmin.html#sc_zkCommands) command.
 
 ## Requirements
 
