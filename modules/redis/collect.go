@@ -7,11 +7,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/blang/semver/v4"
 	"regexp"
 	"strings"
-	"time"
-
-	"github.com/blang/semver/v4"
 )
 
 const precision = 1000 // float values multiplier and dimensions divisor
@@ -35,27 +33,11 @@ func (r *Redis) collect() (map[string]int64, error) {
 		return nil, fmt.Errorf("unsupported server app, want=redis, got=%s", r.server)
 	}
 
-	ms := make(map[string]int64)
-	r.collectInfo(ms, info)
+	mx := make(map[string]int64)
+	r.collectInfo(mx, info)
+	r.collectPingLatency(mx)
 
-	r.pingSummary.Reset()
-
-	for i := 0; i < r.PingSamples; i++ {
-		now := time.Now()
-		_, err := r.rdb.Ping(context.Background()).Result()
-		elapsed := time.Since(now)
-
-		if err != nil {
-			r.Debug(err)
-			continue
-		}
-
-		r.pingSummary.Observe(float64(elapsed.Microseconds()))
-	}
-
-	r.pingSummary.WriteTo(ms, "ping_latency", 1, 1)
-
-	return ms, nil
+	return mx, nil
 }
 
 // redis_version:6.0.9

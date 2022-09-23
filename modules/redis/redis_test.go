@@ -236,7 +236,7 @@ func TestRedis_Collect(t *testing.T) {
 				"rdb_last_bgsave_status":          0,
 				"rdb_last_bgsave_time_sec":        0,
 				"rdb_last_cow_size":               290816,
-				"rdb_last_save_time":              1606951667,
+				"rdb_last_save_time":              56978305,
 				"redis_git_dirty":                 0,
 				"redis_git_sha1":                  0,
 				"rejected_connections":            0,
@@ -294,7 +294,7 @@ func TestRedis_Collect(t *testing.T) {
 
 			ms := rdb.Collect()
 
-			copyPingLatency(ms, test.wantCollected)
+			copyTimeRelatedMetrics(ms, test.wantCollected)
 
 			assert.Equal(t, test.wantCollected, ms)
 			if len(test.wantCollected) > 0 {
@@ -374,13 +374,15 @@ func ensureCollectedDbsAddedToCharts(t *testing.T, rdb *Redis) {
 	}
 }
 
-func copyPingLatency(dst, src map[string]int64) {
+func copyTimeRelatedMetrics(dst, src map[string]int64) {
 	for k, v := range src {
-		if !strings.HasPrefix(k, "ping_latency") {
-			continue
-		}
-		if _, ok := dst[k]; ok {
-			dst[k] = v
+		switch {
+		case k == "rdb_last_save_time",
+			strings.HasPrefix(k, "ping_latency"):
+
+			if _, ok := dst[k]; ok {
+				dst[k] = v
+			}
 		}
 	}
 }
