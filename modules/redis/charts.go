@@ -19,6 +19,8 @@ const (
 	prioNet
 
 	prioConnectedReplicas
+	prioMasterLastIOSinceTime
+	prioMasterLinkDownSinceTime
 
 	prioPersistenceRDBChanges
 	prioPersistenceRDBBgSaveNow
@@ -327,6 +329,28 @@ var (
 		Priority: prioConnectedReplicas,
 		Dims: module.Dims{
 			{ID: "connected_slaves", Name: "connected"},
+		},
+	}
+	masterLastIOSinceTimeChart = module.Chart{
+		ID:       "master_last_io_since_time",
+		Title:    "Time elapsed since the last interaction with master",
+		Units:    "seconds",
+		Fam:      "replication",
+		Ctx:      "redis.master_last_io_since_time",
+		Priority: prioMasterLastIOSinceTime,
+		Dims: module.Dims{
+			{ID: "master_last_io_seconds_ago", Name: "time"},
+		},
+	}
+	masterLinkDownSinceTimeChart = module.Chart{
+		ID:       "master_link_down_since_stime",
+		Title:    "Time elapsed since the link between master and slave is down",
+		Units:    "seconds",
+		Fam:      "replication",
+		Ctx:      "redis.master_link_down_since_time",
+		Priority: prioMasterLinkDownSinceTime,
+		Dims: module.Dims{
+			{ID: "master_link_down_since_seconds", Name: "time"},
 		},
 	}
 )
