@@ -12,6 +12,8 @@ management system emphasizing extensibility and SQL compliance.
 
 This module monitors one or more Postgres servers, depending on your configuration.
 
+To find out more about these metrics and why they are important to monitor, read our blog post on [PostgreSQL monitoring with Netdata](https://www.netdata.cloud/blog/postgresql-monitoring)
+
 ## Requirements
 
 - PostgreSQL v9.4+
@@ -180,7 +182,3 @@ should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m postgres
   ```
-  
-## Additional information
-  
-- Read our blog post on [PostgreSQL monitoring with Netdata](https://www.netdata.cloud/blog/postgresql-monitoring)
