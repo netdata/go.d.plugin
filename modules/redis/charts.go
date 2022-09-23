@@ -8,6 +8,7 @@ const (
 	prioConnections = module.Priority + iota
 	prioClients
 
+	prioPingLatency
 	prioCommands
 	prioKeyLookupHitRate
 
@@ -39,6 +40,7 @@ var redisCharts = module.Charts{
 	chartConnections.Copy(),
 	chartClients.Copy(),
 
+	pingLatencyCommands.Copy(),
 	chartCommands.Copy(),
 	chartKeyLookupHitRate.Copy(),
 
@@ -95,6 +97,20 @@ var (
 )
 
 var (
+	pingLatencyCommands = module.Chart{
+		ID:       "ping_latency",
+		Title:    "Ping latency",
+		Units:    "seconds",
+		Fam:      "performance",
+		Ctx:      "redis.ping_latency",
+		Priority: prioPingLatency,
+		Type:     module.Area,
+		Dims: module.Dims{
+			{ID: "ping_latency_min", Name: "min", Div: 1e6},
+			{ID: "ping_latency_max", Name: "max", Div: 1e6},
+			{ID: "ping_latency_avg", Name: "avg", Div: 1e6},
+		},
+	}
 	chartCommands = module.Chart{
 		ID:       "commands",
 		Title:    "Processed commands",

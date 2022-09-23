@@ -27,6 +27,7 @@ It collects information and statistics about the server executing the following 
 
 ### Performance
 
+- Ping latency in `seconds`
 - Processed commands in `commands/s`
 - Keys lookup hit rate in `percentage`
 

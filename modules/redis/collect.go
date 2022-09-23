@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/blang/semver/v4"
 )
@@ -36,6 +37,23 @@ func (r *Redis) collect() (map[string]int64, error) {
 
 	ms := make(map[string]int64)
 	r.collectInfo(ms, info)
+
+	r.pingSummary.Reset()
+
+	for i := 0; i < r.PingSamples; i++ {
+		now := time.Now()
+		_, err := r.rdb.Ping(context.Background()).Result()
+		elapsed := time.Since(now)
+
+		if err != nil {
+			r.Debug(err)
+			continue
+		}
+
+		r.pingSummary.Observe(float64(elapsed.Microseconds()))
+	}
+
+	r.pingSummary.WriteTo(ms, "ping_latency", 1, 1)
 
 	return ms, nil
 }
