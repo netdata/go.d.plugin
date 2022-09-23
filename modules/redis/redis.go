@@ -30,10 +30,11 @@ func New() *Redis {
 			PingSamples: 5,
 		},
 
-		addAOFChartsOnce:  &sync.Once{},
-		pingSummary:       metrics.NewSummary(),
-		collectedCommands: make(map[string]bool),
-		collectedDbs:      make(map[string]bool),
+		addAOFChartsOnce:       &sync.Once{},
+		addReplSlaveChartsOnce: &sync.Once{},
+		pingSummary:            metrics.NewSummary(),
+		collectedCommands:      make(map[string]bool),
+		collectedDbs:           make(map[string]bool),
 	}
 }
 
@@ -56,7 +57,8 @@ type (
 		server  string
 		version *semver.Version
 
-		addAOFChartsOnce *sync.Once
+		addAOFChartsOnce       *sync.Once
+		addReplSlaveChartsOnce *sync.Once
 
 		pingSummary metrics.Summary
 

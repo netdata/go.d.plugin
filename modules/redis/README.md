@@ -44,6 +44,8 @@ It collects information and statistics about the server executing the following 
 ### Replication
 
 - Connected replicas in `replicas`
+- Time elapsed since the last interaction with master in `seconds`
+- Time elapsed since the link between master and slave is down in `seconds`
 
 ### Persistence
 

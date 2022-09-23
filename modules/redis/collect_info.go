@@ -88,6 +88,12 @@ func (r *Redis) collectInfo(mx map[string]int64, info string) {
 	if has(mx, "keyspace_hits", "keyspace_misses") {
 		mx["keyspace_hit_rate"] = int64(calcKeyspaceHitRate(mx) * precision)
 	}
+	if has(mx, "master_last_io_seconds_ago") {
+		r.addReplSlaveChartsOnce.Do(r.addReplSlaveCharts)
+		if !has(mx, "master_link_down_since_seconds") {
+			mx["master_link_down_since_seconds"] = 0
+		}
+	}
 }
 
 var reKeyspaceValue = regexp.MustCompile(`^keys=(\d+),expires=(\d+)`)
@@ -217,6 +223,15 @@ func (r *Redis) addAOFCharts() {
 	err := r.Charts().Add(chartPersistenceAOFSize.Copy())
 	if err != nil {
 		r.Warningf("error on adding '%s' chart", chartPersistenceAOFSize.ID)
+	}
+}
+
+func (r *Redis) addReplSlaveCharts() {
+	if err := r.Charts().Add(masterLastIOSinceTimeChart.Copy()); err != nil {
+		r.Warningf("error on adding '%s' chart", masterLastIOSinceTimeChart.ID)
+	}
+	if err := r.Charts().Add(masterLinkDownSinceTimeChart.Copy()); err != nil {
+		r.Warningf("error on adding '%s' chart", masterLinkDownSinceTimeChart.ID)
 	}
 }
 
