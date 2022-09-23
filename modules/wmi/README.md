@@ -10,7 +10,7 @@ sidebar_label: "Windows machines"
 This module will monitor one or more Windows machines, using
 the [windows_exporter](https://github.com/prometheus-community/windows_exporter).
 
-Module collects metrics from the following collectors:
+The module collects metrics from the following collectors:
 
 - [cpu](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.cpu.md)
 - [memory](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.memory.md)
@@ -21,16 +21,23 @@ Module collects metrics from the following collectors:
 - [logon](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.logon.md)
 - [thermalzone](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.thermalzone.md)
 
-Run `windows_exporter` with these collectors:
-
-> windows_exporter-0.16.0-amd64.exe --collectors.enabled="cpu,memory,net,logical_disk,os,system,logon,thermalzone"
-
 
 Installation: please follow the [official guide](https://github.com/prometheus-community/windows_exporter#installation).
 
 ## Requirements
 
-- `windows_exporter` version v0.13.0+
+`windows_exporter` version v0.13.0+
+
+- On your Windows machine [download the latest version of the windows_exporter msi](https://github.com/prometheus-community/windows_exporter/releases)
+
+- Install the `windows_exporter` with `msiexec` and the parameters shown below:
+
+  ```msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone```
+  
+  The msi installer automatically adds and starts a service called `windows_exporter`, which listens to port 9182 by default. 
+  Full installation instructions options can be found  [here](https://github.com/prometheus-community/windows_exporter/releases).
+
+- Verify that the exporter works properly by accessing http://localhost:9182/
 
 ## Charts
 
