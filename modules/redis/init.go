@@ -11,14 +11,14 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func (r Redis) validateConfig() error {
+func (r *Redis) validateConfig() error {
 	if r.Address == "" {
 		return errors.New("'address' not set")
 	}
 	return nil
 }
 
-func (r Redis) initRedisClient() (*redis.Client, error) {
+func (r *Redis) initRedisClient() (*redis.Client, error) {
 	opts, err := redis.ParseURL(r.Address)
 	if err != nil {
 		return nil, err
@@ -42,6 +42,6 @@ func (r Redis) initRedisClient() (*redis.Client, error) {
 	return redis.NewClient(opts), nil
 }
 
-func (r Redis) initCharts() (*module.Charts, error) {
+func (r *Redis) initCharts() (*module.Charts, error) {
 	return redisCharts.Copy(), nil
 }

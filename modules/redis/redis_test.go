@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -221,6 +222,11 @@ func TestRedis_Collect(t *testing.T) {
 				"module_fork_in_progress":         0,
 				"module_fork_last_cow_size":       0,
 				"number_of_cached_scripts":        0,
+				"ping_latency_avg":                0,
+				"ping_latency_count":              5,
+				"ping_latency_max":                0,
+				"ping_latency_min":                0,
+				"ping_latency_sum":                0,
 				"process_id":                      1,
 				"pubsub_channels":                 0,
 				"pubsub_patterns":                 0,
@@ -287,6 +293,8 @@ func TestRedis_Collect(t *testing.T) {
 			rdb := test.prepare(t)
 
 			ms := rdb.Collect()
+
+			copyPingLatency(ms, test.wantCollected)
 
 			assert.Equal(t, test.wantCollected, ms)
 			if len(test.wantCollected) > 0 {
@@ -366,19 +374,34 @@ func ensureCollectedDbsAddedToCharts(t *testing.T, rdb *Redis) {
 	}
 }
 
+func copyPingLatency(dst, src map[string]int64) {
+	for k, v := range src {
+		if !strings.HasPrefix(k, "ping_latency") {
+			continue
+		}
+		if _, ok := dst[k]; ok {
+			dst[k] = v
+		}
+	}
+}
+
 type mockRedisClient struct {
 	errOnInfo   bool
 	result      []byte
 	calledClose bool
 }
 
-func (m mockRedisClient) Info(_ context.Context, _ ...string) (cmd *redis.StringCmd) {
+func (m *mockRedisClient) Info(_ context.Context, _ ...string) (cmd *redis.StringCmd) {
 	if m.errOnInfo {
 		cmd = redis.NewStringResult("", errors.New("error on Info"))
 	} else {
 		cmd = redis.NewStringResult(string(m.result), nil)
 	}
 	return cmd
+}
+
+func (m *mockRedisClient) Ping(_ context.Context) (cmd *redis.StatusCmd) {
+	return redis.NewStatusResult("PONG", nil)
 }
 
 func (m *mockRedisClient) Close() error {
