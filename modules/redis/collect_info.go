@@ -80,6 +80,9 @@ func (r *Redis) collectInfo(mx map[string]int64, info string) {
 			mx[field] = int64(time.Since(time.Unix(v, 0)).Seconds())
 		case field == "aof_enabled" && value == "1":
 			r.addAOFChartsOnce.Do(r.addAOFCharts)
+		case field == "master_link_status":
+			mx["master_link_status_up"] = boolToInt(value == "up")
+			mx["master_link_status_down"] = boolToInt(value == "down")
 		default:
 			collectNumericValue(mx, field, value)
 		}
@@ -227,6 +230,9 @@ func (r *Redis) addAOFCharts() {
 }
 
 func (r *Redis) addReplSlaveCharts() {
+	if err := r.Charts().Add(masterLinkStatusChart.Copy()); err != nil {
+		r.Warningf("error on adding '%s' chart", masterLinkStatusChart.ID)
+	}
 	if err := r.Charts().Add(masterLastIOSinceTimeChart.Copy()); err != nil {
 		r.Warningf("error on adding '%s' chart", masterLastIOSinceTimeChart.ID)
 	}
@@ -242,4 +248,11 @@ func has(m map[string]int64, key string, keys ...string) bool {
 	default:
 		return ok && has(m, keys[0], keys[1:]...)
 	}
+}
+
+func boolToInt(v bool) int64 {
+	if v {
+		return 1
+	}
+	return 0
 }
