@@ -19,6 +19,7 @@ const (
 	prioNet
 
 	prioConnectedReplicas
+	prioMasterLinkStatus
 	prioMasterLastIOSinceTime
 	prioMasterLinkDownSinceTime
 
@@ -329,6 +330,18 @@ var (
 		Priority: prioConnectedReplicas,
 		Dims: module.Dims{
 			{ID: "connected_slaves", Name: "connected"},
+		},
+	}
+	masterLinkStatusChart = module.Chart{
+		ID:       "master_last_status",
+		Title:    "Master link status",
+		Units:    "status",
+		Fam:      "replication",
+		Ctx:      "redis.master_link_status",
+		Priority: prioMasterLinkStatus,
+		Dims: module.Dims{
+			{ID: "master_link_status_up", Name: "up"},
+			{ID: "master_link_status_down", Name: "down"},
 		},
 	}
 	masterLastIOSinceTimeChart = module.Chart{
