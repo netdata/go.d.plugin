@@ -171,7 +171,7 @@ var systemCharts = Charts{
 		Title: "Rebalance Approximate Time Until Finish",
 		Units: "seconds",
 		Fam:   "rebalance",
-		Ctx:   "scaleio.rebalance_time_until_finish",
+		Ctx:   "scaleio.system_rebalance_time_until_finish",
 		Dims: Dims{
 			{ID: "system_rebalance_time_until_finish", Name: "time"},
 		},
@@ -203,7 +203,7 @@ var systemCharts = Charts{
 	{
 		ID:    "system_defined_components",
 		Title: "Components",
-		Units: "number",
+		Units: "components",
 		Fam:   "components",
 		Ctx:   "scaleio.system_defined_components",
 		Dims: Dims{
@@ -222,7 +222,7 @@ var systemCharts = Charts{
 	{
 		ID:    "system_components_volumes_by_type",
 		Title: "Volumes By Type",
-		Units: "number",
+		Units: "volumes",
 		Fam:   "components",
 		Ctx:   "scaleio.system_components_volumes_by_type",
 		Type:  module.Stacked,
@@ -234,7 +234,7 @@ var systemCharts = Charts{
 	{
 		ID:    "system_components_volumes_by_mapping",
 		Title: "Volumes By Mapping",
-		Units: "number",
+		Units: "volumes",
 		Fam:   "components",
 		Ctx:   "scaleio.system_components_volumes_by_mapping",
 		Type:  module.Stacked,
@@ -324,7 +324,7 @@ var storagePoolCharts = Charts{
 	{
 		ID:    "storage_pool_%s_components",
 		Title: "Components",
-		Units: "number",
+		Units: "components",
 		Fam:   "pool %s",
 		Ctx:   "scaleio.storage_pool_components",
 		Dims: Dims{
