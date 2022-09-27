@@ -358,7 +358,7 @@ var (
 		Title:    "Custom Field %s Requests By Pattern",
 		Units:    "requests/s",
 		Fam:      "custom field ptn",
-		Ctx:      "web_log.custom_field_%s_pattern_requests",
+		Ctx:      "web_log.custom_field_pattern_requests",
 		Type:     module.Stacked,
 		Priority: prioReqCustomFieldPattern,
 	}
@@ -396,7 +396,7 @@ var (
 		Title:    "Responses By Status Code",
 		Units:    "responses/s",
 		Fam:      "url ptn %s",
-		Ctx:      "web_log.url_pattern_%s_status_code_responses",
+		Ctx:      "web_log.url_pattern_status_code_responses",
 		Type:     module.Stacked,
 		Priority: prioURLPatternStats,
 	}
@@ -405,7 +405,7 @@ var (
 		Title:    "Requests By HTTP Method",
 		Units:    "requests/s",
 		Fam:      "url ptn %s",
-		Ctx:      "web_log.url_pattern_%s_http_method_requests",
+		Ctx:      "web_log.url_pattern_http_method_requests",
 		Type:     module.Stacked,
 		Priority: prioURLPatternStats + 1,
 	}
@@ -414,7 +414,7 @@ var (
 		Title:    "Bandwidth",
 		Units:    "kilobits/s",
 		Fam:      "url ptn %s",
-		Ctx:      "web_log.url_pattern_%s_bandwidth",
+		Ctx:      "web_log.url_pattern_bandwidth",
 		Type:     module.Area,
 		Priority: prioURLPatternStats + 2,
 		Dims: Dims{
@@ -427,7 +427,7 @@ var (
 		Title:    "Request Processing Time",
 		Units:    "milliseconds",
 		Fam:      "url ptn %s",
-		Ctx:      "web_log.url_pattern_%s_request_processing_time",
+		Ctx:      "web_log.url_pattern_request_processing_time",
 		Priority: prioURLPatternStats + 3,
 		Dims: Dims{
 			{ID: "url_ptn_%s_req_proc_time_min", Name: "min", Div: 1000},
@@ -500,7 +500,6 @@ func newURLPatternRespCodesChart(name string) *Chart {
 	chart := urlPatternRespCodes.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
-	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
 	return chart
 }
 
@@ -508,7 +507,6 @@ func newURLPatternReqMethodsChart(name string) *Chart {
 	chart := urlPatternReqMethods.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
-	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
 	return chart
 }
 
@@ -516,7 +514,6 @@ func newURLPatternBandwidthChart(name string) *Chart {
 	chart := urlPatternBandwidth.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
-	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, name)
 	}
@@ -527,7 +524,6 @@ func newURLPatternReqProcTimeChart(name string) *Chart {
 	chart := urlPatternReqProcTime.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, name)
 	chart.Fam = fmt.Sprintf(chart.Fam, name)
-	chart.Ctx = fmt.Sprintf(chart.Ctx, name)
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, name)
 	}
@@ -552,7 +548,6 @@ func newCustomFieldChart(f customField) (*Chart, error) {
 	chart := reqByCustomFieldPattern.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, f.Name)
 	chart.Title = fmt.Sprintf(chart.Title, f.Name)
-	chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
 	for _, p := range f.Patterns {
 		dim := &Dim{
 			ID:   fmt.Sprintf("custom_field_%s_%s", f.Name, p.Name),
