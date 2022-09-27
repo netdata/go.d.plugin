@@ -10,23 +10,25 @@ sidebar_label: "Chrony"
 
 This module monitors the system's clock performance and peers activity status using Chrony communication protocol v6.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "bind." prefix.
 
-- Distance to the reference clock
-- Current correction
-- Network path delay to stratum-1
-- Dispersion accumulated back to stratum-1
-- Offset on the last clock update
-- Long-term average of the offset value
-- Frequency
-- Residual frequency
-- Skew
-- Interval between the last two clock updates
-- Time since the last measurement
-- Leap status
-- Peers activity
+| Metric               | Scope  |                        Dimensions                        |   Units   |
+|----------------------|:------:|:--------------------------------------------------------:|:---------:|
+| stratum              | global |                         stratum                          |   level   |
+| current_correction   | global |                    current_correction                    |  seconds  |
+| root_delay           | global |                        root_delay                        |  seconds  |
+| root_dispersion      | global |                     root_dispersion                      |  seconds  |
+| last_offset          | global |                          offset                          |  seconds  |
+| rms_offset           | global |                          offset                          |  seconds  |
+| frequency            | global |                        frequency                         |    ppm    |
+| residual_frequency   | global |                    residual_frequency                    |    ppm    |
+| skew                 | global |                           skew                           | frequency |
+| update_interval      | global |                     update_interval                      |  seconds  |
+| ref_measurement_time | global |                   ref_measurement_time                   |  seconds  |
+| leap_status          | global |   normal, insert_second, delete_second, unsynchronised   |  status   |
+| activity             | global | online, offline, burst_online, burst_offline, unresolved |  sources  |
 
 ## Configuration
 
