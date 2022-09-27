@@ -5,6 +5,7 @@ package coredns
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/blang/semver/v4"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -702,6 +703,7 @@ func (cd *CoreDNS) addNewZoneCharts(name string) {
 		chart.ID = fmt.Sprintf(chart.ID, "zone", name)
 		chart.Title = fmt.Sprintf(chart.Title, "Zone", name)
 		chart.Fam = fmt.Sprintf(chart.Fam, "zone", name)
+		chart.Ctx = strings.Replace(chart.Ctx, "coredns.server_", "coredns.zone_", 1)
 
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, name)
