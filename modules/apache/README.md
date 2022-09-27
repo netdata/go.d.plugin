@@ -16,19 +16,22 @@ This module will monitor one or more `Apache` servers, depending on your configu
 
 - `Apache` with enabled [`mod_status`](https://httpd.apache.org/docs/2.4/mod/mod_status.html)
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "apache." prefix.
 
-- Requests in `requests/s`
-- Connections in `connections`
-- Async Connections in `connections`
-- Scoreboard in `connections`
-- Bandwidth in `kilobits/s`
-- Workers in `workers`
-- Lifetime Average Number Of Requests Per Second in `requests/s`
-- Lifetime Average Number Of Bytes Served Per Second in `KiB/s`
-- Lifetime Average Response Size in `KiB`
+| Metric      | Scope  |                                                 Dimensions                                                  |    Units    |
+|-------------|:------:|:-----------------------------------------------------------------------------------------------------------:|:-----------:|
+| connections | global |                                                 connections                                                 | connections |
+| conns_async | global |                                         keepalive, closing, writing                                         | connections |
+| workers     | global |                                                 idle, busy                                                  |   workers   |
+| scoreboard  | global | waiting, starting, reading, sending, keepalive, dns_lookup, closing, logging, finishing, idle_cleanup, open | connections |
+| requests    | global |                                                  requests                                                   | requests/s  |
+| net         | global |                                                    sent                                                     |  kilobit/s  |
+| reqpersec   | global |                                                  requests                                                   | requests/s  |
+| bytespersec | global |                                                   served                                                    |    KiB/s    |
+| bytesperreq | global |                                                    size                                                     |     KiB     |
+| uptime      | global |                                                   uptime                                                    |   seconds   |
 
 ## Configuration
 
