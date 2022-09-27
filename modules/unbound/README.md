@@ -35,52 +35,50 @@ For auto-detection parameters from `unbound.conf`:
 - `unbound.conf` should be readable by `netdata` user
 - if you have several configuration files (include feature) all of them should be readable by `netdata` user
 
-## Charts
+## Metrics
 
-Module produces following summary charts:
+All metrics have "vcsa." prefix.
 
-- Received Queries in `queries`
-- Rate Limited Queries in `queries`
-- DNSCrypt Queries in `queries`
-- Cache Statistics in `events`
-- Cache Statistics Percentage in `percentage`
-- Cache Prefetches in `prefetches`
-- Replies Served From Expired Cache in `replies`
-- Replies That Needed Recursive Processing in `replies`
-- Time Spent On Recursive Processing in `milliseconds`
-- Request List Usage in `queries`
-- Current Request List Usage in `queries`
-- Request List Jostle List Events in `queries`
-- TCP Handler Buffers in `buffers`
-- Uptime `seconds`
-
-If `extended-statistics` is enabled:
-
-- Queries By Type in `queries`
-- Queries By Class in `queries`
-- Queries By OpCode in `queries`
-- Queries By Flag in `queries`
-- Replies By RCode in `replies`
-- Cache Items Count in `items`
-- Cache Memory in `KB`
-- Module Memory in `KB`
-- TCP and TLS Stream Wait Buffer Memory in `KB`
-
-Per thread charts (only if number of threads > 1):
-
-- Received Queries in `queries`
-- Rate Limited Queries in `queries`
-- DNSCrypt Queries in `queries`
-- Cache Statistics in `events`
-- Cache Statistics Percentage in `events`
-- Cache Prefetches in `prefetches`
-- Replies Served From Expired Cache in `replies`
-- Replies That Needed Recursive Processing in `replies`
-- Time Spent On Recursive Processing in `milliseconds`
-- Request List Usage in `queries`
-- Current Request List Usage in `queries`
-- Request List Jostle List Events in `queries`
-- TCP Handler Buffers in `buffers`
+| Metric                            | Scope  |                       Dimensions                       |    Units     |
+|-----------------------------------|:------:|:------------------------------------------------------:|:------------:|
+| queries                           | global |                        queries                         |   queries    |
+| queries_ip_ratelimited            | global |                      ratelimited                       |   queries    |
+| dnscrypt_queries                  | global |          crypted, cert, cleartext, malformed           |   queries    |
+| cache                             | global |                       hits, miss                       |    events    |
+| cache_percentage                  | global |                       hits, miss                       |  percentage  |
+| prefetch                          | global |                       prefetches                       |  prefetches  |
+| expired                           | global |                        expired                         |   replies    |
+| zero_ttl_replies                  | global |                        zero_ttl                        |   replies    |
+| recursive_replies                 | global |                       recursive                        |   replies    |
+| recursion_time                    | global |                      avg, median                       | milliseconds |
+| request_list_usage                | global |                        avg, max                        |   queries    |
+| current_request_list_usage        | global |                       all, users                       |   queries    |
+| request_list_jostle_list          | global |                  overwritten, dropped                  |   queries    |
+| tcpusage                          | global |                         usage                          |   buffers    |
+| uptime                            | global |                          time                          |   seconds    |
+| thread_cache                      | thread |                       hits, miss                       |    events    |
+| thread_cache_percentage           | thread |                       hits, miss                       |  percentage  |
+| thread_prefetch                   | thread |                       prefetches                       |  prefetches  |
+| thread_expired                    | thread |                        expired                         |   replies    |
+| thread_zero_ttl_replies           | thread |                        zero_ttl                        |   replies    |
+| thread_recursive_replies          | thread |                       recursive                        |   replies    |
+| thread_recursion_time             | thread |                      avg, median                       | milliseconds |
+| thread_request_list_usage         | thread |                        avg, max                        |   queries    |
+| thread_current_request_list_usage | thread |                       all, users                       |   queries    |
+| thread_request_list_jostle_list   | thread |                  overwritten, dropped                  |   queries    |
+| thread_tcpusage                   | thread |                         usage                          |   buffers    |
+| cache_memory                      | global | message, rrset, dnscrypt_nonce, dnscrypt_shared_secret |      KB      |
+| mod_memory                        | global |       iterator, respip, validator, subnet, ipsec       |      KB      |
+| mem_streamwait                    | global |                       streamwait                       |      KB      |
+| cache_count                       | global | infra, key, msg, rrset, dnscrypt_nonce, shared_secret  |    items     |
+| type_queries                      | global |           <i>a dimension per query type</i>            |   queries    |
+| class_queries                     | global |           <i>a dimension per query class</i>           |   queries    |
+| opcode_queries                    | global |          <i>a dimension per query opcode</i>           |   queries    |
+| flag_queries                      | global |             qr, aa, tc, rd, ra, z, ad, cd              |   queries    |
+| rcode_answers                     | global |           <i>a dimension per reply rcode</i>           |   replies    |
+| thread_queries                    | global |                        queries                         |   queries    |
+| thread_queries_ip_ratelimited     | global |                      ratelimited                       |   queries    |
+| thread_dnscrypt_queries           | global |          crypted, cert, cleartext, malformed           |   queries    |
 
 ## Configuration
 
