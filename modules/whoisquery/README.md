@@ -9,11 +9,13 @@ sidebar_label: "Whois domain expiry"
 
 This collector module checks the remaining time until a domain is expired.
 
-## Charts
+## Metrics
 
-This collector produces the following chart:
+All metrics have "whoisquery." prefix.
 
-- Time until domain expiry in `seconds`
+| Metric                | Scope  | Dimensions |  Units  |
+|-----------------------|:------:|:----------:|:-------:|
+| time_until_expiration | global |   expiry   | seconds |
 
 ## Configuration
 
