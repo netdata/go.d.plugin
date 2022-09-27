@@ -17,18 +17,20 @@ This module monitors one or more `Tengine` instances, depending on your configur
 - `tengine` with configured [`ngx_http_reqstat_module`](http://tengine.taobao.org/document/http_reqstat.html).
 - collector expects [default line format](http://tengine.taobao.org/document/http_reqstat.html).
 
-## Charts
+## Metrics
 
-It produces the following summary charts:
+All metrics have "tengine." prefix.
 
-- Bandwidth in `B/s`
-- Connections in `connections/s`
-- Requests in `requests/s`
-- Requests Per Response Code Family in `requests/s`
-- Requests Per Response Code Detailed in `requests/s`
-- Number Of Requests Calling For Upstream in `requests/s`
-- Number Of Times Calling For Upstream in `calls/s`
-- Requests Per Response Code Family in `requests/s`
+| Metric                                           | Scope  |                               Dimensions                               |     Units     |
+|--------------------------------------------------|:------:|:----------------------------------------------------------------------:|:-------------:|
+| bandwidth_total                                  | global |                                in, out                                 |      B/s      |
+| connections_total                                | global |                                accepted                                | connections/s |
+| requests_total                                   | global |                               processed                                |  requests/s   |
+| requests_per_response_code_family_total          | global |                       2xx, 3xx, 4xx, 5xx, other                        |  requests/s   |
+| requests_per_response_code_detailed_total        | global | 200, 206, 302, 304, 403, 404, 419, 499, 500, 502, 503, 504, 508, other |  requests/s   |
+| requests_upstream_total                          | global |                                requests                                |  requests/s   |
+| tries_upstream_total                             | global |                                 calls                                  |    calls/s    |
+| requests_upstream_per_response_code_family_total | global |                                4xx, 5xx                                |  requests/s   |
 
 ## Configuration
 
