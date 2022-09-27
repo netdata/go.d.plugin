@@ -120,7 +120,7 @@ func (p *Postgres) doQueryQueryableDatabases() error {
 		// charts: 20 x table, 4 x index.
 		// https://discord.com/channels/847502280503590932/1022693928874549368
 		if tables > 50 || indexes > 250 {
-			p.Warningf("database '%s' has too many tables/indexes, skipping it", dbname)
+			p.Warningf("database '%s' has too many user tables(%d)/indexes(%d), skipping it", dbname, tables, indexes)
 			conn.connErrors = connErrMax
 			_ = db.Close()
 			stdlib.UnregisterConnConfig(connStr)
