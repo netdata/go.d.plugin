@@ -20,19 +20,18 @@ Used methods:
 
 - [`supervisor.getAllProcessInfo`](http://supervisord.org/api.html#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.getAllProcessInfo)
 
-## Charts
+## Metrics
 
-Summary charts:
+All metrics have "supervisord." prefix.
 
-- Processes in `processes`
-
-Processes groups charts:
-
-- Processes in `processes`
-- State code in `code`
-- Exit status in `status`
-- Uptime in `seconds`
-- Downtime in `seconds`
+| Metric              |     Scope     |           Dimensions           |    Units    |
+|---------------------|:-------------:|:------------------------------:|:-----------:|
+| summary_processes   |    global     |      running, non-running      |  processes  |
+| processes           | process group |      running, non-running      |  processes  |
+| process_state_code  | process group | <i>a dimension per process</i> |    code     |
+| process_exit_status | process group | <i>a dimension per process</i> | exit status |
+| process_uptime      | process group | <i>a dimension per process</i> |   seconds   |
+| process_downtime    | process group | <i>a dimension per process</i> |   seconds   |
 
 ## Configuration
 
