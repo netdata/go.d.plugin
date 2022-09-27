@@ -16,116 +16,74 @@ This module will monitor one or more `VerneMQ` instances, depending on your conf
 
 - v1.10.1
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "vernemq." prefix.
 
-#### Sockets
-
-- Open Sockets in `sockets`
-- Socket Open and Close Events in `sockets/s`
-- Closed Sockets due to Keepalive Time Expired in `sockets/s`
-- Closed Sockets due to no CONNECT Frame On Time in `sockets/s`
-- Socket Errors in `errors/s`
-
-#### Queues
-
-- Living Queues in an Online or an Offline State in `queue processes`
-- Queue Processes Setup and Teardown Events in `events/s`
-- Queue Processes Initialized from Offline Storage in `queue processes/s`
-- Received and Sent PUBLISH Messages in `messages/s`
-- Undelivered PUBLISH Messages in `messages`
-
-#### Subscriptions
-
-- Subscriptions in the Routing Table in `subscriptions`
-- Matched Subscriptions `subscriptions`
-- Routing Table Memory Usage in `KiB`
-
-#### Erlang VM
-
-- Average Scheduler Utilization in `percentage`
-- Erlang Processes in `processes`
-- Reductions in `ops/s`
-- Context Switches in `ops/s`
-- Received and Sent Traffic through Ports in `kilobits/s`
-- Processes that are Ready to Run on All Run-Queues in `processes`
-- GC Count in `KiB/s`
-- GC Words Reclaimed in `KiB/s`
-- Memory Allocated by the Erlang Processes and by the Emulator in `KiB`
-
-#### Bandwidth
-
-- Bandwidth in `kilobits/s`
-
-#### Retain
-
-- Stored Retained Messages in `messages`
-- Stored Retained Messages Memory Usage in `KiB`
-
-#### Cluster
-
-- Communication with Other Cluster Nodes in `kilobits/s`
-- Traffic Dropped During Communication with Other Cluster Nodes in `kilobits/s`
-- Unresolved Netsplits in `netsplits`
-- Netsplits in `netsplits/s`
-
-#### MQTT AUTH
-
-- v5 AUTH in `packets/s`
-- v5 AUTH Received by Reason in `packets/s`
-- v5 AUTH Sent by Reason in `packets/s`
-
-#### MQTT CONNECT
-
-- v3/v5 CONNECT and CONNACK in `packets/s`
-- v3/v5 CONNACK Sent by Reason in `packets/s`
-
-#### MQTT DISCONNECT
-
-- v3/v5 DISCONNECT in `packets/s`
-- v5 DISCONNECT Received by Reason in `packets/s`
-- v5 DISCONNECT Sent by Reason in `packets/s`
-
-#### MQTT SUBSCRIBE
-
-- v3/v5 SUBSCRIBE and SUBACK in `packets/s`
-- v3/v5 Failed SUBSCRIBE Operations due to a Netsplit in `ops/s`
-- v3/v5 Unauthorized SUBSCRIBE Attempts in `attempts/s`
-
-#### MQTT UNSUBSCRIBE
-
-- v3/v5 UNSUBSCRIBE and UNSUBACK in `packets/s`
-- v3/v5 Failed UNSUBSCRIBE Operation due to a Netsplit in `ops/s`
-
-#### MQTT PUBLISH
-
-- v3/v5 QoS 0,1,2 PUBLISH in `packets/s`
-- v3/v5 Failed PUBLISH Operations due to a Netsplit in `ops/s`
-- v3/v5 Unauthorized PUBLISH Attempts in `attempts/s`
-- v3/v5 QoS 1 PUBACK in `packets/s`
-- v5 PUBACK QoS 1 Received by Reason in `packets/s`
-- v5 PUBACK QoS 1 Sent by Reason in `packets/s`
-- v3/v5 PUBACK QoS 1 Received Unexpected Messages in `messages/s`
-- v3/v5 PUBREC QoS 2 in `packets/s`
-- v5 PUBREC QoS 2 Received by Reason in `packets/s`
-- v5 PUBREC QoS 2 Sent by Reason in `packets/s`
-- v3 PUBREC QoS 2 Received Unexpected Messages in `messages/s`
-- v3/v5 PUBREL QoS 2 in `packets/s`
-- v5 PUBREL QoS 2 Received by Reason in `packets/s`
-- v5 PUBREL QoS 2 Sent by Reason in `packets/s`
-- v3/v5 PUBCOMP QoS 2 in `packets/s`
-- v5 PUBCOMP QoS 2 Received by Reason in `packets/s`
-- v5 PUBCOMP QoS 2 Sent by Reason in `packets/s`
-- v3/v5 PUBCOMP QoS 2 Received Unexpected Messages in `messages/s`
-
-#### MQTT PING
-
-- v3/v5 PING in `packets/s`
-
-#### Uptime
-
-- Node Uptime in `seconds`
+| Metric                          | Scope  |            Dimensions            |       Units       |
+|---------------------------------|:------:|:--------------------------------:|:-----------------:|
+| sockets                         | global |           open, close            |     events/s      |
+| client_keepalive_expired        | global |              closed              |     sockets/s     |
+| socket_close_timeout            | global |              closed              |     sockets/s     |
+| socket_errors                   | global |              errors              |     errors/s      |
+| queue_processes                 | global |         queue_processes          |  queue processes  |
+| queue_processes_operations      | global |         setup, teardown          |     events/s      |
+| queue_process_init_from_storage | global |         queue_processes          | queue processes/s |
+| queue_messages                  | global |          received, sent          |    messages/s     |
+| queue_undelivered_messages      | global |   dropped, expired, unhandled    |    messages/s     |
+| router_subscriptions            | global |          subscriptions           |   subscriptions   |
+| router_matched_subscriptions    | global |          local, remote           |  subscriptions/s  |
+| router_memory                   | global |               used               |        KiB        |
+| average_scheduler_utilization   | global |           utilization            |    percentage     |
+| system_utilization_scheduler    | global | <i>a dimension per scheduler</i> |    percentage     |
+| system_processes                | global |            processes             |     processes     |
+| system_reductions               | global |            reductions            |       ops/s       |
+| system_context_switches         | global |         context_switches         |       ops/s       |
+| system_io                       | global |          received, sent          |    kilobits/s     |
+| system_run_queue                | global |              ready               |     processes     |
+| system_gc_count                 | global |                gc                |       ops/s       |
+| system_gc_words_reclaimed       | global |         words_reclaimed          |       ops/s       |
+| system_allocated_memory         | global |        processes, system         |        KiB        |
+| bandwidth                       | global |          received, sent          |    kilobits/s     |
+| retain_messages                 | global |             messages             |     messages      |
+| retain_memory                   | global |               used               |        KiB        |
+| cluster_bandwidth               | global |          received, sent          |    kilobits/s     |
+| cluster_dropped                 | global |             dropped              |    kilobits/s     |
+| netsplit_unresolved             | global |            unresolved            |     netsplits     |
+| netsplits                       | global |        resolved, detected        |    netsplits/s    |
+| mqtt_auth                       | global |          received, sent          |     packets/s     |
+| mqtt_auth_received_reason       | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_auth_sent_reason           | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_connect                    | global |         connect, connack         |     packets/s     |
+| mqtt_connack_sent_reason        | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_disconnect                 | global |          received, sent          |     packets/s     |
+| mqtt_disconnect_received_reason | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_disconnect_sent_reason     | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_subscribe                  | global |        subscribe, suback         |     packets/s     |
+| mqtt_subscribe_error            | global |              failed              |       ops/s       |
+| mqtt_subscribe_auth_error       | global |              unauth              |    attempts/s     |
+| mqtt_unsubscribe                | global |      unsubscribe, unsuback       |     packets/s     |
+| mqtt_unsubscribe                | global |      mqtt_unsubscribe_error      |       ops/s       |
+| mqtt_publish                    | global |          received, sent          |     packets/s     |
+| mqtt_publish_errors             | global |              failed              |       ops/s       |
+| mqtt_publish_auth_errors        | global |              unauth              |    attempts/s     |
+| mqtt_puback                     | global |          received, sent          |     packets/s     |
+| mqtt_puback_received_reason     | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_puback_sent_reason         | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_puback_invalid_error       | global |            unexpected            |    messages/s     |
+| mqtt_pubrec                     | global |          received, sent          |     packets/s     |
+| mqtt_pubrec_received_reason     | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_pubrec_sent_reason         | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_pubrec_invalid_error       | global |            unexpected            |    messages/s     |
+| mqtt_pubrel                     | global |          received, sent          |     packets/s     |
+| mqtt_pubrel_received_reason     | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_pubrel_sent_reason         | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_pubcom                     | global |          received, sent          |     packets/s     |
+| mqtt_pubcomp_received_reason    | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_pubcomp_sent_reason        | global |  <i>a dimensions per reason</i>  |     packets/s     |
+| mqtt_pubcomp_invalid_error      | global |            unexpected            |    messages/s     |
+| mqtt_ping                       | global |        pingreq, pingresp         |     packets/s     |
+| node_uptime                     | global |        pingreq, pingresp         |     packets/s     |
 
 ## Configuration
 
