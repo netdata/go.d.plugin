@@ -15,40 +15,36 @@ This module collects hosts and vms performance statistics from one or more `vCen
 > **Warning**: The `vsphere` collector cannot re-login and continue collecting metrics after a vCenter reboot.
 > go.d.plugin needs to be restarted.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "vsphere." prefix.
 
-#### Virtual Machine
-
-- Cpu Usage Total in `%`
-- Memory Usage Percentage in `%`
-- Memory Usage in `KiB`
-- VMKernel Memory Swap Rate in `KiB/s`
-- VMKernel Memory Swap in `KiB`
-- Network Bandwidth Total in `KiB/s`
-- Network Packets Total in `packets`
-- Network Drops Total in `packets`
-- Disk Usage Total in `KiB/s`
-- Disk Max Latency in `ms`
-- Overall Alarm Status in `status`
-- System Uptime in `seconds`
-
-#### Host
-
-- Cpu Usage Total in `%`
-- Memory Usage Percentage in `%`
-- Memory Usage in `KiB`
-- VMKernel Memory Swap Rate in `KiB/s`
-- VMKernel Memory Swap in `KiB`
-- Network Bandwidth Total in `KiB/s`
-- Network Packets Total in `packets`
-- Network Drops Total in `packets`
-- Network Errors Total in `errors`
-- Disk Usage Total in `KiB/s`
-- Disk Max Latency in `ms`
-- Overall Alarm Status in `status`
-- System Uptime in `seconds`
+| Metric                    |      Scope      |                   Dimensions                    |   Units    |
+|---------------------------|:---------------:|:-----------------------------------------------:|:----------:|
+| vm_cpu_usage_total        | virtual machine |                      used                       | percentage |
+| vm_mem_usage_percentage   | virtual machine |                      used                       | percentage |
+| vm_mem_usage              | virtual machine |        granted, consumed, active, shared        |    KiB     |
+| vm_mem_swap_rate          | virtual machine |                     in, out                     |   KiB/s    |
+| vm_mem_swap               | virtual machine |                     swapped                     |    KiB     |
+| vm_net_bandwidth_total    | virtual machine |                     rx, tx                      |   KiB/s    |
+| vm_net_packets_total      | virtual machine |                     rx, tx                      |  packets   |
+| vm_net_drops_total        | virtual machine |                     rx, tx                      |  packets   |
+| vm_disk_usage_total       | virtual machine |                   read, write                   |   KiB/s    |
+| vm_disk_max_latency       | virtual machine |                     latency                     |     ms     |
+| vm_overall_status         | virtual machine |                     status                      |   status   |
+| vm_system_uptime          | virtual machine |                      time                       |  seconds   |
+| host_cpu_usage_total      |      host       |                      used                       | percentage |
+| host_mem_usage_percentage |      host       |                      used                       | percentage |
+| host_mem_usage            |      host       | granted, consumed, active, shared, sharedcommon |    KiB     |
+| host_mem_swap_rate        |      host       |                     in, out                     |   KiB/s    |
+| host_net_bandwidth_total  |      host       |                     rx, tx                      |   KiB/s    |
+| host_net_packets_total    |      host       |                     rx, tx                      |  packets   |
+| host_net_drops_total      |      host       |                     rx, tx                      |  packets   |
+| host_net_errors_total     |      host       |                     rx, tx                      |   errors   |
+| host_disk_usage_total     |      host       |                   read, write                   |   KiB/s    |
+| host_disk_max_latency     |      host       |                     latency                     |     ms     |
+| host_overall_status       |      host       |                     status                      |   status   |
+| host_system_uptime        |      host       |                      time                       |  seconds   |
 
 ## Configuration
 
