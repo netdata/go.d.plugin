@@ -18,11 +18,15 @@ configuration.
 
 - `vSphere` 6.5+
 
-## Charts
+## Metrics
 
-- Overall System Health in `status`
-- Components Health in `status`
-- Software Updates Health in `status`
+All metrics have "vcsa." prefix.
+
+| Metric                  | Scope  |                   Dimensions                   | Units  |
+|-------------------------|:------:|:----------------------------------------------:|:------:|
+| system_health           | global |                     system                     | status |
+| components_health       | global | applmgmt, database_storage, mem, storage, swap | status |
+| software_updates_health | global |               software_packages                | status |
 
 ## Health statuses
 
