@@ -18,59 +18,37 @@ It collects information and statistics about the server executing the following 
 
 - [`INFO ALL`](https://redis.io/commands/info)
 
-## Charts
+## Metrics
 
-### Connections
+All metrics have "redis." prefix.
 
-- Accepted and rejected (maxclients limit) connections in `connections/s`
-- Clients in `clients`
-
-### Performance
-
-- Ping latency in `seconds`
-- Processed commands in `commands/s`
-- Keys lookup hit rate in `percentage`
-
-### Memory
-
-- Memory usage in `bytes`
-- Ratio between used_memory_rss and used_memory in `ratio`
-- Evicted keys due to maxmemory limit in `keys/s`
-
-### Network bandwidth
-
-- Bandwidth in `kilobits/s`
-
-### Replication
-
-- Connected replicas in `replicas`
-- Master link status in `status`
-- Time elapsed since the last interaction with master in `seconds`
-- Time elapsed since the link between master and slave is down in `seconds`
-
-### Persistence
-
-- Operations that produced changes since the last SAVE or BGSAVE in `operations`
-- Duration of the ongoing RDB save operation if any in `seconds`
-- Status of the last RDB save operation in `status`
-- Time elapsed since the last successful RDB save in `seconds`
-- AOF file size in `bytes`
-
-### Commands
-
-- Calls per command in `calls/s`
-- Total CPU time consumed by the commands in `usec`
-- Average CPU consumed per command execution in `usec/s`
-
-### Keyspace
-
-- Expired keys in `keys/s`
-- Keys per database in `keys`
-- Keys with an expiration per database in `keys`
-
-### Uptime
-
-- Uptime in `seconds`
+| Metric                          | Scope  |                   Dimensions                   |     Units      |
+|---------------------------------|:------:|:----------------------------------------------:|:--------------:|
+| connections                     | global |               accepted, rejected               | connections/s  |
+| clients                         | global | connected, blocked, tracking, in_timeout_table |    clients     |
+| ping_latency                    | global |                 min, max, avg                  |    seconds     |
+| commands                        | global |                   processes                    |   commands/s   |
+| keyspace_lookup_hit_rate        | global |                lookup_hit_rate                 |   percentage   |
+| memory                          | global |  max, used, rss, peak, dataset, lua, scripts   |     bytes      |
+| mem_fragmentation_ratio         | global |               mem_fragmentation                |     ratio      |
+| key_eviction_events             | global |                    evicted                     |     keys/s     |
+| net                             | global |                 received, sent                 |   kilobits/s   |
+| rdb_changes                     | global |                    changes                     |   operations   |
+| bgsave_now                      | global |              current_bgsave_time               |    seconds     |
+| bgsave_health                   | global |                  last_bgsave                   |     status     |
+| bgsave_last_rdb_save_since_time | global |                last_bgsave_time                |    seconds     |
+| aof_file_size                   | global |                 current, base                  |     bytes      |
+| commands_calls                  | global |         <i>a dimension per command</i>         |     calls      |
+| commands_usec                   | global |         <i>a dimension per command</i>         |  microseconds  |
+| commands_usec_per_sec           | global |         <i>a dimension per command</i>         | microseconds/s |
+| key_expiration_events           | global |                    expired                     |     keys/s     |
+| database_keys                   | global |        <i>a dimension per database</i>         |      keys      |
+| database_expires_keys           | global |        <i>a dimension per database</i>         |      keys      |
+| connected_replicas              | global |                   connected                    |    replicas    |
+| master_link_status              | global |                    up, down                    |     status     |
+| master_last_io_since_time       | global |                      time                      |    seconds     |
+| master_link_down_since_time     | global |                      time                      |    seconds     |
+| uptime                          | global |                     uptime                     |    seconds     |
 
 ## Configuration
 
