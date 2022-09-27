@@ -9,12 +9,14 @@ sidebar_label: "x509 certificates"
 
 This module checks the time until a x509 certificate expiration and its revocation status.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "x509." prefix.
 
-- Time Until Certificate Expiration in `seconds`
-- Revocation Status in `status`
+| Metric                | Scope  | Dimensions |  Units  |
+|-----------------------|:------:|:----------:|:-------:|
+| time_until_expiration | global |   expiry   | seconds |
+| revocation_status     | global |  revoked   | boolean |
 
 ## Configuration
 
