@@ -12,115 +12,72 @@ survive disasters.
 
 This module will monitor one or more `CockroachDB` databases, depending on your configuration.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "chrony." prefix.
 
-#### Process Statistics
-
-- Combined CPU Time Percentage, Normalized 0-1 by Number of Cores in `percantage`
-- CPU Time Percentage in `percentage`
-- CPU Time in `ms`
-- Memory Usage in `KiB`
-- File Descriptors in `fd`
-- Uptime in `seconds`
-
-#### Host Statistics
-
-- Host Disk Cumulative Bandwidth in `KiB`
-- Host Disk Cumulative Operations in `operations`
-- Host Disk Cumulative IOPS In Progress in `iops`
-- Host Network Cumulative Bandwidth in `kilobits`
-- Host Network Cumulative Packets in `packets`
-- Uptime in `seconds`
-
-#### Liveness
-
-- Live Nodes in the Cluster in `num`
-- Node Liveness Heartbeats in `heartbeats`
-
-#### Capacity
-
-- Total Storage Capacity in `KiB`
-- Storage Capacity Usability in `KiB`
-- Storage Usable Capacity in `KiB`
-- Storage Used Capacity Utilization in `percentage`
-
-#### SQL
-
-- Active SQL Connections in `connections`
-- SQL Bandwidth in `KiB`
-- SQL Statements Total in `statements`
-- SQL Statements and Transaction Errors in `errors`
-- SQL Started DDL Statements in `statements`
-- SQL Executed DDL Statements in `statements`
-- SQL Started DML Statements in `statements`
-- SQL Executed DML Statements in `statements`
-- SQL Started TCL Statements in `statements`
-- SQL Executed TCL Statements in `statements`
-- Active Distributed SQL Queries in `queries`
-- Distributed SQL Flows in `flows`
-
-#### Storage
-
-- Used Live Data in `KiB`
-- Logical Data in `KiB`
-- Logical Data Count in `num`
-
-#### KV Transactions
-
-- KV Transactions in `transactions`
-- KV Transaction Restarts in `restarts`
-
-#### Ranges
-
-- Ranges in `num`
-- Problem Ranges in `ranges`
-- Range Events in `events`
-- Range Snapshot Events in `events`
-
-#### RocksDB
-
-- RocksDB Read Amplification in `reads/query`
-- RocksDB Table Operations in `operations`
-- RocksDB Block Cache Operations in `operations`
-- RocksDB Block Cache Hit Rate in `percentage`
-- RocksDB SSTables in `num`
-
-#### Replication
-
-- Number of Replicas in `num`
-- Replicas Quiescence in `replicas`
-- Number of Raft Leaders in `num`
-- Number of Leaseholders in `num`
-- RocksDB SSTables in `num`
-
-#### Queues
-
-- Queues Processing Failures in `failures`
-
-#### Rebalancing
-
-- Rebalancing Average Queries in `queries/s`
-- Rebalancing Average Writes in `writes/s`
-
-#### Time Series
-
-- Time Series Written Samples in `samples`
-- Time Series Write Errors in `errors`
-- Time Series Bytes Written in `KiB`
-
-#### Slow Requests
-
-- Slow Requests in `requests`
-
-#### Go/Cgo
-
-- Heap Memory Usage in `KiB`
-- Number of Goroutines in `num`
-- GC Runs in `invokes`
-- GC Pause Time in `us`
-- Cgo Calls in `calls`
+| Metric                               | Scope  |                                                                              Dimensions                                                                               |    Units     |
+|--------------------------------------|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------:|
+| process_cpu_time_combined_percentage | global |                                                                                 used                                                                                  |  percentage  |
+| process_cpu_time_percentage          | global |                                                                               user, sys                                                                               |  percentage  |
+| process_cpu_time                     | global |                                                                               user, sys                                                                               |      ms      |
+| process_memory                       | global |                                                                                  rss                                                                                  |     KiB      |
+| process_file_descriptors             | global |                                                                                 open                                                                                  |      fd      |
+| process_uptime                       | global |                                                                                uptime                                                                                 |   seconds    |
+| host_disk_bandwidth                  | global |                                                                              read, write                                                                              |     KiB      |
+| host_disk_operations                 | global |                                                                             reads, writes                                                                             |  operations  |
+| host_disk_iops_in_progress           | global |                                                                              in_progress                                                                              |     iops     |
+| host_network_bandwidth               | global |                                                                            received, sent                                                                             |   kilobits   |
+| host_network_packets                 | global |                                                                            received, sent                                                                             |   packets    |
+| live_nodes                           | global |                                                                              live_nodes                                                                               |    nodes     |
+| node_liveness_heartbeats             | global |                                                                          successful, failed                                                                           |  heartbeats  |
+| total_storage_capacity               | global |                                                                                 total                                                                                 |     KiB      |
+| storage_capacity_usability           | global |                                                                           usable, unusable                                                                            |     KiB      |
+| storage_usable_capacity              | global |                                                                            available, used                                                                            |     KiB      |
+| storage_used_capacity_percentage     | global |                                                                             total, usable                                                                             |  percentage  |
+| sql_connections                      | global |                                                                                active                                                                                 | connections  |
+| sql_bandwidth                        | global |                                                                            received, sent                                                                             |     KiB      |
+| sql_statements_total                 | global |                                                                           started, executed                                                                           |  statements  |
+| sql_errors                           | global |                                                                        statement, transaction                                                                         |    errors    |
+| sql_started_ddl_statements           | global |                                                                                  ddl                                                                                  |  statements  |
+| sql_executed_ddl_statements          | global |                                                                                  ddl                                                                                  |  statements  |
+| sql_started_dml_statements           | global |                                                                    select, update, delete, insert                                                                     |  statements  |
+| sql_executed_dml_statements          | global |                                                                    select, update, delete, insert                                                                     |  statements  |
+| sql_started_tcl_statements           | global |             begin, commit, rollback, savepoint, savepoint_cockroach_restart, release_savepoint_cockroach_restart, rollback_to_savepoint_cockroach_restart             |  statements  |
+| sql_executed_tcl_statements          | global |             begin, commit, rollback, savepoint, savepoint_cockroach_restart, release_savepoint_cockroach_restart, rollback_to_savepoint_cockroach_restart             |  statements  |
+| sql_active_distributed_queries       | global |                                                                                active                                                                                 |   queries    |
+| sql_distributed_flows                | global |                                                                            active, queued                                                                             |    flows     |
+| live_bytes                           | global |                                                                         applications, system                                                                          |     KiB      |
+| logical_data                         | global |                                                                             keys, values                                                                              |     KiB      |
+| logical_data_count                   | global |                                                                             keys, values                                                                              |     num      |
+| kv_transactions                      | global |                                                                committed, fast-path_committed, aborted                                                                | transactions |
+| kv_transaction_restarts              | global | write_too_old, write_too_old_multiple, forwarded_timestamp, possible_reply, async_consensus_failure, read_within_uncertainty_interval, aborted, push_failure, unknown |   restarts   |
+| ranges                               | global |                                                                                ranges                                                                                 |    ranges    |
+| ranges_replication_problem           | global |                                                            unavailable, under_replicated, over_replicated                                                             |    ranges    |
+| range_events                         | global |                                                                       split, add, remove, merge                                                                       |    events    |
+| range_snapshot_events                | global |                                                generated, applied_raft_initiated, applied_learner, applied_preemptive                                                 |    events    |
+| rocksdb_read_amplification           | global |                                                                                 reads                                                                                 | reads/query  |
+| rocksdb_table_operations             | global |                                                                         compactions, flushes                                                                          |  operations  |
+| rocksdb_cache_usage                  | global |                                                                                 used                                                                                  |     KiB      |
+| rocksdb_cache_operations             | global |                                                                             hits, misses                                                                              |  operations  |
+| rocksdb_cache_hit_rate               | global |                                                                               hit_rate                                                                                |  percentage  |
+| rocksdb_sstables                     | global |                                                                               sstables                                                                                |   sstables   |
+| replicas                             | global |                                                                               replicas                                                                                |   replicas   |
+| replicas_quiescence                  | global |                                                                           quiescent, active                                                                           |   replicas   |
+| replicas_leaders                     | global |                                                                       leaders, not_leaseholders                                                                       |   replicas   |
+| replicas_leaseholders                | global |                                                                             leaseholders                                                                              | leaseholders |
+| queue_processing_failures            | global |                                   gc, replica_gc, replication, split, consistency, raft_log, raft_snapshot, time_series_maintenance                                   |   failures   |
+| rebalancing_queries                  | global |                                                                                  avg                                                                                  |  queries/s   |
+| rebalancing_writes                   | global |                                                                                  avg                                                                                  |   writes/s   |
+| timeseries_samples                   | global |                                                                                written                                                                                |   samples    |
+| timeseries_write_errors              | global |                                                                                 write                                                                                 |    errors    |
+| timeseries_write_bytes               | global |                                                                                written                                                                                |     KiB      |
+| slow_requests                        | global |                                                              acquiring_latches, acquiring_lease, in_raft                                                              |   requests   |
+| code_heap_memory_usage               | global |                                                                                go, cgo                                                                                |     KiB      |
+| goroutines                           | global |                                                                              goroutines                                                                               |  goroutines  |
+| gc_count                             | global |                                                                                  gc                                                                                   |   invokes    |
+| gc_pause                             | global |                                                                                 pause                                                                                 |      us      |
+| cgo_calls                            | global |                                                                                  cgo                                                                                  |    calls     |
 
 ## Configuration
 

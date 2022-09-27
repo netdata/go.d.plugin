@@ -12,7 +12,7 @@ This module monitors the system's clock performance and peers activity status us
 
 ## Metrics
 
-All metrics have "bind." prefix.
+All metrics have "chrony." prefix.
 
 | Metric               | Scope  |                        Dimensions                        |   Units   |
 |----------------------|:------:|:--------------------------------------------------------:|:---------:|
