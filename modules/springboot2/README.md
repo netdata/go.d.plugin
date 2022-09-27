@@ -14,15 +14,19 @@ Spring Boot Actuator** included in Spring Boot library.
 Springboot2 module looks up `http://localhost:8080/actuator/prometheus` and `http://127.0.0.1:8080/actuator/prometheus`
 to detect Spring Boot application by default.
 
-## Charts
+## Metrics
 
-- Response Codes in `requests/s`
-- Threads in `threads`
-- Heap Memory Usage Overview in `bytes`
-- Heap Memory Usage Eden Space in `bytes`
-- Heap Memory Usage Survivor Space in `bytes`
-- Heap Memory Usage Old Space in `bytes`
-- Uptime in `seconds`
+All metrics have "springboot2." prefix.
+
+| Metric         | Scope  |        Dimensions         |   Units    |
+|----------------|:------:|:-------------------------:|:----------:|
+| response_codes | global |  1xx, 2xx, 3xx, 4xx, 5xx  | requests/s |
+| thread         | global |       daemon, total       |  threads   |
+| heap           | global | free, eden, survivor, old |     B      |
+| heap_eden      | global |      used, commited       |     B      |
+| heap_survivor  | global |      used, commited       |     B      |
+| heap_old       | global |      used, commited       |     B      |
+| uptime         | global |          uptime           |  seconds   |
 
 ## Configuration
 
