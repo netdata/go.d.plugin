@@ -3,6 +3,7 @@
 package postgres
 
 import (
+	"database/sql"
 	"strconv"
 
 	"github.com/jackc/pgx/v4/stdlib"
@@ -63,6 +64,8 @@ func (p *Postgres) doQuerySettingsMaxLocksHeld() (int64, error) {
 	return strconv.ParseInt(s, 10, 64)
 }
 
+const connErrMax = 3
+
 func (p *Postgres) doQueryQueryableDatabases() error {
 	q := queryQueryableDatabaseList()
 
@@ -87,7 +90,7 @@ func (p *Postgres) doQueryQueryableDatabases() error {
 			p.dbConns[dbname] = conn
 		}
 
-		if conn.db != nil || conn.connErrors >= 3 {
+		if conn.db != nil || conn.connErrors >= connErrMax {
 			continue
 		}
 
@@ -96,6 +99,31 @@ func (p *Postgres) doQueryQueryableDatabases() error {
 			p.Warning(err)
 			conn.connErrors++
 			continue
+		}
+
+		tables, err := p.doDBQueryUserTablesCount(db)
+		if err != nil {
+			p.Warning(err)
+			conn.connErrors++
+			_ = db.Close()
+			stdlib.UnregisterConnConfig(connStr)
+		}
+
+		indexes, err := p.doDBQueryUserIndexesCount(db)
+		if err != nil {
+			p.Warning(err)
+			conn.connErrors++
+			_ = db.Close()
+			stdlib.UnregisterConnConfig(connStr)
+		}
+
+		// charts: 20 x table, 4 x index.
+		// https://discord.com/channels/847502280503590932/1022693928874549368
+		if tables > 50 || indexes > 250 {
+			p.Warningf("database '%s' has too many user tables(%d)/indexes(%d), skipping it", dbname, tables, indexes)
+			conn.connErrors = connErrMax
+			_ = db.Close()
+			stdlib.UnregisterConnConfig(connStr)
 		}
 
 		conn.db, conn.connStr = db, connStr
@@ -115,4 +143,26 @@ func (p *Postgres) doQueryQueryableDatabases() error {
 	}
 
 	return nil
+}
+
+func (p *Postgres) doDBQueryUserTablesCount(db *sql.DB) (int64, error) {
+	q := queryUserTablesCount()
+
+	var v string
+	if err := p.doDBQueryRow(db, q, &v); err != nil {
+		return 0, err
+	}
+
+	return parseInt(v), nil
+}
+
+func (p *Postgres) doDBQueryUserIndexesCount(db *sql.DB) (int64, error) {
+	q := queryUserIndexesCount()
+
+	var v string
+	if err := p.doDBQueryRow(db, q, &v); err != nil {
+		return 0, err
+	}
+
+	return parseInt(v), nil
 }

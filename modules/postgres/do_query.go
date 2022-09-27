@@ -14,6 +14,13 @@ func (p *Postgres) doQueryRow(query string, v any) error {
 	return p.db.QueryRowContext(ctx, query).Scan(v)
 }
 
+func (p *Postgres) doDBQueryRow(db *sql.DB, query string, v any) error {
+	ctx, cancel := context.WithTimeout(context.Background(), p.Timeout.Duration)
+	defer cancel()
+
+	return db.QueryRowContext(ctx, query).Scan(v)
+}
+
 func (p *Postgres) doQuery(query string, assign func(column, value string, rowEnd bool)) error {
 	return p.doDBQuery(p.db, query, assign)
 }
