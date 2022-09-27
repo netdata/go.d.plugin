@@ -21,13 +21,13 @@ var charts = Charts{
 		Title: "Service Checks",
 		Fam:   "checks",
 		Units: "status",
-		Ctx:   "consul.checks",
+		Ctx:   "consul.service_checks",
 	},
 	{
 		ID:    "unbound_checks",
 		Title: "Unbound Checks",
 		Fam:   "checks",
 		Units: "status",
-		Ctx:   "consul.checks",
+		Ctx:   "consul.unbound_checks",
 	},
 }

@@ -12,12 +12,14 @@ platform and public or private cloud.
 
 This module monitors `Consul` health checks.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "consul." prefix.
 
-- Service Checks in `status`
-- Unbound Checks in `status`
+| Metric         | Scope  |          Dimensions          | Units  |
+|----------------|:------:|:----------------------------:|:------:|
+| service_checks | global | <i>a dimension per check</i> | status |
+| unbound_checks | global | <i>a dimension per check</i> | status |
 
 ## Configuration
 

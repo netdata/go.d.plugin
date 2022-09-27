@@ -14,7 +14,7 @@ This module will monitor one or more `CockroachDB` databases, depending on your 
 
 ## Metrics
 
-All metrics have "chrony." prefix.
+All metrics have "cockroachdb." prefix.
 
 | Metric                               | Scope  |                                                                              Dimensions                                                                               |    Units     |
 |--------------------------------------|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------:|
