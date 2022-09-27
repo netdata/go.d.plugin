@@ -12,13 +12,15 @@ Message Service client.
 
 This plugin collects queues and topics metrics using ActiveMQ Console API.
 
-## Charts
+## Metrics
 
-It produces following charts per queue and per topic:
+All metrics have "activemq." prefix.
 
-- Messages in `messages/s`
-- Unprocessed Messages in `messages`
-- Consumers in `consumers`
+| Metric               | Scope  |     Dimensions     |   Units    |
+|----------------------|:------:|:------------------:|:----------:|
+| messages             | global | enqueued, dequeued | messages/s |
+| unprocessed_messages | global |    unprocessed     |  messages  |
+| consumers            | global |     consumers      | consumers  |
 
 ## Configuration
 
