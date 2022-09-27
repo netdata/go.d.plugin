@@ -201,7 +201,7 @@ var (
 		Ctx:      "unbound.expired",
 		Priority: prioCacheExpired,
 		Dims: Dims{
-			{ID: "total.num.expired", Name: "expiries"},
+			{ID: "total.num.expired", Name: "expired"},
 		},
 	}
 	zeroTTLChart = Chart{
