@@ -546,6 +546,10 @@ ORDER BY datname,
 `
 }
 
+func queryUserTablesCount() string {
+	return "SELECT count(*) from  pg_stat_user_tables;"
+}
+
 func queryStatUserTables() string {
 	return `
 SELECT current_database()                                   as datname,
@@ -589,6 +593,10 @@ SELECT current_database()                                       AS datname,
        tidx_blks_hit * current_setting('block_size')::numeric   AS tidx_blks_hit_bytes
 FROM pg_statio_user_tables;
 `
+}
+
+func queryUserIndexesCount() string {
+	return "SELECT count(*) from  pg_stat_user_indexes;"
 }
 
 func queryStatUserIndexes() string {
