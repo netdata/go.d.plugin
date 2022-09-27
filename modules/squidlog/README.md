@@ -11,28 +11,30 @@ sidebar_label: "Web server logs (Squid)"
 
 This module parses `Squid` access logs.
 
-## Charts
+## Metrics
 
-Module produces following charts:
+All metrics have "squidlog." prefix.
 
-- Total Requests in `requests/s`
-- Excluded Requests in `requests/s`
-- Requests By Type in `requests/s`
-- Responses By HTTP Status Code Class in `responses/s`
-- Responses By HTTP Status Code in `responses/s`
-- Bandwidth in `kilobits/s`
-- Response Time in `milliseconds/s`
-- Unique Clients in `clients/s`
-- Requests By Cache Result Code in `requests/s`
-- Requests By Cache Result Delivery Transport Tag in `requests/s`
-- Requests By Cache Result Handling Tag in `requests/s`
-- Requests By Cache Result Produced Object Tag in `requests/s`
-- Requests By Cache Result Load Source Tag in `requests/s`
-- Requests By Cache Result Errors Tag in `requests/s`
-- Requests By HTTP Method in `requests/s`
-- Requests By MIME Type in `requests/s`
-- Requests By Hierarchy Code in `requests/s`
-- Forwarded Requests By Server Address in `requests/s`
+| Metric                                   | Scope  |                         Dimensions                         |    Units     |
+|------------------------------------------|:------:|:----------------------------------------------------------:|:------------:|
+| requests                                 | global |                          requests                          |  requests/s  |
+| excluded_requests                        | global |                         unmatched                          |  requests/s  |
+| type_requests                            | global |               success, bad, redirect, error                |  requests/s  |
+| http_status_code_class_responses         | global |                  1xx, 2xx, 3xx, 4xx, 5xx                   | responses/s  |
+| http_status_code_responses               | global |         <i>a dimension per HTTP response code</i>          | responses/s  |
+| bandwidth                                | global |                            sent                            |  kilobits/s  |
+| response_time                            | global |                       min, max, avg                        | milliseconds |
+| uniq_clients                             | global |                          clients                           |   clients    |
+| cache_result_code_requests               | global |          <i>a dimension per cache result code</i>          |  requests/s  |
+| cache_result_code_transport_tag_requests | global | <i>a dimension per cache result delivery transport tag</i> |  requests/s  |
+| cache_result_code_handling_tag_requests  | global |      <i>a dimension per cache result handling tag</i>      |  requests/s  |
+| cache_code_object_tag_requests           | global |  <i>a dimension per cache result produced object tag</i>   |  requests/s  |
+| cache_code_load_source_tag_requests      | global |    <i>a dimension per cache result load source tag</i>     |  requests/s  |
+| cache_code_error_tag_requests            | global |       <i>a dimension per cache result error tag</i>        |  requests/s  |
+| http_method_requests                     | global |             <i>a dimension per HTTP method</i>             |  requests/s  |
+| mime_type_requests                       | global |              <i>a dimension per MIME type</i>              |  requests/s  |
+| hier_code_requests                       | global |           <i>a dimension per hierarchy code</i>            |  requests/s  |
+| server_address_forwarded_requests        | global |           <i>a dimension per server address</i>            |  requests/s  |
 
 ## Log Parsers
 
