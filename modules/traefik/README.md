@@ -16,15 +16,17 @@ This module will monitor one or more `Traefik` instances, depending on your conf
 
 - `Traefik` with enabled [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/prometheus/).
 
-## Charts
+## Metrics
 
 Current implementation collects only [entrypoint](https://doc.traefik.io/traefik/routing/entrypoints/) metrics.
 
-### Entrypoint
+All metrics have "vcsa." prefix.
 
-- Processed HTTP requests, partitioned by code class in `requests/s`
-- Average HTTP request processing time, partitioned by code class in `milliseconds`
-- Open connections, partitioned by method in `connections`
+| Metric                              |        Scope         |             Dimensions             |    Units     |
+|-------------------------------------|:--------------------:|:----------------------------------:|:------------:|
+| entrypoint_requests                 | entrypoint, protocol |      1xx, 2xx, 3xx, 4xx, 5xx       |  requests/s  |
+| entrypoint_request_duration_average | entrypoint, protocol |      1xx, 2xx, 3xx, 4xx, 5xx       | milliseconds |
+| entrypoint_open_connections         | entrypoint, protocol | <i>a dimension per HTTP method</i> | connections  |
 
 ## Configuration
 
