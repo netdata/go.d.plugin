@@ -16,22 +16,24 @@ This module monitors `Solr` request handler statistics.
 
 - `Solr` version 6.4+
 
-## Charts
+## Metrics
 
-It produces the following charts per core:
+All metrics have "solr." prefix.
 
-- Search Requests in `requests/s`
-- Search Errors in `errors/s`
-- Search Errors By Type in `errors/s`
-- Search Requests Processing Time in `milliseconds`
-- Search Requests Timings in `milliseconds`
-- Search Requests Processing Time Percentile in `milliseconds`
-- Update Requests in `requests/s`
-- Update Errors in `errors/s`
-- Update Errors By Type in `errors/s`
-- Update Requests Processing Time in `milliseconds`
-- Update Requests Timings in `milliseconds`
-- Update Requests Processing Time Percentile in `milliseconds`
+| Metric                                     | Scope  |        Dimensions        |    Units     |
+|--------------------------------------------|:------:|:------------------------:|:------------:|
+| search_requests                            | global |          search          |  requests/s  |
+| search_errors                              | global |          errors          |   errors/s   |
+| search_errors_by_type                      | global | client, server, timeouts |   errors/s   |
+| search_requests_processing_time            | global |           time           | milliseconds |
+| search_requests_timings                    | global |  min, median, mean, max  | milliseconds |
+| search_requests_processing_time_percentile | global |   p75, p95, p99, p999    | milliseconds |
+| update_requests                            | global |          search          |  requests/s  |
+| update_errors                              | global |          errors          |   errors/s   |
+| update_errors_by_type                      | global | client, server, timeouts |   errors/s   |
+| update_requests_processing_time            | global |           time           | milliseconds |
+| update_requests_timings                    | global |  min, median, mean, max  | milliseconds |
+| update_requests_processing_time_percentile | global |   p75, p95, p99, p999    | milliseconds |
 
 ## Configuration
 
