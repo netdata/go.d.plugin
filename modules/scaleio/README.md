@@ -24,48 +24,42 @@ It collects metrics for following `ScaleIO` components:
 - VxFlex OS v2.6.1.1_113, REST API v2.5
 - VxFlex OS v3.0.0.1_134, REST API v3.0
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "scaleio." prefix.
 
-#### System
-
-- Total Capacity in `KiB`
-- Capacity In Use in `KiB`
-- Capacity Usage in `KiB`
-- Available For Volume Allocation in `KiB`
-- Capacity Health State in `KiB`
-- Primary Backend Bandwidth Total (Read and Write) in `KiB/s`
-- Primary Backend Bandwidth in `KiB/s`
-- Primary Backend IOPS Total (Read and Write) in `iops/s`
-- Primary Backend IOPS in `iops/s`
-- Primary Backend I/O Size Total (Read and Write) in `KiB`
-- Rebalance in `KiB/s`
-- Rebalance Pending Capacity in `KiB`
-- Rebalance Approximate Time Until Finish in `seconds`
-- Rebuild Bandwidth Total (Forward, Backward and Normal) in `KiB/s`
-- Rebuild Pending Capacity Total (Forward, Backward and Normal) in `KiB`
-- Components in `number`
-- Volumes By Type in `number`
-- Volumes By Mapping in `number`
-
-#### Storage Pool
-
-- Total Capacity in `KiB`
-- Capacity In Use in `KiB`
-- Capacity Usage in `KiB`
-- Capacity Utilization in `percentage`
-- Available For Volume Allocation in `KiB`
-- Capacity Health State in `KiB`
-- Components in `number`
-
-#### SDC
-
-- MDM Connection State in `boolean`
-- Bandwidth in `KiB/s`
-- IOPS in `iops/s`
-- I/O Size in `KiB`
-- Mapped Volumes in `volumes`
+| Metric                                            |    Scope     |                                                  Dimensions                                                   |   Units    |
+|---------------------------------------------------|:------------:|:-------------------------------------------------------------------------------------------------------------:|:----------:|
+| system_capacity_total                             |    global    |                                                     total                                                     |    KiB     |
+| system_capacity_in_use                            |    global    |                                                    in_use                                                     |    KiB     |
+| system_capacity_usage                             |    global    |                                thick, decreased, thin, snapshot, spare, unused                                |    KiB     |
+| system_capacity_available_volume_allocation       |    global    |                                                   available                                                   |    KiB     |
+| system_capacity_health_state                      |    global    |                           protected, degraded, in_maintenance, failed, unavailable                            |    KiB     |
+| system_workload_primary_bandwidth_total           |    global    |                                                     total                                                     |   KiB/s    |
+| system_workload_primary_bandwidth                 |    global    |                                                  read, write                                                  |   KiB/s    |
+| system_workload_primary_iops_total                |    global    |                                                     total                                                     |   iops/s   |
+| system_workload_primary_iops                      |    global    |                                                  read, write                                                  |   iops/s   |
+| system_workload_primary_io_size_total             |    global    |                                                    io_size                                                    |    KiB     |
+| system_rebalance                                  |    global    |                                                  read, write                                                  |   KiB/s    |
+| system_rebalance_left                             |    global    |                                                     left                                                      |    KiB     |
+| system_rebalance_time_until_finish                |    global    |                                                     time                                                      |  seconds   |
+| system_rebuild                                    |    global    |                                                  read, write                                                  |   KiB/s    |
+| system_rebuild_left                               |    global    |                                                     left                                                      |    KiB     |
+| system_defined_components                         |    global    | devices, fault_sets, protection_domains, rfcache_devices, sdc, sds, snapshots, storage_pools, volumes, vtrees | components |
+| system_components_volumes_by_type                 |    global    |                                                  thick, thin                                                  |  volumes   |
+| system_components_volumes_by_mapping              |    global    |                                               mapped, unmapped                                                |  volumes   |
+| storage_pool_capacity_total                       | storage pool |                                                     total                                                     |    KiB     |
+| storage_pool_capacity_in_use                      | storage pool |                                                    in_use                                                     |    KiB     |
+| storage_pool_capacity_usage                       | storage pool |                                thick, decreased, thin, snapshot, spare, unused                                |    KiB     |
+| storage_pool_capacity_utilization                 | storage pool |                                                     used                                                      | percentage |
+| storage_pool_capacity_available_volume_allocation | storage pool |                                                   available                                                   |    KiB     |
+| storage_pool_capacity_health_state                | storage pool |                           protected, degraded, in_maintenance, failed, unavailable                            |    KiB     |
+| storage_pool_components                           | storage pool |                                      devices, snapshots, volumes, vtrees                                      | components |
+| sdc_mdm_connection_state                          |     sdc      |                                                   connected                                                   |  boolean   |
+| sdc_bandwidth                                     |     sdc      |                                                  read, write                                                  |   KiB/s    |
+| sdc_iops                                          |     sdc      |                                                  read, write                                                  |   iops/s   |
+| sdc_io_size                                       |     sdc      |                                                  read, write                                                  |    KiB     |
+| sdc_num_of_mapped_volumed                         |     sdc      |                                                    mapped                                                     |  volumes   |
 
 ## Configuration
 
