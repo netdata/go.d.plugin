@@ -20,75 +20,59 @@ Used endpoints:
 
 Each endpoint can be enabled/disabled in the module configuration file.
 
-## Charts
+## Metrics
 
-Number of charts depends on enabled endpoints.
+All metrics have "elasticsearch." prefix.
 
-### Local Node Stats
-
-Collected from `/_nodes/_local/stats` endpoint. Controlled by `collect_node_stats` option. Enabled by default.
-
-- Indexing Operations in `operations/s`
-- Indexing Operations Current in `operations`
-- Time Spent On Indexing Operations in `milliseconds`
-- Search Operations in `operations/s`
-- Search Operations Current in `operations`
-- Time Spent On Search Operations in `milliseconds`
-- Refresh Operations in `operations/s`
-- Time Spent On Refresh Operations in `milliseconds`
-- Flush Operations in `operations/s`
-- Time Spent On Flush Operations in `milliseconds`
-- Fielddata Cache Memory Usage in `bytes`
-- Fielddata Evictions in `operations/s`
-- Segments Count in `segments`
-- Segments Memory Usage Total in `bytes`
-- Segments Memory Usage in `bytes`
-- Translog Operations in `operations`
-- Translog Size in `bytes`
-- Process File Descriptors in `fd`
-- JVM Heap Percentage Currently in Use in `percentage`
-- JVM Heap Commit And Usage in `bytes`
-- JVM Buffer Pools Count in `pools`
-- JVM Buffer Pool Direct Memory in `bytes`
-- JVM Buffer Pool Mapped Memory in `bytes`
-- JVM Garbage Collections in `gc/s`
-- JVM Time Spent On Garbage Collections in `milliseconds`
-- Thread Pool Queued Threads Count in `threads`
-- Thread Pool Rejected Threads Count in `threads`
-- Cluster Communication in `pps`
-- Cluster Communication Bandwidth in `bytes/s`
-- HTTP Connections in `connections`
-- Circuit Breaker Trips Count in `trips/s`
-
-### Local Indices Stats
-
-Collected from `/_cat/indices?local=true` endpoint. Controlled by `collect_indices_stats` option. Disabled by default.
-
-- Index Health in `status`
-- Index Shards Count in `shards`
-- Index Docs Count in `docs`
-- Index Store Size in `bytes`
-
-### Cluster Health
-
-Collected from `/_cluster/health` endpoint. Controlled by `collect_cluster_health` option. Enabled by default.
-
-- Cluster Status in `status`
-- Cluster Nodes Count in `nodes`
-- Cluster Shards Count in `shards`
-- Cluster Pending Tasks in `tasks`
-- Cluster Unfinished Fetches in `fetches`
-
-### Cluster Stats
-
-Collected from `/_cluster/stats` endpoint. Controlled by `collect_cluster_stats` option. Enabled by default.
-
-- Cluster Indices Count in `indices`
-- Cluster Indices Shards Count in `shards`
-- Cluster Indices Docs Count in `docs`
-- Cluster Indices Store Size in `bytes`
-- Cluster Indices Query Cache in `events/s`
-- Cluster Nodes By Role Count in `nodes`
+| Metric                                   | Scope  |                                                                             Dimensions                                                                              |    Units     |
+|------------------------------------------|:------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------:|
+| node_indices_indexing                    | global |                                                                                index                                                                                | operations/s |
+| node_indices_indexing_current            | global |                                                                                index                                                                                |  operations  |
+| node_indices_indexing_time               | global |                                                                                index                                                                                | milliseconds |
+| node_indices_search                      | global |                                                                          queries, fetches                                                                           | operations/s |
+| node_indices_search_current              | global |                                                                          queries, fetches                                                                           |  operations  |
+| node_indices_search_time                 | global |                                                                          queries, fetches                                                                           | milliseconds |
+| node_indices_refresh                     | global |                                                                               refresh                                                                               | operations/s |
+| node_indices_refresh_time                | global |                                                                               refresh                                                                               | milliseconds |
+| node_indices_flush                       | global |                                                                                flush                                                                                | operations/s |
+| node_indices_flush_time                  | global |                                                                                flush                                                                                | milliseconds |
+| node_indices_fielddata_memory_usage      | global |                                                                                used                                                                                 |    bytes     |
+| node_indices_fielddata_evictions         | global |                                                                              evictions                                                                              | operations/s |
+| node_indices_segments_count              | global |                                                                              segments                                                                               |   segments   |
+| node_indices_segments_memory_usage_total | global |                                                                                used                                                                                 |    bytes     |
+| node_indices_segments_memory_usage       | global |                               terms, stored_fields, term_vectors, norms, points, doc_values, index_writer, version_map, fixed_bit_set                               |    bytes     |
+| node_indices_translog_operations         | global |                                                                         total, uncommitted                                                                          |  operations  |
+| node_indices_translog_size               | global |                                                                         total, uncommitted                                                                          |    bytes     |
+| node_file_descriptors                    | global |                                                                                open                                                                                 |      fd      |
+| node_jvm_heap                            | global |                                                                                inuse                                                                                |  percentage  |
+| node_jvm_heap_bytes                      | global |                                                                           committed, used                                                                           |    bytes     |
+| node_jvm_buffer_pools_count              | global |                                                                           direct, mapped                                                                            |    pools     |
+| node_jvm_buffer_pool_direct_memory       | global |                                                                             total, used                                                                             |    bytes     |
+| node_jvm_buffer_pool_mapped_memory       | global |                                                                             total, used                                                                             |    bytes     |
+| node_jvm_gc_count                        | global |                                                                             young, old                                                                              |     gc/s     |
+| node_jvm_gc_time                         | global |                                                                             young, old                                                                              | milliseconds |
+| node_thread_pool_queued                  | global | generic, search, search_throttled, get, analyze, write, snapshot, warmer, refresh, listener, fetch_shard_started, fetch_shard_store, flush, force_merge, management |   threads    |
+| node_thread_pool_rejected                | global | generic, search, search_throttled, get, analyze, write, snapshot, warmer, refresh, listener, fetch_shard_started, fetch_shard_store, flush, force_merge, management |   threads    |
+| cluster_communication_packets            | global |                                                                           received, sent                                                                            |     pps      |
+| cluster_communication                    | global |                                                                           received, sent                                                                            |   bytes/s    |
+| http_connections                         | global |                                                                                open                                                                                 | connections  |
+| breakers_trips                           | global |                                            requests, fielddata, in_flight_requests, model_inference, accounting, parent                                             |   trips/s    |
+| http_connections                         | global |                                                                                open                                                                                 | connections  |
+| node_index_health                        | global |                                                                    <i>a dimension per index</i>                                                                     |    status    |
+| node_index_shards_count                  | global |                                                                    <i>a dimension per index</i>                                                                     |    shards    |
+| node_index_docs_count                    | global |                                                                    <i>a dimension per index</i>                                                                     |     docs     |
+| node_index_store_size                    | global |                                                                    <i>a dimension per index</i>                                                                     |    bytes     |
+| cluster_health_status                    | global |                                                                               status                                                                                |    status    |
+| cluster_number_of_nodes                  | global |                                                                          nodes, data_nodes                                                                          |    nodes     |
+| cluster_shards_count                     | global |                                          active_primary, active, relocating, initializing, unassigned, delayed_unaasigned                                           |    shards    |
+| cluster_pending_tasks                    | global |                                                                               pending                                                                               |    tasks     |
+| cluster_number_of_in_flight_fetch        | global |                                                                           in_flight_fetch                                                                           |   fetches    |
+| cluster_indices_count                    | global |                                                                               indices                                                                               |   indices    |
+| cluster_indices_shards_count             | global |                                                                    total, primaries, replication                                                                    |    shards    |
+| cluster_indices_docs_count               | global |                                                                                docs                                                                                 |     docs     |
+| cluster_indices_store_size               | global |                                                                                size                                                                                 |    bytes     |
+| cluster_indices_query_cache              | global |                                                                              hit, miss                                                                              |   events/s   |
+| cluster_nodes_by_role_count              | global |                                           coordinating_only, data, ingest, master, ml, remote_cluster_client, voting_only                                           |    nodes     |
 
 ## Configuration
 

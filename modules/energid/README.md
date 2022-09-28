@@ -13,6 +13,20 @@ This module monitors one or more `Energi Core Wallet` instances, depending on yo
 
 Works only with [Generation 2 wallets](https://docs.energi.software/en/downloads/gen2-core-wallet).
 
+## Metrics
+
+All metrics have "elasticsearch." prefix.
+
+| Metric            | Scope  |            Dimensions             |    Units     |
+|-------------------|:------:|:---------------------------------:|:------------:|
+| blockindex        | global |          blocks, headers          |    count     |
+| difficulty        | global |            difficulty             |  difficulty  |
+| mempool           | global |        max, usage, tx_size        |    bytes     |
+| secmem            | global |     total, used, free, locked     |    bytes     |
+| network           | global |            connections            | connections  |
+| timeoffset        | global |            timeoffset             |   seconds    |
+| utxo_transactions | global | transactions, output_transactions | transactions |
+
 ## Charts
 
 - Blockchain index in `count`
