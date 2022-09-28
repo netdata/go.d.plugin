@@ -169,7 +169,7 @@ var (
 		Ctx:   "mongodb.tcmalloc",
 		Dims: module.Dims{
 			{ID: "tcmalloc_tcmalloc_pageheap_free", Name: "pageheap free"},
-			{ID: "tcmalloc_tcmalloc_pageheap_unmapped", Name: "pageheap unmapped "},
+			{ID: "tcmalloc_tcmalloc_pageheap_unmapped", Name: "pageheap unmapped"},
 			{ID: "tcmalloc_tcmalloc_max_total_thread_cache", Name: "total threaded cache"},
 			{ID: "tcmalloc_tcmalloc_total_free", Name: "free"},
 			{ID: "tcmalloc_tcmalloc_pageheap_committed", Name: "pageheap committed"},
@@ -364,7 +364,7 @@ var (
 			{ID: "wiredtiger_cursor_remove", Name: "prev calls", Algo: module.Incremental},
 			{ID: "wiredtiger_cursor_reserve", Name: "remove calls", Algo: module.Incremental},
 			{ID: "wiredtiger_cursor_reset", Name: "reserve calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_search", Name: "cursor eset calls", Algo: module.Incremental},
+			{ID: "wiredtiger_cursor_search", Name: "cursor reset calls", Algo: module.Incremental},
 			{ID: "wiredtiger_cursor_search_history", Name: "search calls", Algo: module.Incremental},
 			{ID: "wiredtiger_cursor_search_near", Name: "search history store calls", Algo: module.Incremental},
 			{ID: "wiredtiger_cursor_sweep_buckets", Name: "search near calls", Algo: module.Incremental},
@@ -379,24 +379,24 @@ var (
 
 	chartWiredTigerLock = module.Chart{
 		ID:    "wiredtiger_lock",
-		Title: "Wired Tiger Lock",
+		Title: "Wired Tiger Lock Acquisitions",
 		Units: "ops/s",
 		Fam:   "wiredtiger",
 		Ctx:   "mongodb.wiredtiger_lock",
 
 		Dims: module.Dims{
-			{ID: "wiredtiger_lock_checkpoint_acquisitions", Name: "checkpoint lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_read_acquisitions", Name: "dhandle read lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_write_acquisitions", Name: "dhandle write lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_durable_timestamp_queue_read_acquisitions", Name: "durable timestamp queue read lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_durable_timestamp_queue_write_acquisitions", Name: "durable timestamp queue write lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_metadata_acquisitions", Name: "metadata lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_read_timestamp_queue_read_acquisitions", Name: "read timestamp queue read lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_read_timestamp_queue_write_acquisitions", Name: "read timestamp queue write lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_schema_acquisitions", Name: "schema lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_table_read_acquisitions", Name: "table read lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_table_write_acquisitions", Name: "table write lock acquisitions", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_txn_global_read_acquisitions", Name: "txn global read lock acquisitions", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_checkpoint_acquisitions", Name: "checkpoint", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_read_acquisitions", Name: "dhandle read", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_write_acquisitions", Name: "dhandle write", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_durable_timestamp_queue_read_acquisitions", Name: "durable timestamp queue read", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_durable_timestamp_queue_write_acquisitions", Name: "durable timestamp queue write", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_metadata_acquisitions", Name: "metadata", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_read_timestamp_queue_read_acquisitions", Name: "read timestamp queue read", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_read_timestamp_queue_write_acquisitions", Name: "read timestamp queue write", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_schema_acquisitions", Name: "schema", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_table_read_acquisitions", Name: "table read", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_table_write_acquisitions", Name: "table write", Algo: module.Incremental},
+			{ID: "wiredtiger_lock_txn_global_read_acquisitions", Name: "txn global read", Algo: module.Incremental},
 		},
 	}
 
@@ -408,18 +408,18 @@ var (
 		Ctx:   "mongodb.wiredtiger_lock_duration",
 
 		Dims: module.Dims{
-			{ID: "wiredtiger_lock_checkpoint_wait_time", Name: "checkpoint lock application thread wait time"},
-			{ID: "wiredtiger_lock_checkpoint_internal_thread_wait_time", Name: "checkpoint lock internal thread wait time"},
-			{ID: "wiredtiger_lock_application_thread_time_waiting", Name: "dhandle lock application thread time waiting"},
-			{ID: "wiredtiger_lock_internal_thread_time_waiting", Name: "dhandle lock internal thread time waiting"},
-			{ID: "wiredtiger_lock_durable_timestamp_queue_application_thread_time_waiting", Name: "durable timestamp queue lock application thread time waiting"},
-			{ID: "wiredtiger_lock_durable_timestamp_queue_internal_thread_time_waiting", Name: "durable timestamp queue lock internal thread time waiting"},
-			{ID: "wiredtiger_lock_metadata_application_thread_wait_time", Name: "metadata lock application thread wait time"},
-			{ID: "wiredtiger_lock_metadata_internal_thread_wait_time", Name: "metadata lock internal thread wait time"},
-			{ID: "wiredtiger_lock_read_timestamp_queue_application_thread_time_waiting", Name: "read timestamp queue lock application thread time waiting"},
-			{ID: "wiredtiger_lock_read_timestamp_queue_internal_thread_time_waiting", Name: "read timestamp queue lock internal thread time waiting"},
-			{ID: "wiredtiger_lock_schema_application_thread_wait_time", Name: "schema lock application thread wait time"},
-			{ID: "wiredtiger_lock_schema_internal_thread_wait_time", Name: "schema lock internal thread wait time"},
+			{ID: "wiredtiger_lock_checkpoint_wait_time", Name: "checkpoint"},
+			{ID: "wiredtiger_lock_checkpoint_internal_thread_wait_time", Name: "checkpoint internal thread"},
+			{ID: "wiredtiger_lock_application_thread_time_waiting", Name: "dhandle application thread"},
+			{ID: "wiredtiger_lock_internal_thread_time_waiting", Name: "dhandle internal thread"},
+			{ID: "wiredtiger_lock_durable_timestamp_queue_application_thread_time_waiting", Name: "durable timestamp queue application thread"},
+			{ID: "wiredtiger_lock_durable_timestamp_queue_internal_thread_time_waiting", Name: "durable timestamp queue internal thread"},
+			{ID: "wiredtiger_lock_metadata_application_thread_wait_time", Name: "metadata application thread"},
+			{ID: "wiredtiger_lock_metadata_internal_thread_wait_time", Name: "metadata internal thread"},
+			{ID: "wiredtiger_lock_read_timestamp_queue_application_thread_time_waiting", Name: "read timestamp queue application thread"},
+			{ID: "wiredtiger_lock_read_timestamp_queue_internal_thread_time_waiting", Name: "read timestamp queue internal thread"},
+			{ID: "wiredtiger_lock_schema_application_thread_wait_time", Name: "schema application thread"},
+			{ID: "wiredtiger_lock_schema_internal_thread_wait_time", Name: "schema internal thread"},
 		},
 	}
 
@@ -459,8 +459,8 @@ var (
 	chartWiredTigerTransactions = module.Chart{
 		ID:    "wiredtiger_transactions",
 		Title: "Wired Tiger Transactions",
-		Units: "transactions/s",
 		Fam:   "wiredtiger",
+		Units: "transactions/s",
 		Ctx:   "mongodb.wiredtiger_transactions",
 
 		Dims: module.Dims{
