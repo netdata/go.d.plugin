@@ -15,7 +15,7 @@ Works only with [Generation 2 wallets](https://docs.energi.software/en/downloads
 
 ## Metrics
 
-All metrics have "elasticsearch." prefix.
+All metrics have "energid." prefix.
 
 | Metric            | Scope  |            Dimensions             |    Units     |
 |-------------------|:------:|:---------------------------------:|:------------:|
