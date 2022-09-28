@@ -16,13 +16,15 @@ endpoint provided by [in_monitor plugin](https://docs.fluentd.org/v1.0/articles/
 
 - `fluentd` with enabled monitoring agent
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "fluentd." prefix.
 
-- Plugin Retry Count in `count`
-- Plugin Buffer Queue Length in `queue length`
-- Plugin Buffer Total Size in `buffer`
+| Metric                   | Scope  |          Dimensions           |    Units     |
+|--------------------------|:------:|:-----------------------------:|:------------:|
+| retry_count              | global | <i>a dimension per plugin</i> |    count     |
+| buffer_queue_length      | global | <i>a dimension per plugin</i> | queue_length |
+| buffer_total_queued_size | global | <i>a dimension per plugin</i> | queued_size  |
 
 ## Configuration
 

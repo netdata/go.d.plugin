@@ -27,15 +27,6 @@ All metrics have "energid." prefix.
 | timeoffset        | global |            timeoffset             |   seconds    |
 | utxo_transactions | global | transactions, output_transactions | transactions |
 
-## Charts
-
-- Blockchain index in `count`
-- Blockchain difficulty in `difficulty`
-- Memory pool in `bytes`
-- Network in `connections`
-- Network time offset in `seconds`
-- Transactions in `transactions`
-
 ## Configuration
 
 Edit the `go.d/energid.conf` configuration file using `edit-config` from the
