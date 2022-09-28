@@ -156,7 +156,7 @@ var erlangStatisticsCharts = Charts{
 	{
 		ID:    "erlang_proc_counts",
 		Title: "Process counts",
-		Units: "count",
+		Units: "processes",
 		Fam:   "erlang",
 		Ctx:   "couchdb.proccounts",
 		Dims: Dims{
@@ -167,7 +167,7 @@ var erlangStatisticsCharts = Charts{
 	{
 		ID:    "erlang_peak_msg_queue",
 		Title: "Peak message queue size",
-		Units: "count",
+		Units: "messages",
 		Fam:   "erlang",
 		Ctx:   "couchdb.peakmsgqueue",
 		Dims: Dims{
@@ -177,7 +177,7 @@ var erlangStatisticsCharts = Charts{
 	{
 		ID:    "erlang_reductions",
 		Title: "Erlang reductions",
-		Units: "count",
+		Units: "reductions",
 		Fam:   "erlang",
 		Ctx:   "couchdb.reductions",
 		Type:  module.Stacked,
@@ -215,14 +215,14 @@ var (
 			Title: "Database # of docs",
 			Units: "docs",
 			Fam:   "perdbstats",
-			Ctx:   "couchdb_db_doc_count",
+			Ctx:   "couchdb.db_doc_count",
 		},
 		{
 			ID:    "db_doc_del_counts",
 			Title: "Database # of deleted docs",
 			Units: "docs",
 			Fam:   "perdbstats",
-			Ctx:   "couchdb_db_doc_del_count",
+			Ctx:   "couchdb.db_doc_del_count",
 		},
 	}
 )

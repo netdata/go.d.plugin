@@ -21,6 +21,30 @@ Monitors vital statistics of a local Apache CouchDB 2.x server, including:
 
 This module monitors one or more `CouchDB` instances, depending on your configuration.
 
+## Metrics
+
+All metrics have "couchdb." prefix.
+
+| Metric                | Scope  |                                                    Dimensions                                                     |    Units    |
+|-----------------------|:------:|:-----------------------------------------------------------------------------------------------------------------:|:-----------:|
+| activity              | global |                                          db_reads, db_writes, view_reads                                          | requests/s  |
+| request_methods       | global |                                    copy, delete, get, head, options, post, put                                    | requests/s  |
+| response_codes        | global | 200, 201, 202, 204, 206, 301, 302, 304, 400, 401, 403, 404, 406, 409, 412, 413, 414, 415, 416, 417, 500, 501, 503 | responses/s |
+| response_code_classes | global |                                                2xx, 3xx, 4xx, 5xx                                                 | responses/s |
+| active_tasks          | global |                               indexer, db_compaction, replication, view_compaction                                |    tasks    |
+| replicator_jobs       | global |                               running, pending, crashed, internal_replication_jobs                                |    jobs     |
+| open_files            | global |                                                       files                                                       |    files    |
+| erlang_vm_memory      | global |                                      atom, binaries, code, ets, procs, other                                      |      B      |
+| proccounts            | global |                                                os_procs, erl_procs                                                |  processes  |
+| peakmsgqueue          | global |                                                     peak_size                                                     |  messages   |
+| reductions            | global |                                                    reductions                                                     | reductions  |
+| db_sizes_file         | global |                                          <i>a dimension per database</i>                                          |     KiB     |
+| db_sizes_external     | global |                                          <i>a dimension per database</i>                                          |     KiB     |
+| db_sizes_active       | global |                                          <i>a dimension per database</i>                                          |     KiB     |
+| db_doc_count          | global |                                          <i>a dimension per database</i>                                          |    docs     |
+| db_doc_del_count      | global |                                          <i>a dimension per database</i>                                          |    docs     |
+
+
 ## Configuration
 
 Edit the `go.d/couchdb.conf` configuration file using `edit-config` from the
