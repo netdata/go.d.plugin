@@ -31,7 +31,7 @@ by [reading the response on the following query](https://manpages.debian.org/str
 
 ## Metrics
 
-All metrics have "dnsdist." prefix.
+All metrics have "dnsmasq." prefix.
 
 | Metric            | Scope  |      Dimensions       |    Units     |
 |-------------------|:------:|:---------------------:|:------------:|
