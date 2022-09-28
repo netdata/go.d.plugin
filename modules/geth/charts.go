@@ -191,7 +191,7 @@ var (
 		Fam:   "p2p_peers",
 		Ctx:   "geth.p2p_peers",
 		Dims: Dims{
-			{ID: p2pPeers, Name: "Peers"},
+			{ID: p2pPeers, Name: "peers"},
 		},
 	}
 
@@ -200,7 +200,7 @@ var (
 		Title: "P2P Serves and Dials",
 		Units: "calls/s",
 		Fam:   "p2p_peers",
-		Ctx:   "geth.p2p_peers",
+		Ctx:   "geth.p2p_peers_calls",
 		Dims: Dims{
 			{ID: p2pDials, Name: "dials", Algo: "incremental"},
 			{ID: p2pServes, Name: "serves", Algo: "incremental"},

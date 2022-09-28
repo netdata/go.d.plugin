@@ -20,30 +20,28 @@ With Netdata, you can effortlessly monitor your Geth node
 Run `geth` with the flag `--metrics`. That will enable the metric server, with default port `6060` and
 path `/debug/metrics/prometheus`.
 
-## Charts
+## Metrics
 
-This is an initial number of metrics that we chose to collect and organize. It is **very easy** to add more charts based
-on the available metrics in the prometheus endpoint. Head over to [Contribute](#contribute) to learn how you can help to
-expand this collector.
+All metrics have "geth." prefix.
 
-- Chaindata:
-    - total read/write for the session
-    - read/write per second
-- Transaction Pool
-    - Pending
-    - Queued
-- Peer-to-Peer
-    - bandwidth per second (ingress/egress)
-    - number of peers
-    - serves/dials calls per second
-- rpc calls
-    - successful/failed per second
-- reorgs
-    - Total number of executed reorgs
-    - Total number of added/removed blocks due to reorg
-- number of active goroutines
-- chainhead
-    - block, receipt and header. If block = header, then Geth node is fully synced.
+| Metric                           | Scope  |                           Dimensions                           |    Units     |
+|----------------------------------|:------:|:--------------------------------------------------------------:|:------------:|
+| eth_db_chaindata_ancient_io_rate | global |                         reads, writes                          |   bytes/s    |
+| eth_db_chaindata_ancient_io      | global |                         reads, writes                          |    bytes     |
+| eth_db_chaindata_disk_io         | global |                         reads, writes                          |    bytes     |
+| goroutines                       | global |                           goroutines                           |  goroutines  |
+| eth_db_chaindata_disk_io_rate    | global |                         reads, writes                          |   bytes/s    |
+| chaindata_db_size                | global |                      level_db, ancient_db                      |    bytes     |
+| chainhead                        | global |                     block, receipt, header                     |    block     |
+| tx_pool_pending                  | global | invalid, pending, local, discard, no_funds, ratelimit, replace | transactions |
+| tx_pool_current                  | global |                 invalid, pending, local, pool                  | transactions |
+| tx_pool_queued                   | global |             discard, eviction, no_funds, ratelimit             | transactions |
+| p2p_bandwidth                    | global |                        ingress, egress                         |   bytes/s    |
+| reorgs                           | global |                            executed                            |    reorgs    |
+| reorgs_blocks                    | global |                         added, dropped                         |    blocks    |
+| p2p_peers                        | global |                             peers                              |    peers     |
+| p2p_peers_calls                  | global |                         dials, serves                          |   calls/s    |
+| rpc_calls                        | global |                       failed, successful                       |   calls/s    |
 
 ## Contribute
 

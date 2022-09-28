@@ -9,14 +9,15 @@ sidebar_label: "HTTP endpoints"
 
 This module monitors one or more http servers availability and response time.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "httpcheck." prefix.
 
-- HTTP Response Time in `ms`
-- HTTP Check Status in `boolean`
-- HTTP Current State Duration in `seconds`
-- HTTP Response Body Length in `characters`
+| Metric          | Scope  |                        Dimensions                        |   Units    |
+|-----------------|:------:|:--------------------------------------------------------:|:----------:|
+| response_time   | global |                           time                           |     ms     |
+| response_length | global |                          length                          | characters |
+| status          | global | success, no_connection, timeout, bad_content, bad_status |  boolean   |
 
 ## Check statuses
 
