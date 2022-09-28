@@ -25,17 +25,6 @@ All metrics have "k8s_kubeproxy." prefix.
 | rest_client_requests_by_method                 | global |                                       <i>a dimension per HTTP method</i>                                       |  requests/s  |
 | http_request_duration                          | global |                                                 0.5, 0.9, 0.99                                                 | microseconds |
 
-## Charts
-
-It produces the following charts:
-
-- Sync Proxy Rules in `events/s`
-- Sync Proxy Rules Latency in `observes/s`
-- Sync Proxy Rules Latency Percentage in `%`
-- REST Client HTTP Requests By Status Code in `requests/s`
-- REST Client HTTP Requests By Method in `requests/s`
-- HTTP Requests Duration in `microseconds`
-
 ## Configuration
 
 Edit the `go.d/k8s_kubeproxy.conf` configuration file using `edit-config` from the
