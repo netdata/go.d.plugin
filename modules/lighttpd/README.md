@@ -16,15 +16,17 @@ This module will monitor one or more `Lighttpd` servers, depending on your confi
 
 - `lighttpd` with enabled [`mod_status`](https://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModStatus).
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "lighttpd." prefix.
 
-- Requests in `requests/s`
-- Bandwidth in `kilobytes/s`
-- Servers in `servers`
-- Scoreboard in `connections`
-- Uptime in `seconds`
+| Metric     | Scope  |                                                    Dimensions                                                    |    Units    |
+|------------|:------:|:----------------------------------------------------------------------------------------------------------------:|:-----------:|
+| requests   | global |                                                     requests                                                     | requests/s  |
+| net        | global |                                                       sent                                                       | kilobits/s  |
+| workers    | global |                                                    idle, busy                                                    |   servers   |
+| scoreboard | global | waiting, open, close, hard_error, keepalive, read, read_post, write, handle_request, request_start, request_end, | connections |
+| uptime     | global |                                                      uptime                                                      |   seconds   |
 
 ## Configuration
 

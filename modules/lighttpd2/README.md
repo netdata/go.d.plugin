@@ -15,17 +15,19 @@ This module will monitor one or more `Lighttpd2` servers, depending on your conf
 
 - `lighttpd2` with enabled [`mod_status`](https://doc.lighttpd.net/lighttpd2/mod_status.html)
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "lighttpd2." prefix.
 
-- Requests in `requests/s`
-- Status Codes in `requests/s`
-- Traffic in `kilobits/s`
-- Connections in `connections`
-- Connection States in  `connection`
-- Memory Usage in `KiB`
-- Uptime in `seconds`
+| Metric            | Scope  |                               Dimensions                                |    Units    |
+|-------------------|:------:|:-----------------------------------------------------------------------:|:-----------:|
+| requests          | global |                                requests                                 | requests/s  |
+| status_codes      | global |                         1xx, 2xx, 3xx, 4xx, 5xx                         | requests/s  |
+| traffic           | global |                                 in, out                                 | kilobits/s  |
+| connections       | global |                               connections                               | connections |
+| connection_states | global | start, read_header, handle_request, write_response, keepalive, upgraded |    state    |
+| memory_usage      | global |                                  usage                                  |     KiB     |
+| uptime            | global |                                 uptime                                  |   seconds   |
 
 ## Configuration
 

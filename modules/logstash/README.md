@@ -12,19 +12,26 @@ collect, process, and load data into `Elasticsearch`.
 
 This module will monitor one or more `Logstash` instances, depending on your configuration.
 
-## Charts
+## Metrics
 
-It produces following charts:
+All metrics have "logstash." prefix.
 
-- JVM Threads in `count`
-- JVM Heap Memory Percentage in `percent`
-- JVM Heap Memory in `KiB`
-- JVM Pool Survivor Memory in `KiB`
-- JVM Pool Old Memory in `KiB`
-- JVM Pool Eden Memory in `KiB`
-- Garbage Collection Count in `counts/s`
-- Time Spent On Garbage Collection in `ms`
-- Uptime in `time`
+| Metric                 |   Scope   |    Dimensions     |   Units    |
+|------------------------|:---------:|:-----------------:|:----------:|
+| jvm_threads            |  global   |      threads      |   count    |
+| jvm_mem_heap_used      |  global   |      in_use       | percentage |
+| jvm_mem_heap           |  global   |  committed, used  |    KiB     |
+| jvm_mem_pools_eden     |  global   |  committed, used  |    KiB     |
+| jvm_mem_pools_survivor |  global   |  committed, used  |    KiB     |
+| jvm_mem_pools_old      |  global   |  committed, used  |    KiB     |
+| jvm_gc_collector_count |  global   |     eden, old     |  counts/s  |
+| jvm_gc_collector_time  |  global   |     eden, old     |     ms     |
+| open_file_descriptors  |  global   |       open        |     fd     |
+| event                  |  global   | in, filtered, out |  events/s  |
+| event_duration         |  global   |   event, queue    |  seconds   |
+| uptime                 |  global   |      uptime       |  seconds   |
+| pipeline_event         | piepeline | in, filtered, out |  events/s  |
+| pipeline_event         | piepeline |   event, queue    |  seconds   |
 
 ## Configuration
 
