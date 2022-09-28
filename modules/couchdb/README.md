@@ -7,17 +7,7 @@ sidebar_label: "CouchDB"
 
 # Apache CouchDB monitoring with Netdata
 
-Monitors vital statistics of a local Apache CouchDB 2.x server, including:
-
-- Overall server reads/writes
-- HTTP traffic breakdown
-    - Request methods (`GET`, `PUT`, `POST`, etc.)
-    - Success response status codes (`200`, `201`, etc.)
-    - Response status code classes (`2xx`, `3xx`, etc.)
-- Active server tasks
-- Replication status (CouchDB 2.1 and up only)
-- Erlang VM stats
-- Optional per-database statistics: sizes, # of docs, # of deleted docs
+Monitors vital statistics of a local Apache CouchDB 2.x server.
 
 This module monitors one or more `CouchDB` instances, depending on your configuration.
 
