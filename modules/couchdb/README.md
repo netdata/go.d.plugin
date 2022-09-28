@@ -44,7 +44,6 @@ All metrics have "couchdb." prefix.
 | db_doc_count          | global |                                          <i>a dimension per database</i>                                          |    docs     |
 | db_doc_del_count      | global |                                          <i>a dimension per database</i>                                          |    docs     |
 
-
 ## Configuration
 
 Edit the `go.d/couchdb.conf` configuration file using `edit-config` from the
@@ -74,7 +73,6 @@ If you want per-database statistics, these need to be added to the configuration
 
 ```yaml
 local:
-  ...
   databases: 'db1 db2 db3 ...'
 ```
 
