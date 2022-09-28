@@ -28,7 +28,7 @@ var charts = Charts{
 	{
 		ID:    "engine_daemon_container_states_containers",
 		Title: "Containers In Various States",
-		Units: "count",
+		Units: "containers",
 		Fam:   "containers",
 		Ctx:   "docker_engine.engine_daemon_container_states_containers",
 		Type:  module.Stacked,
@@ -82,7 +82,7 @@ var swarmManagerCharts = Charts{
 	{
 		ID:    "swarm_manager_object_store",
 		Title: "Swarm Manager Object Store",
-		Units: "count",
+		Units: "objects",
 		Fam:   "swarm",
 		Type:  module.Stacked,
 		Ctx:   "docker_engine.swarm_manager_object_store",
@@ -98,7 +98,7 @@ var swarmManagerCharts = Charts{
 	{
 		ID:    "swarm_manager_nodes_per_state",
 		Title: "Swarm Manager Nodes Per State",
-		Units: "count",
+		Units: "nodes",
 		Fam:   "swarm",
 		Ctx:   "docker_engine.swarm_manager_nodes_per_state",
 		Type:  module.Stacked,
@@ -112,7 +112,7 @@ var swarmManagerCharts = Charts{
 	{
 		ID:    "swarm_manager_tasks_per_state",
 		Title: "Swarm Manager Tasks Per State",
-		Units: "count",
+		Units: "tasks",
 		Fam:   "swarm",
 		Ctx:   "docker_engine.swarm_manager_tasks_per_state",
 		Type:  module.Stacked,

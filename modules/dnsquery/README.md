@@ -9,11 +9,13 @@ sidebar_label: "DNS queries"
 
 This module provides DNS query RTT in milliseconds.
 
-## Charts
+## Metrics
 
-It produces only one chart:
+All metrics have "dnsquery." prefix.
 
-- Query Time in `milliseconds`
+| Metric     | Scope  |             Dimensions             | Units |
+|------------|:------:|:----------------------------------:|:-----:|
+| query_time | global | <i>a dimension per name server</i> |  ms   |
 
 ## Configuration
 

@@ -12,16 +12,18 @@ images with your team.
 
 This module will collect `Docker Hub` repositories statistics.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "docker_engine." prefix.
 
-- Pulls Summary in `pulls`
-- Pulls in `pulls`
-- Pulls Rate in `pulls/s`
-- Stars in `stars/s`
-- Current Status in `status`
-- Time Since Last Update in `seconds`
+| Metric       | Scope  |            Dimensions             |  Units  |
+|--------------|:------:|:---------------------------------:|:-------:|
+| pulls_sum    | global |                sum                |  pulls  |
+| pulls        | global | <i>a dimension per repository</i> |  pulls  |
+| pulls_rate   | global | <i>a dimension per repository</i> | pulls/s |
+| stars        | global | <i>a dimension per repository</i> |  stars  |
+| status       | global | <i>a dimension per repository</i> | status  |
+| last_updated | global | <i>a dimension per repository</i> | seconds |
 
 ## Configuration
 
