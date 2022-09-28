@@ -18,48 +18,36 @@ Netdata accesses HDFS metrics over `Java Management Extensions` (JMX) through th
 
 - `hdfs` node with accessible `/jmx` endpoint
 
-## Charts
+## Metrics
 
-It produces the following charts for `namenode`:
+All metrics have "hdfs." prefix.
 
-- Heap Memory in `MiB`
-- GC Events in `events/s`
-- GC Time in `ms`
-- Number of Times That the GC Threshold is Exceeded in `events/s`
-- Number of Threads in `num`
-- Number of Logs in `logs/s`
-- RPC Bandwidth in `kilobits/s`
-- RPC Calls in `calls/s`
-- RPC Open Connections in `connections`
-- RPC Call Queue Length in `num`
-- RPC Avg Queue Time in `ms`
-- RPC Avg Processing Time in `ms`
-- Capacity Across All Datanodes in `KiB`
-- Used Capacity Across All Datanodes in `KiB`
-- Number of Concurrent File Accesses (read/write) Across All DataNodes in `load`
-- Number of Volume Failures Across All Datanodes in `events/s`
-- Number of Tracked Files in `num`
-- Number of Allocated Blocks in the System in `num`
-- Number of Problem Blocks (can point to an unhealthy cluster) in `num`
-- Number of Data Nodes By Status in `num`
-
-For `datanode`:
-
-- Heap Memory in `MiB`
-- GC Events in `events/s`
-- GC Time in `ms`
-- Number of Times That the GC Threshold is Exceeded in `events/s`
-- Number of Threads in `num`
-- Number of Logs in `logs/s`
-- RPC Bandwidth in `kilobits/s`
-- RPC Calls in `calls/s`
-- RPC Open Connections in `connections`
-- RPC Call Queue Length in `num`
-- RPC Avg Queue Time in `ms`
-- RPC Avg Processing Time in `ms`
-- Capacity in `KiB`
-- Used Capacity in `KiB`
-- Bandwidth in `KiB/s`
+| Metric                  | Scope  |                         Dimensions                         |    Units    |
+|-------------------------|:------:|:----------------------------------------------------------:|:-----------:|
+| heap_memory             | global |                      committed, used                       |     MiB     |
+| gc_count_total          | global |                             gc                             |  events/s   |
+| gc_time_total           | global |                             ms                             |     ms      |
+| gc_threshold            | global |                         info, warn                         |  events/s   |
+| threads                 | global | new, runnable, blocked, waiting, timed_waiting, terminated |     num     |
+| logs_total              | global |                  info, error, warn, fatal                  |   logs/s    |
+| rpc_bandwidth           | global |                       received, sent                       | kilobits/s  |
+| rpc_calls               | global |                           calls                            |   calls/s   |
+| open_connections        | global |                            open                            | connections |
+| call_queue_length       | global |                           length                           |     num     |
+| avg_queue_time          | global |                            time                            |     ms      |
+| avg_processing_time     | global |                            time                            |     ms      |
+| capacity                | global |                      remaining, used                       |     KiB     |
+| used_capacity           | global |                        dfs, non_dfs                        |     KiB     |
+| load                    | global |                            load                            |    load     |
+| volume_failures_total   | global |                          failures                          |  events/s   |
+| files_total             | global |                           files                            |     num     |
+| blocks_total            | global |                           blocks                           |     num     |
+| blocks                  | global |             corrupt, missing, under_replicated             |     num     |
+| data_nodes              | global |                     live, dead, stale                      |     num     |
+| datanode_capacity       | global |                      remaining, used                       |     KiB     |
+| datanode_used_capacity  | global |                        dfs, non_dfs                        |     KiB     |
+| datanode_failed_volumes | global |                       failed volumes                       |     num     |
+| datanode_bandwidth      | global |                       reads, writes                        |    KiB/s    |
 
 ## Configuration
 

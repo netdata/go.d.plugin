@@ -18,10 +18,24 @@ This module will monitor one or more `HAProxy` instances, depending on your conf
   `HAProxy`. It is provided as an extra component for
   everyone [who wants to use it](https://github.com/haproxy/haproxy/tree/master/addons/promex).
 
-## Charts
+## Metrics
 
 Current implementation collects
 only [backend](https://www.haproxy.com/documentation/hapee/latest/configuration/config-sections/backend/) metrics.
+
+All metrics have "haproxy." prefix.
+
+| Metric                        | Scope  |           Dimensions           |    Units     |
+|-------------------------------|:------:|:------------------------------:|:------------:|
+| backend_current_sessions      | global |  <i>a dimension per proxy</i>  |   sessions   |
+| backend_sessions              | global |  <i>a dimension per proxy</i>  |  sessions/s  |
+| backend_response_time_average | global |  <i>a dimension per proxy</i>  | milliseconds |
+| backend_queue_time_average    | global |  <i>a dimension per proxy</i>  | milliseconds |
+| backend_current_queue         | global |  <i>a dimension per proxy</i>  |   requests   |
+| backend_http_responses        | proxy  | 1xx, 2xx, 3xx, 4xx, 5xx, other | responses/s  |
+| backend_network_io            | proxy  |            in, out             |   bytes/s    |
+
+## Charts
 
 ### Backend
 

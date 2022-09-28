@@ -26,7 +26,7 @@ To enable status feature do the following:
 
 ## Metrics
 
-All metrics have "fluentd." prefix.
+All metrics have "freeradius." prefix.
 
 | Metric                                | Scope  |                      Dimensions                       |   Units   |
 |---------------------------------------|:------:|:-----------------------------------------------------:|:---------:|
