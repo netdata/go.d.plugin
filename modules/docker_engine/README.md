@@ -16,21 +16,20 @@ This module will monitor one or more `Docker Engines` applications, depending on
 
 - Docker with enabled [`metric-address`](https://docs.docker.com/config/thirdparty/prometheus/)
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "docker_engine." prefix.
 
-- Container Actions in `actions/s`
-- Container States in `containers`
-- Builder Builds Fails By Reason in `fails/s`
-- Health Checks in `events/s`
-
-If Docker is running in [Swarm mode](https://docs.docker.com/engine/swarm/) and the instance is a Swarm manager:
-
-- Swarm Manager Leader in `bool`
-- Swarm Manager Object Store in `count`
-- Swarm Manager Nodes Per State in `count`
-- Swarm Manager Tasks Per State in `count`
+| Metric                                    | Scope  |                                                                                                         Dimensions                                                                                                          |   Units    |
+|-------------------------------------------|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------:|
+| engine_daemon_container_actions           | global |                                                                                           changes, commit, create, delete, start                                                                                            | actions/s  |
+| engine_daemon_container_states_containers | global |                                                                                                  running, paused, stopped                                                                                                   | containers |
+| builder_builds_failed_total               | global | build_canceled, build_target_not_reachable_error, command_not_supported_error, dockerfile_empty_error, dockerfile_syntax_error, error_processing_commands_error, missing_onbuild_arguments_error, unknown_instruction_error |  fails/s   |
+| engine_daemon_health_checks_failed_total  | global |                                                                                                            fails                                                                                                            |  events/s  |
+| swarm_manager_leader                      | global |                                                                                                          is_leader                                                                                                          |    bool    |
+| swarm_manager_object_store                | global |                                                                                     nodes, services, tasks, networks, secrets, configs                                                                                      |  objects   |
+| swarm_manager_nodes_per_state             | global |                                                                                             ready, down, unknown, disconnected                                                                                              |   nodes    |
+| swarm_manager_tasks_per_state             | global |                                                running, failed, ready, rejected, starting, shutdown, new, orphaned, preparing, pending, complete, remove, accepted, assigned                                                |   tasks    |
 
 ## Configuration
 
