@@ -36,24 +36,22 @@ suggest [to use file access control lists](https://linux.die.net/man/1/setfacl):
 setfacl -m u:netdata:rx file ...
 ``` 
 
-> :warning: For security reasons, this should not be applied recursively, but only to the exact set of directories that lead to the file/dir you want to monitor.
+> **Warning**: For security reasons, this should not be applied recursively, but only to the exact set of directories
+> that lead to the file/dir you want to monitor.
 
-## Charts
+## Metrics
 
-Files and directories have their own set of charts.
+All metrics have "filecheck." prefix.
 
-### Files
-
-- File Existence in `boolean`
-- File Time Since the Last Modification in `seconds`
-- File Size in `bytes`
-
-### Directories
-
-- Dir Existence in `boolean`
-- Dir Time Since the Last Modification in `seconds`
-- Dir Number of Files in `files`
-- Dir Size in `bytes`
+| Metric           | Scope  |            Dimensions            |  Units  |
+|------------------|:------:|:--------------------------------:|:-------:|
+| file_existence   | global |   <i>a dimension per file</i>    | boolean |
+| file_mtime_ago   | global |   <i>a dimension per file</i>    | seconds |
+| file_size        | global |   <i>a dimension per file</i>    |  bytes  |
+| dir_existence    | global | <i>a dimension per directory</i> | boolean |
+| dir_mtime_ago    | global | <i>a dimension per directory</i> | seconds |
+| dir_num_of_files | global | <i>a dimension per directory</i> |  files  |
+| dir_size         | global | <i>a dimension per directory</i> |  bytes  |
 
 ## Configuration
 

@@ -24,20 +24,22 @@ To enable status feature do the following:
 - `ln -s ../sites-available/status status`
 - restart FreeRADIUS server
 
-## Charts
+## Metrics
 
-It produces following charts:
+All metrics have "fluentd." prefix.
 
-- Authentication in `pps`
-- Authentication Responses in `pps`
-- Bad Authentication Requests in `pps`
-- Proxy Authentication in `pps`
-- Proxy Authentication Responses in `pps`
-- Proxy Bad Authentication Requests in `pps`
-- Accounting in `pps`
-- Bad Accounting Requests in `pps`
-- Proxy Accounting in `pps`
-- Proxy Bad Accounting Requests in `pps`
+| Metric                                | Scope  |                      Dimensions                       |   Units   |
+|---------------------------------------|:------:|:-----------------------------------------------------:|:---------:|
+| authentication                        | global |                  requests, responses                  | packets/s |
+| authentication_access_responses       | global |             accepts, rejects, challenges              | packets/s |
+| bad_authentication                    | global | dropped, duplicate, invalid, malformed, unknown-types | packets/s |
+| proxy_authentication                  | global |                  requests, responses                  | packets/s |
+| proxy_authentication_access_responses | global |             accepts, rejects, challenges              | packets/s |
+| proxy_bad_authentication              | global | dropped, duplicate, invalid, malformed, unknown-types | packets/s |
+| accounting                            | global |                  requests, responses                  | packets/s |
+| bad_accounting                        | global | dropped, duplicate, invalid, malformed, unknown-types | packets/s |
+| proxy_accounting                      | global |                  requests, responses                  | packets/s |
+| proxy_bad_accounting                  | global | dropped, duplicate, invalid, malformed, unknown-types | packets/s |
 
 ## Configuration
 
