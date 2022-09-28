@@ -12,16 +12,18 @@ node in your cluster, implementing part of the Kubernetes Service.
 
 This module will monitor one or more `kube-proxy` instances, depending on your configuration.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "k8s_kubeproxy." prefix.
 
-- Sync Proxy Rules in `events/s`
-- Sync Proxy Rules Latency in `observes/s`
-- Sync Proxy Rules Latency Percentage in `%`
-- REST Client HTTP Requests By Status Code in `requests/s`
-- REST Client HTTP Requests By Method in `requests/s`
-- HTTP Requests Duration in `microseconds`
+| Metric                                         | Scope  |                                                   Dimensions                                                   |    Units     |
+|------------------------------------------------|:------:|:--------------------------------------------------------------------------------------------------------------:|:------------:|
+| kubeproxy_sync_proxy_rules                     | global |                                                sync_proxy_rules                                                |   events/s   |
+| kubeproxy_sync_proxy_rules_latency_microsecond | global | 0.001, 0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048, 4.096, 8.192, 16.384, +Inf |  observes/s  |
+| kubeproxy_sync_proxy_rules_latency             | global | 0.001, 0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048, 4.096, 8.192, 16.384, +Inf |  percentage  |
+| rest_client_requests_by_code                   | global |                                    <i>a dimension per HTTP status code</i>                                     |  requests/s  |
+| rest_client_requests_by_method                 | global |                                       <i>a dimension per HTTP method</i>                                       |  requests/s  |
+| http_request_duration                          | global |                                                 0.5, 0.9, 0.99                                                 | microseconds |
 
 ## Configuration
 

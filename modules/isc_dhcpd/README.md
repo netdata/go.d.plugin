@@ -17,11 +17,15 @@ database (`dhcpd.leases`).
 
 `dhcpd.leases` must be readable by `netdata` user.
 
-## Charts
+## Metrics
 
-- Active Leases Total in `leases`
-- Pool Active Leases in `leases`
-- Pool Utilization in `percentage`
+All metrics have "isc_dhcps." prefix.
+
+| Metric              | Scope  |            Dimensions            |   Units    |
+|---------------------|:------:|:--------------------------------:|:----------:|
+| active_leases_total | global |              active              |   leases   |
+| pool_active_leases  | global | <i>a dimension per DHCP pool</i> |   leases   |
+| pool_utilization    | global | <i>a dimension per DHCP pool</i> | percentage |
 
 ## Configuration
 

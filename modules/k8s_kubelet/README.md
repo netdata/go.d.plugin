@@ -12,31 +12,31 @@ cluster. It makes sure that containers are running in a pod.
 
 This module will monitor one or more `kubelet` instances, depending on your configuration.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "k8s_kubelet." prefix.
 
-- API Server Audit Requests in `requests/s`
-- API Server Failed Data Encryption Key(DEK) Generation Operations in `events/s`
-- API Server Latencies Of Data Encryption Key(DEK) Generation Operations in `observes/s`
-- API Server Latencies Of Data Encryption Key(DEK) Generation Operations Percentage in `%`
-- API Server Storage Envelope Transformation Cache Misses` in `events/s`
-- Number Of Containers Currently Running in `containers`
-- Number Of Pods Currently Running in `pods`
-- Bytes Used By The Pod Logs On The Filesystem in `bytes`
-- Runtime Operations By Type in `operations/s`
-- Docker Operations By Type in `operations/s`
-- Docker Operations Errors By Type in `operations/s`
-- Node Configuration-Related Error in `bool`
-- PLEG Relisting Interval Summary in `microseconds`
-- PLEG Relisting Latency Summary in `microseconds`
-- Token Requests To The Alternate Token Source in `requests/s`
-- REST Client HTTP Requests By Status Code in `requests/s`
-- REST Client HTTP Requests By Method in `requests/s`
-
-Per every plugin:
-
-- Volume Manager State Of The World in `state`
+| Metric                                                  |     Scope      |                                                       Dimensions                                                        |       Units        |
+|---------------------------------------------------------|:--------------:|:-----------------------------------------------------------------------------------------------------------------------:|:------------------:|
+| apiserver_audit_requests_rejected                       |     global     |                                                        rejected                                                         |     requests/s     |
+| apiserver_storage_data_key_generation_failures          |     global     |                                                        failures                                                         |      events/s      |
+| apiserver_storage_data_key_generation_latencies         |     global     | 5_µs, 10_µs, 20_µs, 40_µs, 80_µs, 160_µs, 320_µs, 640_µs, 1280_µs, 2560_µs, 5120_µs, 10240_µs, 20480_µs, 40960_µs, +Inf |     observes/s     |
+| apiserver_storage_data_key_generation_latencies_percent |     global     | 5_µs, 10_µs, 20_µs, 40_µs, 80_µs, 160_µs, 320_µs, 640_µs, 1280_µs, 2560_µs, 5120_µs, 10240_µs, 20480_µs, 40960_µs, +Inf |     percentage     |
+| apiserver_storage_envelope_transformation_cache_misses  |     global     |                                                      cache misses                                                       |      events/s      |
+| kubelet_containers_running                              |     global     |                                                          total                                                          | running_containers |
+| kubelet_pods_running                                    |     global     |                                                          total                                                          |    running_pods    |
+| kubelet_pods_log_filesystem_used_bytes                  |     global     |                                        <i>a dimension per namespace and pod</i>                                         |         B          |
+| kubelet_runtime_operations                              |     global     |                                          <i>a dimension per operation type</i>                                          |    operations/s    |
+| kubelet_runtime_operations_errors                       |     global     |                                          <i>a dimension per operation type</i>                                          |      errors/s      |
+| kubelet_docker_operations                               |     global     |                                          <i>a dimension per operation type</i>                                          |    operations/s    |
+| kubelet_docker_operations_errors                        |     global     |                                          <i>a dimension per operation type</i>                                          |      errors/s      |
+| kubelet_node_config_error                               |     global     |                                                   experiencing_error                                                    |        bool        |
+| kubelet_pleg_relist_interval_microseconds               |     global     |                                                     0.5, 0.9, 0.99                                                      |    microseconds    |
+| kubelet_pleg_relist_latency_microseconds                |     global     |                                                     0.5, 0.9, 0.99                                                      |    microseconds    |
+| kubelet_token_requests                                  |     global     |                                                      total, failed                                                      |  token_requests/s  |
+| rest_client_requests_by_code                            |     global     |                                         <i>a dimension per HTTP status code</i>                                         |     requests/s     |
+| rest_client_requests_by_method                          |     global     |                                           <i>a dimension per HTTP method</i>                                            |     requests/s     |
+| volume_manager_total_volumes                            | volume manager |                                                     actual, desired                                                     |       state        |
 
 ## Configuration
 
