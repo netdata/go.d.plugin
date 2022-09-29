@@ -17,14 +17,16 @@ This module will monitor one or more `NGINX` servers, depending on your configur
 - `NGINX` with
   configured [`ngx_http_stub_status_module`](http://nginx.org/en/docs/http/ngx_http_stub_status_module.html).
 
-## Charts
+## Metrics
 
-It produces following charts:
+All metrics have "nginx." prefix.
 
-- Active Client Connections Including Waiting Connections in `connections`
-- Active Connections Per Status in `connections`
-- Accepted And Handled Connections in `connections/s`
-- Requests in `requests/s`
+| Metric                       | Scope  |       Dimensions       |     Units     |
+|------------------------------|:------:|:----------------------:|:-------------:|
+| connections                  | global |         active         |  connections  |
+| connections_status           | global | reading, writing, idle |  connections  |
+| connections_accepted_handled | global |   accepted, handled    | connections/s |
+| requests                     | global |        requests        |  requests/s   |
 
 ## Configuration
 
