@@ -16,17 +16,18 @@ that requires Management Interface enabled.
 
 - `update_every` interval must match the interval on which OpenVPN writes the operational status to the log file.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "openvpn." prefix.
 
-- Active Clients in `clients`
-- Traffic in `kilobits/s`
+> user_* stats are disabled by default, see `per_user_stats` in the module config file.
 
-Per user charts (disabled by default, see `per_user_stats` in the module config file):
-
-- User Traffic in `kilobits/s`
-- User Connection Time in `seconds`
+| Metric               | Scope  | Dimensions |   Units    |
+|----------------------|:------:|:----------:|:----------:|
+| active_clients       | global |  clients   |  clients   |
+| total_traffic        | global |  in, out   | kilobits/s |
+| user_traffic         |  user  |  in, out   | kilobits/s |
+| user_connection_time |  user  |    time    |  seconds   |
 
 ## Configuration
 

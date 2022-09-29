@@ -17,17 +17,18 @@ This module will monitor one or more `OpenVPN` instances via Management Interfac
 
 - `OpenVPN` with enabled [`management-interface`](https://openvpn.net/community-resources/management-interface/).
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "openvpn." prefix.
 
-- Total Number Of Active Clients in `clients`
-- Total Traffic in `kilobits/s`
+> user_* stats are disabled by default, see `per_user_stats` in the module config file.
 
-Per user charts (disabled by default, see `per_user_stats` in the module config file):
-
-- User Traffic in `kilobits/s`
-- User Connection Time in `seconds`
+| Metric               | Scope  | Dimensions |   Units    |
+|----------------------|:------:|:----------:|:----------:|
+| active_clients       | global |  clients   |  clients   |
+| total_traffic        | global |  in, out   | kilobits/s |
+| user_traffic         |  user  |  in, out   | kilobits/s |
+| user_connection_time |  user  |    time    |  seconds   |
 
 ## Configuration
 

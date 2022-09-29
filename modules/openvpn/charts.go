@@ -15,7 +15,7 @@ var charts = Charts{
 	{
 		ID:    "active_clients",
 		Title: "Total Number Of Active Clients",
-		Units: "active clients",
+		Units: "clients",
 		Fam:   "clients",
 		Ctx:   "openvpn.active_clients",
 		Dims: Dims{

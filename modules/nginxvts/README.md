@@ -11,7 +11,7 @@ with [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts).
 
 ## Metrics
 
-All metrics have "nginx." prefix.
+All metrics have "nginxvts." prefix.
 
 | Metric                 | Scope  |                            Dimensions                            |     Units     |
 |------------------------|:------:|:----------------------------------------------------------------:|:-------------:|
