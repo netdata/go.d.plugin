@@ -780,7 +780,7 @@ var (
 	chartGaleraClusterSize = module.Chart{
 		ID:       "galera_cluster_size",
 		Title:    "Number of Nodes in the Cluster",
-		Units:    "num",
+		Units:    "nodes",
 		Fam:      "galera",
 		Ctx:      "mysql.galera_cluster_size",
 		Priority: prioGaleraClusterSize,
@@ -824,18 +824,18 @@ var (
 	chartGaleraOpenTransactions = module.Chart{
 		ID:       "galera_open_transactions",
 		Title:    "Open Transactions",
-		Units:    "num",
+		Units:    "transactions",
 		Fam:      "galera",
 		Ctx:      "mysql.galera_open_transactions",
 		Priority: prioGaleraOpenTransactions,
 		Dims: module.Dims{
-			{ID: "wsrep_open_transactions", Name: "open transactions"},
+			{ID: "wsrep_open_transactions", Name: "open"},
 		},
 	}
 	chartGaleraThreads = module.Chart{
 		ID:       "galera_thread_count",
 		Title:    "Total Number of WSRep (applier/rollbacker) Threads",
-		Units:    "num",
+		Units:    "threads",
 		Fam:      "galera",
 		Ctx:      "mysql.galera_thread_count",
 		Priority: prioGaleraThreadCount,
