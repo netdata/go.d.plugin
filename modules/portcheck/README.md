@@ -9,13 +9,15 @@ sidebar_label: "TCP endpoints"
 
 This module monitors one or more TCP services availability and response time.
 
-## Charts
+## Metrics
 
-It produces the following charts for every monitoring port:
+All metrics have "portcheck." prefix.
 
-- TCP Check Status in `boolean`
-- Current State Duration in `seconds`
-- TCP Connection Latency in `ms`
+| Metric         | Scope  |        Dimensions        |  Units  |
+|----------------|:------:|:------------------------:|:-------:|
+| status         | global | success, failed, timeout | boolean |
+| state_duration | global |           time           | seconds |
+| latency        | global |           time           |   ms    |
 
 ## Configuration
 

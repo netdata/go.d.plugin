@@ -17,23 +17,23 @@ It collects data using following endpoints:
 - `/api/node/{node_name}`
 - `/api/vhosts`
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "rabbitmq." prefix.
 
-- Queued Messages in `messages`
-- Messages in `messages/s`
-- Global Counts in `counts`
-- File Descriptors in `descriptors`
-- Socket Descriptors in `descriptors`
-- Erlang Processes in `processes`
-- Erlang run queue in `processes`
-- Memory in `MiB`
-- Disk Space in `GiB`
-
-Per vhost charts:
-
-- Messages in `messages/s`
+| Metric           | Scope  |                                                             Dimensions                                                              |    Units    |
+|------------------|:------:|:-----------------------------------------------------------------------------------------------------------------------------------:|:-----------:|
+| queued_messages  | global |                                                        ready, unacknowledged                                                        |  messages   |
+| message_rates    | global | ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable | messages/s  |
+| global_counts    | global |                                         channels, consumers, connections, queues, exchanges                                         |   counts    |
+| file_descriptors | global |                                                                used                                                                 | descriptors |
+| sockets          | global |                                                                used                                                                 | descriptors |
+| processes        | global |                                                                used                                                                 |  processes  |
+| erlang_run_queue | global |                                                               length                                                                |  processes  |
+| memory           | global |                                                                used                                                                 |     MiB     |
+| disk_space       | global |                                                                free                                                                 |     MiB     |
+| disk_space       | global |                                                                free                                                                 |     GiB     |
+| vhost_messages   | vhost  |                            ack, confirm, deliver, get, get_no_ack, publish, redeliver, return_unroutable                            |  messages   |
 
 ## Configuration
 

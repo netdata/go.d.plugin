@@ -18,82 +18,66 @@ the [prometheus endpoint](https://pulsar.apache.org/docs/en/deploy-monitoring/#b
 
 - v2.5.0
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "pulsar." prefix.
 
-### Summary
+- topic_* metrics are available when `exposeTopicLevelMetricsInPrometheus` is set to true.
+- subscription_* and namespace_subscription metrics are available when `exposeTopicLevelMetricsInPrometheus` si set to
+  true.
+- replication_* and namespace_replication_* metrics are available when replication is configured
+  and `replicationMetricsEnabled` is set to true
 
-- Broker Components in `num`
-- Messages Rate in `messages/s`
-- Throughput Rate in `KiB/s`
-- Storage Size in `KiB`
-- Messages Backlog Size in `messages`
-- Storage Write Latency Histogram in `entries/s`
-- Entry Size Histogram in `entries/s`
-- Subscriptions Delayed for Dispatching in `message batches`
-
-If `exposeTopicLevelMetricsInPrometheus` is set to true:
-
-- Subscriptions Redelivered Message Rate in `messages/s`
-- Subscriptions Blocked On Unacked Messages in `subscriptions`
-
-If replication is configured and `replicationMetricsEnabled` is set to true:
-
-- Replication Rate in `messages/s`
-- Replication Throughput Rate in `messages/s`
-- Replication Backlog in `messages`
-
-### Namespace
-
-- Broker Components in `num`
-- Messages Rate in `messages/s`
-- Throughput Rate in `KiB/s`
-- Storage Size in `KiB`
-- Storage Read/Write Operations Rate in `message batches/s`
-- Messages Backlog Size in `messages`
-- Storage Write Latency Histogram in `entries/s`
-- Entry Size Histogram in `entries/s`
-- Subscriptions Delayed for Dispatching in `message batches`
-
-If `exposeTopicLevelMetricsInPrometheus` is set to true:
-
-- Subscriptions Redelivered Message Rate in `messages/s`
-- Subscriptions Blocked On Unacked Messages in `subscriptions`
-
-If replication is configured and `replicationMetricsEnabled` is set to true:
-
-- Replication Rate in `messages/s`
-- Replication Throughput Rate in `messages/s`
-- Replication Backlog in `messages`
-
-### Topic
-
-Topic charts are only available when `exposeTopicLevelMetricsInPrometheus` is set to true. In addition, you need to
-set `topic_filer` configuration option. If you have a lot of topics this is highly unrecommended.
-
-- Producers in `producers`
-- Subscriptions in `producers`
-- Consumers in `producers`
-- Publish Messages Rate in `publishes/s`
-- Dispatch Messages Rate in `dispatches/s`
-- Publish Throughput Rate in `KiB/s`
-- Dispatch Throughput Rate in `KiB/s`
-- Storage Size in `KiB`
-- Storage Read Rate in `message batches/s`
-- Storage Write Rate in `message batches/s`
-- Messages Backlog Size in `messages`
-- Subscriptions Delayed for Dispatching in `message batches`
-- Subscriptions Redelivered Message Rate in `messages/s`
-- Subscriptions Blocked On Unacked Messages in `blocked subscriptions`
-
-If replication is configured and `replicationMetricsEnabled` is set to true:
-
-- Topic Replication Rate From Remote Cluster in `messages/s`
-- Topic Replication Rate To Remote Cluster in `messages/s`
-- Topic Replication Throughput Rate From Remote Cluster in `KiB/s`
-- Topic Replication Throughput Rate To Remote Cluster in `KiB/s`
-- Topic Replication Backlog in `KiB/s`
+| Metric                                             |   Scope   |                                Dimensions                                 |         Units         |
+|----------------------------------------------------|:---------:|:-------------------------------------------------------------------------:|:---------------------:|
+| broker_components                                  |  global   |          namespaces, topics, subscriptions, producers, consumers          |      components       |
+| messages_rate                                      |  global   |                             publish, dispatch                             |      messages/s       |
+| throughput_rate                                    |  global   |                             publish, dispatch                             |         KiB/s         |
+| storage_size                                       |  global   |                                   used                                    |          KiB          |
+| storage_operations_rate                            |  global   |                                read, write                                |   message batches/s   |
+| msg_backlog                                        |  global   |                                  backlog                                  |       messages        |
+| storage_write_latency                              |  global   | <=0.5ms, <=1ms, <=5ms, =10ms, <=20ms, <=50ms, <=100ms, <=200ms, <=1s, >1s |       entries/s       |
+| entry_size                                         |  global   |     <=128B, <=512B, <=1KB, <=2KB, <=4KB, <=16KB, <=100KB, <=1MB, >1MB     |       entries/s       |
+| subscription_delayed                               |  global   |                                  delayed                                  |    message bacthes    |
+| subscription_msg_rate_redeliver                    |  global   |                                redelivered                                |      messages/s       |
+| subscription_blocked_on_unacked_messages           |  global   |                                  blocked                                  |     subscriptions     |
+| replication_rate                                   |  global   |                                  in, out                                  |      messages/s       |
+| replication_throughput_rate                        |  global   |                                  in, out                                  |         KiB/s         |
+| replication_backlog                                |  global   |                                  backlog                                  |       messages        |
+| namespace_broker_components                        |  global   |                topics, subscriptions, producers, consumers                |      components       |
+| namespace_messages_rate                            | namespace |                             publish, dispatch                             |      messages/s       |
+| namespace_throughput_rate                          | namespace |                             publish, dispatch                             |         KiB/s         |
+| namespace_storage_size                             | namespace |                                   used                                    |          KiB          |
+| namespace_storage_operations_rate                  | namespace |                                read, write                                |   message batches/s   |
+| namespace_msg_backlog                              | namespace |                                  backlog                                  |       messages        |
+| namespace_storage_write_latency                    | namespace | <=0.5ms, <=1ms, <=5ms, =10ms, <=20ms, <=50ms, <=100ms, <=200ms, <=1s, >1s |       entries/s       |
+| namespace_entry_size                               | namespace |     <=128B, <=512B, <=1KB, <=2KB, <=4KB, <=16KB, <=100KB, <=1MB, >1MB     |       entries/s       |
+| namespace_subscription_delayed                     | namespace |                                  delayed                                  |    message bacthes    |
+| namespace_subscription_msg_rate_redeliver          | namespace |                                redelivered                                |      messages/s       |
+| namespace_subscription_blocked_on_unacked_messages | namespace |                                  blocked                                  |     subscriptions     |
+| namespace_replication_rate                         | namespace |                                  in, out                                  |      messages/s       |
+| namespace_replication_throughput_rate              | namespace |                                  in, out                                  |         KiB/s         |
+| namespace_replication_backlog                      | namespace |                                  backlog                                  |       messages        |
+| topic_producers                                    | namespace |                       <i>a dimension per topic</i>                        |       producers       |
+| topic_subscriptions                                | namespace |                       <i>a dimension per topic</i>                        |     subscriptions     |
+| topic_consumers                                    | namespace |                       <i>a dimension per topic</i>                        |       consumers       |
+| topic_messages_rate_in                             | namespace |                       <i>a dimension per topic</i>                        |      publishes/s      |
+| topic_messages_rate_out                            | namespace |                       <i>a dimension per topic</i>                        |     dispatches/s      |
+| topic_throughput_rate_in                           | namespace |                       <i>a dimension per topic</i>                        |         KiB/s         |
+| topic_throughput_rate_out                          | namespace |                       <i>a dimension per topic</i>                        |         KiB/s         |
+| topic_storage_size                                 | namespace |                       <i>a dimension per topic</i>                        |          KiB          |
+| topic_storage_read_rate                            | namespace |                       <i>a dimension per topic</i>                        |   message batches/s   |
+| topic_storage_write_rate                           | namespace |                       <i>a dimension per topic</i>                        |   message batches/s   |
+| topic_msg_backlog                                  | namespace |                       <i>a dimension per topic</i>                        |       messages        |
+| topic_subscription_delayed                         | namespace |                       <i>a dimension per topic</i>                        |    message batches    |
+| topic_subscription_msg_rate_redeliver              | namespace |                       <i>a dimension per topic</i>                        |      messages/s       |
+| topic_subscription_blocked_on_unacked_messages     | namespace |                       <i>a dimension per topic</i>                        | blocked subscriptions |
+| topic_replication_rate_in                          | namespace |                       <i>a dimension per topic</i>                        |      messages/s       |
+| topic_replication_rate_out                         | namespace |                       <i>a dimension per topic</i>                        |      messages/s       |
+| topic_replication_throughput_rate_in               | namespace |                       <i>a dimension per topic</i>                        |      messages/s       |
+| topic_replication_throughput_rate_out              | namespace |                       <i>a dimension per topic</i>                        |      messages/s       |
+| topic_replication_backlog                          | namespace |                       <i>a dimension per topic</i>                        |       messages        |
+| topic_replication_backlog                          | namespace |                       <i>a dimension per topic</i>                        |       messages        |
 
 ## Configuration
 
@@ -121,8 +105,8 @@ module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/c
 
 ## Topic filtering
 
-By default, module collects data for all topics, but it supports topic filtering. Filtering doesn't exclude a topic stats
-from the [summary](#summary)/[namespace](#namespace) stats, it only removes the topic from the [topic](#topic) charts.
+By default, module collects data for all topics, but it supports topic filtering. Filtering doesn't exclude a topic
+stats from the summary/namespace stats, it only removes the topic from the topic charts.
 
 To check matcher syntax
 see [matcher documentation](https://github.com/netdata/go.d.plugin/blob/master/pkg/matcher/README.md).

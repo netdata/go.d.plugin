@@ -26,15 +26,18 @@ For collecting metrics via HTTP, we need:
 - [enabled webserver](https://doc.powerdns.com/recursor/http-api/index.html#webserver).
 - [enabled HTTP API](https://doc.powerdns.com/recursor/http-api/index.html#enabling-the-api).
 
-## Charts
+## Metrics
 
-- Incoming questions in `questions/s`
-- Outgoing questions in `questions/s`
-- Queries answered within a time range in `queries/s`
-- Timeouts on outgoing UDP queries in `timeouts/s`
-- Drops in `drops/s`
-- Cache Usage in `events/s`
-- Cache Size in `entries`
+All metrics have "powerdns_recursor." prefix.
+
+| Metric        | Scope  |                                        Dimensions                                         |    Units    |
+|---------------|:------:|:-----------------------------------------------------------------------------------------:|:-----------:|
+| questions_in  | global |                                     total, tcp, ipv6                                      | questions/s |
+| questions_out | global |                                 udp, tcp, ipv6, throttled                                 | questions/s |
+| answer_time   | global |                         0-1ms, 1-10ms, 10-100ms, 100-1000ms, slow                         |  queries/s  |
+| timeouts      | global |                                     total, ipv4, ipv6                                     | timeouts/s  |
+| drops         | global | over-capacity-drops, query-pipe-full-drops, too-old-drops, truncated-drops, empty-queries |   drops/s   |
+| cache_size    | global |                            cache, packet-cache, negative-cache                            |   entries   |
 
 ## Configuration
 

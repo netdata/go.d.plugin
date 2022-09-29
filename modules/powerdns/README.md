@@ -25,13 +25,17 @@ For collecting metrics via HTTP, we need:
 - [enabled webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver).
 - [enabled HTTP API](https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api).
 
-## Charts
+## Metrics
 
-- Incoming questions in `questions/s`
-- Outgoing questions in `questions/s`
-- Cache Usage in `events/s`
-- Cache Size in `entries`
-- Latency in `microseconds`
+All metrics have "powerdns." prefix.
+
+| Metric        | Scope  |                              Dimensions                              |    Units     |
+|---------------|:------:|:--------------------------------------------------------------------:|:------------:|
+| questions_in  | global |                               udp, tcp                               | questions/s  |
+| questions_out | global |                               udp, tcp                               | questions/s  |
+| cache_usage   | global | query-cache-hit, query-cache-miss, packetcache-hit, packetcache-miss |   events/s   |
+| cache_size    | global |           query-cache, packet-cache, key-cache, meta-cache           |   entries    |
+| latency       | global |                               latency                                | microseconds |
 
 ## Configuration
 

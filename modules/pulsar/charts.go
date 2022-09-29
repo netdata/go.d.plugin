@@ -44,7 +44,7 @@ var (
 	sumBrokerComponentsChart = Chart{
 		ID:    "broker_components",
 		Title: "Broker Components",
-		Units: "num",
+		Units: "components",
 		Fam:   "ns summary",
 		Ctx:   "pulsar.broker_components",
 		Type:  module.Stacked,
