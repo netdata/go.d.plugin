@@ -18,16 +18,18 @@ This module will monitor one or more `php-fpm` instances, depending on your conf
     - open the `php-fpm` configuration file.
     - inside this file, find and uncomment the variable `pm.status_path = /status`.
 
-## Charts
+## Metrics
 
-It produces following charts:
+All metrics have "phpfpm." prefix.
 
-- Active Connections in `connections`
-- Requests in `requests/s`
-- Performance in `status`
-- Requests Duration Among All Idle Processes in `milliseconds`
-- Last Request CPU Usage Among All Idle Processes in `percentage`
-- Last Request Memory Usage Among All Idle Processes in `KB`
+| Metric           | Scope  |             Dimensions              |    Units     |
+|------------------|:------:|:-----------------------------------:|:------------:|
+| connections      | global |      active, max_active, idle       | connections  |
+| requests         | global |              requests               |  requests/s  |
+| performance      | global | max_children_reached, slow_requests |    status    |
+| request_duration | global |            min, max, avg            | milliseconds |
+| request_cpu      | global |            min, max, avg            |  percentage  |
+| request_mem      | global |            min, max, avg            |      KB      |
 
 ## Configuration
 

@@ -19,30 +19,34 @@ It collects information and statistics about the server executing the following 
 
 - [`INFO ALL`](https://github.com/Qihoo360/pika/wiki/pika-info%E4%BF%A1%E6%81%AF%E8%AF%B4%E6%98%8E)
 
-## Charts
+## Metrics
 
-- Connections in `connections/s`
-- Clients in `clients`
-- Memory usage in `bytes`
-- Connected replicas in `replicas`
-- Processed commands in `queries/s`
-- Calls per command in `calls/s`
-- Strings type keys per database in `keys`
-- Strings type expires keys per database in `keys`
-- Strings type invalid keys per database in `keys`
-- Hashes type keys per database in `keys`
-- Hashes type expires keys per database in `keys`
-- Hashes type invalid keys per database in `keys`
-- Lists type keys per database in `keys`
-- Lists type expires keys per database in `keys`
-- Lists type invalid keys per database in `keys`
-- Zsets type keys per database in `keys`
-- Zsets type expires keys per database in `keys`
-- Zsets type invalid keys per database in `keys`
-- Sets type keys per database in `keys`
-- Sets type expires keys per database in `keys`
-- Sets type invalid keys per database in `keys`
-- Uptime in `seconds`
+All metrics have "pika." prefix.
+
+| Metric                        | Scope  |           Dimensions            |    Units    |
+|-------------------------------|:------:|:-------------------------------:|:-----------:|
+| connections                   | global |            accepted             | connections |
+| clients                       | global |            connected            |   clients   |
+| memory                        | global |              used               |    bytes    |
+| connected_replicas            | global |            connected            |  replicas   |
+| commands                      | global |            processed            | commands/s  |
+| commands_calls                | global | <i>a dimension per command</i>  |   calls/s   |
+| database_strings_keys         | global | <i>a dimension per database</i> |    keys     |
+| database_strings_expires_keys | global | <i>a dimension per database</i> |    keys     |
+| database_strings_invalid_keys | global | <i>a dimension per database</i> |    keys     |
+| database_hashes_keys          | global | <i>a dimension per database</i> |    keys     |
+| database_hashes_expires_keys  | global | <i>a dimension per database</i> |    keys     |
+| database_hashes_invalid_keys  | global | <i>a dimension per database</i> |    keys     |
+| database_lists_keys           | global | <i>a dimension per database</i> |    keys     |
+| database_lists_expires_keys   | global | <i>a dimension per database</i> |    keys     |
+| database_lists_invalid_keys   | global | <i>a dimension per database</i> |    keys     |
+| database_zsets_keys           | global | <i>a dimension per database</i> |    keys     |
+| database_zsets_expires_keys   | global | <i>a dimension per database</i> |    keys     |
+| database_zsets_invalid_keys   | global | <i>a dimension per database</i> |    keys     |
+| database_sets_keys            | global | <i>a dimension per database</i> |    keys     |
+| database_sets_expires_keys    | global | <i>a dimension per database</i> |    keys     |
+| database_sets_invalid_keys    | global | <i>a dimension per database</i> |    keys     |
+| uptime                        | global |             uptime              |   seconds   |
 
 ## Configuration
 

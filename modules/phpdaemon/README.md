@@ -17,6 +17,17 @@ This module collects `phpdaemon` workers statistics via http.
 - `phpdaemon` with enabled `http` server.
 - statistics should be reported in `json` format.
 
+## Metrics
+
+All metrics have "phpdaemon." prefix.
+
+| Metric        | Scope  |         Dimensions         |  Units  |
+|---------------|:------:|:--------------------------:|:-------:|
+| workers       | global |      alive, shutdown       | workers |
+| alive_workers | global |   idle, busy, reloading    | workers |
+| idle_workers  | global | preinit, init, initialized | workers |
+| uptime        | global |            time            | seconds |
+
 ## Charts
 
 It produces the following charts:
