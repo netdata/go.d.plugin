@@ -7,9 +7,9 @@ sidebar_label: "MySQL"
 
 # MySQL monitoring with Netdata
 
-[`MySQL`](https://www.mysql.com/) is an open-source relational database management system.
+[MySQL](https://www.mysql.com/) is an open-source relational database management system.
 
-This module monitors one or more `MySQL` servers, depending on your configuration.
+This module monitors one or more MySQL servers, depending on your configuration.
 
 ## Requirements
 
@@ -22,15 +22,16 @@ Executed queries:
 - `SHOW USER_STATISTICS;` (MariaDBv10.1.1+)
 - `SELECT TIME,USER FROM INFORMATION_SCHEMA.PROCESSLIST;`
 
-[User Statistics](https://mariadb.com/kb/en/user-statistics/) query is [`MariaDB`](https://mariadb.com/) specific.
+[User Statistics](https://mariadb.com/kb/en/user-statistics/) query is [MariaDB](https://mariadb.com/) specific.
 
-`MySQL` user should have the following [permissions](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html):
+A user account should have the
+following [permissions](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html):
 
 - [`USAGE`](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html#priv_usage)
 - [`REPLICATION CLIENT`](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html#priv_replication-client)
 - [`PROCESS`](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html#priv_process)
 
-To create the `netdata` user with these permissions, execute the following in the `MySQL` shell:
+To create the `netdata` user with these permissions, execute the following in the MySQL shell:
 
 ```mysql
 CREATE USER 'netdata'@'localhost';
@@ -38,94 +39,89 @@ GRANT USAGE, REPLICATION CLIENT, PROCESS ON *.* TO 'netdata'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-The `netdata` user will have the ability to connect to the `MySQL` server on localhost without a password. It will only
+The `netdata` user will have the ability to connect to the MySQL server on localhost without a password. It will only
 be able to gather statistics without being able to alter or affect operations in any way.
 
-## Charts
+## Metrics
 
-It produces the following charts:
+All metrics have "mysql." prefix.
 
-- Bandwidth in `kilobits/s`
-- Queries in `queries/s`
-- Queries By Type in `queries/s`
-- Handlers in `handlers/s`
-- Table Locks in `locks/s`
-- Table Select Join Issues in `joins/s`
-- Table Sort Issues in `joins/s`
-- Tmp Operations in `events/s`
-- Connections in `connections/s`
-- Active Connections in `connections`
-- Binlog Cache in `transactions/s`
-- Threads in `threads`
-- Threads Creation Rate in `threads/s`
-- Threads Cache Misses in `misses`
-- InnoDB I/O Bandwidth in `KiB/s`
-- InnoDB I/O Operations in `operations/s`
-- InnoDB Pending I/O Operations in `operations`
-- InnoDB Log Operations in `operations/s`
-- InnoDB OS Log Pending Operations in `operations`
-- InnoDB OS Log Operations in `operations/s`
-- InnoDB OS Log Bandwidth in `KiB/s`
-- InnoDB Current Row Locks in `operations`
-- InnoDB Row Operations in `operations/s`
-- InnoDB Buffer Pool Pages in `pages`
-- InnoDB Buffer Pool Flush Pages Requests in `requests/s`
-- InnoDB Buffer Pool Bytes in `MiB`
-- InnoDB Buffer Pool Operations in `operations/s`
-- MyISAM Key Cache Blocks in `blocks`
-- MyISAM Key Cache Requests in `requests/s`
-- MyISAM Key Cache Disk Operations in `operations/s`
-- Open Files in `files`
-- Opened Files Rate in `files/s`
-- Binlog Statement Cache in `statements/s`
-- Connection Errors in `errors/s`
-- Opened Tables in `tables/s`
-- Open Tables in `tables`
-- Process List Fetch Duration in `milliseconds`
-- Process List Queries Count in `queries`
-- Process List Longest Query Duration in `seconds`
+- userstats_* metrics need [User Statistics](https://mariadb.com/kb/en/user-statistics/#enabling-the-plugin) plugin
+  enabled. MariaDB and Percona MySQL only.
 
-If [Query Cache](https://dev.mysql.com/doc/refman/5.7/en/query-cache.html) metrics are available (`MariaDB`
-and [old versions of `MySQL`](https://mysqlserverteam.com/mysql-8-0-retiring-support-for-the-query-cache/)):
-
-- QCache Operations in `queries/s`
-- QCache Queries in Cache in `queries`
-- QCache Free Memory in `MiB`
-- QCache Memory Blocks in `blocks`
-
-If [WSRep](https://galeracluster.com/library/documentation/galera-status-variables.html) metrics are available:
-
-- Replicated Writesets in `writesets/s`
-- Replicated Bytes in `KiB/s`
-- Galera Queue in `writesets`
-- Replication Conflicts in `transactions`
-- Flow Control in `ms`
-- Cluster Component Status in `status`
-- Cluster Component State in `state`
-- Number of Nodes in the Cluster in `num`
-- The Total Weight of the Current Members in the Cluster in `weight`
-- Cluster Connection Status in `boolean`
-- Accept Queries Readiness Status in `boolean`
-- Open Transactions in `num`
-- Total Number of WSRep (applier/rollbacker) Threads in `num`
-
-If [Slave Status](https://dev.mysql.com/doc/refman/8.0/en/show-slave-status.html) metrics are available:
-
-- Slave Behind Seconds in `seconds`
-- I/O / SQL Thread Running State in `boolean`
-
-If [User Statistics](https://mariadb.com/kb/en/user-statistics/) metrics are available:
-
-- User CPU Time in `percentage`
-- User Rows Operations in `operations/s`
-- User Commands in `commands/s`
-- User Denied Commands in `commands/s`
-- User Transactions in `transactions/s`
-- User Binlog Written in `B/s`
-- User Empty Queries in `queries/s`
-- User Created Connections in `connections/s`
-- User Lost Connections in `connections/s`
-- User Denied Connections in `connections/s`
+| Metric                              |   Scope    |                                                                     Dimensions                                                                      |     Units      |
+|-------------------------------------|:----------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|:--------------:|
+| net                                 |   global   |                                                                       in, out                                                                       |   kilobits/s   |
+| queries                             |   global   |                                                          queries, questions, slow_queries                                                           |   queries/s    |
+| queries_type                        |   global   |                                                       select, delete, update, insert, replace                                                       |   queries/s    |
+| handlers                            |   global   | commit, delete, prepare, read_first, read_key, read_next, read_prev, read_rnd, read_rnd_next, rollback, savepoint, savepointrollback, update, write |   handlers/s   |
+| table_locks                         |   global   |                                                                  immediate, waited                                                                  |    locks/s     |
+| join_issues                         |   global   |                                                full_join, full_range_join, range, range_check, scan                                                 |    joins/s     |
+| sort_issues                         |   global   |                                                              merge_passes, range, scan                                                              |    issues/s    |
+| tmp                                 |   global   |                                                             disk_tables, files, tables                                                              |    events/s    |
+| connections                         |   global   |                                                                    all, aborted                                                                     | connections/s  |
+| connections_active                  |   global   |                                                              active, limit, max_active                                                              |  connections   |
+| threads                             |   global   |                                                             connected, cached, running                                                              |    threads     |
+| threads_created                     |   global   |                                                                       created                                                                       |   threads/s    |
+| thread_cache_misses                 |   global   |                                                                       misses                                                                        |     misses     |
+| innodb_io                           |   global   |                                                                     read, write                                                                     |     KiB/s      |
+| innodb_io_ops                       |   global   |                                                                reads, writes, fsyncs                                                                |  operations/s  |
+| innodb_io_pending_ops               |   global   |                                                                reads, writes, fsyncs                                                                |   operations   |
+| innodb_log                          |   global   |                                                            waits, write_requests, writes                                                            |  operations/s  |
+| innodb_cur_row_lock                 |   global   |                                                                    current waits                                                                    |   operations   |
+| innodb_rows                         |   global   |                                                          inserted, read, updated, deleted                                                           |  operations/s  |
+| innodb_buffer_pool_pages            |   global   |                                                           data, dirty, free, misc, total                                                            |     pages      |
+| innodb_buffer_pool_pages_flushed    |   global   |                                                                     flush_pages                                                                     |   requests/s   |
+| innodb_buffer_pool_bytes            |   global   |                                                                     data, dirty                                                                     |      MiB       |
+| innodb_buffer_pool_read_ahead       |   global   |                                                                    all, evicted                                                                     |    pages/s     |
+| innodb_buffer_pool_read_ahead_rnd   |   global   |                                                                     read-ahead                                                                      |  operations/s  |
+| innodb_buffer_pool_ops              |   global   |                                                                disk_reads, wait_free                                                                |  operations/s  |
+| innodb_os_log                       |   global   |                                                                   fsyncs, writes                                                                    |   operations   |
+| innodb_os_log_fsync_writes          |   global   |                                                                       fsyncs                                                                        |  operations/s  |
+| innodb_os_log_io                    |   global   |                                                                        write                                                                        |     KiB/s      |
+| innodb_deadlocks                    |   global   |                                                                      deadlocks                                                                      |  operations/s  |
+| files                               |   global   |                                                                        files                                                                        |     files      |
+| files_rate                          |   global   |                                                                        files                                                                        |    files/s     |
+| connection_errors                   |   global   |                                                  accept, internal, max, peer_addr, select, tcpwrap                                                  |    errors/s    |
+| opened_tables                       |   global   |                                                                       tables                                                                        |    tables/s    |
+| open_tables                         |   global   |                                                                    cache, tables                                                                    |     tables     |
+| process_list_fetch_query_duration   |   global   |                                                                      duration                                                                       |  milliseconds  |
+| process_list_queries_count          |   global   |                                                                    system, user                                                                     |    queries     |
+| process_list_longest_query_duration |   global   |                                                                      duration                                                                       |    seconds     |
+| qcache_ops                          |   global   |                                                      hits, lowmem_prunes, inserts, not_cached                                                       |   queries/s    |
+| qcache                              |   global   |                                                                       queries                                                                       |    queries     |
+| qcache_freemem                      |   global   |                                                                        free                                                                         |      MiB       |
+| qcache_memblocks                    |   global   |                                                                     free, total                                                                     |     blocks     |
+| galera_writesets                    |   global   |                                                                       rx, tx                                                                        |  writesets/s   |
+| galera_bytes                        |   global   |                                                                       rx, tx                                                                        |     KiB/s      |
+| galera_queue                        |   global   |                                                                       rx, tx                                                                        |   writesets    |
+| galera_conflicts                    |   global   |                                                                bf_aborts, cert_fails                                                                |  transactions  |
+| galera_flow_control                 |   global   |                                                                       paused                                                                        |       ms       |
+| galera_cluster_status               |   global   |                                                         primary, non_primary, disconnected                                                          |     status     |
+| galera_cluster_state                |   global   |                                                  undefined, joining, donor, joined, synced, error                                                   |     state      |
+| galera_cluster_size                 |   global   |                                                                        nodes                                                                        |     nodes      |
+| galera_cluster_weight               |   global   |                                                                       weight                                                                        |     weight     |
+| galera_connected                    |   global   |                                                                      connected                                                                      |    boolean     |
+| galera_ready                        |   global   |                                                                        ready                                                                        |    boolean     |
+| galera_open_transactions            |   global   |                                                                        open                                                                         |  transactions  |
+| galera_thread_count                 |   global   |                                                                       threads                                                                       |    threads     |
+| key_blocks                          |   global   |                                                              unused, used, not_flushed                                                              |     blocks     |
+| key_requests                        |   global   |                                                                    reads, writes                                                                    |   requests/s   |
+| key_disk_ops                        |   global   |                                                                    reads, writes                                                                    |  operations/s  |
+| binlog_cache                        |   global   |                                                                      disk, all                                                                      | transactions/s |
+| binlog_stmt_cache                   |   global   |                                                                      disk, all                                                                      |  statements/s  |
+| slave_behind                        | connection |                                                                       seconds                                                                       |    seconds     |
+| slave_status                        | connection |                                                               sql_running, io_running                                                               |    boolean     |
+| userstats_cpu                       |    user    |                                                                        used                                                                         |   percentage   |
+| userstats_rows                      |    user    |                                                       read, sent, updated, inserted, deleted                                                        |  operations/s  |
+| userstats_commands                  |    user    |                                                                select, update, other                                                                |   commands/s   |
+| userstats_denied_commands           |    user    |                                                                       denied                                                                        |   commands/s   |
+| userstats_created_transactions      |    user    |                                                                  commit, rollback                                                                   | transactions/s |
+| userstats_binlog_written            |    user    |                                                                       written                                                                       |      B/s       |
+| userstats_empty_queries             |    user    |                                                                        empty                                                                        |   queries/s    |
+| userstats_connections               |    user    |                                                                       created                                                                       | connections/s  |
+| userstats_lost_connections          |    user    |                                                                        lost                                                                         | connections/s  |
+| userstats_denied_connections        |    user    |                                                                       denied                                                                        | connections/s  |
 
 ## Configuration
 
