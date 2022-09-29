@@ -420,7 +420,7 @@ func (j *Job) createChart(chart *Chart) {
 			_ = j.api.CLABEL(k, v, LabelSourceConf)
 		}
 	}
-	_ = j.api.CLABEL("_collect_job", j.Name(), 0)
+	_ = j.api.CLABEL("_collect_job", j.Name(), LabelSourceAuto)
 	_ = j.api.CLABELCOMMIT()
 
 	for _, dim := range chart.Dims {
