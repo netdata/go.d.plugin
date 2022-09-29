@@ -406,6 +406,12 @@ func (j *Job) createChart(chart *Chart) {
 	for _, l := range chart.Labels {
 		if l.Key != "" && l.Value != "" {
 			seen[l.Key] = true
+			ls := l.Source
+			// the default should be auto
+			// https://github.com/netdata/netdata/blob/cc2586de697702f86a3c34e60e23652dd4ddcb42/database/rrd.h#L205
+			if ls == 0 {
+				ls = 1 << 0
+			}
 			_ = j.api.CLABEL(l.Key, l.Value, l.Source)
 		}
 	}
