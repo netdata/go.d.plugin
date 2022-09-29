@@ -41,6 +41,7 @@ const (
 	// Not documented.
 	// https://github.com/netdata/netdata/blob/cc2586de697702f86a3c34e60e23652dd4ddcb42/database/rrd.h#L204
 
+	LabelSourceAuto = 1 << 0
 	LabelSourceConf = 1 << 1
 	LabelSourceK8s  = 1 << 2
 )
