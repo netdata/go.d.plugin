@@ -406,7 +406,13 @@ func (j *Job) createChart(chart *Chart) {
 	for _, l := range chart.Labels {
 		if l.Key != "" && l.Value != "" {
 			seen[l.Key] = true
-			_ = j.api.CLABEL(l.Key, l.Value, l.Source)
+			ls := l.Source
+			// the default should be auto
+			// https://github.com/netdata/netdata/blob/cc2586de697702f86a3c34e60e23652dd4ddcb42/database/rrd.h#L205
+			if ls == 0 {
+				ls = LabelSourceAuto
+			}
+			_ = j.api.CLABEL(l.Key, l.Value, ls)
 		}
 	}
 	for k, v := range j.labels {
@@ -414,7 +420,7 @@ func (j *Job) createChart(chart *Chart) {
 			_ = j.api.CLABEL(k, v, LabelSourceConf)
 		}
 	}
-	_ = j.api.CLABEL("_collect_job", j.Name(), 0)
+	_ = j.api.CLABEL("_collect_job", j.Name(), LabelSourceAuto)
 	_ = j.api.CLABELCOMMIT()
 
 	for _, dim := range chart.Dims {
