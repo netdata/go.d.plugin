@@ -412,7 +412,7 @@ func (j *Job) createChart(chart *Chart) {
 			if ls == 0 {
 				ls = LabelSourceAuto
 			}
-			_ = j.api.CLABEL(l.Key, l.Value, l.Source)
+			_ = j.api.CLABEL(l.Key, l.Value, ls)
 		}
 	}
 	for k, v := range j.labels {
