@@ -10,10 +10,10 @@ import (
 	"github.com/netdata/go.d.plugin/logger"
 )
 
-func (p *PardotZFS) collect() map[string]int64 {
+func (z *ZFS) collect() map[string]int64 {
 	results := make(map[string]int64)
 
-	for _, v := range p.pools {
+	for _, v := range z.pools {
 
 		stderr := new(bytes.Buffer)
 		stdout := new(bytes.Buffer)

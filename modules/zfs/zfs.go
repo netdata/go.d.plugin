@@ -12,26 +12,26 @@ type Module interface {
 	Cleanup()
 }
 
-type PardotZFS struct {
+type ZFS struct {
 	module.Base
 	pools []string
 }
 
 // Init enables metric collection - it must return true for the metric collection to happen
-func (p *PardotZFS) Init() bool {
-	return p.init()
+func (z *ZFS) Init() bool {
+	return z.init()
 }
 
-func (p *PardotZFS) Check() bool {
-	return len(p.Collect()) > 0
+func (z *ZFS) Check() bool {
+	return len(z.Collect()) > 0
 }
 
-func (p *PardotZFS) Charts() *module.Charts {
-	return p.createcharts()
+func (z *ZFS) Charts() *module.Charts {
+	return z.createcharts()
 }
 
-func (p *PardotZFS) Collect() map[string]int64 {
-	return p.collect()
+func (z *ZFS) Collect() map[string]int64 {
+	return z.collect()
 }
 
-func (z *PardotZFS) Cleanup() {}
+func (z *ZFS) Cleanup() {}

@@ -3,7 +3,7 @@
 package modules
 
 import (
-	_ "github.com/bflanigan-sfdc/go.d.plugin/modules/pardot_zfs"
+	_ "github.com/bflanigan-sfdc/go.d.plugin/modules/zfs"
 	_ "github.com/netdata/go.d.plugin/modules/activemq"
 	_ "github.com/netdata/go.d.plugin/modules/apache"
 	_ "github.com/netdata/go.d.plugin/modules/bind"

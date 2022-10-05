@@ -9,7 +9,7 @@ import (
 	"github.com/netdata/go.d.plugin/logger"
 )
 
-func (p *PardotZFS) init() bool {
+func (z *ZFS) init() bool {
 	stderr := new(bytes.Buffer)
 	stdout := new(bytes.Buffer)
 	cmd := exec.Command("/usr/sbin/zfs", "list")
@@ -27,7 +27,7 @@ func (p *PardotZFS) init() bool {
 		return false
 	}
 
-	pools, err := p.getPools(stdout)
+	pools, err := z.getPools(stdout)
 	if err != nil {
 		return false
 	}
@@ -36,12 +36,12 @@ func (p *PardotZFS) init() bool {
 		return false
 	}
 
-	p.pools = pools
+	z.pools = pools
 
 	return true
 }
 
-func (p *PardotZFS) getPools(b *bytes.Buffer) ([]string, error) {
+func (z *ZFS) getPools(b *bytes.Buffer) ([]string, error) {
 
 	var pools []string
 	s := bufio.NewScanner(b)
