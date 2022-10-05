@@ -1,4 +1,4 @@
-package pardot_zfs
+package zfs
 
 import "github.com/netdata/go.d.plugin/agent/module"
 
