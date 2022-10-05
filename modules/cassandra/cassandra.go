@@ -26,8 +26,8 @@ type (
 	cache struct {
 		throughput map[string]bool
 		latency    map[string]bool
-		disk   	   map[string]bool
 		cache      map[string]bool
+		disk   	   map[string]bool
 	}
 )
 
@@ -42,14 +42,11 @@ func init() {
 
 func New() *Cassandra {
 	return &Cassandra{
-			Config: Config{
-					HTTP: web.HTTP{
-							Client: web.Client{
-									Timeout: web.Duration{Duration: time.Second * 5},
-							},
-					},
-			},
-			charts: newCollectionCharts(),
+		Base:   module.Base{},
+		Config: Config{HTTP: web.HTTP{Client: web.Client{Timeout: web.Duration{Duration: time.Second * 5}}}},
+		prom:   nil,
+		cache:  cache{},
+		charts: newCassandraCharts(),
 	}
 }
 

@@ -105,7 +105,7 @@ var chartCassandraDiskCompactionQueue = Chart{
 	},
 }
 
-func newCollectionCharts() *Charts {
+func newCassandraCharts() *Charts {
 	return &Charts{
 		chartCassandraThroughput.Copy(),
 		chartCassandraLatency.Copy(),

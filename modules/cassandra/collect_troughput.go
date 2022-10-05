@@ -5,12 +5,12 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorTroughput = "clientrequest"
+	collectorTroughput = "Read"
 	metricTroughputType = "org_apache_cassandra_metrics_clientrequest_count"
 )
 
 func doCollectThroughput(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorTroughput)
+	enabled, success := checkCollector(pms, metricTroughputType, collectorTroughput, true)
 	return enabled && success
 }
 

@@ -11,7 +11,7 @@ import (
 
 func (c Cassandra) validateConfig() error {
 	if c.URL == "" {
-			return errors.New("'url' is not set")
+		return errors.New("'url' is not set")
 	}
 	return nil
 }
@@ -19,7 +19,7 @@ func (c Cassandra) validateConfig() error {
 func (c Cassandra) initPrometheusClient() (prometheus.Prometheus, error) {
 	client, err := web.NewHTTPClient(c.Client)
 	if err != nil {
-			return nil, err
+		return nil, err
 	}
 	return prometheus.New(client, c.Request), nil
 }

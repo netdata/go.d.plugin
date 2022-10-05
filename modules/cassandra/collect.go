@@ -7,14 +7,13 @@ import (
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/stm"
-	"github.com/prometheus/prometheus/model/labels"
 )
 
 const (
-	metricCollectorSuccess  = "peers"
+	metricCollectorSuccess  = "org_apache_cassandra_metrics_clientrequest_count"
 )
 
-func isValidWindowsExporterMetrics(pms prometheus.Metrics) bool {
+func isValidCassandraMetrics(pms prometheus.Metrics) bool {
 	return pms.FindByName(metricCollectorSuccess).Len() > 0
 }
 
@@ -24,8 +23,8 @@ func (c *Cassandra) collect() (map[string]int64, error) {
 			return nil, err
 	}
 
-	if !isValidWindowsExporterMetrics(pms) {
-			return nil, errors.New("collected metrics aren't windows_exporter metrics")
+	if !isValidCassandraMetrics(pms) {
+		return nil, errors.New("collected metrics aren't cassandra metrics")
 	}
 
 	mx := collect(pms)
@@ -45,13 +44,16 @@ func collect(pms prometheus.Metrics) *metrics {
 	return &mx
 }
 
-func checkCollector(pms prometheus.Metrics, name string) (enabled, success bool) {
-	m, err := labels.NewMatcher(labels.MatchEqual, "collector", name)
-	if err != nil {
-		panic(err)
+func checkCollector(pms prometheus.Metrics, metric string, testValue string, testScope bool) (enabled, success bool) {
+	for _, pm := range pms.FindByName(metric) {
+		metricScope := pm.Labels.Get("scope")
+		metricName := pm.Labels.Get("name")
+		// FOr some metrics we need to verify scope, for others name, so we test both
+		if metricName == testValue && !testScope {
+			return true, true
+		} else if metricScope == testValue && testScope {
+			return true, true
+		}
 	}
-
-	pms = pms.FindByName(metricCollectorSuccess)
-	ms := pms.Match(m)
-	return ms.Len() > 0, ms.Max() == 1
+	return false, false
 }

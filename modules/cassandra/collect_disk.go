@@ -5,12 +5,12 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorDisk = "table"
+	collectorDisk = "LiveDiskSpaceUsed"
 	metricDiskType = "org_apache_cassandra_metrics_table_count"
 )
 
 func doCollectDisk(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorDisk)
+	enabled, success := checkCollector(pms, metricDiskType, collectorDisk, true)
 	return enabled && success
 }
 

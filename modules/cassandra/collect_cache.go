@@ -5,12 +5,12 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorCache = "cache"
+	collectorCache = "HitRate"
 	metricCacheType = "org_apache_cassandra_metrics_cache_value"
 )
 
 func doCollectCache(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorCache)
+	enabled, success := checkCollector(pms, metricCacheType, collectorCache, false)
 	return enabled && success
 }
 
