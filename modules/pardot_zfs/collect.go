@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/netdata/go.d.plugin/logger"
 )
 
 func (p *PardotZFS) collect() map[string]int64 {
@@ -21,12 +23,14 @@ func (p *PardotZFS) collect() map[string]int64 {
 
 		err := cmd.Run()
 		if err != nil {
+			logger.Infof("got error fetching fragmentation value: %v\n", err)
 			results[v] = 0
 			continue
 		}
 
 		be, err := io.ReadAll(stderr)
 		if err != nil {
+			logger.Infof("got error reading command stderr: %v\n", err)
 			results[v] = 0
 			continue
 		}
@@ -37,6 +41,7 @@ func (p *PardotZFS) collect() map[string]int64 {
 
 		bs, err := io.ReadAll(stdout)
 		if err != nil {
+			logger.Infof("got error reading command stdout: %v\n", err)
 			results[v] = 0
 			continue
 		}
@@ -46,6 +51,7 @@ func (p *PardotZFS) collect() map[string]int64 {
 
 		i, err := strconv.ParseInt(s, 0, 64)
 		if err != nil {
+			logger.Infof("got error invoking strconv.ParseInt on %s: %v\n", s, err)
 			results[v] = 0
 			continue
 		}
