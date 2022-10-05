@@ -1,0 +1,40 @@
+lowercaseOutputLabelNames: true
+lowercaseOutputName: true
+whitelistObjectNames: ["org.apache.cassandra.metrics:*"]
+rules:
+
+# Throughput (Read/Write)
+#      Read = clientrequest_read
+#      Write = clientrequest_write
+- pattern: org.apache.cassandra.metrics<type=(ClientRequest), scope=(\S*), name=(\S*)><>(Count|Unavailables|Failures)
+
+# Cache
+#       cache_hitrate
+- pattern: 'org.apache.cassandra.metrics<type=Cache, scope=(\w*), name=(HitRate)><>(Count|Value)'
+
+# Latency 
+#       Read = ReadLatency
+#       Write = WriteLatency
+# Disk usage:
+#       Load = LiveDiskSpaceUsed
+#       Total Disk used  = TotalDiskSpaceUsed
+#       Compaction tasks completed = CompactionBytesWritten
+#       Compaction tasks in queue = PendingCompactions
+# Errors:
+#       Pending Tasks: pendingflushes
+- pattern: org.apache.cassandra.metrics<type=(Table), keyspace=(\S*), scope=(\S*), name=(\S*)><>(Count)
+
+# Garbage Collectiion
+#       It was not acttivated with this configuration options, on the other hand JMX_EXPORTER could start, so probably
+#       it is not having any garbage data.
+#
+#       ParNew Count = Count
+#       ParNew time = Time
+#       ConcurrentMarkSweep = not found in official documentation
+#       ConcurrentMarkSweep =  not found in official documentation
+- pattern: org.apache.cassandra.metrics<type=(GarbageCollector), keyspace=(\S*), scope=(\S*), name=(\S*)><>(Count)
+
+# Here we should have errors.
+- pattern: org.apache.cassandra.metrics<type=(Compaction), keyspace=(\S*), scope=(\S*), name=(\S*)><>(Count)
+
+- pattern: org.apache.cassandra.net<type=(FailureDetector)><>(DownEndpointCount)
