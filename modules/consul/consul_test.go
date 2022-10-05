@@ -179,7 +179,9 @@ func TestConsul_Collect(t *testing.T) {
 			mx := consul.Collect()
 
 			require.Equal(t, test.wantMetrics, mx)
-			assert.Equal(t, test.wantNumOfCharts, len(*consul.Charts()))
+			if len(test.wantMetrics) > 0 {
+				assert.Equal(t, test.wantNumOfCharts, len(*consul.Charts()))
+			}
 		})
 	}
 }
