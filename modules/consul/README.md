@@ -16,10 +16,10 @@ This module monitors `Consul` health checks.
 
 All metrics have "consul." prefix.
 
-| Metric         | Scope  |          Dimensions          | Units  |
-|----------------|:------:|:----------------------------:|:------:|
-| service_checks | global | <i>a dimension per check</i> | status |
-| unbound_checks | global | <i>a dimension per check</i> | status |
+| Metric                      | Scope |               Dimensions                | Units  |
+|-----------------------------|:-----:|:---------------------------------------:|:------:|
+| service_health_check_status | check | passing, maintenance, warning, critical | status |
+| unbound_health_check_status | check | passing, maintenance, warning, critical | status |
 
 ## Configuration
 
