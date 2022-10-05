@@ -3,23 +3,26 @@
 package consul
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/web"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	dataHealthChecks, _ = os.ReadFile("testdata/checks.txt")
+	dataAgentChecks, _  = os.ReadFile("testdata/checks.txt")
+	dataAgentMetrics, _ = os.ReadFile("testdata/metrics.json")
 )
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"dataHealthChecks": dataHealthChecks,
+		"dataAgentChecks":  dataAgentChecks,
+		"dataAgentMetrics": dataAgentMetrics,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -103,8 +106,17 @@ func TestConsul_Collect(t *testing.T) {
 	}{
 		"success on response from Consul": {
 			prepare:         caseConsulResponse,
-			wantNumOfCharts: 4,
+			wantNumOfCharts: 11,
 			wantMetrics: map[string]int64{
+				"consul.autopilot.failure_tolerance":    0,
+				"consul.autopilot.healthy.no":           0,
+				"consul.autopilot.healthy.yes":          1,
+				"consul.client.rpc":                     1,
+				"consul.runtime.alloc_bytes":            14164144,
+				"consul.runtime.sys_bytes":              34685960,
+				"consul.runtime.total_gc_pause_ns":      9367254,
+				"consul.server.isLeader.no":             0,
+				"consul.server.isLeader.yes":            1,
 				"health_check_chk1_critical_status":     0,
 				"health_check_chk1_maintenance_status":  0,
 				"health_check_chk1_passing_status":      1,
@@ -125,8 +137,17 @@ func TestConsul_Collect(t *testing.T) {
 		},
 		"success on response from Consul with filtered checks": {
 			prepare:         caseConsulResponseWithFilteredChecks,
-			wantNumOfCharts: 1,
+			wantNumOfCharts: 8,
 			wantMetrics: map[string]int64{
+				"consul.autopilot.failure_tolerance":    0,
+				"consul.autopilot.healthy.no":           0,
+				"consul.autopilot.healthy.yes":          1,
+				"consul.client.rpc":                     1,
+				"consul.runtime.alloc_bytes":            14164144,
+				"consul.runtime.sys_bytes":              34685960,
+				"consul.runtime.total_gc_pause_ns":      9367254,
+				"consul.server.isLeader.no":             0,
+				"consul.server.isLeader.yes":            1,
 				"health_check_mysql_critical_status":    1,
 				"health_check_mysql_maintenance_status": 0,
 				"health_check_mysql_passing_status":     0,
@@ -158,7 +179,9 @@ func TestConsul_Collect(t *testing.T) {
 			mx := consul.Collect()
 
 			require.Equal(t, test.wantMetrics, mx)
-			assert.Equal(t, test.wantNumOfCharts, len(*consul.Charts()))
+			if len(test.wantMetrics) > 0 {
+				assert.Equal(t, test.wantNumOfCharts, len(*consul.Charts()))
+			}
 		})
 	}
 }
@@ -168,8 +191,10 @@ func caseConsulResponse(t *testing.T) (*Consul, func()) {
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
-			case urlPathChecks:
-				_, _ = w.Write(dataHealthChecks)
+			case urlPathAgentChecks:
+				_, _ = w.Write(dataAgentChecks)
+			case urlPathAgentMetrics:
+				_, _ = w.Write(dataAgentMetrics)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
@@ -188,8 +213,10 @@ func caseConsulResponseWithFilteredChecks(t *testing.T) (*Consul, func()) {
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
-			case urlPathChecks:
-				_, _ = w.Write(dataHealthChecks)
+			case urlPathAgentChecks:
+				_, _ = w.Write(dataAgentChecks)
+			case urlPathAgentMetrics:
+				_, _ = w.Write(dataAgentMetrics)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}

@@ -2,9 +2,7 @@
 
 package consul
 
-const urlPathChecks = "/v1/agent/checks"
-
-type healthCheck struct {
+type agentCheck struct {
 	Node        string
 	CheckID     string
 	Name        string
@@ -14,10 +12,13 @@ type healthCheck struct {
 	ServiceTags []string
 }
 
-func (c *Consul) collectLocalChecks(mx map[string]int64) error {
-	var checks map[string]*healthCheck
+// https://www.consul.io/api-docs/agent/check#list-checks
+const urlPathAgentChecks = "/v1/agent/checks"
 
-	if err := c.doOKDecode(urlPathChecks, &checks); err != nil {
+func (c *Consul) collectAgentChecks(mx map[string]int64) error {
+	var checks map[string]*agentCheck
+
+	if err := c.doOKDecode(urlPathAgentChecks, &checks); err != nil {
 		return err
 	}
 
@@ -46,11 +47,4 @@ func (c *Consul) collectLocalChecks(mx map[string]int64) error {
 	}
 
 	return nil
-}
-
-func boolToInt(v bool) int64 {
-	if v {
-		return 1
-	}
-	return 0
 }

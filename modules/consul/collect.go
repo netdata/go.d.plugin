@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package consul
 
 import (
@@ -12,7 +14,10 @@ import (
 func (c *Consul) collect() (map[string]int64, error) {
 	mx := make(map[string]int64)
 
-	if err := c.collectLocalChecks(mx); err != nil {
+	if err := c.collectAgentChecks(mx); err != nil {
+		return nil, err
+	}
+	if err := c.collectAgentMetrics(mx); err != nil {
 		return nil, err
 	}
 
@@ -53,4 +58,11 @@ func closeBody(resp *http.Response) {
 		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
+}
+
+func boolToInt(v bool) int64 {
+	if v {
+		return 1
+	}
+	return 0
 }

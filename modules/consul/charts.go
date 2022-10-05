@@ -9,8 +9,117 @@ import (
 )
 
 const (
-	prioServiceHealthCheckStatus = module.Priority + iota
+	_ = module.Priority + iota
+	prioServerLeadershipStatus
+
+	prioAutopilotHealthState
+	prioAutopilotFailureTolerance
+
+	prioMemoryAllocated
+	prioMemorySys
+
+	prioGCPauseTime
+
+	prioRPCRequests
+
+	prioServiceHealthCheckStatus
 	prioUnboundHealthCheckStatus
+)
+
+var (
+	globalCharts = module.Charts{
+		chartServerLeadershipStatus.Copy(),
+		chartAutopilotHealthState.Copy(),
+		chartAutopilotFailureTolerance.Copy(),
+		chartMemoryAllocated.Copy(),
+		chartMemorySys.Copy(),
+		chartGCPauseTime.Copy(),
+		chartClientRPCRequestsRate.Copy(),
+	}
+
+	chartServerLeadershipStatus = module.Chart{
+		ID:       "server_leadership_status",
+		Title:    "Server leadership status",
+		Units:    "status",
+		Fam:      "leadership",
+		Ctx:      "consul.server_leadership_status",
+		Priority: prioServerLeadershipStatus,
+		Dims: module.Dims{
+			{ID: "consul.server.isLeader.yes", Name: "leader"},
+			{ID: "consul.server.isLeader.no", Name: "not_leader"},
+		},
+	}
+
+	chartAutopilotHealthState = module.Chart{
+		ID:       "autopilot_health_state",
+		Title:    "Autopilot health state",
+		Units:    "state",
+		Fam:      "autopilot",
+		Ctx:      "consul.autopilot_health_state",
+		Priority: prioAutopilotHealthState,
+		Dims: module.Dims{
+			{ID: "consul.autopilot.healthy.yes", Name: "healthy"},
+			{ID: "consul.autopilot.healthy.no", Name: "unhealthy"},
+		},
+	}
+	chartAutopilotFailureTolerance = module.Chart{
+		ID:       "autopilot_failure_tolerance",
+		Title:    "Autopilot failure tolerance",
+		Units:    "servers",
+		Fam:      "autopilot",
+		Ctx:      "consul.autopilot_failure_tolerance",
+		Priority: prioAutopilotFailureTolerance,
+		Dims: module.Dims{
+			{ID: "consul.autopilot.failure_tolerance", Name: "tolerance"},
+		},
+	}
+
+	chartMemoryAllocated = module.Chart{
+		ID:       "memory_allocated",
+		Title:    "Memory allocated by the Consul process",
+		Units:    "bytes",
+		Fam:      "memory",
+		Ctx:      "consul.memory_allocated",
+		Priority: prioMemoryAllocated,
+		Dims: module.Dims{
+			{ID: "consul.runtime.alloc_bytes", Name: "allocated"},
+		},
+	}
+	chartMemorySys = module.Chart{
+		ID:       "memory_sys",
+		Title:    "Memory obtained from the OS",
+		Units:    "bytes",
+		Fam:      "memory",
+		Ctx:      "consul.memory_sys",
+		Priority: prioMemorySys,
+		Dims: module.Dims{
+			{ID: "consul.runtime.sys_bytes", Name: "sys"},
+		},
+	}
+
+	chartGCPauseTime = module.Chart{
+		ID:       "gc_pause_time",
+		Title:    "Garbage collection stop-the-world pause time",
+		Units:    "seconds",
+		Fam:      "garbage collection",
+		Ctx:      "consul.gc_pause_time",
+		Priority: prioGCPauseTime,
+		Dims: module.Dims{
+			{ID: "consul.runtime.total_gc_pause_ns", Name: "gc_pause", Algo: module.Incremental, Div: 1e9},
+		},
+	}
+
+	chartClientRPCRequestsRate = module.Chart{
+		ID:       "client_rpc_requests_rate",
+		Title:    "Client RPC requests",
+		Units:    "requests/s",
+		Fam:      "client rpc",
+		Ctx:      "consul.client_rpc_requests_rate",
+		Priority: prioRPCRequests,
+		Dims: module.Dims{
+			{ID: "consul.client.rpc", Name: "rpc", Algo: module.Incremental},
+		},
+	}
 )
 
 var (
@@ -44,7 +153,7 @@ var (
 	}
 )
 
-func newServiceHealthCheckChart(check *healthCheck) *module.Chart {
+func newServiceHealthCheckChart(check *agentCheck) *module.Chart {
 	chart := chartTmplServiceHealthCheckStatus.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, check.CheckID)
 	chart.Labels = []module.Label{
@@ -57,7 +166,7 @@ func newServiceHealthCheckChart(check *healthCheck) *module.Chart {
 	return chart
 }
 
-func newUnboundHealthCheckChart(check *healthCheck) *module.Chart {
+func newUnboundHealthCheckChart(check *agentCheck) *module.Chart {
 	chart := chartTmplUnboundHealthCheckStatus.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, check.CheckID)
 	chart.Labels = []module.Label{
@@ -69,7 +178,7 @@ func newUnboundHealthCheckChart(check *healthCheck) *module.Chart {
 	return chart
 }
 
-func (c *Consul) addHealthCheckCharts(check *healthCheck) {
+func (c *Consul) addHealthCheckCharts(check *agentCheck) {
 	var chart *module.Chart
 
 	if check.ServiceName != "" {
