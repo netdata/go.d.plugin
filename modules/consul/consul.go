@@ -28,7 +28,7 @@ func New() *Consul {
 			},
 		},
 		checks: make(map[string]bool),
-		charts: &module.Charts{},
+		charts: globalCharts.Copy(),
 	}
 }
 
