@@ -2,7 +2,7 @@ package pardot_zfs
 
 import "github.com/netdata/go.d.plugin/agent/module"
 
-func (z *zfsMetric) createcharts() *module.Charts {
+func (p *PardotZFS) createcharts() *module.Charts {
 	chart := &module.Chart{
 		ID:    "pardot_zfs",
 		Title: "ZFS Free Space Fragmentation",
@@ -10,7 +10,7 @@ func (z *zfsMetric) createcharts() *module.Charts {
 		Fam:   "pardot_zfs",
 	}
 
-	for _, v := range z.pools {
+	for _, v := range p.pools {
 		d := module.Dim{
 			ID:   v,
 			Name: v,

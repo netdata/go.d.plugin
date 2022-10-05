@@ -8,10 +8,10 @@ import (
 	"strings"
 )
 
-func (z *zfsMetric) collect() map[string]int64 {
+func (p *PardotZFS) collect() map[string]int64 {
 	results := make(map[string]int64)
 
-	for _, v := range z.pools {
+	for _, v := range p.pools {
 
 		stderr := new(bytes.Buffer)
 		stdout := new(bytes.Buffer)

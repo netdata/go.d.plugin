@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (z *zfsMetric) init() bool {
+func (p *PardotZFS) init() bool {
 	stderr := new(bytes.Buffer)
 	stdout := new(bytes.Buffer)
 	cmd := exec.Command("/usr/sbin/zfs", "list")
@@ -23,7 +23,7 @@ func (z *zfsMetric) init() bool {
 		return false
 	}
 
-	pools, err := z.getPools(stdout)
+	pools, err := p.getPools(stdout)
 	if err != nil {
 		return false
 	}
@@ -37,7 +37,7 @@ func (z *zfsMetric) init() bool {
 	return true
 }
 
-func (z *zfsMetric) getPools(b *bytes.Buffer) ([]string, error) {
+func (p *PardotZFS) getPools(b *bytes.Buffer) ([]string, error) {
 
 	var pools []string
 	s := bufio.NewScanner(b)
