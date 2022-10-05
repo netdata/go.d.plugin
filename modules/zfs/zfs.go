@@ -4,14 +4,6 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-type Module interface {
-	Init() bool
-	Check() bool
-	Charts() *module.Charts
-	Collect() map[string]int64
-	Cleanup()
-}
-
 type ZFS struct {
 	module.Base
 	pools []string
