@@ -9,7 +9,7 @@ require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/axiomhq/hyperloglog v0.0.0-20220105174342-98591331716a
 	github.com/blang/semver/v4 v4.0.0
-	github.com/cloudflare/cfssl v1.6.2
+	github.com/cloudflare/cfssl v1.6.3
 	github.com/coreos/go-systemd/v22 v22.4.0
 	github.com/docker/docker v20.10.18+incompatible
 	github.com/facebook/time v0.0.0-20220713141651-bfc62ed6ec5f
