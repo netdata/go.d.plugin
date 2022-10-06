@@ -5,7 +5,7 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorCache = "HitRate"
+	collectorCache  = "HitRate"
 	metricCacheType = "org_apache_cassandra_metrics_cache_value"
 )
 
@@ -20,9 +20,9 @@ func collectCache(pms prometheus.Metrics) *CACHE {
 	}
 
 	var ca CACHE
-    collectCacheByType(&ca, pms)
+	collectCacheByType(&ca, pms)
 
-    return &ca
+	return &ca
 }
 
 func collectCacheByType(ca *CACHE, pms prometheus.Metrics) {
@@ -30,7 +30,7 @@ func collectCacheByType(ca *CACHE, pms prometheus.Metrics) {
 		metricScope := pm.Labels.Get("scope")
 		metricName := pm.Labels.Get("name")
 		if metricScope == "KeyCache" {
-			assignCacheMetric(ca, metricName, pm.Value * 100.0)
+			assignCacheMetric(ca, metricName, pm.Value*100.0)
 		}
 	}
 }

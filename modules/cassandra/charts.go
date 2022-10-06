@@ -26,9 +26,9 @@ var chartCassandraThroughput = Chart{
 	Fam:   "throughput %s %s",
 	Ctx:   "cassandra.throughput",
 	Type:  module.Line,
-	Dims:  Dims{
-			{ID: "%s_%s_read", Name: "read", Algo: module.Incremental},
-			{ID: "%s_%s_write", Name: "write", Algo: module.Incremental},
+	Dims: Dims{
+		{ID: "%s_%s_read", Name: "read", Algo: module.Incremental},
+		{ID: "%s_%s_write", Name: "write", Algo: module.Incremental},
 	},
 }
 
@@ -39,9 +39,9 @@ var chartCassandraLatency = Chart{
 	Fam:   "latency %s %s",
 	Ctx:   "cassandra.latency",
 	Type:  module.Line,
-	Dims:  Dims{
-			{ID: "%s_%s_read", Name: "read", Algo: module.Incremental},
-			{ID: "%s_%s_write", Name: "write", Algo: module.Incremental},
+	Dims: Dims{
+		{ID: "%s_%s_read", Name: "read", Algo: module.Incremental},
+		{ID: "%s_%s_write", Name: "write", Algo: module.Incremental},
 	},
 }
 
@@ -52,8 +52,8 @@ var chartCassandraCache = Chart{
 	Fam:   "cache %s %s",
 	Ctx:   "cassandra.cache",
 	Type:  module.Line,
-	Dims:  Dims{
-			{ID: "%s_%s_ratio", Name: "ratio", Algo: module.Incremental},
+	Dims: Dims{
+		{ID: "%s_%s_ratio", Name: "ratio", Algo: module.Incremental},
 	},
 }
 
@@ -64,8 +64,8 @@ var chartCassandraDiskNode = Chart{
 	Fam:   "node %s %s",
 	Ctx:   "cassandra.node",
 	Type:  module.Line,
-	Dims:  Dims{
-			{ID: "%s_%s_node", Name: "node", Algo: module.Incremental},
+	Dims: Dims{
+		{ID: "%s_%s_node", Name: "node", Algo: module.Incremental},
 	},
 }
 
@@ -76,8 +76,8 @@ var chartCassandraDiskColumn = Chart{
 	Fam:   "column %s %s",
 	Ctx:   "cassandra.disk_column",
 	Type:  module.Line,
-	Dims:  Dims{
-			{ID: "%s_%s_column", Name: "column", Algo: module.Incremental},
+	Dims: Dims{
+		{ID: "%s_%s_column", Name: "column", Algo: module.Incremental},
 	},
 }
 
@@ -88,8 +88,8 @@ var chartCassandraDiskCompactionCompleted = Chart{
 	Fam:   "compaction %s %s",
 	Ctx:   "cassandra.compaction_completed",
 	Type:  module.Line,
-	Dims:  Dims{
-			{ID: "%s_%s_compaction", Name: "compaction", Algo: module.Incremental},
+	Dims: Dims{
+		{ID: "%s_%s_compaction", Name: "compaction", Algo: module.Incremental},
 	},
 }
 
@@ -100,8 +100,8 @@ var chartCassandraDiskCompactionQueue = Chart{
 	Fam:   "queue %s %s",
 	Ctx:   "cassandra.compaction_queued",
 	Type:  module.Line,
-	Dims:  Dims{
-			{ID: "%s_%s_queue", Name: "queue", Algo: module.Incremental},
+	Dims: Dims{
+		{ID: "%s_%s_queue", Name: "queue", Algo: module.Incremental},
 	},
 }
 
@@ -126,24 +126,24 @@ func (c *Cassandra) updateCharts(mx *metrics) {
 
 func (c *Cassandra) updateThrouputCharts(mx *metrics) {
 	if !mx.hasThrouput() {
-			return
+		return
 	}
 }
 
 func (c *Cassandra) updateLatencyCharts(mx *metrics) {
 	if !mx.hasLatency() {
-			return
+		return
 	}
 }
 
 func (c *Cassandra) updateCacheCharts(mx *metrics) {
 	if !mx.hasCache() {
-			return
+		return
 	}
 }
 
 func (c *Cassandra) updateDiskCharts(mx *metrics) {
 	if !mx.hasDisk() {
-			return
+		return
 	}
 }

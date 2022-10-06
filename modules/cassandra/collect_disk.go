@@ -5,7 +5,7 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorDisk = "LiveDiskSpaceUsed"
+	collectorDisk  = "LiveDiskSpaceUsed"
 	metricDiskType = "org_apache_cassandra_metrics_table_count"
 )
 
@@ -20,9 +20,9 @@ func collectDisk(pms prometheus.Metrics) *DISK {
 	}
 
 	var di DISK
-    collectDiskByType(&di, pms)
+	collectDiskByType(&di, pms)
 
-    return &di
+	return &di
 }
 
 func collectDiskByType(di *DISK, pms prometheus.Metrics) {

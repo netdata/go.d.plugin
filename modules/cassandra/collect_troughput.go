@@ -5,7 +5,7 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorTroughput = "Read"
+	collectorTroughput  = "Read"
 	metricTroughputType = "org_apache_cassandra_metrics_clientrequest_count"
 )
 
@@ -20,9 +20,9 @@ func collectThroughput(pms prometheus.Metrics) *THROUGHPUT {
 	}
 
 	var tp THROUGHPUT
-    collectThroughputByType(&tp, pms)
+	collectThroughputByType(&tp, pms)
 
-    return &tp
+	return &tp
 }
 
 func collectThroughputByType(tp *THROUGHPUT, pms prometheus.Metrics) {
@@ -39,8 +39,8 @@ func assignThroughputMetric(tp *THROUGHPUT, scope string, value float64) {
 	switch scope {
 	default:
 	case "Read":
-		tp.read = int64(value);
+		tp.read = int64(value)
 	case "Write":
-		tp.write = int64(value);
+		tp.write = int64(value)
 	}
 }

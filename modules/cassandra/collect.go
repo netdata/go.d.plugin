@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	metricCollectorSuccess  = "org_apache_cassandra_metrics_clientrequest_count"
+	metricCollectorSuccess = "org_apache_cassandra_metrics_clientrequest_count"
 )
 
 func isValidCassandraMetrics(pms prometheus.Metrics) bool {
@@ -20,7 +20,7 @@ func isValidCassandraMetrics(pms prometheus.Metrics) bool {
 func (c *Cassandra) collect() (map[string]int64, error) {
 	pms, err := c.prom.Scrape()
 	if err != nil {
-			return nil, err
+		return nil, err
 	}
 
 	if !isValidCassandraMetrics(pms) {
@@ -35,10 +35,10 @@ func (c *Cassandra) collect() (map[string]int64, error) {
 
 func collect(pms prometheus.Metrics) *metrics {
 	mx := metrics{
-		throughput:  collectThroughput(pms),
-		latency:  collectLatency(pms),
-		cache:  collectCache(pms),
-		disk:  collectDisk(pms),
+		throughput: collectThroughput(pms),
+		latency:    collectLatency(pms),
+		cache:      collectCache(pms),
+		disk:       collectDisk(pms),
 	}
 
 	return &mx

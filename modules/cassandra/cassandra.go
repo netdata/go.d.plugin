@@ -10,7 +10,6 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-
 type (
 	Config struct {
 		web.HTTP `yaml:",inline"`
@@ -19,24 +18,24 @@ type (
 		module.Base
 		Config `yaml:",inline"`
 
-		prom     prometheus.Prometheus
-		cache 	 cache
-		charts   *module.Charts
+		prom   prometheus.Prometheus
+		cache  cache
+		charts *module.Charts
 	}
 	cache struct {
 		throughput map[string]bool
 		latency    map[string]bool
 		cache      map[string]bool
-		disk   	   map[string]bool
+		disk       map[string]bool
 	}
 )
 
 func init() {
 	module.Register("cassandra", module.Creator{
-			Defaults: module.Defaults{
-				UpdateEvery: 5,
-			},
-			Create: func() module.Module { return New() },
+		Defaults: module.Defaults{
+			UpdateEvery: 5,
+		},
+		Create: func() module.Module { return New() },
 	})
 }
 
@@ -52,14 +51,14 @@ func New() *Cassandra {
 
 func (c *Cassandra) Init() bool {
 	if err := c.validateConfig(); err != nil {
-			c.Errorf("error on validating config: %v", err)
-			return false
+		c.Errorf("error on validating config: %v", err)
+		return false
 	}
 
 	prom, err := c.initPrometheusClient()
 	if err != nil {
-			c.Errorf("error on init prometheus client: %v", err)
-			return false
+		c.Errorf("error on init prometheus client: %v", err)
+		return false
 	}
 	c.prom = prom
 

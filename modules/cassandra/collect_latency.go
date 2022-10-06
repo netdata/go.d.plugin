@@ -5,7 +5,7 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorLatency = "ReadLatency"
+	collectorLatency  = "ReadLatency"
 	metricLatencyType = "org_apache_cassandra_metrics_table_count"
 )
 
@@ -20,9 +20,9 @@ func collectLatency(pms prometheus.Metrics) *LATENCY {
 	}
 
 	var la LATENCY
-    collectLatencyByType(&la, pms)
+	collectLatencyByType(&la, pms)
 
-    return &la
+	return &la
 }
 
 func collectLatencyByType(la *LATENCY, pms prometheus.Metrics) {

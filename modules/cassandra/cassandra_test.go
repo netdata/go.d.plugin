@@ -36,7 +36,7 @@ func TestCassandra_Init(t *testing.T) {
 	}{
 		"success if 'url' is set": {
 			config: Config{
-			HTTP: web.HTTP{Request: web.Request{URL: "http://127.0.0.1:7072"}}},
+				HTTP: web.HTTP{Request: web.Request{URL: "http://127.0.0.1:7072"}}},
 		},
 		"fails on default config": {
 			wantFail: true,
@@ -103,7 +103,7 @@ func TestCassandra_Check(t *testing.T) {
 func TestCachestat_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
-		
+
 func TestCachestat_Cleanup(t *testing.T) {
 	assert.NotPanics(t, New().Cleanup)
 }
@@ -116,12 +116,12 @@ func TestCassandra_Collect(t *testing.T) {
 		"success on valid response": {
 			prepare: prepareCassandra,
 			wantCollected: map[string]int64{
-				"org_apache_cassandra_metrics_clientrequest_count_Read" :     1,
-				"org_apache_cassandra_metrics_clientrequest_count_Write" :     0,
-				"org_apache_cassandra_metrics_table_count_HitRate" :     0,
-				"org_apache_cassandra_metrics_table_count_ReadLatency" :      0,
-				"org_apache_cassandra_metrics_table_count_WriteLatency" :      0,
-				"system_up_time" :      0,
+				"org_apache_cassandra_metrics_clientrequest_count_Read":  1,
+				"org_apache_cassandra_metrics_clientrequest_count_Write": 0,
+				"org_apache_cassandra_metrics_table_count_HitRate":       0,
+				"org_apache_cassandra_metrics_table_count_ReadLatency":   0,
+				"org_apache_cassandra_metrics_table_count_WriteLatency":  0,
+				"system_up_time": 0,
 			},
 		},
 		"fails if endpoint returns invalid data": {
@@ -137,33 +137,33 @@ func TestCassandra_Collect(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-				c, cleanup := test.prepare()
-				defer cleanup()
+			c, cleanup := test.prepare()
+			defer cleanup()
 
-				require.True(t, c.Init())
+			require.True(t, c.Init())
 
-				collected := c.Collect()
+			collected := c.Collect()
 
-				if collected != nil && test.wantCollected != nil {
-					collected["system_up_time"] = test.wantCollected["system_up_time"]
-				}
+			if collected != nil && test.wantCollected != nil {
+				collected["system_up_time"] = test.wantCollected["system_up_time"]
+			}
 
-				assert.Equal(t, test.wantCollected, collected)
-				if len(test.wantCollected) > 0 {
-					testCharts(t, c, collected)
-				}
+			assert.Equal(t, test.wantCollected, collected)
+			if len(test.wantCollected) > 0 {
+				testCharts(t, c, collected)
+			}
 		})
 	}
 }
 
 func testCharts(t *testing.T, c *Cassandra, collected map[string]int64) {
 }
-		
+
 func prepareCassandra() (c *Cassandra, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
-	func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write(vMetrics)
-	}))
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write(vMetrics)
+		}))
 
 	c = New()
 	c.URL = ts.URL
@@ -172,9 +172,9 @@ func prepareCassandra() (c *Cassandra, cleanup func()) {
 
 func prepareCassandraInvalidData() (c *Cassandra, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-					_, _ = w.Write([]byte("hello and\n goodbye"))
-			}))
+		func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte("hello and\n goodbye"))
+		}))
 
 	c = New()
 	c.URL = ts.URL
@@ -189,9 +189,9 @@ func prepareCassandraConnectionRefused() (c *Cassandra, cleanup func()) {
 
 func prepareCassandraResponse404() (c *Cassandra, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-					w.WriteHeader(http.StatusNotFound)
-			}))
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
 
 	c = New()
 	c.URL = ts.URL
