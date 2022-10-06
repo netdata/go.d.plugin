@@ -37,7 +37,6 @@ func New() *Cassandra {
 		Base:   module.Base{},
 		Config: Config{HTTP: web.HTTP{Client: web.Client{Timeout: web.Duration{Duration: time.Second * 5}}}},
 		prom:   nil,
-		cache:  cache{},
 		charts: newCassandraCharts(),
 	}
 }
