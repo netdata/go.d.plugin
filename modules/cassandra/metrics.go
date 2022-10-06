@@ -24,7 +24,7 @@ type (
 		write int64 `stm:"WriteLatency"`
 	}
 	CACHE struct {
-		hit float64 `stm:"HitRate"`
+		hit int64 `stm:"HitRate"`
 	}
 	DISK struct {
 		load float64 `stm:"LiveDiskSpaceUsed"`

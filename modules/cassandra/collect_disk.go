@@ -27,7 +27,7 @@ func collectDisk(pms prometheus.Metrics) *DISK {
 
 func collectDiskByType(di *DISK, pms prometheus.Metrics) {
 	var total DISK
-	for _, pm := range pms.FindByName(metricTroughputType) {
+	for _, pm := range pms.FindByName(metricDiskType) {
 		metricName := pm.Labels.Get("name")
 		sumDiskMetric(&total, metricName, pm.Value)
 	}

@@ -30,7 +30,7 @@ func collectCacheByType(ca *CACHE, pms prometheus.Metrics) {
 		metricScope := pm.Labels.Get("scope")
 		metricName := pm.Labels.Get("name")
 		if metricScope == "KeyCache" {
-			assignCacheMetric(ca, metricName, pm.Value)
+			assignCacheMetric(ca, metricName, pm.Value * 100.0)
 		}
 	}
 }
@@ -39,6 +39,6 @@ func assignCacheMetric(ca *CACHE, scope string, value float64) {
 	switch scope {
 	default:
 	case "HitRate":
-		ca.hit = value
+		ca.hit = int64(value)
 	}
 }

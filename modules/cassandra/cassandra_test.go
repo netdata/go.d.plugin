@@ -107,6 +107,57 @@ func TestCachestat_Charts(t *testing.T) {
 func TestCachestat_Cleanup(t *testing.T) {
 	assert.NotPanics(t, New().Cleanup)
 }
+
+func TestCassandra_Collect(t *testing.T) {
+	tests := map[string]struct {
+		prepare       func() (c *Cassandra, cleanup func())
+		wantCollected map[string]int64
+	}{
+		"success on valid response": {
+			prepare: prepareCassandra,
+			wantCollected: map[string]int64{
+				"org_apache_cassandra_metrics_clientrequest_count_Read" :     1,
+				"org_apache_cassandra_metrics_clientrequest_count_Write" :     0,
+				"org_apache_cassandra_metrics_table_count_HitRate" :     0,
+				"org_apache_cassandra_metrics_table_count_ReadLatency" :      0,
+				"org_apache_cassandra_metrics_table_count_WriteLatency" :      0,
+				"system_up_time" :      0,
+			},
+		},
+		"fails if endpoint returns invalid data": {
+			prepare: prepareCassandraInvalidData,
+		},
+		"fails on connection refused": {
+			prepare: prepareCassandraConnectionRefused,
+		},
+		"fails on 404 response": {
+			prepare: prepareCassandraResponse404,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+				c, cleanup := test.prepare()
+				defer cleanup()
+
+				require.True(t, c.Init())
+
+				collected := c.Collect()
+
+				if collected != nil && test.wantCollected != nil {
+					collected["system_up_time"] = test.wantCollected["system_up_time"]
+				}
+
+				assert.Equal(t, test.wantCollected, collected)
+				if len(test.wantCollected) > 0 {
+					testCharts(t, c, collected)
+				}
+		})
+	}
+}
+
+func testCharts(t *testing.T, c *Cassandra, collected map[string]int64) {
+}
 		
 func prepareCassandra() (c *Cassandra, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
