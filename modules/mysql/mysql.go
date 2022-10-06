@@ -4,12 +4,12 @@ package mysql
 
 import (
 	"database/sql"
-	"github.com/go-sql-driver/mysql"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/blang/semver/v4"
+	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/netdata/go.d.plugin/agent/module"
