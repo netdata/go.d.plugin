@@ -19,14 +19,7 @@ type (
 		Config `yaml:",inline"`
 
 		prom   prometheus.Prometheus
-		cache  cache
 		charts *module.Charts
-	}
-	cache struct {
-		throughput map[string]bool
-		latency    map[string]bool
-		cache      map[string]bool
-		disk       map[string]bool
 	}
 )
 
