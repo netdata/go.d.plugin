@@ -153,14 +153,8 @@ func TestCassandra_Collect(t *testing.T) {
 			}
 
 			assert.Equal(t, test.wantCollected, collected)
-			if len(test.wantCollected) > 0 {
-				testCharts(t, c, collected)
-			}
 		})
 	}
-}
-
-func testCharts(t *testing.T, c *Cassandra, collected map[string]int64) {
 }
 
 func prepareCassandra() (c *Cassandra, cleanup func()) {
