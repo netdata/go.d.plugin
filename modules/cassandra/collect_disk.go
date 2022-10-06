@@ -2,7 +2,11 @@
 
 package cassandra
 
-import "github.com/netdata/go.d.plugin/pkg/prometheus"
+import (
+	"fmt"
+
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
+)
 
 const (
 	collectorDisk  = "LiveDiskSpaceUsed"
@@ -10,11 +14,12 @@ const (
 )
 
 func doCollectDisk(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, metricDiskType, collectorDisk, true)
+	enabled, success := checkCollector(pms, metricDiskType, collectorDisk, false)
 	return enabled && success
 }
 
 func collectDisk(pms prometheus.Metrics) *DISK {
+	fmt.Println("Testing = ", doCollectDisk(pms))
 	if !doCollectDisk(pms) {
 		return nil
 	}
