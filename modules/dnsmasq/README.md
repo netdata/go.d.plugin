@@ -25,7 +25,6 @@ by [reading the response on the following query](https://manpages.debian.org/str
 ;evictions.bind.   CH	 TXT
 ;hits.bind.        CH	 TXT
 ;misses.bind.      CH	 TXT
-;auth.bind.        CH	 TXT
 ;servers.bind.     CH	 TXT
 ```
 

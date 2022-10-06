@@ -103,7 +103,8 @@ func (d *Dnsmasq) queryCacheStatistics() (*dns.Msg, error) {
 			{Name: "evictions.bind.", Qtype: dns.TypeTXT, Qclass: dns.ClassCHAOS},
 			{Name: "hits.bind.", Qtype: dns.TypeTXT, Qclass: dns.ClassCHAOS},
 			{Name: "misses.bind.", Qtype: dns.TypeTXT, Qclass: dns.ClassCHAOS},
-			{Name: "auth.bind.", Qtype: dns.TypeTXT, Qclass: dns.ClassCHAOS},
+			// https://github.com/netdata/netdata/issues/13766
+			//{Name: "auth.bind.", Qtype: dns.TypeTXT, Qclass: dns.ClassCHAOS},
 			{Name: "servers.bind.", Qtype: dns.TypeTXT, Qclass: dns.ClassCHAOS},
 		},
 	}
