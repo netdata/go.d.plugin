@@ -108,7 +108,7 @@ func (m *MySQL) Init() bool {
 	cfg.Passwd = strings.Repeat("*", len(cfg.Passwd))
 	m.safeDSN = cfg.FormatDSN()
 
-	m.Debugf("using DSN [%s]", m.safeDSN)
+	m.Debugf("using DSN [%s]", m.DSN)
 	return true
 }
 
