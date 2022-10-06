@@ -3,8 +3,6 @@
 package cassandra
 
 import (
-	"fmt"
-
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
@@ -19,7 +17,6 @@ func doCollectDisk(pms prometheus.Metrics) bool {
 }
 
 func collectDisk(pms prometheus.Metrics) *DISK {
-	fmt.Println("Testing = ", doCollectDisk(pms))
 	if !doCollectDisk(pms) {
 		return nil
 	}

@@ -26,21 +26,21 @@ func collectLatency(pms prometheus.Metrics) *LATENCY {
 }
 
 func collectLatencyByType(la *LATENCY, pms prometheus.Metrics) {
-	for _, pm := range pms.FindByName(metricTroughputType) {
-		metricScope := pm.Labels.Get("scope")
+	var total LATENCY
+	for _, pm := range pms.FindByName(metricLatencyType) {
 		metricName := pm.Labels.Get("name")
-		if metricScope == "events" {
-			assignLatencyMetric(la, metricName, pm.Value)
-		}
+		assignLatencyMetric(&total, metricName, pm.Value)
 	}
+	la.read = total.read
+	la.write = total.write
 }
 
 func assignLatencyMetric(la *LATENCY, scope string, value float64) {
 	switch scope {
 	default:
 	case "ReadLatency":
-		la.read = int64(value)
+		la.read += int64(value)
 	case "WriteLatency":
-		la.write = int64(value)
+		la.write += int64(value)
 	}
 }
