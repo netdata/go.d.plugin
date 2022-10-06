@@ -90,7 +90,7 @@ func (m *MySQL) collect() (map[string]int64, error) {
 func (m *MySQL) openConnection() error {
 	db, err := sql.Open("mysql", m.DSN)
 	if err != nil {
-		return fmt.Errorf("error on opening a connection with the mysql database [%s]: %v", m.DSN, err)
+		return fmt.Errorf("error on opening a connection with the mysql database [%s]: %v", m.safeDSN, err)
 	}
 
 	db.SetConnMaxLifetime(10 * time.Minute)
@@ -100,7 +100,7 @@ func (m *MySQL) openConnection() error {
 
 	if err := db.PingContext(ctx); err != nil {
 		_ = db.Close()
-		return fmt.Errorf("error on pinging the mysql database [%s]: %v", m.DSN, err)
+		return fmt.Errorf("error on pinging the mysql database [%s]: %v", m.safeDSN, err)
 	}
 
 	m.db = db

@@ -4,6 +4,8 @@ package mysql
 
 import (
 	"database/sql"
+	"github.com/go-sql-driver/mysql"
+	"strings"
 	"sync"
 	"time"
 
@@ -55,6 +57,7 @@ type MySQL struct {
 	Config `yaml:",inline"`
 
 	db        *sql.DB
+	safeDSN   string
 	version   *semver.Version
 	isMariaDB bool
 	isPercona bool
@@ -96,7 +99,16 @@ func (m *MySQL) Init() bool {
 		return false
 	}
 
-	m.Debugf("using DSN [%s]", m.DSN)
+	cfg, err := mysql.ParseDSN(m.DSN)
+	if err != nil {
+		m.Errorf("error on parsing DSN: %v", err)
+		return false
+	}
+
+	cfg.Passwd = strings.Repeat("*", len(cfg.Passwd))
+	m.safeDSN = cfg.FormatDSN()
+
+	m.Debugf("using DSN [%s]", m.safeDSN)
 	return true
 }
 
@@ -125,7 +137,7 @@ func (m *MySQL) Cleanup() {
 		return
 	}
 	if err := m.db.Close(); err != nil {
-		m.Errorf("cleanup: error on closing the mysql database [%s]: %v", m.DSN, err)
+		m.Errorf("cleanup: error on closing the mysql database [%s]: %v", m.safeDSN, err)
 	}
 	m.db = nil
 }
