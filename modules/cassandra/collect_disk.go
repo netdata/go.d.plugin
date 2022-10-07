@@ -7,12 +7,11 @@ import (
 )
 
 const (
-	collectorDisk  = "LiveDiskSpaceUsed"
-	metricDiskType = "org_apache_cassandra_metrics_table_count"
+	collectorDisk = "LiveDiskSpaceUsed"
 )
 
 func doCollectDisk(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, metricDiskType, collectorDisk, false)
+	enabled, success := checkCollector(pms, metricTableType, collectorDisk, false)
 	return enabled && success
 }
 
@@ -29,7 +28,7 @@ func collectDisk(pms prometheus.Metrics) *DISK {
 
 func collectDiskByType(di *DISK, pms prometheus.Metrics) {
 	var total DISK
-	for _, pm := range pms.FindByName(metricDiskType) {
+	for _, pm := range pms.FindByName(metricTableType) {
 		metricName := pm.Labels.Get("name")
 		sumDiskMetric(&total, metricName, pm.Value)
 	}
