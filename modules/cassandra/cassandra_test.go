@@ -119,7 +119,7 @@ func TestCassandra_Collect(t *testing.T) {
 				"org_apache_cassandra_metrics_clientrequest_count_Read":           1,
 				"org_apache_cassandra_metrics_clientrequest_count_Write":          0,
 				"org_apache_cassandra_metrics_table_count_CompactionBytesWritten": 7186,
-				"org_apache_cassandra_metrics_table_count_HitRate":                0,
+				"org_apache_cassandra_metrics_table_count_HitRate":                87,
 				"org_apache_cassandra_metrics_table_count_LiveDiskSpaceUsed":      124808,
 				"org_apache_cassandra_metrics_table_count_PendingCompactions":     0,
 				"org_apache_cassandra_metrics_table_count_ReadLatency":            100,

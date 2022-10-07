@@ -26,7 +26,7 @@ func collectCache(pms prometheus.Metrics) *CACHE {
 }
 
 func collectCacheByType(ca *CACHE, pms prometheus.Metrics) {
-	for _, pm := range pms.FindByName(metricTroughputType) {
+	for _, pm := range pms.FindByName(metricCacheType) {
 		metricScope := pm.Labels.Get("scope")
 		metricName := pm.Labels.Get("name")
 		if metricScope == "KeyCache" {
