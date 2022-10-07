@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/sys
 sidebar_label: "Systemd units"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "System Metrics"
+learn_rel_path: "Collectors References/System Metrics"
 -->
 
 # Systemd units state monitoring with Netdata

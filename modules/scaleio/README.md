@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/sca
 sidebar_label: "ScaleIO"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Storage"
+learn_rel_path: "Collectors References/Storage"
 -->
 
 # ScaleIO monitoring with Netdata

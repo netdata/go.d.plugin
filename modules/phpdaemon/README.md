@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/php
 sidebar_label: "phpDaemon"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "APM"
+learn_rel_path: "Collectors References/APM"
 -->
 
 # phpDaemon monitoring with Netdata

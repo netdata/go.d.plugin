@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/sol
 sidebar_label: "Solr"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Apps"
+learn_rel_path: "Collectors References/Apps"
 -->
 
 # Solr monitoring with Netdata

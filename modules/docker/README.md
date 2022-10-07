@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/doc
 sidebar_label: "Docker"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Virtualized environments/Containers"
+learn_rel_path: "Collectors References/Virtualized environments/Containers"
 -->
 
 # Docker monitoring with Netdata

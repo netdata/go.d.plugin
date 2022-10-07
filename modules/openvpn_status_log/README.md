@@ -4,7 +4,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/ope
 sidebar_label: "OpenVPN(StatusLog)"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Networking"
+learn_rel_path: "Collectors References/Networking"
 -->
 
 # OpenVPN monitoring with Netdata

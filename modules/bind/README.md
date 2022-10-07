@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/bin
 sidebar_label: "Bind9"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "WebApps"
+learn_rel_path: "Collectors References/WebApps"
 -->
 
 # Bind9 monitoring with Netdata
