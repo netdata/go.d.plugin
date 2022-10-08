@@ -1,4 +1,4 @@
-module github.com/netdata/go.d.plugin
+module github.com/bflanigan-sfdc/go.d.plugin
 
 go 1.19
 
