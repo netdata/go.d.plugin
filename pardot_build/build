@@ -3,8 +3,11 @@
 set -e
 
 mybranch=$(git branch --show-current)
-git remote add upstream https://github.com/netdata/go.d.plugin.git
+
+if [[ ! $(git remote) =~ upstream ]]; then
+    git remote add upstream https://github.com/netdata/go.d.plugin.git
+fi
 git fetch upstream
-git merge upstream "${mybranch}"
+git merge upstream/master "${mybranch}" -m "Merge remote-tracking branch upstream/master into local"
 
 git commit -a -m "merge of upstream master branch"
