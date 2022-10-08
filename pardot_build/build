@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+mybranch=$(git branch --show-current)
+git remote add upstream https://github.com/netdata/go.d.plugin.git
+git fetch upstream
+git merge upstream "${mybranch}"
+
+git commit -a -m "merge of upstream master branch"

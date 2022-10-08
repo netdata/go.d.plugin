@@ -1,0 +1,15 @@
+1. fork https://github.com/netdata/go.d.plugin into git.dev.pardot.com/Pardot/netdata-go.d.plugin
+2. create our own branch (new-pardot-metric) on our forked repo (git.dev.pardot.com/Pardot/netdata-go.d.plugin)
+3. get the custom collection module working
+4. git fetch upstream && merge the upstream master branch into our forked branch (new-pardot-metric) to pick up any plugin bugfixes
+5. merge our branch (new-pardot-metric) into git.dev.pardot.com/Pardot/netdata-go.d.plugin::main
+5.5. compile the plugin in BK
+6. put the compiled plugin into AFY, either as a raw file or add a new BK step to invoke rpmbuild
+7. update Chef to have the latest go.d.plugin pulled down onto EC2 nodes, either as a pardot_artifactory_file or yum_package resource
+8. signal Chef to restart the netdata service
+
+
+
+
+https://git.dev.pardot.com/Pardot/infrastructure/blob/main/components/mesh-sidecar/.buildkite/pipeline.yml
+https://git.dev.pardot.com/Pardot/infrastructure/blob/main/components/mesh-sidecar/Dockerfile
