@@ -90,19 +90,28 @@ var (
 			Dims: Dims{
 				{ID: "blocklist_last_update", Name: "ago"},
 			},
-			Vars: Vars{
-				{ID: "file_exists", Value: 1},
+		},
+		{
+			ID:    "blocklist_file_existence_state",
+			Title: "Blocklist File Existence",
+			Units: "state",
+			Fam:   "blocklist",
+			Ctx:   "pihole.blocklist_file_existence_state",
+			Dims: Dims{
+				{ID: "blocklist_file_exists", Name: "exists"},
+				{ID: "blocklist_file_not_exists", Name: "not_exists"},
 			},
 		},
 		// ads blocking
 		{
 			ID:    "unwanted_domains_blocking_status",
 			Title: "Unwanted Domains Blocking Status",
-			Units: "boolean",
+			Units: "status",
 			Fam:   "status",
 			Ctx:   "pihole.unwanted_domains_blocking_status",
 			Dims: Dims{
-				{ID: "status", Name: "enabled"},
+				{ID: "blocking_status_enabled", Name: "enabled"},
+				{ID: "blocking_status_disabled", Name: "disabled"},
 			},
 		},
 	}

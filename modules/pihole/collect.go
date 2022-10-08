@@ -41,8 +41,10 @@ func collectSummary(mx map[string]int64, pmx *piholeMetrics) {
 	mx["queries_forwarded"] = pmx.summary.QueriesForwarded
 	mx["queries_cached"] = pmx.summary.QueriesCached
 	mx["unique_clients"] = pmx.summary.UniqueClients
-	mx["file_exists"] = boolToInt(pmx.summary.GravityLastUpdated.FileExists)
-	mx["status"] = boolToInt(pmx.summary.Status == "enabled")
+	mx["blocklist_file_exists"] = boolToInt(pmx.summary.GravityLastUpdated.FileExists)
+	mx["blocklist_file_not_exists"] = boolToInt(!pmx.summary.GravityLastUpdated.FileExists)
+	mx["blocking_status_enabled"] = boolToInt(pmx.summary.Status == "enabled")
+	mx["blocking_status_disabled"] = boolToInt(pmx.summary.Status != "enabled")
 }
 
 func collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
