@@ -1,40 +1,41 @@
 lowercaseOutputLabelNames: true
 lowercaseOutputName: true
 whitelistObjectNames: ["org.apache.cassandra.metrics:*"]
+# ColumnFamily is an alias for Table metrics
+#blacklistObjectNames: ["org.apache.cassandra.metrics:type=ColumnFamily,*"]
 rules:
 
 # Throughput (Read/Write)
-#      Read = clientrequest_read
-#      Write = clientrequest_write
-- pattern: org.apache.cassandra.metrics<type=(ClientRequest), scope=(\S*), name=(\S*)><>(Count|Unavailables|Failures)
-
-# Cache
-#       cache_hitrate
-- pattern: 'org.apache.cassandra.metrics<type=Cache, scope=(\w*), name=(HitRate)><>(Count|Value)'
+- pattern: org.apache.cassandra.metrics<type=(ClientRequest), scope=(Write|Read), name=(Latency)><>(OneMinuteRate)
 
 # Latency 
-#       Read = ReadLatency
-#       Write = WriteLatency
-# Disk usage:
-#       Load = LiveDiskSpaceUsed
-#       Total Disk used  = TotalDiskSpaceUsed
-#       Compaction tasks completed = CompactionBytesWritten
-#       Compaction tasks in queue = PendingCompactions
-# Errors:
-#       Pending Tasks: pendingflushes
-- pattern: org.apache.cassandra.metrics<type=(Table), keyspace=(\S*), scope=(\S*), name=(\S*)><>(Count)
+- pattern: org.apache.cassandra.metrics<type=(ClientRequest), scope=(Write|Read), name=(TotalLatency|Latency|Timeouts|Unavailables)><>(Count)
 
-# Garbage Collectiion
-#       It was not acttivated with this configuration options, on the other hand JMX_EXPORTER could start, so probably
-#       it is not having any garbage data.
-#
-#       ParNew Count = Count
-#       ParNew time = Time
-#       ConcurrentMarkSweep = not found in official documentation
-#       ConcurrentMarkSweep =  not found in official documentation
-- pattern: org.apache.cassandra.metrics<type=(GarbageCollector), keyspace=(\S*), scope=(\S*), name=(\S*)><>(Count)
+# Cache
+- pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache), name=(Requests|Hits)><>(Count)
 
-# Here we should have errors.
-- pattern: org.apache.cassandra.metrics<type=(Compaction), keyspace=(\S*), scope=(\S*), name=(\S*)><>(Count)
+# Load
+- pattern: org.apache.cassandra.metrics<type=(Storage), name=(Load)><>(Count)
 
-- pattern: org.apache.cassandra.net<type=(FailureDetector)><>(DownEndpointCount)
+# Total Disk Space
+- pattern: org.apache.cassandra.metrics<type=(ColumnFamily), keyspace=(\S*), scope=(ColumnFamilyName), name=(TotalDiskSpaceUsed)><>(Count)
+
+# Compaction task
+- pattern: org.apache.cassandra.metrics<type=(Compaction), name=(CompletedTasks)><>(Value)
+
+# Pending task
+- pattern: org.apache.cassandra.metrics<type=(Compaction), name=(PendingTasks)><>(Value)
+
+# ParNew Garbage Collection
+- pattern: <type=(GarbageCollector), name=(ParNew)><>(CollectionCount|CollectionTime)
+
+# CMS Garbage Collection
+- pattern: <type=(GarbageCollector), name=(ConcurrentMarkSweep)><>(CollectionCount|CollectionTime)
+
+# Exceptions
+- pattern: org.apache.cassandra.metrics<type=(GarbageCollector), name=(ConcurrentMarkSweep)><>(CollectionCount|CollectionTime)
+
+# Pending Tasks
+- pattern: org.apache.cassandra.metrics<type=(ThreadPools), scope=(CounterMutationStage|MutationStage|ReadRepairStage|ReadStage|RequestResponseStage), name=(PendingTasks)><>(Value)
+- pattern: org.apache.cassandra.metrics<type=(ThreadPools), scope=(CounterMutationStage|MutationStage|ReadRepairStage|ReadStage|RequestResponseStage), name=(CurrentlyBlockedTasks)><>(Count)
+
