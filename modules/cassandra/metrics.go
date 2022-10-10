@@ -3,14 +3,14 @@
 package cassandra
 
 type metrics struct {
-	throughput *THROUGHPUT         `stm:"org_apache_cassandra_metrics_clientrequest_oneminuterate"`
-	latency    *LATENCY            `stm:"org_apache_cassandra_metrics_clientrequest_count"`
-	cache      *CACHE              `stm:"org_apache_cassandra_metrics_cache_count"`
-	disk       *DISK               `stm:"org_apache_cassandra_metrics_table_count"`
-	gcc        *GARBAGE_COLLECTION `stm:"jvm_gc_collection_seconds_count"`
-	gct        *GARBAGE_COLLECTION `stm:"jvm_gc_collection_seconds_sum"`
-	et         *REQUEST_ERROR      `stm:"org_apache_cassandra_metrics_clientrequest_count"`
-	eu         *REQUEST_ERROR      `stm:"org_apache_cassandra_metrics_clientrequest_count"`
+	throughput *THROUGHPUT         `stm:"throuput"`
+	latency    *LATENCY            `stm:"latency"`
+	cache      *CACHE              `stm:"cache"`
+	disk       *DISK               `stm:"disk"`
+	gcc        *GARBAGE_COLLECTION `stm:"java_gc_count"`
+	gct        *GARBAGE_COLLECTION `stm:"java_gc_time"`
+	et         *REQUEST_ERROR      `stm:"error_timeout"`
+	eu         *REQUEST_ERROR      `stm:"error_unavailable"`
 }
 
 func (c metrics) hasThrouput() bool { return c.throughput != nil }
