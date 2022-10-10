@@ -3,8 +3,6 @@
 package cassandra
 
 import (
-	"fmt"
-
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
@@ -19,7 +17,6 @@ func doCollectGCCount(pms prometheus.Metrics) bool {
 }
 
 func collectGCCount(pms prometheus.Metrics) *GARBAGE_COLLECTION_COUNT {
-	fmt.Println("Testing = ", doCollectGCCount(pms))
 	if !doCollectGCCount(pms) {
 		return nil
 	}

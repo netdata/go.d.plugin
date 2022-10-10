@@ -41,6 +41,8 @@ func collect(pms prometheus.Metrics) *metrics {
 		disk:       collectDisk(pms),
 		gcc:        collectGCCount(pms),
 		gct:        collectGCTime(pms),
+		et:         collectRequestError(pms, collectorTimeout),
+		eu:         collectRequestError(pms, collectorUnavailable),
 	}
 
 	return &mx

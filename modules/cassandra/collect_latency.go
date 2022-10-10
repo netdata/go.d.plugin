@@ -5,12 +5,11 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorLatency  = "Read"
-	metricLatencyType = "org_apache_cassandra_metrics_clientrequest_count"
+	collectorLatency = "Read"
 )
 
 func doCollectLatency(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, metricLatencyType, collectorLatency, false)
+	enabled, success := checkCollector(pms, metricRequestType, collectorLatency, false)
 	return enabled && success
 }
 
@@ -27,7 +26,7 @@ func collectLatency(pms prometheus.Metrics) *LATENCY {
 
 func collectLatencyByType(la *LATENCY, pms prometheus.Metrics) {
 	var total LATENCY
-	for _, pm := range pms.FindByName(metricLatencyType) {
+	for _, pm := range pms.FindByName(metricRequestType) {
 		metricName := pm.Labels.Get("name")
 		metricScope := pm.Labels.Get("scope")
 		// We also have a latency specific for Read/Write, but total
