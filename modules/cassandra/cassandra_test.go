@@ -116,6 +116,10 @@ func TestCassandra_Collect(t *testing.T) {
 		"success on valid response": {
 			prepare: prepareCassandra,
 			wantCollected: map[string]int64{
+				"jvm_gc_collection_seconds_count_ConcurrentMarkSweep":             1,
+				"jvm_gc_collection_seconds_count_ParNew":                          8,
+				"jvm_gc_collection_seconds_sum_ConcurrentMarkSweep":               100,
+				"jvm_gc_collection_seconds_sum_ParNew":                            800,
 				"org_apache_cassandra_metrics_cache_count_HitRate":                0,
 				"org_apache_cassandra_metrics_clientrequest_oneminuterate_Read":   14,
 				"org_apache_cassandra_metrics_clientrequest_oneminuterate_Write":  0,

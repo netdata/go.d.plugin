@@ -15,7 +15,7 @@ func doCollectGCTime(pms prometheus.Metrics) bool {
 }
 
 func collectGCTime(pms prometheus.Metrics) *GARBAGE_COLLECTION_TIME {
-	if !doCollectGCCount(pms) {
+	if !doCollectGCTime(pms) {
 		return nil
 	}
 

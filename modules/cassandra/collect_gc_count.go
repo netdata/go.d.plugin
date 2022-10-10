@@ -2,7 +2,11 @@
 
 package cassandra
 
-import "github.com/netdata/go.d.plugin/pkg/prometheus"
+import (
+	"fmt"
+
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
+)
 
 const (
 	collectorGCC  = "ParNew"
@@ -10,11 +14,12 @@ const (
 )
 
 func doCollectGCCount(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, metricGCCount, collectorGCC, false)
+	enabled, success := checkCollector(pms, metricGCCount, collectorGCC, true)
 	return enabled && success
 }
 
 func collectGCCount(pms prometheus.Metrics) *GARBAGE_COLLECTION_COUNT {
+	fmt.Println("Testing = ", doCollectGCCount(pms))
 	if !doCollectGCCount(pms) {
 		return nil
 	}

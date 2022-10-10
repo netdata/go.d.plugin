@@ -50,10 +50,13 @@ func checkCollector(pms prometheus.Metrics, metric string, testValue string, tes
 	for _, pm := range pms.FindByName(metric) {
 		metricScope := pm.Labels.Get("scope")
 		metricName := pm.Labels.Get("name")
+		metricGC := pm.Labels.Get("gc")
 		// FOr some metrics we need to verify scope, for others name, so we test both
 		if metricName == testValue && !testScope {
 			return true, true
 		} else if metricScope == testValue && testScope {
+			return true, true
+		} else if metricGC == testValue {
 			return true, true
 		}
 	}
