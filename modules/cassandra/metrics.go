@@ -3,7 +3,7 @@
 package cassandra
 
 type metrics struct {
-	throughput *THROUGHPUT `stm:"org_apache_cassandra_metrics_clientrequest_count"`
+	throughput *THROUGHPUT `stm:"org_apache_cassandra_metrics_clientrequest_oneminuterate"`
 	latency    *LATENCY    `stm:"org_apache_cassandra_metrics_table_count"`
 	cache      *CACHE      `stm:"org_apache_cassandra_metrics_table_count"`
 	disk       *DISK       `stm:"org_apache_cassandra_metrics_table_count"`
