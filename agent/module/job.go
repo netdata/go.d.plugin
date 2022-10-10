@@ -375,7 +375,7 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 	if updated == 0 {
 		return false
 	}
-	if ndInternalMonitoringDisabled {
+	if !ndInternalMonitoringDisabled {
 		j.updateChart(j.runChart, map[string]int64{"time": elapsed}, sinceLastRun)
 	}
 	return true
