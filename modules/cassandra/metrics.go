@@ -28,8 +28,8 @@ type (
 		write int64 `stm:"Write"`
 	}
 	LATENCY struct {
-		read  int64 `stm:"ReadLatency"`
-		write int64 `stm:"WriteLatency"`
+		read_latency  int64 `stm:"ReadLatency"`
+		write_latency int64 `stm:"WriteLatency"`
 	}
 	CACHE struct {
 		hit int64 `stm:"HitRate"`

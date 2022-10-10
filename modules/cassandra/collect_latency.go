@@ -36,16 +36,16 @@ func collectLatencyByType(la *LATENCY, pms prometheus.Metrics) {
 			assignLatencyMetric(&total, metricScope, pm.Value)
 		}
 	}
-	la.read = total.read
-	la.write = total.write
+	la.read_latency = total.read_latency
+	la.write_latency = total.write_latency
 }
 
 func assignLatencyMetric(la *LATENCY, scope string, value float64) {
 	switch scope {
 	default:
 	case "Read":
-		la.read += int64(value)
+		la.read_latency += int64(value)
 	case "Write":
-		la.write += int64(value)
+		la.write_latency += int64(value)
 	}
 }
