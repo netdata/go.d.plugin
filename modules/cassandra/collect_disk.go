@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	collectorDisk = "LiveDiskSpaceUsed"
+	collectorDisk   = "LiveDiskSpaceUsed"
 	metricTableType = "org_apache_cassandra_metrics_table_count"
 )
 

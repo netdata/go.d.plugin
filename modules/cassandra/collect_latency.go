@@ -5,7 +5,7 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorLatency = "Read"
+	collectorLatency  = "Read"
 	metricLatencyType = "org_apache_cassandra_metrics_clientrequest_count"
 )
 
