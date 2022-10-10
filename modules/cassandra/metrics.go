@@ -3,14 +3,15 @@
 package cassandra
 
 type metrics struct {
-	throughput *THROUGHPUT         `stm:"throuput"`
-	latency    *LATENCY            `stm:"latency"`
-	cache      *CACHE              `stm:"cache"`
-	disk       *DISK               `stm:"disk"`
-	gcc        *GARBAGE_COLLECTION `stm:"java_gc_count"`
-	gct        *GARBAGE_COLLECTION `stm:"java_gc_time"`
-	et         *REQUEST_ERROR      `stm:"error_timeout"`
-	eu         *REQUEST_ERROR      `stm:"error_unavailable"`
+	throughput   *THROUGHPUT         `stm:"throuput"`
+	latency      *LATENCY            `stm:"latency"`
+	cache        *CACHE              `stm:"cache"`
+	disk         *DISK               `stm:"disk"`
+	gcc          *GARBAGE_COLLECTION `stm:"java_gc_count"`
+	gct          *GARBAGE_COLLECTION `stm:"java_gc_time"`
+	et           *REQUEST_ERROR      `stm:"error_timeout"`
+	eu           *REQUEST_ERROR      `stm:"error_unavailable"`
+	pending_task *PENDING_TASK       `stm:"pending_tasks"`
 }
 
 func (c metrics) hasThrouput() bool { return c.throughput != nil }
@@ -47,5 +48,8 @@ type (
 	REQUEST_ERROR struct {
 		read_error  int64 `stm:"Read"`
 		write_error int64 `stm:"Write"`
+	}
+	PENDING_TASK struct {
+		task int64 `stm:"tasks"`
 	}
 )

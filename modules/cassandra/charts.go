@@ -179,6 +179,18 @@ var chartCassandraErrorUnavailable = Chart{
 	},
 }
 
+var chartCassandraPendingTasks = Chart{
+	ID:    "pending_task_%s_%s",
+	Title: "Task queued",
+	Units: "tasks/s",
+	Fam:   "task queued %s %s",
+	Ctx:   "cassandra.task_queued",
+	Type:  module.Line,
+	Dims: Dims{
+		{ID: "%s_%s_task", Name: "task", Algo: module.Incremental},
+	},
+}
+
 func newCassandraCharts() *Charts {
 	return &Charts{
 		chartCassandraThroughput.Copy(),
@@ -194,6 +206,7 @@ func newCassandraCharts() *Charts {
 		chartCassandraMarkSweepTime.Copy(),
 		chartCassandraErrorTimeout.Copy(),
 		chartCassandraErrorUnavailable.Copy(),
+		chartCassandraPendingTasks.Copy(),
 	}
 }
 
