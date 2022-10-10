@@ -5,8 +5,8 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorCache  = "HitRate"
-	metricCacheType = "org_apache_cassandra_metrics_cache_value"
+	collectorCache  = "Hits"
+	metricCacheType = "org_apache_cassandra_metrics_cache_count"
 )
 
 func doCollectCache(pms prometheus.Metrics) bool {
@@ -27,9 +27,9 @@ func collectCache(pms prometheus.Metrics) *CACHE {
 
 func collectCacheByType(ca *CACHE, pms prometheus.Metrics) {
 	for _, pm := range pms.FindByName(metricCacheType) {
-		metricScope := pm.Labels.Get("scope")
 		metricName := pm.Labels.Get("name")
-		if metricScope == "KeyCache" {
+		// Code prepared to collect more metrics from Cache.
+		if metricName == "Hits" {
 			assignCacheMetric(ca, metricName, pm.Value*100.0)
 		}
 	}
