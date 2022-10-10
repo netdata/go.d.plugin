@@ -7,10 +7,10 @@ type metrics struct {
 	latency      *LATENCY            `stm:"latency"`
 	cache        *CACHE              `stm:"cache"`
 	disk         *DISK               `stm:"disk"`
-	gcc          *GARBAGE_COLLECTION `stm:"java_gc_count"`
-	gct          *GARBAGE_COLLECTION `stm:"java_gc_time"`
-	et           *REQUEST_ERROR      `stm:"error_timeout"`
-	eu           *REQUEST_ERROR      `stm:"error_unavailable"`
+	gc_count     *GARBAGE_COLLECTION `stm:"java_gc_count"`
+	gc_time      *GARBAGE_COLLECTION `stm:"java_gc_time"`
+	etimeout     *REQUEST_ERROR      `stm:"error_timeout"`
+	eunavailable *REQUEST_ERROR      `stm:"error_unavailable"`
 	pending_task *PENDING_TASK       `stm:"pending_tasks"`
 }
 
