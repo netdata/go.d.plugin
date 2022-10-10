@@ -17,7 +17,7 @@ func doCollectBlockedTask(pms prometheus.Metrics) bool {
 }
 
 func collectBlockedTask(pms prometheus.Metrics) *BLOCKED_TASK {
-	if !doCollectPendingTask(pms) {
+	if !doCollectBlockedTask(pms) {
 		return nil
 	}
 
