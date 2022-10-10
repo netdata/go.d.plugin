@@ -5,7 +5,7 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorGCT   = "ParNew"
+	collectorGCT = "ParNew"
 	metricGCTime = "jvm_gc_collection_seconds_sum"
 )
 
