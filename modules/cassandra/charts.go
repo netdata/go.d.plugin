@@ -21,7 +21,7 @@ type (
 
 var chartCassandraThroughput = Chart{
 	ID:    "throughput_%s_%s",
-	Title: "I/O requests for a Cassandra server.",
+	Title: "I/O requests.",
 	Units: "requests/s",
 	Fam:   "throughput %s %s",
 	Ctx:   "cassandra.throughput",
@@ -34,7 +34,7 @@ var chartCassandraThroughput = Chart{
 
 var chartCassandraLatency = Chart{
 	ID:    "latency_%s_%s",
-	Title: "I/O latency for a Cassandra server.",
+	Title: "I/O latency.",
 	Units: "requests/s",
 	Fam:   "latency %s %s",
 	Ctx:   "cassandra.latency",
@@ -107,7 +107,7 @@ var chartCassandraDiskCompactionQueue = Chart{
 
 var chartCassandraParNewCount = Chart{
 	ID:    "gc_parnew_count_%s_%s",
-	Title: "Number of young-generation collection",
+	Title: "Young-generation garbage collection counter",
 	Units: "garbage collection/s",
 	Fam:   "par new count %s %s",
 	Ctx:   "cassandra.gc_parnew_count",
@@ -119,7 +119,7 @@ var chartCassandraParNewCount = Chart{
 
 var chartCassandraParNewTime = Chart{
 	ID:    "gc_parnew_time_%s_%s",
-	Title: "Elpased time of young-generation collection in milliseconds",
+	Title: "Young-generation garbage collection timer",
 	Units: "period of time",
 	Fam:   "par new time %s %s",
 	Ctx:   "cassandra.gc_parnew_time",
@@ -131,7 +131,7 @@ var chartCassandraParNewTime = Chart{
 
 var chartCassandraMarkSweepCount = Chart{
 	ID:    "gc_marksweep_count_%s_%s",
-	Title: "Number of old-generation collection",
+	Title: "Old-generation collection",
 	Units: "events/s",
 	Fam:   "mark sweep %s %s",
 	Ctx:   "cassandra.gc_sweep_count",
@@ -143,7 +143,7 @@ var chartCassandraMarkSweepCount = Chart{
 
 var chartCassandraMarkSweepTime = Chart{
 	ID:    "gc_marksweep_time_%s_%s",
-	Title: "Elapsed time of old-generation collection in milliseconds",
+	Title: "Elapsed time Old-generation collection",
 	Units: "period of time",
 	Fam:   "mark sweep %s %s",
 	Ctx:   "cassandra.gc_sweep_time",
