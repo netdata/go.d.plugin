@@ -47,8 +47,8 @@ func assignRequestErrorMetric(re *REQUEST_ERROR, scope string, value float64) {
 	switch scope {
 	default:
 	case "Read":
-		re.read = int64(value)
+		re.read_error = int64(value)
 	case "Write":
-		re.write = int64(value)
+		re.write_error = int64(value)
 	}
 }

@@ -45,7 +45,7 @@ type (
 		markSweep int64 `stm:"ConcurrentMarkSweep"`
 	}
 	REQUEST_ERROR struct {
-		read  int64 `stm:"Read"`
-		write int64 `stm:"Write"`
+		read_error  int64 `stm:"Read"`
+		write_error int64 `stm:"Write"`
 	}
 )
