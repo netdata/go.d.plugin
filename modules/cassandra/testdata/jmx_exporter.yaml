@@ -1,3 +1,7 @@
+# https://grafana.com/grafana/dashboards/5408-cassandra/
+# SOURCE: https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#table-metrics
+# https://www.datadoghq.com/blog/how-to-collect-cassandra-metrics/
+
 lowercaseOutputLabelNames: true
 lowercaseOutputName: true
 whitelistObjectNames: ["org.apache.cassandra.metrics:*"]
@@ -18,7 +22,7 @@ rules:
 - pattern: org.apache.cassandra.metrics<type=(Storage), name=(Load)><>(Count)
 
 # Total Disk Space
-- pattern: org.apache.cassandra.metrics<type=(ColumnFamily), keyspace=(\S*), scope=(ColumnFamilyName), name=(TotalDiskSpaceUsed)><>(Count)
+- pattern: org.apache.cassandra.metrics<type=(Table), keyspace=(\S*), scope=(\S*), name=(TotalDiskSpaceUsed|LiveDiskSpaceUsed|CompactionBytesWritten|PendingCompactions)><>(Count)
 
 # Compaction task
 - pattern: org.apache.cassandra.metrics<type=(Compaction), name=(CompletedTasks)><>(Value)

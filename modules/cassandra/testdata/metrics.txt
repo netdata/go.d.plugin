@@ -3,26 +3,26 @@
 jmx_config_reload_success_total 0.0
 # HELP jvm_memory_pool_allocated_bytes_total Total bytes allocated in a given JVM memory pool. Only updated after GC, not continuously.
 # TYPE jvm_memory_pool_allocated_bytes_total counter
-jvm_memory_pool_allocated_bytes_total{pool="Par Survivor Space",} 2.5640296E7
-jvm_memory_pool_allocated_bytes_total{pool="CMS Old Gen",} 6.8275824E7
-jvm_memory_pool_allocated_bytes_total{pool="CodeHeap 'profiled nmethods'",} 1.3902464E7
-jvm_memory_pool_allocated_bytes_total{pool="CodeHeap 'non-profiled nmethods'",} 3294592.0
-jvm_memory_pool_allocated_bytes_total{pool="Compressed Class Space",} 6478728.0
-jvm_memory_pool_allocated_bytes_total{pool="Metaspace",} 5.0279584E7
-jvm_memory_pool_allocated_bytes_total{pool="Par Eden Space",} 1.50994944E9
-jvm_memory_pool_allocated_bytes_total{pool="CodeHeap 'non-nmethods'",} 1424384.0
+jvm_memory_pool_allocated_bytes_total{pool="Par Survivor Space",} 2.2765568E7
+jvm_memory_pool_allocated_bytes_total{pool="CMS Old Gen",} 2.4283136E7
+jvm_memory_pool_allocated_bytes_total{pool="CodeHeap 'profiled nmethods'",} 8076928.0
+jvm_memory_pool_allocated_bytes_total{pool="CodeHeap 'non-profiled nmethods'",} 1730304.0
+jvm_memory_pool_allocated_bytes_total{pool="Compressed Class Space",} 5492112.0
+jvm_memory_pool_allocated_bytes_total{pool="Metaspace",} 4.1905456E7
+jvm_memory_pool_allocated_bytes_total{pool="Par Eden Space",} 5.0331648E8
+jvm_memory_pool_allocated_bytes_total{pool="CodeHeap 'non-nmethods'",} 1374208.0
 # HELP jvm_threads_current Current thread count of a JVM
 # TYPE jvm_threads_current gauge
-jvm_threads_current 38.0
+jvm_threads_current 50.0
 # HELP jvm_threads_daemon Daemon thread count of a JVM
 # TYPE jvm_threads_daemon gauge
-jvm_threads_daemon 34.0
+jvm_threads_daemon 46.0
 # HELP jvm_threads_peak Peak thread count of a JVM
 # TYPE jvm_threads_peak gauge
-jvm_threads_peak 52.0
+jvm_threads_peak 50.0
 # HELP jvm_threads_started_total Started thread count of a JVM
 # TYPE jvm_threads_started_total counter
-jvm_threads_started_total 335.0
+jvm_threads_started_total 122.0
 # HELP jvm_threads_deadlocked Cycles of JVM-threads that are in deadlock waiting to acquire object monitors or ownable synchronizers
 # TYPE jvm_threads_deadlocked gauge
 jvm_threads_deadlocked 0.0
@@ -35,19 +35,141 @@ jvm_threads_state{state="NEW",} 0.0
 jvm_threads_state{state="TERMINATED",} 0.0
 jvm_threads_state{state="RUNNABLE",} 9.0
 jvm_threads_state{state="BLOCKED",} 0.0
-jvm_threads_state{state="WAITING",} 10.0
-jvm_threads_state{state="TIMED_WAITING",} 19.0
+jvm_threads_state{state="WAITING",} 6.0
+jvm_threads_state{state="TIMED_WAITING",} 35.0
 jvm_threads_state{state="UNKNOWN",} 0.0
+# HELP org_apache_cassandra_metrics_table_count Attribute exposed for management org.apache.cassandra.metrics:name=CompactionBytesWritten,type=Table,attribute=Count
+# TYPE org_apache_cassandra_metrics_table_count untyped
+org_apache_cassandra_metrics_table_count{keyspace="system_traces",scope="events",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="view_builds_in_progress",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_distributed",scope="parent_repair_history",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_distributed",scope="repair_history",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="available_ranges",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="built_views",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="indexes",name="LiveDiskSpaceUsed",} 17084.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="role_members",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="available_ranges_v2",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_distributed",scope="repair_history",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="role_permissions",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="tables",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="repairs",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="batches",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="role_members",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_traces",scope="events",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="paxos",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="role_permissions",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peer_events_v2",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="view_builds_in_progress",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="types",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="role_members",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="available_ranges_v2",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="transferred_ranges_v2",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peer_events",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_traces",scope="sessions",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="views",name="TotalDiskSpaceUsed",} 16961.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="prepared_statements",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="paxos",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="table_estimates",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="columns",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="triggers",name="TotalDiskSpaceUsed",} 17084.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="functions",name="TotalDiskSpaceUsed",} 17342.0
+org_apache_cassandra_metrics_table_count{keyspace="system_distributed",scope="parent_repair_history",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="IndexInfo",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="indexes",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peer_events_v2",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="prepared_statements",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="network_permissions",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="local",name="LiveDiskSpaceUsed",} 8643.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="size_estimates",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="batches",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="transferred_ranges",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="functions",name="LiveDiskSpaceUsed",} 17342.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peers",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="tables",name="LiveDiskSpaceUsed",} 29641.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="role_permissions",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="triggers",name="LiveDiskSpaceUsed",} 17084.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="repairs",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="functions",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_distributed",scope="view_build_status",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="IndexInfo",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="indexes",name="TotalDiskSpaceUsed",} 17084.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="paxos",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="repairs",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="sstable_activity",name="TotalDiskSpaceUsed",} 13230.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="transferred_ranges",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_traces",scope="events",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peer_events",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peers_v2",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="table_estimates",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="resource_role_permissons_index",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="size_estimates",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_distributed",scope="view_build_status",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_distributed",scope="parent_repair_history",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peer_events",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peer_events_v2",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="transferred_ranges",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="resource_role_permissons_index",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="aggregates",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="prepared_statements",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="columns",name="TotalDiskSpaceUsed",} 35012.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peers_v2",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="transferred_ranges_v2",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_distributed",scope="repair_history",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="batches",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="available_ranges",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="built_views",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="table_estimates",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peers",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_distributed",scope="view_build_status",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="views",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peers_v2",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="types",name="LiveDiskSpaceUsed",} 16961.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="local",name="CompactionBytesWritten",} 679.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="roles",name="LiveDiskSpaceUsed",} 5181.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="tables",name="TotalDiskSpaceUsed",} 29641.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="size_estimates",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="local",name="TotalDiskSpaceUsed",} 8643.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="sstable_activity",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="available_ranges_v2",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="resource_role_permissons_index",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="view_builds_in_progress",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="keyspaces",name="TotalDiskSpaceUsed",} 17979.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="keyspaces",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="sstable_activity",name="LiveDiskSpaceUsed",} 13230.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="IndexInfo",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="dropped_columns",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="aggregates",name="TotalDiskSpaceUsed",} 17342.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="columns",name="LiveDiskSpaceUsed",} 35012.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="built_views",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="peers",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_traces",scope="sessions",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="dropped_columns",name="TotalDiskSpaceUsed",} 17822.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="keyspaces",name="LiveDiskSpaceUsed",} 17979.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="compaction_history",name="LiveDiskSpaceUsed",} 27428.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="roles",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="types",name="TotalDiskSpaceUsed",} 16961.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="network_permissions",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="transferred_ranges_v2",name="TotalDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="roles",name="TotalDiskSpaceUsed",} 5181.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="aggregates",name="LiveDiskSpaceUsed",} 17342.0
+org_apache_cassandra_metrics_table_count{keyspace="system_traces",scope="sessions",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="compaction_history",name="CompactionBytesWritten",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="compaction_history",name="TotalDiskSpaceUsed",} 27428.0
+org_apache_cassandra_metrics_table_count{keyspace="system",scope="available_ranges",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_auth",scope="network_permissions",name="LiveDiskSpaceUsed",} 0.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="dropped_columns",name="LiveDiskSpaceUsed",} 17822.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="views",name="LiveDiskSpaceUsed",} 16961.0
+org_apache_cassandra_metrics_table_count{keyspace="system_schema",scope="triggers",name="CompactionBytesWritten",} 0.0
 # HELP org_apache_cassandra_metrics_cache_count Attribute exposed for management org.apache.cassandra.metrics:name=Requests,type=Cache,attribute=Count
 # TYPE org_apache_cassandra_metrics_cache_count untyped
 org_apache_cassandra_metrics_cache_count{scope="KeyCache",name="Requests",} 129.0
 org_apache_cassandra_metrics_cache_count{scope="KeyCache",name="Hits",} 114.0
 # HELP org_apache_cassandra_metrics_storage_count Attribute exposed for management org.apache.cassandra.metrics:name=Load,type=Storage,attribute=Count
 # TYPE org_apache_cassandra_metrics_storage_count untyped
-org_apache_cassandra_metrics_storage_count{name="Load",} 130416.0
+org_apache_cassandra_metrics_storage_count{name="Load",} 257710.0
 # HELP org_apache_cassandra_metrics_compaction_value Attribute exposed for management org.apache.cassandra.metrics:name=CompletedTasks,type=Compaction,attribute=Value
 # TYPE org_apache_cassandra_metrics_compaction_value untyped
-org_apache_cassandra_metrics_compaction_value{name="CompletedTasks",} 52.0
+org_apache_cassandra_metrics_compaction_value{name="CompletedTasks",} 41.0
 org_apache_cassandra_metrics_compaction_value{name="PendingTasks",} 0.0
 # HELP org_apache_cassandra_metrics_clientrequest_count Attribute exposed for management org.apache.cassandra.metrics:name=Timeouts,type=ClientRequest,attribute=Count
 # TYPE org_apache_cassandra_metrics_clientrequest_count untyped
@@ -57,15 +179,15 @@ org_apache_cassandra_metrics_clientrequest_count{scope="Read",name="Unavailables
 org_apache_cassandra_metrics_clientrequest_count{scope="Write",name="TotalLatency",} 0.0
 org_apache_cassandra_metrics_clientrequest_count{scope="Read",name="Timeouts",} 0.0
 org_apache_cassandra_metrics_clientrequest_count{scope="Write",name="Latency",} 0.0
-org_apache_cassandra_metrics_clientrequest_count{scope="Read",name="TotalLatency",} 40841.0
+org_apache_cassandra_metrics_clientrequest_count{scope="Read",name="TotalLatency",} 16502.0
 org_apache_cassandra_metrics_clientrequest_count{scope="Write",name="Unavailables",} 0.0
 # HELP org_apache_cassandra_metrics_clientrequest_oneminuterate Attribute exposed for management org.apache.cassandra.metrics:name=Latency,type=ClientRequest,attribute=OneMinuteRate
 # TYPE org_apache_cassandra_metrics_clientrequest_oneminuterate untyped
-org_apache_cassandra_metrics_clientrequest_oneminuterate{scope="Read",name="Latency",} 0.004327474143898629
+org_apache_cassandra_metrics_clientrequest_oneminuterate{scope="Read",name="Latency",} 0.1433062621147579
 org_apache_cassandra_metrics_clientrequest_oneminuterate{scope="Write",name="Latency",} 0.0
 # HELP jmx_scrape_duration_seconds Time this JMX scrape took, in seconds.
 # TYPE jmx_scrape_duration_seconds gauge
-jmx_scrape_duration_seconds 2.092021346
+jmx_scrape_duration_seconds 2.510005142
 # HELP jmx_scrape_error Non-zero if this scrape failed.
 # TYPE jmx_scrape_error gauge
 jmx_scrape_error 0.0
@@ -80,21 +202,21 @@ jmx_config_reload_failure_total 0.0
 jmx_exporter_build_info{version="0.17.2",name="jmx_prometheus_javaagent",} 1.0
 # HELP jvm_gc_collection_seconds Time spent in a given JVM garbage collector in seconds.
 # TYPE jvm_gc_collection_seconds summary
-jvm_gc_collection_seconds_count{gc="ParNew",} 14.0
-jvm_gc_collection_seconds_sum{gc="ParNew",} 0.196
+jvm_gc_collection_seconds_count{gc="ParNew",} 8.0
+jvm_gc_collection_seconds_sum{gc="ParNew",} 0.154
 jvm_gc_collection_seconds_count{gc="ConcurrentMarkSweep",} 1.0
-jvm_gc_collection_seconds_sum{gc="ConcurrentMarkSweep",} 0.028
+jvm_gc_collection_seconds_sum{gc="ConcurrentMarkSweep",} 0.022
 # HELP jvm_memory_objects_pending_finalization The number of objects waiting in the finalizer queue.
 # TYPE jvm_memory_objects_pending_finalization gauge
 jvm_memory_objects_pending_finalization 0.0
 # HELP jvm_memory_bytes_used Used bytes of a given JVM memory area.
 # TYPE jvm_memory_bytes_used gauge
-jvm_memory_bytes_used{area="heap",} 1.28899024E8
-jvm_memory_bytes_used{area="nonheap",} 7.4334368E7
+jvm_memory_bytes_used{area="heap",} 1.98938584E8
+jvm_memory_bytes_used{area="nonheap",} 7.0652208E7
 # HELP jvm_memory_bytes_committed Committed (bytes) of a given JVM memory area.
 # TYPE jvm_memory_bytes_committed gauge
 jvm_memory_bytes_committed{area="heap",} 1.052770304E9
-jvm_memory_bytes_committed{area="nonheap",} 7.7672448E7
+jvm_memory_bytes_committed{area="nonheap",} 7.415808E7
 # HELP jvm_memory_bytes_max Max (bytes) of a given JVM memory area.
 # TYPE jvm_memory_bytes_max gauge
 jvm_memory_bytes_max{area="heap",} 1.052770304E9
@@ -105,23 +227,23 @@ jvm_memory_bytes_init{area="heap",} 1.073741824E9
 jvm_memory_bytes_init{area="nonheap",} 7667712.0
 # HELP jvm_memory_pool_bytes_used Used bytes of a given JVM memory pool.
 # TYPE jvm_memory_pool_bytes_used gauge
-jvm_memory_pool_bytes_used{pool="CodeHeap 'non-nmethods'",} 1420544.0
-jvm_memory_pool_bytes_used{pool="Metaspace",} 4.9230952E7
-jvm_memory_pool_bytes_used{pool="CodeHeap 'profiled nmethods'",} 1.3958016E7
-jvm_memory_pool_bytes_used{pool="Compressed Class Space",} 6341048.0
-jvm_memory_pool_bytes_used{pool="Par Eden Space",} 6.7302976E7
-jvm_memory_pool_bytes_used{pool="Par Survivor Space",} 823488.0
-jvm_memory_pool_bytes_used{pool="CodeHeap 'non-profiled nmethods'",} 3383808.0
-jvm_memory_pool_bytes_used{pool="CMS Old Gen",} 6.077256E7
+jvm_memory_pool_bytes_used{pool="CodeHeap 'non-nmethods'",} 1420928.0
+jvm_memory_pool_bytes_used{pool="Metaspace",} 4.8644168E7
+jvm_memory_pool_bytes_used{pool="CodeHeap 'profiled nmethods'",} 1.1643008E7
+jvm_memory_pool_bytes_used{pool="Compressed Class Space",} 6321896.0
+jvm_memory_pool_bytes_used{pool="Par Eden Space",} 1.41008848E8
+jvm_memory_pool_bytes_used{pool="Par Survivor Space",} 2683224.0
+jvm_memory_pool_bytes_used{pool="CodeHeap 'non-profiled nmethods'",} 2622208.0
+jvm_memory_pool_bytes_used{pool="CMS Old Gen",} 5.5246512E7
 # HELP jvm_memory_pool_bytes_committed Committed bytes of a given JVM memory pool.
 # TYPE jvm_memory_pool_bytes_committed gauge
 jvm_memory_pool_bytes_committed{pool="CodeHeap 'non-nmethods'",} 2555904.0
-jvm_memory_pool_bytes_committed{pool="Metaspace",} 5.0753536E7
-jvm_memory_pool_bytes_committed{pool="CodeHeap 'profiled nmethods'",} 1.3959168E7
+jvm_memory_pool_bytes_committed{pool="Metaspace",} 5.0253824E7
+jvm_memory_pool_bytes_committed{pool="CodeHeap 'profiled nmethods'",} 1.1665408E7
 jvm_memory_pool_bytes_committed{pool="Compressed Class Space",} 6995968.0
 jvm_memory_pool_bytes_committed{pool="Par Eden Space",} 1.6777216E8
 jvm_memory_pool_bytes_committed{pool="Par Survivor Space",} 2.097152E7
-jvm_memory_pool_bytes_committed{pool="CodeHeap 'non-profiled nmethods'",} 3407872.0
+jvm_memory_pool_bytes_committed{pool="CodeHeap 'non-profiled nmethods'",} 2686976.0
 jvm_memory_pool_bytes_committed{pool="CMS Old Gen",} 8.64026624E8
 # HELP jvm_memory_pool_bytes_max Max bytes of a given JVM memory pool.
 # TYPE jvm_memory_pool_bytes_max gauge
@@ -146,8 +268,8 @@ jvm_memory_pool_bytes_init{pool="CMS Old Gen",} 8.64026624E8
 # HELP jvm_memory_pool_collection_used_bytes Used bytes after last collection of a given JVM memory pool.
 # TYPE jvm_memory_pool_collection_used_bytes gauge
 jvm_memory_pool_collection_used_bytes{pool="Par Eden Space",} 0.0
-jvm_memory_pool_collection_used_bytes{pool="Par Survivor Space",} 823488.0
-jvm_memory_pool_collection_used_bytes{pool="CMS Old Gen",} 1.1946632E7
+jvm_memory_pool_collection_used_bytes{pool="Par Survivor Space",} 2683224.0
+jvm_memory_pool_collection_used_bytes{pool="CMS Old Gen",} 1.1936944E7
 # HELP jvm_memory_pool_collection_committed_bytes Committed after last collection bytes of a given JVM memory pool.
 # TYPE jvm_memory_pool_collection_committed_bytes gauge
 jvm_memory_pool_collection_committed_bytes{pool="Par Eden Space",} 1.6777216E8
@@ -165,28 +287,28 @@ jvm_memory_pool_collection_init_bytes{pool="Par Survivor Space",} 2.097152E7
 jvm_memory_pool_collection_init_bytes{pool="CMS Old Gen",} 8.64026624E8
 # HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
 # TYPE process_cpu_seconds_total counter
-process_cpu_seconds_total 24.66
+process_cpu_seconds_total 14.91
 # HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
 # TYPE process_start_time_seconds gauge
-process_start_time_seconds 1.665358947957E9
+process_start_time_seconds 1.665363064485E9
 # HELP process_open_fds Number of open file descriptors.
 # TYPE process_open_fds gauge
-process_open_fds 149.0
+process_open_fds 191.0
 # HELP process_max_fds Maximum number of open file descriptors.
 # TYPE process_max_fds gauge
 process_max_fds 100000.0
 # HELP process_virtual_memory_bytes Virtual memory size in bytes.
 # TYPE process_virtual_memory_bytes gauge
-process_virtual_memory_bytes 3.056123904E9
+process_virtual_memory_bytes 3.056033792E9
 # HELP process_resident_memory_bytes Resident memory size in bytes.
 # TYPE process_resident_memory_bytes gauge
-process_resident_memory_bytes 1.530003456E9
+process_resident_memory_bytes 1.515995136E9
 # HELP jvm_classes_currently_loaded The number of classes that are currently loaded in the JVM
 # TYPE jvm_classes_currently_loaded gauge
-jvm_classes_currently_loaded 9202.0
+jvm_classes_currently_loaded 9168.0
 # HELP jvm_classes_loaded_total The total number of classes that have been loaded since the JVM has started execution
 # TYPE jvm_classes_loaded_total counter
-jvm_classes_loaded_total 9202.0
+jvm_classes_loaded_total 9168.0
 # HELP jvm_classes_unloaded_total The total number of classes that have been unloaded since the JVM has started execution
 # TYPE jvm_classes_unloaded_total counter
 jvm_classes_unloaded_total 0.0
@@ -195,29 +317,29 @@ jvm_classes_unloaded_total 0.0
 jvm_info{runtime="OpenJDK Runtime Environment",vendor="Ubuntu",version="11.0.16+8-post-Ubuntu-0ubuntu122.04",} 1.0
 # HELP jvm_buffer_pool_used_bytes Used bytes of a given JVM buffer pool.
 # TYPE jvm_buffer_pool_used_bytes gauge
-jvm_buffer_pool_used_bytes{pool="mapped",} 6.7129715E7
-jvm_buffer_pool_used_bytes{pool="direct",} 5.1058931E7
+jvm_buffer_pool_used_bytes{pool="mapped",} 6.714631E7
+jvm_buffer_pool_used_bytes{pool="direct",} 5.1070562E7
 # HELP jvm_buffer_pool_capacity_bytes Bytes capacity of a given JVM buffer pool.
 # TYPE jvm_buffer_pool_capacity_bytes gauge
-jvm_buffer_pool_capacity_bytes{pool="mapped",} 6.7129715E7
-jvm_buffer_pool_capacity_bytes{pool="direct",} 5.1058929E7
+jvm_buffer_pool_capacity_bytes{pool="mapped",} 6.714631E7
+jvm_buffer_pool_capacity_bytes{pool="direct",} 5.107056E7
 # HELP jvm_buffer_pool_used_buffers Used buffers of a given JVM buffer pool.
 # TYPE jvm_buffer_pool_used_buffers gauge
-jvm_buffer_pool_used_buffers{pool="mapped",} 34.0
-jvm_buffer_pool_used_buffers{pool="direct",} 16.0
+jvm_buffer_pool_used_buffers{pool="mapped",} 76.0
+jvm_buffer_pool_used_buffers{pool="direct",} 19.0
 # HELP jmx_config_reload_failure_created Number of times configuration have failed to be reloaded.
 # TYPE jmx_config_reload_failure_created gauge
-jmx_config_reload_failure_created 1.665358948061E9
+jmx_config_reload_failure_created 1.665363064611E9
 # HELP jmx_config_reload_success_created Number of times configuration have successfully been reloaded.
 # TYPE jmx_config_reload_success_created gauge
-jmx_config_reload_success_created 1.66535894806E9
+jmx_config_reload_success_created 1.665363064609E9
 # HELP jvm_memory_pool_allocated_bytes_created Total bytes allocated in a given JVM memory pool. Only updated after GC, not continuously.
 # TYPE jvm_memory_pool_allocated_bytes_created gauge
-jvm_memory_pool_allocated_bytes_created{pool="Par Survivor Space",} 1.665358949818E9
-jvm_memory_pool_allocated_bytes_created{pool="CMS Old Gen",} 1.665358950713E9
-jvm_memory_pool_allocated_bytes_created{pool="CodeHeap 'profiled nmethods'",} 1.665358949815E9
-jvm_memory_pool_allocated_bytes_created{pool="CodeHeap 'non-profiled nmethods'",} 1.665358949818E9
-jvm_memory_pool_allocated_bytes_created{pool="Compressed Class Space",} 1.665358949818E9
-jvm_memory_pool_allocated_bytes_created{pool="Metaspace",} 1.665358949818E9
-jvm_memory_pool_allocated_bytes_created{pool="Par Eden Space",} 1.665358949818E9
-jvm_memory_pool_allocated_bytes_created{pool="CodeHeap 'non-nmethods'",} 1.665358949818E9
+jvm_memory_pool_allocated_bytes_created{pool="Par Survivor Space",} 1.665363066301E9
+jvm_memory_pool_allocated_bytes_created{pool="CMS Old Gen",} 1.665363067198E9
+jvm_memory_pool_allocated_bytes_created{pool="CodeHeap 'profiled nmethods'",} 1.6653630663E9
+jvm_memory_pool_allocated_bytes_created{pool="CodeHeap 'non-profiled nmethods'",} 1.665363066301E9
+jvm_memory_pool_allocated_bytes_created{pool="Compressed Class Space",} 1.665363066301E9
+jvm_memory_pool_allocated_bytes_created{pool="Metaspace",} 1.665363066301E9
+jvm_memory_pool_allocated_bytes_created{pool="Par Eden Space",} 1.665363066301E9
+jvm_memory_pool_allocated_bytes_created{pool="CodeHeap 'non-nmethods'",} 1.665363066301E9

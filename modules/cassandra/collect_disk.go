@@ -8,6 +8,7 @@ import (
 
 const (
 	collectorDisk = "LiveDiskSpaceUsed"
+	metricTableType = "org_apache_cassandra_metrics_table_count"
 )
 
 func doCollectDisk(pms prometheus.Metrics) bool {
