@@ -105,6 +105,54 @@ var chartCassandraDiskCompactionQueue = Chart{
 	},
 }
 
+var chartCassandraParNewCount = Chart{
+	ID:    "gc_parnew_count_%s_%s",
+	Title: "Number of young-generation collection",
+	Units: "garbage collection/s",
+	Fam:   "par new count %s %s",
+	Ctx:   "cassandra.gc_parnew_count",
+	Type:  module.Line,
+	Dims: Dims{
+		{ID: "%s_%s_parnew", Name: "parnew", Algo: module.Incremental},
+	},
+}
+
+var chartCassandraParNewTime = Chart{
+	ID:    "gc_parnew_time_%s_%s",
+	Title: "Elpased time of young-generation collection in milliseconds",
+	Units: "period of time",
+	Fam:   "par new time %s %s",
+	Ctx:   "cassandra.gc_parnew_time",
+	Type:  module.Line,
+	Dims: Dims{
+		{ID: "%s_%s_parnew", Name: "parnew", Algo: module.Incremental},
+	},
+}
+
+var chartCassandraMarkSweepCount = Chart{
+	ID:    "gc_marksweep_count_%s_%s",
+	Title: "Number of old-generation collection",
+	Units: "events/s",
+	Fam:   "mark sweep %s %s",
+	Ctx:   "cassandra.gc_sweep_count",
+	Type:  module.Line,
+	Dims: Dims{
+		{ID: "%s_%s_sweep", Name: "sweep", Algo: module.Incremental},
+	},
+}
+
+var chartCassandraMarkSweepTime = Chart{
+	ID:    "gc_marksweep_time_%s_%s",
+	Title: "Elapsed time of old-generation collection in milliseconds",
+	Units: "period of time",
+	Fam:   "mark sweep %s %s",
+	Ctx:   "cassandra.gc_sweep_time",
+	Type:  module.Line,
+	Dims: Dims{
+		{ID: "%s_%s_sweep", Name: "sweep", Algo: module.Incremental},
+	},
+}
+
 func newCassandraCharts() *Charts {
 	return &Charts{
 		chartCassandraThroughput.Copy(),
@@ -114,6 +162,10 @@ func newCassandraCharts() *Charts {
 		chartCassandraDiskColumn.Copy(),
 		chartCassandraDiskCompactionCompleted.Copy(),
 		chartCassandraDiskCompactionQueue.Copy(),
+		chartCassandraParNewCount.Copy(),
+		chartCassandraParNewTime.Copy(),
+		chartCassandraMarkSweepCount.Copy(),
+		chartCassandraMarkSweepTime.Copy(),
 	}
 }
 
