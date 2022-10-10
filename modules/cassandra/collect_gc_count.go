@@ -5,12 +5,12 @@ package cassandra
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorGC   = "ParNew"
+	collectorGCC   = "ParNew"
 	metricGCCount = "jvm_gc_collection_seconds_count"
 )
 
 func doCollectGCCount(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, metricGCCount, collectorGC, false)
+	enabled, success := checkCollector(pms, metricGCCount, collectorGCC, false)
 	return enabled && success
 }
 
@@ -20,12 +20,12 @@ func collectGCCount(pms prometheus.Metrics) *GARBAGE_COLLECTION_COUNT {
 	}
 
 	var gcc GARBAGE_COLLECTION_COUNT
-	collectGCByType(&gcc, pms)
+	collectGCCountByType(&gcc, pms)
 
 	return &gcc
 }
 
-func collectGCByType(gcc *GARBAGE_COLLECTION_COUNT, pms prometheus.Metrics) {
+func collectGCCountByType(gcc *GARBAGE_COLLECTION_COUNT, pms prometheus.Metrics) {
 	for _, pm := range pms.FindByName(metricGCCount) {
 		metricName := pm.Labels.Get("gc")
 		assignGCCountMetric(gcc, metricName, pm.Value)

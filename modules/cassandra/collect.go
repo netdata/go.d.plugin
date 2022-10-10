@@ -40,6 +40,7 @@ func collect(pms prometheus.Metrics) *metrics {
 		cache:      collectCache(pms),
 		disk:       collectDisk(pms),
 		gcc:        collectGCCount(pms),
+		gct:        collectGCTime(pms),
 	}
 
 	return &mx
