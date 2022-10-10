@@ -153,6 +153,32 @@ var chartCassandraMarkSweepTime = Chart{
 	},
 }
 
+var chartCassandraErrorTimeout = Chart{
+	ID:    "error_timeout_%s_%s",
+	Title: "Requests not unacknowledged",
+	Units: "requests/s",
+	Fam:   "request timeout %s %s",
+	Ctx:   "cassandra.error_timeout",
+	Type:  module.Line,
+	Dims: Dims{
+		{ID: "%s_%s_read", Name: "read", Algo: module.Incremental},
+		{ID: "%s_%s_write", Name: "write", Algo: module.Incremental},
+	},
+}
+
+var chartCassandraErrorUnavailable = Chart{
+	ID:    "error_timeout_%s_%s",
+	Title: "Request was unavailable",
+	Units: "requests/s",
+	Fam:   "request unavailable %s %s",
+	Ctx:   "cassandra.error_unavailable",
+	Type:  module.Line,
+	Dims: Dims{
+		{ID: "%s_%s_read", Name: "read", Algo: module.Incremental},
+		{ID: "%s_%s_write", Name: "write", Algo: module.Incremental},
+	},
+}
+
 func newCassandraCharts() *Charts {
 	return &Charts{
 		chartCassandraThroughput.Copy(),
@@ -166,6 +192,8 @@ func newCassandraCharts() *Charts {
 		chartCassandraParNewTime.Copy(),
 		chartCassandraMarkSweepCount.Copy(),
 		chartCassandraMarkSweepTime.Copy(),
+		chartCassandraErrorTimeout.Copy(),
+		chartCassandraErrorUnavailable.Copy(),
 	}
 }
 
