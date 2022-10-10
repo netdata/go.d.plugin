@@ -12,6 +12,7 @@ type metrics struct {
 	etimeout     *REQUEST_ERROR      `stm:"error_timeout"`
 	eunavailable *REQUEST_ERROR      `stm:"error_unavailable"`
 	pending_task *PENDING_TASK       `stm:"pending_tasks"`
+	blocked_task *BLOCKED_TASK       `stm:"blocked_tasks"`
 }
 
 func (c metrics) hasThrouput() bool { return c.throughput != nil }
@@ -51,5 +52,8 @@ type (
 	}
 	PENDING_TASK struct {
 		task int64 `stm:"tasks"`
+	}
+	BLOCKED_TASK struct {
+		task int64 `stm:"CurrentlyBlockedTasks"`
 	}
 )

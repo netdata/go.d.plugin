@@ -3,8 +3,6 @@
 package cassandra
 
 import (
-	"fmt"
-
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
@@ -40,7 +38,6 @@ func assignPendingTaskMetric(pt *PENDING_TASK, scope string, value float64) {
 	switch scope {
 	default:
 	case "PendingTasks":
-		fmt.Println("Testing = ", value)
 		pt.task = int64(value)
 	}
 }

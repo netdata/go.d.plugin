@@ -44,6 +44,7 @@ func collect(pms prometheus.Metrics) *metrics {
 		etimeout:     collectRequestError(pms, collectorTimeout),
 		eunavailable: collectRequestError(pms, collectorUnavailable),
 		pending_task: collectPendingTask(pms),
+		blocked_task: collectBlockedTask(pms),
 	}
 
 	return &mx

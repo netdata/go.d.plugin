@@ -191,6 +191,18 @@ var chartCassandraPendingTasks = Chart{
 	},
 }
 
+var chartCassandraBlockedTasks = Chart{
+	ID:    "blocked_task_%s_%s",
+	Title: "Task blocked",
+	Units: "tasks/s",
+	Fam:   "task queued %s %s",
+	Ctx:   "cassandra.task_blocked",
+	Type:  module.Line,
+	Dims: Dims{
+		{ID: "%s_%s_task", Name: "task", Algo: module.Incremental},
+	},
+}
+
 func newCassandraCharts() *Charts {
 	return &Charts{
 		chartCassandraThroughput.Copy(),
@@ -207,6 +219,7 @@ func newCassandraCharts() *Charts {
 		chartCassandraErrorTimeout.Copy(),
 		chartCassandraErrorUnavailable.Copy(),
 		chartCassandraPendingTasks.Copy(),
+		chartCassandraBlockedTasks.Copy(),
 	}
 }
 
