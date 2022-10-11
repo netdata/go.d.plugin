@@ -32,18 +32,26 @@ func (d *DNSQuery) collect() (map[string]int64, error) {
 				address := net.JoinHostPort(srv, strconv.Itoa(d.Port))
 
 				resp, rtt, err := d.dnsClient.Exchange(msg, address)
-				if err != nil {
-					d.Debugf("error on querying %s after %s query for %s : %s", srv, rtypeName, domain, err)
-					return
-				}
-				if resp != nil && resp.Rcode != dns.RcodeSuccess {
-					d.Errorf("invalid answer from %s after %s query for %s", srv, rtypeName, domain)
-					return
-				}
 
 				mux.Lock()
-				mx["server_"+srv+"_record_"+rtypeName+"_query_time"] = rtt.Nanoseconds()
-				mux.Unlock()
+				defer mux.Unlock()
+
+				px := "server_" + srv + "_record_" + rtypeName + "_"
+
+				mx[px+"query_status_success"] = 0
+				mx[px+"query_status_fail"] = 0
+				mx[px+"query_status_error"] = 0
+
+				if err != nil {
+					d.Debugf("error on querying %s after %s query for %s : %s", srv, rtypeName, domain, err)
+					mx[px+"query_status_error"] = 1
+				} else if resp != nil && resp.Rcode != dns.RcodeSuccess {
+					d.Debugf("invalid answer from %s after %s query for %s", srv, rtypeName, domain)
+					mx[px+"query_status_fail"] = 1
+				} else {
+					mx[px+"query_status_success"] = 1
+					mx["server_"+srv+"_record_"+rtypeName+"_query_time"] = rtt.Nanoseconds()
+				}
 			}(srv, rtypeName, rtype, &wg)
 		}
 	}
