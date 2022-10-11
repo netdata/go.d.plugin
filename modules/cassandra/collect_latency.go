@@ -13,19 +13,19 @@ func doCollectLatency(pms prometheus.Metrics) bool {
 	return enabled && success
 }
 
-func collectLatency(pms prometheus.Metrics) *LATENCY {
+func collectLatency(pms prometheus.Metrics) *latency {
 	if !doCollectLatency(pms) {
 		return nil
 	}
 
-	var la LATENCY
+	var la latency
 	collectLatencyByType(&la, pms)
 
 	return &la
 }
 
-func collectLatencyByType(la *LATENCY, pms prometheus.Metrics) {
-	var total LATENCY
+func collectLatencyByType(la *latency, pms prometheus.Metrics) {
+	var total latency
 	for _, pm := range pms.FindByName(metricRequestType) {
 		metricName := pm.Labels.Get("name")
 		metricScope := pm.Labels.Get("scope")
@@ -40,7 +40,7 @@ func collectLatencyByType(la *LATENCY, pms prometheus.Metrics) {
 	la.write_latency = total.write_latency
 }
 
-func assignLatencyMetric(la *LATENCY, scope string, value float64) {
+func assignLatencyMetric(la *latency, scope string, value float64) {
 	switch scope {
 	default:
 	case "Read":

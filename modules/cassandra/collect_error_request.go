@@ -22,18 +22,18 @@ func doCollectRequestError(pms prometheus.Metrics, metric string) bool {
 	return enabled && success
 }
 
-func collectRequestError(pms prometheus.Metrics, metric string) *REQUEST_ERROR {
+func collectRequestError(pms prometheus.Metrics, metric string) *requestError {
 	if !doCollectRequestError(pms, metric) {
 		return nil
 	}
 
-	var re REQUEST_ERROR
+	var re requestError
 	collectRequestErrorByType(&re, pms)
 
 	return &re
 }
 
-func collectRequestErrorByType(re *REQUEST_ERROR, pms prometheus.Metrics) {
+func collectRequestErrorByType(re *requestError, pms prometheus.Metrics) {
 	for _, pm := range pms.FindByName(metricRequestType) {
 		metricName := pm.Labels.Get("name")
 		scopeName := pm.Labels.Get("scope")
@@ -43,7 +43,7 @@ func collectRequestErrorByType(re *REQUEST_ERROR, pms prometheus.Metrics) {
 	}
 }
 
-func assignRequestErrorMetric(re *REQUEST_ERROR, scope string, value float64) {
+func assignRequestErrorMetric(re *requestError, scope string, value float64) {
 	switch scope {
 	default:
 	case "Read":

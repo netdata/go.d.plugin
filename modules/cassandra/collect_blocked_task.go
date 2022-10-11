@@ -16,19 +16,19 @@ func doCollectBlockedTask(pms prometheus.Metrics) bool {
 	return enabled && success
 }
 
-func collectBlockedTask(pms prometheus.Metrics) *BLOCKED_TASK {
+func collectBlockedTask(pms prometheus.Metrics) *blockedTask {
 	if !doCollectBlockedTask(pms) {
 		return nil
 	}
 
-	var bt BLOCKED_TASK
+	var bt blockedTask
 	collectBlockedTaskByType(&bt, pms)
 
 	return &bt
 }
 
-func collectBlockedTaskByType(bt *BLOCKED_TASK, pms prometheus.Metrics) {
-	var values BLOCKED_TASK
+func collectBlockedTaskByType(bt *blockedTask, pms prometheus.Metrics) {
+	var values blockedTask
 	for _, pm := range pms.FindByName(metricBlockedType) {
 		metricScope := pm.Labels.Get("scope")
 		metricName := pm.Labels.Get("name")
@@ -39,7 +39,7 @@ func collectBlockedTaskByType(bt *BLOCKED_TASK, pms prometheus.Metrics) {
 	bt.task = values.task
 }
 
-func assignBlockedTaskMetric(pt *BLOCKED_TASK, scope string, value float64) {
+func assignBlockedTaskMetric(pt *blockedTask, scope string, value float64) {
 	switch scope {
 	default:
 	case "CounterMutationStage":

@@ -34,16 +34,16 @@ func (c *Cassandra) collect() (map[string]int64, error) {
 
 func collect(pms prometheus.Metrics) *metrics {
 	mx := metrics{
-		throughput:   collectThroughput(pms),
-		latency:      collectLatency(pms),
-		cache:        collectCache(pms),
-		disk:         collectDisk(pms),
-		gc_count:     collectGC(pms, metricGCCount),
-		gc_time:      collectGC(pms, metricGCTime),
+		ioThroughput: collectThroughput(pms),
+		ioLatency:    collectLatency(pms),
+		hit:          collectCache(pms),
+		hd:           collectDisk(pms),
+		gcCount:      collectGC(pms, metricGCCount),
+		gcTime:       collectGC(pms, metricGCTime),
 		etimeout:     collectRequestError(pms, collectorTimeout),
 		eunavailable: collectRequestError(pms, collectorUnavailable),
-		pending_task: collectPendingTask(pms),
-		blocked_task: collectBlockedTask(pms),
+		pTask:        collectPendingTask(pms),
+		bTask:        collectBlockedTask(pms),
 	}
 
 	return &mx

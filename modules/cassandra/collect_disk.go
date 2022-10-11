@@ -16,19 +16,19 @@ func doCollectDisk(pms prometheus.Metrics) bool {
 	return enabled && success
 }
 
-func collectDisk(pms prometheus.Metrics) *DISK {
+func collectDisk(pms prometheus.Metrics) *disk {
 	if !doCollectDisk(pms) {
 		return nil
 	}
 
-	var di DISK
+	var di disk
 	collectDiskByType(&di, pms)
 
 	return &di
 }
 
-func collectDiskByType(di *DISK, pms prometheus.Metrics) {
-	var total DISK
+func collectDiskByType(di *disk, pms prometheus.Metrics) {
+	var total disk
 	for _, pm := range pms.FindByName(metricTableType) {
 		metricName := pm.Labels.Get("name")
 		sumDiskMetric(&total, metricName, pm.Value)
@@ -40,7 +40,7 @@ func collectDiskByType(di *DISK, pms prometheus.Metrics) {
 	di.compaction_queue = total.compaction_queue
 }
 
-func sumDiskMetric(di *DISK, scope string, value float64) {
+func sumDiskMetric(di *disk, scope string, value float64) {
 	switch scope {
 	default:
 	case "LiveDiskSpaceUsed":

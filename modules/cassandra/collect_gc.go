@@ -23,25 +23,25 @@ func doCollectGCCount(pms prometheus.Metrics, metric string) bool {
 	return enabled && success
 }
 
-func collectGC(pms prometheus.Metrics, metric string) *GARBAGE_COLLECTION {
+func collectGC(pms prometheus.Metrics, metric string) *garbageCollection {
 	if !doCollectGCCount(pms, metric) {
 		return nil
 	}
 
-	var gcc GARBAGE_COLLECTION
+	var gcc garbageCollection
 	collectGCCountByType(&gcc, pms)
 
 	return &gcc
 }
 
-func collectGCCountByType(gcc *GARBAGE_COLLECTION, pms prometheus.Metrics) {
+func collectGCCountByType(gcc *garbageCollection, pms prometheus.Metrics) {
 	for _, pm := range pms.FindByName(metricGCCount) {
 		metricName := pm.Labels.Get("gc")
 		assignGCCountMetric(gcc, metricName, pm.Value)
 	}
 }
 
-func assignGCCountMetric(gcc *GARBAGE_COLLECTION, scope string, value float64) {
+func assignGCCountMetric(gcc *garbageCollection, scope string, value float64) {
 	switch scope {
 	default:
 	case "ParNew":

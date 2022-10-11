@@ -16,25 +16,25 @@ func doCollectPendingTask(pms prometheus.Metrics) bool {
 	return enabled && success
 }
 
-func collectPendingTask(pms prometheus.Metrics) *PENDING_TASK {
+func collectPendingTask(pms prometheus.Metrics) *pendingTask {
 	if !doCollectPendingTask(pms) {
 		return nil
 	}
 
-	var pt PENDING_TASK
+	var pt pendingTask
 	collectPendingTaskByType(&pt, pms)
 
 	return &pt
 }
 
-func collectPendingTaskByType(pt *PENDING_TASK, pms prometheus.Metrics) {
+func collectPendingTaskByType(pt *pendingTask, pms prometheus.Metrics) {
 	for _, pm := range pms.FindByName(metricPendingTaskType) {
 		metricName := pm.Labels.Get("name")
 		assignPendingTaskMetric(pt, metricName, pm.Value)
 	}
 }
 
-func assignPendingTaskMetric(pt *PENDING_TASK, scope string, value float64) {
+func assignPendingTaskMetric(pt *pendingTask, scope string, value float64) {
 	switch scope {
 	default:
 	case "PendingTasks":

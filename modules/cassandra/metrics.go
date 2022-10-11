@@ -3,16 +3,16 @@
 package cassandra
 
 type metrics struct {
-	throughput   *THROUGHPUT         `stm:"throuput"`
-	latency      *LATENCY            `stm:"latency"`
-	cache        *CACHE              `stm:"cache"`
-	disk         *DISK               `stm:"disk"`
-	gc_count     *GARBAGE_COLLECTION `stm:"java_gc_count"`
-	gc_time      *GARBAGE_COLLECTION `stm:"java_gc_time"`
-	etimeout     *REQUEST_ERROR      `stm:"error_timeout"`
-	eunavailable *REQUEST_ERROR      `stm:"error_unavailable"`
-	pending_task *PENDING_TASK       `stm:"pending_tasks"`
-	blocked_task *BLOCKED_TASK       `stm:"blocked_tasks"`
+	ioThroughput *throughput        `stm:"throuput"`
+	ioLatency    *latency           `stm:"latency"`
+	hit          *cache             `stm:"cache"`
+	hd           *disk              `stm:"disk"`
+	gcCount      *garbageCollection `stm:"java_gc_count"`
+	gcTime       *garbageCollection `stm:"java_gc_time"`
+	etimeout     *requestError      `stm:"error_timeout"`
+	eunavailable *requestError      `stm:"error_unavailable"`
+	pTask        *pendingTask       `stm:"pending_tasks"`
+	bTask        *blockedTask       `stm:"blocked_tasks"`
 }
 
 const (
@@ -20,35 +20,35 @@ const (
 )
 
 type (
-	THROUGHPUT struct {
+	throughput struct {
 		read  int64 `stm:"Read"`
 		write int64 `stm:"Write"`
 	}
-	LATENCY struct {
+	latency struct {
 		read_latency  int64 `stm:"ReadLatency"`
 		write_latency int64 `stm:"WriteLatency"`
 	}
-	CACHE struct {
+	cache struct {
 		hit int64 `stm:"HitRate"`
 	}
-	DISK struct {
+	disk struct {
 		load                 float64 `stm:"LiveDiskSpaceUsed"`
 		used                 float64 `stm:"TotalDiskSpaceUsed"`
 		compaction_completed float64 `stm:"CompactionBytesWritten"`
 		compaction_queue     float64 `stm:"PendingCompactions"`
 	}
-	GARBAGE_COLLECTION struct {
+	garbageCollection struct {
 		parNew    int64 `stm:"ParNew"`
 		markSweep int64 `stm:"ConcurrentMarkSweep"`
 	}
-	REQUEST_ERROR struct {
+	requestError struct {
 		read_error  int64 `stm:"Read"`
 		write_error int64 `stm:"Write"`
 	}
-	PENDING_TASK struct {
+	pendingTask struct {
 		task int64 `stm:"tasks"`
 	}
-	BLOCKED_TASK struct {
+	blockedTask struct {
 		task int64 `stm:"CurrentlyBlockedTasks"`
 	}
 )

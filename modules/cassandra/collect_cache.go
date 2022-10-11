@@ -14,18 +14,18 @@ func doCollectCache(pms prometheus.Metrics) bool {
 	return enabled && success
 }
 
-func collectCache(pms prometheus.Metrics) *CACHE {
+func collectCache(pms prometheus.Metrics) *cache {
 	if !doCollectCache(pms) {
 		return nil
 	}
 
-	var ca CACHE
+	var ca cache
 	collectCacheByType(&ca, pms)
 
 	return &ca
 }
 
-func collectCacheByType(ca *CACHE, pms prometheus.Metrics) {
+func collectCacheByType(ca *cache, pms prometheus.Metrics) {
 	for _, pm := range pms.FindByName(metricCacheType) {
 		metricName := pm.Labels.Get("name")
 		// Code prepared to collect more metrics from Cache.
@@ -35,7 +35,7 @@ func collectCacheByType(ca *CACHE, pms prometheus.Metrics) {
 	}
 }
 
-func assignCacheMetric(ca *CACHE, scope string, value float64) {
+func assignCacheMetric(ca *cache, scope string, value float64) {
 	switch scope {
 	default:
 	case "HitRate":

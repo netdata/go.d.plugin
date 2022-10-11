@@ -14,25 +14,25 @@ func doCollectThroughput(pms prometheus.Metrics) bool {
 	return enabled && success
 }
 
-func collectThroughput(pms prometheus.Metrics) *THROUGHPUT {
+func collectThroughput(pms prometheus.Metrics) *throughput {
 	if !doCollectThroughput(pms) {
 		return nil
 	}
 
-	var tp THROUGHPUT
+	var tp throughput
 	collectThroughputByType(&tp, pms)
 
 	return &tp
 }
 
-func collectThroughputByType(tp *THROUGHPUT, pms prometheus.Metrics) {
+func collectThroughputByType(tp *throughput, pms prometheus.Metrics) {
 	for _, pm := range pms.FindByName(metricTroughputType) {
 		metricScope := pm.Labels.Get("scope")
 		assignThroughputMetric(tp, metricScope, pm.Value)
 	}
 }
 
-func assignThroughputMetric(tp *THROUGHPUT, scope string, value float64) {
+func assignThroughputMetric(tp *throughput, scope string, value float64) {
 	switch scope {
 	default:
 	case "Read":
