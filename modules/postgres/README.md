@@ -22,9 +22,12 @@ To find out more about these metrics and why they are important to monitor, read
 
 Without additional configuration Netdata will attempt to use the default postgres user - but a separate netdata user can be created for this purpose. If you have PostgreSQL 10+ and want to use Netdata to monitor statistics normally reserved for superusers grant the netdata user pg_monitor permissions. Some of the advanced metrics also require additional permissions as mentioned in [metrics](#metrics).
 
-1. Login to a psql session as a user with CREATEROLE priviliges
-2. `postgres=# create user netdata with password '<PASSWORD>';`
-3. `postgres=# grant pg_monitor to netdata;`
+To create the `netdata` user with these permissions, execute the following in the psql session, as a user with CREATEROLE priviliges:
+
+```postgresql
+create user netdata;
+grant pg_monitor to netdata;
+```
 
 Edit the configuration file as mentioned in the [configuration](#configuration) section.
 ```
