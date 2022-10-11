@@ -29,12 +29,7 @@ create user netdata;
 grant pg_monitor to netdata;
 ```
 
-Edit the configuration file as mentioned in the [configuration](#configuration) section.
-```
-jobs:
-  - name: <jobname>
-    dsn: 'postgres://<username>:<password>@<host>:<port>/<dbname>'
-```
+After creating the new user, restart the Netdata agent with `sudo systemctl restart netdata`, or the [appropriate method](https://learn.netdata.cloud/docs/configure/start-stop-restart) for your system
 
 ## Metrics
 
