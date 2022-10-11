@@ -26,8 +26,7 @@ Without additional configuration Netdata will attempt to use the default postgre
 2. `postgres=# create user netdata with password '<PASSWORD>';`
 3. `postgres=# grant pg_monitor to netdata;`
 
-Edit the `go.d/postgres.conf` configuration file using `edit-config` from the Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata` and set the username and password you just defined.
-
+Edit the configuration file as mentioned in the [configuration](#configuration) section.
 ```
 jobs:
   - name: <jobname>
