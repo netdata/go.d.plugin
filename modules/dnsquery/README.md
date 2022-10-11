@@ -17,9 +17,10 @@ Labels per scope:
 
 - server: server, network, record_type.
 
-| Metric     | Scope  | Dimensions |  Units  |
-|------------|:------:|:----------:|:-------:|
-| query_time | server | query_time | seconds |
+| Metric       | Scope  |      Dimensions      |  Units  |
+|--------------|:------:|:--------------------:|:-------:|
+| query_time   | server |      query_time      | seconds |
+| query_status | server | success, fail, error | seconds |
 
 ## Configuration
 
