@@ -28,7 +28,6 @@ func (c *Cassandra) collect() (map[string]int64, error) {
 	}
 
 	mx := collect(pms)
-	c.updateCharts(mx)
 
 	return stm.ToMap(mx), nil
 }

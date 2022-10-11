@@ -222,34 +222,3 @@ func newCassandraCharts() *Charts {
 		chartCassandraBlockedTasks.Copy(),
 	}
 }
-
-func (c *Cassandra) updateCharts(mx *metrics) {
-	c.updateThrouputCharts(mx)
-	c.updateLatencyCharts(mx)
-	c.updateCacheCharts(mx)
-	c.updateDiskCharts(mx)
-}
-
-func (c *Cassandra) updateThrouputCharts(mx *metrics) {
-	if !mx.hasThrouput() {
-		return
-	}
-}
-
-func (c *Cassandra) updateLatencyCharts(mx *metrics) {
-	if !mx.hasLatency() {
-		return
-	}
-}
-
-func (c *Cassandra) updateCacheCharts(mx *metrics) {
-	if !mx.hasCache() {
-		return
-	}
-}
-
-func (c *Cassandra) updateDiskCharts(mx *metrics) {
-	if !mx.hasDisk() {
-		return
-	}
-}
