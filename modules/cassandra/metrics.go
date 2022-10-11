@@ -15,11 +15,6 @@ type metrics struct {
 	blocked_task *BLOCKED_TASK       `stm:"blocked_tasks"`
 }
 
-func (c metrics) hasThrouput() bool { return c.throughput != nil }
-func (c metrics) hasLatency() bool  { return c.latency != nil }
-func (c metrics) hasCache() bool    { return c.cache != nil }
-func (c metrics) hasDisk() bool     { return c.disk != nil }
-
 const (
 	metricRequestType = "org_apache_cassandra_metrics_clientrequest_count"
 )
