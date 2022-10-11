@@ -28,8 +28,8 @@ var (
 		Priority: prioDNSQueryStatus,
 		Dims: module.Dims{
 			{ID: "server_%s_record_%s_query_status_success", Name: "success"},
-			{ID: "server_%s_record_%s_query_status_fail", Name: "fail"},
-			{ID: "server_%s_record_%s_query_status_error", Name: "error"},
+			{ID: "server_%s_record_%s_query_status_network_error", Name: "network_error"},
+			{ID: "server_%s_record_%s_query_status_dns_error", Name: "dns_error"},
 		},
 	}
 	dnsQueryTimeChartTmpl = module.Chart{
