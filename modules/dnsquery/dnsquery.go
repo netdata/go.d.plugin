@@ -23,10 +23,10 @@ func init() {
 func New() *DNSQuery {
 	return &DNSQuery{
 		Config: Config{
-			Timeout:    web.Duration{Duration: time.Second * 2},
-			Network:    "udp",
-			RecordType: "A",
-			Port:       53,
+			Timeout:     web.Duration{Duration: time.Second * 2},
+			Network:     "udp",
+			RecordTypes: []string{"A"},
+			Port:        53,
 		},
 		newDNSClient: func(network string, timeout time.Duration) dnsClient {
 			return &dns.Client{
@@ -38,12 +38,13 @@ func New() *DNSQuery {
 }
 
 type Config struct {
-	Domains    []string
-	Servers    []string
-	Network    string
-	RecordType string `yaml:"record_type"`
-	Port       int
-	Timeout    web.Duration
+	Domains     []string
+	Servers     []string
+	Network     string
+	RecordType  string   `yaml:"record_type"`
+	RecordTypes []string `yaml:"record_types"`
+	Port        int
+	Timeout     web.Duration
 }
 
 type (
@@ -55,7 +56,7 @@ type (
 		charts *module.Charts
 
 		newDNSClient func(network string, duration time.Duration) dnsClient
-		rtype        uint16
+		recordTypes  map[string]uint16
 
 		dnsClient dnsClient
 	}
@@ -71,12 +72,12 @@ func (d *DNSQuery) Init() bool {
 		return false
 	}
 
-	rt, err := d.initRecordType()
+	rt, err := d.initRecordTypes()
 	if err != nil {
 		d.Errorf("init record type: %v", err)
 		return false
 	}
-	d.rtype = rt
+	d.recordTypes = rt
 
 	charts, err := d.initCharts()
 	if err != nil {

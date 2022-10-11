@@ -36,6 +36,9 @@ Here is an example:
 ```yaml
 jobs:
   - name: job1
+    record_types:
+      - A
+      - AAAA
     domains:
       - google.com
       - github.com
