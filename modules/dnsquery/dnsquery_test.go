@@ -47,38 +47,13 @@ func TestDNSQuery_Charts(t *testing.T) {
 	assert.True(t, charts.Get("query_time").HasDim("8_8_8_8"))
 }
 
-func TestDNSQuery_Cleanup(t *testing.T) {
-	mod := New()
-
-	mod.Domains = []string{"google.com"}
-	mod.Servers = []string{"8.8.8.8"}
-	require.True(t, mod.Init())
-
-	time.Sleep(time.Second)
-	require.Len(t, mod.servers, len(mod.Servers))
-	require.Len(t, mod.workers, len(mod.Servers))
-
-	mod.Cleanup()
-	time.Sleep(time.Second)
-	assert.Len(t, mod.workers, 0)
-
-	wait := time.NewTimer(time.Second)
-	defer wait.Stop()
-
-	select {
-	case <-wait.C:
-		t.Error("cleanup failed, task channel is not closed")
-	case <-mod.task:
-	}
-}
-
 func TestDNSQuery_Collect(t *testing.T) {
 	mod := New()
 	defer mod.Cleanup()
 
 	mod.Domains = []string{"google.com"}
 	mod.Servers = []string{"8.8.8.8"}
-	mod.exchangerFactory = func(network string, duration time.Duration) exchanger {
+	mod.newDNSClient = func(network string, duration time.Duration) dnsClient {
 		return okMockExchanger{}
 	}
 
@@ -98,7 +73,7 @@ func TestDNSQuery_Collect_Error(t *testing.T) {
 
 	mod.Domains = []string{"google.com"}
 	mod.Servers = []string{"8.8.8.8"}
-	mod.exchangerFactory = func(network string, duration time.Duration) exchanger {
+	mod.newDNSClient = func(network string, duration time.Duration) dnsClient {
 		return errMockExchanger{}
 	}
 

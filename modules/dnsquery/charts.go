@@ -2,21 +2,43 @@
 
 package dnsquery
 
-import "github.com/netdata/go.d.plugin/agent/module"
+import (
+	"fmt"
+	"strings"
 
-type (
-	// Charts is an alias for module.Charts
-	Charts = module.Charts
-	// Dim is an alias for module.Dim
-	Dim = module.Dim
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-var charts = Charts{
-	{
-		ID:    "query_time",
+var (
+	dnsChartsTmpl = module.Charts{
+		dnsQueryTimeChartTmpl.Copy(),
+	}
+	dnsQueryTimeChartTmpl = module.Chart{
+		ID:    "server_%s_query_time",
 		Title: "DNS Query Time",
-		Units: "ms",
+		Units: "seconds",
 		Fam:   "query time",
-		Ctx:   "dns_query_time.query_time",
-	},
+		Ctx:   "dns_query.query_time",
+		Dims: module.Dims{
+			{ID: "server_%s_query_time", Name: "query_time", Div: 1e9},
+		},
+	}
+)
+
+func newDNSServerCharts(server, network, rtype string) *module.Charts {
+	charts := dnsChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, strings.ReplaceAll(server, ".", "_"))
+		chart.Labels = []module.Label{
+			{Key: "server", Value: server},
+			{Key: "network", Value: network},
+			{Key: "record_type", Value: rtype},
+		}
+		for _, d := range chart.Dims {
+			d.ID = fmt.Sprintf(d.ID, server)
+		}
+	}
+
+	return charts
 }

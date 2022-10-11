@@ -7,15 +7,15 @@ sidebar_label: "DNS queries"
 
 # DNS query monitoring with Netdata
 
-This module provides DNS query RTT in milliseconds.
+This module provides DNS query round-trip time (RTT).
 
 ## Metrics
 
-All metrics have "dnsquery." prefix.
+All metrics have "dns_query." prefix.
 
-| Metric     | Scope  |             Dimensions             | Units |
-|------------|:------:|:----------------------------------:|:-----:|
-| query_time | global | <i>a dimension per name server</i> |  ms   |
+| Metric     | Scope  | Dimensions |  Units  |
+|------------|:------:|:----------:|:-------:|
+| query_time | server | query_time | seconds |
 
 ## Configuration
 
