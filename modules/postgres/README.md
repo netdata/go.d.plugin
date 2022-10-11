@@ -25,8 +25,8 @@ Without additional configuration Netdata will attempt to use the default postgre
 To create the `netdata` user with these permissions, execute the following in the psql session, as a user with CREATEROLE priviliges:
 
 ```postgresql
-create user netdata;
-grant pg_monitor to netdata;
+CREATE USER netdata;
+GRANT pg_monitor TO netdata;
 ```
 
 After creating the new user, restart the Netdata agent with `sudo systemctl restart netdata`, or the [appropriate method](https://learn.netdata.cloud/docs/configure/start-stop-restart) for your system
