@@ -5,7 +5,6 @@ package dnsquery
 import (
 	"errors"
 	"fmt"
-
 	"github.com/netdata/go.d.plugin/agent/module"
 
 	"github.com/miekg/dns"
@@ -24,24 +23,45 @@ func (d *DNSQuery) verifyConfig() error {
 		return fmt.Errorf("wrong network transport : %s", d.Network)
 	}
 
+	if d.RecordType != "" {
+		d.Warning("'record_type' config option is deprecated, use 'record_types' instead")
+		d.RecordTypes = append(d.RecordTypes, d.RecordType)
+	}
+
+	if len(d.RecordTypes) == 0 {
+		return errors.New("no record types specified")
+	}
+
 	return nil
+}
+
+func (d *DNSQuery) initRecordTypes() (map[string]uint16, error) {
+	types := make(map[string]uint16)
+	for _, v := range d.RecordTypes {
+		rtype, err := parseRecordType(v)
+		if err != nil {
+			return nil, err
+		}
+		types[v] = rtype
+
+	}
+
+	return types, nil
 }
 
 func (d *DNSQuery) initCharts() (*module.Charts, error) {
 	var charts module.Charts
 
 	for _, srv := range d.Servers {
-		cs := newDNSServerCharts(srv, d.Network, d.RecordType)
-		if err := charts.Add(*cs...); err != nil {
-			return nil, err
+		for _, rtype := range d.RecordTypes {
+			cs := newDNSServerCharts(srv, d.Network, rtype)
+			if err := charts.Add(*cs...); err != nil {
+				return nil, err
+			}
 		}
 	}
 
 	return &charts, nil
-}
-
-func (d *DNSQuery) initRecordType() (uint16, error) {
-	return parseRecordType(d.RecordType)
 }
 
 func parseRecordType(recordType string) (uint16, error) {

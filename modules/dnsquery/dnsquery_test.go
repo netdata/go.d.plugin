@@ -27,9 +27,20 @@ func TestDNSQuery_Init(t *testing.T) {
 		"success when all set": {
 			wantFail: false,
 			config: Config{
+				Domains:     []string{"example.com"},
+				Servers:     []string{"192.0.2.0"},
+				Network:     "udp",
+				RecordTypes: []string{"A"},
+				Port:        53,
+				Timeout:     web.Duration{Duration: time.Second},
+			},
+		},
+		"success when using deprecated record_type": {
+			wantFail: false,
+			config: Config{
 				Domains:    []string{"example.com"},
 				Servers:    []string{"192.0.2.0"},
-				Network:    "tcp",
+				Network:    "udp",
 				RecordType: "A",
 				Port:       53,
 				Timeout:    web.Duration{Duration: time.Second},
@@ -42,45 +53,45 @@ func TestDNSQuery_Init(t *testing.T) {
 		"fail when domains not set": {
 			wantFail: true,
 			config: Config{
-				Domains:    nil,
-				Servers:    []string{"192.0.2.0"},
-				Network:    "tcp",
-				RecordType: "A",
-				Port:       53,
-				Timeout:    web.Duration{Duration: time.Second},
+				Domains:     nil,
+				Servers:     []string{"192.0.2.0"},
+				Network:     "udp",
+				RecordTypes: []string{"A"},
+				Port:        53,
+				Timeout:     web.Duration{Duration: time.Second},
 			},
 		},
 		"fail when servers not set": {
 			wantFail: true,
 			config: Config{
-				Domains:    []string{"example.com"},
-				Servers:    nil,
-				Network:    "tcp",
-				RecordType: "A",
-				Port:       53,
-				Timeout:    web.Duration{Duration: time.Second},
+				Domains:     []string{"example.com"},
+				Servers:     nil,
+				Network:     "udp",
+				RecordTypes: []string{"A"},
+				Port:        53,
+				Timeout:     web.Duration{Duration: time.Second},
 			},
 		},
 		"fail when network is invalid": {
 			wantFail: true,
 			config: Config{
-				Domains:    []string{"example.com"},
-				Servers:    []string{"192.0.2.0"},
-				Network:    "gcp",
-				RecordType: "A",
-				Port:       53,
-				Timeout:    web.Duration{Duration: time.Second},
+				Domains:     []string{"example.com"},
+				Servers:     []string{"192.0.2.0"},
+				Network:     "gcp",
+				RecordTypes: []string{"A"},
+				Port:        53,
+				Timeout:     web.Duration{Duration: time.Second},
 			},
 		},
 		"fail when record_type is invalid": {
 			wantFail: true,
 			config: Config{
-				Domains:    []string{"example.com"},
-				Servers:    []string{"192.0.2.0"},
-				Network:    "gcp",
-				RecordType: "B",
-				Port:       53,
-				Timeout:    web.Duration{Duration: time.Second},
+				Domains:     []string{"example.com"},
+				Servers:     []string{"192.0.2.0"},
+				Network:     "udp",
+				RecordTypes: []string{"B"},
+				Port:        53,
+				Timeout:     web.Duration{Duration: time.Second},
 			},
 		},
 	}
@@ -130,14 +141,14 @@ func TestDNSQuery_Check(t *testing.T) {
 }
 
 func TestDNSQuery_Charts(t *testing.T) {
-	mod := New()
+	dq := New()
 
-	mod.Domains = []string{"google.com"}
-	mod.Servers = []string{"192.0.2.0", "192.0.2.1"}
-	require.True(t, mod.Init())
+	dq.Domains = []string{"google.com"}
+	dq.Servers = []string{"192.0.2.0", "192.0.2.1"}
+	require.True(t, dq.Init())
 
-	assert.NotNil(t, mod.Charts())
-	assert.Len(t, *mod.Charts(), len(dnsChartsTmpl)*len(mod.Servers))
+	assert.NotNil(t, dq.Charts())
+	assert.Len(t, *dq.Charts(), len(dnsChartsTmpl)*len(dq.Servers))
 }
 
 func TestDNSQuery_Collect(t *testing.T) {
@@ -148,8 +159,8 @@ func TestDNSQuery_Collect(t *testing.T) {
 		"success when DNS query successful": {
 			prepare: caseDNSClientOK,
 			wantMetrics: map[string]int64{
-				"server_192.0.2.0_query_time": 1000000000,
-				"server_192.0.2.1_query_time": 1000000000,
+				"server_192.0.2.0_record_A_query_time": 1000000000,
+				"server_192.0.2.1_record_A_query_time": 1000000000,
 			},
 		},
 		"fail when DNS query returns an error": {
