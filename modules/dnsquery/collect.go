@@ -44,10 +44,10 @@ func (d *DNSQuery) collect() (map[string]int64, error) {
 
 				if err != nil {
 					d.Debugf("error on querying %s after %s query for %s : %s", srv, rtypeName, domain, err)
-					mx[px+"query_status_error"] = 1
+					mx[px+"query_status_fail"] = 1
 				} else if resp != nil && resp.Rcode != dns.RcodeSuccess {
 					d.Debugf("invalid answer from %s after %s query for %s", srv, rtypeName, domain)
-					mx[px+"query_status_fail"] = 1
+					mx[px+"query_status_error"] = 1
 				} else {
 					mx[px+"query_status_success"] = 1
 					mx["server_"+srv+"_record_"+rtypeName+"_query_time"] = rtt.Nanoseconds()
