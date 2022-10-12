@@ -20,186 +20,186 @@ type (
 )
 
 var chartCassandraThroughput = Chart{
-	ID:    "throughput_%s_%s",
+	ID:    "throughput",
 	Title: "I/O requests.",
 	Units: "requests/s",
-	Fam:   "throughput %s %s",
+	Fam:   "throughput",
 	Ctx:   "cassandra.throughput",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_read", Name: "read", Algo: module.Incremental},
-		{ID: "%s_%s_write", Name: "write", Algo: module.Incremental},
+		{ID: "read", Name: "read", Algo: module.Incremental},
+		{ID: "write", Name: "write", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraLatency = Chart{
-	ID:    "latency_%s_%s",
+	ID:    "latency",
 	Title: "I/O latency.",
 	Units: "requests/s",
-	Fam:   "latency %s %s",
+	Fam:   "latency",
 	Ctx:   "cassandra.latency",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_read", Name: "read", Algo: module.Incremental},
-		{ID: "%s_%s_write", Name: "write", Algo: module.Incremental},
+		{ID: "read", Name: "read", Algo: module.Incremental},
+		{ID: "write", Name: "write", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraCache = Chart{
-	ID:    "cache_%s_%s",
+	ID:    "cache",
 	Title: "Cache Hit",
 	Units: "percentage/s",
-	Fam:   "cache %s %s",
+	Fam:   "cache",
 	Ctx:   "cassandra.cache",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_ratio", Name: "ratio", Algo: module.Incremental},
+		{ID: "ratio", Name: "ratio", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraDiskNode = Chart{
-	ID:    "node_%s_%s",
+	ID:    "node",
 	Title: "Disk Node",
 	Units: "bytes/s",
-	Fam:   "node %s %s",
+	Fam:   "node",
 	Ctx:   "cassandra.node",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_node", Name: "node", Algo: module.Incremental},
+		{ID: "node", Name: "node", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraDiskColumn = Chart{
-	ID:    "column_%s_%s",
+	ID:    "column",
 	Title: "Disk Column",
 	Units: "bytes/s",
-	Fam:   "column %s %s",
+	Fam:   "column",
 	Ctx:   "cassandra.disk_column",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_column", Name: "column", Algo: module.Incremental},
+		{ID: "column", Name: "column", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraDiskCompactionCompleted = Chart{
-	ID:    "compaction_completed_%s_%s",
+	ID:    "compaction_completed",
 	Title: "Completed Compaction Tasks",
 	Units: "events/s",
-	Fam:   "compaction %s %s",
+	Fam:   "compaction",
 	Ctx:   "cassandra.compaction_completed",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_compaction", Name: "compaction", Algo: module.Incremental},
+		{ID: "compaction", Name: "compaction", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraDiskCompactionQueue = Chart{
-	ID:    "compaction_queue_%s_%s",
+	ID:    "compaction_queue",
 	Title: "Queued Compaction Tasks",
 	Units: "events/s",
-	Fam:   "queue %s %s",
+	Fam:   "queue",
 	Ctx:   "cassandra.compaction_queued",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_queue", Name: "queue", Algo: module.Incremental},
+		{ID: "queue", Name: "queue", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraParNewCount = Chart{
-	ID:    "gc_parnew_count_%s_%s",
+	ID:    "gc_parnew_count",
 	Title: "Young-generation garbage collection counter",
 	Units: "garbage collection/s",
-	Fam:   "par new count %s %s",
+	Fam:   "par new count",
 	Ctx:   "cassandra.gc_parnew_count",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_parnew", Name: "parnew", Algo: module.Incremental},
+		{ID: "parnew", Name: "parnew", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraParNewTime = Chart{
-	ID:    "gc_parnew_time_%s_%s",
+	ID:    "gc_parnew_time",
 	Title: "Young-generation garbage collection timer",
 	Units: "period of time",
-	Fam:   "par new time %s %s",
+	Fam:   "par new time",
 	Ctx:   "cassandra.gc_parnew_time",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_parnew", Name: "parnew", Algo: module.Incremental},
+		{ID: "parnew", Name: "parnew", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraMarkSweepCount = Chart{
-	ID:    "gc_marksweep_count_%s_%s",
+	ID:    "gc_marksweep_count",
 	Title: "Old-generation collection",
 	Units: "events/s",
-	Fam:   "mark sweep %s %s",
+	Fam:   "mark sweep",
 	Ctx:   "cassandra.gc_sweep_count",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_sweep", Name: "sweep", Algo: module.Incremental},
+		{ID: "sweep", Name: "sweep", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraMarkSweepTime = Chart{
-	ID:    "gc_marksweep_time_%s_%s",
+	ID:    "gc_marksweep_time",
 	Title: "Elapsed time Old-generation collection",
 	Units: "period of time",
-	Fam:   "mark sweep %s %s",
+	Fam:   "mark sweep",
 	Ctx:   "cassandra.gc_sweep_time",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_sweep", Name: "sweep", Algo: module.Incremental},
+		{ID: "sweep", Name: "sweep", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraErrorTimeout = Chart{
-	ID:    "error_timeout_%s_%s",
+	ID:    "error_timeout",
 	Title: "Requests not unacknowledged",
 	Units: "requests/s",
-	Fam:   "request timeout %s %s",
+	Fam:   "request timeout",
 	Ctx:   "cassandra.error_timeout",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_read", Name: "read", Algo: module.Incremental},
-		{ID: "%s_%s_write", Name: "write", Algo: module.Incremental},
+		{ID: "read", Name: "read", Algo: module.Incremental},
+		{ID: "write", Name: "write", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraErrorUnavailable = Chart{
-	ID:    "error_timeout_%s_%s",
+	ID:    "error_timeout",
 	Title: "Request was unavailable",
 	Units: "requests/s",
-	Fam:   "request unavailable %s %s",
+	Fam:   "request unavailable",
 	Ctx:   "cassandra.error_unavailable",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_read", Name: "read", Algo: module.Incremental},
-		{ID: "%s_%s_write", Name: "write", Algo: module.Incremental},
+		{ID: "read", Name: "read", Algo: module.Incremental},
+		{ID: "write", Name: "write", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraPendingTasks = Chart{
-	ID:    "pending_task_%s_%s",
+	ID:    "pending_task",
 	Title: "Task queued",
 	Units: "tasks/s",
-	Fam:   "task queued %s %s",
+	Fam:   "task queued",
 	Ctx:   "cassandra.task_queued",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_task", Name: "task", Algo: module.Incremental},
+		{ID: "task", Name: "task", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraBlockedTasks = Chart{
-	ID:    "blocked_task_%s_%s",
+	ID:    "blocked_task",
 	Title: "Task blocked",
 	Units: "tasks/s",
-	Fam:   "task queued %s %s",
+	Fam:   "task queued",
 	Ctx:   "cassandra.task_blocked",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "%s_%s_task", Name: "task", Algo: module.Incremental},
+		{ID: "task", Name: "task", Algo: module.Incremental},
 	},
 }
 
