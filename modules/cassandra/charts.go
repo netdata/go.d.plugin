@@ -27,8 +27,8 @@ var chartCassandraThroughput = Chart{
 	Ctx:   "cassandra.throughput",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "read", Name: "read", Algo: module.Incremental},
-		{ID: "write", Name: "write", Algo: module.Incremental},
+		{ID: "throughput_Read", Name: "read", Algo: module.Incremental},
+		{ID: "throughput_Write", Name: "write", Algo: module.Incremental},
 	},
 }
 
@@ -53,31 +53,31 @@ var chartCassandraCache = Chart{
 	Ctx:   "cassandra.cache",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "ratio", Name: "ratio", Algo: module.Incremental},
+		{ID: "cache_HitRate", Name: "ratio", Algo: module.Incremental},
 	},
 }
 
-var chartCassandraDiskNode = Chart{
-	ID:    "node",
-	Title: "Disk Node",
+var chartCassandraDiskLoad = Chart{
+	ID:    "disk_load",
+	Title: "Disk Load",
 	Units: "bytes/s",
-	Fam:   "node",
+	Fam:   "disk_load",
 	Ctx:   "cassandra.node",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "node", Name: "node", Algo: module.Incremental},
+		{ID: "disk_LiveDiskSpaceUsed", Name: "space", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraDiskColumn = Chart{
-	ID:    "column",
+	ID:    "disk_column",
 	Title: "Disk Column",
 	Units: "bytes/s",
 	Fam:   "column",
 	Ctx:   "cassandra.disk_column",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "column", Name: "column", Algo: module.Incremental},
+		{ID: "disk_TotalDiskSpaceUsed", Name: "space", Algo: module.Incremental},
 	},
 }
 
@@ -89,7 +89,7 @@ var chartCassandraDiskCompactionCompleted = Chart{
 	Ctx:   "cassandra.compaction_completed",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "compaction", Name: "compaction", Algo: module.Incremental},
+		{ID: "disk_CompactionBytesWritten", Name: "compaction", Algo: module.Incremental},
 	},
 }
 
@@ -101,19 +101,19 @@ var chartCassandraDiskCompactionQueue = Chart{
 	Ctx:   "cassandra.compaction_queued",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "queue", Name: "queue", Algo: module.Incremental},
+		{ID: "disk_PendingCompactions", Name: "queue", Algo: module.Incremental},
 	},
 }
 
 var chartCassandraParNewCount = Chart{
 	ID:    "gc_parnew_count",
 	Title: "Young-generation garbage collection counter",
-	Units: "garbage collection/s",
+	Units: "events/s",
 	Fam:   "par new count",
 	Ctx:   "cassandra.gc_parnew_count",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "parnew", Name: "parnew", Algo: module.Incremental},
+		{ID: "java_gc_count_ParNew", Name: "parnew", Algo: module.Incremental},
 	},
 }
 
@@ -125,7 +125,7 @@ var chartCassandraParNewTime = Chart{
 	Ctx:   "cassandra.gc_parnew_time",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "parnew", Name: "parnew", Algo: module.Incremental},
+		{ID: "java_gc_time_ParNew", Name: "parnew", Algo: module.Incremental},
 	},
 }
 
@@ -137,7 +137,7 @@ var chartCassandraMarkSweepCount = Chart{
 	Ctx:   "cassandra.gc_sweep_count",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "sweep", Name: "sweep", Algo: module.Incremental},
+		{ID: "java_gc_count_ConcurrentMarkSweep", Name: "sweep", Algo: module.Incremental},
 	},
 }
 
@@ -149,7 +149,7 @@ var chartCassandraMarkSweepTime = Chart{
 	Ctx:   "cassandra.gc_sweep_time",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "sweep", Name: "sweep", Algo: module.Incremental},
+		{ID: "java_gc_time_ConcurrentMarkSweep", Name: "sweep", Algo: module.Incremental},
 	},
 }
 
@@ -161,8 +161,8 @@ var chartCassandraErrorTimeout = Chart{
 	Ctx:   "cassandra.error_timeout",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "read", Name: "read", Algo: module.Incremental},
-		{ID: "write", Name: "write", Algo: module.Incremental},
+		{ID: "error_timeout_Read", Name: "read", Algo: module.Incremental},
+		{ID: "error_timeout_Write", Name: "write", Algo: module.Incremental},
 	},
 }
 
@@ -174,8 +174,8 @@ var chartCassandraErrorUnavailable = Chart{
 	Ctx:   "cassandra.error_unavailable",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "read", Name: "read", Algo: module.Incremental},
-		{ID: "write", Name: "write", Algo: module.Incremental},
+		{ID: "error_unavailable_Read", Name: "read", Algo: module.Incremental},
+		{ID: "error_unavailable_Write", Name: "write", Algo: module.Incremental},
 	},
 }
 
@@ -187,7 +187,7 @@ var chartCassandraPendingTasks = Chart{
 	Ctx:   "cassandra.task_queued",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "task", Name: "task", Algo: module.Incremental},
+		{ID: "pending_tasks_tasks", Name: "task", Algo: module.Incremental},
 	},
 }
 
@@ -208,7 +208,7 @@ func newCassandraCharts() *Charts {
 		chartCassandraThroughput.Copy(),
 		chartCassandraLatency.Copy(),
 		chartCassandraCache.Copy(),
-		chartCassandraDiskNode.Copy(),
+		chartCassandraDiskLoad.Copy(),
 		chartCassandraDiskColumn.Copy(),
 		chartCassandraDiskCompactionCompleted.Copy(),
 		chartCassandraDiskCompactionQueue.Copy(),
