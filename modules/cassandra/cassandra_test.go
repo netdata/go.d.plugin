@@ -131,8 +131,8 @@ func TestCassandra_Collect(t *testing.T) {
 				"java_gc_time_ParNew":               8,
 				"pending_tasks_tasks":               0,
 				"system_up_time":                    0,
-				"throuput_Read":                     14,
-				"throuput_Write":                    0,
+				"throughput_Read":                   14,
+				"throughput_Write":                  0,
 			},
 		},
 		"fails if endpoint returns invalid data": {

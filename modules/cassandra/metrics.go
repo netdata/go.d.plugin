@@ -3,7 +3,7 @@
 package cassandra
 
 type metrics struct {
-	ioThroughput *throughput        `stm:"throuput"`
+	ioThroughput *throughput        `stm:"throughput"`
 	ioLatency    *latency           `stm:"latency"`
 	hit          *cache             `stm:"cache"`
 	hd           *disk              `stm:"disk"`
