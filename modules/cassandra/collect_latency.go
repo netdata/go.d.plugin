@@ -2,14 +2,16 @@
 
 package cassandra
 
-import "github.com/netdata/go.d.plugin/pkg/prometheus"
+import (
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
+)
 
 const (
 	collectorLatency = "Read"
 )
 
 func doCollectLatency(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, metricRequestType, collectorLatency, false)
+	enabled, success := checkCollector(pms, metricRequestType, collectorLatency, true)
 	return enabled && success
 }
 

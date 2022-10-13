@@ -129,6 +129,8 @@ func TestCassandra_Collect(t *testing.T) {
 				"java_gc_count_ParNew":              8,
 				"java_gc_time_ConcurrentMarkSweep":  1,
 				"java_gc_time_ParNew":               8,
+				"latency_Read":                      16502,
+				"latency_Write":                     0,
 				"pending_tasks_tasks":               0,
 				"system_up_time":                    0,
 				"throughput_Read":                   14,

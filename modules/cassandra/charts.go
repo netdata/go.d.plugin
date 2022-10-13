@@ -40,8 +40,8 @@ var chartCassandraLatency = Chart{
 	Ctx:   "cassandra.latency",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "read", Name: "read", Algo: module.Incremental},
-		{ID: "write", Name: "write", Algo: module.Incremental},
+		{ID: "latency_Read", Name: "read", Algo: module.Incremental},
+		{ID: "latency_Write", Name: "write", Algo: module.Incremental},
 	},
 }
 
