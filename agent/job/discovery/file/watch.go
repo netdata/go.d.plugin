@@ -80,7 +80,6 @@ func (w *Watcher) Run(ctx context.Context, in chan<- []*confgroup.Group) {
 				// vim "backupcopy=no" case, already collected after Rename event.
 				break
 			}
-			// event.Op&fsnotify.Rename == fsnotify.Rename
 			if event.Has(fsnotify.Rename) {
 				// It is common to modify files using vim.
 				// When writing to a file a backup is made. "backupcopy" option tells how it's done.
