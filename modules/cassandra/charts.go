@@ -167,7 +167,7 @@ var chartCassandraErrorTimeout = Chart{
 }
 
 var chartCassandraErrorUnavailable = Chart{
-	ID:    "error_timeout",
+	ID:    "error_unavailable",
 	Title: "Request was unavailable",
 	Units: "requests/s",
 	Fam:   "request unavailable",
