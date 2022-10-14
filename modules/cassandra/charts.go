@@ -199,7 +199,7 @@ var chartCassandraBlockedTasks = Chart{
 	Ctx:   "cassandra.task_blocked",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "task", Name: "task", Algo: module.Incremental},
+		{ID: "blocked_task_task", Name: "task", Algo: module.Incremental},
 	},
 }
 
