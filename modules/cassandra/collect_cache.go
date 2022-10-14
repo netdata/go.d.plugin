@@ -30,15 +30,7 @@ func collectCacheByType(ca *cache, pms prometheus.Metrics) {
 		metricName := pm.Labels.Get("name")
 		// Code prepared to collect more metrics from Cache.
 		if metricName == "Hits" {
-			assignCacheMetric(ca, metricName, pm.Value*100.0)
+			ca.hit = int64(pm.Value)
 		}
-	}
-}
-
-func assignCacheMetric(ca *cache, scope string, value float64) {
-	switch scope {
-	default:
-	case "HitRate":
-		ca.hit = int64(value)
 	}
 }

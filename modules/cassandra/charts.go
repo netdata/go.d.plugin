@@ -48,7 +48,7 @@ var chartCassandraLatency = Chart{
 var chartCassandraCache = Chart{
 	ID:    "cache",
 	Title: "Cache Hit rate",
-	Units: "percentage/s",
+	Units: "Hits/s",
 	Fam:   "cache",
 	Ctx:   "cassandra.cache",
 	Type:  module.Line,
