@@ -91,17 +91,6 @@ var (
 				{ID: "blocklist_last_update", Name: "ago"},
 			},
 		},
-		{
-			ID:    "blocklist_file_existence_state",
-			Title: "Blocklist File Existence",
-			Units: "state",
-			Fam:   "blocklist",
-			Ctx:   "pihole.blocklist_file_existence_state",
-			Dims: Dims{
-				{ID: "blocklist_file_exists", Name: "exists"},
-				{ID: "blocklist_file_not_exists", Name: "not_exists"},
-			},
-		},
 		// ads blocking
 		{
 			ID:    "unwanted_domains_blocking_status",
