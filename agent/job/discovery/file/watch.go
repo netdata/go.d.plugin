@@ -72,6 +72,7 @@ func (w *Watcher) Run(ctx context.Context, in chan<- []*confgroup.Group) {
 		case <-tk.C:
 			w.refresh(ctx, in)
 		case event := <-w.watcher.Events:
+			// TODO: check if event.Has will do
 			if event.Name == "" || isChmodOnly(event) || !w.fileMatches(event.Name) {
 				break
 			}
