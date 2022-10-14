@@ -47,7 +47,7 @@ var chartCassandraLatency = Chart{
 
 var chartCassandraCache = Chart{
 	ID:    "cache",
-	Title: "Cache Hit",
+	Title: "Cache Hit rate",
 	Units: "percentage/s",
 	Fam:   "cache",
 	Ctx:   "cassandra.cache",
@@ -59,7 +59,7 @@ var chartCassandraCache = Chart{
 
 var chartCassandraDiskLoad = Chart{
 	ID:    "disk_load",
-	Title: "Disk Load",
+	Title: "Disk space by node",
 	Units: "bytes/s",
 	Fam:   "disk_load",
 	Ctx:   "cassandra.node",
@@ -71,7 +71,7 @@ var chartCassandraDiskLoad = Chart{
 
 var chartCassandraDiskColumn = Chart{
 	ID:    "disk_column",
-	Title: "Disk Column",
+	Title: "Disk space by column",
 	Units: "bytes/s",
 	Fam:   "column",
 	Ctx:   "cassandra.disk_column",
@@ -84,7 +84,7 @@ var chartCassandraDiskColumn = Chart{
 var chartCassandraDiskCompactionCompleted = Chart{
 	ID:    "compaction_completed",
 	Title: "Completed Compaction Tasks",
-	Units: "events/s",
+	Units: "tasks/s",
 	Fam:   "compaction",
 	Ctx:   "cassandra.compaction_completed",
 	Type:  module.Line,
@@ -108,7 +108,7 @@ var chartCassandraDiskCompactionQueue = Chart{
 var chartCassandraParNewCount = Chart{
 	ID:    "gc_parnew_count",
 	Title: "Young-generation garbage collection counter",
-	Units: "events/s",
+	Units: "collection/s",
 	Fam:   "par new count",
 	Ctx:   "cassandra.gc_parnew_count",
 	Type:  module.Line,
@@ -120,7 +120,7 @@ var chartCassandraParNewCount = Chart{
 var chartCassandraParNewTime = Chart{
 	ID:    "gc_parnew_time",
 	Title: "Young-generation garbage collection timer",
-	Units: "period of time",
+	Units: "elapsed time (us)",
 	Fam:   "par new time",
 	Ctx:   "cassandra.gc_parnew_time",
 	Type:  module.Line,
@@ -132,7 +132,7 @@ var chartCassandraParNewTime = Chart{
 var chartCassandraMarkSweepCount = Chart{
 	ID:    "gc_marksweep_count",
 	Title: "Old-generation collection",
-	Units: "events/s",
+	Units: "collection/s",
 	Fam:   "mark sweep",
 	Ctx:   "cassandra.gc_sweep_count",
 	Type:  module.Line,
@@ -144,8 +144,8 @@ var chartCassandraMarkSweepCount = Chart{
 var chartCassandraMarkSweepTime = Chart{
 	ID:    "gc_marksweep_time",
 	Title: "Elapsed time Old-generation collection",
-	Units: "period of time",
-	Fam:   "mark sweep",
+	Units: "elapsed time (us)",
+	Fam:   "mark sweep time",
 	Ctx:   "cassandra.gc_sweep_time",
 	Type:  module.Line,
 	Dims: Dims{
