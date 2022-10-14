@@ -72,14 +72,15 @@ func (w *Watcher) Run(ctx context.Context, in chan<- []*confgroup.Group) {
 		case <-tk.C:
 			w.refresh(ctx, in)
 		case event := <-w.watcher.Events:
-			if event.Name == "" || isChmod(event) || !w.fileMatches(event.Name) {
+			// TODO: check if event.Has will do
+			if event.Name == "" || isChmodOnly(event) || !w.fileMatches(event.Name) {
 				break
 			}
-			if isCreate(event) && w.cache.has(event.Name) {
+			if event.Has(fsnotify.Create) && w.cache.has(event.Name) {
 				// vim "backupcopy=no" case, already collected after Rename event.
 				break
 			}
-			if isRename(event) {
+			if event.Has(fsnotify.Rename) {
 				// It is common to modify files using vim.
 				// When writing to a file a backup is made. "backupcopy" option tells how it's done.
 				// Default is "no": rename the file and write a new one.
@@ -200,16 +201,8 @@ func (w *Watcher) stop() {
 	_ = w.watcher.Close()
 }
 
-func isChmod(event fsnotify.Event) bool {
+func isChmodOnly(event fsnotify.Event) bool {
 	return event.Op^fsnotify.Chmod == 0
-}
-
-func isRename(event fsnotify.Event) bool {
-	return event.Op&fsnotify.Rename == fsnotify.Rename
-}
-
-func isCreate(event fsnotify.Event) bool {
-	return event.Op&fsnotify.Create == fsnotify.Create
 }
 
 func send(ctx context.Context, in chan<- []*confgroup.Group, groups []*confgroup.Group) {
