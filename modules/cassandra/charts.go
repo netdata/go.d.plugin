@@ -63,7 +63,7 @@ var chartCassandraDiskLoad = Chart{
 	Units: "bytes/s",
 	Fam:   "disk_load",
 	Ctx:   "cassandra.node",
-	Type:  module.Line,
+	Type:  module.Stacked,
 	Dims: Dims{
 		{ID: "disk_LiveDiskSpaceUsed", Name: "space", Algo: module.Incremental},
 	},
@@ -75,7 +75,7 @@ var chartCassandraDiskColumn = Chart{
 	Units: "bytes/s",
 	Fam:   "column",
 	Ctx:   "cassandra.disk_column",
-	Type:  module.Line,
+	Type:  module.Stacked,
 	Dims: Dims{
 		{ID: "disk_TotalDiskSpaceUsed", Name: "space", Algo: module.Incremental},
 	},
