@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+const (
+	precision = 1000
+)
+
 func (p *Pihole) collect() (map[string]int64, error) {
 	pmx := new(piholeMetrics)
 	p.scrapePihole(pmx, true)
@@ -195,5 +199,5 @@ func calcPercentage(value, total int64) (v int64) {
 	if total == 0 {
 		return 0
 	}
-	return value * 100 / total
+	return int64(float64(value) * 100 / float64(total) * precision)
 }
