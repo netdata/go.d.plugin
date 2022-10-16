@@ -29,12 +29,6 @@ func (p *Pihole) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-/*
-	{ID: "queries_cached", Name: "cached", Algo: module.PercentOfAbsolute},
-	{ID: "ads_blocked_today", Name: "blocked", Algo: module.PercentOfAbsolute},
-	{ID: "queries_forwarded", Name: "forwarded", Algo: module.PercentOfAbsolute},
-*/
-
 func collectSummary(mx map[string]int64, pmx *piholeMetrics) {
 	if !pmx.hasSummary() {
 		return
