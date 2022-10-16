@@ -116,6 +116,7 @@ func TestPihole_Collect(t *testing.T) {
 		"SRV":                      0,
 		"TXT":                      0,
 		"ads_blocked_today":        0,
+		"ads_blocked_today_perc":   0,
 		"ads_percentage_today":     0,
 		"blocking_status_disabled": 1,
 		"blocking_status_enabled":  0,
@@ -124,7 +125,9 @@ func TestPihole_Collect(t *testing.T) {
 		"dns_queries_today":        0,
 		"domains_being_blocked":    0,
 		"queries_cached":           0,
+		"queries_cached_perc":      0,
 		"queries_forwarded":        0,
+		"queries_forwarded_perc":   0,
 		"top_blocked_domain_a1":    33,
 		"top_blocked_domain_a2":    66,
 		"top_client_c1":            33,
@@ -156,13 +159,16 @@ func TestPihole_Collect_OnlySummary(t *testing.T) {
 
 	expected := map[string]int64{
 		"ads_blocked_today":        0,
+		"ads_blocked_today_perc":   0,
 		"ads_percentage_today":     0,
 		"blocking_status_disabled": 1,
 		"blocking_status_enabled":  0,
 		"dns_queries_today":        0,
 		"domains_being_blocked":    0,
 		"queries_cached":           0,
+		"queries_cached_perc":      0,
 		"queries_forwarded":        0,
+		"queries_forwarded_perc":   0,
 		"unique_clients":           0,
 	}
 
