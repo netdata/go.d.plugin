@@ -54,9 +54,9 @@ var (
 			Ctx:   "pihole.dns_queries_percentage",
 			Type:  module.Stacked,
 			Dims: Dims{
-				{ID: "queries_cached", Name: "cached", Algo: module.PercentOfAbsolute},
-				{ID: "ads_blocked_today", Name: "blocked", Algo: module.PercentOfAbsolute},
-				{ID: "queries_forwarded", Name: "forwarded", Algo: module.PercentOfAbsolute},
+				{ID: "queries_cached_perc", Name: "cached"},
+				{ID: "ads_blocked_today_perc", Name: "blocked"},
+				{ID: "queries_forwarded_perc", Name: "forwarded"},
 			},
 		},
 		// clients

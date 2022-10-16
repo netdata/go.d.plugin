@@ -25,6 +25,12 @@ func (p *Pihole) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
+/*
+	{ID: "queries_cached", Name: "cached", Algo: module.PercentOfAbsolute},
+	{ID: "ads_blocked_today", Name: "blocked", Algo: module.PercentOfAbsolute},
+	{ID: "queries_forwarded", Name: "forwarded", Algo: module.PercentOfAbsolute},
+*/
+
 func collectSummary(mx map[string]int64, pmx *piholeMetrics) {
 	if !pmx.hasSummary() {
 		return
@@ -43,6 +49,11 @@ func collectSummary(mx map[string]int64, pmx *piholeMetrics) {
 	mx["unique_clients"] = pmx.summary.UniqueClients
 	mx["blocking_status_enabled"] = boolToInt(pmx.summary.Status == "enabled")
 	mx["blocking_status_disabled"] = boolToInt(pmx.summary.Status != "enabled")
+
+	tot := pmx.summary.QueriesCached + pmx.summary.AdsBlockedToday + pmx.summary.QueriesForwarded
+	mx["queries_cached_perc"] = calcPercentage(pmx.summary.QueriesCached, tot)
+	mx["ads_blocked_today_perc"] = calcPercentage(pmx.summary.AdsBlockedToday, tot)
+	mx["queries_forwarded_perc"] = calcPercentage(pmx.summary.QueriesForwarded, tot)
 }
 
 func collectQueryTypes(mx map[string]int64, pmx *piholeMetrics) {
@@ -178,4 +189,11 @@ func boolToInt(b bool) int64 {
 		return 0
 	}
 	return 1
+}
+
+func calcPercentage(value, total int64) (v int64) {
+	if total == 0 {
+		return 0
+	}
+	return value * 100 / total
 }
