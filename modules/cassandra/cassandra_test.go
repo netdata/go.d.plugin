@@ -116,7 +116,7 @@ func TestCassandra_Collect(t *testing.T) {
 		"success on valid response": {
 			prepare: prepareCassandra,
 			wantCollected: map[string]int64{
-				"cache_HitRate":                     114,
+				"cache_HitRate":                     88,
 				"disk_CompactionBytesWritten":       679,
 				"disk_LiveDiskSpaceUsed":            257710,
 				"disk_PendingCompactions":           0,

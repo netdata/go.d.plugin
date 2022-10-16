@@ -26,11 +26,16 @@ func collectCache(pms prometheus.Metrics) *cache {
 }
 
 func collectCacheByType(ca *cache, pms prometheus.Metrics) {
+	var hit, requests, hits float64
 	for _, pm := range pms.FindByName(metricCacheType) {
 		metricName := pm.Labels.Get("name")
 		// Code prepared to collect more metrics from Cache.
 		if metricName == "Hits" {
-			ca.hit = int64(pm.Value)
+			hits = pm.Value
+	 	} else if metricName == "Requests" {
+			requests = pm.Value
 		}
 	}
+	hit = (hits/requests)*100.0
+	ca.hit = int64(hit)
 }

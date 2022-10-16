@@ -48,12 +48,12 @@ var chartCassandraLatency = Chart{
 var chartCassandraCache = Chart{
 	ID:    "cache",
 	Title: "Cache Hit rate",
-	Units: "Hits/s",
+	Units: "percentage/s",
 	Fam:   "cache",
 	Ctx:   "cassandra.cache",
 	Type:  module.Line,
 	Dims: Dims{
-		{ID: "cache_HitRate", Name: "ratio", Algo: module.Incremental},
+		{ID: "cache_HitRate", Name: "ratio", Algo: module.Incremental, Div: 100},
 	},
 }
 
