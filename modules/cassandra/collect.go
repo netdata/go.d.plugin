@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	prefixCount     = "_count"
-	prefixValue     = "_value"
-	prefixOneMinute = "_oneminuterate"
+	suffixCount     = "_count"
+	suffixValue     = "_value"
+	suffixOneMinute = "_oneminuterate"
 )
 
 func (c *Cassandra) collect() (map[string]int64, error) {
@@ -57,7 +57,7 @@ func (c *Cassandra) collectClientRequestMetrics(mx *cassandraMetrics, pms promet
 	const metric = "org_apache_cassandra_metrics_clientrequest"
 
 	var rw struct{ r, w **float64 }
-	for _, pm := range pms.FindByName(metric + prefixCount) {
+	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
 		scope := pm.Labels.Get("scope")
 
@@ -89,7 +89,7 @@ func (c *Cassandra) collectClientRequestMetrics(mx *cassandraMetrics, pms promet
 func (c *Cassandra) collectMetricsCacheMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_cache"
 
-	for _, pm := range pms.FindByName(metric + prefixCount) {
+	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
 
 		switch name {
@@ -100,7 +100,7 @@ func (c *Cassandra) collectMetricsCacheMetrics(mx *cassandraMetrics, pms prometh
 		}
 	}
 
-	for _, pm := range pms.FindByName(metric + prefixValue) {
+	for _, pm := range pms.FindByName(metric + suffixValue) {
 		name := pm.Labels.Get("name")
 
 		switch name {
@@ -113,7 +113,7 @@ func (c *Cassandra) collectMetricsCacheMetrics(mx *cassandraMetrics, pms prometh
 func (c *Cassandra) collectThreadPoolsMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_threadpools"
 
-	for _, pm := range pms.FindByName(metric + prefixCount) {
+	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
 
 		switch name {
@@ -128,7 +128,7 @@ func (c *Cassandra) collectThreadPoolsMetrics(mx *cassandraMetrics, pms promethe
 func (c *Cassandra) collectStorageMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_storage"
 
-	for _, pm := range pms.FindByName(metric + prefixCount) {
+	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
 
 		switch name {
@@ -143,7 +143,7 @@ func (c *Cassandra) collectStorageMetrics(mx *cassandraMetrics, pms prometheus.M
 func (c *Cassandra) collectDroppedMessagesMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_droppedmessage"
 
-	for _, pm := range pms.FindByName(metric + prefixOneMinute) {
+	for _, pm := range pms.FindByName(metric + suffixOneMinute) {
 		addValue(&mx.droppedMsgsOneMinute, pm.Value)
 	}
 }
@@ -151,7 +151,7 @@ func (c *Cassandra) collectDroppedMessagesMetrics(mx *cassandraMetrics, pms prom
 func (c *Cassandra) collectJVMMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
 	const metric = "jvm_gc_collection_seconds"
 
-	for _, pm := range pms.FindByName(metric + prefixCount) {
+	for _, pm := range pms.FindByName(metric + suffixCount) {
 		gc := pm.Labels.Get("gc")
 
 		switch gc {
@@ -177,7 +177,7 @@ func (c *Cassandra) collectJVMMetrics(mx *cassandraMetrics, pms prometheus.Metri
 func (c *Cassandra) collectCompactionMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_compaction"
 
-	for _, pm := range pms.FindByName(metric + prefixValue) {
+	for _, pm := range pms.FindByName(metric + suffixValue) {
 		name := pm.Labels.Get("name")
 
 		switch name {
@@ -187,7 +187,7 @@ func (c *Cassandra) collectCompactionMetrics(mx *cassandraMetrics, pms prometheu
 			addValue(&mx.compactionPendingTasks, pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metric + prefixCount) {
+	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
 
 		switch name {
