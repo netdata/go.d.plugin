@@ -6,6 +6,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/activemq"
 	_ "github.com/netdata/go.d.plugin/modules/apache"
 	_ "github.com/netdata/go.d.plugin/modules/bind"
+	_ "github.com/netdata/go.d.plugin/modules/cassandra"
 	_ "github.com/netdata/go.d.plugin/modules/chrony"
 	_ "github.com/netdata/go.d.plugin/modules/cockroachdb"
 	_ "github.com/netdata/go.d.plugin/modules/consul"

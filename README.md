@@ -35,6 +35,7 @@ Go.d.plugin is shipped with Netdata.
 | [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)                     |           ActiveMQ            |
 | [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache)                         |            Apache             |
 | [bind](https://github.com/netdata/go.d.plugin/tree/master/modules/bind)                             |           ISC Bind            |
+| [cassandra](https://github.com/netdata/go.d.plugin/tree/master/modules/cassandra)                   |           Cassandra           |
 | [chrony](https://github.com/netdata/go.d.plugin/tree/master/modules/chrony)                         |            Chrony             |
 | [cockroachdb](https://github.com/netdata/go.d.plugin/tree/master/modules/cockroachdb)               |          CockroachDB          |
 | [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)                         |            Consul             |

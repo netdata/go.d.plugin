@@ -1,0 +1,45 @@
+# https://grafana.com/grafana/dashboards/5408-cassandra/
+# SOURCE: https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#table-metrics
+# https://www.datadoghq.com/blog/how-to-collect-cassandra-metrics/
+
+lowercaseOutputLabelNames: true
+lowercaseOutputName: true
+whitelistObjectNames: ["org.apache.cassandra.metrics:*"]
+# ColumnFamily is an alias for Table metrics
+#blacklistObjectNames: ["org.apache.cassandra.metrics:type=ColumnFamily,*"]
+rules:
+
+# Throughput (Read/Write)
+- pattern: org.apache.cassandra.metrics<type=(ClientRequest), scope=(Write|Read), name=(Latency)><>(OneMinuteRate)
+
+# Latency 
+- pattern: org.apache.cassandra.metrics<type=(ClientRequest), scope=(Write|Read), name=(TotalLatency|Latency|Timeouts|Unavailables)><>(Count)
+
+# Cache
+- pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache), name=(Requests|Hits)><>(Count)
+
+# Load
+- pattern: org.apache.cassandra.metrics<type=(Storage), name=(Load)><>(Count)
+
+# Total Disk Space
+- pattern: org.apache.cassandra.metrics<type=(Table), keyspace=(\S*), scope=(\S*), name=(TotalDiskSpaceUsed|LiveDiskSpaceUsed|CompactionBytesWritten|PendingCompactions)><>(Count)
+
+# Compaction task
+- pattern: org.apache.cassandra.metrics<type=(Compaction), name=(CompletedTasks)><>(Value)
+
+# Pending task
+- pattern: org.apache.cassandra.metrics<type=(Compaction), name=(PendingTasks)><>(Value)
+
+# ParNew Garbage Collection
+- pattern: <type=(GarbageCollector), name=(ParNew)><>(CollectionCount|CollectionTime)
+
+# CMS Garbage Collection
+- pattern: <type=(GarbageCollector), name=(ConcurrentMarkSweep)><>(CollectionCount|CollectionTime)
+
+# Exceptions
+- pattern: org.apache.cassandra.metrics<type=(GarbageCollector), name=(ConcurrentMarkSweep)><>(CollectionCount|CollectionTime)
+
+# Pending Tasks
+- pattern: org.apache.cassandra.metrics<type=(ThreadPools), scope=(CounterMutationStage|MutationStage|ReadRepairStage|ReadStage|RequestResponseStage), name=(PendingTasks)><>(Value)
+- pattern: org.apache.cassandra.metrics<type=(ThreadPools), scope=(CounterMutationStage|MutationStage|ReadRepairStage|ReadStage|RequestResponseStage), name=(CurrentlyBlockedTasks)><>(Count)
+
