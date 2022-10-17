@@ -71,7 +71,7 @@ func (c *Cassandra) collectClientRequestMetrics(mx *cassandraMetrics, pms promet
 		case "Unavailables":
 			rw.r, rw.w = &mx.clientRequestUnavailablesReads, &mx.clientRequestUnavailablesWrites
 		case "Failures":
-			rw.r, rw.w = &mx.clientRequestFailuresWrites, &mx.clientRequestFailuresWrites
+			rw.r, rw.w = &mx.clientRequestFailuresReads, &mx.clientRequestFailuresWrites
 		default:
 			continue
 		}

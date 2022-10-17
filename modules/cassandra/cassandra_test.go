@@ -117,6 +117,7 @@ func TestCassandra_Collect(t *testing.T) {
 				"cache_hits":                           116000,
 				"cache_misses":                         21000,
 				"cache_size":                           1560,
+				"client_request_failures_reads":        0,
 				"client_request_failures_writes":       0,
 				"client_request_latency_reads":         1000,
 				"client_request_latency_writes":        0,
