@@ -32,10 +32,10 @@ func collectCacheByType(ca *cache, pms prometheus.Metrics) {
 		// Code prepared to collect more metrics from Cache.
 		if metricName == "Hits" {
 			hits = pm.Value
-	 	} else if metricName == "Requests" {
+		} else if metricName == "Requests" {
 			requests = pm.Value
 		}
 	}
-	hit = (hits/requests)*100.0
+	hit = (hits / requests) * 100.0
 	ca.hit = int64(hit)
 }
