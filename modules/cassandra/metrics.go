@@ -22,6 +22,8 @@ type cassandraMetrics struct {
 	cacheHitRatio *float64 `stm:"cache_hit_ratio,1000,1"` // calculated
 	cacheSize     *float64 `stm:"cache_size"`
 
+	threadPoolsActiveTasks           *float64 `stm:"thread_pools_active_tasks"`
+	threadPoolsPendingTasks          *float64 `stm:"thread_pools_pending_tasks"`
 	threadPoolsTotalBlockedTasks     *float64 `stm:"thread_pools_total_blocked_tasks"`
 	threadPoolsCurrentlyBlockedTasks *float64 `stm:"thread_pools_currently_blocked_tasks"`
 
