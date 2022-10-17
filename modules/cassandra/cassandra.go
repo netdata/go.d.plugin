@@ -10,19 +10,6 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-type (
-	Config struct {
-		web.HTTP `yaml:",inline"`
-	}
-	Cassandra struct {
-		module.Base
-		Config `yaml:",inline"`
-
-		prom   prometheus.Prometheus
-		charts *module.Charts
-	}
-)
-
 func init() {
 	module.Register("cassandra", module.Creator{
 		Defaults: module.Defaults{
@@ -34,11 +21,34 @@ func init() {
 
 func New() *Cassandra {
 	return &Cassandra{
-		Base:   module.Base{},
-		Config: Config{HTTP: web.HTTP{Client: web.Client{Timeout: web.Duration{Duration: time.Second * 5}}}},
-		prom:   nil,
-		charts: newCassandraCharts(),
+		Config: Config{
+			HTTP: web.HTTP{
+				Request: web.Request{
+					URL: "http://127.0.0.1:7072/metrics",
+				},
+				Client: web.Client{
+					Timeout: web.Duration{Duration: time.Second * 5},
+				},
+			},
+		},
+		charts:          baseCharts.Copy(),
+		validateMetrics: true,
 	}
+}
+
+type Config struct {
+	web.HTTP `yaml:",inline"`
+}
+
+type Cassandra struct {
+	module.Base
+	Config `yaml:",inline"`
+
+	charts *module.Charts
+
+	prom prometheus.Prometheus
+
+	validateMetrics bool
 }
 
 func (c *Cassandra) Init() bool {
@@ -61,20 +71,20 @@ func (c *Cassandra) Check() bool {
 	return len(c.Collect()) > 0
 }
 
-func (c *Cassandra) Charts() *Charts {
+func (c *Cassandra) Charts() *module.Charts {
 	return c.charts
 }
 
 func (c *Cassandra) Collect() map[string]int64 {
-	ms, err := c.collect()
+	mx, err := c.collect()
 	if err != nil {
 		c.Error(err)
 	}
 
-	if len(ms) == 0 {
+	if len(mx) == 0 {
 		return nil
 	}
-	return ms
+	return mx
 }
 
-func (Cassandra) Cleanup() {}
+func (c *Cassandra) Cleanup() {}

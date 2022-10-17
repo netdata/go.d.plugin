@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -38,8 +39,8 @@ func TestCassandra_Init(t *testing.T) {
 			config: Config{
 				HTTP: web.HTTP{Request: web.Request{URL: "http://127.0.0.1:7072"}}},
 		},
-		"fails on default config": {
-			wantFail: true,
+		"success on default config": {
+			wantFail: false,
 			config:   New().Config,
 		},
 		"fails if 'url' is unset": {
@@ -100,12 +101,8 @@ func TestCassandra_Check(t *testing.T) {
 	}
 }
 
-func TestCachestat_Charts(t *testing.T) {
+func TestCassandra_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
-}
-
-func TestCachestat_Cleanup(t *testing.T) {
-	assert.NotPanics(t, New().Cleanup)
 }
 
 func TestCassandra_Collect(t *testing.T) {
@@ -116,25 +113,32 @@ func TestCassandra_Collect(t *testing.T) {
 		"success on valid response": {
 			prepare: prepareCassandra,
 			wantCollected: map[string]int64{
-				"cache_HitRate":                     88,
-				"disk_CompactionBytesWritten":       679,
-				"disk_LiveDiskSpaceUsed":            257710,
-				"disk_PendingCompactions":           0,
-				"disk_TotalDiskSpaceUsed":           257710,
-				"error_timeout_Read":                0,
-				"error_timeout_Write":               0,
-				"error_unavailable_Read":            0,
-				"error_unavailable_Write":           0,
-				"java_gc_count_ConcurrentMarkSweep": 1,
-				"java_gc_count_ParNew":              8,
-				"java_gc_time_ConcurrentMarkSweep":  1,
-				"java_gc_time_ParNew":               8,
-				"latency_Read":                      16502,
-				"latency_Write":                     0,
-				"pending_tasks_tasks":               0,
-				"system_up_time":                    0,
-				"throughput_Read":                   14,
-				"throughput_Write":                  0,
+				"cache_hit_ratio":                      84671,
+				"cache_hits":                           116000,
+				"cache_misses":                         21000,
+				"cache_size":                           1560,
+				"client_request_failures_reads":        0,
+				"client_request_failures_writes":       0,
+				"client_request_latency_reads":         1000,
+				"client_request_latency_writes":        0,
+				"client_request_timeouts_reads":        0,
+				"client_request_timeouts_writes":       0,
+				"client_request_total_latency_reads":   13002000,
+				"client_request_total_latency_writes":  0,
+				"client_request_unavailables_reads":    0,
+				"client_request_unavailables_writes":   0,
+				"compaction_bytes_compacted":           128749,
+				"compaction_completed_tasks":           45,
+				"compaction_pending_tasks":             0,
+				"dropped_messages_one_minute":          0,
+				"jvm_gc_cms_count":                     1000,
+				"jvm_gc_cms_time":                      59,
+				"jvm_gc_parnew_count":                  365000,
+				"jvm_gc_parnew_time":                   1101,
+				"storage_exceptions":                   0,
+				"storage_load":                         145789366,
+				"thread_pools_currently_blocked_tasks": 0,
+				"thread_pools_total_blocked_tasks":     0,
 			},
 		},
 		"fails if endpoint returns invalid data": {
@@ -155,13 +159,9 @@ func TestCassandra_Collect(t *testing.T) {
 
 			require.True(t, c.Init())
 
-			collected := c.Collect()
+			mx := c.Collect()
 
-			if collected != nil && test.wantCollected != nil {
-				collected["system_up_time"] = test.wantCollected["system_up_time"]
-			}
-
-			assert.Equal(t, test.wantCollected, collected)
+			assert.Equal(t, test.wantCollected, mx)
 		})
 	}
 }
