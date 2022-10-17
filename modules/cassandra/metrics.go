@@ -2,53 +2,44 @@
 
 package cassandra
 
-type metrics struct {
-	ioThroughput *throughput        `stm:"throughput"`
-	ioLatency    *latency           `stm:"latency"`
-	hit          *cache             `stm:"cache"`
-	hd           *disk              `stm:"disk"`
-	gcCount      *garbageCollection `stm:"java_gc_count"`
-	gcTime       *garbageCollection `stm:"java_gc_time"`
-	etimeout     *requestError      `stm:"error_timeout"`
-	eunavailable *requestError      `stm:"error_unavailable"`
-	pTask        *pendingTask       `stm:"pending_tasks"`
-	bTask        *blockedTask       `stm:"blocked_tasks"`
+// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#table-metrics
+// https://www.datadoghq.com/blog/how-to-collect-cassandra-metrics/
+
+type cassandraMetrics struct {
+	clientRequestTotalLatencyReads  *float64 `stm:"client_request_total_latency_reads,1000,1"`
+	clientRequestTotalLatencyWrites *float64 `stm:"client_request_total_latency_writes,1000,1"`
+	clientRequestLatencyReads       *float64 `stm:"client_request_latency_reads,1000,1"`
+	clientRequestLatencyWrites      *float64 `stm:"client_request_latency_writes,1000,1"`
+	clientRequestTimeoutsReads      *float64 `stm:"client_request_timeouts_reads,1000,1"`
+	clientRequestTimeoutsWrites     *float64 `stm:"client_request_timeouts_writes,1000,1"`
+	clientRequestUnavailablesReads  *float64 `stm:"client_request_unavailables_reads,1000,1"`
+	clientRequestUnavailablesWrites *float64 `stm:"client_request_unavailables_writes,1000,1"`
+	clientRequestFailuresReads      *float64 `stm:"client_request_failures_reads,1000,1"`
+	clientRequestFailuresWrites     *float64 `stm:"client_request_failures_writes,1000,1"`
+
+	cacheHits     *float64 `stm:"cache_hits,1000,1"`
+	cacheMisses   *float64 `stm:"cache_misses,1000,1"`
+	cacheHitRatio *float64 `stm:"cache_hit_ratio,1000,1"` // calculated
+	cacheSize     *float64 `stm:"cache_size"`
+
+	threadPoolsTotalBlockedTasks     *float64 `stm:"thread_pools_total_blocked_tasks"`
+	threadPoolsCurrentlyBlockedTasks *float64 `stm:"thread_pools_currently_blocked_tasks"`
+
+	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#dropped-metrics
+	droppedMsgsOneMinute *float64 `stm:"dropped_messages_one_minute,1000,1"`
+
+	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#storage-metrics
+	storageLoad       *float64 `stm:"storage_load"`
+	storageExceptions *float64 `stm:"storage_exceptions"`
+
+	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#compaction-metrics
+	compactionBytesCompacted *float64 `stm:"compaction_bytes_compacted"`
+	compactionPendingTasks   *float64 `stm:"compaction_pending_tasks"`
+	compactionCompletedTasks *float64 `stm:"compaction_completed_tasks"`
+
+	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#garbagecollector
+	jvmGCParNewCount *float64 `stm:"jvm_gc_parnew_count,1000,1"`
+	jvmGCParNewTime  *float64 `stm:"jvm_gc_parnew_time,1000,1"`
+	jvmGCCMSCount    *float64 `stm:"jvm_gc_cms_count,1000,1"`
+	jvmGCCMSTime     *float64 `stm:"jvm_gc_cms_time,1000,1"`
 }
-
-const (
-	metricRequestType = "org_apache_cassandra_metrics_clientrequest_count"
-)
-
-type (
-	throughput struct {
-		read  int64 `stm:"Read"`
-		write int64 `stm:"Write"`
-	}
-	latency struct {
-		read_latency  int64 `stm:"Read"`
-		write_latency int64 `stm:"Write"`
-	}
-	cache struct {
-		hit int64 `stm:"HitRate"`
-	}
-	disk struct {
-		load                 float64 `stm:"LiveDiskSpaceUsed"`
-		used                 float64 `stm:"TotalDiskSpaceUsed"`
-		compaction_completed float64 `stm:"CompactionBytesWritten"`
-		compaction_queue     float64 `stm:"PendingCompactions"`
-	}
-	garbageCollection struct {
-		parNew    int64 `stm:"ParNew"`
-		markSweep int64 `stm:"ConcurrentMarkSweep"`
-	}
-	requestError struct {
-		read_error  int64 `stm:"Read"`
-		write_error int64 `stm:"Write"`
-	}
-	pendingTask struct {
-		task int64 `stm:"tasks"`
-	}
-	blockedTask struct {
-		task int64 `stm:"CurrentlyBlockedTasks"`
-	}
-)
