@@ -21,6 +21,8 @@ const (
 
 	prioStorageLoad
 
+	prioThreadPoolsActiveTasks
+	prioThreadPoolsPendingTasks
 	prioThreadPoolsBlockedTasks
 	prioThreadPoolsCurrentlyBlockedTasks
 
@@ -49,6 +51,8 @@ var baseCharts = module.Charts{
 
 	chartStorageLoad.Copy(),
 
+	threadPoolsActiveTasks.Copy(),
+	threadPoolsPendingTasks.Copy(),
 	threadPoolsBlockedTasks.Copy(),
 	threadPoolsCurrentlyBlockedTasks.Copy(),
 
@@ -204,23 +208,45 @@ var (
 )
 
 var (
+	threadPoolsActiveTasks = module.Chart{
+		ID:       "thread_pools_active_tasks",
+		Title:    "Active tasks",
+		Units:    "tasks",
+		Fam:      "thread pools",
+		Ctx:      "cassandra.thread_pools_active_tasks",
+		Priority: prioThreadPoolsActiveTasks,
+		Dims: module.Dims{
+			{ID: "thread_pools_active_tasks", Name: "active"},
+		},
+	}
+	threadPoolsPendingTasks = module.Chart{
+		ID:       "thread_pools_pending_tasks",
+		Title:    "Pending tasks",
+		Units:    "tasks",
+		Fam:      "thread pools",
+		Ctx:      "cassandra.thread_pools_pending_tasks",
+		Priority: prioThreadPoolsPendingTasks,
+		Dims: module.Dims{
+			{ID: "thread_pools_pending_tasks", Name: "pending"},
+		},
+	}
 	threadPoolsBlockedTasks = module.Chart{
-		ID:       "thread_pools_blocked_task",
+		ID:       "thread_pools_blocked_tasks",
 		Title:    "Blocked tasks",
 		Units:    "tasks/s",
 		Fam:      "thread pools",
-		Ctx:      "cassandra.thread_pools_blocked_task",
+		Ctx:      "cassandra.thread_pools_blocked_tasks",
 		Priority: prioThreadPoolsBlockedTasks,
 		Dims: module.Dims{
-			{ID: "thread_pools_total_blocked_tasks", Name: "blocked"},
+			{ID: "thread_pools_total_blocked_tasks", Name: "blocked", Algo: module.Incremental},
 		},
 	}
 	threadPoolsCurrentlyBlockedTasks = module.Chart{
-		ID:       "thread_pools_currently_blocked_task",
+		ID:       "thread_pools_currently_blocked_tasks",
 		Title:    "Blocked tasks",
 		Units:    "tasks",
 		Fam:      "thread pools",
-		Ctx:      "cassandra.thread_pools_currently_blocked_task",
+		Ctx:      "cassandra.thread_pools_currently_blocked_tasks",
 		Priority: prioThreadPoolsCurrentlyBlockedTasks,
 		Dims: module.Dims{
 			{ID: "thread_pools_currently_blocked_tasks", Name: "blocked"},

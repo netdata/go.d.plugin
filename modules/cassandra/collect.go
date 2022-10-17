@@ -113,6 +113,16 @@ func (c *Cassandra) collectMetricsCacheMetrics(mx *cassandraMetrics, pms prometh
 func (c *Cassandra) collectThreadPoolsMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_threadpools"
 
+	for _, pm := range pms.FindByName(metric + suffixValue) {
+		name := pm.Labels.Get("name")
+
+		switch name {
+		case "ActiveTasks":
+			addValue(&mx.threadPoolsActiveTasks, pm.Value)
+		case "PendingTasks":
+			addValue(&mx.threadPoolsPendingTasks, pm.Value)
+		}
+	}
 	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
 
