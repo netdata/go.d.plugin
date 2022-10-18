@@ -75,8 +75,8 @@ var (
 		Ctx:      "cassandra.client_requests_rate",
 		Priority: prioRequestsRate,
 		Dims: module.Dims{
-			{ID: "client_request_latency_reads", Name: "reads", Algo: module.Incremental},
-			{ID: "client_request_latency_writes", Name: "writes", Algo: module.Incremental, Mul: -1},
+			{ID: "client_request_latency_reads", Name: "read", Algo: module.Incremental},
+			{ID: "client_request_latency_writes", Name: "write", Algo: module.Incremental, Mul: -1},
 		},
 	}
 )
@@ -151,7 +151,7 @@ var (
 		Title:    "Total disk space used",
 		Units:    "bytes",
 		Fam:      "disk usage",
-		Ctx:      "cassandra.storage_tables_total_disk_space_used",
+		Ctx:      "cassandra.storage_total_disk_space_used",
 		Priority: prioStorageTotalDiskSpaceUsed,
 		Dims: module.Dims{
 			{ID: "tables_total_disk_space_used", Name: "used"},
@@ -258,7 +258,7 @@ var (
 	chartJVMGCTime = module.Chart{
 		ID:       "jvm_gc_time",
 		Title:    "Garbage collection time",
-		Units:    "us",
+		Units:    "microseconds",
 		Fam:      "jvm gc",
 		Ctx:      "cassandra.jvm_gc_time",
 		Priority: prioJVMGCTime,
