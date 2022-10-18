@@ -4,6 +4,7 @@ package cassandra
 
 // https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#table-metrics
 // https://www.datadoghq.com/blog/how-to-collect-cassandra-metrics/
+// https://docs.opennms.com/horizon/29/deployment/time-series-storage/newts/cassandra-jmx.html
 
 type cassandraMetrics struct {
 	clientRequestTotalLatencyReads  *float64 `stm:"client_request_total_latency_reads"`
