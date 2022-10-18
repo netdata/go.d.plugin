@@ -14,8 +14,11 @@ rules:
   - pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache), name=(Hits|Misses)><>(Count)
   - pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache), name=(Size)><>(Value)
 
-  # Storage Load
+  # Storage
   - pattern: org.apache.cassandra.metrics<type=(Storage), name=(Load|Exceptions)><>(Count)
+
+  # Tables
+  - pattern: org.apache.cassandra.metrics<type=(Table), keyspace=(\S*), scope=(\S*), name=(TotalDiskSpaceUsed)><>(Count)
 
   # Compaction
   - pattern: org.apache.cassandra.metrics<type=(Compaction), name=(CompletedTasks|PendingTasks)><>(Value)
