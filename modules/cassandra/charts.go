@@ -85,13 +85,13 @@ var (
 	chartClientRequestsLatency = module.Chart{
 		ID:       "client_requests_latency",
 		Title:    "Client requests latency",
-		Units:    "microseconds",
+		Units:    "seconds",
 		Fam:      "latency",
 		Ctx:      "cassandra.client_requests_latency",
 		Priority: prioLatency,
 		Dims: module.Dims{
-			{ID: "client_request_total_latency_reads", Name: "read", Algo: module.Incremental},
-			{ID: "client_request_total_latency_writes", Name: "write", Algo: module.Incremental, Mul: -1},
+			{ID: "client_request_total_latency_reads", Name: "read", Algo: module.Incremental, Div: 1e6},
+			{ID: "client_request_total_latency_writes", Name: "write", Algo: module.Incremental, Mul: -1, Div: 1e6},
 		},
 	}
 )
@@ -247,7 +247,7 @@ var (
 		ID:       "jvm_gc_rate",
 		Title:    "Garbage collections rate",
 		Units:    "gc/s",
-		Fam:      "jvm gc",
+		Fam:      "garbage collection",
 		Ctx:      "cassandra.jvm_gc_rate",
 		Priority: prioJVMGCCount,
 		Dims: module.Dims{
@@ -258,13 +258,13 @@ var (
 	chartJVMGCTime = module.Chart{
 		ID:       "jvm_gc_time",
 		Title:    "Garbage collection time",
-		Units:    "microseconds",
-		Fam:      "jvm gc",
+		Units:    "seconds",
+		Fam:      "garbage collection",
 		Ctx:      "cassandra.jvm_gc_time",
 		Priority: prioJVMGCTime,
 		Dims: module.Dims{
-			{ID: "jvm_gc_parnew_time", Name: "parnew", Algo: module.Incremental, Div: 1000},
-			{ID: "jvm_gc_cms_time", Name: "cms", Algo: module.Incremental, Div: 1000},
+			{ID: "jvm_gc_parnew_time", Name: "parnew", Algo: module.Incremental, Div: 1e9},
+			{ID: "jvm_gc_cms_time", Name: "cms", Algo: module.Incremental, Div: 1e9},
 		},
 	}
 )
