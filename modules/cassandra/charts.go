@@ -14,7 +14,6 @@ const (
 	prioCacheSize
 
 	prioStorageLiveDiskSpaceUsed
-	prioStorageTotalDiskSpaceUsed
 
 	prioCompactionCompletedTasksRate
 	prioCompactionPendingTasksCount
@@ -45,7 +44,6 @@ var baseCharts = module.Charts{
 	chartCacheSize.Copy(),
 
 	chartStorageLiveDiskSpaceUsed.Copy(),
-	chartStorageTotalDiskSpaceUsed.Copy(),
 
 	chartCompactionCompletedTasksRate.Copy(),
 	chartCompactionPendingTasksCount.Copy(),
@@ -144,17 +142,6 @@ var (
 		Priority: prioStorageLiveDiskSpaceUsed,
 		Dims: module.Dims{
 			{ID: "storage_load", Name: "used"},
-		},
-	}
-	chartStorageTotalDiskSpaceUsed = module.Chart{
-		ID:       "storage_total_disk_space_used",
-		Title:    "Total disk space used",
-		Units:    "bytes",
-		Fam:      "disk usage",
-		Ctx:      "cassandra.storage_total_disk_space_used",
-		Priority: prioStorageTotalDiskSpaceUsed,
-		Dims: module.Dims{
-			{ID: "tables_total_disk_space_used", Name: "used"},
 		},
 	}
 )

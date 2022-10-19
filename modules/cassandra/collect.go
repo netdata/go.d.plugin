@@ -48,7 +48,6 @@ func (c *Cassandra) collectMetrics(mx *cassandraMetrics, pms prometheus.Metrics)
 	c.collectDroppedMessagesMetrics(mx, pms)
 	c.collectThreadPoolsMetrics(mx, pms)
 	c.collectStorageMetrics(mx, pms)
-	c.collectTableMetrics(mx, pms)
 	c.collectCacheMetrics(mx, pms)
 	c.collectJVMMetrics(mx, pms)
 	c.collectCompactionMetrics(mx, pms)
@@ -147,19 +146,6 @@ func (c *Cassandra) collectStorageMetrics(mx *cassandraMetrics, pms prometheus.M
 			addValue(&mx.storageLoad, pm.Value)
 		case "Exceptions":
 			addValue(&mx.storageExceptions, pm.Value)
-		}
-	}
-}
-
-func (c *Cassandra) collectTableMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
-	const metric = "org_apache_cassandra_metrics_table"
-
-	for _, pm := range pms.FindByName(metric + suffixCount) {
-		name := pm.Labels.Get("name")
-
-		switch name {
-		case "TotalDiskSpaceUsed":
-			addValue(&mx.tablesTotalDiskSpaceUsed, pm.Value)
 		}
 	}
 }

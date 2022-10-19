@@ -15,12 +15,12 @@ import (
 )
 
 var (
-	vMetrics, _ = os.ReadFile("testdata/metrics.txt")
+	dataMetrics, _ = os.ReadFile("testdata/metrics.txt")
 )
 
 func Test_TestData(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"vMetrics": vMetrics,
+		"dataMetrics": dataMetrics,
 	} {
 		assert.NotNilf(t, data, name)
 	}
@@ -137,7 +137,6 @@ func TestCassandra_Collect(t *testing.T) {
 				"jvm_gc_parnew_time":                   937,
 				"storage_exceptions":                   0,
 				"storage_load":                         145838019,
-				"tables_total_disk_space_used":         145838019,
 				"thread_pools_active_tasks":            0,
 				"thread_pools_currently_blocked_tasks": 0,
 				"thread_pools_pending_tasks":           0,
@@ -172,7 +171,7 @@ func TestCassandra_Collect(t *testing.T) {
 func prepareCassandra() (c *Cassandra, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write(vMetrics)
+			_, _ = w.Write(dataMetrics)
 		}))
 
 	c = New()

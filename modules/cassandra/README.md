@@ -42,7 +42,6 @@ All metrics have "cassandra." prefix.
 | cache_hit_rate                    | global | hits, misses |   events/s   |
 | cache_size                        | global |     size     |    bytes     |
 | storage_live_disk_space_used      | global |     used     |    bytes     |
-| storage_total_disk_space_used     | global |     used     |    bytes     |
 | compaction_completed_tasks_rate   | global |  completed   |   tasks/s    |
 | compaction_pending_tasks_count    | global |   pending    |    tasks     |
 | compaction_compacted_rate         | global |  compacted   |   bytes/s    |

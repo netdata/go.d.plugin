@@ -28,9 +28,6 @@ type cassandraMetrics struct {
 	threadPoolsTotalBlockedTasks     *float64 `stm:"thread_pools_total_blocked_tasks"`
 	threadPoolsCurrentlyBlockedTasks *float64 `stm:"thread_pools_currently_blocked_tasks"`
 
-	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#table-metrics
-	tablesTotalDiskSpaceUsed *float64 `stm:"tables_total_disk_space_used"`
-
 	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#dropped-metrics
 	droppedMsgsOneMinute *float64 `stm:"dropped_messages_one_minute,1000,1"`
 
