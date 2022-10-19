@@ -13,9 +13,9 @@ This module will monitor one or more Cassandra servers, depending on your config
 
 ## Requirements
 
-- Cassandra with [Prometheus JXM Exporter](https://github.com/prometheus/jmx_exporter).
+- Cassandra with [Prometheus JMX Exporter](https://github.com/prometheus/jmx_exporter).
 
-To configure Cassandra with the JXM Exporter:
+To configure Cassandra with the JMX Exporter:
 
 > **Note**: paths can differ depends on your setup.
 
