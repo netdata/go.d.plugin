@@ -218,7 +218,7 @@ var (
 		Ctx:      "cassandra.thread_pool_blocked_tasks_count",
 		Priority: prioThreadPoolBlockedTasksCount,
 		Dims: module.Dims{
-			{ID: "thread_pool_%s_currently_blocked_tasks", Name: "blocked"},
+			{ID: "thread_pool_%s_blocked_tasks", Name: "blocked"},
 		},
 	}
 	chartTmplThreadPoolBlockedTasksRate = module.Chart{
