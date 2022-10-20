@@ -46,6 +46,7 @@ type (
 		cpuTimeTotal          `stm:""`
 		DPCsTotal             float64 `stm:"dpcs,1000,1"`       // DPCsQueuedPersec
 		InterruptsTotal       float64 `stm:"interrupts,1000,1"` // InterruptsPersec
+		frequency             float64 `stm:"frequency,1,1"`  // CPU frequency
 	}
 
 	cpuTimeTotal struct {

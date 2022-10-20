@@ -30,6 +30,7 @@ const (
 	prioCPUInterrupts
 	prioCPUCoreUtil
 	prioCPUCoreCState
+	prioCPUFrequency
 
 	prioMemUtil
 	prioMemPageFaults
@@ -71,6 +72,7 @@ func newCPUCharts() Charts {
 		cpuUtilChart.Copy(),
 		cpuDPCsChart.Copy(),
 		cpuInterruptsChart.Copy(),
+		cpuFrequencyChart.Copy(),
 	}
 }
 
@@ -108,6 +110,15 @@ var (
 		Ctx:      "wmi.cpu_interrupts",
 		Type:     module.Stacked,
 		Priority: prioCPUInterrupts,
+	}
+	cpuFrequencyChart = Chart{
+		ID:       "cpu_frequency",
+		Title:    "CPU Frequency",
+		Units:    "MHz",
+		Fam:      "cpu",
+		Ctx:      "wmi.cpu_frequency",
+		Type:     module.Line,
+		Priority: prioCPUFrequency,
 	}
 )
 
@@ -646,6 +657,9 @@ func (w *WMI) updateCPUCharts(mx *metrics) {
 		if err := addDimToCPUInterruptsChart(w.Charts(), core.ID); err != nil {
 			w.Warning(err)
 		}
+		if err := addDimToCPUFrequencyChart(w.Charts(), core.ID); err != nil {
+			w.Warning(err)
+		}
 	}
 }
 
@@ -829,6 +843,24 @@ func addDimToCPUInterruptsChart(charts *Charts, coreID string) error {
 	}
 	dim := &Dim{
 		ID:   fmt.Sprintf("cpu_core_%s_interrupts", coreID),
+		Name: "core" + coreID,
+		Algo: module.Incremental,
+		Div:  1000,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToCPUFrequencyChart(charts *Charts, coreID string) error {
+	chart := charts.Get(cpuFrequencyChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", cpuFrequencyChart.ID)
+	}
+	dim := &Dim{
+		ID:   fmt.Sprintf("cpu_core_%s_frequency", coreID),
 		Name: "core" + coreID,
 		Algo: module.Incremental,
 		Div:  1000,

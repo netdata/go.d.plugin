@@ -15,6 +15,7 @@ const (
 	metricCPUDPCsTotal       = "windows_cpu_dpcs_total"
 	metricCPUInterruptsTotal = "windows_cpu_interrupts_total"
 	metricCPUTimeTotal       = "windows_cpu_time_total"
+	metricCPUFrequency       = "windows_cpu_core_frequency_mhz"
 )
 
 func doCollectCPU(pms prometheus.Metrics) bool {
@@ -32,6 +33,7 @@ func collectCPU(pms prometheus.Metrics) *cpuMetrics {
 	collectCPUCoresDPCs(cm, pms)
 	collectCPUCoresInterrupts(cm, pms)
 	collectCPUCoresUsage(cm, pms)
+	collectCPUFrequency(cm, pms)
 	collectCPUSummary(cm)
 	sortCPUCores(&cm.Cores)
 	return cm
@@ -124,6 +126,23 @@ func collectCPUCoresDPCs(cm *cpuMetrics, pms prometheus.Metrics) {
 		}
 
 		core.DPCsTotal = pm.Value
+	}
+}
+
+func collectCPUFrequency(cm *cpuMetrics, pms prometheus.Metrics) {
+	var core *cpuCore
+
+	for _, pm := range pms.FindByName(metricCPUFrequency) {
+		coreID := pm.Labels.Get("core")
+		if coreID == "" {
+			continue
+		}
+
+		if core == nil || core.ID != coreID {
+			core = cm.Cores.get(coreID)
+		}
+
+		core.frequency = pm.Value
 	}
 }
 
