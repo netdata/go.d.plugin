@@ -42,7 +42,7 @@ Labels per scope:
 | Metric                            |    Scope    |  Dimensions  |    Units     |
 |-----------------------------------|:-----------:|:------------:|:------------:|
 | client_requests_rate              |   global    | read, write  |  requests/s  |
-| client_requests_latency           |   global    | read, write  | microseconds |
+| client_requests_latency           |   global    | read, write  |   seconds    |
 | cache_hit_ratio                   |   global    |  hit_ratio   |  percentage  |
 | cache_hit_rate                    |   global    | hits, misses |   events/s   |
 | cache_size                        |   global    |     size     |    bytes     |
@@ -55,7 +55,7 @@ Labels per scope:
 | thread_pool_blocked_tasks_count   | thread pool |   blocked    |    tasks     |
 | thread_pool_blocked_tasks_rate    | thread pool |   blocked    |   tasks/s    |
 | jvm_gc_rate                       |   global    | parnew, cms  |     gc/s     |
-| jvm_gc_time                       |   global    | parnew, cms  | microseconds |
+| jvm_gc_time                       |   global    | parnew, cms  |   seconds    |
 | dropped_messages_one_minute_rate  |   global    |   dropped    |  messages/s  |
 | client_requests_timeouts_rate     |   global    | read, write  |  timeout/s   |
 | client_requests_unavailables_rate |   global    | read, write  | exceptions/s |
