@@ -37,7 +37,7 @@ const (
 )
 
 const (
-	prioPodCPURequestsUsed = 38200 + iota
+	prioPodCPURequestsUsed = 40300 + iota
 	prioPodCPULimitsUsed
 	prioPodMemRequestsUsed
 	prioPodMemLimitsUsed
