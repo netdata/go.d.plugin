@@ -117,7 +117,6 @@ var (
 		Units:    "MHz",
 		Fam:      "cpu",
 		Ctx:      "wmi.cpu_frequency",
-		Type:     module.Line,
 		Priority: prioCPUFrequency,
 	}
 )
