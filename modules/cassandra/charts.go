@@ -2,7 +2,10 @@
 
 package cassandra
 
-import "github.com/netdata/go.d.plugin/agent/module"
+import (
+	"fmt"
+	"github.com/netdata/go.d.plugin/agent/module"
+)
 
 const (
 	prioRequestsRate = module.Priority + iota
@@ -19,10 +22,10 @@ const (
 	prioCompactionPendingTasksCount
 	prioCompactionBytesCompactedRate
 
-	prioThreadPoolsActiveTasksCount
-	prioThreadPoolsPendingTasksCount
-	prioThreadPoolsBlockedTasksRate
-	prioThreadPoolsCurrentlyBlockedTasksCount
+	prioThreadPoolActiveTasksCount
+	prioThreadPoolPendingTasksCount
+	prioThreadPoolBlockedTasksCount
+	prioThreadPoolBlockedTasksRate
 
 	prioJVMGCCount
 	prioJVMGCTime
@@ -48,11 +51,6 @@ var baseCharts = module.Charts{
 	chartCompactionCompletedTasksRate.Copy(),
 	chartCompactionPendingTasksCount.Copy(),
 	chartCompactionBytesCompactedRate.Copy(),
-
-	threadPoolsActiveTasksCount.Copy(),
-	threadPoolsPendingTasksCount.Copy(),
-	threadPoolsBlockedTasksRate.Copy(),
-	threadPoolsBlockedTasksCount.Copy(),
 
 	chartJVMGCRate.Copy(),
 	chartJVMGCTime.Copy(),
@@ -183,48 +181,55 @@ var (
 )
 
 var (
-	threadPoolsActiveTasksCount = module.Chart{
-		ID:       "thread_pools_active_tasks_count",
+	chartsTmplThreadPool = module.Charts{
+		chartTmplThreadPoolActiveTasksCount.Copy(),
+		chartTmplThreadPoolPendingTasksCount.Copy(),
+		chartTmplThreadPoolBlockedTasksCount.Copy(),
+		chartTmplThreadPoolBlockedTasksRate.Copy(),
+	}
+
+	chartTmplThreadPoolActiveTasksCount = module.Chart{
+		ID:       "thread_pool_%s_active_tasks_count",
 		Title:    "Active tasks",
 		Units:    "tasks",
 		Fam:      "thread pools",
-		Ctx:      "cassandra.thread_pools_active_tasks_count",
-		Priority: prioThreadPoolsActiveTasksCount,
+		Ctx:      "cassandra.thread_pool_active_tasks_count",
+		Priority: prioThreadPoolActiveTasksCount,
 		Dims: module.Dims{
-			{ID: "thread_pools_active_tasks", Name: "active"},
+			{ID: "thread_pool_%s_active_tasks", Name: "active"},
 		},
 	}
-	threadPoolsPendingTasksCount = module.Chart{
-		ID:       "thread_pools_pending_tasks_count",
+	chartTmplThreadPoolPendingTasksCount = module.Chart{
+		ID:       "thread_pool_%s_pending_tasks_count",
 		Title:    "Pending tasks",
 		Units:    "tasks",
 		Fam:      "thread pools",
-		Ctx:      "cassandra.thread_pools_pending_tasks_count",
-		Priority: prioThreadPoolsPendingTasksCount,
+		Ctx:      "cassandra.thread_pool_pending_tasks_count",
+		Priority: prioThreadPoolPendingTasksCount,
 		Dims: module.Dims{
-			{ID: "thread_pools_pending_tasks", Name: "pending"},
+			{ID: "thread_pool_%s_pending_tasks", Name: "pending"},
 		},
 	}
-	threadPoolsBlockedTasksRate = module.Chart{
-		ID:       "thread_pools_blocked_tasks_rate",
-		Title:    "Blocked tasks rate",
-		Units:    "tasks/s",
-		Fam:      "thread pools",
-		Ctx:      "cassandra.thread_pools_blocked_tasks_rate",
-		Priority: prioThreadPoolsBlockedTasksRate,
-		Dims: module.Dims{
-			{ID: "thread_pools_total_blocked_tasks", Name: "blocked", Algo: module.Incremental},
-		},
-	}
-	threadPoolsBlockedTasksCount = module.Chart{
-		ID:       "thread_pools_blocked_tasks_count",
+	chartTmplThreadPoolBlockedTasksCount = module.Chart{
+		ID:       "thread_pool_%s_blocked_tasks_count",
 		Title:    "Blocked tasks",
 		Units:    "tasks",
 		Fam:      "thread pools",
-		Ctx:      "cassandra.thread_pools_blocked_tasks_count",
-		Priority: prioThreadPoolsCurrentlyBlockedTasksCount,
+		Ctx:      "cassandra.thread_pool_blocked_tasks_count",
+		Priority: prioThreadPoolBlockedTasksCount,
 		Dims: module.Dims{
-			{ID: "thread_pools_currently_blocked_tasks", Name: "blocked"},
+			{ID: "thread_pool_%s_blocked_tasks", Name: "blocked"},
+		},
+	}
+	chartTmplThreadPoolBlockedTasksRate = module.Chart{
+		ID:       "thread_pool_%s_blocked_tasks_rate",
+		Title:    "Blocked tasks rate",
+		Units:    "tasks/s",
+		Fam:      "thread pools",
+		Ctx:      "cassandra.thread_pool_blocked_tasks_rate",
+		Priority: prioThreadPoolBlockedTasksRate,
+		Dims: module.Dims{
+			{ID: "thread_pool_%s_total_blocked_tasks", Name: "blocked", Algo: module.Incremental},
 		},
 	}
 )
@@ -316,3 +321,21 @@ var (
 		},
 	}
 )
+
+func (c *Cassandra) addThreadPoolCharts(pool *threadPoolMetrics) {
+	charts := chartsTmplThreadPool.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, pool.name)
+		chart.Labels = []module.Label{
+			{Key: "thread_pool", Value: pool.name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, pool.name)
+		}
+	}
+
+	if err := c.Charts().Add(*charts...); err != nil {
+		c.Warning(err)
+	}
+}

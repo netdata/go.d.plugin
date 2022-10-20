@@ -33,6 +33,7 @@ func New() *Cassandra {
 		},
 		charts:          baseCharts.Copy(),
 		validateMetrics: true,
+		mx:              newCassandraMetrics(),
 	}
 }
 
@@ -49,6 +50,7 @@ type Cassandra struct {
 	prom prometheus.Prometheus
 
 	validateMetrics bool
+	mx              *cassandraMetrics
 }
 
 func (c *Cassandra) Init() bool {
