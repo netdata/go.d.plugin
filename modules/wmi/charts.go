@@ -861,7 +861,7 @@ func addDimToCPUFrequencyChart(charts *Charts, coreID string) error {
 	dim := &Dim{
 		ID:   fmt.Sprintf("cpu_core_%s_frequency", coreID),
 		Name: "core" + coreID,
-		Algo: module.Incremental,
+		Algo: module.Absolute,
 	}
 	if err := chart.AddDim(dim); err != nil {
 		return err
