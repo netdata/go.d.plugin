@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
-	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
 const (
@@ -29,64 +28,120 @@ func (c *Cassandra) collect() (map[string]int64, error) {
 		c.validateMetrics = false
 	}
 
-	var mx cassandraMetrics
-	c.collectMetrics(&mx, pms)
+	mx := make(map[string]int64)
 
-	if mx.cacheMisses != nil && mx.cacheHits != nil {
-		var hitRatio float64
-		if total := *mx.cacheMisses + *mx.cacheHits; total > 0 {
-			hitRatio = *mx.cacheHits * 100 / total
+	c.resetMetrics()
+	c.collectMetrics(pms)
+	c.processMetric(mx)
+
+	return mx, nil
+}
+
+func (c *Cassandra) resetMetrics() {
+	cm := newCassandraMetrics()
+	for key, p := range c.mx.threadPools {
+		cm.threadPools[key] = &threadPoolMetrics{
+			name:      p.name,
+			hasCharts: p.hasCharts,
 		}
-		mx.cacheHitRatio = &hitRatio
+	}
+	c.mx = cm
+}
+
+func (c *Cassandra) processMetric(mx map[string]int64) {
+	c.mx.clientReqTotalLatencyReads.write(mx, "client_request_total_latency_reads")
+	c.mx.clientReqTotalLatencyWrites.write(mx, "client_request_total_latency_writes")
+	c.mx.clientReqLatencyReads.write(mx, "client_request_latency_reads")
+	c.mx.clientReqLatencyWrites.write(mx, "client_request_latency_writes")
+	c.mx.clientReqTimeoutsReads.write(mx, "client_request_timeouts_reads")
+	c.mx.clientReqTimeoutsWrites.write(mx, "client_request_timeouts_writes")
+	c.mx.clientReqUnavailablesReads.write(mx, "client_request_unavailables_reads")
+	c.mx.clientReqUnavailablesWrites.write(mx, "client_request_unavailables_writes")
+	c.mx.clientReqFailuresReads.write(mx, "client_request_failures_reads")
+	c.mx.clientReqFailuresWrites.write(mx, "client_request_failures_writes")
+
+	c.mx.cacheHits.write(mx, "cache_hits")
+	c.mx.cacheMisses.write(mx, "cache_misses")
+	c.mx.cacheSize.write(mx, "cache_size")
+	if c.mx.cacheHits.isSet && c.mx.cacheMisses.isSet {
+		if s := c.mx.cacheHits.value + c.mx.cacheMisses.value; s > 0 {
+			mx["cache_hit_ratio"] = int64((c.mx.cacheHits.value * 100 / s) * 1000)
+		} else {
+			mx["cache_hit_ratio"] = 0
+		}
 	}
 
-	return stm.ToMap(mx), nil
+	c.mx.droppedMsgsOneMinute.write1k(mx, "dropped_messages_one_minute")
+
+	c.mx.storageLoad.write(mx, "storage_load")
+	c.mx.storageExceptions.write(mx, "storage_exceptions")
+
+	c.mx.compactionBytesCompacted.write(mx, "compaction_bytes_compacted")
+	c.mx.compactionPendingTasks.write(mx, "compaction_pending_tasks")
+	c.mx.compactionCompletedTasks.write(mx, "compaction_completed_tasks")
+
+	c.mx.jvmGCParNewCount.write(mx, "jvm_gc_parnew_count")
+	c.mx.jvmGCParNewTime.write1k(mx, "jvm_gc_parnew_time")
+	c.mx.jvmGCCMSCount.write(mx, "jvm_gc_cms_count")
+	c.mx.jvmGCCMSTime.write1k(mx, "jvm_gc_cms_time")
+
+	for _, p := range c.mx.threadPools {
+		if !p.hasCharts {
+			p.hasCharts = true
+			c.addThreadPoolCharts(p)
+		}
+
+		px := "thread_pool_" + p.name + "_"
+		p.activeTasks.write(mx, px+"active_tasks")
+		p.pendingTasks.write(mx, px+"pending_tasks")
+		p.blockedTasks.write(mx, px+"blocked_tasks")
+		p.totalBlockedTasks.write(mx, px+"total_blocked_tasks")
+	}
 }
 
-func (c *Cassandra) collectMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
-	c.collectClientRequestMetrics(mx, pms)
-	c.collectDroppedMessagesMetrics(mx, pms)
-	c.collectThreadPoolsMetrics(mx, pms)
-	c.collectStorageMetrics(mx, pms)
-	c.collectCacheMetrics(mx, pms)
-	c.collectJVMMetrics(mx, pms)
-	c.collectCompactionMetrics(mx, pms)
+func (c *Cassandra) collectMetrics(pms prometheus.Metrics) {
+	c.collectClientRequestMetrics(pms)
+	c.collectDroppedMessagesMetrics(pms)
+	c.collectThreadPoolsMetrics(pms)
+	c.collectStorageMetrics(pms)
+	c.collectCacheMetrics(pms)
+	c.collectJVMMetrics(pms)
+	c.collectCompactionMetrics(pms)
 }
 
-func (c *Cassandra) collectClientRequestMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
+func (c *Cassandra) collectClientRequestMetrics(pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_clientrequest"
 
-	var rw struct{ r, w **float64 }
+	var rw struct{ r, w *metricValue }
 	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
 		scope := pm.Labels.Get("scope")
 
 		switch name {
 		case "TotalLatency":
-			rw.r, rw.w = &mx.clientRequestTotalLatencyReads, &mx.clientRequestTotalLatencyWrites
+			rw.r, rw.w = &c.mx.clientReqTotalLatencyReads, &c.mx.clientReqTotalLatencyWrites
 		case "Latency":
-			rw.r, rw.w = &mx.clientRequestLatencyReads, &mx.clientRequestLatencyWrites
+			rw.r, rw.w = &c.mx.clientReqLatencyReads, &c.mx.clientReqLatencyWrites
 		case "Timeouts":
-			rw.r, rw.w = &mx.clientRequestTimeoutsReads, &mx.clientRequestTimeoutsWrites
+			rw.r, rw.w = &c.mx.clientReqTimeoutsReads, &c.mx.clientReqTimeoutsWrites
 		case "Unavailables":
-			rw.r, rw.w = &mx.clientRequestUnavailablesReads, &mx.clientRequestUnavailablesWrites
+			rw.r, rw.w = &c.mx.clientReqUnavailablesReads, &c.mx.clientReqUnavailablesWrites
 		case "Failures":
-			rw.r, rw.w = &mx.clientRequestFailuresReads, &mx.clientRequestFailuresWrites
+			rw.r, rw.w = &c.mx.clientReqFailuresReads, &c.mx.clientReqFailuresWrites
 		default:
 			continue
 		}
 
 		switch scope {
 		case "Read":
-			addValue(rw.r, pm.Value)
+			rw.r.add(pm.Value)
 		case "Write":
-			addValue(rw.w, pm.Value)
+			rw.w.add(pm.Value)
 		}
-
 	}
 }
 
-func (c *Cassandra) collectCacheMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
+func (c *Cassandra) collectCacheMetrics(pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_cache"
 
 	for _, pm := range pms.FindByName(metric + suffixCount) {
@@ -94,9 +149,9 @@ func (c *Cassandra) collectCacheMetrics(mx *cassandraMetrics, pms prometheus.Met
 
 		switch name {
 		case "Misses":
-			addValue(&mx.cacheMisses, pm.Value)
+			c.mx.cacheMisses.add(pm.Value)
 		case "Hits":
-			addValue(&mx.cacheHits, pm.Value)
+			c.mx.cacheHits.add(pm.Value)
 		}
 	}
 
@@ -105,37 +160,43 @@ func (c *Cassandra) collectCacheMetrics(mx *cassandraMetrics, pms prometheus.Met
 
 		switch name {
 		case "Size":
-			addValue(&mx.cacheSize, pm.Value)
+			c.mx.cacheSize.add(pm.Value)
 		}
 	}
 }
 
-func (c *Cassandra) collectThreadPoolsMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
+func (c *Cassandra) collectThreadPoolsMetrics(pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_threadpools"
 
 	for _, pm := range pms.FindByName(metric + suffixValue) {
 		name := pm.Labels.Get("name")
+		scope := pm.Labels.Get("scope")
+		pool := c.getThreadPoolMetrics(scope)
 
 		switch name {
 		case "ActiveTasks":
-			addValue(&mx.threadPoolsActiveTasks, pm.Value)
+			pool.activeTasks.add(pm.Value)
 		case "PendingTasks":
-			addValue(&mx.threadPoolsPendingTasks, pm.Value)
+			pool.pendingTasks.add(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
+		scope := pm.Labels.Get("scope")
+		pool := c.getThreadPoolMetrics(scope)
 
 		switch name {
+		case "CompletedTasks":
+			pool.totalBlockedTasks.add(pm.Value)
 		case "TotalBlockedTasks":
-			addValue(&mx.threadPoolsTotalBlockedTasks, pm.Value)
+			pool.totalBlockedTasks.add(pm.Value)
 		case "CurrentlyBlockedTasks":
-			addValue(&mx.threadPoolsCurrentlyBlockedTasks, pm.Value)
+			pool.blockedTasks.add(pm.Value)
 		}
 	}
 }
 
-func (c *Cassandra) collectStorageMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
+func (c *Cassandra) collectStorageMetrics(pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_storage"
 
 	for _, pm := range pms.FindByName(metric + suffixCount) {
@@ -143,22 +204,22 @@ func (c *Cassandra) collectStorageMetrics(mx *cassandraMetrics, pms prometheus.M
 
 		switch name {
 		case "Load":
-			addValue(&mx.storageLoad, pm.Value)
+			c.mx.storageLoad.add(pm.Value)
 		case "Exceptions":
-			addValue(&mx.storageExceptions, pm.Value)
+			c.mx.storageExceptions.add(pm.Value)
 		}
 	}
 }
 
-func (c *Cassandra) collectDroppedMessagesMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
+func (c *Cassandra) collectDroppedMessagesMetrics(pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_droppedmessage"
 
 	for _, pm := range pms.FindByName(metric + suffixOneMinute) {
-		addValue(&mx.droppedMsgsOneMinute, pm.Value)
+		c.mx.droppedMsgsOneMinute.add(pm.Value)
 	}
 }
 
-func (c *Cassandra) collectJVMMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
+func (c *Cassandra) collectJVMMetrics(pms prometheus.Metrics) {
 	const metric = "jvm_gc_collection_seconds"
 
 	for _, pm := range pms.FindByName(metric + suffixCount) {
@@ -166,9 +227,9 @@ func (c *Cassandra) collectJVMMetrics(mx *cassandraMetrics, pms prometheus.Metri
 
 		switch gc {
 		case "ParNew":
-			addValue(&mx.jvmGCParNewCount, pm.Value)
+			c.mx.jvmGCParNewCount.add(pm.Value)
 		case "ConcurrentMarkSweep":
-			addValue(&mx.jvmGCCMSCount, pm.Value)
+			c.mx.jvmGCCMSCount.add(pm.Value)
 		}
 	}
 
@@ -177,14 +238,14 @@ func (c *Cassandra) collectJVMMetrics(mx *cassandraMetrics, pms prometheus.Metri
 
 		switch gc {
 		case "ParNew":
-			addValue(&mx.jvmGCParNewTime, pm.Value)
+			c.mx.jvmGCParNewTime.add(pm.Value)
 		case "ConcurrentMarkSweep":
-			addValue(&mx.jvmGCCMSTime, pm.Value)
+			c.mx.jvmGCCMSTime.add(pm.Value)
 		}
 	}
 }
 
-func (c *Cassandra) collectCompactionMetrics(mx *cassandraMetrics, pms prometheus.Metrics) {
+func (c *Cassandra) collectCompactionMetrics(pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_compaction"
 
 	for _, pm := range pms.FindByName(metric + suffixValue) {
@@ -192,9 +253,9 @@ func (c *Cassandra) collectCompactionMetrics(mx *cassandraMetrics, pms prometheu
 
 		switch name {
 		case "CompletedTasks":
-			addValue(&mx.compactionCompletedTasks, pm.Value)
+			c.mx.compactionCompletedTasks.add(pm.Value)
 		case "PendingTasks":
-			addValue(&mx.compactionPendingTasks, pm.Value)
+			c.mx.compactionPendingTasks.add(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metric + suffixCount) {
@@ -202,9 +263,18 @@ func (c *Cassandra) collectCompactionMetrics(mx *cassandraMetrics, pms prometheu
 
 		switch name {
 		case "BytesCompacted":
-			addValue(&mx.compactionBytesCompacted, pm.Value)
+			c.mx.compactionBytesCompacted.add(pm.Value)
 		}
 	}
+}
+
+func (c *Cassandra) getThreadPoolMetrics(name string) *threadPoolMetrics {
+	pool, ok := c.mx.threadPools[name]
+	if !ok {
+		pool = &threadPoolMetrics{name: name}
+		c.mx.threadPools[name] = pool
+	}
+	return pool
 }
 
 func isCassandraMetrics(pms prometheus.Metrics) bool {
@@ -214,12 +284,4 @@ func isCassandraMetrics(pms prometheus.Metrics) bool {
 		}
 	}
 	return false
-}
-
-func addValue(current **float64, value float64) {
-	if *current == nil {
-		*current = &value
-	} else {
-		**current += value
-	}
 }
