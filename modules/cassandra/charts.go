@@ -14,6 +14,7 @@ const (
 
 	prioKeyCacheHitRatio
 	prioKeyCacheHitRate
+	prioKeyCacheUtilization
 	prioKeyCacheSize
 
 	prioStorageLiveDiskSpaceUsed
@@ -44,6 +45,7 @@ var baseCharts = module.Charts{
 
 	chartKeyCacheHitRatio.Copy(),
 	chartKeyCacheHitRate.Copy(),
+	chartKeyCacheUtilization.Copy(),
 	chartKeyCacheSize.Copy(),
 
 	chartStorageLiveDiskSpaceUsed.Copy(),
@@ -115,6 +117,17 @@ var (
 		Dims: module.Dims{
 			{ID: "key_cache_hits", Name: "hits", Algo: module.Incremental},
 			{ID: "key_cache_misses", Name: "misses", Algo: module.Incremental},
+		},
+	}
+	chartKeyCacheUtilization = module.Chart{
+		ID:       "key_cache_utilization",
+		Title:    "Key cache utilization",
+		Units:    "percentage",
+		Fam:      "cache",
+		Ctx:      "cassandra.key_cache_utilization",
+		Priority: prioKeyCacheUtilization,
+		Dims: module.Dims{
+			{ID: "key_cache_utilization", Name: "used", Div: 1000},
 		},
 	}
 	chartKeyCacheSize = module.Chart{

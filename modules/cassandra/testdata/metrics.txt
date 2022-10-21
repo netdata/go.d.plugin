@@ -211,7 +211,8 @@ org_apache_cassandra_metrics_clientrequest_count{scope="Read",name="TotalLatency
 org_apache_cassandra_metrics_clientrequest_count{scope="Write",name="Unavailables",} 0.0
 # HELP org_apache_cassandra_metrics_cache_value Attribute exposed for management org.apache.cassandra.metrics:name=Size,type=Cache,attribute=Value
 # TYPE org_apache_cassandra_metrics_cache_value untyped
-org_apache_cassandra_metrics_cache_value{scope="KeyCache",name="Size",} 1560.0
+org_apache_cassandra_metrics_cache_value{scope="KeyCache",name="Size",} 7.2921832E7
+org_apache_cassandra_metrics_cache_value{scope="KeyCache",name="Capacity",} 9.437184E8
 # HELP org_apache_cassandra_metrics_droppedmessage_oneminuterate Attribute exposed for management org.apache.cassandra.metrics:name=Dropped,type=DroppedMessage,attribute=OneMinuteRate
 # TYPE org_apache_cassandra_metrics_droppedmessage_oneminuterate untyped
 org_apache_cassandra_metrics_droppedmessage_oneminuterate{scope="FINALIZE_PROPOSE_MSG",name="Dropped",} 0.0
