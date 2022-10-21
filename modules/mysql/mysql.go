@@ -29,17 +29,18 @@ func New() *MySQL {
 			Timeout: web.Duration{Duration: time.Second},
 		},
 
-		charts:                 baseCharts.Copy(),
-		addInnoDBOSLogOnce:     &sync.Once{},
-		addBinlogOnce:          &sync.Once{},
-		addMyISAMOnce:          &sync.Once{},
-		addInnodbDeadlocksOnce: &sync.Once{},
-		addGaleraOnce:          &sync.Once{},
-		addQCacheOnce:          &sync.Once{},
-		doSlaveStatus:          true,
-		doUserStatistics:       true,
-		collectedReplConns:     make(map[string]bool),
-		collectedUsers:         make(map[string]bool),
+		charts:                         baseCharts.Copy(),
+		addInnoDBOSLogOnce:             &sync.Once{},
+		addBinlogOnce:                  &sync.Once{},
+		addMyISAMOnce:                  &sync.Once{},
+		addInnodbDeadlocksOnce:         &sync.Once{},
+		addGaleraOnce:                  &sync.Once{},
+		addQCacheOnce:                  &sync.Once{},
+		addTableOpenCacheOverflowsOnce: &sync.Once{},
+		doSlaveStatus:                  true,
+		doUserStatistics:               true,
+		collectedReplConns:             make(map[string]bool),
+		collectedUsers:                 make(map[string]bool),
 
 		recheckGlobalVarsEvery: time.Minute * 10,
 	}
@@ -64,12 +65,13 @@ type MySQL struct {
 
 	charts *module.Charts
 
-	addInnoDBOSLogOnce     *sync.Once
-	addBinlogOnce          *sync.Once
-	addMyISAMOnce          *sync.Once
-	addInnodbDeadlocksOnce *sync.Once
-	addGaleraOnce          *sync.Once
-	addQCacheOnce          *sync.Once
+	addInnoDBOSLogOnce             *sync.Once
+	addBinlogOnce                  *sync.Once
+	addMyISAMOnce                  *sync.Once
+	addInnodbDeadlocksOnce         *sync.Once
+	addGaleraOnce                  *sync.Once
+	addQCacheOnce                  *sync.Once
+	addTableOpenCacheOverflowsOnce *sync.Once
 
 	doSlaveStatus      bool
 	collectedReplConns map[string]bool
