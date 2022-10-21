@@ -45,6 +45,9 @@ func (m *MySQL) collect() (map[string]int64, error) {
 	if hasGaleraMetrics(mx) {
 		m.addGaleraOnce.Do(m.addGaleraCharts)
 	}
+	if hasTableOpenCacheOverflowsMetrics(mx) {
+		m.addTableOpenCacheOverflowsOnce.Do(m.addTableOpenCacheOverflowChart)
+	}
 
 	now := time.Now()
 	if now.Sub(m.recheckGlobalVarsTime) > m.recheckGlobalVarsEvery {
@@ -134,6 +137,11 @@ func hasGaleraMetrics(collected map[string]int64) bool {
 
 func hasQCacheMetrics(collected map[string]int64) bool {
 	_, ok := collected["qcache_hits"]
+	return ok
+}
+
+func hasTableOpenCacheOverflowsMetrics(collected map[string]int64) bool {
+	_, ok := collected["table_open_cache_overflows"]
 	return ok
 }
 
