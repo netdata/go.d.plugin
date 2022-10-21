@@ -28,6 +28,7 @@ const (
 	prioThreadPoolBlockedTasksCount
 	prioThreadPoolBlockedTasksRate
 
+	prioJVMMemoryUsed
 	prioJVMGCCount
 	prioJVMGCTime
 
@@ -54,6 +55,7 @@ var baseCharts = module.Charts{
 	chartCompactionPendingTasksCount.Copy(),
 	chartCompactionBytesCompactedRate.Copy(),
 
+	chartJVMMemoryUsed.Copy(),
 	chartJVMGCRate.Copy(),
 	chartJVMGCTime.Copy(),
 
@@ -248,11 +250,24 @@ var (
 )
 
 var (
+	chartJVMMemoryUsed = module.Chart{
+		ID:       "jvm_memory_used",
+		Title:    "Memory used",
+		Units:    "bytes",
+		Fam:      "jvm runtime",
+		Ctx:      "cassandra.jvm_memory_used",
+		Priority: prioJVMMemoryUsed,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "jvm_memory_heap_used", Name: "heap"},
+			{ID: "jvm_memory_nonheap_used", Name: "nonheap"},
+		},
+	}
 	chartJVMGCRate = module.Chart{
 		ID:       "jvm_gc_rate",
 		Title:    "Garbage collections rate",
 		Units:    "gc/s",
-		Fam:      "garbage collection",
+		Fam:      "jvm runtime",
 		Ctx:      "cassandra.jvm_gc_rate",
 		Priority: prioJVMGCCount,
 		Dims: module.Dims{
@@ -264,7 +279,7 @@ var (
 		ID:       "jvm_gc_time",
 		Title:    "Garbage collection time",
 		Units:    "seconds",
-		Fam:      "garbage collection",
+		Fam:      "jvm runtime",
 		Ctx:      "cassandra.jvm_gc_time",
 		Priority: prioJVMGCTime,
 		Dims: module.Dims{

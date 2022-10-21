@@ -87,6 +87,8 @@ func (c *Cassandra) processMetric(mx map[string]int64) {
 	c.mx.compactionPendingTasks.write(mx, "compaction_pending_tasks")
 	c.mx.compactionCompletedTasks.write(mx, "compaction_completed_tasks")
 
+	c.mx.jvmMemoryHeapUsed.write(mx, "jvm_memory_heap_used")
+	c.mx.jvmMemoryNonHeapUsed.write(mx, "jvm_memory_nonheap_used")
 	c.mx.jvmGCParNewCount.write(mx, "jvm_gc_parnew_count")
 	c.mx.jvmGCParNewTime.write1k(mx, "jvm_gc_parnew_time")
 	c.mx.jvmGCCMSCount.write(mx, "jvm_gc_cms_count")
@@ -233,9 +235,21 @@ func (c *Cassandra) collectDroppedMessagesMetrics(pms prometheus.Metrics) {
 }
 
 func (c *Cassandra) collectJVMMetrics(pms prometheus.Metrics) {
-	const metric = "jvm_gc_collection_seconds"
+	const metricMemUsed = "jvm_memory_bytes_used"
+	const metricGC = "jvm_gc_collection_seconds"
 
-	for _, pm := range pms.FindByName(metric + suffixCount) {
+	for _, pm := range pms.FindByName(metricMemUsed) {
+		area := pm.Labels.Get("area")
+
+		switch area {
+		case "heap":
+			c.mx.jvmMemoryHeapUsed.add(pm.Value)
+		case "nonheap":
+			c.mx.jvmMemoryNonHeapUsed.add(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricGC + suffixCount) {
 		gc := pm.Labels.Get("gc")
 
 		switch gc {
@@ -246,7 +260,7 @@ func (c *Cassandra) collectJVMMetrics(pms prometheus.Metrics) {
 		}
 	}
 
-	for _, pm := range pms.FindByName(metric + "_sum") {
+	for _, pm := range pms.FindByName(metricGC + "_sum") {
 		gc := pm.Labels.Get("gc")
 
 		switch gc {

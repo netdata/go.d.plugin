@@ -131,6 +131,8 @@ func TestCassandra_Collect(t *testing.T) {
 				"jvm_gc_cms_time":                                              60,
 				"jvm_gc_parnew_count":                                          297,
 				"jvm_gc_parnew_time":                                           937,
+				"jvm_memory_heap_used":                                         602092056,
+				"jvm_memory_nonheap_used":                                      78651400,
 				"key_cache_hit_ratio":                                          85401,
 				"key_cache_hits":                                               117,
 				"key_cache_misses":                                             20,
