@@ -113,10 +113,6 @@ func TestCassandra_Collect(t *testing.T) {
 		"success on valid response": {
 			prepare: prepareCassandra,
 			wantCollected: map[string]int64{
-				"cache_hit_ratio":                                              85401,
-				"cache_hits":                                                   117,
-				"cache_misses":                                                 20,
-				"cache_size":                                                   1560,
 				"client_request_failures_reads":                                0,
 				"client_request_failures_writes":                               0,
 				"client_request_latency_reads":                                 1,
@@ -135,6 +131,10 @@ func TestCassandra_Collect(t *testing.T) {
 				"jvm_gc_cms_time":                                              60,
 				"jvm_gc_parnew_count":                                          297,
 				"jvm_gc_parnew_time":                                           937,
+				"key_cache_hit_ratio":                                          85401,
+				"key_cache_hits":                                               117,
+				"key_cache_misses":                                             20,
+				"key_cache_size":                                               1560,
 				"storage_exceptions":                                           0,
 				"storage_load":                                                 145838019,
 				"thread_pool_CacheCleanupExecutor_active_tasks":                0,

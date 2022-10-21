@@ -24,9 +24,9 @@ type cassandraMetrics struct {
 	clientReqFailuresReads      metricValue
 	clientReqFailuresWrites     metricValue
 
-	cacheHits   metricValue
-	cacheMisses metricValue
-	cacheSize   metricValue
+	keyCacheHits   metricValue
+	keyCacheMisses metricValue
+	keyCacheSize   metricValue
 
 	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#dropped-metrics
 	droppedMsgsOneMinute metricValue
