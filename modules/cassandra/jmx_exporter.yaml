@@ -25,9 +25,6 @@ rules:
   - pattern: org.apache.cassandra.metrics<type=(Compaction), name=(CompletedTasks|PendingTasks)><>(Value)
   - pattern: org.apache.cassandra.metrics<type=(Compaction), name=(BytesCompacted)><>(Count)
 
-  # Garbage Collection
-  - pattern: <type=(GarbageCollector), name=(ParNew|ConcurrentMarkSweep)><>(CollectionCount|CollectionTime)
-
   # Thread Pools
   - pattern: org.apache.cassandra.metrics<type=(ThreadPools), path=(\S*), scope=(\S*), name=(ActiveTasks|PendingTasks)><>(Value)
   - pattern: org.apache.cassandra.metrics<type=(ThreadPools), path=(\S*), scope=(\S*), name=(CurrentlyBlockedTasks|TotalBlockedTasks)><>(Count)

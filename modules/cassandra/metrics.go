@@ -41,6 +41,9 @@ type cassandraMetrics struct {
 	compactionPendingTasks   metricValue
 	compactionCompletedTasks metricValue
 
+	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#memory
+	jvmMemoryHeapUsed    metricValue
+	jvmMemoryNonHeapUsed metricValue
 	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#garbagecollector
 	jvmGCParNewCount metricValue
 	jvmGCParNewTime  metricValue
