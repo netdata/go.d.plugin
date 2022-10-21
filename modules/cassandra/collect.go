@@ -60,14 +60,14 @@ func (c *Cassandra) processMetric(mx map[string]int64) {
 	c.mx.clientReqFailuresReads.write(mx, "client_request_failures_reads")
 	c.mx.clientReqFailuresWrites.write(mx, "client_request_failures_writes")
 
-	c.mx.cacheHits.write(mx, "cache_hits")
-	c.mx.cacheMisses.write(mx, "cache_misses")
-	c.mx.cacheSize.write(mx, "cache_size")
-	if c.mx.cacheHits.isSet && c.mx.cacheMisses.isSet {
-		if s := c.mx.cacheHits.value + c.mx.cacheMisses.value; s > 0 {
-			mx["cache_hit_ratio"] = int64((c.mx.cacheHits.value * 100 / s) * 1000)
+	c.mx.keyCacheHits.write(mx, "key_cache_hits")
+	c.mx.keyCacheMisses.write(mx, "key_cache_misses")
+	c.mx.keyCacheSize.write(mx, "key_cache_size")
+	if c.mx.keyCacheHits.isSet && c.mx.keyCacheMisses.isSet {
+		if s := c.mx.keyCacheHits.value + c.mx.keyCacheMisses.value; s > 0 {
+			mx["key_cache_hit_ratio"] = int64((c.mx.keyCacheHits.value * 100 / s) * 1000)
 		} else {
-			mx["cache_hit_ratio"] = 0
+			mx["key_cache_hit_ratio"] = 0
 		}
 	}
 
@@ -146,12 +146,16 @@ func (c *Cassandra) collectCacheMetrics(pms prometheus.Metrics) {
 
 	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
+		scope := pm.Labels.Get("scope")
+		if scope != "KeyCache" {
+			continue
+		}
 
 		switch name {
 		case "Misses":
-			c.mx.cacheMisses.add(pm.Value)
+			c.mx.keyCacheMisses.add(pm.Value)
 		case "Hits":
-			c.mx.cacheHits.add(pm.Value)
+			c.mx.keyCacheHits.add(pm.Value)
 		}
 	}
 
@@ -160,7 +164,7 @@ func (c *Cassandra) collectCacheMetrics(pms prometheus.Metrics) {
 
 		switch name {
 		case "Size":
-			c.mx.cacheSize.add(pm.Value)
+			c.mx.keyCacheSize.add(pm.Value)
 		}
 	}
 }

@@ -43,9 +43,9 @@ Labels per scope:
 |-----------------------------------|:-----------:|:------------:|:------------:|
 | client_requests_rate              |   global    | read, write  |  requests/s  |
 | client_requests_latency           |   global    | read, write  |   seconds    |
-| cache_hit_ratio                   |   global    |  hit_ratio   |  percentage  |
-| cache_hit_rate                    |   global    | hits, misses |   events/s   |
-| cache_size                        |   global    |     size     |    bytes     |
+| key_cache_hit_ratio               |   global    |  hit_ratio   |  percentage  |
+| key_cache_hit_rate                |   global    | hits, misses |   events/s   |
+| key_cache_size                    |   global    |     size     |    bytes     |
 | storage_live_disk_space_used      |   global    |     used     |    bytes     |
 | compaction_completed_tasks_rate   |   global    |  completed   |   tasks/s    |
 | compaction_pending_tasks_count    |   global    |   pending    |    tasks     |

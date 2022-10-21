@@ -12,9 +12,9 @@ const (
 
 	prioLatency
 
-	prioCacheHitRatio
-	prioCacheHitRate
-	prioCacheSize
+	prioKeyCacheHitRatio
+	prioKeyCacheHitRate
+	prioKeyCacheSize
 
 	prioStorageLiveDiskSpaceUsed
 
@@ -42,9 +42,9 @@ var baseCharts = module.Charts{
 
 	chartClientRequestsLatency.Copy(),
 
-	chartCacheHitRatio.Copy(),
-	chartCacheHitRate.Copy(),
-	chartCacheSize.Copy(),
+	chartKeyCacheHitRatio.Copy(),
+	chartKeyCacheHitRate.Copy(),
+	chartKeyCacheSize.Copy(),
 
 	chartStorageLiveDiskSpaceUsed.Copy(),
 
@@ -93,39 +93,39 @@ var (
 )
 
 var (
-	chartCacheHitRatio = module.Chart{
-		ID:       "cache_hit_ratio",
-		Title:    "Cache hit ratio",
+	chartKeyCacheHitRatio = module.Chart{
+		ID:       "key_cache_hit_ratio",
+		Title:    "Key cache hit ratio",
 		Units:    "percentage",
 		Fam:      "cache",
-		Ctx:      "cassandra.cache_hit_ratio",
-		Priority: prioCacheHitRatio,
+		Ctx:      "cassandra.key_cache_hit_ratio",
+		Priority: prioKeyCacheHitRatio,
 		Dims: module.Dims{
-			{ID: "cache_hit_ratio", Name: "hit_ratio", Div: 1000},
+			{ID: "key_cache_hit_ratio", Name: "hit_ratio", Div: 1000},
 		},
 	}
-	chartCacheHitRate = module.Chart{
-		ID:       "cache_hit_rate",
-		Title:    "Cache hit rate",
+	chartKeyCacheHitRate = module.Chart{
+		ID:       "key_cache_hit_rate",
+		Title:    "Key cache hit rate",
 		Units:    "events/s",
 		Fam:      "cache",
-		Ctx:      "cassandra.cache_hit_rate",
-		Priority: prioCacheHitRate,
+		Ctx:      "cassandra.key_cache_hit_rate",
+		Priority: prioKeyCacheHitRate,
 		Type:     module.Stacked,
 		Dims: module.Dims{
-			{ID: "cache_hits", Name: "hits", Algo: module.Incremental},
-			{ID: "cache_misses", Name: "misses", Algo: module.Incremental},
+			{ID: "key_cache_hits", Name: "hits", Algo: module.Incremental},
+			{ID: "key_cache_misses", Name: "misses", Algo: module.Incremental},
 		},
 	}
-	chartCacheSize = module.Chart{
-		ID:       "cache_size",
-		Title:    "Cache size",
+	chartKeyCacheSize = module.Chart{
+		ID:       "key_cache_size",
+		Title:    "Key cache size",
 		Units:    "bytes",
 		Fam:      "cache",
-		Ctx:      "cassandra.cache_size",
-		Priority: prioCacheSize,
+		Ctx:      "cassandra.key_cache_size",
+		Priority: prioKeyCacheSize,
 		Dims: module.Dims{
-			{ID: "cache_size", Name: "size"},
+			{ID: "key_cache_size", Name: "size"},
 		},
 	}
 )
