@@ -22,7 +22,7 @@ To configure Cassandra with the JMX Exporter:
 - Download latest [jmx_exporter](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/) jar file
   and install it in a directory where Cassandra can access it.
 - Add
-  the [jmx_exporter.yaml](https://raw.githubusercontent.com/netdata/go.d.plugin/master/modules/cassandra/testdata/jmx_exporter.yaml)
+  the [jmx_exporter.yaml](https://raw.githubusercontent.com/netdata/go.d.plugin/master/modules/cassandra/jmx_exporter.yaml)
   file to `/etc/cassandra`.
 - Add the following line to `/etc/cassandra/cassandra-env.sh`
   ```
@@ -45,6 +45,7 @@ Labels per scope:
 | client_requests_latency           |   global    | read, write  |   seconds    |
 | key_cache_hit_ratio               |   global    |  hit_ratio   |  percentage  |
 | key_cache_hit_rate                |   global    | hits, misses |   events/s   |
+| key_cache_utilization             |   global    |     used     |  percentage  |
 | key_cache_size                    |   global    |     size     |    bytes     |
 | storage_live_disk_space_used      |   global    |     used     |    bytes     |
 | compaction_completed_tasks_rate   |   global    |  completed   |   tasks/s    |

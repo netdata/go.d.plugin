@@ -13,7 +13,7 @@ rules:
 
   # Cache
   - pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache), name=(Hits|Misses)><>(Count)
-  - pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache), name=(Size)><>(Value)
+  - pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache), name=(Capacity|Size)><>(Value)
 
   # Storage
   - pattern: org.apache.cassandra.metrics<type=(Storage), name=(Load|Exceptions)><>(Count)

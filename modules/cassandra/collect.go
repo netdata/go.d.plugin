@@ -70,6 +70,13 @@ func (c *Cassandra) processMetric(mx map[string]int64) {
 			mx["key_cache_hit_ratio"] = 0
 		}
 	}
+	if c.mx.keyCacheCapacity.isSet && c.mx.keyCacheSize.isSet {
+		if s := c.mx.keyCacheCapacity.value; s > 0 {
+			mx["key_cache_utilization"] = int64((c.mx.keyCacheSize.value * 100 / s) * 1000)
+		} else {
+			mx["key_cache_utilization"] = 0
+		}
+	}
 
 	c.mx.droppedMsgsOneMinute.write1k(mx, "dropped_messages_one_minute")
 
@@ -152,10 +159,10 @@ func (c *Cassandra) collectCacheMetrics(pms prometheus.Metrics) {
 		}
 
 		switch name {
-		case "Misses":
-			c.mx.keyCacheMisses.add(pm.Value)
 		case "Hits":
 			c.mx.keyCacheHits.add(pm.Value)
+		case "Misses":
+			c.mx.keyCacheMisses.add(pm.Value)
 		}
 	}
 
@@ -163,6 +170,8 @@ func (c *Cassandra) collectCacheMetrics(pms prometheus.Metrics) {
 		name := pm.Labels.Get("name")
 
 		switch name {
+		case "Capacity":
+			c.mx.keyCacheCapacity.add(pm.Value)
 		case "Size":
 			c.mx.keyCacheSize.add(pm.Value)
 		}
