@@ -15,6 +15,7 @@ type metrics struct {
 	Logon       *logonMetrics       `stm:"logon"`
 	ThermalZone *thermalZoneMetrics `stm:"thermalzone"`
 	Collectors  *collectors         `stm:""`
+	TCP         *tcpMetrics         `stm:"tcp"`
 }
 
 func (m metrics) hasCPU() bool         { return m.CPU != nil }
@@ -26,6 +27,7 @@ func (m metrics) hasSystem() bool      { return m.System != nil }
 func (m metrics) hasLogon() bool       { return m.Logon != nil }
 func (m metrics) hasThermalZone() bool { return m.ThermalZone != nil }
 func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
+func (m metrics) hasTCP() bool         { return m.TCP != nil }
 
 // cpu
 type (
@@ -138,14 +140,15 @@ type (
 // tcp
 type (
 	tcpMetrics struct {
-		failures               tcpConnection `stm:"tcp_failure"`
-		active                 tcpConnection `stm:"tcp_active"`
-		established            tcpConnection `stm:"tcp_established"`
-		passive                tcpConnection `stm:"tcp_passive_connection"`
-		reset                  tcpConnection `stm:"tcp_reset"`
-		segments_received      tcpConnection `stm:"tcp_segments_received"`
-		segments_retransmitted tcpConnection `stm:"tcp_segments_retransmitted"`
-		segments_sent          tcpConnection `stm:"tcp_segments_sent"`
+		failures               tcpConnection `stm:"failure"`
+		active                 tcpConnection `stm:"active"`
+		established            tcpConnection `stm:"established"`
+		passive                tcpConnection `stm:"passive_connection"`
+		reset                  tcpConnection `stm:"reset"`
+		segments_received      tcpConnection `stm:"segments_received"`
+		segments_retransmitted tcpConnection `stm:"segments_retransmitted"`
+		segments_sent          tcpConnection `stm:"segments_sent"`
+		segments_total         tcpConnection `stm:"segments_total"`
 	}
 	tcpConnection struct {
 		ipv4 float64 `stm:"ipv4"`
