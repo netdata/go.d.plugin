@@ -19,6 +19,7 @@ The module collects metrics from the following collectors:
 - [os](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.os.md)
 - [system](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.system.md)
 - [logon](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.logon.md)
+- [tcp](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.tcp.md)
 - [thermalzone](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.thermalzone.md)
 
 Installation: please follow the [official guide](https://github.com/prometheus-community/windows_exporter#installation).
@@ -77,6 +78,7 @@ All metrics have "wmi." prefix.
 | system_threads           |     global     |                                                                                      threads                                                                                       |    number    |
 | system_uptime            |     global     |                                                                                        time                                                                                        |   seconds    |
 | logon_type_sessions      |     global     | system, interactive, network, batch, service, proxy, unlock, network_clear_text, new_credentials, remote_interactive, cached_interactive, cached_remote_interactive, cached_unlock |   seconds    |
+| tcp                      |     network    | active, established, failures, passive, reset, segments (received, retransmitted, sent)                                                                                            |   number    |
 | thermalzone_temperature  |     global     |                                                                         <i>a dimension per thermalzone</i>                                                                         |   celsius    |
 
 ## Configuration
