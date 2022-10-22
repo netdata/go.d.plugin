@@ -135,6 +135,24 @@ type (
 	}
 )
 
+// tcp
+type (
+	tcpMetrics struct {
+		failures               tcpConnection `stm:"tcp_failure"`
+		active                 tcpConnection `stm:"tcp_active"`
+		established            tcpConnection `stm:"tcp_established"`
+		passive                tcpConnection `stm:"tcp_passive_connection"`
+		reset                  tcpConnection `stm:"tcp_reset"`
+		segments_received      tcpConnection `stm:"tcp_segments_received"`
+		segments_retransmitted tcpConnection `stm:"tcp_segments_retransmitted"`
+		segments_sent          tcpConnection `stm:"tcp_segments_sent"`
+	}
+	tcpConnection struct {
+		ipv4 float64 `stm:"ipv4"`
+		ipv6 float64 `stm:"ipv6"`
+	}
+)
+
 // logical disk
 type (
 	logicalDiskMetrics struct {
