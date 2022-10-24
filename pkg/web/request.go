@@ -3,15 +3,11 @@
 package web
 
 import (
-	"bytes"
-	"context"
 	"encoding/base64"
 	"io"
 	"net/http"
 	"net/url"
-	"os/exec"
 	"strings"
-	"time"
 )
 
 // Request is the configuration of the HTTP request.
@@ -99,32 +95,18 @@ func (r *Request) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 func urlResolveHostname(rawURL string) string {
-	const hostname = "hostname"
+	const hostnameWord = "hostname"
 
-	if !strings.Contains(rawURL, hostname) {
+	if hostname == "" || !strings.Contains(rawURL, hostnameWord) {
 		return rawURL
 	}
 
 	u, err := url.Parse(rawURL)
-	if err != nil || (u.Hostname() != hostname && !strings.Contains(u.Hostname(), hostname+".")) {
+	if err != nil || (u.Hostname() != hostnameWord && !strings.Contains(u.Hostname(), hostnameWord+".")) {
 		return rawURL
 	}
 
-	path, err := exec.LookPath(hostname)
-	if err != nil {
-		return rawURL
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer cancel()
-
-	bs, err := exec.CommandContext(ctx, path).Output()
-	if err != nil {
-		return rawURL
-	}
-	bs = bytes.TrimSpace(bs)
-
-	u.Host = strings.Replace(u.Host, hostname, string(bs), 1)
+	u.Host = strings.Replace(u.Host, hostnameWord, hostname, 1)
 
 	return u.String()
 }
