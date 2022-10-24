@@ -59,6 +59,7 @@ func needAuth(q Query) bool {
 type Configuration struct {
 	Client      *http.Client
 	URL         string
+	Headers     map[string]string
 	WebPassword string
 }
 
@@ -70,6 +71,7 @@ func New(config Configuration) *Client {
 	return &Client{
 		HTTPClient:  config.Client,
 		URL:         config.URL,
+		Headers:     config.Headers,
 		WebPassword: config.WebPassword,
 	}
 }
@@ -78,6 +80,7 @@ func New(config Configuration) *Client {
 type Client struct {
 	HTTPClient  *http.Client
 	URL         string
+	Headers     map[string]string
 	WebPassword string
 }
 
@@ -192,7 +195,14 @@ func (c *Client) getWithDecode(dst interface{}, url string) error {
 }
 
 func (c *Client) getOK(url string) (*http.Response, error) {
-	resp, err := c.HTTPClient.Get(url)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	setHeaders(req, c.Headers)
+
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -260,4 +270,15 @@ func parseTopItems(raw topItems) *TopItems {
 	}
 
 	return &ti
+}
+
+func setHeaders(req *http.Request, headers map[string]string) {
+	for k, v := range headers {
+		switch k {
+		case "host", "Host":
+			req.Host = v
+		default:
+			req.Header.Set(k, v)
+		}
+	}
 }
