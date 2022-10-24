@@ -410,11 +410,11 @@ var (
 		},
 	}
 	tcpConnsResetsChart = Chart{
-		ID:       "tcp_conns_reset",
-		Title:    "TCP connections reseted",
+		ID:       "tcp_conns_resets",
+		Title:    "TCP connections resets",
 		Units:    "resets/s",
 		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_reset",
+		Ctx:      "wmi.tcp_conns_resets",
 		Priority: prioTCPConnsReset,
 		Dims: Dims{
 			{ID: "tcp_conns_resets_ipv4", Name: "ipv4", Algo: module.Incremental},
