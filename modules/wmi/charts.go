@@ -68,7 +68,6 @@ const (
 	prioTCPSegReceived
 	prioTCPSegRetransmitted
 	prioTCPSegSent
-	prioTCPSegTotal
 
 	prioThermalzoneTemperature
 
@@ -358,7 +357,6 @@ func newTCPCharts() Charts {
 		tcpSegmentReceivedChart.Copy(),
 		tcpSegmentRetransmittedChart.Copy(),
 		tcpSegmentSentChart.Copy(),
-		tcpSegmentTotalChart.Copy(),
 	}
 }
 
@@ -465,19 +463,6 @@ var (
 		Dims: Dims{
 			{ID: "tcp_segments_sent_ipv4", Name: "ipv4", Algo: module.Incremental},
 			{ID: "tcp_segments_sent_ipv6", Name: "ipv6", Algo: module.Incremental},
-		},
-	}
-	tcpSegmentTotalChart = Chart{
-		ID:       "tcp_segment_total",
-		Title:    "Total number of TCP segments",
-		Units:    "segments/s",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_segment_sent",
-		Type:     module.Line,
-		Priority: prioTCPSegSent,
-		Dims: Dims{
-			{ID: "tcp_segments_total_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_segments_total_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
 )
