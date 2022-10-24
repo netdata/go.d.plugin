@@ -60,14 +60,14 @@ const (
 
 	prioLogonSessions
 
-	prioTCPConnActive
-	prioTCPConnEstablished
-	prioTCPConnFailure
-	prioTCPConnPassive
-	prioTCPConnReset
-	prioTCPSegReceived
-	prioTCPSegRetransmitted
-	prioTCPSegSent
+	prioTCPConnsEstablished
+	prioTCPConnsActive
+	prioTCPConnsPassive
+	prioTCPConnsFailure
+	prioTCPConnsReset
+	prioTCPSegmentsReceived
+	prioTCPSegmentsSent
+	prioTCPSegmentsRetransmitted
 
 	prioThermalzoneTemperature
 
@@ -361,19 +361,6 @@ func newTCPCharts() Charts {
 }
 
 var (
-	tcpConnActiveChart = Chart{
-		ID:       "tcp_conn_active",
-		Title:    "TCP active connections",
-		Units:    "connections/s",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conn_active",
-		Type:     module.Line,
-		Priority: prioTCPConnActive,
-		Dims: Dims{
-			{ID: "tcp_conn_active_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_conn_active_ipv6", Name: "ipv6", Algo: module.Incremental},
-		},
-	}
 	tcpConnEstablishedChart = Chart{
 		ID:       "tcp_conn_established",
 		Title:    "TCP established connections",
@@ -381,23 +368,23 @@ var (
 		Fam:      "tcp",
 		Ctx:      "wmi.tcp_conn_established",
 		Type:     module.Line,
-		Priority: prioTCPConnEstablished,
+		Priority: prioTCPConnsEstablished,
 		Dims: Dims{ // This is Gauge
 			{ID: "tcp_conn_established_ipv4", Name: "ipv4", Algo: module.Absolute},
 			{ID: "tcp_conn_established_ipv6", Name: "ipv6", Algo: module.Absolute},
 		},
 	}
-	tcpConnFailureChart = Chart{
-		ID:       "tcp_conn_failures",
-		Title:    "TCP connection failures",
+	tcpConnActiveChart = Chart{
+		ID:       "tcp_conn_active",
+		Title:    "TCP active connections",
 		Units:    "connections/s",
 		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conn_failures",
+		Ctx:      "wmi.tcp_conn_active",
 		Type:     module.Line,
-		Priority: prioTCPConnFailure,
+		Priority: prioTCPConnsActive,
 		Dims: Dims{
-			{ID: "tcp_conn_failure_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_conn_failure_ipv6", Name: "ipv6", Algo: module.Incremental},
+			{ID: "tcp_conn_active_ipv4", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_conn_active_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
 	tcpConnPassiveChart = Chart{
@@ -407,10 +394,23 @@ var (
 		Fam:      "tcp",
 		Ctx:      "wmi.tcp_conn_passive",
 		Type:     module.Line,
-		Priority: prioTCPConnPassive,
+		Priority: prioTCPConnsPassive,
 		Dims: Dims{
 			{ID: "tcp_conn_passive_ipv4", Name: "ipv4", Algo: module.Incremental},
 			{ID: "tcp_conn_passive_ipv6", Name: "ipv6", Algo: module.Incremental},
+		},
+	}
+	tcpConnFailureChart = Chart{
+		ID:       "tcp_conn_failures",
+		Title:    "TCP connection failures",
+		Units:    "connections/s",
+		Fam:      "tcp",
+		Ctx:      "wmi.tcp_conn_failures",
+		Type:     module.Line,
+		Priority: prioTCPConnsFailure,
+		Dims: Dims{
+			{ID: "tcp_conn_failure_ipv4", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_conn_failure_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
 	tcpConnResetChart = Chart{
@@ -420,7 +420,7 @@ var (
 		Fam:      "tcp",
 		Ctx:      "wmi.tcp_conn_reset",
 		Type:     module.Line,
-		Priority: prioTCPConnReset,
+		Priority: prioTCPConnsReset,
 		Dims: Dims{
 			{ID: "tcp_conn_reset_ipv4", Name: "ipv4", Algo: module.Incremental},
 			{ID: "tcp_conn_reset_ipv6", Name: "ipv6", Algo: module.Incremental},
@@ -433,23 +433,10 @@ var (
 		Fam:      "tcp",
 		Ctx:      "wmi.tcp_segment_received",
 		Type:     module.Line,
-		Priority: prioTCPSegReceived,
+		Priority: prioTCPSegmentsReceived,
 		Dims: Dims{
 			{ID: "tcp_segments_received_ipv4", Name: "ipv4", Algo: module.Incremental},
 			{ID: "tcp_segments_received_ipv6", Name: "ipv6", Algo: module.Incremental},
-		},
-	}
-	tcpSegmentRetransmittedChart = Chart{
-		ID:       "tcp_segment_retransmitted",
-		Title:    "Number of TCP segments retransmitted",
-		Units:    "segments/s",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_segment_retransmitted",
-		Type:     module.Line,
-		Priority: prioTCPSegRetransmitted,
-		Dims: Dims{
-			{ID: "tcp_segments_retransmitted_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_segments_retransmitted_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
 	tcpSegmentSentChart = Chart{
@@ -459,10 +446,23 @@ var (
 		Fam:      "tcp",
 		Ctx:      "wmi.tcp_segment_sent",
 		Type:     module.Line,
-		Priority: prioTCPSegSent,
+		Priority: prioTCPSegmentsSent,
 		Dims: Dims{
 			{ID: "tcp_segments_sent_ipv4", Name: "ipv4", Algo: module.Incremental},
 			{ID: "tcp_segments_sent_ipv6", Name: "ipv6", Algo: module.Incremental},
+		},
+	}
+	tcpSegmentRetransmittedChart = Chart{
+		ID:       "tcp_segment_retransmitted",
+		Title:    "Number of TCP segments retransmitted",
+		Units:    "segments/s",
+		Fam:      "tcp",
+		Ctx:      "wmi.tcp_segment_retransmitted",
+		Type:     module.Line,
+		Priority: prioTCPSegmentsRetransmitted,
+		Dims: Dims{
+			{ID: "tcp_segments_retransmitted_ipv4", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_segments_retransmitted_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
 )
