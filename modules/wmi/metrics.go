@@ -140,11 +140,11 @@ type (
 // tcp
 type (
 	tcpMetrics struct {
-		failures               tcpConnection `stm:"failure"`
-		active                 tcpConnection `stm:"active"`
-		established            tcpConnection `stm:"established"`
-		passive                tcpConnection `stm:"passive_connection"`
-		reset                  tcpConnection `stm:"reset"`
+		failures               tcpConnection `stm:"conn_failure"`
+		active                 tcpConnection `stm:"conn_active"`
+		established            tcpConnection `stm:"conn_established"`
+		passive                tcpConnection `stm:"conn_passive"`
+		reset                  tcpConnection `stm:"conn_reset"`
 		segments_received      tcpConnection `stm:"segments_received"`
 		segments_retransmitted tcpConnection `stm:"segments_retransmitted"`
 		segments_sent          tcpConnection `stm:"segments_sent"`

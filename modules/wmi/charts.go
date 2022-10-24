@@ -372,8 +372,8 @@ var (
 		Type:     module.Line,
 		Priority: prioTCPConnActive,
 		Dims: Dims{
-			{ID: "tcp_active_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_active_ipv6", Name: "ipv6", Algo: module.Incremental},
+			{ID: "tcp_conn_active_ipv4", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_conn_active_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
 	tcpConnEstablishedChart = Chart{
@@ -385,8 +385,8 @@ var (
 		Type:     module.Line,
 		Priority: prioTCPConnEstablished,
 		Dims: Dims{ // This is Gauge
-			{ID: "tcp_established_ipv4", Name: "ipv4", Algo: module.Absolute},
-			{ID: "tcp_established_ipv6", Name: "ipv6", Algo: module.Absolute},
+			{ID: "tcp_conn_established_ipv4", Name: "ipv4", Algo: module.Absolute},
+			{ID: "tcp_conn_established_ipv6", Name: "ipv6", Algo: module.Absolute},
 		},
 	}
 	tcpConnFailureChart = Chart{
@@ -398,8 +398,8 @@ var (
 		Type:     module.Line,
 		Priority: prioTCPConnFailure,
 		Dims: Dims{
-			{ID: "tcp_failure_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_failure_ipv6", Name: "ipv6", Algo: module.Incremental},
+			{ID: "tcp_conn_failure_ipv4", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_conn_failure_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
 	tcpConnPassiveChart = Chart{
@@ -411,8 +411,8 @@ var (
 		Type:     module.Line,
 		Priority: prioTCPConnPassive,
 		Dims: Dims{
-			{ID: "tcp_passive_connection_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_passive_connection_ipv6", Name: "ipv6", Algo: module.Incremental},
+			{ID: "tcp_conn_passive_ipv4", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_conn_passive_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
 	tcpConnResetChart = Chart{
@@ -424,8 +424,8 @@ var (
 		Type:     module.Line,
 		Priority: prioTCPConnReset,
 		Dims: Dims{
-			{ID: "tcp_reset_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_reset_ipv6", Name: "ipv6", Algo: module.Incremental},
+			{ID: "tcp_conn_reset_ipv4", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_conn_reset_ipv6", Name: "ipv6", Algo: module.Incremental},
 		},
 	}
 	tcpSegmentReceivedChart = Chart{
