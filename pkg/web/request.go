@@ -95,18 +95,16 @@ func (r *Request) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 func urlResolveHostname(rawURL string) string {
-	const hostnameWord = "hostname"
-
-	if hostname == "" || !strings.Contains(rawURL, hostnameWord) {
+	if hostname == "" || !strings.Contains(rawURL, "hostname") {
 		return rawURL
 	}
 
 	u, err := url.Parse(rawURL)
-	if err != nil || (u.Hostname() != hostnameWord && !strings.Contains(u.Hostname(), hostnameWord+".")) {
+	if err != nil || (u.Hostname() != "hostname" && !strings.Contains(u.Hostname(), "hostname.")) {
 		return rawURL
 	}
 
-	u.Host = strings.Replace(u.Host, hostnameWord, hostname, 1)
+	u.Host = strings.Replace(u.Host, "hostname", hostname, 1)
 
 	return u.String()
 }
