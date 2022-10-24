@@ -178,3 +178,34 @@ func parseBasicAuth(auth string) (username, password string, ok bool) {
 
 	return decodedStr[:idx], decodedStr[idx+1:], true
 }
+
+func Test_urlResolveHostname(t *testing.T) {
+	tests := map[string]struct {
+		input       string
+		wantChanged bool
+	}{
+		"hostname with suffix": {
+			wantChanged: true,
+			input:       "http://hostname.local:80/metrics",
+		},
+		"hostname without": {
+			wantChanged: true,
+			input:       "http://hostname.local:80/metrics",
+		},
+		"no hostname": {
+			wantChanged: false,
+			input:       "http://127.0.0.1:80/metrics",
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+
+			if test.wantChanged {
+				assert.NotEqual(t, test.input, urlResolveHostname(test.input))
+			} else {
+				assert.Equal(t, test.input, urlResolveHostname(test.input))
+			}
+		})
+	}
+}

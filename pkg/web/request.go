@@ -3,10 +3,15 @@
 package web
 
 import (
+	"bytes"
+	"context"
 	"encoding/base64"
 	"io"
 	"net/http"
+	"net/url"
+	"os/exec"
 	"strings"
+	"time"
 )
 
 // Request is the configuration of the HTTP request.
@@ -80,4 +85,46 @@ func NewHTTPRequest(cfg Request) (*http.Request, error) {
 		}
 	}
 	return req, nil
+}
+
+func (r *Request) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	type plain Request
+	if err := unmarshal((*plain)(r)); err != nil {
+		return err
+	}
+
+	r.URL = urlResolveHostname(r.URL)
+
+	return nil
+}
+
+func urlResolveHostname(rawURL string) string {
+	const hostname = "hostname"
+
+	if !strings.Contains(rawURL, hostname) {
+		return rawURL
+	}
+
+	u, err := url.Parse(rawURL)
+	if err != nil || (u.Hostname() != hostname && !strings.Contains(u.Hostname(), hostname+".")) {
+		return rawURL
+	}
+
+	path, err := exec.LookPath(hostname)
+	if err != nil {
+		return rawURL
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer cancel()
+
+	bs, err := exec.CommandContext(ctx, path).Output()
+	if err != nil {
+		return rawURL
+	}
+	bs = bytes.TrimSpace(bs)
+
+	u.Host = strings.Replace(u.Host, hostname, string(bs), 1)
+
+	return u.String()
 }
