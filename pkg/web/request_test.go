@@ -188,9 +188,9 @@ func Test_urlResolveHostname(t *testing.T) {
 			wantChanged: true,
 			input:       "http://hostname.local:80/metrics",
 		},
-		"hostname without": {
+		"hostname without suffix": {
 			wantChanged: true,
-			input:       "http://hostname.local:80/metrics",
+			input:       "http://hostname:80/metrics",
 		},
 		"no hostname": {
 			wantChanged: false,
