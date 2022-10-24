@@ -100,6 +100,7 @@ func (p *Pihole) Init() bool {
 	config := client.Configuration{
 		Client:      httpClient,
 		URL:         p.URL,
+		Headers:     p.Headers,
 		WebPassword: p.Password,
 	}
 	p.client = client.New(config)
