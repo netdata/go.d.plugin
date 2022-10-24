@@ -15,6 +15,7 @@ type metrics struct {
 	Logon       *logonMetrics       `stm:"logon"`
 	ThermalZone *thermalZoneMetrics `stm:"thermalzone"`
 	Collectors  *collectors         `stm:""`
+	TCP         *tcpMetrics         `stm:"tcp"`
 }
 
 func (m metrics) hasCPU() bool         { return m.CPU != nil }
@@ -26,6 +27,7 @@ func (m metrics) hasSystem() bool      { return m.System != nil }
 func (m metrics) hasLogon() bool       { return m.Logon != nil }
 func (m metrics) hasThermalZone() bool { return m.ThermalZone != nil }
 func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
+func (m metrics) hasTCP() bool         { return m.TCP != nil }
 
 // cpu
 type (
@@ -132,6 +134,25 @@ type (
 		PacketsReceivedUnknown   float64 `stm:"packets_received_unknown,1000,1"`
 		PacketsSentTotal         float64 `stm:"packets_sent_total,1000,1"` // PacketsSentPersec
 		CurrentBandwidth         float64 `stm:"current_bandwidth"`
+	}
+)
+
+// tcp
+type (
+	tcpMetrics struct {
+		failures               tcpConnection `stm:"conn_failure"`
+		active                 tcpConnection `stm:"conn_active"`
+		established            tcpConnection `stm:"conn_established"`
+		passive                tcpConnection `stm:"conn_passive"`
+		reset                  tcpConnection `stm:"conn_reset"`
+		segments_received      tcpConnection `stm:"segments_received"`
+		segments_retransmitted tcpConnection `stm:"segments_retransmitted"`
+		segments_sent          tcpConnection `stm:"segments_sent"`
+		segments_total         tcpConnection `stm:"segments_total"`
+	}
+	tcpConnection struct {
+		ipv4 float64 `stm:"ipv4"`
+		ipv6 float64 `stm:"ipv6"`
 	}
 )
 
