@@ -18,7 +18,6 @@ const (
 	metricTCPConnectionSegmentsReceived      = "windows_tcp_segments_received_total"
 	metricTCPConnectionSegmentsRetransmitted = "windows_tcp_segments_retransmitted_total"
 	metricTCPConnectionSegmentsSent          = "windows_tcp_segments_sent_total"
-	metricTCPConnectionSegmentsTotal         = "windows_tcp_segments_total"
 )
 
 var tcpMetricNames = []string{
@@ -30,7 +29,6 @@ var tcpMetricNames = []string{
 	metricTCPConnectionSegmentsReceived,
 	metricTCPConnectionSegmentsRetransmitted,
 	metricTCPConnectionSegmentsSent,
-	metricTCPConnectionSegmentsTotal,
 }
 
 func doCollectTCP(pms prometheus.Metrics) bool {
@@ -72,17 +70,15 @@ func assignTCPMetric(tcpm *tcpMetrics, af string, name string, value float64) {
 	case metricTCPConnectionReset:
 		assignTCPConnection(&tcpm.reset, af, value)
 	case metricTCPConnectionSegmentsReceived:
-		assignTCPConnection(&tcpm.segments_received, af, value)
+		assignTCPConnection(&tcpm.segmentsReceived, af, value)
 	case metricTCPConnectionSegmentsRetransmitted:
-		assignTCPConnection(&tcpm.segments_retransmitted, af, value)
+		assignTCPConnection(&tcpm.segmentsRetransmitted, af, value)
 	case metricTCPConnectionSegmentsSent:
-		assignTCPConnection(&tcpm.segments_sent, af, value)
-	case metricTCPConnectionSegmentsTotal:
-		assignTCPConnection(&tcpm.segments_total, af, value)
+		assignTCPConnection(&tcpm.segmentsSent, af, value)
 	}
 }
 
-func assignTCPConnection(c *tcpConnection, af string, value float64) {
+func assignTCPConnection(c *tcpConnectionAF, af string, value float64) {
 	switch af {
 	case afIPV4:
 		c.ipv4 = value
