@@ -12,8 +12,8 @@ rules:
   - pattern: org.apache.cassandra.metrics<type=(DroppedMessage), scope=(\S*), name=(Dropped)><>(OneMinuteRate)
 
   # Cache
-  - pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache), name=(Hits|Misses)><>(Count)
-  - pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache), name=(Capacity|Size)><>(Value)
+  - pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache|RowCache), name=(Hits|Misses)><>(Count)
+  - pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache|RowCache), name=(Capacity|Size)><>(Value)
 
   # Storage
   - pattern: org.apache.cassandra.metrics<type=(Storage), name=(Load|Exceptions)><>(Count)

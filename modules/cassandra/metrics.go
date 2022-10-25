@@ -24,6 +24,10 @@ type cassandraMetrics struct {
 	clientReqFailuresReads      metricValue
 	clientReqFailuresWrites     metricValue
 
+	rowCacheHits     metricValue
+	rowCacheMisses   metricValue
+	rowCacheCapacity metricValue
+	rowCacheSize     metricValue
 	keyCacheHits     metricValue
 	keyCacheMisses   metricValue
 	keyCacheCapacity metricValue

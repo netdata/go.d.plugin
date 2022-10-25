@@ -60,6 +60,24 @@ func (c *Cassandra) processMetric(mx map[string]int64) {
 	c.mx.clientReqFailuresReads.write(mx, "client_request_failures_reads")
 	c.mx.clientReqFailuresWrites.write(mx, "client_request_failures_writes")
 
+	c.mx.rowCacheHits.write(mx, "row_cache_hits")
+	c.mx.rowCacheMisses.write(mx, "row_cache_misses")
+	c.mx.rowCacheSize.write(mx, "row_cache_size")
+	if c.mx.rowCacheHits.isSet && c.mx.rowCacheMisses.isSet {
+		if s := c.mx.rowCacheHits.value + c.mx.rowCacheMisses.value; s > 0 {
+			mx["row_cache_hit_ratio"] = int64((c.mx.rowCacheHits.value * 100 / s) * 1000)
+		} else {
+			mx["row_cache_hit_ratio"] = 0
+		}
+	}
+	if c.mx.rowCacheCapacity.isSet && c.mx.rowCacheSize.isSet {
+		if s := c.mx.rowCacheCapacity.value; s > 0 {
+			mx["row_cache_utilization"] = int64((c.mx.rowCacheSize.value * 100 / s) * 1000)
+		} else {
+			mx["row_cache_utilization"] = 0
+		}
+	}
+
 	c.mx.keyCacheHits.write(mx, "key_cache_hits")
 	c.mx.keyCacheMisses.write(mx, "key_cache_misses")
 	c.mx.keyCacheSize.write(mx, "key_cache_size")
@@ -121,31 +139,31 @@ func (c *Cassandra) collectMetrics(pms prometheus.Metrics) {
 func (c *Cassandra) collectClientRequestMetrics(pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_clientrequest"
 
-	var rw struct{ r, w *metricValue }
+	var rw struct{ read, write *metricValue }
 	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
 		scope := pm.Labels.Get("scope")
 
 		switch name {
 		case "TotalLatency":
-			rw.r, rw.w = &c.mx.clientReqTotalLatencyReads, &c.mx.clientReqTotalLatencyWrites
+			rw.read, rw.write = &c.mx.clientReqTotalLatencyReads, &c.mx.clientReqTotalLatencyWrites
 		case "Latency":
-			rw.r, rw.w = &c.mx.clientReqLatencyReads, &c.mx.clientReqLatencyWrites
+			rw.read, rw.write = &c.mx.clientReqLatencyReads, &c.mx.clientReqLatencyWrites
 		case "Timeouts":
-			rw.r, rw.w = &c.mx.clientReqTimeoutsReads, &c.mx.clientReqTimeoutsWrites
+			rw.read, rw.write = &c.mx.clientReqTimeoutsReads, &c.mx.clientReqTimeoutsWrites
 		case "Unavailables":
-			rw.r, rw.w = &c.mx.clientReqUnavailablesReads, &c.mx.clientReqUnavailablesWrites
+			rw.read, rw.write = &c.mx.clientReqUnavailablesReads, &c.mx.clientReqUnavailablesWrites
 		case "Failures":
-			rw.r, rw.w = &c.mx.clientReqFailuresReads, &c.mx.clientReqFailuresWrites
+			rw.read, rw.write = &c.mx.clientReqFailuresReads, &c.mx.clientReqFailuresWrites
 		default:
 			continue
 		}
 
 		switch scope {
 		case "Read":
-			rw.r.add(pm.Value)
+			rw.read.add(pm.Value)
 		case "Write":
-			rw.w.add(pm.Value)
+			rw.write.add(pm.Value)
 		}
 	}
 }
@@ -153,29 +171,47 @@ func (c *Cassandra) collectClientRequestMetrics(pms prometheus.Metrics) {
 func (c *Cassandra) collectCacheMetrics(pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_cache"
 
+	var hm struct{ hits, misses *metricValue }
 	for _, pm := range pms.FindByName(metric + suffixCount) {
 		name := pm.Labels.Get("name")
 		scope := pm.Labels.Get("scope")
-		if scope != "KeyCache" {
+
+		switch scope {
+		case "KeyCache":
+			hm.hits, hm.misses = &c.mx.keyCacheHits, &c.mx.keyCacheMisses
+		case "RowCache":
+			hm.hits, hm.misses = &c.mx.rowCacheHits, &c.mx.rowCacheMisses
+		default:
 			continue
 		}
 
 		switch name {
 		case "Hits":
-			c.mx.keyCacheHits.add(pm.Value)
+			hm.hits.add(pm.Value)
 		case "Misses":
-			c.mx.keyCacheMisses.add(pm.Value)
+			hm.misses.add(pm.Value)
 		}
 	}
 
+	var cs struct{ cap, size *metricValue }
 	for _, pm := range pms.FindByName(metric + suffixValue) {
 		name := pm.Labels.Get("name")
+		scope := pm.Labels.Get("scope")
+
+		switch scope {
+		case "KeyCache":
+			cs.cap, cs.size = &c.mx.keyCacheCapacity, &c.mx.keyCacheSize
+		case "RowCache":
+			cs.cap, cs.size = &c.mx.rowCacheCapacity, &c.mx.rowCacheSize
+		default:
+			continue
+		}
 
 		switch name {
 		case "Capacity":
-			c.mx.keyCacheCapacity.add(pm.Value)
+			cs.cap.add(pm.Value)
 		case "Size":
-			c.mx.keyCacheSize.add(pm.Value)
+			cs.size.add(pm.Value)
 		}
 	}
 }
