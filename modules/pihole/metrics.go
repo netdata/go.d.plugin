@@ -58,6 +58,7 @@ type queryTypesMetrics struct {
 	} `json:"querytypes"`
 }
 
+// https://github.com/pi-hole/FTL/blob/6f69dd5b4ca60f925d68bfff3869350e934a7240/src/api/api.c#L474
 type forwardDestinations struct {
 	Destinations map[string]float64 `json:"forward_destinations"`
 }
