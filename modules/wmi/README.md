@@ -34,7 +34,7 @@ Installation: please follow the [official guide](https://github.com/prometheus-c
 - Install the `windows_exporter` with `msiexec` and the parameters shown below:
 
   ```bash 
-  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone
+  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp
   ```
 
   The msi installer automatically adds and starts a service called `windows_exporter`, which listens to port 9182 by
