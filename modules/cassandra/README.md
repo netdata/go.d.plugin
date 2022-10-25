@@ -43,6 +43,10 @@ Labels per scope:
 |-----------------------------------|:-----------:|:-------------:|:------------:|
 | client_requests_rate              |   global    |  read, write  |  requests/s  |
 | client_requests_latency           |   global    |  read, write  |   seconds    |
+| row_cache_hit_ratio               |   global    |   hit_ratio   |  percentage  |
+| row_cache_hit_rate                |   global    | hits, misses  |   events/s   |
+| row_cache_utilization             |   global    |     used      |  percentage  |
+| row_cache_size                    |   global    |     size      |    bytes     |
 | key_cache_hit_ratio               |   global    |   hit_ratio   |  percentage  |
 | key_cache_hit_rate                |   global    | hits, misses  |   events/s   |
 | key_cache_utilization             |   global    |     used      |  percentage  |

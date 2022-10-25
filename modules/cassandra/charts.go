@@ -4,6 +4,7 @@ package cassandra
 
 import (
 	"fmt"
+
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
@@ -13,9 +14,13 @@ const (
 	prioLatency
 
 	prioKeyCacheHitRatio
+	prioRowCacheHitRatio
 	prioKeyCacheHitRate
+	prioRowCacheHitRate
 	prioKeyCacheUtilization
+	prioRowCacheUtilization
 	prioKeyCacheSize
+	prioRowCacheSize
 
 	prioStorageLiveDiskSpaceUsed
 
@@ -45,9 +50,13 @@ var baseCharts = module.Charts{
 	chartClientRequestsLatency.Copy(),
 
 	chartKeyCacheHitRatio.Copy(),
+	chartRowCacheHitRatio.Copy(),
 	chartKeyCacheHitRate.Copy(),
+	chartRowCacheHitRate.Copy(),
 	chartKeyCacheUtilization.Copy(),
+	chartRowCacheUtilization.Copy(),
 	chartKeyCacheSize.Copy(),
+	chartRowCacheSize.Copy(),
 
 	chartStorageLiveDiskSpaceUsed.Copy(),
 
@@ -141,6 +150,53 @@ var (
 		Priority: prioKeyCacheSize,
 		Dims: module.Dims{
 			{ID: "key_cache_size", Name: "size"},
+		},
+	}
+
+	chartRowCacheHitRatio = module.Chart{
+		ID:       "row_cache_hit_ratio",
+		Title:    "Row cache hit ratio",
+		Units:    "percentage",
+		Fam:      "cache",
+		Ctx:      "cassandra.row_cache_hit_ratio",
+		Priority: prioRowCacheHitRatio,
+		Dims: module.Dims{
+			{ID: "row_cache_hit_ratio", Name: "hit_ratio", Div: 1000},
+		},
+	}
+	chartRowCacheHitRate = module.Chart{
+		ID:       "row_cache_hit_rate",
+		Title:    "Row cache hit rate",
+		Units:    "events/s",
+		Fam:      "cache",
+		Ctx:      "cassandra.row_cache_hit_rate",
+		Priority: prioRowCacheHitRate,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "row_cache_hits", Name: "hits", Algo: module.Incremental},
+			{ID: "row_cache_misses", Name: "misses", Algo: module.Incremental},
+		},
+	}
+	chartRowCacheUtilization = module.Chart{
+		ID:       "row_cache_utilization",
+		Title:    "Row cache utilization",
+		Units:    "percentage",
+		Fam:      "cache",
+		Ctx:      "cassandra.row_cache_utilization",
+		Priority: prioRowCacheUtilization,
+		Dims: module.Dims{
+			{ID: "row_cache_utilization", Name: "used", Div: 1000},
+		},
+	}
+	chartRowCacheSize = module.Chart{
+		ID:       "row_cache_size",
+		Title:    "Row cache size",
+		Units:    "bytes",
+		Fam:      "cache",
+		Ctx:      "cassandra.row_cache_size",
+		Priority: prioRowCacheSize,
+		Dims: module.Dims{
+			{ID: "row_cache_size", Name: "size"},
 		},
 	}
 )
