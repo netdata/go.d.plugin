@@ -27,13 +27,9 @@ All metrics have "pihole." prefix.
 | unique_clients                    | global |              unique              |  clients   |
 | domains_on_blocklist              | global |            blocklist             |  domains   |
 | blocklist_last_update             | global |               ago                |  seconds   |
-| blocklist_file_existence_state    | global |        exists, not_exists        |   state    |
-| unwanted_domains_blocking_status  | global |        enabled, disables         |   status   |
+| unwanted_domains_blocking_status  | global |        enabled, disabled         |   status   |
 | dns_queries_types                 | global | a, aaaa, any, ptr, soa, srv, txt | percentage |
-| dns_queries_forwarded_destination | global |         cache, blocklist         | percentage |
-| top_clients                       | global |  <i>a dimension per client</i>   |  requests  |
-| top_permitted_domains             | global |  <i>a dimension per domain</i>   |    hits    |
-| top_blocked_domains               | global |  <i>a dimension per domain</i>   |    hits    |
+| dns_queries_forwarded_destination | global |      cached, blocked, other      | percentage |
 
 ## Configuration
 
