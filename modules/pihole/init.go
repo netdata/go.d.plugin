@@ -4,13 +4,28 @@ package pihole
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
+
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-func (p *Pihole) webPassword() string {
-	// do no read setupVarsPath is password is net in the configuration file
+func (p *Pihole) validateConfig() error {
+	if p.URL == "" {
+		return errors.New("url not set")
+	}
+	return nil
+}
+
+func (p *Pihole) initHTTPClient() (*http.Client, error) {
+	return web.NewHTTPClient(p.Client)
+}
+
+func (p *Pihole) getWebPassword() string {
+	// do no read setupVarsPath is password is set in the configuration file
 	if p.Password != "" {
 		return p.Password
 	}
@@ -20,7 +35,7 @@ func (p *Pihole) webPassword() string {
 	}
 
 	p.Infof("starting web password auto detection, reading : %s", p.SetupVarsPath)
-	pass, err := findWebPassword(p.SetupVarsPath)
+	pass, err := getWebPassword(p.SetupVarsPath)
 	if err != nil {
 		p.Warningf("error during reading '%s' : %v", p.SetupVarsPath, err)
 	}
@@ -28,8 +43,8 @@ func (p *Pihole) webPassword() string {
 	return pass
 }
 
-func findWebPassword(filePath string) (string, error) {
-	f, err := os.Open(filePath)
+func getWebPassword(path string) (string, error) {
+	f, err := os.Open(path)
 	if err != nil {
 		return "", err
 	}
@@ -38,19 +53,14 @@ func findWebPassword(filePath string) (string, error) {
 	s := bufio.NewScanner(f)
 	var password string
 
-	for s.Scan() {
-		line := s.Text()
-		if !strings.HasPrefix(line, "WEBPASSWORD") {
-			continue
+	for s.Scan() && password == "" {
+		if strings.HasPrefix(s.Text(), "WEBPASSWORD") {
+			parts := strings.Split(s.Text(), "=")
+			if len(parts) != 2 {
+				return "", fmt.Errorf("unparsable line : %s", s.Text())
+			}
+			password = parts[1]
 		}
-
-		parts := strings.Split(line, "=")
-		if len(parts) != 2 {
-			return "", fmt.Errorf("unparsable line : %s", line)
-		}
-
-		password = parts[1]
-		break
 	}
 
 	return password, nil
