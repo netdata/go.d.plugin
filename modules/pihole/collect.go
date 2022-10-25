@@ -41,7 +41,7 @@ func (p *Pihole) collect() (map[string]int64, error) {
 		if ver != wantAPIVersion {
 			return nil, fmt.Errorf("API version: %d, supported version: %d", ver, wantAPIVersion)
 		}
-		p.checkVersion = true
+		p.checkVersion = false
 	}
 
 	pmx := new(piholeMetrics)
