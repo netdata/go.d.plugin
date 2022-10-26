@@ -62,7 +62,7 @@ Labels per scope:
 | jvm_memory_used                   |   global    | heap, nonheap |    bytes     |
 | jvm_gc_rate                       |   global    |  parnew, cms  |     gc/s     |
 | jvm_gc_time                       |   global    |  parnew, cms  |   seconds    |
-| dropped_messages_one_minute_rate  |   global    |    dropped    |  messages/s  |
+| dropped_messages_rate             |   global    |    dropped    |  messages/s  |
 | client_requests_timeouts_rate     |   global    |  read, write  |  timeout/s   |
 | client_requests_unavailables_rate |   global    |  read, write  | exceptions/s |
 | client_requests_failures_rate     |   global    |  read, write  |  failures/s  |

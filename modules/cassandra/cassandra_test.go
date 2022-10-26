@@ -126,7 +126,7 @@ func TestCassandra_Collect(t *testing.T) {
 				"compaction_bytes_compacted":                                   840350211,
 				"compaction_completed_tasks":                                   185,
 				"compaction_pending_tasks":                                     0,
-				"dropped_messages_one_minute":                                  0,
+				"dropped_messages":                                             0,
 				"jvm_gc_cms_count":                                             4,
 				"jvm_gc_cms_time":                                              208,
 				"jvm_gc_parnew_count":                                          324,

@@ -37,7 +37,7 @@ const (
 	prioJVMGCCount
 	prioJVMGCTime
 
-	prioDroppedMessagesOneMinuteRate
+	prioDroppedMessagesRate
 	prioRequestsTimeoutsRate
 	prioRequestsUnavailablesRate
 	prioRequestsFailuresRate
@@ -68,7 +68,7 @@ var baseCharts = module.Charts{
 	chartJVMGCRate.Copy(),
 	chartJVMGCTime.Copy(),
 
-	chartDroppedMessagesOneMinuteRate.Copy(),
+	chartDroppedMessagesRate.Copy(),
 	chartClientRequestTimeoutsRate.Copy(),
 	chartClientRequestUnavailablesRate.Copy(),
 	chartClientRequestFailuresRate.Copy(),
@@ -346,15 +346,15 @@ var (
 )
 
 var (
-	chartDroppedMessagesOneMinuteRate = module.Chart{
-		ID:       "dropped_messages_one_minute_rate",
-		Title:    "Dropped messages one minute rate",
+	chartDroppedMessagesRate = module.Chart{
+		ID:       "dropped_messages_rate",
+		Title:    "Dropped messages rate",
 		Units:    "messages/s",
 		Fam:      "errors",
-		Ctx:      "cassandra.dropped_messages_one_minute_rate",
-		Priority: prioDroppedMessagesOneMinuteRate,
+		Ctx:      "cassandra.dropped_messages_rate",
+		Priority: prioDroppedMessagesRate,
 		Dims: module.Dims{
-			{ID: "dropped_messages_one_minute", Name: "dropped", Div: 1000},
+			{ID: "dropped_messages", Name: "dropped"},
 		},
 	}
 	chartClientRequestTimeoutsRate = module.Chart{

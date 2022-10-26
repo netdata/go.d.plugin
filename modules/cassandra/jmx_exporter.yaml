@@ -9,7 +9,7 @@ rules:
   - pattern: org.apache.cassandra.metrics<type=(ClientRequest), scope=(Write|Read), name=(TotalLatency|Latency|Timeouts|Unavailables|Failures)><>(Count)
 
   # Dropped messages
-  - pattern: org.apache.cassandra.metrics<type=(DroppedMessage), scope=(\S*), name=(Dropped)><>(OneMinuteRate)
+  - pattern: org.apache.cassandra.metrics<type=(DroppedMessage), scope=(\S*), name=(Dropped)><>(Count)
 
   # Cache
   - pattern: org.apache.cassandra.metrics<type=Cache, scope=(KeyCache|RowCache), name=(Hits|Misses)><>(Count)
