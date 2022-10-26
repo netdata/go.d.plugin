@@ -9,9 +9,11 @@ import (
 )
 
 const (
-	prioRequestsRate = module.Priority + iota
+	prioClientRequestsRate = module.Priority + iota
 
-	prioLatency
+	prioClientRequestsReadLatency
+	prioClientRequestsWriteLatency
+	prioClientRequestsLatency
 
 	prioKeyCacheHitRatio
 	prioRowCacheHitRatio
@@ -48,6 +50,8 @@ var baseCharts = module.Charts{
 	chartClientRequestsRate.Copy(),
 
 	chartClientRequestsLatency.Copy(),
+	chartClientRequestsReadLatency.Copy(),
+	chartClientRequestsWriteLatency.Copy(),
 
 	chartKeyCacheHitRatio.Copy(),
 	chartRowCacheHitRatio.Copy(),
@@ -82,7 +86,7 @@ var (
 		Units:    "requests/s",
 		Fam:      "throughput",
 		Ctx:      "cassandra.client_requests_rate",
-		Priority: prioRequestsRate,
+		Priority: prioClientRequestsRate,
 		Dims: module.Dims{
 			{ID: "client_request_latency_reads", Name: "read", Algo: module.Incremental},
 			{ID: "client_request_latency_writes", Name: "write", Algo: module.Incremental, Mul: -1},
@@ -91,16 +95,48 @@ var (
 )
 
 var (
+	chartClientRequestsReadLatency = module.Chart{
+		ID:       "client_requests_read_latency_histogram",
+		Title:    "Client requests read latency histogram",
+		Units:    "seconds",
+		Fam:      "latency",
+		Ctx:      "cassandra.client_requests_read_latency_histogram",
+		Priority: prioClientRequestsReadLatency,
+		Dims: module.Dims{
+			{ID: "client_request_read_latency_p50", Name: "p50", Div: 1e6},
+			{ID: "client_request_read_latency_p75", Name: "p75", Div: 1e6},
+			{ID: "client_request_read_latency_p95", Name: "p95", Div: 1e6},
+			{ID: "client_request_read_latency_p98", Name: "p98", Div: 1e6},
+			{ID: "client_request_read_latency_p99", Name: "p99", Div: 1e6},
+			{ID: "client_request_read_latency_p999", Name: "p999", Div: 1e6},
+		},
+	}
+	chartClientRequestsWriteLatency = module.Chart{
+		ID:       "client_requests_write_latency_histogram",
+		Title:    "Client requests write latency histogram",
+		Units:    "seconds",
+		Fam:      "latency",
+		Ctx:      "cassandra.client_requests_write_latency_histogram",
+		Priority: prioClientRequestsWriteLatency,
+		Dims: module.Dims{
+			{ID: "client_request_write_latency_p50", Name: "p50", Div: 1e6},
+			{ID: "client_request_write_latency_p75", Name: "p75", Div: 1e6},
+			{ID: "client_request_write_latency_p95", Name: "p95", Div: 1e6},
+			{ID: "client_request_write_latency_p98", Name: "p98", Div: 1e6},
+			{ID: "client_request_write_latency_p99", Name: "p99", Div: 1e6},
+			{ID: "client_request_write_latency_p999", Name: "p999", Div: 1e6},
+		},
+	}
 	chartClientRequestsLatency = module.Chart{
 		ID:       "client_requests_latency",
-		Title:    "Client requests latency",
+		Title:    "Client total requests latency",
 		Units:    "seconds",
 		Fam:      "latency",
 		Ctx:      "cassandra.client_requests_latency",
-		Priority: prioLatency,
+		Priority: prioClientRequestsLatency,
 		Dims: module.Dims{
 			{ID: "client_request_total_latency_reads", Name: "read", Algo: module.Incremental, Div: 1e6},
-			{ID: "client_request_total_latency_writes", Name: "write", Algo: module.Incremental, Mul: -1, Div: 1e6},
+			{ID: "client_request_total_latency_writes", Name: "write", Algo: module.Incremental, Div: 1e6},
 		},
 	}
 )
