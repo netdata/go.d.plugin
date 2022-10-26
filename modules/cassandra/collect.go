@@ -4,9 +4,8 @@ package cassandra
 
 import (
 	"errors"
-	"strings"
-
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
+	"strings"
 )
 
 const (
@@ -58,6 +57,19 @@ func (c *Cassandra) processMetric(mx map[string]int64) {
 	c.mx.clientReqUnavailablesWrites.write(mx, "client_request_unavailables_writes")
 	c.mx.clientReqFailuresReads.write(mx, "client_request_failures_reads")
 	c.mx.clientReqFailuresWrites.write(mx, "client_request_failures_writes")
+
+	c.mx.clientReqReadLatencyP50.write(mx, "client_request_read_latency_p50")
+	c.mx.clientReqReadLatencyP75.write(mx, "client_request_read_latency_p75")
+	c.mx.clientReqReadLatencyP95.write(mx, "client_request_read_latency_p95")
+	c.mx.clientReqReadLatencyP98.write(mx, "client_request_read_latency_p98")
+	c.mx.clientReqReadLatencyP99.write(mx, "client_request_read_latency_p99")
+	c.mx.clientReqReadLatencyP999.write(mx, "client_request_read_latency_p999")
+	c.mx.clientReqWriteLatencyP50.write(mx, "client_request_write_latency_p50")
+	c.mx.clientReqWriteLatencyP75.write(mx, "client_request_write_latency_p75")
+	c.mx.clientReqWriteLatencyP95.write(mx, "client_request_write_latency_p95")
+	c.mx.clientReqWriteLatencyP98.write(mx, "client_request_write_latency_p98")
+	c.mx.clientReqWriteLatencyP99.write(mx, "client_request_write_latency_p99")
+	c.mx.clientReqWriteLatencyP999.write(mx, "client_request_write_latency_p999")
 
 	c.mx.rowCacheHits.write(mx, "row_cache_hits")
 	c.mx.rowCacheMisses.write(mx, "row_cache_misses")
@@ -154,6 +166,48 @@ func (c *Cassandra) collectClientRequestMetrics(pms prometheus.Metrics) {
 			rw.read, rw.write = &c.mx.clientReqUnavailablesReads, &c.mx.clientReqUnavailablesWrites
 		case "Failures":
 			rw.read, rw.write = &c.mx.clientReqFailuresReads, &c.mx.clientReqFailuresWrites
+		default:
+			continue
+		}
+
+		switch scope {
+		case "Read":
+			rw.read.add(pm.Value)
+		case "Write":
+			rw.write.add(pm.Value)
+		}
+	}
+
+	rw = struct{ read, write *metricValue }{}
+
+	for _, pm := range pms.FindByNames(
+		metric+"_50thpercentile",
+		metric+"_75thpercentile",
+		metric+"_95thpercentile",
+		metric+"_98thpercentile",
+		metric+"_99thpercentile",
+		metric+"_999thpercentile",
+	) {
+		name := pm.Labels.Get("name")
+		scope := pm.Labels.Get("scope")
+
+		if name != "Latency" {
+			continue
+		}
+
+		switch {
+		case strings.HasSuffix(pm.Name(), "_50thpercentile"):
+			rw.read, rw.write = &c.mx.clientReqReadLatencyP50, &c.mx.clientReqWriteLatencyP50
+		case strings.HasSuffix(pm.Name(), "_75thpercentile"):
+			rw.read, rw.write = &c.mx.clientReqReadLatencyP75, &c.mx.clientReqWriteLatencyP75
+		case strings.HasSuffix(pm.Name(), "_95thpercentile"):
+			rw.read, rw.write = &c.mx.clientReqReadLatencyP95, &c.mx.clientReqWriteLatencyP95
+		case strings.HasSuffix(pm.Name(), "_98thpercentile"):
+			rw.read, rw.write = &c.mx.clientReqReadLatencyP98, &c.mx.clientReqWriteLatencyP98
+		case strings.HasSuffix(pm.Name(), "_99thpercentile"):
+			rw.read, rw.write = &c.mx.clientReqReadLatencyP99, &c.mx.clientReqWriteLatencyP99
+		case strings.HasSuffix(pm.Name(), "_999thpercentile"):
+			rw.read, rw.write = &c.mx.clientReqReadLatencyP999, &c.mx.clientReqWriteLatencyP999
 		default:
 			continue
 		}

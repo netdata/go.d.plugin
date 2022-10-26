@@ -24,6 +24,19 @@ type cassandraMetrics struct {
 	clientReqFailuresReads      metricValue
 	clientReqFailuresWrites     metricValue
 
+	clientReqReadLatencyP50   metricValue
+	clientReqReadLatencyP75   metricValue
+	clientReqReadLatencyP95   metricValue
+	clientReqReadLatencyP98   metricValue
+	clientReqReadLatencyP99   metricValue
+	clientReqReadLatencyP999  metricValue
+	clientReqWriteLatencyP50  metricValue
+	clientReqWriteLatencyP75  metricValue
+	clientReqWriteLatencyP95  metricValue
+	clientReqWriteLatencyP98  metricValue
+	clientReqWriteLatencyP99  metricValue
+	clientReqWriteLatencyP999 metricValue
+
 	rowCacheHits     metricValue
 	rowCacheMisses   metricValue
 	rowCacheCapacity metricValue
