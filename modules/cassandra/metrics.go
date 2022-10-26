@@ -34,7 +34,7 @@ type cassandraMetrics struct {
 	keyCacheSize     metricValue
 
 	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#dropped-metrics
-	droppedMsgsOneMinute metricValue
+	droppedMessages metricValue
 
 	// https://cassandra.apache.org/doc/latest/cassandra/operating/metrics.html#storage-metrics
 	storageLoad       metricValue

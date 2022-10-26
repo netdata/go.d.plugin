@@ -10,9 +10,8 @@ import (
 )
 
 const (
-	suffixCount     = "_count"
-	suffixValue     = "_value"
-	suffixOneMinute = "_oneminuterate"
+	suffixCount = "_count"
+	suffixValue = "_value"
 )
 
 func (c *Cassandra) collect() (map[string]int64, error) {
@@ -96,7 +95,7 @@ func (c *Cassandra) processMetric(mx map[string]int64) {
 		}
 	}
 
-	c.mx.droppedMsgsOneMinute.write1k(mx, "dropped_messages_one_minute")
+	c.mx.droppedMessages.write1k(mx, "dropped_messages")
 
 	c.mx.storageLoad.write(mx, "storage_load")
 	c.mx.storageExceptions.write(mx, "storage_exceptions")
@@ -265,8 +264,8 @@ func (c *Cassandra) collectStorageMetrics(pms prometheus.Metrics) {
 func (c *Cassandra) collectDroppedMessagesMetrics(pms prometheus.Metrics) {
 	const metric = "org_apache_cassandra_metrics_droppedmessage"
 
-	for _, pm := range pms.FindByName(metric + suffixOneMinute) {
-		c.mx.droppedMsgsOneMinute.add(pm.Value)
+	for _, pm := range pms.FindByName(metric + suffixCount) {
+		c.mx.droppedMessages.add(pm.Value)
 	}
 }
 
