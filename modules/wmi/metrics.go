@@ -29,6 +29,26 @@ func (m metrics) hasThermalZone() bool { return m.ThermalZone != nil }
 func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
 func (m metrics) hasTCP() bool         { return m.TCP != nil }
 
+// apps
+type (
+	appsMetrics struct {
+		info appsInfos `stm:"apps"`
+	}
+
+	appsInfos []*appsInfo
+
+	appsInfo struct {
+		cpuTimeTotal    float64 `stm:"cpu_time_total"`
+		cpuHandles      float64 `stm:"handles"`
+		ioBytes         float64 `stm:"io_bytes"`
+		ioOperations    float64 `stm:"io_operations"`
+		ioPageFaults    float64 `stm:"page_faults"`
+		ioPageFileBytes float64 `stm:"page_file_bytes"`
+		ioPoolBytes     float64 `stm:"pool_bytes"`
+		ioThreads       float64 `stm:"threads"`
+	}
+)
+
 // cpu
 type (
 	cpuMetrics struct {
