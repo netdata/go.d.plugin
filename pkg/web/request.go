@@ -83,18 +83,7 @@ func NewHTTPRequest(cfg Request) (*http.Request, error) {
 	return req, nil
 }
 
-func (r *Request) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type plain Request
-	if err := unmarshal((*plain)(r)); err != nil {
-		return err
-	}
-
-	r.URL = urlResolveHostname(r.URL)
-
-	return nil
-}
-
-func urlResolveHostname(rawURL string) string {
+func URLResolveHostname(rawURL string) string {
 	if hostname == "" || !strings.Contains(rawURL, "hostname") {
 		return rawURL
 	}
