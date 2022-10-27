@@ -202,9 +202,9 @@ func Test_urlResolveHostname(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 
 			if test.wantChanged {
-				assert.NotEqual(t, test.input, urlResolveHostname(test.input))
+				assert.NotEqual(t, test.input, URLResolveHostname(test.input))
 			} else {
-				assert.Equal(t, test.input, urlResolveHostname(test.input))
+				assert.Equal(t, test.input, URLResolveHostname(test.input))
 			}
 		})
 	}
