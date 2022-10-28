@@ -43,10 +43,10 @@ type (
 		STMKey string
 		ID     string
 
-		cpuTimeTotal    float64 `stm:"cpu_time_total"`
-		cpuHandles      float64 `stm:"handles"`
-		ioBytes         float64 `stm:"io_bytes"`
-		ioOperations    float64 `stm:"io_operations"`
+		cpuTimeTotal  float64 `stm:"cpu_time_total"`
+		cpuHandles    float64 `stm:"handles"`
+		ioBytes       float64 `stm:"io_bytes"`
+		ioOperations  float64 `stm:"io_operations"`
 		PageFaults    float64 `stm:"page_faults"`
 		PageFileBytes float64 `stm:"page_file_bytes"`
 		PoolBytes     float64 `stm:"pool_bytes"`
