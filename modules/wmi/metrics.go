@@ -47,10 +47,10 @@ type (
 		cpuHandles      float64 `stm:"handles"`
 		ioBytes         float64 `stm:"io_bytes"`
 		ioOperations    float64 `stm:"io_operations"`
-		ioPageFaults    float64 `stm:"page_faults"`
-		ioPageFileBytes float64 `stm:"page_file_bytes"`
-		ioPoolBytes     float64 `stm:"pool_bytes"`
-		ioThreads       float64 `stm:"threads"`
+		PageFaults    float64 `stm:"page_faults"`
+		PageFileBytes float64 `stm:"page_file_bytes"`
+		PoolBytes     float64 `stm:"pool_bytes"`
+		Threads       float64 `stm:"threads"`
 	}
 )
 
