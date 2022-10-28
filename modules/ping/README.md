@@ -13,7 +13,7 @@ This module measures round-tripe time and packet loss by sending ping messages t
 
 There are two operational modes:
 
-- privileged (send UDP ping, default). Requires
+- privileged (send raw ICMP ping, default). Requires
   CAP_NET_RAW [capability](https://man7.org/linux/man-pages/man7/capabilities.7.html) or root privileges:
   > **Note**: set automatically during Netdata installation.
 
@@ -21,7 +21,7 @@ There are two operational modes:
   sudo setcap CAP_NET_RAW=eip <INSTALL_PREFIX>/usr/libexec/netdata/plugins.d/go.d.plugin
   ```
 
-- unprivileged (send raw ICMP ping, Linux only).
+- unprivileged (send UDP ping, Linux only).
   Requires configuring [ping_group_range](https://www.man7.org/linux/man-pages/man7/icmp.7.html):
 
   ```bash
