@@ -73,6 +73,103 @@ const (
 
 	prioCollectionDuration
 	prioCollectionStatus
+
+	prioAppsCPUTimeTotal
+	prioAppsHandles
+	prioAppsIOBytes
+	prioAppsIOOperations
+	prioAppsPageFaults
+	prioAppsPageFileBytes
+	prioAppsPoolBytes
+	prioThreads
+)
+
+func newAppsCharts() Charts {
+	return Charts{
+		appsCPUTimeTotalChart.Copy(),
+		appsHandlesChart.Copy(),
+		appsIOBytesChart.Copy(),
+		appsIOOperationsChart.Copy(),
+		appsPageFaultsChart.Copy(),
+		appsPageFileBytes.Copy(),
+		appsPoolBytes.Copy(),
+		appsThreads.Copy(),
+	}
+}
+
+var (
+	appsCPUTimeTotalChart = Chart{
+		ID:       "apps_cpu_time_total",
+		Title:    "CPU Time total per application",
+		Units:    "elapsed time",
+		Fam:      "apps",
+		Ctx:      "wmi.apps_cpu_time_total",
+		Type:     module.Stacked,
+		Priority: prioAppsCPUTimeTotal,
+	}
+	appsHandlesChart = Chart{
+		ID:       "apps_handles",
+		Title:    "Number of handles open",
+		Units:    "handles",
+		Fam:      "apps",
+		Ctx:      "wmi.apps_handles",
+		Type:     module.Stacked,
+		Priority: prioAppsHandles,
+	}
+	appsIOBytesChart = Chart{
+		ID:       "apps_io_bytes",
+		Title:    "Total of IO bytes (read, write, other)",
+		Units:    "bytes",
+		Fam:      "apps",
+		Ctx:      "wmi.apps_io_bytes",
+		Type:     module.Stacked,
+		Priority: prioAppsIOBytes,
+	}
+	appsIOOperationsChart = Chart{
+		ID:       "apps_io_operations",
+		Title:    "Total of IO events (read, write, other)",
+		Units:    "events",
+		Fam:      "apps",
+		Ctx:      "wmi.apps_io_operations",
+		Type:     module.Stacked,
+		Priority: prioAppsIOOperations,
+	}
+	appsPageFaultsChart = Chart{
+		ID:       "apps_page_faults",
+		Title:    "Number of page faults",
+		Units:    "events",
+		Fam:      "apps",
+		Ctx:      "wmi.apps_page_faults",
+		Type:     module.Stacked,
+		Priority: prioAppsPageFaults,
+	}
+	appsPageFileBytes = Chart{
+		ID:       "apps_page_file_bytes",
+		Title:    "Bytes used in page file(s)",
+		Units:    "bytes",
+		Fam:      "apps",
+		Ctx:      "wmi.apps_file_bytes",
+		Type:     module.Stacked,
+		Priority: prioAppsPageFileBytes,
+	}
+	appsPoolBytes = Chart{
+		ID:       "apps_pool_bytes",
+		Title:    "Last observed bytes in paged",
+		Units:    "bytes",
+		Fam:      "apps",
+		Ctx:      "wmi.apps_pool_bytes",
+		Type:     module.Stacked,
+		Priority: prioAppsPoolBytes,
+	}
+	appsThreads = Chart{
+		ID:       "apps_threads",
+		Title:    "Active threads",
+		Units:    "threads",
+		Fam:      "apps",
+		Ctx:      "wmi.apps_threads",
+		Type:     module.Stacked,
+		Priority: prioAppsPoolBytes,
+	}
 )
 
 func newCPUCharts() Charts {
@@ -724,6 +821,49 @@ func (w *WMI) updateCharts(mx *metrics) {
 	w.updateLogonCharts(mx)
 	w.updateThermalzoneCharts(mx)
 	w.updateTCPCharts(mx)
+	w.updateAppsCharts(mx)
+}
+
+func (w *WMI) updateAppsCharts(mx *metrics) {
+	if !mx.hasApps() {
+		return
+	}
+	if !w.cache.collectors[collectorProcess] {
+		w.cache.collectors[collectorProcess] = true
+		if err := w.Charts().Add(newAppsCharts()...); err != nil {
+			w.Warning(err)
+		}
+	}
+	for _, apps := range mx.Apps.info {
+		if w.cache.apps[apps.ID] {
+			continue
+		}
+		w.cache.apps[apps.ID] = true
+		if err := addDimToAppsCPUTimeTotalChart(w.Charts(), apps.ID); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToAppsHandlesChart(w.Charts(), apps.ID); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToAppsIOBytesChart(w.Charts(), apps.ID); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToAppsIOOperationsChart(w.Charts(), apps.ID); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToAppsPageFaultsChart(w.Charts(), apps.ID); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToAppsPageFileBytes(w.Charts(), apps.ID); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToAppsPoolBytes(w.Charts(), apps.ID); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToAppsThreads(w.Charts(), apps.ID); err != nil {
+			w.Warning(err)
+		}
+	}
 }
 
 func (w *WMI) updateCollectionCharts(mx *metrics) {
@@ -1017,6 +1157,142 @@ func addDimToCollectionStatusChart(charts *Charts, colName string) error {
 	dim := &Dim{
 		ID:   colName + "_collection_success",
 		Name: colName,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToAppsCPUTimeTotalChart(charts *Charts, appsID string) error {
+	chart := charts.Get(appsCPUTimeTotalChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", appsCPUTimeTotalChart.ID)
+	}
+	dim := &Dim{
+		ID:   fmt.Sprintf("apps_%s_cpu_time_total", appsID),
+		Name: appsID,
+		Algo: module.Incremental,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToAppsHandlesChart(charts *Charts, appsID string) error {
+	chart := charts.Get(appsHandlesChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", appsHandlesChart.ID)
+	}
+	dim := &Dim{
+		ID:   fmt.Sprintf("apps_%s_handles", appsID),
+		Name: appsID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToAppsIOBytesChart(charts *Charts, appsID string) error {
+	chart := charts.Get(appsIOBytesChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", appsIOBytesChart.ID)
+	}
+	dim := &Dim{
+		ID:   fmt.Sprintf("apps_%s_io_bytes", appsID),
+		Name: appsID,
+		Algo: module.Incremental,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToAppsIOOperationsChart(charts *Charts, appsID string) error {
+	chart := charts.Get(appsIOOperationsChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", appsIOOperationsChart.ID)
+	}
+	dim := &Dim{
+		ID:   fmt.Sprintf("apps_%s_io_operations", appsID),
+		Name: appsID,
+		Algo: module.Incremental,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToAppsPageFaultsChart(charts *Charts, appsID string) error {
+	chart := charts.Get(appsPageFaultsChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", appsPageFaultsChart.ID)
+	}
+	dim := &Dim{
+		ID:   fmt.Sprintf("apps_%s_page_faults", appsID),
+		Name: appsID,
+		Algo: module.Incremental,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToAppsPageFileBytes(charts *Charts, appsID string) error {
+	chart := charts.Get(appsPageFileBytes.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", appsPageFileBytes.ID)
+	}
+	dim := &Dim{
+		ID:   fmt.Sprintf("apps_%s_page_file_bytes", appsID),
+		Name: appsID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToAppsPoolBytes(charts *Charts, appsID string) error {
+	chart := charts.Get(appsPoolBytes.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", appsPoolBytes.ID)
+	}
+	dim := &Dim{
+		ID:   fmt.Sprintf("apps_%s_pool_bytes", appsID),
+		Name: appsID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToAppsThreads(charts *Charts, appsID string) error {
+	chart := charts.Get(appsThreads.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", appsThreads.ID)
+	}
+	dim := &Dim{
+		ID:   fmt.Sprintf("apps_%s_threads", appsID),
+		Name: appsID,
+		Algo: module.Absolute,
 	}
 	if err := chart.AddDim(dim); err != nil {
 		return err
