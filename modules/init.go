@@ -50,6 +50,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/phpfpm"
 	_ "github.com/netdata/go.d.plugin/modules/pihole"
 	_ "github.com/netdata/go.d.plugin/modules/pika"
+	_ "github.com/netdata/go.d.plugin/modules/ping"
 	_ "github.com/netdata/go.d.plugin/modules/portcheck"
 	_ "github.com/netdata/go.d.plugin/modules/postgres"
 	_ "github.com/netdata/go.d.plugin/modules/powerdns"

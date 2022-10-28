@@ -29,6 +29,7 @@ require (
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.50
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/prometheus-community/pro-bing v0.1.0
 	github.com/prometheus/prometheus v0.36.2
 	github.com/stretchr/testify v1.8.1
 	github.com/tomasen/fcgi_client v0.0.0-20180423082037-2bb3d819fd19
@@ -85,7 +86,7 @@ require (
 	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/google/uuid v1.2.0 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/grafana/regexp v0.0.0-20220304095617-2e8d9baf4ac2 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
