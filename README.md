@@ -77,6 +77,7 @@ Go.d.plugin is shipped with Netdata.
 | [phpfpm](https://github.com/netdata/go.d.plugin/tree/master/modules/phpfpm)                         |            PHP-FPM            |
 | [pihole](https://github.com/netdata/go.d.plugin/tree/master/modules/pihole)                         |            Pi-hole            |
 | [pika](https://github.com/netdata/go.d.plugin/tree/master/modules/pika)                             |             Pika              |
+| [ping](https://github.com/netdata/go.d.plugin/tree/master/modules/ping)                             |       Any network host        |
 | [prometheus](https://github.com/netdata/go.d.plugin/tree/master/modules/prometheus)                 |    Any Prometheus Endpoint    |
 | [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)                   |       Any TCP Endpoint        |
 | [postgres](https://github.com/netdata/go.d.plugin/tree/master/modules/postgres)                     |          PostgreSQL           |
