@@ -24,15 +24,15 @@ var hostChartsTmpl = module.Charts{
 var hostRTTChartTmpl = module.Chart{
 	ID:       "ping_host_%s_rtt",
 	Title:    "Ping round-trip time",
-	Units:    "seconds",
+	Units:    "milliseconds",
 	Fam:      "latency",
 	Ctx:      "ping.host_rtt",
 	Priority: prioHostRTTLatency,
 	Type:     module.Area,
 	Dims: module.Dims{
-		{ID: "host_%s_min_rtt", Name: "min", Div: 1e6},
-		{ID: "host_%s_max_rtt", Name: "max", Div: 1e6},
-		{ID: "host_%s_avg_rtt", Name: "avg", Div: 1e6},
+		{ID: "host_%s_min_rtt", Name: "min", Div: 1e3},
+		{ID: "host_%s_max_rtt", Name: "max", Div: 1e3},
+		{ID: "host_%s_avg_rtt", Name: "avg", Div: 1e3},
 	},
 }
 
