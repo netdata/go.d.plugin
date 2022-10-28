@@ -27,7 +27,7 @@ func doCollectApps(pms prometheus.Metrics) bool {
 }
 
 func collectApps(pms prometheus.Metrics) *appsMetrics {
-	if !doCollectCPU(pms) {
+	if !doCollectApps(pms) {
 		return nil
 	}
 
