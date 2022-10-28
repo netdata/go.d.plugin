@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	prioHostRTTLatency = module.Priority + iota
+	prioHostRTT = module.Priority + iota
 	prioHostPingPacketLoss
 	prioHostPingPackets
 )
@@ -22,12 +22,12 @@ var hostChartsTmpl = module.Charts{
 }
 
 var hostRTTChartTmpl = module.Chart{
-	ID:       "ping_host_%s_rtt",
+	ID:       "host_%s_rtt",
 	Title:    "Ping round-trip time",
 	Units:    "milliseconds",
 	Fam:      "latency",
 	Ctx:      "ping.host_rtt",
-	Priority: prioHostRTTLatency,
+	Priority: prioHostRTT,
 	Type:     module.Area,
 	Dims: module.Dims{
 		{ID: "host_%s_min_rtt", Name: "min", Div: 1e3},
@@ -37,7 +37,7 @@ var hostRTTChartTmpl = module.Chart{
 }
 
 var hostPacketLossChartTmpl = module.Chart{
-	ID:       "host_host_%s_packet_loss",
+	ID:       "host_%s_packet_loss",
 	Title:    "Ping packet loss",
 	Units:    "percentage",
 	Fam:      "packet loss",
@@ -49,7 +49,7 @@ var hostPacketLossChartTmpl = module.Chart{
 }
 
 var hostPacketsChartTmpl = module.Chart{
-	ID:       "host_host_%s_packets",
+	ID:       "host_%s_packets",
 	Title:    "Ping packets transferred",
 	Units:    "packets",
 	Fam:      "packets",
