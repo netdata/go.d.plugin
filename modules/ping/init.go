@@ -18,7 +18,11 @@ func (p *Ping) validateConfig() error {
 }
 
 func (p *Ping) initProber() (prober, error) {
-	deadline := time.Millisecond * time.Duration(float64(p.UpdateEvery)*1.5*1000)
+	mul := 0.9
+	if p.UpdateEvery > 1 {
+		mul = 0.95
+	}
+	deadline := time.Millisecond * time.Duration(float64(p.UpdateEvery)*mul*1000)
 	if deadline.Milliseconds() == 0 {
 		return nil, errors.New("zero ping deadline")
 	}
