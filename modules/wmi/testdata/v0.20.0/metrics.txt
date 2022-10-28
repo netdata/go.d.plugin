@@ -162,6 +162,7 @@ windows_exporter_collector_duration_seconds{collector="logon"} 0.0726594
 windows_exporter_collector_duration_seconds{collector="memory"} 0
 windows_exporter_collector_duration_seconds{collector="net"} 0
 windows_exporter_collector_duration_seconds{collector="os"} 0.0041218
+windows_exporter_collector_duration_seconds{collector="process"} 1.0564787
 windows_exporter_collector_duration_seconds{collector="system"} 0.0007185
 windows_exporter_collector_duration_seconds{collector="tcp"} 0
 windows_exporter_collector_duration_seconds{collector="thermalzone"} 1.7144933

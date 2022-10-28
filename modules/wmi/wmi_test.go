@@ -709,6 +709,8 @@ func TestWMI_Collect(t *testing.T) {
 				"os_virtual_memory_free_bytes":                                  3349536768000,
 				"os_visible_memory_bytes":                                       4244140032000,
 				"os_visible_memory_used_bytes":                                  2306338816000,
+				"process_collection_duration":                                   1056,
+				"process_collection_success":                                    0,
 				"service_collection_duration":                                   0,
 				"service_collection_success":                                    1,
 				"system_boot_time":                                              0,
