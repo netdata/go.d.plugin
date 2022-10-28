@@ -26,7 +26,7 @@ func New() *Ping {
 		Config: Config{
 			Privileged:  true,
 			SendPackets: 5,
-			Interval:    web.Duration{Duration: time.Millisecond * 200},
+			Interval:    web.Duration{Duration: time.Millisecond * 100},
 		},
 
 		charts:    &module.Charts{},
