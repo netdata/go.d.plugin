@@ -16,10 +16,10 @@ type metrics struct {
 	ThermalZone *thermalZoneMetrics `stm:"thermalzone"`
 	Collectors  *collectors         `stm:""`
 	TCP         *tcpMetrics         `stm:"tcp"`
-	apps        *appsMetrics        `stm:"apps"`
+	Apps        *appsMetrics        `stm:"apps"`
 }
 
-func (m metrics) hasApps() bool        { return m.apps != nil }
+func (m metrics) hasApps() bool        { return m.Apps != nil }
 func (m metrics) hasCPU() bool         { return m.CPU != nil }
 func (m metrics) hasMemory() bool      { return m.Memory != nil }
 func (m metrics) hasNet() bool         { return m.Net != nil }
@@ -34,7 +34,7 @@ func (m metrics) hasTCP() bool         { return m.TCP != nil }
 // apps
 type (
 	appsMetrics struct {
-		info appsInfos `stm:"apps"`
+		info appsInfos `stm:""`
 	}
 
 	appsInfos []*appsInfo
