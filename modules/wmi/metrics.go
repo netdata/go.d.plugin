@@ -16,8 +16,10 @@ type metrics struct {
 	ThermalZone *thermalZoneMetrics `stm:"thermalzone"`
 	Collectors  *collectors         `stm:""`
 	TCP         *tcpMetrics         `stm:"tcp"`
+	apps        *appsMetrics        `stm:"apps"`
 }
 
+func (m metrics) hasApps() bool        { return m.apps != nil }
 func (m metrics) hasCPU() bool         { return m.CPU != nil }
 func (m metrics) hasMemory() bool      { return m.Memory != nil }
 func (m metrics) hasNet() bool         { return m.Net != nil }
@@ -38,6 +40,9 @@ type (
 	appsInfos []*appsInfo
 
 	appsInfo struct {
+		STMKey string
+		ID     string
+
 		cpuTimeTotal    float64 `stm:"cpu_time_total"`
 		cpuHandles      float64 `stm:"handles"`
 		ioBytes         float64 `stm:"io_bytes"`
@@ -291,11 +296,23 @@ type (
 	}
 )
 
+func newApps(id string) *appsInfo           { return &appsInfo{STMKey: id, ID: id} }
 func newCollector(id string) *collector     { return &collector{STMKey: id, ID: id} }
 func newCPUCore(id string) *cpuCore         { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
 func newNIC(id string) *netNIC              { return &netNIC{STMKey: id, ID: id} }
 func newVolume(id string) *volume           { return &volume{STMKey: id, ID: id} }
 func newThermalZone(id string) *thermalZone { return &thermalZone{STMKey: id, ID: id} }
+
+func (ai *appsInfos) get(id string) *appsInfo {
+	for _, a := range *ai {
+		if a.ID == id {
+			return a
+		}
+	}
+	a := newApps(id)
+	*ai = append(*ai, a)
+	return a
+}
 
 func getCPUIntID(id string) int {
 	if id == "" {
