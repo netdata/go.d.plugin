@@ -19,10 +19,10 @@ type metrics struct {
 	ThermalZone *thermalZoneMetrics `stm:"thermalzone"`
 	Collectors  *collectors         `stm:""`
 	TCP         *tcpMetrics         `stm:"tcp"`
-	Apps        *appsMetrics        `stm:"apps"`
+	Processes   *processesMetrics   `stm:"process"`
 }
 
-func (m metrics) hasApps() bool        { return m.Apps != nil }
+func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
 func (m metrics) hasCPU() bool         { return m.CPU != nil }
 func (m metrics) hasMemory() bool      { return m.Memory != nil }
 func (m metrics) hasNet() bool         { return m.Net != nil }
@@ -31,31 +31,8 @@ func (m metrics) hasOS() bool          { return m.OS != nil }
 func (m metrics) hasSystem() bool      { return m.System != nil }
 func (m metrics) hasLogon() bool       { return m.Logon != nil }
 func (m metrics) hasThermalZone() bool { return m.ThermalZone != nil }
-func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
 func (m metrics) hasTCP() bool         { return m.TCP != nil }
-
-// apps
-type (
-	appsMetrics struct {
-		info appsInfos `stm:""`
-	}
-
-	appsInfos []*appsInfo
-
-	appsInfo struct {
-		STMKey string
-		ID     string
-
-		cpuTimeTotal  float64 `stm:"cpu_time_total"`
-		cpuHandles    float64 `stm:"handles"`
-		ioBytes       float64 `stm:"io_bytes"`
-		ioOperations  float64 `stm:"io_operations"`
-		PageFaults    float64 `stm:"page_faults"`
-		PageFileBytes float64 `stm:"page_file_bytes"`
-		PoolBytes     float64 `stm:"pool_bytes"`
-		Threads       float64 `stm:"threads"`
-	}
-)
+func (m metrics) hasProcesses() bool   { return m.Processes != nil && len(m.Processes.procs) > 0 }
 
 // cpu
 type (
@@ -288,6 +265,26 @@ type logonMetrics struct {
 	} `stm:"type"`
 }
 
+// process
+type (
+	processesMetrics struct {
+		procs map[string]*processMetrics `stm:""`
+	}
+
+	processMetrics struct {
+		ID string
+
+		CPUTime       float64 `stm:"cpu_time,1000,1"`
+		Handles       float64 `stm:"handles"`
+		IOBytes       float64 `stm:"io_bytes"`
+		IOOperations  float64 `stm:"io_operations"`
+		PageFaults    float64 `stm:"page_faults"`
+		PageFileBytes float64 `stm:"page_file_bytes"`
+		PoolBytes     float64 `stm:"pool_bytes"`
+		Threads       float64 `stm:"threads"`
+	}
+)
+
 type (
 	collectors []*collector
 	collector  struct {
@@ -299,24 +296,12 @@ type (
 	}
 )
 
-func newApps(id string) *appsInfo           { return &appsInfo{STMKey: id, ID: id} }
 func newCollector(id string) *collector     { return &collector{STMKey: id, ID: id} }
 func newCPUCore(id string) *cpuCore         { return &cpuCore{STMKey: id, ID: id, id: getCPUIntID(id)} }
 func newNIC(id string) *netNIC              { return &netNIC{STMKey: id, ID: id} }
 func newVolume(id string) *volume           { return &volume{STMKey: id, ID: id} }
 func newThermalZone(id string) *thermalZone { return &thermalZone{STMKey: id, ID: id} }
-
-func (ai *appsInfos) get(id string) *appsInfo {
-	name := strings.Replace(id, " ", "", -1)
-	for _, a := range *ai {
-		if a.ID == name {
-			return a
-		}
-	}
-	a := newApps(name)
-	*ai = append(*ai, a)
-	return a
-}
+func newProcess(id string) *processMetrics  { return &processMetrics{ID: id} }
 
 func getCPUIntID(id string) int {
 	if id == "" {
@@ -382,4 +367,14 @@ func (tz *thermalZones) get(id string) *thermalZone {
 	v := newThermalZone(id)
 	*tz = append(*tz, v)
 	return v
+}
+
+func (pm *processesMetrics) get(id string) *processMetrics {
+	id = strings.ReplaceAll(id, " ", "_")
+	p, ok := pm.procs[id]
+	if !ok {
+		p = newProcess(id)
+		pm.procs[id] = p
+	}
+	return p
 }
