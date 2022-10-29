@@ -43,6 +43,7 @@ func collect(pms prometheus.Metrics) *metrics {
 		ThermalZone: collectThermalzone(pms),
 		Collectors:  collectCollection(pms),
 		TCP:         collectTCP(pms),
+		Apps:        collectApps(pms),
 	}
 
 	if mx.hasOS() && mx.hasMemory() {

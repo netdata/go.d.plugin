@@ -44,12 +44,26 @@ Installation: please follow the [official guide](https://github.com/prometheus-c
 
 - Verify that the exporter works properly by accessing http://localhost:9182/
 
+### Expensive metric
+
+The plugin is also able to collect information for `process`, but it will need at least 4 times more resource from your server. We recommend to enable this metric only when it is really necessary.
+
+To enable this expensive metric, pass as argument for `ENABLED_COLLECTORS` the word `process`.
+
 ## Metrics
 
 All metrics have "wmi." prefix.
 
 | Metric                     |     Scope      |                                                                                     Dimensions                                                                                     |     Units     |
 |----------------------------|:--------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------:|
+| apps_cpu_time_total        |     global     |                                                                                     application                                                                                    |    number     |
+| apps_handles               |     global     |                                                                                     application                                                                                    |    number     |
+| apps_io_bytes_total        |     global     |                                                                                     application                                                                                    |     bytes     |
+| apps_io_opreations_total   |     global     |                                                                                     application                                                                                    |     number     |
+| apps_page_faults_total     |     global     |                                                                                     application                                                                                    |     number     |
+| apps_page_file_bytes       |     global     |                                                                                     application                                                                                    |     bytes     |
+| apps_pool_bytes            |     global     |                                                                                     application                                                                                    |     bytes     |
+| apps_threads               |     global     |                                                                                     application                                                                                    |     number     |
 | cpu_utilization_total      |     global     |                                                                          dpc, user, privileged, interrupt                                                                          |  percentage   |
 | cpu_dpcs                   |     global     |                                                                            <i>a dimension per core</i>                                                                             |    dpcs/s     |
 | cpu_interrupts             |     global     |                                                                            <i>a dimension per core</i>                                                                             | interrupts/s  |
