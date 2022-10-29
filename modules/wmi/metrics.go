@@ -2,7 +2,10 @@
 
 package wmi
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
 type metrics struct {
 	// https://github.com/prometheus-community/windows_exporter/tree/master/docs#documentation
@@ -304,12 +307,13 @@ func newVolume(id string) *volume           { return &volume{STMKey: id, ID: id}
 func newThermalZone(id string) *thermalZone { return &thermalZone{STMKey: id, ID: id} }
 
 func (ai *appsInfos) get(id string) *appsInfo {
+	name := strings.Replace(id, " ", "", -1)
 	for _, a := range *ai {
-		if a.ID == id {
+		if a.ID == name {
 			return a
 		}
 	}
-	a := newApps(id)
+	a := newApps(name)
 	*ai = append(*ai, a)
 	return a
 }
