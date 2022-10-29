@@ -35,7 +35,7 @@ func New() *WMI {
 			nics:         make(map[string]bool),
 			volumes:      make(map[string]bool),
 			thermalZones: make(map[string]bool),
-			apps:         make(map[string]bool),
+			procs:        make(map[string]bool),
 		},
 		charts: newCollectionCharts(),
 	}
@@ -50,10 +50,10 @@ type (
 		Config `yaml:",inline"`
 		prom   prometheus.Prometheus
 		cache  cache
-		charts *Charts
+		charts *module.Charts
 	}
 	cache struct {
-		apps         map[string]bool
+		procs        map[string]bool
 		collectors   map[string]bool
 		collection   map[string]bool
 		cores        map[string]bool
@@ -85,7 +85,7 @@ func (w *WMI) Check() bool {
 	return len(w.Collect()) > 0
 }
 
-func (w *WMI) Charts() *Charts {
+func (w *WMI) Charts() *module.Charts {
 	return w.charts
 }
 
@@ -101,4 +101,4 @@ func (w *WMI) Collect() map[string]int64 {
 	return ms
 }
 
-func (WMI) Cleanup() {}
+func (w *WMI) Cleanup() {}

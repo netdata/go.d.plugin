@@ -21,6 +21,7 @@ The module collects metrics from the following collectors:
 - [logon](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.logon.md)
 - [tcp](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.tcp.md)
 - [thermalzone](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.thermalzone.md)
+- [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md)
 
 Installation: please follow the [official guide](https://github.com/prometheus-community/windows_exporter#installation).
 
@@ -37,18 +38,17 @@ Installation: please follow the [official guide](https://github.com/prometheus-c
   msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp
   ```
 
-  The msi installer automatically adds and starts a service called `windows_exporter`, which listens to port 9182 by
-  default.
-  Full installation instructions options can be
-  found  [here](https://github.com/prometheus-community/windows_exporter/releases).
+  [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md) exposes
+  metrics about all processes in the system by default. This results in thousands of time series and can significantly
+  increase CPU usage. It is recommended to
+  use [filtering flags](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md#flags)
+  to keep down the number of returned metrics.
+
+  ```bash 
+  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp,process
+  ```
 
 - Verify that the exporter works properly by accessing http://localhost:9182/
-
-### Expensive metric
-
-The plugin is also able to collect information for `process`, but it will need at least 4 times more resource from your server. We recommend to enable this metric only when it is really necessary.
-
-To enable this expensive metric, pass as argument for `ENABLED_COLLECTORS` the word `process`.
 
 ## Metrics
 
@@ -56,14 +56,6 @@ All metrics have "wmi." prefix.
 
 | Metric                     |     Scope      |                                                                                     Dimensions                                                                                     |     Units     |
 |----------------------------|:--------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------:|
-| apps_cpu_time_total        |     global     |                                                                                     application                                                                                    |    number     |
-| apps_handles               |     global     |                                                                                     application                                                                                    |    number     |
-| apps_io_bytes_total        |     global     |                                                                                     application                                                                                    |     bytes     |
-| apps_io_opreations_total   |     global     |                                                                                     application                                                                                    |     number     |
-| apps_page_faults_total     |     global     |                                                                                     application                                                                                    |     number     |
-| apps_page_file_bytes       |     global     |                                                                                     application                                                                                    |     bytes     |
-| apps_pool_bytes            |     global     |                                                                                     application                                                                                    |     bytes     |
-| apps_threads               |     global     |                                                                                     application                                                                                    |     number     |
 | cpu_utilization_total      |     global     |                                                                          dpc, user, privileged, interrupt                                                                          |  percentage   |
 | cpu_dpcs                   |     global     |                                                                            <i>a dimension per core</i>                                                                             |    dpcs/s     |
 | cpu_interrupts             |     global     |                                                                            <i>a dimension per core</i>                                                                             | interrupts/s  |
@@ -82,7 +74,7 @@ All metrics have "wmi." prefix.
 | net_errors                 | network device |                                                                                 inbound, outbound                                                                                  |   errors/s    |
 | net_discarded              | network device |                                                                                 inbound, outbound                                                                                  |  discards/s   |
 | logical_disk_utilization   |  logical disk  |                                                                                     free, used                                                                                     |      KiB      |
-| logical_disk_bandwidth    |  logical disk  |                                                                                    read, write                                                                                     |     KiB/s     |
+| logical_disk_bandwidth     |  logical disk  |                                                                                    read, write                                                                                     |     KiB/s     |
 | logical_disk_operations    |  logical disk  |                                                                                   reads, writes                                                                                    | operations/s  |
 | logical_disk_latency       |  logical disk  |                                                                                    read, write                                                                                     | milliseconds  |
 | os_processes               |     global     |                                                                                     processes                                                                                      |    number     |
@@ -101,6 +93,14 @@ All metrics have "wmi." prefix.
 | tcp_segments_received      |     global     |                                                                                     ipv4, ipv6                                                                                     |  segments/s   |
 | tcp_segments_sent          |     global     |                                                                                     ipv4, ipv6                                                                                     |  segments/s   |
 | tcp_segments_retransmitted |     global     |                                                                                     ipv4, ipv6                                                                                     |  segments/s   |
+| processes_cpu_time         |     global     |                                                                           <i>a dimension per process</i>                                                                           |  percentage   |
+| processes_handles          |     global     |                                                                           <i>a dimension per process</i>                                                                           |    handles    |
+| processes_io_bytes         |     global     |                                                                           <i>a dimension per process</i>                                                                           |    bytes/s    |
+| processes_io_operations    |     global     |                                                                           <i>a dimension per process</i>                                                                           | operations/s  |
+| processes_page_faults      |     global     |                                                                           <i>a dimension per process</i>                                                                           |  pgfaults/s   |
+| processes_page_file_bytes  |     global     |                                                                           <i>a dimension per process</i>                                                                           |     bytes     |
+| processes_pool_bytes       |     global     |                                                                           <i>a dimension per process</i>                                                                           |     bytes     |
+| processes_threads          |     global     |                                                                           <i>a dimension per process</i>                                                                           |    threads    |
 
 ## Configuration
 
