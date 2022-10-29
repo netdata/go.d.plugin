@@ -9,14 +9,14 @@ import (
 const (
 	collectorProcess = "process"
 
-	metricAppsCPUTimeTotal  = "windows_process_cpu_time_total"
-	metricAppsCPUHandles    = "windows_process_handles"
-	metricAppsIOBytes       = "windows_process_io_bytes_total"
-	metricAppsIOOperations  = "windows_process_io_operations_total"
-	metricAppsPageFaults    = "windows_process_page_faults_total"
-	metricAppsPageFileBytes = "windows_process_page_file_bytes"
-	metricAppsPoolBytes     = "windows_process_pool_bytes"
-	metricAppsThreads       = "windows_process_threads"
+	metricProcessCPUTimeTotal  = "windows_process_cpu_time_total"
+	metricProcessCPUHandles    = "windows_process_handles"
+	metricProcessIOBytes       = "windows_process_io_bytes_total"
+	metricProcessIOOperations  = "windows_process_io_operations_total"
+	metricProcessPageFaults    = "windows_process_page_faults_total"
+	metricProcessPageFileBytes = "windows_process_page_file_bytes"
+	metricProcessPoolBytes     = "windows_process_pool_bytes"
+	metricProcessThreads       = "windows_process_threads"
 )
 
 func doCollectProcess(pms prometheus.Metrics) bool {
@@ -44,7 +44,7 @@ func collectProcess(pms prometheus.Metrics) *processesMetrics {
 
 func collectProcessCpuTimeTotal(procs *processesMetrics, pms prometheus.Metrics) {
 	var proc *processMetrics
-	for _, pm := range pms.FindByName(metricAppsCPUTimeTotal) {
+	for _, pm := range pms.FindByName(metricProcessCPUTimeTotal) {
 		name := pm.Labels.Get("process")
 		if name == "" {
 			continue
@@ -60,7 +60,7 @@ func collectProcessCpuTimeTotal(procs *processesMetrics, pms prometheus.Metrics)
 
 func collectProcessHandles(procs *processesMetrics, pms prometheus.Metrics) {
 	var proc *processMetrics
-	for _, pm := range pms.FindByName(metricAppsCPUHandles) {
+	for _, pm := range pms.FindByName(metricProcessCPUHandles) {
 		name := pm.Labels.Get("process")
 		if name == "" {
 			continue
@@ -76,7 +76,7 @@ func collectProcessHandles(procs *processesMetrics, pms prometheus.Metrics) {
 
 func collectProcessIOBytes(procs *processesMetrics, pms prometheus.Metrics) {
 	var proc *processMetrics
-	for _, pm := range pms.FindByName(metricAppsIOBytes) {
+	for _, pm := range pms.FindByName(metricProcessIOBytes) {
 		name := pm.Labels.Get("process")
 		if name == "" {
 			continue
@@ -92,7 +92,7 @@ func collectProcessIOBytes(procs *processesMetrics, pms prometheus.Metrics) {
 
 func collectProcessIOOperations(procs *processesMetrics, pms prometheus.Metrics) {
 	var proc *processMetrics
-	for _, pm := range pms.FindByName(metricAppsIOOperations) {
+	for _, pm := range pms.FindByName(metricProcessIOOperations) {
 		name := pm.Labels.Get("process")
 		if name == "" {
 			continue
@@ -108,7 +108,7 @@ func collectProcessIOOperations(procs *processesMetrics, pms prometheus.Metrics)
 
 func collectProcessPageFaults(procs *processesMetrics, pms prometheus.Metrics) {
 	var proc *processMetrics
-	for _, pm := range pms.FindByName(metricAppsPageFaults) {
+	for _, pm := range pms.FindByName(metricProcessPageFaults) {
 		name := pm.Labels.Get("process")
 		if name == "" {
 			continue
@@ -124,7 +124,7 @@ func collectProcessPageFaults(procs *processesMetrics, pms prometheus.Metrics) {
 
 func collectProcessPageFileBytes(procs *processesMetrics, pms prometheus.Metrics) {
 	var proc *processMetrics
-	for _, pm := range pms.FindByName(metricAppsPageFileBytes) {
+	for _, pm := range pms.FindByName(metricProcessPageFileBytes) {
 		name := pm.Labels.Get("process")
 		if name == "" {
 			continue
@@ -140,7 +140,7 @@ func collectProcessPageFileBytes(procs *processesMetrics, pms prometheus.Metrics
 
 func collectProcessPoolBytes(procs *processesMetrics, pms prometheus.Metrics) {
 	var proc *processMetrics
-	for _, pm := range pms.FindByName(metricAppsPoolBytes) {
+	for _, pm := range pms.FindByName(metricProcessPoolBytes) {
 		name := pm.Labels.Get("process")
 		if name == "" {
 			continue
@@ -156,7 +156,7 @@ func collectProcessPoolBytes(procs *processesMetrics, pms prometheus.Metrics) {
 
 func collectProcessThreads(procs *processesMetrics, pms prometheus.Metrics) {
 	var proc *processMetrics
-	for _, pm := range pms.FindByName(metricAppsThreads) {
+	for _, pm := range pms.FindByName(metricProcessThreads) {
 		name := pm.Labels.Get("process")
 		if name == "" {
 			continue
