@@ -20,7 +20,7 @@ type metrics struct {
 	Collectors  *collectors         `stm:""`
 	TCP         *tcpMetrics         `stm:"tcp"`
 	Processes   *processesMetrics   `stm:"process"`
-	Services    *servicesMetrics    `stm:"services"`
+	Services    *servicesMetrics    `stm:"service"`
 }
 
 func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
