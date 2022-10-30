@@ -20,6 +20,7 @@ type metrics struct {
 	Collectors  *collectors         `stm:""`
 	TCP         *tcpMetrics         `stm:"tcp"`
 	Processes   *processesMetrics   `stm:"process"`
+	Services    *servicesMetrics    `stm:"services"`
 }
 
 func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
@@ -33,6 +34,7 @@ func (m metrics) hasLogon() bool       { return m.Logon != nil }
 func (m metrics) hasThermalZone() bool { return m.ThermalZone != nil }
 func (m metrics) hasTCP() bool         { return m.TCP != nil }
 func (m metrics) hasProcesses() bool   { return m.Processes != nil && len(m.Processes.procs) > 0 }
+func (m metrics) hasServices() bool    { return m.Services != nil && len(m.Services.servs) > 0 }
 
 // cpu
 type (
@@ -321,10 +323,12 @@ const (
 
 type (
 	servicesMetrics struct {
-		services map[string]*processMetrics `stm:"service"`
+		servs map[string]*serviceMetrics `stm:""`
 	}
 
-	sericeMetrics struct {
+	serviceMetrics struct {
+		ID string
+
 		startMode float64 `stm:"start_mode"`
 		state     float64 `stm:"state"`
 		status    float64 `stm:"status"`
@@ -348,6 +352,7 @@ func newNIC(id string) *netNIC              { return &netNIC{STMKey: id, ID: id}
 func newVolume(id string) *volume           { return &volume{STMKey: id, ID: id} }
 func newThermalZone(id string) *thermalZone { return &thermalZone{STMKey: id, ID: id} }
 func newProcess(id string) *processMetrics  { return &processMetrics{ID: id} }
+func newService(id string) *serviceMetrics  { return &serviceMetrics{ID: id} }
 
 func getCPUIntID(id string) int {
 	if id == "" {
@@ -421,6 +426,16 @@ func (pm *processesMetrics) get(id string) *processMetrics {
 	if !ok {
 		p = newProcess(id)
 		pm.procs[id] = p
+	}
+	return p
+}
+
+func (pm *servicesMetrics) get(id string) *serviceMetrics {
+	id = strings.ReplaceAll(id, " ", "_")
+	p, ok := pm.servs[id]
+	if !ok {
+		p = newService(id)
+		pm.servs[id] = p
 	}
 	return p
 }
