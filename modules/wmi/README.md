@@ -37,9 +37,8 @@ The module collects metrics from the following collectors:
   ```
 - Verify that the exporter works properly by accessing http://localhost:9182/
 
-
-  Netdata also supports the [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md) collector, 
-  which by defaults exposes metrics about all processes in the system. This can result in thousands of time series and can significantly
+  Netdata also supports [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md) and [service](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.service.md) exposes
+  metrics about all processes in the system by default. This results in thousands of time series and can significantly
   increase CPU usage. It is recommended to
   use [filtering flags](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md#flags)
   to keep down the number of returned metrics.
@@ -47,7 +46,7 @@ The module collects metrics from the following collectors:
   For example:
   
   ```bash 
-  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp,process EXTRA_FLAGS="collector.process.whitelist=""(firefox|FIREFOX|chrome).*"""
+  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp,process,service
   ```
   
  More installation options can be found in the windows_exporter [official installation guide](https://github.com/prometheus-community/windows_exporter#installation).
@@ -103,6 +102,11 @@ All metrics have "wmi." prefix.
 | processes_page_file_bytes  |     global     |                                                                           <i>a dimension per process</i>                                                                           |     bytes     |
 | processes_pool_bytes       |     global     |                                                                           <i>a dimension per process</i>                                                                           |     bytes     |
 | processes_threads          |     global     |                                                                           <i>a dimension per process</i>                                                                           |    threads    |
+| service_start_mode         |     global     |                                                                        <i>a dimension per service</i>                                                                              |    service    |
+| service_status             |     global     |                                                                          <i>a dimension per service</i>                                                                            |    service    |
+| service_state              |     global     |                                                                           <i>a dimension per service</i>                                                                           |    service    |
+
+## Configuration
 
 ## Configuration
 
