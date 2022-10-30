@@ -285,6 +285,52 @@ type (
 	}
 )
 
+// service
+const (
+	serviceStartModeAuto = iota
+	serviceStartModeBoot
+	serviceStartModeDisabled
+	serviceStartModeManual
+	serviceStartModeSystem
+)
+
+const (
+	serviceStateContinuePending = iota
+	serviceStatePausePending
+	serviceStatePaused
+	serviceStateRunning
+	serviceStateStartPending
+	serviceStateStopPending
+	serviceStateStopped
+	serviceStateUnknown
+)
+
+const (
+	serviceStatusDegraded = iota
+	serviceStatusError
+	serviceStatusLostConn
+	serviceStatusNoContact
+	serviceStatusOK
+	serviceStatusPredFail
+	serviceStatusService
+	serviceStatusStarting
+	serviceStatusStopping
+	serviceStatusStressed
+	serviceStatusUnkown
+)
+
+type (
+	servicesMetrics struct {
+		services map[string]*processMetrics `stm:"service"`
+	}
+
+	sericeMetrics struct {
+		startMode float64 `stm:"start_mode"`
+		state     float64 `stm:"state"`
+		status    float64 `stm:"status"`
+	}
+)
+
 type (
 	collectors []*collector
 	collector  struct {
