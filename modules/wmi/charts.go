@@ -77,7 +77,18 @@ const (
 	prioServiceStateStopPending
 	prioServiceStateStopped
 	prioServiceStateUnknown
-	prioServiceStatus
+	prioServiceStatusDegraded
+	prioServiceStatusError
+	prioServiceStatusLostConn
+	prioServiceStatusNoContact
+	prioServiceStatusNonRecover
+	prioServiceStatusOK
+	prioServiceStatusPredFail
+	prioServiceStatusService
+	prioServiceStatusStarting
+	prioServiceStatusStopping
+	prioServiceStatusStressed
+	prioServiceStatusUnknown
 )
 
 func newProcessesCharts() module.Charts {
@@ -803,7 +814,18 @@ func newServicesCharts() *module.Charts {
 		servicesStateStopPendingChart.Copy(),
 		servicesStateStoppedChart.Copy(),
 		servicesStateUnknownChart.Copy(),
-		servicesStatusChart.Copy(),
+		servicesStatusDegradedChart.Copy(),
+		servicesStatusErrorChart.Copy(),
+		servicesStatusLostCommChart.Copy(),
+		servicesStatusNoContactChart.Copy(),
+		servicesStatusNonRecoverChart.Copy(),
+		servicesStatusOKChart.Copy(),
+		servicesStatusPredFailChart.Copy(),
+		servicesStatusServiceChart.Copy(),
+		servicesStatusStartingChart.Copy(),
+		servicesStatusStoppingChart.Copy(),
+		servicesStatusStressedChart.Copy(),
+		servicesStatusUnknownChart.Copy(),
 	}
 }
 
@@ -874,13 +896,101 @@ var (
 		Priority: prioServiceStateUnknown,
 	}
 	// Status
-	servicesStatusChart = module.Chart{
-		ID:       "services_state_status_mode",
-		Title:    "Service status mode",
-		Units:    "number",
+	servicesStatusDegradedChart = module.Chart{
+		ID:       "services_state_status_degraded",
+		Title:    "Services with status Degraded",
+		Units:    "bool",
 		Fam:      "services",
-		Ctx:      "wmi.services_status_mode",
-		Priority: prioServiceStatus,
+		Ctx:      "wmi.services_status_degraded",
+		Priority: prioServiceStatusDegraded,
+	}
+	servicesStatusErrorChart = module.Chart{
+		ID:       "services_state_status_error",
+		Title:    "Services with status Error",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_error",
+		Priority: prioServiceStatusError,
+	}
+	servicesStatusLostCommChart = module.Chart{
+		ID:       "services_state_status_lost_comm",
+		Title:    "Services with status Lost Comm",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_lost_comm",
+		Priority: prioServiceStatusLostConn,
+	}
+	servicesStatusNoContactChart = module.Chart{
+		ID:       "services_state_status_no_contact",
+		Title:    "Services with status No Contact",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_no_contact",
+		Priority: prioServiceStatusNoContact,
+	}
+	servicesStatusNonRecoverChart = module.Chart{
+		ID:       "services_state_status_non_recover",
+		Title:    "Services with status Non Recover",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_non_recover",
+		Priority: prioServiceStatusNonRecover,
+	}
+	servicesStatusOKChart = module.Chart{
+		ID:       "services_state_status_ok",
+		Title:    "Services with status OK",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_ok",
+		Priority: prioServiceStatusOK,
+	}
+	servicesStatusPredFailChart = module.Chart{
+		ID:       "services_state_status_pred_fail",
+		Title:    "Services with status Pred Fail",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_pred_fail",
+		Priority: prioServiceStatusPredFail,
+	}
+	servicesStatusServiceChart = module.Chart{
+		ID:       "services_state_status_service",
+		Title:    "Services with status Service",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_service",
+		Priority: prioServiceStatusPredFail,
+	}
+	servicesStatusStartingChart = module.Chart{
+		ID:       "services_state_status_starting",
+		Title:    "Services with status Starting",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_starting",
+		Priority: prioServiceStatusStarting,
+	}
+	servicesStatusStoppingChart = module.Chart{
+		ID:       "services_state_status_stopping",
+		Title:    "Services with status Stopping",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_stopping",
+		Priority: prioServiceStatusStopping,
+	}
+	servicesStatusStressedChart = module.Chart{
+		ID:       "services_state_status_stressed",
+		Title:    "Services with status Stressed",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_stressed",
+		Priority: prioServiceStatusStressed,
+	}
+	servicesStatusUnknownChart = module.Chart{
+		ID:       "services_state_status_unknown",
+		Title:    "Services with status Unknown",
+		Units:    "bool",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_unknown",
+		Priority: prioServiceStatusUnknown,
 	}
 )
 
@@ -963,7 +1073,40 @@ func (w *WMI) updateServicesCharts(mx *metrics) {
 			w.Warning(err)
 		}
 		// Status
-		if err := addDimToServicesStatusChart(w.Charts(), id); err != nil {
+		if err := addDimToServicesStatusDegradedChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusErrorChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusLostCommChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusNoContactChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusNonRecoverChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusOKChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusPredFailChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusServiceChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusStartingChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusStoppingChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusStressedChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusUnknownChart(w.Charts(), id); err != nil {
 			w.Warning(err)
 		}
 	}
@@ -1594,13 +1737,200 @@ func addDimToServicesUnknownChart(charts *module.Charts, servID string) error {
 	return nil
 }
 
-func addDimToServicesStatusChart(charts *module.Charts, servID string) error {
-	chart := charts.Get(servicesStatusChart.ID)
+func addDimToServicesStatusDegradedChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusDegradedChart.ID)
 	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", servicesStatusChart)
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusDegradedChart.ID)
 	}
 	dim := &module.Dim{
-		ID:   fmt.Sprintf("service_%s_status", servID),
+		ID:   fmt.Sprintf("service_%s_status_degraded", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusErrorChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusErrorChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusErrorChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_error", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusLostCommChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusLostCommChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusLostCommChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_lost_comm", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusNoContactChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusNoContactChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusNoContactChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_no_contact", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusNonRecoverChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusNonRecoverChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusNonRecoverChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_nonrecover", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusOKChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusOKChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusOKChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_ok", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusPredFailChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusPredFailChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusPredFailChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_pred_fail", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusServiceChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusServiceChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusServiceChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_service", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusStartingChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusStartingChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusStartingChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_starting", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusStoppingChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusStoppingChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusStoppingChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_stopping", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusStressedChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusStressedChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusStressedChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_stressed", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusUnknownChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusUnknownChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusUnknownChart.ID)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status_unknown", servID),
 		Name: servID,
 		Algo: module.Absolute,
 	}

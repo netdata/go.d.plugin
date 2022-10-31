@@ -296,8 +296,8 @@ type (
 	serviceMetrics struct {
 		ID string
 
-		state  serviceState `stm:"state"`
-		status float64      `stm:"status"`
+		state  serviceState  `stm:"state"`
+		status serviceStatus `stm:"status"`
 	}
 
 	serviceState struct {
@@ -309,6 +309,21 @@ type (
 		stopPending     float64 `stm:"stop_pending"`
 		stopped         float64 `stm:"stopped"`
 		unknown         float64 `stm:"unknown"`
+	}
+
+	serviceStatus struct {
+		degraded   float64 `stm:"degraded"`
+		errors     float64 `stm:"error"`
+		lostComm   float64 `stm:"lost_comm"`
+		noContact  float64 `stm:"no_contact"`
+		nonRecover float64 `stm:"nonrecover"`
+		ok         float64 `stm:"ok"`
+		predFail   float64 `stm:"pred_fail"`
+		service    float64 `stm:"service"`
+		starting   float64 `stm:"starting"`
+		stopping   float64 `stm:"stopping"`
+		stressed   float64 `stm:"stressed"`
+		unknown    float64 `stm:"unknown"`
 	}
 )
 

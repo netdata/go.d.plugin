@@ -60,6 +60,7 @@ func collectService(pms prometheus.Metrics) *servicesMetrics {
 
 	servs := &servicesMetrics{servs: make(map[string]*serviceMetrics)}
 	collectServiceState(servs, pms)
+	collectServiceStatus(servs, pms)
 
 	return servs
 }
@@ -88,7 +89,7 @@ func collectServiceStatus(procs *servicesMetrics, pms prometheus.Metrics) {
 	for _, pm := range pms.FindByName(metricServiceStatus) {
 		name := pm.Labels.Get("name")
 		status := pm.Labels.Get("status")
-		if name == "" {
+		if name == "" || status == "" || pm.Value == 0 {
 			continue
 		}
 
@@ -96,9 +97,7 @@ func collectServiceStatus(procs *servicesMetrics, pms prometheus.Metrics) {
 			serv = procs.get(name)
 		}
 
-		if pm.Value == 1 {
-			serv.status = float64(selectServiceStatus(status))
-		}
+		setServiceStatus(&serv.status, status)
 	}
 }
 
@@ -113,33 +112,19 @@ func selectServiceState(sse *serviceState, name string) {
 	sse.unknown = boolToFloat64(name == "unknown")
 }
 
-func selectServiceStatus(name string) int32 {
-	switch name {
-	case "degraded":
-		return serviceStatusDegraded
-	case "error":
-		return serviceStatusError
-	case "lost comm":
-		return serviceStatusLostConn
-	case "no contact":
-		return serviceStatusNoContact
-	case "nonrecover":
-		return serviceStatusNonRecover
-	case "ok":
-		return serviceStatusOK
-	case "pred fail":
-		return serviceStatusPredFail
-	case "service":
-		return serviceStatusService
-	case "starting":
-		return serviceStatusStarting
-	case "stopping":
-		return serviceStatusStopping
-	case "stressed":
-		return serviceStatusStressed
-	}
-
-	return serviceStateUnknown
+func setServiceStatus(status *serviceStatus, name string) {
+	status.degraded = boolToFloat64(name == "degraded")
+	status.errors = boolToFloat64(name == "error")
+	status.lostComm = boolToFloat64(name == "lost comm")
+	status.noContact = boolToFloat64(name == "no contact")
+	status.nonRecover = boolToFloat64(name == "nonrecover")
+	status.ok = boolToFloat64(name == "ok")
+	status.predFail = boolToFloat64(name == "pred fail")
+	status.service = boolToFloat64(name == "service")
+	status.starting = boolToFloat64(name == "starting")
+	status.stopping = boolToFloat64(name == "stopping")
+	status.stressed = boolToFloat64(name == "stressed")
+	status.unknown = boolToFloat64(name == "unknown")
 }
 
 func boolToFloat64(v bool) float64 {
