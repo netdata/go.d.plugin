@@ -68,6 +68,10 @@ const (
 	prioProcessesPageFileBytes
 	prioProcessesPoolBytes
 	prioProcessesThreads
+
+	prioServiceStartMode
+	prioServiceState
+	prioServiceStatus
 )
 
 func newProcessesCharts() module.Charts {
@@ -783,6 +787,41 @@ var (
 	}
 )
 
+func newServicesCharts() *module.Charts {
+	return &module.Charts{
+		servicesStartModeChart.Copy(),
+		servicesStateChart.Copy(),
+		servicesStatusChart.Copy(),
+	}
+}
+
+var (
+	servicesStartModeChart = module.Chart{
+		ID:       "services_start_mode",
+		Title:    "Service start mode",
+		Units:    "number",
+		Fam:      "services",
+		Ctx:      "wmi.services_start_mode",
+		Priority: prioServiceStartMode,
+	}
+	servicesStateChart = module.Chart{
+		ID:       "services_state_mode",
+		Title:    "Service state mode",
+		Units:    "number",
+		Fam:      "services",
+		Ctx:      "wmi.services_state_mode",
+		Priority: prioServiceState,
+	}
+	servicesStatusChart = module.Chart{
+		ID:       "services_status_mode",
+		Title:    "Service status mode",
+		Units:    "number",
+		Fam:      "services",
+		Ctx:      "wmi.services_status_mode",
+		Priority: prioServiceStatus,
+	}
+)
+
 func newChartFromTemplate(template module.Chart, id string) *module.Chart {
 	chart := template.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, id)
@@ -808,6 +847,44 @@ func (w *WMI) updateCharts(mx *metrics) {
 	w.updateThermalzoneCharts(mx)
 	w.updateTCPCharts(mx)
 	w.updateProcessesCharts(mx)
+	w.updateServicesCharts(mx)
+}
+
+func (w *WMI) updateServicesCharts(mx *metrics) {
+	if !mx.hasServices() {
+		return
+	}
+
+	if !w.cache.collectors[collectorService] {
+		w.cache.collectors[collectorService] = true
+
+		if err := w.Charts().Add(*newServicesCharts()...); err != nil {
+			w.Warning(err)
+		}
+	}
+
+	servs := make([]string, 0, len(mx.Services.servs))
+	for _, serv := range mx.Services.servs {
+		servs = append(servs, serv.ID)
+	}
+	sort.Slice(servs, func(i, j int) bool { return servs[i] < servs[j] })
+
+	for _, id := range servs {
+		if w.cache.servs[id] {
+			continue
+		}
+		w.cache.servs[id] = true
+
+		if err := addDimToServicesStartModeChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStateChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+		if err := addDimToServicesStatusChart(w.Charts(), id); err != nil {
+			w.Warning(err)
+		}
+	}
 }
 
 func (w *WMI) updateProcessesCharts(mx *metrics) {
@@ -1290,6 +1367,57 @@ func addDimToProcessesThreads(charts *module.Charts, procID string) error {
 	dim := &module.Dim{
 		ID:   fmt.Sprintf("process_%s_threads", procID),
 		Name: procID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStartModeChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStartModeChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStartModeChart)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_start_mode", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStateChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStateChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStateChart)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_state", servID),
+		Name: servID,
+		Algo: module.Absolute,
+	}
+	if err := chart.AddDim(dim); err != nil {
+		return err
+	}
+	chart.MarkNotCreated()
+	return nil
+}
+
+func addDimToServicesStatusChart(charts *module.Charts, servID string) error {
+	chart := charts.Get(servicesStatusChart.ID)
+	if chart == nil {
+		return fmt.Errorf("chart '%s' is not in charts", servicesStatusChart)
+	}
+	dim := &module.Dim{
+		ID:   fmt.Sprintf("service_%s_status", servID),
+		Name: servID,
 		Algo: module.Absolute,
 	}
 	if err := chart.AddDim(dim); err != nil {

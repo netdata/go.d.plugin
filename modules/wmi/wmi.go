@@ -36,6 +36,7 @@ func New() *WMI {
 			volumes:      make(map[string]bool),
 			thermalZones: make(map[string]bool),
 			procs:        make(map[string]bool),
+			servs:        make(map[string]bool),
 		},
 		charts: newCollectionCharts(),
 	}
@@ -60,6 +61,7 @@ type (
 		nics         map[string]bool
 		volumes      map[string]bool
 		thermalZones map[string]bool
+		servs        map[string]bool
 	}
 )
 
