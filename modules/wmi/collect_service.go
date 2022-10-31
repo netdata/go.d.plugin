@@ -14,13 +14,13 @@ const (
 	metricServiceStatus    = "windows_service_status"
 )
 
-func doCollectMetrics(pms prometheus.Metrics) bool {
+func doCollectService(pms prometheus.Metrics) bool {
 	enabled, success := checkCollector(pms, collectorService)
 	return enabled && success
 }
 
 func collectService(pms prometheus.Metrics) *servicesMetrics {
-	if !doCollectProcess(pms) {
+	if !doCollectService(pms) {
 		return nil
 	}
 
