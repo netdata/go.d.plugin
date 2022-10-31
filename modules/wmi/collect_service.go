@@ -7,40 +7,6 @@ import (
 )
 
 const (
-	serviceStartModeAuto = iota
-	serviceStartModeBoot
-	serviceStartModeDisabled
-	serviceStartModeManual
-	serviceStartModeSystem
-)
-
-const (
-	serviceStateContinuePending = iota
-	serviceStatePausePending
-	serviceStatePaused
-	serviceStateRunning
-	serviceStateStartPending
-	serviceStateStopPending
-	serviceStateStopped
-	serviceStateUnknown
-)
-
-const (
-	serviceStatusDegraded = iota
-	serviceStatusError
-	serviceStatusLostConn
-	serviceStatusNoContact
-	serviceStatusNonRecover
-	serviceStatusOK
-	serviceStatusPredFail
-	serviceStatusService
-	serviceStatusStarting
-	serviceStatusStopping
-	serviceStatusStressed
-	serviceStatusUnkown
-)
-
-const (
 	collectorService = "service"
 
 	metricServiceStartMode = "windows_service_start_mode"
