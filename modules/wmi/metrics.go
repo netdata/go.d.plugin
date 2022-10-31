@@ -296,8 +296,19 @@ type (
 	serviceMetrics struct {
 		ID string
 
-		state  float64 `stm:"state"`
-		status float64 `stm:"status"`
+		state  serviceState `stm:"state"`
+		status float64      `stm:"status"`
+	}
+
+	serviceState struct {
+		continuePending float64 `stm:"continue_pending"`
+		pausePending    float64 `stm:"pause_pending"`
+		paused          float64 `stm:"paused"`
+		running         float64 `stm:"running"`
+		startPending    float64 `stm:"start_pending"`
+		stopPending     float64 `stm:"stop_pending"`
+		stopped         float64 `stm:"stopped"`
+		unknown         float64 `stm:"unknown"`
 	}
 )
 

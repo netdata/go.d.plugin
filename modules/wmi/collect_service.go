@@ -2,7 +2,9 @@
 
 package wmi
 
-import "github.com/netdata/go.d.plugin/pkg/prometheus"
+import (
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
+)
 
 const (
 	serviceStartModeAuto = iota
@@ -76,7 +78,7 @@ func collectServiceState(procs *servicesMetrics, pms prometheus.Metrics) {
 		}
 
 		if pm.Value == 1 {
-			serv.state = float64(selectServiceState(state))
+			selectServiceState(&serv.state, state)
 		}
 	}
 }
@@ -100,25 +102,15 @@ func collectServiceStatus(procs *servicesMetrics, pms prometheus.Metrics) {
 	}
 }
 
-func selectServiceState(name string) int32 {
-	switch name {
-	case "continue pending":
-		return serviceStateContinuePending
-	case "pause pending":
-		return serviceStatePausePending
-	case "paused":
-		return serviceStatePaused
-	case "running":
-		return serviceStateRunning
-	case "start pending":
-		return serviceStateStartPending
-	case "stop pending":
-		return serviceStateStopPending
-	case "stopped":
-		return serviceStateStopped
-	}
-
-	return serviceStateUnknown
+func selectServiceState(sse *serviceState, name string) {
+	sse.continuePending = boolToFloat64(name == "continue pending")
+	sse.pausePending = boolToFloat64(name == "pause pending")
+	sse.paused = boolToFloat64(name == "paused")
+	sse.running = boolToFloat64(name == "running")
+	sse.startPending = boolToFloat64(name == "start pending")
+	sse.stopPending = boolToFloat64(name == "stop pending")
+	sse.stopped = boolToFloat64(name == "stopped")
+	sse.unknown = boolToFloat64(name == "unknown")
 }
 
 func selectServiceStatus(name string) int32 {
@@ -148,4 +140,11 @@ func selectServiceStatus(name string) int32 {
 	}
 
 	return serviceStateUnknown
+}
+
+func boolToFloat64(v bool) float64 {
+	if v {
+		return 1
+	}
+	return 0
 }
