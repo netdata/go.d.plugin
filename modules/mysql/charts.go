@@ -144,7 +144,7 @@ var (
 		Dims: module.Dims{
 			{ID: "queries", Name: "queries", Algo: module.Incremental},
 			{ID: "questions", Name: "questions", Algo: module.Incremental},
-			{ID: "slow_queries", Name: "slow queries", Algo: module.Incremental},
+			{ID: "slow_queries", Name: "slow_queries", Algo: module.Incremental},
 		},
 	}
 	chartQueriesType = module.Chart{
