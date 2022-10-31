@@ -3,11 +3,11 @@
 package confgroup
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/web"
 	"regexp"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/ilyam8/hashstructure"
 )
