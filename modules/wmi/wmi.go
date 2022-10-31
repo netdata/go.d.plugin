@@ -64,8 +64,6 @@ type (
 )
 
 func (w *WMI) Init() bool {
-	w.URL = web.URLResolveHostname(w.URL)
-
 	if err := w.validateConfig(); err != nil {
 		w.Errorf("error on validating config: %v", err)
 		return false

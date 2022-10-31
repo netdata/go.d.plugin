@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"io"
 	"net/http"
-	"net/url"
 	"strings"
 )
 
@@ -81,19 +80,4 @@ func NewHTTPRequest(cfg Request) (*http.Request, error) {
 		}
 	}
 	return req, nil
-}
-
-func URLResolveHostname(rawURL string) string {
-	if hostname == "" || !strings.Contains(rawURL, "hostname") {
-		return rawURL
-	}
-
-	u, err := url.Parse(rawURL)
-	if err != nil || (u.Hostname() != "hostname" && !strings.Contains(u.Hostname(), "hostname.")) {
-		return rawURL
-	}
-
-	u.Host = strings.Replace(u.Host, "hostname", hostname, 1)
-
-	return u.String()
 }
