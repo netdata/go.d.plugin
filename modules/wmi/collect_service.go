@@ -57,29 +57,9 @@ func collectService(pms prometheus.Metrics) *servicesMetrics {
 	}
 
 	servs := &servicesMetrics{servs: make(map[string]*serviceMetrics)}
-	collectServiceStartMode(servs, pms)
 	collectServiceState(servs, pms)
 
 	return servs
-}
-
-func collectServiceStartMode(procs *servicesMetrics, pms prometheus.Metrics) {
-	var serv *serviceMetrics
-	for _, pm := range pms.FindByName(metricServiceStartMode) {
-		name := pm.Labels.Get("name")
-		mode := pm.Labels.Get("start_mode")
-		if name == "" {
-			continue
-		}
-
-		if serv == nil || serv.ID != name {
-			serv = procs.get(name)
-		}
-
-		if pm.Value == 1 {
-			serv.startMode = float64(selectServiceStartMode(mode))
-		}
-	}
 }
 
 func collectServiceState(procs *servicesMetrics, pms prometheus.Metrics) {
@@ -118,21 +98,6 @@ func collectServiceStatus(procs *servicesMetrics, pms prometheus.Metrics) {
 			serv.status = float64(selectServiceStatus(status))
 		}
 	}
-}
-
-func selectServiceStartMode(name string) int32 {
-	switch name {
-	case "auto":
-		return serviceStartModeAuto
-	case "boot":
-		return serviceStartModeBoot
-	case "disabled":
-		return serviceStartModeDisabled
-	case "manual":
-		return serviceStartModeManual
-	}
-
-	return serviceStartModeSystem
 }
 
 func selectServiceState(name string) int32 {

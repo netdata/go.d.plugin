@@ -69,7 +69,6 @@ const (
 	prioProcessesPoolBytes
 	prioProcessesThreads
 
-	prioServiceStartMode
 	prioServiceState
 	prioServiceStatus
 )
@@ -789,21 +788,12 @@ var (
 
 func newServicesCharts() *module.Charts {
 	return &module.Charts{
-		servicesStartModeChart.Copy(),
 		servicesStateChart.Copy(),
 		servicesStatusChart.Copy(),
 	}
 }
 
 var (
-	servicesStartModeChart = module.Chart{
-		ID:       "services_start_mode",
-		Title:    "Service start mode",
-		Units:    "number",
-		Fam:      "services",
-		Ctx:      "wmi.services_start_mode",
-		Priority: prioServiceStartMode,
-	}
 	servicesStateChart = module.Chart{
 		ID:       "services_state_mode",
 		Title:    "Service state mode",
@@ -875,9 +865,6 @@ func (w *WMI) updateServicesCharts(mx *metrics) {
 		}
 		w.cache.servs[id] = true
 
-		if err := addDimToServicesStartModeChart(w.Charts(), id); err != nil {
-			w.Warning(err)
-		}
 		if err := addDimToServicesStateChart(w.Charts(), id); err != nil {
 			w.Warning(err)
 		}
@@ -1367,23 +1354,6 @@ func addDimToProcessesThreads(charts *module.Charts, procID string) error {
 	dim := &module.Dim{
 		ID:   fmt.Sprintf("process_%s_threads", procID),
 		Name: procID,
-		Algo: module.Absolute,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
-}
-
-func addDimToServicesStartModeChart(charts *module.Charts, servID string) error {
-	chart := charts.Get(servicesStartModeChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", servicesStartModeChart)
-	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("service_%s_start_mode", servID),
-		Name: servID,
 		Algo: module.Absolute,
 	}
 	if err := chart.AddDim(dim); err != nil {

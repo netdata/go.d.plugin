@@ -296,9 +296,8 @@ type (
 	serviceMetrics struct {
 		ID string
 
-		startMode float64 `stm:"start_mode"`
-		state     float64 `stm:"state"`
-		status    float64 `stm:"status"`
+		state  float64 `stm:"state"`
+		status float64 `stm:"status"`
 	}
 )
 
