@@ -67,6 +67,7 @@ func collectServiceStartMode(procs *servicesMetrics, pms prometheus.Metrics) {
 	var serv *serviceMetrics
 	for _, pm := range pms.FindByName(metricServiceStartMode) {
 		name := pm.Labels.Get("name")
+		mode := pm.Labels.Get("start_mode")
 		if name == "" {
 			continue
 		}
@@ -76,7 +77,7 @@ func collectServiceStartMode(procs *servicesMetrics, pms prometheus.Metrics) {
 		}
 
 		if pm.Value == 1 {
-			serv.startMode = float64(selectServiceStartMode(name))
+			serv.startMode = float64(selectServiceStartMode(mode))
 		}
 	}
 }
@@ -85,6 +86,7 @@ func collectServiceState(procs *servicesMetrics, pms prometheus.Metrics) {
 	var serv *serviceMetrics
 	for _, pm := range pms.FindByName(metricServiceState) {
 		name := pm.Labels.Get("name")
+		state := pm.Labels.Get("state")
 		if name == "" {
 			continue
 		}
@@ -94,7 +96,7 @@ func collectServiceState(procs *servicesMetrics, pms prometheus.Metrics) {
 		}
 
 		if pm.Value == 1 {
-			serv.state = float64(selectServiceState(name))
+			serv.state = float64(selectServiceState(state))
 		}
 	}
 }
@@ -103,6 +105,7 @@ func collectServiceStatus(procs *servicesMetrics, pms prometheus.Metrics) {
 	var serv *serviceMetrics
 	for _, pm := range pms.FindByName(metricServiceStatus) {
 		name := pm.Labels.Get("name")
+		status := pm.Labels.Get("status")
 		if name == "" {
 			continue
 		}
@@ -112,7 +115,7 @@ func collectServiceStatus(procs *servicesMetrics, pms prometheus.Metrics) {
 		}
 
 		if pm.Value == 1 {
-			serv.status = float64(selectServiceStatus(name))
+			serv.status = float64(selectServiceStatus(status))
 		}
 	}
 }
