@@ -856,7 +856,7 @@ func (w *WMI) updateProcessesCharts(mx *metrics) {
 		if err := addDimToProcessesPoolBytes(w.Charts(), id); err != nil {
 			w.Warning(err)
 		}
-		if err := addDimToAppsThreads(w.Charts(), id); err != nil {
+		if err := addDimToProcessesThreads(w.Charts(), id); err != nil {
 			w.Warning(err)
 		}
 	}
@@ -1282,7 +1282,7 @@ func addDimToProcessesPoolBytes(charts *module.Charts, procID string) error {
 	return nil
 }
 
-func addDimToAppsThreads(charts *module.Charts, procID string) error {
+func addDimToProcessesThreads(charts *module.Charts, procID string) error {
 	chart := charts.Get(processesThreads.ID)
 	if chart == nil {
 		return fmt.Errorf("chart '%s' is not in charts", processesThreads.ID)
