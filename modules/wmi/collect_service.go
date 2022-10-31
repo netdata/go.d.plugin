@@ -70,7 +70,7 @@ func collectServiceState(procs *servicesMetrics, pms prometheus.Metrics) {
 	for _, pm := range pms.FindByName(metricServiceState) {
 		name := pm.Labels.Get("name")
 		state := pm.Labels.Get("state")
-		if name == "" {
+		if name == "" || state == "" || pm.Value == 0 {
 			continue
 		}
 
@@ -79,7 +79,7 @@ func collectServiceState(procs *servicesMetrics, pms prometheus.Metrics) {
 		}
 
 		if pm.Value == 1 {
-			selectServiceState(&serv.state, state)
+			setServiceState(&serv.state, state)
 		}
 	}
 }
@@ -101,15 +101,15 @@ func collectServiceStatus(procs *servicesMetrics, pms prometheus.Metrics) {
 	}
 }
 
-func selectServiceState(sse *serviceState, name string) {
-	sse.continuePending = boolToFloat64(name == "continue pending")
-	sse.pausePending = boolToFloat64(name == "pause pending")
-	sse.paused = boolToFloat64(name == "paused")
-	sse.running = boolToFloat64(name == "running")
-	sse.startPending = boolToFloat64(name == "start pending")
-	sse.stopPending = boolToFloat64(name == "stop pending")
-	sse.stopped = boolToFloat64(name == "stopped")
-	sse.unknown = boolToFloat64(name == "unknown")
+func setServiceState(state *serviceState, name string) {
+	state.continuePending = boolToFloat64(name == "continue pending")
+	state.pausePending = boolToFloat64(name == "pause pending")
+	state.paused = boolToFloat64(name == "paused")
+	state.running = boolToFloat64(name == "running")
+	state.startPending = boolToFloat64(name == "start pending")
+	state.stopPending = boolToFloat64(name == "stop pending")
+	state.stopped = boolToFloat64(name == "stopped")
+	state.unknown = boolToFloat64(name == "unknown")
 }
 
 func setServiceStatus(status *serviceStatus, name string) {
