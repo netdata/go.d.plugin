@@ -23,8 +23,6 @@ The module collects metrics from the following collectors:
 - [thermalzone](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.thermalzone.md)
 - [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md)
 
-Installation: please follow the [official guide](https://github.com/prometheus-community/windows_exporter#installation).
-
 ## Requirements
 
 `windows_exporter` version v0.13.0+
@@ -37,18 +35,22 @@ Installation: please follow the [official guide](https://github.com/prometheus-c
   ```bash 
   msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp
   ```
+- Verify that the exporter works properly by accessing http://localhost:9182/
 
-  [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md) exposes
-  metrics about all processes in the system by default. This results in thousands of time series and can significantly
+
+  Netdata also supports the [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md) collector, 
+  which by defaults exposes metrics about all processes in the system. This can result in thousands of time series and can significantly
   increase CPU usage. It is recommended to
   use [filtering flags](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md#flags)
   to keep down the number of returned metrics.
 
+  For example:
+  
   ```bash 
-  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp,process
+  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp,process EXTRA_FLAGS="collector.process.whitelist=""(firefox|FIREFOX|chrome).*"""
   ```
-
-- Verify that the exporter works properly by accessing http://localhost:9182/
+  
+ More installation options can be found in the windows_exporter [official installation guide](https://github.com/prometheus-community/windows_exporter#installation).
 
 ## Metrics
 
