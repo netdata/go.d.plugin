@@ -3,6 +3,7 @@
 package confgroup
 
 import (
+	"github.com/netdata/go.d.plugin/pkg/web"
 	"regexp"
 	"strings"
 
@@ -61,6 +62,7 @@ func (c Config) Apply(def Default) {
 	} else {
 		c.set("name", cleanName(c.Name()))
 	}
+	c.set("name", web.URLResolveHostname(c.Name()))
 }
 
 func cleanName(name string) string {
