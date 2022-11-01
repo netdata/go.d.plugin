@@ -36,6 +36,7 @@ func New() *WMI {
 			volumes:      make(map[string]bool),
 			thermalZones: make(map[string]bool),
 			procs:        make(map[string]bool),
+			svcs:         make(map[string]bool),
 		},
 		charts: newCollectionCharts(),
 	}
@@ -53,6 +54,7 @@ type (
 		charts *module.Charts
 	}
 	cache struct {
+		svcs         map[string]bool
 		procs        map[string]bool
 		collectors   map[string]bool
 		collection   map[string]bool

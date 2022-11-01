@@ -68,6 +68,70 @@ const (
 	prioProcessesPageFileBytes
 	prioProcessesPoolBytes
 	prioProcessesThreads
+
+	prioServiceState
+	prioServiceStatus
+)
+
+func newServiceCharts(name string) *module.Charts {
+	charts := module.Charts{
+		serviceStateChartTmpl.Copy(),
+		serviceStatusChartTmpl.Copy(),
+	}.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, name)
+		chart.Labels = []module.Label{
+			{Key: "service", Value: name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, name)
+		}
+	}
+
+	return charts
+}
+
+var (
+	serviceStateChartTmpl = module.Chart{
+		ID:       "service_%s_state",
+		Title:    "Service state",
+		Units:    "state",
+		Fam:      "services",
+		Ctx:      "wmi.service_state",
+		Priority: prioServiceState,
+		Dims: module.Dims{
+			{ID: "service_%s_state_running", Name: "running"},
+			{ID: "service_%s_state_stopped", Name: "stopped"},
+			{ID: "service_%s_state_start_pending", Name: "start_pending"},
+			{ID: "service_%s_state_stop_pending", Name: "stop_pending"},
+			{ID: "service_%s_state_continue_pending", Name: "continue_pending"},
+			{ID: "service_%s_state_pause_pending", Name: "pause_pending"},
+			{ID: "service_%s_state_paused", Name: "paused"},
+			{ID: "service_%s_state_unknown", Name: "unknown"},
+		},
+	}
+	serviceStatusChartTmpl = module.Chart{
+		ID:       "service_%s_status",
+		Title:    "Service status",
+		Units:    "status",
+		Fam:      "services",
+		Ctx:      "wmi.service_status",
+		Priority: prioServiceStatus,
+		Dims: module.Dims{
+			{ID: "service_%s_status_ok", Name: "ok"},
+			{ID: "service_%s_status_error", Name: "error"},
+			{ID: "service_%s_status_unknown", Name: "unknown"},
+			{ID: "service_%s_status_pred_fail", Name: "pred_fail"},
+			{ID: "service_%s_status_starting", Name: "starting"},
+			{ID: "service_%s_status_stopping", Name: "stopping"},
+			{ID: "service_%s_status_service", Name: "service"},
+			{ID: "service_%s_status_stressed", Name: "stressed"},
+			{ID: "service_%s_status_nonrecover", Name: "nonrecover"},
+			{ID: "service_%s_status_no_contact", Name: "no_contact"},
+			{ID: "service_%s_status_lost_comm", Name: "lost_comm"},
+		},
+	}
 )
 
 func newProcessesCharts() module.Charts {
@@ -808,6 +872,26 @@ func (w *WMI) updateCharts(mx *metrics) {
 	w.updateThermalzoneCharts(mx)
 	w.updateTCPCharts(mx)
 	w.updateProcessesCharts(mx)
+	w.updateServicesCharts(mx)
+}
+
+func (w *WMI) updateServicesCharts(mx *metrics) {
+	if !mx.hasServices() {
+		return
+	}
+
+	for _, svc := range mx.Services.svcs {
+		if w.cache.svcs[svc.ID] {
+			continue
+		}
+		w.cache.svcs[svc.ID] = true
+
+		charts := newServiceCharts(svc.ID)
+
+		if err := w.Charts().Add(*charts...); err != nil {
+			w.Warning(err)
+		}
+	}
 }
 
 func (w *WMI) updateProcessesCharts(mx *metrics) {

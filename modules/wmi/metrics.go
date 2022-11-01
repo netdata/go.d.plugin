@@ -20,6 +20,7 @@ type metrics struct {
 	Collectors  *collectors         `stm:""`
 	TCP         *tcpMetrics         `stm:"tcp"`
 	Processes   *processesMetrics   `stm:"process"`
+	Services    *servicesMetrics    `stm:"service"`
 }
 
 func (m metrics) hasCollectors() bool  { return m.Collectors != nil }
@@ -33,6 +34,7 @@ func (m metrics) hasLogon() bool       { return m.Logon != nil }
 func (m metrics) hasThermalZone() bool { return m.ThermalZone != nil }
 func (m metrics) hasTCP() bool         { return m.TCP != nil }
 func (m metrics) hasProcesses() bool   { return m.Processes != nil && len(m.Processes.procs) > 0 }
+func (m metrics) hasServices() bool    { return m.Services != nil && len(m.Services.svcs) > 0 }
 
 // cpu
 type (
@@ -285,6 +287,46 @@ type (
 	}
 )
 
+// service
+type (
+	servicesMetrics struct {
+		svcs map[string]*serviceMetrics `stm:""`
+	}
+
+	serviceMetrics struct {
+		ID string
+
+		state  serviceState  `stm:"state"`
+		status serviceStatus `stm:"status"`
+	}
+
+	serviceState struct {
+		stopped         float64 `stm:"stopped"`
+		startPending    float64 `stm:"start_pending"`
+		stopPending     float64 `stm:"stop_pending"`
+		running         float64 `stm:"running"`
+		continuePending float64 `stm:"continue_pending"`
+		pausePending    float64 `stm:"pause_pending"`
+		paused          float64 `stm:"paused"`
+		unknown         float64 `stm:"unknown"`
+	}
+
+	serviceStatus struct {
+		ok         float64 `stm:"ok"`
+		error      float64 `stm:"error"`
+		degraded   float64 `stm:"degraded"`
+		unknown    float64 `stm:"unknown"`
+		predFail   float64 `stm:"pred_fail"`
+		starting   float64 `stm:"starting"`
+		stopping   float64 `stm:"stopping"`
+		service    float64 `stm:"service"`
+		stressed   float64 `stm:"stressed"`
+		nonRecover float64 `stm:"nonrecover"`
+		noContact  float64 `stm:"no_contact"`
+		lostComm   float64 `stm:"lost_comm"`
+	}
+)
+
 type (
 	collectors []*collector
 	collector  struct {
@@ -302,6 +344,7 @@ func newNIC(id string) *netNIC              { return &netNIC{STMKey: id, ID: id}
 func newVolume(id string) *volume           { return &volume{STMKey: id, ID: id} }
 func newThermalZone(id string) *thermalZone { return &thermalZone{STMKey: id, ID: id} }
 func newProcess(id string) *processMetrics  { return &processMetrics{ID: id} }
+func newService(id string) *serviceMetrics  { return &serviceMetrics{ID: id} }
 
 func getCPUIntID(id string) int {
 	if id == "" {
@@ -377,4 +420,14 @@ func (pm *processesMetrics) get(id string) *processMetrics {
 		pm.procs[id] = p
 	}
 	return p
+}
+
+func (sm *servicesMetrics) get(id string) *serviceMetrics {
+	id = strings.ReplaceAll(id, " ", "_")
+	s, ok := sm.svcs[id]
+	if !ok {
+		s = newService(id)
+		sm.svcs[id] = s
+	}
+	return s
 }
