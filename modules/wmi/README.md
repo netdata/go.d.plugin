@@ -37,20 +37,23 @@ The module collects metrics from the following collectors:
   ```
 - Verify that the exporter works properly by accessing http://localhost:9182/
 
+Netdata also supports
+the [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md) and
+[service](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.service.md) collectors,
+which by defaults expose metrics about all processes and services in the system. This can result in thousands of time
+series and can significantly increase CPU usage. It is recommended to use filtering
+flags ([process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md#flags),
+[service](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.service.md#flags))
+to keep down the number of returned metrics.
 
-  Netdata also supports the [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md) collector, 
-  which by defaults exposes metrics about all processes in the system. This can result in thousands of time series and can significantly
-  increase CPU usage. It is recommended to
-  use [filtering flags](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md#flags)
-  to keep down the number of returned metrics.
+For example:
 
-  For example:
-  
   ```bash 
-  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp,process EXTRA_FLAGS="collector.process.whitelist=""(firefox|FIREFOX|chrome).*"""
+  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp,process EXTRA_FLAGS="--collector.process.whitelist=""(firefox|FIREFOX|chrome).*"" --collector.service.services-where ""Name LIKE 'sql%'"""
   ```
-  
- More installation options can be found in the windows_exporter [official installation guide](https://github.com/prometheus-community/windows_exporter#installation).
+
+More installation options can be found in the
+windows_exporter [official installation guide](https://github.com/prometheus-community/windows_exporter#installation).
 
 ## Metrics
 

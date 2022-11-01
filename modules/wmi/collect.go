@@ -44,6 +44,7 @@ func collect(pms prometheus.Metrics) *metrics {
 		Collectors:  collectCollection(pms),
 		TCP:         collectTCP(pms),
 		Processes:   collectProcess(pms),
+		Services:    collectService(pms),
 	}
 
 	if mx.hasOS() && mx.hasMemory() {
