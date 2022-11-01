@@ -106,6 +106,8 @@ All metrics have "wmi." prefix.
 | processes_page_file_bytes  |     global     |                                                                           <i>a dimension per process</i>                                                                           |     bytes     |
 | processes_pool_bytes       |     global     |                                                                           <i>a dimension per process</i>                                                                           |     bytes     |
 | processes_threads          |     global     |                                                                           <i>a dimension per process</i>                                                                           |    threads    |
+| service_state              |    service     |                                          running, stopped, start_pending, stop_pending, continue_pending, pause_pending, paused, unknown                                           |     state     |
+| service_status             |    service     |                                      ok, error, unknown, pred_fail, starting, stopping, service, stressed, nonrecover, no_contact, lost_comm                                       |    status     |
 
 ## Configuration
 
