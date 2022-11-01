@@ -113,7 +113,7 @@ func jobNameResolveHostname(name string) string {
 		return name
 	}
 
-	if name != "hostname" && !strings.HasPrefix(name, "hostname.") {
+	if name != "hostname" && !strings.HasPrefix(name, "hostname.") && !strings.HasPrefix(name, "hostname_") {
 		return name
 	}
 

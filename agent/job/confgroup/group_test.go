@@ -359,9 +359,13 @@ func Test_jobNameResolveHostname(t *testing.T) {
 		input       string
 		wantChanged bool
 	}{
-		"hostname with suffix": {
+		"hostname with dot suffix": {
 			wantChanged: true,
 			input:       "hostname.local",
+		},
+		"hostname with underscore suffix": {
+			wantChanged: true,
+			input:       "hostname_local",
 		},
 		"hostname without suffix": {
 			wantChanged: true,
