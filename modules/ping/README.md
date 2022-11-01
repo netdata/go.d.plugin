@@ -39,6 +39,7 @@ All metrics have "ping." prefix.
 | Metric           | Scope |   Dimensions   |    Units     |
 |------------------|:-----:|:--------------:|:------------:|
 | host_rtt         | host  | min, max, avg  | milliseconds |
+| host_std_dev_rtt | host  |    std_dev     | milliseconds |
 | host_packet_loss | host  |      loss      |  percentage  |
 | host_packets     | host  | received, sent |   packets    |
 

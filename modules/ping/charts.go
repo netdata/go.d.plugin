@@ -11,30 +11,45 @@ import (
 
 const (
 	prioHostRTT = module.Priority + iota
+	prioHostStdDevRTT
 	prioHostPingPacketLoss
 	prioHostPingPackets
 )
 
 var hostChartsTmpl = module.Charts{
 	hostRTTChartTmpl.Copy(),
+	hostStdDevRTTChartTmpl.Copy(),
 	hostPacketLossChartTmpl.Copy(),
 	hostPacketsChartTmpl.Copy(),
 }
 
-var hostRTTChartTmpl = module.Chart{
-	ID:       "host_%s_rtt",
-	Title:    "Ping round-trip time",
-	Units:    "milliseconds",
-	Fam:      "latency",
-	Ctx:      "ping.host_rtt",
-	Priority: prioHostRTT,
-	Type:     module.Area,
-	Dims: module.Dims{
-		{ID: "host_%s_min_rtt", Name: "min", Div: 1e3},
-		{ID: "host_%s_max_rtt", Name: "max", Div: 1e3},
-		{ID: "host_%s_avg_rtt", Name: "avg", Div: 1e3},
-	},
-}
+var (
+	hostRTTChartTmpl = module.Chart{
+		ID:       "host_%s_rtt",
+		Title:    "Ping round-trip time",
+		Units:    "milliseconds",
+		Fam:      "latency",
+		Ctx:      "ping.host_rtt",
+		Priority: prioHostRTT,
+		Type:     module.Area,
+		Dims: module.Dims{
+			{ID: "host_%s_min_rtt", Name: "min", Div: 1e3},
+			{ID: "host_%s_max_rtt", Name: "max", Div: 1e3},
+			{ID: "host_%s_avg_rtt", Name: "avg", Div: 1e3},
+		},
+	}
+	hostStdDevRTTChartTmpl = module.Chart{
+		ID:       "host_%s_std_dev_rtt",
+		Title:    "Ping round-trip time standard deviation",
+		Units:    "milliseconds",
+		Fam:      "latency",
+		Ctx:      "ping.host_std_dev_rtt",
+		Priority: prioHostStdDevRTT,
+		Dims: module.Dims{
+			{ID: "host_%s_std_dev_rtt", Name: "std_dev", Div: 1e3},
+		},
+	}
+)
 
 var hostPacketLossChartTmpl = module.Chart{
 	ID:       "host_%s_packet_loss",
