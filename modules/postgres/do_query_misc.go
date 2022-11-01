@@ -107,6 +107,7 @@ func (p *Postgres) doQueryQueryableDatabases() error {
 			conn.connErrors++
 			_ = db.Close()
 			stdlib.UnregisterConnConfig(connStr)
+			continue
 		}
 
 		indexes, err := p.doDBQueryUserIndexesCount(db)
@@ -115,6 +116,7 @@ func (p *Postgres) doQueryQueryableDatabases() error {
 			conn.connErrors++
 			_ = db.Close()
 			stdlib.UnregisterConnConfig(connStr)
+			continue
 		}
 
 		// charts: 20 x table, 4 x index.
@@ -124,6 +126,7 @@ func (p *Postgres) doQueryQueryableDatabases() error {
 			conn.connErrors = connErrMax
 			_ = db.Close()
 			stdlib.UnregisterConnConfig(connStr)
+			continue
 		}
 
 		conn.db, conn.connStr = db, connStr
