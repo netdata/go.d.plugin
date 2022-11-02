@@ -1,5 +1,5 @@
 <!--
-title: "Pi-hole monitoring with Netdata"
+title: "Ping monitoring with Netdata"
 description: "Monitor round-trip time and packet loss to network hosts with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/ping/README.md
 sidebar_label: "Ping"
