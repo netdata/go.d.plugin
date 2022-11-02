@@ -57,10 +57,7 @@ const (
 
 	prioThermalzoneTemperature
 
-	prioCollectionDuration
-	prioCollectionStatus
-
-	prioProcessesCPUTimeTotal
+	prioProcessesCPUUtilization
 	prioProcessesHandles
 	prioProcessesIOBytes
 	prioProcessesIOOperations
@@ -71,6 +68,9 @@ const (
 
 	prioServiceState
 	prioServiceStatus
+
+	prioCollectionDuration
+	prioCollectionStatus
 )
 
 func newServiceCharts(name string) *module.Charts {
@@ -136,7 +136,7 @@ var (
 
 func newProcessesCharts() module.Charts {
 	return module.Charts{
-		processesCPUTimeTotalChart.Copy(),
+		processesCPUUtilizationTotalChart.Copy(),
 		processesHandlesChart.Copy(),
 		processesIOBytesChart.Copy(),
 		processesIOOperationsChart.Copy(),
@@ -148,14 +148,14 @@ func newProcessesCharts() module.Charts {
 }
 
 var (
-	processesCPUTimeTotalChart = module.Chart{
-		ID:       "processes_cpu_time",
+	processesCPUUtilizationTotalChart = module.Chart{
+		ID:       "processes_cpu_utilization",
 		Title:    "CPU usage",
 		Units:    "percentage",
 		Fam:      "processes",
-		Ctx:      "wmi.processes_cpu_time",
+		Ctx:      "wmi.processes_cpu_utilization",
 		Type:     module.Stacked,
-		Priority: prioProcessesCPUTimeTotal,
+		Priority: prioProcessesCPUUtilization,
 	}
 	processesHandlesChart = module.Chart{
 		ID:       "processes_handles",
@@ -945,6 +945,36 @@ func (w *WMI) updateProcessesCharts(mx *metrics) {
 		}
 	}
 
+	for k := range w.cache.procs {
+		if _, ok := mx.Processes.procs[k]; ok {
+			continue
+		}
+
+		delete(w.cache.procs, k)
+		for _, chart := range *w.Charts() {
+			switch chart.ID {
+			case processesCPUUtilizationTotalChart.ID,
+				processesHandlesChart.ID,
+				processesIOBytesChart.ID,
+				processesIOOperationsChart.ID,
+				processesPageFaultsChart.ID,
+				processesPageFileBytes.ID,
+				processesPoolBytes.ID,
+				processesThreads.ID:
+				for _, dim := range chart.Dims {
+					if !strings.HasPrefix(dim.ID, "process_"+k) {
+						continue
+					}
+					if err := chart.MarkDimRemove(dim.ID, false); err != nil {
+						w.Warning(err)
+						continue
+					}
+					chart.MarkNotCreated()
+					break
+				}
+			}
+		}
+	}
 }
 
 func (w *WMI) updateCollectionCharts(mx *metrics) {
@@ -1247,15 +1277,18 @@ func addDimToCollectionStatusChart(charts *module.Charts, colName string) error 
 }
 
 func addDimToProcessesCPUTimeTotalChart(charts *module.Charts, procID string) error {
-	chart := charts.Get(processesCPUTimeTotalChart.ID)
+	chart := charts.Get(processesCPUUtilizationTotalChart.ID)
 	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", processesCPUTimeTotalChart.ID)
+		return fmt.Errorf("chart '%s' is not in charts", processesCPUUtilizationTotalChart.ID)
 	}
 	dim := &module.Dim{
 		ID:   fmt.Sprintf("process_%s_cpu_time", procID),
 		Name: procID,
-		Algo: module.Incremental,
+		Algo: module.PercentOfIncremental,
 		Div:  1000,
+	}
+	if procID == "Idle" {
+		dim.DimOpts.Hidden = true
 	}
 	if err := chart.AddDim(dim); err != nil {
 		return err
