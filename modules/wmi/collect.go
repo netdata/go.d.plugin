@@ -4,67 +4,209 @@ package wmi
 
 import (
 	"errors"
+	"net/url"
+	"strings"
+	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
-	"github.com/netdata/go.d.plugin/pkg/stm"
-
-	"github.com/prometheus/prometheus/model/labels"
 )
 
-func isValidWindowsExporterMetrics(pms prometheus.Metrics) bool {
-	return pms.FindByName(metricCollectorSuccess).Len() > 0
+const precision = 1000
+
+const (
+	collectorCPU         = "cpu"
+	collectorMemory      = "memory"
+	collectorNet         = "net"
+	collectorLogicalDisk = "logical_disk"
+	collectorOS          = "os"
+	collectorSystem      = "system"
+	collectorLogon       = "logon"
+	collectorThermalZone = "thermalzone"
+	collectorTCP         = "tcp"
+	collectorProcess     = "process"
+	collectorService     = "service"
+)
+
+var fastCollectors = map[string]bool{
+	collectorCPU:         true,
+	collectorMemory:      true,
+	collectorNet:         true,
+	collectorLogicalDisk: true,
+	collectorOS:          true,
+	collectorSystem:      true,
+	collectorTCP:         true,
+}
+
+var slowCollectors = map[string]bool{
+	collectorLogon:       true,
+	collectorThermalZone: true,
+	collectorProcess:     true,
+	collectorService:     true,
 }
 
 func (w *WMI) collect() (map[string]int64, error) {
-	pms, err := w.prom.Scrape()
-	if err != nil {
-		return nil, err
+	if w.doCheck {
+		if err := w.checkSupportedCollectors(); err != nil {
+			return nil, err
+		}
+		w.doCheck = false
 	}
 
-	if !isValidWindowsExporterMetrics(pms) {
-		return nil, errors.New("collected metrics aren't windows_exporter metrics")
+	mx := make(map[string]int64)
+
+	if err := w.collectMetrics(mx, w.promFast); err != nil {
+		if !strings.Contains(err.Error(), "unavailable collector") {
+			return nil, err
+		}
+		w.doCheck = true
 	}
 
-	mx := collect(pms)
-	w.updateCharts(mx)
+	if now := time.Now(); now.Sub(w.doSlowTime) > w.doSlowEvery {
+		w.doSlowTime = now
+		w.slowCache = make(map[string]int64)
+		if err := w.collectMetrics(w.slowCache, w.promSlow); err != nil {
+			if !strings.Contains(err.Error(), "unavailable collector") {
+				return nil, err
+			}
+			w.doCheck = true
+		}
+	}
 
-	return stm.ToMap(mx), nil
+	for k, v := range w.slowCache {
+		mx[k] = v
+	}
+
+	if hasKey(mx, "os_visible_memory_bytes", "memory_available_bytes") {
+		mx["memory_used_bytes"] = 0 +
+			mx["os_visible_memory_bytes"] -
+			mx["memory_available_bytes"]
+	}
+	if hasKey(mx, "os_paging_limit_bytes", "os_paging_free_bytes") {
+		mx["os_paging_used_bytes"] = 0 +
+			mx["os_paging_limit_bytes"] -
+			mx["os_paging_free_bytes"]
+	}
+	if hasKey(mx, "os_visible_memory_bytes", "os_physical_memory_free_bytes") {
+		mx["os_visible_memory_used_bytes"] = 0 +
+			mx["os_visible_memory_bytes"] -
+			mx["os_physical_memory_free_bytes"]
+	}
+	if hasKey(mx, "memory_commit_limit", "memory_committed_bytes") {
+		mx["memory_not_committed_bytes"] = 0 +
+			mx["memory_commit_limit"] -
+			mx["memory_committed_bytes"]
+	}
+	if hasKey(mx, "memory_standby_cache_reserve_bytes", "memory_standby_cache_normal_priority_bytes", "memory_standby_cache_core_bytes") {
+		mx["memory_standby_cache_total"] = 0 +
+			mx["memory_standby_cache_reserve_bytes"] +
+			mx["memory_standby_cache_normal_priority_bytes"] +
+			mx["memory_standby_cache_core_bytes"]
+	}
+	if hasKey(mx, "memory_standby_cache_total", "memory_modified_page_list_bytes") {
+		mx["memory_cache_total"] = 0 +
+			mx["memory_standby_cache_total"] +
+			mx["memory_modified_page_list_bytes"]
+	}
+
+	return mx, nil
 }
 
-func collect(pms prometheus.Metrics) *metrics {
-	mx := metrics{
-		CPU:         collectCPU(pms),
-		Memory:      collectMemory(pms),
-		Net:         collectNet(pms),
-		LogicalDisk: collectLogicalDisk(pms),
-		OS:          collectOS(pms),
-		System:      collectSystem(pms),
-		Logon:       collectLogon(pms),
-		ThermalZone: collectThermalzone(pms),
-		Collectors:  collectCollection(pms),
-		TCP:         collectTCP(pms),
-		Processes:   collectProcess(pms),
-		Services:    collectService(pms),
+func (w *WMI) collectMetrics(mx map[string]int64, prom prometheus.Prometheus) error {
+	if prom == nil {
+		return nil
 	}
 
-	if mx.hasOS() && mx.hasMemory() {
-		v := mx.OS.VisibleMemoryBytes - mx.Memory.AvailableBytes
-		mx.Memory.UsedBytes = &v
+	pms, err := prom.Scrape()
+	if err != nil {
+		return err
 	}
-	if mx.hasOS() {
-		mx.OS.PagingUsedBytes = mx.OS.PagingLimitBytes - mx.OS.PagingFreeBytes
-		mx.OS.VisibleMemoryUsedBytes = mx.OS.VisibleMemoryBytes - mx.OS.PhysicalMemoryFreeBytes
+
+	w.collectCollector(mx, pms)
+	for _, pm := range pms.FindByName(metricCollectorSuccess) {
+		if pm.Value == 0 {
+			continue
+		}
+		switch pm.Labels.Get("collector") {
+		case collectorCPU:
+			w.collectCPU(mx, pms)
+		case collectorMemory:
+			w.collectMemory(mx, pms)
+		case collectorNet:
+			w.collectNet(mx, pms)
+		case collectorLogicalDisk:
+			w.collectLogicalDisk(mx, pms)
+		case collectorOS:
+			w.collectOS(mx, pms)
+		case collectorSystem:
+			w.collectSystem(mx, pms)
+		case collectorLogon:
+			w.collectLogon(mx, pms)
+		case collectorThermalZone:
+			w.collectThermalzone(mx, pms)
+		case collectorTCP:
+			w.collectTCP(mx, pms)
+		case collectorProcess:
+			w.collectProcess(mx, pms)
+		case collectorService:
+			w.collectService(mx, pms)
+		}
 	}
-	return &mx
+
+	return nil
 }
 
-func checkCollector(pms prometheus.Metrics, name string) (enabled, success bool) {
-	m, err := labels.NewMatcher(labels.MatchEqual, "collector", name)
+func (w *WMI) checkSupportedCollectors() error {
+	pms, err := w.promCheck.Scrape()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	pms = pms.FindByName(metricCollectorSuccess)
-	ms := pms.Match(m)
-	return ms.Len() > 0, ms.Max() == 1
+	if pms = pms.FindByName(metricCollectorSuccess); pms.Len() == 0 {
+		return errors.New("collected metrics aren't windows_exporter metrics")
+	}
+
+	var fast, slow []string
+	for _, pm := range pms {
+		name := pm.Labels.Get("collector")
+		switch {
+		case name == collectorThermalZone && pm.Value == 0:
+		case fastCollectors[name]:
+			fast = append(fast, name)
+		case slowCollectors[name]:
+			slow = append(slow, name)
+		}
+	}
+
+	if len(fast) == 0 && len(slow) == 0 {
+		return errors.New("no supported collectors found")
+	}
+
+	req := w.Request.Copy()
+	u, err := url.Parse(req.URL)
+	if err != nil {
+		return err
+	}
+
+	if len(fast) > 0 {
+		u.RawQuery = url.Values{"collect[]": fast}.Encode()
+		req.URL = u.String()
+		w.promFast = prometheus.New(w.httpClient, req.Copy())
+	}
+	if len(slow) > 0 {
+		u.RawQuery = url.Values{"collect[]": slow}.Encode()
+		req.URL = u.String()
+		w.promSlow = prometheus.New(w.httpClient, req.Copy())
+	}
+
+	return nil
+}
+
+func hasKey(mx map[string]int64, key string, keys ...string) bool {
+	_, ok := mx[key]
+	switch len(keys) {
+	case 0:
+		return ok
+	default:
+		return ok && hasKey(mx, keys[0], keys[1:]...)
+	}
 }

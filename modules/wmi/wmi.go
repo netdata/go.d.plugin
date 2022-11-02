@@ -3,6 +3,7 @@
 package wmi
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -35,48 +36,70 @@ func New() *WMI {
 			nics:         make(map[string]bool),
 			volumes:      make(map[string]bool),
 			thermalZones: make(map[string]bool),
-			procs:        make(map[string]bool),
-			svcs:         make(map[string]bool),
+			processes:    make(map[string]bool),
+			services:     make(map[string]bool),
 		},
-		charts: newCollectionCharts(),
+		charts:      &module.Charts{},
+		doCheck:     true,
+		doSlowEvery: time.Second * 10,
 	}
 }
 
+type Config struct {
+	web.HTTP `yaml:",inline"`
+}
+
 type (
-	Config struct {
-		web.HTTP `yaml:",inline"`
-	}
 	WMI struct {
 		module.Base
 		Config `yaml:",inline"`
-		prom   prometheus.Prometheus
-		cache  cache
+
 		charts *module.Charts
+
+		doCheck bool
+
+		httpClient *http.Client
+		promCheck  prometheus.Prometheus
+		promFast   prometheus.Prometheus
+		promSlow   prometheus.Prometheus
+
+		doSlowTime  time.Time
+		doSlowEvery time.Duration
+		slowCache   map[string]int64
+
+		cache cache
 	}
 	cache struct {
-		svcs         map[string]bool
-		procs        map[string]bool
+		cores        map[string]bool
+		volumes      map[string]bool
+		nics         map[string]bool
+		thermalZones map[string]bool
+		processes    map[string]bool
+		services     map[string]bool
 		collectors   map[string]bool
 		collection   map[string]bool
-		cores        map[string]bool
-		nics         map[string]bool
-		volumes      map[string]bool
-		thermalZones map[string]bool
 	}
 )
 
 func (w *WMI) Init() bool {
 	if err := w.validateConfig(); err != nil {
-		w.Errorf("error on validating config: %v", err)
+		w.Errorf("config validation: %v", err)
 		return false
 	}
 
-	prom, err := w.initPrometheusClient()
+	httpClient, err := w.initHTTPClient()
 	if err != nil {
-		w.Errorf("error on init prometheus client: %v", err)
+		w.Errorf("init HTTP client: %v", err)
 		return false
 	}
-	w.prom = prom
+	w.httpClient = httpClient
+
+	prom, err := w.initPrometheusCheckClient(w.httpClient)
+	if err != nil {
+		w.Errorf("init prometheus clients: %v", err)
+		return false
+	}
+	w.promCheck = prom
 
 	return true
 }
@@ -101,4 +124,8 @@ func (w *WMI) Collect() map[string]int64 {
 	return ms
 }
 
-func (w *WMI) Cleanup() {}
+func (w *WMI) Cleanup() {
+	if w.httpClient != nil {
+		w.httpClient.CloseIdleConnections()
+	}
+}

@@ -4,168 +4,91 @@ package wmi
 
 import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
+	"strings"
 )
 
 const (
-	collectorProcess = "process"
-
-	metricProcessCPUTimeTotal  = "windows_process_cpu_time_total"
-	metricProcessCPUHandles    = "windows_process_handles"
-	metricProcessIOBytes       = "windows_process_io_bytes_total"
-	metricProcessIOOperations  = "windows_process_io_operations_total"
-	metricProcessPageFaults    = "windows_process_page_faults_total"
-	metricProcessPageFileBytes = "windows_process_page_file_bytes"
-	metricProcessPoolBytes     = "windows_process_pool_bytes"
-	metricProcessThreads       = "windows_process_threads"
+	metricProcessCPUTimeTotal    = "windows_process_cpu_time_total"
+	metricProcessWorkingSetBytes = "windows_process_working_set_private_bytes"
+	metricProcessIOBytes         = "windows_process_io_bytes_total"
+	metricProcessIOOperations    = "windows_process_io_operations_total"
+	metricProcessPageFaults      = "windows_process_page_faults_total"
+	metricProcessPageFileBytes   = "windows_process_page_file_bytes"
+	metricProcessThreads         = "windows_process_threads"
+	metricProcessCPUHandles      = "windows_process_handles"
 )
 
-func doCollectProcess(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorProcess)
-	return enabled && success
-}
-
-func collectProcess(pms prometheus.Metrics) *processesMetrics {
-	if !doCollectProcess(pms) {
-		return nil
+func (w *WMI) collectProcess(mx map[string]int64, pms prometheus.Metrics) {
+	if !w.cache.collection[collectorProcess] {
+		w.cache.collection[collectorProcess] = true
+		w.addProcessesCharts()
 	}
 
-	procs := &processesMetrics{procs: make(map[string]*processMetrics)}
-	collectProcessCpuTimeTotal(procs, pms)
-	collectProcessHandles(procs, pms)
-	collectProcessIOBytes(procs, pms)
-	collectProcessIOOperations(procs, pms)
-	collectProcessPageFaults(procs, pms)
-	collectProcessPageFileBytes(procs, pms)
-	collectProcessPoolBytes(procs, pms)
-	collectProcessThreads(procs, pms)
-
-	return procs
-}
-
-func collectProcessCpuTimeTotal(procs *processesMetrics, pms prometheus.Metrics) {
-	var proc *processMetrics
+	seen := make(map[string]bool)
+	px := "process_"
 	for _, pm := range pms.FindByName(metricProcessCPUTimeTotal) {
-		name := pm.Labels.Get("process")
-		if name == "" {
-			continue
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+name+"_cpu_time"] += int64(pm.Value * 1000)
 		}
-
-		if proc == nil || proc.ID != name {
-			proc = procs.get(name)
-		}
-
-		proc.CPUTime += pm.Value
 	}
-}
-
-func collectProcessHandles(procs *processesMetrics, pms prometheus.Metrics) {
-	var proc *processMetrics
-	for _, pm := range pms.FindByName(metricProcessCPUHandles) {
-		name := pm.Labels.Get("process")
-		if name == "" {
-			continue
+	for _, pm := range pms.FindByName(metricProcessWorkingSetBytes) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+name+"_working_set_private_bytes"] += int64(pm.Value)
 		}
-
-		if proc == nil || proc.ID != name {
-			proc = procs.get(name)
-		}
-
-		proc.Handles += pm.Value
 	}
-}
-
-func collectProcessIOBytes(procs *processesMetrics, pms prometheus.Metrics) {
-	var proc *processMetrics
 	for _, pm := range pms.FindByName(metricProcessIOBytes) {
-		name := pm.Labels.Get("process")
-		if name == "" {
-			continue
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+name+"_io_bytes"] += int64(pm.Value)
 		}
-
-		if proc == nil || proc.ID != name {
-			proc = procs.get(name)
-		}
-
-		proc.IOBytes += pm.Value
 	}
-}
-
-func collectProcessIOOperations(procs *processesMetrics, pms prometheus.Metrics) {
-	var proc *processMetrics
 	for _, pm := range pms.FindByName(metricProcessIOOperations) {
-		name := pm.Labels.Get("process")
-		if name == "" {
-			continue
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+name+"_io_operations"] += int64(pm.Value)
 		}
-
-		if proc == nil || proc.ID != name {
-			proc = procs.get(name)
-		}
-
-		proc.IOOperations += pm.Value
 	}
-}
-
-func collectProcessPageFaults(procs *processesMetrics, pms prometheus.Metrics) {
-	var proc *processMetrics
 	for _, pm := range pms.FindByName(metricProcessPageFaults) {
-		name := pm.Labels.Get("process")
-		if name == "" {
-			continue
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+name+"_page_faults"] += int64(pm.Value)
 		}
-
-		if proc == nil || proc.ID != name {
-			proc = procs.get(name)
-		}
-
-		proc.PageFaults += pm.Value
 	}
-}
-
-func collectProcessPageFileBytes(procs *processesMetrics, pms prometheus.Metrics) {
-	var proc *processMetrics
 	for _, pm := range pms.FindByName(metricProcessPageFileBytes) {
-		name := pm.Labels.Get("process")
-		if name == "" {
-			continue
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+name+"_page_file_bytes"] += int64(pm.Value)
 		}
-
-		if proc == nil || proc.ID != name {
-			proc = procs.get(name)
-		}
-
-		proc.PageFileBytes += pm.Value
 	}
-}
-
-func collectProcessPoolBytes(procs *processesMetrics, pms prometheus.Metrics) {
-	var proc *processMetrics
-	for _, pm := range pms.FindByName(metricProcessPoolBytes) {
-		name := pm.Labels.Get("process")
-		if name == "" {
-			continue
-		}
-
-		if proc == nil || proc.ID != name {
-			proc = procs.get(name)
-		}
-
-		proc.PoolBytes += pm.Value
-	}
-}
-
-func collectProcessThreads(procs *processesMetrics, pms prometheus.Metrics) {
-	var proc *processMetrics
 	for _, pm := range pms.FindByName(metricProcessThreads) {
-		name := pm.Labels.Get("process")
-		if name == "" {
-			continue
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+name+"_threads"] += int64(pm.Value)
 		}
-
-		if proc == nil || proc.ID != name {
-			proc = procs.get(name)
-		}
-
-		proc.Threads += pm.Value
 	}
+	for _, pm := range pms.FindByName(metricProcessCPUHandles) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+name+"_handles"] += int64(pm.Value)
+		}
+	}
+
+	for proc := range seen {
+		if !w.cache.processes[proc] {
+			w.cache.processes[proc] = true
+			w.addProcessToCharts(proc)
+		}
+	}
+	for proc := range w.cache.processes {
+		if !seen[proc] {
+			delete(w.cache.processes, proc)
+			w.removeServiceCharts(proc)
+		}
+	}
+}
+
+func cleanProcessName(name string) string {
+	return strings.ReplaceAll(name, " ", "_")
 }

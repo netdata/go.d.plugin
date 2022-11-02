@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -16,13 +17,11 @@ import (
 )
 
 var (
-	v0150Metrics, _ = os.ReadFile("testdata/v0.15.0/metrics.txt")
 	v0200Metrics, _ = os.ReadFile("testdata/v0.20.0/metrics.txt")
 )
 
 func Test_TestData(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"v0150Metrics": v0150Metrics,
 		"v0200Metrics": v0200Metrics,
 	} {
 		assert.NotNilf(t, data, name)
@@ -71,9 +70,6 @@ func TestWMI_Check(t *testing.T) {
 		prepare  func() (wmi *WMI, cleanup func())
 		wantFail bool
 	}{
-		"success on valid response v0.15.0": {
-			prepare: prepareWMIv0150,
-		},
 		"success on valid response v0.20.0": {
 			prepare: prepareWMIv0200,
 		},
@@ -120,364 +116,216 @@ func TestWMI_Collect(t *testing.T) {
 		prepare       func() (wmi *WMI, cleanup func())
 		wantCollected map[string]int64
 	}{
-		"success on valid response v0.15.0": {
-			prepare: prepareWMIv0150,
-			wantCollected: map[string]int64{
-				"cpu_collection_duration":                                     1000,
-				"cpu_collection_success":                                      1,
-				"cpu_core_0,0_c1":                                             666516,
-				"cpu_core_0,0_c2":                                             1000,
-				"cpu_core_0,0_c3":                                             1000,
-				"cpu_core_0,0_dpc":                                            6234,
-				"cpu_core_0,0_dpcs":                                           352862000,
-				"cpu_core_0,0_idle":                                           696218,
-				"cpu_core_0,0_interrupt":                                      21359,
-				"cpu_core_0,0_interrupts":                                     3799540000,
-				"cpu_core_0,0_privileged":                                     517031,
-				"cpu_core_0,0_user":                                           402703,
-				"cpu_dpc":                                                     6234,
-				"cpu_idle":                                                    696218,
-				"cpu_interrupt":                                               21359,
-				"cpu_privileged":                                              517031,
-				"cpu_user":                                                    402703,
-				"logical_disk_C:_free_space":                                  8434745344000,
-				"logical_disk_C:_idle_seconds_total":                          0,
-				"logical_disk_C:_read_bytes_total":                            8458891776000,
-				"logical_disk_C:_read_latency":                                143835,
-				"logical_disk_C:_read_seconds_total":                          0,
-				"logical_disk_C:_reads_total":                                 101079,
-				"logical_disk_C:_requests_queued":                             0,
-				"logical_disk_C:_split_ios_total":                             0,
-				"logical_disk_C:_total_space":                                 21371027456000,
-				"logical_disk_C:_used_space":                                  12936282112000,
-				"logical_disk_C:_write_bytes_total":                           7427673600000,
-				"logical_disk_C:_write_latency":                               39666,
-				"logical_disk_C:_write_seconds_total":                         0,
-				"logical_disk_C:_writes_total":                                56260,
-				"logical_disk_collection_duration":                            1000,
-				"logical_disk_collection_success":                             1,
-				"logon_collection_duration":                                   1256,
-				"logon_collection_success":                                    1,
-				"logon_type_batch":                                            1,
-				"logon_type_cached_interactive":                               1,
-				"logon_type_cached_remote_interactive":                        1,
-				"logon_type_cached_unlock":                                    1,
-				"logon_type_interactive":                                      2,
-				"logon_type_network":                                          1,
-				"logon_type_network_clear_text":                               1,
-				"logon_type_new_credentials":                                  1,
-				"logon_type_proxy":                                            1,
-				"logon_type_remote_interactive":                               1,
-				"logon_type_service":                                          1,
-				"logon_type_system":                                           1,
-				"logon_type_unlock":                                           1,
-				"memory_available_bytes":                                      788783104000,
-				"memory_cache_bytes":                                          68575232000,
-				"memory_cache_bytes_peak":                                     102326272000,
-				"memory_cache_faults_total":                                   915557000,
-				"memory_cache_total":                                          842539008000,
-				"memory_collection_duration":                                  1000,
-				"memory_collection_success":                                   1,
-				"memory_commit_limit":                                         3547709440000,
-				"memory_committed_bytes":                                      2657218560000,
-				"memory_demand_zero_faults_total":                             6242530000,
-				"memory_free_and_zero_page_list_bytes":                        2531328000,
-				"memory_free_system_page_table_entries":                       12529874000,
-				"memory_modified_page_list_bytes":                             56287232000,
-				"memory_not_committed_bytes":                                  890490880000,
-				"memory_page_faults_total":                                    17047959000,
-				"memory_pool_nonpaged_allocs_total":                           1000,
-				"memory_pool_nonpaged_bytes_total":                            97243136000,
-				"memory_pool_paged_allocs_total":                              1000,
-				"memory_pool_paged_bytes":                                     172675072000,
-				"memory_pool_paged_resident_bytes":                            153165824000,
-				"memory_standby_cache_core_bytes":                             124506112000,
-				"memory_standby_cache_normal_priority_bytes":                  441131008000,
-				"memory_standby_cache_reserve_bytes":                          220614656000,
-				"memory_standby_cache_total":                                  786251776000,
-				"memory_swap_page_operations_total":                           1466380000,
-				"memory_swap_page_reads_total":                                127979000,
-				"memory_swap_page_writes_total":                               3618000,
-				"memory_swap_pages_read_total":                                1240157000,
-				"memory_swap_pages_written_total":                             226223000,
-				"memory_system_cache_resident_bytes":                          68575232000,
-				"memory_system_code_resident_bytes":                           4321280000,
-				"memory_system_code_total_bytes":                              4636672000,
-				"memory_system_driver_resident_bytes":                         3244032000,
-				"memory_system_driver_total_bytes":                            17526784000,
-				"memory_transition_faults_total":                              10153909000,
-				"memory_transition_pages_repurposed_total":                    1375981000,
-				"memory_used_bytes":                                           1358229504000,
-				"memory_write_copies_total":                                   105886000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_received":    76499000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_sent":        88865000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_bytes_total":       165364000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_current_bandwidth": 1000000000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_outbound_discarded": 1000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_outbound_errors":    1000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_discarded": 1000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_errors":    1000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_total":     676000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_received_unknown":   1000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_sent_total":         686000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_2_packets_total":              1362000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_received":               383489027000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_sent":                   6755954000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_bytes_total":                  390244981000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_current_bandwidth":            1000000000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_outbound_discarded":   1000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_outbound_errors":      1000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_discarded":   1000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_errors":      1000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_total":       262638000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_received_unknown":     1000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_sent_total":           84041000,
-				"net_Intel_R_PRO_1000_MT_Desktop_Adapter_packets_total":                346679000,
-				"net_collection_duration":           1000,
-				"net_collection_success":            1,
-				"os_collection_duration":            1127,
-				"os_collection_success":             1,
-				"os_paging_free_bytes":              1056043008000,
-				"os_paging_limit_bytes":             1400696832000,
-				"os_paging_used_bytes":              344653824000,
-				"os_physical_memory_free_bytes":     798547968000,
-				"os_process_memory_limit_bytes":     0,
-				"os_processes":                      79,
-				"os_processes_limit":                4294967295,
-				"os_time":                           1615228118,
-				"os_users":                          2,
-				"os_virtual_memory_bytes":           3547709440000,
-				"os_virtual_memory_free_bytes":      905457664000,
-				"os_visible_memory_bytes":           2147012608000,
-				"os_visible_memory_used_bytes":      1348464640000,
-				"system_boot_time":                  1615226502,
-				"system_calls_total":                41784660000,
-				"system_collection_duration":        1000,
-				"system_collection_success":         1,
-				"system_context_switches_total":     4616757000,
-				"system_exception_dispatches_total": 3695000,
-				"system_processor_queue_length":     10,
-				"system_threads":                    967,
-				"system_up_time":                    10424243,
-			},
-		},
 		"success on valid response v0.20.0": {
 			prepare: prepareWMIv0200,
 			wantCollected: map[string]int64{
-				"cpu_collection_duration":                                       0,
-				"cpu_collection_success":                                        1,
-				"cpu_core_0,0_c1":                                               1841769627,
-				"cpu_core_0,0_c2":                                               0,
-				"cpu_core_0,0_c3":                                               0,
-				"cpu_core_0,0_dpc":                                              89046,
-				"cpu_core_0,0_dpcs":                                             9205934000,
-				"cpu_core_0,0_idle":                                             1844928953,
-				"cpu_core_0,0_interrupt":                                        79750,
-				"cpu_core_0,0_interrupts":                                       164487760000,
-				"cpu_core_0,0_privileged":                                       3507703,
-				"cpu_core_0,0_user":                                             3949109,
-				"cpu_core_0,1_c1":                                               1843147617,
-				"cpu_core_0,1_c2":                                               0,
-				"cpu_core_0,1_c3":                                               0,
-				"cpu_core_0,1_dpc":                                              2140,
-				"cpu_core_0,1_dpcs":                                             1467612000,
-				"cpu_core_0,1_idle":                                             1846598625,
-				"cpu_core_0,1_interrupt":                                        130796,
-				"cpu_core_0,1_interrupts":                                       173675048000,
-				"cpu_core_0,1_privileged":                                       2806625,
-				"cpu_core_0,1_user":                                             2979500,
-				"cpu_dpc":                                                       91187,
-				"cpu_idle":                                                      3691527578,
-				"cpu_interrupt":                                                 210546,
-				"cpu_privileged":                                                6314328,
-				"cpu_user":                                                      6928609,
-				"logical_disk_C:_free_space":                                    31603032064000,
-				"logical_disk_C:_idle_seconds_total":                            0,
-				"logical_disk_C:_read_bytes_total":                              121832960000,
-				"logical_disk_C:_read_latency":                                  3586,
-				"logical_disk_C:_read_seconds_total":                            0,
-				"logical_disk_C:_reads_total":                                   5316,
-				"logical_disk_C:_requests_queued":                               0,
-				"logical_disk_C:_split_ios_total":                               0,
-				"logical_disk_C:_total_space":                                   53683945472000,
-				"logical_disk_C:_used_space":                                    22080913408000,
-				"logical_disk_C:_write_bytes_total":                             195316224000,
-				"logical_disk_C:_write_latency":                                 8492,
-				"logical_disk_C:_write_seconds_total":                           0,
-				"logical_disk_C:_writes_total":                                  9374,
-				"logical_disk_collection_duration":                              0,
-				"logical_disk_collection_success":                               1,
-				"logon_collection_duration":                                     72,
-				"logon_collection_success":                                      1,
-				"logon_type_batch":                                              0,
-				"logon_type_cached_interactive":                                 0,
-				"logon_type_cached_remote_interactive":                          1,
-				"logon_type_cached_unlock":                                      0,
-				"logon_type_interactive":                                        7,
-				"logon_type_network":                                            1,
-				"logon_type_network_clear_text":                                 0,
-				"logon_type_new_credentials":                                    0,
-				"logon_type_proxy":                                              0,
-				"logon_type_remote_interactive":                                 1,
-				"logon_type_service":                                            5,
-				"logon_type_system":                                             1,
-				"logon_type_unlock":                                             0,
-				"memory_available_bytes":                                        1938132992000,
-				"memory_cache_bytes":                                            145616896000,
-				"memory_cache_bytes_peak":                                       195719168000,
-				"memory_cache_faults_total":                                     14334571000,
-				"memory_cache_total":                                            1570410496000,
-				"memory_collection_duration":                                    0,
-				"memory_collection_success":                                     1,
-				"memory_commit_limit":                                           5720535040000,
-				"memory_committed_bytes":                                        2370998272000,
-				"memory_demand_zero_faults_total":                               61122648000,
-				"memory_free_and_zero_page_list_bytes":                          375119872000,
-				"memory_free_system_page_table_entries":                         12524106000,
-				"memory_modified_page_list_bytes":                               7401472000,
-				"memory_not_committed_bytes":                                    3349536768000,
-				"memory_page_faults_total":                                      224955133000,
+				"collector_cpu_duration":                                        0,
+				"collector_cpu_status_fail":                                     0,
+				"collector_cpu_status_success":                                  1,
+				"collector_logical_disk_duration":                               0,
+				"collector_logical_disk_status_fail":                            0,
+				"collector_logical_disk_status_success":                         1,
+				"collector_logon_duration":                                      113,
+				"collector_logon_status_fail":                                   0,
+				"collector_logon_status_success":                                1,
+				"collector_memory_duration":                                     0,
+				"collector_memory_status_fail":                                  0,
+				"collector_memory_status_success":                               1,
+				"collector_net_duration":                                        0,
+				"collector_net_status_fail":                                     0,
+				"collector_net_status_success":                                  1,
+				"collector_os_duration":                                         2,
+				"collector_os_status_fail":                                      0,
+				"collector_os_status_success":                                   1,
+				"collector_process_duration":                                    115,
+				"collector_process_status_fail":                                 0,
+				"collector_process_status_success":                              1,
+				"collector_service_duration":                                    101,
+				"collector_service_status_fail":                                 0,
+				"collector_service_status_success":                              1,
+				"collector_system_duration":                                     0,
+				"collector_system_status_fail":                                  0,
+				"collector_system_status_success":                               1,
+				"collector_tcp_duration":                                        0,
+				"collector_tcp_status_fail":                                     0,
+				"collector_tcp_status_success":                                  1,
+				"cpu_core_0,0_cstate_c1":                                        160233427,
+				"cpu_core_0,0_cstate_c2":                                        0,
+				"cpu_core_0,0_cstate_c3":                                        0,
+				"cpu_core_0,0_dpc_time":                                         67109,
+				"cpu_core_0,0_dpcs":                                             4871900,
+				"cpu_core_0,0_idle_time":                                        162455593,
+				"cpu_core_0,0_interrupt_time":                                   77281,
+				"cpu_core_0,0_interrupts":                                       155194331,
+				"cpu_core_0,0_privileged_time":                                  1182109,
+				"cpu_core_0,0_user_time":                                        1073671,
+				"cpu_core_0,1_cstate_c1":                                        159528054,
+				"cpu_core_0,1_cstate_c2":                                        0,
+				"cpu_core_0,1_cstate_c3":                                        0,
+				"cpu_core_0,1_dpc_time":                                         11093,
+				"cpu_core_0,1_dpcs":                                             1650552,
+				"cpu_core_0,1_idle_time":                                        159478125,
+				"cpu_core_0,1_interrupt_time":                                   58093,
+				"cpu_core_0,1_interrupts":                                       79325847,
+				"cpu_core_0,1_privileged_time":                                  1801234,
+				"cpu_core_0,1_user_time":                                        3432000,
+				"cpu_core_0,2_cstate_c1":                                        159891723,
+				"cpu_core_0,2_cstate_c2":                                        0,
+				"cpu_core_0,2_cstate_c3":                                        0,
+				"cpu_core_0,2_dpc_time":                                         16062,
+				"cpu_core_0,2_dpcs":                                             2236469,
+				"cpu_core_0,2_idle_time":                                        159848437,
+				"cpu_core_0,2_interrupt_time":                                   53515,
+				"cpu_core_0,2_interrupts":                                       67305419,
+				"cpu_core_0,2_privileged_time":                                  1812546,
+				"cpu_core_0,2_user_time":                                        3050250,
+				"cpu_core_0,3_cstate_c1":                                        159544117,
+				"cpu_core_0,3_cstate_c2":                                        0,
+				"cpu_core_0,3_cstate_c3":                                        0,
+				"cpu_core_0,3_dpc_time":                                         8140,
+				"cpu_core_0,3_dpcs":                                             1185046,
+				"cpu_core_0,3_idle_time":                                        159527546,
+				"cpu_core_0,3_interrupt_time":                                   44484,
+				"cpu_core_0,3_interrupts":                                       60766938,
+				"cpu_core_0,3_privileged_time":                                  1760828,
+				"cpu_core_0,3_user_time":                                        3422875,
+				"cpu_dpc_time":                                                  102404,
+				"cpu_idle_time":                                                 641309701,
+				"cpu_interrupt_time":                                            233373,
+				"cpu_privileged_time":                                           6556717,
+				"cpu_user_time":                                                 10978796,
+				"logical_disk_C:_free_space":                                    43636490240,
+				"logical_disk_C:_read_bytes_total":                              17676328448,
+				"logical_disk_C:_read_latency":                                  97,
+				"logical_disk_C:_reads_total":                                   350593,
+				"logical_disk_C:_total_space":                                   67938287616,
+				"logical_disk_C:_used_space":                                    24301797376,
+				"logical_disk_C:_write_bytes_total":                             9135282688,
+				"logical_disk_C:_write_latency":                                 123,
+				"logical_disk_C:_writes_total":                                  450705,
+				"logon_type_batch_sessions":                                     0,
+				"logon_type_cached_interactive_sessions":                        0,
+				"logon_type_cached_remote_interactive_sessions":                 0,
+				"logon_type_cached_unlock_sessions":                             0,
+				"logon_type_interactive_sessions":                               2,
+				"logon_type_network_clear_text_sessions":                        0,
+				"logon_type_network_sessions":                                   0,
+				"logon_type_new_credentials_sessions":                           0,
+				"logon_type_proxy_sessions":                                     0,
+				"logon_type_remote_interactive_sessions":                        0,
+				"logon_type_service_sessions":                                   0,
+				"logon_type_system_sessions":                                    0,
+				"logon_type_unlock_sessions":                                    0,
+				"memory_available_bytes":                                        1379942400,
+				"memory_cache_bytes":                                            170774528,
+				"memory_cache_bytes_peak":                                       208621568,
+				"memory_cache_faults_total":                                     8009603,
+				"memory_cache_total":                                            1392185344,
+				"memory_commit_limit":                                           5733113856,
+				"memory_committed_bytes":                                        3447439360,
+				"memory_demand_zero_faults_total":                               102505136,
+				"memory_free_and_zero_page_list_bytes":                          20410368,
+				"memory_free_system_page_table_entries":                         16722559,
+				"memory_modified_page_list_bytes":                               32653312,
+				"memory_not_committed_bytes":                                    2285674496,
+				"memory_page_faults_total":                                      119093924,
 				"memory_pool_nonpaged_allocs_total":                             0,
-				"memory_pool_nonpaged_bytes_total":                              0,
+				"memory_pool_nonpaged_bytes_total":                              126865408,
 				"memory_pool_paged_allocs_total":                                0,
-				"memory_pool_paged_bytes":                                       275705856000,
-				"memory_pool_paged_resident_bytes":                              246333440000,
-				"memory_standby_cache_core_bytes":                               0,
-				"memory_standby_cache_normal_priority_bytes":                    1093529600000,
-				"memory_standby_cache_reserve_bytes":                            469479424000,
-				"memory_standby_cache_total":                                    1563009024000,
-				"memory_swap_page_operations_total":                             7595386000,
-				"memory_swap_page_reads_total":                                  608527000,
-				"memory_swap_page_writes_total":                                 2934000,
-				"memory_swap_pages_read_total":                                  6847572000,
-				"memory_swap_pages_written_total":                               747814000,
-				"memory_system_cache_resident_bytes":                            145616896000,
-				"memory_system_code_resident_bytes":                             17100800000,
-				"memory_system_code_total_bytes":                                8192000,
-				"memory_system_driver_resident_bytes":                           38674432000,
-				"memory_system_driver_total_bytes":                              28409856000,
-				"memory_transition_faults_total":                                143833525000,
-				"memory_transition_pages_repurposed_total":                      4769338000,
-				"memory_used_bytes":                                             2306007040000,
-				"memory_write_copies_total":                                     6732296000,
-				"net_Amazon_Elastic_Network_Adapter_bytes_received":             1002322186000,
-				"net_Amazon_Elastic_Network_Adapter_bytes_sent":                 601090821000,
-				"net_Amazon_Elastic_Network_Adapter_bytes_total":                1603413007000,
-				"net_Amazon_Elastic_Network_Adapter_current_bandwidth":          0,
-				"net_Amazon_Elastic_Network_Adapter_packets_outbound_discarded": 0,
-				"net_Amazon_Elastic_Network_Adapter_packets_outbound_errors":    0,
-				"net_Amazon_Elastic_Network_Adapter_packets_received_discarded": 0,
-				"net_Amazon_Elastic_Network_Adapter_packets_received_errors":    0,
-				"net_Amazon_Elastic_Network_Adapter_packets_received_total":     2740032000,
-				"net_Amazon_Elastic_Network_Adapter_packets_received_unknown":   0,
-				"net_Amazon_Elastic_Network_Adapter_packets_sent_total":         2083285000,
-				"net_Amazon_Elastic_Network_Adapter_packets_total":              4823317000,
-				"net_collection_duration":                                       0,
-				"net_collection_success":                                        1,
-				"os_collection_duration":                                        4,
-				"os_collection_success":                                         1,
-				"os_paging_free_bytes":                                          1275879424000,
-				"os_paging_limit_bytes":                                         1476395008000,
-				"os_paging_used_bytes":                                          200515584000,
-				"os_physical_memory_free_bytes":                                 1937801216000,
-				"os_process_memory_limit_bytes":                                 140737488224256000,
-				"os_processes":                                                  119,
-				"os_processes_limit":                                            4294967295,
-				"os_time":                                                       1666394276,
-				"os_users":                                                      1,
-				"os_virtual_memory_bytes":                                       5720535040000,
-				"os_virtual_memory_free_bytes":                                  3349536768000,
-				"os_visible_memory_bytes":                                       4244140032000,
-				"os_visible_memory_used_bytes":                                  2306338816000,
-				"process_collection_duration":                                   1056,
-				"process_collection_success":                                    1,
-				"process_powershell_cpu_time":                                   1906,
-				"process_powershell_handles":                                    1385,
-				"process_powershell_io_bytes":                                   1618302,
-				"process_powershell_io_operations":                              9197,
-				"process_powershell_page_faults":                                54849,
-				"process_powershell_page_file_bytes":                            131256320,
-				"process_powershell_pool_bytes":                                 1041088,
-				"process_powershell_threads":                                    38,
-				"process_windows_exporter-0.20.0-amd64_cpu_time":                1828,
-				"process_windows_exporter-0.20.0-amd64_handles":                 304,
-				"process_windows_exporter-0.20.0-amd64_io_bytes":                1205058,
-				"process_windows_exporter-0.20.0-amd64_io_operations":           5442,
-				"process_windows_exporter-0.20.0-amd64_page_faults":             145453,
-				"process_windows_exporter-0.20.0-amd64_page_file_bytes":         32546816,
-				"process_windows_exporter-0.20.0-amd64_pool_bytes":              201160,
-				"process_windows_exporter-0.20.0-amd64_threads":                 15,
-				"service_ajrouter_state_continue_pending":                       0,
-				"service_ajrouter_state_pause_pending":                          0,
-				"service_ajrouter_state_paused":                                 0,
-				"service_ajrouter_state_running":                                0,
-				"service_ajrouter_state_start_pending":                          0,
-				"service_ajrouter_state_stop_pending":                           0,
-				"service_ajrouter_state_stopped":                                1,
-				"service_ajrouter_state_unknown":                                0,
-				"service_ajrouter_status_degraded":                              0,
-				"service_ajrouter_status_error":                                 0,
-				"service_ajrouter_status_lost_comm":                             0,
-				"service_ajrouter_status_no_contact":                            0,
-				"service_ajrouter_status_nonrecover":                            0,
-				"service_ajrouter_status_ok":                                    1,
-				"service_ajrouter_status_pred_fail":                             0,
-				"service_ajrouter_status_service":                               0,
-				"service_ajrouter_status_starting":                              0,
-				"service_ajrouter_status_stopping":                              0,
-				"service_ajrouter_status_stressed":                              0,
-				"service_ajrouter_status_unknown":                               0,
-				"service_apphostsvc_state_continue_pending":                     0,
-				"service_apphostsvc_state_pause_pending":                        0,
-				"service_apphostsvc_state_paused":                               0,
-				"service_apphostsvc_state_running":                              1,
-				"service_apphostsvc_state_start_pending":                        0,
-				"service_apphostsvc_state_stop_pending":                         0,
-				"service_apphostsvc_state_stopped":                              0,
-				"service_apphostsvc_state_unknown":                              0,
-				"service_apphostsvc_status_degraded":                            0,
-				"service_apphostsvc_status_error":                               0,
-				"service_apphostsvc_status_lost_comm":                           0,
-				"service_apphostsvc_status_no_contact":                          0,
-				"service_apphostsvc_status_nonrecover":                          0,
-				"service_apphostsvc_status_ok":                                  1,
-				"service_apphostsvc_status_pred_fail":                           0,
-				"service_apphostsvc_status_service":                             0,
-				"service_apphostsvc_status_starting":                            0,
-				"service_apphostsvc_status_stopping":                            0,
-				"service_apphostsvc_status_stressed":                            0,
-				"service_apphostsvc_status_unknown":                             0,
-				"service_collection_duration":                                   1000,
-				"service_collection_success":                                    1,
-				"system_boot_time":                                              0,
-				"system_calls_total":                                            0,
-				"system_collection_duration":                                    0,
-				"system_collection_success":                                     1,
-				"system_context_switches_total":                                 0,
-				"system_exception_dispatches_total":                             0,
-				"system_processor_queue_length":                                 0,
-				"system_threads":                                                0,
-				"system_up_time":                                                1667302037,
-				"tcp_collection_duration":                                       0,
-				"tcp_collection_success":                                        1,
-				"tcp_conns_active_ipv4":                                         96883,
-				"tcp_conns_active_ipv6":                                         67,
-				"tcp_conns_established_ipv4":                                    3,
-				"tcp_conns_established_ipv6":                                    2,
-				"tcp_conns_failures_ipv4":                                       7587,
-				"tcp_conns_failures_ipv6":                                       6,
-				"tcp_conns_passive_ipv4":                                        20108,
-				"tcp_conns_passive_ipv6":                                        61,
-				"tcp_conns_resets_ipv4":                                         14793,
-				"tcp_conns_resets_ipv6":                                         2,
-				"tcp_segments_received_ipv4":                                    2322665,
-				"tcp_segments_received_ipv6":                                    6350,
-				"tcp_segments_retransmitted_ipv4":                               29907,
-				"tcp_segments_retransmitted_ipv6":                               24,
-				"tcp_segments_sent_ipv4":                                        1846067,
-				"tcp_segments_sent_ipv6":                                        6076,
-				"thermalzone_collection_duration":                               1714,
-				"thermalzone_collection_success":                                0,
+				"memory_pool_paged_bytes":                                       303906816,
+				"memory_pool_paged_resident_bytes":                              294293504,
+				"memory_standby_cache_core_bytes":                               107376640,
+				"memory_standby_cache_normal_priority_bytes":                    1019121664,
+				"memory_standby_cache_reserve_bytes":                            233033728,
+				"memory_standby_cache_total":                                    1359532032,
+				"memory_swap_page_operations_total":                             4956175,
+				"memory_swap_page_reads_total":                                  402087,
+				"memory_swap_page_writes_total":                                 7012,
+				"memory_swap_pages_read_total":                                  4643279,
+				"memory_swap_pages_written_total":                               312896,
+				"memory_system_cache_resident_bytes":                            170774528,
+				"memory_system_code_resident_bytes":                             17100800,
+				"memory_system_code_total_bytes":                                8192,
+				"memory_system_driver_resident_bytes":                           46092288,
+				"memory_system_driver_total_bytes":                              18731008,
+				"memory_transition_faults_total":                                27183527,
+				"memory_transition_pages_repurposed_total":                      2856471,
+				"memory_used_bytes":                                             2876776448,
+				"memory_write_copies_total":                                     1194039,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_bytes_received": 38290755856,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_bytes_sent":     8211165504,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_bytes_total":    46501921360,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_outbound_discarded": 0,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_outbound_errors":    0,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_received_discarded": 0,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_received_errors":    0,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_received_total":     4120869,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_received_unknown":   0,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_sent_total":         1332466,
+				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_total":              5453335,
+				"os_paging_free_bytes":                     1414107136,
+				"os_paging_limit_bytes":                    1476395008,
+				"os_paging_used_bytes":                     62287872,
+				"os_physical_memory_free_bytes":            1379946496,
+				"os_process_memory_limit_bytes":            140737488224256,
+				"os_processes":                             152,
+				"os_processes_limit":                       4294967295,
+				"os_time":                                  1667508748,
+				"os_users":                                 2,
+				"os_virtual_memory_bytes":                  5733113856,
+				"os_virtual_memory_free_bytes":             2285674496,
+				"os_visible_memory_bytes":                  4256718848,
+				"os_visible_memory_used_bytes":             2876772352,
+				"process_msedge_cpu_time":                  1919893,
+				"process_msedge_handles":                   5779,
+				"process_msedge_io_bytes":                  3978227378,
+				"process_msedge_io_operations":             16738642,
+				"process_msedge_page_faults":               5355941,
+				"process_msedge_page_file_bytes":           681603072,
+				"process_msedge_threads":                   213,
+				"process_msedge_working_set_private_bytes": 461344768,
+				"service_dhcp_state_continue_pending":      0,
+				"service_dhcp_state_pause_pending":         0,
+				"service_dhcp_state_paused":                0,
+				"service_dhcp_state_running":               1,
+				"service_dhcp_state_start_pending":         0,
+				"service_dhcp_state_stop_pending":          0,
+				"service_dhcp_state_stopped":               0,
+				"service_dhcp_state_unknown":               0,
+				"service_dhcp_status_degraded":             0,
+				"service_dhcp_status_error":                0,
+				"service_dhcp_status_lost_comm":            0,
+				"service_dhcp_status_no_contact":           0,
+				"service_dhcp_status_nonrecover":           0,
+				"service_dhcp_status_ok":                   1,
+				"service_dhcp_status_pred_fail":            0,
+				"service_dhcp_status_service":              0,
+				"service_dhcp_status_starting":             0,
+				"service_dhcp_status_stopping":             0,
+				"service_dhcp_status_stressed":             0,
+				"service_dhcp_status_unknown":              0,
+				"system_calls_total":                       1886567439,
+				"system_context_switches_total":            486550330,
+				"system_exception_dispatches_total":        160348,
+				"system_processor_queue_length":            0,
+				"system_threads":                           1559,
+				"system_up_time":                           165738,
+				"tcp_ipv4_conns_active":                    4301,
+				"tcp_ipv4_conns_established":               7,
+				"tcp_ipv4_conns_failures":                  137,
+				"tcp_ipv4_conns_passive":                   501,
+				"tcp_ipv4_conns_resets":                    1282,
+				"tcp_ipv4_segments_received":               676388,
+				"tcp_ipv4_segments_retransmitted":          2120,
+				"tcp_ipv4_segments_sent":                   871379,
+				"tcp_ipv6_conns_active":                    214,
+				"tcp_ipv6_conns_established":               0,
+				"tcp_ipv6_conns_failures":                  214,
+				"tcp_ipv6_conns_passive":                   0,
+				"tcp_ipv6_conns_resets":                    0,
+				"tcp_ipv6_segments_received":               1284,
+				"tcp_ipv6_segments_retransmitted":          428,
+				"tcp_ipv6_segments_sent":                   856,
 			},
 		},
 		"fails if endpoint returns invalid data": {
@@ -498,154 +346,139 @@ func TestWMI_Collect(t *testing.T) {
 
 			require.True(t, wmi.Init())
 
-			collected := wmi.Collect()
+			mx := wmi.Collect()
 
-			if collected != nil && test.wantCollected != nil {
-				collected["system_up_time"] = test.wantCollected["system_up_time"]
+			if mx != nil && test.wantCollected != nil {
+				mx["system_up_time"] = test.wantCollected["system_up_time"]
 			}
 
-			assert.Equal(t, test.wantCollected, collected)
+			assert.Equal(t, test.wantCollected, mx)
 			if len(test.wantCollected) > 0 {
-				testCharts(t, wmi, collected)
+				testCharts(t, wmi, mx)
 			}
 		})
 	}
 }
-func testCharts(t *testing.T, wmi *WMI, collected map[string]int64) {
-	ensureChartsCreated(t, wmi)
-	ensureChartsDynamicDimsCreated(t, wmi)
-	ensureCollectedHasAllChartsDimsVarsIDs(t, wmi, collected)
+func testCharts(t *testing.T, wmi *WMI, mx map[string]int64) {
+	ensureChartsDimsCreated(t, wmi)
+	ensureCollectedHasAllChartsDimsVarsIDs(t, wmi, mx)
 }
 
-func ensureChartsCreated(t *testing.T, w *WMI) {
-	for _, chart := range newCPUCharts() {
-		if w.cache.collectors[collectorCPU] {
+func ensureChartsDimsCreated(t *testing.T, w *WMI) {
+	for _, chart := range cpuCharts {
+		if w.cache.collection[collectorCPU] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range newMemCharts() {
-		if w.cache.collectors[collectorMemory] {
+	for _, chart := range memCharts {
+		if w.cache.collection[collectorMemory] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range newOSCharts() {
-		if w.cache.collectors[collectorOS] {
+	for _, chart := range tcpCharts {
+		if w.cache.collection[collectorTCP] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range newSystemCharts() {
-		if w.cache.collectors[collectorSystem] {
+	for _, chart := range osCharts {
+		if w.cache.collection[collectorOS] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range newLogonCharts() {
-		if w.cache.collectors[collectorLogon] {
+	for _, chart := range systemCharts {
+		if w.cache.collection[collectorSystem] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range newThermalzoneCharts() {
-		if w.cache.collectors[collectorThermalzone] {
+	for _, chart := range logonCharts {
+		if w.cache.collection[collectorLogon] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range *newCollectionCharts() {
-		assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
-	}
-
-	for coreID := range w.cache.cores {
-		for _, chart := range newCPUCoreCharts() {
-			id := fmt.Sprintf(chart.ID, coreID)
-			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' core", id, coreID)
+	for _, chart := range processesCharts {
+		if w.cache.collection[collectorProcess] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
 
-	for nicID := range w.cache.nics {
-		for _, chart := range newNICCharts() {
-			id := fmt.Sprintf(chart.ID, nicID)
-			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' nic", id, nicID)
+	for core := range w.cache.cores {
+		for _, chart := range cpuCoreChartsTmpl {
+			id := fmt.Sprintf(chart.ID, core)
+			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' core", id, core)
 		}
 	}
-
-	for diskID := range w.cache.volumes {
-		for _, chart := range newDiskCharts() {
-			id := fmt.Sprintf(chart.ID, diskID)
-			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' disk", id, diskID)
+	for disk := range w.cache.volumes {
+		for _, chart := range diskChartsTmpl {
+			id := fmt.Sprintf(chart.ID, disk)
+			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' disk", id, disk)
 		}
 	}
-}
-
-func ensureChartsDynamicDimsCreated(t *testing.T, w *WMI) {
-	for coreID := range w.cache.cores {
-		chart := w.Charts().Get(cpuDPCsChart.ID)
-		if chart != nil {
-			dimID := fmt.Sprintf("cpu_core_%s_dpc", coreID)
-			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has not dim '%s' for core '%s'", chart.ID, dimID, coreID)
-		}
-
-		chart = w.Charts().Get(cpuInterruptsChart.ID)
-		if chart != nil {
-			dimID := fmt.Sprintf("cpu_core_%s_interrupts", coreID)
-			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has not dim '%s' for core '%s'", chart.ID, dimID, coreID)
+	for nic := range w.cache.nics {
+		for _, chart := range nicChartsTmpl {
+			id := fmt.Sprintf(chart.ID, nic)
+			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' nic", id, nic)
 		}
 	}
-
 	for zone := range w.cache.thermalZones {
-		chart := w.Charts().Get(thermalzoneTemperatureChart.ID)
-		if chart != nil {
-			dimID := fmt.Sprintf("thermalzone_%s_temperature", zone)
-			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has not dim '%s' for core '%s'", chart.ID, dimID, zone)
+		for _, chart := range thermalzoneChartsTmpl {
+			id := fmt.Sprintf(chart.ID, zone)
+			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' thermalzone", id, zone)
+		}
+	}
+	for svc := range w.cache.services {
+		for _, chart := range serviceChartsTmpl {
+			id := fmt.Sprintf(chart.ID, svc)
+			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' service", id, svc)
+		}
+	}
+	for name := range w.cache.collectors {
+		for _, chart := range collectorChartsTmpl {
+			id := fmt.Sprintf(chart.ID, name)
+			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' collector", id, name)
 		}
 	}
 
-	for colID := range w.cache.collectors {
-		chart := w.Charts().Get(collectionDurationChart.ID)
-		if chart != nil {
-			dimID := colID + "_collection_duration"
-			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has not dim '%s' for collector '%s'", chart.ID, dimID, colID)
+	for _, chart := range processesCharts {
+		if chart = w.Charts().Get(chart.ID); chart == nil {
+			continue
 		}
-
-		chart = w.Charts().Get(collectionsStatusChart.ID)
-		if chart != nil {
-			dimID := colID + "_collection_success"
-			assert.Truef(t, chart.HasDim(dimID), "chart '%s' has not dim '%s' for collector '%s'", chart.ID, dimID, colID)
+		for proc := range w.cache.processes {
+			var found bool
+			for _, dim := range chart.Dims {
+				if found = strings.HasPrefix(dim.ID, "process_"+proc); found {
+					break
+				}
+			}
+			assert.Truef(t, found, "chart '%s' has not dim for '%s' process", chart.ID, proc)
 		}
 	}
 }
 
-func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WMI, collected map[string]int64) {
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WMI, mx map[string]int64) {
 	for _, chart := range *w.Charts() {
 		for _, dim := range chart.Dims {
-			_, ok := collected[dim.ID]
+			_, ok := mx[dim.ID]
 			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
 		}
 		for _, v := range chart.Vars {
-			_, ok := collected[v.ID]
+			_, ok := mx[v.ID]
 			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
 		}
 	}
-}
-
-func prepareWMIv0150() (wmi *WMI, cleanup func()) {
-	ts := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write(v0150Metrics)
-		}))
-
-	wmi = New()
-	wmi.URL = ts.URL
-	return wmi, ts.Close
 }
 
 func prepareWMIv0200() (wmi *WMI, cleanup func()) {

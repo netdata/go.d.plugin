@@ -37,7 +37,7 @@ type (
 		// internal use
 		buf     *bytes.Buffer
 		gzipr   *gzip.Reader
-		bodybuf *bufio.Reader
+		bodyBuf *bufio.Reader
 	}
 )
 
@@ -71,23 +71,74 @@ func NewWithSelector(client *http.Client, request web.Request, sr selector.Selec
 func (p *prometheus) Scrape() (Metrics, error) {
 	p.metrics.Reset()
 	p.metadata.reset()
+
 	if err := p.scrape(&p.metrics, p.metadata); err != nil {
 		return nil, err
 	}
+
 	p.metrics.Sort()
+
 	return p.metrics, nil
 }
 
-func (p prometheus) Metadata() Metadata {
+func (p *prometheus) Metadata() Metadata {
 	return p.metadata
 }
 
 func (p *prometheus) scrape(metrics *Metrics, meta Metadata) error {
 	p.buf.Reset()
+
 	if err := p.fetch(p.buf); err != nil {
 		return err
 	}
+
 	return p.parse(p.buf.Bytes(), metrics, meta)
+}
+
+func (p *prometheus) fetch(w io.Writer) error {
+	req, err := web.NewHTTPRequest(p.request)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Accept", acceptHeader)
+	req.Header.Add("Accept-Encoding", "gzip")
+	req.Header.Set("User-Agent", userAgentHeader)
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		_, _ = io.Copy(io.Discard, resp.Body)
+		_ = resp.Body.Close()
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("server returned HTTP status %s", resp.Status)
+	}
+
+	if resp.Header.Get("Content-Encoding") != "gzip" {
+		_, err = io.Copy(w, resp.Body)
+		return err
+	}
+
+	if p.gzipr == nil {
+		p.bodyBuf = bufio.NewReader(resp.Body)
+		p.gzipr, err = gzip.NewReader(p.bodyBuf)
+		if err != nil {
+			return err
+		}
+	} else {
+		p.bodyBuf.Reset(resp.Body)
+		_ = p.gzipr.Reset(p.bodyBuf)
+	}
+
+	_, err = io.Copy(w, p.gzipr)
+	_ = p.gzipr.Close()
+
+	return err
 }
 
 func (p *prometheus) parse(prometheusText []byte, metrics *Metrics, meta Metadata) error {
@@ -120,47 +171,4 @@ func (p *prometheus) parse(prometheusText []byte, metrics *Metrics, meta Metadat
 		}
 	}
 	return nil
-}
-
-func (p *prometheus) fetch(w io.Writer) error {
-	req, err := web.NewHTTPRequest(p.request)
-	if err != nil {
-		return err
-	}
-	req.Header.Add("Accept", acceptHeader)
-	req.Header.Add("Accept-Encoding", "gzip")
-	req.Header.Set("User-Agent", userAgentHeader)
-
-	resp, err := p.client.Do(req)
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		_, _ = io.Copy(io.Discard, resp.Body)
-		_ = resp.Body.Close()
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("server returned HTTP status %s", resp.Status)
-	}
-
-	if resp.Header.Get("Content-Encoding") != "gzip" {
-		_, err = io.Copy(w, resp.Body)
-		return err
-	}
-
-	if p.gzipr == nil {
-		p.bodybuf = bufio.NewReader(resp.Body)
-		p.gzipr, err = gzip.NewReader(p.bodybuf)
-		if err != nil {
-			return err
-		}
-	} else {
-		p.bodybuf.Reset(resp.Body)
-		_ = p.gzipr.Reset(p.bodybuf)
-	}
-	_, err = io.Copy(w, p.gzipr)
-	_ = p.gzipr.Close()
-	return err
 }
