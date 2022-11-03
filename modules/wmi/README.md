@@ -22,38 +22,16 @@ The module collects metrics from the following collectors:
 - [tcp](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.tcp.md)
 - [thermalzone](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.thermalzone.md)
 - [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md)
+- [service](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.service.md)
 
 ## Requirements
 
-`windows_exporter` version v0.13.0+
-
-- On your Windows
-  machine [download the latest version of the windows_exporter msi](https://github.com/prometheus-community/windows_exporter/releases)
-
-- Install the `windows_exporter` with `msiexec` and the parameters shown below:
-
-  ```bash 
-  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp
-  ```
-- Verify that the exporter works properly by accessing http://localhost:9182/
-
-Netdata also supports
-the [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md) and
-[service](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.service.md) collectors,
-which by defaults expose metrics about all processes and services in the system. This can result in thousands of time
-series and can significantly increase CPU usage. It is recommended to use filtering
-flags ([process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md#flags),
-[service](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.service.md#flags))
-to keep down the number of returned metrics.
-
-For example:
-
-  ```bash 
-  msiexec -i <path-to-msi-file> ENABLED_COLLECTORS=cpu,memory,net,logical_disk,os,system,logon,thermalzone,tcp,process EXTRA_FLAGS="--collector.process.whitelist=""(firefox|FIREFOX|chrome).*"" --collector.service.services-where ""Name LIKE 'sql%'"""
-  ```
-
-More installation options can be found in the
-windows_exporter [official installation guide](https://github.com/prometheus-community/windows_exporter#installation).
+On your Windows machine:
+- Install the latest [Prometheus exporter for Windows](https://github.com/prometheus-community/windows_exporter/releases).
+- Download the [netdata.msi](https://github.com/netdata/msi-installer/releases)
+- Run netdata.msi directly, or with the options provided by Netdata Cloud. It will install WSL2 or WSL1 and run Netdata on your machine.
+  If you do not want to install WSL on your Windows machines, you can configure a single Netdata instance to collect data remotely from 
+  multiple Windows hosts. Just add multiple jobs to `wmi.conf`, as shown in the [configuration section](#configuration).
 
 ## Metrics
 
