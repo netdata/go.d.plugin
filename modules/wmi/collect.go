@@ -4,11 +4,9 @@ package wmi
 
 import (
 	"errors"
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"net/url"
 	"strings"
-	"time"
-
-	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
 const precision = 1000
@@ -61,19 +59,12 @@ func (w *WMI) collect() (map[string]int64, error) {
 		w.doCheck = true
 	}
 
-	if now := time.Now(); now.Sub(w.doSlowTime) > w.doSlowEvery {
-		w.doSlowTime = now
-		w.slowCache = make(map[string]int64)
-		if err := w.collectMetrics(w.slowCache, w.promSlow); err != nil {
-			if !strings.Contains(err.Error(), "unavailable collector") {
-				return nil, err
-			}
-			w.doCheck = true
+	// TODO: charts with different update_every required
+	if err := w.collectMetrics(mx, w.promSlow); err != nil {
+		if !strings.Contains(err.Error(), "unavailable collector") {
+			return nil, err
 		}
-	}
-
-	for k, v := range w.slowCache {
-		mx[k] = v
+		w.doCheck = true
 	}
 
 	if hasKey(mx, "os_visible_memory_bytes", "memory_available_bytes") {

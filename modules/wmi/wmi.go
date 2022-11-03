@@ -39,9 +39,8 @@ func New() *WMI {
 			processes:    make(map[string]bool),
 			services:     make(map[string]bool),
 		},
-		charts:      &module.Charts{},
-		doCheck:     true,
-		doSlowEvery: time.Second * 10,
+		charts:  &module.Charts{},
+		doCheck: true,
 	}
 }
 
@@ -62,10 +61,6 @@ type (
 		promCheck  prometheus.Prometheus
 		promFast   prometheus.Prometheus
 		promSlow   prometheus.Prometheus
-
-		doSlowTime  time.Time
-		doSlowEvery time.Duration
-		slowCache   map[string]int64
 
 		cache cache
 	}
