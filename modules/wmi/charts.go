@@ -989,9 +989,9 @@ func (w *WMI) addProcessToCharts(procID string) {
 		case processesCPUUtilizationTotalChart.ID:
 			id := fmt.Sprintf("process_%s_cpu_time", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental, Div: 1000, Mul: 100}
-			//if procID == "Idle" {
-			//	dim.Hidden = true
-			//}
+			if procID == "Idle" {
+				dim.Hidden = true
+			}
 		case processesMemoryUsageChart.ID:
 			id := fmt.Sprintf("process_%s_working_set_private_bytes", procID)
 			dim = &module.Dim{ID: id, Name: procID}
