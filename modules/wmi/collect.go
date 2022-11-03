@@ -121,11 +121,16 @@ func (w *WMI) collectMetrics(mx map[string]int64, prom prometheus.Prometheus) er
 		return err
 	}
 
+	if pms.Len() == 0 {
+		return nil
+	}
+
 	w.collectCollector(mx, pms)
 	for _, pm := range pms.FindByName(metricCollectorSuccess) {
 		if pm.Value == 0 {
 			continue
 		}
+
 		switch pm.Labels.Get("collector") {
 		case collectorCPU:
 			w.collectCPU(mx, pms)
@@ -156,6 +161,8 @@ func (w *WMI) collectMetrics(mx map[string]int64, prom prometheus.Prometheus) er
 }
 
 func (w *WMI) checkSupportedCollectors() error {
+	w.promFast, w.promSlow = nil, nil
+
 	pms, err := w.promCheck.Scrape()
 	if err != nil {
 		return err
@@ -165,20 +172,36 @@ func (w *WMI) checkSupportedCollectors() error {
 		return errors.New("collected metrics aren't windows_exporter metrics")
 	}
 
+	seen := make(map[string]bool)
 	var fast, slow []string
 	for _, pm := range pms {
 		name := pm.Labels.Get("collector")
 		switch {
 		case name == collectorThermalZone && pm.Value == 0:
 		case fastCollectors[name]:
+			seen[name] = true
 			fast = append(fast, name)
 		case slowCollectors[name]:
+			seen[name] = true
 			slow = append(slow, name)
 		}
 	}
 
-	if len(fast) == 0 && len(slow) == 0 {
+	if len(seen) == 0 {
 		return errors.New("no supported collectors found")
+	}
+
+	for name := range seen {
+		if !w.cache.collectors[name] {
+			w.cache.collectors[name] = true
+			w.addCollectorCharts(name)
+		}
+	}
+	for name := range w.cache.collectors {
+		if !seen[name] {
+			delete(w.cache.collectors, name)
+			w.removeCollectorCharts(name)
+		}
 	}
 
 	req := w.Request.Copy()
