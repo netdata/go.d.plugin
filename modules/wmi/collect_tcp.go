@@ -5,11 +5,6 @@ package wmi
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	collectorTCP = "tcp"
-
-	afIPV4 = "ipv4"
-	afIPV6 = "ipv6"
-
 	metricTCPConnectionFailure               = "windows_tcp_connection_failures_total"
 	metricTCPConnectionActive                = "windows_tcp_connections_active_total"
 	metricTCPConnectionEstablished           = "windows_tcp_connections_established"
@@ -20,69 +15,51 @@ const (
 	metricTCPConnectionSegmentsSent          = "windows_tcp_segments_sent_total"
 )
 
-var tcpMetricNames = []string{
-	metricTCPConnectionFailure,
-	metricTCPConnectionActive,
-	metricTCPConnectionEstablished,
-	metricTCPConnectionPassive,
-	metricTCPConnectionReset,
-	metricTCPConnectionSegmentsReceived,
-	metricTCPConnectionSegmentsRetransmitted,
-	metricTCPConnectionSegmentsSent,
-}
-
-func doCollectTCP(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorTCP)
-	return enabled && success
-}
-
-func collectTCP(pms prometheus.Metrics) *tcpMetrics {
-	if !doCollectTCP(pms) {
-		return nil
+func (w *WMI) collectTCP(mx map[string]int64, pms prometheus.Metrics) {
+	if !w.cache.collection[collectorTCP] {
+		w.cache.collection[collectorTCP] = true
+		w.addTCPCharts()
 	}
 
-	tcpm := &tcpMetrics{}
-	for _, name := range tcpMetricNames {
-		collectTCPMetric(tcpm, pms, name)
+	px := "tcp_"
+	for _, pm := range pms.FindByName(metricTCPConnectionFailure) {
+		if af := pm.Labels.Get("af"); af != "" {
+			mx[px+af+"_conns_failures"] = int64(pm.Value)
+		}
 	}
-
-	return tcpm
-}
-
-func collectTCPMetric(tcpm *tcpMetrics, pms prometheus.Metrics, name string) {
-	for _, pm := range pms.FindByName(name) {
-		af := pm.Labels.Get("af")
-
-		assignTCPMetric(tcpm, af, name, pm.Value)
+	for _, pm := range pms.FindByName(metricTCPConnectionActive) {
+		if af := pm.Labels.Get("af"); af != "" {
+			mx[px+af+"_conns_active"] = int64(pm.Value)
+		}
 	}
-}
-
-func assignTCPMetric(tcpm *tcpMetrics, af string, name string, value float64) {
-	switch name {
-	case metricTCPConnectionFailure:
-		assignTCPConnection(&tcpm.failures, af, value)
-	case metricTCPConnectionActive:
-		assignTCPConnection(&tcpm.active, af, value)
-	case metricTCPConnectionEstablished:
-		assignTCPConnection(&tcpm.established, af, value)
-	case metricTCPConnectionPassive:
-		assignTCPConnection(&tcpm.passive, af, value)
-	case metricTCPConnectionReset:
-		assignTCPConnection(&tcpm.reset, af, value)
-	case metricTCPConnectionSegmentsReceived:
-		assignTCPConnection(&tcpm.segmentsReceived, af, value)
-	case metricTCPConnectionSegmentsRetransmitted:
-		assignTCPConnection(&tcpm.segmentsRetransmitted, af, value)
-	case metricTCPConnectionSegmentsSent:
-		assignTCPConnection(&tcpm.segmentsSent, af, value)
+	for _, pm := range pms.FindByName(metricTCPConnectionEstablished) {
+		if af := pm.Labels.Get("af"); af != "" {
+			mx[px+af+"_conns_established"] = int64(pm.Value)
+		}
 	}
-}
-
-func assignTCPConnection(c *tcpConnectionAF, af string, value float64) {
-	switch af {
-	case afIPV4:
-		c.ipv4 = value
-	case afIPV6:
-		c.ipv6 = value
+	for _, pm := range pms.FindByName(metricTCPConnectionPassive) {
+		if af := pm.Labels.Get("af"); af != "" {
+			mx[px+af+"_conns_passive"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricTCPConnectionReset) {
+		if af := pm.Labels.Get("af"); af != "" {
+			mx[px+af+"_conns_resets"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricTCPConnectionSegmentsReceived) {
+		if af := pm.Labels.Get("af"); af != "" {
+			mx[px+af+"_segments_received"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricTCPConnectionSegmentsRetransmitted) {
+		if af := pm.Labels.Get("af"); af != "" {
+			mx[px+af+"_segments_retransmitted"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricTCPConnectionSegmentsSent) {
+		if af := pm.Labels.Get("af"); af != "" {
+			mx[px+af+"_segments_sent"] = int64(pm.Value)
+		}
 	}
 }

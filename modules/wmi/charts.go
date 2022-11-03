@@ -4,7 +4,6 @@ package wmi
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -12,9 +11,9 @@ import (
 
 const (
 	prioCPUUtil = module.Priority + iota
-	prioCPUDPCs
-	prioCPUInterrupts
 	prioCPUCoreUtil
+	prioCPUInterrupts
+	prioCPUDPCs
 	prioCPUCoreCState
 
 	prioMemUtil
@@ -26,15 +25,24 @@ const (
 	prioMemCacheFaults
 	prioMemSystemPool
 
+	prioDiskSpaceUsage
+	prioDiskBandwidth
+	prioDiskOperations
+	prioDiskAvgLatency
+
 	prioNICBandwidth
 	prioNICPackets
 	prioNICErrors
 	prioNICDiscards
 
-	prioDiskUtil
-	prioDiskBandwidth
-	prioDiskOperations
-	prioDiskAvgLatency
+	prioTCPConnsEstablished
+	prioTCPConnsActive
+	prioTCPConnsPassive
+	prioTCPConnsFailure
+	prioTCPConnsReset
+	prioTCPSegmentsReceived
+	prioTCPSegmentsSent
+	prioTCPSegmentsRetransmitted
 
 	prioOSProcesses
 	prioOSUsers
@@ -46,53 +54,694 @@ const (
 
 	prioLogonSessions
 
-	prioTCPConnsEstablished
-	prioTCPConnsActive
-	prioTCPConnsPassive
-	prioTCPConnsFailure
-	prioTCPConnsReset
-	prioTCPSegmentsReceived
-	prioTCPSegmentsSent
-	prioTCPSegmentsRetransmitted
-
 	prioThermalzoneTemperature
 
 	prioProcessesCPUUtilization
-	prioProcessesHandles
+	prioProcessesMemoryUsage
 	prioProcessesIOBytes
 	prioProcessesIOOperations
 	prioProcessesPageFaults
 	prioProcessesPageFileBytes
-	prioProcessesPoolBytes
 	prioProcessesThreads
+	prioProcessesHandles
 
 	prioServiceState
 	prioServiceStatus
 
-	prioCollectionDuration
-	prioCollectionStatus
+	prioCollectorDuration
+	prioCollectorStatus
 )
 
-func newServiceCharts(name string) *module.Charts {
-	charts := module.Charts{
+// CPU
+var (
+	cpuCharts = module.Charts{
+		cpuUtilChart.Copy(),
+	}
+	cpuUtilChart = module.Chart{
+		ID:       "cpu_utilization_total",
+		Title:    "Total CPU Utilization (all cores)",
+		Units:    "percentage",
+		Fam:      "cpu",
+		Ctx:      "wmi.cpu_utilization_total",
+		Type:     module.Stacked,
+		Priority: prioCPUUtil,
+		Dims: module.Dims{
+			{ID: "cpu_idle_time", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: module.DimOpts{Hidden: true}},
+			{ID: "cpu_dpc_time", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_user_time", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_privileged_time", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
+			{ID: "cpu_interrupt_time", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
+		},
+	}
+)
+
+// CPU core
+var (
+	cpuCoreChartsTmpl = module.Charts{
+		cpuCoreUtilChartTmpl.Copy(),
+		cpuCoreInterruptsChartTmpl.Copy(),
+		cpuDPCsChartTmpl.Copy(),
+		cpuCoreCStateChartTmpl.Copy(),
+	}
+	cpuCoreUtilChartTmpl = module.Chart{
+		ID:       "core_%s_cpu_utilization",
+		Title:    "Core CPU Utilization",
+		Units:    "percentage",
+		Fam:      "cpu",
+		Ctx:      "wmi.cpu_core_utilization",
+		Type:     module.Stacked,
+		Priority: prioCPUCoreUtil,
+		Dims: module.Dims{
+			{ID: "cpu_core_%s_idle_time", Name: "idle", Algo: module.PercentOfIncremental, Div: precision, DimOpts: module.DimOpts{Hidden: true}},
+			{ID: "cpu_core_%s_dpc_time", Name: "dpc", Algo: module.PercentOfIncremental, Div: precision},
+			{ID: "cpu_core_%s_user_time", Name: "user", Algo: module.PercentOfIncremental, Div: precision},
+			{ID: "cpu_core_%s_privileged_time", Name: "privileged", Algo: module.PercentOfIncremental, Div: precision},
+			{ID: "cpu_core_%s_interrupt_time", Name: "interrupt", Algo: module.PercentOfIncremental, Div: precision},
+		},
+	}
+	cpuCoreInterruptsChartTmpl = module.Chart{
+		ID:       "cpu_core_%s_interrupts",
+		Title:    "Received and Serviced Hardware Interrupts",
+		Units:    "interrupts/s",
+		Fam:      "cpu",
+		Ctx:      "wmi.cpu_core_interrupts",
+		Priority: prioCPUInterrupts,
+		Dims: module.Dims{
+			{ID: "cpu_core_%s_interrupts", Name: "interrupts", Algo: module.Incremental},
+		},
+	}
+	cpuDPCsChartTmpl = module.Chart{
+		ID:       "cpu_core_%s_dpcs",
+		Title:    "Received and Serviced Deferred Procedure Calls (DPC)",
+		Units:    "dpc/s",
+		Fam:      "cpu",
+		Ctx:      "wmi.cpu_core_dpcs",
+		Priority: prioCPUDPCs,
+		Dims: module.Dims{
+			{ID: "cpu_core_%s_dpcs", Name: "dpcs", Algo: module.Incremental},
+		},
+	}
+	cpuCoreCStateChartTmpl = module.Chart{
+		ID:       "cpu_core_%s_cpu_cstate",
+		Title:    "Core Time Spent in Low-Power Idle State",
+		Units:    "percentage",
+		Fam:      "cpu",
+		Ctx:      "wmi.cpu_core_cstate",
+		Type:     module.Stacked,
+		Priority: prioCPUCoreCState,
+		Dims: module.Dims{
+			{ID: "cpu_core_%s_cstate_c1", Name: "c1", Algo: module.PercentOfIncremental, Div: precision},
+			{ID: "cpu_core_%s_cstate_c2", Name: "c2", Algo: module.PercentOfIncremental, Div: precision},
+			{ID: "cpu_core_%s_cstate_c3", Name: "c3", Algo: module.PercentOfIncremental, Div: precision},
+		},
+	}
+)
+
+// Memory
+var (
+	memCharts = module.Charts{
+		memUtilChart.Copy(),
+		memPageFaultsChart.Copy(),
+		memSwapUtilChart.Copy(),
+		memSwapOperationsChart.Copy(),
+		memSwapPagesChart.Copy(),
+		memCacheChart.Copy(),
+		memCacheFaultsChart.Copy(),
+		memSystemPoolChart.Copy(),
+	}
+	memUtilChart = module.Chart{
+		ID:       "memory_utilization",
+		Title:    "Memory Utilization",
+		Units:    "bytes",
+		Fam:      "mem",
+		Ctx:      "wmi.memory_utilization",
+		Type:     module.Stacked,
+		Priority: prioMemUtil,
+		Dims: module.Dims{
+			{ID: "memory_available_bytes", Name: "available"},
+			{ID: "memory_used_bytes", Name: "used"},
+		},
+		Vars: module.Vars{
+			{ID: "os_visible_memory_bytes"},
+		},
+	}
+	memPageFaultsChart = module.Chart{
+		ID:       "memory_page_faults",
+		Title:    "Memory Page Faults",
+		Units:    "pgfaults/s",
+		Fam:      "mem",
+		Ctx:      "wmi.memory_page_faults",
+		Priority: prioMemPageFaults,
+		Dims: module.Dims{
+			{ID: "memory_page_faults_total", Name: "page_faults", Algo: module.Incremental},
+		},
+	}
+	memSwapUtilChart = module.Chart{
+		ID:       "memory_swap_utilization",
+		Title:    "Swap Utilization",
+		Units:    "bytes",
+		Fam:      "mem",
+		Ctx:      "wmi.memory_swap_utilization",
+		Type:     module.Stacked,
+		Priority: prioMemSwapUtil,
+		Dims: module.Dims{
+			{ID: "memory_not_committed_bytes", Name: "available"},
+			{ID: "memory_committed_bytes", Name: "used"},
+		},
+		Vars: module.Vars{
+			{ID: "memory_commit_limit"},
+		},
+	}
+	memSwapOperationsChart = module.Chart{
+		ID:       "memory_swap_operations",
+		Title:    "Swap Operations",
+		Units:    "operations/s",
+		Fam:      "mem",
+		Ctx:      "wmi.memory_swap_operations",
+		Type:     module.Area,
+		Priority: prioMemSwapOperations,
+		Dims: module.Dims{
+			{ID: "memory_swap_page_reads_total", Name: "read", Algo: module.Incremental},
+			{ID: "memory_swap_page_writes_total", Name: "write", Algo: module.Incremental, Mul: -1},
+		},
+	}
+	memSwapPagesChart = module.Chart{
+		ID:       "memory_swap_pages",
+		Title:    "Swap Pages",
+		Units:    "pages/s",
+		Fam:      "mem",
+		Ctx:      "wmi.memory_swap_pages",
+		Priority: prioMemSwapPages,
+		Dims: module.Dims{
+			{ID: "memory_swap_pages_read_total", Name: "read", Algo: module.Incremental},
+			{ID: "memory_swap_pages_written_total", Name: "written", Algo: module.Incremental, Mul: -1},
+		},
+	}
+	memCacheChart = module.Chart{
+		ID:       "memory_cached",
+		Title:    "Cached",
+		Units:    "bytes",
+		Fam:      "mem",
+		Ctx:      "wmi.memory_cached",
+		Type:     module.Area,
+		Priority: prioMemCache,
+		Dims: module.Dims{
+			{ID: "memory_cache_total", Name: "cached"},
+		},
+	}
+	memCacheFaultsChart = module.Chart{
+		ID:       "memory_cache_faults",
+		Title:    "Cache Faults",
+		Units:    "faults/s",
+		Fam:      "mem",
+		Ctx:      "wmi.memory_cache_faults",
+		Priority: prioMemCacheFaults,
+		Dims: module.Dims{
+			{ID: "memory_cache_faults_total", Name: "cache_faults", Algo: module.Incremental},
+		},
+	}
+	memSystemPoolChart = module.Chart{
+		ID:       "memory_system_pool",
+		Title:    "System Memory Pool",
+		Units:    "bytes",
+		Fam:      "mem",
+		Ctx:      "wmi.memory_system_pool",
+		Type:     module.Stacked,
+		Priority: prioMemSystemPool,
+		Dims: module.Dims{
+			{ID: "memory_pool_paged_bytes", Name: "paged"},
+			{ID: "memory_pool_nonpaged_bytes_total", Name: "non-paged"},
+		},
+	}
+)
+
+// Logical Disks
+var (
+	diskChartsTmpl = module.Charts{
+		diskSpaceUsageChartTmpl.Copy(),
+		diskBandwidthChartTmpl.Copy(),
+		diskOperationsChartTmpl.Copy(),
+		diskAvgLatencyChartTmpl.Copy(),
+	}
+	diskSpaceUsageChartTmpl = module.Chart{
+		ID:       "logical_disk_%s_space_usage",
+		Title:    "Space usage",
+		Units:    "bytes",
+		Fam:      "disk",
+		Ctx:      "wmi.logical_disk_space_usage",
+		Type:     module.Stacked,
+		Priority: prioDiskSpaceUsage,
+		Dims: module.Dims{
+			{ID: "logical_disk_%s_free_space", Name: "free"},
+			{ID: "logical_disk_%s_used_space", Name: "used"},
+		},
+	}
+	diskBandwidthChartTmpl = module.Chart{
+		ID:       "logical_disk_%s_bandwidth",
+		Title:    "Bandwidth",
+		Units:    "bytes/s",
+		Fam:      "disk",
+		Ctx:      "wmi.logical_disk_bandwidth",
+		Type:     module.Area,
+		Priority: prioDiskBandwidth,
+		Dims: module.Dims{
+			{ID: "logical_disk_%s_read_bytes_total", Name: "read", Algo: module.Incremental},
+			{ID: "logical_disk_%s_write_bytes_total", Name: "write", Algo: module.Incremental, Mul: -1},
+		},
+	}
+	diskOperationsChartTmpl = module.Chart{
+		ID:       "logical_disk_%s_operations",
+		Title:    "Operations",
+		Units:    "operations/s",
+		Fam:      "disk",
+		Ctx:      "wmi.logical_disk_operations",
+		Priority: prioDiskOperations,
+		Dims: module.Dims{
+			{ID: "logical_disk_%s_reads_total", Name: "reads", Algo: module.Incremental},
+			{ID: "logical_disk_%s_writes_total", Name: "writes", Algo: module.Incremental, Mul: -1},
+		},
+	}
+	diskAvgLatencyChartTmpl = module.Chart{
+		ID:       "logical_disk_%s_latency",
+		Title:    "Average Read/Write Latency Disk",
+		Units:    "milliseconds",
+		Fam:      "disk",
+		Ctx:      "wmi.logical_disk_latency",
+		Priority: prioDiskAvgLatency,
+		Dims: module.Dims{
+			{ID: "logical_disk_%s_read_latency", Name: "read", Algo: module.Incremental},
+			{ID: "logical_disk_%s_write_latency", Name: "write", Algo: module.Incremental},
+		},
+	}
+)
+
+// Network interfaces
+var (
+	nicChartsTmpl = module.Charts{
+		nicBandwidthChartTmpl.Copy(),
+		nicPacketsChartTmpl.Copy(),
+		nicErrorsChartTmpl.Copy(),
+		nicDiscardsChartTmpl.Copy(),
+	}
+	nicBandwidthChartTmpl = module.Chart{
+		ID:       "nic_%s_bandwidth",
+		Title:    "Bandwidth",
+		Units:    "kilobits/s",
+		Fam:      "net",
+		Ctx:      "wmi.net_nic_bandwidth",
+		Type:     module.Area,
+		Priority: prioNICBandwidth,
+		Dims: module.Dims{
+			{ID: "net_nic_%s_bytes_received", Name: "received", Algo: module.Incremental, Div: 1000},
+			{ID: "net_nic_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -1, Div: 1000},
+		},
+	}
+	nicPacketsChartTmpl = module.Chart{
+		ID:       "nic_%s_packets",
+		Title:    "Packets",
+		Units:    "packets/s",
+		Fam:      "net",
+		Ctx:      "wmi.net_nic_packets",
+		Priority: prioNICPackets,
+		Dims: module.Dims{
+			{ID: "net_nic_%s_packets_received_total", Name: "received", Algo: module.Incremental},
+			{ID: "net_nic_%s_packets_sent_total", Name: "sent", Algo: module.Incremental, Mul: -1},
+		},
+	}
+	nicErrorsChartTmpl = module.Chart{
+		ID:       "nic_%s_errors",
+		Title:    "Errors",
+		Units:    "errors/s",
+		Fam:      "net",
+		Ctx:      "wmi.net_nic_errors",
+		Priority: prioNICErrors,
+		Dims: module.Dims{
+			{ID: "net_nic_%s_packets_received_errors", Name: "inbound", Algo: module.Incremental},
+			{ID: "net_nic_%s_packets_outbound_errors", Name: "outbound", Algo: module.Incremental, Mul: -1},
+		},
+	}
+	nicDiscardsChartTmpl = module.Chart{
+		ID:       "nic_%s_discarded",
+		Title:    "Discards",
+		Units:    "discards/s",
+		Fam:      "net",
+		Ctx:      "wmi.net_nic_discarded",
+		Priority: prioNICDiscards,
+		Dims: module.Dims{
+			{ID: "net_nic_%s_packets_received_discarded", Name: "inbound", Algo: module.Incremental},
+			{ID: "net_nic_%s_packets_outbound_discarded", Name: "outbound", Algo: module.Incremental, Mul: -1},
+		},
+	}
+)
+
+// TCP
+var (
+	tcpCharts = module.Charts{
+		tcpConnsActiveChart.Copy(),
+		tcpConnsEstablishedChart.Copy(),
+		tcpConnsFailuresChart.Copy(),
+		tcpConnsPassiveChart.Copy(),
+		tcpConnsResetsChart.Copy(),
+		tcpSegmentsReceivedChart.Copy(),
+		tcpSegmentsRetransmittedChart.Copy(),
+		tcpSegmentsSentChart.Copy(),
+	}
+	tcpConnsEstablishedChart = module.Chart{
+		ID:       "tcp_conns_established",
+		Title:    "TCP established connections",
+		Units:    "connections",
+		Fam:      "tcp",
+		Ctx:      "wmi.tcp_conns_established",
+		Priority: prioTCPConnsEstablished,
+		Dims: module.Dims{
+			{ID: "tcp_ipv4_conns_established", Name: "ipv4"},
+			{ID: "tcp_ipv6_conns_established", Name: "ipv6"},
+		},
+	}
+	tcpConnsActiveChart = module.Chart{
+		ID:       "tcp_conns_active",
+		Title:    "TCP active connections",
+		Units:    "connections/s",
+		Fam:      "tcp",
+		Ctx:      "wmi.tcp_conns_active",
+		Priority: prioTCPConnsActive,
+		Dims: module.Dims{
+			{ID: "tcp_ipv4_conns_active", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_ipv6_conns_active", Name: "ipv6", Algo: module.Incremental},
+		},
+	}
+	tcpConnsPassiveChart = module.Chart{
+		ID:       "tcp_conns_passive",
+		Title:    "TCP passive connections",
+		Units:    "connections/s",
+		Fam:      "tcp",
+		Ctx:      "wmi.tcp_conns_passive",
+		Priority: prioTCPConnsPassive,
+		Dims: module.Dims{
+			{ID: "tcp_ipv4_conns_passive", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_ipv6_conns_passive", Name: "ipv6", Algo: module.Incremental},
+		},
+	}
+	tcpConnsFailuresChart = module.Chart{
+		ID:       "tcp_conns_failures",
+		Title:    "TCP connection failures",
+		Units:    "failures/s",
+		Fam:      "tcp",
+		Ctx:      "wmi.tcp_conns_failures",
+		Priority: prioTCPConnsFailure,
+		Dims: module.Dims{
+			{ID: "tcp_ipv4_conns_failures", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_ipv6_conns_failures", Name: "ipv6", Algo: module.Incremental},
+		},
+	}
+	tcpConnsResetsChart = module.Chart{
+		ID:       "tcp_conns_resets",
+		Title:    "TCP connections resets",
+		Units:    "resets/s",
+		Fam:      "tcp",
+		Ctx:      "wmi.tcp_conns_resets",
+		Priority: prioTCPConnsReset,
+		Dims: module.Dims{
+			{ID: "tcp_ipv4_conns_resets", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_ipv6_conns_resets", Name: "ipv6", Algo: module.Incremental},
+		},
+	}
+	tcpSegmentsReceivedChart = module.Chart{
+		ID:       "tcp_segments_received",
+		Title:    "Number of TCP segments received",
+		Units:    "segments/s",
+		Fam:      "tcp",
+		Ctx:      "wmi.tcp_segments_received",
+		Priority: prioTCPSegmentsReceived,
+		Dims: module.Dims{
+			{ID: "tcp_ipv4_segments_received", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_ipv6_segments_received", Name: "ipv6", Algo: module.Incremental},
+		},
+	}
+	tcpSegmentsSentChart = module.Chart{
+		ID:       "tcp_segments_sent",
+		Title:    "Number of TCP segments sent",
+		Units:    "segments/s",
+		Fam:      "tcp",
+		Ctx:      "wmi.tcp_segments_sent",
+		Priority: prioTCPSegmentsSent,
+		Dims: module.Dims{
+			{ID: "tcp_ipv4_segments_sent", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_ipv6_segments_sent", Name: "ipv6", Algo: module.Incremental},
+		},
+	}
+	tcpSegmentsRetransmittedChart = module.Chart{
+		ID:       "tcp_segments_retransmitted",
+		Title:    "Number of TCP segments retransmitted",
+		Units:    "segments/s",
+		Fam:      "tcp",
+		Ctx:      "wmi.tcp_segments_retransmitted",
+		Priority: prioTCPSegmentsRetransmitted,
+		Dims: module.Dims{
+			{ID: "tcp_ipv4_segments_retransmitted", Name: "ipv4", Algo: module.Incremental},
+			{ID: "tcp_ipv6_segments_retransmitted", Name: "ipv6", Algo: module.Incremental},
+		},
+	}
+)
+
+// OS
+var (
+	osCharts = module.Charts{
+		osProcessesChart.Copy(),
+		osUsersChart.Copy(),
+		osMemoryUsage.Copy(),
+		osPagingFilesUsageChart.Copy(),
+	}
+	osProcessesChart = module.Chart{
+		ID:       "os_processes",
+		Title:    "Processes",
+		Units:    "number",
+		Fam:      "os",
+		Ctx:      "wmi.os_processes",
+		Priority: prioOSProcesses,
+		Dims: module.Dims{
+			{ID: "os_processes", Name: "processes"},
+		},
+		Vars: module.Vars{
+			{ID: "os_processes_limit"},
+		},
+	}
+	osUsersChart = module.Chart{
+		ID:       "os_users",
+		Title:    "Number of Users",
+		Units:    "users",
+		Fam:      "os",
+		Ctx:      "wmi.os_users",
+		Priority: prioOSUsers,
+		Dims: module.Dims{
+			{ID: "os_users", Name: "users"},
+		},
+	}
+	osMemoryUsage = module.Chart{
+		ID:       "os_visible_memory_usage",
+		Title:    "Visible Memory Usage",
+		Units:    "bytes",
+		Fam:      "os",
+		Ctx:      "wmi.os_visible_memory_usage",
+		Type:     module.Stacked,
+		Priority: prioOSVisibleMemoryUsage,
+		Dims: module.Dims{
+			{ID: "os_physical_memory_free_bytes", Name: "free"},
+			{ID: "os_visible_memory_used_bytes", Name: "used"},
+		},
+		Vars: module.Vars{
+			{ID: "os_visible_memory_bytes"},
+		},
+	}
+	osPagingFilesUsageChart = module.Chart{
+		ID:       "os_paging_files_usage",
+		Title:    "Paging Files Usage",
+		Units:    "bytes",
+		Fam:      "os",
+		Ctx:      "wmi.os_paging_files_usage",
+		Type:     module.Stacked,
+		Priority: prioOSPagingUsage,
+		Dims: module.Dims{
+			{ID: "os_paging_free_bytes", Name: "free"},
+			{ID: "os_paging_used_bytes", Name: "used"},
+		},
+		Vars: module.Vars{
+			{ID: "os_paging_limit_bytes"},
+		},
+	}
+)
+
+// System
+var (
+	systemCharts = module.Charts{
+		systemThreadsChart.Copy(),
+		systemUptimeChart.Copy(),
+	}
+	systemThreadsChart = module.Chart{
+		ID:       "system_threads",
+		Title:    "Threads",
+		Units:    "number",
+		Fam:      "system",
+		Ctx:      "wmi.system_threads",
+		Priority: prioSystemThreads,
+		Dims: module.Dims{
+			{ID: "system_threads", Name: "threads"},
+		},
+	}
+	systemUptimeChart = module.Chart{
+		ID:       "system_uptime",
+		Title:    "Uptime",
+		Units:    "seconds",
+		Fam:      "system",
+		Ctx:      "wmi.system_uptime",
+		Priority: prioSystemUptime,
+		Dims: module.Dims{
+			{ID: "system_up_time", Name: "time"},
+		},
+	}
+)
+
+// Logon
+var (
+	logonCharts = module.Charts{
+		logonSessionsChart.Copy(),
+	}
+	logonSessionsChart = module.Chart{
+		ID:       "logon_active_sessions_by_type",
+		Title:    "Active User Logon Sessions By Type",
+		Units:    "sessions",
+		Fam:      "logon",
+		Ctx:      "wmi.logon_type_sessions",
+		Type:     module.Stacked,
+		Priority: prioLogonSessions,
+		Dims: module.Dims{
+			{ID: "logon_type_system_sessions", Name: "system"},
+			{ID: "logon_type_proxy_sessions", Name: "proxy"},
+			{ID: "logon_type_network_sessions", Name: "network"},
+			{ID: "logon_type_interactive_sessions", Name: "interactive"},
+			{ID: "logon_type_batch_sessions", Name: "batch"},
+			{ID: "logon_type_service_sessions", Name: "service"},
+			{ID: "logon_type_unlock_sessions", Name: "unlock"},
+			{ID: "logon_type_network_clear_text_sessions", Name: "network_clear_text"},
+			{ID: "logon_type_new_credentials_sessions", Name: "new_credentials"},
+			{ID: "logon_type_remote_interactive_sessions", Name: "remote_interactive"},
+			{ID: "logon_type_cached_interactive_sessions", Name: "cached_interactive"},
+			{ID: "logon_type_cached_remote_interactive_sessions", Name: "cached_remote_interactive"},
+			{ID: "logon_type_cached_unlock_sessions", Name: "cached_unlock"},
+		},
+	}
+)
+
+// Thermal zone
+var (
+	thermalzoneChartsTmpl = module.Charts{
+		thermalzoneTemperatureChartTmpl.Copy(),
+	}
+	thermalzoneTemperatureChartTmpl = module.Chart{
+		ID:       "thermalzone_%s_temperature",
+		Title:    "Thermal zone temperature",
+		Units:    "celsius",
+		Fam:      "thermalzone",
+		Ctx:      "wmi.thermalzone_temperature",
+		Priority: prioThermalzoneTemperature,
+		Dims: module.Dims{
+			{ID: "thermalzone_%s_temperature", Name: "temperature"},
+		},
+	}
+)
+
+// Processes
+var (
+	processesCharts = module.Charts{
+		processesCPUUtilizationTotalChart.Copy(),
+		processesMemoryUsageChart.Copy(),
+		processesHandlesChart.Copy(),
+		processesIOBytesChart.Copy(),
+		processesIOOperationsChart.Copy(),
+		processesPageFaultsChart.Copy(),
+		processesPageFileBytes.Copy(),
+		processesThreads.Copy(),
+	}
+	processesCPUUtilizationTotalChart = module.Chart{
+		ID:       "processes_cpu_utilization",
+		Title:    "CPU usage (100% = 1 core)",
+		Units:    "percentage",
+		Fam:      "processes",
+		Ctx:      "wmi.processes_cpu_utilization",
+		Type:     module.Stacked,
+		Priority: prioProcessesCPUUtilization,
+	}
+	processesMemoryUsageChart = module.Chart{
+		ID:       "processes_memory_usage",
+		Title:    "Memory usage",
+		Units:    "bytes",
+		Fam:      "processes",
+		Ctx:      "wmi.processes_memory_usage",
+		Type:     module.Stacked,
+		Priority: prioProcessesMemoryUsage,
+	}
+	processesIOBytesChart = module.Chart{
+		ID:       "processes_io_bytes",
+		Title:    "Total of IO bytes (read, write, other)",
+		Units:    "bytes/s",
+		Fam:      "processes",
+		Ctx:      "wmi.processes_io_bytes",
+		Type:     module.Stacked,
+		Priority: prioProcessesIOBytes,
+	}
+	processesIOOperationsChart = module.Chart{
+		ID:       "processes_io_operations",
+		Title:    "Total of IO events (read, write, other)",
+		Units:    "operations/s",
+		Fam:      "processes",
+		Ctx:      "wmi.processes_io_operations",
+		Type:     module.Stacked,
+		Priority: prioProcessesIOOperations,
+	}
+	processesPageFaultsChart = module.Chart{
+		ID:       "processes_page_faults",
+		Title:    "Number of page faults",
+		Units:    "pgfaults/s",
+		Fam:      "processes",
+		Ctx:      "wmi.processes_page_faults",
+		Type:     module.Stacked,
+		Priority: prioProcessesPageFaults,
+	}
+	processesPageFileBytes = module.Chart{
+		ID:       "processes_page_file_bytes",
+		Title:    "Bytes used in page file(s)",
+		Units:    "bytes",
+		Fam:      "processes",
+		Ctx:      "wmi.processes_file_bytes",
+		Type:     module.Stacked,
+		Priority: prioProcessesPageFileBytes,
+	}
+	processesThreads = module.Chart{
+		ID:       "processes_threads",
+		Title:    "Active threads",
+		Units:    "threads",
+		Fam:      "processes",
+		Ctx:      "wmi.processes_threads",
+		Type:     module.Stacked,
+		Priority: prioProcessesThreads,
+	}
+	processesHandlesChart = module.Chart{
+		ID:       "processes_handles",
+		Title:    "Number of handles open",
+		Units:    "handles",
+		Fam:      "processes",
+		Ctx:      "wmi.processes_handles",
+		Type:     module.Stacked,
+		Priority: prioProcessesHandles,
+	}
+)
+
+// Service
+var (
+	serviceChartsTmpl = module.Charts{
 		serviceStateChartTmpl.Copy(),
 		serviceStatusChartTmpl.Copy(),
-	}.Copy()
-
-	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, name)
-		chart.Labels = []module.Label{
-			{Key: "service", Value: name},
-		}
-		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, name)
-		}
 	}
-
-	return charts
-}
-
-var (
 	serviceStateChartTmpl = module.Chart{
 		ID:       "service_%s_state",
 		Title:    "Service state",
@@ -134,1284 +783,333 @@ var (
 	}
 )
 
-func newProcessesCharts() module.Charts {
-	return module.Charts{
-		processesCPUUtilizationTotalChart.Copy(),
-		processesHandlesChart.Copy(),
-		processesIOBytesChart.Copy(),
-		processesIOOperationsChart.Copy(),
-		processesPageFaultsChart.Copy(),
-		processesPageFileBytes.Copy(),
-		processesPoolBytes.Copy(),
-		processesThreads.Copy(),
-	}
-}
-
+// Collectors
 var (
-	processesCPUUtilizationTotalChart = module.Chart{
-		ID:       "processes_cpu_utilization",
-		Title:    "CPU usage",
-		Units:    "percentage",
-		Fam:      "processes",
-		Ctx:      "wmi.processes_cpu_utilization",
-		Type:     module.Stacked,
-		Priority: prioProcessesCPUUtilization,
+	collectorChartsTmpl = module.Charts{
+		collectorDurationChartTmpl.Copy(),
+		collectorStatusChartTmpl.Copy(),
 	}
-	processesHandlesChart = module.Chart{
-		ID:       "processes_handles",
-		Title:    "Number of handles open",
-		Units:    "handles",
-		Fam:      "processes",
-		Ctx:      "wmi.processes_handles",
-		Type:     module.Stacked,
-		Priority: prioProcessesHandles,
-	}
-	processesIOBytesChart = module.Chart{
-		ID:       "processes_io_bytes",
-		Title:    "Total of IO bytes (read, write, other)",
-		Units:    "bytes/s",
-		Fam:      "processes",
-		Ctx:      "wmi.processes_io_bytes",
-		Type:     module.Stacked,
-		Priority: prioProcessesIOBytes,
-	}
-	processesIOOperationsChart = module.Chart{
-		ID:       "processes_io_operations",
-		Title:    "Total of IO events (read, write, other)",
-		Units:    "operations/s",
-		Fam:      "processes",
-		Ctx:      "wmi.processes_io_operations",
-		Type:     module.Stacked,
-		Priority: prioProcessesIOOperations,
-	}
-	processesPageFaultsChart = module.Chart{
-		ID:       "processes_page_faults",
-		Title:    "Number of page faults",
-		Units:    "pgfaults/s",
-		Fam:      "processes",
-		Ctx:      "wmi.processes_page_faults",
-		Type:     module.Stacked,
-		Priority: prioProcessesPageFaults,
-	}
-	processesPageFileBytes = module.Chart{
-		ID:       "processes_page_file_bytes",
-		Title:    "Bytes used in page file(s)",
-		Units:    "bytes",
-		Fam:      "processes",
-		Ctx:      "wmi.processes_file_bytes",
-		Type:     module.Stacked,
-		Priority: prioProcessesPageFileBytes,
-	}
-	processesPoolBytes = module.Chart{
-		ID:       "processes_pool_bytes",
-		Title:    "Last observed bytes in paged",
-		Units:    "bytes",
-		Fam:      "processes",
-		Ctx:      "wmi.processes_pool_bytes",
-		Type:     module.Stacked,
-		Priority: prioProcessesPoolBytes,
-	}
-	processesThreads = module.Chart{
-		ID:       "processes_threads",
-		Title:    "Active threads",
-		Units:    "threads",
-		Fam:      "processes",
-		Ctx:      "wmi.processes_threads",
-		Type:     module.Stacked,
-		Priority: prioProcessesThreads,
-	}
-)
-
-func newCPUCharts() module.Charts {
-	return module.Charts{
-		cpuUtilChart.Copy(),
-		cpuDPCsChart.Copy(),
-		cpuInterruptsChart.Copy(),
-	}
-}
-
-var (
-	cpuUtilChart = module.Chart{
-		ID:       "cpu_utilization_total",
-		Title:    "Total CPU Utilization (all cores)",
-		Units:    "percentage",
-		Fam:      "cpu",
-		Ctx:      "wmi.cpu_utilization_total",
-		Type:     module.Stacked,
-		Priority: prioCPUUtil,
-		Dims: module.Dims{
-			{ID: "cpu_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: module.DimOpts{Hidden: true}},
-			{ID: "cpu_dpc", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_user", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
-		},
-	}
-	cpuDPCsChart = module.Chart{
-		ID:       "cpu_dpcs",
-		Title:    "Received and Serviced Deferred Procedure Calls (DPC)",
-		Units:    "dpc/s",
-		Fam:      "cpu",
-		Ctx:      "wmi.cpu_dpcs",
-		Type:     module.Stacked,
-		Priority: prioCPUDPCs,
-	}
-	cpuInterruptsChart = module.Chart{
-		ID:       "cpu_interrupts",
-		Title:    "Received and Serviced Hardware Interrupts",
-		Units:    "interrupts/s",
-		Fam:      "cpu",
-		Ctx:      "wmi.cpu_interrupts",
-		Type:     module.Stacked,
-		Priority: prioCPUInterrupts,
-	}
-)
-
-func newCPUCoreCharts() module.Charts {
-	return module.Charts{
-		cpuCoreUtilChart.Copy(),
-		cpuCoreCStateChart.Copy(),
-	}
-}
-
-var (
-	cpuCoreUtilChart = module.Chart{
-		ID:       "core_%s_cpu_utilization",
-		Title:    "Core%s CPU Utilization",
-		Units:    "percentage",
-		Fam:      "cpu",
-		Ctx:      "wmi.cpu_utilization",
-		Type:     module.Stacked,
-		Priority: prioCPUCoreUtil,
-		Dims: module.Dims{
-			{ID: "cpu_core_%s_idle", Name: "idle", Algo: module.PercentOfIncremental, Div: 1000, DimOpts: module.DimOpts{Hidden: true}},
-			{ID: "cpu_core_%s_dpc", Name: "dpc", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_core_%s_user", Name: "user", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_core_%s_privileged", Name: "privileged", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_core_%s_interrupt", Name: "interrupt", Algo: module.PercentOfIncremental, Div: 1000},
-		},
-	}
-	cpuCoreCStateChart = module.Chart{
-		ID:       "core_%s_cpu_cstate",
-		Title:    "Core%s Time Spent in Low-Power Idle State",
-		Units:    "percentage",
-		Fam:      "cpu",
-		Ctx:      "wmi.cpu_cstate",
-		Type:     module.Stacked,
-		Priority: prioCPUCoreCState,
-		Dims: module.Dims{
-			{ID: "cpu_core_%s_c1", Name: "c1", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_core_%s_c2", Name: "c2", Algo: module.PercentOfIncremental, Div: 1000},
-			{ID: "cpu_core_%s_c3", Name: "c3", Algo: module.PercentOfIncremental, Div: 1000},
-		},
-	}
-)
-
-func newMemCharts() module.Charts {
-	return module.Charts{
-		memUtilChart.Copy(),
-		memPageFaultsChart.Copy(),
-		memSwapUtilChart.Copy(),
-		memSwapOperationsChart.Copy(),
-		memSwapPagesChart.Copy(),
-		memCacheChart.Copy(),
-		memCacheFaultsChart.Copy(),
-		memSystemPoolChart.Copy(),
-	}
-}
-
-var (
-	memUtilChart = module.Chart{
-		ID:       "memory_utilization",
-		Title:    "Memory Utilization",
-		Units:    "KiB",
-		Fam:      "mem",
-		Ctx:      "wmi.memory_utilization",
-		Type:     module.Stacked,
-		Priority: prioMemUtil,
-		Dims: module.Dims{
-			{ID: "memory_available_bytes", Name: "available", Div: 1000 * 1024},
-			{ID: "memory_used_bytes", Name: "used", Div: 1000 * 1024},
-		},
-		Vars: module.Vars{
-			{ID: "os_visible_memory_bytes"},
-		},
-	}
-	memPageFaultsChart = module.Chart{
-		ID:       "memory_page_faults",
-		Title:    "Memory Page Faults",
-		Units:    "events/s",
-		Fam:      "mem",
-		Ctx:      "wmi.memory_page_faults",
-		Priority: prioMemPageFaults,
-		Dims: module.Dims{
-			{ID: "memory_page_faults_total", Name: "page faults", Algo: module.Incremental, Div: 1000},
-		},
-	}
-	memSwapUtilChart = module.Chart{
-		ID:       "memory_swap_utilization",
-		Title:    "Swap Utilization",
-		Units:    "KiB",
-		Fam:      "mem",
-		Ctx:      "wmi.memory_swap_utilization",
-		Type:     module.Stacked,
-		Priority: prioMemSwapUtil,
-		Dims: module.Dims{
-			{ID: "memory_not_committed_bytes", Name: "available", Div: 1000 * 1024},
-			{ID: "memory_committed_bytes", Name: "used", Div: 1000 * 1024},
-		},
-		Vars: module.Vars{
-			{ID: "memory_commit_limit"},
-		},
-	}
-	memSwapOperationsChart = module.Chart{
-		ID:       "memory_swap_operations",
-		Title:    "Swap Operations",
-		Units:    "operations/s",
-		Fam:      "mem",
-		Ctx:      "wmi.memory_swap_operations",
-		Type:     module.Area,
-		Priority: prioMemSwapOperations,
-		Dims: module.Dims{
-			{ID: "memory_swap_page_reads_total", Name: "read", Algo: module.Incremental, Div: 1000},
-			{ID: "memory_swap_page_writes_total", Name: "write", Algo: module.Incremental, Div: -1000},
-		},
-	}
-	memSwapPagesChart = module.Chart{
-		ID:       "memory_swap_pages",
-		Title:    "Swap Pages",
-		Units:    "pages/s",
-		Fam:      "mem",
-		Ctx:      "wmi.memory_swap_pages",
-		Type:     module.Area,
-		Priority: prioMemSwapPages,
-		Dims: module.Dims{
-			{ID: "memory_swap_pages_read_total", Name: "read", Algo: module.Incremental, Div: 1000},
-			{ID: "memory_swap_pages_written_total", Name: "written", Algo: module.Incremental, Div: -1000},
-		},
-	}
-	memCacheChart = module.Chart{
-		ID:       "memory_cached",
-		Title:    "Cached",
-		Units:    "KiB",
-		Fam:      "mem",
-		Ctx:      "wmi.memory_cached",
-		Priority: prioMemCache,
-		Dims: module.Dims{
-			{ID: "memory_cache_total", Name: "cached", Div: 1000 * 1024},
-		},
-	}
-	memCacheFaultsChart = module.Chart{
-		ID:       "memory_cache_faults",
-		Title:    "Cache Faults",
-		Units:    "events/s",
-		Fam:      "mem",
-		Ctx:      "wmi.memory_cache_faults",
-		Priority: prioMemCacheFaults,
-		Dims: module.Dims{
-			{ID: "memory_cache_faults_total", Name: "cache faults", Algo: module.Incremental, Div: 1000},
-		},
-	}
-	memSystemPoolChart = module.Chart{
-		ID:       "memory_system_pool",
-		Title:    "System Memory Pool",
-		Units:    "KiB",
-		Fam:      "mem",
-		Ctx:      "wmi.memory_system_pool",
-		Type:     module.Stacked,
-		Priority: prioMemSystemPool,
-		Dims: module.Dims{
-			{ID: "memory_pool_paged_bytes", Name: "paged", Div: 1000 * 1024},
-			{ID: "memory_pool_nonpaged_bytes_total", Name: "non-paged", Div: 1000 * 1024},
-		},
-	}
-)
-
-func newNICCharts() module.Charts {
-	return module.Charts{
-		nicBandwidthChart.Copy(),
-		nicPacketsChart.Copy(),
-		nicErrorsChart.Copy(),
-		nicDiscardsChart.Copy(),
-	}
-}
-
-var (
-	nicBandwidthChart = module.Chart{
-		ID:       "nic_%s_bandwidth",
-		Title:    "Bandwidth %s",
-		Units:    "kilobits/s",
-		Fam:      "net",
-		Ctx:      "wmi.net_bandwidth",
-		Type:     module.Area,
-		Priority: prioNICBandwidth,
-		Dims: module.Dims{
-			{ID: "net_%s_bytes_received", Name: "received", Algo: module.Incremental, Div: 1000 * 125},
-			{ID: "net_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Div: -1000 * 125},
-		},
-		Vars: module.Vars{
-			{ID: "net_%s_current_bandwidth"},
-		},
-	}
-	nicPacketsChart = module.Chart{
-		ID:       "nic_%s_packets",
-		Title:    "Packets %s",
-		Units:    "packets/s",
-		Fam:      "net",
-		Ctx:      "wmi.net_packets",
-		Type:     module.Area,
-		Priority: prioNICPackets,
-		Dims: module.Dims{
-			{ID: "net_%s_packets_received_total", Name: "received", Algo: module.Incremental, Div: 1000},
-			{ID: "net_%s_packets_sent_total", Name: "sent", Algo: module.Incremental, Div: -1000},
-		},
-	}
-	nicErrorsChart = module.Chart{
-		ID:       "nic_%s_errors",
-		Title:    "Errors %s",
-		Units:    "errors/s",
-		Fam:      "net",
-		Ctx:      "wmi.net_errors",
-		Type:     module.Area,
-		Priority: prioNICErrors,
-		Dims: module.Dims{
-			{ID: "net_%s_packets_received_errors", Name: "inbound", Algo: module.Incremental, Div: 1000},
-			{ID: "net_%s_packets_outbound_errors", Name: "outbound", Algo: module.Incremental, Div: -1000},
-		},
-	}
-	nicDiscardsChart = module.Chart{
-		ID:       "nic_%s_discarded",
-		Title:    "Discards %s",
-		Units:    "discards/s",
-		Fam:      "net",
-		Ctx:      "wmi.net_discarded",
-		Type:     module.Area,
-		Priority: prioNICDiscards,
-		Dims: module.Dims{
-			{ID: "net_%s_packets_received_discarded", Name: "inbound", Algo: module.Incremental, Div: 1000},
-			{ID: "net_%s_packets_outbound_discarded", Name: "outbound", Algo: module.Incremental, Div: -1000},
-		},
-	}
-)
-
-func newTCPCharts() module.Charts {
-	return module.Charts{
-		tcpConnsActiveChart.Copy(),
-		tcpConnsEstablishedChart.Copy(),
-		tcpConnsFailuresChart.Copy(),
-		tcpConnsPassiveChart.Copy(),
-		tcpConnsResetsChart.Copy(),
-		tcpSegmentsReceivedChart.Copy(),
-		tcpSegmentsRetransmittedChart.Copy(),
-		tcpSegmentsSentChart.Copy(),
-	}
-}
-
-var (
-	tcpConnsEstablishedChart = module.Chart{
-		ID:       "tcp_conns_established",
-		Title:    "TCP established connections",
-		Units:    "connections",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_established",
-		Priority: prioTCPConnsEstablished,
-		Dims: module.Dims{
-			{ID: "tcp_conns_established_ipv4", Name: "ipv4"},
-			{ID: "tcp_conns_established_ipv6", Name: "ipv6"},
-		},
-	}
-	tcpConnsActiveChart = module.Chart{
-		ID:       "tcp_conns_active",
-		Title:    "TCP active connections",
-		Units:    "connections/s",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_active",
-		Priority: prioTCPConnsActive,
-		Dims: module.Dims{
-			{ID: "tcp_conns_active_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_conns_active_ipv6", Name: "ipv6", Algo: module.Incremental},
-		},
-	}
-	tcpConnsPassiveChart = module.Chart{
-		ID:       "tcp_conns_passive",
-		Title:    "TCP passive connections",
-		Units:    "connections/s",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_passive",
-		Priority: prioTCPConnsPassive,
-		Dims: module.Dims{
-			{ID: "tcp_conns_passive_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_conns_passive_ipv6", Name: "ipv6", Algo: module.Incremental},
-		},
-	}
-	tcpConnsFailuresChart = module.Chart{
-		ID:       "tcp_conns_failures",
-		Title:    "TCP connection failures",
-		Units:    "failures/s",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_failures",
-		Priority: prioTCPConnsFailure,
-		Dims: module.Dims{
-			{ID: "tcp_conns_failures_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_conns_failures_ipv6", Name: "ipv6", Algo: module.Incremental},
-		},
-	}
-	tcpConnsResetsChart = module.Chart{
-		ID:       "tcp_conns_resets",
-		Title:    "TCP connections resets",
-		Units:    "resets/s",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_resets",
-		Priority: prioTCPConnsReset,
-		Dims: module.Dims{
-			{ID: "tcp_conns_resets_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_conns_resets_ipv6", Name: "ipv6", Algo: module.Incremental},
-		},
-	}
-	tcpSegmentsReceivedChart = module.Chart{
-		ID:       "tcp_segments_received",
-		Title:    "Number of TCP segments received",
-		Units:    "segments/s",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_segments_received",
-		Priority: prioTCPSegmentsReceived,
-		Dims: module.Dims{
-			{ID: "tcp_segments_received_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_segments_received_ipv6", Name: "ipv6", Algo: module.Incremental},
-		},
-	}
-	tcpSegmentsSentChart = module.Chart{
-		ID:       "tcp_segments_sent",
-		Title:    "Number of TCP segments sent",
-		Units:    "segments/s",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_segments_sent",
-		Priority: prioTCPSegmentsSent,
-		Dims: module.Dims{
-			{ID: "tcp_segments_sent_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_segments_sent_ipv6", Name: "ipv6", Algo: module.Incremental},
-		},
-	}
-	tcpSegmentsRetransmittedChart = module.Chart{
-		ID:       "tcp_segments_retransmitted",
-		Title:    "Number of TCP segments retransmitted",
-		Units:    "segments/s",
-		Fam:      "tcp",
-		Ctx:      "wmi.tcp_segments_retransmitted",
-		Priority: prioTCPSegmentsRetransmitted,
-		Dims: module.Dims{
-			{ID: "tcp_segments_retransmitted_ipv4", Name: "ipv4", Algo: module.Incremental},
-			{ID: "tcp_segments_retransmitted_ipv6", Name: "ipv6", Algo: module.Incremental},
-		},
-	}
-)
-
-func newDiskCharts() module.Charts {
-	return module.Charts{
-		diskUtilChart.Copy(),
-		diskBandwidthChart.Copy(),
-		diskOperationsChart.Copy(),
-		diskAvgLatencyChart.Copy(),
-	}
-}
-
-var (
-	diskUtilChart = module.Chart{
-		ID:       "logical_disk_%s_utilization",
-		Title:    "Utilization Disk %s",
-		Units:    "KiB",
-		Fam:      "disk",
-		Ctx:      "wmi.logical_disk_utilization",
-		Type:     module.Stacked,
-		Priority: prioDiskUtil,
-		Dims: module.Dims{
-			{ID: "logical_disk_%s_free_space", Name: "free", Div: 1000 * 1024},
-			{ID: "logical_disk_%s_used_space", Name: "used", Div: 1000 * 1024},
-		},
-	}
-	diskBandwidthChart = module.Chart{
-		ID:       "logical_disk_%s_bandwidth",
-		Title:    "Bandwidth Disk %s",
-		Units:    "KiB/s",
-		Fam:      "disk",
-		Ctx:      "wmi.logical_disk_bandwidth",
-		Type:     module.Area,
-		Priority: prioDiskBandwidth,
-		Dims: module.Dims{
-			{ID: "logical_disk_%s_read_bytes_total", Name: "read", Algo: module.Incremental, Div: 1000 * 1024},
-			{ID: "logical_disk_%s_write_bytes_total", Name: "write", Algo: module.Incremental, Div: -1000 * 1024},
-		},
-	}
-	diskOperationsChart = module.Chart{
-		ID:       "logical_disk_%s_operations",
-		Title:    "Operations Disk %s",
-		Units:    "operations/s",
-		Fam:      "disk",
-		Ctx:      "wmi.logical_disk_operations",
-		Type:     module.Area,
-		Priority: prioDiskOperations,
-		Dims: module.Dims{
-			{ID: "logical_disk_%s_reads_total", Name: "reads", Algo: module.Incremental},
-			{ID: "logical_disk_%s_writes_total", Name: "writes", Algo: module.Incremental, Mul: -1},
-		},
-	}
-	diskAvgLatencyChart = module.Chart{
-		ID:       "logical_disk_%s_latency",
-		Title:    "Average Read/Write Latency Disk %s",
-		Units:    "milliseconds",
-		Fam:      "disk",
-		Ctx:      "wmi.logical_disk_latency",
-		Priority: prioDiskAvgLatency,
-		Dims: module.Dims{
-			{ID: "logical_disk_%s_read_latency", Name: "read", Algo: module.Incremental},
-			{ID: "logical_disk_%s_write_latency", Name: "write", Algo: module.Incremental},
-		},
-	}
-)
-
-func newOSCharts() module.Charts {
-	return module.Charts{
-		osProcessesChart.Copy(),
-		osUsersChart.Copy(),
-		osMemoryUsage.Copy(),
-		osPagingFilesUsageChart.Copy(),
-	}
-}
-
-var (
-	osProcessesChart = module.Chart{
-		ID:       "os_processes",
-		Title:    "Processes",
-		Units:    "number",
-		Fam:      "os",
-		Ctx:      "wmi.os_processes",
-		Priority: prioOSProcesses,
-		Dims: module.Dims{
-			{ID: "os_processes", Name: "processes"},
-		},
-		Vars: module.Vars{
-			{ID: "os_processes_limit"},
-		},
-	}
-	osUsersChart = module.Chart{
-		ID:       "os_users",
-		Title:    "Number of Users",
-		Units:    "users",
-		Fam:      "os",
-		Ctx:      "wmi.os_users",
-		Priority: prioOSUsers,
-		Dims: module.Dims{
-			{ID: "os_users", Name: "users"},
-		},
-	}
-	osMemoryUsage = module.Chart{
-		ID:       "os_visible_memory_usage",
-		Title:    "Visible Memory Usage",
-		Units:    "bytes",
-		Fam:      "os",
-		Ctx:      "wmi.os_visible_memory_usage",
-		Type:     module.Stacked,
-		Priority: prioOSVisibleMemoryUsage,
-		Dims: module.Dims{
-			{ID: "os_physical_memory_free_bytes", Name: "free", Div: 1000},
-			{ID: "os_visible_memory_used_bytes", Name: "used", Div: 1000},
-		},
-		Vars: module.Vars{
-			{ID: "os_visible_memory_bytes"},
-		},
-	}
-	osPagingFilesUsageChart = module.Chart{
-		ID:       "os_paging_files_usage",
-		Title:    "Paging Files Usage",
-		Units:    "bytes",
-		Fam:      "os",
-		Ctx:      "wmi.os_paging_files_usage",
-		Type:     module.Stacked,
-		Priority: prioOSPagingUsage,
-		Dims: module.Dims{
-			{ID: "os_paging_free_bytes", Name: "free", Div: 1000},
-			{ID: "os_paging_used_bytes", Name: "used", Div: 1000},
-		},
-		Vars: module.Vars{
-			{ID: "os_paging_limit_bytes"},
-		},
-	}
-)
-
-func newSystemCharts() module.Charts {
-	return module.Charts{
-		systemThreadsChart.Copy(),
-		systemUptimeChart.Copy(),
-	}
-}
-
-var (
-	systemThreadsChart = module.Chart{
-		ID:       "system_threads",
-		Title:    "Threads",
-		Units:    "number",
-		Fam:      "system",
-		Ctx:      "wmi.system_threads",
-		Priority: prioSystemThreads,
-		Dims: module.Dims{
-			{ID: "system_threads", Name: "threads"},
-		},
-	}
-	systemUptimeChart = module.Chart{
-		ID:       "system_uptime",
-		Title:    "Uptime",
+	collectorDurationChartTmpl = module.Chart{
+		ID:       "collector_%s_duration",
+		Title:    "Duration of a data collection",
 		Units:    "seconds",
-		Fam:      "system",
-		Ctx:      "wmi.system_uptime",
-		Priority: prioSystemUptime,
+		Fam:      "collection",
+		Ctx:      "wmi.collector_duration",
+		Priority: prioCollectorDuration,
 		Dims: module.Dims{
-			{ID: "system_up_time", Name: "time"},
+			{ID: "collector_%s_duration", Name: "duration", Div: precision},
+		},
+	}
+	collectorStatusChartTmpl = module.Chart{
+		ID:       "collector_%s_status",
+		Title:    "Status of a data collection",
+		Units:    "status",
+		Fam:      "collection",
+		Ctx:      "wmi.collector_status",
+		Priority: prioCollectorStatus,
+		Dims: module.Dims{
+			{ID: "collector_%s_status_success", Name: "success"},
+			{ID: "collector_%s_status_fail", Name: "fail"},
 		},
 	}
 )
 
-func newLogonCharts() module.Charts {
-	return module.Charts{
-		logonSessionsChart.Copy(),
-	}
-}
+func (w *WMI) addCPUCharts() {
+	charts := cpuCharts.Copy()
 
-var (
-	logonSessionsChart = module.Chart{
-		ID:       "logon_active_sessions_by_type",
-		Title:    "Active User Logon Sessions By Type",
-		Units:    "sessions",
-		Fam:      "logon",
-		Ctx:      "wmi.logon_type_sessions",
-		Type:     module.Stacked,
-		Priority: prioLogonSessions,
-		Dims: module.Dims{
-			{ID: "logon_type_system", Name: "system"},
-			{ID: "logon_type_interactive", Name: "interactive"},
-			{ID: "logon_type_network", Name: "network"},
-			{ID: "logon_type_batch", Name: "batch"},
-			{ID: "logon_type_service", Name: "service"},
-			{ID: "logon_type_proxy", Name: "proxy"},
-			{ID: "logon_type_unlock", Name: "unlock"},
-			{ID: "logon_type_network_clear_text", Name: "network_clear_text"},
-			{ID: "logon_type_new_credentials", Name: "new_credentials"},
-			{ID: "logon_type_remote_interactive", Name: "remote_interactive"},
-			{ID: "logon_type_cached_interactive", Name: "cached_interactive"},
-			{ID: "logon_type_cached_remote_interactive", Name: "cached_remote_interactive"},
-			{ID: "logon_type_cached_unlock", Name: "cached_unlock"},
-		},
-	}
-)
-
-func newThermalzoneCharts() module.Charts {
-	return module.Charts{
-		thermalzoneTemperatureChart.Copy(),
-	}
-}
-
-var (
-	thermalzoneTemperatureChart = module.Chart{
-		ID:       "thermalzone_temperature",
-		Title:    "Thermal zone temperature",
-		Units:    "celsius",
-		Fam:      "thermalzone",
-		Ctx:      "wmi.thermalzone_temperature",
-		Type:     module.Area,
-		Priority: prioThermalzoneTemperature,
-	}
-)
-
-func newCollectionCharts() *module.Charts {
-	return &module.Charts{
-		collectionDurationChart.Copy(),
-		collectionsStatusChart.Copy(),
-	}
-}
-
-var (
-	collectionDurationChart = module.Chart{
-		ID:       "collector_duration",
-		Title:    "Duration",
-		Units:    "ms",
-		Fam:      "collection",
-		Ctx:      "cpu.collector_duration",
-		Priority: prioCollectionDuration,
-	}
-	collectionsStatusChart = module.Chart{
-		ID:       "collector_success",
-		Title:    "Collection Status",
-		Units:    "bool",
-		Fam:      "collection",
-		Ctx:      "cpu.collector_success",
-		Priority: prioCollectionStatus,
-	}
-)
-
-func newChartFromTemplate(template module.Chart, id string) *module.Chart {
-	chart := template.Copy()
-	chart.ID = fmt.Sprintf(chart.ID, id)
-	chart.Title = fmt.Sprintf(chart.Title, id)
-	for _, dim := range chart.Dims {
-		dim.ID = fmt.Sprintf(dim.ID, id)
-	}
-	for _, v := range chart.Vars {
-		v.ID = fmt.Sprintf(v.ID, id)
-	}
-	return chart
-}
-
-func (w *WMI) updateCharts(mx *metrics) {
-	w.updateCollectionCharts(mx)
-	w.updateCPUCharts(mx)
-	w.updateMemoryCharts(mx)
-	w.updateNetCharts(mx)
-	w.updateLogicalDisksCharts(mx)
-	w.updateSystemCharts(mx)
-	w.updateOSCharts(mx)
-	w.updateLogonCharts(mx)
-	w.updateThermalzoneCharts(mx)
-	w.updateTCPCharts(mx)
-	w.updateProcessesCharts(mx)
-	w.updateServicesCharts(mx)
-}
-
-func (w *WMI) updateServicesCharts(mx *metrics) {
-	if !mx.hasServices() {
-		return
-	}
-
-	for _, svc := range mx.Services.svcs {
-		if w.cache.svcs[svc.ID] {
-			continue
-		}
-		w.cache.svcs[svc.ID] = true
-
-		charts := newServiceCharts(svc.ID)
-
-		if err := w.Charts().Add(*charts...); err != nil {
-			w.Warning(err)
-		}
-	}
-}
-
-func (w *WMI) updateProcessesCharts(mx *metrics) {
-	if !mx.hasProcesses() {
-		return
-	}
-
-	if !w.cache.collectors[collectorProcess] {
-		w.cache.collectors[collectorProcess] = true
-
-		if err := w.Charts().Add(newProcessesCharts()...); err != nil {
-			w.Warning(err)
-		}
-	}
-
-	procs := make([]string, 0, len(mx.Processes.procs))
-	for _, proc := range mx.Processes.procs {
-		procs = append(procs, proc.ID)
-	}
-	sort.Slice(procs, func(i, j int) bool { return procs[i] < procs[j] })
-
-	for _, id := range procs {
-		if w.cache.procs[id] {
-			continue
-		}
-		w.cache.procs[id] = true
-
-		if err := addDimToProcessesCPUTimeTotalChart(w.Charts(), id); err != nil {
-			w.Warning(err)
-		}
-		if err := addDimToProcessesHandlesChart(w.Charts(), id); err != nil {
-			w.Warning(err)
-		}
-		if err := addDimToProcessesIOBytesChart(w.Charts(), id); err != nil {
-			w.Warning(err)
-		}
-		if err := addDimToProcessesIOOperationsChart(w.Charts(), id); err != nil {
-			w.Warning(err)
-		}
-		if err := addDimToProcessesPageFaultsChart(w.Charts(), id); err != nil {
-			w.Warning(err)
-		}
-		if err := addDimToProcessesPageFileBytes(w.Charts(), id); err != nil {
-			w.Warning(err)
-		}
-		if err := addDimToProcessesPoolBytes(w.Charts(), id); err != nil {
-			w.Warning(err)
-		}
-		if err := addDimToProcessesThreads(w.Charts(), id); err != nil {
-			w.Warning(err)
-		}
-	}
-
-	for k := range w.cache.procs {
-		if _, ok := mx.Processes.procs[k]; ok {
-			continue
-		}
-
-		delete(w.cache.procs, k)
-		for _, chart := range *w.Charts() {
-			switch chart.ID {
-			case processesCPUUtilizationTotalChart.ID,
-				processesHandlesChart.ID,
-				processesIOBytesChart.ID,
-				processesIOOperationsChart.ID,
-				processesPageFaultsChart.ID,
-				processesPageFileBytes.ID,
-				processesPoolBytes.ID,
-				processesThreads.ID:
-				for _, dim := range chart.Dims {
-					if !strings.HasPrefix(dim.ID, "process_"+k) {
-						continue
-					}
-					if err := chart.MarkDimRemove(dim.ID, false); err != nil {
-						w.Warning(err)
-						continue
-					}
-					chart.MarkNotCreated()
-					break
-				}
-			}
-		}
-	}
-}
-
-func (w *WMI) updateCollectionCharts(mx *metrics) {
-	if !mx.hasCollectors() {
-		return
-	}
-	for _, c := range *mx.Collectors {
-		if w.cache.collection[c.ID] {
-			continue
-		}
-		w.cache.collection[c.ID] = true
-		if err := addDimToCollectionDurationChart(w.Charts(), c.ID); err != nil {
-			w.Warning(err)
-		}
-		if err := addDimToCollectionStatusChart(w.Charts(), c.ID); err != nil {
-			w.Warning(err)
-		}
-	}
-}
-
-func (w *WMI) updateCPUCharts(mx *metrics) {
-	if !mx.hasCPU() {
-		return
-	}
-	if !w.cache.collectors[collectorCPU] {
-		w.cache.collectors[collectorCPU] = true
-		if err := w.Charts().Add(newCPUCharts()...); err != nil {
-			w.Warning(err)
-		}
-	}
-	for _, core := range mx.CPU.Cores {
-		if w.cache.cores[core.ID] {
-			continue
-		}
-		w.cache.cores[core.ID] = true
-		if err := addCPUCoreCharts(w.Charts(), core.ID); err != nil {
-			w.Warning(err)
-		}
-		if err := addDimToCPUDPCsChart(w.Charts(), core.ID); err != nil {
-			w.Warning(err)
-		}
-		if err := addDimToCPUInterruptsChart(w.Charts(), core.ID); err != nil {
-			w.Warning(err)
-		}
-	}
-}
-
-func (w *WMI) updateMemoryCharts(mx *metrics) {
-	if !mx.hasMemory() {
-		return
-	}
-	if w.cache.collectors[collectorMemory] {
-		return
-	}
-	w.cache.collectors[collectorMemory] = true
-	if err := w.Charts().Add(newMemCharts()...); err != nil {
+	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
 	}
 }
 
-func (w *WMI) updateNetCharts(mx *metrics) {
-	if !mx.hasNet() {
-		return
-	}
-	for _, nic := range mx.Net.NICs {
-		if w.cache.nics[nic.ID] {
-			continue
-		}
-		w.cache.nics[nic.ID] = true
-		if err := addNICCharts(w.Charts(), nic.ID); err != nil {
-			w.Warning(err)
-		}
-	}
-}
+func (w *WMI) addCPUCoreCharts(core string) {
+	charts := cpuCoreChartsTmpl.Copy()
 
-func (w *WMI) updateLogicalDisksCharts(mx *metrics) {
-	if !mx.hasLogicalDisk() {
-		return
-	}
-	set := make(map[string]bool)
-	for _, vol := range mx.LogicalDisk.Volumes {
-		set[vol.ID] = true
-		if w.cache.volumes[vol.ID] {
-			continue
-		}
-		w.cache.volumes[vol.ID] = true
-		if err := addLogicalDiskCharts(w.Charts(), vol.ID); err != nil {
-			w.Warning(err)
-		}
-	}
-	for vol := range w.cache.volumes {
-		if set[vol] {
-			continue
-		}
-		delete(w.cache.volumes, vol)
-		removeLogicalDiskFromCharts(w.Charts(), vol)
-	}
-}
-
-func (w *WMI) updateSystemCharts(mx *metrics) {
-	if !mx.hasSystem() {
-		return
-	}
-	if w.cache.collectors[collectorSystem] {
-		return
-	}
-	w.cache.collectors[collectorSystem] = true
-	if err := w.Charts().Add(newSystemCharts()...); err != nil {
-		w.Warning(err)
-	}
-}
-
-func (w *WMI) updateOSCharts(mx *metrics) {
-	if !mx.hasOS() {
-		return
-	}
-	if w.cache.collectors[collectorOS] {
-		return
-	}
-	w.cache.collectors[collectorOS] = true
-	if err := w.Charts().Add(newOSCharts()...); err != nil {
-		w.Warning(err)
-	}
-}
-
-func (w *WMI) updateLogonCharts(mx *metrics) {
-	if !mx.hasLogon() {
-		return
-	}
-	if w.cache.collectors[collectorLogon] {
-		return
-	}
-	w.cache.collectors[collectorLogon] = true
-	if err := w.Charts().Add(newLogonCharts()...); err != nil {
-		w.Warning(err)
-	}
-}
-
-func (w *WMI) updateThermalzoneCharts(mx *metrics) {
-	if !mx.hasThermalZone() {
-		return
-	}
-
-	if !w.cache.collectors[collectorThermalzone] {
-		w.cache.collectors[collectorThermalzone] = true
-		if err := w.Charts().Add(newThermalzoneCharts()...); err != nil {
-			w.Warning(err)
-		}
-	}
-
-	for _, zone := range mx.ThermalZone.Zones {
-		if w.cache.thermalZones[zone.ID] {
-			continue
-		}
-		w.cache.thermalZones[zone.ID] = true
-		if err := addDimToThermalzoneTemperatureChart(w.Charts(), zone.ID); err != nil {
-			w.Warning(err)
-		}
-	}
-
-}
-
-func (w *WMI) updateTCPCharts(mx *metrics) {
-	if !mx.hasTCP() {
-		return
-	}
-	if w.cache.collectors[collectorTCP] {
-		return
-	}
-	w.cache.collectors[collectorTCP] = true
-	if err := w.Charts().Add(newTCPCharts()...); err != nil {
-		w.Warning(err)
-	}
-}
-
-func addCPUCoreCharts(charts *module.Charts, coreID string) error {
-	for _, chart := range newCPUCoreCharts() {
-		chart = newChartFromTemplate(*chart, coreID)
-		if err := charts.Add(chart); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func addNICCharts(charts *module.Charts, nicID string) error {
-	for _, chart := range newNICCharts() {
-		chart = newChartFromTemplate(*chart, nicID)
-		if err := charts.Add(chart); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func addLogicalDiskCharts(charts *module.Charts, diskID string) error {
-	for _, chart := range newDiskCharts() {
-		chart = newChartFromTemplate(*chart, diskID)
-		if err := charts.Add(chart); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func removeLogicalDiskFromCharts(charts *module.Charts, diskID string) {
 	for _, chart := range *charts {
-		if !strings.HasPrefix(chart.ID, fmt.Sprintf("logical_disk_%s", diskID)) {
+		chart.ID = fmt.Sprintf(chart.ID, core)
+		chart.Labels = []module.Label{
+			{Key: "core", Value: core},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, core)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeCPUCoreCharts(core string) {
+	px := fmt.Sprintf("cpu_core_%s", core)
+	for _, chart := range *w.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
+}
+
+func (w *WMI) addMemoryCharts() {
+	charts := memCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addDiskCharts(disk string) {
+	charts := diskChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, disk)
+		chart.Labels = []module.Label{
+			{Key: "disk", Value: disk},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, disk)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeDiskCharts(disk string) {
+	px := fmt.Sprintf("logical_disk_%s", disk)
+	for _, chart := range *w.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
+}
+
+func (w *WMI) addNICCharts(nic string) {
+	charts := nicChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, nic)
+		chart.Labels = []module.Label{
+			{Key: "nic", Value: nic},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, nic)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeNICCharts(nic string) {
+	px := fmt.Sprintf("nic_%s", nic)
+	for _, chart := range *w.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
+}
+
+func (w *WMI) addTCPCharts() {
+	charts := tcpCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addOSCharts() {
+	charts := osCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addSystemCharts() {
+	charts := systemCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addLogonCharts() {
+	charts := logonCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addThermalZoneCharts(zone string) {
+	charts := thermalzoneChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, zone)
+		chart.Labels = []module.Label{
+			{Key: "thermalzone", Value: zone},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, zone)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeThermalZoneCharts(zone string) {
+	px := fmt.Sprintf("thermalzone_%s", zone)
+	for _, chart := range *w.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
+}
+
+func (w *WMI) addProcessesCharts() {
+	charts := processesCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addProcessToCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var dim *module.Dim
+		switch chart.ID {
+		case processesCPUUtilizationTotalChart.ID:
+			id := fmt.Sprintf("process_%s_cpu_time", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental, Div: 1000, Mul: 100}
+			if procID == "Idle" {
+				dim.Hidden = true
+			}
+		case processesMemoryUsageChart.ID:
+			id := fmt.Sprintf("process_%s_working_set_private_bytes", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case processesIOBytesChart.ID:
+			id := fmt.Sprintf("process_%s_io_bytes", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case processesIOOperationsChart.ID:
+			id := fmt.Sprintf("process_%s_io_operations", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case processesPageFaultsChart.ID:
+			id := fmt.Sprintf("process_%s_page_faults", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case processesPageFileBytes.ID:
+			id := fmt.Sprintf("process_%s_page_file_bytes", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case processesThreads.ID:
+			id := fmt.Sprintf("process_%s_threads", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case processesHandlesChart.ID:
+			id := fmt.Sprintf("process_%s_handles", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		default:
 			continue
 		}
-		chart.MarkRemove()
+
+		if dim == nil {
+			continue
+		}
+		if err := chart.AddDim(dim); err != nil {
+			w.Warning(err)
+			continue
+		}
 		chart.MarkNotCreated()
 	}
 }
 
-func addDimToCPUDPCsChart(charts *module.Charts, coreID string) error {
-	chart := charts.Get(cpuDPCsChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", cpuDPCsChart.ID)
+func (w *WMI) removeProcessFromCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var id string
+		switch chart.ID {
+		case processesCPUUtilizationTotalChart.ID:
+			id = fmt.Sprintf("process_%s_cpu_time", procID)
+		case processesMemoryUsageChart.ID:
+			id = fmt.Sprintf("process_%s_working_set_private_bytes", procID)
+		case processesIOBytesChart.ID:
+			id = fmt.Sprintf("process_%s_io_bytes", procID)
+		case processesIOOperationsChart.ID:
+			id = fmt.Sprintf("process_%s_io_operations", procID)
+		case processesPageFaultsChart.ID:
+			id = fmt.Sprintf("process_%s_page_faults", procID)
+		case processesPageFileBytes.ID:
+			id = fmt.Sprintf("process_%s_page_file_bytes", procID)
+		case processesThreads.ID:
+			id = fmt.Sprintf("process_%s_threads", procID)
+		case processesHandlesChart.ID:
+			id = fmt.Sprintf("process_%s_handles", procID)
+		default:
+			continue
+		}
+
+		if err := chart.MarkDimRemove(id, false); err != nil {
+			w.Warning(err)
+		}
 	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("cpu_core_%s_dpc", coreID),
-		Name: "core" + coreID,
-		Algo: module.Incremental,
-		Div:  1000,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
 }
 
-func addDimToCPUInterruptsChart(charts *module.Charts, coreID string) error {
-	chart := charts.Get(cpuInterruptsChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", cpuInterruptsChart.ID)
+func (w *WMI) addServiceCharts(svc string) {
+	charts := serviceChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, svc)
+		chart.Labels = []module.Label{
+			{Key: "service", Value: svc},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, svc)
+		}
 	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("cpu_core_%s_interrupts", coreID),
-		Name: "core" + coreID,
-		Algo: module.Incremental,
-		Div:  1000,
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
 	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
 }
 
-func addDimToThermalzoneTemperatureChart(charts *module.Charts, zoneName string) error {
-	chart := charts.Get(thermalzoneTemperatureChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", thermalzoneTemperatureChart.ID)
+func (w *WMI) removeServiceCharts(svc string) {
+	px := fmt.Sprintf("service_%s", svc)
+	for _, chart := range *w.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
 	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("thermalzone_%s_temperature", zoneName),
-		Name: zoneName,
-		Algo: module.Absolute,
-		Div:  1000,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
 }
 
-func addDimToCollectionDurationChart(charts *module.Charts, colName string) error {
-	chart := charts.Get(collectionDurationChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", collectionDurationChart.ID)
+func (w *WMI) addCollectorCharts(name string) {
+	charts := collectorChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, name)
+		chart.Labels = []module.Label{
+			{Key: "collector", Value: name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, name)
+		}
 	}
-	dim := &module.Dim{
-		ID:   colName + "_collection_duration",
-		Name: colName,
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
 	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
 }
 
-func addDimToCollectionStatusChart(charts *module.Charts, colName string) error {
-	chart := charts.Get(collectionsStatusChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", collectionsStatusChart.ID)
+func (w *WMI) removeCollectorCharts(name string) {
+	px := fmt.Sprintf("collector_%s", name)
+	for _, chart := range *w.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
 	}
-	dim := &module.Dim{
-		ID:   colName + "_collection_success",
-		Name: colName,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
-}
-
-func addDimToProcessesCPUTimeTotalChart(charts *module.Charts, procID string) error {
-	chart := charts.Get(processesCPUUtilizationTotalChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", processesCPUUtilizationTotalChart.ID)
-	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("process_%s_cpu_time", procID),
-		Name: procID,
-		Algo: module.PercentOfIncremental,
-		Div:  1000,
-	}
-	if procID == "Idle" {
-		dim.DimOpts.Hidden = true
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
-}
-
-func addDimToProcessesHandlesChart(charts *module.Charts, procID string) error {
-	chart := charts.Get(processesHandlesChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", processesHandlesChart.ID)
-	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("process_%s_handles", procID),
-		Name: procID,
-		Algo: module.Absolute,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
-}
-
-func addDimToProcessesIOBytesChart(charts *module.Charts, procID string) error {
-	chart := charts.Get(processesIOBytesChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", processesIOBytesChart.ID)
-	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("process_%s_io_bytes", procID),
-		Name: procID,
-		Algo: module.Incremental,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
-}
-
-func addDimToProcessesIOOperationsChart(charts *module.Charts, procID string) error {
-	chart := charts.Get(processesIOOperationsChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", processesIOOperationsChart.ID)
-	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("process_%s_io_operations", procID),
-		Name: procID,
-		Algo: module.Incremental,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
-}
-
-func addDimToProcessesPageFaultsChart(charts *module.Charts, procID string) error {
-	chart := charts.Get(processesPageFaultsChart.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", processesPageFaultsChart.ID)
-	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("process_%s_page_faults", procID),
-		Name: procID,
-		Algo: module.Incremental,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
-}
-
-func addDimToProcessesPageFileBytes(charts *module.Charts, procID string) error {
-	chart := charts.Get(processesPageFileBytes.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", processesPageFileBytes.ID)
-	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("process_%s_page_file_bytes", procID),
-		Name: procID,
-		Algo: module.Absolute,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
-}
-
-func addDimToProcessesPoolBytes(charts *module.Charts, procID string) error {
-	chart := charts.Get(processesPoolBytes.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", processesPoolBytes.ID)
-	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("process_%s_pool_bytes", procID),
-		Name: procID,
-		Algo: module.Absolute,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
-}
-
-func addDimToProcessesThreads(charts *module.Charts, procID string) error {
-	chart := charts.Get(processesThreads.ID)
-	if chart == nil {
-		return fmt.Errorf("chart '%s' is not in charts", processesThreads.ID)
-	}
-	dim := &module.Dim{
-		ID:   fmt.Sprintf("process_%s_threads", procID),
-		Name: procID,
-		Algo: module.Absolute,
-	}
-	if err := chart.AddDim(dim); err != nil {
-		return err
-	}
-	chart.MarkNotCreated()
-	return nil
 }
