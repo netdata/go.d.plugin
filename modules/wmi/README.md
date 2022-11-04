@@ -26,15 +26,25 @@ The module collects metrics from the following collectors:
 
 ## Requirements
 
-On your Windows machine:
+There are two ways to monitor Windows with Netdata. Install Netdata over WSL on each host, or remotely collect
+data from one or more centralized agents, running on dedicated Linux machines. 
 
-- Install the
-  latest [Prometheus exporter for Windows](https://github.com/prometheus-community/windows_exporter/releases).
-- Download the [netdata.msi](https://github.com/netdata/msi-installer/releases)
-- Run netdata.msi directly, or with the options provided by Netdata Cloud. It will install WSL2 or WSL1 and run Netdata
-  on your machine. If you do not want to install WSL on your Windows machines, you can configure a single Netdata
-  instance to collect data remotely from multiple Windows hosts. Just add multiple jobs to `wmi.conf`, as shown in
-  the [configuration section](#configuration).
+### Netdata on each Windows machine
+
+- Download the latest [netdata.msi](https://github.com/netdata/msi-installer/releases)
+- Before running netdata.msi, be aware that it will need to restart your Windows machine. 
+- Run netdata.msi directly, or with the options provided by Netdata Cloud. The msi will:
+    - Install the latest [Prometheus exporter for Windows](https://github.com/prometheus-community/windows_exporter/releases)
+    - Install a WSL2 or WSL1 preconfigured "Netdata" distribution on your machine
+    - Restart the machine to finish the installation.
+  
+### Remote data collection
+
+- Install the latest [Prometheus exporter for Windows](https://github.com/prometheus-community/windows_exporter/releases)
+  on every Windows host you want to monitor.
+- Install Netdata on one or more Linux servers.
+- Configure each Netdata instance to collect data remotely, from several Windows hosts. Just add one job 
+  for each host to  `wmi.conf`, as shown in the [configuration section](#configuration).
 
 ## Metrics
 
