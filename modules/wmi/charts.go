@@ -181,9 +181,6 @@ var (
 			{ID: "memory_available_bytes", Name: "available"},
 			{ID: "memory_used_bytes", Name: "used"},
 		},
-		Vars: module.Vars{
-			{ID: "os_visible_memory_bytes"},
-		},
 	}
 	memPageFaultsChart = module.Chart{
 		ID:       "memory_page_faults",
@@ -323,14 +320,14 @@ var (
 	}
 	diskAvgLatencyChartTmpl = module.Chart{
 		ID:       "logical_disk_%s_latency",
-		Title:    "Average Read/Write Latency Disk",
-		Units:    "milliseconds",
+		Title:    "Average Read/Write Latency",
+		Units:    "seconds",
 		Fam:      "disk",
 		Ctx:      "wmi.logical_disk_latency",
 		Priority: prioDiskAvgLatency,
 		Dims: module.Dims{
-			{ID: "logical_disk_%s_read_latency", Name: "read", Algo: module.Incremental},
-			{ID: "logical_disk_%s_write_latency", Name: "write", Algo: module.Incremental},
+			{ID: "logical_disk_%s_read_latency", Name: "read", Algo: module.Incremental, Div: precision},
+			{ID: "logical_disk_%s_write_latency", Name: "write", Algo: module.Incremental, Div: precision},
 		},
 	}
 )

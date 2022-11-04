@@ -9,35 +9,19 @@ import (
 )
 
 const (
-	metricNetCurrentBandwidth              = "windows_net_current_bandwidth"
-	metricNetBytesTotal                    = "windows_net_bytes_total"
 	metricNetBytesReceivedTotal            = "windows_net_bytes_received_total"
 	metricNetBytesSentTotal                = "windows_net_bytes_sent_total"
-	metricNetPacketsTotal                  = "windows_net_packets_total"
 	metricNetPacketsReceivedTotal          = "windows_net_packets_received_total"
 	metricNetPacketsSentTotal              = "windows_net_packets_sent_total"
 	metricNetPacketsReceivedDiscardedTotal = "windows_net_packets_received_discarded_total"
 	metricNetPacketsOutboundDiscardedTotal = "windows_net_packets_outbound_discarded_total"
 	metricNetPacketsReceivedErrorsTotal    = "windows_net_packets_received_errors_total"
 	metricNetPacketsOutboundErrorsTotal    = "windows_net_packets_outbound_errors_total"
-	metricNetPacketsReceivedUnknownTotal   = "windows_net_packets_received_unknown_total"
 )
 
 func (w *WMI) collectNet(mx map[string]int64, pms prometheus.Metrics) {
 	seen := make(map[string]bool)
 	px := "net_nic_"
-	for _, pm := range pms.FindByName(metricNetCurrentBandwidth) {
-		if nic := cleanNICID(pm.Labels.Get("nic")); nic != "" {
-			seen[nic] = true
-			mx[px+nic+"_current_bandwidth"] += int64(pm.Value)
-		}
-	}
-	for _, pm := range pms.FindByName(metricNetBytesTotal) {
-		if nic := cleanNICID(pm.Labels.Get("nic")); nic != "" {
-			seen[nic] = true
-			mx[px+nic+"_bytes_total"] += int64(pm.Value * 8)
-		}
-	}
 	for _, pm := range pms.FindByName(metricNetBytesReceivedTotal) {
 		if nic := cleanNICID(pm.Labels.Get("nic")); nic != "" {
 			seen[nic] = true
@@ -48,12 +32,6 @@ func (w *WMI) collectNet(mx map[string]int64, pms prometheus.Metrics) {
 		if nic := cleanNICID(pm.Labels.Get("nic")); nic != "" {
 			seen[nic] = true
 			mx[px+nic+"_bytes_sent"] += int64(pm.Value * 8)
-		}
-	}
-	for _, pm := range pms.FindByName(metricNetPacketsTotal) {
-		if nic := cleanNICID(pm.Labels.Get("nic")); nic != "" {
-			seen[nic] = true
-			mx[px+nic+"_packets_total"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricNetPacketsReceivedTotal) {
@@ -90,12 +68,6 @@ func (w *WMI) collectNet(mx map[string]int64, pms prometheus.Metrics) {
 		if nic := cleanNICID(pm.Labels.Get("nic")); nic != "" {
 			seen[nic] = true
 			mx[px+nic+"_packets_outbound_errors"] += int64(pm.Value)
-		}
-	}
-	for _, pm := range pms.FindByName(metricNetPacketsReceivedUnknownTotal) {
-		if nic := cleanNICID(pm.Labels.Get("nic")); nic != "" {
-			seen[nic] = true
-			mx[px+nic+"_packets_received_unknown"] += int64(pm.Value)
 		}
 	}
 

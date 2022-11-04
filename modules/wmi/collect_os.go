@@ -9,15 +9,11 @@ import (
 const (
 	metricOSPhysicalMemoryFreeBytes = "windows_os_physical_memory_free_bytes"
 	metricOSPagingFreeBytes         = "windows_os_paging_free_bytes"
-	metricOSVirtualMemoryFreeBytes  = "windows_os_virtual_memory_free_bytes"
 	metricOSProcessesLimit          = "windows_os_processes_limit"
-	metricOSProcessMemoryLimitBytes = "windows_os_process_memory_limit_bytes"
 	metricOSProcesses               = "windows_os_processes"
 	metricOSUsers                   = "windows_os_users"
 	metricOSPagingLimitBytes        = "windows_os_paging_limit_bytes"
-	metricOSVirtualMemoryBytes      = "windows_os_virtual_memory_bytes"
 	metricOSVisibleMemoryBytes      = "windows_os_visible_memory_bytes"
-	metricOSTime                    = "windows_os_time"
 )
 
 func (w *WMI) collectOS(mx map[string]int64, pms prometheus.Metrics) {
@@ -33,14 +29,8 @@ func (w *WMI) collectOS(mx map[string]int64, pms prometheus.Metrics) {
 	if pm := pms.FindByName(metricOSPagingFreeBytes); pm.Len() > 0 {
 		mx[px+"paging_free_bytes"] = int64(pm.Max())
 	}
-	if pm := pms.FindByName(metricOSVirtualMemoryFreeBytes); pm.Len() > 0 {
-		mx[px+"virtual_memory_free_bytes"] = int64(pm.Max())
-	}
 	if pm := pms.FindByName(metricOSProcessesLimit); pm.Len() > 0 {
 		mx[px+"processes_limit"] = int64(pm.Max())
-	}
-	if pm := pms.FindByName(metricOSProcessMemoryLimitBytes); pm.Len() > 0 {
-		mx[px+"process_memory_limit_bytes"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricOSProcesses); pm.Len() > 0 {
 		mx[px+"processes"] = int64(pm.Max())
@@ -51,13 +41,7 @@ func (w *WMI) collectOS(mx map[string]int64, pms prometheus.Metrics) {
 	if pm := pms.FindByName(metricOSPagingLimitBytes); pm.Len() > 0 {
 		mx[px+"paging_limit_bytes"] = int64(pm.Max())
 	}
-	if pm := pms.FindByName(metricOSVirtualMemoryBytes); pm.Len() > 0 {
-		mx[px+"virtual_memory_bytes"] = int64(pm.Max())
-	}
 	if pm := pms.FindByName(metricOSVisibleMemoryBytes); pm.Len() > 0 {
 		mx[px+"visible_memory_bytes"] = int64(pm.Max())
-	}
-	if pm := pms.FindByName(metricOSTime); pm.Len() > 0 {
-		mx[px+"time"] = int64(pm.Max())
 	}
 }

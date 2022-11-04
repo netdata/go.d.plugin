@@ -68,14 +68,14 @@ func (w *WMI) collectLogicalDisk(mx map[string]int64, pms prometheus.Metrics) {
 		vol := pm.Labels.Get("volume")
 		if vol != "" && !strings.HasPrefix(vol, "HarddiskVolume") {
 			seen[vol] = true
-			mx[px+vol+"_read_latency"] = int64(pm.Value)
+			mx[px+vol+"_read_latency"] = int64(pm.Value * precision)
 		}
 	}
 	for _, pm := range pms.FindByName(metricLDWriteLatencyTotal) {
 		vol := pm.Labels.Get("volume")
 		if vol != "" && !strings.HasPrefix(vol, "HarddiskVolume") {
 			seen[vol] = true
-			mx[px+vol+"_write_latency"] = int64(pm.Value)
+			mx[px+vol+"_write_latency"] = int64(pm.Value * precision)
 		}
 	}
 
