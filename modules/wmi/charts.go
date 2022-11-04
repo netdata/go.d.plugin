@@ -65,6 +65,19 @@ const (
 	prioProcessesThreads
 	prioProcessesHandles
 
+	prioIISActiveRequests
+	prioIISActiveConns
+	prioIISIsapExtReq
+	prioIISUptime
+	prioIISBandwidth
+	prioIISTotalReq
+	prioIISConnsAttemp
+	prioIISReqAttemp
+	prioIISFileTransfer
+	prioIISExtensionReq
+	prioIISLogon
+	prioIISErrors
+
 	prioServiceState
 	prioServiceStatus
 
@@ -595,6 +608,132 @@ var (
 		Dims: module.Dims{
 			{ID: "system_up_time", Name: "time"},
 		},
+	}
+)
+
+// IIS
+var (
+	IISCharts = module.Charts{
+		IISActiveConnectionChartsChart.Copy(),
+		IISActiveRequestChart.Copy(),
+		IISIsapiExtReqChart.Copy(),
+		IISUptimeChart.Copy(),
+		IISBandwidthChart.Copy(),
+		IISTotalRequestsChart.Copy(),
+		IISConnsAttempChart.Copy(),
+		IISRequestAttempChart.Copy(),
+		IISFileTransferChart.Copy(),
+		IISExtensionReqChart.Copy(),
+		IISLogonChart.Copy(),
+		IISErrorChart.Copy(),
+	}
+	IISActiveConnectionChartsChart = module.Chart{
+		ID:       "iis_active_conn",
+		Title:    "Website Active connections",
+		Units:    "connections",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_active_conn",
+		Type:     module.Stacked,
+		Priority: prioIISActiveConns,
+	}
+	IISActiveRequestChart = module.Chart{
+		ID:       "iis_active_request",
+		Title:    "Website active request per user",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_active_request",
+		Type:     module.Stacked,
+		Priority: prioIISActiveRequests,
+	}
+	IISIsapiExtReqChart = module.Chart{
+		ID:       "iis_isapi_ext_req",
+		Title:    "ISAPI extension requests",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_isapi_ext_req",
+		Type:     module.Stacked,
+		Priority: prioIISIsapExtReq,
+	}
+	IISUptimeChart = module.Chart{
+		ID:       "iis_uptime",
+		Title:    "Website uptime",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_uptime",
+		Type:     module.Stacked,
+		Priority: prioIISUptime,
+	}
+	IISBandwidthChart = module.Chart{
+		ID:       "iis_bandwidth",
+		Title:    "Website bandwidth",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_bandwidith",
+		Type:     module.Stacked,
+		Priority: prioIISBandwidth,
+	}
+	IISTotalRequestsChart = module.Chart{
+		ID:       "iis_total_requests",
+		Title:    "Website total requests",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_total_requests",
+		Type:     module.Stacked,
+		Priority: prioIISTotalReq,
+	}
+	IISConnsAttempChart = module.Chart{
+		ID:       "iis_conns_attemp",
+		Title:    "Website connections attempts",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_conns_attemp",
+		Type:     module.Stacked,
+		Priority: prioIISConnsAttemp,
+	}
+	IISRequestAttempChart = module.Chart{
+		ID:       "iis_req_attemp",
+		Title:    "Website requests attempts",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_req_attemp",
+		Type:     module.Stacked,
+		Priority: prioIISReqAttemp,
+	}
+	IISFileTransferChart = module.Chart{
+		ID:       "iis_file_transfer",
+		Title:    "Website file tansfer",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_file_transfer",
+		Type:     module.Stacked,
+		Priority: prioIISFileTransfer,
+	}
+	IISExtensionReqChart = module.Chart{
+		ID:       "iis_extension_request",
+		Title:    "Website extensions request",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_extension_request",
+		Type:     module.Stacked,
+		Priority: prioIISExtensionReq,
+	}
+	IISLogonChart = module.Chart{
+		ID:       "iis_logon",
+		Title:    "Website logon",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_logon",
+		Type:     module.Stacked,
+		Priority: prioIISLogon,
+	}
+	IISErrorChart = module.Chart{
+		ID:       "iis_errors",
+		Title:    "Website errors",
+		Units:    "requests",
+		Fam:      "IIS",
+		Ctx:      "wmi.iis_errors",
+		Type:     module.Stacked,
+		Priority: prioIISErrors,
 	}
 )
 
