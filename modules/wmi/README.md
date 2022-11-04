@@ -13,6 +13,7 @@ the [windows_exporter](https://github.com/prometheus-community/windows_exporter)
 The module collects metrics from the following collectors:
 
 - [cpu](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.cpu.md)
+- [iis](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.iis.md)
 - [memory](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.memory.md)
 - [net](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.net.md)
 - [logical_disk](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.logical_disk.md)
@@ -58,6 +59,19 @@ All metrics have "wmi." prefix.
 | cpu_core_dpcs              |    cpu core    |                                                                                        dpcs                                                                                        |    dpcs/s     |
 | cpu_core_cstate            |    cpu core    |                                                                                     c1, c2, c3                                                                                     |  percentage   |
 | memory_utilization         |     global     |                                                                                  available, used                                                                                   |     bytes     |
+| iis_acttive_request        |      IIS       |                                                                                        site                                                                                        |  requests   |
+| iis_active_conns           |      IIS       |                                                                                        site                                                                                        |  connections   |
+| iis_isapi_ext_req          |      IIS       |                                                                                        site                                                                                        |  requests   |
+| iis_uptime                 |      IIS       |                                                                                       uptime                                                                                       |  seconds   |
+| iis_bandwidth              |      IIS       |                                                                                        site                                                                                        |  bytes   |
+| iis_total_anon_req         |      IIS       |                                                                                        site                                                                                        |  requests   |
+| iis_conns_attemp           |      IIS       |                                                                                        site                                                                                        |  requests   |
+| iis_req_attemp             |      IIS       |                                                                                        site                                                                                        |  requests   |
+| iis_file_transfer          |      IIS       |                                                                                        site                                                                                        |  files   |
+| iis_extension_req          |      IIS       |                                                                                        site                                                                                        |  requests   |
+| iis_logon                  |      IIS       |                                                                                        site                                                                                        |  logons   |
+| iis_errors                 |      IIS       |                                                                                        site                                                                                        |  errors   |
+| memory_utilization         |     global     |                                                                                  available, used                                                                                   |      KiB      |
 | memory_page_faults         |     global     |                                                                                    page_faults                                                                                     |   events/s    |
 | memory_swap_utilization    |     global     |                                                                                  available, used                                                                                   |     bytes     |
 | memory_swap_operations     |     global     |                                                                                    read, write                                                                                     | operations/s  |
