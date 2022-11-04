@@ -3,8 +3,9 @@
 package wmi
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"strings"
+
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
 const (
