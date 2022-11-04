@@ -23,6 +23,7 @@ const (
 	collectorLogon       = "logon"
 	collectorThermalZone = "thermalzone"
 	collectorTCP         = "tcp"
+	collectorIIS         = "iis"
 	collectorProcess     = "process"
 	collectorService     = "service"
 )
@@ -41,6 +42,7 @@ var fastCollectors = map[string]bool{
 // slow collectors with gauge (absolute) metrics only
 var slowCollectors = map[string]bool{
 	collectorLogon:       true,
+	collectorIIS:         true,
 	collectorThermalZone: true,
 	collectorService:     true,
 }
@@ -155,6 +157,8 @@ func (w *WMI) collectMetrics(mx map[string]int64, prom prometheus.Prometheus) er
 			w.collectProcess(mx, pms)
 		case collectorService:
 			w.collectService(mx, pms)
+		case collectorIIS:
+			w.collectIIS(mx, pms)
 		}
 	}
 
