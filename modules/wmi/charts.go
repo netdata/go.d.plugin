@@ -1054,7 +1054,9 @@ func (w *WMI) removeProcessFromCharts(procID string) {
 
 		if err := chart.MarkDimRemove(id, false); err != nil {
 			w.Warning(err)
+			continue
 		}
+		chart.MarkNotCreated()
 	}
 }
 
