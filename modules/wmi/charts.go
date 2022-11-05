@@ -1110,6 +1110,40 @@ func (w *WMI) removeThermalZoneCharts(zone string) {
 	}
 }
 
+func (w *WMI) addIISCharts() {
+	charts := IISCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addIISToCharts(siteID string) {
+	for _, chart := range *w.Charts() {
+		var dim0 *module.Dim
+		var dim1 *module.Dim
+		switch chart.ID {
+		case IISActiveConnectionChartsChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_active_request_anon", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
+			id1 := fmt.Sprintf("iis_%s_iis_active_request_non_anon", siteID)
+			dim1 = &module.Dim{ID: id1, Name: siteID, Algo: module.Incremental}
+		}
+
+		if dim0 != nil {
+			if err := chart.AddDim(dim0); err != nil {
+				w.Warning(err)
+			}
+		}
+		if dim1 != nil {
+			if err := chart.AddDim(dim1); err != nil {
+				w.Warning(err)
+			}
+		}
+
+	}
+}
+
 func (w *WMI) addProcessesCharts() {
 	charts := processesCharts.Copy()
 
