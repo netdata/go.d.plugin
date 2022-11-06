@@ -197,6 +197,23 @@ func TestWMI_Collect(t *testing.T) {
 				"cpu_interrupt_time":                                            233373,
 				"cpu_privileged_time":                                           6556717,
 				"cpu_user_time":                                                 10978796,
+				"iis_Default_Web_Site_iis_active_conn":                          0,
+				"iis_Default_Web_Site_iis_active_request_anon":                  0,
+				"iis_Default_Web_Site_iis_active_request_non_anon":              0,
+				"iis_Default_Web_Site_iis_bandwidth_recv":                       10289,
+				"iis_Default_Web_Site_iis_bandwidth_sent":                       105882,
+				"iis_Default_Web_Site_iis_conns_atemp":                          1,
+				"iis_Default_Web_Site_iis_error_404":                            1,
+				"iis_Default_Web_Site_iis_error_423":                            0,
+				"iis_Default_Web_Site_iis_extension_req":                        0,
+				"iis_Default_Web_Site_iis_file_transfer_recv":                   0,
+				"iis_Default_Web_Site_iis_file_transfer_sent":                   2,
+				"iis_Default_Web_Site_iis_isapi_ext":                            0,
+				"iis_Default_Web_Site_iis_logon":                                4,
+				"iis_Default_Web_Site_iis_req_total":                            3,
+				"iis_Default_Web_Site_iis_total_req":                            3,
+				"iis_Default_Web_Site_iis_total_req_anon":                       3,
+				"iis_Default_Web_Site_iis_uptime":                               258633,
 				"logical_disk_C:_free_space":                                    43636490240,
 				"logical_disk_C:_read_bytes_total":                              17676328448,
 				"logical_disk_C:_read_latency":                                  97420,
@@ -334,6 +351,7 @@ func TestWMI_Collect(t *testing.T) {
 		})
 	}
 }
+
 func testCharts(t *testing.T, wmi *WMI, mx map[string]int64) {
 	ensureChartsDimsCreated(t, wmi)
 	ensureCollectedHasAllChartsDimsVarsIDs(t, wmi, mx)
