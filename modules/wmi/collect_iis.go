@@ -145,6 +145,12 @@ func (w *WMI) collectIIS(mx map[string]int64, pms prometheus.Metrics) {
 			w.addIISToCharts(site)
 		}
 	}
+	for site := range w.cache.iis {
+		if !seen[site] {
+				delete(w.cache.iis, site)
+				w.removeServiceCharts(site)
+		}
+	}
 }
 
 func cleanSiteName(name string) string {
