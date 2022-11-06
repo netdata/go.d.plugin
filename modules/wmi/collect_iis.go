@@ -147,8 +147,8 @@ func (w *WMI) collectIIS(mx map[string]int64, pms prometheus.Metrics) {
 	}
 	for site := range w.cache.iis {
 		if !seen[site] {
-				delete(w.cache.iis, site)
-				w.removeServiceCharts(site)
+			delete(w.cache.iis, site)
+			w.removeIISCharts(site)
 		}
 	}
 }

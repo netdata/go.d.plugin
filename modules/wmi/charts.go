@@ -1187,6 +1187,60 @@ func (w *WMI) addIISToCharts(siteID string) {
 	}
 }
 
+func (w *WMI) removeIISCharts(siteID string) {
+	for _, chart := range *w.Charts() {
+		var id0 string
+		var id1 string
+		switch chart.ID {
+		case IISActiveRequestChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_active_request_anon", siteID)
+			id1 = fmt.Sprintf("iis_%s_iis_active_request_non_anon", siteID)
+		case IISActiveConnectionChartsChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_active_conn", siteID)
+		case IISIsapiExtReqChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_isapi_ext", siteID)
+		case IISUptimeChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_uptime", siteID)
+		case IISBandwidthChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_bandwidth_recv", siteID)
+			id1 = fmt.Sprintf("iis_%s_iis_bandwidth_sent", siteID)
+		case IISRequestAttempChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_total_req_anon", siteID)
+			id1 = fmt.Sprintf("iis_%s_iis_total_req", siteID)
+		case IISConnsAttempChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_conns_atemp", siteID)
+		case IISRequestAttempChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_req_total", siteID)
+		case IISFileTransferChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_file_transfer_recv", siteID)
+			id1 = fmt.Sprintf("iis_%s_iis_file_transfer_sent", siteID)
+		case IISExtensionReqChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_extension_req", siteID)
+		case IISLogonChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_logon", siteID)
+		case IISErrorChart.ID:
+			id0 = fmt.Sprintf("iis_%s_iis_error_423", siteID)
+			id1 = fmt.Sprintf("iis_%s_iis_error_404", siteID)
+		default:
+			continue
+		}
+
+		if len(id0) > 0 {
+			if err := chart.MarkDimRemove(id0, false); err != nil {
+				w.Warning(err)
+				continue
+			}
+		}
+		if len(id1) > 0 {
+			if err := chart.MarkDimRemove(id1, false); err != nil {
+				w.Warning(err)
+				continue
+			}
+		}
+		chart.MarkNotCreated()
+	}
+}
+
 func (w *WMI) addProcessesCharts() {
 	charts := processesCharts.Copy()
 
