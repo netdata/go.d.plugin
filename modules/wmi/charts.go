@@ -1151,14 +1151,6 @@ func (w *WMI) removeThermalZoneCharts(zone string) {
 	}
 }
 
-func (w *WMI) addIISCharts() {
-	charts := IISCharts.Copy()
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
-}
-
 func (w *WMI) addIISToCharts(siteID string) {
 	for _, chart := range *w.Charts() {
 		var dim0 *module.Dim

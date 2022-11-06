@@ -31,7 +31,6 @@ const (
 func (w *WMI) collectIIS(mx map[string]int64, pms prometheus.Metrics) {
 	if !w.cache.collection[collectorIIS] {
 		w.cache.collection[collectorIIS] = true
-		w.addIISCharts()
 	}
 
 	seen := make(map[string]bool)
