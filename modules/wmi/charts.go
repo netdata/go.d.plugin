@@ -1152,7 +1152,7 @@ func (w *WMI) removeThermalZoneCharts(zone string) {
 }
 
 func (w *WMI) addIISCharts(siteID string) {
-	charts := serviceChartsTmpl.Copy()
+	charts := IISCharts.Copy()
 
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, siteID)
