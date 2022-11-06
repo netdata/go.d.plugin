@@ -85,7 +85,7 @@ func (w *WMI) collectProcess(mx map[string]int64, pms prometheus.Metrics) {
 	for proc := range w.cache.processes {
 		if !seen[proc] {
 			delete(w.cache.processes, proc)
-			w.removeServiceCharts(proc)
+			w.removeProcessFromCharts(proc)
 		}
 	}
 }
