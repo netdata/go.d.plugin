@@ -141,7 +141,7 @@ func (w *WMI) collectIIS(mx map[string]int64, pms prometheus.Metrics) {
 	for site := range seen {
 		if !w.cache.iis[site] {
 			w.cache.iis[site] = true
-			w.addIISToCharts(site)
+			w.addIISCharts(site)
 		}
 	}
 	for site := range w.cache.iis {
