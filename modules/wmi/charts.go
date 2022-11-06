@@ -1123,11 +1123,54 @@ func (w *WMI) addIISToCharts(siteID string) {
 		var dim0 *module.Dim
 		var dim1 *module.Dim
 		switch chart.ID {
-		case IISActiveConnectionChartsChart.ID:
+		case IISActiveRequestChart.ID:
 			id0 := fmt.Sprintf("iis_%s_iis_active_request_anon", siteID)
 			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
 			id1 := fmt.Sprintf("iis_%s_iis_active_request_non_anon", siteID)
 			dim1 = &module.Dim{ID: id1, Name: siteID, Algo: module.Incremental}
+		case IISActiveConnectionChartsChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_active_conn", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
+		case IISIsapiExtReqChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_isapi_ext", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
+		case IISUptimeChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_uptime", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
+		case IISBandwidthChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_bandwidth_recv", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental, Mul: -1}
+			id1 := fmt.Sprintf("iis_%s_iis_bandwidth_sent", siteID)
+			dim1 = &module.Dim{ID: id1, Name: siteID, Algo: module.Incremental}
+		case IISRequestAttempChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_total_req_anon", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
+			id1 := fmt.Sprintf("iis_%s_iis_total_req", siteID)
+			dim1 = &module.Dim{ID: id1, Name: siteID, Algo: module.Incremental}
+		case IISConnsAttempChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_conns_atemp", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
+		case IISRequestAttempChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_req_total", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
+		case IISFileTransferChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_file_transfer_recv", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental, Mul: -1}
+			id1 := fmt.Sprintf("iis_%s_iis_file_transfer_sent", siteID)
+			dim1 = &module.Dim{ID: id1, Name: siteID, Algo: module.Incremental}
+		case IISExtensionReqChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_extension_req", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
+		case IISLogonChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_logon", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
+		case IISErrorChart.ID:
+			id0 := fmt.Sprintf("iis_%s_iis_error_423", siteID)
+			dim0 = &module.Dim{ID: id0, Name: siteID, Algo: module.Incremental}
+			id1 := fmt.Sprintf("iis_%s_iis_error_404", siteID)
+			dim1 = &module.Dim{ID: id1, Name: siteID, Algo: module.Incremental}
+		default:
+			continue
 		}
 
 		if dim0 != nil {
