@@ -17,12 +17,12 @@ const (
 	prioDevicePowerOnTime
 	prioDeviceUnsafeShutdownsCount
 	prioDeviceCriticalWarningsState
-	prioDeviceMediaErrorsCount
-	prioDeviceErrorLogEntriesCount
+	prioDeviceMediaErrorsRate
+	prioDeviceErrorLogEntriesRate
 	prioDeviceWarningCompositeTemperatureTime
 	prioDeviceCriticalCompositeTemperatureTime
 	prioDeviceThmTemp1TransitionsCount
-	prioDeviceThmTemp2TransitionsCount
+	prioDeviceThmTemp2TransitionsRate
 	prioDeviceThmTemp1Time
 	prioDeviceThmTemp2Time
 )
@@ -36,12 +36,12 @@ var deviceChartsTmpl = module.Charts{
 	devicePowerOnTimeChartTmpl.Copy(),
 	deviceUnsafeShutdownsCountChartTmpl.Copy(),
 	deviceCriticalWarningsStateChartTmpl.Copy(),
-	deviceMediaErrorsCountChartTmpl.Copy(),
-	deviceErrorLogEntriesCountChartTmpl.Copy(),
+	deviceMediaErrorsRateChartTmpl.Copy(),
+	deviceErrorLogEntriesRateChartTmpl.Copy(),
 	deviceWarnCompositeTemperatureTimeChartTmpl.Copy(),
 	deviceCritCompositeTemperatureTimeChartTmpl.Copy(),
-	deviceThmTemp1TransitionsCountChartTmpl.Copy(),
-	deviceThmTemp2TransitionsCountChartTmpl.Copy(),
+	deviceThmTemp1TransitionsRateChartTmpl.Copy(),
+	deviceThmTemp2TransitionsRateChartTmpl.Copy(),
 	deviceThmTemp1TimeChartTmpl.Copy(),
 	deviceThmTemp2TimeChartTmpl.Copy(),
 }
@@ -142,26 +142,26 @@ var deviceUnsafeShutdownsCountChartTmpl = module.Chart{
 		{ID: "device_%s_unsafe_shutdowns", Name: "unsafe"},
 	},
 }
-var deviceMediaErrorsCountChartTmpl = module.Chart{
-	ID:       "device_%s_media_errors_count",
+var deviceMediaErrorsRateChartTmpl = module.Chart{
+	ID:       "device_%s_media_errors_rate",
 	Title:    "Media and data integrity errors",
-	Units:    "errors",
+	Units:    "errors/s",
 	Fam:      "media errors",
 	Ctx:      "nvme.device_media_errors_count",
-	Priority: prioDeviceMediaErrorsCount,
+	Priority: prioDeviceMediaErrorsRate,
 	Dims: module.Dims{
-		{ID: "device_%s_media_errors", Name: "media"},
+		{ID: "device_%s_media_errors", Name: "media", Algo: module.Incremental},
 	},
 }
-var deviceErrorLogEntriesCountChartTmpl = module.Chart{
-	ID:       "device_%s_error_log_entries_count",
+var deviceErrorLogEntriesRateChartTmpl = module.Chart{
+	ID:       "device_%s_error_log_entries_rate",
 	Title:    "Error log entries",
-	Units:    "entries",
+	Units:    "entries/s",
 	Fam:      "error log",
-	Ctx:      "nvme.device_error_log_entries_count",
-	Priority: prioDeviceErrorLogEntriesCount,
+	Ctx:      "nvme.device_error_log_entries_rate",
+	Priority: prioDeviceErrorLogEntriesRate,
 	Dims: module.Dims{
-		{ID: "device_%s_num_err_log_entries", Name: "error_log"},
+		{ID: "device_%s_num_err_log_entries", Name: "error_log", Algo: module.Incremental},
 	},
 }
 var deviceWarnCompositeTemperatureTimeChartTmpl = module.Chart{
@@ -187,26 +187,26 @@ var deviceCritCompositeTemperatureTimeChartTmpl = module.Chart{
 	},
 }
 var (
-	deviceThmTemp1TransitionsCountChartTmpl = module.Chart{
-		ID:       "device_%s_thm_temp1_transitions_count",
+	deviceThmTemp1TransitionsRateChartTmpl = module.Chart{
+		ID:       "device_%s_thm_temp1_transitions_rate",
 		Title:    "Thermal management temp1 transitions",
-		Units:    "transitions",
+		Units:    "transitions/s",
 		Fam:      "thermal mgmt transitions",
-		Ctx:      "nvme.device_thermal_mgmt_temp1_transitions_count",
+		Ctx:      "nvme.device_thermal_mgmt_temp1_transitions_rate",
 		Priority: prioDeviceThmTemp1TransitionsCount,
 		Dims: module.Dims{
-			{ID: "device_%s_thm_temp1_trans_count", Name: "temp1"},
+			{ID: "device_%s_thm_temp1_trans_count", Name: "temp1", Algo: module.Incremental},
 		},
 	}
-	deviceThmTemp2TransitionsCountChartTmpl = module.Chart{
-		ID:       "device_%s_thm_temp2_transitions_count",
+	deviceThmTemp2TransitionsRateChartTmpl = module.Chart{
+		ID:       "device_%s_thm_temp2_transitions_rate",
 		Title:    "Thermal management temp2 transitions",
-		Units:    "transitions",
+		Units:    "transitions/s",
 		Fam:      "thermal mgmt transitions",
-		Ctx:      "nvme.device_thermal_mgmt_temp2_transitions_count",
-		Priority: prioDeviceThmTemp2TransitionsCount,
+		Ctx:      "nvme.device_thermal_mgmt_temp2_transitions_rate",
+		Priority: prioDeviceThmTemp2TransitionsRate,
 		Dims: module.Dims{
-			{ID: "device_%s_thm_temp2_trans_count", Name: "temp2"},
+			{ID: "device_%s_thm_temp2_trans_count", Name: "temp2", Algo: module.Incremental},
 		},
 	}
 )
