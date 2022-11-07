@@ -20,7 +20,7 @@ func New() *NVMe {
 	return &NVMe{
 		Config: Config{
 			BinaryPath: "nvme",
-			Timeout:    web.Duration{Duration: time.Second * 5},
+			Timeout:    web.Duration{Duration: time.Second * 2},
 		},
 		charts:           &module.Charts{},
 		devicePaths:      make(map[string]bool),
