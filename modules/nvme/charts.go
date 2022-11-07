@@ -147,7 +147,7 @@ var deviceMediaErrorsRateChartTmpl = module.Chart{
 	Title:    "Media and data integrity errors",
 	Units:    "errors/s",
 	Fam:      "media errors",
-	Ctx:      "nvme.device_media_errors_count",
+	Ctx:      "nvme.device_media_errors_rate",
 	Priority: prioDeviceMediaErrorsRate,
 	Dims: module.Dims{
 		{ID: "device_%s_media_errors", Name: "media", Algo: module.Incremental},
