@@ -16,6 +16,8 @@ type nvmeDeviceList struct {
 	}
 }
 
+// See "Health Information Log Page" in the Current Specification Version
+// https://nvmexpress.org/developers/nvme-specification/
 type nvmeDeviceSmartLog struct {
 	CriticalWarning    int64 `json:"critical_warning"`
 	Temperature        int64 `json:"temperature"`
