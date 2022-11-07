@@ -31,12 +31,7 @@ data from one or more centralized agents, running on dedicated Linux machines.
 
 ### Netdata on each Windows machine
 
-- Download the latest [netdata.msi](https://github.com/netdata/msi-installer/releases)
-- Before running netdata.msi, be aware that it will need to restart your Windows machine. 
-- Run netdata.msi directly, or with the options provided by Netdata Cloud. The msi will:
-    - Install the latest [Prometheus exporter for Windows](https://github.com/prometheus-community/windows_exporter/releases)
-    - Install a WSL2 or WSL1 preconfigured "Netdata" distribution on your machine
-    - Restart the machine to finish the installation.
+Use the [Netdata MSI installer](https://github.com/netdata/msi-installer#instructions).
   
 ### Remote data collection
 
