@@ -31,12 +31,18 @@ func (n *NVMe) initNVMeCLIExec() (nvmeCLI, error) {
 	}
 
 	if sudoPath != "" {
-		ctx, cancel := context.WithTimeout(context.Background(), n.Timeout.Duration)
-		defer cancel()
+		ctx1, cancel1 := context.WithTimeout(context.Background(), n.Timeout.Duration)
+		defer cancel1()
 
-		_, err := exec.CommandContext(ctx, sudoPath, "-n", "-l", nvmePath).Output()
-		if err != nil {
-			return nil, fmt.Errorf("can not execute '%s' with sudo: %v", n.BinaryPath, err)
+		if _, err := exec.CommandContext(ctx1, sudoPath, "-n", "-v").Output(); err != nil {
+			return nil, fmt.Errorf("can not run sudo on this host: %v", err)
+		}
+
+		ctx2, cancel2 := context.WithTimeout(context.Background(), n.Timeout.Duration)
+		defer cancel2()
+
+		if _, err := exec.CommandContext(ctx2, sudoPath, "-n", "-l", nvmePath).Output(); err != nil {
+			return nil, fmt.Errorf("can not run '%s' with sudo: %v", n.BinaryPath, err)
 		}
 	}
 
