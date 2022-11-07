@@ -10,7 +10,7 @@ import (
 func init() {
 	module.Register("nvme", module.Creator{
 		Defaults: module.Defaults{
-			UpdateEvery: 5,
+			UpdateEvery: 10,
 		},
 		Create: func() module.Module { return New() },
 	})
