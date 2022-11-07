@@ -10,21 +10,24 @@ sidebar_label: "NVMe devices"
 Monitors health metrics (estimated endurance, space capacity, critical warnings, temperature, etc.) using
 the [nvme](https://github.com/linux-nvme/nvme-cli#nvme-cli) CLI tool.
 
-## Requirements
-
 The module uses `nvme`, which can only be executed by root. It uses `sudo` and assumes that it is configured such that
 the netdata user can execute `nvme` as root without a password.
 
-Add the following line to the `/etc/sudoers` file (use `which nvme` to find the full path to the binary):
+## Requirements
 
-```bash
-netdata ALL=(root)       NOPASSWD: /usr/sbin/nvme
-```
+- [Install](https://github.com/linux-nvme/nvme-cli#distro-support) `nvme-cli`.
+- Add the netdata user to the `/etc/sudoers` file (use `which nvme` to find the full path to the binary):
+
+  ```bash
+  netdata ALL=(root) NOPASSWD: /usr/sbin/nvme
+  ```
+
+---
 
 <details>
 <summary>Additionally, you may need to adjust Netdata's system unit on Linux distributions using systemd.</summary>
 
-> **Note**: This is an optional step. Only do this if adding `netdata` to `/etc/sudoers` didn't help.
+> **Note**: This is an optional step. Only do this if adding netdata to `/etc/sudoers` didn't help.
 
 The default [CapabilityBoundingSet](https://www.freedesktop.org/software/systemd/man/systemd.exec.html#Capabilities)
 doesn't allow using sudo, and is quite strict in general. Resetting is not optimal, but a next-best solution given the
@@ -32,12 +35,12 @@ inability to execute nvme using sudo.
 
 As the root user, do the following:
 
- ```bash
-mkdir /etc/systemd/system/netdata.service.d
-echo -e '[Service]\nCapabilityBoundingSet=~' | tee /etc/systemd/system/netdata.service.d/unset-capability-bounding-set.conf
-systemctl daemon-reload
-systemctl restart netdata.service
-```
+   ```bash
+  mkdir /etc/systemd/system/netdata.service.d
+  echo -e '[Service]\nCapabilityBoundingSet=~' | tee /etc/systemd/system/netdata.service.d/unset-capability-bounding-set.conf
+  systemctl daemon-reload
+  systemctl restart netdata.service
+  ```
 
 </details>
 
