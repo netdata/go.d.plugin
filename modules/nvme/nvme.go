@@ -10,7 +10,6 @@ import (
 func init() {
 	module.Register("nvme", module.Creator{
 		Defaults: module.Defaults{
-			//Disabled:    true,
 			UpdateEvery: 5,
 		},
 		Create: func() module.Module { return New() },
@@ -24,7 +23,6 @@ func New() *NVMe {
 			Timeout:    web.Duration{Duration: time.Second * 5},
 		},
 		charts:           &module.Charts{},
-		newNVMeCLI:       newNVMeCLIExec,
 		devicePaths:      make(map[string]bool),
 		listDevicesEvery: time.Minute * 10,
 	}
@@ -43,12 +41,12 @@ type (
 
 		charts *module.Charts
 
-		newNVMeCLI func(cfg Config) (*nvmeCLIExec, error)
-		exec       nvmeCLI
+		exec nvmeCLI
 
 		devicePaths      map[string]bool
 		listDevicesTime  time.Time
 		listDevicesEvery time.Duration
+		forceListDevices bool
 	}
 	nvmeCLI interface {
 		list() (*nvmeDeviceList, error)
@@ -57,6 +55,18 @@ type (
 )
 
 func (n *NVMe) Init() bool {
+	if err := n.validateConfig(); err != nil {
+		n.Errorf("config validation: %v", err)
+		return false
+	}
+
+	v, err := n.initNVMeCLIExec()
+	if err != nil {
+		n.Errorf("init nvme-cli exec: %v", err)
+		return false
+	}
+	n.exec = v
+
 	return true
 }
 

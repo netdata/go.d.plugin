@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	_ = module.Priority + iota
+	_ = 2050 + iota // right after Disks section
 	prioDeviceEstimatedEndurancePerc
 	prioDeviceAvailableSparePerc
 	prioDeviceCompositeTemperature
@@ -79,20 +79,20 @@ var deviceCompositeTemperatureChartTmpl = module.Chart{
 		{ID: "device_%s_temperature", Name: "temperature"},
 	},
 }
-var (
-	deviceIOTransferredCountChartTmpl = module.Chart{
-		ID:       "device_%s_io_transferred_count",
-		Title:    "Amount of data transferred to and from device",
-		Units:    "bytes",
-		Fam:      "transferred data",
-		Ctx:      "nvme.device_io_transferred_count",
-		Priority: prioDeviceIOTransferredCount,
-		Dims: module.Dims{
-			{ID: "device_%s_data_units_read", Name: "read"},
-			{ID: "device_%s_data_units_written", Name: "written", Mul: -1},
-		},
-	}
-)
+var deviceIOTransferredCountChartTmpl = module.Chart{
+	ID:       "device_%s_io_transferred_count",
+	Title:    "Amount of data transferred to and from device",
+	Units:    "bytes",
+	Fam:      "transferred data",
+	Ctx:      "nvme.device_io_transferred_count",
+	Priority: prioDeviceIOTransferredCount,
+	Type:     module.Area,
+	Dims: module.Dims{
+		{ID: "device_%s_data_units_read", Name: "read"},
+		{ID: "device_%s_data_units_written", Name: "written", Mul: -1},
+	},
+}
+
 var devicePowerCyclesCountChartTmpl = module.Chart{
 	ID:       "device_%s_power_cycles_count",
 	Title:    "Power cycles",
@@ -192,7 +192,7 @@ var (
 		Title:    "Thermal management temp1 transitions",
 		Units:    "transitions",
 		Fam:      "thermal mgmt transitions",
-		Ctx:      "nvme.device_thm_temp1_transitions_count",
+		Ctx:      "nvme.device_thermal_mgmt_temp1_transitions_count",
 		Priority: prioDeviceThmTemp1TransitionsCount,
 		Dims: module.Dims{
 			{ID: "device_%s_thm_temp1_trans_count", Name: "temp1"},
@@ -203,7 +203,7 @@ var (
 		Title:    "Thermal management temp2 transitions",
 		Units:    "transitions",
 		Fam:      "thermal mgmt transitions",
-		Ctx:      "nvme.device_thm_temp2_transitions_count",
+		Ctx:      "nvme.device_thermal_mgmt_temp2_transitions_count",
 		Priority: prioDeviceThmTemp2TransitionsCount,
 		Dims: module.Dims{
 			{ID: "device_%s_thm_temp2_trans_count", Name: "temp2"},
@@ -216,7 +216,7 @@ var (
 		Title:    "Thermal management temp1 time",
 		Units:    "seconds",
 		Fam:      "thermal mgmt time",
-		Ctx:      "nvme.device_thm_temp1_transitions",
+		Ctx:      "nvme.device_thermal_mgmt_temp1_time",
 		Priority: prioDeviceThmTemp1Time,
 		Dims: module.Dims{
 			{ID: "device_%s_thm_temp1_total_time", Name: "temp1"},
@@ -227,7 +227,7 @@ var (
 		Title:    "Thermal management temp1 time",
 		Units:    "seconds",
 		Fam:      "thermal mgmt time",
-		Ctx:      "nvme.device_thm_temp2_transitions",
+		Ctx:      "nvme.device_thermal_mgmt_temp2_time",
 		Priority: prioDeviceThmTemp2Time,
 		Dims: module.Dims{
 			{ID: "device_%s_thm_temp2_total_time", Name: "temp2"},

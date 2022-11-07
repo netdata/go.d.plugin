@@ -3,8 +3,6 @@ package nvme
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"os"
 	"os/exec"
 	"time"
 )
@@ -42,46 +40,10 @@ type nvmeDeviceSmartLog struct {
 	ThmTemp2TotalTime  int64 `json:"thm_temp2_total_time"`
 }
 
-func newNVMeCLIExec(cfg Config) (*nvmeCLIExec, error) {
-	nvmeBinPath := cfg.BinaryPath
-	if _, err := os.Stat(nvmeBinPath); os.IsNotExist(err) {
-		path, err := exec.LookPath("nvme")
-		if err != nil {
-			return nil, fmt.Errorf("error on lookup 'nvme': %v", err)
-		}
-		nvmeBinPath = path
-	}
-
-	var sudoBinPath string
-	if os.Getuid() != 0 {
-		path, err := exec.LookPath("sudo")
-		if err != nil {
-			return nil, fmt.Errorf("error on lookup 'sudo': %v", err)
-		}
-		sudoBinPath = path
-	}
-
-	if sudoBinPath != "" {
-		ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout.Duration)
-		defer cancel()
-
-		_, err := exec.CommandContext(ctx, sudoBinPath, "-n", "-l", nvmeBinPath).Output()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return &nvmeCLIExec{
-		sudoBinPath: sudoBinPath,
-		nvmeBinPath: nvmeBinPath,
-		timeout:     cfg.Timeout.Duration,
-	}, nil
-}
-
 type nvmeCLIExec struct {
-	sudoBinPath string
-	nvmeBinPath string
-	timeout     time.Duration
+	sudoPath string
+	nvmePath string
+	timeout  time.Duration
 }
 
 func (n *nvmeCLIExec) list() (*nvmeDeviceList, error) {
@@ -116,10 +78,10 @@ func (n *nvmeCLIExec) execute(arg ...string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), n.timeout)
 	defer cancel()
 
-	if n.sudoBinPath != "" {
-		args := append([]string{"-n", n.nvmeBinPath}, arg...)
-		return exec.CommandContext(ctx, n.sudoBinPath, args...).Output()
+	if n.sudoPath != "" {
+		args := append([]string{"-n", n.nvmePath}, arg...)
+		return exec.CommandContext(ctx, n.sudoPath, args...).Output()
 	}
 
-	return exec.CommandContext(ctx, n.nvmeBinPath, arg...).Output()
+	return exec.CommandContext(ctx, n.nvmePath, arg...).Output()
 }
