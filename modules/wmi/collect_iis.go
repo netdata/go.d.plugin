@@ -9,149 +9,132 @@ import (
 )
 
 const (
-	metricIISCurrentAnonReq    = "windows_iis_current_anonymous_users"
-	metricIISCurrentNonAnonReq = "windows_iis_current_non_anonymous_users"
-	metricIISActiveConn        = "windows_iis_current_connections"
-	metricIISISAPIExtConn      = "windows_iis_current_connections"
-	metricIISUptime            = "windows_iis_service_uptime"
-	metricIISBandwidthRecv     = "windows_iis_received_bytes_total"
-	metricIISBandwidthSent     = "windows_iis_sent_bytes_total"
-	metricIISTotalReqAnon      = "windows_iis_anonymous_users_total"
-	metricIISTotalReq          = "windows_iis_requests_total"
-	metricIISConnAttemp        = "windows_iis_connection_attempts_all_instances_total"
-	metricIISReqTotal          = "windows_iis_requests_total"
-	metricIISFileRecv          = "windows_iis_files_received_total"
-	metricIISFileSent          = "windows_iis_files_sent_total"
-	metricIISExtensionReq      = "windows_iis_ipapi_extension_requests_total"
-	metricIISLogon             = "windows_iis_logon_attempts_total"
-	metricIISError423          = "windows_iis_locked_errors_total"
-	metricIISError404          = "windows_iis_not_found_errors_total"
+	metricIISCurrentAnonymousUsers    = "windows_iis_current_anonymous_users"
+	metricIISCurrentNonAnonymousUsers = "windows_iis_current_non_anonymous_users"
+	metricIISCurrentConnections       = "windows_iis_current_connections"
+	metricIICurrentISAPIExtRequests   = "windows_iis_current_isapi_extension_requests"
+	metricIISUptime                   = "windows_iis_service_uptime"
+
+	metricIISReceivedBytesTotal            = "windows_iis_received_bytes_total"
+	metricIISSentBytesTotal                = "windows_iis_sent_bytes_total"
+	metricIISRequestsTotal                 = "windows_iis_requests_total"
+	metricIISIPAPIExtRequestsTotal         = "windows_iis_ipapi_extension_requests_total"
+	metricIISConnAttemptsAllInstancesTotal = "windows_iis_connection_attempts_all_instances_total"
+	metricIISFilesReceivedTotal            = "windows_iis_files_received_total"
+	metricIISFilesSentTotal                = "windows_iis_files_sent_total"
+	metricIISLogonAttemptsTotal            = "windows_iis_logon_attempts_total"
+	metricIISLockedErrorsTotal             = "windows_iis_locked_errors_total"
+	metricIISNotFoundErrorsTotal           = "windows_iis_not_found_errors_total"
 )
 
 func (w *WMI) collectIIS(mx map[string]int64, pms prometheus.Metrics) {
-	if !w.cache.collection[collectorIIS] {
-		w.cache.collection[collectorIIS] = true
-	}
-
 	seen := make(map[string]bool)
-	ix := "iis_"
-	for _, pm := range pms.FindByName(metricIISCurrentAnonReq) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	px := "iis_website_"
+	for _, pm := range pms.FindByName(metricIISCurrentAnonymousUsers) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_active_request_anon"] += int64(pm.Value)
+			mx[px+name+"_current_anonymous_users"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISCurrentNonAnonReq) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISCurrentNonAnonymousUsers) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_active_request_non_anon"] += int64(pm.Value)
+			mx[px+name+"_current_non_anonymous_users"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISActiveConn) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISCurrentConnections) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_active_conn"] += int64(pm.Value)
+			mx[px+name+"_current_connections"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISISAPIExtConn) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIICurrentISAPIExtRequests) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_isapi_ext"] += int64(pm.Value)
+			mx[px+name+"_current_isapi_extension_requests"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricIISUptime) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_uptime"] += int64(pm.Value)
+			mx[px+name+"_service_uptime"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISBandwidthRecv) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISReceivedBytesTotal) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_bandwidth_recv"] += int64(pm.Value)
+			mx[px+name+"_received_bytes_total"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISBandwidthSent) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISSentBytesTotal) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_bandwidth_sent"] += int64(pm.Value)
+			mx[px+name+"_sent_bytes_total"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISTotalReqAnon) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISRequestsTotal) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_total_req_anon"] += int64(pm.Value)
+			mx[px+name+"_requests_total"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISTotalReq) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISConnAttemptsAllInstancesTotal) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_total_req"] += int64(pm.Value)
+			mx[px+name+"_connection_attempts_all_instances_total"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISConnAttemp) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISFilesReceivedTotal) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_conns_atemp"] += int64(pm.Value)
+			mx[px+name+"_files_received_total"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISReqTotal) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISFilesSentTotal) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_req_total"] += int64(pm.Value)
+			mx[px+name+"_files_sent_total"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISFileRecv) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISIPAPIExtRequestsTotal) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_file_transfer_recv"] += int64(pm.Value)
+			mx[px+name+"_isapi_extension_requests_total"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISFileSent) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISLogonAttemptsTotal) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_file_transfer_sent"] += int64(pm.Value)
+			mx[px+name+"_logon_attempts_total"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISExtensionReq) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISLockedErrorsTotal) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_extension_req"] += int64(pm.Value)
+			mx[px+name+"_locked_errors_total"] += int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricIISLogon) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
+	for _, pm := range pms.FindByName(metricIISNotFoundErrorsTotal) {
+		if name := cleanWebsiteName(pm.Labels.Get("site")); name != "" {
 			seen[name] = true
-			mx[ix+name+"_iis_logon"] += int64(pm.Value)
-		}
-	}
-	for _, pm := range pms.FindByName(metricIISError423) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
-			seen[name] = true
-			mx[ix+name+"_iis_error_423"] += int64(pm.Value)
-		}
-	}
-	for _, pm := range pms.FindByName(metricIISError404) {
-		if name := cleanSiteName(pm.Labels.Get("site")); name != "" {
-			seen[name] = true
-			mx[ix+name+"_iis_error_404"] += int64(pm.Value)
+			mx[px+name+"_not_found_errors_total"] += int64(pm.Value)
 		}
 	}
 
 	for site := range seen {
 		if !w.cache.iis[site] {
 			w.cache.iis[site] = true
-			w.addIISCharts(site)
+			w.addIISWebsiteCharts(site)
 		}
 	}
 	for site := range w.cache.iis {
 		if !seen[site] {
 			delete(w.cache.iis, site)
-			w.removeIISCharts(site)
+			w.removeIIWebsiteSCharts(site)
 		}
 	}
 }
 
-func cleanSiteName(name string) string {
+func cleanWebsiteName(name string) string {
 	return strings.ReplaceAll(name, " ", "_")
 }
