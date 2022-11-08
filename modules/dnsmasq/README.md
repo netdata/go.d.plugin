@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/dns
 sidebar_label: "Dnsmasq DNS Forwarder"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Collectors References/Networking"
+learn_rel_path: "References/Collectors references/Networking"
 -->
 
 # Dnsmasq DNS Forwarder

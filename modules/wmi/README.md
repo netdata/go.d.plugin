@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/wmi
 sidebar_label: "Windows machines"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Collectors References/System metrics"
+learn_rel_path: "References/Collectors references/System metrics"
 -->
 
 # Windows machine monitoring with Netdata

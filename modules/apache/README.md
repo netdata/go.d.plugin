@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/apa
 sidebar_label: "Apache"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Collectors References/WebApps"
+learn_rel_path: "References/Collectors references/Webapps"
 -->
 
 # Apache monitoring with Netdata
