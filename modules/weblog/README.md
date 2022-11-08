@@ -2,12 +2,12 @@
 title: "Web server log (Apache, NGINX) monitoring with Netdata"
 description: "Monitor the health and performance of Apache or Nginx logs with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/weblog/README.md
-sidebar_label: "Web server logs (Apache, NGINX)"
+sidebar_label: "Web server logs (Apache, NGINX, Microsoft IIS)"
 -->
 
-# Web log (Apache, NGINX) monitoring with Netdata
+# Web log (Apache, NGINX, IIS) monitoring with Netdata
 
-This module parses [`Apache`](https://httpd.apache.org/) and [`NGINX`](https://nginx.org/en/) web servers logs.
+This module parses [`Apache`](https://httpd.apache.org/), [`NGINX`](https://nginx.org/en/) and [Microsoft IIS](https://www.iis.net/) web servers logs.
 
 ## Metrics
 
@@ -166,6 +166,8 @@ Notes:
 - Don't use both `$bytes_sent` and `$body_bytes_sent` (`%O` and `%B` or `%b`). The module does not distinguish between
   these parameters.
 
+Weblog uses the same NGINX pattern when parsing Microsoft IIS.
+
 ## Custom Log Format
 
 Custom log format is easy. Use [known fields](#known-fields) to construct your log format.
@@ -316,6 +318,10 @@ jobs:
     log_type: csv
     csv_config:
       format: '- - %h - - %t \"%r\" %>s %b'
+
+  - name: iis
+    path: /mnt/c/inetput/logs/LogFiles/W3SC1/u_ex221108.log
+
 ```
 
 For all available options, please see the
