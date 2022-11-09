@@ -608,7 +608,7 @@ SELECT current_database()                                as datname,
        idx_scan,
        idx_tup_read,
        idx_tup_fetch,
-       pg_relation_size(quote_ident(indexrelname)::text) as size
+       pg_relation_size(quote_ident(schemaname) || '.' || quote_ident(indexrelname)::text) as size
 FROM pg_stat_user_indexes;
 `
 }
