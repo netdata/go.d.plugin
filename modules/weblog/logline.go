@@ -24,6 +24,7 @@ import (
 // Variables:
 //  - nginx: http://nginx.org/en/docs/varindex.html
 //  - apache: http://httpd.apache.org/docs/current/mod/mod_log_config.html#logformat
+//  - IIS: https://learn.microsoft.com/en-us/windows/win32/http/w3c-logging
 
 /*
 | nginx                   | apache    | description                                   |
