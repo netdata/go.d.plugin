@@ -320,7 +320,7 @@ jobs:
       format: '- - %h - - %t \"%r\" %>s %b'
 
   - name: iis
-    path: /mnt/c/inetpub/logs/LogFiles/W3SC1/u_ex221108.log
+    path: /mnt/c/inetpub/logs/LogFiles/W3SVC1/u_ex221108.log
     log_type: csv
     csv_config:
       format: '- - $host $request_method $request_uri - $server_port - $remote_add - - $status - - $request_time'
