@@ -2,12 +2,12 @@
 title: "Web server log (Apache, NGINX) monitoring with Netdata"
 description: "Monitor the health and performance of Apache or Nginx logs with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/weblog/README.md
-sidebar_label: "Web server logs (Apache, NGINX)"
+sidebar_label: "Web server logs (Apache, NGINX, Microsoft IIS)"
 -->
 
-# Web log (Apache, NGINX) monitoring with Netdata
+# Web log (Apache, NGINX, IIS) monitoring with Netdata
 
-This module parses [`Apache`](https://httpd.apache.org/) and [`NGINX`](https://nginx.org/en/) web servers logs.
+This module parses [`Apache`](https://httpd.apache.org/), [`NGINX`](https://nginx.org/en/) and [Microsoft IIS](https://www.iis.net/) web servers logs.
 
 ## Metrics
 
@@ -316,6 +316,12 @@ jobs:
     log_type: csv
     csv_config:
       format: '- - %h - - %t \"%r\" %>s %b'
+
+  - name: iis
+    path: /mnt/c/inetpub/logs/LogFiles/W3SVC1/u_ex*.log
+    log_type: csv
+    csv_config:
+      format: '- - $host $request_method $request_uri - $server_port - $remote_addr - - $status - - $request_time'
 ```
 
 For all available options, please see the
