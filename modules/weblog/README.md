@@ -166,8 +166,6 @@ Notes:
 - Don't use both `$bytes_sent` and `$body_bytes_sent` (`%O` and `%B` or `%b`). The module does not distinguish between
   these parameters.
 
-Weblog uses the same NGINX pattern when parsing Microsoft IIS.
-
 ## Custom Log Format
 
 Custom log format is easy. Use [known fields](#known-fields) to construct your log format.
