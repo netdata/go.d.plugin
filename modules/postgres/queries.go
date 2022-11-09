@@ -573,7 +573,7 @@ SELECT current_database()                                   as datname,
        autovacuum_count,
        analyze_count,
        autoanalyze_count,
-       pg_total_relation_size(schemaname || '.' || relname) as total_relation_size
+       pg_total_relation_size(quote_ident(schemaname) || '.' || quote_ident(relname)) as total_relation_size
 FROM pg_stat_user_tables;
 `
 }
