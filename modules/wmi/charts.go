@@ -925,6 +925,7 @@ var (
 			{ID: "service_%s_status_ok", Name: "ok"},
 			{ID: "service_%s_status_error", Name: "error"},
 			{ID: "service_%s_status_unknown", Name: "unknown"},
+			{ID: "service_%s_status_degraded", Name: "degraded"},
 			{ID: "service_%s_status_pred_fail", Name: "pred_fail"},
 			{ID: "service_%s_status_starting", Name: "starting"},
 			{ID: "service_%s_status_stopping", Name: "stopping"},
