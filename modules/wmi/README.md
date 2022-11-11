@@ -27,21 +27,27 @@ The module collects metrics from the following collectors:
 
 ## Requirements
 
-There are two ways to monitor Windows with Netdata. Install Netdata over WSL on each host, or remotely collect
-data from one or more centralized agents, running on dedicated Linux machines.
+Netdata monitors Windows hosts by utilizing the 
+[Prometheus exporter for Windows machines](https://github.com/prometheus-community/windows_exporter),
+a native Windows agent running on each host. 
 
-### Netdata on each Windows machine
+To quickly test Netdata directly on a Windows machine, you can use the [Netdata MSI installer](https://github.com/netdata/msi-installer#instructions).
+The installer runs Netdata in a custom WSL deployment. WSL wasn’t developed for production environments, so we 
+do not recommend using the installer in production.
 
-Use the [Netdata MSI installer](https://github.com/netdata/msi-installer#instructions).
-  
-### Remote data collection
-
+For production use, you need to install Netdata on one or more nodes running Linux:
 - Install the
   latest [Prometheus exporter for Windows](https://github.com/prometheus-community/windows_exporter/releases)
   on every Windows host you want to monitor.
-- Install Netdata on one or more Linux servers.
+- Get the installation commands from [Netdata Cloud](https://app.netdata.cloud) and install Netdata on one or more Linux nodes.  
 - Configure each Netdata instance to collect data remotely, from several Windows hosts. Just add one job
-  for each host to  `wmi.conf`, as shown in the [configuration section](#configuration).
+  for each host to  `wmi.conf`, as shown in the [configuration section](#configuration). 
+- [Optional] [Disable all plugins](https://learn.netdata.cloud/docs/configure/common-changes#disable-a-collector-or-plugin)
+ except for go.d in `netdata.conf`, so that you only see Windows metrics.
+- [Optional] Set up [replication](https://learn.netdata.cloud/docs/agent/streaming), for high availability.
+
+Automated charts and alerts for your entire Windows infrastructure will be automatically generated. 
+Each Windows host (data collection job) will be identifiable as an "instance" in the Netdata Cloud charts. 
 
 ## Metrics
 
@@ -129,6 +135,9 @@ jobs:
   - name: win_server2
     url: http://203.0.113.11:9182/metrics
 ```
+
+Hint: Use friendly server names for job names, as these will appear as "instances" in Netdata Cloud charts
+and in the right side menu of the agent UI charts.
 
 For all available options please see
 module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/wmi.conf).
