@@ -3,11 +3,6 @@
 package wmi
 
 import (
-	"errors"
-	"net/url"
-	"strings"
-	"time"
-
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
@@ -28,56 +23,14 @@ const (
 	collectorService     = "service"
 )
 
-var fastCollectors = map[string]bool{
-	collectorCPU:         true,
-	collectorMemory:      true,
-	collectorNet:         true,
-	collectorLogicalDisk: true,
-	collectorOS:          true,
-	collectorSystem:      true,
-	collectorTCP:         true,
-	collectorProcess:     true,
-}
-
-// slow collectors with gauge (absolute) metrics only
-var slowCollectors = map[string]bool{
-	collectorLogon:       true,
-	collectorIIS:         true,
-	collectorThermalZone: true,
-	collectorService:     true,
-}
-
 func (w *WMI) collect() (map[string]int64, error) {
-	if w.doCheck {
-		if err := w.checkSupportedCollectors(); err != nil {
-			return nil, err
-		}
-		w.doCheck = false
+	pms, err := w.prom.Scrape()
+	if err != nil {
+		return nil, err
 	}
 
 	mx := make(map[string]int64)
-
-	if err := w.collectMetrics(mx, w.promFast); err != nil {
-		if !strings.Contains(err.Error(), "unavailable collector") {
-			return nil, err
-		}
-		w.doCheck = true
-	}
-
-	if now := time.Now(); now.Sub(w.doSlowTime) > w.doSlowEvery {
-		w.doSlowTime = now
-		w.slowCache = make(map[string]int64)
-		if err := w.collectMetrics(w.slowCache, w.promSlow); err != nil {
-			if !strings.Contains(err.Error(), "unavailable collector") {
-				return nil, err
-			}
-			w.doCheck = true
-		}
-	}
-
-	for k, v := range w.slowCache {
-		mx[k] = v
-	}
+	w.collectMetrics(mx, pms)
 
 	if hasKey(mx, "os_visible_memory_bytes", "memory_available_bytes") {
 		mx["memory_used_bytes"] = 0 +
@@ -114,20 +67,7 @@ func (w *WMI) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func (w *WMI) collectMetrics(mx map[string]int64, prom prometheus.Prometheus) error {
-	if prom == nil {
-		return nil
-	}
-
-	pms, err := prom.Scrape()
-	if err != nil {
-		return err
-	}
-
-	if pms.Len() == 0 {
-		return nil
-	}
-
+func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Metrics) {
 	w.collectCollector(mx, pms)
 	for _, pm := range pms.FindByName(metricCollectorSuccess) {
 		if pm.Value == 0 {
@@ -161,72 +101,6 @@ func (w *WMI) collectMetrics(mx map[string]int64, prom prometheus.Prometheus) er
 			w.collectIIS(mx, pms)
 		}
 	}
-
-	return nil
-}
-
-func (w *WMI) checkSupportedCollectors() error {
-	w.promFast, w.promSlow = nil, nil
-
-	pms, err := w.promCheck.Scrape()
-	if err != nil {
-		return err
-	}
-
-	if pms = pms.FindByName(metricCollectorSuccess); pms.Len() == 0 {
-		return errors.New("collected metrics aren't windows_exporter metrics")
-	}
-
-	seen := make(map[string]bool)
-	var fast, slow []string
-	for _, pm := range pms {
-		name := pm.Labels.Get("collector")
-		switch {
-		case name == collectorThermalZone && pm.Value == 0:
-		case fastCollectors[name]:
-			seen[name] = true
-			fast = append(fast, name)
-		case slowCollectors[name]:
-			seen[name] = true
-			slow = append(slow, name)
-		}
-	}
-
-	if len(seen) == 0 {
-		return errors.New("no supported collectors found")
-	}
-
-	for name := range seen {
-		if !w.cache.collectors[name] {
-			w.cache.collectors[name] = true
-			w.addCollectorCharts(name)
-		}
-	}
-	for name := range w.cache.collectors {
-		if !seen[name] {
-			delete(w.cache.collectors, name)
-			w.removeCollectorCharts(name)
-		}
-	}
-
-	req := w.Request.Copy()
-	u, err := url.Parse(req.URL)
-	if err != nil {
-		return err
-	}
-
-	if len(fast) > 0 {
-		u.RawQuery = url.Values{"collect[]": fast}.Encode()
-		req.URL = u.String()
-		w.promFast = prometheus.New(w.httpClient, req.Copy())
-	}
-	if len(slow) > 0 {
-		u.RawQuery = url.Values{"collect[]": slow}.Encode()
-		req.URL = u.String()
-		w.promSlow = prometheus.New(w.httpClient, req.Copy())
-	}
-
-	return nil
 }
 
 func hasKey(mx map[string]int64, key string, keys ...string) bool {

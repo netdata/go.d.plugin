@@ -40,10 +40,7 @@ func New() *WMI {
 			iis:          make(map[string]bool),
 			services:     make(map[string]bool),
 		},
-		charts:      &module.Charts{},
-		doCheck:     true,
-		doSlowEvery: time.Second * 30,
-		slowCache:   make(map[string]int64),
+		charts: &module.Charts{},
 	}
 }
 
@@ -61,13 +58,7 @@ type (
 		doCheck bool
 
 		httpClient *http.Client
-		promCheck  prometheus.Prometheus
-		promFast   prometheus.Prometheus
-		promSlow   prometheus.Prometheus
-
-		doSlowTime  time.Time
-		doSlowEvery time.Duration
-		slowCache   map[string]int64
+		prom       prometheus.Prometheus
 
 		cache cache
 	}
@@ -97,12 +88,12 @@ func (w *WMI) Init() bool {
 	}
 	w.httpClient = httpClient
 
-	prom, err := w.initPrometheusCheckClient(w.httpClient)
+	prom, err := w.initPrometheusClient(w.httpClient)
 	if err != nil {
 		w.Errorf("init prometheus clients: %v", err)
 		return false
 	}
-	w.promCheck = prom
+	w.prom = prom
 
 	return true
 }
