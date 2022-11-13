@@ -77,6 +77,27 @@ const (
 	prioIISWebsiteErrorsRate
 	prioIISWebsiteUptime
 
+	prioMSSQLAccessMethodPageSplit
+	prioMSSQLCacheHitRatio
+	prioMSSQLBufferCheckpointPage
+	prioMSSQLBufferPageLifeExpectancy
+	prioMSSQLPageIO
+	prioMSSQLActiveTransaction
+	prioMSSQLBackupRestoreOperation
+	prioMSSQLDataFileSize
+	prioMSSQLLogFlushed
+	prioMSSQLLogFlushes
+	prioMSSQLTransactions
+	prioMSSQLWriteTransaction
+	prioMSSQLBlockedProcess
+	prioMSSQLLocksWait
+	prioMSSQLMemmgrPendingMemory
+	prioMSSQLMemTotalServer
+	prioMSSQLStateAutoParameterization
+	prioMSSQLStateSafeAuto
+	prioMSSQLStateCompilation
+	prioMSSQLStateRecompilation
+
 	prioServiceState
 	prioServiceStatus
 
@@ -751,6 +772,266 @@ var (
 		Priority: prioIISWebsiteUptime,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_service_uptime", Name: "uptime"},
+		},
+	}
+)
+
+// MS-SQL
+var (
+	mssqlChartsTmpl = module.Charts{
+		mssqlAccessMethodPageSplitsChart.Copy(),
+		mssqlCacheHitRatioChart.Copy(),
+		mssqlBufferCheckpointPageChart.Copy(),
+		mssqlBufferPageLifeExpectancyChart.Copy(),
+		mssqlPageIOChart.Copy(),
+		mssqlActiveTransactionChart.Copy(),
+		mssqlBackupRestoreChart.Copy(),
+		mssqlDatabaseSizeChart.Copy(),
+		mssqlLogFlushedChart.Copy(),
+		mssqlLogFlushesChart.Copy(),
+		mssqlTransactionChart.Copy(),
+		mssqlWriteTransactionChart.Copy(),
+		mssqlBlockedProcessChart.Copy(),
+		mssqlLocksWaitChart.Copy(),
+		mssqlMemmgrPendingMemoryChart.Copy(),
+		mssqlMemmgrTotalServerChart.Copy(),
+		mssqlStateAutoParamChart.Copy(),
+		mssqlStateSafeAutoChart.Copy(),
+		mssqlStateCompilationChart.Copy(),
+		mssqlStateRecompilationChart.Copy(),
+	}
+	mssqlAccessMethodPageSplitsChart = module.Chart{
+		ID:       "mssql_access_page_split_%s",
+		Title:    "Number of pages split",
+		Units:    "pages",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_access_page_split",
+		Priority: prioMSSQLAccessMethodPageSplit,
+		Dims: module.Dims{
+			{ID: "mssql_access_page_split_%s", Name: "page"},
+		},
+	}
+	mssqlCacheHitRatioChart = module.Chart{
+		ID:       "mssql_cache_hit_ratio_%s",
+		Title:    "Buffer Cache hit ratio",
+		Units:    "percentage",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_cache_hit_ratio",
+		Priority: prioMSSQLCacheHitRatio,
+		Dims: module.Dims{
+			{ID: "mssql_cache_hit_ratio_%s", Name: "page"},
+		},
+	}
+	mssqlBufferCheckpointPageChart = module.Chart{
+		ID:       "mssql_buffer_checkpoint_page_%s",
+		Title:    "Pages flushes by checkpoint",
+		Units:    "pages",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_buffer_checkpoint_page",
+		Priority: prioMSSQLBufferCheckpointPage,
+		Dims: module.Dims{
+			{ID: "mssql_buffer_checkpoint_page_%s", Name: "page"},
+		},
+	}
+	mssqlBufferPageLifeExpectancyChart = module.Chart{
+		ID:       "mssql_buffer_pagelife_expectancy_%s",
+		Title:    "Duration page in buffer",
+		Units:    "seconds",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_buffer_pagelife_expectancy",
+		Priority: prioMSSQLBufferPageLifeExpectancy,
+		Dims: module.Dims{
+			{ID: "mssql_buffer_pagelife_expectancy_%s", Name: "duration"},
+		},
+	}
+	mssqlPageIOChart = module.Chart{
+		ID:       "mssql_page_io_%s",
+		Title:    "Number of pages input and output",
+		Units:    "pages",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_page_io",
+		Priority: prioMSSQLPageIO,
+		Dims: module.Dims{
+			{ID: "mssql_page_read_%s", Name: "read"},
+			{ID: "mssql_page_write_%s", Name: "write", Mul: -1},
+		},
+	}
+	mssqlActiveTransactionChart = module.Chart{
+		ID:       "mssql_active_transaction_%s",
+		Title:    "Active transactions per database",
+		Units:    "transactions",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_active_transaction",
+		Priority: prioMSSQLActiveTransaction,
+		Dims: module.Dims{
+			{ID: "mssql_active_transaction_%s", Name: "%s"},
+		},
+	}
+	mssqlBackupRestoreChart = module.Chart{
+		ID:       "mssql_backup_restore_%s",
+		Title:    "Backup IO per database",
+		Units:    "operations",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_backup_restore",
+		Priority: prioMSSQLBackupRestoreOperation,
+		Dims: module.Dims{
+			{ID: "mssql_backup_restore_%s", Name: "%s"},
+		},
+	}
+	mssqlDatabaseSizeChart = module.Chart{
+		ID:       "mssql_database_size_%s",
+		Title:    "Current database size",
+		Units:    "bytes",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_database_size",
+		Priority: prioMSSQLDataFileSize,
+		Dims: module.Dims{
+			{ID: "mssql_database_size_%s", Name: "%s", Mul: 1000},
+		},
+	}
+	mssqlLogFlushedChart = module.Chart{
+		ID:       "mssql_log_flushed_%s",
+		Title:    "Log byte Flushed per database",
+		Units:    "bytes",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_log_flushed",
+		Priority: prioMSSQLLogFlushed,
+		Dims: module.Dims{
+			{ID: "mssql_log_flushed_%s", Name: "%s"},
+		},
+	}
+	mssqlLogFlushesChart = module.Chart{
+		ID:       "mssql_log_flushes_%s",
+		Title:    "Log byte Flushed per database",
+		Units:    "seconds",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_log_flushes",
+		Priority: prioMSSQLLogFlushes,
+		Dims: module.Dims{
+			{ID: "mssql_log_flushes_%s", Name: "%s", Div: 1000},
+		},
+	}
+	mssqlTransactionChart = module.Chart{
+		ID:       "mssql_transaction_%s",
+		Title:    "Transactions per database",
+		Units:    "transactions",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_transaction",
+		Priority: prioMSSQLTransactions,
+		Dims: module.Dims{
+			{ID: "mssql_transaction_%s", Name: "%s"},
+		},
+	}
+	mssqlWriteTransactionChart = module.Chart{
+		ID:       "mssql_write_transaction_%s",
+		Title:    "Write transactions per database",
+		Units:    "transactions",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_write_transaction",
+		Priority: prioMSSQLWriteTransaction,
+		Dims: module.Dims{
+			{ID: "mssql_write_transaction_%s", Name: "%s"},
+		},
+	}
+	mssqlBlockedProcessChart = module.Chart{
+		ID:       "mssql_blocked_process_%s",
+		Title:    "Server is not able to retain lock",
+		Units:    "process",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_blocked_process",
+		Priority: prioMSSQLBlockedProcess,
+		Dims: module.Dims{
+			{ID: "mssql_blocked_process_%s", Name: "process"},
+		},
+	}
+	mssqlLocksWaitChart = module.Chart{
+		ID:       "mssql_locks_wait_%s",
+		Title:    "Blocked processes",
+		Units:    "seconds",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_locks_wait",
+		Priority: prioMSSQLLocksWait,
+		Dims: module.Dims{
+			{ID: "mssql_lock_wait_allocunit_%s", Name: "AllocUnit"},
+			{ID: "mssql_lock_wait_application_%s", Name: "Application"},
+			{ID: "mssql_lock_wait_database_%s", Name: "Database"},
+			{ID: "mssql_lock_wait_extent_%s", Name: "Extent"},
+			{ID: "mssql_lock_wait_file_%s", Name: "File"},
+			{ID: "mssql_lock_wait_hobt_%s", Name: "HoBT"},
+			{ID: "mssql_lock_wait_key_%s", Name: "Key"},
+			{ID: "mssql_lock_wait_Metadata_%s", Name: "Metadata"},
+			{ID: "mssql_lock_wait_oib_%s", Name: "OIB"},
+			{ID: "mssql_lock_wait_object_%s", Name: "Object"},
+			{ID: "mssql_lock_wait_page_%s", Name: "Page"},
+			{ID: "mssql_lock_wait_rid_%s", Name: "RID"},
+			{ID: "mssql_lock_wait_row_group_%s", Name: "Row Group"},
+			{ID: "mssql_lock_wait_xact_%s", Name: "Xact"},
+		},
+	}
+	mssqlMemmgrPendingMemoryChart = module.Chart{
+		ID:       "mssql_memmgr_pending_%s",
+		Title:    "Process waiting for memory grant",
+		Units:    "process",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_memmgr_pending",
+		Priority: prioMSSQLMemmgrPendingMemory,
+		Dims: module.Dims{
+			{ID: "mssql_memmgr_pending_%s", Name: "process"},
+		},
+	}
+	mssqlMemmgrTotalServerChart = module.Chart{
+		ID:       "mssql_memmgr_total_%s",
+		Title:    "Total memory commited",
+		Units:    "bytes",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_memmgr_total",
+		Priority: prioMSSQLMemmgrPendingMemory,
+		Dims: module.Dims{
+			{ID: "mssql_memmgr_total_%s", Name: "memory", Mul: 1000},
+		},
+	}
+	mssqlStateAutoParamChart = module.Chart{
+		ID:       "mssql_state_auto_param_%s",
+		Title:    "Total of failed auto-parameterization",
+		Units:    "attemps",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_state_auto_param",
+		Priority: prioMSSQLStateAutoParameterization,
+		Dims: module.Dims{
+			{ID: "mssql_state_auto_param_%s", Name: "attemps"},
+		},
+	}
+	mssqlStateSafeAutoChart = module.Chart{
+		ID:       "mssql_state_safe_auto_%s",
+		Title:    "Total of safe auto-parameterization",
+		Units:    "attemps",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_state_safe_auto",
+		Priority: prioMSSQLStateSafeAuto,
+		Dims: module.Dims{
+			{ID: "mssql_state_safe_auto_%s", Name: "attemps"},
+		},
+	}
+	mssqlStateCompilationChart = module.Chart{
+		ID:       "mssql_state_compilation_%s",
+		Title:    "Total of compilations",
+		Units:    "operation/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_state_compilation",
+		Priority: prioMSSQLStateCompilation,
+		Dims: module.Dims{
+			{ID: "mssql_state_compilation_%s", Name: "operation"},
+		},
+	}
+	mssqlStateRecompilationChart = module.Chart{
+		ID:       "mssql_state_recompilation_%s",
+		Title:    "Total of re-compilations",
+		Units:    "operation/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_state_recompilation",
+		Priority: prioMSSQLStateRecompilation,
+		Dims: module.Dims{
+			{ID: "mssql_state_recompilation_%s", Name: "operation"},
 		},
 	}
 )
