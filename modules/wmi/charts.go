@@ -97,6 +97,7 @@ const (
 	prioMSSQLStateSafeAuto
 	prioMSSQLStateCompilation
 	prioMSSQLStateRecompilation
+	prioMSSQLUserConnections
 
 	prioServiceState
 	prioServiceStatus
@@ -1032,6 +1033,17 @@ var (
 		Priority: prioMSSQLStateRecompilation,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_state_recompilation", Name: "operation"},
+		},
+	}
+	mssqlUserConnectionChart = module.Chart{
+		ID:       "mssql_instance_%s_user_connection",
+		Title:    "User connections",
+		Units:    "connection/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_instance_user_connection",
+		Priority: prioMSSQLStateRecompilation,
+		Dims: module.Dims{
+			{ID: "mssql_instance_%s_user_connection", Name: "connection", Algo: module.Incremental},
 		},
 	}
 )
