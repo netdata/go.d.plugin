@@ -32,7 +32,7 @@ const (
 
 func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 	seen := make(map[string]bool)
-	px := "mssql_"
+	px := "mssql_instance_"
 	for _, pm := range pms.FindByName(metricMSSQLAccessMethodPageSplits) {
 		if name := cleanWebsiteName(pm.Labels.Get("mssql_instance")); name != "" {
 				seen[name] = true
