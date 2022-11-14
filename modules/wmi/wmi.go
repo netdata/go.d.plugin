@@ -69,6 +69,7 @@ type (
 		thermalZones map[string]bool
 		processes    map[string]bool
 		iis          map[string]bool
+		mssql        map[string]bool
 		services     map[string]bool
 		collectors   map[string]bool
 		collection   map[string]bool

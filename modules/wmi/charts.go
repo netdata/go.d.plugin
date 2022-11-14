@@ -1450,6 +1450,27 @@ func (w *WMI) removeIIWebsiteSCharts(website string) {
 	}
 }
 
+func (w *WMI) addMSSQLInstanceCharts(instance string) {
+	charts := mssqlChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, instance)
+		chart.Labels = []module.Label{
+			{Key: "instance", Value: instance},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, instance)
+			if len(dim.Name) == 2 {
+				dim.Name = fmt.Sprintf(dim.Name, instance)
+			}
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
 func (w *WMI) addProcessesCharts() {
 	charts := processesCharts.Copy()
 
