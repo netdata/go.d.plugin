@@ -1450,7 +1450,7 @@ func (w *WMI) removeIIWebsiteSCharts(website string) {
 	}
 }
 
-func (w *WMI) addMSSQLInstanceCharts(instance string) {
+func (w *WMI) addMSSQLInstanceCharts(instance string, dbnames *map[string]bool) {
 	charts := mssqlChartsTmpl.Copy()
 
 	for _, chart := range *charts {
@@ -1460,9 +1460,6 @@ func (w *WMI) addMSSQLInstanceCharts(instance string) {
 		}
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, instance)
-			if len(dim.Name) == 2 {
-				dim.Name = fmt.Sprintf(dim.Name, instance)
-			}
 		}
 	}
 

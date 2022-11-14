@@ -92,44 +92,62 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
 				seen[name] = true
 				db[dbname] = true
-				mx[px+name+"_active_transaction"] = int64(pm.Value)
+				mx[px + name + "_" + dbname + "_active_transaction"] = int64(pm.Value)
 			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLBackupRestoreOperation) {
 		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
 				seen[name] = true
-				mx[px+name+"_backup_restore"] = int64(pm.Value)
+				db[dbname] = true
+				mx[px + name + "_" + dbname + "_backup_restore"] = int64(pm.Value)
+			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLDataFileSize) {
 		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
 				seen[name] = true
-				mx[px+name+"_database_size"] = int64(pm.Value)
+				db[dbname] = true
+				mx[px + name + "_" + dbname + "_database_size"] = int64(pm.Value)
+			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLLogFlushed) {
 		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
 				seen[name] = true
-				mx[px+name+"_log_flushed"] = int64(pm.Value)
+				db[dbname] = true
+				mx[px + name + "_" + dbname + "_log_flushed"] = int64(pm.Value)
+			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLLogFlushes) {
 		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
 				seen[name] = true
-				mx[px+name+"_log_flushes"] = int64(pm.Value)
+				db[dbname] = true
+				mx[px + name + "_" + dbname + "_log_flushes"] = int64(pm.Value)
+			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLTransactions) {
 		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
 				seen[name] = true
-				mx[px+name+"_transaction"] = int64(pm.Value)
+				db[dbname] = true
+				mx[px + name + "_" + dbname + "_transaction"] = int64(pm.Value)
+			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLWriteTransaction) {
 		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
 				seen[name] = true
-				mx[px+name+"_write_transaction"] = int64(pm.Value)
+				db[dbname] = true
+				mx[px + name + "_" + dbname + "_write_transaction"] = int64(pm.Value)
+			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLBlockedProcesses) {
@@ -192,7 +210,7 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 	for instance := range seen {
 		if !w.cache.mssql[instance] {
 				w.cache.mssql[instance] = true
-				w.addMSSQLInstanceCharts(instance)
+				w.addMSSQLInstanceCharts(instance, &db)
 		}
 	}
 	for instance := range w.cache.iis {
