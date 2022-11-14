@@ -660,8 +660,8 @@ github.com/likexian/gokit v0.25.9 h1:rzSQ/dP7Qw+QUzSuWlrLF0AtZS3Di6uO5yWOKhx2Gk4
 github.com/likexian/gokit v0.25.9/go.mod h1:oDDqJUcnnF9uAKuw54F7s6oEG+OJ7eallfDW2dq0A/o=
 github.com/likexian/whois v1.14.3 h1:lFeSEBs7BEwJiTFbJKVtp4VxoM8UB9G3Fksfr4G50vc=
 github.com/likexian/whois v1.14.3/go.mod h1:uBqrDy1FgZuHUAKWeoOuyq3zd1/BtslqnazV7tCT0sY=
-github.com/likexian/whois-parser v1.24.1 h1:UVV/A0hr2X4lM3rXUwjMX6x9MGfPJdJ4hCz8EjzSGNE=
-github.com/likexian/whois-parser v1.24.1/go.mod h1:fT0m/HCa4PXuR4ddA5PIE9V7gTWldeiMG/AHpeAhLtg=
+github.com/likexian/whois-parser v1.24.2 h1:EaNwcXqWBfQPfLD5F6MxAA0o7FnzmGcN3mg7v7h0zfY=
+github.com/likexian/whois-parser v1.24.2/go.mod h1:fT0m/HCa4PXuR4ddA5PIE9V7gTWldeiMG/AHpeAhLtg=
 github.com/lyft/protoc-gen-star v0.5.1/go.mod h1:9toiA3cC7z5uVbODF7kEQ91Xn7XNFkVUl+SrEe+ZORU=
 github.com/lyft/protoc-gen-star v0.6.0/go.mod h1:TGAoBVkt8w7MPG72TrKIu85MIdXwDuzJYeZuUPFPNwA=
 github.com/lyft/protoc-gen-validate v0.0.13/go.mod h1:XbGvPuh87YZc5TdIa2/I4pLk0QoUACkjt2znoq26NVQ=
