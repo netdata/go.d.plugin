@@ -865,7 +865,7 @@ var (
 		Ctx:      "wmi.mssql_instance_active_transaction",
 		Priority: prioMSSQLActiveTransaction,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_active_transaction", Name: "%s", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_%s_active_transaction", Name: "%s", Algo: module.Incremental},
 		},
 	}
 	mssqlBackupRestoreChart = module.Chart{
@@ -876,7 +876,7 @@ var (
 		Ctx:      "wmi.mssql_instance_backup_restore",
 		Priority: prioMSSQLBackupRestoreOperation,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_backup_restore", Name: "%s", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_%s_backup_restore", Name: "%s", Algo: module.Incremental},
 		},
 	}
 	mssqlDatabaseSizeChart = module.Chart{
@@ -887,7 +887,7 @@ var (
 		Ctx:      "wmi.mssql_instance_database_size",
 		Priority: prioMSSQLDataFileSize,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_database_size", Name: "%s", Mul: 1000},
+			{ID: "mssql_instance_%s_%s_database_size", Name: "%s", Mul: 1000},
 		},
 	}
 	mssqlLogFlushedChart = module.Chart{
@@ -898,7 +898,7 @@ var (
 		Ctx:      "wmi.mssql_instance_log_flushed",
 		Priority: prioMSSQLLogFlushed,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_log_flushed", Name: "%s", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_%s_log_flushed", Name: "%s", Algo: module.Incremental},
 		},
 	}
 	mssqlLogFlushesChart = module.Chart{
@@ -909,7 +909,7 @@ var (
 		Ctx:      "wmi.mssql_instance_log_flushes",
 		Priority: prioMSSQLLogFlushes,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_log_flushes", Name: "%s", Div: 1000, Algo: module.Incremental},
+			{ID: "mssql_instance_%s_%s_log_flushes", Name: "%s", Div: 1000, Algo: module.Incremental},
 		},
 	}
 	mssqlTransactionChart = module.Chart{
@@ -920,7 +920,7 @@ var (
 		Ctx:      "wmi.mssql_instance_transaction",
 		Priority: prioMSSQLTransactions,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_transaction", Name: "%s", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_%s_transaction", Name: "%s", Algo: module.Incremental},
 		},
 	}
 	mssqlWriteTransactionChart = module.Chart{
@@ -931,7 +931,7 @@ var (
 		Ctx:      "wmi.mssql_instance_write_transaction",
 		Priority: prioMSSQLWriteTransaction,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_write_transaction", Name: "%s", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_%s_write_transaction", Name: "%s", Algo: module.Incremental},
 		},
 	}
 	mssqlBlockedProcessChart = module.Chart{
