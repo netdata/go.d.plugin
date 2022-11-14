@@ -864,9 +864,6 @@ var (
 		Fam:      "mssql",
 		Ctx:      "wmi.mssql_instance_active_transaction",
 		Priority: prioMSSQLActiveTransaction,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_%s_active_transaction", Name: "%s", Algo: module.Incremental},
-		},
 	}
 	mssqlBackupRestoreChart = module.Chart{
 		ID:       "mssql_instance_%s_backup_restore",
@@ -875,9 +872,6 @@ var (
 		Fam:      "mssql",
 		Ctx:      "wmi.mssql_instance_backup_restore",
 		Priority: prioMSSQLBackupRestoreOperation,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_%s_backup_restore", Name: "%s", Algo: module.Incremental},
-		},
 	}
 	mssqlDatabaseSizeChart = module.Chart{
 		ID:       "mssql_instance_%s_database_size",
@@ -886,9 +880,6 @@ var (
 		Fam:      "mssql",
 		Ctx:      "wmi.mssql_instance_database_size",
 		Priority: prioMSSQLDataFileSize,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_%s_database_size", Name: "%s", Mul: 1000},
-		},
 	}
 	mssqlLogFlushedChart = module.Chart{
 		ID:       "mssql_instance_%s_log_flushed",
@@ -897,9 +888,6 @@ var (
 		Fam:      "mssql",
 		Ctx:      "wmi.mssql_instance_log_flushed",
 		Priority: prioMSSQLLogFlushed,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_%s_log_flushed", Name: "%s", Algo: module.Incremental},
-		},
 	}
 	mssqlLogFlushesChart = module.Chart{
 		ID:       "mssql_instance_%s_log_flushes",
@@ -908,9 +896,6 @@ var (
 		Fam:      "mssql",
 		Ctx:      "wmi.mssql_instance_log_flushes",
 		Priority: prioMSSQLLogFlushes,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_%s_log_flushes", Name: "%s", Div: 1000, Algo: module.Incremental},
-		},
 	}
 	mssqlTransactionChart = module.Chart{
 		ID:       "mssql_instance_%s_transaction",
@@ -919,9 +904,6 @@ var (
 		Fam:      "mssql",
 		Ctx:      "wmi.mssql_instance_transaction",
 		Priority: prioMSSQLTransactions,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_%s_transaction", Name: "%s", Algo: module.Incremental},
-		},
 	}
 	mssqlWriteTransactionChart = module.Chart{
 		ID:       "mssql_instance_%s_write_transaction",
@@ -930,9 +912,6 @@ var (
 		Fam:      "mssql",
 		Ctx:      "wmi.mssql_instance_write_transaction",
 		Priority: prioMSSQLWriteTransaction,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_%s_write_transaction", Name: "%s", Algo: module.Incremental},
-		},
 	}
 	mssqlBlockedProcessChart = module.Chart{
 		ID:       "mssql_instance_%s_blocked_process",
@@ -1458,13 +1437,70 @@ func (w *WMI) addMSSQLInstanceCharts(instance string, dbnames *map[string]bool) 
 		chart.Labels = []module.Label{
 			{Key: "instance", Value: instance},
 		}
-		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, instance)
+		if (chart.Dims != nil) {
+			for _, dim := range chart.Dims {
+				dim.ID = fmt.Sprintf(dim.ID, instance)
+			}
+		} else {
+			var markChart bool = false
+			for name, value := range *dbnames {
+				var dim *module.Dim
+				if value == false {
+					continue
+				}
+				switch chart.Ctx {
+				case mssqlActiveTransactionChart.Ctx:
+					id := fmt.Sprintf("mssql_instance_%s_%s_active_transaction", instance, name)
+					dim = &module.Dim{ID: id, Name: name, Algo: module.Incremental}
+				case mssqlBackupRestoreChart.Ctx:
+					id := fmt.Sprintf("mssql_instance_%s_%s_backup_restore", instance, name)
+					dim = &module.Dim{ID: id, Name: name, Algo: module.Incremental}
+				case mssqlDatabaseSizeChart.Ctx:
+					id := fmt.Sprintf("mssql_instance_%s_%s_database_size", instance, name)
+					dim = &module.Dim{ID: id, Name: name, Algo: module.Incremental}
+				case mssqlLogFlushedChart.Ctx:
+					id := fmt.Sprintf("mssql_instance_%s_%s_log_flushed", instance, name)
+					dim = &module.Dim{ID: id, Name: name, Algo: module.Incremental}
+				case mssqlLogFlushesChart.Ctx:
+					id := fmt.Sprintf("mssql_instance_%s_%s_log_flushes", instance, name)
+					dim = &module.Dim{ID: id, Name: name, Algo: module.Incremental}
+				case mssqlTransactionChart.Ctx:
+					id := fmt.Sprintf("mssql_instance_%s_%s_transaction", instance, name)
+					dim = &module.Dim{ID: id, Name: name, Algo: module.Incremental}
+				case mssqlWriteTransactionChart.Ctx:
+					id := fmt.Sprintf("mssql_instance_%s_%s_write_transaction", instance, name)
+					dim = &module.Dim{ID: id, Name: name, Algo: module.Incremental}
+				default:
+					continue
+				}
+
+				if dim == nil {
+					continue
+				}
+				if err := chart.AddDim(dim); err != nil {
+					w.Warning(err)
+					continue
+				}
+				markChart = true
+			}
+			if markChart == true {
+				chart.MarkNotCreated()
+			}
 		}
 	}
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeMSSQLInstanceCharts(instance string) {
+	px := fmt.Sprintf("mssql_instance_%s", instance)
+	for _, chart := range *w.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
 	}
 }
 
