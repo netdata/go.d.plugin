@@ -1437,7 +1437,7 @@ func (w *WMI) addMSSQLInstanceCharts(instance string, dbnames *map[string]bool) 
 		chart.Labels = []module.Label{
 			{Key: "instance", Value: instance},
 		}
-		if (chart.Dims != nil) {
+		if chart.Dims != nil {
 			for _, dim := range chart.Dims {
 				dim.ID = fmt.Sprintf(dim.ID, instance)
 			}
