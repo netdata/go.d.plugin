@@ -25,7 +25,7 @@ const (
 )
 
 func (w *WMI) collect() (map[string]int64, error) {
-	pms, err := w.prom.Scrape()
+	pms, err := w.prom.ScrapeSeries()
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (w *WMI) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Metrics) {
+func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 	w.collectCollector(mx, pms)
 	for _, pm := range pms.FindByName(metricCollectorSuccess) {
 		if pm.Value == 0 {

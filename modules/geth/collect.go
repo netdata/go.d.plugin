@@ -8,7 +8,7 @@ import (
 )
 
 func (g *Geth) collect() (map[string]int64, error) {
-	pms, err := g.prom.Scrape()
+	pms, err := g.prom.ScrapeSeries()
 	if err != nil {
 		return nil, err
 	}
@@ -17,7 +17,7 @@ func (g *Geth) collect() (map[string]int64, error) {
 	return stm.ToMap(mx), nil
 }
 
-func (g *Geth) collectGeth(pms prometheus.Metrics) map[string]float64 {
+func (g *Geth) collectGeth(pms prometheus.Series) map[string]float64 {
 	mx := make(map[string]float64)
 	g.collectChainData(mx, pms)
 	g.collectP2P(mx, pms)
@@ -26,7 +26,7 @@ func (g *Geth) collectGeth(pms prometheus.Metrics) map[string]float64 {
 	return mx
 }
 
-func (g *Geth) collectChainData(mx map[string]float64, pms prometheus.Metrics) {
+func (g *Geth) collectChainData(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		chainValidation,
 		chainWrite,
@@ -48,7 +48,7 @@ func (g *Geth) collectChainData(mx map[string]float64, pms prometheus.Metrics) {
 
 }
 
-func (g *Geth) collectRpc(mx map[string]float64, pms prometheus.Metrics) {
+func (g *Geth) collectRpc(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		rpcRequests,
 		rpcSuccess,
@@ -57,7 +57,7 @@ func (g *Geth) collectRpc(mx map[string]float64, pms prometheus.Metrics) {
 	g.collectEth(mx, pms)
 }
 
-func (g *Geth) collectTxPool(mx map[string]float64, pms prometheus.Metrics) {
+func (g *Geth) collectTxPool(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		txPoolInvalid,
 		txPoolPending,
@@ -74,7 +74,7 @@ func (g *Geth) collectTxPool(mx map[string]float64, pms prometheus.Metrics) {
 	g.collectEth(mx, pms)
 }
 
-func (g *Geth) collectP2P(mx map[string]float64, pms prometheus.Metrics) {
+func (g *Geth) collectP2P(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		p2pDials,
 		p2pEgress,
@@ -85,7 +85,7 @@ func (g *Geth) collectP2P(mx map[string]float64, pms prometheus.Metrics) {
 	g.collectEth(mx, pms)
 }
 
-func (g *Geth) collectEth(mx map[string]float64, pms prometheus.Metrics) {
+func (g *Geth) collectEth(mx map[string]float64, pms prometheus.Series) {
 	for _, pm := range pms {
 		mx[pm.Name()] += pm.Value
 	}

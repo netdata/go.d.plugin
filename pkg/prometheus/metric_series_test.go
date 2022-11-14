@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/prometheus/prometheus/model/labels"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,8 +17,8 @@ const (
 	testName2 = "jvm_threads_peak"
 )
 
-func testMetrics() Metrics {
-	return Metrics{
+func newTestSeries() Series {
+	return Series{
 		{
 			Value: 10,
 			Labels: labels.Labels{
@@ -57,94 +56,79 @@ func testMetrics() Metrics {
 	}
 }
 
-func TestMetric_Name(t *testing.T) {
-	m := testMetrics()
+func TestSeries_Name(t *testing.T) {
+	m := newTestSeries()
 
 	assert.Equal(t, testName1, m[0].Name())
 	assert.Equal(t, testName1, m[1].Name())
 
 }
 
-func TestMetrics_Add(t *testing.T) {
-	m := testMetrics()
+func TestSeries_Add(t *testing.T) {
+	m := newTestSeries()
 
 	require.Len(t, m, 5)
-	m.Add(Metric{})
+	m.Add(SeriesSample{})
 	assert.Len(t, m, 6)
 }
 
-func TestMetrics_FindByName(t *testing.T) {
-	m := testMetrics()
+func TestSeries_FindByName(t *testing.T) {
+	m := newTestSeries()
 	m.Sort()
-	assert.Len(t, Metrics{}.FindByName(testName1), 0)
+	assert.Len(t, Series{}.FindByName(testName1), 0)
 	assert.Len(t, m.FindByName(testName1), len(m)-1)
 }
 
-func TestMetrics_FindByNames(t *testing.T) {
-	m := testMetrics()
+func TestSeries_FindByNames(t *testing.T) {
+	m := newTestSeries()
 	m.Sort()
 	assert.Len(t, m.FindByNames(), 0)
 	assert.Len(t, m.FindByNames(testName1), len(m)-1)
 	assert.Len(t, m.FindByNames(testName1, testName2), len(m))
 }
 
-func TestMetrics_Len(t *testing.T) {
-	m := testMetrics()
+func TestSeries_Len(t *testing.T) {
+	m := newTestSeries()
 
 	assert.Equal(t, len(m), m.Len())
 }
 
-func TestMetrics_Less(t *testing.T) {
-	m := testMetrics()
+func TestSeries_Less(t *testing.T) {
+	m := newTestSeries()
 
 	assert.False(t, m.Less(0, 1))
 	assert.True(t, m.Less(4, 0))
 }
 
-func TestMetrics_Match(t *testing.T) {
-	m := testMetrics()
-
-	assert.Len(
-		t,
-		m.Match(&labels.Matcher{
-			Type:  labels.MatchEqual,
-			Name:  "__name__",
-			Value: testName1,
-		}),
-		4,
-	)
-
-}
-
-func TestMetrics_Max(t *testing.T) {
-	m := testMetrics()
+func TestSeries_Max(t *testing.T) {
+	m := newTestSeries()
 
 	assert.Equal(t, float64(26), m.Max())
 
 }
 
-func TestMetrics_Reset(t *testing.T) {
-	m := testMetrics()
+func TestSeries_Reset(t *testing.T) {
+	m := newTestSeries()
 	m.Reset()
 
 	assert.Len(t, m, 0)
 
 }
 
-func TestMetrics_Sort(t *testing.T) {
+func TestSeries_Sort(t *testing.T) {
 	{
-		m := testMetrics()
+		m := newTestSeries()
 		m.Sort()
 		assert.Equal(t, testName2, m[0].Name())
 	}
 	{
-		m := Metrics{}
+		m := Series{}
 		assert.Equal(t, 0.0, m.Max())
 	}
 }
 
-func TestMetrics_Swap(t *testing.T) {
-	m := testMetrics()
+func TestSeries_Swap(t *testing.T) {
+	m := newTestSeries()
 
 	m0 := m[0]
 	m1 := m[1]

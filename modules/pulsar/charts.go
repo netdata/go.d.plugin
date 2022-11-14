@@ -473,7 +473,7 @@ var (
 	}
 )
 
-func (p *Pulsar) adjustCharts(pms prometheus.Metrics) {
+func (p *Pulsar) adjustCharts(pms prometheus.Series) {
 	if pms := pms.FindByName(metricPulsarStorageReadRate); pms.Len() == 0 || pms[0].Labels.Get("namespace") == "" {
 		p.removeSummaryChart(sumStorageOperationsRateChart.ID)
 		p.removeNamespaceChart(nsStorageOperationsChart.ID)

@@ -9,32 +9,27 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
-
-	"github.com/prometheus/prometheus/model/labels"
-	"github.com/prometheus/prometheus/model/textparse"
 )
 
 type (
 	// Prometheus is a helper for scrape and parse prometheus format metrics.
 	Prometheus interface {
-		// Scrape and parse prometheus format metrics
-		Scrape() (Metrics, error)
-		// Metadata returns last scrape metrics metadata
-		Metadata() Metadata
+		// ScrapeSeries and parse prometheus format metrics
+		ScrapeSeries() (Series, error)
+		Scrape() (MetricFamilies, error)
 	}
 
 	prometheus struct {
-		client   *http.Client
-		request  web.Request
-		metrics  Metrics
-		metadata Metadata
-		sr       selector.Selector
+		client  *http.Client
+		request web.Request
 
-		// internal use
+		sr selector.Selector
+
+		parser promTextParser
+
 		buf     *bytes.Buffer
 		gzipr   *gzip.Reader
 		bodyBuf *bufio.Reader
@@ -49,50 +44,42 @@ const (
 // New creates a Prometheus instance.
 func New(client *http.Client, request web.Request) Prometheus {
 	return &prometheus{
-		client:   client,
-		request:  request,
-		metadata: make(Metadata),
-		buf:      bytes.NewBuffer(make([]byte, 0, 16000)),
+		client:  client,
+		request: request,
+		buf:     bytes.NewBuffer(make([]byte, 0, 16000)),
 	}
 }
 
 // NewWithSelector creates a Prometheus instance with the selector.
 func NewWithSelector(client *http.Client, request web.Request, sr selector.Selector) Prometheus {
 	return &prometheus{
-		client:   client,
-		request:  request,
-		metadata: make(Metadata),
-		sr:       sr,
-		buf:      bytes.NewBuffer(make([]byte, 0, 16000)),
+		client:  client,
+		request: request,
+		sr:      sr,
+		buf:     bytes.NewBuffer(make([]byte, 0, 16000)),
+		parser:  promTextParser{sr: sr},
 	}
 }
 
-// Scrape scrapes metrics, parses and sorts
-func (p *prometheus) Scrape() (Metrics, error) {
-	p.metrics.Reset()
-	p.metadata.reset()
-
-	if err := p.scrape(&p.metrics, p.metadata); err != nil {
-		return nil, err
-	}
-
-	p.metrics.Sort()
-
-	return p.metrics, nil
-}
-
-func (p *prometheus) Metadata() Metadata {
-	return p.metadata
-}
-
-func (p *prometheus) scrape(metrics *Metrics, meta Metadata) error {
+// ScrapeSeries scrapes metrics, parses and sorts
+func (p *prometheus) ScrapeSeries() (Series, error) {
 	p.buf.Reset()
 
 	if err := p.fetch(p.buf); err != nil {
-		return err
+		return nil, err
 	}
 
-	return p.parse(p.buf.Bytes(), metrics, meta)
+	return p.parser.parseToSeries(p.buf.Bytes())
+}
+
+func (p *prometheus) Scrape() (MetricFamilies, error) {
+	p.buf.Reset()
+
+	if err := p.fetch(p.buf); err != nil {
+		return nil, err
+	}
+
+	return p.parser.parseToMetricFamilies(p.buf.Bytes())
 }
 
 func (p *prometheus) fetch(w io.Writer) error {
@@ -139,36 +126,4 @@ func (p *prometheus) fetch(w io.Writer) error {
 	_ = p.gzipr.Close()
 
 	return err
-}
-
-func (p *prometheus) parse(prometheusText []byte, metrics *Metrics, meta Metadata) error {
-	parser := textparse.NewPromParser(prometheusText)
-	for {
-		entry, err := parser.Next()
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			if entry == textparse.EntryInvalid && strings.HasPrefix(err.Error(), "invalid metric type") {
-				continue
-			}
-			return err
-		}
-
-		switch entry {
-		case textparse.EntrySeries:
-			var lbs labels.Labels
-			_, _, val := parser.Series()
-			parser.Metric(&lbs)
-			if p.sr != nil && !p.sr.Matches(lbs) {
-				continue
-			}
-			metrics.Add(Metric{lbs, val})
-		case textparse.EntryType:
-			meta.setType(parser.Type())
-		case textparse.EntryHelp:
-			meta.setHelp(parser.Help())
-		}
-	}
-	return nil
 }
