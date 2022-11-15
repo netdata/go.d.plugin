@@ -39,6 +39,7 @@ func New() *WMI {
 			processes:    make(map[string]bool),
 			iis:          make(map[string]bool),
 			services:     make(map[string]bool),
+			mssql:        make(map[string]bool),
 		},
 		charts: &module.Charts{},
 	}
