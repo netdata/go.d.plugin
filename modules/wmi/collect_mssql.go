@@ -56,7 +56,7 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 			seen[name] = true
 			var hit float64
 			if pm.Value != 0 {
-				hit = (float64(mx[px+name+"_cache_hit_ratio"]) / pm.Value)*100
+				hit = (float64(mx[px+name+"_cache_hit_ratio"]) / pm.Value) * 100
 			} else {
 				hit = math.NaN()
 			}
