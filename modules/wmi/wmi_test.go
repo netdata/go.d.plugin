@@ -260,7 +260,7 @@ func TestWMI_Collect(t *testing.T) {
 				"mssql_instance_SQLEXPRESS_blocked_process":                                 0,
 				"mssql_instance_SQLEXPRESS_buffer_checkpoint_page":                          82,
 				"mssql_instance_SQLEXPRESS_buffer_pagelife_expectancy":                      191350,
-				"mssql_instance_SQLEXPRESS_cache_hit_ratio":                                 1,
+				"mssql_instance_SQLEXPRESS_cache_hit_ratio":                                 100,
 				"mssql_instance_SQLEXPRESS_master_active_transaction":                       0,
 				"mssql_instance_SQLEXPRESS_master_backup_restore":                           0,
 				"mssql_instance_SQLEXPRESS_master_database_size":                            4653056,
